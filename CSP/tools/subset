@@ -446,7 +446,7 @@ class Workspace:
       if not result.ok: return result
     result = cs.submit()
     if result.ok:
-      #del self._sets[name]
+      del self._sets[name]
       self.save()
     return result
 

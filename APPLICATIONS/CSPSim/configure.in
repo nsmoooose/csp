@@ -9,8 +9,8 @@ dnl   -OS
 
 dnl Process this file with autoconf to produce a configure script.
 AC_INIT(Source/CSPSim.cpp)
-AM_INIT_AUTOMAKE(CSPSim, 0.1.0)
-AM_CONFIG_HEADER(config.h)
+#AM_INIT_AUTOMAKE(CSPSim, 0.1.0)
+#AM_CONFIG_HEADER(config.h)
 
 dnl Checks for programs.
 AC_PROG_CC

@@ -117,6 +117,9 @@ void Server::onConnectionRequest(simdata::Ref<ConnectionRequest> const &msg, sim
 	SIMNET_LOG(HANDSHAKE, DEBUG, "connection request " << *msg);
 	PeerId client_id = msg->getSource();
 	ConnectionData &connection_data = m_PendingConnections[client_id];
+	if (msg->incoming_bw() < 1000 || msg->outgoing_bw() < 1000) {
+		SIMNET_LOG(HANDSHAKE, ERROR, "client reports very low bandwidth " << *msg);
+	}
 	connection_data.incoming_bw = msg->incoming_bw();
 	connection_data.outgoing_bw = msg->outgoing_bw();
 	ConnectionResponse::Ref response = new ConnectionResponse();
@@ -132,9 +135,11 @@ void Server::onAcknowledge(simdata::Ref<Acknowledge> const &msg, simdata::Ref<Me
 	SIMNET_LOG(HANDSHAKE, DEBUG, "received acknowledgement " << *msg);
 	PendingConnectionMap::iterator iter = m_PendingConnections.find(msg->getSource());
 	if (iter == m_PendingConnections.end()) {
-		SIMNET_LOG(HANDSHAKE, ERROR, "received unsolicited connection acknowledgement from client id " << msg->getSource());
+		SIMNET_LOG(HANDSHAKE, WARNING, "received unsolicited connection acknowledgement from client id " << msg->getSource());
 		return;
 	}
+	SIMNET_LOG(HANDSHAKE, INFO, "adding client " << msg->getSource()
+		<< " (bw " << (iter->second.incoming_bw) << "/" << (iter->second.outgoing_bw) << ")");
 	m_NetworkInterface->establishConnection(msg->getSource(), iter->second.incoming_bw, iter->second.outgoing_bw);
 	m_PendingConnections.erase(iter);
 }
@@ -164,6 +169,8 @@ bool Client::connectToServer(NetworkNode const &server, double timeout) {
 	request->setReliable();
 	request->setRoutingType(0);
 	request->setRoutingData(getLocalNode().getPort());
+	request->set_incoming_bw(m_NetworkInterface->getNominalIncomingBandwidth());
+	request->set_outgoing_bw(m_NetworkInterface->getNominalOutgoingBandwidth());
 	m_MessageQueue->queueMessage(request);
 
 	// wait for a response

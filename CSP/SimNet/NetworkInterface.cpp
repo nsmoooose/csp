@@ -153,7 +153,10 @@ void NetworkInterface::sendPackets(double timeout) {
 		// queued packets when a peer disconnects).
 		if (!peer || !peer->isActive()) {
 			// check that this peer id was previously active (not a very stringent test).
-			assert(peer->getLastDeactivationTime() > 0);
+			//assert(peer->getLastDeactivationTime() > 0);
+			if (peer->getLastDeactivationTime() <= 0) {
+				SIMNET_LOG(PACKET, WARNING, "sending to inacive peer " << header->destination() << " and last deactivation time <= 0 " << (!peer ? "null" : "nonnull"));
+			}
 			queue->releaseReadBuffer();
 			continue;
 		}
@@ -773,6 +776,7 @@ void NetworkInterface::establishConnection(PeerId id, double incoming, double ou
 	SIMNET_LOG(PEER, INFO, "connection established with peer " << id);
 	PeerInfo *peer = getPeer(id);
 	if (peer && peer->isActive() && peer->isProvisional()) {
+		SIMNET_LOG(PEER, INFO, "setting peer bandwidth " << incoming << ", " << outgoing);
 		peer->updateBandwidth(incoming, outgoing);
 		peer->setProvisional(false);
 	}

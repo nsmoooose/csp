@@ -56,8 +56,8 @@ PeerInfo::PeerInfo():
 	m_bytes_self_to_peer(0),
 	m_average_outgoing_packet_size(100.0),
 	m_packets_throttled(0),
-	m_desired_rate_self_to_peer(1),
-	m_desired_rate_peer_to_self(1),
+	m_desired_rate_self_to_peer(100),
+	m_desired_rate_peer_to_self(100),
 	m_allocation_peer_to_self(100),  // ~10% of inbound bandwidth initially
 	m_allocation_self_to_peer(100),  // ~10% of inbound bandwidth initially
 	m_desired_bandwidth_peer_to_self(0.0),

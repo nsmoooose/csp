@@ -176,7 +176,7 @@ private:
 		command->setDestination(client_id);
 		command->setRoutingType(ROUTE_COMMAND);
 		command->setReliable();
-		m_NetworkServer->queue()->queueMessage(command);
+		m_NetworkServer->queue()->queueMessage(command, client_id);
 	}
 
 	void bindCommandDispatch(simnet::DispatchHandler::Ref const &dispatch) {
@@ -189,6 +189,7 @@ private:
 	PlayerJoin::Ref makeJoin(const PeerId id) {
 		PlayerJoin::Ref join = new PlayerJoin();
 		join->setRoutingType(ROUTE_COMMAND);
+		join->setReliable();
 		ClientData &data = m_ClientData[id];
 		simnet::PeerInfo const *peer_info = m_NetworkServer->getPeer(id);
 		join->set_peer_id(id);
@@ -210,11 +211,13 @@ private:
 
 			// if the external ips match, these hosts are probably on a LAN and should communicate via their
 			// internal interfaces; otherwise use the external ip.
+			/*  XXX broken since join is shared for all outbound messages
 			if (iter->second.external_ip_addr == new_client_data.external_ip_addr) {
 				join->set_ip_addr(new_client_data.internal_ip_addr);
 			} else {
 				join->set_ip_addr(new_client_data.external_ip_addr);
 			}
+			*/
 
 			m_NetworkServer->queue()->queueMessage(join, iter->first);
 		}

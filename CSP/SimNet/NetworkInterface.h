@@ -368,6 +368,16 @@ public:
 	 *  recently disconnected.
 	 */
 	PeerId nextDisconnectedPeerId();
+
+	/** Get the nominal (max) incoming bandwidth, in bytes per second.  This is
+	 *  the value specified when the network interface was initialized.
+	 */
+	inline int getNominalIncomingBandwidth() const { return m_IncomingBandwidth; }
+
+	/** Get the nominal (max) ougoing bandwidth, in bytes per second.  This is
+	 *  the value specified when the network interface was initialized.
+	 */
+	inline int getNominalOutgoingBandwidth() const { return m_OutgoingBandwidth; }
 };
 
 } // namespace simnet

@@ -1,13 +1,14 @@
 Version 0.3.1 (in progress)
 ===========================
 
+*********** VC USERS: please remove Platform.cpp from the VC project
+            files.
+
 2003-04-11: onsight
             Fixed two coordinate system bugs in the impact code during
 	    hard crashes that could cause numerical overflows and lead
 	    to segfaults.  There's still somewhat odd behaviour at
-	    times, but only under conditions where the plane would
-	    break into pieces anyway (which of course isn't modelled
-	    yet).
+	    times, so this should be revisited at some point.
 
             Reordered member initializers in NumericalMethod ctors to
 	    silence gcc warnigns.
@@ -22,6 +23,19 @@ Version 0.3.1 (in progress)
 	    so they can be run directly from the commandd line
 	    under linux (assuming your python path is the same
 	    as mine ;-).
+
+	    Removed Platform.cpp from the build.  None of the files
+	    should include Platform.h;  from now on you should use
+	    SimData/FileUtility.h to provide the ospath functions.
+	    These are in the simdata namespace, so they look like:
+
+	        simdata::ospath::join(...)
+
+            Stripped all the includes out of stdinc.h which were
+	    not needed by any of the source files that included
+	    it.  I also removed the #include "stdinc.h" from these.
+	    stdinc.h now just contains the lines to enable mmgr
+	    which are commented out.
 
 *********** ALL USERS: you will need to remake your aircraft.hid file.
 	    Go to Tools/HID, and run map2hid aicraft.map, then copy the

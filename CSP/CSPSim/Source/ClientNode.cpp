@@ -26,7 +26,12 @@ int ClientNode::run()
   printf("sizeof(simdata::SimTime) = %d\n", sizeof(simdata::SimTime));
   printf("sizeof(_Vector3Struct) = %d\n", sizeof(_Vector3Struct));
   printf("sizeof(_QuatStruct) = %d\n", sizeof(_QuatStruct));
+  printf("sizeof(MessageHeader) = %d\n", sizeof(MessageHeader));
+  printf("sizeof(NetworkMessage) = %d\n", sizeof(NetworkMessage));
+  printf("sizeof(ObjectUpdateMessagePayload) = %d\n", sizeof(ObjectUpdateMessagePayload)); 
   
+  MessageHeader header;
+  header.dumpOffsets();
 	
   printf("Network test client starting up...\n");
   Port localPort = g_Config.getInt("Networking", "LocalMessagePort", 10000, true);

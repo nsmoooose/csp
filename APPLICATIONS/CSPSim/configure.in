@@ -54,24 +54,10 @@ dnl check for Geospatial Data Abstraction Library
 #CSP_LIB_CONFIG([GDAL], [gdal], [1.1.7], [Geospatial Data Abstraction Library], [http://remotesensing.org/gdal/])
 
 dnl check for OpenSceneGraph
-CSP_OSG_CONFIG(osg, 0.9.4, [OpenSceneGraph])
-# osg 0.9.3 segfaults when any of these libs are linked against a
-# minimal version test script.  so, no version check for now, just
-# see if the libs exist.  hopefully the next osg release will fix
-# this!
-#AC_CHECK_LIB(osgGLUT, osgGLUTGetVersion, ,
-#    [AC_MSG_ERROR(OpenSceneGraph utility library not found. See http://www.openscenegraph.org)],)
-#AC_CHECK_LIB(osgUtil, osgUtilGetVersion, ,
-#    [AC_MSG_ERROR(OpenSceneGraph utility library not found. See http://www.openscenegraph.org)],)
-#AC_CHECK_LIB(osgText, osgTextGetVersion, ,
-#    [AC_MSG_ERROR(OpenSceneGraph utility library not found. See http://www.openscenegraph.org)],)
-#AC_CHECK_LIB(osgParticle, osgParticleGetVersion, ,
-#    [AC_MSG_ERROR(OpenSceneGraph utility library not found. See http://www.openscenegraph.org)],)
-# GLUT is no longer needed.
-#CSP_OSG_CONFIG(osgGLUT, 0.9.3, [OpenSceneGraph GLUT library])
-CSP_OSG_CONFIG(osgUtil, 0.9.4, [OpenSceneGraph Util library])
-CSP_OSG_CONFIG(osgText, 0.9.4, [OpenSceneGraph Text library])
-CSP_OSG_CONFIG(osgParticle, 0.9.4, [OpenSceneGraph Particle library])
+CSP_OSG_CONFIG(osg, 0.9.6, [OpenSceneGraph])
+CSP_OSG_CONFIG(osgUtil, 0.9.6, [OpenSceneGraph Util library])
+CSP_OSG_CONFIG(osgText, 0.9.6, [OpenSceneGraph Text library])
+CSP_OSG_CONFIG(osgParticle, 0.9.6, [OpenSceneGraph Particle library])
 
 dnl check for libSigC++ type-safe signal libraryy
 dnl CSP_LIB_CONFIG([SIGC], [sigc], [1.0.1], [--cflags], [LibSigC++ Signal Library], [http://libsigc.sourceforge.net/])

@@ -1,6 +1,13 @@
  Version 0.4.0 (in progress)
 ===========================
 2003-10-19: onsight
+            Updated configure script to check for osg 0.9.6.  Version
+	    0.9.4 can still be used, if necessary.  To do so, change 
+	    configure.in to check for 0.9.4, run autoconf, then 
+	    ./configure.  Finally, edit Include/CSPSim.h and uncomment
+	    the #define CSP_OSG_094 line.
+
+2003-10-19: onsight
             Updated the xml files to remove the 'static' attribute (now
 	    set in the class definition), and convert the engine thrust
 	    tables to use simdata::Table2.  Added systems.xml to

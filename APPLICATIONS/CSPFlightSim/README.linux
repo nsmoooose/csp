@@ -30,7 +30,7 @@ are standardized.
 
 To build, do the following:
 
-$ aclocal; autoconf; automake
+$ aclocal; autoconf; automake --add-missing
 $ ./configure
 $ make
 $ ln -s Source/CSPFlightSim .

@@ -10,6 +10,12 @@
  * Add exception handlers for csp and simdata exceptions thrown from the
    main loop.
 
+ * Add two simple digital filters.
+
+ * Add infrastructure for creating generic flight control systems.  This
+   check-in is the first of two (or possibly more) that will define a complex
+   and realistic flight control system for the F-16.
+
 2005-03-05: onsight
  * Fix a couple minor warnings under gcc.
 

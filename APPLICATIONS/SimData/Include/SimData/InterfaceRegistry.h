@@ -45,18 +45,45 @@ class Object;
 class Packer;
 class UnPacker;
 
-
-/**
- * @brief Base class for interface proxy classes.
+/** @page InterfaceDetails Object Interfaces and Interface Proxies
  *
- * Stores a reference to the actual interface and provides accessor methods to
- * create and manipulate objects dynamically at runtime.
+ *  Classes derived from simdata::Object define custom InterfaceProxy
+ *  extensions to provide access to member variables that can be set
+ *  from external data sources.  Such InterfaceProxy classes are 
+ *  defined as inner classes using various macros such as
+ *  BEGIN_SIMDATA_XML_INTERFACE.  Interface proxy classes store an
+ *  ObjectInterface instance for the object class, which is provides 
+ *  direct access to the member variables listed with SIMDATA_XML
+ *  macros.
+ *
+ *  TODO write me!
+ */
+
+/** Base class for interface proxy classes.
+ *
+ *  Stores a reference to the actual interface and provides accessor methods
+ *  to create and manipulate objects dynamically at runtime.  See
+ *  @ref InterfaceDetails for details.
  * 
- * @author Mark Rose <mrose@stm.lbl.gov>
+ *  @author Mark Rose <mrose@stm.lbl.gov>
  */
 class SIMDATA_EXPORT InterfaceProxy {
+
+private:
+	/** Default constructor.
+	 *
+	 *  This private constructor should not be called and is undefined.
+	 */
+	InterfaceProxy();
 public:
-	InterfaceProxy() {}
+	/** Constructor.
+	 *
+	 *  Construct a new interface proxy, and register it with the global
+	 *  interface registry.
+	 *
+	 *  @param cname the class name
+	 *  @param chash the class hash
+	 */
 	InterfaceProxy(const char *cname, hasht chash);
 #ifndef SWIG
 	InterfaceProxy(const char *cname, hasht (*chash)());
@@ -156,7 +183,7 @@ private:
  *
  *  ObjectInterfaces automatically register themselves with the global instance of this
  *  class at startup.  Interfaces can be accessed by name to provide dynamic object
- *  creation and variable assignment.
+ *  creation and variable assignment.  See @ref InterfaceDetails for details.
  * 
  *  @author Mark Rose <mrose@stm.lbl.gov>
  */
@@ -200,8 +227,8 @@ private:
 	
 	void __cleanup();
 
-	typedef HASH_MAPS<const char *, InterfaceProxy *, HASH<const char *>, eqstr>::Type proxy_map;
-	typedef HASH_MAPS<hasht, InterfaceProxy *, hasht_hash, hasht_eq>::Type proxy_id_map;
+	typedef HASH_MAPS<const char*, InterfaceProxy*, HASH<const char*>, eqstr>::Type proxy_map;
+	typedef HASHT_MAP<InterfaceProxy*>::Type proxy_id_map;
 
 	proxy_map *__map;
 	proxy_id_map *__id_map;
@@ -211,23 +238,31 @@ private:
 
 
 
-//-------------------------------------------------------
-// macros to create an interface to a specific class.
-// since an instance of the interface class is created,
-// these macros should not be used in header files.
-//
-// between the BEGIN and END macros, include SIMDATA_XML
-// macros to bind the class member variables to string 
-// identifiers:
-//
-// BEGIN_SIMDATA_XML_INTERFACE(myclass)
-//   SIMDATA_XML("name", myclass::name, true)
-//   SIMDATA_XML("size", myclass::size, true)
-//   ...
-// END_SIMDATA_XML_INTERFACE
-//-------------------------------------------------------
+/** @page InterfaceMacros Object Interface Macros
+ * 
+ *  Macros to create an interface to a specific class.
+ *
+ *  Since an instance of the interface class is created,
+ *  these macros should not be used in header files.
+ *
+ *  Between the BEGIN and END macros, include SIMDATA_XML
+ *  macros to bind the class member variables to string 
+ *  identifiers:
+ *
+ *  @code
+ *  BEGIN_SIMDATA_XML_INTERFACE(myclass)
+ *    SIMDATA_XML("name", myclass::name, true)
+ *    SIMDATA_XML("size", myclass::size, true)
+ *    ...
+ *  END_SIMDATA_XML_INTERFACE
+ *  @endcode
+ */
 
-// interface macro 0
+
+/** interface macro 0
+ *
+ *  <b><i>For internal use only.</i></b>  See @ref InterfaceMacros for details.
+ */
 #define __SIMDATA_XML_INTERFACE_0(classname, baseinterface) \
 class classname##InterfaceProxy; \
 friend class classname##InterfaceProxy; \
@@ -388,6 +423,7 @@ namespace { \
 namespace { \
 	parent::classname::classname##InterfaceProxy __##parent##_##classname##_interface; \
 } /* anonymous namespace */
+
 
 
 NAMESPACE_SIMDATA_END

@@ -33,7 +33,7 @@
 	#    define SIMDATA_EXPORT   __declspec(dllexport)
 	#  else
 	#    define SIMDATA_EXPORT   __declspec(dllimport)
-	#  endif /*SIMDATA_EXPORTS */
+	#  endif // SIMDATA_EXPORTS
 #else
 	#  define SIMDATA_EXPORT
 #endif

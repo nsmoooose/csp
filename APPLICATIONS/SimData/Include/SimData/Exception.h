@@ -21,6 +21,8 @@
 
 /**
  * @file Exception.h
+ *
+ * Exception base classes and macros for creating new exceptions.
  */
 
 
@@ -36,71 +38,60 @@
 NAMESPACE_SIMDATA
 
 
-/**
- * @brief General exception base class with error reporting.
+/** General exception base class with error reporting.
  *
- * @author Mark Rose <mrose@stm.lbl.gov>
+ *  @author Mark Rose <mrose@stm.lbl.gov>
  */
 class SIMDATA_EXPORT ExceptionBase { //: public std::runtime_error {
 	std::string _msg;
 	std::string _type;
 	mutable bool dump;
 public:
-	/**
-	 * Create a new exception.
+	/** Create a new exception.
 	 *
-	 * @param type a string representing the type of error.
-	 * @param msg a string providing additional information about the error.
+	 *  @param type a string representing the type of error.
+	 *  @param msg a string providing additional information about the error.
 	 */
 	ExceptionBase(std::string const &type="Exception", std::string const &msg="");
 
-	/**
-	 * Copy constructor.
+	/** Copy constructor.
 	 */
 	ExceptionBase(ExceptionBase const &e);
 
-	/**
-	 * Destructor.
+	/** Destructor.
 	 *
-	 * If the exception has not cleared, it will display its
-	 * details to stderr on destruction.
+	 *  If the exception has not cleared, it will display its
+	 *  details to stderr on destruction.
 	 */
 	virtual ~ExceptionBase();
 
-	/**
-	 * Get the string describing the error.
+	/** Get the string describing the error.
 	 */
 	std::string getMessage();
 
-	/**
-	 * Get the string representing the type of error.
+	/** Get the string representing the type of error.
 	 */
 	std::string getType();
 
-	/**
-	 * Get the full error message (type + message).
+	/** Get the full error message (type + message).
 	 */
 	std::string getError();
 
-	/**
-	 * Add additional information to the error description.
+	/** Add additional information to the error description.
 	 */
 	void appendMessage(std::string const &msg);
 
-	/**
-	 * Reset the exception so that it will not print to stderr on 
-	 * destruction.
+	/** Reset the exception so that it will not print to stderr on 
+	 *  destruction.
 	 */
 	void clear();
 
-	/**
-	 * Dump information about the exception to stderr.
+	/** Dump information about the exception to stderr.
 	 */
 	void details();
 };
 
-/**
- * @brief Base class for all SimData specific exceptions.
+/** Base class for all SimData specific exceptions.
  */
 class SIMDATA_EXPORT Exception: public ExceptionBase {
 public:
@@ -120,10 +111,9 @@ public: \
 #define SIMDATA_EXCEPTION(a)	SIMDATA_SUBEXCEPTION(a, Exception)
 
 
-/**
- * Exception for marshalling python exceptions through SWIG wrapers.
+/** Exception for marshalling python exceptions through SWIG wrapers.
  *
- * @author Mark Rose <mrose@stm.lbl.gov>
+ *  @author Mark Rose <mrose@stm.lbl.gov>
  */
 SIMDATA_EXCEPTION(PythonException);
 
@@ -132,3 +122,4 @@ NAMESPACE_SIMDATA_END
 
 
 #endif // __SIMDATA_EXCEPTION_H__
+

@@ -28,7 +28,7 @@
 
 #include <SimData/Math.h>
 #include <SimData/GeoPos.h>
-#include <SimData/GlibCsp.h>
+#include <SimData/Math.h>
 #include <SimData/Pack.h>
 
 #include <cmath>
@@ -123,7 +123,7 @@ LLA UTMtoLLA(UTM const &utm, ReferenceEllipsoid const &_ref)
 		y -= 10000000.0;  //remove 10,000,000 meter offset used for southern hemisphere
 	}
 
-	double lon0 = D2R * ((utm.zone() - 1) * 6 - 180 + 3);  //+3 puts origin in middle of zone
+	double lon0 = toRadians(((utm.zone() - 1) * 6.0 - 180.0 + 3.0));  //+3 puts origin in middle of zone
 
 	M = y / k0;
 
@@ -173,13 +173,13 @@ UTM LLAtoUTM(LLA const &lla, ReferenceEllipsoid const &_ref, char _zone)
 	double nu, T, T2, C, CP, A, A2, A4, M, S;
 	
 	//Make sure the longitude is between -180.00 .. 179.9
-	if (lon >= G_PI) {
-		int n = (int) (0.5 * lon / G_PI + 0.5);
-		lon -= n * 2.0 * G_PI;
+	if (lon >= PI) {
+		int n = (int) (0.5 * lon / PI + 0.5);
+		lon -= n * 2.0 * PI;
 	} else
-	if (lon < -G_PI) {
-		int n = (int) (0.5 * lon / G_PI - 0.5);
-		lon -= n * 2.0 * G_PI;
+	if (lon < -PI) {
+		int n = (int) (0.5 * lon / PI - 0.5);
+		lon -= n * 2.0 * PI;
 	}
 
 	if (_zone >= 0) {
@@ -200,7 +200,7 @@ UTM LLAtoUTM(LLA const &lla, ReferenceEllipsoid const &_ref, char _zone)
 				lon0 = 0.654498469497874;
 				break;
 			default:
-				lon0 = G_PI / 180.0 * ((int(_zone) - 1)*6 - 180 + 3); 
+				lon0 = toRadians((int(_zone) - 1)*6.0 - 180.0 + 3.0); 
 		}
 	}
 
@@ -233,8 +233,8 @@ UTM LLAtoUTM(LLA const &lla, ReferenceEllipsoid const &_ref, char _zone)
 	}
 	
 	if (_zone == -1) {
-		_zone = char((lon / G_PI + 1.0) * 30.0) + 1;
-		lon0 = G_PI / 180.0 * ((int(_zone) - 1)*6 - 180 + 3); 
+		_zone = char((lon / PI + 1.0) * 30.0) + 1;
+		lon0 = toRadians((int(_zone) - 1)*6.0 - 180.0 + 3.0); 
 	}
 
 	S = sin(lat);
@@ -580,7 +580,7 @@ void GeoPos::setUTM(double northing, double easting, char zone, char designator,
 		y -= 10000000.0;  //remove 10,000,000 meter offset used for southern hemisphere
 	}
 
-	double lon0 = D2R * ((getZoneNumber() - 1) * 6 - 180 + 3);  //+3 puts origin in middle of zone
+	double lon0 = toRadians((getZoneNumber() - 1) * 6.0 - 180.0 + 3.0);  //+3 puts origin in middle of zone
 
 	M = y / k0;
 
@@ -648,13 +648,13 @@ void GeoPos::_updateUTM() const
 	double nu, T, T2, C, CP, A, A2, A4, M, S;
 	
 	//Make sure the longitude is between -180.00 .. 179.9
-	if (lon >= G_PI) {
-		int n = (int) (0.5 * lon / G_PI + 0.5);
-		lon -= n * 2.0 * G_PI;
+	if (lon >= PI) {
+		int n = (int) (0.5 * lon / PI + 0.5);
+		lon -= n * 2.0 * PI;
 	} else
-	if (lon < -G_PI) {
-		int n = (int) (0.5 * lon / G_PI - 0.5);
-		lon -= n * 2.0 * G_PI;
+	if (lon < -PI) {
+		int n = (int) (0.5 * lon / PI - 0.5);
+		lon -= n * 2.0 * PI;
 	}
 
 	_zone = -1;
@@ -688,8 +688,8 @@ void GeoPos::_updateUTM() const
 	}
 	
 	if (_zone == -1) {
-		_zone = char((lon / G_PI + 1.0) * 30.0) + 1;
-		lon0 = G_PI / 180.0 * ((int(_zone) - 1)*6 - 180 + 3); 
+		_zone = char((lon / PI + 1.0) * 30.0) + 1;
+		lon0 = toRadians((int(_zone) - 1) * 6.0 - 180.0 + 3.0); 
 	}
 
 	S = sin(lat);
@@ -735,7 +735,7 @@ void GeoPos::_updateUTM() const
 char GeoPos::_getUTMDesignator(double latitude)
 {
 	static const char designator[] = "CDEFGHJKLMNPQRSTUVWXX";
-	latitude *= 180.0 / G_PI;
+	latitude = toDegrees(latitude);
 	if (latitude < -80.0 || latitude > 84.0) return 'Z';
 	return designator[(int)(latitude + 80.0)>>3];
 }
@@ -862,7 +862,7 @@ UTM const &UTM::operator = (ECEF const &ecef) {
 char UTM::getDesignator(double latitude)
 {
 	static const char designator[] = "CDEFGHJKLMNPQRSTUVWXX";
-	latitude *= 180.0 / G_PI;
+	latitude = toDegrees(latitude);
 	if (latitude < -80.0 || latitude > 84.0) return 'Z';
 	return designator[(int)(latitude + 80.0)>>3];
 }
@@ -979,9 +979,13 @@ LLA const &LLA::operator = (ECEF const &ecef)
 
 std::string LLA::asString() const
 {
-	char buff[128];
-	sprintf(buff, "[%.3f %.3f, %.3f]", toDegrees(_lat), toDegrees(_lon), _alt);
-	return buff;
+	std::stringstream ss;
+	ss << std::fixed << std::setprecision(3);
+	ss << "[" << toDegrees(_lat) 
+	   << " " << toDegrees(_lon) 
+	   << ", " << _alt 
+	   << "]";
+	return ss.str();
 }
 
 void LLA::parseXML(const char* cdata) {

@@ -21,7 +21,6 @@
 #include <SimData/DataArchive.h>
 #include <SimData/DataManager.h>
 #include <SimData/InterfaceRegistry.h>
-#include <SimData/GlibCsp.h>
 #include <SimData/Object.h>
 #include <SimData/Log.h>
 
@@ -65,7 +64,7 @@ void DataArchive::_addEntry(int offset, int length, ObjectID hash, std::string c
 }
 
 void DataArchive::writeMagic() {
-	fprintf(_f, "RAWDAT-%c", (G_BYTE_ORDER == G_LITTLE_ENDIAN) ? 'L' : 'B');
+	fprintf(_f, "RAWDAT-%c", isLittleEndian() ? 'L' : 'B');
 }
 
 void DataArchive::readMagic() {
@@ -78,7 +77,7 @@ void DataArchive::readMagic() {
 		throw BadMagic(msg.c_str());
 	}
 	bool data_little = (magic[7] == 'L');
-	bool machine_little = (G_BYTE_ORDER == G_LITTLE_ENDIAN);
+	bool machine_little = isLittleEndian();
 	if (data_little != machine_little) {
 		char msg[128];
 		sprintf(msg, "le(machine, data) = (%d, %d)", machine_little, data_little);

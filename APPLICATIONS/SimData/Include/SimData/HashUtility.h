@@ -106,7 +106,8 @@ struct SIMDATA_EXPORT HashT {
 
 typedef HashT hasht;
 
-//#define hash_string newhasht_cstring
+/** The primary string to hash function used internally by SimData.
+ */
 inline HashT hash_string(std::string const &key) { return newhasht_cstring(key); }
 
 
@@ -216,8 +217,6 @@ struct SIMDATA_EXPORT hashstring {
 	};
 #endif
 
-class Object;
-class ObjectProxyBase;
 
 /** hash_map specialization type for hasht to T maps.
  */
@@ -225,16 +224,6 @@ template <class T>
 struct HASHT_MAP {
 	typedef typename HASH_MAPS<hasht, T, hasht_hash, hasht_eq>::Type Type;
 };
-
-/** A hasht to int map.
- */
-typedef HASH_MAPS<hasht, int, hasht_hash, hasht_eq>::Type hasht_map;
-
-/** A hasht to ObjectProxyBase* map.
- */
-typedef HASH_MAPS<hasht, ObjectProxyBase*, hasht_hash, hasht_eq>::Type proxy_map;
-
-//typedef HASH_MAPS<const std::string, int, hashstring, eqstring>::Type string_map;
 
 extern std::ostream & operator<<(std::ostream &o, const hasht &x);
 

@@ -4,6 +4,22 @@ Version 0.3.4 (in progress)
 2003-08-17: onsight
             Fixed assertion range errors in Matrix3.h
 
+	    Moved template metaprogramming structs into the
+	    'meta' namespace in PTS.h.
+
+	    Removed GlibCsp.h includes in GeoPos.cpp and 
+	    DataArchive.cpp, with associated fixups.
+
+	    Added byte-order tests to Uniform.h.
+
+	    Tried adding template-meta-programming-style fixed
+	    integer size typedef mappings (e.g. uint32), but
+	    SWIG chokes on these so it's back to hard-coded
+	    typedefs.  For now these should work on most systems 
+	    that SimData is likely to run on.  Autoconf is the
+	    obvious alternative, but I'd rather not use it at
+	    this point.
+
 2003-08-16: onsight
             Replaced several old-school buffer allocations with
 	    std::vector equivalents in DataArchive.

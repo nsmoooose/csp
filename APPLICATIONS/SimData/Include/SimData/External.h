@@ -31,18 +31,17 @@
 
 NAMESPACE_SIMDATA
 
-/**
- * @brief Holds the file system path to an external data source.
+/** Holds the file system path to an external data source.
  *
- * Paths are stored interally in a platform independent format, and
- * automatically converted to and from the native format.
+ *  Paths are stored interally in a platform independent format, and
+ *  automatically converted to and from the native format.
  *
- * The utility of this class is rather questionable.  At this point
- * I recommend using std::string and using functions in simdata::ospath
- * to convert to native format at runtime. (-MR)
+ *  @note The utility of this class is rather questionable.  At this point
+ *  I recommend using std::string and using functions in simdata::ospath
+ *  to convert to native format at runtime. (-MR)
  *
- * @author Mark Rose <mrose@stm.lbl.gov>
- * @ingroup BaseTypes
+ *  @author Mark Rose <mrose@stm.lbl.gov>
+ *  @ingroup BaseTypes
  */
 class SIMDATA_EXPORT External: public BaseType {
 protected:
@@ -50,50 +49,41 @@ protected:
 	std::string _native_path;
 
 public:
-	/**
-	 * Destructor.
+	/** Destructor.
 	 */
 	virtual ~External();
 
 #ifndef SWIG
-	/**
-	 * Assign from a path string, converting to the internal farmat.
+	/** Assign from a path string, converting to the internal farmat.
 	 */
 	const External &operator=(std::string const &);
 
-	/**
-	 * Copy method.
+	/** Copy method.
 	 */
 	const External &operator=(External const &);
 #endif // SWIG
 
-	/** 
-	 * Assign from a path string, converting to the internal farmat.
+	/** Assign from a path string, converting to the internal farmat.
 	 */
 	void setSource(const char* path);
 
-	/**
-	 * Get the source path in the platform specific format.
+	/** Get the source path in the platform specific format.
 	 */
 	const std::string& getSource() const;
 
-	/**
-	 * Serialize.
+	/** Serialize.
 	 */
 	virtual void pack(Packer& p) const;
 	
-	/**
-	 * Deserialize.
+	/** Deserialize.
 	 */
 	virtual void unpack(UnPacker& p);
 	
-	/**
-	 * Standard string representation.
+	/** Standard string representation.
 	 */
 	virtual std::string asString() const;
 
-	/**
-	 * Return a string representation of the type.
+	/** Return a string representation of the type.
 	 */
 	virtual std::string typeString() const { return "type::External"; }
 };

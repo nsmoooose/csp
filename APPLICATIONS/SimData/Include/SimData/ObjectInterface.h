@@ -56,10 +56,9 @@ SIMDATA_EXCEPTION(InterfaceError)
 
 
 
-/**
- * @brief Base class for storing and accessing member variable references.
+/** Base class for storing and accessing member variable references.
  * 
- * @author Mark Rose <mrose@stm.lbl.gov>
+ *  @author Mark Rose <mrose@stm.lbl.gov>
  */
 class MemberAccessorBase 
 {
@@ -113,10 +112,9 @@ protected:
 };
 
 
-/**
- * @brief Class for storing and accessing bitmasked member variable references.
+/** Class for storing and accessing bitmasked member variable references.
  * 
- * @author Mark Rose <mrose@stm.lbl.gov>
+ *  @author Mark Rose <mrose@stm.lbl.gov>
  */
 template <class C, typename T> 
 class MemberMaskAccessor: public MemberAccessorBase 
@@ -170,10 +168,9 @@ public:
 };
 
 
-/**
- * @brief Class for storing and accessing member variable references.
+/** Class for storing and accessing member variable references.
  *
- * @author Mark Rose <mrose@stm.lbl.gov>
+ *  @author Mark Rose <mrose@stm.lbl.gov>
  */
 template <class C, typename T> 
 class MemberAccessor: public MemberAccessorBase 
@@ -216,12 +213,11 @@ public:
 };
 
 
-/**
- * @brief Partially specialized MemberAccessor for std::string<> variables.
+/** Partially specialized MemberAccessor for std::vector<> variables.
  *
- * @author Mark Rose <mrose@stm.lbl.gov>
+ *  @author Mark Rose <mrose@stm.lbl.gov>
  */
-#ifdef __PTS_SIM__
+#ifdef __SIMDATA_PTS_SIM
 template <class C, typename T> 
 class VectorMemberAccessor: public MemberAccessorBase 
 {
@@ -331,10 +327,9 @@ public:
 	}
 };
 
-/**
- * @brief Specialized MemberMaskAccessor for int bitmasked variables.
+/** Specialized MemberMaskAccessor for int bitmasked variables.
  *
- * @author Mark Rose <mrose@stm.lbl.gov>
+ *  @author Mark Rose <mrose@stm.lbl.gov>
  */
 template <class C> 
 class MemberAccessor< C, int >: public MemberMaskAccessor<C, int> {
@@ -345,10 +340,9 @@ public:
 		MemberMaskAccessor<C, int>(pm, name_, mask_, required_) { }
 };
 
-/**
- * @brief Specialized MemberMaskAccessor for short int bitmasked variables.
+/** Specialized MemberMaskAccessor for short int bitmasked variables.
  *
- * @author Mark Rose <mrose@stm.lbl.gov>
+ *  @author Mark Rose <mrose@stm.lbl.gov>
  */
 template <class C> 
 class MemberAccessor< C, short >: public MemberMaskAccessor<C, short> {
@@ -359,10 +353,9 @@ public:
 		MemberMaskAccessor<C, short>(pm, name_, mask_, required_) { }
 };
 
-/**
- * @brief Specialized MemberMaskAccessor for char bitmasked variables.
+/** Specialized MemberMaskAccessor for char bitmasked variables.
  *
- * @author Mark Rose <mrose@stm.lbl.gov>
+ *  @author Mark Rose <mrose@stm.lbl.gov>
  */
 template <class C> 
 class MemberAccessor< C, char >: public MemberMaskAccessor<C, char> {
@@ -429,16 +422,14 @@ public:
 #endif
 
 
-#ifdef __PTS_SIM__
+#ifdef __SIMDATA_PTS_SIM
 
-/*
- * Simulated Partial Template Specialization
+/** Simulated Partial Template Specialization
  *
  * Adapted from: metactrl.h
  * by Krzysztof Czarnecki & Ulrich Eisenecker
- */
-
-/* The following functions come from chapter 10 of the indispensable book
+ *
+ * The following functions come from chapter 10 of the indispensable book
  * Generative Programming by Krzysztof Czarnecki & Ulrich Eisenecker
  * (C) Copyright Krzysztof Czarnecki & Ulrich Eisenecker 1998-2000.
  * Permission to copy, use, modify, sell and distribute this software is
@@ -448,7 +439,6 @@ public:
  * This software is provided "as is" without express or implied
  * warranty, and with no claim as to its suitability for any purpose.
  */
-
 namespace PTS {
 
 	template <typename T>
@@ -469,102 +459,63 @@ namespace PTS {
 		enum { RET = (sizeof(IsVector((T*)0)) == 1) };
 	};
 	
-	struct SelectThen
-	{       template<class Then, class Else>
-		struct Result
-		{       typedef Then RET;
-		};
-	}; // end SelectThen
-
-	struct SelectElse
-	{       template<class Then, class Else>
-		struct Result
-		{       typedef Else RET;
-		};
-	}; // end SelectElse
-
-	template<bool Condition>
-	struct Selector
-	{       typedef SelectThen RET;
-	}; // end Selector
-
-	template<>
-	struct Selector<false>
-	{       typedef SelectElse RET;
-	}; // end Selector<false>
-
-	template<bool Condition, class Then, class Else>
-	struct IF
-	{
-		typedef typename Selector<Condition>::RET select;
-		typedef typename select::Result<Then,Else>::RET RET;
-	}; // IF
-
 	template <class C, typename T>
 	struct SELECT_ACCESSOR {
-		typedef typename IF<ISVECTOR<T>::RET, 
+		typedef typename meta::IF<ISVECTOR<T>::RET, 
 			simdata::VectorMemberAccessor<C, T>, simdata::MemberAccessor<C, T> >::RET ACCESSOR;
 	};
 }
 
-#endif // __PTS_SIM__
+#endif // __SIMDATA_PTS_SIM
 
 
-/**
- * @brief Pure virtual base class for object interfaces.
+/** Pure virtual base class for object interfaces.
  *
- * @author Mark Rose <mrose@stm.lbl.gov>
+ *  @author Mark Rose <mrose@stm.lbl.gov>
  */
 class ObjectInterfaceBase {
 public:
 	virtual ~ObjectInterfaceBase() {}
-	/**
-	 * Test if a given variable name exists in the interface.
+	/** Test if a given variable name exists in the interface.
 	 *
-	 * @return Returns true if the variable name exists in the
-	 * interface.
+	 *  @return Returns true if the variable name exists in the
+	 *  interface.
 	 */
 	virtual bool variableExists(const char *name) const = 0;
 
-	/**
-	 * Test if a given variable is tagged as 'required'.  
+	/** Test if a given variable is tagged as 'required'.  
 	 *
-	 * @return Returns false if the variable is not marked as
-	 * 'required' or does not exist in the interface.
+	 *  @return Returns false if the variable is not marked as
+	 *  'required' or does not exist in the interface.
 	 */
 	virtual bool variableRequired(const char *name) const = 0;
 
-	/**
-	 * Get a string identifier string for a variable.
+	/** Get a string identifier string for a variable.
 	 *
-	 * @return Returns the type identifier string.
+	 *  @return Returns the type identifier string.
 	 */
 	virtual std::string variableType(const char *name) const = 0;
 
-	/**
-	 * Get the accessor associated with the specified memeber variable.
+	/** Get the accessor associated with the specified memeber variable.
 	 *
-	 * This method is for internal use by the interface classes only.
+	 *  This method is for internal use by the interface classes only.
 	 */
 	virtual MemberAccessorBase *getAccessor(const char *name) = 0;
 
-	/**
-	 * Get the names of all variables defined in the interface.
+	/** Get the names of all variables defined in the interface.
 	 */
 	virtual std::vector<std::string> getVariableNames() const = 0;
 	
-	/**
-	 * Get the names of required variables defined in the interface.
+	/** Get the names of required variables defined in the interface.
 	 */
 	virtual std::vector<std::string> getRequiredNames() const = 0;
 
 };
 
 
-/**
- * @brief Class-specialized object interface.
+/** Class-specialized object interface.
  *
- * @author Mark Rose <mrose@stm.lbl.gov>
+ *  @author Mark Rose <mrose@stm.lbl.gov>
  */
 template <class C>
 class ObjectInterface: public ObjectInterfaceBase {
@@ -581,16 +532,16 @@ public:
 	ObjectInterface() {}
 	virtual ~ObjectInterface() {}
 
-	/**
-	 * Method to bind a string identifier to a member variable and
-	 * store the association.
+	/** Method to bind a string identifier to a member variable and
+	 *  store the association.
 	 *
-	 * Do not call this method directly: use the XML() macro instead.
+	 *  @note Do not call this method directly: use the SIMDATA_XML() 
+	 *        macro instead.
 	 */
 	template<typename T>
 	Self& def(const char *name, T C::*pm, bool required) throw(InterfaceError) {
 		if (variableExists(name)) throw InterfaceError("interface variable \"" + std::string(name) + "\" multiply defined in class '" + C::_getClassName() + "'.");
-#ifdef __PTS_SIM__
+#ifdef __SIMDATA_PTS_SIM
 		table[name] = new typename PTS::SELECT_ACCESSOR<C, T>::ACCESSOR(pm, name, required);
 #else
 		table[name] = new MemberAccessor<C, T>(pm, name, required);
@@ -600,7 +551,7 @@ public:
 	template<typename T>
 	Self& def(const char *name, T C::*pm, int mask, bool required) throw(InterfaceError) {
 		if (variableExists(name)) throw InterfaceError("interface variable \"" + std::string(name) + "\" multiply defined in class '" + C::_getClassName() + "'.");
-#ifdef __PTS_SIM__
+#ifdef __SIMDATA_PTS_SIM
 		table[name] = new typename PTS::SELECT_ACCESSOR<C, T>::ACCESSOR(pm, name, required);
 #else
 		table[name] = new MemberAccessor<C, T>(pm, name, mask, required);

@@ -31,12 +31,38 @@
 NAMESPACE_SIMDATA
 
 
+/** Size specific integer types.
+ *
+ *  Note that these are currently hard-coded, assuming
+ *  that almost all modern compilers and architectures 
+ *  will use these quasi-standard sizes.  If this is
+ *  not true, these typedefs make it easy to adjust
+ *  the mapping by hand (or by autoconf).  
+ *
+ *  @note SimData currently uses internal structures to 
+ *  represent 64-bit integer types, but these may be 
+ *  optimized in the future to use long ints on 64-bit 
+ *  hardware.
+ */
+//@{
 typedef signed char int8;
 typedef unsigned char uint8;
 typedef signed short int16;
 typedef unsigned short uint16;
 typedef signed int int32;
 typedef unsigned int uint32;
+//@}
+
+/** Test for big-endian byte order */
+inline bool isBigEndian() { 
+	static uint16 test=0x1234; 
+	return (*reinterpret_cast<uint8*>(&test)) == 0x12; 
+}
+
+/** Test for little-endian byte order */
+inline bool isLittleEndian() { 
+	return !isBigEndian(); 
+}
 
 
 NAMESPACE_SIMDATA_END

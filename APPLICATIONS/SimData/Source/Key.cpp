@@ -21,6 +21,9 @@
 #include <SimData/Key.h>
 #include <SimData/Pack.h>
 
+#include <sstream>
+#include <iomanip>
+
 
 NAMESPACE_SIMDATA
 
@@ -45,9 +48,9 @@ void Key::unpack(UnPacker& p) {
 }
 
 std::string Key::asString() const {
-	char buff[32];
-	sprintf(buff, "Key<%08X>", _key);
-	return buff;
+	std::stringstream ss;
+	ss << "Key<0x" << std::hex << std::uppercase << std::setw(8) << std::setfill('0') << _key << ">";
+	return ss.str();
 }
 
 

@@ -50,6 +50,21 @@ def setDefaultJoystick():
 			os.environ["SDL_JOYSTICK_DEVICE"]="/dev/input/js0"
 
 
+def ensureDefaultHID(hid_file):
+	"""
+	Verify that the specified hid input definition exists.  If not, generate it from
+	from the example input maps in ../Tools/HID/Examples
+	"""
+	if not os.path.exists('../Data/Input'): return
+	output = '../Data/Input/%s.hid' % hid_file
+	if not os.path.exists(output):
+		os.system('../Tools/HID/cspinput -I../Tools/HID -o%s ../Tools/HID/Examples/%s.map' % (output, hid_file))
+		if os.path.exists(output):
+			print 'Default input map created for %s.hid; see Tools/HID/README for details.' % hid_file
+		else:
+			print 'Unable to create default input map for %s.hid; see Tools/HID/README for details.' % hid_file
+
+
 def printUsage():
 	print "Combat Simulator Project - CSPSim"
 	print
@@ -64,8 +79,6 @@ def printUsage():
 	print "                                   --logpri=5"
 	print "    --pause              pause on startup for attaching a debug session"
 	print "    --dump-data          show the contents of sim.dar"
-	print "    --client-node        run networking test client node"
-	print "    --echo-server-node   run networking test echo server node"
 	print "    --help               help message"
 
 
@@ -116,6 +129,9 @@ def runCSPSim(args):
 		print
 		print "Static data archive '%s' not found." % dar
 		compileData([])
+
+	ensureDefaultHID('aircraft')
+	ensureDefaultHID('gamescreen')
 
 	import Shell
 	app = cCSP.CSPSim()
@@ -186,23 +202,6 @@ def compileData(args):
 		print 'Aborting'
 		sys.exit(1)
 	print
-
-
-def runClientNode(args):
-	print "CSPSim.py - runClientNode - Starting Test Client Node..."
-	print "CSPSim.py - runClientNode - calling loadCSP"
-	loadCSP()
-	print "CSPSim.py - runClientNode - calling CSP.ClientNode"
-	app = cCSP.ClientNode()
-	print "CSPSim.py - runClientNode - calling app.run"
-	app.run()
-
-
-def runEchoServerNode(args):
-	print "Starting Test Echo Server Node..."
-	loadCSP()
-	app = cCSP.EchoServerNode()
-	app.run()
 
 
 def loadSimData():
@@ -310,10 +309,6 @@ def main(argv):
 		elif arg.startswith('--dump-data='):
 			action = dumpData
 			other_args.append(arg)
-		elif arg == '--client-node':
-			action = runClientNode
-		elif arg == '--echo-server-node':
-			action = runEchoServerNode
 		elif arg == '--pause':
 			pause = 1
 		elif arg in ("--help", "-h", "-help"):
@@ -335,7 +330,6 @@ def main(argv):
 
 	if action is None:
 		action = runCSPSim
-
 
 	loadSimData()
 

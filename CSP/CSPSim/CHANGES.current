@@ -4,6 +4,13 @@
  * Add a message box to the onscreen display that displays/scrolls several
    lines of text, and fades out when unchanged for several seconds.
 
+ * Minor changes to the cspinput command line.  Now takes -Ipath option to
+   set the base include path, and -o to specify the output file (instead
+   of using the 2nd non-flag argument).  Added a check in CSPSim.py for
+   aircraft.hid and gamescreen.hid in ../Data/Input.  If not found,
+   CSPSim.py calls cspinput to try to regenerate them from the examples
+   in ../Tools/HID/Examples.
+
 2004-12-17: delta
  * Updated FlightModel and m2k xml related files.
 

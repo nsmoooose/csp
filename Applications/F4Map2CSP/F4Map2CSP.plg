@@ -1,0 +1,45 @@
+<html>
+<body>
+<pre>
+<h1>Erstellungsprotokoll</h1>
+<h3>
+--------------------Konfiguration: F4Map2CSP - Win32 Debug--------------------
+</h3>
+<h3>Befehlszeilen</h3>
+Creating command line "rc.exe /l 0x407 /fo"Debug/F4Map2CSP.res" /d "_DEBUG" /d "_AFXDLL" "C:\Dokumente und Einstellungen\mh\Eigene Dateien\Code\CSP\SISS\F4Map2CSP\F4Map2CSP.rc"" 
+Erstellen der temporären Datei  "C:\DOKUME~1\mh\LOKALE~1\Temp\RSP9B.tmp" mit Inhalten
+[
+/nologo /MDd /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_AFXDLL" /D "_MBCS" /FR"Debug/" /Fp"Debug/F4Map2CSP.pch" /Yu"stdafx.h" /Fo"Debug/" /Fd"Debug/" /FD /GZ /c 
+"C:\Dokumente und Einstellungen\mh\Eigene Dateien\Code\CSP\SISS\F4Map2CSP\F4Map2CSPDlg.cpp"
+]
+Creating command line "cl.exe @C:\DOKUME~1\mh\LOKALE~1\Temp\RSP9B.tmp" 
+Erstellen der temporären Datei  "C:\DOKUME~1\mh\LOKALE~1\Temp\RSP9C.tmp" mit Inhalten
+[
+/nologo /subsystem:windows /incremental:yes /pdb:"Debug/F4Map2CSP.pdb" /debug /machine:I386 /out:"Debug/F4Map2CSP.exe" /pdbtype:sept 
+".\Debug\F4DiskQuad.obj"
+".\Debug\F4Map.obj"
+".\Debug\F4Map2CSP.obj"
+".\Debug\F4Map2CSPDlg.obj"
+".\Debug\F4TerrainBlock.obj"
+".\Debug\F4TerrainLevel.obj"
+".\Debug\StdAfx.obj"
+".\Debug\TextOutputDlg.obj"
+".\Debug\F4Map2CSP.res"
+]
+Erstellen der Befehlzeile "link.exe @C:\DOKUME~1\mh\LOKALE~1\Temp\RSP9C.tmp"
+<h3>Ausgabefenster</h3>
+Ressourcen werden kompiliert...
+Kompilierung läuft...
+F4Map2CSPDlg.cpp
+Linker-Vorgang läuft...
+Erstellen der Befehlzeile "bscmake.exe /nologo /o"Debug/F4Map2CSP.bsc"  ".\Debug\StdAfx.sbr" ".\Debug\F4DiskQuad.sbr" ".\Debug\F4Map.sbr" ".\Debug\F4Map2CSP.sbr" ".\Debug\F4Map2CSPDlg.sbr" ".\Debug\F4TerrainBlock.sbr" ".\Debug\F4TerrainLevel.sbr" ".\Debug\TextOutputDlg.sbr""
+Browse-Informationsdatei wird erstellt...
+<h3>Ausgabefenster</h3>
+
+
+
+<h3>Ergebnisse</h3>
+F4Map2CSP.exe - 0 Fehler, 0 Warnung(en)
+</pre>
+</body>
+</html>

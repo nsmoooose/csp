@@ -1,10 +1,13 @@
  Version 0.4.0 (in progress)
 ===========================
 
-2004-12-22: delta
-* Minor change in ScreenInfo: MessageBox has been renamed MessageList.
+2004-12-22: onsight
+ * Rename new .3DS models to .3ds to match the XML path.
 
-* Small change in the implementation of ScreenInfo. 
+2004-12-22: delta
+ * Minor change in ScreenInfo: MessageBox has been renamed MessageList.
+
+ * Small change in the implementation of ScreenInfo.
 
 2004-12-19: lologramme
  * Add offices and flag

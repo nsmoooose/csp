@@ -49,15 +49,15 @@ void ThrustData::unpack(simdata::UnPacker &p) {
 }  
 
 float ThrustData::getMil(float altitude, float mach) const {
-	return m_mil_thrust.getValue(altitude, mach);
+	return m_mil_thrust.getValue(mach, altitude);
 }
 
 float ThrustData::getIdle(float altitude, float mach) const {
-	return m_idle_thrust.getValue(altitude, mach);
+	return m_idle_thrust.getValue(mach, altitude);
 }
 
 float ThrustData::getAb(float altitude, float mach) const {
-	return m_ab_thrust.getValue(altitude, mach);
+	return m_ab_thrust.getValue(mach, altitude);
 }
 
 
@@ -187,12 +187,9 @@ void EngineDynamics::update(double dt) {
 			// FIXME: calibrate joystick positions for csp
 			(*i)->setThrottle(2.0f *  static_cast<float>(*m_Throttle));
 			simdata::Vector3 force = (*i)->getThrust();
-			//FIXME: convert XML value to newton
-			force = simdata::Vector3(simdata::convert::lb_n(force.x),
-									 simdata::convert::lb_n(force.y), 
-									 simdata::convert::lb_n(force.z));
 			m_Force += force;
 			m_Moment += (*i)->m_EngineOffset^force;
 		}
 	}
 }
+

@@ -200,7 +200,7 @@ public:
 	Sun();
 	virtual void updatePosition(double);
 	void updateScene(double h, double A, Color const &color, float intensity, float background);
-	void _updateLighting(float x, float y, float z, Color const &color, float intensity, float background);
+	void _updateLighting(float x, float y, float z, float h, Color const &color, float intensity, float background);
 };
 
 class Moon: public AstronomicalBody {

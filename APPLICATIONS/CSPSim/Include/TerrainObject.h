@@ -78,6 +78,7 @@ public:
 	void setCameraPosition(float, float, float);
 
 	int getTerrainPolygonsRendered() const;
+	osg::Node *getNode() { return m_TerrainNode; }
 
 	
 protected:

@@ -178,7 +178,6 @@ void TerrainObject::activate(VirtualBattlefield *battlefield)
 		assert(!m_Battlefield);
 		m_Battlefield = battlefield;
 		load();
-		m_Battlefield->addNodeToScene(m_TerrainNode);
 		m_Battlefield->setActiveTerrain(this);
 	} 
 }
@@ -190,8 +189,6 @@ void TerrainObject::deactivate()
 {
 	if (m_Active) {
 		assert(m_Battlefield);
-		m_Battlefield->removeNodeFromScene(m_TerrainNode);
-		//m_Battlefield->removeNodeFromScene(m_TerrainLatticeNode.get());
 		m_Battlefield->setActiveTerrain(0);
 		m_Battlefield = NULL;
 		m_Active = false;

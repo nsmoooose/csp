@@ -350,13 +350,30 @@ void Sun::updateScene(double h, double A, Color const &color, float intensity, f
 	y = -cos(h);
 	x = y*sin(A);
 	y *= cos(A);
-	_updateLighting(x, y, z, color, intensity, background);
+	_updateLighting(x, y, z, h, color, intensity, background);
 }
 
-void Sun::_updateLighting(float x, float y, float z, Color const &color, float intensity, float background) {
+void Sun::_updateLighting(float x, float y, float z, float h, Color const &color, float intensity, float background) {
 	float specular_scale = 1.0;
 	float ambient = background;
 	if (ambient > 0.1) ambient = 0.1;
+
+/* the first calculation of scale is somewhat physically based on
+   a plot of sunlight intensity versus angle in Preetham.  the
+   ad-hoc one below seems better for compensating the limited
+   dynamic range of the monitor though, so this is currently
+   disabled.  also, it has not been tested or tweaked.
+	float scale = 1.0;
+	{
+		// angle from zenith
+		float a = 1.0 - h / 0.5*G_PI;
+		a *= a;
+		scale = 1.0 - a*a;
+		float horizon_light = intensity*intensity * 25.0;
+		if (horizon_light > 1.0) horizon_light = 1.0;
+		if (horizon_light > scale) scale = horizon_light;
+	}
+*/
 	// ad-hoc additional darkening once the sun has set... the gl light
 	// representing the sun should not be as bright as the horizion.
 	float scale = intensity * intensity * 25.0;
@@ -460,16 +477,10 @@ bool AstroBillboard::computeMatrix(Matrix& modelview, const Vec3& eye_local, con
 	Matrix matrix;
 	Vec3 to_eye(eye_local-pos_local);
 	Vec3 to_eye_projection = to_eye^_axis;
-	float to_eye_projection_len = to_eye_projection.length();
-	if (to_eye_projection_len != 0.0) {
-		to_eye_projection /= to_eye_projection_len;
-		Vec3 normal_projection(_normal^_axis);
-		float normal_projection_len = normal_projection.length();
-		if (normal_projection_len != 0.0f) {
-			normal_projection /= normal_projection_len;
-			float rotation_angle = acos(to_eye_projection*normal_projection);
-			matrix.makeRotate(rotation_angle, normal_projection^to_eye_projection);
-		}
+	if (to_eye_projection.normalize() > 0.0) {
+		float rotation_angle = G_PI+acos(to_eye_projection*_onormal);
+		Vec3 pivot = _onormal^to_eye_projection;
+		matrix.makeRotate(rotation_angle, pivot);
 	}
 	matrix = _orient * matrix;
 	matrix.setTrans(pos_local);
@@ -487,15 +498,18 @@ void AstroBillboard::setAxes(const Vec3& axis, const Vec3 &up, const Vec3 &norma
 	up_.normalize();
 	_normal = up_ ^ (_normal ^ up_);
 	Vec3 rot = _axis ^ up_;
-	_orient.makeRotate(-acos(up_*_axis), rot);
-	_normal = _orient * _normal;
+	float angle = acos(up_*_axis);
+	_orient.makeRotate(-angle, rot);
+	Matrix inv;
+	inv.makeRotate(angle, rot);
+	_normal = inv * _normal;
+	_onormal = _normal ^ _axis;
+	_onormal.normalize();
 }
 
 
 Moon::Moon(): AstronomicalBody() {
 	_radius = 1738000.0;
-	// approximate distance for setting initial size
-	//_distance = 384400000.0 - 6370000.0;
 	m_Latitude = -100.0;
 	m_DirtyImage = true;
 	m_Phase = 0.0;
@@ -506,7 +520,7 @@ Moon::Moon(): AstronomicalBody() {
 	
 	m_RenderDistance = 950000.0;
 	float x, y;
-	x = y = 1.0; //_radius / _distance * m_RenderDistance;
+	x = y = 1.0; 
 	m_Image = osgDB::readImageFile("moon.png");
 	assert(m_Image.valid());
 
@@ -529,9 +543,6 @@ Moon::Moon(): AstronomicalBody() {
 	osg::BlendFunc *bf = new osg::BlendFunc;
 	bf->setFunction(osg::BlendFunc::SRC_ALPHA, osg::BlendFunc::ONE_MINUS_SRC_ALPHA);
 	dstate->setAttributeAndModes(bf, osg::StateAttribute::ON);
-	m_CM = new osg::ColorMatrix;
-	m_CM->setMatrix(osg::Matrix(1.0,0,0,0,0,1.0,0,0,0,0,1.0,0,0,0,0,0.3));
-	//dstate->setAttributeAndModes(m_CM.get(), osg::StateAttribute::OVERRIDE);
 	osg::Depth *depth = new osg::Depth;
 	depth->setFunction(osg::Depth::ALWAYS);
 	depth->setRange(1.0, 2000000.0);
@@ -576,7 +587,6 @@ Moon::Moon(): AstronomicalBody() {
 	m_Transform->addChild(m_Billboard.get());
 	m_Transform->setStateSet(dstate);
 	m_Transform->setCullingActive(false);
-	//_maskPhase(0.785);
 //	moon->setStateSet(dstate);
 }
 

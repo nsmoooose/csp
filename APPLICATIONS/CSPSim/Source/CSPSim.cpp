@@ -231,11 +231,13 @@ void CSPSim::Init()
 	m_Battlefield->addObject(ao);
 	//ao->AddSmoke();
 	
+	/*
 	simdata::Pointer<DynamicObject> to = m_DataArchive->getObject("vehicles.aircraft.m2k");
 	assert(to.valid());
 	to->setGlobalPosition(483000, 501000, 0);
 	to->addToScene(m_Battlefield);
 	m_Battlefield->addObject(to);
+	*/
 
 	// create screens
 	m_GameScreen = new GameScreen;

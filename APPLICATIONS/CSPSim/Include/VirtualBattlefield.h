@@ -137,7 +137,8 @@ protected:
 	osg::ref_ptr<osg::Group> m_LightGroup;
 	osg::ref_ptr<osg::Transform> m_EyeTransform;
 
-	osg::Node * m_pTerrainNode;
+	osg::ref_ptr<osg::Node> m_TerrainNode;
+	osg::ref_ptr<osg::Group> m_ShadowGroup;
 
 	ObjectList objectList;
 	static unsigned int latest_object_id;

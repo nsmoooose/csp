@@ -33,6 +33,7 @@
 #include <osgDB/FileUtils>
 
 #include <osgUtil/CullVisitor>
+#include <osgUtil/DisplayListVisitor>
 
 #include "Config.h"
 #include "CSPSim.h"
@@ -42,6 +43,7 @@
 #include "CSPSim.h"
 #include "Config.h"
 #include "Platform.h"
+#include "shadow.h"
 
 #include <SimData/Types.h>
 #include <SimData/Math.h>
@@ -78,6 +80,15 @@ using simdata::Pointer;
 
 float intensity_test = 0.0;
 
+void setNVG(osg::ColorMatrix* cm) {
+	assert(cm);
+	// 0.212671*R + 0.71516*G + 0.072169*B;
+	cm->setMatrix(osg::Matrix(
+		0.4*0.213, 1.0*0.213, 0.4*0.213, 0.0,
+		0.4*0.715, 1.0*0.715, 0.4*0.715, 0.0,
+		0.4*0.072, 1.0*0.072, 0.4*0.072, 0.0,
+		0.0, 0.0, 0.0, 1.0));
+}
 
 void setCM(osg::ColorMatrix* cm, float intensity) {
 	assert(cm);
@@ -245,7 +256,6 @@ int VirtualBattlefield::buildScene()
 	// add the sky and base layer.
 	m_Sky = new Sky;
 	m_EyeTransform->addChild(m_Sky.get()); //makeSky());  // bin number -2 so drawn first.
-	m_EyeTransform->addChild(makeBase()); // bin number -1 so draw second.      
 
 	// add the transform to the earth sky.
 	earthSky->addChild(m_EyeTransform.get());
@@ -283,7 +293,9 @@ int VirtualBattlefield::buildScene()
 	pFogState->setAttributeAndModes(fog, osg::StateAttribute::ON);
 
 	m_rpObjectRootNode->setStateSet(pFogState);
-	m_rpRootNode->addChild(m_rpObjectRootNode.get());
+	m_ShadowGroup = new osg::Group;
+	m_ShadowGroup->addChild(m_rpObjectRootNode.get());
+	m_rpRootNode->addChild(m_ShadowGroup.get());
 
 	// light group under EyeTransform for celestial bodies (sun, moon, etc)
 	m_CelestialLightGroup = new osg::Group;
@@ -296,11 +308,11 @@ int VirtualBattlefield::buildScene()
 	osg::StateSet* globalStateSet = m_pView->getGlobalStateSet();
 	assert(globalStateSet);
 
-
 	osg::ColorMatrix* cm = new osg::ColorMatrix;
-	setCM(cm, 0.0);
-	//globalStateSet->setAttributeAndModes(cm, osg::StateAttribute::OVERRIDE);
-	//m_pView->setGlobalStateSet(globalStateSet);
+	//setNVG(cm);
+	globalStateSet->setAttribute(cm);
+	pFogState->setAttributeAndModes(cm, osg::StateAttribute::OVERRIDE);
+	m_pView->setGlobalStateSet(globalStateSet);
 
 
 	osg::Light *pSunLight = m_Sky->getSunLight();
@@ -340,11 +352,14 @@ int VirtualBattlefield::drawScene()
 	}
     
 	osgUtil::CullVisitor * pCullVisitor = m_pView->getCullVisitor();
-	pCullVisitor->setComputeNearFarMode(osgUtil::CullVisitor::COMPUTE_NEAR_FAR_USING_BOUNDING_VOLUMES);
-	pCullVisitor->setCullingMode(osgUtil::CullVisitor::ENABLE_ALL_CULLING);
+	//pCullVisitor->setComputeNearFarMode(osgUtil::CullVisitor::COMPUTE_NEAR_FAR_USING_BOUNDING_VOLUMES);
+	//pCullVisitor->setCullingMode(osgUtil::CullVisitor::ENABLE_ALL_CULLING);
 	m_pView->setCullVisitor(pCullVisitor);
   
 	m_pView->update();
+	// segfaults... why?
+	//assert(pCullVisitor);
+	//m_TerrainNode->accept(*pCullVisitor);
 	m_pView->cull();
 	m_pView->draw();
 
@@ -389,9 +404,9 @@ void VirtualBattlefield::onUpdate(float dt)
 			m_ResetTheWorld = false;
 		}
 		if (m_SpinTheWorld) m_Sky->spinTheWorld();
-		//m_Sky->update(lat, lon, CSPSim::theSim->getCurrentTime());
+		m_Sky->update(lat, lon, CSPSim::theSim->getCurrentTime());
 		// greenwich, england (for testing)
-		m_Sky->update(0.8985, 0.0, CSPSim::theSim->getCurrentTime());
+		//m_Sky->update(0.8985, 0.0, CSPSim::theSim->getCurrentTime());
 		t+=1.0;
 	} else {
 		t += dt;
@@ -462,10 +477,13 @@ void VirtualBattlefield::setLookAt(simdata::Vector3 & eyePos, simdata::Vector3 &
 		pFogAttr->setColor(color);
 		pFogAttr->setStart(15000.0 + eyez + 15000.0*a);
 		pStateSet->setAttributeAndModes(pFogAttr ,osg::StateAttribute::ON);
-		m_rpObjectRootNode->setStateSet(pStateSet);
+		//osg::ColorMatrix* cm = (osg::ColorMatrix *) pStateSet->getAttribute(osg::StateAttribute::COLORMATRIX);
+		//setNVG(cm);
+		//pStateSet->setAttributeAndModes(cm ,osg::StateAttribute::OVERRIDE);
+		m_ShadowGroup->setStateSet(pStateSet);
 	}
     
-    	if (1)
+    	if (0)
     	{
 		static bool up = false;
 		static float I = 0.0;
@@ -477,8 +495,9 @@ void VirtualBattlefield::setLookAt(simdata::Vector3 & eyePos, simdata::Vector3 &
 		osg::StateSet* pStateSet = m_pView->getGlobalStateSet();
 		osg::ColorMatrix* cm = (osg::ColorMatrix *) pStateSet->getAttribute(osg::StateAttribute::COLORMATRIX);
 		//setCM(cm, I*0.4);
-		//pStateSet->setAttributeAndModes(cm ,osg::StateAttribute::OVERRIDE);
-		//m_pView->setGlobalStateSet(pStateSet);
+		setNVG(cm);
+		pStateSet->setAttributeAndModes(cm ,osg::StateAttribute::OVERRIDE);
+		m_pView->setGlobalStateSet(pStateSet);
 	
 	}
 
@@ -523,12 +542,11 @@ void VirtualBattlefield::addController(BaseController * controller)
 
 }
 
-void VirtualBattlefield::addNodeToScene( osg::Node * pNode)
+void VirtualBattlefield::addNodeToScene(osg::Node * pNode)
 {
 	CSP_LOG(CSP_APP, CSP_INFO, "VirtualBattlefield::addNodeToScene() - NodeName: " << pNode->getName() );
 	//  osgUtil::Optimizer optimzer;
 	//  optimzer.optimize(pNode, osgUtil::Optimizer::OptimizationOptions::ALL_OPTIMIZATIONS);
-
 	m_rpObjectRootNode->addChild(pNode);
 }
 
@@ -836,13 +854,42 @@ int VirtualBattlefield::getTerrainPolygonsRendered()
 
 void VirtualBattlefield::setActiveTerrain(TerrainObject *pTerrainObject)
 {
+	if (pTerrainObject == 0) {
+		if (m_TerrainNode.valid()) {
+			m_ShadowGroup->removeChild(m_TerrainNode.get());
+		}
+		m_TerrainNode = NULL;
+	}
+
 	m_ActiveTerrainObject = pTerrainObject; 
 
 	float xPatch = 35000 + 448000;
 	float yPatch = 6000 + 500000;
 
 	if (!m_ActiveTerrainObject.isNull()) {
-		 m_ActiveTerrainObject->setCameraPosition( xPatch, yPatch, 1000);
+		m_ActiveTerrainObject->setCameraPosition(xPatch, yPatch, 1000);
+		m_TerrainNode = m_ActiveTerrainObject->getNode();
+		if (m_TerrainNode.valid()) {
+			m_ShadowGroup->addChild(m_TerrainNode.get());
+#if 0
+			osg::Group *g = new osg::Group;
+			g->addChild(m_TerrainNode.get());
+			m_ShadowGroup->addChild(g);
+			//m_ShadowGroup->addChild(m_TerrainNode.get());
+			osg::Vec4 ambientLightColor(0.9f,0.1f,0.1f,1.0f);
+			int texture_unit = 2;
+			///osg::NodeCallback* cb = createCullCallback(m_rpObjectRootNode.get(),osg::Vec3(35000.0,51500.0,30000),ambientLightColor,texture_unit);
+    			///g->setCullCallback(cb);
+/*
+			g->setCullingActive(true);
+			m_TerrainNode->setCullingActive(true);
+			m_ShadowGroup->setCullingActive(true);
+			m_rpRootNode->setCullingActive(true);
+*/
+			//printf("call=%p\n", cb);
+			//printf("terr=%p, shad=%p, root=%p\n", m_TerrainNode.get(), m_ShadowGroup.get(), m_rpRootNode.get());
+#endif
+		}
 	}
 	
 	/*
@@ -867,3 +914,4 @@ void VirtualBattlefield::setActiveTerrain(TerrainObject *pTerrainObject)
 double VirtualBattlefield::getSpin() {
 	return m_Sky->getSpin(); 
 }
+

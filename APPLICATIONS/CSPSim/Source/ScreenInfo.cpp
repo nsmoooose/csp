@@ -133,19 +133,14 @@ void GeneralStats::update()
 
 ObjectStats::ObjectStats(int posx,int posy):ScreenInfo(posx,posy,"OBJECT STATS")
 {
-	simdata::Pointer<DynamicObject> activeObject = CSPSim::theSim->getActiveObject();
-	if (!activeObject.isNull()) {
-		std::vector<std::string> stringStats;
-		activeObject->getStats(stringStats);
-		for (unsigned short i = 0; i < stringStats.size(); ++i) {
-			posy -= m_FontSize;
-			osgText::Text* aStat = new  osgText::Text(m_BitmapFont);
-			aStat->setPosition(osg::Vec3(posx,posy,0));
-			m_ObjectStats.push_back(aStat);
-			addDrawable( aStat );
-		}
-     removeDrawable(m_Text);
+	for (unsigned short i = 0; i < 10; ++i) {
+		posy -= m_FontSize;
+		osgText::Text* aStat = new  osgText::Text(m_BitmapFont);
+		aStat->setPosition(osg::Vec3(posx,posy,0));
+		m_ObjectStats.push_back(aStat);
+		addDrawable( aStat );
 	}
+	removeDrawable(m_Text);
 };
 
 void ObjectStats::update()
@@ -154,7 +149,12 @@ void ObjectStats::update()
 	if (!activeObject.isNull()) {
 		std::vector<std::string> stringStats;
 		activeObject->getStats(stringStats);
-		for (unsigned short i = 0; i < m_ObjectStats.size(); ++i)
-            m_ObjectStats[i]->setText(stringStats[i]);
+		unsigned int n = m_ObjectStats.size();
+		if (stringStats.size() < n) n = stringStats.size();
+		for (unsigned short i = 0; i < n; ++i) {
+			m_ObjectStats[i]->setText(stringStats[i]);
+//			std::cout << stringStats[i] << std::endl;
+		}
+//		std::cout << stringStats.size() << std::endl;
 	}
 }

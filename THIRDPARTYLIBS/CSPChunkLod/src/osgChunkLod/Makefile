@@ -84,13 +84,13 @@ $(DEPDIR)/%.swigdep : %
 #	cd $(TOPDIR) && ./configure
 
 #all: Makefile build-subdirs _cCSP.so #CSPapp
-all: libosgChunkLod.so libosgChunkLod.a #CSPapp
+all: libosgChunkLod_csp.so libosgChunkLod_csp.a #CSPapp
 
-libosgChunkLod.so: $(OBJECTS)
+libosgChunkLod_csp.so: $(OBJECTS)
 	$(CXX) $(LDOPTS) -o $@ $^
 	#cp $@ $(TOPDIR)/../../APPLICATIONS/CSPSim/Bin
 
-libosgChunkLod.a: $(OBJECTS)
+libosgChunkLod_csp.a: $(OBJECTS)
 	$(AR) rc $@ $^
 	cp $@ $(LIBDIR)
 

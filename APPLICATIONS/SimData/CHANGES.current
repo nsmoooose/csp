@@ -1,5 +1,21 @@
 Version 0.4.0 (in progress)
 ===========================
+2004-02-03: delta
+  * Added a quick hack in Exception.h to fix a weird 
+  behaviour of swig1.3.21 when it parses this file on
+  windows/vc++7.1.
+  
+  * (vc++7.1) Added a -lexceptions.i in swig command line 
+  such that it uses this dependency instead of 
+  SimData/Exception.i on windows. Removed -DWIN32 to the 
+  command line. The path to swig executable is no more 
+  hardcoded in the custom build step but instead it relies 
+  on an environment variable (SWIG) the user must define. 
+  
+  * (vc++7.1) Removed PostBuilt.bat; user must install and 
+  test by command line the SimData site-package installation 
+  as before.
+  
 2003-01-31: onsight
   * Added debian packaging files (experimental).
 

@@ -44,7 +44,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="ws2_32.lib OpenThreadsWin32d.lib osgChunkLodd.lib osgFXd.lib sigc-1.2d.lib producerd.lib opengl32.lib SDL.lib osgDBd.lib DemeterVisualC6d.lib osgTextd.lib osgUtild.lib osgParticled.lib osgd.lib _cSimData.lib"
+				AdditionalDependencies="ws2_32.lib OpenThreadsWin32d.lib osgChunkLodd.lib osgFXd.lib sigc-1.2d.lib producerd.lib opengl32.lib SDL.lib osgDBd.lib DemeterVisualC6d.lib osgTextd.lib osgUtild.lib osgParticled.lib osgd.lib _cSimData.lib ccgnu2.lib ccext2.lib"
 				OutputFile="../../Bin/_cCSP.dll"
 				LinkIncremental="2"
 				SuppressStartupBanner="TRUE"
@@ -121,7 +121,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="ws2_32.lib osgFX.lib osgChunkLod.lib producer.lib osgText.lib DemeterVisualC6.lib opengl32.lib SDL.lib _cSimData.lib osgParticle.lib osgUtil.lib osgDB.lib osg.lib sigc-1.2.lib OpenThreadsWin32.lib"
+				AdditionalDependencies="ws2_32.lib osgFX.lib osgChunkLod.lib producer.lib osgText.lib DemeterVisualC6.lib opengl32.lib SDL.lib _cSimData.lib osgParticle.lib osgUtil.lib osgDB.lib osg.lib sigc-1.2.lib OpenThreadsWin32.lib  ccgnu2.lib ccext2.lib"
 				OutputFile="../../Bin/_cCSP.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
@@ -210,6 +210,9 @@
 				RelativePath="..\..\Source\ChunkLodTerrain.cpp">
 			</File>
 			<File
+				RelativePath="..\..\Source\ClientNode.cpp">
+			</File>
+			<File
 				RelativePath="..\..\Source\Collision.cpp">
 			</File>
 			<File
@@ -295,6 +298,9 @@
 			</File>
 			<File
 				RelativePath="..\..\Source\ScreenInfoManager.cpp">
+			</File>
+			<File
+				RelativePath="..\..\Source\ServerNode.cpp">
 			</File>
 			<File
 				RelativePath="..\..\Source\SimObject.cpp">
@@ -411,11 +417,24 @@
 				</File>
 				<File
 					RelativePath="..\..\Source\Views\View.cpp">
+					<FileConfiguration
+						Name="Debug|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							GeneratePreprocessedFile="0"
+							ExpandAttributedSource="TRUE"/>
+					</FileConfiguration>
 				</File>
 			</Filter>
 			<Filter
 				Name="Networking"
 				Filter="">
+				<File
+					RelativePath="..\..\Source\Networking\MessageSocketDuplex.cpp">
+				</File>
+				<File
+					RelativePath="..\..\Source\Networking\NetworkAddress.cpp">
+				</File>
 				<File
 					RelativePath="..\..\Source\Networking\NetworkBroadcaster.cpp">
 				</File>
@@ -471,6 +490,9 @@
 			</File>
 			<File
 				RelativePath="..\..\Include\ChunkLodTerrain.h">
+			</File>
+			<File
+				RelativePath="..\..\Include\ClientNode.h">
 			</File>
 			<File
 				RelativePath="..\..\Include\Collision.h">
@@ -576,6 +598,9 @@
 			</File>
 			<File
 				RelativePath="..\..\Include\ScreenInfoManager.h">
+			</File>
+			<File
+				RelativePath="..\..\Include\ServerNode.h">
 			</File>
 			<File
 				RelativePath="..\..\Include\SimObject.h">

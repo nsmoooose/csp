@@ -2,7 +2,8 @@
 ===========================
 
 2004-05-08: Wolverine
-  * more updates to networking.
+  * more updates to networking. Including changes so both windows and unix
+    can compile.
 
 2004-05-02: wolverine
   * Updates to the networking to use commonc++, and export a python module.

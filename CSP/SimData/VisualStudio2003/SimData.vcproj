@@ -52,6 +52,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
+				AdditionalDependencies="pthreadVC.lib"
 				OutputFile="../SimData/_cSimData.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
@@ -124,6 +125,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
+				AdditionalDependencies="pthreadVC.lib"
 				OutputFile="../SimData/_cSimDatad.dll"
 				LinkIncremental="2"
 				SuppressStartupBanner="TRUE"
@@ -253,6 +255,12 @@
 				RelativePath="..\Source\Real.cpp">
 			</File>
 			<File
+				RelativePath="..\Source\ThreadBase.cpp">
+			</File>
+			<File
+				RelativePath="..\Source\Timing.cpp">
+			</File>
+			<File
 				RelativePath="..\Source\TypeAdapter.cpp">
 			</File>
 			<File
@@ -266,7 +274,16 @@
 			Name="Header Files"
 			Filter="h;hpp;hxx;hm;inl">
 			<File
+				RelativePath="..\Include\SimData\Archive.h">
+			</File>
+			<File
+				RelativePath="..\Include\SimData\AtomicCounter.h">
+			</File>
+			<File
 				RelativePath="..\Include\SimData\BaseType.h">
+			</File>
+			<File
+				RelativePath="..\Include\SimData\Composite.h">
 			</File>
 			<File
 				RelativePath="..\Include\SimData\Conversions.h">
@@ -291,9 +308,6 @@
 			</File>
 			<File
 				RelativePath="..\Include\SimData\GeoPos.h">
-			</File>
-			<File
-				RelativePath="..\Include\SimData\GlibCsp.h">
 			</File>
 			<File
 				RelativePath="..\Include\SimData\hash_map.h">
@@ -347,6 +361,9 @@
 				RelativePath="..\Include\SimData\ObjectInterface.h">
 			</File>
 			<File
+				RelativePath="..\Include\SimData\osg.h">
+			</File>
+			<File
 				RelativePath="..\Include\SimData\Path.h">
 			</File>
 			<File
@@ -365,16 +382,46 @@
 				RelativePath="..\Include\SimData\Ref.h">
 			</File>
 			<File
+				RelativePath="..\Include\SimData\ScopedPointer.h">
+			</File>
+			<File
+				RelativePath="..\Include\SimData\Singleton.h">
+			</File>
+			<File
 				RelativePath="..\Include\SimData\String.h">
 			</File>
 			<File
 				RelativePath="..\Include\SimData\TaggedRecord.h">
 			</File>
 			<File
+				RelativePath="..\Include\SimData\TaggedRecordRegistry.h">
+			</File>
+			<File
+				RelativePath="..\Include\SimData\Thread.h">
+			</File>
+			<File
+				RelativePath="..\Include\SimData\ThreadBase.h">
+			</File>
+			<File
+				RelativePath="..\Include\SimData\ThreadLog.h">
+			</File>
+			<File
+				RelativePath="..\Include\SimData\ThreadQueue.h">
+			</File>
+			<File
+				RelativePath="..\Include\SimData\Timing.h">
+			</File>
+			<File
+				RelativePath="..\Include\SimData\Trace.h">
+			</File>
+			<File
 				RelativePath="..\Include\SimData\TypeAdapter.h">
 			</File>
 			<File
 				RelativePath="..\Include\SimData\Types.h">
+			</File>
+			<File
+				RelativePath="..\Include\SimData\Uniform.h">
 			</File>
 			<File
 				RelativePath="..\Include\SimData\Vector3.h">

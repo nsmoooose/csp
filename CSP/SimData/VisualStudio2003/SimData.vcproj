@@ -283,6 +283,12 @@
 				RelativePath="..\Include\SimData\BaseType.h">
 			</File>
 			<File
+				RelativePath="..\Include\SimData\BufferPool.h">
+			</File>
+			<File
+				RelativePath="..\Include\SimData\CircularBuffer.h">
+			</File>
+			<File
 				RelativePath="..\Include\SimData\Composite.h">
 			</File>
 			<File
@@ -305,6 +311,9 @@
 			</File>
 			<File
 				RelativePath="..\Include\SimData\External.h">
+			</File>
+			<File
+				RelativePath="..\Include\SimData\FileUtility.h">
 			</File>
 			<File
 				RelativePath="..\Include\SimData\GeoPos.h">
@@ -353,6 +362,9 @@
 			</File>
 			<File
 				RelativePath="..\Include\SimData\Namespace.h">
+			</File>
+			<File
+				RelativePath="..\Include\SimData\Noise.h">
 			</File>
 			<File
 				RelativePath="..\Include\SimData\Object.h">
@@ -425,9 +437,6 @@
 			</File>
 			<File
 				RelativePath="..\Include\SimData\Vector3.h">
-			</File>
-			<File
-				RelativePath="..\Include\SimData\Vector3.inl">
 			</File>
 			<File
 				RelativePath="..\Include\SimData\Version.h">

@@ -1,6 +1,6 @@
 SimData - A library for efficient use of data XML in simulations.
 
-Release 0.3.4
+Release 0.4.0
 
 Copyright (C) 2002, 2003 Mark Rose <mrose@stm.lbl.gov>
 
@@ -93,19 +93,22 @@ will create cSimData.py, _cSimData.so, and libSimData.a in the SimData
 package directory.
 
 
-BUILDING: VC6/.NET
+BUILDING: VC6
 
 Load SimDataMSVC.dsw and build it in release mode. 
+
+BUILDING: VS .NET 2003
+
+Load VisualStudio2003/SimData.sln and build in release mode.
 
 
 TESTING
 
-As a quick test, run Python from the main SimData directory.  
-Try typing "import SimData".  You should see a line similar to 
-"loaded @ 0x4883012".  If not, something went wrong... post to 
-the CSP developer's forum and we can try to find the problem.
-After you have installed SimData, the same test should work
-from any starting directory.
+As a quick test, execute 'runtests.py' is the main SimData directory.  
+Depending on how python is installed you may have to enter
+'python runtests.py' at the command/shell prompt.  If any of the tests
+fail, please post to the CSP developer's forum and we can try to find 
+the problem.  
 
 
 INSTALLING AND USING SIMDATA
@@ -118,7 +121,7 @@ Under Linux, run 'make install' as root.  Alternatively, you can
 accomplish the same thing with 'python setup.py install'.
 
 Under Windows, run 'python setup.py make_install_win'.  If you
-are running Windows XP you may need to have sufficient priviledges to 
+are running Windows XP you may need to have sufficient privileges to 
 write to the Python directories.
 
 To use the SimData headers for development, just add the usual Python

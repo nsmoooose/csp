@@ -1,12 +1,27 @@
  Version 0.4.0 (in progress)
 ===========================
 
+2005-01-30: onsight
+ * Move IsoContour classes out of RandomBillboardModel.cpp and
+   use them in RandomForestModel.cpp.
+
+ * Update the RandomForestModel interface to be the same as
+   RandomBillboardModel.
+
+ * Fix quad normals for "X" shaped trees in RandomForestModel.
+   These geometries could still use a lot of work (e.g. polygon
+   offset instead of a fixed offset, bump mapped shaders, a
+   skirt for better top-down viewing, etc.)
+
+==> Windows users: add CSPSim/Source/IsoContour.cpp to the
+    build.
+
 2005-01-25: delta
  * Display altitude above ground level in feets.
- 
+
 2005-01-23: delta
  * Display CAS in knots.
- 
+
 2005-01-22: delta
  * Minor cleanup on Animation class.
 
@@ -20,7 +35,7 @@
  * A Screenshots/ directory will be created (if non existent), when a
    snapshot is taken. The default location is CSPSim/Screenshots and is
    configurable in CSPSim.ini.
-   
+
 2005-01-15: lologramme
  * Mirage 2000: Textures "color diffuse" problem resolved
 

@@ -76,6 +76,7 @@ SOURCES = [
 	'Theater/FeatureObjectModel.cpp',
 	'Theater/FeatureQuad.cpp',
 	'Theater/FeatureSceneModel.cpp',
+	'Theater/IsoContour.cpp',
 	'Theater/LayoutTransform.cpp',
 	'Theater/Objective.cpp',
 	'Theater/RandomBillboardModel.cpp',

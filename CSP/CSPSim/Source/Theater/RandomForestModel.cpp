@@ -28,6 +28,7 @@
 #include "Theater/FeatureSceneGroup.h"
 #include "Theater/LayoutTransform.h"
 #include "Theater/ElevationCorrection.h"
+#include "Theater/IsoContour.h"
 
 #include <SimData/Random.h>
 
@@ -74,8 +75,8 @@ osg::Geometry *RandomForestModel::construct(simdata::Ref<FeatureQuad> quad, std:
 	col[0].set(1.0, 1.0, 1.0, 1.0);
 	nrm[0].set(0.0, -1.0, 0.0);
 	nrm[1].set(0.0, +1.0, 0.0);
-	nrm[2].set(+1.0, 0.0, 0.0);
-	nrm[3].set(-1.0, 0.0, 0.0);
+	nrm[2].set(-1.0, 0.0, 0.0);
+	nrm[3].set(+1.0, 0.0, 0.0);
 
 	osg::Vec2Array::iterator t = tex.begin();
 	osg::Vec3Array::iterator v = vex.begin();
@@ -126,8 +127,9 @@ int RandomForestModel::getFeatureCount() const {
 void RandomForestModel::makeFeatures(std::vector<Feature> &, int) const {
 }
 
-RandomForestModel::RandomForestModel() {
-	m_Seed = 0;
+RandomForestModel::RandomForestModel():
+	m_Seed(0),
+	m_IsoContour(new RectangularCurve()) {
 }
 
 RandomForestModel::~RandomForestModel() {
@@ -135,8 +137,7 @@ RandomForestModel::~RandomForestModel() {
 
 void RandomForestModel::postCreate() {
 	assert(m_Density.size() == m_Models.size());
-	float radius = 400.0;
-	float area = 3.1416 * radius * radius;
+	float area = m_IsoContour->getArea();
 	int i, n = m_Models.size();
 	simdata::random::Taus2 rand;
 	rand.setSeed(m_Seed);
@@ -147,8 +148,8 @@ void RandomForestModel::postCreate() {
 		while (count > 0) {
 			float x = rand.uniform(-1.0, 1.0);
 			float y = rand.uniform(-1.0, 1.0);
-			if (x*x + y*y < 1.0) {
-				m_Offsets[i].push_back(simdata::Vector3(x*radius, y*radius, 0.0));
+			if (m_IsoContour->in(x, y)) {
+				m_Offsets[i].push_back(m_IsoContour->getPoint(x, y));
 				count--;
 			}
 		}

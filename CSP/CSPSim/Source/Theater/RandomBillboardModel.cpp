@@ -24,6 +24,7 @@
 
 
 #include "Theater/RandomBillboardModel.h"
+#include "Theater/IsoContour.h"
 
 #include <vector>
 
@@ -44,75 +45,6 @@
 
 SIMDATA_REGISTER_INTERFACE(RandomBillboardModel)
 
-class IsoContour: public simdata::Object {
-protected:
-	virtual float f(float x, float y) const = 0;
-public:
-	virtual bool in(float x, float y) const {
-		return f(x,y) < 1.0f;
-	}
-	virtual simdata::Vector3 getPoint(float x,float y) const = 0;
-	virtual float getArea() const = 0;
-	virtual ~IsoContour() {}
-};
-
-class Circle: public IsoContour {
-	float m_Radius;
-protected:
-	virtual float f(float x, float y) const {
-		return x*x+y*y;
-	}
-public:
-	SIMDATA_OBJECT(Circle, 0, 0)
-
-	BEGIN_SIMDATA_XML_INTERFACE(Circle)
-		SIMDATA_XML("radius", Circle::m_Radius, true)
-	END_SIMDATA_XML_INTERFACE
-
-	Circle(float radius = 20.0f):
-	  m_Radius(radius) {
-	}
-	virtual simdata::Vector3 getPoint(float x, float y) const {
-		return simdata::Vector3(m_Radius * x, m_Radius * y, 0.0f);
-	}
-	virtual float getArea() const {
-		return simdata::PI * m_Radius * m_Radius;
-	}
-	virtual ~Circle() {}
-};
-
-class RectangularCurve: public IsoContour {
-	float m_Width, m_Height;
-protected:
-	virtual float f(float /*x*/, float /*y*/) const {
-		return 0.0f;
-	}
-public:
-	SIMDATA_OBJECT(RectangularCurve, 0, 0)
-
-	BEGIN_SIMDATA_XML_INTERFACE(RectangularCurve)
-		SIMDATA_XML("width", RectangularCurve::m_Width, true)
-		SIMDATA_XML("height", RectangularCurve::m_Height, true)
-	END_SIMDATA_XML_INTERFACE
-
-	RectangularCurve(float width = 20.0f, float height = 50.0f):
-		m_Width(width != 0.0f ? fabs(width) : 20.0f),
-		m_Height(height != 0.0f ? fabs(height) : 50.0f) {
-			if (width * height == 0.0f) {
-				CSP_LOG(APP, WARNING, "Rectangle: [" << width << "," << height << "corrected to 20x50]");
-			}
-	}
-	virtual simdata::Vector3 getPoint(float x, float y) const {
-		return simdata::Vector3(m_Width * x, m_Height * y, 0.0f);
-	}
-	virtual float getArea() const {
-		return m_Width * m_Height;
-	}
-	virtual ~RectangularCurve(){}
-};
-
-SIMDATA_REGISTER_INTERFACE(Circle)
-SIMDATA_REGISTER_INTERFACE(RectangularCurve)
 
 int RandomBillboardModel::getFeatureCount() const {
 	return 0; // TODO
@@ -142,7 +74,7 @@ void RandomBillboardModel::postCreate() {
 		while (count > 0) {
 			float x = rand.uniform(-1.0, 1.0);
 			float y = rand.uniform(-1.0, 1.0);
-			if (m_IsoContour->in(x,y)) {
+			if (m_IsoContour->in(x, y)) {
 				m_Offsets[i].push_back(m_IsoContour->getPoint(x,y));
 				count--;
 			}
@@ -174,7 +106,8 @@ void RandomBillboardModel::addSceneModel(FeatureSceneGroup *group, LayoutTransfo
 			// pos has the x, y coordinates of the drawable relative to the root
 			// FeatureSceneGroup.
 			osg::Vec3 pos = correction(transform(*ofs));
-			bb->addDrawable(new osg::Geometry(*model), pos);
+			//bb->addDrawable(new osg::Geometry(*model), pos);
+			bb->addDrawable(model, pos);
 		}
 		scene_model->addChild(bb);
 	}

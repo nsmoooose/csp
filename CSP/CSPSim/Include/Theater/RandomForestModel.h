@@ -45,6 +45,7 @@ namespace osg {
 class FeatureSceneGroup;
 class LayoutTransform;
 class ElevationCorrection;
+class IsoContour;
 
 
 /**
@@ -59,6 +60,7 @@ class RandomForestModel: public FeatureGroupModel {
 	std::vector<float> m_Density;
 	float m_MinimumSpacing;
 	int m_Seed;
+	simdata::Link<IsoContour> m_IsoContour;
 
 	std::vector<std::vector<simdata::Vector3> > m_Offsets;
 	
@@ -72,6 +74,7 @@ public:
 		SIMDATA_XML("density", RandomForestModel::m_Density, true)
 		SIMDATA_XML("minimum_spacing", RandomForestModel::m_MinimumSpacing, true)
 		SIMDATA_XML("seed", RandomForestModel::m_Seed, false)
+		SIMDATA_XML("isocontour", RandomForestModel::m_IsoContour, false)
 	END_SIMDATA_XML_INTERFACE
 
 

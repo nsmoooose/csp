@@ -10,6 +10,9 @@ Version 0.4.0 (in progress)
     named test_*.cpp is treated as a test, and can be built and
     run from a toplevel 'make tests'.  Failed tests should exit
     with a non-zero status code.
+
+  * Expanded test_Objects.cpp test to check the interface
+    registry and object introspection.
     
 2003-10-23: onsight
   * Separated Singleton class into Singleton.h (was InterfaceRegistry.h).

@@ -318,7 +318,7 @@ public:
 	virtual std::string asString() const;
 
 	/// Type representation.
-	virtual std::string typeString() const { return "Vector3"; }
+	virtual std::string typeString() const { return "type::Vector3"; }
 
 	/// Serialize to or from a data archive.
 	virtual void serialize(Archive&);

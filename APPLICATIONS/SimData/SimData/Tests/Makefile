@@ -16,7 +16,7 @@ DEPDIR = .deps
 MKDEP = $(CXX) -M $(CFLAGS)
 SWDEP = $(SWIG) -M $(SWOPTS)
 DEPFILES = $(addprefix $(DEPDIR)/,$(addsuffix .d, $(TESTS)))
-DEPFILTER =
+DEPFILTER = | sed 's/\.o:/:/'
 DEPS_MAGIC := $(shell mkdir $(DEPDIR) > /dev/null 2>&1 || :)
 
 .PHONY: clean-deps clean all default
@@ -36,21 +36,25 @@ ifneq ($(strip $(DEPFILES)),)
 endif
 endif
 
+FAILURES = 0
+
 $(DEPDIR)/%.d : %
-	@echo "Computing dependencies for $<..."
 	@$(MKDEP) $<.cpp $(DEPFILTER) > $@
 	
+#@echo "Computing dependencies for $<..."
+
 %: %.cpp 
 	@echo -n "Building $@..."
 	@for foo in a; do \
-		$(CXX) -o $@ $(CFLAGS) $(@:=.cpp) -L$(TOPDIR)/SimData -lSimData 2>/dev/null 1>/dev/null; \
-		if [ $$? = "0" ]; then echo "ok"; else echo "failed!"; fi; \
+		$(CXX) -o $@ $(CFLAGS) $(@:=.cpp) -L$(TOPDIR)/SimData -lSimData 2>.testlog 1>/dev/null; \
+		if [ $$? = "0" ]; then echo "ok"; else echo "failed!"; exit 1; fi; \
 	done
+	$
 
 run:
 	@for test in $(TESTS); do \
 	   echo -n "Running  $$test..."; \
-	   ./$$test 2>/dev/null 1>/dev/null; \
+	   ./$$test 2>.testlog 1>/dev/null; \
 	   if [ $$? = "0" ]; then echo "ok"; else echo "failed!"; fi; \
 	done
 

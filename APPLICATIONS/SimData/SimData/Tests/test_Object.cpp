@@ -59,9 +59,9 @@ class SubObject: public TestObject
 {
 public:
 
-	SIMDATA_OBJECT(SubObject,0,0)
+	SIMDATA_STATIC_OBJECT(SubObject,0,0)
 	EXTEND_SIMDATA_XML_INTERFACE(SubObject, TestObject)
-		SIMDATA_XML("link1", SubObject::_link1, true)
+		SIMDATA_XML("link1", SubObject::_link1, false)
 		SIMDATA_XML("link2", SubObject::_link2, true)
 	END_SIMDATA_XML_INTERFACE
 
@@ -77,12 +77,51 @@ private:
 SIMDATA_REGISTER_INTERFACE(TestObject);
 SIMDATA_REGISTER_INTERFACE(SubObject);
 
+void testTestObjectInterface(simdata::InterfaceProxy *i) {
+	assert(i != 0);
+	assert(i->variableExists("vector"));
+	assert(i->variableExists("link"));
+	assert(i->variableExists("bool"));
+	assert(i->variableRequired("vector"));
+	assert(i->variableRequired("link"));
+	assert(!i->variableRequired("bool"));
+	assert(i->variableType("vector") == "type::Vector3");
+	assert(i->variableType("bool") == "builtin::bool");
+}
+
+void testSubObjectInterface(simdata::InterfaceProxy *i) {
+	assert(i != 0);
+	assert(i->variableExists("link1"));
+	assert(i->variableExists("link2"));
+	assert(!i->variableRequired("link1"));
+	assert(i->variableRequired("link2"));
+	assert(i->isSubclass(TestObject::_getClassName()));
+	assert(i->isSubclass(TestObject::_getClassHash()));
+}
+
 void test() {
 	// TODO 
-	// 	* get object interfaces from the registry
 	// 	* set and retrieve values
-	// 	* test introspection
-	// 	* split Object class declarations into a header
+	// 	* split Object class declarations into a header?
+	simdata::InterfaceRegistry &reg = simdata::InterfaceRegistry::getInterfaceRegistry();
+	assert(reg.hasInterface("TestObject"));
+	assert(reg.hasInterface("SubObject"));
+	assert(reg.hasInterface(TestObject::_getClassHash()));
+	assert(reg.hasInterface(SubObject::_getClassHash()));
+	assert(reg.hasInterface(TestObject::_getClassName()));
+	assert(reg.hasInterface(SubObject::_getClassName()));
+	simdata::InterfaceProxy *i;
+	i = reg.getInterface("TestObject");
+	assert(i->getClassHash() == TestObject::_getClassHash());
+	assert(i->getClassName() == TestObject::_getClassName());
+	assert(!i->isStatic());
+	testTestObjectInterface(i);
+	i = reg.getInterface("SubObject");
+	assert(i->getClassHash() == SubObject::_getClassHash());
+	assert(i->getClassName() == SubObject::_getClassName());
+	assert(i->isStatic());
+	testTestObjectInterface(i);
+	testSubObjectInterface(i);
 	::exit(0);
 }
 

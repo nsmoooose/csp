@@ -1,6 +1,6 @@
 #include <SimNet/Networking.h>
-#include <stdio.h>
-#include <stdlib.h>
+#include <cstdio>
+#include <cstdlib>
 #include "Config.h"      
 
 #include "Bus.h"

@@ -1,7 +1,7 @@
 // Demeter Terrain Visualization Library by Clay Fowler
 // Copyright (C) 2002 Clay Fowler
 
-// $Id: Terrain.h,v 1.2 2003/02/02 20:59:23 mkrose Exp $
+// $Id: Terrain.h,v 1.3 2003/02/08 15:57:28 deltasf Exp $
 
 /*
 This library is free software; you can redistribute it and/or
@@ -101,7 +101,7 @@ namespace Demeter
     class Vector;
 
     /// An abstract factory that allows applications to provide and manage their own terrain textures, rather than letting Demeter manage textures. This is most useful for procedural texture algorithms.
-    class TextureFactory
+    class TERRAIN_API TextureFactory
     {
     public:
         /// Called by the owning Terrain object when a texture has become visible and needs to rendered. The index is a unique ID for the texture, and the other parameters are in world units.
@@ -224,6 +224,9 @@ namespace Demeter
         Texture*        m_pTexture;
     };
  
+
+	//class   vpDetailTexture:public vector<DetailTexture*>{};
+
     class TERRAIN_API TextureCell
     {
     public:
@@ -244,9 +247,12 @@ namespace Demeter
         void                    FlipVertical();
     private:
         Texture*                m_pTexture;
-        vector<DetailTexture*>  m_DetailTextures;
+		vector<TERRAIN_API DetailTexture*>  m_DetailTextures;
+		//vpDetailTexture         m_DetailTextures;
+
     };
  
+	
     class TERRAIN_API TextureSet
     {
     public:

@@ -98,7 +98,7 @@ namespace Demeter
         protected:
         
             virtual bool          computeBound() const;
-				mutable osg::ref_ptr<TerrainLattice>    m_RefTerrainLattice;
+			mutable osg::ref_ptr<TerrainLattice>    m_RefTerrainLattice;
 			DemeterLatticeDrawableLoadListener * m_pLatticeLoadListener;
 
 			std::map<Terrain*, osg::Geode *> terrainOsgMap;

@@ -22,7 +22,7 @@
 #include "Theater.h"
 #include "Projection.h"
 #include "Shell.h"
-#include <SimCore/Battlefield/Battlefield.h>
+#include <SimCore/Battlefield/OldBattlefield.h>
 #include <SimData/Math.h>
 
 void _createVehicleHelper(CSPSim *self, const char *path, simdata::Vector3 position,

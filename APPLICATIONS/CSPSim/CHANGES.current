@@ -1,5 +1,14 @@
 Version 0.3.1 (in progress)
 ===========================
+2003-03-25: onsight
+            Pushed the "look-at" point out to 50 m in front of the aircraft
+	    for view #1, which eliminates jitter at low fov.
+
+	    Added a couple extra contact points to the bottom of the M2K.
+	    Turning off the landing gear while on the ground looks quite
+	    cool now, as there are several different stable configurations
+	    the plane can end up in.
+
 2003-03-23: onsight
             Changed turbulence from air density fluctuations to 3D wind
 	    gusts.  The fluctuations are still indexed by distance travelled.

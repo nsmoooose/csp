@@ -524,7 +524,7 @@ void GameScreen::SetCamera(double dt)
 		RotZ.FromAxisAngle(planeUp,  - m_fangleRotZ);
 		RotX.FromAxisAngle(RotZ * planeRight, - m_fangleRotX);
 		eyePos = planePos;
-		lookPos = 5.0 * RotX * RotZ * planeDir + eyePos;
+		lookPos = 50.0 * RotX * RotZ * planeDir + eyePos;
 		upVec = planeUp;
 		break;
 	}

@@ -1,5 +1,32 @@
 Version 0.3.1 (in progress)
 ===========================
+2003-03-26: onsight
+            Reorganized the Tools/HID directory.  The "standard" maps are
+	    now under Tools/HID/Maps.  This are the files that have
+	    generic binding that are updated as new features are added.
+	    There are templates for creating custom maps in the
+	    Tools/HID/Examples directory.  These are my own custom maps,
+	    but should be changed to make them as general as possible.
+	    Probably the windows joystick axis bindings (assuming these are 
+	    the same for all sticks) used.
+
+	    The README.map file now has info on the map scripting language
+	    and the README file has instructions for setting up your own
+	    maps.  See README for some of the rational behind these changes.
+
+	    GameScreen.* -> gamescreen.*
+
+            Improved the map2hid utility to allow an output file to be
+	    specified on the command line.  If the output file is '-',
+	    stdout will be used.  If no output file is specified and the
+	    input file ends with '.map', then the corresponding filename
+	    ending with '.hid' will be used.
+
+	    Added a slightly more useful usage output and '--help' option
+	    to map2hid.
+
+	    Fixed map2hid to use relative paths for included map files.
+	    
 2003-03-25: onsight
             Pushed the "look-at" point out to 50 m in front of the aircraft
 	    for view #1, which eliminates jitter at low fov.

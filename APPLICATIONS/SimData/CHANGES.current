@@ -1,8 +1,12 @@
 Version 0.3.1 (in progress)
 ===========================
 
+2003-04-11: onsight
+            Updated setup.py to install FileUtility.h.
+            
 2003-04-11: delta
 	    Finally got the changes from Onsight compile on .net ;-)
+	    ^- aah, it wasn't that bad ;-) --OS
 
 2003-03-29: onsight
             Added a DataManager class to combine access to multiple data

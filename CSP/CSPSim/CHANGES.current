@@ -1,6 +1,10 @@
  Version 0.4.0 (in progress)
 ===========================
 
+2004-05-12: delta
+  * Removed obsolete ComputeTransformCallback in Source/VirtualScene.cpp
+    and replaced it by an osg::Transform (lunalog's post).
+    
 2004-05-09
   * Minor cleanings in Include/CSPSim.h. 
   

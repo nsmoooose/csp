@@ -35,16 +35,27 @@
 namespace simnet { class NetworkMessage; }
 
 
-class AnimationUpdate {
+class RemoteAnimationUpdate {
 	DataChannel<double>::CRef m_Channel;
 	simdata::uint8 m_LastValue;
 
 public:
-	AnimationUpdate(): m_LastValue(0) { }
+	RemoteAnimationUpdate(): m_LastValue(0) { }
 	void bind(DataChannel<double>::CRef const &channel) { m_Channel = channel; }
 	bool update();
 	inline simdata::uint8 value() const { return m_LastValue; }
 	inline static double convert(simdata::uint8 value);
+};
+
+class LocalAnimationUpdate {
+	DataChannel<double>::Ref m_Channel;
+	double m_Target;
+
+public:
+	LocalAnimationUpdate(): m_Target(0) { }
+	void bind(DataChannel<double>::Ref const &channel) { m_Channel = channel; }
+	void setTarget(simdata::uint8 value);
+	void update(double dt);
 };
 
 
@@ -55,11 +66,11 @@ class RemoteController: public System {
 	DataChannel<simdata::Vector3>::CRef b_Velocity;
 	DataChannel<simdata::Vector3>::CRef b_AngularVelocity;
 	DataChannel<simdata::Quat>::CRef b_Attitude;
-	AnimationUpdate m_GearExtension;
-	AnimationUpdate m_AileronDeflection;
-	AnimationUpdate m_ElevatorDeflection;
-	AnimationUpdate m_RudderDeflection;
-	AnimationUpdate m_AirbrakeDeflection;
+	RemoteAnimationUpdate m_GearExtension;
+	RemoteAnimationUpdate m_AileronDeflection;
+	RemoteAnimationUpdate m_ElevatorDeflection;
+	RemoteAnimationUpdate m_RudderDeflection;
+	RemoteAnimationUpdate m_AirbrakeDeflection;
 	int m_UpdateDelay;
 
 protected:
@@ -92,6 +103,12 @@ class LocalController: public System {
 	DataChannel<double>::Ref b_ElevatorDeflection;
 	DataChannel<double>::Ref b_RudderDeflection;
 	DataChannel<double>::Ref b_AirbrakeDeflection;
+	LocalAnimationUpdate m_GearExtension;
+	LocalAnimationUpdate m_AileronDeflection;
+	LocalAnimationUpdate m_ElevatorDeflection;
+	LocalAnimationUpdate m_RudderDeflection;
+	LocalAnimationUpdate m_AirbrakeDeflection;
+
 	// dynamic properties
 	DataChannel<simdata::Vector3>::Ref b_Position;
 	DataChannel<simdata::Vector3>::Ref b_Velocity;

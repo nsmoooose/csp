@@ -55,7 +55,7 @@ void RemoteController::importChannels(Bus *bus) {
 	m_AirbrakeDeflection.bind(bus->getChannel("ControlSurfaces.AirbrakeDeflection"));
 }
 
-bool AnimationUpdate::update() {
+bool RemoteAnimationUpdate::update() {
 	if (m_Channel.valid()) {
 		simdata::uint8 x = static_cast<simdata::uint8>(100.0 * m_Channel->value() + 128);
 		if (x != m_LastValue) {
@@ -66,7 +66,18 @@ bool AnimationUpdate::update() {
 	return false;
 }
 
-inline double AnimationUpdate::convert(simdata::uint8 x) { return 0.01 * (static_cast<double>(x) - 128.0); }
+void LocalAnimationUpdate::setTarget(simdata::uint8 value) {
+	m_Target = 0.01 * (static_cast<double>(value) - 128.0);
+}
+
+void LocalAnimationUpdate::update(double dt) {
+	double value = m_Channel->value();
+	if (value < m_Target - 0.001) {
+		m_Channel->value() = std::min(value + 1.0 * dt, m_Target);  // ~60 deg/sec
+	} else if (value > m_Target + 0.001) {
+		m_Channel->value() = std::max(value - 1.0 * dt, m_Target);  // ~60 deg/sec
+	}
+}
 
 
 simdata::Ref<simnet::NetworkMessage> RemoteController::getUpdate(simcore::TimeStamp current_timestamp, simdata::SimTime interval, int detail) {
@@ -160,6 +171,11 @@ void LocalController::importChannels(Bus *bus) {
 	b_Velocity = bus->getSharedChannel(bus::Kinetics::Velocity, true, true);
 	b_AngularVelocity = bus->getSharedChannel(bus::Kinetics::AngularVelocity, true, true);
 	b_Attitude = bus->getSharedChannel(bus::Kinetics::Attitude, true, true);
+	m_GearExtension.bind(b_GearExtension);
+	m_AileronDeflection.bind(b_AileronDeflection);
+	m_ElevatorDeflection.bind(b_ElevatorDeflection);
+	m_RudderDeflection.bind(b_RudderDeflection);
+	m_AirbrakeDeflection.bind(b_AirbrakeDeflection);
 }
 
 bool LocalController::sequentialUpdate(simcore::TimeStamp stamp, simcore::TimeStamp now, simdata::SimTime &dt) {
@@ -201,16 +217,16 @@ void LocalController::onUpdate(simdata::Ref<simnet::NetworkMessage> const &msg, 
 		setTargetPosition(update->position().Vector3() + m_TargetVelocity * dt);
 		b_GearExtension->value() = (update->gear_up() ? 0.0 : 1.0);
 		if (update->has_elevator_deflection()) {
-			b_ElevatorDeflection->value() = AnimationUpdate::convert(update->elevator_deflection());
+			m_ElevatorDeflection.setTarget(update->elevator_deflection());
 		}
 		if (update->has_airbrake_deflection()) {
-			b_AirbrakeDeflection->value() = AnimationUpdate::convert(update->airbrake_deflection());
+			m_AirbrakeDeflection.setTarget(update->airbrake_deflection());
 		}
 		if (update->has_aileron_deflection()) {
-			b_AileronDeflection->value() = AnimationUpdate::convert(update->aileron_deflection());
+			m_AileronDeflection.setTarget(update->aileron_deflection());
 		}
 		if (update->has_rudder_deflection()) {
-			b_RudderDeflection->value() = AnimationUpdate::convert(update->rudder_deflection());
+			m_RudderDeflection.setTarget(update->rudder_deflection());
 		}
 	} else {
 		CSP_LOG(OBJECT, INFO, "non sequential update: msg=" << update->timestamp() << " local=" << now);
@@ -241,6 +257,12 @@ double LocalController::onUpdate(double dt) {
 		double f = dt * 10.0;
 		if (f > 1.0) f = 1.0;
 		b_Attitude->value().slerp(f, b_Attitude->value(), m_TargetAttitude);
+	}
+	{
+		m_ElevatorDeflection.update(dt);
+		m_AirbrakeDeflection.update(dt);
+		m_AileronDeflection.update(dt);
+		m_RudderDeflection.update(dt);
 	}
 	return 0.0;
 }

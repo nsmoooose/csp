@@ -244,7 +244,7 @@ struct hasht_hash {
 
 /** String hash functor for hash_map.
  */
-struct SIMDATA_EXPORT hashstring {
+struct hashstring {
 	static HASH<const char*> h;
 	size_t operator()(const std::string &s) const {
 		return static_cast<size_t>(h(s.c_str()));

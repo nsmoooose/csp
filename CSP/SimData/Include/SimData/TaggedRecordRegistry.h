@@ -67,7 +67,7 @@ public:
  *
  *  @author Mark Rose <mrose@stm.lbl.gov>
  */
-class SIMDATA_EXPORT TaggedRecordRegistry: public Singleton<TaggedRecordRegistry> {
+class TaggedRecordRegistry: public Singleton<TaggedRecordRegistry> {
 
 friend class Singleton<TaggedRecordRegistry>;
 
@@ -159,7 +159,7 @@ private:
 /** Factory template for creating TaggedRecord subclasses.
  */
 template <class RECORD>
-class SIMDATA_EXPORT TaggedRecordFactory: public TaggedRecordFactoryBase {
+class TaggedRecordFactory: public TaggedRecordFactoryBase {
 public:
 	typedef RECORD RecordType;
 	TaggedRecordFactory(): TaggedRecordFactoryBase() {

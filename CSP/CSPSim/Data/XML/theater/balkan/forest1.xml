@@ -10,8 +10,6 @@
     </List>
     <List name="density">
         <Float>0.01</Float>
-        <Float>0.005</Float>
-        <Float>0.005</Float>
     </List>
     <Float name="minimum_spacing">2</Float>
     <Object class="RectangularCurve" name="isocontour">

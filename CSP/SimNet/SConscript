@@ -23,7 +23,6 @@ def PackageConfig(env):
 	conf = build.CustomConfigure(env)
 	conf.CheckCommandVersion('ccgnu2', 'ccgnu2-config --version', '1.0.13')
 	env = conf.Finish()
-	env.ParseConfig('ccgnu2-config --flags --libs')
 
 env = env.Copy()
 env.AppendUnique(SHLINKFLAGS = '-Wl,-z,lazyload')
@@ -31,6 +30,7 @@ env.Replace(CXXFLAGS=env['CXXFLAGS'].replace('-W ', ''))
 
 env.SetConfig(PackageConfig)
 env.Documentation('#/SimNet/.dox', '#/SimNet/Doxyfile', '#/SimNet/*.{h,cpp}')
+env.ParseConfig('ccgnu2-config --flags --libs')
 
 
 SOURCES = [
@@ -47,11 +47,11 @@ MESSAGES = [
 	#'TestMessage.net',
 ]
 
-libsimnet = env.StaticLibrary('SimNet', SOURCES)
-Alias(['all', 'simnet'], [libsimnet])
+libsimnet = env.StaticLibrary('simnet', SOURCES)
+Alias(['all', 'SimNet'], [libsimnet])
 
 libmessages = env.SharedLibrary('SimNetMessages', MESSAGES)
-Alias(['all', 'simnet'], [libmessages])
+Alias(['all', 'SimNet'], [libmessages])
 
 """
 test = env.Program('test', ['test.cpp'] + libsimnet + libmessages)

@@ -149,6 +149,7 @@ def SetShortMessage(env, builder, message):
 		ShortMessageWrapper(message).bind(action)
 
 def SetShortMessages(env):
+	SetShortMessage(env, 'Program', TargetMessage('Building'))
 	SetShortMessage(env, 'StaticObject', SourceMessage('Compiling'))
 	SetShortMessage(env, 'SharedObject', SourceMessage('Compiling', suffix=' (shared)'))
 	SetShortMessage(env, 'Object', SourceMessage('Compiling'))

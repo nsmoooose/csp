@@ -37,6 +37,7 @@ AC_DEFUN(CSP_LIB_ERROR, [
 dnl Generic version check for libraries using 'xxx-config' scripts
 AC_DEFUN(CSP_LIB_CONFIG, [
   lib_min_version=$3
+  lib_flags_opt=$4
   lib=yes
   AC_PATH_PROG($1[]_CONFIG, $2-config, no)
   AC_MSG_CHECKING(for $1 >= $lib_min_version)
@@ -60,7 +61,7 @@ AC_DEFUN(CSP_LIB_CONFIG, [
       $lib_micro \>= $lib_micro_min `
     if test "$lib_version_proper" = "1" ; then
       AC_MSG_RESULT(yes)
-      $1[]_FLAGS=`$$1[]_CONFIG --cflags`
+      $1[]_FLAGS=`$$1[]_CONFIG $lib_flags_opt`
       $1[]_LIBS=`$$1[]_CONFIG --libs`
     else
       AC_MSG_RESULT(no)
@@ -68,7 +69,7 @@ AC_DEFUN(CSP_LIB_CONFIG, [
     fi
    fi
    if test "$no_lib" = "yes"; then
-	CSP_LIB_ERROR($4,$3,$5,$1[]_CONFIG)
+	CSP_LIB_ERROR($5,$3,$6,$1[]_CONFIG)
    fi
    AC_SUBST($1[]_FLAGS)
    AC_SUBST($1[]_LIBS)

@@ -1,6 +1,13 @@
  Version 0.3.3 (in progress)
 ===========================
 
+2003-07-22: onsight
+            Actually checked in a bunch of changes from the last
+	    changelog entry that I had forgotten to commit.
+
+	    Slight tweaks to acinclude.m4 and configure.in.  The
+	    checks for GNU CC++ are now in place but commented.
+
 2003-07-21: onsight
             Moved a couple accessor methods in Theater and 
 	    FeatureLayout out of the class declarations.  This

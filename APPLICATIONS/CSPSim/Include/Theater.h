@@ -89,7 +89,7 @@ public:
 	/**
 	 * Get the TerrainObject used by the theater.
 	 */
-	inline simdata::Ref<TerrainObject> getTerrain() { return m_Terrain; }
+	simdata::Ref<TerrainObject> getTerrain();
 
 	virtual void postCreate();
 

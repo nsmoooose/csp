@@ -55,3 +55,7 @@ void FeatureLayout::makeFeatures(std::vector<Feature> &features, int value) cons
 }
 
 
+simdata::Ref<FeatureModel const> FeatureLayout::getFeatureModel() const { 
+	return m_FeatureModel; 
+}
+

@@ -42,11 +42,9 @@
 #include <string>
 #include <vector>
 #include <iostream>
+#include <sstream>
 #include <fstream>
 #include <cassert>
-
-#include "compiler.h"
-#include STL_SSTREAM
 
 #include <SimData/FileUtility.h>
 

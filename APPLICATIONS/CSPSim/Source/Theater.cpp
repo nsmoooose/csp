@@ -59,3 +59,7 @@ void Theater::postCreate() {
 	CSP_LOG(TERRAIN, INFO, "Projecting feature groups done.");
 }
 
+simdata::Ref<TerrainObject> Theater::getTerrain() { 
+	return m_Terrain; 
+}
+

@@ -73,7 +73,7 @@ public:
 	/**
 	 * Get the FeatureModel.
 	 */
-	simdata::Ref<FeatureModel const> getFeatureModel() const { return m_FeatureModel; } 
+	simdata::Ref<FeatureModel const> getFeatureModel() const;
 
 	/** 
 	 * Get the relative position of the FeatureModel.

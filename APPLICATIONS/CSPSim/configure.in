@@ -32,7 +32,7 @@ dnl Check for st_blksize in struct stat
 AC_ST_BLKSIZE
 
 dnl check for Simple Direct Media Library
-CSP_LIB_CONFIG([SDL], [sdl], [1.2.5], [Simple Direct Media Library], [http://www.libsdl.org/])
+CSP_LIB_CONFIG([SDL], [sdl], [1.2.5], [--cflags], [Simple Direct Media Library], [http://www.libsdl.org/])
 
 dnl check for SDL Image Library
 AC_CHECK_LIB(SDL_image, IMG_Load, [], [AC_MSG_ERROR([
@@ -70,6 +70,8 @@ CSP_OSG_CONFIG(osg, 0.9.4, [OpenSceneGraph])
 CSP_OSG_CONFIG(osgUtil, 0.9.4, [OpenSceneGraph Util library])
 CSP_OSG_CONFIG(osgText, 0.9.4, [OpenSceneGraph Text library])
 CSP_OSG_CONFIG(osgParticle, 0.9.4, [OpenSceneGraph Particle library])
+
+#CSP_LIB_CONFIG([CCGNU2], [ccgnu2], [1.0.6], [--flags], [GNU Common C++ Library], [http://www.gnu.org/software/commonc++/])
 
 CSP_PYTHON(2.2.0)
 

@@ -38,12 +38,36 @@
             <Float name="y">1380</Float>
             <Float name="orientation">1.57</Float>
         </Object>
-        <!-- F-G Taxi signalisation -->
+        <!-- Taxi signalisation -->
         <Object class="FeatureLayout">
             <Path name="model">caisson01</Path>
             <Float name="x">365</Float>
             <Float name="y">1218</Float>
             <Float name="orientation">3.64</Float>
+        </Object>
+        <Object class="FeatureLayout">
+            <Path name="model">caisson02</Path>
+            <Float name="x">240</Float>
+            <Float name="y">1138</Float>
+            <Float name="orientation">2.07</Float>
+        </Object>
+        <Object class="FeatureLayout">
+            <Path name="model">caisson03</Path>
+            <Float name="x">52</Float>
+            <Float name="y">1138</Float>
+            <Float name="orientation">2.07</Float>
+        </Object>
+        <Object class="FeatureLayout">
+            <Path name="model">caisson04</Path>
+            <Float name="x">48</Float>
+            <Float name="y">1138</Float>
+            <Float name="orientation">-2.07</Float>
+        </Object>
+        <Object class="FeatureLayout">
+            <Path name="model">caisson05</Path>
+            <Float name="x">30</Float>
+            <Float name="y">1068</Float>
+            <Float name="orientation">-0.64</Float>
         </Object>
     </List>
 </Object>

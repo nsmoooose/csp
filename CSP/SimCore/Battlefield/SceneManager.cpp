@@ -24,7 +24,7 @@
 
 
 #include <SimCore/Battlefield/SceneManager.h>
-#include <SimCore/Battlefield/SimObject.h>
+#include <SimCore/Battlefield/OldSimObject.h>
 
 
 void SceneManager::setVisible(ObjectRef const& object, bool visible) {

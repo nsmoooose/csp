@@ -30,7 +30,7 @@
 #include "InputInterface.h"
 #include "TerrainObject.h"
 
-#include <SimCore/Battlefield/SimObject.h>
+#include <SimCore/Battlefield/OldSimObject.h>
 #include <SimData/Quat.h>
 
 

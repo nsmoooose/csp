@@ -1,6 +1,10 @@
  Version 0.4.0 (in progress)
 ===========================
 
+2004-11-14: onsight
+  * Moved SimObject.* to OldSimObject.*, to be replaced when the
+    network-enabled battlefield is checked in (soon).
+
 2004-10-17: onsight
   * Moved Battlefield.* to OldBattlefield.*, to be replaced by a
     new network-enabled battlefield.

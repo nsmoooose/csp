@@ -24,7 +24,7 @@ LIBPATH= env.get('LIBPATH', []) + ['#/SpatialIndex/.bin']
 SOURCES = [
 	'OldBattlefield.cpp',
 	'SceneManager.cpp',
-	'SimObject.cpp',
+	'OldSimObject.cpp',
 ]
 
 OBJECTS = build.Apply(env.StaticObject, SOURCES, LIBS=LIBS, LIBPATH=LIBPATH)

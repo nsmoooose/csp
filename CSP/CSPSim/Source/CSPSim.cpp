@@ -62,7 +62,7 @@
 #include <SimNet/PrintMessageHandler.h>
 
 #include <SimCore/Battlefield/OldBattlefield.h>
-#include <SimCore/Battlefield/SimObject.h>
+#include <SimCore/Battlefield/OldSimObject.h>
 #include <SimCore/Util/Log.h>
 
 #include <SimData/Types.h>

@@ -18,12 +18,12 @@
 
 
 /**
- * @file SimObject.h
+ * @file OldSimObject.h
  *
  **/
 
-#ifndef __SIMCORE_BATTLEFIELD_SIMOBJECT_H__
-#define __SIMCORE_BATTLEFIELD_SIMOBJECT_H__
+#ifndef __SIMCORE_BATTLEFIELD_OLDSIMOBJECT_H__
+#define __SIMCORE_BATTLEFIELD_OLDSIMOBJECT_H__
 
 
 #include <SimCore/Util/SynchronousUpdate.h>
@@ -302,5 +302,5 @@ inline std::ostream &operator << (std::ostream &os, SimObject &object) {
 	return os << object._debugId();
 }
 
-#endif // __SIMCORE_BATTLEFIELD_SIMOBJECT_H__
+#endif // __SIMCORE_BATTLEFIELD_OLDSIMOBJECT_H__
 

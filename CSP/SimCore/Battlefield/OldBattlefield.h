@@ -39,7 +39,7 @@
 #include <SpatialIndex/QuadTree.h>
 
 #include <SimCore/Util/SynchronousUpdate.h>
-#include <SimCore/Battlefield/SimObject.h>
+#include <SimCore/Battlefield/OldSimObject.h>
 
 
 class SceneManager;

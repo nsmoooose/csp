@@ -18,12 +18,12 @@
 
 
 /**
- * @file SimObject.cpp
+ * @file OldSimObject.cpp
  *
  **/
 
 
-#include <SimCore/Battlefield/SimObject.h>
+#include <SimCore/Battlefield/OldSimObject.h>
 #include <SimCore/Util/Log.h>
 
 #include <sstream>

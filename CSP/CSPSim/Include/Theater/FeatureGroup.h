@@ -40,7 +40,7 @@
 #include <osg/Vec3>
 #include <osg/ref_ptr>
 
-#include <SimCore/Battlefield/SimObject.h>
+#include <SimCore/Battlefield/OldSimObject.h>
 
 #include <vector>
 

@@ -2,33 +2,34 @@ Version 0.3.1 (in progress)
 ===========================
 
 2003-03-13: onsight
-            * fixed several bugs related to std::vector types
-            * fix to allow inplace (anonymous) object definitions in xml
-
-            Added a logging facility so we can filter and redirect messages 
-	    to a file.  The syntax is similar to that used in CSP:
-
-	        SIMDATA_LOG(type, severity, msg)
-
-	    Where type is one of (LOG_TYPE, LOG_ARCHIVE, LOG_REGISTRY, ...)
-	    and severity is one of (LOG_TRACE, LOG_DEBUG, LOG_INFO, LOG_WARN,
-	    LOG_ALERT, LOG_ERROR).  The msg field can include the usual
-	    ostream operators (<<).
+            Fixed several bugs related to std::vector types
 	    
-            Added a new postCreate() method in Object which is called after 
-            unpack() is complete.  You can extend this to do additional 
-            object setup once the data is loaded.  From now on, unpack() 
-            must be the exact inverse operation of pack().
-	    
-            Data compiler enhancements, mainly the ability to only reparse 
-	    xml files that have changed since the archive was last generated. 
-	    This significantly speeds up the processing.  Specifying
-	    '--rebuild' on the command line will rebuild the entire archive
-	    from scratch.
+	    Fix to allow inplace (anonymous) object definitions in xml
 
-            Big simplification of the various smart pointer types:
-	        PathPointer<T> is gone; now just use Pointer<T> for all 
-		object references.  PathPointerBase is not PointerBase,
-		and what was originally PointerBase is now ReferencedPointer
-		(although you shouldn't need to use these classed directly).
+            Added a logging facility so we can filter and redirect messages
+            to a file. The syntax is similar to that used in CSP:
+
+            SIMDATA_LOG(type, severity, msg)
+
+            Where type is one of (LOG_TYPE, LOG_ARCHIVE, LOG_REGISTRY, ...)
+            and severity is one of (LOG_TRACE, LOG_DEBUG, LOG_INFO,
+            LOG_WARN, LOG_ALERT, LOG_ERROR). The msg field can include the
+            usual ostream operators (<<).
+
+            Added a new postCreate() method in Object which is called after
+            unpack() is complete. You can extend this to do additional
+            object setup once the data is loaded. From now on, unpack() must
+            be the exact inverse operation of pack().
+
+            Data compiler enhancements, mainly the ability to only reparse
+            xml files that have changed since the archive was last
+            generated. This significantly speeds up the processing.
+            Specifying '--rebuild' on the command line will rebuild the
+            entire archive from scratch.
+
+            Big simplification of the various smart pointer types.
+            PathPointer<T> is gone; now just use Pointer<T> for all object
+            references. PathPointerBase is not PointerBase, and what was
+            originally PointerBase is now ReferencedPointer (although you
+            shouldn't need to use these classed directly).
 

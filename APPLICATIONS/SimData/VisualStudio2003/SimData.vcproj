@@ -227,9 +227,6 @@
 				RelativePath="..\Source\Object.cpp">
 			</File>
 			<File
-				RelativePath="..\Source\Pack.cpp">
-			</File>
-			<File
 				RelativePath="..\Source\Path.cpp">
 			</File>
 			<File

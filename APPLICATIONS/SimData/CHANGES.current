@@ -1,6 +1,9 @@
 Version 0.4.0 (in progress)
 ===========================
 2003-10-20: onsight
+  * Removed Pack.cpp from the vcproj file.
+
+2003-10-20: onsight
   * Added a log message when the interface registry is destroyed.
 
 2003-10-19: onsight

@@ -172,6 +172,7 @@ public:
 	virtual void skipPacket() {
 		if (m_Queue.size() > 0) {
 			NetworkMessage::Ref message = m_Queue.front().message;
+			SIMNET_LOG(PACKET, INFO, "dropping outbound packet " << *message);
 			m_Queue.pop_front();
 			// if we had a cached payload for the message that was skipped, and the
 			// next message is different we need to invalidate the cache.

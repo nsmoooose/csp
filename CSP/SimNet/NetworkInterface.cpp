@@ -71,6 +71,7 @@ namespace simnet {
 #pragma pack(push, 1)
 struct PingPayload {
 	simdata::uint32 transmit_time; // ms
+	simdata::int32 last_latency; // ms
 };
 #pragma pack(pop)
 
@@ -248,9 +249,8 @@ bool NetworkInterface::pingPeer(PeerInfo *peer) {
 	PingPayload *payload = reinterpret_cast<PingPayload*>(ptr + header_size);
 	simdata::uint32 transmit_time = static_cast<simdata::uint32>(simdata::getCalibratedRealTime() * 1000.0);
 	payload->transmit_time = SIMDATA_UINT32_TO_LE(transmit_time);
-	// hack: overload RoutingData to save a few bytes
-	header->setRouting(0, peer->getLastPingLatency());
-	std::cout << "PING " << peer->getId() << " .......\n";
+	payload->last_latency = SIMDATA_INT32_TO_LE(peer->getLastPingLatency());
+	//std::cout << "PING " << peer->getId() << " .......\n";
 	queue->commitWriteBuffer(packet_size);
 	return true;
 }
@@ -334,7 +334,7 @@ void NetworkInterface::processOutgoing(double timeout) {
 			header->setReliable(false);
 		}
 		header->setPriority(queue_idx);
-		header->setSource( m_LocalId);
+		header->setSource(m_LocalId);
 
 		simdata::uint8 *payload = ptr + header_size;
 		payload_length = allocation_size - header_size;
@@ -482,11 +482,11 @@ int NetworkInterface::receivePackets(double timeout) {
 
 		if (header->messageId() == PingID) {
 			if (packet_length == header_size + sizeof(PingPayload)) {
-				int last_ping_latency = header->routingData();
 				PingPayload *payload = reinterpret_cast<PingPayload*>(buffer + header_size);
+				int32 last_ping_latency = SIMDATA_INT32_FROM_LE(payload->last_latency);
 				simdata::uint32 transmit_time = SIMDATA_UINT32_FROM_LE(payload->transmit_time);
 				simdata::uint32 receive_time = static_cast<uint32>(simdata::getCalibratedRealTime() * 1000.0);
-				std::cout << "PING TX=" << transmit_time << " RX=" << receive_time << " OFS=" << last_ping_latency << "\n";
+				//std::cout << "PING TX=" << transmit_time << " RX=" << receive_time << " OFS=" << last_ping_latency << "\n";
 				simdata::int64 t_latency = static_cast<int64>(receive_time) - static_cast<int64>(transmit_time);
 				if (t_latency >= SIMDATA_LL(0x80000000)) {
 					t_latency -= SIMDATA_LL(0x80000000);

@@ -140,6 +140,7 @@ private:
 
 	simdata::ScopedPointer<ObjectIdPool> m_LocalIdPool;
 
+	double m_ServerTimeOffset;
 	simdata::SimTime m_CurrentTime;
 	simcore::TimeStamp m_CurrentTimeStamp;
 

@@ -78,8 +78,8 @@ class GlobalBattlefield: public Battlefield {
 			m_Response->setReplyTo(request);
 			m_Response->setRoutingType(ROUTE_COMMAND);
 		}
-		typename MSG::Ref const &operator->() { return m_Response; }
-		void send(simnet::MessageQueue::Ref const &queue) {
+		inline typename MSG::Ref const &operator->() { return m_Response; }
+		inline void send(simnet::MessageQueue::Ref const &queue) {
 			queue->queueMessage(m_Response);
 		}
 	};

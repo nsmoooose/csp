@@ -32,6 +32,7 @@
 #include <SimNet/ReliablePacket.h>
 #include <SimNet/Sockets.h>
 #include <SimNet/NetLog.h>
+#include <SimNet/Median.h>
 
 #include <SimData/Properties.h>
 #include <SimData/ScopedPointer.h>
@@ -128,10 +129,15 @@ class PeerInfo: public simdata::NonCopyable {
 	int m_last_ping_latency;
 
 	// track timing data over successive pings
-	int m_timing_history[9];  // MUST BE 9, see median filter in updateTiming
-	int m_timing_history_size;
-	int m_timing_history_index;
+	Median9History<int> m_time_skew_history;
+	Median9History<int> m_roundtrip_latency_history;
 	double m_time_filter;
+
+	// the elapsed time since the connection was established.
+	double m_connect_time;
+
+	// the elapsed time since the last ping was sent.
+	double m_ping_time;
 
 	// a measure of the time between packets sent to this peer that is
 	// used to determine when additional pings need to be sent.
@@ -179,9 +185,14 @@ public:
 	 *  a backlog of reliable packet confirmations to send (which can piggyback on
 	 *  ping messages).
 	 */
-	inline bool needsPing() const {
-		double limit = (hasPendingConfirmations() ? 0.0 : 0.5);
-		return m_quiet_time > limit;
+	inline bool needsPing() {
+		// ping quickly at first to help establish a stable time offset; and at
+		// least occasionally after that.
+		const double ping_limit = (m_connect_time < 20.0 ? 1.0 : 10.0);
+		const double quiet_limit = (hasPendingConfirmations() ? 0.0 : 0.5);
+		bool ping = (m_quiet_time > quiet_limit || m_ping_time > ping_limit);
+		if (ping) m_ping_time = 0.0;
+		return ping;
 	}
 
 	/** Returns an estimate of the average transmission rate (in bytes per second) from
@@ -388,6 +399,25 @@ public:
 	/** Get the dedicated udp socket used to send packets to this peer.
 	 */
 	inline DatagramTransmitSocket *getSocket() { return m_active ? m_socket.get() : 0; }
+
+	/** Get the time offset of the peer relative to the local machine, in msec.
+	 *  This value is filtered increasingly aggressively with each ping received,
+	 *  such that the offset will quickly settle down to a stable value. Note that
+	 *  this assumes that the remote machine's time runs at very nearly the same rate
+	 *  as the local machine.  Otherwise the time skew will grow steadily but may not
+	 *  keep pace with the actual time difference.
+	 */
+	inline double getTimeSkew() const { return m_time_skew; }
+
+	/** Get the roundtrip latency, in msec.  Provides a rough measure of the
+	 *  median roundtrip delay over the last several ping packets.  This
+	 *  delay includes the time required for the network layer to receive and
+	 *  decode the ping packets, but does not include any higher level processing
+	 *  time.  If the network interface is driven periodically as part of the
+	 *  simulation main loop, this delay will be included in the latency measure.
+	 */
+	inline double getRoundtripLatency() const { return m_roundtrip_latency; }
+
 };
 
 

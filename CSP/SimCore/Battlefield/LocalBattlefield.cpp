@@ -192,6 +192,7 @@ LocalBattlefield::LocalBattlefield(simdata::Ref<simdata::DataManager> const &dat
 	m_CameraGridPosition(0,0),
 	m_UnitUpdateMaster(new UpdateMaster()),
 	m_LocalIdPool(new ObjectIdPool()),
+	m_ServerTimeOffset(0),
 	m_ScanElapsedTime(0),
 	m_ScanRate(0),
 	m_ScanIndex(0)
@@ -284,7 +285,13 @@ void LocalBattlefield::continueUnitScan(double dt) {
 }
 
 void LocalBattlefield::update(double dt) {
-	m_CurrentTime = simdata::get_realtime();
+	double offset = m_NetworkClient.valid() ? m_NetworkClient->getServerTimeOffset() : 0.0;
+	double filter = std::min(1.0, dt);
+	// server time offset changes discontinuously when pings are received (with especially
+	// large jumps right after the connection is established), so we filter the offset
+	// to spread the jumps out over a few seconds.
+	m_ServerTimeOffset = m_ServerTimeOffset * (1.0 - filter) + filter * offset;
+	m_CurrentTime = simdata::getCalibratedRealTime() + m_ServerTimeOffset;
 	m_CurrentTimeStamp = simcore::getTimeStamp(m_CurrentTime);
 	if (m_NetworkClient.valid()) {
 		m_NetworkClient->processIncoming(0.01);

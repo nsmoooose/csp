@@ -65,8 +65,8 @@ ClientServerBase::ClientServerBase(NetworkNode const &bind, bool isServer, int /
 }
 
 PeerInfo const *ClientServerBase::getPeer(PeerId id) const {
-	NetworkInterface const *ni = m_NetworkInterface.get();
-	PeerInfo const *info = ni->getPeer(id);
+	const NetworkInterface * const ni = m_NetworkInterface.get();
+	const PeerInfo *info = ni->getPeer(id);
 	return info->isActive() ? info : 0;
 }
 
@@ -216,6 +216,12 @@ void Client::sendToServer(NetworkMessage::Ref const &msg) {
 
 void Client::disconnectPeer(PeerId id) {
 	m_NetworkInterface->disconnectPeer(id);
+}
+
+double Client::getServerTimeOffset() const {
+	if (!m_Connected) return 0.0;
+	const PeerInfo *info = getPeer(NetworkInterface::ServerId);
+	return (info == 0) ? 0.0 : info->getTimeSkew() * 0.001;
 }
 
 } // namespace simnet

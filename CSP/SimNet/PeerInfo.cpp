@@ -69,9 +69,9 @@ PeerInfo::PeerInfo():
 	m_time_skew(0.0),
 	m_roundtrip_latency(0.0),
 	m_last_ping_latency(0),
-	m_timing_history_size(0),
-	m_timing_history_index(0),
 	m_time_filter(0.1),
+	m_connect_time(0.0),
+	m_ping_time(0.0),
 	m_quiet_time(0.0),
 	m_dead_time(0.0),
 	m_last_deactivation_time(0.0),
@@ -90,6 +90,8 @@ void PeerInfo::update(double dt, double scale_desired_rate_to_self) {
 	} else {
 		m_dead_time += dt;
 	}
+	m_connect_time += dt;
+	m_ping_time += dt;
 	if (m_packets_self_to_peer > 0) {
 		m_quiet_time = 0.0;
 		const double outgoing_packet_size = (double(m_bytes_self_to_peer) / m_packets_self_to_peer);
@@ -250,7 +252,6 @@ void PeerInfo::setReceipt(PacketReceiptHeader *receipt, bool reliable, simdata::
 	SIMNET_LOG(PACKET, DEBUG, "sending receipt " << receipt->id3());
 }
 
-
 void PeerInfo::disable() {
 	if (m_active) {
 		m_last_deactivation_time = simdata::get_realtime();
@@ -259,30 +260,16 @@ void PeerInfo::disable() {
 	if (m_socket.valid()) m_socket->disconnect();
 }
 
-#define M9_SORT(a, b, t) if ((a) > (b)) { t = (b); (b) = (a); (a) = t; }
-
 void PeerInfo::updateTiming(int ping_latency, int last_ping_latency) {
-	int correction = (ping_latency - last_ping_latency) / 2;
-	m_timing_history[m_timing_history_index] = correction;
-	m_timing_history_index = (m_timing_history_index + 1) % 9;
-	if (m_timing_history_size < 9) m_timing_history_size++;
-	if (m_timing_history_size == 9) {
-		int m[9];
-		memcpy(m, m_timing_history, sizeof(m_timing_history));
-		int tmp;
-		// find the median of 9 elements
-		M9_SORT(m[1], m[2], tmp); M9_SORT(m[4], m[5], tmp); M9_SORT(m[7], m[8], tmp);
-		M9_SORT(m[0], m[1], tmp); M9_SORT(m[3], m[4], tmp); M9_SORT(m[6], m[7], tmp);
-		M9_SORT(m[1], m[2], tmp); M9_SORT(m[4], m[5], tmp); M9_SORT(m[7], m[8], tmp);
-		M9_SORT(m[0], m[3], tmp); M9_SORT(m[5], m[8], tmp); M9_SORT(m[4], m[7], tmp);
-		M9_SORT(m[3], m[6], tmp); M9_SORT(m[1], m[4], tmp); M9_SORT(m[2], m[5], tmp);
-		M9_SORT(m[4], m[7], tmp); M9_SORT(m[4], m[2], tmp); M9_SORT(m[6], m[4], tmp);
-		M9_SORT(m[4], m[2], tmp);
-		correction = m[4];  // median
-	}
 	int roundtrip_latency = (ping_latency + last_ping_latency);
-	const double latency_filter = 0.9;
+	roundtrip_latency = m_roundtrip_latency_history.add(roundtrip_latency);
+	double latency_filter = 0.8;
+	if (m_roundtrip_latency > 1.25 * roundtrip_latency) latency_filter = 0.0;
+	if (m_roundtrip_latency < 0.80 * roundtrip_latency) latency_filter = 0.0;
 	m_roundtrip_latency = m_roundtrip_latency * latency_filter + roundtrip_latency * (1.0 - latency_filter);
+
+	int correction = (ping_latency - last_ping_latency) / 2;
+	correction = m_time_skew_history.add(correction);
 	m_time_skew = m_time_skew * m_time_filter + correction * (1.0 - m_time_filter);
 	m_last_ping_latency = ping_latency;
 	if (m_time_filter < 0.9999) {
@@ -291,8 +278,9 @@ void PeerInfo::updateTiming(int ping_latency, int last_ping_latency) {
 	if (m_time_filter > 0.9999) {
 		m_time_filter = 0.9999;
 	}
+	//std::cout << "clock skew = " << m_time_skew << "\n";
+	//std::cout << "round trip = " << m_roundtrip_latency << "\n";
 }
-
 
 void ActivePeerList::update(double dt, NetworkInterface *ni) {
 	SIMDATA_ASSERT_GE(dt, 0.0);
@@ -312,7 +300,9 @@ void ActivePeerList::update(double dt, NetworkInterface *ni) {
 		// this lag won't have a large effect.
 		peer->update(m_ElapsedTime, scale_desired_peer_to_self);
 		desired_rate_to_self += peer->getDesiredRatePeerToSelf();
-		if (peer->needsPing()) ni->pingPeer(peer);
+		if (peer->needsPing()) {
+			ni->pingPeer(peer);
+		}
 		for(;;) {
 			ReliablePacket::Ref packet = peer->getNextResend(now);
 			if (!packet) break;

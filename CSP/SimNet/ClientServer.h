@@ -264,6 +264,14 @@ public:
 	 *  by hasDisconnectedPeers() and nextDisconnectedPeer().
 	 */
 	void disconnectPeer(PeerId id);
+
+	/** Get the time offset between the local system time and the server time,
+	 *  in seconds.  This value may change quickly for the first few seconds
+	 *  after connecting to the server, but will eventually settle to a stable
+	 *  offset.  This assumes that the client and server times progress at
+	 *  very nearly the same rate.
+	 */
+	double getServerTimeOffset() const;
 };
 
 

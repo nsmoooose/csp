@@ -109,7 +109,7 @@ public:
 };
 
 #define SIMDATA_EXCEPTION(a)	\
-class a: public Exception { \
+class SIMDATA_EXPORT a: public Exception { \
 public: \
 	a(std::string msg=""): \
 		Exception(#a, msg) { } \

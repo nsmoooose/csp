@@ -122,6 +122,7 @@ class Changeset:
     sublib.File.ADD: 'add',
     sublib.File.DEL: 'delete',
     sublib.File.MOD: 'modified',
+    sublib.File.REP: 'replaced',
     sublib.File.CONFLICT: 'XXX conflict',
   }
 

@@ -37,6 +37,7 @@ class File:
   ADD = 'ADD'
   DEL = 'DEL'
   MOD = 'MOD'
+  REP = 'REP'
   CONFLICT = 'CON'
 
   def __init__(self, path, root, mode):
@@ -83,6 +84,7 @@ def svn_st(files=None):
     if line.startswith('M'): mode = File.MOD
     elif line.startswith('A'): mode = File.ADD
     elif line.startswith('D'): mode = File.DEL
+    elif line.startswith('R'): mode = File.REP
     elif line.startswith('C'): mode = File.CONFLICT
     else: continue
     files.append(File(relpath, root, mode))

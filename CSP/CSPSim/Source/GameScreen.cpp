@@ -34,9 +34,10 @@
 
 #include "ConsoleCommands.h"
 #include "CSPSim.h"
+#include "DynamicObject.h"
 #include "EventMapIndex.h"
 #include "Log.h"
-#include "VirtualBattlefield.h"
+#include "Battlefield.h"
 #include "VirtualScene.h"
 #include "Views/CameraCommand.h"
 
@@ -217,7 +218,7 @@ void GameScreen::onExit() {
 void GameScreen::setActiveObject(simdata::Ref<DynamicObject> const &object) {
 	VirtualScene *scene = CSPSim::theSim->getScene();
 	if (m_ActiveObject.valid() && m_ActiveObject != object) {
-		if (scene && m_ActiveObject->getNearFlag()) {
+		if (scene && m_ActiveObject->isNearField()) {
 			scene->setNearObject(m_ActiveObject, false);
 		}
 		setRecorder(false);
@@ -350,7 +351,7 @@ void GameScreen::on_Console()
 void GameScreen::on_ChangeVehicle()
 {
 	simdata::Ref<DynamicObject> object;
-	VirtualBattlefield *battlefield = CSPSim::theSim->getBattlefield();
+	Battlefield *battlefield = CSPSim::theSim->getBattlefield();
 	object = battlefield->getNextUnit(m_ActiveObject, -1, -1, -1);
 	if (object.valid()) CSPSim::theSim->setActiveObject(object);
 }
@@ -457,19 +458,13 @@ void GameScreen::on_MouseView(int x, int y, int dx, int dy) {
 }
 
 void GameScreen::setCamera(double dt) {	
-	m_CameraAgent.set(m_ViewMode,m_CurrentCameraCommand);
+	m_CameraAgent.set(m_ViewMode, m_CurrentCameraCommand);
 	m_CameraAgent.updateCamera(dt);
 	m_CurrentCameraCommand = 0;
 
-	VirtualBattlefield* battlefield = CSPSim::theSim->getBattlefield();
+	Battlefield* battlefield = CSPSim::theSim->getBattlefield();
 	if (battlefield) {
-		battlefield->updateOrigin(m_CameraAgent.getEyePoint()); 
-		battlefield->setCamera(m_CameraAgent.getEyePoint());
-	}
-
-	VirtualScene* scene = CSPSim::theSim->getScene();
-	if (scene) {	
-		scene->setLookAt(m_CameraAgent.getEyePoint(),m_CameraAgent.getLookPoint(),m_CameraAgent.getUpVector());
+		battlefield->setCamera(m_CameraAgent.getEyePoint(), m_CameraAgent.getLookPoint(), m_CameraAgent.getUpVector());
 	}
 }
 

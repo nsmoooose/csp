@@ -1,24 +1,34 @@
-TOPDIR = ..
+TOPDIR = ../..
 
-BIN = $(TOPDIR)/Bin
+BIN = $(TOPDIR)/CSPSim/Bin
 
 SUBDIRS = Theater SimNet Views Systems
 
-DEMETER_PREFIX = $(TOPDIR)/$(DEMETER_RELATIVE)
+DEMETER_PREFIX = $(TOPDIR)/Demeter
 DEMETER_INCLUDE = -I$(DEMETER_PREFIX)
 DEMETER_LIBRARY = -L$(DEMETER_PREFIX) -ldemeter_csp 
 
-CHUNKLOD_PREFIX = $(TOPDIR)/$(CHUNKLOD_RELATIVE)
+CHUNKLOD_PREFIX = $(TOPDIR)/CSPChunkLod
 CHUNKLOD_LIBRARY = -L$(CHUNKLOD_PREFIX)/lib -losgChunkLod_csp
 CHUNKLOD_INCLUDE = -I$(CHUNKLOD_PREFIX)/include
 
-SIMDATA_PREFIX = $(TOPDIR)/$(SIMDATA_RELATIVE)
+SIMDATA_PREFIX = $(TOPDIR)/SimData
 SIMDATA_LIBRARY = -L$(SIMDATA_PREFIX)/SimData -lSimData
 SIMDATA_INCLUDE = -I$(SIMDATA_PREFIX)/Include
 
-LIBS = $(DEMETER_LIBRARY) $(CHUNKLOD_LIBRARY) -lccgnu2
+SPATIALINDEX_PREFIX = $(TOPDIR)/SpatialIndex
+SPATIALINDEX_LIBRARY = -L$(SPATIALINDEX_PREFIX) -lspatialindex
+SPATIALINDEX_INCLUDE = -I$(TOPDIR)
 
-INCLUDE = -I$(TOPDIR)/Include $(SIMDATA_INCLUDE) $(DEMETER_INCLUDE) $(CHUNKLOD_INCLUDE) -I@PYTHON_INCLUDE@
+LIBS = $(DEMETER_LIBRARY) $(CHUNKLOD_LIBRARY) $(SPATIALINDEX_LIBRARY) -lccgnu2
+
+INCLUDE = \
+	-I$(TOPDIR)/CSPSim/Include \
+	$(SIMDATA_INCLUDE) \
+	$(DEMETER_INCLUDE) \
+	$(CHUNKLOD_INCLUDE) \
+	$(SPATIALINDEX_INCLUDE) \
+	-I@PYTHON_INCLUDE@
 
 BASEFL = $(GDEBUGF) $(GCFLAGS) $(INCLUDE) @SDL_FLAGS@ @SIGC_FLAGS@ @CCGNU2_FLAGS@
 CFLAGS = $(filter-out -I/usr/local/include, $(BASEFL))
@@ -44,6 +54,7 @@ SOURCES = \
 	Atmosphere.cpp \
 	BaseDynamics.cpp \
 	BaseScreen.cpp \
+	Battlefield.cpp \
 	ChunkLodTerrain.cpp \
 	ClientNode.cpp \
 	Collision.cpp \
@@ -84,10 +95,12 @@ SOURCES = \
 	ObjectModel.cpp \
 	PhysicsModel.cpp \
 	RedirectServerNode.cpp \
+	SceneManager.cpp \
 	ScreenInfo.cpp \
 	ScreenInfoManager.cpp \
 	SimObject.cpp \
 	SimpleConfig.cpp \
+	SimpleSceneManager.cpp \
 	Sky.cpp \
 	SmokeEffects.cpp \
 	SynchronousUpdate.cpp \
@@ -113,7 +126,6 @@ SOURCES = \
 	Views/CameraAgent.cpp \
 	Views/CameraKinematics.cpp \
 	Views/View.cpp \
-	VirtualBattlefield.cpp \
 	VirtualScene.cpp
 
 OBJDIR = .objs
@@ -125,7 +137,7 @@ MKDEP = $(CXX) -M $(CFLAGS)
 SWDEP = $(SWIG) -M $(SWOPTS)
 DEPFILES = $(addprefix $(DEPDIR)/,$(addsuffix .d, $(SOURCES))) \
            $(addprefix $(DEPDIR)/,$(addsuffix .swigd, $(INTERFACES)))
-DEPFILTER = | sed -n 's/^\(.*:\)/$(OBJDIR)\/\1/;p'
+DEPFILTER = | sed -n 's/^\(.*:\)/$(subst /,\/,$@) $(OBJDIR)\/\1/;p'
 DEP_MAGIC := $(shell mkdir $(DEPDIR) $(addprefix $(DEPDIR)/,$(SUBDIRS)) > /dev/null 2>&1 || :)
 
 .PHONY: clean-deps clean all default
@@ -202,7 +214,7 @@ $(OBJDIR)/AeroDynamics.o: AeroDynamics.cpp
 #	$(CXX) -c $(CFLAGS) $(INCLUDE) -o ServerNodeDriver.o ServerNodeDriver.cpp
 
 Makefile: Makefile.in
-	cd $(TOPDIR) && ./configure
+	cd $(TOPDIR)/CSPSim && ./configure
 
 all: Makefile $(WRAPED_LIB) #$(STATIC_LIB) test #CSPapp
 

@@ -1,6 +1,53 @@
  Version 0.4.0 (in progress)
 ===========================
 
+2004-09-12: onsight
+  * Implemented a new Battlefield class to replace VirtualBattlefield.
+    This class uses quadtree spatial indices instead of a fixed grid
+    structure, and has a looser coupling to other components of CSP
+    than the old battlefield.  This should make it easier to reuse
+    for the index server.
+
+  * Defined a SceneManager interface to decouple the battlefield from
+    the scene graph.  Implemented the interface in SimpleSceneManager
+    to provide basic addition and removal of objects from the scene
+    graph.  In the future it would be good to implemented a more
+    sophisticated scene manager subclass that constructs the scene
+    graph elements of FeatureGroups in a separate thread, and handles
+    feature transparency to smoothly hide features at the edge of
+    the visible range.
+
+  * Added a method to synchronous update to allow update targets to be
+    manually disconnected from an update master.
+
+  * Revised the SimObject interface, consolidating some pieces that
+    had spread to DynamicObject and FeatureGroup.  SimObject is the
+    only object class that the new battlefield needs to know about.
+
+  * Minor tweaks to SimNet to reduce header dependencies.
+
+  * Implemented a new view mode that places the camera in a fixed
+    location 20 m behind the object and tracks the object motion
+    from that point.  This was useful when testing object visibility
+    updates with the new battlefield code, but may be removed when
+    no longer needed/desired.
+
+  * Changed the makefile paths such that TOPDIR now refers to CSP/.  Also
+    added the SpatialIndex library (CSP/SpatialIndex/libspatialindex).
+
+  * Fix .dep file dependencies, so that a .dep file will be regenerated
+    whenever the corresponding object file is regenerated.  Previously
+    .dep files were only regenerated when the corresponding source file
+    changed, but this neglected important header file changes.  Linux
+    developers should 'make clean-deps' (or just 'make clean') after this
+    update to ensure that the dependency files are set up correctly.
+
+==> Windows users:
+     - build and link to the SpatialIndex library.
+     - add Battlefield.cpp, SceneManager.cpp, and SimpleSceneManager.cpp to
+       the build.
+     - remove VirtualBattlefield.cpp from the build.
+
 2004-09-11: onsight
   * Adjusted airbase position slightly to move it to a flat area.
     Moved the initial position of the test aircraft to compensate.

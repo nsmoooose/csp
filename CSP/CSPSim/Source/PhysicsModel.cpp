@@ -26,7 +26,6 @@
 #include <Collision.h>
 #include <CSPSim.h>
 #include <PhysicsModel.h>
-#include <VirtualBattlefield.h>
 #include <KineticsChannels.h>
 
 

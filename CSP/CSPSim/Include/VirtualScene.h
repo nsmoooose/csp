@@ -48,8 +48,10 @@ namespace osgUtil {
 #include "TerrainObject.h"
 
 class Sky;
-class DynamicObject;
 class FalseHorizon;
+class FeatureTile;
+class FeatureGroup;
+class DynamicObject;
 
 
 /**
@@ -79,12 +81,19 @@ public:
 	void removeParticleSystem(osg::Node *system, osg::Node *program);
 	void addObject(simdata::Ref<DynamicObject> object);
 	void removeObject(simdata::Ref<DynamicObject> object);
-	void addFeatureCell(osg::Node *feature);
-	void removeFeatureCell(osg::Node *feature);
 	void setNearObject(simdata::Ref<DynamicObject> object, bool isNear);
 
-	void setLookAt(const simdata::Vector3& eyePos,const simdata::Vector3& lookPos,const simdata::Vector3& upVec);
+	void removeFeature(simdata::Ref<FeatureGroup> feature);
+	void addFeature(simdata::Ref<FeatureGroup> feature);
+
+	/** Called by the SceneManager to update the view point.
+	 *  Do not call this method directly; instead use Battlefield->setCamera()
+	 *  to update the view point.
+	 */
+	void _setLookAt(const simdata::Vector3& eyePos,const simdata::Vector3& lookPos,const simdata::Vector3& upVec);
+
 	void getLookAt(simdata::Vector3 & eyePos, simdata::Vector3 & lookPos, simdata::Vector3 & upVec) const;
+
 	void setWireframeMode(bool flag);
 	bool getWireframeMode() const { return m_Wireframe; }
 	void setFogMode(bool flag);
@@ -94,7 +103,8 @@ public:
 	float getViewDistance() const { return m_ViewDistance; }
 	void setViewDistance(float value);
 
-	simdata::Vector3 const &getOrigin() { return m_Origin; }
+	simdata::Vector3 const &getOrigin() const { return m_Origin; }
+	simdata::Vector3 getFeatureOrigin(simdata::Ref<FeatureGroup> const &feature) const;
 
 	void setTerrain(simdata::Ref<TerrainObject>);
 	inline simdata::Ref<TerrainObject> getTerrain() const { return m_Terrain; }
@@ -114,6 +124,19 @@ public:
 	double getSpin();
 
 	void drawPlayerInterface();
+
+private:
+
+	typedef osg::ref_ptr<FeatureTile> FeatureTileRef;
+	typedef std::map<int, FeatureTileRef> FeatureTileMap;
+	FeatureTileMap m_FeatureTiles;
+
+	typedef simdata::Ref<DynamicObject> DynamicObjectRef;
+	typedef std::vector<DynamicObjectRef> DynamicObjectList;
+	DynamicObjectList m_DynamicObjects;
+
+	int _getFeatureTileIndex(simdata::Ref<FeatureGroup> feature) const;
+	void _updateOrigin(simdata::Vector3 const &origin);
 
 protected:
 
@@ -139,6 +162,9 @@ protected:
 
 	bool m_SpinTheWorld;
 	bool m_ResetTheWorld;
+
+	double m_FeatureTileSize;
+	double m_FeatureTileScale;
 
 	simdata::Vector3 m_Origin;
 	simdata::Vector3 m_SkyPoint;

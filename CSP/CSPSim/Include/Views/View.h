@@ -91,16 +91,25 @@ public:
 	virtual ~ExternalViewWorld(){}
 };
 
-
 class FlybyView: public View {
+protected:
 	simdata::Vector3 m_FixedCameraPosition;
-	void newFixedCamPos(SimObject* target);
+	virtual void newFixedCamPos(SimObject* target);
 public:
 	FlybyView(size_t vm):View(vm){}
 	virtual void activate();
 	virtual void update(simdata::Vector3& ep,simdata::Vector3& lp,simdata::Vector3& up,double dt);
 	virtual void recalculate(simdata::Vector3& ep,simdata::Vector3& lp,simdata::Vector3& up,double dt);
 	virtual ~FlybyView(){}
+};
+
+class FixedFlybyView: public FlybyView {
+	bool m_Initialized;
+	virtual void newFixedCamPos(SimObject* target);
+public:
+	FixedFlybyView(size_t vm):FlybyView(vm), m_Initialized(false) {}
+	virtual void activate();
+	virtual ~FixedFlybyView(){}
 };
 
 class SatelliteView: public View {
@@ -133,6 +142,7 @@ class ViewFactory {
 	View* createView_2() const;
 	View* createView_3() const;
 	View* createView_4() const;
+	View* createView_5() const;
 	View* createView_7() const;
 	View* createView_8() const;
 	View* createView_9() const;

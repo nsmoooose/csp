@@ -63,6 +63,7 @@
 using bus::Kinetics;
 
 #include "ClientNode.h"
+#include "Battlefield.h"
 
 ClientNode::ClientNode() {
 	CSP_LOG(NETWORK, INFO, "ClientNode::ClientNode()");
@@ -165,8 +166,7 @@ void ClientNode::init() {
 	std::string logfile = g_Config.getString("Debug", "LogFile", "ClientNode.log", true);
 	csplog().setOutput(logfile);
 
-	m_battlefield = new VirtualBattlefield();
-	m_battlefield->create();
+	m_battlefield = new Battlefield();
 
 	// setup osg search path for external data files
 	std::string image_path = getDataPath("ImagePath");
@@ -253,7 +253,7 @@ void ClientNode::initNetworking() {
 	DispatchMessageHandler * dispatchMessageHandler = new DispatchMessageHandler();
 	dispatchMessageHandler->setLocalAddress( m_localNode->getAddress().getAddress().s_addr );
 	dispatchMessageHandler->setLocalPort(m_localPort);
-	dispatchMessageHandler->setVirtualBattlefield(m_battlefield);
+	dispatchMessageHandler->setBattlefield(m_battlefield);
 	dispatchMessageHandler->setDataManager(m_DataManager);
 
 	m_networkMessenger->registerMessageHandler(dispatchMessageHandler);

@@ -113,7 +113,14 @@ void UpdateTarget::detachUpdateProxy() {
 	m_UpdateProxy = 0; 
 }
 
+void UpdateTarget::disconnectFromUpdateMaster() {
+	if (m_UpdateProxy.valid()) {
+		m_UpdateProxy->targetSelfDetach();
+	}
+}
+
 void UpdateTarget::registerUpdate(UpdateMaster *master) {
+	// TODO disconnect when master == NULL?
 	if (master) {
 		if (m_UpdateProxy.valid()) m_UpdateProxy->targetSelfDetach();
 		m_UpdateProxy = master->registerUpdate(this);

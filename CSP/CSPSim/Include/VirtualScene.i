@@ -31,7 +31,7 @@ public:
 	void spinTheWorld(bool spin);
 	void resetSpin();
 
-	void setLookAt(simdata::Vector3 & eyePos, simdata::Vector3 & lookPos, simdata::Vector3 & upVec);
+	void _setLookAt(simdata::Vector3 const & eyePos, simdata::Vector3 const & lookPos, simdata::Vector3 const & upVec);
 	void getLookAt(simdata::Vector3 & eyePos, simdata::Vector3 & lookPos, simdata::Vector3 & upVec) const;
 	void setWireframeMode(bool flag);
 	void setFogMode(bool flag);

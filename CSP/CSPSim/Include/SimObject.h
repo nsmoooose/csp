@@ -1,5 +1,5 @@
 // Combat Simulator Project - FlightSim Demo
-// Copyright (C) 2002, 2004 The Combat Simulator Project
+// Copyright (C) 2002 The Combat Simulator Project
 // http://csp.sourceforge.net
 //
 // This program is free software; you can redistribute it and/or
@@ -26,97 +26,196 @@
 #define __SIMOBJECT_H__
 
 
-#include "ObjectModel.h"
 #include "SynchronousUpdate.h"
+#include "Dispatch.h"
+#include "Log.h"
 
 #include <SimData/Object.h>
 #include <SimData/Vector3.h>
-
-#include <SimData/InterfaceRegistry.h>
 
 
 /**
  * class SimObject - Base class for all objects in the simulation.
  *
  */
-class SimObject: public simdata::Object, public UpdateTarget
+class SimObject: public simdata::Object, public UpdateTarget, public MessageDispatcher
 {
+	friend class Battlefield;
 	friend class VirtualScene;
-	friend class VirtualBattlefield;
-	friend class ActiveCell;
+	friend class SceneManager;
 
 public:
 
 	typedef unsigned ObjectId;
 
-protected:
-
 	typedef enum {
 		TYPE_AIR_UNIT,
 		TYPE_MUD_UNIT,
 		TYPE_SEA_UNIT,
-		TYPE_FEATURE,
+		TYPE_STATIC,
 	} TypeId;
 
 private:
-
-	enum {
-	       // bits 0-7 reserved for SimObject
-	       F_FREEZE     = 0x00000001,
-	       F_NEARFIELD  = 0x00000002,
-	       F_INSCENE    = 0x00000004,
-	       F_AGGREGATE  = 0x00000008,
-	       F_VISIBLE    = 0x00000010,
-	     };
-
-	void setSceneFlag(bool flag) { setFlags(F_INSCENE, flag); }
-	void setNearFlag(bool flag) { setFlags(F_NEARFIELD, flag); }
-	void setAggregateFlag(bool flag) { setFlags(F_AGGREGATE, flag); }
-	void setVisibleFlag(bool flag) { setFlags(F_VISIBLE, flag); }
-
-	void _aggregate() {
-		assert(!getAggregateFlag());
-		setAggregateFlag(true);
-		aggregate();
-	}
-
-	void _deaggregate() {
-		assert(getAggregateFlag());
-		setAggregateFlag(false);
-		deaggregate();
-	}
-
-protected:
 
 	void setFlags(int flag, bool on) {
 		if (on) m_Flags |= flag; else m_Flags &= ~flag;
 	}
 
-	int getFlags(int flags) const {
+	inline int getFlags(int flags) const {
 		return m_Flags & flags;
 	}
 
-	/** Called when an object that was deaggregated leaves a human
-	 *  player's bubble.
+	enum {
+	       // mutable settings
+	       F_NEARFIELD  = 0x00000002,
+	       F_INSCENE    = 0x00000004,
+	       F_AGGREGATE  = 0x00000008,
+	       F_VISIBLE    = 0x00000010,
+	       F_LOCAL      = 0x00000100,  // owned by this host (not remote)
+	       F_HUMAN      = 0x00000200,  // controlled by a human
+
+	       // immutable settings
+	       F_STATIC     = 0x00010000,
+	       F_AIR        = 0x00020000,  // air object (airplane or helo)
+	     };
+
+	void setSceneFlag(bool flag) { setFlags(F_INSCENE, flag); }
+	void setVisibleFlag(bool flag) { setFlags(F_VISIBLE, flag); }
+	void setNearFlag(bool flag) { setFlags(F_NEARFIELD, flag); }
+	void setAggregateFlag(bool flag) { setFlags(F_AGGREGATE, flag); }
+
+	friend std::ostream &operator << (std::ostream &os, SimObject &object);
+	std::string _debugId() const;
+
+	inline void _debug(std::string const &msg) {
+		CSP_LOG(BATTLEFIELD, DEBUG, _debugId() << ": " << msg);
+	}
+
+
+	// HUMAN/AGENT -------------------------------------------------------
+
+	void setHuman() {
+		_debug("set human");
+		assert(isAgent());
+		if (isHuman()) return;
+		setFlags(F_HUMAN, true);
+		onHuman();
+	}
+
+	void setAgent() {
+		_debug("set agent");
+		assert(isHuman());
+		if (isAgent()) return;
+		setFlags(F_HUMAN, false);
+		onAgent();
+	}
+
+	virtual void onHuman() { }
+	virtual void onAgent() { }
+
+
+	// LOCAL/REMOTE -----------------------------------------------------
+
+	void setLocal() {
+		_debug("set local");
+		assert(isRemote());
+		if (isLocal()) return;
+		setFlags(F_LOCAL, true);
+		onLocal();
+	}
+
+	void setRemote() {
+		_debug("set remote");
+		assert(isLocal());
+		if (isRemote()) return;
+		setFlags(F_LOCAL, false);
+		onRemote();
+	}
+
+	virtual void onLocal() { }
+	virtual void onRemote() { }
+
+
+	// AGGREGATE/DEAGGREGATE --------------------------------------------
+
+	void aggregate() {
+		_debug("aggregate");
+		assert(!isAggregated());
+		if (isAggregated()) return;
+		setAggregateFlag(true);
+		onAggregate();
+	}
+
+	void deaggregate() {
+		_debug("deaggregate");
+		assert(isAggregated());
+		if (!isAggregated()) return;
+		setAggregateFlag(false);
+		onDeaggregate();
+	}
+
+	/** Called when an object that was deaggregated leaves all
+	 *  deaggregation bubbles.
 	 *
 	 *  Extend this method to implement aggregation logic.
 	 */
-	virtual void aggregate();
+	virtual void onAggregate() { }
 
-	/** Called when an object that was aggregated enters a human
-	 *  player's bubble.
+	/** Called when an object that was aggregated enters a deaggregation
+	 *  bubble.
 	 *
 	 *  Extend this method to implement deaggregation logic.
 	 */
-	virtual void deaggregate();
+	virtual void onDeaggregate() { }
+
+
+	// SCENE MANAGEMENT -------------------------------------------------
+
+	void enterScene() {
+		_debug("enter scene");
+		assert(!isInScene());
+		if (isInScene()) return;
+		setSceneFlag(true);
+		onEnterScene();
+	}
+
+	void leaveScene() {
+		_debug("leave scene");
+		assert(isInScene());
+		if (!isInScene()) return;
+		setSceneFlag(false);
+		onLeaveScene();
+	}
+
+	/** Called before an object is added to the scene graph.
+	 *
+	 *  This method is called even if no scene graph exists (e.g. on an
+	 *  AI client).
+	 */
+	virtual void onEnterScene() { }
+
+	/** Called before an object is removed from the scene graph.
+	 *
+	 *  This method is called even if no scene graph exists (e.g. on an
+	 *  AI client).
+	 */
+	virtual void onLeaveScene() { }
+
+
+	// ------------------------------------------------------------------
 
 	/** Set the object's unique identifier number.
 	 *
 	 *  Can only be called once.
 	 */
-	void setID(ObjectId id) {
-		assert(m_ID == 0);
-		m_ID = id;
+	void setId(ObjectId id) {
+		assert(m_Id == 0);
+		m_Id = id;
+	}
+
+	void setType(TypeId type) {
+		assert(m_Type == 0);
+		m_Type = type;
 	}
 
 	/** Update callback.
@@ -129,9 +228,6 @@ protected:
 
 public:
 
-	BEGIN_SIMDATA_XML_VIRTUAL_INTERFACE(SimObject)
-	END_SIMDATA_XML_INTERFACE
-
 	SimObject(TypeId type);
 	virtual ~SimObject();
 
@@ -140,48 +236,71 @@ public:
 
 	/** Get the unique object id of this instance.
 	 */
-	inline ObjectId getID() const { return m_ID; }
-	inline TypeId getType() const { return m_Type; }
+	inline ObjectId id() const { return m_Id; }
+	inline TypeId type() const { return m_Type; }
+	std::string const &name() const { return m_Name; }
 
-	/** Called before an object is added to the scene graph.
-	 *
-	 *  This method is called even if no scene graph exists (e.g. on an
-	 *  AI client).
+	/** The object name holds an identifier string for in-game display.
+	 *  It is not intended for unique object identification.
+	 *  Examples: "Thumper", "Cowboy11", "T-62".
 	 */
-	virtual void enterScene();
+	void setName(std::string const &name) {
+		_debug("renamed to " + name);
+		m_Name = name;
+	}
 
-	/** Called before an object is removed from the scene graph.
-	 *
-	 *  This method is called even if no scene graph exists (e.g. on an
-	 *  AI client).
-	 */
-	virtual void leaveScene();
+	inline bool isInScene() const { return getFlags(F_INSCENE) != 0; }
+	inline bool isNearField() const { return getFlags(F_NEARFIELD) != 0; }
+	inline bool isAggregated() const { return getFlags(F_AGGREGATE) != 0; }
+	inline bool isVisible() const { return getFlags(F_VISIBLE) != 0; }
+	inline bool isStatic() const { return getFlags(F_STATIC) != 0; }
+	inline bool isAir() const { return getFlags(F_AIR) != 0; }
 
-	void setFreezeFlag(bool flag) { setFlags(F_FREEZE, flag); }
-	bool getFreezeFlag() const { return getFlags(F_FREEZE) != 0; }
-	bool getSceneFlag() const { return getFlags(F_INSCENE) != 0; }
-	bool getNearFlag() const { return getFlags(F_NEARFIELD) != 0; }
-	bool getAggregateFlag() const { return getFlags(F_AGGREGATE) != 0; }
-	bool getVisibleFlag() const { return getFlags(F_VISIBLE) != 0; }
-
-	bool isAir() const { return m_Type == TYPE_AIR_UNIT; }
-	bool isFeature() const { return m_Type == TYPE_FEATURE; }
+	inline bool isHuman() const { return getFlags(F_HUMAN) != 0; }
+	inline bool isAgent() const { return !isHuman(); }
+	inline bool isLocal() const { return getFlags(F_LOCAL) != 0; }
+	inline bool isRemote() const { return !isLocal(); }
 
 	// position accessor methods
 	virtual simdata::Vector3 getGlobalPosition() const = 0;
-	
-	std::string _debugId() const;
+
+	// get the aggregation bubble radius for air units around this object (in meters)
+	inline double getAirBubbleRadius() const  {
+		assert(m_AirBubble > 0);   // catch if setAggregationBubbles not called
+		return m_AirBubble;
+	}
+
+	// get the aggregation bubble radius for ground units (mud & sea) around this object (in meters)
+	inline double getGroundBubbleRadius() const {
+		assert(m_GroundBubble > 0);  // catch if setAggregationBubbles not called
+		return m_GroundBubble;
+	}
 
 protected:
 
-	ObjectId m_ID;
+	// set the nominal air and ground aggregation bubble radii (in meters)
+	void setAggregationBubbles(int air, int ground) {
+		// only set once
+		assert(m_AirBubble == 0 && m_GroundBubble == 0 && air > 0 && ground > 0);
+		m_AirBubble = air;
+		m_GroundBubble = ground;
+	}
+
+private:
+
+	ObjectId m_Id;
 	TypeId m_Type;
 	unsigned int m_Flags;
+	std::string m_Name;
 
-	static unsigned int localObjectInstance;
+	int m_AirBubble;
+	int m_GroundBubble;
+
 };
 
+inline std::ostream &operator << (std::ostream &os, SimObject &object) {
+	return os << object._debugId();
+}
 
 #endif // __SIMOBJECT_H__
-
 

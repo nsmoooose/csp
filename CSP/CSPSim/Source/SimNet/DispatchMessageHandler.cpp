@@ -29,6 +29,7 @@
 #include <SimNet/DispatchMessageHandler.h>
 
 #include "DynamicObject.h"
+#include "Battlefield.h"
 #include "Config.h"
 
 #include <SimData/FileUtility.h>
@@ -98,6 +99,7 @@ simdata::Ref<DynamicObject> DispatchMessageHandler::addRemoteObject( NetworkMess
 	//  ao->putUpdateMessage(message);
 
 	CSP_LOG(NETWORK, DEBUG, "DispatchMessageHandler::addRemoteObject() - adding new object to battlefield");
-	_virtualBattlefield->addUnit(ao);
+	// FIXME human or agent?
+	_battlefield->addUnit(ao, true /* human */);
 	return ao;
 }

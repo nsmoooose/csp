@@ -51,6 +51,7 @@
 
 
 #include <SimData/Ref.h>
+#include <SimData/ScopedPointer.h>
 #include <SimData/Date.h>
 #include <SimData/DataManager.h>
 
@@ -72,7 +73,7 @@ class PyShell;
 class DynamicObject;
 class TerrainObject;
 class Theater;
-class VirtualBattlefield;
+class Battlefield;
 class VirtualScene;
 class VirtualHID;
 class BaseScreen;
@@ -112,8 +113,10 @@ public:
 	
 	void setActiveObject(simdata::Ref<DynamicObject> object);
 	simdata::Ref<DynamicObject> getActiveObject() const;
-	VirtualBattlefield * getBattlefield();
-	VirtualBattlefield const * getBattlefield() const;
+	Battlefield * getBattlefield();
+	Battlefield const * getBattlefield() const;
+	TerrainObject * getTerrain();
+	TerrainObject const * getTerrain() const;
 	VirtualScene * getScene();
 	VirtualScene const * getScene() const;
 	simdata::Ref<Theater> getTheater() const;
@@ -185,7 +188,7 @@ private:
 	/**
 	 * The virtual battlefield
 	 */
-	simdata::Ref<VirtualBattlefield> m_Battlefield;
+	simdata::Ref<Battlefield> m_Battlefield;
 	simdata::Ref<VirtualScene> m_Scene;
 
 	// TODO the terrain will eventually be encapsulated in a Theater class

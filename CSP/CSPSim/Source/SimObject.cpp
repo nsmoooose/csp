@@ -24,60 +24,50 @@
 
 
 #include "SimObject.h"
-#include "SmokeEffects.h"
-#include "VirtualBattlefield.h"
 #include "Log.h"
-
-#include <osg/NodeVisitor>
-#include <osg/Quat>
-
-#include <SimData/InterfaceRegistry.h>
-#include <SimData/Math.h>
 
 #include <sstream>
 
-SIMDATA_REGISTER_INTERFACE(SimObject)
 
-unsigned int SimObject::localObjectInstance = 0;
-
-SimObject::SimObject(TypeId type): m_ID(0), m_Type(type), m_Flags(0)
+SimObject::SimObject(TypeId type):
+	m_Id(0),
+	m_Type(type),
+	m_Flags(0),
+	m_Name("?"),
+	m_AirBubble(0),
+	m_GroundBubble(0)
 {
-	CSP_LOG(APP, DEBUG, "SimObject::SimObject()" );
-
-	m_ID = ++SimObject::localObjectInstance;
-
+	// XXX battlefield should set this!
+	CSP_LOG(BATTLEFIELD, DEBUG, "SimObject::SimObject(): " << _debugId());
 	setAggregateFlag(true);
+	switch (type) {
+		case TYPE_AIR_UNIT:
+			setFlags(F_AIR, true);
+			setFlags(F_STATIC, false);
+			break;
+		case TYPE_MUD_UNIT:
+		case TYPE_SEA_UNIT:
+			setFlags(F_AIR, false);
+			setFlags(F_STATIC, false);
+			break;
+		case TYPE_STATIC:
+			setFlags(F_AIR, false);
+			setFlags(F_STATIC, true);
+			break;
+		default:
+			CSP_LOG(BATTLEFIELD, ERROR, "Invalid object type: " << type);
+			assert(0);
+	};
 }
-
 
 SimObject::~SimObject() {
-	CSP_LOG(APP, INFO, "SimObject::~SimObject()..." );
+	CSP_LOG(BATTLEFIELD, DEBUG, "SimObject::~SimObject()" );
 }
-
-
-void SimObject::aggregate() {
-	CSP_LOG(BATTLEFIELD, INFO, "SimObject aggregate " << int(this));
-}
-
-void SimObject::deaggregate() {
-	CSP_LOG(BATTLEFIELD, INFO, "SimObject deaggregate " << int(this));
-}
-
-void SimObject::enterScene() {
-	CSP_LOG(SCENE, INFO, "SimObject enterScene " << int(this));
-	assert(!getVisibleFlag());
-	setVisibleFlag(true);
-}
-
-void SimObject::leaveScene() {
-	CSP_LOG(SCENE, INFO, "SimObject leaveScene " << int(this));
-	assert(getVisibleFlag());
-	setVisibleFlag(false);
-}
-
 
 std::string SimObject::_debugId() const {
 	std::stringstream ss;
-	ss << "<Object " << m_ID << '>';
+	ss << "<SimObject " << id() << ", " << name() << '>';
 	return ss.str();
 }
+
+

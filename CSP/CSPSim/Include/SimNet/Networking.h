@@ -44,9 +44,8 @@
 #include <SimData/Date.h>
 #include <stdio.h>
 
+#include "Log.h"
 #include "DynamicObject.h"
-#include "VirtualBattlefield.h"
-
 #include <SimNet/NetworkMessageHandler.h>
 
 typedef int SockFd;

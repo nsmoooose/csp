@@ -73,9 +73,12 @@ protected:
 	std::vector<Feature> m_Features;
 
 public:
+
+	typedef simdata::Ref<FeatureGroup> Ref;
+
 	SIMDATA_OBJECT(FeatureGroup, 0, 0)
 
-	EXTEND_SIMDATA_XML_INTERFACE(FeatureGroup, SimObject)
+	BEGIN_SIMDATA_XML_INTERFACE(FeatureGroup)
 		SIMDATA_XML("model", FeatureGroup::m_Model, true)
 		SIMDATA_XML("position", FeatureGroup::m_Position, true)
 		SIMDATA_XML("orientation", FeatureGroup::m_Orientation, true)
@@ -100,13 +103,13 @@ public:
 	 * Notification that the FeatureGroup has moved into a visual
 	 * bubble in the battlefield.
 	 */
-	virtual void enterScene();
+	virtual void onEnterScene();
 
 	/**
 	 * Notification that the FeatureGroup has moved out of any visual
 	 * bubbles in the battlefield.
 	 */
-	virtual void leaveScene();
+	virtual void onLeaveScene();
 	
 	/**
 	 * Construct a scene graph containing all the child FeatureModels.
@@ -121,12 +124,12 @@ public:
 	/**
 	 * Aggregate the FeatureGroup. 
 	 */
-	virtual void aggregate();
+	virtual void onAggregate();
 
 	/**
 	 * Deaggregate the FeatureGroup. 
 	 */
-	virtual void deaggregate();
+	virtual void onDeaggregate();
 
 	FeatureGroup();
 

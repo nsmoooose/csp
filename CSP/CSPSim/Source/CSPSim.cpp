@@ -33,7 +33,9 @@
 #endif
 
 #include "CSPSim.h"
-#include "Config.h"      
+#include "Battlefield.h"
+#include "Config.h"
+#include "ConsoleCommands.h"
 #include "DynamicObject.h"
 #include "EventMapIndex.h"
 #include "Exception.h"
@@ -42,14 +44,13 @@
 #include "MenuScreen.h"
 #include "LogoScreen.h"
 #include "Log.h"
+#include "Profile.h"
 #include "Shell.h"
 #include "SimObject.h"
-#include "VirtualBattlefield.h"
-#include "VirtualScene.h"
+#include "SimpleSceneManager.h"
 #include "TerrainObject.h"
 #include "Theater.h"
-#include "ConsoleCommands.h"
-#include "Profile.h"
+#include "VirtualScene.h"
 
 #include <SimNet/Networking.h>
 #include <SimNet/NetworkMessage.h>
@@ -147,9 +148,6 @@ CSPSim::CSPSim() {
 	m_GameScreen = NULL;
 	m_MainMenuScreen = NULL;
 
-	m_Battlefield = NULL;
-	m_Scene = NULL;
-
 	m_FrameTime = 0.05;
 	m_FrameRate = 20.0;
 	m_ElapsedTime = 0.0;
@@ -184,14 +182,14 @@ void CSPSim::setActiveObject(simdata::Ref<DynamicObject> object) {
 
 	if (object == m_ActiveObject) return;
 	if (m_ActiveObject.valid()) {
-		m_Battlefield->setHuman(m_ActiveObject, false);
+		m_Battlefield->setHuman(m_ActiveObject->id(), false);
 	}
 	m_ActiveObject = object;
 	if (m_GameScreen) {
 		m_GameScreen->setActiveObject(m_ActiveObject);
 	}
 	if (m_ActiveObject.valid()) {
-		m_Battlefield->setHuman(m_ActiveObject, true);
+		m_Battlefield->setHuman(m_ActiveObject->id(), true);
 		simdata::hasht classhash = m_ActiveObject->getPath();
 		CSP_LOG(APP, INFO, "getting map for " << classhash.str());
 		simdata::Ref<EventMapping> map = m_InterfaceMaps->getMap(classhash);
@@ -209,11 +207,11 @@ simdata::Ref<DynamicObject> CSPSim::getActiveObject() const {
 	return m_ActiveObject;
 }
 
-VirtualBattlefield * CSPSim::getBattlefield() {
+Battlefield * CSPSim::getBattlefield() {
 	return m_Battlefield.get();
 }
 
-VirtualBattlefield const * CSPSim::getBattlefield() const {
+Battlefield const * CSPSim::getBattlefield() const {
 	return m_Battlefield.get();
 }
 
@@ -350,11 +348,6 @@ void CSPSim::init()
 
 		CSP_LOG(APP, DEBUG, "INIT:: battlefield");
 
-		m_Battlefield = new VirtualBattlefield();
-		m_Battlefield->create();
-		m_Battlefield->setScene(m_Scene);
-		m_Battlefield->setTheater(m_Theater);
-
 		logoScreen.onUpdate(0.0);
 		logoScreen.onRender();
 		SDL_GL_SwapBuffers();
@@ -373,6 +366,18 @@ void CSPSim::init()
 		m_Scene->setFogStart(fog_start);
 		int fog_end = g_Config.getInt("View", "FogEnd", 35000, true);
 		m_Scene->setFogEnd(fog_end);
+
+		int visual_radius = g_Config.getInt("Testing", "VisualRadius",  40000, true);
+		m_Battlefield = new Battlefield();
+		m_Battlefield->setSceneManager(new SimpleSceneManager(m_Scene, visual_radius));
+		if (m_Theater.valid()) {
+	    	simdata::Ref<FeatureGroup>::list groups = m_Theater->getAllFeatureGroups();
+	    	simdata::Ref<FeatureGroup>::list::iterator iter = groups.begin();
+			CSP_LOG(BATTLEFIELD, DEBUG, "Adding " << groups.size() << " features to the battlefield");
+			for (; iter != groups.end(); ++iter) {
+				m_Battlefield->addStatic(*iter);
+			}
+		}
 
 		// create a test object (other objects can be created via TestObjects.py)
 #if 0
@@ -444,7 +449,7 @@ void CSPSim::init()
 		dispatchMessageHandler->setLocalAddress( m_localNode->getAddress().getAddress().s_addr );
 		dispatchMessageHandler->setLocalPort( localMessagePort );
 		dispatchMessageHandler->setDataManager(m_DataManager);
-		dispatchMessageHandler->setVirtualBattlefield(getBattlefield());
+		dispatchMessageHandler->setBattlefield(getBattlefield());
 		m_NetworkMessenger->registerMessageHandler(dispatchMessageHandler);
 
 #if 0
@@ -488,8 +493,7 @@ void CSPSim::cleanup()
 	m_GameScreen = NULL;
 	m_InterfaceMaps = NULL;
 	m_Terrain->deactivate();
-	m_Battlefield->removeAllUnits();
-	m_Battlefield->cleanup();
+	m_Battlefield = NULL;
 	m_Terrain = NULL;
 	m_Theater = NULL;
 	m_Battlefield = NULL;
@@ -616,9 +620,6 @@ void CSPSim::run()
 			//--m_RenderSurface.swapBuffers();
 			SDL_GL_SwapBuffers();
 #endif
-			// remove marked objects, this should be done at the end of the main loop.
-			m_Battlefield->removeUnitsMarkedForDelete();
-
 			PROF1(_simloop, 30);
 		}
 		//m_Battlefield->dumpObjectHistory();
@@ -730,7 +731,7 @@ void CSPSim::updateObjects(double dt)
 	CSP_LOG(APP, DEBUG, "CSPSim::updateObjects...");
 
  	if (m_Battlefield.valid()) {
-		m_Battlefield->onUpdate(dt);
+		m_Battlefield->update(dt);
 	}
 	if (m_Scene.valid()) {
 		m_Scene->onUpdate(dt);
@@ -877,6 +878,14 @@ void CSPSim::endConsole() {
 
 simdata::Ref<Theater> CSPSim::getTheater() const {
 	return m_Theater;
+}
+
+TerrainObject * CSPSim::getTerrain() {
+	return m_Terrain.get();
+}
+
+TerrainObject const * CSPSim::getTerrain() const {
+	return m_Terrain.get();
 }
 
 simdata::Ref<EventMapIndex> CSPSim::getInterfaceMaps() const { 

@@ -81,7 +81,7 @@ using simdata::TaggedRecord;
 
 // forward declarations
 class NetworkMessage;
-class MessageDispatchBase;
+class MessageDispatcher;
 
 namespace simdata {
 	class TaggedRecordFactoryBase;
@@ -108,7 +108,7 @@ public:
 
 	/** Dispatch a tagged record to an object handler.
 	 */
-	bool dispatch(TaggedRecord::Ref record, MessageDispatchBase &object) const;
+	bool dispatch(TaggedRecord::Ref record, MessageDispatcher &object) const;
 
 private:
 	std::vector<simdata::TaggedRecordFactoryBase *> m_factories;

@@ -60,6 +60,13 @@ public:
 	 */
 	virtual void registerUpdate(UpdateMaster *master);
 
+	/** Disconnect from the UpdateMaster.
+	 *
+	 *  An UpdateTarget can also disconnect by returning a negative
+	 *  value from onUpdate().
+	 */
+	virtual void disconnectFromUpdateMaster();
+
 	virtual void copyRegistration(UpdateTarget const *target) {
 		if (target) {
 			registerUpdate(target->getMaster());
@@ -101,6 +108,15 @@ public:
 	 */
 	double lastUpdateTime() const { return m_LastUpdateTime; }
 
+	/** Disconnect from the target.
+	 */
+	void detachTarget() { 
+		if (m_Target) {
+			m_Target->detachUpdateProxy();
+			m_Target = 0;
+		}
+	}
+
 private:
 
 	/// Connection to an update master.
@@ -124,15 +140,6 @@ private:
 	 */
 	void targetSelfDetach() { 
 		m_Target = 0; 
-	}
-
-	/** Disconnect from the target.
-	 */
-	void detachTarget() { 
-		if (m_Target) {
-			m_Target->detachUpdateProxy();
-			m_Target = 0;
-		}
 	}
 
 	/** Update the target.

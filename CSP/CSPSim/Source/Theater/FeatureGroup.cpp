@@ -49,13 +49,11 @@ FeatureSceneGroup* FeatureGroup::getSceneGroup() {
 	return m_SceneGroup.get();
 }
 
-void FeatureGroup::enterScene() {
-	SimObject::enterScene();
+void FeatureGroup::onEnterScene() {
 	CSP_LOG(APP, DEBUG, "FeatureGroup @ " << getGlobalPosition() << ": adding " << m_Model->getFeatureCount() << " feature(s) to the scene");
 }
 
-void FeatureGroup::leaveScene() {
-	SimObject::leaveScene();
+void FeatureGroup::onLeaveScene() {
 	CSP_LOG(APP, DEBUG, "FeatureGroup @ " << getGlobalPosition() << ": removing " << m_Model->getFeatureCount() << " feature(s) from the scene");
 	// our scene graph is no longer needed
 	m_SceneGroup = NULL;
@@ -70,15 +68,13 @@ FeatureSceneGroup* FeatureGroup::makeSceneGroup(simdata::Vector3 const &origin, 
 	return m_SceneGroup.get();
 }
 
-void FeatureGroup::aggregate() {
-	SimObject::aggregate();
+void FeatureGroup::onAggregate() {
 }
 
-void FeatureGroup::deaggregate() {
-	SimObject::deaggregate();
+void FeatureGroup::onDeaggregate() {
 }
 
-FeatureGroup::FeatureGroup(): SimObject(TYPE_FEATURE) {
+FeatureGroup::FeatureGroup(): SimObject(TYPE_STATIC) {
 	m_X = 0.0;
 	m_Y = 0.0;
 	m_Orientation = 0.0;

@@ -24,9 +24,10 @@
 
 
 #include "VirtualScene.h"
-#include "VirtualBattlefield.h"
 #include "TerrainObject.h"
 #include "DynamicObject.h"
+#include "Theater/FeatureGroup.h"
+#include "Theater/FeatureSceneGroup.h"
 #include "CSPSim.h"
 #include "Config.h"
 #include "Log.h"
@@ -43,11 +44,17 @@
 #include <osg/PolygonMode>
 #include <osg/ColorMatrix>
 #include <osg/LightSource>
+#include <osg/PositionAttitudeTransform>
 #include <osgUtil/SceneView>
 #include <osgUtil/Optimizer>
 #include <osgUtil/CullVisitor>
 #include <osgUtil/DisplayListVisitor>
 
+#include <osg/Material>
+#include <osg/BlendFunc>
+#include <osg/StateSet>
+
+#include <cmath>
 
 // SHADOW is an *extremely* experimental feature.  It is based on the
 // osgShadow demo, and does (did) work to some extent, but only for a 
@@ -57,9 +64,6 @@
 #ifdef SHADOW
 #include "shadow.h"
 #endif
-
-extern osg::Node *makeTreesPatch( float xcen, float ycen, float spacing, float width, 
-					 float height, VirtualBattlefield * pBattlefield);
 
 using simdata::Ref;
 
@@ -74,10 +78,10 @@ void setNVG(osg::ColorMatrix* cm) {
 	assert(cm);
 	// 0.212671*R + 0.71516*G + 0.072169*B;
 	cm->setMatrix(osg::Matrix(
-		0.4*0.213, 1.0*0.213, 0.4*0.213, 0.0,
-		0.4*0.715, 1.0*0.715, 0.4*0.715, 0.0,
-		0.4*0.072, 1.0*0.072, 0.4*0.072, 0.0,
-		0.0, 0.0, 0.0, 1.0));
+				0.4*0.213, 1.0*0.213, 0.4*0.213, 0.0,
+				0.4*0.715, 1.0*0.715, 0.4*0.715, 0.0,
+				0.4*0.072, 1.0*0.072, 0.4*0.072, 0.0,
+				0.0, 0.0, 0.0, 1.0));
 }
 
 void setCM(osg::ColorMatrix* cm, float intensity) {
@@ -89,10 +93,10 @@ void setCM(osg::ColorMatrix* cm, float intensity) {
 	//cout << sat << endl;
 	// 0.212671*R + 0.71516*G + 0.072169*B;
 	cm->setMatrix(osg::Matrix(
-		sat + (1.0 - sat)*0.213, des*0.213, des*0.213, 0.0,
-		0.715*des, sat + (1.0 - sat)*0.715, des*0.715, 0.0,
-		des*0.072, des*0.072, sat + (1.0 - sat)*0.072, 0.0,
-		0.0, 0.0, 0.0, 1.0));
+				sat + (1.0 - sat)*0.213, des*0.213, des*0.213, 0.0,
+				0.715*des, sat + (1.0 - sat)*0.715, des*0.715, 0.0,
+				des*0.072, des*0.072, sat + (1.0 - sat)*0.072, 0.0,
+				0.0, 0.0, 0.0, 1.0));
 }
 
 osg::Matrix getCM(float intensity) {
@@ -103,10 +107,10 @@ osg::Matrix getCM(float intensity) {
 	//cout << sat << endl;
 	// 0.212671*R + 0.71516*G + 0.072169*B;
 	return osg::Matrix(
-		sat + (1.0 - sat)*0.213, des*0.213, des*0.213, 0.0,
-		0.715*des, sat + (1.0 - sat)*0.715, des*0.715, 0.0,
-		des*0.072, des*0.072, sat + (1.0 - sat)*0.072, 0.0,
-		0.0, 0.0, 0.0, 1.0);
+			sat + (1.0 - sat)*0.213, des*0.213, des*0.213, 0.0,
+			0.715*des, sat + (1.0 - sat)*0.715, des*0.715, 0.0,
+			des*0.072, des*0.072, sat + (1.0 - sat)*0.072, 0.0,
+			0.0, 0.0, 0.0, 1.0);
 }
 
 ///////////////////////////////////////////////////////////////////////
@@ -146,6 +150,91 @@ struct MoveEarthySkyWithEyePointCallback : public osg::Transform
 };
 
 
+class FeatureTile: public osg::PositionAttitudeTransform {
+	simdata::Vector3 m_GlobalPosition;
+	public:
+	FeatureTile(simdata::Vector3 const &origin): m_GlobalPosition(origin) { }
+	typedef osg::ref_ptr<FeatureTile> Ref;
+	inline void updateOrigin(simdata::Vector3 const &origin) {
+		simdata::Vector3 offset = m_GlobalPosition - origin;
+		setPosition(osg::Vec3(offset.x(), offset.y(), offset.z()));
+	}
+};
+
+void VirtualScene::_updateOrigin(simdata::Vector3 const &origin) {
+	m_Origin = origin;
+	FeatureTileMap::iterator titer = m_FeatureTiles.begin();
+	for (; titer != m_FeatureTiles.end(); ++titer) {
+		titer->second->updateOrigin(origin);
+	}
+	DynamicObjectList::iterator diter = m_DynamicObjects.begin();
+	for (; diter != m_DynamicObjects.end(); ++diter) {
+		(*diter)->updateScene(origin);
+	}
+}
+
+simdata::Vector3 VirtualScene::getFeatureOrigin(simdata::Ref<FeatureGroup> const &feature) const {
+	double x = floor(feature->getGlobalPosition().x() * m_FeatureTileScale) * m_FeatureTileSize;
+	double y = floor(feature->getGlobalPosition().y() * m_FeatureTileScale) * m_FeatureTileSize;
+	return simdata::Vector3(x, y, 0.0);
+}
+
+int VirtualScene::_getFeatureTileIndex(simdata::Ref<FeatureGroup> feature) const {
+	int x = static_cast<int>(feature->getGlobalPosition().x() * m_FeatureTileScale);
+	int y = static_cast<int>(feature->getGlobalPosition().y() * m_FeatureTileScale);
+	// the multiplier below is somewhat arbitrary (needs to be big enough to
+	// separate x and y, and small enough not to overflow).
+	return y * 30000 + x;
+}
+
+/** Called by the scene manager to add a feature to the scene.
+ *  The feature's scene group must be constructed *before* calling
+ *  this method.
+ */
+void VirtualScene::addFeature(simdata::Ref<FeatureGroup> feature) {
+	int index = _getFeatureTileIndex(feature);
+	FeatureTileMap::iterator iter = m_FeatureTiles.find(index);
+	FeatureTileRef tile;
+	if (iter == m_FeatureTiles.end()) {
+		simdata::Vector3 origin = getFeatureOrigin(feature);
+		tile = new FeatureTile(origin);
+		m_FeatureTiles[index] = tile;
+		m_FeatureGroup->addChild(tile.get());
+		CSP_LOG(SCENE, DEBUG, "adding new feature cell, index = " << index);
+	} else {
+		tile = iter->second;
+	}
+	CSP_LOG(SCENE, DEBUG, "adding feature " << *feature << " to scene");
+	FeatureSceneGroup *scene_group = feature->getSceneGroup();
+	assert(scene_group != 0);
+	if (scene_group == 0) return;
+
+	feature->enterScene();
+	tile->addChild(scene_group);
+}
+
+/**
+*/
+void VirtualScene::removeFeature(simdata::Ref<FeatureGroup> feature) {
+	int index = _getFeatureTileIndex(feature);
+	FeatureTileMap::iterator iter = m_FeatureTiles.find(index);
+	assert(iter != m_FeatureTiles.end());
+	if (iter == m_FeatureTiles.end()) return;
+	FeatureSceneGroup *scene_group = feature->getSceneGroup();
+	assert(scene_group != 0);
+	if (scene_group == 0) return;
+	FeatureTile* tile = iter->second.get();
+	tile->removeChild(scene_group);
+	feature->leaveScene();
+	CSP_LOG(SCENE, DEBUG, "removing feature " << *feature << " from scene");
+	if (tile->getNumChildren() == 0) {
+		m_FeatureGroup->removeChild(tile);
+		m_FeatureTiles.erase(iter);
+		CSP_LOG(SCENE, DEBUG, "removing empty feature cell, index = " << index);
+	}
+	// TODO feature->discardSceneGroup() ??
+}
+
 
 VirtualScene::VirtualScene()
 {
@@ -158,6 +247,8 @@ VirtualScene::VirtualScene()
 	m_SpinTheWorld = false;
 	m_ResetTheWorld = false;
 	m_Wireframe = false;
+	m_FeatureTileSize = 40000.0; // 40 km
+	m_FeatureTileScale = 1.0 / m_FeatureTileSize;
 }
 
 VirtualScene::~VirtualScene()
@@ -181,7 +272,7 @@ int VirtualScene::buildScene()
 
 	// construct the views
 	m_FarView = new osgUtil::SceneView();
-	
+
 	osg::DisplaySettings* ds;
 	ds = m_FarView->getDisplaySettings();
 	if (!ds) {
@@ -329,7 +420,7 @@ void VirtualScene::buildSky()
 	pSunLightSource->setLight(pSunLight);
 	pSunLightSource->setLocalStateSetModes(osg::StateAttribute::ON);
 	pSunLightSource->setStateSetModes(*globalStateSet,osg::StateAttribute::ON);
-	
+
 	// moonlight
 	osg::Light *pMoonLight = m_Sky->getMoonLight();
 	osg::LightSource *pMoonLightSource = new osg::LightSource;
@@ -366,7 +457,7 @@ int VirtualScene::drawScene()
 
 	if (m_NearObjectGroup->getNumChildren() > 0) {
 		m_NearView->setProjectionMatrixAsPerspective(m_ViewAngle, m_Aspect, 0.01f, 100.0);
-		
+
 		osg::NodeVisitor* UpdateVisitor = m_NearView->getUpdateVisitor();
 		UpdateVisitor->setTraversalMask(0x1);
 		m_NearView->setUpdateVisitor(UpdateVisitor);
@@ -392,7 +483,7 @@ void VirtualScene::onUpdate(float dt)
 	static float t = 0.0;
 
 	if (m_SpinTheWorld || m_ResetTheWorld || (int(t) % 10) == 0 ||
-		(m_SkyPoint - m_Origin).length2() > 25.0e+6) {
+			(m_SkyPoint - m_Origin).length2() > 25.0e+6) {
 		m_SkyPoint = m_Origin;
 		if (m_ResetTheWorld) {
 			m_Sky->spinTheWorld(false);
@@ -425,12 +516,12 @@ void VirtualScene::setCameraNode( osg::Node * pNode)
 {
 }
 
-void VirtualScene::setLookAt(const simdata::Vector3& eyePos, const simdata::Vector3& lookPos, const simdata::Vector3& upVec)
+void VirtualScene::_setLookAt(const simdata::Vector3& eyePos, const simdata::Vector3& lookPos, const simdata::Vector3& upVec)
 {
 	CSP_LOG(APP, DEBUG, "VirtualScene::setLookAt - eye: " << eyePos << ", look: " << lookPos << ", up: " << upVec);
 
 	assert(m_FarView.valid());
-	m_Origin = eyePos;
+	_updateOrigin(eyePos);
 	osg::Vec3 _up (upVec.x(), upVec.y(), upVec.z() );
 
 	m_FarView->setViewMatrixAsLookAt(osg::Vec3(0.0, 0.0, 0.0), simdata::toOSG(lookPos - eyePos), _up);
@@ -442,7 +533,7 @@ void VirtualScene::setLookAt(const simdata::Vector3& eyePos, const simdata::Vect
 	m_EyeTransform->asPositionAttitudeTransform()->setPosition(osg::Vec3(0.0, 0.0, -eyePos.z()));
 
 	_updateFog(lookPos, eyePos);
-    
+
 	if (m_Terrain.valid()) {
 		m_Terrain->setCameraPosition(eyePos.x(), eyePos.y(), eyePos.z());
 		simdata::Vector3 tpos = m_Terrain->getOrigin(eyePos) - eyePos;
@@ -455,10 +546,10 @@ void VirtualScene::setLookAt(const simdata::Vector3& eyePos, const simdata::Vect
 	osg::Vec3 _camUpVec;
 	m_FarView->getViewMatrixAsLookAt(_camEyePos, _camLookPos, _camUpVec);
 	CSP_LOG(APP, DEBUG, 
-		"VirtualScene::setLookAt - eye: " << _camEyePos  
-		<< ", look: " << _camLookPos  
-		<< ", up: " << _camUpVec 
-	);
+			"VirtualScene::setLookAt - eye: " << _camEyePos  
+			<< ", look: " << _camLookPos  
+			<< ", up: " << _camUpVec 
+		   );
 }
 
 // TODO externalize a couple fixed parameters
@@ -535,33 +626,45 @@ void VirtualScene::removeParticleEmitter(osg::Node *emitter) {
 
 void VirtualScene::addObject(simdata::Ref<DynamicObject> object) {
 	assert(object.valid());
-	assert(!object->getSceneFlag());
-	object->setSceneFlag(true);
+	assert(!object->isInScene());
 	osg::Node *node = object->getOrCreateModelNode();
-	if (object->getNearFlag()) {
+	assert(node != 0);
+	object->enterScene();
+	if (object->isNearField()) {
 		m_NearObjectGroup->addChild(node);
 	} else {
 		m_FreeObjectGroup->addChild(node);
 	}
+	m_DynamicObjects.push_back(object);
 }
 
 void VirtualScene::removeObject(simdata::Ref<DynamicObject> object) {
 	assert(object.valid());
-	assert(object->getSceneFlag());
-	object->setSceneFlag(false);
+	assert(object->isInScene());
 	osg::Node *node = object->getOrCreateModelNode();
-	if (object->getNearFlag()) {
+	assert(node != 0);
+	if (object->isNearField()) {
 		m_NearObjectGroup->removeChild(node);
 	} else {
 		m_FreeObjectGroup->removeChild(node);
+	}
+	object->leaveScene();
+	// not very efficient, but object removal is rare compared to
+	// traversing the visible object list for camera origin updates
+	// every frame.
+	for (unsigned i = 0; i < m_DynamicObjects.size(); ++i) {
+		if (m_DynamicObjects[i] == object) {
+			m_DynamicObjects.erase(m_DynamicObjects.begin() + i);
+			break;
+		}
 	}
 }
 
 void VirtualScene::setNearObject(simdata::Ref<DynamicObject> object, bool isNear) {
 	assert(object.valid());
-	if (object->getNearFlag() == isNear) return;
+	if (object->isNearField() == isNear) return;
 	object->setNearFlag(isNear);
-	if (object->getSceneFlag()) {
+	if (object->isInScene()) {
 		osg::Node *node = object->getOrCreateModelNode();
 		if (isNear) {
 			m_FreeObjectGroup->removeChild(node);
@@ -572,19 +675,6 @@ void VirtualScene::setNearObject(simdata::Ref<DynamicObject> object, bool isNear
 		}
 	}
 }
-
-void VirtualScene::addFeatureCell(osg::Node *cell) {
-	assert(cell);
-	m_FeatureGroup->addChild(cell);
-	CSP_LOG(SCENE, DEBUG, "Adding feature cell to scene.");
-}
-
-void VirtualScene::removeFeatureCell(osg::Node *cell) {
-	assert(cell);
-	CSP_LOG(SCENE, DEBUG, "Removing feature cell from scene.");
-	m_FeatureGroup->removeChild(cell);
-}
-
 
 void VirtualScene::setWireframeMode(bool flag)
 {
@@ -633,6 +723,13 @@ void VirtualScene::setFogEnd(float value)
 	m_FogEnd = value;
 }
 
+// XXX XXX this needs to be integrated with SceneManager, and
+// is probably not worth supporting.  SimpleSceneManager currently
+// defines its own value, independent of this one, which is used
+// by the battlefield to decide which objects should be added or
+// removed from the scene.  it's probably not worth supporting a
+// method to change the view distance of an existing scene, since
+// the battlefield would then need to update which objects are visible.
 void VirtualScene::setViewDistance(float value)
 {
 	m_ViewDistance = value;

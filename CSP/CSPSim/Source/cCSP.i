@@ -34,7 +34,7 @@
 %import "SimData/cSimData.i"
 
 
-%include "VirtualBattlefield.i"
+//%include "Battlefield.i"
 %include "VirtualScene.i"
 %include "SimNet/Networking.i"
 %include "CSPSim.i"

@@ -24,7 +24,8 @@
 
 #include "CSPSim.h"
 #include "DynamicObject.h"
-#include "VirtualBattlefield.h"
+#include "Battlefield.h"
+#include "VirtualScene.h"
 
 #include "Views/View.h"
 #include "Views/CameraAgent.h"
@@ -65,12 +66,12 @@ View::View(size_t vm):
 void View::cull() {
 	VirtualScene* scene = CSPSim::theSim->getScene();
 	if (scene && m_ActiveObject.valid()) {
-		bool isNear = m_ActiveObject->getNearFlag();
+		bool isNear = m_ActiveObject->isNearField();
 		if (isNear && !m_Internal) {
 			scene->setNearObject(m_ActiveObject, false);
 		} else
 		if (!isNear && m_Internal) {
-			scene->setNearObject(m_ActiveObject, true);		
+			scene->setNearObject(m_ActiveObject, true);
 		}
 	}
 }
@@ -124,6 +125,25 @@ void ExternalViewWorld::update(simdata::Vector3& ep,simdata::Vector3& lp,simdata
 	updateWorld(ep,lp,up);
 }
 
+void FixedFlybyView::newFixedCamPos(SimObject* target) {
+	if (m_Initialized) return;
+	m_Initialized = true;
+	simdata::Vector3 object_pos = target->getGlobalPosition();
+	DynamicObject* dynamic = dynamic_cast<DynamicObject*>(target);
+	if (dynamic) {
+		simdata::Vector3 up = dynamic->getUpDirection();
+		simdata::Vector3 object_dir = dynamic->getDirection();
+		//double speed_level = dynamic->getSpeed()/50.0;
+		m_FixedCameraPosition =  object_pos - 20.0 * object_dir;
+	} else {
+		m_FixedCameraPosition = object_pos + 100.0 * simdata::Vector3::ZAXIS + 100.0 * simdata::Vector3::XAXIS;
+	}
+}
+
+void FixedFlybyView::activate() {
+	m_Initialized = false;
+	FlybyView::activate();
+}
 
 void FlybyView::newFixedCamPos(SimObject* target) {
 	simdata::Vector3 object_pos = target->getGlobalPosition();
@@ -153,14 +173,14 @@ void FlybyView::update(simdata::Vector3& ep,simdata::Vector3& lp,simdata::Vector
 }
 
 void FlybyView::recalculate(simdata::Vector3& ep,simdata::Vector3& lp,simdata::Vector3& up,double dt) {
-	VirtualScene* scene	= CSPSim::theSim->getScene();
-	const simdata::Ref<TerrainObject> terrain =	scene->getTerrain();
-	const float SAFETY	= 2.0f;
-	TerrainObject::IntersectionHint	camera_hint	= 0;
-	float h	= SAFETY + terrain->getGroundElevation(ep.x(),ep.y(),camera_hint);
-	float d = ep.z() - h;
-	if (d<0)
-		ep.z() -= d;
+	TerrainObject* terrain = CSPSim::theSim->getTerrain();
+	if (terrain) {
+		const float SAFETY	= 2.0f;
+		TerrainObject::IntersectionHint	camera_hint	= 0;
+		float h	= SAFETY + terrain->getGroundElevation(ep.x(), ep.y(), camera_hint);
+		float d = ep.z() - h;
+		if (d<0) ep.z() -= d;
+	}
 }
 
 void SatelliteView::activate() {
@@ -182,7 +202,7 @@ PadlockView::PadlockView(size_t vm):
 
 void PadlockView::activate() {
 	m_CameraKinematics->reset();
-	VirtualBattlefield* battlefield = CSPSim::theSim->getBattlefield();
+	Battlefield* battlefield = CSPSim::theSim->getBattlefield();
 	m_Padlock = battlefield->getNextUnit(m_ActiveObject, -1, -1, -1);
 	if (m_Padlock == m_ActiveObject) {
 		m_Padlock = battlefield->getNextUnit(m_Padlock, -1, -1, -1);
@@ -252,6 +272,10 @@ View* ViewFactory::createView_3() const {
 View* ViewFactory::createView_4() const {
 	return new InternalViewHist(4);
 }
+
+View* ViewFactory::createView_5() const {
+	return new FixedFlybyView(5);
+}
 	
 View* ViewFactory::createView_7() const {
 	return new SatelliteView(7);
@@ -270,6 +294,7 @@ void ViewFactory::attachAllView(CameraAgent* ca) const {
 	ca->attach(2,createView_2());
 	ca->attach(3,createView_3());
 	ca->attach(4,createView_4());
+	ca->attach(5,createView_5());
 	ca->attach(7,createView_7());
 	ca->attach(8,createView_8());
 	ca->attach(9,createView_9());

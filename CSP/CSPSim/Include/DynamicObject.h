@@ -29,7 +29,7 @@
 #include "SimObject.h"
 #include "InputInterface.h"
 #include "Controller.h"
-#include "SmokeEffects.h"
+#include "ObjectModel.h"
 #include "TerrainObject.h"
 #include "DataRecorder.h"
 #include "SystemsModel.h"
@@ -41,9 +41,6 @@ namespace osgParticle {
 	class ParticleSystemUpdater;
 	class ModularEmitter;
 };
-
-
-class VirtualBattlefield;
 
 
 /**
@@ -66,28 +63,27 @@ class DynamicObject: public SimObject, public InputInterface
 	enum { MODELCACHESIZE = 5 };
 
 private:
-	enum { 
-	       // bits 8-15 reserved for DynamicObject
-	       F_LOCAL    = 0x00000100,  // controlled internally
-	       F_HUMAN    = 0x00000200,  // controlled by a human
-	       F_GROUNDED = 0x00000800,  // currently on the ground
-	     };
 
-	// managed by the battlefield
-	void setHuman(bool flag) { 
-		if (isHuman() == flag) return;
-		setFlags(F_HUMAN, flag); 
+	virtual void onHuman() {
 		if (isLocal()) {
-			if (!flag) cacheSystemsModel();
 			selectVehicleCore();
 		}
 	}
 
-	void setLocal(bool flag) { 
-		if (isLocal() == flag) return;
-		setFlags(F_LOCAL, flag); 
+	virtual void onAgent() {
+		if (isLocal()) {
+			cacheSystemsModel();
+			selectVehicleCore();
+		}
+	}
+
+	virtual void onLocal() {
+		selectVehicleCore();
+	}
+
+	virtual void onRemote() {
 		if (isHuman()) {
-			if (!flag) cacheSystemsModel();
+			cacheSystemsModel();
 		}
 		selectVehicleCore();
 	}
@@ -100,12 +96,10 @@ private:
 
 
 protected:
-	void setGrounded(bool flag) { setFlags(F_GROUNDED, flag); }
-
 	Bus::Ref DynamicObject::getBus();
 
 public:
-	EXTEND_SIMDATA_XML_VIRTUAL_INTERFACE(DynamicObject, SimObject)
+	BEGIN_SIMDATA_XML_VIRTUAL_INTERFACE(DynamicObject)
 		SIMDATA_XML("model", DynamicObject::m_Model, true)
 		SIMDATA_XML("mass", DynamicObject::m_ReferenceMass, true)
 		SIMDATA_XML("inertia", DynamicObject::m_ReferenceInertia, false)
@@ -135,22 +129,15 @@ public:
 	void setVelocity(double Vx, double Vy, double Vz);
 	simdata::Vector3 const & getVelocity() const { return b_LinearVelocity->value(); }
 	double getSpeed() const { return b_LinearVelocity->value().length(); }
+	virtual double getAltitude() const { return (b_GlobalPosition->value().z() - b_GroundZ->value()); }
 
 	virtual simdata::Vector3 getViewPoint() const;
 
-	bool isHuman() const { return getFlags(F_HUMAN) != 0; }
-	bool isLocal() const { return getFlags(F_LOCAL) != 0; }
-	bool isGrounded() const { return getFlags(F_GROUNDED) != 0; }
-
 	void updateGlobalPosition();
-	void updateGroundPosition();
 	void updateOrientation();
 
-	virtual void aggregate() { CSP_LOG(APP, INFO, "aggregate @ " << int(this)); }
-	virtual void deaggregate() { CSP_LOG(APP, INFO, "deaggregate @ " << int(this)); }
-	virtual void setVisible(bool visible) {
-		CSP_LOG(APP, INFO, "object @ " << int(this) << ": visible = " << visible);
-	}
+	virtual void onAggregate() { CSP_LOG(APP, INFO, "aggregate @ " << int(this)); }
+	virtual void onDeaggregate() { CSP_LOG(APP, INFO, "deaggregate @ " << int(this)); }
 
 	bool isNearGround();
 

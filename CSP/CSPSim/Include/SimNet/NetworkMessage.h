@@ -40,6 +40,7 @@ struct MessageHeader
 
 class NetworkMessage
 {
+	friend class silence_gcc_warnings;
 
 	protected:
 	MessageHeader m_header;

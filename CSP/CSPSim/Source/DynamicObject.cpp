@@ -27,8 +27,6 @@
 #include <Controller.h>
 #include <PhysicsModel.h>
 #include <Log.h>
-#include <VirtualBattlefield.h>
-#include <VirtualScene.h>
 #include <TerrainObject.h>
 #include <CSPSim.h>
 #include <KineticsChannels.h>
@@ -47,7 +45,7 @@ using bus::Kinetics;
 
 DynamicObject::DynamicObject(TypeId type): SimObject(type)
 {
-	assert(!isFeature());
+	assert(!isStatic());
 
 	b_GlobalPosition = DataChannel<simdata::Vector3>::newLocal(Kinetics::Position, simdata::Vector3::ZERO);
 	b_Mass = DataChannel<double>::newLocal(Kinetics::Mass, 1.0);
@@ -66,11 +64,11 @@ DynamicObject::DynamicObject(TypeId type): SimObject(type)
 
 	m_Controller = NULL;
 
-	setLocal(true);
-	setHuman(false);
-
 	setGlobalPosition(simdata::Vector3::ZERO);
 	m_PrevPosition = simdata::Vector3::ZERO;
+
+	// XXX XXX hack for now.  these values should probably be externalized in the xml interface.
+	setAggregationBubbles(60000, 40000);
 }
 
 DynamicObject::~DynamicObject()
@@ -113,14 +111,6 @@ void DynamicObject::setGlobalPosition(simdata::Vector3 const & position)
 
 void DynamicObject::setGlobalPosition(double x, double y, double z)
 {
-	if (isGrounded())
-	{
-		// if the object is fixed to the ground, ignore the z component 
-		// and use the local elevation (not implemented)
-		// FIXME FIXME FIXME XXX XXX
-		float offset = 0.0;
-		z = offset;
-	}
 	b_GlobalPosition->value() = simdata::Vector3(x, y, z);
 }
 
@@ -133,25 +123,6 @@ void DynamicObject::setVelocity(double Vx, double Vy, double Vz)
 {
 	setVelocity(simdata::Vector3(Vx, Vy, Vz));
 }
-
-void DynamicObject::updateGroundPosition()
-{
-	float offset;
-	if (m_Model.valid()) {
-		//offset = m_Model->groundOffset();
-		offset = 0.0;
-	}
-	else {
-		offset = 0.0;
-	}
-	CSPSim *sim = CSPSim::theSim;
-	assert(sim);
-	VirtualBattlefield const *battlefield = sim->getBattlefield();
-	assert(battlefield);
-	simdata::Vector3 &pos = b_GlobalPosition->value();
-	pos.z() = battlefield->getGroundElevation(pos.x(), pos.y(), m_GroundHint) + offset;
-}
-
 
 void DynamicObject::registerUpdate(UpdateMaster *master) {
 	SimObject::registerUpdate(master);
@@ -194,23 +165,18 @@ void DynamicObject::postUpdate(double dt) {
 	if (m_SceneModel.valid() && isSmoke()) {
 		m_SceneModel->updateSmoke(dt, b_GlobalPosition->value(), b_Attitude->value());
 	}
-	if (isGrounded()) {
-		// FIXME GroundZ/GroundN should be set for all vehicles
-		updateGroundPosition();
-	} else {
-		CSPSim *sim = CSPSim::theSim;
-		assert(sim);
-		VirtualBattlefield const *battlefield = sim->getBattlefield();
-		assert(battlefield);
-		b_GroundZ->value() = battlefield->getGroundElevation(
-			b_GlobalPosition->value().x(), 
-			b_GlobalPosition->value().y(), 
-			b_GroundN->value(),
-			m_GroundHint
-		);
-		double height = (b_GlobalPosition->value().z() - b_GroundZ->value()) * b_GroundN->value().z();
-		b_NearGround->value() = (height < m_Model->getBoundingSphereRadius());
-	}
+	CSPSim *sim = CSPSim::theSim;
+	assert(sim);
+	TerrainObject *terrain = sim->getTerrain();
+	assert(terrain);
+	b_GroundZ->value() = terrain->getGroundElevation(
+		b_GlobalPosition->value().x(),
+		b_GlobalPosition->value().y(),
+		b_GroundN->value(),
+		m_GroundHint
+	);
+	double height = (b_GlobalPosition->value().z() - b_GroundZ->value()) * b_GroundN->value().z();
+	b_NearGround->value() = (height < m_Model->getBoundingSphereRadius());
 }
 
 simdata::Vector3 DynamicObject::getDirection() const
@@ -263,7 +229,7 @@ std::list<DynamicObject::SystemsModelStore> DynamicObject::SystemsModelCache;
 void DynamicObject::cacheSystemsModel() {
 	std::list<SystemsModelStore>::iterator cached = SystemsModelCache.begin();
 	for (; cached != SystemsModelCache.end(); ++cached) {
-		if (cached->id == getID()) {
+		if (cached->id == id()) {
 			SystemsModelCache.erase(cached);
 			break;
 		}
@@ -271,14 +237,14 @@ void DynamicObject::cacheSystemsModel() {
 	if (SystemsModelCache.size() >= MODELCACHESIZE) {
 		SystemsModelCache.pop_front();
 	}
-	SystemsModelCache.push_back(SystemsModelStore(getID(), m_SystemsModel));
+	SystemsModelCache.push_back(SystemsModelStore(id(), m_SystemsModel));
 }
 
 SystemsModel::Ref DynamicObject::getCachedSystemsModel() {
 	std::list<SystemsModelStore>::iterator iter;
 	simdata::Ref<SystemsModel> model;
 	for (iter = SystemsModelCache.begin(); iter != SystemsModelCache.end(); ++iter) {
-		if (iter->id == getID()) {
+		if (iter->id == id()) {
 			model = iter->model;
 			SystemsModelCache.erase(iter);
 			break;
@@ -399,7 +365,7 @@ NetworkMessage * DynamicObject::getUpdateMessage() {
 	NetworkMessage * message = CSPSim::theSim->getNetworkMessenger()->allocMessageBuffer(messageType, payloadLen);
 
 	ObjectUpdateMessagePayload * ptrPayload = (ObjectUpdateMessagePayload*)message->getPayloadPtr();
-	ptrPayload->id = m_ID;
+	ptrPayload->id = id();
 	ptrPayload->timeStamp = CSPSim::theSim->getElapsedTime();
 	b_GlobalPosition->value().writeBinary((unsigned char *)&(ptrPayload->globalPosition),24);
 	b_LinearVelocity->value().writeBinary((unsigned char *)&(ptrPayload->linearVelocity),24);
@@ -407,8 +373,8 @@ NetworkMessage * DynamicObject::getUpdateMessage() {
 	b_Attitude->value().writeBinary((unsigned char *)&(ptrPayload->attitude),32);
 
 	//  simdata::MemoryWriter writer((simdata::uint8*)ptrPayload);
-	//  writer << m_ID;
-	//  writer << m_Type;
+	//  writer << id();
+	//  writer << type();
 	//  writer << CSPSim::theSim->getElapsedTime();
 	//  b_GlobalPosition->value().serialize(writer);
 	//  b_LinearVelocity->value().serialize(writer);
@@ -425,9 +391,9 @@ void DynamicObject::putUpdateMessage(NetworkMessage* message) {
 
 	ObjectUpdateMessagePayload * ptrPayload = (ObjectUpdateMessagePayload*)message->getPayloadPtr();
 	// verify we have the correct id in the packet for this object.
-	if (m_ID == ptrPayload->id)
+	if (id() == ptrPayload->id)
 	{
-	//	printf("Loading update message of object %d\n", m_ID);
+	//	printf("Loading update message of object %d\n", id());
 	}
 	else
 	{

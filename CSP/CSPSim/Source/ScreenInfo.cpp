@@ -25,7 +25,6 @@
 #include "ScreenInfo.h"
 #include "CSPSim.h"
 #include "DynamicObject.h"
-#include "VirtualBattlefield.h"
 #include "VirtualScene.h"
 
 #include <iomanip>
@@ -167,8 +166,9 @@ void GeneralStats::update() {
 	simdata::Ref<DynamicObject const> const activeObject = CSPSim::theSim->getActiveObject();
 	if (activeObject.valid()) {
 		simdata::Vector3 pos = activeObject->getGlobalPosition();
+		double altitude = activeObject->getAltitude();
 		osstr.str("");
-		osstr << "Altitude: " << setprecision(precision) << fixed << setw(8) << pos.z() - CSPSim::theSim->getBattlefield()->getGroundElevation(pos.x(),pos.y());
+		osstr << "Altitude: " << setprecision(precision) << fixed << setw(8) << altitude;
 		m_Altitude->setText(osstr.str());
 
 		osstr.str("");

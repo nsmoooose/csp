@@ -19,6 +19,7 @@
 
 %{
 #include "CSPSim.h"
+#include "Battlefield.h"
 #include "Theater.h"
 #include "Projection.h"
 #include "Shell.h"
@@ -37,7 +38,7 @@ void _createVehicleHelper(CSPSim *self, const char *path, simdata::Vector3 posit
 	attitude *= 3.1416 / 180.0;
 	q_attitude.makeRotate(attitude.x(), attitude.y(), -attitude.z());
 	obj->setAttitude(q_attitude);
-	self->getBattlefield()->addUnit(obj);
+	self->getBattlefield()->addUnit(obj, false);
 	if (!self->getActiveObject()) self->setActiveObject(obj);
 }
 

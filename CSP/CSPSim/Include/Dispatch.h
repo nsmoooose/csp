@@ -90,7 +90,7 @@
  *  Inherit from this class and use the MESSAGE_DISPATCH macros to
  *  bind handlers to specific message types.
  */
-class MessageDispatchBase {
+class MessageDispatcher {
 
 public:
 	virtual bool dispatchMessage(simdata::Ref<simdata::TaggedRecord> const &record) {
@@ -103,7 +103,7 @@ protected:
 	}
 
 public:
-	virtual ~MessageDispatchBase() {}
+	virtual ~MessageDispatcher() {}
 };
 
 

@@ -45,7 +45,7 @@ TaggedRecord::Ref DispatchCenter::decode(NetworkMessage *message) const {
 	simdata::TaggedRecordFactoryBase *factory = m_factories[id];
 	TaggedRecord::Ref record = factory->create();
 	// TODO too much buffer copying; need to optimize
-	string payload(static_cast<char*>(message->getPayloadPtr()), message->getPayloadLen());
+	std::string payload(static_cast<char*>(message->getPayloadPtr()), message->getPayloadLen());
 	simdata::StringReader reader(payload);
 	simdata::TagReader tag_reader(reader);
 	// TODO need to catch errors
@@ -73,7 +73,7 @@ bool DispatchCenter::encode(TaggedRecord::Ref record, NetworkMessage *message) c
 	return true;
 }
 
-bool DispatchCenter::dispatch(TaggedRecord::Ref record, MessageDispatchBase &object) const {
+bool DispatchCenter::dispatch(TaggedRecord::Ref record, MessageDispatcher &object) const {
 	return object.dispatchMessage(record);
 }
 

@@ -1,6 +1,8 @@
 #ifndef __CLIENTNODE_H__
 #define __CLIENTNODE_H__
 
+class Battlefield;
+
 class ClientNode
 {
 
@@ -8,12 +10,12 @@ class ClientNode
     ClientNode();
     int run();
   protected:
-          
-    void init();		 
+
+    void init();
     void dumpSizes();
     void initNetworking();
-	  
-    VirtualBattlefield * m_battlefield;
+
+    Battlefield * m_battlefield;
     simdata::DataManager m_DataManager;
     NetworkMessenger * m_networkMessenger;
     NetworkNode * m_remoteNode;

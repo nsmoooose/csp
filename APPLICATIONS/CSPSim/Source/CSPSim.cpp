@@ -260,7 +260,7 @@ void CSPSim::init()
 		simdata::Pointer<AircraftObject> ao = m_DataManager.getObject("sim:vehicles.aircraft.m2k");
 		assert(ao.valid());
 		ao->setGlobalPosition(483000, 499000, 91.2);
-		ao->setAttitude(2.0, 0.0, 0.0);
+		ao->setAttitude(0.03, 0.0, 0.0);
 		ao->setVelocity(0, 2.0, 0);
 		m_Battlefield->addObject(ao);
 

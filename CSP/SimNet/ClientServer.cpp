@@ -43,12 +43,9 @@
 namespace simnet {
 
 
-// TODO set and use the specified bandwidth.
-ClientServerBase::ClientServerBase(NetworkNode const &bind, bool isServer, int /*inbound_bw*/, int /*outbound_bw*/):
-	m_LocalNode(bind)
-{
+ClientServerBase::ClientServerBase(NetworkNode const &bind, bool isServer, int inbound_bw, int outbound_bw) {
 	m_NetworkInterface = new NetworkInterface();
-	m_NetworkInterface->initialize(bind, isServer);
+	m_NetworkInterface->initialize(bind, isServer, inbound_bw, outbound_bw);
 	m_MessageQueue = new MessageQueue();
 	m_PacketDecoder = new PacketDecoder();
 	m_NetworkInterface->addPacketHandler(m_PacketDecoder);
@@ -111,12 +108,17 @@ void ClientServerBase::queueMessage(NetworkMessage::Ref const &msg) {
 }
 
 
-Server::Server(NetworkNode const &bind, int inbound_bw, int outbound_bw): ClientServerBase(bind, true /*isServer*/, inbound_bw, outbound_bw) {
+Server::Server(NetworkNode const &bind, int inbound_bw, int outbound_bw):
+	ClientServerBase(bind, true /*isServer*/, inbound_bw, outbound_bw)
+{
 }
 
 void Server::onConnectionRequest(simdata::Ref<ConnectionRequest> const &msg, simdata::Ref<MessageQueue> const &queue) {
 	SIMNET_LOG(HANDSHAKE, DEBUG, "connection request " << *msg);
 	PeerId client_id = msg->getSource();
+	ConnectionData &connection_data = m_PendingConnections[client_id];
+	connection_data.incoming_bw = msg->incoming_bw();
+	connection_data.outgoing_bw = msg->outgoing_bw();
 	ConnectionResponse::Ref response = new ConnectionResponse();
 	response->setReliable();
 	response->setReplyTo(msg);
@@ -128,8 +130,13 @@ void Server::onConnectionRequest(simdata::Ref<ConnectionRequest> const &msg, sim
 
 void Server::onAcknowledge(simdata::Ref<Acknowledge> const &msg, simdata::Ref<MessageQueue> const &queue) {
 	SIMNET_LOG(HANDSHAKE, DEBUG, "received acknowledgement " << *msg);
-	// hack (need to cache connection requests)
-	m_NetworkInterface->establishConnection(msg->getSource(), 30000, 3000);
+	PendingConnectionMap::iterator iter = m_PendingConnections.find(msg->getSource());
+	if (iter == m_PendingConnections.end()) {
+		SIMNET_LOG(HANDSHAKE, ERROR, "received unsolicited connection acknowledgement from client id " << msg->getSource());
+		return;
+	}
+	m_NetworkInterface->establishConnection(msg->getSource(), iter->second.incoming_bw, iter->second.outgoing_bw);
+	m_PendingConnections.erase(iter);
 }
 
 void Server::onDisconnect(simdata::Ref<Disconnect> const &msg, simdata::Ref<MessageQueue> const &queue) {
@@ -222,6 +229,10 @@ double Client::getServerTimeOffset() const {
 	if (!m_Connected) return 0.0;
 	const PeerInfo *info = getPeer(NetworkInterface::ServerId);
 	return (info == 0) ? 0.0 : info->getTimeSkew() * 0.001;
+}
+
+void Client::setExternalNode(NetworkNode const &external_node) {
+	m_NetworkInterface->setExternalNode(external_node);
 }
 
 } // namespace simnet

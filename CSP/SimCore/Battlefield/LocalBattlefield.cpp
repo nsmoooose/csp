@@ -291,6 +291,7 @@ void LocalBattlefield::update(double dt) {
 	// large jumps right after the connection is established), so we filter the offset
 	// to spread the jumps out over a few seconds.
 	m_ServerTimeOffset = m_ServerTimeOffset * (1.0 - filter) + filter * offset;
+	{ static int XXX = 0; if ((++XXX % 100) == 0) std::cout << "server time offset = " << m_ServerTimeOffset << "\n"; } // XXX
 	m_CurrentTime = simdata::getCalibratedRealTime() + m_ServerTimeOffset;
 	m_CurrentTimeStamp = simcore::getTimeStamp(m_CurrentTime);
 	if (m_NetworkClient.valid()) {
@@ -349,6 +350,8 @@ void LocalBattlefield::connectToServer(std::string const &name) {
 	assert(m_ConnectionState == CONNECTION_DETACHED);
 	JoinRequest::Ref msg = new JoinRequest();
 	msg->set_user_name(name);
+	msg->set_internal_ip_addr(m_NetworkClient->getLocalNode().getIp());
+	msg->set_external_ip_addr(m_NetworkClient->getExternalNode().getIp());
 	sendServerCommand(msg);
 	m_ConnectionState = CONNECTION_JOIN;
 }

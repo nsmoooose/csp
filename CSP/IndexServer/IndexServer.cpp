@@ -57,7 +57,9 @@ void IndexServer::initPrimaryInterface() {
 	}
 	CSP_LOG(APP, INFO, "binding to interface " << address << ":" << port);
 	simnet::NetworkNode local(address, port);
-	m_NetworkServer = new simnet::Server(local, 100000, 100000); // TODO real bw?
+	const int incoming_bw = g_Config.getInt("Network", "IncomingBandwidth", 12000, true);
+	const int outgoing_bw = g_Config.getInt("Network", "OutgoingBandwidth", 12000, true);
+	m_NetworkServer = new simnet::Server(local, incoming_bw, outgoing_bw);
 }
 
 void IndexServer::initialize() {
@@ -86,10 +88,10 @@ int main() {
 		return 1;
 	}
 
-	simnet::netlog().setLogPriority(simdata::LOG_INFO);
 	csplog().setOutput("IndexServer.log");
-	csplog().setLogPriority(simdata::LOG_INFO);
 	csplog().setLogCategory(simdata::LOG_ALL);
+	csplog().setLogPriority(g_Config.getInt("Debug", "CspLoggingThreshold", simdata::LOG_INFO, true));
+	simnet::netlog().setLogPriority(g_Config.getInt("Debug", "NetLoggingThreshold", simdata::LOG_INFO, true));
 
 	IndexServer server;
 	server.run();

@@ -115,11 +115,16 @@ class NetworkInterface: public simdata::Referenced {
 	// Indicates whether initialize() has been called.
 	bool m_Initialized;
 
+	// Nominal bandwidths in bytes/sec.
+	int m_IncomingBandwidth;
+	int m_OutgoingBandwidth;
+
 	// Our connection to the outside world
 	simdata::ScopedPointer<DatagramReceiveSocket> m_Socket;
 
 	simdata::ScopedPointer<NetworkNode> m_ServerNode;
 	simdata::ScopedPointer<NetworkNode> m_LocalNode;
+	simdata::ScopedPointer<NetworkNode> m_ExternalNode;
 
 	// NetworkInterface supports multiple packet handlers, each of which
 	// receives every inbound packet.  Typically only one packet handlers
@@ -228,8 +233,30 @@ public:
 	 *    accept connections from unknown peers.  Otherwise the interface will
 	 *    be initialized with id = 0, and will need to connect to a server to
 	 *    receive an id assignment before communicating with other peers.
+	 *  @param incoming_bw The server incoming bandwidth (bytes per second)
+	 *  @param outgoing_bw The server outgoing bandwidth (bytes per second)
      */
-	void initialize(NetworkNode const &local_node, bool isServer);
+	void initialize(NetworkNode const &local_node, bool isServer, int incoming_bw, int outgoing_bw);
+
+	/** Specify an alternate ip address and port that should be used to reach
+	 *  this host from an external network.  For example, local_node specified
+	 *  in initialize() may refer to an unroutable LAN address (e.g. 192.168.x.x)
+	 *  while external_node refers to the ip address of the external interface
+	 *  of a firewall/router providing NAT service and port forwarding for the
+	 *  LAN.  The external ip address does not directly affect the behavior of
+	 *  NetworkInterface, but can be used by higher level protocols to help
+	 *  manage LAN/internet routing.  See getExternalNode().
+	 */
+	void setExternalNode(NetworkNode const &external_node);
+
+	/** Get the external node specified by setExternalNode(), or the local node
+	 *  if no external node was set.
+	 */
+	const NetworkNode &getExternalNode() const;
+
+	/** Get the local node specified by initialize() used to receive packets.
+	 */
+	const NetworkNode &getLocalNode() const;
 
 	/** Reset diagnostic statistics.  Does not affect bandwidth throttling
 	 *  statistics.

@@ -56,8 +56,8 @@ PeerInfo::PeerInfo():
 	m_bytes_self_to_peer(0),
 	m_average_outgoing_packet_size(100.0),
 	m_packets_throttled(0),
-	m_desired_rate_self_to_peer(0),
-	m_desired_rate_peer_to_self(0),
+	m_desired_rate_self_to_peer(1),
+	m_desired_rate_peer_to_self(1),
 	m_allocation_peer_to_self(100),  // ~10% of inbound bandwidth initially
 	m_allocation_self_to_peer(100),  // ~10% of inbound bandwidth initially
 	m_desired_bandwidth_peer_to_self(0.0),
@@ -114,7 +114,11 @@ void PeerInfo::update(double dt, double scale_desired_rate_to_self) {
 	m_desired_rate_self_to_peer = std::max(1U, std::min(static_cast<simdata::uint32>(desired_rate), 1023U));
 
 	m_allocation_peer_to_self = static_cast<simdata::uint32>(m_desired_rate_peer_to_self * scale_desired_rate_to_self);
-	m_allocation_peer_to_self = std::min(1023U, std::max(1U, m_allocation_peer_to_self));
+
+	// limit the inbound bandwidth we allocate for messages from this peer to between 1% and 100% of our
+	// total inbound bandwidth.  the lower limit is important to prevent the peer from throttling all
+	// packets to us, thereby preventing us from knowing that it needs more allocation!
+	m_allocation_peer_to_self = std::min(1023U, std::max(10U, m_allocation_peer_to_self));
 
 	// translate our allocated bandwidth to this peer into a throttling threshold
 	const double allocated_bandwidth = m_allocation_self_to_peer * m_total_peer_incoming_bandwidth * (1.0 / 1024.0);

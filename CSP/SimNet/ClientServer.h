@@ -65,8 +65,6 @@ class ClientServerBase: public simdata::Referenced {
 	virtual void onDisconnect(simdata::Ref<Disconnect> const &, simdata::Ref<MessageQueue> const &) {}
 	virtual void onUnknownMessage(simdata::Ref<NetworkMessage> const &, simdata::Ref<MessageQueue> const &) {}
 
-	NetworkNode m_LocalNode;
-
 protected:
 	ClientServerBase(NetworkNode const &bind, bool isServer, int inbound_bw, int outbound_bw);
 	virtual ~ClientServerBase() {}
@@ -167,7 +165,11 @@ public:
 
 	/** Get the network node of this client or server.
 	 */
-	NetworkNode const &getLocalNode() const { return m_LocalNode; }
+	NetworkNode const &getLocalNode() const { return m_NetworkInterface->getLocalNode(); }
+
+	/** Get the external node of this client or server.
+	 */
+	NetworkNode const &getExternalNode() const { return m_NetworkInterface->getExternalNode(); }
 
 	/** Returns true if one or more peers have disconnected, but have
 	 *  not yet been processed by nextDeadPeer.
@@ -198,6 +200,14 @@ class Server: public ClientServerBase {
 	// Callback when a client sends a disconnect message.
 	virtual void onDisconnect(simdata::Ref<Disconnect> const &msg, simdata::Ref<MessageQueue> const &queue);
 
+	struct ConnectionData {
+		int incoming_bw;
+		int outgoing_bw;
+	};
+
+	typedef std::map<PeerId, ConnectionData> PendingConnectionMap;
+	PendingConnectionMap m_PendingConnections;
+
 public:
 	/** Construct a new server.
 	 *
@@ -225,6 +235,10 @@ public:
 	 *  @param outbound_bw The maximum outbound bandwidth for this client (bytes/sec).
 	 */
 	Client(NetworkNode const &bind, int inbound_bw, int outbound_bw);
+
+	/** See NetworkInterface::setExternalNode().
+	 */
+	void setExternalNode(NetworkNode const &external_node);
 
 	virtual ~Client();
 

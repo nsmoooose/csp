@@ -31,6 +31,8 @@
 #include <SimCore/Battlefield/Battlefield.h>
 #include <SimCore/Battlefield/BattlefieldMessages.h>
 
+#include <SimNet/NetworkNode.h>   // XXX forward declare InetHostAddress
+
 class SceneManager;
 class UpdateMaster;
 
@@ -50,6 +52,13 @@ public:
 
 	void update(double dt);
 
+	/** Specify the network client used to communicate with the global battlefield
+	 *  and other local battlefields.  The client's external node, if set, will be
+	 *  used by the global battlefield to negotiate the initial connection between
+	 *  remote peers.  If the peers are on the same LAN, the local ip address will
+	 *  be used.  NB: in either case, only the port number specified in the local
+	 *  node will used---the port number in the external node is currently ignored.
+	 */
 	void setNetworkClient(simdata::Ref<simnet::Client> const &client);
 
 	void connectToServer(std::string const &name);
@@ -176,7 +185,6 @@ private:
 
 	void scanUnit(LocalUnitWrapper *wrapper);
 	void continueUnitScan(double dt);
-
 };
 
 

@@ -112,9 +112,27 @@ public:
 		return ConnectionPoint(m_addr.getAddress().s_addr, m_port);
 	}
 
+	/** Get the ip address as a 32-bit int, in network byte-order.
+	 */
+	simdata::uint32 getIp() const;
+
 	/** Get the host name.
 	 */
 	const char * getHostname() const;
+
+	/** Test if an ip address is unroutable (10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16).
+	 *  @param addr 32-bit ipv4 address in network byte-order.
+	 */
+	static bool isRoutable(simdata::uint32 addr) {
+		return ((addr & 0xffff) != 43200) &&  // 192.168.  0.  0 - 192.168.255.255
+		       ((addr & 0x00ff) !=    10) &&  //  10.  0.  0.  0 -  10.255.255.255
+		       ((addr & 0xf0ff) !=  4268);    // 172. 16.  0.  0 - 172. 31.255.255
+	}
+
+	/** Convert an ip address to a dotted-quad string.
+	 *  @param addr 32-bit ipv4 address in network byte-order.
+	 */
+	static std::string ipToString(simdata::uint32 addr);
 };
 
 

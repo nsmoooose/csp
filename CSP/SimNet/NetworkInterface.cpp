@@ -669,6 +669,8 @@ NetworkInterface::NetworkInterface():
 	m_ActivePeers(new ActivePeerList),
 	m_AllowUnknownPeers(false),
 	m_Initialized(false),
+	m_IncomingBandwidth(0),
+	m_OutgoingBandwidth(0),
 	m_PacketHandlers(new PacketHandlerSet)
 {
 	for (unsigned i = 0; i < PeerIndexSize; ++i) {
@@ -697,12 +699,15 @@ void NetworkInterface::resetStats() {
 }
 
 
-void NetworkInterface::initialize(NetworkNode const &local_node, bool isServer) {
+void NetworkInterface::initialize(NetworkNode const &local_node, bool isServer, int incoming_bw, int outgoing_bw) {
 	assert(!m_Initialized);
 	m_Initialized = true;
 	m_LastUpdate = -1.0;
 	m_Socket.reset(new DatagramReceiveSocket(local_node.getAddress(), local_node.getPort()));
 	m_LocalNode.reset(new NetworkNode(local_node));
+	assert(incoming_bw > 0 && outgoing_bw > 0);
+	m_IncomingBandwidth = incoming_bw;
+	m_OutgoingBandwidth = outgoing_bw;
 	if (isServer) {
 		m_AllowUnknownPeers = true;
 		m_LocalId = ServerId;
@@ -803,6 +808,7 @@ PeerId NetworkInterface::getSourceId(ConnectionPoint const &point) {
 	IpPeerMap::iterator iter = m_IpPeerMap.find(point);
 	// if the ip is unknown ip, allocate a new peer id
 	if (iter == m_IpPeerMap.end()) {
+		SIMNET_LOG(HANDSHAKE, INFO, "initial connection from " << NetworkNode::ipToString(point.first) << ":" << point.second);
 		// a connection must be disconnected for 60 seconds before the id can be reused.
 		double cutoff = simdata::get_realtime() - 60;
 		// use LastAssignedPeerId to rotate through assignments, rather than always
@@ -812,6 +818,7 @@ PeerId NetworkInterface::getSourceId(ConnectionPoint const &point) {
 			if (id == PeerIndexSize) id = 2;
 			if (!m_PeerIndex[id].isActive()) {
 				if (m_PeerIndex[id].getLastDeactivationTime() < cutoff) {
+					SIMNET_LOG(HANDSHAKE, INFO, "assigned provisional id " << id);
 					// TODO add a callback mechanism for validating ips?
 					NetworkNode node(point);
 					// restrict to a low initial bandwidth; will be reconfigured once the
@@ -834,5 +841,17 @@ void NetworkInterface::setClientId(PeerId id) {
 	m_LocalId = id;
 }
 
+void NetworkInterface::setExternalNode(NetworkNode const &external_node) {
+	m_ExternalNode.reset(new NetworkNode(external_node));
+}
+
+const NetworkNode &NetworkInterface::getExternalNode() const {
+	return m_ExternalNode.valid() ? *m_ExternalNode : *m_LocalNode;
+}
+
+const NetworkNode &NetworkInterface::getLocalNode() const {
+	assert(m_LocalNode.valid());
+	return *m_LocalNode;
+}
 
 } // namespace simnet

@@ -62,6 +62,8 @@ struct ClientData {
 	std::string user_name;
 	simnet::PeerId id;
 	std::set<SimObject::ObjectId> units;
+	uint32 internal_ip_addr;
+	uint32 external_ip_addr;
 };
 
 
@@ -193,14 +195,26 @@ private:
 		join->set_outgoing_bw(static_cast<int>(peer_info->outgoingBandwidth()));
 		join->set_incoming_bw(static_cast<int>(peer_info->incomingBandwidth()));
 		join->set_port(peer_info->getNode().getPort());
-		join->set_ip_addr(peer_info->getNode().getAddress().getAddress().s_addr);
+		// default to the external ip (overridden in announceJoin)
+		join->set_ip_addr(data.external_ip_addr);
 		return join;
 	}
 
 	void announceJoin(const PeerId id) {
+		ClientData &new_client_data = m_ClientData[id];
 		PlayerJoin::Ref join = makeJoin(id);
 		for (ClientDataMap::const_iterator iter = m_ClientData.begin(); iter != m_ClientData.end(); ++iter) {
+			// don't announce to ourself
 			if (iter->first == id) continue;
+
+			// if the external ips match, these hosts are probably on a LAN and should communicate via their
+			// internal interfaces; otherwise use the external ip.
+			if (iter->second.external_ip_addr == new_client_data.external_ip_addr) {
+				join->set_ip_addr(new_client_data.internal_ip_addr);
+			} else {
+				join->set_ip_addr(new_client_data.external_ip_addr);
+			}
+
 			m_NetworkServer->queue()->queueMessage(join, iter->first);
 		}
 	}
@@ -229,25 +243,61 @@ private:
 	void onJoinRequest(simdata::Ref<JoinRequest> const &msg, simdata::Ref<simnet::MessageQueue> const &queue) {
 		CSP_LOG(BATTLEFIELD, INFO, "received join request");
 		ClientResponse<JoinResponse> response(msg);
-		if (msg->has_user_name()) {
-			response->set_success(true);
-			response->set_details("welcome " + msg->user_name());
-			response->set_first_id(m_NextId);
-			response->set_id_count(100);
-			m_NextId += 100;
-			PeerId id = msg->getSource();
-			ClientData &data = m_ClientData[id];
-			data.id = id;
-			data.units.clear();
-			data.user_name = msg->user_name();
-			response.send(queue);
-			announceJoin(id);
-			announceExistingPlayers(id);
-		} else {
-			response->set_success(false);
+		response->set_success(false);
+
+		if (!msg->has_user_name()) {
+			CSP_LOG(BATTLEFIELD, ERROR, "join rejected: no user name");
 			response->set_details("no user name");
 			response.send(queue);
+			return;
 		}
+
+		PeerId id = msg->getSource();
+		simnet::PeerInfo const *peer_info = m_NetworkServer->getPeer(id);
+		uint32 inbound_ip_addr = peer_info->getNode().getIp();
+		uint32 internal_ip_addr = msg->has_internal_ip_addr() ? msg->internal_ip_addr() : inbound_ip_addr;
+		uint32 external_ip_addr = msg->has_external_ip_addr() ? msg->external_ip_addr() : inbound_ip_addr;
+
+		ost::InetAddress decode_addr;
+		CSP_LOG(BATTLEFIELD, INFO, "join request from " << (decode_addr = inbound_ip_addr).getHostname());
+		CSP_LOG(BATTLEFIELD, INFO, "      internal ip " << (decode_addr = internal_ip_addr).getHostname());
+		CSP_LOG(BATTLEFIELD, INFO, "      external ip " << (decode_addr = external_ip_addr).getHostname());
+
+		// basic sanity checking on ip addresses
+		if (simnet::NetworkNode::isRoutable(internal_ip_addr) && (internal_ip_addr != external_ip_addr)) {
+			CSP_LOG(BATTLEFIELD, ERROR, "join rejected: internal ip routable, but does not match external ip");
+			response->set_details("internal ip routable, but does not match external ip");
+			response.send(queue);
+			return;
+		}
+		if (simnet::NetworkNode::isRoutable(inbound_ip_addr) && (external_ip_addr != inbound_ip_addr)) {
+			CSP_LOG(BATTLEFIELD, ERROR, "join rejected: inbound ip routable, but does not match external ip");
+			response->set_details("inbound ip is routable, but does not match external ip");
+			response.send(queue);
+			return;
+		}
+		if (!simnet::NetworkNode::isRoutable(inbound_ip_addr) && (internal_ip_addr != inbound_ip_addr)) {
+			CSP_LOG(BATTLEFIELD, ERROR, "join rejected: inbound ip unroutable, but does not match internal ip");
+			response->set_details("inbound ip is unroutable, but does not match internal ip");
+			response.send(queue);
+			return;
+		}
+
+		ClientData &data = m_ClientData[id];
+		response->set_success(true);
+		response->set_details("welcome " + msg->user_name());
+		response->set_first_id(m_NextId);
+		response->set_id_count(100);
+		m_NextId += 100;
+		data.id = id;
+		data.units.clear();
+		data.user_name = msg->user_name();
+		data.internal_ip_addr = internal_ip_addr;
+		data.external_ip_addr = external_ip_addr;
+
+		response.send(queue);
+		announceJoin(id);
+		announceExistingPlayers(id);
 	}
 
 	void onIdAllocationRequest(simdata::Ref<IdAllocationRequest> const &msg, simdata::Ref<simnet::MessageQueue> const &queue) {

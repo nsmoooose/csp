@@ -39,6 +39,8 @@ typedef simnet::NetworkMessage NetworkMessage;
 message JoinRequest : NetworkMessage { @id=64;
 	// any identifier (e.g. callsign)
 	std::string user_name;
+	uint32 internal_ip_addr;
+	uint32 external_ip_addr;
 }
 
 // response from the index server to a client indicating if

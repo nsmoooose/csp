@@ -25,6 +25,7 @@
  */
 
 #include <SimNet/NetworkNode.h>
+#include <sstream>
 
 namespace simnet {
 
@@ -79,6 +80,16 @@ ost::tpport_t NetworkNode::getPort() const {
 
 const char * NetworkNode::getHostname() const {
 	return m_addr.getHostname();
+}
+
+simdata::uint32 NetworkNode::getIp() const {
+	return m_addr.getAddress().s_addr;
+}
+
+std::string NetworkNode::ipToString(simdata::uint32 addr) {
+	std::ostringstream os;
+	os << (addr & 0xff) << "." << ((addr >> 8) & 0xff) << "." << ((addr >> 16) & 0xff) << "." << (addr >> 24);
+	return os.str();
 }
 
 } // namespace simnet

@@ -54,15 +54,6 @@
 #include "Theater.h"
 #include "VirtualScene.h"
 
-/* WNET
-#include <SimNet/Networking.h>
-#include <SimNet/NetworkMessage.h>
-#include <SimNet/NetworkNode.h>
-#include <SimNet/NetworkMessenger.h>
-#include <SimNet/DispatchMessageHandler.h>
-#include <SimNet/PrintMessageHandler.h>
-*/
-
 #include <SimCore/Battlefield/LocalBattlefield.h>
 #include <SimCore/Battlefield/SimObject.h>
 #include <SimCore/Util/Log.h>
@@ -171,14 +162,6 @@ CSPSim::CSPSim():
 	m_ElapsedTime = 0.0;
 
 	m_Shell = new PyShell();
-	
-/* WNET
-	m_NetworkMessenger = NULL;
-	m_RemoteServerNode = NULL;
-	m_localNode = NULL;
-	b_networkingFlag = false;
-*/
-
 }
 
 
@@ -238,12 +221,6 @@ LocalBattlefield const * CSPSim::getBattlefield() const {
 VirtualScene * CSPSim::getScene() {
 	return m_Scene.get();
 }
-
-/* WNET
-NetworkMessenger * CSPSim::getNetworkMessenger() {
-	return m_NetworkMessenger;
-}
-*/
 
 VirtualScene const * CSPSim::getScene() const {
 	return m_Scene.get();
@@ -390,13 +367,22 @@ void CSPSim::init()
 		// create the networking layer
 		if (g_Config.getBool("Networking", "UseNetworking", false, true)) {
 			simnet::netlog().setLogPriority(simdata::LOG_INFO);
-			int local_port = g_Config.getInt("Networking", "LocalPort", 14111, true);
 			std::string local_address = g_Config.getString("Networking", "LocalIp", "127.0.0.1", true);
-			CSP_LOG(NETWORK, INFO, "Initializing network interface: " << local_address << ":" << local_port);
+			int local_port = g_Config.getInt("Networking", "LocalPort", 14111, true);
+
+			CSP_LOG(NETWORK, INFO, "Initializing network interface " << local_address << ":" << local_port);
 			int incoming_bw = g_Config.getInt("Networking", "IncomingBandwidth", 36000, true);
 			int outgoing_bw = g_Config.getInt("Networking", "OutgoingBandwidth", 36000, true);
 			simnet::NetworkNode local_node(local_address, local_port);
 			m_NetworkClient = new simnet::Client(local_node, incoming_bw, outgoing_bw);
+
+			if (g_Config.hasKey("Networking", "ExternalIp")) {
+				std::string external_address = g_Config.getString("Networking", "ExternalIp");
+				simnet::NetworkNode external_node(external_address, local_port);
+				CSP_LOG(NETWORK, INFO, "External interface is " << external_address << ":" << local_port);
+				m_NetworkClient->setExternalNode(external_node);
+			}
+
 			std::string server_address = g_Config.getString("Networking", "ServerIp", "127.0.0.1", true);
 			int server_port = g_Config.getInt("Networking", "ServerPort", 14110, true);
 			CSP_LOG(NETWORK, INFO, "Connecting to server: " << server_address << ":" << server_port);
@@ -421,7 +407,7 @@ void CSPSim::init()
 				}
 			}
 			simnet::netlog().setLogPriority(simdata::LOG_INFO);
-			simnet::netlog().setLogPriority(6);
+			//simnet::netlog().setLogPriority(6);
 		}
 
 		logoScreen.onUpdate(0.0);
@@ -441,29 +427,6 @@ void CSPSim::init()
 		m_GameScreen = new GameScreen;
 		m_GameScreen->onInit();
 		
-/* WNET
-		// create the networking layer
-		b_networkingFlag = g_Config.getBool("Networking", "UseNetworking", false, true);
-		int localMessagePort = g_Config.getInt("Networking", "LocalMessagePort", 10000, true);
-		std::string localAddr = g_Config.getString("Networking", "LocalMessageHost", "127.0.0.1", true);
-		CSP_LOG(APP, DEBUG, "init() - Creating Message listener on port: " << localMessagePort);
-                std::string remoteAddr = g_Config.getString("Networking", "RemoteMessageHost", "127.0.0.1", true);
-		
-		Port remotePort = (Port)g_Config.getInt("Networking", "RemoteMessagePort", 0, true);
-		m_RemoteServerNode = new NetworkNode(remoteAddr.c_str(), remotePort );
-		m_localNode =  new NetworkNode(localAddr.c_str(), localMessagePort);
-		m_NetworkMessenger = new NetworkMessenger(m_localNode);
-		PrintMessageHandler * printMessageHandler = new PrintMessageHandler();
-		printMessageHandler->setFrequency(100);
-		m_NetworkMessenger->registerMessageHandler(printMessageHandler);
-		DispatchMessageHandler * dispatchMessageHandler = new DispatchMessageHandler();
-		dispatchMessageHandler->setLocalAddress( m_localNode->getAddress().getAddress().s_addr );
-		dispatchMessageHandler->setLocalPort( localMessagePort );
-		dispatchMessageHandler->setDataManager(m_DataManager.get());
-		dispatchMessageHandler->setBattlefield(getBattlefield());
-		m_NetworkMessenger->registerMessageHandler(dispatchMessageHandler);
-*/
-
 #if 0
 		// set the Main Menu then start the main loop
 		m_MainMenuScreen = new MenuScreen;

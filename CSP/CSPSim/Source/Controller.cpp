@@ -163,28 +163,30 @@ void LocalController::importChannels(Bus *bus) {
 }
 
 bool LocalController::sequentialUpdate(simcore::TimeStamp stamp, simcore::TimeStamp now, simdata::SimTime &dt) {
+	static double hack_offset = 0.0;
 	if (m_LastStamp != 0) {
 		simdata::SimTime sequence = simcore::timeStampDelta(stamp, m_LastStamp);
 		if (sequence <= 0) return false;
 	}
-	dt = simcore::timeStampDelta(now, stamp);
+	dt = simcore::timeStampDelta(now, stamp) + hack_offset;
 	// if dt < -200 ms the clocks are badly skewed.  may need a recovery mode
 	// note that we need to allow negative time differences, since "now"
 	// corresponds to the start of this message processing cycle rather than
 	// the current time.
-	if (dt < -0.200) return false;
+	if (dt < -0.200) {
+		// XXX hack
+		hack_offset += 0.025;  // XXX temporary bandaid for clock skew problems
+		std::cout << "hack offset now " << hack_offset << "\n";
+		dt = 0.0;
+		m_LastStamp = stamp;
+		return true;
+		// XXX ^^^ hack
+		return false;
+	}
 	m_LastStamp = stamp;
 	return true;
 }
 
-// TODO
-//   the object will be updated after receiving this message, and before
-//   rendering, so we want to set the position relative to the PREVIOUS
-//   frame time.  it should be ok for LBF to pass a timestamp computed
-//   at the start of processIncoming.  in that case, msg->timestamp() can
-//   exceed {now} (within reason---100 ms sec cutoff?).   the target
-//   position is just
-//       msg->position + msg->velocity * ({now} - msg->timestamp)
 void LocalController::onUpdate(simdata::Ref<simnet::NetworkMessage> const &msg, simcore::TimeStamp now) {
 	CSP_LOG(OBJECT, INFO, "received state: " << *msg);
 	ObjectUpdate::Ref update = simnet::NetworkMessage::FastCast<ObjectUpdate>(msg);

@@ -61,7 +61,7 @@ SOURCE_FOOTER = """
 
 class DataPackCompiler:
 
-  re_line = re.compile(r'^(\w*:?:?\w+)(\[\])?\s+(\w*)\s*((?:\s+\w+\s*=\s*\w+)*)\s*({|})?$')
+  re_line = re.compile(r'^(\w*:?:?\w+)(\[\])?\s+(\w*)\s*((?:\s+\w+\s*=\s*[a-zA-Z0-9_:]+)*)\s*({|})?$')
   re_opts = re.compile(r'\s*=\s*')
   re_ns = re.compile(r'namespace\s+([a-zA-Z_][a-zA-Z0-9]*)\s*;?')
 

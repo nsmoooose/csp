@@ -42,6 +42,7 @@ SOURCES = \
 	MenuScreen.cpp \
  	Message.cpp \
 	mmgr.cpp \
+	NumericalMethod.cpp \
 	ObjectModel.cpp \
 	ObjectRangeInfo.cpp \
 	Platform.cpp \

@@ -34,11 +34,14 @@ env.ParseConfig('ccgnu2-config --flags --libs')
 
 
 SOURCES = [
+	'DispatchManager.cpp',
+	'DispatchHandler.cpp',
 	'NetRandom.cpp',
 	'NetworkInterface.cpp',
 	'NetworkNode.cpp',
 	'PeerInfo.cpp',
 	'RecordCodec.cpp',
+	'RoutingHandler.cpp',
 ]
 
 MESSAGES = [
@@ -52,6 +55,9 @@ Alias(['all', 'SimNet'], [libsimnet])
 
 libmessages = env.SharedLibrary('SimNetMessages', MESSAGES)
 Alias(['all', 'SimNet'], [libmessages])
+
+server = env.Program('server', ['server.cpp', 'ObjectUpdate.net'] + libsimnet + ['#/SimData/SimData/libSimData.a'])
+Alias('server', server)
 
 """
 test = env.Program('test', ['test.cpp'] + libsimnet + libmessages)

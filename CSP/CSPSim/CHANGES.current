@@ -1,6 +1,9 @@
  Version 0.4.0 (in progress)
 ===========================
 
+2005-03-11: onsight
+ * Fix an exception in the DataRecorder.
+
 2005-03-05: onsight
  * Fix a couple minor warnings under gcc.
 

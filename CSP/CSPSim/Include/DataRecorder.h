@@ -152,13 +152,13 @@ public:
 
 	bool addSource(simdata::Ref<const DataChannelBase> channel) {
 		if (!channel) return false;
-		DataChannel<double>::CRef dchannel = channel;
-		if (dchannel.valid()) {
+		DataChannel<double>::CRef dchannel;
+		if (dchannel.tryAssign(channel)) {
 			m_Sources.push_back(new SingleSource(dchannel));
 			return true;
 		} else {
-			DataChannel<simdata::Vector3>::CRef vchannel = channel;
-			if (vchannel.valid()) {
+			DataChannel<simdata::Vector3>::CRef vchannel;
+			if (vchannel.tryAssign(channel)) {
 				m_Sources.push_back(new VectorSource(vchannel, 0));
 				m_Sources.push_back(new VectorSource(vchannel, 1));
 				m_Sources.push_back(new VectorSource(vchannel, 2));

@@ -44,10 +44,20 @@ public:
 	END_SIMDATA_XML_INTERFACE
 		//SIMDATA_XML("aircraft_dynamics", AircraftObject::m_AircraftDynamics, true)
 
-	ACTION_INTERFACE(AircraftObject, SmokeOn);
-	ACTION_INTERFACE(AircraftObject, SmokeOff);
-	ACTION_INTERFACE(AircraftObject, SmokeToggle);
-	ACTION_INTERFACE(AircraftObject, MarkersToggle);
+	DECLARE_INPUT_INTERFACE(AircraftObject, DynamicObject)
+		BIND_ACTION("SMOKE_ON", SmokeOn);
+		BIND_ACTION("SMOKE_OFF", SmokeOff);
+		BIND_ACTION("SMOKE_TOGGLE", SmokeToggle);
+		BIND_ACTION("MARKS_TOGGLE", MarkersToggle);
+	END_INPUT_INTERFACE
+
+public:
+
+	// input event handlers
+	void SmokeOn();
+	void SmokeOff();
+	void SmokeToggle();
+	void MarkersToggle();
 
 	AircraftObject();
 	virtual ~AircraftObject();

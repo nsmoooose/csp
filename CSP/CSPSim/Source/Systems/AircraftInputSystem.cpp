@@ -28,40 +28,11 @@
 
 SIMDATA_REGISTER_INTERFACE(AircraftInputSystem)
 
+DEFINE_INPUT_INTERFACE(AircraftInputSystem);
 
 AircraftInputSystem::AircraftInputSystem(): 
 	m_ThrottleInput(0.2)
 {
-	BIND_AXIS("THROTTLE", setThrottle);
-	BIND_AXIS("AILERON", setRoll);
-	BIND_AXIS("ELEVATOR", setPitch);
-	BIND_AXIS("RUDDER", setRudder);
-	BIND_AXIS("AIRBRAKE", setAirbrake);
-	BIND_AXIS("WHEEL_BRAKE", setWheelBrake);
-	BIND_ACTION("INC_THROTTLE", IncThrottle);
-	BIND_ACTION("STOP_INC_THROTTLE", noIncThrottle);
-	BIND_ACTION("DEC_THROTTLE", DecThrottle);
-	BIND_ACTION("STOP_DEC_THROTTLE", noDecThrottle);
-	BIND_ACTION("INC_AILERON", IncRoll);
-	BIND_ACTION("STOP_INC_AILERON", noIncRoll);
-	BIND_ACTION("DEC_AILERON", DecRoll);
-	BIND_ACTION("STOP_DEC_AILERON", noDecRoll);
-	BIND_ACTION("INC_ELEVATOR", IncPitch);
-	BIND_ACTION("STOP_INC_ELEVATOR", noIncPitch);
-	BIND_ACTION("DEC_ELEVATOR", DecPitch);
-	BIND_ACTION("STOP_DEC_ELEVATOR", noDecPitch);
-	BIND_ACTION("INC_RUDDER", IncRudder);
-	BIND_ACTION("STOP_INC_RUDDER", noIncRudder);
-	BIND_ACTION("DEC_RUDDER", DecRudder);
-	BIND_ACTION("STOP_DEC_RUDDER", noDecRudder);
-	BIND_ACTION("INC_AIRBRAKE", IncAirbrake);
-	BIND_ACTION("DEC_AIRBRAKE", DecAirbrake);
-	BIND_ACTION("OPEN_AIRBRAKE", OpenAirbrake);
-	BIND_ACTION("CLOSE_AIRBRAKE", CloseAirbrake);
-	BIND_ACTION("WHEEL_BRAKE_PULSE", WheelBrakePulse);
-	BIND_ACTION("WHEEL_BRAKE_ON", WheelBrakeOn);
-	BIND_ACTION("WHEEL_BRAKE_OFF", WheelBrakeOff);
-	BIND_ACTION("WHEEL_BRAKE_TOGGLE", WheelBrakeToggle);
 }
 
 void AircraftInputSystem::registerChannels(Bus *bus) {

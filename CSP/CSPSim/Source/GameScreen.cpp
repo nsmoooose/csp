@@ -58,48 +58,14 @@
  *       o externalize parameters
  */
 
+
+DEFINE_INPUT_INTERFACE(GameScreen);
+
 void GameScreen::initInterface()
 {
 	assert(!m_Interface);
 	m_Interface = new VirtualHID(); //GameScreenInterface();
 	m_Interface->bindObject(this);
-	BIND_ACTION("QUIT", on_Quit);
-	BIND_ACTION("PAUSE", on_Pause);
-	BIND_ACTION("TOGGLE_RECORDER", on_ToggleRecorder);
-	BIND_ACTION("TOGGLE_WIREFRAME", on_ToggleWireframe);
-	BIND_ACTION("STATS", on_Stats);
-	BIND_ACTION("CONSOLE", on_Console);
-	BIND_ACTION("CHANGE_VEHICLE", on_ChangeVehicle);
-	BIND_ACTION("CAMERA_VIEW_0", on_View0);
-	BIND_ACTION("CAMERA_VIEW_1", on_View1);
-	BIND_ACTION("CAMERA_VIEW_2", on_View2);
-	BIND_ACTION("CAMERA_VIEW_3", on_View3);
-	BIND_ACTION("CAMERA_VIEW_4", on_View4);
-	BIND_ACTION("CAMERA_VIEW_5", on_View5);
-	BIND_ACTION("CAMERA_VIEW_6", on_View6);
-	BIND_ACTION("CAMERA_VIEW_7", on_View7);
-	BIND_ACTION("CAMERA_VIEW_8", on_View8);
-	BIND_ACTION("CAMERA_VIEW_9", on_View9);
-	BIND_ACTION("CAMERA_PAN_LEFT", on_ViewPanLeft);
-	BIND_ACTION("CAMERA_PAN_RIGHT", on_ViewPanRight);
-	BIND_ACTION("CAMERA_PAN_LEFT_STOP", on_ViewPanLeftStop);
-	BIND_ACTION("CAMERA_PAN_RIGHT_STOP", on_ViewPanRightStop);
-	BIND_ACTION("CAMERA_PAN_UP", on_ViewPanUp);
-	BIND_ACTION("CAMERA_PAN_DOWN", on_ViewPanDown);
-	BIND_ACTION("CAMERA_PAN_UP_STOP", on_ViewPanUpStop);
-	BIND_ACTION("CAMERA_PAN_DOWN_STOP", on_ViewPanDownStop);
-	BIND_ACTION("CAMERA_ZOOM_IN", on_ViewZoomIn);
-	BIND_ACTION("CAMERA_ZOOM_OUT", on_ViewZoomOut);
-	BIND_ACTION("CAMERA_ZOOM_STOP", on_ViewZoomStop);
-	BIND_ACTION("CAMERA_ZOOM_STEP_IN", on_ViewZoomStepIn);
-	BIND_ACTION("CAMERA_ZOOM_STEP_OUT", on_ViewZoomStepOut);
-	BIND_ACTION("CAMERA_FOV_STEP_DEC", on_ViewFovStepDec);
-	BIND_ACTION("CAMERA_FOV_STEP_INC", on_ViewFovStepInc);
-	BIND_ACTION("SPIN_THE_WORLD", on_SpinTheWorld);
-	BIND_ACTION("SPIN_THE_WORLD_STOP", on_SpinTheWorldStop);
-	BIND_ACTION("PRINT_SCREEN", on_PrintScreen);
-	BIND_ACTION("RESET_SPIN", on_ResetSpin);
-	BIND_MOTION("CAMERA_PAN", on_MouseView);
 	simdata::Ref<EventMapIndex> maps = CSPSim::theSim->getInterfaceMaps();
 	if (maps.valid()) {
 		EventMapping::Ref map = maps->getMap("__gamescreen__");

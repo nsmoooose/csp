@@ -188,9 +188,18 @@ public:
 		SIMDATA_XML("gear_set", GearDynamics::m_Gear, true)
 	END_SIMDATA_XML_INTERFACE
 
-	ACTION_INTERFACE(GearDynamics, GearUp);
-	ACTION_INTERFACE(GearDynamics, GearDown);
-	ACTION_INTERFACE(GearDynamics, GearToggle);
+	DECLARE_INPUT_INTERFACE(GearDynamics, BaseDynamics)
+		BIND_ACTION("GEAR_UP", GearUp);
+		BIND_ACTION("GEAR_DOWN", GearDown);
+		BIND_ACTION("GEAR_TOGGLE", GearToggle);
+	END_INPUT_INTERFACE
+
+public:
+
+	// input event handlers
+	void GearUp();
+	void GearDown();
+	void GearToggle();
 
 	GearDynamics();
 

@@ -4,6 +4,22 @@
 2004-07-10: onsight
   * Small formatting cleanup in DynamicObject.cpp.
 
+  * Refactored InputInterface to move the handler maps to a separate
+    class (InputInterfaceDispatch).  A static instance of this class is
+    then created in each InputInterface subclass.  This means that
+    there will be one set of maps per InputInterface subclass (created
+    once during static intialization), rather than one set per instance
+    (recreated each time a new object was created).
+
+    The input interface macros have changed somewhat as well.  The BIND_*
+    macros that were in the object ctors are now used in the class
+    declaration (c.f. AircraftObject.h).  There is also a macro that must
+    be called in the .cpp file to define the static InputInterfaceDispatch
+    instance (c.f. AircraftObject.cpp).  The macros used to define static
+    and non-static handlers have been removed.  Instead just declare the
+    handlers as normal methods in the class body, and implement them as
+    usual in the source (.cpp) file.
+
 2004-07-08: onsight
   * Slight tweak of the logging macros.  See the SimData changelog for
     details.

@@ -1,17 +1,17 @@
 // Combat Simulator Project - FlightSim Demo
-// Copyright (C) 2002 The Combat Simulator Project
+// Copyright (C) 2002, 2004 The Combat Simulator Project
 // http://csp.sourceforge.net
-// 
+//
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
 // as published by the Free Software Foundation; either version 2
 // of the License, or (at your option) any later version.
-// 
+//
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU General Public License
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
@@ -40,6 +40,7 @@ using simdata::toDegrees;
 
 
 SIMDATA_REGISTER_INTERFACE(AircraftObject)
+DEFINE_INPUT_INTERFACE(AircraftObject);
 
 AircraftObject::AircraftObject(): DynamicObject() {
 
@@ -51,11 +52,6 @@ AircraftObject::AircraftObject(): DynamicObject() {
 	b_Pitch = DataChannel<double>::newLocal("Kinetic.Pitch", 0.0);
 	
 	setAir(true);
-
-	BIND_ACTION("SMOKE_ON", SmokeOn);
-	BIND_ACTION("SMOKE_OFF", SmokeOff);
-	BIND_ACTION("SMOKE_TOGGLE", SmokeToggle);
-	BIND_ACTION("MARKS_TOGGLE", MarkersToggle);
 
 	CSP_LOG(OBJECT, DEBUG, "... AircraftObject::AircraftObject()");
 }
@@ -114,15 +110,15 @@ void AircraftObject::onRender() {
 }
 
 
-void AircraftObject::SmokeOn() { 
+void AircraftObject::SmokeOn() {
 	enableSmoke();
 }
 
-void AircraftObject::SmokeOff() { 
+void AircraftObject::SmokeOff() {
 	disableSmoke();
 }
 
-void AircraftObject::SmokeToggle() { 
+void AircraftObject::SmokeToggle() {
 	if (isSmoke()) {
 		disableSmoke();
 	} else {
@@ -170,7 +166,7 @@ void AircraftObject::getInfo(std::vector<std::string> &info) const {
 	line.setf(std::ios::fixed);
 	line << "Heading: " << std::setw(3) << std::setfill('0') << heading << std::setfill(' ');
 	line.setf(std::ios::fixed | std::ios::showpos);
-	line << ", Pitch: " << std::setw(4) << pitch 
+	line << ", Pitch: " << std::setw(4) << pitch
 	     << ", Roll: " << std::setw(4) << roll;
 	info.push_back(line.str());
 }

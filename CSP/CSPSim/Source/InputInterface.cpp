@@ -28,37 +28,34 @@
 
 #include "InputInterface.h"
 
+InputInterfaceDispatch::~InputInterfaceDispatch() {
+	for (ActionMap::iterator iter = m_Actions.begin(); iter != m_Actions.end(); ++iter) {
+		delete iter->second;
+	}
+	for (MotionMap::iterator iter = m_Motions.begin(); iter != m_Motions.end(); ++iter) {
+		delete iter->second;
+	}
+	for (AxisMap::iterator iter = m_Axes.begin(); iter != m_Axes.end(); ++iter) {
+		delete iter->second;
+	}
+}
 
 bool InputInterface::onCommand(std::string const &id, int x, int y) {
-	ActionAdapter adapter = m_Actions[id.c_str()];
-	if (adapter) {
-		adapter(this, x, y);
-		return true;
-	}
-	return false;
+	InputInterfaceDispatch *map = _getInputInterfaceDispatch();
+	if (!map) return false;
+	return map->callAction(id, this, x, y);
 }
 
 bool InputInterface::onAxis(std::string const &id, double value) {
-	AxisAdapter adapter = m_Axes[id.c_str()];
-	if (adapter) {
-		adapter(this, value);
-		return true;
-	}
-	return false;
+	InputInterfaceDispatch *map = _getInputInterfaceDispatch();
+	if (!map) return false;
+	return map->callAxis(id, this, value);
 }
 
 bool InputInterface::onMotion(std::string const &id, int x, int y, int dx, int dy) {
-	if (id != m_LastMotionID) {
-		m_LastMotionID = id;
-		m_LastMotionAdapter = NULL;
-		MotionMap::const_iterator map = m_Motions.find(id.c_str());
-		if (map == m_Motions.end()) return false;
-		m_LastMotionAdapter = map->second;
-	}
-	MotionAdapter adapter = m_LastMotionAdapter;
-	if (!adapter) return false;
-	adapter(this, x, y, dx, dy);
-	return true;
+	InputInterfaceDispatch *map = _getInputInterfaceDispatch();
+	if (!map) return false;
+	return map->callMotion(id, this, x, y, dx, dy);
 }
 
 bool InputInterface::onMapEvent(MapEvent const &event) {

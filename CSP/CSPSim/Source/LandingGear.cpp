@@ -565,10 +565,9 @@ GearDynamics::GearDynamics():
 	m_Extended(true),
 	m_Height(0.0)
 {
-	BIND_ACTION("GEAR_UP", GearUp);
-	BIND_ACTION("GEAR_DOWN", GearDown);
-	BIND_ACTION("GEAR_TOGGLE", GearToggle);
 }
+
+DEFINE_INPUT_INTERFACE(GearDynamics);
 
 void GearDynamics::registerChannels(Bus *bus) {
 	assert(bus!=0);

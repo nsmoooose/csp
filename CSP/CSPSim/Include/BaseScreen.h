@@ -27,6 +27,7 @@
 
 //#include "SDL_keysym.h"
 #include "InputInterface.h"
+#include "HID.h"
 
 
 // BaseScreen represents a generic screen

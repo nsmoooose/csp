@@ -1,6 +1,9 @@
 Version 0.4.0 (in progress)
 ===========================
 
+2004-06-12: delta
+  * Added Properties.h to SimData.vcproj header folder.
+
 2004-06-11: onsight
   * Fixed up the ArchiveTest to use ArchiveReader and ArchiveWriter,
     and also changed the import statements in the test suite a bit.

@@ -350,6 +350,9 @@
 				RelativePath="..\Include\SimData\Path.h">
 			</File>
 			<File
+				RelativePath="..\Include\SimData\Properties.h">
+			</File>
+			<File
 				RelativePath="..\Include\SimData\Quat.h">
 			</File>
 			<File

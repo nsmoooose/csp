@@ -1,6 +1,22 @@
 CSPSim release change log.  See CHANGES.current for the latest updates
 to CVS.
 
+ Version 0.3.5 (2003-10-19)
+===========================
+
+2003-09-07: onsight
+            Added Include/System.h and Include/Bus.h, which provide
+	    infrastructure for constructing detailed vehicle models.
+	    Several existing components such as the data recorder and
+	    flight model need to be refactored to use this new
+	    interface.
+
+	    Minor warning cleanups in System.h and Bus.h.
+
+2003-08-20: onsight
+            Tagged version r0_3_4, starting version 0.3.5
+
+
  Version 0.3.4 (2003-08-20)
 ===========================
 

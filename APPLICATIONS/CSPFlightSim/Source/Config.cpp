@@ -73,7 +73,7 @@ void CConfig::ReadConfigFile(const char* cFilename)
 		{
 			i++;
 			k = 0;
-			while (sConfigData[i] != '>')
+			while (sConfigData[i] && sConfigData[i] != '>')
 			{
 				cParamName[k] = sConfigData[i];
 				i++;
@@ -85,18 +85,18 @@ void CConfig::ReadConfigFile(const char* cFilename)
 			k = 0;
 
 			i++;  // skip '>'
-			while (strchr(" \t\n\r", sConfigData[i])) {
+			while (sConfigData[i] && strchr(" \t\n\r", sConfigData[i])) {
 				i++;
 			}
 
-			while (!strchr("\r\n", sConfigData[i]))			// read the value, terminated by a LF
+			while (sConfigData[i] && !strchr("\r\n", sConfigData[i]))			// read the value, terminated by a LF
 			{
 				cParamValue[k] = sConfigData[i];
 				i++;
 				k++;
 			}
 			cParamValue[k] = 0;						// terminate the string with 0x00
-			while (strchr(" \t\n\r", sConfigData[i])) {
+			while (sConfigData[i] && strchr(" \t\n\r", sConfigData[i])) {
 				i++;
 			}
 

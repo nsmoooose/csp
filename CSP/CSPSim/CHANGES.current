@@ -3,6 +3,7 @@
 
 2004-09-24: onsight
   * Fix a few compiler warnings under gcc.
+  * Add 'clean' target to tools makefiles.
 
 2004-09-18: delta
   * Updated VisualStudio/CSPSimDLL/CSPSimDLL.vcproj linking onto

@@ -20,3 +20,5 @@ dem2dat_wrap.o: dem2dat_wrap.cxx
 dem2dat_wrap.cxx: dem2dat.i dem2dat.h
 	$(SWIG) -c -c++ -python -noexcept dem2dat.i
 
+clean:
+	$(RM) dem2dat_wrap.o dem2dat dem2dat_wrap.cxx dem2dat.py

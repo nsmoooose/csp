@@ -128,7 +128,7 @@ public:
 	Leaf(uint32 level, Region const &region): Node(level, region) { }
 
 	virtual bool insert(Child *child, uint32 x, uint32 y, Node *&replacement, TreeConstraint &constraint) {
-		assert(contains(child.point()));
+		assert(contains(child->point()));
 		//std::cout << "LI: " << x << " " << y << "\n";
 		if (_children.size() >= constraint.getLeafLimit() && getLevel() <= constraint.getMaxDepth()) {
 			//std::cout << "NEW BRANCH\n";

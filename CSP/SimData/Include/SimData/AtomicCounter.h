@@ -41,6 +41,7 @@
 #  define _WINSOCKAPI_
 #  define NOMINMAX
 #  include <Windows.h>
+#  undef ERROR
 #else
 #  define LIN_ATOMIC
 extern "C" {

@@ -24,6 +24,7 @@
  */
 
 #include <iostream>
+#include <string>
 
 int main(int, char **argv) {
 	int x = 1;

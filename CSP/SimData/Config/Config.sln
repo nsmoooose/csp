@@ -1,10 +1,5 @@
 Microsoft Visual Studio Solution File, Format Version 8.00
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SimData", "SimData.vcproj", "{F9948756-70B5-4328-8A6A-F4BE5A521A27}"
-	ProjectSection(ProjectDependencies) = postProject
-		{33DAE914-B7A2-407A-993E-0A12C4A3544B} = {33DAE914-B7A2-407A-993E-0A12C4A3544B}
-	EndProjectSection
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Config", "..\Config\Config.vcproj", "{33DAE914-B7A2-407A-993E-0A12C4A3544B}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Config", "Config.vcproj", "{33DAE914-B7A2-407A-993E-0A12C4A3544B}"
 	ProjectSection(ProjectDependencies) = postProject
 	EndProjectSection
 EndProject
@@ -14,10 +9,6 @@ Global
 		Release = Release
 	EndGlobalSection
 	GlobalSection(ProjectConfiguration) = postSolution
-		{F9948756-70B5-4328-8A6A-F4BE5A521A27}.Debug.ActiveCfg = Debug|Win32
-		{F9948756-70B5-4328-8A6A-F4BE5A521A27}.Debug.Build.0 = Debug|Win32
-		{F9948756-70B5-4328-8A6A-F4BE5A521A27}.Release.ActiveCfg = Release|Win32
-		{F9948756-70B5-4328-8A6A-F4BE5A521A27}.Release.Build.0 = Release|Win32
 		{33DAE914-B7A2-407A-993E-0A12C4A3544B}.Debug.ActiveCfg = Debug|Win32
 		{33DAE914-B7A2-407A-993E-0A12C4A3544B}.Debug.Build.0 = Debug|Win32
 		{33DAE914-B7A2-407A-993E-0A12C4A3544B}.Release.ActiveCfg = Release|Win32

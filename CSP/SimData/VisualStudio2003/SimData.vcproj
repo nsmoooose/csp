@@ -78,7 +78,8 @@
 				CommandLine="copy /Y ..\Source\cSimData.py ..\SimData"
 				ExcludedFromBuild="FALSE"/>
 			<Tool
-				Name="VCPreBuildEventTool"/>
+				Name="VCPreBuildEventTool"
+				CommandLine="..\SimData\Config.exe &gt; ..\Include\SimData\Config.h"/>
 			<Tool
 				Name="VCPreLinkEventTool"/>
 			<Tool
@@ -148,7 +149,8 @@
 				CommandLine="copy /Y ..\Source\cSimData.py ..\SimData"
 				ExcludedFromBuild="FALSE"/>
 			<Tool
-				Name="VCPreBuildEventTool"/>
+				Name="VCPreBuildEventTool"
+				CommandLine="..\SimData\Configd.exe &gt; ..\Include\SimData\Config.h"/>
 			<Tool
 				Name="VCPreLinkEventTool"/>
 			<Tool

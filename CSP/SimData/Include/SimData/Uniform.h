@@ -65,7 +65,7 @@ typedef signed int int32;
 typedef unsigned int uint32;
 #endif
 
-#ifdef _WIN32
+#if defined(_MSC_VER) && (_MSC_VER >= 1310)
 # define SIMDATA_STATIC_CONST_DEF(x)
 # define SIMDATA_PACKED
 typedef __int64 int64;

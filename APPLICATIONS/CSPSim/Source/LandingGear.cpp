@@ -40,10 +40,9 @@
 #include <cstdio>
 #include <iostream>
 
-using simdata::DegreesToRadians;
-using simdata::Dot;
-using simdata::RadiansToDegrees;
-using simdata::QVRotate;
+using simdata::toRadians;
+using simdata::dot;
+using simdata::toDegrees;
 using simdata::Vector3;
 
 
@@ -212,8 +211,8 @@ double LandingGear::setSteering(double setting, double link_brakes) {
 	if (setting < -1.0) setting = -1.0;
 	m_BrakeSteer = setting * link_brakes * m_BrakeSteeringLinkage;
 	m_SteerAngle = setting * m_SteeringLimit;
-	double rad = DegreesToRadians(m_SteerAngle);
-	m_SteerTransform.FromAngleAxis(rad, Vector3::ZAXIS);
+	double rad = toRadians(m_SteerAngle);
+	m_SteerTransform.makeRotate(rad, Vector3::ZAXIS);
 	return m_SteerAngle;
 }
 
@@ -253,7 +252,7 @@ void LandingGear::updateWOW(simdata::Vector3 const &origin, simdata::Quat const 
 		if (!m_WOW) {
 			// yes, flag the touchdown
 			m_Touchdown = true;
-			m_TouchdownPoint = origin + QVRotate(q, m_Position);
+			m_TouchdownPoint = origin + q.rotate(m_Position);
 			m_WOW = true;
 		}
 	} else {
@@ -278,9 +277,9 @@ void LandingGear::updateSuspension(simdata::Vector3 const &origin,
                                    simdata::Vector3 const &normalGroundBody) 
 {
 	double compression = 0.0;
-	double motionNormal = Dot(m_Motion, normalGroundBody);
+	double motionNormal = dot(m_Motion, normalGroundBody);
 	if (motionNormal > 0.0) { 
-		compression = - (Dot(m_MaxPosition, normalGroundBody) + height) / motionNormal;
+		compression = - (dot(m_MaxPosition, normalGroundBody) + height) / motionNormal;
 	}
 
 	// at (or past) max extension?
@@ -309,7 +308,7 @@ void LandingGear::updateSuspension(simdata::Vector3 const &origin,
 		// (e.g. when brakes are applied)
 	
 		// calculate strut compression speed
-		double vCompression = - Dot(vBody, normalGroundBody) * motionNormal;
+		double vCompression = - dot(vBody, normalGroundBody) * motionNormal;
 		// restrict to reasonable limits (faster than this means the gear will 
 		// probably break in a moment anyway)
 		vCompression = std::min(std::max(vCompression, -10.0), 10.0);
@@ -354,7 +353,7 @@ void LandingGear::updateWheel(double dt,
 	static double XXX_t = 0.0;
 	if (updateContact) XXX_t += dt;
 
-	simdata::Vector3 tirePositionLocal = origin + QVRotate(q, m_Position);
+	simdata::Vector3 tirePositionLocal = origin + q.rotate(m_Position);
 
 	// not in contact
 	if (m_Compression <= 0.0) {
@@ -370,11 +369,11 @@ void LandingGear::updateWheel(double dt,
 	simdata::Vector3 tireForce = - tireDeformation * m_TireK;
 
 	// switch to body coordinates
-	simdata::Vector3 tireForceBody = QVRotate(q.Bar(), tireForce);
+	simdata::Vector3 tireForceBody = q.invrotate(tireForce);
 	// project onto the ground 
-	tireForceBody -= simdata::Dot(tireForceBody, normalGroundBody) * normalGroundBody;
+	tireForceBody -= dot(tireForceBody, normalGroundBody) * normalGroundBody;
 	// transform to wheel coordinates
-	simdata::Vector3 tireForceWheel = QVRotate(m_SteerTransform, tireForceBody);
+	simdata::Vector3 tireForceWheel = m_SteerTransform.rotate(tireForceBody);
 
 	simdata::Vector3 XXX_tfb = tireForceBody;
 
@@ -410,9 +409,9 @@ void LandingGear::updateWheel(double dt,
 	}
 
 	// ground velocity in body coordinates
-	simdata::Vector3 vGroundBody = vBody - Dot(vBody, normalGroundBody) * normalGroundBody;
+	simdata::Vector3 vGroundBody = vBody - dot(vBody, normalGroundBody) * normalGroundBody;
 	// transform to wheel coordinates
-	simdata::Vector3 vGroundWheel = QVRotate(m_SteerTransform, vGroundBody);
+	simdata::Vector3 vGroundWheel = m_SteerTransform.rotate(vGroundBody);
 	// normalize to get rolling direction
 	simdata::Vector3 rollingDirectionWheel = Vector3(0.0, vGroundWheel.y(), vGroundWheel.z()).normalized();
 	// compute rolling friction
@@ -455,7 +454,7 @@ void LandingGear::updateWheel(double dt,
 		// reduce total force (reevaluate skidLimit with skidding friction)
 		tireForceWheel *= m_TireFriction * normalForce / totalTireForce;
 		// convert back to body coordinates
-		tireForceBody = QVRotate(m_SteerTransform.Bar(), tireForceWheel);
+		tireForceBody = m_SteerTransform.invrotate(tireForceWheel);
 	} else {
 		if (!brakeSlip) {
 			// tire is fixed and brakes are locked, so we need to damp the
@@ -467,7 +466,7 @@ void LandingGear::updateWheel(double dt,
 			tireForceWheel += rollingFrictionWheel;
 		}
 		// convert back to body coordinates
-		tireForceBody = QVRotate(m_SteerTransform.Bar(), tireForceWheel);
+		tireForceBody = m_SteerTransform.invrotate(tireForceWheel);
 		if (updateContact) {
 			m_Skidding = false;
 			// tire isn't skidding, so use static friction from now on
@@ -487,7 +486,7 @@ void LandingGear::updateWheel(double dt,
 	// the wheel is rolling or skidding
 	if (updateContact && (skidding || brakeSlip)) {
 		// convert back to local coordinates
-		tireForce = QVRotate(q, tireForceBody);
+		tireForce = q.rotate(tireForceBody);
 		// update tire contact point
 		m_TireContactPoint = tirePositionLocal + tireForce / m_TireK;
 	}
@@ -556,7 +555,7 @@ void GearDynamics::doComplexPhysics(double x) {
 	simdata::Vector3 airflow_body = *m_WindBody - *m_VelocityBody;
 	double airspeed = airflow_body.length();
 	simdata::Vector3 dynamic_pressure = 0.5 * (*m_qBar) * airflow_body * airspeed;
-	simdata::Vector3 groundNormalBody = QVRotate(m_qOrientation->Bar(), *m_NormalGround);
+	simdata::Vector3 groundNormalBody = m_qOrientation->invrotate(*m_NormalGround);
 	size_t n = m_Gear.size();
 	for (size_t i = 0; i < n; ++i) {
 		LandingGear &gear = *(m_Gear[i]);
@@ -672,7 +671,7 @@ void GearDynamics::postSimulationStep(double dt) {
 	BaseDynamics::postSimulationStep(dt);
 	if (!m_Extended) return;
 	if (!(*m_NearGround)) return;
-	simdata::Vector3 groundNormalBody = QVRotate(m_qOrientation->Bar(), *m_NormalGround);
+	simdata::Vector3 groundNormalBody = m_qOrientation->invrotate(*m_NormalGround);
 	size_t n =  m_Gear.size();
 	for (size_t i = 0; i < n; ++i) {
 		simdata::Vector3 R = m_Gear[i]->getPosition();

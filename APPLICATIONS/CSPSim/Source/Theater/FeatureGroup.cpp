@@ -65,7 +65,7 @@ FeatureSceneGroup* FeatureGroup::makeSceneGroup(simdata::Vector3 const &origin, 
 	assert(!m_SceneGroup);
 	m_SceneGroup = new FeatureSceneGroup();
 	m_Model->addSceneModel(m_SceneGroup.get(), LayoutTransform(), ElevationCorrection(terrain, m_X, m_Y, m_Orientation));
-	m_SceneGroup->setPosition(osg::Vec3(m_X-origin.x, m_Y-origin.y, -origin.z));
+	m_SceneGroup->setPosition(osg::Vec3(m_X-origin.x(), m_Y-origin.y(), -origin.z()));
 	m_SceneGroup->setAttitude(osg::Quat(m_Orientation, osg::Z_AXIS));
 	return m_SceneGroup.get();
 }
@@ -99,8 +99,8 @@ void FeatureGroup::project(Projection const &map) {
 	simdata::Vector3 place = map.convert(m_Position);
 	//std::cout << "             -> " << place << std::endl;
 	//std::cout << "             -> " << map.getCenter() << std::endl;
-	m_X = place.x;
-	m_Y = place.y;
+	m_X = place.x();
+	m_Y = place.y();
 }
 
 

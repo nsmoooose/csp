@@ -31,7 +31,7 @@
 #include <SimData/InterfaceRegistry.h>
 #include <SimData/Object.h>
 #include <SimData/Vector3.h>
-#include <SimData/Quaternion.h>
+#include <SimData/Quat.h>
 #include <SimData/Link.h>
 
 #include "BaseDynamics.h"
@@ -91,28 +91,28 @@ public:
 	virtual void postSimulationStep(double dt,
                                         simdata::Vector3 const &origin, 
                                         simdata::Vector3 const &vBody,
-                                        simdata::Quaternion const &q, 
+                                        simdata::Quat const &q, 
 		                        double const height,
                                         simdata::Vector3 const &normalGroundBody);
 	simdata::Vector3 simulateSubStep(simdata::Vector3 const &origin,
                                          simdata::Vector3 const &vBody,
-                                         simdata::Quaternion const &q, 
+                                         simdata::Quat const &q, 
                                          double height, 
                                          simdata::Vector3 const &normalGroundBody);
 
 protected:
 	void resetForces();
-	void updateWOW(simdata::Vector3 const &origin, simdata::Quaternion const &q);
+	void updateWOW(simdata::Vector3 const &origin, simdata::Quat const &q);
 	void updateBraking(double dt);
 	void updateWheel(double dt,
                          simdata::Vector3 const &origin, 
                          simdata::Vector3 const &vBody,
-                         simdata::Quaternion const &q, 
+                         simdata::Quat const &q, 
                          simdata::Vector3 const &normalGroundBody,
                          bool updateContact);
 	void updateSuspension(simdata::Vector3 const &origin, 
                               simdata::Vector3 const &vBody, 
-                              simdata::Quaternion const &q, 
+                              simdata::Quat const &q, 
                               double const height, 
                               simdata::Vector3 const &normalGroundBody);
 
@@ -152,7 +152,7 @@ protected:
 
 	double m_SteerAngle;
 	double m_SteeringLimit;
-	simdata::Quaternion m_SteerTransform;
+	simdata::Quat m_SteerTransform;
 
 	bool m_Extended;
 	bool m_WOW;

@@ -73,9 +73,9 @@ public:
 		simdata::Ref<DynamicObject> obj = self->getDataManager().getObject(path);
 		obj->setGlobalPosition(position);
 		obj->setVelocity(velocity);
-		simdata::Quaternion q_attitude;
+		simdata::Quat q_attitude;
 		attitude *= 3.1416 / 180.0;
-		q_attitude = simdata::Quaternion::MakeQFromEulerAngles(attitude.x, attitude.y, attitude.z);
+		q_attitude.makeRotate(attitude.x(), attitude.y(), -attitude.z());
 		obj->setAttitude(q_attitude);
 		self->getBattlefield()->addUnit(obj);
 		if (!self->getActiveObject()) self->setActiveObject(obj);
@@ -87,9 +87,9 @@ public:
 		simdata::Vector3 position = map.convert(lla);
 		obj->setGlobalPosition(position);
 		obj->setVelocity(velocity);
-		simdata::Quaternion q_attitude;
+		simdata::Quat q_attitude;
 		attitude *= 3.1416 / 180.0;
-		q_attitude = simdata::Quaternion::MakeQFromEulerAngles(attitude.x, attitude.y, attitude.z);
+		q_attitude.makeRotate(attitude.x(), attitude.y(), -attitude.z());
 		obj->setAttitude(q_attitude);
 		self->getBattlefield()->addUnit(obj);
 		if (!self->getActiveObject()) self->setActiveObject(obj);

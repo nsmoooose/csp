@@ -94,7 +94,7 @@ public:
 		p.unpack(m_Center);
 		p.unpack(m_Width);
 		p.unpack(m_Height);
-		double d = m_Center.Length();
+		double d = m_Center.length();
 		double w = atan2(m_Width, d);
 		double h = atan2(m_Height, d);
 		assert(d > 0.0);
@@ -102,15 +102,15 @@ public:
 		assert(h > 0.0);
 		m_ScaleTheta = 1.0 / w;
 		m_ScalePhi = 1.0 / h;
-		m_CenterTheta = atan2(m_Center.z, m_Center.y);
-		m_CenterPhi = atan2(m_Center.x, m_Center.y);
+		m_CenterTheta = atan2(m_Center.z(), m_Center.y());
+		m_CenterPhi = atan2(m_Center.x(), m_Center.y());
 	}
 		
 	void positionFPM(Vector3 &body_velocity, double &x, double &y)
 	{
-		double theta = atan2(body_velocity.z, body_velocity.y);
+		double theta = atan2(body_velocity.z(), body_velocity.y());
 		y = (theta - m_CenterTheta) * m_ScaleTheta;
-		double phi = atan2(body_velocity.x, body_velocity.y);
+		double phi = atan2(body_velocity.x(), body_velocity.y());
 		x = (phi - m_CenterPhi) * m_ScalePhi;
 	}
 

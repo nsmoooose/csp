@@ -32,8 +32,8 @@
 #include "Profile.h"
 #include "Log.h"
 
-using simdata::DegreesToRadians;
-using simdata::RadiansToDegrees;
+using simdata::toRadians;
+using simdata::toDegrees;
 
 
 SIMDATA_REGISTER_INTERFACE(AircraftObject)
@@ -161,14 +161,14 @@ void AircraftObject::unpack(simdata::UnPacker& p) {
 }
 
 void AircraftObject::convertXML() {
-	m_AileronMin = DegreesToRadians(m_AileronMin);
-	m_AileronMax = DegreesToRadians(m_AileronMax);
-	m_ElevatorMin = DegreesToRadians(m_ElevatorMin);
-	m_ElevatorMax = DegreesToRadians(m_ElevatorMax);
-	m_RudderMin = DegreesToRadians(m_RudderMin);
-	m_RudderMax = DegreesToRadians(m_RudderMax);
-	m_AirbrakeMax = DegreesToRadians(m_AirbrakeMax);
-	m_AirbrakeRate = DegreesToRadians(m_AirbrakeRate);
+	m_AileronMin = toRadians(m_AileronMin);
+	m_AileronMax = toRadians(m_AileronMax);
+	m_ElevatorMin = toRadians(m_ElevatorMin);
+	m_ElevatorMax = toRadians(m_ElevatorMax);
+	m_RudderMin = toRadians(m_RudderMin);
+	m_RudderMax = toRadians(m_RudderMax);
+	m_AirbrakeMax = toRadians(m_AirbrakeMax);
+	m_AirbrakeRate = toRadians(m_AirbrakeRate);
 }
 
 void AircraftObject::postCreate() {
@@ -529,7 +529,8 @@ void AircraftObject::setAttitude(double pitch, double roll, double heading)
 	m_Heading = heading;
 	
 	// use standard Euler convension (X axis is roll, Y is pitch, Z is yaw).
-	attitude = simdata::Quat::MakeQFromEulerAngles(m_Roll, m_Pitch, -m_Heading);
+	//attitude = simdata::Quat::MakeQFromEulerAngles(m_Roll, m_Pitch, -m_Heading); // old-style
+	attitude.makeRotate(m_Roll, m_Pitch, -m_Heading);
 	DynamicObject::setAttitude(attitude);
 }
 
@@ -551,11 +552,15 @@ void AircraftObject::doMovement(double dt)
 	///updateTransform();
 
 	// modified Euler angles are the CSP frame (X is pitch, Y is roll, Z is -yaw).
-	simdata::Vector3 angles = simdata::Quat::MakeModifiedEulerAnglesFromQ(m_Attitude);
+	double yaw;
+	m_Attitude.getEulerAngles(m_Roll, m_Pitch, yaw);
+	m_Heading = -yaw;
 	
-	m_Pitch = angles.x();
-	m_Roll = angles.y();
-	m_Heading = angles.z();
+	//simdata::Vector3 angles = simdata::Quat::MakeModifiedEulerAnglesFromQ(m_Attitude); // old-style
+	//m_Pitch = angles.x();
+	//m_Roll = angles.y();
+	//m_Heading = angles.z();
+
 	m_Speed = m_LinearVelocity.length();
 }
 
@@ -642,19 +647,19 @@ void AircraftObject::getStats(std::vector<std::string> &stats) const {
 	float speed = getSpeed();
 	float alpha = getAngleOfAttack();
 	float G = getGForce();
-	//snprintf(buffer, 255, "Alpha: %+.2f, G: %+.2f, Air speed: %.1f", RadiansToDegrees(alpha), G, speed);
-	snprintf(buffer, 255, "AOA: %+.2f, G: %+.2f, Air speed: %.1f", RadiansToDegrees(alpha), G, speed);
+	//snprintf(buffer, 255, "Alpha: %+.2f, G: %+.2f, Air speed: %.1f", toDegrees(alpha), G, speed);
+	snprintf(buffer, 255, "AOA: %+.2f, G: %+.2f, Air speed: %.1f", toDegrees(alpha), G, speed);
 	stats.push_back(buffer);
-	float heading = RadiansToDegrees(m_Heading);
+	float heading = toDegrees(m_Heading);
 	if (heading < 0.0) heading += 360.0;
 	snprintf(buffer, 255, "Heading: %.3f, Pitch: %.3f, Roll: %.3f",
 	         heading,
-	         RadiansToDegrees(m_Pitch), 
-	         RadiansToDegrees(m_Roll));
+	         toDegrees(m_Pitch), 
+	         toDegrees(m_Roll));
 	stats.push_back(buffer);
 	/*static float aoa = 0.0;
-	if (fabsf(RadiansToDegrees(alpha)) > aoa) {
-		aoa = fabsf(RadiansToDegrees(alpha));
+	if (fabsf(toDegrees(alpha)) > aoa) {
+		aoa = fabsf(toDegrees(alpha));
 		std::cout << "\naoa max = " << aoa << "\n";
 	}
 	static int i = 0;
@@ -786,9 +791,9 @@ void AircraftObject::doMovement(double dt)
 
     m_Orientation.ToEulerAnglesZXY(m_heading, m_pitch, m_roll);
 
-    m_heading = RadiansToDegrees( m_heading );
-    m_pitch = RadiansToDegrees ( m_pitch );
-    m_roll = RadiansToDegrees( m_roll );
+    m_heading = toDegrees( m_heading );
+    m_pitch = toDegrees ( m_pitch );
+    m_roll = toDegrees( m_roll );
 }
 
 void AircraftObject::doSimplePhysics(double dt)

@@ -371,8 +371,8 @@ class VirtualBattlefield: public simdata::Referenced
 	void toCell(int idx, int &x, int &y);
 
 	int toCell(simdata::Vector3 const &v) {
-		int x = int(floor(v.x / m_CellSize + 0.5));
-		int y = int(floor(v.y / m_CellSize + 0.5));
+		int x = int(floor(v.x() / m_CellSize + 0.5));
+		int y = int(floor(v.y() / m_CellSize + 0.5));
 		return toCell(x, y);
 	}
 

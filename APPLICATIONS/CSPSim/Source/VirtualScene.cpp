@@ -529,10 +529,10 @@ void VirtualScene::_updateFog(simdata::Vector3 const &lookPos, simdata::Vector3 
 	float sunz = (1.0 - sdir.z());
 	if (sunz > 1.0) sunz = 2.0 - sunz;
 	float clearSky = 0.0; //std::max(0.0, 0.5 * eyePos.z() - 2500.0);
-	double a = simdata::Dot(dir, sdir) * sunz;
+	double a = simdata::dot(dir, sdir) * sunz;
 	osg::StateSet *pStateSet = m_FogGroup->getStateSet();
 	osg::Fog * pFogAttr = (osg::Fog*)pStateSet->getAttribute(osg::StateAttribute::FOG);
-	float angle = simdata::RadiansToDegrees(atan2(dir.y(), dir.x()));
+	float angle = simdata::toDegrees(atan2(dir.y(), dir.x()));
 	// 0.8 brings some relief to distant mountain profiles at the clip plane, but
 	// is not an ideal solution (better to push out the clip plane)
 	//osg::Vec4 color = m_Sky->getHorizonColor(angle) * 0.8;

@@ -30,7 +30,7 @@
 
 #include <SimData/Object.h>
 #include <SimData/Vector3.h>
-#include <SimData/Quaternion.h>
+#include <SimData/Quat.h>
 #include <SimData/Link.h>
 #include <SimData/InterfaceRegistry.h>
 

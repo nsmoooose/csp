@@ -34,8 +34,8 @@
 #include <SimData/Quat.h>
 
 
-using simdata::RadiansToDegrees;
-using simdata::DegreesToRadians;
+using simdata::toDegrees;
+using simdata::toRadians;
 
 
 SIMDATA_REGISTER_INTERFACE(PrimaryAeroDynamics)
@@ -168,13 +168,13 @@ void PrimaryAeroDynamics::unpack(simdata::UnPacker& p) {
 
 void PrimaryAeroDynamics::convertXML() {
 	// angle data are given in degree
-	m_DeMax = DegreesToRadians(m_DeMax);
-	m_DeMin = DegreesToRadians(m_DeMin);
-	m_DaMax = DegreesToRadians(m_DaMax);
-	m_DaMin = DegreesToRadians(m_DaMin);
-	m_DrMax = DegreesToRadians(m_DrMax);
-	m_DrMin = DegreesToRadians(m_DrMin);
-	m_stallAOA = DegreesToRadians(m_stallAOA);
+	m_DeMax = toRadians(m_DeMax);
+	m_DeMin = toRadians(m_DeMin);
+	m_DaMax = toRadians(m_DaMax);
+	m_DaMin = toRadians(m_DaMin);
+	m_DrMax = toRadians(m_DrMax);
+	m_DrMin = toRadians(m_DrMin);
+	m_stallAOA = toRadians(m_stallAOA);
 }
 
 void PrimaryAeroDynamics::postCreate() {
@@ -225,7 +225,7 @@ void PrimaryAeroDynamics::initializeSimulationStep(double dt) {
 
 
 void PrimaryAeroDynamics::computeForceAndMoment(double x) {
-	m_AirflowBody =	*m_VelocityBody - *m_WindBody; //simdata::QVRotate(m_qOrientation->Bar(), m_WindLocal);
+	m_AirflowBody =	*m_VelocityBody - *m_WindBody; //m_qOrientation->invrotate(m_WindLocal);
 	m_AirSpeed = m_AirflowBody.length();
 	// prevent singularities
 	if (m_AirSpeed < 1.0) m_AirSpeed = 1.0;
@@ -264,12 +264,12 @@ void PrimaryAeroDynamics::calculateLiftCoefficient() {
 	
 	m_CL = ((m_CL0) + 
 	        (m_CL_a * alpha) + 
-	        (m_CL_q * m_AngularVelocityBody->x + m_CL_adot * m_alphaDot ) * m_WingChord / ( 2.0 * m_AirSpeed) + 
+	        (m_CL_q * m_AngularVelocityBody->x() + m_CL_adot * m_alphaDot ) * m_WingChord / ( 2.0 * m_AirSpeed) + 
 	        (m_CL_de * m_Elevator)
 	       );
 
 	CSP_LOG(PHYSICS, DEBUG, "AeroDynamics::calculateLiftCoefficient() " << 
-	                                m_CL << " at alpha = " << RadiansToDegrees(m_alpha) << 
+	                                m_CL << " at alpha = " << toDegrees(m_alpha) << 
 	                                ", Elevator: " << m_Elevator );
 }
 
@@ -321,7 +321,7 @@ void PrimaryAeroDynamics::calculateDragCoefficient() {
 	m_CD += induced;
 	
 	CSP_LOG(PHYSICS, DEBUG, "AeroDynamics::calculateDragCoefficient() " << 
-	                                m_CD << " at alpha = " << RadiansToDegrees(m_alpha) << 
+	                                m_CD << " at alpha = " << toDegrees(m_alpha) << 
 	                                ", Elevator: " << m_Elevator << ", Induced: " << induced << ", GE: " << m_GE << ", m_CL: " << m_CL );
 }
 
@@ -361,7 +361,7 @@ void PrimaryAeroDynamics::calculateSideCoefficient() {
 	}
 */
 
-	m_CY = m_CY_beta * beta + m_CY_dr * m_Rudder - m_CY_r * m_AngularVelocityBody->z;
+	m_CY = m_CY_beta * beta + m_CY_dr * m_Rudder - m_CY_r * m_AngularVelocityBody->z();
 
 	CSP_LOG(PHYSICS, DEBUG, "AeroDynamics::calculateSideCoefficient() " << m_CY );
 }
@@ -383,7 +383,7 @@ simdata::Vector3 const&  PrimaryAeroDynamics::sideVector() {
 double PrimaryAeroDynamics::calculateRollMoment() const {
 	return ( (m_CI_beta * m_beta) + 
 	         (m_CI_da * m_Aileron) +
-	         (m_CI_p * m_AngularVelocityBody->y - m_CI_r * m_AngularVelocityBody->z)* m_WingSpan / ( 2.0 * m_AirSpeed) +
+	         (m_CI_p * m_AngularVelocityBody->y() - m_CI_r * m_AngularVelocityBody->z())* m_WingSpan / ( 2.0 * m_AirSpeed) +
 	         (m_CI_dr * m_Rudder)
 	       ) * m_qBarS * m_WingSpan;
 }
@@ -392,7 +392,7 @@ double PrimaryAeroDynamics::calculateRollMoment() const {
 double PrimaryAeroDynamics::calculatePitchMoment() const {
 	return ( (m_CM0) + 
 	         (m_CM_a * m_alpha) +
-	         (m_CM_q * m_AngularVelocityBody->x + m_CM_adot * m_alphaDot) * m_WingChord / ( 2.0 * m_AirSpeed) +
+	         (m_CM_q * m_AngularVelocityBody->x() + m_CM_adot * m_alphaDot) * m_WingChord / ( 2.0 * m_AirSpeed) +
 	         (m_CM_de * m_Elevator)
 	       ) * m_qBarS * m_WingChord;
 }
@@ -400,7 +400,7 @@ double PrimaryAeroDynamics::calculatePitchMoment() const {
 
 double PrimaryAeroDynamics::calculateYawMoment() const {   
 	return - ( (m_Cn_beta * m_beta) + 
-	           (m_Cn_p * m_AngularVelocityBody->y - m_Cn_r * m_AngularVelocityBody->z) * m_WingSpan / ( 2.0 * m_AirSpeed) +
+	           (m_Cn_p * m_AngularVelocityBody->y() - m_Cn_r * m_AngularVelocityBody->z()) * m_WingSpan / ( 2.0 * m_AirSpeed) +
 	           (m_Cn_da * m_Aileron + m_Cn_dr * m_Rudder)
 	         ) * m_qBarS *  m_WingSpan; // Yaw
 } 

@@ -186,8 +186,8 @@ void EngineDynamics::preSimulationStep(double dt) {
 	BaseDynamics::preSimulationStep(dt);
 	m_Force = m_Moment = simdata::Vector3::ZERO;
 	if (!m_Engine.empty()) {
-		float altitude = static_cast<float>(m_PositionLocal->z);
-		float speed = static_cast<float>(m_VelocityBody->Length());
+		float altitude = static_cast<float>(m_PositionLocal->z());
+		float speed = static_cast<float>(m_VelocityBody->length());
 		float mach = static_cast<float>(CSPSim::theSim->getAtmosphere()->getMach(speed, altitude));
 		simdata::Link<Engine>::vector::iterator i = m_Engine.begin();
 		simdata::Link<Engine>::vector::const_iterator iEnd = m_Engine.end();

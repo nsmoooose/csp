@@ -246,7 +246,7 @@ float ChunkLodTerrain::getGroundElevation(double x, double y, simdata::Vector3 &
 	//simdata::SimTime t2 = simdata::SimDate::getSystemTime();
 	if (m_ElevationTest->getHit()) {
 		osg::Vec3 norm = m_ElevationTest->getNormal();
-		normal.Set(norm.x(), -norm.z(), norm.y());
+		normal.set(norm.x(), -norm.z(), norm.y());
 		if (normal.z() <= 0.0) std::cout << normal << "\n";
 		assert(normal.z() > 0.0);
 		/*
@@ -281,7 +281,7 @@ void ChunkLodTerrain::setCameraPosition(double x, double y, double z)
 		m_Terrain->setCameraPosition(x, y);
 		m_Terrain->getLocalOrigin(x, y, z);
 		// translate coordinates
-		m_Origin.Set(x, -z, y);
+		m_Origin.set(x, -z, y);
 		CSP_LOG(TERRAIN, DEBUG, "Terrain origin @ " << (simdata::Vector3(x,y,z)));
 	} else {
 		m_Origin = simdata::Vector3::ZERO;

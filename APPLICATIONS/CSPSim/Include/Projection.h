@@ -37,7 +37,6 @@
 #include <iostream>
 #include <cstdio>
 
-using simdata::Normalized;
 
 /**
  * A gnomonic projection of a sphere onto a tangent (or secant) plane.
@@ -99,12 +98,12 @@ public:
 	}
 
 	simdata::LLA convert(simdata::Vector3 const &pos) const {
-		double x0 = atan(pos.x / m_R);
-		double y = atan(pos.y / m_R);
+		double x0 = atan(pos.x() / m_R);
+		double y = atan(pos.y() / m_R);
 		double x = sqrt(1.0 - x0*x0 - y*y);
 		double z = m_S * x + m_C * y;
 		x = m_C * x - m_S * y;
-		return simdata::LLA(asin(z), atan2(x0, x) + m_Lon0, pos.z);
+		return simdata::LLA(asin(z), atan2(x0, x) + m_Lon0, pos.z());
 	}
 
 	simdata::Vector3 getNorth(simdata::LLA const &pos) const {
@@ -119,12 +118,12 @@ public:
 		y = m_S * cy * splat / (y*y);
 		x = cos(x);
 		x = -sy * splat / (x*x);
-		return Normalized(simdata::Vector3(x, y, 0.0));
+		return simdata::Vector3(x, y, 0.0).normalized();
 	}
 
 	simdata::Vector3 getNorth(simdata::Vector3 const &pos) const {
-		double x0 = atan(pos.x / m_R);
-		double y = atan(pos.y / m_R);
+		double x0 = atan(pos.x() / m_R);
+		double y = atan(pos.y() / m_R);
 		double x = sqrt(1.0 - x0*x0 - y*y);
 		double z = m_S * x + m_C * y;
 		x = m_C * x - m_S * y;
@@ -139,7 +138,7 @@ public:
 		y = m_S * cy * splat / (y*y);
 		x = cos(x);
 		x = -sy * splat / (x*x);
-		return Normalized(simdata::Vector3(x, y, 0.0));
+		return simdata::Vector3(x, y, 0.0).normalized();
 	}
 };
 
@@ -198,8 +197,8 @@ private:
 			for (i = -nx; i <= nx; i++) {
 				simdata::Vector3 pos(i*spacing, j*spacing, 0.0);
 				simdata::Vector3 n = GnomonicMap::getNorth(pos);
-				dataX.push_back(n.x);
-				dataY.push_back(n.y);
+				dataX.push_back(n.x());
+				dataY.push_back(n.y());
 			}
 		}
 		m_NorthX.setData(dataX);
@@ -268,8 +267,8 @@ public:
 	 */
 	simdata::Vector3 getNorth(simdata::Vector3 const &pos) const {
 		assert(m_Valid);
-		double x = std::min(m_SizeX, std::max(-m_SizeX, pos.x));
-		double y = std::min(m_SizeY, std::max(-m_SizeY, pos.y));
+		double x = std::min(m_SizeX, std::max(-m_SizeX, pos.x()));
+		double y = std::min(m_SizeY, std::max(-m_SizeY, pos.y()));
 		return simdata::Vector3(m_NorthX.getValue(x, y), m_NorthY.getValue(x, y), 0.0);
 	}
 

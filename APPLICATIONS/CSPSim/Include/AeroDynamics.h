@@ -30,7 +30,7 @@
 #include <SimData/Object.h>
 #include <SimData/Matrix3.h>
 #include <SimData/Vector3.h>
-#include <SimData/Quaternion.h>
+#include <SimData/Quat.h>
 #include <SimData/InterfaceRegistry.h>
 
 #include "Collision.h"
@@ -217,7 +217,7 @@ public:
 	//void setVelocity(const simdata::Vector3 & velo);
 	
 	void bindObject(simdata::Vector3 &position, simdata::Vector3 &velocity, 
-	                simdata::Vector3 &angular_velocity, simdata::Quaternion &orientation);
+	                simdata::Vector3 &angular_velocity, simdata::Quat &orientation);
 	void bindGearDynamics(GearDynamics &gearDynamics);
 	void bindGroundCollisionDynamics(GroundCollisionDynamics &groundCollisionDynamics);
 	void bindEngineDynamics(EngineDynamics &engineDynamics);
@@ -274,7 +274,7 @@ protected:
 	double m_qBarS;			// 0.5 * WingSpan * density * V^2 
 	
 	simdata::Vector3 m_EulerAngles;    
-	simdata::Quaternion m_qOrientation;       // orientation in earth coordinates
+	simdata::Quat m_qOrientation;       // orientation in earth coordinates
 
 	simdata::Vector3 m_ForcesBody;          // total force in body coordinates
 	simdata::Vector3 m_ForcesLocal;	        // total force in local coordinates
@@ -311,7 +311,7 @@ protected:
 	simdata::Vector3 *m_Position;
 	simdata::Vector3 *m_Velocity;
 	simdata::Vector3 *m_AngularVelocity;
-	simdata::Quaternion *m_Orientation;
+	simdata::Quat *m_Orientation;
 
 	double m_Distance;
 	double m_AirSpeed;

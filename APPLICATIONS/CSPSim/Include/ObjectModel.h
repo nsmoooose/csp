@@ -36,9 +36,10 @@
 #include <SimData/Object.h>
 #include <SimData/Vector3.h>
 #include <SimData/Matrix3.h>
-#include <SimData/Quaternion.h>
+#include <SimData/Quat.h>
 #include <SimData/External.h>
 #include <SimData/InterfaceRegistry.h>
+#include <SimData/osg.h>
 
 //FIXME: or not FIXME? see below, forward declaration
 #include "Animation.h"
@@ -175,9 +176,9 @@ public:
 	simdata::Ref<ObjectModel> getModel() { return m_Model; }
 	osg::Group* getRoot() { return m_Transform.get(); }
 
-	void setPositionAttitude(simdata::Vector3 const &position, simdata::Quaternion const &attitude) {
-		m_Transform->setAttitude(osg::Quat(attitude.x, attitude.y, attitude.z, attitude.w));
-		m_Transform->setPosition(osg::Vec3(position.x, position.y, position.z));
+	void setPositionAttitude(simdata::Vector3 const &position, simdata::Quat const &attitude) {
+		m_Transform->setAttitude(simdata::toOSG(attitude));
+		m_Transform->setPosition(simdata::toOSG(position));
 	}
 
 	// XXX 
@@ -197,7 +198,7 @@ public:
 	bool isSmoke();
 	void disableSmoke();
 	void enableSmoke();
-	void updateSmoke(double dt, simdata::Vector3 const & global_position, simdata::Quaternion const &attitude);
+	void updateSmoke(double dt, simdata::Vector3 const & global_position, simdata::Quat const &attitude);
 	void setLabel(std::string const &);
 };
 

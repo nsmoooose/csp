@@ -127,8 +127,8 @@ public:
 
 	simdata::Vector3 getDirection() const;
 	simdata::Vector3 getUpDirection() const;
-	simdata::Quaternion & getAttitude() { return m_Attitude; }
-	void setAttitude(simdata::Quaternion const & attitude);
+	simdata::Quat & getAttitude() { return m_Attitude; }
+	void setAttitude(simdata::Quat const & attitude);
 
 	virtual simdata::Vector3 getGlobalPosition() const { return m_GlobalPosition; }
 	virtual void setGlobalPosition(simdata::Vector3 const & position);
@@ -178,7 +178,7 @@ protected:
 	simdata::Vector3 m_AngularVelocity;
 	simdata::Vector3 m_LinearVelocity;
 
-	simdata::Quaternion m_Attitude;
+	simdata::Quat m_Attitude;
 
 	std::string m_ObjectName;
 

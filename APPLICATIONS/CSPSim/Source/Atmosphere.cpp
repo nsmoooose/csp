@@ -53,7 +53,7 @@ class Perlin1D {
 	}
 	
 	void randomize() {
-		m_offset = int(simdata::g_Random.newRand()*1.0e+9);
+		m_offset = int(simdata::g_Random.unit()*1.0e+9);
 	}
 
 	double Noise(int x) {

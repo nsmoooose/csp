@@ -28,7 +28,7 @@
 
 #include <SimData/Matrix3.h>
 #include <SimData/Vector3.h>
-#include <SimData/Quaternion.h>
+#include <SimData/Quat.h>
 #include <SimData/Ref.h>
 
 #include "DynamicalSystem.h"
@@ -58,7 +58,7 @@ public:
 	void bindObject(simdata::Vector3 &position, 
                         simdata::Vector3 &velocity, 
                         simdata::Vector3 &angular_velocity, 
-                        simdata::Quaternion &orientation);
+                        simdata::Quat &orientation);
 
 	/**
 	 * Integrate the equations of motion over the specified time
@@ -121,7 +121,7 @@ protected:
 	std::vector<double> const &bodyToY(simdata::Vector3 const &p,
 	                                   simdata::Vector3 const &v,
 	                                   simdata::Vector3 const &w,
-	                                   simdata::Quaternion const &q);
+	                                   simdata::Quat const &q);
 
 	/**
 	 * Convert from local (global) to body coordinates.
@@ -153,7 +153,7 @@ protected:
 	// internally: X = right, Y = nose, Z = up
 	// externally: X = nose, Y = right, Z = down (for XML input)
 	
-	simdata::Quaternion m_qOrientation;     // orientation in earth coordinates
+	simdata::Quat m_qOrientation;     // orientation in earth coordinates
 
 	simdata::Vector3 m_ForcesBody;          // total force in body coordinates
 	simdata::Vector3 m_MomentsBody;         // (L,M,N) total moment (torque) in body coordinates
@@ -171,7 +171,7 @@ protected:
 	simdata::Vector3 *m_Position;
 	simdata::Vector3 *m_Velocity;
 	simdata::Vector3 *m_AngularVelocity;
-	simdata::Quaternion *m_Orientation;
+	simdata::Quat *m_Orientation;
 
 	// View following from fuel consumption ...
 	double m_Mass;

@@ -329,7 +329,7 @@ void ObjectModel::loadModel() {
 	assert(m_Axis0.length() > 0.0);
 	m_Axis0.normalize();
 	// orthogonalize
-	m_Axis1 = m_Axis1 - m_Axis0 * simdata::Dot(m_Axis0, m_Axis1);
+	m_Axis1 = m_Axis1 - m_Axis0 * simdata::dot(m_Axis0, m_Axis1);
 	assert(m_Axis1.length() > 0.0);
 	m_Axis1.normalize();
 
@@ -340,17 +340,16 @@ void ObjectModel::loadModel() {
 	    m_Scale != 1.0 ||
 	    m_Offset != simdata::Vector3::ZERO) {
 		// find third axis and make the transform matrix
-		simdata::Vector3 axis2 = simdata::Cross(m_Axis0, m_Axis1);
+		simdata::Vector3 axis2 = m_Axis0 ^ m_Axis1;
 		simdata::Matrix3 o(m_Axis0.x(), m_Axis0.y(), m_Axis0.z(), 
 		                   m_Axis1.x(), m_Axis1.y(), m_Axis1.z(), 
 		                   axis2.x(), axis2.y(), axis2.z());
-		o = o.Inverse() * m_Scale;
-		simdata::Matrix3::M_t (&R)[3][3] = o.rowcol;
+		o = o.getInverse() * m_Scale;
 		osg::Matrix model_orientation;
 		model_orientation.set(
-			R[0][0], R[1][0], R[2][0], 0.0,
-			R[0][1], R[1][1], R[2][1], 0.0,
-			R[0][2], R[1][2], R[2][2], 0.0,
+			o(0, 0), o(1, 0), o(2, 0), 0.0,
+			o(0, 1), o(1, 1), o(2, 1), 0.0,
+			o(0, 2), o(1, 2), o(2, 2), 0.0,
 			m_Offset.x(), m_Offset.y(), m_Offset.z(), 1.0
 		);
 		osg::MatrixTransform *adjust = new osg::MatrixTransform;
@@ -362,7 +361,7 @@ void ObjectModel::loadModel() {
 		adjust->setMatrix(model_orientation);
 		adjust->addChild(m_Model.get());
 		m_Model = adjust;
-		simdata::Matrix3 sd_adjust = simdata::fromOSG(model_orientation).Inverse();
+		simdata::Matrix3 sd_adjust = simdata::fromOSG(model_orientation).getInverse();
 		for (unsigned i = 0; i < m_Contacts.size(); i++) {
 			m_Contacts[i] = sd_adjust * m_Contacts[i] + m_Offset;
 		}

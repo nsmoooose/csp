@@ -1,6 +1,11 @@
  Version 0.3.4 (in progress)
 ===========================
 
+2003-08-05: onsight
+            Initial updates to use new SimData APIs for Random,
+	    Vector3, Matrix3, Quat.  Dynamics seem correct but
+	    more testing is needed.
+
 2003-08-04: onsight
             Tagged version r0_3_3, starting version 0.3.4
 

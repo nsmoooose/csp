@@ -43,8 +43,8 @@
 #include <SimData/Quat.h>
 
 
-using simdata::RadiansToDegrees;
-using simdata::DegreesToRadians;
+using simdata::toDegrees;
+using simdata::toRadians;
 
 
 SIMDATA_REGISTER_INTERFACE(FlightModel)
@@ -146,7 +146,7 @@ void FlightModel::unpack(simdata::UnPacker& p) {
 
 void FlightModel::convertXML() {
 	// angle data are given in degree
-	m_stallAOA = DegreesToRadians(m_stallAOA);
+	m_stallAOA = toRadians(m_stallAOA);
 }
 
 void FlightModel::postCreate() {

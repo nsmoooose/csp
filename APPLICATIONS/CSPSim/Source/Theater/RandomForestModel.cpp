@@ -138,14 +138,15 @@ void RandomForestModel::postCreate() {
 	float radius = 400.0;
 	float area = 3.1416 * radius * radius;
 	int i, n = m_Models.size();
-	simdata::Random rand(m_Seed);
+	simdata::random::Taus2 rand;
+	rand.setSeed(m_Seed);
 	m_Offsets.resize(n);
 	for (i = 0; i < n; i++) {
 		int count = int(m_Density[i] * area);
 		m_Offsets[i].reserve(count);
 		while (count > 0) {
-			float x = rand.newRand()*2.0-1.0;
-			float y = rand.newRand()*2.0-1.0;
+			float x = rand.uniform(-1.0, 1.0);
+			float y = rand.uniform(-1.0, 1.0);
 			if (x*x + y*y < 1.0) {
 				m_Offsets[i].push_back(simdata::Vector3(x*radius, y*radius, 0.0));
 				count--;

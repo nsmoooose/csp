@@ -42,8 +42,8 @@ std::vector<double> const &AircraftPhysicsModel::_f(double x, std::vector<double
 	m_PositionLocal = *m_Position + bodyToLocal(simdata::Vector3(y[0],y[1],y[2]));
 	m_VelocityBody = simdata::Vector3(y[3],y[4],y[5]);
 	m_AngularVelocityBody = simdata::Vector3(y[6],y[7],y[8]);
-	m_qOrientation = simdata::Quat(y[9],y[10],y[11],y[12]);
-	double mag = m_qOrientation.Magnitude();
+	m_qOrientation = simdata::Quat(y[10],y[11],y[12],y[9]);
+	double mag = m_qOrientation.length();
 	if (mag != 0.0) {
 		m_qOrientation /= mag;
 	}
@@ -147,8 +147,8 @@ void AircraftPhysicsModel::doSimStep(double dt) {
 		physicsBodyToLocal();
 
 		// update attitude and force for a unit quaternion
-		m_qOrientation = simdata::Quat(y[9],y[10],y[11],y[12]);
-		double mag = m_qOrientation.Magnitude();
+		m_qOrientation = simdata::Quat(y[10],y[11],y[12],y[9]);
+		double mag = m_qOrientation.length();
 		if (mag	!= 0.0)
 			m_qOrientation /= mag;
 		

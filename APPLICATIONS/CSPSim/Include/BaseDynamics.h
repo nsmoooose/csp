@@ -26,8 +26,9 @@
 
 #include <SimData/Vector3.h>
 
-class simdata::Quaternion;
-
+namespace simdata {
+	class Quat;
+}
 
 /**
  * Abstract base class for all object dynamics (physics) modelling.
@@ -41,7 +42,7 @@ class BaseDynamics {
 protected:
 	simdata::Vector3 m_Force, m_Moment;
 	simdata::Vector3 const *m_PositionLocal, *m_VelocityBody, *m_AngularVelocityBody;
-	simdata::Quaternion const *m_qOrientation;
+	simdata::Quat const *m_qOrientation;
 	double const *m_Height;
 	bool const *m_NearGround;
 	simdata::Vector3 const *m_NormalGround;
@@ -121,7 +122,7 @@ public:
 	 * @param orientation the orientation of the object
 	 */
 	void bindKinematics(simdata::Vector3 const &position_local, simdata::Vector3 const &velocity_body, 
-					simdata::Vector3 const &angular_velocity_body, simdata::Quaternion const &orientation);
+					simdata::Vector3 const &angular_velocity_body, simdata::Quat const &orientation);
 
 	/**
 	 * Bind parameters related to the ground directly beneath the object.

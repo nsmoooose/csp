@@ -66,7 +66,7 @@ void GroundCollisionDynamics::computeForceAndMoment(double x) {
 	
 	simdata::Vector3 const &normalGroundLocal = *m_NormalGround;
 	simdata::Vector3 origin(0.0, 0.0, *m_Height);
-	simdata::Vector3 normalGroundBody = simdata::QVRotate(q.Bar(), normalGroundLocal);
+	simdata::Vector3 normalGroundBody = q.invrotate(normalGroundLocal);
 
 	m_HasContact = false;
 	m_NeedsImpulse = false;
@@ -76,12 +76,12 @@ void GroundCollisionDynamics::computeForceAndMoment(double x) {
 	for (size_t i = 0; i < m_Contacts.size(); ++i) {
 		simdata::Vector3 forceBody = simdata::Vector3::ZERO;
 		simdata::Vector3 const &contactBody = m_Contacts[i];
-		simdata::Vector3 contactLocal = simdata::QVRotate(q, contactBody) + origin;
-		double depth = -simdata::Dot(contactLocal, normalGroundLocal);
+		simdata::Vector3 contactLocal = q.rotate(contactBody) + origin;
+		double depth = -simdata::dot(contactLocal, normalGroundLocal);
 		if (depth >= 0.0) { // contact
 			m_HasContact = true;
 			simdata::Vector3 contactVelocityBody = velocityBody + (angularVelocityBody^contactBody);
-			double impactSpeed = -simdata::Dot(contactVelocityBody, normalGroundBody);
+			double impactSpeed = -simdata::dot(contactVelocityBody, normalGroundBody);
 			if (impactSpeed > m_ImpactSpeedTolerance) { // hard impact (not used)
 			}
 			// normal spring force plus damping

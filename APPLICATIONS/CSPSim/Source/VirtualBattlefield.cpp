@@ -1035,7 +1035,7 @@ bool VirtualBattlefield::doSphereTest( SimObject * pObj1, SimObject * pObj2)
 
 	// Calculate the diff vector between the two
 	simdata::Vector3 pDiff = pObj1->getGlobalPosition() - pObj2->getGlobalPosition();
-	float p2 = Dot( pDiff, pDiff);
+	float p2 = simdata::dot( pDiff, pDiff);
 
 	if ( (p2 - r2) <= 0) {
 		return true;

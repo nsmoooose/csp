@@ -233,7 +233,7 @@ float DemeterTerrain::getGroundElevation(double x, double y, simdata::Vector3 &n
 			/* XXX broken
 			float normalX, normalY, normalZ;
 			m_Terrain->GetNormal(x, y, normalX, normalY, normalZ);
-			normal->Set(normalX, normalY, normalZ);
+			normal->set(normalX, normalY, normalZ);
 			*/
 		}
 	} else {
@@ -244,12 +244,12 @@ float DemeterTerrain::getGroundElevation(double x, double y, simdata::Vector3 &n
 			/*
 			float normalX, normalY, normalZ;
 			m_TerrainLattice->GetNormal(x, y, normalX, normalY, normalZ);
-			normal->Set(normalX, normalY, normalZ);
+			normal->set(normalX, normalY, normalZ);
 			*/
 		}
 	}
 	// poor man's normal
-	normal.Set(-zx, -zy, 1.0);
+	normal.set(-zx, -zy, 1.0);
 	normal.normalize();
 	return z;
 }
@@ -448,7 +448,7 @@ void DemeterTerrain::postCreate() {
 	TerrainObject::postCreate();
 	CSP_LOG(TERRAIN, INFO, "Terrain Center @ " << getCenter().asString());
 	CSP_LOG(TERRAIN, INFO, "Terrain Size " << getWidth() << " x " << getHeight() << " m");
-	m_Offset.Set(getWidth()*0.5, getHeight()*0.5, 0.0);
+	m_Offset.set(getWidth()*0.5, getHeight()*0.5, 0.0);
 	m_CellWidth = getWidth() / m_LatticeWidth;
 	m_CellHeight = getHeight() / m_LatticeHeight;
 }

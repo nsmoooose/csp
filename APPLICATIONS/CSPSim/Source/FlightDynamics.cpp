@@ -35,8 +35,8 @@
 #include <SimData/Quat.h>
 
 
-using simdata::RadiansToDegrees;
-using simdata::DegreesToRadians;
+using simdata::toDegrees;
+using simdata::toRadians;
 
 
 

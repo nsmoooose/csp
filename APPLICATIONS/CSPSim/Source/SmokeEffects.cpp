@@ -221,7 +221,7 @@ void SmokeThinner::operate(osgParticle::Particle *p, double dt)
 	float lifetime = p->getRadius();
 	// check if we've already operated on this particle
 	if (lifetime > 1000.0) {
-		float x = simdata::g_Random.newRand();
+		float x = simdata::g_Random.unit();
 		float old_lifetime = p->getLifeTime();
 		// this needs to be made into a member variable, set by
 		// a constructor argument
@@ -446,7 +446,7 @@ osgParticle::Placer* SmokeTrail::getPlacer() {
 }
 
 void SmokeTrail::update(double dt, simdata::Vector3 const &position, simdata::Quat const &attitude) {
-	simdata::Vector3 place = position + attitude.GetRotated(m_Offset);
+	simdata::Vector3 place = position + attitude.rotate(m_Offset);
 	m_Placer->setVertexA(toOSG(place));
 	m_Placer->setVertexB(toOSG(m_LastPlace+m_LastWind*dt));
 	m_Shooter->updateWind(place);
@@ -458,7 +458,7 @@ void SmokeTrail::update(double dt, simdata::Vector3 const &position, simdata::Qu
 void SmokeTrail::update(double dt, simdata::Vector3 const &position, simdata::Quat const &attitude) {
 	WindEmitter *emitter = dynamic_cast<WindEmitter*>(m_Emitter.get());
 	if (emitter) {
-		simdata::Vector3 place = position + attitude.GetRotated(m_Offset);
+		simdata::Vector3 place = position + attitude.rotate(m_Offset);
 		emitter->setSource(place);
 	}
 }

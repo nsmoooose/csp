@@ -31,7 +31,7 @@
 #include <osgParticle/ParticleSystemUpdater>
 #include <osgParticle/Operator>
 
-#include <SimData/Quaternion.h>
+#include <SimData/Quat.h>
 #include <SimData/Vector3.h>
 
 #include <vector>
@@ -77,7 +77,7 @@ public:
 	}
 	int addSource(simdata::Vector3 const &v);
 	osgParticle::SegmentPlacer *getSegment(int i);
-	void update(simdata::Vector3 const &motion, simdata::Quaternion const &attitude);
+	void update(simdata::Vector3 const &motion, simdata::Quat const &attitude);
 };
 */
 
@@ -153,7 +153,7 @@ public:
 
 	void setExpansion(float speed);
 	void setOffset(simdata::Vector3 const &offset);
-	void update(double dt, simdata::Vector3 const &motion, simdata::Quaternion const &attitude);
+	void update(double dt, simdata::Vector3 const &motion, simdata::Quat const &attitude);
 
 protected:
 
@@ -196,7 +196,7 @@ class SmokeTrailSystem: public osg::Referenced {
 public:
 	SmokeTrailSystem();
 	virtual void addSmokeTrail(SmokeTrail *);
-	virtual void update(double dt, simdata::Vector3 const &motion, simdata::Quaternion const &attitude);
+	virtual void update(double dt, simdata::Vector3 const &motion, simdata::Quat const &attitude);
 	virtual void setEnabled(bool);
 protected:
 	virtual ~SmokeTrailSystem();

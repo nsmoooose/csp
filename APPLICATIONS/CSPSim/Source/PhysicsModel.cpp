@@ -31,7 +31,7 @@
 PhysicsModel::PhysicsModel(unsigned short dimension):
 	DynamicalSystem(dimension),
 	m_Damping(1.0),
-	m_qOrientation(simdata::Quat(1.0,0.0,0.0,0.0)),
+	m_qOrientation(simdata::Quat::IDENTITY),
 	m_ForcesBody(simdata::Vector3::ZERO),
 	m_MomentsBody(simdata::Vector3::ZERO),
 	m_AngularAccelBody(simdata::Vector3::ZERO),
@@ -78,16 +78,16 @@ void PhysicsModel::setInertia(double mass, simdata::Matrix3 const &I)
 	//simdata::Matrix3 R(0.0, 1.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, -1.0);
 	//m_Inertia = R * I * R.Inverse();
 	m_Inertia = I;  // use CSP frame in XML
-	m_InertiaInverse = I.Inverse();
+	m_InertiaInverse = I.getInverse();
 }
 
 simdata::Vector3 PhysicsModel::localToBody(simdata::Vector3 const &vec ) {
-	return simdata::QVRotate( m_qOrientation.Bar(), vec );
+	return m_qOrientation.invrotate(vec);
 }
 
 
 simdata::Vector3 PhysicsModel::bodyToLocal(simdata::Vector3 const &vec ) {
-	return simdata::QVRotate( m_qOrientation, vec );
+	return m_qOrientation.rotate(vec);
 }
 
 std::vector<double> const &PhysicsModel::bodyToY(simdata::Vector3 const &p,
@@ -142,7 +142,7 @@ void PhysicsModel::updateAeroParameters(double dt) {
 		m_qBar = atmosphere->getDensity(m_PositionLocal.z());
 		simdata::Vector3 wind = atmosphere->getWind(m_PositionLocal);
 		wind += atmosphere->getTurbulence(m_PositionLocal, m_Distance);
-		m_WindBody = simdata::QVRotate(m_qOrientation.Bar(), wind);
+		m_WindBody = m_qOrientation.invrotate(wind);
 	} else {
 		m_qBar = 1.25; // nominal sea-level air density
 		m_WindBody = simdata::Vector3::ZERO;

@@ -638,8 +638,8 @@ void GameScreen::setCamera(double dt)
 		//lookPos = simdata::Vector3(483000.0, 499005.0, 2000.0);
 		upVec = simdata::Vector3::ZAXIS;
 		simdata::Matrix3 RotZ, RotX;
-		RotZ.FromAxisAngle(upVec,  - m_AngleRotZ);
-		RotX.FromAxisAngle(RotZ * simdata::Vector3::XAXIS, - m_AngleRotX);
+		RotZ.makeRotate(-m_AngleRotZ, upVec);
+		RotX.makeRotate(-m_AngleRotX, RotZ * simdata::Vector3::XAXIS);
 		simdata::Matrix3 R;
 		R = RotX * RotZ;
 		lookPos = RotX * RotZ * simdata::Vector3::YAXIS + eyePos;
@@ -656,8 +656,8 @@ void GameScreen::setCamera(double dt)
 		simdata::Vector3 planeUp = m_ActiveObject->getUpDirection();
 		simdata::Vector3 planeRight = planeDir^planeUp;
 		simdata::Matrix3 RotZ, RotX;
-		RotZ.FromAxisAngle(planeUp,  - m_AngleRotZ);
-		RotX.FromAxisAngle(RotZ * planeRight, - m_AngleRotX);
+		RotZ.makeRotate(-m_AngleRotZ, planeUp);
+		RotX.makeRotate(-m_AngleRotX, RotZ * planeRight);
 		eyePos = planePos;
 		eyePos += m_ActiveObject->getViewPoint();
 		lookPos = 1000 * RotX * RotZ * planeDir + eyePos;
@@ -674,9 +674,9 @@ void GameScreen::setCamera(double dt)
 		simdata::Vector3 planeUp = m_ActiveObject->getUpDirection();
 		simdata::Vector3 planeRight = planeDir^planeUp;
 		simdata::Matrix3 RotZ, RotX;
-		RotZ.FromAxisAngle(planeUp,  m_AngleRotZ);
+		RotZ.makeRotate(m_AngleRotZ, planeUp);
 		simdata::Vector3 axisX = RotZ * planeRight;
-		RotX.FromAxisAngle(axisX, m_AngleRotX);
+		RotX.makeRotate(m_AngleRotX, axisX);
 		eyePos = - m_DistanceToObject * RotX * RotZ * planeDir;
 		upVec = eyePos^axisX;
 		eyePos += planePos;
@@ -690,9 +690,9 @@ void GameScreen::setCamera(double dt)
 		scaleView(dt);
 		simdata::Vector3 planePos = m_ActiveObject->getGlobalPosition();
 		simdata::Matrix3 RotZ, RotX;
-		RotZ.FromAxisAngle(simdata::Vector3::ZAXIS,  m_AngleRotZ);
+		RotZ.makeRotate(m_AngleRotZ, simdata::Vector3::ZAXIS);
 		simdata::Vector3 axisX = - RotZ * m_NormalDirection;
-		RotX.FromAxisAngle(simdata::Vector3::ZAXIS^axisX, m_AngleRotX);
+		RotX.makeRotate(m_AngleRotX, simdata::Vector3::ZAXIS^axisX);
 		eyePos = m_DistanceToObject * RotX * axisX;
 		upVec = simdata::Vector3::ZAXIS;
 		eyePos += planePos;
@@ -736,7 +736,7 @@ void GameScreen::setCamera(double dt)
 		eyePos += m_ActiveObject->getViewPoint();
 		lookPos = m_Padlock->getGlobalPosition();
 		simdata::Vector3 dir = (lookPos - eyePos).normalized();
-		attitude.InverseRotate(dir);
+		dir = attitude.invrotate(dir);
 		float phi = atan2(-dir.x(), dir.y());
 		float theta = acos(dir.z());
 		float phi_max = 2.6 - std::max(0.0, 1.57 - 2.0*theta);
@@ -760,12 +760,12 @@ void GameScreen::setCamera(double dt)
 		if (psi > 0.0) offset = -offset;
 		m_NeckTheta = theta;
 		m_NeckPhi = phi;
-		dir.Set(-sin(theta)*sin(phi), sin(theta)*cos(phi), cos(theta));
+		dir.set(-sin(theta)*sin(phi), sin(theta)*cos(phi), cos(theta));
 		simdata::Vector3 d(sin(psi), -cos(psi), 0.0);
-		upVec.Set(d.x()*cos(theta), d.y()*cos(theta), sin(theta));
-		attitude.Rotate(upVec);
-		eyePos += attitude.GetRotated(offset * simdata::Vector3::XAXIS);
-		attitude.Rotate(dir);
+		upVec.set(d.x()*cos(theta), d.y()*cos(theta), sin(theta));
+		upVec = attitude.rotate(upVec);
+		eyePos += attitude.rotate(offset * simdata::Vector3::XAXIS);
+		dir = attitude.rotate(dir);
 		lookPos = eyePos + 100.0 * dir;
 		break;
 	}

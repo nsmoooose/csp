@@ -233,12 +233,12 @@ void DynamicObject::postMotion(double dt) {
 
 simdata::Vector3 DynamicObject::getDirection() const
 {
-	return m_Attitude.GetRotated(simdata::Vector3::YAXIS);
+	return m_Attitude.rotate(simdata::Vector3::YAXIS);
 }
 
 simdata::Vector3 DynamicObject::getUpDirection() const
 {
-	return m_Attitude.GetRotated(simdata::Vector3::ZAXIS);
+	return m_Attitude.rotate(simdata::Vector3::ZAXIS);
 }
 
 void DynamicObject::setAttitude(simdata::Quat const &attitude)
@@ -247,7 +247,7 @@ void DynamicObject::setAttitude(simdata::Quat const &attitude)
 }
 
 simdata::Vector3 DynamicObject::getViewPoint() const {
-	 return m_Attitude.GetRotated(m_Model->getViewPoint());
+	 return m_Attitude.rotate(m_Model->getViewPoint());
 }
 
 bool DynamicObject::isSmoke() {

@@ -77,13 +77,13 @@ void LogoScreen::onRender()
 
 	SDL_Rect src, dest;
 
-	src.x() = 0;
-	src.y() = 0;
+	src.x = 0;
+	src.y = 0;
 	src.w = m_image->w;
 	src.h = m_image->h;
 
-	dest.x() = 0;
-	dest.y() = 0;
+	dest.x = 0;
+	dest.y = 0;
 	dest.w = m_image->w;
 	dest.h = m_image->h;
 

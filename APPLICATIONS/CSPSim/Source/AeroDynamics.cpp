@@ -37,8 +37,8 @@
 #define CSP_NDEBUG
 #include "Log.h"
 
-using simdata::RadiansToDegrees;
-using simdata::DegreesToRadians;
+using simdata::toDegrees;
+using simdata::toRadians;
 
 
 double	const g = 9.806; // acceleration due to gravity, m/s^2
@@ -184,7 +184,7 @@ void AeroDynamics::initialize()
 	m_Rudder = 0.0;
 	m_ThrustForce = simdata::Vector3::ZERO;
 	
-	m_qOrientation = simdata::Quat(1,0,0,0);
+	m_qOrientation = simdata::Quat::IDENTITY;
 
 	m_AngularAccelBody = simdata::Vector3::ZERO;
 	m_LinearAccelBody = simdata::Vector3::ZERO;
@@ -210,13 +210,13 @@ void AeroDynamics::initialize()
 
 void AeroDynamics::convertXML() {
 	// angle data are given in degree
-	m_DeMax = DegreesToRadians(m_DeMax);
-	m_DeMin = DegreesToRadians(m_DeMin);
-	m_DaMax = DegreesToRadians(m_DaMax);
-	m_DaMin = DegreesToRadians(m_DaMin);
-	m_DrMax = DegreesToRadians(m_DrMax);
-	m_DrMin = DegreesToRadians(m_DrMin);
-	m_stallAOA = DegreesToRadians(m_stallAOA);
+	m_DeMax = toRadians(m_DeMax);
+	m_DeMin = toRadians(m_DeMin);
+	m_DaMax = toRadians(m_DaMax);
+	m_DaMin = toRadians(m_DaMin);
+	m_DrMax = toRadians(m_DrMax);
+	m_DrMin = toRadians(m_DrMin);
+	m_stallAOA = toRadians(m_stallAOA);
 }
 
 
@@ -465,20 +465,20 @@ void AeroDynamics::doSimStep(double dt)
 					// FIXME: skipping landing gear contacts which are temporary!
 					for (contact = m_Contacts->begin()+3; contact != m_Contacts->end(); contact++) {
 						simdata::Vector3 contact_local = BodyToLocal(*contact) + origin;
-						double height = simdata::Dot(contact_local, m_GroundN);
+						double height = simdata::dot(contact_local, m_GroundN);
 						if (height < 0.0) {
 							// for now, just act like a hard surface	
 							simdata::Vector3 Vb = m_VelocityBody + (m_AngularVelocityBody^(*contact));
 							simdata::Vector3 V = BodyToLocal(Vb);
 							static const float groundK = 1.0e+7;
 							static const float groundBeta = 1.0e+6;
-							double impact = simdata::Dot(V, m_GroundN);
+							double impact = simdata::dot(V, m_GroundN);
 							// spring plus damping terms
 							double scale = - (height*groundK + impact*fabs(impact)*groundBeta);
 							// semiarbitrary force limit
 							if (fabs(scale)>groundK) {
 								// dissipate some extra energy
-								double body_impact = simdata::Dot(m_VelocityBody, bodyn);
+								double body_impact = simdata::dot(m_VelocityBody, bodyn);
 								if (impact < -10.0) {
 									//m_VelocityBody *= 0.50;
 									
@@ -583,7 +583,7 @@ void AeroDynamics::doSimStep(double dt)
 		// Integrate the rotation quaternion
 		m_qOrientation += 0.25f * dt * ( m_qOrientation * (m_AngularVelocityBody + angularVelocityBody));
 		// Now normalize the orientation quaternion:
-		double mag = m_qOrientation.Magnitude();
+		double mag = m_qOrientation.length();
 		if (mag != 0.0) {
 			m_qOrientation /= mag;
 		}
@@ -609,7 +609,7 @@ void AeroDynamics::doSimStep(double dt)
 	CSP_LOG(PHYSICS, DEBUG, "AeroDynamics:   LinAcc: " << m_LinearAccelBody );
 	CSP_LOG(PHYSICS, DEBUG, "AeroDynamics: Velocity: " << m_VelocityLocal);
 	CSP_LOG(PHYSICS, DEBUG, "AeroDynamics:    Speed: " << m_AirSpeed);
-	CSP_LOG(PHYSICS, DEBUG, "AeroDynamics: AngOfAtt: " << RadiansToDegrees(m_alpha) );
+	CSP_LOG(PHYSICS, DEBUG, "AeroDynamics: AngOfAtt: " << toDegrees(m_alpha) );
 	//	CSP_LOG(PHYSICS, DEBUG, "AeroDynamics:   VelDir: " << VelocityDirection );
 	CSP_LOG(PHYSICS, DEBUG, "AeroDynamics: Position: " << m_PositionLocal );
 	CSP_LOG(PHYSICS, DEBUG, "AeroDynamics:   Orient: " << m_qOrientation );
@@ -677,7 +677,7 @@ double AeroDynamics::CalculateLiftCoefficient() const
 	       );
 
 	CSP_LOG(PHYSICS, DEBUG, "AeroDynamics::CalculateLiftCoefficient() " << 
-	                                Cl << " at alpha = " << RadiansToDegrees(m_alpha) << 
+	                                Cl << " at alpha = " << toDegrees(m_alpha) << 
 	                                ", Elevator: " << m_Elevator );
 
 	return Cl;
@@ -734,7 +734,7 @@ double AeroDynamics::CalculateDragCoefficient() const
 	drag_coe += induced;
 	
 	CSP_LOG(PHYSICS, DEBUG, "AeroDynamics::CalculateDragCoefficient() " << 
-	                                drag_coe << " at alpha = " << RadiansToDegrees(m_alpha) << 
+	                                drag_coe << " at alpha = " << toDegrees(m_alpha) << 
 	                                ", Elevator: " << m_Elevator << ", Induced: " << induced << ", GE: " << m_GE << ", m_CL: " << m_CL );
 
 	return drag_coe;
@@ -833,13 +833,13 @@ double AeroDynamics::CalculateYawMoment(double const qbarS) const
 
 simdata::Vector3 AeroDynamics::LocalToBody(const simdata::Vector3 & vec )
 {
-	return simdata::QVRotate( m_qOrientation.Bar(), vec );
+	return m_qOrientation.invrotate(vec);
 }
 
 
 simdata::Vector3 AeroDynamics::BodyToLocal(const simdata::Vector3 & vec )
 {
-	return simdata::QVRotate( m_qOrientation, vec );
+	return m_qOrientation.rotate(vec);
 }
 
 double AeroDynamics::CIVbasis(double p_t) const
@@ -902,8 +902,8 @@ std::vector<double> const &AeroDynamics::_f(double x, std::vector<double> &y) {
 	m_PositionLocal = *m_Position + BodyToLocal(simdata::Vector3(y[0],y[1],y[2]));
 	m_VelocityBody = simdata::Vector3(y[3],y[4],y[5]);
 	m_AngularVelocityBody = damping * simdata::Vector3(y[6],y[7],y[8]);
-	m_qOrientation = simdata::Quat(y[9],y[10],y[11],y[12]);
-	double mag = m_qOrientation.Magnitude();
+	m_qOrientation = simdata::Quat(y[10],y[11],y[12],y[9]);
+	double mag = m_qOrientation.length();
 	if (mag != 0.0) 
 		m_qOrientation /= mag;
 	y[9]  = m_qOrientation.w(); 
@@ -1077,8 +1077,8 @@ void AeroDynamics::doSimStep2(double dt) {
 		BodyToLocal();
 
 		// update attitude and check for a unit quaternion
-		m_qOrientation = simdata::Quat(y[9],y[10],y[11],y[12]);
-		double mag = m_qOrientation.Magnitude();
+		m_qOrientation = simdata::Quat(y[10],y[11],y[12],y[9]);
+		double mag = m_qOrientation.length();
 		if (mag	!= 0.0)
 			m_qOrientation /=	mag;
 

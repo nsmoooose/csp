@@ -8,5 +8,8 @@
 		     0.0   63080.0       0.0
 		     0.0       0.0  195000.0
 	</Matrix>
+	<Bool name="test2">true</Bool>
+	<Bool name="test1">true</Bool>
+	<Bool name="test0">true</Bool>
 </Object>
 

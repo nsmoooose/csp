@@ -1,12 +1,11 @@
-#include "stdinc.h"
-
-#include "TerrainObject.h"
-#include "VirtualBattlefield.h"
-
 #include <osg/Depth>
 #include <osg/Geode>
 #include <osg/StateSet>
 
+#include "LogStream.h"
+#include "Platform.h"
+#include "TerrainObject.h"
+#include "VirtualBattlefield.h"
 
 extern int g_ScreenWidth;
 extern int g_ScreenHeight;
@@ -82,7 +81,7 @@ void TerrainObject::SetActive(bool value)
 		if (m_bLattice)
 		{
 			// create lattice
-			Demeter::Settings::GetInstance()->SetMediaPath("Terrain");
+			Demeter::Settings::GetInstance()->SetMediaPath("../Data/Terrain");
 			createTerrainLattice();
 		    osg::Node * pTerrainLatticeNode = CreateTerrainLatticeNode(m_pTerrainLattice);
 			pTerrainLatticeNode->setName("TerrainLatticeNode");
@@ -94,7 +93,7 @@ void TerrainObject::SetActive(bool value)
 		else
 		{
 			// create single terrain node
-			Demeter::Settings::GetInstance()->SetMediaPath("Terrain");
+			Demeter::Settings::GetInstance()->SetMediaPath("../Data/Terrain");
 			createTerrain();
 			osg::Node * pTerrainNode = CreateTerrainNode(m_pTerrain);
 			pTerrainNode->setName("TerrainNode");
@@ -308,10 +307,8 @@ int TerrainObject::getTerrainPolygonsRendered()
 
 void TerrainObject::UpdateDemeterSettings()
 {
-    char szMediaPath[9];
-
-    sprintf(szMediaPath,".%cterrain%c",DIR_SEPARATOR,DIR_SEPARATOR);
-    Demeter::Settings::GetInstance()->SetMediaPath(szMediaPath);
+    std::string mediaPath = OSPath::filter("../Data/Terrain/");
+    Demeter::Settings::GetInstance()->SetMediaPath(mediaPath.c_str());
 
     Demeter::Settings::GetInstance()->SetVerbose(false);
     Demeter::Settings::GetInstance()->SetScreenWidth(g_ScreenWidth);
@@ -319,7 +316,7 @@ void TerrainObject::UpdateDemeterSettings()
     Demeter::Settings::GetInstance()->SetPreloadTextures(m_bPreloadTextures);
     Demeter::Settings::GetInstance()->SetTextureCompression(m_bTextureCompression);
     Demeter::Settings::GetInstance()->SetUseDynamicTextures(m_bDynamicTextures);
-	Demeter::Settings::GetInstance()->SetDetailTextureRepeats(20);
+	Demeter::Settings::GetInstance()->SetDetailTextureRepeats(16);
 	Demeter::Settings::GetInstance()->SetUseNormals(true);
 
 

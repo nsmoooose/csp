@@ -31,9 +31,6 @@ import sys
 
 min_python_version = "2.2.0"
 
-# this is the default path used by make_install under linux to install the 
-# shared and static libraries.  it can be changed with --prefix=XYZ
-default_libpath = "/usr/local/lib"
 
 if len(sys.argv) == 2:
     command = sys.argv[1]
@@ -86,12 +83,16 @@ def make_install(win, args):
 	modpath = os.path.join(lib, "SimData")
 	incpath = os.path.join(inc, "SimData")
 	localinc = os.path.normpath("Include/SimData")
-	libpath = default_libpath
+	libpath = modpath
+	prefix = ""
 	verbose = 0
 	warnings = 0
 	for arg in args:
 		if arg.startswith("--prefix="):
-			libpath = arg[9:]
+			prefix = arg[9:]
+			modpath = os.path.normpath(prefix+modpath)
+			incpath = os.path.normpath(prefix+incpath)
+			libpath = os.path.normpath(prefix+libpath)
 		elif arg=='-v' or arg=='--verbose':
 			verbose = 1
 	package_files = ['__init__.py', 'Debug.py', 'Parse.py', 'Compile.py']

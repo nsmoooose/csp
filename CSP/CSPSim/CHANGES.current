@@ -1,6 +1,16 @@
  Version 0.4.0 (in progress)
 ===========================
 
+2004-04-25: delta
+  * Added CSPSim/Data/Fonts.
+  
+  * Added Data/Models/Mirage2000/Glass.tga
+  
+  * Added Demeter & CSPChunkLod projects to CSPSim as dependencies.
+    Building CSPSim now builds terrain lib dependencies.
+  
+  * Adjusted paths in CSPSim project.
+
 2004-04-17: delta
   * Minor fixes to get the build going under windows.
 

@@ -1,6 +1,16 @@
 Microsoft Visual Studio Solution File, Format Version 8.00
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CSPSimDLL", "CSPSimDLL\CSPSimDLL.vcproj", "{A609C12F-9E38-4AFF-8560-B1099F051941}"
 	ProjectSection(ProjectDependencies) = postProject
+		{F856C351-17F7-4410-8069-6877CB39E149} = {F856C351-17F7-4410-8069-6877CB39E149}
+		{439CBFDC-A6BC-4AE6-9A40-B706C4146C1A} = {439CBFDC-A6BC-4AE6-9A40-B706C4146C1A}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DemeterVisualC6", "..\..\Demeter\DemeterVisualC6.vcproj", "{F856C351-17F7-4410-8069-6877CB39E149}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "osgChunkLod", "..\..\CSPChunkLod\VisualStudio\VisualStudio.vcproj", "{439CBFDC-A6BC-4AE6-9A40-B706C4146C1A}"
+	ProjectSection(ProjectDependencies) = postProject
 	EndProjectSection
 EndProject
 Global
@@ -13,6 +23,14 @@ Global
 		{A609C12F-9E38-4AFF-8560-B1099F051941}.Debug.Build.0 = Debug|Win32
 		{A609C12F-9E38-4AFF-8560-B1099F051941}.Release.ActiveCfg = Release|Win32
 		{A609C12F-9E38-4AFF-8560-B1099F051941}.Release.Build.0 = Release|Win32
+		{F856C351-17F7-4410-8069-6877CB39E149}.Debug.ActiveCfg = Debug|Win32
+		{F856C351-17F7-4410-8069-6877CB39E149}.Debug.Build.0 = Debug|Win32
+		{F856C351-17F7-4410-8069-6877CB39E149}.Release.ActiveCfg = Release|Win32
+		{F856C351-17F7-4410-8069-6877CB39E149}.Release.Build.0 = Release|Win32
+		{439CBFDC-A6BC-4AE6-9A40-B706C4146C1A}.Debug.ActiveCfg = Debug|Win32
+		{439CBFDC-A6BC-4AE6-9A40-B706C4146C1A}.Debug.Build.0 = Debug|Win32
+		{439CBFDC-A6BC-4AE6-9A40-B706C4146C1A}.Release.ActiveCfg = Release|Win32
+		{439CBFDC-A6BC-4AE6-9A40-B706C4146C1A}.Release.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 	EndGlobalSection

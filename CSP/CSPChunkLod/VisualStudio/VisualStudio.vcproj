@@ -33,7 +33,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="cgGL.lib Cg.lib osgNVCgd.lib opengl32.lib osgNVd.lib libjpeg.lib osgDBd.lib osgd.lib"
-				OutputFile="..\..\..\APPLICATIONS\CSPSim\Bin\osgChunkLodd.dll"
+				OutputFile="../../CSPSim/Bin/osgChunkLodd.dll"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="..\..\lib"
 				IgnoreDefaultLibraryNames="libc"
@@ -83,7 +83,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="cgGL.lib Cg.lib osgNVCg.lib osg.lib osgDB.lib osgNV.lib opengl32.lib libjpeg.lib"
-				OutputFile="..\..\..\APPLICATIONS\CSPSim\Bin\osgChunkLod.dll"
+				OutputFile="../../CSPSim/Bin/osgChunkLod.dll"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="..\..\lib"
 				IgnoreDefaultLibraryNames="libc"

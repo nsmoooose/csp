@@ -3,6 +3,7 @@
 	ProjectType="Visual C++"
 	Version="7.10"
 	Name="SimData"
+	ProjectGUID="{038B778B-C414-4F9A-949A-13A3FFDBAC3D}"
 	RootNamespace="SimData"
 	SccProjectName=""
 	SccLocalPath="">

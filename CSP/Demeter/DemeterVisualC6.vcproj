@@ -3,6 +3,7 @@
 	ProjectType="Visual C++"
 	Version="7.10"
 	Name="DemeterVisualC6"
+	ProjectGUID="{F856C351-17F7-4410-8069-6877CB39E149}"
 	SccProjectName=""
 	SccLocalPath="">
 	<Platforms>
@@ -40,7 +41,7 @@
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
 				AdditionalDependencies="SDL_image.lib SDL.lib osgd.lib opengl32.lib glu32.lib"
-				OutputFile="../../APPLICATIONS/CSPSim/Bin/DemeterVisualC6d.dll"
+				OutputFile="../CSPSim/Bin/DemeterVisualC6d.dll"
 				LinkIncremental="2"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\lib"
@@ -106,7 +107,7 @@
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
 				AdditionalDependencies="osg.lib opengl32.lib glu32.lib SDL.lib SDL_image.lib"
-				OutputFile="../../APPLICATIONS/CSPSim/Bin/DemeterVisualC6.dll"
+				OutputFile="../CSPSim/Bin/DemeterVisualC6.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\lib"

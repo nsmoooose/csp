@@ -1,41 +1,43 @@
 Version 0.3.2 (in progress)
 ===========================
 
+2004-04-25: delta
+        Adjusted paths.
+        
 2003-12-06: delta
-	    Minor changes to shut up .net 7.1 warnings.
+        Minor changes to shut up .net 7.1 warnings.
             Demeter debug version links onto release 
             SDL_image.lib 
 
 2003-07-15: onsight
             Disabled GDAL support by default.
-	    Moved LoadRawImage into an #ifdef _USE_GDAL_ block.
+        Moved LoadRawImage into an #ifdef _USE_GDAL_ block.
 
 2003-05-XX: onsight
             Minor optimizations in texture generation.  Still needs
-	    its own thread.
+        its own thread.
 
 2003-05-15: delta
-	    Updated .net project such that dlls are now sent to 
-	    ../../APPLICATIONS/CSPSim/Bin and libs to ../lib.
+        Updated .net project such that dlls are now sent to 
+        ../../APPLICATIONS/CSPSim/Bin and libs to ../lib.
 
 2003-04-18: delta
-	    Checked Onsight changes. 
-	    Got ride of some vc++ warnings.
-	    Updated .NET project.
+        Checked Onsight changes. 
+        Got ride of some vc++ warnings.
+        Updated .NET project.
 
 2003-04-18: onsight
             Changed Terrain and TerrainLattice to inherit from 
-	    osg::Referenced instead of just implementing compatible
-	    reference counting methods.
+        osg::Referenced instead of just implementing compatible
+        reference counting methods.
 
-	    Added DETAIL_TEXTURE_SIZE #define so that larger detail
-	    textures can be used.  The original value was 256, but
-	    512 works fine and so should larger sizes (although I
-	    haven't tested these).  Ideally the size would be
-	    determined at runtime from the actual texture image, but
-	    this was the simplest approach for now.  Note that
-	    Demeter will crash if the texture size exceeds the value
-	    of DETAIL_TEXTURE_SIZE.  Textures that are smaller than
-	    DETAIL_TEXTURE_SIZE do not seem to cause a problem.  The
-	    default setting is now 512.
-
+        Added DETAIL_TEXTURE_SIZE #define so that larger detail
+        textures can be used.  The original value was 256, but
+        512 works fine and so should larger sizes (although I
+        haven't tested these).  Ideally the size would be
+        determined at runtime from the actual texture image, but
+        this was the simplest approach for now.  Note that
+        Demeter will crash if the texture size exceeds the value
+        of DETAIL_TEXTURE_SIZE.  Textures that are smaller than
+        DETAIL_TEXTURE_SIZE do not seem to cause a problem.  The
+        default setting is now 512.

@@ -17,6 +17,9 @@
     <Float name="rudder_min">-23.5</Float>
     <Float name="rudder_max">+23.5</Float>
 
+    <Float name="airbrake_max">60.0</Float>
+    <Float name="airbrake_rate">20.0</Float>
+
     <!-- Mass/Inertial properties -->
     <!-- empty mass = 7600 kg -->
     <Float name="mass">10000.0</Float>
@@ -29,7 +32,7 @@
 
     <Object class="AircraftDynamics" name="aircraft_dynamics">
     
-        <Path name="primary_aero_dynamics">m2k.fm</Path>
+        <Path name="flight_model">m2k.fm</Path>
         
         <Path name="gear_dynamics">m2k.gear</Path>
     
@@ -43,7 +46,7 @@
                     <Float name="engine_ab_thrust">0.95</Float>
                     <Vector name="thrust_direction">0.0 1.0 0.0</Vector>
                     <Vector name="engine_offset">0.0 0.0 0.0</Vector>
-		    <Vector name="smoke_emitter_location">0.0 -5.5 0.0></Vector> 
+		    <Vector name="smoke_emitter_location">0.0 -5.5 0.0</Vector> 
                 </Object>
             </List>
         </Object>

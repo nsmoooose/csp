@@ -10,7 +10,7 @@
 	<List name="gear_set">
         <!-- all of these values are complete guesses for testing only! -->
                 <Object class="LandingGear"> <!-- nosewheel -->
-                    <Vector name="max_position">0.0 4.75 -2.0</Vector>
+                    <Vector name="max_position">0.0 4.20 -2.0</Vector>
                     <Vector name="motion">0 0 1.0</Vector>
                     <Real name="damage_limit">80000.0:10000.0</Real>
                     <Float name="compression_limit">0.5</Float>

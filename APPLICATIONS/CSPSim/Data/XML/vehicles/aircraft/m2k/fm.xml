@@ -6,29 +6,18 @@
 	many parameters are estimates.
 -->
 
-<Object class="PrimaryAeroDynamics">
+<Object class="FlightModel">
 
 	<!-- Wing geometry -->
 	<Float name="wing_span">9.13</Float>
 	<Float name="wing_chord">4.5</Float>
 	<Float name="wing_area">41.0</Float>
 
-	<!-- Control surfaces min/max angles -->
-	<!-- these values come from a FS2k2 add-on -->
-	<Float name="de_max">+27.5</Float>
-	<Float name="de_min">-20.6</Float>
-	<Float name="da_max">+19.5</Float>
-	<Float name="da_min">-15</Float>
-	<Float name="dr_max">+23.5</Float>
-	<Float name="dr_min">-23.5</Float>
-
-	<Float name="g_min">-3.2</Float>
-	<Float name="g_max">9.0</Float>
-
 	<!-- Drag Parameters -->
 	<Float name="cd0">0.06</Float>
 	<Float name="cd_a">0.07</Float>
 	<Float name="cd_de">0.0</Float>
+	<Float name="cd_db">0.08</Float>
 	<!--Float name="cd_df">0.07</Float-->
 	<!--Float name="cd_ds">0.14</Float-->
 
@@ -73,15 +62,6 @@
 	<Float name="cn_r">-8.17</Float><!-- <0 -->
 	<Float name="cn_da">-0.03</Float>
 	<Float name="cn_dr">0.15</Float>
-
-	<!-- g limiter (based on a F16 cat III)>
-	<Curve="limiter_g_aoa">
-	<Breaks spacing='0.03'>
-		0.27 0.31 0.35 0.44 3.14	
-	</Break>
-	<Values>
-		1.0 8.0 7.4 1.0 1.0
-	</Values-->
 
 </Object>
 

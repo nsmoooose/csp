@@ -2,10 +2,12 @@
 
 <Object class="ObjectModel" static="1">
 	<!--External name="model_path">f35.3DS</External-->
-	<External name="model_path">m2k2g.3ds</External>
+	<!--External name="model_path">m2k2g.3ds</External-->
+	<External name="model_path">s.osg</External>
 	<Vector name="axis_0">1 0 0</Vector>
 	<Vector name="axis_1">0 1 0</Vector>
 	<Float name="scale">1.0</Float>
+	<Vector name="offset">0.0 -0.55 0.0</Vector>
 	<Vector name="view_point">0.0 4.65 0.65</Vector>
 	<List name="contacts">
 		<Vector>0.0 8.55 -0.4</Vector>
@@ -22,9 +24,65 @@
 	</List>
 	<List name="landing_gear">
 	<!-- this needs to be fixed to reflect real positions ...-->
-		<Vector>0.0 4.75 -2.0</Vector>
-		<Vector>-1.7 -0.05 -2.0</Vector>
-		<Vector>1.7 -0.05 -2.0</Vector>
+		<Vector>0.0 4.20 -2.0</Vector>
+		<Vector>-1.75 -0.7 -2.0</Vector>
+		<Vector>1.75 -0.7 -2.0</Vector>
+	</List>
+	<List name="animations">
+		<Object class="DrivenRotation">
+		    <Key name="control_id">Aircraft.Rudder</Key>
+		    <Key name="model_id">Aircraft.Rudder</Key>
+		    <Int name="lod_limit">1</Int>
+		    <Vector name="axis">0 -0.34038 0.94029</Vector>
+		</Object>
+		<Object class="DrivenRotation">
+		    <Key name="control_id">Aircraft.Elevator</Key>
+		    <Key name="model_id">Aircraft.LeftElevator</Key>
+		    <Int name="lod_limit">1</Int>
+		    <Vector name="axis">-1 0 0</Vector>
+		</Object>
+		<Object class="DrivenRotation">
+		    <Key name="control_id">Aircraft.Elevator</Key>
+		    <Key name="model_id">Aircraft.RightElevator</Key>
+		    <Int name="lod_limit">1</Int>
+		    <Vector name="axis">-1 0 0</Vector>
+		</Object>
+		<Object class="DrivenRotation">
+		    <Key name="control_id">Aircraft.Aileron</Key>
+		    <Key name="model_id">Aircraft.LeftAileron</Key>
+		    <Int name="lod_limit">1</Int>
+		    <Vector name="axis">1 0 0</Vector>
+		</Object>
+		<Object class="DrivenRotation">
+		    <Key name="control_id">Aircraft.Aileron</Key>
+		    <Key name="model_id">Aircraft.RightAileron</Key>
+		    <Int name="lod_limit">1</Int>
+		    <Vector name="axis">-1 0 0</Vector>
+		</Object>
+		<Object class="DrivenRotation">
+		    <Key name="control_id">Aircraft.Airbrake</Key>
+		    <Key name="model_id">Aircraft.LowerRightAirbrake</Key>
+		    <Int name="lod_limit">1</Int>
+		    <Vector name="axis">1 0 0</Vector>
+		</Object>
+		<Object class="DrivenRotation">
+		    <Key name="control_id">Aircraft.Airbrake</Key>
+		    <Key name="model_id">Aircraft.LowerLeftAirbrake</Key>
+		    <Int name="lod_limit">1</Int>
+		    <Vector name="axis">1 0 0</Vector>
+		</Object>
+		<Object class="DrivenRotation">
+		    <Key name="control_id">Aircraft.Airbrake</Key>
+		    <Key name="model_id">Aircraft.UpperRightAirbrake</Key>
+		    <Int name="lod_limit">1</Int>
+		    <Vector name="axis">-1 0 0</Vector>
+		</Object>
+		<Object class="DrivenRotation">
+		    <Key name="control_id">Aircraft.Airbrake</Key>
+		    <Key name="model_id">Aircraft.UpperLeftAirbrake</Key>
+		    <Int name="lod_limit">1</Int>
+		    <Vector name="axis">-1 0 0</Vector>
+		</Object>
 	</List>
 </Object>
 

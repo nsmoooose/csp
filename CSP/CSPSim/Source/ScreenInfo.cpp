@@ -251,14 +251,14 @@ void GeneralStats::update() {
 		m_Altitude->setText(osstr.str());
 
 		osstr.str("");
-		osstr << "(" << setprecision(precision) << fixed 
-		      << setw(7 + precision) << setfill('0')  << pos.x() << ",";
-		osstr << setw(7 + precision) << setfill('0') << pos.y() << "," << pos.z() << ")";
+		osstr << "( " << setprecision(precision) << fixed 
+		      << setw(7 + precision) /* << setfill('0') */  << pos.x() << ", ";
+		osstr << setw(7 + precision) /* << setfill('0') */  << pos.y() << ", " << pos.z() << " )";
 		m_GlobalPosition->setText(osstr.str());
 	
 		simdata::Vector3 vel = activeObject->getVelocity();
 		osstr.str("");
-		osstr << setprecision(2) << fixed << "(" << vel.x() << "," << vel.y() << "," << vel.z() << ")";
+		osstr << setprecision(2) << fixed << "( " << vel.x() << ", " << vel.y() << ", " << vel.z() << " )";
 		m_Velocity->setText(osstr.str());
 
 		osstr.str("");

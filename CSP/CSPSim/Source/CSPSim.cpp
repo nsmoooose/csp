@@ -417,12 +417,13 @@ void CSPSim::init()
 		// create the networking layer
 		b_networkingFlag = g_Config.getBool("Networking", "UseNetworking", false, true);
 		int localMessagePort = g_Config.getInt("Networking", "LocalMessagePort", 10000, true);
+		std::string localAddr = g_Config.getString("Networking", "LocalMessageHost", "127.0.0.1", true);
 		CSP_LOG(APP, DEBUG, "init() - Creating Message listener on port: " << localMessagePort);
                 std::string remoteAddr = g_Config.getString("Networking", "RemoteMessageHost", "127.0.0.1", true);
 		   
 		Port remotePort = (Port)g_Config.getInt("Networking", "RemoteMessagePort", 0, true);
 		m_RemoteServerNode = new NetworkNode(1, remoteAddr.c_str(), remotePort );
-		m_localNode =  new NetworkNode(1, "localhost", localMessagePort);
+		m_localNode =  new NetworkNode(1, localAddr.c_str(), localMessagePort);
 		m_NetworkMessenger = new NetworkMessenger(m_localNode);
 
 #if 0

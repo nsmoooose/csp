@@ -677,7 +677,7 @@ void CSPSim::doInput(double dt)
 	simdata::Ref<VirtualHID> screen_interface = m_CurrentScreen->getInterface();
 
 	SDL_Event event;
-	short doPoll = 5;
+	short doPoll = 10;
 	while (doPoll-- && m_InputEvent(event)) {
 	//while (doPoll-- && SDL_PollEvent(&event)) {	
 		bool handled = false;

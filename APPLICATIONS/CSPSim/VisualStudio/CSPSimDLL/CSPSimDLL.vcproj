@@ -44,7 +44,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="osgProducerd.lib OpenThreadsWin32d.lib osgChunkLodd.lib osgFXd.lib sigc-1.2d.lib producerd.lib opengl32.lib SDL.lib osgDBd.lib DemeterVisualC6d.lib osgTextd.lib osgUtild.lib osgParticled.lib osgd.lib _cSimData.lib"
+				AdditionalDependencies="ws2_32.lib OpenThreadsWin32d.lib osgChunkLodd.lib osgFXd.lib sigc-1.2d.lib producerd.lib opengl32.lib SDL.lib osgDBd.lib DemeterVisualC6d.lib osgTextd.lib osgUtild.lib osgParticled.lib osgd.lib _cSimData.lib"
 				OutputFile="../../Bin/_cCSP.dll"
 				LinkIncremental="2"
 				SuppressStartupBanner="TRUE"
@@ -121,7 +121,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="osgFX.lib osgChunkLod.lib producer.lib osgText.lib DemeterVisualC6.lib opengl32.lib SDL.lib _cSimData.lib osgParticle.lib osgUtil.lib osgDB.lib osg.lib sigc-1.2.lib OpenThreadsWin32.lib"
+				AdditionalDependencies="ws2_32.lib osgFX.lib osgChunkLod.lib producer.lib osgText.lib DemeterVisualC6.lib opengl32.lib SDL.lib _cSimData.lib osgParticle.lib osgUtil.lib osgDB.lib osg.lib sigc-1.2.lib OpenThreadsWin32.lib"
 				OutputFile="../../Bin/_cCSP.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
@@ -208,16 +208,6 @@
 			</File>
 			<File
 				RelativePath="..\..\Source\ChunkLodTerrain.cpp">
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"/>
-				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\Source\Collision.cpp">
@@ -423,6 +413,31 @@
 					RelativePath="..\..\Source\Views\View.cpp">
 				</File>
 			</Filter>
+			<Filter
+				Name="Networking"
+				Filter="">
+				<File
+					RelativePath="..\..\Source\Networking\NetworkBroadcaster.cpp">
+				</File>
+				<File
+					RelativePath="..\..\Source\Networking\NetworkListener.cpp">
+				</File>
+				<File
+					RelativePath="..\..\Source\Networking\NetworkMessage.cpp">
+				</File>
+				<File
+					RelativePath="..\..\Source\Networking\NetworkMessenger.cpp">
+				</File>
+				<File
+					RelativePath="..\..\Source\Networking\NetworkNode.cpp">
+				</File>
+				<File
+					RelativePath="..\..\Source\Networking\NetworkSocket.cpp">
+				</File>
+				<File
+					RelativePath="..\..\Source\Networking\ObjectUpdateMessage.cpp">
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="Header Files"
@@ -537,6 +552,9 @@
 			</File>
 			<File
 				RelativePath="..\..\Include\Message.h">
+			</File>
+			<File
+				RelativePath="..\..\Include\Networking.h">
 			</File>
 			<File
 				RelativePath="..\..\Include\NumericalMethod.h">

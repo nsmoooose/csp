@@ -2,15 +2,16 @@ Version 0.3.3 (in progress)
 ===========================
 
 2003-07-22: onsight
-            Added a patch by VI to setup.py which improves the 
-	    installation path handling under Linux.  This changes the
-	    default static library path from /usr/local/lib to
-	    {PYTHONLIBPATH}/site-packages/SimData.  The install
-	    currently depends on Python, but one goal of SimData is
-	    that it should be able to operate as a standalone library
-	    independent of Python.  Subsequent changes to the Makefile
-	    installation will be needed to achieve this, probably
-	    involving a new install target such as install_nopython.
+            Applied a patch by Verok Istvan to setup.py which improves the
+            installation path handling under Linux. This changes the default
+            static library path from /usr/local/lib to 
+	    {PYTHONLIBPATH}/site-packages/SimData. 
+		
+            The install currently depends on Python, but one goal of SimData
+            is that it should be able to operate as a standalone library
+            independent of Python. Subsequent changes to the Makefile
+            installation will be needed to achieve this, probably involving
+            a new install target such as install_nopython.
 
 2003-07-21: onsight
             COPYING now correctly contains the GPL license, not the

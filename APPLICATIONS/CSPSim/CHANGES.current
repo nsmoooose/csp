@@ -1,5 +1,15 @@
  Version 0.4.0 (in progress)
 ===========================
+2003-10-24: onsight
+  * Added some SimData header includes that were included
+    implicitly before via SimData/TypeAdapter.h.
+
+2003-10-23: onsight
+  * Changed XML path to come under CachePath in CSPSim.py
+    (submitted by VI).
+
+  * Fixed errant data path in CSPSim.ini.
+
 2003-10-21: onsight
   * Cleaned up the code that initializes the test sound.  The
     sim won't abort if it can't find the sound file or open

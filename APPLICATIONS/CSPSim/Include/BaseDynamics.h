@@ -24,6 +24,7 @@
 #ifndef __BASEDYNAMICS_H__
 #define __BASEDYNAMICS_H__
 
+#include <SimData/Quat.h>
 #include <SimData/Vector3.h>
 
 #include <System.h>

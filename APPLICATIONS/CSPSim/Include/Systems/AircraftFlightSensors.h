@@ -27,6 +27,7 @@
 #define __AIRCRAFTFLIGHTSENSORS_H__
 
 #include <System.h>
+#include <SimData/Vector3.h>
 
 class AircraftFlightSensors: public System {
 public:

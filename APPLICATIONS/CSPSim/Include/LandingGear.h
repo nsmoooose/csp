@@ -32,6 +32,7 @@
 #include <SimData/Object.h>
 #include <SimData/Vector3.h>
 #include <SimData/Quat.h>
+#include <SimData/Real.h>
 #include <SimData/Link.h>
 
 #include "BaseDynamics.h"

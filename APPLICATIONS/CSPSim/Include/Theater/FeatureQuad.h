@@ -31,6 +31,7 @@
 #include <SimData/Path.h>
 #include <SimData/Object.h>
 #include <SimData/Vector3.h>
+#include <SimData/External.h>
 #include <SimData/InterfaceRegistry.h>
 
 #include <osg/ref_ptr>

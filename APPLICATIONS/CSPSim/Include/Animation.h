@@ -33,6 +33,7 @@
 #include <SimData/Object.h>
 #include <SimData/Vector3.h>
 #include <SimData/Matrix3.h>
+#include <SimData/Key.h>
 #include <SimData/InterfaceRegistry.h>
 #include <SimData/osg.h>
 

@@ -60,6 +60,7 @@ def setLogClasses():
 			print "Unrecognized log class:", class_name
 	CSP.csplog().setLogClasses(flags)
 
+
 def runCSPSim(args):
 	if len(args):
 		print "Unrecognized option '%s'" % args[0]
@@ -108,7 +109,7 @@ def compileData(args):
 	datapath = CSP.getDataPath()
 	cachepath = CSP.getCachePath()
 	dar = os.path.join(cachepath, "sim.dar")
-	XML = os.path.join(cachepath, "XML")
+	XML = os.path.join(datapath, "XML")
 	CSP.csplog().setLogLevels(CSP.CSP_ALL, SimData.LOG_ALERT)
 	#print "compile %s %s" % (XML, dar)
 	try:
@@ -225,6 +226,7 @@ def main(argv):
 	all_args = argv[1:]
 	log_classes = []
 	other_args = []
+	pause = 0
 	simdata_loglevel = "ALERT"
 
 	config = findConfig()
@@ -237,6 +239,8 @@ def main(argv):
 		elif arg.startswith('--dump-data='):
 			action = dumpData
 			other_args.append(arg)
+		elif arg == '--pause':
+			pause = 1
 		elif arg in ("--help", "-h", "-help"):
 			if action == None:
 				print
@@ -275,6 +279,11 @@ def main(argv):
 	if not CSP.openConfig(config):
 		print "Unable to open primary configuration file (%s)" % config
 		sys.exit(0)
+
+	if pause:
+		print "Hit <ctrl-break> to temporarily exit and set breakpoints."
+		print "When you are done, continue execution and hit <enter>."
+		sys.stdin.readline()
 
 	action(other_args)
 

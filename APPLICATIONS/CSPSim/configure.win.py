@@ -12,7 +12,7 @@
 import sys
 
 min_python_version = "2.2.0"
-min_simdata_version = "0.3.1"
+min_simdata_version = "0.4.0"
 
 if len(sys.argv) == 2:
 	command = sys.argv[1]
@@ -27,7 +27,7 @@ if len(sys.argv) == 2:
 		
 try:
 	import SimData
-	if SimData.getVersion() < "0.3.1":
+	if SimData.getVersion() < min_simdata_version:
 		print
 		print "SimData version %s or greater is required, but version %s is installed." % (min_simdata_version, SimData.getVersion())
 		print "SimData is available from CVS at http://sourceforge.net/projects/csp"

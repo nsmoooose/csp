@@ -79,8 +79,9 @@ ScreenInfo::ScreenInfo(float pos_x, float pos_y, std::string const &name, std::s
 	m_FontSize(20),
 	//m_CharacterSize(14),
 	m_CharacterSize(11),
-	m_Text(makeText(pos_x,pos_y - m_CharacterSize, text)) {
-		addDrawable(m_Text);
+	m_Text(makeText(pos_x,pos_y - m_CharacterSize, text)),
+	m_InfoGeode(new osg::Geode) {
+		m_InfoGeode->addDrawable(m_Text.get());
 		setName(name);
 		// HACK to prevent text from disappearing when chunklod multitexture details
 		// are turned on:
@@ -88,6 +89,7 @@ ScreenInfo::ScreenInfo(float pos_x, float pos_y, std::string const &name, std::s
 		ss->setTextureMode(1,GL_TEXTURE_2D,osg::StateAttribute::OFF);
 		//ss->setTextureMode(2,GL_TEXTURE_2D,osg::StateAttribute::OFF);
 		//ss->setTextureMode(3,GL_TEXTURE_2D,osg::StateAttribute::OFF);
+		addChild(m_InfoGeode.get());
 }
 
 osgText::Text *ScreenInfo::makeText(float pos_x, float pos_y, std::string const &string_text) {
@@ -114,7 +116,7 @@ Framerate::Framerate(int pos_x, int pos_y):
 	m_Date(makeText(pos_x, pos_y - 2*m_CharacterSize)) {
 		m_Text->setUseDisplayList(false);
 		m_Date->setUseDisplayList(false);
-		addDrawable(m_Date);
+		m_InfoGeode->addDrawable(m_Date);
 		setUpdateCallback(new UpdateCallback);
 }
 
@@ -156,11 +158,11 @@ GeneralStats::GeneralStats(int pos_x,int pos_y):
 
 	m_Text->setUseDisplayList(false);
 	m_Altitude->setUseDisplayList(false);
-	addDrawable(m_Altitude);
+	m_InfoGeode->addDrawable(m_Altitude);
 	m_GlobalPosition->setUseDisplayList(false);
-	addDrawable(m_GlobalPosition);
+	m_InfoGeode->addDrawable(m_GlobalPosition);
 	m_Velocity->setUseDisplayList(false);
-	addDrawable(m_Velocity);
+	m_InfoGeode->addDrawable(m_Velocity);
 
 	setUpdateCallback(new UpdateCallback);
 }
@@ -199,8 +201,8 @@ ObjectStats::ObjectStats(int posx,int posy, simdata::Ref<DynamicObject> const& /
 	: ScreenInfo(posx,posy,"OBJECT STATS"), m_PosX(posx), m_PosY(posy)
 {
 	m_Skip = static_cast<int>(m_CharacterSize);
-	if (m_Text) {
-		removeDrawable(m_Text);	
+	if (m_Text.valid()) {
+		m_InfoGeode->removeDrawable(m_Text.get());	
 	}
 	if (!getUpdateCallback()) {
 		setUpdateCallback(new UpdateCallback);
@@ -216,7 +218,7 @@ void ObjectStats::update() {
 		short m = stringStats.size();
 		if (m < n) {
 			for (int i = m; i < n; ++i) {
-				removeDrawable(m_ObjectStats[i].get());
+				m_InfoGeode->removeDrawable(m_ObjectStats[i].get());
 			}
 			m_ObjectStats.resize(m);
 		} else
@@ -224,7 +226,7 @@ void ObjectStats::update() {
 			m_ObjectStats.resize(m);
 			for (int i = n; i < m; ++i) {
 				m_ObjectStats[i] = makeText(m_PosX, m_PosY+i*m_Skip);
-				addDrawable(m_ObjectStats[i].get());
+				m_InfoGeode->addDrawable(m_ObjectStats[i].get());
 			}
 		}
 		while (--m >= 0) {
@@ -233,24 +235,24 @@ void ObjectStats::update() {
 	}
 }
 
-MessageBox::MessageBox(int posx, int posy, int lines, float delay)
+MessageList::MessageList(int posx, int posy, int lines, float delay)
 	: ScreenInfo(posx, posy, "MESSAGE BOX"), m_Lines(lines), m_Delay(delay), m_Alpha(1.0), m_LastUpdate(0)
 {
-	if (m_Text) {
-		removeDrawable(m_Text);
+	if (m_Text.valid()) {
+		m_InfoGeode->removeDrawable(m_Text.get());
 	}
 	int stepy = static_cast<int>(m_CharacterSize);
 	for (int i = 0; i < lines; ++i) {
 		osg::ref_ptr<osgText::Text> line = makeText(posx, posy - i * stepy);
 		m_Messages.push_back(line);
-		addDrawable(line.get());
+		m_InfoGeode->addDrawable(line.get());
 	}
 	if (!getUpdateCallback()) {
 		setUpdateCallback(new UpdateCallback);
 	}
 }
 
-void MessageBox::addLine(std::string const &line) {
+void MessageList::addLine(std::string const &line) {
 	m_LastUpdate = simdata::get_realtime();
 	for (int i = m_Lines-1; i > 0; --i) {
 		m_Messages[i]->setText(m_Messages[i-1]->getText());
@@ -260,7 +262,7 @@ void MessageBox::addLine(std::string const &line) {
 	}
 }
 
-void MessageBox::update() {
+void MessageList::update() {
 	double now = simdata::get_realtime();
 	float dt = static_cast<float>(now - m_LastUpdate);
 	float old_alpha = m_Alpha;

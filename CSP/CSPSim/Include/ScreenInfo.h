@@ -26,30 +26,33 @@
 #ifndef __SCREENINFO_H__
 #define __SCREENINFO_H__
 
-#include <osg/Geode>
-
 namespace osgText {
 	class Text;
 }
+
+#include <osg/Geode>
+#include <osg/Switch>
 
 #include <SimData/Ref.h>
 
 class DynamicObject;
 
-class ScreenInfo: public osg::Geode
+class ScreenInfo: public osg::Switch 
+//class ScreenInfo: public osg::Geode
 {
 protected:
 	std::string m_TTFPath;
 	int m_FontSize;
 	float m_CharacterSize;
-	osgText::Text *m_Text;
+	osg::ref_ptr<osg::Geode> m_InfoGeode;
+	osg::ref_ptr<osgText::Text> m_Text;
 	osgText::Text *makeText(float pos_x, float pos_y,std::string const &string_text = "");
 	virtual ~ScreenInfo() {}
 public:
 	ScreenInfo(float pos_x, float pos_y, std::string const &name, std::string const &text = "");
 	virtual void update(){}
-	void setStatus(bool const visible) {if (visible) setNodeMask(0x1); else setNodeMask(0x0);}
-	bool getStatus() const {return getNodeMask() != 0x0;}
+	void setStatus(bool const visible) {if (visible) setAllChildrenOn(); else setAllChildrenOff();}
+	bool getStatus() const {return getValue(0);}
 };
 
 
@@ -93,7 +96,7 @@ public:
 };
 
 
-class MessageBox: public ScreenInfo
+class MessageList: public ScreenInfo
 {
 	std::vector<osg::ref_ptr<osgText::Text> > m_Messages;
 	int m_Lines;
@@ -101,9 +104,9 @@ class MessageBox: public ScreenInfo
 	float m_Alpha;
 	double m_LastUpdate;
 protected:
-	~MessageBox(){}
+	~MessageList(){}
 public:
-	MessageBox(int posx, int posy, int lines, float delay);
+	MessageList(int posx, int posy, int lines, float delay);
 	void addLine(std::string const &line);
 	virtual void update();
 };

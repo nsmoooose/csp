@@ -31,10 +31,11 @@
 #include <SimData/Object.h>
 #include <SimData/Path.h>
 
+#include "TerrainObject.h"
+#include "VirtualScene.h"
+#include "DynamicObject.h"
+
 class BaseController;
-class TerrainObject;
-class VirtualScene;
-class DynamicObject;
 
 
 /**

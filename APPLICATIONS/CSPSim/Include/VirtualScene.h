@@ -43,10 +43,10 @@ namespace osgUtil {
 	class SceneView;
 }
 
-class VirtualBattlefield;
-class TerrainObject;
-class Sky;
-class SimObject;
+#include "VirtualBattlefield.h"
+#include "TerrainObject.h"
+#include "SimObject.h"
+#include "Sky.h"
 
 
 /**

@@ -459,6 +459,7 @@ void LocalBattlefield::onJoinResponse(simdata::Ref<JoinResponse> const &msg, sim
 
 void LocalBattlefield::onIdAllocationResponse(simdata::Ref<IdAllocationResponse> const &msg, simdata::Ref<simnet::MessageQueue> const &) {
 	SIMNET_LOG(MESSAGE, INFO, *msg);
+	if (static_cast<ObjectId>(msg->first_id()) == m_LocalIdPool->reserve) return;  // duplicate
 	assert(m_LocalIdPool->reserve_limit == 0);
 	m_LocalIdPool->reserve = msg->first_id();
 	m_LocalIdPool->reserve_limit = msg->first_id() + msg->id_count();

@@ -78,6 +78,7 @@ class GlobalBattlefield: public Battlefield {
 	public:
 		ClientResponse(simnet::NetworkMessage::Ref const &request): m_Response(new MSG()) {
 			m_Response->setReplyTo(request);
+			m_Response->setReliable();
 			m_Response->setRoutingType(ROUTE_COMMAND);
 		}
 		inline typename MSG::Ref const &operator->() { return m_Response; }

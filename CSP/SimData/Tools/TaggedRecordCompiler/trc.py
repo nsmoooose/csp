@@ -113,6 +113,8 @@ class DataPackCompiler:
           self.error('syntax error')
       if trim.startswith('//'):
         continue
+      idx = trim.rfind('//')
+      if idx >= 0: trim = trim[:idx]
       header = 0
       while trim:
         rest = ''

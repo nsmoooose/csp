@@ -424,8 +424,8 @@ class TagReader: public TagBase {
 		_lasttag = _tagstack.top();
 		_tagstack.pop();
 	}
-	int readLength() {
-		int length = 0;
+	unsigned int readLength() {
+		unsigned int length = 0;
 		int sh = 0;
 		unsigned char x;
 		do {

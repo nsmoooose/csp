@@ -90,7 +90,8 @@ public:
 	 *
 	 *  @returns 0 if the interface is not found.
 	 */
-	Ref<TaggedRecord> createRecord(hasht key) const {
+	Ref<TaggedRecord> createRecord(TaggedRecord::Id id) const {
+		HashT key(static_cast<uint32>(id), static_cast<uint32>(id>>32));
 		FactoryIdMap::const_iterator it = _id_map.find(key);
 		if (it != _id_map.end()) return it->second->create();
 		return 0;
@@ -109,7 +110,8 @@ public:
 	 *
 	 *  @param key The object class hash.
 	 */
-	bool hasFactory(hasht key) const {
+	bool hasFactory(TaggedRecord::Id id) const {
+		HashT key(static_cast<uint32>(id), static_cast<uint32>(id>>32));
 		FactoryIdMap::const_iterator it = _id_map.find(key);
 		return it != _id_map.end();
 	}
@@ -141,8 +143,10 @@ private:
 		assert(factory != 0);
 		assert(!hasFactory(factory->getName()));
 		SIMDATA_LOG(LOG_ALL, LOG_INFO, "Registering TaggedRecordFactory<" << factory->getName() << "> [" << factory->getId() << "]");
+		TaggedRecord::Id id = factory->getId();
+		HashT key(static_cast<uint32>(id), static_cast<uint32>(id>>32));
 		_map[factory->getName()] = factory;
-		_id_map[factory->getId()] = factory;
+		_id_map[key] = factory;
 	}
 
 	TaggedRecordRegistry() { }

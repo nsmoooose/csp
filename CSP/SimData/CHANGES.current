@@ -1,6 +1,9 @@
 Version 0.4.0 (in progress)
 ===========================
 
+2004-08-25: onsight
+ * Clean up some compiler warnings, and a few misc. fixes.
+
 2004-08-08: onsight
  * Removed restriction on serializing null+none Links.  Added a
    validation callback in ObjectInterface to catch null+none Links

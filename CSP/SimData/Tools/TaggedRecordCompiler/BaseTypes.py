@@ -376,16 +376,16 @@ class ArrayType(Declaration):
 
   def dump_save(self, format):
     format.write('writer.writeLength(%s.size());' % self.varname())
-    format.write('for (int i=0; i < %s.size(); ++i) {' % self.varname())
+    format.write('for (unsigned i=0; i < %s.size(); ++i) {' % self.varname())
     format.indent()
     self.child.dump_save(format)
     format.dedent()
     format.write('}')
 
   def dump_load(self, format):
-    format.write('int %s_len = reader.readLength();' % self.id)
+    format.write('unsigned %s_len = reader.readLength();' % self.id)
     format.write('%s.resize(%s_len);' % (self.varname(), self.id))
-    format.write('for (int i=0; i < %s_len; ++i) {' % self.id)
+    format.write('for (unsigned i=0; i < %s_len; ++i) {' % self.id)
     format.indent()
     self.child.dump_load(format)
     format.dedent()
@@ -394,7 +394,7 @@ class ArrayType(Declaration):
   def dump_print(self, format):
     format.write('os << "[\\n";')
     format.write('++indent;')
-    format.write('for (int i=0; i < %s.size(); ++i) {' % self.varname())
+    format.write('for (unsigned i=0; i < %s.size(); ++i) {' % self.varname())
     format.indent()
     self.child.dump_print(format)
     format.write('os << "\\n";')
@@ -434,7 +434,8 @@ class Message(CompoundType):
   def dump_source(self, format=None, file=None):
     if not format:
       format = CodeFormat.Format(file=file)
-    format.write('int %s::m_CustomId = 0;' % (self.id))
+    custom_id = int(self.opts.get('ID', '0'))
+    format.write('int %s::m_CustomId = %d;' % (self.id, custom_id))
     format.write('const %s::Id %s::_Id;' % (self.id, self.id))
     format.write('namespace { simdata::TaggedRecordFactory<%s> __%s_factory; }' % (self.id, self.id))
 

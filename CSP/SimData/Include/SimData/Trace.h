@@ -136,12 +136,12 @@ public:
 #if defined(__GNUC__) && !defined(__MINGW32__)
 
 private:
-	static void __sigsegv(int sign) {
+	static void __sigsegv(int /*sig_n*/) {
 		getTrace().error(3, true);
 		abort();
 	}
 
-	static void __sigabort(int sign) {
+	static void __sigabort(int /*sig_n*/) {
 		getTrace().error(3);
 	}
 

@@ -1,0 +1,46 @@
+#!/usr/bin/env python
+
+# CSPEdit - Copyright (C) 2003 Mark Rose
+#
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# as published by the Free Software Foundation; either version 2
+# of the License, or (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, US
+
+		
+import sys, threading
+import CSPEdit, UI, Core
+
+
+class UIThread(threading.Thread):
+
+	def __init__(self, view):
+		threading.Thread.__init__(self)
+		self.setDaemon(1)
+		self._view = view
+		self._core = Core.Core(view)
+
+	def run(self):
+		print "CSPEdit - Combat Simulator Project Theater Editor"
+		print "================================================="
+		ui = UI.Init(self._core)
+		ui.MainLoop()
+		self._view.quit()
+
+
+view = CSPEdit.View();
+view.init(sys.argv)
+ui = UIThread(view)
+ui.start()
+view.run()
+
+

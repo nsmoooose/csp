@@ -36,6 +36,7 @@
 #include <SimData/HashUtility.h>
 #include <SimData/TypeAdapter.h>
 #include <SimData/ObjectInterface.h>
+#include <SimData/Singleton.h>
 #include <SimData/Namespace.h>
 #include <SimData/Exception.h>
 
@@ -335,21 +336,6 @@ public:
 };
 
 
-/** Creates a single, static instance of the templated class.
- */
-template <class C>
-class Singleton {
-public:
-	/** Get the one instance of the template class.
-	 */
-	static C& getInstance() {
-		static C __instance;
-		return __instance;
-	}
-private:
-	Singleton() {}
-	~Singleton() {}
-};
 
 /** Singleton class to store and access all ObjectInterfaces in the application.
  *

@@ -137,7 +137,7 @@ protected:
 	inline virtual int sync();
 
 	/** overflow */
-	int overflow( int ch );
+	int overflow(int ch);
 
 private:
 
@@ -170,9 +170,9 @@ logbuf::set_log_state(int c, int p)
 
 //inline logbuf::int_type
 inline int
-logbuf::overflow( int c )
+logbuf::overflow(int c)
 {
-	return logging_enabled ? sbuf->sputc(c) : (EOF == 0 ? 1: 0);
+	return logging_enabled ? sbuf->sputc(static_cast<char>(c)) : (EOF == 0 ? 1: 0);
 }
 
 /** LogStream manipulator for setting the log level of a message.

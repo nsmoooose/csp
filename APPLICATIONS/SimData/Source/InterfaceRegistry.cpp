@@ -134,9 +134,9 @@ InterfaceRegistry::~InterfaceRegistry() {
 
 void InterfaceRegistry::__cleanup() {
 	SIMDATA_LOG(LOG_REGISTRY, LOG_DEBUG, "Destroying the interface registry.");
-	if (__map) delete __map;
-	if (__id_map) delete __id_map;
-	if (__list) delete __list;
+	if (__map) delete __map; __map = 0;
+	if (__id_map) delete __id_map; __id_map = 0;
+	if (__list) delete __list; __list = 0;
 }
 
 InterfaceProxy *InterfaceRegistry::getInterface(const char *name) {

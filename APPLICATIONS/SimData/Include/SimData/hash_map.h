@@ -27,7 +27,7 @@
 #ifndef __SIMDATA_HASH_MAP_H__
 #define __SIMDATA_HASH_MAP_H__
 
-#if defined(__GNUC__) || defined(__INTEL_COMPILER)
+#if defined(__GNUC__) //|| defined(__INTEL_COMPILER)
   #if __GNUC__ >= 3
     #include <ext/hash_map>
     #if __GNUC_MINOR__ > 0
@@ -44,7 +44,11 @@
   #endif
 #else
   #ifdef _MSC_VER 
-   #if (_MSC_VER <= 1200) && defined(_STLP_WIN32)
+   #if defined(_STLPORT)
+    #include <hash_map>
+    #define HASH_MAP std::hash_map
+    #define HASH std::hash
+   #elif ((_MSC_VER <= 1200) && defined(_STLP_WIN32))
     #include <hash_map>
     #define HASH_MAP std::hash_map
     #define HASH std::hash

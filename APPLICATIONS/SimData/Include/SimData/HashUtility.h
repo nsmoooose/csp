@@ -169,9 +169,9 @@ inline HashT hash_string(std::string const &key) { return newhasht_cstring(key);
 /** Integer equality functor for hash_map.
  */
 #if defined(_MSC_VER) && (_MSC_VER >= 1300) 
-	struct eqint: public std::hash_compare<int const> {
+	struct eqint: public HASH<int const> {
 		size_t operator ()(int const& i) const {
-			return i;
+			return static_cast<size_t>(i);
 		}
 		bool operator()(int const& i1, int const& i2) const {
 			return (i1 < i2);
@@ -188,8 +188,8 @@ inline HashT hash_string(std::string const &key) { return newhasht_cstring(key);
 /** Integer hash functor for hash_map.
  */
 struct hashint {
-	int operator()(int i) const {
-		return i;
+	size_t operator()(int i) const {
+		return static_cast<size_t>(i);
 	}
 };
 
@@ -197,39 +197,38 @@ struct hashint {
 /** const char* equality functor for hash_map.
  */
 #if defined(_MSC_VER) && (_MSC_VER >= 1300) 
-	struct eqstr: public std::hash_compare<char const*>
-		{
-			size_t operator()(char const* s ) const {
-				return newhash4_cstring(s);
-			}
-			bool operator()(char const* s1, char const* s2) const {
-				return (strcmp(s1, s2) < 0);
-			}
-		};
+	struct eqstr: public HASH<char const*>
+	{
+		size_t operator()(char const* s) const {
+			return static_cast<size_t>(newhash4_cstring(s));
+		}
+		bool operator()(char const* s1, char const* s2) const {
+			return (strcmp(s1, s2) < 0);
+		}
+	};
 #else
 	struct eqstr {
 		bool operator()(const char* s1, const char* s2) const {
 			return (strcmp(s1, s2) == 0);
 		}
-	
 	};
 #endif
 
 /** hasht hash functor for hash_map.
  */
 struct hasht_hash {
-	uint32 operator()(hasht i1) const {
-		return i1.a;
+	size_t operator()(hasht i1) const {
+		return static_cast<size_t>(i1.a);
 	}
 };
 
 /** hasht equality functor for hash_map.
  */
-#if defined(_MSC_VER) && (_MSC_VER >= 1300) 
-	struct hasht_eq: public std::hash_compare<hasht const> {
-		size_t operator()( hasht const& i1 ) const {
-		return i1.a;
-			}
+#if defined(_MSC_VER) && (_MSC_VER >= 1300)
+	struct hasht_eq: public HASH<hasht const> {
+		size_t operator()(hasht const& i1) const {
+			return static_cast<size_t>(i1.a);
+		}
 		bool operator()(hasht const& i1, hasht const& i2) const {
 			return (i1.a < i2.a || (i1.a == i2.a && i1.b < i2.b));
 		}
@@ -247,16 +246,16 @@ struct hasht_hash {
  */
 struct SIMDATA_EXPORT hashstring {
 	static HASH<const char*> h;
-	int operator()(const std::string &s) const {
-		return h(s.c_str());
+	size_t operator()(const std::string &s) const {
+		return static_cast<size_t>(h(s.c_str()));
 	}
 };
 
 /** String equality functor for hash_map.
  */
-#if defined(_MSC_VER) && (_MSC_VER >= 1300) 
-	struct eqstring: public std::hash_compare<std::string const> {
-		size_t operator()( std::string const& a ) const {
+#if defined(_MSC_VER) && (_MSC_VER >= 1300)
+	struct eqstring: public HASH<std::string const> {
+		size_t operator()(std::string const& a) const {
 			return eqstr()(a.c_str());
 		}
 		bool operator()(std::string const& a, std::string const& b) const {

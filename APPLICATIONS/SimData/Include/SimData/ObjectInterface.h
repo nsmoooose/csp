@@ -93,16 +93,16 @@ public:
 	virtual unsigned int getMask() const { return 0; }
 protected:
 	void setType(BaseType &x) { type = x.typeString(); }
-	void setType(double &x) { type = "builtin::double"; }
-	void setType(float &x) { type = "builtin::float"; }
-	void setType(unsigned int &x) { type = "builtin::uint"; }
-	void setType(int &x) { type = "builtin::int"; }
-	void setType(unsigned char &x) { type = "builtin::uint8"; }
-	void setType(char &x) { type = "builtin::int8"; }
-	void setType(unsigned short &x) { type = "builtin::uint16"; }
-	void setType(short &x) { type = "builtin::int16"; }
-	void setType(bool &x) { type = "builtin::bool"; }
-	void setType(std::string const &x) { type = "builtin::string"; }
+	void setType(double &) { type = "builtin::double"; }
+	void setType(float &) { type = "builtin::float"; }
+	void setType(unsigned int &) { type = "builtin::uint"; }
+	void setType(int &) { type = "builtin::int"; }
+	void setType(unsigned char &) { type = "builtin::uint8"; }
+	void setType(char &) { type = "builtin::int8"; }
+	void setType(unsigned short &) { type = "builtin::uint16"; }
+	void setType(short &) { type = "builtin::int16"; }
+	void setType(bool &) { type = "builtin::bool"; }
+	void setType(std::string const &) { type = "builtin::string"; }
 	MemberAccessorBase(): type("none") {}
 	std::string name;
 	std::string help;

@@ -220,7 +220,7 @@ public:
 	/** Get the day of the week as an integer (1=MONDAY..7=SUNDAY)
 	 */
 	weekday_t getWeekday() const {
-		return ((m_julian) % 7) + 1;
+		return static_cast<weekday_t>((m_julian % 7) + 1);
 	}
 
 	/** Get the month of the year as an integer (1..12).

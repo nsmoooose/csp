@@ -145,7 +145,7 @@ friend class Enumeration;
 		std::string token; 
 		int value = 0;
 		for (int idx = 0; ss >> token; idx++) {
-			std::size_t eq = token.find("=");
+			std::string::size_type eq = token.find("=");
 			if (eq != std::string::npos) {
 				value = atoi(std::string(token, eq+1, std::string::npos).c_str());
 				token = std::string(token, 0, eq);

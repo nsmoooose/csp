@@ -1,6 +1,21 @@
 Version 0.3.3 (in progress)
 ===========================
 
+2003-05-03: onsight
+            Replaced CSP's logging facilities with SimData's (which 
+	    originally came from CSP).  Some tweaks to the logging
+	    classes needed to be made to support multiple logs at once,
+	    but this seems to work fine now.  The CSP_LOG macro is
+	    a little easier to use now, since it inserts the CSP_
+	    prefix automatically for the class and priority levels:
+
+	        CSP_LOG(APP, DEBUG, "a message");
+
+	    instead of
+
+	        CSP_LOG(CSP_APP, CSP_DEBUG, "a message");
+
+
 2003-05-02: onsight
 ==========> VC USERS: add Theater.cpp to the project.
 

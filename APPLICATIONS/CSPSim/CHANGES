@@ -8,9 +8,12 @@ Version 0.3.0 (2003-03-14)
             CSPSim: 0.3.0
 
 2003-03-14: onsight
-            Include file fix in GameScreen.cpp (LogStream.h)
-
-	    Removed -march flag from Makefile.in
+            - Include file fix in GameScreen.cpp (LogStream.h)
+	    - Removed -march flag from Makefile.in
+	    - Temporary fix for osg lib version tests in configure.in
+	    - Removed Source/FX/Makefile.in from configure targets.
+	    - Added DynamicalObject.cpp to Makefile.
+	    - Set sounds path to Data/Sounds in ini.
 	    
 2003-03-12: delta
             Cleaning code for ScreenInfo and ScreenInfoManager. It still

@@ -352,6 +352,33 @@ void Quat::get(Matrix3& m) const {
 	m(2,2) = 1.0 - (xx + yy);
 }
 
+int Quat::readBinary(const unsigned char * ptrBuf, int size)
+{
+  if (size != sizeof(Quat))
+    {
+      printf("Trying to read a binary Quat with the wrong size\n");
+      return 0;
+    }
+  memcpy((void*)&_x, (void*)ptrBuf, sizeof(double)); ptrBuf += sizeof(double);
+  memcpy((void*)&_y, (void*)ptrBuf, sizeof(double)); ptrBuf += sizeof(double);
+  memcpy((void*)&_z, (void*)ptrBuf, sizeof(double)); ptrBuf += sizeof(double);
+  memcpy((void*)&_w, (void*)ptrBuf, sizeof(double)); ptrBuf += sizeof(double);
+  return 4*sizeof(double);
+}
+
+int Quat::writeBinary(unsigned char * ptrBuf, int size)
+{
+  if (size != sizeof(Quat))
+    {
+      printf("Trying to write a binary Quat with the wrong size\n");
+      return 0;
+    }
+  memcpy((void*)ptrBuf, (void*)&_x, sizeof(double)); ptrBuf += sizeof(double);
+  memcpy((void*)ptrBuf, (void*)&_y, sizeof(double)); ptrBuf += sizeof(double);
+  memcpy((void*)ptrBuf, (void*)&_z, sizeof(double)); ptrBuf += sizeof(double);
+  memcpy((void*)ptrBuf, (void*)&_w, sizeof(double)); ptrBuf += sizeof(double); 
+  return 4*sizeof(double);
+}
 
 NAMESPACE_SIMDATA_END
 

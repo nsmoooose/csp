@@ -1,5 +1,10 @@
 Version 0.4.0 (in progress)
 ===========================
+2004-04-17: wolverine
+  * made changes to Vector3, Quad and Matrix3 to write data
+    to binary buffers that are used to serialize and deserialize
+    the object for network packets.
+
 2004-03-31: delta
   * Namespace & SIMDATA_EXPORT symbol hacks cleaned in 
     SimData/Include/SimData/ExceptionBase.h :-)

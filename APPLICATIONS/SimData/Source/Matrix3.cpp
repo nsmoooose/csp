@@ -342,6 +342,46 @@ void Matrix3::parseXML(const char* cdata) {
 	}
 }
 
+int Matrix3::readBinary(const unsigned char * ptrBuf, int size)
+{
+   if (size != 9*sizeof(double))
+   {
+	printf("Matrix3::readBinary - buffer is incorrect size\n");
+	return 0;
+   }
+   memcpy((void*)&_mat[0][0], (void*)ptrBuf, sizeof(double)); ptrBuf += sizeof(double);
+   memcpy((void*)&_mat[0][1], (void*)ptrBuf, sizeof(double)); ptrBuf += sizeof(double);
+   memcpy((void*)&_mat[0][2], (void*)ptrBuf, sizeof(double)); ptrBuf += sizeof(double);
+   memcpy((void*)&_mat[1][0], (void*)ptrBuf, sizeof(double)); ptrBuf += sizeof(double);
+   memcpy((void*)&_mat[1][1], (void*)ptrBuf, sizeof(double)); ptrBuf += sizeof(double);
+   memcpy((void*)&_mat[1][2], (void*)ptrBuf, sizeof(double)); ptrBuf += sizeof(double);
+   memcpy((void*)&_mat[2][0], (void*)ptrBuf, sizeof(double)); ptrBuf += sizeof(double);
+   memcpy((void*)&_mat[2][1], (void*)ptrBuf, sizeof(double)); ptrBuf += sizeof(double);
+   memcpy((void*)&_mat[2][2], (void*)ptrBuf, sizeof(double)); ptrBuf += sizeof(double);
+   return 9*sizeof(double);
+   
+}
+int Matrix3::writeBinary(unsigned char * ptrBuf, int size)
+{
+   if (size != 9*sizeof(double))
+   {
+	printf("Matrix3::writeBinary - buffer is incorrect size\n");
+	return 0;
+   }
+
+   memcpy((void*)ptrBuf, (void*)&_mat[0][0], sizeof(double)); ptrBuf += sizeof(double);
+   memcpy((void*)ptrBuf, (void*)&_mat[0][1], sizeof(double)); ptrBuf += sizeof(double);
+   memcpy((void*)ptrBuf, (void*)&_mat[0][2], sizeof(double)); ptrBuf += sizeof(double);
+   memcpy((void*)ptrBuf, (void*)&_mat[1][0], sizeof(double)); ptrBuf += sizeof(double);
+   memcpy((void*)ptrBuf, (void*)&_mat[1][1], sizeof(double)); ptrBuf += sizeof(double);
+   memcpy((void*)ptrBuf, (void*)&_mat[1][2], sizeof(double)); ptrBuf += sizeof(double);
+   memcpy((void*)ptrBuf, (void*)&_mat[2][0], sizeof(double)); ptrBuf += sizeof(double);
+   memcpy((void*)ptrBuf, (void*)&_mat[2][1], sizeof(double)); ptrBuf += sizeof(double);
+   memcpy((void*)ptrBuf, (void*)&_mat[2][2], sizeof(double)); ptrBuf += sizeof(double);
+   return 9*sizeof(double);
+}
+
+
 std::ostream& operator<< (std::ostream& os, const Matrix3& m)
 {
 	os << "["<<std::endl;

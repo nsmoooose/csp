@@ -586,6 +586,10 @@ public:
 	friend SIMDATA_EXPORT std::ostream& operator<< (std::ostream& os, const Matrix3& m);
 #endif // SWIG
 
+	virtual int readBinary(const unsigned char *, int size);
+	virtual int writeBinary(unsigned char *, int size);
+
+
 protected:
 	/** The matrix elements */
         double _mat[3][3];

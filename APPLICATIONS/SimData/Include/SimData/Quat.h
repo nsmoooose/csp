@@ -456,6 +456,10 @@ public:
 %}
 #endif // SWIG
 
+	virtual int readBinary(const unsigned char *, int size);
+	virtual int writeBinary(unsigned char *, int size);
+
+
 };	// end of class prototype
 
 

@@ -83,6 +83,58 @@ void Vector3::parseXML(const char* cdata) {
 	if (n!=3) throw ParseException("SYNTAX ERROR: expecting 3 floats");
 }
 
+/**
+ * Copy a vector into a binary buffer
+ */
+int Vector3::readBinary(const unsigned char * data, int size) {
+	
+	if (size != sizeof(Vector3))
+	{
+		fprintf(stderr, "Illegal mem copy operation attempted\n");
+		return 0;
+	}
+        
+	double dvalue;
+	printf("Vector3::readBinary() - loading double values binary into Vector3\n");
+	memcpy((void*)&dvalue, (void*)data, sizeof(double)); data += sizeof(double);	
+	printf("Vector3::readBinary() dvalue: %f\n", dvalue);
+	_x = dvalue;
+	memcpy((void*)&dvalue, (void*)data, sizeof(double)); data += sizeof(double);
+	printf("Vector3::readBinary() dvalue: %f\n", dvalue);
+	_y = dvalue;
+	memcpy((void*)&dvalue, (void*)data, sizeof(double));
+	printf("Vector3::readBinary() dvalue: %f\n", dvalue);
+	_z = dvalue;
+	printf("Vector3::readBinary() - finished loading double values for Vector3\n");
+
+	return 3*sizeof(double);
+}
+
+/**
+ * Copy a binary buffer into a vector.
+ */
+int Vector3::writeBinary(unsigned char * data, int size) {
+
+	if (size != sizeof(Vector3))
+	{
+		fprintf(stderr, "Illegal mem copy operation attempted\n");
+		return 0;
+	}
+	
+	printf("Vector3::writeBinary() - loading Vector3 into binary buffer.\n");
+	memcpy( (void*)data, (void*)&_x, sizeof(double)); data += sizeof(double);	
+	printf("Vector3::writeBinary() - _x: %f\n", _x);
+	memcpy( (void*)data, (void*)&_y, sizeof(double)); data += sizeof(double);
+	printf("Vector3::writeBinary() - _y: %f\n", _y);
+	memcpy( (void*)data, (void*)&_z, sizeof(double));
+	printf("Vector3::writeBinary() - _z: %f\n", _z);
+	printf("Vector3::writeBinary() - finished loading Vector3 values into binary buffer.\n");
+
+	return 3*sizeof(double);
+
+}
+
+
 
 NAMESPACE_SIMDATA_END
 

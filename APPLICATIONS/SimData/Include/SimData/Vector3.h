@@ -329,6 +329,9 @@ public:
 	 */
 	virtual void parseXML(const char*);
 
+	virtual int readBinary(const unsigned char *, int size);
+	virtual int writeBinary(unsigned char *, int size);
+
 #ifdef SWIG
 	// setup accessors for x, y, and z (ugly hack)
 %extend {
@@ -360,6 +363,7 @@ inline double dot(const Vector3& a, const Vector3& b) { return a*b; }
 inline const Vector3 cross(const Vector3& a, const Vector3& b) { return a^b; }
 
 inline Vector3 operator * (double lhs, const Vector3 &rhs) { return rhs*lhs; }
+
 
 NAMESPACE_SIMDATA_END // simdata
 

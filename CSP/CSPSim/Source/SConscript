@@ -29,18 +29,16 @@ SOURCES = [
 	'BaseDynamics.cpp',
 	'BaseScreen.cpp',
 	'ChunkLodTerrain.cpp',
-	'ClientNode.cpp',
 	'Collision.cpp',
 	'Colorspace.cpp',
 	'Config.cpp',
 	'Console.cpp',
 	'ConsoleCommands.cpp',
+	'Controller.cpp',
 	'CSPSim.cpp',
 	'DemeterTerrain.cpp',
-	'DispatchCenter.cpp',
 	'DynamicObject.cpp',
 	'DynamicalSystem.cpp',
-	'EchoServerNode.cpp',
 	'Engine.cpp',
 	'EventMapIndex.cpp',
 	'EventMapping.cpp',
@@ -48,6 +46,7 @@ SOURCES = [
 	'FlightDynamics.cpp',
 	'FlightModel.cpp',
 	'GameScreen.cpp',
+	'glDiagnostics.cpp',
 	'HID.cpp',
 	'InputEvent.cpp',
 	'InputInterface.cpp',
@@ -55,19 +54,10 @@ SOURCES = [
 	'LandingGear.cpp',
 	'LogoScreen.cpp',
 	'MenuScreen.cpp',
- 	'Message.cpp',
-	'SimNet/NetworkNode.cpp',
-	'SimNet/NetworkMessage.cpp',
-	'SimNet/ObjectUpdateMessage.cpp',
-	'SimNet/NetworkMessenger.cpp',
-	'SimNet/PrintMessageHandler.cpp',
-	'SimNet/RedirectMessageHandler.cpp',
-	'SimNet/EchoMessageHandler.cpp',
-	'SimNet/DispatchMessageHandler.cpp',
+	'Message.cpp',
 	'NumericalMethod.cpp',
 	'ObjectModel.cpp',
 	'PhysicsModel.cpp',
-	'RedirectServerNode.cpp',
 	'ScreenInfo.cpp',
 	'ScreenInfoManager.cpp',
 	'SimpleSceneManager.cpp',
@@ -95,6 +85,8 @@ SOURCES = [
 	'Views/CameraKinematics.cpp',
 	'Views/View.cpp',
 	'VirtualScene.cpp',
+# --------------------------------------
+	'ObjectUpdate.net',
 ]
 
 
@@ -103,12 +95,4 @@ INTERFACES = [env.SwigWrapper(cCSP_wrap)]
 
 cCSP = env.SharedLibrary('cCSP', INTERFACES + SOURCES, SHLIBPREFIX='_')
 Alias('all', cCSP)
-
-#$(WRAPED_LIB) : $(OBJECTS) cCSP_wrap.o
-#	$(CXX) $(LDOPTS) -o$@ $^ $(LIBS)
-#	cp $(WRAPED_LIB) $(BIN)/$(WRAPED_LIB)
-	
-#cCSP_wrap.cpp: cCSP.i
-#	$(SWIG) $(SWOPTS) -o $@ $< 
-#	mv cCSP.py $(BIN)
 

@@ -48,6 +48,7 @@ PACKAGES = [
 	'Demeter',
 	'CSPChunkLod',
 	'CSPSim',
+	'IndexServer',
 	'SimCore',
 	'SimData',
 	'SimNet',
@@ -66,6 +67,8 @@ INCLUDE = [
 CXXFLAGS = '-O2 -g -W -Wall -pedantic -Wno-long-long'
 SWIGCXXFLAGS = '-O2 -g'
 SWIGFLAGS = '-noruntime -python -c++'
+ARFLAGS = ['cr']
+
 
 opts = Options()
 
@@ -74,6 +77,7 @@ env = Environment(CPPPATH=INCLUDE,
                   CXXFILESUFFIX='.cpp',
                   SWIGFLAGS=SWIGFLAGS,
                   SWIGCXXFLAGS=SWIGCXXFLAGS,
+                  ARFLAGS=ARFLAGS,
                   options=opts)
 
 Help(HELP + opts.GenerateHelpText(env))

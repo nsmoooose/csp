@@ -37,14 +37,17 @@
 #include "Animation.h"
 #include "ConsoleCommands.h"
 #include "CSPSim.h"
+#include "DataRecorder.h"
 #include "DynamicObject.h"
 #include "EventMapIndex.h"
+#include "glDiagnostics.h"
 #include "ObjectModel.h"
 #include "ScreenInfoManager.h"
-#include "VirtualScene.h"
+#include "Views/CameraAgent.h"
 #include "Views/CameraCommand.h"
+#include "VirtualScene.h"
 
-#include <SimCore/Battlefield/OldBattlefield.h>
+#include <SimCore/Battlefield/LocalBattlefield.h>
 #include <SimCore/Util/Log.h>
 
 
@@ -142,6 +145,7 @@ void GameScreen::on_PrintScreen() {
 	sn(*camera);
 }
 
+/*
 void GameScreen::createCameraCommand() {
 	m_PanLeft = new PanLeft;
 	m_PanRight = new PanRight;
@@ -172,18 +176,21 @@ void GameScreen::deleteCameraCommands() {
 	delete m_ZoomStepOut;
 	m_CurrentCameraCommand = 0;
 }
+*/
 
 GameScreen::GameScreen():
 	BaseScreen(),
 	m_ActiveObject(0),
-	m_CameraAgent(ViewFactory()),
+	m_CameraAgent(new CameraAgent(ViewFactory())),
+	m_CameraCommands(new CameraCommands),
 	m_CurrentCameraCommand(0) {
 	initInterface();
-	createCameraCommand();
+	//createCameraCommand();
 }
 
 GameScreen::~GameScreen() {
-	deleteCameraCommands();
+	//deleteCameraCommands();
+	m_CurrentCameraCommand = 0;
 }
 
 void GameScreen::onInit() {
@@ -229,7 +236,7 @@ void GameScreen::setActiveObject(simdata::Ref<DynamicObject> const &object) {
 		setRecorder(false);
 	}
 	m_ActiveObject = object;
-	m_CameraAgent.setObject(object);
+	m_CameraAgent->setObject(object);
 	if (object.valid() && object->isHuman() && object->isLocal()) {
 		on_View1();
 	} else {
@@ -249,7 +256,18 @@ void GameScreen::onRender() {
 		scene->drawScene();
 	}
 	m_InfoView->cull();
+
+	// FIXME pushing and popping state around the SceneView.draw call should
+	// _not_ be necessary, yet all three of the SceneViews currently used by
+	// CSP leak state.  It's not clear where the state leaks occur, and the
+	// whole problem may go away when we upgrade to the next version of OSG.
+	glPushAttrib(GL_ALL_ATTRIB_BITS); // FIXME
+	glPushClientAttrib(GL_ALL_CLIENT_ATTRIB_BITS); // FIXME
+	//GlStateSnapshot snapshot; // <-- uncomment this to log the state leak
 	m_InfoView->draw();
+	//snapshot.logDiff("info view"); // <-- uncomment this to log the state leak
+	glPopClientAttrib(); // FIXME
+	glPopAttrib(); // FIXME
 }
 
 void GameScreen::onUpdate(double dt) {
@@ -265,39 +283,47 @@ void GameScreen::onUpdate(double dt) {
 
 void GameScreen::on_View1() {
 	m_ViewMode = 1;
+	m_CameraAgent->setViewMode(m_ViewMode);
 }
 
 void GameScreen::on_View2() {
 	m_ViewMode = 2;
+	m_CameraAgent->setViewMode(m_ViewMode);
 }
-
 
 void GameScreen::on_View3() {
 	m_ViewMode = 3;
+	m_CameraAgent->setViewMode(m_ViewMode);
 }
 
 void GameScreen::on_View4() {
 	m_ViewMode = 4;
+	m_CameraAgent->setViewMode(m_ViewMode);
 }
 
 void GameScreen::on_View5() {
 	m_ViewMode = 5;
+	m_CameraAgent->setViewMode(m_ViewMode);
 }
 
 void GameScreen::on_View6() {
 	m_ViewMode = 6;
+	m_CameraAgent->setViewMode(m_ViewMode);
 }
 
 void GameScreen::on_View7() {
 	m_ViewMode = 7;
+	m_CameraAgent->setViewMode(m_ViewMode);
 }
 
 void GameScreen::on_View8() {
 	m_ViewMode = 8;
+	m_CameraAgent->setViewMode(m_ViewMode);
 }
 
 void GameScreen::on_View9() {
 	m_ViewMode = 9;
+	m_CameraAgent->setViewMode(m_ViewMode);
 }
 
 void GameScreen::on_View0() {
@@ -355,62 +381,77 @@ void GameScreen::on_Console()
 
 void GameScreen::on_ChangeVehicle()
 {
-	simdata::Ref<DynamicObject> object;
-	Battlefield *battlefield = CSPSim::theSim->getBattlefield();
-	object = battlefield->getNextUnit(m_ActiveObject, -1, -1, -1);
-	if (object.valid()) CSPSim::theSim->setActiveObject(object);
+	LocalBattlefield *battlefield = CSPSim::theSim->getBattlefield();
+	if (battlefield) {
+		simdata::Ref<DynamicObject> object;
+		object = battlefield->getNextUnit(m_ActiveObject, 1, 1, 0);
+		if (object.valid()) CSPSim::theSim->setActiveObject(object);
+	}
 }
 
 void GameScreen::on_ViewPanLeft() {
-	m_CurrentCameraCommand = m_PanLeft;
+//	m_CurrentCameraCommand = &m_CameraCommands->PanLeft;
+	m_CameraAgent->setCameraCommand(&m_CameraCommands->PanLeft);
 }
 
 void GameScreen::on_ViewPanRight() {
-	m_CurrentCameraCommand = m_PanRight;
+//	m_CurrentCameraCommand = &m_CameraCommands->PanRight;
+	m_CameraAgent->setCameraCommand(&m_CameraCommands->PanRight);
 }
 
 void GameScreen::on_ViewPanLeftStop() {
-	m_CurrentCameraCommand = m_PanLeftRightStop;
+//	m_CurrentCameraCommand = &m_CameraCommands->PanLeftRightStop;
+	m_CameraAgent->setCameraCommand(&m_CameraCommands->PanLeftRightStop);
 }
 
 void GameScreen::on_ViewPanRightStop() {
-	m_CurrentCameraCommand = m_PanLeftRightStop;
+//	m_CurrentCameraCommand = &m_CameraCommands->PanLeftRightStop;
+	m_CameraAgent->setCameraCommand(&m_CameraCommands->PanLeftRightStop);
 }
 
 void GameScreen::on_ViewPanUpStop() {
-	m_CurrentCameraCommand = m_PanUpDownStop;
+//	m_CurrentCameraCommand = &m_CameraCommands->PanUpDownStop;
+	m_CameraAgent->setCameraCommand(&m_CameraCommands->PanUpDownStop);
 }
 
 void GameScreen::on_ViewPanDownStop() {
-	m_CurrentCameraCommand = m_PanUpDownStop;
+//	m_CurrentCameraCommand = &m_CameraCommands->PanUpDownStop;
+	m_CameraAgent->setCameraCommand(&m_CameraCommands->PanUpDownStop);
 }
 
 void GameScreen::on_ViewZoomStop() {
-	m_CurrentCameraCommand = m_ZoomStop;
+//	m_CurrentCameraCommand = &m_CameraCommands->ZoomStop;
+	m_CameraAgent->setCameraCommand(&m_CameraCommands->ZoomStop);
 }
 
 void GameScreen::on_ViewPanUp() {
-	m_CurrentCameraCommand = m_PanUp;
+//	m_CurrentCameraCommand = &m_CameraCommands->PanUp;
+	m_CameraAgent->setCameraCommand(&m_CameraCommands->PanUp);
 }
 
 void GameScreen::on_ViewPanDown() {
-	m_CurrentCameraCommand = m_PanDown;
+//	m_CurrentCameraCommand = &m_CameraCommands->PanDown;
+	m_CameraAgent->setCameraCommand(&m_CameraCommands->PanDown);
 }
 
 void GameScreen::on_ViewZoomIn() {
-	m_CurrentCameraCommand = m_ZoomIn;
+//	m_CurrentCameraCommand = &m_CameraCommands->ZoomIn;
+	m_CameraAgent->setCameraCommand(&m_CameraCommands->ZoomIn);
 }
 
 void GameScreen::on_ViewZoomOut() {
-	m_CurrentCameraCommand = m_ZoomOut;
+//	m_CurrentCameraCommand = &m_CameraCommands->ZoomOut;
+	m_CameraAgent->setCameraCommand(&m_CameraCommands->ZoomOut);
 }
 
 void GameScreen::on_ViewZoomStepIn() {
-	m_CurrentCameraCommand = m_ZoomStepIn;
+//	m_CurrentCameraCommand = &m_CameraCommands->ZoomStepIn;
+	m_CameraAgent->setCameraCommand(&m_CameraCommands->ZoomStepIn);
 }
 
 void GameScreen::on_ViewZoomStepOut() {
-	m_CurrentCameraCommand = m_ZoomStepOut;
+//	m_CurrentCameraCommand = &m_CameraCommands->ZoomStepOut;
+	m_CameraAgent->setCameraCommand(&m_CameraCommands->ZoomStepOut);
 }
 
 void GameScreen::on_ViewFovStepDec()
@@ -458,18 +499,19 @@ void GameScreen::on_ResetSpin() {
 }
 
 void GameScreen::on_MouseView(int x, int y, int dx, int dy) {
-	m_Mouse->set(x,y,dx,dy);
-	m_CurrentCameraCommand = m_Mouse;	
+	m_CameraCommands->Mouse.set(x,y,dx,dy);
+//	m_CurrentCameraCommand = &m_CameraCommands->Mouse;
+	m_CameraAgent->setCameraCommand(&m_CameraCommands->Mouse);
 }
 
-void GameScreen::setCamera(double dt) {	
-	m_CameraAgent.set(m_ViewMode, m_CurrentCameraCommand);
-	m_CameraAgent.updateCamera(dt);
+void GameScreen::setCamera(double dt) {
+	//m_CameraAgent->set(m_ViewMode, m_CurrentCameraCommand);
+	m_CameraAgent->updateCamera(dt);
 	m_CurrentCameraCommand = 0;
 
-	Battlefield* battlefield = CSPSim::theSim->getBattlefield();
+	LocalBattlefield* battlefield = CSPSim::theSim->getBattlefield();
 	if (battlefield) {
-		battlefield->setCamera(m_CameraAgent.getEyePoint(), m_CameraAgent.getLookPoint(), m_CameraAgent.getUpVector());
+		battlefield->setCamera(m_CameraAgent->getEyePoint(), m_CameraAgent->getLookPoint(), m_CameraAgent->getUpVector());
 	}
 }
 

@@ -51,8 +51,12 @@ simdata::Ref<PhysicsModel> SystemsModel::getPhysicsModel() const {
 	return m_PhysicsModel;
 }
 
-simdata::Ref<Controller> SystemsModel::getController() const {
-	return m_Controller;
+simdata::Ref<RemoteController> SystemsModel::getRemoteController() const {
+	return m_RemoteController;
+}
+
+simdata::Ref<LocalController> SystemsModel::getLocalController() const {
+	return m_LocalController;
 }
 
 void SystemsModel::postCreate() {
@@ -61,9 +65,14 @@ void SystemsModel::postCreate() {
 		CSP_LOG(OBJECT, DEBUG, "Adding PhysicsModel (" << m_PhysicsModel->getClassName() << ")");
 		addChild(m_PhysicsModel.get());
 	}
-	if (m_Controller.valid()) {
-		CSP_LOG(OBJECT, DEBUG, "Adding Controller (" << m_Controller->getClassName() << ")");
-		addChild(m_Controller.get());
+	assert(!(m_RemoteController.valid() && m_LocalController.valid()));
+	if (m_RemoteController.valid()) {
+		CSP_LOG(OBJECT, DEBUG, "Adding RemoteController (" << m_RemoteController->getClassName() << ")");
+		addChild(m_RemoteController.get());
+	}
+	if (m_LocalController.valid()) {
+		CSP_LOG(OBJECT, DEBUG, "Adding LocalController (" << m_LocalController->getClassName() << ")");
+		addChild(m_LocalController.get());
 	}
 }
 

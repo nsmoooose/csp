@@ -1,6 +1,6 @@
 <?xml version="1.0" standalone="no"?>
 
-<!-- 
+<!--
     Mirage 2000
 -->
 
@@ -13,12 +13,13 @@
     <Float name="mass">10000.0</Float>
     <!-- these values come from a FS2k2 add-on -->
     <Matrix name="inertia">
-	171554.0	0.0		0.0
-	     0.0        55427.0  	1764.0
-	     0.0     	1764.0  	252326.0
+    171554.0      0.0       0.0
+         0.0  55427.0    1764.0
+         0.0   1764.0  252326.0
     </Matrix>
 
     <Path name="human_systems">m2k.systems</Path>
+    <Path name="remote_systems">m2k.remote</Path>
     <Path name="agent_systems">m2k.systems</Path>
 
 </Object>

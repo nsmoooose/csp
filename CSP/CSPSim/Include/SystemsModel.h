@@ -80,7 +80,8 @@ class SystemsModel: public System {
 	};
 
 	simdata::Link<PhysicsModel> m_PhysicsModel;
-	simdata::Link<Controller> m_Controller;
+	simdata::Link<LocalController> m_LocalController;
+	simdata::Link<RemoteController> m_RemoteController;
 
 protected:
 	virtual ~SystemsModel() { }
@@ -93,7 +94,8 @@ public:
 
 	EXTEND_SIMDATA_XML_INTERFACE(SystemsModel, System)
 		SIMDATA_XML("physics_model", SystemsModel::m_PhysicsModel, false)
-		//SIMDATA_XML("controller", SystemsModel::m_Controller, false)
+		SIMDATA_XML("local_controller", SystemsModel::m_LocalController, false)
+		SIMDATA_XML("remote_controller", SystemsModel::m_RemoteController, false)
 	END_SIMDATA_XML_INTERFACE
 
 	/** Initialize from an existing model.
@@ -122,7 +124,8 @@ public:
 
 	simdata::Ref<PhysicsModel> getPhysicsModel() const;
 
-	simdata::Ref<Controller> getController() const;
+	simdata::Ref<LocalController> getLocalController() const;
+	simdata::Ref<RemoteController> getRemoteController() const;
 
 	void setDataRecorder(DataRecorder*);
 

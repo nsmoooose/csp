@@ -424,7 +424,7 @@ void ObjectModel::loadModel() {
 	// 1) it rarely appears in the release built (never when called from this exact line)
 	// 2) it appears in the debug built systematically on the second times the
 	//    program is run but only if a few seconds separate the 2 runs. Wait
-	//	  for 5 minutes or so (or run another process) and the bug will not occur
+	//    for 5 minutes or so (or run another process) and the bug will not occur
 	//    (thread related?).
 	// 3) I haven't noticed the bug in the debug built when the optimizer is run in this
 	//    line (like for the release built) but called it 10 lines above and it segfaults.

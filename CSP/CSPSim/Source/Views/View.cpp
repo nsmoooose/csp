@@ -24,8 +24,6 @@
 
 #include <cmath>
 
-#include <SimCore/Battlefield/OldBattlefield.h>
-
 #include "Views/View.h"
 #include "Views/CameraAgent.h"
 
@@ -35,6 +33,8 @@
 #include "ObjectModel.h"
 #include "VirtualScene.h"
 
+#include <SimData/Noise.h>
+#include <SimCore/Battlefield/LocalBattlefield.h>
 
 void View::accept(const simdata::Ref<DynamicObject> object) {
 	m_ActiveObject = object;
@@ -126,7 +126,27 @@ void ExternalViewWorld::activate() {
 }
 
 void ExternalViewWorld::update(simdata::Vector3& ep, simdata::Vector3& lp, simdata::Vector3& up, double /*dt*/) {
+	/*  Very simplistic camera jitter (disabled).  Ideally should take wind speed/direction
+	 *  and turbulence into account.
+	static std::vector<float> turbulenceX;
+	static std::vector<float> turbulenceY;
+	static std::vector<float> turbulenceZ;
+	static int i = 0, j = 512;
+	if (turbulenceX.empty()) {
+		simdata::Perlin1D noise(0.8, 8, simdata::Perlin1D::LINEAR);
+		turbulenceX = noise.generate(1024, true, 4.0, 2.0);
+		turbulenceY = noise.generate(1024, true, 4.0, 2.0);
+		turbulenceZ = noise.generate(1024, true, 4.0, 1.0);
+		for (int k = 0; k < 1000; k++) std::cout << turbulenceX[k] << " ";
+	}
+	if (++i >= 1024) i = 0;
+	if (++j >= 1024) j = 0;
+	*/
 	updateWorld(ep, lp, up);
+	/*
+	ep += simdata::Vector3(turbulenceX[i], turbulenceY[i], turbulenceZ[i]) * 0.03;
+	lp += simdata::Vector3(turbulenceX[j], turbulenceY[j], turbulenceZ[j]) * 0.015 * m_CameraKinematics->getDistance() ;
+	*/
 }
 
 void FixedFlybyView::newFixedCamPos(SimObject* target) {
@@ -199,54 +219,87 @@ void SatelliteView::update(simdata::Vector3& ep, simdata::Vector3& lp, simdata::
 
 PadlockView::PadlockView(size_t vm):
 	View(vm),
-	m_Padlock(m_ActiveObject)
+	m_Padlocked(false)
 {
 	m_Internal = true;
 }
 
 void PadlockView::activate() {
-	m_CameraKinematics->reset();
-	Battlefield* battlefield = CSPSim::theSim->getBattlefield();
-	m_Padlock = battlefield->getNextUnit(m_ActiveObject, -1, -1, -1);
-	if (m_Padlock == m_ActiveObject) {
+	CSP_LOG(APP, ERROR, "padlock view activated");
+	//m_CameraKinematics->reset();
+	LocalBattlefield* battlefield = CSPSim::theSim->getBattlefield();
+	if (battlefield) {
+		// TODO need to prioritize and lock on to objects within the current field of view
+		if (!m_Padlock) m_Padlock = m_ActiveObject;
 		m_Padlock = battlefield->getNextUnit(m_Padlock, -1, -1, -1);
-	}
-	if (m_Padlock != m_ActiveObject) {
-		m_NeckTheta = m_CameraKinematics->getPhi() - simdata::PI_2;
+		if (m_Padlock == m_ActiveObject) {
+			m_Padlock = battlefield->getNextUnit(m_Padlock, -1, -1, -1);
+		}
+		setPadlocked();
+		m_NeckTheta = simdata::PI_2 - m_CameraKinematics->getPhi();
 		m_NeckPhi = m_CameraKinematics->getTheta();
+		if (m_Padlock == m_ActiveObject) {
+			m_Padlock = 0;
+		}
+		m_Padlocked = m_Padlock.valid();
+		CSP_LOG(APP, ERROR, "padlocked = " << m_Padlocked);
 	}
 }
 
-void PadlockView::constrain(simdata::Vector3& ep, simdata::Vector3& /*lp*/, simdata::Vector3& /*up*/, double dt) {
-	if (m_Padlock.valid()) {
-		ep = m_ActiveObject->getGlobalPosition();
-		m_Attitude = m_ActiveObject->getAttitude();
-		ep += m_ActiveObject->getViewPoint();
-		simdata::Vector3 dir = (m_Padlock->getGlobalPosition() - ep).normalized();
-		dir = m_Attitude.invrotate(dir);
-		float phi = atan2(-dir.x(), dir.y());
-		float theta = acos(dir.z());
-		float phi_max = 2.6 - std::max(0.0, 1.57 - 2.0*theta);
-		if (phi > phi_max) {
-			phi = phi_max;
-			m_NeckLimit = true;
-		} else if (phi < -phi_max) {
-			phi = -phi_max;
-			m_NeckLimit = true;
-		} else {
-			m_NeckLimit = false;
-		}
-		float motion = std::min(3.0*dt, 0.3);
-		phi = m_NeckPhi * (1.0-motion) + phi * motion;
-		m_psi = phi * std::max(0.0, std::min(1.0, 2.0*theta));
-		m_NeckTheta = theta;
-		m_NeckPhi = phi;
+void PadlockView::setPadlocked() {
+	m_Padlocked = true;
+	m_OldPhi = m_CameraKinematics->getPhi();
+	m_OldTheta = m_CameraKinematics->getTheta();
+}
+
+bool PadlockView::checkPadlocked() {
+	if (!m_Padlocked) return false;
+	m_Padlocked = (m_OldPhi == m_CameraKinematics->getPhi() && m_OldTheta == m_CameraKinematics->getTheta());
+	if (!m_Padlocked) {
+		CSP_LOG(APP, ERROR, "moved out of padlock");
+		// FIXME this is broken
+		m_CameraKinematics->getPhi() = simdata::PI_2 - m_NeckTheta;
+		m_CameraKinematics->getTheta() = m_NeckPhi;
 	}
+	return m_Padlocked;
+}
+
+void PadlockView::constrainPadlocked(simdata::Vector3& ep, simdata::Vector3& /*lp*/, simdata::Vector3& /*up*/, double dt) {
+	assert(m_Padlocked);
+	assert(m_Padlock.valid());
+	simdata::Vector3 dir = (m_Padlock->getGlobalPosition() - ep).normalized();
+	m_Attitude = m_ActiveObject->getAttitude();
+	dir = m_Attitude.invrotate(dir);
+	float phi = atan2(-dir.x(), dir.y());
+	float theta = acos(dir.z());
+	float phi_max = 2.6 - std::max(0.0, 1.57 - 2.0*theta);
+	if (phi > phi_max) {
+		phi = phi_max;
+		m_NeckLimit = true;
+	} else if (phi < -phi_max) {
+		phi = -phi_max;
+		m_NeckLimit = true;
+	} else {
+		m_NeckLimit = false;
+	}
+	float motion = std::min(3.0*dt, 0.3);
+	phi = m_NeckPhi * (1.0-motion) + phi * motion;
+	theta = m_NeckTheta * (1.0-motion) + theta * motion;
+	m_psi = phi * std::max(0.0, std::min(1.0, 2.0*theta));
+	m_NeckTheta = theta;
+	m_NeckPhi = phi;
+}
+
+void PadlockView::constrainNotPadlocked(simdata::Vector3& /*ep*/, simdata::Vector3& /*lp*/, simdata::Vector3& /*up*/, double /*dt*/) {
+	float limit = simdata::PI_2;
+	m_CameraKinematics->clampPhi(m_CameraKinematics->getPhi(), -limit, limit);
+	m_CameraKinematics->clampTheta(m_CameraKinematics->getTheta(), -limit, limit);
 }
 
 void PadlockView::update(simdata::Vector3& ep, simdata::Vector3& lp, simdata::Vector3& up, double dt) {
-	if (m_Padlock.valid()) {
-		constrain(ep, lp, up, dt);
+	ep = m_ActiveObject->getGlobalPosition() + m_ActiveObject->getViewPoint();
+	if (checkPadlocked()) {
+		constrainPadlocked(ep, lp, up, dt);
 		simdata::Vector3 dir(-sin(m_NeckTheta)*sin(m_NeckPhi), sin(m_NeckTheta)*cos(m_NeckPhi), cos(m_NeckTheta));
 		simdata::Vector3 d(sin(m_psi), -cos(m_psi), 0.0);
 		up.set(d.x()*cos(m_NeckTheta), d.y()*cos(m_NeckTheta), sin(m_NeckTheta));
@@ -256,6 +309,13 @@ void PadlockView::update(simdata::Vector3& ep, simdata::Vector3& lp, simdata::Ve
 		ep += m_Attitude.rotate(offset * simdata::Vector3::XAXIS);
 		dir = m_Attitude.rotate(dir);
 		lp = ep + 100.0 * dir;
+	} else {
+		constrainNotPadlocked(ep, lp, up, dt);
+		simdata::Vector3 object_up = m_ActiveObject->getUpDirection();
+		simdata::Vector3 object_dir = m_ActiveObject->getDirection();
+		simdata::Quat q = simdata::Quat(m_CameraKinematics->getTheta(), object_up, m_CameraKinematics->getPhi(), object_dir^object_up, 0.0, object_dir);
+		lp = ep + m_CameraKinematics->getDistance() * q.rotate(object_dir);
+		up = q.rotate(object_up);
 	}
 }
 

@@ -26,18 +26,18 @@
 #define __GAMESCREEN_H__
 
 #include <osg/ref_ptr>
-
 #include <SimData/Ref.h>
-
+#include <SimData/ScopedPointer.h>
 #include "BaseScreen.h"
-#include "DataRecorder.h"
-#include "Views/CameraAgent.h"
 
 class PyConsole;
-class CameraCommand;
 class DynamicObject;
 class MouseCommand;
 class ScreenInfoManager;
+class DataRecorder;
+class CameraAgent;
+class CameraCommand;
+class CameraCommands;
 
 namespace osgUtil {
 	class SceneView;
@@ -167,7 +167,10 @@ protected:
 	void setRecorder(bool on);
 
 	// camera management by a command
-	CameraAgent m_CameraAgent;
+	simdata::ScopedPointer<CameraAgent> m_CameraAgent;
+	simdata::ScopedPointer<CameraCommands> m_CameraCommands;
+	CameraCommand* m_CurrentCameraCommand;
+	/*
 	CameraCommand *m_PanLeft,*m_PanRight,*m_PanLeftRightStop;
 	CameraCommand *m_PanUp,*m_PanDown,*m_PanUpDownStop;
 	CameraCommand *m_ZoomIn,*m_ZoomOut,*m_ZoomStop,*m_ZoomStepIn,*m_ZoomStepOut;
@@ -175,6 +178,7 @@ protected:
 	CameraCommand* m_CurrentCameraCommand;
 	void createCameraCommand();
 	void deleteCameraCommands();
+	*/
 };
 
 #endif // __GAMESCREEN_H__

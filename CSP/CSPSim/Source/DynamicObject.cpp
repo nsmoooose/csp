@@ -24,21 +24,18 @@
 
 
 #include <DynamicObject.h>
+#include <Animation.h>
 #include <Controller.h>
-#include <PhysicsModel.h>
-#include <TerrainObject.h>
 #include <CSPSim.h>
 #include <KineticsChannels.h>
 #include <ObjectModel.h>
+#include <PhysicsModel.h>
 #include <SystemsModel.h>
-#include <Animation.h>
+#include <TerrainObject.h>
 
 #include <SimCore/Util/Log.h>
+#include <SimData/DataManager.h>
 #include <SimData/Quat.h>
-
-#include <SimNet/Networking.h>
-#include <SimNet/NetworkMessage.h>
-#include <SimNet/NetworkMessenger.h>
 
 #include <osg/Group>
 
@@ -49,8 +46,7 @@ SIMDATA_REGISTER_INTERFACE(DynamicObject)
 using bus::Kinetics;
 
 
-DynamicObject::DynamicObject(TypeId type): SimObject(type)
-{
+DynamicObject::DynamicObject(TypeId type): SimObject(type) {
 	assert(!isStatic());
 
 	b_GlobalPosition = DataChannel<simdata::Vector3>::newLocal(Kinetics::Position, simdata::Vector3::ZERO);
@@ -68,8 +64,6 @@ DynamicObject::DynamicObject(TypeId type): SimObject(type)
 	m_ReferenceMass = 1.0;
 	m_ReferenceInertia = simdata::Matrix3::IDENTITY;
 
-	m_Controller = NULL;
-
 	setGlobalPosition(simdata::Vector3::ZERO);
 	m_PrevPosition = simdata::Vector3::ZERO;
 
@@ -77,8 +71,7 @@ DynamicObject::DynamicObject(TypeId type): SimObject(type)
 	setAggregationBubbles(60000, 40000);
 }
 
-DynamicObject::~DynamicObject()
-{
+DynamicObject::~DynamicObject() {
 }
 
 void DynamicObject::postCreate() {
@@ -109,24 +102,19 @@ osg::Node* DynamicObject::getModelNode() {
 	return m_SceneModel->getRoot();
 }
 
-
-void DynamicObject::setGlobalPosition(simdata::Vector3 const & position)
-{
+void DynamicObject::setGlobalPosition(simdata::Vector3 const & position) {
 	setGlobalPosition(position.x(), position.y(), position.z());
 }
 
-void DynamicObject::setGlobalPosition(double x, double y, double z)
-{
+void DynamicObject::setGlobalPosition(double x, double y, double z) {
 	b_GlobalPosition->value() = simdata::Vector3(x, y, z);
 }
 
-void DynamicObject::setVelocity(simdata::Vector3 const &velocity)
-{
+void DynamicObject::setVelocity(simdata::Vector3 const &velocity) {
 	b_LinearVelocity->value() = velocity;
 }
 
-void DynamicObject::setVelocity(double Vx, double Vy, double Vz)
-{
+void DynamicObject::setVelocity(double Vx, double Vy, double Vz) {
 	setVelocity(simdata::Vector3(Vx, Vy, Vz));
 }
 
@@ -137,10 +125,25 @@ void DynamicObject::registerUpdate(UpdateMaster *master) {
 	}
 }
 
+simdata::Ref<simnet::NetworkMessage> DynamicObject::getState(simcore::TimeStamp current_time, simdata::SimTime interval, int detail) const {
+	CSP_LOG(OBJECT, INFO, "get object state");
+	if (m_RemoteController.valid()) {
+		CSP_LOG(OBJECT, INFO, "get object state from remote controller");
+		return m_RemoteController->getUpdate(current_time, interval, detail);
+	}
+	return 0;
+}
 
-// update 
-double DynamicObject::onUpdate(double dt)
-{
+void DynamicObject::setState(simdata::Ref<simnet::NetworkMessage> const &msg, simcore::TimeStamp now) {
+	CSP_LOG(OBJECT, INFO, "set object state");
+	if (m_LocalController.valid()) {
+		CSP_LOG(OBJECT, INFO, "set object state (local controller)");
+		m_LocalController->onUpdate(msg, now);
+	}
+}
+
+// update
+double DynamicObject::onUpdate(double dt) {
 	// Save the objects old position
 	m_PrevPosition = b_GlobalPosition->value();
 	// XXX don't move non-human aircraft for now (no ai yet)
@@ -152,10 +155,9 @@ double DynamicObject::onUpdate(double dt)
 	return 0.0;
 }
 
-
 void DynamicObject::doControl(double dt) {
-	if (m_Controller.valid()) {
-		m_Controller->doControl(dt);
+	if (m_LocalController.valid()) {
+		m_LocalController->onUpdate(dt);
 	}
 }
 
@@ -164,7 +166,6 @@ void DynamicObject::doPhysics(double dt) {
 		m_PhysicsModel->doSimStep(dt);
 	}
 }
-	
 
 // update variables that depend on position
 void DynamicObject::postUpdate(double dt) {
@@ -185,23 +186,20 @@ void DynamicObject::postUpdate(double dt) {
 	b_NearGround->value() = (height < m_Model->getBoundingSphereRadius());
 }
 
-simdata::Vector3 DynamicObject::getDirection() const
-{
+simdata::Vector3 DynamicObject::getDirection() const {
 	return b_Attitude->value().rotate(simdata::Vector3::YAXIS);
 }
 
-simdata::Vector3 DynamicObject::getUpDirection() const
-{
+simdata::Vector3 DynamicObject::getUpDirection() const {
 	return b_Attitude->value().rotate(simdata::Vector3::ZAXIS);
 }
 
-void DynamicObject::setAttitude(simdata::Quat const &attitude)
-{
+void DynamicObject::setAttitude(simdata::Quat const &attitude) {
 	b_Attitude->value() = attitude;
 }
 
 simdata::Vector3 DynamicObject::getViewPoint() const {
-	 return b_Attitude->value().rotate(m_Model->getViewPoint());
+	return b_Attitude->value().rotate(m_Model->getViewPoint());
 }
 
 bool DynamicObject::isSmoke() {
@@ -233,6 +231,7 @@ void DynamicObject::setDataRecorder(DataRecorder *recorder) {
 std::list<DynamicObject::SystemsModelStore> DynamicObject::SystemsModelCache;
 
 void DynamicObject::cacheSystemsModel() {
+	if (!m_SystemsModel.valid()) return;
 	std::list<SystemsModelStore>::iterator cached = SystemsModelCache.begin();
 	for (; cached != SystemsModelCache.end(); ++cached) {
 		if (cached->id == id()) {
@@ -259,7 +258,6 @@ SystemsModel::Ref DynamicObject::getCachedSystemsModel() {
 	return model;
 }
 
-
 void DynamicObject::registerChannels(Bus::Ref bus) {
 	if (!bus) return;
 	bus->registerChannel(b_GlobalPosition.get());
@@ -274,7 +272,6 @@ void DynamicObject::registerChannels(Bus::Ref bus) {
 	bus->registerChannel(b_NearGround.get());
 	bus->registerLocalDataChannel< simdata::Ref<ObjectModel> >("Internal.ObjectModel", m_Model);
 }
-
 
 Bus::Ref DynamicObject::getBus() {
 	return (m_SystemsModel.valid() ? m_SystemsModel->getBus(): 0);
@@ -298,23 +295,25 @@ void DynamicObject::selectVehicleCore() {
 		if (isHuman()) {
 			systems = getCachedSystemsModel();
 			path = m_HumanModel;
+			CSP_LOG(OBJECT, INFO, "selecting local human systems model for " << *this);
 		} else {
 			path = m_AgentModel;
+			CSP_LOG(OBJECT, INFO, "selecting local agent systems model for " << *this);
 		}
-		if (!systems && !path.isNone()) {
-			CSPSim *sim = CSPSim::theSim;
-			if (sim) {
-				simdata::DataManager &manager = sim->getDataManager();
-				systems = manager.getObject(path);
-				if (systems.valid()) {
-					registerChannels(systems->getBus());
-					systems->bindSystems();
-				}
+	} else {
+		path = m_RemoteModel;
+		CSP_LOG(OBJECT, INFO, "selecting remote systems model for " << *this);
+	}
+	if (!systems && !path.isNone()) {
+		CSPSim *sim = CSPSim::theSim;
+		if (sim) {
+			simdata::DataManager &manager = sim->getDataManager();
+			systems = manager.getObject(path);
+			if (systems.valid()) {
+				registerChannels(systems->getBus());
+				systems->bindSystems();
 			}
 		}
-	} else { // remote control
-		// systems = ...;
-		// etc
 	}
 	setVehicleCore(systems);
 }
@@ -323,10 +322,12 @@ void DynamicObject::setVehicleCore(SystemsModel::Ref systems) {
 	if (systems.valid()) {
 		systems->init(m_SystemsModel);
 		m_PhysicsModel = systems->getPhysicsModel();
-		m_Controller = systems->getController();
+		m_LocalController = systems->getLocalController();
+		m_RemoteController = systems->getRemoteController();
 	} else {
 		m_PhysicsModel = 0;
-		m_Controller = 0;
+		m_LocalController = 0;
+		m_RemoteController = 0;
 	}
 	if (m_SystemsModel.valid()) {
 		m_SystemsModel->registerUpdate(0);
@@ -361,76 +362,6 @@ void DynamicObject::updateScene(simdata::Vector3 const &origin) {
 	}
 }
 
-
-NetworkMessage * DynamicObject::getUpdateMessage() {
-	CSP_LOG(APP, DEBUG, "DynamicObject::getUpdateMessage()");
-	unsigned short messageType = 2;
-	unsigned short payloadLen  = sizeof(int) + sizeof(double) + 3*sizeof(simdata::Vector3) +
-	                       sizeof(simdata::Quat) /* + sizeof(simdata::Matrix3) + sizeof(double) */;
-
-	NetworkMessage * message = CSPSim::theSim->getNetworkMessenger()->allocMessageBuffer(messageType, payloadLen);
-
-	ObjectUpdateMessagePayload * ptrPayload = (ObjectUpdateMessagePayload*)message->getPayloadPtr();
-	ptrPayload->id = id();
-	ptrPayload->timeStamp = CSPSim::theSim->getElapsedTime();
-	b_GlobalPosition->value().writeBinary((unsigned char *)&(ptrPayload->globalPosition),24);
-	b_LinearVelocity->value().writeBinary((unsigned char *)&(ptrPayload->linearVelocity),24);
-	b_AngularVelocity->value().writeBinary((unsigned char *)&(ptrPayload->angularVelocity),24);
-	b_Attitude->value().writeBinary((unsigned char *)&(ptrPayload->attitude),32);
-
-	//  simdata::MemoryWriter writer((simdata::uint8*)ptrPayload);
-	//  writer << id();
-	//  writer << type();
-	//  writer << CSPSim::theSim->getElapsedTime();
-	//  b_GlobalPosition->value().serialize(writer);
-	//  b_LinearVelocity->value().serialize(writer);
-	//  b_AngularVelocity->value().serialize(writer);
-	//  b_Attitude->value().serialize(writer);
-  
-	CSP_LOG(APP, DEBUG, "DynamicObject::getUpdateMessage() - returning message");
-
-	return message;
-}
-
-void DynamicObject::putUpdateMessage(NetworkMessage* message) {
-	// read message
-
-	ObjectUpdateMessagePayload * ptrPayload = (ObjectUpdateMessagePayload*)message->getPayloadPtr();
-	// verify we have the correct id in the packet for this object.
-	if (id() == ptrPayload->id)
-	{
-	//	printf("Loading update message of object %d\n", id());
-	}
-	else
-	{
-	//	printf("Error loading update message, object id (%d) does not match\n", idValue);
-	}
-
-	// we can disregard this message if the timestamp is older then the most
-	// recent update.
-  
-	ptrPayload->timeStamp = CSPSim::theSim->getElapsedTime();
-	//
-	//load the other values.
-	b_GlobalPosition->value().readBinary((unsigned char*)&(ptrPayload->globalPosition),24);
-	b_LinearVelocity->value().readBinary((unsigned char *)&(ptrPayload->linearVelocity),24);
-	b_AngularVelocity->value().readBinary((unsigned char *)&(ptrPayload->angularVelocity),24);
-	b_Attitude->value().readBinary((unsigned char *)&(ptrPayload->attitude),32);
-  
-	//  unsigned int _id;
-	//  unsigned  _type;
-	//  float _timestamp;
-	//  
-	//  simdata::MemoryReader reader((simdata::uint8*)ptrPayload);
-	//  reader >> _id;
-	//  reader >> _type;
-	//  reader >> _timestamp;
-	//  b_GlobalPosition->value().serialize(reader);
-	//  b_LinearVelocity->value().serialize(reader);
-	//  b_AngularVelocity->value().serialize(reader);
-	//  b_Attitude->value().serialize(reader);
-}
-
 simdata::Ref<SceneModel> DynamicObject::getSceneModel() {
 	return m_SceneModel;
 }
@@ -446,7 +377,7 @@ simdata::Ref<SystemsModel> DynamicObject::getSystemsModel() const {
 DynamicObject::SystemsModelStore::SystemsModelStore(): id(0) {
 }
 
-DynamicObject::SystemsModelStore::SystemsModelStore(unsigned int id_, simdata::Ref<SystemsModel> model_): id(id_), model(model_) {
+DynamicObject::SystemsModelStore::SystemsModelStore(ObjectId id_, simdata::Ref<SystemsModel> model_): id(id_), model(model_) {
 }
 
 DynamicObject::SystemsModelStore::~SystemsModelStore() {

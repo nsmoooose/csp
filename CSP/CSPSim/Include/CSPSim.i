@@ -22,7 +22,9 @@
 #include "Theater.h"
 #include "Projection.h"
 #include "Shell.h"
-#include <SimCore/Battlefield/OldBattlefield.h>
+#include "DynamicObject.h"
+#include <SimCore/Battlefield/LocalBattlefield.h>
+#include <SimData/DataManager.h>
 #include <SimData/Math.h>
 
 void _createVehicleHelper(CSPSim *self, const char *path, simdata::Vector3 position,
@@ -38,10 +40,10 @@ void _createVehicleHelper(CSPSim *self, const char *path, simdata::Vector3 posit
 	attitude *= 3.1416 / 180.0;
 	q_attitude.makeRotate(attitude.x(), attitude.y(), -attitude.z());
 	obj->setAttitude(q_attitude);
-	self->getBattlefield()->addUnit(obj, false);
+	self->getBattlefield()->__test__addLocalHumanUnit(obj);
 	if (!self->getActiveObject()) self->setActiveObject(obj);
 }
-	
+
 %}
 
 class CSPSim

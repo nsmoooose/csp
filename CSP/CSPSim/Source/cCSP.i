@@ -33,11 +33,14 @@
 %include std_vector.i
 
 %include "VirtualScene.i"
+/**WNET
 %include "SimNet/Networking.i"
+*/
 %include "CSPSim.i"
 %include "Config.i"
 %include "Log.i"
+/**WNET
 %include "ClientNode.i"
 %include "EchoServerNode.i"
 %include "RedirectServerNode.i"
-
+*/

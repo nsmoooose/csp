@@ -54,15 +54,17 @@
 #include "Theater.h"
 #include "VirtualScene.h"
 
+/* WNET
 #include <SimNet/Networking.h>
 #include <SimNet/NetworkMessage.h>
 #include <SimNet/NetworkNode.h>
 #include <SimNet/NetworkMessenger.h>
 #include <SimNet/DispatchMessageHandler.h>
 #include <SimNet/PrintMessageHandler.h>
+*/
 
-#include <SimCore/Battlefield/OldBattlefield.h>
-#include <SimCore/Battlefield/OldSimObject.h>
+#include <SimCore/Battlefield/LocalBattlefield.h>
+#include <SimCore/Battlefield/SimObject.h>
 #include <SimCore/Util/Log.h>
 
 #include <SimData/Types.h>
@@ -71,7 +73,10 @@
 #include <SimData/DataManager.h>
 #include <SimData/FileUtility.h>
 #include <SimData/GeoPos.h>
+#include <SimData/Timing.h>
 #include <SimData/Trace.h>
+
+#include <SimNet/ClientServer.h>
 
 #include <GL/gl.h>		// Header File For The OpenGL32 Library
 #include <GL/glu.h>		// Header File For The GLu32 Library
@@ -167,10 +172,12 @@ CSPSim::CSPSim():
 
 	m_Shell = new PyShell();
 	
+/* WNET
 	m_NetworkMessenger = NULL;
 	m_RemoteServerNode = NULL;
 	m_localNode = NULL;
 	b_networkingFlag = false;
+*/
 
 }
 
@@ -195,14 +202,14 @@ void CSPSim::setActiveObject(simdata::Ref<DynamicObject> object) {
 
 	if (object == m_ActiveObject) return;
 	if (m_ActiveObject.valid()) {
-		m_Battlefield->setHuman(m_ActiveObject->id(), false);
+		// XXX XXX m_Battlefield->setHuman(m_ActiveObject->id(), false);
 	}
 	m_ActiveObject = object;
 	if (m_GameScreen) {
 		m_GameScreen->setActiveObject(m_ActiveObject);
 	}
 	if (m_ActiveObject.valid()) {
-		m_Battlefield->setHuman(m_ActiveObject->id(), true);
+		// XXX XXX m_Battlefield->setHuman(m_ActiveObject->id(), true);
 		simdata::hasht classhash = m_ActiveObject->getPath();
 		CSP_LOG(APP, INFO, "getting map for " << classhash.str());
 		simdata::Ref<EventMapping> map = m_InterfaceMaps->getMap(classhash);
@@ -220,11 +227,11 @@ simdata::Ref<DynamicObject> CSPSim::getActiveObject() const {
 	return m_ActiveObject;
 }
 
-Battlefield * CSPSim::getBattlefield() {
+LocalBattlefield * CSPSim::getBattlefield() {
 	return m_Battlefield.get();
 }
 
-Battlefield const * CSPSim::getBattlefield() const {
+LocalBattlefield const * CSPSim::getBattlefield() const {
 	return m_Battlefield.get();
 }
 
@@ -232,9 +239,11 @@ VirtualScene * CSPSim::getScene() {
 	return m_Scene.get();
 }
 
+/* WNET
 NetworkMessenger * CSPSim::getNetworkMessenger() {
 	return m_NetworkMessenger;
 }
+*/
 
 VirtualScene const * CSPSim::getScene() const {
 	return m_Scene.get();
@@ -292,20 +301,7 @@ void CSPSim::init()
 		//--m_RenderSurface->realize();
 		SDL_WM_SetCaption("CSPSim", "");
 
-		// put up Logo screen then do rest of initialization
-		/*int height = g_Config.getInt("Screen", "Height", 768, true);
-		int width = g_Config.getInt("Screen", "Width", 1024, true);
-		int fullscreen = g_Config.getInt("Screen", "FullScreen", 0, true);
-
-		m_ScreenHeight = height;
-		m_ScreenWidth = width;
-	
-		g_ScreenHeight = height;
-		g_ScreenWidth = width;*/
-
 		LogoScreen logoScreen(m_ScreenWidth, m_ScreenHeight);
-		//logoScreen.start();
-		//logoScreen.join();
 		logoScreen.onInit();
 
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -381,52 +377,53 @@ void CSPSim::init()
 		m_Scene->setFogEnd(fog_end);
 
 		int visual_radius = g_Config.getInt("Testing", "VisualRadius",  40000, true);
-		m_Battlefield = new Battlefield();
+		m_Battlefield = new LocalBattlefield(m_DataManager);
 		m_Battlefield->setSceneManager(new SimpleSceneManager(m_Scene, visual_radius));
 		if (m_Theater.valid()) {
-	    	simdata::Ref<FeatureGroup>::list groups = m_Theater->getAllFeatureGroups();
-	    	simdata::Ref<FeatureGroup>::list::iterator iter = groups.begin();
+			FeatureGroup::Ref::list groups = m_Theater->getAllFeatureGroups();
 			CSP_LOG(BATTLEFIELD, DEBUG, "Adding " << groups.size() << " features to the battlefield");
-			for (; iter != groups.end(); ++iter) {
+			for (FeatureGroup::Ref::list::iterator iter = groups.begin(); iter != groups.end(); ++iter) {
 				m_Battlefield->addStatic(*iter);
 			}
 		}
 
-		// create a test object (other objects can be created via TestObjects.py)
-#if 0
+		// create the networking layer
+		if (g_Config.getBool("Networking", "UseNetworking", false, true)) {
+			simnet::netlog().setLogPriority(simdata::LOG_INFO);
+			int local_port = g_Config.getInt("Networking", "LocalPort", 14111, true);
+			std::string local_address = g_Config.getString("Networking", "LocalIp", "127.0.0.1", true);
+			CSP_LOG(NETWORK, INFO, "Initializing network interface: " << local_address << ":" << local_port);
+			int incoming_bw = g_Config.getInt("Networking", "IncomingBandwidth", 36000, true);
+			int outgoing_bw = g_Config.getInt("Networking", "OutgoingBandwidth", 36000, true);
+			simnet::NetworkNode local_node(local_address, local_port);
+			m_NetworkClient = new simnet::Client(local_node, incoming_bw, outgoing_bw);
+			std::string server_address = g_Config.getString("Networking", "ServerIp", "127.0.0.1", true);
+			int server_port = g_Config.getInt("Networking", "ServerPort", 14110, true);
+			CSP_LOG(NETWORK, INFO, "Connecting to server: " << server_address << ":" << server_port);
+			simnet::NetworkNode server_node(server_address, server_port);
+			if (!m_NetworkClient->connectToServer(server_node, 5.0 /*seconds*/)) {
+				std::cerr << "Unable to connecting to server, running in local mode\n";
+				CSP_LOG(NETWORK, ERROR, "Unable to connecting to server, running in local mode");
+				m_NetworkClient = 0;
+			} else {
+				std::string name = g_Config.getString("Networking", "UserName", "anonymous", true);
+				CSP_LOG(NETWORK, INFO, "Connecting to server battlefield as " << name);
+				m_Battlefield->setNetworkClient(m_NetworkClient);
+				m_Battlefield->connectToServer(name);
+				simdata::Timer timer;
+				timer.start();
+				while (timer.elapsed() < 5.0 && !m_Battlefield->isConnectionActive()) {
+					m_NetworkClient->processAndWait(0.01, 0.01, 0.1);
+				}
+				if (!m_Battlefield->isConnectionActive()) {
+					// connection failed, go back to local mode
+					m_Battlefield->setNetworkClient(0);
+				}
+			}
+			simnet::netlog().setLogPriority(simdata::LOG_INFO);
+			simnet::netlog().setLogPriority(6);
+		}
 
-		CSP_LOG(APP, DEBUG, "INIT:: test vehicle");
-
-		std::string vehicle = g_Config.getPath("Testing", "Vehicle", "sim:vehicles.aircraft.m2k", false);
-		simdata::Ref<AircraftObject> ao = m_DataManager->getObject(vehicle.c_str());
-		assert(ao.valid());
-
-		//simdata::LLA position;
-		//position.setDegrees(40.6000, 14.3750, 1000.0);
-		//std::cout << "Starting point = " << m_Terrain->getProjection().convert(position) << std::endl;
-		//ao->setGlobalPosition(m_Terrain->getProjection().convert(position));
-
-		// just place at the center of the terrain, with enough elevation to be safe
-		ao->setGlobalPosition(0.0, 0.0, 150.0);
-
-		//ao->setGlobalPosition(483000-512000, 499000-512000, 91.2);
-		ao->setAttitude(0.0, 0.0, 3.14);
-		ao->setVelocity(0, -90.0, 0);
-
-// original placement for balkan terrain testing
-		/*
-		ao->setGlobalPosition(483025, 499000, 188.5);
-		ao->setAttitude(0.0, 0.0, 1.92);
-		ao->setVelocity(0, 1.0, 0);
-		*/
-
-
-		CSP_LOG(APP, DEBUG, "INIT:: activate test vehicle");
-
-		m_Battlefield->addUnit(ao);
-		setActiveObject(ao);
-
-#endif
 		logoScreen.onUpdate(0.0);
 		logoScreen.onRender();
 		SDL_GL_SwapBuffers();
@@ -444,6 +441,7 @@ void CSPSim::init()
 		m_GameScreen = new GameScreen;
 		m_GameScreen->onInit();
 		
+/* WNET
 		// create the networking layer
 		b_networkingFlag = g_Config.getBool("Networking", "UseNetworking", false, true);
 		int localMessagePort = g_Config.getInt("Networking", "LocalMessagePort", 10000, true);
@@ -464,6 +462,7 @@ void CSPSim::init()
 		dispatchMessageHandler->setDataManager(m_DataManager.get());
 		dispatchMessageHandler->setBattlefield(getBattlefield());
 		m_NetworkMessenger->registerMessageHandler(dispatchMessageHandler);
+*/
 
 #if 0
 		// set the Main Menu then start the main loop
@@ -509,7 +508,6 @@ void CSPSim::cleanup()
 	m_Battlefield = NULL;
 	m_Terrain = NULL;
 	m_Theater = NULL;
-	m_Battlefield = NULL;
 	m_Scene = NULL;
  	if (m_SDLJoystick) {
 		SDL_JoystickClose(m_SDLJoystick);
@@ -578,6 +576,10 @@ void CSPSim::run()
 		while (!m_Finished) {
 			CSP_LOG(APP, DEBUG, "CSPSim::run... Starting loop iteration");
 
+			if (m_NetworkClient.valid()) {
+				m_NetworkClient->processIncoming(0.01);
+			}
+
 			PROF0(_simloop);
 
 			updateTime();
@@ -620,9 +622,10 @@ void CSPSim::run()
 				PROF1(_screen_render, 60);
 			}
 
+			if (m_NetworkClient.valid()) {
+				m_NetworkClient->processOutgoing(0.01);
+			}
 
-			
-			
 			// Swap OpenGL buffers
 #ifndef __CSPSIM_EXE__
 			Py_BEGIN_ALLOW_THREADS;
@@ -660,8 +663,8 @@ void CSPSim::initTime(simdata::SimDate const &date)
 	m_TimeLag = 0.00001;
 	m_AverageFrameTime = 1.0;
 }
-	
-	
+
+
 // update time from the current frame update and the previous one.
 // the timestep for updates is restricted to 1 second max.  greater
 // delays will accumulate in _timeLag to be made up in subsequent
@@ -745,34 +748,12 @@ void CSPSim::updateObjects(double dt)
 {
 	CSP_LOG(APP, DEBUG, "CSPSim::updateObjects...");
 
- 	if (m_Battlefield.valid()) {
+	if (m_Battlefield.valid()) {
 		m_Battlefield->update(dt);
 	}
 	if (m_Scene.valid()) {
 		m_Scene->onUpdate(dt);
 	}
-
-	// call networking layer.
-        // TODO the code below tests the networking section. Later it probably needs to
-	// be moved elsewhere.  Currently commenting out so we can move to subversion.
-	CSP_LOG(APP, DEBUG, "CSPSim::run... beginning network updates");
-
-        if (b_networkingFlag)
-	{
-		simdata::Ref<DynamicObject> dynamicObject = (simdata::Ref<DynamicObject>)m_ActiveObject;
-        	NetworkMessage * message = dynamicObject->getUpdateMessage();
-
-//		CSP_LOG(APP, DEBUG, "CSPSim::run... queuing test network updates");
-		m_NetworkMessenger->queueMessage(m_RemoteServerNode, message);
-		m_NetworkMessenger->sendQueuedMessages();
-		m_NetworkMessenger->receiveMessages();
-
-			
-//		CSP_LOG(APP, DEBUG, "CSPSim::run... finished network updates");
-	}
-			// this may not be necessary. especially if a memory pool of messages objects is used.
-
-
 }
 
 

@@ -1,17 +1,17 @@
 // Combat Simulator Project - FlightSim Demo
 // Copyright (C) 2004 The Combat Simulator Project
 // http://csp.sourceforge.net
-// 
+//
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
 // as published by the Free Software Foundation; either version 2
 // of the License, or (at your option) any later version.
-// 
+//
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU General Public License
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
@@ -30,117 +30,81 @@
 class CameraCommand {
 public:
 	virtual void execute(CameraKinematics* ck) = 0;
-	virtual ~CameraCommand(){}
+	virtual ~CameraCommand() {}
 };
 
 
-class CameraReset: public CameraCommand {
+class CameraResetCommand: public CameraCommand {
 public:
-	virtual void execute(CameraKinematics* ck) {
-		ck->reset();
-	}
-	virtual ~CameraReset(){}
+	virtual void execute(CameraKinematics* ck) { ck->reset(); }
 };
 
 
-class PanLeft: public CameraCommand {
+class PanLeftCommand: public CameraCommand {
 public:
-	virtual void execute(CameraKinematics* ck) {
-		ck->panLeft();
-	}
-	virtual ~PanLeft(){}
+	virtual void execute(CameraKinematics* ck) { ck->panLeft(); }
 };
 
 
-class PanRight: public CameraCommand {
+class PanRightCommand: public CameraCommand {
 public:
-	virtual void execute(CameraKinematics* ck) {
-		ck->panRight();
-	}
-	virtual ~PanRight(){}
+	virtual void execute(CameraKinematics* ck) { ck->panRight(); }
 };
 
 
-class PanLeftRightStop: public CameraCommand {
+class PanLeftRightStopCommand: public CameraCommand {
 public:
-	virtual void execute(CameraKinematics* ck) {
-		ck->panLeftRightStop();
-	}
-	virtual ~PanLeftRightStop(){}
+	virtual void execute(CameraKinematics* ck) { ck->panLeftRightStop(); }
 };
 
 
-class PanUp: public CameraCommand {
+class PanUpCommand: public CameraCommand {
 public:
-	virtual void execute(CameraKinematics* ck) {
-		ck->panUp();
-	}
-	virtual ~PanUp(){}
+	virtual void execute(CameraKinematics* ck) { ck->panUp(); }
 };
 
-class PanDown: public CameraCommand {
+class PanDownCommand: public CameraCommand {
 public:
-	virtual void execute(CameraKinematics* ck) {
-		ck->panDown();
-	}
-	virtual ~PanDown(){}
+	virtual void execute(CameraKinematics* ck) { ck->panDown(); }
 };
 
 
-class PanUpDownStop: public CameraCommand {
+class PanUpDownStopCommand: public CameraCommand {
 public:
-	virtual void execute(CameraKinematics* ck) {
-		ck->panUpDownStop();
-	}
-	virtual ~PanUpDownStop(){}
+	virtual void execute(CameraKinematics* ck) { ck->panUpDownStop(); }
 };
 
 
-class ZoomIn: public CameraCommand {
+class ZoomInCommand: public CameraCommand {
 public:
-	virtual void execute(CameraKinematics* ck) {
-		ck->zoomIn();
-	}
-	virtual ~ZoomIn(){}
+	virtual void execute(CameraKinematics* ck) { ck->zoomIn(); }
 };
 
 
-class ZoomOut: public CameraCommand {
+class ZoomOutCommand: public CameraCommand {
 public:
-	virtual void execute(CameraKinematics* ck) {
-		ck->zoomOut();
-	}
-	virtual ~ZoomOut(){}
+	virtual void execute(CameraKinematics* ck) { ck->zoomOut(); }
 };
 
 
-class ZoomStop: public CameraCommand {
+class ZoomStopCommand: public CameraCommand {
 public:
-	virtual void execute(CameraKinematics* ck) {
-		ck->zoomStop();
-	}
-	virtual ~ZoomStop(){}
+	virtual void execute(CameraKinematics* ck) { ck->zoomStop(); }
 };
 
-class ZoomStepIn: public CameraCommand {
+class ZoomStepInCommand: public CameraCommand {
 public:
-	virtual void execute(CameraKinematics* ck) {
-		ck->zoomStepIn();
-	}
-	virtual ~ZoomStepIn(){}
+	virtual void execute(CameraKinematics* ck) { ck->zoomStepIn(); }
 };
 
 
-class ZoomStepOut: public CameraCommand {
+class ZoomStepOutCommand: public CameraCommand {
 public:
-	virtual void execute(CameraKinematics* ck) {
-		ck->zoomStepOut();
-	}
-	virtual ~ZoomStepOut(){}
+	virtual void execute(CameraKinematics* ck) { ck->zoomStepOut(); }
 };
 
 class MouseCommand: public CameraCommand {
-	int m_x,m_y,m_dx,m_dy;
+	int m_x, m_y, m_dx, m_dy;
 	void reset() {
 		m_x = 0;
 		m_y = 0;
@@ -151,17 +115,32 @@ public:
 	MouseCommand() {
 		  reset();
 	 }
-	void set(int x,int y, int dx, int dy) {
+	void set(int x, int y, int dx, int dy) {
 		m_x = x;
 		m_y = y;
 		m_dx = dx;
 		m_dy = dy;
 	}
 	virtual void execute(CameraKinematics* ck) {
-		ck->displacement(m_x,m_y,m_dx,m_dy);
+		ck->displacement(m_x, m_y, m_dx, m_dy);
 		reset();
 	}
-	virtual ~MouseCommand(){}
+};
+
+struct CameraCommands {
+	MouseCommand Mouse;
+	PanUpCommand PanUp;
+	PanDownCommand PanDown;
+	PanLeftCommand PanLeft;
+	PanRightCommand PanRight;
+	PanLeftRightStopCommand PanLeftRightStop;
+	PanUpDownStopCommand PanUpDownStop;
+	ZoomInCommand ZoomIn;
+	ZoomOutCommand ZoomOut;
+	ZoomStopCommand ZoomStop;
+	ZoomStepInCommand ZoomStepIn;
+	ZoomStepOutCommand ZoomStepOut;
+	CameraResetCommand CameraReset;
 };
 
 #endif //__CAMERACOMMAND_H__

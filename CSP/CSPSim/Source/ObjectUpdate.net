@@ -1,0 +1,35 @@
+#header <ObjectUpdate.h>
+
+#include <SimNet/NetworkMessage.h>
+#include <SimData/Vector3.h>
+#include <SimData/Quat.h>
+#include <SimCore/Util/MessageTypes.h>
+
+// simplified/inefficient object update message for testing only.
+//
+// eventually we will want to make some fields required, use
+// single-precision where possible, and add (optional) common
+// state fields.
+//
+// the static id assignment is only for convenience; eventually
+// ids will be assigned during theater generation.
+
+type simcore::GlobalPosition;
+type simcore::Vector3f;
+type simcore::Vector4f;
+
+message ObjectUpdate : simnet::NetworkMessage { @id=1024;
+
+	REQUIRED int32 timestamp;
+	REQUIRED simcore::GlobalPosition position;
+	REQUIRED simcore::Vector3f velocity;
+	simcore::Vector4f attitude;
+	bitset {
+		bool gear_up = 1;
+	}
+
+	uint8 aileron_deflection;
+	uint8 elevator_deflection;
+	uint8 rudder_deflection;
+	uint8 airbrake_deflection;
+}

@@ -122,7 +122,7 @@ int ClientNode::run() {
 		//    ptrPayload->timeStamp = timestamp;
 		b_GlobalPosition->value() = simdata::Vector3(timestamp*1.0, timestamp*0.5, 1.0);
 
-		//simdata::MemoryWriter writer((simdata::uint8 *)ptrPayload);
+		simdata::MemoryWriter writer((simdata::uint8 *)ptrPayload);
 
 		//    writer << id;
 		//    writer << type;

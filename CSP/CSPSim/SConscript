@@ -64,6 +64,7 @@ env.Documentation('#/CSPSim/Doc', '#/CSPSim/Doc/Doxyfile',
 env.Append(LIBS=['demeter_csp'], LIBPATH=['#/Demeter/.bin'])
 env.Append(LIBS=['osgChunkLod'], LIBPATH=['#/CSPChunkLod/.bin'])
 env.Append(LIBS=['simcore'], LIBPATH=['#/SimCore/.bin'])
+env.Append(LIBS=['simnet'], LIBPATH=['#/SimNet/.bin'])
 env.Append(LIBS=['spatialindex'], LIBPATH=['#/SpatialIndex/.bin'])
 
 build.BuildModules(env, MODULES)

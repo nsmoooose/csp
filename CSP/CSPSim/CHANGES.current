@@ -1,6 +1,19 @@
  Version 0.4.0 (in progress)
 ===========================
 
+2004-12-03: onsight
+  * Add in the new distributed battlefield code, replacing the existing
+    simnet code.
+
+  * Update the view code to reset/reactivate the current view when
+    reselected.  A few fixes and enhancements to the padlock view.
+
+  * Add remote and local controller classes for sending and receiving
+    object update messages, and dead-reckoning intermediate positions.
+
+2004-11-20: onsight
+  * Update .net definitions for new trc syntax.
+
 2004-11-14: onsight
   * Explicitly save and restore gl state when rendering the scene
     views.  Fixes some rendering anomalies.

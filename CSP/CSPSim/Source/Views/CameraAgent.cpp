@@ -41,7 +41,7 @@ CameraAgent::CameraAgent(const ViewFactory& vf):
 	notifyCameraKinematicsToViews();
 }
 
-void CameraAgent::attach(size_t mode,View* vm){
+void CameraAgent::attach(size_t mode, View* vm){
 	m_ViewList[mode] = vm;
 }
 
@@ -49,35 +49,35 @@ CameraAgent::~CameraAgent() {
 	deleteViews();
 }
 
-void CameraAgent::validate(double dt)	{
-	VirtualScene* scene	= CSPSim::theSim->getScene();
-	const simdata::Ref<TerrainObject> terrain =	scene->getTerrain();
-	TerrainObject::IntersectionHint	camera_hint	= 0;
-	double const SAFETY	= 3.0;
-	float h	= SAFETY + terrain->getGroundElevation(m_EyePoint.x(),m_EyePoint.y(),camera_hint);
+void CameraAgent::validate(double dt) {
+	VirtualScene* scene = CSPSim::theSim->getScene();
+	const simdata::Ref<TerrainObject> terrain = scene->getTerrain();
+	TerrainObject::IntersectionHint camera_hint = 0;
+	double const SAFETY = 3.0;
+	float h = SAFETY + terrain->getGroundElevation(m_EyePoint.x(), m_EyePoint.y(), camera_hint);
 	// if the eyepoint is near the ground, check more carefully that the terrain isn't
 	// clipped by the near-clipping plane.
 	if (m_EyePoint.z() < h) {
 		double alpha_2 = simdata::toRadians(0.5*scene->getViewAngle());
 		double near_dist = scene->getNearPlane();
-		double aspect =	scene->getAspect();
-		simdata::Vector3 eye_look =	m_LookPoint	- m_EyePoint;
+		double aspect = scene->getAspect();
+		simdata::Vector3 eye_look = m_LookPoint - m_EyePoint;
 		simdata::Vector3 eye_look_unit = eye_look.normalized();
 		simdata::Vector3 up_vec_unit = m_UpVector.normalized();
 
 		double tan_alpha_2 = tan(alpha_2);
-		simdata::Vector3 right_unit	= eye_look_unit^up_vec_unit;
+		simdata::Vector3 right_unit = eye_look_unit^up_vec_unit;
 		simdata::Vector3 min_edge;
-		double min_elev	= 1.0;
+		double min_elev = 1.0;
 		// iterate over the corners of the rectangle defined by the intersection
 		// of the near clipping plane and the view frustum; find the lowest
 		// corner.
-		for	(double	i =	-1.0; i	<= 1.0;	i += 2.0)
-			for	(double	j =	-1.0;j <= 1.0; j +=	2.0) {
+		for (double i = -1.0; i <= 1.0; i += 2.0)
+			for (double j = -1.0;j <= 1.0; j += 2.0) {
 				simdata::Vector3 edge_vector = near_dist * (eye_look_unit
-					+ tan_alpha_2 *	( i	* up_vec_unit +	j *	aspect * right_unit));
-				simdata::Vector3 edge =	m_EyePoint + edge_vector;
-				double edge_elev = edge.z()-terrain->getGroundElevation(edge.x(),edge.y(),camera_hint);
+					+ tan_alpha_2 * ( i * up_vec_unit + j * aspect * right_unit));
+				simdata::Vector3 edge = m_EyePoint + edge_vector;
+				double edge_elev = edge.z()-terrain->getGroundElevation(edge.x(), edge.y(), camera_hint);
 				if (min_elev > edge_elev) {
 					min_elev = edge_elev;
 					min_edge = edge;
@@ -107,28 +107,35 @@ void CameraAgent::validate(double dt)	{
 					m_CameraKinematics.setPhi(phi - alpha);
 				}
 				m_CameraKinematics.panUpDownStop();
-				m_ViewList[m_ViewMode]->recalculate(m_EyePoint,m_LookPoint,m_UpVector,dt);
+				m_ViewList[m_ViewMode]->recalculate(m_EyePoint, m_LookPoint, m_UpVector, dt);
 			}
 		}
 	}
 }
 
-void CameraAgent::set(size_t vm,CameraCommand* cc) {
-	if (m_ViewMode != vm) {
-		ViewList::iterator view_it = m_ViewList.find(vm);
-		if (view_it != m_ViewList.end()) {
+void CameraAgent::setViewMode(size_t vm) {
+	ViewList::iterator view_it = m_ViewList.find(vm);
+	if (view_it != m_ViewList.end()) {
+		if (m_ViewMode == vm) {
+			CSP_LOG(APP, INFO, "reactivate view");
+			view_it->second->reactivate();
+		} else {
+			CSP_LOG(APP, INFO, "selected new view");
 			view_it->second->activate();
 			m_ViewMode = vm;
 		}
 	}
+}
+
+void CameraAgent::setCameraCommand(CameraCommand *cc) {
 	m_CameraKinematics.accept(cc);
 }
 
-void CameraAgent::updateCamera(double dt)	{
+void CameraAgent::updateCamera(double dt) {
 	ViewList::iterator view = m_ViewList.find(m_ViewMode);
 	if (view != m_ViewList.end()) {
 		m_CameraKinematics.update(dt);
-		view->second->update(m_EyePoint,m_LookPoint,m_UpVector,dt);
+		view->second->update(m_EyePoint, m_LookPoint, m_UpVector, dt);
 		if (!view->second->isInternal()) {
 			validate(dt);
 		}
@@ -137,14 +144,14 @@ void CameraAgent::updateCamera(double dt)	{
 }
 
 void CameraAgent::deleteViews() {
-	std::for_each(m_ViewList.begin(),m_ViewList.end(),DestroyView());
+	std::for_each(m_ViewList.begin(), m_ViewList.end(), DestroyView());
 }
 
 void CameraAgent::setObject(simdata::Ref<DynamicObject> object) {
-	std::for_each(m_ViewList.begin(),m_ViewList.end(),Accept<simdata::Ref<DynamicObject> >(object));
+	std::for_each(m_ViewList.begin(), m_ViewList.end(), Accept<simdata::Ref<DynamicObject> >(object));
 	m_CameraKinematics.reset();
 }
 
 void CameraAgent::notifyCameraKinematicsToViews() {
-	std::for_each(m_ViewList.begin(),m_ViewList.end(),Accept<CameraKinematics*>(&m_CameraKinematics));
+	std::for_each(m_ViewList.begin(), m_ViewList.end(), Accept<CameraKinematics*>(&m_CameraKinematics));
 }

@@ -89,6 +89,7 @@ def setLogCategory():
 
 
 def setLogPriority():
+	cCSP.csplog().setTimeLogging(1)
 	if log_priority is None: return
 	cCSP.csplog().setLogPriority(log_priority)
 	SimData.log().setLogPriority(log_priority)

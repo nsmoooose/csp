@@ -24,20 +24,22 @@ LIBS = env.get('LIBS', []) + ['spatialindex']
 LIBPATH= env.get('LIBPATH', []) + ['#/SpatialIndex/.bin']
 
 SOURCES = [
-	'OldBattlefield.cpp',
-#	'LocalBattlefield.cpp',
+#	'OldBattlefield.cpp',
+#	'OldSimObject.cpp',
+	'Battlefield.cpp',
+	'LocalBattlefield.cpp',
 	'SceneManager.cpp',
-	'OldSimObject.cpp',
-#	'BattlefieldMessages.net',
+	'SimObject.cpp',
+	'BattlefieldMessages.net',
 ]
 
 OBJECTS = build.Apply(env.StaticObject, SOURCES, LIBS=LIBS, LIBPATH=LIBPATH)
 Return('OBJECTS')
 
-#BFC = env.Program('test-client.cpp',
-#                   LIBS=LIBS + ['simcore', 'SimData', 'pthread', 'spatialindex', 'simnet'],
-#                   LIBPATH=LIBPATH + ['#/SimCore/.bin', '#/SimData/SimData', '#/SimNet/.bin'])
-#BFS = env.Program('test-server.cpp',
-#                   LIBS=LIBS + ['simcore', 'SimData', 'pthread', 'spatialindex', 'simnet'],
-#                   LIBPATH=LIBPATH + ['#/SimCore/.bin', '#/SimData/SimData', '#/SimNet/.bin'])
-#Alias('bftest', [BFC, BFS])
+BFC = env.Program(['test-client.cpp', 'ObjectUpdate.net'],
+                   LIBS=LIBS + ['simcore', 'SimData', 'pthread', 'spatialindex', 'simnet'],
+                   LIBPATH=LIBPATH + ['#/SimCore/.bin', '#/SimData/SimData', '#/SimNet/.bin'])
+BFS = env.Program('test-server.cpp',
+                   LIBS=LIBS + ['simcore', 'SimData', 'pthread', 'spatialindex', 'simnet'],
+                   LIBPATH=LIBPATH + ['#/SimCore/.bin', '#/SimData/SimData', '#/SimNet/.bin'])
+Alias('bftest', [BFC, BFS])

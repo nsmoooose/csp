@@ -26,19 +26,19 @@
 #define __DYNAMICOBJECT_H__
 
 #include "DataRecorder.h"
-#include "Controller.h"
 #include "InputInterface.h"
 #include "TerrainObject.h"
 
-#include <SimCore/Battlefield/OldSimObject.h>
+#include <SimCore/Battlefield/SimObject.h>
 #include <SimData/Quat.h>
 
 
-class NetworkMessage;
 class PhysicsModel;
 class SystemsModel;
 class ObjectModel;
 class SceneModel;
+class RemoteController;
+class LocalController;
 
 
 namespace osgParticle {
@@ -54,14 +54,12 @@ namespace osgParticle {
  */
 class DynamicObject: public SimObject, public InputInterface
 {
-	friend class VirtualBattlefield;
-
 	struct SystemsModelStore {
-		unsigned int id;
+		ObjectId id;
 		simdata::Ref<SystemsModel> model;
 		SystemsModelStore();
 		~SystemsModelStore();
-		SystemsModelStore(unsigned int id_, simdata::Ref<SystemsModel> model_);
+		SystemsModelStore(ObjectId id_, simdata::Ref<SystemsModel> model_);
 	};
 
 	static std::list<SystemsModelStore> SystemsModelCache;
@@ -110,6 +108,7 @@ public:
 		SIMDATA_XML("inertia", DynamicObject::m_ReferenceInertia, false)
 		SIMDATA_XML("human_systems", DynamicObject::m_HumanModel, false)
 		SIMDATA_XML("agent_systems", DynamicObject::m_AgentModel, false)
+		SIMDATA_XML("remote_systems", DynamicObject::m_RemoteModel, false)
 	END_SIMDATA_XML_INTERFACE
 
 	DynamicObject(TypeId type);
@@ -125,10 +124,6 @@ public:
 	osg::Node* getModelNode();
 
 	virtual void getInfo(std::vector<std::string> &info) const;
-
-	void setController(Controller * Controller) {
-		m_Controller = Controller;
-	}
 
 	void setVelocity(simdata::Vector3 const & velocity);
 	void setVelocity(double Vx, double Vy, double Vz);
@@ -167,8 +162,7 @@ public:
 	void enableSmoke();
 
 	virtual void setDataRecorder(DataRecorder *recorder);
-	virtual NetworkMessage* getUpdateMessage();
-	virtual void putUpdateMessage(NetworkMessage* message);
+
 
 protected:
 
@@ -182,6 +176,9 @@ protected:
 	virtual void registerChannels(Bus::Ref bus);
 	virtual void bindChannels(Bus::Ref bus);
 	virtual void bindAnimations(Bus::Ref bus);
+
+	virtual simdata::Ref<simnet::NetworkMessage> getState(simcore::TimeStamp current_timestamp, simdata::SimTime interval, int detail) const;
+	virtual void setState(simdata::Ref<simnet::NetworkMessage> const &msg, simcore::TimeStamp now);
 
 	TerrainObject::IntersectionHint m_GroundHint;
 
@@ -206,7 +203,8 @@ protected:
 	simdata::Ref<SceneModel> m_SceneModel;
 	simdata::Ref<SystemsModel> m_SystemsModel;
 	simdata::Ref<PhysicsModel> m_PhysicsModel;
-	simdata::Ref<Controller> m_Controller;
+	simdata::Ref<LocalController> m_LocalController;
+	simdata::Ref<RemoteController> m_RemoteController;
 
 	virtual void doPhysics(double dt);
 	virtual void doControl(double dt);
@@ -218,6 +216,7 @@ private:
 	simdata::Matrix3 m_ReferenceInertia;
 	simdata::Path m_HumanModel;
 	simdata::Path m_AgentModel;
+	simdata::Path m_RemoteModel;
 };
 
 

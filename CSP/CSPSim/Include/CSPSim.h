@@ -59,12 +59,13 @@ typedef struct _SDL_Joystick SDL_Joystick;
 class Atmosphere;
 //--namespace Producer { class RenderSurface; }
 namespace simdata { class DataManager; }
+namespace simnet { class Client; }
 class InputEvent;
 class PyShell;
 class DynamicObject;
 class TerrainObject;
 class Theater;
-class Battlefield;
+class LocalBattlefield;
 class VirtualScene;
 class VirtualHID;
 class BaseScreen;
@@ -72,8 +73,10 @@ class GameScreen;
 class EventMapIndex;
 class PyConsole;
 
+/*WNET
 class NetworkMessenger;
 class NetworkNode;
+*/
 
 void fillerup(void *unused, unsigned char *stream, int len);
 
@@ -104,15 +107,18 @@ public:
 	
 	void setActiveObject(simdata::Ref<DynamicObject> object);
 	simdata::Ref<DynamicObject> getActiveObject() const;
-	Battlefield * getBattlefield();
-	Battlefield const * getBattlefield() const;
+	LocalBattlefield * getBattlefield();
+	LocalBattlefield const * getBattlefield() const;
 	TerrainObject * getTerrain();
 	TerrainObject const * getTerrain() const;
 	VirtualScene * getScene();
 	VirtualScene const * getScene() const;
 	simdata::Ref<Theater> getTheater() const;
 	simdata::Ref<EventMapIndex> getInterfaceMaps() const;
-        NetworkMessenger * getNetworkMessenger();
+
+/*WNET
+	NetworkMessenger * getNetworkMessenger();
+*/
 
 	void togglePause();
 	void runConsole(PyConsole *console);
@@ -179,8 +185,9 @@ private:
 	/**
 	 * The virtual battlefield
 	 */
-	simdata::Ref<Battlefield> m_Battlefield;
+	simdata::Ref<LocalBattlefield> m_Battlefield;
 	simdata::Ref<VirtualScene> m_Scene;
+	simdata::Ref<simnet::Client> m_NetworkClient;
 
 	// TODO the terrain will eventually be encapsulated in a Theater class
 	simdata::Ref<Theater> m_Theater;
@@ -192,13 +199,13 @@ private:
 	//osg::ref_ptr<PyConsole> m_Console;
 	simdata::Ref<PyShell> m_Shell;
 	
-	/**
-	  * The network layer
-	  */
+/*WNET
+	/// The network layer
 	NetworkMessenger * m_NetworkMessenger;
 	NetworkNode * m_RemoteServerNode;
 	NetworkNode * m_localNode;
 	bool b_networkingFlag;
+*/
 	
 	//--osg::ref_ptr<Producer::RenderSurface> m_RenderSurface;
 

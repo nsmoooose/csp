@@ -30,8 +30,19 @@
 #undef _POSIX_C_SOURCE
 #endif
 
-#include <Python.h>
-#include <unistd.h>
+
+#ifdef _MSC_VER
+	#ifdef _DEBUG
+		#undef _DEBUG
+		#include <Python.h>
+		#define _DEBUG
+	#else
+		#include <Python.h>
+	#endif
+#else
+	#include <Python.h>
+	#include <unistd.h>
+#endif
 
 #include <osgUtil/Optimizer>
 #include <osgDB/ReadFile>
@@ -51,6 +62,7 @@
 #include <osg/Geometry>
 #include <osg/Drawable>
 #include <osg/ref_ptr>
+#include <osg/Vec3>
 
 #include <iostream>
 #include <cstdio>
@@ -138,9 +150,11 @@ View::~View() {
 void View::run() {
 	if (!m_Viewer) return;
 	m_Quit = false;
+#ifndef _MSC_VER
 	timespec sleeptime;
 	sleeptime.tv_sec = 0;
 	sleeptime.tv_nsec = 1000000;
+#endif
 	m_Viewer->realize();
 	while (!m_Viewer->done() && !m_Quit) {
 		m_Viewer->sync();
@@ -148,7 +162,11 @@ void View::run() {
 		m_Viewer->frame();
 		m_DynamicGrid->setLook(getCameraTarget(), getCameraPosition());
 		Py_BEGIN_ALLOW_THREADS;
+#ifndef _MSC_VER
 		nanosleep(&sleeptime, 0);
+#else
+		Sleep(1);
+#endif
 		Py_END_ALLOW_THREADS;
 	}
 	//m_Viewer->sync();
@@ -249,12 +267,12 @@ void View::screenToSurface(float x, float y, float &surface_x, float &surface_y)
 		}
 		osg::Matrixd inverseMVPW;
 		inverseMVPW.invert(vum);
-		osg::Vec3 near = osg::Vec3(rx, ry, -1.0) * inverseMVPW;
-		osg::Vec3 far = osg::Vec3(rx, ry, 1.0) * inverseMVPW;
-		osg::Vec3 ray = near - far;
+		osg::Vec3 near_ = osg::Vec3(rx, ry, -1.0) * inverseMVPW;
+		osg::Vec3 far_ = osg::Vec3(rx, ry, 1.0) * inverseMVPW;
+		osg::Vec3 ray = near_ - far_;
 		if (ray.z() != 0) {
-			surface_x = near.x() - near.z() * (ray.x() / ray.z());
-			surface_y = near.y() - near.z() * (ray.y() / ray.z());
+			surface_x = near_.x() - near_.z() * (ray.x() / ray.z());
+			surface_y = near_.y() - near_.z() * (ray.y() / ray.z());
 		}
 	}
 }

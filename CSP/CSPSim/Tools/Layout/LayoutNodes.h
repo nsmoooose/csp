@@ -240,7 +240,7 @@ public:
 	virtual void traverse(LayoutNodeVisitor &v) {
 	}
 	virtual bool isGroup() const { return false; }
-	virtual LayoutGroup *asGroup() { assert(0); }
+	virtual LayoutGroup *asGroup() { assert(0); return 0; }
 	virtual void setModel(osg::ref_ptr<osg::Node> node) {
 		_graph = node;
 		rebind();

@@ -29,6 +29,11 @@
 #include <SimNet/Networking.h>
 #include <SimData/LogStream.h>
 #include "Log.h"
+#include <SimNet/NetworkNode.h>
+#include <SimNet/NetworkMessage.h>
+#include <SimNet/NetworkMessenger.h>
+#include <SimNet/NetworkMessageHandler.h>
+#include <SimNet/EchoMessageHandler.h>
 
 EchoMessageHandler::EchoMessageHandler() {
 	m_messenger = NULL;

@@ -22,6 +22,7 @@
  * @author Scott Flicker (Wolverine)
  */
 #include <SimNet/Networking.h>
+#include <SimNet/NetworkNode.h>
 #include "Log.h"
 
 MessageSocketDuplex::MessageSocketDuplex() {

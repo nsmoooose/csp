@@ -23,6 +23,11 @@
  */
 
 #include <SimNet/Networking.h>
+#include <SimNet/NetworkMessage.h>
+#include <SimNet/NetworkNode.h>
+#include <SimNet/NetworkMessageHandler.h>
+#include <SimNet/DispatchMessageHandler.h>
+
 #include "DynamicObject.h"
 #include "Config.h"
 

@@ -26,6 +26,8 @@
  */
 
 #include <SimNet/Networking.h>
+#include <SimNet/NetworkMessage.h>
+#include <SimNet/NetworkNode.h>
 
 unsigned short NetworkMessage::m_magicNumber = 0xACDC;
 unsigned short NetworkMessage::m_HeaderLen = 16;

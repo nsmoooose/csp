@@ -25,6 +25,7 @@
  */
 
 #include <SimNet/Networking.h>
+#include <SimNet/NetworkNode.h>
 
 NetworkNode::NetworkNode() {
 	// m_node_id = 0;

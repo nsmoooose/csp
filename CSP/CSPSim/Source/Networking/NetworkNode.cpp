@@ -87,5 +87,5 @@ short NetworkNode::getId()
 
 const char * NetworkNode::getHostname()
 {
-  m_addr.getHostname();
+  return m_addr.getHostname();
 }

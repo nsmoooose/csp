@@ -269,7 +269,7 @@ void LandingGear::updateSuspension(Vector3 const &origin,
 		double vCompression = - dot(vBody, normalGroundBody) * motionNormal;
 		// restrict to reasonable limits (faster than this means the gear will 
 		// probably break in a moment anyway)
-		vCompression = std::min(std::max(vCompression, -10.0), 10.0);
+		vCompression = simdata::clampTo(vCompression, -10.0, 10.0);
 		// ground support (in response to strut compression + damping)
 		double normalForce = (m_K * m_Compression + m_Beta * vCompression) * motionNormal;
 		if (normalForce < 0.0) normalForce = 0.0; // wheel hop

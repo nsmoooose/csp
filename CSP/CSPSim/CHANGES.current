@@ -1,5 +1,15 @@
  Version 0.4.0 (in progress)
 ===========================
+
+2004-12-18: delta
+* Until we make a more accurate FCS, we'll use the animation binding to 
+  provide a better visual approximation of the animations of the "ailerons" 
+  and "elevators".
+  
+* Deflection limits are set to -16 deg and +25 deg.
+
+==> ALL USERS: run RebuildData.py.
+
 2004-12-17: onsight
  * Add a message box to the onscreen display that displays/scrolls several
    lines of text, and fades out when unchanged for several seconds.
@@ -49,6 +59,9 @@
  * Rename the runway model file to all lowercase (wasn't found under linux).
 
 ==> Run ComplileData.py after updating to pick up the changes.
+
+2004-12-15: delta
+ * Moved the aircraft at start up to be at the bottom of the runway.
 
 2004-12-14: onsight
  * Minor fix for the engine cutoff function under linux.

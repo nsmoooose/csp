@@ -82,7 +82,7 @@ protected:
 
 	void error(int skip, bool segv=false);
 
-	virtual void _backtrace(std::ostream&, int skip) {}
+	virtual void _backtrace(std::ostream&, int /*skip*/) {}
 };
 
 

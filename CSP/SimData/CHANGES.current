@@ -1,12 +1,15 @@
 Version 0.4.0 (in progress)
 ===========================
 
+2004-12-05: onsight
+ * Fix a couple minor warnings under msvc.
+
 2004-12-03: delta
- * Updated SimData project files adding a simple project to build 
+ * Updated SimData project files adding a simple project to build
    Config.cpp. Added a dependency from SimData onto Config and a
    custom pre-build step.
- 
- * Changed _WIN32 to more vc++ specific protection for 
+
+ * Changed _WIN32 to more vc++ specific protection for
    SIMDATA_STATIC_CONST_DEF(x).
 
 2004-12-02: onsight

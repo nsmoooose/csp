@@ -615,8 +615,8 @@ public: \
 		}
 
 #define __SIMDATA_XML_BASE_SERIALIZE \
-		inline void _base_serialize(SIMDATA(Writer) &writer) const { } \
-		inline void _base_serialize(SIMDATA(Reader) &reader) { } \
+		inline void _base_serialize(SIMDATA(Writer) &) const { } \
+		inline void _base_serialize(SIMDATA(Reader) &) { } \
 
 #define __SIMDATA_XML_BASE_SERIALIZE_EXTEND(basename) \
 		inline void _base_serialize(SIMDATA(Writer) &writer) const { basename::_serialize(writer); } \

@@ -97,7 +97,7 @@ void Date::addMonths(int nmonths) {
 	year_t years = static_cast<year_t>(nmonths / 12);
 	month_t months = static_cast<month_t>(nmonths % 12);
 	m_month = months + 1;
-	m_year += years;
+	m_year += static_cast<year_t>(years);
 	int index = isLeap() ? 1 : 0;
 	if (m_day > days_in_months[index][m_month]) {
 		m_day = days_in_months[index][m_month];
@@ -108,7 +108,7 @@ void Date::addMonths(int nmonths) {
 void Date::subtractMonths(int nmonths) {
 	year_t years = static_cast<year_t>(nmonths / 12);
 	month_t months = static_cast<month_t>(nmonths % 12);
-	m_year -= years;
+	m_year -= static_cast<year_t>(years);
 	if (m_month > months) {
 		m_month -= months;
 	} else {
@@ -331,11 +331,10 @@ double DateZulu::getAccurateMST(radian_t longitude) const {
 double DateZulu::getMST(radian_t longitude) const {
 	double JD = getJulianDate();
 	double T = (JD - EPOCH) * SIMDATA_F1p0_36525p0;
-	double F = DAYSEC * (JD - (int) JD);
-	double GMST = COEFF0 - DAYSEC/2.0L
-	               + ((COEFF1 + (COEFF2 + COEFF3 * T) * T) * T) + F;
+	double F = static_cast<double>(DAYSEC * (JD - static_cast<int>(JD)));
+	double GMST = static_cast<double>(COEFF0 - DAYSEC/2.0L + ((COEFF1 + (COEFF2 + COEFF3 * T) * T) * T) + F);
 	GMST = GMST * SEC2RAD;
-	int n = (int) (GMST * (0.5/PI));
+	int n = static_cast<int>(GMST * (0.5/PI));
 	if (n < 0) n--;
 	return GMST - n*(2.0*PI) + longitude;
 }
@@ -350,9 +349,10 @@ const SimDate &SimDate::operator=(const SimDate &d) {
 }
 
 double SimDate::update() {
+	calibrateRealTime();
 	SimTime dt = 0.0;
 	if (!paused) {
-		SimTime t = get_realtime();
+		SimTime t = getCalibratedRealTime();
 		dt = t - last_update;
 		last_update = t;
 		setTime(t - reference);

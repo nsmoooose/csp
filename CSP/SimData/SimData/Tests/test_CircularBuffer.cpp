@@ -34,7 +34,7 @@
 #include <deque>
 
 #define TEST_LOOP_COUNT 1000000
-#define DBG false
+#define DBG(x)
 
 using namespace simdata;
 
@@ -45,9 +45,9 @@ void testOneByte() {
 	assert(b.getAllocatedSpace() == 0);
 	assert(b.getMaximumAllocation() > 430);
 	for (int i = 0; i < TEST_LOOP_COUNT; ++i) {
-		if (DBG) std::cerr << "iteration: " << i << "\n";
+		DBG(std::cerr << "iteration: " << i << "\n";)
 		uint8 *x = b.getWriteBuffer(1);
-		*x = i & 255;
+		*x = static_cast<uint8>(i & 255);
 		b.commitWriteBuffer();
 		uint32 size;
 		x = b.getReadBuffer(size);
@@ -65,12 +65,12 @@ void testRandomUse() {
 	std::deque<uint8*> q_ptr;
 	std::deque<uint32> q_size;
 	for (int i = 0; i < TEST_LOOP_COUNT; ++i) {
-		if (DBG) std::cerr << "iteration: " << i << "\n";
+		DBG(std::cerr << "iteration: " << i << "\n";)
 		if (rand() & 1) {
 			uint32 size;
 			uint8 *x = b.getReadBuffer(size);
 			if (x != 0) {
-				if (DBG) std::cerr << "read  " << (void*)x << " " << size << "\n";
+				DBG(std::cerr << "read  " << (void*)x << " " << size << "\n";)
 				assert(x == q_ptr.front());
 				q_ptr.pop_front();
 				assert(size == q_size.front());
@@ -78,23 +78,22 @@ void testRandomUse() {
 				b.releaseReadBuffer();
 			} else {
 				assert(q_ptr.empty());
-				if (DBG) std::cerr << "read --- empty!\n";
+				DBG(std::cerr << "read --- empty!\n";)
 			}
 		} else {
 			uint32 size = (rand() & 255);
 			uint8 *x = b.getWriteBuffer(size);
 			if (x != 0) {
-				if (DBG) std::cerr << "write " << (void*)x << " " << size << "\n";
+				DBG(std::cerr << "write " << (void*)x << " " << size << "\n";)
 				q_ptr.push_back(x);
 				q_size.push_back(size);
 				b.commitWriteBuffer();
 			} else {
-				if (DBG) std::cerr << "write --- full! " << q_ptr.size() << "\n";
+				DBG(std::cerr << "write --- full! " << q_ptr.size() << "\n";)
 			}
 		}
 	}
 }
-
 
 void test() {
 	testRandomUse();

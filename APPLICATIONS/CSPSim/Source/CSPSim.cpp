@@ -568,7 +568,8 @@ int CSPSim::initSDL()
 		SDL_FreeWAV(m_audioWave.sound);
 		::exit(2);
 	}
-	SDL_PauseAudio(1);
+	bool mute = g_Config.getBool("Testing", "Mute", false, true);
+	SDL_PauseAudio(mute);
 
 	return 0;
 }

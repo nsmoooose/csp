@@ -219,3 +219,14 @@ package.add(extension_interface, 'source')
 #package.add(package_files + headers + sub_interfaces + extra_files + doc_files, 'both')
 #package.setTargets(package_targets)
 #package.unitTests('./runtests.py')
+
+# XXX vs project generation (under construction)
+env.MSVSProject(target='SimData'+env['MSVSPROJECTSUFFIX'],
+                srcs=sources,
+                incs=headers,
+                buildtarget=package_targets,
+                variant='Release')
+#localincs = barlocalincs,
+#resources = barresources,
+#misc = barmisc,
+

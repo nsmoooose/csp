@@ -115,13 +115,6 @@ SUBDIRS = (builddir, 'Doc')
 
 for subdir in SUBDIRS:
     SConscript(subdir+'/SConscript')
-    
-# XXX vs project generation
-#env.MSVSProject(target='SimData'+env['MSVSPROJECTSUFFIX'],srcs=['sources'],incs=['headers'],buildtarget='_cSimData.dll',variant='Release')
-#localincs = barlocalincs,
-#resources = barresources,
-#misc = barmisc,
-
 
 package.addManifest("MANIFEST.IN")
 # XXX

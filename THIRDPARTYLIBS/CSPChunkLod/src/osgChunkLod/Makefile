@@ -23,7 +23,6 @@ SOURCES = \
 	ChunkLodLoader.cpp \
 	RayStrip.cpp \
 	TextureQuadTree.cpp \
-	TriangleIntersection.cpp \
 	Version.cpp
 
 OBJECTS = $(SOURCES:%.cpp=%.o) 

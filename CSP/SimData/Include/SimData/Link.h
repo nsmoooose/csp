@@ -155,7 +155,7 @@ protected:
 	inline void _assign_safe(Object* ptr) {
 		_release();
 		_update(ptr);
-		if (!isNull()) _reference->_ref();
+		if (!isNull()) _reference->_incref();
 	}
 
 	/** Rebind to a new object, without testing for type compatibility.
@@ -166,14 +166,14 @@ protected:
 	inline void _assign_fast(Object *ptr) {
 		_release();
 		_reference = ptr;
-		if (!isNull()) _reference->_ref();
+		if (!isNull()) _reference->_incref();
 	}
 
 	/** Rebind to null.
 	 */
 	inline void _release() {
 		if (!isNull()) {
-			_reference->_deref();
+			_reference->_decref();
 			_reference = 0;
 		}
 	}

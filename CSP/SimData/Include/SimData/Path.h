@@ -275,7 +275,7 @@ protected:
 	inline void _assign_safe(Object* ptr) {
 		_release();
 		_update(ptr);
-		if (!isNull()) _reference->_ref();
+		if (!isNull()) _reference->_incref();
 	}
 
 	/**
@@ -287,7 +287,7 @@ protected:
 	inline void _assign_fast(Object *ptr) {
 		_release();
 		_reference = ptr;
-		if (!isNull()) _reference->_ref();
+		if (!isNull()) _reference->_incref();
 	}
 
 	/**
@@ -295,7 +295,7 @@ protected:
 	 */
 	inline void _release() {
 		if (!isNull()) {
-			_reference->_deref();
+			_reference->_decref();
 			_reference = 0;
 		}
 	}

@@ -313,6 +313,7 @@ headers = [
     "osg.h",
     "Path.h",
     "PTS.h",
+    "Properties.h",
     "Quat.h",
     "Random.h",
     "Real.h",

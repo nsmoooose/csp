@@ -37,6 +37,7 @@
 #include <SimData/Export.h>
 #include <SimData/ExceptionBase.h>
 #include <SimData/Log.h>
+#include <SimData/Properties.h>
 
 
 NAMESPACE_SIMDATA
@@ -82,7 +83,7 @@ public:
 	/** Create a new reference.
 	 */
 	Ref(T* ptr): _reference(ptr) {
-		if (ptr) ptr->_ref();
+		if (ptr) ptr->_incref();
 	}
 
 	/** Light-weight copy with reference counting.
@@ -97,7 +98,7 @@ public:
 	Ref(Ref<Q> const & r): _reference(0) {
 		Q *rp = r.get();
 		if (rp != 0) {
-			//rp->_ref();
+			//rp->_incref();
 			//_reference = static_cast<T*>(rp);
 			_rebind(rp);
 		}
@@ -106,14 +107,14 @@ public:
 	/** Light-weight copy with reference counting.
 	 */
 	Ref(Ref const & r): _reference(r._reference) {
-		if (_reference != 0) _reference->_ref();
+		if (_reference != 0) _reference->_incref();
 	}
 
 	/** Decrement the reference count, and potentially destroy
 	 *  the referenced object.
 	 */
 	~Ref() {
-		if (_reference) _reference->_deref();
+		if (_reference) _reference->_decref();
 	}
 
 	/** Returns true if this is the only reference.
@@ -167,7 +168,7 @@ public:
 	 */
 	inline void *operator=(void *ptr) {
 		assert(ptr==0);
-		if (_reference != 0) _reference->_deref();
+		if (_reference != 0) _reference->_decref();
 		_reference = 0;
 		return ptr;
 	}
@@ -238,8 +239,8 @@ protected:
 	 */
 	template <class Q>
 	void _rebind(Q* ptr) {
-		if (ptr) ptr->_ref();
-		if (_reference != 0) _reference->_deref();
+		if (ptr) ptr->_incref();
+		if (_reference != 0) _reference->_decref();
 		_reference = dynamic_cast<T*>(ptr);
 		if (_reference == 0 && ptr != 0) {
 			SIMDATA_LOG(LOG_ALL, LOG_ERROR, "simdata::Ref() assignment: incompatible types (dynamic cast failed).");
@@ -259,19 +260,18 @@ protected:
  *
  *  @author Mark Rose <mrose@stm.lbl.gov>
  */
-class SIMDATA_EXPORT Referenced {
+class SIMDATA_EXPORT Referenced: public NonCopyable {
 
 template <class T> friend class Ref;
 friend class ReferencePointer;
 
-public:
+protected:
 	Referenced(): __count(0) {}
 
-protected:
 	/** @todo This dtor should be eliminated eventually, or at
 	 *  least made non-virtual if we can be sure that Referenced
-	 *  derived objects will never be deleted via a Referenced*. 
-	 *  Since Referenced::_deref() currently handles deletion,
+	 *  derived objects will never be deleted via a Referenced*.
+	 *  Since Referenced::_decref() currently handles deletion,
 	 *  this would require moving the deletion responsibility to
 	 *  Ref<>, and declaring a Ref<Referenced> specialization for
 	 *  preventation. --MR
@@ -283,23 +283,14 @@ protected:
 	}
 
 private:
-	inline void _ref() const { ++__count; }
-
-	inline void _deref() const { 
+	inline void _incref() const { ++__count; }
+	inline void _decref() const {
 		if (--__count <= 0) {
 			delete this;
 		}
 	}
 	inline unsigned _count() const { return __count; }
-
 	mutable unsigned __count;
-
-	Referenced(Referenced const &); //: __count(0) {}
-
-#ifndef SWIG
-	inline Referenced& operator=(Referenced const &);// { return *this; }
-#endif // SWIG
-
 };
 
 

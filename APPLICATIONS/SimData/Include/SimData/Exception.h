@@ -102,7 +102,7 @@ public:
 /**
  * Base class for all SimData specific exceptions.
  */
-class Exception: public ExceptionBase {
+class SIMDATA_EXPORT Exception: public ExceptionBase {
 public:
 	Exception(std::string const &type="Exception", std::string const &msg=""): 
 		ExceptionBase(type, msg) { }

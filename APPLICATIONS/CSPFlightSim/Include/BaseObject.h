@@ -128,7 +128,7 @@ class BaseObject
 
   void ShowRepresentant(unsigned short const p_usflag)
   {
-    //m_rpSwitch->setAllChildrenOff();
+	//m_rpSwitch->setAllChildrenOff();
     m_rpSwitch->setValue(1-p_usflag, false);
     m_rpSwitch->setValue(p_usflag, true);
   }

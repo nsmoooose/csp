@@ -20,6 +20,7 @@
 #include <SimData/DataManager.h>
 #include <SimData/FileUtility.h>
 #include <SimData/GeoPos.h>
+#include <SimData/Timing.h>
 
 using bus::Kinetics;
 
@@ -48,11 +49,12 @@ int ServerNode::run()
   NetworkNode * localNode =  new NetworkNode(1, localHost.c_str(), localPort);
   
   NetworkMessenger * networkMessenger = new NetworkMessenger(localNode);
-//  PrintMessageHandler * printMessageHandler = new PrintMessageHandler();
-//  printMessageHandler->setFrequency(1);
-//  networkMessenger->registerReceiveHandler(printMessageHandler);
+  PrintMessageHandler * printMessageHandler = new PrintMessageHandler();
+  printMessageHandler->setFrequency(1);
+  networkMessenger->registerReceiveHandler(printMessageHandler);
 
   EchoMessageHandler * echoMessageHandler = new EchoMessageHandler();
+  echoMessageHandler->setMessenger(networkMessenger);
   networkMessenger->registerReceiveHandler(echoMessageHandler);
   
   //MessageSocketDuplex * socketDuplex = new MessageSocketDuplex(localPort);
@@ -61,10 +63,18 @@ int ServerNode::run()
   while(1)
   {
     networkMessenger->receiveMessages();
+    int count = networkMessenger->getSendQueueCount();
+    printf("SendQueueCount: %d\n", count);
     networkMessenger->sendQueuedMessages();
-#ifndef WIN32
-  //  ::sleep(1);
-#endif
+
+    simdata::tstart();
+
+    simdata::tend();
+    double etime;
+    etime = simdata::tval();
+    while((etime = simdata::tval()) < 3.0 ) {
+      simdata::tend();
+    }
     
   }
  

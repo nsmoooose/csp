@@ -16,7 +16,7 @@ DispatchMessageHandler::~DispatchMessageHandler()
 
 }
 
-void DispatchMessageHandler::process(NetworkMessage * message, NetworkMessenger * messenger)
+void DispatchMessageHandler::process(NetworkMessage * message)
 {
   CSP_LOG(APP, DEBUG, "DispatchMessageHandler::process()");
   NetworkNode * node = message->getOriginatorNode();
@@ -74,7 +74,7 @@ simdata::Ref<DynamicObject> DispatchMessageHandler::addRemoteObject( NetworkMess
 
 
   CSP_LOG(APP, DEBUG, "DispatchMessageHandler::addRemoteObject() - sending update message to new object");
-  ao->putUpdateMessage(message);
+//  ao->putUpdateMessage(message);
 
   CSP_LOG(APP, DEBUG, "DispatchMessageHandler::addRemoteObject() - adding new object to battlefield");
   _virtualBattlefield->addUnit(ao);

@@ -94,7 +94,7 @@ NetworkMessenger::NetworkMessenger(NetworkNode * originatorNode)
 
 void NetworkMessenger::queueMessage(NetworkNode * node, NetworkMessage * message)
 {
-  CSP_LOG(APP, DEBUG, "NetworkMessenger::queueMessage() - targetHost " << node->getHostname() 
+  CSP_LOG(APP, DEBUG, "NetworkMessenger::queueMessage() - targetHost " << node->getAddress() 
 		  << ", targetPort " << node->getPort());
   printf("NetworkMessenger.queueMessage()");
   message->dumpMessageHeader();
@@ -128,22 +128,31 @@ void NetworkMessenger::sendQueuedMessages()
 
 void NetworkMessenger::receiveMessages()
 {
-  CSP_LOG(APP, DEBUG, "NetworkMessenger::ReceiveMessage()");
+  receiveMessages(1000);
+}
+
+void NetworkMessenger::receiveMessages(int max)
+{
+  printf("NetworkMessenger::receiveMessages()\n");
+  CSP_LOG(APP, DEBUG, "NetworkMessenger::receiveMessages()");
 //  NetworkMessage * networkMessageHandle;
 //  m_messageSocketDuplex->recvfrom(&networkMessageHandle);
 
   // receive up to a maximum messages or return if no
   // available messages.
-  for (int i=0;i<1000;i++) {
+  for (int i=0;i<max;i++) {
 	  
     NetworkMessage * networkMessage = receiveMessage();
     if ( networkMessage ) {
+      printf("NetworkMessenger::receiveMessages() - received message\n");
+      CSP_LOG(APP, DEBUG, "NetworkMessenger::ReceiveMessages() - Received Message");
       std::list<NetworkMessageHandler *>::iterator iter = m_ReceiveHandlerList.begin();
       std::list<NetworkMessageHandler *>::const_iterator end = m_ReceiveHandlerList.end();
       for (;iter != end ; ++iter) {
 	  NetworkMessageHandler * handler = (NetworkMessageHandler*)(*iter);    
 	  if (handler != NULL) {
-            handler->process(networkMessage, this);
+	    CSP_LOG(APP, DEBUG, "NetworkMessenger::ReceiveMessages() - Dispatching Message");	  
+            handler->process(networkMessage);
 	  }
       }
     }
@@ -247,7 +256,7 @@ int NetworkMessenger::sendto(NetworkMessage * message, ost::InetHostAddress * re
 
 NetworkMessage * NetworkMessenger::receiveMessage()
 {
-    CSP_LOG(APP, DEBUG, "NetworkMessenger::recvfrom() - Receving Network Packet");
+    CSP_LOG(APP, DEBUG, "NetworkMessenger::receiveMessage() - Receving Network Packet");
 
     if (m_UDPReceiverSocket->isPending(ost::Socket::pendingInput, 0))
     {
@@ -331,12 +340,13 @@ int NetworkMessenger::sendto(NetworkMessage * message, NetworkNode * node)
 
 int NetworkMessenger::sendto(std::vector<RoutedMessage> * sendArray, int count)
 {
+  CSP_LOG(APP, DEBUG, "NetworkMessenger::sendto(RoutedMessageArray,Count) - Sending Network Packet");
 
 }
 
 int NetworkMessenger::recvfrom(std::vector<RoutedMessage> * receiveArray, int * count)
 {
-    CSP_LOG(NETWORK, DEBUG, "Receving Network Packet");
+    CSP_LOG(NETWORK, DEBUG, "NetworkMessenger::recvfrom(RoutedMessageArray, count) - Receving Network Packet");
 
     if (m_UDPReceiverSocket->isPending(ost::Socket::pendingInput, 0))
     {

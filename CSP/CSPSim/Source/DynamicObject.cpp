@@ -396,22 +396,22 @@ NetworkMessage * DynamicObject::getUpdateMessage()
 
   NetworkMessage * message = CSPSim::theSim->getNetworkMessenger()->allocMessageBuffer(messageType, payloadLen);
 
-  ObjectUpdateMessagePayload * ptrPayload = (ObjectUpdateMessagePayload*)message->getPayloadPtr();
-//  ptrPayload->id = m_ID;
-//  ptrPayload->timeStamp = CSPSim::theSim->getElapsedTime();
-//  b_GlobalPosition->value().writeBinary((unsigned char *)&(ptrPayload->globalPosition),24);
-//  b_LinearVelocity->value().writeBinary((unsigned char *)&(ptrPayload->linearVelocity),24);
-//  b_AngularVelocity->value().writeBinary((unsigned char *)&(ptrPayload->angularVelocity),24);
-//  b_Attitude->value().writeBinary((unsigned char *)&(ptrPayload->attitude),32);
+    ObjectUpdateMessagePayload * ptrPayload = (ObjectUpdateMessagePayload*)message->getPayloadPtr();
+    ptrPayload->id = m_ID;
+    ptrPayload->timeStamp = CSPSim::theSim->getElapsedTime();
+    b_GlobalPosition->value().writeBinary((unsigned char *)&(ptrPayload->globalPosition),24);
+    b_LinearVelocity->value().writeBinary((unsigned char *)&(ptrPayload->linearVelocity),24);
+    b_AngularVelocity->value().writeBinary((unsigned char *)&(ptrPayload->angularVelocity),24);
+    b_Attitude->value().writeBinary((unsigned char *)&(ptrPayload->attitude),32);
  
-  simdata::MemoryWriter writer((simdata::uint8*)ptrPayload);
-  writer << m_ID;
-  writer << m_Type;
-  writer << CSPSim::theSim->getElapsedTime();
-  b_GlobalPosition->value().serialize(writer);
-  b_LinearVelocity->value().serialize(writer);
-  b_AngularVelocity->value().serialize(writer);
-  b_Attitude->value().serialize(writer);
+//  simdata::MemoryWriter writer((simdata::uint8*)ptrPayload);
+//  writer << m_ID;
+//  writer << m_Type;
+//  writer << CSPSim::theSim->getElapsedTime();
+//  b_GlobalPosition->value().serialize(writer);
+//  b_LinearVelocity->value().serialize(writer);
+//  b_AngularVelocity->value().serialize(writer);
+//  b_Attitude->value().serialize(writer);
   
   CSP_LOG(APP, DEBUG, "DynamicObject::getUpdateMessage() - returning message");
 
@@ -437,26 +437,26 @@ void DynamicObject::putUpdateMessage(NetworkMessage* message)
   // we can disregard this message if the timestamp is older then the most
   // recent update.
   
-  //ptrPayload->timeStamp = CSPSim::theSim->getElapsedTime();
-  //
-  //load the other values.
-  //b_GlobalPosition->value().readBinary((unsigned char*)&(ptrPayload->globalPosition),24);
-  //b_LinearVelocity->value().readBinary((unsigned char *)&(ptrPayload->linearVelocity),24);
-  //b_AngularVelocity->value().readBinary((unsigned char *)&(ptrPayload->angularVelocity),24);
-  //b_Attitude->value().readBinary((unsigned char *)&(ptrPayload->attitude),32);
+    ptrPayload->timeStamp = CSPSim::theSim->getElapsedTime();
+    //
+    //load the other values.
+    b_GlobalPosition->value().readBinary((unsigned char*)&(ptrPayload->globalPosition),24);
+    b_LinearVelocity->value().readBinary((unsigned char *)&(ptrPayload->linearVelocity),24);
+    b_AngularVelocity->value().readBinary((unsigned char *)&(ptrPayload->angularVelocity),24);
+    b_Attitude->value().readBinary((unsigned char *)&(ptrPayload->attitude),32);
   
-  unsigned int _id;
-  unsigned  _type;
-  float _timestamp;
-  
-  simdata::MemoryReader reader((simdata::uint8*)ptrPayload);
-  reader >> _id;
-  reader >> _type;
-  reader >> _timestamp;
-  b_GlobalPosition->value().serialize(reader);
-  b_LinearVelocity->value().serialize(reader);
-  b_AngularVelocity->value().serialize(reader);
-  b_Attitude->value().serialize(reader);
+//  unsigned int _id;
+//  unsigned  _type;
+//  float _timestamp;
+//  
+//  simdata::MemoryReader reader((simdata::uint8*)ptrPayload);
+//  reader >> _id;
+//  reader >> _type;
+//  reader >> _timestamp;
+//  b_GlobalPosition->value().serialize(reader);
+//  b_LinearVelocity->value().serialize(reader);
+//  b_AngularVelocity->value().serialize(reader);
+//  b_Attitude->value().serialize(reader);
 }
 
 

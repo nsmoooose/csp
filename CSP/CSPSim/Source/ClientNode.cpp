@@ -1,5 +1,4 @@
 #include "Networking.h"
-#include "ClientNode.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include "Config.h"      
@@ -22,92 +21,31 @@
 #include <osgDB/FileUtils>
 using bus::Kinetics;
 
+#include "ClientNode.h"
 
 ClientNode::ClientNode()
 {
-
+  printf("ClientNode::ClientNode()\n");
+  m_battlefield = NULL;
+  m_networkMessenger = NULL;
 }
 
 int ClientNode::run()
 {
+  printf("ClientNode::run()\n"); 
 
-  int level = g_Config.getInt("Debug", "LoggingLevel", 0, true);
-  csplog().setLogLevels(CSP_ALL, level);
-  csplog().setOutput("ClientNode.log");
-  
-  VirtualBattlefield * battlefield = new VirtualBattlefield();
-  battlefield->create();
-  simdata::DataManager dataManager;
-  
-  // setup osg search path for external data files
-  std::string image_path = getDataPath("ImagePath");
-  std::string model_path = getDataPath("ModelPath");
-  std::string font_path = getDataPath("FontPath");
-  std::string search_path;
-  simdata::ospath::addpath(search_path, image_path);
-  simdata::ospath::addpath(search_path, model_path);
-  simdata::ospath::addpath(search_path, font_path);
-  osgDB::setDataFilePathList(search_path);
+  init();
 
-  // open the primary data archive
-  std::string cache_path = getCachePath();
-  std::string archive_file = simdata::ospath::join(cache_path, "sim.dar");
-  try {
-	simdata::DataArchive *sim = new simdata::DataArchive(archive_file.c_str(), 1);
-	assert(sim);
-	dataManager.addArchive(sim);
-  } 
-  catch (simdata::Exception &e) {
-	CSP_LOG(APP, ERROR, "Error opening data archive " << archive_file);
-	CSP_LOG(APP, ERROR, e.getType() << ": " << e.getMessage());
-	throw e;
-	//::exit(0);
-  }
-
-  printf("sizeof(int) = %d\n", sizeof(int));
-  printf("sizeof(double) = %d\n", sizeof(double));
-  printf("sizeof(simdata::Vector3) = %d\n", sizeof(simdata::Vector3));
-  printf("sizeof(simdata::Quat) = %d\n", sizeof(simdata::Quat));
-  printf("sizeof(simdata::SimTime) = %d\n", sizeof(simdata::SimTime));
-  printf("sizeof(_Vector3Struct) = %d\n", sizeof(_Vector3Struct));
-  printf("sizeof(_QuatStruct) = %d\n", sizeof(_QuatStruct));
-  printf("sizeof(MessageHeader) = %d\n", sizeof(MessageHeader));
-  printf("sizeof(NetworkMessage) = %d\n", sizeof(NetworkMessage));
-  printf("sizeof(ObjectUpdateMessagePayload) = %d\n", sizeof(ObjectUpdateMessagePayload)); 
-  
-  
   MessageHeader header;
   header.dumpOffsets();
-	
-  printf("Network test client starting up...\n");
-  Port localPort = g_Config.getInt("Networking", "LocalMessagePort", 10000, true);
-  std::string localHost = g_Config.getString("Networking", "LocalMessageHost", "127.0.0.1", true);
-  
-  Port remotePort = (Port)g_Config.getInt("Networking", "RemoteMessagePort", 0, true);
-  std::string remoteHost = g_Config.getString("Networking", "RemoteMessageHost", "127.0.0.1", true);
-		   
-  
-  NetworkNode * remoteNode = new NetworkNode(1, remoteHost.c_str(), remotePort );
-  NetworkNode * localNode =  new NetworkNode(1, localHost.c_str(), localPort);
-  NetworkMessenger * networkMessenger = new NetworkMessenger(localNode);
-  PrintMessageHandler * printMessageHandler = new PrintMessageHandler();
-  printMessageHandler->setFrequency(1);
-  networkMessenger->registerReceiveHandler(printMessageHandler);
-  DispatchMessageHandler * dispatchMessageHandler = new DispatchMessageHandler();
-  dispatchMessageHandler->setLocalAddress( localNode->getAddress().getAddress().s_addr );
-  dispatchMessageHandler->setLocalPort(localPort);
-  dispatchMessageHandler->setVirtualBattlefield(battlefield);
-  dispatchMessageHandler->setDataManager(dataManager);
-  networkMessenger->registerReceiveHandler(dispatchMessageHandler);
+
   
   
   unsigned short messageType = 2;
   unsigned short payloadLen  = sizeof(int) + sizeof(double) + 3*sizeof(simdata::Vector3) +
 	                       sizeof(simdata::Quat) /* + sizeof(simdata::Matrix3) + sizeof(double) */;
 
-  NetworkMessage * message = networkMessenger->allocMessageBuffer(messageType, payloadLen);
-  ObjectUpdateMessagePayload * ptrPayload = (ObjectUpdateMessagePayload*)message->getPayloadPtr();
-  ptrPayload->dumpOffsets();
+//  ptrPayload->dumpOffsets();
 	   
 //  NetworkMessage * message = networkMessenger->getMessageFromPool(1, 100);
 //  memset(payloadPtr, 0 , 100);
@@ -138,35 +76,133 @@ int ClientNode::run()
  // ptrPayload->id = 1;
   while(1)
   {
+    NetworkMessage * message = m_networkMessenger->allocMessageBuffer(messageType, payloadLen);
+    ObjectUpdateMessagePayload * ptrPayload = (ObjectUpdateMessagePayload*)message->getPayloadPtr();
     timestamp += 1.0;
-    ptrPayload->timeStamp = timestamp;
+//    ptrPayload->timeStamp = timestamp;
     b_GlobalPosition->value() = simdata::Vector3(timestamp*1.0, timestamp*0.5, 1.0);
     
     simdata::MemoryWriter writer((simdata::uint8 *)ptrPayload);
-    writer << id;
-    writer << type;
-    writer << timestamp;
+    
+//    writer << id;
+//    writer << type;
+//    writer << timestamp;
+    
+    ptrPayload->timeStamp = timestamp;
+    ptrPayload->id = 1;
+    ptrPayload->objectType = 1;
   
-//  b_GlobalPosition->value().writeBinary((unsigned char *)&(ptrPayload->globalPosition),24);
-//  b_LinearVelocity->value().writeBinary((unsigned char *)&(ptrPayload->linearVelocity),24);
-//  b_AngularVelocity->value().writeBinary((unsigned char *)&(ptrPayload->angularVelocity),24);
-//  b_Attitude->value().writeBinary((unsigned char *)&(ptrPayload->attitude),32);
+    b_GlobalPosition->value().writeBinary((unsigned char *)&(ptrPayload->globalPosition),24);
+    b_LinearVelocity->value().writeBinary((unsigned char *)&(ptrPayload->linearVelocity),24);
+    b_AngularVelocity->value().writeBinary((unsigned char *)&(ptrPayload->angularVelocity),24);
+    b_Attitude->value().writeBinary((unsigned char *)&(ptrPayload->attitude),32);
 
-    b_GlobalPosition->value().serialize(writer);
-    b_LinearVelocity->value().serialize(writer);
-    b_AngularVelocity->value().serialize(writer);
-    b_Attitude->value().serialize(writer);
+//  b_GlobalPosition->value().serialize(writer);
+//  b_LinearVelocity->value().serialize(writer);
+//  b_AngularVelocity->value().serialize(writer);
+//  b_Attitude->value().serialize(writer);
   
     ptrPayload->dump();
   
-    networkMessenger->queueMessage(remoteNode, message);
+    m_networkMessenger->queueMessage(m_remoteNode, message);
   
-    networkMessenger->sendQueuedMessages();
-    networkMessenger->receiveMessages();
-    sleep(1);
+    m_networkMessenger->sendQueuedMessages();
+    m_networkMessenger->receiveMessages();
+    
+    simdata::tstart();
+
+    simdata::tend();
+    double etime;
+    etime = simdata::tval();
+    while((etime = simdata::tval()) < 3.0 ) {
+      simdata::tend();
+    }
   }
   return 0;
 }
 
+void ClientNode::init()
+{
+  printf("Network test client starting up...\n");
+  printf("ClientNode::init()\n");
+  int level = g_Config.getInt("Debug", "LoggingLevel", 0, true);
+  csplog().setLogLevels(CSP_ALL, level);
+  csplog().setOutput("ClientNode.log");
+
+  m_battlefield = new VirtualBattlefield();
+  m_battlefield->create();
+
+  // setup osg search path for external data files
+  std::string image_path = getDataPath("ImagePath");
+  std::string model_path = getDataPath("ModelPath");
+  std::string font_path = getDataPath("FontPath");
+  std::string search_path;
+  simdata::ospath::addpath(search_path, image_path);
+  simdata::ospath::addpath(search_path, model_path);
+  simdata::ospath::addpath(search_path, font_path);
+  osgDB::setDataFilePathList(search_path);
+
+  // open the primary data archive
+  std::string cache_path = getCachePath();
+  std::string archive_file = simdata::ospath::join(cache_path, "sim.dar");
+  try {
+	simdata::DataArchive *sim = new simdata::DataArchive(archive_file.c_str(), 1);
+	assert(sim);
+	m_DataManager.addArchive(sim);
+  } 
+  catch (simdata::Exception &e) {
+	CSP_LOG(APP, ERROR, "Error opening data archive " << archive_file);
+	CSP_LOG(APP, ERROR, e.getType() << ": " << e.getMessage());
+	throw e;
+	//::exit(0);
+  }
+  
+  initNetworking();
+}
+
+void ClientNode::dumpSizes()
+{
+  printf("sizeof(int) = %d\n", sizeof(int));
+  printf("sizeof(double) = %d\n", sizeof(double));
+  printf("sizeof(simdata::Vector3) = %d\n", sizeof(simdata::Vector3));
+  printf("sizeof(simdata::Quat) = %d\n", sizeof(simdata::Quat));
+  printf("sizeof(simdata::SimTime) = %d\n", sizeof(simdata::SimTime));
+  printf("sizeof(_Vector3Struct) = %d\n", sizeof(_Vector3Struct));
+  printf("sizeof(_QuatStruct) = %d\n", sizeof(_QuatStruct));
+  printf("sizeof(MessageHeader) = %d\n", sizeof(MessageHeader));
+  printf("sizeof(NetworkMessage) = %d\n", sizeof(NetworkMessage));
+  printf("sizeof(ObjectUpdateMessagePayload) = %d\n", sizeof(ObjectUpdateMessagePayload)); 
+  
 
 
+}
+
+void ClientNode::initNetworking()
+{
+  printf("ClientNode::initNetworking()\n");
+  m_localPort = g_Config.getInt("Networking", "LocalMessagePort", 10000, true);
+  m_localHost = g_Config.getString("Networking", "LocalMessageHost", "127.0.0.1", true);
+  
+  m_remotePort = (Port)g_Config.getInt("Networking", "RemoteMessagePort", 0, true);
+  m_remoteHost = g_Config.getString("Networking", "RemoteMessageHost", "127.0.0.1", true);
+   
+  
+  m_remoteNode = new NetworkNode(1, m_remoteHost.c_str(), m_remotePort );
+  m_localNode =  new NetworkNode(1, m_localHost.c_str(), m_localPort);
+  
+  m_networkMessenger = new NetworkMessenger(m_localNode);
+  
+  PrintMessageHandler * printMessageHandler = new PrintMessageHandler();
+  printMessageHandler->setFrequency(1);
+  
+  m_networkMessenger->registerReceiveHandler(printMessageHandler);
+  
+//  DispatchMessageHandler * dispatchMessageHandler = new DispatchMessageHandler();
+//  dispatchMessageHandler->setLocalAddress( m_localNode->getAddress().getAddress().s_addr );
+//  dispatchMessageHandler->setLocalPort(m_localPort);
+//  dispatchMessageHandler->setVirtualBattlefield(m_battlefield);
+//  dispatchMessageHandler->setDataManager(m_DataManager);
+  
+//  m_networkMessenger->registerReceiveHandler(dispatchMessageHandler);
+  
+}

@@ -27,6 +27,8 @@
  */
 
 
+#include <SimData/LogStream.h>
+#include "Log.h"
 #include "Networking.h"
 #include <stdio.h>
 
@@ -41,47 +43,48 @@ PrintMessageHandler::~PrintMessageHandler()
 
 }
 
-void PrintMessageHandler::process(NetworkMessage * message, NetworkMessenger * messenger)
+void PrintMessageHandler::process(NetworkMessage * message)
 {
+  CSP_LOG(APP, DEBUG, "PrintMessageHandler::process()" );
   if (m_count % m_frequency == 0)
   {
+    CSP_LOG(APP, DEBUG, "PrintMessageHandler::process() - Printing Message" );
     NetworkNode * node = message->getOriginatorNode();
     MessageHeader * header = (MessageHeader*)message;
     header->dumpOffsets();
-    std::cout << "Received Data From Client:" << std::endl;
-    std::cout << "Client addr: " << node->getHostname() << std::endl;
-    std::cout << "Client port: " << node->getPort() << std::endl;
-    std::cout << "Header Information" << std::endl;
-    std::cout << "MagicNumber: " << std::hex << header->m_magicNumber << std::endl;
-    std::cout << "PayloadLen: " << header->m_payloadLen << std::endl;
-    std::cout << "MessageType: " << header->m_messageType << std::endl;
-    std::cout << "IPAddr: " << header->m_ipaddr << std::endl;
-    std::cout << "Port: " << std::hex << header->m_port << std::endl;
-    std::cout << "ID: " << header->m_id << std::endl;
+    CSP_LOG(APP, DEBUG, "PrintMessageHandler::process() - Counter: " << m_count );
+    CSP_LOG(APP, DEBUG, "PrintMessageHandler::process() - Received Data From Remote Node" );
+    CSP_LOG(APP, DEBUG, "PrintMessageHandler::process() - Header Info - Remote addr: " << node->getHostname());
+    CSP_LOG(APP, DEBUG, "PrintMessageHandler::process() - Header Info - Remote port: " << node->getPort());
+    CSP_LOG(APP, DEBUG, "PrintMessageHandler::process() - Header Info - MagicNumber: 0x" << std::hex << header->m_magicNumber );
+    CSP_LOG(APP, DEBUG, "PrintMessageHandler::process() - Header Info - PayloadLen: " << header->m_payloadLen );
+    CSP_LOG(APP, DEBUG, "PrintMessageHandler::process() - Header Info - MessageType: " << header->m_messageType);
+    CSP_LOG(APP, DEBUG, "PrintMessageHandler::process() - Header Info - IPAddr: " << header->m_ipaddr);
+    CSP_LOG(APP, DEBUG, "PrintMessageHandler::process() - Header Info - Port: " << header->m_port);
+    CSP_LOG(APP, DEBUG, "PrintMessageHandler::process() - Header Info - Node ID: " << header->m_id);
 			  
     ObjectUpdateMessagePayload * ptrPayload = (ObjectUpdateMessagePayload*)message->getPayloadPtr();
-    ptrPayload->dumpOffsets();
-    printf("Payload Information\n");
-    printf("ID: %u\n", ptrPayload->id);
-    printf("TYPE: %u\n", ptrPayload->objectType);
-    printf("TimeStamp: %f\n", ptrPayload->timeStamp);
-    printf("PosX: %f, PosY: %f, PosZ: %f\n", 
-			ptrPayload->globalPosition.x,
-			ptrPayload->globalPosition.y,
-			ptrPayload->globalPosition.z);
-    printf("LVeloX: %f, LVeloY: %f, LVeloZ: %f\n", 
-			ptrPayload->linearVelocity.x,
-			ptrPayload->linearVelocity.y,
-			ptrPayload->linearVelocity.z);
-    printf("AngVeloX: %f, AngVeloY: %f, AngVeloZ: %f\n", 
-			ptrPayload->angularVelocity.x,
-			ptrPayload->angularVelocity.y,
-			ptrPayload->angularVelocity.z);
-    printf("AttX: %f, AttY: %f, AttZ: %f, AttW: %f\n", 
-			ptrPayload->attitude.x,
-			ptrPayload->attitude.y,
-			ptrPayload->attitude.z,
-			ptrPayload->attitude.w);
+    CSP_LOG(APP, DEBUG, "PrintMessageHandler::process() - Payload Info - ID: " << ptrPayload->id);
+    CSP_LOG(APP, DEBUG, "PrintMessageHandler::process() - Payload Info - TYPE: " << ptrPayload->objectType);
+    CSP_LOG(APP, DEBUG, "PrintMessageHandler::process() - Payload Info - TimeStamp: " << ptrPayload->timeStamp);
+	  
+    CSP_LOG(APP, DEBUG, "PrintMessageHandler::process() - Payload Info - " <<
+		    "  PosX: " << ptrPayload->globalPosition.x << 
+		    ", PosY: " << ptrPayload->globalPosition.y << 
+		    ", PosZ: " << ptrPayload->globalPosition.z); 
+//    printf("LVeloX: %f, LVeloY: %f, LVeloZ: %f\n", 
+//			ptrPayload->linearVelocity.x,
+//			ptrPayload->linearVelocity.y,
+//			ptrPayload->linearVelocity.z);
+//    printf("AngVeloX: %f, AngVeloY: %f, AngVeloZ: %f\n", 
+//			ptrPayload->angularVelocity.x,
+//			ptrPayload->angularVelocity.y,
+//			ptrPayload->angularVelocity.z);
+//    printf("AttX: %f, AttY: %f, AttZ: %f, AttW: %f\n", 
+//			ptrPayload->attitude.x,
+//			ptrPayload->attitude.y,
+//			ptrPayload->attitude.z,
+//			ptrPayload->attitude.w);
   }
   m_count++;
 }

@@ -27,11 +27,13 @@
  */
 
 
+#include <SimData/LogStream.h>
+#include "Log.h"
 #include "Networking.h"
 
 EchoMessageHandler::EchoMessageHandler()
 {
-
+  m_messenger = NULL;
 }
 
 EchoMessageHandler::~EchoMessageHandler()
@@ -39,20 +41,24 @@ EchoMessageHandler::~EchoMessageHandler()
 
 }
 
-void EchoMessageHandler::process(NetworkMessage * message, NetworkMessenger * messenger)
+void EchoMessageHandler::process(NetworkMessage * message)
 {
+    CSP_LOG(APP, DEBUG, "EchoMessageHandler::process()\n");
+
 
     NetworkNode * originatorNode = message->getOriginatorNode();
+    CSP_LOG(APP, DEBUG, "EchoMessageHandler::process() - Sending back to host: " << 
+		    originatorNode->getHostname() << ", port: " << originatorNode->getPort());
 
     // must make a copy of the message since the buffer in the parameter will be returned 
     // to the pool after this function exists.
-    NetworkMessage * messageCopy = messenger->allocMessageBuffer();
+    NetworkMessage * messageCopy = m_messenger->allocMessageBuffer();
     memcpy( (void*)messageCopy, (void*)message, 512);
     
-    MessageHeader * header = (MessageHeader*)messageCopy;
-    ObjectUpdateMessagePayload * ptrPayload = (ObjectUpdateMessagePayload*)messageCopy->getPayloadPtr();
+//    MessageHeader * header = (MessageHeader*)messageCopy;
+//    ObjectUpdateMessagePayload * ptrPayload = (ObjectUpdateMessagePayload*)messageCopy->getPayloadPtr();
 
-    messenger->queueMessage(originatorNode, messageCopy);
+    m_messenger->queueMessage(originatorNode, messageCopy);
 }
 
 

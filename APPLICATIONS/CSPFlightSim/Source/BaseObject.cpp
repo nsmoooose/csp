@@ -270,7 +270,8 @@ void BaseObject::setVelocity(double Vx, double Vy, double Vz)
 
 }
 
-osgParticle::ParticleSystem *setupParticleSystem(osg::MatrixTransform *base, const osg::Vec4 &colorMin,
+osgParticle::ParticleSystem *setupParticleSystem(osg::MatrixTransform *base, const string & p_textureFile,
+												 const osg::Vec4 &colorMin,
 												 const osg::Vec4 &colorMax,
 												 const osg::Vec3 &center, float lifetime)
 {
@@ -278,18 +279,19 @@ osgParticle::ParticleSystem *setupParticleSystem(osg::MatrixTransform *base, con
 	ptemp.setShape(osgParticle::Particle::QUAD);
 	ptemp.setLifeTime(lifetime);
 	ptemp.setAlphaRange(osgParticle::rangef(1,0));
-	ptemp.setMass(0.2);
-	ptemp.setRadius(0.4);
+	ptemp.setMass(1.1);
+	ptemp.setRadius(0.3);
 	ptemp.setPosition(osg::Vec3(0,0,0));
 	ptemp.setVelocity(osg::Vec3(0,0,0));
-	ptemp.setSizeRange(osgParticle::rangef(0.55f, 0.3f));
+	//ptemp.setSizeRange(osgParticle::rangef(0.55f, 0.3f));
+	ptemp.setSizeRange(osgParticle::rangef(0.5f, 0.2f));
 	ptemp.setColorRange(osgParticle::rangev4(colorMin, colorMax));
 
 	osgParticle::ParticleSystem *ps = osgNew osgParticle::ParticleSystem;
 	//setDefaultAttributes(const std::string &texturefile = "", 
 	//                     bool emissive_particles = true, bool lighting = false, int texture_unit = 0) 
 
-	ps->setDefaultAttributes("Images/particle.rgb", false);
+	ps->setDefaultAttributes(p_textureFile, true, true,0);
 	ps->setDefaultParticleTemplate(ptemp);
 	ps->setFreezeOnCull(false);
 
@@ -299,12 +301,12 @@ osgParticle::ParticleSystem *setupParticleSystem(osg::MatrixTransform *base, con
 	sp->setPhiRange(0,osg::PI * 2);
 
 	osgParticle::RandomRateCounter *rrc = osgNew osgParticle::RandomRateCounter;
-	rrc->setRateRange(80, 80);
+	rrc->setRateRange(100, 100);
 
 	osgParticle::RadialShooter *rs = osgNew osgParticle::RadialShooter;
 	rs->setPhiRange(0, 0);
 	rs->setThetaRange(0,0);
-	rs->setInitialSpeedRange(4, 5);
+	rs->setInitialSpeedRange(0, 0);
 
 	osgParticle::ModularEmitter *me = osgNew osgParticle::ModularEmitter;
 	me->setParticleSystem(ps);
@@ -356,35 +358,42 @@ void BaseObject::AddSmoke()
 	float r = s.radius();
 	osg::Vec3 c = s.center();
 
-    osgParticle::ParticleSystem *ps1;
-	ps1 = setupParticleSystem(m_rpTransform.get(), osg::Vec4(0.2, 0.5, 1, 0.8), osg::Vec4(0,1,0,1), 
-		                      - osg::Vec3(0,2.0 * r/3.0,1),0.1);
-	osg::Geode *geode1 = osgNew osg::Geode;
-	geode1->setName("PlayerParticleSystem");
-	geode1->addDrawable(ps1);
-	g_pBattlefield->addNodeToScene(geode1);
-
-	osgParticle::ParticleSystem *ps2;
-	ps2 = setupParticleSystem(m_rpTransform.get(), osg::Vec4(1, 0, 1, 0.8), osg::Vec4(1,1,1,1), 
-		                      - osg::Vec3(0,3.0*r/4,1),0.1);
-	osg::Geode *geode2 = osgNew osg::Geode;
-	geode2->setName("PlayerParticleSystem");
-	geode2->addDrawable(ps2);
-	g_pBattlefield->addNodeToScene(geode2);
-
-	osgParticle::ParticleSystem *ps3;
-	ps3 = setupParticleSystem(m_rpTransform.get(), osg::Vec4(1, 0, 1, 0.8), osg::Vec4(1,1,1,1), 
-		                      - osg::Vec3(0,r,1),0.1);
-	osg::Geode *geode3 = osgNew osg::Geode;
-	geode3->setName("PlayerParticleSystem");
-	geode3->addDrawable(ps3);
-	g_pBattlefield->addNodeToScene(geode3);
+	osg::Vec3Array* pl = osgNew osg::Vec3Array;
+	
+	for (unsigned short i = 0; i<10; ++i)
+	pl->push_back(osg::Vec3(0.0,-(0.8+i/20.0) * r,0.0));
+    
 
 	osgParticle::ParticleSystemUpdater *psu = osgNew osgParticle::ParticleSystemUpdater;
-	psu->addParticleSystem(ps1);
-	psu->addParticleSystem(ps2);
-	psu->addParticleSystem(ps3);
-	g_pBattlefield->addNodeToScene(psu);
+
+	for (i = 0; i<pl->size();++i)
+	{
+	osgParticle::ParticleSystem *ps = setupParticleSystem(m_rpTransform.get(),"Images/particle.rgb",
+		                                                  osg::Vec4(0.2, 0.5, 1, 0.8), 
+														  osg::Vec4(0,0.5,1,1), 
+														  (*pl)[i],0.05);
+	osg::Geode *geode = osgNew osg::Geode;
+	geode->setName("PlayerParticleSystem");
+	geode->addDrawable(ps);
+	g_pBattlefield->addNodeToScene(geode);
+	psu->addParticleSystem(ps);
+	}
+    
+	for (i = 0; i<pl->size();++i)
+	{
+	osgParticle::ParticleSystem *ps = setupParticleSystem(m_rpTransform.get(),"Images/smoke.rgb",
+		                                                  osg::Vec4(0,1,0,1), 
+														  osg::Vec4(0.2, 0.5, 1, 0.8), 
+														  (*pl)[i],0.01);
+	osg::Geode *geode = osgNew osg::Geode;
+	geode->setName("PlayerParticleSystem");
+	geode->addDrawable(ps);
+	g_pBattlefield->addNodeToScene(geode);
+	psu->addParticleSystem(ps);
+	}
+    
+	//g_pBattlefield->addNodeToScene(psu);
+    m_rpTransform.get()->addChild(psu);
 }
 
 void BaseObject::addToScene()

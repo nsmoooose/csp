@@ -481,7 +481,7 @@ public:
  *
  * @ingroup BaseTypes
  */
-class EnumLink: public BaseType {
+class SIMDATA_EXPORT EnumLink: public BaseType {
 friend class Enumeration;
 	/// the associated enumeration
 	Enumeration __E;

@@ -35,12 +35,16 @@ class AircraftPhysicsModel;
 class GroundCollisionDynamics;
 */
 
+class TimedSequence;
+
 class AircraftObject: public DynamicObject
 {
 public:
 	SIMDATA_OBJECT(AircraftObject, 0, 0)
 
 	EXTEND_SIMDATA_XML_INTERFACE(AircraftObject, DynamicObject)
+		SIMDATA_XML("fuel_door_sequence", AircraftObject::m_FuelDoorSequence, false)
+		SIMDATA_XML("canopy_sequence", AircraftObject::m_CanopySequence, false)
 	END_SIMDATA_XML_INTERFACE
 		//SIMDATA_XML("aircraft_dynamics", AircraftObject::m_AircraftDynamics, true)
 
@@ -49,6 +53,8 @@ public:
 		BIND_ACTION("SMOKE_OFF", SmokeOff);
 		BIND_ACTION("SMOKE_TOGGLE", SmokeToggle);
 		BIND_ACTION("MARKS_TOGGLE", MarkersToggle);
+		BIND_ACTION("FUEL_DOOR_TOGGLE",FuelDoorToggle);
+		BIND_ACTION("CANOPY_TOGGLE",CanopyToggle);
 	END_INPUT_INTERFACE
 
 public:
@@ -58,6 +64,8 @@ public:
 	void SmokeOff();
 	void SmokeToggle();
 	void MarkersToggle();
+	void FuelDoorToggle();
+	void CanopyToggle();
 
 	AircraftObject();
 	virtual ~AircraftObject();
@@ -104,6 +112,9 @@ protected:
 	DataChannel<double>::Ref b_Roll;
 	DataChannel<double>::Ref b_Pitch;
 	DataChannel<double>::Ref b_Heading;
+
+	simdata::Link<TimedSequence> m_FuelDoorSequence;
+	simdata::Link<TimedSequence> m_CanopySequence;
 };
 
 	

@@ -401,5 +401,16 @@
             <Vector name="axis">0.990831 -0.0283094 -0.132111</Vector>
             <Float name="gain">2.2</Float>
         </Object>
+        
+        <Object class="TimedAnimationPath">
+			<String name="channel_name">Aircraft.FuelDoorSequence.ReferenceTime</String>
+			<Key name="model_id">Aircraft.FuelDoor</Key>
+			<Float name="time_multiplier">0.6666</Float>
+        </Object>
+        <Object class="TimedAnimationPath">
+			<String name="channel_name">Aircraft.CanopySequence.ReferenceTime</String>
+			<Key name="model_id">Aircraft.Canopy</Key>
+			<Float name="time_multiplier">.3333</Float>
+        </Object>
     </List>
 </Object>

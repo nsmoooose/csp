@@ -126,6 +126,7 @@ class ModelProcessor: public osg::NodeVisitor {
 			return m_KeyToCompare == e.first;
 		}
 	};
+
 public:
 	ModelProcessor(): NodeVisitor(TRAVERSE_ALL_CHILDREN) { }
 	void setAnimations(simdata::Link<Animation>::vector const *animations) {
@@ -136,23 +137,25 @@ public:
 		std::string name = node.getName();
 		CSP_LOG(APP, DEBUG, "MODEL TRANSFORM: " << name);
 		if (name.substr(0,6) == "ANIM: ") {
-			simdata::Key id = name.substr(6);
-			CSP_LOG(APP, DEBUG, "SEARCHING FOR " << name.substr(6) << " (" << id.asString() << ")");
+			std::string relevant_name = name.substr(6);
+			std::string::size_type pos = relevant_name.find(':'); 
+			if (pos != std::string::npos) {
+				relevant_name = relevant_name.substr(0,pos);
+			}
+			simdata::Key id = relevant_name;
+			CSP_LOG(APP, DEBUG, "SEARCHING FOR " << relevant_name << " (" << id.asString() << ")");
 			AnimationsMap::iterator i = m_AnimationsMap.find(id);
 			AnimationsMap::const_iterator i_end = m_AnimationsMap.end();
 			if (i != i_end) {
-				CSP_LOG(APP, DEBUG, "FOUND");
+				CSP_LOG(APP, DEBUG, "FOUND ANIMATION");
 				node.setDataVariance(osg::Object::DYNAMIC);
 				AnimationBinding* animation_binding = new AnimationBinding(i->second.get());
 				node.setUserData(animation_binding);
 				i = std::find_if(++i, m_AnimationsMap.end(), KeyToCompare(id));
 				if (i != i_end) {
-					CSP_LOG(APP, DEBUG, "FOUND 2nd");
+					CSP_LOG(APP, DEBUG, "FOUND 2nd ANIMATION");
 					animation_binding->setNestedAnimation(i->second.get());
 				}
-			} else {
-				// si id contient le nom d une TimedAnimationPath alors
-				// associer ce noeud a la TimedAnimationPath trouvee
 			}
 		}
 		traverse(node);
@@ -446,10 +449,10 @@ void ObjectModel::loadModel() {
 	//    it never occurs when running csp in debug mode from the ide.
 	// 5) I'm unable to trace it :)
 
-	CSP_LOG(APP, DEBUG, "LoadModel: Optimizer run");
+	//CSP_LOG(APP, DEBUG, "LoadModel: Optimizer run");
 	osgUtil::Optimizer opt;
-	opt.optimize(m_Model.get());
-	CSP_LOG(APP, DEBUG, "LoadModel: Optimizer done");
+	//opt.optimize(m_Model.get());
+	//CSP_LOG(APP, DEBUG, "LoadModel: Optimizer done");
 }
 
 void ObjectModel::addContactMarkers() {
@@ -511,9 +514,12 @@ public:
 			if (binding) {
 				osg::Node *new_node = dynamic_cast<osg::Node*>(node->clone(*this));
 				m_AnimationCallbacks.push_back(binding->bind(new_node));
-				if (binding->hasNestedAnimation())
+				CSP_LOG(APP, INFO, "ADDED CALLBACK (" << m_AnimationCallbacks.size() << ") ON " << node->getName().substr(6));
+				if (binding->hasNestedAnimation()) {
 					m_AnimationCallbacks.push_back(binding->bindNested(new_node));
-				CSP_LOG(APP, INFO, "ADDED CALLBACK");
+					CSP_LOG(APP, INFO, "ADDED NESTED CALLBACK (" << m_AnimationCallbacks.size() << ") ON " 
+										<< node->getName().substr(6));
+				}
 				return new_node;
 			}
 		}
@@ -543,7 +549,7 @@ SceneModel::SceneModel(simdata::Ref<ObjectModel> const & model) {
 
 	CSP_LOG(APP, DEBUG, "MODEL COPIED");
 
-	CSP_LOG(APP, INFO, "MODEL animation count = " << model_copy.getAnimationCallbacks().size());
+	CSP_LOG(APP, INFO, "COPIED MODEL animation count = " << model_copy.getAnimationCallbacks().size());
 
 	m_AnimationCallbacks.resize(model_copy.getAnimationCallbacks().size());
 
@@ -666,6 +672,10 @@ void SceneModel::bindAnimationChannels(Bus::Ref bus) {
 	if (bus.valid()) {
 		int index, n = m_AnimationCallbacks.size();
 		for (index = 0; index < n; ++index) {
+			if (!m_AnimationCallbacks[index].valid()) {
+				CSP_LOG(OBJECT, WARNING, "bindAnimationChannels: AnimationCallbacks '" << index << "' not valid; skipping");
+				continue;
+			}
 			std::string name = m_AnimationCallbacks[index]->getChannelName();
 			simdata::Ref<const DataChannelBase> channel = bus->getChannel(name, false);
 			if (!channel.valid()) {

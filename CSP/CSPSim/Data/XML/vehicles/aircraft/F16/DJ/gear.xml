@@ -80,7 +80,11 @@
 				<Float name="offset">0.03</Float>
 			</Object>
 			<Object class="TimedSequence" name="gear_sequence_animation">
-				<Float name="time_length">4.0</Float>
+				<Object class="TimedAnimationProxy" name="timed_animation_proxy">
+					<Float name="t0">0.0</Float>
+					<Float name="t1">4.0</Float>
+				</Object>
+				<Float name="initial_time">4.0</Float>
 				<String name="name">Aircraft.GearSequence</String>
 			</Object>
 		</Object>

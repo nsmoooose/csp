@@ -40,6 +40,7 @@ SIMDATA_REGISTER_INTERFACE(DrivenVectorialTranslation)
 SIMDATA_REGISTER_INTERFACE(TimedMagnitudeTranslation)
 SIMDATA_REGISTER_INTERFACE(DrivenSwitch)
 SIMDATA_REGISTER_INTERFACE(TimedSequence)
+SIMDATA_REGISTER_INTERFACE(TimedAnimationPath)
 
 
 void AnimationCallback::bind(osg::NodeCallback &node_callback) {
@@ -74,7 +75,7 @@ Rotation::Rotation():
 
 void DrivenRotation::Callback::operator()(osg::Node* node, osg::NodeVisitor* nv) {
 	updateValue();
-	if (needsUpdate(*node)) {
+	if (getNestedCallback() || (!node->getUpdateCallback()->getNestedCallback() && needsUpdate(*node))) {
 		osg::MatrixTransform* t = dynamic_cast<osg::MatrixTransform*>(node);
 		assert(t);
 		if (t) {
@@ -83,18 +84,16 @@ void DrivenRotation::Callback::operator()(osg::Node* node, osg::NodeVisitor* nv)
 			m.setTrans(t->getMatrix().getTrans());
 			t->setMatrix(m);
 		}
-	}
-	else if (needsUpdate(*node->getUpdateCallback())) {
+	} else if (node->getUpdateCallback()->getNestedCallback()) {
 			osg::MatrixTransform* t = dynamic_cast<osg::MatrixTransform*>(node);
 			if (t) {
-				osg::Matrix m = osg::Matrix::rotate(m_Parameters->getGain()*m_Value + m_Parameters->getPhase(), 
-													  m_Parameters->getAxis());
+				osg::Matrix m = osg::Matrix::rotate(m_Parameters->getGain() * m_Value + m_Parameters->getPhase(), m_Parameters->getAxis());
 				osg::Vec3 translation = t->getMatrix().getTrans();
 				m.preMult(t->getMatrix());
 				m.setTrans(translation);
 				t->setMatrix(m);
 			}
-		}
+	}
 	traverse(node, nv);
 }
 
@@ -192,4 +191,21 @@ void DrivenSwitch::Callback::operator()(osg::Node* node, osg::NodeVisitor* nv) {
 	traverse(node, nv);
 }
 
+void TimedAnimationPath::Callback::operator()(osg::Node* node, osg::NodeVisitor* nv) {
+	updateValue();
+	if (needsUpdate(*node)) {
+		if (_animationPath.valid() && nv->getVisitorType() == osg::NodeVisitor::UPDATE_VISITOR && nv->getFrameStamp()) {
+			double time = nv->getFrameStamp()->getReferenceTime();
+			_latestTime = time;
+			//((_latestTime-_firstTime)-_timeOffset)*_timeMultiplier;
+			setTimeOffset(_latestTime - _firstTime - m_Value);
+			if (!_pause) {
+				// Only update _firstTime the first time, when its value is still DBL_MAX
+				if (_firstTime == DBL_MAX) _firstTime = time;
+				update(*node);
+			}
+		}
+	}
+	traverse(node, nv);
+}
 

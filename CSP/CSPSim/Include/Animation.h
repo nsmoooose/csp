@@ -66,6 +66,10 @@ protected:
 	};
 public:
 	AnimationCallback(): m_DirtyCount(0) {}
+	AnimationCallback(const osg::AnimationPathCallback& oapc): 
+		osg::AnimationPathCallback(oapc),
+		m_DirtyCount(0) {
+	}
 	virtual ~AnimationCallback() {}
 	inline void dirty() { ++m_DirtyCount; }
 	inline bool needsUpdate(osg::Node& node) {
@@ -110,11 +114,6 @@ private:
 	float m_Limit1;
 	float m_Gain;
 
-	void init(AnimationCallback *callback) const {
-		assert(callback);
-		callback->setChannelName(m_ChannelName);
-		callback->setDefault(m_Default);
-	}
 protected:
 	/**
 	* Small template class to reduce & simplify writing.
@@ -134,6 +133,12 @@ protected:
 			m_Value(0.0f) { 
 				assert(param); 
 		}
+		Callback_A_C(const A *const param, const osg::AnimationPathCallback& oapc):
+			AnimationCallback(oapc),
+			m_Parameters(param),
+			m_Value(0.0f) { 
+				assert(param); 
+		}
 		virtual void bindChannel(simdata::Ref<const DataChannelBase> channel) {
 			m_Channel = channel;
 		}
@@ -149,7 +154,7 @@ protected:
 		virtual void updateValue() {
 			if (m_Channel.valid()) {
 				float value = m_Channel->value();
-				if (value != m_Value) {
+				if (std::abs(value - m_Value) > 0.00001) {
 					m_Value = value;
 					dirty();
 				}
@@ -158,6 +163,8 @@ protected:
 	public:
 		Callback_A(const A *const param):
 			Callback_A_C<A>(param) {}
+		Callback_A(const A *const param, const osg::AnimationPathCallback& oapc):
+			Callback_A_C<A>(param,oapc) {}
 		virtual ~Callback_A(){}
 	};
 
@@ -177,6 +184,12 @@ protected:
 		callback->bind(*node_callback);
 		return callback;
 	}
+	void init(AnimationCallback *callback) const {
+		assert(callback);
+		callback->setChannelName(m_ChannelName);
+		callback->setDefault(m_Default);
+	}
+
 public:
 	BEGIN_SIMDATA_XML_VIRTUAL_INTERFACE(Animation)
 		SIMDATA_XML("model_id", Animation::m_ModelID, true)
@@ -266,7 +279,7 @@ public:
 * Tiny class encapsulating time values.
 */
 class TimedAnimationProxy: public simdata::Object {
-	float m_t0, m_t1, m_DeltaT, m_Rate;
+	float m_t0, m_t1, m_TimeLength, m_Rate;
 public:
 	SIMDATA_OBJECT(TimedAnimationProxy, 0, 0)
 	
@@ -277,22 +290,36 @@ public:
 
 	TimedAnimationProxy():
 		m_t0(0.0f),
-		m_t1(1.0f) {
+		m_t1(0.0f),
+		m_TimeLength(1.0f),
+		m_Rate(0.0f) {
 	}
 	~TimedAnimationProxy(){}
 	float getDelta_t0(float t) const {
-		return simdata::clampTo(t, m_t0, m_t1) - m_t0;
+		return clamp(t) - m_t0;
+	}
+	float clamp(float t) const {
+		return simdata::clampTo(t, m_t0, m_t1);
 	}
 	float getRate() const {
 		return m_Rate;
 	}
 	void setRate(float limit0, float limit1) {
 		float delta_limit = limit1 - limit0;
-		m_Rate = delta_limit / m_DeltaT;
+		m_Rate = delta_limit / m_TimeLength;
+	}
+	float getTimeLength() const {
+		return m_TimeLength;
+	}
+	float gett_0() const {
+		return m_t0;
+	}
+	float gett_1() const {
+		return m_t1;
 	}
 protected:
 	virtual void postCreate() {
-		m_DeltaT = m_t1 - m_t0;
+		 m_TimeLength = m_t1 - m_t0;
 	}
 };
 
@@ -487,47 +514,52 @@ public:
 };
 
 /**
-* TimedSequence controls TimedAnimation providing a basic time counter.
+* TimedSequence controls timed animations providing a basic time counter.
 * It exports (registers) 2 channels which can be imported; ReferenceTime 
 * denotes the time from the beginning of the animation and NormalizedTime
 * the corresponding normalized value in [0,1].
 */
-
 class TimedSequence: public simdata::Object {
-	double m_TimeLength;
-	DataChannel<double>::Ref b_ReferenceTime, b_NormalizedTime;
-	double m_Direction, m_PreviousDirection;
+	class UpdateReferenceTime: public DataChannelBase::Handler {
+		TimedSequence &m_TimedSequence;
+	public:
+		UpdateReferenceTime(TimedSequence &timed_sequence):
+			m_TimedSequence(timed_sequence) {
+		}
+		virtual ~UpdateReferenceTime(){}
+		virtual void operator()() {
+			m_TimedSequence.setReferenceTime();
+		}
+	};
+
+	// SimData data
+	simdata::Link<TimedAnimationProxy> m_TimeAnimationProxy;
+	double m_InitialTime;
 	std::string m_Name;
+
+	// Shared channels
+	DataChannel<double>::Ref b_ReferenceTime;
+	DataChannel<double>::Ref b_NormalizedTime; // push channel
+
+	// Internal members
+	double m_Direction, m_PreviousDirection;
+	UpdateReferenceTime* m_UpdateReferenceTime;
+	SigC::Connection m_Connection;
+	
 	void setTimeValues(double t) {
-		b_NormalizedTime->value() = simdata::clampTo(t / m_TimeLength, 0.0, 1.0);
+		b_NormalizedTime->value() = 
+			simdata::clampTo(m_TimeAnimationProxy->getDelta_t0(t)/m_TimeAnimationProxy->getTimeLength(),0.0f,1.0f);
 		setReferenceTime();
 	}
-
-public:
-	SIMDATA_OBJECT(TimedSequence, 0, 0)
-
-	BEGIN_SIMDATA_XML_INTERFACE(TimedSequence)
-		// TODO: add initial values of channels
-		SIMDATA_XML("time_length", TimedSequence::m_TimeLength, true)
-		SIMDATA_XML("name", TimedSequence::m_Name, true)
-	END_SIMDATA_XML_INTERFACE
-
-	TimedSequence():
-		m_Direction(0.0f),
-		m_PreviousDirection(0.0f) {
-	}
-	virtual ~TimedSequence(){}
-
 	void setReferenceTime() {
-		b_ReferenceTime->value() = simdata::clampTo(b_NormalizedTime->value() * m_TimeLength, 0.0, m_TimeLength);
+		b_ReferenceTime->value() = 
+			m_TimeAnimationProxy->clamp(m_TimeAnimationProxy->gett_0()+b_NormalizedTime->value()*m_TimeAnimationProxy->getTimeLength());
 	}
-	double onUpdate(double dt) {
-		double t = b_ReferenceTime->value();
-		t += m_Direction*dt;
-		t = simdata::clampTo(t,0.0,m_TimeLength);
-		setTimeValues(t);
-		m_PreviousDirection = m_Direction;
-		return 0.016;
+	bool isEnd() const {
+		return 1.0 - b_NormalizedTime->value() < 0.0001;
+	}
+	bool isBegin() const {
+		return b_NormalizedTime->value() < 0.0001;
 	}
 	void setDirection(double direction) {
 		m_PreviousDirection = m_Direction;
@@ -542,33 +574,121 @@ public:
 	void backward() {
 		setDirection(-m_PreviousDirection);
 	}
+public:
+	SIMDATA_OBJECT(TimedSequence, 0, 0)
+
+	BEGIN_SIMDATA_XML_INTERFACE(TimedSequence)
+		SIMDATA_XML("timed_animation_proxy", TimedSequence::m_TimeAnimationProxy, true)
+		SIMDATA_XML("initial_time", TimedSequence::m_InitialTime, false)
+		SIMDATA_XML("name", TimedSequence::m_Name, true)
+	END_SIMDATA_XML_INTERFACE
+
+	TimedSequence():
+		m_InitialTime(0.0),
+		m_Direction(0.0f),
+		m_PreviousDirection(0.0f),
+		m_UpdateReferenceTime(0) {
+	}
+	virtual ~TimedSequence(){
+		if (m_UpdateReferenceTime) {
+			delete m_UpdateReferenceTime;
+			m_UpdateReferenceTime = 0;
+		}
+	}
+	double onUpdate(double dt) {
+		double t = b_ReferenceTime->value();
+		t += m_Direction*dt;
+		t = m_TimeAnimationProxy->clamp(t);
+		setTimeValues(t);
+		return 0.016;
+	}
 	void start() {
-		// don't allow to start again until the current sequence is not over
-		if (b_NormalizedTime->value() < 0.0001) {
-			setTimeValues(0.0);
+		// do not allow to start again until the current sequence is not over
+		if (isBegin()) {
+			setTimeValues(m_TimeAnimationProxy->gett_0());
 			setDirection(1.0);
 		}
 	}
 	void rstart() {
-		// don't allow to rstart again until the current sequence is not over
-		if (b_NormalizedTime->value() > 0.9999) {
-			setTimeValues(m_TimeLength);
+		// do not allow to rstart again until the current sequence is not over
+		if (isEnd()) {
+			setTimeValues(m_TimeAnimationProxy->gett_1());
 			setDirection(-1.0);
 		}
 	}
+	void toggle() {
+		if (isEnd())
+			rstart();
+		else if (isBegin())
+			start();
+	}
+	void bindChannels(Bus::Ref bus) {
+		if (!b_ReferenceTime.valid()) {
+			std::string name = m_Name + ".ReferenceTime";
+			b_ReferenceTime = bus->getSharedChannel(name);
+		}
+	}
 	void registerChannels(Bus::Ref bus) {
-		bus->registerChannel(b_ReferenceTime.get());
+		std::string name = m_Name + ".ReferenceTime";
+		if (!bus->hasChannel(name)) {
+			 b_ReferenceTime = bus->registerSharedDataChannel(name, m_InitialTime);
+		}
 		bus->registerChannel(b_NormalizedTime.get());
 	}
-	double getNormalizedTime() const {
-		return b_NormalizedTime->value();
-	}
-
+	
 protected:
 	virtual void postCreate() {
 		CSP_LOG(OBJECT, DEBUG, "TimedSequence: m_Name = " << m_Name);
-		b_ReferenceTime = DataChannel<double>::newLocal(m_Name + ".ReferenceTime", m_TimeLength);
-		b_NormalizedTime = DataChannel<double>::newLocal(m_Name + ".NormalizedTime", 1.0);
+		m_InitialTime = m_TimeAnimationProxy->clamp(m_InitialTime);
+		double initial_normalized_time = simdata::clampTo(m_TimeAnimationProxy->getDelta_t0(m_InitialTime)/m_TimeAnimationProxy->getTimeLength(),0.0f,1.0f);
+		b_NormalizedTime = DataChannel<double>::newSharedPush(m_Name + ".NormalizedTime", initial_normalized_time);
+		m_UpdateReferenceTime = new UpdateReferenceTime(*this);
+		m_Connection = b_NormalizedTime->connect(m_UpdateReferenceTime);
+	}
+};
+
+
+class TimedAnimationPath: public Animation {
+	class Callback: public Callback_A<TimedAnimationPath> {
+	public:
+		Callback(const TimedAnimationPath * const param): 
+		  Callback_A<TimedAnimationPath>(param){
+		  }
+		  Callback(const TimedAnimationPath * const param, const osg::AnimationPathCallback &oapc): 
+			Callback_A<TimedAnimationPath>(param,oapc){
+		  }
+		virtual void operator()(osg::Node* node, osg::NodeVisitor* nv);
+		virtual ~Callback(){}
+	};
+	double m_TimeMultiplier;
+public:
+	SIMDATA_OBJECT(TimedAnimationPath, 0, 0)
+	
+	EXTEND_SIMDATA_XML_INTERFACE(TimedAnimationPath, Animation)
+		SIMDATA_XML("time_multiplier", TimedAnimationPath::m_TimeMultiplier, false)
+	END_SIMDATA_XML_INTERFACE
+
+	TimedAnimationPath():
+		m_TimeMultiplier(1.0) {
+	}
+	virtual ~TimedAnimationPath(){}
+
+	virtual AnimationCallback *newCallback(osg::Node *node) const {
+		AnimationCallback *callback = 0;
+		osg::ref_ptr<osg::AnimationPathCallback> oapc = dynamic_cast<osg::AnimationPathCallback *>(node->getUpdateCallback());
+		if (oapc.valid()) {
+			callback = new Callback(this, *oapc);
+			if (callback) {
+				init(callback);
+				assert(node);
+				callback->bind(*node);
+				callback->setTimeMultiplier(m_TimeMultiplier);
+			}
+		}
+		return callback;
+	}
+	virtual AnimationCallback *newCallback(osg::NodeCallback *nodeCallback) const {
+		return Animation::newCallback_<TimedAnimationPath,Callback>(nodeCallback);
 	}
 };
 

@@ -89,6 +89,7 @@ public:
 	double getSteeringAngle() const { return m_SteerAngle; }
 	double getDragFactor() const;
 	double getTireRotation() const { return m_TireRotation; }
+	simdata::Vector3 getDisplacement() const;
 
 	// dynamics interface
 	virtual void preSimulationStep(double dt);
@@ -225,8 +226,8 @@ public:
 			m_Offset(0.0f) {
 			}
 			virtual double onUpdate(double /*dt*/) {
-				double vertical_displacement = b_GearDisplacement->value()*m_DisplacementAxis;
 				b_WheelRotation->value() = b_GearTireRotation->value();
+				double vertical_displacement = b_GearDisplacement->value()*m_DisplacementAxis;
 				b_Absorber02Angle->value() = asin((vertical_displacement-m_Offset)/(2*m_Absorber02Length));
 				b_Absorber03Angle->value() = asin((vertical_displacement-m_Offset)/(2*m_Absorber03Length));
 				return 0.016;
@@ -389,10 +390,6 @@ public:
 
 	void setBraking(double left, double right);
 	void setSteering(double x, double link_brakes=1.0);
-
-	LandingGear const *getGear(size_t i);
-	size_t getGearNumber() const;
-	simdata::Vector3 getGearDisplacement(size_t i) const;
 
 	virtual void preSimulationStep(double dt);
 	virtual void postSimulationStep(double dt);

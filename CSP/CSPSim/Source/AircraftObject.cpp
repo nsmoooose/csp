@@ -74,11 +74,23 @@ void AircraftObject::registerChannels(Bus::Ref bus) {
 		bus->registerChannel(b_Heading.get());
 		bus->registerChannel(b_Pitch.get());
 		bus->registerChannel(b_Roll.get());
+		if (m_FuelDoorSequence.valid()) {
+			m_FuelDoorSequence->registerChannels(bus);
+		}
+		if (m_CanopySequence.valid()) {
+			m_CanopySequence->registerChannels(bus);
+		}
 	}
 }
 
 void AircraftObject::bindChannels(Bus::Ref bus) {
 	DynamicObject::bindChannels(bus);
+	if (m_FuelDoorSequence.valid()) {
+			m_FuelDoorSequence->bindChannels(bus);
+	}
+	if (m_CanopySequence.valid()) {
+			m_CanopySequence->bindChannels(bus);
+	}
 }
 
 void AircraftObject::dump() {
@@ -89,6 +101,10 @@ void AircraftObject::initialize() {
 
 double AircraftObject::onUpdate(double dt)
 {
+	if (m_FuelDoorSequence.valid())
+		m_FuelDoorSequence->onUpdate(dt);
+	if (m_CanopySequence.valid())
+		m_CanopySequence->onUpdate(dt);
 	return DynamicObject::onUpdate(dt);
 }
 
@@ -124,6 +140,18 @@ void AircraftObject::SmokeToggle() {
 
 void AircraftObject::MarkersToggle() {
 	m_Model->showContactMarkers(!m_Model->getMarkersVisible());
+}
+
+void AircraftObject::FuelDoorToggle() {
+	if (m_FuelDoorSequence.valid()) {
+		m_FuelDoorSequence->toggle();
+	}
+}
+
+void AircraftObject::CanopyToggle() {
+	if (m_CanopySequence.valid()) {
+		m_CanopySequence->toggle();
+	}
 }
 
 void AircraftObject::setAttitude(double pitch, double roll, double heading)

@@ -224,6 +224,11 @@ void LandingGear::updateTireRotation(double dt) {
 	m_TireRotation += m_TireRotationRate * dt;
 }
 
+simdata::Vector3 LandingGear::getDisplacement() const {
+	Vector3 move = getPosition();
+	move -= getMaxPosition();
+	return move;
+}
 
 /**
  * Simulate the main shock adsorber to determine the normal force and
@@ -586,7 +591,7 @@ void GearDynamics::registerChannels(Bus *bus) {
 	b_WOW = bus->registerLocalDataChannel<bool>("State.WOW", false);
 	//b_GearExtension = bus->registerLocalDataChannel<double>("LandingGear.GearExtended", 1.0);
 
-	size_t n(getGearNumber());
+	size_t n(m_Gear.size());
 	b_GearDisplacement.resize(n);
 	b_TireRotation.resize(n);
 	for(size_t i = 0; i<n; ++i) {
@@ -668,24 +673,6 @@ void GearDynamics::setSteering(double x, double link_brakes) {
 	}
 }
 
-LandingGear const *GearDynamics::getGear(size_t i) {
-	assert(i < m_Gear.size());
-	return m_Gear[i].get();
-}
-
-size_t GearDynamics::getGearNumber() const {
-	return m_Gear.size();
-}
-
-Vector3 GearDynamics::getGearDisplacement(size_t i) const {
-	if (i >= m_Gear.size()) 
-		throw std::out_of_range("invalid index in GearDynamics::getGearDisplacement");
-	const LandingGear& gear = *m_Gear[i];
-	Vector3 move = gear.getPosition();
-	move -= gear.getMaxPosition();
-	return move;
-}
-
 void GearDynamics::preSimulationStep(double dt) {
 	BaseDynamics::preSimulationStep(dt);
 	b_WOW->value() = false;
@@ -706,7 +693,7 @@ void GearDynamics::postSimulationStep(double dt) {
 	BaseDynamics::postSimulationStep(dt);
 	size_t n =  m_Gear.size();
 	if (!isGearExtended() || !b_NearGround->value()) {
-		double airspeed = b_GearExtension->value() ? m_VelocityBody->length() : 0.0;  // approx
+		double airspeed = b_GearExtension->value() ? m_VelocityBody->length() : 0.0;  // approx	
 		for (size_t i = 0; i < n; ++i) { m_Gear[i]->residualUpdate(dt, airspeed); }
 		return;
 	}
@@ -722,8 +709,9 @@ void GearDynamics::postSimulationStep(double dt) {
 double GearDynamics::onUpdate(double dt) {
 	size_t n =  m_Gear.size();
 	for (size_t i = 0; i < n; ++i) {
-		b_GearDisplacement[i]->value() = getGearDisplacement(i);
-		b_TireRotation[i]->value() = getGear(i)->getTireRotation();
+		const LandingGear &gear = *m_Gear[i];
+		b_GearDisplacement[i]->value() = gear.getDisplacement();
+		b_TireRotation[i]->value() = gear.getTireRotation();
 	}
 	std::for_each(m_GearSetAnimation.begin(),m_GearSetAnimation.end(),GearAnimation::OnUpdate(dt));
 	return 0.016;

@@ -2,59 +2,9 @@
 # these values are correct for windows xp using minimal gameport driver.
 # it is conceivable that value mapping is different under Linux.
 
-# primary buttons
-
-#define CH_CS:FireA     1
-#define CH_CS:FireB     2
-#define CH_CS:FireC     7
-#define CH_CS:FireD     4
-
-# additional buttons
-
-#define CH_CS:Pinkie    6
-#define CH_CS:Launch    3
-
-# thumb stick
-
-#define CH_CS:Mouse     5
-#define CH_CS:Mouse_Up  22
-#define CH_CS:Mouse_Right   23
-#define CH_CS:Mouse_Down    24
-#define CH_CS:Mouse_Left    25
-
-# mode switch
-
-#define CH_CS:Mode1     8
-#define CH_CS:Mode2     9
-#define CH_CS:Mode3     10
-
-# aux switch
-
-#define CH_CS:Aux1      11
-#define CH_CS:Aux2      12
-#define CH_CS:Aux3      13
-
-# hat 2
-
-define CH_CS:H2_Up     14
-define CH_CS:H2_Right  15
-define CH_CS:H2_Down   16
-define CH_CS:H2_Left   17
-
-# hat 3
-
-define CH_CS:H3_Up     18
-define CH_CS:H3_Right  19
-define CH_CS:H3_Down   20
-define CH_CS:H3_Left   21
-
 # axes
 
 define CH_CS:Stick_X   0
 define CH_CS:Stick_Y   1
-define CH_CS:Rudder    3
 define CH_CS:Throttle  2
-define CH_CS:R1        2
-define CH_CS:R2        5
-define CH_CS:H1_H      6
-define CH_CS:H1_V      7
+

@@ -21,5 +21,20 @@
     <Path name="human_systems">F16.DJ.systems</Path>
     <Path name="remote_systems">F16.DJ.remote</Path>
     <Path name="agent_systems">F16.DJ.systems</Path>
+    
+    <Object class="TimedSequence" name="fuel_door_sequence">
+		<Object class="TimedAnimationProxy" name="timed_animation_proxy">
+			<Float name="t0">0.0</Float>
+			<Float name="t1">3.0</Float>
+		</Object>
+		<String name="name">Aircraft.FuelDoorSequence</String>
+	</Object>
+	<Object class="TimedSequence" name="canopy_sequence">
+		<Object class="TimedAnimationProxy" name="timed_animation_proxy">
+			<Float name="t0">0.0</Float>
+			<Float name="t1">6.0</Float>
+		</Object>
+		<String name="name">Aircraft.CanopySequence</String>
+	</Object>
 
 </Object>

@@ -107,7 +107,7 @@ public:
 	 * parameter, and if you do be sure you really understand what 
 	 * it means.  Also, do not modify internal state variables of
 	 * the Dynamics class during the computeForceAndMoment() call.  
-	 * State changes should only occur instead in the preSimulationStep 
+	 * State changes should only occur instead in the preSimulationStep() 
 	 * and postSimulationStep() methods.  In particular, do not do
 	 * anything that results in discontinuous force or moment
 	 * variations that can prevent the RK solver from converging.

@@ -141,7 +141,7 @@ public:
 	/**
 	 * Get the name of this generator
 	 */
-	inline std::string getName() const { return "Marsenne Twister (MT19937)"; }
+	inline std::string getName() const { return "Mersenne Twister (MT19937)"; }
 
 	/**
 	 * Construct a new generator with seed 0
@@ -730,7 +730,7 @@ std::string RandomDistribution<RD>::getName() const {
 
 namespace random { // generators and distributions
 	typedef RandomDistribution<rd::Gauss> Gauss;
-	typedef RandomNumberGenerator<rng::MT19937> MarsenneTwister;
+	typedef RandomNumberGenerator<rng::MT19937> MersenneTwister;
 	typedef RandomNumberGenerator<rng::Taus2> Taus2;
 	typedef Taus2 Standard;
 }

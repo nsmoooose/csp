@@ -141,7 +141,7 @@ public:
 	inline RNG *operator->() { return &_gen; }
 };
 
-%template(MarsenneTwister)  RandomNumberGenerator<simdata::rng::MT19937>;
+%template(MersenneTwister)  RandomNumberGenerator<simdata::rng::MT19937>;
 %template(Taus2) RandomNumberGenerator<simdata::rng::Taus2>;
 
 NAMESPACE_SIMDATA_END

@@ -400,7 +400,9 @@ public:
 	}
 
 	virtual MemberAccessorBase *getAccessor(const char *name) {
-		return table[name];
+		MemberAccessorBase::map::const_iterator idx = table.find(name);
+		if (idx == table.end()) return 0;
+		return idx->second;
 	}
 
 	virtual std::vector<std::string> getVariableNames() const {

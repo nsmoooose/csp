@@ -1,6 +1,12 @@
 Version 0.3.2 (in progress)
 ===========================
 
+2003-04-20: onsight
+            Fix for a nasty little bug in ObjectInterface.h that could
+	    cause memory corruption during data compiling.   Rebuild
+	    SimData, install it, then rebuild CSPSim from scratch (just
+	    to be sure).
+
 2003-04-18: onsight
             Wrote a specialized vector rotation method for quaternions
 	    that should be a little bit faster.

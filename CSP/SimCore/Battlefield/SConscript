@@ -18,15 +18,26 @@
 
 Import('env build')
 
+env.ParseConfig('ccgnu2-config --flags --libs')
+
 LIBS = env.get('LIBS', []) + ['spatialindex']
 LIBPATH= env.get('LIBPATH', []) + ['#/SpatialIndex/.bin']
 
 SOURCES = [
-	'OldBattlefield.cpp',
+	'Battlefield.cpp',
+	'LocalBattlefield.cpp',
 	'SceneManager.cpp',
-	'OldSimObject.cpp',
+	'SimObject.cpp',
+	'BattlefieldMessages.net',
 ]
 
 OBJECTS = build.Apply(env.StaticObject, SOURCES, LIBS=LIBS, LIBPATH=LIBPATH)
 Return('OBJECTS')
 
+BFC = env.Program('test-client.cpp',
+                   LIBS=LIBS + ['simcore', 'SimData', 'pthread', 'spatialindex', 'simnet'],
+                   LIBPATH=LIBPATH + ['#/SimCore/.bin', '#/SimData/SimData', '#/SimNet/.bin'])
+#BFS = env.Program('test-server.cpp',
+#                   LIBS=LIBS + ['simcore', 'SimData', 'pthread', 'spatialindex', 'simnet'],
+#                   LIBPATH=LIBPATH + ['#/SimCore/.bin', '#/SimData/SimData', '#/SimNet/.bin'])
+Alias('bftest', [BFC]) #, BFS])

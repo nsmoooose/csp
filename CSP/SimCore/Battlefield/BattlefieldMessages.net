@@ -1,0 +1,130 @@
+// -*- cpp -*-
+//
+// Copyright 2004 Mark Rose <mkrose@users.sourceforge.net>
+//
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 2 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+
+#header <SimCore/Battlefield/BattlefieldMessages.h>
+
+#include <SimNet/NetworkMessage.h>
+#include <SimData/Path.h>
+
+///////////////////////////////////////////////////////////////////
+// TESTING ONLY -- REMOVE ME!
+#include <SimData/Vector3.h>
+#include <SimData/Quat.h>
+
+// battlefield messages use fixed ids in the range 64-511.  ids
+// are assigned sequentially for now (although this is somewhat
+// brittle and error prone), so be sure that new messages are
+// added at the end of this file.
+#idbase 64
+#message simnet::NetworkMessage
+
+// TODO a nicer syntax would be:
+//	#define header <...>
+//	#define idbase 64
+//	#define Message simnet::NetworkMessage
+
+
+// request sent to the index server by a client wishing
+// to join the game.  this is extremely oversimplified
+// for testing purposes.
+
+Message JoinRequest {
+	// any identifier (e.g. callsign)
+	std::string user_name;
+}
+
+// response from the index server to a client indicating if
+// a join request was successful.
+
+Message JoinResponse {
+	bool success;
+	std::string message;
+
+	// initial allocation of unique object ids
+	int32 first_id;
+	int32 id_count;
+}
+
+Message PlayerJoin {
+	std::string user_name;
+	int16 peer_id;
+	int16 port;
+	int32 ip_addr;
+	int32 incoming_bw;
+	int32 outgoing_bw;
+}
+
+Message PlayerQuit {
+	int16 peer_id;
+}
+
+
+// Client-GameServer: register an object owned by the client
+Message RegisterUnit {
+	uint32 unit_id;
+	simdata::Path unit_class;
+	uint8 unit_type;
+	uint32 grid_x;
+	uint32 grid_y;
+}
+
+// Client<->GameServer: owned object has moved
+Message NotifyUnitMotion {
+	uint32 unit_id;
+	uint32 grid_x;
+	uint32 grid_y;
+}
+
+// GameServer->Client: send object updates to peer
+Message CommandUpdatePeer {
+	uint32 unit_id;
+	uint16 peer_id;
+	bool stop;
+}
+
+// GameServer->Client: add a new unit, expect peer updates
+Message CommandAddUnit {
+	uint32 unit_id;
+	simdata::Path unit_class;
+	uint8 unit_type;
+	uint16 owner_id;
+	uint32 grid_x;
+	uint32 grid_y;
+}
+
+// GameServer-Client: remove a new unit, disregard peer updates
+Message CommandRemoveUnit {
+	uint32 unit_id;
+}
+
+Message IdAllocationRequest {
+}
+
+Message IdAllocationResponse {
+	uint32 first_id;
+	uint32 id_count;
+}
+
+Message TestUnitState {
+	uint32 timestamp;
+	simdata::Vector3 position;
+	simdata::Vector3 velocity;
+	simdata::Quat attitude;
+	bool test_object;
+}

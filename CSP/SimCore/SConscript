@@ -27,4 +27,4 @@ env = env.Copy()
 OBJECTS = build.BuildModules(env, MODULES)
 
 libsimcore = env.StaticLibrary('simcore', OBJECTS)
-Alias('all', [libsimcore])
+Alias(['all', 'simcore'], [libsimcore])

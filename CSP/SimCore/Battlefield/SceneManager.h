@@ -58,7 +58,8 @@ namespace simdata {
  */
 class SceneManager: public simdata::Referenced
 {
-friend class Battlefield;
+friend class Battlefield;  // FIXME needed?
+friend class LocalBattlefield;
 
 protected:
 	typedef simdata::Ref<SimObject> ObjectRef;

@@ -22,12 +22,63 @@
 	<Int name="army">0</Int>
 	
 	<!-- Mass/Inertial properties -->
-	<Real name="mass">7500.0</Real>
+	<!--
+		<Real name="mass">7500.0</Real>
+		<Matrix name="inertia">
+		       135691.0        0.0       0.0
+			    0.0    20354.0    6785.0
+			    0.0     6785.0  135691.0
+		</Matrix> 
+	-->
+	<Real name="mass">10000.0</Real>
 	<Matrix name="inertia">
-	       135691.0        0.0       0.0
-		    0.0    20354.0    6785.0
-	            0.0     6785.0  135691.0
+	       100000.0        0.0       0.0
+		    0.0    25000.0    6785.0
+	            0.0     6785.0  120000.0
 	</Matrix>
+
+	<Object class="LandingGearSet" name="landing_gear">
+		<List name="gear_set">
+			<!-- all of these values are complete guesses for testing only! -->
+			<Object class="LandingGear"> <!-- nosewheel -->
+				<Vector name="max_position">0.0 3.3 -2.0</Vector>
+				<Vector name="motion">0 0 1.0</Vector>
+				<Number name="damage_limit">80000.0:10000.0</Number>
+				<Real name="compression_limit">0.5</Real>
+				<Real name="K">200000.0</Real>
+				<Real name="beta">10000.0</Real>
+				<Real name="brake_limit">3000.0</Real>
+				<Real name="static_friction">0.7</Real>
+				<Real name="dynamic_friction">0.5</Real>
+				<Real name="steering_limit">45.0</Real>
+				<Real name="tire_K">200000.0</Real>
+			</Object>
+			<Object class="LandingGear"> <!-- left main -->
+				<Vector name="max_position">-1.4 -0.7 -2.0</Vector>
+				<Vector name="motion">0 0 1.0</Vector>
+				<Number name="damage_limit">80000.0</Number>
+				<Real name="compression_limit">0.5</Real>
+				<Real name="K">200000.0</Real>
+				<Real name="beta">10000.0</Real>
+				<Real name="brake_limit">3000.0</Real>
+				<Real name="static_friction">0.7</Real>
+				<Real name="dynamic_friction">0.5</Real>
+				<Real name="tire_K">200000.0</Real>
+			</Object>
+			<Object class="LandingGear"> <!-- right main -->
+				<Vector name="max_position">1.4 -0.7 -2.0</Vector>
+				<Vector name="motion">0 0 1.0</Vector>
+				<Number name="damage_limit">80000.0:10000.0</Number>
+				<Real name="compression_limit">0.5</Real>
+				<Real name="K">200000.0</Real>
+				<Real name="beta">10000.0</Real>
+				<Real name="brake_limit">3000.0</Real>
+				<Real name="static_friction">0.7</Real>
+				<Real name="dynamic_friction">0.5</Real>
+				<Real name="tire_K">200000.0</Real>
+			</Object>
+		</List>
+	</Object>
 
 </Object>
 

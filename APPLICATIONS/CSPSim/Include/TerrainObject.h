@@ -78,7 +78,7 @@ public:
 	void setCameraPosition(float, float, float);
 
 	int getTerrainPolygonsRendered() const;
-	osg::Node *getNode() { return m_TerrainNode; }
+	osg::Node *getNode() { return m_TerrainNode.get(); }
 
 	
 protected:
@@ -119,9 +119,9 @@ protected:
 	osg::Node* createTerrainLatticeNode(Demeter::TerrainLattice* pTerrainLattice);
 
 	//osg::Node* m_TerrainLatticeNode;
-	osg::Node* m_TerrainNode;
+	//osg::Node* m_TerrainNode;
 	//osg::ref_ptr<osg::Node> m_TerrainLatticeNode;
-	//osg::ref_ptr<osg::Node> m_TerrainNode;
+	osg::ref_ptr<osg::Node> m_TerrainNode;
 
 	void updateDemeterSettings();
 	

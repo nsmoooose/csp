@@ -35,7 +35,7 @@
 #include "HID.h"
 #include "ScreenInfoManager.h"
 
-
+class PyConsole;
 class VirtualBattlefield;
 
 
@@ -71,6 +71,7 @@ public:
 	ACTION_INTERFACE(GameScreen, on_Quit);
 	ACTION_INTERFACE(GameScreen, on_Pause);
 	ACTION_INTERFACE(GameScreen, on_Stats);
+	ACTION_INTERFACE(GameScreen, on_Console);
 	ACTION_INTERFACE(GameScreen, on_ChangeVehicle);
 	ACTION_INTERFACE(GameScreen, on_View0);
 	ACTION_INTERFACE(GameScreen, on_View1);
@@ -125,8 +126,10 @@ protected:
 	/**
 	* Text informations
 	*/
-    osg::ref_ptr<ScreenInfoManager> m_ScreenInfoManager;
-    osg::ref_ptr<osgUtil::SceneView> m_rpInfosView;
+	osg::ref_ptr<ScreenInfoManager> m_ScreenInfoManager;
+	osg::ref_ptr<osgUtil::SceneView> m_InfoView;
+	osg::ref_ptr<osg::Group> m_InfoGroup;
+	osg::ref_ptr<PyConsole> m_Console;
 
 	simdata::Pointer<DynamicObject> m_ActiveObject;
 	VirtualBattlefield *m_Battlefield;

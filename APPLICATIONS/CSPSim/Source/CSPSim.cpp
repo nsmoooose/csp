@@ -47,6 +47,7 @@
 #include "Platform.h"
 #include "SimObject.h"
 #include "VirtualBattlefield.h"
+#include "ConsoleCommands.h"
 
 #include <SimData/Types.h>
 #include <SimData/Exception.h>
@@ -97,15 +98,17 @@ CSPSim::CSPSim()
 		theSim = this;
 	}
 
-	m_bFinished = FALSE;
+	m_Paused = true;
+	m_Finished = false;
+	m_ConsoleOpen = false;
+
+	m_Console = NULL;
 
 	m_CurrentScreen = NULL;
 	m_PrevScreen = NULL;
 
 	m_GameScreen = NULL;
 	m_MainMenuScreen = NULL;
-
-	m_bFreezeSim = true;
 
 	m_Interface = NULL;
 	m_Battlefield = NULL;
@@ -127,6 +130,12 @@ CSPSim::~CSPSim()
 	if (m_GameScreen) {
 		delete m_GameScreen;
 	}
+	/*
+	if (m_Console) {
+		Py_DECREF(m_Console);
+		m_Console = NULL;
+	}
+	*/
 	csplog().set_output(cerr);
 }
 
@@ -148,7 +157,7 @@ void CSPSim::setActiveObject(simdata::Pointer<DynamicObject> object) {
 		EventMapping *map = m_InterfaceMaps->getMap(classhash);
 		printf("selecting map @ %p\n", map);
 		m_Interface->setMapping(map);
-		m_Interface->bindObject(m_ActiveObject.ptr());
+		m_Interface->bindObject(m_ActiveObject.get());
 		printf("map set, object bound.\n");
 	}
 	else {
@@ -167,10 +176,10 @@ VirtualBattlefield * const CSPSim::getBattlefield() const
 }
 
 void CSPSim::togglePause() {
-	m_bFreezeSim = !m_bFreezeSim;
+	m_Paused = !m_Paused;
 } 
 
-void CSPSim::Init()
+void CSPSim::init()
 {
 	CSP_LOG(CSP_APP, CSP_INFO, "Starting CSPSim...");
 
@@ -185,11 +194,11 @@ void CSPSim::Init()
 	catch (simdata::Exception e) {
 		CSP_LOG(CSP_APP, CSP_ERROR, "Error opening data archive " << archive_file);
 		CSP_LOG(CSP_APP, CSP_ERROR, e.getType() << ": " << e.getMessage());
-		exit(0);
+		::exit(0);
 	}
 	
 	// initialize SDL
-	InitSDL();
+	initSDL();
 
 	SDL_WM_SetCaption("CSPSim", "");
 
@@ -202,9 +211,6 @@ void CSPSim::Init()
 	logoScreen.onRender();
 
 	SDL_GL_SwapBuffers();
-
-	// do rest of initialization
-	//InitConsole();             // should be replaced by osgConsole if necessary
 
 	// load all interface maps and create a virtual hid for the active object
 	m_InterfaceMaps = new EventMapIndex();
@@ -237,28 +243,28 @@ void CSPSim::Init()
 	// create a couple test objects
 	simdata::Pointer<AircraftObject> ao = m_DataArchive->getObject("vehicles.aircraft.m2k");
 	assert(ao.valid());
-	ao->setGlobalPosition(483000, 499000, 2000);
-	ao->setOrientation(0, 10.0, 0);
+	//ao->setGlobalPosition(483000, 499000, 2000);
+	ao->setGlobalPosition(483000, 499000, 91.2);
+	ao->setOrientation(0, 5.0, 0);
 	ao->setVelocity(0, 120.0, 0);
+	ao->setVelocity(0, 2.0, 0);
 	ao->addToScene(m_Battlefield);
 	m_Battlefield->addObject(ao);
-	//ao->AddSmoke();
 	
-
 	/*
 	simdata::Pointer<DynamicObject> to = m_DataArchive->getObject("vehicles.aircraft.m2k");
 	assert(to.valid());
 	to->setGlobalPosition(483000, 501000, 0);
 	to->addToScene(m_Battlefield);
 	m_Battlefield->addObject(to);
-	*/
+	*/	
 
 	// create screens
 	m_GameScreen = new GameScreen;
 
 	// setup screens
-	m_GameScreen->OnInit();
 	m_GameScreen->SetBattlefield(m_Battlefield);
+	m_GameScreen->OnInit();
 
 	// start in the aircraft
 	setActiveObject(ao);
@@ -267,19 +273,19 @@ void CSPSim::Init()
 	// set the Main Menu then start the main loop
 	m_MainMenuScreen = new MenuScreen;
 	m_MainMenuScreen->OnInit();
-	ChangeScreen(m_MainMenuScreen);
+	changeScreen(m_MainMenuScreen);
 #endif
 
-	ChangeScreen(m_GameScreen);
+
+	changeScreen(m_GameScreen);
 	
 	logoScreen.OnExit();
 }
 
 
-void CSPSim::Cleanup()
+void CSPSim::cleanup()
 {
-
-	CSP_LOG(CSP_APP, CSP_INFO, "CSPSim  Cleanup...");
+	CSP_LOG(CSP_APP, CSP_INFO, "CSPSim  cleanup...");
 
 	assert(m_Battlefield);
 	assert(m_ActiveTerrain.isNull() == false);
@@ -289,7 +295,7 @@ void CSPSim::Cleanup()
 	m_ActiveTerrain->deactivate();
 	m_Battlefield->removeAllObjects();
 	m_Battlefield->Cleanup();
-	m_ActiveTerrain = simdata::PathPointerBase();
+	m_ActiveTerrain = simdata::PointerBase();
 	delete m_Battlefield;
 	m_Battlefield = NULL;
 	delete m_GameScreen;
@@ -300,44 +306,37 @@ void CSPSim::Cleanup()
 		SDL_JoystickClose(m_SDLJoystick);
 		m_SDLJoystick = NULL;
 	}
-}
-
-
-void CSPSim::Quit()
-{
-	CSP_LOG(CSP_APP, CSP_DEBUG, "CSPSim::Quit...");
-	m_bFinished = true;
-}
-
-void CSPSim::Exit()
-{
-	CSP_LOG(CSP_APP, CSP_DEBUG, "CSPSim::Exit...");
 	SDL_Quit();
 }
 
 
-void CSPSim::ChangeScreen(BaseScreen * newScreen)
+void CSPSim::quit()
 {
-	CSP_LOG(CSP_APP, CSP_DEBUG, "CSPSim::ChangeScreen ...");
+	CSP_LOG(CSP_APP, CSP_DEBUG, "CSPSim::quit...");
+	m_Finished = true;
+}
+
+
+void CSPSim::changeScreen(BaseScreen * newScreen)
+{
+	CSP_LOG(CSP_APP, CSP_DEBUG, "CSPSim::changeScreen ...");
 	m_PrevScreen = m_CurrentScreen;
 	m_CurrentScreen = newScreen;
 }
 
 
 // Main Game loop
-void CSPSim::Run()
+void CSPSim::run()
 {
-	CSP_LOG(CSP_APP, CSP_DEBUG, "CSPSim::Run...");
+	float low_priority = 0.0;
+	int idx = 0;
 
-	m_bFreezeSim = false;
+	CSP_LOG(CSP_APP, CSP_DEBUG, "CSPSim::run...");
 
-	//initTime(simdata::SimDate(2003, 2, 25, 13, 0, 0));
-	//initTime(simdata::SimDate(2003, 1, 25, 8, 33, 0)); // quarter
-	//initTime(simdata::SimDate(2003, 2, 16, 23, 33, 0)); // full
-	//initTime(simdata::SimDate(2003, 2, 27, 23, 33, 0)); // sliver
-	//initTime(simdata::SimDate(2003, 2, 14, 23, 33, 0)); // nearly full
-	//initTime(simdata::SimDate(2003, 2, 28, 4, 33, 0)); // sliver
-	//initTime(simdata::SimDate(2003, 2, 18, 3, 52, 0)); // quarter
+	//m_bShowStats = true;
+	//m_Paused = false;
+	m_Paused = true;
+
 	std::string date_string = g_Config.getString("Testing", "Date", "2000-01-01 00:00:00.0", true);
 	simdata::SimDate date;
 	try {
@@ -345,41 +344,56 @@ void CSPSim::Run()
 	} 
 	catch (...) {
 		std::cerr << "Invalid starting date in INI file (Testing:Date).\n" << std::endl; 
-		exit(1);
+		::exit(1);
 	}
 	initTime(date);
+	
+	// XXX move this elsewhere
+	double lat = simdata::DegreesToRadians(g_Config.getFloat("Testing", "Latitude", 0, true));
+	double lon = simdata::DegreesToRadians(g_Config.getFloat("Testing", "Longitude", 0, true));
+	m_Atmosphere.setPosition(lat, lon);
+	m_Atmosphere.setDate(date);
+	m_Atmosphere.reset();
 
 	try 
 	{
-		while (!m_bFinished) {
-
-			CSP_LOG(CSP_APP, CSP_DEBUG, "CSPSim::Run... Starting loop iteration");
+		while (!m_Finished) {
+			CSP_LOG(CSP_APP, CSP_DEBUG, "CSPSim::run... Starting loop iteration");
 
 			updateTime();
 			float dt = m_FrameTime;
 
 			// Do Input loop
-			DoInput();
+			doInput();
+
+			// Miscellaneous Updates
+			low_priority += dt;
+			if (low_priority > 1.0) {
+				switch (idx++) {
+					case 0:
+						m_Atmosphere.update(low_priority);
+						break;
+					default:
+						idx = 0;
+				}
+				low_priority = 0.0;
+			}
 
 			// Update Objects if sim is not frozen
-			if (!m_bFreezeSim) {
-				UpdateObjects(dt);
+			if (!m_Paused && !m_ConsoleOpen) {
+				updateObjects(dt);
 			}
-			
-			
 			
 			// Display (render) current Screen
 			if (m_CurrentScreen) {
 				m_CurrentScreen->onUpdate(dt);
-                m_CurrentScreen->onRender();
+				m_CurrentScreen->onRender();
 			}
             
-			// Do Console
-			//if (m_bConsoleDisplay)
-			//	CON_DrawConsole(m_pConsole);
-
 			// Swap OpenGL buffers
+			Py_BEGIN_ALLOW_THREADS;
 			SDL_GL_SwapBuffers();
+			Py_END_ALLOW_THREADS;
 
 			// remove marked objects, this should be done at the end of the main loop.
 			m_Battlefield->removeObjectsMarkedForDelete();
@@ -389,15 +403,13 @@ void CSPSim::Run()
    
 	catch(DemeterException * pEx) {
 		CSP_LOG(CSP_APP, CSP_ERROR, "Caught Demeter Exception: " << pEx->GetErrorMessage());
-		Cleanup();
-		Exit();
-		exit(0);
+		cleanup();
+		::exit(0);
 	}
 	catch(...) {
 		CSP_LOG(CSP_APP, CSP_ERROR, "MAIN: Unexpected exception, GLErrorNUM: " << glGetError());
-		Cleanup();
-		Exit();
-		exit(0);
+		cleanup();
+		::exit(0);
 	}
 
 }
@@ -444,20 +456,27 @@ void CSPSim::updateTime()
 }
 
 
-void CSPSim::DoInput()
+void CSPSim::doInput()
 {
-	CSP_LOG(CSP_APP, CSP_DEBUG, "CSPSim::DoInput()...");
+	CSP_LOG(CSP_APP, CSP_DEBUG, "CSPSim::doInput()...");
 
 	SDL_Event event;
 	int doPoll = 10;
 	while (doPoll-- && SDL_PollEvent(&event)) {
 		bool handled = false;
 		if (event.type == SDL_QUIT) {
-			m_bFinished = TRUE;
+			m_Finished = true;
 			return;
 		}
-		
-		if (m_CurrentScreen) {
+		if (m_ConsoleOpen && event.type == SDL_KEYDOWN) {
+			if (event.key.keysym.sym == SDLK_ESCAPE) {
+				endConsole();
+				handled = true;
+			} else {
+				handled = m_Console->onKey(event.key.keysym);
+			}
+		}
+		if (!handled && m_CurrentScreen) {
 			VirtualHID *i = m_CurrentScreen->getInterface();
 			if (i) {
 				handled = i->OnEvent(event);
@@ -466,63 +485,15 @@ void CSPSim::DoInput()
 		if (!handled && m_Interface) {
 			handled = m_Interface->OnEvent(event);
 		}
-#if 0
-				switch (event.key.keysym.sym) {
-				case SDLK_ESCAPE:
-				{
-					m_bFinished = TRUE;
-					break;
-				}
-				case SDLK_F9:
-				{
-					m_bConsoleDisplay = !m_bConsoleDisplay;
-					if (m_bConsoleDisplay) {
-						m_bFreezeSim = true;
-						CON_Topmost(m_pConsole);
-						SDL_EnableUNICODE(1);
-					} else {
-						m_bFreezeSim = false;
-						CON_Topmost(NULL);
-						SDL_EnableUNICODE(0);
-					}
-					break;
-				}
-				case SDLK_F10:
-				{
-					m_bShowStats = !m_bShowStats;
-					break;
-				}
-				case SDLK_p:
-				{
-					// don't do pause while in console mode.
-					if (!m_bConsoleDisplay) {
-						// todo: call m_CurrentTime.pause/unpause()
-						if (!m_bFreezeSim)
-							m_bFreezeSim = true;
-						else
-							m_bFreezeSim = false;
-					}
-				}
-				default:
-				{
-// Send the event to the console
-					if (m_bConsoleDisplay)
-						CON_Events(&event);
-					break;
-				}
-				}
-			}
-#endif
-//			break;
 	}
 }
 
 /**
  * Update all objects, calling physics and AI routines.
  */
-void CSPSim::UpdateObjects(double dt)
+void CSPSim::updateObjects(double dt)
 {
-	CSP_LOG(CSP_APP, CSP_DEBUG, "CSPSim::UpdateObjects...");
+	CSP_LOG(CSP_APP, CSP_DEBUG, "CSPSim::updateObjects...");
 
     	if (m_Battlefield) {
 		m_Battlefield->onUpdate(dt);
@@ -530,7 +501,7 @@ void CSPSim::UpdateObjects(double dt)
 }
 
 
-int CSPSim::InitSDL()
+int CSPSim::initSDL()
 {
 	CSP_LOG(CSP_APP, CSP_DEBUG, "Initializing SDL...");
 
@@ -566,7 +537,7 @@ int CSPSim::InitSDL()
 
 	m_SDLScreen = SDL_SetVideoMode(width, height, bpp, flags);
 	SDL_GL_SetAttribute( SDL_GL_DEPTH_SIZE, 32 );
-    SDL_GL_SetAttribute( SDL_GL_DOUBLEBUFFER, 1 );
+	SDL_GL_SetAttribute( SDL_GL_DOUBLEBUFFER, 1 );
 
 	if (m_SDLScreen == NULL) {
 		printf("Unable to set video mode: %s\n", SDL_GetError());
@@ -584,9 +555,9 @@ int CSPSim::InitSDL()
 
 	std::string sound_path = g_Config.getPath("Paths", "SoundPath", ".", true);
 	if ( SDL_LoadWAV(ospath::join(sound_path, "avionturbine5.wav").c_str(),
-			&m_audioWave.spec, &m_audioWave.sound, &m_audioWave.soundlen) == NULL ) {
+		&m_audioWave.spec, &m_audioWave.sound, &m_audioWave.soundlen) == NULL ) {
 		CSP_LOG(CSP_APP, CSP_ERROR,  "Couldn't load " << sound_path << "/avionturbine5.wav: " << SDL_GetError());
-		exit(1);
+		::exit(1);
 	}
 	m_audioWave.spec.callback = fillerup;
 
@@ -594,7 +565,7 @@ int CSPSim::InitSDL()
 	if ( SDL_OpenAudio(&m_audioWave.spec, NULL) < 0 ) {
 		fprintf(stderr, "Couldn't open audio: %s\n", SDL_GetError());
 		SDL_FreeWAV(m_audioWave.sound);
-		exit(2);
+		::exit(2);
 	}
 	SDL_PauseAudio(0);
 
@@ -622,6 +593,22 @@ void fillerup(void *unused, Uint8 *stream, int len)
 	}
 	SDL_MixAudio(stream, waveptr, len, SDL_MIX_MAXVOLUME);
 	m_audioWave.soundpos += len;
+}
+
+
+void CSPSim::runConsole(PyConsole *console) {
+	m_Console = console;
+	if (m_Console.valid()) {
+		m_ConsoleOpen = true;
+		m_Console->bind(m_Shell);
+		m_Console->enable();
+	}
+}
+
+void CSPSim::endConsole() {
+	m_ConsoleOpen = false;
+	m_Console->disable();
+	m_Console = NULL;
 }
 
 /*

@@ -43,33 +43,31 @@ class UpdateCallback : public osg::NodeCallback
 };
 
 ScreenInfo::ScreenInfo(int posx,int posy, std::string const & name, std::string const & text):
-m_TTFPath("ltype.ttf"),m_FontSize(11),
-m_BitmapFont(new osgText::BitmapFont(m_TTFPath,m_FontSize)),
-m_Text(new osgText::Text(m_BitmapFont))
+	m_TTFPath("ltype.ttf"),m_FontSize(11),
+	m_BitmapFont(new osgText::BitmapFont(m_TTFPath,m_FontSize)),
+	m_Text(new osgText::Text(m_BitmapFont))
 {
-	int heightFont = m_BitmapFont->getHeight(); //uh, an osg fix is needed here
-	heightFont = m_FontSize;
+	int heightFont = m_FontSize;
 	m_Text->setPosition(osg::Vec3(posx,posy - heightFont,0));
 	setUpdateCallback(new UpdateCallback());
 	m_Text->setText(text);
-	addDrawable( m_Text );
+	addDrawable(m_Text);
 
 	setName(name);
 }
 
 Framerate::Framerate(int posx, int posy):ScreenInfo(posx,posy,"FRAMERATE"),m_minFps(60),m_maxFps(25) 
 {	
-	int heightFont = m_BitmapFont->getHeight(); //uh, an osg fix is needed here
 	m_Date = new  osgText::Text(m_BitmapFont);
 	m_Date->setPosition(osg::Vec3(posx,posy - 2 * m_FontSize,0));
-	addDrawable( m_Date );
+	addDrawable(m_Date);
 }
 
 void Framerate::update()
 {
 	float fps = CSPSim::theSim->getFrameRate();
-	m_minFps = min(m_minFps,fps);
-	m_maxFps = max(m_maxFps,fps);
+	m_minFps = min(m_minFps,fps)+0.01;
+	m_maxFps = max(m_maxFps,fps)-0.01;
 	std::ostringstream osstr;
 	osstr << setprecision(1) << fixed << fps << " FPS min: " << m_minFps << " max: " << m_maxFps;
     m_Text->setText(osstr.str());

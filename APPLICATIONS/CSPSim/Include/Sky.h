@@ -201,6 +201,11 @@ public:
 	virtual void updatePosition(double);
 	void updateScene(double h, double A, Color const &color, float intensity, float background);
 	void _updateLighting(float x, float y, float z, float h, Color const &color, float intensity, float background);
+	Color const &getColor() const { return m_Color; }
+	float getIntensity() const { return m_Intensity; }
+protected:
+	Color m_Color;
+	float m_Intensity;
 };
 
 class Moon: public AstronomicalBody {
@@ -244,7 +249,7 @@ public:
 	osg::Light* getSunLight();
 	osg::Light* getMoonLight();
 	osg::Vec4 getHorizonColor(float angle);
-	float getSunIntensity() { return m_SunIntensity; }
+	float getSunIntensity() { return m_Sun.getIntensity(); }
 	float getSkyIntensity() { return m_AverageIntensity; }
 	void spinTheWorld(bool noreset=true);
 	double getSpin() { return m_SpinTheWorld*86400.0; }
@@ -267,8 +272,8 @@ protected:
 	int m_nlev, m_nseg;
 	float *m_lev;
 	int m_HorizonIndex;
-	Color m_SunColor;
-	float m_SunIntensity;
+	Color m_ZenithColor;
+	float m_ZenithIntensity;
 	float m_AverageIntensity;
 	double m_JD;
 	double m_LastMoonFullUpdate;

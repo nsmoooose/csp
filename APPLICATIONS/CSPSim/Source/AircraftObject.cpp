@@ -33,24 +33,6 @@ using simdata::RadiansToDegrees;
 SIMDATA_REGISTER_INTERFACE(AircraftObject)
 
 
-////////////////////////////////////////////////////////////////////
-// class AircraftInterface: public VirtualHID
-
-
-// MOVE THESE TO CONSTANTS.H, and use seperate atmosphere model
-double	const	g	= 9.806; // acceleration due to gravity, m/s^2
-//double	const	rho = 0.0023769f * 14.5938 / 0.02831685 ; // air density at sea level, slugs/ft^3 -> convert to kg/m^3
-double   const   rho = 1.225; //kg/m^3
-#define	_DTHRUST	10.0f
-#define	_MAXTHRUST	300000.0f
-// SLUGS?????
-double   const   SlugToKg = 14.5938f;
-// FT?????
-double   const   FtToMeters = 0.3048f;
-double   const   Ft2ToM2 = 0.09290394f;
-double   const   FtIbToKgM = 0.1383f;
-
-
 AircraftObject::AircraftObject(): DynamicObject()
 {
 	//m_iObjectType = AIRPLANE_OBJECT_TYPE;
@@ -71,6 +53,8 @@ AircraftObject::AircraftObject(): DynamicObject()
 	m_dThrottleInput = 0.0;
 	m_dAileronInput = 0.0;
 	m_dElevatorInput = 0.0;
+	m_BrakeInput = 0.0;
+	m_BrakePulse = 0.0;
 	
 	m_decayAileron = 0;
 	m_decayElevator = 0;
@@ -111,6 +95,10 @@ AircraftObject::AircraftObject(): DynamicObject()
 	BIND_ACTION("STOP_DEC_ELEVATOR", noDecElevator);
 	BIND_ACTION("SMOKE_ON", SmokeOn);
 	BIND_ACTION("SMOKE_OFF", SmokeOff);
+	BIND_ACTION("WHEEL_BRAKE_PULSE", WheelBrakePulse);
+	BIND_ACTION("WHEEL_BRAKE_ON", WheelBrakeOn);
+	BIND_ACTION("WHEEL_BRAKE_OFF", WheelBrakeOff);
+	BIND_AXIS("WHEEL_BRAKE", setWheelBrake);
 
 	CSP_LOG(CSP_APP, CSP_DEBUG, "... AircraftObject::AircraftObject()");
 }
@@ -130,6 +118,7 @@ void AircraftObject::pack(simdata::Packer& p) const {
 	p.pack(m_ElevatorMax);
 	p.pack(m_RudderMin);
 	p.pack(m_RudderMax);
+	p.pack(m_Gear);
 }
 
 void AircraftObject::unpack(simdata::UnPacker& p) {
@@ -142,7 +131,15 @@ void AircraftObject::unpack(simdata::UnPacker& p) {
 	p.unpack(m_ElevatorMax);
 	p.unpack(m_RudderMin);
 	p.unpack(m_RudderMax);
+	p.unpack(m_Gear);
+}
+
+void AircraftObject::postCreate() {
+	DynamicObject::postCreate();
 	m_FlightModel->bindObject(m_LocalPosition, m_LinearVelocity, m_AngularVelocity, m_qOrientation);
+	m_FlightModel->bindGearSet(m_Gear);
+	m_FlightModel->bindContacts(m_Model->getContacts());
+	m_FlightModel->setBoundingRadius(getBoundingSphereRadius());
 	m_FlightModel->setInertia(m_Mass, m_Inertia);
 }
 
@@ -188,6 +185,19 @@ void AircraftObject::updateControls(double dt)
 	m_ThrottleInput += m_dThrottleInput * dt * 0.2;
 	m_AileronInput += m_dAileronInput * dt * 0.4;
 	m_ElevatorInput += m_dElevatorInput * dt * 0.4;
+
+	if (m_BrakePulse > 0.0) {
+		m_BrakePulse -= dt;
+		if (m_BrakePulse < 0.0) m_BrakePulse = 0.0;
+	} else {
+		m_BrakePulse = 0.0;
+	}
+
+	// FIXME only need to do this if gear is extended and/or WOW
+	float braking = m_BrakeInput + m_BrakePulse;
+	if (braking > 1.0) braking = 1.0;
+	m_Gear.setBraking(braking);
+	
 	if (m_decayAileron > 0) {
 		m_decayAileron--;
 		if (m_dAileronInput == 0.0) m_AileronInput *= 0.90;
@@ -223,6 +233,7 @@ void AircraftObject::setThrottle(double x)
 void AircraftObject::setRudder(double x)
 { 
 	m_RudderInput = x; 
+	m_Gear.setSteering(x);
 }
 
 void AircraftObject::setAileron(double x)
@@ -303,6 +314,22 @@ void AircraftObject::SmokeOn() {
 
 void AircraftObject::SmokeOff() { 
 	DisableSmoke();
+}
+
+void AircraftObject::WheelBrakePulse() { 
+	m_BrakePulse = 2.0;
+}
+
+void AircraftObject::WheelBrakeOn() {
+	m_BrakeInput = 1.0;
+}
+
+void AircraftObject::WheelBrakeOff() {
+	m_BrakeInput = 0.0;
+}
+
+void AircraftObject::setWheelBrake(double x) {
+	m_BrakeInput = x;
 }
 	
 void AircraftObject::setOrientation(double heading, double pitch, double roll)
@@ -390,8 +417,20 @@ void AircraftObject::doComplexPhysics(double dt)
 {
 	m_FlightModel->setThrust(m_Throttle * 70000.0);
 	m_FlightModel->setControlSurfaces(m_Aileron, m_Elevator, m_Rudder);
-	//m_FlightModel->doSimStep(dt);
-	m_FlightModel->doSimStep2(dt);
+
+        //preset various aircraft dimensions and landing/takeoff parameters:
+	//  pitch and roll limits
+	//  gear vectors and state
+	//  gear spring constants and damping
+	//  gear travel and force limits
+	//flightmodel needs to return out of spec parameters for subsequent
+	//damage modelling.
+	//m_FlightModel->setGroundPosition(m_GroundZ);
+
+	m_FlightModel->setGroundZ(m_GroundZ);
+	m_FlightModel->setGroundN(m_GroundN);
+	m_FlightModel->doSimStep(dt);
+	//m_FlightModel->doSimStep2(dt);
 	updateOrientation();
 	m_Direction = m_Orientation * simdata::Vector3::YAXIS;
 	m_NormalDirection = m_Orientation * simdata::Vector3::ZAXIS;

@@ -59,7 +59,7 @@
 
 using namespace osg;
 
-const float TURBIDITY = 4.0f;
+const float TURBIDITY = 3.0f;
 
 /*
  * TODO
@@ -186,8 +186,8 @@ public:
 		_catalog = archive->getObject("environment.stars");
 		assert(_catalog.valid());
 		int n = _catalog->_stars.size();
-		std::cout << "Using " << _catalog->m_Source << std::endl;
-		std::cout << "Magnitude " << _catalog->m_MagnitudeCutoff << " cutoff, " << n << " stars\n";
+		//std::cout << "Using " << _catalog->m_Source << std::endl;
+		//std::cout << "Magnitude " << _catalog->m_MagnitudeCutoff << " cutoff, " << n << " stars\n";
 		_positionList = new Vec3Array(n);
 		_colorList = new Vec4Array(n);
 		Vec3Array &p = *(_positionList.get());
@@ -355,39 +355,55 @@ void Sun::updateScene(double h, double A, Color const &color, float intensity, f
 
 void Sun::_updateLighting(float x, float y, float z, float h, Color const &color, float intensity, float background) {
 	float specular_scale = 1.0;
+	float diffuse_scale = 1.0;
 	float ambient = background;
 	if (ambient > 0.1) ambient = 0.1;
-
-/* the first calculation of scale is somewhat physically based on
-   a plot of sunlight intensity versus angle in Preetham.  the
-   ad-hoc one below seems better for compensating the limited
-   dynamic range of the monitor though, so this is currently
-   disabled.  also, it has not been tested or tweaked.
-	float scale = 1.0;
-	{
-		// angle from zenith
-		float a = 1.0 - h / 0.5*G_PI;
-		a *= a;
-		scale = 1.0 - a*a;
-		float horizon_light = intensity*intensity * 25.0;
-		if (horizon_light > 1.0) horizon_light = 1.0;
-		if (horizon_light > scale) scale = horizon_light;
+		
+	// the sky shading at the sun's position is too blue when the sun
+	// is high to use as the light color.  instead we use the approximate
+	// chromaticity taken from Preetham.  near sunset/rise, this function
+	// decays too rapidly and to account for secondary scattering from
+	// the atmosphere that becomes important as the direct sunlight weakens.
+	// so, as an approximation we blend the sunlight color and intensity
+	// smoothly into the sky color at the sun's position as it nears the
+	// horizon.  this misses the sharp drop in direct light as the sun
+	// sets, but captures the nice glow from the horizon that persists for
+	// a short time after sunset/before sunrise.  The discontinuity in
+	// direct light at sunrise/set is approximated by diffuse_scale and
+	// specular_scale below.
+	m_Color = color;
+	m_Intensity = intensity;
+	if (z > 0.0) {
+		// approximate atmospheric path length (1.0 at sunset)
+		double atmospheric_distance = 0.03 / (z + 0.03);
+		// very approximate fit to figure 7 in Preetham
+		double ciex = 0.3233 + 0.08 * atmospheric_distance;
+		double ciey = 0.556 + 2.3*(ciex-0.33) - 2.0*ciex*ciex;
+		// completely ad-hoc
+		double cieY = 1.0 - 0.4 * atmospheric_distance * atmospheric_distance; 
+		float weight = z * 2.0;
+		if (weight > 1.0) weight = 1.0;
+		m_Color.blend(Color(ciex, ciey, cieY, Color::CIExyY, false).toRGB(true), weight);
+		m_Intensity = (1.0 - weight) * m_Intensity + weight * cieY;
 	}
-*/
+
 	// ad-hoc additional darkening once the sun has set... the gl light
 	// representing the sun should not be as bright as the horizion.
-	float scale = intensity * intensity * 25.0;
+	float scale = m_Intensity * m_Intensity * 25.0;
 	if (scale > 1.0) scale = 1.0;
-	float light_r = color.getA() * scale;
-	float light_g = color.getB() * scale;
-	float light_b = color.getC() * scale;
+	float light_r = m_Color.getA() * scale;
+	float light_g = m_Color.getB() * scale;
+	float light_b = m_Color.getC() * scale;
 
 	// below horizon?
 	if (z < 0.0) {
+		// 0.5 cuts light level in half exactly at sunset 
+		// (give or take the sun's diameter)
+		diffuse_scale = 0.5;
 		// fade out specular faster as sun drops below the horizon
-		specular_scale = 1.0 + 9.0*z;  
+		specular_scale = 0.5 + 9.0*z;  
 		if (specular_scale < 0.0) specular_scale = 0.0;
-		// get the "sun color" from the horizion
+		// get the "sun shine" from the horizion, not below.
 		z = 0.0;
 	}
 
@@ -402,7 +418,10 @@ void Sun::_updateLighting(float x, float y, float z, float h, Color const &color
 	                              0.3f * light_g + ambient,
 	                              0.3f * light_b + ambient,
 	                              1.0f));
-	m_Light->setDiffuse(osg::Vec4(light_r,light_g,light_b,1.0f));
+	m_Light->setDiffuse(osg::Vec4(diffuse_scale*light_r,
+	                              diffuse_scale*light_g,
+				      diffuse_scale*light_b,
+				      1.0f));
 	m_Light->setSpecular(osg::Vec4(specular_scale*light_r,
 	                               specular_scale*light_g,
 	                               specular_scale*light_b,
@@ -706,7 +725,7 @@ void Moon::_maskPhase(float phi, float beta) {
 	{
 		int n = (int) (phi / (2.0*G_PI));
 		phi -= n * 2.0 * G_PI;
-		cout << "MOON PHASE = " << phi << endl;
+		//cout << "MOON PHASE = " << phi << endl;
 	}
 	osg::Image *phased = new osg::Image(*(m_Image.get()), CopyOp::DEEP_COPY_IMAGES);
 	int i, j;
@@ -804,7 +823,7 @@ SkyShader::SkyShader() {
 	m_SunsetSharpness = 4.0;
 	m_NightBase = 0.02;
 	m_FullMoonColor = Color(0.008, 0.035, 0.140, Color::RGB);
-	setTurbidity(4.0);
+	setTurbidity(TURBIDITY);
 	setSunElevation(0.0);
 }
 
@@ -941,8 +960,8 @@ void SkyShader::_computeBase() {
 #ifdef CUSTOM
 	// F(sun_h) is my own attenuation function which cuts the intensity
 	// as the sun nears the horizon.  Large values of SHARPNESS localize
-	// the drop at the horizon.  BASE is scaling with the sun 90 degrees
-	// below the horizon.
+	// the drop at the horizon.  NightBase is scaling with the sun 90 
+	// degrees below the horizon.
 	m_F =(atan(m_SunElevation*m_SunsetSharpness)/G_PI+0.5)*(1.0-m_NightBase) + m_NightBase;
 #endif
 
@@ -966,6 +985,9 @@ Color SkyShader::SkyColor(float elevation, float azimuth, float dark, float &int
 	//  scale to Y = 1 looking directly at the sun
 	if (m_MaxY > 0.0) cieY = m_OverLuminescence * cieY / m_MaxY;
 	
+	////Color txyY(ciex, ciey, cieY, Color::CIExyY, false);
+	////cout << txyY << endl;
+
 	// model for cloudy days:
 	//cieY = zenith.getC() * (1+2*cos(theta))/3.0;
 
@@ -976,13 +998,16 @@ Color SkyShader::SkyColor(float elevation, float azimuth, float dark, float &int
 	//float oldY = cieY;
 	if (cieY < 0.0) cieY = 0.0;
 	cieY = pow((double)cieY, (double)m_HaloSharpness) * m_F;
-	if (cieY > m_OverLuminescence) cieY = m_OverLuminescence;
+	//if (cieY > m_OverLuminescence) cieY = m_OverLuminescence;
+	if (cieY > 1.0) cieY = 1.0;
 #endif // CUSTOM
 
 	intensity = cieY;
 
 	Color xyY(ciex, ciey, cieY, Color::CIExyY, false);
+	//cout << xyY << endl;
 	Color rgb = xyY.toRGB();
+	////cout << rgb << endl;
 #ifdef CUSTOM
 	rgb.composite(m_FullMoonColor, 1.0, dark);
 	rgb.check();
@@ -1165,13 +1190,16 @@ void Sky::_updateSun() {
 	if (sin(light_h) < 0.0) {
 		light_h = 0.0;
 	}
-	m_SkyShader.setSunElevation(sun_h);
-	m_SunColor = m_SkyShader.SkyColor(light_h, 0.0, 0.0, m_SunIntensity);
 
+	m_SkyShader.setSunElevation(sun_h);
+	
 	// update the skydome
 	_updateShading(sun_h, sun_A);
+
+	// get the sky shading at the position of the sun
+	m_ZenithColor = m_SkyShader.SkyColor(light_h, 0.0, 0.0, m_ZenithIntensity);
 	
-	m_Sun.updateScene(sun_h, sun_A, m_SunColor, m_SunIntensity, m_AverageIntensity);
+	m_Sun.updateScene(sun_h, sun_A, m_ZenithColor, m_ZenithIntensity, m_AverageIntensity);
 }
 
 void Sky::_updateStars() {

@@ -89,7 +89,7 @@ class FlightControlSystem_Mirage {
 
 protected:
 
-	simdata::PathPointer<AeroDynamics> m_FlightModel;
+	simdata::Pointer<AeroDynamics> m_FlightModel;
 	
 	bool m_PhysicsInitialized;
 	bool m_ComplexPhysics;

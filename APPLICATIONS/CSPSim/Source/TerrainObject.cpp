@@ -64,6 +64,7 @@ TerrainObject::TerrainObject(): simdata::Object()
 
 TerrainObject::~TerrainObject()
 {
+	cout << "~TerrainObject()\n";
 	unload();
 }
 
@@ -122,12 +123,22 @@ void TerrainObject::unpack(simdata::UnPacker& p)
 void TerrainObject::unload() {
 	if (m_Active) deactivate();
 	if (m_Loaded) {
+	/* FIXME .... make TerrainLattice properly reference counted!
+ <<<<<<< TerrainObject.cpp
+		if (m_pTerrainLattice) {
+			delete m_pTerrainLattice;
+			m_pTerrainLattice = NULL;
+ =======
 		//m_TerrainLatticeNode = NULL;
 		m_TerrainNode = NULL;
 		if (m_pTerrainLattice.valid()) {
 			//delete m_pTerrainLattice;
 			//m_pTerrainLattice = NULL;
-		}
+ >>>>>>> 1.8
+*/
+// XXX same for m_pTerrain!
+		m_TerrainNode = NULL;
+		m_pTerrainLattice = NULL;
 		if (m_pTerrain) {
 			delete m_pTerrain;
 			m_pTerrain= NULL;

@@ -32,6 +32,8 @@
 #include <osgDB/Registry>
 #include <osgDB/ReadFile>
 #include <osgUtil/SmoothingVisitor>
+#include <osg/Geometry>
+#include <osg/Geode>
 
 
 SIMDATA_REGISTER_INTERFACE(ObjectModel)
@@ -46,6 +48,7 @@ ObjectModel::ObjectModel(): simdata::Object() {
 	m_Axis1 = simdata::Vector3::ZAXIS;
 	m_Offset = simdata::Vector3::ZERO;
 	m_Scale = 1.0;
+	m_Smooth = true;
 }
 
 ObjectModel::~ObjectModel() {
@@ -59,6 +62,8 @@ void ObjectModel::pack(simdata::Packer& p) const {
 	p.pack(m_Axis1);
 	p.pack(m_Offset);
 	p.pack(m_Scale);
+	p.pack(m_Smooth);
+	p.pack(m_Contacts);
 }
 
 void ObjectModel::unpack(simdata::UnPacker& p) {
@@ -69,7 +74,57 @@ void ObjectModel::unpack(simdata::UnPacker& p) {
 	p.unpack(m_Axis1);
 	p.unpack(m_Offset);
 	p.unpack(m_Scale);
+	p.unpack(m_Smooth);
+	p.unpack(m_Contacts);
+}
+
+void ObjectModel::postCreate() {
+	Object::postCreate();
 	loadModel();
+}
+
+osg::Geometry *makeDiamond(simdata::Vector3 const &pos, float s) {
+    float vv[][3] =
+    {
+        { 0.0, 0.0,   s },
+        {   s, 0.0, 0.0 },
+        { 0.0,   s, 0.0 },
+        {  -s, 0.0, 0.0 },
+        { 0.0,  -s, 0.0 },
+        {   s, 0.0, 0.0 },
+        { 0.0, 0.0,  -s },
+        {   s, 0.0, 0.0 },
+        { 0.0,  -s, 0.0 },
+        {  -s, 0.0, 0.0 },
+        { 0.0,   s, 0.0 },
+        {   s, 0.0, 0.0 },
+    };
+
+    osg::Vec3Array& v = *(new osg::Vec3Array(12));
+    osg::Vec4Array& l = *(new osg::Vec4Array(1));
+
+    int   i;
+
+    l[0][0] = 1;
+    l[0][1] = 0;
+    l[0][2] = 0;
+    l[0][3] = 1;
+
+    for( i = 0; i < 12; i++ )
+    {
+        v[i][0] = vv[i][0] + pos.x;
+        v[i][1] = vv[i][1] + pos.y;
+        v[i][2] = vv[i][2] + pos.z;
+    }
+
+    osg::Geometry *geom = new osg::Geometry;
+    geom->setVertexArray(&v);
+    geom->setColorArray(&l);
+    geom->setColorBinding(osg::Geometry::BIND_OVERALL);
+    geom->addPrimitiveSet( new osg::DrawArrays(osg::PrimitiveSet::TRIANGLE_FAN,0,6) );
+    geom->addPrimitiveSet( new osg::DrawArrays(osg::PrimitiveSet::TRIANGLE_FAN,6,6) );
+
+    return geom;
 }
 
 void ObjectModel::loadModel() {
@@ -111,7 +166,6 @@ void ObjectModel::loadModel() {
 	simdata::Vector3 axis2 = simdata::Cross(m_Axis0, m_Axis1);
 	
 	simdata::Matrix3 o(m_Axis0.x, m_Axis0.y, m_Axis0.z, m_Axis1.x, m_Axis1.y, m_Axis1.z, axis2.x, axis2.y, axis2.z);
-	// TODO test for o approx equal to identity.  if so, skip transform and return model node directly.
 	o = o.Inverse() * m_Scale;
 	simdata::Matrix3::M_t (&R)[3][3] = o.rowcol;
 	osg::Matrix model_orientation;
@@ -127,16 +181,31 @@ void ObjectModel::loadModel() {
 	//stateSet->setGlobalDefaults();
 	//m_rpNode->setStateSet(stateSet);
     
-    	// TODO: make optional from xml interface?
-	osgUtil::SmoothingVisitor sv;
-	m_Transform->accept(sv);
+	if (m_Smooth) {
+		osgUtil::SmoothingVisitor sv;
+		m_Transform->accept(sv);
+	}
 
 	// TODO: run an optimizer to flatten the model transform (if it differs from identity)
+
+	m_DebugMarkers = new osg::Switch;
+	m_Transform->addChild(m_DebugMarkers.get());
+
+	// create visible markers for each contact point
+	addContactMarkers();
 }
 
+void ObjectModel::addContactMarkers() {
+	m_ContactMarkers = new osg::Group;
+	for (unsigned i = 0; i < m_Contacts.size(); i++) {
+		osg::Geode *diamond = new osg::Geode;
+		diamond->addDrawable(makeDiamond(m_Contacts[i], 0.2));
+		m_ContactMarkers->addChild(diamond);
+	}
+	m_DebugMarkers->addChild(m_ContactMarkers.get());
+}
 
-osg::ref_ptr<osg::Node> ObjectModel::getModel() {
-	//return m_Node;
-	return m_Transform.get(); 
+void ObjectModel::showContactMarkers(bool on) {
+	m_DebugMarkers->setChildValue(m_ContactMarkers.get(), on);
 }
 

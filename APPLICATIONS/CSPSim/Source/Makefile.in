@@ -4,17 +4,13 @@ TOPDIR = ..
 
 DEMETER_PREFIX = $(TOPDIR)/$(DEMETER_RELATIVE)
 DEMETER_INCLUDE = -I$(DEMETER_PREFIX)
-DEMETER_LIBRARY = -L$(DEMETER_PREFIX) -ldemeter_csp #libdemeter_csp.so #$(DEMETER_PREFIX)/libdemeter_csp.so
+DEMETER_LIBRARY = -L$(DEMETER_PREFIX) -ldemeter_csp 
 
-SIMDATA_PREFIX = $(TOPDIR)/$(SIMDATA_RELATIVE)
-SIMDATA_INCLUDE = -I$(SIMDATA_PREFIX)/Include
-SIMDATA_LIBRARY = #_cSimData.so #$(SIMDATA_PREFIX)/Source/_cSimData.so
+LIBS = $(DEMETER_LIBRARY)
 
-LIBS = $(SIMDATA_LIBRARY) $(DEMETER_LIBRARY)
+INCLUDE = -I$(TOPDIR)/Include $(DEMETER_INCLUDE) -I@PYTHON_PREFIX@/include/python2.2
 
-INCLUDE = -I$(TOPDIR)/Include $(DEMETER_INCLUDE) $(SIMDATA_INCLUDE)
-
-CFLAGS = $(GCFLAGS) $(INCLUDE) $(GDEBUGF)  @SDL_FLAGS@ @GDAL_FLAGS@
+CFLAGS = $(GDEBUGF) $(GCFLAGS) $(INCLUDE) @SDL_FLAGS@
 SWCXXF = $(GCFLAGS) $(INCLUDE)
 LDOPTS = -Wl,-z,lazyload $(GLDOPTS) @LIBS@
 SWOPTS = $(GSWOPTS) $(INCLUDE)
@@ -22,10 +18,12 @@ SWOPTS = $(GSWOPTS) $(INCLUDE)
 SOURCES = \
 	AeroDynamics.cpp \
 	AircraftObject.cpp \
+	Atmosphere.cpp \
 	base.cpp \
 	BaseScreen.cpp \
 	Colorspace.cpp \
 	Config.cpp \
+	Console.cpp \
 	ConsoleCommands.cpp \
 	CSPSim.cpp \
 	DynamicObject.cpp \
@@ -36,6 +34,7 @@ SOURCES = \
 	GameScreen.cpp \
 	HID.cpp \
 	InputInterface.cpp \
+	LandingGear.cpp \
 	LogoScreen.cpp \
 	LogStream.cpp \
 	MenuScreen.cpp \

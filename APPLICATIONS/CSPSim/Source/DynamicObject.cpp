@@ -42,6 +42,9 @@ DynamicObject::DynamicObject(): SimObject()
 	m_Mass = 1.0;
 	m_Speed = 0.0;
 
+	m_GroundZ = 0.0;
+	m_GroundN = simdata::Vector3::ZAXIS;
+
 	m_pController = NULL;
 	m_iControllerID = 0;
 
@@ -193,6 +196,19 @@ void DynamicObject::postMotion(double dt)
 	updateGlobalPosition();
 	if (m_bOnGround) {
 		updateGroundPosition();
+	} else {
+		assert(m_Battlefield);
+		m_GroundZ = m_Battlefield->getElevation(m_GlobalPosition.x, m_GlobalPosition.y);
+		float h1, h2;
+		h1 = m_Battlefield->getElevation(m_GlobalPosition.x+1, m_GlobalPosition.y) - m_GroundZ;
+		h2 = m_Battlefield->getElevation(m_GlobalPosition.x, m_GlobalPosition.y+1) - m_GroundZ;
+		m_GroundN = simdata::Vector3(-h1,-h2, 1.0);
+		m_GroundN.Normalize();
+		/*
+		float nx, ny, nz;
+		m_Battlefield->getNormal(m_GlobalPosition.x, m_GlobalPosition.y, nx, ny, nz);
+		m_GroundN = simdata::Vector3(nx, ny, nz);
+		*/
 	}
 }
 

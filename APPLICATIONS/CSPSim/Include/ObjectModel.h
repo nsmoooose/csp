@@ -27,11 +27,15 @@
 
 
 #include <osg/Node>
+#include <osg/Switch>
+#include <osg/Group>
 #include <osg/MatrixTransform>
 
 #include <SimData/Object.h>
 #include <SimData/Types.h>
 #include <SimData/InterfaceRegistry.h>
+
+#include <vector>
 
 
 /**
@@ -41,7 +45,9 @@
 class ObjectModel: public simdata::Object
 {
 public:
-	SIMDATA_OBJECT(ObjectModel, 0, 0);
+	typedef std::vector<simdata::Vector3> ContactList;
+
+	SIMDATA_OBJECT(ObjectModel, 1, 0);
 	
 	BEGIN_SIMDATA_XML_INTERFACE(ObjectModel)
 		SIMDATA_XML("model_path", ObjectModel::m_ModelPath, true)
@@ -50,12 +56,15 @@ public:
 		SIMDATA_XML("axis_1", ObjectModel::m_Axis1, true)
 		SIMDATA_XML("offset", ObjectModel::m_Offset, false)
 		SIMDATA_XML("scale", ObjectModel::m_Scale, false)
+		SIMDATA_XML("smooth", ObjectModel::m_Smooth, false)
+		SIMDATA_XML("contacts", ObjectModel::m_Contacts, false)
 	END_SIMDATA_XML_INTERFACE
 
 	ObjectModel();
 	virtual ~ObjectModel();
 
-	osg::ref_ptr<osg::Node> getModel();
+	osg::ref_ptr<osg::Node> getModel() { return m_Transform.get(); }
+	osg::ref_ptr<osg::Node> getRawModel() { return m_Node.get(); }
 	std::string getModelPath() const { return m_ModelPath.getSource(); }
 
 	const simdata::Matrix3 &getRotation() const { return m_Rotation; }
@@ -63,6 +72,9 @@ public:
 	const simdata::Vector3 &getAxis1() const { return m_Axis1; }
 
 	double getBoundingSphereRadius() const { return m_BoundingSphereRadius; }
+	ContactList const &getContacts() const { return m_Contacts; }
+
+	void showContactMarkers(bool on);
 
 protected:
 
@@ -71,16 +83,24 @@ protected:
 	simdata::Vector3 m_Axis0, m_Axis1;
 	simdata::Vector3 m_Offset;
 	double m_Scale;
+	bool m_Smooth;
+	ContactList m_Contacts;
 	
 	virtual void pack(simdata::Packer& p) const;
 	virtual void unpack(simdata::UnPacker& p);
+	virtual void postCreate();
 	virtual void loadModel();
+	void addContactMarkers();
 
 	double m_BoundingSphereRadius;
+
+	enum { CONTACT_MARKERS };
 
 private:
 	osg::ref_ptr<osg::Node> m_Node;
 	osg::ref_ptr<osg::MatrixTransform> m_Transform;
+	osg::ref_ptr<osg::Switch> m_DebugMarkers;
+	osg::ref_ptr<osg::Group> m_ContactMarkers;
 };
 
 

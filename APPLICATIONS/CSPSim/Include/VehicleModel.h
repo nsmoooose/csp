@@ -36,7 +36,6 @@
 
 
 using simdata::Pointer;
-using simdata::PathPointer;
 using simdata::Vector3;
 using simdata::Matrix3;
 
@@ -204,7 +203,7 @@ public:
 		m_HUD->onUpdate(dt, true);
 	}
 
-	PathPointer<F16Hud> m_HUD;
+	Pointer<F16Hud> m_HUD;
 
 protected:
 	

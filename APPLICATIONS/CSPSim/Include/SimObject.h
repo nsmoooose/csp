@@ -122,7 +122,7 @@ public:
 protected:
 
 	int m_Army;
-	simdata::PathPointer<ObjectModel> m_Model;
+	simdata::Pointer<ObjectModel> m_Model;
 
 	virtual void pack(simdata::Packer& p) const;
 	virtual void unpack(simdata::UnPacker& p);

@@ -1,10 +1,9 @@
 SUBDIRS = Source 
 
 export DEMETER_RELATIVE = ../../THIRDPARTYLIBS/demeter
-export SIMDATA_RELATIVE = ../SimData
 
 export GDEBUGF = -g -Wall
-export GCFLAGS = -I/usr/local/include/python2.2 -fPIC -Wall -DSWIG_GLOBAL -O2
+export GCFLAGS = -fPIC -O2# -DSWIG_GLOBAL #-march=athon-tbird
 export GLDOPTS = -shared -lswigpy -ldl
 export GSWOPTS = -c -c++ -python -noexcept
 export CXX = g++
@@ -24,11 +23,8 @@ all clean clean-deps: Makefile
 #		$(MAKE) -C $${dir} $@ || exit 1; \
 #	done
 
-swig:
-	rm Source/cSimData_wrap.cpp || true;
-	make -C Source all
-
-Makefile: Makefile.in configure.in aclocal.m4
+Makefile: Makefile.in configure.in acinclude.m4
+	aclocal ; autoconf
 	./configure
 
 

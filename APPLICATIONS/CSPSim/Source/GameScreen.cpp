@@ -22,6 +22,10 @@
  *
  **/
 
+#include "stdinc.h"
+
+//#include <osg/DisplaySettings>
+
 #include <SimData/Types.h>
 
 #include "CSPSim.h"
@@ -29,7 +33,8 @@
 #include "EventMapIndex.h"
 #include "LogStream.h"
 #include "VirtualBattlefield.h"
-
+#include "CSPSim.h"
+#include "ConsoleCommands.h"
 
 
 double const GameScreen::OffsetRate =  30.0 * (G_PI / 180.0); // x deg / s, even if it is used for Zoom also ...
@@ -55,6 +60,7 @@ void GameScreen::InitInterface()
 	BIND_ACTION("QUIT", on_Quit);
 	BIND_ACTION("PAUSE", on_Pause);
 	BIND_ACTION("STATS", on_Stats);
+	BIND_ACTION("CONSOLE", on_Console);
 	BIND_ACTION("CHANGE_VEHICLE", on_ChangeVehicle);
 	BIND_ACTION("CAMERA_VIEW_0", on_View0);
 	BIND_ACTION("CAMERA_VIEW_1", on_View1);
@@ -169,20 +175,27 @@ void GameScreen::OnInit()
 	}
 
 	// add a layer for texts on screen
-	m_rpInfosView = new osgUtil::SceneView();
-	m_rpInfosView->setDefaults();
+	m_InfoView = new osgUtil::SceneView();
+	m_InfoView->setDefaults();
 
-	int ScreenWidth = CSPSim::theSim->GetSDLScreen()->w;
-	int ScreenHeight = CSPSim::theSim->GetSDLScreen()->h;
+	int ScreenWidth = CSPSim::theSim->getSDLScreen()->w;
+	int ScreenHeight = CSPSim::theSim->getSDLScreen()->h;
 
-	m_rpInfosView->setViewport(0,0,ScreenWidth,ScreenHeight);
+	m_InfoView->setViewport(0,0,ScreenWidth,ScreenHeight);
 
-	m_rpInfosView->getRenderStage()->setClearMask(0x0);
+	m_InfoView->getRenderStage()->setClearMask(0x0);
 
 	m_ScreenInfoManager = new ScreenInfoManager(ScreenWidth,ScreenHeight);
 	m_ScreenInfoManager->setName("ScreenInfoManager");
 
-    m_rpInfosView->setSceneData(m_ScreenInfoManager.get() );
+	m_Console = new PyConsole(ScreenWidth, ScreenHeight);
+	m_Console->setName("PyConsole");
+
+	m_InfoGroup = new osg::Group;
+	m_InfoGroup->addChild(m_ScreenInfoManager.get());
+	m_InfoGroup->addChild(m_Console.get());
+
+	m_InfoView->setSceneData(m_InfoGroup.get());
 }
 
 void GameScreen::OnExit()
@@ -200,8 +213,8 @@ void GameScreen::setActiveObject(simdata::PointerBase &object)
 		on_View2();
 	}
 	if (vehicle.valid()) {
-		int ScreenWidth = CSPSim::theSim->GetSDLScreen()->w;
-		int ScreenHeight = CSPSim::theSim->GetSDLScreen()->h;
+		int ScreenWidth = CSPSim::theSim->getSDLScreen()->w;
+		int ScreenHeight = CSPSim::theSim->getSDLScreen()->h;
 		m_ScreenInfoManager->changeObjectStats(ScreenWidth,ScreenHeight);
 	}
 }
@@ -228,14 +241,14 @@ void GameScreen::onRender()
 	if (m_Battlefield) {
 		m_Battlefield->drawScene();
 	}
-	 m_rpInfosView->cull();
-	 m_rpInfosView->draw();
+	 m_InfoView->cull();
+	 m_InfoView->draw();
 }
 
 void GameScreen::onUpdate(double dt)
 {	
 	SetCamera(dt);
-	m_rpInfosView->update();
+	m_InfoView->update();
 }
 
 simdata::Vector3 GameScreen::GetNewFixedCamPos(SimObject * const target) const
@@ -311,7 +324,7 @@ void GameScreen::on_View8()
 {
 	if (m_ActiveObject.valid()) {
 		m_iViewMode = 8;
-		m_fixedCamPos = GetNewFixedCamPos(m_ActiveObject.ptr());
+		m_fixedCamPos = GetNewFixedCamPos(m_ActiveObject.get());
 		m_bInternalView = false;
 	}
 }
@@ -327,7 +340,7 @@ void GameScreen::on_View0()
 
 void GameScreen::on_Quit()
 {
-	CSPSim::theSim->Quit();
+	CSPSim::theSim->quit();
 }
 
 void GameScreen::on_Pause()
@@ -340,6 +353,11 @@ void GameScreen::on_Stats()
 {
 	m_ScreenInfoManager->setStatus("GENERAL STATS", !m_ScreenInfoManager->getStatus("GENERAL STATS"));
 	m_ScreenInfoManager->setStatus("OBJECT STATS", !m_ScreenInfoManager->getStatus("OBJECT STATS"));
+}
+
+void GameScreen::on_Console()
+{
+	CSPSim::theSim->runConsole(m_Console.get());
 }
 
 void GameScreen::on_ChangeVehicle()
@@ -466,122 +484,6 @@ void GameScreen::on_MouseView(int x, int y, int dx, int dy)
 	m_fangleRotX += dy * 0.001;
 }
 
-/*
-bool GameScreen::OnKeyUp(SDLKey key)
-{
-    CSP_LOG( CSP_APP , CSP_DEBUG, "GameScreen::OnKeyUp: m_iViewMode = " << m_iViewMode << "; key = " << key); 
-
-	switch ( key )
-	{
-	case SDLK_KP4:
-    case SDLK_KP6:
-			if ( m_iViewMode == 1 || m_iViewMode == 2 || m_iViewMode == 3 ) 
-				m_fangleOffsetZ = 0.0;
-			break;
-	case SDLK_KP2:
-	case SDLK_KP8:
-		    if ( m_iViewMode == 1 || m_iViewMode == 2 || m_iViewMode == 3 ) 
-				m_fangleOffsetX = 0.0;
-	    	break;
-	case SDLK_KP_MINUS:
-    case SDLK_KP_PLUS:
-		if ( m_iViewMode == 1 || m_iViewMode == 2 || m_iViewMode == 3 ) 
-				m_fscaleFactor = 1.0;
-		    break;
-	default:
-		return false;
-		break;
-	}
-	return true;
-}
- 
-void GameScreen::OnMouseMove(int x, int y)
-{
-
-}
- 
-void GameScreen::OnMouseButtonDown(int num, int x, int y)
-{
-  // if the joystick button is down fire a missile
-
-}
-
-void GameScreen::OnJoystickAxisMotion(int joynum, int axis, int val)
-{
-}
-
-void GameScreen::OnJoystickHatMotion(int joynum, int hat, int val)
-{
-	CSP_LOG(CSP_APP, CSP_DEBUG, "GameScreen::OnJoystickHatMotion, joystick: " << joynum
-		<< ", hat: " << hat << ", val: " << val );
-	
-	switch ( joynum )
-	{
-	case 0:
-		switch ( hat )
-		{
-		case 0:
-			switch ( val )
-			{
-			case SDL_HAT_RIGHT:
-				m_fangleOffsetZ = angleOffset;
-				break;
-			case SDL_HAT_LEFT:
-				m_fangleOffsetZ = - angleOffset;
-				break;
-			case SDL_HAT_UP:
-				m_fangleOffsetX = - angleOffset;
-				break;
-			case SDL_HAT_DOWN:
-				m_fangleOffsetX = angleOffset;
-				break;
-			case SDL_HAT_RIGHTUP:
-				
-			case SDL_HAT_RIGHTDOWN:
-				
-			case SDL_HAT_LEFTUP:
-				
-			case SDL_HAT_LEFTDOWN:
-				break;
-			case SDL_HAT_CENTERED:
-				m_fangleOffsetX = 0.0;
-				m_fangleOffsetZ = 0.0;
-			    break;
-			}
-		}
-		break;
-	}
-}
-
-void GameScreen::OnJoystickButtonDown(int joynum, int butnum)
-{
-    CSP_LOG(CSP_APP, CSP_DEBUG, "OnJoystickButtonDown, joystick: " << joynum
-                << ", butnum: " << butnum );
-// this has been removed for now.  this was just for testing anyway, since missile firing will be
-// done via the active object's callbacks, not the gamescreen.  since i'm dumping the ObjectFactory
-// infrastructure i've had to comment it out, but it may still a useful starting point in the
-// future.
-#if 0
-
-
-  if (butnum == 0 && missile_delay > 0.5)
-  {
-
-      MissileObject * pMissile = (MissileObject * )g_pObjectFactory->createNamedObject("AMRAAM", "UNNAMED MISSILE");
-
-      pMissile->setOrientation( m_ActiveObject->getOrientation());
-      pMissile->setGlobalPosition( m_ActiveObject->getGlobalPosition() 
-		                         - 3.0 * ( m_ActiveObject->getUpDirection() ) 
-								 - 8.0 * (  m_ActiveObject->getDirection()) );
-      pMissile->setVelocity( m_ActiveObject->getVelocity() );
-      g_pBattlefield->addObject( pMissile );
-
-      missile_delay = 0;
-  }
-#endif
-
-}
-*/
 
 // TODO All references to planes should be made generic!
 
@@ -684,7 +586,7 @@ void GameScreen::SetCamera(double dt)
 	case 8: // view mode 8 is a fly by view 
 		lookPos = m_ActiveObject->getGlobalPosition();
 		if ((lookPos - m_fixedCamPos).Length() > 900.0 )
-			m_fixedCamPos = GetNewFixedCamPos(m_ActiveObject.ptr());
+			m_fixedCamPos = GetNewFixedCamPos(m_ActiveObject.get());
 		eyePos = m_fixedCamPos;
 		upVec = simdata::Vector3::ZAXIS;
 		break;
@@ -693,3 +595,4 @@ void GameScreen::SetCamera(double dt)
 		m_Battlefield->setLookAt(eyePos, lookPos, upVec);
 	}
 }
+

@@ -46,7 +46,7 @@ public:
 	SIMDATA_OBJECT(TankObject, 0, 0);
 
 	EXTEND_SIMDATA_XML_INTERFACE(TankObject, DynamicObject)
-
+		SIMDATA_XML("forward_speed", TankObject::forward_speed, false)
 	END_SIMDATA_XML_INTERFACE
 
 	

@@ -151,7 +151,7 @@ public:
 	/**
 	 * Test for a specific colorspace.
 	 */
-	bool is(space_t S) const { return space == S; }
+	bool isSpace(space_t S) const { return space == S; }
 	
 	/**
 	 * Get the color compenonents in the current colorspace.

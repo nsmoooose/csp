@@ -17,10 +17,37 @@
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 
-%module CSPSim
 %{
 #include "CSPSim.h"
 %}
 
-%include "CSPSim.h"
+
+class CSPSim
+{
+public:
+	static CSPSim *theSim;
+    
+	CSPSim();
+	virtual ~CSPSim();
+	virtual void init();
+	virtual void run();
+	virtual void quit();
+	virtual void cleanup();
+
+	void changeScreen(BaseScreen * newScreen);
+	SDL_Surface * getSDLScreen() {return m_SDLScreen;};
+	simdata::SimDate & getCurrentTime() { return m_CurrentTime; }
+	simdata::SimTime const & getFrameRate() const{ return m_FrameRate; }
+	void setActiveObject(simdata::Pointer<DynamicObject> object);
+	simdata::Pointer<DynamicObject> const getActiveObject() const;
+	VirtualBattlefield * const getBattlefield() const;
+	void setShell(PyObject *shell) { m_Shell.bind(shell); }
+	EventMapIndex *getInterfaceMaps() { return m_InterfaceMaps; }
+	void togglePause();
+	void runConsole(PyConsole *console);
+	void endConsole();
+	bool isPaused() { return m_Paused; }
+	simdata::DataArchive * getDataArchive() { return m_DataArchive; }
+};
+
 

@@ -108,6 +108,9 @@ protected:
 	
 	double m_Mass;
 	double m_Speed;
+	
+	double m_GroundZ;
+	simdata::Vector3 m_GroundN;
 
 	bool m_Local;
 	bool m_Human;

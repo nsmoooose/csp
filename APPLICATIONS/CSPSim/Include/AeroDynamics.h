@@ -31,11 +31,10 @@
 #include <SimData/Types.h>
 #include <SimData/InterfaceRegistry.h>
 
+#include "LandingGear.h"
 #include "DynamicalSystem.h"
 
 class AircraftObject;
-
-	
 
 
 /**
@@ -49,6 +48,7 @@ public:
 	virtual void initialize() = 0;
 	virtual void doSimStep(double dt) = 0;
 };
+
 
 /**
  * class AeroDynamics - aircraft flight model implementation.
@@ -114,7 +114,7 @@ protected:
 	virtual void pack(simdata::Packer& p) const;
 	virtual void unpack(simdata::UnPacker& p);
 	virtual void convertXML();
-	void postProcess();
+	virtual void postCreate();
 
 
 protected:
@@ -181,17 +181,22 @@ public:
 	double getAngleOfAttack() const { return m_alpha; }
 	double getSideSlip() const { return m_beta; }
 	double getGForce() const { return m_gForce; }
-	double getSpeed() const { return m_Speed; }
+	double getSpeed() const { return m_AirSpeed; }
 	
 	void setThrust(double thrust) { m_Thrust = thrust; }
+	void setGroundZ(double groundz) { m_GroundZ = groundz; }
+	void setGroundN(simdata::Vector3 const &groundn) { m_GroundN = groundn; }
 
 	//void setPosition(const simdata::Vector3 & pos) { m_PositionLocal = pos; }
 	//void setVelocity(const simdata::Vector3 & velo);
 	
 	void bindObject(simdata::Vector3 &position, simdata::Vector3 &velocity, 
 	                simdata::Vector3 &angular_velocity, simdata::Quaternion &orientation);
+	void bindGearSet(LandingGearSet &);
+	void bindContacts(std::vector<simdata::Vector3> const &);
 	void setControlSurfaces(double aileron, double elevator, double rudder);
 	void setInertia(double mass, simdata::Matrix3 const &I);
+	void setBoundingRadius(double radius);
 	
 
 protected:
@@ -199,7 +204,7 @@ protected:
 	void bindToBody(std::vector<double> const &y);
 
 	simdata::Vector3 const& CalculateForces(double const p_qBarS); // update gforce too
-	simdata::Vector3 const& CalculateMoments(double const p_qBarS) const;
+	simdata::Vector3 const& CalculateMoments(double const p_qBarS);
 	void updateAngles(double dt);
 	double CalculateLiftCoefficient() const; 
 	double CalculateDragCoefficient() const;
@@ -237,8 +242,6 @@ protected:
 	double m_ElevatorInput;  // desired elevator deflection
 
 	//double SetControl(double const p_setting, double const & p_mMax, double const & p_mMin) const;
-
-	AircraftObject *m_Aircraft;
 
 	// control surfaces
 	double m_Aileron;
@@ -287,17 +290,29 @@ protected:
 	simdata::Vector3 m_AngularVelocityLocal;// angular velocity in earth coordinates
 	simdata::Vector3 m_AngularVelocityBody; // (P,Q,R) angular velocity in body coordinates
 
+	simdata::Vector3 m_ExtraForceBody;      // Landing gear, etc 
+	simdata::Vector3 m_ExtraMomentBody;     // Landing gear, etc
+
 	bool m_Bound;
 	simdata::Vector3 *m_Position;
 	simdata::Vector3 *m_Velocity;
 	simdata::Vector3 *m_AngularVelocity;
 	simdata::Quaternion *m_Orientation;
 
-	double m_Speed;
+	double m_AirSpeed;
 	double m_Mass;
 	double m_MassInverse;
+	double m_AspectRatio;
+	mutable double m_Cl;
+	double m_GE;                       // fractional ground effect
 	simdata::Matrix3 m_Inertia;        // mass moment of inertia in standard coordinates (constant)
 	simdata::Matrix3 m_InertiaInverse; // inverse of moment of inertia matrix (constant)
+
+	LandingGearSet *m_Gear;                                // landing gear
+	const std::vector<simdata::Vector3> *m_Contacts;       // other contact points
+	double m_Radius;                                       // bounding sphere radius
+	double m_GroundZ;                                      // ground position
+	simdata::Vector3 m_GroundN;                            // ground normal
 };
 
 

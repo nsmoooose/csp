@@ -40,5 +40,11 @@ extern SimpleConfig g_Config;
 extern bool openConfig(std::string path, bool report_error=true);
 
 
+/**
+ * Get the main data path.
+ */
+extern std::string getDataPath();
+
+
 #endif // __CONFIG_H__
 

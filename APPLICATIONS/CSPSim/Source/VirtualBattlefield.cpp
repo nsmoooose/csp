@@ -22,6 +22,9 @@
  *
  **/
 
+#define NOSHADOW
+
+
 #include <sstream>
 
 #include <osg/Fog>
@@ -39,7 +42,11 @@
 #include "CSPSim.h"
 #include "LogStream.h"
 #include "Platform.h"
-//#include "shadow.h"
+
+#ifdef SHADOW
+#include "shadow.h"
+#endif
+
 #include "Sky.h"
 #include "VirtualBattlefield.h"
 
@@ -308,8 +315,8 @@ int VirtualBattlefield::buildScene()
 
 	osg::ColorMatrix* cm = new osg::ColorMatrix;
 	//setNVG(cm);
-	globalStateSet->setAttribute(cm);
-	pFogState->setAttributeAndModes(cm, osg::StateAttribute::OVERRIDE);
+	//globalStateSet->setAttribute(cm);
+	//pFogState->setAttributeAndModes(cm, osg::StateAttribute::OVERRIDE);
 	m_pView->setGlobalStateSet(globalStateSet);
 
 
@@ -774,7 +781,7 @@ simdata::Pointer<DynamicObject> VirtualBattlefield::getNextObject(simdata::Point
 		if ((human >= 0) && (*i)->isHuman() != (human != 0)) continue;
 		if ((local >= 0) && (*i)->isLocal() != (local != 0)) continue;
 		break;
-	} while (object.ptr() != (*i).ptr());
+	} while (object.get() != (*i).get());
 	return *i;
 }
 
@@ -871,24 +878,25 @@ void VirtualBattlefield::setActiveTerrain(TerrainObject *pTerrainObject)
 		m_ActiveTerrainObject->setCameraPosition(xPatch, yPatch, 1000);
 		m_TerrainNode = m_ActiveTerrainObject->getNode();
 		if (m_TerrainNode.valid()) {
-			m_ShadowGroup->addChild(m_TerrainNode.get());
-#if 0
+#ifdef SHADOW 
 			osg::Group *g = new osg::Group;
 			g->addChild(m_TerrainNode.get());
 			m_ShadowGroup->addChild(g);
 			//m_ShadowGroup->addChild(m_TerrainNode.get());
 			osg::Vec4 ambientLightColor(0.9f,0.1f,0.1f,1.0f);
 			int texture_unit = 2;
-			///osg::NodeCallback* cb = createCullCallback(m_rpObjectRootNode.get(),osg::Vec3(35000.0,51500.0,30000),ambientLightColor,texture_unit);
-    			///g->setCullCallback(cb);
-/*
+			osg::NodeCallback* cb = createCullCallback(m_rpObjectRootNode.get(),osg::Vec3(35000.0,51500.0,30000),ambientLightColor,texture_unit);
+    			g->setCullCallback(cb);
+
 			g->setCullingActive(true);
 			m_TerrainNode->setCullingActive(true);
 			m_ShadowGroup->setCullingActive(true);
 			m_rpRootNode->setCullingActive(true);
-*/
+
 			//printf("call=%p\n", cb);
 			//printf("terr=%p, shad=%p, root=%p\n", m_TerrainNode.get(), m_ShadowGroup.get(), m_rpRootNode.get());
+#else
+			m_ShadowGroup->addChild(m_TerrainNode.get());
 #endif
 		}
 	}

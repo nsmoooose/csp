@@ -34,13 +34,17 @@
 
 #include "DynamicObject.h"
 #include "TerrainObject.h"
+#include "Atmosphere.h"
+#include "Shell.h"
 
+#include <Python.h>
 
 class VirtualBattlefield;
 class VirtualHID;
 class BaseScreen;
 class GameScreen;
 class EventMapIndex;
+class PyConsole;
 
 struct SDLWave {
 	SDL_AudioSpec spec;
@@ -65,14 +69,13 @@ public:
     
 	CSPSim();
 	virtual ~CSPSim();
-	virtual void Init();
-	virtual void Run();
-	virtual void Quit();
-	virtual void Exit();
-	virtual void Cleanup();
+	virtual void init();
+	virtual void run();
+	virtual void quit();
+	virtual void cleanup();
 
-	void ChangeScreen(BaseScreen * newScreen);
-	SDL_Surface * GetSDLScreen() {return m_SDLScreen;};
+	void changeScreen(BaseScreen * newScreen);
+	SDL_Surface * getSDLScreen() {return m_SDLScreen;};
 
 	simdata::SimDate & getCurrentTime() { return m_CurrentTime; }
 	simdata::SimTime const & getFrameRate() const{ return m_FrameRate; }
@@ -81,22 +84,28 @@ public:
 	simdata::Pointer<DynamicObject const> const getActiveObject() const;
 	VirtualBattlefield * const getBattlefield() const;
 
+	void setShell(PyObject *shell) { m_Shell.bind(shell); }
 
 	EventMapIndex *getInterfaceMaps() { return m_InterfaceMaps; }
 
 	void togglePause();
+	void runConsole(PyConsole *console);
+	void endConsole();
+	bool isPaused() { return m_Paused; }
 
 	simdata::DataArchive * getDataArchive() { return m_DataArchive; }
 
+	Atmosphere const * getAtmosphere() const { return &m_Atmosphere; }
+
+
 protected:
 	
-	void InitSim();
-	int InitSDL();
+	void initSim();
+	int initSDL();
 
-	void DoInput();
-	void UpdateObjects(double dt);
-	void DoStartupScript();
-
+	void doInput();
+	void updateObjects(double dt);
+	void doStartupScript();
 
 
 private:
@@ -111,16 +120,13 @@ private:
 	GameScreen *m_GameScreen;
 	BaseScreen *m_MainMenuScreen;
 
-
-
 	int m_ScreenWidth;
 	int m_ScreenHeight;
 
-	bool m_bFreezeSim;
-	bool m_bFinished;
+	bool m_Paused;
+	bool m_Finished;
+	bool m_ConsoleOpen;
 
-	//SimPlayer *m_Player;
-	
 	/**
 	 * The current simulation time/date
 	 */
@@ -147,8 +153,13 @@ private:
 	VirtualBattlefield *m_Battlefield;
 
 	// TODO the terrain will eventually be encapsulated in a Theater class
-	simdata::PathPointer<TerrainObject> m_ActiveTerrain;
+	simdata::Pointer<TerrainObject> m_ActiveTerrain;
 	simdata::DataArchive *m_DataArchive;
+	Atmosphere m_Atmosphere;
+
+	//PyObject* m_Console;
+	osg::ref_ptr<PyConsole> m_Console;
+	PyShell m_Shell;
 };
 
 #endif // __CSPSIM_H__

@@ -45,7 +45,7 @@
 // Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 // Boston, MA  02111-1307, USA.
 //
-// $Id: LogStream.h,v 1.4 2003/02/19 11:41:56 mkrose Exp $
+// $Id: LogStream.h,v 1.5 2003/03/21 20:08:35 mkrose Exp $
 
 #ifndef __LOGSTREAM_H__
 #define __LOGSTREAM_H__
@@ -261,45 +261,23 @@ public:
 	* The default is to send messages to cerr.
 	* @param out output stream
 	*/
-	logstream( ostream& out )
-		// : logstream_base(out.rdbuf()),
-		: logstream_base(),
-		  ostream(&lbuf),
-		  m_out(NULL)
-	{ 
-		lbuf.set_sb(out.rdbuf());
-	}
+	logstream( ostream& out );
 
-	~logstream() {
-		_close();
-	}
+	~logstream();
 
-	void _close() {
-		if (m_out != NULL) {
-			m_out->close();
-			delete m_out;
-			m_out = NULL;
-		}
-	}
+	void _close();
 
 	/**
 	* Set the output stream
 	* @param out output stream
 	*/
-	void set_output( ostream& out ) { 
-		_close();
-		lbuf.set_sb( out.rdbuf() ); 
-	}
+	void set_output( ostream& out );
 
 	/**
 	* Set the output stream
 	* @param out output stream
 	*/
-	void set_output( std::string const &fn ) { 
-		_close();
-		m_out = new std::ofstream(fn.c_str());
-		lbuf.set_sb( m_out->rdbuf() ); 
-	}
+	void set_output( std::string const &fn );
 
 	/**
 	* Set the global log class and priority level.
@@ -330,12 +308,7 @@ logstream::operator<< ( const loglevel& l )
  * has been initialised.
  * @return current logstream
  */
-inline logstream&
-csplog()
-{
-	static logstream logstrm( cerr );
-	return logstrm;
-}
+logstream& csplog();
 
 
 /** \def SG_LOG(C,P,M)

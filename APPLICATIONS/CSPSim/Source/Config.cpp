@@ -45,3 +45,7 @@ bool openConfig(std::string ini_path, bool report_error) {
         return found_config;
 }
 
+std::string getDataPath() {
+	return g_Config.getPath("Paths", "DataPath", ".", true);
+}
+

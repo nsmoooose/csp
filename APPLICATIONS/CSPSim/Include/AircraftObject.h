@@ -29,6 +29,7 @@
 #include "DynamicObject.h"
 #include "HID.h"
 #include "AeroDynamics.h"
+#include "LandingGear.h"
 
 
 
@@ -46,6 +47,7 @@ public:
 		SIMDATA_XML("elevator_max", AircraftObject::m_ElevatorMax, true)
 		SIMDATA_XML("rudder_min", AircraftObject::m_RudderMin, true)
 		SIMDATA_XML("rudder_max", AircraftObject::m_RudderMax, true)
+		SIMDATA_XML("landing_gear", AircraftObject::m_Gear, true)
 	END_SIMDATA_XML_INTERFACE
 
 	AXIS_INTERFACE(AircraftObject, setThrottle);
@@ -66,6 +68,10 @@ public:
 	ACTION_INTERFACE(AircraftObject, noDecThrottle);
 	ACTION_INTERFACE(AircraftObject, SmokeOn);
 	ACTION_INTERFACE(AircraftObject, SmokeOff);
+	AXIS_INTERFACE(AircraftObject, setWheelBrake);
+	ACTION_INTERFACE(AircraftObject, WheelBrakePulse);
+	ACTION_INTERFACE(AircraftObject, WheelBrakeOn);
+	ACTION_INTERFACE(AircraftObject, WheelBrakeOff);
 
 	AircraftObject();
 	virtual ~AircraftObject();
@@ -102,8 +108,9 @@ protected:
 
 	virtual void pack(simdata::Packer& p) const;
 	virtual void unpack(simdata::UnPacker& p);
+	virtual void postCreate();
 
-	simdata::PathPointer<AeroDynamics> m_FlightModel;
+	simdata::Pointer<AeroDynamics> m_FlightModel;
 	
 	// dynamic properties
 	
@@ -124,6 +131,8 @@ protected:
 	double m_dElevatorInput;
 	double m_dRudderInput;
 	double m_dThrottleInput;
+	double m_BrakeInput;
+	double m_BrakePulse;
 
 	// keyboard relaxation
 
@@ -145,6 +154,9 @@ protected:
 	double m_ElevatorMax;
 	double m_RudderMin;
 	double m_RudderMax;
+
+	// landing gear
+	LandingGearSet m_Gear;
 	
 	bool m_PhysicsInitialized;
 	bool m_ComplexPhysics;

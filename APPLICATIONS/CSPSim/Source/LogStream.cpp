@@ -24,7 +24,7 @@
 // Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 // Boston, MA  02111-1307, USA.
 //
-// $Id: LogStream.cpp,v 1.1 2003/02/02 21:13:40 mkrose Exp $
+// $Id: LogStream.cpp,v 1.2 2003/03/21 20:07:55 mkrose Exp $
 
 #include "stdinc.h"
 
@@ -89,5 +89,46 @@ void
 logstream::setLogLevels( cspDebugClass c, cspDebugPriority p )
 {
     logbuf::set_log_level( c, p );
+}
+
+
+logstream::logstream( ostream& out )
+		// : logstream_base(out.rdbuf()),
+		: logstream_base(),
+		  ostream(&lbuf),
+		  m_out(NULL)
+{ 
+	lbuf.set_sb(out.rdbuf());
+}
+
+logstream::~logstream() {
+	_close();
+}
+
+void logstream::_close() {
+	if (m_out != NULL) {
+		m_out->close();
+		delete m_out;
+		m_out = NULL;
+	}
+}
+
+void logstream::set_output( ostream& out ) { 
+	_close();
+	lbuf.set_sb( out.rdbuf() ); 
+}
+
+void logstream::set_output( std::string const &fn ) { 
+	_close();
+	m_out = new std::ofstream(fn.c_str());
+	lbuf.set_sb( m_out->rdbuf() ); 
+}
+
+logstream& csplog() {
+	static logstream *logstrm = 0;
+	if (!logstrm) {
+		logstrm = new logstream( std::cerr );
+	}
+	return *logstrm;
 }
 

@@ -1,5 +1,12 @@
 Version 0.4.0 (in progress)
 ===========================
+2003-01-31: onsight
+  * Added debian packaging files (experimental).
+
+  * Added 'docs --clean' target to scons.
+
+  * Fixed the source directory for building scons sdist.
+
 2003-01-30: onsight
   * Starting with version 1.3.20 of SWIG, the python runtime
     library support has changed.  The swigpy library is no

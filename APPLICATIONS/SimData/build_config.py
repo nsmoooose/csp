@@ -1,4 +1,4 @@
-from build_support import Config
+from build_support import Config, compareVersions
 
 
 class Config_posix(Config):
@@ -7,10 +7,19 @@ class Config_posix(Config):
 		self.CPPFLAGS = ''
 		self.CPPPATH = ['#/Include', self.PYTHON_INC]
 		self.SHLINKFLAGS = ' -shared -Wl,-z,lazyload'
-		self.SHLINKLIBS = ['dl', 'swigpy']
-		self.SWIGFLAGS = ' -c -c++ -python -noexcept -IInclude -I%s' % self.PYTHON_INC
+		self.SHLINKLIBS = ['dl']
 		self.CXXFILESUFFIX = '.cpp'
 		self.ARCHIVE_FORMATS = None
+		self.configSwig(env)
+	def configSwig(self, env):
+		version = env['SWIG_VERSION']
+		self.SWIGFLAGS = ' -c++ -python -noexcept -IInclude -I%s' % self.PYTHON_INC
+		if compareVersions(version, '1.3.20') >= 0:
+		  self.SWIGFLAGS = self.SWIGFLAGS + ' -runtime'
+		else:
+		  self.SWIGFLAGS = self.SWIGFLAGS + ' -c'
+		  self.SHLINKLIBS.append('swigpy')
+
 
 class Config_msvc(Config):
 	def config(self, env):

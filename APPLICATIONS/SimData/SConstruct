@@ -47,7 +47,6 @@ from build_config import *
 
 EnsureSConsVersion(0,9)
 EnsurePythonVersion(2,2)
-#EnsureSwigVersion('1.3.16 1.3.17 1.3.20') # only needed for shared lib
 
 if ARGUMENTS.get('PLATFORM', 0):
 	env = Environment(PLATFORM = ARGUMENTS['PLATFORM'])
@@ -55,7 +54,6 @@ else:
 	env = Environment()
 
 ConfigPython(env)
-ConfigPlatform(env)
 
 package = Package(env)
 env['PACKAGE'] = package
@@ -76,20 +74,19 @@ options.Add('LINK',
                 help='linker')
 options.Add('ARCHIVE_FORMATS', 
                 help='File format(s) for distribution archives',
-		default=None)
+                default=None)
 options.Add('PACKAGE_PREFIX', 
                 help='Installation path for the SimData package', 
-		default=env['PYTHON_LIB'])
+                default=env['PYTHON_LIB'])
 options.Add('INCLUDE_PREFIX', 
                 help='Installation path for the SimData headers and interfaces', 
-		default=env['PYTHON_INC'])
+                default=env['PYTHON_INC'])
 options.Update(env)
 Help(options.GenerateHelpText(env))
 
-# construct.addSwigSupport(env)
+# Configuration tests
 
-conf = Configure(env)
-addConfigTests(conf)
+conf = CustomConfigure(env)
 if not conf.checkSwig('1.3.16', ('1.3.18','1.3.19')):
 	print
 	print "   SimData requires SWIG 1.3.16, 1.3.17, 1.3.20, or newer.  If a"
@@ -98,6 +95,9 @@ if not conf.checkSwig('1.3.16', ('1.3.18','1.3.19')):
 	print "   http://www.swig.org"
  	print
  	Exit(1)
+env = conf.Finish()
+
+ConfigPlatform(env)
 
 # Export('env', 'construct', 'Package')
 Export('env')

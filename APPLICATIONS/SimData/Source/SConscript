@@ -85,6 +85,7 @@ sub_interfaces = Prefix("#/Include/SimData",
 	Archive.i
 	BaseType.i
 	Conversions.i
+	cSimData.i
 	DataArchive.i
 	DataManager.i
 	Date.i
@@ -161,9 +162,18 @@ extra_files = Prefix("#",
 	TODO
 	Makefile
 	SConstruct
-	construct.py
+	build_support.py
+	build_config.py
 	setup.py
 	Source/SConscript
+	""")
+
+doc_files = Prefix("#/Doc",
+	"""
+	Doxyfile
+	SConscript
+	footer.html
+	Makefile
 	""")
 
 # swig wrappers
@@ -183,9 +193,10 @@ package_targets = libraries + [wrapper]
 # installation
 package = env['PACKAGE']
 package.installTarget(package_files + libraries, headers + sub_interfaces)
-package.add(sources, 'source')
+package.add(Prefix('#/Source', sources) + top_interfaces, 'source')
+package.add(top_interfaces, 'source')
 package.add(libraries, 'binary')
-package.add(package_files + headers + sub_interfaces + extra_files, 'both')
+package.add(package_files + headers + sub_interfaces + extra_files + doc_files, 'both')
 
 # default target(s)
 Default(package_targets)

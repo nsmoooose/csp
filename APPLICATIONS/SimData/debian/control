@@ -1,0 +1,47 @@
+Source: simdata
+Section: devel
+Priority: optional
+Maintainer: Mark Rose <mkrose@users.sourceforge.net>
+Build-Depends: debhelper (>= 4.0.0), scons (>= 0.94), g++ (>=3.2.0), python2.3-dev, swig1.3 (>= 1.3.20)
+Standards-Version: 3.6.0
+
+Package: simdata-dev
+Section: devel
+Architecture: any
+Depends: simdata
+Suggests: simdata-doc
+Description: Header and interface files for SimData
+ SimData is a cross-platform, independent library for data management in
+ simulations. The library is written in C++, and provides full binding to
+ Python via SWIG.  This package provides high-quality data classes that are
+ useful in simulation environments (including vectors, matrices, quaternions,
+ dates, geospacial coordinates, and interpolated lookup tables) and allows
+ static external data to be quickly and easily loaded into the simulation at
+ runtime. 
+
+Package: simdata
+Section: libs
+Architecture: any
+Depends: ${shlibs:Depends}
+Recommends: ${python:Depends}
+Description: Data management library for simulations
+ SimData is a cross-platform, independent library for data management in
+ simulations. The library is written in C++, and provides full binding to
+ Python via SWIG.  This package provides high-quality data classes that are
+ useful in simulation environments (including vectors, matrices, quaternions,
+ dates, geospacial coordinates, and interpolated lookup tables) and allows
+ static external data to be quickly and easily loaded into the simulation at
+ runtime. 
+
+Package: simdata-doc
+Section: doc
+Architecture: all
+Recommends: simdata, simdata-dev
+Description: Documentation for SimData
+ SimData is a cross-platform, independent library for data management in
+ simulations. The library is written in C++, and provides full binding to
+ Python via SWIG.  This package provides high-quality data classes that are
+ useful in simulation environments (including vectors, matrices, quaternions,
+ dates, geospacial coordinates, and interpolated lookup tables) and allows
+ static external data to be quickly and easily loaded into the simulation at
+ runtime. 

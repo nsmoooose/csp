@@ -29,6 +29,7 @@ import SCons.Scanner
 import SCons.Util
 import SCons.Errors
 
+
 Action = SCons.Action.Action
 Builder = SCons.Builder.Builder
 Scanner = SCons.Scanner.Base
@@ -122,6 +123,11 @@ def compareVersions(a, b):
 def addConfigTests(conf):	
 	conf.AddTests(configure_tests)
 
+def CustomConfigure(env):
+	conf = env.Configure()
+	addConfigTests(conf)
+	return conf
+
 
 ############################################################################
 # additional builders
@@ -192,6 +198,7 @@ def checkSwig(context, min_version, not_versions=[]):
 						ok = 0
 	if ok:
 		context.Result("yes (%s)" % swig_version)
+		context.env['SWIG_VERSION'] = swig_version
 	else:
 		context.Result("no")
 	return ok 
@@ -480,10 +487,14 @@ class Package:
 		include_target = os.path.join(env['INCLUDE_PREFIX'], info.package)
 		install_package = installPythonSources(env, package_target, package_files)
 		install_headers = installPythonSources(env, include_target, include_files)
+		env.Alias('install_package', install_package)
+		env.Alias('install_headers', install_headers)
 		env.Alias('install', install_package + install_headers)
 
 def Prefix(dir, names):
-	return map(lambda x: os.path.normpath(os.path.join(dir, x)), names.split())
+	if type(names) == type(''):
+		names = names.split()
+	return map(lambda x: os.path.normpath(os.path.join(dir, x)), names)
 
 
 def SelectBuildDir(env, build_dir, platform=None): 

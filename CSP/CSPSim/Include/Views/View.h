@@ -33,13 +33,13 @@
 
 class CameraAgent;
 class CameraKinematics;
-class SimObject;
 class DynamicObject;
+class SimObject;
 
 class View {
 	size_t m_ViewMode;
 protected:
-	bool m_InternalView;
+	bool m_Internal;
 	simdata::Ref<DynamicObject> m_ActiveObject;
 	CameraKinematics* m_CameraKinematics;
 	void updateBody(simdata::Vector3& ep,simdata::Vector3& lp,simdata::Vector3& up);
@@ -56,11 +56,12 @@ public:
 	}
 	void cull();
 	virtual ~View();
+	bool isInternal() const {return m_Internal;}
 };
 
 class InternalView: public View {
 public:
-	InternalView(size_t vm):View(vm){m_InternalView = true;}
+	InternalView(size_t vm):View(vm){m_Internal = true;}
 	virtual void constrain();
 	virtual void update(simdata::Vector3& ep,simdata::Vector3& lp,simdata::Vector3& up, double dt);
 	virtual void activate();

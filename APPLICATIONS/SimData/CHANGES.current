@@ -1,6 +1,10 @@
 Version 0.3.3 (in progress)
 ===========================
 
+2003-05-24: delta
+	    Added help methods to convert feet to meters and pounds to newtons
+	    in math.h.
+
 2003-05-13: onsight
             Added exception handling to file copying in setup.py.  Copy errors
 	    will be printed as warnings, and the installation will continue.

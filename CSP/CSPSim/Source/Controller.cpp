@@ -49,7 +49,9 @@ void RemoteController::importChannels(Bus *bus) {
 	b_AngularVelocity = bus->getChannel(bus::Kinetics::AngularVelocity);
 	b_Attitude = bus->getChannel(bus::Kinetics::Attitude);
 	b_AccelerationBody = bus->getChannel(bus::Kinetics::AccelerationBody);
-	m_GearExtension.bind(bus->getChannel("LandingGear.GearExtended"));
+	// XXX: FIXME, it doesn'nt work.
+	//m_GearExtension.bind(bus->getChannel("LandingGear.GearExtended"));
+	m_GearExtension.bind(bus->getChannel("Aircraft.GearSequence.NormalizedTime"));
 	m_AileronDeflection.bind(bus->getChannel("ControlSurfaces.AileronDeflection"));
 	m_ElevatorDeflection.bind(bus->getChannel("ControlSurfaces.ElevatorDeflection"));
 	m_RudderDeflection.bind(bus->getChannel("ControlSurfaces.RudderDeflection"));
@@ -209,7 +211,9 @@ LocalController::~LocalController() {
 }
 
 void LocalController::registerChannels(Bus *bus) {
-	b_GearExtension = bus->registerLocalDataChannel<double>("LandingGear.GearExtended", 0.0);
+	// XXX: FIXME, it doesn'nt work.
+	//b_GearExtension = bus->registerLocalDataChannel<double>("LandingGear.GearExtended", 0.0);
+	b_GearExtension = bus->registerLocalDataChannel<double>("Aircraft.GearSequence.NormalizedTime", 0.0);
 	b_AileronDeflection = bus->registerLocalDataChannel<double>("ControlSurfaces.AileronDeflection", 0.0);
 	b_ElevatorDeflection = bus->registerLocalDataChannel<double>("ControlSurfaces.ElevatorDeflection", 0.0);
 	b_RudderDeflection = bus->registerLocalDataChannel<double>("ControlSurfaces.RudderDeflection", 0.0);

@@ -46,6 +46,7 @@
 #include <cstdio>
 #include <iostream>
 #include <iomanip>
+#include <limits>
 #include <sstream>
 #include <stdexcept>
 
@@ -59,6 +60,7 @@ using simdata::Vector3;
 SIMDATA_REGISTER_INTERFACE(LandingGear)
 SIMDATA_REGISTER_INTERFACE(GearDynamics)
 SIMDATA_REGISTER_INTERFACE(GearAnimation)
+SIMDATA_REGISTER_INNER_INTERFACE(GearAnimation, GearStructureAnimation)
 
 
 LandingGear::LandingGear() {
@@ -555,7 +557,10 @@ void GearDynamics::doComplexPhysics(double) {
 	size_t n = m_Gear.size();
 	for (size_t i = 0; i < n; ++i) {
 		LandingGear &gear = *(m_Gear[i]);
-		Vector3 R = gear.getPosition();
+		double extension = 1.0;
+		//if (b_GearExtension[i].valid()
+		//	extension = b_GearExtension[i]->value()
+		Vector3 R = extension * gear.getPosition();
 		Vector3 F = Vector3::ZERO;
 		if (b_NearGround->value()) {
 			Vector3 vBody = *m_VelocityBody + (*m_AngularVelocityBody ^ R);
@@ -565,7 +570,6 @@ void GearDynamics::doComplexPhysics(double) {
 			                          m_Height,
 			                          m_GroundNormalBody);
 		}
-		// TODO torque position should depend on extension
 		F += gear.getDragFactor() * dynamic_pressure;
 		m_Force += F;
 		m_Moment += (R ^ F);
@@ -581,7 +585,7 @@ DEFINE_INPUT_INTERFACE(GearDynamics);
 void GearDynamics::registerChannels(Bus *bus) {
 	assert(bus!=0);
 	b_WOW = bus->registerLocalDataChannel<bool>("State.WOW", false);
-	b_GearExtension = bus->registerLocalDataChannel<double>("LandingGear.GearExtended", 1.0);
+	//b_GearExtension = bus->registerLocalDataChannel<double>("LandingGear.GearExtended", 1.0);
 
 	size_t n(getGearNumber());
 	b_GearDisplacement.resize(n);
@@ -590,12 +594,11 @@ void GearDynamics::registerChannels(Bus *bus) {
 		std::string gear_name = "LandingGear." + m_Gear[i]->getName();
 		CSP_LOG(OBJECT, INFO, "GearDynamics: gear name = " << m_Gear[i]->getName());
 		b_GearDisplacement[i] = bus->registerLocalDataChannel<Vector3>(gear_name + "Displacement",Vector3::ZERO);
-		b_TireRotation[i] = bus->registerLocalDataChannel<double>(gear_name+"TireRotation",0.0);
+		b_TireRotation[i] = bus->registerLocalDataChannel<double>(gear_name + "TireRotation",0.0);
 		//b_GearDisplacement.push_back(bus->registerLocalDataChannel<Vector3>(gear_name + "Displacement",Vector3::ZERO));
 		//b_TireRotation.push_back(bus->registerLocalDataChannel<double>(gear_name+"TireRotation",0.0));
 	}
 	
-	m_GearSetAnimation.size();
 	std::for_each(m_GearSetAnimation.begin(),m_GearSetAnimation.end(),GearAnimation::RegisterChannels(bus));
 }
 
@@ -609,7 +612,8 @@ void GearDynamics::importChannels(Bus *bus) {
 	b_NearGround = bus->getChannel(Kinetics::NearGround);
 	b_GroundN = bus->getChannel(Kinetics::GroundN);
 	b_GroundZ = bus->getChannel(Kinetics::GroundZ);
-	
+	b_GearExtension = bus->getChannel("Aircraft.GearSequence.NormalizedTime"); 
+
 	std::for_each(m_GearSetAnimation.begin(),m_GearSetAnimation.end(),GearAnimation::BindChannels(bus));
 }
 	
@@ -617,32 +621,33 @@ void GearDynamics::computeForceAndMoment(double x) {
 	doComplexPhysics(x);
 }
 
-void GearDynamics::setGearExtension(double on) {
+void GearDynamics::setExtension(bool on) {
 	size_t n = m_Gear.size();
-	bool extended = on != 0.0;
 	for (size_t i = 0; i < n; ++i) {
-		m_Gear[i]->setExtended(extended);
+		m_Gear[i]->setExtended(on);
 	}
-	b_GearExtension->value() = on;
 }
 
 void GearDynamics::GearUp() {
-	setGearExtension(0.0);
+	std::for_each(m_GearSetAnimation.begin(),m_GearSetAnimation.end(),GearAnimation::RStart());
 }
 	
 void GearDynamics::GearDown() {
-	setGearExtension(1.0);
+	std::for_each(m_GearSetAnimation.begin(),m_GearSetAnimation.end(),GearAnimation::Start());
 }
 
 void GearDynamics::GearToggle() {
-	if (isGearExtended())
-		setGearExtension(0.0);
-	else
-		setGearExtension(1.0);
+	if (isGearExtended()) {
+		GearUp();
+	}
+	else {
+		GearDown();
+	}
 }
 	
 bool GearDynamics::isGearExtended() const {
-	return b_GearExtension->value() != 0.0;
+	// TODO: different extension for each gear
+	return b_GearExtension->value() > 0.1;
 }
 
 bool GearDynamics::getWOW() const {

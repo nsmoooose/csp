@@ -1,5 +1,19 @@
  Version 0.4.0 (in progress)
 ===========================
+
+2005-01-12: delta
+ * Reformated Animation's classes. Added basic time based animations.
+   Added animation's sequences in Data/XML/vehicules/aircraft/m2/gear.xml 
+   and model.xml. Added an animation sequence attribute to AnimationGear class
+   in LandingGear.h. The 3d model has been updated to provide necessary node's 
+   hooks.
+   This code is not tested under GNU/Linux.
+ 
+ * Network's hooks  haven't been updated, so animation's sequences won't work on 
+   a remote object.
+   
+ ==> ALL USERS: RebuildData.py
+ 
 2005-01-07: lologramme
  * add Taxi Signalisation
  * Add hangars

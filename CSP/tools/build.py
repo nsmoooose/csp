@@ -525,7 +525,7 @@ def EmitNet(target, source, env):
 
 
 def AddNet(env):
-	cxx_file = env['BUILDERS']['CXXFile']
+	_, cxx_file = SCons.Tool.createCFileBuilders(env)
 	cxx_file.add_emitter('.net', EmitNet)
 	cxx_file.add_action('.net', '$TRC')
 	trc = env.File('#/SimData/Tools/TaggedRecordCompiler/trc.py')

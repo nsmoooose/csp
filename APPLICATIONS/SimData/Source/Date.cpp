@@ -426,15 +426,7 @@ std::string DateZulu::formatString(const char *format, bool local) const {
 #define COEFF3  -6.2e-6L
 
 double DateZulu::getAccurateMST(radian_t longitude) const {  
-	double JD = getJulianDate();
-	double T = (JD - EPOCH) * SIMDATA_F1p0_36525p0;
-	double F = DAYSEC * (JD - (int) JD);
-	double GMST = COEFF0 - DAYSEC/2.0L
-	               + ((COEFF1 + (COEFF2 + COEFF3 * T) * T) * T) + F;
-	GMST = GMST * SEC2RAD;
-	int n = (int) (GMST * (0.5/PI));
-	if (n < 0) n--;
-	return GMST - n*(2.0*PI) + longitude;
+	return getMST(longitude);
 }
 
 double DateZulu::getMST(radian_t longitude) const {  
@@ -442,7 +434,7 @@ double DateZulu::getMST(radian_t longitude) const {
 	double T = (JD - EPOCH) * SIMDATA_F1p0_36525p0;
 	double F = DAYSEC * (JD - (int) JD);
 	double GMST = COEFF0 - DAYSEC/2.0L
-	               + COEFF1 * T + F;
+	               + ((COEFF1 + (COEFF2 + COEFF3 * T) * T) * T) + F;
 	GMST = GMST * SEC2RAD;
 	int n = (int) (GMST * (0.5/PI));
 	if (n < 0) n--;

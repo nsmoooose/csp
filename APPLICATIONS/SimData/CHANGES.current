@@ -1,6 +1,9 @@
 Version 0.3.1 (in progress)
 ===========================
 
+2003-04-11: delta
+	    Finally got the changes from Onsight compile on .net ;-)
+
 2003-03-29: onsight
             Added a DataManager class to combine access to multiple data
 	    archives simultaneously and transparently.
@@ -18,7 +21,7 @@ Version 0.3.1 (in progress)
 2003-03-28: delta
 	    updated .net project (release mode is maintained)
 
-	    Once SimData is compiled, in command line, write:
+	    Once SimData is compiled, in command line, type:
 	    setup.py make_install_win
 	    from APPLICATIONS/SimData to copy all headers and binaries needed
 	    for csp.

@@ -139,6 +139,9 @@
 				RelativePath="..\Source\DataArchive.cpp">
 			</File>
 			<File
+				RelativePath="..\Source\DataManager.cpp">
+			</File>
+			<File
 				RelativePath="..\Source\Date.cpp">
 			</File>
 			<File
@@ -149,6 +152,9 @@
 			</File>
 			<File
 				RelativePath="..\Source\External.cpp">
+			</File>
+			<File
+				RelativePath="..\Source\FileUtility.cpp">
 			</File>
 			<File
 				RelativePath="..\Source\GeoPos.cpp">

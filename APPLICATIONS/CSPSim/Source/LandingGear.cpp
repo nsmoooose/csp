@@ -68,6 +68,7 @@ LandingGear::LandingGear() {
 	m_Compression = 0.0;
 	m_CompressionLimit = 0.0;
 	m_WOW = false;
+	m_Extended = true;
 	m_Touchdown = false;
 	m_Skidding = 0.0;
 	m_Brake = 0.0;
@@ -163,18 +164,27 @@ simdata::Vector3 LandingGear::simulate(simdata::Quaternion const &q,
 	if (mn == 0.0) mn = 0.0001;
 	double compression = - (Dot(extension, normal) + h) / mn;
 	// TODO: add in air drag
+
+	// at (or past) max extension?
 	if (compression <= 0.0) {
+		// limit travel and clear weight-on-wheels (WOW)
 		m_Compression = 0.0;
 		m_Position = m_MaxPosition;
 		m_WOW = false;
 		if (n>1000 && j++ > 10) n = 0;
+		// no ground reaction force (XXX should include air drag)
 		return Vector3::ZERO;
 	}
+	
+	// first contact?  if so, flag the touchdown
 	if (!m_WOW) {
 		// TODO should also store global position, but this isn't currently available
 		m_Touchdown = true;
 	}
+	// weight-on-wheels
 	m_WOW = true;
+
+	// are we overcompressed?
 	if (compression >= m_CompressionLimit) {
 		m_Compression = m_CompressionLimit;
 		// TODO: break the gear!
@@ -186,24 +196,29 @@ simdata::Vector3 LandingGear::simulate(simdata::Quaternion const &q,
 	
 	// FIXME only normal force is taken into account, but other components
 	// can matter if m_Motion isn't vertical. (e.g. when brakes are applied)
+	
 	// calculate strut compression speed
 	Vector3 v_normal_local = Dot(v_local, normal) * normal;
 	Vector3 v_normal_body = QVRotate(q.Bar(), v_normal_local);
 	double v = - Dot(v_normal_body, m_Motion);
-	// restrict v to reasonable limits
+	// restrict v to reasonable limits (faster than this means the gear will 
+	// probably break in a moment anyway)
 	if (v > 10.0) v = 10.0;
 	if (v < -10.0) v = -10.0;
 	
-	Vector3 v_tangent_local = v_local - v_normal_local;
-	Vector3 v_tangent_body = QVRotate(q.Bar(), v_tangent_local);
-
-	// ground support
+	// ground support (in response to strut compression + damping)
 	double normal_force = (m_K * m_Compression + m_Beta * v) * mn;
 	if (normal_force < 0.0) normal_force = 0.0; // wheel hop
 	Vector3 normal_local = normal * normal_force;
 	Vector3 normal_body = QVRotate(q.Bar(), normal_local);
 	
+	// now get motion along the ground
+	Vector3 v_tangent_local = v_local - v_normal_local;
+	Vector3 v_tangent_body = QVRotate(q.Bar(), v_tangent_local);
+	
 	// wheel direction in local coordinates projected to ground
+	// 'y' is along the wheel rolling direction
+	// 'x' is along the wheel rotation axis
 	Vector3 y_local = QVRotate(q, m_Steer);
 	Vector3 y_tangent_local = y_local - Dot(y_local, normal)*normal;
 	y_tangent_local.Normalize();
@@ -213,37 +228,56 @@ simdata::Vector3 LandingGear::simulate(simdata::Quaternion const &q,
 	Vector3 v_y_local = forward_speed * y_tangent_local;
 	Vector3 v_x_local = v_tangent_local - v_y_local;
 
-	// drag
+	// drag and braking unit vector in body coordinates
 	Vector3 drag_body = QVRotate(q.Bar(), y_tangent_local);
 	double abs_forward_speed = fabs(forward_speed);
 	
-	// update brake setting
+	// update actual brake power from the input brake setting (low pass 
+	// filtered XXX ad-hoc time constant)
 	double f = dt*5.0;
 	if (f > 1.0) f = 1.0;
 	m_Brake = m_Brake * (1.0-f) + (m_BrakeSetting - m_Brake) * f;
 
-	double brake_limit = m_Brake * 25000.0; // arbitrary... move to xml
+	// maximum static braking force
+	double brake_limit = m_Brake * 25000.0; // XXX arbitrary... move to xml
+	// wheel reaction force (from deformation of the tire)
 	double brake_force = m_TireShiftY * m_TireK;
 	
+	// we assume for the moment that the brakes will always slip before 
+	// the tire skids.  skidding is modelled further below once we have both
+	// the on and off axis forces acting on the wheel, so that we can compute
+	// the total force and compare it to the max friction force.
+	
+	// can the brakes lock or are they slipping?
 	if (fabs(brake_force) > brake_limit) {
-		// arbitrary reduced slip friction (FIXME move to XML)
+		// arbitrary reduced slip friction (XXX move to XML)
 		double slip_factor = 0.8;
+		// maintain the correct sign if we are moving backwards
 		if (brake_force < 0.0) slip_factor = -slip_factor;
 		brake_force = brake_limit * slip_factor; 
+		// don't let the tire deform any further (the wheel is
+		// already slipping), only allow it to relax (which 
+		// should happen initially since the sliding brake
+		// friction is lower than the static value).
 		if (m_TireShiftY * forward_speed < 0.0) {
 			m_TireShiftY += forward_speed * dt;
 		}
 	} else {
+		// brakes are locked, deform the tire.
 		m_TireShiftY += forward_speed * dt;
 	}
 
+	// XXX ad-hoc drag model for rolling friction added to braking force.
+	// drag has a constant term and a v^2 term.  both are forced to zero
+	// linearly at low speed to prevent artificial rebound.
 	double base_drag = 1000.0 / (1.0 + abs_forward_speed);
 	double drag_force = brake_force + (base_drag + abs_forward_speed)*forward_speed;
 	
+	// scale the drag unit vector to give the drag force vector
 	drag_body *= -drag_force;
 
-
-	// side
+	// lastly, side forces (along the wheel axis)
+	
 	Vector3 side_body = QVRotate(q.Bar(), x_tangent_local);
 	double side_speed = v_x_local.Length();
 	// slip angle approximation
@@ -251,12 +285,13 @@ simdata::Vector3 LandingGear::simulate(simdata::Quaternion const &q,
 	// are we slipping to the left or right in wheel coordinates?
 	if (Dot(v_x_local, x_tangent_local) < 0.0) side_speed = -side_speed;
 	double side_damping = 0.0;
-	// don't keep deforming past the point we lose traction
+	// don't keep deforming the tire past the point we lose traction
 	if (!m_Skidding || m_TireShiftX*side_speed > 0.0 || m_TireShiftX == 0.0) {
 		m_TireShiftX += - side_speed * dt;
 		side_damping = - side_speed * m_TireBeta;
 	}
-	// limit deformation to a reasonable amount
+	// limit deformation to a reasonable amount (we should be skidding at this
+	// point anyway)
 	if (m_TireShiftX > 0.1) {
 		m_TireShiftX = 0.1;
 		side_damping = 0.0;
@@ -266,27 +301,44 @@ simdata::Vector3 LandingGear::simulate(simdata::Quaternion const &q,
 		side_damping = 0.0;
 	}
 	double side_force =  (m_TireK * m_TireShiftX) + side_damping;
+	// is this wheel steerable?
 	if (m_SteeringLimit > 0.0) {
 		// partial (approx) castering of steerable wheels to reduce instability
 		side_force *= (0.1 + 0.9 * fabs(m_SteerAngle/m_SteeringLimit));
 	}
+
+	// scale side unit vector to get side force
 	side_body *= side_force;
 
-	// skid test
+	// now that we have both components of the force in the ground plane, 
+	// it's time for the skid test
 	double mu = m_StaticFriction;
+	// if we are already skidding, use the dynamic friction coefficient.
 	if (m_Skidding > 0.0) mu = m_DynamicFriction;
+	// get the total force in the ground plane
 	double total_force = side_force*side_force + drag_force*drag_force;
+	// get the maximum friction force
 	double friction = normal_force * mu;
+	// are we skidding?
 	if (total_force > friction * friction) {
+		// scale both components of the force equally to limit
+		// to the max friction force
 		double scale = friction / sqrt(total_force + 0.001);
 		side_body *= scale;
 		drag_body *= scale;
+		// if we have antilock braking, reduce the brake force as
+		// well and the tire deformation so that we come out of
+		// the skid (temporarily since the brake_setting will remain
+		// too high)
 		if (m_ABS) {
 			m_Brake *= scale;
 			m_TireShiftY *= scale;
 		}
+		// a rough measure of the severity of the skid (can be used
+		// for sound effects or smoke).
 		m_Skidding = 1.0 - scale;
 	} else {
+		// no, reset so we use the static friction coefficient again
 		m_Skidding = 0.0;
 	}
 	if (0 && m_Skidding && (n++ % 1000) == 0) {
@@ -304,6 +356,8 @@ simdata::Vector3 LandingGear::simulate(simdata::Quaternion const &q,
 
 	// sum forces
 	Vector3 F = normal_body + drag_body + side_body;
+
+	// get the new wheel position
 	m_Position = m_MaxPosition + m_Motion * m_Compression;
 	
 	j=0;
@@ -317,6 +371,7 @@ simdata::Vector3 LandingGear::simulate(simdata::Quaternion const &q,
 		          << "  v = " << v << ", h = " << h << ", max.z = " << extension.z << "\n";
 	}
 
+	// return the total force
 	return F;
 }
 

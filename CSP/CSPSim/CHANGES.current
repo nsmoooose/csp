@@ -14,6 +14,9 @@
   * Cleaned up formatting, copyright notices, and logging in some of the
     network code.
 
+  * Fixed camera panning limit calculation that keeps the camera above
+    ground in external views.
+
 2004-07-29: onsight
   * Removed a couple obsolete files from the Makefile, and added InputEvent.
 

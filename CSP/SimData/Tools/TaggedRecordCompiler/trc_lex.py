@@ -104,7 +104,7 @@ t_SETTING = r'@[a-zA-Z_][a-zA-Z_0-9]*'
 # Variable id
 #t_ID = r'[a-zA-Z_]([a-zA-Z_0-9]*)'
 
-t_ignore = " \t\x0c"
+t_ignore = " \t\x0c\r"
 
 # Integer literal
 t_ICONST = r'\d+([uU]|[lL]|[uU][lL]|[lL][uU])?'

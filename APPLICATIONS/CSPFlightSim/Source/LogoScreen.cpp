@@ -6,6 +6,7 @@
 #include <GL/glu.h>			// Header File For The GLu32 Library
 
 #include "LogoScreen.h"
+#include "Platform.h"
 
 
 extern int g_ScreenWidth;
@@ -14,10 +15,11 @@ extern int g_ScreenHeight;
 
 void LogoScreen::OnInit()
 {
-    m_image = SDL_LoadBMP("../Data/Images/CSPLogo.bmp");
+    std::string path = OSPath::filter("../Data/Images/CSPLogo.bmp");
+    m_image = SDL_LoadBMP(path.c_str());
     if (m_image == NULL)
     {
-        printf("Unable to load bitmap ../Data/Images/CSPLogo.bmp\n");
+        cout << "Unable to load bitmap " << path << endl;
     }
 
 

@@ -130,7 +130,7 @@ std::string OSPath::join(const std::string &a, const std::string &b) {
 	std::string result;
 	std::string::size_type idx;
 	idx = a.length();
-	if (idx > 0 && a[idx-1] == DIR_SEPARATOR) idx--;
+	if (idx > 0 && (a[idx-1] == '/' || a[idx-1] == '\\')) idx--;
 	result = a.substr(0, idx);
 	return result + DIR_SEPARATOR + skiproot(b);
 }

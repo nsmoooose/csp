@@ -31,6 +31,7 @@ headers = Prefix("#/Include/SimData",
     Archive.h
     AtomicCounter.h
     BaseType.h
+    CircularBuffer.h
     Composite.h
     Conversions.h
     DataArchive.h
@@ -75,6 +76,7 @@ headers = Prefix("#/Include/SimData",
     Thread.h
     ThreadBase.h
     ThreadQueue.h
+    ThreadUtil.h
     Timing.h
     Trace.h
     TypeAdapter.h

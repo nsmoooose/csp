@@ -28,7 +28,10 @@
 
 #include <SimData/ThreadBase.h>
 #include <SimData/Log.h>
+#include <SimData/Timing.h>
 
+#include <string>
+#include <sstream>
 
 NAMESPACE_SIMDATA
 

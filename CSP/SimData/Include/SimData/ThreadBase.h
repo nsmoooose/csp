@@ -32,13 +32,10 @@
 
 #include <SimData/Namespace.h>
 #include <SimData/Properties.h>
-#include <SimData/Timing.h>
-#include <SimData/ExceptionBase.h>
+#include <SimData/ThreadUtil.h>
 
 #include <cerrno>
 #include <cmath>
-#include <string>
-#include <sstream>
 #include <pthread.h>
 
 
@@ -49,26 +46,6 @@ NAMESPACE_SIMDATA
 // semaphore
 // barrier
 // unit tests
-
-
-/** Exception class for thread-related errors.  Wraps a small subset
- *  of cerrno constants.
- */
-class ThreadException: public Exception {
-public:
-	ThreadException(const int error);
-
-	static void checkThrow(const int result);
-
-	static void checkLog(const int result);
-
-	int getError() const { return m_error; }
-
-private:
-	void translateError();
-
-	int m_error;
-};
 
 
 /** Thin wrapper for pthreads mutually exclusive locks, which provide
@@ -353,82 +330,6 @@ private:
 	pthread_cond_t m_cond;
 	pthread_mutex_t m_local_mutex;
 	pthread_mutex_t &m_mutex;
-};
-
-
-/** A simple scoped mutex.  Used to protect a shared resource within
- *  the current scope, so that the lock is automatically released the
- *  ScopedLock goes out a scope.
- *
- *  For example:
- *
- *  @code
- *  void foo() {
- *    static int x = 0;
- *    static ThreadMutex mutex;
- *    {
- *      ScopedLock<ThreadMutex> guard(mutex);
- *      // mutex is now locked
- *      x = x + 1;
- *    }
- *    // mutex is now unlocked
- *  }
- *  @endcode
- */
-template <class LOCK>
-class ScopedLock: public NonCopyable {
-public:
-	/** Construct a new scoped lock for a existing lockable instance.  If constructed
-	 *  an the stack, this will immediately lock the instance for the duration of the
-	 *  current scope.
-	 */
-	ScopedLock(LOCK &lock): m_lock(lock) {
-		m_lock.lock();
-	}
-
-	/** Release the underlying lock.
-	 */
-	~ScopedLock() {
-		// never throw from a dtor; log instead.
-		try {
-			m_lock.unlock();
-		} catch (ThreadException &e) {
-			e.logAndClear(LOG_THREAD);
-		}
-	}
-
-private:
-	LOCK &m_lock;
-};
-
-
-/** Similar to ScopedLock, but unlocks the mutex when created and relocks it
- *  on destruction.
- */
-template <class LOCK>
-class ScopedUnlock: public NonCopyable {
-public:
-	/** Construct a new scoped unlock for a existing lockable instance.  If constructed
-	 *  on the stack, this will immediately unlock the instance for the duration of the
-	 *  current scope.
-	 */
-	ScopedUnlock(LOCK &lock): m_lock(lock) {
-		m_lock.unlock();
-	}
-
-	/** Reacquire the underlying lock.
-	 */
-	~ScopedUnlock() {
-		// never throw from a dtor; log instead.
-		try {
-			m_lock.lock();
-		} catch (ThreadException &e) {
-			e.logAndClear(LOG_THREAD);
-		}
-	}
-
-private:
-	LOCK &m_lock;
 };
 
 

@@ -464,6 +464,16 @@ public:
 	 */
 	Thread(std::string const &name): BaseThread(new TASK(), name) { }
 
+	/** Construct a new Thread instance to execute a task.
+	 *
+	 *  The thread does not start running upon creation; you must call
+	 *  the start() method to begin execution.
+	 *
+	 *  @param task Pointer to a newly allocated task.
+	 *  @param name An arbitrary string identifier for the new task.
+	 */
+	Thread(Ref<TASK> task, std::string const &name): BaseThread(task.get(), name) { }
+
 	/** Get the associated task instance.
 	 *
 	 *  Requires an internal downcast from Task to the template type, so

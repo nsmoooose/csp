@@ -18,6 +18,17 @@ Version 0.4.0 (in progress)
     about this functionality and don't want the overhead of a source file
     that must be added to the build system).
 
+  * Moved non-pthread specific threading support classes from ThreadBase.h
+    to ThreadUtil.h.  Minor tweaks to the Thread api to allow preconstructed
+    tasks to be attached to a thread.
+
+  * Tweak to BufferPool to provide optional mutex locking.
+
+  * Added a ring queue and a circular buffer class.  The former is still
+    rough and largely untested.  The latter has been tested extensively
+    (unit test coming soon).  See the header file for docs on what they
+    do and how to use them (nb: ring queue is still under-documented).
+
 2004-07-09: onsight
   * Changed the formating of HashT values to use fixed-width hex
     instead of decimal numbers, and cleaned up the data archive

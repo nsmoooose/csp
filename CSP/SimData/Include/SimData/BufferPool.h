@@ -35,9 +35,11 @@
 #define  __SIMDATA_BUFFERPOOL_H__
 
 #include <SimData/Uniform.h>
+#include <SimData/ThreadUtil.h>
 #include <cassert>
 
 NAMESPACE_SIMDATA
+
 
 
 /** A fixed size, fixed capacity memory buffer pool.
@@ -62,6 +64,7 @@ NAMESPACE_SIMDATA
  *  which it is defined.  Using ScopedBuffers also ensures that buffers are
  *  properly released in the event an exception is thrown.
  */
+template <class MUTEX=NoMutex>
 class BufferPool: public NonCopyable {
 
 	typedef BufferPool* Prefix;
@@ -71,6 +74,7 @@ class BufferPool: public NonCopyable {
 	uint8** m_index;
 	uint32 m_count;
 	uint32 m_size;
+	MUTEX m_mutex;
 
 public:
 
@@ -99,10 +103,12 @@ public:
 	}
 
 	inline uint8 *tryAllocate() {
+		ScopedLock<MUTEX> lock(m_mutex);
 		return (m_count) ? m_index[--m_count] : 0;
 	}
 
 	inline uint8 *allocate() {
+		ScopedLock<MUTEX> lock(m_mutex);
 		if (m_count) {
 			return m_index[--m_count];
 		}
@@ -120,6 +126,7 @@ public:
 	inline void release(uint8 *buffer) {
 		BufferPool::Prefix *base = reinterpret_cast<BufferPool::Prefix*>(buffer) - 1;
 		assert(*base == this);
+		ScopedLock<MUTEX> lock(m_mutex);
 		m_index[m_count++] = buffer;
 	}
 
@@ -135,6 +142,7 @@ public:
 
 private:
 	inline void _release(uint8 *buffer) {
+		ScopedLock<MUTEX> lock(m_mutex);
 		m_index[m_count++] = buffer;
 	}
 

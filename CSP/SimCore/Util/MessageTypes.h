@@ -71,9 +71,9 @@ public:
 	inline GlobalPosition const &operator=(simdata::Vector3 const &v) {
 		x0 = static_cast<simdata::uint8>(floor(v.x() / 32000.0) + 128);
 		y0 = static_cast<simdata::uint8>(floor(v.y() / 32000.0) + 128);
-		x = v.x() - (static_cast<int>(x0)-128) * 32000.0;
-		y = v.y() - (static_cast<int>(y0)-128) * 32000.0;
-		z = v.z();
+		x = static_cast<float>(v.x() - (static_cast<int>(x0)-128) * 32000.0);
+		y = static_cast<float>(v.y() - (static_cast<int>(y0)-128) * 32000.0);
+		z = static_cast<float>(v.z());
 		return *this;
 	}
 
@@ -119,8 +119,8 @@ public:
 	}
 
 	inline Vector2f const &operator=(simdata::Vector3 const &v) {
-		x = v.x();
-		y = v.y();
+		x = static_cast<float>(v.x());
+		y = static_cast<float>(v.y());
 		return *this;
 	}
 
@@ -164,9 +164,9 @@ public:
 	}
 
 	inline Vector3f const &operator=(simdata::Vector3 const &v) {
-		x = v.x();
-		y = v.y();
-		z = v.z();
+		x = static_cast<float>(v.x());
+		y = static_cast<float>(v.y());
+		z = static_cast<float>(v.z());
 		return *this;
 	}
 
@@ -212,10 +212,10 @@ public:
 	}
 
 	inline Vector4f const &operator=(simdata::Quat const &q) {
-		x = q.x();
-		y = q.y();
-		z = q.z();
-		w = q.w();
+		x = static_cast<float>(q.x());
+		y = static_cast<float>(q.y());
+		z = static_cast<float>(q.z());
+		w = static_cast<float>(q.w());
 		return *this;
 	}
 

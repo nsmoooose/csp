@@ -463,7 +463,7 @@ public:
 
 	/** Release the underlying lock.
 	 */
-	~ScopedUnLock() {
+	~ScopedUnlock() {
 		m_lock.lock();
 	}
 

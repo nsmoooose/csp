@@ -85,7 +85,7 @@ LandingGear::LandingGear() {
 	m_BrakeFriction = 1.0;
 	m_BrakeSlip = 0.8;
 	m_BrakeTemperature = 300.0;
-	m_RollingFriction.set(0.02, 0.002);
+	m_RollingFriction.set(0.02f, 0.002f);
 	m_TireFriction = 0.8;
 	m_TireSkidFriction = 0.6;
 	m_TireStaticFriction = 1.0;
@@ -175,7 +175,7 @@ void LandingGear::updateBraking(double dt) {
 	// steering linkage (low pass filtered, XXX ad-hoc time constant)
 	double f = dt*5.0;
 	if (f > 1.0) f = 1.0;
-	double newBrake = std::min(1.0, std::max(0.0, m_BrakeSetting + m_BrakeSteer));
+	double newBrake = simdata::clampTo(m_BrakeSetting + m_BrakeSteer,0.0,1.0);
 	m_Brake = m_Brake * (1.0-f) + newBrake * f;
 	if (m_Brake < 0.0) m_Brake = 0.0;
 	if (m_Brake > 1.0) m_Brake = 1.0;

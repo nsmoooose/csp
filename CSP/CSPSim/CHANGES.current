@@ -1,6 +1,12 @@
  Version 0.4.0 (in progress)
 ===========================
 
+2004-08-24: delta
+  * Used simdata::clampTo instead of std::min/max to avoid the usual 
+	macro conflict on vs. 
+  
+  * Avoid a minor warning with an implicit cats from double to float.
+
 2004-08-08: onsight
   * Clamp throttle to [0,1] when using keyboard controls (was [-1,1]).
 

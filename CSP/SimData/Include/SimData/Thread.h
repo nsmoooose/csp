@@ -159,7 +159,7 @@ public:
 			return !(*this == i);
 		}
 		bool operator&&(bool other) const {
-			return (*this == 0) && other;
+			return (*this != 0) && other;
 		}
 	};
 #endif

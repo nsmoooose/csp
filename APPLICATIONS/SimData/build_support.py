@@ -93,8 +93,10 @@ PythonInstallBuilder = Builder(action=[installFileAction, byteCompileAction])
 def installPythonSources(env, dir, source):
 	"""Install specified files in the given directory."""
 	import SCons.Node
-	sources = SCons.Node.arg2nodes(source, env.fs.File)
-	dnodes = SCons.Node.arg2nodes(dir, env.fs.Dir)
+	sources = env.arg2nodes(source, env.fs.File)
+	dnodes = env.arg2nodes(dir, env.fs.Dir)
+	#sources = SCons.Node.arg2nodes(source, env.fs.File)
+	#dnodes = SCons.Node.arg2nodes(dir, env.fs.Dir)
 	tgt = []
 	for dnode in dnodes:
 		for src in sources:
@@ -184,8 +186,7 @@ SWIG = 'swig'
 def checkSwig(context, min_version, not_versions=[]):
 	ok = 0
 	context.Message("Checking for swig...")
-	#swig_in, swig_out, swig_err = os.popen3('%s -version' % SWIG, 't', 1024)
-	swig_err = os.popen('%s -version 2>&1' % SWIG, 'rt', 1024)
+	swig_in, swig_out, swig_err = os.popen3('%s -version' % SWIG, 't')
 	if swig_err is not None:
 		output = swig_err.readlines()
 		output = " ".join(map(lambda x: x.strip(), output))
@@ -366,7 +367,8 @@ class Package:
 		self.remove(exclude, type)
 
 	def add(self, content, type='both'):
-		content = SCons.Node.arg2nodes(content, self.env.fs.File)
+		content = self.env.arg2nodes(content, self.env.fs.File)
+		#content = SCons.Node.arg2nodes(content, self.env.fs.File)
 		if type == 'source' or type == 'both':
 			self.source_content.extend(content)
 		if type == 'binary' or type == 'both':
@@ -376,7 +378,8 @@ class Package:
 		return filter(lambda x, y=map(str,list): not str(x) in y, content)
 
 	def remove(self, content, type='both'):
-		content = SCons.Node.arg2nodes(content, self.env.fs.File)
+		content = self.env.arg2nodes(content, self.env.fs.File)
+		#content = SCons.Node.arg2nodes(content, self.env.fs.File)
 		if type == 'source' or type == 'both':
 			self.source_content = self._filter_content(self.source_content, content)
 		if type == 'binary' or type == 'both':
@@ -437,8 +440,10 @@ class Package:
 		dist = target
 		src = map(str, content)
 		dst = map(lambda x: os.path.join(dist, x), src)
-		src = SCons.Node.arg2nodes(src, env.fs.File)
-		dst = SCons.Node.arg2nodes(dst, env.fs.File)
+		src = self.env.arg2nodes(src, env.fs.File)
+		dst = self.env.arg2nodes(dst, env.fs.File)
+		#src = SCons.Node.arg2nodes(src, env.fs.File)
+		#dst = SCons.Node.arg2nodes(dst, env.fs.File)
 		ret = []
 		for source, target in map(lambda x, y: (x,y), src, dst):
 			ret.append(env.LinkFile(target, source))

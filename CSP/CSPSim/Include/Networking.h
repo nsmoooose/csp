@@ -151,6 +151,7 @@ struct ObjectUpdateMessagePayload
 
     public:
       unsigned int id;
+      unsigned int objectType;
       simdata::SimTime timeStamp;
       _Vector3Struct globalPosition;
       _Vector3Struct linearVelocity;
@@ -161,6 +162,7 @@ struct ObjectUpdateMessagePayload
   {
 	simdata::uint32 thisAddr = (simdata::uint32)this;
 	simdata::uint32 idAddr = (simdata::uint32)&id;
+	simdata::uint32 typeAddr = (simdata::uint32)&objectType;
 	simdata::uint32 timeStampAddr = (simdata::uint32)&timeStamp;
 	simdata::uint32 globalPositionAddr = (simdata::uint32)&globalPosition;
 	simdata::uint32 linearVelocityAddr = (simdata::uint32)&linearVelocity;
@@ -168,6 +170,7 @@ struct ObjectUpdateMessagePayload
 	simdata::uint32 attitudeAddr = (simdata::uint32)&attitude;
 
 	printf("ObjectUpdateMessagePayload - IDOffset: %d\n", idAddr - thisAddr );
+	printf("ObjectUpdateMessagePayload - TypeOffset: %d\n", typeAddr - thisAddr);
 	printf("ObjectUpdateMessagePayload - timeStampOffset: %d\n", timeStampAddr - thisAddr );
 	printf("ObjectUpdateMessagePayload - globalPositionOffset: %d\n", globalPositionAddr - thisAddr );
 	printf("ObjectUpdateMessagePayload - linearVelocityOffset: %d\n", linearVelocityAddr - thisAddr );

@@ -104,6 +104,7 @@ LandingGear::LandingGear() {
 	m_TireRotation = 0.0;
 	m_TireRotationRate = 0.0;
 	m_TireRadius = 0.25;
+	m_DragFactor = 0.8;
 }
 
 
@@ -139,15 +140,13 @@ Vector3 LandingGear::simulateSubStep(Vector3 const &origin,
 
 
 void LandingGear::setBraking(double setting) {
-	if (setting < 0.0) setting = 0.0;
-	if (setting > 1.0) setting = 1.0;
+	setting = simdata::clampTo(setting,-1.0,1.0);
 	m_BrakeSetting = setting;
 }
 
 
 double LandingGear::setSteering(double setting, double link_brakes) {
-	if (setting > 1.0) setting = 1.0;
-	if (setting < -1.0) setting = -1.0;
+	setting = simdata::clampTo(setting,-1.0,1.0);
 	m_BrakeSteer = setting * link_brakes * m_BrakeSteeringLinkage;
 	m_SteerAngle = setting * m_SteeringLimit;
 	double rad = toRadians(m_SteerAngle);
@@ -158,7 +157,7 @@ double LandingGear::setSteering(double setting, double link_brakes) {
 
 double LandingGear::getDragFactor() const {
 	// XXX very temporary hack (need xml, partial extension, etc)
-	if (m_Extended) return 1.0; // just a random value
+	if (m_Extended) return m_DragFactor;
 	return 0.0;
 }
 
@@ -558,8 +557,8 @@ void GearDynamics::doComplexPhysics(double) {
 	for (size_t i = 0; i < n; ++i) {
 		LandingGear &gear = *(m_Gear[i]);
 		double extension = 1.0;
-		//if (b_GearExtension[i].valid()
-		//	extension = b_GearExtension[i]->value()
+		if (b_GearExtension.valid())
+			extension = b_GearExtension->value();
 		Vector3 R = extension * gear.getPosition();
 		Vector3 F = Vector3::ZERO;
 		if (b_NearGround->value()) {
@@ -570,7 +569,7 @@ void GearDynamics::doComplexPhysics(double) {
 			                          m_Height,
 			                          m_GroundNormalBody);
 		}
-		F += gear.getDragFactor() * dynamic_pressure;
+		F += extension * gear.getDragFactor() * dynamic_pressure;
 		m_Force += F;
 		m_Moment += (R ^ F);
 	}

@@ -1,6 +1,12 @@
  Version 0.4.0 (in progress)
 ===========================
 
+2005-01-17: delta
+ * Minor changes in LandingGear class exposing the drag value. Also,
+   gear dynamics now takes into account of the extension.
+
+==> ALL USERS: RebuildData.py
+
 2005-01-16: delta
  * A Screenshots/ directory will be created (if non existent), when a
    snapshot is taken. The default location is CSPSim/Screenshots and is

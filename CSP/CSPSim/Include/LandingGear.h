@@ -62,6 +62,7 @@ public:
 		SIMDATA_XML("abs", LandingGear::m_ABS, false)
 		SIMDATA_XML("rolling_friction", LandingGear::m_RollingFriction, false)
 		SIMDATA_XML("brake_steering_linkage", LandingGear::m_BrakeSteeringLinkage, false)
+		SIMDATA_XML("drag_factor", LandingGear::m_DragFactor, false)
 	END_SIMDATA_XML_INTERFACE
 
 	LandingGear();
@@ -167,6 +168,8 @@ protected:
 	bool m_Skidding;
 	bool m_SkidFlag;
 	double m_ABSActiveTimer;
+
+	double m_DragFactor;
 
 	simdata::Vector3 m_Position;
 	simdata::Vector3 m_NormalForce;

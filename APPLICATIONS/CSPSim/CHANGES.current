@@ -1,6 +1,11 @@
  Version 0.4.0 (in progress)
 ===========================
 
+2004-04-17: wolverine
+  * Added initial networking functionality, This includes new files
+    in the Source/Networking subdirectory and changes to some current
+    file.
+
 2004-04-17: delta
   * Changes COLOR to COLOR0 to enforce arbvp1 compatibility in 
     nvMorph.cg.

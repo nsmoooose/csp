@@ -153,15 +153,15 @@ void LandingGear::postCreate() {
 }
 
 simdata::Vector3 LandingGear::simulate(simdata::Quaternion const &q, 
-                                       simdata::Vector3 const &velocity, float h, simdata::Vector3 const &normal, float dt) 
+                                       simdata::Vector3 const &velocity, double h, simdata::Vector3 const &normal, double dt) 
 {
 	static int n = 0, j = 0;
 	if (!m_Extended) return Vector3::ZERO;
 	Vector3 extension = QVRotate(q, m_MaxPosition);
 	Vector3 motion = QVRotate(q, m_Motion);
-	float mn = Dot(motion, normal);
+	double mn = Dot(motion, normal);
 	if (mn == 0.0) mn = 0.0001;
-	float compression = - (Dot(extension, normal) + h) / mn;
+	double compression = - (Dot(extension, normal) + h) / mn;
 	// TODO: add in air drag
 	if (compression <= 0.0) {
 		m_Compression = 0.0;
@@ -189,7 +189,7 @@ simdata::Vector3 LandingGear::simulate(simdata::Quaternion const &q,
 	// calculate strut compression speed
 	Vector3 v_normal_local = Dot(v_local, normal) * normal;
 	Vector3 v_normal_body = QVRotate(q.Bar(), v_normal_local);
-	float v = - Dot(v_normal_body, m_Motion);
+	double v = - Dot(v_normal_body, m_Motion);
 	// restrict v to reasonable limits
 	if (v > 10.0) v = 10.0;
 	if (v < -10.0) v = -10.0;
@@ -198,7 +198,7 @@ simdata::Vector3 LandingGear::simulate(simdata::Quaternion const &q,
 	Vector3 v_tangent_body = QVRotate(q.Bar(), v_tangent_local);
 
 	// ground support
-	float normal_force = (m_K * m_Compression + m_Beta * v) * mn;
+	double normal_force = (m_K * m_Compression + m_Beta * v) * mn;
 	if (normal_force < 0.0) normal_force = 0.0; // wheel hop
 	Vector3 normal_local = normal * normal_force;
 	Vector3 normal_body = QVRotate(q.Bar(), normal_local);
@@ -215,19 +215,19 @@ simdata::Vector3 LandingGear::simulate(simdata::Quaternion const &q,
 
 	// drag
 	Vector3 drag_body = QVRotate(q.Bar(), y_tangent_local);
-	float abs_forward_speed = fabs(forward_speed);
+	double abs_forward_speed = fabs(forward_speed);
 	
 	// update brake setting
-	float f = dt*5.0;
+	double f = dt*5.0;
 	if (f > 1.0) f = 1.0;
 	m_Brake = m_Brake * (1.0-f) + (m_BrakeSetting - m_Brake) * f;
 
-	float brake_limit = m_Brake * 25000.0; // arbitrary... move to xml
-	float brake_force = m_TireShiftY * m_TireK;
+	double brake_limit = m_Brake * 25000.0; // arbitrary... move to xml
+	double brake_force = m_TireShiftY * m_TireK;
 	
 	if (fabs(brake_force) > brake_limit) {
 		// arbitrary reduced slip friction (FIXME move to XML)
-		float slip_factor = 0.8;
+		double slip_factor = 0.8;
 		if (brake_force < 0.0) slip_factor = -slip_factor;
 		brake_force = brake_limit * slip_factor; 
 		if (m_TireShiftY * forward_speed < 0.0) {
@@ -237,20 +237,20 @@ simdata::Vector3 LandingGear::simulate(simdata::Quaternion const &q,
 		m_TireShiftY += forward_speed * dt;
 	}
 
-	float base_drag = 1000.0 / (1.0 + abs_forward_speed);
-	float drag_force = brake_force + (base_drag + abs_forward_speed)*forward_speed;
+	double base_drag = 1000.0 / (1.0 + abs_forward_speed);
+	double drag_force = brake_force + (base_drag + abs_forward_speed)*forward_speed;
 	
 	drag_body *= -drag_force;
 
 
 	// side
 	Vector3 side_body = QVRotate(q.Bar(), x_tangent_local);
-	float side_speed = v_x_local.Length();
+	double side_speed = v_x_local.Length();
 	// slip angle approximation
 	//side_speed /= (abs_forward_speed + 1.0);
 	// are we slipping to the left or right in wheel coordinates?
 	if (Dot(v_x_local, x_tangent_local) < 0.0) side_speed = -side_speed;
-	float side_damping = 0.0;
+	double side_damping = 0.0;
 	// don't keep deforming past the point we lose traction
 	if (!m_Skidding || m_TireShiftX*side_speed > 0.0 || m_TireShiftX == 0.0) {
 		m_TireShiftX += - side_speed * dt;
@@ -265,7 +265,7 @@ simdata::Vector3 LandingGear::simulate(simdata::Quaternion const &q,
 		m_TireShiftX = -0.1;
 		side_damping = 0.0;
 	}
-	float side_force =  (m_TireK * m_TireShiftX) + side_damping;
+	double side_force =  (m_TireK * m_TireShiftX) + side_damping;
 	if (m_SteeringLimit > 0.0) {
 		// partial (approx) castering of steerable wheels to reduce instability
 		side_force *= (0.1 + 0.9 * fabs(m_SteerAngle/m_SteeringLimit));
@@ -273,12 +273,12 @@ simdata::Vector3 LandingGear::simulate(simdata::Quaternion const &q,
 	side_body *= side_force;
 
 	// skid test
-	float mu = m_StaticFriction;
+	double mu = m_StaticFriction;
 	if (m_Skidding > 0.0) mu = m_DynamicFriction;
-	float total_force = side_force*side_force + drag_force*drag_force;
-	float friction = normal_force * mu;
+	double total_force = side_force*side_force + drag_force*drag_force;
+	double friction = normal_force * mu;
 	if (total_force > friction * friction) {
-		float scale = friction / sqrt(total_force + 0.001);
+		double scale = friction / sqrt(total_force + 0.001);
 		side_body *= scale;
 		drag_body *= scale;
 		if (m_ABS) {
@@ -321,11 +321,11 @@ simdata::Vector3 LandingGear::simulate(simdata::Quaternion const &q,
 }
 
 
-float LandingGear::setSteering(float setting) {
+double LandingGear::setSteering(double setting) {
 	if (setting > 1.0) setting = 1.0;
 	if (setting < -1.0) setting = -1.0;
 	m_SteerAngle = setting * m_SteeringLimit;
-	float rad = DegreesToRadians(m_SteerAngle);
+	double rad = DegreesToRadians(m_SteerAngle);
 	m_Steer = Vector3(sin(rad), cos(rad), 0.0); 
 	return m_SteerAngle;
 }

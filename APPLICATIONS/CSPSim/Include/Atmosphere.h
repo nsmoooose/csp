@@ -28,8 +28,50 @@
 #include <SimData/Object.h>
 #include <SimData/Vector3.h>
 #include <SimData/Date.h>
+#include <SimData/Interpolate.h>
+
+template <typename T>
+T convert_kts_mps(T x) { return x * 0.514444; }
+
+template <typename T>
+T convert_mps_kts(T x) { return x * 1.94385; }
+
+template <typename T>
+T convert_ft_m(T x) { return x * 0.3048; }
+
+template <typename T>
+T convert_m_ft(T x) { return x * 3.2808398950; }
+
+template <typename T>
+T convert_kg_lb(T x) { return x * 2.2046; }
+
+template <typename T>
+T convert_lb_kg(T x) { return x * 0.45360; }
+
+template <typename T>
+T convert_nm_m(T x) { return x * 1852.0; }
+
+template <typename T>
+T convert_m_nm(T x) { return x * 0.0005399568; }
+
+template <typename T>
+T convert_pa_mmhg(T x) { return x * 0.00752; }
+
+template <typename T>
+T convert_mmhg_pa(T x) { return x * 133.0; }
 
 
+/**
+ * class Atmosphere
+ *
+ * This class maintains implements a primitive atmospheric model based on
+ * the 1976 Standard Atmosphere.  Dynamic variables such as temperature and
+ * pressure are modelled using a comibination of physical effects (e.g.
+ * season and sun elevation) and hand-tailored noise functions.  The latter
+ * is also used to generate winds, gusts, and turbulence.  A number of utility
+ * functions such as mach number and calibrated airspeed are also implemented.
+ *
+ */
 class Atmosphere { //: public simdata::Object {
 
 public:
@@ -45,10 +87,16 @@ public:
 	void setDate(simdata::SimDate const &);
 	void reset();
 	void update(double dt);
+
+	inline double getMach(double speed, double altitude) const;
+	double getSpeedOfSound(double altitude) const;
+	double getPreciseCAS(double mach, double altitude) const;
+	double getCAS(double mach, double altitude) const;
 	
 protected:
 	void _update();
 	void generateWinds();
+	void tabulateCAS();
 
 	double m_Latitude;
 	double m_Longitude;
@@ -78,11 +126,20 @@ protected:
 	std::vector<float> m_TurbulenceZ;
 	std::vector<float> m_TurbulenceAltA;
 	std::vector<float> m_TurbulenceAltB;
+	simdata::Table m_CAS;
 	double m_TurbulenceBlend;
 	bool m_TurbulenceBlendUp;
 	double m_GustModulation;
 	int m_GustIndex;
 };
+
+inline double Atmosphere::getMach(double speed, double alt) const {
+	return speed / getSpeedOfSound(alt);
+}
+
+inline double Atmosphere::getCAS(double mach, double altitude) const {
+	return m_CAS.getValue(mach, altitude);
+}
 
 
 #endif // __ATMOSPHERE_H__

@@ -18,7 +18,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
-#include <SimData/Spread.h>
+#include <SimData/Real.h>
 #include <SimData/Random.h>
 #include <SimData/Pack.h>
 
@@ -26,20 +26,20 @@
 NAMESPACE_SIMDATA
 
 
-// class Spread
+// class Real
 
-void Spread::pack(Packer &p) const {
+void Real::pack(Packer &p) const {
 	p.pack(_mean);
 	p.pack(_sigma);
 }
 
-void Spread::unpack(UnPacker &p) {
+void Real::unpack(UnPacker &p) {
 	p.unpack(_mean);
 	p.unpack(_sigma);
 	regen();
 }
 
-void Spread::parseXML(const char* cdata) {
+void Real::parseXML(const char* cdata) {
 	std::string s(cdata);
 	float mean, sigma = 0.0;
 	bool ok = true;
@@ -55,53 +55,53 @@ void Spread::parseXML(const char* cdata) {
 	if (!ok) throw ParseException("SYNTAX ERROR: expect 'float' or 'float:float'");
 }
 
-Spread::Spread(float mean, float sigma) {
+Real::Real(float mean, float sigma) {
 	set(mean, sigma);
 	regen();
 }
 
-void Spread::set(float mean, float sigma) {
+void Real::set(float mean, float sigma) {
 	_mean = mean;
 	_sigma = sigma;
 	regen();
 }
 
-void Spread::regen() { 
+void Real::regen() { 
 	if (_sigma <= 0.0)
 		_value = _mean;
 	else
 		_value = box_muller(_mean, _sigma);
 }
 
-float Spread::getMean() { return _mean; }
+float Real::getMean() { return _mean; }
 
-float Spread::getSigma() { return _sigma; }
+float Real::getSigma() { return _sigma; }
 
-float Spread::getValue() { return _value; }
+float Real::getValue() { return _value; }
 
-std::string Spread:: asString() const { 
+std::string Real:: asString() const { 
 	char fmt[128];
 	snprintf(fmt, 128, "%f", _value);
 	return std::string(fmt);
 }
 
-float Spread::__neg__() { return -_value; }
-float Spread::__pos__() { return _value; }
-float Spread::__abs__() { return static_cast<float>(fabs(_value)); }
-int Spread::__nonzero__() { return _value != 0.0; }
-float Spread::__float__() { return _value; }
-int Spread::__int__() { return (int)_value; }
-long Spread::__long__() { return (long)_value; }
-float Spread::__add__(float v) { return v + _value; }
-float Spread::__radd__(float v) { return v + _value; }
-float Spread::__sub__(float v) { return _value - v; }
-float Spread::__rsub__(float v) { return v - _value; }
-float Spread::__mul__(float v) { return v * _value; }
-float Spread::__rmul__(float v) { return v * _value; }
-float Spread::__div__(float v) { assert(v != 0.0); return _value / v; }
-float Spread::__rdiv__(float v) { assert(_value != 0.0); return v / _value; }
-float Spread::__rpow__(float v) { return static_cast<float>(pow(v, _value)); }
-float Spread::__pow__(float v) { return static_cast<float>(pow(_value, v)); }
+float Real::__neg__() { return -_value; }
+float Real::__pos__() { return _value; }
+float Real::__abs__() { return static_cast<float>(fabs(_value)); }
+int Real::__nonzero__() { return _value != 0.0; }
+float Real::__float__() { return _value; }
+int Real::__int__() { return (int)_value; }
+long Real::__long__() { return (long)_value; }
+float Real::__add__(float v) { return v + _value; }
+float Real::__radd__(float v) { return v + _value; }
+float Real::__sub__(float v) { return _value - v; }
+float Real::__rsub__(float v) { return v - _value; }
+float Real::__mul__(float v) { return v * _value; }
+float Real::__rmul__(float v) { return v * _value; }
+float Real::__div__(float v) { assert(v != 0.0); return _value / v; }
+float Real::__rdiv__(float v) { assert(_value != 0.0); return v / _value; }
+float Real::__rpow__(float v) { return static_cast<float>(pow(v, _value)); }
+float Real::__pow__(float v) { return static_cast<float>(pow(_value, v)); }
 
 
 NAMESPACE_END // namespace simdata

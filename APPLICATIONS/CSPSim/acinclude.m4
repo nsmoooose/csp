@@ -150,3 +150,20 @@ AC_DEFUN(CSP_PYTHON, [
   fi
 ])
 
+dnl check for simdata
+AC_DEFUN(CSP_SIMDATA, [
+  min_version=$1
+  dnl AC_MSG_CHECKING(for simdata >= $min_version)
+  AC_MSG_CHECKING(for simdata)
+  python -c 'import SimData' 1>/dev/null 2>&1
+  if test "$?" = "0" ; then
+    AC_MSG_RESULT(yes)
+  else
+    AC_MSG_RESULT(no)
+    AC_MSG_ERROR([
+      SimData does not appear to be installed.  CVS snapshots of SimData
+      are avalable from http://sourceforge.net/projects/csp
+    ])
+  fi
+])
+

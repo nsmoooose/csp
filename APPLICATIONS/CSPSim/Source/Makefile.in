@@ -62,7 +62,7 @@ OBJECTS = $(SOURCES:%.cpp=%.o)
 DEPDIR = .deps
 MKDEP = $(CXX) -M $(CFLAGS)
 SWDEP = $(SWIG) -M $(SWOPTS)
-DEPFILES = $(addprefix $(DEPDIR)/,$(addsuffix .d, $(SOURCES))) $(DEPDIR)/cSimData.i.swigdep
+DEPFILES = $(addprefix $(DEPDIR)/,$(addsuffix .d, $(SOURCES))) $(DEPDIR)/CSP.i.swigdep
 DEPFILTER =
 DEPS_MAGIC := $(shell mkdir $(DEPDIR) > /dev/null 2>&1 || :)
 

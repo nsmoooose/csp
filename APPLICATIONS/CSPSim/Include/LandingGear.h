@@ -60,49 +60,49 @@ public:
 	virtual void postCreate();
 
 	bool getWOW() const { return m_WOW; }
-	float getSkidding() const { return m_Skidding; }
+	double getSkidding() const { return m_Skidding; }
 	bool getTouchdown() const { return m_Touchdown; }
 	void resetTouchdown() { m_Touchdown = false; }
 	double getCompression() const { return m_Compression; }
-	float getDamage() const { return m_Damage; }
+	double getDamage() const { return m_Damage; }
 	bool getExtended() const { return m_Extended; }
 	void setExtended(bool e) { m_Extended = e; }
 	simdata::Vector3 const &getPosition() const { return m_Position; }
 	simdata::Vector3 const &getMaxPosition() const { return m_MaxPosition; }
 
-	float setSteering(float setting);
-	void setBraking(float setting) { m_BrakeSetting = setting; }
+	double setSteering(double setting);
+	void setBraking(double setting) { m_BrakeSetting = setting; }
 	void setABS(bool antiskid) { m_ABS = antiskid; }
-	float getSteeringAngle() const { return m_SteerAngle; }
+	double getSteeringAngle() const { return m_SteerAngle; }
 
-	simdata::Vector3 simulate(simdata::Quaternion const &, simdata::Vector3 const &v, float h, simdata::Vector3 const &normal, float dt);
+	simdata::Vector3 simulate(simdata::Quaternion const &, simdata::Vector3 const &v, double h, simdata::Vector3 const &normal, double dt);
 
 protected:
 	simdata::Vector3 m_MaxPosition;
 	simdata::Vector3 m_Motion;
-	simdata::Spread m_DamageLimit;
-	float m_K;
-	float m_Beta;
+	simdata::Real m_DamageLimit;
+	double m_K;
+	double m_Beta;
 	bool m_Chained;
-	float m_BrakeLimit;
-	float m_StaticFriction;
-	float m_DynamicFriction;
-	float m_CompressionLimit;
-	float m_SteeringLimit;
-	float m_TireK;
-	float m_TireBeta;
+	double m_BrakeLimit;
+	double m_StaticFriction;
+	double m_DynamicFriction;
+	double m_CompressionLimit;
+	double m_SteeringLimit;
+	double m_TireK;
+	double m_TireBeta;
 
-	float m_Brake;
-	float m_BrakeSetting;
+	double m_Brake;
+	double m_BrakeSetting;
 	simdata::Vector3 m_Steer;
-	float m_SteerAngle;
-	float m_Damage;
+	double m_SteerAngle;
+	double m_Damage;
 	bool m_Extended;
 	bool m_WOW;
 	bool m_Touchdown;
-	float m_Skidding;
-	float m_TireShiftX;
-	float m_TireShiftY;
+	double m_Skidding;
+	double m_TireShiftX;
+	double m_TireShiftY;
 	double m_Compression;
 	bool m_ABS;
 	simdata::Vector3 m_Position;
@@ -125,9 +125,9 @@ public:
 	void doComplexPhysics(simdata::Quaternion const &orientation, 
 			 simdata::Vector3 const &velocity, 
 			 simdata::Vector3 const &angular_velocity, 
-			 float height, 
+			 double height, 
 			 simdata::Vector3 const &normal, 
-			 float dt,
+			 double dt,
 			 simdata::Vector3 &force,
 			 simdata::Vector3 &moment) {
 		m_WOW = false;
@@ -152,7 +152,7 @@ public:
 		p.unpack(m_Gear);
 	}
 
-//	doSimplePhysics(float dt) {}
+//	doSimplePhysics(double dt) {}
 
 	//FIXME: just for some testing purpose
 	void setStatus(bool on) {
@@ -171,13 +171,13 @@ public:
 
 	bool getWOW() const { return m_WOW; }
 
-	void setBraking(float x) {
+	void setBraking(double x) {
 		for (unsigned i = 0; i < m_Gear.size(); i++) {
 			m_Gear[i]->setBraking(x);
 		}
 	}
 
-	void setSteering(float x) {
+	void setSteering(double x) {
 		for (unsigned i = 0; i < m_Gear.size(); i++) {
 			m_Gear[i]->setSteering(x);
 		}

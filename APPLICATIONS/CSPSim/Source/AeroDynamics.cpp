@@ -377,6 +377,13 @@ void AeroDynamics::doSimStep(double dt)
 		m_Gravity = atmosphere->getGravity(m_PositionLocal.z);
 		Wind = atmosphere->getWind(m_PositionLocal);
 		Wind += atmosphere->getTurbulence(m_PositionLocal, m_Distance);
+		static int XXX = 0;
+		if ((XXX++ % 30) == 0) {
+			double M = atmosphere->getMach(m_AirSpeed, m_PositionLocal.z);
+			double c = atmosphere->getPreciseCAS(M, m_PositionLocal.z);
+			double d = atmosphere->getCAS(M, m_PositionLocal.z);
+			std::cout << c << " : " << (c-d) << std::endl;
+		}
 	} else {
 		qBarFactor *= 1.25;
 		m_Gravity = 9.8;
@@ -393,8 +400,9 @@ void AeroDynamics::doSimStep(double dt)
 		if (near_ground) {
 			// approximate (generic) ground effect... TODO: paramaterize in xml.
 			double x = m_PositionLocal.z - m_GroundZ; // + wing height relative to cg
-			m_GE = 0.49 + (0.1 - 0.006 * x) * x;
-			if (m_GE > 1.0) m_GE = 1.0;
+			x /= m_WingSpan;
+			if (x > 1.0) x = 1.0;
+			m_GE = 0.49 + (1.0 - 0.5 * x) * x;
 		}
 		
 		AirflowBody = LocalToBody(m_VelocityLocal - Wind);

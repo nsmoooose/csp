@@ -53,7 +53,7 @@ class Perlin1D {
 	}
 	
 	void randomize() {
-		m_offset = int(simdata::g_Random.NewRand()*1.0e+9);
+		m_offset = int(simdata::g_Random.newRand()*1.0e+9);
 	}
 
 	double Noise(int x) {
@@ -137,6 +137,7 @@ Atmosphere::Atmosphere() {
 	m_GustModulation = 1.0;
 	m_GustIndex = 0;
 	reset();
+	tabulateCAS();
 }
 
 void Atmosphere::generateWinds() {
@@ -425,6 +426,45 @@ void Atmosphere::reset() {
 	_update();
 	_update();
 }
+
+
+double Atmosphere::getSpeedOfSound(double altitude) const {
+	double T = getTemperature(altitude);
+        return 20.0324 * sqrt(T); // m/s
+}
+
+double Atmosphere::getPreciseCAS(double mach, double altitude) const {
+	double delta = getPressure(altitude) / m_GroundPressure;
+	double gamma = pow(1.0 + 0.2 * mach * mach, 3.5) - 1.0;
+	return 760.369 * sqrt( pow(gamma * delta + 1.0, 0.2857142857) - 1.0 );
+}
+
+
+void Atmosphere::tabulateCAS() {
+	simdata::Table::vector_t breaks, cas;
+	simdata::Table::vector_it cas_i;
+	int i, j;
+	breaks.resize(300);
+	for (i = 0; i < 300; i++) breaks[i] = 0.02 * i;
+	m_CAS.setXBreaks(breaks);
+	m_CAS.setXSpacing(0.02);
+	breaks.resize(300);
+	for (i = 0; i < 300; i++) breaks[i] = 100.0 * i;
+	m_CAS.setYBreaks(breaks);
+	m_CAS.setYSpacing(100.0);
+	cas.resize(300*300);
+	cas_i = cas.begin();
+	for (i = 0; i < 300; i++) {
+		float altitude = 100.0 * i;
+		for (j = 0; j < 300; j++) {
+			float mach = 0.02 * j;
+			*cas_i++ = getPreciseCAS(mach, altitude);
+		}
+	}
+	m_CAS.setData(cas);
+	m_CAS.interpolate();
+}
+
 
 /*
 http://www.grc.nasa.gov/WWW/K-12/airplane/atmosmet.html

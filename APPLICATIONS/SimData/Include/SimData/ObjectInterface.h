@@ -400,6 +400,7 @@ namespace PTS {
 	int IsVector(double const *);	// no implementation is required
 	int IsVector(int const *);	// no implementation is required
 	int IsVector(bool const*);	// no implementation is required
+	int IsVector(char const*);	// no implementation is required
 	int IsVector(std::string const*);// no implementation is required
 	int IsVector(TypeAdapter const *);// no implementation is required
 

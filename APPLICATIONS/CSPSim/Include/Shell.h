@@ -61,12 +61,14 @@ public:
 	 */
 	std::string run(std::string const &command) {
 		PyObject *result;
-		result = PyObject_CallMethod(m_Shell, "run", "s", command.c_str());
-		if (result != NULL) {
-			return PyString_AsString(result);
+		if (m_Shell) {
+			result = PyObject_CallMethod(m_Shell, "run", "s", command.c_str());
+			if (result != NULL) {
+				return PyString_AsString(result);
+			}
+			// should never reach this point since the python method traps
+			// exceptions and returns the error and  traceback as a string
 		}
-		// should never reach this point since the python method traps
-		// exceptions and returns the error and  traceback as a string
 		return "";
 	}
 protected:

@@ -123,7 +123,7 @@ public:
 	inline simdata::Vector3 getForce() const { return m_Force; }
 
 	/**
-	 * Get the total force computed in the last update() call.
+	 * Get the total moment computed in the last update() call.
 	 */
 	inline simdata::Vector3 getMoment() const { return m_Moment; }
 

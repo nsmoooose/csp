@@ -35,8 +35,10 @@ public:
 	~LogStream();
 	void _close();
 	void setOutput(std::string const &fn);
-	void setLogPriority(int p);
-	void setLogCategory(int c);
+	void setLogPriority(int);
+	void setLogCategory(int);
+	void setTimeLogging(bool);
+	void setPointLogging(bool);
 };
 
 NAMESPACE_SIMDATA_END // namespace simdata

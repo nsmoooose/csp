@@ -29,6 +29,9 @@ Version 0.4.0 (in progress)
     (unit test coming soon).  See the header file for docs on what they
     do and how to use them (nb: ring queue is still under-documented).
 
+  * Expand the python interface to LogStream to include setting the
+    enabling point and time logging.
+
 2004-07-09: onsight
   * Changed the formating of HashT values to use fixed-width hex
     instead of decimal numbers, and cleaned up the data archive

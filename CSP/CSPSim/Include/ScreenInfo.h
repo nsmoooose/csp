@@ -1,17 +1,17 @@
 // Combat Simulator Project - FlightSim Demo
 // Copyright (C) 2002 The Combat Simulator Project
 // http://csp.sourceforge.net
-// 
+//
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
 // as published by the Free Software Foundation; either version 2
 // of the License, or (at your option) any later version.
-// 
+//
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU General Public License
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
@@ -36,7 +36,7 @@ namespace osgText {
 
 class DynamicObject;
 
-class ScreenInfo: public osg::Geode 
+class ScreenInfo: public osg::Geode
 {
 protected:
 	std::string m_TTFPath;
@@ -53,7 +53,7 @@ public:
 };
 
 
-class Framerate: public ScreenInfo 
+class Framerate: public ScreenInfo
 {
 	float m_MinFps, m_MaxFps, m_Cumul;
 	osgText::Text* m_Date;
@@ -65,7 +65,7 @@ public:
 };
 
 
-class GeneralStats: public ScreenInfo 
+class GeneralStats: public ScreenInfo
 {
 	osgText::Text* m_Altitude;
 	osgText::Text* m_GlobalPosition;
@@ -78,7 +78,7 @@ public:
 };
 
 
-class ObjectStats: public ScreenInfo 
+class ObjectStats: public ScreenInfo
 {
 	// input device informations
 	std::vector<osg::ref_ptr<osgText::Text> > m_ObjectStats;
@@ -93,6 +93,20 @@ public:
 };
 
 
+class MessageBox: public ScreenInfo
+{
+	std::vector<osg::ref_ptr<osgText::Text> > m_Messages;
+	int m_Lines;
+	float m_Delay;
+	float m_Alpha;
+	double m_LastUpdate;
+protected:
+	~MessageBox(){}
+public:
+	MessageBox(int posx, int posy, int lines, float delay);
+	void addLine(std::string const &line);
+	virtual void update();
+};
 
 #endif  // __SCREENINFO_H__
 

@@ -33,7 +33,10 @@
 #include <sstream>
 
 #include <osg/Texture2D>
+#include <osg/StateSet>
 #include <osgText/Text>
+
+#include <SimData/Timing.h>
 
 using std::max;
 using std::min;
@@ -226,3 +229,48 @@ void ObjectStats::update() {
 	}
 }
 
+MessageBox::MessageBox(int posx, int posy, int lines, float delay)
+	: ScreenInfo(posx, posy, "MESSAGE BOX"), m_Lines(lines), m_Delay(delay), m_Alpha(1.0), m_LastUpdate(0)
+{
+	if (m_Text) {
+		removeDrawable(m_Text);
+	}
+	int stepy = static_cast<int>(m_CharacterSize);
+	for (int i = 0; i < lines; ++i) {
+		osg::ref_ptr<osgText::Text> line = makeText(posx, posy - i * stepy);
+		m_Messages.push_back(line);
+		addDrawable(line.get());
+	}
+	if (!getUpdateCallback()) {
+		setUpdateCallback(new UpdateCallback);
+	}
+}
+
+void MessageBox::addLine(std::string const &line) {
+	m_LastUpdate = simdata::get_realtime();
+	for (int i = m_Lines-1; i > 0; --i) {
+		m_Messages[i]->setText(m_Messages[i-1]->getText());
+	}
+	if (m_Lines > 0) {
+		m_Messages[0]->setText(line);
+	}
+}
+
+void MessageBox::update() {
+	double now = simdata::get_realtime();
+	float dt = static_cast<float>(now - m_LastUpdate);
+	float old_alpha = m_Alpha;
+	if (dt > m_Delay) {
+		m_Alpha = std::max<float>(0, 1.0 - (dt - m_Delay));
+	} else {
+		m_Alpha = 1.0;
+	}
+	if (m_Alpha != old_alpha) {
+		for (int i = 0; i < m_Lines; ++i) {
+			m_Messages[i]->setColor(osg::Vec4(1, 1, 1, m_Alpha));
+			if (m_Alpha == 0.0) {
+				m_Messages[i]->setText("");
+			}
+		}
+	}
+}

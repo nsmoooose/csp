@@ -36,11 +36,13 @@ void set2dScene(osg::Group *rootNode, int ScreenWidth, int ScreenHeight)
 	osg::ref_ptr<ScreenInfo> pause = new ScreenInfo(ScreenWidth-5*offsetpos,ScreenHeight-offsetpos,"PAUSE", "PAUSE");
 	osg::ref_ptr<ScreenInfo> record = new ScreenInfo(ScreenWidth-15*offsetpos,ScreenHeight-offsetpos,"RECORD", "RECORD");
 	osg::ref_ptr<GeneralStats> generalStats = new GeneralStats(offsetpos, ScreenHeight / 5);
+	osg::ref_ptr<MessageBox> messageBox = new MessageBox(offsetpos, ScreenHeight / 2, 4, 4.0);
 
 	rootNode->addChild(framerate.get());
 	rootNode->addChild(pause.get());
 	rootNode->addChild(record.get());
 	rootNode->addChild(generalStats.get());
+	rootNode->addChild(messageBox.get());
 
 	osg::StateSet *rootState = rootNode->getOrCreateStateSet();
 	rootState->setMode(GL_LIGHTING,osg::StateAttribute::OFF);
@@ -129,3 +131,10 @@ bool ScreenInfoManager::getStatus(std::string const& name)
 	}
 }
 
+void ScreenInfoManager::addMessage(std::string const &line)
+{
+	MessageBox *mbox = dynamic_cast<MessageBox*>(getScreenInfo("MESSAGE BOX"));
+	if (mbox) {
+		mbox->addLine(line);
+	}
+}

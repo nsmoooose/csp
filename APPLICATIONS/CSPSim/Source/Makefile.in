@@ -1,5 +1,7 @@
 TOPDIR = ..
 
+BIN = $(TOPDIR)/Bin
+
 #SUBDIRS = FX
 
 DEMETER_PREFIX = $(TOPDIR)/$(DEMETER_RELATIVE)
@@ -62,7 +64,7 @@ OBJECTS = $(SOURCES:%.cpp=%.o)
 DEPDIR = .deps
 MKDEP = $(CXX) -M $(CFLAGS)
 SWDEP = $(SWIG) -M $(SWOPTS)
-DEPFILES = $(addprefix $(DEPDIR)/,$(addsuffix .d, $(SOURCES))) $(DEPDIR)/CSP.i.swigdep
+DEPFILES = $(addprefix $(DEPDIR)/,$(addsuffix .d, $(SOURCES))) $(DEPDIR)/cCSP.i.swigdep
 DEPFILTER =
 DEPS_MAGIC := $(shell mkdir $(DEPDIR) > /dev/null 2>&1 || :)
 
@@ -74,7 +76,7 @@ default:
 clean-objects:
 	rm -f $(SOURCES:%.cpp=%.o)
 	rm -f lib*.a
-	rm -f _CSP.so CSP_wrap.*
+	rm -f $(BIN)/_cCSP.so $(BIN)/cCSP.py cCSP_wrap.*
 	rm -f $(DEPDIR)/*.d
 
 clean-dependencies:
@@ -108,16 +110,17 @@ $(DEPDIR)/%.swigdep : %
 	@echo "Computing dependencies for $<..."
 	@$(SWDEP) $(DEPFILTER) -o $(<:.i=_wrap.cpp) $< > $@
 
-_CSP.so: $(OBJECTS) CSP_wrap.o
-	$(CXX) $(LDOPTS) -o$@ $^ $(LIBS)
+_cCSP.so: $(OBJECTS) cCSP_wrap.o
+	$(CXX) $(LDOPTS) -o$(BIN)/$@ $^ $(LIBS)
 	
 CSPapp: $(OBJECTS) main.o
 	$(CXX) -lswigpy -lpython2.2 -o$@ $^ $(LIBS)
 
-CSP_wrap.cpp: CSP.i
+cCSP_wrap.cpp: cCSP.i
 	$(SWIG) $(SWOPTS) -o $@ $< 
+	mv cCSP.py $(BIN)
 
-CSP_wrap.o: CSP_wrap.cpp
+cCSP_wrap.o: cCSP_wrap.cpp
 	$(CXX) -c $(SWCXXF) $(@:.o=.cpp)
 
 %.o: %.cpp 
@@ -129,5 +132,5 @@ AeroDynamics.o: AeroDynamics.cpp
 Makefile: Makefile.in
 	cd $(TOPDIR) && ./configure
 
-all: Makefile build-subdirs _CSP.so #CSPapp
+all: Makefile build-subdirs _cCSP.so #CSPapp
 

@@ -358,20 +358,33 @@ class Workspace:
     self.save()
     return Result(0)
 
-  def diff(self, name):
+  def diff(self, names, revision):
     dircmd = os.environ.get('SUBSET_DIFF_DIR', '')
     onecmd = os.environ.get('SUBSET_DIFF_ONE', dircmd)
     cs = None
-    if not name:
+    if not names:
+      name = 'default changeset'
       files = filter(self._closed, sublib.svn_st())
-    elif os.path.exists(name):
+    elif len(names) > 1 or os.path.exists(names[0]):
       files = sublib.svn_st()
-      path = os.path.abspath(name)
-      files = [x for x in files if x.abspath() == path]
-      if not files:
-        print '%s unmanaged or unchanged' % name
+      diffs = []
+      for file in files:
+        path = file.abspath()
+        for name in names:
+          name = os.path.abspath(name)
+          if os.path.isdir(name):
+            if path.startswith(name):
+              diffs.append(file)
+              break
+          else:
+            if name == path:
+              diffs.append(file)
+              break
+      if not diffs:
         return Result(0)
+      files = diffs
     else:
+      name = names[0]
       cs = self.getChangeset(name)
       if not cs:
         return Error('no changeset "%s"' % name)
@@ -405,14 +418,19 @@ class Workspace:
       else:
         index.write('<h3>%s</h3>' % name)
       cleanup.append(diffindex)
+      if revision:
+        index.write('<b>diff to revision %s</b>' % revision)
       index.write('<ul>\n')
     for file in files:
       outbase = file.path.replace(os.path.sep, '~') + '.diff'
       outfile = os.path.join(tmproot, outbase)
       cleanup.append(outfile)
-      sublib.svn_savediff(file, outfile)
+      exit_code = sublib.svn_savediff(file, outfile, revision)
       if makeindex:
-        index.write('<li><a href="%s">%s</a></li>\n' % (outbase, file.path))
+        if exit_code:
+          index.write('<li>%s <i>...unable to diff</i></li>\n' % (file.path))
+        else:
+          index.write('<li><a href="%s">%s</a></li>\n' % (outbase, file.path))
     if makeindex:
       index.write('</ul>\n</small></body></html>')
       index.close()
@@ -859,22 +877,16 @@ class Diff(Command):
   def _define(self):
     self._long = ('diff: generate diffs for files or changesets.\n'
                   '\n'
-                  'usage: %prog diff [changeset|file]'
+                  'usage: %prog diff [changeset | file [file...]]'
                   '\n'
                   'If no arguments are specified, all files in the default changeset\n'
                   'will be diffed')
     self._short = 'generate diffs'
     self._addKeys('diff')
+    self._addOption('-r', '--revision', default='', metavar='REV', help='diff relative to a specific revision')
 
   def _run(self, options, args):
-    if len(args) > 1:
-      self.help()
-      return 1
-    if len(args) == 0:
-      name = ''
-    else:
-      name = args[0]
-    return run('diff', name)
+    return run('diff', args, options.revision)
 
 
 class Help(Command):
@@ -885,7 +897,6 @@ class Help(Command):
                   'usage: %prog help [SUBCOMMAND...]')
     self._short = 'describe subcommands'
     self._addKeys('help', 'h', '?')
-    self._addOption('-r')
 
   def _run(self, options, args):
     if len(args) == 1:

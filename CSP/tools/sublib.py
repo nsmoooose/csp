@@ -106,9 +106,13 @@ def svn_root():
   return os.path.abspath(os.path.dirname(svn_rootsvn()))
 
 
-def svn_savediff(file, target, context=100):
+def svn_savediff(file, target, revision=None, context=100):
   path = file.path
-  exit_code, out = runo('svn diff --diff-cmd diff -x "-U %d" %s' % (context, path))
+  if revision:
+    revision = '-r %s' % revision
+  else:
+    revision = ''
+  exit_code, out = runo('svn diff %s --diff-cmd diff -x "-U %d" %s' % (revision, context, path))
   open(target, 'w').write(''.join(out))
   return exit_code
 

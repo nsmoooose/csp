@@ -93,5 +93,29 @@
             <Float name="y">340</Float>
             <Float name="orientation">2.07</Float>
         </Object>
+        <Object class="FeatureLayout">
+            <Path name="model">hangar</Path>
+            <Float name="x">231</Float>
+            <Float name="y">1253</Float>
+            <Float name="orientation">-0.75</Float>
+        </Object>
+        <Object class="FeatureLayout">
+            <Path name="model">hangar</Path>
+            <Float name="x">208</Float>
+            <Float name="y">1326</Float>
+            <Float name="orientation">-0.20</Float>
+        </Object>
+        <Object class="FeatureLayout">
+            <Path name="model">hangar</Path>
+            <Float name="x">192</Float>
+            <Float name="y">1433</Float>
+            <Float name="orientation">-2.10</Float>
+        </Object>
+        <Object class="FeatureLayout">
+            <Path name="model">hangar</Path>
+            <Float name="x">208</Float>
+            <Float name="y">1510</Float>
+            <Float name="orientation">-1.6</Float>
+        </Object>
     </List>
 </Object>

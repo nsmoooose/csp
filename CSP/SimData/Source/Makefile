@@ -34,6 +34,7 @@ MODULES = \
 	Quat \
 	Random \
 	Real \
+	Timing \
 	TypeAdapter \
 	Vector3 \
 	Version

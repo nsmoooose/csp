@@ -1,18 +1,18 @@
-/* SimDataCSP: Data Infrastructure for Simulations
- * Copyright (C) 2002 Mark Rose <tm2@stm.lbl.gov>
- * 
- * This file is part of SimDataCSP.
- * 
+/* SimData: Data Infrastructure for Simulations
+ * Copyright 2002, 2003, 2004 Mark Rose <mkrose@users.sourceforge.net>
+ *
+ * This file is part of SimData.
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
@@ -23,95 +23,13 @@
 
 #include <ctime>
 
-// for fast timing routines
-#ifdef _WIN32
-	#include <Windows.h>
-#else
-	#include <sys/time.h>
-	#include <unistd.h>
-#endif
-
 
 NAMESPACE_SIMDATA
 
 
-/////////////////////////////////////////////////////////////
-// 'fast' timing routines (1-2 msec accuracy)
-
-#ifdef _WIN32
-	static LARGE_INTEGER _tstart, _tend;
-	static LARGE_INTEGER freq;
-
-	void tstart(void) {
-		static int first = 1;
-		if (first) {
-			QueryPerformanceFrequency(&freq);
-			first = 0;
-		}
-		QueryPerformanceCounter(&_tstart);
-	}
-
-	void tend(void) {
-		QueryPerformanceCounter(&_tend);
-	}
-
-	double tval() {
-		return ((double)_tend.QuadPart -
-			(double)_tstart.QuadPart)/((double)freq.QuadPart);
-	}
-
-	timing_t get_realtime() {
-		static double scale;
-		static int first = 1;
-		LARGE_INTEGER x;
-		double now;
-		if (first) {
-			QueryPerformanceFrequency(&x);
-			first = 0;
-			scale = 1.0 / (double)x.QuadPart;
-		}
-		QueryPerformanceCounter(&x);
-		now = (double)x.QuadPart;
-		return (timing_t) (now * scale);
-	}
-
-#else
-
-	static struct timeval _tstart, _tend;
-	static struct timezone tz;
-
-	void tstart(void) {
-		gettimeofday(&_tstart, &tz);
-	}
-
-	void tend(void) {
-		gettimeofday(&_tend,&tz);
-	}
-
-	double tval() {
-		double t1, t2;
-		t1 =  (double)_tstart.tv_sec + (double)_tstart.tv_usec/(1000*1000);
-		t2 =  (double)_tend.tv_sec + (double)_tend.tv_usec/(1000*1000);
-		return t2-t1;
-	}
-
-	timing_t get_realtime() {
-		struct timezone tz_;
-		struct timeval now;
-		gettimeofday(&now, &tz_);
-		return (timing_t) ((double)now.tv_sec + (double)now.tv_usec*1.0e-6);
-	}
-
-#endif
-
-/////////////////////////////////////////////////////////////
-// end of timing routines
-
-
-
-const Date::day_t Date::days_in_months[2][13] = 
+const Date::day_t Date::days_in_months[2][13] =
 {  /* error, jan feb mar apr may jun jul aug sep oct nov dec */
-  {  0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 }, 
+  {  0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 },
   {  0, 31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 } /* leap year */
 };
 const int Date::days_in_year[2][14] =
@@ -129,8 +47,8 @@ Date::Date(year_t year, month_t month, day_t day) {
 }
 
 const char *Date::getMonthName() const {
-	static const char* name[] = {"January", "February", "March", 
-	                             "April", "May", "June", "July", 
+	static const char* name[] = {"January", "February", "March",
+	                             "April", "May", "June", "July",
 				     "August", "September", "October",
 				     "November", "December"};
 	int idx = getMonth() - 1;
@@ -139,8 +57,8 @@ const char *Date::getMonthName() const {
 }
 
 const char *Date::getMonthShortName() const {
-	static const char* name[] = {"Jan", "Feb", "Mar", 
-	                             "Apr", "May", "Jun", "Jul", 
+	static const char* name[] = {"Jan", "Feb", "Mar",
+	                             "Apr", "May", "Jun", "Jul",
 				     "Aug", "Sep", "Oct",
 				     "Nov", "Dec"};
 	int idx = getMonth() - 1;
@@ -220,7 +138,7 @@ void Date::subtractMonths(int nmonths) {
 	_updateJulian();
 }
 
-void Date::addYears(int nyears) {  
+void Date::addYears(int nyears) {
 	m_year += nyears;
 	if (m_month == 2 && m_day == 29) {
 		if (!isLeap()) m_day = 28;
@@ -228,7 +146,7 @@ void Date::addYears(int nyears) {
 	_updateJulian();
 }
 
-void Date::subtractYears(int nyears) {  
+void Date::subtractYears(int nyears) {
 	m_year -= nyears;
 	if (m_month == 2 && m_day == 29) {
 		if (!isLeap()) m_day = 28;
@@ -257,27 +175,27 @@ void Date::_updateYMD()
   month_t m;
   day_t day;
   unsigned int A, B, C, D, E, M;
-  
+
   /* Formula taken from the Calendar FAQ */
-  
+
   A = m_julian + 32045;
   B = ( 4 *(A + 36524) )/ 146097 - 1;
   C = A - (146097 * B)/4;
   D = ( 4 * (C + 365) ) / 1461 - 1;
   E = C - ((1461*D) / 4);
   M = (5 * (E - 1) + 2)/153;
-  
+
   m = M + 3 - (12*(M/10));
   day = E - (153*M + 2)/5;
   y = 100 * B + D - 4800 + (M/10);
-  
+
 #ifdef ENABLE_DEBUG
-  if (!validYMD(y, m, day)) 
+  if (!validYMD(y, m, day))
     {
       throw InvalidDate();
     }
 #endif
-  
+
   m_year = y;
   m_month = m;
   m_day = day;
@@ -324,10 +242,10 @@ void Date::convert(struct tm *tm) const {
 	/* On Linux and maybe other systems, there are weird non-POSIX
 	* fields on the end of struct tm that choke strftime if they
 	* contain garbage.  So we need to 0 the entire struct, not just the
-	* fields we know to exist. 
+	* fields we know to exist.
 	*/
 	memset (tm, 0x0, sizeof (struct tm));
-  
+
 	tm->tm_mday = m_day;
 	tm->tm_mon  = m_month - 1; /* 0-11 goes in tm */
 	tm->tm_year = ((int)m_year) - 1900; /* X/Open says tm_year can be negative */
@@ -366,7 +284,7 @@ void Zulu::convert(struct tm *tm, bool local) const {
 	/* On Linux and maybe other systems, there are weird non-POSIX
 	* fields on the end of struct tm that choke strftime if they
 	* contain garbage.  So we need to 0 the entire struct, not just the
-	* fields we know to exist. 
+	* fields we know to exist.
 	*/
 	memset (tm, 0x0, sizeof (struct tm));
   	tm->tm_hour = getHour(local);
@@ -390,7 +308,7 @@ void DateZulu::convert(struct tm *tm, bool local) const {
 	/* On Linux and maybe other systems, there are weird non-POSIX
 	* fields on the end of struct tm that choke strftime if they
 	* contain garbage.  So we need to 0 the entire struct, not just the
-	* fields we know to exist. 
+	* fields we know to exist.
 	*/
 	memset (tm, 0x0, sizeof (struct tm));
   	tm->tm_hour = getHour(local);
@@ -428,11 +346,11 @@ std::string DateZulu::formatString(const char *format, bool local) const {
 #define COEFF2  0.093104e+0L
 #define COEFF3  -6.2e-6L
 
-double DateZulu::getAccurateMST(radian_t longitude) const {  
+double DateZulu::getAccurateMST(radian_t longitude) const {
 	return getMST(longitude);
 }
 
-double DateZulu::getMST(radian_t longitude) const {  
+double DateZulu::getMST(radian_t longitude) const {
 	double JD = getJulianDate();
 	double T = (JD - EPOCH) * SIMDATA_F1p0_36525p0;
 	double F = DAYSEC * (JD - (int) JD);
@@ -496,7 +414,7 @@ void SimDate::parseXML(const char* cdata) {
 	}
 	try {
 		*this = SimDate(dy, dm, dd, th, tm, ts);
-	} 
+	}
 	catch (InvalidDate) {
 		throw ParseException("SYNTAX ERROR: invalid date string");
 	}

@@ -1,18 +1,18 @@
 /* SimData: Data Infrastructure for Simulations
- * Copyright (C) 2002, 2003 Mark Rose <tm2@stm.lbl.gov>
- * 
+ * Copyright 2002, 2003, 2004 Mark Rose <mkrose@users.sourceforge.net>
+ *
  * This file is part of SimData.
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
@@ -25,15 +25,15 @@
  *
  * Classes for date and time manipulation.
  *
- * 	Date: 
+ * 	Date:
  * 	      Generic date class storing YMD and julian days
  * 	
- * 	Zulu: 
+ * 	Zulu:
  * 	      Very simple time class storing seconds since midnight as
  * 	      a float.  Rollover functions are provided to integrate with
  * 	      the Date class.  Time is ZULU (UTC), with an optional TZ
  * 	      field that can be used to adjust for the local timezone.
- * 	      
+ * 	
  * 	DateZulu:
  * 	      This class simply combines Date and Zulu, implementing
  * 	      date/time rollover.  Some astronical time routines, such
@@ -58,7 +58,8 @@
 #include <SimData/Archive.h>
 #include <SimData/ExceptionBase.h>
 #include <SimData/BaseType.h>
-
+#include <SimData/Timing.h>
+#include <SimData/Uniform.h>
 
 
 NAMESPACE_SIMDATA
@@ -72,45 +73,6 @@ NAMESPACE_SIMDATA
 
 typedef double radian_t;
 typedef double degree_t;
-
-
-/////////////////////////////////////////////////////////////
-// 'fast' timing routines (1-2 msec accuracy)
-
-typedef double timing_t;
-
-/** Start the timer.
- */
-void tstart(void);
-
-/** Stop the timer.
- */
-void tend(void);
-
-/** Get the time interval (in seconds) between last calls to tstart()
- *  and tend().
- *
- *  The precision should be about 1-2 ms on most platforms.
- */
-double tval();
-
-/** Return the current time in seconds.  
- *
- *  The offset is platform dependent, so do not use this value for 
- *  absolute time.
- */
-timing_t get_realtime();
-
-
-/////////////////////////////////////////////////////////////
-// end of timing routines
-
-
-
-// TODO: please merge these with global type definitions
-typedef int sint32;
-typedef short sint16;
-typedef unsigned char uint08;
 
 
 /** Exception thrown by the Date class when invalid dates are detected.
@@ -130,11 +92,11 @@ SIMDATA_EXCEPTION(InvalidDate);
  */
 class SIMDATA_EXPORT Date {
 public:
-	typedef sint32 julian_t;
-	typedef uint08 day_t;
-	typedef uint08 weekday_t;
-	typedef uint08 month_t;
-	typedef sint16 year_t;
+	typedef int32 julian_t;
+	typedef uint8 day_t;
+	typedef uint8 weekday_t;
+	typedef uint8 month_t;
+	typedef int16 year_t;
 
 	typedef enum {
 		MONDAY       = 1,
@@ -201,7 +163,7 @@ public:
 	 */
 	static bool validYMD(year_t year, month_t month, day_t day) {
 		if (month < 1 || month > 12 || day < 1) return false;
-		return (day <= (isLeap(year) ? 
+		return (day <= (isLeap(year) ?
 		           days_in_months[1][month] : days_in_months[0][month]));
 	}
 
@@ -312,26 +274,26 @@ public:
 		_updateYMD();
 	}
 
-	/** Add a number of months to the date.  
-	 *  
+	/** Add a number of months to the date.
+	 *
 	 *  The day will be truncated to fit within the new month.
 	 */
 	void addMonths(int nmonths);
 	
-	/** Subtract a number of months to the date.  
+	/** Subtract a number of months to the date.
 	 *
 	 *  The day will be truncated to fit within the new month.
 	 */
 	void subtractMonths(int nmonths);
 
-	/** Add a number of years to the date.  
-	 *  
+	/** Add a number of years to the date.
+	 *
 	 *  February 29 change to February 28 for non-leap years.
 	 */
 	void addYears(int nyears);
 
-	/** Subtract a number of years to the date.  
-	 *  
+	/** Subtract a number of years to the date.
+	 *
 	 *  February 29 change to February 28 for non-leap years.
 	 */
 	void subtractYears(int nyears);
@@ -348,19 +310,19 @@ public:
 	 */
 	static int getSundayWeeksInYear(year_t year);
 
-	/** Compare two dates.  
+	/** Compare two dates.
 	 *
 	 *  @returns +1 if a > b, -1 if a < b, or 0 if a == b.
 	 */
 	static int compare(const Date &a, const Date &b);
 	
-	/** Compare with another Date.  
+	/** Compare with another Date.
 	 *
 	 *  @returns +1 if this > other, -1 if this < other,
 	 *           and 0 if the dates are equal.
 	 */
-	virtual int compare(const Date &other) const { 
-		return compare(*this, other); 
+	virtual int compare(const Date &other) const {
+		return compare(*this, other);
 	}
 
 	/** Convert the date to a struct tm (time fields are set to zero).
@@ -403,7 +365,7 @@ private:
 
 
 /** Time of day in "zulu" time (i.e. UTC or Greenwich Mean).
- * 
+ *
  *  Times are stored as doubles in seconds since midnight.  This
  *  makes time based calculations relatively easy.  When the second
  *  count exceeds 86400, the day is incremented and the clock reset.
@@ -414,10 +376,10 @@ private:
  *  use the SimDate::interval function.
  *
  *  A timezone parameter and options for operating on "local" times
- *  are provided.  Care must be taken when using these methods in 
- *  conjunction with dates, since the date may differ depending on 
+ *  are provided.  Care must be taken when using these methods in
+ *  conjunction with dates, since the date may differ depending on
  *  whether local or zulu time is used.
- * 
+ *
  *  @author Mark Rose <mrose@stm.lbl.gov>
  */
 
@@ -448,7 +410,7 @@ public:
 	}
 	
 	/** Construct a Zulu from the seconds since midnight.
-	 * 
+	 *
 	 *  @param second seconds since midnight (0.0-86400.0)
 	 *  @param tz timezone (default to Greenwich mean)
 	 */
@@ -499,7 +461,7 @@ public:
 	 *
 	 *  @param local adjust the result to reflect the timezone.
 	 */
-	time_t getTime(bool local=false) const { 
+	time_t getTime(bool local=false) const {
 		return m_time + (local ? (m_tz * 3600.0) : 0.0);
 	}
 	
@@ -598,7 +560,7 @@ private:
 
 
 /** Class combining time and date operations.
- * 
+ *
  *  @author Mark Rose <mrose@stm.lbl.gov>
  */
 class SIMDATA_EXPORT DateZulu: public Date, public Zulu {
@@ -606,14 +568,14 @@ class SIMDATA_EXPORT DateZulu: public Date, public Zulu {
 
 public:
 
-	/** Default constructor 
-	 * 
+	/** Default constructor
+	 *
 	 *  @see Date() and Zulu()
 	 */
 	DateZulu(): Date(), Zulu() {}
 
 	/** Construct a new DateZulu.
-	 * 
+	 *
 	 *  @param year the year (e.g. 2000)
 	 *  @param month the month (1-12)
 	 *  @param day the day (1-31)
@@ -628,7 +590,7 @@ public:
 	}
 
 	/** Construct a new DateZulu.
-	 * 
+	 *
 	 *  @param julian the Julian day.
 	 *  @param hour the hour (0-23)
 	 *  @param minute the minute (0-59)
@@ -656,25 +618,25 @@ public:
 		
 	
 	/** Store the time into a standard time structure.
-	 * 
+	 *
 	 *  @param tm The time structure to set (see <time.h>)
-	 *  @param local Optionally adjust the time for the local 
+	 *  @param local Optionally adjust the time for the local
 	 *               timezone.
 	 */
 	void convert(struct tm *tm, bool local=false) const;
 
 	/** Format the date and time to a string.
-	 * 
+	 *
 	 *  @param format Identical to the format string used by
 	 *                strftime() (Google: strftime)
-	 *  @param local Optionally adjust the time for the local 
+	 *  @param local Optionally adjust the time for the local
 	 *               timezone.
 	 *  @returns The formatted date/time string.
 	 */
 	std::string formatString(const char *format, bool local=false) const;
 
 	/** Return a string representation of the date and time.
-	 * 
+	 *
 	 *  @returns The date and time as a string in the format
 	 *           "YYYY/MM/DD HH:MM::SSz".
 	 */
@@ -687,7 +649,7 @@ public:
 	virtual std::string typeString() const { return "type::DateZulu"; }
 	
 	/** Increment the current time, with date rollover.
-	 * 
+	 *
 	 *  @param dt The time interval (in seconds)
 	 *  @returns The number of rollover days.
 	 */
@@ -698,7 +660,7 @@ public:
 	}
 
 	/** Set the current time, with date rollover.
-	 * 
+	 *
 	 *  @param t The current time of day (in seconds)
 	 *  @returns The number of rollover days.
 	 */
@@ -709,7 +671,7 @@ public:
 	}
 
 	/** Get the real-valued Julian date.
-	 * 
+	 *
 	 *  @returns The Julian date and time as a real value,
 	 *           with the whole part of the result equal to
 	 *           the Julian day, and the fractional part of
@@ -722,7 +684,7 @@ public:
 	}
 
 	/** Get the (accurate) Mean Sidereal time.
-	 * 
+	 *
 	 *  @deprecated This routine now calls getMST and remains
 	 *              only for backwards compatibility.  It may
 	 *              be removed in a future version of SimData.
@@ -732,8 +694,8 @@ public:
 	/** Get the Mean Sidereal time.
 	 *
 	 *  @param longitude The local longitude in radians.
-	 *  @returns The mean sidereal time (in radians) for the 
-	 *           specified latitude using a third-order 
+	 *  @returns The mean sidereal time (in radians) for the
+	 *           specified latitude using a third-order
 	 *           polynomial approximation.
 	 */
 	double getMST(radian_t longitude=0.0L) const;
@@ -775,7 +737,7 @@ public:
 	}
 
 	/** Construct a new SimDate.
-	 * 
+	 *
 	 *  @param year the year (e.g. 2000)
 	 *  @param month the month (1-12)
 	 *  @param day the day (1-31)
@@ -792,7 +754,7 @@ public:
 	}
 		
 	/** Construct a new SimDate.
-	 * 
+	 *
 	 *  @param julian the Julian day.
 	 *  @param hour the hour (0-23)
 	 *  @param minute the minute (0-59)
@@ -835,7 +797,7 @@ public:
 	 */
 	virtual std::string typeString() const { return "type::SimDate"; }
 	
-	/** The difference between two times.  
+	/** The difference between two times.
 	 *
 	 *  Both times should be in the range [0, 86400).
 	 *
@@ -850,7 +812,7 @@ public:
 
 	/** Return the current system clock.
 	 *
-	 *  @returns the system time in seconds (~ 3 millisecond 
+	 *  @returns the system time in seconds (~ 3 millisecond
 	 *           accuracy).
 	 */
 	static SimTime getSystemTime() {
@@ -870,13 +832,13 @@ public:
 	 */
 	double update();
 
-	/** Compare with another SimDate.  
+	/** Compare with another SimDate.
 	 *
 	 *  @returns +1 if this > other, -1 if this < other,
 	 *           and 0 if the dates and times are equal.
 	 */
-	virtual int compare(const SimDate &other) const { 
-		int date_comp = Date::compare(*this, other); 
+	virtual int compare(const SimDate &other) const {
+		int date_comp = Date::compare(*this, other);
 		if (date_comp != 0) return date_comp;
 		if (getTime() > other.getTime()) return 1;
 		if (getTime() < other.getTime()) return -1;
@@ -885,7 +847,7 @@ public:
 
 	/** Set the time reference to produce the desired target time
 	 *
-	 *  @param target The desired simulation time, right NOW! 
+	 *  @param target The desired simulation time, right NOW!
 	 *         (seconds: 0-86400)
 	 */
 	void setReferenceTime(SimTime target) {
@@ -902,7 +864,7 @@ public:
 		pause_time = get_realtime();
 	}
 
-	/** Restore time updates.  
+	/** Restore time updates.
 	 *
 	 *  Subsequent calls to update() will advance the time starting
 	 *  from the point at which setPause() was called.
@@ -957,7 +919,7 @@ public:
          */
 	virtual void parseXML(const char* cdata);
 	
-}; 
+};
 
 NAMESPACE_SIMDATA_END
 

@@ -8,6 +8,9 @@ Version 0.4.0 (in progress)
     different counter types to be used in anticipation of adding
     thread-safe reference counting.
 
+  * Moved fast-timing code out of Date.h/cpp, into Timing.h/cpp.
+===>WINDOWS users please add Source/Timing.cpp to the project.
+
 2004-06-16: onsight
   * Doxygen cleanups.
 

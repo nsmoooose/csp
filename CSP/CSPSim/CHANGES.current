@@ -1,6 +1,10 @@
  Version 0.4.0 (in progress)
 ===========================
 
+2004-06-28: wolverine
+  * Changed subdirectory name from Networking to SimNet. Also moved the
+    Networking.h include file to a SimNet subdirectory.
+
 2004-06-27: wolverine
   * Fixed a number of problems with the new callback handling code.
 

@@ -607,14 +607,15 @@ class _LUTHandler(SimpleHandler):
 
 	handlers = {
 		"Values"       : FloatListHandler,
-#		"Method"       : EnumHandler,
+		"Method"       : StringHandler,
 	}
 
 	members = handlers.keys()
-	required_members = members
+	required_members = ["Values"]
 	
 	def __init__(self, dim, id, base, name, attrs):
 		SimpleHandler.__init__(self, id, base, name, attrs)
+		self._method = attrs.get("method", "linear")
 		self._required_members = _LUTHandler.required_members
 		for i in range(dim): 
 			self._required_members.append("Breaks%d" % i)
@@ -656,9 +657,12 @@ class _LUTHandler(SimpleHandler):
 			spacing.append(n)
 		values, attrs = tags["Values"]
 		table.load(values, breaks)
-#		method, attrs = tags["Method"]
-#		table.method.parseXML(method)
-		table.interpolate(spacing, table.LINEAR)
+		try:
+			method = getattr(table, self._method.upper())
+		except:
+			msg = "LUTHander: unknown interpolation method '%s'" % self._method
+			raise XMLSyntax, msg
+		table.interpolate(spacing, method)
 		interface.set(object, name, table)
 
 

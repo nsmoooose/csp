@@ -1,6 +1,15 @@
 Version 0.3.3 (in progress)
 ===========================
 
+2003-07-18: onsight
+            Enabled method attribute for specifying the interpolation
+	    method for LUT's.  Valid methods are right now are LINEAR 
+	    or SPLINE (case insensitive).  The default is linear.
+
+	    For example:
+	          <Table1 name="foo" method="spline">
+		      <Breaks0> .... etc.
+
 2003-07-17: onsight
             Moved non-inlined LUT methods and ancillary classes out
 	    of the header and into LUT.cpp.  Since these are template 

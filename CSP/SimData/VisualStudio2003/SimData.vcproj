@@ -466,7 +466,7 @@
 				Name="Release|Win32">
 				<Tool
 					Name="VCCustomBuildTool"
-					CommandLine="$(SWIG_PATH)\swig -runtime -c++ -python -noexcept -I..\Include -o ..\Source\$(InputName)_wrap.cpp ..\Source\$(InputName).i
+					CommandLine="$(SWIG_PATH)\swig -DSWIG_STD_BACKWARD_COMP -runtime -c++ -python -noexcept -I..\Include -o ..\Source\$(InputName)_wrap.cpp ..\Source\$(InputName).i
 "
 					Outputs="..\Source\$(InputName)_wrap.cpp"/>
 			</FileConfiguration>
@@ -474,7 +474,7 @@
 				Name="Debug|Win32">
 				<Tool
 					Name="VCCustomBuildTool"
-					CommandLine="$(SWIG_PATH)\swig -runtime -c++ -python -noexcept -I..\Include -o ..\Source\$(InputName)_wrap.cpp ..\Source\$(InputName).i
+					CommandLine="$(SWIG_PATH)\swig -DSWIG_STD_BACKWARD_COMP -runtime -c++ -python -noexcept -I..\Include -o ..\Source\$(InputName)_wrap.cpp ..\Source\$(InputName).i
 "
 					Outputs="..\Source\$(InputName)_wrap.cpp"/>
 			</FileConfiguration>

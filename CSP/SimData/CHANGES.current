@@ -1,6 +1,9 @@
 Version 0.4.0 (in progress)
 ===========================
 
+2004-11-11: delta
+ * Added SWIG_STD_BACKWARD_COMP to the swig command line in SimData.vcproj.
+ 
 2004-11-10: onsight
  * Another bug fix in Parse.py, this time for TableN types.   Prevents
    spurious complaints about missing required fields.

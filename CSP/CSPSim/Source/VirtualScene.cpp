@@ -33,6 +33,7 @@
 #include "Sky.h"
 #include "Animation.h"
 #include "ObjectModel.h"
+#include "glDiagnostics.h"
 
 #include <SimCore/Util/Log.h>
 #include <SimData/Types.h>
@@ -57,6 +58,7 @@
 #include <osg/StateSet>
 
 #include <cmath>
+#include <cassert>
 
 // SHADOW is an *extremely* experimental feature.  It is based on the
 // osgShadow demo, and does (did) work to some extent, but only for a
@@ -114,6 +116,7 @@ osg::Matrix getCM(float intensity) {
 			des*0.072, des*0.072, sat + (1.0 - sat)*0.072, 0.0,
 			0.0, 0.0, 0.0, 1.0);
 }
+
 
 ///////////////////////////////////////////////////////////////////////
 //
@@ -455,9 +458,20 @@ int VirtualScene::drawScene()
 	m_FarView->setCullVisitor(CullVisitor);
 	m_FarView->cull();
 
+	// FIXME pushing and popping state around the SceneView.draw call should
+	// _not_ be necessary, yet all three of the SceneViews currently used by
+	// CSP leak state.  It's not clear where the state leaks occur, and the
+	// whole problem may go away when we upgrade to the next version of OSG.
+	glPushAttrib(GL_ALL_ATTRIB_BITS);  // FIXME
+	glPushClientAttrib(GL_ALL_CLIENT_ATTRIB_BITS);  // FIXME
+	//GlStateSnapshot snapshot;  // <-- uncomment this to log the state leak
 	m_FarView->draw();
+	//snapshot.logDiff("far view");  // <-- uncomment this to log the state leak
+	glPopClientAttrib();  // FIXME
+	glPopAttrib();  // FIXME
 
 	if (m_NearObjectGroup->getNumChildren() > 0) {
+		assert(m_NearObjectGroup->getNumChildren() == 1);
 		m_NearView->setProjectionMatrixAsPerspective(m_ViewAngle, m_Aspect, 0.01f, 100.0);
 
 		osg::NodeVisitor* UpdateVisitor = m_NearView->getUpdateVisitor();
@@ -465,14 +479,24 @@ int VirtualScene::drawScene()
 		m_NearView->setUpdateVisitor(UpdateVisitor);
 		m_NearView->update();
 
-		CullVisitor = m_NearView->getCullVisitor();
+		osgUtil::CullVisitor* CullVisitor = m_NearView->getCullVisitor();
 		CullVisitor->setComputeNearFarMode(osgUtil::CullVisitor::COMPUTE_NEAR_FAR_USING_BOUNDING_VOLUMES);
 		CullVisitor->setCullingMode(osgUtil::CullVisitor::ENABLE_ALL_CULLING);
 		m_NearView->setCullMask(0x2);
 		m_NearView->setCullVisitor(CullVisitor);
 		m_NearView->cull();
 
+		// FIXME pushing and popping state around the SceneView.draw call should
+		// _not_ be necessary, yet all three of the SceneViews currently used by
+		// CSP leak state.  It's not clear where the state leaks occur, and the
+		// whole problem may go away when we upgrade to the next version of OSG.
+		glPushClientAttrib(GL_ALL_CLIENT_ATTRIB_BITS);  // FIXME
+		glPushAttrib(GL_ALL_ATTRIB_BITS); // FIXME
+		//GlStateSnapshot snapshot; // <-- uncomment this to log the state leak
 		m_NearView->draw();
+		//snapshot.logDiff("near view"); // <-- uncomment this to log the state leak
+		glPopClientAttrib(); // FIXME
+		glPopAttrib(); // FIXME
 	}
 
 	if (m_Terrain.valid()) m_Terrain->endDraw();
@@ -633,9 +657,13 @@ void VirtualScene::addObject(simdata::Ref<DynamicObject> object) {
 	assert(node != 0);
 	object->enterScene();
 	if (object->isNearField()) {
-		m_NearObjectGroup->addChild(node);
+		bool ok = m_NearObjectGroup->addChild(node);
+		assert(ok);
+		CSP_LOG(SCENE, INFO, "adding object to near field " << *object);
 	} else {
-		m_FreeObjectGroup->addChild(node);
+		bool ok = m_FreeObjectGroup->addChild(node);
+		assert(ok);
+		CSP_LOG(SCENE, INFO, "adding object to far field " << *object);
 	}
 	m_DynamicObjects.push_back(object);
 }
@@ -647,8 +675,10 @@ void VirtualScene::removeObject(simdata::Ref<DynamicObject> object) {
 	assert(node != 0);
 	if (object->isNearField()) {
 		m_NearObjectGroup->removeChild(node);
+		CSP_LOG(SCENE, INFO, "removing object from near field " << *object);
 	} else {
 		m_FreeObjectGroup->removeChild(node);
+		CSP_LOG(SCENE, INFO, "removing object from far field " << *object);
 	}
 	object->leaveScene();
 	// not very efficient, but object removal is rare compared to
@@ -666,14 +696,20 @@ void VirtualScene::setNearObject(simdata::Ref<DynamicObject> object, bool isNear
 	assert(object.valid());
 	if (object->isNearField() == isNear) return;
 	object->setNearFlag(isNear);
+	CSP_LOG(SCENE, INFO, "setting near flag for " << *object << " to " << isNear);
 	if (object->isInScene()) {
 		osg::Node *node = object->getOrCreateModelNode();
 		if (isNear) {
 			m_FreeObjectGroup->removeChild(node);
 			m_NearObjectGroup->addChild(node);
+			CSP_LOG(SCENE, INFO, "moving object from far to near field " << *object);
 		} else {
-			m_NearObjectGroup->removeChild(node);
-			m_FreeObjectGroup->addChild(node);
+			bool ok;
+			ok = m_NearObjectGroup->removeChild(node);
+			assert(ok);
+			ok = m_FreeObjectGroup->addChild(node);
+			assert(ok);
+			CSP_LOG(SCENE, INFO, "moving object from near to far field " << *object);
 		}
 	}
 }

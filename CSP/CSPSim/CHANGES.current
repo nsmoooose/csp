@@ -2,6 +2,10 @@
 ===========================
 
 2004-11-14: onsight
+  * Explicitly save and restore gl state when rendering the scene
+    views.  Fixes some rendering anomalies.
+
+2004-11-14: onsight
   * Moved SimObject.* to OldSimObject.*, to be replaced when the
     network-enabled battlefield is checked in (soon).
 

@@ -27,12 +27,13 @@ NetworkSocket::NetworkSocket(NetworkNode * node, short port)
 {
     m_sockfd = socket(AF_INET, SOCK_DGRAM, 0);
     m_servaddr = new sockaddr_in;
+    struct in_addr * addrptr = &m_servaddr->sin_addr;
  
     printf("Opening socket to %s on port %d\n", node->getNetworkName(), port);
-    bzero( m_servaddr, sizeof (struct sockaddr_in));
+    memset( m_servaddr, 0,  sizeof (struct sockaddr_in));
     m_servaddr->sin_family = AF_INET;
     m_servaddr->sin_port = htons( port );
-    inet_pton(AF_INET, node->getNetworkName(), (void*)&m_servaddr->sin_addr);
+    inet_aton( node->getNetworkName(), addrptr);
     
 }
 

@@ -1,3 +1,5 @@
+#include <iostream>
+
 #ifdef WIN32
 #include <windows.h>
 #endif
@@ -19,7 +21,7 @@ void LogoScreen::OnInit()
     m_image = SDL_LoadBMP(path.c_str());
     if (m_image == NULL)
     {
-        cout << "Unable to load bitmap " << path << endl;
+		std::cout << "Unable to load bitmap " << path << std::endl;
     }
 
 

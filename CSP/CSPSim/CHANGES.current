@@ -68,6 +68,10 @@
     misplacement and bad elevation corrections.  Also minor cleanups of
     path handling and logging.
 
+  * Minor tweaks to the m2k model to make the ambient lighting coefficients
+    uniform across all parts (some where set to zero). Also increased the
+    overall ambient lighting a bit.
+
 2004-07-29: onsight
   * Removed a couple obsolete files from the Makefile, and added InputEvent.
 

@@ -50,7 +50,7 @@ MatrixTransform {
           Material {
             DataVariance STATIC
             ColorMode OFF
-            ambientColor 0 0 0 1
+            ambientColor 0.588 0.588 0.588 1
             diffuseColor 1 1 1 1
             specularColor 0.0225225 0.0225225 0.0225225 1
             emissionColor 0 0 0 1
@@ -216,7 +216,7 @@ MatrixTransform {
           Material {
             DataVariance STATIC
             ColorMode OFF
-            ambientColor 0 0 0 1
+            ambientColor 0.588 0.588 0.588 1
             diffuseColor 1 1 1 1
             specularColor 0.0225225 0.0225225 0.0225225 1
             emissionColor 0 0 0 1
@@ -9760,7 +9760,7 @@ MatrixTransform {
           Material {
             DataVariance STATIC
             ColorMode OFF
-            ambientColor 0.0640517 0.158168 0.181698 1
+            ambientColor 0.588 0.588 0.588 1
             diffuseColor 1 1 1 1
             specularColor 0.0225225 0.0225225 0.0225225 1
             emissionColor 0 0 0 1
@@ -10698,7 +10698,7 @@ MatrixTransform {
           Material {
             DataVariance STATIC
             ColorMode OFF
-            ambientColor 0 0 0 1
+            ambientColor 0.588 0.588 0.588 1
             diffuseColor 1 1 1 1
             specularColor 0.0225225 0.0225225 0.0225225 1
             emissionColor 0 0 0 1
@@ -16920,7 +16920,7 @@ MatrixTransform {
           Material {
             DataVariance STATIC
             ColorMode OFF
-            ambientColor 0 0 0 1
+            ambientColor 0.588 0.588 0.588 1
             diffuseColor 0.588 0.588 0.588 1
             specularColor 0 0 0 1
             emissionColor 0 0 0 1
@@ -21426,7 +21426,7 @@ MatrixTransform {
             Material {
               DataVariance STATIC
               ColorMode OFF
-              ambientColor 0.0640517 0.158168 0.181698 1
+              ambientColor 0.588 0.588 0.588 1
               diffuseColor 1 1 1 1
               specularColor 0.0225225 0.0225225 0.0225225 1
               emissionColor 0 0 0 1
@@ -29354,7 +29354,7 @@ MatrixTransform {
               Material {
                 DataVariance STATIC
                 ColorMode OFF
-                ambientColor 0 0 0 1
+                ambientColor 0.588 0.588 0.588 1
                 diffuseColor 0.588 0.588 0.588 1
                 specularColor 0 0 0 1
                 emissionColor 0 0 0 1
@@ -51541,7 +51541,7 @@ MatrixTransform {
           Material {
             DataVariance STATIC
             ColorMode OFF
-            ambientColor 0 0 0 1
+            ambientColor 0.588 0.588 0.588 1
             diffuseColor 0.588 0.588 0.588 1
             specularColor 0 0 0 1
             emissionColor 0 0 0 1
@@ -51587,7 +51587,7 @@ MatrixTransform {
           Material {
             DataVariance STATIC
             ColorMode OFF
-            ambientColor 0 0 0 1
+            ambientColor 0.588 0.588 0.588 1
             diffuseColor 0.588 0.588 0.588 1
             specularColor 0 0 0 1
             emissionColor 0 0 0 1
@@ -59153,7 +59153,7 @@ MatrixTransform {
           Material {
             DataVariance STATIC
             ColorMode OFF
-            ambientColor 0.0640517 0.158168 0.181698 1
+            ambientColor 0.588 0.588 0.588 1
             diffuseColor 1 1 1 1
             specularColor 0.0225225 0.0225225 0.0225225 1
             emissionColor 0 0 0 1

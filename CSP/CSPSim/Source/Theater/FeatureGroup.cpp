@@ -78,7 +78,7 @@ void FeatureGroup::deaggregate() {
 	SimObject::deaggregate();
 }
 
-FeatureGroup::FeatureGroup() {
+FeatureGroup::FeatureGroup(): SimObject(TYPE_FEATURE) {
 	m_X = 0.0;
 	m_Y = 0.0;
 	m_Orientation = 0.0;

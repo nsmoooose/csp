@@ -45,8 +45,10 @@ SIMDATA_REGISTER_INTERFACE(DynamicObject)
 using bus::Kinetics;
 
 
-DynamicObject::DynamicObject(): SimObject()
+DynamicObject::DynamicObject(TypeId type): SimObject(type)
 {
+	assert(!isFeature());
+
 	b_GlobalPosition = DataChannel<simdata::Vector3>::newLocal(Kinetics::Position, simdata::Vector3::ZERO);
 	b_Mass = DataChannel<double>::newLocal(Kinetics::Mass, 1.0);
 	b_GroundZ = DataChannel<double>::newLocal(Kinetics::GroundZ, 0.0);

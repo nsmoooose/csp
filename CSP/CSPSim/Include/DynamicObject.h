@@ -70,7 +70,6 @@ private:
 	       // bits 8-15 reserved for DynamicObject
 	       F_LOCAL    = 0x00000100,  // controlled internally
 	       F_HUMAN    = 0x00000200,  // controlled by a human
-	       F_AIR      = 0x00000400,  // air object (airplane or helo)
 	       F_GROUNDED = 0x00000800,  // currently on the ground
 	     };
 
@@ -101,7 +100,6 @@ private:
 
 
 protected:
-	void setAir(bool flag) { setFlags(F_AIR, flag); }
 	void setGrounded(bool flag) { setFlags(F_GROUNDED, flag); }
 
 	Bus::Ref DynamicObject::getBus();
@@ -115,7 +113,7 @@ public:
 		SIMDATA_XML("agent_systems", DynamicObject::m_AgentModel, false)
 	END_SIMDATA_XML_INTERFACE
 
-	DynamicObject();
+	DynamicObject(TypeId type);
 	virtual ~DynamicObject();
 
 	// model and scene related functions
@@ -142,7 +140,6 @@ public:
 
 	bool isHuman() const { return getFlags(F_HUMAN) != 0; }
 	bool isLocal() const { return getFlags(F_LOCAL) != 0; }
-	bool isAir() const { return getFlags(F_AIR) != 0; }
 	bool isGrounded() const { return getFlags(F_GROUNDED) != 0; }
 
 	void updateGlobalPosition();

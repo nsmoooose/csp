@@ -31,13 +31,12 @@ using namespace std;
 SIMDATA_REGISTER_INTERFACE(TankObject)
 
 
-TankObject::TankObject(): DynamicObject()
+TankObject::TankObject(): DynamicObject(TYPE_MUD_UNIT)
 {
 //	m_ObjectType = TANK_OBJECT_TYPE;
 	m_ObjectName = "TANK";
 
 	setGrounded(true);
-	setAir(false);
 
 	movement_state = 1;
 	gun_angle = 45.0f;

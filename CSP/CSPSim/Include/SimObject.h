@@ -1,17 +1,17 @@
 // Combat Simulator Project - FlightSim Demo
-// Copyright (C) 2002 The Combat Simulator Project
+// Copyright (C) 2002, 2004 The Combat Simulator Project
 // http://csp.sourceforge.net
-// 
+//
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
 // as published by the Free Software Foundation; either version 2
 // of the License, or (at your option) any later version.
-// 
+//
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU General Public License
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
@@ -31,14 +31,8 @@
 
 #include <SimData/Object.h>
 #include <SimData/Vector3.h>
-#include <SimData/Quat.h>
-#include <SimData/Link.h>
+
 #include <SimData/InterfaceRegistry.h>
-
-
-class VirtualScene;
-class VirtualBattlefield;
-class ActiveCell;
 
 
 /**
@@ -51,8 +45,22 @@ class SimObject: public simdata::Object, public UpdateTarget
 	friend class VirtualBattlefield;
 	friend class ActiveCell;
 
+public:
+
+	typedef unsigned ObjectId;
+
+protected:
+
+	typedef enum {
+		TYPE_AIR_UNIT,
+		TYPE_MUD_UNIT,
+		TYPE_SEA_UNIT,
+		TYPE_FEATURE,
+	} TypeId;
+
 private:
-	enum { 
+
+	enum {
 	       // bits 0-7 reserved for SimObject
 	       F_FREEZE     = 0x00000001,
 	       F_NEARFIELD  = 0x00000002,
@@ -89,16 +97,16 @@ protected:
 	}
 
 	/** Called when an object that was deaggregated leaves a human
-	 *  player's bubble.  
+	 *  player's bubble.
 	 *
-	 *  Extend this method to implement aggregation logic.  
+	 *  Extend this method to implement aggregation logic.
 	 */
 	virtual void aggregate();
 
 	/** Called when an object that was aggregated enters a human
-	 *  player's bubble.  
+	 *  player's bubble.
 	 *
-	 *  Extend this method to implement deaggregation logic.  
+	 *  Extend this method to implement deaggregation logic.
 	 */
 	virtual void deaggregate();
 
@@ -106,17 +114,12 @@ protected:
 	 *
 	 *  Can only be called once.
 	 */
-	void setID(unsigned int id) {
+	void setID(ObjectId id) {
 		assert(m_ID == 0);
-		m_ID = id; 
+		m_ID = id;
 	}
 
-	void setType(unsigned int type) {
-		assert(m_Type == 0);
-		m_Type = type;
-	}
-
-	/** Update callback. 
+	/** Update callback.
 	 *
 	 *  @param dt time since elapsed last call to onUpdate()
 	 *  @returns sleep time between updates (return 0.0 for
@@ -129,7 +132,7 @@ public:
 	BEGIN_SIMDATA_XML_VIRTUAL_INTERFACE(SimObject)
 	END_SIMDATA_XML_INTERFACE
 
-	SimObject();
+	SimObject(TypeId type);
 	virtual ~SimObject();
 
 	virtual void dump() {}
@@ -137,20 +140,20 @@ public:
 
 	/** Get the unique object id of this instance.
 	 */
-	unsigned int getID() const { return m_ID; }
-	unsigned int getType() const { return m_Type; }
+	inline ObjectId getID() const { return m_ID; }
+	inline TypeId getType() const { return m_Type; }
 
 	/** Called before an object is added to the scene graph.
 	 *
-	 *  This method is called even if no scene graph exists (e.g. on an 
-	 *  AI client).  
+	 *  This method is called even if no scene graph exists (e.g. on an
+	 *  AI client).
 	 */
 	virtual void enterScene();
 
 	/** Called before an object is removed from the scene graph.
 	 *
-	 *  This method is called even if no scene graph exists (e.g. on an 
-	 *  AI client).  
+	 *  This method is called even if no scene graph exists (e.g. on an
+	 *  AI client).
 	 */
 	virtual void leaveScene();
 
@@ -161,13 +164,18 @@ public:
 	bool getAggregateFlag() const { return getFlags(F_AGGREGATE) != 0; }
 	bool getVisibleFlag() const { return getFlags(F_VISIBLE) != 0; }
 
+	bool isAir() const { return m_Type == TYPE_AIR_UNIT; }
+	bool isFeature() const { return m_Type == TYPE_FEATURE; }
+
 	// position accessor methods
 	virtual simdata::Vector3 getGlobalPosition() const = 0;
 	
+	std::string _debugId() const;
+
 protected:
 
-	unsigned int m_ID;
-	unsigned int m_Type;
+	ObjectId m_ID;
+	TypeId m_Type;
 	unsigned int m_Flags;
 
 	static unsigned int localObjectInstance;

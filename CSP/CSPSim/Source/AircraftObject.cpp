@@ -41,7 +41,7 @@ using simdata::toDegrees;
 SIMDATA_REGISTER_INTERFACE(AircraftObject)
 DEFINE_INPUT_INTERFACE(AircraftObject);
 
-AircraftObject::AircraftObject(): DynamicObject() {
+AircraftObject::AircraftObject(): DynamicObject(TYPE_AIR_UNIT) {
 
 	CSP_LOG(OBJECT, DEBUG, "AircraftObject::AircraftObject() ...");
 	m_ObjectName = "AIRCRAFT";
@@ -50,8 +50,6 @@ AircraftObject::AircraftObject(): DynamicObject() {
 	b_Roll = DataChannel<double>::newLocal("Kinetic.Roll", 0.0);
 	b_Pitch = DataChannel<double>::newLocal("Kinetic.Pitch", 0.0);
 	
-	setAir(true);
-
 	CSP_LOG(OBJECT, DEBUG, "... AircraftObject::AircraftObject()");
 }
 

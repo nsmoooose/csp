@@ -1,6 +1,10 @@
 Version 0.3.2 (in progress)
 ===========================
 
+2003-04-18: delta
+	    Checked Onsight changes. got ride of some vc++ warnings.
+	    Updated .NET project.
+
 2003-04-18: onsight
             Changed Terrain and TerrainLattice to inherit from 
 	    osg::Referenced instead of just implementing compatible

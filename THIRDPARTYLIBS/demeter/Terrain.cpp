@@ -18,7 +18,7 @@ Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 Boston, MA  02111-1307, USA.
 */
 
-#ifdef _WIN32
+# if defined(_MSC_VER) && (_MSC_VER <= 1300)
 #pragma warning( disable : 4786 )
 #endif
 
@@ -56,8 +56,6 @@ Boston, MA  02111-1307, USA.
 //#ifdef DEMETER_MEMORYMANAGER
 //#include "mmgr.h"
 //#endif
-
-#define _PROTECT_ACCESS_
 
 #include "Terrain.h"
 #include "BitArray.h"
@@ -1626,8 +1624,8 @@ void Terrain::Render()
 #ifdef _WIN32
 	HGLRC currentContext = wglGetCurrentContext();
 	bool found = false;
-	for (i = 0; i < m_SharedContexts.size() && !found; i++)
-		found = (m_SharedContexts[i] == currentContext);
+	for (unsigned k  = 0; k < m_SharedContexts.size() && !found; k++)
+		found = (m_SharedContexts[k] == currentContext);
 	if (!found)
 	{
 		m_SharedContexts.push_back(currentContext);
@@ -1996,7 +1994,7 @@ void Terrain::Write(char* szFilename)
 
     m_pTextureSet->Write(file,this);
 
-    for (int i = 0; i < m_TextureCells.size(); i++)
+    for (unsigned i = 0; i < m_TextureCells.size(); i++)
         m_TextureCells[i]->Write(file,this);
     fclose(file);
 }
@@ -2048,7 +2046,7 @@ void Terrain::FlipTexturesForMapping()
 
 void Terrain::PreloadTextures()
 {
-    for (int i = 0; i < m_TextureCells.size(); i++)
+    for (unsigned i = 0; i < m_TextureCells.size(); i++)
     {
         m_TextureCells[i]->BindTexture();
         for (int j = 0; j < m_TextureCells[i]->GetNumberOfDetails(); j++)
@@ -3757,13 +3755,13 @@ void Texture::Read(FILE* file,Terrain* pTerrain)
     fread(&m_BorderSize,sizeof(int),1,file);
     Uint8 useCompression;
     fread(&useCompression,sizeof(Uint8),1,file);
-    m_UseCompression = (bool)useCompression;
+	m_UseCompression = useCompression != 0;
     Uint8 bClamp;
     fread(&bClamp,sizeof(Uint8),1,file);
-    m_bClamp = (bool)bClamp;
+    m_bClamp = bClamp != 0;
     Uint8 bAlpha;
     fread(&bAlpha,sizeof(Uint8),1,file);
-    m_bAlpha = (bool)bAlpha;
+    m_bAlpha = bAlpha != 0;
     if (m_szFilename == NULL)
     {
         m_pBuffer = new Uint8[m_Height * m_Width * m_BytesPerPixel];

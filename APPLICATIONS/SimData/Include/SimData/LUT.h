@@ -265,7 +265,7 @@ public:
 /**
  * Base class for interpolated lookup tables.
  */
-class Interpolation: public BaseType {
+class SIMDATA_EXPORT Interpolation: public BaseType {
 public:
 	typedef enum { LINEAR, SPLINE } Modes;
 
@@ -310,7 +310,7 @@ protected:
  * Manages lookup indexing for the interpolated table.
  */
 template <typename X>
-class InterpolationType: public Interpolation {
+class SIMDATA_EXPORT InterpolationType: public Interpolation {
 protected:
 	X m_X0, m_X1, m_XS;
 	int m_Limit;

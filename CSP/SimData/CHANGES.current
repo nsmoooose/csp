@@ -1,5 +1,8 @@
 Version 0.4.0 (in progress)
 ===========================
+2004-04-25: delta
+  * Removed obsolete SimDataMSVC folder.
+  
 2004-04-17: wolverine
   * made changes to Vector3, Quad and Matrix3 to write data
     to binary buffers that are used to serialize and deserialize

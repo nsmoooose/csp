@@ -6,9 +6,19 @@
 	    processing DEM data to ChunkLod and other formats.
 
 	    Added Tools/Terrain/dem2dat which has a utility for
-	    convertind DEM to an intermediate binary format.  This
+	    converting DEM to an intermediate binary format.  This
 	    format is similar to .bt but preserves additional
-	    metadata.
+	    metadata.  This is just an initial check in of the code;
+	    the Makefile is very immature and no msvc project files
+	    exist yet.
+
+	    Added Tools/Terrain/tile which has a utility for combining
+	    many DEM quads (in DAT format) into a large terrain 
+	    elevation map, using a secant gnomonic projection.  The
+	    output can either be 16-bit image tiles (for use with
+	    Demeter) or a .bt format terrain map that can be converted
+	    to the .chu format of osgChunkLod using tools in TU's
+	    original ChunkLod package.
 
 2003-07-19: delta
 	    Commented out setTextureAttributeAndModes in SCreenInfo class.

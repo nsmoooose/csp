@@ -28,8 +28,6 @@
 
 #include <SimData/Log.h>
 
-#undef ERROR
-
 /**
  * Define the possible classes/categories of logging messages
  */

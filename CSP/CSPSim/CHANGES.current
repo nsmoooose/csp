@@ -1,6 +1,14 @@
  Version 0.4.0 (in progress)
 ===========================
 
+2004-05-30: wolverine
+  * 2004-05-30: wolverine
+  * Changed the router queue in NetworkMessagener to be a vector that
+    contains a struct with a node and message pointers. This allows
+    a destination node to be associated with each outgoing message. This
+    approach hopefully avoids any object creation steps during the queueing
+    and dequeing processes. 
+
 2004-05-28: wolverine
   * Created special data transfer structures that contain no virtual
     functions and have the same fundamental binary structure as SimData types

@@ -23,8 +23,8 @@
     fix (problem might be similar for strings longer than N 
     characters).
 ==========> All users, update 
-    APPLICATIONS/CSPSim/Tools/HID/Maps/aircraft-core.map and 
-    RebuilData(.py).
+    APPLICATIONS/CSPSim/Tools/HID/Maps/aircraft-core.map, rebuild
+    aircraft.hid and RebuilData(.py).
 
 2003-12-21: delta
   * Fixed stars at daytime on windows (GL_BLEND problem).

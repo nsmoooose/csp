@@ -80,5 +80,5 @@ CSP_PYTHON(2.2.0)
 #     [AC_MSG_ERROR(OpenSceneGraph Particle library not found. See http://www.openscenegraph.org)],)
 
 
-AC_OUTPUT([Makefile Source/Makefile Source/FX/Makefile], [])
+AC_OUTPUT([Makefile Source/Makefile], [])
 	      

@@ -164,7 +164,7 @@ NAMESPACE_SIMDATA
 			}
 		}
 		// schedule the next calibration
-		next_calibration = counter + static_cast<uint64>(calibration_iterval / counter_scale);
+		next_calibration = counter + static_cast<uint64>(calibration_interval / counter_scale);
 	}
 
 	double getCalibratedRealTime() {

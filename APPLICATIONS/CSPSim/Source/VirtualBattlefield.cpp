@@ -43,7 +43,7 @@
 #include "CSPSim.h"
 #include "Config.h"
 #include "Platform.h"
-#include "shadow.h"
+//#include "shadow.h"
 
 #include <SimData/Types.h>
 #include <SimData/Math.h>

@@ -107,14 +107,14 @@ Vector::Vectord const &PhysicsModel::bodyToY(simdata::Vector3 const &p,
 }
 
 void PhysicsModel::YToBody(Vector::Vectord const &y) {
-	m_PositionBody = simdata::Vector3(y[0],y[1],y[2]);
-	m_VelocityBody = simdata::Vector3(y[3],y[4],y[5]);
+	m_PositionBody.set(y[0],y[1],y[2]);
+	m_VelocityBody.set(y[3],y[4],y[5]);
 	//m_AngularVelocityBody = m_Damping * simdata::Vector3(y[6],y[7],y[8]);
-	m_AngularVelocityBody = simdata::Vector3(y[6],y[7],y[8]);
+	m_AngularVelocityBody.set(y[6],y[7],y[8]);
 }
  
 void PhysicsModel::physicsBodyToLocal() {
-	m_PositionLocal = m_PositionLocal + bodyToLocal(m_PositionBody);
+	m_PositionLocal = b_Position->value() + bodyToLocal(m_PositionBody);
 	m_VelocityLocal = bodyToLocal(m_VelocityBody);
 	m_AngularVelocityLocal = bodyToLocal(m_AngularVelocityBody);
 }

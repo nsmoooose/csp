@@ -64,7 +64,7 @@ HudTextElement Hud::ReadHudTextElement(std::istream & p_istream) const
 
 void Hud::BuildHud(std::string const & p_hudFileName)
 {
-	const unsigned short lineSize = 128;
+	const unsigned short lineSize = 255;
 
 	// set hud name to this class instance
     setName(p_hudFileName);
@@ -124,7 +124,7 @@ void Hud::BuildHud(std::string const & p_hudFileName)
 	osg::StateSet * state = osgNew osg::StateSet;
 	osg::Depth* depth = osgNew osg::Depth;
     depth->setRange(0.0,0.0);
-    
+     
     state->setAttribute(depth);
 	state->setMode(GL_CULL_FACE, osg::StateAttribute::OFF);
 	state->setMode(GL_LIGHTING,osg::StateAttribute::OFF); 

@@ -1,6 +1,14 @@
  Version 0.3.3 (in progress)
 ===========================
 
+2003-07-19: delta
+	    Commented out setTextureAttributeAndModes in SCreenInfo class.
+	    Reenabled TEXDOME with those lines commented out.
+	    Added back ltype.ttf (and commented out screeninfo.ttf lines).
+	    Added mapping for rudder.
+	    Updated .net project (CSPSimAppli is not yet updated).
+	    Fix two forward declaration causing error on .net 2002.
+
 2003-07-17: onsight
             Added speedbrake and data recording bindings
 	    to the default input mappings.
@@ -269,7 +277,6 @@
 	    braking force is still constrained to [0, brake_limit] of
 	    course.
 
->>>>>>> 1.34
 2003-06-20: delta
 	    Moved updateNearGround() outside loop in AircraftPhysicModel::doSimStep.
 	    Corrected kinetic parameters update in AircraftPhysicModel::doSimStep.

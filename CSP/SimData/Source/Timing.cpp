@@ -129,7 +129,7 @@ NAMESPACE_SIMDATA
 		for (int tries = 0; tries < max_tries; ) {
 			uint64 lock_counter = getPerformanceCounter();
 			GetSystemTimeAsFileTime(&update_time);
-			if (update_time != start_time) {
+			if (update_time.dwLowDateTime != start_time.dwLowDateTime) {
 				counter = getPerformanceCounter();
 				// make sure we weren't interrupted between getting the system time and the counter
 				if ((counter - lock_counter) * counter_scale <= 0.0001) break;

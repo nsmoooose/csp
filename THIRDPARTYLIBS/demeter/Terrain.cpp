@@ -55,6 +55,7 @@ Boston, MA  02111-1307, USA.
 //#include "mmgr.h"
 //#endif
 
+#define _PROTECT_ACCESS_
 
 #include "Terrain.h"
 #include "BitArray.h"
@@ -913,6 +914,10 @@ void Terrain::SetAllElevations(const char* szElevationsFilename,float vertexSpac
         // Force the input data to be a power of 2 in width and height by zero-filling up to the next power of 2.
         DimensionPowerOf2(imageWidth,imageHeight,elevWidth,elevHeight);
         pImageData = new float[elevWidth * elevHeight];
+	if (pImageData == 0) {
+	     cout << "TERRAIN: out of memory allocating new terrain elevation map\n";
+	     exit(1);
+	}
         if (imageWidth != elevWidth || imageHeight != elevHeight)
         {
             m_Logfile  << "TERRAIN: WARNING! Input elevations file is not a power of 2 in width and height - forcing to power of 2 by zero filling! You should fix your input data!" << endl;
@@ -964,7 +969,7 @@ void Terrain::SetAllElevations(const float* pElevations,int elevWidth,int elevHe
     m_WidthVertices = elevWidth + 1; // Add 1 dummy pixel line to edge for block strides
     m_HeightVertices = elevHeight + 1;
     m_NumberOfVertices = m_WidthVertices * m_HeightVertices;
-    m_pVertices = new Vector[m_WidthVertices * m_HeightVertices];
+    m_pVertices = new Vector[m_WidthVertices * m_HeightVertices]; 
     int i,j;
     float x,y;
     y = 0.0f;
@@ -1006,6 +1011,7 @@ void Terrain::SetAllElevations(const float* pElevations,int elevWidth,int elevHe
 	if (Settings::GetInstance()->UseNormals())
 	{
 		m_pNormals = new Vector[m_NumberOfVertices];
+		assert(m_pNormals);
 		const float delta = (M_PI * 2.0f) / 8.0f;
 		for (i = 0; i < m_NumberOfVertices; i++)
 		{
@@ -1015,9 +1021,22 @@ void Terrain::SetAllElevations(const float* pElevations,int elevWidth,int elevHe
 			float vertexX,vertexY;
 			vertexX = indexX * m_VertexSpacing;
 			vertexY = indexY * m_VertexSpacing;
+			/*
+			// This average over 8 nearby normals is extremely slow compared
+			// to all the other terrain loading code.  First, the offset vector
+			// calculation is ineffecient, since v is recomputed 8 times at
+			// every vertex to get exactly the same set of vectors each time.
+			// Next, GetNormal() is slow, so doing such an average is costly.
+			// For now I've stripped out this computation, and substituted a
+			// single normal evaluation at a slight (fixed) offset from each
+			// vertex.  This seems to produe comparable results.  If better
+			// normal matching needs to be done at the boundaries of terrain
+			// tiles, this should be done in a separate computation that only
+			// operates on vertices near the edges of the terrain tiles.
+			// -MR
 			Vector avgNormal;
 			avgNormal.x = avgNormal.y = avgNormal.z = 0.0f;
-			for (float theta = -0.5f * delta; theta < (M_PI * 2.0f); theta++)
+			for (float theta = -0.5f * delta; theta < (M_PI * 2.0f); theta+=delta)
 			{
 				Vector v;
 				v.x = 1.0f;
@@ -1026,7 +1045,7 @@ void Terrain::SetAllElevations(const float* pElevations,int elevWidth,int elevHe
 				v.RotateZ(theta);
 				v.x += vertexX;
 				v.y += vertexY;
-				float nx,ny,nz;
+				float nx, ny, nz;
 				GetNormal(v.x,v.y,nx,ny,nz);
 				avgNormal.x += nx;
 				avgNormal.y += ny;
@@ -1035,6 +1054,12 @@ void Terrain::SetAllElevations(const float* pElevations,int elevWidth,int elevHe
 			m_pNormals[i].x = avgNormal.x / 8.0f;
 			m_pNormals[i].y = avgNormal.y / 8.0f;
 			m_pNormals[i].z = avgNormal.z / 8.0f;
+			*/
+			float nx, ny, nz;
+			GetNormal(vertexX+0.2,vertexY+0.8,nx,ny,nz);
+			m_pNormals[i].x = nx;
+			m_pNormals[i].y = ny;
+			m_pNormals[i].z = nz;
 		}
 	}
 }
@@ -2958,8 +2983,9 @@ void Plane::defineFromPoints(Vector& p1,Vector& p2,Vector& p3)
     v2.y = p3.y - p1.y;
     v2.z = p3.z - p1.z;
 
-    v1.Normalize();
-    v2.Normalize();
+    // why?
+    //v1.Normalize();
+    //v2.Normalize();
 // Find surface normal based on cross product.
     normal.x = v1.y * v2.z - v2.y * v1.z;
     normal.y = v2.x * v1.z - v1.x * v2.z;

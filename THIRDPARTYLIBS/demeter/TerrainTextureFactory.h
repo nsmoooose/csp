@@ -13,10 +13,11 @@
  #ifdef __GNUC__
    #if __GNUC__ >= 3
      #include <ext/hash_map>  
+     using __gnu_cxx::hash_map;
    #else
      #include <hash_map>  
+     using std::hash_map;
    #endif
-   using std::hash_map;
  #endif
 #endif
    

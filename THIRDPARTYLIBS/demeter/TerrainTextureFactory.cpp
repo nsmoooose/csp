@@ -131,6 +131,7 @@ TerrainTextureFactory::TerrainTextureFactory()
 	LoadImage("Mud1.tga",  width, height, &pTextureImage, false);
 	m_BaseTextures[1] = pTextureImage;
 
+	//LoadImage("Snow1.tga", width, height, &pTextureImage, false);
 	LoadImage("Grass1.bmp",  width, height, &pTextureImage, false);
 	m_BaseTextures[2] = pTextureImage;
 

@@ -25,9 +25,9 @@
 #ifndef __CSP_EXCEPTION_H__
 #define __CSP_EXCEPTION_H__
 
-
 #include <SimData/ExceptionBase.h>
-#include "DemeterException.h"
+
+class DemeterException;
 
 
 namespace csp {

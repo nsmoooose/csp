@@ -22,16 +22,16 @@
  *
  **/
 
+#include <vector>
 
 #include "Theater/FeatureObjectModel.h"
 #include "Theater/FeatureSceneGroup.h"
 #include "Theater/FeatureSceneModel.h"
 #include "Theater/LayoutTransform.h"
 #include "Theater/ElevationCorrection.h"
+
+#include "Animation.h"
 #include "ObjectModel.h"
-
-#include <vector>
-
 
 
 SIMDATA_REGISTER_INTERFACE(FeatureObjectModel)

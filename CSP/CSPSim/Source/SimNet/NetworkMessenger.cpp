@@ -29,6 +29,9 @@
 #include <SimNet/NetworkNode.h>
 #include <SimNet/NetworkMessenger.h>
 
+#include "Animation.h"
+#include "ObjectModel.h"
+
 NetworkMessenger::NetworkMessenger() {
 	CSP_LOG(NETWORK, DEBUG, "NetworkMessenger.NetworkMessenger()");
 

@@ -25,7 +25,9 @@
 
 #include "DispatchCenter.h"
 #include <SimCore/Util/Log.h>
+#include "Animation.h"
 #include "Config.h"
+#include "ObjectModel.h"
 #include <SimNet/Networking.h>
 #include <SimNet/NetworkMessage.h>
 

@@ -139,7 +139,7 @@ void EngineDynamics::preSimulationStep(double dt) {
 		float altitude = static_cast<float>(m_PositionLocal->z());
 		float mach = static_cast<float>(b_Mach->value());
 		float throttle = static_cast<float>(b_ThrottleInput->value());
-		throttle = throttle * 1.05263 + std::max(0.0, throttle-0.95) * 20.0;
+		throttle = throttle * 1.05263f + std::max(0.0f, throttle-0.95f) * 20.0f;
 		EngineSet::iterator i = m_Engine.begin();
 		EngineSet::const_iterator iEnd = m_Engine.end();
 		for (; i !=iEnd; ++i) {

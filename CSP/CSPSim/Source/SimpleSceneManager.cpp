@@ -27,6 +27,8 @@
 #include "VirtualScene.h"
 #include "DynamicObject.h"
 #include "Theater/FeatureGroup.h"
+#include "ObjectModel.h"
+#include "Animation.h"
 
 #include <SimData/Vector3.h>
 

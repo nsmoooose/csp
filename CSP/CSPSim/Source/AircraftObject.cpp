@@ -28,6 +28,7 @@
 #include "Engine.h"
 #include "SystemsModel.h"
 #include "ObjectModel.h"
+#include "Animation.h"
 #include "FlightModel.h"
 #include "Collision.h"
 

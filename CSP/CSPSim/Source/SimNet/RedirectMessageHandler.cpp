@@ -36,6 +36,8 @@
 #include <SimNet/NetworkMessageHandler.h>
 #include <SimNet/RedirectMessageHandler.h>
 
+#include "Animation.h"
+#include "ObjectModel.h"
 
 RedirectMessageHandler::RedirectMessageHandler() {
 	m_messenger = NULL;

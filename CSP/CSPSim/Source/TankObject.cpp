@@ -26,6 +26,7 @@
 #include "TankObject.h"
 #include "SystemsModel.h"
 #include "ObjectModel.h"
+#include "Animation.h"
 
 
 using namespace std;

@@ -1,8 +1,10 @@
 Microsoft Visual Studio Solution File, Format Version 8.00
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CSPSimDLL", "CSPSimDLL\CSPSimDLL.vcproj", "{A609C12F-9E38-4AFF-8560-B1099F051941}"
 	ProjectSection(ProjectDependencies) = postProject
+		{A8C06316-F233-4921-887E-802F1A4AD146} = {A8C06316-F233-4921-887E-802F1A4AD146}
 		{F856C351-17F7-4410-8069-6877CB39E149} = {F856C351-17F7-4410-8069-6877CB39E149}
 		{439CBFDC-A6BC-4AE6-9A40-B706C4146C1A} = {439CBFDC-A6BC-4AE6-9A40-B706C4146C1A}
+		{94C7C9F9-60EC-41F9-AFD1-560A0F3CCA38} = {94C7C9F9-60EC-41F9-AFD1-560A0F3CCA38}
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DemeterVisualC6", "..\..\Demeter\DemeterVisualC6.vcproj", "{F856C351-17F7-4410-8069-6877CB39E149}"
@@ -10,6 +12,14 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DemeterVisualC6", "..\..\De
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "osgChunkLod", "..\..\CSPChunkLod\VisualStudio\VisualStudio.vcproj", "{439CBFDC-A6BC-4AE6-9A40-B706C4146C1A}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SpatialIndex", "..\..\SpatialIndex\VisualStudio\SpatialIndex.vcproj", "{A8C06316-F233-4921-887E-802F1A4AD146}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SimCore", "..\..\SimCore\VisualStudio2003\SimCore.vcproj", "{94C7C9F9-60EC-41F9-AFD1-560A0F3CCA38}"
 	ProjectSection(ProjectDependencies) = postProject
 	EndProjectSection
 EndProject
@@ -31,6 +41,14 @@ Global
 		{439CBFDC-A6BC-4AE6-9A40-B706C4146C1A}.Debug.Build.0 = Debug|Win32
 		{439CBFDC-A6BC-4AE6-9A40-B706C4146C1A}.Release.ActiveCfg = Release|Win32
 		{439CBFDC-A6BC-4AE6-9A40-B706C4146C1A}.Release.Build.0 = Release|Win32
+		{A8C06316-F233-4921-887E-802F1A4AD146}.Debug.ActiveCfg = Debug|Win32
+		{A8C06316-F233-4921-887E-802F1A4AD146}.Debug.Build.0 = Debug|Win32
+		{A8C06316-F233-4921-887E-802F1A4AD146}.Release.ActiveCfg = Release|Win32
+		{A8C06316-F233-4921-887E-802F1A4AD146}.Release.Build.0 = Release|Win32
+		{94C7C9F9-60EC-41F9-AFD1-560A0F3CCA38}.Debug.ActiveCfg = Debug|Win32
+		{94C7C9F9-60EC-41F9-AFD1-560A0F3CCA38}.Debug.Build.0 = Debug|Win32
+		{94C7C9F9-60EC-41F9-AFD1-560A0F3CCA38}.Release.ActiveCfg = Release|Win32
+		{94C7C9F9-60EC-41F9-AFD1-560A0F3CCA38}.Release.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 	EndGlobalSection

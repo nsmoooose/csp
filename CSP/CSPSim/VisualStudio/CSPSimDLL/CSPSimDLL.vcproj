@@ -35,20 +35,21 @@
 				ObjectFile=".\Debug/"
 				ProgramDataBaseFileName=".\Debug/"
 				BrowseInformation="1"
-				WarningLevel="3"
+				WarningLevel="4"
 				SuppressStartupBanner="TRUE"
 				DebugInformationFormat="3"
-				CompileAs="2"/>
+				CompileAs="2"
+				DisableSpecificWarnings="4511;4512;4100"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="OpenThreadsWin32d.lib osgChunkLodd.lib osgFXd.lib sigc-1.2d.lib producerd.lib opengl32.lib SDL.lib osgDBd.lib DemeterVisualC6d.lib osgTextd.lib osgUtild.lib osgParticled.lib osgd.lib _cSimData.lib ccgnu2.lib ccext2.lib SpatialIndexd.lib"
+				AdditionalDependencies="OpenThreadsWin32d.lib osgChunkLodd.lib osgFXd.lib sigc-1.2d.lib producerd.lib opengl32.lib SDL.lib osgDBd.lib DemeterVisualC6d.lib osgTextd.lib osgUtild.lib osgParticled.lib osgd.lib _cSimData.lib ccgnu2.lib ccext2.lib SpatialIndexd.lib SimCored.lib"
 				OutputFile="../../Bin/_cCSP.dll"
 				LinkIncremental="2"
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="../../../SimData/SimData;&quot;$(PYTHON_PATH)/libs&quot;;../../../lib"
+				AdditionalLibraryDirectories="../../../SimData/SimData;&quot;$(PYTHON_PATH)/libs&quot;;../../../lib;../../../SpatialIndex/.bin;../../../SimCore/.bin"
 				IgnoreDefaultLibraryNames="MSVCRTD"
 				GenerateDebugInformation="TRUE"
 				ProgramDatabaseFile=".\Debug/CSPSimDLL.pdb"
@@ -115,17 +116,18 @@
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				DebugInformationFormat="3"
-				CompileAs="2"/>
+				CompileAs="2"
+				DisableSpecificWarnings="4275"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="ws2_32.lib ccgnu2.lib osgFX.lib osgChunkLod.lib producer.lib osgText.lib DemeterVisualC6.lib opengl32.lib SDL.lib _cSimData.lib osgParticle.lib osgUtil.lib osgDB.lib osg.lib sigc-1.2.lib OpenThreadsWin32.lib ccext2.lib SpatialIndex.lib"
+				AdditionalDependencies="ws2_32.lib ccgnu2.lib osgFX.lib osgChunkLod.lib producer.lib osgText.lib DemeterVisualC6.lib opengl32.lib SDL.lib _cSimData.lib osgParticle.lib osgUtil.lib osgDB.lib osg.lib sigc-1.2.lib OpenThreadsWin32.lib ccext2.lib SpatialIndex.lib SimCore.lib"
 				OutputFile="../../Bin/_cCSP.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="../../../lib;&quot;$(PYTHON_PATH)/libs&quot;;../../../SimData/SimData"
+				AdditionalLibraryDirectories="../../../lib;&quot;$(PYTHON_PATH)/libs&quot;;../../../SimData/SimData;../../../SpatialIndex/.bin;../../../SimCore/.bin"
 				IgnoreDefaultLibraryNames="MSVCRTD"
 				GenerateDebugInformation="FALSE"
 				AssemblyDebug="0"
@@ -186,9 +188,6 @@
 			</File>
 			<File
 				RelativePath="..\..\Source\BaseScreen.cpp">
-			</File>
-			<File
-				RelativePath="..\..\Source\Battlefield.cpp">
 			</File>
 			<File
 				RelativePath="..\..\Source\cCSP_wrap.cpp">
@@ -310,19 +309,10 @@
 				RelativePath="..\..\Source\RedirectServerNode.cpp">
 			</File>
 			<File
-				RelativePath="..\..\Source\SceneManager.cpp">
-			</File>
-			<File
 				RelativePath="..\..\Source\ScreenInfo.cpp">
 			</File>
 			<File
 				RelativePath="..\..\Source\ScreenInfoManager.cpp">
-			</File>
-			<File
-				RelativePath="..\..\Source\SimObject.cpp">
-			</File>
-			<File
-				RelativePath="..\..\Source\SimpleConfig.cpp">
 			</File>
 			<File
 				RelativePath="..\..\Source\SimpleSceneManager.cpp">
@@ -332,9 +322,6 @@
 			</File>
 			<File
 				RelativePath="..\..\Source\SmokeEffects.cpp">
-			</File>
-			<File
-				RelativePath="..\..\Source\SynchronousUpdate.cpp">
 			</File>
 			<File
 				RelativePath="..\..\Source\System.cpp">
@@ -350,9 +337,6 @@
 			</File>
 			<File
 				RelativePath="..\..\Source\Theater.cpp">
-			</File>
-			<File
-				RelativePath="..\..\Source\Tools.cpp">
 			</File>
 			<File
 				RelativePath="..\..\Source\VirtualScene.cpp">
@@ -602,13 +586,15 @@
 				<File
 					RelativePath="..\..\Source\SimNet\ObjectUpdateMessage.cpp">
 					<FileConfiguration
-						Name="Debug|Win32">
+						Name="Debug|Win32"
+						ExcludedFromBuild="TRUE">
 						<Tool
 							Name="VCCLCompilerTool"
 							ObjectFile="$(IntDir)/$(InputName)1.obj"/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Release|Win32">
+						Name="Release|Win32"
+						ExcludedFromBuild="TRUE">
 						<Tool
 							Name="VCCLCompilerTool"
 							ObjectFile="$(IntDir)/$(InputName)1.obj"/>
@@ -668,9 +654,6 @@
 				RelativePath="..\..\Include\BaseScreen.h">
 			</File>
 			<File
-				RelativePath="..\..\Include\Battlefield.h">
-			</File>
-			<File
 				RelativePath="..\..\Include\Bus.h">
 			</File>
 			<File
@@ -708,9 +691,6 @@
 			</File>
 			<File
 				RelativePath="..\..\Include\DemeterTerrain.h">
-			</File>
-			<File
-				RelativePath="..\..\Include\Dispatch.h">
 			</File>
 			<File
 				RelativePath="..\..\Include\DispatchCenter.h">
@@ -761,9 +741,6 @@
 				RelativePath="..\..\Include\LandingGear.h">
 			</File>
 			<File
-				RelativePath="..\..\Include\Log.h">
-			</File>
-			<File
 				RelativePath="..\..\Include\LogoScreen.h">
 			</File>
 			<File
@@ -794,25 +771,13 @@
 				RelativePath="..\..\Include\RedirectServerNode.h">
 			</File>
 			<File
-				RelativePath="..\..\Include\SceneManager.h">
-			</File>
-			<File
 				RelativePath="..\..\Include\ScreenInfo.h">
 			</File>
 			<File
 				RelativePath="..\..\Include\ScreenInfoManager.h">
 			</File>
 			<File
-				RelativePath="..\..\Include\ServerNode.h">
-			</File>
-			<File
 				RelativePath="..\..\Include\Shell.h">
-			</File>
-			<File
-				RelativePath="..\..\Include\SimObject.h">
-			</File>
-			<File
-				RelativePath="..\..\Include\SimpleConfig.h">
 			</File>
 			<File
 				RelativePath="..\..\Include\SimpleSceneManager.h">
@@ -822,12 +787,6 @@
 			</File>
 			<File
 				RelativePath="..\..\Include\SmokeEffects.h">
-			</File>
-			<File
-				RelativePath="..\..\Include\StaticObject.h">
-			</File>
-			<File
-				RelativePath="..\..\Include\SynchronousUpdate.h">
 			</File>
 			<File
 				RelativePath="..\..\Include\System.h">
@@ -845,10 +804,10 @@
 				RelativePath="..\..\Include\Theater.h">
 			</File>
 			<File
-				RelativePath="..\..\Include\Tools.h">
+				RelativePath="..\..\Include\Vector.h">
 			</File>
 			<File
-				RelativePath="..\..\Include\Vector.h">
+				RelativePath="..\..\Include\VectorField.h">
 			</File>
 			<File
 				RelativePath="..\..\Include\VirtualScene.h">
@@ -976,7 +935,7 @@
 				Name="Debug|Win32">
 				<Tool
 					Name="VCCustomBuildTool"
-					CommandLine="$(SWIG_PATH)\swig -runtime -c++ -python -noexcept -I..\..\Include -I..\..\..\SimData\Include -o ..\..\Source\$(InputName)_wrap.cpp ..\..\Source\$(InputName).i
+					CommandLine="$(SWIG_PATH)\swig -runtime -c++ -python -noexcept -I..\..\Include -I..\..\..\SimData\Include -I..\..\.. -o ..\..\Source\$(InputName)_wrap.cpp ..\..\Source\$(InputName).i
 "
 					Outputs="..\..\Source\$(InputName)_wrap.cpp"/>
 			</FileConfiguration>
@@ -984,7 +943,7 @@
 				Name="Release|Win32">
 				<Tool
 					Name="VCCustomBuildTool"
-					CommandLine="$(SWIG_PATH)\swig -runtime -c++ -python -noexcept -I..\..\Include -I..\..\..\SimData\Include -o ..\..\Source\$(InputName)_wrap.cpp ..\..\Source\$(InputName).i
+					CommandLine="$(SWIG_PATH)\swig -runtime -c++ -python -noexcept -I..\..\Include -I..\..\..\SimData\Include -I..\..\.. -o ..\..\Source\$(InputName)_wrap.cpp ..\..\Source\$(InputName).i
 "
 					Outputs="..\..\Source\$(InputName)_wrap.cpp"/>
 			</FileConfiguration>

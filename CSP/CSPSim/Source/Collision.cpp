@@ -26,6 +26,7 @@
 #include <SimData/Ref.h>
 
 #include <Collision.h>
+#include <Animation.h>
 #include <KineticsChannels.h>
 #include <ObjectModel.h>
 

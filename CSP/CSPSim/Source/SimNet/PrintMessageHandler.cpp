@@ -36,6 +36,9 @@
 
 #include <stdio.h>
 
+#include "Animation.h"
+#include "ObjectModel.h"
+
 PrintMessageHandler::PrintMessageHandler() {
   m_frequency = 1;
   m_count = 0;

@@ -22,33 +22,36 @@
  *
  **/
 
-#include <SimNet/Networking.h>
-#include <SimNet/NetworkNode.h>
-#include <SimNet/NetworkMessenger.h>
-#include <SimNet/EchoMessageHandler.h>
-#include <SimNet/PrintMessageHandler.h>
-
 #include "EchoServerNode.h"
-#include <stdio.h>
-#include <stdlib.h>
+
+#include <cstdio>
+#include <cstdlib>
 #ifndef WIN32
 #include <unistd.h>
 #endif
-#include "Config.h"
-#include <KineticsChannels.h>
 
-#include <SimCore/Util/Log.h>
-#include <SimData/Ref.h>
-#include <SimData/Date.h>
-#include <SimData/DataManager.h>
-
-#include <SimData/Types.h>
-#include <SimData/ExceptionBase.h>
 #include <SimData/DataArchive.h>
 #include <SimData/DataManager.h>
+#include <SimData/Date.h>
+#include <SimData/ExceptionBase.h>
 #include <SimData/FileUtility.h>
 #include <SimData/GeoPos.h>
+#include <SimData/Ref.h>
 #include <SimData/Timing.h>
+#include <SimData/Types.h>
+
+#include <SimCore/Util/Log.h>
+
+#include <SimNet/Networking.h>
+#include <SimNet/NetworkMessenger.h>
+#include <SimNet/EchoMessageHandler.h>
+#include <SimNet/NetworkNode.h>
+#include <SimNet/PrintMessageHandler.h>
+
+#include "Animation.h"
+#include "Config.h"
+#include <KineticsChannels.h>
+#include "ObjectModel.h"
 
 using bus::Kinetics;
 

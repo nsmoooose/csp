@@ -31,6 +31,7 @@
 #include <KineticsChannels.h>
 #include <ObjectModel.h>
 #include <SystemsModel.h>
+#include <Animation.h>
 
 #include <SimCore/Util/Log.h>
 #include <SimData/Quat.h>

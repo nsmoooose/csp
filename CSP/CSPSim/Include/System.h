@@ -90,8 +90,6 @@
 #include <SimData/InterfaceRegistry.h>
 #include <SimData/Composite.h>
 
-#undef ERROR
-
 class System;
 class SystemsModel;
 class DataRecorder;

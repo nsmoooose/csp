@@ -22,16 +22,18 @@
  *
  **/
 
-#include "CSPSim.h"
-#include "DynamicObject.h"
-#include "VirtualScene.h"
+#include <cmath>
+
+#include <SimCore/Battlefield/Battlefield.h>
 
 #include "Views/View.h"
 #include "Views/CameraAgent.h"
 
-#include <SimCore/Battlefield/Battlefield.h>
-
-#include <cmath>
+#include "Animation.h"
+#include "CSPSim.h"
+#include "DynamicObject.h"
+#include "ObjectModel.h"
+#include "VirtualScene.h"
 
 
 void View::accept(const simdata::Ref<DynamicObject> object) {

@@ -1,6 +1,19 @@
  Version 0.4.0 (in progress)
 ===========================
 
+2004-10-03: delta
+  * Updated vcproj. Building CSPSimDLL now buils others libs (SimCore, 
+    SpatialIndex) according to the build mode.
+  
+  * #include "Animation.h" and/or "ObjectModel.h" to numerous source files. 
+    Need to investigate more to a safe approach to make it work with vs.
+	
+  * Removed #undef ERROR from System.h. 
+  
+  * Added #include "ObjectModel.h" & "Animation.h" to cCSP.i.
+  
+  * Minor others changes.
+  
 2004-10-02: onsight
   * Break more header interdependencies.  Hopefully doesn't also break
     the Windows build too badly!  Builds on Linux are about 30% faster.

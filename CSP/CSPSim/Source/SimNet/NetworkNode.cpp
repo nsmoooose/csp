@@ -27,6 +27,9 @@
 #include <SimNet/Networking.h>
 #include <SimNet/NetworkNode.h>
 
+#include "Animation.h"
+#include "ObjectModel.h"
+
 NetworkNode::NetworkNode() {
 	// m_node_id = 0;
 	m_addr = "0.0.0.0";

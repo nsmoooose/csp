@@ -24,6 +24,8 @@
 #include <SimData/DataArchive.h>
 #include <SimData/InterfaceRegistry.h>
 #include "CSPSim.h"
+#include "ObjectModel.h"
+#include "Animation.h"
 %}
 
 %include exception.i

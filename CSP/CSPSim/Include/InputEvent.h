@@ -31,8 +31,11 @@
 
 #include <SDL/SDL_events.h>
 
+#include <SimData/Date.h>
+
 class Handle {
 protected:
+	//simdata::SimTime m_EventTime;
 	float m_EventTime;
 	static const float m_Sampling;
 public:

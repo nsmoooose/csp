@@ -25,10 +25,14 @@
 #include <SimData/Math.h>
 
 #include "Views/CameraAgent.h"
+#include "Views/CameraCommand.h"
+
+#include "Animation.h"
 #include "CSPSim.h"
 #include "DynamicObject.h"
+#include "ObjectModel.h"
 #include "VirtualScene.h"
-#include "Views/CameraCommand.h"
+
 
 
 CameraAgent::CameraAgent(const ViewFactory& vf):

@@ -31,6 +31,8 @@
 #include "CSPSim.h"
 #include "Config.h"
 #include "Sky.h"
+#include "Animation.h"
+#include "ObjectModel.h"
 
 #include <SimCore/Util/Log.h>
 #include <SimData/Types.h>

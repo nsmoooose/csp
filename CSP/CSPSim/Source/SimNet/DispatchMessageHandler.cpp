@@ -28,8 +28,10 @@
 #include <SimNet/NetworkMessageHandler.h>
 #include <SimNet/DispatchMessageHandler.h>
 
+#include "Animation.h"
 #include "DynamicObject.h"
 #include "Config.h"
+#include "ObjectModel.h"
 
 #include <SimCore/Battlefield/Battlefield.h>
 #include <SimData/FileUtility.h>

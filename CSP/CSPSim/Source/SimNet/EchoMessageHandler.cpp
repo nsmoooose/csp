@@ -35,6 +35,9 @@
 #include <SimNet/NetworkMessageHandler.h>
 #include <SimNet/EchoMessageHandler.h>
 
+#include "Animation.h"
+#include "ObjectModel.h"
+
 EchoMessageHandler::EchoMessageHandler() {
 	m_messenger = NULL;
 }

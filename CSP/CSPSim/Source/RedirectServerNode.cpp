@@ -34,8 +34,10 @@
 #ifndef WIN32
 #include <unistd.h>
 #endif
+#include "Animation.h"
 #include "Config.h"
 #include <KineticsChannels.h>
+#include "ObjectModel.h"
 
 #include <SimCore/Util/Log.h>
 #include <SimData/DataArchive.h>

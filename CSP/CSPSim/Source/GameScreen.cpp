@@ -34,10 +34,12 @@
 #include <osgText/Text>
 #include <Producer/Camera>
 
+#include "Animation.h"
 #include "ConsoleCommands.h"
 #include "CSPSim.h"
 #include "DynamicObject.h"
 #include "EventMapIndex.h"
+#include "ObjectModel.h"
 #include "ScreenInfoManager.h"
 #include "VirtualScene.h"
 #include "Views/CameraCommand.h"

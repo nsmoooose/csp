@@ -64,7 +64,9 @@
 
 using bus::Kinetics;
 
+#include "Animation.h"
 #include "ClientNode.h"
+#include "ObjectModel.h"
 
 
 ClientNode::ClientNode() {

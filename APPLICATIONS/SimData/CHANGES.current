@@ -1,6 +1,10 @@
 Version 0.3.3 (in progress)
 ===========================
 
+2003-05-13: delta
+	    Added a post built step to copy VisualStudio/cSimData.py to SimData.
+	    Corrected a vc project bug (Ref.cpp)
+
 2003-05-08: onsight
             Added a dummy 'pass()' method to Interface to prevent warning
 	    messages when a class defines an empty interface.

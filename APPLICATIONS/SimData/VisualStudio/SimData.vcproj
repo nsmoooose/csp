@@ -54,7 +54,8 @@
 				TargetEnvironment="1"
 				TypeLibraryName=".\Release/SimData.tlb"/>
 			<Tool
-				Name="VCPostBuildEventTool"/>
+				Name="VCPostBuildEventTool"
+				CommandLine="copy /Y cSimData.py ..\SimData"/>
 			<Tool
 				Name="VCPreBuildEventTool"/>
 			<Tool
@@ -113,7 +114,8 @@
 				TargetEnvironment="1"
 				TypeLibraryName=".\Debug/SimData.tlb"/>
 			<Tool
-				Name="VCPostBuildEventTool"/>
+				Name="VCPostBuildEventTool"
+				CommandLine="copy /Y cSimData.py ..\SimData"/>
 			<Tool
 				Name="VCPreBuildEventTool"/>
 			<Tool
@@ -203,9 +205,6 @@
 			</File>
 			<File
 				RelativePath="..\Source\Real.cpp">
-			</File>
-			<File
-				RelativePath="..\Source\Ref.cpp">
 			</File>
 			<File
 				RelativePath="..\Source\TypeAdapter.cpp">

@@ -41,12 +41,11 @@
 #pragma comment( lib, "glu32.lib" )										// Search For GLu32.lib While Linking
 #pragma comment( lib, "glaux.lib" )										// Search For GLaux.lib While Linking
 
-
-#define WM_TOGGLEFULLSCREEN (WM_USER+1)									// Application Define Message For Toggling
-
 static BOOL g_isProgramLooping;											// Window Creation Loop, For FullScreen/Windowed Toggle																		// Between Fullscreen / Windowed Mode
 static BOOL g_createFullScreen;											// If TRUE, Then Create Fullscreen
 extern int iMode;
+extern bool useMultitexture;
+GLint maxTexelUnits=1;													// Number Of Texel-Pipelines. This Is At Least 1.
 
 CTerrainData *m_pTerrainData;											// Global class containing all terrain parameters
 CTerrain	 *m_pTerrain;												// The main Terrain class
@@ -57,8 +56,66 @@ CDlgExtract   m_cDlgExtract;
 CFractal	Fractal;
 CSwapInterval		cSwapInterval;
 
+PFNGLMULTITEXCOORD1FARBPROC	glMultiTexCoord1fARB	= NULL;
+PFNGLMULTITEXCOORD2FARBPROC	glMultiTexCoord2fARB	= NULL;
+PFNGLMULTITEXCOORD3FARBPROC	glMultiTexCoord3fARB	= NULL;
+PFNGLMULTITEXCOORD4FARBPROC	glMultiTexCoord4fARB	= NULL;
+PFNGLACTIVETEXTUREARBPROC	glActiveTextureARB	= NULL;
+PFNGLCLIENTACTIVETEXTUREARBPROC	glClientActiveTextureARB= NULL;
 
 extern int iLastMouseposX, iLastMouseposY;
+
+bool isInString(char *string, const char *search) {
+	int pos=0;
+	int maxpos=strlen(search)-1;
+	int len=strlen(string);
+	char *other;
+	for (int i=0; i<len; i++) {
+		if ((i==0) || ((i>1) && string[i-1]=='\n')) {			// New Extension Begins Here!
+			other=&string[i];
+			pos=0;							// Begin New Search
+			while (string[i]!='\n') {				// Search Whole Extension-String
+				if (string[i]==search[pos]) pos++;		// Next Position
+				if ((pos>maxpos) && string[i+1]=='\n') return true;	// We Have A Winner!
+				i++;
+			}
+		}
+	}
+	return false;								// Sorry, Not Found!
+}
+
+bool initMultitexture(void) {
+	char *extensions;
+	extensions=strdup((char *) glGetString(GL_EXTENSIONS));			// Fetch Extension String
+	int len=strlen(extensions);
+	for (int i=0; i<len; i++)						// Separate It By Newline Instead Of Blank
+		if (extensions[i]==' ') extensions[i]='\n';
+
+#ifdef EXT_INFO
+	MessageBox(hWnd,extensions,"supported GL extensions",MB_OK | MB_ICONINFORMATION);
+#endif
+
+	if (isInString(extensions,"GL_ARB_multitexture")			// Is Multitexturing Supported?
+		&& __ARB_ENABLE							// Override Flag
+		&& isInString(extensions,"GL_EXT_texture_env_combine"))		// texture-environment-combining supported?
+	{       
+		glGetIntegerv(GL_MAX_TEXTURE_UNITS_ARB,&maxTexelUnits);
+		glMultiTexCoord1fARB = (PFNGLMULTITEXCOORD1FARBPROC) wglGetProcAddress("glMultiTexCoord1fARB");
+		glMultiTexCoord2fARB = (PFNGLMULTITEXCOORD2FARBPROC) wglGetProcAddress("glMultiTexCoord2fARB");
+		glMultiTexCoord3fARB = (PFNGLMULTITEXCOORD3FARBPROC) wglGetProcAddress("glMultiTexCoord3fARB");
+		glMultiTexCoord4fARB = (PFNGLMULTITEXCOORD4FARBPROC) wglGetProcAddress("glMultiTexCoord4fARB");
+		glActiveTextureARB   = (PFNGLACTIVETEXTUREARBPROC) wglGetProcAddress("glActiveTextureARB");
+		glClientActiveTextureARB= (PFNGLCLIENTACTIVETEXTUREARBPROC) wglGetProcAddress("glClientActiveTextureARB");
+               
+#ifdef EXT_INFO
+		MessageBox(hWnd,"The GL_ARB_multitexture extension will be used.","feature supported!",MB_OK | MB_ICONINFORMATION);
+#endif
+
+		return true;
+	}
+	useMultitexture=false;							// We Can't Use It If It Isn't Supported!
+	return false;
+}
 
 void TerminateApplication (GL_Window* window)							// Terminate The Application
 {
@@ -411,7 +468,7 @@ int WINAPI WinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
 	window.init.title			= "CSP Terrain Lab";					// Window Title
 	window.init.width			= 800;									// Window Width
 	window.init.height			= 600;									// Window Height
-	window.init.bitsPerPixel	= 16;									// Bits Per Pixel
+	window.init.bitsPerPixel	= 32;									// Bits Per Pixel
 	window.init.isFullScreen	= FALSE;								// Fullscreen? (Set To TRUE)
 
 	ZeroMemory (&keys, sizeof (Keys));									// Zero keys Structure

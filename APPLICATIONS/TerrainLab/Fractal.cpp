@@ -39,7 +39,7 @@ float CFractal::MiddleRandomPoint(float a, float b, float c, float d, float rnd)
 	return m;
 }
 
-void CFractal::DiamondSquare(float fFactorD)
+void CFractal::DiamondSquareAlt(float fFactorD)
 {
 	float a, b, c, d, e, f, g, h, i, j, k;
 	float highest, lowest, rnd, interval;	
@@ -98,9 +98,9 @@ void CFractal::DiamondSquare(float fFactorD)
 			if(interval != 0)
 				e = MiddleRandomPoint(a, b, c, d, rnd / (4.0*interval));
 			else
-				e = a;
+				e = (a+b+c+d)/4;
 
-			if(e<0) e=0;
+//			if(e<0) e=0;
  			m_pFractMap[y*fract_width*dist_factor+(fract_width*dist_factor/2)+
 					    x*dist_factor+(dist_factor/2)] = e;
 		}
@@ -130,7 +130,7 @@ void CFractal::DiamondSquare(float fFactorD)
 				if(interval != 0)
 					f = MiddleRandomPoint(a, c, e, a, rnd / (4.0*interval));
 				else
-					f = a;
+					f = (a+c+e+a)/4;
 			}
 			// there is a left neighbor, so get the value!
 			else
@@ -147,9 +147,9 @@ void CFractal::DiamondSquare(float fFactorD)
 				if(interval != 0)
 					f = MiddleRandomPoint(a, c, e, j, rnd / (4.0*interval));
 				else
-					f = a;
+					f = (a+c+e+j)/4;
 			}
-			if(f<0) f=0;
+//			if(f<0) f=0;
 			m_pFractMap[y*fract_width*dist_factor+(fract_width*dist_factor/2)+
 					    x*dist_factor] = f;
 
@@ -166,7 +166,7 @@ void CFractal::DiamondSquare(float fFactorD)
 				if(interval != 0)
 					g = MiddleRandomPoint(a, b, e, b, rnd / (4.0*interval));
 				else
-					g = a;
+					g = (a+b+e+b)/4;
 			}
 			// there is a upper neighbor, so get the value!
 			else
@@ -183,9 +183,9 @@ void CFractal::DiamondSquare(float fFactorD)
 				if(interval != 0)
 					g = MiddleRandomPoint(a, b, e, k, rnd / (4.0*interval));
 				else
-					g = a;
+					g = (a+b+e+k)/4;
 			}
-			if(g<0) g=0;
+//			if(g<0) g=0;
 			m_pFractMap[y*fract_width*dist_factor+x*dist_factor+(dist_factor/2)] = g;
 
 			// do we have to calculate i?
@@ -201,9 +201,9 @@ void CFractal::DiamondSquare(float fFactorD)
 				if(interval != 0)
 					i = MiddleRandomPoint(c, d, e, e, rnd / (4.0*interval));
 				else	
-					i = c;
+					i = (c+d+e+e)/4;
 			}
-			if(i<0) i=0;
+//			if(i<0) i=0;
 			m_pFractMap[(y+1)*fract_width*dist_factor+x*dist_factor+(dist_factor/2)] = i;
 
 			// do we have to calculate h?
@@ -218,9 +218,9 @@ void CFractal::DiamondSquare(float fFactorD)
 				if(interval != 0)
 					h = MiddleRandomPoint(b, d, e, b, rnd / (4.0*interval));
 				else
-					h = b;
+					h = (b+d+e+b)/4;
 
-				if(h<0) h=0;
+//				if(h<0) h=0;
 				m_pFractMap[y*fract_width*dist_factor+(fract_width*dist_factor/2)+
 						   (x+1)*dist_factor] = h;
 			}
@@ -238,7 +238,7 @@ void CFractal::DiamondSquare(float fFactorD)
 	return;
 }
 
-void CFractal::DiamondSquareAlt(float fFactorD)
+void CFractal::DiamondSquare(float fFactorD)
 {
 	float a, b, c, d, e, f, g, h, i, j, k;
 	float highest, lowest, rnd, interval;	
@@ -293,7 +293,7 @@ void CFractal::DiamondSquareAlt(float fFactorD)
 //			e = (a+b+c+d)/4 + (rnd * fFactorD);
 			e = (a+b+c+d)/4 + rnd;
 
-			if(e<0) e=0;
+//			if(e<0) e=0;
  
 			m_pFractMap[y*fract_width*dist_factor+(fract_width*dist_factor/2)+
 					    x*dist_factor+(dist_factor/2)] = e;
@@ -335,7 +335,7 @@ void CFractal::DiamondSquareAlt(float fFactorD)
 
 				f = (a+c+e+j)/4 + rnd;
 			}
-			if(f<0) f=0;
+//			if(f<0) f=0;
 			m_pFractMap[y*fract_width*dist_factor+(fract_width*dist_factor/2)+
 					    x*dist_factor] = f;
 
@@ -363,7 +363,7 @@ void CFractal::DiamondSquareAlt(float fFactorD)
 				
 				g = (a+b+e+k)/4 + rnd;
 			}
-			if(g<0) g=0;
+//			if(g<0) g=0;
 			m_pFractMap[y*fract_width*dist_factor+x*dist_factor+(dist_factor/2)] = g;
 
 			// do we have to calculate i?
@@ -377,7 +377,7 @@ void CFractal::DiamondSquareAlt(float fFactorD)
 				
 				i = (c+d+e)/3 + rnd;
 			}
-			if(i<0) i=0;
+//			if(i<0) i=0;
 			m_pFractMap[(y+1)*fract_width*dist_factor+x*dist_factor+(dist_factor/2)] = i;
 
 			// do we have to calculate h?
@@ -527,7 +527,7 @@ void CFractal::SmoothStepAlternative(float fSmoothFactor)
 	// smooth every 2nd point in the heightmap, X direction
 	for(y=0;y<iWidthY;y++)
 	{
-		for(x=1;x<iWidthX-1;x+=1)
+		for(x=1;x<iWidthX;x++)
 		{
 			// calculate index for heightmap array
 			i = y*iWidthX+x;
@@ -577,7 +577,7 @@ void CFractal::SmoothStepAlternative(float fSmoothFactor)
 	// smooth every 2nd point in the heightmap, Y direction
 	for(x=0; x<iWidthX; x++)
 	{
-		for(y=1; y<iWidthY-1; y+=1)
+		for(y=1; y<iWidthY; y++)
 		{
 			// calculate index for heightmap array
 			i = y*iWidthX+x;
@@ -620,7 +620,7 @@ void CFractal::SmoothStepAlternative(float fSmoothFactor)
 			}
 		
 			fX = ((fB-fA)+(fC-fD))*fSmoothFactor;
-			if(fX < 0.0) fX = 0.0;
+//			if(fX < 0.0) fX = 0.0;
 			fHeightmap[i] = ((fB+fC)/2)+fX;
 		}	
 	}		

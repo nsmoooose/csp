@@ -20,11 +20,11 @@
 ///////////////////////////////////////////////////////////////////////////
 
 #include <windows.h>											// Header File For Windows
-#include <gl\gl.h>												// Header File For The OpenGL32 Library
-#include <gl\glu.h>												// Header File For The GLu32 Library
-#include <gl\glaux.h>											// Header File For The GLaux Library
-#include <math.h>
+//#include <gl\gl.h>												// Header File For The OpenGL32 Library
+//#include <gl\glu.h>												// Header File For The GLu32 Library
+//#include <gl\glaux.h>											// Header File For The GLaux Library
 #include "BaseCode.h"											// Header File For NeHeGL
+#include <math.h>
 #include "TerrainData.h"
 #include "Terrain.h"
 #include "Camera.h"
@@ -56,6 +56,10 @@ extern CSwapInterval cSwapInterval;
 GL_Window*	g_window;
 Keys*		g_keys;
 
+bool multitextureSupported=false;					// Flag Indicating Whether Multitexturing Is Supported
+bool useMultitexture=true;							// Use It If It Is Supported?
+short texturesAvailable=UNKNOWN;						// This is true when textures are available on hard disk
+
 // User Defined Variables
 float		angle;												// Used To Rotate The Triangles
 int			iLastMouseposX, iLastMouseposY;					// Used for storing mouse motion
@@ -70,6 +74,8 @@ BOOL Initialize (GL_Window* window, Keys* keys)					// Any GL Init Code & User I
 	iLastMouseposX = iLastMouseposY = 0;
 
 	// Start Of User Initialization
+	multitextureSupported=initMultitexture();
+	
 	glClearColor (0.8f, 0.85f, 0.9f, 1.0f);						// Black Background
 	glClearDepth (1.0f);										// Depth Buffer Setup
 	glShadeModel (GL_SMOOTH);									// Select Smooth Shading
@@ -121,12 +127,12 @@ void Update (DWORD milliseconds)								// Perform Motion Updates Here
 
 	if (g_keys->keyDown ['A'] == TRUE)
 	{
-		m_pCamera->m_fSpeed += .1f;
+		m_pCamera->m_fSpeed += 5.0f;
 	}
 
 	if (g_keys->keyDown ['Y'] == TRUE)
 	{
-		m_pCamera->m_fSpeed -= .1f;
+		m_pCamera->m_fSpeed -= 5.0f;
 	} 
 
 	if (g_keys->keyDown ['Q'] == TRUE)
@@ -142,22 +148,49 @@ void Update (DWORD milliseconds)								// Perform Motion Updates Here
 
 	if (g_keys->keyDown ['S'] == TRUE)
 	{
-		m_pTerrainData->m_bRenderMode = m_pTerrainData->m_bRenderMode = RENDER_MODE_SHADED;
+		m_pTerrainData->m_bRenderMode = RENDER_MODE_SHADED;
 		g_keys->keyDown ['S'] = FALSE;
 	} 
 
 	if (g_keys->keyDown ['W'] == TRUE)
 	{
-		m_pTerrainData->m_bRenderMode = m_pTerrainData->m_bRenderMode = RENDER_MODE_TRIANGLES;
+		m_pTerrainData->m_bRenderMode = RENDER_MODE_TRIANGLES;
 		g_keys->keyDown ['W'] = FALSE;
 	} 
 
-	if (g_keys->keyDown ['S'] == TRUE)
+	if (g_keys->keyDown ['C'] == TRUE)
 	{
-		m_pTerrainData->m_bRenderMode = m_pTerrainData->m_bRenderMode = RENDER_MODE_SQUARES;
-		g_keys->keyDown ['S'] = FALSE;
+		m_pTerrainData->m_bShadingMode = SHADING_MODE_ECO_COLOR;
+		g_keys->keyDown ['C'] = FALSE;
 	} 
 
+	if (g_keys->keyDown ['L'] == TRUE)
+	{
+		m_pTerrainData->m_bShadingMode = SHADING_MODE_SLOPE;
+		g_keys->keyDown ['L'] = FALSE;
+	} 
+
+	if (g_keys->keyDown ['R'] == TRUE)
+	{
+		m_pTerrainData->m_bShadingMode = SHADING_MODE_REL_ELEVATION;
+		g_keys->keyDown ['R'] = FALSE;
+	} 
+
+	if (g_keys->keyDown ['T'] == TRUE)
+	{
+		m_pTerrainData->m_bRenderMode = RENDER_MODE_TEXTURED;
+		g_keys->keyDown ['T'] = FALSE;
+	} 
+
+	if (g_keys->keyDown ['E'] == TRUE)
+	{
+		if(m_pTerrainData->m_bEcosystemMode == ECOSYSTEM_MODE_SHARP)
+			m_pTerrainData->m_bEcosystemMode = ECOSYSTEM_MODE_SMOOTH;
+		else
+			m_pTerrainData->m_bEcosystemMode = ECOSYSTEM_MODE_SHARP;
+
+		g_keys->keyDown ['E'] = FALSE;
+	} 
 
 	if (g_keys->keyDown [VK_F1] == TRUE)
 	{
@@ -176,7 +209,7 @@ void Update (DWORD milliseconds)								// Perform Motion Updates Here
 		g_keys->keyDown [VK_F1] = FALSE;
 	}
 
-	if (g_keys->keyDown [VK_F2] == TRUE)
+/*	if (g_keys->keyDown [VK_F2] == TRUE)
 	{
 		// Call the dialog. no return values.
 		iRetVal = m_cDlgProcess.QueryParameters();
@@ -189,6 +222,7 @@ void Update (DWORD milliseconds)								// Perform Motion Updates Here
 		iRetVal = m_cDlgExtract.QueryParameters();
 		g_keys->keyDown [VK_F3] = FALSE;
 	}
+*/
 
 	// update the camera position 
 	CalculateFPS(milliseconds);
@@ -217,130 +251,18 @@ void Draw (void)
 {
 	switch(m_pTerrainData->m_bRenderMode)
 	{
-//	case RENDER_MODE_SQUARES:
-//		m_pTerrain->RenderSquares();
-		break;
 	case RENDER_MODE_TRIANGLES:
 		m_pTerrain->RenderTriangles();
 		break;
 	case RENDER_MODE_SHADED:
 		m_pTerrain->RenderShaded();
 		break;
+	case RENDER_MODE_TEXTURED:
+		m_pTerrain->RenderTextured();
+		break;
 	}
 }
 
-/*void DrawFractalMesh(void)
-{
-	short x, y, gd;
-	int tricount = 0, vertcount = 0;
-
-	float mat_specular[] = { 0, 0, 0, 0 };
-	float mat_diffuse[] = { 0.7f, 0.7f, 0.7f, 1.0f };
-	float white_light[] = { 1.0, 1.0, 1.0, 1.0 };
-	float col_ambient[] = { 0.4f, 0.4f, 0.4f, 1.0f };
-
-	gd = m_pTerrainData->m_iMeshGridDistance;
-
-	if(m_pTerrainData->m_bLight)
-	{
-		glMaterialfv(GL_FRONT, GL_DIFFUSE, mat_diffuse);
-		glMaterialfv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, mat_diffuse);
-
-		glLightfv(GL_LIGHT0, GL_DIFFUSE, white_light);
-		glLightfv(GL_LIGHT0, GL_AMBIENT, col_ambient);
-
-		glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);		// Clear Screen And Depth Buffer
-		glLoadIdentity ();											// Reset The Modelview Matrix
-		gluLookAt(0, 0, 0, 0, 1, 0, 0, 0, 1);
-
-		glRotatef(m_pCamera->m_fRotY, -1.0f, 0.0f, 0.0f);
-		glRotatef(m_pCamera->m_fRotX, 0.0f, 0.0f, -1.0f); 
-		glTranslatef (-m_pCamera->m_fPosX, -m_pCamera->m_fPosY, -m_pCamera->m_fPosZ);
-
-		// this is used to show the position of the light source
-		glDisable(GL_LIGHTING);
-		glPointSize(1000.0f);
-		glBegin(GL_POINTS);
-		glColor3f(1.0, 1.0, 0.0);
-		glVertex3fv(m_pTerrainData->m_faLightPos);
-		glEnd();
-
-		glEnable(GL_LIGHTING);
-		glLightfv(GL_LIGHT0, GL_POSITION, m_pTerrainData->m_faLightPos);
-
-		for(y=0; y<m_pTerrainData->m_iMeshWidth-1;y++)
-			for(x=0; x<m_pTerrainData->m_iMeshWidth-1; x++)
-			{
-				glBegin(GL_TRIANGLES);
-				glNormal3fv(m_pTerrainData->m_paNormals[y*m_pTerrainData->m_iMeshWidth+x]);			
-				glVertex3fv(m_pTerrainData->m_paVertices[y*m_pTerrainData->m_iMeshWidth+x]);		// left lower 
-				glNormal3fv(m_pTerrainData->m_paNormals[y*m_pTerrainData->m_iMeshWidth+x+1]);			
-				glVertex3fv(m_pTerrainData->m_paVertices[y*m_pTerrainData->m_iMeshWidth+x+1]);		// right lower
-				glNormal3fv(m_pTerrainData->m_paNormals[(y+1)*m_pTerrainData->m_iMeshWidth+x]);			
-				glVertex3fv(m_pTerrainData->m_paVertices[(y+1)*m_pTerrainData->m_iMeshWidth+x]);    // left upper
-				glEnd();
-	
-				glBegin(GL_TRIANGLES);
-				glNormal3fv(m_pTerrainData->m_paNormals[y*m_pTerrainData->m_iMeshWidth+x+1]);
-				glVertex3fv(m_pTerrainData->m_paVertices[y*m_pTerrainData->m_iMeshWidth+x+1]);		// right lower 
-				glNormal3fv(m_pTerrainData->m_paNormals[(y+1)*m_pTerrainData->m_iMeshWidth+x+1]);
-				glVertex3fv(m_pTerrainData->m_paVertices[(y+1)*m_pTerrainData->m_iMeshWidth+x+1]);  // right upper
-				glNormal3fv(m_pTerrainData->m_paNormals[(y+1)*m_pTerrainData->m_iMeshWidth+x]);
-				glVertex3fv(m_pTerrainData->m_paVertices[(y+1)*m_pTerrainData->m_iMeshWidth+x]);	// left upper
-				glEnd();
-
-				tricount+=2;
-				vertcount+=6; 
-
-			}
-			
-		glDisable(GL_LIGHTING);
-		glColor3f(0.0, 0.0, 0.0);
-		OGLText.Print(0, 0, "Iteration: %i", m_pTerrainData->m_iIterationLevel);
-		OGLText.Print(0, 1, "FactorD:	%f", m_pTerrainData->m_fFactorD);
-		OGLText.Print(0, 2, "FPS:		%i, Vertices: %i, Triangles: %i", m_pTerrainData->m_BenchRes.iFPSnow, vertcount, tricount);
-		OGLText.Print(0, 3, "Sun X:		%i, Sun Y:	  %i, Sun Z		%i", 
-					  (int)m_pTerrainData->m_faLightPos[0], (int)m_pTerrainData->m_faLightPos[1],
-					  (int)m_pTerrainData->m_faLightPos[2]);
-	}
-
-	// render without gllighting
-	else
-	{
-		glDisable(GL_LIGHTING);
-		glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);		// Clear Screen And Depth Buffer
-		glLoadIdentity ();											// Reset The Modelview Matrix
-		gluLookAt(0, 0, 0, 0, 1, 0, 0, 0, 1);
-	
-		glColor3i(255, 255, 255);
-		glRotatef(m_pCamera->m_fRotY, -1.0f, 0.0f, 0.0f);
-		glRotatef(m_pCamera->m_fRotX, 0.0f, 0.0f, -1.0f); 
-		glTranslatef (-m_pCamera->m_fPosX, -m_pCamera->m_fPosY, -m_pCamera->m_fPosZ);
-
-		for(y=0; y<m_pTerrainData->m_iMeshWidth-1;y++)
-			for(x=0; x<m_pTerrainData->m_iMeshWidth-1; x++)
-			{
-				glBegin(GL_LINE_STRIP);
-				glVertex3fv(m_pTerrainData->m_paVertices[y*m_pTerrainData->m_iMeshWidth+x]);		// left lower 
-				glVertex3fv(m_pTerrainData->m_paVertices[y*m_pTerrainData->m_iMeshWidth+x+1]);		// right lower
-				glVertex3fv(m_pTerrainData->m_paVertices[(y+1)*m_pTerrainData->m_iMeshWidth+x+1]);    // left upper
-				glVertex3fv(m_pTerrainData->m_paVertices[(y+1)*m_pTerrainData->m_iMeshWidth+x]);    // left upper
-				glEnd();
-
-				tricount+=1;
-				vertcount+=4; 
-			}
-
-		glColor3i(0, 0, 0);
-		OGLText.Print(0, 0, "Iteration: %i", m_pTerrainData->m_iIterationLevel);
-		OGLText.Print(0, 1, "FactorD:	%f", m_pTerrainData->m_fFactorD);
-		OGLText.Print(0, 2, "FPS:		%i, Vertices: %i, Triangles: %i", m_pTerrainData->m_BenchRes.iFPSnow, vertcount, tricount);
-	}
-
-
-	glFlush ();													// Flush The GL Rendering Pipeline
-}
-*/
 void CalculateFPS(DWORD milliseconds)
 {
 	if(milliseconds > 0)

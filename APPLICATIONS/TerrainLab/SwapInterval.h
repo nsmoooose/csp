@@ -17,7 +17,10 @@
 
 #include <assert.h>
 #include <GL/gl.h>
+
 #include "glext.h"
+//#include "my_glext.h"
+#include "WGLEXT.H"
 
 #define ENABLE_VSYNC 1
 #define DISABLE_VSYNC 0

@@ -43,7 +43,7 @@ RSC=rc.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /Yu"stdafx.h" /FD /c
-# ADD CPP /nologo /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /YX /FD /c
+# ADD CPP /nologo /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /FR /YX /FD /c
 # ADD BASE MTL /nologo /D "NDEBUG" /mktyplib203 /win32
 # ADD MTL /nologo /D "NDEBUG" /mktyplib203 /win32
 # ADD BASE RSC /l 0x407 /d "NDEBUG"
@@ -116,7 +116,15 @@ SOURCE=.\DlgStartup.rc
 # End Source File
 # Begin Source File
 
+SOURCE=.\EcoSystem.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\Fractal.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\Lightmap.cpp
 # End Source File
 # Begin Source File
 
@@ -142,6 +150,10 @@ SOURCE=.\TerrainData.cpp
 # Begin Source File
 
 SOURCE=.\TerrainLab.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\Texture.cpp
 # End Source File
 # End Group
 # Begin Group "Header-Dateien"
@@ -169,11 +181,23 @@ SOURCE=.\DlgStartup.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\EcoSystem.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\Fractal.h
 # End Source File
 # Begin Source File
 
 SOURCE=.\glext.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\Lightmap.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\N_MATH.H
 # End Source File
 # Begin Source File
 
@@ -198,6 +222,10 @@ SOURCE=.\Terrain.h
 # Begin Source File
 
 SOURCE=.\TerrainData.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\Texture.h
 # End Source File
 # End Group
 # Begin Group "Ressourcendateien"

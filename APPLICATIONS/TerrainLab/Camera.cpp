@@ -28,7 +28,7 @@ CCamera::CCamera()
 {
 	m_fPosX = 2500;
 	m_fPosY = 500;
-	m_fPosZ = 1500;
+	m_fPosZ = 3000;
 	m_fRotX = 0;
 	m_fRotY = 0;
 	m_fRotZ = 0;
@@ -46,7 +46,7 @@ CCamera::ResetCamera()
 {
 	m_fPosX = (float)m_pTerrainData->m_iMeshWidth*m_pTerrainData->m_iMeshGridDistance / 2;
 	m_fPosY = -1000;
-	m_fPosZ = 1000;
+	m_fPosZ = 3000;
 	m_fRotX = 0;
 	m_fRotY = 0;
 	m_fRotZ = 0;

@@ -60,7 +60,7 @@ BOOL CDlgProcess::BuildTerrain(HWND hDlg)
 	}
 
 	// save the name of the old mesh file
-	m_pTerrain->LoadRAWData(m_sSourceFile);
+//	m_pTerrain->LoadRAWData(m_sSourceFile);
 //	m_pTerrain->LoadDefaultMesh();
 	iQuadsWide = iQuadsHigh = m_pTerrainData->m_iMeshWidth-1;
 	
@@ -140,6 +140,7 @@ BOOL CDlgProcess::BuildTerrain(HWND hDlg)
 	if (sBuffer) delete []sBuffer;
 	return TRUE;
 }
+
 
 BOOL CDlgProcess::BrowseSource(HWND hDlg)
 {

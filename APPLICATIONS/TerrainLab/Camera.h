@@ -21,7 +21,7 @@
 #if !defined(CAMERA_H)
 #define CAMERA_H
 
-#include "BaseCode.h"
+//#include "BaseCode.h"
 #include "TerrainData.h"
 
 extern CTerrainData *m_pTerrainData;

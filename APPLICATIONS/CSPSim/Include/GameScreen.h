@@ -36,6 +36,7 @@
 #include "HID.h"
 #include "ScreenInfoManager.h"
 #include "TerrainObject.h"
+#include "DataRecorder.h"
 
 
 class PyConsole;
@@ -63,6 +64,7 @@ public:
 
 	ACTION_INTERFACE(GameScreen, on_Quit);
 	ACTION_INTERFACE(GameScreen, on_Pause);
+	ACTION_INTERFACE(GameScreen, on_ToggleRecorder);
 	ACTION_INTERFACE(GameScreen, on_Stats);
 	ACTION_INTERFACE(GameScreen, on_Console);
 	ACTION_INTERFACE(GameScreen, on_ChangeVehicle);
@@ -121,9 +123,7 @@ protected:
 
 	TerrainObject::IntersectionHint m_CameraHint;
 
-	/**
-	* Text information
-	*/
+	// text information
 	osg::ref_ptr<ScreenInfoManager> m_ScreenInfoManager;
 	osg::ref_ptr<osgUtil::SceneView> m_InfoView;
 	osg::ref_ptr<osg::Group> m_InfoGroup;
@@ -131,10 +131,15 @@ protected:
 
 	simdata::Ref<DynamicObject> m_ActiveObject;
 
+	// padlock testing
 	simdata::Ref<DynamicObject> m_Padlock;
 	float m_NeckPhi;
 	float m_NeckTheta;
 	bool m_NeckLimit;
+
+	// data recorder
+	simdata::Ref<DataRecorder> m_DataRecorder;
+	void setRecorder(bool on);
 };
 
 #endif // __GAMESCREEN_H__

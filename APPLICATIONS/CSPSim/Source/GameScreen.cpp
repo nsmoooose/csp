@@ -78,6 +78,7 @@ void GameScreen::initInterface()
 	m_Interface->bindObject(this);
 	BIND_ACTION("QUIT", on_Quit);
 	BIND_ACTION("PAUSE", on_Pause);
+	BIND_ACTION("TOGGLE_RECORDER", on_ToggleRecorder);
 	BIND_ACTION("STATS", on_Stats);
 	BIND_ACTION("CONSOLE", on_Console);
 	BIND_ACTION("CHANGE_VEHICLE", on_ChangeVehicle);
@@ -209,6 +210,7 @@ void GameScreen::onInit()
 	m_ScreenInfoManager = new ScreenInfoManager(ScreenWidth,ScreenHeight);
 	m_ScreenInfoManager->setName("ScreenInfoManager");
 	m_ScreenInfoManager->setStatus("PAUSE", CSPSim::theSim->isPaused());
+	m_ScreenInfoManager->setStatus("RECORD", false);
 
 	m_Console = new PyConsole(ScreenWidth, ScreenHeight);
 	m_Console->setName("PyConsole");
@@ -236,6 +238,7 @@ void GameScreen::setActiveObject(simdata::Ref<DynamicObject> const &object)
 		if (scene && m_ActiveObject->getNearFlag()) {
 			scene->setNearObject(m_ActiveObject, false);
 		}
+		setRecorder(false);
 	}
 	m_ActiveObject = object;
 	m_Padlock = object;
@@ -284,8 +287,12 @@ void GameScreen::onRender()
 void GameScreen::onUpdate(double dt) {
 	static short i = 0;
 	setCamera(dt);
-	if ((++i)%3 == 0)
+	if ((++i)%3 == 0) {
 		m_InfoView->update();
+	}
+	if (m_DataRecorder.valid()) {
+		m_DataRecorder->timeStamp(dt);
+	}
 }
 
 simdata::Vector3 GameScreen::getNewFixedCamPos(SimObject * const target) const
@@ -415,6 +422,28 @@ void GameScreen::on_Pause()
 {
 	CSPSim::theSim->togglePause();
 	m_ScreenInfoManager->setStatus("PAUSE", !m_ScreenInfoManager->getStatus("PAUSE"));
+}
+
+void GameScreen::setRecorder(bool on) {
+	if (on && !m_DataRecorder && m_ActiveObject.valid()) {
+		static int n = 0;
+		char fn[128];
+		sprintf(fn, "data-%03d.rec", n);
+		m_DataRecorder = new DataRecorder(fn);
+		m_ActiveObject->setDataRecorder(m_DataRecorder.get());
+	} else
+	if (!on && m_DataRecorder.valid()) {
+		if (m_ActiveObject.valid()) {
+			m_ActiveObject->setDataRecorder(NULL);
+		}
+		m_DataRecorder->close();
+		m_DataRecorder = NULL;
+	}
+	m_ScreenInfoManager->setStatus("RECORD", m_DataRecorder.valid());
+}
+
+void GameScreen::on_ToggleRecorder() {
+	setRecorder(!m_DataRecorder);
 }
 
 void GameScreen::on_Stats()

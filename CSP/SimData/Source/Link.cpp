@@ -33,8 +33,6 @@
 
 #include <sstream>
 
-using std::cout;
-using std::endl;
 
 NAMESPACE_SIMDATA
 

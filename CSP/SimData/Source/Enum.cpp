@@ -28,6 +28,9 @@
 #include <SimData/Enum.h>
 #include <SimData/Archive.h>
 
+#include <iostream>
+#include <sstream>
+
 
 NAMESPACE_SIMDATA
 
@@ -55,6 +58,62 @@ std::string EnumLink::asString() const {
 
 std::string EnumLink::typeString() const {
 	return "type::Enum";
+}
+
+std::string EnumLink::__repr__() const {
+	std::stringstream repr;
+	repr << "<Enum:" << getToken() << "=" << getValue() << ">";
+	return repr.str();
+}
+
+void EnumerationCore::__init(std::string const &s) {
+	std::stringstream ss(s);
+	std::string token;
+	int value = 0;
+	for (int idx = 0; ss >> token; idx++) {
+		std::string::size_type eq = token.find("=");
+		if (eq != std::string::npos) {
+			value = atoi(std::string(token, eq+1, std::string::npos).c_str());
+			token = std::string(token, 0, eq);
+		}
+		if (__i2idx.find(value) != __i2idx.end()) {
+			std::stringstream msg;
+			msg << "Enumeration value '" << value << "' multiply defined in '" << s << "'";
+			throw EnumError(msg.str());
+		}
+		if (__s2idx.find(token) != __s2idx.end()) {
+			std::stringstream msg;
+			msg << "Enumeration token '" << token << "' multiply defined in '" << s << "'";
+			throw EnumError(msg.str());
+		}
+		__elements.push_back(Element(token, value));
+		__i2idx[value] = idx;
+		__s2idx[token] = idx;
+		value++;
+	}
+	if (__elements.size() <= 0) throw EnumError("Empty Enumeration");
+}
+
+int EnumerationCore::getIndexByValue(int value) const {
+	std::map<int, int>::const_iterator iter = __i2idx.find(value);
+	if (iter == __i2idx.end()) {
+		std::stringstream msg;
+		msg << value;
+		throw EnumIndexError(msg.str());
+	}
+	return iter->second;
+}
+
+std::string Enumeration::__repr__() const {
+	assert(__core.valid());
+	std::stringstream ss;
+	ss << "<Enumeration:";
+	for (int i = 0; i < size(); i++) {
+		ss << " " << __core->getTokenByIndex(i)
+		   << "=" << __core->getValueByIndex(i);
+	}
+	ss << ">";
+	return ss.str();
 }
 
 

@@ -1,18 +1,18 @@
 /* SimDataCSP: Data Infrastructure for Simulations
  * Copyright (C) 2002 Mark Rose <tm2@stm.lbl.gov>
- * 
+ *
  * This file is part of SimDataCSP.
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
@@ -48,7 +48,7 @@ void cspline(std::vector<X> const &x, std::vector<X> const &y, std::vector<X> &o
 	std::vector<X> D(n), b(n), L(n);
 	X dx0, dx1 = x[1] - x[0];
 	X dy0, dy1 = y[1] - y[0];
-	for (int i = 0, j = n - 2; i < j; i++) { 
+	for (int i = 0, j = n - 2; i < j; i++) {
 		dx0 = dx1;
 		dy0 = dy1;
 		dx1 = x[i+2] - x[i+1];
@@ -112,9 +112,9 @@ public:
 
 	/**
 	 * Set a specific subelement indexed by a single
-	 * integer.  The indexing mirrors the LUT method 
+	 * integer.  The indexing mirrors the LUT method
 	 * getElement().
-	 * 
+	 *
 	 * For example:
 	 *     if N = 3 and the dimensions are 10, 5, and 20,
 	 *     then n = 834 would correspond to the indices
@@ -196,7 +196,7 @@ void InterpolationType<X>::postInterpolation(X x0, X x1, int n) {
 /**
  * N-dimensional lookup table.
  *
- * Converts (partially) irregularly spaced data to a regularly spaced 
+ * Converts (partially) irregularly spaced data to a regularly spaced
  * lookup table using linear or spline interpolation.  The table is
  * then accessed by fast linear interpolation.
  */
@@ -204,7 +204,6 @@ template <int N, class X>
 void LUT<N,X>::createData(int n) {
 	deref();
 	m_Data = new DataVector(n);
-	__LUTLOG("NEW-N " << int(m_Data));
 	m_Ref = new int(0);
 	ref();
 }
@@ -306,9 +305,9 @@ void LUT<N,X>::interpolateSpline(int n, TableVector *_table) {
 
 // spline interpolation
 template <int N, class X>
-void LUT<N,X>::__splineInterpolate(X x, X h, LUT<N,X> const &y0, LUT<N,X> const &y1, 
-	      Curvature<N,X> const &c0, 
-	      Curvature<N,X> const &c1, 
+void LUT<N,X>::__splineInterpolate(X x, X h, LUT<N,X> const &y0, LUT<N,X> const &y1,
+	      Curvature<N,X> const &c0,
+	      Curvature<N,X> const &c1,
 	      LUT<N,X> &out) {
 	int n = y0.dataSize();
 	assert(y1.dataSize() == n);
@@ -377,7 +376,6 @@ void LUT<N,X>::interpolate(Dim const &dim, Interpolation::Modes mode) {
 	int n = dim[0];
 	assert(n >= 2 && m_Data && dataSize() >= 2);
 	TableVector *_table = new TableVector(n);
-	__LUTLOG("NEWDN " << int(_table));
 	switch (mode) {
 		case LINEAR:
 			interpolateLinear(n, _table);
@@ -389,7 +387,6 @@ void LUT<N,X>::interpolate(Dim const &dim, Interpolation::Modes mode) {
 			throwInterpolationMode();
 	}
 	for (int i = 0; i < n; ++i) {
-		__LUTLOG("SUB INTERP " << i << " of " << n);
 		(*_table)[i].interpolate(dim.rest(), mode);
 	}
 	postInterpolation(_table);
@@ -408,7 +405,6 @@ X LUT<N,X>::getValue(Vec const &v) const {
 	X f;
 	find(x, i, f);
 	X value = table(i).getValue(v.rest()) * (static_cast<X>(1.0)-f) + table(i+1).getValue(v.rest()) * f;
-	__LUTLOG("getValue[N]: " << x << " " << i << " " << f << " = " << value);
 	return value;
 }
 
@@ -477,7 +473,7 @@ std::string LUT<N,X>::asString() const {
 }
 
 template <int N, class X>
-std::string LUT<N,X>::typeString() const { 
+std::string LUT<N,X>::typeString() const {
 	std::stringstream ss;
 	ss << "type::LUT<" << N << ">";
 	return ss.str();
@@ -489,8 +485,6 @@ void LUT<1,X>::createData(int n) {
 	//DataVector *old = m_Data;
 	deref();
 	m_Data = new DataVector(n);
-	//__LUTLOG("NEW-1 " << int(m_Data) << " (was " << int(old) << ")");
-	__LUTLOG("NEW-1 " << int(m_Data));
 	m_Ref = new int(0);
 	ref();
 }
@@ -581,15 +575,15 @@ void LUT<1,X>::__interpolate(X x, LUT<1,X> const &next, LUT<1,X> &out) {
 	}
 }
 
-// spline interpolation 
+// spline interpolation
 template <typename X>
 void LUT<1,X>::__splineInterpolate(
-		X x, X h, 
-		LUT<1,X> const &y0, 
-		LUT<1,X> const &y1, 
-		Curvature<1,X> const &c0, 
-		Curvature<1,X> const &c1, 
-		LUT<1,X> &out) 
+		X x, X h,
+		LUT<1,X> const &y0,
+		LUT<1,X> const &y1,
+		Curvature<1,X> const &c0,
+		Curvature<1,X> const &c1,
+		LUT<1,X> &out)
 {
 	int n = y0.dataSize();
 	assert(y1.dataSize() == n);
@@ -598,7 +592,7 @@ void LUT<1,X>::__splineInterpolate(
 	X d2s = h * h * static_cast<X>(0.1666666666667);
 	for (int i = 0; i < n; i++) {
 		out.data(i).first = y0.data(i).first;
-		out.data(i).second = y * y0.data(i).second + 
+		out.data(i).second = y * y0.data(i).second +
 				     x * y1.data(i).second +
 				     ((y * y - static_cast<X>(1.0)) * y * c0.curve(i) +
 				      (x * x - static_cast<X>(1.0)) * x * c1.curve(i)) * d2s;
@@ -616,13 +610,11 @@ LUT<1,X>::~LUT() {
 
 template <typename X>
 LUT<1,X>::LUT(LUT<1, X> const &copy): InterpolationType<X>(copy), m_Data(copy.m_Data), m_Ref(copy.m_Ref) {
-	__LUTLOG("COPY IMP " << int(m_Data));
 	ref();
 }
 
 template <typename X>
 LUT<1, X> const &LUT<1,X>::operator=(LUT<1, X> const &copy) {
-	__LUTLOG("COPY EXP " << int(m_Data) << " " << int(copy.m_Data));
 	InterpolationType<X>::operator=(copy);
 	deref();
 	m_Data = copy.m_Data;
@@ -638,7 +630,6 @@ void LUT<1,X>::interpolate(Dim const &dim, Interpolation::Modes mode) {
 	assert(n >= 2 && dataSize() >= 2);
 	TableVector *_table = new TableVector(n);
 	assert(_table != 0);
-	__LUTLOG("NEWD1 " << int(_table));
 	switch (mode) {
 		case LINEAR:
 			interpolateLinear(n, _table);
@@ -665,7 +656,6 @@ X LUT<1,X>::getValue(Vec const &v) const {
 	X f;
 	find(x, i, f);
 	X value = table(i) * (static_cast<X>(1.0)-f) + table(i+1) * f;
-	__LUTLOG("getValue[1]: " << x << " " << i << " " << f << " = " << value);
 	return value;
 }
 
@@ -737,7 +727,7 @@ std::string LUT<1,X>::asString() const {
 }
 
 template <typename X>
-std::string LUT<1,X>::typeString() const { 
+std::string LUT<1,X>::typeString() const {
 	return "type::LUT<1>";
 }
 
@@ -805,7 +795,7 @@ void test() {
 	t0 = simdata::SimDate::getSystemTime();
 	float x = 0.0;
 	for (int i = 100000; i > 0; --i) {
-		x += t[2.1][30400]; 
+		x += t[2.1][30400];
 	}
 	t1 = simdata::SimDate::getSystemTime();
 	std::cout << (t1-t0)*10.0 << " us; " << x <<  "\n";
@@ -820,9 +810,9 @@ void test() {
 	*/
 }
 
-int main() try { 
+int main() try {
 	test();
-	return 0; 
+	return 0;
 } catch(...) { }
 
 #endif

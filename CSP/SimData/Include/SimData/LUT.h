@@ -43,9 +43,6 @@
 
 
 #include <vector>
-#include <iostream>
-#include <istream>
-#include <cstdio>
 #include <cmath>
 
 
@@ -60,17 +57,6 @@ SIMDATA_EXCEPTION(InterpolationInput);
 SIMDATA_EXCEPTION(InterpolationError);
 SIMDATA_EXCEPTION(InterpolationIndex);
 SIMDATA_EXCEPTION(InterpolationUnpackMismatch);
-
-
-// some simple debugging messages used during initial development
-// LUTLOG() can be safely removed when no longer needed
-#if 0
-#  define __LUTLOG(msg) std::cout << msg << "\n";
-#else
-#  define __LUTLOG(msg)
-#endif
-
-
 
 
 // forward declaration for lookup table templates
@@ -439,12 +425,10 @@ class SIMDATA_EXPORT LUT: public InterpolationType<X> {
 		if (*m_Ref == 0) {
 			if (m_Interpolated) {
 				assert(m_Table);
-				__LUTLOG("~TABLE " << int(m_Table));
 				delete m_Table;
 				m_Table = 0;
 			} else {
 				assert(m_Data);
-				__LUTLOG("~DATA " << int(m_Data));
 				delete m_Data;
 				m_Data = 0;
 			}
@@ -643,12 +627,10 @@ class SIMDATA_EXPORT LUT<1, X>: public InterpolationType<X> {
 		if (*m_Ref == 0) {
 			if (m_Interpolated) {
 				assert(m_Table);
-				__LUTLOG("~TABLE " << int(m_Table));
 				delete m_Table;
 				m_Table = 0;
 			} else {
 				assert(m_Data);
-				__LUTLOG("~DATA " << int(m_Data));
 				delete m_Data;
 				m_Data = 0;
 			}

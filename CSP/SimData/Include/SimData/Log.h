@@ -28,8 +28,8 @@
 #define __SIMDATA_LOG_H__
 
 
-#include <cstdio>
 #include <string>
+#include <iostream>
 
 #include <SimData/LogStream.h>
 #include <SimData/Namespace.h>
@@ -65,13 +65,7 @@ enum {
 
 /** Display a fatal error message to stderr and exit.
  */
-inline void fatal(std::string const &msg) {
-	std::cerr << "SIMDATA fatal error:" << std::endl;
-	std::cerr << msg << std::endl;
-	// use abort() instead of exit() to trigger the SIGABRT handler (if installed)
-	// and generate a stack trace.
-	::abort();
-}
+extern void fatal(std::string const &msg);
 
 
 /** Return the one and only LogStream instance.
@@ -89,7 +83,7 @@ inline SIMDATA_EXPORT LogStream& log() {
 		// default to stderr, which may be overridden by the environment
 		// settings.  note that this LogStream instance is never freed, so
 		// it is safe to log messages from static destructors.
-		log_stream = new LogStream(std::cerr);
+		log_stream = new LogStream();
 		log_stream->initFromEnvironment("SIMDATA_LOGFILE", "SIMDATA_LOGPRIORITY");
 	}
 	return *log_stream;
@@ -137,13 +131,13 @@ inline SIMDATA_EXPORT ThreadLog& threadlog() {
 # define SIMDATA_LOG(C,P,M) if (SIMDATA_NOTEWORTHY(C, P)) \
                               SIMDATA_LOG_.entry(P, C, __FILE__, __LINE__) << M << std::endl
 
-# define SIMDATA_BULK(C,M) SIMDATA_LOG(C,LOG_BULK,M)
-# define SIMDATA_TRACE(C,M) SIMDATA_LOG(C,LOG_TRACE,M)
-# define SIMDATA_DEBUG(C,M) SIMDATA_LOG(C,LOG_DEBUG,M)
-# define SIMDATA_INFO(C,M) SIMDATA_LOG(C,LOG_INFO,M)
-# define SIMDATA_WARNING(C,M) SIMDATA_LOG(C,LOG_WARNING,M)
-# define SIMDATA_ALERT(C,M) SIMDATA_LOG(C,LOG_ALERT,M)
-# define SIMDATA_ERROR(C,M) SIMDATA_LOG(C,LOG_ERROR,M)
+# define SIMDATA_BULK(C,M) SIMDATA_LOG(C,SIMDATA(LOG_BULK),M)
+# define SIMDATA_TRACE(C,M) SIMDATA_LOG(C,SIMDATA(LOG_TRACE),M)
+# define SIMDATA_DEBUG(C,M) SIMDATA_LOG(C,SIMDATA(LOG_DEBUG),M)
+# define SIMDATA_INFO(C,M) SIMDATA_LOG(C,SIMDATA(LOG_INFO),M)
+# define SIMDATA_WARNING(C,M) SIMDATA_LOG(C,SIMDATA(LOG_WARNING),M)
+# define SIMDATA_ALERT(C,M) SIMDATA_LOG(C,SIMDATA(LOG_ALERT),M)
+# define SIMDATA_ERROR(C,M) SIMDATA_LOG(C,SIMDATA(LOG_ERROR),M)
 
 
 NAMESPACE_SIMDATA_END

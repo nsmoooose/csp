@@ -34,102 +34,10 @@
 #include <SimData/Export.h>
 #include <SimData/ThreadBase.h>
 #include <SimData/LogStream.h>
-#include <SimData/Log.h>
+#include <SimData/ScopedPointer.h>
 
 
 NAMESPACE_SIMDATA
-
-
-/** A steam buffer class for thread-safe logging.
- *
- *  StringBufs are used internally by ThreadLog to provide serialized
- *  access to a LogStream.
- */
-class SIMDATA_EXPORT StringBuf: public NonCopyable, public std::streambuf
-{
-	std::string m_buffer;
-	int m_category;
-	int m_priority;
-	const char *m_file;
-	int m_line;
-	LogStream &m_log;
-
-	void init() {
-		m_buffer.reserve(1024);
-	}
-
-	typedef ScopedLock<LogStream> ScopedLogLock;
-
-public:
-
-	/** Default constructor, connects to the global simdata log.
-	 */
-	StringBuf(): m_category(LOG_ALL), m_priority(LOG_INFO), m_file(0), m_line(0), m_log(::simdata::log()) {
-		init();
-	}
-
-	/** Constructor, connects to the specified LogStream
-	 */
-	StringBuf(LogStream &base): m_category(LOG_ALL), m_priority(LOG_INFO), m_log(base) {
-		init();
-	}
-
-	/** Cache the log entry parameters.
-	 */
-	inline void setPrefix(int priority, int category, const char *file, int line) {
-		m_priority = priority;
-		m_category = category;
-		m_file = file;
-		m_line = line;
-	}
-
-	/** Retrieve the associated LogStream.
-	 */
-	inline LogStream &getLogStream() const { return m_log; }
-
-protected:
-
-	/** Overflow (cache characters internally)
-	 */
-	virtual int overflow(int c) {
-		m_buffer.push_back(static_cast<char>(c));
-		return 1;
-	}
-
-	/** Sync/flush the cached log entry to the underlying LogStream
-	 */
-	virtual int sync() {
-		ScopedLogLock lock(m_log);
-		std::ostream &entry = m_log.entry(m_priority, m_category, m_file, m_line);
-		entry << m_buffer;
-		entry.flush();
-		m_buffer.clear();
-		return 1;
-	}
-
-
-};
-
-/** A helper class for ThreadLog construction.
- *
- *  A helper class that ensures a streambuf and ostream are constructed and
- *  destroyed in the correct order.  The streambuf must be created before the
- *  ostream but bases are constructed before members.  Thus, making this class
- *  a private base of ThreadLog, declared to the left of ostream, we ensure the
- *  correct order of construction and destruction.
- */
-struct SIMDATA_EXPORT ThreadLogBase: public NonCopyable
-{
-protected:
-	ThreadLogBase(): m_stringbuf() {}
-	ThreadLogBase(LogStream &base): m_stringbuf(base) {}
-
-	virtual ~ThreadLogBase() { }
-
-	inline LogStream &getLogStream() const { return m_stringbuf.getLogStream(); }
-
-	StringBuf m_stringbuf;
-};
 
 
 /** A thread-safe logging class that provides serialized access to an
@@ -138,18 +46,27 @@ protected:
  *  ThreadLog instances instead of the global LogStream whenever threading
  *  is enabled.
  */
-class SIMDATA_EXPORT ThreadLog: private ThreadLogBase, protected std::ostream
+class SIMDATA_EXPORT ThreadLog: public NonCopyable
 {
+	class StringBuf;
 	typedef ScopedLock<LogStream> ScopedLogLock;
+	ScopedPointer<StringBuf> m_stringbuf;
+	ScopedPointer<std::ostream> m_logstream;
+	LogStream &m_log;
+	inline LogStream &getLogStream() const { return m_log; }
 
 public:
 	/** Default constructor, connects to the global simdata log.
 	 */
-	ThreadLog(): ThreadLogBase(), std::ostream(&m_stringbuf) {}
+	ThreadLog();
 
 	/** Constructor, connects to the specified LogStream
 	 */
-	ThreadLog(LogStream &base): ThreadLogBase(base), std::ostream(&m_stringbuf) {}
+	ThreadLog(LogStream &base);
+
+	/** Destructor.
+	 */
+	~ThreadLog();
 
 	/** Close the underlying (shared) LogStream.
 	 */
@@ -240,10 +157,7 @@ public:
 	 *  @param line line number of the code that generated this message (typically __LINE__).
 	 *  @return an output stream to receive the message contents.
 	 */
-	std::ostream & entry(int priority, int category=LOG_ALL, const char *file=0, int line=0) {
-		m_stringbuf.setPrefix(priority, category, file, line);
-		return *this;
-	}
+	std::ostream & entry(int priority, int category=LOG_ALL, const char *file=0, int line=0);
 
 };
 

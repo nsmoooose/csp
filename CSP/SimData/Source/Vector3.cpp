@@ -1,18 +1,18 @@
 /* SimData: Data Infrastructure for Simulations
  * Copyright (C) 2002, 2003 Mark Rose <tm2@stm.lbl.gov>
- * 
+ *
  * This file is part of SimData.
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
@@ -23,11 +23,11 @@
  *
  * A three-dimensional vector class.
  *
- * This source code was originally based on the Vec3 class of 
+ * This source code was originally based on the Vec3 class of
  * the OpenSceneGraph library, Copyright 1998-2003 Robert Osfield.
  * Source code from OpenSceneGraph is used here under the GNU General
- * Public License Version 2 or later, as permitted under the 
- * OpenSceneGraph Public License Version 0.0 (exception 3) and the GNU 
+ * Public License Version 2 or later, as permitted under the
+ * OpenSceneGraph Public License Version 0.0 (exception 3) and the GNU
  * Lesser Public  License Version 2 (clause 3).
  **/
 
@@ -66,8 +66,8 @@ std::string Vector3::asString() const {
  * Print string representation to a stream.
  */
 std::ostream & operator << (std::ostream & os, const Vector3& v) {
-	os << "[" << std::setw(8) << v.x() 
-	   << " " << std::setw(8) << v.y() 
+	os << "[" << std::setw(8) << v.x()
+	   << " " << std::setw(8) << v.y()
  	   << " " << std::setw(8) << v.z() << "]";
 	return os;
 }
@@ -90,12 +90,11 @@ void Vector3::parseXML(const char* cdata) {
  */
 int Vector3::readBinary(const unsigned char * data, int size) {
 	
-	if (size != 3*sizeof(double))
-	{
+	if (size != 3*sizeof(double)) {
 		fprintf(stderr, "Illegal mem copy operation attempted\n");
 		return 0;
 	}
-        
+
 	memcpy((void*)&_x, (void*)data, sizeof(double)); data += sizeof(double);	
 	memcpy((void*)&_y, (void*)data, sizeof(double)); data += sizeof(double);
 	memcpy((void*)&_z, (void*)data, sizeof(double));
@@ -108,8 +107,7 @@ int Vector3::readBinary(const unsigned char * data, int size) {
  */
 int Vector3::writeBinary(unsigned char * data, int size) {
 
-	if (size != 3*sizeof(double))
-	{
+	if (size != 3*sizeof(double)) {
 		fprintf(stderr, "Illegal mem copy operation attempted\n");
 		return 0;
 	}
@@ -121,7 +119,6 @@ int Vector3::writeBinary(unsigned char * data, int size) {
 	return 3*sizeof(double);
 
 }
-
 
 
 NAMESPACE_SIMDATA_END

@@ -28,8 +28,7 @@
 #ifndef __SIMDATA_LOGSTREAM_H__
 #define __SIMDATA_LOGSTREAM_H__
 
-#include <iostream>
-#include <fstream>
+#include <iosfwd>
 #include <string>
 #include <cassert>
 #include <ctime>
@@ -50,7 +49,6 @@ NAMESPACE_SIMDATA
  */
 class SIMDATA_EXPORT LogStream
 {
-	std::ostream m_null;
 	std::ostream *m_stream;
 	std::ofstream *m_fstream;
 	bool m_log_point;
@@ -70,7 +68,6 @@ public:
 	/** Create a new log stream that defaults to stderr.
 	 */
 	LogStream():
-	          m_null(NULL),
 	          m_stream(NULL),
 	          m_fstream(NULL),
 	          m_log_point(true),
@@ -84,7 +81,6 @@ public:
 	 *  @param out_ The initial output stream.
 	 */
 	LogStream(std::ostream& out_):
-	          m_null(NULL),
 	          m_stream(&out_),
 	          m_fstream(NULL),
 	          m_log_point(true),
@@ -138,14 +134,7 @@ public:
 	 *
 	 *  Idempotent, and will not close cerr or cout.
 	 */
-	void _close() {
-		if (m_fstream != NULL) {
-			m_fstream->close();
-			delete m_fstream;
-			m_fstream = NULL;
-		}
-		m_stream = NULL;
-	}
+	void _close();
 
 	/** Set the output stream
 	 *
@@ -160,22 +149,13 @@ public:
 	 *
 	 *  @param out_ output file stream (LogStream will close it)
 	 */
-	void setOutput(std::ofstream& out_) {
-		_close();
-		m_fstream = &out_;
-		m_stream = &out_;
-	}
+	void setOutput(std::ofstream& out_);
 
 	/** Set the output stream
 	 *
 	 *  @param filename output file path
 	 */
-	void setOutput(std::string const &filename) {
-		_close();
-		m_fstream = new std::ofstream(filename.c_str());
-		assert(m_fstream != NULL);
-		m_stream = m_fstream;
-	}
+	void setOutput(std::string const &filename);
 
 	/** Set the global log priority level.
 	 *  Log entries with priority lower than this value will be suppressed.

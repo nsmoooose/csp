@@ -1,18 +1,18 @@
 /* SimData: Data Infrastructure for Simulations
  * Copyright (C) 2002, 2003, 2004 Mark Rose <tm2@stm.lbl.gov>
- * 
+ *
  * This file is part of SimData.
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
@@ -36,7 +36,6 @@
 #include <SimData/Namespace.h>
 #include <SimData/Export.h>
 #include <SimData/ExceptionBase.h>
-#include <SimData/Log.h>
 #include <SimData/Properties.h>
 #include <SimData/AtomicCounter.h>
 
@@ -54,6 +53,9 @@ class LinkBase;
 
 SIMDATA_EXCEPTION(ConversionError);
 
+void SIMDATA_EXPORT _log_reference_count_error(int count, int pointer);
+void SIMDATA_EXPORT _log_reference_conversion_error();
+
 
 /** Base class for reference counted objects.
  *
@@ -69,23 +71,18 @@ friend class ReferencePointer;
 
 protected:
 	ReferencedBase(): __count(0) {
-		//SIMDATA_LOG(LOG_ALL, LOG_ERROR, "ReferencedBase(" << this << ")");
 	}
 
 	virtual ~ReferencedBase() {
-		//SIMDATA_LOG(LOG_ALL, LOG_ERROR, "~ReferencedBase(" << this << ", " << __count << ")");
-		if (__count != 0) {
-			SIMDATA_LOG(LOG_ALL, LOG_ERROR, "simdata::ReferencedBase(" << std::hex << int(this) << ") deleted with non-zero reference count (" << __count << "): memory corruption possible.");
-		}
+		if (__count != 0) _log_reference_count_error(__count, reinterpret_cast<int>(this));
 	}
 
 private:
+
 	inline void _incref() const {
-		//SIMDATA_LOG(LOG_ALL, LOG_ERROR, "_incref(" << this << ", " << __count << ")");
 		++__count;
 	}
 	inline void _decref() const {
-		//SIMDATA_LOG(LOG_ALL, LOG_ERROR, "_decref(" << this << ", " << __count << ")");
 		assert(__count > 0);
 		if (!--__count) delete this;
 	}
@@ -331,7 +328,7 @@ protected:
 		_unbind();
 		_reference = dynamic_cast<CLASS*>(ptr);
 		if (_reference == 0 && ptr != 0) {
-			SIMDATA_LOG(LOG_ALL, LOG_ERROR, "simdata::Ref() assignment: incompatible types (dynamic cast failed).");
+			_log_reference_conversion_error();
 			throw ConversionError();
 		}
 	}

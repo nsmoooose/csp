@@ -1,18 +1,18 @@
 /* SimDataCSP: Data Infrastructure for Simulations
  * Copyright (C) 2002 Mark Rose <tm2@stm.lbl.gov>
- * 
+ *
  * This file is part of SimDataCSP.
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
@@ -39,9 +39,8 @@
 #include <algorithm>
 #include <string>
 #include <vector>
+#include <sstream>
 
-using std::cout;
-using std::endl;
 
 NAMESPACE_SIMDATA
 
@@ -63,14 +62,14 @@ InterfaceProxy::InterfaceProxy(const char *cname, hasht chash)
 	InterfaceRegistry::getInterfaceRegistry().addInterface(cname, chash, this);
 }
 
-Object *InterfaceProxy::createObject() const { 
+Object *InterfaceProxy::createObject() const {
 	fatal("INTERNAL ERROR: InterfaceProxy::createObject()");
 	return 0;
 }
 
-void InterfaceProxy::addInterface(ObjectInterfaceBase* objectinterface, 
+void InterfaceProxy::addInterface(ObjectInterfaceBase* objectinterface,
                                   std::string const &classname,
-				  hasht const &classhash) { 
+				  hasht const &classhash) {
 	std::vector<std::string> names = objectinterface->getVariableNames();
 	std::vector<std::string>::iterator name = names.begin();
 	for (; name != names.end(); ++name) {
@@ -78,9 +77,8 @@ void InterfaceProxy::addInterface(ObjectInterfaceBase* objectinterface,
 			// variable multiply defined
 			std::stringstream ss;
 			ss << "variable \"" << *name << "\""
-			   << " multiply defined in interface to class " 
+			   << " multiply defined in interface to class "
 			   << classname << " or parent interface.";
-			std::cout << ss.str() << std::endl;
 			throw InterfaceError(ss.str());
 		}
 		_interfacesByVariableName[*name] = objectinterface;
@@ -103,12 +101,12 @@ ObjectInterfaceBase *InterfaceProxy::findInterface(std::string const &varname, b
 	return iter->second;
 }
 
-hasht InterfaceProxy::getClassHash() const { 
+hasht InterfaceProxy::getClassHash() const {
 	fatal("INTERNAL ERROR: InterfaceProxy::getClassHash()");
 	return 0;
 }
 
-const char * InterfaceProxy::getClassName() const { 
+const char * InterfaceProxy::getClassName() const {
 	fatal("INTERNAL ERROR: InterfaceProxy::getClassName()");
 	return 0;
 }

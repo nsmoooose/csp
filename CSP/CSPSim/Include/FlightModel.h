@@ -1,17 +1,17 @@
 // Combat Simulator Project - FlightSim Demo
 // Copyright (C) 2002 The Combat Simulator Project
 // http://csp.sourceforge.net
-// 
+//
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
 // as published by the Free Software Foundation; either version 2
 // of the License, or (at your option) any later version.
-// 
+//
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU General Public License
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
@@ -28,11 +28,12 @@
 
 
 #include <SimData/InterfaceRegistry.h>
-
+#include <SimData/Math.h>
+#include <SimData/Vector3.h>
 
 
 /**
- * class FlightModel 
+ * class FlightModel
  *
  * An aircraft flight model based on stability derivatives.
  * FlightModel instances are shared by all aircraft of a
@@ -90,9 +91,9 @@ public:
 	FlightModel();
 	virtual ~FlightModel();
 
-	inline void setAirstream(double alpha, 
-	                         double alphaDot, 
-	                         double beta, 
+	inline void setAirstream(double alpha,
+	                         double alphaDot,
+	                         double beta,
 	                         double airspeed,
 	                         double qBar) {
 		// prevent driving the model outside its range of validity
@@ -103,9 +104,9 @@ public:
 		m_Inv2V = 0.5 / std::max(0.5, airspeed);
 	}
 
-	inline void setControlSurfaces(double aileron, 
-	                               double elevator, 
-	                               double rudder, 
+	inline void setControlSurfaces(double aileron,
+	                               double elevator,
+	                               double rudder,
 	                               double airbrake) {
 		m_Aileron = aileron;
 		m_Elevator = elevator;
@@ -127,9 +128,9 @@ protected:
 	virtual void postCreate();
 
 	double m_WingSpan;
-	double m_WingChord;		// chord length        
+	double m_WingChord;		// chord length
 	double m_WingArea;		// surface area of wings
-	double m_stallAOA;		// stall AOA 
+	double m_stallAOA;		// stall AOA
 	
 	/**
 	 * internally: X = right, Y = nose, Z = up
@@ -149,20 +150,20 @@ protected:
 	
 	double m_CM0;     // CMo is the pitch moment coefficient
 	double m_CM_a;    // CMa is the pitch moment coefficient due to angle of attack
-	double m_CM_adot;     
+	double m_CM_adot;
 	double m_CM_q;    // CMq is the pitch moment coefficient due to pitch rate
-	double m_CM_de;   // CMde is the pitch coefficient due to elevator 
+	double m_CM_de;   // CMde is the pitch coefficient due to elevator
 	
 	double m_CY_beta; // CLb - the dihedral effect
 	double m_CY_p;    // Clp - roll damping
 	double m_CY_r;    // CLr - roll due to yaw rate
 	double m_CY_da;   // Clda - roll due to aileron
-	double m_CY_dr;   // CLdr - roll due to rudder   
+	double m_CY_dr;   // CLdr - roll due to rudder
 	
-	double m_CI_beta;       
-	double m_CI_p;          
-	double m_CI_r;          
-	double m_CI_da;         
+	double m_CI_beta;
+	double m_CI_p;
+	double m_CI_r;
+	double m_CI_da;
 	double m_CI_dr;
 
 	double m_Cn_beta;   // CNb is the weather cocking stability
@@ -173,7 +174,7 @@ protected:
 
 	void updateAngles(double dt);
 
-	simdata::Vector3 calculateLiftVector(); 
+	simdata::Vector3 calculateLiftVector();
 	simdata::Vector3 calculateDragVector();
 	simdata::Vector3 calculateSideVector();
 
@@ -187,7 +188,7 @@ protected:
 	// derived quantities
 	double m_HalfWingArea;
 	double m_AspectRatio;
-	double m_CD_i;    // CD_i is induced drag coefficient = 1 / (e * pi * lambda) 
+	double m_CD_i;    // CD_i is induced drag coefficient = 1 / (e * pi * lambda)
 	                  // where lamdba = Span^2 / Area and e is Osswald coefficient
 	
 	// shared intermediate values
@@ -195,7 +196,7 @@ protected:
 	double m_CD;
 	double m_CY;
 
-	// airstream parameters 
+	// airstream parameters
 	double m_Alpha;
 	double m_AlphaDot;
 	double m_Beta;

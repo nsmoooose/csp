@@ -82,10 +82,6 @@
 #include <string>
 #include <vector>
 #include <map>
-#include <cstdio>
-#include <iostream>
-#include <sstream>
-
 
 
 NAMESPACE_SIMDATA
@@ -140,33 +136,7 @@ friend class Enumeration;
 	/// Parse enum string into lookup tables.
 	///
 	/// @see EnumerationCore(std::string const &s)
-	void __init(std::string const &s) {
-		std::stringstream ss(s);
-		std::string token;
-		int value = 0;
-		for (int idx = 0; ss >> token; idx++) {
-			std::string::size_type eq = token.find("=");
-			if (eq != std::string::npos) {
-				value = atoi(std::string(token, eq+1, std::string::npos).c_str());
-				token = std::string(token, 0, eq);
-			}
-			if (__i2idx.find(value) != __i2idx.end()) {
-				std::stringstream msg;
-				msg << "Enumeration value '" << value << "' multiply defined in '" << s << "'";
-				throw EnumError(msg.str());
-			}
-			if (__s2idx.find(token) != __s2idx.end()) {
-				std::stringstream msg;
-				msg << "Enumeration token '" << token << "' multiply defined in '" << s << "'";
-				throw EnumError(msg.str());
-			}
-			__elements.push_back(Element(token, value));
-			__i2idx[value] = idx;
-			__s2idx[token] = idx;
-			value++;
-		}
-		if (__elements.size() <= 0) throw EnumError("Empty Enumeration");
-	}
+	void __init(std::string const &s);
 
 	/// Return an element by index number.
 	Element const &getElementByIndex(int idx) const {
@@ -183,15 +153,7 @@ friend class Enumeration;
 	/// Lookup the index of the element with the specified value.
 	///
 	/// Throws EnumIndexError if the value does not exist.
-	int getIndexByValue(int value) const {
-		std::map<int, int>::const_iterator iter = __i2idx.find(value);
-		if (iter == __i2idx.end()) {
-			std::stringstream msg;
-			msg << value;
-			throw EnumIndexError(msg.str());
-		}
-		return iter->second;
-	}
+	int getIndexByValue(int value) const;
 
 	/// Get the token associated with a given value.
 	std::string getTokenByValue(int value) const {
@@ -391,17 +353,7 @@ public:
 	}
 
 	/// Return a string representation of the Enumeration (used by SWIG/Python).
-	std::string __repr__() const {
-		assert(__core.valid());
-		std::stringstream ss;
-		ss << "<Enumeration:";
-		for (int i = 0; i < size(); i++) {
-			ss << " " << __core->getTokenByIndex(i)
-			   << "=" << __core->getValueByIndex(i);
-		}
-		ss << ">";
-		return ss.str();
-	}
+	std::string __repr__() const;
 
 	/// Return an ordered vector of Enums in this Enumeration.
 	inline const std::vector<EnumLink> each() const;
@@ -560,11 +512,7 @@ public:
 	std::string getToken() const { return __E.getTokenByIndex(_idx); }
 
 	/// Return a string representation (for SWIG/Python).
-	std::string __repr__() const {
-		std::stringstream repr;
-		repr << "<Enum:" << getToken() << "=" << getValue() << ">";
-		return repr.str();
-	}
+	std::string __repr__() const;
 
 	/// Return a new Enum for the next item in the Enumeration (cyclic).
 	EnumLink next(int n=1) const { return makeEnum((_idx+n+abs(n)*__size())%__size()); }

@@ -24,9 +24,15 @@
  */
 
 #include <SimData/List.h>
-
+#include <sstream>
 
 NAMESPACE_SIMDATA
+
+std::string ListBase::_asString(int size) const {
+	std::stringstream ss;
+	ss << "<simdata::List[" << size << "]>";
+	return ss.str();
+}
 
 NAMESPACE_SIMDATA_END
 

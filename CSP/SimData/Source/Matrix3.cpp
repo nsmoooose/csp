@@ -1,18 +1,18 @@
 /* SimData: Data Infrastructure for Simulations
  * Copyright (C) 2002, 2003 Mark Rose <tm2@stm.lbl.gov>
- * 
+ *
  * This file is part of SimData.
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
@@ -24,11 +24,11 @@
  *
  * A three-by-three matrix class.
  *
- * This source code was originally based on the Matrix class of 
+ * This source code was originally based on the Matrix class of
  * the OpenSceneGraph library, Copyright 1998-2003 Robert Osfield.
  * Source code from OpenSceneGraph is used here under the GNU General
- * Public License Version 2 or later, as permitted under the 
- * OpenSceneGraph Public License Version 0.0 (exception 3) and the GNU 
+ * Public License Version 2 or later, as permitted under the
+ * OpenSceneGraph Public License Version 0.0 (exception 3) and the GNU
  * Lesser Public  License Version 2 (clause 3).
  **/
 
@@ -48,7 +48,7 @@ NAMESPACE_SIMDATA
 
 const Matrix3 Matrix3::ZERO(0,0,0,0,0,0,0,0,0);
 const Matrix3 Matrix3::IDENTITY(1,0,0,0,1,0,0,0,1);
-        
+
 
 Matrix3::Matrix3(const Vector3& col0, const Vector3& col1, const Vector3& col2) {
 	set(col0.x(), col1.x(), col2.x(),
@@ -56,15 +56,15 @@ Matrix3::Matrix3(const Vector3& col0, const Vector3& col1, const Vector3& col2) 
 	    col0.z(), col1.z(), col2.z());
 }
 
-bool Matrix3::isNaN() const { 
-	return simdata::isNaN(_mat[0][0]) || 
-	       simdata::isNaN(_mat[0][1]) || 
-	       simdata::isNaN(_mat[0][2]) || 
-	       simdata::isNaN(_mat[1][0]) || 
-	       simdata::isNaN(_mat[1][1]) || 
-	       simdata::isNaN(_mat[1][2]) || 
-	       simdata::isNaN(_mat[2][0]) || 
-	       simdata::isNaN(_mat[2][1]) || 
+bool Matrix3::isNaN() const {
+	return simdata::isNaN(_mat[0][0]) ||
+	       simdata::isNaN(_mat[0][1]) ||
+	       simdata::isNaN(_mat[0][2]) ||
+	       simdata::isNaN(_mat[1][0]) ||
+	       simdata::isNaN(_mat[1][1]) ||
+	       simdata::isNaN(_mat[1][2]) ||
+	       simdata::isNaN(_mat[2][0]) ||
+	       simdata::isNaN(_mat[2][1]) ||
 	       simdata::isNaN(_mat[2][2]);
 }
 
@@ -167,7 +167,7 @@ bool Matrix3::invert(const Matrix3& m, double tolerance) {
 
 #undef DET2
 
-#if 0 
+#if 0
 // osg inversion approach -- todo: test speed against cofactors
 bool Matrix3::invert(const Matrix3& mat)
 {
@@ -200,7 +200,7 @@ bool Matrix3::invert(const Matrix3& mat)
 							irow=j;
 							icol=k;
 						}
-					} else 
+					} else
 					if (ipiv[k] > 1) {
 						return false;
 					}
@@ -268,10 +268,10 @@ void Matrix3::makeRotate(double angle, double x, double y, double z) {
 }
 
 void Matrix3::makeRotate(const Quat& q) {
-	q.get(*this);    
+	q.get(*this);
 }
 
-void Matrix3::makeRotate(double angle1, const Vector3& axis1, 
+void Matrix3::makeRotate(double angle1, const Vector3& axis1,
                          double angle2, const Vector3& axis2,
                          double angle3, const Vector3& axis3)
 {
@@ -339,8 +339,8 @@ void Matrix3::serialize(Writer &writer) const {
 }
 
 void Matrix3::parseXML(const char* cdata) {
-	std::stringstream ss(cdata); 
-	std::string token; 
+	std::stringstream ss(cdata);
+	std::string token;
 	for (int irow = 0; irow < 3; ++irow) {
 		for (int icol = 0; icol < 3; ++icol) {
 			if (!(ss >> token)) {
@@ -356,55 +356,53 @@ void Matrix3::parseXML(const char* cdata) {
 
 int Matrix3::readBinary(const unsigned char * ptrBuf, int size)
 {
-   if (size != 9*sizeof(double))
-   {
-	printf("Matrix3::readBinary - buffer is incorrect size\n");
-	return 0;
-   }
-   memcpy((void*)&_mat[0][0], (void*)ptrBuf, sizeof(double)); ptrBuf += sizeof(double);
-   memcpy((void*)&_mat[0][1], (void*)ptrBuf, sizeof(double)); ptrBuf += sizeof(double);
-   memcpy((void*)&_mat[0][2], (void*)ptrBuf, sizeof(double)); ptrBuf += sizeof(double);
-   memcpy((void*)&_mat[1][0], (void*)ptrBuf, sizeof(double)); ptrBuf += sizeof(double);
-   memcpy((void*)&_mat[1][1], (void*)ptrBuf, sizeof(double)); ptrBuf += sizeof(double);
-   memcpy((void*)&_mat[1][2], (void*)ptrBuf, sizeof(double)); ptrBuf += sizeof(double);
-   memcpy((void*)&_mat[2][0], (void*)ptrBuf, sizeof(double)); ptrBuf += sizeof(double);
-   memcpy((void*)&_mat[2][1], (void*)ptrBuf, sizeof(double)); ptrBuf += sizeof(double);
-   memcpy((void*)&_mat[2][2], (void*)ptrBuf, sizeof(double)); ptrBuf += sizeof(double);
-   return 9*sizeof(double);
-   
+	if (size != 9*sizeof(double)) {
+		printf("Matrix3::readBinary - buffer is incorrect size\n");
+		return 0;
+	}
+	memcpy((void*)&_mat[0][0], (void*)ptrBuf, sizeof(double)); ptrBuf += sizeof(double);
+	memcpy((void*)&_mat[0][1], (void*)ptrBuf, sizeof(double)); ptrBuf += sizeof(double);
+	memcpy((void*)&_mat[0][2], (void*)ptrBuf, sizeof(double)); ptrBuf += sizeof(double);
+	memcpy((void*)&_mat[1][0], (void*)ptrBuf, sizeof(double)); ptrBuf += sizeof(double);
+	memcpy((void*)&_mat[1][1], (void*)ptrBuf, sizeof(double)); ptrBuf += sizeof(double);
+	memcpy((void*)&_mat[1][2], (void*)ptrBuf, sizeof(double)); ptrBuf += sizeof(double);
+	memcpy((void*)&_mat[2][0], (void*)ptrBuf, sizeof(double)); ptrBuf += sizeof(double);
+	memcpy((void*)&_mat[2][1], (void*)ptrBuf, sizeof(double)); ptrBuf += sizeof(double);
+	memcpy((void*)&_mat[2][2], (void*)ptrBuf, sizeof(double)); ptrBuf += sizeof(double);
+	return 9*sizeof(double);
 }
+
 int Matrix3::writeBinary(unsigned char * ptrBuf, int size)
 {
-   if (size != 9*sizeof(double))
-   {
-	printf("Matrix3::writeBinary - buffer is incorrect size\n");
-	return 0;
-   }
+	if (size != 9*sizeof(double)) {
+		printf("Matrix3::writeBinary - buffer is incorrect size\n");
+		return 0;
+	}
 
-   memcpy((void*)ptrBuf, (void*)&_mat[0][0], sizeof(double)); ptrBuf += sizeof(double);
-   memcpy((void*)ptrBuf, (void*)&_mat[0][1], sizeof(double)); ptrBuf += sizeof(double);
-   memcpy((void*)ptrBuf, (void*)&_mat[0][2], sizeof(double)); ptrBuf += sizeof(double);
-   memcpy((void*)ptrBuf, (void*)&_mat[1][0], sizeof(double)); ptrBuf += sizeof(double);
-   memcpy((void*)ptrBuf, (void*)&_mat[1][1], sizeof(double)); ptrBuf += sizeof(double);
-   memcpy((void*)ptrBuf, (void*)&_mat[1][2], sizeof(double)); ptrBuf += sizeof(double);
-   memcpy((void*)ptrBuf, (void*)&_mat[2][0], sizeof(double)); ptrBuf += sizeof(double);
-   memcpy((void*)ptrBuf, (void*)&_mat[2][1], sizeof(double)); ptrBuf += sizeof(double);
-   memcpy((void*)ptrBuf, (void*)&_mat[2][2], sizeof(double)); ptrBuf += sizeof(double);
-   return 9*sizeof(double);
+	memcpy((void*)ptrBuf, (void*)&_mat[0][0], sizeof(double)); ptrBuf += sizeof(double);
+	memcpy((void*)ptrBuf, (void*)&_mat[0][1], sizeof(double)); ptrBuf += sizeof(double);
+	memcpy((void*)ptrBuf, (void*)&_mat[0][2], sizeof(double)); ptrBuf += sizeof(double);
+	memcpy((void*)ptrBuf, (void*)&_mat[1][0], sizeof(double)); ptrBuf += sizeof(double);
+	memcpy((void*)ptrBuf, (void*)&_mat[1][1], sizeof(double)); ptrBuf += sizeof(double);
+	memcpy((void*)ptrBuf, (void*)&_mat[1][2], sizeof(double)); ptrBuf += sizeof(double);
+	memcpy((void*)ptrBuf, (void*)&_mat[2][0], sizeof(double)); ptrBuf += sizeof(double);
+	memcpy((void*)ptrBuf, (void*)&_mat[2][1], sizeof(double)); ptrBuf += sizeof(double);
+	memcpy((void*)ptrBuf, (void*)&_mat[2][2], sizeof(double)); ptrBuf += sizeof(double);
+	return 9*sizeof(double);
 }
 
 
 std::ostream& operator<< (std::ostream& os, const Matrix3& m)
 {
-	os << "["<<std::endl;
+	os << "[\n";
 	for (int irow=0; irow<3; ++irow) {
 		os << "\t";
 		for (int icol=0; icol<3; ++icol) {
 			os << std::setw(8) << m(irow, icol) << " ";
 		}
-		os << std::endl;
+		os << "\n";
 	}
-	os << "]";
+	os << ']';
 	return os;
 }
 

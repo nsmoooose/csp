@@ -1,18 +1,18 @@
 /* SimDataCSP: Data Infrastructure for Simulations
  * Copyright (C) 2002 Mark Rose <tm2@stm.lbl.gov>
- * 
+ *
  * This file is part of SimDataCSP.
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
@@ -25,6 +25,7 @@
 #include <SimData/Log.h>
 
 #include <iomanip>
+#include <iostream>
 #include <sstream>
 
 
@@ -36,12 +37,12 @@ DataArchive* DataArchive::defaultArchive = 0;
 
 /*
 long DataArchive::_getOffset() { return ftell(_f); } // for Python use only
-FP DataArchive::_filePointer() { 
+FP DataArchive::_filePointer() {
 	FP x;
 	x.f = _f;
 	x.name = _fn;
 	x.mode = isWrite() ? "wb" : "rb";
-	return x; 
+	return x;
 }
 */
 
@@ -217,7 +218,7 @@ DataArchive::DataArchive(std::string const &fn, bool read, bool chain) {
 		msg = msg + "Unable to open DataArchive '" + fn + "'";
 		if (read)
 			msg += " for reading.";
-		else 
+		else
 			msg += " for writing.";
 		throw IOError(msg.c_str());
 	}
@@ -307,7 +308,7 @@ const DataArchive::TableEntry* DataArchive::_lookupPath(ObjectID const &id, std:
 			if (msg == "") {
 				msg = "human-readable path unavailable";
 			}
-		} 
+		}
 		SIMDATA_LOG(LOG_ARCHIVE, LOG_ERROR, "DataArchive: path not found in '" << _fn << "' (" << msg << ") " + id.str());
 		throw IndexError(msg.c_str());
 	}
@@ -330,7 +331,7 @@ Object *DataArchive::_createObject(ObjectID classhash) {
 // if the object is found in the static cache, a pointer to the
 // cached object is returned.  otherwise, the object is loaded from the
 // archive on disk.  if the object is marked as static, it is added to
-// the static cache.  
+// the static cache.
 
 const LinkBase DataArchive::getObject(const Path& path, std::string const &path_str) {
 	ObjectID id = (ObjectID) path.getPath();
@@ -481,7 +482,7 @@ InterfaceProxy *DataArchive::getObjectInterface(std::string const &path) const {
 
 void DataArchive::setManager(DataManager *m) {
 	assert(_manager == 0 || m == 0);
-	_manager = m; 
+	_manager = m;
 }
 
 void DataArchive::dump() const {

@@ -41,7 +41,7 @@
 
 #include <string>
 #include <vector>
-#include <iostream>
+#include <iosfwd>
 #include <algorithm>
 #include <cassert>
 #include <cmath>

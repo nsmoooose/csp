@@ -70,13 +70,7 @@ protected:
 		_log = &log_;
 	}
 
-	std::ostream &log() {
-		if (_log) {
-			return _log->entry(LOG_ERROR, LOG_ALL);
-		} else {
-			return simdata::log().entry(LOG_ERROR, LOG_ALL);
-		}
-	}
+	std::ostream &log();
 
 	void _preCallback() {
 		if (_precallback != 0) _precallback();
@@ -86,16 +80,7 @@ protected:
 		if (_postcallback != 0) _postcallback();
 	}
 
-	void error(int skip, bool segv=false) {
-		if (_traced) return;
-		_traced = true;
-		if (segv) {
-			log() << "FATAL ERROR: segmentation fault." << std::endl;
-		}
-		_preCallback();
-		_backtrace(log(), skip);
-		_postCallback();
-	}
+	void error(int skip, bool segv=false);
 
 	virtual void _backtrace(std::ostream&, int skip) {}
 };
@@ -107,31 +92,7 @@ class Trace: public TraceBase {
 
 public:
 
-#if defined(__GNUC__) && !defined(__MINGW32__)
-
-	static void StackDump(std::ostream &out, int skip=0) {
-		void *trace[64];
-		char **messages = (char **)NULL;
-		int i, trace_size = 0;
-
-		trace_size = backtrace(trace, 64);
-		out << "CALL STACK BACKTRACE:" << std::endl;
-		messages = backtrace_symbols(trace, trace_size);
-		if (messages) {
-			for (i=skip; i<trace_size; ++i) {
-				out << "  " << messages[i] << std::endl;
-			}
-			free(messages);
-		} else {
-			out << "  unavailable!" << std::endl;
-		}
-	}
-
-#else
-
-	static void StackDump(std::ostream &, int=0) { }
-
-#endif // __GNUC__
+	static void StackDump(std::ostream &out, int skip=0);
 
 #if defined(__GNUC__) && !defined(__MINGW32__)
 

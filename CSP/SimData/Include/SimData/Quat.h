@@ -1,18 +1,18 @@
 /* SimData: Data Infrastructure for Simulations
  * Copyright (C) 2002, 2003 Mark Rose <tm2@stm.lbl.gov>
- * 
+ *
  * This file is part of SimData.
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
@@ -24,11 +24,11 @@
  *
  * A quaternion class.
  *
- * This source code was originally based on the Quat class of 
+ * This source code was originally based on the Quat class of
  * the OpenSceneGraph library, Copyright 1998-2003 Robert Osfield.
  * Source code from OpenSceneGraph is used here under the GNU General
- * Public License version 2 or later, as permitted under the 
- * OpenSceneGraph Public License version 0.0 (exception 3) and the 
+ * Public License version 2 or later, as permitted under the
+ * OpenSceneGraph Public License version 0.0 (exception 3) and the
  * GNU Lesser Public  License version 2 (clause 3).
  **/
 
@@ -42,7 +42,7 @@
 
 #include <string>
 #include <vector>
-#include <iostream>
+#include <iosfwd>
 #include <algorithm>
 #include <cmath>
 
@@ -54,7 +54,7 @@ NAMESPACE_SIMDATA
  * @brief Quaternion class using double-precision.
  *
  * Quaternions are four dimensional objects that form a compact
- * representation for rotations.  Many thorough treatments of 
+ * representation for rotations.  Many thorough treatments of
  * quaternions and their use in simulations can be readily found
  * on the web.
  *
@@ -99,8 +99,8 @@ public:
 	 *
 	 *  Specifiy the four real-valued components.
 	 */
-	inline Quat(double x_, double y_, double z_, double w_):  
-		_x(x_), _y(y_), _z(z_), _w(w_) 
+	inline Quat(double x_, double y_, double z_, double w_):
+		_x(x_), _y(y_), _z(z_), _w(w_)
 	{
 	}
 
@@ -126,7 +126,7 @@ public:
 	 *  @param angle3 the third rotation angle (right-handed) in radians.
 	 *  @param axis3 the third rotation axis.
 	 */
-	inline Quat(double angle1, const Vector3& axis1, 
+	inline Quat(double angle1, const Vector3& axis1,
 		    double angle2, const Vector3& axis2,
 		    double angle3, const Vector3& axis3)
 	{
@@ -148,7 +148,7 @@ public:
 #ifndef SWIG
 	/** Access a component by index (0,1,2,3 = x,y,z,w)
 	 */
-	inline double& operator [] (int i) { 
+	inline double& operator [] (int i) {
 		switch (i) {
 			case 0: return _x;
 			case 1: return _y;
@@ -161,7 +161,7 @@ public:
 
 	/** Get a component value by index (0,1,2,3 = x,y,z,w)
 	 */
-	inline double  operator [] (int i) const { 
+	inline double  operator [] (int i) const {
 		switch (i) {
 			case 0: return _x;
 			case 1: return _y;
@@ -201,21 +201,21 @@ public:
 		return !(*this == rhs);
 	}
 
-    	/** Test if the quaternion is zero.
+	/** Test if the quaternion is zero.
 	 *
 	 *  Zero rotations can generally be ignored in computations.
 	 */
-	bool zeroRotation() const { 
-		return _x==0.0 && _y==0.0 && _z==0.0 && _w==1.0; 
-	} 
+	bool zeroRotation() const {
+		return _x==0.0 && _y==0.0 && _z==0.0 && _w==1.0;
+	}
 
 
-	/// Multiply by scalar 
-        inline const Quat operator * (double rhs) const {
+	/// Multiply by scalar
+	inline const Quat operator * (double rhs) const {
 		return Quat(_x*rhs, _y*rhs, _z*rhs, _w*rhs);
 	}
 
-	/// Unary multiply by scalar 
+	/// Unary multiply by scalar
 	inline Quat& operator *= (double rhs) {
 		_x *= rhs; _y *= rhs; _z *= rhs; _w *= rhs;	
 		return *this;
@@ -241,77 +241,77 @@ public:
 		return *this;	
 	}
 
-	/// Divide by scalar 
+	/// Divide by scalar
 	inline const Quat operator / (double rhs) const {
 		return *this * (1.0/rhs);
 	}
 
-	/// Unary divide by scalar 
+	/// Unary divide by scalar
 	inline Quat& operator /= (double rhs) {
 		return *this *= (1.0 / rhs);
 	}
 
-	/// Binary divide 
+	/// Binary divide
 	inline const Quat operator/(const Quat& denom) const {
 		return *this * denom.inverse();
 	}
 
-	/// Unary divide 
+	/// Unary divide
 	inline Quat& operator/=(const Quat& denom) {
 		return *this *= denom.inverse();
 	}
 
-	/// Binary addition 
-        inline const Quat operator + (const Quat& rhs) const {
+	/// Binary addition
+	inline const Quat operator + (const Quat& rhs) const {
 		return Quat(_x+rhs._x, _y+rhs._y, _z+rhs._z, _w+rhs._w);
 	}
 
 	/// Unary addition
-        inline Quat& operator += (const Quat& rhs) {
+	inline Quat& operator += (const Quat& rhs) {
 		_x += rhs._x; _y += rhs._y; _z += rhs._z; _w += rhs._w;
 		return *this;
 	}
 
-        /// Binary subtraction 
-        inline const Quat operator - (const Quat& rhs) const {
+	/// Binary subtraction
+	inline const Quat operator - (const Quat& rhs) const {
 		return Quat(_x-rhs._x, _y-rhs._y, _z-rhs._z, _w-rhs._w);
 	}
 
-        /// Unary subtraction 
-        inline Quat& operator -= (const Quat& rhs) {
+	/// Unary subtraction
+	inline Quat& operator -= (const Quat& rhs) {
 		_x -= rhs._x; _y -= rhs._y; _z -= rhs._z; _w -= rhs._w;
 		return *this;
-        }
+	}
 
-        /// Negation operator - returns the negative of the quaternion.
-        inline const Quat operator - () const {
+	/// Negation operator - returns the negative of the quaternion.
+	inline const Quat operator - () const {
 		return Quat(-_x, -_y, -_z, -_w);
-        }
+	}
 
-        /// Length of the quaternion = sqrt(vec . vec)
-        double length() const {
+	/// Length of the quaternion = sqrt(vec . vec)
+	double length() const {
 		return sqrt(_x*_x + _y*_y + _z*_z + _w*_w);
-        }
+	}
 
-        /// Squared length of the quaternion = vec . vec
-        double length2() const {
+	/// Squared length of the quaternion = vec . vec
+	double length2() const {
 		return (_x*_x + _y*_y + _z*_z + _w*_w);
-        }
+	}
 
-        /// Get conjugate 
-        inline Quat conj() const { 
+	/// Get conjugate
+	inline Quat conj() const {
 		return Quat(-_x, -_y, -_z, _w);
-        }
+	}
 
 	/// Get conjugate
 	inline Quat operator ~() const {
 		return Quat(-_x, -_y, -_z, _w);
 	}
 
-        /// Multiplicative inverse method: q^(-1) = q^*/(q.q^*)
-        inline const Quat inverse () const {
+	/// Multiplicative inverse method: q^(-1) = q^*/(q.q^*)
+	inline const Quat inverse () const {
 		return conj() / length2();
-        }
+	}
 
 	/** Set this Quat to represent a rotation about an axis.
 	 *
@@ -320,15 +320,14 @@ public:
 	 *  @param y the y component of the rotation axis.
 	 *  @param z the z component of the rotation axis.
 	 */
-        void makeRotate(double angle, 
-                        double x, double y, double z);
+	void makeRotate(double angle, double x, double y, double z);
 
 	/** Set this Quat to represent a rotation about an axis.
 	 *
 	 *  @param angle the angle of rotation (right-handed) in radians.
 	 *  @param vec the rotation axis.
 	 */
-        void makeRotate(double angle, const Vector3& vec);
+	void makeRotate(double angle, const Vector3& vec);
 
 	/** Set this Quat to represent a product of three rotations.
 	 *
@@ -339,15 +338,15 @@ public:
 	 *  @param angle3 the third rotation angle (right-handed) in radians.
 	 *  @param axis3 the third rotation axis.
 	 */
-        void makeRotate(double angle1, const Vector3& axis1, 
-                        double angle2, const Vector3& axis2,
-                        double angle3, const Vector3& axis3);
+	void makeRotate(double angle1, const Vector3& axis1,
+	                double angle2, const Vector3& axis2,
+	                double angle3, const Vector3& axis3);
 
-        /** Set this Quat to represent a rotation that transforms vec1 to vec2.
+	/** Set this Quat to represent a rotation that transforms vec1 to vec2.
 	 */
-        void makeRotate(const Vector3& vec1, const Vector3& vec2);
+	void makeRotate(const Vector3& vec1, const Vector3& vec2);
 
-        /** Set this Quat to represent a rotation defined by Euler angles.
+	/** Set this Quat to represent a rotation defined by Euler angles.
 	 *
 	 *  @param roll The x-axis rotation angle (right-handed) in radians.
 	 *  @param pitch The y-axis rotation angle (right-handed) in radians.
@@ -356,35 +355,35 @@ public:
 	void makeRotate(double roll, double pitch, double yaw);
 
 	void getEulerAngles(double &roll, double &pitch, double &yaw) const;
-    
-        /** Return the angle and vector components represented by the quaternion.
-	 */
-        void getRotate(double& angle, double& x, double& y, double& z) const;
 
-        /** Return the angle and vector represented by the quaternion.
+	/** Return the angle and vector components represented by the quaternion.
 	 */
-        void getRotate(double& angle, Vector3& vec) const;
+	void getRotate(double& angle, double& x, double& y, double& z) const;
 
-        /** Spherical Linear Interpolation.
-	 *  As t goes from 0 to 1, the Quat object goes from "from" to "to". 
+	/** Return the angle and vector represented by the quaternion.
 	 */
-        void slerp(double t, const Quat& from, const Quat& to);
-        
-        /** Set quaternion to be equivalent to specified matrix.
-	 */
-        void set(const Matrix3& m);
+	void getRotate(double& angle, Vector3& vec) const;
 
-        /** Get the equivalent matrix for this quaternion.
+	/** Spherical Linear Interpolation.
+	 *  As t goes from 0 to 1, the Quat object goes from "from" to "to".
 	 */
-        void get(Matrix3& m) const;
+	void slerp(double t, const Quat& from, const Quat& to);
 
-        /** Get the equivalent matrix for this quaternion.
+	/** Set quaternion to be equivalent to specified matrix.
 	 */
-        Matrix3 getMatrix3() const {
+	void set(const Matrix3& m);
+
+	/** Get the equivalent matrix for this quaternion.
+	 */
+	void get(Matrix3& m) const;
+
+	/** Get the equivalent matrix for this quaternion.
+	 */
+	Matrix3 getMatrix3() const {
 		Matrix3 matrix;
 		get(matrix);
 		return matrix;
-        }
+	}
 	
 	/** Rotate a vector by this quaternion.
 	 */
@@ -405,10 +404,10 @@ public:
 #ifndef SWIG
 	/** Format to an output stream.
 	 */
-        friend inline std::ostream& operator << (std::ostream& output, const Quat& vec);
+	friend inline std::ostream& operator << (std::ostream& output, const Quat& vec);
 	/** Multiply a Quat by a scalar value on the left.
 	 */
-        friend inline Quat operator * (double lhs, const Quat& rhs) { return rhs*lhs; }
+	friend inline Quat operator * (double lhs, const Quat& rhs) { return rhs*lhs; }
 	/** Multiply a Quat by a vector on the right.
 	 */
 	friend inline Quat operator *(Quat const& lhs, Vector3 const& rhs) {
@@ -462,16 +461,6 @@ public:
 
 
 };	// end of class prototype
-
-
-inline std::ostream& operator << (std::ostream& output, const Quat& quat)
-{
-    output << "[" << quat._x
-	   << " " << quat._y
-	   << " " << quat._z
-	   << " " << quat._w << "]";
-    return output;
-}
 
 
 NAMESPACE_SIMDATA_END

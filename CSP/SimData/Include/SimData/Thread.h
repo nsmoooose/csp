@@ -34,8 +34,6 @@
 #include <SimData/Properties.h>
 #include <SimData/ThreadBase.h>
 #include <SimData/Ref.h>
-#include <iostream>
-#include <iomanip>
 #include <pthread.h>
 
 

@@ -30,14 +30,11 @@
 
 #include <string>
 #include <vector>
-#include <map>
 
 #include <SimData/Export.h>
 #include <SimData/HashUtility.h>
 #include <SimData/TaggedRecord.h>
 #include <SimData/Singleton.h>
-#include <SimData/Namespace.h>
-#include <SimData/ExceptionBase.h>
 
 
 NAMESPACE_SIMDATA
@@ -129,7 +126,7 @@ public:
 	
 	/** Get the interface registry singleton.
 	 */
-	static TaggedRecordRegistry &getTaggedRecordRegistry() {
+	static inline TaggedRecordRegistry &getTaggedRecordRegistry() {
 		return getInstance();
 	}
 
@@ -139,15 +136,7 @@ private:
 
 	/** Register a factory with the registry.
 	 */
-	void registerFactory(TaggedRecordFactoryBase *factory) {
-		assert(factory != 0);
-		assert(!hasFactory(factory->getName()));
-		SIMDATA_LOG(LOG_ALL, LOG_INFO, "Registering TaggedRecordFactory<" << factory->getName() << "> [" << factory->getId() << "]");
-		TaggedRecord::Id id = factory->getId();
-		HashT key(static_cast<uint32>(id), static_cast<uint32>(id>>32));
-		_map[factory->getName()] = factory;
-		_id_map[key] = factory;
-	}
+	void registerFactory(TaggedRecordFactoryBase *factory);
 
 	TaggedRecordRegistry() { }
 	

@@ -24,6 +24,8 @@
 
 
 #include "TankObject.h"
+#include "SystemsModel.h"
+#include "ObjectModel.h"
 
 
 using namespace std;

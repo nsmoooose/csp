@@ -47,8 +47,11 @@ SOURCES = [
 	'Quat.cpp',
 	'Random.cpp',
 	'Real.cpp',
+	'TaggedRecordRegistry.cpp',
 	'ThreadBase.cpp',
+	'ThreadLog.cpp',
 	'Timing.cpp',
+	'Trace.cpp',
 	'TypeAdapter.cpp',
 	'Vector3.cpp',
 	'Version.cpp',
@@ -62,7 +65,7 @@ INTERFACES = [env.SwigWrapper(cSimData_wrap)]
 
 shlib = env.SharedLibrary('#/SimData/SimData/cSimData', INTERFACES + SOURCES)
 build.MarkVersionSource(env, shlib)
-env.Alias(['shared', 'all'], shlib)
+env.Alias(['shared', 'all', 'simdata_shlib'], shlib)
 
 if not build.IsWindows(env):
 	stlib = env.StaticLibrary('#/SimData/SimData/SimData', SOURCES)

@@ -1,18 +1,18 @@
 /* SimData: Data Infrastructure for Simulations
  * Copyright (C) 2002, 2003 Mark Rose <tm2@stm.lbl.gov>
- * 
+ *
  * This file is part of SimData.
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
@@ -24,11 +24,11 @@
  *
  * A quaternion class.
  *
- * This source code was originally based on the Quat class of 
+ * This source code was originally based on the Quat class of
  * the OpenSceneGraph library, Copyright 1998-2003 Robert Osfield.
  * Source code from OpenSceneGraph is used here under the GNU General
- * Public License Version 2 or later, as permitted under the 
- * OpenSceneGraph Public License Version 0.0 (exception 3) and the GNU 
+ * Public License Version 2 or later, as permitted under the
+ * OpenSceneGraph Public License Version 0.0 (exception 3) and the GNU
  * Lesser Public  License Version 2 (clause 3).
  **/
 
@@ -62,8 +62,8 @@ void Quat::serialize(Writer &writer) const {
 }
 
 void Quat::parseXML(const char* cdata) {
-	std::stringstream ss(cdata); 
-	std::string token; 
+	std::stringstream ss(cdata);
+	std::string token;
 	double v[9];
 	for (int i = 0; i < 9; i++) {
 		if (!(ss >> token)) {
@@ -74,7 +74,7 @@ void Quat::parseXML(const char* cdata) {
 				throw ParseException("Expect either four (4) or  nine (9) elements in quaternion");
 			}
 		}
-    		v[i] = atof(token.c_str());
+  		v[i] = atof(token.c_str());
 	}
 	if (ss >> token) {
 		throw ParseException("Expect exactly four (4) or nine (9) elements in quaternion");
@@ -109,7 +109,7 @@ void Quat::makeRotate(double angle, const Vector3& vec) {
 }
 
 
-void Quat::makeRotate(double angle1, const Vector3& axis1, 
+void Quat::makeRotate(double angle1, const Vector3& axis1,
                       double angle2, const Vector3& axis2,
                       double angle3, const Vector3& axis3)
 {
@@ -117,7 +117,7 @@ void Quat::makeRotate(double angle1, const Vector3& axis1,
 	Quat q2; q2.makeRotate(angle2, axis2);
 	Quat q3; q3.makeRotate(angle3, axis3);
 	*this = q1*q2*q3;
-}                        
+}
 
 // Make a rotation Quat which will rotate vec1 to vec2
 // Generally take adot product to get the angle between these
@@ -191,7 +191,7 @@ void Quat::getEulerAngles(double &roll, double &pitch, double &yaw) const {
 		yaw = atan2(2.0*(_x*_y + _w*_z), w2+x2-y2-z2);
 	}
 }
-    
+
 void Quat::getRotate(double& angle, Vector3& vec) const {
 	getRotate(angle, vec.x(), vec.y(), vec.z());
 }
@@ -246,8 +246,8 @@ void Quat::slerp(double t, const Quat& from, const Quat& to) {
 	simdata::Quat quatTo(to);
 	cosomega = from._x*to._x + from._y*to._y + from._z*to._z + from._w*to._w;
 
-	if (cosomega < 0.0) { 
-		cosomega = -cosomega; 
+	if (cosomega < 0.0) {
+		cosomega = -cosomega;
 		quatTo.set(-to._x, -to._y, -to._z, -to._w);
 	}
 
@@ -257,7 +257,7 @@ void Quat::slerp(double t, const Quat& from, const Quat& to) {
 		scale_from = sin((1.0-t)*omega)*invsinomega;
 		scale_to = sin(t*omega)*invsinomega;
 	} else {
-		 // The ends of the vectors are very close  we can use 
+		 // The ends of the vectors are very close  we can use
 		 // simple linear interpolation
 		scale_from = 1.0 - t;
 		scale_to = t;
@@ -355,30 +355,37 @@ void Quat::get(Matrix3& m) const {
 
 int Quat::readBinary(const unsigned char * ptrBuf, int size)
 {
-  if (size != 4*sizeof(double))
-    {
-      printf("Trying to read a binary Quat with the wrong size\n");
-      return 0;
-    }
-  memcpy((void*)&_x, (void*)ptrBuf, sizeof(double)); ptrBuf += sizeof(double);
-  memcpy((void*)&_y, (void*)ptrBuf, sizeof(double)); ptrBuf += sizeof(double);
-  memcpy((void*)&_z, (void*)ptrBuf, sizeof(double)); ptrBuf += sizeof(double);
-  memcpy((void*)&_w, (void*)ptrBuf, sizeof(double)); ptrBuf += sizeof(double);
-  return 4*sizeof(double);
+	if (size != 4*sizeof(double)) {
+		printf("Trying to read a binary Quat with the wrong size\n");
+		return 0;
+	}
+	memcpy((void*)&_x, (void*)ptrBuf, sizeof(double)); ptrBuf += sizeof(double);
+	memcpy((void*)&_y, (void*)ptrBuf, sizeof(double)); ptrBuf += sizeof(double);
+	memcpy((void*)&_z, (void*)ptrBuf, sizeof(double)); ptrBuf += sizeof(double);
+	memcpy((void*)&_w, (void*)ptrBuf, sizeof(double)); ptrBuf += sizeof(double);
+	return 4*sizeof(double);
 }
 
 int Quat::writeBinary(unsigned char * ptrBuf, int size)
 {
-  if (size != 4*sizeof(double))
-    {
-      printf("Trying to write a binary Quat with the wrong size\n");
-      return 0;
-    }
-  memcpy((void*)ptrBuf, (void*)&_x, sizeof(double)); ptrBuf += sizeof(double);
-  memcpy((void*)ptrBuf, (void*)&_y, sizeof(double)); ptrBuf += sizeof(double);
-  memcpy((void*)ptrBuf, (void*)&_z, sizeof(double)); ptrBuf += sizeof(double);
-  memcpy((void*)ptrBuf, (void*)&_w, sizeof(double)); ptrBuf += sizeof(double);
-  return 4*sizeof(double);
+	if (size != 4*sizeof(double)) {
+		printf("Trying to write a binary Quat with the wrong size\n");
+		return 0;
+	}
+	memcpy((void*)ptrBuf, (void*)&_x, sizeof(double)); ptrBuf += sizeof(double);
+	memcpy((void*)ptrBuf, (void*)&_y, sizeof(double)); ptrBuf += sizeof(double);
+	memcpy((void*)ptrBuf, (void*)&_z, sizeof(double)); ptrBuf += sizeof(double);
+	memcpy((void*)ptrBuf, (void*)&_w, sizeof(double)); ptrBuf += sizeof(double);
+	return 4*sizeof(double);
+}
+
+inline std::ostream& operator << (std::ostream& output, const Quat& quat)
+{
+	output << "[" << quat._x
+	       << " " << quat._y
+	       << " " << quat._z
+	       << " " << quat._w << "]";
+	return output;
 }
 
 NAMESPACE_SIMDATA_END

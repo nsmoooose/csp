@@ -26,4 +26,8 @@ Compiling Demeter-CSP:
     under *nix:
 	aclocal; autoconf; ./configure; make
 
+	under *nix with scons (prefered):
+	Follow the directions in ../README (the CSP/ directory) for building CSPSim.
+	Demeter will be built automatically.
+
 

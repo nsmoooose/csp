@@ -30,8 +30,6 @@
 #ifndef __SIMDATA_COMPOSITE_H__
 #define __SIMDATA_COMPOSITE_H__
 
-#include <iostream>
-#include <cstdio>
 #include <vector>
 #include <SimData/Ref.h>
 #include <SimData/Log.h>

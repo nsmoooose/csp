@@ -1,17 +1,17 @@
 // Combat Simulator Project - FlightSim Demo
 // Copyright (C) 2002 The Combat Simulator Project
 // http://csp.sourceforge.net
-// 
+//
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
 // as published by the Free Software Foundation; either version 2
 // of the License, or (at your option) any later version.
-// 
+//
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU General Public License
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
@@ -27,12 +27,6 @@
 
 #include <vector>
 
-#include <osg/Node>
-#include <osg/Switch>
-#include <osg/Group>
-#include <osg/MatrixTransform>
-#include <osg/PositionAttitudeTransform>
-
 #include <SimData/Object.h>
 #include <SimData/Vector3.h>
 #include <SimData/Matrix3.h>
@@ -42,16 +36,26 @@
 #include <SimData/InterfaceRegistry.h>
 #include <SimData/osg.h>
 
-//FIXME: or not FIXME? see below, forward declaration
-#include "Animation.h"
-#include "SmokeEffects.h"
 
-//class Animation;
+class Animation;
 class AnimationCallback;
 class AnimationChannel;
+class Bus;
+
+namespace osg {
+	class Node;
+	class Group;
+	class Switch;
+	class MatrixTransform;
+	class PositionAttitudeTransform;
+}
 
 namespace osgText {
 	class Text;
+}
+
+namespace fx {
+	class SmokeTrailSystem;
 }
 
 
@@ -60,7 +64,7 @@ namespace osgText {
  *
  * One ObjectModel instance is created for each type of model, and shared by
  * many SceneModel instances.
- * 
+ *
  * TODO: add LOD support here.
  *
  */
@@ -98,8 +102,8 @@ public:
 	ObjectModel();
 	virtual ~ObjectModel();
 
-	osg::ref_ptr<osg::Node> getModel() { return m_Model.get(); }
-	osg::ref_ptr<osg::Node> getDebugMarkers() { return m_DebugMarkers.get(); }
+	osg::ref_ptr<osg::Node> getModel();
+	osg::ref_ptr<osg::Node> getDebugMarkers();
 	std::string getModelPath() const { return m_ModelPath.getSource(); }
 
 	const simdata::Vector3 &getAxis0() const { return m_Axis0; }
@@ -170,14 +174,11 @@ public:
 	SceneModel(simdata::Ref<ObjectModel> const & model);
 	
 	simdata::Ref<ObjectModel> getModel() { return m_Model; }
-	osg::Group* getRoot() { return m_Transform.get(); }
+	osg::Group* getRoot();
 
-	void setPositionAttitude(simdata::Vector3 const &position, simdata::Quat const &attitude) {
-		m_Transform->setAttitude(simdata::toOSG(attitude));
-		m_Transform->setPosition(simdata::toOSG(position));
-	}
+	void setPositionAttitude(simdata::Vector3 const &position, simdata::Quat const &attitude);
 
-	void bindAnimationChannels(Bus::Ref);
+	void bindAnimationChannels(simdata::Ref<Bus>);
 
 	void setSmokeEmitterLocation(std::vector<simdata::Vector3> const &sel);
 	bool addSmoke();

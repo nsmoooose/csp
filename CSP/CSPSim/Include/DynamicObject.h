@@ -28,13 +28,15 @@
 #include "DataRecorder.h"
 #include "Controller.h"
 #include "InputInterface.h"
-#include "ObjectModel.h"
-#include "SystemsModel.h"
 #include "TerrainObject.h"
 
 #include <SimCore/Battlefield/SimObject.h>
 
 class NetworkMessage;
+class PhysicsModel;
+class SystemsModel;
+class ObjectModel;
+class SceneModel;
 
 
 namespace osgParticle {
@@ -55,8 +57,9 @@ class DynamicObject: public SimObject, public InputInterface
 	struct SystemsModelStore {
 		unsigned int id;
 		simdata::Ref<SystemsModel> model;
-		SystemsModelStore(): id(0) {}
-		SystemsModelStore(unsigned int id_, simdata::Ref<SystemsModel> model_): id(id_), model(model_) {}
+		SystemsModelStore();
+		~SystemsModelStore();
+		SystemsModelStore(unsigned int id_, simdata::Ref<SystemsModel> model_);
 	};
 
 	static std::list<SystemsModelStore> SystemsModelCache;
@@ -90,9 +93,9 @@ private:
 	}
 
 	void cacheSystemsModel();
-	SystemsModel::Ref getCachedSystemsModel();
+	simdata::Ref<SystemsModel> getCachedSystemsModel();
 	void selectVehicleCore();
-	void setVehicleCore(SystemsModel::Ref);
+	void setVehicleCore(simdata::Ref<SystemsModel>);
 
 
 protected:
@@ -111,9 +114,9 @@ public:
 	virtual ~DynamicObject();
 
 	// model and scene related functions
-	simdata::Ref<SceneModel> getSceneModel() { return m_SceneModel; }
-	simdata::Ref<ObjectModel> getModel() const { return m_Model; }
-	simdata::Ref<SystemsModel> getSystemsModel() const { return m_SystemsModel; }
+	simdata::Ref<SceneModel> getSceneModel();
+	simdata::Ref<ObjectModel> getModel() const;
+	simdata::Ref<SystemsModel> getSystemsModel() const;
 	virtual void createSceneModel();
 	virtual void destroySceneModel();
 	osg::Node* getOrCreateModelNode();
@@ -121,7 +124,7 @@ public:
 
 	virtual void getInfo(std::vector<std::string> &info) const;
 
-	void setController(Controller * Controller) { 
+	void setController(Controller * Controller) {
 		m_Controller = Controller;
 	}
 
@@ -141,7 +144,7 @@ public:
 
 	bool isNearGround();
 
-	// The object name holds an identifier string for in-game display.  It is not 
+	// The object name holds an identifier string for in-game display.  It is not
 	// intended for unique object identification. (e.g. "Callsign", Cowboy11, T-62)
 	void setObjectName(const std::string name) { m_ObjectName = name; }
 	std::string getObjectName() const { return m_ObjectName; }

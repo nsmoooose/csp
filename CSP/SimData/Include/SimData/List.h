@@ -43,6 +43,8 @@ NAMESPACE_SIMDATA
 class ListBase: public BaseType {
 public:
 	virtual ~ListBase() {}
+protected:
+	std::string _asString(int size) const;
 };
 
 
@@ -91,9 +93,7 @@ void List<T>::serialize(Writer &writer) const {
 
 template<typename T>
 std::string List<T>::asString() const {
-	std::stringstream ss;
-	ss << "<simdata::List[" << size() << ">";
-	return ss.str();
+	return _asString(size());
 }
 
 

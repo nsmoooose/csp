@@ -1,17 +1,17 @@
 // Combat Simulator Project - FlightSim Demo
 // Copyright (C) 2002 The Combat Simulator Project
 // http://csp.sourceforge.net
-// 
+//
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
 // as published by the Free Software Foundation; either version 2
 // of the License, or (at your option) any later version.
-// 
+//
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU General Public License
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
@@ -21,7 +21,7 @@
  * @file CSPSim.h
  *
  * Provides CSPSim, the primary simulation engine.
- * 
+ *
  */
 
 /**
@@ -50,19 +50,16 @@
 #include <SimData/Ref.h>
 #include <SimData/ScopedPointer.h>
 #include <SimData/Date.h>
-#include <SimData/DataManager.h>
-
-#include "Atmosphere.h"
-#include "InputEvent.h"
 
 #include <osg/ref_ptr>
 
-#include <SDL/SDL_joystick.h>
-
-#include <Producer/RenderSurface>
-
 struct SDL_Surface;
+typedef struct _SDL_Joystick SDL_Joystick;
 
+class Atmosphere;
+//--namespace Producer { class RenderSurface; }
+namespace simdata { class DataManager; }
+class InputEvent;
 class PyShell;
 class DynamicObject;
 class TerrainObject;
@@ -90,7 +87,7 @@ class CSPSim
 {
 public:
 	static CSPSim *theSim;
-    
+
 	CSPSim();
 	virtual ~CSPSim();
 	virtual void init();
@@ -122,9 +119,9 @@ public:
 	void endConsole();
 	bool isPaused() { return m_Paused; }
 
-	simdata::DataManager & getDataManager() { return m_DataManager; }
+	simdata::DataManager & getDataManager() { return *m_DataManager; }
 
-	Atmosphere const * getAtmosphere() const { return &m_Atmosphere; }
+	Atmosphere const * getAtmosphere() const { return m_Atmosphere.get(); }
 
 	simdata::Ref<PyShell> getShell() const;
 
@@ -142,7 +139,7 @@ protected:
 private:
 
 	SDL_Surface *m_SDLScreen;
-	SDL_Joystick *m_SDLJoystick;
+	SDL_Joystick* m_SDLJoystick;
 
 	BaseScreen *m_CurrentScreen;
 	BaseScreen *m_PrevScreen;
@@ -188,14 +185,14 @@ private:
 	// TODO the terrain will eventually be encapsulated in a Theater class
 	simdata::Ref<Theater> m_Theater;
 	simdata::Ref<TerrainObject> m_Terrain;
-	simdata::DataManager m_DataManager;
-	Atmosphere m_Atmosphere;
+	simdata::ScopedPointer<simdata::DataManager> m_DataManager;
+	simdata::ScopedPointer<Atmosphere> m_Atmosphere;
 
 	//PyObject* m_Console;
 	osg::ref_ptr<PyConsole> m_Console;
 	simdata::Ref<PyShell> m_Shell;
 	
-	/** 
+	/**
 	  * The network layer
 	  */
 	NetworkMessenger * m_NetworkMessenger;
@@ -203,9 +200,9 @@ private:
 	NetworkNode * m_localNode;
 	bool b_networkingFlag;
 	
-	osg::ref_ptr<Producer::RenderSurface> m_RenderSurface;
+	//--osg::ref_ptr<Producer::RenderSurface> m_RenderSurface;
 
-	InputEvent m_InputEvent;
+	simdata::ScopedPointer<InputEvent> m_InputEvent;
 };
 
 #endif // __CSPSIM_H__

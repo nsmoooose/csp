@@ -18,24 +18,19 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
-// This file is based on the logging implementation in FlightGear
-// (SimGear), originally ported to CSP and modified by Wolverine.
-//
-// Stream based logging mechanism.
-//
-// Written by Bernie Bright, 1998
-//
-// Copyright (C) 1998  Bernie Bright - bbright@c031.aone.net.au
-//
-// Source code from Bernie Bright's LogStream library is used
-// here under the turms of the GNU General Public License
-// version 2 or later, as allowed by the GNU Library General
-// Public License Version 2 (clause 3).
+// The logging code originally used in SimData was based on code
+// from SimGear (modified by Wolverine), which in turn was based
+// on a stream library by Bernie Bright.  The vast majority of the
+// current logging code has been reimplemented from scratch and
+// bears little resemblance to the earlier approach.  This notice
+// will be removed eventually.
 
 
 #include <SimData/LogStream.h>
 #include <SimData/Log.h>
 
+#include <iostream>
+#include <fstream>
 #include <cstdlib>
 #include <map>
 
@@ -62,6 +57,7 @@ void LogStream::initFromEnvironment(const char *log_file, const char *log_priori
 }
 
 std::ostream & LogStream::entry(int priority, int category, const char *file, int line) {
+	static std::ostream m_null(NULL);
 	if (!isNoteworthy(priority, category)) return m_null;
 	if (!m_stream) setOutput(std::cerr);
 	std::ostream &out(*m_stream);
@@ -96,6 +92,49 @@ LogStream *LogStream::getOrCreateNamedLog(const std::string &name) {
 	return iter->second;
 }
 
+void LogStream::_close() {
+	if (m_fstream != NULL) {
+		m_fstream->close();
+		delete m_fstream;
+		m_fstream = NULL;
+	}
+	m_stream = NULL;
+}
+
+void LogStream::setOutput(std::ofstream& out_) {
+	_close();
+	m_fstream = &out_;
+	m_stream = &out_;
+}
+
+void LogStream::setOutput(std::string const &filename) {
+	_close();
+	m_fstream = new std::ofstream(filename.c_str());
+	assert(m_fstream != NULL);
+	m_stream = m_fstream;
+}
+
+void fatal(std::string const &msg) {
+	std::cerr << "SIMDATA fatal error:" << std::endl;
+	std::cerr << msg << std::endl;
+	// use abort() instead of exit() to trigger the SIGABRT handler (if installed)
+	// and generate a stack trace.
+	::abort();
+}
+
+LogStream *_makeDefaultLog() {
+	return new LogStream(std::cerr);
+}
+
+// not really the right place for this, but convenient.
+void _log_reference_count_error(int count, int pointer) {
+	SIMDATA_LOG(LOG_ALL, LOG_ERROR, "simdata::ReferencedBase(" << std::hex << pointer << ") deleted with non-zero reference count (" << count << "): memory corruption possible.");
+}
+
+// not really the right place for this, but convenient.
+void _log_reference_conversion_error() {
+	SIMDATA_LOG(LOG_ALL, LOG_ERROR, "simdata::Ref() assignment: incompatible types (dynamic cast failed).");
+}
 
 NAMESPACE_SIMDATA_END
 

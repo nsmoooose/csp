@@ -37,7 +37,7 @@
 #include <SimData/hash_map.h>
 #include <SimData/Namespace.h>
 
-#include <iostream>
+#include <iosfwd>
 #include <string>
 
 

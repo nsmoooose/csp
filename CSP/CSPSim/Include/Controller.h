@@ -26,8 +26,9 @@
 #ifndef __CONTROLLER_H__
 #define __CONTROLLER_H__
 
-#include <Message.h>
 #include <System.h>
+
+class Message;
 
 
 /** Interface for controlling dynamic objects.

@@ -20,6 +20,8 @@
 #include <SimNet/RecordCodec.h>
 #include <SimData/TaggedRecordRegistry.h>
 
+#include <iostream>
+
 
 namespace simnet {
 

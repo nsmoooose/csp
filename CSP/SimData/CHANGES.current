@@ -5,6 +5,13 @@ Version 0.4.0 (in progress)
  * Fix import SimData statements in Compile.py and Parse.py to
    find the local SimData package.
 
+ * Clean up headers by removing bloated/unnecessary includes and
+   moving some large methods to the .cpp files.  Simplified the
+   logging code slightly.  Miscellaneous formating/indenting cleanups.
+
+==>WINDOWS USERS add TaggedRecordRegistry.cpp, ThreadLog.cpp, and
+   Trace.cpp to the project.
+
 2004-09-30: onsight
  * Added explicit casts to silence msvc warnings in GeoPos.cpp.
 

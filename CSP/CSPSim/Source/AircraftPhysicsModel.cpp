@@ -1,16 +1,16 @@
 // Copyright (C) 2002 The Combat Simulator Project
 // http://csp.sourceforge.net
-// 
+//
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
 // as published by the Free Software Foundation; either version 2
 // of the License, or (at your option) any later version.
-// 
+//
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU General Public License
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
@@ -21,6 +21,7 @@
  *
  **/
 #include "AircraftPhysicsModel.h"
+#include "Atmosphere.h"
 #include "BaseDynamics.h"
 #include "Collision.h"
 #include "CSPSim.h"
@@ -39,7 +40,7 @@ AircraftPhysicsModel::AircraftPhysicsModel():
 		setNumericalMethod(new RKCK_VS_VO(this));
 }
 
-Vectord const &AircraftPhysicsModel::f(double x, Vectord &y) {   
+Vectord const &AircraftPhysicsModel::f(double x, Vectord &y) {
 	// dot(p,v,w,q) = f(p,v,w,q)
 
 	// bind(y,p,v,w,q)
@@ -89,14 +90,14 @@ Vectord const &AircraftPhysicsModel::f(double x, Vectord &y) {
 	
 
 	// angular acceleration body: calculate Iw' = M - w^Iw
-	m_AngularAccelBody = b_InertiaInverse->value() * 
+	m_AngularAccelBody = b_InertiaInverse->value() *
 	                     (m_MomentsBody - (m_AngularVelocityBody^(b_Inertia->value() * m_AngularVelocityBody)));
 	
 	// quaternion derivative and w in body coordinates: q' = 0.5 * q * w
 	simdata::Quat qprim = 0.5 * m_Attitude * m_AngularVelocityBody;
 	
 	// p' = v
-	m_dy[0] = y[3]; m_dy[1] = y[4]; m_dy[2] = y[5]; 
+	m_dy[0] = y[3]; m_dy[1] = y[4]; m_dy[2] = y[5];
 	// v'
 	m_dy[3] = m_LinearAccelBody.x(); m_dy[4] = m_LinearAccelBody.y(); m_dy[5] = m_LinearAccelBody.z();
 	// w'
@@ -172,7 +173,7 @@ void AircraftPhysicsModel::doSimStep(double dt) {
 
 		std::for_each(m_Dynamics.begin(),m_Dynamics.end(),PostSimulationStep(dtlocal));
 
-		// convert position, linear velocity and angular velocity from body to local coordinates 
+		// convert position, linear velocity and angular velocity from body to local coordinates
 		physicsBodyToLocal();
 
 		// update attitude and normalize the quaternion

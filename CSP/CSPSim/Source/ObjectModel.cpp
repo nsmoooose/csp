@@ -1,17 +1,17 @@
 // Combat Simulator Project - FlightSim Demo
 // Copyright (C) 2002 The Combat Simulator Project
 // http://csp.sourceforge.net
-// 
+//
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
 // as published by the Free Software Foundation; either version 2
 // of the License, or (at your option) any later version.
-// 
+//
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU General Public License
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
@@ -27,6 +27,7 @@
 
 #include "ObjectModel.h"
 #include "Animation.h"
+#include "SmokeEffects.h"
 #include "Config.h"
 
 #include <osgDB/FileUtils>
@@ -44,7 +45,11 @@
 #include <osg/Depth>
 #include <osgText/Text>
 #include <osg/PolygonOffset>
-
+#include <osg/Node>
+#include <osg/Switch>
+#include <osg/Group>
+#include <osg/MatrixTransform>
+#include <osg/PositionAttitudeTransform>
 
 #include <SimCore/Util/Log.h>
 #include <SimData/FileUtility.h>
@@ -71,7 +76,7 @@ SIMDATA_REGISTER_INTERFACE(ObjectModel)
  * Animation binding helper that can be attached to model
  * nodes (using osg::Object user data).  When the model
  * prototype is cloned, these bindings help to connect the
- * new animation transform nodes to the correct animation 
+ * new animation transform nodes to the correct animation
  * callback.
  */
 class AnimationBinding: public osg::Referenced {
@@ -136,7 +141,7 @@ public:
 			AnimationsMap::iterator i = m_AnimationsMap.find(id);
 			AnimationsMap::const_iterator i_end = m_AnimationsMap.end();
 			if (i != i_end) {
-				CSP_LOG(APP, DEBUG, "FOUND"); 
+				CSP_LOG(APP, DEBUG, "FOUND");
 				node.setDataVariance(osg::Object::DYNAMIC);
 				AnimationBinding* animation_binding = new AnimationBinding(i->second.get());
 				node.setUserData(animation_binding);
@@ -153,19 +158,19 @@ public:
 
 
 
-/** 
+/**
  * Visit nodes, applying anisotropic filtering to textures.
  */
 class TrilinearFilterVisitor: public osg::NodeVisitor
 {
 	float m_MaxAnisotropy;
 public:
-	TrilinearFilterVisitor(float MaxAnisotropy=16.0f): 
+	TrilinearFilterVisitor(float MaxAnisotropy=16.0f):
 		osg::NodeVisitor(osg::NodeVisitor::TRAVERSE_ALL_CHILDREN),
 		m_MaxAnisotropy(MaxAnisotropy) {
 	}
 
-	virtual void apply(osg::Node& node) { 
+	virtual void apply(osg::Node& node) {
 	    osg::StateSet* ss = node.getStateSet();
 		filter(ss);
 		traverse(node);
@@ -360,8 +365,8 @@ void ObjectModel::loadModel() {
 	    m_Offset != simdata::Vector3::ZERO) {
 		// find third axis and make the transform matrix
 		simdata::Vector3 axis2 = m_Axis0 ^ m_Axis1;
-		simdata::Matrix3 o(m_Axis0.x(), m_Axis0.y(), m_Axis0.z(), 
-		                   m_Axis1.x(), m_Axis1.y(), m_Axis1.z(), 
+		simdata::Matrix3 o(m_Axis0.x(), m_Axis0.y(), m_Axis0.z(),
+		                   m_Axis1.x(), m_Axis1.y(), m_Axis1.z(),
 		                   axis2.x(), axis2.y(), axis2.z());
 		o = o.getInverse() * m_Scale;
 		osg::Matrix model_orientation;
@@ -398,7 +403,7 @@ void ObjectModel::loadModel() {
 	if (m_Effect == "SpecularHighlights") {
 		m_Model = addSpecularHighlights(m_Model.get());
 	};
-     
+
 	m_DebugMarkers = new osg::Switch;
 	// XXX should reuse a single static stateset?
 	m_DebugMarkers->getOrCreateStateSet()->setMode(GL_LIGHTING, osg::StateAttribute::OFF);
@@ -417,13 +422,13 @@ void ObjectModel::loadModel() {
 
 	// XXX: there is a really weird bug on vs with the optimizer:
 	// 1) it rarely appears in the release built (never when called from this exact line)
-	// 2) it appears in the debug built systematically on the second times the 
-	//    program is run but only if a few seconds separate the 2 runs. Wait 
-	//	  for 5 minutes or so (or run another process) and the bug will not occur 
+	// 2) it appears in the debug built systematically on the second times the
+	//    program is run but only if a few seconds separate the 2 runs. Wait
+	//	  for 5 minutes or so (or run another process) and the bug will not occur
 	//    (thread related?).
-	// 3) I haven't noticed the bug in the debug built when the optimizer is run in this 
+	// 3) I haven't noticed the bug in the debug built when the optimizer is run in this
 	//    line (like for the release built) but called it 10 lines above and it segfaults.
-	// 4) The bug only occurs when CSP is run from command line or clicking CSPSim.py; 
+	// 4) The bug only occurs when CSP is run from command line or clicking CSPSim.py;
 	//    it never occurs when running csp in debug mode from the ide.
 	// 5) I'm unable to trace it :)
 	CSP_LOG(APP, DEBUG, "LoadModel: Optimizer run");
@@ -448,7 +453,7 @@ void ObjectModel::addContactMarkers() {
 }
 
 void ObjectModel::showContactMarkers(bool on) {
-	if (on) 
+	if (on)
 		m_ContactMarkers->setNodeMask(0xffffffff);
 	else
 		m_ContactMarkers->setNodeMask(0x0);
@@ -456,6 +461,14 @@ void ObjectModel::showContactMarkers(bool on) {
 
 bool ObjectModel::getMarkersVisible() const {
 	return (m_ContactMarkers->getNodeMask() != 0x0);
+}
+
+osg::ref_ptr<osg::Node> ObjectModel::getModel() {
+	return m_Model.get();
+}
+
+osg::ref_ptr<osg::Node> ObjectModel::getDebugMarkers() {
+	return m_DebugMarkers.get();
 }
 
 /**
@@ -467,8 +480,8 @@ bool ObjectModel::getMarkersVisible() const {
 class ModelCopy: public osg::CopyOp {
 public:
 	typedef std::vector<osg::ref_ptr<AnimationCallback> > AnimationCallbackVector;
-	inline AnimationCallbackVector const &getAnimationCallbacks() const { 
-		return m_AnimationCallbacks; 
+	inline AnimationCallbackVector const &getAnimationCallbacks() const {
+		return m_AnimationCallbacks;
 	}
 	virtual osg::Node* operator() (const osg::Node* node) const {
 		osg::Referenced const *data = node->getUserData();
@@ -567,11 +580,11 @@ void SceneModel::setSmokeEmitterLocation(std::vector<simdata::Vector3> const &se
 }
 
 bool SceneModel::addSmoke() {
-	if (m_SmokeTrails.valid()) 
+	if (m_SmokeTrails.valid())
 		return true;
 	else {
 		if (!m_SmokeEmitterLocation.empty()) {
-			std::vector<simdata::Vector3>::const_iterator iEnd = m_SmokeEmitterLocation.end(); 
+			std::vector<simdata::Vector3>::const_iterator iEnd = m_SmokeEmitterLocation.end();
 			for (std::vector<simdata::Vector3>::iterator i = m_SmokeEmitterLocation.begin(); i != iEnd; ++i) {
 				fx::SmokeTrail *trail = new fx::SmokeTrail();
 				trail->setEnabled(false);
@@ -633,7 +646,7 @@ void SceneModel::bindAnimationChannels(Bus::Ref bus) {
 	if (bus.valid()) {
 		int index, n = m_AnimationCallbacks.size();
 		for (index = 0; index < n; ++index) {
-			std::string name = m_AnimationCallbacks[index]->getChannelName(); 
+			std::string name = m_AnimationCallbacks[index]->getChannelName();
 			simdata::Ref<const DataChannelBase> channel = bus->getChannel(name, false);
 			if (!channel.valid()) {
 				CSP_LOG(OBJECT, ERROR, "bindAnimationChannels: animation channel '" << name << "' not found; skipping");
@@ -651,4 +664,12 @@ void SceneModel::bindAnimationChannels(Bus::Ref bus) {
 	}
 }
 
+void SceneModel::setPositionAttitude(simdata::Vector3 const &position, simdata::Quat const &attitude) {
+	m_Transform->setAttitude(simdata::toOSG(attitude));
+	m_Transform->setPosition(simdata::toOSG(position));
+}
+
+osg::Group* SceneModel::getRoot() {
+	return m_Transform.get();
+}
 

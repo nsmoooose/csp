@@ -29,6 +29,8 @@
 #include <TerrainObject.h>
 #include <CSPSim.h>
 #include <KineticsChannels.h>
+#include <ObjectModel.h>
+#include <SystemsModel.h>
 
 #include <SimCore/Util/Log.h>
 #include <SimData/Quat.h>
@@ -36,6 +38,9 @@
 #include <SimNet/Networking.h>
 #include <SimNet/NetworkMessage.h>
 #include <SimNet/NetworkMessenger.h>
+
+#include <osg/Group>
+
 
 SIMDATA_REGISTER_INTERFACE(DynamicObject)
 
@@ -425,6 +430,25 @@ void DynamicObject::putUpdateMessage(NetworkMessage* message) {
 	//  b_Attitude->value().serialize(reader);
 }
 
+simdata::Ref<SceneModel> DynamicObject::getSceneModel() {
+	return m_SceneModel;
+}
 
+simdata::Ref<ObjectModel> DynamicObject::getModel() const {
+	return m_Model;
+}
+
+simdata::Ref<SystemsModel> DynamicObject::getSystemsModel() const {
+	return m_SystemsModel;
+}
+
+DynamicObject::SystemsModelStore::SystemsModelStore(): id(0) {
+}
+
+DynamicObject::SystemsModelStore::SystemsModelStore(unsigned int id_, simdata::Ref<SystemsModel> model_): id(id_), model(model_) {
+}
+
+DynamicObject::SystemsModelStore::~SystemsModelStore() {
+}
 
 

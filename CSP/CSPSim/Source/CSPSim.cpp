@@ -33,6 +33,8 @@
 #endif
 
 #include "CSPSim.h"
+
+#include "Atmosphere.h"
 #include "Config.h"
 #include "ConsoleCommands.h"
 #include "DynamicObject.h"
@@ -40,6 +42,7 @@
 #include "Exception.h"
 #include "GameScreen.h"
 #include "HID.h"
+#include "InputEvent.h"
 #include "MenuScreen.h"
 #include "LogoScreen.h"
 #include "Profile.h"
@@ -74,9 +77,12 @@
 #include <osg/Timer>
 #include <osg/Notify>
 #include <osgDB/FileUtils>
+//--#include <Producer/RenderSurface>
 
 #include <SDL/SDL.h>
 #include <SDL/SDL_audio.h>
+#include <SDL/SDL_joystick.h>
+
 
 #include <Demeter/DemeterException.h>
 
@@ -122,7 +128,12 @@ SDLWave  m_audioWave;
  */
 CSPSim *CSPSim::theSim = 0;
 
-CSPSim::CSPSim() {
+CSPSim::CSPSim():
+	m_DataManager(new simdata::DataManager),
+	m_Atmosphere(new Atmosphere),
+	//--m_RenderSurface(new Producer::RenderSurface),
+	m_InputEvent(new InputEvent)
+{
 	if (theSim == 0) {
 		theSim = this;
 	}
@@ -232,7 +243,7 @@ void CSPSim::togglePause() {
 	m_Paused = !m_Paused;
 }
 
-OpenThreads::Barrier bar;
+//OpenThreads::Barrier bar;
 
 void CSPSim::init()
 {
@@ -260,7 +271,7 @@ void CSPSim::init()
 		try {
 			simdata::DataArchive *sim = new simdata::DataArchive(archive_file.c_str(), 1);
 			assert(sim);
-			m_DataManager.addArchive(sim);
+			m_DataManager->addArchive(sim);
 		}
 		catch (simdata::Exception &e) {
 			CSP_LOG(APP, ERROR, "Error opening data archive " << archive_file);
@@ -274,10 +285,10 @@ void CSPSim::init()
 			::exit(1);
 		}
 
-		//--m_RenderSurface.setWindowRectangle(-1, -1, m_ScreenWidth, m_ScreenHeight);
-		//--m_RenderSurface.setWindowName("CSPSim");
-		//--m_RenderSurface.fullScreen(0);
-		//--m_RenderSurface.realize();
+		//--m_RenderSurface->setWindowRectangle(-1, -1, m_ScreenWidth, m_ScreenHeight);
+		//--m_RenderSurface->setWindowName("CSPSim");
+		//--m_RenderSurface->fullScreen(0);
+		//--m_RenderSurface->realize();
 		SDL_WM_SetCaption("CSPSim", "");
 
 		// put up Logo screen then do rest of initialization
@@ -301,7 +312,7 @@ void CSPSim::init()
 		// should run in its own thread
 		logoScreen.onRender();
 		SDL_GL_SwapBuffers();
-		//--m_RenderSurface.swapBuffers();
+		//--m_RenderSurface->swapBuffers();
 		logoScreen.run();
 
 		m_Clean = false;
@@ -320,7 +331,7 @@ void CSPSim::init()
 		CSP_LOG(APP, DEBUG, "INIT:: theater");
 
 		std::string theater = g_Config.getPath("Testing", "Theater", "sim:theater.balkan", false);
-		m_Theater = m_DataManager.getObject(theater.c_str());
+		m_Theater = m_DataManager->getObject(theater.c_str());
 		assert(m_Theater.valid());
 		m_Terrain = m_Theater->getTerrain();
 		assert(m_Terrain.valid());
@@ -331,7 +342,7 @@ void CSPSim::init()
 		// to be updated for motion within a given theater.
 		double lat = m_Terrain->getCenter().latitude();
 		double lon = m_Terrain->getCenter().longitude();
-		m_Atmosphere.setPosition(lat, lon);
+		m_Atmosphere->setPosition(lat, lon);
 		
 		logoScreen.onUpdate(0.0);
 		logoScreen.onRender();
@@ -386,7 +397,7 @@ void CSPSim::init()
 		CSP_LOG(APP, DEBUG, "INIT:: test vehicle");
 
 		std::string vehicle = g_Config.getPath("Testing", "Vehicle", "sim:vehicles.aircraft.m2k", false);
-		simdata::Ref<AircraftObject> ao = m_DataManager.getObject(vehicle.c_str());
+		simdata::Ref<AircraftObject> ao = m_DataManager->getObject(vehicle.c_str());
 		assert(ao.valid());
 
 		//simdata::LLA position;
@@ -449,7 +460,7 @@ void CSPSim::init()
 		DispatchMessageHandler * dispatchMessageHandler = new DispatchMessageHandler();
 		dispatchMessageHandler->setLocalAddress( m_localNode->getAddress().getAddress().s_addr );
 		dispatchMessageHandler->setLocalPort( localMessagePort );
-		dispatchMessageHandler->setDataManager(m_DataManager);
+		dispatchMessageHandler->setDataManager(*m_DataManager);
 		dispatchMessageHandler->setBattlefield(getBattlefield());
 		m_NetworkMessenger->registerMessageHandler(dispatchMessageHandler);
 
@@ -558,8 +569,8 @@ void CSPSim::run()
 
 	initTime(date);
 	
-	m_Atmosphere.setDate(date);
-	m_Atmosphere.reset();
+	m_Atmosphere->setDate(date);
+	m_Atmosphere->reset();
 
 	try
 	{
@@ -581,7 +592,7 @@ void CSPSim::run()
 			if (low_priority > 0.33) {
 				switch (idx++) {
 					case 0:
-						m_Atmosphere.update(low_priority);
+						m_Atmosphere->update(low_priority);
 						break;
 					default:
 						idx = 0;
@@ -614,11 +625,11 @@ void CSPSim::run()
 			// Swap OpenGL buffers
 #ifndef __CSPSIM_EXE__
 			Py_BEGIN_ALLOW_THREADS;
-			//--m_RenderSurface.swapBuffers();
+			//--m_RenderSurface->swapBuffers();
 			SDL_GL_SwapBuffers();
 			Py_END_ALLOW_THREADS;
 #else
-			//--m_RenderSurface.swapBuffers();
+			//--m_RenderSurface->swapBuffers();
 			SDL_GL_SwapBuffers();
 #endif
 			PROF1(_simloop, 30);
@@ -688,7 +699,7 @@ void CSPSim::doInput(double dt)
 
 	SDL_Event event;
 	short doPoll = 10;
-	while (doPoll-- && m_InputEvent(event)) {
+	while (doPoll-- && (*m_InputEvent)(event)) {
 	//while (doPoll-- && SDL_PollEvent(&event)) {	
 		bool handled = false;
 		HID::translate(event);

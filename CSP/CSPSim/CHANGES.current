@@ -1,6 +1,12 @@
  Version 0.4.0 (in progress)
 ===========================
 
+2004-10-01: onsight
+  * Clean up header includes slightly.  Use ScopedPointer for some of
+    the member variables in class CSPSim.  Break several key header
+    dependencies that were slowing down the build.  More work to be
+    done.
+
 2004-09-26: onsight
   * Fix a large number of small warnings when building CSPSim with
     g++ -W -Wall -pendantic.  The only remaining warning is produced

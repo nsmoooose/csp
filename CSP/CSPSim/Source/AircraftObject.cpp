@@ -26,7 +26,8 @@
 
 #include "AircraftObject.h"
 #include "Engine.h"
-//#include "AircraftPhysicsModel.h"
+#include "SystemsModel.h"
+#include "ObjectModel.h"
 #include "FlightModel.h"
 #include "Collision.h"
 

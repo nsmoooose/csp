@@ -44,7 +44,7 @@
 #include <SimData/PTS.h>
 
 #include <string>
-#include <iostream>
+#include <iosfwd>
 
 
 NAMESPACE_SIMDATA

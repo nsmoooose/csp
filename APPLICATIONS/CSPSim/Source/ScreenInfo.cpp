@@ -70,21 +70,18 @@ ScreenInfo::ScreenInfo(float pos_x, float pos_y, std::string const &name, std::s
 	m_TTFPath("screeninfo.ttf"),
 	//m_TTFPath("ltype.ttf"),
 	m_FontSize(20), 
-	m_CharacterSize(14),
-	//m_CharacterSize(11),
+	//m_CharacterSize(14),
+	m_CharacterSize(11),
 	m_Text(0) {
 	m_Text = makeText(pos_x,pos_y - m_CharacterSize, text);
 	addDrawable(m_Text);
 	setName(name);
-	// FIXME: these lines seems to badly interact with others parts of the code, 
-	// on windows at least; for example, TEXDOME code from Sky doesn t work correctly
-	// when they are uncommented.
 	// HACK to prevent text from disappearing when chunklod multitexture details
 	// are turned on:
-	//osg::StateSet *ss = getOrCreateStateSet();
-	//ss->setTextureAttributeAndModes(1, new osg::Texture2D, osg::StateAttribute::OFF);
-	//ss->setTextureAttributeAndModes(2, new osg::Texture2D, osg::StateAttribute::OFF);
-	//ss->setTextureAttributeAndModes(3, new osg::Texture2D, osg::StateAttribute::OFF);
+	osg::StateSet *ss = getOrCreateStateSet();
+	ss->setTextureAttributeAndModes(1, new osg::Texture2D, osg::StateAttribute::OFF);
+	ss->setTextureAttributeAndModes(2, new osg::Texture2D, osg::StateAttribute::OFF);
+	ss->setTextureAttributeAndModes(3, new osg::Texture2D, osg::StateAttribute::OFF);
 }
 
 osgText::Text *ScreenInfo::makeText(float pos_x, float pos_y, std::string const &string_text) {

@@ -13,6 +13,8 @@
  * Convert channel strings to channel name constants and connect
    angular velocity (in body coordinates) channel.
 
+ * Export qBar and G channels.
+
 2005-03-12: delta
  * Reformated GearAnimation and related classes as Systems. Adjusted 
    xml files consequently. Cleaned up GearDynamics.

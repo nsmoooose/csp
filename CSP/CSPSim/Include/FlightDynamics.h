@@ -1,17 +1,17 @@
-// Combat Simulator Project - FlightSim Demo
-// Copyright (C) 2002 The Combat Simulator Project
+// Combat Simulator Project
+// Copyright (C) 2002-2005 The Combat Simulator Project
 // http://csp.sourceforge.net
-// 
+//
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
 // as published by the Free Software Foundation; either version 2
 // of the License, or (at your option) any later version.
-// 
+//
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU General Public License
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
@@ -78,15 +78,18 @@ protected:
 	DataChannel<simdata::Vector3>::CRef b_WindVelocity;
 
 	// export channels
-	DataChannel<double>::Ref b_Alpha;	// current angle of attack
-	DataChannel<double>::Ref b_Beta;	// side slip angle
+	DataChannel<double>::Ref b_Alpha;    // current angle of attack
+	DataChannel<double>::Ref b_Beta;     // side slip angle
 	DataChannel<double>::Ref b_Airspeed;
+	DataChannel<double>::Ref b_QBar;     // dynamic pressure
+	DataChannel<double>::Ref b_G;        // G force (includes gravity)
 
 	double m_Beta;
 	double m_Alpha;
-	double m_Alpha0;			// discrete AOA
+	double m_Alpha0;     // discrete AOA
 	double m_AlphaDot;
 	double m_Airspeed;
+	double m_QBar;
 
 	simdata::Vector3 m_WindVelocityBody;
 

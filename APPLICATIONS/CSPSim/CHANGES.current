@@ -3,6 +3,17 @@
 
 2003-07-02: onsight
 
+            Added an automatic build target to the main Makefile to
+	    generate default hid mappings for aircraft.hid and 
+	    gamescreen.hid if they don't already exist.  These are
+	    created from the examples in Tools/HID/Examples, and
+	    include reasonably up-to-date mappings for the keyboard
+	    commands.  The joystick mappings may or may not work on
+	    any given system, and this is not meant as a substitute
+	    for reading Tools/HID/README and building your own custom
+	    map files.  A similar step should be added to the Windows
+	    build if possible.
+
             Added backface culling to model debug markers so that
 	    the initial view is not obstructed by the view placement
 	    marker.

@@ -23,8 +23,18 @@ MODULES = [
 	'Util',
 ]
 
+def PackageConfig(env):
+	print '<< SimCore Config >>'
+	conf = build.CustomConfigure(env)
+	conf.CheckPkgConfig('sigc++-1.2', version='1.2.5', lib_name='sigc')
+	env = conf.Finish()
+	env.ParseConfig('pkg-config --cflags --libs sigc++-1.2')
+
 env = env.Copy()
+env.SetConfig(PackageConfig)
+
 OBJECTS = build.BuildModules(env, MODULES)
 
 libsimcore = env.StaticLibrary('simcore', OBJECTS)
 Alias(['all', 'simcore'], [libsimcore])
+

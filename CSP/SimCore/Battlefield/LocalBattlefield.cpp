@@ -26,6 +26,7 @@
 #include <SimCore/Battlefield/Battlefield.h>
 #include <SimCore/Battlefield/SceneManager.h>
 #include <SimCore/Util/SynchronousUpdate.h>
+#include <SimCore/Util/Callback.h>
 
 #include <SimNet/ClientServer.h>
 #include <SimNet/DispatchHandler.h>
@@ -195,7 +196,9 @@ LocalBattlefield::LocalBattlefield(simdata::Ref<simdata::DataManager> const &dat
 	m_ServerTimeOffset(0),
 	m_ScanElapsedTime(0),
 	m_ScanRate(0),
-	m_ScanIndex(0)
+	m_ScanIndex(0),
+	m_PlayerJoinSignal(new simcore::Signal2<int, const std::string&>()),
+	m_PlayerQuitSignal(new simcore::Signal2<int, const std::string&>())
 {
 	// if no network connection, ids will be assigned sequentially
 	// starting at 1024.  otherwise, the id pool is initialized when
@@ -369,28 +372,42 @@ void LocalBattlefield::bindCommandDispatch(simnet::DispatchHandler::Ref const &d
 void LocalBattlefield::onPlayerQuit(simdata::Ref<PlayerQuit> const &msg, simdata::Ref<simnet::MessageQueue> const &) {
 	SIMNET_LOG(MESSAGE, INFO, *msg);
 	const PeerId id = msg->peer_id();
+	PlayerInfoMap::iterator iter = m_PlayerInfoMap.find(id);
+	if (iter != m_PlayerInfoMap.end()) {
+		CSP_LOG(BATTLEFIELD, INFO, iter->second->GetName() << " just quit the game! (id " << id << ")");
+		m_PlayerQuitSignal->emit(id, iter->second->GetName());
+		m_PlayerInfoMap.erase(iter);
+	} else {
+		CSP_LOG(BATTLEFIELD, WARNING, "received quit message for unmapped peer " << id);
+	}
 	if (m_NetworkClient->getPeer(id)) {
-		PlayerInfoMap::iterator iter = m_PlayerInfoMap.find(id);
-		if (iter != m_PlayerInfoMap.end()) {
-			CSP_LOG(BATTLEFIELD, INFO, iter->second->GetName() << " just quit the game!");
-			m_PlayerInfoMap.erase(iter);
-		}
 		m_NetworkClient->disconnectPeer(id);
 		// the global battlefield should send separate messages to remove
 		// all objects owned by this peer
+	} else {
+		CSP_LOG(BATTLEFIELD, WARNING, "received quit message for unknown peer " << id);
 	}
+}
+
+void LocalBattlefield::registerPlayerJoinCallback(simcore::Callback2<int, const std::string&> &callback) {
+	m_PlayerJoinSignal->connect(callback);
+}
+
+void LocalBattlefield::registerPlayerQuitCallback(simcore::Callback2<int, const std::string&> &callback) {
+	m_PlayerQuitSignal->connect(callback);
 }
 
 void LocalBattlefield::onPlayerJoin(simdata::Ref<PlayerJoin> const &msg, simdata::Ref<simnet::MessageQueue> const &) {
 	SIMNET_LOG(MESSAGE, INFO, *msg);
 	const PeerId id = msg->peer_id();
 	if (!m_NetworkClient->getPeer(id)) {
-		CSP_LOG(BATTLEFIELD, INFO, msg->user_name() << " just joined the game!");
 		const simnet::NetworkNode remote_node(msg->ip_addr(), msg->port());
+		CSP_LOG(BATTLEFIELD, INFO, msg->user_name() << " just joined the game! (id " << id << ", ip " << remote_node << ")");
 		const int incoming_bw = msg->incoming_bw();
 		const int outgoing_bw = msg->outgoing_bw();
 		m_PlayerInfoMap[id] = new PlayerInfo(id, msg->user_name());
 		m_NetworkClient->addPeer(id, remote_node, incoming_bw, outgoing_bw);
+		m_PlayerJoinSignal->emit(id, msg->user_name());
 	}
 }
 
@@ -731,20 +748,30 @@ double LocalBattlefield::UnitUpdateProxy::onUpdate(double dt) {
 		const int detail = m_PeerUpdates[n_updates - 1].detail;
 		assert(detail >=0 && detail < DETAIL_LEVELS);
 
+		// the object may choose to skip an update due to low estimated error
+		bool skipped = false;
+
 		// ok to use slightly stale messages.  note that if we refresh the cache for any
 		// peer, all other peers at that detail level will get the new message.
 		if (m_UpdateTime - m_DetailCache[detail].last_refresh > interval / 10) {
 			// FIXME the state message will be used for multiple peers that are updated at different
 			// intervals, so the content should not depend on interval.
 			simnet::NetworkMessage::Ref msg = m_Wrapper->unit()->getState(timestamp, 0 /*interval*/, detail);
-			msg->setRoutingType(ROUTE_UNIT_UPDATE);
-			msg->setRoutingData(m_Wrapper->id());
-			msg->setPriority(2);  // XXX msg/detail dependent?
-			m_DetailCache[detail].msg = msg;
-			m_DetailCache[detail].last_refresh = m_UpdateTime;
+			if (msg.valid()) {
+				msg->setRoutingType(ROUTE_UNIT_UPDATE);
+				msg->setRoutingData(m_Wrapper->id());
+				msg->setPriority(2);  // XXX msg/detail dependent?
+				m_DetailCache[detail].msg = msg;
+				m_DetailCache[detail].last_refresh = m_UpdateTime;
+			} else {
+				skipped = true;
+			}
 		}
-		// hack for sorting by detail level, see below
-		targets[target_count++] = (detail << 24) | m_PeerUpdates[n_updates - 1].id;
+
+		if (!skipped) {
+			// hack for sorting by detail level, see below
+			targets[target_count++] = (detail << 24) | m_PeerUpdates[n_updates - 1].id;
+		}
 
 		std::push_heap(m_PeerUpdates.begin(), m_PeerUpdates.end());
 	}
@@ -769,7 +796,7 @@ double LocalBattlefield::UnitUpdateProxy::onUpdate(double dt) {
 }
 
 void LocalBattlefield::UnitUpdateProxy::setUpdateParameters(PeerId id, double interval, simdata::uint16 detail) {
-	assert(detail >= 0 && detail < DETAIL_LEVELS);
+	assert(detail < DETAIL_LEVELS);
 	simdata::uint16 interval_ms = static_cast<simdata::uint16>(interval * 1000.0);
 	const unsigned n = m_PeerUpdates.size();
 	for (unsigned i = 0; i < n; ++i) {

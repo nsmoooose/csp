@@ -30,8 +30,7 @@
 
 #include <SimCore/Battlefield/Battlefield.h>
 #include <SimCore/Battlefield/BattlefieldMessages.h>
-
-#include <SimNet/NetworkNode.h>   // XXX forward declare InetHostAddress
+#include <SimCore/Util/CallbackDecl.h>
 
 class SceneManager;
 class UpdateMaster;
@@ -86,6 +85,9 @@ public:
 	inline bool isConnectionActive() const {
 		return m_ConnectionState == CONNECTION_ACTIVE;
 	}
+
+	void registerPlayerJoinCallback(simcore::Callback2<int, const std::string&> &callback);
+	void registerPlayerQuitCallback(simcore::Callback2<int, const std::string&> &callback);
 
 private:
 
@@ -185,6 +187,9 @@ private:
 
 	void scanUnit(LocalUnitWrapper *wrapper);
 	void continueUnitScan(double dt);
+
+	simdata::ScopedPointer<simcore::Signal2<int, const std::string&> > m_PlayerJoinSignal;
+	simdata::ScopedPointer<simcore::Signal2<int, const std::string&> > m_PlayerQuitSignal;
 };
 
 

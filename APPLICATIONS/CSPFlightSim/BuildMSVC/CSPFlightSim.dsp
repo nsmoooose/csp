@@ -43,8 +43,8 @@ RSC=rc.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /YX /FD /c
-# ADD CPP /nologo /MD /W3 /GR /GX /O2 /I "..\include" /I "..\..\..\ThirdPartyLibs\Demeter" /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /D "_STLP_USE_OWN_NAMESPACE" /FD /c
-# SUBTRACT CPP /Z<none> /YX
+# ADD CPP /nologo /MD /W3 /GR /GX /Zi /Od /I "../Include" /I "../../../THIRDPARTYLIBS/Include" /I "../../../THIRDPARTYLIBS/demeter" /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /D "_STLP_USE_OWN_NAMESPACE" /FD /c
+# SUBTRACT CPP /YX
 # ADD BASE MTL /nologo /D "NDEBUG" /mktyplib203 /win32
 # ADD MTL /nologo /D "NDEBUG" /mktyplib203 /win32
 # ADD BASE RSC /l 0x409 /d "NDEBUG"
@@ -54,7 +54,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /machine:I386
-# ADD LINK32 osg.lib osgUtil.lib osgDb.lib SDL.lib SDLMain.lib opengl32.lib glaux.lib glu32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib SDL_Console.lib gdal_i.lib /nologo /subsystem:windows /debug /machine:I386 /out:"../Bin/CSPFlightSim_Release.exe" /pdbtype:sept
+# ADD LINK32 osgparticle.lib osgtext.lib demetervisualc6.lib osg.lib osgUtil.lib osgDb.lib SDL.lib SDLMain.lib opengl32.lib glaux.lib glu32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib DemeterVisualC6.lib SDL_Console.lib gdal_i.lib /nologo /subsystem:windows /debug /machine:I386 /out:"../DemoPackage/CSPFlightSim_Release.exe" /pdbtype:sept /libpath:"../../../THIRDPARTYLIBS/lib"
 # SUBTRACT LINK32 /map
 
 !ELSEIF  "$(CFG)" == "CSPFlightSim - Win32 Debug"
@@ -71,7 +71,8 @@ LINK32=link.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /YX /FD /GZ /c
-# ADD CPP /nologo /MDd /W3 /Gm /GR /GX /Zi /Od /I "..\include" /I "..\..\..\ThirdPartyLibs\Demeter" /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /D "_STLP_USE_OWN_NAMESPACE" /FR /Yu"stdinc.h" /FD /GZ /c
+# ADD CPP /nologo /MDd /W3 /Gm /GR /GX /Zi /Od /I "..\Include" /I "..\..\..\THIRDPARTYLIBS\Include" /I "..\..\..\THIRDPARTYLIBS\demeter" /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /D "_STLP_USE_OWN_NAMESPACE" /FR /FD /GZ /c
+# SUBTRACT CPP /YX /Yc /Yu
 # ADD BASE MTL /nologo /D "_DEBUG" /mktyplib203 /win32
 # ADD MTL /nologo /D "_DEBUG" /mktyplib203 /win32
 # ADD BASE RSC /l 0x409 /d "_DEBUG"
@@ -81,8 +82,8 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /debug /machine:I386 /pdbtype:sept
-# ADD LINK32 osgd.lib osgUtild.lib osgDBd.lib SDL.lib SDLMain.lib SDL_Image.lib opengl32.lib glaux.lib glu32.lib SDL_Console.lib gdal_i.lib /nologo /subsystem:windows /incremental:no /pdb:"../DemoPackage/CSPFlightSim_Debug.pdb" /debug /machine:I386 /out:"../Bin/CSPFlightSim_Debug.exe" /pdbtype:sept
-# SUBTRACT LINK32 /pdb:none /nodefaultlib
+# ADD LINK32 osgParticled.lib gdal_i.lib osgd.lib osgDBd.lib SDL_console.lib SDLd.lib opengl32.lib osgTextd.lib DemeterVisualC6d.lib osgUtild.lib SDLmaind.lib /nologo /subsystem:windows /incremental:no /pdb:"../DemoPackage/CSPFlightSim_Debug.pdb" /debug /machine:I386 /nodefaultlib:"msvcrt.lib" /out:"../DemoPackage/CSPFlightSim_Debug.exe" /pdbtype:sept /libpath:"..\..\..\THIRDPARTYLIBS\lib"
+# SUBTRACT LINK32 /pdb:none
 
 !ENDIF 
 
@@ -179,6 +180,32 @@ SOURCE=..\Source\GlobalCommands.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\Source\Hud.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\Source\HudElement.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\Source\HudGeometricElement.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\Source\HudTextElement.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\Source\InstantActionController.cpp
+# PROP Exclude_From_Build 1
+# End Source File
+# Begin Source File
+
+SOURCE=..\Source\InstantActionManager.cpp
+# PROP Exclude_From_Build 1
+# End Source File
+# Begin Source File
+
 SOURCE=..\Source\LogoScreen.cpp
 # End Source File
 # Begin Source File
@@ -208,19 +235,6 @@ SOURCE=..\Source\MissileController.cpp
 # Begin Source File
 
 SOURCE=..\Source\MissileObject.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\Source\mmgr.cpp
-
-!IF  "$(CFG)" == "CSPFlightSim - Win32 Release"
-
-!ELSEIF  "$(CFG)" == "CSPFlightSim - Win32 Debug"
-
-# SUBTRACT CPP /YX /Yc /Yu
-
-!ENDIF 
-
 # End Source File
 # Begin Source File
 
@@ -389,10 +403,6 @@ SOURCE=..\Include\BaseObject.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\Include\BasePhysics.h
-# End Source File
-# Begin Source File
-
 SOURCE=..\Include\BaseScreen.h
 # End Source File
 # Begin Source File
@@ -441,6 +451,22 @@ SOURCE=..\Include\GlobalCommands.h
 # End Source File
 # Begin Source File
 
+SOURCE=..\Include\Hud.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\Include\HudElement.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\Include\HudGeometricElement.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\Include\HudTextElement.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\Include\InstantActionController.h
 # End Source File
 # Begin Source File
@@ -474,14 +500,6 @@ SOURCE=..\Include\MissileController.h
 # Begin Source File
 
 SOURCE=..\Include\MissileObject.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\Include\mmgr.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\Include\nommgr.h
 # End Source File
 # Begin Source File
 
@@ -534,10 +552,6 @@ SOURCE=..\Include\TankController.h
 # Begin Source File
 
 SOURCE=..\Include\TankObject.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\Include\TankPhysics.h
 # End Source File
 # Begin Source File
 
@@ -600,22 +614,5 @@ SOURCE=..\Include\VirtualBattlefieldScene.h
 
 # PROP Default_Filter "ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe"
 # End Group
-# Begin Source File
-
-SOURCE=..\..\..\ThirdPartyLibs\Demeter\Debug\DemeterVisualC6.lib
-
-!IF  "$(CFG)" == "CSPFlightSim - Win32 Release"
-
-# PROP Exclude_From_Build 1
-
-!ELSEIF  "$(CFG)" == "CSPFlightSim - Win32 Debug"
-
-!ENDIF 
-
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\..\ThirdPartyLibs\Demeter\Release\DemeterVisualC6.lib
-# End Source File
 # End Target
 # End Project

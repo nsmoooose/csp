@@ -1,6 +1,14 @@
 Version 0.3.4 (in progress)
 ===========================
 
+2003-08-07: onsight
+            Added SIMDATA_EXPORT to classes in Random.h
+
+	    Fixed #include <float.h> bug in Math.h under Windows
+
+	    Moved some inline friend declarations out of the Vector3
+	    class declaration to help MSVC find them.
+
 2003-08-06: onsight
             Removed Math.i and Vector3.inl from setup.py.
 

@@ -4,15 +4,18 @@
 2005-03-11: onsight
  * Fix an exception in the DataRecorder.
 
+ * Add a new data channel method for setting and pushing a value in one
+   call.  Also add a method for safely reading an invalid channel.
+
 2005-03-05: onsight
  * Fix a couple minor warnings under gcc.
 
 2005-03-05: delta
  * Extended Animation class with a direct children of AnimationPathCallback.
    It should allow to export (simple) animations from max thanks to osgExp.
-   Necessary changes to handle this new class have been committed in 
-   ObjectModel. Due to the changes in the animation classes, a few xml files 
-   have been updated. F16DJ model.osg has been slightly updated too. 
+   Necessary changes to handle this new class have been committed in
+   ObjectModel. Due to the changes in the animation classes, a few xml files
+   have been updated. F16DJ model.osg has been slightly updated too.
    It's a work in progress!
 
  * Added toggles for refuelling doors and canopy (only f16dj). Hot keys added

@@ -385,6 +385,15 @@ public:
 		}
 	}
 
+	/** Set the channel value and signal the change to listeners.
+	 *
+	 *  Should only be called for push channels (asserts false otherwise).
+	 */
+	void push(const T& value) {
+		m_Value = value;
+		push();
+	}
+
 	/**
 	 * Get the current value of this channel as a non-const reference.
 	 *
@@ -652,6 +661,19 @@ public:
 			channel = DataChannel<T>::newLocal(name, default_value);
 		}
 		return channel;
+	}
+
+	/** Convenience function for accessing a data channel that may be null.
+	 *  (The channel reference must have already been already been retrieved
+	 *  from the bus.)
+	 *
+	 *  @param channel A data channel that may be null.
+	 *  @param fallback The value to return if the channel is null.
+	 *  @returns The channel value or the fallback.
+	 */
+	template <typename T>
+	static T readChannel(typename DataChannel<T>::CRef &channel, T const &fallback) {
+		return channel.isNull() ? fallback : channel->value();
 	}
 
 	/** Get the bus status value.

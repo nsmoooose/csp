@@ -106,12 +106,13 @@ public:
 #endif // SWIG
 
 	// arithmetic operations
+	Matrix3 operator-() const;
 	Matrix3 operator+(const Matrix3& rkMatrix) const;
 	Matrix3 operator-(const Matrix3& rkMatrix) const;
+#ifndef SWIG
 	Matrix3 operator*(const Matrix3& rkMatrix) const;
-	Matrix3 operator-() const;
-	// matrix * scalar
 	Matrix3 operator*(double fScalar) const;
+#endif // SWIG
 
 #ifndef SWIG
 	// matrix * vector [3x3 * 3x1 = 3x1]
@@ -119,8 +120,8 @@ public:
 	                                 const Vector3& rkVector);
 
 	// vector * matrix [1x3 * 3x3 = 1x3]
-	// friend Vector3 operator*(const Vector3& rkVector,
-	//				     const Matrix3& rkMatrix);
+	friend Vector3 operator*(const Vector3& rkVector,
+		                 const Matrix3& rkMatrix);
 	
 	// scalar * matrix
 	SIMDATA_EXPORT friend Matrix3 operator*(double fScalar, const Matrix3& rkMatrix);
@@ -187,16 +188,24 @@ public:
 #ifndef SWIG
 	friend std::ostream & operator<< (std::ostream & os, const Matrix3 & m);
 #endif // SWIG
+	
+	// explicit multiplication operators for Python
+	Matrix3 __mul__(const Matrix3 &a) const;
+	Matrix3 __mul__(double a) const;
+	Matrix3 __rmul__(double a) const;
+	Vector3 __mul__(const Vector3 &a) const;
 
-//#if defined(SWIG) || defined(SWIGPYTHON)
-//	std::string __repr__() { return toString(); }
-	/*
-	Vector3 __mul__(const Vector3 &v) const;
-	Matrix3 __mul__(double fScalar) const;
-	*/
+#ifdef SWIG_____NOTYETREADY
+	%extend {
+//		bool operator==(const Vector3 & a) { return *self == a; }
+//		bool operator!=(const Vector3 & a) { return *self != a; }
+//		Vector3 operator*(const Vector3 & a) { return (*self)*a; }
+//		Matrix3 operator*(const Matrix3 & a) { return (*self)*a; }
+//		Matrix3 operator*(double a) { return (*self)*a; }
+	}
+#endif // SWIG 
 
 #ifdef SWIG 
-//%rename(__mul__) Matrix::operator*;
 %insert("shadow") %{
 %}
 #endif // SWIG

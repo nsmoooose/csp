@@ -1,9 +1,9 @@
 SUBDIRS = Source 
 
 export GDEBUGF = -g -Wall
-export GCFLAGS = -fPIC -DUSE_NAMESPACE_SIMDATA -O2 # -march=athlon-tbird
+export GCFLAGS = -fPIC -O2 # -march=athlon-tbird
 export GLDOPTS = -shared -lswigpy -ldl
-export GSWOPTS = -c -c++ -python -DUSE_NAMESPACE_SIMDATA -noexcept
+export GSWOPTS = -c -c++ -python -noexcept
 export CXX = g++
 export SWIG = swig 
 
@@ -22,3 +22,6 @@ default:
 swig:
 	rm Source/cSimData_wrap.cpp || true;
 	make -C Source all
+
+install:
+	python setup.py make_install

@@ -102,6 +102,7 @@ public:
 	 */
 	Vector3 operator -() const;
 
+#ifndef SWIG
 	/**
 	 * Multiply a vector by a scalar.
 	 */ 
@@ -110,7 +111,6 @@ public:
 		return Vector3(f*x, f*y, f*z);
 	}
 
-#ifndef SWIG
 	// friend arithmetic operators
 	friend Vector3 operator/(const Vector3 &a, double f);
 	friend Vector3 operator*(double f, const Vector3 &a);
@@ -121,7 +121,7 @@ public:
 	void Set(double _x, double _y, double _z);
 	double Length() const;
 	double LengthSquared() const;
-	bool IsNull();
+	bool IsNull() const;
 	Vector3 & Normalize();
 	double Unitize(double  fTolerance = 1e-06);
 
@@ -135,13 +135,13 @@ public:
 	friend Vector3 Normalized(const Vector3 &a);
 #endif // SWIG
 	
-	Vector3 Cross(const Vector3 & a);
-	double Dot(const Vector3 & a);
-	std::vector<double> GetElements();
+	Vector3 Cross(const Vector3 & a) const;
+	double Dot(const Vector3 & a) const;
+	std::vector<double> GetElements() const;
 
-	Matrix3 StarMatrix();
+	Matrix3 StarMatrix() const;
 
-	void Print(FILE * stream);
+	void Print(FILE * stream) const;
 
 	static const Vector3 ZERO;
 	static const Vector3 XAXIS;
@@ -154,11 +154,15 @@ public:
 
 	virtual std::string asString() const;
 	
+	double __mul__(const Vector3 & a) const { return Dot(a); }
+	Vector3 __mul__(const Matrix3 & a) const;
+	Vector3 __mul__(double a) const { return (*this)*a; }
+	Vector3 __rmul__(double a) const { return (*this)*a; }
+	
 #ifdef SWIG
 	%extend {
 		bool operator==(const Vector3 & a) { return *self == a; }
 		bool operator!=(const Vector3 & a) { return *self != a; }
-		double operator*(const Vector3 & a) { return self->Dot(a); }
 	}
 #endif // SWIG 
 

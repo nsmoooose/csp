@@ -241,7 +241,7 @@ inline double Vector3::LengthSquared() const
 /** 
  * Determine if all the components of the vector are zero.
  */ 
-inline bool Vector3::IsNull()
+inline bool Vector3::IsNull() const
 {
 	return ((x == 0.0f) && (y == 0.0f) && (z == 0.0f));
 }

@@ -182,19 +182,6 @@ struct hasht_hash {
 	};
 #endif
 
-/*
-struct equ8 {
-	bool operator()(u8 i1, u8 i2) const {
-		return (i1 == i2);
-	}
-};
-
-struct hashu8 {
-	u8 operator()(u8 i) const {
-		return i;
-	}
-};
-*/
 
 /*
  * Helpers for storing a hash map of string->int.
@@ -223,7 +210,6 @@ struct SIMDATA_EXPORT hashstring {
 	};
 #endif
 
-
 class Object;
 class ObjectProxyBase;
 
@@ -234,11 +220,13 @@ template <class T>
 typedef HASH_MAPS<hasht, int, hasht_hash, hasht_eq>::Type hasht_map;
 typedef HASH_MAPS<hasht, Object*, hasht_hash, hasht_eq>::Type cache_map;
 typedef HASH_MAPS<hasht, ObjectProxyBase*, hasht_hash, hasht_eq>::Type proxy_map;
-
-typedef HASH_MAPS<const std::string, int, hashstring, eqstring>::Type string_map;
+//typedef HASH_MAPS<const std::string, int, hashstring, eqstring>::Type string_map;
 
 extern std::ostream & operator<<(std::ostream &o, const hasht &x);
 
+
 NAMESPACE_END // namespace simdata
 
+
 #endif // __HASHUTILITY_H__
+

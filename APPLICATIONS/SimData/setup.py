@@ -1,12 +1,71 @@
+# SimDataCSP: Data Infrastructure for Simulations
+# Copyright (C) 2002 Mark Rose <tm2@stm.lbl.gov>
+# 
+# This file is part of SimDataCSP.
+# 
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# as published by the Free Software Foundation; either version 2
+# of the License, or (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+
+
+###
+# This script has many warts, but should be functional.  It will
+# be cleaned up in due course....
+#
+# -MR
+
+
 from distutils.core import setup
 from distutils.core import Extension
 import distutils.command.build_ext
 from distutils.command.build_ext import build_ext
-import os, os.path, string
+import os, os.path, string, sys
 
 # REMEMBER TO 'touch Version.cpp' OR REBUILD ALL
 VERSION = "\"0.3.1\""
 
+def copy_dir(src, dst, files):
+    from distutils.file_util import copy_file
+    from distutils.dir_util import mkpath
+    from distutils.errors import DistutilsFileError, DistutilsInternalError
+    from stat import ST_ATIME, ST_MTIME, ST_MODE, S_IMODE
+    if not os.path.isdir(src):
+        raise DistutilsFileError, \
+              "cannot copy dir '%s': not a directory" % src
+    mkpath(dst)
+    st = os.stat(src)
+    os.chmod(dst, S_IMODE(st[ST_MODE]))
+    for n in files:
+        src_name = os.path.join(src, n)
+        dst_name = os.path.join(dst, n)
+        if not os.path.isdir(src_name):
+            copy_file(src_name, dst_name)
+
+def make_install():
+	from distutils import sysconfig, dir_util
+	lib = sysconfig.get_python_lib()
+	inc = sysconfig.get_python_inc()
+	modpath = os.path.join(lib, "SimData")
+	incpath = os.path.join(inc, "SimData")
+	try:
+		print "Installing SimData package to", modpath
+		copy_dir("SimData", modpath, ['__init__.py', 'Debug.py', 'Parse.py', 'Compile.py', 'cSimData.py', '_cSimData.so'])
+		print "Installing SimData headers to", incpath
+		copy_dir("Include/SimData", incpath, headers)
+	except Exception, e:
+		print e
+		sys.exit(1)
+	sys.exit(0)
 
 class build_swig_ext(build_ext):
 	
@@ -152,6 +211,7 @@ headers = [
 	"TypeAdapter.h",
 	"Types.h",
 	"Vector3.h",
+	"Vector3.inl",
 	"Version.h",
 ]
 
@@ -164,13 +224,17 @@ def fullpath(path, ext, list):
 
 sources = fullpath("Source/", ".cpp", sources)
 interfaces = fullpath("Source/", ".i", interfaces)
-headers = fullpath("Include/SimData/", "", headers)
+headers_fullpath = fullpath("Include/SimData/", "", headers)
 
-build_swig_ext.options = "-DUSE_NAMESPACE_SIMDATA -IInclude -noexcept"
+build_swig_ext.options = "-IInclude -noexcept"
 includes = ["Include"]
-defines = [("USE_NAMESPACE_SIMDATA", None), ("SIMDATA_VERSION", VERSION)]
+defines = [("SIMDATA_VERSION", VERSION)]
 libraries = ["swigpy", "dl"]
 cflags = []
+
+
+if len(sys.argv)==2 and sys.argv[1]=="make_install":
+	make_install()
 
 cSimData = Extension("SimData._cSimData", 
                      sources + interfaces, 
@@ -187,7 +251,7 @@ setup(name="SimData",
       author_email="mrose@stm.lbl.gov",
       url="http://csp.sourceforge.net/wiki/",
       packages=['SimData'],
-	  headers = headers,
+	  headers = headers_fullpath,
 	  ext_modules = [cSimData],
 	  )
 

@@ -27,9 +27,11 @@
 #ifndef __NS_SIMDATA_H__
 #define __NS_SIMDATA_H__
 
-#ifndef USE_NAMESPACE_SIMDATA
 // turn on the simdata namespace by default
 #define USE_NAMESPACE_SIMDATA
+
+#ifdef NO_NAMESPACE_SIMDATA
+#undef USE_NAMESPACE_SIMDATA
 #endif // USE_NAMESPACE_SIMDATA
 
 // simdata namespace macros, to easily turn namespace support

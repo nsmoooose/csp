@@ -68,8 +68,8 @@ Matrix3::Matrix3(const Matrix3& rkMatrix)
 }
 
 Matrix3::Matrix3(double fEntry00, double fEntry01, double fEntry02,
-                                 double fEntry10, double fEntry11, double fEntry12, 
-                                 double fEntry20, double fEntry21, double fEntry22)
+                 double fEntry10, double fEntry11, double fEntry12, 
+                 double fEntry20, double fEntry21, double fEntry22)
 {
 	rowcol[0][0] = fEntry00;
 	rowcol[0][1] = fEntry01;
@@ -83,8 +83,8 @@ Matrix3::Matrix3(double fEntry00, double fEntry01, double fEntry02,
 }
 
 Matrix3::Matrix3(const Vector3& column1, // a matrix is given by 3 column vectors
-                                 const Vector3& column2, 
-                                 const Vector3& column3)
+                 const Vector3& column2, 
+                 const Vector3& column3)
 {
 	SetColumn(0, column1);
 	SetColumn(1, column2);
@@ -226,33 +226,85 @@ Matrix3 Matrix3::operator*(const Matrix3& rkMatrix) const
 	return kProd;
 }
 
+// multiplication (proxy) operators for Python
+
+Matrix3 Matrix3::__mul__(const Matrix3& m) const {
+	return (*this)*m;
+}
+
+Matrix3 Matrix3::__mul__(double v) const {
+	return (*this)*v;
+}
+
+Matrix3 Matrix3::__rmul__(double v) const {
+	return (*this)*v;
+}
+
+Vector3 Matrix3::__mul__(const Vector3& v) const {
+	return (*this)*v;
+}
+
+
+/*
 Vector3 operator*(const Matrix3& rkMatrix,
                           const Vector3& rkPoint) // Checked
 {
 	Vector3 kProd;
 	for (int iRow = 0; iRow < 3; ++iRow) {
 		kProd[iRow] =
-			rkMatrix.rowcol[iRow][0]*rkPoint[0] +
-			rkMatrix.rowcol[iRow][1]*rkPoint[1] +
-			rkMatrix.rowcol[iRow][2]*rkPoint[2];
+			rkMatrix.rowcol[iRow][0]*rkPoint.x +
+			rkMatrix.rowcol[iRow][1]*rkPoint.y +
+			rkMatrix.rowcol[iRow][2]*rkPoint.z;
 	}
 	return kProd;
 }
 
 
-/*
 Vector3 operator* (const Vector3& rkPoint, const Matrix3& rkMatrix)
 {
 	Vector3 kProd;
 	for (int iCol = 0; iCol < 3; iCol++)
 	{
 		kProd[iCol] =
-			rkPoint[0]*rkMatrix.rowcol[0][iCol] +
-			rkPoint[1]*rkMatrix.rowcol[1][iCol] +
-			rkPoint[2]*rkMatrix.rowcol[2][iCol];
+			rkPoint.x*rkMatrix.rowcol[0][iCol] +
+			rkPoint.y*rkMatrix.rowcol[1][iCol] +
+			rkPoint.z*rkMatrix.rowcol[2][iCol];
 	}
 	return kProd;
-}*/
+}
+*/
+
+Vector3 operator*(const Matrix3& rkMatrix, const Vector3& rkPoint) 
+{
+	double *row0 = &(rkMatrix.rowcol[0][0]);
+	double *row1 = &(rkMatrix.rowcol[1][0]);
+	double *row2 = &(rkMatrix.rowcol[2][0]);
+	double x, y, z;
+	x  = rkPoint.x * *row0++;
+	x += rkPoint.y * *row0++;
+	x += rkPoint.z * *row0++;
+	y  = rkPoint.x * *row1++; 
+	y += rkPoint.y * *row1++;
+	y += rkPoint.z * *row1++;
+	z  = rkPoint.x * *row2++; 
+	z += rkPoint.y * *row2++;
+	z += rkPoint.z * *row2++;
+	return Vector3(x, y, z);
+}
+
+
+Vector3 operator* (const Vector3& rkPoint, const Matrix3& rkMatrix)
+{
+	double *row0 = &(rkMatrix.rowcol[0][0]);
+	double *row1 = &(rkMatrix.rowcol[1][0]);
+	double *row2 = &(rkMatrix.rowcol[2][0]);
+	double x, y, z;
+	x = rkPoint.x * *row0++ + rkPoint.y * *row1++ + rkPoint.z * *row2++;
+	y = rkPoint.x * *row0++ + rkPoint.y * *row1++ + rkPoint.z * *row2++;
+	z = rkPoint.x * *row0++ + rkPoint.y * *row1++ + rkPoint.z * *row2++;
+	return Vector3(x, y, z);
+}
+
 
 Matrix3 Matrix3::operator-() const
 {
@@ -886,23 +938,6 @@ std::ostream & operator<<(std::ostream & os, const Matrix3 & m)
 	return os;
 }
 
-
-/*
-// Methods for SWIG
-#if defined(SWIG) || defined(SWIGPYTHON)
-std::string Matrix3::__repr__() { 
-	return asString(); 
-}
-
-Vector3 Matrix3::__mul__(const Vector3 &v) const {
-	return *this * v;
-}
-
-Matrix3 Matrix3::__mul__(double fScalar) const {
-	return *this * fScalar;
-}
-#endif // SWIG
-*/
 
 
 void Matrix3::pack(Packer &p) const {

@@ -55,6 +55,8 @@ clean-objects:
 	rm -f _cSimData.so cSimData_wrap.*
 	rm -f $(MODULES:%=%_wrap.o)
 	rm -f $(DEPDIR)/*.d
+	rm -f $(TOPDIR)/SimData/_cSimData.so
+	rm -f $(TOPDIR)/SimData/cSimData.py
 
 clean-dependencies:
 	@echo $(RM) -r $(RMFLAGS) $(DEPDIR)
@@ -93,9 +95,11 @@ libSimData.a: $(OBJECTS)
 
 _cSimData.so: $(OBJECTS) cSimData_wrap.o
 	$(CXX) -Wl,-z,lazyload $(LDOPTS) -o$@ $^
+	cp $@ $(TOPDIR)/SimData
 
 cSimData_wrap.cpp: cSimData.i
 	$(SWIG) $(SWOPTS) -o $@ $< 
+	cp cSimData.py $(TOPDIR)/SimData
 
 cSimData_wrap.o: cSimData_wrap.cpp
 	$(CXX) -I/usr/local/include/python2.2 -DSWIG_GLOBAL -c $(SWCXXF) $(@:.o=.cpp)

@@ -133,14 +133,14 @@ double Vector3::Unitize (double fTolerance)
 /**
  * Print string representation to a stream.
  */
-void Vector3::Print(FILE * stream)
+void Vector3::Print(FILE * stream) const
 {
 	fprintf(stream, "[%f, %f, %f]\n", x, y, z);
 }
 
 //} // namespace Math
 
-Matrix3 Vector3::StarMatrix()
+Matrix3 Vector3::StarMatrix() const
 {
 	Matrix3 mat;
 	mat[0][1] = -z;
@@ -174,15 +174,15 @@ std::ostream & operator << (std::ostream & os, const Vector3& v)
   return os;
 }
 
-Vector3 Vector3::Cross(const Vector3 & a) {
+Vector3 Vector3::Cross(const Vector3 & a) const {
 	return SIMDATA(Cross)(*this, a);
 }
 
-double Vector3::Dot(const Vector3 & a) {
+double Vector3::Dot(const Vector3 & a) const {
 	return SIMDATA(Dot)(*this, a);
 }
 
-std::vector<double> Vector3::GetElements() {
+std::vector<double> Vector3::GetElements() const {
 	std::vector<double> elements;
 	elements.push_back(x);
 	elements.push_back(y);
@@ -218,6 +218,10 @@ void Vector3::parseXML(const char* cdata) {
 	y = Y;
 	z = Z;
 	if (n!=3) throw ParseException("SYNTAX ERROR: expecting 3 floats");
+}
+
+Vector3 Vector3::__mul__(const Matrix3 & a) const { 
+	return (*this)*a; 
 }
 
 NAMESPACE_END // namespace simdata

@@ -1,6 +1,29 @@
 Version 0.3.1 (in progress)
 ===========================
+2003-03-19: onsight
+            Changed Enumeration implementation to use std::map<> instead
+	    of (non-)std::hash_map<>.
 
+	    Enumeration __getattr__ in Python now returns new Enum objects 
+	    to prevent const subversion (the Enumeration members were
+	    mutable from Python).  The logic for __getattr__ is more robust
+	    as well.
+
+	    Added __mul__ and __rmul__ operators to Vector3 and Matrix3
+	    to allow: V*V, M*M, V*M, M*V, M*F, F*M, V*F, F*V.
+
+	    Optimized Matrix3*Vector3 and Vector3*Matrix3 slightly by
+	    using vector members instead of integer indexing (which
+	    required nine extra function calls).  Access to the matrix
+	    elements is also faster using pointer arithmatic, and the
+	    for loops have been unrolled by hand.
+
+	    Fixed setup.py to preserve file and directory permissions
+	    during installation.
+
+	    Added make_install target to setup.py which is used by the
+	    standard Makefile to install SimData (make install).
+	    
 2003-03-17: onsight
             Fixes to MS VC.net fixes.  Lather, rinse, repeat... ;-)
 	    

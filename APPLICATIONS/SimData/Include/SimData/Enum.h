@@ -35,9 +35,9 @@
 #include <vector>
 #include <cstdio>
 #include <iostream>
+#include <map>
 
 #include <SimData/BaseType.h>
-#include <SimData/HashUtility.h>
 
 
 NAMESPACE_SIMDATA
@@ -109,6 +109,7 @@ protected:
 	void __assign(const Enum* i);
 public:
 	Enum();
+	Enum(const Enum &);
 	Enum(const Enumeration& parent, int idx=0);
 	Enum(const Enumeration& parent, const std::string &s);
 	virtual ~Enum();
@@ -149,12 +150,14 @@ public:
  * An enumeration class representing a set of possible values indexed by strings.
  */
 class Enumeration {
+	typedef std::map<std::string, int> string_map;
 	string_map _map;
 	std::vector<Enum> _enums;
 	std::vector<std::string> _strings;
 	Enumeration() { }
 public:
 	explicit Enumeration(const char* items);
+	~Enumeration();
 	const std::vector<Enum> each() const;
 	const std::vector<std::string> eachString() const;
 	const std::vector<std::string> getLabels() const;
@@ -176,9 +179,9 @@ public:
 	bool __contains__(const Enum& i) const;
 	bool __contains__(int i) const;
 	bool __contains__(const std::string& i) const;
-	const Enum& __getitem__(int n) const;
-	const Enum& __getitem__(const std::string& s) const;
-	const Enum& __getattr_c__(const std::string& s) const;
+	const Enum __getitem__(int n) const;
+	const Enum __getitem__(const std::string& s) const;
+	const Enum __getattr_c__(const std::string& s) const;
 
 	std::string asString() const { return "<simdata::Enumeration>"; }
 	
@@ -190,7 +193,7 @@ public:
 	%insert("shadow") %{
 	def __getattr__(*args): 
 		self, name = args
-		if name in ["this", "thisown", "__str__"]: 
+		if name.startswith('__') or name in ("this", "thisown"):
 			return _swig_getattr(self, Enumeration, name)
 		return apply(_cSimData.Enumeration___getattr_c__,args)
 	%}

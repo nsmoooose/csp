@@ -27,6 +27,10 @@ Enum::Enum(const Enumeration& parent, int idx): _parent(&parent) {
 	_name = parent[idx].asString();
 }
 
+Enum::Enum(const Enum &e): _parent(0) {
+	__assign(&e);
+}
+
 Enum::~Enum() {
 }
 
@@ -126,6 +130,12 @@ Enumeration::Enumeration(const char* items) {
 	if (_enums.size() == 0) throw EnumError("Enumeration(): empty enumeration list");
 }
 
+Enumeration::~Enumeration() { 
+	_enums.clear(); 
+	_map.clear(); 
+	_strings.clear(); 
+}
+
 const std::vector<Enum> Enumeration::each() const { return _enums; }
 
 const std::vector<std::string> Enumeration::eachString() const {
@@ -183,9 +193,9 @@ int Enumeration::__len__() const { return size(); }
 bool Enumeration::__contains__(const Enum& i) const { return contains(i); }
 bool Enumeration::__contains__(int i) const { return contains(i); }
 bool Enumeration::__contains__(const std::string& i) const { return contains(i); }
-const Enum& Enumeration::__getitem__(int n) const { return _enums[n]; }
-const Enum& Enumeration::__getitem__(const std::string& s) const { return this->operator[](s); }
-const Enum& Enumeration::__getattr_c__(const std::string& s) const {
+const Enum Enumeration::__getitem__(int n) const { return _enums[n]; }
+const Enum Enumeration::__getitem__(const std::string& s) const { return this->operator[](s); }
+const Enum Enumeration::__getattr_c__(const std::string& s) const {
 	return this->operator[](s);
 }
 

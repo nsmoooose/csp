@@ -6,6 +6,7 @@
 %include "std_string.i"
 %include "std_vector.i"
 
+%include "SimData/ns-simdata.h"
 
 %template(vEnum) std::vector<SIMDATA(Enum)>;
 
@@ -16,13 +17,14 @@
 #endif
 
 //%import "SimData/Pack.i"
-%ignore eqstring;
-%ignore hashstring;
-%ignore string_map;
+//%ignore eqstring;
+//%ignore hashstring;
+//%ignore string_map;
 
 #define TRY	try { $action }
 #define CATCH(a, b) \
 	catch (a& e) {\
+		std::cout << "EXCEPT\n"; \
 		SWIG_exception(b, const_cast<char*>(e.getError().c_str()));\
 	}
 	
@@ -34,16 +36,6 @@
 	CATCH(SIMDATA(EnumIndexError), SWIG_IndexError)
 	CATCH(SIMDATA(EnumError), SWIG_RuntimeError)
 }
-/*
-%exception Enumeration {
-	TRY
-	CATCH(EnumTypeError, SWIG_TypeError)
-	CATCH(EnumIndexError, SWIG_IndexError)
-	CATCH(EnumError, SWIG_RuntimeError)
-}
-*/		
-
-%include "SimData/ns-simdata.h"
 
 %rename(__repr__) SIMDATA(Enum)::asString() const;
 %rename(__repr__) SIMDATA(Enumeration)::asString() const;

@@ -46,7 +46,8 @@
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				DebugInformationFormat="0"
-				CompileAs="2"/>
+				CompileAs="2"
+				DisableSpecificWarnings="4511;4512;4100;4275"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
 			<Tool
@@ -121,7 +122,7 @@
 				SuppressStartupBanner="TRUE"
 				DebugInformationFormat="3"
 				CompileAs="2"
-				DisableSpecificWarnings="4511;4512;4100"/>
+				DisableSpecificWarnings="4511;4512;4100;4275;4505"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
 			<Tool

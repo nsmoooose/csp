@@ -56,20 +56,17 @@ int s_child_count = 0;
 #include <osgChunkLod/MultiTextureDetails>
 #include <osgChunkLod/RayStrip>
 
+
 #ifdef USE_CG
-#include <osgNVCg/Context>
-#include <osgNVCg/Program>
+#include <osgNV/VectorParameterValue>
 #include <osgNVCg/Parameter>
-#include <osgNVCg/VectorParameter>
 #endif
 
+
 #ifdef USE_NV
-#include <osgNV/VertexProgram>
-#include <osgNV/VectorParameter>
-#include <osgNV/StateMatrixParameter>
-#include <osgNV/RegisterCombiners>
-#include <osgNV/FinalCombinerInput>
+#include <osgNV/StateMatrixParameterValue>
 #endif
+
 
 
 #include <osg/buffered_value>
@@ -171,8 +168,7 @@ ChunkLodTree::ChunkLodTree (const char *chunksrc,
 		_canUseVertexProgram = true;
 		_useVertexProgram = true;
 
-		_cgProgram = new osgNVCg::Program (_cgContext);
-		_cgProgram->setProfile (osgNVCg::Program::ARBVP1);
+		_cgProgram = new osgNVCg::Program (_cgContext,osgNVCg::Program::ARBVP1);
 		_cgProgram->setFileName ("ChunkVertexMorph.cg");
 
 		// set up some base stuffs
@@ -189,27 +185,26 @@ ChunkLodTree::ChunkLodTree (const char *chunksrc,
 	_canUseVertexProgram = true;
 	_useVertexProgram = true;
 
-	_vp = new osgNV::VertexProgram;
+	_vp = new osgNVExt::VertexProgram;
 	_vp->readCodeFromFile("nvMorph.nvv");
-
-	_vp->addParameter(new osgNV::StateMatrixParameter(0, osgNV::StateMatrixParameter::MODELVIEW_PROJECTION));
-	_vp->addParameter(new osgNV::StateMatrixParameter(4, osgNV::StateMatrixParameter::MODELVIEW));
-	_vp_texgen0 = new osgNV::VectorParameter(8, 1.0, 1.0, 1.0, 1.0);
-	_vp->addParameter(_vp_texgen0.get());
-	_vp_texgen1 = new osgNV::VectorParameter(9, 1.0, 1.0, 1.0, 1.0);
-	_vp->addParameter(_vp_texgen1.get());
-	_vp_texgen2 = new osgNV::VectorParameter(10, 1.0, 1.0, 1.0, 1.0);
-	_vp->addParameter(_vp_texgen2.get());
-	_vp_texgen3 = new osgNV::VectorParameter(11, 1.0, 1.0, 1.0, 1.0);
-	_vp->addParameter(_vp_texgen3.get());
-	_vp_scale = new osgNV::VectorParameter(12, 0.0, 0.0, 0.0, 0.0);
-	_vp->addParameter(_vp_scale.get());
-	_vp_offset = new osgNV::VectorParameter(13, 0.0, 0.0, 0.0, 0.0);
-	_vp->addParameter(_vp_offset.get());
-	osgNV::VectorParameter *_vp_gfog = new osgNV::VectorParameter(14, 0.002, 30000.0, 0.0, 0.0);
-	_vp->addParameter(_vp_gfog);
-	_vp->addParameter(new osgNV::VectorParameter(15, 0.0, 0.0, 0.0, 1.0));
-	_vp->addParameter(new osgNV::VectorParameter(16, 0.0, 0.0, 10000.0, 1.0));
+	_vp->addParameter(new osgNVExt::VertexProgramParameter(0, new osgNV::StateMatrixParameterValue(osgNV::StateMatrixParameterValue::MODELVIEW_PROJECTION)));
+	_vp->addParameter(new osgNVExt::VertexProgramParameter(4, new osgNV::StateMatrixParameterValue(osgNV::StateMatrixParameterValue::MODELVIEW)));
+	_vp_texgen0 = new osgNV::VectorParameterValue(osg::Vec4(1.0,1.0,1.0,1.0));
+	_vp->addParameter(new osgNVExt::VertexProgramParameter(8, _vp_texgen0.get()));
+	_vp_texgen1 = new osgNV::VectorParameterValue(osg::Vec4(1.0,1.0,1.0,1.0));
+	_vp->addParameter(new osgNVExt::VertexProgramParameter(9,_vp_texgen1.get()));
+	_vp_texgen2 = new osgNV::VectorParameterValue(osg::Vec4(1.0, 1.0, 1.0, 1.0));
+	_vp->addParameter(new osgNVExt::VertexProgramParameter(10,_vp_texgen2.get()));
+	_vp_texgen3 = new osgNV::VectorParameterValue(osg::Vec4(1.0, 1.0, 1.0, 1.0));
+	_vp->addParameter(new osgNVExt::VertexProgramParameter(11,_vp_texgen3.get()));
+	_vp_scale = new osgNV::VectorParameterValue(osg::Vec4(0.0, 0.0, 0.0, 0.0));
+	_vp->addParameter(new osgNVExt::VertexProgramParameter(12,_vp_scale.get()));
+	_vp_offset = new osgNV::VectorParameterValue(osg::Vec4(0.0, 0.0, 0.0, 0.0));
+	_vp->addParameter(new osgNVExt::VertexProgramParameter(13,_vp_offset.get()));
+	osgNV::VectorParameterValue *_vp_gfog = new osgNV::VectorParameterValue(osg::Vec4(0.002, 30000.0, 0.0, 0.0));
+	_vp->addParameter(new osgNVExt::VertexProgramParameter(14,_vp_gfog));
+	_vp->addParameter(new osgNVExt::VertexProgramParameter(15,new osgNV::VectorParameterValue(osg::Vec4(0.0, 0.0, 0.0, 1.0))));
+	_vp->addParameter(new osgNVExt::VertexProgramParameter(16,new osgNV::VectorParameterValue(osg::Vec4(0.0, 0.0, 10000.0, 1.0))));
 #else
 	_canUseVertexProgram = false;
 	_useVertexProgram = false;
@@ -1189,7 +1184,7 @@ ChunkLodData::render (const ChunkLodTree& c,
 #ifdef USE_CG
 		c.getCgScaleValueParameter()->set (sx, c.getVerticalScale(), sz);
 		c.getCgOffsetValueParameter()->set (offsetx, 1.0f - f, offsetz);
-		s.applyAttribute (c.getCgContext());
+		s.applyAttribute (c.getCgProgram());
 #else
 #ifdef USE_NV
 		c._vp_scale->set(sx, c.getVerticalScale(), sz);
@@ -1219,7 +1214,7 @@ ChunkLodData::render (const ChunkLodTree& c,
 		c._vp->CustomVertexProgram::apply(s);
 		// this is an ugly hack to force the vertex parameters to be
 		// reloaded in between stateset changes
-		static osg::ref_ptr<osgNV::VertexProgram> dummy = new osgNV::VertexProgram;
+		static osg::ref_ptr<osgNVExt::VertexProgram> dummy = new osgNVExt::VertexProgram;
 		s.haveAppliedAttribute(dummy.get());
 		bool applied = s.applyAttribute(c._vp.get());
 		if (!applied) return 0;

@@ -59,16 +59,11 @@
 #ifdef USE_CG
 #include <osgNVCg/Context>
 #include <osgNVCg/Program>
-#include <osgNVCg/Parameter>
-#include <osgNVCg/VectorParameter>
 #endif
 
 #ifdef USE_NV
-#include <osgNV/VertexProgram>
-#include <osgNV/VectorParameter>
-#include <osgNV/StateMatrixParameter>
-#include <osgNV/RegisterCombiners>
-#include <osgNV/FinalCombinerInput>
+#include <osgNVExt/VertexProgram>
+#include <osgNV/VectorParameterValue>
 #endif
 
 namespace osgChunkLod {
@@ -330,8 +325,8 @@ namespace osgChunkLod {
 #ifdef USE_CG
 		inline osgNVCg::Context * getCgContext() const { return _cgContext; }
 		inline osgNVCg::Program * getCgProgram() const { return _cgProgram; }
-		inline osgNVCg::VectorParameter * getCgScaleValueParameter() const { return _cgScaleValParam; }
-		inline osgNVCg::VectorParameter * getCgOffsetValueParameter() const { return _cgOffsetValParam; }
+		inline osgNV::VectorParameterValue * getCgScaleValueParameter() const { return _cgScaleValParam; }
+		inline osgNV::VectorParameterValue * getCgOffsetValueParameter() const { return _cgOffsetValParam; }
 #endif
 		
 	private:
@@ -384,19 +379,19 @@ namespace osgChunkLod {
 #ifdef USE_CG
 		 osgNVCg::Context * _cgContext;
 		 osgNVCg::Program * _cgProgram;
-		 osgNVCg::VectorParameter * _cgScaleValParam;
-		 osgNVCg::VectorParameter * _cgOffsetValParam;
+		 osgNV::VectorParameterValue * _cgScaleValParam;
+		 osgNV::VectorParameterValue * _cgOffsetValParam;
 #else
 #ifdef USE_NV
 		 /// XXX
 		 public:
-mutable		 osg::ref_ptr<osgNV::VertexProgram>  _vp;
-mutable		 osg::ref_ptr<osgNV::VectorParameter> _vp_texgen0;
-mutable		 osg::ref_ptr<osgNV::VectorParameter> _vp_texgen1;
-mutable		 osg::ref_ptr<osgNV::VectorParameter> _vp_texgen2;
-mutable		 osg::ref_ptr<osgNV::VectorParameter> _vp_texgen3;
-mutable		 osg::ref_ptr<osgNV::VectorParameter> _vp_scale;
-mutable		 osg::ref_ptr<osgNV::VectorParameter> _vp_offset;
+mutable		 osg::ref_ptr<osgNVExt::VertexProgram>  _vp;
+mutable		 osg::ref_ptr<osgNV::VectorParameterValue> _vp_texgen0;
+mutable		 osg::ref_ptr<osgNV::VectorParameterValue> _vp_texgen1;
+mutable		 osg::ref_ptr<osgNV::VectorParameterValue> _vp_texgen2;
+mutable		 osg::ref_ptr<osgNV::VectorParameterValue> _vp_texgen3;
+mutable		 osg::ref_ptr<osgNV::VectorParameterValue> _vp_scale;
+mutable		 osg::ref_ptr<osgNV::VectorParameterValue> _vp_offset;
 		 private:
 		 /// XXX
 #endif 

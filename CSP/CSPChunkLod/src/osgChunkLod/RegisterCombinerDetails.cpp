@@ -24,10 +24,10 @@
 
 #ifdef USE_NV
 #include <osgNV/Version>
-#include <osgNV/RegisterCombiners>
-#include <osgNV/CombinerInput>
-#include <osgNV/CombinerOutput>
-#include <osgNV/FinalCombinerInput>
+#include <osgNVExt/RegisterCombiners>
+#include <osgNVExt/CombinerInput>
+#include <osgNVExt/CombinerOutput>
+#include <osgNVExt/FinalCombinerInput>
 #endif
 
 #include <osgDB/ReadFile>
@@ -46,34 +46,34 @@ public:
 	}
 
 	void init(osg::StateSet *ss) {
-		_rc = new osgNV::RegisterCombiners;
+		_rc = new osgNVExt::RegisterCombiners;
 		_rc->setNumCombiners(2);
 		osg::Vec3 light_dir(0.0, 0.707, 0.707);
 		_rc->setConstantColor0(osg::Vec4(light_dir, 0));
 		_rc->setConstantColor1(osg::Vec4(1,1,1,1));
 
-		_rc->addParameter(new osgNV::CombinerInput(0, "RGB A CONSTANT_COLOR_0 SIGNED_IDENTITY NORMAL RGB")); // L
-		_rc->addParameter(new osgNV::CombinerInput(0, "RGB B TEXTURE_1 EXPAND NORMAL RGB")); // NORMAL
-		_rc->addParameter(new osgNV::CombinerInput(0, "RGB C PRIMARY_COLOR EXPAND NORMAL RGB")); // H
-		_rc->addParameter(new osgNV::CombinerInput(0, "RGB D TEXTURE_1 EXPAND NORMAL RGB")); // NORMAL
-		_rc->addParameter(new osgNV::CombinerOutput(0, "RGB SPARE_0 SPARE_1 DISCARD SCALE_NONE BIAS_NONE 1 1 0"));
+		_rc->addParameter(new osgNVExt::CombinerInput(0, "RGB A CONSTANT_COLOR_0 SIGNED_IDENTITY NORMAL RGB")); // L
+		_rc->addParameter(new osgNVExt::CombinerInput(0, "RGB B TEXTURE_1 EXPAND NORMAL RGB")); // NORMAL
+		_rc->addParameter(new osgNVExt::CombinerInput(0, "RGB C PRIMARY_COLOR EXPAND NORMAL RGB")); // H
+		_rc->addParameter(new osgNVExt::CombinerInput(0, "RGB D TEXTURE_1 EXPAND NORMAL RGB")); // NORMAL
+		_rc->addParameter(new osgNVExt::CombinerOutput(0, "RGB SPARE_0 SPARE_1 DISCARD SCALE_NONE BIAS_NONE 1 1 0"));
 
-		_rc->addParameter(new osgNV::CombinerInput(1, "RGB A TEXTURE_0 EXPAND NORMAL RGB")); // DIFFUSE
-		_rc->addParameter(new osgNV::CombinerInput(1, "RGB B SPARE_0 UNSIGNED_IDENTITY NORMAL RGB")); // N.L 
-		_rc->addParameter(new osgNV::CombinerInput(1, "RGB C SPARE_1 UNSIGNED_IDENTITY NORMAL RGB")); // N.H
-		_rc->addParameter(new osgNV::CombinerInput(1, "RGB D SPARE_1 UNSIGNED_IDENTITY NORMAL RGB")); // N.H
-		_rc->addParameter(new osgNV::CombinerOutput(1, "RGB SPARE_0 SPARE_1 DISCARD SCALE_NONE BIAS_NONE 0 0 0"));
+		_rc->addParameter(new osgNVExt::CombinerInput(1, "RGB A TEXTURE_0 EXPAND NORMAL RGB")); // DIFFUSE
+		_rc->addParameter(new osgNVExt::CombinerInput(1, "RGB B SPARE_0 UNSIGNED_IDENTITY NORMAL RGB")); // N.L 
+		_rc->addParameter(new osgNVExt::CombinerInput(1, "RGB C SPARE_1 UNSIGNED_IDENTITY NORMAL RGB")); // N.H
+		_rc->addParameter(new osgNVExt::CombinerInput(1, "RGB D SPARE_1 UNSIGNED_IDENTITY NORMAL RGB")); // N.H
+		_rc->addParameter(new osgNVExt::CombinerOutput(1, "RGB SPARE_0 SPARE_1 DISCARD SCALE_NONE BIAS_NONE 0 0 0"));
 
 		// TODO alpha mux
 		//_rc->addParameter(new osgNV::CombinerInput(1, "ALPHA A SPARE_1 UNSIGNED_IDENTITY NORMAL RGB")); // N.H
 
-		_rc->addParameter(new osgNV::FinalCombinerInput("A CONSTANT_COLOR_1 UNSIGNED_IDENTITY RGB"));
-		_rc->addParameter(new osgNV::FinalCombinerInput("B E_TIMES_F        UNSIGNED_IDENTITY RGB"));
-		_rc->addParameter(new osgNV::FinalCombinerInput("C ZERO             UNSIGNED_IDENTITY RGB"));
-		_rc->addParameter(new osgNV::FinalCombinerInput("D SPARE_0          UNSIGNED_IDENTITY RGB"));
-		_rc->addParameter(new osgNV::FinalCombinerInput("E SPARE_1          UNSIGNED_IDENTITY RGB"));
-		_rc->addParameter(new osgNV::FinalCombinerInput("F SPARE_1          UNSIGNED_IDENTITY RGB"));
-		_rc->addParameter(new osgNV::FinalCombinerInput("G ZERO             UNSIGNED_INVERT   ALPHA"));
+		_rc->addParameter(new osgNVExt::FinalCombinerInput("A CONSTANT_COLOR_1 UNSIGNED_IDENTITY RGB"));
+		_rc->addParameter(new osgNVExt::FinalCombinerInput("B E_TIMES_F        UNSIGNED_IDENTITY RGB"));
+		_rc->addParameter(new osgNVExt::FinalCombinerInput("C ZERO             UNSIGNED_IDENTITY RGB"));
+		_rc->addParameter(new osgNVExt::FinalCombinerInput("D SPARE_0          UNSIGNED_IDENTITY RGB"));
+		_rc->addParameter(new osgNVExt::FinalCombinerInput("E SPARE_1          UNSIGNED_IDENTITY RGB"));
+		_rc->addParameter(new osgNVExt::FinalCombinerInput("F SPARE_1          UNSIGNED_IDENTITY RGB"));
+		_rc->addParameter(new osgNVExt::FinalCombinerInput("G ZERO             UNSIGNED_INVERT   ALPHA"));
 
 		ss->setAttributeAndModes(_rc.get());
 	}
@@ -111,7 +111,7 @@ public:
 
 
 protected:
-	osg::ref_ptr<osgNV::RegisterCombiners> _rc;
+	osg::ref_ptr<osgNVExt::RegisterCombiners> _rc;
 #endif
 
 };

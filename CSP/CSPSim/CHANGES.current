@@ -2,9 +2,40 @@
 ===========================
 
 2004-06-12: wolverine
+  * Added Dispatch.h as a possible way to dispatch network messages through
+    object hierarchies.  Not integrated with the build yet.
+
+2004-06-12: wolverine
   * Switching the writing of network buffers to use a SimData MemoryWriter.
     Switched the code that reads network buffers to use a SimData 
     MemoryReader
+
+2004-06-11: onsight
+  * Removed most serialize() methods, since SimData now handles saving and
+    loading of the public XML interface automatically.  Minor tweaks to
+    Sky.cpp to serialize the stars (which don't use the standard XML
+    facilities).
+
+  * Added a relative path to SimData in the working copy to the Python path
+    in CSPSim.py so that SimData will not be loaded from site-packages.  The
+    idea is that CSPSim and SimData will be developed concurrently, and we
+    don't want to have to go through a separate install process everytime
+    something changes.  Changes to SimData that require simultaneous changes
+    to CSPSim should be checked in as one submission.
+
+  * Added an exception handler to CSPSim to suppress a stack trace when the
+    data compiler fails.  The real trace is already logged, and this makes
+    the error message more visible.
+
+  * Changed the configure script under Linux to look for SimData in the
+    working copy rather than site-packages.  Not quite working so currently
+    disabled.  Also set the SimData include path to be local in the Makefile.
+
+==> Windows devs: please change the project file to use the working copy
+    of SimData rather than the version installed in site-packages.
+
+  * Added GNU Common C++ check to the configure script, and include/libs
+    to the Makefile templates.
 
 2004-06-10: wolverine
   * Merged the networking classes MessageSocketDuplex into

@@ -85,7 +85,7 @@ bool RecordCodec::registerMessageId(TaggedRecord::Id id, int local_id) {
 	simdata::TaggedRecordRegistry const &registry = simdata::TaggedRecordRegistry::getInstance();
 	simdata::TaggedRecordFactoryBase const *factory = registry.getFactory(id);
 	if (!factory) return false;
-	simdata::uint16 current_id = factory->getCustomId();
+	simdata::uint16 current_id = static_cast<simdata::uint16>(factory->getCustomId());
 	if (current_id == local_id) {
 		SIMDATA_VERIFY(m_Factories[current_id] == factory);
 		return true;

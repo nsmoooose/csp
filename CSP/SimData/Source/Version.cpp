@@ -25,9 +25,6 @@
 
 
 #include <SimData/Version.h>
-#include <cstdio>
-#include <iostream>
-#include <iomanip>
 
 #define SIMDATA_BUILD_DATE __TIME__ " " __DATE__
 

@@ -63,18 +63,22 @@ private:
  *
  *  Example usage:
  *
+ * 	@code
  *  template <class FOO>
  *  class Widget: HasBase<FOO, Bar>, public WidgetBase {
  *  ...
  *  };
+ *  @endcode
  *
  *  This will only allow Widget<FOO> to compile if FOO is a subclass of
  *  class Bar:
  *
+ *  @code
  *  class BarChild: public Bar { };
  *  class NotBarChild { };
  *  Widget<BarChild> bar_widget;  // ok
  *  Widget<NotBarChild> not_bar_widget;  // compiler error
+ *  @endcode
  *
  *  @author Mark Rose <mkrose@users.sourceforge.net>
  */

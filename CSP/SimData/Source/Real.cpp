@@ -101,6 +101,5 @@ std::string Real:: asString() const {
 }
 
 
-
 NAMESPACE_SIMDATA_END
 

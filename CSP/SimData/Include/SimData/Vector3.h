@@ -324,7 +324,7 @@ public:
 	virtual void serialize(Reader&);
 	virtual void serialize(Writer&) const;
 
-	/** Parse the character data from an XML <Vector> tag.
+	/** Parse the character data from an XML \<Vector\> tag.
 	 *
 	 *  The three components must be separated by whitespace.
 	 */

@@ -912,11 +912,15 @@ public:
 	/** Parse date/time string from XML cdata.
 	 *
 	 *  The format is either:
-  	 *    <Date name='...'>yyyy-mm-dd hh-mm-ss.ms</Date>
-         *  where '.ms' is optional, or:
-         *    <Date name='...'>yyyy-mm-dd</Date>
+	 *  @code
+	 *    <Date name='...'>yyyy-mm-dd hh-mm-ss.ms</Date>
+	 *  @endcode
+	 *  where '.ms' is optional, or:
+	 *  @code
+	 *    <Date name='...'>yyyy-mm-dd</Date>
+	 *  @endcode
 	 *  in which case the time is set to zero.
-         */
+	 */
 	virtual void parseXML(const char* cdata);
 	
 };

@@ -1,9 +1,12 @@
 Version 0.4.0 (in progress)
 ===========================
 
+2004-09-24: onsight
+ * Minor cleanups, mostly doxygen related.
+
 2004-09-16: delta
- * Tried to reduce the impact of including windows API headers on the 
-	code.
+ * Tried to reduce the impact of including windows API headers on the
+   code.
 
 2004-09-12: onsight
  * Add an interface for creating and retrieving log streams based on

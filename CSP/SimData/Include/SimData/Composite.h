@@ -429,13 +429,13 @@ private:
 
 
 template <class N>
-void VisitorCore<N>::descend(CompositeBase<N> &node) {
+void VisitorCore<N>::descend(Node &node) {
 	node.descend(this);
 };
 
 
 template <class N>
-void VisitorCore<N>::ascend(CompositeBase<N> &node) {
+void VisitorCore<N>::ascend(Node &node) {
 	node.ascend(this);
 };
 

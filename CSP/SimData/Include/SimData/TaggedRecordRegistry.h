@@ -108,7 +108,7 @@ public:
 	
 	/** Test if an object interface is registered.
 	 *
-	 *  @param key The object class hash.
+	 *  @param id The object class hash.
 	 */
 	bool hasFactory(TaggedRecord::Id id) const {
 		HashT key(static_cast<uint32>(id), static_cast<uint32>(id>>32));

@@ -91,7 +91,7 @@ public:
 	/** String compare unequal
 	 */
 	bool operator!=(std::string const &k) const { return !(*this==k); }
-	
+
 	/** Order comparison, for use with standard stl comparisons
 	 */
 	bool operator<(Key const &k) const { return _key < k._key; }
@@ -100,7 +100,7 @@ public:
 	 */
 	virtual void serialize(Reader&);
 	virtual void serialize(Writer&) const;
-	
+
 	/** Standard string representation.
 	 */
 	virtual std::string asString() const;

@@ -29,6 +29,8 @@
 
 #include "LogoScreen.h"
 
+#include <ctime>
+
 #include <osg/Geode>
 #include <osg/Geometry>
 #include <osg/Texture2D>
@@ -90,10 +92,7 @@ public:
 				m_ImageList.push_back(image);
 		}
 		if (!file_name.empty()) {
-			__time64_t ltime;
-			_time64( &ltime );
-			unsigned int seed = static_cast<unsigned int>(ltime);
-			srand(seed);
+			srand(static_cast<unsigned int>(time(0)));
 			m_CurrPos = rand() % file_name.size();
 			setValue();
 		}

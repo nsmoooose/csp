@@ -92,25 +92,34 @@ class DataPackCompiler:
     includes = []
     namespace = ''
     include_as = '"%s"' % os.path.basename(self._header)
+    id_base = None
+    default_base = None
     header = 1
     for line in file:
       line_number = line_number + 1
       trim = line.strip()
       if not trim: continue
-      if header and trim.startswith('#include'):
-        includes.append(trim)
-        continue
-      if header and trim.startswith('#header'):
-        include_as = trim[7:].strip()
-        continue
-      if header and trim.startswith('namespace'):
-        m = DataPackCompiler.re_ns.match(trim)
-        if m:
-          if namespace: self.error('multiple namespace declarations')
-          namespace = m.groups(1)
+      if header:
+        if trim.startswith('#include'):
+          includes.append(trim)
           continue
-        else:
-          self.error('syntax error')
+        if trim.startswith('#header'):
+          include_as = trim[7:].strip()
+          continue
+        if trim.startswith('#message '):
+          default_base = trim[8:].strip()
+          continue
+        if trim.startswith('#idbase '):
+          id_base = int(trim[7:])
+          continue
+        if trim.startswith('namespace'):
+          m = DataPackCompiler.re_ns.match(trim)
+          if m:
+            if namespace: self.error('multiple namespace declarations')
+            namespace = m.groups(1)
+            continue
+          else:
+            self.error('syntax error')
       if trim.startswith('//'):
         continue
       idx = trim.rfind('//')
@@ -161,6 +170,15 @@ class DataPackCompiler:
           for option_pair in option_list:
             option, value = option_pair.split('=')
             options[option] = value
+        else:
+          options = {}
+        if type_class.TOPLEVEL:
+          if default_base:
+            options.setdefault('BASE', default_base)
+          if id_base is not None and type_class.TOPLEVEL:
+            if not options.has_key('ID'):
+              options['ID'] = str(id_base)
+              id_base += 1
         if array:
           object = BaseTypes.ArrayType(id, type_class, opts=options)
         else:

@@ -107,13 +107,29 @@ public:
 		return (_running ? get_realtime() - _start + _elapsed : _elapsed);
 	}
 
-	/// Reset the elapsed time to zero (does not stop the timer).
+	/** Reset the elapsed time to zero (does not stop the timer).
+	 */
 	inline void reset() {
 		if (_running) {
 			_start = get_realtime();
 		}
 		_elapsed = 0;
 	}
+
+	/** Return the elapsed time and reset the timer to zero (does not
+	 *  stop the timer).
+	 */
+	inline timing_t incremental() {
+		timing_t elapsed = _elapsed;
+		_elapsed = 0;
+		if (_running) {
+			timing_t start = _start;
+			_start = get_realtime();
+			elapsed += (_start - start);
+		}
+		return elapsed;
+	}
+
 };
 
 

@@ -1,12 +1,21 @@
 Version 0.4.0 (in progress)
 ===========================
 
+2004-11-14: onsight
+* Added a method to Timer to both return and reset the elapsed time.
+
+* Set the SWIG_STD_BACKWARD_COMP flag to the Scons script to fix the
+  build under Swig 1.3.22.
+
+* Added message id generation to the tagged record compiler.  Also
+  inlined several of the generated methods.
+
 2004-11-11: delta
  * Added SWIG_STD_BACKWARD_COMP to the swig command line in SimData.vcproj
    for swig 1.3.22.
- 
+
  * Added a few pragmas for insignificant warnings.
- 
+
 2004-11-10: onsight
  * Another bug fix in Parse.py, this time for TableN types.   Prevents
    spurious complaints about missing required fields.

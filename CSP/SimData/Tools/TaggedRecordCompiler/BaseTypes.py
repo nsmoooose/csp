@@ -71,7 +71,7 @@ class Declaration:
     format.write(text)
 
   def dump_clear(self, format):
-    format.write('void clear_%s() { m_has_%s = 0; }' % (self.id, self.id))
+    format.write('inline void clear_%s() { m_has_%s = 0; }' % (self.id, self.id))
 
   def init(self): pass
   def dump_private(self, format): assert 0
@@ -170,7 +170,7 @@ class CompoundType(Declaration):
       format.write('}')
       format.write()
     for element in self.elements:
-      format.write('bool has_%s() const { return m_has_%s; }' % (element.id, element.id))
+      format.write('inline bool has_%s() const { return m_has_%s; }' % (element.id, element.id))
       element.dump_clear(format)
     format.write()
     for element in self.elements:
@@ -304,7 +304,7 @@ class SimpleType(Declaration):
   def dump_get(self, format):
     type = self.typename()
     id = self.id
-    format.write('%s const & %s() const { return m_%s; }' % (type, id, id))
+    format.write('inline %s const & %s() const { return m_%s; }' % (type, id, id))
 
   def dump_set(self, format):
     if self.isDeprecated(): return
@@ -366,7 +366,7 @@ class ArrayType(Declaration):
     type = self.child.fulltype()
     id = self.id
     name = self.varname()
-    format.write('std::vector< %s > const & %s() const { return %s; }' % (type, id, name))
+    format.write('inline std::vector< %s > const & %s() const { return %s; }' % (type, id, name))
 
   def dump_set(self, format):
     if self.isDeprecated(): return
@@ -631,6 +631,10 @@ class t_int64(TrfType): TYPENAME = 'int64'
 class t_int32(TrfType): TYPENAME = 'int32'
 class t_int16(TrfType): TYPENAME = 'int16'
 class t_int8(TrfType): TYPENAME = 'int8'
+class t_uint64(TrfType): TYPENAME = 'uint64'
+class t_uint32(TrfType): TYPENAME = 'uint32'
+class t_uint16(TrfType): TYPENAME = 'uint16'
+class t_uint8(TrfType): TYPENAME = 'uint8'
 class t_string(SimpleType): TYPENAME = 'std::string'
 
 
@@ -658,6 +662,10 @@ TYPES.extend([
   t_int32,
   t_int16,
   t_int8,
+  t_uint64,
+  t_uint32,
+  t_uint16,
+  t_uint8,
   t_bool,
   t_string,
 ])

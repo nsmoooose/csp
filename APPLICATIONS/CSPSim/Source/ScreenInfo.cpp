@@ -262,7 +262,7 @@ void GeneralStats::update() {
 		m_Velocity->setText(osstr.str());
 
 		osstr.str("");
-		osstr << setprecision(2) << fixed << vel.Length();
+		osstr << setprecision(2) << fixed << vel.length();
 		m_Magnitude->setText(osstr.str());
 	}
 }

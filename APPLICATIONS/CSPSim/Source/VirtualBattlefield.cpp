@@ -1003,7 +1003,7 @@ void VirtualBattlefield::getObjectsInRange(SimObject * fromObj, float range, flo
 		SimObject *toObj = (SimObject*)*i;
 		if (fromObj->getObjectID() != toObj->getObjectID() && toObj->getArmy() == army) {
 			simdata::Vector3 distVect = toObj->getGlobalPosition() - fromObj->getGlobalPosition();
-			float dist = distVect.Length();
+			float dist = distVect.length();
 			simdata::Vector3 distVectNormalized = Normalized(distVect);
 			float angle = simdata::angleBetweenTwoVectors(fromObj->getDirection(), distVectNormalized);
 			angle = angle*360.0/3.1415/2.0;
@@ -1048,7 +1048,7 @@ bool VirtualBattlefield::doSphereTest( SimObject * pObj1, SimObject * pObj2)
 void VirtualBattlefield::getObjectDistance(SimObject * fromObject, SimObject * toObject, float & distance, simdata::Vector3 & direction)
 {
 	simdata::Vector3 distVect = fromObject->getGlobalPosition() - toObject->getGlobalPosition();
-	distance = distVect.Length();
+	distance = distVect.length();
 	direction = Normalized(distVect);
 }
 */

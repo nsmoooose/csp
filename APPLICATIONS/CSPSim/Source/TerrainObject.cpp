@@ -102,7 +102,7 @@ TerrainObject::Intersection::Intersection(simdata::Vector3 const &start, simdata
 }
 
 float TerrainObject::Intersection::getDistance() const { 
-	return _hit ? (_end - _start).Length() * _ratio : -1.0f;
+	return _hit ? (_end - _start).length() * _ratio : -1.0f;
 }
 
 void TerrainObject::Intersection::setHit(float ratio, simdata::Vector3 const &normal) { 

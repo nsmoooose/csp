@@ -32,7 +32,7 @@
 #include "Log.h" 
 
 #include <SimData/Math.h>
-#include <SimData/Quaternion.h>
+#include <SimData/Quat.h>
 
 
 using simdata::RadiansToDegrees;
@@ -139,7 +139,7 @@ double FlightDynamics::controlInputValue(double p_gForce) const {
 
 void FlightDynamics::updateAirflow(double h) {
 	m_AirflowBody =	*m_VelocityBody - *m_WindBody;
-	m_Airspeed = m_AirflowBody.Length();
+	m_Airspeed = m_AirflowBody.length();
 	m_Alpha = -atan2(m_AirflowBody.z, m_AirflowBody.y); 
 	if (h > 0.0) {
 		m_AlphaDot = ( m_Alpha - m_Alpha0 ) / h;

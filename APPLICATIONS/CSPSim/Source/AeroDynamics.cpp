@@ -30,7 +30,7 @@
 
 #include <SimData/InterfaceRegistry.h>
 #include <SimData/Math.h>
-#include <SimData/Quaternion.h>
+#include <SimData/Quat.h>
 
 #include <algorithm>
 
@@ -184,7 +184,7 @@ void AeroDynamics::initialize()
 	m_Rudder = 0.0;
 	m_ThrustForce = simdata::Vector3::ZERO;
 	
-	m_qOrientation = simdata::Quaternion(1,0,0,0);
+	m_qOrientation = simdata::Quat(1,0,0,0);
 
 	m_AngularAccelBody = simdata::Vector3::ZERO;
 	m_LinearAccelBody = simdata::Vector3::ZERO;
@@ -232,7 +232,7 @@ void AeroDynamics::postCreate()
 
 
 void AeroDynamics::bindObject(simdata::Vector3 &position, simdata::Vector3 &velocity, simdata::Vector3 &angular_velocity,
-								simdata::Quaternion &orientation) {
+								simdata::Quat &orientation) {
 	m_Position = &position;
 	m_Velocity = &velocity;
 	m_AngularVelocity = &angular_velocity;
@@ -286,13 +286,13 @@ void run_test(AeroDynamics &a, unsigned short int &m_Maxi,
 	simdata::Vector3 &p,
 	simdata::Vector3 &v,
 	simdata::Vector3 &av,
-	simdata::Quaternion &o)
+	simdata::Quat &o)
 {
 	int run;
 	double dt = 0.000500;
 	simdata::Vector3 _p = p;
 	simdata::Vector3 _av = av;
-	simdata::Quaternion _o = o;
+	simdata::Quat _o = o;
 
 	for (run = 0; run < 16; run++) {
 		a.setControlSurfaces(0.1, 0.35, 0.0);
@@ -306,7 +306,7 @@ void run_test(AeroDynamics &a, unsigned short int &m_Maxi,
 			m_Maxi = 100;
 			a.doSimStep(dt);
 		}
-		printf("%d %6d %8.3f\n", run, int(dt*1e+6), v.LengthSquared());
+		printf("%d %6d %8.3f\n", run, int(dt*1e+6), v.length2());
 		dt = dt * 1.5;
 	}
 }
@@ -324,7 +324,7 @@ bool AeroDynamics::isNearGround() {
 			// component to bring us back up.
 			m_VelocityLocal.z = 100.0;
 			simdata::Vector3 axis = Normalized(m_VelocityLocal) ^ simdata::Vector3::ZAXIS;
-			double angle = acos(axis.Length());
+			double angle = acos(axis.length());
 			qOrientation.FromAngleAxis(angle, axis);
 		}
 #endif
@@ -409,7 +409,7 @@ void AeroDynamics::doSimStep(double dt)
 		}
 
 		AirflowBody = LocalToBody(m_VelocityLocal - Wind);
-		m_AirSpeed = AirflowBody.Length();
+		m_AirSpeed = AirflowBody.length();
 		// prevent singularities
 		if (m_AirSpeed < 1.0) m_AirSpeed = 1.0;
 
@@ -504,7 +504,7 @@ void AeroDynamics::doSimStep(double dt)
 							if (height < -1.0) height = -1.0;
 							scale = -2.0 * groundK * height;  // 2 G slide
 							// reduce to zero as speed drops
-							double v = V.Length();
+							double v = V.length();
 							scale = scale / (0.1 + v);
 							// limit to 4G max
 							if (scale * v > m_Mass * 40.0) {
@@ -902,14 +902,14 @@ std::vector<double> const &AeroDynamics::_f(double x, std::vector<double> &y) {
 	m_PositionLocal = *m_Position + BodyToLocal(simdata::Vector3(y[0],y[1],y[2]));
 	m_VelocityBody = simdata::Vector3(y[3],y[4],y[5]);
 	m_AngularVelocityBody = damping * simdata::Vector3(y[6],y[7],y[8]);
-	m_qOrientation = simdata::Quaternion(y[9],y[10],y[11],y[12]);
+	m_qOrientation = simdata::Quat(y[9],y[10],y[11],y[12]);
 	double mag = m_qOrientation.Magnitude();
 	if (mag != 0.0) 
 		m_qOrientation /= mag;
 	y[9]  = m_qOrientation.w; y[10] = m_qOrientation.x; y[11] = m_qOrientation.y; y[12] = m_qOrientation.z;
 
 	m_AirflowBody = m_VelocityBody - LocalToBody(m_WindLocal);
-	m_AirSpeed = m_AirflowBody.Length();
+	m_AirSpeed = m_AirflowBody.length();
 	if (m_AirSpeed < 1.0) m_AirSpeed = 1.0;
 	m_qBarS = m_qBarFactor * m_AirSpeed * m_AirSpeed;
 
@@ -964,7 +964,7 @@ std::vector<double> const &AeroDynamics::_f(double x, std::vector<double> &y) {
 				                  (m_MomentsBody - (m_AngularVelocityBody^(m_Inertia * m_AngularVelocityBody)));
 	
 	// quaternion derivative and w in body coordinates: q' = 0.5 * q * w
-	simdata::Quaternion qprim = 0.5 * m_qOrientation * m_AngularVelocityBody;
+	simdata::Quat qprim = 0.5 * m_qOrientation * m_AngularVelocityBody;
 
 	// p' = v
 	dy[0] = y[3]; dy[1] = y[4]; dy[2] = y[5];
@@ -981,7 +981,7 @@ std::vector<double> const &AeroDynamics::_f(double x, std::vector<double> &y) {
 std::vector<double> const &bind(simdata::Vector3 const &p,
                                 simdata::Vector3 const &v,
                                 simdata::Vector3 const &w,
-                                simdata::Quaternion const &q) {
+                                simdata::Quat const &q) {
 	static std::vector<double> y(13);
 	y[0] = p.x; y[1] = p.y; y[2] = p.z;
 	y[3] = v.x; y[4] = v.y; y[5] = v.z;
@@ -1047,7 +1047,7 @@ void AeroDynamics::doSimStep2(double dt) {
 		m_qOrientation = *m_Orientation;
 
 		m_AirflowBody =	LocalToBody(m_VelocityLocal	- m_WindLocal);
-		m_AirSpeed = m_AirflowBody.Length();
+		m_AirSpeed = m_AirflowBody.length();
 		// prevent singularities
 		if (m_AirSpeed < 1.0) m_AirSpeed = 1.0;
 
@@ -1074,7 +1074,7 @@ void AeroDynamics::doSimStep2(double dt) {
 		BodyToLocal();
 
 		// update attitude and check for a unit quaternion
-		m_qOrientation = simdata::Quaternion(y[9],y[10],y[11],y[12]);
+		m_qOrientation = simdata::Quat(y[9],y[10],y[11],y[12]);
 		double mag = m_qOrientation.Magnitude();
 		if (mag	!= 0.0)
 			m_qOrientation /=	mag;

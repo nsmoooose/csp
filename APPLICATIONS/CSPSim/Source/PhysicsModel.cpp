@@ -31,7 +31,7 @@
 PhysicsModel::PhysicsModel(unsigned short dimension):
 	DynamicalSystem(dimension),
 	m_Damping(1.0),
-	m_qOrientation(simdata::Quaternion(1.0,0.0,0.0,0.0)),
+	m_qOrientation(simdata::Quat(1.0,0.0,0.0,0.0)),
 	m_ForcesBody(simdata::Vector3::ZERO),
 	m_MomentsBody(simdata::Vector3::ZERO),
 	m_AngularAccelBody(simdata::Vector3::ZERO),
@@ -48,7 +48,7 @@ PhysicsModel::~PhysicsModel() {
 }
 
 void PhysicsModel::bindObject(simdata::Vector3 &position, simdata::Vector3 &velocity, simdata::Vector3 &angular_velocity,
-							 simdata::Quaternion &orientation) {
+							 simdata::Quat &orientation) {
 	m_Position = &position;
 	m_Velocity = &velocity;
 	m_AngularVelocity = &angular_velocity;
@@ -93,7 +93,7 @@ simdata::Vector3 PhysicsModel::bodyToLocal(simdata::Vector3 const &vec ) {
 std::vector<double> const &PhysicsModel::bodyToY(simdata::Vector3 const &p,
                                 simdata::Vector3 const &v,
                                 simdata::Vector3 const &w,
-                                simdata::Quaternion const &q) {
+                                simdata::Quat const &q) {
 	static std::vector<double> y(13);
 	y[0] = p.x; y[1] = p.y; y[2] = p.z;
 	y[3] = v.x; y[4] = v.y; y[5] = v.z;
@@ -147,7 +147,7 @@ void PhysicsModel::updateAeroParameters(double dt) {
 		m_qBar = 1.25; // nominal sea-level air density
 		m_WindBody = simdata::Vector3::ZERO;
 	}
-	double air_speed = m_WindBody.Length();
+	double air_speed = m_WindBody.length();
 	m_Distance += air_speed * dt;
 }
 

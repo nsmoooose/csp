@@ -523,13 +523,13 @@ void AircraftObject::MarkersToggle() {
 
 void AircraftObject::setAttitude(double pitch, double roll, double heading)
 {
-	simdata::Quaternion attitude;
+	simdata::Quat attitude;
 	m_Pitch = pitch;
 	m_Roll = roll;
 	m_Heading = heading;
 	
 	// use standard Euler convension (X axis is roll, Y is pitch, Z is yaw).
-	attitude = simdata::Quaternion::MakeQFromEulerAngles(m_Roll, m_Pitch, -m_Heading);
+	attitude = simdata::Quat::MakeQFromEulerAngles(m_Roll, m_Pitch, -m_Heading);
 	DynamicObject::setAttitude(attitude);
 }
 
@@ -551,12 +551,12 @@ void AircraftObject::doMovement(double dt)
 	///updateTransform();
 
 	// modified Euler angles are the CSP frame (X is pitch, Y is roll, Z is -yaw).
-	simdata::Vector3 angles = simdata::Quaternion::MakeModifiedEulerAnglesFromQ(m_Attitude);
+	simdata::Vector3 angles = simdata::Quat::MakeModifiedEulerAnglesFromQ(m_Attitude);
 	
 	m_Pitch = angles.x;
 	m_Roll = angles.y;
 	m_Heading = angles.z;
-	m_Speed = m_LinearVelocity.Length();
+	m_Speed = m_LinearVelocity.length();
 }
 
 

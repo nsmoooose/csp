@@ -83,7 +83,7 @@ LandingGear::LandingGear() {
 	m_TangentForce = Vector3::ZERO;
 	m_TouchdownPoint = Vector3::ZERO;
 	m_TireContactPoint = Vector3::ZERO;
-	m_SteerTransform = simdata::Quaternion::IDENTITY;
+	m_SteerTransform = simdata::Quat::IDENTITY;
 	m_Skidding = false;
 	m_SkidFlag = false;
 	m_Touchdown = false;
@@ -179,7 +179,7 @@ void LandingGear::postCreate() {
 
 simdata::Vector3 LandingGear::simulateSubStep(simdata::Vector3 const &origin,
                                               simdata::Vector3 const &vBody,
-                                              simdata::Quaternion const &q, 
+                                              simdata::Quat const &q, 
                                               double height, 
                                               simdata::Vector3 const &normalGroundBody) 
 {
@@ -247,7 +247,7 @@ void LandingGear::updateBraking(double dt) {
 /**
  * Update Weight-On-Wheels flag and record touchdown point
  */
-void LandingGear::updateWOW(simdata::Vector3 const &origin, simdata::Quaternion const &q) {
+void LandingGear::updateWOW(simdata::Vector3 const &origin, simdata::Quat const &q) {
 	if (m_Compression > 0.0) {
 		// first contact? 
 		if (!m_WOW) {
@@ -273,7 +273,7 @@ void LandingGear::updateWOW(simdata::Vector3 const &origin, simdata::Quaternion 
  */
 void LandingGear::updateSuspension(simdata::Vector3 const &origin, 
                                    simdata::Vector3 const &vBody, 
-                                   simdata::Quaternion const &q, 
+                                   simdata::Quat const &q, 
                                    double const height, 
                                    simdata::Vector3 const &normalGroundBody) 
 {
@@ -328,7 +328,7 @@ void LandingGear::resetForces() {
 void LandingGear::postSimulationStep(double dt,
                                      simdata::Vector3 const &origin, 
                                      simdata::Vector3 const &vBody,
-                                     simdata::Quaternion const &q, 
+                                     simdata::Quat const &q, 
 				     double const height,
                                      simdata::Vector3 const &normalGroundBody) {
 	if (!m_Extended) return;
@@ -347,7 +347,7 @@ void LandingGear::postSimulationStep(double dt,
 void LandingGear::updateWheel(double dt,
                               simdata::Vector3 const &origin, 
                               simdata::Vector3 const &vBody,
-                              simdata::Quaternion const &q, 
+                              simdata::Quat const &q, 
                               simdata::Vector3 const &normalGroundBody,
                               bool updateContact) 
 {
@@ -383,7 +383,7 @@ void LandingGear::updateWheel(double dt,
 	// true for any wheel that can be steered.
 
 	// normal force on tire/ground interface
-	double normalForce = m_NormalForce.Length();
+	double normalForce = m_NormalForce.length();
 	// maximum braking force (neglects axle friction)
 	double brakeLimit = m_BrakeFriction * m_Brake * m_BrakeLimit;
 
@@ -429,7 +429,7 @@ void LandingGear::updateWheel(double dt,
 	// maximum traction
 	double skidLimit = m_TireFriction * normalForce;
 	// total (virtual) tire force due to braking and sideslip
-	double totalTireForce = tireForceWheel.Length();
+	double totalTireForce = tireForceWheel.length();
 
 	// FIXME wheels currently have zero inertia.  the current implementation
 	// isn't well suited to modelling wheel spin, and only very crude tracking
@@ -517,7 +517,7 @@ void LandingGear::updateWheel(double dt,
 		// compute black body radiation (approximating emmisivity and surface area)
 		double radiation = 5.7e-8 * (T2*T2-8.1e+9) * surfaceArea;
 		// total guess
-		double aircooling = 30.0 * (m_BrakeTemperature - 300.0) * surfaceArea * (vBody.Length() + 1.0);
+		double aircooling = 30.0 * (m_BrakeTemperature - 300.0) * surfaceArea * (vBody.length() + 1.0);
 		// arbitrary universal scaling (approximate volume as R3, specific heat 
 		// near that of steel) 
 		double heatCapacity = R2 * m_TireRadius * 2e+6; 
@@ -536,10 +536,10 @@ void LandingGear::updateWheel(double dt,
 		}
 	}
 
-	if (0 && XXX_t > 90.0 && (tireForceBody-XXX_tfb).Length() > 0.001) {
+	if (0 && XXX_t > 90.0 && (tireForceBody-XXX_tfb).length() > 0.001) {
 		std::cout << "DIFFERENCE: " << (tireForceBody-XXX_tfb).asString() << " " << skidding << " " << brakeSlip << ", " << tireForceBody << " " << brakeLimit << " " << m_Brake << " " << m_BrakeFriction << m_BrakeLimit << "\n";
 	}
-	if (tireForceBody.Length() > 50000.0) {
+	if (tireForceBody.length() > 50000.0) {
 		std::cout << "TFB ---> " << tireForceBody.asString() << "\n";
 		std::cout << "DEF ---> " << tireDeformation.asString() << "\n";
 		std::cout << "TFB ---> " << XXX_tfb.asString() << "\n";
@@ -554,7 +554,7 @@ void GearDynamics::doComplexPhysics(double x) {
 	m_Force = m_Moment = simdata::Vector3::ZERO;
 	if (!m_Extended) return;
 	simdata::Vector3 airflow_body = *m_WindBody - *m_VelocityBody;
-	double airspeed = airflow_body.Length();
+	double airspeed = airflow_body.length();
 	simdata::Vector3 dynamic_pressure = 0.5 * (*m_qBar) * airflow_body * airspeed;
 	simdata::Vector3 groundNormalBody = QVRotate(m_qOrientation->Bar(), *m_NormalGround);
 	size_t n = m_Gear.size();

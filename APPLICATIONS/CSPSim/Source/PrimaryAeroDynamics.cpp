@@ -31,7 +31,7 @@
 #include "PrimaryAeroDynamics.h"
 
 #include <SimData/Math.h>
-#include <SimData/Quaternion.h>
+#include <SimData/Quat.h>
 
 
 using simdata::RadiansToDegrees;
@@ -226,7 +226,7 @@ void PrimaryAeroDynamics::initializeSimulationStep(double dt) {
 
 void PrimaryAeroDynamics::computeForceAndMoment(double x) {
 	m_AirflowBody =	*m_VelocityBody - *m_WindBody; //simdata::QVRotate(m_qOrientation->Bar(), m_WindLocal);
-	m_AirSpeed = m_AirflowBody.Length();
+	m_AirSpeed = m_AirflowBody.length();
 	// prevent singularities
 	if (m_AirSpeed < 1.0) m_AirSpeed = 1.0;
 	updateAngles(x);

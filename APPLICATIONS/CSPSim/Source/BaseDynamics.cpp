@@ -38,7 +38,7 @@ BaseDynamics::~BaseDynamics() {
 void BaseDynamics::bindKinematics(simdata::Vector3 const &position_local, 
                                   simdata::Vector3 const &velocity_body, 
                                   simdata::Vector3 const &angular_velocity_body, 
-                                  simdata::Quaternion const &orientation) 
+                                  simdata::Quat const &orientation) 
 {
 	m_PositionLocal = &position_local;
 	m_VelocityBody = &velocity_body;

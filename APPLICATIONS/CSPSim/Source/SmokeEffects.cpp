@@ -124,7 +124,7 @@ public:
 	void emit(double dt) {
 		simdata::Vector3 wind, d_wind;
 		simdata::Vector3 place, d_place;
-		float distance = (m_VertexB - m_VertexA).Length();
+		float distance = (m_VertexB - m_VertexA).length();
 		int count = int(distance * m_Density);
 		if (count > m_Max) count = m_Max;
 		d_wind = (m_WindB - m_WindA) / count;
@@ -445,7 +445,7 @@ osgParticle::Placer* SmokeTrail::getPlacer() {
 	return m_Placer.get();
 }
 
-void SmokeTrail::update(double dt, simdata::Vector3 const &position, simdata::Quaternion const &attitude) {
+void SmokeTrail::update(double dt, simdata::Vector3 const &position, simdata::Quat const &attitude) {
 	simdata::Vector3 place = position + attitude.GetRotated(m_Offset);
 	m_Placer->setVertexA(toOSG(place));
 	m_Placer->setVertexB(toOSG(m_LastPlace+m_LastWind*dt));
@@ -455,7 +455,7 @@ void SmokeTrail::update(double dt, simdata::Vector3 const &position, simdata::Qu
 }
 */
 
-void SmokeTrail::update(double dt, simdata::Vector3 const &position, simdata::Quaternion const &attitude) {
+void SmokeTrail::update(double dt, simdata::Vector3 const &position, simdata::Quat const &attitude) {
 	WindEmitter *emitter = dynamic_cast<WindEmitter*>(m_Emitter.get());
 	if (emitter) {
 		simdata::Vector3 place = position + attitude.GetRotated(m_Offset);
@@ -501,7 +501,7 @@ void SmokeTrailSystem::setEnabled(bool on) {
 		(*iter)->setEnabled(on);
 }
 
-void SmokeTrailSystem::update(double dt, simdata::Vector3 const &position, simdata::Quaternion const &attitude) {
+void SmokeTrailSystem::update(double dt, simdata::Vector3 const &position, simdata::Quat const &attitude) {
 	TrailList::iterator iter = m_Trails.begin();
 	TrailList::const_iterator iEnd = m_Trails.end();
 	for (; iter != iEnd; ++iter)

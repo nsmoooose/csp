@@ -326,11 +326,11 @@ void ObjectModel::loadModel() {
 	m_Model->accept(processor);
 	std::cout << "PROCESSING MODEL DONE\n";
 
-	assert(m_Axis0.Length() > 0.0);
+	assert(m_Axis0.length() > 0.0);
 	m_Axis0.Normalize();
 	// orthogonalize
 	m_Axis1 = m_Axis1 - m_Axis0 * simdata::Dot(m_Axis0, m_Axis1);
-	assert(m_Axis1.Length() > 0.0);
+	assert(m_Axis1.length() > 0.0);
 	m_Axis1.Normalize();
 
 	// insert an adjustment matrix at the head of the model only
@@ -691,7 +691,7 @@ void SceneModel::setLabel(std::string const &label) {
 	m_Label->setText(label);
 }
 
-void SceneModel::updateSmoke(double dt, simdata::Vector3 const &global_position, simdata::Quaternion const &attitude) {
+void SceneModel::updateSmoke(double dt, simdata::Vector3 const &global_position, simdata::Quat const &attitude) {
 	m_SmokeTrails->update(dt, global_position, attitude);
 }
 

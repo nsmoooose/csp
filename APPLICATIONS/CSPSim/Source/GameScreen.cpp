@@ -722,7 +722,7 @@ void GameScreen::setCamera(double dt)
 		break;
 	case 8: // view mode 8 is a fly by view 
 		lookPos = m_ActiveObject->getGlobalPosition();
-		if ((lookPos - m_FixedCameraPosition).Length() > 900.0 )
+		if ((lookPos - m_FixedCameraPosition).length() > 900.0 )
 			m_FixedCameraPosition = getNewFixedCamPos(m_ActiveObject.get());
 		eyePos = m_FixedCameraPosition;
 		upVec = simdata::Vector3::ZAXIS;
@@ -731,7 +731,7 @@ void GameScreen::setCamera(double dt)
 	{
 		static int xxx = 0;
 		simdata::Vector3 planePos = m_ActiveObject->getGlobalPosition();
-		simdata::Quaternion attitude = m_ActiveObject->getAttitude();
+		simdata::Quat attitude = m_ActiveObject->getAttitude();
 		eyePos = planePos;
 		eyePos += m_ActiveObject->getViewPoint();
 		lookPos = m_Padlock->getGlobalPosition();

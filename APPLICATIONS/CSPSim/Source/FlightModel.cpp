@@ -40,7 +40,7 @@
 #include "FlightDynamics.h"
 
 #include <SimData/Math.h>
-#include <SimData/Quaternion.h>
+#include <SimData/Quat.h>
 
 
 using simdata::RadiansToDegrees;

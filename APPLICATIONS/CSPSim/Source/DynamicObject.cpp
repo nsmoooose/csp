@@ -31,7 +31,7 @@
 #include "TerrainObject.h"
 #include "CSPSim.h"
 
-#include <SimData/Quaternion.h>
+#include <SimData/Quat.h>
 
 
 
@@ -44,7 +44,7 @@ DynamicObject::DynamicObject(): SimObject()
 	m_GroundN = simdata::Vector3::ZAXIS;
 	m_GroundHint = 0;
 
-	setAttitude(simdata::Quaternion::IDENTITY);
+	setAttitude(simdata::Quat::IDENTITY);
 	setGlobalPosition(simdata::Vector3::ZERO);
 
 	m_Controller = NULL;
@@ -146,7 +146,7 @@ void DynamicObject::setGlobalPosition(double x, double y, double z)
 void DynamicObject::setVelocity(simdata::Vector3 const &velocity)
 {
 	m_LinearVelocity = velocity;
-	m_Speed = m_LinearVelocity.Length();
+	m_Speed = m_LinearVelocity.length();
 
 /*
 	CSP_LOG(APP, DEBUG, "SimObject::setVelocity - ID: " << m_ObjectID 
@@ -157,7 +157,7 @@ void DynamicObject::setVelocity(simdata::Vector3 const &velocity)
 void DynamicObject::setVelocity(double Vx, double Vy, double Vz)
 {
 	m_LinearVelocity = simdata::Vector3(Vx, Vy, Vz);
-	m_Speed = m_LinearVelocity.Length();
+	m_Speed = m_LinearVelocity.length();
 
 /*
 	CSP_LOG(APP, DEBUG, "SimObject::setVelocity - ID: " << m_ObjectID 
@@ -241,7 +241,7 @@ simdata::Vector3 DynamicObject::getUpDirection() const
 	return m_Attitude.GetRotated(simdata::Vector3::ZAXIS);
 }
 
-void DynamicObject::setAttitude(simdata::Quaternion const &attitude)
+void DynamicObject::setAttitude(simdata::Quat const &attitude)
 {
 	m_Attitude = attitude;
 }

@@ -22,7 +22,7 @@
  **/
 #include <algorithm>
 
-#include <SimData/Quaternion.h>
+#include <SimData/Quat.h>
 #include <SimData/Ref.h>
 
 #include "Collision.h"
@@ -59,7 +59,7 @@ void GroundCollisionDynamics::setGroundProperties(double spring_constant,
 
 void GroundCollisionDynamics::computeForceAndMoment(double x) {
 
-	simdata::Quaternion const &q = *m_qOrientation;
+	simdata::Quat const &q = *m_qOrientation;
 
 	simdata::Vector3 const &velocityBody = *m_VelocityBody;
 	simdata::Vector3 const &angularVelocityBody = *m_AngularVelocityBody;
@@ -91,7 +91,7 @@ void GroundCollisionDynamics::computeForceAndMoment(double x) {
 			forceBody += normalForce * normalGroundBody;
 			// sliding frictional force
 			simdata::Vector3 slidingVelocityBody = contactVelocityBody + impactSpeed * normalGroundBody;
-			double slidingSpeed = slidingVelocityBody.Length();
+			double slidingSpeed = slidingVelocityBody.length();
 			if (slidingSpeed > 0.0) {
 				// in principle we should have both sliding and static friction coefficients,
 				// but this is probably adequate for now.
@@ -102,7 +102,7 @@ void GroundCollisionDynamics::computeForceAndMoment(double x) {
 				/*
 				m_Extension[i] += slidingVelocityBody * dt;
 				simdata::Vector3 slidingFriction = -m_Extension[i] * m_ContactSpring;
-				double frictionScale = slidingFriction.Length() / frictionLimit;
+				double frictionScale = slidingFriction.length() / frictionLimit;
 				if (frictionScale > 1.0) {  // free sliding
 					m_Extension[i] /= frictionScale;
 					slidingFriction /= frictionScale;
@@ -126,7 +126,7 @@ void GroundCollisionDynamics::computeForceAndMoment(double x) {
 	} 
 
 	if (m_HasContact) {
-		double acceleration = m_Force.Length() / m_Mass;
+		double acceleration = m_Force.length() / m_Mass;
 		double limit = 20.0 * 9.8; // 20 G limit for basic response
 		double scale = 1.0;
 		// extreme impact, supply addition reactive impulse

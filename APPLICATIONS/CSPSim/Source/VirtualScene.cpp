@@ -418,7 +418,7 @@ void VirtualScene::onUpdate(float dt)
 	static float t = 0.0;
 
 	if (m_SpinTheWorld || m_ResetTheWorld || (int(t) % 10) == 0 ||
-		(m_SkyPoint - m_Origin).LengthSquared() > 25.0e+6) {
+		(m_SkyPoint - m_Origin).length2() > 25.0e+6) {
 		m_SkyPoint = m_Origin;
 		if (m_ResetTheWorld) {
 			m_Sky->spinTheWorld(false);

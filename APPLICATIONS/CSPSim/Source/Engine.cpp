@@ -21,7 +21,7 @@
  *
  **/
 #include <SimData/Conversions.h>
-#include <SimData/Quaternion.h>
+#include <SimData/Quat.h>
 
 #include "CSPSim.h"
 #include "Engine.h"

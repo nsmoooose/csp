@@ -28,14 +28,13 @@
 #ifndef __PROJECTION_H__
 #define __PROJECTION_H__
 
-
 #include <SimData/Vector3.h>
 #include <SimData/Math.h>
 #include <SimData/GeoPos.h>
 #include <SimData/Interpolate.h>
 
-#include <iostream>
 #include <cstdio>
+#include <iostream>
 
 
 /**
@@ -159,7 +158,7 @@ private:
 	 */
 	void _secantMap() {
 		double R = 6371010.0;
-		double angle = 0.5 * std::max(m_SizeX, m_SizeY) / R;
+		double angle = 0.5 * std::max<double>(m_SizeX, m_SizeY) / R;
 		double scale = 1.0 / cos(angle) / cos(angle);
 		scale = 0.5 * (1.0 + scale) / scale;
 		setRadius(R * scale);
@@ -267,8 +266,8 @@ public:
 	 */
 	simdata::Vector3 getNorth(simdata::Vector3 const &pos) const {
 		assert(m_Valid);
-		double x = std::min(m_SizeX, std::max(-m_SizeX, pos.x()));
-		double y = std::min(m_SizeY, std::max(-m_SizeY, pos.y()));
+		double x = simdata::clampTo(pos.x(),-m_SizeX,m_SizeX);
+		double y = simdata::clampTo(pos.y(),-m_SizeY, m_SizeY);
 		return simdata::Vector3(m_NorthX.getValue(x, y), m_NorthY.getValue(x, y), 0.0);
 	}
 

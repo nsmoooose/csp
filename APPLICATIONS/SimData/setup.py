@@ -58,6 +58,7 @@ def make_install(win):
 	inc = sysconfig.get_python_inc()
 	modpath = os.path.join(lib, "SimData")
 	incpath = os.path.join(inc, "SimData")
+	localinc = os.path.normpath("Include/SimData")
 	package_files = ['__init__.py', 'Debug.py', 'Parse.py', 'Compile.py']
 	if win:
 		package_files.extend(['cSimData.py', '_cSimData.dll', '_cSimData.lib'])
@@ -67,8 +68,8 @@ def make_install(win):
 		print "Installing SimData package to", modpath
 		copy_dir("SimData", modpath, package_files)
 		print "Installing SimData headers to", incpath
-		copy_dir("Include/SimData", incpath, headers)
-		copy_dir("Include/SimData", incpath, interfaces)
+		copy_dir(localinc, incpath, headers)
+		copy_dir(localinc, incpath, interfaces)
 	except Exception, e:
 		print e
 		sys.exit(1)

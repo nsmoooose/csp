@@ -198,7 +198,7 @@ bool ospath::exists(const std::string &path) {
 #else // POSIX (hopefully)
 	static const int mode = F_OK;
 #endif
-	return access(path.c_str(), mode) != 0;
+	return access(path.c_str(), mode) == 0;
 }
 
 ospath::DirectoryContents ospath::getDirectoryContents(std::string const &path) {

@@ -57,6 +57,7 @@ DynamicObject::DynamicObject(TypeId type): SimObject(type) {
 	b_Inertia = DataChannel<simdata::Matrix3>::newLocal(Kinetics::Inertia, simdata::Matrix3::IDENTITY);
 	b_InertiaInv = DataChannel<simdata::Matrix3>::newLocal(Kinetics::InertiaInverse, simdata::Matrix3::IDENTITY);
 	b_AngularVelocity = DataChannel<simdata::Vector3>::newLocal(Kinetics::AngularVelocity, simdata::Vector3::ZERO);
+	b_AngularVelocityBody = DataChannel<simdata::Vector3>::newLocal(Kinetics::AngularVelocityBody, simdata::Vector3::ZERO);
 	b_LinearVelocity = DataChannel<simdata::Vector3>::newLocal(Kinetics::Velocity, simdata::Vector3::ZERO);
 	b_AccelerationBody = DataChannel<simdata::Vector3>::newLocal(Kinetics::AccelerationBody, simdata::Vector3::ZERO);
 	b_Attitude = DataChannel<simdata::Quat>::newLocal(Kinetics::Attitude, simdata::Quat::IDENTITY);
@@ -227,6 +228,7 @@ void DynamicObject::setDataRecorder(DataRecorder *recorder) {
 	recorder->addSource(b_GlobalPosition);
 	recorder->addSource(b_LinearVelocity);
 	recorder->addSource(b_AngularVelocity);
+	recorder->addSource(b_AngularVelocityBody);
 }
 
 std::list<DynamicObject::SystemsModelStore> DynamicObject::SystemsModelCache;
@@ -265,6 +267,7 @@ void DynamicObject::registerChannels(Bus::Ref bus) {
 	bus->registerChannel(b_LinearVelocity.get());
 	bus->registerChannel(b_AccelerationBody.get());
 	bus->registerChannel(b_AngularVelocity.get());
+	bus->registerChannel(b_AngularVelocityBody.get());
 	bus->registerChannel(b_Attitude.get());
 	bus->registerChannel(b_Mass.get());
 	bus->registerChannel(b_Inertia.get());

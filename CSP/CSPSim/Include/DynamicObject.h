@@ -195,6 +195,7 @@ protected:
 	DataChannel<simdata::Matrix3>::Ref b_Inertia;
 	DataChannel<simdata::Matrix3>::Ref b_InertiaInv;
 	DataChannel<simdata::Vector3>::Ref b_AngularVelocity;
+	DataChannel<simdata::Vector3>::Ref b_AngularVelocityBody;
 	DataChannel<simdata::Vector3>::Ref b_LinearVelocity;
 	DataChannel<simdata::Vector3>::Ref b_AccelerationBody;
 	DataChannel<simdata::Quat>::Ref b_Attitude;

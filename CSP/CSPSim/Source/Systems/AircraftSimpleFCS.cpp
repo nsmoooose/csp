@@ -1,17 +1,17 @@
 // Combat Simulator Project - FlightSim Demo
-// Copyright (C) 2002, 2003 The Combat Simulator Project
+// Copyright (C) 2002-2005 The Combat Simulator Project
 // http://csp.sourceforge.net
-// 
+//
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
 // as published by the Free Software Foundation; either version 2
 // of the License, or (at your option) any later version.
-// 
+//
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU General Public License
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
@@ -23,6 +23,8 @@
  **/
 
 
+#include <ControlInputsChannels.h>
+#include <ControlSurfacesChannels.h>
 #include <Systems/AircraftSimpleFCS.h>
 
 #include <SimData/Math.h>
@@ -75,17 +77,17 @@ void AircraftSimpleFCS::postCreate() {
 }
 
 void AircraftSimpleFCS::registerChannels(Bus *bus) {
-	m_Elevator.registerOutput(bus, "ControlSurfaces.ElevatorDeflection");
-	m_Aileron.registerOutput(bus, "ControlSurfaces.AileronDeflection");
-	m_Rudder.registerOutput(bus, "ControlSurfaces.RudderDeflection");
-	m_Airbrake.registerOutput(bus, "ControlSurfaces.AirbrakeDeflection");
+	m_Elevator.registerOutput(bus, bus::ControlSurfaces::ElevatorDeflection);
+	m_Aileron.registerOutput(bus, bus::ControlSurfaces::AileronDeflection);
+	m_Rudder.registerOutput(bus, bus::ControlSurfaces::RudderDeflection);
+	m_Airbrake.registerOutput(bus, bus::ControlSurfaces::AirbrakeDeflection);
 }
 
 void AircraftSimpleFCS::importChannels(Bus *bus) {
-	m_Elevator.bindInput(bus, "ControlInputs.PitchInput");
-	m_Aileron.bindInput(bus, "ControlInputs.RollInput");
-	m_Rudder.bindInput(bus, "ControlInputs.RudderInput");
-	m_Airbrake.bindInput(bus, "ControlInputs.AirbrakeInput");
+	m_Elevator.bindInput(bus, bus::ControlInputs::PitchInput);
+	m_Aileron.bindInput(bus, bus::ControlInputs::RollInput);
+	m_Rudder.bindInput(bus, bus::ControlInputs::RudderInput);
+	m_Airbrake.bindInput(bus, bus::ControlInputs::AirbrakeInput);
 }
 
 

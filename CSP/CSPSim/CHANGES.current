@@ -10,6 +10,9 @@
 
  * Export angular velocity in body coordinates from PhysicsModel.
 
+ * Convert channel strings to channel name constants and connect
+   angular velocity (in body coordinates) channel.
+
 2005-03-12: delta
  * Reformated GearAnimation and related classes as Systems. Adjusted 
    xml files consequently. Cleaned up GearDynamics.

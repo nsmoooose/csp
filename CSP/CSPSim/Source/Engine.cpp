@@ -25,12 +25,11 @@
 
 #include "CSPSim.h"
 #include "Engine.h"
-#include "KineticsChannels.h"
+#include "ConditionsChannels.h"
+#include "FlightDynamicsChannels.h"
 
 #include <iomanip>
 #include <sstream>
-
-using bus::Kinetics;
 
 
 SIMDATA_REGISTER_INTERFACE(ThrustData)
@@ -119,8 +118,8 @@ void EngineDynamics::registerChannels(Bus *) {
 void EngineDynamics::importChannels(Bus *bus) {
 	if (!bus) return;
 	b_ThrottleInput = bus->getChannel("ControlInputs.ThrottleInput");
-	b_Mach = bus->getChannel("Conditions.Mach");
-	b_Alpha = bus->getChannel("FlightDynamics.Alpha");
+	b_Mach = bus->getChannel(bus::Conditions::Mach);
+	b_Alpha = bus->getChannel(bus::FlightDynamics::Alpha);
 }
 
 EngineDynamics::EngineDynamics() {

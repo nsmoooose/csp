@@ -25,12 +25,13 @@
 #include <SimData/Math.h>
 
 #include "AircraftObject.h"
-#include "Engine.h"
-#include "SystemsModel.h"
-#include "ObjectModel.h"
 #include "Animation.h"
-#include "FlightModel.h"
+#include "KineticsChannels.h"
 #include "Collision.h"
+#include "Engine.h"
+#include "FlightModel.h"
+#include "ObjectModel.h"
+#include "SystemsModel.h"
 
 #include <SimCore/Util/Log.h>
 
@@ -49,9 +50,9 @@ AircraftObject::AircraftObject(): DynamicObject(TYPE_AIR_UNIT) {
 	CSP_LOG(OBJECT, DEBUG, "AircraftObject::AircraftObject() ...");
 	m_ObjectName = "AIRCRAFT";
 
-	b_Heading = DataChannel<double>::newLocal("Kinetic.Heading", 0.0);
-	b_Roll = DataChannel<double>::newLocal("Kinetic.Roll", 0.0);
-	b_Pitch = DataChannel<double>::newLocal("Kinetic.Pitch", 0.0);
+	b_Heading = DataChannel<double>::newLocal(bus::Kinetics::Heading, 0.0);
+	b_Roll = DataChannel<double>::newLocal(bus::Kinetics::Roll, 0.0);
+	b_Pitch = DataChannel<double>::newLocal(bus::Kinetics::Pitch, 0.0);
 	
 	CSP_LOG(OBJECT, DEBUG, "... AircraftObject::AircraftObject()");
 }

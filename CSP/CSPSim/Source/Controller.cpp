@@ -25,6 +25,7 @@
 
 #include <Controller.h>
 #include <KineticsChannels.h>
+#include <ControlSurfacesChannels.h>
 #include <SimCore/Battlefield/BattlefieldMessages.h>
 #include <ObjectUpdate.h>
 #include <SimCore/Util/TimeStamp.h>
@@ -47,15 +48,16 @@ void RemoteController::importChannels(Bus *bus) {
 	b_Position = bus->getChannel(bus::Kinetics::Position);
 	b_Velocity = bus->getChannel(bus::Kinetics::Velocity);
 	b_AngularVelocity = bus->getChannel(bus::Kinetics::AngularVelocity);
+	b_AngularVelocityBody = bus->getChannel(bus::Kinetics::AngularVelocityBody);
 	b_Attitude = bus->getChannel(bus::Kinetics::Attitude);
 	b_AccelerationBody = bus->getChannel(bus::Kinetics::AccelerationBody);
 	// XXX: FIXME, it doesn'nt work.
 	//m_GearExtension.bind(bus->getChannel("LandingGear.GearExtended"));
 	m_GearExtension.bind(bus->getChannel("Aircraft.GearSequence.NormalizedTime"));
-	m_AileronDeflection.bind(bus->getChannel("ControlSurfaces.AileronDeflection"));
-	m_ElevatorDeflection.bind(bus->getChannel("ControlSurfaces.ElevatorDeflection"));
-	m_RudderDeflection.bind(bus->getChannel("ControlSurfaces.RudderDeflection"));
-	m_AirbrakeDeflection.bind(bus->getChannel("ControlSurfaces.AirbrakeDeflection"));
+	m_AileronDeflection.bind(bus->getChannel(bus::ControlSurfaces::AileronDeflection));
+	m_ElevatorDeflection.bind(bus->getChannel(bus::ControlSurfaces::ElevatorDeflection));
+	m_RudderDeflection.bind(bus->getChannel(bus::ControlSurfaces::RudderDeflection));
+	m_AirbrakeDeflection.bind(bus->getChannel(bus::ControlSurfaces::AirbrakeDeflection));
 }
 
 bool RemoteAnimationUpdate::update() {

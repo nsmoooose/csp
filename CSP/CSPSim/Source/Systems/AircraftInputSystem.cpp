@@ -1,5 +1,5 @@
-// Combat Simulator Project - FlightSim Demo
-// Copyright (C) 2002, 2003 The Combat Simulator Project
+// Combat Simulator Project
+// Copyright (C) 2002-2005 The Combat Simulator Project
 // http://csp.sourceforge.net
 //
 // This program is free software; you can redistribute it and/or
@@ -24,25 +24,25 @@
 
 
 #include "Systems/AircraftInputSystem.h"
+#include "ControlInputsChannels.h"
 
 
 SIMDATA_REGISTER_INTERFACE(AircraftInputSystem)
 
 DEFINE_INPUT_INTERFACE(AircraftInputSystem);
 
-AircraftInputSystem::AircraftInputSystem():
-	m_ThrottleInput(0.2 /*rate*/, 1.0 /*decay*/, 0.0 /*min*/, 1.0 /*max*/)
+AircraftInputSystem::AircraftInputSystem(): m_ThrottleInput(0.2 /*rate*/, 1.0 /*decay*/, 0.0 /*min*/, 1.0 /*max*/)
 {
 }
 
 void AircraftInputSystem::registerChannels(Bus *bus) {
-	m_PitchInput.connect(bus, "ControlInputs.PitchInput");
-	m_RollInput.connect(bus, "ControlInputs.RollInput");
-	m_RudderInput.connect(bus, "ControlInputs.RudderInput");
-	m_LeftBrakeInput.connect(bus, "ControlInputs.LeftBrakeInput");
-	m_RightBrakeInput.connect(bus, "ControlInputs.RightBrakeInput");
-	m_ThrottleInput.connect(bus, "ControlInputs.ThrottleInput");
-	m_AirbrakeInput.connect(bus, "ControlInputs.AirbrakeInput");
+	m_PitchInput.connect(bus, bus::ControlInputs::PitchInput);
+	m_RollInput.connect(bus, bus::ControlInputs::RollInput);
+	m_RudderInput.connect(bus, bus::ControlInputs::RudderInput);
+	m_LeftBrakeInput.connect(bus, bus::ControlInputs::LeftBrakeInput);
+	m_RightBrakeInput.connect(bus, bus::ControlInputs::RightBrakeInput);
+	m_ThrottleInput.connect(bus, bus::ControlInputs::ThrottleInput);
+	m_AirbrakeInput.connect(bus, bus::ControlInputs::AirbrakeInput);
 }
 
 void AircraftInputSystem::importChannels(Bus *) {

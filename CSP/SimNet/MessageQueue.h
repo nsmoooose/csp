@@ -32,21 +32,35 @@
 
 namespace simnet {
 
+/** A packet source that encodes NetworkMessages to binary packets.
+ */
 class MessageQueue: public PacketSource {
 	std::deque<NetworkMessage::Ref> m_Queue;
 	simdata::BufferWriter m_Writer;
 	simdata::TagWriter m_TagWriter;
+
 public:
+
+	/** Create a new message queue.
+	 */
 	MessageQueue(): m_TagWriter(m_Writer) { }
 
+	/** Add a message to the queue.
+	 */
 	inline void queueMessage(NetworkMessage::Ref msg) {
 		m_Queue.push_back(msg);
 	}
 
+	/** Get the number of pending message in the queue.
+	 */
 	virtual int size() { return m_Queue.size(); }
 
+	/** Test if the queue is empty.
+	 */
 	virtual bool isEmpty() { return m_Queue.size() == 0; }
 
+	/** Encode the next message in the queue.
+	 */
 	virtual bool getPacket(PacketHeader *header, simdata::uint8 *payload, simdata::uint32 &payload_length) {
 		if (m_Queue.size() == 0) return false;
 		assert(payload_length > 0);
@@ -62,13 +76,22 @@ public:
 		return true;
 	}
 
-	virtual bool peekPriority(PeerId &id, int &priority) {
+	/** Test the destination and priority of the next message without retrieving
+	 *  (or encoding) it.
+	 *
+	 *  @param destination the peer to send the next packet to.
+	 *  @param priority the priority of the next packet (0-3).
+	 *  @return false if no packets are availible.
+	 */
+	virtual bool peek(PeerId &destination, int &priority) {
 		if (m_Queue.size() == 0) return false;
-		id = m_Queue.front()->getDestination();
+		destination = m_Queue.front()->getDestination();
 		priority = m_Queue.front()->getPriority();
 		return true;
 	}
 
+	/** Drop the next message (if any) from the queue.
+	 */
 	virtual void skipPacket() {
 		if (m_Queue.size() > 0) m_Queue.pop_front();
 	}

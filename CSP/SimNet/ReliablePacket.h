@@ -26,6 +26,7 @@
 #define __SIMNET_RELIABLEPACKET_H__
 
 #include <SimNet/NetBase.h>
+#include <SimNet/NetLog.h>
 #include <SimData/Ref.h>
 #include <SimData/Timing.h>
 
@@ -35,45 +36,100 @@
 
 namespace simnet {
 
+/** Storage class used by PeerInfo to keep track of reliable packets
+ *  until confirmation in received.
+ */
 class ReliablePacket: public simdata::Referenced {
 	ConfirmationId m_Id;
 	bool m_Confirmed;
 	int m_Attempts;
 	double m_NextTime;
 	std::string m_PacketData;
+
 public:
 	typedef simdata::Ref<ReliablePacket> Ref;
+
+	/** Construct an empty instance; use assign to initialize it.
+	 */
 	ReliablePacket(): m_Id(0), m_Confirmed(true), m_Attempts(0), m_NextTime(0.0) { }
+
+	/** Destructor (releases packet buffer).
+	 */
 	virtual ~ReliablePacket() {
-		std::cout << "RELIABLE PACKET " << m_Id << ": DESTROYED\n";
+		SIMNET_LOG(PACKET, DEBUG, "reliable packet " << m_Id << ": destroyed");
 	}
+
+	/** Iniitalize this instance.
+	 *
+	 *  Resets the retry attempt count to zero, marks the packet as unconfirmed,
+	 *  and stores a copy of the packet buffer for later retransmission.
+	 *
+	 *  @param id the id number of the packet needing confirmation.
+	 *  @param receipt a pointer to the packet header (and payload data).
+	 *  @param packet_size the full packet size in bytes (header + payload).
+	 */
 	void assign(ConfirmationId id, PacketReceiptHeader* receipt, simdata::uint32 packet_size) {
-		std::cout << "RELIABLE PACKET " << id << "\n";
+		SIMNET_LOG(PACKET, DEBUG, "creating reliable packet " << id);
 		m_Id = id;
 		m_Confirmed = false;
 		m_Attempts = 0;
 		m_NextTime = simdata::get_realtime() + 1.0;
 		m_PacketData.assign(reinterpret_cast<char*>(receipt), packet_size);
 	}
+
+	/** Record an attempted retransmission of the packet.
+	 *
+	 *  Increments the retry attempt count and schedules the next retry attempt.
+	 *
+	 *  @param now the current system time (in seconds).
+	 */
 	void updateAttempt(double now) {
-		std::cout << "RELIABLE PACKET " << m_Id << ": RETRY " << (m_Attempts+1) << "\n";
-		double delay = ++m_Attempts * 1.0;
-		m_NextTime = now + std::min(8.0, delay);
+		double delay = std::min(8.0, ++m_Attempts * 1.0);
+		m_NextTime = now + delay;
+		SIMNET_LOG(PACKET, DEBUG, "reliable packet " << m_Id << " retry #" << m_Attempts << "; next retry in " << delay << " s");
 	}
+
+	/** Copy the stored packet data (header + payload) to a buffer.
+	 *
+	 *  It is the callers responsibility to ensure that ptr is valid and has
+	 *  sufficient space to store the packet data (see size()).
+	 *
+	 *  @param ptr the buffer to receive the packet data.
+	 */
 	inline void copy(simdata::uint8 *ptr) {
-		std::cout << "RELIABLE PACKET " << m_Id << ": SENDING\n";
 		memcpy(ptr, m_PacketData.data(), m_PacketData.size());
 	}
+	
+	/** Get the size of the packet data in bytes (header + payload)
+	 */
 	inline simdata::uint32 size() const { return m_PacketData.size(); }
+
+	/** Get the reliable packet confirmation id.
+	 */
 	inline ConfirmationId getId() const { return m_Id; }
+
+	/** Get the system time of the next retry attempt.
+	 */
 	inline double nextTime() { return m_NextTime; }
+
+	/** Test if the remote peer has already confirmed receipt of this packet.
+	 */
 	inline bool isConfirmed() const { return m_Confirmed; }
+
+	/** Mark this packet as confirmed.
+	 */
 	inline void confirm() {
-		std::cout << "RELIABLE PACKET " << m_Id << ": CONFIRMED\n";
+		SIMNET_LOG(PACKET, DEBUG, "reliable packet " << m_Id << " confirmed");
 		m_Confirmed = true;
 	}
+
+	/** Functor used to order reliable packets in a priority queue by the
+	 *  scheduled time for the next retry attempt.
+	 */
 	struct Order : public std::binary_function<Ref, Ref, bool> {
-		inline bool operator()(const Ref& __x, const Ref& __y) const { return __x->nextTime() > __y->nextTime(); }
+		inline bool operator()(const Ref& __x, const Ref& __y) const {
+			return __x->nextTime() > __y->nextTime();
+		}
 	};
 };
 

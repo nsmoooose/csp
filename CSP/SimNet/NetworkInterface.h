@@ -111,7 +111,10 @@ public:
 	// TODO internalize
 	void setServerId(PeerId id);
 	void hackPeerIndex(PeerId id, NetworkNode const &remote_node, double incoming_bw, double outgoing_bw);
-	void setPacketSource(PacketSource::Ref source) { m_PacketSource = source; }
+	void setPacketSource(PacketSource::Ref source) {
+		m_PacketSource = source;
+		m_PacketSource->bind(this);
+	}
 	bool pingPeer(PeerInfo *peer);
 	void resend(simdata::Ref<ReliablePacket> &packet);
 

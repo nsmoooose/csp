@@ -59,7 +59,7 @@ $(DEPDIR)/%.swigdep : %
 	@$(SWDEP) $(DEPFILTER) -o $(<:.i=_wrap.cpp) $< > $@
 
 test: $(OBJECTS)
-	g++ -o $@ $^ -L../SimData/SimData -lSimData -lpthread -ldl -lccgnu2 -pg
+	g++ -pg -o $@ $^ -L../SimData/SimData -lSimData -lpthread -ldl -lccgnu2
 
 $(BINDIR)/%.o: %.cpp
 	$(CXX) -o $@ -c $(CXXFLAGS) $^
@@ -76,4 +76,9 @@ all: test libSimNet.a
 dox docs doc:
 	@echo "Generating documentation..."
 	doxygen
+
+profile:
+	gprof test > .test.prof
+	pdot --device=ps .test.prof > .test.prof.ps
+	gv .test.prof.ps
 

@@ -33,28 +33,48 @@
 
 namespace simnet {
 
+/** Packet handler for decoding raw packets to NetworkMessage subclasses.
+ */
 class PacketDecoder: public PacketHandler {
 	RecordCodec m_Codec;
 	HandlerSet<MessageHandler> m_MessageHandlers;
 
-	struct Callback {
+	/** Helper functor for passing a network message to a set of MessageHandlers
+	 */
+	class Callback {
+		NetworkMessage::Ref m_msg;
+	public:
 		Callback(NetworkMessage::Ref &msg): m_msg(msg) { }
 		inline void operator()(MessageHandler::Ref handler) { handler->handleMessage(m_msg); }
-		NetworkMessage::Ref m_msg;
 	};
 
 public:
-	virtual bool handlePacket(PacketHeader const *header, simdata::uint8 *payload, simdata::uint32 payload_length) {
+	/** Called by the network interface to handle an incoming packet.
+	 *
+	 *  The packet payload is decoded using RecordCodec into the appropriate
+	 *  NetworkInterface subclass instance (using the message id stored in
+	 *  the packet header), and then passed to all registered message handlers.
+	 *
+	 *  @param header a pointer to the packet header.
+	 *  @param payload a buffer containing the payload data.
+	 *  @param payload_length the size of the payload, in bytes.
+	 */
+	virtual void handlePacket(PacketHeader const *header, simdata::uint8 *payload, simdata::uint32 payload_length) {
 		NetworkMessage::Ref msg = m_Codec.decode(header->message_id, payload, payload_length);
 		assert(msg.valid());
 		Callback callback(msg);
 		m_MessageHandlers.apply(callback);
 	}
 
+	/** Add a message handler.  Each decoded message will be passed to all
+	 *  message handlers for subsequent processing.
+	 */
 	void addMessageHandler(MessageHandler::Ref handler) {
 		m_MessageHandlers.addHandler(handler);
 	}
 
+	/** Remove a message handler.
+	 */
 	bool removeMessageHandler(MessageHandler::Ref handler) {
 		return m_MessageHandlers.removeHandler(handler);
 	}

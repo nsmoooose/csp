@@ -30,16 +30,40 @@
 
 namespace simnet {
 
+/** Abstract interface for handling incoming packets.
+ *
+ *  Subclasses must implement handlePacket().  PacketHandlers must be registered
+ *  with a NetworkInterface.  All registered handlers are called to handle each
+ *  incoming packet.
+ */
 class PacketHandler: public simdata::Referenced {
 	friend class NetworkInterface;
+
+	// TODO(os)
+	// NetworkInterface calls bind(this) to give PacketHandler subclasses direct
+	// access to the associated NI.  This is not currently used, and should be
+	// removed unless a compelling need is found.
+	
 	NetworkInterface *m_network_interface;
 	virtual void bind(NetworkInterface* interface) { m_network_interface = interface; }
+
 protected:
 	inline NetworkInterface *getNetworkInterface() { return m_network_interface; }
+
 public:
 	typedef simdata::Ref<PacketHandler> Ref;
+
+	/** Destructor.
+	 */
 	virtual ~PacketHandler() { }
-	virtual bool handlePacket(PacketHeader const *, simdata::uint8 *, simdata::uint32)=0;
+
+	/** Implement this method to process incoming packets.
+	 *
+	 *  @param header a pointer to the packet header.
+	 *  @param payload a buffer containing the payload data.
+	 *  @param payload_length the size of the payload, in bytes.
+	 */
+	virtual void handlePacket(PacketHeader const *header, simdata::uint8 *payload, simdata::uint32 payload_length)=0;
 };
 
 } // namespace simnet

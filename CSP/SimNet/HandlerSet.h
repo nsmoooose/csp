@@ -30,33 +30,59 @@
 
 namespace simnet {
 
+/** Class for managing a set of handlers.  Effectively this is just a
+ *  thin wrapper around std::vector, with a few convenience methods
+ *  for common operations.  std::vector was chosen to speed up handler
+ *  calls, since iteration over a vector is significantly faster than
+ *  maps and sets.
+ */
 template <class HANDLER>
 class HandlerSet {
 	typedef typename HANDLER::Ref HandlerRef;
+
 	// std::set would be slighly cleaner but less efficient
 	typedef std::vector<HandlerRef> Handlers;
+
 	Handlers m_Handlers;
 
 public:
+	/** Add a handler to the set.  Will be called (in the order added), but
+	 *  apply().
+	 */
 	void addHandler(HandlerRef handler) {
 		assert(handler.valid());
 		if (!hasHandler(handler)) m_Handlers.push_back(handler);
 	}
 
+	/** Remove a handler from the set.  All the performance implications of
+	 *  removing elements from a std::vector apply.
+	 *
+	 *  @returns true if the handler was removed; false otherwise.
+	 */
 	bool removeHandler(HandlerRef handler) {
 		typename Handlers::iterator iter = std::find(m_Handlers.begin(), m_Handlers.end(), handler);
 		if (iter != m_Handlers.end()) m_Handlers.erase(iter);
 	}
 
+	/** Test if a handler is in the set.  All the performance implications of
+	 *  finding elements from a std::vector apply.
+	 *
+	 *  @returns true if the handler was found; false otherwise.
+	 */
 	bool hasHandler(HandlerRef handler) {
 		typename Handlers::iterator iter = std::find(m_Handlers.begin(), m_Handlers.end(), handler);
 		return (iter != m_Handlers.end());
 	}
 
+	/** Apply a unary function object to all handlers.
+	 *
+	 *  @param callback a unary function object implementing void operator()(HANDLER&).
+	 */
 	template <class CALLBACK>
 	inline void apply(CALLBACK &callback) {
 		std::for_each(m_Handlers.begin(), m_Handlers.end(), callback);
 	}
+
 };
 
 } // namespace simnet

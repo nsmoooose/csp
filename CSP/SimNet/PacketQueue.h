@@ -29,6 +29,7 @@
 
 namespace simnet {
 
+
 /** A single-threaded circular buffer that encapsulates rules for
  *  prioritizing realtime messages.
  *
@@ -61,42 +62,112 @@ class PacketQueue {
 	int m_Depth;
 	double m_DropFraction;
 public:
+
+	/** Construct a new packet queue.
+	 *
+	 *  @param size the number of bytes reserved for the queue.
+	 *  @param drop_percent the percentage of packets to drop when dropOldest
+	 *                      is called.
+	 */
 	PacketQueue(simdata::uint32 size, double drop_percent): m_Buffer(size), m_Depth(0) {
 		m_DropFraction = drop_percent * 0.01;
 	}
 
+	/** Allocate a new buffer for writing packet data.  You must
+	 *  call either commitWriteBuffer or abandonWriteBuffer after
+	 *  calling this method (unless the return value is NULL).
+	 *
+	 *  See simdata::CircularBuffer for details.
+	 *
+	 *  @param size the number of bytes to allocate.
+	 *  @return a pointer to a writeable buffer, or NULL if insufficient
+	 *    space was available.
+	 */
 	inline simdata::uint8 *getWriteBuffer(const simdata::uint32 size) {
 		return m_Buffer.getWriteBuffer(size);
 	}
+
+	/** Store a buffer previously allocated with getWriteBuffer.
+	 *
+	 *  See simdata::CircularBuffer for details.
+	 *
+	 *  @param size the number of bytes to store; if smaller than the
+	 *    number allocated, the extra bytes are released and made available
+	 *    for subsequent allocations.
+	 */
 	inline void commitWriteBuffer(simdata::uint32 size) {
 		m_Buffer.commitWriteBuffer(size);
 		m_Depth++;
 	}
+
+	/** Abandon a buffer previously allocated with getWriteBuffer.
+	 *
+	 *  See simdata::CircularBuffer for details.
+	 */
 	inline void abandonWriteBuffer() {
 		m_Buffer.abandonWriteBuffer();
 	}
+
+	/** Get the next packet buffer from the queue.
+	 *  Either releaseReadBuffer or replaceReadBuffer must be called
+	 *  after calling this method and receiving a non-NULL pointer.
+	 *
+	 *  See simdata::CircularBuffer for details.
+	 *
+	 *  @param size the size of the packet buffer, in bytes (output-only)
+	 *  @return a pointer to the packet buffer, or null if the queue is
+	 *  empty.
+	 */
 	inline simdata::uint8* getReadBuffer(simdata::uint32 &size) {
 		return m_Buffer.getReadBuffer(size);
 	}
+	
+	/** Release a packet buffer previously retrieved by getReadBuffer.
+	 *
+	 *  See simdata::CircularBuffer for details.
+	 */
 	inline void releaseReadBuffer() {
 		m_Buffer.releaseReadBuffer();
 		m_Depth--;
 	}
+
+	/** Return a packet buffer previously retrieved by getReadBuffer to
+	 *  the queue (as though getReadBuffer had not been called).
+	 *
+	 *  See simdata::CircularBuffer for details.
+	 */
 	inline void replaceReadBuffer() {
 		m_Buffer.replaceReadBuffer();
 	}
+
+	/** Test if the packet queue is empty.
+	 */
 	inline bool isEmpty() {
 		return m_Buffer.isEmpty();
 	}
 
+	/** Get the number of packets waiting in the queue.
+	 */
 	inline int getQueueDepth() {
 		return m_Depth;
 	}
 
+	/** Get an estimate of the number of packets that would be
+	 *  dropped by calling dropOldest.
+	 */
 	inline int estimateExcess() {
 		return int(m_Depth * m_DropFraction);
 	}
 
+	/** Drop excess packets.  Typically called after processing packets in
+	 *  the queue, up to some timeout.  Packets that remain unprocessed are
+	 *  then dropped (oldest first), to reduce the size of the queue.  The
+	 *  fraction of packets dropped is set when the packet queue is created.
+	 *  In steady state when the rate at which packets are added to the
+	 *  queue exceeds the rate at which packets are processed, this process
+	 *  limits the depth of the queue (and hence the maximum age of the
+	 *  packets).
+	 */
 	int dropOldest() {
 		int excess = int(m_Depth * m_DropFraction);
 		int drop_count = excess;

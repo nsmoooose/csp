@@ -30,12 +30,23 @@
 
 namespace simnet {
 
+
+/** Abstract interface for handlers of received network messages.
+ *
+ *  Subclass MessageHandler and add your handler to a PacketDecoder
+ *  to process incoming messages.
+ */
 class MessageHandler: public simdata::Referenced {
 public:
 	typedef simdata::Ref<MessageHandler> Ref;
-	virtual void handleMessage(NetworkMessage::Ref record)=0;
+
+	/** Called by PacketDecoder to handle an incoming message.
+	 */
+	virtual void handleMessage(NetworkMessage::Ref message)=0;
+
 	virtual ~MessageHandler() { }
 };
+
 
 } // namespace simnet
 

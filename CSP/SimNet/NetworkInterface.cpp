@@ -166,7 +166,7 @@ void NetworkInterface::sendPackets(double timeout) {
 }
 
 
-void NetworkInterface::resend(ReliablePacket::Ref &packet) {
+void NetworkInterface::resend(simdata::Ref<ReliablePacket> &packet) {
 	const int queue_idx = 3;
 	PacketQueue *queue = m_TxQueues[queue_idx];
 	simdata::uint32 packet_size = packet->size();
@@ -208,7 +208,7 @@ void NetworkInterface::processOutgoing(double timeout) {
 	// TODO divide timeout between packet_source and tx based
 	// on queue lengths.  for now just split evenly
 
-	SIMNET_LOG(TIMING, DEBUG, "OUTGOING LOOP START (" << m_PacketSource->size() << " packets to send)");
+	SIMNET_LOG(TIMING, DEBUG, "outgoing loop start (" << m_PacketSource->size() << " packets to send)");
 	int DEBUG_exitcode = 0;
 	double DEBUG_dt[20000];
 	int DEBUG_idx = 0;
@@ -224,7 +224,7 @@ void NetworkInterface::processOutgoing(double timeout) {
 	PeerId destination;
 
 	// first transfer packets from a packet source to the appropriate tx queue
-	while (m_PacketSource->peekPriority(destination, queue_idx)) {
+	while (m_PacketSource->peek(destination, queue_idx)) {
 		assert(queue_idx >= 0 && queue_idx < 4);
 		assert(destination < PeerIndexSize);
 
@@ -288,17 +288,17 @@ void NetworkInterface::processOutgoing(double timeout) {
 	// next flush the tx queue to the outgoing sockets
 	sendPackets(timeout);
 
-	SIMNET_LOG(TIMING, DEBUG, "OUTGOING LOOP END " << (DEBUG_elapsed * 1000.0) << " ms to queue packets");
+	SIMNET_LOG(TIMING, DEBUG, "outgoing loop end: " << (DEBUG_elapsed * 1000.0) << " ms to queue packets");
 	if (DEBUG_exitcode == 1) {
-		SIMNET_LOG(TIMING, DEBUG, "  QUEUE BUFFER FULL");
+		SIMNET_LOG(TIMING, DEBUG, "  exit state: queue buffer full");
 	} else
 	if (DEBUG_exitcode == 2) {
-		SIMNET_LOG(TIMING, DEBUG, "  SEND TIME EXPIRED");
+		SIMNET_LOG(TIMING, DEBUG, "  exit state: send time expired");
 	} else {
-		SIMNET_LOG(TIMING, DEBUG, "  NO MORE PACKETS");
+		SIMNET_LOG(TIMING, DEBUG, "  exit state: no more packets");
 	}
 	for (int i=0; i < DEBUG_idx; ++i) {
-		SIMNET_LOG(TIMING, DEBUG, "SEND PACKET @ " << (DEBUG_dt[i]*1000.0));
+		SIMNET_LOG(TIMING, DEBUG, "send packet @ " << (DEBUG_dt[i]*1000.0) << " ms");
 	}
 
 }
@@ -317,7 +317,7 @@ int NetworkInterface::receivePackets(double timeout) {
 	char null[MaxPayloadLength + HeaderSize];
 	PacketQueue *queue;
 
-	SIMNET_LOG(TIMING, DEBUG, "RECEIVE PACKETS; " << (timeout * 1000.0) << " ms available");
+	SIMNET_LOG(TIMING, DEBUG, "receive packets; " << (timeout * 1000.0) << " ms available");
 	int DEBUG_exitcode = 0;
 	int DEBUG_count = 0;
 
@@ -342,7 +342,7 @@ int NetworkInterface::receivePackets(double timeout) {
 		}
 
 		if (header.destination != m_ServerId) {
-			SIMNET_LOG(PACKET, ALERT, "Received bad packet (wrong destination): " << header);
+			SIMNET_LOG(PACKET, ALERT, "received bad packet (wrong destination): " << header);
 			m_Socket->receive((void*)null, sizeof(null));
 			m_BadPackets++;
 			continue;
@@ -351,7 +351,7 @@ int NetworkInterface::receivePackets(double timeout) {
 		simdata::uint16 source = header.source;
 		PeerInfo *peer = (source < PeerIndexSize) ? &(m_PeerIndex[source]) : 0;
 		if (!peer || !peer->isActive()) {
-			SIMNET_LOG(PACKET, ALERT, "Received packet from unknown source: " << header);
+			SIMNET_LOG(PACKET, ALERT, "received packet from unknown source: " << header);
 			m_Socket->receive((void*)null, sizeof(null));
 			m_BadPackets++;
 			continue;
@@ -419,12 +419,12 @@ int NetworkInterface::receivePackets(double timeout) {
 
 	double DEBUG_elapsed = watch.elapsed();
 	DEBUG_recvtime = DEBUG_elapsed;
-	SIMNET_LOG(TIMING, DEBUG, "RECEIVE LOOP END " << (DEBUG_elapsed * 1000.0) << " ms to queue " << DEBUG_count << " packets");
-	SIMNET_LOG(TIMING, DEBUG, "RECV: " << m_BadPackets << " bad, " << m_DroppedPackets << " dropped, " << m_ReceivedPackets << " ok)");
+	SIMNET_LOG(TIMING, DEBUG, "receive loop end: " << (DEBUG_elapsed * 1000.0) << " ms to queue " << DEBUG_count << " packets");
+	SIMNET_LOG(TIMING, DEBUG, "receive stats: " << m_BadPackets << " bad, " << m_DroppedPackets << " dropped, " << m_ReceivedPackets << " ok)");
 	if (DEBUG_exitcode == 1) {
-		SIMNET_LOG(TIMING, DEBUG, "  RECV TIME EXPIRED");
+		SIMNET_LOG(TIMING, DEBUG, "  exit state: recv time expired");
 	} else {
-		SIMNET_LOG(TIMING, DEBUG, "  NO MORE PACKETS");
+		SIMNET_LOG(TIMING, DEBUG, "  exit state: no more packets");
 	}
 
 	return received_packets;
@@ -450,7 +450,7 @@ int NetworkInterface::receivePackets(double timeout) {
 void NetworkInterface::processIncoming(double timeout) {
 	static StopWatch::Data swd(0.000001);
 
-	SIMNET_LOG(TIMING, DEBUG, "PROCESSING INCOMING PACKETS\n");
+	SIMNET_LOG(TIMING, DEBUG, "processing incoming packets");
 
 	double start_time = simdata::get_realtime();
 
@@ -464,7 +464,7 @@ void NetworkInterface::processIncoming(double timeout) {
 	receive_dt = DEBUG_recvtime;  // XXX XXX remove me when debug logging is removed from receivePackets
 	timeout -= receive_dt;
 
-	SIMNET_LOG(TIMING, DEBUG, "HANDLING PACKETS; " << (timeout * 1000.0) << " ms available\n");
+	SIMNET_LOG(TIMING, DEBUG, "handling packets; " << (timeout * 1000.0) << " ms available");
 
 	StopWatch watch(timeout, swd);
 	watch.start();
@@ -513,11 +513,11 @@ void NetworkInterface::processIncoming(double timeout) {
 	}
 
 	double DEBUG_elapsed = watch.elapsed();
-	SIMNET_LOG(TIMING, DEBUG, "HANDLING LOOP END " << (DEBUG_elapsed * 1000.0) << " ms to handle packets");
+	SIMNET_LOG(TIMING, DEBUG, "handling loop end: " << (DEBUG_elapsed * 1000.0) << " ms to handle packets");
 	if (DEBUG_exitcode == 1) {
-		SIMNET_LOG(TIMING, DEBUG, "  SEND TIME EXPIRED");
+		SIMNET_LOG(TIMING, DEBUG, "  exit state: send time expired");
 	} else {
-		SIMNET_LOG(TIMING, DEBUG, "  NO MORE PACKETS");
+		SIMNET_LOG(TIMING, DEBUG, "  exit state: no more packets");
 	}
 
 	double now = simdata::get_realtime();

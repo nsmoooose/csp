@@ -31,6 +31,9 @@
 
 namespace simnet {
 
+
+/** Class representing a remote host address (ip address and receive port)
+ */
 class NetworkNode
 {
 private:
@@ -38,18 +41,51 @@ private:
 	ost::tpport_t m_port;
 
 public:
+	/** Construct a default node.  The address defaults to the interface
+	 *  matching gethostname(), port 0.
+	 */
 	NetworkNode();
+
+	/** Construct from an existing cc++ address and receive port.
+	 */
 	NetworkNode(ost::InetHostAddress addr, ost::tpport_t port);
+
+	/** Construct a new node from ip address and receive port.
+	 *
+	 *  @param addr the binary address of the host.
+	 *  @param port the port number used by the host for receiving data.
+	 */
 	NetworkNode(simdata::uint32 addr, ost::tpport_t port);
+
+	/** Construct a new node, from hostname and receive port.
+	 *
+	 *  @param hostname the physical host address or the DNS name of a
+	 *    host machine (e.g. "csp.sourceforge.net").
+	 *  @param port the port number used by the host for receiving data.
+	 */
 	NetworkNode(const char * hostname, ost::tpport_t port);
 
+	/** Set the host ip address.
+	 */
 	void setAddress(ost::InetHostAddress addr);
+
+	/** Set the host receive port.
+	 */
 	void setPort(ost::tpport_t port);
 
+	/** Get the host receive port.
+	 */
 	ost::tpport_t getPort() const;
+
+	/** Get the host ip address.
+	 */
 	ost::InetHostAddress const &getAddress() const;
+
+	/** Get the host name.
+	 */
 	const char * getHostname() const;
 };
+
 
 } // namespace simnet
 

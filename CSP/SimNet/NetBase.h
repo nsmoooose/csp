@@ -30,12 +30,34 @@
 
 namespace simnet {
 
+
+/** Peer id, used as an index to the PeerInfo table.
+ */
 typedef simdata::uint16 PeerId;
+
+/** Network message id, used as an index to the NetworkMessage table
+ *  and cached in the custom id field of each NetworkMessage subclass.
+ */
 typedef simdata::uint16 MessageId;
+
+/** A type representing network bandwidth, in bytes per second.
+ */
 typedef simdata::uint32 Bandwidth;
+
+/** An id number assigned to reliable messages and used to confirm
+ *  receipt of such messages.  Ids are generated sequentially, per
+ *  peer, and roll over at 65535.  Id 0 is reserved for "no id".
+ */
 typedef simdata::uint16 ConfirmationId;
 
 
+/** Header attached to all transmitted network packets.  This is the
+ *  short form of the header, used for unreliable transmissions.  If
+ *  reliable is set to 1, the longer PacketReceiptHeader is used.
+ *  The latter subclasses PacketHeader, providing the same fields
+ *  (at the same offsets) as well as extra fields for implementing
+ *  reliable udp.
+ */
 struct PacketHeader {
 	simdata::uint16 reliable:1;  // if true, header is actually a PacketReceiptHeader
 	simdata::uint16 reserved:2;  // reserved for future use
@@ -50,9 +72,12 @@ struct PacketHeader {
 	simdata::uint16 message_id;  // id of the message
 };
 
-// used in place of PacketHeader when reliable is true
-// if priority==3, id0 will be the confirmation id for this packet.
-// all other non-zero ids are confirmations of past messages.
+
+/** Used in place of PacketHeader when reliable is set to 1.  If
+ *  priority is 3, id0 will be the confirmation id for this packet.
+ *  All other non-zero ids are confirmations of past messages that
+ *  have been successfully received from the destination host.
+ */
 struct PacketReceiptHeader: public PacketHeader {
 	ConfirmationId id0;
 	ConfirmationId id1;
@@ -60,10 +85,23 @@ struct PacketReceiptHeader: public PacketHeader {
 	ConfirmationId id3;
 };
 
+
+/** Helper class for debugging.  Dumps a packet header to an output stream.
+ */
 inline std::ostream &operator <<(std::ostream &os, PacketHeader const &header) {
-	os << (header.reliable ? 'R' : 'U') << header.priority << ':' << header.statmode << "*" << header.connstat << ':'
-	   << header.source << '>' << header.destination << ':' << header.message_id;
+	return os << (header.reliable ? 'R' : 'U') << header.priority << ':' << header.statmode
+	          << "*" << header.connstat << ':' << header.source << '>' << header.destination
+	          << ':' << header.message_id;
 }
+
+
+/** Helper class for debugging.  Dumps a packet receipt header to an output stream.
+ */
+inline std::ostream &operator <<(std::ostream &os, PacketReceiptHeader const &header) {
+	return os << reinterpret_cast<PacketHeader const &>(header) << "<" << header.id0 << ","
+	          << header.id1 << "," << header.id2 << "," << header.id3;
+}
+
 
 } // namespace simnet
 

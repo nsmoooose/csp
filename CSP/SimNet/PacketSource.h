@@ -30,19 +30,58 @@
 
 namespace simnet {
 
+
+/** Abstract interface for classes that generate packets to be sent
+ *  over the network.
+ */
 class PacketSource: public simdata::Referenced {
 	friend class NetworkInterface;
+
+	// TODO(os)
+	// NetworkInterface calls bind(this) to give PacketSource subclasses direct
+	// access to the associated NI.  This is not currently used, and should be
+	// removed unless a compelling need is found.
+	
 	NetworkInterface *m_network_interface;
 	virtual void bind(NetworkInterface* interface) { m_network_interface = interface; }
+
 protected:
 	inline NetworkInterface *getNetworkInterface() { return m_network_interface; }
+
 public:
 	typedef simdata::Ref<PacketSource> Ref;
+
 	virtual ~PacketSource() { }
-	virtual bool getPacket(PacketHeader *, simdata::uint8 *, simdata::uint32 &)=0;
+
+	/** Retrieve the next packet.
+	 *
+	 *  @param header a packet header; the implementation needs to set the destination, priority, and
+	 *    message_id fields.
+	 *  @param payload a buffer to receive the raw message data (excluding the header).
+	 *  @param payload_length when called, the amount of space allocated for payload (in bytes);
+	 *    on return the implementation must return the actual number of bytes used.
+	 *  @return true if a packet was returned, false otherwise.
+	 */
+	virtual bool getPacket(PacketHeader *header, simdata::uint8 *payload, simdata::uint32 &payload_length)=0;
+
+	/** Test if the source has packets available.
+	 */
 	virtual bool isEmpty()=0;
+
+	/** Return the number of packets available.
+	 */
 	virtual int size()=0;
-	virtual bool peekPriority(PeerId &destination, int &priority)=0;
+
+	/** Test the destination and priority of the next packet without retrieving it.
+	 *
+	 *  @param destination the peer to send the next packet to.
+	 *  @param priority the priority of the next packet (0-3).
+	 *  @return false if no packets are availible.
+	 */
+	virtual bool peek(PeerId &destination, int &priority)=0;
+
+	/** Drop the next packet.
+	 */
 	virtual void skipPacket()=0;
 };
 

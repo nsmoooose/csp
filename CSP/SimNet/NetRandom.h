@@ -36,18 +36,32 @@ namespace simnet {
  *  License, version 2.
  */
 
-// internal state for lcg used to drop packets under high load
+/** LCG pseudorandom number generator  used to drop packets under high load.
+ *
+ *  Uses the venerable 69069 generator.
+ */
 class NetRandom {
+	// internal state for lcg
 	static simdata::uint32 RandSeed;
+
+	// not currently used
 	static simdata::uint32 NetClock;
 
 public:
 
+	/** Get a new random number, from 0 to 4294967295.
+	 */
 	inline static simdata::uint32 random() {
 		RandSeed = RandSeed * 69069L + 1;
 		return RandSeed ^ NetClock;
 	}
 
+	/** Add entropy to the generator.  In practice this is not generally
+	 *  needed for packet culling.
+	 *
+	 *  @param entropy an arbitrary 32-bit value, ideally derived from
+	 *    a high entropy source (e.g. /dev/random under Linux).
+	 */
 	inline static void randomize(simdata::uint32 entropy) {
 		RandSeed ^= entropy;
 		random();

@@ -22,6 +22,7 @@
 #include <SimNet/MessageQueue.h>
 #include <SimNet/NetworkNode.h>
 #include <SimNet/TestMessage.h>
+#include <SimNet/NetLog.h>
 #include <SimData/Timing.h>
 #include <SimData/Thread.h>
 #include <SimData/Trace.h>
@@ -67,7 +68,7 @@ public:
 					assert(0);
 				}
 				*/
-				if (recvcnt % 100 == 0) { std::cout << recvcnt << "\n"; }
+				if (recvcnt % 1000 == 0) { std::cout << recvcnt << "\n"; }
 			}
 		}
 		++recvcnt;
@@ -81,6 +82,9 @@ public:
 int main(int argc, char** argv) {
 
 	simdata::Trace::install();
+	netlog().setOutput("simnet.log");
+	netlog().setLogPriority(simdata::LOG_DEBUG);
+	netlog().setLogCategory(simdata::LOG_ALL);
 
 	if (argc != 2) {
 		std::cout << "must specify local id\n";
@@ -90,7 +94,7 @@ int main(int argc, char** argv) {
 	hackBuildMessageIndex();
 
 	int local_id = atoi(argv[1]);
-	int bunch = 100 + local_id * 50;
+	int bunch = 200 + local_id * 50;
 	NetworkNode local("127.0.0.1", 4567 + local_id);
 
 	std::cout << "creating interface\n";
@@ -102,7 +106,8 @@ int main(int argc, char** argv) {
 	for (int id = 1; id < 4; ++id) {
 		if (id == local_id) continue;
 		NetworkNode node("127.0.0.1", 4567 + id);
-		ni->hackPeerIndex(id, node, 256000, 256000);
+		//ni->hackPeerIndex(id, node, 256000, 256000);
+		ni->hackPeerIndex(id, node, 2560000, 2560000);
 	}
 
 	std::cout << "adding handlers\n";

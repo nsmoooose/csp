@@ -1,0 +1,210 @@
+Microsoft Developer Studio Workspace File, Format Version 6.00
+# WARNING: DO NOT EDIT OR DELETE THIS WORKSPACE FILE!
+
+###############################################################################
+
+Project: "CSP"=.\DEMOS\CSP\CSP.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+    begin source code control
+    "$/Framework", BAAAAAAA
+    .
+    end source code control
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "DynamicCube"=.\Demos\DynamicCube\DynamicCube.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+    begin source code control
+    "$/Framework", BAAAAAAA
+    .
+    end source code control
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name Framework_Lib
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "Framework"=.\Framework.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+    begin source code control
+    "$/Framework", BAAAAAAA
+    .
+    end source code control
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "Framework_Lib"=.\Framework_Lib\Framework_Lib.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+    begin source code control
+    "$/Framework", BAAAAAAA
+    .
+    end source code control
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "Objects"=..\SISS\Objects\Objects.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "SimpleFlight"=.\Demos\SimpleFlight\SimpleFlight.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+    begin source code control
+    "$/Framework", BAAAAAAA
+    .
+    end source code control
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name Framework_Lib
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "TerrainEngineLib"=..\SISS\TERRAINENGINE\TerrainEngineLib\TerrainEngineLib.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+    begin source code control
+    "$/Framework", BAAAAAAA
+    .
+    end source code control
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name Framework_Lib
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "TerrainEnginePort"=.\Demos\TerrainEnginePort\TerrainEnginePort.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+    begin source code control
+    "$/Framework", BAAAAAAA
+    .
+    end source code control
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name Framework_Lib
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "TerrainFrameworkDemo"=..\APPLICATIONS\TerrainFrameworkDemo\TerrainFrameworkDemo.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+    begin source code control
+    "$/Framework", BAAAAAAA
+    .
+    end source code control
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name Framework_Lib
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name TerrainEngineLib
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "TerrainTest"=..\Test\TerrainTest\TerrainTest.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+    begin source code control
+    "$/Framework", BAAAAAAA
+    .
+    end source code control
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "Walker"=.\Demos\Walker\Source\Walker.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+    begin source code control
+    "$/Framework", BAAAAAAA
+    .
+    end source code control
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name Framework_Lib
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Global:
+
+Package=<5>
+{{{
+}}}
+
+Package=<3>
+{{{
+}}}
+
+###############################################################################
+

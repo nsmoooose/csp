@@ -62,7 +62,7 @@ class DataArchive;
 	__GETCLASSHASH(a, major) \
 	__GETCLASSVERSION(major, minor)
 
-#define __NEW(a) virtual Object* _new() const { return new a(); }
+#define __NEW(a) virtual SIMDATA(Object)* _new() const { return new a(); }
 
 // Macro to add standard boilerplate code to object classes.  The
 // first parameter is the object class, while the second and third

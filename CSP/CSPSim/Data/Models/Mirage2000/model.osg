@@ -52,9 +52,9 @@ MatrixTransform {
             ColorMode OFF
             ambientColor 0.588 0.588 0.588 1
             diffuseColor 1 1 1 1
-            specularColor 0.0225225 0.0225225 0.0225225 1
+            specularColor 0 0 0 1
             emissionColor 0 0 0 1
-            shininess 12.8
+            shininess 0
           }
           textureUnit 0 {
             GL_TEXTURE_2D ON
@@ -14444,9 +14444,9 @@ MatrixTransform {
             ColorMode OFF
             ambientColor 0.588 0.588 0.588 1
             diffuseColor 1 1 1 1
-            specularColor 0.0225225 0.0225225 0.0225225 1
+            specularColor 0 0 0 1
             emissionColor 0 0 0 1
-            shininess 12.8
+            shininess 0
           }
           textureUnit 0 {
             GL_TEXTURE_2D ON
@@ -16479,9 +16479,9 @@ MatrixTransform {
             ColorMode OFF
             ambientColor 0.588 0.588 0.588 1
             diffuseColor 1 1 1 1
-            specularColor 0.00900901 0.00900901 0.00900901 1
+            specularColor 0 0 0 1
             emissionColor 0 0 0 1
-            shininess 12.8
+            shininess 0
           }
           textureUnit 0 {
             GL_TEXTURE_2D ON
@@ -19954,9 +19954,9 @@ MatrixTransform {
             ColorMode OFF
             ambientColor 0.588 0.588 0.588 1
             diffuseColor 1 1 1 1
-            specularColor 0.0225225 0.0225225 0.0225225 1
+            specularColor 0 0 0 1
             emissionColor 0 0 0 1
-            shininess 12.8
+            shininess 0
           }
           textureUnit 0 {
             GL_TEXTURE_2D ON
@@ -20640,9 +20640,9 @@ MatrixTransform {
             ColorMode OFF
             ambientColor 0.588 0.588 0.588 1
             diffuseColor 1 1 1 1
-            specularColor 0.0225225 0.0225225 0.0225225 1
+            specularColor 0 0 0 1
             emissionColor 0 0 0 1
-            shininess 12.8
+            shininess 0
           }
           textureUnit 0 {
             GL_TEXTURE_2D ON
@@ -41990,7 +41990,7 @@ MatrixTransform {
           Material {
             DataVariance STATIC
             ColorMode OFF
-            ambientColor 0.588 0.588 0.588 1
+            ambientColor 0.0640517 0.158168 0.181698 1
             diffuseColor 1 1 1 1
             specularColor 0.0225225 0.0225225 0.0225225 1
             emissionColor 0 0 0 1
@@ -76059,7 +76059,7 @@ MatrixTransform {
           Material {
             DataVariance STATIC
             ColorMode OFF
-            ambientColor 0.588 0.588 0.588 1
+            ambientColor 0.0640517 0.158168 0.181698 1
             diffuseColor 1 1 1 1
             specularColor 0.0225225 0.0225225 0.0225225 1
             emissionColor 0 0 0 1
@@ -83387,11 +83387,11 @@ MatrixTransform {
           Material {
             DataVariance STATIC
             ColorMode OFF
-            ambientColor 0.205227 0.142482 0.253592 1
+            ambientColor 0.588 0.588 0.588 1
             diffuseColor 1 1 1 1
-            specularColor 0.0045045 0.0045045 0.0045045 1
+            specularColor 0 0 0 1
             emissionColor 0 0 0 1
-            shininess 32
+            shininess 0
           }
           textureUnit 0 {
             GL_TEXTURE_2D ON
@@ -105985,7 +105985,7 @@ MatrixTransform {
           DataVariance STATIC
           rendering_hint DEFAULT_BIN
           renderBinMode INHERIT
-          GL_CULL_FACE OVERRIDE|OFF
+          GL_CULL_FACE ON
           GL_LIGHTING ON
           0xba1 ON
           Material {
@@ -105993,9 +105993,9 @@ MatrixTransform {
             ColorMode OFF
             ambientColor 0.588 0.588 0.588 1
             diffuseColor 1 1 1 1
-            specularColor 0.0225225 0.0225225 0.0225225 1
+            specularColor 0 0 0 1
             emissionColor 0 0 0 1
-            shininess 12.8
+            shininess 0
           }
           textureUnit 0 {
             GL_TEXTURE_2D ON

@@ -34,6 +34,7 @@
  */
 
 #include "LandingGear.h"
+
 #include <SimData/Math.h>
 
 #include <cstdio>
@@ -47,7 +48,7 @@ using simdata::Vector3;
 
 
 SIMDATA_REGISTER_INTERFACE(LandingGear)
-SIMDATA_REGISTER_INTERFACE(LandingGearSet)
+SIMDATA_REGISTER_INTERFACE(GearDynamics)
 
 
 LandingGear::LandingGear() {
@@ -381,5 +382,106 @@ double LandingGear::setSteering(double setting) {
 	double rad = DegreesToRadians(m_SteerAngle);
 	m_Steer = Vector3(sin(rad), cos(rad), 0.0); 
 	return m_SteerAngle;
+}
+
+
+void GearDynamics::doComplexPhysics(double dt) {
+	m_WOW = false;
+	m_Force = m_Moment = simdata::Vector3::ZERO;
+	if (*m_NearGround) {
+		simdata::Vector3 const &pos_local = *m_PositionLocal;
+		simdata::Vector3 const &vel_body = *m_VelocityBody;
+		simdata::Vector3 const &ang_vel_body = *m_AngularVelocityBody;
+		simdata::Quaternion const &q = *m_qOrientation;
+		simdata::Vector3 const &normal_local = *m_NormalGround;
+		double const &height = *m_Height;
+		size_t n = m_Gear.size();
+		for (size_t i = 0; i < n; ++i) {
+			LandingGear &gear = *(m_Gear[i]);
+			simdata::Vector3 R = gear.getPosition();
+			simdata::Vector3 V = vel_body + (ang_vel_body ^ R);
+			simdata::Vector3 F = gear.simulate(q, V, height, normal_local, dt);
+			if (gear.getWOW()) 
+				m_WOW = true;
+			m_Force += F;
+			m_Moment += (R ^ F);
+		}
+	}
+}
+
+//FIXME: just for some testing purpose
+void GearDynamics::setStatus(bool on) {
+	size_t n = m_Gear.size();
+	for (size_t i = 0; i < n; ++i)
+		m_Gear[i]->setExtended(on);
+	m_Extended = on;
+}
+
+GearDynamics::GearDynamics():
+	m_WOW(false),
+	m_Extended(true) { 
+}
+	
+void GearDynamics::update(double dt) {
+	doComplexPhysics(dt);
+}
+
+void GearDynamics::pack(simdata::Packer& p) const {
+	Object::pack(p);
+	p.pack(m_Gear);
+}
+
+void GearDynamics::unpack(simdata::UnPacker& p) {
+	Object::unpack(p);
+	p.unpack(m_Gear);
+}
+	
+void GearDynamics::Retract() { 
+	setStatus(false);
+}
+	
+void GearDynamics::Extend() {
+	setStatus(true);
+}
+	
+bool GearDynamics::getExtended() const {
+	return m_Extended;
+}
+
+bool GearDynamics::getWOW() const {
+	return m_WOW;
+}
+
+void GearDynamics::setBraking(double x) {
+	size_t n = m_Gear.size();
+	for (size_t i = 0; i < n; ++i)
+		m_Gear[i]->setBraking(x);
+}
+
+void GearDynamics::setSteering(double x) {
+	size_t n = m_Gear.size();
+	for (size_t i = 0; i < n; ++i)
+		m_Gear[i]->setSteering(x);
+}
+
+LandingGear const *GearDynamics::getGear(unsigned i) {
+	assert(i <= m_Gear.size());
+	return m_Gear[i].get();
+}
+
+size_t GearDynamics::getGearNumber() const {
+		return m_Gear.size();
+}
+
+std::vector<simdata::Vector3> GearDynamics::getGearPosition() const {
+	std::vector<simdata::Vector3> gear_pos;
+	size_t n =  m_Gear.size();
+	for (size_t i = 0; i < n; ++i) {
+		LandingGear const *gear = m_Gear[i].get();
+		simdata::Vector3 move = gear->getPosition();
+		move.z -= gear->getMaxPosition().z;
+		gear_pos.push_back( move );
+	}
+	return gear_pos;
 }
 

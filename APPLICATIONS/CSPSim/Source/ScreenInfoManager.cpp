@@ -28,7 +28,7 @@
 #include <osg/MatrixTransform>
 
 
-void set2dScene(osg::Group* rootNode, int ScreenWidth, int ScreenHeight)
+void set2dScene(osg::Group *rootNode, int ScreenWidth, int ScreenHeight)
 {
 	const unsigned short offsetpos = 11;
 	osg::ref_ptr<Framerate> framerate = new Framerate(offsetpos,ScreenHeight - offsetpos);
@@ -39,7 +39,7 @@ void set2dScene(osg::Group* rootNode, int ScreenWidth, int ScreenHeight)
 	rootNode->addChild(pause.get());
 	rootNode->addChild(generalStats.get());
 
-	osg::StateSet* rootState = rootNode->getOrCreateStateSet();
+	osg::StateSet *rootState = rootNode->getOrCreateStateSet();
 	rootState->setMode(GL_LIGHTING,osg::StateAttribute::OFF);
 	rootState->setMode(GL_DEPTH_TEST,osg::StateAttribute::OFF);
 }
@@ -60,7 +60,7 @@ ScreenInfoManager::ScreenInfoManager(int ScreenWidth, int ScreenHeight)
 
 void ScreenInfoManager::changeObjectStats(int ScreenWidth, int ScreenHeight,simdata::Ref<DynamicObject> const& vehicle)
 {
-	ScreenInfo* os = getScreenInfo("OBJECT STATS");
+	ScreenInfo *os = getScreenInfo("OBJECT STATS");
 	if (os)
 		m_modelview_abs->removeChild(os);
 	osg::ref_ptr<ObjectStats> objectStats = new ObjectStats(12, 2 * ScreenHeight / 3,vehicle);
@@ -95,20 +95,20 @@ ScreenInfo* ScreenInfoManager::getScreenInfo(std::string const& name)
 {
 	FindNamedNodeVisitor nv;
 	nv.setNameToFind(name);
-	nv.apply( *m_modelview_abs );
+    m_modelview_abs->accept(nv);
 	return dynamic_cast<ScreenInfo*>(nv.foundNode());
 }
 
 void ScreenInfoManager::setStatus(std::string const& name, bool bvisible)
 {
-	ScreenInfo* sci = getScreenInfo(name);
+	ScreenInfo *sci = getScreenInfo(name);
 	if (sci)
 		sci->setStatus(bvisible);
 }
 
 bool ScreenInfoManager::getStatus(std::string const& name)
 {
-	ScreenInfo* sci = getScreenInfo(name);
+	ScreenInfo *sci = getScreenInfo(name);
 	if (sci)
 		return sci->getStatus();
 	else

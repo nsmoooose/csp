@@ -107,7 +107,7 @@ protected:
 	bool m_bPreviousState;
 
 	void normalView();
-	void turnViewAboutX(double dt, double fangleMax = G_PI / 2);
+	void turnViewAboutX(double dt, double fangleMax = G_PI / 2.0);
 	void turnViewAboutZ(double dt, double fangleMax = G_PI);
 	void scaleView(double dt);
 	simdata::Vector3 getNewFixedCamPos(SimObject * const target) const;

@@ -81,14 +81,14 @@ public:
 	bool getFreezeFlag() const { return getFlags(F_FREEZE) != 0; }
 
 	// model and scene related functions
-	SceneModel * getSceneModel() { return m_SceneModel; }
+	SceneModel * getSceneModel() { return m_SceneModel.get(); }
 	simdata::Ref<ObjectModel> getModel() const { return m_Model; }
 	virtual void createSceneModel();
 	virtual void destroySceneModel();
 	osg::Node* getOrCreateModelNode();
 	osg::Node* getModelNode();
-	virtual void showModel() { if (m_SceneModel) m_SceneModel->show(); }
-	virtual void hideModel() { if (m_SceneModel) m_SceneModel->hide(); }
+	virtual void showModel() { if (m_SceneModel.valid()) m_SceneModel->show(); }
+	virtual void hideModel() { if (m_SceneModel.valid()) m_SceneModel->hide(); }
 
 	virtual void updateScene(simdata::Vector3 const &origin) = 0;
 
@@ -101,7 +101,7 @@ protected:
 	virtual void unpack(simdata::UnPacker& p);
 
 	simdata::Link<ObjectModel> m_Model;
-	SceneModel *m_SceneModel;
+	simdata::Ref<SceneModel> m_SceneModel;
 
 	//unsigned int m_ObjectID;
 	//unsigned int m_ObjectType;

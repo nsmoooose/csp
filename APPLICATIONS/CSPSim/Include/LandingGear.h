@@ -26,6 +26,7 @@
 #ifndef __LANDINGGEAR_H__
 #define __LANDINGGEAR_H__
 
+#include <vector>
 
 #include <SimData/InterfaceRegistry.h>
 #include <SimData/Object.h>
@@ -33,6 +34,7 @@
 #include <SimData/Quaternion.h>
 #include <SimData/Link.h>
 
+#include "BaseDynamics.h"
 
 class LandingGear: public simdata::Object {
 public:
@@ -111,6 +113,78 @@ protected:
 };
 
 
+class GearDynamics: public simdata::Object, public BaseDynamics {
+
+	typedef simdata::Link<LandingGear>::vector GearSet;
+	
+	void doComplexPhysics(double dt);
+	void doSimplePhysics(double dt);
+
+	//FIXME: just for some testing purpose
+	void setStatus(bool on);
+public:
+	SIMDATA_OBJECT(GearDynamics, 0, 0)
+
+	BEGIN_SIMDATA_XML_INTERFACE(GearDynamics)
+		SIMDATA_XML("gear_set", GearDynamics::m_Gear, true)
+	END_SIMDATA_XML_INTERFACE
+
+	GearDynamics();
+	void update(double dt);
+	virtual void pack(simdata::Packer& p) const;
+	virtual void unpack(simdata::UnPacker& p);
+	void Retract();
+	void Extend();
+	bool getExtended() const;
+	bool getWOW() const;
+	void setBraking(double x);
+	void setSteering(double x);
+	LandingGear const *getGear(unsigned i);
+	size_t getGearNumber() const;
+	std::vector<simdata::Vector3> getGearPosition() const;
+protected:
+	GearSet m_Gear;
+	bool m_WOW;
+	bool m_Extended;
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*
+#if 0
 class LandingGearSet: public simdata::Object {
 
 	typedef simdata::Link<LandingGear>::vector GearSet;
@@ -123,7 +197,6 @@ public:
 	END_SIMDATA_XML_INTERFACE
 
 	LandingGearSet() { m_WOW = false; m_Extended = true; }
-
 	void doComplexPhysics(simdata::Quaternion const &orientation, 
 			 simdata::Vector3 const &velocity, 
 			 simdata::Vector3 const &angular_velocity, 
@@ -133,7 +206,8 @@ public:
 			 simdata::Vector3 &force,
 			 simdata::Vector3 &moment) {
 		m_WOW = false;
-		for (unsigned i = 0; i < m_Gear.size(); i++) {
+		unsigned short n = m_Gear.size();
+		for (unsigned short i = 0; i < n; i++) {
 			LandingGear &gear = *(m_Gear[i]);
 			simdata::Vector3 R = gear.getPosition();
 			simdata::Vector3 V = velocity + (angular_velocity ^ R);
@@ -143,12 +217,10 @@ public:
 			moment += R ^ F;
 		}
 	}
-
 	virtual void pack(simdata::Packer& p) const {
 		Object::pack(p);
 		p.pack(m_Gear);
 	}
-
 	virtual void unpack(simdata::UnPacker& p) {
 		Object::unpack(p);
 		p.unpack(m_Gear);
@@ -163,11 +235,9 @@ public:
 			m_Gear[i]->setExtended(on);
 		m_Extended = on;
 	}
-
 	void Retract() { 
 		setStatus(false);
 	}
-
 	void Extend() {
 		setStatus(true);
 	}
@@ -175,33 +245,27 @@ public:
 	bool getExtended() const {
 		return m_Extended;
 	}
-
 	bool getWOW() const { return m_WOW; }
-
 	void setBraking(double x) {
 		for (unsigned i = 0; i < m_Gear.size(); i++) {
 			m_Gear[i]->setBraking(x);
 		}
 	}
-
 	void setSteering(double x) {
 		for (unsigned i = 0; i < m_Gear.size(); i++) {
 			m_Gear[i]->setSteering(x);
 		}
 	}
-
 	LandingGear const *getGear(unsigned i) {
 		assert(i <= m_Gear.size());
 		return m_Gear[i].get();
 	}
-
 protected:
 	GearSet m_Gear;
 	bool m_WOW;
 	bool m_Extended;
 };
-
-
-
+#endif
+*/
 #endif // __LANDINGGEAR_H__
 

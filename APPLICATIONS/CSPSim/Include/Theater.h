@@ -23,7 +23,7 @@
  * A theater is a large geographic area it which military operations are
  * conducted (dictionary.com).  In CSPSim this include the terrain,
  * natural features, and static man-made objects.  The classes here are
- * used to orginize and manage this data.
+ * used to organize and manage this data.
  *
  **/
 

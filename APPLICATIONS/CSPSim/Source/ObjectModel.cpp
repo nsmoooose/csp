@@ -22,6 +22,9 @@
  *
  **/
 
+#include <vector>
+
+#include <osg/ShapeDrawable>
 
 #include "ObjectModel.h"
 #include "Log.h"
@@ -39,6 +42,7 @@
 #include <osg/Geode>
 
 #include <SimData/FileUtility.h>
+#include <SimData/osg.h>
 
 
 SIMDATA_REGISTER_INTERFACE(ObjectModel)
@@ -102,6 +106,7 @@ ObjectModel::ObjectModel(): simdata::Object() {
 	m_Scale = 1.0;
 	m_Smooth = true;
 	m_Filter = true;
+	m_MarkersVisible = true;
 }
 
 ObjectModel::~ObjectModel() {
@@ -118,6 +123,7 @@ void ObjectModel::pack(simdata::Packer& p) const {
 	p.pack(m_Smooth);
 	p.pack(m_Filter);
 	p.pack(m_Contacts);
+	p.pack(m_LandingGear);
 }
 
 void ObjectModel::unpack(simdata::UnPacker& p) {
@@ -131,6 +137,7 @@ void ObjectModel::unpack(simdata::UnPacker& p) {
 	p.unpack(m_Smooth);
 	p.unpack(m_Filter);
 	p.unpack(m_Contacts);
+	p.unpack(m_LandingGear);
 }
 
 void ObjectModel::postCreate() {
@@ -182,10 +189,9 @@ osg::Geometry *makeDiamond(simdata::Vector3 const &pos, float s) {
     return geom;
 }
 
-
 void ObjectModel::loadModel() {
 	if (g_ModelPath == "") {
-		g_ModelPath = g_Config.getPath("Paths", "ModelPath", ".", true);
+		g_ModelPath = g_Config.getPath("Paths", "ModelPath", ".", true); 
 	}
 
 	std::string source = simdata::ospath::filter(simdata::ospath::join(g_ModelPath, m_ModelPath.getSource()));
@@ -253,14 +259,16 @@ void ObjectModel::loadModel() {
 		m_Transform->accept(tfv);
 	}
 
-	// TODO: run an optimizer to flatten the model transform (if it differs from identity)
-
 	m_DebugMarkers = new osg::Switch;
 	m_Transform->addChild(m_DebugMarkers.get());
 
 	// create visible markers for each contact point
 	addContactMarkers();
 
+	// create landing gear wheels
+	addGearSprites();
+
+	// TODO: run an optimizer to flatten the model transform (if it differs from identity)
 	osgUtil::Optimizer opt;
 	opt.optimize(m_Transform.get());
 
@@ -269,6 +277,9 @@ void ObjectModel::loadModel() {
 	dlv.setState(state.get());
 	dlv.setNodeMaskOverride(0xffffffff);
 	m_Transform->accept(dlv);
+   
+	//FIXME: why this culling when optimizing occurs only here!?
+	opt.optimize(m_Transform.get());
 }
 
 void ObjectModel::addContactMarkers() {
@@ -281,8 +292,179 @@ void ObjectModel::addContactMarkers() {
 	m_DebugMarkers->addChild(m_ContactMarkers.get());
 }
 
+// temporary hack to deal with gear objects
+void ObjectModel::makeFrontGear(simdata::Vector3 const &point) {
+	//FIXME: harcoded  gravity center height
+	double const offset = -0.75;
+	double const radius1 = 0.22;
+	double const e1 = 0.11;
+
+	osg::Vec3 p = simdata::toOSG(point);
+
+	osg::Quat q;
+	q.makeRotate(osg::DegreesToRadians(90.0),osg::Vec3(0.0,1.0,0.0)); 
+	osg::Cylinder *cyl1 = new osg::Cylinder(osg::Vec3(e1,0.0,p.z()+radius1), radius1, e1);
+	cyl1->setRotation(q);
+	osg::ShapeDrawable *wheel_front1 = new osg::ShapeDrawable(cyl1);
+	wheel_front1->setColor(osg::Vec4(0.2,0.2,0.2,1.0));
+
+	osg::Cylinder *cyl2 = new osg::Cylinder(osg::Vec3(-e1,0.0,p.z()+radius1), radius1, e1);
+	cyl2->setRotation(q);
+	osg::ShapeDrawable *wheel_front2 = new osg::ShapeDrawable(cyl2);
+	wheel_front2->setColor(osg::Vec4(0.2,0.2,0.2,1.0));
+
+	osg::Geode *geode = new osg::Geode;
+	geode->addDrawable(wheel_front1);
+	geode->addDrawable(wheel_front2);
+
+
+	double l = (- p.z() + offset - radius1) / 2.0;
+	osg::ShapeDrawable *tube_mobile = 
+		new osg::ShapeDrawable(new osg::Cylinder(osg::Vec3(0.0,0.0,offset - l), e1/4.0, 2.0 * l));
+	tube_mobile->setColor(osg::Vec4(0.4,0.4,0.4,1.0));
+	geode->addDrawable(tube_mobile);
+
+	osg::PositionAttitudeTransform *mobile_group = new osg::PositionAttitudeTransform; 
+	mobile_group->addChild(geode);
+
+	osg::ShapeDrawable *tube_static = 
+		new osg::ShapeDrawable(new osg::Cylinder(osg::Vec3(p.x(),p.y(),offset), e1/2.0, l));
+	tube_static->setColor(osg::Vec4(0.4,0.4,0.4,1.0));
+	osg::Geode *geode2 = new osg::Geode;
+	geode2->addDrawable(tube_static);
+	osg::Group *static_group = new osg::Group;
+	static_group->addChild(geode2);
+
+	m_GearSprites->addChild(mobile_group);
+	m_GearSprites->addChild(static_group);
+}
+
+void ObjectModel::makeLeftGear(simdata::Vector3 const &point) {
+	//FIXME: harcoded  gravity center height
+	double const offset = -0.67;
+	double const radius = 0.44;
+	double const e = 0.22;
+
+	osg::Vec3 p = simdata::toOSG(point);
+
+	osg::Quat q;
+	q.makeRotate(osg::DegreesToRadians(90.0),osg::Vec3(0.0,1.0,0.0)); 
+	osg::Cylinder *cyl = new osg::Cylinder(osg::Vec3(-0.75 * e,0.0,p.z()+radius), radius, e);
+	cyl->setRotation(q);
+	osg::ShapeDrawable *wheel = new osg::ShapeDrawable(cyl);
+	wheel->setColor(osg::Vec4(0.2,0.2,0.2,1.0));
+
+	osg::Geode *geode = new osg::Geode;
+	geode->addDrawable(wheel);
+
+	double l1 = (- p.z() + offset - radius) / 2.0;
+	double l = l1 - l1 / 4.0;
+	osg::ShapeDrawable *tube_mobile = 
+		new osg::ShapeDrawable(new osg::Cylinder(osg::Vec3(0.0,0.0,offset - l1 /4.0 - l), e/4.0, 2.0 * l));
+	tube_mobile->setColor(osg::Vec4(0.4,0.4,0.4,1.0));
+	geode->addDrawable(tube_mobile);
+
+	osg::PositionAttitudeTransform *mobile_group = new osg::PositionAttitudeTransform; 
+	mobile_group->addChild(geode);
+
+	osg::ShapeDrawable *tube_static = 
+		new osg::ShapeDrawable(new osg::Cylinder(osg::Vec3(p.x(),p.y(),offset), e/2.0, l1/2.0));
+	tube_static->setColor(osg::Vec4(0.4,0.4,0.4,1.0));
+	osg::Geode *geode2 = new osg::Geode;
+	geode2->addDrawable(tube_static);
+	osg::Group *static_group = new osg::Group;
+	static_group->addChild(geode2);
+
+	m_GearSprites->addChild(mobile_group);
+	m_GearSprites->addChild(static_group);
+}
+
+void ObjectModel::makeRightGear(simdata::Vector3 const &point) {
+	//FIXME: harcoded  gravity center height
+	double const offset = -0.67;
+	double const radius = 0.44;
+	double const e = 0.22;
+
+	osg::Vec3 p = simdata::toOSG(point);
+
+	osg::Quat q;
+	q.makeRotate(osg::DegreesToRadians(90.0),osg::Vec3(0.0,1.0,0.0)); 
+	osg::Cylinder *cyl = new osg::Cylinder(osg::Vec3(0.75 * e,0.0,p.z()+radius), radius, e);
+	cyl->setRotation(q);
+	osg::ShapeDrawable *wheel = new osg::ShapeDrawable(cyl);
+	wheel->setColor(osg::Vec4(0.2,0.2,0.2,1.0));
+
+	osg::Geode *geode = new osg::Geode;
+	geode->addDrawable(wheel);
+
+	double l1 = (- p.z() + offset - radius) / 2.0;
+	double l = l1 - l1 / 4.0;
+	osg::ShapeDrawable *tube_mobile = 
+		new osg::ShapeDrawable(new osg::Cylinder(osg::Vec3(0.0,0.0,offset - l1 /4.0 - l), e/4.0, 2.0 * l));
+	tube_mobile->setColor(osg::Vec4(0.4,0.4,0.4,1.0));
+	geode->addDrawable(tube_mobile);
+
+	osg::PositionAttitudeTransform *mobile_group = new osg::PositionAttitudeTransform; 
+	mobile_group->addChild(geode);
+
+	osg::ShapeDrawable *tube_static = 
+		new osg::ShapeDrawable(new osg::Cylinder(osg::Vec3(p.x(),p.y(),offset), e/2.0, l1/2.0));
+	tube_static->setColor(osg::Vec4(0.4,0.4,0.4,1.0));
+	osg::Geode *geode2 = new osg::Geode;
+	geode2->addDrawable(tube_static);
+	osg::Group *static_group = new osg::Group;
+	static_group->addChild(geode2);
+
+	m_GearSprites->addChild(mobile_group);
+	m_GearSprites->addChild(static_group);
+}
+
+void ObjectModel::addGearSprites() {
+	size_t n = m_LandingGear.size();
+	if (n>0) {
+		m_GearSprites = new osg::Group;
+		makeFrontGear(m_LandingGear[0]);
+		makeLeftGear(m_LandingGear[1]);
+		makeRightGear(m_LandingGear[2]);
+		m_Transform->addChild(m_GearSprites.get());
+	}
+}
+
+//FIXME: to be moved in AircraftModel?
+void ObjectModel::updateGearSprites(std::vector<simdata::Vector3> const &move) {
+	if (m_GearSprites.valid()) {
+		size_t m =  m_GearSprites->getNumChildren();
+		size_t i = 0;
+		for (size_t j = 0; j < m; ++j) {
+			osg::Node *node = m_GearSprites->getChild(j);
+			osg::PositionAttitudeTransform *pos = dynamic_cast<osg::PositionAttitudeTransform*>(node); 
+			if (pos) {
+				osg::Vec3 p = osg::Vec3(m_LandingGear[i].x,m_LandingGear[i].y,move[i].z);
+				pos->setPosition(p);
+				++i;
+			}
+		}
+	}
+}
+
 void ObjectModel::showContactMarkers(bool on) {
-	m_DebugMarkers->setChildValue(m_ContactMarkers.get(), on);
+	if (on) 
+		m_DebugMarkers->setAllChildrenOn();
+	else
+		m_DebugMarkers->setAllChildrenOff();
+	m_MarkersVisible = on;
+}
+
+//FIXME: to be moved in AircraftModel?
+void ObjectModel::showGearSprites(bool on) {
+	if (on)
+		m_GearSprites->setNodeMask(0x1);
+	else
+		m_GearSprites->setNodeMask(0x0);
+}
+
+bool ObjectModel::getMarkersVisible() const {
+	return m_MarkersVisible;
 }
 
 
@@ -298,6 +480,7 @@ SceneModel::SceneModel(simdata::Ref<ObjectModel> const & model) {
 	m_Switch->setAllChildrenOn();
 	m_Transform = new osg::PositionAttitudeTransform;
 	m_Transform->addChild(m_Switch.get());
+	m_Smoke = false;
 	//show();
 }
 
@@ -308,7 +491,63 @@ SceneModel::~SceneModel() {
 	m_Transform->removeChild(m_Switch.get()); 
 }
 
+void SceneModel::updateSmoke(double dt, simdata::Vector3 const &global_position, simdata::Quaternion const &attitude) {
+	m_SmokeTrails->update(dt, global_position, attitude);
+}
 
+void SceneModel::setSmokeEmitterLocation(std::vector<simdata::Vector3> const &sel) {
+	m_SmokeEmitterLocation = sel;
+}
+
+bool SceneModel::addSmoke() {
+	if (m_SmokeTrails.valid()) 
+		return true;
+	else {
+		size_t n = m_SmokeEmitterLocation.size();
+		if (n>0) {
+			for (size_t i = 0; i <n; ++i) {
+				fx::SmokeTrail *trail = new fx::SmokeTrail();
+				trail->setEnabled(false);
+				trail->setTexture("Images/white-smoke.rgb");
+				trail->setColorRange(osg::Vec4(0.9, 0.9, 1.0, 1.0), osg::Vec4(1.0, 1.0, 1.0, 0.5));
+				trail->setSizeRange(0.2, 4.0);
+				trail->setLight(false);
+				trail->setLifeTime(5.5);
+				trail->setExpansion(1.2);
+				trail->addOperator(new fx::SmokeThinner);
+
+				trail->setOffset(m_SmokeEmitterLocation[i]);
+
+				m_SmokeTrails = new fx::SmokeTrailSystem;
+				m_SmokeTrails->addSmokeTrail(trail);
+			}
+			m_Smoke = false;
+			return true;
+		}
+	}
+	return false;
+}
+
+bool SceneModel::isSmoke() {
+	return m_Smoke;
+}
+
+void SceneModel::disableSmoke()
+{
+	if (m_Smoke) {
+		m_SmokeTrails->setEnabled(false);
+		m_Smoke = false;
+	}
+}
+
+void SceneModel::enableSmoke()
+{
+	if (!m_Smoke) {
+		if (!addSmoke()) return;
+		m_SmokeTrails->setEnabled(true);
+		m_Smoke = true;
+	}
+}
 // FIXME: from SimObject.... needs to be incorparated:
 /*
 void SimObject::initModel()

@@ -18,28 +18,22 @@
 
 
 /**
- * @file DynamicalSystem.h
+ * @file AircraftPhysicModel.h
  *
  **/
 
+#ifndef __AIRCRAFTPHYSICMODEL_H__
+#define __AIRCRAFTPHYSICMODEL_H__
 
-#ifndef __DYNAMICALSYSTEM_H__
-#define __DYNAMICALSYSTEM_H__
+#include "PhysicModel.h"
 
-#include <vector>
-
-#include "NumericalMethod.h"
-
-
-class DynamicalSystem: protected VectorField {
-	NumericalMethod* _numericalMethod;
+class AircraftPhysicModel: public PhysicModel {
 public:
-	DynamicalSystem(unsigned short dimension = 0);
-	DynamicalSystem(VectorField* pf);
-	virtual ~DynamicalSystem();
-	void setNumericalMethod(NumericalMethod* pnumericalMethod);
-	std::vector<double> const& flow(std::vector<double>& y0, double t0, double dt) const;
+	AircraftPhysicModel();
+	void doSimStep(double dt);
+	std::vector<double> const& _f(double t, std::vector<double>& y);
 };
 
-#endif //__DYNAMICALSYSTEM_H__
+#endif //__AIRCRAFTPHYSICMODEL_H__
+
 

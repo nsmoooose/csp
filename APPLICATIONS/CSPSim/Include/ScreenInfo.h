@@ -39,10 +39,11 @@ protected:
 	std::string m_TTFPath;
 	int m_FontSize;
 	float m_CharacterSize;
-	osgText::Text* m_Text;
-public:
-	ScreenInfo(int posx,int posy, std::string const & name, std::string const & text = "");
+	osgText::Text *m_Text;
+	osgText::Text *makeText(int pos_x, int pos_y,std::string const &string_text = "");
 	virtual ~ScreenInfo() {}
+public:
+	ScreenInfo(int posx,int posy, std::string const &name, std::string const &text = "");
 	virtual void update(){}
 	void setStatus(bool const bvisible) {if (bvisible) setNodeMask(0x1); else setNodeMask(0x0);};
 	bool getStatus() const {return getNodeMask() != 0;};
@@ -52,23 +53,26 @@ public:
 class Framerate: public ScreenInfo 
 {
 	float m_minFps, m_maxFps, m_cumul;
-	osgText::Text* m_Date;
+	osgText::Text* m_Date, *m_MinFps, *m_MaxFps, *m_Av;
+protected:
+	~Framerate(){}
 public:
 	Framerate(int posx,int posy);
-	virtual ~Framerate(){}
 	virtual void update();
 };
 
 
 class GeneralStats: public ScreenInfo 
 {
-	osgText::Text* m_LocalPosition;
+	osgText::Text* m_Altitude;
 	osgText::Text* m_GlobalPosition;
 	osgText::Text* m_Velocity;
+protected:
+	~GeneralStats(){}
 public:
 	GeneralStats(int posx,int posy);
 	virtual void update();
-	virtual ~GeneralStats(){}
+	
 };
 
 
@@ -76,10 +80,12 @@ class ObjectStats: public ScreenInfo
 {
 	// input device informations
 	std::vector<osgText::Text*> m_ObjectStats;
+protected:
+	~ObjectStats(){}
 public:
 	ObjectStats(int posx,int posy, simdata::Ref<DynamicObject> const& activeObject);
 	virtual void update();
-	virtual ~ObjectStats(){}
+	
 };
 
 

@@ -21,11 +21,6 @@
  * @file CSPSim.cpp
  *
  */
-
-#ifdef _WIN32
-#include <windows.h>
-#endif
-
 #include <Python.h>
 
 #include "CSPSim.h"
@@ -224,13 +219,17 @@ void CSPSim::init()
 			m_DataManager.addArchive(sim);
 		} 
 
+#ifndef CSP_NDEBUG
 		catch (simdata::Exception &e) {
 			CSP_LOG(APP, ERROR, "Error opening data archive " << archive_file);
 			CSP_LOG(APP, ERROR, e.getType() << ": " << e.getMessage());
 			throw;
 			//::exit(0);
 		}
-	
+#else 
+		catch (...) {
+		}
+#endif
 		// initialize SDL
 		initSDL();
 
@@ -253,7 +252,7 @@ void CSPSim::init()
 		m_InterfaceMaps->loadAllMaps();
 		m_Interface = new VirtualHID();
 
-		std::string theater = g_Config.getPath("Testing", "Theater", "sim:theater.balkan", true);
+		std::string theater = g_Config.getPath("Testing", "Theater", "sim:theater.balkan", false);
 		m_Theater = m_DataManager.getObject(theater.c_str());
 		assert(m_Theater.valid());
 		m_Terrain = m_Theater->getTerrain();
@@ -292,12 +291,12 @@ void CSPSim::init()
 		//simdata::Ref<ObjectModel> test = m_DataManager.getObject("sim:theater.runway_model");
 		//m_Scene->addEffectUpdater(test->getModel().get());
 
-		std::string vehicle = g_Config.getPath("Testing", "Vehicle", "sim:vehicles.aircraft.m2k", true);
+		std::string vehicle = g_Config.getPath("Testing", "Vehicle", "sim:vehicles.aircraft.m2k", false);
 		simdata::Ref<AircraftObject> ao = m_DataManager.getObject(vehicle.c_str());
 		assert(ao.valid());
-		ao->setGlobalPosition(483000, 499000, 91.2);
-		ao->setAttitude(0.03, 0.0, 1.9);
-		ao->setVelocity(0, 2.0, 0);
+		ao->setGlobalPosition(483025, 499000, 88.5);
+		ao->setAttitude(0.0, 0.0, 1.92);
+		ao->setVelocity(0, 1.0, 0);
 		m_Battlefield->addUnit(ao);
 
 #if 0
@@ -472,7 +471,6 @@ void CSPSim::run()
 			}
             
 			// Swap OpenGL buffers
-#if 0
 #ifndef __CSPSIM_EXE__
 			Py_BEGIN_ALLOW_THREADS;
 			SDL_GL_SwapBuffers();
@@ -480,19 +478,18 @@ void CSPSim::run()
 #else
 			SDL_GL_SwapBuffers();
 #endif
-#endif
-			SDL_GL_SwapBuffers();
 			// remove marked objects, this should be done at the end of the main loop.
 			m_Battlefield->removeUnitsMarkedForDelete();
 		}
 		//m_Battlefield->dumpObjectHistory();
 	}
-   
+#ifndef CSP_NDEBUG
 	catch(DemeterException * pEx) {
 		CSP_LOG(APP, ERROR, "Caught Demeter Exception: " << pEx->GetErrorMessage());
 		cleanup();
 		::exit(1);
 	}
+#endif
 	catch(...) {
 		CSP_LOG(APP, ERROR, "MAIN: Unexpected exception, GLErrorNUM: " << glGetError());
 		cleanup();

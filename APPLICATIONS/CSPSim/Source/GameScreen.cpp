@@ -179,7 +179,7 @@ void GameScreen::onInit()
 
 	m_InfoView->setViewport(0,0,ScreenWidth,ScreenHeight);
 
-	m_InfoView->getRenderStage()->setClearMask(0x0);
+	m_InfoView->getRenderStage()->setClearMask(GL_DEPTH_BUFFER_BIT);
 
 	m_ScreenInfoManager = new ScreenInfoManager(ScreenWidth,ScreenHeight);
 	m_ScreenInfoManager->setName("ScreenInfoManager");
@@ -246,10 +246,11 @@ void GameScreen::onRender()
 	m_InfoView->draw();
 }
 
-void GameScreen::onUpdate(double dt)
-{	
+void GameScreen::onUpdate(double dt) {
+	static short i = 0;
 	setCamera(dt);
-	m_InfoView->update();
+	if ((++i)%5 == 0)
+		m_InfoView->update();
 }
 
 simdata::Vector3 GameScreen::getNewFixedCamPos(SimObject * const target) const
@@ -265,12 +266,6 @@ simdata::Vector3 GameScreen::getNewFixedCamPos(SimObject * const target) const
 	} else {
 		camPos = objectPos + 100.0 * simdata::Vector3::ZAXIS + 100.0 * simdata::Vector3::XAXIS;
 	}
-	float h = 0.0;
-	VirtualBattlefield *battlefield = CSPSim::theSim->getBattlefield();
-	if (battlefield) {
-		h = battlefield->getElevation(objectPos.x, objectPos.y);
-	}
-	if ( camPos.z < h ) camPos.z = h;
 	return camPos;
 }
 
@@ -613,7 +608,7 @@ void GameScreen::setCamera(double dt)
 	VirtualScene *scene = CSPSim::theSim->getScene();
 	if (scene) {	
 		// checking if eyePos is under ground.
-		float h = 1.0;
+		float h = 2.0;
 		VirtualBattlefield *battlefield = CSPSim::theSim->getBattlefield();
 		if (battlefield) {
 			h += battlefield->getElevation(eyePos.x, eyePos.y);

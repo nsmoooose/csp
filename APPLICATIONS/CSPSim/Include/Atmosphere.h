@@ -25,41 +25,10 @@
 #ifndef __ATMOSPHERE_H__
 #define __ATMOSPHERE_H__
 
-#include <SimData/Object.h>
-#include <SimData/Vector3.h>
 #include <SimData/Date.h>
 #include <SimData/Interpolate.h>
-
-template <typename T>
-T convert_kts_mps(T x) { return x * 0.514444; }
-
-template <typename T>
-T convert_mps_kts(T x) { return x * 1.94385; }
-
-template <typename T>
-T convert_ft_m(T x) { return x * 0.3048; }
-
-template <typename T>
-T convert_m_ft(T x) { return x * 3.2808398950; }
-
-template <typename T>
-T convert_kg_lb(T x) { return x * 2.2046; }
-
-template <typename T>
-T convert_lb_kg(T x) { return x * 0.45360; }
-
-template <typename T>
-T convert_nm_m(T x) { return x * 1852.0; }
-
-template <typename T>
-T convert_m_nm(T x) { return x * 0.0005399568; }
-
-template <typename T>
-T convert_pa_mmhg(T x) { return x * 0.00752; }
-
-template <typename T>
-T convert_mmhg_pa(T x) { return x * 133.0; }
-
+#include <SimData/Object.h>
+#include <SimData/Vector3.h>
 
 /**
  * class Atmosphere

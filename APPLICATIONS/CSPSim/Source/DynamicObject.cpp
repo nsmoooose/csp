@@ -29,12 +29,7 @@
 #include "VirtualBattlefield.h"
 #include "VirtualScene.h"
 #include "TerrainObject.h"
-#include "SmokeEffects.h"
 #include "CSPSim.h"
-
-#include <osg/Geode>
-#include <osgParticle/ParticleSystemUpdater>
-#include <osgParticle/ModularEmitter>
 
 #include <SimData/Quaternion.h>
 
@@ -63,9 +58,6 @@ DynamicObject::DynamicObject(): SimObject()
 
 	m_Inertia = simdata::Matrix3::IDENTITY;
 	m_InertiaInv = simdata::Matrix3::IDENTITY;
-
-	m_SmokeTrails = NULL;
-	m_Smoke = false;
 }
 
 DynamicObject::~DynamicObject()
@@ -183,15 +175,18 @@ double DynamicObject::onUpdate(double dt)
 		m_Controller->onUpdate(dt);
 	}
 	postMotion(dt);
+	onRender();
 	return 0.0;
 }
 
+unsigned int DynamicObject::onRender() {
+	return 0;
+}
+
 // update variables that depend on position
-void DynamicObject::postMotion(double dt)
-{
-	if (m_SmokeTrails.valid()) {
-		m_SmokeTrails->update(dt, m_GlobalPosition, m_Attitude);
-	}
+void DynamicObject::postMotion(double dt) {
+	if (m_SceneModel.valid() && isSmoke())
+		m_SceneModel->updateSmoke(dt, m_GlobalPosition, m_Attitude);
 	if (isGrounded()) {
 		updateGroundPosition();
 	} else {
@@ -230,53 +225,17 @@ simdata::Vector3 DynamicObject::getViewPoint() const {
 	 return m_Attitude.GetRotated(m_Model->getViewPoint());
 }
 
-// FIXME move the osg related code out of here!
-bool DynamicObject::AddSmoke()
-{
-	if (m_SmokeTrails.valid()) return true;
-	if (!m_SceneModel) return false;
-
-	fx::SmokeTrail *trail = new fx::SmokeTrail();
-	trail->setEnabled(false);
-	trail->setTexture("Images/white-smoke.rgb");
-	trail->setColorRange(osg::Vec4(0.9, 0.9, 1.0, 1.0), osg::Vec4(1.0, 1.0, 1.0, 0.5));
-	trail->setSizeRange(0.2, 4.0);
-	trail->setLight(true);
-	trail->setLifeTime(5.5);
-	trail->setExpansion(1.2);
-	trail->addOperator(new fx::SmokeThinner);
-
-	// FIXME position should be specified in ObjectModel XML
-	double radius = m_Model->getBoundingSphereRadius();
-	trail->setOffset(simdata::Vector3(0.0, -0.70 * radius, 0.0));
-
-	m_SmokeTrails = new fx::SmokeTrailSystem;
-	m_SmokeTrails->addSmokeTrail(trail);
-
-	m_Smoke = false;
-
-	return true;
-}
-
-
 bool DynamicObject::isSmoke() {
-	return m_Smoke;
+	return m_SceneModel->isSmoke();
 }
 
-void DynamicObject::DisableSmoke()
-{
-	if (m_Smoke) {
-		m_SmokeTrails->setEnabled(false);
-		m_Smoke = false;
-	}
+void DynamicObject::disableSmoke() {
+	m_SceneModel->disableSmoke();
 }
 
-void DynamicObject::EnableSmoke()
-{
-	if (!m_Smoke) {
-		if (!AddSmoke()) return;
-		m_SmokeTrails->setEnabled(true);
-		m_Smoke = true;
-	}
+void DynamicObject::enableSmoke() {
+	if (!isSmoke())
+		m_SceneModel->enableSmoke();
+
 }
 

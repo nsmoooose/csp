@@ -69,7 +69,7 @@ int VirtualBattlefield::create()
 {
 	return 1;
 }
-
+ 
 void VirtualBattlefield::cleanup()
 {
 	_cleanupActiveCells();
@@ -94,7 +94,7 @@ float VirtualBattlefield::getElevation( float x,float y ) const
 void VirtualBattlefield::getNormal(float x, float y, float & normalX, 
                                    float & normalY, float & normalZ ) const
 {
-	normalX = 0; normalY = 0; normalZ = 1;
+	normalX = 0.0f; normalY = 0.0f; normalZ = 1.0f;
 	if (m_Terrain.valid()) {
 		m_Terrain->getNormal(x,y, normalX, normalY, normalZ);
 	}
@@ -181,8 +181,8 @@ void VirtualBattlefield::updateAllUnits(float dt)
 void VirtualBattlefield::updateOrigin(simdata::Vector3 const &origin) {
 	if (m_Scene.valid()) {
 		std::list<ActiveCell*>::iterator i = m_ActiveCells.begin();
-		std::list<ActiveCell*>::iterator j = m_ActiveCells.end();
-		for (; i != j ; ++i) {
+		std::list<ActiveCell*>::const_iterator end = m_ActiveCells.end();
+		for (; i != end ; ++i) {
 			(*i)->updateScene(origin);
 		}
 	}
@@ -190,7 +190,7 @@ void VirtualBattlefield::updateOrigin(simdata::Vector3 const &origin) {
 
 VirtualBattlefield::Unit VirtualBattlefield::getNextUnit(Unit const &unit, int human, int local, int category)
 {
-	UnitList::iterator i = m_UnitList.begin();
+	UnitList::const_iterator i = m_UnitList.begin();
 	UnitList::const_iterator end = m_UnitList.end();
 	for (; i != end; ++i) {
 		if (i->unit == unit) break;

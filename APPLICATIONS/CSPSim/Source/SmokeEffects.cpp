@@ -495,17 +495,17 @@ void SmokeTrailSystem::addSmokeTrail(SmokeTrail *trail) {
 }
 
 void SmokeTrailSystem::setEnabled(bool on) {
-	TrailList::iterator iter;
-	for (iter = m_Trails.begin(); iter != m_Trails.end(); iter++) {
+	TrailList::iterator iter = m_Trails.begin();
+	TrailList::const_iterator iEnd = m_Trails.end();
+	for (; iter != iEnd; ++iter)
 		(*iter)->setEnabled(on);
-	}
 }
 
 void SmokeTrailSystem::update(double dt, simdata::Vector3 const &position, simdata::Quaternion const &attitude) {
-	TrailList::iterator iter;
-	for (iter = m_Trails.begin(); iter != m_Trails.end(); iter++) {
+	TrailList::iterator iter = m_Trails.begin();
+	TrailList::const_iterator iEnd = m_Trails.end();
+	for (; iter != iEnd; ++iter)
 		(*iter)->update(dt, position, attitude);
-	}
 }
 
 } // fx

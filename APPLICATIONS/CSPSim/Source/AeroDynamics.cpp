@@ -38,7 +38,7 @@ using simdata::RadiansToDegrees;
 using simdata::DegreesToRadians;
 
 
-double	const	g	= 9.806; // acceleration due to gravity, m/s^2
+double	const g = 9.806; // acceleration due to gravity, m/s^2
 
 unsigned short const maxIteration = 150;
 unsigned short const minIteration = 100;
@@ -52,8 +52,7 @@ AeroDynamics::AeroDynamics():
 	m_ExtraMomentBody(0.0, 0.0, 0.0) 
 {
 	m_depsilon = 0.0;
-	m_Gear = 0;
-	m_Contacts = 0;
+	m_GearDynamics = 0;
 	m_Bound = false;
 	m_Distance = 0.0;
 	m_AirSpeed = 0.0;
@@ -180,20 +179,18 @@ void AeroDynamics::initialize()
 	m_Elevator = 0.0;
 	m_Aileron = 0.0;
 	m_Rudder = 0.0;
-	m_Thrust = 0.0;
+	m_ThrustForce = simdata::Vector3::ZERO;
 	
-	qOrientation = simdata::Quaternion(1,0,0,0);
+	m_qOrientation = simdata::Quaternion(1,0,0,0);
 
 	m_AngularAccelBody = simdata::Vector3::ZERO;
 	m_LinearAccelBody = simdata::Vector3::ZERO;
 	m_AngularAccelLocal = simdata::Vector3::ZERO;
 	m_LinearAccelLocal = simdata::Vector3::ZERO;
 	
-	m_GravityForce =  - g * simdata::Vector3::ZAXIS;    // gravity force is always towards earth.
-	m_ThrustForce = simdata::Vector3::ZERO;
+	m_GravityAcceLocal =  - g * simdata::Vector3::ZAXIS;    // gravity force is always towards earth.
 	m_LiftForce = simdata::Vector3::ZERO;
 	m_DragForce = simdata::Vector3::ZERO;
-	m_CurrentForceTotal = simdata::Vector3::ZERO;
 
 	m_alpha = 0.0;
 	m_alpha0 = 0.0;
@@ -225,16 +222,14 @@ void AeroDynamics::postCreate()
 	Object::postCreate();
 	m_AspectRatio = m_WingSpan * m_WingSpan / m_WingArea;
 	m_CD_i = 1.0 / (0.9 * G_PI * m_AspectRatio);
-	m_depsilon = std::min(static_cast<double>(m_GMax),static_cast<double>(fabs(m_GMin))) / 2.0;
+	m_HalfWingArea = 0.5 * m_WingArea;
+	m_depsilon = std::min(m_GMax,fabs(m_GMin));
 	setNumericalMethod(new RungeKuttaCK(this, false));
 }
 
 
-void AeroDynamics::bindObject(simdata::Vector3 &position, 
-                              simdata::Vector3 &velocity, 
-			      simdata::Vector3 &angular_velocity,
-			      simdata::Quaternion &orientation)
-{
+void AeroDynamics::bindObject(simdata::Vector3 &position, simdata::Vector3 &velocity, simdata::Vector3 &angular_velocity,
+								simdata::Quaternion &orientation) {
 	m_Position = &position;
 	m_Velocity = &velocity;
 	m_AngularVelocity = &angular_velocity;
@@ -242,14 +237,20 @@ void AeroDynamics::bindObject(simdata::Vector3 &position,
 	m_Bound = true;
 }
 
-void AeroDynamics::bindGearSet(LandingGearSet &gear) 
-{
-	m_Gear = &gear;
+void AeroDynamics::bindGearDynamics(GearDynamics &gearDynamics) {
+	m_GearDynamics = &gearDynamics;
+	m_GearDynamics->bindObject(m_PositionLocal, m_VelocityBody, m_AngularVelocityBody, m_qOrientation, m_NearGround, m_Height);
 }
 
-void AeroDynamics::bindContacts(std::vector<simdata::Vector3> const &contacts) 
-{
-	m_Contacts = &contacts;
+void AeroDynamics::bindGroundCollisionDynamics(GroundCollisionDynamics &groundCollisionDynamics) {
+	m_GroundCollisionDynamics = &groundCollisionDynamics;
+	m_GroundCollisionDynamics->bindObject(m_PositionLocal,m_VelocityBody,m_AngularVelocityBody,m_qOrientation, m_NearGround, m_Height);
+	m_GroundCollisionDynamics->bindWeight(m_WeightBody);
+}
+
+void AeroDynamics::bindEngineDynamics(EngineDynamics &engineDynamics) {
+	m_EngineDynamics = &engineDynamics;
+	m_EngineDynamics->bindObject(m_PositionLocal,m_VelocityBody,m_AngularVelocityBody,m_qOrientation, m_NearGround, m_Height);
 }
 
 void AeroDynamics::setControlSurfaces(double aileron, double elevator, double rudder) {
@@ -328,6 +329,7 @@ bool AeroDynamics::isNearGround() {
 	return near_ground;
 }
 
+#if 0
 void AeroDynamics::doSimStep(double dt)
 {
 	/*
@@ -344,7 +346,7 @@ void AeroDynamics::doSimStep(double dt)
 	m_PositionLocal = *m_Position;
 	m_VelocityLocal = *m_Velocity;
 	m_AngularVelocityLocal = *m_AngularVelocity;
-	qOrientation = *m_Orientation;
+	m_qOrientation = *m_Orientation;
 
 	if ( dt - m_dprevdt < 0.0 ) {
 		if ( m_Maxi < maxIteration ) {
@@ -372,20 +374,20 @@ void AeroDynamics::doSimStep(double dt)
 
 	m_Distance += m_AirSpeed * dt;
 
-	double qBarFactor = 0.5 * m_WingArea;
+	m_qBarFactor = m_HalfWingArea;
 	Atmosphere const *atmosphere = CSPSim::theSim->getAtmosphere();
 	if (atmosphere != NULL) {
 		double density = atmosphere->getDensity(m_PositionLocal.z);
-		qBarFactor *= density;
+		m_qBarFactor *= density;
 		m_Gravity = atmosphere->getGravity(m_PositionLocal.z);
 		Wind = atmosphere->getWind(m_PositionLocal);
 		Wind += atmosphere->getTurbulence(m_PositionLocal, m_Distance);
 	} else {
-		qBarFactor *= 1.25;
+		m_qBarFactor *= 1.25;
 		m_Gravity = 9.8;
 	}
 
-	m_GravityWorld = - m_Mass * m_Gravity * simdata::Vector3::ZAXIS;
+	m_WeightLocal = - m_Mass * m_Gravity * simdata::Vector3::ZAXIS;
 
 	for (unsigned short modelStepNumber = 0; modelStepNumber < m_Maxi; ++modelStepNumber) {	 
 
@@ -428,22 +430,21 @@ void AeroDynamics::doSimStep(double dt)
 		simdata::Vector3 linearAccelBody;
 		unsigned short GControlNumber = 0;
 
+		m_ExtraForceBody = m_ExtraMomentBody = simdata::Vector3::ZERO;
+
 		//do // Testing some feedback control
 		{
 			m_ElevatorScale = (0.95 * m_ElevatorScale + 0.05 * ControlInputValue( m_gForce ));
 			m_Elevator = m_ElevatorInput * m_ElevatorScale;
 
 			// Dynamic pressure
-			double qBarS = qBarFactor * m_AirSpeed * m_AirSpeed;
-
-			// Calculate moment
-			m_MomentsBody = CalculateMoments(qBarS);
+			m_qBarS = m_qBarFactor * m_AirSpeed * m_AirSpeed;
 
 			if (near_ground) {
 				if (m_Gear) {
 					double height = m_PositionLocal.z - m_GroundZ;
 					simdata::Vector3 force, moment;
-					m_Gear->doComplexPhysics(qOrientation, 
+					m_Gear->doComplexPhysics(m_qOrientation, 
 						m_VelocityBody, 
 						m_AngularVelocityBody, 
 						height, 
@@ -515,6 +516,9 @@ void AeroDynamics::doSimStep(double dt)
 				} //if (m_Contacts)
 			} //if (near_ground)
 
+			// Calculate moment
+			m_MomentsBody = getMoment();
+
 			// First, calculate angular acceleration
 			angularAccelBody = m_InertiaInverse * 
 				(m_MomentsBody - (m_AngularVelocityBody^(m_Inertia * m_AngularVelocityBody)));
@@ -529,8 +533,15 @@ void AeroDynamics::doSimStep(double dt)
 			// Games gems advice
 			angularVelocityBody *= 0.999; 
 
-			// Calculate force
-			m_ForcesBody = CalculateForces(qBarS);  
+			// Calculate aero (!) force
+			m_ForcesBody = getForce();
+
+			// Add gravity
+	        m_WeightBody = LocalToBody(m_WeightLocal);
+	        m_ForcesBody += m_WeightBody;
+
+			// Add thrust concentrated in y direction
+	        m_ForcesBody += m_ThrustForce;
 
 			// Deduce linear acceleration
 			linearAccelBody =  m_MassInverse * m_ForcesBody - (angularVelocityBody^m_VelocityBody);
@@ -567,11 +578,11 @@ void AeroDynamics::doSimStep(double dt)
 		m_AngularVelocityLocal = BodyToLocal(angularVelocityBody);
 
 		// Integrate the rotation quaternion
-		qOrientation += 0.25f * dt * ( qOrientation * (m_AngularVelocityBody + angularVelocityBody));
+		m_qOrientation += 0.25f * dt * ( m_qOrientation * (m_AngularVelocityBody + angularVelocityBody));
 		// Now normalize the orientation quaternion:
-		double mag = qOrientation.Magnitude();
+		double mag = m_qOrientation.Magnitude();
 		if (mag != 0.0) {
-			qOrientation /= mag;
+			m_qOrientation /= mag;
 		}
 
 		// Update angular velocity
@@ -586,7 +597,7 @@ void AeroDynamics::doSimStep(double dt)
 	*m_Position = m_PositionLocal;
 	*m_Velocity = m_VelocityLocal;
 	*m_AngularVelocity = m_AngularVelocityLocal;
-	*m_Orientation = qOrientation;
+	*m_Orientation = m_qOrientation;
 
 	CSP_LOG(PHYSICS, DEBUG, "AeroDynamics:   Forces: " << m_ForcesBody );
 	CSP_LOG(PHYSICS, DEBUG, "AeroDynamics:  Moments: " << m_MomentsBody );
@@ -598,16 +609,16 @@ void AeroDynamics::doSimStep(double dt)
 	CSP_LOG(PHYSICS, DEBUG, "AeroDynamics: AngOfAtt: " << RadiansToDegrees(m_alpha) );
 	//	CSP_LOG(PHYSICS, DEBUG, "AeroDynamics:   VelDir: " << VelocityDirection );
 	CSP_LOG(PHYSICS, DEBUG, "AeroDynamics: Position: " << m_PositionLocal );
-	CSP_LOG(PHYSICS, DEBUG, "AeroDynamics:   Orient: " << qOrientation );
+	CSP_LOG(PHYSICS, DEBUG, "AeroDynamics:   Orient: " << m_qOrientation );
 	//	CSP_LOG(PHYSICS, DEBUG, "AeroDynamics:  Euler A: " << m_EulerAngles );
 
 }
-
+#endif
 
 // must calculate the resultant forces ...
-simdata::Vector3 const& AeroDynamics::CalculateForces( double const p_qBarS )
+simdata::Vector3 AeroDynamics::getForce()
 {
-	static simdata::Vector3 forceBody;
+	static simdata::Vector3 forcesBody;
 #if 0
 	CSP_LOG(PHYSICS, DEBUG, "AeroDynamics: BodyVelocity: " << m_VelocityBody);
 	CSP_LOG(PHYSICS, DEBUG, "AeroDynamics: local velocity: " << m_VelocityLocal);
@@ -616,45 +627,35 @@ simdata::Vector3 const& AeroDynamics::CalculateForces( double const p_qBarS )
 	
 	// Calculate Aero Forces
 
-	// Caution: calculate lift first
+	// Caution: calculate lift first to get vertical load factor
 	// Lift
-	forceBody = p_qBarS * LiftVector();
+	forcesBody = m_qBarS * LiftVector();
+
+	// Evaluate g's
+	m_gForce = m_MassInverse * forcesBody.z / 9.81;
 
 	// Drag and sideforce
-	forceBody += p_qBarS * DragVector();
-	forceBody += p_qBarS * SideVector();
-
-	// Add thrust concentrated in y direction
-	forceBody.y += m_Thrust;
+	forcesBody += m_qBarS * (DragVector() + SideVector());
 
 	// Add in extra forces and reset
-	forceBody += m_ExtraForceBody;
-	m_ExtraForceBody = simdata::Vector3(0.0, 0.0, 0.0);
-	
-	// Evaluate g's
-	m_gForce = m_MassInverse * forceBody.z / 9.81;
-	
-	// Add gravity
-	m_GravityBody = LocalToBody(m_GravityWorld);
-	forceBody += m_GravityBody;
+	forcesBody += m_ExtraForceBody;
 
-	return forceBody;
+	return forcesBody;
 }
 
 
 // ... and moments on the aircraft
-simdata::Vector3 const& AeroDynamics::CalculateMoments( double const p_qBarS ) 
+simdata::Vector3 AeroDynamics::getMoment()
 {
-	static simdata::Vector3 moments;
+	static simdata::Vector3 momentsBody;
 
-	moments.x = CalculatePitchMoment(p_qBarS); // Pitch
-	moments.y = CalculateRollMoment(p_qBarS);  // Roll
-	moments.z = CalculateYawMoment(p_qBarS);   // Yaw
+	momentsBody.x = CalculatePitchMoment(m_qBarS); // Pitch
+	momentsBody.y = CalculateRollMoment(m_qBarS);  // Roll
+	momentsBody.z = CalculateYawMoment(m_qBarS);   // Yaw
 
-	moments += m_ExtraMomentBody;
-	m_ExtraMomentBody = simdata::Vector3(0.0, 0.0, 0.0);
+	momentsBody += m_ExtraMomentBody;
 
-	return moments;
+	return momentsBody;
 }
 
 
@@ -666,24 +667,23 @@ double AeroDynamics::CalculateLiftCoefficient() const
 	if (alpha > 0.8) alpha = 0.8;
 	if (alpha < -0.8) alpha = -0.8;
 	
-	m_Cl = ((m_CL0) + 
+	double Cl = ((m_CL0) + 
 	        (m_CL_a * alpha) + 
 	        (m_CL_q * m_AngularVelocityBody.x + m_CL_adot * m_alphaDot ) * m_WingChord / ( 2.0 * m_AirSpeed) + 
 	        (m_CL_de * m_Elevator)
 	       );
 
 	CSP_LOG(PHYSICS, DEBUG, "AeroDynamics::CalculateLiftCoefficient() " << 
-	                                m_Cl << " at alpha = " << RadiansToDegrees(m_alpha) << 
+	                                Cl << " at alpha = " << RadiansToDegrees(m_alpha) << 
 	                                ", Elevator: " << m_Elevator );
 
-	return m_Cl;
+	return Cl;
 }
 
 
-simdata::Vector3 const& AeroDynamics::LiftVector()
+simdata::Vector3 const &AeroDynamics::LiftVector()
 {
 	static simdata::Vector3 lift;
-	lift.x = 0.0;
 
 	m_CL = CalculateLiftCoefficient();
 
@@ -697,6 +697,7 @@ simdata::Vector3 const& AeroDynamics::LiftVector()
 		//lift.z /= 1.0 + c;
 	}
 	
+	lift.x = 0.0;
 	lift.y = m_CL * sin(m_alpha);
 	lift.z = m_CL * cos(m_alpha);
 
@@ -717,6 +718,8 @@ double AeroDynamics::CalculateDragCoefficient() const
 	drag_coe =  m_CD0 + m_CD_a * fabs(alpha) + m_CD_de * fabs(m_Elevator);
 	//drag_coe =  -0.0194 + 0.0214 * alpha + (- 0.29 * m_Elevator + 0.0033 + 0.206 * alpha) * m_Elevator + (-0.699 - 0.903 * alpha) * alpha * alpha;
 	//drag_coe = - drag_coe;
+
+	m_GE = calculateGroundEffectCoefficient();
 
 	double induced = m_GE * m_CD_i * m_CL * m_CL;
 	if (induced < 0.0) induced = 0.0;
@@ -827,13 +830,13 @@ double AeroDynamics::CalculateYawMoment(double const qbarS) const
 
 simdata::Vector3 AeroDynamics::LocalToBody(const simdata::Vector3 & vec )
 {
-	return simdata::QVRotate( qOrientation.Bar(), vec );
+	return simdata::QVRotate( m_qOrientation.Bar(), vec );
 }
 
 
 simdata::Vector3 AeroDynamics::BodyToLocal(const simdata::Vector3 & vec )
 {
-	return simdata::QVRotate( qOrientation, vec );
+	return simdata::QVRotate( m_qOrientation, vec );
 }
 
 double AeroDynamics::CIVbasis(double p_t) const
@@ -873,9 +876,20 @@ void AeroDynamics::updateAngles(double h) {
 	m_beta  = atan2(m_AirflowBody.x, m_AirflowBody.y);
 }
 
-double const damping = 0.91;
+double AeroDynamics::calculateGroundEffectCoefficient() const {
+// approximate (generic) ground effect... TODO: paramaterize in xml.
+	double GE = 0.0;
+	if (m_NearGround) {
+		double h = m_PositionLocal.z - m_GroundZ; // + wing height relative to cg
+		h /= m_WingSpan;
+		if (h > 1.0) 
+			h = 1.0;
+		GE = 0.49 + (1.0 - 0.5 * h) * h;
+	}
+	return GE;
+}
 
-double const scaleFactor2 = 1.0/2.0;
+double const damping = 0.98;
 
 std::vector<double> const &AeroDynamics::_f(double x, std::vector<double> &y) {   
 	// dot(p,v,w,q) = f(p,v,w,q)
@@ -885,145 +899,69 @@ std::vector<double> const &AeroDynamics::_f(double x, std::vector<double> &y) {
 	m_PositionLocal = *m_Position + BodyToLocal(simdata::Vector3(y[0],y[1],y[2]));
 	m_VelocityBody = simdata::Vector3(y[3],y[4],y[5]);
 	m_AngularVelocityBody = damping * simdata::Vector3(y[6],y[7],y[8]);
-	qOrientation = simdata::Quaternion(y[9],y[10],y[11],y[12]);
-	double mag = qOrientation.Magnitude();
+	m_qOrientation = simdata::Quaternion(y[9],y[10],y[11],y[12]);
+	double mag = m_qOrientation.Magnitude();
 	if (mag != 0.0) 
-		qOrientation /= mag;
-	y[9]  = qOrientation.w; y[10] = qOrientation.x; y[11] = qOrientation.y; y[12] = qOrientation.z;
+		m_qOrientation /= mag;
+	y[9]  = m_qOrientation.w; y[10] = m_qOrientation.x; y[11] = m_qOrientation.y; y[12] = m_qOrientation.z;
 
 	m_AirflowBody = m_VelocityBody - LocalToBody(m_WindLocal);
 	m_AirSpeed = m_AirflowBody.Length();
 	if (m_AirSpeed < 1.0) m_AirSpeed = 1.0;
-	double qBarS = m_qBarFactor * m_AirSpeed * m_AirSpeed;
+	m_qBarS = m_qBarFactor * m_AirSpeed * m_AirSpeed;
 
 	// pass AOA, AOA dot, side angle
 	updateAngles(x);
-    m_ExtraForceBody = simdata::Vector3(0.0, 0.0, 0.0);
-	m_ExtraMomentBody = simdata::Vector3(0.0, 0.0, 0.0);
-	if (m_NearGround) {
-		// approximate (generic) ground effect... TODO: paramaterize in xml.
-		double h = m_PositionLocal.z - m_GroundZ; // + wing height relative to cg
-		h /= m_WingSpan;
-		if (h > 1.0) h = 1.0;
-		m_GE = 0.49 + (1.0 - 0.5 * h) * h;
-		if (m_Gear) {
-			double height = m_PositionLocal.z - m_GroundZ;
-			simdata::Vector3 force, moment;
-			m_Gear->doComplexPhysics(qOrientation, 
-				m_VelocityBody, 
-				m_AngularVelocityBody, 
-				height, 
-				m_GroundN,
-				x, 
-				force, 
-				moment);
-			m_ExtraForceBody += force;
-			m_ExtraMomentBody += moment;
+
+	m_ForcesBody = m_MomentsBody = simdata::Vector3::ZERO;
+	m_WeightBody = LocalToBody(m_WeightLocal);
+	m_GroundCollisionDynamics->reset();
+
+	// ground torque
+	if (isNearGround()) {
+		if (m_GearDynamics) {
+			m_GearDynamics->update(x);
+			m_ForcesBody += m_GearDynamics->getForce();
+			m_MomentsBody += m_GearDynamics->getMoment();
 		}//if (m_Gear)
-		if (m_Contacts) {
-			simdata::Vector3 bodyn = LocalToBody(m_GroundN);
-			simdata::Vector3 origin(0.0, 0.0, m_PositionLocal.z - m_GroundZ);
-			// FIXME: skipping landing gear contacts which are temporary!
-			std::vector<simdata::Vector3>::const_iterator contact = m_Contacts->begin()+3;
-			std::vector<simdata::Vector3>::const_iterator cEnd =  m_Contacts->end();
-			float const elastic = 0.5;
-			double const friction = 0.9;
-			bool nonGearContact = false;
-			for (; contact != cEnd; ++contact) {
-				simdata::Vector3 contact_local = BodyToLocal(*contact) + origin;
-				double height = simdata::Dot(contact_local, m_GroundN);
-				if (height <= 0.0) {
-					nonGearContact = true;
-					simdata::Vector3 Vb = m_VelocityBody + (m_AngularVelocityBody^(*contact));
-					// velocity direction in body coordinates tangent to ground
-					simdata::Vector3 Vtangentb = simdata::Normalized(m_VelocityBody - simdata::Dot(m_VelocityBody,bodyn) * bodyn); 
-					simdata::Vector3 angularImpulsionContact = m_InertiaInverse * (*contact ^ bodyn);
-					double impulsion = -(1.0 + elastic) * simdata::Dot(Vb,bodyn) / 
-						            (m_MassInverse + simdata::Dot(bodyn,angularImpulsionContact));
-                    std::cout << "impulsion = " << impulsion << "\n";
-					//if (impulsion > 0) {
-						simdata::Vector3 linearImpulsion =  m_MassInverse * fabs(impulsion) * (bodyn - friction * Vtangentb);
-						double normLI = linearImpulsion.Length();
-						double linearLimiter = std::min(m_VelocityBody.Length(), normLI);
-						m_VelocityBody += (linearLimiter / normLI) * linearImpulsion; 
-						simdata::Vector3 angularImpulsion = 
-							impulsion * ( angularImpulsionContact - m_InertiaInverse * (*contact^(friction * Vtangentb)));
-						double normAI = angularImpulsion.Length();
-						double angularLimiter = std::min(m_AngularVelocityBody.Length(), normAI);
-						m_AngularVelocityBody += (angularLimiter / normAI) * angularImpulsion;
-					/*}
-					else {
-						m_VelocityBody *= 0.1;
-						m_AngularVelocityBody *= 0.1;
-					}*/
-					//// for now, just  act like a hard surface	
-					//
-					//simdata::Vector3 V = BodyToLocal(Vb);
-					//static const float groundK = 1.0e+7;
-					//static const float groundBeta = 1.0e+6;
-					//double impact = simdata::Dot(V, m_GroundN);
-					//double scale = - (height*groundK + impact*fabs(impact)*groundBeta);
-					//if (fabs(scale)>groundK) {
-					//	// dissipate some extra energy
-					//	if (impact < -10.0) {
-					//		m_VelocityBody -= 0.25 * simdata::Dot(m_VelocityBody, bodyn) * bodyn;
-					//		std::cout << "SLAM!!!!\n";
-					//	} else {
-					//		m_VelocityBody -= 0.05 * simdata::Dot(m_VelocityBody, bodyn) * bodyn;
-					//		std::cout << "SLAM!\n";
-					//	}
-					//	if (scale > 0.0) {
-					//		scale = groundK;
-					//	} else {
-					//		scale = -groundK;
-					//	}
-					//}//if (fabs(scale)>groundK)
-					//
-					//simdata::Vector3 force = scale * bodyn;
+		if (m_GroundCollisionDynamics) {
+			m_GroundCollisionDynamics->update(x);
+			if (m_GroundCollisionDynamics->hasContact()) {
+				m_ForcesBody += m_GroundCollisionDynamics->getForce();
+				m_MomentsBody += m_GroundCollisionDynamics->getMoment();
+				if (m_GroundCollisionDynamics->hasImpulsion()) {
+					m_VelocityBody += m_GroundCollisionDynamics->getLinearImpulsion();
+					m_AngularVelocityBody += m_GroundCollisionDynamics->getAngularImpulsion(); 
+				}
+			}
+		} //if (m_HasContactPoints)
+	} // if (m_NearGround)
 
-					//V -= impact * m_GroundN;
-					//V = LocalToBody(V);
-					//if (height < -1.0) height = -1.0;
-					//scale = -2.0 * groundK * height;  // 2 G slide
-					//// reduce to zero as speed drops
-					//float v = V.Length();
-					//scale /= 1.0 + v;
-					//// limit to 4G max
-					//if (scale * v > m_Mass * 40.0) {
-					//	scale = m_Mass * 40.0 / v;
-					//}
-					//force += -scale * V;
-					//m_ExtraForceBody += force;
-					//m_ExtraMomentBody += (*contact) ^ force;
+	// Add aerodynamic force
+	m_ForcesBody += getForce();
 
-					std::cout << "height = " << height << "\n";
-					simdata::Vector3 airflowTangentGround = m_AirflowBody - simdata::Dot(m_AirflowBody,bodyn)* bodyn;
-					simdata::Vector3 force = scaleFactor2 * (
-					                       - 100 * height * bodyn
-										   - m_AirSpeed * m_AirSpeed * airflowTangentGround
-										   );
-					m_ExtraForceBody += force;
-					m_ExtraMomentBody += (*contact)^force;
-				} //if (height <= 0.0)
-			} //for (contact)
-         if (nonGearContact)
-			 m_ExtraForceBody += m_Gravity * m_Mass * LocalToBody(simdata::Vector3::ZAXIS);
-		} //if (m_Contacts)
-	} else { // if (m_NearGround)
-		m_GE = 0.0;
-	}
+	// Add weight
+	m_ForcesBody += m_WeightBody;
 
-	m_ForcesBody = CalculateForces(qBarS);
+	// Add thrust
+	m_EngineDynamics->update(x);
+	m_ForcesBody += m_EngineDynamics->getForce();
+
 	// linear acceleration body: calculate v' = F/m - w^v
 	m_LinearAccelBody =  m_MassInverse * m_ForcesBody - (m_AngularVelocityBody^m_VelocityBody);
 	
-	m_MomentsBody = CalculateMoments(qBarS);
+	// Add aerodynamic moment
+	m_MomentsBody += getMoment();
+
+	// Add engine moment
+	m_MomentsBody += m_EngineDynamics->getMoment();
+
 	// angular acceleration body: calculate Iw' = M - w^Iw
 	m_AngularAccelBody = m_InertiaInverse * 
 				                  (m_MomentsBody - (m_AngularVelocityBody^(m_Inertia * m_AngularVelocityBody)));
 	
-	// quaternion derivative with w in body coordinates: q' = 0.5 * q * w
-	simdata::Quaternion qprim = 0.5 * qOrientation * m_AngularVelocityBody;
+	// quaternion derivative and w in body coordinates: q' = 0.5 * q * w
+	simdata::Quaternion qprim = 0.5 * m_qOrientation * m_AngularVelocityBody;
 
 	// p' = v
 	dy[0] = y[3]; dy[1] = y[4]; dy[2] = y[5];
@@ -1056,35 +994,35 @@ void AeroDynamics::bindToBody(std::vector<double> const &y) {
 }
  
 void AeroDynamics::BodyToLocal() {
-	qOrientation = *m_Orientation;
+	m_qOrientation = *m_Orientation;
 	m_PositionLocal = *m_Position + BodyToLocal(m_PositionBody);
 	m_VelocityLocal = BodyToLocal(m_VelocityBody);
 	m_AngularVelocityLocal = BodyToLocal(m_AngularVelocityBody);
 }
 
 void AeroDynamics::doSimStep2(double dt) {	
-	static double cdt = 0;
+	static double cdt = 0; 
 	static unsigned	long c = 0;
 
-	if (dt == 0.0) dt =	0.01;
+	if (dt == 0.0) dt =	0.017;
 
-	unsigned short n = 2;
+	unsigned short const n = 180 * dt ;
 	double dtlocal = dt/n;
 
 	cdt	+= dt;
 	c++;
-	if (!(c	% 10000)) 
+	if (!(c	% 5000)) 
 		std::cout << "average dt = " <<	cdt/c << "\n";
 
-	double u = dtlocal/(m_AirSpeed + 1.0);
+	double u = (0.034 + dt)/(1.0 - atan(m_AirSpeed) / G_PI);
 	m_ElevatorScale	= (1.0 - u) * m_ElevatorScale + u * ControlInputValue( m_gForce );
-	m_Elevator = (1.0 -	u)* m_Elevator  +	u * m_ElevatorInput * m_ElevatorScale;
+	m_Elevator = m_ElevatorInput * m_ElevatorScale;
 
 	// initial conditions
 
-	m_qBarFactor = 0.5 * m_WingArea;
+	m_qBarFactor = m_HalfWingArea;
 	Atmosphere const *atmosphere = CSPSim::theSim->getAtmosphere();
-	if (atmosphere != NULL)	{
+	if (atmosphere)	{
 		double density = atmosphere->getDensity(m_PositionLocal.z);
 		m_qBarFactor *=	density;
 		m_Gravity =	atmosphere->getGravity(m_PositionLocal.z);
@@ -1092,51 +1030,57 @@ void AeroDynamics::doSimStep2(double dt) {
 		m_WindLocal	+= atmosphere->getTurbulence(m_PositionLocal, m_Distance);
 	} else {
 		m_qBarFactor *=	1.25;
-		m_Gravity =	9.8;
+		m_Gravity =	9.806;
 	}
 
 	m_Distance += m_AirSpeed * dt;
 
-	m_GravityWorld = - m_Mass *	m_Gravity *	simdata::Vector3::ZAXIS;
+	m_WeightLocal = - m_Mass *	m_Gravity *	simdata::Vector3::ZAXIS;
 
 	for	(unsigned short	i = 0; i<n; ++i) {
 		m_PositionLocal	= *m_Position;
 		m_VelocityLocal	= *m_Velocity;
 		m_AngularVelocityLocal = *m_AngularVelocity;
-		qOrientation = *m_Orientation;
+		m_qOrientation = *m_Orientation;
 
 		m_AirflowBody =	LocalToBody(m_VelocityLocal	- m_WindLocal);
 		m_AirSpeed = m_AirflowBody.Length();
 		// prevent singularities
 		if (m_AirSpeed < 1.0) m_AirSpeed = 1.0;
 
-		
-
-		m_NearGround = isNearGround();
-
 		m_VelocityBody = LocalToBody(m_VelocityLocal);
 		m_AngularVelocityBody =	LocalToBody(m_AngularVelocityLocal);
 		updateAngles(dt);
-		std::vector<double>	y0 = ::bind(simdata::Vector3::ZERO,	m_VelocityBody,	m_AngularVelocityBody, qOrientation);
+		std::vector<double>	y0 = ::bind(simdata::Vector3::ZERO,	m_VelocityBody,	m_AngularVelocityBody, m_qOrientation);
 
 		// solution
 		std::vector<double>	y =	flow(y0, 0,	dtlocal);
 
 		// update all variables
 		// Caution:	don	t permute these	lines
-		bindToBody(y);	  
+		// bind solution to body data members
+		bindToBody(y);
+		// correct an eventual underground position
+		if (m_GroundCollisionDynamics->hasContact())
+			m_PositionBody += m_GroundCollisionDynamics->getZCorrection();
+
 		updateAngles(dt);
 		m_alpha0 = m_alpha;
-		BodyToLocal();
-		qOrientation = simdata::Quaternion(y[9],y[10],y[11],y[12]);
-		double mag = qOrientation.Magnitude();
-		if (mag	!= 0.0)
-			qOrientation /=	mag;
 
+		// convert body members to local coordinates 
+		BodyToLocal();
+
+		// update attitude and check for a unit quaternion
+		m_qOrientation = simdata::Quaternion(y[9],y[10],y[11],y[12]);
+		double mag = m_qOrientation.Magnitude();
+		if (mag	!= 0.0)
+			m_qOrientation /=	mag;
+
+		// returns vehicle data members
 		*m_Position	= m_PositionLocal;
 		*m_Velocity	= m_VelocityLocal;
 		*m_AngularVelocity = m_AngularVelocityLocal;
-		*m_Orientation = qOrientation;	
+		*m_Orientation = m_qOrientation;	
 	}
 }
 

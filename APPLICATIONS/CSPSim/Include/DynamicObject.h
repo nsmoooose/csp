@@ -104,12 +104,8 @@ public:
 	virtual void deaggregate() { std::cout << "deaggregate " << int(this) << std::endl; }
 	virtual void setVisible(bool visible) { std::cout << int(this) << ": visible = " << visible << std::endl; }
 	
+	virtual unsigned int onRender();
 	virtual double onUpdate(double dt);
-	
-	bool AddSmoke();
-	bool isSmoke();
-	void DisableSmoke();
-	void EnableSmoke();
 
 	bool isNearGround();
 
@@ -128,8 +124,12 @@ public:
 	virtual void setGlobalPosition(double x, double y, double z);
 
 	virtual void updateScene(simdata::Vector3 const &origin) { 
-		if (m_SceneModel) m_SceneModel->setPositionAttitude(m_GlobalPosition - origin, m_Attitude); 
+		if (m_SceneModel.valid()) m_SceneModel->setPositionAttitude(m_GlobalPosition - origin, m_Attitude); 
 	}
+	
+	bool isSmoke();
+	void disableSmoke();
+	void enableSmoke();
 
 protected:
 
@@ -140,10 +140,6 @@ protected:
 	virtual void postMotion(double dt);
 
 	BaseController * m_Controller;
-	
-	// FIXME... remove scene graph related code to auxillary class!
-	bool m_Smoke;
-	osg::ref_ptr<fx::SmokeTrailSystem> m_SmokeTrails;
 
 	// dynamic properties
 	

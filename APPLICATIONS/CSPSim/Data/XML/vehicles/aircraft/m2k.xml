@@ -1,82 +1,50 @@
 <?xml version="1.0" standalone="no"?>
 
 <!-- 
-
-	Mirage 2000
-
+    Mirage 2000
 -->
 
 <Object class="AircraftObject">
 
-	<Path name="model">m2k.model</Path>
-	<Path name="flight_model">m2k.fm</Path>
-	<Bool name="complex_physics">true</Bool>
+    <Path name="model">m2k.model</Path>
+    <Bool name="complex_physics">true</Bool>
 
-	<Float name="aileron_min">-25.0</Float>
-	<Float name="aileron_max">25.0</Float>
-	<Float name="elevator_min">-25.0</Float>
-	<Float name="elevator_max">25.0</Float>
-	<Float name="rudder_min">-25.0</Float>
-	<Float name="rudder_max">25.0</Float>
+    <!-- these values come from a FS2k2 add-on -->
+    <Float name="aileron_min">-15.0</Float>
+    <Float name="aileron_max">+19.5</Float>
+    <Float name="elevator_min">-20.6</Float>
+    <Float name="elevator_max">+27.5</Float>
+    <Float name="rudder_min">-23.5</Float>
+    <Float name="rudder_max">+23.5</Float>
 
-	<!-- Mass/Inertial properties -->
-	<!--
-		<Float name="mass">7500.0</Float>
-		<Matrix name="inertia">
-		       135691.0        0.0       0.0
-			    0.0    20354.0    6785.0
-			    0.0     6785.0  135691.0
-		</Matrix> 
-	-->
-	<Float name="mass">10000.0</Float>
-	<Matrix name="inertia">
-	       100000.0        0.0       0.0
-		    0.0    25000.0    6785.0
-	            0.0     6785.0  120000.0
-	</Matrix>
+    <!-- Mass/Inertial properties -->
+    <!-- these values come from a FS2k2 add-on -->
+    <Float name="mass">15000.0</Float>
+    <Matrix name="inertia">
+	171554.0	0.0		0.0
+	     0.0        55427.0  	1764.0
+	     0.0     	1764.0  	252326.0
+    </Matrix>
 
-	<Object class="LandingGearSet" name="landing_gear">
-		<List name="gear_set">
-			<!-- all of these values are complete guesses for testing only! -->
-			<Object class="LandingGear"> <!-- nosewheel -->
-				<Vector name="max_position">0.0 3.3 -2.0</Vector>
-				<Vector name="motion">0 0 1.0</Vector>
-				<Real name="damage_limit">80000.0:10000.0</Real>
-				<Float name="compression_limit">0.5</Float>
-				<Float name="K">200000.0</Float>
-				<Float name="beta">10000.0</Float>
-				<Float name="brake_limit">3000.0</Float>
-				<Float name="static_friction">0.7</Float>
-				<Float name="dynamic_friction">0.5</Float>
-				<Float name="steering_limit">45.0</Float>
-				<Float name="tire_K">200000.0</Float>
-			</Object>
-			<Object class="LandingGear"> <!-- left main -->
-				<Vector name="max_position">-1.4 -0.7 -2.0</Vector>
-				<Vector name="motion">0 0 1.0</Vector>
-				<Real name="damage_limit">80000.0</Real>
-				<Float name="compression_limit">0.5</Float>
-				<Float name="K">200000.0</Float>
-				<Float name="beta">10000.0</Float>
-				<Float name="brake_limit">3000.0</Float>
-				<Float name="static_friction">0.7</Float>
-				<Float name="dynamic_friction">0.5</Float>
-				<Float name="tire_K">200000.0</Float>
-			</Object>
-			<Object class="LandingGear"> <!-- right main -->
-				<Vector name="max_position">1.4 -0.7 -2.0</Vector>
-				<Vector name="motion">0 0 1.0</Vector>
-				<Real name="damage_limit">80000.0:10000.0</Real>
-				<Float name="compression_limit">0.5</Float>
-				<Float name="K">200000.0</Float>
-				<Float name="beta">10000.0</Float>
-				<Float name="brake_limit">3000.0</Float>
-				<Float name="static_friction">0.7</Float>
-				<Float name="dynamic_friction">0.5</Float>
-				<Float name="tire_K">200000.0</Float>
-			</Object>
-		</List>
-	</Object>
-
+    <Object class="AircraftDynamics" name="aircraft_dynamics">
+    
+        <Path name="primary_aero_dynamics">m2k.fm</Path>
+        
+        <Path name="gear_dynamics">m2k.gear</Path>
+    
+        <Object class="EngineDynamics" name="engine_dynamics">
+            <List name="engine_set">
+	    <!-- real engine power is 9700 kg -->
+            <!-- thrustdata values comes from F4SP3: f16.dat -->
+                <Object class="Engine">
+                    <Path name="thrust_data">m2k.thrust</Path>
+                    <Float name="engine_idle_rpm">0.68</Float>
+                    <Float name="engine_ab_thrust">0.95</Float>
+                    <Vector name="thrust_direction">0.0 1.0 0.0</Vector>
+                    <Vector name="engine_offset">0.0 0.0 0.0</Vector>
+		    <Vector name="smoke_emitter_location">0.0 -5.5 0.0></Vector> 
+                </Object>
+            </List>
+        </Object>
+    </Object>
 </Object>
-

@@ -209,7 +209,7 @@ double const RungeKuttaCK::PSHRNK = -0.25;
 double const RungeKuttaCK::SAFETY = 0.9;
 double const RungeKuttaCK::ERRCON = 1.89e-4;
 
-unsigned int const RungeKuttaCK::MAXSTP = 8;
+unsigned int const RungeKuttaCK::MAXSTP = 4;
 double const       RungeKuttaCK::TINY   = std::numeric_limits<float>::epsilon();
 
 
@@ -306,6 +306,7 @@ std::vector<double> const &RungeKuttaCK::odeint(std::vector<double> const & ysta
 	y = ystart;
 	unsigned int nstp = 0;
 	double const delta21 = x2 - x1;
+
 	do {
 		++nstp;
 		std::vector<double> dydx = vectorField->_f(x, y);

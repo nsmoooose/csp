@@ -22,16 +22,18 @@
  *
  **/
 
-#include "AircraftObject.h"
-#include "Log.h"
 #include <SimData/Math.h>
+
+#include "AircraftObject.h"
+#include "AircraftPhysicModel.h"
+#include "Collision.h"
+#include "Log.h"
 
 using simdata::DegreesToRadians;
 using simdata::RadiansToDegrees;
 
 
 SIMDATA_REGISTER_INTERFACE(AircraftObject)
-
 
 AircraftObject::AircraftObject(): DynamicObject()
 {
@@ -53,11 +55,13 @@ AircraftObject::AircraftObject(): DynamicObject()
 	m_dThrottleInput = 0.0;
 	m_dAileronInput = 0.0;
 	m_dElevatorInput = 0.0;
+	m_dRudderInput = 0.0;
 	m_BrakeInput = 0.0;
 	m_BrakePulse = 0.0;
 	
 	m_decayAileron = 0;
 	m_decayElevator = 0;
+	m_decayRudder = 0;
 	
 	m_AileronMin = -1.0;
 	m_AileronMax = 1.0;
@@ -106,18 +110,17 @@ AircraftObject::AircraftObject(): DynamicObject()
 	BIND_ACTION("GEAR_UP", GearUp);
 	BIND_ACTION("GEAR_DOWN", GearDown);
 	BIND_ACTION("GEAR_TOGGLE", GearToggle);
+	BIND_ACTION("MARKERS_TOGGLE", MarkersToggle);
 
 	CSP_LOG(APP, DEBUG, "... AircraftObject::AircraftObject()");
 }
 
 
-AircraftObject::~AircraftObject()
-{
+AircraftObject::~AircraftObject() {
 }
 
 void AircraftObject::pack(simdata::Packer& p) const {
 	DynamicObject::pack(p);
-	p.pack(m_FlightModel);
 	p.pack(m_ComplexPhysics);
 	p.pack(m_AileronMin);
 	p.pack(m_AileronMax);
@@ -125,12 +128,11 @@ void AircraftObject::pack(simdata::Packer& p) const {
 	p.pack(m_ElevatorMax);
 	p.pack(m_RudderMin);
 	p.pack(m_RudderMax);
-	p.pack(m_Gear);
+	p.pack(m_AircraftDynamics);
 }
 
 void AircraftObject::unpack(simdata::UnPacker& p) {
 	DynamicObject::unpack(p);
-	p.unpack(m_FlightModel);
 	p.unpack(m_ComplexPhysics);
 	p.unpack(m_AileronMin);
 	p.unpack(m_AileronMax);
@@ -138,24 +140,44 @@ void AircraftObject::unpack(simdata::UnPacker& p) {
 	p.unpack(m_ElevatorMax);
 	p.unpack(m_RudderMin);
 	p.unpack(m_RudderMax);
-	p.unpack(m_Gear);
+	p.unpack(m_AircraftDynamics);
 }
 
 void AircraftObject::postCreate() {
 	DynamicObject::postCreate();
-	m_FlightModel->bindObject(m_GlobalPosition, m_LinearVelocity, m_AngularVelocity, m_Attitude);
-	m_FlightModel->bindGearSet(*(m_Gear.get()));
-	m_FlightModel->bindContacts(m_Model->getContacts());
-	m_FlightModel->setBoundingRadius(m_Model->getBoundingSphereRadius());
-	m_FlightModel->setInertia(m_Mass, m_Inertia);
+
+	m_AircraftPhysicModel = new AircraftPhysicModel;
+	m_AircraftPhysicModel->bindObject(m_GlobalPosition, m_LinearVelocity, m_AngularVelocity, m_Attitude);
+	m_AircraftPhysicModel->setBoundingRadius(m_Model->getBoundingSphereRadius());
+	m_AircraftPhysicModel->setInertia(m_Mass, m_Inertia);
+
+	m_PrimaryAeroDynamics = m_AircraftDynamics->getAeroDynamics();
+	m_PrimaryAeroDynamics->setMassInverse(1.0 / m_Mass);
+	m_AircraftPhysicModel->addDynamics(m_PrimaryAeroDynamics.get());
+
+	m_EngineDynamics = m_AircraftDynamics->getEngineDynamics();
+	m_EngineDynamics->bindThrottle(m_Throttle);
+	m_AircraftPhysicModel->addDynamics(m_EngineDynamics.get());
+	//if (!m_SceneModel.valid())
+	//	createSceneModel();
+	//m_SceneModel->setSmokeEmitterLocation(m_EngineDynamics->getSmokeEmitterLocation());
+
+	m_GearDynamics = m_AircraftDynamics->getGearDynamics();
+	m_AircraftPhysicModel->addDynamics(m_GearDynamics.get());
+
+	std::vector<simdata::Vector3> const &contacts = m_Model->getContacts();
+	if (!contacts.empty()) { 
+		m_GroundCollisionDynamics = new GroundCollisionDynamics(m_Mass, m_Inertia, contacts);
+		m_AircraftPhysicModel->addDynamics(m_GroundCollisionDynamics.get());
+	}
 }
 
-void AircraftObject::dump()
-{
+
+
+void AircraftObject::dump() {
 }
 
-void AircraftObject::initialize()
-{
+void AircraftObject::initialize() {
 }
 
 double AircraftObject::onUpdate(double dt)
@@ -171,9 +193,12 @@ double AircraftObject::onUpdate(double dt)
 }
 
 
-unsigned int AircraftObject::onRender()
-{
+unsigned int AircraftObject::onRender() {
 	// TODO: animation code here
+	DynamicObject::onRender();
+	if (m_SceneModel.valid())
+		m_SceneModel->setSmokeEmitterLocation(m_EngineDynamics->getSmokeEmitterLocation());
+	m_Model->updateGearSprites(m_GearDynamics->getGearPosition());
 	return 0;
 }
 
@@ -197,9 +222,11 @@ void AircraftObject::updateControls(double dt)
 	}
 
 	// FIXME only need to do this if gear is extended and/or WOW
-	float braking = m_BrakeInput + m_BrakePulse;
-	if (braking > 1.0) braking = 1.0;
-	m_Gear->setBraking(braking);
+	if (m_GearDynamics->getExtended() && m_GearDynamics->getWOW()) {
+		double braking = m_BrakeInput + m_BrakePulse;
+		if (braking > 1.0) braking = 1.0;
+		m_GearDynamics->setBraking(braking);
+	}
 	
 	if (m_decayAileron > 0) {
 		m_decayAileron--;
@@ -236,7 +263,7 @@ void AircraftObject::setThrottle(double x)
 void AircraftObject::setRudder(double x)
 { 
 	m_RudderInput = x; 
-	m_Gear->setSteering(x);
+	m_GearDynamics->setSteering(x);
 }
 
 void AircraftObject::setAileron(double x)
@@ -312,18 +339,18 @@ void AircraftObject::noDecThrottle() {
 }
 
 void AircraftObject::SmokeOn() { 
-	EnableSmoke();
+	enableSmoke();
 }
 
 void AircraftObject::SmokeOff() { 
-	DisableSmoke();
+	disableSmoke();
 }
 
 void AircraftObject::SmokeToggle() { 
 	if (isSmoke()) {
-		DisableSmoke();
+		disableSmoke();
 	} else {
-		EnableSmoke();
+		enableSmoke();
 	}
 }
 
@@ -353,11 +380,11 @@ void AircraftObject::setWheelBrake(double x) {
 
 void AircraftObject::setGearStatus(bool on) {
 	if (on) {
-		m_Gear->Extend();
+		m_GearDynamics->Extend();
 	} else {
-		m_Gear->Retract();
+		m_GearDynamics->Retract();
 	}
-	m_Model->showContactMarkers(on);
+	m_Model->showGearSprites(on);
 }
 	
 void AircraftObject::GearUp() {
@@ -369,7 +396,11 @@ void AircraftObject::GearDown() {
 }
 
 void AircraftObject::GearToggle() {
-	setGearStatus(!m_Gear->getExtended());
+	setGearStatus(!m_GearDynamics->getExtended());
+}
+
+void AircraftObject::MarkersToggle() {
+	m_Model->showContactMarkers(!m_Model->getMarkersVisible());
 }
 
 void AircraftObject::setAttitude(double pitch, double roll, double heading)
@@ -466,12 +497,10 @@ void AircraftObject::doSimplePhysics(double dt)
 */
 }
 
-void AircraftObject::doComplexPhysics(double dt)
-{
-	m_FlightModel->setThrust(m_Throttle * 70000.0);
-	m_FlightModel->setControlSurfaces(m_Aileron, m_Elevator, m_Rudder);
+void AircraftObject::doComplexPhysics(double dt) {
+	m_PrimaryAeroDynamics->setControlSurfaces(m_Aileron, m_Elevator, m_Rudder);
 
-        //preset various aircraft dimensions and landing/takeoff parameters:
+    //preset various aircraft dimensions and landing/takeoff parameters:
 	//  pitch and roll limits
 	//  gear vectors and state
 	//  gear spring constants and damping
@@ -479,10 +508,7 @@ void AircraftObject::doComplexPhysics(double dt)
 	//flightmodel needs to return out of spec parameters for subsequent
 	//damage modelling.
 
-	m_FlightModel->setGroundZ(m_GroundZ);
-	m_FlightModel->setGroundN(m_GroundN);
-	m_FlightModel->doSimStep(dt);
-	//m_FlightModel->doSimStep2(dt);
+	m_AircraftPhysicModel->doSimStep(dt);
 }
 
 void AircraftObject::getStats(std::vector<std::string> &stats) const {
@@ -496,7 +522,7 @@ void AircraftObject::getStats(std::vector<std::string> &stats) const {
 	float speed = getSpeed();
 	float alpha = getAngleOfAttack();
 	float G = getGForce();
-	snprintf(buffer, 255, "Alpha: %+.2f, G: %+.2f, Speed: %.1f", RadiansToDegrees(alpha), G, speed);
+	snprintf(buffer, 255, "Alpha: %+.2f, G: %+.2f, Air speed: %.1f", RadiansToDegrees(alpha), G, speed);
 	stats.push_back(buffer);
 	float heading = RadiansToDegrees(m_Heading);
 	if (heading < 0.0) heading += 360.0;
@@ -508,6 +534,21 @@ void AircraftObject::getStats(std::vector<std::string> &stats) const {
 }
 
 
+SIMDATA_REGISTER_INTERFACE(AircraftDynamics)
+
+void AircraftDynamics::pack(simdata::Packer& p) const {
+	simdata::Object::pack(p); 
+    p.pack(m_PrimaryAeroDynamics); 
+	p.pack(m_EngineDynamics);
+    p.pack(m_GearDynamics);
+}
+
+void AircraftDynamics::unpack(simdata::UnPacker& p) {
+	simdata::Object::unpack(p); 
+    p.unpack(m_PrimaryAeroDynamics); 
+	p.unpack(m_EngineDynamics);
+    p.unpack(m_GearDynamics);
+}
 
 
 

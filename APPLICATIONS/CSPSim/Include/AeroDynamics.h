@@ -33,8 +33,11 @@
 #include <SimData/Quaternion.h>
 #include <SimData/InterfaceRegistry.h>
 
-#include "LandingGear.h"
+#include "Collision.h"
 #include "DynamicalSystem.h"
+#include "Engine.h"
+#include "LandingGear.h"
+
 
 class AircraftObject;
 
@@ -51,13 +54,11 @@ public:
 	virtual void doSimStep(double dt) = 0;
 };
 
-class AeroVectorField;
-
 /**
  * class AeroDynamics - aircraft flight model implementation.
  *
  */
-class AeroDynamics: public simdata::Object, public Physics, protected DynamicalSystem
+class AeroDynamics: public simdata::Object, public Physics, public BaseDynamics, protected DynamicalSystem
 {                
 public:
 	SIMDATA_OBJECT(AeroDynamics, 0, 0)
@@ -103,14 +104,17 @@ public:
 		SIMDATA_XML("cn_r", AeroDynamics::m_Cn_r, true)
 		SIMDATA_XML("cn_da", AeroDynamics::m_Cn_da, true)
 		SIMDATA_XML("cn_dr", AeroDynamics::m_Cn_dr, true)
+
+		//SIMDATA_XML("engine_dynamics", AeroDynamics::m_EngineDynamics, true)
 	END_SIMDATA_XML_INTERFACE
 		
 	AeroDynamics();
 	virtual ~AeroDynamics();
 	
 	virtual void initialize();
-	virtual void doSimStep(double dt);
-	virtual void doSimStep2(double dt);
+	void doSimStep2(double dt);
+	void update(double dt) {}
+	virtual void doSimStep(double dt){};
 
 protected:
 
@@ -128,6 +132,7 @@ protected:
 	float m_WingSpan;
 	double m_WingChord; // chord length        
 	double m_WingArea;  // surface area of wings
+	double m_HalfWingArea;
 	double m_stallAOA;  // stall AOA 
 	
 	double m_DeMax;
@@ -138,8 +143,8 @@ protected:
 	double m_DrMin;
 
 	// the folowing parameters are both structural and controlled in nature
-	float m_GMin; // min number of G that this aircraft model can support (in general < 0)
-	float m_GMax; // max  ...                                             (in general > 3)
+	double m_GMin; // min number of G that this aircraft model can support (in general < 0)
+	double m_GMax; // max  ...                                             (in general > 3)
 
 	/**
 	 * internally: X = right, Y = nose, Z = up
@@ -183,43 +188,43 @@ protected:
 	double m_Cn_da;     // CNda is the yaw due to aileron
 	double m_Cn_dr;     // CNdr is the yaw due to rudder
 
+	double mutable m_GE;	// fractional ground effect
+
 public:
 	
 	double getAngleOfAttack() const { return m_alpha; }
 	double getSideSlip() const { return m_beta; }
 	double getGForce() const { return m_gForce; }
 	double getSpeed() const { return m_AirSpeed; }
+
+	simdata::Vector3 getForce();	// update gforce, cl too
+	simdata::Vector3 getMoment();
 	
-	void setThrust(double thrust) { m_Thrust = thrust; }
+	void setThrust(double thrust) { m_ThrustForce = thrust * simdata::Vector3::YAXIS; }
 	void setGroundZ(double groundz) { m_GroundZ = groundz; }
 	void setGroundN(simdata::Vector3 const &groundn) { m_GroundN = groundn; }
-
-	//void setPosition(const simdata::Vector3 & pos) { m_PositionLocal = pos; }
-	//void setVelocity(const simdata::Vector3 & velo);
 	
 	void bindObject(simdata::Vector3 &position, simdata::Vector3 &velocity, 
 	                simdata::Vector3 &angular_velocity, simdata::Quaternion &orientation);
-	void bindGearSet(LandingGearSet &);
-	void bindContacts(std::vector<simdata::Vector3> const &);
+	void bindGearDynamics(GearDynamics &gearDynamics);
+	void bindGroundCollisionDynamics(GroundCollisionDynamics &groundCollisionDynamics);
+	void bindEngineDynamics(EngineDynamics &engineDynamics);
 	void setControlSurfaces(double aileron, double elevator, double rudder);
 	void setInertia(double mass, simdata::Matrix3 const &I);
 	void setBoundingRadius(double radius);
 	
 
 protected:
-	// FIXME: needs to be moved in a mother class
+	// FIXME: needs to be moved in another class
 	bool isNearGround();
 
-
-	std::vector<double> const &f(double x, std::vector<double> &y);
 	void bindToBody(std::vector<double> const &y);
 
-	simdata::Vector3 const& CalculateForces(double const p_qBarS); // update gforce too
-	simdata::Vector3 const& CalculateMoments(double const p_qBarS);
 	void updateAngles(double dt);
 	double CalculateLiftCoefficient() const; 
 	double CalculateDragCoefficient() const;
 	double CalculateSideCoefficient() const;
+	double calculateGroundEffectCoefficient() const;
 	double CalculateRollMoment(double const qbarS) const;
 	double CalculatePitchMoment(double const qbarS) const;
 	double CalculateYawMoment(double const qbarS) const;
@@ -246,40 +251,34 @@ protected:
 	double m_Elevator;
 	double m_Rudder;
 
-	double m_Thrust;
+	// derived quantities
+	double m_alpha;				// current angle of attack
+	double m_alpha0;			// discrete AOA
+	double m_alphaDot;			// AOA rate
+	double m_beta;				// side slip angle
+	double m_gForce;	// current g acceleration
+	
+	double m_qBarFactor;	// 0.5 * WingSpan * density (updated 1 time in a simulation step)
+	double m_qBarS;			// 0.5 * WingSpan * density * V^2 
+	
+	simdata::Vector3 m_EulerAngles;    
+	simdata::Quaternion m_qOrientation;       // orientation in earth coordinates
 
-	simdata::Vector3 m_CurrentForceTotal;
-	simdata::Vector3 m_GravityForce;
+	simdata::Vector3 m_ForcesBody;          // total force in body coordinates
+	simdata::Vector3 m_ForcesLocal;	        // total force in local coordinates
+	
+	double m_Gravity;                       // current gravitational acceleration
+	simdata::Vector3 m_WeightBody;          // weight force in body coordinates
+	simdata::Vector3 m_WeightLocal;         // weight force in local/world/earth coordinates
+	simdata::Vector3 m_GravityAcceLocal;
+
 	simdata::Vector3 m_ThrustForce;
 	simdata::Vector3 m_LiftForce;
 	simdata::Vector3 m_DragForce;
 
-	// derived quantities
-	double m_alpha;    // current angle of attack
-	double m_alpha0;   // discrete AOA
-	double m_alphaDot; // AOA rate
-	double m_beta;     // side slip angle
-	double m_gForce;   // current g acceleration
-	
-	double m_qBarFactor;                    // 0.5 * WingSpan * density (updated 1 time in a simulation step)
-	double m_Gravity;                       // current gravitational acceleration
-	simdata::Vector3 m_GravityWorld;        // current gravity vector in earth coordinates
-
-	simdata::Vector3 m_EulerAngles;    
-	simdata::Quaternion qOrientation;       // orientation in earth coordinates
-
-	simdata::Vector3 m_ForcesBody;          // total force in body coordinates
-	simdata::Vector3 m_ForcesLocal;	        // total force in local coordinates
-	simdata::Vector3 m_GravityBody;         // gravitational force in body coordinates
-
 	simdata::Vector3 m_MomentsBody;         // (L,M,N) total moment (torque) in body coordinates
 
 	simdata::Vector3 m_PositionBody;        // position after integration step in body coordinates
-	simdata::Vector3 m_AngularAccelBody;    // (Pdot, Qdot, Rdot)
-	simdata::Vector3 m_AngularAccelLocal;   // angular acceleration in local coordinates
-	simdata::Vector3 m_LinearAccelBody;     // (Udot, Vdot, Wdot)
-	simdata::Vector3 m_LinearAccelLocal;    // linuar acceleration in local coordinates
-
 	simdata::Vector3 m_PositionLocal;       // position in earth coordinates
 	simdata::Vector3 m_VelocityLocal;       // velocity in earth coordinates
 	simdata::Vector3 m_VelocityBody;        // (U,V,W) velocity in body coordinates
@@ -287,6 +286,10 @@ protected:
 	simdata::Vector3 m_WindLocal;           // wind velocity in local coordinates
 	simdata::Vector3 m_AngularVelocityLocal;// angular velocity in earth coordinates
 	simdata::Vector3 m_AngularVelocityBody; // (P,Q,R) angular velocity in body coordinates
+	simdata::Vector3 m_AngularAccelBody;    // (Pdot, Qdot, Rdot)
+	simdata::Vector3 m_AngularAccelLocal;   // angular acceleration in local coordinates
+	simdata::Vector3 m_LinearAccelBody;     // (Udot, Vdot, Wdot)
+	simdata::Vector3 m_LinearAccelLocal;    // linuar acceleration in local coordinates
 
 	simdata::Vector3 m_ExtraForceBody;      // Landing gear, etc 
 	simdata::Vector3 m_ExtraMomentBody;     // Landing gear, etc
@@ -303,16 +306,18 @@ protected:
 	double m_Mass;
 	double m_MassInverse;
 	double m_AspectRatio;
-	mutable double m_Cl;
-	double m_GE;                       // fractional ground effect
+
 	simdata::Matrix3 m_Inertia;        // mass moment of inertia in standard coordinates (constant)
 	simdata::Matrix3 m_InertiaInverse; // inverse of moment of inertia matrix (constant)
 
-	LandingGearSet *m_Gear;                                // landing gear
-	const std::vector<simdata::Vector3> *m_Contacts;       // other contact points
+	// landing gear
+	GearDynamics *m_GearDynamics;
 	double m_Radius;                                       // bounding sphere radius
 	double m_GroundZ;                                      // ground position
 	simdata::Vector3 m_GroundN;                            // ground normal
+
+	GroundCollisionDynamics  *m_GroundCollisionDynamics;		// very primitive collision response to ground
+	EngineDynamics *m_EngineDynamics;
 };
 
 

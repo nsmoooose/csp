@@ -195,11 +195,11 @@ protected:
 class SmokeTrailSystem: public osg::Referenced {
 public:
 	SmokeTrailSystem();
-	virtual ~SmokeTrailSystem();
 	virtual void addSmokeTrail(SmokeTrail *);
 	virtual void update(double dt, simdata::Vector3 const &motion, simdata::Quaternion const &attitude);
 	virtual void setEnabled(bool);
 protected:
+	virtual ~SmokeTrailSystem();
 	typedef std::vector< osg::ref_ptr<SmokeTrail> > TrailList;
 	TrailList m_Trails;
 	osg::ref_ptr<ParticleEffectUpdater> m_Updater;

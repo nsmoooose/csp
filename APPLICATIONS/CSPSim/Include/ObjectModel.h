@@ -25,6 +25,7 @@
 #ifndef __OBJECTMODEL_H__
 #define __OBJECTMODEL_H__
 
+#include <vector>
 
 #include <osg/Node>
 #include <osg/Switch>
@@ -39,7 +40,7 @@
 #include <SimData/External.h>
 #include <SimData/InterfaceRegistry.h>
 
-#include <vector>
+#include "SmokeEffects.h"
 
 
 /**
@@ -68,6 +69,7 @@ public:
 		SIMDATA_XML("smooth", ObjectModel::m_Smooth, false)
 		SIMDATA_XML("filter", ObjectModel::m_Filter, false)
 		SIMDATA_XML("contacts", ObjectModel::m_Contacts, false)
+		SIMDATA_XML("landing_gear", ObjectModel::m_LandingGear, false)
 	END_SIMDATA_XML_INTERFACE
 
 	ObjectModel();
@@ -85,6 +87,10 @@ public:
 	ContactList const &getContacts() const { return m_Contacts; }
 
 	void showContactMarkers(bool on);
+	void showGearSprites(bool on);
+	void updateGearSprites(std::vector<simdata::Vector3> const &landing_gear);
+
+	bool getMarkersVisible() const;
 
 protected:
 
@@ -96,18 +102,26 @@ protected:
 	bool m_Smooth;
 	bool m_Filter;
 	ContactList m_Contacts;
+	std::vector<simdata::Vector3> m_LandingGear;
 	
 	virtual void pack(simdata::Packer& p) const;
 	virtual void unpack(simdata::UnPacker& p);
 	virtual void postCreate();
 	virtual void loadModel();
 	void addContactMarkers();
+	void addGearSprites();
+	void makeFrontGear(simdata::Vector3 const &point);
+	void makeLeftGear(simdata::Vector3 const &point);
+	void makeRightGear(simdata::Vector3 const &point);
 
 	double m_BoundingSphereRadius;
 
 	enum { CONTACT_MARKERS };
 
+	bool m_MarkersVisible;
+
 private:
+	osg::ref_ptr<osg::Group> m_GearSprites;
 	osg::ref_ptr<osg::Node> m_Node;
 	osg::ref_ptr<osg::MatrixTransform> m_Transform;
 	osg::ref_ptr<osg::Switch> m_DebugMarkers;
@@ -123,11 +137,19 @@ private:
  * contains a pointer to a SceneModel that can be instantiated to create
  * a visual representation of the object.
  */
-class SceneModel {
-	
+class SceneModel: public simdata::Referenced {
+private:
+	osg::ref_ptr<osg::PositionAttitudeTransform> m_Transform;
+	osg::ref_ptr<osg::Switch> m_Switch;
+	simdata::Ref<ObjectModel> m_Model;
+	bool m_Smoke;
+	osg::ref_ptr<fx::SmokeTrailSystem> m_SmokeTrails;
+	std::vector<simdata::Vector3> m_SmokeEmitterLocation;
+protected:
+	virtual ~SceneModel();
 public:
 	SceneModel(simdata::Ref<ObjectModel> const & model);
-	virtual ~SceneModel();
+	
 	
 	simdata::Ref<ObjectModel> getModel() { return m_Model; }
 	osg::Group* getRoot() { return m_Transform.get(); }
@@ -147,10 +169,12 @@ public:
 		m_Switch->setAllChildrenOff();
 	}
 
-private:
-	osg::ref_ptr<osg::PositionAttitudeTransform> m_Transform;
-	osg::ref_ptr<osg::Switch> m_Switch;
-	simdata::Ref<ObjectModel> m_Model;
+	void setSmokeEmitterLocation(std::vector<simdata::Vector3> const &sel);
+	bool addSmoke();
+	bool isSmoke();
+	void disableSmoke();
+	void enableSmoke();
+	void updateSmoke(double dt, simdata::Vector3 const & global_position, simdata::Quaternion const &attitude);
 };
 
 

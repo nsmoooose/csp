@@ -39,7 +39,7 @@ SIMDATA_REGISTER_INTERFACE(SimObject)
 
 
 SimObject::SimObject()
-{
+{ 
 	CSP_LOG(APP, DEBUG, "SimObject::SimObject()" );
 
 	m_SceneModel = NULL;
@@ -52,9 +52,8 @@ SimObject::SimObject()
 }
 
 
-SimObject::~SimObject()
-{
-	CSP_LOG(APP, INFO, "SimObject::~SimObject()" );
+SimObject::~SimObject() {
+	CSP_LOG(APP, INFO, "SimObject::~SimObject()..." );
 }
 
 
@@ -71,16 +70,15 @@ void SimObject::unpack(simdata::UnPacker& p) {
 
 
 void SimObject::createSceneModel() {
-	if (m_SceneModel) return;
-	m_SceneModel = new SceneModel(m_Model);
-	assert(m_SceneModel);
+	if (!m_SceneModel.valid()) {
+		m_SceneModel = new SceneModel(m_Model);
+		assert(m_SceneModel.valid());
+	}
 }
 
 void SimObject::destroySceneModel() {
-	if (m_SceneModel) {
-		delete m_SceneModel;
+	if (m_SceneModel.valid())
 		m_SceneModel = NULL;
-	}
 }
 
 osg::Node* SimObject::getOrCreateModelNode() {
@@ -243,103 +241,4 @@ void SimObject::AddSmoke()
 }
 #endif
 
-/*
-<<<<<<< SimObject.cpp
 
-void SimObject::addToScene(VirtualBattlefield *battlefield)
-{
-	CSP_LOG(APP, DEBUG, "SimObject::addToScene() - ID: " << m_iObjectID);
-
-	if (!m_ModelInit) {
-		initModel();
-	}
-
-	osg::Matrix worldMat;
-	simdata::Matrix3::M_t (&R)[3][3] = m_Orientation.rowcol;
-	worldMat.set(R[0][0], R[1][0], R[2][0], 0.0,
-	             R[0][1], R[1][1], R[2][1], 0.0,
-		     R[0][2], R[1][2], R[2][2], 0.0,
-		     m_LocalPosition.x, m_LocalPosition.y, m_LocalPosition.z, 1.0);
-
-	//m_rpTransform->setReferenceFrame(osg::Transform::RELATIVE_TO_PARENTS);
-
-	m_rpTransform->setMatrix(worldMat);
-	
-	m_Battlefield = battlefield;
-	m_Battlefield->addNodeToScene(m_rpTransform.get());
-
-	setCullingActive(true);
-
-	//CSP_LOG(APP, DEBUG, "NodeName: " << m_rpNode->getName() <<
-	//	", BoundingPos: " << sphere.center() << ", BoundingRadius: " << 
-	//	sphere.radius() );
-
-}
-
-
-void SimObject::removeFromScene() {
-	// FIXME what else?
-	m_Battlefield = NULL;
-}
-
-
-int SimObject::updateScene() { 
-	// this needs 2 upgrades; 
-	// first one is: working with quat and only quat; 
-	// second is: make an osg update()/draw() callback
-	
-
-	CSP_LOG(APP, DEBUG, "SimObject::updateScene() ID:"  << m_iObjectID );
-
-	osg::Quat q = osg::Quat(m_qOrientation.x, m_qOrientation.y, m_qOrientation.z, m_qOrientation.w);
-	osg::Matrix R = osg::Matrix::rotate(q);
-	osg::Matrix T = osg::Matrix::translate(m_LocalPosition.x, m_LocalPosition.y, m_LocalPosition.z);
-	
-	m_rpTransform->setMatrix(R * T);
-
-	// onRender();
-
-	CSP_LOG(APP, DEBUG, "SimObject::updateScene() - Position: " <<
-		m_LocalPosition );
-//	CSP_LOG(APP, DEBUG, "SimObject::updateScene() - Bounding Sphere " 
-//		<< c.x() << ", " << c.y() << ", " << c.z() << ", " << r );
-
-	return 0;
-}
-
-void SimObject::setCullingActive(bool flag)
-{
-	//if (m_rpNode.valid())
-	//	m_rpNode->setCullingActive(flag);
-	if (m_rpTransform.valid())
-	{
-		m_rpTransform->setCullingActive(flag);
-	}
-}
-
-
-void SimObject::getLatticePosition(int & x, int & y) const
-{
-	x = m_XLatticePos;
-	y = m_YLatticePos;
-}
-
-
-void SimObject::setOrientation(simdata::Matrix3 const &mOrientation)
-{
-	m_Orientation = mOrientation;
-	m_qOrientation.FromRotationMatrix(m_Orientation);
-	m_Direction = m_Orientation*simdata::Vector3::XAXIS;
-	m_NormalDirection = m_Orientation*simdata::Vector3::ZAXIS;
-}
-
-void SimObject::setOrientation(simdata::Quaternion const &qOrientation)
-{
-	simdata::Matrix3 Orientation;
-	qOrientation.ToRotationMatrix(Orientation);
-	SimObject::setOrientation(Orientation);
-}
-
-=======
->>>>>>> 1.7
-*/

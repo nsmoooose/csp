@@ -44,6 +44,7 @@
 #include <osg/LightSource>
 #include <osgDB/FileUtils>
 #include <osgUtil/SceneView>
+#include <osgUtil/Optimizer>
 #include <osgUtil/CullVisitor>
 #include <osgUtil/DisplayListVisitor>
 
@@ -330,6 +331,11 @@ int VirtualScene::buildScene()
 
 	osgDB::Registry::instance();
 
+	//FIXME: why ALL_OPTIMIZATIONS don t work as expected?
+	osgUtil::Optimizer opt;
+	opt.optimize(m_RootNode.get(), osgUtil::Optimizer::COMBINE_ADJACENT_LODS);
+	opt.optimize(m_RootNode.get(), osgUtil::Optimizer::SHARE_DUPLICATE_STATE);
+
 	return 1;
 }
 
@@ -452,6 +458,37 @@ void VirtualScene::setLookAt(simdata::Vector3 & eyePos, simdata::Vector3 & lookP
 	camera->setLookAt(osg::Vec3(0.0, 0.0, 0.0), simdata::toOSG(lookPos - eyePos), _up);
 	camera->ensureOrthogonalUpVector();
 
+/*****
+* code which could be used in replacement of osg::camera
+******/
+
+//osgUtil::SceneView contains all the functionality of the "old" 
+//osg::Camera.  When you think "Camera" and "No Producer", use 
+//osgUtil::SceneView and osg::RefMatrix:
+//
+//
+//  osg::ref_ptr<osg::RefMatrix> projectionMatrix = new osg::RefMatrix;
+//
+//  double verticalFieldOfView = 45.0; // Degrees
+//  double aspectRatio = 1.0;          // verticalFOV == horizontalFOV
+//  double nearClip = 1.0;
+//  double farClip  = 1e4;
+//  projectionMatrix->makeProjection( verticalFieldOfView,
+//                                   aspectRatio,
+//                                   nearClip, farClip );
+//
+//  osg::BoundingSphere bs = rootNode->getBound(); 
+//  osg::ref_ptr<osg::RefMatrix> modelViewMatrix  = new osg::RefMatrix;
+//  modelViewMatrix->setLookAt( 
+//        bs.center() - osg::Vec3(0.0, bs.radius()*2.5, 0.0),  // Eye
+//        bs.center(),                                         // Center
+//        osg::Vec3(0,0,1.0) );                                // Up
+//  
+//  // Here it is.  The next two lines is the sum total of what 
+//  // osgCamera did.
+//  sceneView->setProjectionMatrix( projectionMatrix.get() );
+//  sceneView->setModelViewMatrix( modelViewMatrix.get() );
+
 	m_GlobalFrame->setPosition(simdata::toOSG(-eyePos));
 
 	//AdjustCM(m_Sky->getSkyIntensity());
@@ -523,8 +560,10 @@ void VirtualScene::setLookAt(simdata::Vector3 & eyePos, simdata::Vector3 & lookP
 	osg::Vec3 _localLook(localLookPosition_x, localLookPosition_y, lookPos.z ) ;
 	osg::Vec3 _up (upVec.x, upVec.y, upVec.z );
     
+
 	camera->setLookAt(_localEye, _localLook , _up);
 	camera->ensureOrthogonalUpVector();
+
 
 	//AdjustCM(m_Sky->getSkyIntensity());
 	intensity_test = m_Sky->getSkyIntensity();
@@ -745,14 +784,14 @@ void VirtualScene::setViewDistance(float value)
 {
 	osg::Camera * camera = m_View->getCamera();
 	m_ViewDistance = value;
-	camera->setPerspective(m_ViewAngle, 1.0, 0.3f, m_ViewDistance);
+	camera->setPerspective(m_ViewAngle, 1.0, 2.0f, m_ViewDistance);
 }
 
 void VirtualScene::setViewAngle(float value)
 {
 	osg::Camera * camera = m_View->getCamera();
 	m_ViewAngle = value;
-	camera->setPerspective(m_ViewAngle, 1.0, 0.3f, m_ViewDistance);
+	camera->setPerspective(m_ViewAngle, 1.0, 2.0f, m_ViewDistance);
 }
 
 void VirtualScene::spinTheWorld(bool spin) {

@@ -50,6 +50,9 @@ Version 0.3.3 (in progress)
             Include/Theater and Source/Theater.  All the files in
 	    Source/Theater need to be added to the project.
 
+==========> WIN: Add ChunkLodTerrain.cpp and DemeterTerrain.cpp to
+            the project.
+
             Changed BaseDynamics::update(dt) to computeForceAndMoment(x)
 	    to reduce confusion with other update methods in the sim
 	    that take real (sequential) time interval parameters.

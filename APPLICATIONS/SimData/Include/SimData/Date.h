@@ -508,7 +508,7 @@ public:
 	std::string formatString(const char *format, bool local=false) const;
 	
 	virtual std::string asString() const {
-		return formatString("%Tz");
+		return formatString("%H:%M:%Sz");
 	}
 
 private:
@@ -549,7 +549,7 @@ public:
 	void convert(struct tm *tm, bool local=false) const;
 	std::string formatString(const char *format, bool local=false) const;
 	virtual std::string asString() const {
-		return formatString("%Y/%m/%d %Tz");
+		return formatString("%Y/%m/%d %H:%M:%Sz");
 	}
 	
 	/**
@@ -628,7 +628,7 @@ public:
 #endif // SWIG	
 
 	virtual std::string asString() const {
-		return formatString("%Y/%m/%d %Tz");
+		return formatString("%Y/%m/%d %H:%M:%Sz");
 	}
 	
 	/* The difference between two times.  Both times

@@ -20,5 +20,23 @@
             <Float name="y">-300</Float>
             <Float name="orientation">-1.57</Float>
         </Object>
+        <Object class="FeatureLayout">
+            <Path name="model">flag01</Path>
+            <Float name="x">340</Float>
+            <Float name="y">1400</Float>
+            <Float name="orientation">1.57</Float>
+        </Object>
+        <Object class="FeatureLayout">
+            <Path name="model">bureau01</Path>
+            <Float name="x">340</Float>
+            <Float name="y">1420</Float>
+            <Float name="orientation">1.57</Float>
+        </Object>
+        <Object class="FeatureLayout">
+            <Path name="model">bureau01</Path>
+            <Float name="x">340</Float>
+            <Float name="y">1380</Float>
+            <Float name="orientation">1.57</Float>
+        </Object>
     </List>
 </Object>

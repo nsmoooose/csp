@@ -36,7 +36,7 @@ NAMESPACE_SIMDATA
 
 
 /**
- * Base class for packable lists.
+ * @brief Base class for packable lists.
  *
  * @author Mark Rose <mrose@stm.lbl.gov>
  */
@@ -47,9 +47,10 @@ public:
 
 
 /**
- * A packable list class based on std::vector.
+ * @brief A packable list class based on std::vector.
  *
  * @author Mark Rose <mrose@stm.lbl.gov>
+ * @ingroup BaseTypes
  */
 template <class T> class List: public ListBase, public std::vector<T> {
 

@@ -59,13 +59,14 @@ SIMDATA_EXCEPTION(ObjectTypeMismatch)
 
 
 /**
- * BaseType path to a data source.
+ * @brief Path to an object record in a data archive.
  *
  * Object paths use '.' to separate path elements, and uniquely 
  * identify objects in a data archive.  Path objects store the
  * path as a 64-bit hash of the path string, called an Object ID.
  * 
  * @author Mark Rose <mrose@stm.lbl.gov>
+ * @ingroup BaseTypes
  */
 class SIMDATA_EXPORT Path: public BaseType {
 protected:
@@ -321,7 +322,7 @@ protected:
 
 
 /**
- * Base class for "smart-pointer" to Objects.
+ * @brief Base class for "smart-pointer" to Objects.
  * 
  * Use this and the template Pointer<> class below for all Object references.
  * This class serves as a generic version of the specialized Pointer template
@@ -433,7 +434,7 @@ protected:
 
 
 /**
- * Class-specialized "smart-pointer" to Objects.
+ * @brief Class-specialized "smart-pointer" to Objects.
  *
  * Use this class as you would an ordinary pointer to refer to all
  * objects descended from simdata::Object.  Given that all objects 

@@ -26,6 +26,12 @@
  * 
  */
 
+/**
+ * @namespace convert
+ *
+ * @brief Unit conversion functions.
+ */
+
 #ifndef __SIMDATA_CONVERSIONS_H__
 #define __SIMDATA_CONVERSIONS_H__
 
@@ -41,6 +47,13 @@
 #include <SimData/Namespace.h>
 
 NAMESPACE_SIMDATA
+
+/**
+ * @defgroup Conversions Unit conversions
+ */
+
+//@{
+
 namespace convert {
 
 // This is currently just a small set of unit conversions.  Feel free to add
@@ -137,6 +150,9 @@ T n_lb(T x) { return x * 0.22481; }
 SIMDATA_CVT(n_lb)
 
 } // namespace convert
+
+//@}
+
 NAMESPACE_SIMDATA_END
 
 

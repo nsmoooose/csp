@@ -40,6 +40,11 @@
 
 NAMESPACE_SIMDATA
 
+/**
+ * @defgroup Adapters Class adapter utilities
+ */
+
+//@{
 
 inline osg::Vec3 toOSG(Vector3 const &v) {
 	return osg::Vec3(v.x(), v.y(), v.z());
@@ -71,6 +76,9 @@ inline osg::Quat toOSG(Quat const &q) {
 inline Quat fromOSG(osg::Quat const &q) {
 	return Quat(q.x(), q.y(), q.z(), q.w());
 }
+
+
+//@}
 
 
 NAMESPACE_SIMDATA_END

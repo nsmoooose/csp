@@ -40,9 +40,7 @@ NAMESPACE_SIMDATA
 
 
 /**
- * class Perlin1D
- *
- * Encapsulates a perlin noise generator in one-dimension.
+ * @brief Encapsulates a perlin noise generator in one-dimension.
  * 
  * Many introductions to perlin noise and its uses are available online,
  * via Google.  Here's one such site:

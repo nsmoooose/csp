@@ -51,7 +51,7 @@ SIMDATA_EXCEPTION(DataUnderflow);
 
 
 /**
- * Utility class for writing raw data to an object archive.
+ * @brief Utility class for writing raw data to an object archive.
  *
  * Packer instances are created by the DataArchive class when an
  * object is being serialized.  The instance stores a FILE object
@@ -147,7 +147,7 @@ public:
 
 
 /**
- * Utility class for extracting raw data from an object archive.
+ * @brief Utility class for extracting raw data from an object archive.
  *
  * UnPacker instances are created by the DataArchive class when an
  * object is being deserialized.  The instance stores all the data

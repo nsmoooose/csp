@@ -25,6 +25,12 @@
  * Platform independent file utilities.
  */
 
+/**
+ * @namespace ospath
+ *
+ * @brief Platform-neutral file and directory utilities.
+ */
+
 #ifndef __SIMDATA_FILEUTILITY_H__
 #define __SIMDATA_FILEUTILITY_H__
 
@@ -36,6 +42,12 @@
 
 
 NAMESPACE_SIMDATA
+
+/**
+ * @defgroup FileUtils File Utilities
+ */
+
+//@{
 
 namespace ospath {
 
@@ -127,6 +139,7 @@ namespace ospath {
 	
 } // namespace ospath
 
+//@}
 
 NAMESPACE_SIMDATA_END
 

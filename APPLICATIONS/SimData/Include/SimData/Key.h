@@ -33,12 +33,13 @@
 NAMESPACE_SIMDATA
 
 /**
- * A 32-bit hash key identifier.
+ * @brief A 32-bit hash key identifier.
  *
  * Can be used in place of strings and enums to bind internal
  * and external identifiers efficiently.
  *
  * @author Mark Rose <mrose@stm.lbl.gov>
+ * @ingroup BaseTypes
  */
 class SIMDATA_EXPORT Key: public BaseType {
 protected:

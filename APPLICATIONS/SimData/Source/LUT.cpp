@@ -76,6 +76,8 @@ void cspline(std::vector<X> const &x, std::vector<X> const &y, std::vector<X> &o
 
 
 /**
+ * @brief A helper class for storing second-derivatives.
+ *
  * A helper class for storing second-derivatives used
  * in spline interpolation.  The structure mirrors that
  * of LUT<N,X>, with nested vectors of progressively
@@ -135,7 +137,7 @@ public:
 };
 
 /**
- * Partial specialization of Curvature for one-dimension.
+ * @brief Partial specialization of Curvature for one-dimension.
  *
  * This is essentially just a std::vector<X>.  See Curvature
  * (N>1) for details.
@@ -164,7 +166,7 @@ public:
 };
 
 /**
- * Zero-dimensional Curvatures are not allowed.
+ * @brief Stub to prevent zero-dimensional Curvatures.
  */
 template <class X>
 class Curvature<0, X> {

@@ -62,6 +62,9 @@
   #endif
 #endif
 
+/**
+ * @brief Adapter type for platform-specific hash_map classes.
+ */
 template <class key, class val, class hash, class eq> struct HASH_MAPS {
 #if defined(_MSC_VER) && (_MSC_VER >= 1300)
 	typedef HASH_MAP<key, val, eq> Type;

@@ -47,7 +47,7 @@ class InterfaceProxy;
 
 
 /**
- * Class for managing read access to multiple data archives.
+ * @brief Class for managing read access to multiple data archives.
  *
  * @author Mark Rose <mrose@stm.lbl.gov>
  */

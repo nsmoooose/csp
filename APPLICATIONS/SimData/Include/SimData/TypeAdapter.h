@@ -76,7 +76,7 @@ SIMDATA_EXCEPTION(TypeMismatch)
 
 	
 /**
- * class TypeAdapter - Dynamically typed wrapper for basic types and objects.
+ * @brief Dynamically typed wrapper for basic types and objects.
  * 
  * For internal use only.  This class is used to pass typed data as
  * parameters to virtual member functions (which are not compatible
@@ -84,6 +84,7 @@ SIMDATA_EXCEPTION(TypeMismatch)
  * objects derived from the Object base class. 
  *
  * @author Mark Rose <mrose@stm.lbl.gov>
+ * @internal
  */
  
 class SIMDATA_EXPORT TypeAdapter 

@@ -57,6 +57,8 @@ using std::ostream;
 //
 
 /**
+ * @brief An output-only, category-based log stream.
+ *
  * logbuf is an output-only streambuf with the ability to disable sets of
  * messages at runtime. Only messages with priority >= logbuf::logPriority
  * and debugClass == logbuf::logClass are output.
@@ -170,7 +172,7 @@ logbuf::overflow( int c )
 }
 
 /**
- * logstream manipulator for setting the log level of a message.
+ * @brief LogStream manipulator for setting the log level of a message.
  */
 struct loglevel
 {
@@ -182,6 +184,8 @@ struct loglevel
 };
 
 /**
+ * @brief A helper class for logstream construction.
+ *
  * A helper class that ensures a streambuf and ostream are constructed and
  * destroyed in the correct order.  The streambuf must be created before the
  * ostream but bases are constructed before members.  Thus, making this class
@@ -195,7 +199,7 @@ struct SIMDATA_EXPORT logstream_base
 };
  
 /**
- * Class to manage the debug logging stream.
+ * @brief Class to manage the debug logging stream.
  */
 class SIMDATA_EXPORT logstream : private logstream_base, public std::ostream
 {

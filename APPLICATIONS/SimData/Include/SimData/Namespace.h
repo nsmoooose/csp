@@ -23,6 +23,11 @@
  * @file Namespace.h
  */
 
+/**
+ * @namespace simdata
+ *
+ * @brief The primary namespace for all classes in SimData.
+ */
 
 #ifndef __SIMDATA_NAMESPACE_H__
 #define __SIMDATA_NAMESPACE_H__

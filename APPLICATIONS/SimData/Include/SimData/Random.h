@@ -26,6 +26,23 @@
  *
  */
 
+/**
+ * @namespace random
+ *
+ * @brief Random number generators and distributions.
+ */
+
+/**
+ * @namespace rng
+ *
+ * @brief Low-level random number generator interfaces.
+ */
+
+/**
+ * @namespace rd
+ *
+ * @brief Low-level random number distribution interfaces.
+ */
 
 #ifndef __SIMDATA_RANDOM_H__
 #define __SIMDATA_RANDOM_H__
@@ -45,7 +62,7 @@ NAMESPACE_SIMDATA
 namespace rng { // random number generators
 
 /**
- *  Mersenne Twister
+ *  @brief Mersenne Twister random number generator.
  *
  *  Original implementation was copyright (C) 1997 Makoto Matsumoto and
  *  Takuji Nishimura. Coded by Takuji Nishimura, considering the
@@ -131,7 +148,7 @@ class SIMDATA_EXPORT MT19937 {
 
 public:
 	/**
-	 * Structure for saving and restoring the internal state of the generator
+	 * @brief Structure for saving and restoring the internal state of the generator.
 	 */
 	struct State {
 		unsigned long _mt[N];
@@ -206,7 +223,7 @@ public:
 
 
 /**
- * Maximally Equidistributed Combined Tausworthe Generator
+ * @brief Maximally Equidistributed Combined Tausworthe generator.
  * 
  * This class was adapted from the c-implementation of the taus2
  * random number generator included in the GNU Scientific Library
@@ -303,7 +320,7 @@ class SIMDATA_EXPORT Taus2 {
 	}
 public:
 	/**
-	 * Structure for saving and restoring the internal state of the generator
+	 * @brief Structure for saving and restoring the internal state of the generator.
 	 */
 	struct State {
 		unsigned long int _s1, _s2, _s3;
@@ -382,10 +399,13 @@ public:
 // Random Number Generator Wrappers
 
 /**
- * Abstract interface for random number generators and random distributions.
+ * @brief Abstract interface for random number generators and random distributions.
  */
 class SIMDATA_EXPORT RandomInterface {
 protected:
+	/**
+	 * @brief Base class for storing the state of a random number generator.
+	 */
 	struct _State: Referenced { };
 public:
 	typedef Ref<_State> State;
@@ -399,7 +419,7 @@ public:
 
 
 /**
- * Abstract interface for random number generators.
+ * @brief Abstract interface for random number generators.
  */
 class SIMDATA_EXPORT RandomNumberGeneratorInterface: public RandomInterface {
 public:
@@ -412,6 +432,8 @@ public:
 };
 
 /**
+ * @brief Random number generator wrapper.
+ *
  * Random number generator wrapper, implementing the random number
  * generator interface.  These generics provide a uniform interface
  * to the underlying generators and generator state data.  The
@@ -420,6 +442,10 @@ public:
  */
 template <class RNG>
 class RandomNumberGenerator: public RandomNumberGeneratorInterface {
+
+	/**
+	 * @brief Random number generator state.
+	 */
 	struct RNGState: _State {
 		typename RNG::State _state;
 	};
@@ -553,12 +579,19 @@ std::string RandomNumberGenerator<RNG>::getName() const {
 
 namespace rd { // random distributions
 
+/**
+ * @brief Gaussian random number distribution.
+ */
 class SIMDATA_EXPORT Gauss {
 	rng::Taus2 _gen;
 	double _mean, _sigma;
 	double _x;
 	bool _odd;
 public:
+
+	/**
+	 * @brief Random number generator state.
+	 */
 	struct State {
 		rng::Taus2::State _state;
 		double _mean, _sigma, _x;
@@ -638,7 +671,7 @@ extern SIMDATA_EXPORT double BoxMueller(RandomNumberGeneratorInterface &_gen, do
 
 
 /**
- * Abstract interface for random distributions.
+ * @brief Abstract interface for random distributions.
  */
 class SIMDATA_EXPORT RandomDistributionInterface: public RandomInterface {
 public:
@@ -648,12 +681,17 @@ public:
 
 
 /**
+ * @brief Random distribution wrapper.
+ *
  * Random distribution wrapper, implementing the random distribution
  * interface.  These generics provide a uniform interface to the 
  * underlying distributions and distribution (generator) state data.  
  */
 template <class RD>
 class RandomDistribution: public RandomDistributionInterface {
+	/**
+	 * @brief Random number generator state.
+	 */
 	struct RDState: _State {
 		typename RD::State _state;
 	};

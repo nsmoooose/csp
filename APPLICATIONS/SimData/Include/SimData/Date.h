@@ -130,7 +130,7 @@ typedef unsigned char uint08;
 SIMDATA_EXCEPTION(InvalidDate);
 
 /**
- * Date class for YMD and julian dates.
+ * @brief Date class for YMD and julian dates.
  *
  * @author Mark Rose <mrose@stm.lbl.gov>
  * @credits Many of these routines borrow heavily from the GDate
@@ -435,10 +435,7 @@ private:
 
 
 /**
- * class Zulu
- * 
- * This class represents the time of day in "zulu" time (i.e. UTC
- * or Greenwich Mean).
+ * @brief Time of day in "zulu" time (i.e. UTC or Greenwich Mean).
  * 
  * Times are stored as doubles in seconds since midnight.  This
  * makes time based calculations relatively easy.  When the second
@@ -649,9 +646,7 @@ private:
 
 
 /**
- * class DateZulu
- *
- * This class combines time and date operations into a single object.
+ * @brief Class combining time and date operations.
  * 
  * @author Mark Rose <mrose@stm.lbl.gov>
  */
@@ -738,9 +733,10 @@ public:
 typedef DateZulu::time_t SimTime;
 
 /**
- * Class for representing dates and times within the simulation.
+ * @brief Class for representing dates and times within the simulation.
  *
  * @author Mark Rose <mrose@stm.lbl.gov>
+ * @ingroup BaseTypes
  */
 class SIMDATA_EXPORT SimDate: public DateZulu, public BaseType {
 

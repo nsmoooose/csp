@@ -79,12 +79,16 @@ class LUT;
 
 
 /**
+ * @brief A fixed-dimension vector for LUT parameters.
+ *
  * General purpose, fixed-dimension vectors for
  * use with LUT templates.  Used for passing table
  * dimensions and lookup coordinates.  Not the
  * cleanest class ever, but its fast and designed
  * to work with recursive algorithms (which the
  * LUT classes use extensively).
+ *
+ * @author Mark Rose <mrose@stm.lbl.gov>
  */
 template <int N, typename T>
 class VEC {
@@ -177,10 +181,12 @@ public:
 };
 
 /**
- * One-dimensional VEC partial specialization.
+ * @brief One-dimensional VEC partial specialization.
  * 
  * The methods here are pretty straightforward, see VEC<N, T>
  * for details.
+ *
+ * @author Mark Rose <mrose@stm.lbl.gov>
  */
 template <typename T>
 class VEC<1, T> {
@@ -206,6 +212,8 @@ public:
 };
 
 /**
+ * @brief Stub to prevent zero-dimensional vectors. 
+ *
  * No zero-dimensional vectors allowed.
  */
 template <typename T>
@@ -215,6 +223,8 @@ class VEC<0, T> {
 
 
 /**
+ * @brief Helper class for LUT parameters.
+ *
  * Helper class templates for improved syntax when accessing 
  * tables.  LUT::operator[] returns a WRAP object which can
  * be further dereferenced with operator[].  When N coordinates
@@ -232,6 +242,8 @@ class VEC<0, T> {
  * calling table.getValue().  The righthand-side expression
  * is still a WRAP<3, float> at this point, but is implicitly
  * coerced to a float to assign the interpolated value to 'x'.
+ *
+ * @author Mark Rose <mrose@stm.lbl.gov>
  */
 template <int N, typename T>
 class WRAP {
@@ -263,7 +275,9 @@ public:
 
 
 /**
- * Base class for interpolated lookup tables.
+ * @brief Base class for interpolated lookup tables.
+ *
+ * @author Mark Rose <mrose@stm.lbl.gov>
  */
 class SIMDATA_EXPORT Interpolation: public BaseType {
 public:
@@ -306,8 +320,11 @@ protected:
 
 
 /**
- * Interpolation base class for a specific data type.
+ * @brief Interpolation base class for a specific data type.
+ *
  * Manages lookup indexing for the interpolated table.
+ *
+ * @author Mark Rose <mrose@stm.lbl.gov>
  */
 template <typename X>
 class SIMDATA_EXPORT InterpolationType: public Interpolation {
@@ -345,8 +362,10 @@ protected:
 
 
 /**
- * A helper class for storing second-derivatives used
- * in spline interpolation.  The structure mirrors that
+ * @brief A helper class for storing second-derivatives.
+ *
+ * A helper class for storing second-derivatives used in 
+ * spline interpolation.  The structure mirrors that
  * of LUT<N,X>, with nested vectors of progressively
  * lower dimensional Curvature instances.
  *
@@ -358,11 +377,14 @@ class Curvature;
 
 
 /**
- * N-dimensional lookup table.
+ * @brief N-dimensional lookup table.
  *
  * Converts (partially) irregularly spaced data to a regularly spaced 
  * lookup table using linear or spline interpolation.  The table is
  * then accessed by fast linear interpolation.
+ *
+ * @author Mark Rose <mrose@stm.lbl.gov>
+ * @ingroup BaseTypes
  */
 template <int N, class X=float>
 class SIMDATA_EXPORT LUT: public InterpolationType<X> {
@@ -502,6 +524,11 @@ public:
 	virtual std::string asString() const;
 };
 
+/**
+ * @brief One-dimensional lookup table specialization.
+ *
+ * @author Mark Rose <mrose@stm.lbl.gov>
+ */
 template <typename X>
 class SIMDATA_EXPORT LUT<1, X>: public InterpolationType<X> {
 	typedef std::vector< std::pair<X, X> > DataVector;
@@ -643,7 +670,7 @@ public:
 };
 
 /**
- * No zero-dimensional LUTs
+ * @brief Stub to prevent zero-dimensional LUTs
  */
 template <typename X>
 class SIMDATA_EXPORT LUT<0, X>: public Interpolation {
@@ -667,10 +694,27 @@ inline WRAP<N,X> &WRAP<N,X>::operator[](X x) {
 
 
 /**
- * Define a few common LUT types.
+ * @brief A one-dimensional interpolated lookup table using single-precision floats.
+ *
+ * @author Mark Rose <mrose@stm.lbl.gov>
+ * @ingroup BaseTypes
  */
 typedef LUT<1,float> Table1;
+
+/**
+ * @brief A two-dimensional interpolated lookup table using single-precision floats.
+ *
+ * @author Mark Rose <mrose@stm.lbl.gov>
+ * @ingroup BaseTypes
+ */
 typedef LUT<2,float> Table2;
+
+/**
+ * @brief A three-dimensional interpolated lookup table using single-precision floats.
+ *
+ * @author Mark Rose <mrose@stm.lbl.gov>
+ * @ingroup BaseTypes
+ */
 typedef LUT<3,float> Table3;
 
 

@@ -57,8 +57,7 @@ SIMDATA_EXCEPTION(InterfaceError)
 
 
 /**
- * class MemberAccessorBase - base class for storing and accessing member 
- * variable references.
+ * @brief Base class for storing and accessing member variable references.
  * 
  * @author Mark Rose <mrose@stm.lbl.gov>
  */
@@ -114,6 +113,11 @@ protected:
 };
 
 
+/**
+ * @brief Class for storing and accessing bitmasked member variable references.
+ * 
+ * @author Mark Rose <mrose@stm.lbl.gov>
+ */
 template <class C, typename T> 
 class MemberMaskAccessor: public MemberAccessorBase 
 {
@@ -167,8 +171,7 @@ public:
 
 
 /**
- * class MemberAccessor - Class for storing and accessing member variable 
- * references.
+ * @brief Class for storing and accessing member variable references.
  *
  * @author Mark Rose <mrose@stm.lbl.gov>
  */
@@ -214,7 +217,7 @@ public:
 
 
 /**
- * class MemberAccessor - Partially specialized MemberAccessor for std::string<> variables.
+ * @brief Partially specialized MemberAccessor for std::string<> variables.
  *
  * @author Mark Rose <mrose@stm.lbl.gov>
  */
@@ -328,6 +331,11 @@ public:
 	}
 };
 
+/**
+ * @brief Specialized MemberMaskAccessor for int bitmasked variables.
+ *
+ * @author Mark Rose <mrose@stm.lbl.gov>
+ */
 template <class C> 
 class MemberAccessor< C, int >: public MemberMaskAccessor<C, int> {
 public:
@@ -337,6 +345,11 @@ public:
 		MemberMaskAccessor<C, int>(pm, name_, mask_, required_) { }
 };
 
+/**
+ * @brief Specialized MemberMaskAccessor for short int bitmasked variables.
+ *
+ * @author Mark Rose <mrose@stm.lbl.gov>
+ */
 template <class C> 
 class MemberAccessor< C, short >: public MemberMaskAccessor<C, short> {
 public:
@@ -346,6 +359,11 @@ public:
 		MemberMaskAccessor<C, short>(pm, name_, mask_, required_) { }
 };
 
+/**
+ * @brief Specialized MemberMaskAccessor for char bitmasked variables.
+ *
+ * @author Mark Rose <mrose@stm.lbl.gov>
+ */
 template <class C> 
 class MemberAccessor< C, char >: public MemberMaskAccessor<C, char> {
 public:
@@ -493,7 +511,7 @@ namespace PTS {
 
 
 /**
- * class ObjectInterfaceBase - Pure virtual base class for object interfaces.
+ * @brief Pure virtual base class for object interfaces.
  *
  * @author Mark Rose <mrose@stm.lbl.gov>
  */
@@ -542,6 +560,12 @@ public:
 
 };
 
+
+/**
+ * @brief Class-specialized object interface.
+ *
+ * @author Mark Rose <mrose@stm.lbl.gov>
+ */
 template <class C>
 class ObjectInterface: public ObjectInterfaceBase {
 	

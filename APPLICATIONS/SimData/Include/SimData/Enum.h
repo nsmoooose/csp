@@ -112,7 +112,7 @@ SIMDATA_SUBEXCEPTION(EnumTypeError, EnumError);
 
 
 /**
- * Core Enumuration
+ * @brief Enumeration set (internal)
  *
  * This is an internal class used to store the integer and string
  * indices of the Enumeration.  It is reference counted, and can
@@ -236,25 +236,29 @@ friend class Enumeration;
 	/// This method is not defined and should never be called.
 	EnumerationCore();
 
-	/// Construct a new enum from a string.
-	///
-	/// The enumeration tokens are must be separated by
-	/// white-space and can have an optional value assignment.
-	/// Tokens without explicit values will be assigned
-	/// sequential values following the last specified
-	/// value.  The initial default value is zero.
-	///
-	/// Examples:
-	/// <pre>
-	///     "zero one two three"
-	///     "one=1 two three ten=10 eleven"
-	/// </pre>
+	/** Construct a new enum from a string.
+	 *
+	 * The enumeration tokens are must be separated by
+	 * white-space and can have an optional value assignment.
+	 * Tokens without explicit values will be assigned
+	 * sequential values following the last specified
+	 * value.  The initial default value is zero.
+	 *
+	 * Examples:
+	 *
+	 * @code
+	 *     "zero one two three"
+	 *     "one=1 two three ten=10 eleven"
+	 * @endcode
+	 */
 	EnumerationCore(std::string const &s): Referenced() {
 		__init(s);
 	}
 };
 
 /**
+ * @brief Class representing an enumeration set.
+ *
  * A class representing an ordered set of unique items that
  * can be indexed by number or token.
  *
@@ -349,19 +353,20 @@ public:
 	/// Equality of Enumerations means sharing the same EnumerationCore.
 	bool operator !=(Enumeration const &e) const { return __core != e.__core; }
 
-	/// Construct a new Enumeration, creating and binding to a new EnumerationCore.
-	///
-	/// The enumeration tokens are must be separated by
-	/// white-space and can have an optional value assignment.
-	/// Tokens without explicit values will be assigned
-	/// sequential values following the last specified
-	/// value.  The initial default value is zero.
-	///
-	/// Examples:
-	/// @code
-	///     "zero one two three"
-	///     "one=1 two three ten=10 eleven"
-	/// @endcode
+	/**
+	 * Construct a new Enumeration, creating and binding to a new EnumerationCore.
+	 *
+	 * The enumeration tokens are must be separated by
+	 * white-space and can have an optional value assignment.
+	 * Tokens without explicit values will be assigned
+	 * sequential values following the last specified
+	 * value.  The initial default value is zero.
+	 *
+	 * Examples:
+	 *
+	 *  @li "zero one two three"
+	 *  @li "one=1 two three ten=10 eleven"
+	 */
 	Enumeration(std::string const &s) {
 		__core = new EnumerationCore(s);
 	}
@@ -464,14 +469,16 @@ public:
 
 
 
-
 /**
- * EnumLink implements the most of Enum interface and binds to a parent
- * Enumeration.  This class is used internally to return Enum instances
+ * @brief Represents an element in an Enumeration set.
+ *
+ * This class is used internally to return Enum instances
  * from an Enumeration, which is unable to directly create templated Enum 
  * instances.  EnumLinks can also be used to create Enums on the fly by
  * specifying an existing Enumeration in the constructor.  EnumLink's and 
  * Enum templates can be used interchangeably.
+ *
+ * @ingroup BaseTypes
  */
 class EnumLink: public BaseType {
 friend class Enumeration;
@@ -656,7 +663,9 @@ public:
 };
 
 /**
- * Enum template.  Use this class to create Enum instances that are bound
+ * @brief Represents an element in a specified Enumeration set.
+ *
+ * Use this class to create Enum instances that are bound
  * to an Enumeration during static construction.  This early binding to
  * the variable type has the advantage that the Enumeration associated with
  * an Enum<> member variable can be accessed without instantiating the
@@ -664,6 +673,8 @@ public:
  * the introspection capabilities of SimData.  An additional advantage is
  * that Enum<> members do not have to be explicitly bound in the class
  * ctor (which is somewhat error prone).
+ *
+ * @ingroup BaseTypes
  */
 template <Enumeration const &E>
 class Enum: public EnumLink {

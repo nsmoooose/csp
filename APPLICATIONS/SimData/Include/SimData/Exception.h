@@ -37,7 +37,7 @@ NAMESPACE_SIMDATA
 
 
 /**
- * General expection base class with error reporting.
+ * @brief General exception base class with error reporting.
  *
  * @author Mark Rose <mrose@stm.lbl.gov>
  */
@@ -100,7 +100,7 @@ public:
 };
 
 /**
- * Base class for all SimData specific exceptions.
+ * @brief Base class for all SimData specific exceptions.
  */
 class SIMDATA_EXPORT Exception: public ExceptionBase {
 public:

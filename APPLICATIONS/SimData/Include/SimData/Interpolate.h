@@ -54,7 +54,7 @@ class Packer;
 class UnPacker;
 
 /**
- * Base class for interpolated data.
+ * @brief Base class for interpolated data.
  * 
  * @author Mark Rose <mrose@stm.lbl.gov>
  */
@@ -102,7 +102,7 @@ protected:
 
 
 /**
- * A simple one-dimensional bicubic-interpolated look-up table.
+ * @brief A one-dimensional bicubic-interpolated look-up table.
  *
  * The curve input is a discrete set of (x, y) pairs sampled from a
  * continuous curve y = F(x).  A smooth curve is formed from these
@@ -112,6 +112,8 @@ protected:
  * interpolation) to find y(x).
  * 
  * @author Mark Rose <mrose@stm.lbl.gov>
+ * @ingroup BaseTypes
+ * @deprecated Use Table1 instead.
  */
 class SIMDATA_EXPORT Curve: public InterpolatedData<float> {
 
@@ -209,9 +211,11 @@ protected:
 
 
 /**
- * A simple two-dimensional bicubic-interpolated look up table.
+ * @brief A two-dimensional bicubic-interpolated look up table.
  * 
  * @author Mark Rose <mrose@stm.lbl.gov>
+ * @ingroup BaseTypes
+ * @deprecated Use Table2 instead.
  */
 class SIMDATA_EXPORT Table: public InterpolatedData<float> {
 

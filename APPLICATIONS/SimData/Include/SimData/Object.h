@@ -90,7 +90,7 @@ class LinkBase;
 NAMESPACE_SIMDATA
 
 /**
- * Base class for all classes representing packable data objects.
+ * @brief Base class for all classes representing packable data objects.
  *
  * Derived classes must include the SIMDATA_OBJECT(classname, major, minor)
  * macro in their class definition and the SIMDATA_REGISTER(classname) macro 
@@ -110,6 +110,7 @@ NAMESPACE_SIMDATA
  * managed by the DataArchive.
  *
  * @author Mark Rose <mrose@stm.lbl.gov>
+ * @ingroup BaseTypes
  */
 
 class SIMDATA_EXPORT Object: public Referenced, public BaseType {

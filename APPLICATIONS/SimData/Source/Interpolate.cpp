@@ -32,13 +32,6 @@ NAMESPACE_SIMDATA
 template <typename T>
 const Enumeration InterpolatedData<T>::Method("LINEAR SPLINE");
 
-class load_check {
-public:
-	load_check() {
-		printf("SimData %s loaded @ %p\n", getVersion(), this);
-	}
-} check_interpolate;
-
 //static load_check check_interpolate;
 
 

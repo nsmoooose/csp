@@ -19,6 +19,15 @@
  */
 
 
+/**
+ * @file BaseType.h
+ */
+
+/**
+ * @defgroup BaseTypes Data classes
+ */
+
+
 #ifndef __SIMDATA_BASETYPE_H__
 #define __SIMDATA_BASETYPE_H__
 
@@ -39,7 +48,7 @@ SIMDATA_EXCEPTION(ParseException)
 
 
 /**
- * Base class for objects that support serialization to data archives.
+ * @brief Base class for objects that support serialization to data archives.
  *
  * @author Mark Rose <mrose@stm.lbl.gov>
  */

@@ -47,6 +47,11 @@ NAMESPACE_SIMDATA
 
 class Matrix3;
 
+/**
+ * @brief A three-dimensional vector class using double-precision.
+ *
+ * @ingroup BaseTypes
+ */
 class SIMDATA_EXPORT Vector3: public BaseType
 {
 protected:

@@ -49,6 +49,11 @@ NAMESPACE_SIMDATA
 class DataArchive;
 
 
+/**
+ * @brief Base class for smart-pointers to Object classes.
+ *
+ * @author Mark Rose <mrose@stm.lbl.gov>
+ */
 class SIMDATA_EXPORT ReferencePointer {
 public:
 
@@ -211,7 +216,7 @@ protected:
 
 
 /**
- * Base class for "auto-loading smart-pointers" to Objects.
+ * @brief Base class for auto-loading, smart-pointers to Objects.
  * 
  * This class combines the Path type with reference-counting for Object
  * types.  It should seldom be used directly.  See Link<> and Ref<> for
@@ -324,7 +329,7 @@ protected:
 
 
 /**
- * Class-specialized, auto-loading smart-pointer to Objects.
+ * @brief Class-specialized, auto-loading smart-pointer to Objects.
  *
  * Use this class for linking to other Objects in a data archive. 
  * The associated Objects will automatically be created by the 
@@ -336,6 +341,7 @@ protected:
  * you should use a Ref<> handle instead of Link<>.
  *
  * @author Mark Rose <mrose@stm.lbl.gov>
+ * @ingroup BaseTypes
  */
 template<class T> class Link: public LinkBase {
 public:

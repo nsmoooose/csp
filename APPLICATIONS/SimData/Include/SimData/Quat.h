@@ -49,12 +49,14 @@ NAMESPACE_SIMDATA
 
 
 /**
- * class Quaternion
+ * @brief Quaternion class using double-precision.
  *
  * Quaternions are four dimensional objects that form a compact
  * representation for rotations.  Many thorough treatments of 
  * quaternions and their use in simulations can be readily found
  * on the web.
+ *
+ * @ingroup BaseTypes
  */
 class SIMDATA_EXPORT Quat: public BaseType
 {

@@ -51,6 +51,11 @@ NAMESPACE_SIMDATA
 class Quat;
 
 
+/**
+ * @brief A three-by-three matrix class using double-precision.
+ *
+ * @ingroup BaseTypes
+ */
 class SIMDATA_EXPORT Matrix3: public BaseType
 {
 public:

@@ -31,5 +31,17 @@ const char *getVersion() {
 	return SIMDATA_VERSION;
 }
 
+
+/**
+ * @brief Print a startup message to verify proper loading of SimData
+ */
+class load_check {
+public:
+	load_check() {
+		printf("SimData %s loaded @ %p\n", getVersion(), this);
+	}
+} check_interpolate;
+
+
 NAMESPACE_SIMDATA_END
 

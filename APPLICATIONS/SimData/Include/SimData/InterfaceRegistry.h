@@ -47,7 +47,7 @@ class UnPacker;
 
 
 /**
- * class InterfaceProxy - Base class for interface proxy classes.
+ * @brief Base class for interface proxy classes.
  *
  * Stores a reference to the actual interface and provides accessor methods to
  * create and manipulate objects dynamically at runtime.
@@ -138,6 +138,9 @@ public:
 };
 
 
+/**
+ * @brief Creates a single, static instance of the templated class.
+ */
 template <class C>
 class Singleton {
 public:
@@ -151,8 +154,7 @@ private:
 };
 
 /**
- * class InterfaceRegistry - Singleton class to store and access all ObjectInterfaces
- * in the application.
+ * @brief Singleton class to store and access all ObjectInterfaces in the application.
  *
  * ObjectInterfaces automatically register themselves with the global instance of this
  * class at startup.  Interfaces can be accessed by name to provide dynamic object

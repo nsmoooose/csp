@@ -32,7 +32,7 @@
 NAMESPACE_SIMDATA
 
 /**
- * Holds the file system path to an external data source.
+ * @brief Holds the file system path to an external data source.
  *
  * Paths are stored interally in a platform independent format, and
  * automatically converted to and from the native format.
@@ -42,6 +42,7 @@ NAMESPACE_SIMDATA
  * to convert to native format at runtime. (-MR)
  *
  * @author Mark Rose <mrose@stm.lbl.gov>
+ * @ingroup BaseTypes
  */
 class SIMDATA_EXPORT External: public BaseType {
 protected:

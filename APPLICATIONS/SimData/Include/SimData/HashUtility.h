@@ -78,6 +78,11 @@ extern HashT newhasht_cstring(std::string const &);
 //extern u8 newhash8_cstring(std::string const &);
 
 //typedef  u8       hasht;
+
+/**
+ * @brief A 64-bit hash value.
+ *
+ */
 struct SIMDATA_EXPORT HashT {
 	guint32 a, b;
 	HashT() {
@@ -125,6 +130,9 @@ struct SIMDATA_EXPORT HashT {
 typedef HashT hasht;
 
 
+/**
+ * @brief Integer equality functor for hash_map.
+ */
 #if defined(_MSC_VER) && (_MSC_VER >= 1300) 
 	struct eqint: public std::hash_compare<int const> {
 		size_t operator ()(int const& i) const {
@@ -142,6 +150,9 @@ typedef HashT hasht;
 	};
 #endif
 
+/**
+ * @brief Integer hash functor for hash_map.
+ */
 struct hashint {
 	int operator()(int i) const {
 		return i;
@@ -149,6 +160,9 @@ struct hashint {
 };
 
 
+/**
+ * @brief const char* equality functor for hash_map.
+ */
 #if defined(_MSC_VER) && (_MSC_VER >= 1300) 
 	struct eqstr: public std::hash_compare<char const*>
 		{
@@ -168,13 +182,18 @@ struct hashint {
 	};
 #endif
 
-
+/**
+ * @brief hasht hash functor for hash_map.
+ */
 struct hasht_hash {
 	guint32 operator()(hasht i1) const {
 		return i1.a;
 	}
 };
 
+/**
+ * @brief hasht equality functor for hash_map.
+ */
 #if defined(_MSC_VER) && (_MSC_VER >= 1300) 
 	struct hasht_eq: public std::hash_compare<hasht const> {
 		size_t operator()( hasht const& i1 ) const {
@@ -193,9 +212,9 @@ struct hasht_hash {
 #endif
 
 
-/*
- * Helpers for storing a hash map of string->int.
-*/
+/**
+ * @brief String hash functor for hash_map.
+ */
 struct SIMDATA_EXPORT hashstring {
 	static HASH<const char*> h;
 	int operator()(const std::string &s) const {
@@ -203,6 +222,9 @@ struct SIMDATA_EXPORT hashstring {
 	}
 };
 
+/**
+ * @brief String equality functor for hash_map.
+ */
 #if defined(_MSC_VER) && (_MSC_VER >= 1300) 
 	struct eqstring: public std::hash_compare<std::string const> {
 		size_t operator()( std::string const& a ) const {
@@ -223,12 +245,24 @@ struct SIMDATA_EXPORT hashstring {
 class Object;
 class ObjectProxyBase;
 
+/**
+ * @brief hash_map specialization type for hasht to T maps.
+ */
 template <class T>
-	struct HASHT_MAP {
-		typedef typename HASH_MAPS<hasht, T, hasht_hash, hasht_eq>::Type Type;
-	};
+struct HASHT_MAP {
+	typedef typename HASH_MAPS<hasht, T, hasht_hash, hasht_eq>::Type Type;
+};
+
+/**
+ * @brief A hasht to int map.
+ */
 typedef HASH_MAPS<hasht, int, hasht_hash, hasht_eq>::Type hasht_map;
+
+/**
+ * @brief A hasht to ObjectProxyBase* map.
+ */
 typedef HASH_MAPS<hasht, ObjectProxyBase*, hasht_hash, hasht_eq>::Type proxy_map;
+
 //typedef HASH_MAPS<const std::string, int, hashstring, eqstring>::Type string_map;
 
 extern std::ostream & operator<<(std::ostream &o, const hasht &x);

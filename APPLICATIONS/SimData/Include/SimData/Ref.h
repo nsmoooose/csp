@@ -51,6 +51,8 @@ SIMDATA_EXCEPTION(ConversionError);
 
 
 /**
+ * @brief Reference counting smart-pointer.
+ *
  * Reference counting smart-pointer for use with simdata::Referenced
  * objects.
  *
@@ -259,7 +261,7 @@ protected:
 
 
 /**
- * Base class for reference counted objects.
+ * @brief Base class for reference counted objects.
  *
  * Inspired by OpenSceneGraph's osg::Referenced class.
  *

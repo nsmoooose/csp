@@ -59,7 +59,7 @@ class InterfaceProxy;
 
 
 /**
- * C++ interface to data archive files.
+ * @brief Interface for reading and writing data archive files.
  * 
  * The DataArchive class provides read and write access to data archive
  * files.  Write mode is primarily intended for use by the data complier.

@@ -33,12 +33,15 @@ NAMESPACE_SIMDATA
 
 
 /**
- * class Real
+ * @brief A guassian distributed floating-point value.
  *
  * This class represents a "real-world" value distributed according
  * to a normal distribution.  Reals are specified by a median value
  * and a standard deviation.  When constructed the actual value is
  * generated from this distribution.
+ *
+ * @author Mark Rose <mrose@stm.lbl.gov>
+ * @ingroup BaseTypes
  */
 class SIMDATA_EXPORT Real: public BaseType {
 	static random::Taus2 _rng;

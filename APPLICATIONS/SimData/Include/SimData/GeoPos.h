@@ -24,6 +24,11 @@
  * Geodetic coordinate class and conversions.
  */
 
+/**
+ * @namespace GeoRef 
+ *
+ * @brief Reference ellipsoids for geospacial coordinate transforms.
+ */
 
 #ifndef __SIMDATA_GEOPOS_H__
 #define __SIMDATA_GEOPOS_H__
@@ -37,8 +42,7 @@ NAMESPACE_SIMDATA
 
 
 /**
- * Reference ellipsoid parameters.
- *
+ * @brief Reference ellipsoid parameters.
  */
 struct SIMDATA_EXPORT ReferenceEllipsoid {
 	ReferenceEllipsoid(double semi_major, double semi_minor) {
@@ -134,7 +138,7 @@ namespace GeoRef {
 
 
 /**
- * GeoPos position class.
+ * @brief Position class using ECEF coordinates.
  *
  * Extends a cartesian 3-vector to Earth-Centered, Earth-Fixed (ECEF) 
  * coordinates.  Helper methods are provided for lazy conversion to
@@ -148,6 +152,8 @@ namespace GeoRef {
  * ensure that subsequent conversions to Geodetic and UTM coordinates
  * function properly.
  * 
+ * @ingroup BaseTypes
+ * @deprecated Use LLA, UTM, and/or ECEF instead.
  */
 class SIMDATA_EXPORT GeoPos: public Vector3 {
 public:
@@ -553,6 +559,8 @@ void ShellDistance(LLA const &p,
 
 
 /**
+ * @brief Latitude, longitude, and altitude coordinates.
+ *
  * A geospatial coordinate class representing latitude, longitude, and
  * altitude.
  *
@@ -565,6 +573,8 @@ void ShellDistance(LLA const &p,
  *     @code <LLA>37.1 -122.43 100.0</LLA> @endcode
  * and 
  *     @code <LLA>37'6"0.0 -122'25"48.0 100.0</LLA> @endcode
+ *
+ * @ingroup BaseTypes
  */
 class SIMDATA_EXPORT LLA: public BaseType {
 	double _lat, _lon, _alt;
@@ -668,11 +678,15 @@ public:
 
 
 /**
+ * @brief Universal Transverse Mercator and altitude coordinates.
+ *
  * A geospatial coordinate class using Universal Transverse Mercator (UTM)
  * coordinates plus altitude. 
  *
  * A sample XML tag for this type is @code<UTM>704300 3390210 13T 100.0</UTM>@endcode
  * which represents 704300E 3390210N 13T, 100.0 m above the reference ellipsoid.
+ *
+ * @ingroup BaseTypes
  */
 class SIMDATA_EXPORT UTM: public BaseType {
 	double _E, _N, _alt;
@@ -807,10 +821,14 @@ public:
 };
 
 /**
+ * @brief Earth-centered, earth-fixed coordinates.
+ *
  * A geospatial coordinate class representing Earth Centered, Earth
  * Fixed coordinates.
  *
  * The XML format for this type is @code <ECEF> X Y Z </ECEF> @endcode.
+ *
+ * @ingroup BaseTypes
  */
 class SIMDATA_EXPORT ECEF: public Vector3 {
 public:

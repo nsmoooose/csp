@@ -28,7 +28,6 @@ from xml.sax import ContentHandler, ErrorHandler, make_parser
 import xml.sax
 from gzip import GzipFile
 from zipfile import ZipFile
-import random
 import re
 import os.path
 from traceback import print_exception
@@ -203,9 +202,9 @@ class ListHandler(SimpleHandler):
 				f = int
 			elif self._type == "float":
 				f = float
-			elif self._type == "number":
+			elif self._type == "real":
 				def spread(x):
-					y = SimData.Spread()
+					y = SimData.Real()
 					y.parseXML(x)
 					return y
 				f = spread 
@@ -290,16 +289,7 @@ class RealHandler(SimpleHandler):
 		SimpleHandler.__init__(self, id, base, name, attrs)
 	
 	def end(self):
-		self._element = float(self._c)
-
-
-class NumberHandler(SimpleHandler):
-
-	def __init__(self, id, base, name, attrs):
-		SimpleHandler.__init__(self, id, base, name, attrs)
-	
-	def end(self):
-		self._element = SimData.Spread()
+		self._element = SimData.Real()
 		self._element.parseXML(self._c)
 
 

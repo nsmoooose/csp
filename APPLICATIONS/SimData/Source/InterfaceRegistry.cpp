@@ -31,7 +31,7 @@
 #include <SimData/TypeAdapter.h>
 #include <SimData/ObjectInterface.h>
 #include <SimData/Namespace.h>
-#include <SimData/Exception.h>
+#include <SimData/BaseException.h>
 #include <SimData/Enum.h>
 #include <SimData/Path.h>
 #include <SimData/Version.h>

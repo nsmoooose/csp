@@ -78,90 +78,90 @@ def isOldSwigRuntime():
     return major == 1 and minor == 3 and rev < 20
 
 def copy_dir(src, dst, files, verbose=0):
-	from distutils.file_util import copy_file
-	from distutils.dir_util import mkpath
-	from distutils.errors import DistutilsFileError, DistutilsInternalError
-	from stat import ST_ATIME, ST_MTIME, ST_MODE, S_IMODE
-	if not os.path.isdir(src):
-		raise DistutilsFileError, \
-			"cannot copy dir '%s': not a directory" % src
-	mkpath(dst)
-	st = os.stat(src)
-	os.chmod(dst, S_IMODE(st[ST_MODE]))
-	warnings = 0
-	for n in files:
-		src_name = os.path.join(src, n)
-		dst_name = os.path.join(dst, n)
-		if not os.path.isdir(src_name):
-			if verbose:
-				print "%s => %s" % (src_name, dst_name)
-			try:
-				copy_file(src_name, dst_name)
-			except DistutilsFileError, e:
-				print "WARNING:", e
-				warnings = warnings + 1
-	return warnings
+    from distutils.file_util import copy_file
+    from distutils.dir_util import mkpath
+    from distutils.errors import DistutilsFileError, DistutilsInternalError
+    from stat import ST_ATIME, ST_MTIME, ST_MODE, S_IMODE
+    if not os.path.isdir(src):
+        raise DistutilsFileError, \
+            "cannot copy dir '%s': not a directory" % src
+    mkpath(dst)
+    st = os.stat(src)
+    os.chmod(dst, S_IMODE(st[ST_MODE]))
+    warnings = 0
+    for n in files:
+        src_name = os.path.join(src, n)
+        dst_name = os.path.join(dst, n)
+        if not os.path.isdir(src_name):
+            if verbose:
+                print "%s => %s" % (src_name, dst_name)
+            try:
+                copy_file(src_name, dst_name)
+            except DistutilsFileError, e:
+                print "WARNING:", e
+                warnings = warnings + 1
+    return warnings
 
 def make_install(win, args):
-	from distutils.errors import DistutilsFileError
-	lib = sysconfig.get_python_lib()
-	inc = sysconfig.get_python_inc()
-	modpath = os.path.join(lib, "SimData")
-	incpath = os.path.join(inc, "SimData")
-	localinc = os.path.normpath("Include/SimData")
-	libpath = modpath
-	prefix = ""
-	verbose = 0
-	warnings = 0
-	for arg in args:
-		if arg.startswith("--prefix="):
-			prefix = arg[9:]
-			modpath = os.path.normpath(prefix+modpath)
-			incpath = os.path.normpath(prefix+incpath)
-			libpath = os.path.normpath(prefix+libpath)
-		elif arg=='-v' or arg=='--verbose':
-			verbose = 1
-	package_files = ['__init__.py', 'Debug.py', 'Parse.py', 'Compile.py']
-	if win:
-		package_files.extend(['cSimData.py', '_cSimData.dll', '_cSimData.lib','_cSimDatad.dll', '_cSimDatad.lib'])
-		src = os.path.join("VisualStudio","cSimData.py")
-		if os.path.exists(src):
-			from distutils.file_util import copy_file
-			try:
-				copy_file(src, os.path.join("SimData","cSimData.py"))
-			except DistutilsFileError, e:
-				print "WARNING:", e
-				warnings = warnings + 1
-	else:
-		package_files.extend(['cSimData.py', '_cSimData.so'])
-	try:
-		print "Installing SimData package to", modpath
-		warnings = warnings + copy_dir("SimData", modpath, package_files, verbose)
-		print "Installing SimData headers to", incpath
-		warnings = warnings + copy_dir(localinc, incpath, headers, verbose)
-		warnings = warnings + copy_dir(localinc, incpath, interfaces, verbose)
-		if not win:
-			print "Installing SimData libraries to", libpath
-			warnings = warnings + copy_dir("SimData", libpath, ['_cSimData.so', 'libSimData.a'], verbose)
-		print "Byte compiling the Python modules..."
-		import py_compile
-		for file in package_files:
-			if file.endswith(".py"):
-				script = os.path.join(modpath, file)
-				if os.path.exists(script):
-					py_compile.compile(script)  
-					os.chmod(script+"c", 0644)
-	except Exception, e:
-		print e
-		sys.exit(1)
-	if warnings > 0:
-		print "WARNING: Some errors were encountered during installation."
-		if win:
-			print
-			print "         If you have only built the release version of SimData, you"
-			print "         can safely ignore warnings related to _cSimDatad.dll  and"
-			print "         _cSimDatad.lib."
-	sys.exit(0)
+    from distutils.errors import DistutilsFileError
+    lib = sysconfig.get_python_lib()
+    inc = sysconfig.get_python_inc()
+    modpath = os.path.join(lib, "SimData")
+    incpath = os.path.join(inc, "SimData")
+    localinc = os.path.normpath("Include/SimData")
+    libpath = modpath
+    prefix = ""
+    verbose = 0
+    warnings = 0
+    for arg in args:
+        if arg.startswith("--prefix="):
+            prefix = arg[9:]
+            modpath = os.path.normpath(prefix+modpath)
+            incpath = os.path.normpath(prefix+incpath)
+            libpath = os.path.normpath(prefix+libpath)
+        elif arg=='-v' or arg=='--verbose':
+            verbose = 1
+    package_files = ['__init__.py', 'Debug.py', 'Parse.py', 'Compile.py']
+    if win:
+        package_files.extend(['cSimData.py', '_cSimData.dll', '_cSimData.lib','_cSimDatad.dll', '_cSimDatad.lib'])
+        src = os.path.join("VisualStudio","cSimData.py")
+        if os.path.exists(src):
+            from distutils.file_util import copy_file
+            try:
+                copy_file(src, os.path.join("SimData","cSimData.py"))
+            except DistutilsFileError, e:
+                print "WARNING:", e
+                warnings = warnings + 1
+    else:
+        package_files.extend(['cSimData.py', '_cSimData.so'])
+    try:
+        print "Installing SimData package to", modpath
+        warnings = warnings + copy_dir("SimData", modpath, package_files, verbose)
+        print "Installing SimData headers to", incpath
+        warnings = warnings + copy_dir(localinc, incpath, headers, verbose)
+        warnings = warnings + copy_dir(localinc, incpath, interfaces, verbose)
+        if not win:
+            print "Installing SimData libraries to", libpath
+            warnings = warnings + copy_dir("SimData", libpath, ['_cSimData.so', 'libSimData.a'], verbose)
+        print "Byte compiling the Python modules..."
+        import py_compile
+        for file in package_files:
+            if file.endswith(".py"):
+                script = os.path.join(modpath, file)
+                if os.path.exists(script):
+                    py_compile.compile(script)  
+                    os.chmod(script+"c", 0644)
+    except Exception, e:
+        print e
+        sys.exit(1)
+    if warnings > 0:
+        print "WARNING: Some errors were encountered during installation."
+        if win:
+            print
+            print "         If you have only built the release version of SimData, you"
+            print "         can safely ignore warnings related to _cSimDatad.dll  and"
+            print "         _cSimDatad.lib."
+    sys.exit(0)
 
 class build_swig_ext(build_ext):
     
@@ -249,116 +249,116 @@ if os.name == "posix":
     sysconfig._init_posix = gpp_init_posix
 
 sources = [
-	"BaseType",
-	"DataArchive",
-	"DataManager",
-	"Date",
-	"Enum",
-	"Exception",
-	"External",
-	"FileUtility",
-	"GeoPos",
-	"HashUtility",
-	"InterfaceRegistry",
-	"Interpolate",
-	"Key",
-	"Link",
-	"List",
-	"LogStream",
-	"LUT",
-	"Math",
-	"Matrix3",
-	"Object",
-	"Noise",
-	"Path",
-	"Quat",
-	"Random",
-	"Real",
-	"TypeAdapter",
-	"Vector3",
-	"Version",
+    "BaseType",
+    "DataArchive",
+    "DataManager",
+    "Date",
+    "Enum",
+    "BaseException",
+    "External",
+    "FileUtility",
+    "GeoPos",
+    "HashUtility",
+    "InterfaceRegistry",
+    "Interpolate",
+    "Key",
+    "Link",
+    "List",
+    "LogStream",
+    "LUT",
+    "Math",
+    "Matrix3",
+    "Object",
+    "Noise",
+    "Path",
+    "Quat",
+    "Random",
+    "Real",
+    "TypeAdapter",
+    "Vector3",
+    "Version",
 ]
 
 headers = [
-	"Archive.h",
-	"BaseType.h",
-	"Composite.h",
-	"Conversions.h",
-	"DataArchive.h",
-	"DataManager.h",
-	"Date.h",
-	"Enum.h",
-	"Exception.h",
-	"Export.h",
-	"External.h",
-	"FileUtility.h",
-	"GeoPos.h",
-	"hash_map.h",
-	"HashUtility.h",
-	"Integer.h",
-	"InterfaceRegistry.h",
-	"Interpolate.h",
-	"Key.h",
-	"Link.h",
-	"List.h",
-	"LUT.h",
-	"Log.h",
-	"LogStream.h",
-	"Math.h",
-	"Matrix3.h",
-	"Noise.h",
-	"Namespace.h",
-	"Object.h",
-	"ObjectInterface.h",
-	"osg.h",
-	"Path.h",
-	"PTS.h",
-	"Quat.h",
-	"Random.h",
-	"Real.h",
-	"Ref.h",
-	"Singleton.h",
-	"String.h",
-	"Trace.h",
-	"TypeAdapter.h",
-	"Types.h",
-	"Uniform.h",
-	"Vector3.h",
-	"Version.h",
+    "Archive.h",
+    "BaseType.h",
+    "Composite.h",
+    "Conversions.h",
+    "DataArchive.h",
+    "DataManager.h",
+    "Date.h",
+    "Enum.h",
+    "ExceptionBase.h",
+    "Export.h",
+    "External.h",
+    "FileUtility.h",
+    "GeoPos.h",
+    "hash_map.h",
+    "HashUtility.h",
+    "Integer.h",
+    "InterfaceRegistry.h",
+    "Interpolate.h",
+    "Key.h",
+    "Link.h",
+    "List.h",
+    "LUT.h",
+    "Log.h",
+    "LogStream.h",
+    "Math.h",
+    "Matrix3.h",
+    "Noise.h",
+    "Namespace.h",
+    "Object.h",
+    "ObjectInterface.h",
+    "osg.h",
+    "Path.h",
+    "PTS.h",
+    "Quat.h",
+    "Random.h",
+    "Real.h",
+    "Ref.h",
+    "Singleton.h",
+    "String.h",
+    "Trace.h",
+    "TypeAdapter.h",
+    "Types.h",
+    "Uniform.h",
+    "Vector3.h",
+    "Version.h",
 ]
 
 interfaces = [
-	"cSimData.i",
-	"Archive.i",
-	"BaseType.i",
-	"Conversions.i",
-	"DataArchive.i",
-	"DataManager.i",
-	"Date.i",
-	"Enum.i",
-	"Exception.i",
-	"External.i",
-	"filemap.i",
-	"GeoPos.i",
-	"HashUtility.i",
-	"InterfaceRegistry.i",
-	"Interpolate.i",
-	"Key.i",
-	"Link.i",
-	"List.i",
-	"Log.i",
-	"LUT.i",
-	"Matrix3.i",
-	"Noise.i",
-	"Object.i",
-	"Path.i",
-	"Quat.i",
-	"Random.i",
-	"Real.i",
-	"String.i",
-	"Types.i",
-	"vector.i",
-	"Vector3.i",
+    "cSimData.i",
+    "Archive.i",
+    "BaseType.i",
+    "Conversions.i",
+    "DataArchive.i",
+    "DataManager.i",
+    "Date.i",
+    "Enum.i",
+    "ExceptionBase.i",
+    "External.i",
+    "filemap.i",
+    "GeoPos.i",
+    "HashUtility.i",
+    "InterfaceRegistry.i",
+    "Interpolate.i",
+    "Key.i",
+    "Link.i",
+    "List.i",
+    "Log.i",
+    "LUT.i",
+    "Matrix3.i",
+    "Noise.i",
+    "Object.i",
+    "Path.i",
+    "Quat.i",
+    "Random.i",
+    "Real.i",
+    "String.i",
+    "Types.i",
+    "vector.i",
+    "Vector3.i",
 ]
 
 
@@ -394,10 +394,10 @@ if len(sys.argv)>=2:
         sys.exit(0)
     if command == "ldopts":
         print '-shared', ' '.join(map(lambda x: '-l%s' % x, libraries))
-	sys.exit(0)
+    sys.exit(0)
     if command == "swigopts":
         print ' '.join(swigopts)
-	sys.exit(0)
+    sys.exit(0)
 
 cSimData = Extension("SimData._cSimData", 
                      sources + main_interface_fullpath, 
@@ -413,7 +413,7 @@ setup(name="SimData",
       author="Mark Rose",
       author_email="mrose@stm.lbl.gov",
       url="http://csp.sourceforge.net/wiki/SimData",
-	  license="GNU General Public License, version 2 or later.",
+      license="GNU General Public License, version 2 or later.",
       packages=['SimData'],
       headers = headers_fullpath + interfaces_fullpath + main_interface_fullpath,
       ext_modules = [cSimData],

@@ -18,8 +18,8 @@
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-
 ##
+
 # Utilities for building and installing with SCons 
 
 
@@ -46,44 +46,44 @@ configure_tests = {}
 ############################################################################
 
 def getPythonInc():
-	from distutils import sysconfig
-	return sysconfig.get_python_inc()
+    from distutils import sysconfig
+    return sysconfig.get_python_inc()
 
 def getPythonLib():
-	from distutils import sysconfig
-	return sysconfig.get_python_lib()
+    from distutils import sysconfig
+    return sysconfig.get_python_lib()
 
 def installFile(target, source, env):
-	"""Install a source file into a target using the function specified
-	as the INSTALL construction variable."""
-	try:
-		install = env['INSTALL']
-	except KeyError:
-		raise SCons.Errors.UserError('Missing INSTALL construction variable.')
-	return install(target[0].path, source[0].path, env)
+    """Install a source file into a target using the function specified
+    as the INSTALL construction variable."""
+    try:
+        install = env['INSTALL']
+    except KeyError:
+        raise SCons.Errors.UserError('Missing INSTALL construction variable.')
+    return install(target[0].path, source[0].path, env)
 
 def byteCompile(target, source, env):
-	"""Byte compile a python source file."""
-	target = str(target[0])
-	if target.endswith(".py") and os.path.exists(target):
-		import py_compile
-		try:
-			py_compile.compile(target)  
-			os.chmod(target+"c", 0644)
-			return 0
-		except:
-			pass
-	return 0
+    """Byte compile a python source file."""
+    target = str(target[0])
+    if target.endswith(".py") and os.path.exists(target):
+        import py_compile
+        try:
+            py_compile.compile(target)  
+            os.chmod(target+"c", 0644)
+            return 0
+        except:
+            pass
+    return 0
 
 def installFileString(target, source, env):
-	source = str(source[0])
-	target = str(target[0])
-	return 'copying %s -> %s' % (source, target)
+    source = str(source[0])
+    target = str(target[0])
+    return 'copying %s -> %s' % (source, target)
 
 def byteCompileString(target, source, env):
-	target = str(target[0])
-	if target.endswith(".py"):
-		return 'byte-compiling %s to %sc' % (target, os.path.basename(target))
+    target = str(target[0])
+    if target.endswith(".py"):
+        return 'byte-compiling %s to %sc' % (target, os.path.basename(target))
 
 installFileAction = Action(installFile, installFileString)
 byteCompileAction = Action(byteCompile, byteCompileString)
@@ -107,28 +107,27 @@ def installPythonSources(env, dir, source):
 	return tgt
 
 
-
 ############################################################################
 # general utilities
 ############################################################################
 
 def compareVersions(a, b):
-	a = map(int, a.split('.'))
-	b = map(int, b.split('.'))
-	for i in range(min(len(a), len(b))):
-		if a[i] < b[i]: return -1
-		if a[i] > b[i]: return 1
-	if len(a) < len(b): return -1
-	if len(a) > len(b): return 1
-	return 0
+    a = map(int, a.split('.'))
+    b = map(int, b.split('.'))
+    for i in range(min(len(a), len(b))):
+        if a[i] < b[i]: return -1
+        if a[i] > b[i]: return 1
+    if len(a) < len(b): return -1
+    if len(a) > len(b): return 1
+    return 0
 
-def addConfigTests(conf):	
-	conf.AddTests(configure_tests)
+def addConfigTests(conf):   
+    conf.AddTests(configure_tests)
 
 def CustomConfigure(env):
-	conf = env.Configure(log_file='#/.config.log')
-	addConfigTests(conf)
-	return conf
+    conf = env.Configure(log_file='#/.config.log')
+    addConfigTests(conf)
+    return conf
 
 def ExpandList(list, arg):
 	if type(arg) == types.ListType:
@@ -141,46 +140,46 @@ def ExpandList(list, arg):
 ############################################################################
 
 def addDoxygen(env):
-	def dox(target, source, env):
-		cwd = os.getcwd()
-		os.chdir(os.path.dirname(str(source[0])))
-		sources = map(os.path.basename, map(str, source))
-		result = os.system("doxygen %s" % " ".join(sources))
-		os.chdir(cwd)
-		return result
-	#action = 'cd $SOURCE.dir && doxygen $SOURCES.file'
-	action = dox
-	env.Append(BUILDERS = {'Doxygen': Builder(action=action)})
+    def dox(target, source, env):
+        cwd = os.getcwd()
+        os.chdir(os.path.dirname(str(source[0])))
+        sources = map(os.path.basename, map(str, source))
+        result = os.system("doxygen %s" % " ".join(sources))
+        os.chdir(cwd)
+        return result
+    #action = 'cd $SOURCE.dir && doxygen $SOURCES.file'
+    action = dox
+    env.Append(BUILDERS = {'Doxygen': Builder(action=action)})
 
 def addCopyFile(env):
-	def copy(target, source, env):
-		shutil.copy(str(source[0]), str(target[0]))
-	def report(target, source, env):
-		source = str(source[0])
-		target = str(target[0])
-		return 'copying %s -> %s' % (source, target)
-	CopyFile = Builder(action=Action(copy, report))
-	env.Append(BUILDERS = {'CopyFile': CopyFile})
+    def copy(target, source, env):
+        shutil.copy(str(source[0]), str(target[0]))
+    def report(target, source, env):
+        source = str(source[0])
+        target = str(target[0])
+        return 'copying %s -> %s' % (source, target)
+    CopyFile = Builder(action=Action(copy, report))
+    env.Append(BUILDERS = {'CopyFile': CopyFile})
 
 def addLinkFile(env):
-	def copy(target, source, env):
-		source = str(source[0])
-		target = str(target[0])
-		if os.name=='posix':
-			os.link(source, target)
-		else:
-			shutil.copy(source, target)
-	def report(target, source, env):
-		source = str(source[0])
-		target = str(target[0])
-		return 'copying %s -> %s' % (source, target)
-	CopyFile = Builder(action=Action(copy, report))
-	env.Append(BUILDERS = {'LinkFile': CopyFile})
+    def copy(target, source, env):
+        source = str(source[0])
+        target = str(target[0])
+        if os.name=='posix':
+            os.link(source, target)
+        else:
+            shutil.copy(source, target)
+    def report(target, source, env):
+        source = str(source[0])
+        target = str(target[0])
+        return 'copying %s -> %s' % (source, target)
+    CopyFile = Builder(action=Action(copy, report))
+    env.Append(BUILDERS = {'LinkFile': CopyFile})
 
 def addBuilders(env):
-	addDoxygen(env)
-	addCopyFile(env)
-	addLinkFile(env)
+    addDoxygen(env)
+    addCopyFile(env)
+    addLinkFile(env)
 
 ############################################################################
 # SWIG support
@@ -208,11 +207,11 @@ def checkSwig(context, min_version, not_versions=[]):
 		context.env['SWIG_VERSION'] = swig_version
 	else:
 		context.Result("no")
-	return ok 
+	return ok
 
 configure_tests['checkSwig'] = checkSwig
 
-	
+    
 def emitSwig(target, source, env):
 	target = []
 	assert(len(source)==1)
@@ -228,26 +227,26 @@ def emitSwig(target, source, env):
 	return (target, source)
 
 def addSwigBuild(env):
-	builder = Builder(action = '$SWIG $SWIGFLAGS -o ${TARGETS[0]} $SOURCE',
-	                  emitter = emitSwig)
-	env.Append(BUILDERS = {'Swig': builder})
+    builder = Builder(action = '$SWIG $SWIGFLAGS -o ${TARGETS[0]} $SOURCE',
+                      emitter = emitSwig)
+    env.Append(BUILDERS = {'Swig': builder})
 
 def addSwigDep(env):
-	def SwigScanner(node, env, path, arg=None):
-		cmd = env.subst('$SWIG -MM $_CPPINCFLAGS %s' % str(node))
-		stdin, stdout, stderr = os.popen3(cmd, 't')
-		deps = ''.join(map(lambda x: x.strip(), stdout.readlines()))
-		deps = map(lambda x: "#/"+x.strip(), deps.split('\\'))[1:]
-		return deps
-	scanner = Scanner(name = 'SwigScanner', function = SwigScanner, skeys = ['.i'], recursive = 0)
-	env.Append(SCANNERS = scanner)
+    def SwigScanner(node, env, path, arg=None):
+        cmd = env.subst('$SWIG -MM $_CPPINCFLAGS %s' % str(node))
+        stdin, stdout, stderr = os.popen3(cmd, 't')
+        deps = ''.join(map(lambda x: x.strip(), stdout.readlines()))
+        deps = map(lambda x: "#/"+x.strip(), deps.split('\\'))[1:]
+        return deps
+    scanner = Scanner(name = 'SwigScanner', function = SwigScanner, skeys = ['.i'], recursive = 0)
+    env.Append(SCANNERS = scanner)
 
 def addSwigSupport(env):
-	global SWIG
-	SWIG = SCons.Util.WhereIs('swig')
-	env['SWIG'] = SWIG
-	addSwigDep(env)
-	addSwigBuild(env)
+    global SWIG
+    SWIG = SCons.Util.WhereIs('swig')
+    env['SWIG'] = SWIG
+    addSwigDep(env)
+    addSwigBuild(env)
 
 
 ############################################################
@@ -255,33 +254,33 @@ def addSwigSupport(env):
 ############################################################
 
 class OptionSet:
-	class Empty: 
-		pass
-	def __init__(self):
-		self.set = OptionSet.Empty()
-		self.add = OptionSet.Empty()
-	def __getattr__(self, x):
-		d = self.__dict__
-		if x in d.keys(): return d[x]
-		return getattr(d['set'], x)
-	def methods(self):
-		return self.set, self.add
-	def apply(self, env):
-		for key, value in self.set.__dict__.iteritems():
-				env[key] = value
-		for key, value in self.add.__dict__.iteritems():
-				env.Append(**{key: value})
+    class Empty: 
+        pass
+    def __init__(self):
+        self.set = OptionSet.Empty()
+        self.add = OptionSet.Empty()
+    def __getattr__(self, x):
+        d = self.__dict__
+        if x in d.keys(): return d[x]
+        return getattr(d['set'], x)
+    def methods(self):
+        return self.set, self.add
+    def apply(self, env):
+        for key, value in self.set.__dict__.iteritems():
+                env[key] = value
+        for key, value in self.add.__dict__.iteritems():
+                env.Append(**{key: value})
 
 class Globals:
-	class Empty:
-		pass
-	def __init__(self):
-		self.add = Globals.Empty()
-	def set(self):
-		for key, value in self.set.__dict__.iteritems():
-			eval("%s=%s" % (key, value), globals(), globals())
+    class Empty:
+        pass
+    def __init__(self):
+        self.add = Globals.Empty()
+    def set(self):
+        for key, value in self.set.__dict__.iteritems():
+            eval("%s=%s" % (key, value), globals(), globals())
 
-	
+    
 
 class Package:
 
@@ -492,34 +491,34 @@ class Package:
 		self.env.Alias('test', self.env.Command('unittests', '', command))
 
 def Prefix(dir, names):
-	if type(names) == type(''):
-		names = names.split()
-	return map(lambda x: os.path.normpath(os.path.join(dir, x)), names)
+    if type(names) == type(''):
+        names = names.split()
+    return map(lambda x: os.path.normpath(os.path.join(dir, x)), names)
 
 
 def SelectBuildDir(env, build_dir, platform=None): 
-	if not platform: 
-		platform = env['PLATFORM']
-	target_dir = os.path.join(build_dir, platform)
-	if not os.path.exists(target_dir):
-		os.makedirs(target_dir, 0755)
-	print "Building in '%s'" % target_dir 
-	return target_dir 
+    if not platform: 
+        platform = env['PLATFORM']
+    target_dir = os.path.join(build_dir, platform)
+    if not os.path.exists(target_dir):
+        os.makedirs(target_dir, 0755)
+    print "Building in '%s'" % target_dir 
+    return target_dir 
 
 
 def ConfigPlatform(env):
-	import build_config
-	platform = env['PLATFORM']
-	try:
-		config = eval('build_config.Config_%s' % platform)
-	except:
-		print "No configuration for platform '%s', aborting" % platform
-		sys.exit(0)
-	config(env)
+    import build_config
+    platform = env['PLATFORM']
+    try:
+        config = eval('build_config.Config_%s' % platform)
+    except:
+        print "No configuration for platform '%s', aborting" % platform
+        sys.exit(0)
+    config(env)
 
 def ConfigPython(env):
-	env['PYTHON_INC'] = getPythonInc()
-	env['PYTHON_LIB'] = getPythonLib()
+    env['PYTHON_INC'] = getPythonInc()
+    env['PYTHON_LIB'] = getPythonLib()
 
 class Config:
 	def __init__(self, env):
@@ -540,5 +539,3 @@ class Config:
 		else:
 			self.SWIGFLAGS = self.SWIGFLAGS + ' -c'
 			self.SHLINKLIBS.append('swigpy')
-
-

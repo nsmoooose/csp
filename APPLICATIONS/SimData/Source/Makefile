@@ -9,37 +9,37 @@ SWOPTS = $(GSWOPTS) $(INCLUDE)
 #SUBDIRS = Types
 
 MODULES = \
-	BaseType \
-	DataArchive \
-	DataManager \
-	Date \
-	Enum \
-	Exception \
-	External \
-	FileUtility \
-	GeoPos \
-	HashUtility \
-	InterfaceRegistry \
-	Interpolate \
-	Key \
-	Link \
-	List \
-	LogStream \
-	LUT \
-	Math \
-	Matrix3 \
-	Noise \
-	Object \
-	Path \
-	Quat \
-	Random \
-	Real \
-	TypeAdapter \
-	Vector3 \
-	Version
+    BaseType \
+    DataArchive \
+    DataManager \
+    Date \
+    Enum \
+    ExceptionBase \
+    External \
+    FileUtility \
+    GeoPos \
+    HashUtility \
+    InterfaceRegistry \
+    Interpolate \
+    Key \
+    Link \
+    List \
+    LogStream \
+    LUT \
+    Math \
+    Matrix3 \
+    Noise \
+    Object \
+    Path \
+    Quat \
+    Random \
+    Real \
+    TypeAdapter \
+    Vector3 \
+    Version
 
 SOURCES = $(MODULES:%=%.cpp)
-OBJECTS = $(MODULES:%=%.o) 
+OBJECTS = $(MODULES:%=%.o)
 
 DEPDIR = .deps
 MKDEP = $(CXX) -M $(CFLAGS)
@@ -51,20 +51,20 @@ DEPS_MAGIC := $(shell mkdir $(DEPDIR) > /dev/null 2>&1 || :)
 .PHONY: clean-deps clean all default
 
 default:
-	@echo "run make from top-level directory only"
-	
+    @echo "run make from top-level directory only"
+
 clean-objects:
-	rm -f $(MODULES:%=_%.so)
-	rm -f $(MODULES:%=%.o)
-	rm -f lib*.a
-	rm -f _cSimData.so cSimData_wrap.*
-	rm -f $(MODULES:%=%_wrap.o)
-	rm -f $(DEPDIR)/*.d
-	rm -f $(TOPDIR)/SimData/_cSimData.so
-	rm -f $(TOPDIR)/SimData/cSimData.py
+    rm -f $(MODULES:%=_%.so)
+    rm -f $(MODULES:%=%.o)
+    rm -f lib*.a
+    rm -f _cSimData.so cSimData_wrap.*
+    rm -f $(MODULES:%=%_wrap.o)
+    rm -f $(DEPDIR)/*.d
+    rm -f $(TOPDIR)/SimData/_cSimData.so
+    rm -f $(TOPDIR)/SimData/cSimData.py
 
 clean-dependencies:
-	@echo $(RM) -r $(RMFLAGS) $(DEPDIR)
+    @echo $(RM) -r $(RMFLAGS) $(DEPDIR)
 
 clean-deps: clean-dependencies
 
@@ -77,42 +77,41 @@ endif
 endif
 
 #clean clean-deps:
-#	for dir in $(SUBDIRS); do \
-#		$(MAKE) -C $${dir} $@; \
-#	done
-	
+#   for dir in $(SUBDIRS); do \
+#       $(MAKE) -C $${dir} $@; \
+#   done
+
 build-subdirs:
-	for dir in $(SUBDIRS); do \
-		$(MAKE) -C $${dir} all; \
-	done
+    for dir in $(SUBDIRS); do \
+        $(MAKE) -C $${dir} all; \
+    done
 
 $(DEPDIR)/%.d : %
-	@echo "Computing dependencies for $<..."
-	@$(MKDEP) $< $(DEPFILTER) > $@
-	
+    @echo "Computing dependencies for $<..."
+    @$(MKDEP) $< $(DEPFILTER) > $@
+
 $(DEPDIR)/%.swigdep : %
-	@echo "Computing dependencies for $<..."
-	@$(SWDEP) $(DEPFILTER) -o $(<:.i=_wrap.cpp) $< > $@
+    @echo "Computing dependencies for $<..."
+    @$(SWDEP) $(DEPFILTER) -o $(<:.i=_wrap.cpp) $< > $@
 
 libSimData.a: $(OBJECTS)
-	ar cru $@ $^
-	ranlib $@
-	cp $@ $(TOPDIR)/SimData
+    ar cru $@ $^
+    ranlib $@
+    cp $@ $(TOPDIR)/SimData
 
 _cSimData.so: $(OBJECTS) cSimData_wrap.o
-	$(CXX) -Wl,-z,lazyload $(LDOPTS) -o$@ $^
-	cp $@ $(TOPDIR)/SimData
+    $(CXX) -Wl,-z,lazyload $(LDOPTS) -o$@ $^
+    cp $@ $(TOPDIR)/SimData
 
 cSimData_wrap.cpp: cSimData.i
-	$(SWIG) $(SWOPTS) -o $@ $< 
-	cp cSimData.py $(TOPDIR)/SimData
+    $(SWIG) $(SWOPTS) -o $@ $<
+    cp cSimData.py $(TOPDIR)/SimData
 
 cSimData_wrap.o: cSimData_wrap.cpp
-	$(CXX) -c $(SWCXXF) -I$(PYTHON_INCLUDE) $(@:.o=.cpp)
+    $(CXX) -c $(SWCXXF) -I$(PYTHON_INCLUDE) $(@:.o=.cpp)
 
-%.o: %.cpp 
-	$(CXX) -c $(CFLAGS) $(@:.o=.cpp)
+%.o: %.cpp
+    $(CXX) -c $(CFLAGS) $(@:.o=.cpp)
 
 all: _cSimData.so libSimData.a
 #all: build-subdirs _cSimData.so libSimData.a
-

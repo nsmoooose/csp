@@ -20,7 +20,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				AdditionalIncludeDirectories="../..;../../SimData/Include"
-				PreprocessorDefinitions="WIN32"
+				PreprocessorDefinitions="PTHREADS_WIN;WIN32"
 				RuntimeLibrary="3"
 				RuntimeTypeInfo="TRUE"
 				WarningLevel="4"
@@ -64,7 +64,7 @@
 				FavorSizeOrSpeed="1"
 				OptimizeForWindowsApplication="TRUE"
 				AdditionalIncludeDirectories="../..;../../SimData/Include"
-				PreprocessorDefinitions="WIN32"
+				PreprocessorDefinitions="PTHREADS_WIN;WIN32"
 				RuntimeLibrary="2"
 				RuntimeTypeInfo="TRUE"
 				WarningLevel="3"/>

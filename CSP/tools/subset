@@ -253,14 +253,17 @@ class Changeset:
       index[file.abspath()] = file
     return index
 
-  def removeFile(self, file):
+  def removeFileByPath(self, abspath):
     index = self._fileIndex()
-    abspath = file.abspath()
     file = index.get(abspath, None)
     if not file:
       return Error('file not found in changeset %s' % self._name)
     self._files.remove(file)
     return Result(file)
+
+  def removeFile(self, file):
+    abspath = file.abspath()
+    return self.removeFileByPath(abspath)
 
   def addFile(self, file):
     index = self._fileIndex()
@@ -300,6 +303,7 @@ class Workspace:
     self._files = {}
     if not rootsvn: rootsvn = sublib.svn_rootsvn()
     self._load(rootsvn)
+    self.cleanup()
 
   def _load(self, rootsvn):
     ws = os.path.join(rootsvn, '.workspace')
@@ -329,6 +333,20 @@ class Workspace:
     abspath = file.abspath()
     return not self._files.has_key(abspath)
 
+  def cleanup(self):
+    filemap = {}
+    for file in sublib.svn_st():
+      filemap[file.abspath()] = file
+    items = self._files.items()
+    changed = 0
+    for path, set in items:
+      if not filemap.has_key(path):
+        result = set.removeFileByPath(path)
+        assert result.ok
+        del self._files[path]
+        changed = 1
+    if changed: self.save()
+
   def assign(self, name, files):
     if name == 'default':
       dest = None
@@ -340,10 +358,14 @@ class Workspace:
     if not files:
       return Error('no files found')
     for file in files:
-      set = self._files.get(file.abspath(), None)
+      abspath = file.abspath()
+      set = self._files.get(abspath, None)
       if set:
         set.removeFile(file)
-      if dest: dest.addFile(file)
+        del self._files[abspath]
+      if dest:
+        dest.addFile(file)
+        self._files[abspath] = dest
     self.save()
     return Result(0)
 
@@ -664,13 +686,24 @@ class Command:
 
 class SVNCommand(Command):
 
+  def _svn(self, command, args):
+    paths = os.environ.get('PATH', '')
+    for path in paths.split(os.pathsep):
+      path = os.path.join(path, 'svn')
+      if os.path.exists(path): break
+      path = ''
+    if not path: return Error('svn not found')
+    code = os.spawnv(os.P_WAIT, path, ['svn', command] + args)
+    if code: return Error('svn failed')
+    return Result(0)
+
   def _start(self, args):
     command = self._keys[0]
-    os.execvp('svn', ['svn', command] + args)
+    return self._svn(command, args)
 
   def help(self):
     command = self._keys[0]
-    os.execvp('svn', ['svn', 'help', command])
+    return self._svn(command, 'help', (command,))
 
 
 class Blame(SVNCommand):
@@ -707,6 +740,49 @@ class Cat(SVNCommand):
   def _define(self):
     self._addKeys('cat', 'print')
     self._short = 'output the content of specified files or URLs'
+
+
+class Add(SVNCommand):
+  def _define(self):
+    self._addKeys('add')
+    self._short = 'put files and directories under version control'
+
+
+class Delete(SVNCommand):
+  def _define(self):
+    self._addKeys('delete', 'remove', 'rm')
+    self._short = 'remove files and directories from version control'
+
+
+class Mkdir(SVNCommand):
+  def _define(self):
+    self._addKeys('mkdir')
+    self._short = 'create a new directory under version control'
+
+
+class Copy(SVNCommand):
+  def _define(self):
+    self._addKeys('copy', 'cp')
+    self._short = 'duplicate something in working copy or repos, with history'
+
+
+class Update(SVNCommand):
+  def _define(self):
+    self._addKeys('update', 'up', 'sync')
+    self._short = 'bring changes from the repository into the working copy'
+
+
+class Revert(SVNCommand):
+
+  def _define(self):
+    self._addKeys('revert')
+    self._short = 'restore pristine working copy file'
+
+  def _start(self, args):
+    result = SVNCommand._start(self, args)
+    if result.ok:
+      return run('cleanup')
+    return result
 
 
 class Opened(Command):
@@ -946,12 +1022,18 @@ Review()
 Submit()
 
 # svn subcommands
+Add()
 Blame()
 Cat()
+Copy()
+Delete()
 Info()
 List()
 Log()
+Mkdir()
+Revert()
 Status()
+Update()
 
 
 def main(args):

@@ -720,7 +720,7 @@
 				Name="Debug|Win32">
 				<Tool
 					Name="VCCustomBuildTool"
-					CommandLine="$(SWIG_PATH)\swig -runtime -c++ -python -noexcept -I..\..\Include -I$(PYTHONPATH)\include -o ..\..\Source\$(InputName)_wrap.cpp ..\..\Source\$(InputName).i
+					CommandLine="$(SWIG_PATH)\swig -runtime -c++ -python -noexcept -I..\..\Include -I$(PYTHON_PATH)\include -o ..\..\Source\$(InputName)_wrap.cpp ..\..\Source\$(InputName).i
 "
 					Outputs="..\..\Source\$(InputName)_wrap.cpp"/>
 			</FileConfiguration>

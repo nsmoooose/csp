@@ -1,6 +1,9 @@
 Version 0.4.0 (in progress)
 ===========================
 
+2004-12-02: delta
+ * Minor update of SimData.vcproj.
+
 2004-11-30: onsight
  * Add type statement to trc to declare external types.  External types
    must have stream operators for serializing to Writer and Reader

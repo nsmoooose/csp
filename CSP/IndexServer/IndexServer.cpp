@@ -42,16 +42,16 @@ IndexServer::~IndexServer() {
 
 void IndexServer::initPrimaryInterface() {
 	assert(m_NetworkServer.isNull());
-	const std::string interface = g_Config.getString("Network", "Bind", "127.0.0.1:4999", true);
-	const std::string::size_type colon = interface.find(':');
+	const std::string server_interface = g_Config.getString("Network", "Bind", "127.0.0.1:4999", true);
+	const std::string::size_type colon = server_interface.find(':');
 	std::string address;
 	simnet::Port port = 0;
 	if (colon != std::string::npos) {
-		port = atoi(interface.substr(colon + 1).c_str());
-		address = interface.substr(0, colon);
+		port = static_cast<simnet::Port>(atoi(server_interface.substr(colon + 1).c_str()));
+		address = server_interface.substr(0, colon);
 	}
 	if (address.size() == 0 || port == 0) {
-		std::cerr << "Invalid value for Network.Bind in .ini file: " << interface << "\n";
+		std::cerr << "Invalid value for Network.Bind in .ini file: " << server_interface << "\n";
 		std::cerr << "Should be of the form www.xxx.yyy.zzz:port\n";
 		::exit(1);
 	}
@@ -71,7 +71,7 @@ void IndexServer::run() {
 	CSP_LOG(APP, INFO, "starting network loop");
 	simdata::Timer timer;
 	timer.start();
-	while (1) {
+	for (;;) {
 		m_NetworkServer->processAndWait(0.01, 0.01, 0.10);
 		m_Battlefield->update(timer.incremental());
 	}
@@ -94,3 +94,4 @@ int main() {
 	IndexServer server;
 	server.run();
 }
+

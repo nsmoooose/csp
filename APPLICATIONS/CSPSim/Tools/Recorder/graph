@@ -1,0 +1,13 @@
+#########################################################
+#
+# Script to create pdf reports of data recordings
+#
+#  usage: graph input.rec
+# output: out.pdf and out-header.pdf
+#
+#########################################################
+
+
+./RecCSP --jgraph $1 | jgraph -P > .out.ps~ 
+make
+

@@ -1,6 +1,19 @@
  Version 0.3.3 (in progress)
 ===========================
 
+2003-07-23: onsight
+            Committed changes to GameScreen to enable toggling of
+	    the DataRecorder.  By default this function is mapped
+	    to the 'r' key.  The output goes to data-xxx.rec where
+	    xxx is a sequential index starting at 000.  A new
+	    output file is started each time the recorder is
+	    toggled.  Use Tools/Recorder/RecCSP to convert the
+	    .rec files into readable formats.
+
+	    Added "RECORD" indicator to ScreenInfoManager.
+
+	    Added 'r' key binding to gamescreen-core.map
+
 2003-07-22: onsight
 	    Increased the default window size to 800x600 so that
 	    the splash screen will show properly.

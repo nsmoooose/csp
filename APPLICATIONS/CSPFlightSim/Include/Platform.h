@@ -47,7 +47,7 @@ public:
 	 *
 	 * Example: basename("/usr/local/csp") returns "csp"
 	 */
-	static std::string basename(const string &path);
+	static std::string basename(const std::string &path);
 	
 	/**
 	 * Returns true if path is an absolute pathname.

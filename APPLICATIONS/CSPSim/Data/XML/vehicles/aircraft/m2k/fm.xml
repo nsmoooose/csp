@@ -53,24 +53,35 @@
 	<!-- Side Force Parameters -->
 	<Float name="cy_beta">-0.29</Float>
 	<Float name="cy_p">0.11</Float>
-	<Float name="cy_r">-0.81</Float>
+	<Float name="cy_r">0.81</Float>
 	<Float name="cy_da">0.0</Float>
 	<Float name="cy_dr">-0.15</Float>
 
 	<!-- Roll moment parameters -->
 	<Float name="ci_beta">-0.17</Float>
-	<Float name="ci_p">-1.86</Float><!-- <0 -->
-	<Float name="ci_r">0.33</Float>
-	<!--Float name="ci_da">0.29</Float-->
+		<!--Float name="ci_p">-1.86</Float--><!-- <0 -->
+	<Float name="ci_p">-9.5</Float><!-- <0 -->
+		<!--Float name="ci_r">0.33</Float-->
+	<Float name="ci_r">-0.33</Float>
+		<!--Float name="ci_da">0.29</Float-->
 	<Float name="ci_da">1.46</Float>
 	<Float name="ci_dr">-0.03</Float>
 
 	<!-- Yaw Moment Parameters -->
 	<Float name="cn_beta">0.36</Float>
-	<Float name="cn_p">0.11</Float>
-	<Float name="cn_r">-0.81</Float><!-- <0 -->
+	<Float name="cn_p">-0.11</Float>
+	<Float name="cn_r">-8.17</Float><!-- <0 -->
 	<Float name="cn_da">-0.03</Float>
 	<Float name="cn_dr">0.15</Float>
+
+	<!-- g limiter (based on a F16 cat III)>
+	<Curve="limiter_g_aoa">
+	<Breaks spacing='0.03'>
+		0.27 0.31 0.35 0.44 3.14	
+	</Break>
+	<Values>
+		1.0 8.0 7.4 1.0 1.0
+	</Values-->
 
 </Object>
 

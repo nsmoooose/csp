@@ -54,7 +54,7 @@ namespace thread {
 	 *  or higher priority.  If no such threads are available, the calling
 	 *  thread continues immediately.
 	 */
-	static int yield() {
+	static inline int yield() {
 		return sched_yield();
 	}
 
@@ -64,14 +64,14 @@ namespace thread {
 
 	/** Terminate the currently executing thread.
 	 */
-	static void exit() {
+	static inline void exit() {
 		pthread_exit(0);
 	}
 
 	/** Set the thread cancellation state to enabled.  Requests to cancel
 	 *  this thread will be honored.
 	 */
-	static void enableCancel() {
+	static inline void enableCancel() {
 		const int result = pthread_setcancelstate(PTHREAD_CANCEL_ENABLE, 0);
 		ThreadException::checkThrow(result);
 	}
@@ -79,7 +79,7 @@ namespace thread {
 	/** Set the thread cancellation state to disabled.  Requests to cancel
 	 *  this thread will be remain pending until cancellation is reenabled.
 	 */
-	static void disableCancel() {
+	static inline void disableCancel() {
 		const int result = pthread_setcancelstate(PTHREAD_CANCEL_DISABLE, 0);
 		ThreadException::checkThrow(result);
 	}
@@ -89,7 +89,7 @@ namespace thread {
 	 *  at cancellation points (most blocking functions).
 	 *  @see Thread::cancel().
 	 */
-	static void testCancel() {
+	static inline void testCancel() {
 		pthread_testcancel();
 	}
 
@@ -99,7 +99,7 @@ namespace thread {
 	 *  Asynchronous cancellation should only be used in very tight loops,
 	 *  where calls to testCancel would be too expensive.
 	 */
-	static void useAsynchronousCancel() {
+	static inline void useAsynchronousCancel() {
 		const int result = pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, 0);
 		ThreadException::checkThrow(result);
 	}
@@ -108,7 +108,7 @@ namespace thread {
 	 *  deferred until a cancellation point is reached, i.e most blocking functions
 	 *  or an explicit call to testCancel().
 	 */
-	static void useDeferredCancel() {
+	static inline void useDeferredCancel() {
 		const int result = pthread_setcanceltype(PTHREAD_CANCEL_DEFERRED, 0);
 		ThreadException::checkThrow(result);
 	}
@@ -118,7 +118,7 @@ namespace thread {
 	 *  @param seconds seconds to pause (fractional values ok, but limited by
 	 *    the granularity of the operating system's time slices).
 	 */
-	static void sleep(double seconds) {
+	static inline void sleep(double seconds) {
 		static ThreadCondition m_condition;
 		ScopedLock<ThreadCondition> lock(m_condition);
 		m_condition.wait(seconds);
@@ -408,8 +408,8 @@ public:
 	}
 
 private:
-	Task::ThreadId m_thread_id;
 	Ref<Task> m_task;
+	Task::ThreadId m_thread_id;
 	bool m_cancelled;
 };
 

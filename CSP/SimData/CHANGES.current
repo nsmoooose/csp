@@ -14,6 +14,9 @@ Version 0.4.0 (in progress)
 
  * Minor logging improvements.
 
+ * Made static thread methods inline to avoid declaring them in multiple
+   translation units (silences a g++ warning).
+
 2004-07-26: delta
  * Removed some not needed SIMDATA_EXPORT for vs 7.1.
 

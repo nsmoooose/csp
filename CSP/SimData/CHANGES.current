@@ -5,6 +5,15 @@ Version 0.4.0 (in progress)
   * Fixup python call for saving/restoring ints from archives (now
     _int32).
 
+  * Logging now checks SIMDATA_LOGFILE environment variable when
+    opening the log.  If not set or empty, log messages are initially
+    directed to stderr (log output can also be redirected at runtime).
+
+  * Change the initial "SimData [version] loaded @ xxx" message to be
+    a log message.  With the SIMDATA_LOGFILE this makes it possible to
+    suppress display of this message on startup while still allowing
+    the version and load address to be determined..
+
 2004-06-12: onsight
   * Commented out throw statement for assignment to Ref<> from an
     incompatible type.  Callers must check that the ref is not null

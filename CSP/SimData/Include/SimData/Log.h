@@ -28,6 +28,7 @@
 #define __SIMDATA_LOG_H__
 
 
+#include <cstdlib>
 #include <cstdio>
 #include <string>
 
@@ -56,7 +57,14 @@ inline void error(std::string const &msg) {
 inline SIMDATA_EXPORT logstream& log() {
 	//static logstream logstrm(std::cerr);
 	static logstream *logstrm = 0;
-	if (logstrm == 0) logstrm = new logstream(std::cerr);
+	if (logstrm == 0) {
+		char *save = getenv("SIMDATA_LOGFILE");
+		// default to stderr if SIMDATA_LOGFILE isn't set
+		logstrm = new logstream(std::cerr);
+		if (save and *save) {
+			logstrm->setOutput(save);
+		}
+	}
 	return *logstrm;
 }
 

@@ -70,15 +70,6 @@ AC_CHECK_LIB(osgParticle, osgParticleGetVersion, ,
 #CSP_OSG_CONFIG(osgText, 0.9.3, [OpenSceneGraph Util library])
 #CSP_OSG_CONFIG(osgParticle, 0.9.3, [OpenSceneGraph Particle library])
 
-AC_CHECK_LIB(osgGLUT, osgGLUTGetVersion, ,
-     [AC_MSG_ERROR(OpenSceneGraph GLUT library not found. See http://www.openscenegraph.org)],)
-AC_CHECK_LIB(osgUtil, osgUtilGetVersion, ,
-     [AC_MSG_ERROR(OpenSceneGraph Util library not found. See http://www.openscenegraph.org)],)
-AC_CHECK_LIB(osgText, osgTextGetVersion, ,
-     [AC_MSG_ERROR(OpenSceneGraph Text library not found. See http://www.openscenegraph.org)],)
-AC_CHECK_LIB(osgParticle, osgParticleGetVersion, ,
-     [AC_MSG_ERROR(OpenSceneGraph Particle library not found. See http://www.openscenegraph.org)],)
-
 CSP_PYTHON(2.2.0)
 
 AC_OUTPUT([Makefile Source/Makefile], [])

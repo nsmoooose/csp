@@ -138,6 +138,8 @@ AC_DEFUN(CSP_PYTHON, [
   if test "$version_proper" = "1" ; then
     AC_MSG_RESULT(yes)
     python=yes
+    PYTHON_PREFIX=`python -c 'import sys; print sys.prefix'`
+    AC_SUBST(PYTHON_PREFIX)
   else
     AC_MSG_RESULT(no)
     AC_MSG_ERROR([

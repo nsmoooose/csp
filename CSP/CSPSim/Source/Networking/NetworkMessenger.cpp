@@ -26,45 +26,49 @@
 #include "Log.h"
 #include "Networking.h"
 
-NetworkNode * g_node;
-
 NetworkMessenger::NetworkMessenger()
 {
   m_messageSocketDuplex = new MessageSocketDuplex();
   m_orginatorNode = new NetworkNode();
+  m_messageArrayMax = 200;
+  m_messageArrayCount = 0;
+  m_messageArray.reserve(m_messageArrayMax);
 }
 
 NetworkMessenger::NetworkMessenger(NetworkNode * orginatorNode)
 {
   m_messageSocketDuplex = new MessageSocketDuplex(orginatorNode->getPort());
   m_orginatorNode = orginatorNode;
+  m_messageArrayMax = 200;
+  m_messageArrayCount = 0;
+  m_messageArray.reserve(m_messageArrayMax);
 }
 
 void NetworkMessenger::queueMessage(NetworkNode * node, NetworkMessage * message)
 {
   CSP_LOG(APP, DEBUG, "NetworkMessenger::queueMessage()");
-  m_messageList.push_back(message);
-  g_node = node;
+  if (m_messageArrayCount >= m_messageArrayMax)
+  {
+    m_messageArrayMax += m_messageArrayGrow;
+	m_messageArray.resize(m_messageArrayMax);
+  }
+  m_messageArray[m_messageArrayCount].m_destinationNode = node;
+  m_messageArray[m_messageArrayCount].m_message = message;
+  m_messageArrayCount++;
 }
 
 void NetworkMessenger::sendMessages()
 {
   CSP_LOG(APP, DEBUG, "NetworkMessenger::sendMessages()");
-  while(!m_messageList.empty())
-  {
-    NetworkMessage * message = m_messageList.front();
-    m_messageSocketDuplex->sendto(message, g_node);
-    m_messageList.pop_front();
-    returnMessageToPool(message);
-	    
-  }
-//  std::list<NetworkMessage*>::iterator i = m_messageList.begin();
-//  std::list<NetworkMessage*>::const_iterator end = m_messageList.end();
-//  for ( ; i != end ; ++i )
-//  {
-//	m_messageSocketDuplex->sendto((*i), g_node);
-//  }
-	
+
+  for(int i=0;i<m_messageArrayCount;i++) {
+	  m_messageSocketDuplex->sendto(m_messageArray[i].m_message, 
+			                          m_messageArray[i].m_destinationNode);
+	  returnMessageToPool(m_messageArray[i].m_message);
+	  m_messageArray[i].m_message = NULL;
+    }
+    m_messageArrayCount = 0;
+	    	
 }
 
 void NetworkMessenger::receiveMessages()
@@ -100,7 +104,7 @@ NetworkMessage * NetworkMessenger::getMessageFromPool(int messageType, int paylo
   }
   NetworkMessage * message = m_messagePool.front();
   m_messagePool.pop_front();
-  memset(message, 0x00, 512);
+  memset(message, 0x00, NETWORK_PACKET_SIZE);
   message->initialize( messageType, payloadLen, m_orginatorNode);
   return message;
 }

@@ -23,8 +23,8 @@
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/Zm1000"
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;E:\CSP\THIRDPARTYLIBS\libsigc++-1.2.5\sigc++\config&quot;;E:\CSP\THIRDPARTYLIBS\OpenThreads\include;E:\CSP\THIRDPARTYLIBS\Producer\include;&quot;E:\CSP\THIRDPARTYLIBS\libsigc++-1.2.5&quot;;C:\Python22\include;..\..\Include;..\..\..\..\THIRDPARTYLIBS\include;..\..\..\..\THIRDPARTYLIBS\demeter;..\..\..\..\THIRDPARTYLIBS\CSPChunkLod\include"
-				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;CSPSIMDLL_EXPORTS"
+				AdditionalIncludeDirectories="C:\Python23\include;..\..\Include;..\..\..\..\THIRDPARTYLIBS\demeter;..\..\..\..\THIRDPARTYLIBS\CSPChunkLod\include"
+				PreprocessorDefinitions="WIN32;_DEBUG;_USRDLL;CSPSIMDLL_EXPORTS"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
 				RuntimeTypeInfo="TRUE"
@@ -42,11 +42,11 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="opengl32.lib SDL.lib osgDBd.lib DemeterVisualC6d.lib osgTextd.lib osgUtild.lib osgParticled.lib osgd.lib _cSimDatad.lib odbc32.lib odbccp32.lib"
+				AdditionalDependencies="sigc-1.2d.lib producerd.lib opengl32.lib SDL.lib osgDBd.lib DemeterVisualC6d.lib osgTextd.lib osgUtild.lib osgParticled.lib osgd.lib _cSimDatad.lib odbc32.lib odbccp32.lib"
 				OutputFile="../../Bin/_cCSPd.dll"
 				LinkIncremental="2"
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="C:/Python22/Lib/site-packages/SimData,C:/Python22/libs, ../../../../THIRDPARTYLIBS/lib"
+				AdditionalLibraryDirectories="C:/Python23/Lib/site-packages/SimData,C:/Python23/libs, ../../../../THIRDPARTYLIBS/lib"
 				IgnoreDefaultLibraryNames="msvcrt.lib"
 				GenerateDebugInformation="TRUE"
 				ProgramDatabaseFile=".\Debug/CSPSimDLL.pdb"
@@ -92,8 +92,8 @@
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/Zm1000"
 				InlineFunctionExpansion="1"
-				AdditionalIncludeDirectories="E:\CSP\THIRDPARTYLIBS\OpenThreads\include;&quot;E:\CSP\THIRDPARTYLIBS\libsigc++-1.2.5\sigc++\config&quot;;E:\CSP\THIRDPARTYLIBS\Producer\include;&quot;E:\CSP\THIRDPARTYLIBS\libsigc++-1.2.5&quot;;../../Include;C:/Python22/include;../../../../THIRDPARTYLIBS/include;../../../../THIRDPARTYLIBS/demeter;..\..\..\..\\THIRDPARTYLIBS\CSPChunkLod\include"
-				PreprocessorDefinitions="CSP_NDEBUG;WIN32;NDEBUG;_WINDOWS;_USRDLL;CSPSIMDLL_EXPORTS"
+				AdditionalIncludeDirectories="C:/Python23/include;../../Include;../../../../THIRDPARTYLIBS/demeter;../../../../THIRDPARTYLIBS/CSPChunkLod/include"
+				PreprocessorDefinitions="WIN32;NDEBUG;_USRDLL;CSPSIMDLL_EXPORTS"
 				StringPooling="TRUE"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="TRUE"
@@ -102,20 +102,27 @@
 				AssemblerListingLocation=".\Release/"
 				ObjectFile=".\Release/"
 				ProgramDataBaseFileName=".\Release/"
+				BrowseInformation="0"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
-				CompileAs="0"/>
+				DebugInformationFormat="3"
+				CompileAs="2"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="osgText.lib DemeterVisualC6.lib opengl32.lib SDL.lib _cSimData.lib osgParticle.lib osgUtil.lib osgDB.lib osg.lib odbc32.lib odbccp32.lib sigc-1.2.lib OpenThreadsWin32.lib"
+				AdditionalDependencies="osgFX.lib osgChunkLod.lib producer.lib osgText.lib DemeterVisualC6.lib opengl32.lib SDL.lib _cSimData.lib osgParticle.lib osgUtil.lib osgDB.lib osg.lib  sigc-1.2.lib OpenThreadsWin32.lib"
 				OutputFile="../../Bin/_cCSP.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="../../../../THIRDPARTYLIBS/lib,C:/Python22/libs,C:/Python22/Lib/site-packages/SimData"
-				ImportLibrary=".\Release/_CSP.lib"/>
+				AdditionalLibraryDirectories="../../../../THIRDPARTYLIBS/lib,C:/Python23/libs,C:/Python23/Lib/site-packages/SimData"
+				GenerateDebugInformation="TRUE"
+				AssemblyDebug="0"
+				GenerateMapFile="FALSE"
+				MapExports="FALSE"
+				ImportLibrary=".\Release/_CSP.lib"
+				TargetMachine="1"/>
 			<Tool
 				Name="VCMIDLTool"
 				PreprocessorDefinitions="NDEBUG"
@@ -179,25 +186,21 @@
 					Name="Debug|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
-						PreprocessorDefinitions="SWIG_NOINCLUDE"/>
+						PreprocessorDefinitions="SWIG_NOINCLUDE"
+						UndefinePreprocessorDefinitions="_DEBUG"/>
 				</FileConfiguration>
 				<FileConfiguration
 					Name="Release|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
-						PreprocessorDefinitions="SWIG_NOINCLUDE"/>
+						PreprocessorDefinitions="SWIG_NOINCLUDE"
+						UndefinePreprocessorDefinitions="_DEBUG"/>
 				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\Source\ChunkLodTerrain.cpp">
 				<FileConfiguration
 					Name="Debug|Win32"
-					ExcludedFromBuild="TRUE">
-					<Tool
-						Name="VCCLCompilerTool"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32"
 					ExcludedFromBuild="TRUE">
 					<Tool
 						Name="VCCLCompilerTool"/>
@@ -483,9 +486,6 @@
 				RelativePath="..\..\Include\GameScreen.h">
 			</File>
 			<File
-				RelativePath="..\..\Include\GlibCsp.h">
-			</File>
-			<File
 				RelativePath="..\..\Include\HID.h">
 			</File>
 			<File
@@ -499,6 +499,9 @@
 			</File>
 			<File
 				RelativePath="..\..\Include\LogoScreen.h">
+			</File>
+			<File
+				RelativePath="..\..\Include\MapEvent.h">
 			</File>
 			<File
 				RelativePath="..\..\Include\MenuScreen.h">
@@ -543,9 +546,6 @@
 				RelativePath="..\..\Include\StaticObject.h">
 			</File>
 			<File
-				RelativePath="..\..\Include\stdinc.h">
-			</File>
-			<File
 				RelativePath="..\..\Include\SynchronousUpdate.h">
 			</File>
 			<File
@@ -567,10 +567,10 @@
 				RelativePath="..\..\Include\Tools.h">
 			</File>
 			<File
-				RelativePath="..\..\Include\VehicleModel.h">
+				RelativePath="..\..\Include\VirtualBattlefield.h">
 			</File>
 			<File
-				RelativePath="..\..\Include\VirtualBattlefield.h">
+				RelativePath="..\..\Include\VirtualScene.h">
 			</File>
 			<Filter
 				Name="Theater"
@@ -654,7 +654,7 @@
 				Name="Debug|Win32">
 				<Tool
 					Name="VCCustomBuildTool"
-					CommandLine="C:\progra~1\SWIG-1.3.19\swig -c++ -python -noexcept -DWIN32 -I..\..\Include -IC:\Python22\include -o ..\..\Source\$(InputName)_wrap.cpp ..\..\Source\$(InputName).i
+					CommandLine="C:\progra~1\SWIG-1.3.17\swig -c++ -python -noexcept -DWIN32 -I..\..\Include -IC:\Python23\include -o ..\..\Source\$(InputName)_wrap.cpp ..\..\Source\$(InputName).i
 "
 					Outputs="..\..\Source\$(InputName)_wrap.cpp"/>
 			</FileConfiguration>
@@ -662,7 +662,7 @@
 				Name="Release|Win32">
 				<Tool
 					Name="VCCustomBuildTool"
-					CommandLine="C:\progra~1\SWIG-1.3.16\swig -c++ -python -noexcept -DWIN32 -I..\..\Include -IC:\Python22\include -o ..\..\Source\$(InputName)_wrap.cpp ..\..\Source\$(InputName).i
+					CommandLine="C:\progra~1\SWIG-1.3.17\swig -c++ -python -noexcept -DWIN32 -I..\..\Include -IC:\Python23\include -o ..\..\Source\$(InputName)_wrap.cpp ..\..\Source\$(InputName).i
 "
 					Outputs="..\..\Source\$(InputName)_wrap.cpp"/>
 			</FileConfiguration>

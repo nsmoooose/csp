@@ -171,6 +171,22 @@
 				RelativePath="..\Source\Interpolate.cpp">
 			</File>
 			<File
+				RelativePath="..\Source\Key.cpp">
+			</File>
+			<File
+				RelativePath="..\Source\LUT.cpp">
+				<FileConfiguration
+					Name="Release|Win32">
+					<Tool
+						Name="VCCLCompilerTool"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug|Win32">
+					<Tool
+						Name="VCCLCompilerTool"/>
+				</FileConfiguration>
+			</File>
+			<File
 				RelativePath="..\Source\Link.cpp">
 			</File>
 			<File
@@ -259,6 +275,9 @@
 				RelativePath="..\Include\SimData\External.h">
 			</File>
 			<File
+				RelativePath="..\Include\SimData\GeoPos.h">
+			</File>
+			<File
 				RelativePath="..\Include\SimData\GlibCsp.h">
 			</File>
 			<File
@@ -275,6 +294,12 @@
 			</File>
 			<File
 				RelativePath="..\Include\SimData\Interpolate.h">
+			</File>
+			<File
+				RelativePath="..\Include\SimData\Key.h">
+			</File>
+			<File
+				RelativePath="..\Include\SimData\LUT.h">
 			</File>
 			<File
 				RelativePath="..\Include\SimData\Link.h">
@@ -350,7 +375,7 @@
 				Name="Release|Win32">
 				<Tool
 					Name="VCCustomBuildTool"
-					CommandLine="C:\progra~1\SWIG-1.3.19\swig -c++ -python -noexcept -DWIN32 -I..\Include -o ..\Source\$(InputName)_wrap.cpp ..\Source\$(InputName).i
+					CommandLine="C:\progra~1\SWIG-1.3.19\swig -c++ -python -noexcept -D__NO_LUT__ -DWIN32 -I..\Include -o ..\Source\$(InputName)_wrap.cpp ..\Source\$(InputName).i
 "
 					Outputs="..\Source\$(InputName)_wrap.cpp"/>
 			</FileConfiguration>
@@ -358,7 +383,7 @@
 				Name="Debug|Win32">
 				<Tool
 					Name="VCCustomBuildTool"
-					CommandLine="C:\progra~1\SWIG-1.3.19\swig -c++ -python -noexcept -DWIN32 -I..\Include -o ..\Source\$(InputName)_wrap.cpp ..\Source\$(InputName).i
+					CommandLine="C:\progra~1\SWIG-1.3.19\swig -c++ -python -noexcept -D__NO_LUT__ -DWIN32 -I..\Include -o ..\Source\$(InputName)_wrap.cpp ..\Source\$(InputName).i
 "
 					Outputs="..\Source\$(InputName)_wrap.cpp"/>
 			</FileConfiguration>

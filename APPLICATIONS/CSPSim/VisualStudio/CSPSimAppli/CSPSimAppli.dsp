@@ -54,8 +54,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /machine:I386
-# ADD LINK32 DemeterVisualC6.lib opengl32.lib SDLmain.lib SDL.lib SDL_Console.lib gdal_i.lib _cSimData.lib osgParticle.lib osgUtil.lib osgDB.lib osg.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /pdb:none /machine:I386 /out:"../../Bin/CSPSim.exe" /libpath:"C:/Python22/libs" /libpath:"../../../../THIRDPARTYLIBS/lib"
-# SUBTRACT LINK32 /debug
+# ADD LINK32 SDLmain.lib osgText.lib DemeterVisualC6.lib opengl32.lib SDL.lib _cSimData.lib osgParticle.lib osgUtil.lib osgDB.lib osg.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /pdb:none /machine:I386 /out:"../../Bin/CSPSim.exe" /libpath:"C:/Python22/libs" /libpath:"../../../../THIRDPARTYLIBS/lib"
 
 !ELSEIF  "$(CFG)" == "CSPSimAppli - Win32 Debug"
 
@@ -82,8 +81,8 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /debug /machine:I386 /pdbtype:sept
-# ADD LINK32 DemeterVisualC6d.lib opengl32.lib SDLmain.lib SDLd.lib SDL_Console.lib gdal_i.lib _cSimDatad.lib osgParticled.lib osgUtild.lib osgDBd.lib osgd.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /incremental:no /pdb:"../../Bin/CSPSimd.pdb" /debug /machine:I386 /nodefaultlib:"msvcrt.lib" /out:"../../Bin/CSPSimd.exe" /pdbtype:sept /libpath:"C:/Python22/libs" /libpath:"../../../../THIRDPARTYLIBS/lib"
-# SUBTRACT LINK32 /pdb:none /map
+# ADD LINK32 DemeterVisualC6d.lib opengl32.lib SDLmain.lib SDLd.lib SDL_Console.lib gdal_i.lib _cSimDatad.lib osgParticled.lib osgUtild.lib osgDBd.lib osgd.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /incremental:no /pdb:"../../Bin/CSPSimd.pdb" /debug /machine:I386 /nodefaultlib:"msvcrt.lib" /out:"../../Bin/CSPSimd.exe" /pdbtype:sept /libpath:"C:/Python22/libs" /libpath:"../../../../THIRDPARTYLIBS/lib"
+# SUBTRACT LINK32 /pdb:none
 
 !ENDIF 
 
@@ -129,8 +128,6 @@ SOURCE=..\..\Source\Colorspace.cpp
 
 !IF  "$(CFG)" == "CSPSimAppli - Win32 Release"
 
-# PROP Exclude_From_Build 1
-
 !ELSEIF  "$(CFG)" == "CSPSimAppli - Win32 Debug"
 
 !ENDIF 
@@ -139,10 +136,6 @@ SOURCE=..\..\Source\Colorspace.cpp
 # Begin Source File
 
 SOURCE=..\..\Source\Config.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\Source\ConsoleCommands.cpp
 # End Source File
 # Begin Source File
 
@@ -202,10 +195,6 @@ SOURCE=..\..\Source\Message.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\Source\mmgr.cpp
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\Source\ObjectModel.cpp
 # End Source File
 # Begin Source File
@@ -215,6 +204,14 @@ SOURCE=..\..\Source\ObjectRangeInfo.cpp
 # Begin Source File
 
 SOURCE=..\..\Source\Platform.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\Source\ScreenInfo.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\Source\ScreenInfoManager.cpp
 # End Source File
 # Begin Source File
 
@@ -290,15 +287,7 @@ SOURCE=..\..\Include\compiler.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\Include\CON_consolecommands.h
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\Include\Config.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\Include\ConsoleCommands.h
 # End Source File
 # Begin Source File
 
@@ -323,14 +312,6 @@ SOURCE=..\..\Include\EventMapIndex.h
 # Begin Source File
 
 SOURCE=..\..\Include\EventMapping.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\Include\FLCS.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\Include\GameScreen.h
 # End Source File
 # Begin Source File
 
@@ -362,14 +343,6 @@ SOURCE=..\..\Include\Message.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\Include\mmgr.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\Include\nommgr.h
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\Include\ObjectModel.h
 # End Source File
 # Begin Source File
@@ -378,11 +351,15 @@ SOURCE=..\..\Include\ObjectRangeInfo.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\Include\OGLText.h
+SOURCE=..\..\Include\Platform.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\Include\Platform.h
+SOURCE=..\..\Include\ScreenInfo.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\Include\ScreenInfoManager.h
 # End Source File
 # Begin Source File
 
@@ -394,15 +371,15 @@ SOURCE=..\..\Include\SimpleConfig.h
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\Include\Sky.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\Include\SmokeEffects.h
 # End Source File
 # Begin Source File
 
 SOURCE=..\..\Include\StaticObject.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\Include\stdinc.h
 # End Source File
 # Begin Source File
 

@@ -54,8 +54,8 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /dll /machine:I386
-# ADD LINK32 DemeterVisualC6.lib opengl32.lib SDLmain.lib SDL.lib SDL_Console.lib gdal_i.lib _cSimData.lib osgParticle.lib osgUtil.lib osgDB.lib osg.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /dll /pdb:"../../Bin/CSP.pdb" /debug /machine:I386 /out:"../../Bin/_CSP.dll" /pdbtype:sept /libpath:"../../../../THIRDPARTYLIBS/lib" /libpath:"C:/Python22/libs"
-# SUBTRACT LINK32 /pdb:none
+# ADD LINK32 osgText.lib DemeterVisualC6.lib opengl32.lib SDL.lib _cSimData.lib osgParticle.lib osgUtil.lib osgDB.lib osg.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /dll /pdb:none /machine:I386 /out:"../../Bin/_CSP.dll" /libpath:"../../../../THIRDPARTYLIBS/lib" /libpath:"C:/Python22/libs"
+# SUBTRACT LINK32 /debug
 
 !ELSEIF  "$(CFG)" == "CSPSimDLL - Win32 Debug"
 
@@ -127,8 +127,6 @@ SOURCE=..\..\Source\Colorspace.cpp
 
 !IF  "$(CFG)" == "CSPSimDLL - Win32 Release"
 
-# PROP Exclude_From_Build 1
-
 !ELSEIF  "$(CFG)" == "CSPSimDLL - Win32 Debug"
 
 !ENDIF 
@@ -137,10 +135,6 @@ SOURCE=..\..\Source\Colorspace.cpp
 # Begin Source File
 
 SOURCE=..\..\Source\Config.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\Source\ConsoleCommands.cpp
 # End Source File
 # Begin Source File
 
@@ -205,6 +199,14 @@ SOURCE=..\..\Source\ObjectRangeInfo.cpp
 # Begin Source File
 
 SOURCE=..\..\Source\Platform.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\Source\ScreenInfo.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\Source\ScreenInfoManager.cpp
 # End Source File
 # Begin Source File
 
@@ -280,15 +282,7 @@ SOURCE=..\..\Include\compiler.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\Include\CON_consolecommands.h
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\Include\Config.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\Include\ConsoleCommands.h
 # End Source File
 # Begin Source File
 
@@ -297,10 +291,6 @@ SOURCE=..\..\Include\CSPSim.h
 # Begin Source File
 
 SOURCE=..\..\Include\debug_types.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\Include\DirVectorDrawable.h
 # End Source File
 # Begin Source File
 
@@ -368,6 +358,14 @@ SOURCE=..\..\Include\Platform.h
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\Include\ScreenInfo.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\Include\ScreenInfoManager.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\Include\SimObject.h
 # End Source File
 # Begin Source File
@@ -393,10 +391,6 @@ SOURCE=..\..\Include\TankObject.h
 # Begin Source File
 
 SOURCE=..\..\Include\TerrainObject.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\Include\TerrainSymbol.h
 # End Source File
 # Begin Source File
 

@@ -1,6 +1,22 @@
 Version 0.4.0 (in progress)
 ===========================
 
+2004-11-30: onsight
+ * Add type statement to trc to declare external types.  External types
+   must have stream operators for serializing to Writer and Reader
+   streams, as well formatted output to std::ostream (for diagnostics).
+   Using EXTTYPE to represent the external typename, the following
+   functions need to be defined:
+
+     Reader &operator>>(Reader &, EXTTYPE &);
+     Writer &operator<<(Writer &, EXTTYPE const &);
+     std::ostream &operator<<(std::ostream &, EXTTYPE const &);
+
+   To use an external type in a trc definition file, just declare the type
+   prior to using it, like this:
+
+     type EXTTYPE;
+
 2004-11-20: onsight
  * Rewrote trc using ply (lex/yacc).  Note that the input syntax is
    slightly different (hopefully cleaner).  Moved the old version of

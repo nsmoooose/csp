@@ -51,6 +51,7 @@ reserved = (
 	'using',
 	'include',
 	'header',
+	'type',
 	'typedef',
 	'enum',
 )

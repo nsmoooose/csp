@@ -52,6 +52,7 @@ def p_declaration_list_2(p):
 def p_declaration(p):
 	'''declaration : message
 	               | include
+	               | type
 	               | typedef
 	               | using
 	'''
@@ -93,6 +94,13 @@ def p_typedef(p):
 	state.typedefs[p[3]] = p[2]
 	p[0] = '__IGNORE__'
 
+# declare external types
+
+def p_type(p):
+	'type : TYPE qualified_id SEMI'
+	state.types[p[2]] = 'EXTERN'
+	p[0] = '__IGNORE__'
+
 # a file path specification for include files (e.g. "a.h" or <a.h>)
 
 def p_pathspec(p):
@@ -130,24 +138,24 @@ def p_message_body_2(p):
 	p[0] = p[1] + [p[2]]
 
 def p_mesage_element(p):
-	'''message_element : message_field
+	'''message_element : annotated_field
 	                   | message_setting
 	                   | group
 	                   | enum
 	'''
 	p[0] = p[1]
 
-def p_message_field(p):
-	'message_field : field'
+def p_annotated_field(p):
+	'annotated_field : field'
 	p[0] = p[1]
 
-def p_message_field_required(p):
-	'message_field : REQUIRED field'
+def p_annotated_field_required(p):
+	'annotated_field : REQUIRED field'
 	p[2].required = 1
 	p[0] = p[2]
 
-def p_message_field_deprecated(p):
-	'message_field : DEPRECATED field'
+def p_annotated_field_deprecated(p):
+	'annotated_field : DEPRECATED field'
 	p[2].deprecated = 1
 	p[0] = p[2]
 
@@ -166,11 +174,11 @@ def p_group(p):
 	p[0] = trc_gen.Group(p[2], p[4], state)
 
 def p_group_body_0(p):
-	'group_body : field'
+	'group_body : annotated_field'
 	p[0] = [p[1]]
 
 def p_group_body_1(p):
-	'group_body : group_body field'
+	'group_body : group_body annotated_field'
 	p[0] = p[1] + [p[2]]
 
 def p_bitset(p):

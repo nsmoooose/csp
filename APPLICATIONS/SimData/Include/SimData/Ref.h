@@ -60,7 +60,7 @@ SIMDATA_EXCEPTION(ConversionError);
  * @author Mark Rose <mrose@stm.lbl.gov>
  */
 template<class T>
-class SIMDATA_EXPORT Ref {
+class Ref {
 public:
 	typedef std::vector< Ref<T> > vector;
 	typedef std::list< Ref<T> > list;

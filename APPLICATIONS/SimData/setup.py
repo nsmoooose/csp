@@ -52,7 +52,7 @@ from distutils import sysconfig, dir_util
 import os, os.path, string
 
 # REMEMBER TO 'touch Version.cpp' OR REBUILD ALL
-VERSION = "\"0.3.1\""
+VERSION = "\"0.3.2\""
 
 def copy_dir(src, dst, files, verbose=0):
     from distutils.file_util import copy_file

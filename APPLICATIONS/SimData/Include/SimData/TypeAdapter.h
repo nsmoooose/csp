@@ -39,6 +39,8 @@
 #include <SimData/Enum.h>
 #include <SimData/Path.h>
 
+#include <SimData/Types.h>
+
 
 NAMESPACE_SIMDATA
 
@@ -53,6 +55,7 @@ class External;
 class Enum;
 class SimDate;
 class ListBase;
+class GeoPos;
 class Object;
 
 
@@ -140,10 +143,23 @@ public:
 		T *nc = const_cast<T *>(p);
 		x = *nc;
 	}
+
+	/*
 	template <typename T> 
-	void set(T & x) const {
-		setBase(x);
-	}
+	void set(T & x) const { setBase(x); }
+	*/
+
+	void set(SimDate & x) const { setBase(x); }
+	void set(GeoPos & x) const { setBase(x); }
+	void set(Vector3 & x) const { setBase(x); }
+	void set(Matrix3 & x) const { setBase(x); }
+	void set(Spread & x) const { setBase(x); }
+	void set(Curve & x) const { setBase(x); }
+	void set(Table & x) const { setBase(x); }
+	void set(External & x) const { setBase(x); }
+	void set(Path & x) const { setBase(x); }
+	// list
+
 	void set(int &x) const { IntCheck(); x = static_cast<int>(var.i); }
 	void set(bool &x) const { IntCheck(); x = (var.i != 0); }
 	void set(float &x) const { DoubleCheck(); x = static_cast<float>(var.d); }

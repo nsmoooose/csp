@@ -183,13 +183,23 @@ void Quat::makeRotate(double roll, double pitch, double yaw) {
 	_w = ch0 * ch1 * ch2 + sh0 * sh1 * sh2;
 }
 
-void Quat::getEulerAngles(double &roll, double &pitch, double &yaw) {
-	roll = atan2(2.0*(_y*_z + _w*_x), _w*_w-_x*_x-_y*_y+_z*_z);
-	pitch = asin(-2.0*(_x*_z - _w*_y));
-	yaw = atan2(2.0*(_x*_y + _w*_z), _w*_w+_x*_x-_y*_y-_z*_z);
+void Quat::getEulerAngles(double &roll, double &pitch, double &yaw) const {
+	double x2 = _x*_x;
+	double y2 = _y*_y;
+	double z2 = _z*_z;
+	double w2 = _w*_w;
+	double sin_theta = 2.0 * (_w*_y - _x*_z);
+	if (fabs(sin_theta) > 0.99999) {
+		roll = 0.0;
+		pitch = asin(sin_theta);
+		yaw = atan2(2.0*(_w*_z - _x*_y), w2-x2+y2-z2);
+	} else {
+		roll = atan2(2.0*(_y*_z + _w*_x), w2-x2-y2+z2);
+		pitch = asin(sin_theta);
+		yaw = atan2(2.0*(_x*_y + _w*_z), w2+x2-y2-z2);
+	}
 }
     
-
 void Quat::getRotate(double& angle, Vector3& vec) const {
 	getRotate(angle, vec.x(), vec.y(), vec.z());
 }

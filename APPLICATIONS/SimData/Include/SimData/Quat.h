@@ -247,7 +247,7 @@ public:
 
 	void makeRotate(double roll, double pitch, double yaw);
 
-	void getEulerAngles(double &roll, double &pitch, double &yaw);
+	void getEulerAngles(double &roll, double &pitch, double &yaw) const;
     
         /** Return the angle and vector components represented by the quaternion.*/
         void getRotate(double& angle, double& x, double& y, double& z) const;

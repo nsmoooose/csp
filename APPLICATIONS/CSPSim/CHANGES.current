@@ -6,6 +6,10 @@
 	    Vector3, Matrix3, Quat.  Dynamics seem correct but
 	    more testing is needed.
 
+	    Fixed euler angles.  The new code preconverts to/from
+	    CSP's internal coordinate system rather than relying
+	    on a special method in SimData.
+
 2003-08-04: onsight
             Tagged version r0_3_3, starting version 0.3.4
 

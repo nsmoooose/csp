@@ -523,15 +523,16 @@ void AircraftObject::MarkersToggle() {
 
 void AircraftObject::setAttitude(double pitch, double roll, double heading)
 {
-	simdata::Quat attitude;
 	m_Pitch = pitch;
 	m_Roll = roll;
 	m_Heading = heading;
 	
+	simdata::Quat attitude;
 	// use standard Euler convension (X axis is roll, Y is pitch, Z is yaw).
-	//attitude = simdata::Quat::MakeQFromEulerAngles(m_Roll, m_Pitch, -m_Heading); // old-style
-	attitude.makeRotate(m_Roll, m_Pitch, -m_Heading);
-	DynamicObject::setAttitude(attitude);
+	attitude.makeRotate(m_Roll, m_Pitch, m_Heading);
+	// convert to CSP coordinate system (X axis is pitch, Y axis is roll, -Z is yaw)
+	simdata::Quat modified(m_Attitude.y(), m_Attitude.x(), -m_Attitude.z(), m_Attitude.w());
+	DynamicObject::setAttitude(modified);
 }
 
 void AircraftObject::doMovement(double dt)
@@ -551,15 +552,9 @@ void AircraftObject::doMovement(double dt)
 
 	///updateTransform();
 
-	// modified Euler angles are the CSP frame (X is pitch, Y is roll, Z is -yaw).
-	double yaw;
-	m_Attitude.getEulerAngles(m_Roll, m_Pitch, yaw);
-	m_Heading = -yaw;
-	
-	//simdata::Vector3 angles = simdata::Quat::MakeModifiedEulerAnglesFromQ(m_Attitude); // old-style
-	//m_Pitch = angles.x();
-	//m_Roll = angles.y();
-	//m_Heading = angles.z();
+	// convert from CSP frame to standard Euler (X is roll, Y is pitch, Z is yaw)
+	simdata::Quat modified(m_Attitude.y(), m_Attitude.x(), -m_Attitude.z(), m_Attitude.w());
+	modified.getEulerAngles(m_Roll, m_Pitch, m_Heading);
 
 	m_Speed = m_LinearVelocity.length();
 }

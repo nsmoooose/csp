@@ -23,4 +23,3 @@ float SimTime::getSimTime()
 {
     return sim_time;
 }
-

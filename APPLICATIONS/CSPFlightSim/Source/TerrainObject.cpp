@@ -1,6 +1,4 @@
-#include <osg/Depth>
 #include <osg/Geode>
-#include <osg/StateSet>
 
 #include "LogStream.h"
 #include "Platform.h"

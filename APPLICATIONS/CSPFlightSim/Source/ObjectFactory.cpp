@@ -14,8 +14,7 @@
 
 #include <osg/CullFace>
 #include <osg/Node>
-#include <osgDB/FileUtils>
-#include <osgDB/Registry>
+
 #include <osgDB/ReadFile>
 
 extern SymbolTable GlobalSymbolTable;

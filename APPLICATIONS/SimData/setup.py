@@ -55,66 +55,86 @@ import os, os.path, string
 VERSION = "\"0.3.2\""
 
 def copy_dir(src, dst, files, verbose=0):
-    from distutils.file_util import copy_file
-    from distutils.dir_util import mkpath
-    from distutils.errors import DistutilsFileError, DistutilsInternalError
-    from stat import ST_ATIME, ST_MTIME, ST_MODE, S_IMODE
-    if not os.path.isdir(src):
-        raise DistutilsFileError, \
-              "cannot copy dir '%s': not a directory" % src
-    mkpath(dst)
-    st = os.stat(src)
-    os.chmod(dst, S_IMODE(st[ST_MODE]))
-    for n in files:
-        src_name = os.path.join(src, n)
-        dst_name = os.path.join(dst, n)
-        if not os.path.isdir(src_name):
-            if verbose:
-                print "%s => %s" % (src_name, dst_name)
-            copy_file(src_name, dst_name)
+	from distutils.file_util import copy_file
+	from distutils.dir_util import mkpath
+	from distutils.errors import DistutilsFileError, DistutilsInternalError
+	from stat import ST_ATIME, ST_MTIME, ST_MODE, S_IMODE
+	if not os.path.isdir(src):
+		raise DistutilsFileError, \
+			"cannot copy dir '%s': not a directory" % src
+	mkpath(dst)
+	st = os.stat(src)
+	os.chmod(dst, S_IMODE(st[ST_MODE]))
+	warnings = 0
+	for n in files:
+		src_name = os.path.join(src, n)
+		dst_name = os.path.join(dst, n)
+		if not os.path.isdir(src_name):
+			if verbose:
+				print "%s => %s" % (src_name, dst_name)
+			try:
+				copy_file(src_name, dst_name)
+			except DistutilsFileError, e:
+				print "WARNING:", e
+				warnings = warnings + 1
+	return warnings
 
 def make_install(win, args):
-    lib = sysconfig.get_python_lib()
-    inc = sysconfig.get_python_inc()
-    modpath = os.path.join(lib, "SimData")
-    incpath = os.path.join(inc, "SimData")
-    localinc = os.path.normpath("Include/SimData")
-    libpath = default_libpath
-    verbose = 0
-    for arg in args:
-        if arg.startswith("--prefix="):
-            libpath = arg[9:]
-        elif arg=='-v' or arg=='--verbose':
-            verbose = 1
-    package_files = ['__init__.py', 'Debug.py', 'Parse.py', 'Compile.py']
-    if win:
-        package_files.extend(['cSimData.py', '_cSimData.dll', '_cSimData.lib','_cSimDatad.dll', '_cSimDatad.lib'])
-        src = os.path.join("VisualStudio","cSimData.py")
-        if os.path.exists(src):
-            from distutils.file_util import copy_file
-            copy_file(src, os.path.join("SimData","cSimData.py"))
-    else:
-        package_files.extend(['cSimData.py', '_cSimData.so'])
-    try:
-        print "Installing SimData package to", modpath
-        copy_dir("SimData", modpath, package_files, verbose)
-        print "Installing SimData headers to", incpath
-        copy_dir(localinc, incpath, headers, verbose)
-        copy_dir(localinc, incpath, interfaces, verbose)
-        if not win:
-            print "Installing SimData libraries to", libpath
-            copy_dir("SimData", libpath, ['_cSimData.so', 'libSimData.a'], verbose)
-        print "Byte compiling the Python modules..."
-        import py_compile
-        for file in package_files:
-            if file.endswith(".py"):
-                script = os.path.join(modpath, file)
-                py_compile.compile(script)  
-                os.chmod(script+"c", 0644)
-    except Exception, e:
-        print e
-        sys.exit(1)
-    sys.exit(0)
+	from distutils.errors import DistutilsFileError
+	lib = sysconfig.get_python_lib()
+	inc = sysconfig.get_python_inc()
+	modpath = os.path.join(lib, "SimData")
+	incpath = os.path.join(inc, "SimData")
+	localinc = os.path.normpath("Include/SimData")
+	libpath = default_libpath
+	verbose = 0
+	warnings = 0
+	for arg in args:
+		if arg.startswith("--prefix="):
+			libpath = arg[9:]
+		elif arg=='-v' or arg=='--verbose':
+			verbose = 1
+	package_files = ['__init__.py', 'Debug.py', 'Parse.py', 'Compile.py']
+	if win:
+		package_files.extend(['cSimData.py', '_cSimData.dll', '_cSimData.lib','_cSimDatad.dll', '_cSimDatad.lib'])
+		src = os.path.join("VisualStudio","cSimData.py")
+		if os.path.exists(src):
+			from distutils.file_util import copy_file
+			try:
+				copy_file(src, os.path.join("SimData","cSimData.py"))
+			except DistutilsFileError, e:
+				print "WARNING:", e
+				warnings = warnings + 1
+	else:
+		package_files.extend(['cSimData.py', '_cSimData.so'])
+	try:
+		print "Installing SimData package to", modpath
+		warnings = warnings + copy_dir("SimData", modpath, package_files, verbose)
+		print "Installing SimData headers to", incpath
+		warnings = warnings + copy_dir(localinc, incpath, headers, verbose)
+		warnings = warnings + copy_dir(localinc, incpath, interfaces, verbose)
+		if not win:
+			print "Installing SimData libraries to", libpath
+			warnings = warnings + copy_dir("SimData", libpath, ['_cSimData.so', 'libSimData.a'], verbose)
+		print "Byte compiling the Python modules..."
+		import py_compile
+		for file in package_files:
+			if file.endswith(".py"):
+				script = os.path.join(modpath, file)
+				if os.path.exists(script):
+					py_compile.compile(script)  
+					os.chmod(script+"c", 0644)
+	except Exception, e:
+		print e
+		sys.exit(1)
+	if warnings > 0:
+		print "WARNING: Some errors were encountered during installation."
+		if win:
+			print
+			print "         If you have only built the release version of SimData, you"
+			print "         can safely ignore warnings related to _cSimDatad.dll  and"
+			print "         _cSimDatad.lib."
+	sys.exit(0)
 
 class build_swig_ext(build_ext):
     

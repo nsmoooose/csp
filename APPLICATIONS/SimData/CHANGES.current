@@ -1,6 +1,10 @@
 Version 0.3.3 (in progress)
 ===========================
 
+2003-05-13: onsight
+            Added exception handling to file copying in setup.py.  Copy errors
+	    will be printed as warnings, and the installation will continue.
+
 2003-05-13: delta
 	    Added a post built step to copy VisualStudio/cSimData.py to SimData.
 	    Corrected a vc project bug (Ref.cpp)

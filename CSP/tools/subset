@@ -30,10 +30,6 @@ Usage: %(prog)s [options] command [args...]
 Run "%(prog)s help <command>" for help on a specific command.
 """
 
-
-# setup CSP
-import bootstrap
-
 from CSP.base import app
 from CSP.tools import subcmd
 

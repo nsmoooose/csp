@@ -37,7 +37,6 @@ import os.path
 import zipfile
 from modulefinder import ModuleFinder
 
-import bootstrap
 from CSP.base import app
 
 

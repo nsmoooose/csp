@@ -48,8 +48,6 @@ import os
 import re
 import os.path
 
-import bootstrap
-
 from CSP.base import app
 
 
@@ -245,7 +243,7 @@ def main(args):
 		input = sys.stdin.readlines()
 	except KeyboardInterrupt:
 		return 0
-	
+
 	dir = app.options.dir
 	stack_trace = StackTrace()
 	stack_trace.process(input, dir)

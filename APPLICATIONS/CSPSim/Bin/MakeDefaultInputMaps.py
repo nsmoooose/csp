@@ -37,9 +37,9 @@ except:
 	print >>sys.stderr, "Unable to find DataPath in '%s', aborting" % config
 	sys.exit(1)
 
-map2hid = norm("../Tools/HID/map2hid")
-if not os.path.exists(map2hid):
-	print >>sys.stderr, "Can't find '%s', aborting." % map2hid
+cspinput = norm("../Tools/HID/cspinput")
+if not os.path.exists(cspinput):
+	print >>sys.stderr, "Can't find '%s', aborting." % cspinput
 	sys.exit(1)
 
 input_path = os.path.join(config_path, "Input")
@@ -54,7 +54,7 @@ maps = ("gamescreen", "aircraft")
 for map in maps:
 	source = os.path.join("Examples", "%s.map" % map)
 	target = os.path.join(input_path, "%s.hid" % map)
-	os.system("python map2hid %s %s" % (source, target))
+	os.system("python cspinput %s %s" % (source, target))
 	print "Default input map created for %s.map; see Tools/HID/README for details." % map
 
 os.chdir(cwd)

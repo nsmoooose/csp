@@ -57,17 +57,17 @@ void InterpolatedData<T>::unpack(UnPacker& p) {
 }
 
 template <typename T>
-T InterpolatedData<T>::getValue(T, T) const { 
+typename InterpolatedData<T>::value_t InterpolatedData<T>::getValue(value_t, value_t) const { 
 	return 0.0; 
 }
 
 template <typename T>
-T InterpolatedData<T>::getPrecise(T, T) const { 
+typename InterpolatedData<T>::value_t InterpolatedData<T>::getPrecise(value_t, value_t) const { 
 	return 0.0; 
 }
 
 template <typename T>
-typename InterpolatedData<T>::vector_t InterpolatedData<T>::_compute_second_derivatives(const typename InterpolatedData<T>::vector_t& breaks, const typename InterpolatedData<T>::vector_t& data) {
+typename InterpolatedData<T>::vector_t InterpolatedData<T>::_compute_second_derivatives(const vector_t& breaks, const vector_t& data) {
 	int n = breaks.size();
 	vector_t z(n,0.0), u(n,0.0);
 	int i;
@@ -87,7 +87,7 @@ typename InterpolatedData<T>::vector_t InterpolatedData<T>::_compute_second_deri
 }
 
 template <typename T>
-int InterpolatedData<T>::find(vector_t b, T v) const {
+int InterpolatedData<T>::find(vector_t b, value_t v) const {
 	int lo = 0;
 	int hi = b.size()-1;
 	int i;

@@ -23,6 +23,8 @@
  * @file osg.h
  *
  * OpenSceneGraph (OSG) math adapters
+ * 
+ * See http://www.openscenegraph.org
  */
 
 
@@ -43,36 +45,46 @@ NAMESPACE_SIMDATA
 /**
  * @defgroup Adapters Class adapter utilities
  */
-
 //@{
 
+/** convert simdata::Vector3 to osg::Vec3 */
 inline osg::Vec3 toOSG(Vector3 const &v) {
-	return osg::Vec3(v.x(), v.y(), v.z());
+	return osg::Vec3(static_cast<float>(v.x()), 
+			 static_cast<float>(v.y()), 
+			 static_cast<float>(v.z()));
 }
 
+/** convert osg::Vec3 to simdata::Vector3 */
 inline Vector3 fromOSG(osg::Vec3 const &v) {
 	return Vector3(v.x(), v.y(), v.z());
 }
 
-// transpose: osg matrix convension is v * M
+/** convert simdata::Matrix3 to osg::Matrix */
 inline osg::Matrix toOSG(Matrix3 const &m) {
+	// transpose: osg matrix convension is v * M
 	return osg::Matrix(m(0, 0), m(1, 0), m(2, 0), 0.0,
 	                   m(0, 1), m(1, 1), m(2, 1), 0.0,
 			   m(0, 2), m(1, 2), m(2, 2), 0.0,
 			   0.0, 0.0, 0.0, 1.0);
 }
 
-// transpose: osg matrix convension is v * M
+/** convert osg::Matrix to simdata::Matrix3 */
 inline Matrix3 fromOSG(osg::Matrix const &m) {
+	// transpose: osg matrix convension is v * M
 	return Matrix3(m(0, 0), m(1, 0), m(2, 0),
 	               m(0, 1), m(1, 1), m(2, 1),
 	               m(0, 2), m(1, 2), m(2, 2));
 }
 
+/** convert osg::Quat to simdata::Quat */
 inline osg::Quat toOSG(Quat const &q) {
-	return osg::Quat(q.x(), q.y(), q.z(), q.w());
+	return osg::Quat(static_cast<float>(q.x()), 
+			 static_cast<float>(q.y()), 
+			 static_cast<float>(q.z()),
+			 static_cast<float>(q.w()));
 }
 
+/** convert simdata::Quat to osg::Quat */
 inline Quat fromOSG(osg::Quat const &q) {
 	return Quat(q.x(), q.y(), q.z(), q.w());
 }

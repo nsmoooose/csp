@@ -835,8 +835,8 @@ void GeoPos::iterateECEF(double p, double z, double lat, int iter=0) {
 ////////////////////////////////////////////////////////////////////////////////////
 // UTM
 
-UTM::UTM(LLA const &lla, ReferenceEllipsoid const &ref, char zone_) {
-	*this = LLAtoUTM(lla, ref, zone_);
+UTM::UTM(LLA const &lla, ReferenceEllipsoid const &ref, char zone) {
+	*this = LLAtoUTM(lla, ref, zone);
 }
 
 UTM::UTM(ECEF const &ecef, ReferenceEllipsoid const &ref) {
@@ -857,7 +857,7 @@ UTM const &UTM::operator = (ECEF const &ecef) {
  * Get the UTM designator for a given latitude, or 'Z' if outside
  * the UTM limits (80S to 84N)
  *
- * @param lat latitude in radians
+ * @param latitude latitude in radians
  */
 char UTM::getDesignator(double latitude)
 {

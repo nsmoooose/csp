@@ -20,7 +20,7 @@
 
 
 /**
- * @file pts.h
+ * @file PTS.h
  *
  * Simulated partial template specialization and template metaprogramming
  * support.
@@ -43,6 +43,8 @@
 NAMESPACE_SIMDATA
 
 
+/** Template meta-programming structures.
+ */
 namespace meta {
 
 struct SelectThen

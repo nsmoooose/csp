@@ -609,7 +609,7 @@ public:
  *  A geospatial coordinate class using Universal Transverse Mercator (UTM)
  *  coordinates plus altitude. 
  *
- *  A sample XML tag for this type is @code<UTM>704300 3390210 13T 100.0</UTM>@endcode
+ *  A sample XML tag for this type is <tt> <UTM>704300 3390210 13T 100.0</UTM> </tt>
  *  which represents 704300E 3390210N 13T, 100.0 m above the reference ellipsoid.
  *
  *  @ingroup BaseTypes
@@ -634,19 +634,19 @@ public:
 
 	/** Convert from LLA to UTM
 	 */
-	UTM(LLA const &, ReferenceEllipsoid const & = GeoRef::WGS84, char zone = -1);
+	UTM(LLA const &lla, ReferenceEllipsoid const &ref = GeoRef::WGS84, char zone = -1);
 
 	/** Convert from ECEF to UTM
 	 */
-	UTM(ECEF const &, ReferenceEllipsoid const & = GeoRef::WGS84);
+	UTM(ECEF const &ecef, ReferenceEllipsoid const &ref = GeoRef::WGS84);
 
 	/** Convert from LLA to UTM (using WGS84)
 	 */
-	UTM const &operator = (LLA const &);
+	UTM const &operator = (LLA const &lla);
 
 	/** Convert from ECEF to UTM (using WGS84)
 	 */
-	UTM const &operator = (ECEF const &);
+	UTM const &operator = (ECEF const &ecef);
 
 	virtual ~UTM() {}
 
@@ -731,7 +731,7 @@ public:
  *  A geospatial coordinate class representing Earth Centered, Earth
  *  Fixed coordinates.
  *
- *  The XML format for this type is @code <ECEF> X Y Z </ECEF> @endcode.
+ *  The XML format for this type is <tt> <ECEF> X Y Z </ECEF> </tt>
  *
  *  @ingroup BaseTypes
  */

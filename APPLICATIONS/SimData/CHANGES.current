@@ -1,6 +1,10 @@
 Version 0.3.4 (in progress)
 ===========================
 
+2003-08-18: onsight
+            More Doxygen fixes, reorganization, and added
+	    documentation.
+
 2003-08-17: onsight
             Fixed assertion range errors in Matrix3.h
 

@@ -97,6 +97,7 @@ public:
 	ACTION_INTERFACE(GameScreen, on_SpinTheWorld);
 	ACTION_INTERFACE(GameScreen, on_SpinTheWorldStop);
 	ACTION_INTERFACE(GameScreen, on_ResetSpin);
+	ACTION_INTERFACE(GameScreen, on_PrintScreen);
 	MOTION_INTERFACE(GameScreen, on_MouseView);
 
 	virtual void initInterface();

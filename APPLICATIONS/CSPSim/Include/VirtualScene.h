@@ -107,7 +107,7 @@ public:
 	void setNearPlane(float value);
 	inline float getAspect() const {return m_Aspect;}
 	void setAspect(float value);
-	
+	void getViewport(int& x,int& y,int& width,int& height);
 
 	void spinTheWorld(bool spin);
 	void resetSpin();

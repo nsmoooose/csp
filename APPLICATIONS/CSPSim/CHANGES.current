@@ -1,159 +1,155 @@
  Version 0.4.0 (in progress)
 ===========================
 2003-10-21: onsight
-            Cleaned up the code that initializes the test sound.  The
-	    sim won't abort if it can't find the sound file or open
-	    an audio device, but a warning is written to the log.
+  * Cleaned up the code that initializes the test sound.  The
+    sim won't abort if it can't find the sound file or open
+    an audio device, but a warning is written to the log.
 
-	    Added a modified version of Lologramme's Mirage 2000
-	    model and textures to CVS.  This version includes special
-	    hooks for CSP animations.  The model and textures are
-	    under Data/Models/Mirage2000, and the including COPYING
-	    file lists copyright information.  The m2k/model.xml file
-	    now points to this 3D model.
+  * Added a modified version of Lologramme's Mirage 2000
+    model and textures to CVS.  This version includes special
+    hooks for CSP animations.  The model and textures are
+    under Data/Models/Mirage2000, and the including COPYING
+    file lists copyright information.  The m2k/model.xml file
+    now points to this 3D model.
 
-2003-10-19: onsight
-            Updated configure script to check for osg 0.9.6.  Version
-	    0.9.4 can still be used, if necessary.  To do so, change 
-	    configure.in to check for 0.9.4, run autoconf, then 
-	    ./configure.  Finally, edit Include/CSPSim.h and uncomment
-	    the #define CSP_OSG_094 line.
+  * Changed the CHANGES.current format to be clearer and more
+    space-efficient.
 
 2003-10-19: onsight
-            Updated the xml files to remove the 'static' attribute (now
-	    set in the class definition), and convert the engine thrust
-	    tables to use simdata::Table2.  Added systems.xml to
-	    vehicles/aircraft/m2k.
+  * Updated configure script to check for osg 0.9.6.  Version
+    0.9.4 can still be used, if necessary.  To do so, change 
+    configure.in to check for 0.9.4, run autoconf, then 
+    ./configure.  Finally, edit Include/CSPSim.h and uncomment
+    the #define CSP_OSG_094 line.
 
 2003-10-19: onsight
-            Tagged r0_3_5 and started branch b0_3.  Merged 'systems'
-	    branch into the trunk to start version 0.4.0.
+  * Updated the xml files to remove the 'static' attribute (now
+    set in the class definition), and convert the engine thrust
+    tables to use simdata::Table2.  Added systems.xml to
+    vehicles/aircraft/m2k.
 
 2003-10-19: onsight
-            Modified class Thrust to use simdata::Table2 instead of the
-	    deprecated simdata::Table class.  Note that the XML thrust
-	    tables must be modified to use this new class, but that these
-	    changes will not be checked into cvs (to prevent clashes with
-	    the trunk).  The corrected files will be posted at 
-	    http://csp.sourceforge.net/downloads (soon) until the systems
-	    branch is merged to make v0.4.0.
+  * Tagged r0_3_5 and started branch b0_3.  Merged 'systems'
+    branch into the trunk to start version 0.4.0.
 
-	    SIMDATA_OBJECT(...) changed to SIMDATA_STATIC_OBJECT(...) for 
-	    object classes that are static.  This was previously specified
-	    per object in the associated xml file using the 'static' attr.
-	    That use is deprecated in simdata 0.4; now object classes are 
-	    either static or not.
+2003-10-19: onsight
+  * Modified class Thrust to use simdata::Table2 instead of the
+    deprecated simdata::Table class.  Note that the XML thrust
+    tables must be modified to use this new class, but that these
+    changes will not be checked into cvs (to prevent clashes with
+    the trunk).  The corrected files will be posted at 
+    http://csp.sourceforge.net/downloads (soon) until the systems
+    branch is merged to make v0.4.0.
+
+  * SIMDATA_OBJECT(...) changed to SIMDATA_STATIC_OBJECT(...) for 
+    object classes that are static.  This was previously specified
+    per object in the associated xml file using the 'static' attr.
+    That use is deprecated in simdata 0.4; now object classes are 
+    either static or not.
 
 2003-10-14: onsight
-            Removed very old TerrainSymbol.h
+  * Removed very old TerrainSymbol.h
 
 2003-10-11: onsight
-            Tracked down '#define min' from windows.h (no surprise), which
-	    was included via Producer/RenderSurface.  Added #undef's there
-	    as a temporary fix.
+  * Tracked down '#define min' from windows.h (no surprise), which
+    was included via Producer/RenderSurface.  Added #undef's there
+    as a temporary fix.
 
-	    Changed the classes related to input events and hid mapping
-	    to use reference counting.
+  * Changed the classes related to input events and hid mapping
+    to use reference counting.
 
-	    Moved CSP_OSG_094 to CSPSim.h.  You must uncomment this line
-	    to use OSG version 0.9.4 or older.
+  * Moved CSP_OSG_094 to CSPSim.h.  You must uncomment this line
+    to use OSG version 0.9.4 or older.
 
 ==========> VC users add System.cpp, SystemsModel.cpp, and Systems/*.cpp
-            to the project.
+    to the project.
 
 2003-10-09: onsight
-            Fixed minor snprintf problem under msvc.
+  * Fixed minor snprintf problem under msvc.
 
-            Split the SystemsModel class out of System.h/cpp into 
-	    SystemsModel.h/cpp.  This seems to be a better arrangement,
-	    and hopefully circumventns a problem with forward 
-	    declarations + simdata::Link<> under msvc.
+  * Split the SystemsModel class out of System.h/cpp into 
+    SystemsModel.h/cpp.  This seems to be a better arrangement,
+    and hopefully circumventns a problem with forward 
+    declarations + simdata::Link<> under msvc.
 
 2003-10-05: onsight
-            Changed HID to inherit from simdata::Referenced.  Minor
-	    changes to BaseScreen, GameScreen, and CSPSim to support
-	    this change.
+  * Changed HID to inherit from simdata::Referenced.  Minor
+    changes to BaseScreen, GameScreen, and CSPSim to support
+    this change.
 
 2003-09-25: onsight
-            Integrated VI's patches for OSG 096 support.  Changes
-	    camera handling in near/far SceneView intances in
-	    VirtualScene.cpp.
+  * Integrated VI's patches for OSG 096 support.  Changes
+    camera handling in near/far SceneView intances in
+    VirtualScene.cpp.
 
-            Various OSG 096 fixes:
-	      * SceneView aspect ratio
-	      * NearView projection matrix
-	      * False horizon coloring
-	      * Skydome (non-TEXDOME) coloring
+  * Various OSG 096 fixes:
+      + SceneView aspect ratio
+      + NearView projection matrix
+      + False horizon coloring
+      + Skydome (non-TEXDOME) coloring
 
-	    To use OSG 094, uncomment the #define CSP_OSG_094 line
-	    in VirtualScene.cpp
+  * To use OSG 094, uncomment the #define CSP_OSG_094 line
+    in VirtualScene.cpp
 
 2003-09-17: onsight
-            Major refactoring of the aircraft components in terms of
-	    the System/SystemsModel architecture.  PhysicsModel is now
-	    a System under the main SystemsModel for the vehicle.  The
-	    BaseDynamics classes are also Systems, although they only
-	    function as dynamics when placed directly underneath the
-	    PhysicsModel node.  Almost all of the original inter-
-	    component communications are now implemented through the
-	    bus architecture.  A few hacks remain, such as the landing
-	    gear sprites (which needs to be overhauled in terms of
-	    standard animations once a suitable 3d model is available).
+  * Major refactoring of the aircraft components in terms of
+    the System/SystemsModel architecture.  PhysicsModel is now
+    a System under the main SystemsModel for the vehicle.  The
+    BaseDynamics classes are also Systems, although they only
+    function as dynamics when placed directly underneath the
+    PhysicsModel node.  Almost all of the original inter-
+    component communications are now implemented through the
+    bus architecture.  A few hacks remain, such as the landing
+    gear sprites (which needs to be overhauled in terms of
+    standard animations once a suitable 3d model is available).
 
-	    Significant changes to the DataRecorder interface.
+  * Significant changes to the DataRecorder interface.
 
-	    Changed the stats display interface to allow each System
-	    to add its own info lines to the display by extending
-	    getInfo().
+  * Changed the stats display interface to allow each System
+    to add its own info lines to the display by extending
+    getInfo().
 
-	    Changes to the XML data for the m2k to support the new
-	    vehicle interfaces.
+  * Changes to the XML data for the m2k to support the new
+    vehicle interfaces.
 
 2003-09-15: onsight
-            Added SynchronousUpdate.h and SynchronousUpdate.cpp as the
-	    basis for a new update callback infrastructure.
+  * Added SynchronousUpdate.h and SynchronousUpdate.cpp as the
+    basis for a new update callback infrastructure.
 
 2003-09-13: onsight
-            Renamed Model to SystemsModel
+  * Renamed Model to SystemsModel
 
-            Removed F16Model from the build.
+  * Removed F16Model from the build.
 
-	    Added m_SystemsModel to DynamicObject to reference the
-	    current systems model.  The setHuman() and setLocal()
-	    methods now handle updates of the model, using two new
-	    simdata::Path member variables: m_AgentModel and m_HumanModel.
+  * Added m_SystemsModel to DynamicObject to reference the
+    current systems model.  The setHuman() and setLocal()
+    methods now handle updates of the model, using two new
+    simdata::Path member variables: m_AgentModel and m_HumanModel.
 
-	    SystemModel updates are now hooked into DynamicObject updates.
+  * SystemModel updates are now hooked into DynamicObject updates.
 
-	    Input events are chained to the systems model if the dynamic
-	    object doesn't handle them.
+  * Input events are chained to the systems model if the dynamic
+    object doesn't handle them.
 
-	    Changed the mapped input event interface.  The onCommand, 
-	    onAxis, and onMotion methods of InputInterface are now
-	    private, and all mapped events are passed via the onMapEvent
-	    method.  Overriding these methods was generally used to pass 
-	    events to subobjects, so it is easier now that only one method 
-	    needs to be extended.  The raw event handlers were excluded 
-	    from this interface, since raw events are more often handled 
-	    by top-level objects.  MapEvent is a wrapper type that 
-	    encompasses the three original types of events. 
+  * Changed the mapped input event interface.  The onCommand, 
+    onAxis, and onMotion methods of InputInterface are now
+    private, and all mapped events are passed via the onMapEvent
+    method.  Overriding these methods was generally used to pass 
+    events to subobjects, so it is easier now that only one method 
+    needs to be extended.  The raw event handlers were excluded 
+    from this interface, since raw events are more often handled 
+    by top-level objects.  MapEvent is a wrapper type that 
+    encompasses the three original types of events. 
 
 2003-09-07: onsight
-            Added Include/System.h and Include/Bus.h, which provide
-	    infrastructure for constructing detailed vehicle models.
-	    Several existing components such as the data recorder and
-	    flight model need to be refactored to use this new
-	    interface.
+  * Added Include/System.h and Include/Bus.h, which provide
+    infrastructure for constructing detailed vehicle models.
+    Several existing components such as the data recorder and
+    flight model need to be refactored to use this new
+    interface.
 
-<<<<<<< CHANGES.current
-2003-10-19: onsight
-            Tagged version r0_3_5, branched to b0_3 to start version 
-	    0.3.6.  The 'systems' branch will be merged into the trunk
-	    to create version 0.4.0.
-=======
-	    Minor warning cleanups in System.h and Bus.h.
+  * Minor warning cleanups in System.h and Bus.h.
 
 2003-08-20: onsight
-            Tagged version r0_3_4, starting version 0.3.5
->>>>>>> 1.69.2.5
+  * Tagged version r0_3_4, starting version 0.3.5
 

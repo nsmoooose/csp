@@ -17,10 +17,10 @@ extern int g_ScreenHeight;
 
 Hud::Hud(StandardVector3 const & p_direction)
 {
-  double const scale = 1000.0;
+  setName("Hud");
+  double const scale = 750.0;
   StandardVector3 t1  = scale * p_direction;
-  osg::Vec3 t2 = osg::Vec3(t1.x, t1.y, t1.z);
-  setMatrix( osg::Matrix::translate(t2) );
+  setPosition(osg::Vec3(t1.x, t1.y, t1.z));
 }
 
 Hud::~Hud()
@@ -45,7 +45,7 @@ HudTextElement Hud::ReadHudTextElement(std::istream & p_istream) const
  if (sstaticString == "#") 
 	 sstaticString = "";
 
- osg::Vec3 position( x * g_ScreenWidth , y * g_ScreenHeight, z );
+ osg::Vec3 position( x * g_ScreenWidth, y, z * g_ScreenHeight);
 
  std::string sfontName;
  unsigned short fontSize;
@@ -79,13 +79,10 @@ void Hud::BuildHud(std::string const & p_hudFileName)
 	iFStream.getline(buf, lineSize);
 
 	// read the "static" text part of the hud in a unique geode
+	osg::Geode * staticHud = osgNew osg::Geode;
 
-    osg::MatrixTransform * staticHud = osgNew osg::MatrixTransform;
-	staticHud->preMult(osg::Matrix::rotate(osg::inDegrees(90.0), 1.0, 0.0,0.0));
-	
 	// static part is stored in a geode which contains all osgtext drawables 
-	osg::Geode * aGeode = osgNew osg::Geode;
-	aGeode->setName("Static " + p_hudFileName);
+	staticHud->setName("Static " + p_hudFileName);
 
     while ( iFStream.getline(buf, lineSize) ) 
 	{   
@@ -101,11 +98,11 @@ void Hud::BuildHud(std::string const & p_hudFileName)
 		std::istringstream isStream(buf);
 		// read every hud element
 		*phudTextElement = ReadHudTextElement(isStream);	
-		aGeode->addDrawable(phudTextElement);
+        staticHud->addDrawable(phudTextElement);
+
 		}
 	}
 	// add this static part to the hud (master transform)
-    staticHud->addChild(aGeode);
     addChild(staticHud);
 	iFStream.close();  
     }
@@ -141,11 +138,10 @@ void Hud::OnUpdate()
 	unsigned short i;
 	
 	// update static part
-	osg::MatrixTransform * aTransform = dynamic_cast<osg::MatrixTransform *>(getChild(0));
-    osg::Geode * aGeode = dynamic_cast<osg::Geode *>(aTransform->getChild(0));
-	for (i = 0; i < aGeode->getNumDrawables(); ++i)
+	osg::Geode * staticHud = dynamic_cast<osg::Geode*>(getChild(0));
+	for (i = 0; i < staticHud->getNumDrawables(); ++i)
 	{
-		HudElement * aHudElement = dynamic_cast<HudElement *>(aGeode->getDrawable(i));	
+		HudElement * aHudElement = dynamic_cast<HudElement *>(staticHud->getDrawable(i));	
 		aHudElement->OnUpdate();
 		//osgText::Text * aText = aGeode->getDrawable(i);
 		//aText->app();

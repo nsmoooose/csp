@@ -1,25 +1,15 @@
-#include "stdinc.h"
-
 #ifdef WIN32
 #include <windows.h>
 #endif
 
-//#include "GL\GL.h"
-
 #include <GL/gl.h>			// Header File For The OpenGL32 Library
 #include <GL/glu.h>			// Header File For The GLu32 Library
 
-#ifdef WIN32
-#include <GL/glaux.h>		// Header File For The Glaux Library
-#endif
-
+#include "LogoScreen.h"
 
 
 extern int g_ScreenWidth;
 extern int g_ScreenHeight;
-
-
-#include "LogoScreen.h"
 
 
 void LogoScreen::OnInit()

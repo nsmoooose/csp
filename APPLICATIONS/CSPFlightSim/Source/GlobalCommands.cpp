@@ -1,9 +1,6 @@
-#include "stdinc.h"
-
-#ifdef _WIN32
-#include <typeinfo.h>
-#endif
+#ifndef _WIN32
 #include <typeinfo>
+#endif
 
 #include "global.h"
 #include "GlobalCommands.h"
@@ -12,6 +9,7 @@
 #include "AirplaneInput.h"
 #include "ObjectFactory.h"
 #include "CSPFlightSim.h"
+#include "LogStream.h"
 #include "SimTime.h"
 #include "SymbolTable.h"
 #include "ObjectTypeSymbol.h"
@@ -110,10 +108,8 @@ std::string RunCommand(deque<string> & args)
     {
         file.getline(buff, 255);
 		std::string sbuff = std::string(buff);
-	string s = sbuff;
-	int idx = s.find_last_not_of("\r\n") + 1;
-	if (idx < s.length()) s.erase(s.begin() + idx, s.end());
-        //ProcessCommandString(sbuff);
+		size_t idx = sbuff.find_first_of("\r\n");
+		std::string s  = sbuff.substr(0, idx);
         ProcessCommandString(s);
     }
 
@@ -158,7 +154,7 @@ string AddCommand( deque<string> & args)
                         g_pPlayerInput = new AirplaneInput;
 	                    g_pPlayerInput->SetObject(g_pPlayerObject);
 
-						// maybe this has to be moved elsewhere
+						// maybe this has to be moved on another place
 						g_pPlayerObject->initialize();
 					}
 

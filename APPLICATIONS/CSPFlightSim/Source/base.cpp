@@ -56,7 +56,7 @@ Node *makeBase( void )
     tex->setWrap( Texture::WRAP_T, Texture::REPEAT );
 
     StateSet *dstate = new StateSet;
-    dstate->setMode( GL_LIGHTING, StateAttribute::OFF );
+    dstate->setMode( GL_LIGHTING, StateAttribute::ON );
     dstate->setTextureAttributeAndModes( 0, tex, StateAttribute::ON );
 
     dstate->setTextureAttributeAndModes( 0, new TexEnv );
@@ -77,5 +77,6 @@ Node *makeBase( void )
 
     geode->setName( "Base" );
 
+	//return 0;
     return geode;
 }

@@ -1,6 +1,3 @@
-#include "stdinc.h"
-
-
 #include "BaseController.h"
 
 BaseController::BaseController()

@@ -242,7 +242,6 @@ void AirplaneObject::doComplexPhysics(double dt)
         m_pAirplanePhysics->Initialize();
 	    m_pAirplanePhysics->setVelocity(m_LinearVelocity);
         m_pAirplanePhysics->setSpeed(m_Speed);
-        //m_pAirplanePhysics->setPosition(m_LocalPosition);
         m_pAirplanePhysics->qOrientation.FromRotationMatrix(m_Orientation);
         m_bPhysicsInitialized = true;
     }
@@ -255,7 +254,11 @@ void AirplaneObject::doComplexPhysics(double dt)
 
     m_pAirplanePhysics->DoSimStep(dt);
 
-    m_pAirplanePhysics->qOrientation.ToRotationMatrix(m_Orientation); 
+    m_pAirplanePhysics->qOrientation.ToRotationMatrix(m_Orientation);
+
+	// testing
+	m_qOrientation = m_pAirplanePhysics->qOrientation;
+
     m_Direction = m_Orientation * m_InitialDirection;
     m_CurrentNormDir = m_Orientation * m_InitialNormDir;
 

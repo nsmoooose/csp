@@ -4,6 +4,7 @@
 #include "VirtualBattlefield.h"
 
 #include <osg/Depth>
+#include <osg/Geode>
 #include <osg/StateSet>
 
 
@@ -317,7 +318,7 @@ void TerrainObject::UpdateDemeterSettings()
 	sprintf(szMediaPath,".%cterrain%c",fileSeparator,fileSeparator);
     Demeter::Settings::GetInstance()->SetMediaPath(szMediaPath);
 
-    Demeter::Settings::GetInstance()->SetVerbose(true);
+    Demeter::Settings::GetInstance()->SetVerbose(false);
     Demeter::Settings::GetInstance()->SetScreenWidth(g_ScreenWidth);
     Demeter::Settings::GetInstance()->SetScreenHeight(g_ScreenHeight);
     Demeter::Settings::GetInstance()->SetPreloadTextures(m_bPreloadTextures);

@@ -8,6 +8,8 @@
 #include "AeroParamSymbol.h"
 #include "TypesMath.h"
 
+unsigned short const maxIteration = 150;
+unsigned short const minIteration = 100;
 
 extern SimTime * g_pSimTime;
 extern SymbolTable GlobalSymbolTable;
@@ -45,7 +47,7 @@ void AirplanePhysics::Initialize()
 	m_fgForce = 1.0;
 	m_Moments = StandardVector3::ZERO;
 
-	m_usMaxi = 150;
+	m_usMaxi = maxIteration;
 	m_dprevdt = 0.016;
 }
 
@@ -123,15 +125,11 @@ void AirplanePhysics::setAeroParams(AeroParam * pAeroParam )
 }
 
 
-
 void AirplanePhysics::DoSimStep(double dt)
 {
     CSP_LOG(CSP_PHYSICS, CSP_DEBUG, "AirplanePhysics: DoSimStep; Time: " << g_pSimTime->getSimTime() );
-	
-	unsigned short const maxIteration = 150;
-	unsigned short const minIteration = 100;
 
-	if ( m_dprevdt - dt > 0.0 )
+	if ( dt - m_dprevdt < 0.0 )
 	{
 		if ( m_usMaxi < maxIteration )
 		++m_usMaxi;
@@ -447,12 +445,12 @@ double AirplanePhysics::CalculateAirDensity(double const alt) const
 double AirplanePhysics::CalculateGravity(double const p_altitude) const
 {
 	// g = G * Mearth / (Rearth + z)^2
-	// G = 6.672 10^(-11)
+	// G = 6,67259 10^(-11)
 	// Mearth = 5.976 10^(24) kg
-	// Rearth = 6378 10^3 m
+	// Rearth = 6 378 10^3 m
 
-	double h =   1.0 + p_altitude / 6378000.0 ;
-	double gravity = 9.8016140266 / ( h * h );
+	double h =   1.0 + p_altitude / 6357000.0 ;
+	double gravity = 9.802480776 / ( h * h );
 	CSP_LOG(CSP_PHYSICS, CSP_DEBUG, "AirplanePhysics: CalculateGravity: " << gravity << " at altitude " << p_altitude);
     return gravity;
 }

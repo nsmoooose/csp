@@ -6,8 +6,11 @@
 #include <cmath>
 
 #include <osg/Depth>
+#include <osg/Fog>
 #include <osg/Geode>
+#include <osg/Group>
 #include <osg/Geometry>
+#include <osg/Light>
 #include <osgDB/ReadFile>
 #include <osg/Texture2D>
 #include <osg/TexEnv>
@@ -27,7 +30,8 @@ const float FOG_ALPHA = 1.0f;
 
 Node *makeSky( void )
 {
-    int i, j;
+    /*
+	int i, j;
     float lev[] = {-10, -5, -1.0, 1.0, 15.0, 30.0, 45.0, 60.0, 75.0, 90.0  };
     float cc[][4] =
     {
@@ -45,7 +49,7 @@ Node *makeSky( void )
     };
     float x, y, z;
     float alpha, theta;
-    float radius = 25000.0f;
+    float radius = 32000.0f;
     int nlev = sizeof( lev )/sizeof(float);
     Geometry *geom = osgNew Geometry;
 
@@ -111,13 +115,13 @@ Node *makeSky( void )
     geom->setColorBinding( Geometry::BIND_PER_VERTEX );
 
 
-    Texture2D *tex = new Texture2D;
-    tex->setImage(osgDB::readImageFile("Images/white.rgb"));
+    Texture2D *tex = osgNew Texture2D;
+    tex->setImage(osgDB::readImageFile("Images/CSP_Splash.tga"));
 
-    StateSet *dstate = new StateSet;
+    StateSet *dstate = osgNew StateSet;
 
     dstate->setTextureAttributeAndModes( 0, tex, StateAttribute::OFF );
-    dstate->setTextureAttributeAndModes( 0, new TexEnv );
+    dstate->setTextureAttributeAndModes( 0, osgNew TexEnv );
     dstate->setMode( GL_LIGHTING, StateAttribute::OFF );
     dstate->setMode( GL_CULL_FACE, StateAttribute::ON );
     
@@ -127,7 +131,7 @@ Node *makeSky( void )
     depth->setFunction(osg::Depth::ALWAYS);
     depth->setRange(1.0,1.0);   
     dstate->setAttributeAndModes(depth,StateAttribute::ON );
-
+    dstate->setMode ( GL_FOG, osg::StateAttribute::OFF );
     dstate->setRenderBinDetails(-2,"RenderBin");
 
     geom->setStateSet( dstate );
@@ -138,5 +142,69 @@ Node *makeSky( void )
     geode->setName( "Sky" );
 
     return geode;
+
+   */
+    
+    // create a new group for the sky dome
+    osg::Group * skydome_group = osgNew osg::Group;
+
+    // read in the sky model
+    osg::Node * skydome = osgDB::readNodeFile ( "Models/skydome.osg" );
+
+	osg::BoundingSphere s = skydome->getBound();
+	float r = s.radius();
+	osg::Vec3 c = s.center();
+
+    // add the skydome
+    skydome_group->addChild ( skydome );
+
+    // special stateset for the skydome group
+    osg::StateSet * stateset = osgNew osg::StateSet;
+
+	osg::Depth* depth = osgNew osg::Depth;
+    depth->setFunction(osg::Depth::ALWAYS);
+    depth->setRange(1.0,1.0);   
+    stateset->setAttributeAndModes(depth,StateAttribute::ON );
+	stateset->setRenderBinDetails(-2,"RenderBin");
+
+	osg::StateSet * pFogState = osgNew osg::StateSet;
+    osg::Fog* fog = osgNew osg::Fog;
+    fog->setMode(osg::Fog::LINEAR);
+    fog->setDensity(1.9f);
+    fog->setStart(100.0f);
+    fog->setEnd(30000);
+
+	osg::Vec4 fogColor;
+	fogColor[0] = FOG_RED;
+	fogColor[1] = FOG_GREEN; 
+	fogColor[2] = FOG_BLUE; 
+	fogColor[3] = FOG_ALPHA;
+	fog->setColor(fogColor);
+    pFogState->setAttributeAndModes(fog ,osg::StateAttribute::ON);
+	
+	
+	osg::Light * pLight = osgNew osg::Light;
+	//pLight->setDirection( osg::Vec3(1,1,1) );
+	//pLight->setAmbient( osg::Vec4(0.75, 0.75, 0.75, 1) );
+	//pLight->setDiffuse( osg::Vec4(0.6, 0.6, 0.6, 1) );
+
+	pLight->setDirection( osg::Vec3(0,0,-1) );
+	pLight->setAmbient( osg::Vec4(0.2f,0.2f,0.2f,1.0f) );
+	pLight->setDiffuse( osg::Vec4(0.8f,0.8f,0.8f,1.0f) );
+	pLight->setSpecular( osg::Vec4(0.75f,0.75f,0.75f,1.0f) );
+	osg::StateSet * pLightSet = osgNew osg::StateSet;
+	
+	pFogState->setAttributeAndModes(pLight, osg::StateAttribute::ON);
+	
+	stateset->merge(*pFogState);
+	 // ... as we want to disable fogging
+    stateset->setMode ( GL_FOG, osg::StateAttribute::ON );
+
+    // assign the state set
+    skydome_group->setStateSet (stateset);
+
+    return skydome_group;
+	
+	
 }
 

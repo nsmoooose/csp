@@ -189,15 +189,14 @@ void HudGeometricElement::OnUpdateHsi()
   m_fheadingAngle = - g_pPlayerObject->getRoll() / 60.0 ;
   m_fpitchAngle = - 8.0 * g_pPlayerObject->getPitch();
 
-  osg::Matrix matrix = osg::Matrix::rotate(m_fheadingAngle, 0, 1.0, 0);
-	  
-  matrix = matrix * osg::Matrix::translate (0, 0, m_fpitchAngle);
-  setMatrix(matrix); 
+  setPosition(osg::Vec3(0.0, 0.0, m_fpitchAngle));
+  osg::Quat quat(m_fheadingAngle, osg::Vec3(0.0, 1.0, 0.0));
+  setAttitude(quat);
 }
 
 void HudGeometricElement::OnUpdateFpm()
 {
 	StandardVector3 t1 = g_pPlayerObject->getVelocity() - g_pPlayerObject->getSpeed() * g_pPlayerObject->getDirection();
-	osg::Vec3 t = osg::Vec3(t1.x, t1.y, t1.z);
-	setMatrix(osg::Matrix::translate( t )); 
-}
+	osg::Vec3 t = osg::Vec3(t1.x, t1.y, t1.z); 
+	setPosition(t);
+} 

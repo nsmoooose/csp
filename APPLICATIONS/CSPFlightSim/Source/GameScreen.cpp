@@ -102,7 +102,7 @@ void GameScreen::OnRender()
     g_pBattlefield->drawScene();
 }
 
-void GameScreen::OnUpdateObjects(float dt)
+void GameScreen::OnUpdateObjects(double dt)
 {	
     g_pBattlefield->OnUpdate(dt);
     missile_delay += dt;
@@ -113,8 +113,8 @@ StandardVector3 GameScreen::GetNewFixedCamPos(BaseObject * const p_pObject) cons
 	StandardVector3 upVec = p_pObject->getUpDirection();
 	StandardVector3 objectDir = p_pObject->getDirection();
 	StandardVector3 objectPos = p_pObject->getGlobalPosition();
-    StandardVector3 camPos = objectPos + 500.0 * objectDir + ( 50.0 - rand() % 25 ) * (objectDir^upVec) 
-		    + ( 25.0 + rand () % 12 ) * upVec;
+    StandardVector3 camPos = objectPos + 500.0 * objectDir + ( 12.0 - (rand() % 5) ) * (objectDir^upVec) 
+		    + ( 6.0 + (rand () % 3) ) * upVec;
 	float h = g_pBattlefield->getElevation(objectPos.x, objectPos.y);
 	if ( camPos.z < h )
 		camPos.z = h;

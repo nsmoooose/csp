@@ -108,17 +108,17 @@ bool AirplaneInput::OnKeyUp(SDLKey key)
 	case SDLK_LEFT:
 	case SDLK_RIGHT:
 		m_foffsetAileron = 0.0;
-		m_pAirplaneObject->setAileron(0.0);
+		//m_pAirplaneObject->setAileron(0.0);
 		break;
 	case SDLK_UP:
 	case SDLK_DOWN:
 		m_foffsetElevator = 0.0;
-		m_pAirplaneObject->setElevator(0.0);
+		//m_pAirplaneObject->setElevator(0.0);
 		break;
 	case SDLK_COMMA:
 	case SDLK_PERIOD:
         m_foffsetRudder = 0.0;
-		m_pAirplaneObject->setRudder(0.0);
+		//m_pAirplaneObject->setRudder(0.0);
 		break;
 	case SDLK_EQUALS:
 	case SDLK_MINUS:

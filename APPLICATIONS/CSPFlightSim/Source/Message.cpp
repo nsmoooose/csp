@@ -1,8 +1,5 @@
-#include "stdinc.h"
-
+#include "LogStream.h"
 #include "Message.h"
-
-using namespace std;
 
 Message::Message()
 {

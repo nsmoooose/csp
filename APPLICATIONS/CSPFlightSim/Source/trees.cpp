@@ -129,7 +129,8 @@ Node *makeTreesPatch( float xoff, float yoff, float spacing, float width,
 	for (i=0;i<typeTreeNumber;++i)
 	{
     Texture2D* aTex = osgNew Texture2D;
-	aTex->setImage(osgDB::readImageFile(treefileName[i]));
+	osg::Image *image = osgDB::readImageFile ( treefileName[i] );
+	aTex->setImage(image);
     tex.push_back(aTex);
     }
 	

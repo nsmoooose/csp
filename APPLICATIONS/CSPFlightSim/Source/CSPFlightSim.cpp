@@ -5,31 +5,27 @@
 #include <GL/gl.h>			// Header File For The OpenGL32 Library
 #include <GL/glu.h>			// Header File For The GLu32 Library
 
-#include "stdinc.h"
+#include <osg/Timer>
 
-
-#include "SDL.h"
-#include "CON_console.h"
+#include "CON_console.h" // console is using SDL_OPENGLBLIT :-( switch to osgConsole?
 #include "CON_consolecommands.h"
 #include "DT_drawtext.h"
 
 #include "DemeterException.h"
 
-
+#include "BaseInput.h"
+#include "Config.h"
+#include "ConsoleCommands.h"
 #include "CSPFlightSim.h"
 #include "GameScreen.h"
+#include "GlobalCommands.h"
 #include "MenuScreen.h"
 #include "LogoScreen.h"
+#include "LogStream.h"
 #include "SimTime.h"
 #include "ObjectFactory.h"
-#include "GlobalCommands.h"
-#include "ConsoleCommands.h"
-
 #include "VirtualBattlefield.h"
-#include "VirtualBattlefieldScene.h"
-#include "BaseInput.h"
 
-#include <osg/Geode>
 
 #ifndef FALSE
 #define FALSE 0
@@ -40,7 +36,6 @@
 #endif
 
 extern VirtualBattlefield * g_pBattlefield;
-//extern VirtualBattlefieldScene * g_pBattleScene;
 extern SimTime * g_pSimTime;
 extern ObjectFactory * g_pObjectFactory;
 
@@ -55,6 +50,38 @@ int ConsoleFont;
 double g_LatticeXDist = 64000.0;
 double g_LatticeYDist = 64000.0;
 
+// urgent to clarify the following or to use a real viewer!
+// it seems that this class looks more and more like an (osgSDL) viewer!
+osg::Timer _timer;
+osg::Timer_t _initialTick, _lastFrameTick, _frameTick;
+
+osg::Timer_t clockTick()
+{
+    return _timer.tick();
+}
+
+double clockSeconds() 
+{ 
+  return _timer.delta_s(_initialTick,clockTick()); 
+}
+
+// update time from the current frame update and the previous one.
+osg::Timer_t updateFrameTick()
+{
+    _lastFrameTick = _frameTick;
+    _frameTick = _timer.tick();
+    return _frameTick;
+}
+
+double frameSeconds() 
+{ 
+	return _timer.delta_s(_lastFrameTick,_frameTick); 
+}
+
+double frameRate() 
+{ 
+	return 1.0/frameSeconds(); 
+}
 
 CSPFlightSim::CSPFlightSim()
 {
@@ -73,6 +100,10 @@ CSPFlightSim::CSPFlightSim()
 
     g_pPlayerObject = NULL;
 	g_pPlayerInput = NULL;
+
+	_initialTick = _timer.tick();
+	_frameTick = _initialTick;
+	_lastFrameTick = _initialTick;
 }
 
 
@@ -86,7 +117,6 @@ void CSPFlightSim::Init()
 {
 
     CSP_LOG( CSP_APP , CSP_INFO,  "Starting CSPFlightSim..." ); 
-
 
     // Initialize SDL
     InitSDL();
@@ -104,8 +134,6 @@ void CSPFlightSim::Init()
     SDL_GL_SwapBuffers();
 
     // Do rest of initialization.
-//    SDL_Delay(1000);
-
     InitConsole();
 
     g_pObjectFactory->initialize();
@@ -163,16 +191,13 @@ void CSPFlightSim::Run()
     CSP_LOG(CSP_APP, CSP_DEBUG, "CSPFlightSim::Run..." );
     m_bFreezeSim = false;
 	
-    prevSceneTime = SDL_GetTicks() - 1;
-    
     try
     {
 		while(!m_bFinished)
 		{
-			curSceneTime = SDL_GetTicks();
-			int diffTime = curSceneTime - prevSceneTime;
-			float dt = static_cast<float>(diffTime) / 1000.0;
-			
+			updateFrameTick();
+			float dt = frameSeconds();
+
 			g_pSimTime->updateSimTime(dt);    
 			float simtime = g_pSimTime->getSimTime();
 			
@@ -197,11 +222,7 @@ void CSPFlightSim::Run()
 			// Do fps and other stuff.
 			if (m_bShowStats)
 			{
-				if ( diffTime > 1 && diffTime < 1000 )
-				{
-					float fps = 1000.0 / diffTime;
-					ShowStats(fps);
-				};
+				ShowStats(frameRate());
 				ShowPlaneInfo();
 			}
 
@@ -210,8 +231,6 @@ void CSPFlightSim::Run()
 			
 			// remove marked objects, this should be done at the end of the main loop.
 			g_pBattlefield->removeObjectsMarkedForDelete();
-
-			prevSceneTime = curSceneTime;
 		}
 		
 		g_pBattlefield->dumpObjectHistory();
@@ -387,7 +406,7 @@ void CSPFlightSim::DoInput()
 // Update all objects including the players.
 // This will call the objects physics and
 // AI routines.
-void CSPFlightSim::UpdateObjects(float dt)
+void CSPFlightSim::UpdateObjects(double dt)
 {
     CSP_LOG(CSP_APP, CSP_DEBUG, "CSPFlightSim::UpdateObjects..." );
 

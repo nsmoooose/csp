@@ -32,10 +32,7 @@ Run "%(prog)s help <command>" for help on a specific command.
 
 # TODO
 # clean up error reporting of review submit
-# default changeset?
-# use edit function for changeset descriptions (honor save/nosave)
-# a changeset diff viewer (extend describe)... maybe a textbased
-#   diff chooser.  also need diffstats
+# diffstats
 # work with tkdiff by piping through undiff
 
 
@@ -150,16 +147,16 @@ class Changeset:
     self._date = time.time()
     self._pending = pending
 
-  def describe(self):
-    print
-    print 'changelist: %s' % self._name
-    print 'created on: %s' % self.date()
-    print
-    print '\n'.join(self._description)
-    print
+  def describe(self, outfile=sys.stdout):
+    print >>outfile, ''
+    print >>outfile, 'change set: %s' % self._name
+    print >>outfile, 'created on: %s' % self.date()
+    print >>outfile, ''
+    print >>outfile, '\n'.join(self._description)
+    print >>outfile, ''
     if self._files:
-      for file in self._files: print str(file)
-      print
+      for file in self._files: print >>outfile, str(file)
+      print >>outfile, ''
     return Result(0)
 
   def submit(self):
@@ -168,7 +165,7 @@ class Changeset:
     exitcode = os.system('svn ci -m \'%s\' %s' %
                          (description, ' '.join(files)))
     if exitcode != 0:
-      return Error('error submitting changelist')
+      return Error('error submitting changeset')
     self._pending = 0
     return Result(0)
 
@@ -185,7 +182,7 @@ class Changeset:
     if new:
       self._pending = 1
       desc = ['<enter a description here>']
-    addtext('# changelist : %s' % self._name)
+    addtext('# change set : %s' % self._name)
     addtext('# created on : %s' % self.date())
     if self._pending:
       addtext('# status     : pending')
@@ -360,6 +357,73 @@ class Workspace:
     #  del self._files[file.abspath()]
     del self._sets[name]
     self.save()
+    return Result(0)
+
+  def diff(self, name):
+    dircmd = os.environ.get('SUBSET_DIFF_DIR', '')
+    onecmd = os.environ.get('SUBSET_DIFF_ONE', dircmd)
+    cs = None
+    if not name:
+      files = filter(self._closed, sublib.svn_st())
+    elif os.path.exists(name):
+      files = sublib.svn_st()
+      path = os.path.abspath(name)
+      files = [x for x in files if x.abspath() == path]
+      if not files:
+        print '%s unmanaged or unchanged' % name
+        return Result(0)
+    else:
+      cs = self.getChangeset(name)
+      if not cs:
+        return Error('no changeset "%s"' % name)
+      files = cs.files()
+      cs.describe()
+    if not files: return Result(0)
+    tmproot = '/tmp/subset.diff.%010d' % random.randint(1, 1000000000)
+    os.mkdir(tmproot)
+    cleanup = []
+    singleton = not cs and (len(files) == 1)
+    if singleton and not onecmd:
+      print 'SUBSET_DIFF_ONE undefined; cannot view diff.'
+      return Result(1)
+    if not singleton and not dircmd:
+      print 'SUBSET_DIFF_DIR undefined; cannot view diff.'
+      return Result(1)
+    makeindex = not singleton
+    if makeindex:
+      diffindex = os.path.join(tmproot, 'index.html')
+      index = open(diffindex, 'w')
+      index.write('<html><body><small>\n')
+      if cs:
+        index.write('<h3>Changeset %s</h3>\n' % cs.name())
+        index.write('<i>Created on: %s</i><p/>' % cs.date())
+        for line in cs.description():
+          if line.strip():
+            index.write('%s ' % line)
+          else:
+            index.write('<p/>\n')
+        index.write('\n<p/>\n')
+      else:
+        index.write('<h3>%s</h3>' % name)
+      cleanup.append(diffindex)
+      index.write('<ul>\n')
+    for file in files:
+      outbase = file.path.replace(os.path.sep, '~') + '.diff'
+      outfile = os.path.join(tmproot, outbase)
+      cleanup.append(outfile)
+      sublib.svn_savediff(file, outfile)
+      if makeindex:
+        index.write('<li><a href="%s">%s</a></li>\n' % (outbase, file.path))
+    if makeindex:
+      index.write('</ul>\n</small></body></html>')
+      index.close()
+    if singleton:
+      os.system('%s %s 2>/dev/null' % (onecmd, cleanup[-1]))
+    else:
+      os.system('%s %s 2>/dev/null' % (dircmd, tmproot))
+    for path in cleanup:
+      os.unlink(path)
+    os.rmdir(tmproot)
     return Result(0)
 
   def opened(self, filters=None):
@@ -734,6 +798,25 @@ class Describe(Command):
     return run('describe', name)
 
 
+class Diff(Command):
+
+  def _define(self):
+    self._long = ('diff: generate diffs for files or changesets.\n'
+                  'usage: %prog diff [changeset|file]')
+    self._short = 'generate diffs'
+    self._addKeys('diff')
+
+  def _run(self, options, args):
+    if len(args) > 1:
+      self.help()
+      return 1
+    if len(args) == 0:
+      name = ''
+    else:
+      name = args[0]
+    return run('diff', name)
+
+
 class Help(Command):
 
   def _define(self):
@@ -776,7 +859,17 @@ class Help(Command):
 
 
 # register subcommands
-Help(), Opened(), Changes(), Assign(), Describe(), Abandon(), Change(), Submit(), Review()
+Abandon()
+Assign()
+Change()
+Changes()
+Describe()
+Diff()
+Help()
+Opened()
+Review()
+Submit()
+
 
 def main(args):
   if len(args) < 1:

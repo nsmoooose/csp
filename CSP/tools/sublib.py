@@ -59,6 +59,7 @@ def svn_info():
     info[line[:idx]] = line[idx+1:].strip()
   return info
 
+
 def svn_st(files=None):
   root = svn_root()
   if not files:
@@ -84,9 +85,11 @@ def svn_st(files=None):
     files.append(File(relpath, root, mode))
   return files
 
+
 #def svn_info(path):
 #  info = os.popen('svn info %s' % path)
 #  app.log.info(info.readlines())
+
 
 def svn_rootsvn():
   path = '.svn'
@@ -98,8 +101,16 @@ def svn_rootsvn():
     app.log.fatal('must run in a subversion workspace (.svn not found)')
   return rootsvn
 
+
 def svn_root():
   return os.path.abspath(os.path.dirname(svn_rootsvn()))
+
+
+def svn_savediff(file, target, context=100):
+  path = file.path
+  exit_code, out = runo('svn diff --diff-cmd diff -x "-U %d" %s' % (context, path))
+  open(target, 'w').write(''.join(out))
+  return exit_code
 
 
 def runoe(cmd):
@@ -112,13 +123,16 @@ def runoe(cmd):
     app.log.debug('run "%s" failed (%d): err=%s, out=%s' % (cmd, exit_code, err, out))
   return exit_code, out, err
 
+
 def runo(cmd):
   exit_code, out, err = runoe(cmd)
   return exit_code, out
 
+
 def run(cmd):
   exit_code, out, err = runoe(cmd)
   return exit_code
+
 
 def svn_submit_review(name, log, contents):
   info = svn_info()

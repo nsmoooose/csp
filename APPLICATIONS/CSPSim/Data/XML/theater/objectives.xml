@@ -2,7 +2,13 @@
 
 <Object class="FeatureGroupList">
 	<List name="feature_groups">
-		<Object class="Objective">
+		<!-- the format for specify objective locations
+		     has changed from local grid coordinates to
+		     latitude/longitude (or UTM).  the following
+		     test objects must be updated to use simdata
+		     LLA tags before they can be added back into
+		     the theater.  -->
+		<!--Object class="Objective">
 			<Path name="model">airbase</Path>
 			<Float name="x">483010</Float>
 			<Float name="y">499010</Float>
@@ -22,7 +28,7 @@
 			<Float name="y">516173</Float>
 			<Float name="orientation">-0.1744</Float>
 			<Int name="strategic_value_modifier">0</Int>
-		</Object>
+		</Object-->
 	</List>
 </Object>
 

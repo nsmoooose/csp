@@ -49,17 +49,26 @@ def copy_dir(src, dst, files):
         src_name = os.path.join(src, n)
         dst_name = os.path.join(dst, n)
         if not os.path.isdir(src_name):
+            print "%s => %s" % (src_name, dst_name)
             copy_file(src_name, dst_name)
 
-def make_install():
+def make_install(win):
 	from distutils import sysconfig, dir_util
 	lib = sysconfig.get_python_lib()
 	inc = sysconfig.get_python_inc()
 	modpath = os.path.join(lib, "SimData")
 	incpath = os.path.join(inc, "SimData")
+	package_files = ['__init__.py', 'Debug.py', 'Parse.py', 'Compile.py']
+	win_files = []
+	if not win:
+		package_files.extend(['cSimData.py', '_cSimData.so'])
+	else:
+		win_files.extend(['cSimData.py', '_cSimData.dll'])
 	try:
 		print "Installing SimData package to", modpath
-		copy_dir("SimData", modpath, ['__init__.py', 'Debug.py', 'Parse.py', 'Compile.py', 'cSimData.py', '_cSimData.so'])
+		copy_dir("SimData", modpath, package_files)
+		if win:
+			copy_dir("VisualStudio", modpath, win_files)
 		print "Installing SimData headers to", incpath
 		copy_dir("Include/SimData", incpath, headers)
 		copy_dir("Include/SimData", incpath, interfaces)
@@ -263,8 +272,10 @@ libraries = ["swigpy", "dl"]
 cflags = []
 
 
-if len(sys.argv)==2 and sys.argv[1]=="make_install":
-	make_install()
+if len(sys.argv)==2:
+	command = sys.argv[1]
+	if command.startswith("make_install"):
+		make_install(command.endswith("win"))
 
 cSimData = Extension("SimData._cSimData", 
                      sources + main_interface_fullpath, 

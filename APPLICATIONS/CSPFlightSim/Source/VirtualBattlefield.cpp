@@ -129,7 +129,7 @@ int VirtualBattlefield::buildScene()
 	std::string sep = ":";
 #endif
 
-	osgDB::setDataFilePathList("." + sep + "Images" + sep + "Models" + sep + "Fonts");
+	osgDB::setDataFilePathList("../Data" + sep + "../Data/Images" + sep + "../Data/Models" + sep + "../Data/Fonts");
 
 	// we don't need this on Linux since libs are usually
 	// installed in /usr/local/lib/osgPlugins or /usr/lib/osgPlugins.
@@ -153,8 +153,7 @@ int VirtualBattlefield::buildScene()
 	m_rpObjectRootNode->setName("ObjectRootSceneGraph.");
 
 	osg::ClearNode* earthSky = osgNew osg::ClearNode;
-    //earthSky->setRequiresClear(false); // we've got base and sky to do it.
-    earthSky->setRequiresClear(true); // we've got base and sky to do it.
+    earthSky->setRequiresClear(false); // we've got base and sky to do it.
 	
     // use a transform to make the sky and base around with the eye point.
     osg::Transform* transform = osgNew osg::Transform;
@@ -738,7 +737,7 @@ void VirtualBattlefield::setActiveTerrain( TerrainObject * pTerrainObject)
 	m_pActiveTerrainObject = pTerrainObject; 
 
 	float xPatch = 35000 + 448000;
-	float yPatch = 5000 + 500000;
+	float yPatch = 6000 + 500000;
 
 	if (m_pActiveTerrainObject)
 		 m_pActiveTerrainObject->setCameraPosition( xPatch, yPatch, 1000);

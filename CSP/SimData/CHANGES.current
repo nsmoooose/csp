@@ -4,6 +4,8 @@ Version 0.4.0 (in progress)
 2004-11-14: onsight
 * Added a method to Timer to both return and reset the elapsed time.
 
+* Removed spurious 'import bootstrap' from trc.
+
 * Set the SWIG_STD_BACKWARD_COMP flag to the Scons script to fix the
   build under Swig 1.3.22.
 

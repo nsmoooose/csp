@@ -31,7 +31,6 @@ import os
 import os.path
 import re
 
-import bootstrap
 from CSP.base import app
 
 import BaseTypes

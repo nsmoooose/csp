@@ -255,8 +255,10 @@ public:
 		glPushMatrix();
 		glRotatef(rx, 1, 0, 0);
 		glRotatef(rz, 0, 0, 1);
-		glBegin(GL_POINTS);
+
 		glEnable(GL_BLEND);
+
+		glBegin(GL_POINTS);
 		for (; --i >= 0; ++c, ++p) {
 			glColor4f(c->x(), c->y(), c->z(), c->w()*alpha);
 			glVertex3f(p->x(), p->y(), p->z());

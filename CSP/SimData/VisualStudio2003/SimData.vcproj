@@ -368,6 +368,9 @@
 				RelativePath="..\Include\SimData\String.h">
 			</File>
 			<File
+				RelativePath="..\Include\SimData\TaggedRecord.h">
+			</File>
+			<File
 				RelativePath="..\Include\SimData\TypeAdapter.h">
 			</File>
 			<File

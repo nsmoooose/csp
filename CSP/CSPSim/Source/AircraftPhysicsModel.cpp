@@ -129,6 +129,7 @@ void AircraftPhysicsModel::doSimStep(double dt) {
 	assert(b_Position.valid());
 	assert(b_Velocity.valid());
 	assert(b_AngularVelocity.valid());
+	assert(b_AngularVelocityBody.valid());
 	assert(b_Attitude.valid());
 	assert(b_AccelerationBody.valid());
 	m_WeightLocal = - b_Mass->value() * gravity * simdata::Vector3::ZAXIS;
@@ -190,6 +191,7 @@ void AircraftPhysicsModel::doSimStep(double dt) {
 	// returns vehicle data members
 	b_Velocity->value() = m_VelocityLocal;
 	b_AngularVelocity->value() = m_AngularVelocityLocal;
+	b_AngularVelocityBody->value() = localToBody(m_AngularVelocityLocal);
 	b_Attitude->value() = m_Attitude;
 	// the fixed-frame acceleration in body coordinates, *not* m_LinearAccelBody, which is the
 	// rotating-frame acceleration.  to clarify the difference, note that for an aircraft in a

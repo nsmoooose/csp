@@ -8,6 +8,8 @@
  * Add headers and a common source file for declaring top-level bus
    channel names.
 
+ * Export angular velocity in body coordinates from PhysicsModel.
+
 2005-03-12: delta
  * Reformated GearAnimation and related classes as Systems. Adjusted 
    xml files consequently. Cleaned up GearDynamics.

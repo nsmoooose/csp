@@ -127,6 +127,7 @@ void PhysicsModel::importChannels(Bus *bus) {
 	b_Position = bus->getSharedChannel(Kinetics::Position, true, true);
 	b_Velocity = bus->getSharedChannel(Kinetics::Velocity, true, true);
 	b_AngularVelocity = bus->getSharedChannel(Kinetics::AngularVelocity, true, true);
+	b_AngularVelocityBody = bus->getSharedChannel(Kinetics::AngularVelocityBody, true, true);
 	b_Attitude = bus->getSharedChannel(Kinetics::Attitude, true, true);
 	b_AccelerationBody = bus->getSharedChannel(Kinetics::AccelerationBody, true, true);
 	b_Mass = bus->getChannel(Kinetics::Mass);

@@ -129,6 +129,7 @@ protected:
 	DataChannel<simdata::Vector3>::Ref b_Position;
 	DataChannel<simdata::Vector3>::Ref b_Velocity;
 	DataChannel<simdata::Vector3>::Ref b_AngularVelocity;
+	DataChannel<simdata::Vector3>::Ref b_AngularVelocityBody;
 	DataChannel<simdata::Vector3>::Ref b_AccelerationBody;
 	DataChannel<simdata::Quat>::Ref b_Attitude;
 

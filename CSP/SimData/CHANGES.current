@@ -7,6 +7,8 @@ Version 0.4.0 (in progress)
  * Move TaggedRecordRegistry methods to .cpp file, add a factory
    lookup method.
 
+ * Minor cleanup of ScopedPointer, added ScopedArray.
+
 2004-10-04: onsight
  * Add 32-bit and 64-bit pass-through hash functions.
 

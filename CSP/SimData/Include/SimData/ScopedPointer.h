@@ -56,7 +56,9 @@ public:
 	 */
 	explicit ScopedPointer(T * p = 0): _ptr(p) { }
 
-	inline ~ScopedPointer() { if (_ptr) reset(); }
+	/** Deletes the stored pointer.
+	 */
+	inline ~ScopedPointer() { delete _ptr; }
 
 	/** Reassign this instance to a new pointer.
 	 *
@@ -89,6 +91,59 @@ public:
 	inline bool isNull() const { return 0 == _ptr; }
 
 	/** Return true if the pointer is not null.
+	 */
+	inline bool valid() const { return 0 != _ptr; }
+
+};
+
+
+/** A smart pointer class that automatically deletes a
+ *  dynamically allocated array when leaving scope.
+ *
+ *  The interface was borrowed from Boost C++.
+ */
+template <class T>
+class ScopedArray: public NonCopyable {
+	T *_ptr;
+public:
+	typedef T Type;
+
+	/** Construct a new scoped array.
+	 *
+	 *  The assigned pointer, if non-null, will be automatically
+	 *  deleted when this instance goes out of scope.
+	 */
+	explicit ScopedArray(T * p = 0): _ptr(p) { }
+
+	/** Deletes the stored array pointer.
+	 */
+	inline ~ScopedArray() { delete[] _ptr; }
+
+	/** Reassign this instance to a new pointer.
+	 *
+	 *  If the current pointer is non-null it will be deleted.
+	 */
+	void reset(T * p = 0) {
+		assert(_ptr == 0 || _ptr != p);
+		if (_ptr) delete[] _ptr;
+		_ptr = p;
+	}
+
+	/** Obtain a non-const reference to an element of the array.
+	 *
+	 *  Will abort if the array pointer is null.
+	 */
+	inline T & operator[](unsigned i) const { assert(_ptr); return _ptr[i]; }
+
+	/** Get the raw array pointer.
+	 */
+	inline T * get() const { return _ptr; }
+
+	/** Return true if the array pointer is null.
+	 */
+	inline bool isNull() const { return 0 == _ptr; }
+
+	/** Return true if the array pointer is not null.
 	 */
 	inline bool valid() const { return 0 != _ptr; }
 

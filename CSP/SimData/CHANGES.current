@@ -28,6 +28,12 @@ Version 0.4.0 (in progress)
   * Minor fixups to Trace.h (needs more work, and really needs a
     win32 implementation).
 
+  * Slight refactoring and cleanup of InterfaceRegistry.  Subclassed
+    singleton<InterfaceRegistry>, converted some pointer fields to
+    member variables, tweaked the init and cleanup.  Hopefully this
+    won't break the static initializers used to register interfaces.
+    Works fine under linux but needs to be tested under windows.
+
 2004-06-16: onsight
   * Doxygen cleanups.
 

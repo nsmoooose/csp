@@ -347,8 +347,9 @@ public:
  * 
  *  @author Mark Rose <mrose@stm.lbl.gov>
  */
-class InterfaceRegistry {
+class InterfaceRegistry: public Singleton<InterfaceRegistry> {
 	
+friend class Singleton<InterfaceRegistry>;
 friend class InterfaceProxy;
 
 public:
@@ -389,18 +390,12 @@ public:
 	/** Get the interface registry singleton.
 	 */
 	static InterfaceRegistry &getInterfaceRegistry() {
-		return Singleton<InterfaceRegistry>::getInstance();
+		return getInstance();
 	}
-
-#if defined(_MSC_VER ) && (_MSC_VER <= 1200)
-	virtual ~InterfaceRegistry();
-#endif
 
 private:
 
-#if !defined(_MSC_VER ) || (_MSC_VER > 1200)
 	virtual ~InterfaceRegistry();
-#endif
 
 	/** Add an interface to the registry.
 	 *
@@ -409,17 +404,15 @@ private:
 	 */
 	void addInterface(const char *name, hasht id, InterfaceProxy *proxy) throw(InterfaceError);
 
-	friend class Singleton<InterfaceRegistry>;
+	//friend class Singleton<InterfaceRegistry>;
 	InterfaceRegistry();
 	
-	void __cleanup();
-
 	typedef HASH_MAPS<const char*, InterfaceProxy*, HASH<const char*>, eqstr>::Type proxy_map;
 	typedef HASHT_MAP<InterfaceProxy*>::Type proxy_id_map;
 
-	proxy_map *__map;
-	proxy_id_map *__id_map;
-	interface_list *__list;
+	proxy_map __map;
+	proxy_id_map __id_map;
+	interface_list __list;
 
 };
 

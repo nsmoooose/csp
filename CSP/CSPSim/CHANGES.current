@@ -1,6 +1,11 @@
  Version 0.4.0 (in progress)
 ===========================
 
+2004-12-26: delta
+ * Linked the release vesrion against pthreadVC1.lib.
+ 
+ * Removed 0SG096 tag in the source files.
+
 2004-12-22: onsight
  * Rename new .3DS models to .3ds to match the XML path.
 

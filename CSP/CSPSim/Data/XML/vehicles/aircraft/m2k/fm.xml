@@ -84,7 +84,7 @@
 	<!--Float name="cl_dh">0.62</Float-->
 
 	<!-- Pitch Moment Parameters -->
-	<Float name="cm0">0.0001</Float>
+	<Float name="cm0">-0.001</Float>
 	<Float name="cm_a">-1.33</Float>
 	<Float name="cm_adot">-3.61</Float>
 	<Float name="cm_q">-53</Float><!-- <0 -->

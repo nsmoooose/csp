@@ -123,7 +123,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="pthreadVC.lib SimNet.lib ws2_32.lib ccgnu2.lib osgFX.lib osgChunkLod.lib producer.lib osgText.lib DemeterVisualC6.lib opengl32.lib SDL.lib _cSimData.lib osgParticle.lib osgUtil.lib osgDB.lib osg.lib sigc-1.2.lib OpenThreadsWin32.lib ccext2.lib SpatialIndex.lib SimCore.lib"
+				AdditionalDependencies="pthreadVC1.lib SimNet.lib ws2_32.lib ccgnu2.lib osgFX.lib osgChunkLod.lib producer.lib osgText.lib DemeterVisualC6.lib opengl32.lib SDL.lib _cSimData.lib osgParticle.lib osgUtil.lib osgDB.lib osg.lib sigc-1.2.lib OpenThreadsWin32.lib ccext2.lib SpatialIndex.lib SimCore.lib"
 				OutputFile="../../Bin/_cCSP.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"

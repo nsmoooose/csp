@@ -109,11 +109,7 @@ void Console::setFont(std::string const &font, int size) {
 
 void Console::_setFont(osg::ref_ptr<osgText::Text> &text, std::string const &font, int size) {
 	text->setFont(font);
-#ifdef OSG096
-	text->setFontSize(size, size);
-#else
 	text->setFontResolution(size, size);
-#endif // OSG096
 	text->setCharacterSize(size, 1.0);
 	text->setColor(osg::Vec4(1, 1, 1, 1));
 	text->setAlignment(osgText::Text::LEFT_TOP);

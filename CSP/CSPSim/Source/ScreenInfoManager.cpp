@@ -54,11 +54,7 @@ ScreenInfoManager::ScreenInfoManager(int ScreenWidth, int ScreenHeight)
 	setMatrix(osg::Matrix::ortho2D(0,ScreenWidth,0,ScreenHeight));
 
 	m_modelview_abs = new osg::MatrixTransform;
-#ifdef OSG096
-	m_modelview_abs->setReferenceFrame(osg::Transform::RELATIVE_TO_ABSOLUTE);
-#else
 	m_modelview_abs->setReferenceFrame(osg::Transform::ABSOLUTE_RF);
-#endif // OSG096
 	m_modelview_abs->setMatrix(osg::Matrix::identity());
 
 	set2dScene(m_modelview_abs,ScreenWidth,ScreenHeight);

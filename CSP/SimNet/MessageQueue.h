@@ -69,6 +69,8 @@ public:
 		PeerId destination = message->getDestination();
 		header->destination = destination;
 		header->message_id = message->getCustomId();
+		header->routing_type = message->getRoutingType();
+		header->routing_data = message->getRoutingData();
 		m_Writer.bind(payload, payload_length);
 		// XXX need to catch overflows
 		message->serialize(m_TagWriter);

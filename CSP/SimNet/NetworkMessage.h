@@ -43,6 +43,8 @@ namespace simnet {
  */
 class NetworkMessage: public simdata::TaggedRecord {
 	PeerId m_destination;
+	simdata::uint8 m_routing_type;
+	simdata::uint32 m_routing_data;
 	unsigned char m_priority;
 
 public:
@@ -51,7 +53,7 @@ public:
 	/** Default constructor.  Initializes to a non-reliable, low-priority
 	 *  message.
 	 */
-	NetworkMessage(): m_destination(0), m_priority(0) { }
+	NetworkMessage(): m_destination(0), m_routing_type(0), m_routing_data(0), m_priority(0) { }
 
 	/** Get the peer id of the destination host.
 	 */
@@ -62,6 +64,34 @@ public:
 	 *  @param destination the peer id of the destination host.
 	 */
 	void setDestination(PeerId destination) { m_destination = destination; }
+
+	/** Set the message routing data.  Interpretation of this value
+	 *  depends on the message routing type.
+	 */
+	void setRoutingData(simdata::uint32 data) {
+		assert((data & 0xFF00000) == 0);
+		m_routing_data = data;
+	}
+
+	/** Get the message routing data.  Interpretation of this value
+	 *  depends on the message routing type.
+	 */
+	simdata::uint32 getRoutingData() const { return m_routing_data; }
+
+	/** Set the message routing type.  Routing types are used to determine
+	 *  how to handle incoming messages.  For example, if the routing type
+	 *  corresponds to an object message, the routing data will contain the
+	 *  id of the object to receive the message.  This allow the message to
+	 *  be dispatched to the appropriate object without requiring the
+	 *  routing layer to understand the details of particular message types.
+	 */
+	void setRoutingType(simdata::uint8 type) {
+		m_routing_type = type;
+	}
+
+	/** Get the message routing type.  See setRoutingType for details.
+	 */
+	simdata::uint8 getRoutingType() const { return m_routing_type; }
 
 	/** Set the message to be "reliable."  Reliable messages require a confirmation
 	 *  of receipt from the destination host.  The message will be resent periodically
@@ -78,10 +108,12 @@ public:
 
 	/** Set the priority of this message.  There are four priority levels, interpreted
 	 *  roughly as follows:
-	 *    0 : low priority, non-realtime
-	 *    1 : low priority, realtime
-	 *    2 : realtime
-	 *    3 : high priority, reliable
+	 *
+	 *   @li  0 : low priority, non-realtime
+	 *   @li  1 : low priority, realtime
+	 *   @li  2 : realtime
+	 *   @li  3 : high priority, reliable
+	 *
 	 *  Setting the priority to 3 automatically selects reliable transmission.
 	 */
 	void setPriority(unsigned int priority) {

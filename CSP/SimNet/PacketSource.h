@@ -55,8 +55,8 @@ public:
 
 	/** Retrieve the next packet.
 	 *
-	 *  @param header a packet header; the implementation needs to set the destination, priority, and
-	 *    message_id fields.
+	 *  @param header a packet header; the implementation needs to set the destination, priority,
+	 *    message_id, routing_type, and routing_data fields.
 	 *  @param payload a buffer to receive the raw message data (excluding the header).
 	 *  @param payload_length when called, the amount of space allocated for payload (in bytes);
 	 *    on return the implementation must return the actual number of bytes used.

@@ -40,9 +40,9 @@ typedef simdata::uint16 PeerId;
  */
 typedef simdata::uint16 MessageId;
 
-/** A type representing network bandwidth, in bytes per second.
+/** A unique object id.  (24-bits; 16 million ids)
  */
-typedef simdata::uint32 Bandwidth;
+typedef simdata::uint32 ObjectId;
 
 /** An id number assigned to reliable messages and used to confirm
  *  receipt of such messages.  Ids are generated sequentially, per
@@ -59,17 +59,19 @@ typedef simdata::uint16 ConfirmationId;
  *  reliable udp.
  */
 struct PacketHeader {
-	simdata::uint16 reliable:1;  // if true, header is actually a PacketReceiptHeader
-	simdata::uint16 reserved:2;  // reserved for future use
-	simdata::uint16 priority:2;  // 0 = non-realtime, 1=realtime, lopri, 2=realtime, hipri, 3=reliable
-	simdata::uint16 statmode:1;  // 0 = desired send rate, 1 = fractional allocation
-	simdata::uint16 connstat:10; // if statmode == 0, the desired send rate as a fraction of the
-	                             // nominal receiver bandwidth: C * BW / 100
-	                             // if statmode == 1, the fraction of the sender's inbound bandwidth
-	                             // allocated to the receiving peer (0->BW)
-	simdata::uint16 source;      // id of the sender
-	simdata::uint16 destination; // id of the intended receiver
-	simdata::uint16 message_id;  // id of the message
+	simdata::uint16 reliable:1;      // if true, header is actually a PacketReceiptHeader
+	simdata::uint16 reserved:2;      // reserved for future use
+	simdata::uint16 priority:2;      // 0 = non-realtime, 1=realtime, lopri, 2=realtime, hipri, 3=reliable
+	simdata::uint16 statmode:1;      // 0 = desired send rate, 1 = fractional allocation
+	simdata::uint16 connstat:10;     // if statmode == 0, the desired send rate as a fraction of the
+	                                 // nominal receiver bandwidth: C * BW / 100
+	                                 // if statmode == 1, the fraction of the sender's inbound bandwidth
+	                                 // allocated to the receiving peer (0->BW)
+	simdata::uint16 source;          // id of the sender
+	simdata::uint16 destination;     // id of the intended receiver
+	simdata::uint16 message_id;      // id of the message
+	simdata::uint32 routing_type:8;  // routing type (e.g. object update, server handshake, etc.)
+	simdata::uint32 routing_data:24; // routing data (e.g. ObjectId for object update routing)
 };
 
 

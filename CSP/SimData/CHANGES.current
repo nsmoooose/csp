@@ -3,6 +3,8 @@ Version 0.4.0 (in progress)
 
 2004-12-06: onsight
  * Define correct 64-bit integer suffixes for msvc.
+ * Separate 64-bit definitions from other compiler definitions.
+ * Tweak trc to suppress warnings under msvc.
 
 2004-12-05: onsight
  * Fix a couple minor warnings under msvc.

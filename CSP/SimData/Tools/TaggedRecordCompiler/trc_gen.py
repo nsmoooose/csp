@@ -467,24 +467,30 @@ class Compound(Element):
 				if child.required:
 					child.writeSerializeReader(output)
 					output(child.getHasFlag().getSetString())
-		output('for (int tag = reader.nextTag(); tag != 0; tag = reader.nextTag()) {')
-		output.indent()
-		output('switch (tag) {')
-		output.indent()
+		has_tags = 0
 		for child in self.children:
-			if child.required: continue
-			output('case TAG_%s: {' % child.getId())
+			if not child.required:
+				has_tags = 1
+				break
+		if has_tags:
+			output('for (int tag = reader.nextTag(); tag != 0; tag = reader.nextTag()) {')
 			output.indent()
-			child.writeSerializeReader(output)
-			output(child.getHasFlag().getSetString())
-			output('break;')
+			output('switch (tag) {')
+			output.indent()
+			for child in self.children:
+				if child.required: continue
+				output('case TAG_%s: {' % child.getId())
+				output.indent()
+				child.writeSerializeReader(output)
+				output(child.getHasFlag().getSetString())
+				output('break;')
+				output.dedent()
+				output('}')
+			output('default: break;')
 			output.dedent()
 			output('}')
-		output('default: break;')
-		output.dedent()
-		output('}')
-		output.dedent()
-		output('}')
+			output.dedent()
+			output('}')
 		output('reader.endCompound();')
 		output.dedent()
 		output('}\n')

@@ -180,7 +180,7 @@ private:
  *  UpdateTarget instances.  Attachments are made via UpdateProxy instances
  *  which automatically disconnect the callbacks if the target is destroyed.
  *  The UpdateMaster maintains a separate list for callbacks that require
- *  "immidiate" updates (i.e. as soon as possible), and a priority queue for
+ *  "immediate" updates (i.e. as soon as possible), and a priority queue for
  *  callbacks that only require delayed updates.  The minimum time until the
  *  next update callback is determined by the return value of onUpdate(),
  *  where <= 0 means immediate.  Of course callbacks can only occur as

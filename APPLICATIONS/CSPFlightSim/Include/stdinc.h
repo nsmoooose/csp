@@ -7,11 +7,8 @@
 #include <cstdio>
 #include <cstdlib>
 #include <iostream>
-//#include <ostream>
-//#include <istream>
 #include <iomanip>
 #include <fstream>
-//#include <streambuf>
 #include <sstream>
 
 #include <vector>
@@ -27,8 +24,6 @@
 
 #include <fcntl.h>
 
-
-//#include "global.h"
 #include "Config.h"
 #include "LogStream.h"
 #include "Tools.h"

@@ -26,9 +26,7 @@
 #ifndef __BASECONTROLLER_H__
 #define __BASECONTROLLER_H__
 
-
-class BaseObject;
-class Message;
+#include "Message.h"
 
 
 /**

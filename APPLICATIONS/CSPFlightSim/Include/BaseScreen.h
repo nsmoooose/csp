@@ -45,7 +45,7 @@ public:
     virtual void OnInit() = 0;
     virtual void OnExit() = 0;
 
-    virtual void OnUpdateObjects(float dt) = 0;
+    virtual void OnUpdateObjects(double dt) = 0;
     virtual void OnRender() = 0;
 
     // Input Routines, are not required. If the are not overloaded then

@@ -26,8 +26,6 @@
 #define __LOGOSCREEN_H__
 
 #include "SDL.h"
-#include "SDL_image.h"
-
 #include "BaseScreen.h"
 
 /**
@@ -42,7 +40,7 @@ public:
     virtual void OnExit();
 
     virtual void OnRender();
-    virtual void OnUpdateObjects(float dt)  {;  }
+    virtual void OnUpdateObjects(double dt)  {;  }
 
 
 private:

@@ -25,6 +25,9 @@
 #ifndef __GLOBALCOMMANDS_H__
 #define __GLOBALCOMMANDS_H__
 
+#include <deque>
+#include <string>
+
 string ProcessCommandString(string & str);
 
 string RunCommand(deque<string> & args);

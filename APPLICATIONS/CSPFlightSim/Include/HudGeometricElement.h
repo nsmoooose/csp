@@ -25,7 +25,7 @@
 #ifndef HUD_GEOMETRIC_ELEMENT_H
 #define HUD_GEOMETRIC_ELEMENT_H
 
-#include <osg/MatrixTransform>
+#include <osg/PositionAttitudeTransform>
 
 #include "HudElement.h"
 
@@ -37,7 +37,7 @@
  *
  * @author unknown
  */
-class HudGeometricElement : public HudElement, public osg::MatrixTransform
+class HudGeometricElement : public HudElement, public osg::PositionAttitudeTransform
 {
 	float m_fheadingAngle;
 	float m_fpitchAngle;

@@ -25,11 +25,17 @@
 #ifndef __OBJECTFACTORY_H__
 #define __OBJECTFACTORY_H__
 
-#include <BaseObject.h>
-#include <TankObject.h>
-#include <AirplaneObject.h>
+#include <list>
+#include <string>
+
 #include <osg/ref_ptr>
 #include <osg/Node>
+
+#include <AirplaneObject.h>
+#include <BaseObject.h>
+#include <TankObject.h>
+
+
 
 /**
  * class ObjectType
@@ -46,12 +52,12 @@ struct ObjectType
 		m_ObjectClass = UNKNOWN_TYPE;
 	}
 
-    string m_name;
+	std::string m_name;
 
 	osg::ref_ptr<osg::Node> m_rpNode;
-	string m_NodeName;
+	std::string m_NodeName;
     unsigned int m_ObjectClass;
-	string m_AeroName;
+	std::string m_AeroName;
 
 	virtual ~ObjectType();
 
@@ -66,22 +72,22 @@ struct ObjectType
 class ObjectFactory
 {
  public:
-  BaseObject * createNamedObject(const string & typeStr, const string & nameStr);
-  void createObjectType(const string & nameString, 
-             const string & baseString);
-  void deleteObjectType(const string & nameString);
-  void setObjectTypeModel(const string & nameString,
-									   const string & modelString);
-  void setObjectTypeAero(const string & nameString,
-									const string & aeroString);
+	 BaseObject * createNamedObject(const std::string & typeStr, const std::string & nameStr);
+	 void createObjectType(const std::string & nameString, 
+		 const std::string & baseString);
+	 void deleteObjectType(const std::string & nameString);
+	 void setObjectTypeModel(const std::string & nameString,
+		 const std::string & modelString);
+	 void setObjectTypeAero(const std::string & nameString,
+	  const std::string & aeroString);
 
   void initialize();
   void Cleanup();
 
  protected:
 
-    bool isTypeNameUsed(const string & name);
-    ObjectType * getObjectTypeFromName(const string & name);
+	 bool isTypeNameUsed(const std::string & name);
+	 ObjectType * getObjectTypeFromName(const std::string & name);
 
     std::list<ObjectType *> objectTypeList;
 

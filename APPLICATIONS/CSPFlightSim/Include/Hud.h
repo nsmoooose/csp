@@ -28,7 +28,7 @@
 #include <string>
 
 // testing various osg objects
-#include <osg/MatrixTransform>
+#include <osg/PositionAttitudeTransform>
 
 #include "HudTextElement.h"
 #include "TypesVector3.h"
@@ -39,7 +39,7 @@
  *
  * @author unknown
  */
-class Hud : public osg::MatrixTransform
+class Hud : public osg::PositionAttitudeTransform
 {
 	HudTextElement ReadHudTextElement(std::istream & p_istream) const;
 public:

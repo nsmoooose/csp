@@ -84,7 +84,7 @@ class TankController : public BaseController
 
   unsigned int target_id;
 
-  list<ObjectRangeInfo*> enemyList;
+  std::list<ObjectRangeInfo*> enemyList;
 
   unsigned int state;
   unsigned int next_state;

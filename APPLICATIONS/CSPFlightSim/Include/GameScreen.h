@@ -44,7 +44,7 @@ public:
     virtual void OnExit();
 
     virtual void OnRender();
-    virtual void OnUpdateObjects(float dt);
+    virtual void OnUpdateObjects(double dt);
 
 
     //virtual bool OnKeyDown(char * key); the base class method is not redefined here

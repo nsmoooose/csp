@@ -26,33 +26,16 @@
 #define __VIRTUALBATTLEFIELD_H__
 
 #include <list>
+#include <string>
 
-#include "Terrain.h"
-#include "DemeterDrawable.h"
+#include <osg/FrameStamp>
+#include <osg/Group>
 
-#include <osg/Node>
-#include <osg/StateSet>
-#include <osg/GeoSet>
-#include <osg/Material>
-#include <osg/BlendFunc>
-#include <osg/Transform>
-#include <osg/PolygonMode>
-#include <osg/Depth>
-#include <osg/Notify>
-#include <osg/Geode>
-
-#include <osgDB/Registry>
-#include <osgDB/ReadFile>
-#include <osgDB/FileUtils>
-
-#include <osgUtil/Optimizer>
 #include <osgUtil/SceneView>
 
-//#include <osgGA/CameraManipulator>
-
+#include "BaseController.h"
 #include "BaseObject.h"
 #include "ObjectRangeInfo.h"
-#include "BaseController.h"
 #include "TerrainObject.h"
 
 
@@ -81,7 +64,7 @@ public:
     void OnUpdate(float dt);
 
     BaseObject * getObjectFromID( unsigned int ID);
-    BaseObject * getObjectFromName( string name );
+    BaseObject * getObjectFromName( std::string name );
     BaseController * getControllerFromID(unsigned int ID);
     void removeObjectWithID( unsigned int ID);
     void removeObjectsMarkedForDelete();
@@ -112,7 +95,7 @@ public:
 
     float getElevation( float x,float y ) const;
     void GetNormal(float x, float y, float & normalX, 
-		float & normalY, float & normalZ ) const;
+	float & normalY, float & normalZ ) const;
 
 	void drawCockpit();
 
@@ -130,28 +113,18 @@ protected:
 	osgUtil::SceneView* m_pView;
 	osg::ref_ptr<osg::Group> m_rpRootNode;
 	osg::ref_ptr<osg::Group> m_rpObjectRootNode;
-	osg::ref_ptr<osg::FrameStamp> m_frameStamp;
+	osg::ref_ptr<osg::FrameStamp> m_rpFrameStamp;
 
     osg::Node * m_pTerrainNode;
-    osg::Transform * m_pTerrainTransform;
 
     std::list<BaseObject *> objectList;
     static unsigned int latest_object_id;
     std::list<string> objectListHistory;
     list<BaseController *> controllerList;
 
-
 	TerrainObject * m_pActiveTerrainObject;
-
-	int ConsoleFont;
 };
 
-
-
-
-
-
-
-
 #endif // __VIRTUALBATTLEFIELD_H__
+
 

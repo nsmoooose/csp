@@ -25,13 +25,12 @@
 #ifndef __BASEOBJECT_H__
 #define __BASEOBJECT_H__
 
-#include <osg/Node>
 #include <osg/MatrixTransform>
-#include "TypesMath.h"
-#include <BaseController.h>
+#include <osg/Node>
 #include <osg/Switch>
 
-using namespace std;
+#include "BaseController.h"
+#include "TypesMath.h"
 
 #define UNKNOWN_TYPE 0
 #define TANK_OBJECT_TYPE 1
@@ -41,7 +40,6 @@ using namespace std;
 #define AAA_OBJECT_TYPE 20
 #define STATIC_OBJECT_TYPE 30
 #define INSTACTMAN_OBJECT_TYPE 100
-
 
 
 
@@ -65,7 +63,7 @@ class BaseObject
   virtual unsigned int OnRender() = 0;
 
   virtual void setNamedParameter(const char * name, const char * value);
-  static unsigned int getClassTypeFromName(const string & name);
+  static unsigned int getClassTypeFromName(const std::string & name);
   static BaseObject * createObject(unsigned int type);
 
 
@@ -125,12 +123,13 @@ class BaseObject
   osg::Node * getNode();
 
   // this needs to see if this name is already in use.
-  void setObjectName(string name) { m_sObjectName = name; }
-  string getObjectName() { return m_sObjectName; }
+  void setObjectName(std::string name) { m_sObjectName = name; }
+  std::string getObjectName() { return m_sObjectName; }
 
   void ShowRepresentant(unsigned short const p_usflag)
   {
-    m_rpSwitch->setValue(p_usflag);
+	m_rpSwitch->setAllChildrenOff();
+    m_rpSwitch->setValue(p_usflag, true);
   }
 
   virtual double getGForce() {return 1.0;};
@@ -138,12 +137,9 @@ class BaseObject
  protected:
 
   virtual void doMovement(double dt) = 0;
+  void AddSmoke();
 
-
-//  StandardPolygonMesh * p_Mesh;
-//  StandardTexture * p_Texture;
-//  StandardTexture * p_Texture2;
-
+  StandardQuaternion m_qOrientation;
   StandardMatrix3 m_Orientation;
   StandardMatrix3 m_OrientationInverse;
   StandardVector3 m_Direction;
@@ -153,7 +149,6 @@ class BaseObject
   StandardMatrix3 m_IbodyInv;
   StandardMatrix3 m_Iinv;
 
-//  StandardVector3 m_CurrentPosition;
   StandardVector3 m_GlobalPosition;
   int m_XLatticePos;
   int m_YLatticePos;
@@ -163,7 +158,6 @@ class BaseObject
   StandardVector3 m_PrevPosition;
   StandardVector3 m_LinearVelocity;
   StandardVector3 m_LinearVelocityDirection;
-//  StandardVector3 m_CurrentVelocityDir;
   StandardVector3 m_InitialNormDir;
   StandardVector3 m_CurrentNormDir;
 
@@ -190,7 +184,7 @@ class BaseObject
 
   unsigned int m_iObjectID;
   unsigned int m_iObjectType;
-  string m_sObjectName;
+  std::string m_sObjectName;
   bool m_bDeleteFlag;
   bool m_bFreezeFlag;
   bool m_bOnGround;

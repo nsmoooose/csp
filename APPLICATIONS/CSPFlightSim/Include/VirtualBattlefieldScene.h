@@ -26,17 +26,9 @@
 #define __VIRTUALBATTLEFIELDSCENE_H__
 
 #include <osg/Node>
-#include <osg/StateSet>
-#include <osg/GeoSet>
-#include <osg/Material>
-#include <osg/BlendFunc>
 #include <osg/MatrixTransform>
-#include <osg/PolygonMode>
+
 #include <osg/Depth>
-#include <osg/Notify>
-#include <osg/Geode>
-#include <osgDB/Registry>
-#include <osgDB/ReadFile>
 #include <osgDB/FileUtils>
 #include <osgUtil/SceneView>
 

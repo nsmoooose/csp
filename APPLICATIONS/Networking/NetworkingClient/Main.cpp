@@ -11,8 +11,6 @@ private:
   void            run();
   void            final();
 
-public:
-
 };
 
 void Demo::initial()
@@ -23,7 +21,7 @@ void Demo::run()
 {
 
   char inputchars[256];
-
+	
   // Thread can gracefully shutdown.
   setCancel(Thread::cancelDeferred);
 
@@ -35,6 +33,20 @@ void Demo::run()
     if(stricmp(inputchars, "/q") == 0)
     {
       break;
+    }
+
+    if(stricmp(inputchars, "/l") == 0)
+    {
+	    cout << "Now listening";
+
+      Client->Listen(true);
+    }
+
+    if(stricmp(inputchars, "/loff") == 0)
+    {
+	    cout << "No longer listening";
+
+      Client->Listen(false);
     }
 
     if(stricmp(inputchars, "/c") == 0)
@@ -52,24 +64,24 @@ void Demo::run()
 			strcpy(port, inputchars);
 
 			cout << "Now Connecting to " << ipaddress << " " << port;
-      Client->Connect(0, ipaddress, port, 0, 0);
+      Client->Connect(0, ipaddress, port);
     }
 
     if(stricmp(inputchars, "/d") == 0)
     {
-      Client->Disconnect(0, 0, 0);
+      Client->Disconnect(0);
     }
 
     if(stricmp(inputchars, "/s") == 0)
     {
-      Client->Send(0, true, "Blah", 5);
+      Client->Send(0, true, "Blah");
     }
 
     if(stricmp(inputchars, "/cs") == 0)
     {
       for(unsigned char x=0;x<100;x++)
-      {
-        Client->Send(0, true, "Blah", 5);
+      {         
+        Client->Send(0, true, "Blah");
       }
     }
 
@@ -81,7 +93,6 @@ void Demo::run()
       cout << "Latency      - " << Client->GetLatency(0) << endl;
       cout << "RecvBuffer   - " << Client->GetRecvBufferCount(0) << endl;
       cout << "SendBuffer   - " << Client->GetSendBufferCount(0) << endl;
-      cout << "Messages     - " << Client->GetRecvMessages(0) << endl;
       cout << "RecvDataRate - " << Client->GetRecvDataRate(0) << endl;
       cout << "SendDataRate - " << Client->GetSendDataRate(0);
     }
@@ -90,6 +101,8 @@ void Demo::run()
 		{
 			cout << endl;
 			cout << "/q - quit" << endl;
+      cout << "/l - listen" << endl;
+      cout << "/loff - stop listening" << endl;
 			cout << "/c - connect" << endl;
 			cout << "/d - disconnect" << endl;
 			cout << "/s - send a dummy packet" << endl;
@@ -112,13 +125,10 @@ int main(void)
 	cout << "Type /? for help" << endl;
 	cout << "---------------------------------------------";
   
-  NET_TYPE   Type;
-	char tempType[256];
-
-  void      *Data = 0;
-  short      Length;
-  long       Counter;
-  char inputchars[256];
+  NET_TYPE      Type;
+  string        Data;
+  short         Counter;
+  char			    inputchars[256];
 
 	cout << endl << "Enter IP address or DNS name to listen on" << endl;
 	cin >> inputchars;
@@ -132,7 +142,7 @@ int main(void)
 	char port[256];
 	strcpy(port, inputchars);
 
-	cout << "Now Listening on " << ipaddress << " " << port;
+	cout << "Now bound on " << ipaddress << " " << port;
 
   Client = new NetworkingClass(ipaddress, port);
 
@@ -145,62 +155,65 @@ int main(void)
   // Main Receiving Loop
   while(InputThread->isRunning() == true)
   {
-    for(Counter = 0; Counter <= 255; Counter++)
+
+    while(Client->Recv(&Counter, &Type, &Data) != NET_NO_MORE_DATA)
     {
-      if(Client->GetActive(Counter) == true)
-      {
-        while(Client->Recv(Counter, &Type, Data, &Length) != NET_NO_MORE_DATA)
-        {
 
-					memset(tempType, 0, sizeof(tempType));
+				if(Type & CONNECT)
+				{
+				  if(Type & ACK)
+				  {
+            cout << "C";
+				  }
+          else if(Type & REJECT)
+			    {
+            cout << "R";
+			    }
+          else
+          {
+            cout << "A";
+            Client->Accept(0);
+          }
+				}
 
-					if(Type & CONNECT)
-					{
-					 strcat(tempType, " CONNECT");
-					}
+				if(Type & DISCONNECT)
+				{
 
-					if(Type & DISCONNECT)
-					{
-						strcat(tempType, " DISCONNECT");
-					}
+				  if(Type & ACK)
+				  {
+            cout << "D";
+				  }
+          else
+          {
+            cout << "d";
+          }
 
-					if(Type & LAG)
-					{
-						strcat(tempType, " LAG");
-					}
+				}
 
-					if(Type & LAG_RECOVERED)
-					{
-						strcat(tempType, " LAG RECOVERED");
-					}
+				if(Type & LAG)
+				{
+          cout << "L";
+				}
 
-					if(Type & PACKETLOSS)
-					{
-						strcat(tempType, " PACKETLOSS");
-					}
+				if(Type & LAG_RECOVERED)
+				{
+          cout << "l";
+				}
 
-					if(Type & DATA)
-					{
-						strcat(tempType, " DATA");
-					}
+				if(Type & PACKETLOSS)
+				{
+          cout << "P";
+				}
 
-					if(Type & TIMEOUT)
-					{
-						strcat(tempType, " TIMEOUT");
-					}
+				if(Type & DATA)
+				{
+          cout << ".";
+				}
 
-					cout << endl << "<PACKET RECEIVED> Conn: " << Counter << " "
-						              "Type: " << Type << tempType << endl <<
-												  "                  Stats " <<
-							"L: " << Client->GetLatency(Counter) << " " <<
-							"P: " << Client->GetPing(Counter) << " " <<
-							"RBC: " << Client->GetRecvBufferCount(Counter) << " " <<
-							"SBC: " << Client->GetSendBufferCount(Counter) << " " <<
-							"RDR: " << Client->GetRecvDataRate(Counter) << " " <<
-							"SDR: " << Client->GetSendDataRate(Counter) << ">";
-
-        }
-      }
+				if(Type & TIMEOUT)
+				{
+          cout << "T";
+				}
 
     }
 

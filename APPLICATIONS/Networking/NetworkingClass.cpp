@@ -3,16 +3,14 @@
 NetworkingClass::NetworkingClass(char *IP, char *Port)
 {
 
-  p_bShutdown = true;
-  p_sConnectionCount = 0;
-
-  memset(p_Connect, 0, sizeof(p_Connect));
+  p_bListen = false;
 
   // Setup variables
   p_MutexShared = new Mutex;
 
   // Setup our side of connection.
   InetAddress addr = IP;
+ 
   p_Socket = new UDPSocket(addr, (tpport_t)atoi(Port));
 
   // Turn off blocking, we want this asyncronus
@@ -21,53 +19,28 @@ NetworkingClass::NetworkingClass(char *IP, char *Port)
   // Turn on receiving thread.
   start();
 
-  // Signal we are up not shutting down, and ready to receive connections.
-  p_MutexShared->enterMutex();
-  p_bShutdown = false;
-  p_MutexShared->leaveMutex();
-
 }
 
 NetworkingClass::~NetworkingClass()
 {
 
-  long Counter;
+  Listen(false);
 
-  if(p_MutexShared != 0)
-  {
-    p_MutexShared->enterMutex();
-    p_bShutdown = true;
-    p_MutexShared->leaveMutex();
-  }
+  unsigned int Counter;
 
   // Send disconnect to connection
-  if(p_sConnectionCount > 0)
+  for(Counter = 0; Counter < p_Connect.size(); Counter++)
   {
-    for(Counter = 0; Counter<=255; Counter++)
-    {
-      if(p_Connect[Counter].inuse == true && p_Connect[Counter].pendingclose == false)
-      {
-        Disconnect(Counter, 0,0);
-      }
-    }
-   }
+    Disconnect(p_Connect[Counter].connectionid, 0);
+  }
 
   // Wait for all connections to get a disconnect ack.
   while(1)
   {
-    if(p_sConnectionCount > 0)
-    {
-
-      for(Counter = 0; Counter<=255; Counter++)
-      {
-        if(p_Connect[Counter].inuse == true)
-        {
-          Recv(Counter, 0, 0, 0);
-        }
-      }
-
-      sleep(10);
-    }
+		if(p_Connect.size() != 0)
+		{
+			sleep(100);
+		}
     else
     {
       break;
@@ -77,32 +50,23 @@ NetworkingClass::~NetworkingClass()
   // Turn off receiving thread.
   terminate();
 
-  // Delete objects.
-  for(short y=0; y<=255;y++)
+  // Wait for thread to stop
+  while(isRunning() == true)
   {
-    for(short x=0; x<=255;x++)
-    {
-      if(p_Connect[y].recvbuffer[x].packet != 0)
-      {
-        delete []p_Connect[y].recvbuffer[x].packet;
-      }
-      if(p_Connect[y].sendbuffer[x].packet != 0)
-      {
-        delete []p_Connect[y].sendbuffer[x].packet;
-      }
-    }
+    sleep(100);
+  }
+
+  // Delete objects.
+  if(p_MutexShared != 0)
+  {
+    delete p_MutexShared;
+    p_MutexShared = 0;
   }
 
   if(p_Socket != 0)
   {
     delete p_Socket;
     p_Socket = 0;
-  }
-
-  if(p_MutexShared != 0)
-  {
-    delete p_MutexShared;
-    p_MutexShared = 0;
   }
 
 }
@@ -115,23 +79,19 @@ void NetworkingClass::initial()
 
 }
 
+void NetworkingClass::final()
+{
+
+}
+
 void NetworkingClass::run()
 {  // This is the thread that handles the handshakes and receives.
 
-  NetHeader PacketHead;
-  char      PacketBuffer[4096];
-  long      PacketLength;
+  clock_t       begintime;
+  clock_t       endtime;
+  long          Counter;
+  unsigned int  x;
 
-  short     HeaderLength;
-
-  long      ConnectionId;
-
-  long      Counter;
-
-  clock_t   begintime;
-  clock_t   endtime;
-
-  short     x;
   // -------------------------------
 
   // Thread can gracefully shutdown.
@@ -146,810 +106,119 @@ void NetworkingClass::run()
 
     Counter = 1000;
 
-    for(x = 0; x<=255; x++)
+    for(x = 0;x < p_Connect.size(); x++)
     {
-      if(p_Connect[x].inuse == true && p_Connect[x].pendingclose == false)
+      if(p_Connect[x].datarate_counter < Counter)
       {
+        Counter = p_Connect[x].datarate_counter;
+      }
 
-        if(p_Connect[x].datarate_counter < Counter)
+      if(p_Connect[x].keepalive_time < Counter)
+      {
+        Counter = p_Connect[x].keepalive_time;
+      }
+
+      if(p_Connect[x].dropped_seqnbr != NO_SEQ_NBR)
+      {
+        if(p_Connect[x].dropped_time < Counter)
         {
-          Counter = p_Connect[x].datarate_counter;
+          Counter = p_Connect[x].dropped_time;
         }
-
-        if(p_Connect[x].keepalive_time < Counter)
-        {
-          Counter = p_Connect[x].keepalive_time;
-        }
-
-        if(p_Connect[x].dropped_seqnbr != NO_SEQ_NBR)
-        {
-          if(p_Connect[x].dropped_time < Counter)
-          {
-            Counter = p_Connect[x].dropped_time;
-          }
-        }
-
       }
     }
 
     // Wait for receiving information for next tick event.
     if(p_Socket->isPending(p_Socket->pendingInput, Counter) == true)
     { // incoming information
-     
-      // get address and port of other side.
-      InetHostAddress addr;
-      tpport_t        port;
-
-      try
-      {
-        addr = p_Socket->getSender(&port);
-      }
-      catch(...)
-      { // KABOOM
-        goto SKIP;
-      }
-
-      // scan local connection id's for match
-      ConnectionId = -1;
-
-      p_MutexShared->enterMutex();
-
-      for(Counter = 0; Counter <= 255; Counter++)
-      {
-        if(p_Connect[Counter].inuse == true && p_Connect[Counter].pendingclose == false)
-        {
-          if(p_Connect[Counter].addr == addr &&
-             p_Connect[Counter].port == port)
-          {
-            ConnectionId = Counter;
-            break;
-          }
-        }
-      }
-
-      p_MutexShared->leaveMutex();
-        
-      // put message into temp buffer
-      PacketLength = p_Socket->receive(PacketBuffer, sizeof(PacketBuffer));
-      if(PacketLength <= 0)
-      {
-        // So we really don't have data? /boggle.
-        goto SKIP;
-      }
-
-      if(PacketLength > 4096)
-      {
-        // We don't support bigger than 4k buffers. Drop packet.
-        // Must not be for us.
-        goto SKIP;
-      }
-
-      // HEADER
-      // This will use header compression.
-      memset(&PacketHead, 0, sizeof(PacketHead));
-
-      // Pull out initial stuff and convert to correct endians
-      memcpy(&PacketHead, &PacketBuffer, 4);
-
-      FlipFlop(PacketHead.StartFiller);
-      FlipFlop(PacketHead.Type);
-
-      // verify packet seems legit
-      if(PacketHead.StartFiller != PACKET_IDENTIFIER)
-      {
-        // drop packet. Whos sending me this stuff on this port?
-        goto SKIP;
-      }
-
-      // Uncompress header into non compressed struct.
-      HeaderLength = 4;
-
-      if(PacketHead.Type & SEQNBR)
-      {
-        memcpy(&PacketHead.SeqNbr, PacketBuffer + HeaderLength, 2);
-        //FlipFlop(PacketHead.SeqNbr);
-
-        HeaderLength += 2;
-      }
-
-      if(PacketHead.Type & ACKSEQNBR)
-      {
-
-        memcpy(&PacketHead.AckSeqNbr, PacketBuffer + HeaderLength, 2);
-        //FlipFlop(PacketHead.AckSeqNbr);
-
-        HeaderLength += 2;
-      }
-
-      if(PacketHead.Type & TIME)
-      {
-
-        memcpy(&PacketHead.Time, PacketBuffer + HeaderLength, 2);
-        FlipFlop(PacketHead.Time);
-
-        HeaderLength += 2;
-      }
-
-      if(PacketLength < HeaderLength)
-      {
-        // Invalid packet. We didn't get a complete header.
-        goto SKIP;
-      }
-
-      if(PacketHead.Type & DATA)
-      {
-        if(PacketLength == HeaderLength)
-        {
-          // Invalid packet, says we have data but we don't.
-          goto SKIP;
-        }
-      }
-
-      // -----------------------------------------
-      // Check Packet to see what it is....
-      // -----------------------------------------
-      if(PacketHead.Type & CONNECT)
-      {
-        if((PacketHead.Type & ACK) || (PacketHead.Type & REJECT))
-        {
-          // we'll get this later.
-        }
-        else
-        {
-
-          // We must be a server getting a connect.
-          if(ConnectionId == -1)
-          {
-
-            bool Shutdown;
-
-            p_MutexShared->enterMutex();
-            Shutdown = p_bShutdown;
-            p_MutexShared->leaveMutex();
-
-            if(Shutdown == false)
-            {
-
-              // See if there is any room left in array.
-              p_MutexShared->enterMutex();
-
-              for(Counter = 0;Counter<=255;Counter++)
-              {
-                if(p_Connect[Counter].inuse == false)
-                {
-                  break;
-                }
-              }
-
-              p_MutexShared->leaveMutex();
-
-              // Check if server is full
-              if(Counter == 256)
-              {
-                // Send Reject packet saying server is full.
-                Reject(addr, port, "Server Full", 12);
-                goto SKIP;
-              }
-              else
-              {
-                // Server has room, fill out array.
-                ConnectionId = Counter;
-
-                p_Connect[ConnectionId].inuse = true;
-                p_Connect[ConnectionId].addr = addr;
-                p_Connect[ConnectionId].port = port;
-
-                p_Connect[ConnectionId].todo = 0;
-
-								p_Connect[ConnectionId].recvdatabytes = 0;
-								p_Connect[ConnectionId].senddatabytes = 0;
-								p_Connect[ConnectionId].datarate_counter = DATARATE_TIMEOUT;
-
-                p_Connect[ConnectionId].keepalive_time = KEEPALIVE_TIMEOUT;
-                p_Connect[ConnectionId].keepalive_counter = 0;
-
-                p_Connect[ConnectionId].dropped_seqnbr = NO_SEQ_NBR;
-
-                p_Connect[ConnectionId].sendreadpointer = 0;
-                p_Connect[ConnectionId].sendwritepointer = 0;
-                p_Connect[ConnectionId].recvreadpointer = 0;
-                p_Connect[ConnectionId].recvwritepointer = 0;
-                p_Connect[ConnectionId].recvcount = 0;
-                p_Connect[ConnectionId].sendcount = 0;
-
-
-                p_Connect[ConnectionId].latency = 0;
-                p_Connect[ConnectionId].ping = 0;
-                p_Connect[ConnectionId].recvreadpointer = 0;
-                p_Connect[ConnectionId].senddatarate = 0;
-                p_Connect[ConnectionId].recvseqnbr = 0;
-
-								p_Connect[ConnectionId].timestamp = clock();
-
-              }
-            }
-            else
-            {
-              // Send reject packet saying shutdown in progress
-              Reject(addr, port, "Shutting Down", 15);
-              goto SKIP;
-            }
-          }
-          else
-          {
-            // Already connected, 
-            // Send reject packet saying already connected
-            Reject(addr, port, "Already Connected", 18);
-            goto SKIP;
-          }
-        }
-      }
-
-      // If no connection id, nothing else to do.
-      if(ConnectionId == -1)
-      { 
-        goto SKIP;
-      }
-
-      // Add random packet loss for testing
-      /*
-      if((rand() % 10) == 5)
-      {
-        cout << endl << "DROPPING";
-        goto SKIP;
-      }
-      */
-
-      p_MutexShared->enterMutex();
-
-			// Signal LAG RECOVERED if we finially got a packet.
-      if(p_Connect[ConnectionId].keepalive_counter >= 2)
-      {
-				// Using counter == 2 because == 1 is very common.
-				p_MutexShared->leaveMutex();
-        ReportLocalMessage(ConnectionId, LAG_RECOVERED);
-				p_MutexShared->enterMutex();
-			}
-
-			// Reset Keepalives
-      p_Connect[ConnectionId].keepalive_time = KEEPALIVE_TIMEOUT;
-      p_Connect[ConnectionId].keepalive_counter = 0;
-
-			// Set Timestamp
-			if(PacketHead.Type & TIME)
-			{
-				clock_t nowtime = clock();
-
-				p_Connect[ConnectionId].ping = (nowtime - 
-						p_Connect[ConnectionId].timestamp) - PacketHead.Time;
-
-				if(p_Connect[ConnectionId].ping < 0) p_Connect[ConnectionId].ping = 0;
-			}
-
-			p_Connect[ConnectionId].timestamp = clock();
-
-			// Update recv bytes
-			p_Connect[ConnectionId].recvdatabytes += PacketLength;
-
-      // See if this could be a duplicate
-      if(PacketHead.Type & POSSDUPE)
-      {
-
-        Counter = NO_SEQ_NBR;
-
-        // If we aren't currently looking for a RESEND drop packet
-        if(p_Connect[ConnectionId].dropped_seqnbr == NO_SEQ_NBR)
-        {
-          // Set the Counter to be anything != NO_SEQ_NBR to skip.
-          Counter = 0; 
-        }
-
-        // If SEQNBR coming in with POSSDUPE anything other than
-        // The one we are looking for, then drop it.
-        if(PacketHead.SeqNbr != p_Connect[ConnectionId].recvseqnbr)
-        {
-          // Set the Counter to be anything != NO_SEQ_NBR to skip.
-          Counter = 0; 
-        }
-
-        // If SEQNBR coming in with POSSDUPE is the one we are looking for
-        // See if we already have it in our recv buffer.
-        if(PacketHead.SeqNbr == p_Connect[ConnectionId].recvseqnbr)
-        {
-          if(p_Connect[ConnectionId].recvwritepointer < p_Connect[ConnectionId].recvreadpointer)
-          {
-
-            for(x = p_Connect[ConnectionId].recvreadpointer;x<=255;x++)
-            {
-              if(p_Connect[ConnectionId].recvbuffer[x].packetseqnbr == PacketHead.SeqNbr)
-              {
-                Counter = x;
-                break;
-              }
-            }
-
-            if(Counter == NO_SEQ_NBR)
-            {
-              for(x=0;x<p_Connect[ConnectionId].recvwritepointer;x++)
-              {
-                if(p_Connect[ConnectionId].recvbuffer[x].packetseqnbr == PacketHead.SeqNbr)
-                {
-                  Counter = x;
-                  break;
-                }
-              }
-            }
-          }
-          else
-          {
-            for(x = p_Connect[ConnectionId].recvreadpointer;x<p_Connect[ConnectionId].recvwritepointer;x++)
-            {
-              if(p_Connect[ConnectionId].recvbuffer[x].packetseqnbr == PacketHead.SeqNbr)
-              {
-                Counter = x;
-                break;
-              }
-            }
-          }       
-        }
-
-        if(Counter != NO_SEQ_NBR)
-        {
-					p_MutexShared->leaveMutex();
-          goto SKIP;
-        }
-
-      }
-
-      // Other side detected a dropped packet.
-      if(PacketHead.Type & RESEND)
-      {
-
-        Counter = NO_SEQ_NBR;
-
-        if(p_Connect[ConnectionId].sendwritepointer < p_Connect[ConnectionId].sendreadpointer)
-        {
-
-          for(x = p_Connect[ConnectionId].sendreadpointer;x<=255;x++)
-          {
-            if(p_Connect[ConnectionId].sendbuffer[x].packetseqnbr == PacketHead.AckSeqNbr + 1)
-            {
-              Counter = x;
-              break;
-            }
-          }
-
-          if(Counter == NO_SEQ_NBR)
-          {
-            for(x=0;x<p_Connect[ConnectionId].sendwritepointer;x++)
-            {
-              if(p_Connect[ConnectionId].sendbuffer[x].packetseqnbr == PacketHead.AckSeqNbr + 1)
-              {
-                Counter = x;
-                break;
-              }
-            }
-          }
-        }
-        else
-        {
-          for(x = p_Connect[ConnectionId].sendreadpointer;x<p_Connect[ConnectionId].sendwritepointer;x++)
-          {
-            if(p_Connect[ConnectionId].sendbuffer[x].packetseqnbr == PacketHead.AckSeqNbr + 1)
-            {
-              Counter = x;
-              break;
-            }
-          }
-        }
-
-				if(Counter == NO_SEQ_NBR)
-				{
-				}
-				else
-				{
-					NetBuffer tempBuffer;
-					tempBuffer = p_Connect[ConnectionId].sendbuffer[Counter];
-
-					p_MutexShared->leaveMutex();
-
-					Resend(ConnectionId, &tempBuffer);
-
-					p_MutexShared->enterMutex();
-
-				}
-
-        // If its a resend we don't really want to process this message.
-        // We just want to send out another duplicate of the missing packet.
-
-				p_MutexShared->leaveMutex();
-        goto SKIP;
-      }
-
-      // See if wrap around recv buffer is already full.
-      if(p_Connect[ConnectionId].recvcount == 256)
-      {
-        // Buffer full.
-        // Still pondering if we should disconnect or have a wait in here.
-        int a = 0;
-      }
-
-      // Place data into recv buffer.
-      p_Connect[ConnectionId].recvbuffer
-          [p_Connect[ConnectionId].recvwritepointer].processed = false;
-
-      p_Connect[ConnectionId].recvbuffer
-          [p_Connect[ConnectionId].recvwritepointer].packetlength = PacketLength;
-
-      if(p_Connect[ConnectionId].recvbuffer
-          [p_Connect[ConnectionId].recvwritepointer].packet != 0)
-      {
-        delete []p_Connect[ConnectionId].recvbuffer
-          [p_Connect[ConnectionId].recvwritepointer].packet;
-      }
-
-      p_Connect[ConnectionId].recvbuffer
-          [p_Connect[ConnectionId].recvwritepointer].packet = new char[PacketLength];
-
-      memcpy(p_Connect[ConnectionId].
-             recvbuffer[p_Connect[ConnectionId].recvwritepointer].packet,
-             PacketBuffer, PacketLength);
-
-      p_Connect[ConnectionId].recvbuffer
-          [p_Connect[ConnectionId].recvwritepointer].dataoffset = HeaderLength;
-
-      p_Connect[ConnectionId].recvbuffer
-          [p_Connect[ConnectionId].recvwritepointer].datalength = PacketLength - HeaderLength;
-
-      p_Connect[ConnectionId].recvbuffer
-          [p_Connect[ConnectionId].recvwritepointer].type = PacketHead.Type;
-
-      //p_MutexShared->leaveMutex();
-
-      // Connect packet (we just want to record we got it here)
-      if(PacketHead.Type & CONNECT)
-      {
-        // Server is ACKING or NACKING
-        if(PacketHead.Type & ACK)
-        {
-        }
-        if(PacketHead.Type & REJECT)
-        {
-          p_Connect[ConnectionId].pendingclose = true;
-        }
-      }
-
-      // Other side disconnecting.
-      if(PacketHead.Type & DISCONNECT)
-      {
-
-        // See if we are client receiving the ack from server.
-        if(PacketHead.Type & ACK)
-        {
-          p_Connect[ConnectionId].pendingclose = true;
-        }
-        else
-        {
-          // We are the server responding with an ACK.
-          //p_MutexShared->enterMutex();
-          p_Connect[ConnectionId].todo |= DISCONNECT;
-          p_Connect[ConnectionId].todo |= ACK;
-          p_MutexShared->leaveMutex();
-
-          Send(ConnectionId, false, 0, 0);
-
-          // Drop connection we don't care if they actually get ACK or not.
-          p_MutexShared->enterMutex();
-          p_Connect[ConnectionId].pendingclose = true;
-        }
-      }
-
-      // Incoming Seqnbr, timestamp it and have next packet respond.
-      if(PacketHead.Type & SEQNBR)
-      {
-
-        if(p_Connect[ConnectionId].dropped_seqnbr == PacketHead.SeqNbr)
-        {
-          // turn off the resending requests.
-          p_Connect[ConnectionId].dropped_seqnbr = NO_SEQ_NBR;
-          p_Connect[ConnectionId].dropped_time = 0;
-        }
-
-        p_Connect[ConnectionId].recvbuffer
-            [p_Connect[ConnectionId].recvwritepointer].packetseqnbr = PacketHead.SeqNbr;
-
-			}
-      else
-      {
-        p_Connect[ConnectionId].recvbuffer
-            [p_Connect[ConnectionId].recvwritepointer].packetseqnbr = NO_SEQ_NBR;
-      }
-
-      // Incoming AckSeqNbr, we can clear out the send buffer and update ping
-      if(PacketHead.Type & ACKSEQNBR)
-      {
-
-				Counter = NO_SEQ_NBR;
-
-				if(p_Connect[ConnectionId].sendwritepointer < p_Connect[ConnectionId].sendreadpointer)
-				{
-
-					for(x = p_Connect[ConnectionId].sendreadpointer;x<=255;x++)
-					{
-						if(p_Connect[ConnectionId].sendbuffer[x].packetseqnbr == PacketHead.AckSeqNbr)
-						{
-							Counter = x;
-							break;
-						}
-					}
-
-					if(Counter == NO_SEQ_NBR)
-					{
-						for(x=0;x<p_Connect[ConnectionId].sendwritepointer;x++)
-						{
-							if(p_Connect[ConnectionId].sendbuffer[x].packetseqnbr == PacketHead.AckSeqNbr)
-							{
-								Counter = x;
-								break;
-							}
-						}
-					}
-				}
-				else
-				{
-					for(x = p_Connect[ConnectionId].sendreadpointer;x<p_Connect[ConnectionId].sendwritepointer;x++)
-					{
-						if(p_Connect[ConnectionId].sendbuffer[x].packetseqnbr == PacketHead.AckSeqNbr)
-						{
-							Counter = x;
-							break;
-						}
-					}
-				}
-
-        // Update SendBuffer Counters
-				if(Counter != NO_SEQ_NBR)
-				{
-					p_Connect[ConnectionId].sendreadpointer = Counter;
-				}
-
-        if(p_Connect[ConnectionId].sendwritepointer < p_Connect[ConnectionId].sendreadpointer)
-        {
-          p_Connect[ConnectionId].sendcount = (256 - p_Connect[ConnectionId].sendreadpointer) +
-            p_Connect[ConnectionId].sendwritepointer;
-        }
-        else
-        {
-          p_Connect[ConnectionId].sendcount = 
-            p_Connect[ConnectionId].sendwritepointer - 
-            p_Connect[ConnectionId].sendreadpointer;
-        }
-      }
-
-      // Other side has no activity wants some.
-      if(PacketHead.Type & KEEPALIVE)
-      {
-
-				// We are the client getting the response.
-        if(PacketHead.Type & ACK)
-        {
-        }
-				else
-				{
-
-					// We are the server responding with an ACK.
-					p_Connect[ConnectionId].todo |= KEEPALIVE;
-					p_Connect[ConnectionId].todo |= ACK;
-					p_Connect[ConnectionId].todo |= ACKSEQNBR;
-					p_MutexShared->leaveMutex();
-
-					Send(ConnectionId, false, 0, 0);
-
-					p_MutexShared->enterMutex();
-
-				}
-      }
-
-      // Loop through and see if we have more seqnbr packets
-      // This code should only be hit if there are out of order
-      // or missing seq nbrs.
-
-			Counter = NO_SEQ_NBR;
-			bool Found = false;
-
-      if(p_Connect[ConnectionId].recvwritepointer < p_Connect[ConnectionId].recvreadpointer)
-      {
-
-        for(x = p_Connect[ConnectionId].recvreadpointer; 
-            x <= 255;
-            x++)
-        {
-          if((p_Connect[ConnectionId].recvbuffer[x].packetseqnbr != 
-              p_Connect[ConnectionId].recvseqnbr) &&
-							p_Connect[ConnectionId].recvbuffer[x].packetseqnbr != NO_SEQ_NBR &&
-              p_Connect[ConnectionId].recvbuffer[x].processed == false)
-          {
-            Counter = x;
-          }
-
-					if(p_Connect[ConnectionId].recvbuffer[x].packetseqnbr == 
-              p_Connect[ConnectionId].recvseqnbr)
-					{
-						Counter = NO_SEQ_NBR;
-						Found = true;
-						break;
-					}
-
-        }
-
-				if(Found == false)
-				{
-					for(x = 0; 
-							x < p_Connect[ConnectionId].recvwritepointer;
-							x++)
-					{
-
-						if((p_Connect[ConnectionId].recvbuffer[x].packetseqnbr != 
-								p_Connect[ConnectionId].recvseqnbr) &&
-								p_Connect[ConnectionId].recvbuffer[x].packetseqnbr != NO_SEQ_NBR &&
-								p_Connect[ConnectionId].recvbuffer[x].processed == false)
-						{
-							Counter = x;
-						}
-
-						if(p_Connect[ConnectionId].recvbuffer[x].packetseqnbr == 
-								p_Connect[ConnectionId].recvseqnbr)
-						{
-							Counter = NO_SEQ_NBR;
-							break;
-						}
-					}
-				}
-      }
-      else
-      {
-
-        for(x = p_Connect[ConnectionId].recvreadpointer; 
-            x < p_Connect[ConnectionId].recvwritepointer;
-            x++)
-        {
-
-          if((p_Connect[ConnectionId].recvbuffer[x].packetseqnbr != 
-              p_Connect[ConnectionId].recvseqnbr) &&
-							p_Connect[ConnectionId].recvbuffer[x].packetseqnbr != NO_SEQ_NBR &&
-              p_Connect[ConnectionId].recvbuffer[x].processed == false)
-          {
-            Counter = x;
-          }
-
-					if(p_Connect[ConnectionId].recvbuffer[x].packetseqnbr == 
-              p_Connect[ConnectionId].recvseqnbr)
-					{
-						Counter = NO_SEQ_NBR;
-						break;
-					}
-        }
-      }
-
-			if(Counter != NO_SEQ_NBR)
-			{
-				if(p_Connect[ConnectionId].dropped_seqnbr == NO_SEQ_NBR)
-				{
-					p_Connect[ConnectionId].dropped_seqnbr = p_Connect[ConnectionId].recvseqnbr;
-					p_Connect[ConnectionId].dropped_time = DROPPED_TIMEOUT;
-				}
-			}
-
-      // Update RecvBuffer Counters
-      p_Connect[ConnectionId].recvwritepointer++;
-
-      if(p_Connect[ConnectionId].recvwritepointer < p_Connect[ConnectionId].recvreadpointer)
-      {
-        p_Connect[ConnectionId].recvcount = (256 - p_Connect[ConnectionId].recvreadpointer) +
-          p_Connect[ConnectionId].recvwritepointer;
-      }
-      else
-      {
-        p_Connect[ConnectionId].recvcount = 
-          p_Connect[ConnectionId].recvwritepointer - 
-          p_Connect[ConnectionId].recvreadpointer;
-      }
-
-      p_MutexShared->leaveMutex();
-
+      LowLevelRecv();
     }
-
-SKIP:
 
     // update time on connections.
     endtime = clock();
 
     p_MutexShared->enterMutex();
 
-    for(Counter = 0; Counter<=255;Counter++)
+    for(x = 0; x < p_Connect.size();x++)
     {
-      
-      if(p_Connect[Counter].inuse == true && 
-         p_Connect[Counter].pendingclose == false)
+
+			p_Connect[x].datarate_counter -= (short)(endtime - begintime);
+      p_Connect[x].keepalive_time -= (short)(endtime - begintime);
+
+      if(p_Connect[x].dropped_seqnbr != NO_SEQ_NBR)
       {
-				p_Connect[Counter].datarate_counter -= (endtime - begintime);
-        p_Connect[Counter].keepalive_time -= (endtime - begintime);
+        p_Connect[x].dropped_time -= (short)(endtime - begintime);
+      }
 
-        if(p_Connect[Counter].dropped_seqnbr != NO_SEQ_NBR)
+			if(p_Connect[x].datarate_counter <= 5)
+			{
+				p_Connect[x].datarate_counter = DATARATE_TIMEOUT;
+				p_Connect[x].recvdatarate = p_Connect[x].recvdatabytes;
+				p_Connect[x].senddatarate = p_Connect[x].senddatabytes;
+				p_Connect[x].recvdatabytes = 0;
+				p_Connect[x].senddatabytes = 0;
+			}
+
+      if(p_Connect[x].keepalive_time <= 5)
+      {
+        p_Connect[x].keepalive_time = KEEPALIVE_TIMEOUT;
+        p_Connect[x].keepalive_counter++;
+
+        if(p_Connect[x].keepalive_counter >= KEEPALIVE_COUNTER)
         {
-          p_Connect[Counter].dropped_time -= (endtime - begintime);
+
+          ReportLocalMessage(p_Connect[x].connectionid, TIMEOUT);
+
+          p_Connect.erase(&p_Connect[x]);
         }
-
-				if(p_Connect[Counter].datarate_counter <= 5)
-				{
-					p_Connect[Counter].datarate_counter = DATARATE_TIMEOUT;
-					p_Connect[Counter].recvdatarate = p_Connect[Counter].recvdatabytes;
-					p_Connect[Counter].senddatarate = p_Connect[Counter].senddatabytes;
-					p_Connect[Counter].recvdatabytes = 0;
-					p_Connect[Counter].senddatabytes = 0;
-				}
-
-        if(p_Connect[Counter].keepalive_time <= 5)
+        else
         {
-          p_Connect[Counter].keepalive_time = KEEPALIVE_TIMEOUT;
-          p_Connect[Counter].keepalive_counter++;
-          if(p_Connect[Counter].keepalive_counter >= KEEPALIVE_COUNTER)
-          {
-            // Timeout
-            p_Connect[Counter].pendingclose = true;
 
+          // Send Keepalive
+          p_Connect[x].todo |= KEEPALIVE;
+					p_Connect[x].todo |= ACKSEQNBR;
+					p_Connect[x].todo |= TIME;
+
+          if(p_Connect[x].connectionid != NO_SEQ_NBR)
+          {
             p_MutexShared->leaveMutex();
 
-            ReportLocalMessage(Counter, TIMEOUT);
+            InternalSend(x, false);
 
             p_MutexShared->enterMutex();
           }
-          else
-          {
 
-            // Send Keepalive
-            p_Connect[Counter].todo |= KEEPALIVE;
-						p_Connect[Counter].todo |= ACKSEQNBR;
-						p_Connect[Counter].todo |= TIME;
+					if(p_Connect[x].keepalive_counter == 2)
+					{
+						// When lag is first detected report lag.
+						// Using counter == 2 because == 1 is very common.
 
-            p_MutexShared->leaveMutex();
-
-            Send(Counter, false, 0, 0);
-
-            p_MutexShared->enterMutex();
-
-						if(p_Connect[Counter].keepalive_counter == 2)
-						{
-							// When lag is first detected report lag.
-							// Using counter == 2 because == 1 is very common.
-							p_MutexShared->leaveMutex();
-							ReportLocalMessage(Counter, LAG);
-							p_MutexShared->enterMutex();
-						}
-
-          }
-        }
-
-        if(p_Connect[Counter].dropped_seqnbr != NO_SEQ_NBR)
-        {
-          if(p_Connect[Counter].dropped_time <= 5)
-          {
-
-            p_Connect[Counter].dropped_time = DROPPED_TIMEOUT;
-
-            // Send Resend
-            p_Connect[Counter].todo |= RESEND;
-            p_Connect[Counter].todo |= ACKSEQNBR;
-
-            p_MutexShared->leaveMutex();
-
-            Send(Counter, false, 0, 0);
-            ReportLocalMessage(Counter, PACKETLOSS);
-
-            p_MutexShared->enterMutex();
-          }
+            ReportLocalMessage(p_Connect[x].connectionid, LAG);
+					}
         }
       }
+
+      if(p_Connect[x].dropped_seqnbr != NO_SEQ_NBR)
+      {
+        if(p_Connect[x].dropped_time <= 5)
+        {
+
+          p_Connect[x].dropped_time = DROPPED_TIMEOUT;
+
+          // Send Resend
+          p_Connect[x].todo |= RESEND;
+          p_Connect[x].todo |= ACKSEQNBR;
+
+          p_MutexShared->leaveMutex();
+
+          InternalSend(x, false);
+
+          p_MutexShared->enterMutex();
+
+          ReportLocalMessage(p_Connect[x].connectionid, PACKETLOSS);
+
+        }
+      }
+
     }
 
     p_MutexShared->leaveMutex();
@@ -962,728 +231,1088 @@ SKIP:
 
 }
 
-void NetworkingClass::final()
+short NetworkingClass::LowLevelRecv()
 {
 
-}
+  short     ArrayEntry;
+  long      Counter;
 
-// -----------------------------------------------------------------
- 
-short NetworkingClass::Connect(short ConnectionId, char *IP, char *Port, void *Data, short DataLength)
-{
+  NetHeader PacketHead;
+  char      PacketBuffer[4096];
+  long      PacketLength;
 
-  if(GetActive(ConnectionId) == true)
+  short     HeaderLength;
+
+  unsigned int  x;
+
+  // get address and port of other side.
+  InetHostAddress addr;
+  tpport_t        port;
+
+  try
   {
-    return NET_INVALID_STATE;
+    addr = p_Socket->getSender(&port);
   }
+  catch(...)
+  { // KABOOM
+    return NET_EXCEPTION;
+  }
+
+  // scan local connection id's for match
+  ArrayEntry = NO_SEQ_NBR;
 
   p_MutexShared->enterMutex();
 
-  // Set ip/port of other side so we can ack/nack a response correctly.
-  p_Connect[ConnectionId].inuse = true;
-
-  p_Connect[ConnectionId].addr = IP;
-  p_Connect[ConnectionId].port = (tpport_t)atoi(Port);
-
-  p_Connect[ConnectionId].todo |= CONNECT;
-
-	p_Connect[ConnectionId].recvdatabytes = 0;
-	p_Connect[ConnectionId].senddatabytes = 0;
-	p_Connect[ConnectionId].datarate_counter = DATARATE_TIMEOUT;
-
-  p_Connect[ConnectionId].keepalive_time = KEEPALIVE_TIMEOUT;
-  p_Connect[ConnectionId].keepalive_counter = 0;
-
-  p_Connect[ConnectionId].dropped_seqnbr = NO_SEQ_NBR;
-
-  p_Connect[ConnectionId].sendreadpointer = 0;
-  p_Connect[ConnectionId].sendwritepointer = 0;
-  p_Connect[ConnectionId].recvreadpointer = 0;
-  p_Connect[ConnectionId].recvwritepointer = 0;
-  p_Connect[ConnectionId].recvcount = 0;
-  p_Connect[ConnectionId].sendcount = 0;
-
-  p_Connect[ConnectionId].latency = 0;
-  p_Connect[ConnectionId].ping = 0;
-  p_Connect[ConnectionId].recvreadpointer = 0;
-  p_Connect[ConnectionId].senddatarate = 0;
-  p_Connect[ConnectionId].recvseqnbr = 0;
-
-	p_Connect[ConnectionId].timestamp = clock();
-  
-	p_sConnectionCount++;
+  for(x = 0; x < p_Connect.size(); x++)
+  {
+    if(p_Connect[x].addr == addr &&
+        p_Connect[x].port == port)
+    {
+      ArrayEntry = x;
+      break;
+    }
+  }
 
   p_MutexShared->leaveMutex();
-
-  return Send(ConnectionId, true, Data, DataLength);
-}
-
-short NetworkingClass::Disconnect(short ConnectionId, void *Data, short DataLength)
-{
-
-  if(GetActive(ConnectionId) == false)
+    
+  // put message into temp buffer
+  PacketLength = p_Socket->receive(PacketBuffer, sizeof(PacketBuffer));
+  if(PacketLength <= 0)
   {
-    return NET_INVALID_STATE;
+    // So we really don't have data? /boggle.
+    return NET_INVALID_PACKET;
   }
+
+  if(PacketLength > 4096)
+  {
+    // We don't support bigger than 4k buffers. Drop packet.
+    // Must not be for us.
+    return NET_INVALID_PACKET;
+  }
+
+  // HEADER
+  // This will use header compression.
+  memset(&PacketHead, 0, sizeof(PacketHead));
+
+  // Pull out initial stuff and convert to correct endians
+  memcpy(&PacketHead, &PacketBuffer, 4);
+
+  FlipFlop(PacketHead.StartFiller);
+  FlipFlop(PacketHead.Type);
+
+  // verify packet seems legit
+  if(PacketHead.StartFiller != PACKET_IDENTIFIER)
+  {
+    // drop packet. Whos sending me this stuff on this port?
+    return NET_INVALID_PACKET;
+  }
+
+  // Uncompress header into non compressed struct.
+  HeaderLength = 4;
+
+  if(PacketHead.Type & SEQNBR)
+  {
+    memcpy(&PacketHead.SeqNbr, PacketBuffer + HeaderLength, 2);
+    FlipFlop(PacketHead.SeqNbr);
+    HeaderLength += 2;
+  }
+
+  if(PacketHead.Type & ACKSEQNBR)
+  {
+    memcpy(&PacketHead.AckSeqNbr, PacketBuffer + HeaderLength, 2);
+    FlipFlop(PacketHead.AckSeqNbr);
+    HeaderLength += 2;
+  }
+
+  if(PacketHead.Type & TIME)
+  {
+    memcpy(&PacketHead.Time, PacketBuffer + HeaderLength, 2);
+    FlipFlop(PacketHead.Time);
+    HeaderLength += 2;
+  }
+
+  if(PacketLength < HeaderLength)
+  {
+    // Invalid packet. We didn't get a complete header.
+    return NET_INVALID_PACKET;
+  }
+
+  if(PacketHead.Type & DATA)
+  {
+    if(PacketLength == HeaderLength)
+    {
+      // Invalid packet, says we have data but we don't.
+      return NET_INVALID_PACKET;
+    }
+  }
+
+  // -----------------------------------------
+  // Check Packet to see what it is....
+  // -----------------------------------------
+  if(PacketHead.Type & CONNECT)
+  {
+    if((PacketHead.Type & ACK) || (PacketHead.Type & REJECT))
+    {
+      // we'll get this later.
+    }
+    else
+    {
+
+      // We must be a server getting a connect.
+      if(ArrayEntry == NO_SEQ_NBR)
+      {
+
+        bool Listen;
+
+        p_MutexShared->enterMutex();
+
+        Listen = p_bListen;
+
+        p_MutexShared->leaveMutex();
+
+        if(Listen == true)
+        {
+
+					// Fill out Array
+					NetConnections tempConnect;
+
+					memset(&tempConnect, 0, sizeof(tempConnect));
+
+          tempConnect.addr = addr;
+          tempConnect.port = port;
+          tempConnect.connectionid = NO_SEQ_NBR;
+
+					tempConnect.timestamp = clock();
+
+					tempConnect.datarate_counter = DATARATE_TIMEOUT;
+          tempConnect.keepalive_time = KEEPALIVE_TIMEOUT;
+          tempConnect.dropped_seqnbr = NO_SEQ_NBR;
+
+          p_MutexShared->enterMutex();
+
+					p_Connect.push_back(tempConnect);
+					ArrayEntry = p_Connect.size() - 1;
+
+          p_MutexShared->leaveMutex();
+
+        }
+      }
+      else
+      {
+        // Already connected, 
+        // Send reject packet saying already connected
+
+        string message = "Already Connected";
+
+        LowLevelSend(addr, port, CONNECT | REJECT, 0, 0, 0, &message, 0);
+
+        return NET_NO_ERROR;
+      }
+    }
+  }
+
+  // If no connection id, nothing else to do.
+  if(ArrayEntry == NO_SEQ_NBR)
+  { 
+    return NET_NO_ERROR;
+  }
+
+  /*  // Add in intentional random packet loss for testing
+  if((rand() % 100) == 50)
+  {
+    return NET_NO_ERROR;
+  }
+  */
 
   p_MutexShared->enterMutex();
 
-  p_Connect[ConnectionId].todo |= DISCONNECT;
+	// Signal LAG RECOVERED if we finially got a packet.
+  if(p_Connect[ArrayEntry].keepalive_counter >= 2)
+  {
+		// Using counter == 2 because == 1 is very common.
+    ReportLocalMessage(p_Connect[ArrayEntry].connectionid, LAG_RECOVERED);
+	}
+
+	// Reset Keepalives
+  p_Connect[ArrayEntry].keepalive_time = KEEPALIVE_TIMEOUT;
+  p_Connect[ArrayEntry].keepalive_counter = 0;
+
+	// Set Timestamp
+	if(PacketHead.Type & TIME)
+	{
+		clock_t nowtime = clock();
+
+		p_Connect[ArrayEntry].ping = (short)((nowtime - 
+				                          p_Connect[ArrayEntry].timestamp) - PacketHead.Time);
+
+		if(p_Connect[ArrayEntry].ping < 0) p_Connect[ArrayEntry].ping = 0;
+	}
+
+	p_Connect[ArrayEntry].timestamp = clock();
+
+	// Update recv bytes
+	p_Connect[ArrayEntry].recvdatabytes += PacketLength;
+
+  // See if this could be a duplicate
+  if(PacketHead.Type & POSSDUPE)
+  {
+
+    Counter = NO_SEQ_NBR;
+
+    // If we aren't currently looking for a RESEND drop packet
+    if(p_Connect[ArrayEntry].dropped_seqnbr == NO_SEQ_NBR)
+    {
+			p_MutexShared->leaveMutex();
+      return NET_NO_ERROR;
+    }
+
+    // If SEQNBR coming in with POSSDUPE anything other than
+    // The one we are looking for, then drop it.
+    if(PacketHead.SeqNbr != p_Connect[ArrayEntry].dropped_seqnbr)
+    {
+			p_MutexShared->leaveMutex();
+      return NET_NO_ERROR;
+    }
+
+    // If SEQNBR coming in with POSSDUPE is the one we are looking for
+    // See if we already have it in our recv buffer.
+    for(x = 0;x < p_Connect[ArrayEntry].recvbuffer.size();x++)
+    {
+      if(p_Connect[ArrayEntry].recvbuffer[x].header.SeqNbr == PacketHead.SeqNbr)
+      {
+			  p_MutexShared->leaveMutex();
+        return NET_NO_ERROR;
+      }
+    }
+  }
+
+  // Other side detected a dropped packet.
+  if(PacketHead.Type & RESEND)
+  {
+
+    Counter = NO_SEQ_NBR;
+
+    for(x = 0;x < p_Connect[ArrayEntry].sendbuffer.size();x++)
+    {
+      if(p_Connect[ArrayEntry].sendbuffer[x].header.SeqNbr == PacketHead.AckSeqNbr + 1)
+      {
+        Counter = x;
+        break;
+      }
+    }
+
+		if(Counter == NO_SEQ_NBR)
+		{
+		}
+		else
+		{
+
+      LowLevelSend(p_Connect[ArrayEntry].addr,
+                   p_Connect[ArrayEntry].port,
+                   p_Connect[ArrayEntry].sendbuffer[Counter].header.Type | POSSDUPE,
+                   p_Connect[ArrayEntry].sendbuffer[Counter].header.SeqNbr,
+                   p_Connect[ArrayEntry].sendbuffer[Counter].header.AckSeqNbr,
+                   p_Connect[ArrayEntry].sendbuffer[Counter].header.Time,
+                   &p_Connect[ArrayEntry].sendbuffer[Counter].data,
+                   0);
+
+      /* //add in intentional duping for testing
+      if((rand() % 7) == 5)
+      {
+        LowLevelSend(p_Connect[ArrayEntry].addr,
+                     p_Connect[ArrayEntry].port,
+                     p_Connect[ArrayEntry].sendbuffer[Counter].header.Type | POSSDUPE,
+                     p_Connect[ArrayEntry].sendbuffer[Counter].header.SeqNbr,
+                     p_Connect[ArrayEntry].sendbuffer[Counter].header.AckSeqNbr,
+                     p_Connect[ArrayEntry].sendbuffer[Counter].header.Time,
+                     &p_Connect[ArrayEntry].sendbuffer[Counter].data,
+                     0);
+
+      }
+      */
+		}
+
+    // If its a resend we don't really want to process this message.
+    // We just want to send out another duplicate of the missing packet.
+
+		p_MutexShared->leaveMutex();
+    return NET_NO_ERROR;
+  }
+
+  // Place data into recv buffer.
+
+  NetBuffer tempBuffer;
+
+  tempBuffer.processed = false;
+  tempBuffer.header = PacketHead;
+
+  tempBuffer.data.append(PacketBuffer + HeaderLength, PacketLength - HeaderLength);
+
+  p_Connect[ArrayEntry].recvbuffer.push_back(tempBuffer);
+
+  // Connect packet (we just want to record we got it here)
+  if(PacketHead.Type & CONNECT)
+  {
+    // Server is ACKING or NACKING
+    if(PacketHead.Type & ACK)
+    {
+    }
+    if(PacketHead.Type & REJECT)
+    {
+
+      ReportLocalMessage(p_Connect[ArrayEntry].connectionid, 
+                         CONNECT | REJECT,
+                         &p_Connect[ArrayEntry].recvbuffer.back().data);
+
+      p_Connect.erase(&p_Connect[ArrayEntry]);
+
+      p_MutexShared->leaveMutex();
+
+      return NET_NO_ERROR;
+    }
+  }
+
+  // Other side disconnecting.
+  if(PacketHead.Type & DISCONNECT)
+  {
+
+    // See if we are client receiving the ack from server.
+    if(PacketHead.Type & ACK)
+    {
+
+      ReportLocalMessage(p_Connect[ArrayEntry].connectionid, 
+                         DISCONNECT | ACK,
+                         &p_Connect[ArrayEntry].recvbuffer.back().data);
+
+      p_Connect.erase(&p_Connect[ArrayEntry]);
+
+      p_MutexShared->leaveMutex();
+
+      return NET_NO_ERROR;
+    }
+    else
+    {
+      // We are the server responding with an ACK.
+      p_Connect[ArrayEntry].todo |= DISCONNECT;
+      p_Connect[ArrayEntry].todo |= ACK;
+      p_MutexShared->leaveMutex();
+
+      InternalSend(ArrayEntry, false);
+
+      // Drop connection we don't care if they actually get ACK or not.
+      p_MutexShared->enterMutex();
+
+      ReportLocalMessage(p_Connect[ArrayEntry].connectionid, 
+                         DISCONNECT,
+                         &p_Connect[ArrayEntry].recvbuffer.back().data);
+
+      p_Connect.erase(&p_Connect[ArrayEntry]);
+
+      p_MutexShared->leaveMutex();
+
+      return NET_NO_ERROR;
+    }
+  }
+
+  // Incoming Seqnbr, if we are looking for a dropped packet, then we got it.
+  if(PacketHead.Type & SEQNBR)
+  {
+
+    if(p_Connect[ArrayEntry].dropped_seqnbr == PacketHead.SeqNbr)
+    {
+      // turn off the resending requests.
+      p_Connect[ArrayEntry].dropped_seqnbr = NO_SEQ_NBR;
+      p_Connect[ArrayEntry].dropped_time = 0;
+    }
+
+    p_Connect[ArrayEntry].recvbuffer.back().header.SeqNbr = PacketHead.SeqNbr;
+	}
+  else
+  {
+    p_Connect[ArrayEntry].recvbuffer.back().header.SeqNbr = NO_SEQ_NBR;
+  }
+
+  // Incoming AckSeqNbr, we can clear out the send buffer
+  if(PacketHead.Type & ACKSEQNBR)
+  {
+		for(x = 0;x<p_Connect[ArrayEntry].sendbuffer.size();x++)
+		{
+
+      if((p_Connect[ArrayEntry].sendbuffer[x].header.SeqNbr <= PacketHead.AckSeqNbr) ||
+         (p_Connect[ArrayEntry].sendbuffer[x].header.SeqNbr >  p_Connect[ArrayEntry].sendseqnbr))
+      {
+        p_Connect[ArrayEntry].sendbuffer.erase(&p_Connect[ArrayEntry].sendbuffer[x]);
+      }
+		}
+  }
+
+  // Other side has no activity wants some.
+  if(PacketHead.Type & KEEPALIVE)
+  {
+
+		// We are the client getting the response.
+    if(PacketHead.Type & ACK)
+    {
+    }
+		else
+		{
+			// We are the server responding with an ACK.
+
+      if(p_Connect[ArrayEntry].connectionid != NO_SEQ_NBR)
+      {
+
+			  p_Connect[ArrayEntry].todo |= KEEPALIVE;
+			  p_Connect[ArrayEntry].todo |= ACK;
+			  p_Connect[ArrayEntry].todo |= ACKSEQNBR;
+
+			  p_MutexShared->leaveMutex();
+
+			  InternalSend(ArrayEntry, false);
+
+			  p_MutexShared->enterMutex();
+      }
+		}
+  }
+
+  // Add this packet to our recv buffer.
+  for(x = 0; 
+      x < p_Connect[ArrayEntry].recvbuffer.size();
+      x++)
+  {
+
+    bool Report = false;
+
+    if(p_Connect[ArrayEntry].recvbuffer[x].processed == false)
+    {
+      if(p_Connect[ArrayEntry].recvbuffer[x].header.Type & SEQNBR)
+      {
+        if(p_Connect[ArrayEntry].recvbuffer[x].header.SeqNbr == p_Connect[ArrayEntry].recvseqnbr)
+        {
+          Report = true;
+        }
+      }
+      else
+      {
+        Report = true;
+      }
+    }
+
+    if(p_Connect[ArrayEntry].recvbuffer[x].header.Type & KEEPALIVE)
+    {
+
+      p_Connect[ArrayEntry].recvbuffer[x].processed = true;
+
+      Report = false;
+    } 
+
+    if(Report == true)
+    {
+
+      ReportLocalMessage(p_Connect[ArrayEntry].connectionid, 
+                         p_Connect[ArrayEntry].recvbuffer[x].header.Type,
+                        &p_Connect[ArrayEntry].recvbuffer[x].data);
+
+      if(p_Connect[ArrayEntry].recvbuffer[x].header.Type & SEQNBR)
+      {
+        p_Connect[ArrayEntry].recvseqnbr++;
+      }
+
+      p_Connect[ArrayEntry].recvbuffer[x].processed = true;
+      x = 0;
+    }
+  }
+
+  // Loop through and see if we have more seqnbr packets
+  // This code should only be hit if there are out of order
+  // or missing seq nbrs.
+
+	Counter = NO_SEQ_NBR;
+
+  for(x = 0; 
+      x < p_Connect[ArrayEntry].recvbuffer.size();
+      x++)
+  {
+    if(p_Connect[ArrayEntry].recvbuffer[x].processed == false)
+    {
+      if(p_Connect[ArrayEntry].recvbuffer[x].header.Type & SEQNBR)
+      {
+        if(p_Connect[ArrayEntry].recvbuffer[x].header.SeqNbr != p_Connect[ArrayEntry].recvseqnbr)
+        {
+          Counter = x;
+        }
+        else
+        {
+			    Counter = NO_SEQ_NBR;
+			    break;
+        }
+      }
+    }
+  }
+
+	if(Counter != NO_SEQ_NBR)
+	{
+		if(p_Connect[ArrayEntry].dropped_seqnbr == NO_SEQ_NBR)
+		{
+			p_Connect[ArrayEntry].dropped_seqnbr = p_Connect[ArrayEntry].recvseqnbr;
+			p_Connect[ArrayEntry].dropped_time = DROPPED_TIMEOUT;
+		}
+	}
 
   p_MutexShared->leaveMutex();
 
-  return Send(ConnectionId, true, Data, DataLength);
+  return NET_NO_ERROR;
 }
 
-short NetworkingClass::Send(short ConnectionId, bool Guaranteed, void *Data, short DataLength)
+short NetworkingClass::InternalSend(short ArrayEntry, bool Guaranteed)
+{
+  return InternalSend(ArrayEntry, Guaranteed, "");
+}
+
+short NetworkingClass::InternalSend(short ArrayEntry, bool Guaranteed, string Data)
 {
 
-  if(GetActive(ConnectionId) == false)
-  {
-    return NET_INVALID_STATE;
-  }
-
-  long          Counter;
-  short         x;
-
-  // -------------------------------
-
-  // Validate size
-  if(DataLength > 4000)
+  if(Data.size() > 4000)
   {
       return NET_TOO_MUCH_DATA;
   }
 
-  // ------------------------------
-  // Main
-  // ------------------------------
-  p_MutexShared->enterMutex();
+  // ---------------------------------------------------
 
-  // Set Data flag if anything is passed in.
-  if(DataLength > 0)
-  {
-    p_Connect[ConnectionId].todo |= DATA;
-  }
+  unsigned int x;
+
+  p_MutexShared->enterMutex();
 
   // Set Seq Nbr
   if(Guaranteed == true)
   {
-    p_Connect[ConnectionId].todo |= SEQNBR;
-    p_Connect[ConnectionId].todo |= ACKSEQNBR;
-    p_Connect[ConnectionId].todo |= TIME;
+    p_Connect[ArrayEntry].todo |= SEQNBR;
+    p_Connect[ArrayEntry].todo |= ACKSEQNBR;
+    p_Connect[ArrayEntry].todo |= TIME;
   }
 
   // Set Latency time
-  if(p_Connect[ConnectionId].todo & TIME)
+  if(p_Connect[ArrayEntry].todo & TIME)
   {
 		clock_t nowtime = clock();
 
-		p_Connect[ConnectionId].latency = nowtime - p_Connect[ConnectionId].timestamp;
+		p_Connect[ArrayEntry].latency = (short)(nowtime - p_Connect[ArrayEntry].timestamp);
 
-		if(p_Connect[ConnectionId].latency < 0) p_Connect[ConnectionId].latency = 0;
+		if(p_Connect[ArrayEntry].latency < 0) p_Connect[ArrayEntry].latency = 0;
   }
 
-	p_Connect[ConnectionId].timestamp = clock();
+	p_Connect[ArrayEntry].timestamp = clock();
+
+  // Update recv buffers
+  if(p_Connect[ArrayEntry].todo & ACKSEQNBR)
+  {
+
+    // Update RecvBuffer Counters.
+    for(x = 0; x < p_Connect[ArrayEntry].recvbuffer.size();x++)
+    {
+      if(p_Connect[ArrayEntry].recvbuffer[x].processed == true)
+      {
+        p_Connect[ArrayEntry].recvbuffer.erase(&p_Connect[ArrayEntry].recvbuffer[x]);
+      }
+    }
+  }
+
+  // Save off Packet in case they need a resend.
+  if(p_Connect[ArrayEntry].todo & SEQNBR)
+  {
+
+    // Place contents into buffer
+
+    p_Connect[ArrayEntry].sendseqnbr++;
+
+    NetBuffer tempBuffer;
+
+    tempBuffer.header.Type = p_Connect[ArrayEntry].todo;
+    tempBuffer.header.SeqNbr = p_Connect[ArrayEntry].sendseqnbr;
+    tempBuffer.header.AckSeqNbr = p_Connect[ArrayEntry].recvseqnbr-1;
+    tempBuffer.header.Time = p_Connect[ArrayEntry].latency;
+    tempBuffer.data = Data;
+      
+    p_Connect[ArrayEntry].sendbuffer.push_back(tempBuffer);
+
+  }
+
+  // Low Level Send
+  short Length;
+
+  LowLevelSend(p_Connect[ArrayEntry].addr, p_Connect[ArrayEntry].port,
+               p_Connect[ArrayEntry].todo,
+               p_Connect[ArrayEntry].sendseqnbr-1, p_Connect[ArrayEntry].recvseqnbr-1,
+               p_Connect[ArrayEntry].latency,
+               &Data,
+               &Length);
+
+  // Update Stats
+	p_Connect[ArrayEntry].senddatabytes += Length;
+  p_Connect[ArrayEntry].todo = 0;
+
+  p_MutexShared->leaveMutex();
+
+  return NET_NO_ERROR;
+
+}
+
+short NetworkingClass::LowLevelSend(InetHostAddress Addr,
+                                    tpport_t Port,
+                                    short Todo,
+                                    short SeqNbr,
+                                    short AckSeqNbr,
+                                    short Time,
+                                    string *Data,
+                                    short *Length)
+{
+
+  char Buffer[4096];
 
   // Build Packet.
-  char      Buffer[4096];
-  long      Length = 0;
-  short     tempType;
+  bool      InternalLength = false;
+
+  if(Length == 0)
+  {
+    Length = new short;
+    InternalLength = true;
+  }
+
+  if(Data->size() > 0)
+  {
+    Todo |= DATA;
+  }
 
   NetHeader Head;
   memset(&Head, 0, sizeof(Head));
 
   Head.StartFiller = PACKET_IDENTIFIER;
-  Head.Type = p_Connect[ConnectionId].todo;
-  Head.SeqNbr = p_Connect[ConnectionId].sendwritepointer;
-  Head.AckSeqNbr = p_Connect[ConnectionId].recvseqnbr-1;
-  Head.Time = p_Connect[ConnectionId].latency;
+  Head.Type = Todo;
+  Head.SeqNbr = SeqNbr;
+  Head.AckSeqNbr = AckSeqNbr;
+  Head.Time = Time;
 
   // Save off copy so we don't have flipflopped constants
+  short     tempType;
   tempType = Head.Type;
 
   // Build Header
-  FlipFlop(Head.StartFiller);
-  memcpy(Buffer + Length, &Head.StartFiller, 2);
 
-  Length += 2;
+  *Length = 0;
+
+  FlipFlop(Head.StartFiller);
+  memcpy(Buffer + *Length, &Head.StartFiller, 2);
+
+  *Length += 2;
 
   FlipFlop(Head.Type);
-  memcpy(Buffer + Length, &Head.Type, 2);
+  memcpy(Buffer + *Length, &Head.Type, 2);
 
-  Length += 2;
+  *Length += 2;
 
   if(tempType & SEQNBR)
   {
-    //FlipFlop(Head.SeqNbr);
-    memcpy(Buffer + Length, &Head.SeqNbr, 2);
+    FlipFlop(Head.SeqNbr);
+    memcpy(Buffer + *Length, &Head.SeqNbr, 2);
 
-    Length += 2;
+    *Length += 2;
   }
 
   if(tempType & ACKSEQNBR)
   {
-    memcpy(Buffer + Length, &Head.AckSeqNbr, 2);
+    FlipFlop(Head.AckSeqNbr);
+    memcpy(Buffer + *Length, &Head.AckSeqNbr, 2);
 
-    Length += 2;
+    *Length += 2;
   }
 
   if(tempType & TIME)
   {
     FlipFlop(Head.Time);
-    memcpy(Buffer + Length, &Head.Time, 2);
+    memcpy(Buffer + *Length, &Head.Time, 2);
 
-    Length += 2;
+    *Length += 2;
   }
 
   if(tempType & DATA)
   {
     // This data should be flipflopped already by App.
-    memcpy(Buffer + Length, 
-           Data,
-           DataLength);
 
-    Length += DataLength;
+    memcpy(Buffer + *Length, Data->data(), Data->size());
+     
+    *Length += Data->size();
 
-  }
-
-  if(tempType & SEQNBR)
-  {
-
-    // See if wrap around sendbuffer is already full.
-    if(p_Connect[ConnectionId].sendwritepointer+1 ==
-        p_Connect[ConnectionId].sendreadpointer)
-    {
-      // Buffer full.
-      // Still pondering if we should disconnect or have a wait in here.
-    }
-
-    // Timestamp and place contents into buffer
-    //p_Connect[ConnectionId].sendbuffer[p_Connect[ConnectionId].sendwritepointer]
-    //         .timestamp = clock();
-
-    p_Connect[ConnectionId].sendbuffer[p_Connect[ConnectionId].sendwritepointer]
-      .packetseqnbr = p_Connect[ConnectionId].sendwritepointer;
-
-    p_Connect[ConnectionId].sendbuffer[p_Connect[ConnectionId].
-                sendwritepointer].packetlength = Length;
-
-    if(p_Connect[ConnectionId].sendbuffer[p_Connect[ConnectionId].sendwritepointer]
-           .packet != 0)
-    {
-      delete []p_Connect[ConnectionId].sendbuffer[p_Connect[ConnectionId].
-                sendwritepointer].packet;
-    }
-
-    p_Connect[ConnectionId].sendbuffer[p_Connect[ConnectionId].sendwritepointer]
-           .packet = new char[Length];
-
-    memcpy(p_Connect[ConnectionId].sendbuffer[p_Connect[ConnectionId].sendwritepointer]
-           .packet, Buffer, Length);
-
-    // Update SendBuffer Counters.
-
-    p_Connect[ConnectionId].sendwritepointer++;
-
-    p_Connect[ConnectionId].sendcount = 
-      p_Connect[ConnectionId].sendwritepointer - p_Connect[ConnectionId].sendreadpointer;
-
-  }
-
-  if(tempType & ACKSEQNBR)
-  {
-
-		bool Found = false;
-
-    // Update RecvBuffer Counters.
-    if(p_Connect[ConnectionId].recvwritepointer < p_Connect[ConnectionId].recvreadpointer)
-    {
-      for(x = p_Connect[ConnectionId].recvreadpointer; x <= 255;x++)
-      {
-        if(p_Connect[ConnectionId].recvbuffer[x].processed == true)
-        {
-          p_Connect[ConnectionId].recvreadpointer++;
-        }
-        else
-        {
-					Found = true;
-          break;
-        }
-      }
-
-			if(Found == false)
-			{
-				for(x = 0; x < p_Connect[ConnectionId].recvwritepointer;x++)
-				{
-					if(p_Connect[ConnectionId].recvbuffer[x].processed == true)
-					{
-						p_Connect[ConnectionId].recvreadpointer++;
-					}
-					else
-					{
-						break;
-					}
-				}
-			}
-
-    }
-    else
-    {
-
-      for(x = p_Connect[ConnectionId].recvreadpointer; x < p_Connect[ConnectionId].recvwritepointer;x++)
-      {
-        if(p_Connect[ConnectionId].recvbuffer[x].processed == true)
-        {
-          p_Connect[ConnectionId].recvreadpointer++;
-        }
-        else
-        {
-          break;
-        }
-      }
-    }
-
-		if(p_Connect[ConnectionId].recvwritepointer < p_Connect[ConnectionId].recvreadpointer)
-    {
-      p_Connect[ConnectionId].recvcount = (256 - p_Connect[ConnectionId].recvreadpointer) +
-        p_Connect[ConnectionId].recvwritepointer;
-    }
-    else
-    {
-      p_Connect[ConnectionId].recvcount = p_Connect[ConnectionId].recvwritepointer - p_Connect[ConnectionId].recvreadpointer;
-    }
-  }
-
-  p_Connect[ConnectionId].todo = 0;
-
-  // Do the send.
-  p_Socket->setPeer(p_Connect[ConnectionId].addr, p_Connect[ConnectionId].port);
-  p_Socket->send(Buffer, Length);
-
-	p_Connect[ConnectionId].senddatabytes += Length;
-
-  p_MutexShared->leaveMutex();
-
-  return NET_NO_ERROR;
-}
-
-short NetworkingClass::Recv(short ConnectionId, short *Type, void *Data, short *DataLength)
-{
-
-  if(GetActive(ConnectionId) == false)
-  {
-    return NET_INVALID_STATE;
-  }
-
-  long Counter = NO_SEQ_NBR;
-	short x;
-
-  // Loop through and get next message.
-  p_MutexShared->enterMutex();
-
-  if(p_Connect[ConnectionId].recvwritepointer < p_Connect[ConnectionId].recvreadpointer)
-  {
-
-    for(x = p_Connect[ConnectionId].recvreadpointer; 
-        x <= 255;
-        x++)
-    {
-      if(((p_Connect[ConnectionId].recvbuffer[x].packetseqnbr == 
-          p_Connect[ConnectionId].recvseqnbr) ||
-          p_Connect[ConnectionId].recvbuffer[x].packetseqnbr == NO_SEQ_NBR) && 
-          p_Connect[ConnectionId].recvbuffer[x].processed == false)
-      {
-
-        if(Type != 0)
-        {
-          *Type = p_Connect[ConnectionId].recvbuffer[x].type;
-          Data = ((char *)p_Connect[ConnectionId].recvbuffer[x].packet + 
-                 p_Connect[ConnectionId].recvbuffer[x].dataoffset);
-          *DataLength = p_Connect[ConnectionId].recvbuffer[x].datalength;
-        }
-
-        p_Connect[ConnectionId].recvbuffer[x].processed = true;
-
-        if(p_Connect[ConnectionId].recvbuffer[x].packetseqnbr != NO_SEQ_NBR)
-        {
-          p_Connect[ConnectionId].recvseqnbr++;
-        }
-
-        Counter = x;
-
-        break;
-      }
-    }
-
-    if(Counter == NO_SEQ_NBR)
-    {
-
-      for(x = 0; 
-          x < p_Connect[ConnectionId].recvwritepointer;
-          x++)
-      {
-
-				if(((p_Connect[ConnectionId].recvbuffer[x].packetseqnbr == 
-            p_Connect[ConnectionId].recvseqnbr) ||
-            p_Connect[ConnectionId].recvbuffer[x].packetseqnbr == NO_SEQ_NBR) && 
-            p_Connect[ConnectionId].recvbuffer[x].processed == false)
-        {
-
-          if(Type != 0)
-          {
-            *Type = p_Connect[ConnectionId].recvbuffer[x].type;
-            Data = ((char *)p_Connect[ConnectionId].recvbuffer[x].packet + 
-                   p_Connect[ConnectionId].recvbuffer[x].dataoffset);
-            *DataLength = p_Connect[ConnectionId].recvbuffer[x].datalength;
-          }
-
-          p_Connect[ConnectionId].recvbuffer[x].processed = true;
-
-          if(p_Connect[ConnectionId].recvbuffer[x].packetseqnbr != NO_SEQ_NBR)
-          {
-            p_Connect[ConnectionId].recvseqnbr++;
-          }
-
-          Counter = x;
-
-          break;
-        }
-      }
-    }
-  }
-  else
-  {
-    for(x = p_Connect[ConnectionId].recvreadpointer; 
-        x < p_Connect[ConnectionId].recvwritepointer;
-        x++)
-    {
-      if(((p_Connect[ConnectionId].recvbuffer[x].packetseqnbr == 
-          p_Connect[ConnectionId].recvseqnbr) ||
-          p_Connect[ConnectionId].recvbuffer[x].packetseqnbr == NO_SEQ_NBR) && 
-          p_Connect[ConnectionId].recvbuffer[x].processed == false)
-      {
-
-				// Ignore Keepalives
-				if(p_Connect[ConnectionId].recvbuffer[x].type & KEEPALIVE)
-				{
-					p_Connect[ConnectionId].recvbuffer[x].processed = true;
-					continue;
-				}
-
-        if(Type != 0)
-        {
-          *Type = p_Connect[ConnectionId].recvbuffer[x].type;
-          Data = ((char *)p_Connect[ConnectionId].recvbuffer[x].packet + 
-                 p_Connect[ConnectionId].recvbuffer[x].dataoffset);
-          *DataLength = p_Connect[ConnectionId].recvbuffer[x].datalength;
-        }
-
-        p_Connect[ConnectionId].recvbuffer[x].processed = true;
-
-        if(p_Connect[ConnectionId].recvbuffer[x].packetseqnbr != NO_SEQ_NBR)
-        {
-          p_Connect[ConnectionId].recvseqnbr++;
-        }
-
-        Counter = x;
-
-        break;
-      }
-    }
-  }
-
-  // Set variables
-
-  if(Counter == NO_SEQ_NBR)
-  {
-    if(p_Connect[ConnectionId].pendingclose == true)
-    {
-      p_Connect[ConnectionId].inuse = false;
-      p_Connect[ConnectionId].pendingclose = false;
-      p_sConnectionCount--;
-    }
-
-		// clean this stuff up
-		p_MutexShared->leaveMutex();
-
-    return NET_NO_MORE_DATA;
-  }
-
-  p_MutexShared->leaveMutex();
-
-  return NET_NO_ERROR;
-}
-
-short NetworkingClass::Accept(short ConnectionId, void *Data, short DataLength)
-{
-
-  if(GetActive(ConnectionId) == false)
-  {
-    return NET_INVALID_STATE;
-  }
-
-  p_MutexShared->enterMutex();
-
-  p_Connect[ConnectionId].todo |= CONNECT;
-  p_Connect[ConnectionId].todo |= ACK;
-  p_sConnectionCount++;
-
-  p_MutexShared->leaveMutex();
-
-  return Send(ConnectionId, true, Data, DataLength);
-
-}
-
-short NetworkingClass::Reject(short ConnectionId, void *Data, short DataLength)
-{
-
-  if(GetActive(ConnectionId) == false)
-  {
-    return NET_INVALID_STATE;
-  }
-
-  p_MutexShared->enterMutex();
-
-  p_Connect[ConnectionId].todo |= CONNECT;
-  p_Connect[ConnectionId].todo |= REJECT;
-
-  p_MutexShared->leaveMutex();
-
-  return Send(ConnectionId, true, Data, DataLength);
-
-}
-
-short NetworkingClass::Reject(InetHostAddress addr, tpport_t port, void *Data, short DataLength)
-{
-
-  // Build Packet.
-  char      Buffer[4096];
-  long      Length = 0;
-
-  NetHeader Head;
-  memset(&Head, 0, sizeof(Head));
-
-  Head.StartFiller = PACKET_IDENTIFIER;
-  Head.Type = CONNECT | REJECT;
-
-  if(DataLength > 0)
-  {
-    Head.Type |= DATA;
-  }
-
-  short tempType = Head.Type;
-
-  // Build Header
-  FlipFlop(Head.StartFiller);
-  memcpy(Buffer + Length, &Head.StartFiller, 2);
-
-  Length += 2;
-
-  FlipFlop(Head.Type);
-  memcpy(Buffer + Length, &Head.Type, 2);
-
-  Length += 2;
-
-  if(tempType & DATA)
-  {
-    // This data should be flipflopped already by App.
-    memcpy(Buffer + Length, 
-           Data,
-           DataLength);
-
-    Length += DataLength;
   }
 
   // Do the send.
-  p_Socket->setPeer(addr, port);
-  p_Socket->send(Buffer, Length);
+  p_Socket->setPeer(Addr, Port);
+  p_Socket->send(Buffer, *Length);
 
-  return NET_NO_ERROR;
-}
-
-short NetworkingClass::Resend(short ConnectionId, NetBuffer *Packet)
-{
-
-  if(GetActive(ConnectionId) == false)
+  if(InternalLength == true)
   {
-    return NET_INVALID_STATE;
+    delete Length;
+    Length = 0;
   }
 
-  p_MutexShared->enterMutex();
-
-  // Add in Poss Dupe Flag to original message
-  NET_TYPE  tempType;
-
-  memcpy(&tempType, (char *)Packet->packet + 2, sizeof(NET_TYPE));
-
-  FlipFlop(tempType);
-
-  tempType |= POSSDUPE;
-
-  FlipFlop(tempType);
-
-  memcpy((char *)Packet->packet + 2, &tempType, sizeof(NET_TYPE));
-
-  // Now resend
-  p_Socket->setPeer(p_Connect[ConnectionId].addr, p_Connect[ConnectionId].port);
-  p_Socket->send(Packet->packet, Packet->packetlength);  
-
-  // Cause a dupe for testing
-  /*
-  if(rand() % 5 == 2)
-  {
-    p_Socket->send(Packet->packet, Packet->packetlength);
-  }
-  */
-
-  p_MutexShared->leaveMutex();
-
   return NET_NO_ERROR;
+
 }
 
 short NetworkingClass::ReportLocalMessage(short ConnectionId, NET_TYPE Type)
 {
+  return ReportLocalMessage(ConnectionId, Type, 0);
+}
+
+short NetworkingClass::ReportLocalMessage(short ConnectionId, NET_TYPE Type, string *Data)
+{
+
+  NetRecv Recv;
+
+  Recv.ConnectionId = ConnectionId;
+  Recv.Type = Type;
+
+  if(Data != 0)
+  {
+    Recv.Data = *Data;
+  }
+  else
+  {
+    Recv.Data = "";
+  }
+
+  p_Recv.push_back(Recv);
+
+  return NET_NO_ERROR;
+}
+
+short NetworkingClass::ConnectionIdToArrayEntry(short ConnectionId)
+{
+
+	short         result = NO_SEQ_NBR;
+	unsigned int  x;
 
   p_MutexShared->enterMutex();
 
-  // Make recv packet timeout
-  p_Connect[ConnectionId].recvbuffer
-      [p_Connect[ConnectionId].recvwritepointer].processed = false;
+	for(x=0;x<p_Connect.size();x++)
+	{
+		if(p_Connect[x].connectionid == ConnectionId)
+		{
+			result = (short)x;
+			break;
+		}
+	}
 
-  p_Connect[ConnectionId].recvbuffer
-      [p_Connect[ConnectionId].recvwritepointer].packetlength = 0;
+  p_MutexShared->leaveMutex();
 
-  if(p_Connect[ConnectionId].recvbuffer
-      [p_Connect[ConnectionId].recvwritepointer].packet != 0)
+	return result;
+}
+
+// -----------------------------------------------------------------
+ 
+short NetworkingClass::Connect(short ConnectionId, char *IP, char *Port)
+{
+  return Connect(ConnectionId, IP, Port, "");
+}
+
+short NetworkingClass::Connect(short ConnectionId, char *IP, char *Port, string Data)
+{
+
+	short ArrayEntry;
+
+	ArrayEntry = ConnectionIdToArrayEntry(ConnectionId);
+
+	if(ArrayEntry != NO_SEQ_NBR)
   {
-    delete []p_Connect[ConnectionId].recvbuffer
-      [p_Connect[ConnectionId].recvwritepointer].packet;
-
-    p_Connect[ConnectionId].recvbuffer
-      [p_Connect[ConnectionId].recvwritepointer].packet = 0;
+    return NET_INVALID_STATE;
   }
 
-  p_Connect[ConnectionId].recvbuffer
-      [p_Connect[ConnectionId].recvwritepointer].packetseqnbr = NO_SEQ_NBR;
+  // ------------------------------------
 
-  p_Connect[ConnectionId].recvbuffer
-      [p_Connect[ConnectionId].recvwritepointer].dataoffset = 0;
+	NetConnections tempConnect;
 
-  p_Connect[ConnectionId].recvbuffer
-      [p_Connect[ConnectionId].recvwritepointer].datalength = 0;
+	memset(&tempConnect, 0, sizeof(tempConnect));
 
-  p_Connect[ConnectionId].recvbuffer
-      [p_Connect[ConnectionId].recvwritepointer].type = Type;
+  tempConnect.addr = IP;
+  tempConnect.port = (tpport_t)atoi(Port);
+	tempConnect.connectionid = ConnectionId;
 
-  p_Connect[ConnectionId].recvwritepointer++;  
+  tempConnect.todo |= CONNECT;
+
+	tempConnect.datarate_counter = DATARATE_TIMEOUT;
+  tempConnect.keepalive_time = KEEPALIVE_TIMEOUT;
+  tempConnect.dropped_seqnbr = NO_SEQ_NBR;
+
+	tempConnect.timestamp = clock();
+
+  p_MutexShared->enterMutex();  
+
+  p_Connect.push_back(tempConnect);
+
+  p_MutexShared->leaveMutex();
+
+  return Send(ConnectionId, true, Data);
+}
+
+short NetworkingClass::Disconnect(short ConnectionId)
+{
+  return Disconnect(ConnectionId, "");
+}
+
+short NetworkingClass::Disconnect(short ConnectionId, string Data)
+{
+
+	short ArrayEntry;
+
+	ArrayEntry = ConnectionIdToArrayEntry(ConnectionId);
+
+	if(ArrayEntry == NO_SEQ_NBR)
+  {
+    return NET_INVALID_STATE;
+  }
+
+  // ------------------------------------
+
+  p_MutexShared->enterMutex();
+
+  p_Connect[ArrayEntry].todo |= DISCONNECT;
+
+  p_MutexShared->leaveMutex();
+
+  return InternalSend(ArrayEntry, true, Data);
+}
+
+short NetworkingClass::Send(short ConnectionId, bool Guaranteed, string Data)
+{
+
+	short ArrayEntry;
+
+	ArrayEntry = ConnectionIdToArrayEntry(ConnectionId);
+
+	if(ArrayEntry == NO_SEQ_NBR)
+  {
+    return NET_INVALID_STATE;
+  }
+
+  // ------------------------------------
+
+  InternalSend(ArrayEntry, Guaranteed, Data);
+
+  return NET_NO_ERROR;
+}
+
+short NetworkingClass::Recv(short *ConnectionId, NET_TYPE *Type, string *Data)
+{
+
+  p_MutexShared->enterMutex();
+
+  if(p_Recv.size() == 0)
+  {
+    p_MutexShared->leaveMutex();
+
+    return NET_NO_MORE_DATA;
+  }
+
+  NetRecv tempRecv;
+
+  tempRecv = p_Recv.front();
+
+  *ConnectionId = tempRecv.ConnectionId;
+  *Type = tempRecv.Type;
+  *Data = tempRecv.Data;
+
+  p_Recv.pop_front();
 
   p_MutexShared->leaveMutex();
 
   return NET_NO_ERROR;
 }
 
-short NetworkingClass::GetConnections()
+short NetworkingClass::Listen(bool On)
 {
-  return p_sConnectionCount;
+
+  p_MutexShared->enterMutex();
+
+  p_bListen = On;
+
+  p_MutexShared->leaveMutex();
+
+  return NET_NO_ERROR;
+
 }
 
-bool NetworkingClass::GetActive(short ConnectionId)
+short NetworkingClass::Accept(short ConnectionId)
 {
-  return p_Connect[ConnectionId].inuse;
+  return Accept(ConnectionId, "");
+}
+
+short NetworkingClass::Accept(short ConnectionId, string Data)
+{
+
+	short ArrayEntry;
+
+	ArrayEntry = ConnectionIdToArrayEntry(NO_SEQ_NBR);
+
+	if(ArrayEntry == NO_SEQ_NBR)
+  {
+    return NET_INVALID_STATE;
+  }
+
+  // ------------------------------------
+
+  p_MutexShared->enterMutex();
+
+  p_Connect[ArrayEntry].connectionid = ConnectionId;
+
+  p_Connect[ArrayEntry].todo |= CONNECT;
+  p_Connect[ArrayEntry].todo |= ACK;
+
+  p_MutexShared->leaveMutex();
+
+  return InternalSend(ArrayEntry, true, Data);
+
+}
+
+short NetworkingClass::Reject(short ConnectionId)
+{
+  return Reject(ConnectionId, "");
+}
+
+short NetworkingClass::Reject(short ConnectionId, string Data)
+{
+
+	short ArrayEntry;
+
+	ArrayEntry = ConnectionIdToArrayEntry(NO_SEQ_NBR);
+
+	if(ArrayEntry == NO_SEQ_NBR)
+  {
+    return NET_INVALID_STATE;
+  }
+
+  // ------------------------------------
+
+  InetHostAddress   addr;
+  tpport_t          port;
+
+  p_MutexShared->enterMutex();
+
+	addr = p_Connect[ArrayEntry].addr;
+	port = p_Connect[ArrayEntry].port;
+
+	p_Connect.erase(&p_Connect[ArrayEntry]);
+
+  p_MutexShared->leaveMutex();
+
+  return LowLevelSend(addr, port, CONNECT | REJECT, 0, 0, 0, &Data, 0);
+
+}
+
+short NetworkingClass::GetConnections()
+{
+  return p_Connect.size();
 }
 
 short NetworkingClass::GetPing(short ConnectionId)
 {
-  return p_Connect[ConnectionId].ping;
+
+	short ArrayEntry;
+
+	ArrayEntry = ConnectionIdToArrayEntry(ConnectionId);
+
+	if(ArrayEntry == NO_SEQ_NBR)
+  {
+    return NET_INVALID_STATE;
+  }
+
+  // ------------------------------------
+
+  return p_Connect[ArrayEntry].ping;
 }
 
 short NetworkingClass::GetLatency(short ConnectionId)
 {
-  return p_Connect[ConnectionId].latency;
-}
 
-short NetworkingClass::GetRecvMessages(short ConnectionId)
-{
+	short ArrayEntry;
 
-  long Counter = 0;
-  short x;
+	ArrayEntry = ConnectionIdToArrayEntry(ConnectionId);
 
-  // Loop through and get next message.
-  p_MutexShared->enterMutex();
-
-  if(p_Connect[ConnectionId].recvwritepointer < p_Connect[ConnectionId].recvreadpointer)
+	if(ArrayEntry == NO_SEQ_NBR)
   {
-
-    for(x = p_Connect[ConnectionId].recvreadpointer; 
-        x <= 255;
-        x++)
-    {
-      if(p_Connect[ConnectionId].recvbuffer[x].processed == false)
-      {
-				if(p_Connect[ConnectionId].recvbuffer[x].type & KEEPALIVE)
-				{
-					continue;
-				}
-        Counter++;
-      }
-    }
-
-    for(x = 0; 
-        x < p_Connect[ConnectionId].recvwritepointer;
-        x++)
-    {
-      if(p_Connect[ConnectionId].recvbuffer[x].processed == false)
-      {
-				if(p_Connect[ConnectionId].recvbuffer[x].type & KEEPALIVE)
-				{
-					continue;
-				}
-        Counter++;
-      }
-    }
-  }
-  else
-  {
-    for(x = p_Connect[ConnectionId].recvreadpointer; 
-        x < p_Connect[ConnectionId].recvwritepointer;
-        x++)
-    {
-      if(p_Connect[ConnectionId].recvbuffer[x].processed == false)
-      {
-				if(p_Connect[ConnectionId].recvbuffer[x].type & KEEPALIVE)
-				{
-					continue;
-				}
-        Counter++;
-      }
-    }
+    return NET_INVALID_STATE;
   }
 
-  p_MutexShared->leaveMutex();
+  // ------------------------------------
 
-  return Counter;
-
+  return p_Connect[ArrayEntry].latency;
 }
 
 short NetworkingClass::GetRecvBufferCount(short ConnectionId)
 {
-  return p_Connect[ConnectionId].recvcount;
+
+	short ArrayEntry;
+
+	ArrayEntry = ConnectionIdToArrayEntry(ConnectionId);
+
+	if(ArrayEntry == NO_SEQ_NBR)
+  {
+    return NET_INVALID_STATE;
+  }
+
+  // ------------------------------------
+
+  return (short)p_Connect[ArrayEntry].recvbuffer.size();
 }
 
 short NetworkingClass::GetSendBufferCount(short ConnectionId)
 {
-  return p_Connect[ConnectionId].sendcount;
+
+	short ArrayEntry;
+
+	ArrayEntry = ConnectionIdToArrayEntry(ConnectionId);
+
+	if(ArrayEntry == NO_SEQ_NBR)
+  {
+    return NET_INVALID_STATE;
+  }
+
+  // ------------------------------------
+
+  return (short)p_Connect[ArrayEntry].sendbuffer.size();
 }
 
-unsigned long NetworkingClass::GetRecvDataRate(short ConnectionId)
+short NetworkingClass::GetRecvDataRate(short ConnectionId)
 {
-  return p_Connect[ConnectionId].recvdatarate;
+
+	short ArrayEntry;
+
+	ArrayEntry = ConnectionIdToArrayEntry(ConnectionId);
+
+	if(ArrayEntry == NO_SEQ_NBR)
+  {
+    return NET_INVALID_STATE;
+  }
+
+  // ------------------------------------
+
+  return (short)p_Connect[ArrayEntry].recvdatarate;
 }
 
-unsigned long NetworkingClass::GetSendDataRate(short ConnectionId)
+short NetworkingClass::GetSendDataRate(short ConnectionId)
 {
-  return p_Connect[ConnectionId].senddatarate;
+
+	short ArrayEntry;
+
+	ArrayEntry = ConnectionIdToArrayEntry(ConnectionId);
+
+	if(ArrayEntry == NO_SEQ_NBR)
+  {
+    return NET_INVALID_STATE;
+  }
+
+  // ------------------------------------
+
+  return (short)p_Connect[ArrayEntry].senddatarate;
 }
+
 
 void NetworkingClass::FlipFlop(unsigned short &number) 
 {

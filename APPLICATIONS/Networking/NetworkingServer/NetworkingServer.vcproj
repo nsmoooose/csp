@@ -91,7 +91,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="ccgnu2.lib odbc32.lib odbccp32.lib"
+				AdditionalDependencies="ws2_32.lib ccgnu2.lib odbc32.lib odbccp32.lib"
 				ShowProgress="0"
 				OutputFile=".\Release/NetworkingServer.exe"
 				LinkIncremental="1"
@@ -122,17 +122,17 @@
 			Name="Source Files"
 			Filter="cpp;c;cxx;rc;def;r;odl;idl;hpj;bat">
 			<File
-				RelativePath=".\Main.cpp">
+				RelativePath="Main.cpp">
 			</File>
 			<File
-				RelativePath=".\NetworkingClass.cpp">
+				RelativePath="..\NetworkingClass.cpp">
 			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
 			Filter="h;hpp;hxx;hm;inl">
 			<File
-				RelativePath=".\NetworkingClass.h">
+				RelativePath="..\NetworkingClass.h">
 			</File>
 		</Filter>
 	</Files>

@@ -4,6 +4,10 @@
 #include <cc++\thread.h>
 #include <time.h>
 
+#include <vector>
+#include <deque>
+#include <algorithm>
+
 #ifdef  CCXX_NAMESPACES
 using namespace std;
 using namespace ost;
@@ -12,6 +16,8 @@ using namespace ost;
 // errors on functions
 typedef short NET_ERROR;
 
+const NET_ERROR NET_INVALID_PACKET          = -5;
+const NET_ERROR NET_EXCEPTION               = -4;
 const NET_ERROR NET_NO_MORE_DATA            = -3;
 const NET_ERROR NET_INVALID_STATE           = -2;
 const NET_ERROR NET_TOO_MUCH_DATA           = -1;
@@ -41,7 +47,7 @@ const NET_TYPE DATA                        = 0x4000;
 // Move to Privates of NetworkingClass
 const short PACKET_IDENTIFIER           = 0x5E10;
 const short DATARATE_TIMEOUT						= 1000;
-const short DROPPED_TIMEOUT             = 2500;
+const short DROPPED_TIMEOUT             = 500;
 const short KEEPALIVE_TIMEOUT           = 5000;
 const short KEEPALIVE_COUNTER           = 6;
 const short NO_SEQ_NBR                  = -1;
@@ -54,19 +60,12 @@ class NetworkingClass : private Thread
 
 private:
 
-  // buffer struct
-  struct NetBuffer
+  // Recv struct
+  struct NetRecv
   {
-    bool      processed;
-    NET_TYPE  type;
-
-    short     packetseqnbr;
-    short     packetlength;
-    void     *packet;
-    
-    short     dataoffset;
-    short     datalength;
-
+    short         ConnectionId;
+    NET_TYPE      Type;
+    string        Data;
   };
 
   // Each variable will need to be flipflopped.
@@ -74,9 +73,17 @@ private:
   {
     short StartFiller;
     NET_TYPE Type;
-    unsigned char SeqNbr;
-    unsigned char AckSeqNbr;
+    short SeqNbr;
+    short AckSeqNbr;
     short Time;
+  };
+
+  // Packet
+  struct NetBuffer
+  {
+    bool          processed;
+    NetHeader     header;
+    string        data;
   };
 
   // Internal Struct to hold information.
@@ -84,14 +91,10 @@ private:
   {
 
     // Connection
-    bool              inuse;          // if we have open connection this is true
-    bool              pendingclose;   // if we get a disconnect we need to still Recv
-                                      //    the message so we need to pending close
-                                      //    to keep the inuse open until all messages
-                                      //    are read from buffer.
-
     InetHostAddress   addr;           //  address of connection
     tpport_t          port;           //  port of connection
+
+		short							connectionid;		// Connection ID for app.
 
     short             todo;						// what shall we do next send packet?
 
@@ -116,37 +119,49 @@ private:
 
     // Buffer
 		unsigned long			recvdatarate;
-    unsigned char     recvcount;
-    unsigned char     recvseqnbr;
-    unsigned char     recvwritepointer;
-    unsigned char     recvreadpointer;
-    NetBuffer         recvbuffer[256];
+    short             recvseqnbr;
+    vector<NetBuffer> recvbuffer;
 
 		unsigned long			senddatarate;
-    unsigned char     sendcount;
-    unsigned char     sendwritepointer;
-    unsigned char     sendreadpointer;
-    NetBuffer         sendbuffer[256];
+    short             sendseqnbr;
+    vector<NetBuffer> sendbuffer;
 
   };
+
+  // Class variables
+  bool                    p_bListen;
+
+  UDPSocket              *p_Socket;
+  Mutex                  *p_MutexShared;
+
+  vector<NetConnections>  p_Connect;
+  deque<NetRecv>          p_Recv;
 
   // Thread functions
   void            initial();
   void            run();
   void            final();
 
-  // Class variables
-  unsigned char   p_sConnectionCount;
-  bool            p_bShutdown;
+  // Private functions
 
-  UDPSocket      *p_Socket;
-  Mutex          *p_MutexShared;
+  short LowLevelRecv();
 
-  NetConnections  p_Connect[256];
+  short InternalSend(short ArrayEntry, bool Guaranteed);
+  short InternalSend(short ArrayEntry, bool Guaranteed, string Data);
 
-  short Resend(short ConnectionId, NetBuffer *Packet);
-  short Reject(InetHostAddress Addr, tpport_t Port, void *Data, short Length);
+  short LowLevelSend(InetHostAddress Addr,
+                     tpport_t Port,
+                     short Type,
+                     short SeqNbr,
+                     short AckSeqNbr,
+                     short Time,
+                     string *Data,
+                     short *Length);
+
+	short ConnectionIdToArrayEntry(short ConnectionId);
+
   short ReportLocalMessage(short ConnectionId, NET_TYPE Type);
+  short ReportLocalMessage(short ConnectionId, NET_TYPE Type, string *Data);
 
 public:
   
@@ -156,23 +171,31 @@ public:
   // ------------------------------
 
   // Operations
-  short Connect(short ConnectionId, char *IP, char *Port, void*Data, short Length);
-  short Send(short ConnectionId, bool Guaranteed, void *Data, short Length);
-  short Recv(short ConnectionId, NET_TYPE *Type, void *Data, short *Length);
-  short Accept(short ConnectionId, void *Data, short Length);
-  short Reject(short ConnectionId, void *Data, short Length);
-  short Disconnect(short ConnectionId, void *Data, short Length);
+  short Connect(short ConnectionId, char *IP, char *Port, string Data);
+  short Connect(short ConnectionId, char *IP, char *Port);
+
+  short Send(short ConnectionId, bool Guaranteed, string Data);
+  short Recv(short *ConnectionId, NET_TYPE *Type, string *Data);
+
+  short Listen(bool On);
+
+  short Accept(short ConnectionId, string Data);
+  short Accept(short ConnectionId);
+
+  short Reject(short ConnectionId, string Data);
+  short Reject(short ConnectionId);
+
+  short Disconnect(short ConnectionId, string Data);
+  short Disconnect(short ConnectionId);
 
   // Query Performance
   short GetConnections(); // How many others we're connected to.
-  bool  GetActive(short ConnectionId); // See if this connection is active.
   short GetPing(short ConnectionId); // Time to go over internet.
   short GetLatency(short ConnectionId); // Time the server takes to ack.
-  short GetRecvMessages(short ConnectionId); // How many messages are waiting to be recv'd.
   short GetSendBufferCount(short ConnectionId); // How many packets are in the sendbuffer yet to be acknowledged from server.
   short GetRecvBufferCount(short ConnectionId); // How many packets are in the recvbuffer waiting to be acknowledged from us.
-  unsigned long GetSendDataRate(short ConnectionId); // How many bytes per second are being sent.
-  unsigned long GetRecvDataRate(short ConnectionId); // How many bytes per second are being recv.
+  short GetSendDataRate(short ConnectionId); // How many bytes per second are being sent.
+  short GetRecvDataRate(short ConnectionId); // How many bytes per second are being recv.
 
   // FlipFlop functions, used to convert Endians.
   // Anything on the network should be in network order.

@@ -45,7 +45,7 @@ class PacketHandler: public simdata::Referenced {
 	// removed unless a compelling need is found.
 	
 	NetworkInterface *m_network_interface;
-	virtual void bind(NetworkInterface* interface) { m_network_interface = interface; }
+	virtual void bind(NetworkInterface* network_interface) { m_network_interface = network_interface; }
 
 protected:
 	inline NetworkInterface *getNetworkInterface() { return m_network_interface; }

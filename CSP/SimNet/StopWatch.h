@@ -161,7 +161,7 @@ private:
 	int m_tally;
 	int m_count;
 	int m_counts;
-	bool m_DEBUG_extra;
+	int m_DEBUG_extra;
 	double m_timeout;
 	double m_start_time;
 

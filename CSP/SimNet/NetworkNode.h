@@ -28,6 +28,9 @@
 
 #include <SimNet/NetBase.h>
 #include <SimData/Uniform.h>
+#ifdef _WIN32
+#define NOMINMAX
+#endif
 #include <cc++/socket.h>
 
 namespace simnet {

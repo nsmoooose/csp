@@ -82,8 +82,8 @@ public:
 	 *
 	 *  @param callback a unary function object implementing void operator()(HANDLER&).
 	 */
-	template <class CALLBACK>
-	inline void apply(CALLBACK &callback) {
+	template <class C>
+	void apply(C &callback) {
 		std::for_each(m_Handlers.begin(), m_Handlers.end(), callback);
 	}
 

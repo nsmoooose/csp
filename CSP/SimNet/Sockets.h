@@ -25,8 +25,11 @@
 #ifndef __SIMNET_SOCKETS_H__
 #define __SIMNET_SOCKETS_H__
 
+#ifdef _WIN32
 // use this to fix compile problems with mulitple includes of windows and winsock headers.
 #define _WINSOCKAPI_
+#define NOMINMAX
+#endif
 #include <cc++/network.h>
 
 namespace simnet {

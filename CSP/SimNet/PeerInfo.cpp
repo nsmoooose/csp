@@ -27,6 +27,7 @@
 #include <SimData/Verify.h>
 
 #include <vector>
+#include <algorithm>
 
 namespace simnet {
 
@@ -42,7 +43,6 @@ const simdata::uint32 PeerInfo::UDP_OVERHEAD;
 
 
 static int DEBUG_connection_display_loop = 0;
-
 
 PeerInfo::PeerInfo():
 	m_id(0),

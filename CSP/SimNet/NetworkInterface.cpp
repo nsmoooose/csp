@@ -39,8 +39,11 @@
 #include <SimData/Thread.h>
 #include <SimData/Verify.h>
 
+#ifdef _WIN32
 // use this to fix compile problems with mulitple includes of windows and winsock headers.
 #define _WINSOCKAPI_
+#define NOMINMAX
+#endif
 #include <cc++/network.h>
 
 #include <sys/types.h>
@@ -104,7 +107,7 @@ public:
 
 
 void NetworkInterface::sendPackets(double timeout) {
-	static StopWatch::Data swd(0.00001);
+	static StopWatch::Data swd(0.00001f);
 	simdata::uint8 *ptr;
 	ost::InetHostAddress addr;
 	uint32 size;
@@ -243,7 +246,7 @@ void NetworkInterface::disconnectClient(PeerId id) {
 }
 
 void NetworkInterface::processOutgoing(double timeout) {
-	static StopWatch::Data swd(0.00001);
+	static StopWatch::Data swd(0.00001f);
 
 	assert(m_Initialized && m_PacketSource.valid());
 
@@ -357,7 +360,7 @@ bool NetworkInterface::waitPending(double timeout) {
 static double DEBUG_recvtime;
 
 int NetworkInterface::receivePackets(double timeout) {
-	static StopWatch::Data swd(0.000001);
+	static StopWatch::Data swd(0.000001f);
 	assert(m_Initialized);
 
 	simdata::uint8 *ptr;
@@ -519,7 +522,7 @@ int NetworkInterface::receivePackets(double timeout) {
 // passing those along to one or more MessageHandlers.
 
 void NetworkInterface::processIncoming(double timeout) {
-	static StopWatch::Data swd(0.000001);
+	static StopWatch::Data swd(0.000001f);
 
 	SIMNET_LOG(TIMING, DEBUG, "processing incoming packets");
 

@@ -4,6 +4,13 @@
 #include <stdlib.h>
 #include "Config.h"      
 
+#include "Bus.h"
+
+#include <SimData/Ref.h>
+#include <SimData/Date.h>
+#include <SimData/DataManager.h>
+
+
 #include <SimData/Types.h>
 #include <SimData/ExceptionBase.h>
 #include <SimData/DataArchive.h>
@@ -45,11 +52,37 @@ int ClientNode::run()
   NetworkNode * localNode =  new NetworkNode(1, localHost.c_str(), localPort);
   NetworkMessenger * networkMessenger = new NetworkMessenger(localNode);
 
-  NetworkMessage * message = networkMessenger->getMessageFromPool(1, 100);
-  char * payloadPtr = (char*)message->getPayloadPtr();
-  memset(payloadPtr, 0 , 100);
-  strcpy(payloadPtr, "Hello From CSP Network Test Client!");
-  Port port = message->getOriginatorPort();
+  unsigned short messageType = 2;
+  unsigned short payloadLen  = sizeof(int) + sizeof(double) + 3*sizeof(simdata::Vector3) +
+	                       sizeof(simdata::Quat) /* + sizeof(simdata::Matrix3) + sizeof(double) */;
+
+  NetworkMessage * message = networkMessenger->getMessageFromPool(messageType, payloadLen);
+  ObjectUpdateMessagePayload * ptrPayload = (ObjectUpdateMessagePayload*)message->getPayloadPtr();
+
+	   
+//  NetworkMessage * message = networkMessenger->getMessageFromPool(1, 100);
+//  memset(payloadPtr, 0 , 100);
+//  strcpy(payloadPtr, "Hello From CSP Network Test Client!");
+//  Port port = message->getOriginatorPort();
+
+  DataChannel<simdata::Vector3>::Ref b_GlobalPosition;
+  DataChannel<simdata::Vector3>::Ref b_AngularVelocity;
+  DataChannel<simdata::Vector3>::Ref b_LinearVelocity;
+  DataChannel<simdata::Quat>::Ref b_Attitude;
+
+  b_GlobalPosition->value() = simdata::Vector3(1.0, 1.0, 1.0);
+  b_AngularVelocity->value() = simdata::Vector3(1.0, 1.0, 1.0);
+  b_LinearVelocity->value() = simdata::Vector3(1.0, 1.0, 1.0);
+  b_Attitude->value() = simdata::Quat(1.0, 1.0, 1.0, 0.0);
+
+  ptrPayload->id = 1;
+  ptrPayload->timeStamp = 1.0;
+  b_GlobalPosition->value().writeBinary((unsigned char *)&(ptrPayload->globalPosition),24);
+  b_LinearVelocity->value().writeBinary((unsigned char *)&(ptrPayload->linearVelocity),24);
+  b_AngularVelocity->value().writeBinary((unsigned char *)&(ptrPayload->angularVelocity),24);
+  b_Attitude->value().writeBinary((unsigned char *)&(ptrPayload->attitude),32);
+
+
   networkMessenger->queueMessage(remoteNode, message);
   networkMessenger->sendMessages();
   

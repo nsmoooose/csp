@@ -1,5 +1,19 @@
 Version 0.3.1 (in progress)
 ===========================
+2003-03-23: onsight
+            Changed turbulence from air density fluctuations to 3D wind
+	    gusts.  The fluctuations are still indexed by distance travelled.
+	    Also, scaled the altitude variation of turbulence to peak in
+	    the 3000-10000 m range.  Also, the perlin noise function is now
+	    shaped as X*ABS(X).
+
+	    Right justified the fps display in a 5 digit field so that 100.0
+	    doesn't make the display jitter.
+
+2003-03-22: onsight
+            Added mute option to CSPSim.ini.
+
+	    Enabled winds, gusts, and turbulence.
 
 2003-03-21: onsight
             CSPSim.PYTHON now compiles the data automatically if Sim.dar is

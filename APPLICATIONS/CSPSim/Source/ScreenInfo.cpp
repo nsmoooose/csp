@@ -75,8 +75,8 @@ void Framerate::update()
 	m_minFps = min(m_minFps,fps);
 	m_maxFps = max(m_maxFps,fps);
 	std::ostringstream osstr;
-	osstr << setprecision(1) << fixed << fps << " FPS min: " << m_minFps << " max: " << m_maxFps;
-    m_Text->setText(osstr.str());
+	osstr << setprecision(1) << setw(5) << fixed << fps << " FPS min: " << m_minFps << " max: " << m_maxFps;
+	m_Text->setText(osstr.str());
 
 	simdata::SimDate artificial_time = CSPSim::theSim->getCurrentTime();
 	artificial_time.addTime(CSPSim::theSim->getBattlefield()->getSpin());
@@ -109,31 +109,30 @@ void GeneralStats::update()
 
   	std::ostringstream osstr;
 	osstr << "Terrain Polygons: " << CSPSim::theSim->getBattlefield()->getTerrainPolygonsRendered();
-    m_Text->setText(osstr.str());
+	m_Text->setText(osstr.str());
 
 	simdata::Pointer<DynamicObject const> const activeObject = CSPSim::theSim->getActiveObject();
 	if (!activeObject.isNull()) {
-
 		simdata::Vector3 pos = activeObject->getLocalPosition();
 		osstr.str("");
-	    osstr << "LocalPosition: (" << setprecision(precision) << fixed 
-			  << setw(6 + precision) << setfill('0')  << pos.x << ", ";
+		osstr << "LocalPosition: (" << setprecision(precision) << fixed 
+		      << setw(6 + precision) << setfill('0')  << pos.x << ", ";
 		osstr << setw(6 + precision) << setfill('0') << pos.y << ", ";
 		osstr << setw(6 + precision) << setfill('0') << pos.z << ")";
-        m_LocalPosition->setText(osstr.str());
+		m_LocalPosition->setText(osstr.str());
 		
 		pos = activeObject->getGlobalPosition();
 		osstr.str("");
-	    osstr << "GlobalPosition: (" << setprecision(precision) << fixed 
-			  << setw(7 + precision) << setfill('0')  << pos.x << ", ";
+		osstr << "GlobalPosition: (" << setprecision(precision) << fixed 
+		      << setw(7 + precision) << setfill('0')  << pos.x << ", ";
 		osstr << setw(7 + precision) << setfill('0') << pos.y << ", ";
 		osstr << setw(7 + precision) << setfill('0') << pos.z << ")";
-        m_GlobalPosition->setText(osstr.str());
+		m_GlobalPosition->setText(osstr.str());
 	
 		simdata::Vector3 vel = activeObject->getVelocity();
-        osstr.str("");
-	    osstr << "Velocity: (" << setprecision(2) << fixed << vel.x << ", " << vel.y << ", " << vel.z << ")";
-        m_Velocity->setText(osstr.str());
+		osstr.str("");
+		osstr << "Velocity: (" << setprecision(2) << fixed << vel.x << ", " << vel.y << ", " << vel.z << ")";
+		m_Velocity->setText(osstr.str());
 	}
 }
 

@@ -373,10 +373,10 @@ void AeroDynamics::doSimStep(double dt)
 	Atmosphere const *atmosphere = CSPSim::theSim->getAtmosphere();
 	if (atmosphere != NULL) {
 		double density = atmosphere->getDensity(m_PositionLocal.z);
-		density += atmosphere->getTurbulence(m_PositionLocal, m_Distance);
 		qBarFactor *= density;
 		m_Gravity = atmosphere->getGravity(m_PositionLocal.z);
 		Wind = atmosphere->getWind(m_PositionLocal);
+		Wind += atmosphere->getTurbulence(m_PositionLocal, m_Distance);
 	} else {
 		qBarFactor *= 1.25;
 		m_Gravity = 9.8;

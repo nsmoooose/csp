@@ -2,6 +2,9 @@
 
 import sys, os.path
 
+#import Shell
+#from SimData.Compile import Compiler, CompilerUsageError
+
 # enable lazy loading of shared library modules if available
 if hasattr(sys, "setdlopenflags"):
 	sys.setdlopenflags(0x101)
@@ -70,6 +73,9 @@ def compileData(args):
 
 action = None
 config = "../Data/CSPSim.ini"
+if os.path.exists("CSPSim.ini") or not os.path.exists(config):
+	config = "CSPSim.ini"
+
 
 
 # process command line options

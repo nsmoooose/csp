@@ -141,6 +141,7 @@ Atmosphere::Atmosphere() {
 
 void Atmosphere::generateWinds() {
 	Perlin1D noise;
+	int i;
 
 	// pressure variation (10 days)
 	noise.set(0.3, 5);
@@ -150,13 +151,33 @@ void Atmosphere::generateWinds() {
 	// turbulence (10000 m)
 	noise.set(0.9, 6);
 	noise.randomize();
-	m_DensityTime = noise.generate(1000, true, 10.0, 0.02, 0.0);
+	m_TurbulenceX = noise.generate(1000, true, 10.0, 1.0, 0.0);
+	noise.randomize();
+	m_TurbulenceY = noise.generate(1000, true, 10.0, 1.0, 0.0);
+	noise.randomize();
+	m_TurbulenceZ = noise.generate(1000, true, 10.0, 1.0, 0.0);
+	for (i = 0; i < 1000; i++) {
+		float a;
+		a= m_TurbulenceX[i];
+		m_TurbulenceX[i] *= 10.0 * a * fabs(a);
+		a = m_TurbulenceY[i];
+		m_TurbulenceY[i] *= 10.0 * a * fabs(a);
+		a = m_TurbulenceZ[i];
+		m_TurbulenceZ[i] *= 10.0 * a * fabs(a);
+	}
 
 	// turbulence altitude buffers (15000 m)
 	noise.set(0.9, 6);
 	noise.randomize();
-	m_TurbulenceAltA = noise.generate(1000, false, 10.0, 2.0, -1.0);
-	m_TurbulenceAltB = noise.generate(1000, false, 10.0, 2.0, -1.0);
+	m_TurbulenceAltA = noise.generate(1000, false, 10.0, 3.0, -1.5);
+	noise.randomize();
+	m_TurbulenceAltB = noise.generate(1000, false, 10.0, 3.0, -1.5);
+	for (i = 0; i < 1000; i++) {
+		float f = i * 0.015; // f in km
+		f = (12.5 * f + 7.6) / (f*f + 45.0);
+		m_TurbulenceAltA[i] *= f;
+		m_TurbulenceAltB[i] *= f;
+	}
 	
 	// wind direction variation (30000 m)
 	noise.set(0.8, 4);
@@ -191,16 +212,15 @@ simdata::Vector3 Atmosphere::getWind(simdata::Vector3 const &p) const {
 	} else {
 		f = h - idx;
 	}
+	double alt_scale = 1.0 + h*h*0.0025;
+	if (alt_scale > 2.0) alt_scale = 2.0;
 	wind.x += m_WindAltX[idx]*(1.0-f) + m_WindAltX[idx+1]*f;
 	wind.y += m_WindAltY[idx]*(1.0-f) + m_WindAltY[idx+1]*f;
-	return wind * m_WindScale * m_GustModulation;
+	return wind * m_WindScale * m_GustModulation * alt_scale;
 }
 
-double Atmosphere::getTurbulence(simdata::Vector3 const &p, double dist) const {
-	if (dist < 0.0) dist = - dist;
-	int idx = int(dist * 0.1) % 1000;
-	float d = m_DensityTime[idx];
-	idx = int(p.z * 1000.0 / 15000.0);
+simdata::Vector3 Atmosphere::getTurbulence(simdata::Vector3 const &p, double dist) const {
+	int idx = int(p.z * 1000.0 / 15000.0);
 	if (idx < 0) idx = 0;
 	else if (idx > 999) idx = 999;
 	float a = m_TurbulenceAltA[idx];
@@ -208,15 +228,19 @@ double Atmosphere::getTurbulence(simdata::Vector3 const &p, double dist) const {
 	if (a < 0.0) a = 0.0;
 	if (b < 0.0) b = 0.0;
 	a = a * (1.0 - m_TurbulenceBlend) + b * m_TurbulenceBlend;
+	
 	/*
 	static int i = 0;
 	if ((i++ % 40) == 0) {
-		std::cout << a << ":" << d << "\n";
+		std::cout << a << "\n";
 	}
 	*/
-	// first try didn't show much effect.  * 30 does something, but hard to notice.
-	// * 100 is too much.  need to tune...
-	return a * d * 30.0;
+
+	if (a <= 0.0) return simdata::Vector3::ZERO;
+
+	if (dist < 0.0) dist = - dist;
+	idx = int(dist * 0.1) % 1000;
+	return simdata::Vector3(a*m_TurbulenceX[idx],a*m_TurbulenceY[idx],a*m_TurbulenceZ[idx]);
 }
 
 void Atmosphere::setPosition(double lat, double lon) { 
@@ -329,6 +353,11 @@ void Atmosphere::update(double dt) {
 			m_TurbulenceBlend = 1.0;
 			m_TurbulenceBlendUp = false;
 			m_TurbulenceAltA = noise.generate(1000, false, 10.0, 2.0, -1.0);
+			for (int i = 0; i < 1000; i++) {
+				float f = i * 0.015; // f in km
+				f = (12.5 * f + 7.6) / (f*f + 45.0);
+				m_TurbulenceAltA[i] *= f;
+			}
 		}
 	} else {
 		m_TurbulenceBlend += dt * 0.0003;
@@ -339,6 +368,11 @@ void Atmosphere::update(double dt) {
 			m_TurbulenceBlend = 0.0;
 			m_TurbulenceBlendUp = true;
 			m_TurbulenceAltB = noise.generate(1000, false, 10.0, 2.0, -1.0);
+			for (int i = 0; i < 1000; i++) {
+				float f = i * 0.015; // f in km
+				f = (12.5 * f + 7.6) / (f*f + 45.0);
+				m_TurbulenceAltB[i] *= f;
+			}
 		}
 	}
 

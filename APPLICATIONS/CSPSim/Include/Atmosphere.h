@@ -39,7 +39,7 @@ public:
 	double getPressure(double alt) const;
 	double getDensity(double alt) const;
 	simdata::Vector3 getWind(simdata::Vector3 const &) const;
-	double getTurbulence(simdata::Vector3 const &, double dist) const;
+	simdata::Vector3 getTurbulence(simdata::Vector3 const &, double dist) const;
 	void setPosition(double lat, double lon);
 	void setPrevailingWind(simdata::Vector3 const &);
 	void setDate(simdata::SimDate const &);
@@ -73,7 +73,9 @@ protected:
 	std::vector<float> m_WindAltX;
 	std::vector<float> m_WindAltY;
 	std::vector<float> m_GustTime;
-	std::vector<float> m_DensityTime;
+	std::vector<float> m_TurbulenceX;
+	std::vector<float> m_TurbulenceY;
+	std::vector<float> m_TurbulenceZ;
 	std::vector<float> m_TurbulenceAltA;
 	std::vector<float> m_TurbulenceAltB;
 	double m_TurbulenceBlend;

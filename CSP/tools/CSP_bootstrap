@@ -28,6 +28,7 @@ CSP package from the current workspace (if possible).
 import os
 import os.path
 import sys
+import string
 
 # save the path
 old_path = sys.path[:]
@@ -36,13 +37,20 @@ old_path = sys.path[:]
 self = sys.modules['CSP']
 del sys.modules['CSP']
 
+case_insensitive = os.name.startswith('win') or os.name.startswith('nt')
+if case_insensitive:
+	tr_case = string.upper
+else:
+	tr_case = lambda x: x
+
 # look for the root of the current workspace
 cwd = os.getcwd()
 parts = cwd.split(os.sep)
-if not 'CSP' in parts:
+if not 'CSP' in map(tr_case, parts):
 	print 'Error: trying to import CSP from outside of a workspace.'
+	print 'Current working directory is %s' % cwd
 	sys.exit(1)
-while parts[-1] != 'CSP':
+while tr_case(parts[-1]) != 'CSP':
 	parts = parts[:-1]
 
 CSP_PATH = os.path.sep.join(parts[:-1])

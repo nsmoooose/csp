@@ -31,6 +31,7 @@ TEST_SOURCES = glob.glob(TEST_GLOB)
 tests = []
 test_programs = []
 for source in TEST_SOURCES:
+	source = os.path.basename(source)
 	target = source.replace('.cpp', '')
 	test_program = testenv.Program(target, source)
 	test_programs.append(test_program)

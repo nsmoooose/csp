@@ -1,5 +1,10 @@
 Version 0.4.0 (in progress)
 ===========================
+2004-03-30: onsight
+  * Fixed some indentation issues.  Other than that the ExceptionBase
+    change builds fine under Linux.  Some namespace hacks still need
+    to be cleaned out of ExceptionBase.h though.
+
 2004-03-30: delta
   * Changed Exception.* files to ExceptionBase.* to avoid
     swig's conflicts between exception.* and Exception.* 

@@ -189,7 +189,8 @@ Node *makeSky( void )
 	//pLight->setDiffuse( osg::Vec4(0.6, 0.6, 0.6, 1) );
 
 	pLight->setDirection( osg::Vec3(0,0,-1) );
-	pLight->setAmbient( osg::Vec4(0.2f,0.2f,0.2f,1.0f) );
+	//pLight->setAmbient( osg::Vec4(0.2f,0.2f,0.2f,1.0f) );
+	pLight->setAmbient( osg::Vec4(0.4f,0.4f,0.4f,1.0f) );
 	pLight->setDiffuse( osg::Vec4(0.8f,0.8f,0.8f,1.0f) );
 	pLight->setSpecular( osg::Vec4(0.75f,0.75f,0.75f,1.0f) );
 	osg::StateSet * pLightSet = osgNew osg::StateSet;

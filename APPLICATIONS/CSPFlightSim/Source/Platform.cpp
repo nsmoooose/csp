@@ -141,7 +141,7 @@ std::string OSPath::stringreplace(const std::string &path, char search, char rep
 	char *str = strdup(path.c_str());
 	char *idx = str;
 	for (; *idx; idx++) {
-		if (*idx == '/') *idx = '\\';
+		if (*idx == search) *idx = replace;
 	}
 	result = str;
 	free(str);

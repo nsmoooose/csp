@@ -181,8 +181,8 @@ void BaseObject::setGlobalPosition(double x, double y, double z)
 	m_GlobalPosition.x = x;
 	m_GlobalPosition.y = y;
 
-	m_XLatticePos = x / g_LatticeXDist;
-	m_YLatticePos = y / g_LatticeYDist;
+	m_XLatticePos = (int) (x / g_LatticeXDist);
+	m_YLatticePos = (int) (y / g_LatticeYDist);
 
 	m_LocalPosition.x = m_GlobalPosition.x - g_LatticeXDist*m_XLatticePos;
 	m_LocalPosition.y = m_GlobalPosition.y - g_LatticeYDist*m_YLatticePos;
@@ -357,10 +357,11 @@ void BaseObject::AddSmoke()
 	osg::BoundingSphere s = m_rpNode.get()->getBound();
 	float r = s.radius();
 	osg::Vec3 c = s.center();
+	unsigned short i;
 
 	osg::Vec3Array* pl = osgNew osg::Vec3Array;
 	
-	for (unsigned short i = 0; i<10; ++i)
+	for (i = 0; i<10; ++i)
 	pl->push_back(osg::Vec3(0.0,-(0.8+i/20.0) * r,0.0));
     
 

@@ -25,8 +25,6 @@
 # -MR
 
 
-
-
 import sys
 
 min_python_version = "2.2.0"
@@ -46,10 +44,38 @@ from distutils.core import Extension
 import distutils.command.build_ext
 from distutils.command.build_ext import build_ext
 from distutils import sysconfig, dir_util
-import os, os.path, string
+import os, os.path, string, re
 
 # REMEMBER TO 'touch Version.cpp' OR REBUILD ALL
 VERSION = "0.3.4"
+
+
+SWIG_VERSION = None
+
+def getSwigVersion():
+  global SWIG_VERSION
+  if SWIG_VERSION is None:
+    (cout, cin, cerr) = os.popen3('swig -version')
+    versiontext = ' '.join(cerr.readlines())
+    match = re.search(r'\s(1)\.(\d)\.(\d+)\s', versiontext)
+    if match is None:
+      print >>sys.stderr, 'swig -version failed.  Check that SWIG is installed correctly.'
+      sys.exit(1)
+    SWIG_VERSION = map(int, match.groups())
+  return SWIG_VERSION
+
+def checkSwigVersion():
+    major, minor, rev = getSwigVersion()
+    if major < 1 or minor < 3 or rev < 16:
+        print >>sys.stderr, 'SWIG version 1.3.16 or greater required; older versions are not supported.'
+        sys.exit(1)
+    if rev == 18 or rev == 19:
+        print >>sys.stderr, 'SWIG versions 1.3.18 and 1.3.19 are not supported, please upgrade to a newer version.'
+        sys.exit(1)
+
+def isOldSwigRuntime():
+    major, minor, rev = getSwigVersion()
+    return major == 1 and minor == 3 and rev < 20
 
 def copy_dir(src, dst, files, verbose=0):
 	from distutils.file_util import copy_file
@@ -139,7 +165,7 @@ def make_install(win, args):
 
 class build_swig_ext(build_ext):
     
-    swig_options = ''
+    options = []
 
     def build_extension(self, ext):
         self.ext = ext
@@ -182,7 +208,7 @@ class build_swig_ext(build_ext):
             return new_sources
 
         swig = self.find_swig()
-        swig_cmd = [swig, "-python", "-c++"] + build_swig_ext.options.split()
+        swig_cmd = [swig] + build_swig_ext.options
         
         if 1 or self.inplace:
             fullname = self.get_ext_fullname(self.ext.name)
@@ -346,12 +372,18 @@ main_interface_fullpath = fullpath("Source/", "", main_interface)
 interfaces_fullpath = fullpath("Include/SimData/", "", interfaces)
 headers_fullpath = fullpath("Include/SimData/", "", headers)
 
-build_swig_ext.options = "-IInclude -noexcept"
 includes = ["Include"]
 defines = [("SIMDATA_VERSION", '"%s"' % VERSION)]
-libraries = ["swigpy", "dl"]
+libraries = ["dl"]
 cflags = []
 
+checkSwigVersion()
+swigopts = ["-python", "-c++", "-noexcept"]
+if isOldSwigRuntime():
+    libraries.append('swigpy')
+else:
+    swigopts.append("-runtime")
+build_swig_ext.options = swigopts + ["-IInclude"]
 
 if len(sys.argv)>=2:
     command = sys.argv[1]
@@ -360,6 +392,12 @@ if len(sys.argv)>=2:
     if command == "python_include_path":
         print sysconfig.get_python_inc()
         sys.exit(0)
+    if command == "ldopts":
+        print '-shared', ' '.join(map(lambda x: '-l%s' % x, libraries))
+	sys.exit(0)
+    if command == "swigopts":
+        print ' '.join(swigopts)
+	sys.exit(0)
 
 cSimData = Extension("SimData._cSimData", 
                      sources + main_interface_fullpath, 

@@ -1,11 +1,11 @@
 SUBDIRS = Source 
 
 export PYTHON_INCLUDE := $(shell python setup.py python_include_path)
+export GSWOPTS = $(shell python setup.py swigopts)
+export GLDOPTS = $(shell python setup.py ldopts)
 
 export GDEBUGF = -g -W -Wall -pedantic -Wmissing-prototypes -Wconversion -Wshadow #-DSIMDATA_NOLOADCHECK
-export GCFLAGS = -fPIC -O2 # -march=athlon-tbird
-export GLDOPTS = -shared -lswigpy -ldl
-export GSWOPTS = -c -c++ -python -noexcept
+export GCFLAGS = -fPIC -O2
 export CXX = g++
 export SWIG = swig
 

@@ -48,10 +48,14 @@
     #include <hash_map>
     #define HASH_MAP std::hash_map
     #define HASH std::hash
-  #elif (_MSC_VER >= 1300) 
+  #elif (_MSC_VER == 1300) 
     #include <hash_map>
     #define HASH_MAP std::hash_map
     #define HASH std::hash_compare
+  #elif (_MSC_VER > 1300) 
+    #include <hash_map>
+    #define HASH_MAP stdext::hash_map
+    #define HASH stdext::hash_compare
   #endif
   #else
     #error "PLEASE PROVIDE CORRECT #INCLUDE<HASH_MAP> STATEMENT FOR YOUR PLATFORM!"

@@ -52,6 +52,7 @@ SIMDATA_EXCEPTION(MissingInterface);
 
 class DataManager;
 class Object;
+class InterfaceProxy;
 
 //For SWIG (not currently used):
 //struct FP { FILE* f; std::string name; std::string mode; };
@@ -339,6 +340,10 @@ public:
 	 * to free any unused cache entries.
 	 */
 	void cleanStatic();
+
+//	InterfaceProxy *getObjectInterface(ObjectID const &id) const;
+//	InterfaceProxy *getObjectInterface(std::string const &path) const;
+
 
 	// protected methods made public for Python access, don't use!
 	/*

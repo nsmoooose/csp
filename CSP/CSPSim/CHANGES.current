@@ -1,6 +1,8 @@
  Version 0.4.0 (in progress)
 ===========================
-
+2005-02-21: lologramme
+ * Add Light pylons in the hangars aera
+ 
 2005-02-20: onsight
  * Fix path for hid generation under windows.
  * Add the correct F16DJ binding for the core aircraft.map.

@@ -17,7 +17,7 @@
         <Object class="FeatureLayout">
             <Path name="model">hangar2</Path>
             <Float name="x">421</Float>
-            <Float name="y">-300</Float>
+            <Float name="y">-252</Float>
             <Float name="orientation">-1.57</Float>
         </Object>
         <Object class="FeatureLayout">
@@ -152,6 +152,24 @@
             <Float name="x">180</Float>
             <Float name="y">-553</Float>
             <Float name="orientation">1.57</Float>
+        </Object>
+        <Object class="FeatureLayout">
+            <Path name="model">Lightpylon1</Path>
+            <Float name="x">405</Float>
+            <Float name="y">-190</Float>
+            <Float name="orientation">-1.57</Float>
+        </Object>
+        <Object class="FeatureLayout">
+            <Path name="model">Lightpylon1</Path>
+            <Float name="x">408</Float>
+            <Float name="y">-380</Float>
+            <Float name="orientation">-1.57</Float>
+        </Object>
+        <Object class="FeatureLayout">
+            <Path name="model">Lightpylon1</Path>
+            <Float name="x">405</Float>
+            <Float name="y">-572</Float>
+            <Float name="orientation">-1.57</Float>
         </Object>
         <Object class="FeatureLayout">
             <Path name="model">hangar</Path>

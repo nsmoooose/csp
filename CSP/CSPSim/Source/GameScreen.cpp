@@ -30,9 +30,12 @@
 
 #include <osg/Image>
 #include <osgDB/WriteFile>
+#include <osgDB/FileUtils>
 #include <osgUtil/SceneView>
 #include <osgText/Text>
 #include <Producer/Camera>
+
+#include <Simdata/FileUtility.h>
 
 #include "Animation.h"
 #include "ConsoleCommands.h"
@@ -90,7 +93,7 @@ void GameScreen::initInterface()
 
 // XXX: Preparing for the jump to OpenProducer ...
 class SnapImageDrawCallback: public Producer::Camera::Callback {
-	std::string m_Filename, m_Ext;
+	std::string m_Filename, m_Ext, m_Directory;
     bool m_SnapImageOnNextFrame;
 	std::string getDate() {
 		time_t timer;
@@ -109,7 +112,10 @@ public:
 	SnapImageDrawCallback(const std::string& filename = "CSP",const std::string& ext = ".jpg"):
         m_Filename(filename),
 		m_Ext(ext),
+		m_Directory(g_Config.getString("Paths", "Screenshots", "../Screenshots", true)),
         m_SnapImageOnNextFrame(false){
+			if (!osgDB::makeDirectory(m_Directory))
+				std::cerr << "Warning: can't create target: " << m_Directory << "; no snapshot will be saved." << std::endl;
     }
     void setSnapImageOnNextFrame(bool flag) {
 		m_SnapImageOnNextFrame = flag;
@@ -130,7 +136,7 @@ public:
 			image->readPixels(x,y,width,height,GL_RGB,GL_UNSIGNED_BYTE);
 
 			// save the file in the form CSPmmddyy-hhmmss.ext
-			osgDB::writeImageFile(*image,m_Filename + getDate() + m_Ext);
+			osgDB::writeImageFile(*image, simdata::ospath::join(m_Directory, m_Filename + getDate() + m_Ext));
 			m_SnapImageOnNextFrame = false;
 		}
     }

@@ -1,6 +1,11 @@
  Version 0.4.0 (in progress)
 ===========================
 
+2005-01-16: delta
+ * A Screenshots/ directory will be created (if non existent), when a
+   snapshot is taken. The default location is CSPSim/Screenshots and is
+   configurable in CSPSim.ini.
+   
 2005-01-15: lologramme
  * Mirage 2000: Textures "color diffuse" problem resolved
 

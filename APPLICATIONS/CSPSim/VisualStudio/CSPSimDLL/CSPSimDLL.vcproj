@@ -83,7 +83,7 @@
 				Name="VCCLCompilerTool"
 				InlineFunctionExpansion="1"
 				AdditionalIncludeDirectories="../../Include,C:/Python22/include,../../../../THIRDPARTYLIBS/include,../../../../THIRDPARTYLIBS/Demeter"
-				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;CSPSIMDLL_EXPORTS;_STLP_USE_OWN_NAMESPACE"
+				PreprocessorDefinitions="CSP_NDEBUG;WIN32;NDEBUG;_WINDOWS;_USRDLL;CSPSIMDLL_EXPORTS"
 				StringPooling="TRUE"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="TRUE"
@@ -101,7 +101,7 @@
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
 				AdditionalDependencies="osgText.lib DemeterVisualC6.lib opengl32.lib SDL.lib _cSimData.lib osgParticle.lib osgUtil.lib osgDB.lib osg.lib odbc32.lib odbccp32.lib"
-				OutputFile="../../Bin/_CSP.dll"
+				OutputFile="../../Bin/_cCSP.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="../../../../THIRDPARTYLIBS/lib,C:/Python22/libs,C:/Python22/Lib/site-packages/SimData"
@@ -168,9 +168,6 @@
 			</File>
 			<File
 				RelativePath="..\..\Source\CSPSim.cpp">
-			</File>
-			<File
-				RelativePath="..\..\Source\CSP_wrap.cpp">
 			</File>
 			<File
 				RelativePath="..\..\Source\Colorspace.cpp">
@@ -264,6 +261,9 @@
 			</File>
 			<File
 				RelativePath="..\..\Source\base.cpp">
+			</File>
+			<File
+				RelativePath="..\..\Source\cCSP_wrap.cpp">
 			</File>
 			<File
 				RelativePath="..\..\Source\sky.cpp">
@@ -404,21 +404,12 @@
 			Filter="ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe">
 		</Filter>
 		<File
-			RelativePath="..\..\Source\CSP.i">
-			<FileConfiguration
-				Name="Debug|Win32">
-				<Tool
-					Name="VCCustomBuildTool"
-					CommandLine="C:\progra~1\SWIG-1.3.17\swig -c++ -python -noexcept -DWIN32 -I..\..\Include -o ..\..\Source\$(InputName)_wrap.cpp ..\..\Source\$(InputName).i
-"
-					Outputs="..\..\Source\$(InputName)_wrap.cpp"/>
-			</FileConfiguration>
+			RelativePath="..\..\Source\cCSP.i">
 			<FileConfiguration
 				Name="Release|Win32">
 				<Tool
 					Name="VCCustomBuildTool"
-					CommandLine="C:\progra~1\SWIG-1.3.17\swig -c++ -python -noexcept -DWIN32 -IC:/Python22/include -I../../Include -o ..\..\Source\$(InputName)_wrap.cpp ..\..\Source\$(InputName).i
-"
+					CommandLine="C:\progra~1\SWIG-1.3.17\swig -c++ -python -noexcept -DWIN32 -I..\..\Include -IC:\Python22\include -o ..\..\Source\$(InputName)_wrap.cpp ..\..\Source\$(InputName).i"
 					Outputs="..\..\Source\$(InputName)_wrap.cpp"/>
 			</FileConfiguration>
 		</File>

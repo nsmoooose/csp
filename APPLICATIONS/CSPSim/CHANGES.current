@@ -1,5 +1,14 @@
 Version 0.3.1 (in progress)
 ===========================
+
+2003-03-28: delta
+	    .net project updated: CSPSimDLL (release mode is maintained)
+	    You can run python scripts from commandline without invoking python 
+	    interpreter. For example, to rebuild data: "RebuildData.py <CR>" or 
+	    to run CSP, "CSPSim.py <CR>".
+
+	    Removed CSPWin.py, CompileData.py and RebuildData.py from /VisualStudio.
+
 2003-03-27: onsight
             Created Bin directory and moved all Python scripts and 
 	    libraries there.  
@@ -59,6 +68,11 @@ Version 0.3.1 (in progress)
 	    Right justified the fps display in a 5 digit field so that 100.0
 	    doesn't make the display jitter.
 
+2003-03-23: delta
+	    added a key to toggle diamond contact marks
+
+	    added initialization of pause text
+
 2003-03-22: onsight
             Added mute option to CSPSim.ini.
 
@@ -67,7 +81,7 @@ Version 0.3.1 (in progress)
 2003-03-21: onsight
             CSPSim.PYTHON now compiles the data automatically if Sim.dar is
             not found. You still need to run with the --compile-data option
-            whenever the XML files change, or when the CPSSim object storage
+            whenever the XML files change, or when the CPSim object storage
             format changes. In the latter case, also specify the --rebuild
             option to recompile all the source data.
 
@@ -75,7 +89,7 @@ Version 0.3.1 (in progress)
 	    checking and setup to prepare the build under Windows/MSVC.
 
             Added CSPWin.py, CompileData.py, and RebuildData.py to
-            VisualStuVdio. It should be possible to double-click on these
+            VisualStudio. It should be possible to double-click on these
             from Windows to launch CSPSim, compile changes to the data, or
             rebuild the data from scratch. This assumes of course that
             Python has hooked the .py extension properly.
@@ -147,7 +161,7 @@ Version 0.3.1 (in progress)
             Cleaning code for ScreenInfo and ScreenInfoManager. It still
             needs some improvements but it should be better now. Note that
             osgText has been entirely reimplemented. Although, we didn t use
-            it, we ll need to switch to it soon: more flexible interface,
+            it yet, we ll need to switch to it soon: more flexible interface,
             robuster and faster code.
 
             Added a Runge-Kutta method RK_24, with a predictive step and a
@@ -160,7 +174,7 @@ Version 0.3.1 (in progress)
             DynamicalSystem. This class is generic and could be use as soon
             as a vector field may be defined.
 
-            Aerodynamics inherites now from DynamicalSystem. I ve done some
+            Aerodynamics inherites now from DynamicalSystem. Done some
             minor cleaning in code and implement some helper functions to
             use with dynamical system. Call to this numerical method occurs
             in doSimStep2; it will be keep until others will have tested it
@@ -174,7 +188,8 @@ Version 0.3.1 (in progress)
 
             SoundPath = ../Data/Sounds
 
-            Changed the radius of skydome to 64000 (hardcoded!, pkz Onsight,
+            Changed the radius of skydome to 64000 (hardcoded!, plz Onsight,
             check it)
 
             Others changes are minor.
+

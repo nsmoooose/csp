@@ -22,6 +22,7 @@
  *
  **/
 
+#include <SimNet/Networking.h>
 
 #include <DynamicObject.h>
 #include <Controller.h>
@@ -35,7 +36,7 @@
 
 #include <SimData/Quat.h>
 
-#include <SimNet/Networking.h>
+
 
 
 SIMDATA_REGISTER_INTERFACE(DynamicObject)

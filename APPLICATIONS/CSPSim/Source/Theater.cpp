@@ -56,5 +56,6 @@ Theater::~Theater() {
 void Theater::postCreate() {
 	CSP_LOG(TERRAIN, INFO, "Projecting feature groups.");
 	m_FeatureGroupList->projectFeatureGroups(m_Terrain->getProjection());
+	CSP_LOG(TERRAIN, INFO, "Projecting feature groups done.");
 }
 

@@ -23,6 +23,7 @@
  **/
 
 #include "Atmosphere.h"
+#include "Profile.h"
 
 #include <SimData/InterfaceRegistry.h>
 #include <SimData/Random.h>

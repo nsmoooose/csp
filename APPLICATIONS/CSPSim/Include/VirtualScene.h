@@ -90,17 +90,17 @@ public:
 	void setFogStart(float value);
 	void setFogEnd(float value);
 
-	float getViewDistance() const { return m_ViewDistance; }
+	inline float getViewDistance() const { return m_ViewDistance; }
 	void setViewDistance(float value);
 
-	simdata::Vector3 const &getOrigin() { return m_Origin; }
+	inline simdata::Vector3 const &getOrigin() { return m_Origin; }
 
 	void setTerrain(simdata::Ref<TerrainObject>);
-	simdata::Ref<TerrainObject> getTerrain() const { return m_Terrain; }
+	inline simdata::Ref<TerrainObject> getTerrain() const { return m_Terrain; }
 	int getTerrainPolygonsRendered();
 
 	void setCameraNode(osg::Node *);
-	float getViewAngle() const { return m_ViewAngle; }
+	inline float getViewAngle() const { return m_ViewAngle; }
 	void setViewAngle(float);
 
 	void spinTheWorld(bool spin);

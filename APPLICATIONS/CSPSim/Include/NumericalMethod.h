@@ -31,21 +31,45 @@
 #include <iostream>
 
 
+class NumericalMethod;
+
+/**
+ * A simple class to represent a multidimensional vector
+ * field describing the kinetic parameters of a dynamical
+ * system.
+ */
 class VectorField
 {
+	friend class NumericalMethod;
 protected:
 	unsigned short const m_dimension;
 public:
-	VectorField(unsigned short dimension ):
-	  m_dimension(dimension) {
-	  }
+	/**
+	 * Construct a new vector field of the specified dimension.
+	 */
+	VectorField(unsigned short dimension):
+		m_dimension(dimension) 
+	{
+	}
+
+	/**
+	 * Return the dimension of the vector field.
+	 */
 	unsigned short getDimension() const {
 		return m_dimension;
 	}
+
+	/**
+	 * Return the first derivative of the vector field at
+	 * the specified point.
+	 */
 	virtual std::vector<double> const& _f(double t, std::vector<double>& y) = 0;
 };
 
 
+/**
+ * Abstract base class for numerical solvers of dynamical systems.
+ */
 class NumericalMethod {
 	bool m_bdeleteVF;
 protected:

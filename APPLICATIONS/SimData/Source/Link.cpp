@@ -63,8 +63,11 @@ void LinkBase::unpack(UnPacker& p) {
 		p.unpack(class_id);
 		Object *pobj = archive->_createObject(class_id);
 		pobj->unpack(p);
-		pobj->postCreate();
+		// start reference counting before postCreate!
 		_assign_safe(pobj);
+		if (p._loadAll()) {
+			pobj->postCreate();
+		}
 		// XXX should we also check that 'static' is not set?
 		// (it makes no sense to have a static immediate object)
 	} else {

@@ -12,6 +12,8 @@
 
   * Reformatted some of the network code; fixed several gcc warnings.
 
+  * Fix warnings in DispatchCenter.cpp.
+
 2004-07-01: delta
   * CameraKinematics now uses spherical coordinates terminology
     (theta,phi,radius).

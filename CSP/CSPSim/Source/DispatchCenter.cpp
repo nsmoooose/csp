@@ -60,13 +60,13 @@ bool DispatchCenter::encode(TaggedRecord::Ref record, NetworkMessage *message) c
 	// need to extend the tagged record interface to allow ids to be assigned to the
 	// record class, and retrieved from any record instance (ie. need a class static
 	// field --- uint16).
-	simdata::uint16 id = 0; // XXX
+	//simdata::uint16 id = 0; // XXX
 	// TODO serialize without constructing a new writer/tagwriter each time, and
 	// without reallocating the write buffer.
 	simdata::StringWriter writer;
 	simdata::TagWriter tag_writer(writer);
 	record->serialize(tag_writer);
-	std::string const &buffer = writer.str();
+	//std::string const &buffer = writer.str();
 	// TODO message initialization from the buffer data needs to be implemented
 	// (requires changes to NetworkMessage)
 	// message->initialize(id, buffer.data(), buffer.size());

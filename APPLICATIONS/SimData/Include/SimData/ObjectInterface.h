@@ -187,7 +187,7 @@ public:
 	virtual void pack(Object *o, Packer &p) const {
 		C * object = dynamic_cast<C *>(o);
 		T &m = object->*member;
-		p.pack(m.size());
+		p.pack(static_cast<int>(m.size()));
 		typename T::iterator idx;
 		for (idx = m.begin(); idx != m.end(); idx++) {
 			p.pack(*idx);

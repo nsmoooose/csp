@@ -62,7 +62,7 @@ class UnPacker;
 /**
  * Base class for Enum exceptions.
  */
-class EnumError {
+class SIMDATA_EXPORT EnumError {
 protected:
 	std::string _msg;
 	bool _armed;
@@ -77,7 +77,7 @@ public:
 /**
  * Enum exception for values not defined in the associated enumeration set.
  */
-class EnumIndexError: public EnumError {
+class SIMDATA_EXPORT EnumIndexError: public EnumError {
 public:
 	EnumIndexError(const std::string s=""): EnumError() { _msg = "Enumeration::IndexError: " + s; }
 };
@@ -86,7 +86,7 @@ public:
 /**
  * Enum exception for errors related to mixing multiple enumeration sets.
  */
-class EnumTypeError: public EnumError {
+class SIMDATA_EXPORT EnumTypeError: public EnumError {
 public:
 	EnumTypeError(const std::string s=""): EnumError() { _msg = "Enumeration::TypeError: " + s; }
 };
@@ -99,7 +99,7 @@ class Enumeration;
 /**
  * A class representing a particular value from an associated enumeration set.
  */
-class Enum: public BaseType {
+class SIMDATA_EXPORT Enum: public BaseType {
 	friend class Enumeration;
 	Enum(const Enumeration& parent, const std::string &s, int idx);
 protected:
@@ -149,7 +149,7 @@ public:
 /**
  * An enumeration class representing a set of possible values indexed by strings.
  */
-class Enumeration {
+class SIMDATA_EXPORT Enumeration {
 	typedef std::map<std::string, int> string_map;
 	string_map _map;
 	std::vector<Enum> _enums;

@@ -30,7 +30,7 @@
 NAMESPACE_SIMDATA
 
 
-class Spread: public BaseType {
+class SIMDATA_EXPORT Spread: public BaseType {
 	float _mean, _sigma;
 	float _value;
 public:

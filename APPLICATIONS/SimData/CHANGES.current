@@ -3,6 +3,14 @@ Version 0.4.0 (in progress)
 2003-10-20: onsight
   * Removed Pack.cpp from the vcproj file.
 
+  * Removed the __NO_LUT__ define from swig command line in the vcproj
+    file.  This flag was used to prevent errors with older versions of 
+    MSVC during testing of the new lookup table code.
+
+  * Changed the default path to swig to c:\Program Files\swig-1.3.17
+    in vcproj.  The previous path was to swig-1.3.19, but this version
+    of swig has a bug that causes problems with simdata.
+
   * Started a new test suite for data type functionality
 
   * Added SIMDATA_API_VERSION define to Version.h.  This number will

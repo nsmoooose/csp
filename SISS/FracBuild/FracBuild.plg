@@ -1,0 +1,68 @@
+<html>
+<body>
+<pre>
+<h1>Erstellungsprotokoll</h1>
+<h3>
+--------------------Konfiguration: FracBuild - Win32 Debug--------------------
+</h3>
+<h3>Befehlszeilen</h3>
+Erstellen der temporären Datei  "C:\DOKUME~1\STORMB~1\LOKALE~1\Temp\RSP71.tmp" mit Inhalten
+[
+/nologo /MLd /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_CONSOLE" /D "_MBCS" /Fp"Debug/FracBuild.pch" /Yc /Fo"Debug/" /Fd"Debug/" /FD /GZ /c 
+"E:\Code\Eigene\FracBuild\FracBuild.cpp"
+]
+Creating command line "cl.exe @C:\DOKUME~1\STORMB~1\LOKALE~1\Temp\RSP71.tmp" 
+Erstellen der temporären Datei  "C:\DOKUME~1\STORMB~1\LOKALE~1\Temp\RSP72.tmp" mit Inhalten
+[
+kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /incremental:yes /pdb:"Debug/FracBuild.pdb" /debug /machine:I386 /out:"Debug/FracBuild.exe" /pdbtype:sept 
+.\Debug\FracBuild.obj
+]
+Erstellen der Befehlzeile "link.exe @C:\DOKUME~1\STORMB~1\LOKALE~1\Temp\RSP72.tmp"
+<h3>Ausgabefenster</h3>
+Kompilierung läuft...
+FracBuild.cpp
+e:\code\eigene\fracbuild\fracbuild.cpp(89) : warning C4244: 'argument' : Konvertierung von 'float' in 'int', moeglicher Datenverlust
+e:\code\eigene\fracbuild\fracbuild.cpp(151) : warning C4244: 'argument' : Konvertierung von 'float' in 'int', moeglicher Datenverlust
+e:\code\eigene\fracbuild\fracbuild.cpp(173) : warning C4244: 'argument' : Konvertierung von 'float' in 'int', moeglicher Datenverlust
+e:\code\eigene\fracbuild\fracbuild.cpp(196) : warning C4244: 'argument' : Konvertierung von 'float' in 'int', moeglicher Datenverlust
+e:\code\eigene\fracbuild\fracbuild.cpp(214) : warning C4244: 'argument' : Konvertierung von 'float' in 'int', moeglicher Datenverlust
+e:\code\eigene\fracbuild\fracbuild.cpp(236) : warning C4244: 'argument' : Konvertierung von 'float' in 'int', moeglicher Datenverlust
+e:\code\eigene\fracbuild\fracbuild.cpp(257) : warning C4244: 'argument' : Konvertierung von 'float' in 'int', moeglicher Datenverlust
+e:\code\eigene\fracbuild\fracbuild.cpp(32) : warning C4101: 'count' : Unreferenzierte lokale Variable
+e:\code\eigene\fracbuild\fracbuild.cpp(19) : warning C4101: 'icount' : Unreferenzierte lokale Variable
+e:\code\eigene\fracbuild\fracbuild.cpp(21) : warning C4101: 'fBuffer' : Unreferenzierte lokale Variable
+e:\code\eigene\fracbuild\fracbuild.cpp(292) : warning C4305: 'initializing' : Verkuerzung von 'const double' in 'float'
+e:\code\eigene\fracbuild\fracbuild.cpp(293) : warning C4305: 'initializing' : Verkuerzung von 'const double' in 'float'
+e:\code\eigene\fracbuild\fracbuild.cpp(293) : warning C4305: 'initializing' : Verkuerzung von 'const double' in 'float'
+e:\code\eigene\fracbuild\fracbuild.cpp(293) : warning C4305: 'initializing' : Verkuerzung von 'const double' in 'float'
+e:\code\eigene\fracbuild\fracbuild.cpp(293) : warning C4305: 'initializing' : Verkuerzung von 'const double' in 'float'
+e:\code\eigene\fracbuild\fracbuild.cpp(293) : warning C4305: 'initializing' : Verkuerzung von 'const double' in 'float'
+e:\code\eigene\fracbuild\fracbuild.cpp(294) : warning C4305: 'initializing' : Verkuerzung von 'const double' in 'float'
+e:\code\eigene\fracbuild\fracbuild.cpp(294) : warning C4305: 'initializing' : Verkuerzung von 'const double' in 'float'
+e:\code\eigene\fracbuild\fracbuild.cpp(294) : warning C4305: 'initializing' : Verkuerzung von 'const double' in 'float'
+e:\code\eigene\fracbuild\fracbuild.cpp(294) : warning C4305: 'initializing' : Verkuerzung von 'const double' in 'float'
+e:\code\eigene\fracbuild\fracbuild.cpp(295) : warning C4305: 'initializing' : Verkuerzung von 'const double' in 'float'
+e:\code\eigene\fracbuild\fracbuild.cpp(295) : warning C4305: 'initializing' : Verkuerzung von 'const double' in 'float'
+e:\code\eigene\fracbuild\fracbuild.cpp(295) : warning C4305: 'initializing' : Verkuerzung von 'const double' in 'float'
+e:\code\eigene\fracbuild\fracbuild.cpp(295) : warning C4305: 'initializing' : Verkuerzung von 'const double' in 'float'
+e:\code\eigene\fracbuild\fracbuild.cpp(296) : warning C4305: 'initializing' : Verkuerzung von 'const double' in 'float'
+e:\code\eigene\fracbuild\fracbuild.cpp(296) : warning C4305: 'initializing' : Verkuerzung von 'const double' in 'float'
+e:\code\eigene\fracbuild\fracbuild.cpp(296) : warning C4305: 'initializing' : Verkuerzung von 'const double' in 'float'
+e:\code\eigene\fracbuild\fracbuild.cpp(296) : warning C4305: 'initializing' : Verkuerzung von 'const double' in 'float'
+e:\code\eigene\fracbuild\fracbuild.cpp(297) : warning C4305: 'initializing' : Verkuerzung von 'const double' in 'float'
+e:\code\eigene\fracbuild\fracbuild.cpp(297) : warning C4305: 'initializing' : Verkuerzung von 'const double' in 'float'
+e:\code\eigene\fracbuild\fracbuild.cpp(297) : warning C4305: 'initializing' : Verkuerzung von 'const double' in 'float'
+e:\code\eigene\fracbuild\fracbuild.cpp(297) : warning C4305: 'initializing' : Verkuerzung von 'const double' in 'float'
+e:\code\eigene\fracbuild\fracbuild.cpp(297) : warning C4305: 'initializing' : Verkuerzung von 'const double' in 'float'
+e:\code\eigene\fracbuild\fracbuild.cpp(298) : warning C4305: 'initializing' : Verkuerzung von 'const double' in 'float'
+e:\code\eigene\fracbuild\fracbuild.cpp(287) : warning C4101: 'dst' : Unreferenzierte lokale Variable
+Linker-Vorgang läuft...
+LINK : LNK6004: Debug/FracBuild.exe wurde nicht gefunden oder nicht durch den letzten inkrementellen Bindevorgang erstellt; Bindung erfolgt vollstaendig
+
+
+
+<h3>Ergebnisse</h3>
+FracBuild.exe - 0 Fehler, 35 Warnung(en)
+</pre>
+</body>
+</html>

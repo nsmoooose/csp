@@ -22,6 +22,9 @@
  *
  **/
 
+#ifndef GL_ALL_CLIENT_ATTRIB_BITS
+#define GL_ALL_CLIENT_ATTRIB_BITS 0xFFFFFFFF 
+#endif
 
 #include "VirtualScene.h"
 #include "TerrainObject.h"
@@ -438,7 +441,6 @@ void VirtualScene::buildSky()
 	m_SkyLights->addChild(pSunLightSource);
 	m_SkyLights->addChild(pMoonLightSource);
 }
-
 
 int VirtualScene::drawScene()
 {

@@ -3,14 +3,15 @@ CSPSim 0.4 (in progress)
 
 INSTALLATION:
 
-1. Drop this package on your system (make sure the complete
-   path doesn't contain any spaces).  Updates to the system
+1. Unzip this package on your system (make sure the complete
+   path doesn't contain any spaces). This will create a usr
+   folder containing \include, \lib and \bin subdirectories.
+
+2. Add usr\bin to the system path. Updates to the system
    path will take effect after a reboot.
 
-2. Add usr\bin to the system path
-
 3. Add usr\include and usr\lib to VC++ directories so that
-   the compiler will find the new headers and libraries.  You
+   the compiler will find the new headers and libraries. You
    may need to exit and restart VC++ for these changes to
    take effect.
 

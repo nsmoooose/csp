@@ -1,6 +1,13 @@
 Version 0.3.3 (in progress)
 ===========================
 
+2003-07-17: brandon
+            Changed hash_map.h and HashUtility.h to support
+            MSVC 2003 by updating the version numbers >=1300
+            Changed interpolate.cpp and removed the
+            InterpolatedData<T> from the find function param to prevent
+            MSVC 2003 from erroring on that.
+
 2003-07-16: onsight
             Tweaked TypeAdapter constructors to disambiguate the copy
 	    constructor.  The build now works with g++-3.3.

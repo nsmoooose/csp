@@ -367,24 +367,18 @@ void CSPSim::init()
 		// create the networking layer
 		if (g_Config.getBool("Networking", "UseNetworking", false, true)) {
 			simnet::netlog().setLogPriority(simdata::LOG_INFO);
-			std::string local_address = g_Config.getString("Networking", "LocalIp", "127.0.0.1", true);
-			int local_port = g_Config.getInt("Networking", "LocalPort", 14111, true);
-
+			std::string default_ip = simnet::NetworkNode().getIpString();
+			std::string local_address = g_Config.getString("Networking", "LocalIp", default_ip, true);
+			int local_port = g_Config.getInt("Networking", "LocalPort", 3161, true);
+			simnet::NetworkNode local_node(local_address, local_port);
 			CSP_LOG(NETWORK, INFO, "Initializing network interface " << local_address << ":" << local_port);
+
 			int incoming_bw = g_Config.getInt("Networking", "IncomingBandwidth", 36000, true);
 			int outgoing_bw = g_Config.getInt("Networking", "OutgoingBandwidth", 36000, true);
-			simnet::NetworkNode local_node(local_address, local_port);
 			m_NetworkClient = new simnet::Client(local_node, incoming_bw, outgoing_bw);
 
-			if (g_Config.hasKey("Networking", "ExternalIp")) {
-				std::string external_address = g_Config.getString("Networking", "ExternalIp");
-				simnet::NetworkNode external_node(external_address, local_port);
-				CSP_LOG(NETWORK, INFO, "External interface is " << external_address << ":" << local_port);
-				m_NetworkClient->setExternalNode(external_node);
-			}
-
-			std::string server_address = g_Config.getString("Networking", "ServerIp", "127.0.0.1", true);
-			int server_port = g_Config.getInt("Networking", "ServerPort", 14110, true);
+			std::string server_address = g_Config.getString("Networking", "ServerIp", default_ip, true);
+			int server_port = g_Config.getInt("Networking", "ServerPort", 3160, true);
 			CSP_LOG(NETWORK, INFO, "Connecting to server: " << server_address << ":" << server_port);
 			simnet::NetworkNode server_node(server_address, server_port);
 			if (!m_NetworkClient->connectToServer(server_node, 5.0 /*seconds*/)) {

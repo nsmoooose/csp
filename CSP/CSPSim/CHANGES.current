@@ -5,6 +5,12 @@
  * Add hooks in GameScreen to catch player join/quit events and display
    a message on the screen.
 
+ * Simplify the network parameters in the ini file.  If unset, LocalIp
+   should default to the correct value.  ExternalIp is no longer needed
+   or used.  LocalPort now defaults to 3161, and ServerPort defaults to
+   3160.  You still need to specify ServerIp to connect to remote index
+   servers.
+
 2004-12-18: delta
  * Until we make a more accurate FCS, we'll use the animation binding to
    provide a better visual approximation of the animations of the "ailerons"

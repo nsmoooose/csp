@@ -712,7 +712,7 @@ class SVNCommand(Command):
 
   def help(self):
     command = self._keys[0]
-    return self._svn(command, 'help', (command,))
+    return self._svn('help', [command,])
 
 
 class Blame(SVNCommand):

@@ -756,9 +756,6 @@
 				RelativePath="..\..\Include\Message.h">
 			</File>
 			<File
-				RelativePath="..\..\Include\Networking.h">
-			</File>
-			<File
 				RelativePath="..\..\Include\NumericalMethod.h">
 			</File>
 			<File
@@ -915,6 +912,13 @@
 				</File>
 				<File
 					RelativePath="..\..\Include\Views\View.h">
+				</File>
+			</Filter>
+			<Filter
+				Name="SimNet"
+				Filter="">
+				<File
+					RelativePath="..\..\Include\SimNet\Networking.h">
 				</File>
 			</Filter>
 		</Filter>

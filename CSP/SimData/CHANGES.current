@@ -40,6 +40,8 @@ Version 0.4.0 (in progress)
 
   * Fixed the custom id accessor method names in tr factory.
 
+  * Fixed the tr registry include path used in the tr compiler.
+
 2004-07-09: onsight
   * Changed the formating of HashT values to use fixed-width hex
     instead of decimal numbers, and cleaned up the data archive

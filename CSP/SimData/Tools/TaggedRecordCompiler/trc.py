@@ -52,7 +52,7 @@ FOOTER = """
 
 SOURCE_HEADER="""// generated file --- do not edit!'
 
-#include <SimData/TaggedRecordFactory.h>
+#include <SimData/TaggedRecordRegistry.h>
 #include %(include_as)s
 """
 

@@ -299,6 +299,7 @@ protected:
 	simdata::Vector3 *m_AngularVelocity;
 	simdata::Quaternion *m_Orientation;
 
+	double m_Distance;
 	double m_AirSpeed;
 	double m_Mass;
 	double m_MassInverse;

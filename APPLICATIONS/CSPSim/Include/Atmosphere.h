@@ -58,9 +58,10 @@ protected:
 	double m_GroundPressure;
 	double m_GroundDensity;
 	double m_TimeScale;
-	double m_UpdateTime;
 	double m_WindIndex;
 	double m_WindScale;
+	double m_FastUpdate;
+	double m_UpdateTime;
 	int m_UpdateIndex;
 	simdata::SimDate m_Date;
 	simdata::Vector3 m_PrevailingWind;
@@ -71,13 +72,14 @@ protected:
 	std::vector<float> m_WindTimeY;
 	std::vector<float> m_WindAltX;
 	std::vector<float> m_WindAltY;
-	std::vector<float> m_WindGust;
+	std::vector<float> m_GustTime;
 	std::vector<float> m_DensityTime;
 	std::vector<float> m_TurbulenceAltA;
 	std::vector<float> m_TurbulenceAltB;
 	double m_TurbulenceBlend;
 	bool m_TurbulenceBlendUp;
 	double m_GustModulation;
+	int m_GustIndex;
 };
 
 

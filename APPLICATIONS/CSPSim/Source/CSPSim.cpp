@@ -368,7 +368,7 @@ void CSPSim::run()
 
 			// Miscellaneous Updates
 			low_priority += dt;
-			if (low_priority > 1.0) {
+			if (low_priority > 0.33) {
 				switch (idx++) {
 					case 0:
 						m_Atmosphere.update(low_priority);
@@ -553,6 +553,7 @@ int CSPSim::initSDL()
     
 	SDL_EnableUNICODE(1);
 
+
 	std::string sound_path = g_Config.getPath("Paths", "SoundPath", ".", true);
 	if ( SDL_LoadWAV(ospath::join(sound_path, "avionturbine5.wav").c_str(),
 		&m_audioWave.spec, &m_audioWave.sound, &m_audioWave.soundlen) == NULL ) {
@@ -567,7 +568,7 @@ int CSPSim::initSDL()
 		SDL_FreeWAV(m_audioWave.sound);
 		::exit(2);
 	}
-	SDL_PauseAudio(0);
+	SDL_PauseAudio(1);
 
 	return 0;
 }

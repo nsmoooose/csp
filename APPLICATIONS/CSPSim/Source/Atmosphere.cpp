@@ -123,6 +123,7 @@ class Perlin1D {
 Atmosphere::Atmosphere() {
 	generateWinds();
 	m_Latitude = 0.0;
+	m_FastUpdate = 0.0;
 	m_UpdateTime = 0.0;
 	m_UpdateIndex = 0;
 	m_TargetTemperature = 288.15;
@@ -134,6 +135,7 @@ Atmosphere::Atmosphere() {
 	m_TurbulenceBlend = 0.0;
 	m_TurbulenceBlendUp = true;
 	m_GustModulation = 1.0;
+	m_GustIndex = 0;
 	reset();
 }
 
@@ -173,12 +175,10 @@ void Atmosphere::generateWinds() {
 	// wind gust variation (300 s)
 	noise.set(0.9, 5);
 	noise.randomize();
-	m_WindGust = noise.generate(1000, true, 1.0);
+	m_GustTime = noise.generate(1000, true, 60.0, 3.0);
 }
 
 simdata::Vector3 Atmosphere::getWind(simdata::Vector3 const &p) const {
-	return simdata::Vector3::ZERO;
-/*  DISABLE FOR THE MOMENT
 	simdata::Vector3 wind = m_AverageWind;
 	double h = p.z * 0.0033;
 	int idx = int(h);
@@ -194,12 +194,29 @@ simdata::Vector3 Atmosphere::getWind(simdata::Vector3 const &p) const {
 	wind.x += m_WindAltX[idx]*(1.0-f) + m_WindAltX[idx+1]*f;
 	wind.y += m_WindAltY[idx]*(1.0-f) + m_WindAltY[idx+1]*f;
 	return wind * m_WindScale * m_GustModulation;
-*/
 }
 
 double Atmosphere::getTurbulence(simdata::Vector3 const &p, double dist) const {
-	// XXX to write...
-	return 0.0;
+	if (dist < 0.0) dist = - dist;
+	int idx = int(dist * 0.1) % 1000;
+	float d = m_DensityTime[idx];
+	idx = int(p.z * 1000.0 / 15000.0);
+	if (idx < 0) idx = 0;
+	else if (idx > 999) idx = 999;
+	float a = m_TurbulenceAltA[idx];
+	float b = m_TurbulenceAltB[idx];
+	if (a < 0.0) a = 0.0;
+	if (b < 0.0) b = 0.0;
+	a = a * (1.0 - m_TurbulenceBlend) + b * m_TurbulenceBlend;
+	/*
+	static int i = 0;
+	if ((i++ % 40) == 0) {
+		std::cout << a << ":" << d << "\n";
+	}
+	*/
+	// first try didn't show much effect.  * 30 does something, but hard to notice.
+	// * 100 is too much.  need to tune...
+	return a * d * 30.0;
 }
 
 void Atmosphere::setPosition(double lat, double lon) { 
@@ -211,6 +228,11 @@ void Atmosphere::setPrevailingWind(simdata::Vector3 const &wind) {
 	m_PrevailingWind = wind;
 }
 
+/**
+ * Air temperature versus altitude.
+ *
+ * From 1976 Standard Atmosphere, below 32000 m
+ */
 double Atmosphere::getTemperature(double h) const {
 	double scale;
 	if (h < 11000.0) {
@@ -219,11 +241,17 @@ double Atmosphere::getTemperature(double h) const {
 	if (h < 20000.0) {
 		scale = 0.751865;
 	} else {
+		if (h > 32000.0) h = 32000.0;
   		scale = 0.682357 + h * .00000347058;
 	}
 	return m_GroundTemperature*scale;
 }
 
+/**
+ * Air pressure versus altitude.
+ *
+ * From 1976 Standard Atmosphere, below 32000 m
+ */
 double Atmosphere::getPressure(double h) const {
 	double scale;
 	if (h < 11000.0) {
@@ -232,11 +260,18 @@ double Atmosphere::getPressure(double h) const {
 	if (h < 20000.0) {
        		scale = 0.223361 * exp((10999.0-h)*0.000157694);
 	} else {
+		if (h > 32000.0) h = 32000.0;
 		scale = pow(0.988626 + h * 0.00000502758, -34.16319);
 	}
 	return m_GroundPressure * scale;
 }
 
+
+/**
+ * Air density versus altitude.
+ *
+ * From 1976 Standard Atmosphere, below 32000 m
+ */
 double Atmosphere::getDensity(double h) const {
 	double scale;
 	if (h < 11000.0) {
@@ -245,6 +280,7 @@ double Atmosphere::getDensity(double h) const {
 	if (h < 20000.0) {
 		scale = 0.297076 * exp( (10999.0 - h) * 0.000157694);
 	} else {
+		if (h > 32000.0) h = 32000.0;
 		scale = pow(0.978261 + h * 0.00000497488, -35.16319);
 	}
 	return m_GroundDensity * scale;
@@ -256,9 +292,18 @@ double Atmosphere::getDensity(double h) const {
  * Call approximately once per second.
  */
 void Atmosphere::update(double dt) {
+	m_FastUpdate += dt;
+	float gust = m_GustTime[m_GustIndex%1000];
+	if (gust < 0.0) gust = 0.0;
+	m_GustModulation = 1.0 + gust;
+	m_GustIndex++;
+	//std::cout << getWind(simdata::Vector3::ZERO) << m_GustModulation << std:: endl;
+	if (m_FastUpdate < 3.0) return;
 	if (m_UpdateIndex == 0) reset();
-	m_Date.addTime(dt);
+	dt = m_FastUpdate;
+	m_FastUpdate = 0.0;
 	m_UpdateTime += dt;
+	m_Date.addTime(dt);
 	m_WindIndex += dt;
 	m_WindScale = 0.1 * fabs(m_GroundPressure - m_TargetPressure);
 	double f = dt * m_TimeScale;
@@ -275,6 +320,28 @@ void Atmosphere::update(double dt) {
 		_update();
 		m_UpdateTime = 0.0;
 	}
+	if (m_TurbulenceBlendUp) {
+		m_TurbulenceBlend += dt * 0.0003;
+		if (m_TurbulenceBlend > 1.0) {
+			Perlin1D noise;
+			noise.set(0.9, 6);
+			noise.randomize();
+			m_TurbulenceBlend = 1.0;
+			m_TurbulenceBlendUp = false;
+			m_TurbulenceAltA = noise.generate(1000, false, 10.0, 2.0, -1.0);
+		}
+	} else {
+		m_TurbulenceBlend += dt * 0.0003;
+		if (m_TurbulenceBlend < 0.0) {
+			Perlin1D noise;
+			noise.set(0.9, 6);
+			noise.randomize();
+			m_TurbulenceBlend = 0.0;
+			m_TurbulenceBlendUp = true;
+			m_TurbulenceAltB = noise.generate(1000, false, 10.0, 2.0, -1.0);
+		}
+	}
+
 	/*
 	std::cout << "==========================" << std:: endl;
 	std::cout << "PRES: " << m_GroundPressure << std:: endl;
@@ -320,6 +387,9 @@ void Atmosphere::reset() {
 	m_GroundPressure = m_TargetPressure;	
 	m_GroundDensity = m_GroundPressure / (286.9 * m_GroundTemperature);
 	m_AverageWind = m_TargetWind;
+	_update();
+	_update();
+	_update();
 }
 
 /*

@@ -56,6 +56,8 @@ AeroDynamics::AeroDynamics():
 	m_Gear = 0;
 	m_Contacts = 0;
 	m_Bound = false;
+	m_Distance = 0.0;
+	m_AirSpeed = 0.0;
 	initialize();
 }
 
@@ -366,9 +368,13 @@ void AeroDynamics::doSimStep(double dt)
 
 	double qBarFactor  = 0.5 * m_WingArea;
 
+	m_Distance += m_AirSpeed;
+
 	Atmosphere const *atmosphere = CSPSim::theSim->getAtmosphere();
 	if (atmosphere != NULL) {
-		qBarFactor *= atmosphere->getDensity(m_PositionLocal.z);
+		double density = atmosphere->getDensity(m_PositionLocal.z);
+		density += atmosphere->getTurbulence(m_PositionLocal, m_Distance);
+		qBarFactor *= density;
 		m_Gravity = atmosphere->getGravity(m_PositionLocal.z);
 		Wind = atmosphere->getWind(m_PositionLocal);
 	} else {

@@ -107,13 +107,13 @@ template<typename T>
 inline void swap(T &a, T &b) { T t = a; a = b; b = t; }
 
 
-#if (defined(WIN32) && !(defined(_MSC_VER) && (_MSC_VER >= 1300)) && !defined(__MINGW32__) ) ||  defined (sun)
+#if (defined(_WIN32) && !(defined(_MSC_VER) && (_MSC_VER >= 1300)) && !defined(__MINGW32__) ) ||  defined (sun)
     #ifndef isnanf
     #define isnanf (float)isnan
     #endif
 #endif
 
-#if defined(WIN32) && !defined(__CYGWIN__) && !defined(__MWERKS__)
+#if defined(_WIN32) && !defined(__CYGWIN__) && !defined(__MWERKS__)
     inline bool isNaN(float v) { return _isnan(v)!=0; }
     inline bool isNaN(double v) { return _isnan(v)!=0; }
 #else

@@ -36,7 +36,7 @@
 #include <SimData/Properties.h>
 
 
-#if defined(WIN32)
+#if defined(_WIN32)
 #  define WIN_ATOMIC
 #  define _WINSOCKAPI_
 #  define NOMINMAX

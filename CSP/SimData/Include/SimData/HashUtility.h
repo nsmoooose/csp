@@ -167,9 +167,21 @@ inline HashT hash_string(std::string const &key) { return newhasht_cstring(key);
 
 /** Pass through (nop) hash function for 64-bit hash keys.
  */
-struct nohash64 {
+#if defined(_MSC_VER) && (_MSC_VER >= 1300)
+	struct nohash64: public HASH<const uint64> {
+		size_t operator ()(const uint64& x) const {
+			return static_cast<size_t>(x);
+		}
+		bool operator()(const uint64& x1, const uint64& x2) const {
+			return (x1 < x2);
+		}
+	};
+#else
+	struct nohash64 {
 	inline size_t operator()(uint64 x) const { return static_cast<size_t>(x); }
 };
+#endif
+
 
 /** Pass through (nop) hash function for 32-bit hash keys.
  */

@@ -407,7 +407,7 @@ NetworkMessage * DynamicObject::getUpdateMessage()
   b_GlobalPosition->value().writeBinary((unsigned char *)&(ptrPayload->globalPosition),24);
   b_LinearVelocity->value().writeBinary((unsigned char *)&(ptrPayload->linearVelocity),24);
   b_AngularVelocity->value().writeBinary((unsigned char *)&(ptrPayload->angularVelocity),24);
-  b_Attitude->value().writeBinary((unsigned char *)&(ptrPayload->attitude),24);
+  b_Attitude->value().writeBinary((unsigned char *)&(ptrPayload->attitude),32);
   
   CSP_LOG(APP, DEBUG, "DynamicObject::getUpdateMessage() - returning message");
 
@@ -439,7 +439,7 @@ void DynamicObject::putUpdateMessage(NetworkMessage* message)
   b_GlobalPosition->value().readBinary((unsigned char*)&(ptrPayload->globalPosition),24);
   b_LinearVelocity->value().readBinary((unsigned char *)&(ptrPayload->linearVelocity),24);
   b_AngularVelocity->value().readBinary((unsigned char *)&(ptrPayload->angularVelocity),24);
-  b_Attitude->value().readBinary((unsigned char *)&(ptrPayload->attitude),24);
+  b_Attitude->value().readBinary((unsigned char *)&(ptrPayload->attitude),32);
   
 }
 

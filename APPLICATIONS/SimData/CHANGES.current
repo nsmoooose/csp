@@ -1,6 +1,14 @@
 Version 0.3.3 (in progress)
 ===========================
 
+2003-07-21: onsight
+            COPYING now correctly contains the GPL license, not the
+	    LGPL licence.
+
+	    Moved PTS copyright/license notice back to ObjectRegistry.h
+	    where the code actually resides.  Added a GPL notice to
+	    PTS.h.  
+
 2003-07-19: delta
 	    Merged Onsight changes. 
 	    Updated vc project.

@@ -36,7 +36,6 @@
 
             Removed Include/OGLText.h, which seemed to have been
 	    misplaced (part of TerrainTools?).
-
 	    
 2003-07-21: onsight
             Added Tools/Terrain directory for terrain tools used in

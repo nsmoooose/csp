@@ -50,6 +50,26 @@ class ActivePeerList;
 
 
 /** Low level interface for sending and receiving packets over UDP.
+ *
+ *  This class, together with supporting classes, provides both reliable and
+ *  unreliable message transport over UDP.  Reliable packets are resent until
+ *  confirmation is received (confirmation ids ride piggyback on normal traffic
+ *  and/or ping messages to conserve bandwidth).  Duplicate reliable packets
+ *  are filtered internally, but delivery order is currently _not_ guaranteed.
+ *
+ *  Messages are segregated into four different priority classes, based on
+ *  importance and longevity.  Each priority class uses dedicated inbound and
+ *  outbound queues.  Unreliable outbound packets may be throttled based on
+ *  priority and the dynamic bandwidth allocation set by each remote host.
+ *
+ *  Network interface is largely focused on peer-peer communication, but does
+ *  provide minimal support for a client-server model.  The primary distinction
+ *  between a server and a client NetworkInterface is that the former accepts
+ *  provisional connections from unknown remote hosts (i.e. NetworkInterfaces
+ *  using the default id of zero).  This allows a client to connect directly to
+ *  the server, which assigns a unique id to the client and can negotiate peer
+ *  to peer contacts as needed.  Note that there can be only one server on a
+ *  network (the server id is always one).
  */
 class NetworkInterface: public simdata::Referenced {
 	friend class ActivePeerList;
@@ -140,6 +160,7 @@ class NetworkInterface: public simdata::Referenced {
 	simdata::uint32 m_SentPackets;
 	simdata::uint32 m_ReceivedPackets;
 	simdata::uint32 m_BadPackets;
+	simdata::uint32 m_DuplicatePackets;
 	simdata::uint32 m_DroppedPackets;
 	simdata::uint32 m_ThrottledPackets;
 

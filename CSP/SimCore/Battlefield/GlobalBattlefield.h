@@ -203,7 +203,7 @@ private:
 	}
 
 	void announceJoin(const PeerId id) {
-		ClientData &new_client_data = m_ClientData[id];
+		//ClientData &new_client_data = m_ClientData[id];
 		PlayerJoin::Ref join = makeJoin(id);
 		for (ClientDataMap::const_iterator iter = m_ClientData.begin(); iter != m_ClientData.end(); ++iter) {
 			// don't announce to ourself
@@ -319,10 +319,7 @@ private:
 			CSP_LOG(BATTLEFIELD, INFO, "unit moved " << *(wrapper->unit()));
 			GridPoint old_position = wrapper->point();
 			GridPoint new_position(msg->grid_x(), msg->grid_y());
-			if (updatePosition(wrapper, new_position)) {
-				// TODO remove me, now handled by moveUnit() override
-				//recomputeUpdates(wrapper, old_position, new_position);
-			}
+			updatePosition(wrapper, new_position);
 		} else {
 			CSP_LOG(BATTLEFIELD, ERROR, "unknown unit moved " << msg->unit_id());
 		}
@@ -334,20 +331,24 @@ private:
 	}
 
 	void onRegisterUnit(simdata::Ref<RegisterUnit> const &msg, simdata::Ref<simnet::MessageQueue> const &/*queue*/) {
-		UnitWrapper *wrapper = findUnitWrapper(msg->unit_id());
-		assert(!wrapper);  // FIXME be more robust!
-		PeerId owner = msg->getSource();
-		SimObject::ObjectId id = msg->unit_id();
-		CSP_LOG(BATTLEFIELD, INFO, "registering unit " << id << " " << msg->unit_class() << " owned by " << owner);
-		simdata::Ref<UnitContact> unit = new UnitContact(static_cast<SimObject::TypeId>(msg->unit_type()), msg->unit_class(), id);
+		const SimObject::ObjectId unit_id = msg->unit_id();
+		const PeerId owner = msg->getSource();
+		UnitWrapper *wrapper = findUnitWrapper(unit_id);
+		if (wrapper) {
+			CSP_LOG(BATTLEFIELD, ERROR, "request to register existing unit " << unit_id << " for " << owner << " (already owned by " << wrapper->owner() << ")");
+			// wrapper != null could be a client side bug or a duplicate message that wasn't filtered.
+			// either is bad enough that we want to fail (in debug mode).
+			assert(0);
+			return;
+		}
+		CSP_LOG(BATTLEFIELD, INFO, "registering unit " << unit_id << " " << msg->unit_class() << " owned by " << owner);
+		simdata::Ref<UnitContact> unit = new UnitContact(static_cast<SimObject::TypeId>(msg->unit_type()), msg->unit_class(), unit_id);
 		wrapper = new ContactWrapper(unit, owner);
 		addUnit(wrapper);
 		GridPoint old_position = wrapper->point();
 		GridPoint new_position(msg->grid_x(), msg->grid_y());
 		updatePosition(wrapper, new_position);
-		// TODO remove me, now handled by moveUnit() override
-		//recomputeUpdates(wrapper, old_position, new_position);
-		m_ClientData[owner].units.insert(id); // TODO need to remove as well
+		m_ClientData[owner].units.insert(unit_id);
 	}
 	
 	/** Recompute unit update messages sent between peers when a unit moves.

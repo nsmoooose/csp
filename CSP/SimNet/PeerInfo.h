@@ -73,6 +73,9 @@ class PeerInfo: public simdata::NonCopyable {
 
 	ConfirmationId m_next_confirmation_id;
 
+	simdata::uint32 m_duplicate_filter[65536/32];
+	bool m_duplicate_filter_low;
+
 	bool m_statmode_toggle;
 	simdata::uint32 m_throttle_threshold;
 
@@ -314,6 +317,12 @@ public:
 		m_confirmation_queue.push_back(id);
 	}
 
+	/** Test if the given confirmation id has already been received from this peer.  Uses a
+	 *  sliding window to detect duplicates in the last 16k reliable messages received from
+	 *  this peer.
+	 */
+	bool isDuplicate(const ConfirmationId id);
+
 	/** Called when we receive confirmation of a reliable packet sent to this peer.  Once
 	 *  confirmation is received, reliable transmission of the packet is considered to be
 	 *  successful and no further resends will occur.
@@ -324,7 +333,7 @@ public:
 			iter->second->confirm();
 			m_reliable_packet_map.erase(iter);
 		} else {
-			SIMNET_LOG(PEER, WARNING, "Received confirmation that we did not request");
+			SIMNET_LOG(PEER, WARNING, "Received confirmation that we did not request " << id);
 		}
 	}
 

@@ -466,9 +466,20 @@ int NetworkInterface::receivePackets(double timeout) {
 			header_size = ReceiptHeaderSize;
 			SIMNET_LOG(PACKET, DEBUG, "received a reliable header " << *header);
 			if (packet_length >= ReceiptHeaderSize) {
-				// if this packet is priority 3, it requires confirmation (id stored in id0)
-				// there may also be confirmation receipts in the remaining id slots
+				// if this packet is priority 3, it requires confirmation (id stored in id0);
+				// there may also be confirmation receipts in the remaining id slots.  we
+				// check that this reliable packet has not already been received in order to
+				// discard duplicates.  duplicates are not detected/filtered for unreliable
+				// packets, so it is important that such messages be idempotent.
+				//
+				// note too that reliable packets from a given peer may be received in a
+				// different order than they were sent---no effort is (currently) made to
+				// reorder the packets.
 				if (header->priority() == 3) {
+					if (peer->isDuplicate(header->id0())) {
+						m_DuplicatePackets++;
+						continue;
+					}
 					peer->pushConfirmation(header->id0());
 				} else {
 					if (header->id0() != 0) peer->popConfirmation(header->id0());
@@ -542,7 +553,7 @@ int NetworkInterface::receivePackets(double timeout) {
 	double DEBUG_elapsed = watch.elapsed();
 	DEBUG_recvtime = DEBUG_elapsed;
 	SIMNET_LOG(TIMING, DEBUG, "receive loop end: " << (DEBUG_elapsed * 1000.0) << " ms to queue " << DEBUG_count << " packets");
-	SIMNET_LOG(TIMING, DEBUG, "receive stats: " << m_BadPackets << " bad, " << m_DroppedPackets << " dropped, " << m_ReceivedPackets << " ok)");
+	SIMNET_LOG(TIMING, DEBUG, "receive stats: " << m_BadPackets << " bad, " << m_DroppedPackets << " dropped, " << m_DuplicatePackets << " dups, " << m_ReceivedPackets << " ok)");
 	if (DEBUG_exitcode == 1) {
 		SIMNET_LOG(TIMING, DEBUG, "  exit state: recv time expired");
 	} else {
@@ -698,6 +709,7 @@ void NetworkInterface::resetStats() {
 	m_SentPackets = 0;
 	m_ReceivedPackets = 0;
 	m_BadPackets = 0;
+	m_DuplicatePackets = 0;
 	m_DroppedPackets = 0;
 }
 

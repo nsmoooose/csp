@@ -48,6 +48,7 @@ PeerInfo::PeerInfo():
 	m_provisional(false),
 	m_lifetime(0.0),
 	m_next_confirmation_id(1000),
+	m_duplicate_filter_low(true),
 	m_statmode_toggle(false),
 	m_throttle_threshold(0),
 	m_packets_peer_to_self(0),
@@ -75,7 +76,9 @@ PeerInfo::PeerInfo():
 	m_quiet_time(0.0),
 	m_dead_time(0.0),
 	m_last_deactivation_time(0.0),
-	m_socket(0) {
+	m_socket(0)
+{
+	memset(m_duplicate_filter, 0, sizeof(m_duplicate_filter));
 }
 
 void PeerInfo::update(double dt, double scale_desired_rate_to_self) {
@@ -254,6 +257,22 @@ void PeerInfo::setReceipt(PacketReceiptHeader *receipt, bool reliable, simdata::
 	receipt->setId3(m_confirmation_queue.front());
 	m_confirmation_queue.pop_front();
 	SIMNET_LOG(PACKET, DEBUG, "sending receipt " << receipt->id3());
+}
+
+bool PeerInfo::isDuplicate(const ConfirmationId id) {
+	const simdata::uint32 mask = 1 << (id & 31);
+	const int index = id/32;
+	const simdata::uint32 value = m_duplicate_filter[index];
+	const bool duplicate = ((value & mask) != 0);
+	m_duplicate_filter[index] = value | mask;
+	if (m_duplicate_filter_low && (id >= 65536/32*3/4)) {
+		m_duplicate_filter_low = false;
+		memset(reinterpret_cast<char*>(m_duplicate_filter), 0, 65536/2);
+	} else if (!m_duplicate_filter_low && (id >= 65536/32/4)) {
+		m_duplicate_filter_low = true;
+		memset(reinterpret_cast<char*>(m_duplicate_filter) + 65536/2, 0, 65536/2);
+	}
+	return duplicate;
 }
 
 void PeerInfo::disable() {

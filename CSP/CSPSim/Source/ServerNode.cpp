@@ -35,10 +35,21 @@ int ServerNode::run()
 	if (count % 100 == 0)
 	{
 	  NetworkNode * node = message->getOriginatorNode();
+	  MessageHeader * header = (MessageHeader*)message;
           printf("Received Data From Client:\n");
 	  printf("Client addr: %s\n", node->getHostname());
 	  printf("Client port: %d\n", node->getPort());
+
+	  printf("MagicNumber: %u\n", header->m_magicNumber);
+	  printf("PayloadLen: %u\n", header->m_payloadLen);
+	  printf("MessageType: %u\n", header->m_messageType);
+	  printf("IPAddr: %u\n", header->m_ipaddr);
+	  printf("Port: %u\n", header->m_port);
+	  printf("ID: %u\n", header->m_id);
+			  
           ObjectUpdateMessagePayload * ptrPayload = (ObjectUpdateMessagePayload*)message->getPayloadPtr();
+          printf("ID: %u\n", ptrPayload->id);
+	  printf("TimeStamp: %u\n", ptrPayload->timeStamp);
 	  printf("PositionX: %f, PositionY: %f, PositionZ: %f\n", 
 			ptrPayload->globalPosition.x,
 			ptrPayload->globalPosition.y,

@@ -1,6 +1,9 @@
  Version 0.4.0 (in progress)
 ===========================
 
+2004-07-10: onsight
+  * Small formatting cleanup in DynamicObject.cpp.
+
 2004-07-08: onsight
   * Slight tweak of the logging macros.  See the SimData changelog for
     details.

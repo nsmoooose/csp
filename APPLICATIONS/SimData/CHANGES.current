@@ -1,6 +1,10 @@
 Version 0.3.3 (in progress)
 ===========================
 
+2003-07-19: delta
+	    Merged Onsight changes. 
+	    Updated vc project.
+
 2003-07-18: onsight
             Separated the __PTS_SIM__ definition into PTS.h.  Partial
 	    template specialization must be simulated on msvc.net
@@ -83,7 +87,7 @@ Version 0.3.3 (in progress)
 
 2003-05-24: delta
 	    Added help methods to convert feet to meters and pounds to newtons
-	    in math.h.
+	    in Math.h.
 
 2003-05-14: onsight
             Added LLA, UTM, and ECEF classes.  This some functionality is 

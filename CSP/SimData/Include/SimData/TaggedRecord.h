@@ -444,6 +444,10 @@ public:
 	virtual std::string getName() const=0;
 	virtual void dump(std::ostream &, int indent=0) const=0;
 	virtual int getCustomId() const=0;
+	template <class TR>
+	static inline Ref<TR> FastCast(Ref const &record) {
+		return (record->getId() == TR::_getId() ? static_cast<TR*>(record.get()) : 0);
+	}
 protected:
 	virtual ~TaggedRecord() {}
 };

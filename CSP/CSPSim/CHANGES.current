@@ -1,9 +1,11 @@
  Version 0.4.0 (in progress)
 ===========================
-
+2005-01-07: lologramme
+ * add Taxi Signalisation
+ 
 2005-01-03: delta
  * Snapshot is now saved as jpeg.
- 
+
 2005-01-01: onsight
  * Fixed a sign error on the server time offset that made it impossible
    to correct significant clock skew between peers.  Also simplified the

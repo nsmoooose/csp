@@ -69,5 +69,29 @@
             <Float name="y">1068</Float>
             <Float name="orientation">-0.64</Float>
         </Object>
+                <Object class="FeatureLayout">
+            <Path name="model">caisson06</Path>
+            <Float name="x">160</Float>
+            <Float name="y">1138</Float>
+            <Float name="orientation">-2.07</Float>
+        </Object>
+        <Object class="FeatureLayout">
+            <Path name="model">caisson07</Path>
+            <Float name="x">215</Float>
+            <Float name="y">400</Float>
+            <Float name="orientation">3.64</Float>
+        </Object>
+        <Object class="FeatureLayout">
+            <Path name="model">caisson08</Path>
+            <Float name="x">180</Float>
+            <Float name="y">400</Float>
+            <Float name="orientation">2.64</Float>
+        </Object>
+        <Object class="FeatureLayout">
+            <Path name="model">caisson09</Path>
+            <Float name="x">52</Float>
+            <Float name="y">340</Float>
+            <Float name="orientation">2.07</Float>
+        </Object>
     </List>
 </Object>

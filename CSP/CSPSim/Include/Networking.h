@@ -25,11 +25,6 @@
 #ifndef __NETWORKING_H__
 #define __NETWORKING_H__
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <assert.h>
-#include <errno.h>
 #include <sys/types.h>
 #include <list>
 

@@ -133,7 +133,7 @@
 				AssemblyDebug="0"
 				GenerateMapFile="FALSE"
 				MapExports="FALSE"
-				ImportLibrary=".\Release/_CSP.lib"
+				ImportLibrary="../../Bin/_cCSP.lib"
 				TargetMachine="1"/>
 			<Tool
 				Name="VCMIDLTool"
@@ -486,6 +486,9 @@
 			</File>
 			<File
 				RelativePath="..\..\Include\Exception.h">
+			</File>
+			<File
+				RelativePath="..\..\Include\Export.h">
 			</File>
 			<File
 				RelativePath="..\..\Include\FlightDynamics.h">

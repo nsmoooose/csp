@@ -1,6 +1,11 @@
  Version 0.4.0 (in progress)
 ===========================
 
+2005-02-09: delta
+ * Added Include/Export.h
+ 
+ * Minor tweak to the vs project file to send _cCSP.lib to Bin/
+
 2005-02-05: onsight
  * Disable displaylist/stateset compiler visitor when creating
    ObjectModels, since it segfaults for models loaded using the

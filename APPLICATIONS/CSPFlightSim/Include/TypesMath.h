@@ -52,16 +52,14 @@ const double pi = 3.1415926536;
   
   };
 
-
-
-inline	double	DegreesToRadians(double deg)
-{
-	return deg * pi / 180.0f;
+inline double RadiansToDegrees(double rad) 
+{ 
+	return rad * 180.0 / pi;
 }
 
-inline	double	RadiansToDegrees(double rad)
-{	
-	return rad * 180.0f / pi;
+inline double DegreesToRadians(double deg) 
+{ 
+	return deg * pi / 180.0;
 }
 
 inline double MetersPerSecondToKnots(double p_speed)
@@ -84,6 +82,10 @@ double angleBetweenTwoVectors(const StandardVector3 & v1, const StandardVector3 
 double SignOf(double p_t);
 
 double Atan(double const p_a, double const p_b);
+
+float UnsignedRandomNumber();
+
+float SignedRandomNumber();
 
 #endif // __TYPESMATH_H__
 

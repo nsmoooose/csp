@@ -161,8 +161,7 @@ class Changeset:
   def submit(self):
     files = map(lambda x: x.abspath(), self._files)
     description = '\n'.join(self._description).replace("'", "'\"'\"'")
-    exitcode = os.system('svn ci -m \'%s\' %s' %
-                         (description, ' '.join(files)))
+    exitcode = os.system('svn ci -m \'%s\' %s' % (description, ' '.join(files)))
     if exitcode != 0:
       return Error('error submitting changeset')
     self._pending = 0
@@ -465,7 +464,9 @@ class Workspace:
       print '%s (%s)' % (file, name)
     return Result(0)
 
-  def change(self, name):
+  def change(self, name, allow_default=0):
+    if not allow_default and name == 'default':
+      return Error('"default" is reserved; please choose another name.')
     cs = self._sets.get(name, None)
     if cs:
       result = cs.edit()
@@ -518,18 +519,23 @@ class Workspace:
     return cs.describe()
 
   def submit(self, name):
-    cs = self.getChangeset(name)
-    if not cs:
-      result = self.create(name)
+    if not name:
+      name = 'default'
+      result = self.change(name, allow_default=1)
       if not result.ok: return result
-      cs = result.value
+      cs = self.getChangeset(name)
     else:
+      cs = self.getChangeset(name)
+      if not cs:
+        return Error('Unknown changeset "%s"' % name)
       result = self.change(name)
       if not result.ok: return result
     result = cs.submit()
     if result.ok:
       del self._sets[name]
       self.save()
+    elif self._sets.has_key('default'):
+      del self._sets['default']
     return result
 
   def review(self, name,
@@ -609,10 +615,7 @@ class Workspace:
 def run(method, *args, **kw):
   ws = Workspace()
   method = getattr(ws, method)
-  result = method(*args, **kw)
-  if result.ok: return 0
-  print result.error
-  return 1
+  return method(*args, **kw)
 
 
 class Command:
@@ -646,14 +649,15 @@ class Command:
   def _start(self, args):
     opt = self._makeOpt()
     options, args = opt.parse_args(args)
-    self._run(options, args)
+    result = self._run(options, args)
+    if not result.ok:
+      print result.error
 
   def run(command, options):
     handler = Command.Index.get(command, None)
     if handler is None:
-      print 'unknown command "%s"' % command
       app.usage()
-      return 1
+      return Error('unknown command "%s"' % command)
     return handler._start(options)
   run = staticmethod(run)
 
@@ -749,7 +753,7 @@ class Assign(Command):
   def _run(self, options, args):
     if len(args) < 2:
       self.help()
-      return 1
+      return Result(1)
     name = args[0]
     files = args[1:]
     return run('assign', name, files)
@@ -768,7 +772,7 @@ class Change(Command):
   def _run(self, options, args):
     if len(args) != 1:
       self.help()
-      return 1
+      return Result(1)
     name = args[0]
     if options.delete:
       return run('abandon', name)
@@ -797,7 +801,7 @@ class Review(Command):
   def _run(self, options, args):
     if len(args) != 1:
       self.help()
-      return 1
+      return Result(1)
     name = args[0]
     mail = []
     sender = getattr(options, 'from')
@@ -806,15 +810,13 @@ class Review(Command):
       if not sender:
         sender = os.environ.get('SVN_FROM', '')
         if not sender:
-          print 'could not determine your email address; set SVN_FROM or the --from option'
-          return 1
+          return Error('could not determine your email address; set SVN_FROM or the --from option')
     try:
       context = int(options.context)
     except ValueError:
       context = 0
     if context < 1:
-      print 'invalid value (%s) for --context option' % options.context
-      return 1
+      return Error('invalid value (%s) for --context option' % options.context)
     interactive = not options.noedit
     save = options.save
     return run('review', name, mail=mail, save=save, sender=sender, interactive=interactive, context=context)
@@ -828,12 +830,18 @@ class Submit(Command):
                   'usage: %prog submit changeset')
     self._short = 'submit a changeset to the repository'
     self._addKeys('submit')
+    self._addOption('-d', '--default', default=False, action='store_true', help='submit directly from default changeset')
 
   def _run(self, options, args):
-    if len(args) != 1:
+    if len(args) > 1:
       self.help()
-      return 1
-    name = args[0]
+      return Result(1)
+    if not args:
+      name = ''
+      if not options.default:
+        return Error('Must specify "-d" to submit directly from the default changeset')
+    else:
+      name = args[0]
     return run('submit', name)
 
 
@@ -850,7 +858,7 @@ class Abandon(Command):
   def _run(self, options, args):
     if len(args) != 1:
       self.help()
-      return 1
+      return Result(1)
     name = args[0]
     return run('abandon', name)
 
@@ -867,7 +875,7 @@ class Describe(Command):
   def _run(self, options, args):
     if len(args) != 1:
       self.help()
-      return 1
+      return Result(1)
     name = args[0]
     return run('describe', name)
 
@@ -903,12 +911,11 @@ class Help(Command):
       key = args[0]
       command = Command.Index.get(key, None)
       if command is None:
-        print 'unknown subcommand "%s"' % key
-        return 1
+        return Error('unknown subcommand "%s"' % key)
       command.help()
-      return 0
+      return Result(0)
     self.help()
-    return 0
+    return Result(0)
 
   def help(self):
     print __doc__ % {'prog': app.programName()}

@@ -8,6 +8,10 @@
     compatibility before assigning.  Assigning incompatible Ref types
     now throws an exception (SimData).
 
+  * Clean up default ini file a bit.
+
+  * Move trees off of the runway.
+
 2004-08-07: onsight
   * Cleaned up tree images a bit to remove purple pixels.  Converted
     tree0.rgba to png.  Adjusted the aspect ratios slightly.

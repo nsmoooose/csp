@@ -22,7 +22,7 @@
 		</Object>
 		<Object	class="FeatureLayout">
 			<Path name="model">forest</Path>
-			<Float name="x">100</Float>
+			<Float name="x">150</Float>
 			<Float name="y">-200</Float>
 			<Float name="orientation">0</Float>
 		</Object>

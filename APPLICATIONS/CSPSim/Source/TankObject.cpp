@@ -35,10 +35,10 @@ SIMDATA_REGISTER_INTERFACE(TankObject)
 
 TankObject::TankObject(): DynamicObject()
 {
-//	m_iObjectType = TANK_OBJECT_TYPE;
-	m_sObjectName = "TANK";
-	m_bOnGround = true;
+//	m_ObjectType = TANK_OBJECT_TYPE;
+	m_ObjectName = "TANK";
 
+	setGroundFlag(true);
 	movement_state = 1;
 	gun_angle = 45.0f;
 	max_viewing_range = 2000.0;
@@ -56,24 +56,20 @@ TankObject::~TankObject()
 
 void TankObject::initialize()
 {
-	// the controller interface needs to be carefully rethought...
-	//if (m_pController) {
-	//	m_pController->initialize();
+	// FIXME the controller interface needs to be carefully rethought...
+	//if (m_Controller) {
+	//	m_Controller->initialize();
 	//}
 }
 
 
 void TankObject::dump()
 {
-	cout << "ID: " << m_iObjectID
-	     << ", TYPE: " << m_iObjectType
-	     << ", ARMY: " << m_Army
+	cout << "ID: " << m_ObjectID
+	     << ", TYPE: " << m_ObjectType
 	     << ", GLOPOSX: " << m_GlobalPosition.x
 	     << ", GLOPOSY: " << m_GlobalPosition.y
 	     << ", GLOPOSZ: " << m_GlobalPosition.z
-	     << ", DIRX: " << m_Direction.x
-	     << ", DIRY: " << m_Direction.y
-	     << ", DIRZ: " << m_Direction.z
 	     << ", VELX: " << m_LinearVelocity.x
 	     << ", VELY: " << m_LinearVelocity.y
 	     << ", VELZ: " << m_LinearVelocity.z
@@ -90,20 +86,16 @@ void TankObject::doMovement(double dt)
 {
 	DynamicObject::doMovement(dt);
 
+/* FIXME
 	m_Direction.Normalize(); 
 	m_LinearVelocity = m_Speed * m_Direction;
 	m_LocalPosition += dt * m_LinearVelocity;
+*/
 }
 
 unsigned int TankObject::onRender()
 {
-//	updateScene();
 	return 0;
 }
 
-int TankObject::updateScene()
-{
-	DynamicObject::updateScene();
-	return 0;
-}
 

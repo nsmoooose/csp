@@ -41,8 +41,8 @@ public:
 	LogoScreen(int width, int height);
 	virtual ~LogoScreen();
  
-	virtual void OnInit();
-	virtual void OnExit();
+	virtual void onInit();
+	virtual void onExit();
 
 	virtual void onRender();
 	virtual void onUpdate(double dt)  {;  }

@@ -53,7 +53,7 @@ LogoScreen::~LogoScreen()
 {
 }
 
-void LogoScreen::OnInit()
+void LogoScreen::onInit()
 {
 	std::string image_path = g_Config.getPath("Paths", "ImagePath", ".", true);
 	std::string path = simdata::ospath::join(image_path, "CSPLogo.bmp");
@@ -64,7 +64,7 @@ void LogoScreen::OnInit()
 	}
 }
 
-void LogoScreen::OnExit()
+void LogoScreen::onExit()
 {
 	SDL_FreeSurface(m_image);
 }

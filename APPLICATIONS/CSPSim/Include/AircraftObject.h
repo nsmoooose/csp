@@ -82,7 +82,6 @@ public:
 	virtual ~AircraftObject();
 	virtual void dump();
 	
-	virtual int updateScene();
 	virtual unsigned int onRender();
 
 	virtual void initialize();
@@ -96,7 +95,7 @@ public:
 
 	void getStats(std::vector<std::string> &stats);
 
-	void setOrientation(double heading, double pitch, double roll);
+	void setAttitude(double pitch, double roll, double heading);
 
 	void setComplexPhysics(bool flag) { m_ComplexPhysics = flag; }
 

@@ -22,16 +22,21 @@
  *
  **/
 
+
 #include <osg/Geode>
 #include <osgParticle/ParticleSystemUpdater>
 #include <osgParticle/ModularEmitter>
 
 #include <SimData/Quaternion.h>
 
+#include "BaseController.h"
 #include "DynamicObject.h"
 #include "LogStream.h"
 #include "VirtualBattlefield.h"
+#include "VirtualScene.h"
+#include "TerrainObject.h"
 #include "SmokeEffects.h"
+#include "CSPSim.h"
 
 extern double g_LatticeXDist;
 extern double g_LatticeYDist;
@@ -45,8 +50,7 @@ DynamicObject::DynamicObject(): SimObject()
 	m_GroundZ = 0.0;
 	m_GroundN = simdata::Vector3::ZAXIS;
 
-	m_pController = NULL;
-	m_iControllerID = 0;
+	m_Controller = NULL;
 
 	m_Local = true;
 	m_Human = false;
@@ -54,24 +58,17 @@ DynamicObject::DynamicObject(): SimObject()
 	m_PrevPosition = simdata::Vector3::ZERO;
 
 	m_LinearVelocity = simdata::Vector3::ZERO;
-	m_LinearVelocityDirection = simdata::Vector3::YAXIS;
-
 	m_AngularVelocity = simdata::Vector3::ZERO;
 
 	m_Inertia = simdata::Matrix3::IDENTITY;
 	m_InertiaInv = simdata::Matrix3::IDENTITY;
 
-	m_SmokeSegments = NULL;
-	m_SmokeUpdater = NULL;
-	m_SmokeEmitter = NULL;
+	m_SmokeTrails = NULL;
 	m_Smoke = false;
 }
 
 DynamicObject::~DynamicObject()
 {
-	if (m_SmokeSegments) {
-		delete m_SmokeSegments;
-	}
 }
 
 void DynamicObject::pack(simdata::Packer& p) const {
@@ -92,8 +89,8 @@ void DynamicObject::setVelocity(simdata::Vector3 const &velocity)
 	m_LinearVelocity = velocity;
 	m_Speed = m_LinearVelocity.Length();
 
-	CSP_LOG(CSP_APP, CSP_DEBUG, "SimObject::setVelocity - ID: " << m_iObjectID 
-	<< ", Name: " << m_sObjectName << ", Velocity: " << m_LinearVelocity );
+	CSP_LOG(CSP_APP, CSP_DEBUG, "SimObject::setVelocity - ID: " << m_ObjectID 
+	<< ", Name: " << m_ObjectName << ", Velocity: " << m_LinearVelocity );
 }
 
 void DynamicObject::setVelocity(double Vx, double Vy, double Vz)
@@ -101,22 +98,22 @@ void DynamicObject::setVelocity(double Vx, double Vy, double Vz)
 	m_LinearVelocity = simdata::Vector3(Vx, Vy, Vz);
 	m_Speed = m_LinearVelocity.Length();
 
-	CSP_LOG(CSP_APP, CSP_DEBUG, "SimObject::setVelocity - ID: " << m_iObjectID 
-	<<  ", Name: " << m_sObjectName << ", Velocity: " << m_LinearVelocity );
+	CSP_LOG(CSP_APP, CSP_DEBUG, "SimObject::setVelocity - ID: " << m_ObjectID 
+	<<  ", Name: " << m_ObjectName << ", Velocity: " << m_LinearVelocity );
 }
 
 void DynamicObject::updateGroundPosition()
 {
 	float offset;
-	if (m_rpNode.valid()) {
-		osg::BoundingSphere sphere = m_rpNode->getBound();
-		offset = sphere.radius() - sphere.center().z();
+	if (m_Model.valid()) {
+		//offset = m_Model->groundOffset();
+		offset = 0.0;
 	}
 	else {
 		offset = 0.0;
 	}
-	assert(m_Battlefield);
-	m_GlobalPosition.z = m_Battlefield->getElevation(m_GlobalPosition.x, m_GlobalPosition.y) + offset; 
+	m_GlobalPosition.z = CSPSim::theSim->getBattlefield()->getElevation(m_GlobalPosition.x, m_GlobalPosition.y) + offset; 
+	m_GlobalPosition.z = offset;
 	m_LocalPosition.z = m_GlobalPosition.z;
 }
 
@@ -154,23 +151,12 @@ void DynamicObject::updateGlobalPosition()
 	m_GlobalPosition.y = m_LocalPosition.y + m_YLatticePos*g_LatticeYDist;
 	m_GlobalPosition.z = m_LocalPosition.z;
 	// simple testing of smoke trails... improve later
-	if (m_SmokeSegments) {
+	if (m_SmokeTrails.valid()) {
 		simdata::Vector3 motion = m_LocalPosition - m_PrevPosition;
-//		simdata::Vector3 motionBody = simdata::QVRotate(m_qOrientation.Bar(), motion);
-//		osg::Quat q = osg::Quat(m_qOrientation.x, m_qOrientation.y, m_qOrientation.z, m_qOrientation.w);
-		//m_SmokeSegments->update(osg::Vec3(motionBody.x, motionBody.y, motionBody.z), q);
-//		osg::Matrix m, minv;
-	//	m.makeRotate(q);
-	//	minv.makeRotate(q.inverse());
-		m_SmokeSegments->update(motion, m_Orientation, m_OrientationInverse);
+		m_SmokeTrails->update(motion, m_Attitude);
 	}
 }
 
-void DynamicObject::updateOrientation() 
-{
-	m_qOrientation.ToRotationMatrix(m_Orientation);
-	m_qOrientation.Inverse().ToRotationMatrix(m_OrientationInverse);
-}
 
 // move
 void DynamicObject::doMovement(double dt)
@@ -183,8 +169,8 @@ void DynamicObject::doMovement(double dt)
 void DynamicObject::onUpdate(double dt)
 {
 	doMovement(dt);
-	if (m_pController) {
-		m_pController->onUpdate(dt);
+	if (m_Controller) {
+		m_Controller->onUpdate(dt);
 	}
 	postMotion(dt);
 }
@@ -194,14 +180,15 @@ void DynamicObject::postMotion(double dt)
 {
 	updateLocalPosition();
 	updateGlobalPosition();
-	if (m_bOnGround) {
+	if (getGroundFlag()) {
 		updateGroundPosition();
 	} else {
-		assert(m_Battlefield);
-		m_GroundZ = m_Battlefield->getElevation(m_GlobalPosition.x, m_GlobalPosition.y);
+		VirtualBattlefield const *battlefield = CSPSim::theSim->getBattlefield();
+		assert(battlefield);
+		m_GroundZ = battlefield->getElevation(m_GlobalPosition.x, m_GlobalPosition.y);
 		float h1, h2;
-		h1 = m_Battlefield->getElevation(m_GlobalPosition.x+1, m_GlobalPosition.y) - m_GroundZ;
-		h2 = m_Battlefield->getElevation(m_GlobalPosition.x, m_GlobalPosition.y+1) - m_GroundZ;
+		h1 = battlefield->getElevation(m_GlobalPosition.x+1, m_GlobalPosition.y) - m_GroundZ;
+		h2 = battlefield->getElevation(m_GlobalPosition.x, m_GlobalPosition.y+1) - m_GroundZ;
 		m_GroundN = simdata::Vector3(-h1,-h2, 1.0);
 		m_GroundN.Normalize();
 		/*
@@ -212,14 +199,46 @@ void DynamicObject::postMotion(double dt)
 	}
 }
 
+// FIXME move the osg related code out of here!
 bool DynamicObject::AddSmoke()
 {
-	if (!m_Battlefield) return false;
-	if (m_SmokeSegments) return true;
+	if (m_SmokeTrails.valid()) return true;
+	if (!m_SceneModel) return false;
 
-	osg::BoundingSphere s = m_rpNode.get()->getBound();
+	fx::SmokeTrail *trail = new fx::SmokeTrail();
+	trail->setEnabled(false);
+	trail->setTexture("Images/white-smoke.rgb");
+	trail->setColorRange(osg::Vec4(0.9, 0.9, 1.0, 1.0), osg::Vec4(1.0, 1.0, 1.0, 0.5));
+	trail->setSizeRange(0.2, 4.0);
+	trail->setLight(true);
+	trail->setLifeTime(5.5);
+	trail->setExpansion(1.2);
+	trail->setParent(m_SceneModel->getRoot());
+	trail->addOperator(new fx::SmokeThinner);
+
+	// FIXME position should be specified in ObjectModel XML
+	double radius = m_Model->getBoundingSphereRadius();
+	trail->setOffset(simdata::Vector3(0.0, -0.8 * radius, 0.0));
+
+	m_SmokeTrails = new fx::SmokeTrailSystem;
+	m_SmokeTrails->addSmokeTrail(trail);
+
+	m_Smoke = false;
+
+	return true;
+}
+
+#if 0
+// FIXME move the osg related code out of here!
+bool DynamicObject::AddSmoke()
+{
+	if (m_SmokeSegments) return true;
+	if (!m_SceneModel) return false;
+
+	// FIXME position should be specified in ObjectModel XML
+	double radius = m_Model->getBoundingSphereRadius();
 	m_SmokeSegments = new fx::smoke::SmokeSegments;
-	m_SmokeSegments->addSource(simdata::Vector3(0.0, -0.8 * s.radius(), 0.0));
+	m_SmokeSegments->addSource(simdata::Vector3(0.0, -0.8 * radius, 0.0));
 
 	fx::smoke::Trail trail;
 	trail.setTexture("Images/white-smoke.rgb");
@@ -233,20 +252,23 @@ bool DynamicObject::AddSmoke()
 	trail.setLifeTime(5.5);
 	trail.setExpansion(1.2);
 	osgParticle::ParticleSystemUpdater *psu = 0;
-	m_SmokeEmitter = trail.create(m_rpTransform.get(), psu);
+
+	m_SmokeEmitter = trail.create(m_SceneModel->getRoot(), psu);
 	m_SmokeUpdater = psu;
 	m_SmokeEmitter->setEnabled(false);
 	
 	m_SmokeGeode = new osg::Geode;
 	m_SmokeGeode->setName("SmokeParticleSystem");
 	m_SmokeGeode->addDrawable(m_SmokeEmitter->getParticleSystem());
-	m_Battlefield->addNodeToScene(m_SmokeGeode.get());
-	m_rpTransform->addChild(m_SmokeUpdater.get());
+
+	CSPSim::theSim->getScene()->addNodeToScene(m_SmokeGeode.get());
+	m_SceneModel->getRoot()->addChild(m_SmokeUpdater.get());
 
 	m_Smoke = false;
 
 	return true;
 }
+#endif
 
 bool DynamicObject::isSmoke() {
 	return m_Smoke;
@@ -255,7 +277,7 @@ bool DynamicObject::isSmoke() {
 void DynamicObject::DisableSmoke()
 {
 	if (m_Smoke) {
-		m_SmokeEmitter->setEnabled(false);
+		m_SmokeTrails->setEnabled(false);
 		m_Smoke = false;
 	}
 }
@@ -264,7 +286,7 @@ void DynamicObject::EnableSmoke()
 {
 	if (!m_Smoke) {
 		if (!AddSmoke()) return;
-		m_SmokeEmitter->setEnabled(true);
+		m_SmokeTrails->setEnabled(true);
 		m_Smoke = true;
 	}
 }

@@ -17,44 +17,19 @@
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 
-/**
- * @file VirtualBattlefieldScene.h
- *
- **/
-
-#ifndef __VIRTUALBATTLEFIELDSCENE_H__
-#define __VIRTUALBATTLEFIELDSCENE_H__
-
-#include <osg/Node>
-#include <osg/MatrixTransform>
-
-#include <osg/Depth>
-#include <osgDB/FileUtils>
-#include <osgUtil/SceneView>
-
-#include <SimData/Types.h>
-
-#include "TerrainObject.h"
+%{
+#include "VirtualScene.h"
+%}
 
 
-/**
- * class VirtualBattlefieldScene
- *
- * @author unknown
- */
-
-class VirtualBattlefieldScene {
+class VirtualScene
+{
 public:
-	VirtualBattlefieldScene();
-	virtual ~VirtualBattlefieldScene();
+	void addObject(simdata::Pointer<SimObject> object);
+	void removeObject(simdata::Pointer<SimObject> object);
 
-	int buildScene();
-	int drawScene();
-
-	void onUpdate(float dt);
-
-	void addNodeToScene( osg::Node * pNode);
-	void removeNodeFromScene( osg::Node * pNode);
+	void spinTheWorld(bool spin);
+	void resetSpin();
 
 	void setLookAt(simdata::Vector3 & eyePos, simdata::Vector3 & lookPos, simdata::Vector3 & upVec);
 	void getLookAt(simdata::Vector3 & eyePos, simdata::Vector3 & lookPos, simdata::Vector3 & upVec) const;
@@ -66,31 +41,15 @@ public:
 	float getViewDistance() const { return m_ViewDistance; }
 	void setViewDistance(float value);
 
-	void drawPlayerInterface();
-
 	void setCameraNode(osg::Node * pNode);
-	void setActiveTerrain(TerrainObject *pTerrainObject);
 
 	int getTerrainPolygonsRendered();
 
 	float getViewAngle() const { return m_ViewAngle; }
 	void setViewAngle(float);
 
-protected:
-
-	osgUtil::SceneView* m_pView;
-	osg::ref_ptr<osg::Group> m_rpRootNode;
-	osg::ref_ptr<osg::Group> m_rpObjectRootNode;
-	osg::ref_ptr<osg::FrameStamp> m_rpFrameStamp;
-
-	osg::Node * m_pTerrainNode;
-
-	float m_ViewDistance;
-	float m_ViewAngle;
-
-	simdata::Pointer<TerrainObject> m_ActiveTerrainObject;
+	double getSpin();
 
 };
 
-#endif // __VIRTUALBATTLEFIELDSCENE_H__
 

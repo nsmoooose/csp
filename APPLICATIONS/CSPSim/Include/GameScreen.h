@@ -35,18 +35,11 @@
 #include "HID.h"
 #include "ScreenInfoManager.h"
 
+
 class PyConsole;
 class VirtualBattlefield;
+class VirtualBattlefieldScene;
 
-
-/*
-class GameScreenInterface : public VirtualHID
-{
-public:
-	GameScreenInterface();
-protected:
-};
-*/
 
 
 /**
@@ -60,8 +53,8 @@ public:
 	GameScreen();
 	virtual ~GameScreen();
 
-	virtual void OnInit();
-	virtual void OnExit();
+	virtual void onInit();
+	virtual void onExit();
 
 	virtual void onRender();
 	virtual void onUpdate(double dt);
@@ -103,9 +96,7 @@ public:
 	ACTION_INTERFACE(GameScreen, on_ResetSpin);
 	MOTION_INTERFACE(GameScreen, on_MouseView);
 
-	virtual void InitInterface();
-
-	void SetBattlefield(VirtualBattlefield *);
+	virtual void initInterface();
 
 protected:
 	static double const OffsetRate;
@@ -116,15 +107,15 @@ protected:
 	bool m_bInternalView;
 	bool m_bPreviousState;
 
-	void NormalView();
-	void TurnViewAboutX(double dt, double fangleMax = G_PI / 2);
-	void TurnViewAboutZ(double dt, double fangleMax = G_PI);
-	void ScaleView(double dt);
-	simdata::Vector3 GetNewFixedCamPos(SimObject * const target) const;
-	void SetCamera(double dt);
+	void normalView();
+	void turnViewAboutX(double dt, double fangleMax = G_PI / 2);
+	void turnViewAboutZ(double dt, double fangleMax = G_PI);
+	void scaleView(double dt);
+	simdata::Vector3 getNewFixedCamPos(SimObject * const target) const;
+	void setCamera(double dt);
 
 	/**
-	* Text informations
+	* Text information
 	*/
 	osg::ref_ptr<ScreenInfoManager> m_ScreenInfoManager;
 	osg::ref_ptr<osgUtil::SceneView> m_InfoView;
@@ -132,7 +123,6 @@ protected:
 	osg::ref_ptr<PyConsole> m_Console;
 
 	simdata::Pointer<DynamicObject> m_ActiveObject;
-	VirtualBattlefield *m_Battlefield;
 };
 
 #endif // __GAMESCREEN_H__

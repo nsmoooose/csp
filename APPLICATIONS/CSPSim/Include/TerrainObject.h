@@ -25,16 +25,19 @@
 #ifndef __TERRAINOBJECT_H__
 #define __TERRAINOBJECT_H__
 
-#include "Terrain.h"
-#include "DemeterDrawable.h"
-#include "TerrainTextureFactory.h"
 
 #include <SimData/Object.h>
-#include <SimData/Types.h>
+#include <SimData/External.h>
+#include <SimData/Pack.h>
 #include <SimData/InterfaceRegistry.h>
 
+#include <string>
 
-class VirtualBattlefield;
+namespace Demeter {
+	class Terrain;
+	class TerrainLattice;
+	class TerrainTextureFactory;
+}
 
 /**
  * class TerrainObject
@@ -70,7 +73,7 @@ public:
 	TerrainObject();
 	virtual ~TerrainObject();
 
-	void activate(VirtualBattlefield*);
+	void activate();
 	void deactivate();
 	bool isActive();
 	float getElevation(float x, float y) const;
@@ -113,14 +116,9 @@ protected:
 	void load();
 	void unload();
 
-	VirtualBattlefield *m_Battlefield;
-
 	osg::Node* createTerrainNode(Demeter::Terrain* pTerrain);
 	osg::Node* createTerrainLatticeNode(Demeter::TerrainLattice* pTerrainLattice);
 
-	//osg::Node* m_TerrainLatticeNode;
-	//osg::Node* m_TerrainNode;
-	//osg::ref_ptr<osg::Node> m_TerrainLatticeNode;
 	osg::ref_ptr<osg::Node> m_TerrainNode;
 
 	void updateDemeterSettings();
@@ -128,15 +126,11 @@ protected:
 	bool m_Active;
 	bool m_Loaded;
 
-	Demeter::Terrain* m_pTerrain;
+	// XXX check that these should be mutable...it's not clear why they are.
+	mutable osg::ref_ptr<Demeter::Terrain> m_Terrain;
+	mutable osg::ref_ptr<Demeter::TerrainLattice> m_TerrainLattice;
 
-	mutable osg::ref_ptr<Demeter::TerrainLattice> m_pTerrainLattice;
-
-	Demeter::DemeterDrawable* m_pDrawable;
-	Demeter::DemeterLatticeDrawable* m_pLatticeDrawable ;
-
-	Demeter::TerrainTextureFactory * m_pTerrainTextureFactory;
-
+	Demeter::TerrainTextureFactory * m_TerrainTextureFactory;
 };
 
 

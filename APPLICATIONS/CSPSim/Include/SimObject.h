@@ -26,11 +26,6 @@
 #define __SIMOBJECT_H__
 
 
-#include <osg/MatrixTransform>
-#include <osg/Node>
-#include <osg/Switch>
-#include <osgParticle/SegmentPlacer>
-
 #include "ObjectModel.h"
 
 #include <SimData/Object.h>
@@ -38,21 +33,31 @@
 #include <SimData/InterfaceRegistry.h>
 
 
+
 /**
  * class SimObject - Base class for all objects in the simulation.
  *
  */
-class VirtualBattlefield;
-
 class SimObject: public simdata::Object
 {
+	enum { F_DELETE    = 0x0001,
+	       F_FREEZE    = 0x0002,
+	       F_GROUND    = 0x0004,
+	     };
+
+	void setFlags(int flag, bool on) {
+		if (on) m_Flags |= flag; else m_Flags &= ~flag;
+	}
+
+	int getFlags(int flags) const {
+		return m_Flags & flags;
+	}
+
 public:
 
 	BEGIN_SIMDATA_XML_VIRTUAL_INTERFACE(SimObject)
 		SIMDATA_XML("model", SimObject::m_Model, true)
-		SIMDATA_XML("army", SimObject::m_Army, true)
 	END_SIMDATA_XML_INTERFACE
-
 
 	SimObject();
 	virtual ~SimObject();
@@ -64,100 +69,75 @@ public:
 	virtual void initialize() = 0;
 	virtual unsigned int onRender() = 0;
 
-	unsigned int getObjectID() const { return m_iObjectID; }
-	unsigned int getObjectType() const { return m_iObjectType; }
+	unsigned int getObjectID() const { return m_ObjectID; }
+	unsigned int getObjectType() const { return m_ObjectType; }
 	
-	void setFreezeState(bool flag) { m_bFreezeFlag = flag; }
-	bool getFreezeState() const { return m_bFreezeFlag; }
+	void setFreezeFlag(bool flag) { setFlags(F_FREEZE, flag); }
+	bool getFreezeFlag() const { return getFlags(F_FREEZE); }
 
-	void setDeleteFlag(bool flag) { m_bDeleteFlag = flag; }
-	bool getDeleteFlag() const { return m_bDeleteFlag; }
+	void setDeleteFlag(bool flag) { setFlags(F_DELETE, flag); }
+	bool getDeleteFlag() const { return getFlags(F_DELETE); }
 
-	virtual void getStats(std::vector<std::string> &stats) {}
+	void setGroundFlag(bool flag) { setFlags(F_GROUND, flag); }
+	bool getGroundFlag() const { return getFlags(F_GROUND); }
 
-	// bind the osg model
-	osg::Node *getNode();
-	void setCullingActive(bool flag);
-	
-	void initModel();
-	void addToScene(VirtualBattlefield *);
-	void removeFromScene();
-	virtual int updateScene();
+	virtual simdata::Vector3 getViewPoint() const;
 
-	void ShowRepresentant(unsigned short const p_usflag);
+	virtual void getStats(std::vector<std::string> &stats) const {}
+
+	// model and scene related functions
+	SceneModel * getSceneModel() { return m_SceneModel; }
+	simdata::Pointer<ObjectModel> getModel() const { return m_Model; }
+	virtual void createSceneModel();
+	virtual void destroySceneModel();
+	osg::Node* getOrCreateModelNode();
+	osg::Node* getModelNode();
+	virtual void showModel() { if (m_SceneModel) m_SceneModel->show(); }
+	virtual void hideModel() { if (m_SceneModel) m_SceneModel->hide(); }
+	void updateTransform() { 
+		if (m_SceneModel) m_SceneModel->setPositionAttitude(m_LocalPosition, m_Attitude); 
+	}
 
 	// position accessor methods
 	simdata::Vector3 const & getLocalPosition() const { return m_LocalPosition; }
 	simdata::Vector3 const & getGlobalPosition() const { return m_GlobalPosition; }
 	void getLatticePosition(int & x, int & y) const;
 
-	// These are "incomplete" position updates which (probably) should never
-	// be done (especially as public methods).
-	// ---------------------------------------------------------------------
-	//void setLocalPosition(simdata::Vector3 const & position);
-	//void setLocalPosition(double x, double y, double z);
-	//void setLatticePosition(int x, int y);
-	
 	void setGlobalPosition(simdata::Vector3 const & position);
 	void setGlobalPosition(double x, double y, double z);
 
-	simdata::Matrix3 & getOrientation() { return m_Orientation; }
-	simdata::Matrix3 const & getOrientation() const { return m_Orientation; }
-	simdata::Quaternion & getOrientationQ() { return m_qOrientation; }
-	simdata::Quaternion const & getOrientationQ() const { return m_qOrientation; }
-	void setOrientation(simdata::Matrix3 const & mOrientation);
-	void setOrientation(simdata::Quaternion const & qOrientation);
+	simdata::Quaternion & getAttitude() { return m_Attitude; }
+	void setAttitude(simdata::Quaternion const & attitude);
 
-	void setArmy(int army) { m_Army = army; }
-	int getArmy() const { return m_Army; }
+	// The object name holds an identifier string for in-game display.  It is not 
+	// intended for unique object identification. (e.g. "Callsign", Cowboy11, T-62)
+	void setObjectName(const std::string name) { m_ObjectName = name; }
+	std::string getObjectName() const { return m_ObjectName; }
 
-	double getBoundingSphereRadius() const { if (m_Model.isNull()) return 0.0; return m_Model->getBoundingSphereRadius(); }
-
-	void setObjectName(const std::string name) { m_sObjectName = name; }
-	std::string getObjectName() const { return m_sObjectName; }
-
-	simdata::Vector3 const & getDirection() const { return m_Direction; }
-	simdata::Vector3 const & getUpDirection() const { return m_NormalDirection; }
+	simdata::Vector3 getDirection() const;
+	simdata::Vector3 getUpDirection() const;
 	
 protected:
-
-	int m_Army;
-	simdata::Pointer<ObjectModel> m_Model;
 
 	virtual void pack(simdata::Packer& p) const;
 	virtual void unpack(simdata::UnPacker& p);
 
-	simdata::Matrix3 m_Orientation;
-	simdata::Matrix3 m_OrientationInverse;
-	simdata::Quaternion m_qOrientation;
+	simdata::Pointer<ObjectModel> m_Model;
+	SceneModel *m_SceneModel;
 
-	simdata::Vector3 m_Direction;
-	simdata::Vector3 m_NormalDirection;
+	simdata::Quaternion m_Attitude;
 
 	simdata::Vector3 m_GlobalPosition;
 	simdata::Vector3 m_LocalPosition;
 	int m_XLatticePos;
 	int m_YLatticePos;
 
-	VirtualBattlefield *m_Battlefield;
+	unsigned int m_ObjectID;
+	unsigned int m_ObjectType;
 
-	osg::ref_ptr<osg::Node> m_rpNode;
-	osg::ref_ptr<osg::MatrixTransform> m_rpTransform;
-	osg::ref_ptr<osg::Switch> m_rpSwitch;
+	unsigned int m_Flags;
 
-	unsigned int m_iObjectID;
-	unsigned int m_iObjectType;
-
-	bool m_bDeleteFlag;
-	bool m_bFreezeFlag;
-	bool m_bOnGround;
-	bool m_ModelInit;
-
-	// The object name holds an identifier string for
-	// in-game display.  It is not intended for unique
-	// object identification.
-	// e.g. "Callsign", Cowboy11, Static
-	std::string m_sObjectName;
+	std::string m_ObjectName;
 };
 
 

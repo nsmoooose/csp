@@ -19,8 +19,6 @@
 	<Float name="rudder_min">-25.0</Float>
 	<Float name="rudder_max">25.0</Float>
 
-	<Int name="army">0</Int>
-	
 	<!-- Mass/Inertial properties -->
 	<!--
 		<Float name="mass">7500.0</Float>

@@ -8,10 +8,11 @@
 	<Vector name="axis_1">0 1 0</Vector>
 	<Matrix name="rotation">1 0 0 0 1 0 0 0 1</Matrix>
 	<Float name="scale">1.0</Float>
+	<Vector name="view_point">0.0 4.5 0.65</Vector>
 	<List name="contacts">
-		<Vector>0.0 3.3 -2.0</Vector>
-		<Vector>-1.4 -0.7 -2.0</Vector>
-		<Vector>1.4 -0.7 -2.0</Vector>
+		<Vector>0.0 4.75 -2.0</Vector>
+		<Vector>-1.75 -0.7 -2.0</Vector>
+		<Vector>1.75 -0.7 -2.0</Vector>
 		<Vector>0.0 8.55 -0.4</Vector>
 		<Vector>0.0 5.0 0.9</Vector>
 		<Vector>4.7 -3.0 -0.53</Vector>
@@ -21,6 +22,8 @@
 		<Vector>0.0 -5.1 3.2</Vector>
 		<Vector>0.0 7.1 -0.67</Vector>
 		<Vector>0.0 0.0 -0.75</Vector>
+		<!-- view point -->
+		<Vector>0.0 4.5 0.65</Vector>
 	</List>
 </Object>
 

@@ -120,7 +120,7 @@ public:
 		SIMDATA_XML("gear_set", LandingGearSet::m_Gear, true)
 	END_SIMDATA_XML_INTERFACE
 
-	LandingGearSet() { m_WOW = false; }
+	LandingGearSet() { m_WOW = false; m_Extended = true; }
 
 	void doComplexPhysics(simdata::Quaternion const &orientation, 
 			 simdata::Vector3 const &velocity, 

@@ -19,6 +19,7 @@
 
 %{
 #include "CSPSim.h"
+#include <SimData/Math.h>
 %}
 
 
@@ -47,7 +48,19 @@ public:
 	void runConsole(PyConsole *console);
 	void endConsole();
 	bool isPaused() { return m_Paused; }
-	simdata::DataArchive * getDataArchive() { return m_DataArchive; }
+	simdata::DataManager & getDataManager() { return m_DataManager; }
 };
 
 
+%extend CSPSim {
+	void createVehicle(const char *path, simdata::Vector3 position, 
+	                   simdata::Vector3 velocity, simdata::Vector3 attitude) {
+		simdata::Pointer<DynamicObject> obj = self->getDataManager().getObject(path);
+		obj->setGlobalPosition(position);
+		obj->setVelocity(velocity);
+		simdata::Quaternion q_attitude;
+		q_attitude = simdata::Quaternion::MakeQFromEulerAngles(attitude.x, attitude.y, attitude.z);
+		obj->setAttitude(q_attitude);
+		self->getBattlefield()->addObject(obj);
+	}
+}

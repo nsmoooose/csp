@@ -63,6 +63,7 @@ Console::Console(const Console &copy, const osg::CopyOp &copyop)
 :	osg::Drawable(copy, copyop),
 	text_(static_cast<osgText::Text *>(copyop(copy.text_.get()))),
 	token_(static_cast<osgText::Text *>(copyop(copy.token_.get()))),
+	buffer_(copy.buffer_),
 	tab_size_(copy.tab_size_),
 	left_(copy.left_),
 	bottom_(copy.bottom_),
@@ -73,7 +74,6 @@ Console::Console(const Console &copy, const osg::CopyOp &copyop)
 	cursor_char_(copy.cursor_char_),
 	cursor_pos_(copy.cursor_pos_),
 	cursor_x_(copy.cursor_x_),
-	buffer_(copy.buffer_),
 	buf_lines_(copy.buf_lines_)
 
 {

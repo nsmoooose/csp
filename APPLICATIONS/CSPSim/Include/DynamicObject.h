@@ -37,9 +37,7 @@ namespace osgParticle {
 	class ParticleSystemUpdater;
 	class ModularEmitter;
 }
-//#include <osg/Geode>
-//#include <osgParticle/ParticleSystemUpdater>
-//#include <osgParticle/ModularEmitter>
+
 
 /**
  * class DynamicObject - Base class for all mobile objects in the simulation.
@@ -56,11 +54,9 @@ public:
 	DynamicObject();
 	virtual ~DynamicObject();
 
-	void setController(BaseController * pController) { 
-		m_pController = pController;
-		m_iControllerID = pController->controller_id;
+	void setController(BaseController * Controller) { 
+		m_Controller = Controller;
 	}
-	unsigned int getControllerID() const { return m_iControllerID; }
 
 	void setVelocity(simdata::Vector3 const & velocity);
 	void setVelocity(double Vx, double Vy, double Vz);
@@ -94,15 +90,11 @@ protected:
 	virtual void doMovement(double dt);
 	virtual void postMotion(double dt);
 
-	BaseController * m_pController;
-	unsigned int m_iControllerID;
+	BaseController * m_Controller;
 	
+	// FIXME... remove scene graph related code to auxillary class!
 	bool m_Smoke;
-	fx::smoke::SmokeSegments *m_SmokeSegments;
-	osg::ref_ptr<osg::Geode> m_SmokeGeode;
-	osg::ref_ptr<osgParticle::ParticleSystemUpdater> m_SmokeUpdater;
-	osg::ref_ptr<osgParticle::ModularEmitter> m_SmokeEmitter;
-
+	osg::ref_ptr<fx::SmokeTrailSystem> m_SmokeTrails;
 
 	// dynamic properties
 	
@@ -123,7 +115,6 @@ protected:
 
 	simdata::Vector3 m_AngularVelocity;
 	simdata::Vector3 m_LinearVelocity;
-	simdata::Vector3 m_LinearVelocityDirection;
 };
 
 

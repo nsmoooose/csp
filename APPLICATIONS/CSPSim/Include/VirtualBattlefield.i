@@ -44,37 +44,15 @@ public:
 	unsigned int getNewObjectID() { return ++latest_object_id; }
 	VirtualBattlefield::ObjectList getObjectList() { return objectList; }
 	
-	void addNodeToScene( osg::Node * pNode);
-	void removeNodeFromScene( osg::Node * pNode);
-
-	void spinTheWorld(bool spin);
-	void resetSpin();
-
-	void setLookAt(simdata::Vector3 & eyePos, simdata::Vector3 & lookPos, simdata::Vector3 & upVec);
-	void getLookAt(simdata::Vector3 & eyePos, simdata::Vector3 & lookPos, simdata::Vector3 & upVec) const;
-	void setWireframeMode(bool flag);
-	void setFogMode(bool flag);
-	void setFogStart(float value);
-	void setFogEnd(float value);
-
-	float getViewDistance() const { return m_ViewDistance; }
-	void setViewDistance(float value);
-
 	float getElevation(float x,float y) const;
 	void getNormal(float x, float y, float & normalX, float & normalY, float & normalZ) const;
 
-	void drawCockpit();
+	void setTerrain(simdata::Pointer<TerrainObject>);
+	simdata::Pointer<TerrainObject> getTerrain() const { return m_Terrain; }
 
-	void setCameraNode(osg::Node * pNode);
-	void setActiveTerrain(TerrainObject *pTerrainObject);
+	void setScene(simdata::Pointer<VirtualScene>);
+	simdata::Pointer<VirtualScene> getScene() const { return m_Scene; }
 
-	int getTerrainPolygonsRendered();
-
-	float getViewAngle() const { return m_ViewAngle; }
-	void setViewAngle(float);
-
-	double getSpin();
 };
-
 
 

@@ -68,7 +68,6 @@ LandingGear::LandingGear() {
 	m_Compression = 0.0;
 	m_CompressionLimit = 0.0;
 	m_WOW = false;
-	m_Extended = true;
 	m_Touchdown = false;
 	m_Skidding = 0.0;
 	m_Brake = 0.0;

@@ -1,6 +1,6 @@
 #!/usr/bin/python -O
 
-import sys, os.path
+import sys, os, os.path
 
 #import Shell
 #from SimData.Compile import Compiler, CompilerUsageError
@@ -9,6 +9,11 @@ import sys, os.path
 if hasattr(sys, "setdlopenflags"):
 	sys.setdlopenflags(0x101)
 	
+# is the SDL joystick environment variable isn't set, try a standard value
+if not os.environ.has_key("SDL_JOYSTICK_DEVICE"):
+	# try a reasonable default for linux
+	if os.path.exists("/dev/input/js0"):
+		os.environ["SDL_JOYSTICK_DEVICE"]="/dev/input/js0"
 
 def printUsage():
 	print "Combat Simulator Project - CSPSim"
@@ -35,6 +40,15 @@ def runCSPSim(args):
 	import Shell
 	app = CSP.CSPSim()
 	app.init()
+
+	try:
+		import TestObjects
+		TestObjects.create(app)
+	except ImportError:
+		pass
+	except Exception, e:
+		print "Error in TestObjects.py:", e
+
 	app.setShell(Shell.Shell())
 	app.run()
 	app.cleanup()

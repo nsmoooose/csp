@@ -47,8 +47,8 @@ public:
 	BaseScreen();
 	virtual ~BaseScreen();
 
-	virtual void OnInit() = 0;
-	virtual void OnExit() = 0;
+	virtual void onInit() = 0;
+	virtual void onExit() = 0;
 
 	virtual void onUpdate(double dt) = 0;
 	virtual void onRender() = 0;
@@ -57,21 +57,6 @@ public:
 
 protected:
 	VirtualHID *m_Interface;
-
-	// Input Routines, are not required. If the are not overloaded then
-	// a dummy routine will be called here.
-	/*
-	virtual bool OnKeyDown(char *key) { return false; }
-	virtual bool OnKeyDown(SDLKey key) {return false; }
-	virtual void OnKeyUp(char * key) { ; }
-	virtual bool OnKeyUp(SDLKey key) { return false; }
-	virtual void OnMouseMove(int x, int y) {; }
-	virtual void OnMouseButtonDown(int num, int x, int y) {; }
-	virtual void OnJoystickAxisMotion(int joynum, int axis, int val) {; }
-	virtual void OnJoystickHatMotion(int joynum, int hat, int val) {; }
-	virtual void OnJoystickButtonDown(int joynum, int butnum) {; }
-	*/
-
 };
 
 #endif // __BASESCREEN_H__

@@ -32,6 +32,7 @@
 #include "EventMapIndex.h"
 #include "LogStream.h"
 #include "VirtualBattlefield.h"
+#include "VirtualScene.h"
 #include "CSPSim.h"
 #include "ConsoleCommands.h"
 
@@ -40,7 +41,7 @@ double const GameScreen::OffsetRate =  30.0 * (G_PI / 180.0); // x deg / s, even
 
 simdata::Vector3 m_normalDirection;  
 
-void GameScreen::NormalView()
+void GameScreen::normalView()
 {
 	m_fangleRotX = 0.0;
 	m_fangleRotZ = 0.0;
@@ -51,7 +52,7 @@ void GameScreen::NormalView()
 }
 
 
-void GameScreen::InitInterface()
+void GameScreen::initInterface()
 {
 	assert(!m_Interface);
 	m_Interface = new VirtualHID(); //GameScreenInterface();
@@ -104,14 +105,10 @@ void GameScreen::InitInterface()
 }
 
 
-void GameScreen::SetBattlefield(VirtualBattlefield *battlefield)
-{
-	m_Battlefield = battlefield;
-}
 
-void GameScreen::TurnViewAboutZ(double dt, double fangleMax)
+void GameScreen::turnViewAboutZ(double dt, double fangleMax)
 {
-	CSP_LOG( CSP_APP , CSP_DEBUG, "TurnViewAboutZ: 	m_fangleViewZ = " << m_fangleRotZ 
+	CSP_LOG( CSP_APP , CSP_DEBUG, "turnViewAboutZ: 	m_fangleViewZ = " << m_fangleRotZ 
 		<< "; m_PanRateZ = " << m_PanRateZ);
 	
 	m_fangleRotZ += m_PanRateZ * dt;
@@ -127,9 +124,9 @@ void GameScreen::TurnViewAboutZ(double dt, double fangleMax)
 			m_fangleRotZ = - fangleMax;*/
 }
 
-void GameScreen::TurnViewAboutX(double dt, double fangleMax)
+void GameScreen::turnViewAboutX(double dt, double fangleMax)
 {
-	CSP_LOG( CSP_APP , CSP_DEBUG, "TurnViewAboutX: 	m_fangleViewX = " << m_fangleRotX 
+	CSP_LOG( CSP_APP , CSP_DEBUG, "turnViewAboutX: 	m_fangleViewX = " << m_fangleRotX 
 		     << "; m_PanRateX = " << m_PanRateX);
 
 	m_fangleRotX += m_PanRateX * dt;
@@ -139,7 +136,7 @@ void GameScreen::TurnViewAboutX(double dt, double fangleMax)
 		m_fangleRotX = - fangleMax;*/
 }
 
-void GameScreen::ScaleView(double dt)
+void GameScreen::scaleView(double dt)
 {
 	double ScaleFactor = 1.0 + m_ZoomRate * dt;
 	if ( (m_fdisToObject > 2.0 && ScaleFactor < 1.0) ||
@@ -156,21 +153,21 @@ void GameScreen::ScaleView(double dt)
 
 GameScreen::GameScreen(): BaseScreen() {
 	m_ActiveObject = NULL;
-	InitInterface();
+	initInterface();
 }
 	
 GameScreen::~GameScreen() {
 	if (m_Interface) delete m_Interface;
 }
 
-void GameScreen::OnInit()
+void GameScreen::onInit()
 {
 	m_iViewMode = 1;
 	m_bInternalView = true;
 	m_bPreviousState = false;
-	NormalView();
+	normalView();
 	if (m_ActiveObject.valid()) {
-		m_ActiveObject->ShowRepresentant(1);
+		m_ActiveObject->showModel();
 	}
 
 	// add a layer for texts on screen
@@ -198,7 +195,7 @@ void GameScreen::OnInit()
 	m_InfoView->setSceneData(m_InfoGroup.get());
 }
 
-void GameScreen::OnExit()
+void GameScreen::onExit()
 {
 
 }
@@ -228,30 +225,31 @@ void GameScreen::onRender()
 			{
 				// Hide the object if internal view
 				// Draw the hud if internal view
-				m_ActiveObject->ShowRepresentant(1);	
+				//m_ActiveObject->hideModel();
 			}
 			else
 			{
-				m_ActiveObject->ShowRepresentant(0);
+				m_ActiveObject->showModel();
 			}
 			m_bPreviousState = m_bInternalView;
 		}
 	}
 	// Draw the whole scene
-	if (m_Battlefield) {
-		m_Battlefield->drawScene();
+	VirtualScene *scene = CSPSim::theSim->getScene();
+	if (scene) {
+		scene->drawScene();
 	}
-	 m_InfoView->cull();
-	 m_InfoView->draw();
+	m_InfoView->cull();
+	m_InfoView->draw();
 }
 
 void GameScreen::onUpdate(double dt)
 {	
-	SetCamera(dt);
+	setCamera(dt);
 	m_InfoView->update();
 }
 
-simdata::Vector3 GameScreen::GetNewFixedCamPos(SimObject * const target) const
+simdata::Vector3 GameScreen::getNewFixedCamPos(SimObject * const target) const
 {
 	simdata::Vector3 camPos;
 	simdata::Vector3 objectPos = target->getGlobalPosition();
@@ -264,9 +262,10 @@ simdata::Vector3 GameScreen::GetNewFixedCamPos(SimObject * const target) const
 	} else {
 		camPos = objectPos + 100.0 * simdata::Vector3::ZAXIS + 100.0 * simdata::Vector3::XAXIS;
 	}
-	float h = 0;
-	if (m_Battlefield) {
-		h = m_Battlefield->getElevation(objectPos.x, objectPos.y);
+	float h = 0.0;
+	VirtualBattlefield *battlefield = CSPSim::theSim->getBattlefield();
+	if (battlefield) {
+		h = battlefield->getElevation(objectPos.x, objectPos.y);
 	}
 	if ( camPos.z < h ) camPos.z = h;
 	return camPos;
@@ -275,14 +274,14 @@ simdata::Vector3 GameScreen::GetNewFixedCamPos(SimObject * const target) const
 void GameScreen::on_View1()
 {
 	m_iViewMode = 1;
-	NormalView();
+	normalView();
 	m_bInternalView = true;
 }
 
 void GameScreen::on_View2()
 {
 	m_iViewMode = 2;
-	NormalView();
+	normalView();
 	m_bInternalView = false;
 }
 
@@ -324,7 +323,7 @@ void GameScreen::on_View8()
 {
 	if (m_ActiveObject.valid()) {
 		m_iViewMode = 8;
-		m_fixedCamPos = GetNewFixedCamPos(m_ActiveObject.get());
+		m_fixedCamPos = getNewFixedCamPos(m_ActiveObject.get());
 		m_bInternalView = false;
 	}
 }
@@ -363,7 +362,8 @@ void GameScreen::on_Console()
 void GameScreen::on_ChangeVehicle()
 {
 	simdata::Pointer<DynamicObject> object;
-	object = m_Battlefield->getNextObject(m_ActiveObject, -1, -1, -1);
+	VirtualBattlefield *battlefield = CSPSim::theSim->getBattlefield();
+	object = battlefield->getNextObject(m_ActiveObject, -1, -1, -1);
 	if (object.valid()) CSPSim::theSim->setActiveObject(object);
 }
 
@@ -447,33 +447,48 @@ void GameScreen::on_ViewZoomStepOut()
 
 void GameScreen::on_ViewFovStepDec() 
 {
-	float fov = m_Battlefield->getViewAngle() * 0.8;
-	if (fov > 10.0) {
-		m_Battlefield->setViewAngle(fov);
+	VirtualScene *scene = CSPSim::theSim->getScene();
+	if (scene) {
+		float fov = scene->getViewAngle() * 0.8;
+		if (fov > 10.0) {
+			scene->setViewAngle(fov);
+		}
 	}
 }
 
 void GameScreen::on_ViewFovStepInc()
 {
-	float fov = m_Battlefield->getViewAngle() * 1.20;
-	if (fov < 90.0) {
-		m_Battlefield->setViewAngle(fov);
+	VirtualScene *scene = CSPSim::theSim->getScene();
+	if (scene) {
+		float fov = scene->getViewAngle() * 1.20;
+		if (fov < 90.0) {
+			scene->setViewAngle(fov);
+		}
 	}
 }
 
 void GameScreen::on_SpinTheWorld()
 {
-	m_Battlefield->spinTheWorld(true);
+	VirtualScene *scene = CSPSim::theSim->getScene();
+	if (scene) {
+		scene->spinTheWorld(true);
+	}
 }
 
 void GameScreen::on_SpinTheWorldStop()
 {
-	m_Battlefield->spinTheWorld(false);
+	VirtualScene *scene = CSPSim::theSim->getScene();
+	if (scene) {
+		scene->spinTheWorld(false);
+	}
 }
 
 void GameScreen::on_ResetSpin()
 {
-	m_Battlefield->resetSpin();
+	VirtualScene *scene = CSPSim::theSim->getScene();
+	if (scene) {
+		scene->resetSpin();
+	}
 }
 
 void GameScreen::on_MouseView(int x, int y, int dx, int dy)
@@ -487,7 +502,7 @@ void GameScreen::on_MouseView(int x, int y, int dx, int dy)
 
 // TODO All references to planes should be made generic!
 
-void GameScreen::SetCamera(double dt)
+void GameScreen::setCamera(double dt)
 {	
 	simdata::Vector3 eyePos;
 	simdata::Vector3 lookPos;
@@ -496,8 +511,8 @@ void GameScreen::SetCamera(double dt)
 	if (!m_ActiveObject) {
 		// temporary view if there are no active objects... probably
 		// should switch to an "action" view mode in this case.
-		TurnViewAboutX(dt);
-		TurnViewAboutZ(dt);
+		turnViewAboutX(dt);
+		turnViewAboutZ(dt);
 		eyePos = simdata::Vector3(483000.0, 499000.0, 2000.0);
 		//lookPos = simdata::Vector3(483000.0, 499005.0, 2000.0);
 		upVec = simdata::Vector3::ZAXIS;
@@ -507,14 +522,14 @@ void GameScreen::SetCamera(double dt)
 		simdata::Matrix3 R;
 		R = RotX * RotZ;
 		lookPos = RotX * RotZ * simdata::Vector3::YAXIS + eyePos;
-		CSP_LOG( CSP_APP , CSP_DEBUG, "SetCamera: " << R.asString() << " : " << (simdata::Vector3::XAXIS).asString());
+		CSP_LOG( CSP_APP , CSP_DEBUG, "setCamera: " << R.asString() << " : " << (simdata::Vector3::XAXIS).asString());
 	}
 	else switch ( m_iViewMode )
 	{
 	case 1: // view_mode one is normal inside the cockpit view
 	{
-		TurnViewAboutX(dt,M_PI / 3);
-		TurnViewAboutZ(dt,M_PI / 3);
+		turnViewAboutX(dt,M_PI / 3);
+		turnViewAboutZ(dt,M_PI / 3);
 		simdata::Vector3 planePos = m_ActiveObject->getGlobalPosition();
 		simdata::Vector3 planeDir = m_ActiveObject->getDirection();
 		simdata::Vector3 planeUp = m_ActiveObject->getUpDirection();
@@ -523,15 +538,16 @@ void GameScreen::SetCamera(double dt)
 		RotZ.FromAxisAngle(planeUp,  - m_fangleRotZ);
 		RotX.FromAxisAngle(RotZ * planeRight, - m_fangleRotX);
 		eyePos = planePos;
+		eyePos += m_ActiveObject->getViewPoint();
 		lookPos = 50.0 * RotX * RotZ * planeDir + eyePos;
 		upVec = planeUp;
 		break;
 	}
 	case 2: // view mode two is external view; normal view is behind the plane
 	{ 	
-		TurnViewAboutX(dt);
-		TurnViewAboutZ(dt);
-		ScaleView(dt);
+		turnViewAboutX(dt);
+		turnViewAboutZ(dt);
+		scaleView(dt);
 		simdata::Vector3 planePos = m_ActiveObject->getGlobalPosition();
 		simdata::Vector3 planeDir = m_ActiveObject->getDirection();
 		simdata::Vector3 planeUp = m_ActiveObject->getUpDirection();
@@ -548,9 +564,9 @@ void GameScreen::SetCamera(double dt)
 	}
 	case 3: // view mode three is external fixed view around the plane
 	{
-		TurnViewAboutX(dt);
-		TurnViewAboutZ(dt);
-		ScaleView(dt);
+		turnViewAboutX(dt);
+		turnViewAboutZ(dt);
+		scaleView(dt);
 		simdata::Vector3 planePos = m_ActiveObject->getGlobalPosition();
 		simdata::Matrix3 RotZ, RotX;
 		RotZ.FromAxisAngle(simdata::Vector3::ZAXIS,  m_fangleRotZ);
@@ -586,13 +602,14 @@ void GameScreen::SetCamera(double dt)
 	case 8: // view mode 8 is a fly by view 
 		lookPos = m_ActiveObject->getGlobalPosition();
 		if ((lookPos - m_fixedCamPos).Length() > 900.0 )
-			m_fixedCamPos = GetNewFixedCamPos(m_ActiveObject.get());
+			m_fixedCamPos = getNewFixedCamPos(m_ActiveObject.get());
 		eyePos = m_fixedCamPos;
 		upVec = simdata::Vector3::ZAXIS;
 		break;
 	}    
-	if (m_Battlefield) {	
-		m_Battlefield->setLookAt(eyePos, lookPos, upVec);
+	VirtualScene *scene = CSPSim::theSim->getScene();
+	if (scene) {	
+		scene->setLookAt(eyePos, lookPos, upVec);
 	}
 }
 

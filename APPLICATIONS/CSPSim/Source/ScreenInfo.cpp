@@ -27,9 +27,14 @@
 #include "CSPSim.h"
 #include "ScreenInfo.h"
 #include "VirtualBattlefield.h"
+#include "VirtualScene.h"
 
 using std::max;
 using std::min;
+using std::setprecision;
+using std::setw;
+using std::fixed;
+using std::setfill;
 
 class UpdateCallback : public osg::NodeCallback
 {
@@ -79,7 +84,7 @@ void Framerate::update()
 	m_Text->setText(osstr.str());
 
 	simdata::SimDate artificial_time = CSPSim::theSim->getCurrentTime();
-	artificial_time.addTime(CSPSim::theSim->getBattlefield()->getSpin());
+	artificial_time.addTime(CSPSim::theSim->getScene()->getSpin());
 	m_Date->setText("Date: " + artificial_time.asString());
 }
 
@@ -108,7 +113,7 @@ void GeneralStats::update()
 	unsigned short const precision = 2;
 
   	std::ostringstream osstr;
-	osstr << "Terrain Polygons: " << CSPSim::theSim->getBattlefield()->getTerrainPolygonsRendered();
+	osstr << "Terrain Polygons: " << CSPSim::theSim->getScene()->getTerrainPolygonsRendered();
 	m_Text->setText(osstr.str());
 
 	simdata::Pointer<DynamicObject const> const activeObject = CSPSim::theSim->getActiveObject();

@@ -26,27 +26,23 @@
 #define __VIRTUALBATTLEFIELD_H__
 
 #include <list>
+#include <string>
 
-#include <osgUtil/SceneView>
+#include <SimData/Object.h>
+#include <SimData/Path.h>
 
-#include "BaseController.h"
-#include "DynamicObject.h"
-#include "TerrainObject.h"
-
-
-
-class Sky;
-
-const int MAX_NUM_VISIBLE_TRIANGLES = 30000; // Chosen based on the expected number of triangles that will be visible on-screen at any one time (the terrain mesh will typically have far more triangles than are seen at one time, especially with dynamic tessellation)
-
+class BaseController;
+class TerrainObject;
+class VirtualScene;
 class DynamicObject;
+
 
 /**
  * class VirtualBattlefield
  *
  * @author unknown
  */
-class VirtualBattlefield
+class VirtualBattlefield: public simdata::Object
 {
 public:
 	typedef std::list< simdata::Pointer<DynamicObject> > ObjectList;
@@ -55,16 +51,13 @@ public:
 	virtual ~VirtualBattlefield();
 
 	int create();
-	void Cleanup();
-
-	int buildScene();
-	int drawScene();
+	void cleanup();
 
 	void addObject(simdata::Pointer<DynamicObject> object);
 	void onUpdate(float dt);
 
-	simdata::Pointer<DynamicObject> getObjectFromID( unsigned int ID);
-	simdata::Pointer<DynamicObject> getObjectFromName( std::string name );
+	simdata::Pointer<DynamicObject> getObjectFromID(unsigned int ID);
+	simdata::Pointer<DynamicObject> getObjectFromName(std::string name);
 	BaseController* getControllerFromID(unsigned int ID);
 	void removeObjectWithID( unsigned int ID);
 	void removeObjectsMarkedForDelete();
@@ -75,75 +68,32 @@ public:
 	void initializeAllObjects();
 	simdata::Pointer<DynamicObject> getNextObject(simdata::Pointer<DynamicObject> object, int human, int local, int category);
 
-	//void getObjectsInRange(SimObject * fromObject, float range, float view_angle, int army, std::list<ObjectRangeInfo*> & rangeList  );
 	void addController(BaseController * controller);
 	unsigned int getNewObjectID() { return ++latest_object_id; }
 	ObjectList getObjectList() { return objectList; }
 	
 	//bool doSphereTest(SimObject * pObj1, SimObject * pObj2);
 	//void getObjectDistance(SimObject * fromObject, SimObject * toObject, float & distance, simdata::Vector3 & direction);
-
-	void addNodeToScene( osg::Node * pNode);
-	void removeNodeFromScene( osg::Node * pNode);
-
-	void spinTheWorld(bool spin);
-	void resetSpin();
-
-	void setLookAt(simdata::Vector3 & eyePos, simdata::Vector3 & lookPos, simdata::Vector3 & upVec);
-	void getLookAt(simdata::Vector3 & eyePos, simdata::Vector3 & lookPos, simdata::Vector3 & upVec) const;
-	void setWireframeMode(bool flag);
-	void setFogMode(bool flag);
-	void setFogStart(float value);
-	void setFogEnd(float value);
-
-	float getViewDistance() const { return m_ViewDistance; }
-	void setViewDistance(float value);
-
+	//void getObjectsInRange(SimObject * fromObject, float range, float view_angle, int army, std::list<ObjectRangeInfo*> & rangeList  );
 
 	float getElevation(float x,float y) const;
 	void getNormal(float x, float y, float & normalX, float & normalY, float & normalZ) const;
 
-	void drawCockpit();
+	void setTerrain(simdata::Pointer<TerrainObject>);
+	simdata::Pointer<TerrainObject> getTerrain() const { return m_Terrain; }
 
-	void setCameraNode(osg::Node * pNode);
-	void setActiveTerrain(TerrainObject *pTerrainObject);
-
-	int getTerrainPolygonsRendered();
-
-	float getViewAngle() const { return m_ViewAngle; }
-	void setViewAngle(float);
-
-public:
-
-	double getSpin();
+	void setScene(simdata::Pointer<VirtualScene>);
+	simdata::Pointer<VirtualScene> getScene() const { return m_Scene; }
 
 protected:
 
-	bool m_SpinTheWorld;
-	bool m_ResetTheWorld;
-
-	osgUtil::SceneView* m_pView;
-	osg::ref_ptr<osg::Group> m_rpRootNode;
-	osg::ref_ptr<osg::Group> m_rpObjectRootNode;
-	osg::ref_ptr<osg::FrameStamp> m_rpFrameStamp;
-
-	osg::ref_ptr<osg::Group> m_CelestialLightGroup;
-	osg::ref_ptr<osg::Group> m_LightGroup;
-	osg::ref_ptr<osg::Transform> m_EyeTransform;
-
-	osg::ref_ptr<osg::Node> m_TerrainNode;
-	osg::ref_ptr<osg::Group> m_ShadowGroup;
-
 	ObjectList objectList;
 	static unsigned int latest_object_id;
-	std::list<string> objectListHistory;
+	std::list<std::string> objectListHistory;
 	std::list<BaseController *> controllerList;
 
-	float m_ViewDistance;
-	float m_ViewAngle;
-
-	simdata::Pointer<TerrainObject> m_ActiveTerrainObject;
-	osg::ref_ptr<Sky> m_Sky;
+	simdata::Pointer<TerrainObject> m_Terrain;
+	simdata::Pointer<VirtualScene> m_Scene;
 };
 
 #endif // __VIRTUALBATTLEFIELD_H__

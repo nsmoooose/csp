@@ -40,7 +40,6 @@ public:
 	StaticObject();
 	virtual ~StaticObject();
 
-	
 //	EXTEND_SIMDATA_XML_INTERFACE(StaticObject, SimObject)
 //		SIMDATA_XML("direction", StaticObject::m_Direction, false)
 //	END_SIMDATA_XML_INTERFACE

@@ -17,6 +17,7 @@
 
 
 %include "VirtualBattlefield.i"
+%include "VirtualScene.i"
 %include "CSPSim.i"
 //%include "SimpleConfig.i"
 %include "Config.i"

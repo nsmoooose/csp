@@ -39,7 +39,7 @@ AircraftObject::AircraftObject(): DynamicObject()
 	//m_iObjectID = g_pBattlefield->getNewObjectID();
 
 	CSP_LOG(CSP_APP, CSP_DEBUG, "AircraftObject::AircraftObject() ...");
-	m_sObjectName = "AIRCRAFT";
+	m_ObjectName = "AIRCRAFT";
 
 	m_heading = 0.0;
 	m_roll = 0.0;
@@ -141,10 +141,10 @@ void AircraftObject::unpack(simdata::UnPacker& p) {
 
 void AircraftObject::postCreate() {
 	DynamicObject::postCreate();
-	m_FlightModel->bindObject(m_LocalPosition, m_LinearVelocity, m_AngularVelocity, m_qOrientation);
+	m_FlightModel->bindObject(m_LocalPosition, m_LinearVelocity, m_AngularVelocity, m_Attitude);
 	m_FlightModel->bindGearSet(*(m_Gear.get()));
 	m_FlightModel->bindContacts(m_Model->getContacts());
-	m_FlightModel->setBoundingRadius(getBoundingSphereRadius());
+	m_FlightModel->setBoundingRadius(m_Model->getBoundingSphereRadius());
 	m_FlightModel->setInertia(m_Mass, m_Inertia);
 }
 
@@ -167,11 +167,6 @@ void AircraftObject::onUpdate(double dt)
 	CSP_LOG(CSP_APP, CSP_DEBUG, "... AircraftObject::onUpdate");
 }
 
-int AircraftObject::updateScene()
-{
-	DynamicObject::updateScene();
-	return 0;
-}
 
 unsigned int AircraftObject::onRender()
 {
@@ -226,13 +221,13 @@ void AircraftObject::doFCS(double dt)
 	m_Rudder = m_RudderInput * m_RudderMax * 0.017;
 	m_Aileron = m_AileronInput * m_AileronMax * 0.017;
 	m_Elevator = m_ElevatorInput * m_ElevatorMax * 0.017;
-	m_Throttle = (1.0 - m_ThrottleInput) * 0.5;
+	m_Throttle = m_ThrottleInput;
 	CSP_LOG(CSP_APP, CSP_DEBUG, " ... AircraftObject::doFCS");
 }
 
 void AircraftObject::setThrottle(double x) 
 { 
-	m_ThrottleInput = x; 
+	m_ThrottleInput = (1.0 - x); 
 }
 
 void AircraftObject::setRudder(double x)
@@ -374,13 +369,13 @@ void AircraftObject::GearToggle() {
 	setGearStatus(!m_Gear->getExtended());
 }
 
-void AircraftObject::setOrientation(double heading, double pitch, double roll)
+void AircraftObject::setAttitude(double pitch, double roll, double heading)
 {
-	simdata::Matrix3 Orientation;
-	Orientation.FromEulerAnglesZXY(DegreesToRadians(heading),
-                                       DegreesToRadians(pitch), 
-	                               DegreesToRadians(roll));
-	DynamicObject::setOrientation(Orientation);
+	simdata::Quaternion attitude;
+	attitude = simdata::Quaternion::MakeQFromEulerAngles(DegreesToRadians(pitch),
+                                                             DegreesToRadians(roll), 
+	                                                     DegreesToRadians(heading));
+	DynamicObject::setAttitude(attitude);
 }
 
 void AircraftObject::doMovement(double dt)
@@ -395,12 +390,16 @@ void AircraftObject::doMovement(double dt)
 		}
 	} else {
 		//	doSimplePhysics(dt);
+		//doComplexPhysics(dt);
 	}
 
-	m_Orientation.ToEulerAnglesZXY(m_heading, m_pitch, m_roll);
-	m_heading = RadiansToDegrees(m_heading);
-	m_pitch = RadiansToDegrees (m_pitch);
-	m_roll = RadiansToDegrees(m_roll);
+	updateTransform();
+
+	simdata::Vector3 angles = simdata::Quaternion::MakeEulerAnglesFromQ(m_Attitude);
+	m_heading = RadiansToDegrees(angles.x);
+	m_pitch = RadiansToDegrees(angles.y);
+	m_roll = RadiansToDegrees(angles.z);
+	m_Speed = m_LinearVelocity.Length();
 }
 
 
@@ -472,12 +471,6 @@ void AircraftObject::doComplexPhysics(double dt)
 	m_FlightModel->setGroundN(m_GroundN);
 	m_FlightModel->doSimStep(dt);
 	//m_FlightModel->doSimStep2(dt);
-	updateOrientation();
-	m_Direction = m_Orientation * simdata::Vector3::YAXIS;
-	m_NormalDirection = m_Orientation * simdata::Vector3::ZAXIS;
-	m_Speed = m_LinearVelocity.Length();
-//	m_AngleOfAttack = m_FlightModel->getAngleOfAttack();
-//	m_GForce = m_FlightModel->getGForce();
 }
 
 void AircraftObject::getStats(std::vector<std::string> &stats) {

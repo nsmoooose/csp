@@ -39,24 +39,24 @@
 /////////////////////////////////////////////////////////////////////////////
 // class HID 
 
-bool HID::OnEvent(SDL_Event &event) {
+bool HID::onEvent(SDL_Event &event) {
 	switch (event.type) {
 		case SDL_MOUSEMOTION:
-			return OnMouseMove(event.motion);
+			return onMouseMove(event.motion);
 		case SDL_MOUSEBUTTONUP:
 		case SDL_MOUSEBUTTONDOWN:
-			return OnMouseButton(event.button);
+			return onMouseButton(event.button);
 		case SDL_KEYUP:
 		case SDL_KEYDOWN:
-			return OnKey(event.key);
+			return onKey(event.key);
 		case SDL_JOYAXISMOTION:
-			return OnJoystickAxisMotion(event.jaxis);
+			return onJoystickAxisMotion(event.jaxis);
 		case SDL_JOYHATMOTION:
-			//return OnJoystickHatMotion(event.jhat);
+			//return onJoystickHatMotion(event.jhat);
 			return false;
 		case SDL_JOYBUTTONUP:
 		case SDL_JOYBUTTONDOWN:
-			return OnJoystickButton(event.jbutton);
+			return onJoystickButton(event.jbutton);
 		default:
 			break;
 	}
@@ -86,9 +86,9 @@ void VirtualHID::setMapping(EventMapping const *map) {
 
 void VirtualHID::bindObject(InputInterface *object) { m_Object = object; }
 
-bool VirtualHID::OnKey(SDL_KeyboardEvent const &event) {
+bool VirtualHID::onKey(SDL_KeyboardEvent const &event) {
 	if (!m_Object) return false;
-	if (m_Object->OnKey(event)) return true;
+	if (m_Object->onKey(event)) return true;
 	if (!m_Map) return false;
 	EventMapping::Script const *s = m_Map->getKeyScript(event.which, event.keysym, event.state, 0);
 	if (s == NULL) return false;
@@ -96,9 +96,9 @@ bool VirtualHID::OnKey(SDL_KeyboardEvent const &event) {
 	return true;
 }
 
-bool VirtualHID::OnJoystickButton(SDL_JoyButtonEvent const &event) {
+bool VirtualHID::onJoystickButton(SDL_JoyButtonEvent const &event) {
 	if (!m_Object) return false;
-	if (m_Object->OnJoystickButton(event)) return true;
+	if (m_Object->onJoystickButton(event)) return true;
 	if (!m_Map) return false;
 	EventMapping::Script const *s = 
 		m_Map->getJoystickButtonScript(event.which, event.button, event.state, m_JoystickModifier, m_VirtualMode);
@@ -107,13 +107,13 @@ bool VirtualHID::OnJoystickButton(SDL_JoyButtonEvent const &event) {
 	return true;
 }
 
-bool VirtualHID::OnJoystickAxisMotion(SDL_JoyAxisEvent const &event) {
+bool VirtualHID::onJoystickAxisMotion(SDL_JoyAxisEvent const &event) {
 	if (!m_Object) return false;
-	if (m_Object->OnJoystickAxisMotion(event)) return true;
+	if (m_Object->onJoystickAxisMotion(event)) return true;
 	if (!m_Map) return false;
 	EventMapping::Axis const *a = m_Map->getJoystickAxis(event.which, event.axis);
 	if (a == NULL || a->id == "") return false;
-	m_Object->OnAxis(a->id, event.value * (1.0/32768.0));
+	m_Object->onAxis(a->id, event.value * (1.0/32768.0));
 	return true;
 }
 
@@ -125,20 +125,20 @@ void VirtualHID::setJoystickModifier(int jmod) {
 	m_JoystickModifier = (jmod != 0);
 }
 
-bool VirtualHID::OnMouseMove(SDL_MouseMotionEvent const &event) {
+bool VirtualHID::onMouseMove(SDL_MouseMotionEvent const &event) {
 	if (!m_Object) return false;
-	if (m_Object->OnMouseMove(event)) return true;
+	if (m_Object->onMouseMove(event)) return true;
 	if (!m_Map) return false;
 	int kmod = SDL_GetModState();
 	EventMapping::Motion const *m = m_Map->getMouseMotion(event.which, event.state, kmod, m_VirtualMode);
 	if (m == NULL || m->id == "") return false;
-	m_Object->OnMotion(m->id, event.x, event.y, event.xrel, event.yrel);
+	m_Object->onMotion(m->id, event.x, event.y, event.xrel, event.yrel);
 	return true;
 }
 
-bool VirtualHID::OnMouseButton(SDL_MouseButtonEvent const &event) {
+bool VirtualHID::onMouseButton(SDL_MouseButtonEvent const &event) {
 	if (!m_Object) return false;
-	if (m_Object->OnMouseButton(event)) return true;
+	if (m_Object->onMouseButton(event)) return true;
 	if (!m_Map) return false;
 	int kmod = SDL_GetModState();
 	EventMapping::Script const *s = m_Map->getMouseButtonScript(event.which, event.button, event.state, kmod, m_VirtualMode);
@@ -147,12 +147,12 @@ bool VirtualHID::OnMouseButton(SDL_MouseButtonEvent const &event) {
 	return true;
 }
 
-void VirtualHID::OnUpdate(double dt) {
+void VirtualHID::onUpdate(double dt) {
 	int iterations = 0;
 	if (!m_Object || !m_ActiveScript) return;
 	// wait out the delay until the next action should start
 	// strings of actions with delay = 0 will be executed in
-	// a single call of OnUpdate().  a break after 100 actions
+	// a single call of onUpdate().  a break after 100 actions
 	// occurs to prevent infinite loops from completely hanging 
 	// the sim.
 	m_ScriptTime += dt;
@@ -167,7 +167,7 @@ void VirtualHID::OnUpdate(double dt) {
 		if (action->jmod >= 0) {
 			setJoystickModifier(action->jmod);
 		}
-		if (*id && !m_Object->OnCommand(id, m_MouseEventX, m_MouseEventY)) {
+		if (*id && !m_Object->onCommand(id, m_MouseEventX, m_MouseEventY)) {
 			std::cout << "Missing HID interface for command '" << id << "'\n";
 		}
 		// advance, end, or loop the script
@@ -198,7 +198,7 @@ void VirtualHID::setScript(EventMapping::Script const *s, int x, int y) {
 	m_MouseEventY = y;
 	m_ActiveScript = s;
 	m_ScriptTime = 0.0;
-	OnUpdate(0.0);
+	onUpdate(0.0);
 }
 
 

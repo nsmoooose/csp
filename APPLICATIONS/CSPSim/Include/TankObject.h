@@ -58,8 +58,6 @@ public:
 	virtual void onUpdate(double dt);
 	virtual unsigned int onRender();
 
-	virtual int updateScene();
-
 	virtual void initialize();
 	double getMaxViewingRange() { return max_viewing_range; }
 	double getMaxViewingAngle() { return max_viewing_angle; }

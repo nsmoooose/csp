@@ -358,7 +358,7 @@ void AeroDynamics::doSimStep(double dt)
 
 	if (dt < 0.01) dt = 0.01;
 
-	bool m_near_ground = isNearGround();
+	bool near_ground = isNearGround();
 
 	simdata::Vector3 Wind(0.0, 0.0, 0.0);
 	simdata::Vector3 AirflowBody;
@@ -393,12 +393,14 @@ void AeroDynamics::doSimStep(double dt)
 		m_VelocityBody = LocalToBody(m_VelocityLocal);
 		m_AngularVelocityBody = LocalToBody(m_AngularVelocityLocal);
 
-		if (m_near_ground) {
+		if (near_ground) {
 			// approximate (generic) ground effect... TODO: paramaterize in xml.
 			double x = m_PositionLocal.z - m_GroundZ; // + wing height relative to cg
 			x /= m_WingSpan;
 			if (x > 1.0) x = 1.0;
 			m_GE = 0.49 + (1.0 - 0.5 * x) * x;
+		} else {
+			m_GE = 0.0;
 		}
 
 		AirflowBody = LocalToBody(m_VelocityLocal - Wind);
@@ -437,7 +439,7 @@ void AeroDynamics::doSimStep(double dt)
 			// Calculate moment
 			m_MomentsBody = CalculateMoments(qBarS);
 
-			if (m_near_ground) {
+			if (near_ground) {
 				if (m_Gear) {
 					double height = m_PositionLocal.z - m_GroundZ;
 					simdata::Vector3 force, moment;
@@ -511,7 +513,7 @@ void AeroDynamics::doSimStep(double dt)
 						} //if (height < 0.0)
 					} //for (contact
 				} //if (m_Contacts)
-			} //if (m_near_ground)
+			} //if (near_ground)
 
 			// First, calculate angular acceleration
 			angularAccelBody = m_InertiaInverse * 
@@ -627,6 +629,7 @@ simdata::Vector3 const& AeroDynamics::CalculateForces( double const p_qBarS )
 
 	// Add in extra forces and reset
 	forceBody += m_ExtraForceBody;
+	m_ExtraForceBody = simdata::Vector3(0.0, 0.0, 0.0);
 	
 	// Evaluate g's
 	m_gForce = m_MassInverse * forceBody.z / 9.81;
@@ -649,6 +652,7 @@ simdata::Vector3 const& AeroDynamics::CalculateMoments( double const p_qBarS )
 	moments.z = CalculateYawMoment(p_qBarS);   // Yaw
 
 	moments += m_ExtraMomentBody;
+	m_ExtraMomentBody = simdata::Vector3(0.0, 0.0, 0.0);
 
 	return moments;
 }
@@ -725,7 +729,7 @@ double AeroDynamics::CalculateDragCoefficient() const
 	
 	CSP_LOG(CSP_PHYSICS, CSP_DEBUG, "AeroDynamics::CalculateDragCoefficient() " << 
 	                                drag_coe << " at alpha = " << RadiansToDegrees(m_alpha) << 
-	                                ", Elevator: " << m_Elevator );
+	                                ", Elevator: " << m_Elevator << ", Induced: " << induced << ", GE: " << m_GE << ", m_CL: " << m_CL );
 
 	return drag_coe;
 }
@@ -747,8 +751,30 @@ simdata::Vector3 const& AeroDynamics::DragVector() const
 double AeroDynamics::CalculateSideCoefficient() const
 {
 	double side_coe;
+	double beta = m_beta;
 
-	side_coe = m_CY_beta * m_beta + m_CY_dr * m_Rudder - m_CY_r * m_AngularVelocityBody.z;
+/*
+	// keep beta within about 30 degrees of the body axis
+	if (beta > -0.5 && beta < 0.5) {
+	} else {
+		if (beta > 1.57) {
+			beta = 3.1416 - beta;
+			if (beta > 0.5) beta = 0.5;
+		} else 
+		if (beta > 0.5) {
+			beta = 0.5;
+		} else 
+		if (beta < -1.57) {
+			beta = -3.1416 - beta;
+			if (beta < -0.5) beta = -0.5;
+		} else
+		if (beta < -0.5) {
+			beta = -0.5;
+		}
+	}
+*/
+
+	side_coe = m_CY_beta * beta + m_CY_dr * m_Rudder - m_CY_r * m_AngularVelocityBody.z;
 
 	CSP_LOG(CSP_PHYSICS, CSP_DEBUG, "AeroDynamics::CalculateSideCoefficient() " << side_coe );
 
@@ -949,6 +975,8 @@ std::vector<double> const &AeroDynamics::_f(double x, std::vector<double> &y) {
 				} //if (height < 0.0)
 			} //for (contact
 		} //if (m_Contacts)
+	} else { // if (m_NearGround)
+		m_GE = 0.0;
 	}
 
 	m_ForcesBody = CalculateForces(qBarS);

@@ -33,6 +33,8 @@
 
 #include "VirtualBattlefield.h"
 
+#if 0 // FIXME XXX XXX
+// (need to transition to VirtualScene and should include all needed osg headers)
 
 #ifdef _MSC_VER
 #pragma warning( disable : 4244 )
@@ -221,3 +223,6 @@ Node *makeTreesPatch( float xoff, float yoff, float spacing, float width,
 	group->setStateSet( state[iState] );
     return group;
 }
+
+#endif
+

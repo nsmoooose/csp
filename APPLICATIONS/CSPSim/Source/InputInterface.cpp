@@ -29,7 +29,7 @@
 #include "InputInterface.h"
 
 
-bool InputInterface::OnCommand(std::string const &id, int x, int y) {
+bool InputInterface::onCommand(std::string const &id, int x, int y) {
 	ActionAdapter adapter = m_Actions[id.c_str()];
 	if (adapter) {
 		adapter(this, x, y);
@@ -38,7 +38,7 @@ bool InputInterface::OnCommand(std::string const &id, int x, int y) {
 	return false;
 }
 
-bool InputInterface::OnAxis(std::string const &id, double value) {
+bool InputInterface::onAxis(std::string const &id, double value) {
 	AxisAdapter adapter = m_Axes[id.c_str()];
 	if (adapter) {
 		adapter(this, value);
@@ -47,7 +47,7 @@ bool InputInterface::OnAxis(std::string const &id, double value) {
 	return false;
 }
 
-bool InputInterface::OnMotion(std::string const &id, int x, int y, int dx, int dy) {
+bool InputInterface::onMotion(std::string const &id, int x, int y, int dx, int dy) {
 	if (id != m_LastMotionID) {
 		m_LastMotionID = id;
 		m_LastMotionAdapter = NULL;

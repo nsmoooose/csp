@@ -50,15 +50,15 @@ public:
 	}
 
 	virtual ~InputInterface() {}
-	virtual bool OnKey(SDL_KeyboardEvent const &) { return false; }
-	virtual bool OnJoystickButton(SDL_JoyButtonEvent const &) { return false; }
-	virtual bool OnJoystickAxisMotion(SDL_JoyAxisEvent const &) { return false; }
-	virtual bool OnMouseMove(SDL_MouseMotionEvent const &) { return false; }
-	virtual bool OnMouseButton(SDL_MouseButtonEvent const &) { return false; }
+	virtual bool onKey(SDL_KeyboardEvent const &) { return false; }
+	virtual bool onJoystickButton(SDL_JoyButtonEvent const &) { return false; }
+	virtual bool onJoystickAxisMotion(SDL_JoyAxisEvent const &) { return false; }
+	virtual bool onMouseMove(SDL_MouseMotionEvent const &) { return false; }
+	virtual bool onMouseButton(SDL_MouseButtonEvent const &) { return false; }
 
-	virtual bool OnCommand(std::string const &id, int x, int y);
-	virtual bool OnAxis(std::string const &id, double value);
-	virtual bool OnMotion(std::string const &id, int x, int y, int dx, int dy);
+	virtual bool onCommand(std::string const &id, int x, int y);
+	virtual bool onAxis(std::string const &id, double value);
+	virtual bool onMotion(std::string const &id, int x, int y, int dx, int dy);
 
 protected:
 	typedef HASH_MAPS<const char *, ActionAdapter, HASH<const char *>, eqstr>::Type ActionMap;

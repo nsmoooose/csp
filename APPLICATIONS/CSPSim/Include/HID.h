@@ -72,35 +72,35 @@ public:
 	/**
 	 * SDL key event handler
 	 */
-	virtual bool OnKey(SDL_KeyboardEvent const &) = 0;
+	virtual bool onKey(SDL_KeyboardEvent const &) = 0;
 
 	/**
 	 * SDL joystick button handler
 	 */
-	virtual bool OnJoystickButton(SDL_JoyButtonEvent const &) = 0;
+	virtual bool onJoystickButton(SDL_JoyButtonEvent const &) = 0;
 	
 	/**
 	 * SDL joystick axis handler
 	 */
-	virtual bool OnJoystickAxisMotion(SDL_JoyAxisEvent const &) = 0;
+	virtual bool onJoystickAxisMotion(SDL_JoyAxisEvent const &) = 0;
 	
 	/**
 	 * SDL mouse movement handler
 	 */
-	virtual bool OnMouseMove(SDL_MouseMotionEvent const &) = 0;
+	virtual bool onMouseMove(SDL_MouseMotionEvent const &) = 0;
 	
 	/**
 	 * SDL mouse button handler
 	 */
-	virtual bool OnMouseButton(SDL_MouseButtonEvent const &) = 0;
+	virtual bool onMouseButton(SDL_MouseButtonEvent const &) = 0;
 	/*
-	virtual void OnJoystickHatMotion(int joynum, int hat, int val) = 0;
+	virtual void onJoystickHatMotion(int joynum, int hat, int val) = 0;
 	*/
 
 	/**
 	 * Update routine to drive the active script(s).
 	 */
-	virtual void OnUpdate(double) = 0;
+	virtual void onUpdate(double) = 0;
 	
 	/**
 	 * Bind to an object.
@@ -114,7 +114,7 @@ public:
 	/**
 	 * Primary event dispatch routine.
 	 */
-	virtual bool OnEvent(SDL_Event &event);
+	virtual bool onEvent(SDL_Event &event);
 };
 
 
@@ -140,12 +140,12 @@ public:
 	virtual void setMapping(EventMapping const *map);
 	virtual void bindObject(InputInterface *object);
 	
-	virtual bool OnKey(SDL_KeyboardEvent const &event);
-	virtual bool OnJoystickButton(SDL_JoyButtonEvent const &event);
-	virtual bool OnJoystickAxisMotion(SDL_JoyAxisEvent const &event);
-	virtual bool OnMouseMove(SDL_MouseMotionEvent const &event);
-	virtual bool OnMouseButton(SDL_MouseButtonEvent const &event);
-	virtual void OnUpdate(double dt);
+	virtual bool onKey(SDL_KeyboardEvent const &event);
+	virtual bool onJoystickButton(SDL_JoyButtonEvent const &event);
+	virtual bool onJoystickAxisMotion(SDL_JoyAxisEvent const &event);
+	virtual bool onMouseMove(SDL_MouseMotionEvent const &event);
+	virtual bool onMouseButton(SDL_MouseButtonEvent const &event);
+	virtual void onUpdate(double dt);
 
 
 protected:

@@ -40,7 +40,7 @@
 #include <SimData/Path.h>
 #include <SimData/Object.h>
 #include <SimData/InterfaceRegistry.h>
-#include <SimData/DataArchive.h>
+#include <SimData/DataManager.h>
 
 #include <osg/BlendFunc>
 #include <osg/Depth>
@@ -182,9 +182,8 @@ public:
 
 	StarSystem(): osg::Drawable() {
 		rx = rz = 0.0;
-		simdata::DataArchive *archive = CSPSim::theSim->getDataArchive();	
-		assert(archive);
-		_catalog = archive->getObject("sim:environment.stars");
+		simdata::DataManager &manager = CSPSim::theSim->getDataManager();	
+		_catalog = manager.getObject("sim:environment.stars");
 		assert(_catalog.valid());
 		int n = _catalog->_stars.size();
 		//std::cout << "Using " << _catalog->m_Source << std::endl;

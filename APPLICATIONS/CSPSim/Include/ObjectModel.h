@@ -30,6 +30,7 @@
 #include <osg/Switch>
 #include <osg/Group>
 #include <osg/MatrixTransform>
+#include <osg/PositionAttitudeTransform>
 
 #include <SimData/Object.h>
 #include <SimData/Types.h>
@@ -39,7 +40,10 @@
 
 
 /**
- * class ObjectModel - Interface for 3D models in the simulation.
+ * class ObjectModel - Static representation of 3D models in the simulation.
+ *
+ * One ObjectModel instance is created for each type of model, and shared by
+ * many SceneModel instances.
  *
  */
 class ObjectModel: public simdata::Object
@@ -54,6 +58,7 @@ public:
 		SIMDATA_XML("rotation", ObjectModel::m_Rotation, true)
 		SIMDATA_XML("axis_0", ObjectModel::m_Axis0, true)
 		SIMDATA_XML("axis_1", ObjectModel::m_Axis1, true)
+		SIMDATA_XML("view_point", ObjectModel::m_ViewPoint, false)
 		SIMDATA_XML("offset", ObjectModel::m_Offset, false)
 		SIMDATA_XML("scale", ObjectModel::m_Scale, false)
 		SIMDATA_XML("smooth", ObjectModel::m_Smooth, false)
@@ -71,6 +76,7 @@ public:
 	const simdata::Matrix3 &getRotation() const { return m_Rotation; }
 	const simdata::Vector3 &getAxis0() const { return m_Axis0; }
 	const simdata::Vector3 &getAxis1() const { return m_Axis1; }
+	const simdata::Vector3 &getViewPoint() const { return m_ViewPoint; }
 
 	double getBoundingSphereRadius() const { return m_BoundingSphereRadius; }
 	ContactList const &getContacts() const { return m_Contacts; }
@@ -83,6 +89,7 @@ protected:
 	simdata::Matrix3 m_Rotation;
 	simdata::Vector3 m_Axis0, m_Axis1;
 	simdata::Vector3 m_Offset;
+	simdata::Vector3 m_ViewPoint;
 	double m_Scale;
 	bool m_Smooth;
 	bool m_Filter;
@@ -103,6 +110,47 @@ private:
 	osg::ref_ptr<osg::MatrixTransform> m_Transform;
 	osg::ref_ptr<osg::Switch> m_DebugMarkers;
 	osg::ref_ptr<osg::Group> m_ContactMarkers;
+};
+
+
+class VirtualBattlefieldScene;
+
+
+/**
+ * SceneModel - Represents an object in the scene graph.
+ *
+ * The base object classes are independent of the scene graph.  SimObject
+ * contains a pointer to a SceneModel that can be instantiated to create
+ * a visual representation of the object.
+ */
+class SceneModel {
+	
+public:
+	SceneModel(simdata::Pointer<ObjectModel> const & model);
+	virtual ~SceneModel();
+	
+	simdata::Pointer<ObjectModel> getModel() { return m_Model; }
+	osg::Group* getRoot() { return m_Transform.get(); }
+
+	void setPositionAttitude(simdata::Vector3 const &position, simdata::Quaternion const &attitude) {
+		m_Transform->setAttitude(osg::Quat(attitude.x, attitude.y, attitude.z, attitude.w));
+		m_Transform->setPosition(osg::Vec3(position.x, position.y, position.z));
+	}
+
+	// XXX 
+	// these two methods are temporary, and will probably change when
+	// animation code becomes available.
+	void show() { 
+		m_Switch->setAllChildrenOn();
+	}
+	void hide() {
+		m_Switch->setAllChildrenOff();
+	}
+
+private:
+	osg::ref_ptr<osg::PositionAttitudeTransform> m_Transform;
+	osg::ref_ptr<osg::Switch> m_Switch;
+	simdata::Pointer<ObjectModel> m_Model;
 };
 
 

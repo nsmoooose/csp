@@ -57,8 +57,8 @@ SOURCES = \
 	TerrainObject.cpp \
 	Tools.cpp \
 	trees.cpp \
-	VirtualBattlefield.cpp
-	#VirtualBattlefieldScene.cpp 
+	VirtualBattlefield.cpp \
+	VirtualScene.cpp 
 
 OBJECTS = $(SOURCES:%.cpp=%.o) 
 

@@ -50,8 +50,8 @@ class TrilinearFilterVisitor: public osg::NodeVisitor
 	float m_MaxAnisotropy;
 public:
 	TrilinearFilterVisitor(float MaxAnisotropy=16.0): 
-		m_MaxAnisotropy(MaxAnisotropy),
-		osg::NodeVisitor(osg::NodeVisitor::TRAVERSE_ALL_CHILDREN) {
+		osg::NodeVisitor(osg::NodeVisitor::TRAVERSE_ALL_CHILDREN),
+		m_MaxAnisotropy(MaxAnisotropy) {
 	}
 
 	virtual void apply(osg::Node& node) { 
@@ -97,6 +97,7 @@ ObjectModel::ObjectModel(): simdata::Object() {
 	m_Axis0 = simdata::Vector3::XAXIS;
 	m_Axis1 = simdata::Vector3::ZAXIS;
 	m_Offset = simdata::Vector3::ZERO;
+	m_ViewPoint = simdata::Vector3::ZERO;
 	m_Scale = 1.0;
 	m_Smooth = true;
 	m_Filter = true;
@@ -111,6 +112,7 @@ void ObjectModel::pack(simdata::Packer& p) const {
 	p.pack(m_Rotation);
 	p.pack(m_Axis0);
 	p.pack(m_Axis1);
+	p.pack(m_ViewPoint);
 	p.pack(m_Offset);
 	p.pack(m_Scale);
 	p.pack(m_Smooth);
@@ -124,6 +126,7 @@ void ObjectModel::unpack(simdata::UnPacker& p) {
 	p.unpack(m_Rotation);
 	p.unpack(m_Axis0);
 	p.unpack(m_Axis1);
+	p.unpack(m_ViewPoint);
 	p.unpack(m_Offset);
 	p.unpack(m_Scale);
 	p.unpack(m_Smooth);
@@ -269,3 +272,96 @@ void ObjectModel::showContactMarkers(bool on) {
 	m_DebugMarkers->setChildValue(m_ContactMarkers.get(), on);
 }
 
+
+SceneModel::SceneModel(simdata::Pointer<ObjectModel> const & model) {
+	m_Model = model;
+	assert(m_Model.valid());
+	CSP_LOG(CSP_APP, CSP_INFO, "create SceneModel for " << m_Model->getModelPath());
+	osg::Node *model_node = m_Model->getModel().get();
+	assert(model_node);
+	// to switch between various representations of the same object (depending on views for example)
+	m_Switch = new osg::Switch;
+	m_Switch->addChild(model_node);
+	m_Switch->setAllChildrenOn();
+	m_Transform = new osg::PositionAttitudeTransform;
+	m_Transform->addChild(m_Switch.get());
+	//show();
+}
+
+SceneModel::~SceneModel() {
+	osg::Node *model_node = m_Model->getModel().get();
+	assert(model_node);
+	m_Switch->removeChild(model_node);
+	m_Transform->removeChild(m_Switch.get()); 
+}
+
+
+// FIXME: from SimObject.... needs to be incorparated:
+/*
+void SimObject::initModel()
+{ 
+	CSP_LOG(CSP_APP, CSP_DEBUG, "SimObject::initModel() - ID: " << m_iObjectID);
+
+	assert(m_rpNode == NULL && m_rpSwitch == NULL && m_rpTransform == NULL);
+	assert(m_Model.valid());
+
+	std::cout << "INIT MODEL\n";
+
+	m_rpNode = m_Model->getModel();
+    
+	//osg::StateSet * stateSet = m_rpNode->getStateSet();
+	//stateSet->setGlobalDefaults();
+	//m_rpNode->setStateSet(stateSet);
+    
+	// to switch between various representants of same object (depending on views for example)
+	m_rpSwitch = new osg::Switch;
+	m_rpSwitch->setName("MODEL SWITCH");
+	m_rpSwitch->addChild(m_rpNode.get());
+
+	// master object to which all others ones are linked
+	m_rpTransform = new osg::MatrixTransform;
+	m_rpTransform->setName("MODEL TRANSFORM");
+
+	m_rpTransform->addChild( m_rpSwitch.get() );
+	//m_rpSwitch->setAllChildrenOn();
+}
+
+	if (m_rpTransform != NULL && m_rpSwitch != NULL) {
+		m_rpTransform->removeChild( m_rpSwitch.get() ); 
+	}
+
+void SimObject::ShowRepresentant(unsigned short const p_usflag)
+{
+	m_rpSwitch->setAllChildrenOff();
+	m_rpSwitch->setValue(p_usflag, true);
+}
+
+	osg::Matrix worldMat;
+	simdata::Matrix3::M_t (&R)[3][3] = m_Orientation.rowcol;
+	worldMat.set(R[0][0], R[1][0], R[2][0], 0.0,
+	             R[0][1], R[1][1], R[2][1], 0.0,
+		     R[0][2], R[1][2], R[2][2], 0.0,
+		     m_LocalPosition.x, m_LocalPosition.y, m_LocalPosition.z, 1.0);
+
+	//m_rpTransform->setReferenceFrame(osg::Transform::RELATIVE_TO_PARENTS);
+
+	m_rpTransform->setMatrix(worldMat);
+	
+	// FIXME: call specific versions of this from derived classes:
+	//scene->addNodeToScene(m_rpTransform.get());
+
+	setCullingActive(true);
+
+	//CSP_LOG(CSP_APP, CSP_DEBUG, "NodeName: " << m_rpNode->getName() <<
+	//	", BoundingPos: " << sphere.center() << ", BoundingRadius: " << 
+	//	sphere.radius() );
+
+
+void SimObject::setCullingActive(bool flag)
+{
+	if (m_rpTransform.valid()) {
+		m_rpTransform->setCullingActive(flag);
+	}
+}
+
+*/

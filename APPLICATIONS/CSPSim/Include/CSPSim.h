@@ -31,6 +31,7 @@
 #include <SDL/SDL_joystick.h>
 
 #include <SimData/Types.h>
+#include <SimData/DataManager.h>
 
 #include "DynamicObject.h"
 #include "TerrainObject.h"
@@ -40,6 +41,7 @@
 #include <Python.h>
 
 class VirtualBattlefield;
+class VirtualScene;
 class VirtualHID;
 class BaseScreen;
 class GameScreen;
@@ -82,7 +84,10 @@ public:
 
 	void setActiveObject(simdata::Pointer<DynamicObject> object);
 	simdata::Pointer<DynamicObject const> const getActiveObject() const;
-	VirtualBattlefield* const getBattlefield() const;
+	VirtualBattlefield * getBattlefield();
+	VirtualBattlefield const * getBattlefield() const;
+	VirtualScene * getScene();
+	VirtualScene const * getScene() const;
 
 	void setShell(PyObject *shell) { m_Shell.bind(shell); }
 
@@ -93,7 +98,7 @@ public:
 	void endConsole();
 	bool isPaused() { return m_Paused; }
 
-	simdata::DataArchive * getDataArchive() { return m_DataArchive; }
+	simdata::DataManager & getDataManager() { return m_DataManager; }
 
 	Atmosphere const * getAtmosphere() const { return &m_Atmosphere; }
 
@@ -126,6 +131,7 @@ private:
 	bool m_Paused;
 	bool m_Finished;
 	bool m_ConsoleOpen;
+	bool m_Clean;
 
 	/**
 	 * The current simulation time/date
@@ -150,11 +156,12 @@ private:
 	/**
 	 * The virtual battlefield
 	 */
-	VirtualBattlefield *m_Battlefield;
+	simdata::Pointer<VirtualBattlefield> m_Battlefield;
+	simdata::Pointer<VirtualScene> m_Scene;
 
 	// TODO the terrain will eventually be encapsulated in a Theater class
 	simdata::Pointer<TerrainObject> m_ActiveTerrain;
-	simdata::DataArchive *m_DataArchive;
+	simdata::DataManager m_DataManager;
 	Atmosphere m_Atmosphere;
 
 	//PyObject* m_Console;

@@ -1,7 +1,6 @@
 <?xml version="1.0" standalone="no"?>
 
 <Object class="TankObject">
-	<Int name="army">5</Int>
 	<Path name="model">t62.model</Path>
 	<Float name="mass">41500</Float>
 	<Matrix name="inertia">

@@ -24,7 +24,7 @@
 
 
 /*
- * need to clean up the BaseSystem interface, and allow multiple operators
+ * need to clean up the ParticleEffect interface, and allow multiple operators
  *
  * need to provide access to the particle system after creation to allow
  * continuous variations (color, thickness, rate, velocity, lifetime, etc).
@@ -51,8 +51,11 @@
 # endif
 
 #include "SmokeEffects.h"
+#include "CSPSim.h"
+#include "VirtualScene.h"
 
-#include <osg/Transform>
+#include <osg/Geode>
+#include <osg/Group>
 #include <osgParticle/LinearInterpolator>
 #include <osgParticle/ParticleSystem>
 #include <osgParticle/ParticleSystemUpdater>
@@ -62,43 +65,17 @@
 #include <osgParticle/SectorPlacer>
 #include <osgParticle/SegmentPlacer>
 #include <osgParticle/RadialShooter>
+#include <osgParticle/Operator>
+
+#include <SimData/Random.h>
 
 #include <cstdio>
-#include <SimData/Random.h>
+#include <algorithm>
 
 
 namespace fx {
-namespace smoke {
 
 
-int SmokeSegments::addSource(simdata::Vector3 const &v) {
-	m_Sources.push_back(v);
-	m_LastPlace.push_back(simdata::Vector3());
-	m_Placers.push_back(new osgParticle::SegmentPlacer);
-	return m_Sources.size()-1;
-}
-
-osgParticle::SegmentPlacer *SmokeSegments::getSegment(int i) { return m_Placers[i].get(); }
-
-inline osg::Vec3 toVec3(simdata::Vector3 const &v) {
-	return osg::Vec3(v.x, v.y, v.z); 
-}
-
-void SmokeSegments::update(simdata::Vector3 const &motion, simdata::Matrix3 const &to_scene, simdata::Matrix3 const &to_body) {
-	size_t i, n;
-	n = m_Placers.size();
-	std::vector<simdata::Vector3>::iterator source = m_Sources.begin();
-	std::vector<simdata::Vector3>::iterator lastplace = m_LastPlace.begin();
-
-	for (i = 0; i < n; ++i) {
-		simdata::Vector3 lastbody = to_body * (*lastplace - motion);
-		m_Placers[i]->setVertexA(toVec3(*source));
-		m_Placers[i]->setVertexB(toVec3(lastbody));
-		*lastplace = to_scene * *source;
-		++lastplace;
-		++source;
-	}
-}
 
 void VortexExpander::operate(osgParticle::Particle *p, double dt)
 {
@@ -120,121 +97,7 @@ void VortexExpander::operate(osgParticle::Particle *p, double dt)
 	}
 }
 
-
-BaseSystem::BaseSystem() {
-	setDefault();
-}
-
-BaseSystem::~BaseSystem() {}
-
-void BaseSystem::setDefault() {
-	m_Prototype.setShape(osgParticle::Particle::QUAD);
-	m_Prototype.setLifeTime(1.0);
-	m_Prototype.setAlphaRange(osgParticle::rangef(1,0));
-	m_Prototype.setSizeRange(osgParticle::rangef(0.2f, 0.2f));
-	m_Prototype.setPosition(osg::Vec3(0.0f,0.0f,0.0f));
-	m_Prototype.setVelocity(osg::Vec3(0.0,0.0,0.0));
-	m_Prototype.setColorRange(osgParticle::rangev4(osg::Vec4(1,1,1,1), osg::Vec4(1,1,1,1)));
-	m_Prototype.setRadius(10000.0);
-	m_Emissive = false;
-	m_Light = false;
-}
-
-void BaseSystem::setTexture(const std::string & TextureFile) { m_TextureFile = TextureFile; }
-
-void BaseSystem::setColorRange(const osg::Vec4 &colorMin, const osg::Vec4 &colorMax) {
-	m_Prototype.setColorRange(osgParticle::rangev4(colorMin, colorMax));
-}
-
-void BaseSystem::setAlphaRange(float alpha_0, float alpha_1) {
-	m_Prototype.setAlphaRange(osgParticle::rangef(alpha_0, alpha_1));
-}
-
-void BaseSystem::setSizeRange(float size_0, float size_1) {
-	m_Prototype.setSizeRange(osgParticle::rangef(size_0, size_1));
-}
-
-void BaseSystem::setLifeTime(float t) {
-	m_Prototype.setLifeTime(t);
-}
-
-void BaseSystem::setShape(osgParticle::Particle::Shape const &shape) {
-	m_Prototype.setShape(shape);
-}
-
-void BaseSystem::setEmissive(bool emissive) { m_Emissive = emissive; }
-void BaseSystem::setLight(bool light) { m_Light = light; }
-
-void BaseSystem::setCounter(osgParticle::Counter *counter) {
-	m_UserCounter = counter;
-}
-
-osgParticle::Counter *BaseSystem::getCounter() {
-	if (!m_UserCounter) return NULL;
-	return m_UserCounter.get();
-}
-
-void BaseSystem::setShooter(osgParticle::Shooter *shooter) {
-	m_UserShooter = shooter;
-}
-
-osgParticle::Shooter *BaseSystem::getShooter() {
-	if (!m_UserShooter) return NULL;
-	return m_UserShooter.get();
-}
-
-void BaseSystem::setPlacer(osgParticle::Placer *placer) {
-	m_UserPlacer = placer;
-}
-
-osgParticle::Placer *BaseSystem::getPlacer() {
-	if (!m_UserPlacer) return NULL;
-	return m_UserPlacer.get();
-}
-
-void BaseSystem::setOperator(osgParticle::Operator *op) {
-	m_UserOperator = op;
-}
-
-osgParticle::Operator *BaseSystem::getOperator() { 
-	if (!m_UserOperator) return NULL;
-	return m_UserOperator.get();
-}
-
-osgParticle::ModularEmitter *BaseSystem::create(osg::Transform *base, 
-					    osgParticle::ParticleSystemUpdater *&psu) {
-	osgParticle::ParticleSystem *ps = new osgParticle::ParticleSystem;
-	ps->setDefaultAttributes(m_TextureFile, m_Emissive, m_Light, 0);
-	ps->setDefaultParticleTemplate(m_Prototype);
-	ps->setFreezeOnCull(false);
-	osgParticle::ModularEmitter *me = new osgParticle::ModularEmitter;
-	me->setParticleSystem(ps);
-	m_Placer = getPlacer();
-	assert(m_Placer.valid());
-	me->setPlacer(m_Placer.get());
-	m_Counter = getCounter();
-	assert(m_Counter.valid());
-	me->setCounter(m_Counter.get());
-	m_Shooter = getShooter();
-	assert(m_Shooter.valid());
-	me->setShooter(m_Shooter.get());
-	base->addChild(me);
-	osgParticle::ModularProgram *mp = new osgParticle::ModularProgram;
-	mp->setParticleSystem(ps);
-	// need a better setup to allow multiple operators
-	m_Operator = getOperator();
-	if (m_Operator.valid()) {
-		mp->addOperator(m_Operator.get());
-	}
-	base->addChild(mp);
-	if (!psu) {
-		psu = new osgParticle::ParticleSystemUpdater;
-	}
-	psu->addParticleSystem(ps);
-	return me;
-}
-
-void Thinner::operate(osgParticle::Particle *p, double dt)
+void SmokeThinner::operate(osgParticle::Particle *p, double dt)
 {
 	float lifetime = p->getRadius();
 	// check if we've already operated on this particle
@@ -259,31 +122,247 @@ void Thinner::operate(osgParticle::Particle *p, double dt)
 	} 
 }
 
-osgParticle::Shooter *Trail::getShooter() {
-	osgParticle::Shooter *user = BaseSystem::getShooter();
-	if (user) return user;
 
-	osgParticle::RadialShooter *rs = new osgParticle::RadialShooter;
-	rs->setPhiRange(-0.21f, 1.78f);
-	rs->setThetaRange(0.0f, 1.57f);
-	rs->setInitialSpeedRange(0, m_Speed);
-	return rs;
+
+ParticleEffect::ParticleEffect() {
+	m_Created = false;
+	m_Parent = NULL;
+	setDefault();
 }
 
-osgParticle::Counter *Trail::getCounter() {
-	osgParticle::Counter *user = BaseSystem::getCounter();
-	if (user) return user;
-	osgParticle::RandomRateCounter *rrc = new osgParticle::RandomRateCounter;
-	// this should be adjustable, even if these are the defaults
-	rrc->setRateRange(2000, 2400);
-	return rrc;
+ParticleEffect::~ParticleEffect() {
+	if (m_Created) {
+		VirtualScene *scene = CSPSim::theSim->getScene();
+		assert(scene);
+		scene->removeParticleSystem(m_Geode.get(), m_Program.get());
+	}
+	if (m_Parent.valid()) {
+		m_Parent->removeChild(m_Emitter.get());
+	}
 }
 
-void Trail::setExpansion(float speed) {
+void ParticleEffect::setDefault() {
+	m_Prototype.setShape(osgParticle::Particle::QUAD);
+	m_Prototype.setLifeTime(1.0);
+	m_Prototype.setAlphaRange(osgParticle::rangef(1,0));
+	m_Prototype.setSizeRange(osgParticle::rangef(0.2f, 0.2f));
+	m_Prototype.setPosition(osg::Vec3(0.0f,0.0f,0.0f));
+	m_Prototype.setVelocity(osg::Vec3(0.0,0.0,0.0));
+	m_Prototype.setColorRange(osgParticle::rangev4(osg::Vec4(1,1,1,1), osg::Vec4(1,1,1,1)));
+	m_Prototype.setRadius(10000.0);
+	m_Emissive = false;
+	m_Light = true;
+}
+
+void ParticleEffect::setTexture(const std::string & TextureFile) { 
+	m_TextureFile = TextureFile; 
+}
+
+void ParticleEffect::setColorRange(const osg::Vec4 &colorMin, const osg::Vec4 &colorMax) {
+	m_Prototype.setColorRange(osgParticle::rangev4(colorMin, colorMax));
+}
+
+void ParticleEffect::setAlphaRange(float alpha_0, float alpha_1) {
+	m_Prototype.setAlphaRange(osgParticle::rangef(alpha_0, alpha_1));
+}
+
+void ParticleEffect::setSizeRange(float size_0, float size_1) {
+	m_Prototype.setSizeRange(osgParticle::rangef(size_0, size_1));
+}
+
+void ParticleEffect::setLifeTime(float t) {
+	m_Prototype.setLifeTime(t);
+}
+
+void ParticleEffect::setShape(osgParticle::Particle::Shape const &shape) {
+	m_Prototype.setShape(shape);
+}
+
+void ParticleEffect::setEmissive(bool emissive) { 
+	m_Emissive = emissive; 
+}
+
+void ParticleEffect::setLight(bool light) { 
+	m_Light = light; 
+}
+
+void ParticleEffect::setParent(osg::Group *parent) { 
+	// cannot reassign after creation
+	assert(!m_Created);
+	m_Parent = parent;
+}
+
+void ParticleEffect::setEnabled(bool on) {
+	if (m_Emitter.valid()) m_Emitter->setEnabled(on);
+}
+
+void ParticleEffect::create() {
+	if (m_Created) return;
+
+	setDefaultAttributes(m_TextureFile, m_Emissive, m_Light, 0);
+	setDefaultParticleTemplate(m_Prototype);
+	setFreezeOnCull(false);
+
+	m_Emitter = new osgParticle::ModularEmitter;
+	m_Emitter->setParticleSystem(this);
+	m_Emitter->setPlacer(getPlacer());
+	m_Emitter->setShooter(getShooter());
+	m_Emitter->setCounter(getCounter());
+
+	m_Program = new osgParticle::ModularProgram;
+	m_Program->setParticleSystem(this);
+
+	OperatorList::iterator iter;
+	for (iter = m_Operators.begin(); iter != m_Operators.end(); iter++) {
+		m_Program->addOperator(iter->get());
+	}
+
+	m_Geode = new osg::Geode;
+	m_Geode->addDrawable(this);
+
+	VirtualScene *scene = CSPSim::theSim->getScene();
+	assert(scene);
+	scene->addParticleSystem(m_Geode.get(), m_Program.get());
+
+	if (m_Parent.valid()) {
+		m_Parent->addChild(m_Emitter.get());
+	} 
+
+	m_Created = true;
+}
+
+void ParticleEffect::addOperator(osgParticle::Operator* op) {
+	if (m_Created) {
+		m_Program->addOperator(op);
+	}
+	m_Operators.push_back(op);
+}
+
+void ParticleEffect::removeOperator(osgParticle::Operator* op) {
+	OperatorList::iterator at = std::find(m_Operators.begin(), m_Operators.end(), op);
+	if (at != m_Operators.end()) {
+		m_Operators.erase(at);
+	}
+	if (m_Created) {
+		// XXX is there a simple way to remove an operator from the program
+		//     with only the pointer?
+		//m_Program->removeOperator(op);
+	}
+}
+
+
+ParticleEffectUpdater::ParticleEffectUpdater() { 
+	m_Enabled = false;
+	m_InScene = false;
+}
+
+ParticleEffectUpdater::~ParticleEffectUpdater() { 
+	destroy(); 
+}
+
+
+void ParticleEffectUpdater::addParticleSystem(ParticleEffect *effect) {
+	effect->create();
+	osgParticle::ParticleSystemUpdater::addParticleSystem(effect);
+}
+
+void ParticleEffectUpdater::setEnabled(bool on) {
+	if (m_Enabled == on) return;
+	m_Enabled = on;
+	if (on && !m_InScene) {
+		VirtualScene *scene = CSPSim::theSim->getScene();
+		assert(scene);
+		scene->addEffectUpdater(this);
+		m_InScene = true;
+	}
+}
+
+void ParticleEffectUpdater::destroy() {
+	if (m_InScene) {
+		VirtualScene *scene = CSPSim::theSim->getScene();
+		if (scene) scene->removeEffectUpdater(this);
+		m_InScene = false;
+	}
+}
+
+
+SmokeTrail::SmokeTrail(): ParticleEffect() {
+	m_Speed = 0;
+}
+
+SmokeTrail::~SmokeTrail() {
+}
+
+void SmokeTrail::setExpansion(float speed) {
 	m_Speed = speed;
 }
 
+void SmokeTrail::setOffset(simdata::Vector3 const &offset) {
+	m_Offset = offset;
+}
 
-} // smoke
+osgParticle::Counter* SmokeTrail::getCounter() {
+	if (!m_Counter) m_Counter = new osgParticle::RandomRateCounter();
+	// XXX this should be adjustable, even if these are the defaults
+	m_Counter->setRateRange(2000, 2400);
+	return m_Counter.get();
+}
+
+osgParticle::Shooter* SmokeTrail::getShooter() {
+	if (!m_Shooter) m_Shooter = new osgParticle::RadialShooter();
+	// XXX this should be adjustable, even if these are the defaults
+	m_Shooter->setPhiRange(-0.21f, 1.78f);
+	m_Shooter->setThetaRange(0.0f, 1.57f);
+	m_Shooter->setInitialSpeedRange(0, m_Speed);
+	return m_Shooter.get();
+}
+
+osgParticle::Placer* SmokeTrail::getPlacer() {
+	if (!m_Placer) m_Placer = new osgParticle::SegmentPlacer();
+	return m_Placer.get();
+}
+
+inline osg::Vec3 toVec3(simdata::Vector3 const &v) {
+	return osg::Vec3(v.x, v.y, v.z); 
+}
+
+void SmokeTrail::update(simdata::Vector3 const &motion, simdata::Quaternion const &attitude) {
+	simdata::Vector3 lastbody = attitude.GetInverseRotated(m_LastPlace - motion);
+	m_Placer->setVertexA(toVec3(m_Offset));
+	m_Placer->setVertexB(toVec3(lastbody));
+	m_LastPlace = attitude.GetRotated(m_Offset);
+}
+
+SmokeTrailSystem::SmokeTrailSystem() {
+	m_Updater = NULL;
+}
+
+SmokeTrailSystem::~SmokeTrailSystem() {
+}
+
+void SmokeTrailSystem::addSmokeTrail(SmokeTrail *trail) {
+	if (!m_Updater) {
+		m_Updater = new ParticleEffectUpdater;
+		m_Updater->setEnabled(true);
+	}
+	assert(trail);
+	m_Trails.push_back(trail);
+	m_Updater->addParticleSystem(trail);
+}
+
+void SmokeTrailSystem::setEnabled(bool on) {
+	TrailList::iterator iter;
+	for (iter = m_Trails.begin(); iter != m_Trails.end(); iter++) {
+		(*iter)->setEnabled(on);
+	}
+}
+
+void SmokeTrailSystem::update(simdata::Vector3 const &motion, simdata::Quaternion const &attitude) {
+	TrailList::iterator iter;
+	for (iter = m_Trails.begin(); iter != m_Trails.end(); iter++) {
+		(*iter)->update(motion, attitude);
+	}
+}
+
 } // fx
 

@@ -27,11 +27,11 @@
 #define __SMOKEEFFECTS_H__
 
 #include <osg/ref_ptr>
+#include <osgParticle/ParticleSystem>
+#include <osgParticle/ParticleSystemUpdater>
 #include <osgParticle/Operator>
-#include <osgParticle/SegmentPlacer>
-#include <osgParticle/ModularEmitter>
 
-#include <SimData/Matrix3.h>
+#include <SimData/Quaternion.h>
 #include <SimData/Vector3.h>
 
 #include <vector>
@@ -39,18 +39,28 @@
 
 using std::string;
 
+
+namespace osg {
+	class Geode;
+	class Group;
+}
+
 namespace osgParticle {
-	class ParticleSystem;
-	class ParticleSystemUpdater;
+	class Particle;
+	class ModularEmitter;
+	class ModularProgram;
+	class SegmentPlacer;
+	class RadialShooter;
+	class RandomRateCounter;
 	class Placer;
 	class Counter;
 	class Shooter;
 }
 
 namespace fx {
-namespace smoke {
 
 
+	/*
 class SmokeSegments {
 	typedef std::vector<osg::ref_ptr<osgParticle::SegmentPlacer> > PlacerArray;
 	PlacerArray m_Placers;
@@ -63,8 +73,9 @@ public:
 	}
 	int addSource(simdata::Vector3 const &v);
 	osgParticle::SegmentPlacer *getSegment(int i);
-	void update(simdata::Vector3 const &motion, simdata::Matrix3 const &to_body, simdata::Matrix3 const &to_scene);
+	void update(simdata::Vector3 const &motion, simdata::Quaternion const &attitude);
 };
+*/
 
 class VortexExpander: public osgParticle::Operator
 {
@@ -76,71 +87,117 @@ public:
 };
 
 
-class BaseSystem
+class SmokeThinner: public osgParticle::Operator
 {
 public:
-	BaseSystem();
-	virtual ~BaseSystem();
-	void setDefault();
-	void setTexture(const std::string & TextureFile);
-	void setColorRange(const osg::Vec4 &colorMin, const osg::Vec4 &colorMax);
-	void setAlphaRange(float alpha_0, float alpha_1);
-	void setSizeRange(float size_0, float size_1);
-	void setLifeTime(float t);
-	void setShape(osgParticle::Particle::Shape const &shape);
-	void setEmissive(bool emissive);
-	void setLight(bool light);
-	virtual void setCounter(osgParticle::Counter *counter);
-	virtual osgParticle::Counter *getCounter();
-	virtual void setShooter(osgParticle::Shooter *shooter);
-	virtual osgParticle::Shooter *getShooter();
-	virtual void setPlacer(osgParticle::Placer *placer);
-	virtual osgParticle::Placer *getPlacer();
-	virtual void setOperator(osgParticle::Operator *op);
-	virtual osgParticle::Operator *getOperator();
-	virtual osgParticle::ModularEmitter *create(osg::Transform *base, 
-	                                            osgParticle::ParticleSystemUpdater *&psu);
-						    
-protected:
-	osgParticle::Particle m_Prototype;
-	bool m_Emissive;
-	bool m_Light;
-	std::string m_TextureFile;
-	osg::ref_ptr<osgParticle::Operator> m_Operator;
-	osg::ref_ptr<osgParticle::Operator> m_UserOperator;
-	osg::ref_ptr<osgParticle::Placer> m_Placer;
-	osg::ref_ptr<osgParticle::Placer> m_UserPlacer;
-	osg::ref_ptr<osgParticle::Counter> m_Counter;
-	osg::ref_ptr<osgParticle::Counter> m_UserCounter;
-	osg::ref_ptr<osgParticle::Shooter> m_Shooter;
-	osg::ref_ptr<osgParticle::Shooter> m_UserShooter;
-};
-
-
-class Thinner: public osgParticle::Operator
-{
-public:
-	META_Object(csp, Thinner);
-	Thinner() {}
-	Thinner(const Thinner &copy, const osg::CopyOp &copyop): Operator(copy, copyop) {}
+	META_Object(csp, SmokeThinner);
+	SmokeThinner() {}
+	SmokeThinner(const SmokeThinner &copy, const osg::CopyOp &copyop): Operator(copy, copyop) {}
 	virtual void operate(osgParticle::Particle *p, double dt);
 	int m_X;
 };
 
-class Trail: public BaseSystem
-{
+
+class ParticleEffect: public osgParticle::ParticleSystem {
+	friend class ParticleEffectUpdater;
 public:
-	Trail(): BaseSystem() { m_Segment = NULL; m_Speed = 0.0; }
-	virtual osgParticle::Shooter *getShooter();
-	virtual osgParticle::Counter *getCounter();
-	void setExpansion(float speed);
+	ParticleEffect();
+	virtual ~ParticleEffect();
+
+	virtual void setDefault();
+	virtual void setTexture(const std::string & TextureFile);
+	virtual void setColorRange(const osg::Vec4 &colorMin, const osg::Vec4 &colorMax);
+	virtual void setAlphaRange(float alpha_0, float alpha_1);
+	virtual void setSizeRange(float size_0, float size_1);
+	virtual void setLifeTime(float t);
+	virtual void setShape(osgParticle::Particle::Shape const &shape);
+	virtual void setEmissive(bool emissive);
+	virtual void setLight(bool light);
+	virtual void setParent(osg::Group *parent);
+	virtual void addOperator(osgParticle::Operator* op);
+	virtual void removeOperator(osgParticle::Operator* op);
+	virtual void setEnabled(bool on);
+
 protected:
-	osgParticle::SegmentPlacer *m_Segment;
+
+	virtual osgParticle::Counter* getCounter() = 0;
+	virtual osgParticle::Shooter* getShooter() = 0;
+	virtual osgParticle::Placer* getPlacer() = 0; 
+	virtual void create();
+
+	typedef std::vector<osg::ref_ptr<osgParticle::Operator> > OperatorList;
+
+	OperatorList m_Operators;
+
+	osgParticle::Particle m_Prototype;
+	osg::ref_ptr<osgParticle::ModularEmitter> m_Emitter;
+	osg::ref_ptr<osgParticle::ModularProgram> m_Program;
+	osg::ref_ptr<osg::Geode> m_Geode;
+	osg::ref_ptr<osg::Group> m_Parent;
+
+	std::string m_TextureFile;
+	bool m_Emissive;
+	bool m_Light;
+	bool m_Created;
+};
+
+
+class SmokeTrail: public ParticleEffect {
+public:
+	SmokeTrail();
+	virtual ~SmokeTrail();
+
+	void setExpansion(float speed);
+	void setOffset(simdata::Vector3 const &offset);
+	void update(simdata::Vector3 const &motion, simdata::Quaternion const &attitude);
+
+protected:
+
+	virtual osgParticle::Counter* getCounter();
+	virtual osgParticle::Shooter* getShooter();
+	virtual osgParticle::Placer* getPlacer();
+
+	osg::ref_ptr<osgParticle::RandomRateCounter> m_Counter;
+	osg::ref_ptr<osgParticle::SegmentPlacer> m_Placer;
+	osg::ref_ptr<osgParticle::RadialShooter> m_Shooter;
+
+	simdata::Vector3 m_Offset;
+	simdata::Vector3 m_LastPlace;
 	float m_Speed;
 };
 
 
-} // smoke
+class ParticleEffectUpdater: public osgParticle::ParticleSystemUpdater {
+public:
+	ParticleEffectUpdater();
+	virtual ~ParticleEffectUpdater();
+
+	// XXX note that this is NOT a virtual method!
+	void addParticleSystem(ParticleEffect *effect);
+
+	void setEnabled(bool);
+	void destroy();
+
+protected:
+	bool m_Enabled;
+	bool m_InScene;
+};
+
+
+class SmokeTrailSystem: public osg::Referenced {
+public:
+	SmokeTrailSystem();
+	virtual ~SmokeTrailSystem();
+	virtual void addSmokeTrail(SmokeTrail *);
+	virtual void update(simdata::Vector3 const &motion, simdata::Quaternion const &attitude);
+	virtual void setEnabled(bool);
+protected:
+	typedef std::vector< osg::ref_ptr<SmokeTrail> > TrailList;
+	TrailList m_Trails;
+	osg::ref_ptr<ParticleEffectUpdater> m_Updater;
+};
+
+
 } // fx 
 
 

@@ -48,11 +48,13 @@
 #include "SimObject.h"
 #include "StaticObject.h"
 #include "VirtualBattlefield.h"
+#include "VirtualScene.h"
 #include "ConsoleCommands.h"
 
 #include <SimData/Types.h>
 #include <SimData/Exception.h>
 #include <SimData/DataArchive.h>
+#include <SimData/DataManager.h>
 #include <SimData/Exception.h>
 #include <SimData/FileUtility.h>
 
@@ -101,6 +103,8 @@ CSPSim::CSPSim()
 		theSim = this;
 	}
 
+	m_Clean = true;
+
 	m_Paused = true;
 	m_Finished = false;
 	m_ConsoleOpen = false;
@@ -115,6 +119,7 @@ CSPSim::CSPSim()
 
 	m_Interface = NULL;
 	m_Battlefield = NULL;
+	m_Scene = NULL;
 
 	int level = g_Config.getInt("Debug", "LoggingLevel", 0, true);
 	csplog().setLogLevels(CSP_ALL, (cspDebugPriority)level);
@@ -124,22 +129,10 @@ CSPSim::CSPSim()
 
 CSPSim::~CSPSim()
 {
+	assert(m_Clean);
 	if (theSim == this) {
 		theSim = 0;
 	}
-	if (m_Battlefield) {
-		delete m_Battlefield;
-	}
-	if (m_GameScreen) {
-		delete m_GameScreen;
-	}
-	/*
-	if (m_Console) {
-		Py_DECREF(m_Console);
-		m_Console = NULL;
-	}
-	*/
-	csplog().set_output(cerr);
 }
 
 void CSPSim::setActiveObject(simdata::Pointer<DynamicObject> object) {
@@ -173,9 +166,20 @@ simdata::Pointer<DynamicObject const> const CSPSim::getActiveObject() const {
 	return m_ActiveObject;
 }
 
-VirtualBattlefield* const CSPSim::getBattlefield() const
-{
-	return m_Battlefield;
+VirtualBattlefield * CSPSim::getBattlefield() {
+	return m_Battlefield.get();
+}
+
+VirtualBattlefield const * CSPSim::getBattlefield() const {
+	return m_Battlefield.get();
+}
+
+VirtualScene * CSPSim::getScene() {
+	return m_Scene.get();
+}
+
+VirtualScene const * CSPSim::getScene() const {
+	return m_Scene.get();
 }
 
 void CSPSim::togglePause() {
@@ -193,8 +197,9 @@ void CSPSim::init()
 		
 		// open the primary data archive
 		try {
-			m_DataArchive = new simdata::DataArchive(archive_file.c_str(), 1);
-			assert(m_DataArchive);
+			simdata::DataArchive *sim = new simdata::DataArchive(archive_file.c_str(), 1);
+			assert(sim);
+			m_DataManager.addArchive(sim);
 		} 
 		catch (simdata::Exception e) {
 			CSP_LOG(CSP_APP, CSP_ERROR, "Error opening data archive " << archive_file);
@@ -209,7 +214,7 @@ void CSPSim::init()
 
 		// put up Logo screen then do rest of initialization
 		LogoScreen logoScreen(m_ScreenWidth, m_ScreenHeight);
-		logoScreen.OnInit();
+		logoScreen.onInit();
 
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -217,47 +222,49 @@ void CSPSim::init()
 
 		SDL_GL_SwapBuffers();
 
+		m_Clean = false;
+
 		// load all interface maps and create a virtual hid for the active object
 		m_InterfaceMaps = new EventMapIndex();
 		m_InterfaceMaps->loadAllMaps();
 		m_Interface = new VirtualHID();
 
-		// FIXME: these functions should be separated!
-		// create the battlefield + scenegraph
+		// eventually this will be set in an entirely different way...
+		m_ActiveTerrain = m_DataManager.getObject("sim:terrain.balkan");
+		m_ActiveTerrain->activate();
+
+		m_Scene = new VirtualScene();
+		m_Scene->buildScene();
+		m_Scene->setTerrain(m_ActiveTerrain);
+
 		m_Battlefield = new VirtualBattlefield();
 		m_Battlefield->create();
-		m_Battlefield->buildScene();
-
-		// eventually this will be set in an entirely different way...
-		m_ActiveTerrain = m_DataArchive->getObject("sim:terrain.balkan");
-		m_ActiveTerrain->activate(m_Battlefield);
+		m_Battlefield->setTerrain(m_ActiveTerrain);
+		m_Battlefield->setScene(m_Scene);
 
 		// get view parameters from configuration file.  ultimately there should
 		// be an in-game ui for this and probably a separate config file.
 		bool wireframe = g_Config.getBool("View", "Wireframe", false, true);
-		m_Battlefield->setWireframeMode(wireframe);
+		m_Scene->setWireframeMode(wireframe);
 		int view_distance = g_Config.getInt("View", "ViewDistance", 35000, true);
-		m_Battlefield->setViewDistance(view_distance);
+		m_Scene->setViewDistance(view_distance);
 		bool fog = g_Config.getBool("View", "Fog", true, true);
-		m_Battlefield->setFogMode(fog);
+		m_Scene->setFogMode(fog);
 		int fog_start = g_Config.getInt("View", "FogStart", 20000, true);
-		m_Battlefield->setFogStart(fog_start);
+		m_Scene->setFogStart(fog_start);
 		int fog_end = g_Config.getInt("View", "FogEnd", 35000, true);
-		m_Battlefield->setFogEnd(fog_end);
+		m_Scene->setFogEnd(fog_end);
 
 		// create a couple test objects
-		simdata::Pointer<AircraftObject> ao = m_DataArchive->getObject("sim:vehicles.aircraft.m2k");
+		simdata::Pointer<AircraftObject> ao = m_DataManager.getObject("sim:vehicles.aircraft.m2k");
 		assert(ao.valid());
-		//ao->setGlobalPosition(483000, 499000, 2000);
 		ao->setGlobalPosition(483000, 499000, 91.2);
-		ao->setOrientation(0, 5.0, 0);
-		ao->setVelocity(0, 120.0, 0);
+		ao->setAttitude(2.0, 0.0, 0.0);
 		ao->setVelocity(0, 2.0, 0);
-		ao->addToScene(m_Battlefield);
 		m_Battlefield->addObject(ao);
 
 #if 0
-		static simdata::Pointer<StaticObject> so = m_DataArchive->getObject("sim:objects.runway");
+		static simdata::Pointer<StaticObject> so = m_DataManager.getObject("sim:objects.runway");
 		assert(so.valid());
 		so->setGlobalPosition(483000, 499000, 100.0);
 		so->addToScene(m_Battlefield);
@@ -267,8 +274,7 @@ void CSPSim::init()
 		m_GameScreen = new GameScreen;
 
 		// setup screens
-		m_GameScreen->SetBattlefield(m_Battlefield);
-		m_GameScreen->OnInit();
+		m_GameScreen->onInit();
 
 		// start in the aircraft
 		setActiveObject(ao);
@@ -276,12 +282,12 @@ void CSPSim::init()
 #if 0
 		// set the Main Menu then start the main loop
 		m_MainMenuScreen = new MenuScreen;
-		m_MainMenuScreen->OnInit();
+		m_MainMenuScreen->onInit();
 		changeScreen(m_MainMenuScreen);
 #endif
 
 		changeScreen(m_GameScreen);
-		logoScreen.OnExit();
+		logoScreen.onExit();
 	}
 	catch(csp::Exception & pEx) {
 		csp::FatalException(pEx, "initialization");
@@ -302,17 +308,21 @@ void CSPSim::cleanup()
 {
 	CSP_LOG(CSP_APP, CSP_INFO, "CSPSim  cleanup...");
 
-	assert(m_Battlefield);
-	assert(m_ActiveTerrain.isNull() == false);
+	assert(m_Battlefield.valid());
+	assert(m_Scene.valid());
+	assert(m_ActiveTerrain.valid());
 	assert(m_GameScreen);
 	assert(m_InterfaceMaps);
-	m_GameScreen->SetBattlefield(0);
+	m_ActiveObject = NULL; //setActiveObject(NULL);
 	m_ActiveTerrain->deactivate();
 	m_Battlefield->removeAllObjects();
-	m_Battlefield->Cleanup();
-	m_ActiveTerrain = simdata::PointerBase();
-	delete m_Battlefield;
+	m_Battlefield->cleanup();
+	//m_ActiveTerrain = simdata::PointerBase();
+	m_ActiveTerrain = NULL;
+	//delete m_Battlefield;
 	m_Battlefield = NULL;
+	//delete m_Scene;
+	m_Scene = NULL;
 	delete m_GameScreen;
 	m_GameScreen = NULL;
 	delete m_InterfaceMaps;
@@ -321,7 +331,14 @@ void CSPSim::cleanup()
 		SDL_JoystickClose(m_SDLJoystick);
 		m_SDLJoystick = NULL;
 	}
+	/*
+	if (m_Console) {
+		Py_DECREF(m_Console);
+		m_Console = NULL;
+	}
+	*/
 	SDL_Quit();
+	m_Clean = true;
 }
 
 
@@ -349,8 +366,8 @@ void CSPSim::run()
 	CSP_LOG(CSP_APP, CSP_DEBUG, "CSPSim::run...");
 
 	//m_bShowStats = true;
-	//m_Paused = false;
-	m_Paused = true;
+	m_Paused = false;
+	//m_Paused = true;
 
 	std::string date_string = g_Config.getString("Testing", "Date", "2000-01-01 00:00:00.0", true);
 	simdata::SimDate date;
@@ -361,6 +378,14 @@ void CSPSim::run()
 		std::cerr << "Invalid starting date in INI file (Testing:Date).\n" << std::endl; 
 		::exit(1);
 	}
+
+	// XXX the first call of these routines typically takes a few seconds.
+	// calling them here avoids a time jump at the start of the simloop.
+	if (m_CurrentScreen) {
+		m_CurrentScreen->onUpdate(0.01);
+		m_CurrentScreen->onRender();
+	}
+
 	initTime(date);
 	
 	// XXX move this elsewhere
@@ -454,9 +479,9 @@ void CSPSim::updateTime()
 	m_ElapsedTime += m_FrameTime;
 	m_FrameTime += m_TimeLag;
 	assert(m_FrameTime > 0.0);
-	if (m_FrameTime > 1.0) {
-		m_TimeLag = m_FrameTime - 1.0;
-		m_FrameTime = 1.0;
+	if (m_FrameTime > 0.2) {
+		m_TimeLag = m_FrameTime - 0.2;
+		m_FrameTime = 0.2;
 	} else {
 		m_TimeLag = 0.0;
 	}
@@ -498,16 +523,16 @@ void CSPSim::doInput(double dt)
 		}
 		if (!handled && m_CurrentScreen) {
 			if (screen_interface) {
-				handled = screen_interface->OnEvent(event);
+				handled = screen_interface->onEvent(event);
 			}
 		}
 		if (!handled && m_Interface) {
-			handled = m_Interface->OnEvent(event);
+			handled = m_Interface->onEvent(event);
 		}
 	}
 	// run input scripts
-	if (screen_interface) screen_interface->OnUpdate(dt);
-	if (m_Interface) m_Interface->OnUpdate(dt);
+	if (screen_interface) screen_interface->onUpdate(dt);
+	if (m_Interface) m_Interface->onUpdate(dt);
 }
 
 /**
@@ -517,8 +542,12 @@ void CSPSim::updateObjects(double dt)
 {
 	CSP_LOG(CSP_APP, CSP_DEBUG, "CSPSim::updateObjects...");
 
-    	if (m_Battlefield) {
+    	if (m_Battlefield.valid()) {
 		m_Battlefield->onUpdate(dt);
+	}
+
+	if (m_Scene.valid()) {
+		m_Scene->onUpdate(dt);
 	}
 }
 

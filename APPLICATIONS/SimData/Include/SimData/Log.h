@@ -53,9 +53,7 @@ inline void error(std::string const &msg) {
  *
  *  @return current logstream
  */
-inline SIMDATA_EXPORT logstream&
-log()
-{
+inline SIMDATA_EXPORT logstream& log() {
 	//static logstream logstrm(std::cerr);
 	static logstream *logstrm = 0;
 	if (logstrm == 0) logstrm = new logstream(std::cerr);
@@ -71,7 +69,9 @@ log()
 #ifdef SIMDATA_NDEBUG
 # define SIMDATA_LOG(C,P,M)
 #else
-# define SIMDATA_LOG(C,P,M) simdata::log() << simdata::loglevel(C,P) << M << std::endl
+# define SIMDATA_LOG(C,P,M) simdata::log() << simdata::loglevel(C,P) \
+                                           << "(" << __FILE__ << ":" << __LINE__ << ") " \
+                                           << M << std::endl
 #endif
 
 /// Log message priority levels.

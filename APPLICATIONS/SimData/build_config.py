@@ -15,10 +15,10 @@ class Config_posix(Config):
 		version = env['SWIG_VERSION']
 		self.SWIGFLAGS = ' -c++ -python -noexcept -IInclude -I%s' % self.PYTHON_INC
 		if compareVersions(version, '1.3.20') >= 0:
-		  self.SWIGFLAGS = self.SWIGFLAGS + ' -runtime'
+			self.SWIGFLAGS = self.SWIGFLAGS + ' -runtime'
 		else:
-		  self.SWIGFLAGS = self.SWIGFLAGS + ' -c'
-		  self.SHLINKLIBS.append('swigpy')
+			self.SWIGFLAGS = self.SWIGFLAGS + ' -c'
+			self.SHLINKLIBS.append('swigpy')
 
 
 class Config_msvc(Config):
@@ -30,9 +30,17 @@ class Config_msvc(Config):
 		self.CPPFLAGS = ''
 		self.CPPPATH = ['#/Include', self.PYTHON_INC]
 		self.SHLINKFLAGS = ' /MACHINE:I386 /LIBPATH:%s /NODEFAULTLIB:LIBC' % self.PYTHON_LIB
-		self.SHLINKLIBS = ['dl', 'swigpy']
-		self.SWIGFLAGS = ' -c -c++ -python -noexcept -IInclude -I%s' % self.PYTHON_INC
+		self.SHLINKLIBS = []
 		self.CXXFILESUFFIX = '.cpp'
 		self.ARCHIVE_FORMATS = ['.zip']
+		self.configSwig(env)
+	def configSwig(self, env):
+		version = env['SWIG_VERSION']
+		self.SWIGFLAGS = ' -c++ -python -noexcept -IInclude -I%s' % self.PYTHON_INC
+		if compareVersions(version, '1.3.20') >= 0:
+			self.SWIGFLAGS = self.SWIGFLAGS + ' -runtime'
+		else:
+			self.SWIGFLAGS = self.SWIGFLAGS + ' -c'
+			self.SHLINKLIBS.append('swigpy')
 		
 

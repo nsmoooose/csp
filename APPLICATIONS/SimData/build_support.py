@@ -124,7 +124,7 @@ def addConfigTests(conf):
 	conf.AddTests(configure_tests)
 
 def CustomConfigure(env):
-	conf = env.Configure()
+	conf = env.Configure(log_file='#/.config.log')
 	addConfigTests(conf)
 	return conf
 
@@ -184,7 +184,8 @@ SWIG = 'swig'
 def checkSwig(context, min_version, not_versions=[]):
 	ok = 0
 	context.Message("Checking for swig...")
-	swig_in, swig_out, swig_err = os.popen3('%s -version' % SWIG, 't', 1024)
+	#swig_in, swig_out, swig_err = os.popen3('%s -version' % SWIG, 't', 1024)
+	swig_err = os.popen('%s -version 2>&1' % SWIG, 'rt', 1024)
 	if swig_err is not None:
 		output = swig_err.readlines()
 		output = " ".join(map(lambda x: x.strip(), output))
@@ -205,19 +206,25 @@ def checkSwig(context, min_version, not_versions=[]):
 
 configure_tests['checkSwig'] = checkSwig
 
-
-def addSwigLib(env):
-	# XXX this should work according to the scons dev docs, but builders
-	# don't seem to have a Copy() method yet.
-	#swiglib = env.SharedLibrary.Copy(SHLIBPREFIX = '', LIBS = env["SWLIBS"])
-	#env.Append(BUILDERS = {'SwigLibrary': swiglib})
-	pass
+	
+def emitSwig(target, source, env):
+	target = []
+	assert(len(source)==1)
+	ext = env['CXXFILESUFFIX']
+	for s in source:
+		wrapper = os.path.splitext(str(s))[0]+'_wrap.'+ext
+		target.append(wrapper)
+		# XXX 
+		# Module name really should be based on the %module
+		# directive in the interface file.
+		module = os.path.splitext(str(s))[0]+'.py'
+		target.append(module)
+	return (target, source)
 
 def addSwigBuild(env):
-	action = '$SWIG $SWFLAGS $_CPPINCFLAGS -o ${TARGETS[0]} $SOURCES'
-	SwigBuild = Builder(action=action,
-			    src_suffix=".i")
-	env.Append(BUILDERS = {'SwigBuild': SwigBuild})
+	builder = Builder(action = '$SWIG $SWIGFLAGS -o ${TARGETS[0]} $SOURCE',
+	                  emitter = emitSwig)
+	env.Append(BUILDERS = {'Swig': builder})
 
 def addSwigDep(env):
 	def SwigScanner(node, env, path, arg=None):
@@ -226,7 +233,7 @@ def addSwigDep(env):
 		deps = ''.join(map(lambda x: x.strip(), stdout.readlines()))
 		deps = map(lambda x: "#/"+x.strip(), deps.split('\\'))[1:]
 		return deps
-	scanner = Scanner(function = SwigScanner, skeys = ['.i'], recursive = 0)
+	scanner = Scanner(name = 'SwigScanner', function = SwigScanner, skeys = ['.i'], recursive = 0)
 	env.Append(SCANNERS = scanner)
 
 def addSwigSupport(env):
@@ -234,41 +241,7 @@ def addSwigSupport(env):
 	SWIG = SCons.Util.WhereIs('swig')
 	env['SWIG'] = SWIG
 	addSwigDep(env)
-	addSwigLib(env)
 	addSwigBuild(env)
-
-# def addSDist(env):
-# 	def copy(target, source, env):
-# 		info = env["PACKAGE_INFO"]
-# 		base = '%s-%s' % (info.package, info.version)
-# 		dist = os.path.join('dist', base)
-# 		makepaths = {}
-# 		for src in map(str, source):
-# 			dir = os.path.join(dist, os.path.dirname(src))
-# 			dst = os.path.join(dist, src)
-# 			if not makepaths.has_key(dir):
-# 				makepaths[dir] = 1
-# 				if not os.path.exists(dir):
-# 					os.makedirs(dir)
-			#print "copy %s -> %s" % (src, dst)
-# 			shutil.copy2(src, dst)
-		#print str(target[0])
-		#os.system('tar -C %s -zcf %s.tgz %s' % ('dist', base, base))
-		#---------
-		#env["TARFLAGS"] = '-C dist -cz'
-		#Action(env["TARCOM"])(base+'.tgz', dist, env)
-# 	def emitter(target, source, env):
-# 		info = env["PACKAGE_INFO"]
-# 		base = '%s-%s' % (info.package, info.version)
-# 		dist = os.path.join('#/dist', base)
-# 		return (dist+'.tgz', source)
-# 	def report(target, source, env):
-# 		info = env["PACKAGE_INFO"]
-# 		base = '%s-%s' % (info.package, info.version)
-# 		dist = os.path.join('dist', base)
-# 		return 'copying sources to %s...' % dist 
-# 	SDist = Builder(action=Action(copy, report), emitter=emitter)
-# 	env.Append(BUILDERS = {"SDist": SDist})
 
 
 ############################################################
@@ -305,6 +278,7 @@ class Globals:
 	
 
 class Package:
+
 	def _addDistBuilder(self):
 		def DistAction(target, source, env):
 			dist = str(target[0])
@@ -340,7 +314,7 @@ class Package:
 				error = "Unknown archive format extension '%s'" % os.path.splitext(dist)[1]
 				raise SCons.Errors.UserError(error)
 				return 0
-			Action(command)(target, "", env)
+			return Action(command)(target, "", env)
 		def DistReport(target, source, env):
 			print "Creating package archive %s..." % str(target[0])
 		env = self.env
@@ -361,6 +335,7 @@ class Package:
 		self.info.__dict__.update(kw)
 		self.source_content = []
 		self.binary_content = []
+		self.dists = {}
 
 	def addManifest(self, filename, type='both'):
 		if not os.path.exists(filename): return
@@ -408,7 +383,7 @@ class Package:
 			self.binary_content = self._filter_content(self.binary_content, content)
 
 	def dump(self):
-		print map(str, self.content)
+		pass #print map(str, self.content)
 
 	def distpath(self, base=''):
 		return os.path.join('dist', base)
@@ -434,21 +409,16 @@ class Package:
 	default_format = {'posix': 'tgz', 'nt': 'zip'}
 	def _getArchiveFormats(self):
 		env = self.env
-		try:
-			formats = env['ARCHIVE_FORMATS']
-		except KeyError:
-			formats = None
+		formats = getattr(env, 'ARCHIVE_FORMATS', None)
 		if formats is None:
 			try:
-				formats = [self.default_format[os.name]]
+				formats = self.default_format[os.name]
 			except KeyError:
 				error = "Don't know how to create archive on platform '%s'" % os.name
 				raise SCons.Errors.UserError(error)
-		else:
-			formats = formats.split()
-		return formats
+		return formats.split()
 
-	def _archiveExtension(self, format):
+	def _getArchiveExtension(self, format):
 		if format in ['gztar', 'tar.gz', 'gzip', 'gz', 'tgz']:
 			return '.tar.gz'
 		if format in ['bztar', 'tar.bz2', 'bzip2', 'bz2', 'tbz2', 'tbz']:
@@ -473,11 +443,12 @@ class Package:
 		for source, target in map(lambda x, y: (x,y), src, dst):
 			ret.append(env.LinkFile(target, source))
 		for format in formats:
-			ext = self._archiveExtension(format)
+			ext = self._getArchiveExtension(format)
 			if ext is None:
 				error = "Don't know how to create distribution archive format '%s'" % format
 				raise SCons.Errors.UserError(error)
 			ret.append(env.DistArchive(dist+ext, dst))
+		self.dists[alias] = ret
   		env.Alias(alias, ret)
 
 	def installTarget(self, package_files, include_files):
@@ -490,6 +461,25 @@ class Package:
 		env.Alias('install_package', install_package)
 		env.Alias('install_headers', install_headers)
 		env.Alias('install', install_package + install_headers)
+
+	def debian(self):
+		env = self.env
+		info = self.info
+		base = self.base()
+		path = self.distpath('debian')
+		user = os.environ.get('USER', '')
+		cmd = ['rm -rf %s && mkdir -p %s' % (path, path),
+		       'cd %s && tar -vxzf ../%s-src.tar.gz && mv %s-src %s' % (path, base, base, base.lower()),
+	 	       'cd %s/%s && LOGNAME="%s" dpkg-buildpackage -rfakeroot -d "-i.sconsign|.pyc|debian|.cache"' % (path, base.lower(), user)]
+		env.Command('debs', self.dists['sdist'], cmd)
+
+	def setTargets(self, targets, default=1):
+		self.targets = targets
+		if default: self.env.Default(targets)
+
+	def unitTests(self, command):
+		self.env.Depends('unittests', self.targets)
+		self.env.Alias('test', self.env.Command('unittests', '', command))
 
 def Prefix(dir, names):
 	if type(names) == type(''):
@@ -531,4 +521,5 @@ class Config:
 	def __getattr__(self, attr):
 		dict = self.__dict__['env']
 		return dict.get(attr,None)
+
 

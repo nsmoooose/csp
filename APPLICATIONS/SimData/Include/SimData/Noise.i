@@ -23,8 +23,6 @@
 #include "SimData/Noise.h"
 %}
 
-%include "std_vector.i"
-
 // HACK!
 #ifndef VFLOAT
 #define VFLOAT

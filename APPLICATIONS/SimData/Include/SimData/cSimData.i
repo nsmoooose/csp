@@ -31,6 +31,7 @@
 
 %}
 
+// standard includes
 %include "std_string.i"
 %include "std_vector.i"
 %include "exception.i"
@@ -42,6 +43,7 @@
 
 %include "SimData/Log.i"
 
+// not currently used (will be directors).
 %feature("polymorphic") SIMDATA(InterfaceProxy);
 %feature("polymorphic") SIMDATA(Object);
 

@@ -75,11 +75,6 @@ headers = Prefix("#/Include/SimData",
 	Version.h
 	""")
 
-top_interfaces = Prefix("#/Source/",
-	"""
-	cSimData.i
-	""")
-
 sub_interfaces = Prefix("#/Include/SimData",
 	"""
 	Archive.i
@@ -160,7 +155,6 @@ extra_files = Prefix("#",
 	README
 	COPYING
 	TODO
-	Makefile
 	SConstruct
 	build_support.py
 	build_config.py
@@ -173,35 +167,42 @@ doc_files = Prefix("#/Doc",
 	Doxyfile
 	SConscript
 	footer.html
-	Makefile
 	""")
 
-# swig wrappers
-wrapper = env.CopyFile('#/SimData/cSimData.py', 'cSimData.py')
+deb_files = Prefix("#/debian",
+	"""
+	control
+	rules
+	copyright
+	changelog
+	docs
+	files
+	""")
+
+# extension module
+extension_interface = "#/Source/cSimData.i"
+extension_wrapper, extension_module = env.Swig([], extension_interface)
+package_module = env.CopyFile('#/SimData/cSimData.py', extension_module)
 
 # main libraries
 shared_library = env.SharedLibrary('#/SimData/_cSimData', 
-                                   sources + top_interfaces, 
+                                   sources + [extension_wrapper],
 				   SHLIBPREFIX = '', 
 				   LIBS=env.get('LIBS',[])+env.get('SHLINKLIBS',[]))
 
 static_library = env.StaticLibrary('#/SimData/libSimData', sources)
 
 libraries = [shared_library, static_library]
-package_targets = libraries + [wrapper]
+package_targets = libraries + [package_module]
 
 # installation
 package = env['PACKAGE']
 package.installTarget(package_files + libraries, headers + sub_interfaces)
-package.add(Prefix('#/Source', sources) + top_interfaces, 'source')
-package.add(top_interfaces, 'source')
+package.add(Prefix('#/Source', sources), 'source')
+package.add(extension_interface, 'source')
+package.add(deb_files, 'source')
 package.add(libraries, 'binary')
 package.add(package_files + headers + sub_interfaces + extra_files + doc_files, 'both')
-
-# default target(s)
-Default(package_targets)
-
-# unittests
-env.Depends('unittests', package_targets)
-env.Alias('test', env.Command('unittests', '', './runtests.py'))
+package.setTargets(package_targets)
+package.unitTests('./runtests.py')
 

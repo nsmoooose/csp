@@ -1,5 +1,11 @@
 Version 0.4.0 (in progress)
 ===========================
+2004-03-13: onsight
+  * Some enhancements to the scons script (e.g. building
+    debian packages, fix a popen3 issue under windowns).
+  * Minor swig interface cleanup of std_vector.i includes.
+	* Added source code file and line numbers to log output.
+
 2004-02-03: delta
   * Added a quick hack in Exception.h to fix a weird 
   behaviour of swig1.3.21 when it parses this file on
@@ -16,17 +22,28 @@ Version 0.4.0 (in progress)
   test by command line the SimData site-package installation 
   as before.
   
+2003-02-01: onsight
+  * Renamed CHANGELOG* to ChangeLog* to be slightly more GNUish,
+    plus vim picks up the syntax highlighting automatically now.
+
+  * Readded a Swig builder to scons to properly track dependencies
+    between the module, the wrapper, and the interface.
+  * Fixed the return value of the dist wrapper; dists will now be
+    reassembled only if necessary.
+  * Added a very basic debs target, which extracts the sdist archive
+    and builds the deb.  No dependency tracking yet, so it does all
+    the work everytime.
+
 2003-01-31: onsight
   * Added debian packaging files (experimental).
 
   * Added 'docs --clean' target to scons.
-
   * Fixed the source directory for building scons sdist.
+  * Added 'test' target to scons to run the unittests.
+  * Reenabled swig dependency tracking in scons.
   
   * Cleaned up swig std includes in the various interface
     files.  Now all loaded up front in cSimData.i.
-
-  * Added 'test' target to scons to run the unittests.
 
 2003-01-30: onsight
   * Starting with version 1.3.20 of SWIG, the python runtime
@@ -104,7 +121,7 @@ Version 0.4.0 (in progress)
 
   * Expanded test_Objects.cpp test to check the interface
     registry and object introspection.
-    
+
 2003-10-23: onsight
   * Separated Singleton class into Singleton.h (was InterfaceRegistry.h).
 

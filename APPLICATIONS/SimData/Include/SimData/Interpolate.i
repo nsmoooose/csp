@@ -23,7 +23,6 @@
 #include "SimData/Interpolate.h"
 %}
 
-%include "std_vector.i"
 #ifndef VFLOAT
 #define VFLOAT
 namespace std {

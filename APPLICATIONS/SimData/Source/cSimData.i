@@ -2,4 +2,3 @@
 
 %include "SimData/cSimData.i"
 
-

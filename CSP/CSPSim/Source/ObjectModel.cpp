@@ -84,7 +84,7 @@ class AnimationBinding: public osg::Referenced {
 	simdata::Ref<Animation const> m_NestedAnimation;
 public:
 	AnimationBinding(Animation const* animation): m_Animation(animation) {}
-	inline AnimationCallback *bind(osg::Node *node) const {
+	AnimationCallback *bind(osg::Node *node) const {
 		return m_Animation->newCallback(node);
 	}
 	void setNestedAnimation(Animation const* animation) {
@@ -93,7 +93,7 @@ public:
 	bool hasNestedAnimation() const {
 		return m_NestedAnimation.valid();
 	}
-	AnimationCallback* bindNested(osg::Node* node) const {
+	AnimationCallback *bindNested(osg::Node* node) const {
 		return m_NestedAnimation->newCallback(node->getUpdateCallback());
 	}
 };
@@ -150,6 +150,9 @@ public:
 					CSP_LOG(APP, DEBUG, "FOUND 2nd");
 					animation_binding->setNestedAnimation(i->second.get());
 				}
+			} else {
+				// si id contient le nom d une TimedAnimationPath alors
+				// associer ce noeud a la TimedAnimationPath trouvee
 			}
 		}
 		traverse(node);
@@ -460,19 +463,19 @@ void ObjectModel::addContactMarkers() {
 		m_ContactMarkers->addChild(diamond);
 	}
 	// set markers not visible by default
-	m_ContactMarkers->setAllChildrenOff();
+	showContactMarkers(false);
 	m_DebugMarkers->addChild(m_ContactMarkers.get());
 }
 
 void ObjectModel::showContactMarkers(bool on) {
 	if (on)
-		m_ContactMarkers->setAllChildrenOff();
-	else
 		m_ContactMarkers->setAllChildrenOn();
+	else
+		m_ContactMarkers->setAllChildrenOff();
 }
 
 bool ObjectModel::getMarkersVisible() const {
-	return (m_ContactMarkers->getNodeMask() != 0x0);
+	return (m_ContactMarkers->getValue(0) != 0);
 }
 
 osg::ref_ptr<osg::Node> ObjectModel::getModel() {

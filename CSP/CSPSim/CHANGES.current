@@ -1,5 +1,9 @@
  Version 0.4.0 (in progress)
 ===========================
+
+2005-02-18: delta
+ * Fixed a bug with ContactMarkers.
+ 
 2005-02-17: lologramme
  * Added F16 D
 
@@ -11,7 +15,7 @@
    DrivenRotation::Callback operator.
 
 2005-02-15: lologramme
- * Addes Taxi signalisation
+ * Added Taxi signalisation
 
 2005-02-14: delta
  * Added Tools/Loader vs project.

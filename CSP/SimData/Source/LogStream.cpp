@@ -42,12 +42,12 @@ logbuf::logbuf()
 
 logbuf::~logbuf()
 {
-    if (sbuf) sync();
+    //if (sbuf) sync();    // logs are already flushed by endl
 }
 
 void logbuf::set_sb(std::streambuf* sb)
 {
-    if (sbuf) sync();
+    //if (sbuf) sync();  // enabling this causes segfaults when redirecting output
     sbuf = sb;
 }
 

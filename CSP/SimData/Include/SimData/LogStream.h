@@ -41,6 +41,7 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <cassert>
 
 #include <SimData/Namespace.h>
 #include <SimData/Export.h>
@@ -218,6 +219,7 @@ public:
 	}
 
 	void _close() {
+		lbuf.set_sb(NULL);
 		if (m_out != NULL) {
 			m_out->close();
 			delete m_out;
@@ -231,7 +233,7 @@ public:
 	 */
 	void setOutput(std::ostream& out_) {
 		_close();
-		lbuf.set_sb(out_.rdbuf() );
+		lbuf.set_sb(out_.rdbuf());
 	}
 
 	/** Set the output stream
@@ -241,7 +243,8 @@ public:
 	void setOutput(std::string const &fn) {
 		_close();
 		m_out = new std::ofstream(fn.c_str());
-		lbuf.set_sb( m_out->rdbuf() );
+		assert(m_out != NULL);
+		lbuf.set_sb(m_out->rdbuf());
 	}
 
 	/** Set the global log class and priority level.

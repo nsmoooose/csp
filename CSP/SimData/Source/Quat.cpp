@@ -354,7 +354,7 @@ void Quat::get(Matrix3& m) const {
 
 int Quat::readBinary(const unsigned char * ptrBuf, int size)
 {
-  if (size != sizeof(Quat))
+  if (size != 4*sizeof(double))
     {
       printf("Trying to read a binary Quat with the wrong size\n");
       return 0;
@@ -368,7 +368,7 @@ int Quat::readBinary(const unsigned char * ptrBuf, int size)
 
 int Quat::writeBinary(unsigned char * ptrBuf, int size)
 {
-  if (size != sizeof(Quat))
+  if (size != 4*sizeof(double))
     {
       printf("Trying to write a binary Quat with the wrong size\n");
       return 0;

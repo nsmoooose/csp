@@ -26,7 +26,6 @@ Boston, MA  02111-1307, USA.
 
 #ifdef _WIN32
     #include <crtdbg.h>
-	#include <cmath>
 #endif
 
 #include <cassert>

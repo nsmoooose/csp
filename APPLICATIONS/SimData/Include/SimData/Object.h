@@ -21,6 +21,8 @@
 
 /**
  * @file Object.h
+ *
+ * Object class and related boilerplate macros.
  */
 
 
@@ -96,12 +98,13 @@ NAMESPACE_SIMDATA
  *  in their implementation.
  * 
  *  The following methods must be extended in derived classes:
- *  @li pack        serialize object to archive (call superclass method first)
- *  @li unpack      unserialize object from archive (call superclass method 
- *  	            first)
- *  @li parseXML    parse loose XML cdata if present
- *  @li convertXML  post-process XML data
- *  @li postCreate  additional processing after deserialization
+ *  @li @c pack        serialize object to archive (call superclass method 
+ *                     first)
+ *  @li @c unpack      unserialize object from archive (call superclass method 
+ *  	               first)
+ *  @li @c parseXML    parse loose XML cdata if present
+ *  @li @c convertXML  post-process XML data
+ *  @li @c postCreate  additional processing after deserialization
  *
  *  Objects should never be copied or handled directly by user code.  Use 
  *  Ref<> handles to manipulate them by reference, and Link<> member variables
@@ -117,8 +120,8 @@ class SIMDATA_EXPORT Object: public Referenced, public BaseType {
 
 private:
 	// Objects should never be copied
-	Object(Object const &o): Referenced(o), BaseType(o) { assert(0); }
-	Object const &operator=(Object const &) { assert(0); return *this; }
+	Object(Object const &o); //: Referenced(o), BaseType(o) { assert(0); }
+	Object const &operator=(Object const &); // { assert(0); return *this; }
 
 	void _setPath(hasht);
 	
@@ -126,12 +129,13 @@ private:
 	hasht _path;
 
 protected:
-	/**
-	 * Called after the newly created object has been
-	 * deserialized by unpack().
+	/** Initialize an object after deserialization.
 	 *
-	 * Extend this method to do any initial processing 
-	 * of the external data.
+	 *  Called after the newly created object has been
+	 *  deserialized by unpack().
+	 *
+	 *  Extend this method to do any initial processing 
+	 *  of the external data.
 	 */
 	virtual void postCreate() {}
 
@@ -139,11 +143,10 @@ public:
 	explicit Object();
 	virtual ~Object();
 
-	/**
-	 * Create a new instance of the class.
+	/** Create a new instance of the class.
 	 *
-	 * The method is automatically overridden by the SIMDATA_OBJECT
-	 * macro, so you should never need to extend it manually.
+	 *  The method is automatically overridden by the SIMDATA_OBJECT
+	 *  macro, so you should never need to extend it manually.
 	 */
 	virtual Object* _new() const { 
 		assert(0); 
@@ -152,59 +155,72 @@ public:
 
 	__SIMDATA_CLASSDEF(Object, 0, 0)
 		
-	/**
-	 * Serialize to a data archive.
+	/** Serialize to a data archive.
 	 *
-	 * Extend this method to serialize member variables specified
-	 * by external data.  Be sure to call the base class method
-	 * first.  Note that the pack() method must be the exact inverse 
-	 * of the unpack() method.
+	 *  Extend this method to serialize member variables specified
+	 *  by external data.  Be sure to call the base class method
+	 *  first.  
+	 *
+	 *  <em>Note that the pack() method must be the exact inverse 
+	 *  of the unpack() method.</em>
 	 */
 	virtual void pack(Packer& p) const;
 
-	/**
-	 * Deserialize from a data archive.
+	/** Deserialize from a data archive.
 	 *
-	 * Extend this method to deserialize member variables stored
-	 * by pack().  Call the base class method first, then unpack
-	 * each variable in the exact same order as in the pack()
-	 * method.  Any additional processing of the data should be
-	 * done in postCreate() method.
+	 *  Extend this method to deserialize member variables stored
+	 *  by pack().  Call the base class method first, then unpack
+	 *  each variable in the exact same order as in the pack()
+	 *  method.  Any additional processing of the data should be
+	 *  done in postCreate() method.
+	 *
+	 *  <em>Note that the unpack() method must be the exact inverse 
+	 *  of the pack() method.</em>
 	 */
 	virtual void unpack(UnPacker& p);
 
-	/**
-	 * Get a string representation of the object.
+	/** Get a string representation of the object.
+	 *
+	 *  This method is also used for writing to ostreams
+	 *  using operator<<().
 	 */
 	virtual std::string asString() const;
 
-	/**
-	 * Return a string representation of the type.
+	/** Return a string representation of the type.
+	 *
+	 *  The type string for classes derived from Object
+	 *  is just the classname.  The implementation in
+	 *  Object returns the true classname using getClassName(),
+	 *  so this method should not be overridden in derived
+	 *  classes.
 	 */
 	virtual std::string typeString() const { return getClassName(); }
 
-	/**
-	 * Get the path hash from which the object was instantiated.
+	/** Get the path hash from which the object was instantiated.
+	 *
+	 *  Given the source DataArchive, this path hash can be 
+	 *  converted back to a path string using getPathString().
 	 */
 	hasht getPath() const;
 
-	/**
-	 * Hash function for converting data archive paths to path
-	 * hashes.
+	/** Hash function for converting data archive paths to path hashes.
 	 */
 	static hasht _getHash(const char* c);
 
-	/**
-	 * Set this instance as static or non-static. 
+	/** Set this instance as static or non-static. 
 	 *
-	 * Static objects are cached by the DataArchive class so that
-	 * only one instance is created.  You should never call this
-	 * method directly; it is public only so that SWIG can wrap it.
+	 *  Static objects are cached by the DataArchive class so that
+	 *  only one instance is created.  
+	 *
+	 *  You should never call this method directly; it is public 
+	 *  only so that SWIG can wrap it.  To make an Object instance
+	 *  static, set the @c static attribute of the @c <Object> tag to 
+	 *  @c "1" in the source data xml file 
+	 *  (e.g. <tt><Object class="MyClass" static="1"> ...</tt>).
 	 */
 	void setStatic(bool);
 
-	/**
-	 * Test whether this object is static.
+	/** Test whether this object is static.
 	 */
 	bool isStatic() const;
 };

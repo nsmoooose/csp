@@ -52,7 +52,7 @@
  *       o externalize parameters
  */
 
-double const GameScreen::OffsetRate =  30.0 * (G_PI / 180.0); // x deg / s, even if it is used for Zoom also ...
+double const GameScreen::OffsetRate =  30.0 * (simdata::PI / 180.0); // x deg / s, even if it is used for Zoom also ...
 
 
 void GameScreen::normalView()
@@ -60,7 +60,7 @@ void GameScreen::normalView()
 	m_AngleRotX = 0.0;
 	m_AngleRotZ = 0.0;
 	m_NeckPhi = 0.0;
-	m_NeckTheta = 0.5*G_PI;
+	m_NeckTheta = 0.5*simdata::PI;
 	m_PanRateX = 0.0;
 	m_PanRateZ = 0.0;
 	m_ZoomRate = 0.0;
@@ -325,7 +325,7 @@ void GameScreen::on_View1()
 	m_InternalView = true;
 	m_LookRelative = false;
 	if (m_ViewMode == 9) {
-		m_AngleRotX = 0.5*G_PI-m_NeckTheta;
+		m_AngleRotX = 0.5*simdata::PI-m_NeckTheta;
 		m_AngleRotZ = m_NeckPhi;
 	}
 }
@@ -399,7 +399,7 @@ void GameScreen::on_View9()
 		}
 		if (m_Padlock != m_ActiveObject) {
 			if (m_ViewMode == 1) {
-				m_NeckTheta = m_AngleRotX-0.5*G_PI;
+				m_NeckTheta = m_AngleRotX-0.5*simdata::PI;
 				m_NeckPhi = m_AngleRotZ;
 			}
 			m_ViewMode = 9;
@@ -649,8 +649,8 @@ void GameScreen::setCamera(double dt)
 	{
 	case 1: // view_mode one is normal inside the cockpit view
 	{
-		turnViewAboutX(dt,G_PI / 3);
-		turnViewAboutZ(dt,G_PI / 3);
+		turnViewAboutX(dt,simdata::PI / 3);
+		turnViewAboutZ(dt,simdata::PI / 3);
 		simdata::Vector3 planePos = m_ActiveObject->getGlobalPosition();
 		simdata::Vector3 planeDir = m_ActiveObject->getDirection();
 		simdata::Vector3 planeUp = m_ActiveObject->getUpDirection();

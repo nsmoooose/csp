@@ -22,6 +22,8 @@
 /**
  * @file Vector3.h
  *
+ * A three-dimensional vector class.
+ *
  * This source code was originally based on the Vec3 class of 
  * the OpenSceneGraph library, Copyright 1998-2003 Robert Osfield.
  * Source code from OpenSceneGraph is used here under the GNU General

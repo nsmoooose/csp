@@ -180,7 +180,7 @@ void PrimaryAeroDynamics::convertXML() {
 void PrimaryAeroDynamics::postCreate() {
 	Object::postCreate();
 	m_AspectRatio = m_WingSpan * m_WingSpan / m_WingArea;
-	m_CD_i = 1.0 / (0.9 * G_PI * m_AspectRatio);
+	m_CD_i = 1.0 / (0.9 * simdata::PI * m_AspectRatio);
 	m_HalfWingArea = 0.5 * m_WingArea;
 	m_depsilon = 0.5 * std::min(m_GMax,fabs(m_GMin));
 }
@@ -198,7 +198,7 @@ void PrimaryAeroDynamics::setMassInverse(double massInverse) {
 
 void PrimaryAeroDynamics::initializeSimulationStep(double dt) {
 	BaseDynamics::initializeSimulationStep(dt);
-	//double u = (0.034 + dt)/(1.0 - atan(m_AirSpeed) / G_PI);
+	//double u = (0.034 + dt)/(1.0 - atan(m_AirSpeed) / simdata::PI);
 	double u = 0.05 + dt;
 	m_ElevatorScale	= (1.0 - u) * m_ElevatorScale + u * controlInputValue( m_gForce );
 	m_Elevator = m_ElevatorInput * m_ElevatorScale;

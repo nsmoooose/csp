@@ -116,8 +116,8 @@ protected:
 	float m_MinimumDistance;
 
 	void normalView();
-	void turnViewAboutX(double dt, double AngleMax = G_PI / 2.0);
-	void turnViewAboutZ(double dt, double AngleMax = G_PI);
+	void turnViewAboutX(double dt, double AngleMax = simdata::PI / 2.0);
+	void turnViewAboutZ(double dt, double AngleMax = simdata::PI);
 	void scaleView(double dt);
 	simdata::Vector3 getNewFixedCamPos(SimObject * const target) const;
 	void setCamera(double dt);

@@ -44,6 +44,7 @@ def printUsage():
 	print "              --compile-data  run the data compiler"
 	print "              --config=path   path to config (.ini) file"
 	print "              --log=classes   set the logging classes"
+	print "              --slog=level    set the simdata logging level"
 	print "              --help          help message"
 
 
@@ -211,6 +212,7 @@ def main(argv):
 	all_args = argv[1:]
 	log_classes = []
 	other_args = []
+	simdata_loglevel = "ALERT"
 
 	config = findConfig()
 
@@ -229,6 +231,8 @@ def main(argv):
 			config = arg[9:]
 		elif arg.startswith("--log="):
 			log_classes.extend(arg[6:].split(':'))
+		elif arg.startswith("--slog="):
+			simdata_loglevel = arg[7:]
 		else:
 			other_args.append(arg)
 
@@ -240,7 +244,14 @@ def main(argv):
 	SimData.log().setLogLevels(SimData.LOG_ALL, SimData.LOG_DEBUG)
 
 	loadCSP()
-	SimData.log().setLogLevels(SimData.LOG_ALL, SimData.LOG_ALERT)
+
+	try:
+		simdata_loglevel = eval("SimData.LOG_%s" % simdata_loglevel.upper())
+	except:
+		print "Invalid SimData logging level, defaulting to 'ALERT'"
+		simdata_loglevel = SimData.LOG_ALERT
+
+	SimData.log().setLogLevels(SimData.LOG_ALL, simdata_loglevel)
 
 	print "Loading configuration from '%s'." % config
 	if not CSP.openConfig(config):

@@ -266,7 +266,6 @@ headers = [
     "External.h",
     "FileUtility.h",
     "GeoPos.h",
-    "GlibCsp.h",
     "hash_map.h",
     "HashUtility.h",
     "Integer.h",
@@ -295,6 +294,7 @@ headers = [
     "String.h",
     "TypeAdapter.h",
     "Types.h",
+    "Uniform.h",
     "Vector3.h",
     "Version.h",
 ]

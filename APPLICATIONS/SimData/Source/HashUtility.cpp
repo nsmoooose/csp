@@ -21,6 +21,8 @@
 /**
  * @file HashUtility.cpp
  *
+ * Hash functions utilities
+ *
  * The hash functions coded here are from "Hash Functions for Hash 
  * Table Lookup" by Robert J. Jenokins Jr., and are Public Domain.
  * See <http://burtleburtle.net/bob/hash/evahash.html>

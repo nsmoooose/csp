@@ -28,10 +28,6 @@
 
 NAMESPACE_SIMDATA
 
-const int DataArchive::AS = 1024;
-const int DataArchive::BUFFERSIZE = 4096;
-const int DataArchive::BUFFERS = 10;
-
 
 DataArchive* DataArchive::defaultArchive = 0;
 

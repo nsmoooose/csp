@@ -28,15 +28,6 @@
 NAMESPACE_SIMDATA
 
 
-/*
-void releaseObject(Object* ptr, int force) {
-	if (!ptr) return;
-	if (!force && ptr->isStatic()) return;
-	printf("delete %p\n", ptr);
-	delete ptr;
-}
-*/
-
 // archive serializaiton
 void Object::pack(Packer& p) const {
 	p.pack(_static);

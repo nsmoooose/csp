@@ -614,8 +614,8 @@ public:
 	/** Construct a new DateZulu.
 	 * 
 	 *  @param year the year (e.g. 2000)
-	 *  @param the month (1-12)
-	 *  @param the day (1-31)
+	 *  @param month the month (1-12)
+	 *  @param day the day (1-31)
 	 *  @param hour the hour (0-23)
 	 *  @param minute the minute (0-59)
 	 *  @param second the second (0.0-60.0)
@@ -656,7 +656,7 @@ public:
 	
 	/** Store the time into a standard time structure.
 	 * 
-	 *  @param The time structure to set (see <time.h>)
+	 *  @param tm The time structure to set (see <time.h>)
 	 *  @param local Optionally adjust the time for the local 
 	 *               timezone.
 	 */
@@ -776,8 +776,8 @@ public:
 	/** Construct a new SimDate.
 	 * 
 	 *  @param year the year (e.g. 2000)
-	 *  @param the month (1-12)
-	 *  @param the day (1-31)
+	 *  @param month the month (1-12)
+	 *  @param day the day (1-31)
 	 *  @param hour the hour (0-23)
 	 *  @param minute the minute (0-59)
 	 *  @param second the second (0.0-60.0)

@@ -21,6 +21,8 @@
 /*
  * @file Math.h
  *
+ * Math related utility functions and constants.
+ *
  * Numerous utility functions implemented here are based on 
  * the Math header included in the OpenSceneGraph library, 
  * Copyright 1998-2003 Robert Osfield.  Source code from 

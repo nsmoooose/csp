@@ -361,7 +361,7 @@ void ObjectModel::loadModel() {
 		adjust->setMatrix(model_orientation);
 		adjust->addChild(m_Model.get());
 		m_Model = adjust;
-		simdata::Matrix3 sd_adjust = simdata::fromOSG(model_orientation).getInverse();
+		simdata::Matrix3 sd_adjust = simdata::fromOSG(model_orientation); //.getInverse();
 		for (unsigned i = 0; i < m_Contacts.size(); i++) {
 			m_Contacts[i] = sd_adjust * m_Contacts[i] + m_Offset;
 		}

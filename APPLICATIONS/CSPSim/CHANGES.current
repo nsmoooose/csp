@@ -1,6 +1,14 @@
  Version 0.3.4 (in progress)
 ===========================
 
+2003-08-15: onsight
+            Updates related to SimData API changes (mostly use
+	    of simdata::PI, toRadians, and toDegrees instead of
+	    the G_PI, D2R, and R2D macros).
+
+	    Added a CSPSim.py option to set the SimData logging
+	    level from the command line.
+
 2003-08-12: onsight
 	    Minor updates to Terrain/dem2dat and Terrain/tile to 
 	    sync with the latest SimData API changes.  Improved 

@@ -68,7 +68,7 @@ public:
 	/**
 	 * Create a new object from a path identifier string.
 	 *
-	 * @path_str the path identifier string.
+	 * @param path_str the path identifier string.
 	 * @returns a smart-pointer to the new object.
 	 */
 	const LinkBase getObject(std::string const &path_str);
@@ -76,9 +76,9 @@ public:
 	/**
 	 * Create a new object from a Path instance.
 	 *
-	 * @path the Path instance.
-	 * @path_str the path identifier string (if available).  This is
-	 *           only used for error logging.
+	 * @param path the Path instance.
+	 * @param path_str the path identifier string (if available).  This is
+	 *                 only used for error logging.
 	 */
 	const LinkBase getObject(Path const& path, std::string const &path_str="");
 
@@ -174,10 +174,10 @@ private:
 	 * Manager to create the object.  The last parameter is used to
 	 * prevent unwanted recursion if an object isn't found.
 	 *
-	 * @path the Path instance.
-	 * @path_str the path identifier string (if available).  This is
-	 *           only used for error logging.
-	 * @d the data archive that is requesting the object.
+	 * @param path the Path instance.
+	 * @param path_str the path identifier string (if available).  This is
+	 *        only used for error logging.
+	 * @param d the data archive that is requesting the object.
 	 */
 	const LinkBase getObject(Path const& path, std::string const &path_str, DataArchive const *d) const;
 

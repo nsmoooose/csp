@@ -152,7 +152,7 @@ void FlightModel::convertXML() {
 void FlightModel::postCreate() {
 	Object::postCreate();
 	m_AspectRatio = m_WingSpan * m_WingSpan / m_WingArea;
-	m_CD_i = 1.0 / (0.9 * G_PI * m_AspectRatio);
+	m_CD_i = 1.0 / (0.9 * simdata::PI * m_AspectRatio);
 	m_HalfWingArea = 0.5 * m_WingArea;
 }
 

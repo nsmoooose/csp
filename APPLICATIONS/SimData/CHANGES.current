@@ -16,6 +16,13 @@ Version 0.3.4 (in progress)
 	    Changed hash_string from a macro to an inline function
 	    in the simdata namespace.
 
+	    Added Utility.h, removed GlibCSP.h from the setup.py
+	    installation.
+
+	    Minor improvements to the DataArchive internal structures.
+	    There more to do here, such as using std::vector instead
+	    of hand-rolled allocations.
+
 2003-08-14: onsight
             Doxygen comment fixes.
 

@@ -22,6 +22,8 @@
 /**
  * @file Quat.h
  *
+ * A quaternion class.
+ *
  * This source code was originally based on the Quat class of 
  * the OpenSceneGraph library, Copyright 1998-2003 Robert Osfield.
  * Source code from OpenSceneGraph is used here under the GNU General

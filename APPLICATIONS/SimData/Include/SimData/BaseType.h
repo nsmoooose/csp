@@ -1,5 +1,5 @@
 /* SimData: Data Infrastructure for Simulations
- * Copyright (C) 2002 Mark Rose <tm2@stm.lbl.gov>
+ * Copyright (C) 2002, 2003 Mark Rose <tm2@stm.lbl.gov>
  * 
  * This file is part of SimData.
  * 
@@ -38,66 +38,64 @@
 #include <SimData/Namespace.h>
 #include <SimData/Exception.h>
 
+
 NAMESPACE_SIMDATA
 
 class Packer;
 class UnPacker;
 
 
+/** Error parsing XML cdata.
+ */
 SIMDATA_EXCEPTION(ParseException)
 
 
-/**
- * @brief Base class for objects that support serialization to data archives.
+/** Base class for objects that support serialization to data archives.
  *
- * @author Mark Rose <mrose@stm.lbl.gov>
+ *  @author Mark Rose <mrose@stm.lbl.gov>
  */
 class SIMDATA_EXPORT BaseType {
 public:
-	/**
-	 * Ensure virtual destructor
+	/** Ensure virtual destructor
 	 */
 	virtual ~BaseType();
 
-	/**
-	 * Serialize an object to a data archive.
+	/** Serialize an object to a data archive.
 	 */
 	virtual void pack(Packer&) const; 
 	
-	/**
-	 * Deserialize an object from a data archive.
+	/** Deserialize an object from a data archive.
 	 */
 	virtual void unpack(UnPacker&);
 
-	/**
-	 * Parse cdata from within the XML tags for this object.
+	/** Parse cdata from within the XML tags for this object.
 	 */
 	virtual void parseXML(const char* cdata);
 
-	/**
-	 * Convert XML data to internal format prior to serialization.
+	/** Convert XML data to internal format prior to serialization.
 	 * 
-	 * This method is currently only called by the XML parser for 
-	 * Object classes.  If another BaseType class requires this
-	 * method, a call must be added to the appropriate XML handler
-	 * in the parser. 
+	 *  This method is currently only called by the XML parser for 
+	 *  Object classes.  If another BaseType class requires this
+	 *  method, a call must be added to the appropriate XML handler
+	 *  in the parser. 
 	 */
 	virtual void convertXML();
 	
-	/**
-	 * Return a string representation of the instance.
+	/** Return a string representation of the instance.
+	 *  
+	 *  This method is used to provide a string representation of
+	 *  the object for output to ostreams (using <<), and also 
+	 *  serves as __repr__ in Python.
 	 */
 	virtual std::string asString() const;
 
-	/**
-	 * Return a string representation of the type.
+	/** Return a string representation of the type.
 	 */
 	virtual std::string typeString() const;
 };
 
 
-/**
- * Convenience function for dumping object member variables.
+/** Convenience function for printing BaseTypes to ostreams.
  */
 std::ostream &operator <<(std::ostream &o, BaseType const &t);
 
@@ -106,3 +104,4 @@ NAMESPACE_SIMDATA_END
 
 
 #endif //__SIMDATA_BASETYPE_H__
+

@@ -20,6 +20,8 @@
 
 /**
  * @file Key.h
+ *
+ * 32-Bit hash key identifier class.
  */
 
 #ifndef __SIMDATA_KEY_H__

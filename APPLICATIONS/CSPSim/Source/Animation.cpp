@@ -27,6 +27,9 @@
 #include "Log.h"
 #include "Config.h"
 
+#include <SimData/Math.h>
+
+
 SIMDATA_REGISTER_INTERFACE(DrivenRotation)
 
 
@@ -60,8 +63,8 @@ void Animation::unpack(simdata::UnPacker& p)
 
 DrivenRotation::DrivenRotation(): 
 	m_Axis(0.0f, 0.0f, 0.0f),
-	m_Limit0(-G_PI), 
-	m_Limit1(G_PI),
+	m_Limit0(-simdata::PI), 
+	m_Limit1(simdata::PI),
 	m_Gain(1.0f),
 	m_Offset(0.0f)
 {

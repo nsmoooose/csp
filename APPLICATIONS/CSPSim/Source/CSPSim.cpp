@@ -377,9 +377,11 @@ void CSPSim::init()
 	catch(simdata::Exception & pEx) {
 		csp::SimDataFatalException(pEx, "initialization");
 	}
+	/*
 	catch (...) {
 		csp::OtherFatalException("initialization");
 	}
+	*/
 
 }
 

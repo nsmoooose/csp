@@ -22,6 +22,8 @@
 /**
  * @file Matrix3.cpp
  *
+ * A three-by-three matrix class.
+ *
  * This source code was originally based on the Matrix class of 
  * the OpenSceneGraph library, Copyright 1998-2003 Robert Osfield.
  * Source code from OpenSceneGraph is used here under the GNU General

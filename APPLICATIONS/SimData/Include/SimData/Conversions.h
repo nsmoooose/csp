@@ -1,5 +1,5 @@
 /* SimData: Data Infrastructure for Simulations
- * Copyright (C) 2002 Mark Rose <tm2@stm.lbl.gov>
+ * Copyright (C) 2002, 2003 Mark Rose <tm2@stm.lbl.gov>
  * 
  * This file is part of SimData.
  * 
@@ -26,12 +26,6 @@
  * 
  */
 
-/**
- * @namespace convert
- *
- * @brief Unit conversion functions.
- */
-
 #ifndef __SIMDATA_CONVERSIONS_H__
 #define __SIMDATA_CONVERSIONS_H__
 
@@ -54,6 +48,9 @@ NAMESPACE_SIMDATA
 
 //@{
 
+
+/** Unit conversion functions.
+ */
 namespace convert {
 
 // This is currently just a small set of unit conversions.  Feel free to add
@@ -64,87 +61,63 @@ namespace convert {
 // NOTE: be sure to add corresponding template instantiations for SWIG
 	
 	
-/**
- * knots to meters per second
- */
+/// knots to meters per second
 template <typename T>
 T kts_mps(T x) { return x * 0.514444; }
 SIMDATA_CVT(kts_mps)
 
 
-/**
- * meters per second to knots
- */
+/// meters per second to knots
 template <typename T>
 T mps_kts(T x) { return x * 1.94385; }
 SIMDATA_CVT(mps_kts)
 
-/**
- * feet to meters
- */
+/// feet to meters
 template <typename T>
 T ft_m(T x) { return x * 0.3048; }
 SIMDATA_CVT(ft_m)
 
-/**
- * meters to feet
- */
+/// meters to feet
 template <typename T>
 T m_ft(T x) { return x * 3.2808398950; }
 SIMDATA_CVT(m_ft)
 
-/**
- * kilograms to pounds
- */
+/// kilograms to pounds
 template <typename T>
 T kg_lb(T x) { return x * 2.2046; }
 SIMDATA_CVT(kg_lb)
 
-/**
- * pounds to kilograms
- */
+/// pounds to kilograms
 template <typename T>
 T lb_kg(T x) { return x * 0.45360; }
 SIMDATA_CVT(lb_kg)
 
-/**
- * nautical miles to meters
- */
+/// nautical miles to meters
 template <typename T>
 T nm_m(T x) { return x * 1852.0; }
 SIMDATA_CVT(nm_m)
 
-/**
- * meters to nautical miles
- */
+/// meters to nautical miles
 template <typename T>
 T m_nm(T x) { return x * 0.0005399568; }
 SIMDATA_CVT(m_nm)
 
-/**
- * pascals to millimeters of mercury
- */
+/// pascals to millimeters of mercury
 template <typename T>
 T pa_mmhg(T x) { return x * 0.00752; }
 SIMDATA_CVT(pa_mmhg)
 
-/**
- * millimeters of mercury to pascals
- */
+/// millimeters of mercury to pascals
 template <typename T>
 T mmhg_pa(T x) { return x * 133.0; }
 SIMDATA_CVT(mmhg_pa)
 
-/**
- * pounds to newtons
- */
+/// pounds to newtons
 template <typename T>
 T lb_n(T x) { return x * 4.44822; }
 SIMDATA_CVT(lb_n)
 
-/**
- * newtons to pounds
- */
+/// newtons to pounds
 template <typename T>
 T n_lb(T x) { return x * 0.22481; }
 SIMDATA_CVT(n_lb)

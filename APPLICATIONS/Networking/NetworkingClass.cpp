@@ -31,7 +31,7 @@ NetworkingClass::~NetworkingClass()
   // Send disconnect to connection
   for(Counter = 0; Counter < p_Connect.size(); Counter++)
   {
-    Disconnect(p_Connect[Counter].connectionid, 0);
+    Disconnect(p_Connect[Counter].connectionid);
   }
 
   // Wait for all connections to get a disconnect ack.

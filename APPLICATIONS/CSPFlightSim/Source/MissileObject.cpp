@@ -166,6 +166,10 @@ void MissileObject::doMovement(double dt)
     m_bDeleteFlag = true;
   }
   else 
+	  if ( m_FlightTime < 0.5 )
+	  {
+        m_LinearVelocity -= dt * 8.0 * m_CurrentNormDir;
+	  }
 	  if ( m_FlightTime > 0.5 && m_FlightTime < 2.0 )
 		  m_LinearVelocity += (dt * 150.0  / m_LinearVelocity.Length() ) * m_LinearVelocity;
 

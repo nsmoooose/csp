@@ -34,7 +34,7 @@ OTHER
 
     * Improve the build on Linux.
 
-    * Creae a build for Windows.
+    * Create a build for Windows. (in progress)
 
     * Install target to put SimData.py and _cSimData.so in
       the Python site-local directory, and libSimData.a in
@@ -52,16 +52,17 @@ OTHER
     
     * Consider eliminating pack/unpack object methods, instead using the 
       interface proxy classes to serialize objects. This may be much less 
-      error-prone.
+      error-prone. (but perhaps too inflexible?)
 
     > This is now partially implemented.  I'm holding off on completing
       this feature for the time being.
       
-    * Store path hash in loaded simdata::Object instances
+    * Store path hash in loaded simdata::Object instances (done)
 
     * Change getClassName() to return just the classname, without version 
-      number
+      number (done)
       
-    * Add getClassVersion() method to simdata::Object. Return "major:minor".
+    * Add getClassVersion() method to simdata::Object. Return 
+      "major:minor". (done)
 
 

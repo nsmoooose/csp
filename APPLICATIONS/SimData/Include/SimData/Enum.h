@@ -245,10 +245,10 @@ friend class Enumeration;
 	/// value.  The initial default value is zero.
 	///
 	/// Examples:
-	/// @code
+	/// <pre>
 	///     "zero one two three"
 	///     "one=1 two three ten=10 eleven"
-	/// @endcode
+	/// </pre>
 	EnumerationCore(std::string const &s): Referenced() {
 		__init(s);
 	}

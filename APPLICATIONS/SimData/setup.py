@@ -59,16 +59,13 @@ def make_install(win):
 	modpath = os.path.join(lib, "SimData")
 	incpath = os.path.join(inc, "SimData")
 	package_files = ['__init__.py', 'Debug.py', 'Parse.py', 'Compile.py']
-	win_files = []
-	if not win:
-		package_files.extend(['cSimData.py', '_cSimData.so'])
+	if win:
+		package_files.extend(['cSimData.py', '_cSimData.dll'])
 	else:
-		win_files.extend(['cSimData.py', '_cSimData.dll'])
+		package_files.extend(['cSimData.py', '_cSimData.so'])
 	try:
 		print "Installing SimData package to", modpath
 		copy_dir("SimData", modpath, package_files)
-		if win:
-			copy_dir("VisualStudio", modpath, win_files)
 		print "Installing SimData headers to", incpath
 		copy_dir("Include/SimData", incpath, headers)
 		copy_dir("Include/SimData", incpath, interfaces)

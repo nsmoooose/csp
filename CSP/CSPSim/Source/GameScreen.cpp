@@ -106,10 +106,9 @@ class SnapImageDrawCallback: public Producer::Camera::Callback {
 		return day + '-' + hour;
 	}
 public:
-	// XXX: next release of osg should allow saving to jpg instead of bmp
-	SnapImageDrawCallback(const std::string& filename = "CSP",const std::string& ext = ".bmp"):
+	SnapImageDrawCallback(const std::string& filename = "CSP",const std::string& ext = ".jpg"):
         m_Filename(filename),
-		m_Ext(".bmp"),
+		m_Ext(ext),
         m_SnapImageOnNextFrame(false){
     }
     void setSnapImageOnNextFrame(bool flag) {
@@ -130,7 +129,7 @@ public:
 			osg::ref_ptr<osg::Image> image = new osg::Image;
 			image->readPixels(x,y,width,height,GL_RGB,GL_UNSIGNED_BYTE);
 
-			// save the file in the form CSPScreenmmddyy-hhmmss.ext
+			// save the file in the form CSPmmddyy-hhmmss.ext
 			osgDB::writeImageFile(*image,m_Filename + getDate() + m_Ext);
 			m_SnapImageOnNextFrame = false;
 		}
@@ -187,6 +186,10 @@ GameScreen::GameScreen():
 	m_OnPlayerJoin(this, &GameScreen::onPlayerJoin),
 	m_OnPlayerQuit(this, &GameScreen::onPlayerQuit)
 {
+	//typedef void (GameScreen::*OPJ)(int, const std::string&);
+	//OPJ opj;
+	//m_OnPlayerJoin = simcore::ScopedCallback2<int, const std::string&>(this, opj);
+	//m_OnPlayerQuit = simcore::ScopedCallback2(this, &GameScreen::onPlayerQuit);
 	initInterface();
 }
 

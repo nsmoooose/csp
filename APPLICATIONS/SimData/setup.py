@@ -25,11 +25,25 @@
 # -MR
 
 
+import sys
+
+min_python_version = "2.2.0"
+
+if len(sys.argv) == 2:
+	command = sys.argv[1]
+	if command == "check_version":
+		old = sys.version[:5] < min_python_version
+		if old:
+			print >>sys.stderr, "SimData requires Python version %s or higher. (current version is %s)" % \
+	                    (min_python_version, sys.version[:5])
+		sys.exit(old)
+		
 from distutils.core import setup
 from distutils.core import Extension
 import distutils.command.build_ext
 from distutils.command.build_ext import build_ext
-import os, os.path, string, sys
+from distutils import sysconfig, dir_util
+import os, os.path, string
 
 # REMEMBER TO 'touch Version.cpp' OR REBUILD ALL
 VERSION = "\"0.3.1\""
@@ -53,7 +67,6 @@ def copy_dir(src, dst, files):
             copy_file(src_name, dst_name)
 
 def make_install(win):
-	from distutils import sysconfig, dir_util
 	lib = sysconfig.get_python_lib()
 	inc = sysconfig.get_python_inc()
 	modpath = os.path.join(lib, "SimData")
@@ -62,6 +75,9 @@ def make_install(win):
 	package_files = ['__init__.py', 'Debug.py', 'Parse.py', 'Compile.py']
 	if win:
 		package_files.extend(['cSimData.py', '_cSimData.dll', '_cSimData.lib'])
+		src = os.path.join("Source","cSimData.py")
+		if os.path.exists(src):
+			copy_file(src, os.path.join("SimData","cSimData.py"))
 	else:
 		package_files.extend(['cSimData.py', '_cSimData.so'])
 	try:
@@ -274,6 +290,9 @@ if len(sys.argv)==2:
 	command = sys.argv[1]
 	if command.startswith("make_install"):
 		make_install(command.endswith("win"))
+	if command == "python_include_path":
+		print sysconfig.get_python_inc()
+		sys.exit(0)
 
 cSimData = Extension("SimData._cSimData", 
                      sources + main_interface_fullpath, 

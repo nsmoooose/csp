@@ -14,6 +14,14 @@ Version 0.3.1 (in progress)
             written explicitly, and must be updated by hand whenever new
             types are added.
 
+	    Added Python version check to setup.py (also called from
+	    Makefile).
+
+	    Makefile gets Python include path automatically.
+
+	    To facilitate the build under Windows, setup.py now copies 
+	    cSimData.py from Source to SimData for make_install_win.
+
 2003-03-20: delta
 	    Fixes for msvc.
 

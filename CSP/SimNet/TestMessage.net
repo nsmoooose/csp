@@ -1,0 +1,8 @@
+#header <SimNet/TestMessage.h>
+
+#include <SimNet/NetworkMessage.h>
+
+Message TestMessage BASE=simnet::NetworkMessage {
+	int32 number;
+	std::string helo;
+}

@@ -64,7 +64,7 @@ public:
 	 */
 	virtual void handlePacket(PacketHeader const *header, simdata::uint8 *payload, simdata::uint32 payload_length) {
 		NetworkMessage::Ref msg = m_Codec.decode(header->message_id, payload, payload_length);
-		assert(msg.valid());
+		if (!msg) return;
 		msg->setSource(header->source);
 		msg->setRoutingType(header->routing_type);
 		msg->setRoutingData(header->routing_data);

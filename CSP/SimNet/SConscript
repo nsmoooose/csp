@@ -34,6 +34,7 @@ env.ParseConfig('ccgnu2-config --flags --libs')
 
 
 SOURCES = [
+	'ClientServer.cpp',
 	'DispatchManager.cpp',
 	'DispatchHandler.cpp',
 	'NetRandom.cpp',
@@ -45,19 +46,24 @@ SOURCES = [
 ]
 
 MESSAGES = [
+	'ClientServerMessages.net',
 	#'IndexMessages.net',
 	#'ObjectUpdate.net',
 	#'TestMessage.net',
 ]
 
-libsimnet = env.StaticLibrary('simnet', SOURCES)
+libsimnet = env.StaticLibrary('simnet', SOURCES + MESSAGES)
 Alias(['all', 'SimNet'], [libsimnet])
 
-libmessages = env.SharedLibrary('SimNetMessages', MESSAGES)
-Alias(['all', 'SimNet'], [libmessages])
+#libmessages = env.SharedLibrary('SimNetMessages', MESSAGES)
+#Alias(['all', 'SimNet'], [libmessages])
 
-server = env.Program('server', ['server.cpp', 'ObjectUpdate.net'] + libsimnet + ['#/SimData/SimData/libSimData.a'])
-Alias('server', server)
+#env.Depends(SOURCES, libmessages)
+
+server = env.Program('test-server', ['test-server.cpp', 'ObjectUpdate.net'] + libsimnet + ['#/SimData/SimData/libSimData.a'])
+Alias('testnet', server)
+client = env.Program('test-client', ['test-client.cpp', 'ObjectUpdate.net'] + libsimnet + ['#/SimData/SimData/libSimData.a'])
+Alias('testnet', client)
 
 """
 test = env.Program('test', ['test.cpp'] + libsimnet + libmessages)

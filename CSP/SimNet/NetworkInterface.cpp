@@ -27,6 +27,9 @@
 #include <SimNet/NetworkNode.h>
 #include <SimNet/NetworkMessage.h>
 #include <SimNet/ReliablePacket.h>
+#include <SimNet/PacketHandler.h>
+#include <SimNet/PacketQueue.h>
+#include <SimNet/PacketSource.h>
 #include <SimNet/PeerInfo.h>
 #include <SimNet/StopWatch.h>
 #include <SimNet/NetLog.h>
@@ -34,6 +37,7 @@
 #include <SimData/TaggedRecordRegistry.h>
 #include <SimData/Timing.h>
 #include <SimData/Thread.h>
+#include <SimData/Verify.h>
 
 // use this to fix compile problems with mulitple includes of windows and winsock headers.
 #define _WINSOCKAPI_
@@ -65,14 +69,14 @@
 
 namespace simnet {
 
-// XXX hack
-void NetworkInterface::hackBuildMessageIndex() {
-	simdata::TaggedRecordRegistry const &registry = simdata::TaggedRecordRegistry::getInstance();
-	std::vector<simdata::TaggedRecordFactoryBase *> factories = registry.getFactories();
-	for (unsigned i = 0; i < factories.size(); ++i) {
-		factories[i]->setCustomId(i);
-	}
-}
+
+const simdata::uint32 NetworkInterface::HeaderSize = sizeof(PacketHeader);
+const simdata::uint32 NetworkInterface::ReceiptHeaderSize = sizeof(PacketReceiptHeader);
+const simdata::uint16 NetworkInterface::PingID;
+const simdata::uint32 NetworkInterface::PeerIndexSize;
+const simdata::uint32 NetworkInterface::MaxPayloadLength;
+const PeerId NetworkInterface::InitialClientId;
+const PeerId NetworkInterface::ServerId;
 
 
 /** Callback for HandlerSet<PacketHandler>::apply, to call the handlePacket
@@ -138,10 +142,13 @@ void NetworkInterface::sendPackets(double timeout) {
 		assert(ptr);
 		PacketHeader *header = reinterpret_cast<PacketHeader*>(ptr);
 		PeerInfo *peer = getPeer(header->destination);
-		assert(peer->isActive());
+		assert(peer && peer->isActive());
 		peer->setConnStat(header);
 		DatagramTransmitSocket *socket = peer->getSocket();
 		assert(socket);
+
+		// provisional peers have id 0
+		if (peer->isProvisional()) header->destination = 0;
 
 		// make sure the socket is ready; otherwise if we have already
 		// sent some packets then try waiting for one millisecond (approx)
@@ -175,6 +182,7 @@ void NetworkInterface::sendPackets(double timeout) {
 
 		if (len != int(size)) {
 			SIMNET_LOG(PACKET, INFO, "Send underflow! (" << len << " of " << size << " bytes sent)");
+			// TODO tally errors and eventually disconnect.
 		}
 
 		// check the time after several packets are sent, and bail if
@@ -212,19 +220,27 @@ bool NetworkInterface::pingPeer(PeerInfo *peer) {
 	PacketHeader *header = reinterpret_cast<PacketHeader*>(ptr);
 	header->reliable = 0;
 	header->priority = queue_idx;
-	header->source = m_ServerId;
+	header->source = m_LocalId;
 	header->destination = peer->getId();
 	header->message_id = PingID;
 	if (confirm) {
 		PacketReceiptHeader *receipt = reinterpret_cast<PacketReceiptHeader*>(ptr);
 		header->reliable = 1;
-		peer->setReceipt(receipt, false, 0);
+		peer->setReceipt(receipt, false /*reliable*/, 0 /*payload_length*/);
 	}
 	std::cout << "PING " << peer->getId() << " .......\n";
 	queue->commitWriteBuffer(packet_size);
 	return true;
 }
 
+bool NetworkInterface::handleDeadPeer(PeerInfo *peer) {
+	// TODO provide a callback
+	return true;
+}
+
+void NetworkInterface::disconnectClient(PeerId id) {
+	removePeer(id);
+}
 
 void NetworkInterface::processOutgoing(double timeout) {
 	static StopWatch::Data swd(0.00001);
@@ -253,6 +269,7 @@ void NetworkInterface::processOutgoing(double timeout) {
 	while (m_PacketSource->peek(destination, queue_idx)) {
 		assert(queue_idx >= 0 && queue_idx < 4);
 		PeerInfo *peer = getPeer(destination);
+		assert(peer);
 		if (queue_idx < 3) {
 			if (peer->throttlePacket(queue_idx)) {
 				m_PacketSource->skipPacket();
@@ -284,7 +301,7 @@ void NetworkInterface::processOutgoing(double timeout) {
 			header->reliable = 0;
 		}
 		header->priority = queue_idx;
-		header->source = m_ServerId;
+		header->source = m_LocalId;
 
 		simdata::uint8 *payload = ptr + header_size;
 		payload_length = allocation_size - header_size;
@@ -374,7 +391,7 @@ int NetworkInterface::receivePackets(double timeout) {
 			continue;
 		}
 
-		if (header.destination != m_ServerId) {
+		if (header.destination != m_LocalId) {
 			SIMNET_LOG(PACKET, ALERT, "received bad packet (wrong destination): " << header);
 			m_Socket->receive((void*)null, sizeof(null));
 			m_BadPackets++;
@@ -486,7 +503,7 @@ int NetworkInterface::receivePackets(double timeout) {
 
 
 // processing incoming packets occurs in two steps.  first we
-// call receviePackets to read raw packets from the input socket
+// call receivePackets to read raw packets from the input socket
 // and store each in one of four circular buffers based on the
 // message priority (2 bits in the packet header).
 //
@@ -556,7 +573,7 @@ void NetworkInterface::processIncoming(double timeout) {
 
 		// pass the packet to all handlers
 		PacketHandlerCallback callback(header, payload, payload_length);
-		m_PacketHandlers.apply(callback);
+		m_PacketHandlers->apply(callback);
 
 		queue->releaseReadBuffer();
 
@@ -576,25 +593,30 @@ void NetworkInterface::processIncoming(double timeout) {
 	}
 
 	double now = simdata::get_realtime();
-	double update_dt = now - m_LastUpdate;
-	m_LastUpdate = now;
 
-	// drop a fraction of the packets remaining in each queue
-	int total_excess = 0;
-	for (int idx = 0; idx < 4; ++idx) {
-		total_excess += m_RxQueues[idx]->dropOldest();
+	if (m_LastUpdate > 0.0) {
+		double update_dt = now - m_LastUpdate;
+
+		// drop a fraction of the packets remaining in each queue
+		int total_excess = 0;
+		for (int idx = 0; idx < 4; ++idx) {
+			total_excess += m_RxQueues[idx]->dropOldest();
+		}
+
+		m_ActivePeers->update(update_dt, this);
 	}
 
-	m_ActivePeers->update(update_dt, this);
+	m_LastUpdate = now;
 }
 
 
 NetworkInterface::NetworkInterface():
-	m_ServerId(0),
+	m_LocalId(0),
 	m_PeerIndex(new PeerInfo[PeerIndexSize]),
 	m_ActivePeers(new ActivePeerList),
 	m_AllowUnknownPeers(false),
-	m_Initialized(false)
+	m_Initialized(false),
+	m_PacketHandlers(new PacketHandlerSet)
 {
 	for (unsigned i = 0; i < PeerIndexSize; ++i) {
 		m_PeerIndex[i].setId(static_cast<PeerId>(i));
@@ -604,8 +626,6 @@ NetworkInterface::NetworkInterface():
 
 
 NetworkInterface::~NetworkInterface() {
-	// TODO use ScopedArray
-	if (m_PeerIndex) delete[] m_PeerIndex;
 	if (m_Initialized) {
 		for (int idx = 0; idx < 4; ++idx) {
 			delete m_RxQueues[idx];
@@ -624,11 +644,19 @@ void NetworkInterface::resetStats() {
 }
 
 
-void NetworkInterface::initialize(NetworkNode const &local_node) {
+void NetworkInterface::initialize(NetworkNode const &local_node, bool isServer) {
 	assert(!m_Initialized);
 	m_Initialized = true;
+	m_LastUpdate = -1.0;
 	m_Socket.reset(new DatagramReceiveSocket(local_node.getAddress(), local_node.getPort()));
 	m_LocalNode.reset(new NetworkNode(local_node));
+	if (isServer) {
+		m_AllowUnknownPeers = true;
+		m_LocalId = ServerId;
+	} else {
+		m_AllowUnknownPeers = false;
+		m_LocalId = InitialClientId;
+	}
 	double drop_percent[4] = { 0.2, 5.0, 5.0, 0.0 };
 	for (int idx = 0; idx < 4; ++idx) {
 		// could adjust the sizes based on actual bandwidth (e.g. smaller rx buffers for
@@ -639,14 +667,10 @@ void NetworkInterface::initialize(NetworkNode const &local_node) {
 }
 
 
-void NetworkInterface::setServerId(PeerId id) {
-	m_ServerId = id;
-}
-
-
 void NetworkInterface::addPeer(PeerId id, NetworkNode const &remote_node, bool provisional, double incoming, double outgoing) {
+	SIMNET_LOG(PEER, INFO, "add peer " << id);
 	PeerInfo *peer = getPeer(id);
-	assert(!peer->isActive());
+	assert(peer && !peer->isActive());
 	peer->setNode(remote_node, incoming, outgoing);
 	peer->setProvisional(provisional);
 	m_ActivePeers->addPeer(peer);
@@ -655,8 +679,9 @@ void NetworkInterface::addPeer(PeerId id, NetworkNode const &remote_node, bool p
 
 
 void NetworkInterface::removePeer(PeerId id) {
+	SIMNET_LOG(PEER, INFO, "remove peer " << id);
 	PeerInfo *peer = getPeer(id);
-	assert(peer->isActive());
+	assert(peer && peer->isActive());
 	ConnectionPoint point = peer->getNode().getConnectionPoint();
 	m_IpPeerMap.erase(point);
 	peer->disable();
@@ -664,41 +689,44 @@ void NetworkInterface::removePeer(PeerId id) {
 }
 
 
-void NetworkInterface::hackPeerIndex(PeerId id, NetworkNode const &remote_node, double incoming, double outgoing) {
-	m_RemoteNode.reset(new NetworkNode(remote_node));
-	addPeer(id, remote_node, false /*provisional*/, incoming, outgoing);
+void NetworkInterface::setServer(NetworkNode const &server_node, double incoming, double outgoing) {
+	assert(m_Initialized && m_LocalId == 0);
+	m_ServerNode.reset(new NetworkNode(server_node));
+	addPeer(ServerId, server_node, false /*provisional*/, incoming, outgoing);
 }
 
 
 PeerInfo *NetworkInterface::getPeer(PeerId id) {
-	assert(id > 0 && id < PeerIndexSize);
+	SIMDATA_VERIFY_GT(id, 0);
+	SIMDATA_VERIFY_LT(id, PeerIndexSize);
 	return &(m_PeerIndex[id]);
 }
 
 
 void NetworkInterface::establishConnection(PeerId id, double incoming, double outgoing) {
+	SIMNET_LOG(PEER, INFO, "connection established with peer " << id);
 	PeerInfo *peer = getPeer(id);
-	if (peer->isActive() && peer->isProvisional()) {
+	if (peer && peer->isActive() && peer->isProvisional()) {
 		peer->updateBandwidth(incoming, outgoing);
 		peer->setProvisional(false);
 	}
 }
 
 
-void NetworkInterface::addPacketHandler(PacketHandler::Ref handler) {
-	m_PacketHandlers.addHandler(handler);
+void NetworkInterface::addPacketHandler(PacketHandler::Ref const &handler) {
+	m_PacketHandlers->addHandler(handler);
 	handler->bind(this);
 }
 
 
-void NetworkInterface::removePacketHandler(PacketHandler::Ref handler) {
-	if (m_PacketHandlers.removeHandler(handler)) {
+void NetworkInterface::removePacketHandler(PacketHandler::Ref const &handler) {
+	if (m_PacketHandlers->removeHandler(handler)) {
 		handler->bind(0);
 	}
 }
 
 
-void NetworkInterface::setPacketSource(PacketSource::Ref source) {
+void NetworkInterface::setPacketSource(PacketSource::Ref const &source) {
 	if (m_PacketSource.valid()) m_PacketSource->bind(0);
 	m_PacketSource = source;
 	m_PacketSource->bind(this);
@@ -730,12 +758,10 @@ PeerId NetworkInterface::getSourceId(ConnectionPoint const &point) {
 	return iter->second;
 }
 
+void NetworkInterface::setClientId(PeerId id) {
+	assert(m_LocalId == 0);
+	m_LocalId = id;
+}
 
-const simdata::uint16 NetworkInterface::PingID;
-const simdata::uint32 NetworkInterface::PeerIndexSize;
-const simdata::uint32 NetworkInterface::MaxPayloadLength;
-const simdata::uint32 NetworkInterface::InfoSize;
-const simdata::uint32 NetworkInterface::HeaderSize;
-const simdata::uint32 NetworkInterface::ReceiptHeaderSize;
 
 } // namespace simnet

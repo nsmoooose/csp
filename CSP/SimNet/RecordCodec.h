@@ -70,6 +70,9 @@ using simdata::TaggedRecord;
  *  dispatching these records to object handlers.
  */
 class RecordCodec {
+
+	static const int MAX_MESSAGE_IDS = 65536;
+
 public:
 
 	RecordCodec();
@@ -82,8 +85,22 @@ public:
 	 */
 	size_t encode(TaggedRecord::Ref record, simdata::uint8 *buffer, size_t buffer_length);
 
+	/** Assign a message id to a tagged record.  The new message id must not be
+	 *  in use, and must be above the reserved range (0-63).
+	 *
+	 *  @param id The tagged record id.
+	 *  @param local_id The new (custom) message id.
+	 *  @return True on success.
+	 */
+	bool registerMessageId(TaggedRecord::Id id, int local_id);
+
+	/** Clear all non-reserved message ids.
+	 */
+	void clearMessageIds();
+
 private:
-	std::vector<simdata::TaggedRecordFactoryBase *> m_factories;
+	simdata::TaggedRecordFactoryBase const *m_Factories[MAX_MESSAGE_IDS];
+	//std::vector<simdata::TaggedRecordFactoryBase *> m_factories;
 
 	simdata::BufferWriter m_Writer;
 	simdata::BufferReader m_Reader;

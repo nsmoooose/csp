@@ -116,7 +116,12 @@ class PeerInfo: public simdata::NonCopyable {
 	double m_total_peer_incoming_bandwidth;
 	double m_total_peer_outgoing_bandwidth;
 
+	// a measure of the time between packets sent to this peer that is
+	// used to determine when additional pings need to be sent.
 	double m_quiet_time;
+
+	// the time elapsed since the last packet received from this peer.
+	double m_dead_time;
 
 	simdata::ScopedPointer<DatagramTransmitSocket> m_socket;
 
@@ -174,6 +179,10 @@ public:
 
 	inline bool hasPendingConfirmations() const {
 		return !m_confirmation_queue.empty();
+	}
+
+	inline double getDeadTime() const {
+		return m_dead_time;
 	}
 
 	void registerConfirmation(PacketReceiptHeader *receipt, const simdata::uint32 payload_length);

@@ -58,18 +58,18 @@ public:
 
 	/** Get the peer id of the destination host.
 	 */
-	PeerId getDestination() const { return m_destination; }
+	inline PeerId getDestination() const { return m_destination; }
 
 	/** Set the destination of this message.
 	 *
 	 *  @param destination the peer id of the destination host.
 	 */
-	void setDestination(PeerId destination) { m_destination = destination; }
+	inline void setDestination(PeerId destination) { m_destination = destination; }
 
 	/** Set the message routing data.  Interpretation of this value
 	 *  depends on the message routing type.
 	 */
-	void setRoutingData(simdata::uint32 data) {
+	inline void setRoutingData(simdata::uint32 data) {
 		assert((data & 0xFF00000) == 0);
 		m_routing_data = data;
 	}
@@ -77,17 +77,17 @@ public:
 	/** Get the message routing data.  Interpretation of this value
 	 *  depends on the message routing type.
 	 */
-	simdata::uint32 getRoutingData() const { return m_routing_data; }
+	inline simdata::uint32 getRoutingData() const { return m_routing_data; }
 
 	/** Store the id of the peer that sent the message.
 	 */
-	void setSource(PeerId source) {
+	inline void setSource(PeerId source) {
 		m_source = source;
 	}
 
 	/** Get the id of the peer that sent the message.
 	 */
-	PeerId getSource() const { return m_source; }
+	inline PeerId getSource() const { return m_source; }
 
 	/** Set the message routing type.  Routing types are used to determine
 	 *  how to handle incoming messages.  For example, if the routing type
@@ -96,13 +96,13 @@ public:
 	 *  be dispatched to the appropriate object without requiring the
 	 *  routing layer to understand the details of particular message types.
 	 */
-	void setRoutingType(simdata::uint8 type) {
+	inline void setRoutingType(RoutingType type) {
 		m_routing_type = type;
 	}
 
 	/** Get the message routing type.  See setRoutingType for details.
 	 */
-	simdata::uint8 getRoutingType() const { return m_routing_type; }
+	inline RoutingType getRoutingType() const { return m_routing_type; }
 
 	/** Set the message to be "reliable."  Reliable messages require a confirmation
 	 *  of receipt from the destination host.  The message will be resent periodically
@@ -111,11 +111,11 @@ public:
 	 *  the distination on the first try.  If not, the retry latency starts at one
 	 *  second and grows with each retry.
 	 */
-	void setReliable() { m_priority = 3; }
+	inline void setReliable() { m_priority = 3; }
 
 	/** Test if this message is marked as "reliable;" see setReliable for details.
 	 */
-	bool isReliable() const { return m_priority == 3; }
+	inline bool isReliable() const { return m_priority == 3; }
 
 	/** Set the priority of this message.  There are four priority levels, interpreted
 	 *  roughly as follows:
@@ -127,24 +127,37 @@ public:
 	 *
 	 *  Setting the priority to 3 automatically selects reliable transmission.
 	 */
-	void setPriority(unsigned int priority) {
+	inline void setPriority(unsigned int priority) {
 		assert(priority <= 3);
 		m_priority = static_cast<unsigned char>(priority);
 	}
 
 	/** Get the priority of this message.  See setPriority for details.
 	 */
-	int getPriority() const { return m_priority; }
+	inline int getPriority() const { return m_priority; }
 
+	/** Reimplementation of TaggedRecord::FastCast with specialization for casts
+	 *  to NetworkMessage (which doesn't define _getId).
+	 */
 	template <class TR>
 	static inline simdata::Ref<TR> FastCast(Ref const &record) {
 		return (record->getId() == TR::_getId() ? static_cast<TR*>(record.get()) : 0);
 	}
 
+	/** Address this message to the source of another message.
+	 */
+	inline void setReplyTo(Ref const &msg) {
+		setDestination(msg->getSource());
+	}
+
 };
 
+
+/** Specialized FastCast to/from NetworkMessage (nop).
+ */
 template <>
 inline simdata::Ref<NetworkMessage> NetworkMessage::FastCast(Ref const &record) { return record; }
+
 
 } // namespace simnet
 

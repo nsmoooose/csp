@@ -69,7 +69,7 @@
  */
 #define SIMNET_DISPATCH(MSG, HANDLER) \
 			case MSG::_Id: \
-				return helper->handle<Object, MSG>(this, &Object::HANDLER);
+				return helper->handle<Class, MSG>(this, &Class::HANDLER);
 
 /** End a message dispatch declaration.
  */

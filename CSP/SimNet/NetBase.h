@@ -47,6 +47,11 @@ typedef simdata::uint16 MessageId;
  */
 typedef simdata::uint32 ObjectId;
 
+/** Routing type, which is typically used as the first discriminator
+ *  for message dispatch.
+ */
+typedef simdata::uint8 RoutingType;
+
 /** An id number assigned to reliable messages and used to confirm
  *  receipt of such messages.  Ids are generated sequentially, per
  *  peer, and roll over at 65535.  Id 0 is reserved for "no id".

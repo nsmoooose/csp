@@ -73,6 +73,7 @@ public:
 		if (m_Queue.size() == 0) return false;
 		assert(payload_length > 0);
 		NetworkMessage::Ref message = m_Queue.front();
+		SIMNET_LOG(MESSAGE, ALERT, "SENDING MESSAGE " << message->getCustomId() << " " << message->getName());
 		m_Queue.pop_front();
 		PeerId destination = message->getDestination();
 		header->destination = destination;

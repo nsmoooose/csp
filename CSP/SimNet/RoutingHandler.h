@@ -32,9 +32,8 @@
  *
  *     void bindNetwork(Ref<MessageQueue> queue) {
  *       m_Dispatch = new MessageHandler(queue);
- *       m_Dispatch->registerHandler(this, &ObjectManager::onUpdate);
- *       m_Dispatch->registerHandler(this, &ObjectManager::onDestroyed);
- *       m_Dispatch->
+ *       m_Dispatch->setMessageHandler(this, &ObjectManager::onUpdate);
+ *       m_Dispatch->setMessageHandler(this, &ObjectManager::onDestroyed);
  *     }
  *
  *     Ref<DispatchHandle> getMessageHandler() const { return m_Dispatch; }
@@ -57,7 +56,7 @@
  *     // equal to "ObjectRoutingType" (an 8-bit, application-specific constant)
  *     // to the dispthe ObjectManager for dispatch.  see ObjectManager.h for details.
  *     m_RoutingHandler = new RoutingHandler();
- *     m_RoutingHandler->registerMessageHandler(ObjectRoutingType, m_ObjectManager->getMessageHandler());
+ *     m_RoutingHandler->setMessageHandler(ObjectRoutingType, m_ObjectManager->getMessageHandler());
  *
  *     // packet decoder converts raw packets to messages
  *     m_PacketDecoder = new simnet::PacketDecoder();

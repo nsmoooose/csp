@@ -24,6 +24,7 @@
 #include <SimNet/PeerInfo.h>
 #include <SimNet/NetLog.h>
 #include <SimNet/NetworkInterface.h>
+#include <SimData/Verify.h>
 
 #include <vector>
 
@@ -68,6 +69,7 @@ PeerInfo::PeerInfo():
 	m_total_peer_incoming_bandwidth(0.0),
 	m_total_peer_outgoing_bandwidth(0.0),
 	m_quiet_time(0.0),
+	m_dead_time(0.0),
 	m_socket(0) {
 }
 
@@ -79,6 +81,11 @@ void PeerInfo::update(double dt, double scale_desired_rate_to_self) {
 	m_measured_bandwidth_peer_to_self = lowpass<2000>(dt, m_measured_bandwidth_peer_to_self, new_psbw);
 	const double new_spbw = double(m_bytes_self_to_peer) / dt;
 	m_measured_bandwidth_self_to_peer = lowpass<2000>(dt, m_measured_bandwidth_self_to_peer, new_spbw);
+	if (m_packets_peer_to_self) {
+		m_dead_time = 0.0;
+	} else {
+		m_dead_time += dt;
+	}
 	if (m_packets_self_to_peer > 0) {
 		m_quiet_time = 0.0;
 		const double outgoing_packet_size = (double(m_bytes_self_to_peer) / m_packets_self_to_peer);
@@ -107,7 +114,7 @@ void PeerInfo::update(double dt, double scale_desired_rate_to_self) {
 	const double allocated_bandwidth = m_allocation_self_to_peer * m_total_peer_incoming_bandwidth * (1.0 / 1024.0);
 	const double throttle_fraction = std::min(0.99, std::max(0.0, 1.0 - (allocated_bandwidth / desired_bandwidth)));
 	m_throttle_threshold = static_cast<simdata::uint32>(0xfffffffful * throttle_fraction);
-	
+
 	if (((DEBUG_connection_display_loop % 10) == 0)) {
 		if (m_packets_self_to_peer > 0) {
 			std::cout << "outgoing to " << m_id << ":\n";
@@ -242,7 +249,9 @@ void PeerInfo::disable() {
 
 
 void ActivePeerList::update(double dt, NetworkInterface *ni) {
-	assert(dt > 0.0);
+	SIMDATA_ASSERT_GE(dt, 0.0);
+	SIMDATA_ASSERT_LT(dt, 1000.0);
+
 	m_ElapsedTime += dt;
 	if (m_ElapsedTime < 0.1) return;
 	double now = simdata::get_realtime();
@@ -263,7 +272,16 @@ void ActivePeerList::update(double dt, NetworkInterface *ni) {
 			if (!packet) break;
 			ni->resend(packet);
 		}
-		if (peer->isProvisionalExpired()) remove_peers.push_back(peer);
+		bool remove = false;
+		if (peer->getDeadTime() > 10.0) {
+			SIMNET_LOG(PEER, ALERT, "dead time expired for peer " << peer->getId() << " (" << peer->getDeadTime() << " s)");
+			if (ni->handleDeadPeer(peer)) remove = true;
+		}
+		if (peer->isProvisionalExpired()) {
+			SIMNET_LOG(PEER, ALERT, "provisional time expired for peer " << peer->getId());
+			remove = true;
+		}
+		if (remove) remove_peers.push_back(peer);
 	}
 	for (unsigned i=0; i < remove_peers.size(); ++i) {
 		// note that there's a slight race condition here, in that we may expire
@@ -273,9 +291,7 @@ void ActivePeerList::update(double dt, NetworkInterface *ni) {
 		// assignment strategy such that it is less likely another connection will
 		// reuse the same id right away (e.g. cycle the starting point of the search
 		// for inactive PeerInfos).
-
-		// XXX XXX removePeer is private.  ActivePeerList should probably be an inner class of NI
-		//ni->removePeer(remove_peers[i]->getId());
+		ni->removePeer(remove_peers[i]->getId());
 	}
 	m_DesiredRateToSelf = desired_rate_to_self;
 	m_ElapsedTime = 0.0;

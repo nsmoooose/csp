@@ -108,7 +108,7 @@ public:
 	 *  @param queue A MessageQueue that is passed to the message handlers for
 	 *    sending responses.
 	 */
-	DispatchHandler(simnet::MessageQueue::Ref queue);
+	DispatchHandler(simnet::MessageQueue::Ref const &queue);
 	virtual ~DispatchHandler();
 
 	/** Register a new handler for a specific message type.
@@ -117,7 +117,7 @@ public:
 	 *  @param handler The instance method that will handle the message.
 	 */
 	template <class CLASS, class MSG>
-	void registerHandler(CLASS *instance, NetworkMessage::Ref (CLASS::*handler)(simdata::Ref<MSG>)) {
+	void registerHandler(CLASS *instance, void (CLASS::*handler)(simdata::Ref<MSG> const &, MessageQueue::Ref const &)) {
 		_registerHandler(MSG::_getName(), MSG::_getId(), new MessageCallback<CLASS, MSG>(instance, handler));
 	}
 
@@ -127,7 +127,7 @@ public:
 	 *  @param handler The instance method that will handle the message.
 	 */
 	template <class CLASS>
-	void setDefaultHandler(CLASS *instance, NetworkMessage::Ref (CLASS::*handler)(simdata::Ref<NetworkMessage>)) {
+	void setDefaultHandler(CLASS *instance, void (CLASS::*handler)(simdata::Ref<NetworkMessage> const &, MessageQueue::Ref const &)) {
 		m_DefaultHandler = new DefaultCallback<CLASS>(instance, handler);
 	}
 
@@ -135,7 +135,7 @@ public:
 	 *
 	 *  @param msg The massage to handle.
 	 */
-	virtual void handleMessage(NetworkMessage::Ref msg);
+	virtual void handleMessage(NetworkMessage::Ref const &msg);
 
 	/** Remove the handler for the specified message type.
 	 *
@@ -149,13 +149,13 @@ public:
 	 *  @return True if the message was handled, false otherwise.  The default
 	 *    handler is not called.
 	 */
-	bool dispatch(NetworkMessage::Ref msg) const;
+	bool dispatch(NetworkMessage::Ref const &msg) const;
 
 private:
 	typedef simdata::TaggedRecord::Id MessageId;
 	typedef HASH_MAP<simdata::TaggedRecord::Id, BaseCallback::Ref, simdata::nohash64> DispatchMap;
 
-	void _registerHandler(std::string const &name, const MessageId id, BaseCallback::Ref handler);
+	void _registerHandler(std::string const &name, const MessageId id, BaseCallback::Ref const &handler);
 	inline BaseCallback::Ref getCallback(const MessageId id) const;
 
 	DispatchMap m_DispatchMap;

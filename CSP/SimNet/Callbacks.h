@@ -31,21 +31,27 @@
 #include <SimNet/NetworkMessage.h>
 #include <SimNet/MessageHandler.h>
 #include <SimNet/MessageQueue.h>
+#include <SimData/Ref.h>
 
 
 namespace simnet {
 
-
+/** Base class for callbacks used by DispatchHandler.  The callbacks take
+ *  a single network message as input, as well as a message queue that can
+ *  be used for sending responses.
+ */
 class BaseCallback: public simdata::Referenced {
 public:
 	typedef simdata::Ref<BaseCallback> Ref;
-	virtual void call(NetworkMessage::Ref msg, MessageQueue::Ref const &) = 0;
+	virtual void call(NetworkMessage::Ref const &, MessageQueue::Ref const &) = 0;
 };
 
 
+/** Default callback used by DispatchHandler for unknown message types.
+ */
 template <class CLASS>
 class DefaultCallback: public BaseCallback {
-	typedef NetworkMessage::Ref (CLASS::*Method)(simdata::Ref<NetworkMessage>, MessageQueue::Ref const &);
+	typedef void (CLASS::*Method)(simdata::Ref<NetworkMessage> const &, MessageQueue::Ref const &);
 	CLASS *m_Instance;
 	Method m_Method;
 
@@ -57,35 +63,22 @@ public:
 };
 
 
+/** Specialized callback used by DispatchHandler for specific message types.
+ *  The generic message is efficiently downcast to the correct type with
+ *  static_cast<> prior to executing the callback, using message ids to
+ *  ensure type compatability.
+ */
 template <class CLASS, class MSG>
 class MessageCallback: public BaseCallback {
 public:
-	typedef CLASS Class;
 	typedef void (CLASS::*Method)(typename MSG::Ref const &, MessageQueue::Ref const &);
 	MessageCallback(CLASS *instance, Method method): m_Instance(instance), m_Method(method) {}
-	virtual void call(NetworkMessage::Ref msg, MessageQueue::Ref const &queue) {
+	virtual void call(NetworkMessage::Ref const &msg, MessageQueue::Ref const &queue) {
 		(m_Instance->*m_Method)(NetworkMessage::FastCast<MSG>(msg), queue);
 	}
 private:
 	CLASS *m_Instance;
 	Method m_Method;
-};
-
-
-/** Templated callback for handling network messages.
- */
-template <class CLASS, class MESSAGE>
-class CallbackHandler: public MessageHandler {
-public:
-	typedef void (CLASS::*Callback)(typename MESSAGE::Ref const &);
-	CallbackHandler(CLASS *instance, Callback callback): m_Instance(instance), m_Callback(callback) { }
-	inline void call(NetworkMessage::Ref const &message) {
-		(m_Instance->*m_Callback)(NetworkMessage::FastCast<MESSAGE>(message));
-	}
-	virtual void handleMessage(NetworkMessage::Ref const &message) { call(message); }
-private:
-	CLASS *m_Instance;
-	Callback m_Callback;
 };
 
 

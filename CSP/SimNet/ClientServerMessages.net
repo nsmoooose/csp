@@ -1,0 +1,37 @@
+// -*- cplusplus -*-
+
+#header <SimNet/ClientServerMessages.h>
+
+#include <SimNet/NetworkMessage.h>
+
+// message id numbers 0 - 63 are reserved for internal use.
+
+Message Reserved0 BASE=simnet::NetworkMessage ID=0 {
+}
+
+Message Reserved1 BASE=simnet::NetworkMessage ID=1 {
+}
+
+Message Acknowledge BASE=simnet::NetworkMessage ID=2 {
+}
+
+Message Disconnect BASE=simnet::NetworkMessage ID=3 {
+}
+
+Message Reset BASE=simnet::NetworkMessage ID=4 {
+}
+
+Message ConnectionRequest BASE=simnet::NetworkMessage ID=5 {
+	std::string password;
+	int32 incoming_bw;
+	int32 outgoing_bw;
+}
+
+Message ConnectionResponse BASE=simnet::NetworkMessage ID=6 {
+	std::string server_id;
+	std::string response;
+	bool success;
+	int16 client_id;
+	int32 incoming_bw;
+	int32 outgoing_bw;
+}

@@ -166,63 +166,13 @@ public:
 };
 
 
-// interface event visitors
 
-class EventVisitor: public SystemVisitor {
-	bool m_handled;
-public:
-	typedef simdata::Ref<EventVisitor> Ref;
-	EventVisitor(): m_handled(false) {}
-	bool handled() const { return m_handled; }
-	void apply(System &system) {
-		if (m_handled) return;
-		m_handled = check(system);
-		if (!m_handled) traverse(system);
-	}
-protected:
-	virtual bool check(System &system) = 0;
-};
-
-
-class OnCommandVisitor: public EventVisitor {
-	std::string const &m_id;
-	int m_x, m_y;
-public:
-	OnCommandVisitor(std::string const &id, int x, int y):
-		EventVisitor(), m_id(id), m_x(x), m_y(y) {}
-protected:
-	bool check(System &system) {
-		return system.onCommand(m_id, m_x, m_y); 
-	}
-};
-
-
-class OnAxisVisitor: public EventVisitor {
-	std::string const &m_id;
-	double m_value;
-public:
-	OnAxisVisitor(std::string const &id, double value):
-		EventVisitor(), m_id(id), m_value(value) {}
-protected:
-	bool check(System &system) {
-		return system.onAxis(m_id, m_value);
-	}
-};
-
-
-class OnMotionVisitor: public EventVisitor {
-	std::string const &m_id;
-	int m_x, m_y, m_dx, m_dy;
-public:
-	OnMotionVisitor(std::string const &id, int x, int y, int dx, int dy):
-		EventVisitor(), m_id(id), m_x(x), m_y(y), m_dx(dx), m_dy(dy) {}
-protected:
-	virtual bool check(System &system) {
-		return system.onMotion(m_id, m_x, m_y, m_dx, m_dy); 
-	}
-};
-
-
+/** Base class for detailed vehicle models.
+ *
+ *  Model classes serve as the root node of System trees.  The
+ *  model defines a data bus shared by all systems it contains,
+ *  and serves as the external interface of the composite system.
+ */
 class Model: public System {
 
 	Bus::Ref m_Bus;
@@ -283,4 +233,61 @@ void System::setModel(Model *model) {
 	}
 }
 
+
+
+// interface event visitors
+
+class EventVisitor: public SystemVisitor {
+	bool m_handled;
+public:
+	typedef simdata::Ref<EventVisitor> Ref;
+	EventVisitor(): m_handled(false) {}
+	bool handled() const { return m_handled; }
+	void apply(System &system) {
+		if (m_handled) return;
+		m_handled = check(system);
+		if (!m_handled) traverse(system);
+	}
+protected:
+	virtual bool check(System &system) = 0;
+};
+
+
+class OnCommandVisitor: public EventVisitor {
+	std::string const &m_id;
+	int m_x, m_y;
+public:
+	OnCommandVisitor(std::string const &id, int x, int y):
+		EventVisitor(), m_id(id), m_x(x), m_y(y) {}
+protected:
+	bool check(System &system) {
+		return system.onCommand(m_id, m_x, m_y); 
+	}
+};
+
+
+class OnAxisVisitor: public EventVisitor {
+	std::string const &m_id;
+	double m_value;
+public:
+	OnAxisVisitor(std::string const &id, double value):
+		EventVisitor(), m_id(id), m_value(value) {}
+protected:
+	bool check(System &system) {
+		return system.onAxis(m_id, m_value);
+	}
+};
+
+
+class OnMotionVisitor: public EventVisitor {
+	std::string const &m_id;
+	int m_x, m_y, m_dx, m_dy;
+public:
+	OnMotionVisitor(std::string const &id, int x, int y, int dx, int dy):
+		EventVisitor(), m_id(id), m_x(x), m_y(y), m_dx(dx), m_dy(dy) {}
+protected:
+	virtual bool check(System &system) {
+		return system.onMotion(m_id, m_x, m_y, m_dx, m_dy); 
+	}
+};
 

@@ -1,6 +1,13 @@
  Version 0.3.5 (in progress)
 ===========================
 
+2003-09-07: onsight
+            Added Include/System.h and Include/Bus.h, which provide
+	    infrastructure for constructing detailed vehicle models.
+	    Several existing components such as the data recorder and
+	    flight model need to be refactored to use this new
+	    interface.
+
 2003-08-20: onsight
             Tagged version r0_3_4, starting version 0.3.5
 

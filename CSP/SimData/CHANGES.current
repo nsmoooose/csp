@@ -1,12 +1,16 @@
 Version 0.4.0 (in progress)
 ===========================
 
+2004-12-11: onsight
+ * Fix a dumb bug in the timing code that caused wildly inaccurate
+   times on windows.
+
 2004-12-06: delta
  * Changed the level of warnings of cSimData_wrap.cpp and 
    compiled Config as a multithreads dll (vc project files).
-   
+
  * Cleaned a useless vc specific pragma.
- 
+
  * Removed useless static_cast<> in Date.cpp.
 
 2004-12-06: onsight

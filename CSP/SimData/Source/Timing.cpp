@@ -156,7 +156,7 @@ NAMESPACE_SIMDATA
 				counter_offset = 1e-7 * static_cast<double>(first_time - SIMDATA_ULL(116444736000000000));
 			} else {
 				uint64 elapsed_count = counter - first_counter;
-				uint64 elapsed_time = cvt_filetime(update_time);
+				uint64 elapsed_time = cvt_filetime(update_time) - first_time;
 				double new_scale = static_cast<double>(elapsed_time) * 1e-7 / elapsed_count;
 				// bump the offset to keep the current calibrated time continuous
 				counter_offset += elapsed_count * (counter_scale - new_scale);

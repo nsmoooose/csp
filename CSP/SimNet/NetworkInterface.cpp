@@ -436,7 +436,7 @@ int NetworkInterface::receivePackets(double timeout) {
 		// port number, and routing type will be zero
 		if (source == 0 && m_AllowUnknownPeers && header->routingType() == 0) {
 			simdata::uint32 ip = sender_addr.getAddress().s_addr;
-			ConnectionPoint point(ip, header->routingData());
+			ConnectionPoint point(ip, static_cast<simnet::Port>(header->routingData()));
 			source = getSourceId(point);
 		}
 

@@ -66,7 +66,7 @@ public:
 		NetworkMessage::Ref msg = m_Codec.decode(header->messageId(), payload, payload_length);
 		if (!msg) return;
 		msg->setSource(header->source());
-		msg->setRoutingType(header->routingType());
+		msg->setRoutingType(static_cast<simnet::RoutingType>(header->routingType()));
 		msg->setRoutingData(header->routingData());
 		Callback callback(msg);
 		m_MessageHandlers.apply(callback);

@@ -69,7 +69,7 @@ TaggedRecord::Ref RecordCodec::decode(int local_id, simdata::uint8 const *buffer
 	m_Reader.bind(buffer, buffer_length);
 	try {
 		record->serialize(m_TagReader);
-	} catch (simdata::DataUnderflow const &err) {
+	} catch (simdata::DataUnderflow const &/*err*/) {
 		SIMNET_LOG(MESSAGE, ERROR, "buffer underflow decoding message");
 		return 0;
 	}

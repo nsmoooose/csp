@@ -36,7 +36,7 @@ namespace simdata {
 /**
  * Abstract base class for all object dynamics (physics) modelling.
  *
- * Dervied classes must implement computeForceAndMoment(x) to compute 
+ * Derived classes must implement computeForceAndMoment(x) to compute 
  * the force and moment acting on the object at a point within the 
  * simulation step.  See documentation associated with this method for 
  * important details.

@@ -1,7 +1,7 @@
 <?xml version="1.0" standalone="no"?>
 
 <Object class="ObjectModel">
-    <External name="model_path">Mirage2000/model.osg</External>
+	<External name="model_path">Mirage2000/model.osg</External>
     <Vector name="axis_0">1 0 0</Vector>
     <Vector name="axis_1">0 1 0</Vector>
     <!--Vector name="view_point">0.0 4.1 1.17</Vector-->
@@ -336,12 +336,12 @@
             <Vector name="offset">0 0 -1.13</Vector>
         </Object>
         <Object class="DrivenRotation">
-            <String name="channel_name">LandingGear.FrontGearWheelRotation</String>
+            <String name="channel_name">LandingGear.FrontGearTireRotation</String>
             <Key name="model_id">Aircraft.FrontGearLeftTire</Key>
             <Vector name="axis">-1 0 0</Vector>
         </Object>
         <Object class="DrivenRotation">
-            <String name="channel_name">LandingGear.FrontGearWheelRotation</String>
+            <String name="channel_name">LandingGear.FrontGearTireRotation</String>
             <Key name="model_id">Aircraft.FrontGearRightTire</Key>
             <Vector name="axis">-1 0 0</Vector>
         </Object>
@@ -371,7 +371,7 @@
             <Vector name="offset">0.122 0 -0.39</Vector>
         </Object>
         <Object class="DrivenRotation">
-            <String name="channel_name">LandingGear.LeftGearWheelRotation</String>
+            <String name="channel_name">LandingGear.LeftGearTireRotation</String>
             <Key name="model_id">Aircraft.LeftMainGearTire</Key>
             <Vector name="axis">-1 0 -0.02</Vector>
         </Object>
@@ -396,7 +396,7 @@
             <Vector name="offset">-0.122 0 -0.39</Vector>
         </Object>
         <Object class="DrivenRotation">
-            <String name="channel_name">LandingGear.RightGearWheelRotation</String>
+            <String name="channel_name">LandingGear.RightGearTireRotation</String>
             <Key name="model_id">Aircraft.RightMainGearTire</Key>
             <Vector name="axis">-1.0 0 0.02</Vector>
         </Object>

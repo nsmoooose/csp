@@ -1,7 +1,7 @@
 <?xml version="1.0"	standalone="no"?>
 
 <!--
-	Mirage 2000	gear
+	F16	gear
 -->
 
 <Object	class="GearDynamics" name="gear_dynamics">
@@ -68,7 +68,7 @@
 			<Float name="drag_factor">0.8</Float>
 		</Object>
 	</List>
-	<List name="gear_set_animation">
+	<!--List name="gear_set_animation">
 		<Object	class="GearAnimation">
 			<Object	class="GearStructureAnimation" name="gear_structure_animation">
 				<String	name="displacement_channel">LandingGear.FrontGearDisplacement</String>
@@ -110,6 +110,35 @@
 				<Float name="offset">0.09</Float>
 			</Object>
 		</Object>
+	</List-->
+	<List name="subsystems">
+		<Object class="GearAnimation">
+			<Object class="TimedSequence" name="gear_sequence_animation">
+				<Object class="TimedAnimationProxy" name="timed_animation_proxy">
+					<Float name="t0">0.0</Float>
+					<Float name="t1">4.0</Float>
+				</Object>
+				<Float name="initial_time">4.0</Float>
+				<String name="name">Aircraft.GearSequence</String>
+			</Object>
+			<List name="subsystems">
+				<Object class="M2kGearStructureAnimation">
+					<String	name="displacement_channel">LandingGear.FrontGearDisplacement</String>
+					<Vector	name="displacement_axis">0 0 1</Vector>
+					<String	name="absorber02_channel">LandingGear.FrontGearAbsorber02</String>
+					<String	name="absorber03_channel">LandingGear.FrontGearAbsorber03</String>
+					<Float name="absorber02_length">0.298</Float>
+					<Float name="absorber03_length">0.298</Float>
+					<Float name="offset">0.03</Float>
+				</Object>
+			</List>
+		</Object>
+		<!--Object class="GearAnimation">
+			...
+		</Object>
+		<Object class="GearAnimation">
+			...
+		</Object-->
 	</List>
 </Object>
 	

@@ -70,7 +70,7 @@
  * systems tree until the radar subsytem finally handled the event.
  *
  * Subsystems support synchronous, delayed updates.  Each subsystem can
- * implement on onUpdate(dt) method to perform updates.  The return value
+ * implement an onUpdate(dt) method to perform updates.  The return value
  * indicates the minimum amount of time until the next update.  Systems
  * requiring per frame updates (e.g. a flight model) would return 0.0,
  * while less demanding systems can request less frequent updates.
@@ -274,7 +274,7 @@ public:
 	/** Add another system node as a child of this node.  Propagates the
 	 *  SystemModel reference to the new child and its subtree.
 	 *
-	 *  @retursn true if the node was added successfully.
+	 *  @returns true if the node was added successfully.
 	 */
 	virtual bool addChild(SystemNode *node) {
 		if (!SystemNode::addChild(node)) {

@@ -181,106 +181,40 @@ protected:
 	std::string m_Name;
 };
 
-class GearAnimation: public simdata::Object {
+class GearAnimation: public System {
+	typedef TimedSequence GearSequenceAnimation;
+	simdata::Link<GearSequenceAnimation> m_GearSequenceAnimation;
 
 public:
-
-	class GearStructureAnimation: public simdata::Object {
-		// name of the animated gear 
-		std::string m_GearName;
-
-		// Channels' names.
-		std::string m_Displacement;
-		std::string m_Absorber02, m_Absorber03;
-
-		// Channels to be exposed to drive animations.
-		DataChannel<double>::Ref b_WheelRotation;
-		DataChannel<double>::Ref b_Absorber02Angle, b_Absorber03Angle;
-
-		// Internal parameters.
-		simdata::Vector3 m_DisplacementAxis;
-		float m_Absorber02Length, m_Absorber03Length, m_Offset;
-
-		// Channel to import.
-		DataChannel<simdata::Vector3>::CRef b_GearDisplacement;
-		DataChannel<double>::CRef b_GearTireRotation;
-
-	public:
-		SIMDATA_OBJECT(GearStructureAnimation, 0, 0)
-
-		BEGIN_SIMDATA_XML_INTERFACE(GearStructureAnimation)
-			SIMDATA_XML("displacement_channel", GearStructureAnimation::m_Displacement, true)
-			SIMDATA_XML("displacement_axis", GearStructureAnimation::m_DisplacementAxis, false)
-			SIMDATA_XML("absorber02_channel", GearStructureAnimation::m_Absorber02, false)
-			SIMDATA_XML("absorber03_channel", GearStructureAnimation::m_Absorber03, false)
-			SIMDATA_XML("absorber02_length", GearStructureAnimation::m_Absorber02Length, false)
-			SIMDATA_XML("absorber03_length", GearStructureAnimation::m_Absorber03Length, false)
-			SIMDATA_XML("offset", GearStructureAnimation::m_Offset, false)
-		END_SIMDATA_XML_INTERFACE
-
-		GearStructureAnimation():
-			m_Displacement(""),
-			m_DisplacementAxis(simdata::Vector3::ZAXIS),
-			m_Absorber02Length(1.0f),
-			m_Absorber03Length(1.0f),
-			m_Offset(0.0f) {
-			}
-			virtual double onUpdate(double /*dt*/) {
-				b_WheelRotation->value() = b_GearTireRotation->value();
-				double vertical_displacement = b_GearDisplacement->value()*m_DisplacementAxis;
-				b_Absorber02Angle->value() = asin((vertical_displacement-m_Offset)/(2*m_Absorber02Length));
-				b_Absorber03Angle->value() = asin((vertical_displacement-m_Offset)/(2*m_Absorber03Length));
-				return 0.016;
-			}
-			virtual void registerChannels(Bus::Ref bus) {
-				bus->registerChannel(b_WheelRotation.get());
-				bus->registerChannel(b_Absorber02Angle.get());
-				bus->registerChannel(b_Absorber03Angle.get());
-			}
-			virtual void bindChannels(Bus::Ref bus) {
-				b_GearDisplacement = bus->getChannel(m_Displacement);
-				if (!b_GearDisplacement.valid()) {
-					CSP_LOG(OBJECT, WARNING, "GearStructureAnimation: input channel '" << m_Displacement << "' unavailable."); 
-				}
-				b_GearTireRotation = bus->getChannel(m_GearName + "TireRotation");
-				if (!b_GearTireRotation.valid()) {
-					CSP_LOG(OBJECT, WARNING, "GearStructureAnimation: input channel '" << m_GearName + "TireRotation" << "' unavailable."); 
-				}
-			}
-			const std::string& getGearName() const {
-				return m_GearName;
-			}
-			~GearStructureAnimation(){}
-	protected:
-		virtual void postCreate() {
-			m_DisplacementAxis.normalized();
-			m_GearName = m_Displacement.substr(0,m_Displacement.length()-std::string("Displacement").length());
-			CSP_LOG(OBJECT, DEBUG, "GearAnimmation: m_GearName = " << m_GearName);
-			std::string wheel_rotation = m_GearName + "WheelRotation";
-			b_WheelRotation = DataChannel<double>::newLocal(wheel_rotation, 0.0);
-			b_Absorber02Angle = DataChannel<double>::newLocal(m_Absorber02, 0.0);
-			b_Absorber03Angle = DataChannel<double>::newLocal(m_Absorber03, 0.0);
-		}
-	};
-
-	typedef TimedSequence GearSequenceAnimation;
-
 	SIMDATA_OBJECT(GearAnimation, 0, 0)
 
-	BEGIN_SIMDATA_XML_INTERFACE(GearAnimation)
-		SIMDATA_XML("gear_structure_animation", GearAnimation::m_GearStructureAnimation, true)
+	EXTEND_SIMDATA_XML_INTERFACE(GearAnimation, System)
 		SIMDATA_XML("gear_sequence_animation", GearAnimation::m_GearSequenceAnimation, false)
 	END_SIMDATA_XML_INTERFACE
 
+	DECLARE_INPUT_INTERFACE(GearAnimation, System)
+		BIND_ACTION("GEAR_TOGGLE", GearToggle);
+	END_INPUT_INTERFACE
+
+	virtual ~GearAnimation(){}
+
+	// input event handler
+	void GearToggle() {
+		if (m_GearSequenceAnimation.valid())
+			m_GearSequenceAnimation->toggle();
+	}
+
 	virtual double onUpdate(double dt) {
-		m_GearStructureAnimation->onUpdate(dt);
 		if (m_GearSequenceAnimation.valid())
 			m_GearSequenceAnimation->onUpdate(dt);
 		return 0.016;
 	}
+	virtual std::string getName() const {
+		return  "GearAnimation";
+	}
 
-	virtual void registerChannels(Bus::Ref bus) {
-		m_GearStructureAnimation->registerChannels(bus);
+protected:
+	virtual void registerChannels(Bus* bus) {
 		if (m_GearSequenceAnimation.valid()) {
 			CSP_LOG(OBJECT, DEBUG, "GearAnimation: GearAnimationSequence valid");
 			m_GearSequenceAnimation->registerChannels(bus);
@@ -288,64 +222,138 @@ public:
 		else
 			CSP_LOG(OBJECT, DEBUG, "GearAnimation: GearAnimationSequence not valid");
 	}
-
-	virtual void bindChannels(Bus::Ref bus) {
-		m_GearStructureAnimation->bindChannels(bus);
-	}
-	void start() {
-		if (m_GearSequenceAnimation.valid())
-			m_GearSequenceAnimation->start();
-	}
-	void rstart() {
-		if (m_GearSequenceAnimation.valid())
-			m_GearSequenceAnimation->rstart();
-	}
-
-	// Helper classes
-	class BindChannels {
-		Bus::Ref m_Bus;
-	public:
-		BindChannels(Bus::Ref bus):m_Bus(bus){ }
-		void operator()(simdata::Link<GearAnimation>& ga) const {
-			ga->bindChannels(m_Bus);
-		}
-	};
-
-	class RegisterChannels {
-		Bus::Ref m_Bus;
-	public:
-		RegisterChannels(Bus::Ref bus):m_Bus(bus){ }
-		void operator()(simdata::Link<GearAnimation>& ga) const {
-			ga->registerChannels(m_Bus);
-		}
-	};
-
-	class OnUpdate {
-		double m_dt;
-	public:
-		OnUpdate(double dt):m_dt(dt){ }
-		void operator()(simdata::Link<GearAnimation>& ga) const {
-			ga->onUpdate(m_dt);
-		}
-	};
-
-	class Start {
-	public:
-		void operator()(simdata::Link<GearAnimation>& ga) const {
-			ga->start();
-		}
-	};
-	class RStart {
-	public:
-		void operator()(simdata::Link<GearAnimation>& ga) const {
-			ga->rstart();
-		}
-	};
-
-	private:
-		simdata::Link<GearStructureAnimation> m_GearStructureAnimation;
-		simdata::Link<GearSequenceAnimation> m_GearSequenceAnimation;
+	virtual void importChannels(Bus* bus) {
+	}	
 };
+
+/*
+* Abstract base class for the animation of a gear's structure. Mainly
+* reflects suspension and damping effects.
+* The 'm2k' derivated class shows how to do the work "manually", while
+* the 'path' derivated class shows how to use a TimedSequence tiled with
+* an exported animation.
+*/
+class GearStructureAnimation: public System {
+public:
+	EXTEND_SIMDATA_XML_VIRTUAL_INTERFACE(GearStructureAnimation, System)
+		SIMDATA_XML("displacement_channel", GearStructureAnimation::m_Displacement, true)
+		SIMDATA_XML("displacement_axis", GearStructureAnimation::m_DisplacementAxis, false)
+	END_SIMDATA_XML_INTERFACE
+
+	GearStructureAnimation():
+		m_Displacement(""),
+		m_DisplacementAxis(simdata::Vector3::ZAXIS) {
+	}
+	virtual ~GearStructureAnimation(){}	
+	virtual std::string getName() const {
+		return "StructureAnimation";
+	}
+
+protected:
+	virtual void postCreate() {
+		m_DisplacementAxis.normalized();
+		m_GearName = m_Displacement.substr(0,m_Displacement.length()-std::string("Displacement").length());
+		CSP_LOG(OBJECT, DEBUG, "GearAnimmation: m_GearName = " << m_GearName);
+	}
+	virtual void importChannels(Bus* bus) {
+		b_GearDisplacement = bus->getChannel(m_Displacement);
+		if (!b_GearDisplacement.valid()) {
+			CSP_LOG(OBJECT, WARNING, "GearStructureAnimation: input channel '" << m_Displacement << "' unavailable."); 
+		}
+		b_GearTireRotation = bus->getChannel(m_GearName + "TireRotation");
+		if (!b_GearTireRotation.valid()) {
+			CSP_LOG(OBJECT, WARNING, "GearStructureAnimation: input channel '" << m_GearName + "TireRotation" << "' unavailable."); 
+		}
+	}
+	// name of the animated gear 
+	std::string m_GearName;
+
+	// Channels' names.
+	std::string m_Displacement;
+
+	// Internal parameters.
+	simdata::Vector3 m_DisplacementAxis;
+
+	// Channels to import.
+	DataChannel<simdata::Vector3>::CRef b_GearDisplacement;
+	DataChannel<double>::CRef b_GearTireRotation;
+};
+
+class M2kGearStructureAnimation: public GearStructureAnimation {
+
+	// Channels' names.
+	std::string m_Absorber02, m_Absorber03;
+
+	// Internal parameters
+	float m_Absorber02Length, m_Absorber03Length, m_Offset;
+
+	// Channels to be exposed to drive animations.
+	DataChannel<double>::Ref b_Absorber02Angle, b_Absorber03Angle;
+
+public:
+	SIMDATA_OBJECT(M2kGearStructureAnimation, 0, 0)
+
+	EXTEND_SIMDATA_XML_INTERFACE(M2kGearStructureAnimation, GearStructureAnimation)
+		SIMDATA_XML("absorber02_channel", M2kGearStructureAnimation::m_Absorber02, false)
+		SIMDATA_XML("absorber03_channel", M2kGearStructureAnimation::m_Absorber03, false)
+		SIMDATA_XML("absorber02_length", M2kGearStructureAnimation::m_Absorber02Length, false)
+		SIMDATA_XML("absorber03_length", M2kGearStructureAnimation::m_Absorber03Length, false)
+		SIMDATA_XML("offset", M2kGearStructureAnimation::m_Offset, false)
+	END_SIMDATA_XML_INTERFACE
+
+	M2kGearStructureAnimation():
+		m_Absorber02Length(1.0f),
+		m_Absorber03Length(1.0f),
+		m_Offset(0.0f) {
+	}
+	virtual ~M2kGearStructureAnimation(){}
+	virtual std::string getName() const {
+		return "M2kGearStructureAnimation";
+	}
+	virtual double onUpdate(double) {
+		// Anything left to do with b_GearTireRotation ?
+
+		double vertical_displacement = b_GearDisplacement->value()*m_DisplacementAxis;
+		b_Absorber02Angle->value() = asin((vertical_displacement-m_Offset)/(2*m_Absorber02Length));
+		b_Absorber03Angle->value() = asin((vertical_displacement-m_Offset)/(2*m_Absorber03Length));
+		return 0.016;
+	}
+
+protected:
+	virtual void postCreate() {
+		GearStructureAnimation::postCreate();
+		b_Absorber02Angle = DataChannel<double>::newLocal(m_Absorber02, 0.0);
+		b_Absorber03Angle = DataChannel<double>::newLocal(m_Absorber03, 0.0);
+	}
+	virtual void registerChannels(Bus* bus) {
+		bus->registerChannel(b_Absorber02Angle.get());
+		bus->registerChannel(b_Absorber03Angle.get());
+	}
+	virtual void importChannels(Bus* bus) {
+		GearStructureAnimation::importChannels(bus);
+	}
+};
+
+#if 0
+class DetailedStructure: public GearStructureAnimation {
+public:
+	EXTEND_SIMDATA_XML_INTERFACE(DetailedStructure, GearStructureAnimation)
+	END_SIMDATA_XML_INTERFACE
+
+		virtual ~DetailledStructure(){}
+		virtual std::string getName() const {
+			return "DetailedStructure";
+		}
+
+protected:
+	virtual void postCreate() {
+	}
+	virtual void registerChannels(Bus* bus) {
+	}
+	virtual void importChannels(Bus* bus) {
+	}
+};
+#endif
 
 class GearDynamics: public BaseDynamics {
 
@@ -354,30 +362,12 @@ class GearDynamics: public BaseDynamics {
 	void doComplexPhysics(double x);
 	void doSimplePhysics(double x);
 
-	void setExtension(bool on);
-
-	typedef simdata::Link<GearAnimation>::vector GearSetAnimation;
-
-	GearSetAnimation m_GearSetAnimation;
-
 public:
 	SIMDATA_OBJECT(GearDynamics, 0, 0)
 
 	EXTEND_SIMDATA_XML_INTERFACE(GearDynamics, BaseDynamics)
 		SIMDATA_XML("gear_set", GearDynamics::m_Gear, true)
-		SIMDATA_XML("gear_set_animation", GearDynamics::m_GearSetAnimation, false)
 	END_SIMDATA_XML_INTERFACE
-
-	DECLARE_INPUT_INTERFACE(GearDynamics, BaseDynamics)
-		BIND_ACTION("GEAR_UP", GearUp);
-		BIND_ACTION("GEAR_DOWN", GearDown);
-		BIND_ACTION("GEAR_TOGGLE", GearToggle);
-	END_INPUT_INTERFACE
-
-	// input event handlers
-	void GearUp();
-	void GearDown();
-	void GearToggle();
 
 	GearDynamics();
 
@@ -420,7 +410,6 @@ protected:
 
 	virtual double onUpdate(double dt);
 };
-
 
 #endif // __LANDINGGEAR_H__
 

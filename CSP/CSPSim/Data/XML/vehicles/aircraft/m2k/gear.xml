@@ -68,17 +68,8 @@
 			<Float name="drag_factor">0.8</Float>
 		</Object>
 	</List>
-	<List name="gear_set_animation">
-		<Object	class="GearAnimation">
-			<Object	class="GearStructureAnimation" name="gear_structure_animation">
-				<String	name="displacement_channel">LandingGear.FrontGearDisplacement</String>
-				<Vector	name="displacement_axis">0 0 1</Vector>
-				<String	name="absorber02_channel">LandingGear.FrontGearAbsorber02</String>
-				<String	name="absorber03_channel">LandingGear.FrontGearAbsorber03</String>
-				<Float name="absorber02_length">0.298</Float>
-				<Float name="absorber03_length">0.298</Float>
-				<Float name="offset">0.03</Float>
-			</Object>
+	<List name="subsystems">
+		<Object class="GearAnimation">
 			<Object class="TimedSequence" name="gear_sequence_animation">
 				<Object class="TimedAnimationProxy" name="timed_animation_proxy">
 					<Float name="t0">0.0</Float>
@@ -87,28 +78,43 @@
 				<Float name="initial_time">4.0</Float>
 				<String name="name">Aircraft.GearSequence</String>
 			</Object>
+			<List name="subsystems">
+				<Object class="M2kGearStructureAnimation">
+					<String	name="displacement_channel">LandingGear.FrontGearDisplacement</String>
+					<Vector	name="displacement_axis">0 0 1</Vector>
+					<String	name="absorber02_channel">LandingGear.FrontGearAbsorber02</String>
+					<String	name="absorber03_channel">LandingGear.FrontGearAbsorber03</String>
+					<Float name="absorber02_length">0.298</Float>
+					<Float name="absorber03_length">0.298</Float>
+					<Float name="offset">0.03</Float>
+				</Object>
+			</List>
 		</Object>
-		<Object	class="GearAnimation">
-			<Object	class="GearStructureAnimation" name="gear_structure_animation">
-				<String	name="displacement_channel">LandingGear.LeftGearDisplacement</String>
-				<Vector	name="displacement_axis">-0.134513 0 0.990912</Vector>
-				<String	name="absorber02_channel">LandingGear.LeftGearAbsorber02</String>
-				<String	name="absorber03_channel">LandingGear.LeftGearAbsorber03</String>
-				<Float name="absorber02_length">0.315</Float>
-				<Float name="absorber03_length">0.315</Float>
-				<Float name="offset">0.09</Float>
-			</Object>
+		<Object class="GearAnimation">
+			<List name="subsystems">
+				<Object	class="M2kGearStructureAnimation">
+					<String	name="displacement_channel">LandingGear.LeftGearDisplacement</String>
+					<Vector	name="displacement_axis">-0.134513 0 0.990912</Vector>
+					<String	name="absorber02_channel">LandingGear.LeftGearAbsorber02</String>
+					<String	name="absorber03_channel">LandingGear.LeftGearAbsorber03</String>
+					<Float name="absorber02_length">0.315</Float>
+					<Float name="absorber03_length">0.315</Float>
+					<Float name="offset">0.09</Float>
+				</Object>
+			</List>
 		</Object>
-		<Object	class="GearAnimation">
-			<Object	class="GearStructureAnimation" name="gear_structure_animation">
-				<String	name="displacement_channel">LandingGear.RightGearDisplacement</String>
-				<Vector	name="displacement_axis">0.127615 -0.00447771 0.991814</Vector>
-				<String	name="absorber02_channel">LandingGear.RightGearAbsorber02</String>
-				<String	name="absorber03_channel">LandingGear.RightGearAbsorber03</String>
-				<Float name="absorber02_length">0.315</Float>
-				<Float name="absorber03_length">0.315</Float>
-				<Float name="offset">0.09</Float>
-			</Object>
+		<Object class="GearAnimation">
+			<List name="subsystems">
+				<Object	class="M2kGearStructureAnimation">
+					<String	name="displacement_channel">LandingGear.RightGearDisplacement</String>
+					<Vector	name="displacement_axis">0.127615 -0.00447771 0.991814</Vector>
+					<String	name="absorber02_channel">LandingGear.RightGearAbsorber02</String>
+					<String	name="absorber03_channel">LandingGear.RightGearAbsorber03</String>
+					<Float name="absorber02_length">0.315</Float>
+					<Float name="absorber03_length">0.315</Float>
+					<Float name="offset">0.09</Float>
+				</Object>
+			</List>
 		</Object>
 	</List>
 </Object>

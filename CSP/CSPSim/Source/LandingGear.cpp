@@ -60,7 +60,8 @@ using simdata::Vector3;
 SIMDATA_REGISTER_INTERFACE(LandingGear)
 SIMDATA_REGISTER_INTERFACE(GearDynamics)
 SIMDATA_REGISTER_INTERFACE(GearAnimation)
-SIMDATA_REGISTER_INNER_INTERFACE(GearAnimation, GearStructureAnimation)
+SIMDATA_REGISTER_INTERFACE(GearStructureAnimation)
+SIMDATA_REGISTER_INTERFACE(M2kGearStructureAnimation)
 
 
 LandingGear::LandingGear() {
@@ -551,6 +552,7 @@ void LandingGear::updateWheel(double dt,
 	//m_TangentForce += XXX_tfb;
 }
 
+DEFINE_INPUT_INTERFACE(GearAnimation);
 
 void GearDynamics::doComplexPhysics(double) {
 	m_Force = m_Moment = Vector3::ZERO;
@@ -584,12 +586,9 @@ GearDynamics::GearDynamics():
 	m_Height(0.0) {
 }
 
-DEFINE_INPUT_INTERFACE(GearDynamics);
-
 void GearDynamics::registerChannels(Bus *bus) {
 	assert(bus!=0);
 	b_WOW = bus->registerLocalDataChannel<bool>("State.WOW", false);
-	//b_GearExtension = bus->registerLocalDataChannel<double>("LandingGear.GearExtended", 1.0);
 
 	size_t n(m_Gear.size());
 	b_GearDisplacement.resize(n);
@@ -602,8 +601,6 @@ void GearDynamics::registerChannels(Bus *bus) {
 		//b_GearDisplacement.push_back(bus->registerLocalDataChannel<Vector3>(gear_name + "Displacement",Vector3::ZERO));
 		//b_TireRotation.push_back(bus->registerLocalDataChannel<double>(gear_name+"TireRotation",0.0));
 	}
-	
-	std::for_each(m_GearSetAnimation.begin(),m_GearSetAnimation.end(),GearAnimation::RegisterChannels(bus));
 }
 
 void GearDynamics::importChannels(Bus *bus) {
@@ -617,41 +614,18 @@ void GearDynamics::importChannels(Bus *bus) {
 	b_GroundN = bus->getChannel(Kinetics::GroundN);
 	b_GroundZ = bus->getChannel(Kinetics::GroundZ);
 	b_GearExtension = bus->getChannel("Aircraft.GearSequence.NormalizedTime"); 
-
-	std::for_each(m_GearSetAnimation.begin(),m_GearSetAnimation.end(),GearAnimation::BindChannels(bus));
 }
 	
 void GearDynamics::computeForceAndMoment(double x) {
 	doComplexPhysics(x);
 }
 
-void GearDynamics::setExtension(bool on) {
-	size_t n = m_Gear.size();
-	for (size_t i = 0; i < n; ++i) {
-		m_Gear[i]->setExtended(on);
-	}
-}
-
-void GearDynamics::GearUp() {
-	std::for_each(m_GearSetAnimation.begin(),m_GearSetAnimation.end(),GearAnimation::RStart());
-}
-	
-void GearDynamics::GearDown() {
-	std::for_each(m_GearSetAnimation.begin(),m_GearSetAnimation.end(),GearAnimation::Start());
-}
-
-void GearDynamics::GearToggle() {
-	if (isGearExtended()) {
-		GearUp();
-	}
-	else {
-		GearDown();
-	}
-}
-	
 bool GearDynamics::isGearExtended() const {
 	// TODO: different extension for each gear
-	return b_GearExtension->value() > 0.1;
+	if (b_GearExtension.valid())
+		return b_GearExtension->value() > 0.1;
+	else 
+		return true;
 }
 
 bool GearDynamics::getWOW() const {
@@ -713,7 +687,6 @@ double GearDynamics::onUpdate(double dt) {
 		b_GearDisplacement[i]->value() = gear.getDisplacement();
 		b_TireRotation[i]->value() = gear.getTireRotation();
 	}
-	std::for_each(m_GearSetAnimation.begin(),m_GearSetAnimation.end(),GearAnimation::OnUpdate(dt));
 	return 0.016;
 }
 

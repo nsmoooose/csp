@@ -5,6 +5,9 @@ Version 0.4.0 (in progress)
  * Add a method to DateZulu to get the time offset relative to another
    DateZulu instance in seconds.
 
+ * Add Ref casting functions to test for campatible downcasts without
+   throwing an exception.
+
 2005-02-16: delta
  * For some reasons, vs 2005 needs some template(!) classes to be
    exported whereas vs 2003 doesn't allow it... Back to a version

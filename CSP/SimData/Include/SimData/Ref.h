@@ -297,6 +297,38 @@ public:
 		return p.isNull() || dynamic_cast<CLASS*>(p.get()) != 0;
 	}
 
+	/** Try to assignment from a potentially incompatible reference.  Returns
+	 *  true on success, or false if the pointers are incompatible.  This
+	 *  reference will be set to null if the assignment fails (or the other
+	 *  reference is null).
+	 */
+	template <class Q>
+	bool tryAssign(Ref<Q> const & p) {
+		_rebind(p.get(), false);
+		return (valid() || p.isNull());
+	}
+
+	/** Try to assignment from a potentially incompatible LinkBase.  Returns
+	 *  true on success, or false if the pointers are incompatible.  This
+	 *  reference will be set to null if the assignment fails (or the other
+	 *  reference is null).
+	 */
+	bool tryAssign(LinkBase const & p) {
+		_rebind(p._get(), false);
+		return (valid() || p.isNull());
+	}
+
+	/** Try to assignment from a potentially incompatible pointer.  Returns
+	 *  true on success, or false if the pointers are incompatible.  This
+	 *  reference will be set to null if the assignment fails (or the other
+	 *  reference is null).
+	 */
+	template <class Q>
+	bool tryAssign(Q *p) {
+		_rebind(p, false);
+		return (valid() || (p == 0));
+	}
+
 	/** Comparison with other simdata pointers.
 	 *  XXX the base class NonCopyable is used here instead of CLASS since
 	 *  swig generates bad code if CLASS is const (const const).
@@ -321,11 +353,11 @@ protected:
 	 *  @throws ConversionError if downcasting from an incompatible type.
 	 */
 	template <class Q>
-	void _rebind(Q* ptr) {
+	void _rebind(Q* ptr, bool throw_on_fail=true) {
 		if (ptr) ptr->_incref();
 		_unbind();
 		_reference = dynamic_cast<CLASS*>(ptr);
-		if (_reference == 0 && ptr != 0) {
+		if (_reference == 0 && ptr != 0 && throw_on_fail) {
 			_log_reference_conversion_error();
 			throw ConversionError();
 		}

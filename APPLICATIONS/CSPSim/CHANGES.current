@@ -1,6 +1,15 @@
  Version 0.4.0 (in progress)
 ===========================
    
+2004-01-31: onsight
+  * Patched acinclude.m4, configure.in, and Source/Makefile.in to
+    handle SWIG 1.3.20 and newer.  When used with a newer version
+    of SWIG, the '-c' flag is replace with '-noruntime', and the
+    swigpy library is not linked against.  You may need to rebuild
+    SimData (which has undergone a similar change).
+
+  * Now tests for and links against the osgFX library.
+
 2004-01-27: delta
   * Added a method to access viewport dimensions in VirtualScene.
   

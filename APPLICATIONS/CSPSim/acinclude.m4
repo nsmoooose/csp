@@ -249,3 +249,57 @@ AC_DEFUN(CSP_SIMDATA, [
   fi
 ])
 
+dnl check for swig
+AC_DEFUN(CHECK_SWIG, [
+  min_version=$1
+  AC_MSG_CHECKING(for swig)
+  swig_version_output=`swig -version 2>&1`
+  major=`echo $swig_version_output | sed 's/.* \([[0-9]]\)\.\([[0-9]]\+\)\.\([[0-9]]\+\) .*/\1/'`
+  minor=`echo $swig_version_output | sed 's/.* \([[0-9]]\)\.\([[0-9]]\+\)\.\([[0-9]]\+\) .*/\2/'`
+  micro=`echo $swig_version_output | sed 's/.* \([[0-9]]\)\.\([[0-9]]\+\)\.\([[0-9]]\+\) .*/\3/'`
+  major_min=`echo $min_version | sed 's/\([[0-9]]*\).\([[0-9]]*\).\([[0-9]]*\)/\1/'` 
+  minor_min=`echo $min_version | sed 's/\([[0-9]]*\).\([[0-9]]*\).\([[0-9]]*\)/\2/'`
+  micro_min=`echo $min_version | sed 's/\([[0-9]]*\).\([[0-9]]*\).\([[0-9]]*\)/\3/'`
+  version_proper=`expr \
+    $major \> $major_min \| \
+    $major \= $major_min \& \
+    $minor \> $minor_min \| \
+    $major \= $major_min \& \
+    $minor \= $minor_min \& \
+    $micro \>= $micro_min `
+  new_style=`expr \
+    $major \> 1 \| \
+    $major \= 1 \& \
+    $minor \> 3 \| \
+    $major \= 1 \& \
+    $minor \= 3 \& \
+    $micro \>= 20 `
+  if test "$version_proper" = "1" ; then
+    AC_MSG_RESULT(yes)
+    AC_MSG_CHECKING(swig runtime)
+    if test "$new_style" = "1" ; then
+      AC_MSG_RESULT(new style)
+      SWIG_SWIGPY=''
+      SWIG_RUNTIME='-noruntime'
+      SWIG_NORUNTIME='-noruntime'
+    else
+      AC_MSG_RESULT(old style)
+      SWIG_SWIGPY='-lswigpy'
+      SWIG_RUNTIME=''
+      SWIG_NORUNTIME='-c'
+    fi
+    AC_SUBST(SWIG_SWIGPY)
+    AC_SUBST(SWIG_RUNTIME)
+    AC_SUBST(SWIG_NORUNTIME)
+  else
+    AC_MSG_RESULT(no)
+    AC_MSG_ERROR([
+      SWIG version >= $min_version must be installed.  SWIG is
+      avalable in prepackaged binary and source distributions from
+      http://www.swig.org.
+    ])
+  fi
+])
+  
+  
+

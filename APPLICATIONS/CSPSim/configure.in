@@ -31,6 +31,8 @@ AC_FUNC_ALLOCA
 dnl Check for st_blksize in struct stat
 AC_ST_BLKSIZE
 
+CHECK_SWIG([1.3.16])
+
 _CSP_CHECK_PKG_CONFIG([])
 
 dnl check for Simple Direct Media Library
@@ -58,6 +60,13 @@ CSP_OSG_CONFIG(osg, 0.9.6, [OpenSceneGraph])
 CSP_OSG_CONFIG(osgUtil, 0.9.6, [OpenSceneGraph Util library])
 CSP_OSG_CONFIG(osgText, 0.9.6, [OpenSceneGraph Text library])
 CSP_OSG_CONFIG(osgParticle, 0.9.6, [OpenSceneGraph Particle library])
+dnl check for osgFX
+dnl osgFX does not include a version() function, so we use AC_CHECK_LIB instead
+dnl CSP_OSG_CONFIG(osgFX, 0.9.6, [OpenSceneGraph Effects library])
+AC_HAVE_LIBRARY(osgFX, [], [AC_MSG_ERROR([
+OpenSceneGraph osgFX library needs to be installed.  This library
+is included with OpenSceneGraph 0.9.6 and newer, which can be
+downloaded from http://www.openscenegraph.org])])
 
 dnl check for libSigC++ type-safe signal libraryy
 dnl CSP_LIB_CONFIG([SIGC], [sigc], [1.0.1], [--cflags], [LibSigC++ Signal Library], [http://libsigc.sourceforge.net/])

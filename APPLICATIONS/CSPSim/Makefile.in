@@ -4,9 +4,9 @@ export DEMETER_RELATIVE = ../../THIRDPARTYLIBS/demeter
 export CHUNKLOD_RELATIVE = ../../THIRDPARTYLIBS/CSPChunkLod
 
 export GDEBUGF = -g -Wall
-export GCFLAGS = -fPIC -O2# -DSWIG_GLOBAL #-march=athon-tbird
-export GLDOPTS = -shared -lswigpy -ldl
-export GSWOPTS = -c -c++ -python -noexcept
+export GCFLAGS = -fPIC -O2# -DSWIG_GLOBAL
+export GLDOPTS = -shared -ldl @SWIG_SWIGPY@
+export GSWOPTS = -c++ -python -noexcept @SWIG_NORUNTIME@
 export CXX = g++
 export SWIG = swig 
 
@@ -20,14 +20,11 @@ all clean clean-deps: Makefile
 	done
 	@$(MAKE) InputMaps
 
-#default: 
-#	@for dir in $(SUBDIRS); do \
-#		$(MAKE) -C $${dir} $@ || exit 1; \
-#	done
 
 Makefile: Makefile.in configure.in acinclude.m4
 	aclocal ; autoconf
 	./configure
+
 
 InputMaps: aircraft.hid gamescreen.hid
 

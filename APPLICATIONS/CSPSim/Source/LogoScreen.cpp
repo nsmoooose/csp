@@ -53,13 +53,13 @@ LogoScreen::~LogoScreen() {
 
 class ImageUpdateCallback: public osg::NodeCallback {
 	typedef std::vector<osg::ref_ptr<osg::Image> > ImageList;
-    osg::ref_ptr<osg::Texture2D> m_Texture;
+	osg::ref_ptr<osg::Texture2D> m_Texture;
 	double m_Delay;
-    ImageList m_ImageList;
-    size_t m_CurrPos;
-    double m_PrevTime;
+	ImageList m_ImageList;
+	size_t m_CurrPos;
+	double m_PrevTime;
 public:
-    ImageUpdateCallback(osg::Texture2D *texture, double delay):
+	ImageUpdateCallback(osg::Texture2D *texture, double delay):
 	m_Texture(texture),
 	m_Delay(delay),
 	m_PrevTime(0.0) {
@@ -97,7 +97,7 @@ public:
 			setValue();
 		}
 	}
-    virtual void operator()(osg::Node*, osg::NodeVisitor *nv) {
+	virtual void operator()(osg::Node*, osg::NodeVisitor *nv) {
 		if (nv->getFrameStamp()) {
 			double currTime = nv->getFrameStamp()->getReferenceTime();
 			//if (currTime-m_PrevTime>m_Delay) {
@@ -108,7 +108,7 @@ public:
 			setValue();
 			//}
 		}
-    }
+	}
 	void setValue() {
 		m_Texture->setImage(m_ImageList[m_CurrPos].get());
 	}
@@ -125,34 +125,34 @@ void LogoScreen::onInit() {
 	m_LogoView-> setFrameStamp(fs);
 
 	// create geometry
-    osg::Geometry* geom = new osg::Geometry;
+	osg::Geometry* geom = new osg::Geometry;
 
 	// disable display list so our modified tex show up
-    geom->setUseDisplayList(false);
+	geom->setUseDisplayList(false);
 
 	scale = 0.5f * 1.0f;
 	w = scale * m_width;
 	h = scale * m_height;
-    osg::Vec3Array* vertices = new osg::Vec3Array(4);
+	osg::Vec3Array* vertices = new osg::Vec3Array(4);
 	(*vertices)[0] = osg::Vec3(-w,h,0.0f);//top left
-    (*vertices)[1] = osg::Vec3(-w,-h,0.0f);//bottom left
-    (*vertices)[2] = osg::Vec3(w,-h,0.0f);//bottom right
-    (*vertices)[3] = osg::Vec3(w,h,0.0f);//top right
-    geom->setVertexArray(vertices);
+	(*vertices)[1] = osg::Vec3(-w,-h,0.0f);//bottom left
+	(*vertices)[2] = osg::Vec3(w,-h,0.0f);//bottom right
+	(*vertices)[3] = osg::Vec3(w,h,0.0f);//top right
+	geom->setVertexArray(vertices);
     
-    osg::Vec2Array* texcoords = new osg::Vec2Array(4);
-    (*texcoords)[0].set(0.0f, 1.0f);
-    (*texcoords)[1].set(0.0f, 0.0f);
-    (*texcoords)[2].set(1.0f, 0.0f);
-    (*texcoords)[3].set(1.0f, 1.0f);
+	osg::Vec2Array* texcoords = new osg::Vec2Array(4);
+	(*texcoords)[0].set(0.0f, 1.0f);
+	(*texcoords)[1].set(0.0f, 0.0f);
+	(*texcoords)[2].set(1.0f, 0.0f);
+	(*texcoords)[3].set(1.0f, 1.0f);
 	 
-    geom->setTexCoordArray(0,texcoords);
+	geom->setTexCoordArray(0,texcoords);
 
 	osg::Vec4Array* colors = new osg::Vec4Array(1);
-    (*colors)[0].set(1.0f,1.0f,1.0f,1.0f);
-    geom->setColorArray(colors);
-    geom->setColorBinding(osg::Geometry::BIND_OVERALL);
-    geom->addPrimitiveSet(new osg::DrawArrays(GL_QUADS, 0, 4));
+	(*colors)[0].set(1.0f,1.0f,1.0f,1.0f);
+	geom->setColorArray(colors);
+	geom->setColorBinding(osg::Geometry::BIND_OVERALL);
+	geom->addPrimitiveSet(new osg::DrawArrays(GL_QUADS, 0, 4));
 
 	m_Texture = new osg::Texture2D;
 
@@ -161,7 +161,7 @@ void LogoScreen::onInit() {
 	stateset->setTextureAttributeAndModes(0, m_Texture.get(), osg::StateAttribute::ON);
 	geom->setStateSet(stateset);
 
-    osg::Geode *geode = new osg::Geode;
+	osg::Geode *geode = new osg::Geode;
 	geode->addDrawable(geom);
 	geode->setUpdateCallback(new ImageUpdateCallback(m_Texture.get(),0.5));
 

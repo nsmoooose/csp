@@ -38,12 +38,10 @@
 #include "Config.h"
 #include "CSPSim.h"
 #include "LogStream.h"
-#include "VirtualBattlefield.h"
-#include "Sky.h"
-#include "CSPSim.h"
-#include "Config.h"
 #include "Platform.h"
 //#include "shadow.h"
+#include "Sky.h"
+#include "VirtualBattlefield.h"
 
 #include <SimData/Types.h>
 #include <SimData/Math.h>
@@ -217,7 +215,7 @@ int VirtualBattlefield::buildScene()
 	// installed in /usr/local/lib/osgPlugins or /usr/lib/osgPlugins.
 	// OSG can find itself the plugins.
 #ifdef _WIN32
-	osgDB::setLibraryFilePathList("../Bin");
+	osgDB::setLibraryFilePathList(".");
 #endif
 
 	/////////////////////////////////////
@@ -232,7 +230,7 @@ int VirtualBattlefield::buildScene()
 	m_rpRootNode->setName( "RootSceneGroup" );
 
 	m_rpObjectRootNode = new osg::Group;
-	m_rpObjectRootNode->setName("ObjectRootSceneGraph.");
+	m_rpObjectRootNode->setName("ObjectRootSceneGraph");
 
 	osg::ClearNode* earthSky = new osg::ClearNode;
 	//earthSky->setRequiresClear(false); // we've got base and sky to do it.
@@ -532,7 +530,7 @@ void VirtualBattlefield::addObject(Pointer<DynamicObject> obj)
 	CSP_LOG(CSP_APP, CSP_DEBUG, "ObjectManager::addObject, object_id: " << obj->getObjectID() );
 	assert(obj.valid());
 	objectList.push_front(obj);
-	ostringstream strg;
+	std::ostringstream strg;
 	strg << "Adding object " << obj->getObjectID() ;
 	objectListHistory.push_back(strg.str());
 }
@@ -663,8 +661,9 @@ Pointer<DynamicObject> VirtualBattlefield::getObjectFromName( string name )
 void VirtualBattlefield::removeObjectWithID( unsigned int ID)
 {
 	CSP_LOG( CSP_APP, CSP_INFO, "removeObjectWithID - ID: " << ID );
-	ObjectList::iterator i;
-	for (i = objectList.begin(); i != objectList.end(); ++i) {
+	ObjectList::iterator i = objectList.begin();
+	ObjectList::const_iterator iEnd = objectList.end();
+	for (;i != iEnd; ++i) {
 		if (ID == (*i)->getObjectID()) {
 			(*i)->setDeleteFlag(true);
 		}
@@ -673,11 +672,12 @@ void VirtualBattlefield::removeObjectWithID( unsigned int ID)
 
 void VirtualBattlefield::removeObjectsMarkedForDelete()
 {
-	ObjectList::iterator i;
-	for (i = objectList.begin() ; i != objectList.end() ; ++i) {
+	ObjectList::iterator i = objectList.begin();
+	ObjectList::const_iterator iEnd = objectList.end();
+	for (; i != iEnd ; ++i) {
 		if ((*i)->getDeleteFlag()) {
 			CSP_LOG(CSP_APP, CSP_INFO, "removeObjectsMarkedForDelete() - Removing object " << (*i)->getObjectID());
-			ostringstream strg;
+			std::ostringstream strg;
 			strg << "Removing object " << (*i)->getObjectID();
 			objectListHistory.push_back(strg.str());
 			removeNodeFromScene((*i)->getNode());
@@ -694,7 +694,7 @@ void VirtualBattlefield::removeAllObjects()
 		Pointer<DynamicObject> object = objectList.front();
 		objectList.pop_front();
 
-		ostringstream strg;
+		std::ostringstream strg;
 		strg << "Removing object " << object->getObjectID();
 		objectListHistory.push_back(strg.str());
 
@@ -704,9 +704,10 @@ void VirtualBattlefield::removeAllObjects()
 
 void VirtualBattlefield::dumpAllObjects()
 {
-	cout << "dumpAllObjects() - Dumping List of Game Objects" << endl;
-	ObjectList::iterator i;
-	for (i = objectList.begin() ; i != objectList.end() ; ++i) {
+	std::cout << "dumpAllObjects() - Dumping List of Game Objects" << endl;
+	ObjectList::const_iterator i = objectList.begin();
+	ObjectList::const_iterator iEnd = objectList.end();
+	for (; i != iEnd ; ++i) {
 		Pointer<DynamicObject> object = *i;
 		object->dump();
 	}
@@ -742,13 +743,14 @@ void VirtualBattlefield::updateAllObjects(float dt) // before: unsigned int dt ?
 {
 	cout << "updateAllObjects - Entering" << endl;
 
-	ObjectList::iterator i;
+	ObjectList::iterator i = objectList.begin();
+	ObjectList::const_iterator iEnd = objectList.end();
 
-	for (i = objectList.begin() ; i != objectList.end() ; ++i) {
+	for (; i != iEnd ; ++i) {
 		Pointer<DynamicObject> object = *i;
 	  	object->onUpdate(dt);
 	}
-	cout << "updateAllObjects - Leaving" << endl;
+	std::cout << "updateAllObjects - Leaving" << endl;
 }
 
 void VirtualBattlefield::initializeAllObjects()
@@ -763,8 +765,7 @@ void VirtualBattlefield::initializeAllObjects()
 
 simdata::Pointer<DynamicObject> VirtualBattlefield::getNextObject(simdata::Pointer<DynamicObject> object, int human, int local, int category)
 {
-	ObjectList::iterator i;
-	i = std::find(objectList.begin(), objectList.end(), object);
+	ObjectList::iterator i = std::find(objectList.begin(), objectList.end(), object);
 	if (i == objectList.end()) {
 		return object;
 	}
@@ -858,7 +859,7 @@ void VirtualBattlefield::setActiveTerrain(TerrainObject *pTerrainObject)
 		if (m_TerrainNode.valid()) {
 			m_ShadowGroup->removeChild(m_TerrainNode.get());
 		}
-		m_TerrainNode = NULL;
+		//m_TerrainNode = NULL;
 	}
 
 	m_ActiveTerrainObject = pTerrainObject; 

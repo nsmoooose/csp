@@ -200,7 +200,7 @@ void SimObject::initModel()
 	assert(m_rpNode == NULL && m_rpSwitch == NULL && m_rpTransform == NULL);
 	assert(m_Model.valid());
 
-	cout << "INIT MODEL\n";
+	std::cout << "INIT MODEL\n";
 
 	m_rpNode = m_Model->getModel();
     

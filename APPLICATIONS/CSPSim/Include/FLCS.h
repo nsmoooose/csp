@@ -28,9 +28,6 @@
 
 #include "SimObject.h"
 #include "HID.h"
-#include "AeroDynamics.h"
-
-//#include "AeroDynamics.h"
 
 class FlightControlSystem: public simdata::Object
 {

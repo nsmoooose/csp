@@ -27,6 +27,29 @@
 
 #include "ScreenInfoManager.h"
 
+void set2dScene(osg::Group* rootNode, int ScreenWidth, int ScreenHeight)
+{
+    osg::ref_ptr<Framerate> framerate = new Framerate(0,ScreenHeight);
+	//float textWidth = bitmapFont->getWidth(pause->getEncodedText());
+	osg::ref_ptr<ScreenInfo> pause = new ScreenInfo(ScreenWidth - 5 * 8, ScreenHeight,"PAUSE", "PAUSE");
+	pause->setStatus(false);
+	osg::ref_ptr<GeneralStats> generalStats = new GeneralStats(0, ScreenHeight / 3);
+
+	rootNode->addChild(framerate.get());
+	rootNode->addChild(pause.get());
+	rootNode->addChild(generalStats.get());
+
+    // now add a depth attribute to the scene to force it to draw on top.
+    osg::Depth* depth = new osg::Depth;
+    depth->setRange(0.0,0.0);
+    
+    osg::StateSet* rootState = new osg::StateSet();
+    rootState->setAttribute(depth);
+    rootState->setMode(GL_LIGHTING,osg::StateAttribute::OFF);
+    
+    rootNode->setStateSet(rootState);
+}
+
 ScreenInfoManager::ScreenInfoManager(int ScreenWidth, int ScreenHeight)
 {
     setMatrix(osg::Matrix::ortho2D(0,ScreenWidth,0,ScreenHeight));
@@ -41,32 +64,13 @@ ScreenInfoManager::ScreenInfoManager(int ScreenWidth, int ScreenHeight)
 	setCullingActive(true);
 }
 
-
-
-void ScreenInfoManager::set2dScene(osg::Group* rootNode, int ScreenWidth, int ScreenHeight)
+void ScreenInfoManager::changeObjectStats(int ScreenWidth, int ScreenHeight)
 {
-    osg::ref_ptr<Framerate> framerate = new Framerate(0,ScreenHeight);
-	//float textWidth = bitmapFont->getWidth(pause->getEncodedText());
-	osg::ref_ptr<ScreenInfo> pause = new ScreenInfo(ScreenWidth - 5 * 8, ScreenHeight,"PAUSE", "PAUSE");
-	pause->setStatus(false);
-	osg::ref_ptr<GeneralStats> generalStats = new GeneralStats(0, ScreenHeight / 3);
+	ScreenInfo* os = getScreenInfo("OBJECT STATS");
+	if (os)
+		m_modelview_abs->removeChild(os);
 	osg::ref_ptr<ObjectStats> objectStats = new ObjectStats(0, 2 * ScreenHeight / 3);
-
-	rootNode->addChild(framerate.get());
-	rootNode->addChild(pause.get());
-	rootNode->addChild(generalStats.get());
-	rootNode->addChild(objectStats.get());
-
-
-    // now add a depth attribute to the scene to force it to draw on top.
-    osg::Depth* depth = new osg::Depth;
-    depth->setRange(0.0,0.0);
-    
-    osg::StateSet* rootState = new osg::StateSet();
-    rootState->setAttribute(depth);
-    rootState->setMode(GL_LIGHTING,osg::StateAttribute::OFF);
-    
-    rootNode->setStateSet(rootState);
+	m_modelview_abs->addChild(objectStats.get());
 }
 
 class FindNamedNodeVisitor : public osg::NodeVisitor
@@ -78,14 +82,14 @@ class FindNamedNodeVisitor : public osg::NodeVisitor
             _found_node = 0L;
         }
 
-        virtual void apply( osg::Node &node )
+        virtual void apply( osg::Node& node )
         {
             if( node.getName() == _name_to_find )
             _found_node = &node;
             traverse(node);
         }
 
-        void setNameToFind( std::string const & name ) { _name_to_find = name; }
+        void setNameToFind( std::string const& name ) { _name_to_find = name; }
         osg::Node *foundNode() { return _found_node; }
 
     private :
@@ -93,24 +97,24 @@ class FindNamedNodeVisitor : public osg::NodeVisitor
         osg::Node *_found_node;
 };
 
-ScreenInfo * ScreenInfoManager::getScreenInfo(std::string const & name)
+ScreenInfo* ScreenInfoManager::getScreenInfo(std::string const& name)
 {
 	FindNamedNodeVisitor nv;
 	nv.setNameToFind(name);
 	nv.apply( *m_modelview_abs );
-	return dynamic_cast<ScreenInfo *>(nv.foundNode());
+	return dynamic_cast<ScreenInfo*>(nv.foundNode());
 }
 
-void ScreenInfoManager::setStatus(std::string const & name, bool bvisible)
+void ScreenInfoManager::setStatus(std::string const& name, bool bvisible)
 {
-	ScreenInfo * sci = getScreenInfo(name);
+	ScreenInfo* sci = getScreenInfo(name);
 	if (sci)
 		sci->setStatus(bvisible);
 }
 
-bool ScreenInfoManager::getStatus(std::string const & name)
+bool ScreenInfoManager::getStatus(std::string const& name)
 {
-	ScreenInfo * sci = getScreenInfo(name);
+	ScreenInfo* sci = getScreenInfo(name);
 	if (sci)
 		return sci->getStatus();
 	else

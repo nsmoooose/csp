@@ -22,17 +22,14 @@
  *
  **/
 
-#include "stdinc.h"
-
-#include <osg/Depth>
-#include <osg/State>
-
 #include <SimData/Types.h>
 
+#include "CSPSim.h"
 #include "GameScreen.h"
 #include "EventMapIndex.h"
+#include "Logstream.h"
 #include "VirtualBattlefield.h"
-#include "CSPSim.h"
+
 
 
 double const GameScreen::OffsetRate =  30.0 * (G_PI / 180.0); // x deg / s, even if it is used for Zoom also ...
@@ -180,16 +177,10 @@ void GameScreen::OnInit()
 
 	m_rpInfosView->setViewport(0,0,ScreenWidth,ScreenHeight);
 
-	osg::Depth* depth = new osg::Depth;
-    depth->setRange(0.0,0.0);  
-    osg::StateSet* State = new osg::StateSet();
-    State->setAttribute(depth);
-
 	m_rpInfosView->getRenderStage()->setClearMask(0x0);
 
 	m_ScreenInfoManager = new ScreenInfoManager(ScreenWidth,ScreenHeight);
 	m_ScreenInfoManager->setName("ScreenInfoManager");
-    m_ScreenInfoManager->setStateSet(State);
 
     m_rpInfosView->setSceneData(m_ScreenInfoManager.get() );
 }
@@ -207,6 +198,11 @@ void GameScreen::setActiveObject(simdata::PointerBase &object)
 		on_View1();
 	} else {
 		on_View2();
+	}
+	if (vehicle.valid()) {
+		int ScreenWidth = CSPSim::theSim->GetSDLScreen()->w;
+		int ScreenHeight = CSPSim::theSim->GetSDLScreen()->h;
+		m_ScreenInfoManager->changeObjectStats(ScreenWidth,ScreenHeight);
 	}
 }
 

@@ -25,7 +25,6 @@
 #ifndef __SCREENINFOMANAGER_H__
 #define __SCREENINFOMANAGER_H__
 
-#include <osg/NodeVisitor>
 #include <osg/Projection>
 
 #include "ScreenInfo.h"
@@ -34,13 +33,13 @@ class ScreenInfoManager:public osg::Projection
 {
 public:
 	ScreenInfoManager(int ScreenWidth, int ScreenHeight);
-	virtual ~ScreenInfoManager(){;};
+	virtual ~ScreenInfoManager(){}
 	void setStatus(std::string const & name, bool bvisible);
 	bool ScreenInfoManager::getStatus(std::string const & name);
+	void changeObjectStats(int ScreenWidth, int ScreenHeight);
 private:
 	osg::MatrixTransform* m_modelview_abs;
-	ScreenInfo * getScreenInfo(std::string const & name);
-	void set2dScene(osg::Group* rootNode, int ScreenWidth, int ScreenHeight);
+	ScreenInfo* getScreenInfo(std::string const & name);
 };
 
 #endif // __SCREENINFOMANAGER_H__

@@ -157,7 +157,7 @@ void CSPSim::setActiveObject(simdata::Pointer<DynamicObject> object) {
 	}
 }
 
-simdata::Pointer<DynamicObject> const CSPSim::getActiveObject() const {
+simdata::Pointer<DynamicObject const> const CSPSim::getActiveObject() const {
 	return m_ActiveObject;
 }
 
@@ -255,13 +255,13 @@ void CSPSim::Init()
 
 	// create screens
 	m_GameScreen = new GameScreen;
-	
-	// start in the aircraft
-	setActiveObject(ao);
 
 	// setup screens
 	m_GameScreen->OnInit();
 	m_GameScreen->SetBattlefield(m_Battlefield);
+
+	// start in the aircraft
+	setActiveObject(ao);
 
 #if 0
 	// set the Main Menu then start the main loop
@@ -329,7 +329,6 @@ void CSPSim::Run()
 {
 	CSP_LOG(CSP_APP, CSP_DEBUG, "CSPSim::Run...");
 
-	//m_bShowStats = true;
 	m_bFreezeSim = false;
 
 	//initTime(simdata::SimDate(2003, 2, 25, 13, 0, 0));
@@ -394,7 +393,6 @@ void CSPSim::Run()
 		Exit();
 		exit(0);
 	}
-	
 	catch(...) {
 		CSP_LOG(CSP_APP, CSP_ERROR, "MAIN: Unexpected exception, GLErrorNUM: " << glGetError());
 		Cleanup();
@@ -560,7 +558,7 @@ int CSPSim::InitSDL()
 
 	CSP_LOG(CSP_APP, CSP_ERROR, "Initializing video at " << bpp << " BitsPerPixel.");
 
-	Uint32 flags = SDL_OPENGL | SDL_HWSURFACE | SDL_DOUBLEBUF;
+	Uint32 flags = SDL_OPENGL | SDL_HWSURFACE | SDL_DOUBLEBUF; 
 
 	if (fullscreen) {
 		flags |= SDL_FULLSCREEN;
@@ -584,10 +582,10 @@ int CSPSim::InitSDL()
     
 	SDL_EnableUNICODE(1);
 
-	if ( SDL_LoadWAV("../data/sounds/a.wav",
+	std::string sound_path = g_Config.getPath("Paths", "SoundPath", ".", true);
+	if ( SDL_LoadWAV(ospath::join(sound_path, "avionturbine5.wav").c_str(),
 			&m_audioWave.spec, &m_audioWave.sound, &m_audioWave.soundlen) == NULL ) {
-		CSP_LOG(CSP_APP, CSP_ERROR,  "Couldn't load %s: %s\n",
-						argv[1], SDL_GetError());
+		CSP_LOG(CSP_APP, CSP_ERROR,  "Couldn't load " << sound_path << "/avionturbine5.wav: " << SDL_GetError());
 		exit(1);
 	}
 	m_audioWave.spec.callback = fillerup;

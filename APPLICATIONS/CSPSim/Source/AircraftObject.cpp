@@ -87,10 +87,6 @@ AircraftObject::AircraftObject(): DynamicObject()
 	m_RudderInput = 0.0;
 	m_ThrottleInput = 0.0;
 
-	m_dThrottleInput = 0;
-	m_dAileronInput = 0;
-	m_dElevatorInput = 0;
-
 	m_decayAileron = 0;
 	m_decayElevator = 0;
 
@@ -394,7 +390,8 @@ void AircraftObject::doComplexPhysics(double dt)
 {
 	m_FlightModel->setThrust(m_Throttle * 70000.0);
 	m_FlightModel->setControlSurfaces(m_Aileron, m_Elevator, m_Rudder);
-	m_FlightModel->doSimStep(dt);
+	//m_FlightModel->doSimStep(dt);
+	m_FlightModel->doSimStep2(dt);
 	updateOrientation();
 	m_Direction = m_Orientation * simdata::Vector3::YAXIS;
 	m_NormalDirection = m_Orientation * simdata::Vector3::ZAXIS;

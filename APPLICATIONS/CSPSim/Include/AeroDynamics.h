@@ -31,6 +31,8 @@
 #include <SimData/Types.h>
 #include <SimData/InterfaceRegistry.h>
 
+#include "DynamicalSystem.h"
+
 class AircraftObject;
 
 	
@@ -44,7 +46,6 @@ class Physics
 public:
 	Physics() { }
 	virtual ~Physics() {}
-	
 	virtual void initialize() = 0;
 	virtual void doSimStep(double dt) = 0;
 };
@@ -53,7 +54,7 @@ public:
  * class AeroDynamics - aircraft flight model implementation.
  *
  */
-class AeroDynamics: public simdata::Object, public Physics
+class AeroDynamics: public simdata::Object, public Physics, protected DynamicalSystem
 {
 public:
 	SIMDATA_OBJECT(AeroDynamics, 0, 0)
@@ -106,6 +107,7 @@ public:
 	
 	virtual void initialize();
 	virtual void doSimStep(double dt);
+	virtual void doSimStep2(double dt);
 
 protected:
 
@@ -140,12 +142,15 @@ protected:
 	double m_CD0;     // CDo is the reference drag at zero angle of attack
 	double m_CD_a;    // CDa is the drag curve slope
 	double m_CD_de;   // CDde is the drag due to elevator
+	double m_CD_i;    // CD_i is induced drag coefficient = 1 / (e * pi * lambda) where lamdba = Span^2 / Area  
+	                  // and e is Osswald coefficient
 	
 	double m_CL0;     // CLo is the reference lift at zero angle of attack
 	double m_CL_a;    // CLa is the lift curve slope
 	double m_CL_adot;
 	double m_CL_q;
 	double m_CL_de;   // CLde is the lift due to elevator
+	double m_CL;      // total lift coefficient; used by induced drag  = CD_i * Cl^2
 	
 	double m_CM0;     // CMo is the pitch moment coefficient
 	double m_CM_a;    // CMa is the pitch moment coefficient due to angle of attack
@@ -155,9 +160,9 @@ protected:
 	
 	double m_CY_beta; // CLb - the dihedral effect
 	double m_CY_p;    // Clp - roll damping
-	double m_CY_r;    // CLdr - roll due to rudder
-	double m_CY_da;   // CLr - roll due to yaw rate// Clda - roll due to aileron
-	double m_CY_dr;        
+	double m_CY_r;    // CLr - roll due to yaw rate
+	double m_CY_da;   // Clda - roll due to aileron
+	double m_CY_dr;   // CLdr - roll due to rudder     
 	
 	double m_CI_beta;       
 	double m_CI_p;          
@@ -190,9 +195,12 @@ public:
 	
 
 protected:
+	std::vector<double> const &f(double x, std::vector<double> &y);
+	void bindToBody(std::vector<double> const &y);
 
-	simdata::Vector3 CalculateForces(double const p_qBarS); // update gforce too
-	simdata::Vector3 CalculateMoments(double const p_qBarS) const;
+	simdata::Vector3 const& CalculateForces(double const p_qBarS); // update gforce too
+	simdata::Vector3 const& CalculateMoments(double const p_qBarS) const;
+	void updateAngles(double dt);
 	double CalculateLiftCoefficient() const; 
 	double CalculateDragCoefficient() const;
 	double CalculateSideCoefficient() const;
@@ -208,11 +216,13 @@ protected:
 
 	simdata::Vector3 LocalToBody(const simdata::Vector3 & vec);
 	simdata::Vector3 BodyToLocal(const simdata::Vector3 & vec);
+	void BodyToLocal();
+
 	simdata::Matrix3 MakeAngularVelocityMatrix(simdata::Vector3 u);
 	
-	simdata::Vector3 LiftVector() const; 
-	simdata::Vector3 DragVector() const;
-	simdata::Vector3 SideVector() const;
+	simdata::Vector3 const& LiftVector(); 
+	simdata::Vector3 const& DragVector() const;
+	simdata::Vector3 const& SideVector() const;
 
 	/*
 	double ControlSensibility(double p_x) const;       // control joystick sensibility
@@ -238,7 +248,8 @@ protected:
 	double m_Thrust;
 
 	// calculated forces
-	simdata::Vector3 m_ForceBody;
+	double m_qBarFactor;
+
 	simdata::Vector3 m_CurrentForceTotal;
 	simdata::Vector3 m_GravityForce;
 	simdata::Vector3 m_ThrustForce;
@@ -246,12 +257,13 @@ protected:
 	simdata::Vector3 m_DragForce;
 
 	// derived quantities
-	double m_alpha;    // angle of attack
+	double m_alpha;    // current angle of attack
+	double m_alpha0;   // discrete AOA
 	double m_alphaDot; // AOA rate
 	double m_beta;     // side slip angle
 	double m_gForce;   // current g acceleration
 	
-	double m_Gravity;  // current gravitational acceleration
+	double m_Gravity;                       // current gravitational acceleration
 	simdata::Vector3 m_GravityWorld;        // current gravity vector in earth coordinates
 
 	simdata::Vector3 m_EulerAngles;    
@@ -263,6 +275,7 @@ protected:
 
 	simdata::Vector3 m_MomentsBody;         // (L,M,N) total moment (torque) in body coordinates
 
+	simdata::Vector3 m_PositionBody;        // position after integration step in body coordinates
 	simdata::Vector3 m_AngularAccelBody;    // (Pdot, Qdot, Rdot)
 	simdata::Vector3 m_AngularAccelLocal;   // angular acceleration in local coordinates
 	simdata::Vector3 m_LinearAccelBody;     // (Udot, Vdot, Wdot)

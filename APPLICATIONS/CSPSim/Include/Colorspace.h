@@ -29,11 +29,6 @@
 #ifndef __COLORSPACE_H__
 #define __COLORSPACE_H__
 
-#include <cmath>
-#include <ostream>
-#include <assert.h>
-
-
 /*
  * Colorspace conversions and corrections.
  */

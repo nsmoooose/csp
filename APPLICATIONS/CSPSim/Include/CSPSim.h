@@ -78,7 +78,7 @@ public:
 	simdata::SimTime const & getFrameRate() const{ return m_FrameRate; }
 
 	void setActiveObject(simdata::Pointer<DynamicObject> object);
-	simdata::Pointer<DynamicObject> const getActiveObject() const;
+	simdata::Pointer<DynamicObject const> const getActiveObject() const;
 	VirtualBattlefield * const getBattlefield() const;
 
 

@@ -26,19 +26,13 @@
 #define __VIRTUALBATTLEFIELD_H__
 
 #include <list>
-#include <string>
-
-#include <osg/FrameStamp>
-#include <osg/Group>
 
 #include <osgUtil/SceneView>
 
 #include "BaseController.h"
 #include "DynamicObject.h"
-#include "ObjectRangeInfo.h"
 #include "TerrainObject.h"
 
-#include <SimData/Types.h>
 
 
 class Sky;
@@ -71,7 +65,7 @@ public:
 
 	simdata::Pointer<DynamicObject> getObjectFromID( unsigned int ID);
 	simdata::Pointer<DynamicObject> getObjectFromName( std::string name );
-	BaseController * getControllerFromID(unsigned int ID);
+	BaseController* getControllerFromID(unsigned int ID);
 	void removeObjectWithID( unsigned int ID);
 	void removeObjectsMarkedForDelete();
 	void removeAllObjects();
@@ -143,7 +137,7 @@ protected:
 	ObjectList objectList;
 	static unsigned int latest_object_id;
 	std::list<string> objectListHistory;
-	list<BaseController *> controllerList;
+	std::list<BaseController *> controllerList;
 
 	float m_ViewDistance;
 	float m_ViewAngle;

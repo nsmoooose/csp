@@ -28,11 +28,14 @@
 #include "ScreenInfo.h"
 #include "VirtualBattlefield.h"
 
+using std::max;
+using std::min;
+
 class UpdateCallback : public osg::NodeCallback
 {
 	virtual void operator()(osg::Node* node, osg::NodeVisitor* nv)
 	{ 
-		ScreenInfo * aScreenInfo = dynamic_cast<ScreenInfo*>(node);
+		ScreenInfo* aScreenInfo = dynamic_cast<ScreenInfo*>(node);
 		if (aScreenInfo && aScreenInfo->getStatus()) 
 			aScreenInfo->update();
 		traverse(node,nv);
@@ -40,17 +43,18 @@ class UpdateCallback : public osg::NodeCallback
 };
 
 ScreenInfo::ScreenInfo(int posx,int posy, std::string const & name, std::string const & text):
-m_TTFPath("../Data/Fonts/ltype.ttf"),m_FontSize(11),
+m_TTFPath("ltype.ttf"),m_FontSize(11),
 m_BitmapFont(new osgText::BitmapFont(m_TTFPath,m_FontSize)),
 m_Text(new osgText::Text(m_BitmapFont))
 {
 	int heightFont = m_BitmapFont->getHeight(); //uh, an osg fix is needed here
 	heightFont = m_FontSize;
-	setName(name);
 	m_Text->setPosition(osg::Vec3(posx,posy - heightFont,0));
 	setUpdateCallback(new UpdateCallback());
 	m_Text->setText(text);
 	addDrawable( m_Text );
+
+	setName(name);
 }
 
 Framerate::Framerate(int posx, int posy):ScreenInfo(posx,posy,"FRAMERATE"),m_minFps(60),m_maxFps(25) 
@@ -59,7 +63,6 @@ Framerate::Framerate(int posx, int posy):ScreenInfo(posx,posy,"FRAMERATE"),m_min
 	m_Date = new  osgText::Text(m_BitmapFont);
 	m_Date->setPosition(osg::Vec3(posx,posy - 2 * m_FontSize,0));
 	addDrawable( m_Date );
-
 }
 
 void Framerate::update()
@@ -104,7 +107,7 @@ void GeneralStats::update()
 	osstr << "Terrain Polygons: " << CSPSim::theSim->getBattlefield()->getTerrainPolygonsRendered();
     m_Text->setText(osstr.str());
 
-	simdata::Pointer<DynamicObject> activeObject = CSPSim::theSim->getActiveObject();
+	simdata::Pointer<DynamicObject const> const activeObject = CSPSim::theSim->getActiveObject();
 	if (!activeObject.isNull()) {
 
 		simdata::Vector3 pos = activeObject->getLocalPosition();
@@ -130,31 +133,37 @@ void GeneralStats::update()
 	}
 }
 
-
 ObjectStats::ObjectStats(int posx,int posy):ScreenInfo(posx,posy,"OBJECT STATS")
-{
-	for (unsigned short i = 0; i < 10; ++i) {
-		posy -= m_FontSize;
-		osgText::Text* aStat = new  osgText::Text(m_BitmapFont);
-		aStat->setPosition(osg::Vec3(posx,posy,0));
-		m_ObjectStats.push_back(aStat);
-		addDrawable( aStat );
-	}
-	removeDrawable(m_Text);
-};
-
-void ObjectStats::update()
 {
 	simdata::Pointer<DynamicObject> activeObject = CSPSim::theSim->getActiveObject();
 	if (!activeObject.isNull()) {
 		std::vector<std::string> stringStats;
 		activeObject->getStats(stringStats);
-		unsigned int n = m_ObjectStats.size();
-		if (stringStats.size() < n) n = stringStats.size();
-		for (unsigned short i = 0; i < n; ++i) {
-			m_ObjectStats[i]->setText(stringStats[i]);
-//			std::cout << stringStats[i] << std::endl;
+		short n = stringStats.size();
+		for (;n-->0;) {
+			posy -= m_FontSize;
+			osgText::Text* aStat = new  osgText::Text(m_BitmapFont);
+			aStat->setPosition(osg::Vec3(posx,posy,0));
+			m_ObjectStats.push_back(aStat);
+			addDrawable( aStat );
 		}
-//		std::cout << stringStats.size() << std::endl;
+		removeDrawable(m_Text);	
+	}
+}
+
+void ObjectStats::update() 
+{
+	simdata::Pointer<DynamicObject> activeObject = CSPSim::theSim->getActiveObject();
+	if (!activeObject.isNull()) {
+		std::vector<std::string> stringStats;
+		activeObject->getStats(stringStats);
+		short n = m_ObjectStats.size();
+		short m = stringStats.size();
+		if (m < n) n = m;
+		for (;--n>=0;) {
+			m_ObjectStats[n]->setText(stringStats[n]);
+			//			std::cout << stringStats[n] << std::endl;
+		}
+		//		std::cout << stringStats.size() << std::endl;
 	}
 }

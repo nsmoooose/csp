@@ -24,7 +24,6 @@
 #include <algorithm>
 
 #include "AeroDynamics.h"
-#include "AircraftObject.h"
 #include "LogStream.h"
 
 #include <SimData/InterfaceRegistry.h>
@@ -43,7 +42,7 @@ unsigned short const minIteration = 100;
 SIMDATA_REGISTER_INTERFACE(AeroDynamics)
 
 
-AeroDynamics::AeroDynamics() {
+AeroDynamics::AeroDynamics(): DynamicalSystem(13) {
 	m_depsilon = 0.0;
 	m_Bound = false;
 	initialize();
@@ -186,9 +185,10 @@ void AeroDynamics::initialize()
 	m_DragForce = simdata::Vector3::ZERO;
 	m_CurrentForceTotal = simdata::Vector3::ZERO;
 
-	m_ForceBody = simdata::Vector3::ZERO;
+	m_ForcesBody = simdata::Vector3::ZERO;
 
 	m_alpha = 0.0;
+	m_alpha0 = 0.0;
 	m_alphaDot = 0.0;
    
 	m_ForcesBody = simdata::Vector3::ZERO;
@@ -214,7 +214,8 @@ void AeroDynamics::convertXML() {
 
 void AeroDynamics::postProcess()
 {
-	m_depsilon = std::min((double)m_GMax,fabs(m_GMin)) / 2.0;
+	m_depsilon = std::min(static_cast<double>(m_GMax),fabs(m_GMin)) / 2.0;
+	m_CD_i = m_WingArea / (0.9 * G_PI * m_WingSpan * m_WingSpan);
 }
 
 
@@ -322,9 +323,8 @@ void AeroDynamics::doSimStep(double dt)
 	dt /= m_Maxi; 
 
 
-	double qBarFactor = 0.5 * CalculateAirDensity(m_PositionLocal.z) * m_WingArea;
-
-	//qBarFactor = 0.5 * CalculateAirDensity(m_PositionLocal.z) * m_WingArea;
+	
+    m_qBarFactor = 0.5 * CalculateAirDensity(m_PositionLocal.z) * m_WingArea;
 	m_Gravity = CalculateGravity(m_PositionLocal.z);
 	m_GravityWorld = - m_Mass * m_Gravity * simdata::Vector3::ZAXIS;
 
@@ -360,7 +360,7 @@ void AeroDynamics::doSimStep(double dt)
 			m_Elevator = m_ElevatorInput * m_ElevatorScale;
 			
 			// Dynamic pressure
-			double qBarS = qBarFactor * m_Speed * m_Speed;
+			double qBarS = m_qBarFactor * m_Speed * m_Speed;
 			
 			// Calculate moment
 			m_MomentsBody = CalculateMoments(qBarS);
@@ -457,8 +457,9 @@ void AeroDynamics::doSimStep(double dt)
 
 
 // must calculate the resultant forces ...
-simdata::Vector3 AeroDynamics::CalculateForces( double const p_qBarS )
+simdata::Vector3 const& AeroDynamics::CalculateForces( double const p_qBarS )
 {
+	static simdata::Vector3 forceBody;
 #if 0
 	CSP_LOG(CSP_PHYSICS, CSP_DEBUG, "AeroDynamics: BodyVelocity: " << m_VelocityBody);
 	CSP_LOG(CSP_PHYSICS, CSP_DEBUG, "AeroDynamics: local velocity: " << m_VelocityLocal);
@@ -467,12 +468,14 @@ simdata::Vector3 AeroDynamics::CalculateForces( double const p_qBarS )
 	
 	// Calculate Aero Forces
 
+	// Caution: calculate lift first
 	// Lift
-	simdata::Vector3 forceBody = p_qBarS * LiftVector();
-	static int x = 0;
-	if (x++ % 1000 == 0) {
+	forceBody = p_qBarS * LiftVector();
+
+	//static int x = 0;
+	//if (x++ % 1000 == 0) {
 		//printf("%4.2f %8.2f %8.2f %8.2f\n", m_alpha*180/3.14, p_qBarS, forceBody.y, forceBody.z);
-	}
+	//}
 
 	// Evaluate g's
 	m_gForce = m_MassInverse * forceBody.z / 9.81;
@@ -493,9 +496,10 @@ simdata::Vector3 AeroDynamics::CalculateForces( double const p_qBarS )
 
 
 // ... and moments on the aircraft
-simdata::Vector3 AeroDynamics::CalculateMoments( double const p_qBarS ) const
+simdata::Vector3 const& AeroDynamics::CalculateMoments( double const p_qBarS ) const
 {
-	simdata::Vector3 moments;
+	static simdata::Vector3 moments;
+
 	moments.x = CalculatePitchMoment(p_qBarS); // Pitch
 	moments.y = CalculateRollMoment(p_qBarS);  // Roll
 	moments.z = CalculateYawMoment(p_qBarS);   // Yaw
@@ -527,25 +531,25 @@ double AeroDynamics::CalculateLiftCoefficient() const
 }
 
 
-simdata::Vector3 AeroDynamics::LiftVector() const
+simdata::Vector3 const& AeroDynamics::LiftVector()
 {
-	simdata::Vector3 lift;
+	static simdata::Vector3 lift;
 	lift.x = 0.0;
 
-	double Cl = CalculateLiftCoefficient();
+	m_CL = CalculateLiftCoefficient();
 
 	if ( fabs(m_alpha) > m_stallAOA)
 	{
 		double c = fabs(m_alpha) - m_stallAOA;
-		Cl -= c * c * 3.0;
-		if (Cl < 0.0) Cl = 0.0;
+		m_CL -= c * c * 3.0;
+		if (m_CL < 0.0) m_CL = 0.0;
 		//c *= c;
 		//lift.y -= c;
 		//lift.z /= 1.0 + c;
 	}
 	
-	lift.y = Cl * sin(m_alpha);
-	lift.z = Cl * cos(m_alpha);
+	lift.y = m_CL * sin(m_alpha);
+	lift.z = m_CL * cos(m_alpha);
 
 	return lift;
 }
@@ -556,7 +560,6 @@ double AeroDynamics::CalculateDragCoefficient() const
 	static int x = 0;
 	double drag_coe;
 	double alpha = m_alpha;
-	double lift_coe = CalculateLiftCoefficient();
 	
 	// prevent driving this equation from from its range of validity
 	if (alpha > 0.8) alpha = 0.8;
@@ -566,12 +569,11 @@ double AeroDynamics::CalculateDragCoefficient() const
 	//drag_coe =  -0.0194 + 0.0214 * alpha + (- 0.29 * m_Elevator + 0.0033 + 0.206 * alpha) * m_Elevator + (-0.699 - 0.903 * alpha) * alpha * alpha;
 	//drag_coe = - drag_coe;
 
-	double induced = lift_coe*lift_coe*m_WingArea / (3.145926536 * m_WingSpan*m_WingSpan);
-	if (induced < 0.0) induced = 0.0;
+	double induced = m_CD_i * m_CL * m_CL;
 
-	if (x++ % 1000 == 0) {
+	//if (x++ % 1000 == 0) {
 	//	printf("%6.1f %6.2f %6.2f %6.2f %6.2f\n", m_gForce, drag_coe, induced, m_alpha, m_Elevator);
-	}
+	//}
 
 	drag_coe += induced;
 	
@@ -583,9 +585,9 @@ double AeroDynamics::CalculateDragCoefficient() const
 }
 
 
-simdata::Vector3 AeroDynamics::DragVector() const
+simdata::Vector3 const& AeroDynamics::DragVector() const
 {
-	simdata::Vector3 drag;
+	static simdata::Vector3 drag;
 	double Cd = CalculateDragCoefficient();
 	
 	drag.x = 0.0;
@@ -608,9 +610,9 @@ double AeroDynamics::CalculateSideCoefficient() const
 }
 
 
-simdata::Vector3 AeroDynamics::SideVector() const
+simdata::Vector3 const&  AeroDynamics::SideVector() const
 {
-	simdata::Vector3 side;
+	static simdata::Vector3 side;
 	double Cs = CalculateSideCoefficient();
 	
 	side.x = Cs * cos(m_beta);
@@ -765,15 +767,11 @@ void AeroDynamics::setVelocity(const simdata::Vector3 & velo)
 }
 */
 
-
-
 double AeroDynamics::CIVbasis(double p_t) const
 {
 	double cIV = p_t * p_t  * ( 3.0 - 2.0 * p_t);
 	return cIV;
 }
-
-
 
 
 double AeroDynamics::ControlInputValue(double p_gForce) const
@@ -795,6 +793,145 @@ double AeroDynamics::ControlInputValue(double p_gForce) const
 	return control;
 }
 
+
+void AeroDynamics::updateAngles(double h)
+{
+	m_alpha = - atan2( m_VelocityBody.z, m_VelocityBody.y ); 
+	m_alphaDot = ( m_alpha - m_alpha0 ) / h;
+	// restrict m_alphaDot in vertical stalls
+	if (m_alphaDot > 1.0) m_alphaDot = 1.0;
+	if (m_alphaDot < -1.0) m_alphaDot = -1.0;
+	
+	// Calculate side angle
+	// beta is 0 when v velocity (i.e. side velocity) is 0; note here v is m_VelocityBody.x
+	m_beta  = atan2(m_VelocityBody.x, m_VelocityBody.y);
+}
+
+double const damping = 0.91;
+
+std::vector<double> const &AeroDynamics::f(double x, std::vector<double> &y)
+{   
+	static std::vector<double> dy(13);
+
+    // bind(y,p,v,w,q);
+	m_PositionLocal = *m_Position + BodyToLocal(simdata::Vector3(y[0],y[1],y[2]));
+	m_VelocityBody = simdata::Vector3(y[3],y[4],y[5]);
+	m_AngularVelocityBody = damping * simdata::Vector3(y[6],y[7],y[8]);
+	qOrientation = simdata::Quaternion(y[9],y[10],y[11],y[12]);
+    double mag = qOrientation.Magnitude();
+	if (mag != 0.0)
+		qOrientation /= mag;
+	y[9]  = qOrientation.w; y[10] = qOrientation.x; y[11] = qOrientation.y; y[12] = qOrientation.z;
+
+	// p' = v
+	dy[0] = y[3]; dy[1] = y[4]; dy[2] = y[5];
+
+	
+	// pass AOA, AOA dot, side angle
+	updateAngles(x);
+
+	m_Speed = m_VelocityBody.Length();
+	if (m_Speed < 1.0) m_Speed = 1.0;
+	double qBarS = m_qBarFactor * m_Speed * m_Speed;
+
+	// linear acceleration body: calculate v' = F/m - w^v
+    m_ForcesBody = CalculateForces(qBarS);
+    m_LinearAccelBody =  m_MassInverse * m_ForcesBody - (m_AngularVelocityBody^m_VelocityBody);
+	dy[3] = m_LinearAccelBody.x; dy[4] = m_LinearAccelBody.y; dy[5] = m_LinearAccelBody.z;
+	
+	// angular acceleration body: calculate Iw' = M - w^Iw
+	m_MomentsBody = CalculateMoments(qBarS);
+	m_AngularAccelBody = m_InertiaInverse * 
+				                  (m_MomentsBody - (m_AngularVelocityBody^(m_Inertia * m_AngularVelocityBody)));
+	dy[6] = m_AngularAccelBody.x; dy[7] = m_AngularAccelBody.y; dy[8] = m_AngularAccelBody.z;
+	
+	// quaternion derivative with w in body coordinates: q' = 0.5 * q * w
+	simdata::Quaternion qprim = 0.5 * qOrientation * m_AngularVelocityBody;
+	dy[9]  = qprim.w; dy[10] = qprim.x; dy[11] = qprim.y; dy[12] = qprim.z;
+	
+	return dy;
+}
+
+std::vector<double> const &bind(simdata::Vector3 const &p,
+								 simdata::Vector3 const &v,
+								 simdata::Vector3 const &w,
+								 simdata::Quaternion const &q)
+{
+	static std::vector<double> y(13);
+	y[0] = p.x; y[1] = p.y; y[2] = p.z;
+	y[3] = v.x; y[4] = v.y; y[5] = v.z;
+	y[6] = w.x; y[7] = w.y; y[8] = w.z;
+	y[9] = q.w; y[10] = q.x; y[11] = q.y; y[12] = q.z;
+	return y;
+}
+
+void AeroDynamics::bindToBody(std::vector<double> const &y)
+{
+ m_PositionBody = simdata::Vector3(y[0],y[1],y[2]);
+ m_VelocityBody = simdata::Vector3(y[3],y[4],y[5]);
+ m_AngularVelocityBody = damping * simdata::Vector3(y[6],y[7],y[8]);
+}
+ 
+void AeroDynamics::BodyToLocal()
+{
+  qOrientation = *m_Orientation;
+  m_PositionLocal = *m_Position + BodyToLocal(m_PositionBody);
+  m_VelocityLocal = BodyToLocal(m_VelocityBody);
+  m_AngularVelocityLocal = BodyToLocal(m_AngularVelocityBody);
+}
+
+void AeroDynamics::doSimStep2(double dt)
+{  
+	static std::vector<double> y0, y;
+
+	if (dt == 0.0) dt = 0.01;
+	
+	m_PositionLocal = *m_Position;
+	m_VelocityLocal = *m_Velocity;
+	m_AngularVelocityLocal = *m_AngularVelocity;
+	qOrientation = *m_Orientation;
+	
+	m_ElevatorScale = 0.9 * m_ElevatorScale + 0.1 * ControlInputValue( m_gForce );
+	m_Elevator = (1.0 - dt) * m_Elevator  + dt * m_ElevatorInput * m_ElevatorScale;
+	m_Speed = m_VelocityLocal.Length();
+	// prevent singularities
+	if (m_Speed < 1.0) m_Speed = 1.0;
+	
+	// initial conditions
+	m_qBarFactor = 0.5 * CalculateAirDensity(m_PositionLocal.z) * m_WingArea;
+	
+	m_Gravity = CalculateGravity(m_PositionLocal.z);
+	m_GravityWorld = - m_Mass * m_Gravity * simdata::Vector3::ZAXIS;
+	
+	m_VelocityBody = LocalToBody(m_VelocityLocal);
+	m_AngularVelocityBody = LocalToBody(m_AngularVelocityLocal);
+	updateAngles(dt);
+	y0 = ::bind(simdata::Vector3::ZERO, m_VelocityBody, m_AngularVelocityBody, qOrientation);
+	
+	// solution
+	y = RungeKutta(y0, 0, dt);
+	
+	if (y == y0) {
+		std::cout << "rkqc has failed\n";
+		y = rk4(y0, f(0, y0), 0, dt);
+	}
+
+	// update all variables
+	// Caution: don t permute these lines
+	bindToBody(y);    
+	updateAngles(dt);
+	m_alpha0 = m_alpha;
+	BodyToLocal();
+	qOrientation = simdata::Quaternion(y[9],y[10],y[11],y[12]);
+	double mag = qOrientation.Magnitude();
+	if (mag != 0.0)
+		qOrientation /= mag;
+
+	*m_Position = m_PositionLocal;
+	*m_Velocity = m_VelocityLocal;
+	*m_AngularVelocity = m_AngularVelocityLocal;
+	*m_Orientation = qOrientation;	
+}
 
 
 /*

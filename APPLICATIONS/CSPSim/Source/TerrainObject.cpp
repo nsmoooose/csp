@@ -1,4 +1,4 @@
-#include <osg/Depth>
+//#include <osg/Depth>
 #include <osg/Geode>
 #include <osg/StateSet>
 
@@ -124,9 +124,9 @@ void TerrainObject::unload() {
 	if (m_Loaded) {
 		//m_TerrainLatticeNode = NULL;
 		m_TerrainNode = NULL;
-		if (m_pTerrainLattice) {
-			delete m_pTerrainLattice;
-			m_pTerrainLattice = NULL;
+		if (m_pTerrainLattice.valid()) {
+			//delete m_pTerrainLattice;
+			//m_pTerrainLattice = NULL;
 		}
 		if (m_pTerrain) {
 			delete m_pTerrain;
@@ -150,7 +150,7 @@ void TerrainObject::load() {
 		// create lattice
 		Demeter::Settings::GetInstance()->SetMediaPath(terrain_path.c_str());
 		createTerrainLattice();
-		m_TerrainNode = createTerrainLatticeNode(m_pTerrainLattice);
+		m_TerrainNode = createTerrainLatticeNode(m_pTerrainLattice.get());
 		m_TerrainNode->setName("TerrainLatticeNode");
 //		m_pLatticeDrawable  = m_TerrainLatticeNode->getDrawable(0);
 
@@ -208,7 +208,7 @@ float TerrainObject::getElevation(float x, float y) const
 	}
 	else
 	{
-		if (m_pTerrainLattice)
+		if (m_pTerrainLattice.valid())
 			return m_pTerrainLattice->GetElevation(x,y);
 	}
 	return 0.0;
@@ -224,7 +224,7 @@ void TerrainObject::getNormal(float x, float y, float & normalX,
 			m_pTerrain->GetNormal(x, y, normalX, normalY, normalZ);
 		}
 	} else {
-		if (m_pTerrainLattice) {
+		if (m_pTerrainLattice.valid()) {
 			m_pTerrainLattice->GetNormal(x,y,normalX,normalY,normalZ);
 		}
 	}
@@ -308,7 +308,7 @@ int TerrainObject::createTerrainLattice()
 			true, m_LatticeWidth, m_LatticeHeight);
 	
 	m_pTerrainTextureFactory = new Demeter::TerrainTextureFactory();
-	m_pTerrainTextureFactory->SetTerrainLattice(m_pTerrainLattice);
+	m_pTerrainTextureFactory->SetTerrainLattice(m_pTerrainLattice.get());
 	m_pTerrainLattice->SetTextureFactory(m_pTerrainTextureFactory, 2, 2);
 
 	m_pTerrainLattice->SetDetailThreshold(m_DetailThreshold);
@@ -322,7 +322,7 @@ int TerrainObject::createTerrainLattice()
 
 void TerrainObject::setCameraPosition(float x, float y, float z)
 {
-	if (m_pTerrainLattice) {
+	if (m_pTerrainLattice.valid()) {
 		m_pTerrainLattice->SetCameraPosition(x, y, z);
 	}
 }
@@ -378,7 +378,7 @@ osg::Node* TerrainObject::createTerrainNode(Demeter::Terrain* pTerrain)
 
 int TerrainObject::getTerrainPolygonsRendered() const
 {
-	if (m_pTerrainLattice) {
+	if (m_pTerrainLattice.valid()) {
 		return m_pTerrainLattice->GetLatticePolygonsRendered();
 	} else if (m_pTerrain) {
 		return m_pTerrain->GetTerrainPolygonsRendered();
@@ -398,7 +398,7 @@ void TerrainObject::updateDemeterSettings()
 	Demeter::Settings::GetInstance()->SetPreloadTextures(m_PreloadTextures);
 	Demeter::Settings::GetInstance()->SetTextureCompression(m_TextureCompression);
 	Demeter::Settings::GetInstance()->SetUseDynamicTextures(m_DynamicTextures);
-	Demeter::Settings::GetInstance()->SetDetailTextureRepeats(32);
+	Demeter::Settings::GetInstance()->SetDetailTextureRepeats(3);
 	Demeter::Settings::GetInstance()->SetUseNormals(true);
 }
 

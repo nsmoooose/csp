@@ -130,7 +130,7 @@ protected:
 
 	Demeter::Terrain* m_pTerrain;
 
-	Demeter::TerrainLattice* m_pTerrainLattice;
+	mutable osg::ref_ptr<Demeter::TerrainLattice> m_pTerrainLattice;
 
 	Demeter::DemeterDrawable* m_pDrawable;
 	Demeter::DemeterLatticeDrawable* m_pLatticeDrawable ;

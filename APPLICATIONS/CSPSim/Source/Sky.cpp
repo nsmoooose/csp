@@ -1036,8 +1036,9 @@ void Sky::_init()
 	
 	int i, j;
 	float x, y, z;
-	float alpha, theta;
-	float radius = 1100000.0f;
+	float alpha, theta;          ////////////////////////////////////////////////////////////////////////////
+	//float radius = 1100000.0f; //                                               radius skydome modification
+	float radius = 64000.0;     ////////////////////////////////////////////////////////////////////////////                                                                           
 	m_SkyDome = new Geometry;
 	//m_SkyDome->setSupportsDisplayList(false);
 

@@ -31,7 +31,7 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="SpatialIndexd.lib SimNetd.lib _cSimDatad.lib ccgnu2.lib SimCore-Newd.lib"
+				AdditionalDependencies="SpatialIndexd.lib SimNetd.lib _cSimDatad.lib ccgnu2.lib SimCored.lib"
 				OutputFile="../$(ProjectName)d.exe"
 				AdditionalLibraryDirectories="../../SpatialIndex/.bin;../../SimNet/.bin;../../SimData/SimData;../../SimCore/.bin"
 				GenerateDebugInformation="TRUE"
@@ -84,7 +84,7 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="ws2_32.lib pthreadVC.lib SpatialIndex.lib SimNet.lib _cSimData.lib ccgnu2.lib SimCore-New.lib"
+				AdditionalDependencies="ws2_32.lib pthreadVC.lib SpatialIndex.lib SimNet.lib _cSimData.lib ccgnu2.lib SimCore.lib"
 				OutputFile="../$(ProjectName).exe"
 				LinkIncremental="0"
 				AdditionalLibraryDirectories="../../SpatialIndex/.bin;../../SimNet/.bin;../../SimData/SimData;../../SimCore/.bin"/>

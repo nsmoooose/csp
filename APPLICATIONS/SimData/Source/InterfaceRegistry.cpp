@@ -133,6 +133,7 @@ InterfaceRegistry::~InterfaceRegistry() {
 }
 
 void InterfaceRegistry::__cleanup() {
+	SIMDATA_LOG(LOG_REGISTRY, LOG_DEBUG, "Destroying the interface registry.");
 	if (__map) delete __map;
 	if (__id_map) delete __id_map;
 	if (__list) delete __list;

@@ -1,21 +1,25 @@
 #ifndef __TERRAINTEXTUREFACTORY_H__
 #define __TERRAINTEXTUREFACTORY_H__
 
+
 #include "Terrain.h"
 #include <map>
 #include <vector>
-#ifdef _WIN32
+
+#ifdef _WIN32 
  #include <hash_map>
- #define STLNS std
+ using std::hash_map;
 #else
- #ifdef _GNUCXX
-   #include <ext/hash_map>  
-   #define STLNS __gnu_cxx
- #else
-   #include <hash_map>  
-   #define STLNS std
+ #ifdef __GNUC__
+   #if __GNUC__ >= 3
+     #include <ext/hash_map>  
+   #else
+     #include <hash_map>  
+   #endif
+   using std::hash_map;
  #endif
 #endif
+   
 
 namespace Demeter
 {
@@ -39,7 +43,7 @@ protected:
 	Terrain* m_pTerrain;
 	TerrainLattice * m_pTerrainLattice;
 
-	STLNS::hash_map<int,Texture*>   m_Textures;
+	hash_map<int,Texture*>   m_Textures;
 	std::vector<Uint8*> m_BaseTextures;
 
 
@@ -49,3 +53,4 @@ protected:
 
 
 #endif
+

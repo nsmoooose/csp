@@ -40,42 +40,42 @@ Set M2K_aero GMAX       9.0
 Set M2K_aero ThrustMax 9700.0
 
 REM Drag Parameters cx0 = 2 *  0.074 / ( rc^0.2 ) ; Cx=Cx0+KiCz² Ki(trainee induite) 1/pi*AR
-Set M2K_aero CD0          0.004
+Set M2K_aero CD0          0.01
 Set M2K_aero CD_a         0.3
-Set M2K_aero CD_de        0.1
+Set M2K_aero CD_de        0.02
 
 REM Lift Parameters
 Set M2K_aero StallAOA     31.0
 Set M2K_aero CL0          0.0
 Set M2K_aero CL_a         2.2
-Set M2K_aero CL_adot      0.01
-Set M2K_aero CL_q         0.1
+Set M2K_aero CL_adot      1.29
+Set M2K_aero CL_q         1.5
 Set M2K_aero CL_de        0.7
 
 REM Pitch Moment Parameters
 Set M2K_aero CM0          0.0
 Set M2K_aero CM_a         -0.38
-Set M2K_aero CM_adot      -1.1
+Set M2K_aero CM_adot      -1.73
 Set M2K_aero CM_q         -3.6
-Set M2K_aero CM_de        0.05
+Set M2K_aero CM_de        0.48
 
 REM Side Force Parameters
-Set M2K_aero CY_Beta      -0.98
-Set M2K_aero CY_p          0.0
+Set M2K_aero CY_Beta      -0.29
+Set M2K_aero CY_p          0.11
 Set M2K_aero CY_r          0.0
 Set M2K_aero CY_da         0.0
-Set M2K_aero CY_dr         0.05
+REM Set M2K_aero CY_dr         -0.01
 
 REM Roll moment parameters
-Set M2K_aero CI_beta       -0.12
-Set M2K_aero CI_p          -0.26
-Set M2K_aero CI_r           0.14
-Set M2K_aero CI_da         0.02
-Set M2K_aero CI_dr         -0.001
+Set M2K_aero CI_beta       -0.17
+Set M2K_aero CI_p          -0.3
+Set M2K_aero CI_r           0.3
+Set M2K_aero CI_da          0.03
+Set M2K_aero CI_dr          0.0
 
 Rem Yaw Moment Parameters
 Set M2K_aero Cn_beta       0.25
-Set M2K_aero Cn_p          0.022
-Set M2K_aero Cn_r          -0.35
+Set M2K_aero Cn_p          0.0
+Set M2K_aero Cn_r          -0.99
 Set M2K_aero Cn_da         0.00
-Set M2K_aero Cn_dr         0.01
+Set M2K_aero Cn_dr         0.02

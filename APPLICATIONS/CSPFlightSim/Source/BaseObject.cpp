@@ -341,8 +341,8 @@ void BaseObject::setNode( osg::Node * pNode )
 	// to switch between various representants of same object (depending on views for example)
     m_rpSwitch = osgNew osg::Switch;
     m_rpSwitch->setName("Model switch");
-	m_rpSwitch->addChild(m_rpNode.get());
-	m_rpSwitch->setAllChildrenOn();
+    m_rpSwitch->addChild(m_rpNode.get());
+    //m_rpSwitch->setAllChildrenOn();
 }
 
 osg::Node* BaseObject::getNode()
@@ -397,7 +397,7 @@ void BaseObject::addToScene()
 	
 	if (m_sObjectName == "PLAYER" )
 	{
-	 AddSmoke();
+	 //AddSmoke();
 	}
 
     m_rpTransform->addChild( m_rpSwitch.get() );

@@ -3,7 +3,7 @@
 # last changed on Sunday, November 17th.
 
 # Edit these lines to match your system configuration
-CC=g++ #-3.0
+CC=g++
 
 OSG_PREFIX=/usr/local
 GDAL_PREFIX=/usr/local

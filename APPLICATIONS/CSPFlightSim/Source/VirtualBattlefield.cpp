@@ -153,7 +153,8 @@ int VirtualBattlefield::buildScene()
 	m_rpObjectRootNode->setName("ObjectRootSceneGraph.");
 
 	osg::ClearNode* earthSky = osgNew osg::ClearNode;
-    earthSky->setRequiresClear(false); // we've got base and sky to do it.
+    //earthSky->setRequiresClear(false); // we've got base and sky to do it.
+    earthSky->setRequiresClear(true); // we've got base and sky to do it.
 	
     // use a transform to make the sky and base around with the eye point.
     osg::Transform* transform = osgNew osg::Transform;

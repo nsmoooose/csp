@@ -7,6 +7,8 @@
 
 #include <osg/Timer>
 
+
+#include "SDL.h"
 #include "CON_console.h" // console is using SDL_OPENGLBLIT :-( switch to osgConsole?
 #include "CON_consolecommands.h"
 #include "DT_drawtext.h"
@@ -581,6 +583,13 @@ void CSPFlightSim::ShowStats(float fps)
                		pos.y, pos.z);
     DT_DrawText(buffer, m_SDLScreen, ConsoleFont, 1, m_SDLScreen->h - 80);
     
+   /* frame rate logging versus position -- temporary hack */
+   static float next_dump = 0.0;
+   float simtime = g_pSimTime->getSimTime();
+   if (simtime > next_dump) {
+   	next_dump = simtime + 10.0;
+        CSP_LOG( CSP_APP , CSP_WARN,  framerate << endl << buffer ); 
+   }
 
     pos = g_pPlayerObject->getGlobalPosition();
     sprintf(buffer, "GlobalPosition: [%.3f, %.3f, %.3f]", pos.x,
@@ -597,5 +606,6 @@ void CSPFlightSim::ShowStats(float fps)
                 g_pPlayerObject->getRoll() );
 
     DT_DrawText(buffer, m_SDLScreen, ConsoleFont, 1, m_SDLScreen->h - 20);
+
 
 }

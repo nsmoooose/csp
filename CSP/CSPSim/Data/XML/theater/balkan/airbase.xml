@@ -117,5 +117,29 @@
             <Float name="y">1510</Float>
             <Float name="orientation">-1.6</Float>
         </Object>
+        <Object class="FeatureLayout">
+            <Path name="model">forest</Path>
+            <Float name="x">220</Float>
+            <Float name="y">1283</Float>
+            <Float name="orientation">0</Float>
+        </Object>
+        <Object class="FeatureLayout">
+            <Path name="model">forest</Path>
+            <Float name="x">225</Float>
+            <Float name="y">1377</Float>
+            <Float name="orientation">0</Float>
+        </Object>
+        <Object class="FeatureLayout">
+            <Path name="model">forest</Path>
+            <Float name="x">200</Float>
+            <Float name="y">1482</Float>
+            <Float name="orientation">0</Float>
+        </Object>
+        <Object class="FeatureLayout">
+            <Path name="model">forest1</Path>
+            <Float name="x">357</Float>
+            <Float name="y">1430</Float>
+            <Float name="orientation">0</Float>
+        </Object>
     </List>
 </Object>

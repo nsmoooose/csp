@@ -1,33 +1,31 @@
-<?xml version="1.0" standalone="no"?> 
+<?xml version="1.0" standalone="no"?>
 
-<Object	class="RandomBillboardModel">
-	<List name="models">
-		<Object class="FeatureQuad">
-			<External name="texture">Trees/tree0.png</External>
-			<Float name="width">6</Float>
-			<Float name="height">10</Float>
-		</Object>
-		<Object class="FeatureQuad">
-			<External name="texture">Trees/tree5.png</External>
-			<Float name="width">8</Float>
-			<Float name="height">12</Float>
-		</Object>
-		<Object class="FeatureQuad">
-			<External name="texture">Trees/tree6.png</External>
-			<Float name="width">10</Float>
-			<Float name="height">14</Float>
-		</Object>
-	</List>
-	<List name="density">
-		<Float>0.01</Float>
-		<Float>0.005</Float>
-		<Float>0.005</Float>
-	</List>
-	<Float name="minimum_spacing">2</Float>
-	<Object class="RectangularCurve" name="isocontour">
-		<Float name="width">20</Float>
-		<Float name="height">1200</Float>
-	</Object>
+<Object class="RandomBillboardModel">
+    <List name="models">
+        <Object class="FeatureQuad">
+            <External name="texture">Trees/tree0.png</External>
+            <Float name="width">6</Float>
+            <Float name="height">10</Float>
+        </Object>
+        <Object class="FeatureQuad">
+            <External name="texture">Trees/tree5.png</External>
+            <Float name="width">8</Float>
+            <Float name="height">12</Float>
+        </Object>
+        <Object class="FeatureQuad">
+            <External name="texture">Trees/tree6.png</External>
+            <Float name="width">10</Float>
+            <Float name="height">14</Float>
+        </Object>
+    </List>
+    <List name="density">
+        <Float>0.01</Float>
+        <Float>0.005</Float>
+        <Float>0.005</Float>
+    </List>
+    <Float name="minimum_spacing">2</Float>
+    <Object class="RectangularCurve" name="isocontour">
+        <Float name="width">20</Float>
+        <Float name="height">20</Float>
+    </Object>
 </Object>
-
-

@@ -32,8 +32,8 @@ RANLIB = @RANLIB@
 
 # nothing should be edited below this line
 
-CODE_BINARY=demeter_csp.a
-SHARED_LIB=libdemeter_csp.so
+CODE_BINARY=libdemeter_csp.a
+SHARED_LIB=demeter_csp.so
 
 CXXFLAGS+=-Wall 
 CXXFLAGS+=@sdl_FLAGS@

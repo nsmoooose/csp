@@ -1,7 +1,7 @@
 // Demeter Terrain Visualization Library by Clay Fowler
 // Copyright (C) 2002 Clay Fowler
 
-// $Id: Terrain.h,v 1.1 2002/12/05 03:33:46 mkrose Exp $
+// $Id: Terrain.h,v 1.2 2003/02/02 20:59:23 mkrose Exp $
 
 /*
 This library is free software; you can redistribute it and/or
@@ -83,8 +83,8 @@ typedef signed int      Sint32;
 
 
 #define MAX_VERTICES_PER_FAN 10
-#define EPSILON 0.00001f
-#define INFINITY 999999999.0f
+#define DEMETER_EPSILON 0.00001f
+#define DEMETER_INFINITY 999999999.0f
 
 
 // Forgive the long comment lines. They are all single lines to accomodate doxygen.
@@ -134,7 +134,7 @@ namespace Demeter
                             Vector() {}
                             ~Vector() {}
         float               GetLength();
-        float               Normalize( float tolerance = EPSILON );
+        float               Normalize( float tolerance = DEMETER_EPSILON );
 		void				RotateZ(float theta);
         Vector&             operator = ( const Vector& vector );
         float               x,y,z;

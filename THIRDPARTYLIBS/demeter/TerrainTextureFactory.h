@@ -29,7 +29,7 @@ class TERRAIN_API TerrainTextureFactory : public TextureFactory
 public:
 
 	TerrainTextureFactory();
-	~TerrainTextureFactory();
+	virtual ~TerrainTextureFactory();
 
 	virtual Texture* GetTexture(int index,float originX,float originY,float width,float height);
 

@@ -2218,7 +2218,7 @@ bool Terrain::CuboidInFrustum(const Box& cuboid)
 float Terrain::IntersectRay(float startX,float startY,float startZ,float dirX,float dirY,float dirZ,float& intersectX,float& intersectY,float& intersectZ)
 {
     Ray ray;
-    float distance = INFINITY;
+    float distance = DEMETER_INFINITY;
     Vector point;
     point.x = point.y = point.z = -1.0f;
 
@@ -2374,8 +2374,8 @@ int RayBoxIntersect(const Ray *ray,const Box *box,Vector *point,float *distance)
 {
     float       tnear,tfar,t1,t2;
 
-    tnear = -INFINITY;
-    tfar = INFINITY;
+    tnear = -DEMETER_INFINITY;
+    tfar = DEMETER_INFINITY;
 
 // Find intersection with x-aligned planes of box.
     // If the ray is parallel to the box and not within the planes of the box it misses.

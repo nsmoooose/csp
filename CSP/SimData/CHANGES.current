@@ -5,6 +5,8 @@ Version 0.4.0 (in progress)
   * Added a simple but fast memory pool class for allocating fixed
     size buffers.
 
+  * Fixed typo in ScopedPointer.h
+
 2004-06-28: delta. Mainly vs .net's fixes. Here's a few details:
   * Added Source/Timing.cpp, ThreadBase.cpp to the vs .net build.
 

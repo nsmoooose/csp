@@ -71,13 +71,13 @@ public:
 	 *
 	 *  Will abort if the pointer is null.
 	 */
-	inline T & operator*() const { assert(ptr); return *_ptr; }
+	inline T & operator*() const { assert(_ptr); return *_ptr; }
 
 	/** Dereference the pointer.
 	 *
 	 *  Will abort if the pointer is null.
 	 */
-	inline T * operator->() const { assert(ptr); return _ptr; }
+	inline T * operator->() const { assert(_ptr); return _ptr; }
 
 	/** Get the raw pointer.
 	 */

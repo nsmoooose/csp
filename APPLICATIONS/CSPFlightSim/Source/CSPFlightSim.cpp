@@ -209,6 +209,7 @@ void CSPFlightSim::ChangeScreen(BaseScreen * newScreen)
 // Main Game loop
 void CSPFlightSim::Run()
 {	
+    bool first = true;
     CSP_LOG(CSP_APP, CSP_DEBUG, "CSPFlightSim::Run..." );
     m_bFreezeSim = false;
     
@@ -247,7 +248,7 @@ void CSPFlightSim::Run()
 				ShowPaused();
 			
 			// Do fps and other stuff.
-			if (m_bShowStats)
+			if (m_bShowStats && !first)
 			{
 				ShowStats(frameRate());
 				ShowPlaneInfo();
@@ -258,6 +259,8 @@ void CSPFlightSim::Run()
 			
 			// remove marked objects, this should be done at the end of the main loop.
 			g_pBattlefield->removeObjectsMarkedForDelete();
+
+			first = false;
 		}
 		
 		g_pBattlefield->dumpObjectHistory();

@@ -605,6 +605,12 @@ void CSPSim::run()
 		cleanup();
 		::exit(1);
 	}
+	catch(simdata::Exception & pEx) {
+		csp::SimDataFatalException(pEx, "mainloop");
+	}
+	catch(csp::Exception & pEx) {
+		csp::FatalException(pEx, "initialization");
+	}
 	catch(...) {
 		CSP_LOG(APP, ERROR, "MAIN: Unexpected exception, GLErrorNUM: " << glGetError());
 		cleanup();

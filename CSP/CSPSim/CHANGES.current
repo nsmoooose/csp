@@ -7,6 +7,9 @@
  * Add a new data channel method for setting and pushing a value in one
    call.  Also add a method for safely reading an invalid channel.
 
+ * Add exception handlers for csp and simdata exceptions thrown from the
+   main loop.
+
 2005-03-05: onsight
  * Fix a couple minor warnings under gcc.
 

@@ -23,7 +23,6 @@
 #include "SimData/Object.h"
 %}
 
-%include "std_string.i"
 %include "SimData/Namespace.h"
 %include "SimData/Export.h"
 

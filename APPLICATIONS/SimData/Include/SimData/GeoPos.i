@@ -25,8 +25,6 @@
 #include "SimData/GeoPos.h"
 %}
 
-%include "std_string.i"
-
 NAMESPACE_SIMDATA
 %rename(__repr__) GeoPos::asString() const;
 %rename(__repr__) LLA::asString() const;

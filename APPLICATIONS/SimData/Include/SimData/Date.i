@@ -23,7 +23,6 @@
 #include "SimData/Date.h"
 %}
 
-%include "std_string.i"
 
 NAMESPACE_SIMDATA
 %rename(__repr__) Date::asString() const;
@@ -34,7 +33,6 @@ NAMESPACE_SIMDATA
 %rename(__cmp__) SimDate::compare(SimDate const &) const;
 NAMESPACE_SIMDATA_END
 
-%include exception.i
 %exception {
 	try {
 		$function

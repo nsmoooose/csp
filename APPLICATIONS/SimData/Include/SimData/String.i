@@ -31,8 +31,6 @@ public:
 
 %}
 
-%include "std_string.i"
-
 class swig_string_bug_workaround {
 public:
 	swig_string_bug_workaround(std::string s) {

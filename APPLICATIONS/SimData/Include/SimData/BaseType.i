@@ -23,10 +23,7 @@
 #include "SimData/BaseType.h"
 %}
 
-%include exception.i
-
 %import "SimData/Exception.i"
-%include "std_string.i"
 
 %exception BaseType {
 	try {

@@ -23,7 +23,6 @@
 #include "SimData/Archive.h"
 %}
 
-%include "std_string.i"
 %include "SimData/filemap.i"
 
 %ignore SIMDATA(Archive)::operator();

@@ -21,9 +21,6 @@
 #ifndef __SIMDATA_VECTOR_TEMPLATES__
 #define __SIMDATA_VECTOR_TEMPLATES__
 
-%include "std_string.i"
-%include "std_vector.i"
-
 #define new_vector(a, b)	\
 	%template(simdata_vector_##a) std::vector< b >;
 

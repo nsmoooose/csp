@@ -25,7 +25,6 @@
 %}
 
 
-%include "std_vector.i"
 %import "SimData/Exception.i"
 
 //typedef  unsigned long long  hasht;   /* unsigned 8-byte type */
@@ -35,7 +34,6 @@ namespace std {
 	%template(vector_hasht) vector<SIMDATA(hasht)>;
 }
 
-%include exception.i
 %exception SIMDATA(DataArchive) {
 	try {
 		$function

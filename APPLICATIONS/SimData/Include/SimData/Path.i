@@ -23,7 +23,6 @@
 #include "SimData/Path.h"
 %}
 
-%include "std_string.i"
 %include "SimData/Namespace.h"
 
 %rename(__repr__) SIMDATA(Path)::asString() const;

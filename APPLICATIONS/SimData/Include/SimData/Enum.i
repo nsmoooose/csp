@@ -23,7 +23,6 @@
 #include <SimData/Enum.h>
 %}
 
-%include "std_string.i"
 %import "SimData/Ref.h"
 
 %template(RefEnumerationCore) SIMDATA(Ref)<SIMDATA(EnumerationCore) const>;
@@ -54,8 +53,6 @@
 		SWIG_exception(b, const_cast<char*>(e.getError().c_str()));\
 	}
 	
-%include "exception.i"
-
 %exception  {
 	TRY
 	CATCH(SIMDATA(EnumTypeError), SWIG_TypeError)

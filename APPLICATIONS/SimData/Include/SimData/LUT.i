@@ -25,10 +25,7 @@
 
 #ifndef __NO_LUT__
 
-%include "std_vector.i"
 %include "SimData/Namespace.h"
-
-%include "std_vector.i"
 
 #ifndef VFLOAT
 #define VFLOAT
@@ -103,8 +100,6 @@ class InterpolationType: public Interpolation {
 		SWIG_exception(b, const_cast<char*>(e.getError().c_str()));\
 	}
 	
-%include "exception.i"
-
 %exception  {
 	TRY
 	CATCH(InterpolationIndex, SWIG_IndexError)

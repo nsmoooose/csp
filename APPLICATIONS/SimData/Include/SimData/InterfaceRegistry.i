@@ -27,7 +27,6 @@ using SIMDATA(TypeAdapter);
 
 %include "SimData/Namespace.h"
 %include "SimData/vector.i"
-%include "exception.i"
 
 NAMESPACE_SIMDATA
 %newobject InterfaceProxy::createObject;

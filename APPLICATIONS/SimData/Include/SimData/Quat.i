@@ -23,9 +23,6 @@
 #include "SimData/Quat.h"
 %}
 
-%include "std_string.i"
-%include "std_vector.i"
-
 %include "SimData/Namespace.h"
 
 %rename(__repr__) SIMDATA(Quat)::asString() const;

@@ -201,3 +201,7 @@ package.add(package_files + headers + sub_interfaces + extra_files + doc_files, 
 # default target(s)
 Default(package_targets)
 
+# unittests
+env.Depends('unittests', package_targets)
+env.Alias('test', env.Command('unittests', '', './runtests.py'))
+

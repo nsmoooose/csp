@@ -24,8 +24,6 @@
 #include "SimData/Matrix3.h"
 %}
 
-%include "std_string.i"
-%include "std_vector.i"
 %include "SimData/vector.i"
 
 %include "SimData/Namespace.h"

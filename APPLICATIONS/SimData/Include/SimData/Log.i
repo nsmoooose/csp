@@ -24,7 +24,6 @@
 #include "SimData/Log.h"
 %}
 
-%include "std_string.i"
 %include "SimData/Namespace.h"
 
 NAMESPACE_SIMDATA

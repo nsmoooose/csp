@@ -33,6 +33,7 @@
 
 %include "std_string.i"
 %include "std_vector.i"
+%include "exception.i"
 
 %include "SimData/Namespace.h"
 %include "SimData/Export.h"

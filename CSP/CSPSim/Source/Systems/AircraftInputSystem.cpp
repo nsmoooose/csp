@@ -31,7 +31,7 @@ SIMDATA_REGISTER_INTERFACE(AircraftInputSystem)
 DEFINE_INPUT_INTERFACE(AircraftInputSystem);
 
 AircraftInputSystem::AircraftInputSystem(): 
-	m_ThrottleInput(0.2)
+	m_ThrottleInput(0.2 /*rate*/, 1.0 /*decay*/, 0.0 /*min*/, 1.0 /*max*/)
 {
 }
 

@@ -179,6 +179,7 @@ ObjectModel::ObjectModel(): simdata::Object() {
 	m_ElevationCorrection = true;
 	m_PolygonOffset = 0.0;
 	m_CullFace = -1;
+	m_Lighting = true;
 }
 
 ObjectModel::~ObjectModel() {
@@ -257,6 +258,11 @@ void ObjectModel::loadModel() {
 		po->setFactor(-1.0);
 		po->setUnits(m_PolygonOffset);
 		ss->setAttributeAndModes(po, osg::StateAttribute::ON);
+	}
+
+	if (!m_Lighting) {
+		osg::StateSet *ss = m_Model->getOrCreateStateSet();
+		ss->setMode(GL_LIGHTING,osg::StateAttribute::OFF);
 	}
 
 	if (m_CullFace != 0) {

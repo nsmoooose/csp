@@ -99,13 +99,13 @@ struct PacketHeader {
 		if (reliable) flags |= 1; else flags &= ~1;
 	}
 	inline void setPriority(int priority) {
-		flags = (flags & ~0x06) | ((priority & 3) << 1);
+		flags = static_cast<simdata::uint16>((flags & ~0x06) | ((priority & 3) << 1));
 	}
 	inline void setStatMode(int statmode) {
-		flags = (flags & ~0x20) | ((statmode & 1) << 5);
+		flags = static_cast<simdata::uint16>((flags & ~0x20) | ((statmode & 1) << 5));
 	}
 	inline void setConnStat(int connstat) {
-		flags = (flags & 0x3f) | (connstat << 6);
+		flags = static_cast<simdata::uint16>((flags & 0x3f) | (connstat << 6));
 	}
 
 };

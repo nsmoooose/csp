@@ -115,7 +115,7 @@ public:
 		m_Queue.pop_front();
 		SIMNET_LOG(MESSAGE, ALERT, "SENDING MESSAGE " << message->getCustomId() << " " << message->getName());
 		header->destination = destination;
-		header->message_id = message->getCustomId();
+		header->message_id = static_cast<simdata::uint16>(message->getCustomId());
 		header->routing_type = message->getRoutingType();
 		header->routing_data = message->getRoutingData();
 

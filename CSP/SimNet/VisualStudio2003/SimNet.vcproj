@@ -25,7 +25,7 @@
 				RuntimeTypeInfo="TRUE"
 				WarningLevel="4"
 				DebugInformationFormat="3"
-				DisableSpecificWarnings="4275;4100;4512;4511"/>
+				DisableSpecificWarnings="4511;4512;4100"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
 			<Tool
@@ -67,8 +67,7 @@
 				PreprocessorDefinitions="WIN32"
 				RuntimeLibrary="2"
 				RuntimeTypeInfo="TRUE"
-				WarningLevel="3"
-				DisableSpecificWarnings="4275"/>
+				WarningLevel="3"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
 			<Tool
@@ -144,6 +143,9 @@
 			</File>
 			<File
 				RelativePath="..\ClientServer.h">
+			</File>
+			<File
+				RelativePath="..\ClientServerMessages.h">
 			</File>
 			<File
 				RelativePath="..\DispatchCache.h">
@@ -231,7 +233,7 @@
 					Name="VCCustomBuildTool"
 					CommandLine="..\..\SimData\Tools\TaggedRecordCompiler\trc.py --header=..\$(InputName).h --source=..\$(InputName).cpp ..\$(InputName).net
 "
-					Outputs="$(InputName).h $(InputName).cpp"/>
+					Outputs="../$(InputName).h;../$(InputName).cpp"/>
 			</FileConfiguration>
 			<FileConfiguration
 				Name="Release|Win32">

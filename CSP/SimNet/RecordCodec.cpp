@@ -102,8 +102,5 @@ bool RecordCodec::registerMessageId(TaggedRecord::Id id, int local_id) {
 	return true;
 }
 
-const int RecordCodec::MAX_MESSAGE_IDS;
-
-
 } // namespace simnet
 

@@ -39,10 +39,6 @@ inline double lowpass(const double dt, const double x, const double y) {
 	return x * (1.0 - f) + y * f;
 }
 
-
-const simdata::uint32 PeerInfo::UDP_OVERHEAD;
-
-
 static int DEBUG_connection_display_loop = 0;
 
 PeerInfo::PeerInfo():
@@ -275,7 +271,7 @@ void ActivePeerList::update(double dt, NetworkInterface *ni) {
 		peer->update(m_ElapsedTime, scale_desired_peer_to_self);
 		desired_rate_to_self += peer->getDesiredRatePeerToSelf();
 		if (peer->needsPing()) ni->pingPeer(peer);
-		while (true) {
+		for(;;) {
 			ReliablePacket::Ref packet = peer->getNextResend(now);
 			if (!packet) break;
 			ni->resend(packet);

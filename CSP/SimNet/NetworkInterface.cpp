@@ -76,12 +76,6 @@ namespace simnet {
 
 const simdata::uint32 NetworkInterface::HeaderSize = sizeof(PacketHeader);
 const simdata::uint32 NetworkInterface::ReceiptHeaderSize = sizeof(PacketReceiptHeader);
-const simdata::uint16 NetworkInterface::PingID;
-const simdata::uint32 NetworkInterface::PeerIndexSize;
-const simdata::uint32 NetworkInterface::MaxPayloadLength;
-const PeerId NetworkInterface::InitialClientId;
-const PeerId NetworkInterface::ServerId;
-
 
 /** Callback for HandlerSet<PacketHandler>::apply, to call the handlePacket
  *  method of each of the handlers in the set.
@@ -125,7 +119,7 @@ void NetworkInterface::sendPackets(double timeout) {
 	StopWatch watch(timeout, swd);
 	watch.start();
 
-	while (true) {
+	for (;;) {
 
 		// TODO abstract the scheduling strategy
 		if (queue->isEmpty() || count <= 0) {
@@ -401,7 +395,7 @@ int NetworkInterface::receivePackets(double timeout) {
 	StopWatch watch(timeout, swd);
 	watch.start();
 
-	while (true) {
+	for(;;) {
 
 		if (!m_Socket->isPendingReceive(0)) {
 			watch.calibrate();
@@ -571,7 +565,7 @@ void NetworkInterface::processIncoming(double timeout) {
 
 	int DEBUG_exitcode = 0;
 
-	while (true) {
+	for (;;) {
 
 		// TODO abstract the scheduling strategy
 		if (queue->isEmpty() || count <= 0) {
@@ -782,7 +776,7 @@ PeerId NetworkInterface::getSourceId(ConnectionPoint const &point) {
 		// use LastAssignedPeerId to rotate through assignments, rather than always
 		// reassigning low ids.  greatly increases the average time to recycle an id.
 		assert(m_LastAssignedPeerId > 1);
-		for (PeerId id = m_LastAssignedPeerId + 1; true; ++id) {
+		for (PeerId id = m_LastAssignedPeerId + 1; ; ++id) {
 			if (id == PeerIndexSize) id = 2;
 			if (!m_PeerIndex[id].isActive()) {
 				if (m_PeerIndex[id].getLastDeactivationTime() < cutoff) {

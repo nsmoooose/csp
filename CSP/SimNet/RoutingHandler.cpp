@@ -31,9 +31,6 @@
 
 namespace simnet {
 
-
-const unsigned RoutingHandler::RoutingTableSize;
-
 RoutingHandler::RoutingHandler() {
 }
 

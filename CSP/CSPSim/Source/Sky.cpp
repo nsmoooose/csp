@@ -1097,7 +1097,9 @@ public:
 	void updateHorizon(float altitude, float clip) {
 		float a = 0.0;
 		float da = 2.0 * simdata::PI / m_Segments;
-		float radius = std::min(1000000.0, std::max(1.5*clip, sqrt(2.0 * 6370000.0 * altitude)));
+		// XXX
+		//float radius = std::min(1000000.0, std::max(1.5*clip, sqrt(2.0 * 6370000.0 * altitude)));
+		float radius = std::min(99500.0f, std::max<float>(1.5f*clip, sqrt(2.0f * 6370000.0 * altitude)));
 		// variation less than 2 pixels under most conditions:
 		if (fabs(radius - m_Radius) < 0.0005 * m_Radius) return;
 		//std::cerr << "HORIZON -> " << radius << "\n";
@@ -1160,8 +1162,9 @@ void Sky::_init()
 	int i, j;
 	float x, y, z;
 	float alpha, theta;
+	// XXX
 	//float radius = 1100000.0f;
-	float radius = 64000.0f;
+	float radius = 99500.0f;
 	m_Horizon = new FalseHorizon;
 #ifdef TEXDOME
 	m_Horizon->init(192);
@@ -1219,8 +1222,12 @@ void Sky::_init()
 			drawElements->push_back((i+0)*m_nseg+(j%m_nseg));
 		}
 	}
+
+	// XXX enbaling/disabling dl/vbo may impact performance
 	m_SkyDome->setSupportsDisplayList(false);
 	m_SkyDome->setUseDisplayList(false);
+	//m_SkyDome->setUseVertexBufferObjects(false);
+
 	m_SkyDome->addPrimitiveSet(drawElements);
 	m_SkyDome->setVertexArray(&coords);
 	m_SkyDome->setTexCoordArray(0, &tcoords);
@@ -1261,6 +1268,13 @@ void Sky::_init()
 		dome_state->setMode(GL_CULL_FACE, StateAttribute::OFF);
 		dome_state->setMode(GL_DEPTH_TEST, StateAttribute::OFF);
 		dome_state->setMode(GL_FOG, osg::StateAttribute::OFF);
+		dome_state->setMode(GL_CLIP_PLANE0, osg::StateAttribute::OFF);
+		dome_state->setMode(GL_CLIP_PLANE1, osg::StateAttribute::OFF);
+		dome_state->setMode(GL_CLIP_PLANE2, osg::StateAttribute::OFF);
+		dome_state->setMode(GL_CLIP_PLANE3, osg::StateAttribute::OFF);
+		dome_state->setMode(GL_CLIP_PLANE4, osg::StateAttribute::OFF);
+		dome_state->setMode(GL_CLIP_PLANE5, osg::StateAttribute::OFF);
+		dome_state->setMode(GL_DEPTH_TEST, osg::StateAttribute::OFF);
 		dome_state->setRenderBinDetails(-2,"RenderBin");
 		osg::Depth* depth = new osg::Depth;
 		depth->setFunction(osg::Depth::ALWAYS);

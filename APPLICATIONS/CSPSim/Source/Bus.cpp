@@ -1,4 +1,29 @@
-#include <SimData/Ref.h>
+// Combat Simulator Project - FlightSim Demo
+// Copyright (C) 2003 The Combat Simulator Project
+// http://csp.sourceforge.net
+// 
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public License
+// as published by the Free Software Foundation; either version 2
+// of the License, or (at your option) any later version.
+// 
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+
+
+/**
+ * @file Bus.cpp
+ *
+ **/
+
+
+#include <SimData/Object.h>
 #include <SimData/Key.h>
 #include <map>
 #include <sigc++/signal_system.h>
@@ -13,21 +38,24 @@
    been added to CVS for safekeeping and public access.  Please
    direct comments to the csp developer's forum.
     
-   The code compiles with gcc-3.3 under Linux, but has not been
-   tested at all under Windows.  To build an executable you will
-   need to install libsigc++ (Google: libsigc++).  The following
-   command works for me but may need tweaking on other systems:
+   The code builds with gcc-3.2 and gcc-3.3 under Linux, but has 
+   not been tested at all under Windows.  To build an executable 
+   you will need to install libsigc++ (Google: libsigc++).  The 
+   following command works for me but may need tweaking on other 
+   systems:
 
      g++-3.3 -I/usr/include/python2.2 
              -I/usr/include/sigc++-1.0 
              -I/usr/lib/sigc++-1.0/include 
              -L/usr/lib/python2.2/site-packages/SimData 
              -g -O2 
-             bus.cpp 
+             Bus.cpp 
+	     -o BusTest
              -lSimData -lsigc -lpthread
 */
 
 class Bus;
+class Model;
 
 
 /** Base class for vehicle system components that can be connected
@@ -41,16 +69,55 @@ class Bus;
  *  registered.  Use this method to bind to data channels provided 
  *  by other systems over the bus.
  */
-class System: public simdata::Referenced, public SigC::Object {
+class System: public simdata::Object, public SigC::Object {
 friend class Bus;
+friend class Model;
+
 protected:
+
+	typedef SigC::Signal1<void,double> UpdateSignal;
+
+private:
+
+	Model* m_Model;
+	std::string m_Name;
+
+	struct TimedUpdate: public simdata::Referenced {
+		UpdateSignal _signal;
+		double _interval;
+		double _lapse;
+		void update(double dt) {
+			_lapse += dt;
+			if (_lapse > _interval) {
+				_signal.emit(_lapse);
+				_lapse = 0.0;
+			}
+		}
+		TimedUpdate(double interval): _interval(interval), _lapse(0.0) {}
+	};
+
+	struct TimedUpdater {
+		double dt;
+		TimedUpdater(double dt_): dt(dt_) {}
+		void operator()(simdata::Ref<TimedUpdate> &tu) { tu->update(dt); }
+	};
+
+	std::vector< simdata::Ref<TimedUpdate> > m_TimedUpdates;
+
+protected:
+	UpdateSignal &addTimedUpdate(double interval) {
+		simdata::Ref<TimedUpdate> tu = new TimedUpdate(interval);
+		m_TimedUpdates.push_back(tu);
+		return tu->_signal;
+	}
+
 	/** Register channels for access to internal data by other 
 	 *  systems on the bus.
 	 *
 	 *  Use bus->getName() to select which channels to register 
 	 *  if the system may be attached to more than one bus. 
 	 */
-	virtual void registerChannels(Bus *bus) {}
+	virtual void registerChannels() {}
 
 	/** Bind to channels provided by other systems on the bus.
 	 * 
@@ -59,16 +126,35 @@ protected:
 	 *  bus.  These references should generally be stored as
 	 *  system member variables for later use.
 	 */
-	virtual void bind(Bus *bus) {}
-public:
+	virtual void bind() {}
 
-	/** System reference (convenience) type.
-	 */
-	typedef simdata::Ref< System > Ref;
+	inline void setModel(Model *model);
+
+	// XXX use raw pointers here to prevent circular references
+	// that keep the model alive.  the model pointer is only
+	// for internal use by the system instance, which will be
+	// destroyed when the model goes out of scope.
+	inline Model* getModel() const;
 
 	/** Destructor.
 	 */
 	virtual ~System() {}
+public:
+
+	System(std::string const &name): m_Name(name) {}
+
+	std::string const &getName() const { return m_Name; }
+	
+	virtual void onUpdate(double dt) {
+		std::for_each(m_TimedUpdates.begin(), 
+		              m_TimedUpdates.end(), 
+			      TimedUpdater(dt));
+	}
+
+	/** System reference (convenience) type.
+	 */
+	typedef simdata::Ref<System> Ref;
+
 };
 
 
@@ -315,14 +401,8 @@ public:
  */
 class Bus: public simdata::Referenced {
 
-	/// Key to system map type
-	typedef std::map<simdata::Key, System::Ref> SystemMap;
-
 	/// Key to channl map type
 	typedef std::map<simdata::Key, ChannelBase::Ref> ChannelMap;
-
-	/// Map of all systems connected to the bus
-	SystemMap m_Systems;
 
 	/// Map of all channels connected to the bus
 	ChannelMap m_Channels;
@@ -343,39 +423,12 @@ public:
 	/// Bus reference (convenience) type
 	typedef simdata::Ref<Bus> Ref;
 
-	/** Attach a system to this bus.
-	 *  
-	 *  Any number of systems may be attached to the bus prior
-	 *  to calling bind().  Systems are identified internally by 
-	 *  a hash key generated from their name.  These keys must be
-	 *  unique and an assertion will be raised if a system with
-	 *  the same hash key has already been added to the bus.
-	 *
-	 *  This method calls the system's registerChannels() method.
-	 *
-	 *  @param system The system to attach.
-	 *  @param name The string identifier of the system.
-	 */
-	void attachSystem(System::Ref system, std::string const &name) {
-		assert(!m_Bound);
-		assert(!hasSystem(name));
-		simdata::Key key(name);
-		m_Systems[key] = system;
-		system->registerChannels(this);
-	}
-
 	/** Test if a particular data channel is available.
 	 */
 	bool hasChannel(std::string const &name) {
 		return getChannel(name).valid();
 	}
 		
-	/** Test if a particular system is connected.
-	 */
-	bool hasSystem(std::string const &name) {
-		return getSystem(name).valid();
-	}
-	
 	/** Register a new channel.
 	 *
 	 *  This method is typically called from a system's registerChannels
@@ -390,31 +443,6 @@ public:
 		return channel;
 	}
 	
-	/** Bind all connected systems to data channels on the bus.
-	 *
-	 *  Bus construction is a two step process.  First systems are
-	 *  added using attachSystem().  This method in turn calls each
-	 *  system's registerChannels method to declare all the channels
-	 *  that the system exports.  Once all systems are attached, 
-	 *  bindSystems() calls each system's bind() method to allow it to
-	 *  obtain references to data channels provided by other systems.
-	 *  This is only done once, and subsequent calls to bindSystems()
-	 *  have no effect.  
-	 * 
-	 *  It is currently an (assertion) error to call attachSystem() 
-	 *  after bindSystems() has been called.  If the need arises
-	 *  to provide greater flexibility for dynamically attaching
-	 *  systems to the bus, this requirement can be relaxed.
-	 */
-	void bindSystems() {
-		if (m_Bound) return;
-		for (SystemMap::iterator iter = m_Systems.begin(); 
-		     iter != m_Systems.end(); ++iter) { 
-			iter->second->bind(this);
-		}
-		m_Bound = true;
-	}
-
 	/** Get the name of this bus.
 	 */
 	std::string const &getName() const { return m_Name; }
@@ -456,18 +484,6 @@ public:
 			assert(!required);
 			return 0;
 		}
-		return iter->second;
-	}
-
-	/** Get a system by name.
-	 *
-	 *  @returns A reference to the system or a null reference if the
-	 *           system is not connected to the bus.
-	 */
-	System::Ref getSystem(std::string const &name) {
-		simdata::Key key(name);
-		SystemMap::iterator iter = m_Systems.find(key);
-		if (iter == m_Systems.end()) return 0;
 		return iter->second;
 	}
 
@@ -514,6 +530,84 @@ public:
 };
 	
 
+class Model: public simdata::Object {
+
+	typedef std::map<std::string, Bus::Ref> BusMap;
+
+	typedef std::map<std::string, System::Ref> SystemMap;
+
+	BusMap m_Buses;
+
+	SystemMap m_Systems;
+
+protected:
+
+	Bus* addBus(std::string const &name) {
+		assert(m_Buses.find(name) == m_Buses.end());
+		Bus *bus = new Bus(name);
+		m_Buses[name] = bus;
+		return bus;
+	}
+
+	System* addSystem(System *system) {
+		assert(system);
+		std::string name = system->getName();
+		assert(m_Systems.find(name) == m_Systems.end());
+		m_Systems[system->getName()] = system;
+		system->setModel(this);
+		system->registerChannels();
+		return system;
+	}
+
+	void bindSystems() {
+		for (SystemMap::iterator iter = m_Systems.begin(); 
+		     iter != m_Systems.end(); ++iter) { 
+			iter->second->bind();
+		}
+	}
+
+	virtual ~Model() {
+	}
+
+public:
+
+	Bus::Ref getBus(std::string const &name, bool required = true) const {
+		BusMap::const_iterator iter = m_Buses.find(name);
+		if (iter == m_Buses.end()) {
+			assert(!required);
+			return 0;
+		}
+		return iter->second;
+	}
+
+	System::Ref getSystem(std::string const &name, bool required = true) const {
+		SystemMap::const_iterator iter = m_Systems.find(name);
+		if (iter == m_Systems.end()) {
+			assert(!required);
+			return 0;
+		}
+		return iter->second;
+	}
+
+	Model(): simdata::Object() {}
+
+	virtual void onUpdate(double dt) {
+		SystemMap::iterator iter = m_Systems.begin();
+		for (; iter != m_Systems.end(); ++iter) {
+			iter->second->onUpdate(dt);
+		}
+	}
+
+};
+
+
+void System::setModel(Model *model) {
+	assert(m_Model == 0);
+	m_Model = model;
+}
+
+Model* System::getModel() const { return m_Model; }
+
 
 
 /////////////////////////////////////////////////////////////////////////////////////
@@ -525,36 +619,36 @@ public:
 #include <cstdio>
 
 struct MFD: public System {
-	void registerChannels(Bus *bus);
+	MFD(std::string const &name = "MFD"): System(name) {}
+	void registerChannels();
 	Channel<int>::Ref m_MasterMode;
 	Channel<int>::Ref m_Submode;
 	void getSubMode() { *m_Submode = 42; }
 };
 
-void MFD::registerChannels(Bus *bus) {
-	if (bus->getName()=="A") {
-		m_MasterMode = bus->registerChannel(new Channel<int>("MasterMode", 0));
-		m_Submode = bus->registerChannel(new Channel<int>("Submode", 1));
-		m_Submode->connect(this, &MFD::getSubMode, false);
-	}
+void MFD::registerChannels() {
+	Bus::Ref bus = getModel()->getBus("A");
+	m_MasterMode = bus->registerChannel(new Channel<int>("MasterMode", 0));
+	m_Submode = bus->registerChannel(new Channel<int>("Submode", 1));
+	m_Submode->connect(this, &MFD::getSubMode, false);
 	m_MasterMode->set(1);
 }
 
 struct FCS: public System {
-	void bind(Bus *bus);
+	FCS(std::string const &name = "FCS"): System(name) {}
+	void bind();
 	void onMasterMode();
 	Channel<int>::CRef m_MasterMode;
 	Channel<int>::CRef m_Submode;
 };
 
-void FCS::bind(Bus *bus) {
-	if (bus->getName()=="A") {
-		m_MasterMode = bus->getChannel("MasterMode");
-		m_MasterMode->connect(this, &FCS::onMasterMode);
-		m_Submode = bus->getChannel("Submode");
-		std::cout << m_Submode->get() << " is the answer?\n";
-
-	}
+void FCS::bind() {
+	Bus::Ref bus = getModel()->getBus("A");
+	assert(bus.valid());
+	m_MasterMode = bus->getChannel("MasterMode");
+	m_MasterMode->connect(this, &FCS::onMasterMode);
+	m_Submode = bus->getChannel("Submode");
+	std::cout << m_Submode->get() << " is the answer?\n";
 }
 
 void FCS::onMasterMode() {
@@ -570,34 +664,47 @@ void FCS::onMasterMode() {
 	}
 }
 
-void AvionicsSuite() {
-	std::cout << "avionics suite\n";
-	Bus::Ref busA = new Bus("A");
-	System::Ref m_FCS = new FCS();
-	System::Ref m_MFD = new MFD();
-	busA->attachSystem(m_FCS, "FCS");
-	busA->attachSystem(m_MFD, "MFD");
-	busA->bindSystems();
-	Channel<int>::Ref mm = busA->getSharedChannel("MasterMode");
-	Channel<int>::Ref sm = busA->getSharedChannel("Submode");
-	std::cout << sizeof(*mm) << " bytes\n";
-	simdata::SimTime t0, t1;
-	t0 = simdata::SimDate::getSystemTime();
-	for (int i = 0; i < 1000000; i++) {
-		mm->set(i);
+struct Avionics: public Model {
+	void init() {
+		addBus("A");
+		addSystem(new MFD("MFD"));
+		addSystem(new FCS("FCS"));
+		bindSystems();
 	}
-	t1 = simdata::SimDate::getSystemTime();
-	std::cout << (t1-t0) << " us\n";
-	t0 = simdata::SimDate::getSystemTime();
-	for (int i = 0; i < 1000000; i++) {
-		sm->set(i);
+
+	void test() {
+		std::cout << "avionics suite\n";
+		System::Ref m_FCS = getSystem("FCS");
+		System::Ref m_MFD = getSystem("MFD");
+		Bus::Ref busA = getBus("A");
+		Channel<int>::Ref mm = busA->getSharedChannel("MasterMode");
+		Channel<int>::Ref sm = busA->getSharedChannel("Submode");
+		std::cout << sizeof(*mm) << " bytes\n";
+		simdata::SimTime t0, t1;
+		t0 = simdata::SimDate::getSystemTime();
+		for (int i = 0; i < 1000000; i++) {
+			mm->set(i);
+		}
+		t1 = simdata::SimDate::getSystemTime();
+		std::cout << (t1-t0) << " us\n";
+		t0 = simdata::SimDate::getSystemTime();
+		for (int i = 0; i < 1000000; i++) {
+			sm->set(i);
+		}
+		t1 = simdata::SimDate::getSystemTime();
+		std::cout << (t1-t0) << " us\n";
 	}
-	t1 = simdata::SimDate::getSystemTime();
-	std::cout << (t1-t0) << " us\n";
+
+	~Avionics() {
+		std::cout << "~Avionics\n";
+	}
 };
 
+/*
 int main() {
-	AvionicsSuite();
+	Avionics a;
+	a.init();
+	a.test();
 	return 0;
 }
-
+*/

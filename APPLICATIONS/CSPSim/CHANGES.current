@@ -1,6 +1,13 @@
 Version 0.3.2 (in progress)
 ===========================
 
+2003-04-23: onsight 
+            Upgraded configure.in to check for OSG 0.9.4.  The full test,
+	    which was broken in 0.9.3, works again.  The test for osgGLUT
+	    has been removed since it is no longer needed.
+
+	    Removed osgGLUT from the Linux makefile.
+
 2003-04-22: onsight 
             Port to OSG 0.9.4, mostly changes to text display code. The new
             osgText code seems a bit inefficient, causing a frame rate hit

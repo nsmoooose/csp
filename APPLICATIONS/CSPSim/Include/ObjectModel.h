@@ -138,8 +138,6 @@ protected:
 
 	enum { CONTACT_MARKERS };
 
-	bool m_MarkersVisible;
-
 private:
 	osg::ref_ptr<osg::Group> m_GearSprites;
 	osg::ref_ptr<osg::MatrixTransform> m_Transform;

@@ -34,6 +34,7 @@
 #include <osgDB/FileUtils>
 #include <osgDB/Registry>
 #include <osgDB/ReadFile>
+#include <osgFX/SpecularHighlights>
 #include <osgUtil/SmoothingVisitor>
 #include <osgUtil/DisplayListVisitor>
 #include <osgUtil/Optimizer>
@@ -178,7 +179,6 @@ ObjectModel::ObjectModel(): simdata::Object() {
 	m_ElevationCorrection = true;
 	m_PolygonOffset = 0.0;
 	m_CullFace = -1;
-	m_MarkersVisible = true;
 }
 
 ObjectModel::~ObjectModel() {
@@ -386,6 +386,8 @@ void ObjectModel::addContactMarkers() {
 		diamond->addDrawable(makeDiamond(m_Contacts[i], 0.2));
 		m_ContactMarkers->addChild(diamond);
 	}
+	// set markers visible by default
+	m_ContactMarkers->setNodeMask(0x1);
 	m_DebugMarkers->addChild(m_ContactMarkers.get());
 }
 
@@ -546,10 +548,9 @@ void ObjectModel::updateGearSprites(std::vector<simdata::Vector3> const &move) {
 
 void ObjectModel::showContactMarkers(bool on) {
 	if (on) 
-		m_DebugMarkers->setAllChildrenOn();
+		m_ContactMarkers->setNodeMask(0x1);
 	else
-		m_DebugMarkers->setAllChildrenOff();
-	m_MarkersVisible = on;
+		m_ContactMarkers->setNodeMask(0x0);
 }
 
 //FIXME: to be moved in AircraftModel?
@@ -561,7 +562,7 @@ void ObjectModel::showGearSprites(bool on) {
 }
 
 bool ObjectModel::getMarkersVisible() const {
-	return m_MarkersVisible;
+	return (m_ContactMarkers->getNodeMask() != 0x0);
 }
 
 
@@ -603,6 +604,15 @@ private:
 	mutable AnimationCallbackVector m_AnimationCallbacks;
 };
 
+
+osg::Node *addEffect(osg::Node *model_node) {
+	// add an osgFX effect
+	osgFX::SpecularHighlights* effect = new osgFX::SpecularHighlights;
+	effect->setTextureUnit(1);
+	effect->addChild(model_node);
+	return effect;
+}
+
 SceneModel::SceneModel(simdata::Ref<ObjectModel> const & model) {
 	m_Model = model;
 	assert(m_Model.valid());
@@ -614,7 +624,8 @@ SceneModel::SceneModel(simdata::Ref<ObjectModel> const & model) {
 
 	// create a working copy
 	ModelCopy model_copy;
-	model_node = model_copy(model_node);
+	//model_node = model_copy(model_node);
+	model_node = model_copy(addEffect(model_node));
 
 	std::cout << "MODEL COPIED\n";
 
@@ -684,9 +695,9 @@ bool SceneModel::addSmoke() {
 	if (m_SmokeTrails.valid()) 
 		return true;
 	else {
-		size_t n = m_SmokeEmitterLocation.size();
-		if (n>0) {
-			for (size_t i = 0; i <n; ++i) {
+		if (!m_SmokeEmitterLocation.empty()) {
+			std::vector<simdata::Vector3>::const_iterator iEnd = m_SmokeEmitterLocation.end(); 
+			for (std::vector<simdata::Vector3>::iterator i = m_SmokeEmitterLocation.begin(); i != iEnd; ++i) {
 				fx::SmokeTrail *trail = new fx::SmokeTrail();
 				trail->setEnabled(false);
 				trail->setTexture("Images/white-smoke-hilite.rgb");
@@ -697,7 +708,7 @@ bool SceneModel::addSmoke() {
 				trail->setExpansion(1.2);
 				trail->addOperator(new fx::SmokeThinner);
 
-				trail->setOffset(m_SmokeEmitterLocation[i]);
+				trail->setOffset(*i);
 
 				m_SmokeTrails = new fx::SmokeTrailSystem;
 				m_SmokeTrails->addSmokeTrail(trail);
@@ -723,8 +734,10 @@ void SceneModel::disableSmoke()
 
 void SceneModel::enableSmoke()
 {
+	CSP_LOG(OBJECT, DEBUG, "SceneModel::enableSmoke()...");
 	if (!m_Smoke) {
 		if (!addSmoke()) return;
+		CSP_LOG(OBJECT, DEBUG, "SceneModel::enableSmoke()");
 		m_SmokeTrails->setEnabled(true);
 		m_Smoke = true;
 	}

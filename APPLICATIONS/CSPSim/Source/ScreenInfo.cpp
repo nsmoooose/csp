@@ -30,6 +30,8 @@
 #include <iomanip>
 #include <sstream>
 
+#include <osg/Texture2D>
+
 using std::max;
 using std::min;
 using std::setprecision;
@@ -64,19 +66,27 @@ class UpdateCallback : public osg::NodeCallback {
 };
 
 
-ScreenInfo::ScreenInfo(int posx,int posy, std::string const &name, std::string const &text):
+ScreenInfo::ScreenInfo(float pos_x, float pos_y, std::string const &name, std::string const &text):
 	m_TTFPath("ltype.ttf"),
 	m_FontSize(15), 
-	m_CharacterSize(11) {
-	m_Text = makeText(posx,posy - m_CharacterSize, text);
+	m_CharacterSize(11),
+	m_Text(0) {
+	m_Text = makeText(pos_x,pos_y - m_CharacterSize, text);
 	addDrawable(m_Text);
 	setName(name);
+	// HACK to prevent text from disappearing when chunklod multitexture details
+	// are turned on:
+	osg::StateSet *ss = getOrCreateStateSet();
+	ss->setTextureAttributeAndModes(1, new osg::Texture2D, osg::StateAttribute::OFF);
+	ss->setTextureAttributeAndModes(2, new osg::Texture2D, osg::StateAttribute::OFF);
+	ss->setTextureAttributeAndModes(3, new osg::Texture2D, osg::StateAttribute::OFF);
 }
 
-osgText::Text *ScreenInfo::makeText(int pos_x, int pos_y, std::string const &string_text) {
+osgText::Text *ScreenInfo::makeText(float pos_x, float pos_y, std::string const &string_text) {
 	osgText::Text *text = new osgText::Text;
 	text->setFont(m_TTFPath);
 	text->setFontSize(m_FontSize, m_FontSize);
+	text->setColor(osg::Vec4(1.0f, 1.0f, 1.0f, 1.0f));
 	text->setCharacterSize(m_CharacterSize, 1.0);
 	text->setPosition(osg::Vec3(pos_x, pos_y, 0));
 	text->setText(string_text);
@@ -205,7 +215,7 @@ void GeneralStats::update() {
 		simdata::Vector3 pos = activeObject->getGlobalPosition();
 		osstr.str("");
 		osstr << setprecision(precision) << fixed 
-		      << setw(7 + precision) << setfill('0') << pos.z - CSPSim::theSim->getBattlefield()->getElevation(pos.x,pos.y);
+		      << setw(7 + precision) << setfill('0') << pos.z - CSPSim::theSim->getBattlefield()->getGroundElevation(pos.x,pos.y);
 		m_Altitude->setText(osstr.str());
 
 		osstr.str("");

@@ -38,7 +38,7 @@
 
 class LandingGear: public simdata::Object {
 public:
-	SIMDATA_OBJECT(LandingGear, 0, 0)
+	SIMDATA_OBJECT(LandingGear, 2, 0)
 
 	BEGIN_SIMDATA_XML_INTERFACE(LandingGear)
 		SIMDATA_XML("max_position", LandingGear::m_MaxPosition, true)
@@ -48,12 +48,17 @@ public:
 		SIMDATA_XML("beta", LandingGear::m_Beta, true)
 		SIMDATA_XML("chain", LandingGear::m_Chained, false)
 		SIMDATA_XML("brake_limit", LandingGear::m_BrakeLimit, false)
-		SIMDATA_XML("static_friction", LandingGear::m_StaticFriction, false)
-		SIMDATA_XML("dynamic_friction", LandingGear::m_DynamicFriction, false)
+		SIMDATA_XML("brake_slip", LandingGear::m_BrakeSlip, false)
+		SIMDATA_XML("tire_static_friction", LandingGear::m_TireStaticFriction, false)
+		SIMDATA_XML("tire_skid_friction", LandingGear::m_TireSkidFriction, false)
+		SIMDATA_XML("tire_radius", LandingGear::m_TireRadius, false)
 		SIMDATA_XML("compression_limit", LandingGear::m_CompressionLimit, true)
 		SIMDATA_XML("steering_limit", LandingGear::m_SteeringLimit, false)
 		SIMDATA_XML("tire_K", LandingGear::m_TireK, false)
 		SIMDATA_XML("tire_beta", LandingGear::m_TireBeta, false)
+		SIMDATA_XML("abs", LandingGear::m_ABS, false)
+		SIMDATA_XML("rolling_friction", LandingGear::m_RollingFriction, false)
+		SIMDATA_XML("brake_steering_linkage", LandingGear::m_BrakeSteeringLinkage, false)
 	END_SIMDATA_XML_INTERFACE
 
 	LandingGear();
@@ -66,6 +71,7 @@ public:
 	bool getWOW() const { return m_WOW; }
 	double getSkidding() const { return m_Skidding; }
 	bool getTouchdown() const { return m_Touchdown; }
+	simdata::Vector3 const &getTouchdownPoint() const { return m_TouchdownPoint; }
 	void resetTouchdown() { m_Touchdown = false; }
 	double getCompression() const { return m_Compression; }
 	double getDamage() const { return m_Damage; }
@@ -74,42 +80,92 @@ public:
 	simdata::Vector3 const &getPosition() const { return m_Position; }
 	simdata::Vector3 const &getMaxPosition() const { return m_MaxPosition; }
 
-	double setSteering(double setting);
-	void setBraking(double setting) { m_BrakeSetting = setting; }
+	double setSteering(double setting, double link_brakes);
+	void setBraking(double setting);
 	void setABS(bool antiskid) { m_ABS = antiskid; }
 	double getSteeringAngle() const { return m_SteerAngle; }
+	double getDragFactor() const;
 
-	simdata::Vector3 simulate(simdata::Quaternion const &, simdata::Vector3 const &v, double h, simdata::Vector3 const &normal, double dt);
+	// dynamics interface
+	virtual void preSimulationStep(double dt);
+	virtual void postSimulationStep(double dt,
+                                        simdata::Vector3 const &origin, 
+                                        simdata::Vector3 const &vBody,
+                                        simdata::Quaternion const &q, 
+		                        double const height,
+                                        simdata::Vector3 const &normalGroundBody);
+	simdata::Vector3 simulateSubStep(simdata::Vector3 const &origin,
+                                         simdata::Vector3 const &vBody,
+                                         simdata::Quaternion const &q, 
+                                         double height, 
+                                         simdata::Vector3 const &normalGroundBody);
+
+protected:
+	void resetForces();
+	void updateWOW(simdata::Vector3 const &origin, simdata::Quaternion const &q);
+	void updateBraking(double dt);
+	void updateWheel(double dt,
+                         simdata::Vector3 const &origin, 
+                         simdata::Vector3 const &vBody,
+                         simdata::Quaternion const &q, 
+                         simdata::Vector3 const &normalGroundBody,
+                         bool updateContact);
+	void updateSuspension(simdata::Vector3 const &origin, 
+                              simdata::Vector3 const &vBody, 
+                              simdata::Quaternion const &q, 
+                              double const height, 
+                              simdata::Vector3 const &normalGroundBody);
+
 
 protected:
 	simdata::Vector3 m_MaxPosition;
 	simdata::Vector3 m_Motion;
 	simdata::Real m_DamageLimit;
+
+	bool m_Chained;
+
 	double m_K;
 	double m_Beta;
-	bool m_Chained;
-	double m_BrakeLimit;
-	double m_StaticFriction;
-	double m_DynamicFriction;
+	double m_Compression;
 	double m_CompressionLimit;
-	double m_SteeringLimit;
-	double m_TireK;
-	double m_TireBeta;
+	double m_Damage;
 
 	double m_Brake;
+	double m_BrakeLimit;
 	double m_BrakeSetting;
-	simdata::Vector3 m_Steer;
+	double m_BrakeFriction;
+	double m_BrakeSlip;
+	double m_BrakeSteeringLinkage;
+	double m_BrakeSteer;
+	double m_BrakeTemperature;
+	double m_RollingFriction;
+
+	double m_TireK;
+	double m_TireBeta;
+	double m_TireFriction;
+	double m_TireSkidFriction;
+	double m_TireStaticFriction;
+	double m_TireRotationRate;
+	double m_TireRotation;
+	double m_TireRadius;
+	simdata::Vector3 m_TireContactPoint;
+
 	double m_SteerAngle;
-	double m_Damage;
+	double m_SteeringLimit;
+	simdata::Quaternion m_SteerTransform;
+
 	bool m_Extended;
 	bool m_WOW;
-	bool m_Touchdown;
-	double m_Skidding;
-	double m_TireShiftX;
-	double m_TireShiftY;
-	double m_Compression;
 	bool m_ABS;
+	bool m_Skidding;
+	bool m_SkidFlag;
+
 	simdata::Vector3 m_Position;
+	simdata::Vector3 m_NormalForce;
+	simdata::Vector3 m_TangentForce;
+
+	bool m_Touchdown;
+	simdata::Vector3 m_TouchdownPoint;
 };
 
 
@@ -117,8 +173,8 @@ class GearDynamics: public simdata::Object, public BaseDynamics {
 
 	typedef simdata::Link<LandingGear>::vector GearSet;
 	
-	void doComplexPhysics(double dt);
-	void doSimplePhysics(double dt);
+	void doComplexPhysics(double x);
+	void doSimplePhysics(double x);
 
 	//FIXME: just for some testing purpose
 	void setStatus(bool on);
@@ -130,7 +186,6 @@ public:
 	END_SIMDATA_XML_INTERFACE
 
 	GearDynamics();
-	void update(double dt);
 	virtual void pack(simdata::Packer& p) const;
 	virtual void unpack(simdata::UnPacker& p);
 	void Retract();
@@ -138,10 +193,13 @@ public:
 	bool getExtended() const;
 	bool getWOW() const;
 	void setBraking(double x);
-	void setSteering(double x);
+	void setSteering(double x, double link_brakes=1.0);
 	LandingGear const *getGear(unsigned i);
 	size_t getGearNumber() const;
 	std::vector<simdata::Vector3> getGearPosition() const;
+	virtual void preSimulationStep(double dt);
+	virtual void postSimulationStep(double dt);
+	void computeForceAndMoment(double x);
 protected:
 	GearSet m_Gear;
 	bool m_WOW;
@@ -149,123 +207,5 @@ protected:
 };
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/*
-#if 0
-class LandingGearSet: public simdata::Object {
-
-	typedef simdata::Link<LandingGear>::vector GearSet;
-	
-public:
-	SIMDATA_OBJECT(LandingGearSet, 0, 0)
-
-	BEGIN_SIMDATA_XML_INTERFACE(LandingGearSet)
-		SIMDATA_XML("gear_set", LandingGearSet::m_Gear, true)
-	END_SIMDATA_XML_INTERFACE
-
-	LandingGearSet() { m_WOW = false; m_Extended = true; }
-	void doComplexPhysics(simdata::Quaternion const &orientation, 
-			 simdata::Vector3 const &velocity, 
-			 simdata::Vector3 const &angular_velocity, 
-			 double height, 
-			 simdata::Vector3 const &normal, 
-			 double dt,
-			 simdata::Vector3 &force,
-			 simdata::Vector3 &moment) {
-		m_WOW = false;
-		unsigned short n = m_Gear.size();
-		for (unsigned short i = 0; i < n; i++) {
-			LandingGear &gear = *(m_Gear[i]);
-			simdata::Vector3 R = gear.getPosition();
-			simdata::Vector3 V = velocity + (angular_velocity ^ R);
-			simdata::Vector3 F = gear.simulate(orientation, V, height, normal, dt);
-			if (gear.getWOW()) m_WOW = true;
-			force += F;
-			moment += R ^ F;
-		}
-	}
-	virtual void pack(simdata::Packer& p) const {
-		Object::pack(p);
-		p.pack(m_Gear);
-	}
-	virtual void unpack(simdata::UnPacker& p) {
-		Object::unpack(p);
-		p.unpack(m_Gear);
-	}
-
-//	doSimplePhysics(double dt) {}
-
-	//FIXME: just for some testing purpose
-	void setStatus(bool on) {
-		size_t n = m_Gear.size();
-		for (unsigned short i = 0; i < n; ++i)
-			m_Gear[i]->setExtended(on);
-		m_Extended = on;
-	}
-	void Retract() { 
-		setStatus(false);
-	}
-	void Extend() {
-		setStatus(true);
-	}
-
-	bool getExtended() const {
-		return m_Extended;
-	}
-	bool getWOW() const { return m_WOW; }
-	void setBraking(double x) {
-		for (unsigned i = 0; i < m_Gear.size(); i++) {
-			m_Gear[i]->setBraking(x);
-		}
-	}
-	void setSteering(double x) {
-		for (unsigned i = 0; i < m_Gear.size(); i++) {
-			m_Gear[i]->setSteering(x);
-		}
-	}
-	LandingGear const *getGear(unsigned i) {
-		assert(i <= m_Gear.size());
-		return m_Gear[i].get();
-	}
-protected:
-	GearSet m_Gear;
-	bool m_WOW;
-	bool m_Extended;
-};
-#endif
-*/
 #endif // __LANDINGGEAR_H__
 

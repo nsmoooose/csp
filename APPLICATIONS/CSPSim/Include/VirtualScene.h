@@ -37,15 +37,19 @@ namespace osg {
 	class Group;
 	class Transform;
 	class FrameStamp;
+	class PositionAttitudeTransform;
 }
 
 namespace osgUtil {
 	class SceneView;
 }
 
+
 #include "TerrainObject.h"
-#include "SimObject.h"
-#include "Sky.h"
+
+class Sky;
+class DynamicObject;
+class FalseHorizon;
 
 
 /**
@@ -73,10 +77,11 @@ public:
 	void removeParticleEmitter(osg::Node *emitter);
 	void addParticleSystem(osg::Node *system, osg::Node *program);
 	void removeParticleSystem(osg::Node *system, osg::Node *program);
-	void addObject(simdata::Ref<SimObject> object);
-	void removeObject(simdata::Ref<SimObject> object);
+	void addObject(simdata::Ref<DynamicObject> object);
+	void removeObject(simdata::Ref<DynamicObject> object);
 	void addFeatureCell(osg::Node *feature);
 	void removeFeatureCell(osg::Node *feature);
+	void setNearObject(simdata::Ref<DynamicObject> object, bool near);
 
 	void setLookAt(simdata::Vector3 & eyePos, simdata::Vector3 & lookPos, simdata::Vector3 & upVec);
 	void getLookAt(simdata::Vector3 & eyePos, simdata::Vector3 & lookPos, simdata::Vector3 & upVec) const;
@@ -106,24 +111,27 @@ public:
 
 protected:
 
-	double m_LatticeXDist;
-	double m_LatticeYDist;
-
-	int m_LatticeX;
-	int m_LatticeY;
+	void _updateFog(simdata::Vector3 const &lookPos, simdata::Vector3 const &eyePos);
 
 	simdata::Ref<TerrainObject> m_Terrain;
 
-	osg::ref_ptr<osgUtil::SceneView> m_View;
+	osg::ref_ptr<osgUtil::SceneView> m_NearView;
+	osg::ref_ptr<osgUtil::SceneView> m_FarView;
 	osg::ref_ptr<osg::FrameStamp> m_FrameStamp;
 
 	float m_ViewDistance;
 	float m_ViewAngle;
+	
+	float m_FogStart;
+	float m_FogEnd;
+	bool m_FogEnabled;
+	osg::Vec4 m_FogColor;
 
 	bool m_SpinTheWorld;
 	bool m_ResetTheWorld;
 
 	simdata::Vector3 m_Origin;
+	simdata::Vector3 m_SkyPoint;
 	simdata::Vector3 m_TerrainOrigin;
 
 	osg::ref_ptr<osg::Group> m_RootNode;
@@ -132,6 +140,8 @@ protected:
 	osg::ref_ptr<Sky> m_Sky;
 	osg::ref_ptr<osg::Group> m_SkyLights;
 
+	osg::ref_ptr<osg::Group> m_NearGroup;
+	osg::ref_ptr<osg::Group> m_NearObjectGroup;
 	osg::ref_ptr<osg::Group> m_FogGroup;
 	osg::ref_ptr<osg::Group> m_ObjectGroup;
 	osg::ref_ptr<osg::Node> m_TerrainNode;

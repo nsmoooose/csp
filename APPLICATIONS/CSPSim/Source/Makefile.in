@@ -2,34 +2,43 @@ TOPDIR = ..
 
 BIN = $(TOPDIR)/Bin
 
-#SUBDIRS = FX
+SUBDIRS = Theater 
 
 DEMETER_PREFIX = $(TOPDIR)/$(DEMETER_RELATIVE)
 DEMETER_INCLUDE = -I$(DEMETER_PREFIX)
 DEMETER_LIBRARY = -L$(DEMETER_PREFIX) -ldemeter_csp 
 
-LIBS = $(DEMETER_LIBRARY)
+CHUNKLOD_LIBRARY = -L$(BIN) -losgChunkLod 
+CHUNKLOD_INCLUDE = -I$(TOPDIR)/../../THIRDPARTYLIBS/CSPChunkLod/include
 
-INCLUDE = -I$(TOPDIR)/Include $(DEMETER_INCLUDE) -I@PYTHON_INCLUDE@
+LIBS = $(DEMETER_LIBRARY) $(CHUNKLOD_LIBRARY)
 
-CFLAGS = $(GDEBUGF) $(GCFLAGS) $(INCLUDE) @SDL_FLAGS@
+INCLUDE = -I$(TOPDIR)/Include $(DEMETER_INCLUDE) $(CHUNKLOD_INCLUDE) -I@PYTHON_INCLUDE@ 
+
+BASEFL = $(GDEBUGF) $(GCFLAGS) $(INCLUDE) @SDL_FLAGS@ @CCGNU2_FLAGS@
+CFLAGS = $(filter-out -I/usr/local/include, $(BASEFL))
 SWCXXF = $(GCFLAGS) $(INCLUDE)
 LDOPTS = -Wl,-z,lazyload $(GLDOPTS) @LIBS@
 SWOPTS = $(GSWOPTS) $(INCLUDE)
 
 SOURCES = \
-	AeroDynamics.cpp \
 	AircraftObject.cpp \
+	AircraftPhysicsModel.cpp \
 	Atmosphere.cpp \
 	base.cpp \
+	BaseDynamics.cpp \
 	BaseScreen.cpp \
+	ChunkLodTerrain.cpp \
+	Collision.cpp \
 	Colorspace.cpp \
 	Config.cpp \
 	Console.cpp \
 	ConsoleCommands.cpp \
 	CSPSim.cpp \
+	DemeterTerrain.cpp \
 	DynamicObject.cpp \
 	DynamicalSystem.cpp \
+	Engine.cpp \
 	EventMapIndex.cpp \
 	EventMapping.cpp \
 	Exception.cpp \
@@ -45,20 +54,34 @@ SOURCES = \
 	NumericalMethod.cpp \
 	ObjectModel.cpp \
 	ObjectRangeInfo.cpp \
+	PhysicsModel.cpp \
+	PrimaryAeroDynamics.cpp \
 	ScreenInfo.cpp \
 	ScreenInfoManager.cpp \
 	SimObject.cpp \
 	SimpleConfig.cpp \
 	Sky.cpp \
 	SmokeEffects.cpp \
-	StaticObject.cpp \
 	TankObject.cpp \
 	TerrainObject.cpp \
 	Theater.cpp \
+	Theater/CustomLayoutModel.cpp \
+	Theater/ElevationCorrection.cpp \
+	Theater/Feature.cpp \
+	Theater/FeatureGroup.cpp \
+	Theater/FeatureGroupList.cpp \
+	Theater/FeatureLayout.cpp \
+	Theater/FeatureObjectModel.cpp \
+	Theater/FeatureQuad.cpp \
+	Theater/FeatureSceneModel.cpp \
+	Theater/LayoutTransform.cpp \
+	Theater/Objective.cpp \
+	Theater/RandomBillboardModel.cpp \
+	Theater/RandomForestModel.cpp \
 	Tools.cpp \
 	trees.cpp \
 	VirtualBattlefield.cpp \
-	VirtualScene.cpp 
+	VirtualScene.cpp
 
 OBJECTS = $(SOURCES:%.cpp=%.o) 
 
@@ -66,7 +89,7 @@ DEPDIR = .deps
 MKDEP = $(CXX) -M $(CFLAGS)
 SWDEP = $(SWIG) -M $(SWOPTS)
 DEPFILES = $(addprefix $(DEPDIR)/,$(addsuffix .d, $(SOURCES))) $(DEPDIR)/cCSP.i.swigdep
-DEPFILTER =
+DEPFILTER = 
 DEPS_MAGIC := $(shell mkdir $(DEPDIR) > /dev/null 2>&1 || :)
 
 .PHONY: clean-deps clean all default
@@ -105,7 +128,7 @@ build-subdirs:
 
 $(DEPDIR)/%.d : %
 	@echo "Computing dependencies for $<..."
-	@$(MKDEP) $< $(DEPFILTER) > $@
+	@$(MKDEP) $< $(DEPFILTER) | sed -e 's!^[a-zA-Z0-9_]*.o:!$(<:%.cpp=%.o):!' > $@
 	
 $(DEPDIR)/%.swigdep : %
 	@echo "Computing dependencies for $<..."
@@ -125,7 +148,7 @@ cCSP_wrap.o: cCSP_wrap.cpp
 	$(CXX) -c $(SWCXXF) $(@:.o=.cpp)
 
 %.o: %.cpp 
-	$(CXX) -c $(CFLAGS) $(@:.o=.cpp)
+	$(CXX) -c $(CFLAGS) -o $@ $(@:.o=.cpp)
 
 AeroDynamics.o: AeroDynamics.cpp 
 	$(CXX) -c $(CFLAGS) -O3 $(@:.o=.cpp)

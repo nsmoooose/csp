@@ -35,6 +35,10 @@
 #include <SimData/InterfaceRegistry.h>
 
 
+class VirtualScene;
+class VirtualBattlefield;
+class ActiveCell;
+
 
 /**
  * class SimObject - Base class for all objects in the simulation.
@@ -42,11 +46,36 @@
  */
 class SimObject: public simdata::Object
 {
+	friend class VirtualScene;
+	friend class VirtualBattlefield;
+	friend class ActiveCell;
+
 private:
 	enum { 
 	       // bits 0-7 reserved for SimObject
-	       F_FREEZE    = 0x00000001,
+	       F_FREEZE     = 0x00000001,
+	       F_NEARFIELD  = 0x00000002,
+	       F_INSCENE    = 0x00000004,
+	       F_AGGREGATE  = 0x00000008,
+	       F_VISIBLE    = 0x00000010,
 	     };
+
+	void setSceneFlag(bool flag) { setFlags(F_INSCENE, flag); }
+	void setNearFlag(bool flag) { setFlags(F_NEARFIELD, flag); }
+	void setAggregateFlag(bool flag) { setFlags(F_AGGREGATE, flag); }
+	void setVisibleFlag(bool flag) { setFlags(F_VISIBLE, flag); }
+
+	void _aggregate() {
+		assert(!getAggregateFlag());
+		setAggregateFlag(true);
+		aggregate();
+	}
+
+	void _deaggregate() {
+		assert(getAggregateFlag());
+		setAggregateFlag(false);
+		deaggregate();
+	}
 
 protected:
 
@@ -58,19 +87,56 @@ protected:
 		return m_Flags & flags;
 	}
 
+	/**
+	 * Called when an object that was deaggregated leaves a human
+	 * player's bubble.  Extend this method to implement aggregation
+	 * logic.  
+	 */
+	virtual void aggregate();
+
+	/**
+	 * Called when an object that was aggregated enters a human
+	 * player's bubble.  Extend this method to implement deaggregation
+	 * logic.  
+	 */
+	virtual void deaggregate();
+
+
 public:
 
 	BEGIN_SIMDATA_XML_VIRTUAL_INTERFACE(SimObject)
-		SIMDATA_XML("model", SimObject::m_Model, true)
 	END_SIMDATA_XML_INTERFACE
 
 	SimObject();
 	virtual ~SimObject();
 
-	virtual void dump() = 0;
-	virtual void initialize() = 0;
-	virtual double onUpdate(double dt) = 0;
-	virtual unsigned int onRender() = 0;
+	virtual void dump() {}
+	virtual void initialize() {}
+
+	/**
+	 * Physics update callback. 
+	 *
+	 * @param dt time since elapsed last call to onUpdate()
+	 * @returns sleep time between updates (return 0.0 for
+	 *          fastest possible updating).
+	 */
+	virtual double onUpdate(double dt) { return 10.0; }
+
+	/**
+	 * Called before an object is added to the scene graph.
+	 *
+	 * This method is called even if no scene graph exists (e.g. on an 
+	 * AI client).  
+	 */
+	virtual void enterScene();
+
+	/**
+	 * Called before an object is removed from the scene graph.
+	 *
+	 * This method is called even if no scene graph exists (e.g. on an 
+	 * AI client).  
+	 */
+	virtual void leaveScene();
 
 	/*
 	unsigned int getObjectID() const { return m_ObjectID; }
@@ -79,29 +145,15 @@ public:
 	
 	void setFreezeFlag(bool flag) { setFlags(F_FREEZE, flag); }
 	bool getFreezeFlag() const { return getFlags(F_FREEZE) != 0; }
-
-	// model and scene related functions
-	SceneModel * getSceneModel() { return m_SceneModel.get(); }
-	simdata::Ref<ObjectModel> getModel() const { return m_Model; }
-	virtual void createSceneModel();
-	virtual void destroySceneModel();
-	osg::Node* getOrCreateModelNode();
-	osg::Node* getModelNode();
-	virtual void showModel() { if (m_SceneModel.valid()) m_SceneModel->show(); }
-	virtual void hideModel() { if (m_SceneModel.valid()) m_SceneModel->hide(); }
-
-	virtual void updateScene(simdata::Vector3 const &origin) = 0;
+	bool getSceneFlag() const { return getFlags(F_INSCENE) != 0; }
+	bool getNearFlag() const { return getFlags(F_NEARFIELD) != 0; }
+	bool getAggregateFlag() const { return getFlags(F_AGGREGATE) != 0; }
+	bool getVisibleFlag() const { return getFlags(F_VISIBLE) != 0; }
 
 	// position accessor methods
-	virtual simdata::Vector3 const & getGlobalPosition() const = 0;
+	virtual simdata::Vector3 getGlobalPosition() const = 0;
 	
 protected:
-
-	virtual void pack(simdata::Packer& p) const;
-	virtual void unpack(simdata::UnPacker& p);
-
-	simdata::Link<ObjectModel> m_Model;
-	simdata::Ref<SceneModel> m_SceneModel;
 
 	//unsigned int m_ObjectID;
 	//unsigned int m_ObjectType;

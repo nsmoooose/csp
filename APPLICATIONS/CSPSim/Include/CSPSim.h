@@ -38,6 +38,7 @@
 
 #include <SDL/SDL_joystick.h>
 
+
 struct SDL_Surface;
 
 class PyShell;

@@ -49,3 +49,11 @@ std::string getDataPath() {
 	return g_Config.getPath("Paths", "DataPath", ".", true);
 }
 
+std::string getDataPath(std::string const &pathname) {
+	std::string path = g_Config.getPath("Paths", pathname, ".", true);
+	if (!simdata::ospath::isabs(path)) {
+		path = simdata::ospath::join(getDataPath(), path);
+	}
+	return path;
+}
+

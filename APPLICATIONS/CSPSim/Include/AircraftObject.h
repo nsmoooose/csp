@@ -59,7 +59,7 @@ protected:
 };
 
 
-class AircraftPhysicModel;
+class AircraftPhysicsModel;
 class GroundCollisionDynamics;
 
 class AircraftObject: public DynamicObject
@@ -192,7 +192,7 @@ protected:
 	double m_RudderMin;
 	double m_RudderMax;
 
-	simdata::Ref<AircraftPhysicModel> m_AircraftPhysicModel;
+	simdata::Ref<AircraftPhysicsModel> m_AircraftPhysicsModel;
 
 	// various torques
 	simdata::Link<AircraftDynamics> m_AircraftDynamics;

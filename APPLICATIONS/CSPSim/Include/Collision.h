@@ -16,10 +16,12 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
+
 /**
  * @file Collision.h
  *
  **/
+
 #ifndef __COLLISION_H__
 #define __COLLISION_H__
 
@@ -29,78 +31,64 @@
 
 #include "BaseDynamics.h"
 
-class ContactList;
-
-// base class for collision/impulsion/contact response
-class ContactData {
-protected:
-	simdata::Vector3 m_pb;					// position of contact point in body coordinates
-	simdata::Vector3 m_vb, m_vtdirb, m_avb; // velocity, tangent velocity direction, angular velocity in body coordinates
-	simdata::Vector3 m_normalBody;			// contact normal in body coordinates
-	double m_deep;							// contact deep in collided object
-	simdata::Vector3 m_Force, m_Moment;
-	friend class ContactList;
-public:
-	ContactData(simdata::Vector3 const& pb, simdata::Vector3 const& vb, simdata::Vector3 const& avb, 
-				  simdata::Vector3 const& nb, double deep);
-	simdata::Vector3 getTangentVelocityDir() const;
-	void setForce(simdata::Vector3 const &force);
-	virtual ~ContactData(){}
-};
-
-class HardContactData: public ContactData {
-	simdata::Vector3 m_LinearImpulsion, m_AngularImpulsion;
-	friend class ContactList;
-public:
-	HardContactData(simdata::Vector3 const& pb, simdata::Vector3 const& vb, simdata::Vector3 const& avb, 
-				    simdata::Vector3 const& nb, double deep);
-	void setImpulsion(simdata::Vector3 const& linearImpulsion, simdata::Vector3 const& angularImpulsion);
-};
 
 
-class ContactList {
-	typedef std::vector<ContactData *> ContactDataList;
-	double m_Deep;
-	simdata::Vector3 m_NormalMaxDeep;
-	ContactDataList m_contactDataList;
-	simdata::Vector3 m_ForceBody, m_MomentBody;
-	unsigned short m_Nhcd;
-	simdata::Vector3 m_LinearImpulsion, m_AngularImpulsion;
-	void deleteElements();
-public:
-	ContactList();
-	~ContactList();
-	void addContact(ContactData *cd);
-	void reset();
-	unsigned short size() const;
-	bool hasImpulsion() const;
-	simdata::Vector3 zCorrection() const;
-	simdata::Vector3 linearImpulsion() const;
-	simdata::Vector3 angularImpulsion() const;
-	simdata::Vector3 forceBody() const;
-	simdata::Vector3 momentBody() const;
-};
-
-
+/**
+ * Dynamics class for vehicle-ground collisions.
+ *
+ * Models collisions of vehicle "contact" points with the
+ * ground.  These contact points are specified in the
+ * vehicle ObjectModel and should be placed at the external
+ * points of the model (e.g. wingtips, tail tip, nose, etc).
+ * Collisions are treated as a damped harmonic oscillators, 
+ * with additional sliding friction.  Hard impacts induce
+ * rapid energy loss, and should be coupled with vehicle
+ * damage modeling.
+ */
 class GroundCollisionDynamics: public simdata::Referenced, public BaseDynamics {
-	static const double TOL;
-	ContactList m_ContactList;
+	std::vector<simdata::Vector3> m_Forces;
+	std::vector<simdata::Vector3> m_Extension;
 	std::vector<simdata::Vector3> const m_Contacts;
-	double m_MassInverse;
-	simdata::Matrix3 m_InertiaInverse;
-	double const m_Elastic, m_Friction;
-	double const m_Vtol;
-	simdata::Vector3 const *m_WeightBody;
+	double m_Mass;
+	double m_ContactSpring;
+	double m_SpringConstant, m_Friction, m_ImpactDamping;
+	double const m_ImpactSpeedTolerance;
+	bool m_NeedsImpulse, m_HasContact;
 public:
-	GroundCollisionDynamics(double mass, simdata::Matrix3 const &inertia, std::vector<simdata::Vector3> const &contacts);
-	void reset(double dt);
-	void bindWeight(simdata::Vector3 const &weightBody);
-	void update(double dt);
-	simdata::Vector3 getLinearImpulsion() const;
-	simdata::Vector3 getAngularImpulsion() const;
-	simdata::Vector3 getZCorrection() const;
-	bool hasImpulsion() const;
-	bool hasContact() const;
+	/** 
+	 * Construct a new ground collision dynamics instance.
+	 *
+	 * @mass the (approximate) total vehicle mass, which is
+	 *       used only to limit extremely violent collisions.
+	 * @contacts the vehicle contact points
+	 */
+	GroundCollisionDynamics(double mass, std::vector<simdata::Vector3> const &contacts);
+
+	/**
+	 * Set the dynamic properties of the ground.
+	 *
+	 * @param spring_constant the stiffness of the ground under compresion
+	 * @param friction the coefficent of sliding friction
+	 * @param impact_damping the damping coefficient for the ground under compression
+	 */
+	void setGroundProperties(double spring_constant, double friction, double impact_damping);
+
+	/**
+	 * Compute the total contact force and moment.
+	 */
+	void computeForceAndMoment(double x);
+
+	/**
+	 * Returns true if a collision is sufficiently violent to require
+	 * additional external damping (e.g. by directly attenuating the 
+	 * vehicle's velocity.
+	 */
+	bool needsImpulse() const { return m_NeedsImpulse; }
+
+	/**
+	 * Returns true if any contact points are touching the ground.
+	 */
+	bool hasContact() const { return m_HasContact; }
 };
 
 #endif // __COLLISION_H__

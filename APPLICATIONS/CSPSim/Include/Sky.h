@@ -34,6 +34,7 @@
 #include "Colorspace.h"
 
 class StarSystem;
+class FalseHorizon;
 
 namespace osg {
 	class Texture2D;
@@ -253,6 +254,7 @@ public:
 	float getSkyIntensity() { return m_AverageIntensity; }
 	void spinTheWorld(bool noreset=true);
 	double getSpin() { return m_SpinTheWorld*86400.0; }
+	void updateHorizon(osg::Vec4 const &fog_color, float altitude, float clip);
 protected:
 	void _init();
 	void _initLights();
@@ -261,11 +263,15 @@ protected:
 	void _updateMoon(bool quick);
 	void _updateShading(double sun_h, double sun_A);
 	osg::ref_ptr<StarSystem> m_StarDome;
+	osg::ref_ptr<FalseHorizon> m_Horizon;
 	osg::ref_ptr<osg::Geometry> m_SkyDome;
 	osg::ref_ptr<osg::Light> m_SunLight;
 	osg::ref_ptr<osg::Light> m_MoonLight;
+	osg::Vec2Array *m_TexCoords;
 	osg::Vec4Array *m_Colors;
 	osg::Vec4Array *m_HorizonColors;
+	osg::ref_ptr<osg::Texture2D> m_SkyDomeTexture;
+	osg::ref_ptr<osg::Image> m_SkyDomeTextureImage;
 	Sun m_Sun;
 	Moon m_Moon;
 	SkyShader m_SkyShader;

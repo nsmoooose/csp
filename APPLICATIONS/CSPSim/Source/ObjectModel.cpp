@@ -40,6 +40,8 @@
 #include <osg/Geometry>
 #include <osg/Texture>
 #include <osg/Geode>
+#include <osg/PolygonOffset>
+#include <osg/CullFace>
 
 #include <SimData/FileUtility.h>
 #include <SimData/osg.h>
@@ -106,6 +108,9 @@ ObjectModel::ObjectModel(): simdata::Object() {
 	m_Scale = 1.0;
 	m_Smooth = true;
 	m_Filter = true;
+	m_ElevationCorrection = true;
+	m_PolygonOffset = 0.0;
+	m_CullFace = -1;
 	m_MarkersVisible = true;
 }
 
@@ -123,6 +128,9 @@ void ObjectModel::pack(simdata::Packer& p) const {
 	p.pack(m_Smooth);
 	p.pack(m_Filter);
 	p.pack(m_Contacts);
+	p.pack(m_ElevationCorrection);
+	p.pack(m_PolygonOffset);
+	p.pack(m_CullFace);
 	p.pack(m_LandingGear);
 }
 
@@ -137,6 +145,9 @@ void ObjectModel::unpack(simdata::UnPacker& p) {
 	p.unpack(m_Smooth);
 	p.unpack(m_Filter);
 	p.unpack(m_Contacts);
+	p.unpack(m_ElevationCorrection);
+	p.unpack(m_PolygonOffset);
+	p.unpack(m_CullFace);
 	p.unpack(m_LandingGear);
 }
 
@@ -190,11 +201,14 @@ osg::Geometry *makeDiamond(simdata::Vector3 const &pos, float s) {
 }
 
 void ObjectModel::loadModel() {
+/*
 	if (g_ModelPath == "") {
-		g_ModelPath = g_Config.getPath("Paths", "ModelPath", ".", true); 
+		g_ModelPath = getDataPath("ModelPath");
 	}
 
 	std::string source = simdata::ospath::filter(simdata::ospath::join(g_ModelPath, m_ModelPath.getSource()));
+	*/
+	std::string source = m_ModelPath.getSource();
 
 	CSP_LOG(APP, DEBUG, "ObjectModel::loadModel: " << source);
 
@@ -210,7 +224,23 @@ void ObjectModel::loadModel() {
 
 	m_Node = pNode;
 	m_Node->setName(m_ModelPath.getSource());
-	
+
+	if (m_PolygonOffset != 0.0) {
+		osg::StateSet *ss = m_Node->getOrCreateStateSet();
+		osg::PolygonOffset *po = new osg::PolygonOffset;
+		po->setFactor(-1.0);
+		po->setUnits(m_PolygonOffset);
+		ss->setAttributeAndModes(po, osg::StateAttribute::ON);
+	}
+
+	if (m_CullFace != 0) {
+		// XXX should reuse a single static CullFace instance.
+		osg::StateSet *ss = m_Node->getOrCreateStateSet();
+		osg::CullFace *cf = new osg::CullFace;
+		cf->setMode(m_CullFace < 0 ? osg::CullFace::BACK : osg::CullFace::FRONT);
+		ss->setAttributeAndModes(cf, osg::StateAttribute::ON);
+	}
+
 	// XXX should do this after scaling, no?
 	osg::BoundingSphere s = m_Node->getBound();
 	m_BoundingSphereRadius = s.radius();
@@ -277,9 +307,6 @@ void ObjectModel::loadModel() {
 	dlv.setState(state.get());
 	dlv.setNodeMaskOverride(0xffffffff);
 	m_Transform->accept(dlv);
-   
-	//FIXME: why this culling when optimizing occurs only here!?
-	opt.optimize(m_Transform.get());
 }
 
 void ObjectModel::addContactMarkers() {
@@ -508,7 +535,7 @@ bool SceneModel::addSmoke() {
 			for (size_t i = 0; i <n; ++i) {
 				fx::SmokeTrail *trail = new fx::SmokeTrail();
 				trail->setEnabled(false);
-				trail->setTexture("Images/white-smoke.rgb");
+				trail->setTexture("Images/white-smoke-hilite.rgb");
 				trail->setColorRange(osg::Vec4(0.9, 0.9, 1.0, 1.0), osg::Vec4(1.0, 1.0, 1.0, 0.5));
 				trail->setSizeRange(0.2, 4.0);
 				trail->setLight(false);

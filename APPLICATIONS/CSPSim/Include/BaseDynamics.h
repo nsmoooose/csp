@@ -1,4 +1,4 @@
-// Combat Simulator Project - FlightSim Demo
+// Combat Simulator Project - CSPSim
 // Copyright (C) 2002 The Combat Simulator Project
 // http://csp.sourceforge.net
 // 
@@ -19,7 +19,7 @@
 /**
  * @file BaseDynamics.h
  *
- **/
+ */
 
 #ifndef __BASEDYNAMICS_H__
 #define __BASEDYNAMICS_H__
@@ -28,6 +28,15 @@
 
 class simdata::Quaternion;
 
+
+/**
+ * Abstract base class for all object dynamics (physics) modelling.
+ *
+ * Dervied classes must implement computeForceAndMoment(x) to compute 
+ * the force and moment acting on the object at a point within the 
+ * simulation step.  See documentation associated with this method for 
+ * important details.
+ */
 class BaseDynamics {
 protected:
 	simdata::Vector3 m_Force, m_Moment;
@@ -36,21 +45,110 @@ protected:
 	double const *m_Height;
 	bool const *m_NearGround;
 	simdata::Vector3 const *m_NormalGround;
+	double const *m_qBar;
+	simdata::Vector3 const *m_WindBody;
 public:
 	BaseDynamics();
+	virtual ~BaseDynamics();
+
+	/**
+	 * Called once before one or more integration steps.  Internal 
+	 * state changes and slowly varying parameters can be evaluated 
+	 * here.
+	 *
+	 * @param dt the time interval of each of the following 
+	 *           integration steps.
+	 */
 	virtual void initializeSimulationStep(double dt);
+
+	/**
+	 * Called before each integration step.  Internal state changes
+	 * and slowly varying parameters can be evaluated here.
+	 *
+	 * @param dt the time interval of the following integration
+	 *           step.
+	 */
 	virtual void preSimulationStep(double dt);
+
+	/**
+	 * Called after each integration step.  Internal state changes
+	 * and slowly varying parameters can be evaluated here.
+	 *
+	 * @param dt the time interval of the preceding integration
+	 *           step.
+	 */
 	virtual void postSimulationStep(double dt);
-	virtual void update(double dt) = 0;
-	simdata::Vector3 getForce() const;
-	simdata::Vector3 getMoment() const;
+
+	/**
+	 * Evaluate the force and moment acting on the object at a point
+	 * within the simulation step.
+	 *
+	 * This method will be called repeatedly during the Runge-Kutta 
+	 * integration.  The parameter x is the time from the start of
+	 * the integration, not the absolute time or a monotonic time
+	 * interval.  In general you should not need to use this 
+	 * parameter, and if you do be sure you really understand what 
+	 * it means.  Also, do not modify internal state variables of
+	 * the Dynamics class during the computeForceAndMoment() call.  
+	 * State changes should only occur instead in the preSimulationStep 
+	 * and postSimulationStep() methods.  In particular, do not do
+	 * anything that results in discontinuous force or moment
+	 * variations that can prevent the RK solver from converging.
+	 *
+	 * @param x the time relative to the start of the integration
+	 *          step. 
+	 */
+	virtual void computeForceAndMoment(double x) = 0;
+
+	/**
+	 * Get the total force computed in the last update() call.
+	 */
+	inline simdata::Vector3 getForce() const { return m_Force; }
+
+	/**
+	 * Get the total force computed in the last update() call.
+	 */
+	inline simdata::Vector3 getMoment() const { return m_Moment; }
+
+	/**
+	 * Bind object kinematic state variables.  These values can be
+	 * used freely by any of the simulation step methods.
+	 *
+	 * @param position_local the position of the object in global coordinates
+	 * @param velocity_body the velocity of the object in body coordinates
+	 * @param angular_velocity_body the angular velocity of the object in 
+	 *        body cooordinates
+	 * @param orientation the orientation of the object
+	 */
 	void bindKinematics(simdata::Vector3 const &position_local, simdata::Vector3 const &velocity_body, 
 					simdata::Vector3 const &angular_velocity_body, simdata::Quaternion const &orientation);
+
+	/**
+	 * Bind parameters related to the ground directly beneath the object.
+	 *
+	 * @param near_ground true if the object bounding sphere overlaps the
+	 *                    ground.
+	 * @param height the (z) height above the ground of the center of the 
+	 *               object
+	 * @param normal_ground the normal (unit) vector of the ground beneath
+	 *                      the object.
+	 */
 	void bindGroundParameters(bool const &near_ground, double const &height, simdata::Vector3 const &normal_ground);
-	virtual ~BaseDynamics();
+
+	/**
+	 *  Bind parameters related to aerodynamics.
+	 *
+	 *  @param qbar the atmospheric density.
+	 *  @param wind_body the wind speed in body coordinates.
+	 */
+	void bindAeroParameters(double const &qbar, simdata::Vector3 const &wind_body);
 };
 
 
+/**
+ * Convenience class for calling the initializeSimulationStep method
+ * of multiple dynamics classes.
+ */
 class InitializeSimulationStep {
 	double m_dt;
 public:
@@ -61,6 +159,10 @@ public:
 };
 
 
+/**
+ * Convenience class calling the postSimulationStep method of
+ * multiple dynamics classes.
+ */
 class PostSimulationStep {
 	double m_dt;
 public:
@@ -71,6 +173,10 @@ public:
 };
 
 
+/**
+ * Convenience class calling the preSimulationStep method of
+ * multiple dynamics classes.
+ */
 class PreSimulationStep {
 	double m_dt;
 public:

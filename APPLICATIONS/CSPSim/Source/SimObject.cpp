@@ -24,9 +24,9 @@
 
 
 #include "SimObject.h"
-#include "Log.h"
 #include "SmokeEffects.h"
 #include "VirtualBattlefield.h"
+#include "Log.h"
 
 #include <osg/NodeVisitor>
 #include <osg/Quat>
@@ -42,9 +42,9 @@ SimObject::SimObject()
 { 
 	CSP_LOG(APP, DEBUG, "SimObject::SimObject()" );
 
-	m_SceneModel = NULL;
-
 	m_Flags = 0;
+
+	setAggregateFlag(true);
 
 	///m_ObjectID = 0;
 	///m_ObjectType = 0;
@@ -57,40 +57,25 @@ SimObject::~SimObject() {
 }
 
 
-void SimObject::pack(simdata::Packer& p) const {
-	Object::pack(p);
-	p.pack(m_Model);
+void SimObject::aggregate() {
+	CSP_LOG(BATTLEFIELD, INFO, "SimObject aggregate " << int(this));
 }
 
-
-void SimObject::unpack(simdata::UnPacker& p) {
-	Object::unpack(p);
-	p.unpack(m_Model);
+void SimObject::deaggregate() {
+	CSP_LOG(BATTLEFIELD, INFO, "SimObject deaggregate " << int(this));
 }
 
-
-void SimObject::createSceneModel() {
-	if (!m_SceneModel.valid()) {
-		m_SceneModel = new SceneModel(m_Model);
-		assert(m_SceneModel.valid());
-	}
+void SimObject::enterScene() {
+	CSP_LOG(SCENE, INFO, "SimObject enterScene " << int(this));
+	assert(!getVisibleFlag());
+	setVisibleFlag(true);
 }
 
-void SimObject::destroySceneModel() {
-	if (m_SceneModel.valid())
-		m_SceneModel = NULL;
+void SimObject::leaveScene() {
+	CSP_LOG(SCENE, INFO, "SimObject leaveScene " << int(this));
+	assert(getVisibleFlag());
+	setVisibleFlag(false);
 }
-
-osg::Node* SimObject::getOrCreateModelNode() {
-	if (!m_SceneModel) createSceneModel();
-	return m_SceneModel->getRoot();
-}
-
-osg::Node* SimObject::getModelNode() { 
-	if (!m_SceneModel) return 0;
-	return m_SceneModel->getRoot();
-}
-
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////

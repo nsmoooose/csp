@@ -27,233 +27,120 @@
 
 #include "Collision.h"
 
-using std::min;
-using std::max;
-
-ContactData::ContactData(simdata::Vector3 const& pb, simdata::Vector3 const& vb, simdata::Vector3 const& avb, 
-				  simdata::Vector3 const& nb, double deep):
-	m_pb(pb),
-	m_vb(vb),
-	m_avb(avb),
-	m_normalBody(nb),
-	m_deep(deep) {
-		m_vtdirb = simdata::Normalized(m_vb - simdata::Dot(m_vb,m_normalBody) * m_normalBody);
-}
-
-simdata::Vector3 ContactData::getTangentVelocityDir() const {
-	return m_vtdirb;
-}
-
-void ContactData::setForce(simdata::Vector3 const &force) {
-	static const double staticFriction = 0.5;
-	static const double dynamicFriction = 0.7;
-
-	double speed = m_vb.Length();
-	double fnorm = fabs(simdata::Dot(force,m_normalBody));
-
-	m_Force = force;
-
-	if (speed > 2.0)
-		m_Force -= (0.8 * speed + dynamicFriction * fnorm) * m_vtdirb;
-		
-	else
-		m_Force -= (0.7 * speed + staticFriction * fnorm) * m_vtdirb;
-	m_Moment = m_pb^m_Force;
-}
 
 
-HardContactData::HardContactData(simdata::Vector3 const& pb, simdata::Vector3 const& vb, simdata::Vector3 const& avb, 
-				  simdata::Vector3 const& nb, double deep):
-	ContactData(pb,vb,avb,nb,deep) {
-}
-	
-void HardContactData::setImpulsion(simdata::Vector3 const& linearImpulsion, simdata::Vector3 const& angularImpulsion) {
-	m_LinearImpulsion = linearImpulsion;
-	m_AngularImpulsion = angularImpulsion;
-}
-
-
-ContactList::ContactList():
-	m_Deep(0.0),
-	m_NormalMaxDeep(simdata::Vector3::ZERO),
-	m_ForceBody(simdata::Vector3::ZERO),
-	m_MomentBody(simdata::Vector3::ZERO),
-	m_Nhcd(0),
-	m_LinearImpulsion(simdata::Vector3::ZERO),
-	m_AngularImpulsion(simdata::Vector3::ZERO) {
-}
-
-void ContactList::deleteElements() {
-	std::vector<ContactData *>::iterator i = m_contactDataList.begin();
-	std::vector<ContactData *>::const_iterator iEnd = m_contactDataList.end();
-	for (; i != iEnd; ++i)
-		delete *i;
-}
-
-ContactList::~ContactList() {
-	if (!m_contactDataList.empty())
-		deleteElements();
-}
-
-void ContactList::addContact(ContactData *cd) {
-	m_contactDataList.push_back(cd);
-	double d = max(cd->m_deep, m_Deep);
-	if (m_Deep < d) {
-		m_NormalMaxDeep = cd->m_normalBody;
-		m_Deep = d;
-	}
-	m_ForceBody += cd->m_Force;
-	m_MomentBody += cd->m_Moment;
-	HardContactData *hcd = dynamic_cast<HardContactData *>(cd);
-	if (hcd) {
-		m_Nhcd++;
-		m_LinearImpulsion += hcd->m_LinearImpulsion;
-		m_AngularImpulsion += hcd->m_AngularImpulsion;
-	}
-}
-
-void ContactList::reset() {
-	if (!m_contactDataList.empty()) {
-		deleteElements();
-		m_Deep = 0.0;
-		m_NormalMaxDeep = simdata::Vector3::ZERO;
-		m_contactDataList.clear();
-		m_ForceBody = simdata::Vector3::ZERO;
-		m_MomentBody = simdata::Vector3::ZERO;
-		m_Nhcd = 0;
-		m_LinearImpulsion = simdata::Vector3::ZERO;
-		m_AngularImpulsion = simdata::Vector3::ZERO;
-	}
-}
-
-unsigned short ContactList::size() const { 
-	return m_contactDataList.size();
-}
-
-bool ContactList::hasImpulsion() const { 
-	return m_Nhcd != 0;
-}
-
-simdata::Vector3 ContactList::zCorrection() const {
-	return m_Deep * m_NormalMaxDeep;
-}
-
-simdata::Vector3 ContactList::linearImpulsion() const {
-	simdata::Vector3 linearImpulsion = simdata::Vector3::ZERO;
-	if (m_Nhcd > 0)
-		linearImpulsion = m_LinearImpulsion / m_Nhcd;
-	return linearImpulsion;
-}
-
-simdata::Vector3 ContactList::angularImpulsion() const {
-	simdata::Vector3 angularImpulsion = simdata::Vector3::ZERO;
-	if (m_Nhcd > 0)
-		angularImpulsion = m_AngularImpulsion / m_Nhcd;
-	return angularImpulsion;
-}
-
-simdata::Vector3 ContactList::forceBody() const {
-	simdata::Vector3 force = simdata::Vector3::ZERO;
-	if (!m_contactDataList.empty())
-		force = m_ForceBody / m_contactDataList.size();
-	return force; 
-}
-
-simdata::Vector3 ContactList::momentBody() const {
-	simdata::Vector3 moment = simdata::Vector3::ZERO;
-	if (!m_contactDataList.empty())
-		moment = m_MomentBody / m_contactDataList.size();
-	return moment; 
-}
-
-
-double const GroundCollisionDynamics::TOL = 0.01;
-
-GroundCollisionDynamics::GroundCollisionDynamics(double mass, simdata::Matrix3 const &inertia, std::vector<simdata::Vector3> const &contacts):
-	BaseDynamics(),
-	m_MassInverse(1.0/mass),
-	m_InertiaInverse(inertia.Inverse()),
+GroundCollisionDynamics::GroundCollisionDynamics(double mass, 
+                                                 std::vector<simdata::Vector3> const &contacts):
+	m_Forces(contacts.size()),
+	m_Extension(contacts.size()),
 	m_Contacts(contacts),
-	m_Elastic(0.6),
-	m_Friction(0.8),
-	m_Vtol(-3.0) {
+	m_Mass(mass),
+	m_ContactSpring(1e+5),
+	m_SpringConstant(5e+6),
+	m_Friction(1.2),
+	m_ImpactDamping(1e+6),
+	m_ImpactSpeedTolerance(3.0), 
+	m_NeedsImpulse(false),
+	m_HasContact(false)
+{
 }
 
-void GroundCollisionDynamics::reset(double dt) {
-	m_ContactList.reset();
+void GroundCollisionDynamics::setGroundProperties(double spring_constant, 
+                                                  double friction, 
+                                                  double impact_damping)
+{
+	m_SpringConstant = spring_constant;
+	m_Friction = friction;
+	m_ImpactDamping = impact_damping;
 }
 
-void GroundCollisionDynamics::bindWeight(simdata::Vector3 const &weightBody) {
-	m_WeightBody = &weightBody;
-}
 
-void GroundCollisionDynamics::update(double dt) {
+	
+
+void GroundCollisionDynamics::computeForceAndMoment(double x) {
+
 	simdata::Quaternion const &q = *m_qOrientation;
-	simdata::Vector3 const &velocity_body = *m_VelocityBody;
-	double const velocity_body_length = velocity_body.Length();
-	simdata::Vector3 const &angular_velocity_body = *m_AngularVelocityBody;
-	double const angular_velocity_body_length = angular_velocity_body.Length();
-	simdata::Vector3 const groundReactionBody = - *m_WeightBody;
-	simdata::Vector3 const &p = *m_PositionLocal;
+
+	simdata::Vector3 const &velocityBody = *m_VelocityBody;
+	simdata::Vector3 const &angularVelocityBody = *m_AngularVelocityBody;
 	
-	simdata::Vector3 const &normalGroundLocal =*m_NormalGround;
+	simdata::Vector3 const &normalGroundLocal = *m_NormalGround;
 	simdata::Vector3 origin(0.0, 0.0, *m_Height);
-	simdata::Vector3 normalGroundBody = simdata::QVRotate(q.Bar(),normalGroundLocal);
+	simdata::Vector3 normalGroundBody = simdata::QVRotate(q.Bar(), normalGroundLocal);
 
-	std::vector<simdata::Vector3>::const_iterator contact = m_Contacts.begin();
-	std::vector<simdata::Vector3>::const_iterator cEnd =  m_Contacts.end();
-	
-	for (; contact != cEnd; ++contact) {
-		simdata::Vector3 contact_local = simdata::QVRotate(q,*contact) + origin;
-		double height = simdata::Dot(contact_local, normalGroundLocal);
-		if (height <= 0.0) {
-			simdata::Vector3 Vb = velocity_body + (angular_velocity_body^(*contact));
-			double vbn = simdata::Dot(Vb,normalGroundBody);
-			if (vbn < m_Vtol) {
-				HardContactData *hcd = new HardContactData(*contact,Vb,angular_velocity_body,normalGroundBody, -height);
-				simdata::Vector3 angularImpulsionContact = m_InertiaInverse * (*contact^normalGroundBody);
-				double li = -(1.0 + m_Elastic) * vbn / (m_MassInverse + simdata::Dot(normalGroundBody,angularImpulsionContact));
-				simdata::Vector3 linearImpulsion =  m_MassInverse * li * (normalGroundBody - m_Friction * hcd->getTangentVelocityDir());
-				double normLI = linearImpulsion.Length();
-				double limiter = min(velocity_body_length, normLI);
-				linearImpulsion = (limiter / normLI) * linearImpulsion;
-				simdata::Vector3 angularImpulsion = 
-					li * ( angularImpulsionContact - m_InertiaInverse * (*contact^(m_Friction * hcd->getTangentVelocityDir())));
-				double normAI = angularImpulsion.Length();
-				limiter = min(angular_velocity_body_length, normAI);
-				angularImpulsion = (limiter / normAI) * angularImpulsion;
-				hcd->setImpulsion(linearImpulsion,angularImpulsion);
-				hcd->setForce(groundReactionBody);
-				m_ContactList.addContact(hcd);
+	m_HasContact = false;
+	m_NeedsImpulse = false;
+	m_Force = simdata::Vector3::ZERO;
+	m_Moment = simdata::Vector3::ZERO;
+
+	for (size_t i = 0; i < m_Contacts.size(); ++i) {
+		simdata::Vector3 forceBody = simdata::Vector3::ZERO;
+		simdata::Vector3 const &contactBody = m_Contacts[i];
+		simdata::Vector3 contactLocal = simdata::QVRotate(q, contactBody) + origin;
+		double depth = -simdata::Dot(contactLocal, normalGroundLocal);
+		if (depth >= 0.0) { // contact
+			m_HasContact = true;
+			simdata::Vector3 contactVelocityBody = velocityBody + (angularVelocityBody^contactBody);
+			double impactSpeed = -simdata::Dot(contactVelocityBody, normalGroundBody);
+			if (impactSpeed > m_ImpactSpeedTolerance) { // hard impact (not used)
 			}
-			else {
-				ContactData *cd = new ContactData(*contact,Vb,angular_velocity_body,normalGroundBody, -height);
-				cd->setForce(groundReactionBody);
-				m_ContactList.addContact(cd);
+			// normal spring force plus damping
+			double normalForce = depth * m_SpringConstant + m_ImpactDamping * impactSpeed;
+			// sanity check
+			normalForce = std::max(normalForce, 0.0);
+			forceBody += normalForce * normalGroundBody;
+			// sliding frictional force
+			simdata::Vector3 slidingVelocityBody = contactVelocityBody + impactSpeed * normalGroundBody;
+			double slidingSpeed = slidingVelocityBody.Length();
+			if (slidingSpeed > 0.0) {
+				// in principle we should have both sliding and static friction coefficients,
+				// but this is probably adequate for now.
+				double frictionLimit = std::max(0.1, m_Friction * normalForce);
+				// i'd like to do damped spring extension relative to a fixed point when not
+				// sliding, but not sure if this will work with rk since dt doesn't accumulate
+				// monotonic time.
+				/*
+				m_Extension[i] += slidingVelocityBody * dt;
+				simdata::Vector3 slidingFriction = -m_Extension[i] * m_ContactSpring;
+				double frictionScale = slidingFriction.Length() / frictionLimit;
+				if (frictionScale > 1.0) {  // free sliding
+					m_Extension[i] /= frictionScale;
+					slidingFriction /= frictionScale;
+				} else {
+					double beta = 0.2*m_ContactSpring; 
+					slidingFriction -= beta * slidingVelocityBody;
+				}
+				*/
+				// instead just use sliding friction, and attenuate it to zero at low velocity
+				// this generally results in a perpetual slide at low speed.
+				double friction = frictionLimit / (slidingSpeed + 0.1);
+				simdata::Vector3 slidingFriction = -friction * slidingVelocityBody;
+				forceBody += slidingFriction;
 			}
-		} //if (height <= 0.0) 
-	} //for (contact)
-	m_Force = m_ContactList.forceBody();
-	m_Moment = m_ContactList.momentBody();
+			m_Force += forceBody;
+		} else {
+			// release sliding spring tension
+			m_Extension[i] = simdata::Vector3::ZERO;
+		}
+		m_Forces[i] = forceBody;
+	} 
+
+	if (m_HasContact) {
+		double acceleration = m_Force.Length() / m_Mass;
+		double limit = 20.0 * 9.8; // 20 G limit for basic response
+		double scale = 1.0;
+		// extreme impact, supply addition reactive impulse
+		if (acceleration > limit) {
+			scale = limit / acceleration;
+			m_NeedsImpulse = true;
+		}
+		// compute normalized forces and moments
+		m_Force = simdata::Vector3::ZERO;
+		for (size_t i = 0; i < m_Contacts.size(); ++i) {
+			m_Force += m_Forces[i] * scale;
+			m_Moment += m_Contacts[i] ^ m_Forces[i] * scale;
+		}
+	}
 }
 
-simdata::Vector3 GroundCollisionDynamics::getLinearImpulsion() const {
-	return m_ContactList.linearImpulsion();
-}
-
-simdata::Vector3 GroundCollisionDynamics::getAngularImpulsion() const {
-	return m_ContactList.angularImpulsion();
-}
-	
-simdata::Vector3 GroundCollisionDynamics::getZCorrection() const {
-	return m_ContactList.zCorrection();
-}
-
-bool GroundCollisionDynamics::hasImpulsion() const {
-	return m_ContactList.hasImpulsion();
-}
-
-bool GroundCollisionDynamics::hasContact() const {
-	return m_ContactList.size() != 0;
-}
 

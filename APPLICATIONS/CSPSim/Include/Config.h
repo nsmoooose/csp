@@ -45,6 +45,10 @@ extern bool openConfig(std::string path, bool report_error=true);
  */
 extern std::string getDataPath();
 
+/**
+ * Get the specific data path.
+ */
+extern std::string getDataPath(std::string const &);
 
 #endif // __CONFIG_H__
 

@@ -18,32 +18,36 @@
 
 
 /**
- * @file PhysicModel.cpp
+ * @file PhysicsModel.cpp
  *
  **/
 
 #include "BaseDynamics.h"
 #include "Collision.h"
 #include "CSPSim.h"
-#include "PhysicModel.h"
+#include "PhysicsModel.h"
 #include "VirtualBattlefield.h"
 
-PhysicModel::PhysicModel(unsigned short dimension):
+PhysicsModel::PhysicsModel(unsigned short dimension):
 	DynamicalSystem(dimension),
-	m_Damping(0.999),
+	m_Damping(0.99),
 	m_qOrientation(simdata::Quaternion(1.0,0.0,0.0,0.0)),
+	m_ForcesBody(simdata::Vector3::ZERO),
 	m_AngularAccelBody(simdata::Vector3::ZERO),
 	m_LinearAccelBody(simdata::Vector3::ZERO),
-	m_ForcesBody(simdata::Vector3::ZERO),
 	m_MomentsBody(simdata::Vector3::ZERO),
 	m_NearGround(false),
-	m_Height(0.0) {
+	m_Height(0.0),
+	m_qBar(0.0),
+	m_WindBody(simdata::Vector3::ZERO),
+	m_Distance(0.0) 
+{
 }
 
-PhysicModel::~PhysicModel() {
+PhysicsModel::~PhysicsModel() {
 }
 
-void PhysicModel::bindObject(simdata::Vector3 &position, simdata::Vector3 &velocity, simdata::Vector3 &angular_velocity,
+void PhysicsModel::bindObject(simdata::Vector3 &position, simdata::Vector3 &velocity, simdata::Vector3 &angular_velocity,
 							 simdata::Quaternion &orientation) {
 	m_Position = &position;
 	m_Velocity = &velocity;
@@ -51,19 +55,19 @@ void PhysicModel::bindObject(simdata::Vector3 &position, simdata::Vector3 &veloc
 	m_Orientation = &orientation;
 }
 
-void PhysicModel::addDynamics(BaseDynamics *dynamic) {
+void PhysicsModel::addDynamics(BaseDynamics *dynamic) {
 	GroundCollisionDynamics* gcd = dynamic_cast<GroundCollisionDynamics*>(dynamic);
 	if (gcd) {
 		m_GroundCollisionDynamics = gcd;
-		m_GroundCollisionDynamics->bindWeight(m_WeightBody);
-	}
-	else 
+	} else {
 		m_Dynamics.push_back(dynamic);
+	}
 	dynamic->bindKinematics(m_PositionLocal, m_VelocityBody, m_AngularVelocityBody, m_qOrientation);
 	dynamic->bindGroundParameters(m_NearGround, m_Height, m_NormalGround);
+	dynamic->bindAeroParameters(m_qBar, m_WindBody);
 }
 
-void PhysicModel::setInertia(double mass, simdata::Matrix3 const &I) 
+void PhysicsModel::setInertia(double mass, simdata::Matrix3 const &I) 
 {
 	m_Mass = mass;
 	if (mass == 0.0) {
@@ -77,16 +81,16 @@ void PhysicModel::setInertia(double mass, simdata::Matrix3 const &I)
 	m_InertiaInverse = I.Inverse();
 }
 
-simdata::Vector3 PhysicModel::localToBody(simdata::Vector3 const &vec ) {
+simdata::Vector3 PhysicsModel::localToBody(simdata::Vector3 const &vec ) {
 	return simdata::QVRotate( m_qOrientation.Bar(), vec );
 }
 
 
-simdata::Vector3 PhysicModel::bodyToLocal(simdata::Vector3 const &vec ) {
+simdata::Vector3 PhysicsModel::bodyToLocal(simdata::Vector3 const &vec ) {
 	return simdata::QVRotate( m_qOrientation, vec );
 }
 
-std::vector<double> const &PhysicModel::bodyToY(simdata::Vector3 const &p,
+std::vector<double> const &PhysicsModel::bodyToY(simdata::Vector3 const &p,
                                 simdata::Vector3 const &v,
                                 simdata::Vector3 const &w,
                                 simdata::Quaternion const &q) {
@@ -98,31 +102,52 @@ std::vector<double> const &PhysicModel::bodyToY(simdata::Vector3 const &p,
 	return y;
 }
 
-void PhysicModel::YToBody(std::vector<double> const &y) {
+void PhysicsModel::YToBody(std::vector<double> const &y) {
 	m_PositionBody = simdata::Vector3(y[0],y[1],y[2]);
 	m_VelocityBody = simdata::Vector3(y[3],y[4],y[5]);
 	m_AngularVelocityBody = m_Damping * simdata::Vector3(y[6],y[7],y[8]);
 }
  
-void PhysicModel::physicsBodyToLocal() {
-	m_qOrientation = *m_Orientation; 
-	m_PositionLocal = *m_Position + bodyToLocal(m_PositionBody);
+void PhysicsModel::physicsBodyToLocal() {
+//	m_qOrientation = *m_Orientation; 
+	m_PositionLocal = m_PositionLocal + bodyToLocal(m_PositionBody);
 	m_VelocityLocal = bodyToLocal(m_VelocityBody);
 	m_AngularVelocityLocal = bodyToLocal(m_AngularVelocityBody);
 }
 
-void PhysicModel::updateNearGround() {
-	VirtualBattlefield const *const vbf = CSPSim::theSim->getBattlefield();
+void PhysicsModel::updateNearGround(double dt) {
+/*
+	VirtualBattlefield const *vbf = CSPSim::theSim->getBattlefield();
 	float x,y,z;
 	vbf->getNormal(m_PositionLocal.x,m_PositionLocal.y,x,y,z);
 	m_NormalGround = simdata::Vector3(x,y,z);
 	m_Height = (m_PositionLocal.z - vbf->getElevation(m_PositionLocal.x,m_PositionLocal.y))* z;
+*/
+	// XXX NormalGround and GroundN are redundant.... remove one of them!
+	m_NormalGround = m_GroundN;
+	m_Height = (m_PositionLocal.z - m_GroundZ) * m_GroundN.z;
 	if (m_Height < m_Radius) 
 		m_NearGround = true;
 	else
 		m_NearGround = false;
 }
 
-void PhysicModel::setBoundingRadius(double radius) {
+void PhysicsModel::setBoundingRadius(double radius) {
 	m_Radius = radius;
 }
+
+void PhysicsModel::updateAeroParameters(double dt) {
+	Atmosphere const *atmosphere = CSPSim::theSim->getAtmosphere();
+	if (atmosphere)	{
+		m_qBar = atmosphere->getDensity(m_PositionLocal.z);
+		simdata::Vector3 wind = atmosphere->getWind(m_PositionLocal);
+		wind += atmosphere->getTurbulence(m_PositionLocal, m_Distance);
+		m_WindBody = simdata::QVRotate(m_qOrientation.Bar(), wind);
+	} else {
+		m_qBar = 1.25; // nominal sea-level air density
+		m_WindBody = simdata::Vector3::ZERO;
+	}
+	double air_speed = m_WindBody.Length();
+	m_Distance += air_speed * dt;
+}
+

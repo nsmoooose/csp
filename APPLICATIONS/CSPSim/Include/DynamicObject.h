@@ -30,6 +30,7 @@
 #include "InputInterface.h"
 #include "BaseController.h"
 #include "SmokeEffects.h"
+#include "TerrainObject.h"
 
 
 namespace osgParticle {
@@ -69,12 +70,23 @@ protected:
 
 public:
 	EXTEND_SIMDATA_XML_VIRTUAL_INTERFACE(DynamicObject, SimObject)
+		SIMDATA_XML("model", DynamicObject::m_Model, true)
 		SIMDATA_XML("mass", DynamicObject::m_Mass, true)
 		SIMDATA_XML("inertia", DynamicObject::m_Inertia, false)
 	END_SIMDATA_XML_INTERFACE
 
 	DynamicObject();
 	virtual ~DynamicObject();
+
+	// model and scene related functions
+	simdata::Ref<SceneModel> getSceneModel() { return m_SceneModel; }
+	simdata::Ref<ObjectModel> getModel() const { return m_Model; }
+	virtual void createSceneModel();
+	virtual void destroySceneModel();
+	osg::Node* getOrCreateModelNode();
+	osg::Node* getModelNode();
+	virtual void showModel() { if (m_SceneModel.valid()) m_SceneModel->show(); }
+	virtual void hideModel() { if (m_SceneModel.valid()) m_SceneModel->hide(); }
 
 	virtual void getStats(std::vector<std::string> &stats) const {};
 
@@ -94,12 +106,10 @@ public:
 	bool isAir() const { return getFlags(F_AIR) != 0; }
 	bool isGrounded() const { return getFlags(F_GROUNDED) != 0; }
 
-	void updateLocalPosition();
 	void updateGlobalPosition();
 	void updateGroundPosition();
 	void updateOrientation();
 
-	virtual void setLocalFrame(simdata::Vector3 const &origin = simdata::Vector3::ZERO, osg::Group *group=0);
 	virtual void aggregate() { std::cout << "aggregate " << int(this) << std::endl; }
 	virtual void deaggregate() { std::cout << "deaggregate " << int(this) << std::endl; }
 	virtual void setVisible(bool visible) { std::cout << int(this) << ": visible = " << visible << std::endl; }
@@ -119,7 +129,7 @@ public:
 	simdata::Quaternion & getAttitude() { return m_Attitude; }
 	void setAttitude(simdata::Quaternion const & attitude);
 
-	virtual simdata::Vector3 const & getGlobalPosition() const { return m_GlobalPosition; }
+	virtual simdata::Vector3 getGlobalPosition() const { return m_GlobalPosition; }
 	virtual void setGlobalPosition(simdata::Vector3 const & position);
 	virtual void setGlobalPosition(double x, double y, double z);
 
@@ -146,15 +156,12 @@ protected:
 	simdata::Vector3 m_GlobalPosition;
 	simdata::Vector3 m_PrevPosition;
 
-	simdata::Vector3 m_LocalOrigin;
-	osg::ref_ptr<osg::Group> m_LocalGroup;
-	
 	double m_Mass;
 	double m_Speed;
 	
+	TerrainObject::IntersectionHint m_GroundHint;
 	double m_GroundZ;
 	simdata::Vector3 m_GroundN;
-
 	bool m_NearGround;
 
 	simdata::Matrix3 m_Inertia;
@@ -166,6 +173,10 @@ protected:
 	simdata::Quaternion m_Attitude;
 
 	std::string m_ObjectName;
+
+	simdata::Link<ObjectModel> m_Model;
+	simdata::Ref<SceneModel> m_SceneModel;
+
 };
 
 

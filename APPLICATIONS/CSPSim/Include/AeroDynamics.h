@@ -202,7 +202,19 @@ public:
 	
 	void setThrust(double thrust) { m_ThrustForce = thrust * simdata::Vector3::YAXIS; }
 	void setGroundZ(double groundz) { m_GroundZ = groundz; }
-	void setGroundN(simdata::Vector3 const &groundn) { m_GroundN = groundn; }
+	void setGroundN(simdata::Vector3 const &groundn) { 
+		// FIXME: just testing to see if smoothing normal transitions
+		// will reduce bad physics at terrain triangle boundaries.  if
+		// it is promising, we need to tie the time constant to the frame
+		// rate.
+		// first test: seems to help with convex transitions.  to deal
+		// with concave sections probably requires multiple elevation
+		// tests.
+		m_GroundN = 0.98 * m_GroundN + 0.02 * groundn; 
+	}
+
+	//void setPosition(const simdata::Vector3 & pos) { m_PositionLocal = pos; }
+	//void setVelocity(const simdata::Vector3 & velo);
 	
 	void bindObject(simdata::Vector3 &position, simdata::Vector3 &velocity, 
 	                simdata::Vector3 &angular_velocity, simdata::Quaternion &orientation);

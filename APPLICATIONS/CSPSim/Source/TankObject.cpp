@@ -83,8 +83,7 @@ void TankObject::dump()
 
 double TankObject::onUpdate(double dt)
 {
-	DynamicObject::onUpdate(dt);
-	return 0.0;
+	return DynamicObject::onUpdate(dt);
 }
 
 void TankObject::doMovement(double dt)

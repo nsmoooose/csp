@@ -42,6 +42,7 @@ DynamicObject::DynamicObject(): SimObject()
 
 	m_GroundZ = 0.0;
 	m_GroundN = simdata::Vector3::ZAXIS;
+	m_GroundHint = 0;
 
 	setAttitude(simdata::Quaternion::IDENTITY);
 	setGlobalPosition(simdata::Vector3::ZERO);
@@ -66,15 +67,39 @@ DynamicObject::~DynamicObject()
 
 void DynamicObject::pack(simdata::Packer& p) const {
 	SimObject::pack(p);
+	p.pack(m_Model);
 	p.pack(m_Mass);
 	p.pack(m_Inertia);
 }
 
 void DynamicObject::unpack(simdata::UnPacker& p) {
 	SimObject::unpack(p);
+	p.unpack(m_Model);
 	p.unpack(m_Mass);
 	p.unpack(m_Inertia);
 }
+
+void DynamicObject::createSceneModel() {
+	if (!m_SceneModel) {
+		m_SceneModel = new SceneModel(m_Model);
+		assert(m_SceneModel.valid());
+	}
+}
+
+void DynamicObject::destroySceneModel() {
+	m_SceneModel = NULL;
+}
+
+osg::Node* DynamicObject::getOrCreateModelNode() {
+	if (!m_SceneModel) createSceneModel();
+	return m_SceneModel->getRoot();
+}
+
+osg::Node* DynamicObject::getModelNode() { 
+	if (!m_SceneModel) return 0;
+	return m_SceneModel->getRoot();
+}
+
 
 void DynamicObject::setGlobalPosition(simdata::Vector3 const & position)
 {
@@ -117,11 +142,6 @@ void DynamicObject::setGlobalPosition(double x, double y, double z)
 */
 }
 
-void DynamicObject::setLocalFrame(simdata::Vector3 const &origin, osg::Group *group) {
-	m_LocalOrigin = origin;
-	m_LocalGroup = group;
-}
-
 void DynamicObject::setVelocity(simdata::Vector3 const &velocity)
 {
 	m_LinearVelocity = velocity;
@@ -154,7 +174,7 @@ void DynamicObject::updateGroundPosition()
 	else {
 		offset = 0.0;
 	}
-	m_GlobalPosition.z = CSPSim::theSim->getBattlefield()->getElevation(m_GlobalPosition.x, m_GlobalPosition.y) + offset; 
+	m_GlobalPosition.z = CSPSim::theSim->getBattlefield()->getGroundElevation(m_GlobalPosition.x, m_GlobalPosition.y, m_GroundHint) + offset; 
 	m_GlobalPosition.z = offset;
 }
 
@@ -185,19 +205,23 @@ unsigned int DynamicObject::onRender() {
 
 // update variables that depend on position
 void DynamicObject::postMotion(double dt) {
-	if (m_SceneModel.valid() && isSmoke())
+	if (m_SceneModel.valid() && isSmoke()) {
 		m_SceneModel->updateSmoke(dt, m_GlobalPosition, m_Attitude);
+	}
+	// FIXME GroundZ/GroundN should be set for all vehicles
 	if (isGrounded()) {
 		updateGroundPosition();
 	} else {
 		VirtualBattlefield const *battlefield = CSPSim::theSim->getBattlefield();
 		assert(battlefield);
-		m_GroundZ = battlefield->getElevation(m_GlobalPosition.x, m_GlobalPosition.y);
+		m_GroundZ = battlefield->getGroundElevation(m_GlobalPosition.x, m_GlobalPosition.y, m_GroundN, m_GroundHint);
+		/*
 		float h1, h2;
 		h1 = battlefield->getElevation(m_GlobalPosition.x+1, m_GlobalPosition.y) - m_GroundZ;
 		h2 = battlefield->getElevation(m_GlobalPosition.x, m_GlobalPosition.y+1) - m_GroundZ;
 		m_GroundN = simdata::Vector3(-h1,-h2, 1.0);
 		m_GroundN.Normalize();
+		*/
 		/*
 		float nx, ny, nz;
 		m_Battlefield->getNormal(m_GlobalPosition.x, m_GlobalPosition.y, nx, ny, nz);
@@ -226,16 +250,18 @@ simdata::Vector3 DynamicObject::getViewPoint() const {
 }
 
 bool DynamicObject::isSmoke() {
-	return m_SceneModel->isSmoke();
+	return m_SceneModel.valid() && m_SceneModel->isSmoke();
 }
 
 void DynamicObject::disableSmoke() {
-	m_SceneModel->disableSmoke();
+	if (m_SceneModel.valid() && isSmoke()) {
+		m_SceneModel->disableSmoke();
+	}
 }
 
 void DynamicObject::enableSmoke() {
-	if (!isSmoke())
+	if (m_SceneModel.valid() && !isSmoke()) {
 		m_SceneModel->enableSmoke();
-
+	}
 }
 

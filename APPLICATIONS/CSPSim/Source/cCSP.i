@@ -21,6 +21,7 @@
 %include "CSPSim.i"
 //%include "SimpleConfig.i"
 %include "Config.i"
+%include "Log.i"
 
 /*
 %include "SimObject.i"

@@ -116,7 +116,8 @@ public:
 
 	EngineDynamics();
 	void setThrottle(double const throttle);
-	void update(double dt);
+	virtual void preSimulationStep(double dt);
+	virtual void computeForceAndMoment(double x);
 	std::vector<simdata::Vector3> getSmokeEmitterLocation() const;
 };
 

@@ -24,6 +24,7 @@
 
 
 #include "DynamicalSystem.h"
+#include "Profile.h"
 
 #include <cmath>
 #include <iostream>
@@ -31,34 +32,48 @@
 
 
 DynamicalSystem::DynamicalSystem(unsigned short dimension):
-VectorField(dimension),
-_numericalMethod(0) {
+	VectorField(dimension),
+	_numericalMethod(0) 
+{
 }
 
-DynamicalSystem::~DynamicalSystem() { 
+DynamicalSystem::~DynamicalSystem() 
+{ 
 	if (_numericalMethod) {
 		delete _numericalMethod;
 		_numericalMethod = 0;
 	} 
 }
 
-DynamicalSystem::DynamicalSystem(VectorField* pf):
-VectorField(*pf) {
-	if (!_numericalMethod)
+// XXX this ctor makes no sense as initially written
+// the initial implementation is commented.
+DynamicalSystem::DynamicalSystem(VectorField* pf): VectorField(*pf)
+{
+	_numericalMethod = 0;
+	assert(0); // XXX how can we initialize to a VectorField if
+	           // we don't have a numerical method
+	/*
+	if (!_numericalMethod) {
 		_numericalMethod->setVectorField(pf);
+	}
+	*/
 }
 
-void DynamicalSystem::setNumericalMethod(NumericalMethod* pnumericalMethod){
-		_numericalMethod = pnumericalMethod;
-	}
+void DynamicalSystem::setNumericalMethod(NumericalMethod* pnumericalMethod)
+{
+	_numericalMethod = pnumericalMethod;
+}
 
-std::vector<double> const& DynamicalSystem::flow(std::vector<double>& y0, double t0, double dt) const {
+std::vector<double> const& DynamicalSystem::flow(std::vector<double>& y0, double t0, double dt) const 
+{
 	static std::vector<double> y;
-        y = _numericalMethod->enhancedSolve(y0, t0, dt);
-		if (_numericalMethod->failed()) {
-			//std::cout << "quick solve is required\n";
-			y = _numericalMethod->quickSolve(y0, t0, dt);
-		}
-
-		return y;
+	//PROF0(FLOW);
+	y = _numericalMethod->enhancedSolve(y0, t0, dt);
+	//PROF1(FLOW, 200);
+	if (_numericalMethod->failed()) {
+		//std::cout << "quick solve is required\n";
+		y = _numericalMethod->quickSolve(y0, t0, dt);
 	}
+	return y;
+}
+

@@ -182,15 +182,15 @@ std::vector<simdata::Vector3> EngineDynamics::getSmokeEmitterLocation() const {
 	return smoke_emitter_location;
 }
 
-void EngineDynamics::update(double dt) {
+void EngineDynamics::preSimulationStep(double dt) {
+	BaseDynamics::preSimulationStep(dt);
+	m_Force = m_Moment = simdata::Vector3::ZERO;
 	if (!m_Engine.empty()) {
-		m_Force = m_Moment = simdata::Vector3::ZERO;
+		float altitude = static_cast<float>(m_PositionLocal->z);
+		float speed = static_cast<float>(m_VelocityBody->Length());
+		float mach = static_cast<float>(CSPSim::theSim->getAtmosphere()->getMach(speed, altitude));
 		simdata::Link<Engine>::vector::iterator i = m_Engine.begin();
 		simdata::Link<Engine>::vector::const_iterator iEnd = m_Engine.end();
-		float speed = static_cast<float>(m_VelocityBody->Length());
-		simdata::Vector3 const &pos = *m_PositionLocal;
-		float altitude = static_cast<float>(*m_Height);
-		float mach = static_cast<float>(CSPSim::theSim->getAtmosphere()->getMach(speed, altitude));
 		for (; i !=iEnd; ++i) {
 			(*i)->setMach(mach);
 			(*i)->setAltitude(altitude);
@@ -199,5 +199,9 @@ void EngineDynamics::update(double dt) {
 			m_Moment += (*i)->m_EngineOffset^force;
 		}
 	}
+}
+
+void EngineDynamics::computeForceAndMoment(double x) {
+	// all the work is done by preSimulationStep
 }
 

@@ -84,7 +84,7 @@ public:
 	PrimaryAeroDynamics();
 	virtual ~PrimaryAeroDynamics();
 
-	void update(double dt);
+	void computeForceAndMoment(double x);
 	void initializeSimulationStep(double dt);
 	void postSimulationStep(double dt);
 
@@ -165,7 +165,7 @@ protected:
 	double m_Cn_da;     // CNda is the yaw due to aileron
 	double m_Cn_dr;     // CNdr is the yaw due to rudder
 
-	double m_GE;	// fractional ground effect
+	double m_GE;        // drag reduction factor due to ground effect
 
 	void updateAngles(double dt);
 	void calculateLiftCoefficient(); 
@@ -183,7 +183,7 @@ protected:
 	simdata::Vector3 const& dragVector();
 	simdata::Vector3 const& sideVector();
 
-	double m_depsilon;       // Gforce control feedback stall
+	double m_depsilon;       // G-force control feedback stall
 	double m_ElevatorScale;  // elevator correction
 	double m_ElevatorInput;  // desired elevator deflection
 
@@ -199,15 +199,12 @@ protected:
 	double m_beta;		// side slip angle
 	double m_gForce;	// current g acceleration
 	
-	double m_qBarFactor;	// 0.5 * WingSpan * density (updated 1 time in a simulation step)
-	double m_qBarS;			// 0.5 * WingSpan * density * V^2 
+	double m_qBarS;		// 0.5 * WingSpan * density * V^2 
 	
 	double m_MassInverse;
 
-	simdata::Vector3 m_AirflowBody;         // air flow velocity in body coordinate
 	double m_AirSpeed;
-	simdata::Vector3 m_WindLocal;           // wind velocity in local coordinates
-	double m_Distance;
+	simdata::Vector3 m_AirflowBody;         // air flow velocity in body coordinate
 };
 
 

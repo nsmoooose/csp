@@ -33,11 +33,45 @@
 #include <iostream>
 #include <sstream>
 #include <fstream>
+#include <vector>
+#include <list>
 #include <string>
 
 
 /////////////////////////////////////////////////////////////////////////////
 // class HID 
+
+
+
+void HID::translate(SDL_Event &event) {
+	if (event.type == SDL_KEYDOWN || event.type == SDL_KEYUP) {
+		static std::vector< std::list<int> > device(16);
+		int device_n = event.key.which;
+		assert(device_n < 16);
+		std::list<int> &pressed = device[device_n];
+		int sym = event.key.keysym.sym;
+		if (event.key.state == SDL_PRESSED) {
+			pressed.push_front((event.key.keysym.mod << 16) | sym);
+			// incase we miss removing some keys, don't let the
+			// list grow by much... noone is using so many fingers 
+			// at once ;-)
+			if (pressed.size() > 8) pressed.pop_back();
+		} else {
+			std::list<int>::iterator i = pressed.begin();
+			std::list<int>::iterator j = pressed.end();
+			for (; i != j; i++) {
+				if ((*i & 0xFFFF) == sym) {
+					event.key.keysym.mod = static_cast<SDLMod>(*i >> 16);
+					pressed.erase(i);
+					return;
+				}
+			}
+			// not found!?
+			// can happen.... just ignore it.
+		}
+	}
+}
+
 
 bool HID::onEvent(SDL_Event &event) {
 	switch (event.type) {
@@ -69,6 +103,7 @@ bool HID::onEvent(SDL_Event &event) {
 
 /////////////////////////////////////////////////////////////////////////////
 // class VirtualHID: public HID
+
 
 
 VirtualHID::VirtualHID() { 

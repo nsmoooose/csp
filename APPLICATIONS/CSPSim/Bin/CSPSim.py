@@ -21,8 +21,20 @@ def printUsage():
 	print "  Primary options:"
 	print "              --compile-data  run the data compiler"
 	print "              --config=path   path to config (.ini) file"
+	print "              --log=classes   set the logging classes"
 	print "              --help          help message"
 
+
+def setLogClasses():
+	if len(log_classes) == 0: return
+	flags = 0
+	for class_name in log_classes:
+		try:
+			class_flag = getattr(CSP, "CSP_"+class_name);
+			flags = flags | class_flag
+		except:
+			print "Unrecognized log class:", class_name
+	CSP.csplog().setLogClasses(flags)
 
 def runCSPSim(args):
 	if len(args):
@@ -39,6 +51,7 @@ def runCSPSim(args):
 		compileData([])
 	import Shell
 	app = CSP.CSPSim()
+	setLogClasses()
 	app.init()
 
 	try:
@@ -59,6 +72,7 @@ def compileData(args):
 	datapath = CSP.getDataPath()
 	dar = os.path.join(datapath, "sim.dar")
 	XML = os.path.join(datapath, "XML")
+	CSP.csplog().setLogLevels(CSP.CSP_ALL, SimData.LOG_ALERT)
 	#print "compile %s %s" % (XML, dar)
 	try:
 		from SimData.Compile import Compiler, CompilerUsageError
@@ -95,6 +109,7 @@ if os.path.exists("CSPSim.ini") or not os.path.exists(config):
 # process command line options
 program = sys.argv[0]
 all_args = sys.argv[1:]
+log_classes = []
 other_args = []
 
 for arg in all_args:
@@ -110,6 +125,8 @@ for arg in all_args:
 			other_args.append(arg)
 	elif arg.startswith("--config="):
 		config = arg[9:]
+	elif arg.startswith("--log="):
+		log_classes.extend(arg[6:].split(':'))
 	else:
 		other_args.append(arg)
 

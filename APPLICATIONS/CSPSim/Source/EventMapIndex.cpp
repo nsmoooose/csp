@@ -75,7 +75,7 @@ void EventMapIndex::loadAllMaps() {
 	std::string path;
 	osgDB::DirectoryContents dc;
 	osgDB::DirectoryContents::iterator file;
-	path = g_Config.getPath("Paths", "InputMapPath", ".", true);
+	path = getDataPath("InputMapPath");
 	CSP_LOG(APP, INFO, "Looking for human interface device mappings in '" << path << "'");
 	dc = osgDB::getDirectoryContents(path);
 	for (file = dc.begin(); file != dc.end(); file++) {

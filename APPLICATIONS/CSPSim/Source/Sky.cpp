@@ -17,10 +17,12 @@
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 
+
 /**
  * @file Sky.cpp
  *
  **/
+
 
 #include "Sky.h"
 #include "Tools.h"
@@ -28,6 +30,7 @@
 #include "Config.h"
 #include "Colorspace.h"
 #include "Exception.h"
+#include "Profile.h"
 
 #include <cmath>
 
@@ -69,6 +72,17 @@ const float TURBIDITY = 3.0f;
  * dim the stars when the moon is full
  * 
  */
+
+
+/*
+ * TEXDOME uses a texture to shade the sky, as opposed to skydome vertex
+ * colors.  This can reduce artifacts when the sun passes near a skydome
+ * vertex, but has the disadvantage of more obvious non-uniformity of
+ * the skycolor due to texelization.  One solution is to use a larger
+ * texture, but this requires more time to reevaluate and would have to
+ * be computed over multiple frames.
+ */
+#define TEXDOME
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -172,6 +186,10 @@ public:
 SIMDATA_REGISTER_INTERFACE(StarCatalog)
 
 
+// TODO reimplement this as an osg::Geometry using a vertex list PrimitiveSet
+// and GL_POINTS.  the current routine is called infrequently (the stars are
+// rendered from a display list between updates), but requires a few ms to
+// update the stars one at a time
 class StarSystem: public osg::Drawable {
 public:
 	META_Object(csp, StarSystem);
@@ -241,20 +259,24 @@ public:
 
 	//const bool computeBound() const { return true; }
 	virtual void drawImplementation(osg::State &state) const {
+		PROF0(_stars);
 		int i = _positionList->size();
-		Vec3Array const &p = *(_positionList.get());
-		Vec4Array const &c = *(_colorList.get());
+		Vec3Array::const_iterator p = _positionList->begin();
+		Vec4Array::const_iterator c = _colorList->begin();
+		glPushAttrib(GL_ENABLE_BIT);
 		glPushMatrix();
 		glRotatef(rx, 1, 0, 0);
 		glRotatef(rz, 0, 0, 1);
 		glBegin(GL_POINTS);
 		glEnable(GL_BLEND);
-		while (i-- > 0) {
-			glColor4f(c[i][0], c[i][1], c[i][2], c[i][3]*alpha);
-			glVertex3f(p[i][0], p[i][1], p[i][2]);
+		for (; --i >= 0; ++c, ++p) {
+			glColor4f(c->x(), c->y(), c->z(), c->w()*alpha);
+			glVertex3f(p->x(), p->y(), p->z());
 		}
 		glEnd();
 		glPopMatrix();
+		glPopAttrib();
+		PROF1(_stars, 4);
 	}
 
 	void setObserver(double lat, double lmst, float ambient) {
@@ -1012,6 +1034,90 @@ Color SkyShader::SkyColor(float elevation, float azimuth, float dark, float &int
 }
 
 
+class FalseHorizon: public osg::Geometry {
+public:
+	FalseHorizon() {
+		m_Init = false;
+		m_Segments = 0;
+		m_Radius = 0.0;
+		setSupportsDisplayList(false);
+		osg::StateSet* dstate = new osg::StateSet;
+		dstate->setMode(GL_LIGHTING,osg::StateAttribute::OFF);
+		dstate->setMode(GL_CULL_FACE, StateAttribute::OFF);
+		dstate->setMode(GL_FOG, osg::StateAttribute::OFF);
+		dstate->setMode(GL_CLIP_PLANE0, osg::StateAttribute::OFF);
+		dstate->setMode(GL_CLIP_PLANE1, osg::StateAttribute::OFF);
+		dstate->setMode(GL_CLIP_PLANE2, osg::StateAttribute::OFF);
+		dstate->setMode(GL_CLIP_PLANE3, osg::StateAttribute::OFF);
+		dstate->setMode(GL_CLIP_PLANE4, osg::StateAttribute::OFF);
+		dstate->setMode(GL_CLIP_PLANE5, osg::StateAttribute::OFF);
+		dstate->setMode(GL_DEPTH_TEST, osg::StateAttribute::OFF);
+		osg::Depth *depth = new osg::Depth;
+		depth->setFunction(osg::Depth::ALWAYS);
+		depth->setRange(1.0, 1.0);   
+		dstate->setAttributeAndModes(depth, osg::StateAttribute::OFF);
+		setStateSet(dstate);
+	}
+
+	void init(int segments) {
+		if (m_Init) return;
+		m_Init = true;
+		m_Segments = segments;
+		m_Colors = new Vec4Array(segments+1);
+		m_Coords = new Vec3Array(segments+1);
+		_init();
+	}
+
+	void _init() {
+		DrawElementsUShort* fan = new DrawElementsUShort(PrimitiveSet::TRIANGLE_FAN);
+		fan->reserve(m_Segments+2);
+		fan->push_back(m_Segments);
+		for (int i=0; i < m_Segments; i++) {
+			fan->push_back(i);
+		}
+		fan->push_back(0);
+		(*m_Coords)[m_Segments].set(0.0, 0.0, -1000.0);
+		addPrimitiveSet(fan);
+		setVertexArray(m_Coords);
+		setColorArray(m_Colors);
+		setColorBinding(Geometry::BIND_PER_VERTEX);
+		updateHorizon(1000.0, 120000.0);
+		updateFogColor(Vec4(1.0, 1.0, 1.0, 1.0));
+	}
+
+	void updateHorizonColors(Vec4Array const &colors) {
+		assert(int(colors.size()) == m_Segments);
+		for (int i=0; i < m_Segments; i++) (*m_Colors)[i] = colors[i];
+	}
+
+	void updateFogColor(Vec4 const &fog) {
+		m_FogColor = fog;
+		(*m_Colors)[m_Segments] = fog;
+	}
+
+	void updateHorizon(float altitude, float clip) {
+		float a = 0.0;
+		float da = 2.0 * G_PI / m_Segments;
+		float radius = std::min(1000000.0, std::max(1.5*clip, sqrt(2.0 * 6370000.0 * altitude)));
+		// variation less than 2 pixels under most conditions:
+		if (fabs(radius - m_Radius) < 0.0005 * m_Radius) return;
+		//std::cerr << "HORIZON -> " << radius << "\n";
+		m_Radius = radius;
+		for (int i=0; i < m_Segments; i++) {
+			(*m_Coords)[i].set(cos(a) * m_Radius, -sin(a) * m_Radius, -1000.0);
+			a += da;
+		}
+	}
+
+private:
+	bool m_Init;
+	int m_Segments;
+	Vec4 m_FogColor;
+	Vec4Array *m_Colors;
+	Vec3Array *m_Coords; 
+	float m_Radius;
+};
+
 ////////////////////////////////////////////////////////////////////////////////
 //
 ////////////////////////////////////////////////////////////////////////////////
@@ -1034,21 +1140,18 @@ void Sky::_init()
 	initColor();
 	_initLights();
 	m_lev = new float[90];
-	float elev = -10.0;
+	float base_elev = -10.0;
 	m_nlev = 0;
 	m_HorizonIndex = 0;
-	while (elev <= 90.0 && m_nlev < 90) {
+	for (float elev = base_elev; elev <= 90.0 && m_nlev < 90; ) {
 		m_lev[m_nlev] = elev;
 		m_nlev++;
-		if (elev < -5.0 || elev >= 5.0) {
+		if (elev <= -5.0 || elev >= 5.0) {
 			elev += 5.0; 
-		} else
-		if (elev < -1.0) {
-			elev = -1.0;
 		} else
 		if (elev <  1.0) {
 			elev = 1.0; 
-			m_HorizonIndex = m_nlev;
+			m_HorizonIndex = m_nlev-1;
 		} else {
 			elev = 5.0;
 		}
@@ -1057,17 +1160,25 @@ void Sky::_init()
 	
 	int i, j;
 	float x, y, z;
-	float alpha, theta;          ////////////////////////////////////////////////////////////////////////////
-	//float radius = 1100000.0f; //                                               radius skydome modification
-	float radius = 64000.0;     ////////////////////////////////////////////////////////////////////////////                                                                           
+	float alpha, theta;
+	float radius = 1100000.0f; 
+	m_Horizon = new FalseHorizon;
+#ifdef TEXDOME
+	m_Horizon->init(192);
+#else
+	m_Horizon->init(m_nseg);
+#endif
 	m_SkyDome = new Geometry;
-	//m_SkyDome->setSupportsDisplayList(false);
-
 	m_Colors = new Vec4Array(m_nseg*m_nlev);
+	m_TexCoords = new Vec2Array(m_nseg*m_nlev);
 	Vec3Array& coords = *(new Vec3Array(m_nseg*m_nlev));
 	Vec4Array& colors = *m_Colors;
-	Vec2Array& tcoords = *(new Vec2Array(m_nseg*m_nlev));
+	Vec2Array& tcoords = *m_TexCoords;
+#ifdef TEXDOME
+	m_HorizonColors = new Vec4Array(192);
+#else
 	m_HorizonColors = new Vec4Array(m_nseg);
+#endif
 
 	int ci, ii;
 	ii = ci = 0;
@@ -1075,7 +1186,7 @@ void Sky::_init()
 	for( i = 0; i < m_nlev; i++ ) {
 		for( j = 0; j < m_nseg; j++ ) {
 			alpha = osg::DegreesToRadians(m_lev[i]);
-			theta = osg::DegreesToRadians((float)(j*360.0/(m_nseg-1)));
+			theta = osg::DegreesToRadians((float)(j*360.0/m_nseg));
 
 			x = radius * cosf( alpha ) * cosf( theta );
 			y = radius * cosf( alpha ) * -sinf( theta );
@@ -1085,9 +1196,9 @@ void Sky::_init()
 			coords[ci][1] = y;
 			coords[ci][2] = z;
 
-			colors[ci][0] = 0.0;
-			colors[ci][1] = 0.0;
-			colors[ci][2] = 0.0;
+			colors[ci][0] = 1.0;
+			colors[ci][1] = 1.0;
+			colors[ci][2] = 1.0;
 			colors[ci][3] = 1.0;
 
 			tcoords[ci][0] = (float)j/(float)(m_nseg-1);
@@ -1098,30 +1209,48 @@ void Sky::_init()
 	}
 
 	DrawElementsUShort* drawElements = new DrawElementsUShort(PrimitiveSet::TRIANGLE_STRIP);
-	drawElements->reserve(m_nlev*m_nseg*2);
-	for( i = 0; i < m_nlev-1; i++ ) {
-		//DrawElementsUShort* drawElements = new DrawElementsUShort(PrimitiveSet::TRIANGLE_STRIP);
-		//drawElements->reserve(m_nseg*2);
-		for( j = 0; j < m_nseg; j++ ) {
-			drawElements->push_back((i+1)*m_nseg+j);
-			drawElements->push_back((i+0)*m_nseg+j);
+	drawElements->reserve(m_nlev*(m_nseg+1)*2);
+	for (i = 0; i < m_nlev-1; i++) {
+		for (j = 0; j <= m_nseg; j++) {
+			drawElements->push_back((i+1)*m_nseg+j%m_nseg);
+			drawElements->push_back((i+0)*m_nseg+j%m_nseg);
 		}
-		//m_SkyDome->addPrimitiveSet(drawElements);
 	}
-	m_SkyDome->addPrimitiveSet(drawElements);
 
+	m_SkyDome->addPrimitiveSet(drawElements);
 	m_SkyDome->setVertexArray( &coords );
 	m_SkyDome->setTexCoordArray( 0, &tcoords );
 	m_SkyDome->setColorArray( &colors );
 	m_SkyDome->setColorBinding( Geometry::BIND_PER_VERTEX );
-
-	Texture2D *tex = new Texture2D;
-	tex->setImage(osgDB::readImageFile("CSP_Splash.tga"));
-
+	
 	StateSet *dstate = new StateSet;
 
-	dstate->setTextureAttributeAndModes(0, tex, StateAttribute::OFF);
-	dstate->setTextureAttributeAndModes(0, new TexEnv);
+	if (1) {
+		Image *image = new Image();
+		image->allocateImage(64, 64, 1, GL_RGB, GL_UNSIGNED_BYTE);
+		assert(image->data() != NULL);
+		memset(image->data(), 0, 64*64*3);
+		// setting the internal texture format is required, but
+		// its not clear how to determine the correct value.  the
+		// following is just what the png loader does, setting
+		// the format to the number of color bytes.
+		image->setInternalTextureFormat(3); 
+		Texture2D *tex = new Texture2D;
+		tex->setImage(image);
+		tex->setWrap(Texture::WRAP_S, Texture::CLAMP);
+		tex->setWrap(Texture::WRAP_T, Texture::CLAMP);
+		tex->setFilter(Texture::MIN_FILTER, Texture::LINEAR);
+		tex->setFilter(Texture::MAG_FILTER, Texture::LINEAR);
+		//tex->setFilter(Texture::MIN_FILTER, Texture::NEAREST);
+		//tex->setFilter(Texture::MAG_FILTER, Texture::NEAREST);
+		tex->setUseHardwareMipMapGeneration(false);
+		tex->setUnRefImageDataAfterApply(false);
+		m_SkyDomeTextureImage = image;
+		m_SkyDomeTexture = tex;
+		dstate->setTextureAttributeAndModes(0, m_SkyDomeTexture.get(), StateAttribute::ON);
+		dstate->setTextureAttributeAndModes(0, new TexEnv);
+	}
+
 	dstate->setMode(GL_LIGHTING, StateAttribute::OFF);
 	dstate->setMode(GL_CULL_FACE, StateAttribute::OFF);
 	dstate->setMode(GL_DEPTH_TEST, StateAttribute::OFF);
@@ -1143,6 +1272,10 @@ void Sky::_init()
 	geode->addDrawable(m_StarDome.get());
 	addChild(geode);
 	addChild(m_Moon.getNode());
+	osg::Geode *horizon = new osg::Geode();
+	horizon->addDrawable(m_Horizon.get());
+ 	// draw horizon after sky, stars, and moon
+	addChild(horizon);
 
 	setName("Sky");
 };
@@ -1202,16 +1335,19 @@ void Sky::_updateStars() {
 	m_StarDome->setObserver(m_Latitude, m_LMST, m_AverageIntensity);
 }
 
+#ifndef TEXDOME
 void Sky::_updateShading(double sun_h, double sun_A) {
 	Vec4Array& colors = *(dynamic_cast<Vec4Array*>(m_SkyDome->getColorArray()));
-	double da = 2.0 * G_PI / (m_nseg - 1);
+	double da = 2.0 * G_PI / (m_nseg);
 	double min_a = 0.5*da;
 	double jitter = 0.0;
 	int i, j, ci = 0;
 	m_AverageIntensity = 0.0;
 	float dark = m_Moon.getApparentBrightness();
+	osg::Vec4 horizon_average;
 	for (i = 0; i < m_nlev; i++) {
 		double elev = m_lev[i] * D2R;
+		if (elev < 0.0) elev = 0.0; // sub horizon colors aren't correct 
 		double azimuth = -sun_A - 0.5 * G_PI;
 		bool at_vertex = fabs(elev - sun_h) < min_a; // this is only a rough measure
 		for (j = 0; j < m_nseg; j++) {
@@ -1232,14 +1368,99 @@ void Sky::_updateShading(double sun_h, double sun_A) {
 			colors[ci][3] = 1.0;
 			if (i == m_HorizonIndex) {
 				(*m_HorizonColors)[j] = colors[ci];
+				horizon_average += colors[ci];
 			}
 			ci++;
 			m_AverageIntensity += intensity;
 		}
 	}
+	m_Horizon->updateHorizonColors(*m_HorizonColors);
 	m_AverageIntensity /= m_nlev*m_nseg;
-	m_SkyDome->dirtyDisplayList();
+	m_SkyDome->dirtyDisplayList(); 
 }
+#endif
+
+#ifdef TEXDOME
+void Sky::_updateShading(double sun_h, double sun_A) {
+	Vec2Array& tex = *(dynamic_cast<Vec2Array*>(m_SkyDome->getTexCoordArray(0)));
+	Vec4Array& col = *(dynamic_cast<Vec4Array*>(m_SkyDome->getColorArray()));
+	int i, j;
+
+	m_AverageIntensity = 0.0;
+	int n_average = 0;
+
+	float dark = m_Moon.getApparentBrightness();
+	simdata::SimTime t = simdata::SimDate::getSystemTime();
+
+	{ // update skydome texture
+		unsigned char *shade = m_SkyDomeTextureImage->data();
+		assert(shade);
+		for (j = 0; j < 64; j++) {
+			int idx = (j * 64 + 32) * 3;
+			double y = (j-32) / 30.0; 
+			for (i = 0; i < 32; i++) {
+				double x = i / 30.0;
+				double elevation = (1.0 - sqrt(x*x+y*y)) * 0.5 * G_PI;
+				if (elevation >= -0.15) {
+					if (elevation < 0.0) elevation = 0.0;
+					double azimuth = atan2(x, y);
+					float intensity;
+					Color c = m_SkyShader.SkyColor(elevation, azimuth, dark, intensity);
+					int i0 = idx + i*3 - 1;
+					int i1 = idx - i*3 - 1;
+					shade[++i0] = shade[++i1] = static_cast<unsigned char>(c.getA() * 255.0);
+					shade[++i0] = shade[++i1] = static_cast<unsigned char>(c.getB() * 255.0);
+					shade[++i0] = shade[++i1] = static_cast<unsigned char>(c.getC() * 255.0);
+					m_AverageIntensity += intensity;
+					++n_average;
+				}
+			}
+		}
+	}
+
+	{ // separate evaluation for horizon colors
+		int n = m_HorizonColors->size();
+		double da = 2.0 * G_PI / n;
+		double azimuth = -sun_A - 0.5 * G_PI;
+		for (i = 0; i < n; i++) {
+			float intensity;
+			Color c = m_SkyShader.SkyColor(0.0, azimuth, dark, intensity);
+			(*m_HorizonColors)[i] = Vec4(c.getA(), c.getB(), c.getC(), 1.0);
+			azimuth += da;
+		}
+	}
+
+	{ // update texture coordinates
+		int ci = 0;
+		double da = 2.0 * G_PI / (m_nseg);
+		for (i = 0; i < m_nlev; i++) {
+			double elev = m_lev[i] * D2R;
+			if (elev < 0.0) elev = 0.0; // sub horizon colors aren't correct 
+			double azimuth = -sun_A - 0.5 * G_PI;
+			float factor = (1.0 - 2.0 * elev / G_PI) * 30.0 / 32.0;
+			for (j = 0; j < m_nseg; j++) {
+				float x = 0.5 * (1.0 + sin(azimuth) * factor) + 0.5 / 64.0;
+				float y = 0.5 * (1.0 + cos(azimuth) * factor) + 0.5 / 64.0;
+				tex[ci][0] = x;
+				tex[ci][1] = y;
+				ci++;
+				azimuth += da;
+			}
+		}
+	}
+
+	simdata::SimTime u = simdata::SimDate::getSystemTime();
+	std::cout << "SKY UPDATE TIME: " << ((u-t)*1000.0) << " ms\n";
+
+	m_Horizon->updateHorizonColors(*m_HorizonColors);
+	m_AverageIntensity /= n_average;
+
+	m_SkyDomeTextureImage->dirty();
+	m_SkyDomeTexture->dirtyTextureObject();
+	m_SkyDomeTexture->setImage(m_SkyDomeTextureImage.get());
+	m_SkyDome->dirtyDisplayList(); 
+}
+#endif
 
 
 void Sky::spinTheWorld(bool noreset) {
@@ -1276,20 +1497,30 @@ void Sky::update(double lat, double lon, simdata::SimDate const &t) {
 // implemented below for avg > 0.
 osg::Vec4 Sky::getHorizonColor(float angle) {
 	static int avg = 0;
+	// skydome wraps around clockwise
 	angle = -angle;
 	if (angle < 360.0) {
 		angle -= 360.0 * (int(angle / 360.0)-2);
 	}
-	angle *= m_nseg / 360.0;
+	int n = m_HorizonColors->size();
+	angle *= n / 360.0;
 	int idx = int(angle);
 	float da = angle - idx;
 	assert(m_HorizonColors);
 	osg::Vec4 color;
-	color = (*m_HorizonColors)[(idx-avg)%m_nseg] * (1.0-da);
+	color = (*m_HorizonColors)[(idx-avg)%n] * (1.0-da);
 	for (int i = 1-avg; i <= avg; i++) {
-		color += (*m_HorizonColors)[(idx+i)%m_nseg];
+		color += (*m_HorizonColors)[(idx+i)%n];
 	}
-	color += (*m_HorizonColors)[(idx+avg+1)%m_nseg] * da;
-	return color/(2*avg+1);
+	color += (*m_HorizonColors)[(idx+avg+1)%n] * da;
+	color /= (2.0*avg+1.0);
+	return color;
+}
+
+
+void Sky::updateHorizon(Vec4 const &fog_color, float altitude, float clip)
+{
+	m_Horizon->updateFogColor(fog_color);
+	m_Horizon->updateHorizon(altitude, clip);
 }
 

@@ -18,22 +18,9 @@
 
 
 /**
- * @file AircraftPhysicModel.h
+ * @file DamageModifier.cpp
  *
  **/
 
-#ifndef __AIRCRAFTPHYSICMODEL_H__
-#define __AIRCRAFTPHYSICMODEL_H__
-
-#include "PhysicModel.h"
-
-class AircraftPhysicModel: public PhysicModel {
-public:
-	AircraftPhysicModel();
-	void doSimStep(double dt);
-	std::vector<double> const& _f(double t, std::vector<double>& y);
-};
-
-#endif //__AIRCRAFTPHYSICMODEL_H__
-
+SIMDATA_REGISTER_INTERFACE(DamageModifier)
 

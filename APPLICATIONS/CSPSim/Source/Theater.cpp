@@ -24,22 +24,37 @@
 
 
 #include "Theater.h"
+#include "Theater/FeatureGroup.h"
+#include "Theater/FeatureGroupList.h"
+#include "TerrainObject.h"
+#include "Log.h"
 
-SIMDATA_REGISTER_INTERFACE(DamageModifier)
+#include <SimData/Ref.h>
+#include <SimData/Path.h>
 
-// models
-SIMDATA_REGISTER_INTERFACE(FeatureObjectModel)
-//SIMDATA_REGISTER_INTERFACE(FeatureGroupModel)
-SIMDATA_REGISTER_INTERFACE(CustomLayoutModel)
 
-// layouts
-SIMDATA_REGISTER_INTERFACE(FeatureLayout)
-
-// featrue groups
-SIMDATA_REGISTER_INTERFACE(FeatureGroup)
-SIMDATA_REGISTER_INTERFACE(Objective)
-
-// top-level data
-SIMDATA_REGISTER_INTERFACE(FeatureGroupList)
 SIMDATA_REGISTER_INTERFACE(Theater)
+
+
+simdata::Ref<FeatureGroup>::list Theater::getAllFeatureGroups() {
+	simdata::Link<FeatureGroup>::vector const &groups = m_FeatureGroupList->getFeatureGroups();
+	simdata::Ref<FeatureGroup>::list result;
+	// translate from Link<> list to Ref<> list.  XXX should be a simdata function?
+	simdata::Link<FeatureGroup>::vector::const_iterator i = groups.begin();
+	for (; i != groups.end(); i++) {
+		result.push_back(*i);
+	}
+	return result;
+}
+
+Theater::Theater() {
+}
+
+Theater::~Theater() {
+}
+
+void Theater::postCreate() {
+	CSP_LOG(TERRAIN, INFO, "Projecting feature groups.");
+	m_FeatureGroupList->projectFeatureGroups(m_Terrain->getProjection());
+}
 

@@ -19,6 +19,8 @@
 
 %{
 #include "CSPSim.h"
+#include "Theater.h"
+#include "Projection.h"
 #include "Shell.h"
 #include <SimData/Math.h>
 %}
@@ -56,6 +58,19 @@ public:
 	void createVehicle(const char *path, simdata::Vector3 position, 
 	                   simdata::Vector3 velocity, simdata::Vector3 attitude) {
 		simdata::Ref<DynamicObject> obj = self->getDataManager().getObject(path);
+		obj->setGlobalPosition(position);
+		obj->setVelocity(velocity);
+		simdata::Quaternion q_attitude;
+		attitude *= 3.1416 / 180.0;
+		q_attitude = simdata::Quaternion::MakeQFromEulerAngles(attitude.x, attitude.y, attitude.z);
+		obj->setAttitude(q_attitude);
+		self->getBattlefield()->addUnit(obj);
+	}
+	void createVehicle(const char *path, simdata::LLA lla, 
+	                   simdata::Vector3 velocity, simdata::Vector3 attitude) {
+		simdata::Ref<DynamicObject> obj = self->getDataManager().getObject(path);
+		Projection const &map = CSPSim::theSim->getTheater()->getTerrain()->getProjection();
+		simdata::Vector3 position = map.convert(lla);
 		obj->setGlobalPosition(position);
 		obj->setVelocity(velocity);
 		simdata::Quaternion q_attitude;

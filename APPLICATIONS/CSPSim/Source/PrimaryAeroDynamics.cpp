@@ -41,17 +41,19 @@ SIMDATA_REGISTER_INTERFACE(PrimaryAeroDynamics)
 
 PrimaryAeroDynamics::PrimaryAeroDynamics():
 	m_depsilon(0.0),
-	m_Distance(0.0),
-	m_AirSpeed(0.0),
-	m_ElevatorInput(0.0),
 	m_ElevatorScale(0.0),
-	m_Elevator(0.0),
+	m_ElevatorInput(0.0),
 	m_Aileron(0.0),
+	m_Elevator(0.0),
 	m_Rudder(0.0),
 	m_alpha(0.0),
 	m_alpha0(0.0),
 	m_alphaDot(0.0),
-	m_gForce(1.0) {
+	m_beta(0.0),
+	m_gForce(1.0),
+	m_AirSpeed(0.0)
+	//m_Distance(0.0)
+{
 }
 
 PrimaryAeroDynamics::~PrimaryAeroDynamics() {
@@ -194,11 +196,14 @@ void PrimaryAeroDynamics::setMassInverse(double massInverse) {
 }
 
 void PrimaryAeroDynamics::initializeSimulationStep(double dt) {
-	double u = (0.034 + dt)/(1.0 - atan(m_AirSpeed) / G_PI);
+	BaseDynamics::initializeSimulationStep(dt);
+	//double u = (0.034 + dt)/(1.0 - atan(m_AirSpeed) / G_PI);
+	double u = 0.05 + dt;
 	m_ElevatorScale	= (1.0 - u) * m_ElevatorScale + u * controlInputValue( m_gForce );
 	m_Elevator = m_ElevatorInput * m_ElevatorScale;
 	// initial conditions
-	m_qBarFactor = m_HalfWingArea;
+
+	/* XXX now handled by PhysicModel
 	Atmosphere const *atmosphere = CSPSim::theSim->getAtmosphere();
 	if (atmosphere)	{
 		simdata::Vector3 const &p = *m_PositionLocal;
@@ -206,31 +211,38 @@ void PrimaryAeroDynamics::initializeSimulationStep(double dt) {
 		m_qBarFactor *=	density;
 		m_WindLocal	= atmosphere->getWind(p);
 		m_WindLocal	+= atmosphere->getTurbulence(p, m_Distance);
-	} else
+	} else {
 		m_qBarFactor *=	1.25;
+	}
 	m_Distance += m_AirSpeed * dt;
+	// moved here from update(); (so less frequent updates)
+	m_AirSpeed = m_AirflowBody->Length();
+	// prevent singularities
+	if (m_AirSpeed < 1.0) m_AirSpeed = 1.0;
+	*/
 }
 
-void PrimaryAeroDynamics::update(double dt) {
-	m_AirflowBody =	*m_VelocityBody - simdata::QVRotate(m_qOrientation->Bar(), m_WindLocal);
+
+void PrimaryAeroDynamics::computeForceAndMoment(double x) {
+	m_AirflowBody =	*m_VelocityBody - *m_WindBody; //simdata::QVRotate(m_qOrientation->Bar(), m_WindLocal);
 	m_AirSpeed = m_AirflowBody.Length();
 	// prevent singularities
 	if (m_AirSpeed < 1.0) m_AirSpeed = 1.0;
-	updateAngles(dt);
+	updateAngles(x);
 
 	//////////////////////////
 	// internal frame is used
 	/////////////////////////
- 
-	m_qBarS = m_qBarFactor * m_AirSpeed * m_AirSpeed;
+
+	m_qBarS = m_HalfWingArea * (*m_qBar) * m_AirSpeed * m_AirSpeed;
 
 	m_Force = m_qBarS * liftVector();
+
 	// Evaluate g's
 	// FIXME: m_MassInverse is constant? ;-)
 	m_gForce = m_MassInverse * m_Force.z / 9.81;
 	// Drag and sideforce
 	m_Force += m_qBarS * (dragVector() + sideVector());
-
 	m_Moment.x = calculatePitchMoment(); // Pitch
 	m_Moment.y = calculateRollMoment();  // Roll
 	m_Moment.z = calculateYawMoment();   // Yaw
@@ -283,7 +295,6 @@ simdata::Vector3 const &PrimaryAeroDynamics::liftVector() {
 }
 
 void PrimaryAeroDynamics::calculateDragCoefficient() {
-	//static int x = 0;
 	double alpha = m_alpha;
 	
 	// prevent driving this equation from from its range of validity
@@ -299,9 +310,12 @@ void PrimaryAeroDynamics::calculateDragCoefficient() {
 	double induced = m_GE * m_CD_i * m_CL * m_CL;
 	if (induced < 0.0) induced = 0.0;
 
-	//if (x++ % 1000 == 0) {
-	//	printf("%6.1f %6.2f %6.2f %6.2f %6.2f\n", m_gForce, drag_coe, induced, m_alpha, m_Elevator);
-	//}
+	/*
+	static int x = 0;
+	if (x++ % 1000 == 0) {
+		printf("Cd=%6.3f I=%6.3f Cdi=%6.3f Cl=%6.3f a=%6.2f ge=%6.3f\n", m_CD, induced, m_CD_i, m_CL, m_alpha, m_GE);
+	}	
+	*/
 
 	m_CD += induced;
 	
@@ -397,26 +411,24 @@ double PrimaryAeroDynamics::controlIVbasis(double p_t) const {
 
 double PrimaryAeroDynamics::controlInputValue(double p_gForce) const { 
 	// to reduce G, decrease deflection control surface
-	double control = 1.0;
-
 	if (p_gForce > m_GMax && m_ElevatorInput > 0.0) return 0.0;
 	if (p_gForce < m_GMin && m_ElevatorInput < 0.0) return 0.0;
-	if ( m_alpha > m_stallAOA && m_ElevatorInput > 0.0) return 0.0;
-	if ( p_gForce > m_GMax - m_depsilon && m_ElevatorInput > 0.0) {
-		control = controlIVbasis((m_GMax - p_gForce) / m_depsilon);
-	} else {
-		if ( p_gForce < m_GMin + m_depsilon && m_ElevatorInput < 0.0) {
-			control = controlIVbasis((p_gForce - m_GMin) / m_depsilon);
-		}
+	if (m_alpha > m_stallAOA && m_ElevatorInput > 0.0) return 0.0;
+	if (p_gForce > m_GMax - m_depsilon && m_ElevatorInput > 0.0) {
+		return controlIVbasis((m_GMax - p_gForce) / m_depsilon);
+	} 
+	if ( p_gForce < m_GMin + m_depsilon && m_ElevatorInput < 0.0) {
+		return controlIVbasis((p_gForce - m_GMin) / m_depsilon);
 	}
-	
-	return control;
+	return 1.0;
 }
 
 void PrimaryAeroDynamics::updateAngles(double h) {
 	m_alpha = - atan2( m_AirflowBody.z, m_AirflowBody.y ); 
-	//m_alpha = - atan( m_AirflowBody.z/m_AirflowBody.y ); 
-	m_alphaDot = ( m_alpha - m_alpha0 ) / h;
+	if (h > 0.0) {
+		m_alphaDot = ( m_alpha - m_alpha0 ) / h;
+	} // else keep previous value
+
 	// restrict m_alphaDot in vertical stalls
 	if (m_alphaDot > 1.0) m_alphaDot = 1.0;
 	if (m_alphaDot < -1.0) m_alphaDot = -1.0;
@@ -424,12 +436,11 @@ void PrimaryAeroDynamics::updateAngles(double h) {
 	// Calculate side angle
 	// beta is 0 when v velocity (i.e. side velocity) is 0; note here v is m_AirflowBody.x
 	m_beta  = atan2(m_AirflowBody.x, m_AirflowBody.y);
-	//m_beta  = atan(m_AirflowBody.x/ m_AirflowBody.y);
 }
 
 void PrimaryAeroDynamics::calculateGroundEffectCoefficient() {
 // approximate (generic) ground effect... TODO: paramaterize in xml.
-	m_GE = 0.0;
+	m_GE = 1.0;
 	if (*m_NearGround) {
 		double h = *m_Height; // + wing height relative to cg
 		h /= m_WingSpan;

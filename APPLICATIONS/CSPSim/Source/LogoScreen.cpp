@@ -55,7 +55,7 @@ LogoScreen::~LogoScreen()
 
 void LogoScreen::onInit()
 {
-	std::string image_path = g_Config.getPath("Paths", "ImagePath", ".", true);
+	std::string image_path = getDataPath("ImagePath");
 	std::string path = simdata::ospath::join(image_path, "CSPLogo.bmp");
 	m_image = SDL_LoadBMP(path.c_str());
 	if (m_image == NULL)

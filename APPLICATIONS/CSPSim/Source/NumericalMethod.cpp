@@ -27,6 +27,7 @@
 #endif
 
 #include "NumericalMethod.h"
+#include "Profile.h"
 
 #include <cmath>
 
@@ -41,20 +42,20 @@ double const RungeKutta2::FCOR   = 0.06666666;         // 1.0/15.0
 double const RungeKutta2::SAFETY = 0.9;
 double const RungeKutta2::ERRCON = 6.0e-4;
 
-unsigned int const RungeKutta2::MAXSTP = 8;
+unsigned int const RungeKutta2::MAXSTP = 8; // XXX WAS 8
 double const       RungeKutta2::TINY   = std::numeric_limits<float>::epsilon();//1.0e-30;
 
 
 //===========================================================================
 
 std::vector<double> const &RungeKutta2::rk4(std::vector<double> const &y, 
-												std::vector<double> const &dydx, 
-												double x, double h) const
+                                            std::vector<double> const &dydx, 
+                                            double x, double h) const
 {	
 	static std::vector<double> yout(m_dimension), yt(m_dimension);
 
 	double hh = h * 0.5;
-    unsigned short i = 0;
+	unsigned short i = 0;
 
 	for (; i < m_dimension; ++i)
 		yt[i] = y[i] + hh * dydx[i];
@@ -82,10 +83,10 @@ std::vector<double> const &RungeKutta2::rk4(std::vector<double> const &y,
 //=========================================================================== 
 
 std::vector<double> const &RungeKutta2::rkqc(std::vector<double> &y, 
-												 std::vector<double> &dydx, 
-												 double &x, double htry, double eps, 
-												 std::vector<double> const &yscal, 
-												 double &hdid, double &hnext) {
+                                             std::vector<double> &dydx, 
+                                             double &x, double htry, double eps, 
+                                             std::vector<double> const &yscal, 
+                                             double &hdid, double &hnext) {
 	static std::vector<double> y1, ysav;
 
 	double xsav = x;
@@ -96,6 +97,7 @@ std::vector<double> const &RungeKutta2::rkqc(std::vector<double> &y,
 	bool loop = true;
 	std::vector<double> ytemp;
 	
+	//PROF0(RKQC);
 	do {
 		double hh = 0.5 * h;
 		ytemp = rk4(ysav, dysav, xsav, hh);
@@ -127,6 +129,7 @@ std::vector<double> const &RungeKutta2::rkqc(std::vector<double> &y,
 		}
 	}
 	while ( loop );
+	//PROF1(RKQC, 100);
 	if (m_failed) 
 		return ysav;
 	else {
@@ -139,10 +142,10 @@ std::vector<double> const &RungeKutta2::rkqc(std::vector<double> &y,
 //===========================================================================
 
 std::vector<double> const &RungeKutta2::odeint(
-												   std::vector<double> const & ystart,
-                                                   double x1, double x2, 
-												   double eps, double h1, double hmin, 
-												   unsigned int &nok, unsigned int &nbad)
+	std::vector<double> const & ystart,
+	double x1, double x2, 
+	double eps, double h1, double hmin, 
+	unsigned int &nok, unsigned int &nbad)
 {
 	static std::vector<double> yscal(m_dimension), y;
 
@@ -177,7 +180,6 @@ std::vector<double> const &RungeKutta2::odeint(
 		std::cout << "Too many steps in RungeKutta2::odeint\n";
 		m_failed = true;
 	}
-
 	return ystart;
 }
 
@@ -185,7 +187,7 @@ std::vector<double> const &RungeKutta2::odeint(
 
 std::vector<double> const& RungeKutta2::quickSolve(std::vector<double>& y0, double t0, double dt) const {
 	static std::vector<double> y;
-    y = rk4(y0, vectorField->_f(t0,y0), t0, dt);
+	y = rk4(y0, vectorField->_f(t0,y0), t0, dt);
 	return y;
 }
 
@@ -193,11 +195,13 @@ std::vector<double> const& RungeKutta2::quickSolve(std::vector<double>& y0, doub
 
 std::vector<double> const& RungeKutta2::enhancedSolve(std::vector<double>& y0, double t0, double dt) {
 	static std::vector<double> result;
- unsigned int nok,nbad;
- m_failed = false;
- result = odeint(y0, t0, t0+dt, m_precision, m_hestimate, m_hmin, nok, nbad);
- std::cout << "RungeKutta2::enhancedSolve nok =" << nok << "; nbad = " << nbad << "\n" << std::endl;
- return result;               
+	unsigned int nok,nbad;
+	m_failed = false;
+	//PROF0(_2ODEINT);
+	result = odeint(y0, t0, t0+dt, m_precision, m_hestimate, m_hmin, nok, nbad);
+	//PROF1(_2ODEINT, 100);
+	//std::cout << "RungeKutta2::enhancedSolve nok =" << nok << "; nbad = " << nbad << "\n" << std::endl;
+	return result;               
 }
 
 
@@ -214,66 +218,80 @@ double const       RungeKuttaCK::TINY   = std::numeric_limits<float>::epsilon();
 
 
 std::vector<double> const & RungeKuttaCK::rkck(std::vector<double> const & y, 
-		                            std::vector<double> const & dydx, 
-									double x, double h, std::vector<double>& yerr) const {
+                                               std::vector<double> const & dydx, 
+                                               double x, double h, 
+                                               std::vector<double>& yerr) const 
+{
 	static const double a2 = 0.2, a3 = 0.3, a4 = 0.6, a5 = 1.0, a6 = 0.875, 
-						b21 = 0.2, 
-						b31 = 3.0/40.0, b32 = 9.0/40.0, 
-						b41 = 0.3, b42 = -0.9, b43 =1.2,
-						b51 = -11.0/54.0, b52 = 2.5, b53 = -70.0/27.0, b54 = 35.0/27.0,
-						b61=1631.0/55296.0, b62=175.0/512.0, b63=575.0/13824.0, b64=44275.0/110592.0, b65=253.0/4096.0,
-						c1 = 37.0/378.0, c3 = 250.0/621.0, c4 = 125.0/594.0, c6 = 512.0/1771.0,
-						dc5 = -277.0/14336.0,
-						dc1 = c1 - 2825.0/27648.0, dc3 = c3 - 18575.0/48384.0, dc4 = c4 - 13525.0/55296.0, dc6 = c6 - 0.25;
+	b21 = 0.2, 
+	b31 = 3.0/40.0, b32 = 9.0/40.0, 
+	b41 = 0.3, b42 = -0.9, b43 =1.2,
+	b51 = -11.0/54.0, b52 = 2.5, b53 = -70.0/27.0, b54 = 35.0/27.0,
+	b61 = 1631.0/55296.0, b62=175.0/512.0, b63=575.0/13824.0, b64=44275.0/110592.0, b65=253.0/4096.0,
+	c1 = 37.0/378.0, c3 = 250.0/621.0, c4 = 125.0/594.0, c6 = 512.0/1771.0,
+	dc5 = -277.0/14336.0,
+	dc1 = c1 - 2825.0/27648.0, dc3 = c3 - 18575.0/48384.0, dc4 = c4 - 13525.0/55296.0, dc6 = c6 - 0.25;
  
 	static std::vector<double> ytemp(m_dimension);
 
 	unsigned short i = 0;
-	for (; i < m_dimension; ++i)
+	register short int const dim = m_dimension;
+	for (; i < dim; ++i) {
 		ytemp[i] = y[i] + b21 * h * dydx[i];
+	}
 	std::vector<double> ak2 = vectorField->_f(x + a2*h, ytemp);
-	for (i = 0; i < m_dimension; ++i)
+	for (i = 0; i < dim; ++i) {
 		ytemp[i] = y[i] + h * (b31*dydx[i] + b32*ak2[i]);
-    std::vector<double> ak3 = vectorField->_f(x + a3*h, ytemp);
-	for (i = 0; i < m_dimension; ++i)
+	}
+	std::vector<double> ak3 = vectorField->_f(x + a3*h, ytemp);
+	for (i = 0; i < dim; ++i) {
 		ytemp[i] = y[i] + h * (b41*dydx[i] + b42*ak2[i] + b43*ak3[i]);
+	}
 	std::vector<double> ak4 = vectorField->_f(x + a4*h, ytemp); 
-    for (i = 0; i < m_dimension; ++i)
+	for (i = 0; i < dim; ++i) {
 		ytemp[i] = y[i] + h * (b51*dydx[i] + b52*ak2[i] + b53*ak3[i] + b54*ak4[i]);
+	}
 	std::vector<double> ak5 = vectorField->_f(x + a5*h, ytemp); 
-    for (i = 0; i < m_dimension; ++i)
+	for (i = 0; i < dim; ++i) {
 		ytemp[i] = y[i] + h * (b61*dydx[i] + b62*ak2[i] + b63*ak3[i] + b64*ak4[i] + b65*ak5[i]);
+	}
 	std::vector<double> ak6 = vectorField->_f(x + a6*h, ytemp); 
-    for (i = 0; i < m_dimension; ++i)
+	for (i = 0; i < dim; ++i) {
 		ytemp[i] = y[i] + h * (c1*dydx[i] + c3*ak3[i] + c4*ak4[i] + c6*ak6[i]);
-	for (i = 0; i < m_dimension; ++i)
+	}
+	for (i = 0; i < dim; ++i) {
 		yerr[i] = h * (dc1*dydx[i] + dc3*ak3[i] + dc4*ak4[i] + dc5*ak5[i] + dc6*ak6[i]);
+	}
 	return ytemp;
 }
 
-std::vector<double>	const &RungeKuttaCK::rkqs(std::vector<double> &y, 
-												 std::vector<double> &dydx,	
-												 double	&x,	double htry, double	eps, 
-												 std::vector<double> const &yscal, 
-												 double	&hdid, double &hnext) {	
+std::vector<double> const &RungeKuttaCK::rkqs(std::vector<double> &y, 
+                                              std::vector<double> &dydx,	
+                                              double &x, double htry, double eps, 
+                                              std::vector<double> const &yscal, 
+                                              double &hdid, double &hnext) 
+{
 	static std::vector<double> yerr(m_dimension);
 	double h = htry, xnew, errmax;
 	unsigned short i;
-	bool loop =	true;
-	std::vector<double>	ytemp;
+	bool loop = true;
+	std::vector<double> ytemp;
 	do {
+		//PROF0(RKCK);
 		ytemp =	rkck(y,dydx,x,h,yerr);
+		//PROF1(RKCK, 1);
 		errmax = 0.0;
-		for	(i = 0;	i <	m_dimension; ++i)
+		for (i = 0; i < m_dimension; ++i) {
 			errmax = std::max(errmax,fabs(yerr[i]/yscal[i]));
+		}
 		errmax /= eps;
-		if (errmax <= 1.0)
+		if (errmax <= 1.0) {
 			loop = false;
-		else {
+		} else {
 			 double	htemp =	SAFETY * h * pow(errmax,PSHRNK);
-			 h = (h>=0.0 ? std::max(htemp,0.1 *	h) : std::min(htemp,0.1	*h));
-			 xnew =	x +	h;
-			 if	(x == xnew)	{
+			 h = (h>=0.0 ? std::max(htemp,0.1 * h) : std::min(htemp,0.1*h));
+			 xnew =	x + h;
+			 if (x == xnew) {
 				 std::cout << "Stepsize	underflow in RungeKuttaCK::rkqs\n";
 				 m_failed = true;
 			 }
@@ -281,21 +299,23 @@ std::vector<double>	const &RungeKuttaCK::rkqs(std::vector<double> &y,
 	}
 	while (	loop );
 	if (!m_failed) {
-	if (errmax > ERRCON)
-		hnext =	SAFETY * h * pow(errmax,PGROW);
-	else
-		hnext =	5.0	* h;
-	x += (hdid = h); 
-	for	(i = 0;	i <	m_dimension; ++i) 
-		y[i] = ytemp[i];
+		if (errmax > ERRCON) {
+			hnext =	SAFETY * h * pow(errmax,PGROW);
+		} else {
+			hnext =	5.0 * h;
+		}
+		x += (hdid = h); 
+		for (i = 0; i < m_dimension; ++i) {
+			y[i] = ytemp[i];
+		}
 	}
 	return y;
 }
 
 std::vector<double> const &RungeKuttaCK::odeint(std::vector<double> const & ystart,
-                                                   double x1, double x2, 
-												   double eps, double h1, double hmin, 
-												   unsigned int &nok, unsigned int &nbad)
+                                                double x1, double x2, 
+                                                double eps, double h1, double hmin, 
+                                                unsigned int &nok, unsigned int &nbad)
 {
 	static std::vector<double> yscal(m_dimension), y;
 
@@ -314,17 +334,19 @@ std::vector<double> const &RungeKuttaCK::odeint(std::vector<double> const & ysta
 			yscal[i] = fabs(y[i]) + fabs(dydx[i] * h) + TINY;
 		
 		if ((x+h-x2)*(x+h-x1) > 0.0) h = x2 - x;
+		//PROF0(RKQS);
 		y = rkqs(y, dydx, x, h, eps, yscal, hdid, hnext);
+		//PROF1(RKQS, 1);
 		if ( hdid == h ) ++nok; else ++nbad;
-		if ( (x-x2) * delta21 >= 0.0 )
+		if ( (x-x2) * delta21 >= 0.0 ) {
 			return y;
-		else {
+		} else {
 			if (fabs(hnext) <= hmin) {
 				m_failed = true;
 				std::cout << "Step size too small in RungeKuttaCK::odeint\n";
-			}
-			else
+			} else {
 				h = hnext;
+			}
 		}
 	}
 	while ( nstp < MAXSTP && !m_failed);
@@ -338,8 +360,7 @@ std::vector<double> const &RungeKuttaCK::odeint(std::vector<double> const & ysta
 
 std::vector<double> const& RungeKuttaCK::quickSolve(std::vector<double>& y0, double t0, double dt) const {
 	static std::vector<double> y, yerr(m_dimension);
-
-    y = rkck(y0, vectorField->_f(t0,y0), t0, dt, yerr);
+	y = rkck(y0, vectorField->_f(t0,y0), t0, dt, yerr);
 	return y;
 }
 
@@ -347,10 +368,10 @@ std::vector<double> const& RungeKuttaCK::quickSolve(std::vector<double>& y0, dou
 
 std::vector<double> const& RungeKuttaCK::enhancedSolve(std::vector<double>& y0, double t0, double dt) {
 	static std::vector<double> result;
- unsigned int nok,nbad;
- m_failed = false;
- result = odeint(y0, t0, t0+dt, m_precision, m_hestimate, m_hmin, nok, nbad);
- //std::cout << "RungeKuttaCK::enhancedSolve nok = " << nok << "; nbad = " << nbad << "\n" << std::endl;
- return result;               
+	unsigned int nok,nbad;
+	m_failed = false;
+	result = odeint(y0, t0, t0+dt, m_precision, m_hestimate, m_hmin, nok, nbad);
+	//std::cout << "RungeKuttaCK::enhancedSolve nok = " << nok << "; nbad = " << nbad << "\n" << std::endl;
+	return result;               
 }
 

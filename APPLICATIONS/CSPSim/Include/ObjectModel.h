@@ -57,7 +57,7 @@ class ObjectModel: public simdata::Object
 public:
 	typedef std::vector<simdata::Vector3> ContactList;
 
-	SIMDATA_OBJECT(ObjectModel, 3, 0);
+	SIMDATA_OBJECT(ObjectModel, 6, 0);
 	
 	BEGIN_SIMDATA_XML_INTERFACE(ObjectModel)
 		SIMDATA_XML("model_path", ObjectModel::m_ModelPath, true)
@@ -69,6 +69,9 @@ public:
 		SIMDATA_XML("smooth", ObjectModel::m_Smooth, false)
 		SIMDATA_XML("filter", ObjectModel::m_Filter, false)
 		SIMDATA_XML("contacts", ObjectModel::m_Contacts, false)
+		SIMDATA_XML("elevation_correction", ObjectModel::m_ElevationCorrection, false)
+		SIMDATA_XML("polygon_offset", ObjectModel::m_PolygonOffset, false)
+		SIMDATA_XML("cull_face", ObjectModel::m_CullFace, false)
 		SIMDATA_XML("landing_gear", ObjectModel::m_LandingGear, false)
 	END_SIMDATA_XML_INTERFACE
 
@@ -86,6 +89,8 @@ public:
 	double getBoundingSphereRadius() const { return m_BoundingSphereRadius; }
 	ContactList const &getContacts() const { return m_Contacts; }
 
+	bool getElevationCorrection() const { return m_ElevationCorrection; }
+
 	void showContactMarkers(bool on);
 	void showGearSprites(bool on);
 	void updateGearSprites(std::vector<simdata::Vector3> const &landing_gear);
@@ -101,6 +106,9 @@ protected:
 	double m_Scale;
 	bool m_Smooth;
 	bool m_Filter;
+	bool m_ElevationCorrection;
+	float m_PolygonOffset;
+	int m_CullFace;
 	ContactList m_Contacts;
 	std::vector<simdata::Vector3> m_LandingGear;
 	

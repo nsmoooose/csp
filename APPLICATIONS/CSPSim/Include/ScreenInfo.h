@@ -40,10 +40,10 @@ protected:
 	int m_FontSize;
 	float m_CharacterSize;
 	osgText::Text *m_Text;
-	osgText::Text *makeText(int pos_x, int pos_y,std::string const &string_text = "");
+	osgText::Text *makeText(float pos_x, float pos_y,std::string const &string_text = "");
 	virtual ~ScreenInfo() {}
 public:
-	ScreenInfo(int posx,int posy, std::string const &name, std::string const &text = "");
+	ScreenInfo(float pos_x, float posy, std::string const &name, std::string const &text = "");
 	virtual void update(){}
 	void setStatus(bool const bvisible) {if (bvisible) setNodeMask(0x1); else setNodeMask(0x0);};
 	bool getStatus() const {return getNodeMask() != 0;};

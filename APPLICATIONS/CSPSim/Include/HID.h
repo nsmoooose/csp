@@ -115,6 +115,15 @@ public:
 	 * Primary event dispatch routine.
 	 */
 	virtual bool onEvent(SDL_Event &event);
+
+	/**
+	 * Translate events.
+	 *
+	 * Call this once for each event.  Currently, the modifier state of
+	 * key releases is translated to match the state when the key was
+	 * pressed.
+	 */
+	static void translate(SDL_Event &event);
 };
 
 

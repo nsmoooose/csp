@@ -1,6 +1,81 @@
 Version 0.3.3 (in progress)
 ===========================
 
+2003-06-24: onsight
+            Added Profile.h which has simple but handy profiling 
+	    macros.  There's a new PROFILE log target in Log.h as
+	    well.
+
+	    CSPSim.py now takes a --log parameter to specify which
+	    log targets to record.  E.g.:
+
+	        CSPSim.py --log=PROFILE,PHYSICS
+
+	    Note that if multiple targets are specified they must
+	    be separated by commas (,) with no spaces.  The target
+	    names are the same as in Log.h, but without the leading
+	    'CSP_'.
+
+	    Changed EngineDynamics to only reevaluate the thrust
+	    during the preSimulationStep() call, rather than during
+	    update().  This should still provide more than enough time 
+	    resolution.
+
+	    Reimplemented the ground collision code to simplify the
+	    design and fix some bugs.
+	    
+	    Reimplemented the landing gear dynamics code.  The design
+	    is somewhat saner now, and most importantly it does not
+	    make internal state changes during the rk evaluations.
+	    The monolithic simulation method is now broken into more
+	    manageable pieces, and some new features such as brake
+	    temperature modeling have been added.  There is still
+	    some numerical instability when the wheels are locked and
+	    the system behaves as a stiff harmonic oscillator (tires).
+	    When the damping is too high, extreme instabilities can
+	    occur.  Even without violent behavior, the rk code generally
+	    slows down and works too hard trying to simulate the
+	    oscillation.  Not sure at this point how best to fix the
+	    problem.
+
+	    Updated the GCC Makefile.in.  Probably more changes still
+	    needed to integrate CSPChunkLod smoothly.
+
+==========> WIN: Changed *PhysicModel to *PhysicsModel.  Update the 
+            project files accordingly:
+	    	PhysicsModel.cpp
+		AircraftPhysicsModel.cpp
+
+==========> WIN: Theater code now in separate subdirectories under
+            Include/Theater and Source/Theater.  All the files in
+	    Source/Theater need to be added to the project.
+
+            Changed BaseDynamics::update(dt) to computeForceAndMoment(x)
+	    to reduce confusion with other update methods in the sim
+	    that take real (sequential) time interval parameters.
+
+2003-06-22: onsight
+            Added StateSet to text objects to disable texturing with
+	    tex units 1-3.  Shouldn't be necessary, but it helps to keep
+	    the text from disappearing when terrain multitexturing is
+	    enabled.  This is just a bandaid, not a cure.
+
+	    Implemented brake_limit for landing gear.  This is the
+	    maximum static force (in newtons) that each brake can produce
+	    (independent of tire friction).  It should be set to zero
+	    for wheels that do not have brakes.
+
+	    Fixed a bug in the brake lowpass filter that reduced the
+	    brake setting by 1/2.
+
+	    Added brake-steering linkage, which allows much tighter
+	    turning radii.  Set brake_steering_linkage to -1.0 for
+	    left-side gear and +1.0 for right-side gear.  An additional
+	    multiplier is passed as the second parameter to setSteering.
+	    Brake-steering adds to normal braking, but the total
+	    braking force is still constrained to [0, brake_limit] of
+	    course.
+
 2003-06-20: delta
 	    Moved updateNearGround() outside loop in AircraftPhysicModel::doSimStep.
 	    Reenabled position update in _f.
@@ -8,6 +83,19 @@ Version 0.3.3 (in progress)
 	    Changed binding methods for throttle in EngineDynamics/Engine class: added 
 	    a postCreate() method to bind every engine with EngineDynamics::m_Throttle; 
 	    added EngineDynamics::setThrottle.
+
+2003-06-19: onsight
+            Fixes in AircraftPhysicModel::doSimStep to correctly update
+	    position when multiple internal timesteps are used.
+
+	    Added missing Feature.cpp.  Together with the postCreate
+	    fix to SimData, makeFeatures is now running correctly.
+
+	    The postCreate fix also cures the gear sprite placement
+	    problem when starting in the air.
+
+	    Renamed osgChunkLod-double director to CSPChunkLod, which
+	    is now in cvs.
 
 2003-06-19: delta
 ==========> GCC USERS: add Engine.cpp, BaseDynamics.cpp, Collision.cpp,
@@ -54,16 +142,125 @@ Version 0.3.3 (in progress)
 	    Made ~ScreenInfo() protected (and its subsequent children); same for
 	    ~SmokeTrailSystem() and ~SceneModel().
 
+2003-06-11: onsight
+            Added a link from Feature to the associated FeatureObjectModel.
+
+	    Added an "elevation correction" option to ObjectModel.  The
+	    default is true, which means that features will be floated
+	    relative to the local terrain elevation.  If false, Z=0 is
+	    the reference elevation for the model.  This can be used for
+	    models that are decaled to the terrain surface and already
+	    incorporate the local elevation variations.  In principle,
+	    this functionality and some other parts (e.g. contacts) should
+	    be separated into subclases of ObjectModel (VehicleObjectModel,
+	    DecalObjectModel, FeatureObjectModel, etc).
+
+2003-05-14: onsight
+            Some battlefield code cleanup.
+
+	    New --log=XXX:YYY option for CSPSim to set the logging
+	    classes.  For example: --log=APP:BATTLEFIELD:PROFILE
+          
+	    Use for the new SimData LLA class to specify object coordinates
+	    in latitude, longitude, altitude.  TerrainObject now defines
+	    a center latitude and longitude (set in XML), and the geographic
+	    coordinates around this point are mapped into the sim's flat
+	    coordinate space using a secant gnomonic projection.  This
+	    projection is not the same as was used for the Balkan terrain, 
+	    so object coordinates will not exactly match the terrain.
+	    Internally, the (x, y) coordinate system is now relative to the
+	    center of the terrain rather than the southwestern corner.  The
+	    internal coordinates used by demeter are unchanged, so an 
+	    offset is applied whenever camera positions are passed to 
+	    demeter.
+
+2003-05-06: onsight
+            New RandomForestModel for building random assortments of
+	    'X' quads.  I haven't been able to turn of back-face culling
+	    (not sure the normals would work out right even if I could),
+	    so I'm drawing 4 quads per tree (both sides of each plane of
+	    the 'X').  Seems to work, and is faster than billboarding,
+	    but doesn't look as nice especially wrt lighting.
+
+	    Added normals to billboard quads, renamed the class to
+	    FeatureQuad.
+
+	    Changed the interactions of LayoutTransform, FeatureSceneModel,
+	    and ElevationCorrection.  Fixed the elevation correction.
+
+            Renamed m_fdisToObject and m_fangleRot* to m_DistanceToObject
+	    and m_AngleRot* in GameScreen.  Added m_MinimumDistance which
+	    is set to the active object's bounding sphere radius plus a
+	    couple meters.  The prevents clipping of the model by the
+	    near plane in external views.  You can still clip into other 
+	    models that are nearby of course.
+
+            Added a second SceneView to VirtualScene. The original SceneView
+            is now called m_FarView, and the new one is m_NearView. NearView
+            has the lighting group, and a group for objects near the camera.
+            NearView is only used if this later group is not empty.
+            VirtualScene::draw() first renders the FarView with the near
+            clip plane set to 1-3 m. This relatively large value helps to
+            reduce Z-fighting far from the camera. Then the depth buffer is
+            cleared and NearView is rendered with the depth frustum from 1
+            cm to 100 m. Typically the player's vehicle and interface is
+            rendered in the NearView for internal views. GameScreen manages
+            whether the NearView or FarView is used based on the current
+            viewing mode (internal or external).
+
+	    Additional fixes to the HID keystate tracker. 
+
+2003-05-05: onsight
+            Added HID::translate to keep track of the keyboard modifier
+	    state for each key that is pressed, and force that modifier
+	    state again when the key is released.   So for example, if
+	    PRESS{NUM-6} maps to "begin pan-right", and RELEASE{NUM-6}
+	    maps to "end pan-right", then:
+	    
+	      PRESS{NUM-6}, PRESS{SHIFT}, RELEASE{NUM-6}, RELEASE{SHIFT}
+
+	    never sent the "end pan-right" message since the modifier state
+	    when RELEASE{NUM-6} arrived included the shift state.  The new
+	    translate method records that PRESS{NUM-6} occurred with no
+	    modifiers, and temporarily overrides the modifier state when
+	    the key is released.  This method is currently only called by
+	    CSPSim::doInput().  It is called for all input events, and may
+	    eventually find uses for other event types (e.g. joystick).
+	    
+2003-05-04: onsight
+            Small fix to the camera positioning correction that prevents it
+	    from getting "stuck" to the ground.
+
+	    Added FeatureQuad class to Terrain.h for creating textured quads
+	    used in billboards (e.g. trees).
+
+	    Similified RandomLayoutModel to use FeatureQuad.
+
+	    Added a couple XML files for trees under Data/XML/theater/trees
+
+	    Moved the osgDB search path setup out of VirtualScene and into
+	    CSPSim::init().  All the paths are now relative to DataPath,
+	    and there is a new accessor function in Config.h to make it
+	    easier to access them.  For example, getDataPath("ImagePath") 
+	    will return the full path for images (DataPath + ImagePath, if 
+	    ImagePath is not absolute).
+
 2003-05-04: delta
 	    Added a naive control of camera such that it keeps above ground.
+
 	    Updated .net project. 
+
 	    Added a /Zm 1000 parameter in .net projects to avoid fatal 
 	    compiler error.
+
 	    Changed vehicle orientation at start.
+
 	    Changed some Atmosphere function members to return float instead
 	    double to avoid some warnings.
+
 	    Updated CSPSim.py to take account set_output <-> setOuput for 
 	    log file.
+
 	    Added a vehicle to load in testing item in ini file. The vehicle 
 	    is specified in Vehicle.
 

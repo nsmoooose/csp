@@ -35,6 +35,7 @@
 #include "DynamicObject.h"
 #include "HID.h"
 #include "ScreenInfoManager.h"
+#include "TerrainObject.h"
 
 
 class PyConsole;
@@ -99,19 +100,26 @@ public:
 
 protected:
 	static double const OffsetRate;
-	int m_iViewMode;
-	float m_fangleRotX, m_fangleRotZ, m_fdisToObject, m_PanRateX, m_PanRateZ, m_ZoomRate;
-	simdata::Vector3 m_fixedCamPos;
+	int m_ViewMode;
+	float m_AngleRotX, m_AngleRotZ, m_DistanceToObject, m_PanRateX, m_PanRateZ, m_ZoomRate;
+	simdata::Vector3 m_FixedCameraPosition;
+	simdata::Vector3 m_NormalDirection;  
 
-	bool m_bInternalView;
-	bool m_bPreviousState;
+	bool m_InternalView;
+	bool m_PreviousState;
+	bool m_CameraOnGround;
+	bool m_LookRelative;
+	float m_CameraGroundAngle;
+	float m_MinimumDistance;
 
 	void normalView();
-	void turnViewAboutX(double dt, double fangleMax = G_PI / 2.0);
-	void turnViewAboutZ(double dt, double fangleMax = G_PI);
+	void turnViewAboutX(double dt, double AngleMax = G_PI / 2.0);
+	void turnViewAboutZ(double dt, double AngleMax = G_PI);
 	void scaleView(double dt);
 	simdata::Vector3 getNewFixedCamPos(SimObject * const target) const;
 	void setCamera(double dt);
+
+	TerrainObject::IntersectionHint m_CameraHint;
 
 	/**
 	* Text information
@@ -122,6 +130,11 @@ protected:
 	osg::ref_ptr<PyConsole> m_Console;
 
 	simdata::Ref<DynamicObject> m_ActiveObject;
+
+	simdata::Ref<DynamicObject> m_Padlock;
+	float m_NeckPhi;
+	float m_NeckTheta;
+	bool m_NeckLimit;
 };
 
 #endif // __GAMESCREEN_H__

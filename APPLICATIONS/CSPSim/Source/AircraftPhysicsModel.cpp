@@ -17,22 +17,24 @@
 
 
 /**
- * @file AircraftPhysicModel.cpp
+ * @file AircraftPhysicsModel.cpp
  *
  **/
-#include <algorithm>
-
-#include "AircraftPhysicModel.h"
+#include "AircraftPhysicsModel.h"
 #include "BaseDynamics.h"
 #include "Collision.h"
 #include "CSPSim.h"
+#include "Profile.h"
 
-AircraftPhysicModel::AircraftPhysicModel():
-	PhysicModel(13) {
+#include <algorithm>
+
+
+AircraftPhysicsModel::AircraftPhysicsModel():
+	PhysicsModel(13) {
 	setNumericalMethod(new RungeKuttaCK(this, false));
 }
 
-std::vector<double> const &AircraftPhysicModel::_f(double x, std::vector<double> &y) {   
+std::vector<double> const &AircraftPhysicsModel::_f(double x, std::vector<double> &y) {   
 	// dot(p,v,w,q) = f(p,v,w,q)
 	static std::vector<double> dy(13);
 
@@ -50,26 +52,19 @@ std::vector<double> const &AircraftPhysicModel::_f(double x, std::vector<double>
 	m_ForcesBody = m_MomentsBody = simdata::Vector3::ZERO;
 	m_WeightBody = localToBody(m_WeightLocal);
 
-	m_GroundCollisionDynamics->reset(x);
-
-	if (m_GroundCollisionDynamics && m_NearGround) {
-		m_GroundCollisionDynamics->update(x);
+	if (m_GroundCollisionDynamics && (m_NearGround || m_GroundCollisionDynamics->hasContact())) {
+		m_GroundCollisionDynamics->computeForceAndMoment(x);
 		if (m_GroundCollisionDynamics->hasContact()) {
 			m_ForcesBody += m_GroundCollisionDynamics->getForce();
 			m_MomentsBody += m_GroundCollisionDynamics->getMoment();
-			if (m_GroundCollisionDynamics->hasImpulsion()) {
-				m_VelocityBody += m_GroundCollisionDynamics->getLinearImpulsion();
-				m_AngularVelocityBody += m_GroundCollisionDynamics->getAngularImpulsion(); 
-			}
 		}
 	}
 						
 	std::vector<BaseDynamics*>::iterator bd = m_Dynamics.begin();
 	std::vector<BaseDynamics*>::const_iterator bdEnd = m_Dynamics.end();
 	for (;bd != bdEnd; ++bd) {
-		(*bd)->update(x);
-		simdata::Vector3 force = (*bd)->getForce();
-		m_ForcesBody += force;
+		(*bd)->computeForceAndMoment(x);
+		m_ForcesBody += (*bd)->getForce();
 		m_MomentsBody += (*bd)->getMoment();
 	}
 
@@ -98,7 +93,8 @@ std::vector<double> const &AircraftPhysicModel::_f(double x, std::vector<double>
 	return dy;
 }
 
-void AircraftPhysicModel::doSimStep(double dt) {	
+void AircraftPhysicsModel::doSimStep(double dt) {	
+
 	if (dt == 0.0) dt = 0.017;
 	unsigned short n = std::min<short>(6,static_cast<unsigned short>(180 * dt)) + 1;
 	double dtlocal = dt/n;
@@ -118,7 +114,8 @@ void AircraftPhysicModel::doSimStep(double dt) {
 	m_AngularVelocityLocal = *m_AngularVelocity;
 	m_qOrientation = *m_Orientation;
 
-	updateNearGround();
+	updateNearGround(dt);
+	updateAeroParameters(dt);
 
 	for (unsigned short i = 0; i<n; ++i) {
 		
@@ -131,13 +128,18 @@ void AircraftPhysicModel::doSimStep(double dt) {
 
 		// solution
 		std::vector<double> y = flow(y0, 0, dtlocal);
+
 		// update all variables
 		// Caution: dont permute these	lines
 		// solution to body data members
 		YToBody(y);
+
 		// correct an eventual underground position
-		if (m_GroundCollisionDynamics->hasContact())
-			m_PositionBody += m_GroundCollisionDynamics->getZCorrection();
+		if (m_GroundCollisionDynamics->needsImpulse()) {
+		//	std::cout << "IMPULSE\n";
+			float scale = 1.0 - std::min(1.0, dtlocal * 100.0);
+			m_VelocityBody *= scale;
+		}
 
 		std::for_each(m_Dynamics.begin(),m_Dynamics.end(),PostSimulationStep(dtlocal));
 
@@ -150,9 +152,6 @@ void AircraftPhysicModel::doSimStep(double dt) {
 		if (mag	!= 0.0)
 			m_qOrientation /= mag;
 		
-		if (m_GroundCollisionDynamics->hasContact() && m_VelocityLocal.z < 0.0) {
-			m_VelocityLocal.z *= 0.9;
-		}
 		*m_Position = m_PositionLocal;
 	}
 
@@ -161,3 +160,4 @@ void AircraftPhysicModel::doSimStep(double dt) {
 	*m_AngularVelocity = m_AngularVelocityLocal;
 	*m_Orientation = m_qOrientation;	
 }
+

@@ -26,9 +26,22 @@
 /*
  * TODO 
  *   (many things)
+ *
  *   externalize various parametrs: cellsize, bubble radii, etc.
+ *
  *   compute gridsize based on terrain size
- *   ...
+ *   
+ *   XXX leaveScene() and enterScene() must manage the inScene 
+ *   flag of SimObject, since this is not set by VirtualScene for 
+ *   features.
+ *
+ *   add string-based parsing of log classes to CSPSim::init so 
+ *   that we can filter out all but the battlefield messages.
+ *
+ *   test various bubble radii, including vis > mud and mud > air
+ *  
+ *   add sub-timing of feature agg/degg to see where the bottle-
+ *   neck really is.
  */
 
 #include "VirtualBattlefield.h"
@@ -36,10 +49,14 @@
 #include "TerrainObject.h"
 #include "DynamicObject.h"
 #include "Theater.h"
+#include "Theater/FeatureGroup.h"
+#include "Theater/FeatureSceneGroup.h"
 #include "Config.h"
+#include "Log.h"
 
 #include <SimData/Types.h>
 #include <SimData/Math.h>
+#include <SimData/Date.h>
 
 #include <sstream>
 #include <algorithm>
@@ -53,11 +70,17 @@ VirtualBattlefield::VirtualBattlefield()
 	m_Debug = g_Config.getInt("Debug", "Battlefield", 0, true);
 	m_Deleted = 0;
 	m_CellSize = 10000.0; // 10 km
-	m_GridSizeX = 100; // 1000 km
-	m_GridSizeY = 100; // 1000 km
+	m_GridSizeX = 101; // 1010 km
+	m_GridSizeY = 101; // 1010 km
 	m_Cells.resize(m_GridSizeX * m_GridSizeY);
 	m_Clean = false;
 	m_CameraIndex = -1;
+	// XXX temporary: radii should be retrieved from the active 
+	//     object.  perhaps these should just be scaling factors
+	//     (the equivalent of bubble sliders in falcon)
+	m_VisualRadius = g_Config.getInt("Testing", "VisualRadius",  40000, true);
+	m_MudBubbleRadius = g_Config.getInt("Testing", "MudBubbleRadius",  60000, true);
+	m_AirBubbleRadius = g_Config.getInt("Testing", "AirBubbleRadius",  80000, true);
 }
 
 VirtualBattlefield::~VirtualBattlefield()
@@ -81,33 +104,55 @@ void VirtualBattlefield::setScene(simdata::Ref<VirtualScene> scene)
 	m_Scene = scene;
 }
 
-
-float VirtualBattlefield::getElevation( float x,float y ) const
+float VirtualBattlefield::getGroundElevation(float x, 
+                                             float y, 
+                                             TerrainObject::IntersectionHint &hint) const
 {
 	if (!m_Terrain) {
 		return 0.0;
 	} else {
-		return m_Terrain->getElevation(x,y);
+		return m_Terrain->getGroundElevation(x, y, hint);
 	}
 }
 
-void VirtualBattlefield::getNormal(float x, float y, float & normalX, 
-                                   float & normalY, float & normalZ ) const
+float VirtualBattlefield::getGroundElevation(float x, 
+                                             float y, 
+                                             simdata::Vector3 &normal, 
+                                             TerrainObject::IntersectionHint &hint) const
 {
-	normalX = 0.0f; normalY = 0.0f; normalZ = 1.0f;
-	if (m_Terrain.valid()) {
-		m_Terrain->getNormal(x,y, normalX, normalY, normalZ);
+	if (!m_Terrain) {
+		normal = simdata::Vector3::ZAXIS;
+		return 0.0;
+	} else {
+		return m_Terrain->getGroundElevation(x, y, normal, hint);
 	}
 }
 
+float VirtualBattlefield::getGroundElevation(float x, float y) const
+{
+	if (!m_Terrain) {
+		return 0.0;
+	} else {
+		static TerrainObject::IntersectionHint hint = 0;
+		return m_Terrain->getGroundElevation(x, y, hint);
+	}
+}
 
+float VirtualBattlefield::getGroundElevation(float x, float y, simdata::Vector3 &normal) const
+{
+	if (!m_Terrain) {
+		return 0.0;
+	} else {
+		static TerrainObject::IntersectionHint hint = 0;
+		return m_Terrain->getGroundElevation(x, y, normal, hint);
+	}
+}
 
 void VirtualBattlefield::onUpdate(float dt)
 {
 	updateAllUnits(dt);
 	_updateActiveCells(dt);
 }
-
 
 
 void VirtualBattlefield::addUnit(Unit const &unit)
@@ -117,7 +162,7 @@ void VirtualBattlefield::addUnit(Unit const &unit)
 }
 
 
-void VirtualBattlefield::removeUnit(Unit const &unit)
+void VirtualBattlefield::deleteUnit(Unit const &unit)
 {
 	assert(unit.valid());
 	UnitList::iterator i = m_UnitList.begin();
@@ -208,10 +253,6 @@ VirtualBattlefield::Unit VirtualBattlefield::getNextUnit(Unit const &unit, int h
 }
 
 
-void VirtualBattlefield::setTerrain(simdata::Ref<TerrainObject> terrain) {
-	m_Terrain = terrain;
-}
-
 
 void VirtualBattlefield::saveSnapshot() {
 	static int index = 0;
@@ -247,19 +288,20 @@ void VirtualBattlefield::toCell(int idx, int &x, int &y) {
 	x = idx % m_GridSizeX;
 	if (y < 0) y = 0;
 	if (y >= m_GridSizeY) y = m_GridSizeY-1;
+	y -= m_GridSizeY/2;
+	x -= m_GridSizeX/2;
 }
-
 
 void VirtualBattlefield::_setHuman(UnitWrapper &wrapper, bool human) {
 	Unit &unit = wrapper.unit;
 	if (unit->isHuman() == human) return;
 	if (wrapper.idx != -1) {
 		if (human) {
-			_updateBubble(-1, wrapper.idx, 100000.0, AIR_BUBBLE);
-			_updateBubble(-1, wrapper.idx, 40000.0, MUD_BUBBLE);
+			_updateBubble(-1, wrapper.idx, m_AirBubbleRadius, AIR_BUBBLE);
+			_updateBubble(-1, wrapper.idx, m_MudBubbleRadius, MUD_BUBBLE);
 		} else {
-			_updateBubble(wrapper.idx, -1, 100000.0, AIR_BUBBLE);
-			_updateBubble(wrapper.idx, -1, 40000.0, MUD_BUBBLE);
+			_updateBubble(wrapper.idx, -1, m_AirBubbleRadius, AIR_BUBBLE);
+			_updateBubble(wrapper.idx, -1, m_MudBubbleRadius, MUD_BUBBLE);
 		}
 	}
 	unit->setHuman(human); 
@@ -267,67 +309,41 @@ void VirtualBattlefield::_setHuman(UnitWrapper &wrapper, bool human) {
 
 void VirtualBattlefield::_moveUnit(UnitWrapper &wrapper, int idx) {
 	Unit &unit = wrapper.unit;
-	bool oldBubble, newBubble;
 	bool remove = idx < 0;
 	bool add = wrapper.idx < 0;
-	if (m_Debug > 0) {
-		std::cout << "move from " << wrapper.idx << " to " << idx << std::endl;
-	}
+	CSP_LOG(BATTLEFIELD, DEBUG, "moveUnit " << wrapper.idx << " to " << idx);
 	if (unit->isHuman()) {
-		// XXX parameterize ranges
-		_updateBubble(wrapper.idx, idx, 100000.0, AIR_BUBBLE);
-		_updateBubble(wrapper.idx, idx, 40000.0, MUD_BUBBLE);
-	} else {
-		// non-human unit, check if it has entered or left a bubble.
-		bool air = unit->isAir();
-		if (air) {
-			oldBubble = add ? false : m_Cells[wrapper.idx].inAirBubble();
-			newBubble = remove ? false : m_Cells[idx].inAirBubble();
-		} else {
-			oldBubble = add ? false : m_Cells[wrapper.idx].inMudBubble();
-			newBubble = remove ? false : m_Cells[idx].inMudBubble();
-		}
-		if (oldBubble != newBubble) {
-			if (newBubble) {
-				unit->deaggregate();
-			} else {
-				unit->aggregate();
-			}
-		}
+		_updateBubble(wrapper.idx, idx, m_AirBubbleRadius, AIR_BUBBLE);
+		_updateBubble(wrapper.idx, idx, m_MudBubbleRadius, MUD_BUBBLE);
 	}
-	// update visibility
-	oldBubble = add ? false : m_Cells[wrapper.idx].isVisible();
-	newBubble = remove ? false : m_Cells[idx].isVisible();
-	if (oldBubble != newBubble) {
-		unit->setVisible(newBubble);
-		if (m_Scene.valid()) {
-			if (newBubble) {
-				m_Scene->addObject(unit);
-			} else {
-				m_Scene->removeObject(unit);
-			}
-		}
-	}
-	// update the cell lists
 	if (!add) {
 		m_Cells[wrapper.idx].removeUnit(unit);
 	}
 	wrapper.idx = idx;
 	if (!remove) {
+		// the active cell will handle state updates for the unit
 		m_Cells[idx].addUnit(unit);
-		ActiveCell *active = m_Cells[idx].getActive();
-		if (active) {
-			simdata::Vector3 origin = active->getOrigin();
-			osg::Group *group = active->getSceneFeatureCell().get();
-			unit->setLocalFrame(origin, group);
-		} else {
-			unit->setLocalFrame();
-		}
 	} else {
-		unit->setLocalFrame();
+		// aggregate and remove from the scene
+		_detachUnit(unit);
 	}
 	if (!add && m_Debug > 0) saveSnapshot();
 }
+
+
+void VirtualBattlefield::_detachUnit(Unit &unit) {
+	if (unit->getVisibleFlag()) {	
+		CSP_LOG(BATTLEFIELD, TRACE, "detachUnit");
+		unit->leaveScene();
+		if (m_Scene.valid()) {
+			m_Scene->removeObject(unit);
+		}
+	}
+	if (!unit->isHuman() && !unit->getAggregateFlag()) {
+		unit->_aggregate();
+	}
+}
+
 
 /**
  * Add a cell to a bubble.
@@ -342,8 +358,8 @@ void VirtualBattlefield::_addBubble(int cell, int type) {
 	if (!active) {
 		int x, y;
 		toCell(cell, x, y);
-		float origin_x = (x+0.5) * m_CellSize;
-		float origin_y = (y+0.5) * m_CellSize;
+		float origin_x = x * m_CellSize;
+		float origin_y = y * m_CellSize;
 		active = new ActiveCell(&(m_Cells[cell]), cell, origin_x, origin_y, m_Scene, m_Terrain);
 		m_ActiveCells.push_back(active);
 	}
@@ -396,15 +412,20 @@ void VirtualBattlefield::_updateActiveCells(float dt) {
 	if (m_ActiveCells.empty()) return;
 	std::list<ActiveCell*>::iterator iter = m_ActiveCells.begin();
 	std::list<ActiveCell*>::iterator end = m_ActiveCells.end();
+	simdata::SimTime start = simdata::SimDate::getSystemTime();
 	while (iter != end) {
 		if (((*iter)->needsUpdate())) {
-			int steps = 0;
-			bool active = ((*iter)->update(dt, steps)!=0);
-			if (!active) {
+			if ((*iter)->update(dt)) {
+				iter++;
+			} else {
 				delete *iter;
 				iter = m_ActiveCells.erase(iter);
-			} else {
-				iter++;
+			}
+			// don't spend more than 10 ms at a time
+			if (simdata::SimDate::getSystemTime() - start > 0.010) {
+				// take credit for the stutter
+				std::cout << "ACTIVE CELL UPDATE PAUSED " << 1000.0*(simdata::SimDate::getSystemTime() - start) << "ms\n";
+				return;
 			}
 		} else {
 			iter++;
@@ -430,9 +451,7 @@ void VirtualBattlefield::_updateUnit(UnitWrapper &wrapper, double dt) {
 		wrapper.sleep = wrapper.unit->onUpdate(wrapper.time);
 		wrapper.time = 0.0;
 		simdata::Vector3 const &pos = wrapper.unit->getGlobalPosition();
-		int x = int(pos.x / m_CellSize);
-		int y = int(pos.y / m_CellSize);
-		int idx = toCell(x, y);
+		int idx = toCell(pos);
 		if (idx != wrapper.idx) {
 			_moveUnit(wrapper, idx);
 		}
@@ -443,37 +462,38 @@ void VirtualBattlefield::_updateUnit(UnitWrapper &wrapper, double dt) {
 void VirtualBattlefield::setTheater(simdata::Ref<Theater> const &theater) {
 	m_Theater = theater;
 	if (theater.valid()) {
-		simdata::Ref<FeatureGroup>::vector groups = theater->getAllFeatureGroups();	
-		simdata::Ref<FeatureGroup>::vector::iterator i = groups.begin();
-		simdata::Ref<FeatureGroup>::vector::iterator j = groups.end();
+		simdata::Ref<FeatureGroup>::list groups = theater->getAllFeatureGroups();	
+		simdata::Ref<FeatureGroup>::list::iterator i = groups.begin();
+		simdata::Ref<FeatureGroup>::list::iterator j = groups.end();
 		for (; i != j; i++) {
-			simdata::Vector3 pos = (*i)->getPosition();
-			int x = int(pos.x / m_CellSize);
-			int y = int(pos.y / m_CellSize);
-			int idx = toCell(x, y);
-			if (m_Debug > 0) {
-				std::cout << "adding feature to cell " << x << ":" << y << std::endl;
-			}
+			simdata::Vector3 pos = (*i)->getGlobalPosition();
+			std::cout << pos << "\n";
+			int idx = toCell(pos);
+			CSP_LOG(BATTLEFIELD, DEBUG, "Adding feature to cell " << idx);
 			m_Cells[idx].addFeatureGroup(*i);
 		}
+		m_Terrain = theater->getTerrain();
+	} else {
+		m_Terrain = NULL;
 	}
 } 
 
+simdata::Ref<Theater> VirtualBattlefield::getTheater() const {
+	return m_Theater;
+}
 
 void VirtualBattlefield::setCamera(simdata::Vector3 const &pos) {
 	m_Camera = pos;
-	int x = int(pos.x / m_CellSize);
-	int y = int(pos.y / m_CellSize);
-	int idx = toCell(x, y);
+	int idx = toCell(pos);
 	if (idx != m_CameraIndex) {
+		CSP_LOG(BATTLEFIELD, DEBUG, "Moving camera to cell " << idx);
 		_moveCamera(idx);
 	}
 }
 
 
 void VirtualBattlefield::_moveCamera(int index) {
-	// XXX parameterize range
-	_updateBubble(m_CameraIndex, index, 40000.0, VIS_BUBBLE);
+	_updateBubble(m_CameraIndex, index, m_VisualRadius, VIS_BUBBLE);
 	m_CameraIndex = index;
 }
 
@@ -517,10 +537,10 @@ void VirtualBattlefield::_updateBubble(int idx0, int idx1, float range, int type
 		yhi = y0+int_range;
 	}
 	// limit bbox to gridsize
-	if (xlo < 0) xlo = 0;
-	if (xhi >= m_GridSizeX) xhi = m_GridSizeX-1;
-	if (ylo < 0) ylo = 0;
-	if (yhi >= m_GridSizeY) yhi = m_GridSizeY-1;
+	if (xlo < -m_GridSizeX/2) xlo = -m_GridSizeX/2;
+	if (xhi >= m_GridSizeX/2) xhi =  m_GridSizeX/2 - 1;
+	if (ylo < -m_GridSizeY/2) ylo = -m_GridSizeY/2;
+	if (yhi >= m_GridSizeY/2) yhi =  m_GridSizeY/2 - 1;
 	int i, j;
 	// work with squared distance to avoid sqrt()
 	int sq_range = int(range*range + 0.5);
@@ -554,25 +574,36 @@ void VirtualBattlefield::_updateBubble(int idx0, int idx1, float range, int type
 
 
 /////////////////////////////////////////////////////////////////////////////////////////////
-// VirtualBattlefield::ActiveCell
+// ActiveCell
 /////////////////////////////////////////////////////////////////////////////////////////////
 
 
-VirtualBattlefield::ActiveCell::ActiveCell(Cell *cell, int index, float origin_x, float origin_y, simdata::Ref<VirtualScene> const &scene, simdata::Ref<TerrainObject> const &terrain) {
-	//std::cout << "NEW ACTIVE CELL " << index << std::endl;
+ActiveCell::ActiveCell(Cell *cell, int index, float origin_x, float origin_y, simdata::Ref<VirtualScene> const &scene, simdata::Ref<TerrainObject> const &terrain) {
+	CSP_LOG(BATTLEFIELD, DEBUG, "New ActiveCell " << index);
 	assert(cell);
 	cell->setActive(this);
 	m_Cell = cell;
 	m_Index = index;
 	m_AirBubbleTimer = 0.0;
 	m_MudBubbleTimer = 0.0;
-	m_VisBubbleTimer = 0.0;
+	m_VisualTimer = 0.0;
 	m_Origin = simdata::Vector3(origin_x, origin_y, 0.0);
-	m_CurrentAirUnit = cell->getUnits().begin();
-	m_CurrentMudUnit = cell->getUnits().begin();
-	m_CurrentVisUnit = cell->getUnits().begin();
-	m_CurrentMudFeature = cell->getFeatureGroups().begin();
-	m_CurrentVisFeature = cell->getFeatureGroups().begin();
+
+	m_AirUnitWalker.bind(cell->getUnits());
+	m_AirUnitWalker.setDirection(false);
+
+	m_MudUnitWalker.bind(cell->getUnits());
+	m_MudUnitWalker.setDirection(false);
+
+	m_UnitVisualWalker.bind(cell->getUnits());
+	m_UnitVisualWalker.setDirection(false);
+
+	m_StaticWalker.bind(cell->getFeatureGroups());
+	m_StaticWalker.setDirection(false);
+
+	m_StaticVisualWalker.bind(cell->getFeatureGroups());
+	m_StaticVisualWalker.setDirection(false);
+
 	m_SceneFeatureCell = NULL;
 	m_AirBubbles = 0;
 	m_MudBubbles = 0;
@@ -583,7 +614,7 @@ VirtualBattlefield::ActiveCell::ActiveCell(Cell *cell, int index, float origin_x
 	m_NeedsUpdate = true;
 }
 
-VirtualBattlefield::ActiveCell::~ActiveCell() {
+ActiveCell::~ActiveCell() {
 	// should either be completely inactive or should have 
 	// called cleanup() first if exitting.
 	assert(m_AirBubbles == 0);
@@ -595,11 +626,11 @@ VirtualBattlefield::ActiveCell::~ActiveCell() {
 	}
 }
 
-bool VirtualBattlefield::ActiveCell::inAirBubble() const { return m_AirBubbles > 0; }
-bool VirtualBattlefield::ActiveCell::inMudBubble() const { return m_MudBubbles > 0; }
-bool VirtualBattlefield::ActiveCell::isVisible() const { return m_Visible; }
+bool ActiveCell::inAirBubble() const { return m_AirBubbles > 0; }
+bool ActiveCell::inMudBubble() const { return m_MudBubbles > 0; }
+bool ActiveCell::isVisible() const { return m_Visible; }
 
-void VirtualBattlefield::ActiveCell::updateScene(simdata::Vector3 const & origin) {
+void ActiveCell::updateScene(simdata::Vector3 const & origin) {
 	if (m_SceneFeatureCell.valid()) {
 		simdata::Vector3 pos = m_Origin - origin;
 		m_SceneFeatureCell->setPosition(osg::Vec3(pos.x, pos.y, pos.z));
@@ -611,147 +642,141 @@ void VirtualBattlefield::ActiveCell::updateScene(simdata::Vector3 const & origin
 	}
 }
 
-void VirtualBattlefield::ActiveCell::addAirBubble() {
+void ActiveCell::addAirBubble() {
 	assert(!m_Destroyed);
-	if (m_AirBubbles == 0) m_NeedsUpdate = true;
+	if (m_AirBubbles == 0) {
+		m_NeedsUpdate = true;
+		m_AirUnitWalker.setDirection(true);
+	}
 	m_AirBubbles++;
 }
 
-void VirtualBattlefield::ActiveCell::removeAirBubble() {
+void ActiveCell::removeAirBubble() {
 	assert(!m_Destroyed);
 	assert(m_AirBubbles > 0);
-	if (m_AirBubbles == 1) m_NeedsUpdate = true;
+	if (m_AirBubbles == 1) {
+		m_NeedsUpdate = true;
+		m_AirUnitWalker.setDirection(false);
+	}
 	m_AirBubbles--;
 }
 
-void VirtualBattlefield::ActiveCell::addMudBubble() {
+void ActiveCell::addMudBubble() {
 	assert(!m_Destroyed);
-	if (m_MudBubbles == 0) m_NeedsUpdate = true;
+	if (m_MudBubbles == 0) {
+		m_NeedsUpdate = true;
+		m_MudUnitWalker.setDirection(true);
+		m_StaticWalker.setDirection(true);
+	}
 	m_MudBubbles++;
 }
 
-void VirtualBattlefield::ActiveCell::removeMudBubble() {
+void ActiveCell::removeMudBubble() {
 	assert(!m_Destroyed);
 	assert(m_MudBubbles > 0);
-	if (m_MudBubbles == 1) m_NeedsUpdate = true;
+	if (m_MudBubbles == 1) {
+		m_NeedsUpdate = true;
+		m_MudUnitWalker.setDirection(false);
+		m_StaticWalker.setDirection(false);
+	}
 	m_MudBubbles--;
 }
 
-bool VirtualBattlefield::ActiveCell::setVisible(bool visible) {
+bool ActiveCell::setVisible(bool visible) {
 	assert(!m_Destroyed);
 	if (visible == m_Visible) return false;
-	//std::cout << "ACTIVECELL::setVisible " << m_Index << " = " << visible << std::endl;
+	CSP_LOG(BATTLEFIELD, DEBUG, "ActiveCell::setVisible " << m_Index << " = " << visible);
 	m_NeedsUpdate = true;
-	if (visible && m_Scene.valid()) {
-		if (!m_SceneFeatureCell) {
-			m_SceneFeatureCell = new osg::PositionAttitudeTransform;
-			m_SceneFeatureCell->setPosition(osg::Vec3(m_Origin.x, m_Origin.y, 0.0));
-		}
+	if (visible && m_Scene.valid() && !m_SceneFeatureCell) {
+		m_SceneFeatureCell = new osg::PositionAttitudeTransform;
+		m_SceneFeatureCell->setPosition(osg::Vec3(m_Origin.x, m_Origin.y, 0.0));
 		m_Scene->addFeatureCell(m_SceneFeatureCell.get());
 	}
+	m_UnitVisualWalker.setDirection(visible);
+	m_StaticVisualWalker.setDirection(visible);
 	m_Visible = visible;
 	return true;
 }
 
-VirtualBattlefield::Cell *VirtualBattlefield::ActiveCell::getCell() const { return m_Cell; }
+Cell *ActiveCell::getCell() const { return m_Cell; }
 
-int VirtualBattlefield::ActiveCell::getIndex() const { return m_Index; }
+int ActiveCell::getIndex() const { return m_Index; }
 
-simdata::Vector3 const &VirtualBattlefield::ActiveCell::getOrigin() const { return m_Origin; }
+simdata::Vector3 const &ActiveCell::getOrigin() const { return m_Origin; }
 
-osg::ref_ptr<osg::PositionAttitudeTransform> VirtualBattlefield::ActiveCell::getSceneFeatureCell() const { return m_SceneFeatureCell; }
+osg::ref_ptr<osg::PositionAttitudeTransform> ActiveCell::getSceneFeatureCell() const { return m_SceneFeatureCell; }
 
-// this is some rather tricky stuff, so be careful.  basically
-// we are storing iterators to a unit list in the associated
-// cell, and walking through this list over several updates.
-// during this process, units may be added or removed from 
-// the list, which means we have to be very careful that our
-// iterators stay consistent.  
-//
-// the iterators work from begin() to end() to deaggregate the 
-// units and/or add them to the scene graph.  they go from end() 
-// to begin() to aggregate the units and/or remove them from the
-// scene graph.  thus each iterator divides the list into two
-// distinct sets.
-//
-// when a unit is added to the list, the _moveUnit() method has
-// already set it correctly for the current state of the cell,
-// so we add it to whichever end of the list the appropriate
-// iterator is moving away from.  (e.g. end() if we are 
-// aggregating and begin() if we are deaggregating).
-//
-// when a unit is removed from the list, _moveUnit() will take
-// care of setting its state appropriately.  the only trick is
-// that if any of our iterators point to the unit they must
-// be adjusted before it is removed.  if we are deaggregating
-// we adjust toward end(). if we are aggregating then we adjust 
-// toward begin().   if we are already at begin() we adjust
-// toward end() since that will be the first element once the
-// unit is removed.
 
-// is alread in the correct configuration, so put it
-// on the right side of the iterator.
-void VirtualBattlefield::ActiveCell::_addUnit(Unit const &unit) {
-	// TODO assert unit configuration....
-	assert(!m_Destroyed);
-	if ((unit->isAir() && m_AirBubbles > 0) ||
-	   (!unit->isAir() && m_MudBubbles > 0)) {
-		m_Cell->getUnits().push_front(unit);
-	} else {
-		m_Cell->getUnits().push_back(unit);
+// add the unit to the cell in the correct place
+// relative to the aggregation and visibility
+// ListWalkers.  if necessary, modify the units
+// state right now.
+// XXX this code needs more work... optimize the placement
+// so that it works without a force transition in most cases.
+void ActiveCell::_addUnit(Unit const &unit) {
+	bool visible = unit->getVisibleFlag();
+	bool aggregated = unit->getAggregateFlag();
+	//bool bubble_direction = unit->isAir() ? m_AirUnitWalker.getDirection() : 
+	//                                        m_MudUnitWalker.getDirection(); 
+	bool visual_direction = m_UnitVisualWalker.getDirection();
+	CSP_LOG(BATTLEFIELD, DEBUG, "ActiveCell addUnit (vis=" << visible << ", agg=" << aggregated << ")");
+	//if (visual_direction ^ visible != bubble_direction ^ !aggregated) {
+	if (visible == aggregated) {
+		// cannot place the unit at either end and still be consistent 
+		// with both walkers, so we have to modify the unit state
+		if (visible) {
+			unit->leaveScene();
+			if (m_Scene.valid()) {
+				m_Scene->removeObject(unit);
+			}
+		} else {
+			unit->enterScene();
+			if (m_Scene.valid()) {
+				m_Scene->addObject(unit);
+			}
+		} 
+		visible = !visible;
 	}
+	//if (visual_direction ^ visible) {
+	if (!visible) {
+		m_Cell->getUnits().push_back(unit);
+		m_UnitVisualWalker.checkBack();
+		m_AirUnitWalker.checkBack();
+		m_MudUnitWalker.checkBack();
+		CSP_LOG(BATTLEFIELD, DEBUG, "ActiveCell addUnit push_back " << visual_direction);
+	} else {
+		m_Cell->getUnits().push_front(unit);
+		CSP_LOG(BATTLEFIELD, DEBUG, "ActiveCell addUnit push_front " << visual_direction);
+	}
+	m_NeedsUpdate = true;
 }
+
+
 
 // removing a unit is fine as long as none of the iterators
 // point to it.  if they do we need to adjust them.
-void VirtualBattlefield::ActiveCell::_checkRemoveUnit(Unit const &unit) {
+void ActiveCell::_checkRemoveUnit(Unit const &unit) {
 	assert(!m_Destroyed);
-	Unit::list::iterator begin = m_Cell->getUnits().begin();
-	if (*m_CurrentAirUnit == unit) {
-		if (m_AirBubbles > 0 || m_CurrentAirUnit == begin) {
-			m_CurrentAirUnit++;
-		} else {
-			m_CurrentAirUnit--;
-		}
-	}
-	if (*m_CurrentMudUnit == unit) {
-		if (m_MudBubbles > 0 || m_CurrentMudUnit == begin) {
-			m_CurrentMudUnit++;
-		} else {
-			m_CurrentMudUnit--;
-		}
-	}
-	if (*m_CurrentVisUnit == unit) {
-		if (m_Visible || m_CurrentVisUnit == begin) {
-			m_CurrentVisUnit++;
-		} else {
-			m_CurrentVisUnit--;
-		}
-	}
+	m_AirUnitWalker.checkRemove(unit);
+	m_MudUnitWalker.checkRemove(unit);
+	m_UnitVisualWalker.checkRemove(unit);
 }
 
-int VirtualBattlefield::ActiveCell::update(float dt, int &steps) {
+bool ActiveCell::update(float dt) {
 	assert(!m_Destroyed);
-	if (!m_NeedsUpdate) return 1;
-	Unit::list::iterator unit_begin = m_Cell->getUnits().begin();
-	Unit::list::iterator unit_end = m_Cell->getUnits().end();
-	simdata::Ref<FeatureGroup>::vector::iterator feature_begin = m_Cell->getFeatureGroups().begin();
-	simdata::Ref<FeatureGroup>::vector::iterator feature_end = m_Cell->getFeatureGroups().end();
+	if (!m_NeedsUpdate) return true;
 	bool active = false;
 	int complete = 0;
-	steps = 0;
 	// update the air bubble
 	if (m_AirBubbles > 0) {
 		active = true;
 		m_AirBubbleTimer = 10.0;
-		while (m_CurrentAirUnit != unit_end) {
-			if ((*m_CurrentAirUnit)->isAir()) {
-				(*m_CurrentAirUnit)->deaggregate();
-				m_CurrentAirUnit++;
-				steps++;
+		while (m_AirUnitWalker.more()) {
+			Unit current = m_AirUnitWalker.get();
+			if (current->isAir()) {
+				current->_deaggregate();
 				break;
 			}
-			m_CurrentAirUnit++;
 		}
 		complete++;
 	} else {
@@ -759,12 +784,11 @@ int VirtualBattlefield::ActiveCell::update(float dt, int &steps) {
 		if (m_AirBubbleTimer > 0.0) {
 			active = true;
 		} else {
-			while (m_CurrentAirUnit != unit_begin) {
+			while (m_AirUnitWalker.more()) {
 				active = true;
-				--m_CurrentAirUnit;
-				if ((*m_CurrentAirUnit)->isAir()) {
-					(*m_CurrentAirUnit)->aggregate();
-					steps++;
+				Unit current = m_AirUnitWalker.get();
+				if (current->isAir()) {
+					current->_aggregate();
 					break;
 				}
 			}
@@ -775,19 +799,15 @@ int VirtualBattlefield::ActiveCell::update(float dt, int &steps) {
 	if (m_MudBubbles > 0) {
 		active = true;
 		m_MudBubbleTimer = 10.0;
-		while (m_CurrentMudUnit != unit_end) {
-			if (!((*m_CurrentMudUnit)->isAir())) {
-				(*m_CurrentMudUnit)->deaggregate();
-				m_CurrentMudUnit++;
-				steps++;
+		while (m_MudUnitWalker.more()) {
+			Unit current = m_MudUnitWalker.get();
+			if (!current->isAir()) {
+				current->_deaggregate();
 				break;
 			}
-			m_CurrentMudUnit++;
 		}
-		if (m_CurrentMudFeature != feature_end) {
-			(*m_CurrentMudFeature)->deaggregate();
-			m_CurrentMudFeature++;
-			steps++;
+		if (m_StaticWalker.more()) {
+			m_StaticWalker.get()->_deaggregate();
 		} else {
 			complete++;
 		}
@@ -796,19 +816,17 @@ int VirtualBattlefield::ActiveCell::update(float dt, int &steps) {
 		if (m_MudBubbleTimer > 0.0) {
 			active = true;
 		} else {
-			while (m_CurrentMudUnit != unit_begin) {
+			while (m_MudUnitWalker.more()) {
 				active = true;
-				--m_CurrentMudUnit;
-				if (!(*m_CurrentMudUnit)->isAir()) {
-					(*m_CurrentMudUnit)->aggregate();
-					steps++;
+				Unit current = m_MudUnitWalker.get();
+				if (!current->isAir()) {
+					current->_aggregate();
 					break;
 				}
 			}
-			if (m_CurrentMudFeature != feature_begin) {
+			if (m_StaticWalker.more()) {
 				active = true;
-				--m_CurrentMudFeature;
-				(*m_CurrentMudFeature)->aggregate();
+				m_StaticWalker.get()->_aggregate();
 			} else {
 				complete++;
 			}
@@ -818,51 +836,48 @@ int VirtualBattlefield::ActiveCell::update(float dt, int &steps) {
 	// update the visibility bubble
 	if (m_Visible) {
 		active = true;
-		m_VisBubbleTimer = 10.0;
+		m_VisualTimer = 10.0;
 		// add cell to scene
-		if (m_CurrentVisUnit != unit_end) {
-			(*m_CurrentVisUnit)->setVisible(true);
+		if (m_UnitVisualWalker.more()) {
+			Unit current = m_UnitVisualWalker.get();
+			current->enterScene();
 			if (m_Scene.valid()) {
-				m_Scene->addObject(*m_CurrentVisUnit);
+				m_Scene->addObject(current);
 			}
-			m_CurrentVisUnit++;
-			steps++;
 		} else complete++;
-		if (m_CurrentVisFeature != feature_end) {
-			(*m_CurrentVisFeature)->setVisible(true);
-			osg::Node* node = (*m_CurrentVisFeature)->makeSceneGroup(m_Origin, m_Terrain.get());
+		if (m_StaticVisualWalker.more()) {
+			Static current = m_StaticVisualWalker.get();
+			current->enterScene();
+			osg::Node* node = current->makeSceneGroup(m_Origin, m_Terrain.get());
 			m_SceneFeatureCell->addChild(node);
-			m_CurrentVisFeature++;
-			steps++;
 		} else complete++;
 	} else {
 		// no longer visible, start visibility timer
-		m_VisBubbleTimer -= dt;
-		if (m_VisBubbleTimer > 0.0) {
+		m_VisualTimer -= dt;
+		if (m_VisualTimer > 0.0) {
 			active = true;
 		} else {
 			// timer expired, start to remove cell from scene
-			if (m_CurrentVisUnit != unit_begin) {
+			if (m_UnitVisualWalker.more()) {
 				active = true;
-				--m_CurrentVisUnit;
-				(*m_CurrentVisUnit)->setVisible(false);
+				Unit current = m_UnitVisualWalker.get();
+				CSP_LOG(BATTLEFIELD, DEBUG, "ActiveCell::update remove unit from scene.");
+				current->leaveScene();
 				if (m_Scene.valid()) {
-					m_Scene->removeObject(*m_CurrentVisUnit);
+					m_Scene->removeObject(current);
 				}
-				steps++;
 			} else {
 				complete+=2;
 				// all dynamic objects are gone; now take out the cell 
 				// transform with all the visible features in one step
-				while (m_CurrentVisFeature != feature_begin) {
-					m_CurrentVisFeature--;
-					(*m_CurrentVisFeature)->setVisible(false);
+				while (m_StaticVisualWalker.more()) {
+					CSP_LOG(BATTLEFIELD, DEBUG, "ActiveCell::update remove feature from scene.");
+					m_StaticVisualWalker.get()->leaveScene();
 				}
 				if (m_SceneFeatureCell.valid()) {
-					//std::cout << "REMOVING FEATURE FROM SCENE " << m_Index << "\n";
+					CSP_LOG(BATTLEFIELD, DEBUG, "ActiveCell::update remove feature cell: " << m_Index << " " << int(m_SceneFeatureCell.get()));
 					m_Scene->removeFeatureCell(m_SceneFeatureCell.get());
 					m_SceneFeatureCell = NULL;
-					steps++;
 				}
 			}
 		}
@@ -871,40 +886,43 @@ int VirtualBattlefield::ActiveCell::update(float dt, int &steps) {
 	return active;
 }
 
-void VirtualBattlefield::ActiveCell::cleanup() {
+void ActiveCell::cleanup() {
 	// close all bubbles
-	Unit::list::iterator unit_begin = m_Cell->getUnits().begin();
-	simdata::Ref<FeatureGroup>::vector::iterator feature_begin = m_Cell->getFeatureGroups().begin();
-	while (m_CurrentAirUnit != unit_begin) {
-		--m_CurrentAirUnit;
-		if ((*m_CurrentAirUnit)->isAir()) {
-			(*m_CurrentAirUnit)->aggregate();
+	CSP_LOG(BATTLEFIELD, DEBUG, "ActiveCell::cleanup");
+	m_AirUnitWalker.setDirection(false);
+	while (m_AirUnitWalker.more()) {
+		Unit current = m_AirUnitWalker.get();
+		if (current->isAir()) {
+			current->_aggregate();
 		}
 	}
-	while (m_CurrentMudUnit != unit_begin) {
-		--m_CurrentMudUnit;
-		if (!(*m_CurrentMudUnit)->isAir()) {
-			(*m_CurrentMudUnit)->aggregate();
+	m_MudUnitWalker.setDirection(false);
+	while (m_MudUnitWalker.more()) {
+		Unit current = m_MudUnitWalker.get();
+		if (!current->isAir()) {
+			current->_aggregate();
 		}
 	}
-	while (m_CurrentVisUnit != unit_begin) {
-		--m_CurrentVisUnit;
-		(*m_CurrentVisUnit)->setVisible(false);
+	m_UnitVisualWalker.setDirection(false);
+	while (m_UnitVisualWalker.more()) {
+		Unit current = m_UnitVisualWalker.get();
+		current->leaveScene();
 		if (m_Scene.valid()) {
-			m_Scene->removeObject(*m_CurrentVisUnit);
+			m_Scene->removeObject(current);
 		}
 	}
-	while (m_CurrentMudFeature != feature_begin) {
-		--m_CurrentMudFeature;
-		//(*m_CurrentMudFeature)->aggregate();
+	m_StaticWalker.setDirection(false);
+	while (m_StaticWalker.more()) {
+		m_StaticWalker.get()->_aggregate();
 	}
-	while (m_CurrentVisFeature != feature_begin) {
-		--m_CurrentVisFeature;
-		//(*m_CurrentVisFeature)->???();
+	m_StaticVisualWalker.setDirection(false);
+	while (m_StaticVisualWalker.more()) {
+		m_StaticVisualWalker.get(); //->XXX();
 	}
 	// remove the cell transform from the scene graph
 	if (m_SceneFeatureCell.valid()) {
 		m_Scene->removeFeatureCell(m_SceneFeatureCell.get());
+		m_SceneFeatureCell = NULL;
 	}
 	m_AirBubbles = 0;
 	m_MudBubbles = 0;
@@ -915,35 +933,35 @@ void VirtualBattlefield::ActiveCell::cleanup() {
 
 
 /////////////////////////////////////////////////////////////////////////////////////////////
-// VirtualBattlefield::Cell
+// Cell
 /////////////////////////////////////////////////////////////////////////////////////////////
 
 
 
-VirtualBattlefield::Cell::Cell() { m_Active = 0; }
+Cell::Cell() { m_Active = 0; }
 
-bool VirtualBattlefield::Cell::isEmpty() const { return m_Units.empty(); }
+bool Cell::isEmpty() const { return m_Units.empty(); }
 
-bool VirtualBattlefield::Cell::isVisible() const { return m_Active != 0 && m_Active->isVisible(); }
+bool Cell::isVisible() const { return m_Active != 0 && m_Active->isVisible(); }
 
-bool VirtualBattlefield::Cell::inAirBubble() const { return m_Active != 0 && m_Active->inAirBubble(); }
+bool Cell::inAirBubble() const { return m_Active != 0 && m_Active->inAirBubble(); }
 
-bool VirtualBattlefield::Cell::inMudBubble() const { return m_Active != 0 && m_Active->inMudBubble(); }
+bool Cell::inMudBubble() const { return m_Active != 0 && m_Active->inMudBubble(); }
 
-void VirtualBattlefield::Cell::setActive(ActiveCell* active) { m_Active = active; }
+void Cell::setActive(ActiveCell* active) { m_Active = active; }
 
-VirtualBattlefield::ActiveCell *VirtualBattlefield::Cell::getActive() const { return m_Active; }
+ActiveCell *Cell::getActive() const { return m_Active; }
 
-simdata::Ref<FeatureGroup>::vector & VirtualBattlefield::Cell::getFeatureGroups() { return m_FeatureGroups; }
+simdata::Ref<FeatureGroup>::list & Cell::getFeatureGroups() { return m_FeatureGroups; }
 
-VirtualBattlefield::Unit::list &VirtualBattlefield::Cell::getUnits() { return m_Units; }
+Cell::Unit::list &Cell::getUnits() { return m_Units; }
 
-void VirtualBattlefield::Cell::addFeatureGroup(simdata::Ref<FeatureGroup> const &group) {
+void Cell::addFeatureGroup(simdata::Ref<FeatureGroup> const &group) {
 	m_FeatureGroups.push_back(group);
 }
 
-void VirtualBattlefield::Cell::addUnit(Unit const &unit) {
-	//std::cout << "CELL add unit " << int(unit.get()) << " : " << unit->isAir() << "\n";
+void Cell::addUnit(Unit const &unit) {
+	CSP_LOG(BATTLEFIELD, DEBUG, "CELL add unit " << int(unit.get()) << " : " << unit->isAir() << "|" << int(m_Active));
 	if (m_Active) { 
 		m_Active->_addUnit(unit);
 	} else {
@@ -951,7 +969,7 @@ void VirtualBattlefield::Cell::addUnit(Unit const &unit) {
 	}
 }
 
-void VirtualBattlefield::Cell::removeUnit(Unit const &unit) {
+void Cell::removeUnit(Unit const &unit) {
 	if (m_Active) { 
 		m_Active->_checkRemoveUnit(unit);
 	} 
@@ -960,7 +978,7 @@ void VirtualBattlefield::Cell::removeUnit(Unit const &unit) {
 	m_Units.erase(iter);
 }
 
-void VirtualBattlefield::Cell::getUnits(Unit::list &list) {
+void Cell::getUnits(Unit::list &list) {
 	list.insert(list.end(), m_Units.begin(), m_Units.end());
 }
 

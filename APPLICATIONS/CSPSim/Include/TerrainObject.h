@@ -20,6 +20,10 @@
 /**
  * @file TerrainObject.h
  *
+ * Abstract interface to the terrain engine.  Any terrain engine
+ * that operates in a flat X-Y-Z coordinate space and implements 
+ * this interface can be used with CSPSim.
+ *
  **/
 
 #ifndef __TERRAINOBJECT_H__
@@ -27,20 +31,20 @@
 
 
 #include <SimData/Object.h>
-#include <SimData/External.h>
+#include <SimData/GeoPos.h>
+#include <SimData/Vector3.h>
 #include <SimData/Pack.h>
 #include <SimData/InterfaceRegistry.h>
+#include <SimData/osg.h>
 
-#include <string>
-
-namespace Demeter {
-	class Terrain;
-	class TerrainLattice;
-	class TerrainTextureFactory;
-}
+#include "Projection.h"
 
 #include <osg/ref_ptr>
-#include <osg/Node>
+
+namespace osg {
+	class Node;
+	class LineSegment;
+}
 
 
 /**
@@ -52,89 +56,85 @@ namespace Demeter {
 class TerrainObject: public simdata::Object
 {
 public:
-	SIMDATA_OBJECT(TerrainObject, 0, 0)
-		
-	BEGIN_SIMDATA_XML_INTERFACE(TerrainObject)
-		SIMDATA_XML("detail_texture_file", TerrainObject::m_DetailTextureFile, true)
-		SIMDATA_XML("texture_file", TerrainObject::m_TextureFile, true)
-		SIMDATA_XML("elevation_file", TerrainObject::m_ElevationFile, true)
-		SIMDATA_XML("lattice_basename", TerrainObject::m_LatticeBaseName, true)
-		SIMDATA_XML("lattice_elevation_extension", TerrainObject::m_LatticeElevExt, true)
-		SIMDATA_XML("lattice_texture_extension", TerrainObject::m_LatticeTexExt, true)
-		SIMDATA_XML("use_texture_factory", TerrainObject::m_TextureFactory, false)
-		SIMDATA_XML("lattice_width", TerrainObject::m_LatticeWidth, true)
-		SIMDATA_XML("lattice_height", TerrainObject::m_LatticeHeight, true)
-		SIMDATA_XML("max_triangles", TerrainObject::m_MaxTriangles, true)
-		SIMDATA_XML("detail_threshold", TerrainObject::m_DetailThreshold, true)
-		SIMDATA_XML("vertex_height", TerrainObject::m_VertexHeight, true)
-		SIMDATA_XML("vertex_spacing", TerrainObject::m_VertexSpacing, true)
-		SIMDATA_XML("use_dynamic_textures", TerrainObject::m_DynamicTextures, false)
-		SIMDATA_XML("use_texture_compression", TerrainObject::m_TextureCompression, false)
-		SIMDATA_XML("preload_textures", TerrainObject::m_PreloadTextures, false)
-		SIMDATA_XML("lattice", TerrainObject::m_Lattice, true)
+	/* currently the only two terrain engines are demeter and
+	 * chunk lod.  the former doesn't have hints, the latter
+	 * needs only a short integer.  to be really OO here we
+	 * should have an abstract, reference counted hint class
+	 * that is allocated by the specific terrain objects and
+	 * dynamic_cast to the correct type before use.  at the
+	 * moment this would entail fair amount of memory and
+	 * processing overhead, so we just sidestep the entire
+	 * issue and use integers.  if another engine is added
+	 * in the future that requires more elaborate hinting,
+	 * we can deal with it at that time.
+	 */
+	typedef int IntersectionHint;
+
+	/** Class for doing line segment intersection tests against
+	    the terrain mesh. */
+	class Intersection {
+	public:
+		Intersection();
+		Intersection(simdata::Vector3 const &start, simdata::Vector3 const &end);
+		inline float getRatio() const { return _ratio; }
+		inline float getDistance() const;
+		inline bool getHit() const { return _hit; }
+		inline simdata::Vector3 const &getStart() const { return _start; }
+		inline simdata::Vector3 const &getEnd() const { return _end; }
+		inline void setEndPoints(simdata::Vector3 const &start, simdata::Vector3 const &end) {
+			_start = start;
+			_end = end;
+		}
+		inline simdata::Vector3 const &getPoint() const { return _point; }
+		inline simdata::Vector3 const &getNormal() const { return _normal; }
+		inline void reset() { _hit = false; }
+		void setHit(float ratio, simdata::Vector3 const &normal);
+	protected:
+		bool				_hit;
+		float                           _ratio;
+		simdata::Vector3		_start;
+		simdata::Vector3		_end;
+		simdata::Vector3                _point;
+		simdata::Vector3                _normal;
+	};
+
+	BEGIN_SIMDATA_XML_VIRTUAL_INTERFACE(TerrainObject)
+		SIMDATA_XML("center", TerrainObject::m_Center, true)
+		SIMDATA_XML("width", TerrainObject::m_Width, true)
+		SIMDATA_XML("height", TerrainObject::m_Height, true)
 	END_SIMDATA_XML_INTERFACE
 	
 	TerrainObject();
 	virtual ~TerrainObject();
 
-	void activate();
-	void deactivate();
-	bool isActive();
-	float getElevation(float x, float y) const;
-	void getNormal(float x, float y, float & normalX, float & normalY, float & normalZ ) const;
-	void setCameraPosition(float, float, float);
+	virtual void activate() = 0;
+	virtual void deactivate() = 0;
+	virtual bool isActive() = 0;
+	virtual void setCameraPosition(double, double, double) = 0;
+	virtual void testLineOfSight(Intersection &, IntersectionHint &) = 0;
+	virtual float getGroundElevation(double x, double y, simdata::Vector3 &normal, IntersectionHint &) = 0;
+	virtual float getGroundElevation(double x, double y, IntersectionHint &) = 0;
 
-	int getTerrainPolygonsRendered() const;
-	osg::Node *getNode() { return m_TerrainNode.get(); }
+	virtual int getTerrainPolygonsRendered() const = 0;
+	virtual osg::Node *getNode() = 0;
 
-	
+	simdata::LLA const & getCenter() const { return m_Center; }
+	inline float getWidth() const { return m_Width; }
+	inline float getHeight() const { return m_Height; }
+	Projection const & getProjection() const { return m_Map; }
+	virtual simdata::Vector3 getOrigin(simdata::Vector3 const &) const = 0;
+	virtual void endDraw() {}
+
 protected:
 	
-	bool m_DynamicTextures;
-	bool m_TextureCompression;
-	bool m_PreloadTextures;
-	bool m_TextureFactory;
-	int m_MaxTriangles;
-	simdata::External m_DetailTextureFile;
-	simdata::External m_TextureFile;
-	simdata::External m_ElevationFile;
-	float m_VertexSpacing;
-	float m_VertexHeight;
-	bool m_Lattice;
-	float m_DetailThreshold;
-	std::string m_LatticeBaseName;
-	std::string m_LatticeElevExt;
-	std::string m_LatticeTexExt;
-	int m_LatticeWidth;
-	int m_LatticeHeight;
-
-	
-protected:
+	simdata::LLA m_Center;
+	float m_Width, m_Height;
+	Projection m_Map;
 
 	virtual void pack(simdata::Packer& p) const;
 	virtual void unpack(simdata::UnPacker& p);
+	virtual void postCreate();
 
-	int createTerrainLattice();
-	int createTerrain();
-
-	void load();
-	void unload();
-
-	osg::Node* createTerrainNode(Demeter::Terrain* pTerrain);
-	osg::Node* createTerrainLatticeNode(Demeter::TerrainLattice* pTerrainLattice);
-
-	osg::ref_ptr<osg::Node> m_TerrainNode;
-
-	void updateDemeterSettings();
-	
-	bool m_Active;
-	bool m_Loaded;
-
-	// XXX check that these should be mutable...it's not clear why they are.
-	mutable osg::ref_ptr<Demeter::Terrain> m_Terrain;
-	mutable osg::ref_ptr<Demeter::TerrainLattice> m_TerrainLattice;
-
-	Demeter::TerrainTextureFactory * m_TerrainTextureFactory;
 };
 
 

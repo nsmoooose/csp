@@ -35,25 +35,26 @@
 #include "Log.h"
 #include "Shell.h"
 #include "SimObject.h"
-#include "StaticObject.h"
 #include "VirtualBattlefield.h"
 #include "VirtualScene.h"
 #include "TerrainObject.h"
 #include "Theater.h"
 #include "ConsoleCommands.h"
+#include "Profile.h"
    
-
 #include <SimData/Types.h>
 #include <SimData/Exception.h>
 #include <SimData/DataArchive.h>
 #include <SimData/DataManager.h>
 #include <SimData/Exception.h>
 #include <SimData/FileUtility.h>
+#include <SimData/GeoPos.h>
 
 #include <GL/gl.h>		// Header File For The OpenGL32 Library
 #include <GL/glu.h>		// Header File For The GLu32 Library
 
 #include <osg/Timer>
+#include <osgDB/FileUtils>
 
 #include <SDL/SDL.h>
 #include <SDL/SDL_audio.h>
@@ -206,13 +207,29 @@ void CSPSim::togglePause() {
 
 void CSPSim::init()
 {
-	try {
+	//try {
 		CSP_LOG(APP, INFO, "Starting CSPSim...");
 
-		std::string data_path = g_Config.getPath("Paths", "DataPath", ".", true);
-		std::string archive_file = simdata::ospath::join(data_path, "sim.dar");
-		
+		// setup osg search path for external data files
+		std::string data_path = getDataPath();
+		std::string image_path = getDataPath("ImagePath");
+		std::string model_path = getDataPath("ModelPath");
+		std::string font_path = getDataPath("FontPath");
+		std::string search_path;
+		simdata::ospath::addpath(search_path, image_path);
+		simdata::ospath::addpath(search_path, model_path);
+		simdata::ospath::addpath(search_path, font_path);
+		osgDB::setDataFilePathList(search_path);
+
+		// we don't need this on Linux since libs are usually
+		// installed in /usr/local/lib/osgPlugins or /usr/lib/osgPlugins.
+		// OSG can find itself the plugins.
+#ifdef _WIN32
+		osgDB::setLibraryFilePathList(".");
+#endif
+
 		// open the primary data archive
+		std::string archive_file = simdata::ospath::join(data_path, "sim.dar");
 		try {
 			simdata::DataArchive *sim = new simdata::DataArchive(archive_file.c_str(), 1);
 			assert(sim);
@@ -269,7 +286,6 @@ void CSPSim::init()
 
 		m_Battlefield = new VirtualBattlefield();
 		m_Battlefield->create();
-		m_Battlefield->setTerrain(m_Terrain);
 		m_Battlefield->setScene(m_Scene);
 		m_Battlefield->setTheater(m_Theater);
 
@@ -286,27 +302,33 @@ void CSPSim::init()
 		int fog_end = g_Config.getInt("View", "FogEnd", 35000, true);
 		m_Scene->setFogEnd(fog_end);
 
-		// create a couple test objects
-
-		//simdata::Ref<ObjectModel> test = m_DataManager.getObject("sim:theater.runway_model");
-		//m_Scene->addEffectUpdater(test->getModel().get());
+		// create a test object (other objects can be created via TestObjects.py)
 
 		std::string vehicle = g_Config.getPath("Testing", "Vehicle", "sim:vehicles.aircraft.m2k", false);
 		simdata::Ref<AircraftObject> ao = m_DataManager.getObject(vehicle.c_str());
 		assert(ao.valid());
-		//ao->setGlobalPosition(483025, 499000, 88.5);
-		ao->setGlobalPosition(483025, 499000, 2000.0);
+
+		//simdata::LLA position;
+		//position.setDegrees(40.6000, 14.3750, 1000.0);
+		//std::cout << "Starting point = " << m_Terrain->getProjection().convert(position) << std::endl;
+		//ao->setGlobalPosition(m_Terrain->getProjection().convert(position));
+
+		// just place at the center of the terrain, with enough elevation to be safe
+		ao->setGlobalPosition(0.0, 0.0, 150.0);
+
+		//ao->setGlobalPosition(483000-512000, 499000-512000, 91.2);
+		ao->setAttitude(0.03, 0.0, 0);
+		ao->setVelocity(0, 90.0, 0);
+
+// original placement for balkan terrain testing
+/*
+		ao->setGlobalPosition(483025, 499000, 88.5);
 		ao->setAttitude(0.0, 0.0, 1.92);
 		ao->setVelocity(0, 1.0, 0);
+*/
+
 		m_Battlefield->addUnit(ao);
 
-#if 0
-		static simdata::Ref<StaticObject> so = m_DataManager.getObject("sim:objects.runway");
-		assert(so.valid());
-		so->setGlobalPosition(483000, 499000, 100.0);
-		so->addToScene(m_Battlefield);
-#endif
- 
 		// Following variables should be set before calling GameScreen.init()
 		// because they are used in GameScreen initialization process
 
@@ -317,9 +339,8 @@ void CSPSim::init()
 		// start in the aircraft
 		setActiveObject(ao);
 
-		// create screens
+		// create and initialize screens
 		m_GameScreen = new GameScreen;
-		// setup screens
 		m_GameScreen->onInit();
 
 #if 0
@@ -331,6 +352,7 @@ void CSPSim::init()
 
 		changeScreen(m_GameScreen);
 		logoScreen.onExit();
+		/*
 	}
 	catch(csp::Exception & pEx) {
 		csp::FatalException(pEx, "initialization");
@@ -344,6 +366,7 @@ void CSPSim::init()
 	catch (...) {
 		csp::OtherFatalException("initialization");
 	}
+	*/
 
 }
 
@@ -357,7 +380,6 @@ void CSPSim::cleanup()
 	assert(m_Terrain.valid());
 	assert(m_GameScreen);
 	assert(m_InterfaceMaps);
-//	m_ActiveObject = NULL; 
 	setActiveObject(NULL);
 	delete m_GameScreen;
 	m_GameScreen = NULL;
@@ -441,11 +463,15 @@ void CSPSim::run()
 		while (!m_Finished) {
 			CSP_LOG(APP, DEBUG, "CSPSim::run... Starting loop iteration");
 
+			PROF0(_simloop);
+
 			updateTime();
 			float dt = m_FrameTime;
 
 			// Do Input loop
+			PROF0(_input);
 			doInput(dt);
+			PROF1(_input, 60);
 
 			// Miscellaneous Updates
 			low_priority += dt;
@@ -461,14 +487,22 @@ void CSPSim::run()
 			}
 
 			// Update Objects if sim is not frozen
+			PROF0(_objects);
 			if (!m_Paused && !m_ConsoleOpen) {
+				//CSP_LOG(APP, ERROR, "update objects");
 				updateObjects(dt);
+				//CSP_LOG(APP, ERROR, "update objects done");
 			}
+			PROF1(_objects, 60);
 			
 			// Display (render) current Screen
 			if (m_CurrentScreen) {
+				PROF0(_screen_update);
 				m_CurrentScreen->onUpdate(dt);
+				PROF1(_screen_update, 60);
+				PROF0(_screen_render);
 				m_CurrentScreen->onRender();
+				PROF1(_screen_render, 60);
 			}
             
 			// Swap OpenGL buffers
@@ -481,6 +515,8 @@ void CSPSim::run()
 #endif
 			// remove marked objects, this should be done at the end of the main loop.
 			m_Battlefield->removeUnitsMarkedForDelete();
+
+			PROF1(_simloop, 30);
 		}
 		//m_Battlefield->dumpObjectHistory();
 	}
@@ -551,6 +587,7 @@ void CSPSim::doInput(double dt)
 	int doPoll = 10;
 	while (doPoll-- && SDL_PollEvent(&event)) {
 		bool handled = false;
+		HID::translate(event);
 		if (event.type == SDL_QUIT) {
 			m_Finished = true;
 			return;
@@ -587,7 +624,6 @@ void CSPSim::updateObjects(double dt)
     	if (m_Battlefield.valid()) {
 		m_Battlefield->onUpdate(dt);
 	}
-
 	if (m_Scene.valid()) {
 		m_Scene->onUpdate(dt);
 	}
@@ -648,7 +684,7 @@ int CSPSim::initSDL()
 	SDL_EnableUNICODE(1);
 
 
-	std::string sound_path = g_Config.getPath("Paths", "SoundPath", ".", true);
+	std::string sound_path = getDataPath("SoundPath");
 	if ( SDL_LoadWAV(simdata::ospath::join(sound_path, "avionturbine5.wav").c_str(),
 		&m_audioWave.spec, &m_audioWave.sound, &m_audioWave.soundlen) == NULL ) {
 		CSP_LOG(APP, ERROR,  "Couldn't load " << sound_path << "/avionturbine5.wav: " << SDL_GetError());
@@ -709,3 +745,6 @@ void CSPSim::endConsole() {
 	m_Console = NULL;
 }
 
+simdata::Ref<Theater> CSPSim::getTheater() const {
+	return m_Theater;
+}

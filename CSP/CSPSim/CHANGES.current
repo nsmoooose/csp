@@ -1,6 +1,12 @@
  Version 0.4.0 (in progress)
 ===========================
+2004-12-16: Lologramme
+  * add control tower
 
+2004-12-13: Lologramme
+  * Replace Runway by New runway with taxi and roads
+
+=======
 2004-12-15: onsight
  * Fix m2k animations bound to different channels.  An driven rotation
    animation can only use a single input channel.  More complex animations,
@@ -349,7 +355,7 @@
   * Changed the linear look-up of animations in ModelProcessor
     into a std::multimap look-up.
 
-  * Changed the CullCallback from AnimationCallback into an 
+  * Changed the CullCallback from AnimationCallback into an
     UpdateCallback to be threads safe w.r.t. the scenegraph.
 
   * Extended animation toolkit such that a node can be bound to
@@ -377,67 +383,67 @@
   * XML/vehicles/aircraft/m2k/model.xml has been patched to reflect
     a differential system on the Mirage 2000. The mirage 2000 model
     itself has been grantly improved by Lologramme. Furthermore, more
-    animation hooks are now present. 
+    animation hooks are now present.
     Finally, Sony Tuckson improved the textures' set.
 
-  * Reenabled smoke effects but that will need more work in the near 
+  * Reenabled smoke effects but that will need more work in the near
     future.
-  
+
   * Added Images/Smoke.
-    
+
 ==> All users: rebuild sim.dar
-  
+
 2004-07-28: delta
-  * Added an IsoContour class in RandomBillboardModel 
-    describing the "boundary" of the region. Currently 
+  * Added an IsoContour class in RandomBillboardModel
+    describing the "boundary" of the region. Currently
     supports circle and rectangle.
-    
-  * Added Images/Trees containing trees splat textures 
+
+  * Added Images/Trees containing trees splat textures
     and Images/Logo containing images for LogoScreen.
     Patched LogoScreen.cpp, Data/theater/balkan/airbase.xml
     and Data/theater/balkan/forest.xml to use this stuff.
-    
+
 ==> All users: rebuild sim.dar
 
 2004-07-27: delta
   * Added #undef ERROR in Log.h & System.h.
-  
-  * Moved AeroDynamics.cpp, base.cpp, main.cpp and trees.cpp 
+
+  * Moved AeroDynamics.cpp, base.cpp, main.cpp and trees.cpp
     to Source/old.
-    
+
   * Small cleanup in CameraAgent. Simplified CameraCommand.
-  
-  * Added a balkan dir under CSPSim/Data/XML/theater. 
-    CSPSim/Data/XML/theater/balkan.xml should now refers to 
-    files in this dir. A special area of the Balkan terrain 
-    (balkanMapElev.7-7.bmp) has been flatten out to receive 
+
+  * Added a balkan dir under CSPSim/Data/XML/theater.
+    CSPSim/Data/XML/theater/balkan.xml should now refers to
+    files in this dir. A special area of the Balkan terrain
+    (balkanMapElev.7-7.bmp) has been flatten out to receive
     an airbase (see note below).
-    Changed the starting position of the m2k in createBalkan 
+    Changed the starting position of the m2k in createBalkan
     from TestObjects.py.
-    
-  * Mapped the rudder to US_keyboard:COMMA (dec) and 
-    US_keyboard:PERIOD (inc) in file 
+
+  * Mapped the rudder to US_keyboard:COMMA (dec) and
+    US_keyboard:PERIOD (inc) in file
     CSPSim/Tools/HID/Maps/aircraft-core.map.
-    
+
   * Fixed a small bug(typo?) in the rudder decay.
-  
-  * Added limit min and max to AircraftSimpleFCS::Deflection for 
-    elevators' and ailerons' deflection. 
+
+  * Added limit min and max to AircraftSimpleFCS::Deflection for
+    elevators' and ailerons' deflection.
     XML/vehicles/aircraft/m2k/systems.xml has been patched.
-    
+
   * Changed various logo image file formats to jpg to save bandwith
     (LogoScreen).
-  
+
   * Simplified derived classes of ScreenInfo. Slighty modified the
     position of texts.
-  
+
   * A few changes in SmokeEffects.
-  
-  * Updated vs project. Many network source files are in the project 
+
+  * Updated vs project. Many network source files are in the project
     but excluded from the built.
-  
+
   * Other minor changes.
-  
+
 ==> All users: rebuild sim.dar and aircraft.hid.
                Copy balkanMapElev.7-7.bmp from CSPSim/Images
                to CSPSim/Terrain

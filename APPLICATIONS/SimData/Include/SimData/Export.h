@@ -39,7 +39,7 @@
 #endif
 
 # if defined(_MSC_VER) && (_MSC_VER <= 1310)
-#pragma warning (disable : 4786 4251)
+#pragma warning (disable : 4786 4251 4290)
 # endif
 
 

@@ -66,15 +66,11 @@ typedef unsigned int uint32;
 #endif
 
 #if defined(_MSC_VER) && (_MSC_VER >= 1310)
-# define SIMDATA_STATIC_CONST_DEF(x)
-# define SIMDATA_PACKED
 typedef __int64 int64;
 typedef unsigned __int64 uint64;
 # define SIMDATA_ULL(x) x##ull
 # define SIMDATA_LL(x) x##ll
 #else
-# define SIMDATA_STATIC_CONST_DEF(x) const x
-# define SIMDATA_PACKED __attribute__((packed))
 // use __extension__ to avoid G++ errors with -pedantic
 #ifndef SWIG
 __extension__
@@ -86,6 +82,14 @@ __extension__
 typedef unsigned long long uint64;
 # define SIMDATA_ULL(x) x##ULL
 # define SIMDATA_LL(x) x##LL
+#endif
+
+#if defined(__GNUC__)
+# define SIMDATA_STATIC_CONST_DEF(x) const x
+# define SIMDATA_PACKED __attribute__((packed))
+#else
+# define SIMDATA_STATIC_CONST_DEF(x)
+# define SIMDATA_PACKED
 #endif
 
 //@}

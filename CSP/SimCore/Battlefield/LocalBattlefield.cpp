@@ -747,7 +747,7 @@ double LocalBattlefield::UnitUpdateProxy::onUpdate(double dt) {
 		const int id = targets[i] & 0xffffff;
 		simnet::NetworkMessage::Ref msg = m_DetailCache[detail].msg;
 		if (msg.valid()) {
-			m_Connection->send(msg, id);
+			m_Connection->send(msg, static_cast<PeerId>(id));
 		} else {
 			CSP_LOG(BATTLEFIELD, ERROR, "no state message");
 		}
@@ -764,7 +764,7 @@ void LocalBattlefield::UnitUpdateProxy::setUpdateParameters(PeerId id, double in
 	for (unsigned i = 0; i < n; ++i) {
 		if (m_PeerUpdates[i].id == id) {
 			m_PeerUpdates[i].interval = interval_ms;
-			m_PeerUpdates[i].detail = detail;
+			m_PeerUpdates[i].detail = static_cast<simdata::uint16>(detail);
 			CSP_LOG(BATTLEFIELD, INFO, "set update interval for peer " << id << " to " << interval_ms << " ms");
 			return;
 		}

@@ -52,6 +52,15 @@
 #  include <unistd.h>
 #endif
 
+#ifdef _WIN32
+	const char ospath::DIR_SEPARATOR = '\\';
+	const char ospath::PATH_SEPARATOR = ';';
+#else
+	const char ospath::DIR_SEPARATOR = '/';
+	const char ospath::PATH_SEPARATOR = ':';
+#endif
+
+
 std::string ospath::basename(const std::string &path)
 {
 	std::string::size_type base;
@@ -146,6 +155,12 @@ std::string ospath::stringreplace(const std::string &path, char search, char rep
 	result = str;
 	free(str);
 	return result;
+}
+
+std::string const &ospath::addpath(std::string &pathlist, const std::string &path) {
+	if (pathlist.size() > 0) pathlist = pathlist + PATH_SEPARATOR;
+	pathlist = pathlist + path;
+	return pathlist;
 }
 	
 std::string ospath::normalize(const std::string &path) {

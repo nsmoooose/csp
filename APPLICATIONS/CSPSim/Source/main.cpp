@@ -4,7 +4,7 @@
 
 int main(int argc, char *argv[])
 {
-	if (!openConfig("../Data/CSPSim.ini")) return 0;
+	if (!openConfig("CSPSim.ini")) return 0;
 
 	CSPSim app;
 

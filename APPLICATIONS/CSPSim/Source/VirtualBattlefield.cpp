@@ -35,6 +35,7 @@
 
 #include "LogStream.h"
 #include "VirtualBattlefield.h"
+#include "Platform.h"
 
 #include <SimData/Types.h>
 #include <SimData/Math.h>
@@ -254,7 +255,14 @@ int VirtualBattlefield::buildScene()
 	std::string sep = ":";
 #endif
 
-	osgDB::setDataFilePathList("../Data" + sep + "../Data/Images" + sep + "../Data/Models" + sep + "../Data/Fonts");
+	std::string image_path = g_Config.getPath("Paths", "ImagePath", ".", true);
+	std::string model_path = g_Config.getPath("Paths", "ModelPath", ".", true);
+	std::string font_path = g_Config.getPath("Paths", "FontPath", ".", true);
+	std::string search_path;
+	ospath::addpath(search_path, image_path);
+	ospath::addpath(search_path, model_path);
+	ospath::addpath(search_path, font_path);
+	osgDB::setDataFilePathList(searchpath);
 
 	// we don't need this on Linux since libs are usually
 	// installed in /usr/local/lib/osgPlugins or /usr/lib/osgPlugins.

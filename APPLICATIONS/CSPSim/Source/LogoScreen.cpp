@@ -53,14 +53,13 @@ LogoScreen::~LogoScreen()
 
 void LogoScreen::OnInit()
 {
-    std::string path = ospath::filter("../Data/Images/CSPLogo.bmp");
-    m_image = SDL_LoadBMP(path.c_str());
-    if (m_image == NULL)
-    {
+	std::string image_path = g_Config.getPath("Paths", "ImagePath", ".", true);
+	std::string path = ospath.join(image_path, "CSPLogo.bmp");
+	m_image = SDL_LoadBMP(path.c_str());
+	if (m_image == NULL)
+	{
 		std::cout << "Unable to load bitmap " << path << std::endl;
-    }
-
-
+	}
 }
 
 void LogoScreen::OnExit()

@@ -26,14 +26,11 @@
 #ifndef __PLATFORM_H__
 #define __PLATFORM_H__
 
-#ifdef _WIN32
-  #define NATIVE_WIN32
-  #define DIR_SEPARATOR '\\'
-#else
-  #define DIR_SEPARATOR '/'
-#endif
-
 #include <string>
+
+#ifdef _WIN32
+	  #define NATIVE_WIN32
+#endif
 
 /**
  * Platform independent file path manipulation routines.
@@ -41,6 +38,9 @@
  * @author Mark Rose <mrose@stm.lbl.gov>
  */
 namespace ospath {
+
+	extern const char DIR_SEPARATOR;
+	extern const char PATH_SEPARATOR;
 	
 	/**
 	 * Return the basename of pathname path.
@@ -119,6 +119,10 @@ namespace ospath {
 	 */
 	std::string filter(const std::string &path);
 
+	/**
+	 * Add a path to a list of paths using the platform path separator.
+	 */
+	std::string const &ospath::addpath(std::string &pathlist, const std::string &path);
 };
 
 

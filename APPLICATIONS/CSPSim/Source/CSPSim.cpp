@@ -171,9 +171,8 @@ void CSPSim::Init()
 {
 	CSP_LOG(CSP_APP, CSP_INFO, "Starting CSPSim...");
 
-	std::string archive_file;
-	// TODO get the path prefix from config....
-	archive_file = ospath::filter("../Data/Sim.dar");
+	std::string data_path = g_Config.getPath("Paths", "DataPath", ".", true);
+	std::string archive_file = ospath::join(data_path, "Sim.dar");
 	
 	// open the primary data archive
 	try {
@@ -574,9 +573,11 @@ int CSPSim::InitConsole()
 	Con_rect.x = Con_rect.y = 0;
 	Con_rect.w = Con_rect.h = 300;
 
-	m_ConsoleFont = DT_LoadFont("../Data/Fonts/ConsoleFont.bmp", 0);
+	std::string font_path = g_Config.getPath("Paths", "FontPath", ".", true);
+	std::string console_font = ospath::join(font_path, "ConsoleFont.bmp");
 
-	m_pConsole = CON_Init("../Data/Fonts/ConsoleFont.bmp", m_SDLScreen, 100, Con_rect);
+	m_ConsoleFont = DT_LoadFont(console_font.c_str(), 0);
+	m_pConsole = CON_Init(console_font.c_str(), m_SDLScreen, 100, Con_rect);
 	CON_Alpha(m_pConsole, 50);
 
 	// Add some commands to the console

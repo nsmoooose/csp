@@ -143,10 +143,11 @@ void TerrainObject::unload() {
 
 void TerrainObject::load() {
 	if (m_Loaded) return;
+	std::string terrain_path = g_Config.getPath("Paths", "TerrainPath", ".", true);
 	if (m_Lattice)
 	{
 		// create lattice
-		Demeter::Settings::GetInstance()->SetMediaPath("../Data/Terrain");
+		Demeter::Settings::GetInstance()->SetMediaPath(terrain_path.c_str());
 		createTerrainLattice();
 		m_TerrainNode = createTerrainLatticeNode(m_pTerrainLattice);
 		m_TerrainNode->setName("TerrainLatticeNode");
@@ -156,7 +157,7 @@ void TerrainObject::load() {
 	else
 	{
 		// create single terrain node
-		Demeter::Settings::GetInstance()->SetMediaPath("../Data/Terrain");
+		Demeter::Settings::GetInstance()->SetMediaPath(terrain_path.c_str());
 		createTerrain();
 		m_TerrainNode = createTerrainNode(m_pTerrain);
 		m_TerrainNode->setName("TerrainNode");
@@ -390,8 +391,8 @@ int TerrainObject::getTerrainPolygonsRendered() const
 
 void TerrainObject::updateDemeterSettings()
 {
-	std::string mediaPath = ospath::filter("../Data/Terrain/");
-	Demeter::Settings::GetInstance()->SetMediaPath(mediaPath.c_str());
+	std::string terrain_path = g_Config.getPath("Paths", "TerrainPath", ".", true);
+	Demeter::Settings::GetInstance()->SetMediaPath(terrain_path.c_str());
 	Demeter::Settings::GetInstance()->SetVerbose(false);
 	Demeter::Settings::GetInstance()->SetScreenWidth(g_ScreenWidth);
 	Demeter::Settings::GetInstance()->SetScreenHeight(g_ScreenHeight);

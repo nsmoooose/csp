@@ -29,6 +29,10 @@
 #include <vector>
 #include <string>
 
+#ifndef GL_ALL_CLIENT_ATTRIB_BITS
+#define GL_ALL_CLIENT_ATTRIB_BITS 0xFFFFFFFF
+#endif
+
 
 /** Tool for capturing (most of) the current glState, and logging
  *  state differences.

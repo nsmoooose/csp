@@ -45,11 +45,11 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="OpenThreadsWin32d.lib osgChunkLodd.lib osgFXd.lib sigc-1.2d.lib producerd.lib opengl32.lib SDL.lib osgDBd.lib DemeterVisualC6d.lib osgTextd.lib osgUtild.lib osgParticled.lib osgd.lib _cSimData.lib ccgnu2.lib ccext2.lib SpatialIndexd.lib SimCored.lib"
+				AdditionalDependencies="SimNetd.lib OpenThreadsWin32d.lib osgChunkLodd.lib osgFXd.lib sigc-1.2d.lib producerd.lib opengl32.lib SDL.lib osgDBd.lib DemeterVisualC6d.lib osgTextd.lib osgUtild.lib osgParticled.lib osgd.lib _cSimDatad.lib ccgnu2.lib ccext2.lib SpatialIndexd.lib SimCored.lib"
 				OutputFile="../../Bin/_cCSP.dll"
 				LinkIncremental="2"
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="../../../SimData/SimData;&quot;$(PYTHON_PATH)/libs&quot;;../../../lib;../../../SpatialIndex/.bin;../../../SimCore/.bin"
+				AdditionalLibraryDirectories="../../../SimNet/.bin;../../../SimData/SimData;&quot;$(PYTHON_PATH)/libs&quot;;../../../lib;../../../SpatialIndex/.bin;../../../SimCore/.bin"
 				IgnoreDefaultLibraryNames="MSVCRTD"
 				GenerateDebugInformation="TRUE"
 				ProgramDatabaseFile=".\Debug/CSPSimDLL.pdb"
@@ -123,12 +123,12 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="ws2_32.lib ccgnu2.lib osgFX.lib osgChunkLod.lib producer.lib osgText.lib DemeterVisualC6.lib opengl32.lib SDL.lib _cSimData.lib osgParticle.lib osgUtil.lib osgDB.lib osg.lib sigc-1.2.lib OpenThreadsWin32.lib ccext2.lib SpatialIndex.lib SimCore.lib"
+				AdditionalDependencies="pthreadVC.lib SimNet.lib ws2_32.lib ccgnu2.lib osgFX.lib osgChunkLod.lib producer.lib osgText.lib DemeterVisualC6.lib opengl32.lib SDL.lib _cSimData.lib osgParticle.lib osgUtil.lib osgDB.lib osg.lib sigc-1.2.lib OpenThreadsWin32.lib ccext2.lib SpatialIndex.lib SimCore.lib"
 				OutputFile="../../Bin/_cCSP.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="../../../lib;&quot;$(PYTHON_PATH)/libs&quot;;../../../SimData/SimData;../../../SpatialIndex/.bin;../../../SimCore/.bin"
-				IgnoreDefaultLibraryNames="MSVCRTD"
+				AdditionalLibraryDirectories="../../../SimNet/.bin;../../../lib;&quot;$(PYTHON_PATH)/libs&quot;;../../../SimData/SimData;../../../SpatialIndex/.bin;../../../SimCore/.bin"
+				IgnoreDefaultLibraryNames=""
 				GenerateDebugInformation="FALSE"
 				AssemblyDebug="0"
 				GenerateMapFile="FALSE"
@@ -210,9 +210,6 @@
 				RelativePath="..\..\Source\ChunkLodTerrain.cpp">
 			</File>
 			<File
-				RelativePath="..\..\Source\ClientNode.cpp">
-			</File>
-			<File
 				RelativePath="..\..\Source\Collision.cpp">
 			</File>
 			<File
@@ -228,28 +225,19 @@
 				RelativePath="..\..\Source\ConsoleCommands.cpp">
 			</File>
 			<File
+				RelativePath="..\..\Source\Controller.cpp">
+			</File>
+			<File
 				RelativePath="..\..\Source\CSPSim.cpp">
 			</File>
 			<File
 				RelativePath="..\..\Source\DemeterTerrain.cpp">
 			</File>
 			<File
-				RelativePath="..\..\Source\DispatchCenter.cpp">
-				<FileConfiguration
-					Name="Debug|Win32"
-					ExcludedFromBuild="TRUE">
-					<Tool
-						Name="VCCLCompilerTool"/>
-				</FileConfiguration>
-			</File>
-			<File
 				RelativePath="..\..\Source\DynamicalSystem.cpp">
 			</File>
 			<File
 				RelativePath="..\..\Source\DynamicObject.cpp">
-			</File>
-			<File
-				RelativePath="..\..\Source\EchoServerNode.cpp">
 			</File>
 			<File
 				RelativePath="..\..\Source\Engine.cpp">
@@ -271,6 +259,9 @@
 			</File>
 			<File
 				RelativePath="..\..\Source\GameScreen.cpp">
+			</File>
+			<File
+				RelativePath="..\..\Source\glDiagnostics.cpp">
 			</File>
 			<File
 				RelativePath="..\..\Source\HID.cpp">
@@ -303,10 +294,10 @@
 				RelativePath="..\..\Source\ObjectModel.cpp">
 			</File>
 			<File
-				RelativePath="..\..\Source\PhysicsModel.cpp">
+				RelativePath="..\..\Source\ObjectUpdate.cpp">
 			</File>
 			<File
-				RelativePath="..\..\Source\RedirectServerNode.cpp">
+				RelativePath="..\..\Source\PhysicsModel.cpp">
 			</File>
 			<File
 				RelativePath="..\..\Source\ScreenInfo.cpp">
@@ -420,217 +411,6 @@
 					</FileConfiguration>
 				</File>
 			</Filter>
-			<Filter
-				Name="SimNet"
-				Filter="">
-				<File
-					RelativePath="..\..\Source\SimNet\DispatchMessageHandler.cpp">
-					<FileConfiguration
-						Name="Debug|Win32">
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)/$(InputName)1.obj"/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Release|Win32">
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)/$(InputName)1.obj"/>
-					</FileConfiguration>
-				</File>
-				<File
-					RelativePath="..\..\Source\SimNet\EchoMessageHandler.cpp">
-					<FileConfiguration
-						Name="Debug|Win32">
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)/$(InputName)1.obj"/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Release|Win32">
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)/$(InputName)1.obj"/>
-					</FileConfiguration>
-				</File>
-				<File
-					RelativePath="..\..\Source\SimNet\MessageSocketDuplex.cpp">
-					<FileConfiguration
-						Name="Debug|Win32"
-						ExcludedFromBuild="TRUE">
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)/$(InputName)1.obj"/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Release|Win32"
-						ExcludedFromBuild="TRUE">
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)/$(InputName)1.obj"/>
-					</FileConfiguration>
-				</File>
-				<File
-					RelativePath="..\..\Source\SimNet\NetworkAddress.cpp">
-					<FileConfiguration
-						Name="Debug|Win32"
-						ExcludedFromBuild="TRUE">
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)/$(InputName)1.obj"/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Release|Win32"
-						ExcludedFromBuild="TRUE">
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)/$(InputName)1.obj"/>
-					</FileConfiguration>
-				</File>
-				<File
-					RelativePath="..\..\Source\SimNet\NetworkBroadcaster.cpp">
-					<FileConfiguration
-						Name="Debug|Win32"
-						ExcludedFromBuild="TRUE">
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)/$(InputName)1.obj"/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Release|Win32"
-						ExcludedFromBuild="TRUE">
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)/$(InputName)1.obj"/>
-					</FileConfiguration>
-				</File>
-				<File
-					RelativePath="..\..\Source\SimNet\NetworkListener.cpp">
-					<FileConfiguration
-						Name="Debug|Win32"
-						ExcludedFromBuild="TRUE">
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)/$(InputName)1.obj"/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Release|Win32"
-						ExcludedFromBuild="TRUE">
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)/$(InputName)1.obj"/>
-					</FileConfiguration>
-				</File>
-				<File
-					RelativePath="..\..\Source\SimNet\NetworkMessage.cpp">
-					<FileConfiguration
-						Name="Debug|Win32">
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)/$(InputName)1.obj"/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Release|Win32">
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)/$(InputName)1.obj"/>
-					</FileConfiguration>
-				</File>
-				<File
-					RelativePath="..\..\Source\SimNet\NetworkMessenger.cpp">
-					<FileConfiguration
-						Name="Debug|Win32">
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)/$(InputName)1.obj"/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Release|Win32">
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)/$(InputName)1.obj"/>
-					</FileConfiguration>
-				</File>
-				<File
-					RelativePath="..\..\Source\SimNet\NetworkNode.cpp">
-					<FileConfiguration
-						Name="Debug|Win32">
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)/$(InputName)1.obj"/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Release|Win32">
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)/$(InputName)1.obj"/>
-					</FileConfiguration>
-				</File>
-				<File
-					RelativePath="..\..\Source\SimNet\NetworkSocket.cpp">
-					<FileConfiguration
-						Name="Debug|Win32"
-						ExcludedFromBuild="TRUE">
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)/$(InputName)1.obj"/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Release|Win32"
-						ExcludedFromBuild="TRUE">
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)/$(InputName)1.obj"/>
-					</FileConfiguration>
-				</File>
-				<File
-					RelativePath="..\..\Source\SimNet\ObjectUpdateMessage.cpp">
-					<FileConfiguration
-						Name="Debug|Win32"
-						ExcludedFromBuild="TRUE">
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)/$(InputName)1.obj"/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Release|Win32"
-						ExcludedFromBuild="TRUE">
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)/$(InputName)1.obj"/>
-					</FileConfiguration>
-				</File>
-				<File
-					RelativePath="..\..\Source\SimNet\PrintMessageHandler.cpp">
-					<FileConfiguration
-						Name="Debug|Win32">
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)/$(InputName)1.obj"/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Release|Win32">
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)/$(InputName)1.obj"/>
-					</FileConfiguration>
-				</File>
-				<File
-					RelativePath="..\..\Source\SimNet\RedirectMessageHandler.cpp">
-					<FileConfiguration
-						Name="Debug|Win32">
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)/$(InputName)1.obj"/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Release|Win32">
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)/$(InputName)1.obj"/>
-					</FileConfiguration>
-				</File>
-			</Filter>
 		</Filter>
 		<Filter
 			Name="Header Files"
@@ -658,9 +438,6 @@
 			</File>
 			<File
 				RelativePath="..\..\Include\ChunkLodTerrain.h">
-			</File>
-			<File
-				RelativePath="..\..\Include\ClientNode.h">
 			</File>
 			<File
 				RelativePath="..\..\Include\Collision.h">
@@ -693,16 +470,10 @@
 				RelativePath="..\..\Include\DemeterTerrain.h">
 			</File>
 			<File
-				RelativePath="..\..\Include\DispatchCenter.h">
-			</File>
-			<File
 				RelativePath="..\..\Include\DynamicalSystem.h">
 			</File>
 			<File
 				RelativePath="..\..\Include\DynamicObject.h">
-			</File>
-			<File
-				RelativePath="..\..\Include\EchoServerNode.h">
 			</File>
 			<File
 				RelativePath="..\..\Include\Engine.h">
@@ -724,6 +495,9 @@
 			</File>
 			<File
 				RelativePath="..\..\Include\GameScreen.h">
+			</File>
+			<File
+				RelativePath="..\..\Include\glDiagnostics.h">
 			</File>
 			<File
 				RelativePath="..\..\Include\HID.h">
@@ -757,6 +531,9 @@
 			</File>
 			<File
 				RelativePath="..\..\Include\ObjectModel.h">
+			</File>
+			<File
+				RelativePath="..\..\Include\ObjectUpdate.h">
 			</File>
 			<File
 				RelativePath="..\..\Include\PhysicsModel.h">
@@ -893,37 +670,6 @@
 					RelativePath="..\..\Include\Views\View.h">
 				</File>
 			</Filter>
-			<Filter
-				Name="SimNet"
-				Filter="">
-				<File
-					RelativePath="..\..\Include\SimNet\DispatchMessageHandler.h">
-				</File>
-				<File
-					RelativePath="..\..\Include\SimNet\EchoMessageHandler.h">
-				</File>
-				<File
-					RelativePath="..\..\Include\SimNet\Networking.h">
-				</File>
-				<File
-					RelativePath="..\..\Include\SimNet\NetworkMessage.h">
-				</File>
-				<File
-					RelativePath="..\..\Include\SimNet\NetworkMessageHandler.h">
-				</File>
-				<File
-					RelativePath="..\..\Include\SimNet\NetworkMessenger.h">
-				</File>
-				<File
-					RelativePath="..\..\Include\SimNet\NetworkNode.h">
-				</File>
-				<File
-					RelativePath="..\..\Include\SimNet\PrintMessageHandler.h">
-				</File>
-				<File
-					RelativePath="..\..\Include\SimNet\RedirectMessageHandler.h">
-				</File>
-			</Filter>
 		</Filter>
 		<Filter
 			Name="Resource Files"
@@ -946,6 +692,25 @@
 					CommandLine="$(SWIG_PATH)\swig -runtime -c++ -python -noexcept -I..\..\Include -I..\..\..\SimData\Include -I..\..\.. -o ..\..\Source\$(InputName)_wrap.cpp ..\..\Source\$(InputName).i
 "
 					Outputs="..\..\Source\$(InputName)_wrap.cpp"/>
+			</FileConfiguration>
+		</File>
+		<File
+			RelativePath="..\..\Source\ObjectUpdate.net">
+			<FileConfiguration
+				Name="Debug|Win32">
+				<Tool
+					Name="VCCustomBuildTool"
+					CommandLine="..\..\..\SimData\Tools\TaggedRecordCompiler\trc.py --header=..\..\Include\$(InputName).h --source=..\..\Source\$(InputName).cpp ..\..\Source\$(InputName).net
+"
+					Outputs="..\..\Include\$(InputName).h;..\..\Source\$(InputName).cpp"/>
+			</FileConfiguration>
+			<FileConfiguration
+				Name="Release|Win32">
+				<Tool
+					Name="VCCustomBuildTool"
+					CommandLine="..\..\..\SimData\Tools\TaggedRecordCompiler\trc.py --header=..\..\Include\$(InputName).h --source=..\..\Source\$(InputName).cpp ..\..\Source\$(InputName).net
+"
+					Outputs="..\..\Include\$(InputName).h;..\..\Source\$(InputName).cpp"/>
 			</FileConfiguration>
 		</File>
 	</Files>

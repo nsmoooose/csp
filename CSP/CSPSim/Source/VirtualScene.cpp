@@ -22,10 +22,6 @@
  *
  **/
 
-#ifndef GL_ALL_CLIENT_ATTRIB_BITS
-#define GL_ALL_CLIENT_ATTRIB_BITS 0xFFFFFFFF 
-#endif
-
 #include "VirtualScene.h"
 #include "TerrainObject.h"
 #include "DynamicObject.h"

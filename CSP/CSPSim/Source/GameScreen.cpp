@@ -50,7 +50,6 @@
 #include <SimCore/Battlefield/LocalBattlefield.h>
 #include <SimCore/Util/Log.h>
 
-
 /*
  * TODO
  *   padlock fixes:

@@ -1,6 +1,13 @@
  Version 0.4.0 (in progress)
 ===========================
 
+2004-12-05: delta
+  * Updated CSPSim.vcproj, added SimNet to the build, cleaned up
+    source and header directories and added a custom build step on 
+    UpdateObject.net.
+    
+  * Got ride of a few minor warnings.
+
 2004-12-03: onsight
   * Add in the new distributed battlefield code, replacing the existing
     simnet code.

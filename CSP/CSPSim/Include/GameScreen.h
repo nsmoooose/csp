@@ -37,7 +37,7 @@ class ScreenInfoManager;
 class DataRecorder;
 class CameraAgent;
 class CameraCommand;
-class CameraCommands;
+struct CameraCommands;
 
 namespace osgUtil {
 	class SceneView;

@@ -18,7 +18,7 @@
 
 
 /**
- * @file glDiagnostics.h
+ * @file glDiagnostics.cpp
  *
  **/
 
@@ -26,6 +26,10 @@
 #include "glDiagnostics.h"
 
 #include <sstream>
+
+#ifdef _MSC_VER
+#include <windows.h>
+#endif
 #include <GL/gl.h>
 
 #include <SimCore/Util/Log.h>

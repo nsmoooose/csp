@@ -54,7 +54,7 @@ class RecorderConverter:
 		self.channels = channels = []
 		self.output = output = []
 		for i in range(n):
-			name = f.read(64)
+			name = f.read(100)
 			name = name[0:name.find("\0")]
 			channels.append(name)
 		n = len(channels)
@@ -83,6 +83,11 @@ class RecorderConverter:
 				set[type] = value
 				self.min_data[type] = min(self.min_data[type], value)
 				self.max_data[type] = max(self.max_data[type], value)
+		for i in range(n):
+			if self.min_data[i] > self.max_data[i]:
+				self.min_data[i] = 0.0
+				self.max_data[i] = 0.0
+
 
 	def dumpTab(self):
 		print "time\t%s" % '\t'.join(self.channels)

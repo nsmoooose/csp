@@ -3,6 +3,8 @@
 2005-04-03: onsight
  * Increase the left/right panning limits for the in-cockpit view.
 
+ * Fix a bug in the data recorder decoder.
+
 2005-04-02: onsight
  * Add a DataChannel constructor that can be used for channel data types
    that don't have public copy constructors.

@@ -88,7 +88,7 @@ void NetworkMessenger::setOrginatorNode(NetworkNode * orginatorNode)
 // buffer then cast it to a NetworkMessage pointer.
 NetworkMessage * NetworkMessenger::getMessageFromPool(int messageType, int payloadLen)
 {
-  printf("NetworkMessenger::getMessageFromPool() - CurrentPoolSize: %d\n", m_messagePool.size());
+  //printf("NetworkMessenger::getMessageFromPool() - CurrentPoolSize: %d\n", m_messagePool.size());
   if (m_messagePool.empty())
   {
     for(int i=0;i<100;i++)
@@ -108,7 +108,7 @@ NetworkMessage * NetworkMessenger::getMessageFromPool(int messageType, int paylo
 // cast the NetworkMessage pointer back to a binary buffer then free the buffer.
 void NetworkMessenger::returnMessageToPool(NetworkMessage * message)
 {
-  printf("NetworkMessenger::returnMessageToPool() - CurrentPoolSize: %d\n", m_messagePool.size());
+//  printf("NetworkMessenger::returnMessageToPool() - CurrentPoolSize: %d\n", m_messagePool.size());
   m_messagePool.push_back(message);	
 }
 

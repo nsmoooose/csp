@@ -43,7 +43,7 @@ RSC=rc.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /YX /FD /c
-# ADD CPP /nologo /MD /W3 /GR /GX /Zi /Od /Ob2 /I "../Include" /I "../../../THIRDPARTYLIBS/Include" /I "../../../THIRDPARTYLIBS/demeter" /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /D "_STLP_USE_OWN_NAMESPACE" /FD /c
+# ADD CPP /nologo /MD /W3 /GR /GX /Zi /Od /I "../Include" /I "../../../THIRDPARTYLIBS/Include" /I "../../../THIRDPARTYLIBS/demeter" /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /D "_STLP_USE_OWN_NAMESPACE" /FD /c
 # SUBTRACT CPP /YX
 # ADD BASE MTL /nologo /D "NDEBUG" /mktyplib203 /win32
 # ADD MTL /nologo /D "NDEBUG" /mktyplib203 /win32
@@ -54,8 +54,8 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /machine:I386
-# ADD LINK32 osgparticle.lib osgtext.lib demetervisualc6.lib osg.lib osgUtil.lib osgDb.lib SDL.lib SDLMain.lib opengl32.lib glaux.lib glu32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib DemeterVisualC6.lib SDL_Console.lib gdal_i.lib /nologo /subsystem:windows /debug /machine:I386 /out:"../Bin/CSPFlightSim_Release.exe" /pdbtype:sept /libpath:"../../../THIRDPARTYLIBS/lib"
-# SUBTRACT LINK32 /map
+# ADD LINK32 osgparticle.lib osgtext.lib demetervisualc6.lib osg.lib osgUtil.lib osgDb.lib SDL.lib SDLMain.lib opengl32.lib glaux.lib glu32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib DemeterVisualC6.lib SDL_Console.lib gdal_i.lib /nologo /subsystem:windows /pdb:"../Bin/CSPFlightSim_Release.pdb" /debug /machine:I386 /out:"../Bin/CSPFlightSim_Release.exe" /pdbtype:sept /libpath:"../../../THIRDPARTYLIBS/lib"
+# SUBTRACT LINK32 /pdb:none /map
 
 !ELSEIF  "$(CFG)" == "CSPFlightSim - Win32 Debug"
 
@@ -82,7 +82,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /debug /machine:I386 /pdbtype:sept
-# ADD LINK32 osgParticled.lib gdal_i.lib osgd.lib osgDBd.lib SDL_console.lib SDLd.lib opengl32.lib osgTextd.lib DemeterVisualC6d.lib osgUtild.lib SDLmaind.lib /nologo /subsystem:windows /incremental:no /pdb:"../DemoPackage/CSPFlightSim_Debug.pdb" /debug /machine:I386 /nodefaultlib:"msvcrt.lib" /out:"../Bin/CSPFlightSim_Debug.exe" /pdbtype:sept /libpath:"..\..\..\THIRDPARTYLIBS\lib"
+# ADD LINK32 osgParticled.lib gdal_i.lib osgd.lib osgDBd.lib SDL_console.lib SDLd.lib opengl32.lib osgTextd.lib DemeterVisualC6d.lib osgUtild.lib SDLmaind.lib /nologo /subsystem:windows /incremental:no /pdb:"../Bin/CSPFlightSim_Debug.pdb" /debug /machine:I386 /nodefaultlib:"msvcrt.lib" /out:"../Bin/CSPFlightSim_Debug.exe" /pdbtype:sept /libpath:"..\..\..\THIRDPARTYLIBS\lib"
 # SUBTRACT LINK32 /pdb:none
 
 !ENDIF 
@@ -580,6 +580,10 @@ SOURCE=..\Include\TerrainSymbol.h
 # Begin Source File
 
 SOURCE=..\Include\Tools.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\Include\Trees.h
 # End Source File
 # Begin Source File
 

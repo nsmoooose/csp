@@ -36,8 +36,9 @@
 	    Changed XML/Data/m2k/fm.xml.
 	    Added SWIG_NOINCLUDE on ccSP_wrap.cpp to enable log 
 	    level from python scripts
-	    Merged Onsight changes; can t find a bug in Sky class 
-	    when TEXDOME is defined on windows.
+	    Merged Onsight changes.
+	    When TEXDOME is defined, sky color is not correctly updated; 
+	    this happens only on windows.
 
 2003-06-25: onsight
             

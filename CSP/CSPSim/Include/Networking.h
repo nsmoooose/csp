@@ -152,7 +152,7 @@ class ObjectUpdateMessagePayload
       unsigned int id;
       simdata::SimTime timeStamp;
       _Vector3Struct globalPosition;
-      Vector3Struct linearVelocity;
+      _Vector3Struct linearVelocity;
       _Vector3Struct angularVelocity;
       _QuatStruct attitude;
     

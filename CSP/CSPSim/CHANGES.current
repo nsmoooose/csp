@@ -5,6 +5,10 @@
   * Changed doxygen control file to recurse into the variou subdirectories
     (Systems, Theater, etc).
 
+  * Changed some print statements to use logging instead.
+
+  * Added a mainpage comment for the doxygen docs.
+
 2004-06-14: onsight
   * Added doxygen directory, control file, and make targets.
 

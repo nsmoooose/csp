@@ -24,6 +24,26 @@
  * 
  */
 
+/**
+ * @mainpage CSPSim - Combat Simulator Project
+ *
+ * @section overview Overview
+ *
+ * The Combat Simulator Project is an open-source community united by a
+ * common interest in combat simulator development.  We are developing
+ * standards, technologies, code libraries, tools and artwork that can be
+ * used to build a wide variety of real-time combat simulators.  Our
+ * ultimate goal is to realize concurrent and networked cross-platform
+ * simulation of large-scale multi-vehicle combat scenarios.
+ *
+ * CSPSim is a simulator testbed used to develop the infrastructure of
+ * CSP.  It is currently a functional flight simulator, using OpenGL
+ * rendering under both Microsoft Windows and GNU/Linux environments.
+ * For more details about current development efforts, please visit
+ * the <a href='csp.sourceforge.net/forum'>CSP Forums</a>.
+ *
+ */
+
 #ifndef __CSPSIM_H__
 #define __CSPSIM_H__
 

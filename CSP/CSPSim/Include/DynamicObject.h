@@ -151,10 +151,12 @@ public:
 	void updateGroundPosition();
 	void updateOrientation();
 
-	virtual void aggregate() { std::cout << "aggregate " << int(this) << std::endl; }
-	virtual void deaggregate() { std::cout << "deaggregate " << int(this) << std::endl; }
-	virtual void setVisible(bool visible) { std::cout << int(this) << ": visible = " << visible << std::endl; }
-	
+	virtual void aggregate() { CSP_LOG(APP, INFO, "aggregate @ " << int(this)); }
+	virtual void deaggregate() { CSP_LOG(APP, INFO, "deaggregate @ " << int(this)); }
+	virtual void setVisible(bool visible) {
+		CSP_LOG(APP, INFO, "object @ " << int(this) << ": visible = " << visible);
+	}
+
 	bool isNearGround();
 
 	// The object name holds an identifier string for in-game display.  It is not 

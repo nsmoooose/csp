@@ -1,6 +1,19 @@
 Version 0.3.2 (in progress)
 ===========================
 
+
+2003-04-18: delta
+	    Added Runge-Kutta Cask-Karp numerical method.doSimStep2() is now 
+	    calling it.
+
+	    Added a note on initialization of 'pause'.
+	    Added a simdata::Pointer<DynamicalObject> parameter in ObjectStats methods.
+	    Added a check to non nullitty of m_GameScreen in CSPSim::setActiveObject.
+	    Fixed a getStats non const method in AircraftObject class.
+	    Checked Onsight changes: a couple of forward class declarations causing
+	    compilation problems in vc++ have been fixed thanks to Onsight. 
+	    Updated .NET project.
+
 2003-04-18: onsight
             Lots of changes to many parts of CSPSim. First and foremost, the
             scene graph is now in VirtualScene. VirtualBattlefield no longer

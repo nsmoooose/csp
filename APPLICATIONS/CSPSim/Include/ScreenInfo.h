@@ -29,6 +29,10 @@
 #include <osg/Geode>
 #include <osgText/Text>
 
+#include <simdata/Types.h>
+
+#include "DynamicObject.h"
+
 class ScreenInfo:public osg::Geode 
 {
 protected:
@@ -40,7 +44,7 @@ public:
 	ScreenInfo(int posx,int posy, std::string const & name, std::string const & text = "");
 	virtual ~ScreenInfo() {}
 	virtual void update(){}
-	void setStatus(bool const bvisible) {if (bvisible) setNodeMask(1); else setNodeMask(0);};
+	void setStatus(bool const bvisible) {if (bvisible) setNodeMask(0x1); else setNodeMask(0x0);};
 	bool getStatus() const {return getNodeMask() != 0;};
 };
 
@@ -73,7 +77,7 @@ class ObjectStats: public ScreenInfo
 	// input device informations
 	std::vector<osgText::Text*> m_ObjectStats;
 public:
-	ObjectStats(int posx,int posy);
+	ObjectStats(int posx,int posy, simdata::Pointer<DynamicObject> const& activeObject);
 	virtual void update();
 	virtual ~ObjectStats(){}
 };

@@ -21,6 +21,10 @@
  * @file AeroDynamics.cpp
  *
  **/
+# if defined(_MSC_VER) && (_MSC_VER <= 1300)
+#define NOMINMAX
+#endif
+
 #include <algorithm>
 
 #include <SimData/InterfaceRegistry.h>
@@ -30,9 +34,6 @@
 #include "AeroDynamics.h"
 #include "CSPSim.h"
 #include "LogStream.h"
-
-
-using std::min;
 
 using simdata::RadiansToDegrees;
 using simdata::DegreesToRadians;
@@ -225,8 +226,8 @@ void AeroDynamics::postCreate()
 	Object::postCreate();
 	m_AspectRatio = m_WingSpan * m_WingSpan / m_WingArea;
 	m_CD_i = 1.0 / (0.9 * G_PI * m_AspectRatio);
-	m_depsilon = min(static_cast<double>(m_GMax),static_cast<double>(fabs(m_GMin))) / 2.0;
-	setNumericalMethod(new RungeKutta(this, false));
+	m_depsilon = std::min(static_cast<double>(m_GMax),static_cast<double>(fabs(m_GMin))) / 2.0;
+	setNumericalMethod(new RungeKuttaCK(this, false));
 }
 
 
@@ -875,7 +876,7 @@ void AeroDynamics::updateAngles(double h) {
 
 double const damping = 0.91;
 
-double const scaleFactor2 = 0.1;
+double const scaleFactor2 = 1.0/2.0;
 
 std::vector<double> const &AeroDynamics::_f(double x, std::vector<double> &y) {   
 	// dot(p,v,w,q) = f(p,v,w,q)
@@ -898,8 +899,7 @@ std::vector<double> const &AeroDynamics::_f(double x, std::vector<double> &y) {
 
 	// pass AOA, AOA dot, side angle
 	updateAngles(x);
-
-	m_ExtraForceBody = simdata::Vector3(0.0, 0.0, 0.0);
+    m_ExtraForceBody = simdata::Vector3(0.0, 0.0, 0.0);
 	m_ExtraMomentBody = simdata::Vector3(0.0, 0.0, 0.0);
 	if (m_NearGround) {
 		// approximate (generic) ground effect... TODO: paramaterize in xml.
@@ -927,53 +927,88 @@ std::vector<double> const &AeroDynamics::_f(double x, std::vector<double> &y) {
 			// FIXME: skipping landing gear contacts which are temporary!
 			std::vector<simdata::Vector3>::const_iterator contact = m_Contacts->begin()+3;
 			std::vector<simdata::Vector3>::const_iterator cEnd =  m_Contacts->end();
+			float const elastic = 0.5;
+			float const friction = 0.9;
+			bool nonGearContact = false;
 			for (; contact != cEnd; ++contact) {
 				simdata::Vector3 contact_local = BodyToLocal(*contact) + origin;
 				double height = simdata::Dot(contact_local, m_GroundN);
-				if (height < 0.0) {
-					// for now, just act like a hard surface	
+				if (height <= 0.0) {
+					nonGearContact = true;
 					simdata::Vector3 Vb = m_VelocityBody + (m_AngularVelocityBody^(*contact));
-					simdata::Vector3 V = BodyToLocal(Vb);
-					static const float groundK = 1.0e+7;
-					static const float groundBeta = 1.0e+6;
-					double impact = simdata::Dot(V, m_GroundN);
-					double scale = - (height*groundK + impact*fabs(impact)*groundBeta);
-					if (fabs(scale)>groundK) {
-						// dissipate some extra energy
-						if (impact < -10.0) {
-							m_VelocityBody -= 0.25 * simdata::Dot(m_VelocityBody, bodyn) * bodyn;
-							std::cout << "SLAM!!!!\n";
-						} else {
-							m_VelocityBody -= 0.05 * simdata::Dot(m_VelocityBody, bodyn) * bodyn;
-							std::cout << "SLAM!\n";
-						}
-						if (scale > 0.0) {
-							scale = groundK;
-						} else {
-							scale = -groundK;
-						}
-					}//if (fabs(scale)>groundK)
-					
-					simdata::Vector3 force = scaleFactor2 * scale * bodyn;
+					// velocity direction in body coordinates tangent to ground
+					simdata::Vector3 Vtangentb = simdata::Normalized(m_VelocityBody - simdata::Dot(m_VelocityBody,bodyn) * bodyn); 
+					simdata::Vector3 angularImpulsionContact = m_InertiaInverse * (*contact ^ bodyn);
+					double impulsion = -(1.0 + elastic) * simdata::Dot(Vb,bodyn) / 
+						            (m_MassInverse + simdata::Dot(bodyn,angularImpulsionContact));
+                    std::cout << "impulsion = " << impulsion << "\n";
+					//if (impulsion > 0) {
+						simdata::Vector3 linearImpulsion =  m_MassInverse * impulsion * (bodyn - friction * Vtangentb);
+						double normLI = linearImpulsion.Length();
+						double linearLimiter = std::min(2 * m_VelocityBody.Length(), normLI);
+						m_VelocityBody += scaleFactor2 * (linearLimiter / normLI) * linearImpulsion; 
+						simdata::Vector3 angularImpulsion = 
+							impulsion * ( angularImpulsionContact - m_InertiaInverse * (*contact^(friction * Vtangentb)));
+						double normAI = angularImpulsion.Length();
+						double angularLimiter = std::min(2 * m_AngularVelocityBody.Length(), normAI);
+						m_AngularVelocityBody += scaleFactor2 * (angularLimiter / normAI) * angularImpulsion;
+					/*}
+					else {
+						m_VelocityBody *= 0.0;
+						m_AngularVelocityBody *= 0.0;
+					}*/
+					//// for now, just  act like a hard surface	
+					//
+					//simdata::Vector3 V = BodyToLocal(Vb);
+					//static const float groundK = 1.0e+7;
+					//static const float groundBeta = 1.0e+6;
+					//double impact = simdata::Dot(V, m_GroundN);
+					//double scale = - (height*groundK + impact*fabs(impact)*groundBeta);
+					//if (fabs(scale)>groundK) {
+					//	// dissipate some extra energy
+					//	if (impact < -10.0) {
+					//		m_VelocityBody -= 0.25 * simdata::Dot(m_VelocityBody, bodyn) * bodyn;
+					//		std::cout << "SLAM!!!!\n";
+					//	} else {
+					//		m_VelocityBody -= 0.05 * simdata::Dot(m_VelocityBody, bodyn) * bodyn;
+					//		std::cout << "SLAM!\n";
+					//	}
+					//	if (scale > 0.0) {
+					//		scale = groundK;
+					//	} else {
+					//		scale = -groundK;
+					//	}
+					//}//if (fabs(scale)>groundK)
+					//
+					//simdata::Vector3 force = scale * bodyn;
 
-					V -= impact * m_GroundN;
-					V = LocalToBody(V);
-					if (height < -1.0) height = -1.0;
-					scale = -2.0 * groundK * height;  // 2 G slide
-					// reduce to zero as speed drops
-					float v = V.Length();
-					scale /= 1.0 + v;
-					// limit to 4G max
-					if (scale * v > m_Mass * 40.0) {
-						scale = m_Mass * 40.0 / v;
-					}
-					force += -scaleFactor2 * scale * V;
+					//V -= impact * m_GroundN;
+					//V = LocalToBody(V);
+					//if (height < -1.0) height = -1.0;
+					//scale = -2.0 * groundK * height;  // 2 G slide
+					//// reduce to zero as speed drops
+					//float v = V.Length();
+					//scale /= 1.0 + v;
+					//// limit to 4G max
+					//if (scale * v > m_Mass * 40.0) {
+					//	scale = m_Mass * 40.0 / v;
+					//}
+					//force += -scale * V;
+					//m_ExtraForceBody += force;
+					//m_ExtraMomentBody += (*contact) ^ force;
 
+					std::cout << "height = " << height << "\n";
+					simdata::Vector3 airflowTangentGround = m_AirflowBody - simdata::Dot(m_AirflowBody,bodyn)* bodyn;
+					simdata::Vector3 force = scaleFactor2 * (
+					                       - 100 * height * bodyn
+										   - m_AirSpeed * m_AirSpeed * airflowTangentGround
+										   );
 					m_ExtraForceBody += force;
-					m_ExtraMomentBody += (*contact) ^ force;
-					
-				} //if (height < 0.0)
-			} //for (contact
+					m_ExtraMomentBody += (*contact)^force;
+				} //if (height <= 0.0)
+			} //for (contact)
+         if (nonGearContact)
+			 m_ExtraForceBody += m_Gravity * m_Mass * LocalToBody(simdata::Vector3::ZAXIS);
 		} //if (m_Contacts)
 	} else { // if (m_NearGround)
 		m_GE = 0.0;
@@ -1029,14 +1064,21 @@ void AeroDynamics::BodyToLocal() {
 }
 
 void AeroDynamics::doSimStep2(double dt) {  
+	static float cdt = 0;
+	static unsigned long c = 0;
+
 	if (dt == 0.0) dt = 0.01;
 	
+	cdt += dt;
+	c++;
+	if (!(c % 10000)) 
+		std::cout << "average dt = " << cdt/c << "\n";
 	m_PositionLocal = *m_Position;
 	m_VelocityLocal = *m_Velocity;
 	m_AngularVelocityLocal = *m_AngularVelocity;
 	qOrientation = *m_Orientation;
 	
-	m_ElevatorScale = 0.9 * m_ElevatorScale + 0.1 * ControlInputValue( m_gForce );
+	m_ElevatorScale = (1.0 - dt) * m_ElevatorScale + dt * ControlInputValue( m_gForce );
 	m_Elevator = (1.0 - dt) * m_Elevator  + dt * m_ElevatorInput * m_ElevatorScale;
 
 	// initial conditions
@@ -1089,4 +1131,5 @@ void AeroDynamics::doSimStep2(double dt) {
 	*m_AngularVelocity = m_AngularVelocityLocal;
 	*m_Orientation = qOrientation;	
 }
+
 

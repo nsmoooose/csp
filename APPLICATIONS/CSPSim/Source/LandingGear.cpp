@@ -361,8 +361,8 @@ simdata::Vector3 LandingGear::simulate(simdata::Quaternion const &q,
 	
 	j=0;
 	if (0 && (n++ % 1000) == 0) {
-		//std::cout << "WOW " << compression << " -> " << F << " V = " << v_tangent_body << " d = " << drag_body << " s = " << side_body << "\n";
-		std::cout << side_speed << ":" << m_TireShiftX << " vtb = " << v_tangent_body << " vxl = " << v_x_local<< " sb = " << side_body << "\n";
+		std::cout << "WOW " << compression << " -> " << F << " V = " << v_tangent_body << " d = " << drag_body << " s = " << side_body << "\n";
+		//std::cout << side_speed << ":" << m_TireShiftX << " vtb = " << v_tangent_body << " vxl = " << v_x_local<< " sb = " << side_body << "\n";
 		          //<< "  v = " << v << ", h = " << h << ", gs = " << ground_speed << "\n";
 	}
 	if (0 && n++ < 1000 && (n % 10) == 0) {

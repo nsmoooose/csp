@@ -49,17 +49,17 @@ class NumericalMethod {
 protected:
 	unsigned short m_dimension;
 	VectorField* vectorField;
-	bool m_bfailed;
+	bool m_failed;
 public:
 	NumericalMethod(bool deleteVF = true):
 		m_bdeleteVF(deleteVF),
 		vectorField(0),
-		m_bfailed(false) {
+		m_failed(false) {
 	}
 	NumericalMethod(VectorField* pf, bool deleteVF = true):
 		m_bdeleteVF(deleteVF),
 		vectorField(pf), 
-		m_bfailed(false) {
+		m_failed(false) {
 			if (vectorField)
 				m_dimension = vectorField->getDimension();
 			else
@@ -80,16 +80,16 @@ public:
 	virtual bool failed() const;
 };
 
-class RungeKutta: public NumericalMethod
+class RungeKutta2: public NumericalMethod
 {
 	std::vector<double> const & rk4(std::vector<double> const & y, 
 		                            std::vector<double> const & dyx, 
 		                            double x, double h) const;
 	std::vector<double> const & rkqc(std::vector<double> &y, 
-		std::vector<double> &dyx, 
+		std::vector<double> &dydx, 
 		double &x, double htry, double eps, 
 		std::vector<double> const &yscal, 
-		double &hdid, double &hnext) const;
+		double &hdid, double &hnext);
 	std::vector<double> const &odeint(std::vector<double> const & ystart,
 		double x1, double x2, 
 		double eps, double h1, double hmin, 
@@ -108,7 +108,7 @@ class RungeKutta: public NumericalMethod
 public:
 	std::vector<double> const& quickSolve(std::vector<double>& y0, double t0, double dt) const; 
 	std::vector<double> const& enhancedSolve(std::vector<double>& y0, double t0, double dt);
-	RungeKutta( 
+	RungeKutta2( 
 		VectorField* vectorField = 0,
 		bool deleteVF = true,
 		double Precision = 1.e-3, //1.e-4
@@ -120,6 +120,47 @@ public:
 		m_hestimate(Hestimate)
 	{}
 };
+
+class RungeKuttaCK: public NumericalMethod
+{
+	std::vector<double> const & rkck(std::vector<double> const & y, 
+		                            std::vector<double> const & dyx, 
+									double x, double h, std::vector<double>& yerr) const;
+	std::vector<double> const & rkqs(std::vector<double> &y, 
+		std::vector<double> &dydx, 
+		double &x, double htry, double eps, 
+		std::vector<double> const &yscal, 
+		double &hdid, double &hnext);
+	std::vector<double> const &odeint(std::vector<double> const & ystart,
+		double x1, double x2, 
+		double eps, double h1, double hmin, 
+		unsigned int &nok, unsigned int &nbad);
+	
+	static double const PGROW ;
+	static double const PSHRNK;
+	
+	static double const SAFETY;
+	static double const ERRCON;
+	
+	static unsigned int const MAXSTP;
+    static double const TINY;
+	double m_precision, m_hmin, m_hestimate;
+public:
+	std::vector<double> const& quickSolve(std::vector<double>& y0, double t0, double dt) const; 
+	std::vector<double> const& enhancedSolve(std::vector<double>& y0, double t0, double dt);
+	RungeKuttaCK( 
+		VectorField* vectorField = 0,
+		bool deleteVF = true,
+		double Precision = 1.e-3, //1.e-4
+		double Hmin = std::numeric_limits<float>::epsilon(), 
+		double Hestimate = 1.e-2):
+	    NumericalMethod(vectorField, deleteVF),
+		m_precision(Precision),
+		m_hmin(Hmin),
+		m_hestimate(Hestimate)
+	{}
+};
+
 
 #endif // __NUMERICALMETHOD_H__
 

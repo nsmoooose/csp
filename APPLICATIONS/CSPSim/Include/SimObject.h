@@ -73,13 +73,13 @@ public:
 	unsigned int getObjectType() const { return m_ObjectType; }
 	
 	void setFreezeFlag(bool flag) { setFlags(F_FREEZE, flag); }
-	bool getFreezeFlag() const { return getFlags(F_FREEZE); }
+	bool getFreezeFlag() const { return getFlags(F_FREEZE) != 0; }
 
 	void setDeleteFlag(bool flag) { setFlags(F_DELETE, flag); }
-	bool getDeleteFlag() const { return getFlags(F_DELETE); }
+	bool getDeleteFlag() const { return getFlags(F_DELETE) != 0; }
 
 	void setGroundFlag(bool flag) { setFlags(F_GROUND, flag); }
-	bool getGroundFlag() const { return getFlags(F_GROUND); }
+	bool getGroundFlag() const { return getFlags(F_GROUND) != 0; }
 
 	virtual simdata::Vector3 getViewPoint() const;
 

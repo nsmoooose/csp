@@ -36,7 +36,7 @@ public:
 	virtual ~ScreenInfoManager(){}
 	void setStatus(std::string const & name, bool bvisible);
 	bool ScreenInfoManager::getStatus(std::string const & name);
-	void changeObjectStats(int ScreenWidth, int ScreenHeight);
+	void changeObjectStats(int ScreenWidth, int ScreenHeight,simdata::Pointer<DynamicObject> const& activeObject);
 private:
 	osg::MatrixTransform* m_modelview_abs;
 	ScreenInfo* getScreenInfo(std::string const & name);

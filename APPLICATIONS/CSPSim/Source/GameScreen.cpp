@@ -25,6 +25,7 @@
 
 //#include <osg/DisplaySettings>
 
+#include <SimData/Math.h>
 #include <SimData/Types.h>
 
 #include "CSPSim.h"
@@ -193,6 +194,10 @@ void GameScreen::onInit()
 	m_InfoGroup->addChild(m_Console.get());
 
 	m_InfoView->setSceneData(m_InfoGroup.get());
+
+	simdata::Pointer<DynamicObject> ao = CSPSim::theSim->getActiveObject();
+	if (ao.valid())
+		setActiveObject(ao);
 }
 
 void GameScreen::onExit()
@@ -212,7 +217,7 @@ void GameScreen::setActiveObject(simdata::PointerBase &object)
 	if (vehicle.valid()) {
 		int ScreenWidth = CSPSim::theSim->getSDLScreen()->w;
 		int ScreenHeight = CSPSim::theSim->getSDLScreen()->h;
-		m_ScreenInfoManager->changeObjectStats(ScreenWidth,ScreenHeight);
+		m_ScreenInfoManager->changeObjectStats(ScreenWidth,ScreenHeight,vehicle);
 	}
 }
 
@@ -528,8 +533,8 @@ void GameScreen::setCamera(double dt)
 	{
 	case 1: // view_mode one is normal inside the cockpit view
 	{
-		turnViewAboutX(dt,M_PI / 3);
-		turnViewAboutZ(dt,M_PI / 3);
+		turnViewAboutX(dt,G_PI / 3);
+		turnViewAboutZ(dt,G_PI / 3);
 		simdata::Vector3 planePos = m_ActiveObject->getGlobalPosition();
 		simdata::Vector3 planeDir = m_ActiveObject->getDirection();
 		simdata::Vector3 planeUp = m_ActiveObject->getUpDirection();

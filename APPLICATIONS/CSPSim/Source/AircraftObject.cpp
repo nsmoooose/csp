@@ -473,7 +473,7 @@ void AircraftObject::doComplexPhysics(double dt)
 	//m_FlightModel->doSimStep2(dt);
 }
 
-void AircraftObject::getStats(std::vector<std::string> &stats) {
+void AircraftObject::getStats(std::vector<std::string> &stats) const {
 	DynamicObject::getStats(stats);
 	char buffer[256];
 	snprintf(buffer, 255, "Throttle: %.3f", m_Throttle);

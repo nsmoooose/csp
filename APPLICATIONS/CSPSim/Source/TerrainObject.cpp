@@ -61,7 +61,6 @@ TerrainObject::TerrainObject(): simdata::Object()
 
 TerrainObject::~TerrainObject()
 {
-	cout << "~TerrainObject()\n";
 	unload();
 }
 

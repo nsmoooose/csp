@@ -147,7 +147,8 @@ void CSPSim::setActiveObject(simdata::Pointer<DynamicObject> object) {
 	m_ActiveObject = object;
 	if (m_ActiveObject.valid()) {
 		m_ActiveObject->setHuman();
-		m_GameScreen->setActiveObject(m_ActiveObject);
+		if (m_GameScreen)
+			m_GameScreen->setActiveObject(m_ActiveObject);
 		simdata::hasht classhash = m_ActiveObject->getPath();
 		printf("getting map for %s\n", classhash.str().c_str());
 		EventMapping *map = m_InterfaceMaps->getMap(classhash);
@@ -269,15 +270,21 @@ void CSPSim::init()
 		so->setGlobalPosition(483000, 499000, 100.0);
 		so->addToScene(m_Battlefield);
 #endif
+ 
+		// Following variables should be set before calling GameScreen.init()
+		// because they are used in GameScreen initialization process
 
-		// create screens
-		m_GameScreen = new GameScreen;
-
-		// setup screens
-		m_GameScreen->onInit();
+		// enable/disable pause at startup
+		m_Paused = false;
+	   //m_Paused = true;
 
 		// start in the aircraft
 		setActiveObject(ao);
+
+		// create screens
+		m_GameScreen = new GameScreen;
+		// setup screens
+		m_GameScreen->onInit();
 
 #if 0
 		// set the Main Menu then start the main loop
@@ -301,6 +308,7 @@ void CSPSim::init()
 	catch (...) {
 		csp::OtherFatalException("initialization");
 	}
+
 }
 
 
@@ -366,8 +374,6 @@ void CSPSim::run()
 	CSP_LOG(CSP_APP, CSP_DEBUG, "CSPSim::run...");
 
 	//m_bShowStats = true;
-	m_Paused = false;
-	//m_Paused = true;
 
 	std::string date_string = g_Config.getString("Testing", "Date", "2000-01-01 00:00:00.0", true);
 	simdata::SimDate date;

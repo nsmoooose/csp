@@ -29,10 +29,10 @@
 
 void set2dScene(osg::Group* rootNode, int ScreenWidth, int ScreenHeight)
 {
-    osg::ref_ptr<Framerate> framerate = new Framerate(0,ScreenHeight);
+    osg::ref_ptr<Framerate> framerate = new Framerate(11,ScreenHeight - 11);
 	//float textWidth = bitmapFont->getWidth(pause->getEncodedText());
-	osg::ref_ptr<ScreenInfo> pause = new ScreenInfo(ScreenWidth - 5 * 8, ScreenHeight,"PAUSE", "PAUSE");
-	osg::ref_ptr<GeneralStats> generalStats = new GeneralStats(0, ScreenHeight / 3);
+	osg::ref_ptr<ScreenInfo> pause = new ScreenInfo(ScreenWidth - 5 * 8 - 11, ScreenHeight - 11,"PAUSE", "PAUSE");
+	osg::ref_ptr<GeneralStats> generalStats = new GeneralStats(11, ScreenHeight / 3);
 
 	rootNode->addChild(framerate.get());
 	rootNode->addChild(pause.get());
@@ -63,12 +63,12 @@ ScreenInfoManager::ScreenInfoManager(int ScreenWidth, int ScreenHeight)
 	setCullingActive(true);
 }
 
-void ScreenInfoManager::changeObjectStats(int ScreenWidth, int ScreenHeight)
+void ScreenInfoManager::changeObjectStats(int ScreenWidth, int ScreenHeight,simdata::Pointer<DynamicObject> const& vehicle)
 {
 	ScreenInfo* os = getScreenInfo("OBJECT STATS");
 	if (os)
 		m_modelview_abs->removeChild(os);
-	osg::ref_ptr<ObjectStats> objectStats = new ObjectStats(0, 2 * ScreenHeight / 3);
+	osg::ref_ptr<ObjectStats> objectStats = new ObjectStats(11, 2 * ScreenHeight / 3,vehicle);
 	m_modelview_abs->addChild(objectStats.get());
 }
 

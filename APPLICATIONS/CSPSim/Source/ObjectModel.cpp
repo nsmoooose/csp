@@ -204,7 +204,7 @@ void ObjectModel::loadModel() {
 	assert(pNode);
 
 	m_Node = pNode;
-	m_Node->setName("3D MODEL"); // why?
+	m_Node->setName(m_ModelPath.getSource());
 	
 	osg::BoundingSphere s = m_Node->getBound();
 	m_BoundingSphereRadius = s.radius();

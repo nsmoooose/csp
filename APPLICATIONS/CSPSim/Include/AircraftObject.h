@@ -93,16 +93,16 @@ public:
 	void doMovement(double dt);
 	void doFCS(double dt);
 
-	void getStats(std::vector<std::string> &stats);
-
 	void setAttitude(double pitch, double roll, double heading);
 
 	void setComplexPhysics(bool flag) { m_ComplexPhysics = flag; }
 
-	double getAngleOfAttack() { return m_FlightModel->getAngleOfAttack(); }
-	double getSideSlip() { return m_FlightModel->getSideSlip(); }
-	virtual double getGForce() { return m_FlightModel->getGForce();};
-	virtual double getSpeed() { return m_FlightModel->getSpeed();};
+	double getAngleOfAttack() const { return m_FlightModel->getAngleOfAttack(); }
+	double getSideSlip() const { return m_FlightModel->getSideSlip(); }
+	virtual double getGForce() const { return m_FlightModel->getGForce();}
+	virtual double getSpeed() const { return m_FlightModel->getSpeed();}
+
+	void getStats(std::vector<std::string> &stats) const;
 
 //	void initializeHud();
 //	Hud * GetpHud() const { return m_phud;};

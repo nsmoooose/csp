@@ -135,8 +135,9 @@ protected:
 	float m_DrMax;
 	float m_DrMin;
 
-	float m_GMin;
-	float m_GMax;
+	// the folowing parameters are both structural and controlled in nature
+	float m_GMin; // min number of G that this aircraft model can support (in general < 0)
+	float m_GMax; // max  ...                                             (in general > 3)
 
 	/**
 	 * internally: X = right, Y = nose, Z = up

@@ -33,14 +33,15 @@
 #include <SimData/Types.h>
 #include <SimData/DataManager.h>
 
+
 #include "DynamicObject.h"
 #include "TerrainObject.h"
 #include "Atmosphere.h"
 #include "Shell.h"
+#include "VirtualBattlefield.h"
 
 #include <Python.h>
 
-class VirtualBattlefield;
 class VirtualScene;
 class VirtualHID;
 class BaseScreen;

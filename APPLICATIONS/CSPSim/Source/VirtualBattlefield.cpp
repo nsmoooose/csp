@@ -103,8 +103,9 @@ int VirtualBattlefield::drawScene()
 {
 	CSP_LOG(CSP_APP, CSP_DEBUG, "VirtualBattlefield::drawScene()...");
 	
-	ObjectList::iterator i;
-	for (i = objectList.begin(); i != objectList.end(); i++) {
+	ObjectList::iterator i = objectList.begin();
+	ObjectList::const_iterator iEnd = objectList.end();
+	for (; i != iEnd; ++i) {
 		(*i)->updateScene();
 	}
     
@@ -147,7 +148,6 @@ void VirtualBattlefield::onUpdate(float dt)
 	for (i = objectList.begin() ; i != objectList.end() ; ++i) {
 		(*i)->onUpdate(dt);
 	}
-
 	CSP_LOG(CSP_APP, CSP_DEBUG, "VirtualBattlefield::onUpdate - leaving" );
 }
 

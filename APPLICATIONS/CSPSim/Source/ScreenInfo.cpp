@@ -141,9 +141,9 @@ void GeneralStats::update()
 	}
 }
 
-ObjectStats::ObjectStats(int posx,int posy):ScreenInfo(posx,posy,"OBJECT STATS")
+ObjectStats::ObjectStats(int posx,int posy, simdata::Pointer<DynamicObject> const& activeObject):
+ScreenInfo(posx,posy,"OBJECT STATS")
 {
-	simdata::Pointer<DynamicObject> activeObject = CSPSim::theSim->getActiveObject();
 	if (!activeObject.isNull()) {
 		std::vector<std::string> stringStats;
 		activeObject->getStats(stringStats);

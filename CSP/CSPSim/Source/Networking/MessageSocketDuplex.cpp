@@ -39,25 +39,6 @@ MessageSocketDuplex::MessageSocketDuplex(Port port)
     m_receiverPort = port;
     m_UDPReceiverSocket = new ost::UDPSocket(*m_receiverAddr, port);
     m_UDPSenderSocket   = new ost::UDPSocket();
-    
-    /*
-    m_receiverSockFd = socket(AF_INET, SOCK_DGRAM, 0);
-    m_senderSockFd = socket(AF_INET, SOCK_DGRAM, 0);
-    */
-
-    /*
-    memset( (void*)&m_receiverSocketAddress, 0,  sizeof (struct sockaddr_in));
-
-    m_receiverSocketAddress.sin_family = AF_INET;
-    m_receiverSocketAddress.sin_port = htons( port );
-    m_receiverSocketAddress.sin_addr.s_addr = htonl(INADDR_ANY);
-
-    ::bind(m_receiverSockFd, (struct sockaddr *)&m_receiverSocketAddress, sizeof(m_receiverSocketAddress));
-    */
-    
-    // create sender end point
-    
-    
 }
 
 MessageSocketDuplex::MessageSocketDuplex(ost::InetAddress & addr, Port port)
@@ -69,44 +50,22 @@ MessageSocketDuplex::MessageSocketDuplex(ost::InetAddress & addr, Port port)
 	
 }
 
-/*
-void MessageSocketDuplex::bind(NetworkAddress * address, Port port)
-{
-
-}
-*/
-
-int MessageSocketDuplex::sendto(NetworkMessage & message, ost::InetHostAddress * remoteAddress, Port * remotePort)
+int MessageSocketDuplex::sendto(NetworkMessage * message, ost::InetHostAddress * remoteAddress, Port * remotePort)
 {
 //    CSP_LOG(NETWORK, DEBUG, "Sending Network Packet");
 
     m_UDPSenderSocket->setPeer(*remoteAddress, *remotePort);
     
 #ifdef _MSC_VER
-    return m_UDPSenderSocket->send((const char *)message.getBufferPtr(), message.getBufferLen());
+    return m_UDPSenderSocket->send((const char *)message, NETWORK_PACKET_SIZE);
 #else
-    return m_UDPSenderSocket->send((const void *)message.getBufferPtr(), message.getBufferLen());
+    return m_UDPSenderSocket->send((const void *)message, NETWORK_PACKET_SIZE);
 #endif
 
-    /*
-
-    struct sockaddr_in servaddr;
-    memset((void*)&servaddr, 0, sizeof(sockaddr));
-    servaddr.sin_family = AF_INET;
-    servaddr.sin_port = htons(*remotePort);
-    servaddr.sin_addr.s_addr = inet_addr(remoteAddress->getNetworkName().c_str());
-    
-#ifdef _MSC_VER
-    return ::sendto(m_senderSockFd, (const char *)message->getBufferPtr(), message->getBufferLen(), 0, (const struct sockaddr *)&servaddr, sizeof(sockaddr));
-#else
-	return ::sendto(m_senderSockFd, (const void *)message->getBufferPtr(), message->getBufferLen(), 0, (const struct sockaddr *)&servaddr, sizeof(sockaddr));
-#endif
-
-    */
 	
 }
 
-int MessageSocketDuplex::recvfrom(NetworkMessage & message, ost::InetHostAddress * remoteAddress, Port * remotePort)
+int MessageSocketDuplex::recvfrom(NetworkMessage ** message)
 {
 //    CSP_LOG(NETWORK, DEBUG, "Receving Network Packet");
 
@@ -115,13 +74,8 @@ int MessageSocketDuplex::recvfrom(NetworkMessage & message, ost::InetHostAddress
 	// get addr of next packet
 	Port port;
 	ost::InetHostAddress addr = m_UDPReceiverSocket->getPeer(&port);
-
-
-	// TODO may need to validate addr, and port as being from a register node.
-	if (remotePort)
-		*remotePort = port;
-	if (remoteAddress)
-		*remoteAddress = addr;
+        printf("MessageSocketDuplex::recvfrom() - port: %d\n", port);
+	printf("MessageSocketDuplex::recvfrom() - hostname: %s\n", addr.getHostname());
 	
 	// peek at packet to verify this is a valid CSP packet. and if so get the packet type.
 	
@@ -129,30 +83,25 @@ int MessageSocketDuplex::recvfrom(NetworkMessage & message, ost::InetHostAddress
 	uint16 headerBuffer[6];
 	int numHeaderBytes = m_UDPReceiverSocket->peek(headerBuffer, headerlen);
 
+
 	// TODO validation of header
 	
+	simdata::uint8 * buffer = new simdata::uint8[512];
+	int maxBufLen = 512;
+	
 	// get the packet
-	int numPacketBytes = m_UDPReceiverSocket->receive((void*)message.getBufferPtr(), 
-			                                 message.getBufferLen());
+	int numPacketBytes = m_UDPReceiverSocket->receive((void*)buffer, maxBufLen);
+	*message = (NetworkMessage*)buffer;
 
 	return numPacketBytes;
 	
     }
     return 0;
-		    
-
-    
-    /*
-    struct sockaddr_in cliaddr;
-    socklen_t clilen = sizeof(cliaddr);
-    return ::recvfrom(m_receiverSockFd, (void *)message->getBufferPtr(), message->getBufferLen(), 
-		    0, (struct sockaddr *)&cliaddr, &clilen);
-		    */
 
 }
 
     
-int MessageSocketDuplex::sendto(NetworkMessage & message, NetworkNode * node)
+int MessageSocketDuplex::sendto(NetworkMessage * message, NetworkNode * node)
 {
 
 //  CSP_LOG(NETWORK, DEBUG, "Sending Network Packet");
@@ -162,14 +111,4 @@ int MessageSocketDuplex::sendto(NetworkMessage & message, NetworkNode * node)
 //  return 0;
 }
 
-
-int MessageSocketDuplex::recvfrom(NetworkMessage & message, NetworkNode * node)
-{
-//  CSP_LOG(NETWORK, DEBUG, "Receiving Network Packet");
-  ost::InetHostAddress address = node->getAddress();
-  Port port = node->getPort();
-  return recvfrom(message, &address, &port);
-//    return 0;
-}
- 
 

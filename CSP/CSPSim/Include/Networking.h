@@ -40,37 +40,44 @@
 
 typedef int SockFd;
 typedef simdata::uint16 Port;
+class NetworkNode;
+
+const short NETWORK_PACKET_SIZE = 512;
+
+struct MessageHeader
+{
+  simdata::uint16  m_magicNumber;
+  simdata::uint16  m_payloadLen;
+  simdata::uint16  m_messageType;
+  simdata::uint32  m_ipaddr;
+  simdata::uint16  m_port;
+  simdata::uint16  m_id;
+};
 
 class NetworkMessage
 {
    
     protected: 
+    MessageHeader m_header;
+    simdata::uint8 m_payloadBuf[];
     
-    simdata::uint8 * m_Buf;
-    simdata::uint8 * m_PayloadBuf;
-    simdata::uint16 m_BufferLen;
-    simdata::uint16 m_MessageType;
-    simdata::uint16 m_PayloadLen;
-    bool m_Initialized;
-
-    static unsigned short magicNumber;
+    static unsigned short m_magicNumber;
     static unsigned short m_HeaderLen;
                 
-    public:
+    private:
 
     NetworkMessage();
-    virtual ~NetworkMessage();
 
-    bool initialize(simdata::uint16 type, simdata::uint16 payloadLength);
+    public:
+    
+    bool initialize(simdata::uint16 type, simdata::uint16 payloadLength, NetworkNode * senderNode);
    
     simdata::uint16 getType();
 
-    void * getBufferPtr();
     void * getPayloadPtr();
-
-    simdata::uint16 getBufferLen();
     simdata::uint16 getPayloadLen();
-    simdata::uint16 getHeaderLen();
+
+    Port getOriginatorPort();
 
     bool isInitialized();
     bool isHeaderValid();
@@ -83,32 +90,34 @@ class NetworkMessagePool
 
 };
                                             
-class ObjectUpdateMessage : public NetworkMessage
-{
-
-    public:
-    ObjectUpdateMessage(simdata::uint16 id, simdata::Vector3 position, simdata::Vector3 velocity);
-    
-    
-};
+//class ObjectUpdateMessage : public NetworkMessage
+//{
+//
+//    public:
+//    ObjectUpdateMessage(simdata::uint16 id, simdata::Vector3 position, simdata::Vector3 velocity);
+//    
+//    
+//};
 
 
 class NetworkNode
 {
   private:
-    uint32 m_node_id;
     ost::InetHostAddress m_addr;
     Port m_port;
+    uint16 m_node_id;
     
   public:
     NetworkNode();
     NetworkNode(int node_id, ost::InetHostAddress addr, Port port);
+    NetworkNode(int node_id, const char * hostname, Port port);
+
 
     void setAddress(ost::InetHostAddress addr);
     void setPort(Port port);
-    void setId(int node_id);
+    void setId(short node_id);
 
-    int getId();
+    short getId();
     Port getPort();
     ost::InetHostAddress getAddress();
     
@@ -119,16 +128,6 @@ class MessageSocketDuplex
     ost::UDPSocket * m_UDPReceiverSocket;
     ost::UDPSocket * m_UDPSenderSocket;	
    
-    /*
-    SockFd m_receiverSockFd;
-    SockFd m_senderSockFd;
-    */
-    
-    /*
-    struct sockaddr_in m_receiverSocketAddress;
-    NetworkAddress * m_receiverAddress;
-    */
-    
     ost::InetAddress * m_receiverAddr;
     Port m_receiverPort;
     
@@ -137,15 +136,10 @@ class MessageSocketDuplex
     MessageSocketDuplex(ost::InetAddress & Address, Port port);     // set the bound address and port.
     MessageSocketDuplex(Port port);                            // set the bound port.
     
-    /*
-    void bind(NetworkAddress * address, Port port);                    // binds the listener port.
-    */
+    int sendto(NetworkMessage * message, ost::InetHostAddress * remoteAddress, Port * remotePort);   
+    int sendto(NetworkMessage * message, NetworkNode * node);   
     
-    int sendto(NetworkMessage & message, ost::InetHostAddress * remoteAddress, Port * remotePort);   
-    int recvfrom(NetworkMessage & message, ost::InetHostAddress * remoteAddress=NULL, Port * remotePort=NULL);
-
-    int sendto(NetworkMessage & message, NetworkNode * node);   
-    int recvfrom(NetworkMessage & message, NetworkNode * node);
+    int recvfrom(NetworkMessage ** message);
  
     ost::InetAddress * getReciverAddress() { return m_receiverAddr; }
     Port getReceiverPort() { return m_receiverPort; }
@@ -158,15 +152,22 @@ class NetworkMessenger
    private: 
       MessageSocketDuplex * m_messageSocketDuplex;
       std::list<NetworkMessage*> m_messageList;
+      NetworkNode * m_orginatorNode;
 
    public:
       
     NetworkMessenger();
-    NetworkMessenger(Port port);
+    NetworkMessenger(NetworkNode * orginatorNode);
 
-    void queueMessage(NetworkNode * node, NetworkMessage * message);
+    void queueMessage(NetworkNode * remoteNode, NetworkMessage * message);
     void sendMessages();
     void receiveMessages();
+
+    NetworkNode * getOrginatorNode();
+    void setOrginatorNode(NetworkNode * orginatorNode);
+
+    NetworkMessage * getMessageFromPool(int type, int payloadLen);
+    void returnMessageToPool(NetworkMessage * message);
     
 };
 

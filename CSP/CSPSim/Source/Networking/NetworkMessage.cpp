@@ -27,8 +27,8 @@
 
 #include "Networking.h"
 
-unsigned short NetworkMessage::magicNumber = 0xFCCF;
-unsigned short NetworkMessage::m_HeaderLen = 6;
+unsigned short NetworkMessage::m_magicNumber = 0xFCCF;
+unsigned short NetworkMessage::m_HeaderLen = 14;
 
 /**
  * NetworkMessage()
@@ -40,28 +40,6 @@ unsigned short NetworkMessage::m_HeaderLen = 6;
  * bytes within it to the proper values. Note also once a message object has
  * been initialized it should be free to be used multiple times.
  */
-NetworkMessage::NetworkMessage()
-{
-   m_Buf = NULL;
-   m_PayloadBuf = NULL;
-   m_BufferLen = 0;
-   m_PayloadLen = 0;
-   m_MessageType = 0;
-   m_Initialized = false;
-  
-}
-
-
-/**
- * ~NetworkMessage
- * 
- * Deletes a network message including removing the memory allocated for the buffer.
- */
-NetworkMessage::~NetworkMessage()
-{
-  if (m_Initialized)
-    delete [] m_Buf;
-}
 
 /**
  * initialize()
@@ -69,33 +47,24 @@ NetworkMessage::~NetworkMessage()
  * This method initializes a NetworkMessage, Including allocating a buffer to
  * hold the message header and payload and also setting up the header.
  */
-bool NetworkMessage::initialize( unsigned short type, unsigned short payloadLen)
+bool NetworkMessage::initialize( simdata::uint16  type, simdata::uint16 payloadLen, NetworkNode * orginatorNode )
 {
    // return false if this has already been initialized.
-   if (m_Initialized)
+   // the magic number also serves to determine if initialized.
+   if (m_header.m_magicNumber == NetworkMessage::m_magicNumber)
       return false;
-      
-   m_PayloadLen = payloadLen;
-   m_MessageType = type;
+ 
+   m_header.m_magicNumber = NetworkMessage::m_magicNumber;
+   m_header.m_payloadLen = payloadLen;
+   m_header.m_messageType = type;
+   m_header.m_ipaddr = orginatorNode->getAddress().getAddress().s_addr;
+   m_header.m_port = orginatorNode->getPort();
+   m_header.m_id = orginatorNode->getId();
    
-   m_BufferLen = m_HeaderLen + m_PayloadLen;
-   
-   m_Buf = new unsigned char[m_BufferLen];
-   m_PayloadBuf = m_Buf + m_HeaderLen;
-
-   // write the header;
-   unsigned char * ptrBuf = m_Buf;
-   memcpy((void*)ptrBuf    , (void*)&magicNumber, sizeof(unsigned short));
-   ptrBuf += sizeof(unsigned short);
-   memcpy((void*)ptrBuf    , (void*)&m_BufferLen, sizeof(unsigned short));
-   ptrBuf += sizeof(unsigned short);
-   memcpy((void*)ptrBuf    , (void*)&m_MessageType  , sizeof(unsigned short) );
-   ptrBuf += sizeof(unsigned short);
 
    // write zeros to the payload section of the buffer.
-   memset(m_PayloadBuf, 0x00, m_PayloadLen);
-                                                                                                                              
-   m_Initialized = true;
+   memset(m_payloadBuf, 0x00, m_header.m_payloadLen);
+   
    return true;
 
 }
@@ -106,9 +75,9 @@ bool NetworkMessage::initialize( unsigned short type, unsigned short payloadLen)
  * Returns the number of bytes as a short that the message
  * buffer uses including the header and payload.
  */
-unsigned short NetworkMessage::getBufferLen()
+unsigned short NetworkMessage::getPayloadLen()
 {
-    return m_BufferLen;
+    return m_header.m_payloadLen;
 }
 
 /**
@@ -117,10 +86,10 @@ unsigned short NetworkMessage::getBufferLen()
  * Returns the buffer pointer so functions can copy binary
  * data into the underlying buffer.
  */
-void * NetworkMessage::getBufferPtr()
-{
-  return m_Buf;
-}
+//void * NetworkMessage::getBufferPtr()
+//{
+//  return m_Buf;
+//}
 
 /**
  * getPayloadPtr()
@@ -129,7 +98,7 @@ void * NetworkMessage::getBufferPtr()
  */
 void * NetworkMessage::getPayloadPtr()
 {
-  return (void*)m_PayloadBuf;
+  return (void*)m_payloadBuf;
 }
 
 /**
@@ -138,10 +107,7 @@ void * NetworkMessage::getPayloadPtr()
  */
 unsigned short NetworkMessage::getType()
 {
-   unsigned int type;
-   memcpy((void*)&type , (void*)(m_Buf + 2), sizeof(unsigned short));
-   return type;
-
+   return m_header.m_messageType;
 }
 
 /**
@@ -150,12 +116,12 @@ unsigned short NetworkMessage::getType()
  */
 bool NetworkMessage::isHeaderValid()
 {
-  unsigned short magicNumber = 0xFCCF;
-  unsigned short number;
+//  unsigned short magicNumber = 0xFCCF;
+//  unsigned short number;
+//
+//  memcpy((void*)&number , (void*)&m_Buf, sizeof(unsigned short));
 
-  memcpy((void*)&number , (void*)&m_Buf, sizeof(unsigned short));
-
-  return (number == magicNumber);
+  return (m_header.m_magicNumber == NetworkMessage::m_magicNumber);
   
 }
 
@@ -163,16 +129,14 @@ bool NetworkMessage::isHeaderValid()
  * getHeaderLen()
  * returns the number of bytes as a short that the header occupies.
  */
-unsigned short NetworkMessage::getHeaderLen()
+//unsigned short NetworkMessage::getHeaderLen()
+//{
+// return m_HeaderLen;
+//}
+
+
+Port NetworkMessage::getOriginatorPort()
 {
-  return m_HeaderLen;
+   return m_header.m_port;
 }
 
-/**
- * getPayloadLen()
- * returns the number of bytes as a short that the payload occupies.
- */
-unsigned short NetworkMessage::getPayloadLen()
-{
-  return m_PayloadLen;
-}

@@ -394,12 +394,12 @@ void DynamicObject::updateScene(simdata::Vector3 const &origin) {
 
 NetworkMessage * DynamicObject::getUpdateMessage()
 {
+  CSP_LOG(APP, DEBUG, "DynamicObject::getUpdateMessage()");
   unsigned short messageType = 2;
   unsigned short payloadLen  = sizeof(int) + sizeof(double) + 3*sizeof(simdata::Vector3) +
 	                       sizeof(simdata::Quat) /* + sizeof(simdata::Matrix3) + sizeof(double) */;
 
-  NetworkMessage * message = new NetworkMessage();
-  message->initialize( messageType, payloadLen);
+  NetworkMessage * message = CSPSim::theSim->getNetworkMessenger()->getMessageFromPool(messageType, payloadLen);
 
   unsigned char * ptrBuf = (unsigned char*)message->getPayloadPtr();
 
@@ -428,6 +428,7 @@ NetworkMessage * DynamicObject::getUpdateMessage()
 //  memcpy((void*)ptrBuf, (void*)&b_Mass->value(), sizeof(double));
 //  ptrBuf += bytescopied;
 
+  CSP_LOG(APP, DEBUG, "DynamicObject::getUpdateMessage() - returning message");
 
 
   return message;
@@ -478,6 +479,8 @@ void DynamicObject::putUpdateMessage(NetworkMessage* message)
   // return message to shared pool.
   //  NetworkMessagePool.putMessageObject(message);
 //  delete message;
+//
+//  CSPSim::theSim->getNetworkMessenger()->returnMessageToPool(message);
 }
 
 

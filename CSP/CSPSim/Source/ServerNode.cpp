@@ -14,34 +14,32 @@ ServerNode::ServerNode()
 int ServerNode::run()
 {
   printf("Network test client starting up...\n");
-  Port clientPort = 20010;
-  Port serverPort = 20011;
-  MessageSocketDuplex * socket = new MessageSocketDuplex(serverPort);
-  NetworkMessage message;
-  message.initialize(1, 100);
-  memset((void*)message.getPayloadPtr(), 0, 100);
+  Port remotePort = 3150;
+  Port localPort = 3160;
+  unsigned short messageLen = 512;
+  NetworkNode * remoteNode;
+  NetworkNode localNode(1, "localhost", localPort);
+
+  MessageSocketDuplex * socket = new MessageSocketDuplex(localPort);
+  NetworkMessage * message=NULL;
   while(1)
   {
-    int numreceived = socket->recvfrom(message, NULL, &clientPort);
-    char * payloadPtr = (char*)message.getPayloadPtr();
-    printf("Received Mesage From Client: %s\n", payloadPtr);
-    memset((void*)message.getPayloadPtr(), 0, 100);
-    if (numreceived == 0)
+    int numreceived = socket->recvfrom(&message);
+    if (numreceived > 0)
     {
-//	::sleep(5);
+	Port port = message->getOriginatorPort();
+        printf("Received Data From Client:\n");
+	printf("Client port: %d\n", port);
+    }
+    else
+    {
+#ifndef WIN32
+	::sleep(1);
+#endif
     }
   }
  
   return 0;
 }
 
-#ifdef CSP_STANDALONE
-
-int main(int argc, char * argv[])
-{
-  ServerNode node;
-  return node.run();
-}
-
-#endif
 

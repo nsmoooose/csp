@@ -1,6 +1,9 @@
  Version 0.4.0 (in progress)
 ===========================
 
+2004-05-15: wolverine
+  * Changes to and cleanup to networking code.
+
 2004-05-12: delta
   * Removed obsolete ComputeTransformCallback in Source/VirtualScene.cpp
     and replaced it by an osg::Transform (lunalog's post).

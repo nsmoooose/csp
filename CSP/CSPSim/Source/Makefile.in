@@ -12,6 +12,9 @@ CHUNKLOD_PREFIX = $(TOPDIR)/$(CHUNKLOD_RELATIVE)
 CHUNKLOD_LIBRARY = -L$(CHUNKLOD_PREFIX)/lib -losgChunkLod_csp
 CHUNKLOD_INCLUDE = -I$(CHUNKLOD_PREFIX)/include
 
+SIMDATA_PREFIX = $(TOPDIR)/$(SIMDATA_RELATIVE)
+SIMDATA_LIBRARY = -L$(SIMDATA_PREFIX)/SimData -lSimData
+
 LIBS = $(DEMETER_LIBRARY) $(CHUNKLOD_LIBRARY) -lccgnu2
 
 INCLUDE = -I$(TOPDIR)/Include $(DEMETER_INCLUDE) $(CHUNKLOD_INCLUDE) -I@PYTHON_INCLUDE@ -I/usr/local/include/cc++2
@@ -21,17 +24,11 @@ CFLAGS = $(filter-out -I/usr/local/include, $(BASEFL))
 SWCXXF = $(GCFLAGS) $(INCLUDE) @SIGC_FLAGS@
 LDOPTS = -Wl,-z,lazyload $(GLDOPTS) @LIBS@
 SWOPTS = $(GSWOPTS) $(INCLUDE) 
+EXTERN_LIBS = @LIBS@
 
-NETWORK_SOURCES = Networking/NetworkNode.cpp \
-		  Networking/NetworkMessage.cpp \
-		  Networking/ObjectUpdateMessage.cpp \
-		  Networking/NetworkMessenger.cpp \
-		  Networking/NetworkBroadcaster.cpp \
-		  Networking/NetworkListener.cpp \
-		  Networking/NetworkSocket.cpp \
-		  Networking/MessageSocketDuplex.cpp \
-		  Networking/NetworkAddress.cpp \
-											  
+SHARED_LIB = libcspsim.so
+STATIC_LIB = libcspsim_static.a
+WRAPED_LIB = _cCSP.so
 
 SOURCES = \
 	Systems/AircraftFlightSensors.cpp \
@@ -117,7 +114,6 @@ SOURCES = \
 	VirtualScene.cpp
 
 OBJECTS = $(SOURCES:%.cpp=%.o) 
-NETWORK_OBJECTS = $(NETWORK_SOURCES:%.cpp=%.o)
 
 DEPDIR = .deps
 MKDEP = $(CXX) -M $(CFLAGS)
@@ -135,10 +131,10 @@ clean-objects:
 	rm -f $(SOURCES:%.cpp=%.o)
 	rm -f lib*.a
 	rm -f $(BIN)/_cCSP.so $(BIN)/cCSP.py cCSP_wrap.*
-	rm -f $(DEPDIR)/*.d
 
 clean-dependencies:
-	@echo $(RM) -r $(RMFLAGS) $(DEPDIR)
+	@echo 
+	find $(DEPDIR) -name *.d -exec ${RM} {} \;
 
 clean-deps: clean-dependencies
 
@@ -168,8 +164,15 @@ $(DEPDIR)/%.swigdep : %
 	@echo "Computing dependencies for $<..."
 	@$(SWDEP) $(DEPFILTER) -o $(<:.i=_wrap.cpp) $< > $@
 
-_cCSP.so: $(OBJECTS) cCSP_wrap.o
-	$(CXX) $(LDOPTS) -o$(BIN)/$@ $^ $(LIBS)
+$(WRAPED_LIB) : $(OBJECTS) cCSP_wrap.o
+	$(CXX) $(LDOPTS) -o$@ $^ $(LIBS)
+	cp $(WRAPED_LIB) $(BIN)/$(WRAPED_LIB)
+	
+$(STATIC_LIB): $(OBJECTS)
+	rm -rf $(BIN)/$(STATIC_LIB)
+	$(AR) rc $(BIN)/$(STATIC_LIB) $(OBJECTS)
+	rm -rf $(BIN)/$(SHARED_LIB)
+	$(CXX) -shared $(OBJECTS) -o $(BIN)/$(SHARED_LIB)
 	
 #CSPapp: $(OBJECTS) main.o
 #	$(CXX) -lswigpy -lpython2.2 -o$@ $^ $(LIBS)
@@ -181,20 +184,15 @@ cCSP_wrap.cpp: cCSP.i
 cCSP_wrap.o: cCSP_wrap.cpp
 	$(CXX) -c $(SWCXXF) $(@:.o=.cpp)
 
-ClientNode_StandAlone.o : ClientNode.cpp 
-	$(CXX) -c $(CFLAGS) $(INCLUDE) -DCSP_STANDALONE -o ClientNode_StandAlone.o ClientNode.cpp
-	
-ClientNode: $(NETWORK_OBJECTS) ClientNode_StandAlone.o 
-	$(CXX) -L/usr/local/lib -lccgnu2 -ldl -lpthread -o$(BIN)/$@ $(NETWORK_OBJECTS) ClientNode_StandAlone.o
 
-ServerNode_StandAlone.o : ServerNode.cpp
-	$(CXX) -c $(CFLAGS) $(INCLUDE) -DCSP_STANDALONE -o ServerNode_StandAlone.o ServerNode.cpp
+#clientNode: ClientNodeDriver.o 
+#	$(CXX) $(EXTERN_LIBS) $(OBJECTS) $(SIMDATA_LIBRARY) -o$@ $^ $(LIBS)
 
-ServerNode: $(NETWORK_OBJECTS) ServerNode_StandAlone.o
-	$(CXX) -L/usr/local/lib -lccgnu2 -ldl -lpthread -o$(BIN)/$@ $(NETWORK_OBJECTS) ServerNode_StandAlone.o
-			
+#serverNode: ServerNodeDriver.o
+#	$(CXX) $(EXTERN_LIBS) $(OBJECTS) $(SIMDATA_LIBRARY) -o$@ $^ $(LIBS)
+		
 
-test: ClientNode ServerNode
+test: clientNode serverNode
 
 
 %.o: %.cpp 
@@ -203,8 +201,14 @@ test: ClientNode ServerNode
 AeroDynamics.o: AeroDynamics.cpp 
 	$(CXX) -c $(CFLAGS) -O3 $(@:.o=.cpp)
 	
+#ClientNodeDriver.o: ClientNodeDriver.cpp
+#	$(CXX) -c $(CFLAGS) $(INCLUDE) -o ClientNodeDriver.o ClientNodeDriver.cpp
+
+#ServerNodeDriver.o: ServerNodeDriver.cpp
+#	$(CXX) -c $(CFLAGS) $(INCLUDE) -o ServerNodeDriver.o ServerNodeDriver.cpp
+
 Makefile: Makefile.in
 	cd $(TOPDIR) && ./configure
 
-all: Makefile build-subdirs _cCSP.so test #CSPapp
+all: Makefile build-subdirs $(WRAPED_LIB) #$(STATIC_LIB) test #CSPapp
 

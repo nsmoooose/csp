@@ -151,6 +151,8 @@ CSPSim::CSPSim()
 	m_Shell = new PyShell();
 	
 	m_NetworkMessenger = NULL;
+	m_RemoteServerNode = NULL;
+	m_localNode = NULL;
 
 }
 
@@ -209,6 +211,10 @@ VirtualBattlefield const * CSPSim::getBattlefield() const {
 
 VirtualScene * CSPSim::getScene() {
 	return m_Scene.get();
+}
+
+NetworkMessenger * CSPSim::getNetworkMessenger() {
+	return m_NetworkMessenger;
 }
 
 VirtualScene const * CSPSim::getScene() const {
@@ -410,7 +416,12 @@ void CSPSim::init()
 		// create the networking layer
 		int localMessagePort = g_Config.getInt("Networking", "LocalMessagePort", 10000, true);
 		CSP_LOG(APP, DEBUG, "init() - Creating Message listener on port: " << localMessagePort);
-		m_NetworkMessenger = new NetworkMessenger(localMessagePort);
+                std::string remoteAddr = g_Config.getString("Networking", "RemoteMessageHost", "127.0.0.1", true);
+		   
+		Port remotePort = (Port)g_Config.getInt("Networking", "RemoteMessagePort", 0, true);
+		m_RemoteServerNode = new NetworkNode(1, remoteAddr.c_str(), remotePort );
+		m_localNode =  new NetworkNode(1, "localhost", localMessagePort);
+		m_NetworkMessenger = new NetworkMessenger(m_localNode);
 
 #if 0
 		// set the Main Menu then start the main loop
@@ -708,6 +719,7 @@ void CSPSim::updateObjects(double dt)
         simdata::Ref<DynamicObject> dynamicObject = (simdata::Ref<DynamicObject>)m_ActiveObject;
         NetworkMessage * message = dynamicObject->getUpdateMessage();
 
+	CSP_LOG(APP, DEBUG, "CSPSim::run... queuing test network updates");
 	m_NetworkMessenger->queueMessage(m_RemoteServerNode, message);
 	m_NetworkMessenger->sendMessages();
 	m_NetworkMessenger->receiveMessages();

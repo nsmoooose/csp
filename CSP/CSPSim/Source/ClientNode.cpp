@@ -1,10 +1,7 @@
-
-
-
 #include "Networking.h"
+#include "ClientNode.h"
 #include <stdio.h>
 #include <stdlib.h>
-#include "ClientNode.h"
 
 ClientNode::ClientNode()
 {
@@ -14,28 +11,21 @@ ClientNode::ClientNode()
 int ClientNode::run()
 {
   printf("Network test client starting up...\n");
-  Port clientPort = 20010;
-  Port serverPort = 20011;
-  MessageSocketDuplex * socketDuplex = new MessageSocketDuplex(clientPort);
-  NetworkMessage message;
-  message.initialize(1, 100);
-  char * payloadPtr = (char*)message.getPayloadPtr();
+  Port localPort = 3150;
+  Port remotePort = 3160;
+  NetworkNode localNode(1,  "localhost", localPort);
+  NetworkNode remoteNode(1, "localhost", remotePort);
+  NetworkMessenger * messenger = new NetworkMessenger(&localNode);
+  NetworkMessage * message = messenger->getMessageFromPool(1, 100);
+  char * payloadPtr = (char*)message->getPayloadPtr();
   memset(payloadPtr, 0 , 100);
   strcpy(payloadPtr, "Hello From CSP Network Test Client!");
-  ost::InetHostAddress * serverAddress = new ost::InetHostAddress("localhost");
-  socketDuplex->sendto(message, serverAddress, &serverPort);
+  Port port = message->getOriginatorPort();
+  messenger->queueMessage(&remoteNode, message);
+  messenger->sendMessages();
   
   return 0;
 }
 
-#ifdef CSP_STANDALONE
-
-int main(int argc, char * argv[])
-{
-   ClientNode node;
-   return node.run();
-}
-
-#endif
 
 

@@ -40,6 +40,13 @@ NetworkNode::NetworkNode(int node_id, ost::InetHostAddress addr, Port port)
   m_port = port;
 }
 
+NetworkNode::NetworkNode(int node_id, const char * hostname, Port port)
+{
+  m_node_id = node_id;
+  m_addr = ost::InetHostAddress(hostname);
+  m_port = port;
+}
+
 void NetworkNode::setAddress(ost::InetHostAddress addr)
 {
   m_addr = addr;
@@ -50,7 +57,7 @@ void NetworkNode::setPort(Port port)
   m_port = port;
 }
 
-void NetworkNode::setId(int node_id)
+void NetworkNode::setId(short node_id)
 {
   m_node_id = node_id;
 }
@@ -65,7 +72,7 @@ Port NetworkNode::getPort()
   return m_port;
 }
 
-int NetworkNode::getId()
+short NetworkNode::getId()
 {
   return m_node_id;
 }

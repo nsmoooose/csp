@@ -24,28 +24,28 @@
 
 #include "Networking.h"
 
-ObjectUpdateMessage::ObjectUpdateMessage(simdata::uint16 id, simdata::Vector3 position, simdata::Vector3 velocity)
-{
-    // reserve space to hold 6 doubles.
-    double num;
-    short magicNumber = 0xFCCF;
-    m_BufferLen = 3*sizeof(short) + sizeof(unsigned int) + 6 * sizeof(double);
-    m_Buf = new unsigned char [ m_BufferLen ];
-    m_MessageType = 2;
+//ObjectUpdateMessage::ObjectUpdateMessage(simdata::uint16 id, simdata::Vector3 position, simdata::Vector3 velocity)
+//{
+//    // reserve space to hold 6 doubles.
+//    double num;
+//    short magicNumber = 0xFCCF;
+//    m_BufferLen = 3*sizeof(short) + sizeof(unsigned int) + 6 * sizeof(double);
+//    m_Buf = new unsigned char [ m_BufferLen ];
+//    m_MessageType = 2;
     
     
-   unsigned char * ptrBuf = m_Buf;
-   memcpy((void*)ptrBuf, (void*)&magicNumber,        sizeof(short)); ptrBuf += sizeof(short);
-   memcpy((void*)ptrBuf, (void*)&m_BufferLen, sizeof(short)); ptrBuf += sizeof(short);
-   memcpy((void*)ptrBuf, (void*)&m_MessageType,   sizeof(short)); ptrBuf += sizeof(short);   
-   memcpy((void*)ptrBuf, (void*)&id, sizeof(unsigned int)); ptrBuf += sizeof(unsigned int);
-   num = position.x(); memcpy((void*)ptrBuf, (void*)&num, sizeof(double)); ptrBuf += sizeof(double);   
-   num = position.y(); memcpy((void*)ptrBuf, (void*)&num, sizeof(double)); ptrBuf += sizeof(double);   
-   num = position.z(); memcpy((void*)ptrBuf, (void*)&num, sizeof(double)); ptrBuf += sizeof(double);   
-   num = velocity.z(); memcpy((void*)ptrBuf, (void*)&num, sizeof(double)); ptrBuf += sizeof(double);
-   num = velocity.y(); memcpy((void*)ptrBuf, (void*)&num, sizeof(double)); ptrBuf += sizeof(double);
-   num = velocity.z(); memcpy((void*)ptrBuf, (void*)&num, sizeof(double));
+//   unsigned char * ptrBuf = m_Buf;
+//   memcpy((void*)ptrBuf, (void*)&magicNumber,        sizeof(short)); ptrBuf += sizeof(short);
+//   memcpy((void*)ptrBuf, (void*)&m_BufferLen, sizeof(short)); ptrBuf += sizeof(short);
+//   memcpy((void*)ptrBuf, (void*)&m_MessageType,   sizeof(short)); ptrBuf += sizeof(short);   
+//   memcpy((void*)ptrBuf, (void*)&id, sizeof(unsigned int)); ptrBuf += sizeof(unsigned int);
+//   num = position.x(); memcpy((void*)ptrBuf, (void*)&num, sizeof(double)); ptrBuf += sizeof(double);   
+//   num = position.y(); memcpy((void*)ptrBuf, (void*)&num, sizeof(double)); ptrBuf += sizeof(double);   
+//   num = position.z(); memcpy((void*)ptrBuf, (void*)&num, sizeof(double)); ptrBuf += sizeof(double);   
+//   num = velocity.z(); memcpy((void*)ptrBuf, (void*)&num, sizeof(double)); ptrBuf += sizeof(double);
+//   num = velocity.y(); memcpy((void*)ptrBuf, (void*)&num, sizeof(double)); ptrBuf += sizeof(double);
+//   num = velocity.z(); memcpy((void*)ptrBuf, (void*)&num, sizeof(double));
    
     
-}
+//}
 

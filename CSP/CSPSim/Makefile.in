@@ -2,6 +2,7 @@ SUBDIRS = Source Tools/Terrain/dem2dat Tools/Terrain/tile
 
 export DEMETER_RELATIVE = ../Demeter
 export CHUNKLOD_RELATIVE = ../CSPChunkLod
+export SIMDATA_RELATIVE = ../SimData
 
 export GDEBUGF = -g -Wall
 export GCFLAGS = -fPIC -O2# -DSWIG_GLOBAL

@@ -97,6 +97,7 @@ public:
 	VirtualScene const * getScene() const;
 	simdata::Ref<Theater> getTheater() const;
 	simdata::Ref<EventMapIndex> getInterfaceMaps() const;
+        NetworkMessenger * getNetworkMessenger();
 
 	void togglePause();
 	void runConsole(PyConsole *console);
@@ -181,6 +182,7 @@ private:
 	  */
 	NetworkMessenger * m_NetworkMessenger;
 	NetworkNode * m_RemoteServerNode;
+	NetworkNode * m_localNode;
 
 	osg::ref_ptr<Producer::RenderSurface> m_RenderSurface;
 };

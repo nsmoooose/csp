@@ -558,8 +558,8 @@ class MainWindow(wxFrame):
 			control = None
 			if type == RADIO:
 				handler, name, help = tool[1:]
-				bm0 = wxBitmapFromImage(wxImage("%s.bmp" % name))
-				bm1 = wxBitmapFromImage(wxImage("%s-on.bmp" % name))
+				bm0 = wxBitmapFromImage(wxImage(os.path.join("Images", "%s.png" % name)))
+				bm1 = wxBitmapFromImage(wxImage(os.path.join("Images", "%s-on.png" % name)))
 				toolbar.AddRadioTool(id, bm0, bm1, name, help)
 				if handler is not None:
 					EVT_TOOL(self, id, handler)
@@ -574,22 +574,22 @@ class MainWindow(wxFrame):
 					EVT_BUTTON(self, id, handler)
 			elif type == TOOL:
 				handler, name, help = tool[1:]
-				bm0 = wxBitmapFromImage(wxImage("%s.bmp" % name))
+				bm0 = wxBitmapFromImage(wxImage(os.path.join("Images", "%s.png" % name)))
 				bm1 = wxNullBitmap
 				toolbar.AddTool(id, bm0, bm1, 1, name, help)
 				if handler is not None:
 					EVT_TOOL(self, id, handler)
 			elif type == CHECK:
 				handler, name, help = tool[1:]
-				bm0 = wxBitmapFromImage(wxImage("%s.bmp" % name))
-				bm1 = wxBitmapFromImage(wxImage("%s-on.bmp" % name))
+				bm0 = wxBitmapFromImage(wxImage(os.path.join("Images", "%s.png" % name)))
+				bm1 = wxBitmapFromImage(wxImage(os.path.join("Images", "%s-on.png" % name)))
 				toolbar.AddCheckTool(id, bm0, bm1, name, help)
 				if handler is not None:
 					EVT_TOOL(self, id, handler)
 			elif type == TOGGLE:
 				handler, name, help = tool[1:]
-				bm0 = wxBitmapFromImage(wxImage("%s.bmp" % name))
-				bm1 = wxBitmapFromImage(wxImage("%s-on.bmp" % name))
+				bm0 = wxBitmapFromImage(wxImage(os.path.join("Images", "%s.png" % name)))
+				bm1 = wxBitmapFromImage(wxImage(os.path.join("Images", "%s-on.png" % name)))
 				control = wxBitmapToggleButton(toolbar, id, bm0)
 				control.SetToolTip(wxToolTip(help))
 				control.SetBitmaps(bm0, bm1)

@@ -67,9 +67,11 @@ install:
 	# soon.
 
 
+${srcdir}/aclocal.m4: acinclude.m4
+	cd ${srcdir} && aclocal
 
 # automatic re-running of configure if the ocnfigure.in file has changed
-${srcdir}/configure: configure.in #aclocal.m4
+${srcdir}/configure: configure.in aclocal.m4
 	cd ${srcdir} && autoconf
 
 # autoheader might not change config.h.in, so touch a stamp file

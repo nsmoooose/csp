@@ -376,12 +376,9 @@ int VirtualScene::buildScene()
 	osg::StateSet * pFogState = m_FogGroup->getOrCreateStateSet();
 	osg::Fog* fog = new osg::Fog;
 	fog->setMode(osg::Fog::LINEAR);
+	fog->setFogCoordinateSource(osg::Fog::FRAGMENT_DEPTH);
 	fog->setDensity(0.3f);
-	if (m_FogEnabled) {
-		pFogState->setAttributeAndModes(fog, osg::StateAttribute::ON);
-	} else {
-		pFogState->setAttributeAndModes(fog, osg::StateAttribute::OFF);
-	}
+	pFogState->setAttributeAndModes(fog, m_FogEnabled ? osg::StateAttribute::ON : osg::StateAttribute::OFF);
 	m_FogGroup->setStateSet(pFogState);
 
 	m_FrameStamp = new osg::FrameStamp;
@@ -514,7 +511,7 @@ void VirtualScene::onUpdate(float dt)
 		}
 		if (m_SpinTheWorld) m_Sky->spinTheWorld();
 		if (m_Terrain.valid()) {
-			simdata::LLA m = m_Terrain->getProjection().convert(m_Origin);
+			simdata::LLA m = m_Terrain->getProjection()->convert(m_Origin);
 			m_Sky->update(m.latitude(), m.longitude(), CSPSim::theSim->getCurrentTime());
 		} else {
 			m_Sky->update(0.0, 0.0, CSPSim::theSim->getCurrentTime());

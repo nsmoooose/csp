@@ -20,12 +20,12 @@ OBJECTS = $(MODULES:%=$(BINDIR)/%.o)
 MKDEP = $(CXX) -M $(CXXFLAGS)
 SWDEP = $(SWIG) -M $(SWOPTS)
 DEPFILES = $(addprefix $(DEPDIR)/,$(addsuffix .d, $(SOURCES)))
-DEPFILTER =
+DEPFILTER = | sed -n 's/^\(.*:\)/.bin\/\1/;p'
 DEPS_MAGIC := $(shell mkdir $(DEPDIR) > /dev/null 2>&1 || :)
 BIN_MAGIC := $(shell mkdir $(BINDIR) > /dev/null 2>&1 || :)
 DOC_MAGIC := $(shell mkdir $(DOCDIR) > /dev/null 2>&1 || :)
 
-.PHONY: clean-deps clean all default update_version
+.PHONY: clean-deps clean clean-objects clean-dependencies clean-docs clean-dox clean-doc profile all default update_version
 
 default: all
 
@@ -62,7 +62,7 @@ test: $(OBJECTS)
 	g++ -pg -o $@ $^ -L../SimData/SimData -lSimData -lpthread -ldl -lccgnu2
 
 $(BINDIR)/%.o: %.cpp
-	$(CXX) -o $@ -c $(CXXFLAGS) $^
+	$(CXX) -o $@ -c $(CXXFLAGS) $<
 
 %.cpp %.h: %.net
 	../SimData/Tools/TaggedRecordCompiler/trc.py $<

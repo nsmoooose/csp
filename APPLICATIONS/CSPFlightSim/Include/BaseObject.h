@@ -67,9 +67,10 @@ class BaseObject
   static BaseObject * createObject(unsigned int type);
 
 
-  StandardMatrix3 & getOrientation() { return m_Orientation; }
+  StandardMatrix3 const & getOrientation() const { return m_Orientation; }
+  StandardQuaternion const & getqOrientation() const { return m_qOrientation; };
   void setOrientation(StandardMatrix3 & mOrientation);
-  void setOrientation(StandardQuaternion & qOrientation);
+  void setOrientation(StandardQuaternion const & qOrientation);
   void setOrientation(double heading, double pitch, double roll);
   void setVelocity(StandardVector3 const & velocity);
   void setVelocity(double Vx, double Vy, double Vz);

@@ -170,23 +170,25 @@ def makeZip(zipname, program, modules, path):
     name, basename = uniq_modules[file]
     # special case for the main program module
     if file == program:
-      f = open('__main__.py', 'wt')
+      f = open('X__main__.py', 'wt')
       # big ol' hack.  insert some magic to make the main script look like it
-      # was run directly instead of imported.  better solutions welcome.  note
-      # than setting __name__ to '__main__' is not always sufficient (e.g.
-      # pickle can complain about missing classes when loading).
+      # was run directly instead of imported.  better solutions welcome.
       inject = 1
       for line in open(program, 'rt'):
         if (inject and (line.startswith('app.start(') or line.startswith('if __name__ =='))):
           inject = 0
-          print >>f, "import sys; sys.modules['__main__'] = sys.modules[__name__]; __name__ = '__main__';"
+          #print >>f, "import sys; sys.modules['__main__'] = sys.modules[__name__]; __name__ = '__main__';"
+          print >>f, "__name__ = '__main__';"
         print >>f, line,
       f.close()
-      out.writepy('__main__.py', basename)
+      out.writepy('X__main__.py', basename)
       for ext in ('.py', '.pyc', '.pyo'):
-        prog_name = '__main__' + ext
+        prog_name = 'X__main__' + ext
         if os.path.exists(prog_name): os.unlink(prog_name)
-      main_module = '.'.join(basename.split(os.sep) + ['__main__'])
+      if basename:
+        main_module = '.'.join(basename.split(os.sep) + ['X__main__'])
+      else:
+        main_module = 'X__main__'
       # add a stub so that the entry point is always import <ENTRY_MODULE>
       f = open(ENTRY_MODULE+'.py', 'wt')
       f.write('import %s\n' % main_module)

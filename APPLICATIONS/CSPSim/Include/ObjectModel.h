@@ -150,7 +150,6 @@ protected:
 public:
 	SceneModel(simdata::Ref<ObjectModel> const & model);
 	
-	
 	simdata::Ref<ObjectModel> getModel() { return m_Model; }
 	osg::Group* getRoot() { return m_Transform.get(); }
 

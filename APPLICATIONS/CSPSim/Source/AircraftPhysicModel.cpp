@@ -37,11 +37,7 @@ std::vector<double> const &AircraftPhysicModel::_f(double x, std::vector<double>
 	static std::vector<double> dy(13);
 
 	// bind(y,p,v,w,q); 
-	// XXX the following line is incorrect.
-	//m_PositionLocal = *m_Position + bodyToLocal(simdata::Vector3(y[0],y[1],y[2]));
-	// XXX if, in the future, we need to access the local position here, it should be 
-	// stored in a temporary:
-	// simdata::Vecter3 position = m_LocalPositon + bodyToLocal(simdata::Vector3(y[0],y[1],y[2]));
+	m_PositionLocal = *m_Position + bodyToLocal(simdata::Vector3(y[0],y[1],y[2]));
 	m_VelocityBody = simdata::Vector3(y[3],y[4],y[5]);
 	m_AngularVelocityBody = simdata::Vector3(y[6],y[7],y[8]);
 	m_qOrientation = simdata::Quaternion(y[9],y[10],y[11],y[12]);
@@ -53,6 +49,8 @@ std::vector<double> const &AircraftPhysicModel::_f(double x, std::vector<double>
 
 	m_ForcesBody = m_MomentsBody = simdata::Vector3::ZERO;
 	m_WeightBody = localToBody(m_WeightLocal);
+
+	m_GroundCollisionDynamics->reset(x);
 
 	if (m_GroundCollisionDynamics && m_NearGround) {
 		m_GroundCollisionDynamics->update(x);
@@ -120,12 +118,12 @@ void AircraftPhysicModel::doSimStep(double dt) {
 	m_AngularVelocityLocal = *m_AngularVelocity;
 	m_qOrientation = *m_Orientation;
 
-	for (unsigned short i = 0; i<n; ++i) {
+	updateNearGround();
 
+	for (unsigned short i = 0; i<n; ++i) {
+		
 		m_VelocityBody = localToBody(m_VelocityLocal);
 		m_AngularVelocityBody =	localToBody(m_AngularVelocityLocal);
-
-		updateNearGround();
 
 		std::vector<double> y0 = bodyToY(simdata::Vector3::ZERO,m_VelocityBody,m_AngularVelocityBody,m_qOrientation);
 
@@ -151,13 +149,14 @@ void AircraftPhysicModel::doSimStep(double dt) {
 		double mag = m_qOrientation.Magnitude();
 		if (mag	!= 0.0)
 			m_qOrientation /= mag;
+		
+		if (m_GroundCollisionDynamics->hasContact() && m_VelocityLocal.z < 0.0) {
+			m_VelocityLocal.z *= 0.9;
+		}
+		*m_Position = m_PositionLocal;
 	}
 
 	// returns vehicle data members
-	*m_Position = m_PositionLocal;
-	if (m_GroundCollisionDynamics->hasContact() && m_VelocityLocal.z < 0.0) {
-		m_VelocityLocal.z *= 0.99;
-	}
 	*m_Velocity = m_VelocityLocal;
 	*m_AngularVelocity = m_AngularVelocityLocal;
 	*m_Orientation = m_qOrientation;	

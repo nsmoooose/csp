@@ -294,7 +294,8 @@ void CSPSim::init()
 		std::string vehicle = g_Config.getPath("Testing", "Vehicle", "sim:vehicles.aircraft.m2k", false);
 		simdata::Ref<AircraftObject> ao = m_DataManager.getObject(vehicle.c_str());
 		assert(ao.valid());
-		ao->setGlobalPosition(483025, 499000, 88.5);
+		//ao->setGlobalPosition(483025, 499000, 88.5);
+		ao->setGlobalPosition(483025, 499000, 2000.0);
 		ao->setAttitude(0.0, 0.0, 1.92);
 		ao->setVelocity(0, 1.0, 0);
 		m_Battlefield->addUnit(ao);
@@ -369,7 +370,7 @@ void CSPSim::cleanup()
 	m_Theater = NULL;
 	m_Battlefield = NULL;
 	m_Scene = NULL;
-	if (m_SDLJoystick) {
+ 	if (m_SDLJoystick) {
 		SDL_JoystickClose(m_SDLJoystick);
 		m_SDLJoystick = NULL;
 	}

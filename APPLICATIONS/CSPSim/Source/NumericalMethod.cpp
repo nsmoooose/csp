@@ -209,7 +209,7 @@ double const RungeKuttaCK::PSHRNK = -0.25;
 double const RungeKuttaCK::SAFETY = 0.9;
 double const RungeKuttaCK::ERRCON = 1.89e-4;
 
-unsigned int const RungeKuttaCK::MAXSTP = 4;
+unsigned int const RungeKuttaCK::MAXSTP = 16;//10000
 double const       RungeKuttaCK::TINY   = std::numeric_limits<float>::epsilon();
 
 

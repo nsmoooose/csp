@@ -156,11 +156,7 @@ void AircraftObject::postCreate() {
 	m_AircraftPhysicModel->addDynamics(m_PrimaryAeroDynamics.get());
 
 	m_EngineDynamics = m_AircraftDynamics->getEngineDynamics();
-	m_EngineDynamics->bindThrottle(m_Throttle);
 	m_AircraftPhysicModel->addDynamics(m_EngineDynamics.get());
-	//if (!m_SceneModel.valid())
-	//	createSceneModel();
-	//m_SceneModel->setSmokeEmitterLocation(m_EngineDynamics->getSmokeEmitterLocation());
 
 	m_GearDynamics = m_AircraftDynamics->getGearDynamics();
 	m_AircraftPhysicModel->addDynamics(m_GearDynamics.get());
@@ -255,9 +251,8 @@ void AircraftObject::doFCS(double dt)
 	CSP_LOG(APP, DEBUG, " ... AircraftObject::doFCS");
 }
 
-void AircraftObject::setThrottle(double x) 
-{ 
-	m_ThrottleInput = 0.5 * (1.0 - x); 
+void AircraftObject::setThrottle(double x) { 
+	m_ThrottleInput = 0.5 *(1.0 - x); 
 }
 
 void AircraftObject::setRudder(double x)
@@ -499,6 +494,8 @@ void AircraftObject::doSimplePhysics(double dt)
 
 void AircraftObject::doComplexPhysics(double dt) {
 	m_PrimaryAeroDynamics->setControlSurfaces(m_Aileron, m_Elevator, m_Rudder);
+	// FIXME: calibrate joystick positions for csp
+	m_EngineDynamics->setThrottle(2.0 * m_Throttle);
 
     //preset various aircraft dimensions and landing/takeoff parameters:
 	//  pitch and roll limits

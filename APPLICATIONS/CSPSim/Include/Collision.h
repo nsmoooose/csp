@@ -93,7 +93,7 @@ class GroundCollisionDynamics: public simdata::Referenced, public BaseDynamics {
 	simdata::Vector3 const *m_WeightBody;
 public:
 	GroundCollisionDynamics(double mass, simdata::Matrix3 const &inertia, std::vector<simdata::Vector3> const &contacts);
-	void preSimulationStep(double dt);
+	void reset(double dt);
 	void bindWeight(simdata::Vector3 const &weightBody);
 	void update(double dt);
 	simdata::Vector3 getLinearImpulsion() const;

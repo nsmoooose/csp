@@ -17,7 +17,7 @@
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 /**
- * @file Thrust.cpp
+ * @file Engine.cpp
  *
  **/
 #include <SimData/Conversions.h>
@@ -93,8 +93,8 @@ void Engine::setThrustDirection(simdata::Vector3 const& thrustDirection) {
 	m_ThrustDirection = thrustDirection;
 }
 
-void Engine::setThrottle(float throttle) {
-	m_Throttle = throttle;
+void Engine::bindThrottle(float const &throttle) {
+	m_Throttle = &throttle;
 }
 
 void Engine::setMach(float mach) {
@@ -110,7 +110,7 @@ simdata::Vector3 const &Engine::getSmokeEmitterLocation() const {
 }
 
 simdata::Vector3 Engine::getThrust() const {
-	float throttle = m_Throttle;
+	float throttle = *m_Throttle;
 	if (throttle < 0.0)
 		throttle = 0.0;
 	float milComponent = m_ThrustData->getMil(m_Altitude, m_Mach);
@@ -154,11 +154,21 @@ void EngineDynamics::unpack(simdata::UnPacker &p) {
 	p.unpack(m_Engine);
 } 
 
-EngineDynamics::EngineDynamics() {
+void EngineDynamics::postCreate() { 
+	if (!m_Engine.empty()) {
+		simdata::Link<Engine>::vector::iterator i = m_Engine.begin();
+		simdata::Link<Engine>::vector::const_iterator iEnd = m_Engine.end();
+			for (; i !=iEnd; ++i)
+				(*i)->bindThrottle(m_Throttle);
+	}
 }
 
-void EngineDynamics::bindThrottle(double const &throttle) {
-	m_Throttle = &throttle;
+EngineDynamics::EngineDynamics():
+	m_Throttle(0.0f) {
+}
+
+void EngineDynamics::setThrottle(double const throttle) {
+	m_Throttle = static_cast<float>(throttle);
 }
 
 std::vector<simdata::Vector3> EngineDynamics::getSmokeEmitterLocation() const {
@@ -184,8 +194,6 @@ void EngineDynamics::update(double dt) {
 		for (; i !=iEnd; ++i) {
 			(*i)->setMach(mach);
 			(*i)->setAltitude(altitude);
-			// FIXME: calibrate joystick positions for csp
-			(*i)->setThrottle(2.0f *  static_cast<float>(*m_Throttle));
 			simdata::Vector3 force = (*i)->getThrust();
 			m_Force += force;
 			m_Moment += (*i)->m_EngineOffset^force;

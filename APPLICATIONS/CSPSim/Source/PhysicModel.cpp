@@ -31,7 +31,7 @@
 PhysicModel::PhysicModel(unsigned short dimension):
 	DynamicalSystem(dimension),
 	m_Damping(0.999),
-	m_qOrientation(simdata::Quaternion(1,0,0,0)),
+	m_qOrientation(simdata::Quaternion(1.0,0.0,0.0,0.0)),
 	m_AngularAccelBody(simdata::Vector3::ZERO),
 	m_LinearAccelBody(simdata::Vector3::ZERO),
 	m_ForcesBody(simdata::Vector3::ZERO),

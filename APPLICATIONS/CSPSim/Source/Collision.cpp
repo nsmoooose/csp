@@ -174,12 +174,12 @@ GroundCollisionDynamics::GroundCollisionDynamics(double mass, simdata::Matrix3 c
 	m_MassInverse(1.0/mass),
 	m_InertiaInverse(inertia.Inverse()),
 	m_Contacts(contacts),
-	m_Elastic(0.7),
+	m_Elastic(0.6),
 	m_Friction(0.8),
 	m_Vtol(-3.0) {
 }
 
-void GroundCollisionDynamics::preSimulationStep(double dt) {
+void GroundCollisionDynamics::reset(double dt) {
 	m_ContactList.reset();
 }
 
@@ -188,7 +188,6 @@ void GroundCollisionDynamics::bindWeight(simdata::Vector3 const &weightBody) {
 }
 
 void GroundCollisionDynamics::update(double dt) {
-	m_ContactList.reset();
 	simdata::Quaternion const &q = *m_qOrientation;
 	simdata::Vector3 const &velocity_body = *m_VelocityBody;
 	double const velocity_body_length = velocity_body.Length();
@@ -196,9 +195,9 @@ void GroundCollisionDynamics::update(double dt) {
 	double const angular_velocity_body_length = angular_velocity_body.Length();
 	simdata::Vector3 const groundReactionBody = - *m_WeightBody;
 	simdata::Vector3 const &p = *m_PositionLocal;
-
-	simdata::Vector3 origin(0.0, 0.0, *m_Height);
+	
 	simdata::Vector3 const &normalGroundLocal =*m_NormalGround;
+	simdata::Vector3 origin(0.0, 0.0, *m_Height);
 	simdata::Vector3 normalGroundBody = simdata::QVRotate(q.Bar(),normalGroundLocal);
 
 	std::vector<simdata::Vector3>::const_iterator contact = m_Contacts.begin();

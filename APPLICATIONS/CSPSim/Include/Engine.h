@@ -18,7 +18,7 @@
 
 
 /**
- * @file Thrust.h
+ * @file Engine.h
  *
  **/
 
@@ -62,7 +62,7 @@ class EngineDynamics;
 class Engine:public simdata::Object {
 	simdata::Link<ThrustData> m_ThrustData;
 	simdata::Vector3 m_ThrustDirection, m_EngineOffset;
-	float m_Throttle;
+	float const *m_Throttle;
 	float m_Mach;
 	float m_Altitude;
 	float m_EngineIdleRpm, m_EngineAbRpm;
@@ -88,7 +88,7 @@ public:
 	virtual ~Engine();
 
 	void setThrustDirection(simdata::Vector3 const& thrustDirection);
-	void setThrottle(float throttle);
+	void bindThrottle(float const &throttle);
 	void setMach(float mach);
 	void setAltitude(float altitude);
 
@@ -101,7 +101,7 @@ public:
 class EngineDynamics:public simdata::Object, public BaseDynamics {
 	typedef simdata::Link<Engine>::vector ESet;
 	ESet m_Engine;
-	double const *m_Throttle;
+	float m_Throttle;
 public:
 
 	SIMDATA_OBJECT(EngineDynamics, 3, 0)
@@ -112,9 +112,10 @@ public:
 
 	virtual void pack(simdata::Packer& p) const; 
     virtual void unpack(simdata::UnPacker &p); 
+	virtual void postCreate();
 
 	EngineDynamics();
-	void bindThrottle(double const &throttle);
+	void setThrottle(double const throttle);
 	void update(double dt);
 	std::vector<simdata::Vector3> getSmokeEmitterLocation() const;
 };

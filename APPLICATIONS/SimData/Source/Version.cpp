@@ -21,6 +21,8 @@
 
 #include <SimData/Version.h>
 #include <cstdio>
+#include <iostream>
+#include <iomanip>
 
 #ifndef SIMDATA_VERSION
 	#define SIMDATA_VERSION "[built " __TIME__ " " __DATE__ "]"
@@ -28,20 +30,11 @@
 
 NAMESPACE_SIMDATA
 
+/** Get the SimData version number.
+ */
 const char *getVersion() {
 	return SIMDATA_VERSION;
 }
-
-
-/**
- * @brief Print a startup message to verify proper loading of SimData
- */
-class load_check {
-public:
-	load_check() {
-		printf("SimData %s loaded @ %p\n", getVersion(), this);
-	}
-} check_interpolate;
 
 
 NAMESPACE_SIMDATA_END

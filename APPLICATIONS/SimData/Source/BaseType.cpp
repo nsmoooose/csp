@@ -21,9 +21,41 @@
 #include <string>
 
 #include <SimData/BaseType.h>
+#include <SimData/Version.h>
 
 
 NAMESPACE_SIMDATA
+
+
+#ifndef SIMDATA_NOLOADCHECK
+
+/** Print a startup message to verify proper loading of SimData.
+ *
+ *  Only one copy of SimData should be active so that all object
+ *  interface proxies will be stored in a single object registry.
+ *  Unless you explicitly want distinct object registries, multiple 
+ *  "SimData XX loaded @ XX" messages are an indication of improper 
+ *  linking.
+ *
+ *  This message may be disabled by defining SIMDATA_NOLOADCHECK
+ *  when building SimData.
+ *
+ *  This instance is created in BaseType, as opposed to some other
+ *  object file, since BaseType must be loaded for all but the most 
+ *  basic SimData functionality.
+ */
+class load_check {
+public:
+	load_check() {
+		std::cout << "SimData " << getVersion();
+		std::cout.setf(std::ios_base::hex | std::ios_base::basefield | std::ios_base::showbase);
+		std::cout << " loaded @ " << this;
+		std::cout.unsetf(std::ios_base::hex | std::ios_base::basefield | std::ios_base::showbase);
+		std::cout << std::endl;
+	}
+} check_basetype;
+
+#endif // SIMDATA_NOLOADCHECK
 
 
 BaseType::~BaseType() {

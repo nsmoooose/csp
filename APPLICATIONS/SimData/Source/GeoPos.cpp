@@ -32,6 +32,8 @@
 #include <SimData/Pack.h>
 
 #include <cmath>
+#include <sstream>
+#include <iomanip>
 
 
 NAMESPACE_SIMDATA
@@ -898,9 +900,14 @@ bool UTM::valid() const {
 
 std::string UTM::asString() const
 {
-	char buff[128];
-	sprintf(buff, "[%.0lfE %.0lfN %d%c, %.3lf]", _E, _N, int(_zone), _designator, _alt);
-	return buff;
+	std::stringstream ss;
+	ss << std::fixed;
+	ss << "[";
+	ss << ss.precision(0) << _E << " " << _N;
+	ss << " " << int(_zone) << _designator << ", ";
+	ss << std::setprecision(3) << _alt;
+	ss << "]";
+	return ss.str();
 }
 
 void UTM::parseXML(const char *cdata)

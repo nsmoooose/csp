@@ -45,8 +45,6 @@
 NAMESPACE_SIMDATA
 
 
-#define hash_string newhasht_cstring
-
 
 /**
  * @defgroup HashUtils Hash Utilities
@@ -60,9 +58,7 @@ extern SIMDATA_EXPORT uint32 newhash4_cstring(std::string const &);
 extern SIMDATA_EXPORT HashT newhasht_cstring(std::string const &);
 
 
-/**
- * @brief A 64-bit hash value.
- *
+/** A 64-bit hash value.
  */
 struct SIMDATA_EXPORT HashT {
 	uint32 a, b;
@@ -109,6 +105,10 @@ struct SIMDATA_EXPORT HashT {
 };
 
 typedef HashT hasht;
+
+//#define hash_string newhasht_cstring
+inline HashT hash_string(std::string const &key) { return newhasht_cstring(key); }
+
 
 
 /** Integer equality functor for hash_map.

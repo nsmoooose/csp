@@ -34,6 +34,7 @@
 #include <SimData/Exception.h>
 #include <SimData/Enum.h>
 #include <SimData/Path.h>
+#include <SimData/Version.h>
 
 #include <string>
 #include <vector>
@@ -44,33 +45,10 @@ using std::endl;
 NAMESPACE_SIMDATA
 
 
+
 ///////////////////////////////////////////////////////////////////////////
 // InterfaceProxy
 
-
-
-/**
- * The master interface registry.
- */
-
-/*
-#ifdef _WIN32
-#pragma comment(linker, "/SECTION:.shared,RWS")
-#pragma data_seg(".shared")
-#endif
-
-InterfaceRegistry g_InterfaceRegistry;
-*/
-
-//InterfaceRegistry::proxy_map *InterfaceRegistry::__map = 0;
-//InterfaceRegistry::proxy_id_map *InterfaceRegistry::__id_map = 0;
-//InterfaceRegistry::interface_list *InterfaceRegistry::__list = 0;
-
-/*
-#ifdef _WIN32
-#pragma data_seg()
-#endif
-*/
 
 InterfaceProxy::InterfaceProxy(const char *cname, hasht (*chash)())
 {
@@ -89,7 +67,6 @@ Object *InterfaceProxy::createObject() const {
 	return 0;
 }
 
-//MemberAccessorBase * InterfaceProxy::getAccessor(const char *name, const char *cname = 0) const throw(InterfaceError) { 
 MemberAccessorBase * InterfaceProxy::getAccessor(const char *name, const char *cname) const { 
 	if (!cname) cname = "?";
 	throw InterfaceError("variable \"" + std::string(name) + "\" not defined in interface to class " + cname); 
@@ -170,6 +147,7 @@ std::vector<std::string> InterfaceProxy::getRequiredNames() const {
 
 ///////////////////////////////////////////////////////////////////////////
 // InterfaceRegistry
+
 
 InterfaceRegistry::InterfaceRegistry() {
 }

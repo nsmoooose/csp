@@ -1,6 +1,21 @@
 Version 0.3.4 (in progress)
 ===========================
 
+2003-08-15: onsight
+            More Doxygen work.
+
+	    Move loadcheck to BaseType.cpp, which is much more
+	    likely to be linked to any application using SimData.
+	    The load message can be disabled by building with
+	    SIMDATA_NOLOADCHECK defined.
+
+	    Changed a couple sprintf/printf's to iostreams.
+
+            Prefixed internal macro names in Object.h with 'SIMDATA'.
+
+	    Changed hash_string from a macro to an inline function
+	    in the simdata namespace.
+
 2003-08-14: onsight
             Doxygen comment fixes.
 

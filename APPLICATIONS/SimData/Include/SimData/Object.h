@@ -43,19 +43,19 @@ class LinkBase;
 
 
 // Various object macros for internal use only.
-#define __LEAKCHECK(a) \
+#define __SIMDATA_LEAKCHECK(a) \
 	a() { printf(#a " %p\n", this); } \
 	~a() { printf("~" #a " %p\n", this); }
 
-#define __GETCLASSNAME(a) \
+#define __SIMDATA_GETCLASSNAME(a) \
 	static const char* _getClassName() { return #a; } \
 	virtual const char* getClassName() const { return _getClassName(); }
 
-#define __GETCLASSVERSION(major, minor) \
+#define __SIMDATA_GETCLASSVERSION(major, minor) \
 	static const char* _getClassVersion() { return #major "." #minor; } \
 	virtual const char* getClassVersion() const { return _getClassVersion(); }
 	
-#define __GETCLASSHASH(a, major) \
+#define __SIMDATA_GETCLASSHASH(a, major) \
 	static SIMDATA(hasht) _getClassHash() { \
 		static SIMDATA(hasht) hash = 0; \
 		if (hash == 0) hash = _getHash(#a ":" #major); \
@@ -63,12 +63,12 @@ class LinkBase;
 	} \
 	virtual SIMDATA(hasht) getClassHash() const { return _getClassHash(); }
 
-#define __CLASSDEF(a, major, minor) \
-	__GETCLASSNAME(a) \
-	__GETCLASSHASH(a, major) \
-	__GETCLASSVERSION(major, minor)
+#define __SIMDATA_CLASSDEF(a, major, minor) \
+	__SIMDATA_GETCLASSNAME(a) \
+	__SIMDATA_GETCLASSHASH(a, major) \
+	__SIMDATA_GETCLASSVERSION(major, minor)
 
-#define __NEW(a) virtual SIMDATA(Object)* _new() const { return new a(); }
+#define __SIMDATA_NEW(a) virtual SIMDATA(Object)* _new() const { return new a(); }
 
 // Macro to add standard boilerplate code to object classes.  The
 // first parameter is the object class, while the second and third
@@ -76,8 +76,8 @@ class LinkBase;
 // numbers are used to test binary compatibility during object 
 // deserialization.
 #define SIMDATA_OBJECT(a, major, minor)	\
-	__CLASSDEF(a, major, minor) \
-	__NEW(a)
+	__SIMDATA_CLASSDEF(a, major, minor) \
+	__SIMDATA_NEW(a)
 	
 // Macro to automatically register an object class with the 
 // object registry.  This macro should be called for each
@@ -89,30 +89,28 @@ class LinkBase;
 
 NAMESPACE_SIMDATA
 
-/**
- * @brief Base class for all classes representing packable data objects.
+/** Base class for all classes representing packable data objects.
  *
- * Derived classes must include the SIMDATA_OBJECT(classname, major, minor)
- * macro in their class definition and the SIMDATA_REGISTER(classname) macro 
- * in their implementation.
+ *  Derived classes must include the SIMDATA_OBJECT(classname, major, minor)
+ *  macro in their class definition and the SIMDATA_REGISTER(classname) macro 
+ *  in their implementation.
  * 
- * The following methods must be extended in derived classes:
- * 	pack        serialize object to archive (call superclass method first)
- * 	unpack      unserialize object from archive (call superclass method 
- * 	            first)
- * 	parseXML    parse loose XML cdata if present
- * 	convertXML  post-process XML data
- * 	postCreate  additional processing after deserialization
+ *  The following methods must be extended in derived classes:
+ *  @li pack        serialize object to archive (call superclass method first)
+ *  @li unpack      unserialize object from archive (call superclass method 
+ *  	            first)
+ *  @li parseXML    parse loose XML cdata if present
+ *  @li convertXML  post-process XML data
+ *  @li postCreate  additional processing after deserialization
  *
- * Objects should never be copied or handled directly by user code.  Use 
- * Ref<> handles to manipulate them by reference, and Link<> member variables
- * to load them from data archives.  Objects set as 'static' are singletons 
- * managed by the DataArchive.
+ *  Objects should never be copied or handled directly by user code.  Use 
+ *  Ref<> handles to manipulate them by reference, and Link<> member variables
+ *  to load them from data archives.  Objects set as 'static' are singletons 
+ *  managed by the DataArchive.
  *
- * @author Mark Rose <mrose@stm.lbl.gov>
- * @ingroup BaseTypes
+ *  @author Mark Rose <mrose@stm.lbl.gov>
+ *  @ingroup BaseTypes
  */
-
 class SIMDATA_EXPORT Object: public Referenced, public BaseType {
 	friend class DataArchive;
 	friend class LinkBase;
@@ -152,7 +150,7 @@ public:
 		return 0; 
 	}
 
-	__CLASSDEF(Object, 0, 0)
+	__SIMDATA_CLASSDEF(Object, 0, 0)
 		
 	/**
 	 * Serialize to a data archive.

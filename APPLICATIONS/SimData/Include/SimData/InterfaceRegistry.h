@@ -138,8 +138,7 @@ public:
 };
 
 
-/**
- * @brief Creates a single, static instance of the templated class.
+/** Creates a single, static instance of the templated class.
  */
 template <class C>
 class Singleton {
@@ -153,14 +152,13 @@ private:
 	~Singleton() {}
 };
 
-/**
- * @brief Singleton class to store and access all ObjectInterfaces in the application.
+/** Singleton class to store and access all ObjectInterfaces in the application.
  *
- * ObjectInterfaces automatically register themselves with the global instance of this
- * class at startup.  Interfaces can be accessed by name to provide dynamic object
- * creation and variable assignment.
+ *  ObjectInterfaces automatically register themselves with the global instance of this
+ *  class at startup.  Interfaces can be accessed by name to provide dynamic object
+ *  creation and variable assignment.
  * 
- * @author Mark Rose <mrose@stm.lbl.gov>
+ *  @author Mark Rose <mrose@stm.lbl.gov>
  */
 class InterfaceRegistry {
 	
@@ -188,13 +186,13 @@ public:
 	}
 
 #if defined(_MSC_VER ) && (_MSC_VER <= 1200)
-    virtual ~InterfaceRegistry();
+	virtual ~InterfaceRegistry();
 #endif
 
 private:
 
 #if !defined(_MSC_VER ) || (_MSC_VER > 1200)
-    virtual ~InterfaceRegistry();
+	virtual ~InterfaceRegistry();
 #endif
 
 	friend class Singleton<InterfaceRegistry>;
@@ -211,15 +209,6 @@ private:
 
 };
 
-
-// #define g_InterfaceRegistry Singleton<InterfaceRegistry>::getInstance()
-
-/**
- * The master interface registry.
- */
-/*
-extern InterfaceRegistry g_InterfaceRegistry;
-*/
 
 
 //-------------------------------------------------------
@@ -261,11 +250,6 @@ public:
 	virtual SIMDATA(Object)* createObject() const { assert(0); return 0; } \
 	virtual bool isVirtual() const { return true; }
 
-#ifdef _MSC_VER
-	#define CTOR_INIT(a, b) b
-#else
-	#define CTOR_INIT(a, b) a::b
-#endif
 
 // interface macro 2
 #define __SIMDATA_XML_INTERFACE_2(classname, baseinterface, nqbaseinterface) \

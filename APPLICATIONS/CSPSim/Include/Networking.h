@@ -30,10 +30,13 @@
 #include <string.h>
 #include <assert.h>
 #include <errno.h>
-#include <sys/socket.h>
 #include <sys/types.h>
+
+#ifndef _MSC_VER
+#include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
+#endif
 
 #include <SimData/Vector3.h>
 

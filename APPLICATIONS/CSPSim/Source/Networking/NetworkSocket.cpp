@@ -21,6 +21,10 @@
  * @file NetworkSocket.cpp:
  * @author Scott Flicker (Wolverine)
  */
+#if _MSC_VER
+#include <WinSock2.h>
+#endif
+
 #include "Networking.h"
 
 NetworkSocket::NetworkSocket(NetworkNode * node, short port)
@@ -34,11 +38,14 @@ NetworkSocket::NetworkSocket(NetworkNode * node, short port)
     m_servaddr->sin_family = AF_INET;
     m_servaddr->sin_port = htons( port );
     addrptr->s_addr = inet_addr( node->getNetworkName() );
-    
 }
 
 int NetworkSocket::sendto(NetworkMessage * message)
 {
-    printf("Sending Network Packet\n");   
-    return ::sendto(m_sockfd, (const void *)message->getBufferPtr(), message->getBufferLen(), 0, (const struct sockaddr *)m_servaddr, sizeof(sockaddr_in));
+    printf("Sending Network Packet\n"); 
+#ifdef _MSC_VER
+    return ::sendto(m_sockfd, (const char *)message->getBufferPtr(), message->getBufferLen(), 0, (const struct sockaddr *)m_servaddr, sizeof(sockaddr_in));
+#else
+	return ::sendto(m_sockfd, (const void *)message->getBufferPtr(), message->getBufferLen(), 0, (const struct sockaddr *)m_servaddr, sizeof(sockaddr_in));
+#endif
 }

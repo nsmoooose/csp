@@ -627,12 +627,6 @@ int VirtualScene::getTerrainPolygonsRendered()
 }
 
 
-void VirtualScene::setBattlefield(simdata::Pointer<VirtualBattlefield> battlefield) 
-{
-	m_Battlefield = battlefield;
-}
-
-
 void VirtualScene::setTerrain(simdata::Pointer<TerrainObject> terrain)
 {
 	if (!terrain) {

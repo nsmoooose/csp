@@ -39,6 +39,10 @@ namespace Demeter {
 	class TerrainTextureFactory;
 }
 
+#include <osg/ref_ptr>
+#include <osg/Node>
+
+
 /**
  * class TerrainObject
  *

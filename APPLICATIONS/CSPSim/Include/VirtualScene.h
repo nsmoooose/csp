@@ -43,7 +43,6 @@ namespace osgUtil {
 	class SceneView;
 }
 
-#include "VirtualBattlefield.h"
 #include "TerrainObject.h"
 #include "SimObject.h"
 #include "Sky.h"
@@ -85,9 +84,6 @@ public:
 	float getViewDistance() const { return m_ViewDistance; }
 	void setViewDistance(float value);
 
-	void setBattlefield(simdata::Pointer<VirtualBattlefield>);
-	simdata::Pointer<VirtualBattlefield> getBattlefield() const { return m_Battlefield; }
-	
 	void setTerrain(simdata::Pointer<TerrainObject>);
 	simdata::Pointer<TerrainObject> getTerrain() const { return m_Terrain; }
 	int getTerrainPolygonsRendered();
@@ -105,7 +101,6 @@ public:
 protected:
 
 	simdata::Pointer<TerrainObject> m_Terrain;
-	simdata::Pointer<VirtualBattlefield> m_Battlefield;
 
 	osg::ref_ptr<osgUtil::SceneView> m_View;
 	osg::ref_ptr<osg::FrameStamp> m_FrameStamp;

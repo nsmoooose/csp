@@ -47,6 +47,32 @@ class NetworkNode;
 
 const short NETWORK_PACKET_SIZE = 512;
 
+#ifdef WIN32
+#pragma pack(push)
+#pragma pack(1)
+#endif
+
+                     
+// Define some structs that will only used for data transfers.
+// These differ from SimData structs in that they have no virtual
+// functions and hence have more predictable binary sizes.
+struct _Vector3Struct
+{
+  double x;
+  double y;
+  double z;
+};
+
+struct _QuatStruct
+{
+  double x;
+  double y;
+  double z;
+  double w;
+};
+
+
+
 struct MessageHeader
 {
   simdata::uint16  m_magicNumber;
@@ -118,31 +144,7 @@ class NetworkMessage
    
 };
 
-class NetworkMessagePool
-{
-
-
-};
-                       
-// Define some structs that will only used for data transfers.
-// These differ from SimData structs in that they have no virtual
-// functions and hence have more predictable binary sizes.
-struct _Vector3Struct
-{
-  double x;
-  double y;
-  double z;
-};
-
-struct _QuatStruct
-{
-  double x;
-  double y;
-  double z;
-  double w;
-};
-
-class ObjectUpdateMessagePayload 
+struct ObjectUpdateMessagePayload 
 {
 
     private:
@@ -176,6 +178,16 @@ class ObjectUpdateMessagePayload
     
 };
 
+#ifdef WIN32
+#pragma pack(pop)
+#endif
+
+class NetworkMessagePool
+{
+
+
+};
+  
 
 class NetworkNode
 {

@@ -125,7 +125,7 @@ struct SIMDATA_EXPORT HashT {
 typedef HashT hasht;
 
 
-#if defined(_MSC_VER) && (_MSC_VER == 1300) 
+#if defined(_MSC_VER) && (_MSC_VER >= 1300) 
 	struct eqint: public std::hash_compare<int const> {
 		size_t operator ()(int const& i) const {
 			return i;
@@ -149,7 +149,7 @@ struct hashint {
 };
 
 
-#if defined(_MSC_VER) && (_MSC_VER == 1300) 
+#if defined(_MSC_VER) && (_MSC_VER >= 1300) 
 	struct eqstr: public std::hash_compare<char const*>
 		{
 			size_t operator()(char const* s ) const {
@@ -175,7 +175,7 @@ struct hasht_hash {
 	}
 };
 
-#if defined(_MSC_VER) && (_MSC_VER == 1300) 
+#if defined(_MSC_VER) && (_MSC_VER >= 1300) 
 	struct hasht_eq: public std::hash_compare<hasht const> {
 		size_t operator()( hasht const& i1 ) const {
 		return i1.a;
@@ -203,7 +203,7 @@ struct SIMDATA_EXPORT hashstring {
 	}
 };
 
-#if defined(_MSC_VER) && (_MSC_VER == 1300) 
+#if defined(_MSC_VER) && (_MSC_VER >= 1300) 
 	struct eqstring: public std::hash_compare<std::string const> {
 		size_t operator()( std::string const& a ) const {
 			return eqstr()(a.c_str());

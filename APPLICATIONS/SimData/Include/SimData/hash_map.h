@@ -48,7 +48,7 @@
     #include <hash_map>
     #define HASH_MAP std::hash_map
     #define HASH std::hash
-  #elif (_MSC_VER == 1300) 
+  #elif (_MSC_VER >= 1300) 
     #include <hash_map>
     #define HASH_MAP std::hash_map
     #define HASH std::hash_compare
@@ -59,7 +59,7 @@
 #endif
 
 template <class key, class val, class hash, class eq> struct HASH_MAPS {
-#if defined(_MSC_VER) && (_MSC_VER == 1300)
+#if defined(_MSC_VER) && (_MSC_VER >= 1300)
 	typedef HASH_MAP<key, val, eq> Type;
 #else
 	typedef HASH_MAP<key, val, hash, eq> Type;

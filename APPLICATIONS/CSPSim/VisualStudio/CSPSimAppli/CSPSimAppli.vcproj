@@ -225,9 +225,6 @@
 				RelativePath="..\..\Source\ObjectRangeInfo.cpp">
 			</File>
 			<File
-				RelativePath="..\..\Source\Platform.cpp">
-			</File>
-			<File
 				RelativePath="..\..\Source\ScreenInfo.cpp">
 			</File>
 			<File
@@ -356,9 +353,6 @@
 			</File>
 			<File
 				RelativePath="..\..\Include\ObjectRangeInfo.h">
-			</File>
-			<File
-				RelativePath="..\..\Include\Platform.h">
 			</File>
 			<File
 				RelativePath="..\..\Include\ScreenInfo.h">

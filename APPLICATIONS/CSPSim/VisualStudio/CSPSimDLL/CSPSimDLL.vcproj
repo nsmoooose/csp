@@ -82,7 +82,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				InlineFunctionExpansion="1"
-				AdditionalIncludeDirectories="../../Include,C:/Python22/include,../../../../THIRDPARTYLIBS/include,../../../../THIRDPARTYLIBS/Demeter"
+				AdditionalIncludeDirectories="../../Include,C:/Python22/include,../../../../THIRDPARTYLIBS/include,../../../../THIRDPARTYLIBS/demeter"
 				PreprocessorDefinitions="CSP_NDEBUG;WIN32;NDEBUG;_WINDOWS;_USRDLL;CSPSIMDLL_EXPORTS"
 				StringPooling="TRUE"
 				RuntimeLibrary="2"
@@ -230,9 +230,6 @@
 				RelativePath="..\..\Source\ObjectRangeInfo.cpp">
 			</File>
 			<File
-				RelativePath="..\..\Source\Platform.cpp">
-			</File>
-			<File
 				RelativePath="..\..\Source\ScreenInfo.cpp">
 			</File>
 			<File
@@ -361,9 +358,6 @@
 			</File>
 			<File
 				RelativePath="..\..\Include\ObjectRangeInfo.h">
-			</File>
-			<File
-				RelativePath="..\..\Include\Platform.h">
 			</File>
 			<File
 				RelativePath="..\..\Include\ScreenInfo.h">

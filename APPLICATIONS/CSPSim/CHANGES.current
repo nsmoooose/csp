@@ -8,6 +8,9 @@ Version 0.3.1 (in progress)
             format changes. In the latter case, also specify the --rebuild
             option to recompile all the source data.
 
+	    Added configure.win.py.  This simple script does some minimal
+	    checking and setup to prepare the build under Windows/MSVC.
+
 2003-03-21: delta
             CSPSim is back on windows (thx a lot Onsight).
            

@@ -26,6 +26,8 @@ def runCSPSim(args):
 	datapath = CSP.getDataPath()
 	dar = os.path.join(datapath, "Sim.dar")
 	if not os.path.exists(dar):
+		print
+		print "Static data archive '%s' not found." % dar
 		compileData([])
 	import Shell
 	app = CSP.CSPSim()

@@ -23,7 +23,7 @@
  * 
  * Broadcasts network messages
  */
-#include "Networking.h"
+#include <SimNet/Networking.h>
 
 NetworkBroadcaster::NetworkBroadcaster()
 {

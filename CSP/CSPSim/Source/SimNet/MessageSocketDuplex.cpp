@@ -21,7 +21,7 @@
  * @file NetworkSocket.cpp:
  * @author Scott Flicker (Wolverine)
  */
-#include "Networking.h"
+#include <SimNet/Networking.h>
 #include "Log.h"
 
 MessageSocketDuplex::MessageSocketDuplex()

@@ -24,7 +24,7 @@
  * Listens for network messages
  */
 
-#include "Networking.h"
+#include <SimNet/Networking.h>
 
 
 NetworkListener::NetworkListener()

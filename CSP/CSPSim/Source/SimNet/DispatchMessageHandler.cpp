@@ -1,4 +1,4 @@
-#include "Networking.h"
+#include <SimNet/Networking.h>
 #include "DynamicObject.h"
 
 #include "Config.h"

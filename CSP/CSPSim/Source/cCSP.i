@@ -36,7 +36,7 @@
 
 %include "VirtualBattlefield.i"
 %include "VirtualScene.i"
-%include "Networking.i"
+%include "SimNet/Networking.i"
 %include "CSPSim.i"
 //%include "SimpleConfig.i"
 %include "Config.i"

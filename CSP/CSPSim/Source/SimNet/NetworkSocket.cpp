@@ -22,7 +22,7 @@
  * @author Scott Flicker (Wolverine)
  */
 
-#include "Networking.h"
+#include <SimNet/Networking.h>
 
 NetworkSocket::NetworkSocket()
 {

@@ -25,7 +25,7 @@
  * Currently contains for header and buffer routines
  */
 
-#include "Networking.h"
+#include <SimNet/Networking.h>
 
 unsigned short NetworkMessage::m_magicNumber = 0xACDC;
 unsigned short NetworkMessage::m_HeaderLen = 16;

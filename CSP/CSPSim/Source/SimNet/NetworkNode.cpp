@@ -24,7 +24,7 @@
  * This class encapsulates a node in the simulation network.
  */
 
-#include "Networking.h"
+#include <SimNet/Networking.h>
 
 NetworkNode::NetworkNode()
 {

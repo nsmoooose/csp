@@ -24,7 +24,7 @@
 
 #include <SimData/LogStream.h>
 #include "Log.h"
-#include "Networking.h"
+#include <SimNet/Networking.h>
 
 NetworkMessenger::NetworkMessenger()
 {

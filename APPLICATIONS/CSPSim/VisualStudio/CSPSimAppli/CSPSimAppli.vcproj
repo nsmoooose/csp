@@ -20,7 +20,7 @@
 			CharacterSet="2">
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalOptions="/Zm1000"
+				AdditionalOptions="/Zm200"
 				InlineFunctionExpansion="1"
 				AdditionalIncludeDirectories="../../Include,../../../../THIRDPARTYLIBS/include,../../../../THIRDPARTYLIBS/Demeter,C:/Python22/include"
 				PreprocessorDefinitions="CSP_NDEBUG;WIN32,NDEBUG,_WINDOWS,__CSPSIM_EXE__"
@@ -54,7 +54,8 @@
 				TargetEnvironment="1"
 				TypeLibraryName=".\Release/CSPSimAppli.tlb"/>
 			<Tool
-				Name="VCPostBuildEventTool"/>
+				Name="VCPostBuildEventTool"
+				CommandLine="copy /Y cCSP.py ..\..\Bin"/>
 			<Tool
 				Name="VCPreBuildEventTool"/>
 			<Tool
@@ -78,7 +79,7 @@
 			CharacterSet="2">
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalOptions="/Zm1000"
+				AdditionalOptions="/Zm200"
 				Optimization="0"
 				AdditionalIncludeDirectories="../../Include,../../../../THIRDPARTYLIBS/include,../../../../THIRDPARTYLIBS/Demeter,C:/Python22/include"
 				PreprocessorDefinitions="WIN32,_DEBUG,_WINDOWS,__CSPSIM_EXE__"
@@ -117,7 +118,8 @@
 				TargetEnvironment="1"
 				TypeLibraryName=".\../../Bin/CSPSimAppli.tlb"/>
 			<Tool
-				Name="VCPostBuildEventTool"/>
+				Name="VCPostBuildEventTool"
+				CommandLine="copy /Y cCSP.py ..\..\Bin"/>
 			<Tool
 				Name="VCPreBuildEventTool"/>
 			<Tool
@@ -137,9 +139,6 @@
 			Name="Source Files"
 			Filter="cpp;c;cxx;rc;def;r;odl;idl;hpj;bat">
 			<File
-				RelativePath="..\..\Source\AeroDynamics.cpp">
-			</File>
-			<File
 				RelativePath="..\..\Source\AircraftModel.cpp">
 				<FileConfiguration
 					Name="Release|Win32"
@@ -158,13 +157,22 @@
 				RelativePath="..\..\Source\AircraftObject.cpp">
 			</File>
 			<File
+				RelativePath="..\..\Source\AircraftPhysicModel.cpp">
+			</File>
+			<File
 				RelativePath="..\..\Source\Atmosphere.cpp">
+			</File>
+			<File
+				RelativePath="..\..\Source\BaseDynamics.cpp">
 			</File>
 			<File
 				RelativePath="..\..\Source\BaseScreen.cpp">
 			</File>
 			<File
 				RelativePath="..\..\Source\CSPSim.cpp">
+			</File>
+			<File
+				RelativePath="..\..\Source\Collision.cpp">
 			</File>
 			<File
 				RelativePath="..\..\Source\Colorspace.cpp">
@@ -183,6 +191,9 @@
 			</File>
 			<File
 				RelativePath="..\..\Source\DynamicalSystem.cpp">
+			</File>
+			<File
+				RelativePath="..\..\Source\Engine.cpp">
 			</File>
 			<File
 				RelativePath="..\..\Source\EventMapIndex.cpp">
@@ -225,6 +236,12 @@
 			</File>
 			<File
 				RelativePath="..\..\Source\ObjectRangeInfo.cpp">
+			</File>
+			<File
+				RelativePath="..\..\Source\PhysicModel.cpp">
+			</File>
+			<File
+				RelativePath="..\..\Source\PrimaryAeroDynamics.cpp">
 			</File>
 			<File
 				RelativePath="..\..\Source\ScreenInfo.cpp">
@@ -282,13 +299,19 @@
 			Name="Header Files"
 			Filter="h;hpp;hxx;hm;inl">
 			<File
-				RelativePath="..\..\Include\AeroDynamics.h">
-			</File>
-			<File
 				RelativePath="..\..\Include\AircraftObject.h">
 			</File>
 			<File
+				RelativePath="..\..\Include\AircraftPhysicModel.h">
+			</File>
+			<File
+				RelativePath="..\..\Include\Atmosphere.h">
+			</File>
+			<File
 				RelativePath="..\..\Include\BaseController.h">
+			</File>
+			<File
+				RelativePath="..\..\Include\BaseDynamics.h">
 			</File>
 			<File
 				RelativePath="..\..\Include\BasePhysics.h">
@@ -298,6 +321,9 @@
 			</File>
 			<File
 				RelativePath="..\..\Include\CSPSim.h">
+			</File>
+			<File
+				RelativePath="..\..\Include\Collision.h">
 			</File>
 			<File
 				RelativePath="..\..\Include\Colorspace.h">
@@ -319,6 +345,9 @@
 			</File>
 			<File
 				RelativePath="..\..\Include\DynamicalSystem.h">
+			</File>
+			<File
+				RelativePath="..\..\Include\Engine.h">
 			</File>
 			<File
 				RelativePath="..\..\Include\EventMapIndex.h">
@@ -366,6 +395,12 @@
 				RelativePath="..\..\Include\ObjectRangeInfo.h">
 			</File>
 			<File
+				RelativePath="..\..\Include\PhysicModel.h">
+			</File>
+			<File
+				RelativePath="..\..\Include\PrimaryAeroDynamics.h">
+			</File>
+			<File
 				RelativePath="..\..\Include\ScreenInfo.h">
 			</File>
 			<File
@@ -408,6 +443,9 @@
 				RelativePath="..\..\Include\VirtualBattlefield.h">
 			</File>
 			<File
+				RelativePath="..\..\Include\VirtualScene.h">
+			</File>
+			<File
 				RelativePath="..\..\Include\compiler.h">
 			</File>
 			<File
@@ -426,7 +464,7 @@
 					Name="VCCustomBuildTool"
 					CommandLine="C:\progra~1\SWIG-1.3.19\swig -c++ -python -noexcept -DWIN32 -I..\..\Include -IC:\Python22\include -o ..\..\Source\$(InputName)_wrap.cpp ..\..\Source\$(InputName).i
 "
-					Outputs="..\..\Source\$(InputName)_wrap.cpp ..\..\Bin\$(InputName).py"/>
+					Outputs="..\..\Source\$(InputName)_wrap.cpp"/>
 			</FileConfiguration>
 			<FileConfiguration
 				Name="Debug|Win32">

@@ -58,7 +58,8 @@
 				TargetEnvironment="1"
 				TypeLibraryName=".\Debug/CSPSimDLL.tlb"/>
 			<Tool
-				Name="VCPostBuildEventTool"/>
+				Name="VCPostBuildEventTool"
+				CommandLine="copy /Y cCSP.py ..\..\Bin"/>
 			<Tool
 				Name="VCPreBuildEventTool"/>
 			<Tool
@@ -116,7 +117,8 @@
 				TargetEnvironment="1"
 				TypeLibraryName=".\Release/CSPSimDLL.tlb"/>
 			<Tool
-				Name="VCPostBuildEventTool"/>
+				Name="VCPostBuildEventTool"
+				CommandLine="copy /Y cCSP.py ..\..\Bin"/>
 			<Tool
 				Name="VCPreBuildEventTool"/>
 			<Tool
@@ -136,15 +138,6 @@
 			Name="Source Files"
 			Filter="cpp;c;cxx;rc;def;r;odl;idl;hpj;bat">
 			<File
-				RelativePath="..\..\Source\AeroDynamics.cpp">
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						AdditionalIncludeDirectories="../../Include"/>
-				</FileConfiguration>
-			</File>
-			<File
 				RelativePath="..\..\Source\AircraftModel.cpp">
 				<FileConfiguration
 					Name="Debug|Win32"
@@ -163,13 +156,22 @@
 				RelativePath="..\..\Source\AircraftObject.cpp">
 			</File>
 			<File
+				RelativePath="..\..\Source\AircraftPhysicModel.cpp">
+			</File>
+			<File
 				RelativePath="..\..\Source\Atmosphere.cpp">
+			</File>
+			<File
+				RelativePath="..\..\Source\BaseDynamics.cpp">
 			</File>
 			<File
 				RelativePath="..\..\Source\BaseScreen.cpp">
 			</File>
 			<File
 				RelativePath="..\..\Source\CSPSim.cpp">
+			</File>
+			<File
+				RelativePath="..\..\Source\Collision.cpp">
 			</File>
 			<File
 				RelativePath="..\..\Source\Colorspace.cpp">
@@ -188,6 +190,9 @@
 			</File>
 			<File
 				RelativePath="..\..\Source\DynamicalSystem.cpp">
+			</File>
+			<File
+				RelativePath="..\..\Source\Engine.cpp">
 			</File>
 			<File
 				RelativePath="..\..\Source\EventMapIndex.cpp">
@@ -230,6 +235,12 @@
 			</File>
 			<File
 				RelativePath="..\..\Source\ObjectRangeInfo.cpp">
+			</File>
+			<File
+				RelativePath="..\..\Source\PhysicModel.cpp">
+			</File>
+			<File
+				RelativePath="..\..\Source\PrimaryAeroDynamics.cpp">
 			</File>
 			<File
 				RelativePath="..\..\Source\ScreenInfo.cpp">
@@ -284,9 +295,6 @@
 			Name="Header Files"
 			Filter="h;hpp;hxx;hm;inl">
 			<File
-				RelativePath="..\..\Include\AeroDynamics.h">
-			</File>
-			<File
 				RelativePath="..\..\Include\AircraftObject.h">
 			</File>
 			<File
@@ -296,6 +304,9 @@
 				RelativePath="..\..\Include\BaseController.h">
 			</File>
 			<File
+				RelativePath="..\..\Include\BaseDynamics.h">
+			</File>
+			<File
 				RelativePath="..\..\Include\BasePhysics.h">
 			</File>
 			<File
@@ -303,6 +314,9 @@
 			</File>
 			<File
 				RelativePath="..\..\Include\CSPSim.h">
+			</File>
+			<File
+				RelativePath="..\..\Include\Collision.h">
 			</File>
 			<File
 				RelativePath="..\..\Include\Colorspace.h">
@@ -318,6 +332,9 @@
 			</File>
 			<File
 				RelativePath="..\..\Include\DynamicalSystem.h">
+			</File>
+			<File
+				RelativePath="..\..\Include\Engine.h">
 			</File>
 			<File
 				RelativePath="..\..\Include\EventMapIndex.h">
@@ -359,13 +376,16 @@
 				RelativePath="..\..\Include\NumericalMethod.h">
 			</File>
 			<File
-				RelativePath="..\..\Include\OGLText.h">
-			</File>
-			<File
 				RelativePath="..\..\Include\ObjectModel.h">
 			</File>
 			<File
 				RelativePath="..\..\Include\ObjectRangeInfo.h">
+			</File>
+			<File
+				RelativePath="..\..\Include\PhysicModel.h">
+			</File>
+			<File
+				RelativePath="..\..\Include\PrimaryAeroDynamics.h">
 			</File>
 			<File
 				RelativePath="..\..\Include\ScreenInfo.h">
@@ -378,6 +398,9 @@
 			</File>
 			<File
 				RelativePath="..\..\Include\SimpleConfig.h">
+			</File>
+			<File
+				RelativePath="..\..\Include\Sky.h">
 			</File>
 			<File
 				RelativePath="..\..\Include\SmokeEffects.h">

@@ -25,6 +25,8 @@
  * Enumeration classes for C++ and Python.
  *
  * Examples:
+ *
+ * @code
  
  	// C++ example /////////////////////////////////////////////////////
 	
@@ -64,6 +66,7 @@
 	assert(items.cherry == "cherry")
 	assert(items.cherry > "orange")
 
+ * @endcode
  */
 
 
@@ -123,13 +126,19 @@ class EnumerationCore: public Referenced {
 friend class Enumeration;
 	typedef std::pair<std::string, int> Element;
 	typedef std::vector<Element> Elements;
+
 	/// value to index lookup
 	std::map<int, int> __i2idx;
+
 	/// string to index lookup
 	std::map<std::string, int> __s2idx;
+
 	/// elements
 	Elements __elements;
+
 	/// Parse enum string into lookup tables.
+	///
+	/// @see EnumerationCore(std::string const &s)
 	void __init(std::string const &s) {
 		std::stringstream ss(s); 
 		std::string token; 
@@ -157,12 +166,22 @@ friend class Enumeration;
 		}
 		if (__elements.size() <= 0) throw EnumError("Empty Enumeration");
 	}
+
+	/// Return an element by index number.
 	Element const &getElementByIndex(int idx) const {
 		assert(validIndex(idx));
 		return __elements[idx];
 	}
+
+	/// Return an element token by index number.
 	std::string getTokenByIndex(int idx) const { return getElementByIndex(idx).first; }
+
+	/// Return an element value by index number.
 	int getValueByIndex(int idx) const { return getElementByIndex(idx).second; }
+
+	/// Lookup the index of the element with the specified value.
+	///
+	/// Throws EnumIndexError if the value does not exist.
 	int getIndexByValue(int value) const {
 		std::map<int, int>::const_iterator iter = __i2idx.find(value);
 		if (iter == __i2idx.end()) {
@@ -172,9 +191,15 @@ friend class Enumeration;
 		}
 		return iter->second;
 	}
+
+	/// Get the token associated with a given value.
 	std::string getTokenByValue(int value) const {
 		return __elements[getIndexByValue(value)].first;
 	}
+
+	/// Lookup the index of the element with the specified token.
+	///
+	/// Throws EnumIndexError if the token does not exist.
 	int getIndexByToken(std::string const &token) const {
 		std::map<std::string, int>::const_iterator iter = __s2idx.find(token);
 		if (iter == __s2idx.end()) {
@@ -182,22 +207,48 @@ friend class Enumeration;
 		}
 		return iter->second;
 	}
+
+	/// Get the value associated with a given token.
 	int getValueByToken(std::string const &token) const {
 		return __elements[getIndexByToken(token)].second;
 	}
+
+	/// Return the number of elements in the enumeration.
 	int size() const { return __elements.size(); }
+
+	/// Test if this enumeration contains a given token.
 	bool containsToken(std::string const &token) const {
 		return __s2idx.find(token) != __s2idx.end(); 
 	}
+
+	/// Test if this enumeration contains a given value.
 	bool containsValue(int value) const {
 		return __i2idx.find(value) != __i2idx.end(); 
 	}
+
+	/// Test if an index is valid.
 	bool validIndex(int idx) const {
 		return idx >= 0 && idx <= size();
 	}
-	/// Not defined; should never be called.
+
+	/// Private default constructor.
+	///
+	/// This method is not defined and should never be called.
 	EnumerationCore();
-	/// Construct a new enum from a white-space-separated string.
+
+	/// Construct a new enum from a string.
+	///
+	/// The enumeration tokens are must be separated by
+	/// white-space and can have an optional value assignment.
+	/// Tokens without explicit values will be assigned
+	/// sequential values following the last specified
+	/// value.  The initial default value is zero.
+	///
+	/// Examples:
+	/// @code
+	///     "zero one two three"
+	///     "one=1 two three ten=10 eleven"
+	/// @endcode
 	EnumerationCore(std::string const &s): Referenced() {
 		__init(s);
 	}
@@ -211,17 +262,21 @@ friend class Enumeration;
  * members, together with Enum<> members that use the 
  * static Enumeration as the template argument.  For example:
  *
+ * @code
  *     class Foo {
  *     public:
  *         static const Enumeration MyEnumeration;
  *         Enum<MyEnumeration> MyEnum;
  *         ...
  *     };
+ * @endcode
  *
  * When defining the Enumeration, specify the items in order
  * as a white-space separated string, as in:
  *
+ * @code
  *     Enumeration Foo::MyEnumeration("apple orange cherry");
+ * @endcode
  */
 class Enumeration {
 friend class EnumLink;
@@ -250,33 +305,41 @@ friend class EnumLink;
 		return *this;
 	}
 
+	/// Return the index corresponding to a given token.
 	int getIndexByToken(std::string const &token) const {
 		assert(__core.valid());
 		return __core->getIndexByToken(token);
 	}
 
+	/// Return the index corresponding to a given value.
 	int getIndexByValue(int value) const {
 		assert(__core.valid());
 		return __core->getIndexByValue(value);
 	}
 
+	/// Return the token corresponding to a given index.
 	std::string getTokenByIndex(int idx) const {
 		assert(__core.valid());
 		return __core->getTokenByIndex(idx);
 	}
 
+	/// Return the value corresponding to a given index.
 	int getValueByIndex(int idx) const {
 		assert(__core.valid());
 		return __core->getValueByIndex(idx);
 	}
 
-
+	/// Return a list of enums in a range of indices.
+	///
+	/// @param idx1 The lower index (inclusive).
+	/// @param idx2 The upper index (inclusive).
 	inline const std::vector<EnumLink> __range(int idx1, int idx2) const;
 
 	void __checkIndex(int idx) const {
 		assert(__core.valid() && __core->validIndex(idx));
 	}
 
+	/// Construct a new EnumLink bound to this Enumeration.
 	inline EnumLink makeEnum(int idx) const;
 
 public:
@@ -355,7 +418,10 @@ public:
 		return __core->containsToken(token);
 	}
 
+	/// Return the last enum in the Enumeration set.
 	inline EnumLink last() const;
+
+	/// Return the first enum in the Enumeration set.
 	inline EnumLink first() const;
 
 #ifndef SWIG
@@ -400,7 +466,7 @@ friend class Enumeration;
 	/// the associated enumeration
 	Enumeration __E;
 protected:
-	/// integer index of the enum
+	/// the index of the enum
 	int _idx;
 
 	/// Get the number of items in the associated Enumeration.
@@ -409,12 +475,15 @@ protected:
 	/// The default constructor creates an unbound EnumLink.
 	EnumLink(): __E(), _idx(0) {}
 
+	/// Get the enumeration index of the enum.
 	int getIndex() const { return _idx; }
 
+	/// Construct a new EnumLink bound to a given Enumeration.
 	EnumLink(int idx, Enumeration const &E): __E(E), _idx(idx) { 
 		E.__checkIndex(idx); 
 	}
 
+	/// Construct a new EnumLink bound to the current Enumeration.
 	EnumLink makeEnum(int idx) const {
 		return EnumLink(idx, __E);
 	}
@@ -428,7 +497,7 @@ public:
 		_idx = __E.getIndexByValue(value); 
 	}
 
-	// create a new EnumLink bound to an existing Enumeration.
+	// Create a new EnumLink bound to an existing Enumeration.
 	EnumLink(Enumeration const &E, std::string const &token): __E(E), _idx(0) { 
 		_idx = __E.getIndexByToken(token); 
 	}

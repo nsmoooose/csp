@@ -35,6 +35,7 @@
 #include <vector>
 #include <list>
 #include <map>
+#include <cassert>
 #include <zlib.h>
 
 using namespace simdata;
@@ -80,11 +81,11 @@ public:
 };
 
 
-/**
- * ElevationFinder compiles multiple elevation samples to produce
- * a local average elevation.  This is primarily intended to deal
- * with grid irregularities at quad edges, but can be extended to
- * do subsampling.
+/** ElevationFinder compiles multiple elevation samples to produce
+ *  a local average elevation.  
+ *
+ *  This is primarily intended to deal with grid irregularities at 
+ *  quad edges, but can be extended to do subsampling.
  */
 class ElevationFinder {
 	double lat, lon;
@@ -96,11 +97,10 @@ class ElevationFinder {
 	std::vector<double> d2_part;
 	UTM utm, adjusted;
 public:
-	/**
-	 * Construct a new ElevationFinder.
+	/** Construct a new ElevationFinder.
 	 *
-	 * @param utm_ the UTM coordinates of the point of interest.
-	 * @param length the range of influence for each elevation sample.
+	 *  @param utm_ the UTM coordinates of the point of interest.
+	 *  @param length the range of influence for each elevation sample.
 	 */
 	ElevationFinder(UTM const &utm_, double length) {
 		utm = utm_;
@@ -110,11 +110,11 @@ public:
 		distance_squared_scale = 1.0 / (length*length);
 	}
 
-	/**
-	 * Get the UTM coordinate of the finder, adapted to the UTM
-	 * zone of the current quad.  The resulting coordinates may
-	 * not be strictly valid, but are useful in dealing with
-	 * quad edges at zone boundaries.
+	/** Get the UTM coordinate of the finder, adapted to the UTM
+	 *  zone of the current quad.  
+	 * 
+	 *  The resulting coordinates may not be strictly valid, but 
+	 *  are useful in dealing with quad edges at zone boundaries.
 	 */
 	UTM const &getUTM(int zone) { 
 		if (zone != utm.zone()) {
@@ -126,17 +126,17 @@ public:
 		}
 	}
 
-	/**
-	 * Returns true if this quad contains the point.  Returns
-	 * false during calls to neighboring (hinted) quads.
+	/** Test if the quad contains the point.
+	 *
+	 *  @returns true if this quad contains the point, and
+	 *           false during calls to neighboring (hinted) quads.
 	 */
 	bool isPrimary() const {
 		return !hinted;
 	}
 
-	/**
-	 * Get the elevation by computing a weighted sum of elevation
-	 * samples from surrounding points.
+	/** Get the elevation by computing a weighted sum of elevation
+	 *  samples from surrounding points.
 	 */
 	double getElevation() {
 		int i;
@@ -170,25 +170,24 @@ public:
 		return e / scale;
 	}
 
-	/**
-	 * Add an elevation sample.
+	/** Add an elevation sample.
 	 *
-	 * @param e the elevation in meters
-	 * @praam d2 the squared distance from the elevation sample to the 
-	 *           point.
+	 *  @param e the elevation in meters
+	 *  @praam d2 the squared distance from the elevation sample to the 
+	 *            point.
 	 */
 	void setPartialElevation(double e, double d2) {
 		//std::cout << "setE " << e << ", " << d2 << "\n";
-		assert(e_part.size() == n_parts);
+		assert(int(e_part.size()) == n_parts);
 		e_part.push_back(e);
 		d2_part.push_back(d2);
 		n_parts++;
 	}
 
-	/**
-	 * Suggest neighhboring quads to check for elevation samples.  This 
-	 * is called by the primary quad when the point is near an edge and 
-	 * may be close to samples in neighboring quads.
+	/** Suggest neighhboring quads to check for elevation samples.  
+	 *
+	 *  This is called by the primary quad when the point is near an edge 
+	 *  and may be close to samples in neighboring quads.
 	 */
 	void setHint(int dx, int dy) {
 		if (hinted) return;
@@ -196,14 +195,13 @@ public:
 		hint[dx+3*dy+4]++;
 	}
 
-	/**
-	 * Gets the next hint of other quads to check for elevation samples. 
+	/** Gets the next hint of other quads to check for elevation samples. 
 	 *
-	 * @param dx the eastward position of the next hinted quad relative 
-	 *           to the primary quad.
-	 * @param dy the northward position of the next hinted quad relative 
-	 *           to the primary quad.
-	 * @returns true if no more hints remain.
+	 *  @param dx the eastward position of the next hinted quad relative 
+	 *            to the primary quad.
+	 *  @param dy the northward position of the next hinted quad relative 
+	 *            to the primary quad.
+	 *  @returns true if no more hints remain.
 	 */
 	bool getHint(int &dx, int &dy) {
 		hinted = true;
@@ -220,11 +218,10 @@ public:
 	}
 };
 
-/**
- * Digital Elevation Model class.
+/** Digital Elevation Model class.
  *
- * Reads DEM data from a DAT file and provides elevation sampling and edge
- * matching methods.
+ *  Reads DEM data from a DAT file and provides elevation sampling and edge
+ *  matching methods.
  */
 class DEM {
 	class DEMcol {
@@ -278,11 +275,11 @@ class DEM {
 public:
 	#define READD(a) gzread(fp, &(a), sizeof(double));
 	#define READI(a) gzread(fp, &(a), sizeof(int));
-	/**
-	 * Construct a new DEM, loading data from the appropriate DAT file.
+
+	/** Construct a new DEM, loading data from the appropriate DAT file.
 	 *
-	 * @la latitude contained in the quad (in degrees)
-	 * @lo longitude contained in the quad (in degrees)
+	 *  @la latitude contained in the quad (in degrees)
+	 *  @lo longitude contained in the quad (in degrees)
 	 */
 	DEM(double la, double lo, std::string const &datpath): zero(true) {
 		DEM_count++;
@@ -395,9 +392,11 @@ public:
 	inline double getLatitude() const { return lat; }
 	inline double getLongitude() const { return lon; }
 
-	/**
-	 * Find the nearest elevation samples within a column and add them to
-	 * the finder (along with hints for neighboring quads to check).
+	/** Find and add the nearest elevation samples in a column.
+	 * 
+	 *  Finds the nearest elevation samples within a column and adds 
+	 *  them to the finder (along with hints for neighboring quads to 
+	 *  check).
 	 */
 	int addNearest(std::vector<DEMcol>::iterator &i, UTM const &utm, ElevationFinder &finder) {
 		double fN = (utm.northing() - i->N) / (res.y()*gscale);
@@ -440,8 +439,7 @@ public:
 		return -2;
 	}
 
-	/**
-	 * Scale an elevation sample to meters above mean sea level.
+	/** Scale an elevation sample to meters above mean sea level.
 	 */
 	inline double _scale(double elevation) {
 		double scale = res.z();
@@ -449,11 +447,12 @@ public:
 		return (elevation - bias) * scale;
 	}
 
-	/**
-	 * Get elevation samples for the finder.  Currently this just searches
-	 * the two nearest columns for at most 4 elevation samples (2 per column).
-	 * Near the edges of a quad, fewer samples may be found but hints will be
-	 * provided of other nearby quads to check for additional samples.
+	/** Get elevation samples for the finder. 
+	 *
+	 *  Currently this just searches the two nearest columns for at most 
+	 *  4 elevation samples (2 per column).  Near the edges of a quad, 
+	 *  fewer samples may be found but hints will be provided of other 
+	 *  nearby quads to check for additional samples.
 	 */
 	void getElevation(ElevationFinder &finder) {
 		bool debug = false; //!finder.isPrimary();
@@ -494,7 +493,7 @@ public:
 		//std::cout << "MID\n";
 		//std::cout << E << " REL " << cols.begin()->E << " TIDX=" << t_idx << " OF " << cols.size() << "\n";
 		//std::cout << cols.begin()->E << " " << filename << utm.asString() << "\n";
-		int side = (col_idx > cols.size()/2) ? +1 : -1;
+		int side = (col_idx > int(cols.size())/2) ? +1 : -1;
 		int edge;
 		edge = addNearest(i, utm, finder);
 		if (edge != -2) {
@@ -817,12 +816,11 @@ protected:
 	int _bindex, _buffer_size;
 };
 
-/**
- * Tiler generates images of digital elevation data.  
+/** Tiler generates images of digital elevation data.  
  *
- * The source data is projected onto a plane using a secant 
- * gnomonic projection, and the resulting map is subdivided into 
- * a grid of smaller elevation maps saved in 16-bit PGM format.
+ *  The source data is projected onto a plane using a secant 
+ *  gnomonic projection, and the resulting map is subdivided into 
+ *  a grid of smaller elevation maps saved in 16-bit PGM format.
  */
 class Tiler {
 
@@ -852,8 +850,7 @@ public:
 		setRestriction(0);
 	}
 
-	/**
-	 * Read configuration setting from an ini file.
+	/** Read configuration setting from an ini file.
 	 */
 	bool initialize(char const *fn, char const *datpath, bool quiet=true) {
 		_datpath = datpath;
@@ -1017,8 +1014,7 @@ public:
 		}
 	}
 
-	/**
-	 * Generate the tiles.
+	/** Generate the tiles.
 	 */
 	void run() {
 		int i, j;
@@ -1057,7 +1053,7 @@ public:
 				}
 				output->start(prefix, i, j);
 				//output->setExtent();
-				generateTile(i, j, output, verbose);
+				generateTile(output, verbose);
 				output->finish();
 				/*
 				switch (output_format) {
@@ -1084,8 +1080,7 @@ public:
 
 private:
 
-	/**
-	 * Save a tile as a 16-bit portable graymap (PGM) image.
+	/** Save a tile as a 16-bit portable graymap (PGM) image.
 	 */
 	void writeTilePGM(int i, int j, double scale, int offset, char const *id="") {
 		char suffix[128];
@@ -1103,12 +1098,12 @@ private:
 		fclose(fp);
 	}
 
-	/**
-	 * Save a tile as a 24-bit portable pixmap (PPM) image, where
-	 * elevations are represented as RED << 16 | GREEN << 8 | BLUE.
-	 * Currently Demeter doesn't seem to support negative elevations,
-	 * so make sure the offset is large enough to prevent these from
-	 * occuring.
+	/** Save a tile as a 24-bit portable pixmap (PPM) image, where
+	 *  elevations are represented as RED << 16 | GREEN << 8 | BLUE.
+	 *
+	 *  Currently Demeter doesn't seem to support negative elevations,
+	 *  so make sure the offset is large enough to prevent these from
+	 *  occuring.
 	 */
 	void writeTilePPM(int i, int j, double scale, int offset, char const *id="") {
 		char suffix[128];
@@ -1138,12 +1133,10 @@ private:
 		delete[] buffer;
 	}
 
-	/**
-	 * Generate a relief map (in-place) from the 16-bit elevation data
+	/** Generate a relief map (in-place) from the 16-bit elevation data
 	 */
 	void relief(double depth) {
 		int n = tile_x_size*tile_y_size;
-		int nl = 0;
 		short *d = tile;
 		short *e = d++;
 		while (--n >= 1) {
@@ -1151,9 +1144,8 @@ private:
 		}
 	}
 
-	/**
-	 * Secant gnomonic (inverse) projection from the (x, y) plane 
-	 * to latitude and longitude.
+	/** Secant gnomonic (inverse) projection from the (x, y) plane 
+	 *  to latitude and longitude.
 	 */
 	void project(double x, double y, double &lat, double &lon) {
 		Vector3 pos(R, x, y);
@@ -1162,10 +1154,10 @@ private:
 		lat = asin(pos.z());
 	}
 
-	/**
-	 * Get the DEM quad that contains a given latitude and longitude.  
-	 * Quads are cached to minimize uncompressing and loading of the 
-	 * data.
+	/** Get the DEM quad that contains a given latitude and longitude.  
+	 *
+	 *  Quads are cached to minimize uncompressing and loading of the 
+	 *  data.
 	 */
 	DEM* getDEM(double lat, double lon) {
 		lat *= 180.0/simdata::PI;
@@ -1202,9 +1194,8 @@ private:
 		return d;
 	}
 
-	/**
-	 * Get the elevation above sea level (in meters) for a given 
-	 * point on the (x,y) plane.
+	/** Get the elevation above sea level (in meters) for a given 
+	 *  point on the (x,y) plane.
 	 */
 	double getElevation(double x, double y) {
 		int dx, dy;
@@ -1236,11 +1227,9 @@ private:
 		return finder.getElevation();
 	}
 
-	/**
-	 * Generate the projected elevation data for one tile.
+	/** Generate the projected elevation data for one tile.
 	 */
-	void generateTile(int tx, int ty, OutputHeightMap *output, bool verbose) {
-		int i, j;
+	void generateTile(OutputHeightMap *output, bool verbose) {
 		double x, y, z;
 		double x0, y0;
 		double dx, dy;

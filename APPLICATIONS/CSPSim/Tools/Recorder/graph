@@ -8,6 +8,6 @@
 #########################################################
 
 
-./RecCSP --jgraph $1 | jgraph -P > .out.ps~ 
+./csprec --jgraph $1 | jgraph -P > .out.ps~ 
 make
 

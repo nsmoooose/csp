@@ -135,30 +135,30 @@ public:
 	void setElements(std::vector<double> const &v) const;
 
 	Vector3 getRow(int i) { 
-		assert(i>0 && i<3); 
+		assert(i>=0 && i<3); 
 		return Vector3(_mat[i][0], _mat[i][1], _mat[i][2]); 
 	}
 
 	Vector3 getCol(int i) { 
-		assert(i>0 && i<3); 
+		assert(i>=0 && i<3); 
 		return Vector3(_mat[0][i], _mat[1][i], _mat[2][i]); 
 	}
 
 	void setRow(int i, const Vector3& v) {
-		assert(i>0 && i<3);
+		assert(i>=0 && i<3);
 		_mat[i][0] = v.x();
 		_mat[i][1] = v.y();
 		_mat[i][2] = v.z();
 	}
 
 	void setCol(int i, const Vector3& v) {
-		assert(i>0 && i<3);
+		assert(i>=0 && i<3);
 		_mat[0][i] = v.x();
 		_mat[1][i] = v.y();
 		_mat[2][i] = v.z();
 	}
 
-	double * row(int i) { assert(i>0 && i<3); return (double*)(_mat[i]); }
+	double * row(int i) { assert(i>=0 && i<3); return (double*)(_mat[i]); }
         double * ptr() { return (double *)_mat; }
         double * ptr() const { return (double *)_mat; }
 

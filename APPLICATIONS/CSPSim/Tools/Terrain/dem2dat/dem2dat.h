@@ -465,7 +465,7 @@ public:
 
 	#define SET(x, y, v) { int index=int(sx*(x-x0))+512*int(sy*(y-y0)); if (index>=0 && index < 512*512) image[index] = v;}
 	void dumpPGM() {
-		int i, j, k;
+		int i, j;
 		unsigned char *image;
 		image = new unsigned char[512*512];
 		std::cerr << "P2 512 512 255\n";
@@ -613,7 +613,7 @@ public:
 	}
 
 	bool read(double lat, double lon) {
-		read(DATname(simdata::toRadians(lat), simdata::toRadians(lon)));
+		return read(DATname(simdata::toRadians(lat), simdata::toRadians(lon)));
 	}
 
 	inline double getReferenceLatitude() const { return _ref_lat; }

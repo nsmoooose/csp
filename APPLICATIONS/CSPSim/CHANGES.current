@@ -1,6 +1,14 @@
  Version 0.3.4 (in progress)
 ===========================
 
+2003-08-16: onsight
+            Applied patches by VI to add Tools/Terrain/* to the
+	    build and fix some minor errors in tile.cpp and
+	    Tools/Recorder/graph.
+
+	    Added -W -Wall to the build for Tools/Terrain/*,
+	    and fixed a few small errors that uncovered.
+
 2003-08-15: onsight
             Updates related to SimData API changes (mostly use
 	    of simdata::PI, toRadians, and toDegrees instead of

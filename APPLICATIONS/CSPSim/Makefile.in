@@ -1,4 +1,4 @@
-SUBDIRS = Source 
+SUBDIRS = Source Tools/Terrain/dem2dat Tools/Terrain/tile
 
 export DEMETER_RELATIVE = ../../THIRDPARTYLIBS/demeter
 export CHUNKLOD_RELATIVE = ../../THIRDPARTYLIBS/CSPChunkLod
@@ -35,7 +35,7 @@ InputMaps: aircraft.hid gamescreen.hid
 %.hid:
 	@test -e Data/Input/$@ || \
 	  ( cd Tools/HID && \
-	    python map2hid Examples/$(@:%.hid=%.map) ../../Data/Input/$@ && \
+	    python cspinput Examples/$(@:%.hid=%.map) ../../Data/Input/$@ && \
 	    echo "Default input map created for $@; see Tools/HID/README for details." \
 	  )
 	@test -e Data/Input/$@ || \

@@ -30,12 +30,35 @@
 
 #include "NumericalMethod.h"
 
-class DynamicalSystem: public VectorField {
+
+/**
+ * DynamicalSystem is a base class for physics models that can
+ * be solved by numerical integration.  The dynamical variables
+ * are stored in a vector field, and are integrated by an 
+ * associated numerical method (e.g. Runge-Kutta).  The _f()
+ * function of VectorField provides the driving term, which
+ * must be implemented in derived classes.  Implementations of 
+ * _f() typically involve evaluation of one or more BaseDynamics
+ * instances to determine the total force and moment acting on
+ * the body at each instant.
+ *
+ */
+class DynamicalSystem: protected VectorField {
 	NumericalMethod* _numericalMethod;
 public:
 	DynamicalSystem(unsigned short dimension = 0);
 	virtual ~DynamicalSystem();
+	
+	/**
+	 * Set the numerical integration method used to integrate
+	 * the equations of motion.
+	 */
 	void setNumericalMethod(NumericalMethod* pnumericalMethod);
+
+	/**
+	 * Integrate the model over a specified time interval (dt) given
+	 * a set of initial conditions (y0, t0).
+	 */
 	std::vector<double> const& flow(std::vector<double>& y0, double t0, double dt) const;
 };
 

@@ -207,7 +207,7 @@ void CSPSim::togglePause() {
 
 void CSPSim::init()
 {
-	//try {
+	try {
 		CSP_LOG(APP, INFO, "Starting CSPSim...");
 
 		// setup osg search path for external data files
@@ -235,13 +235,13 @@ void CSPSim::init()
 			assert(sim);
 			m_DataManager.addArchive(sim);
 		} 
-
 		catch (simdata::Exception &e) {
 			CSP_LOG(APP, ERROR, "Error opening data archive " << archive_file);
 			CSP_LOG(APP, ERROR, e.getType() << ": " << e.getMessage());
 			throw e;
 			//::exit(0);
 		}
+
 		// initialize SDL
 		initSDL();
 
@@ -259,10 +259,14 @@ void CSPSim::init()
 
 		m_Clean = false;
 
+		CSP_LOG(APP, DEBUG, "INIT:: interface maps");
+
 		// load all interface maps and create a virtual hid for the active object
 		m_InterfaceMaps = new EventMapIndex();
 		m_InterfaceMaps->loadAllMaps();
 		m_Interface = new VirtualHID();
+
+		CSP_LOG(APP, DEBUG, "INIT:: theater");
 
 		std::string theater = g_Config.getPath("Testing", "Theater", "sim:theater.balkan", false);
 		m_Theater = m_DataManager.getObject(theater.c_str());
@@ -271,18 +275,20 @@ void CSPSim::init()
 		assert(m_Terrain.valid());
 		m_Terrain->activate();
 		
-		// eventually this will be set in an entirely different way...
-		//m_ActiveTerrain = m_DataManager.getObject("sim:terrain.balkan");
-		//m_ActiveTerrain->activate();
+		CSP_LOG(APP, DEBUG, "INIT:: scene");
 
 		m_Scene = new VirtualScene();
 		m_Scene->buildScene();
 		m_Scene->setTerrain(m_Terrain);
 
+		CSP_LOG(APP, DEBUG, "INIT:: battlefield");
+
 		m_Battlefield = new VirtualBattlefield();
 		m_Battlefield->create();
 		m_Battlefield->setScene(m_Scene);
 		m_Battlefield->setTheater(m_Theater);
+
+		CSP_LOG(APP, DEBUG, "INIT:: scene configuration");
 
 		// get view parameters from configuration file.  ultimately there should
 		// be an in-game ui for this and probably a separate config file.
@@ -298,6 +304,8 @@ void CSPSim::init()
 		m_Scene->setFogEnd(fog_end);
 
 		// create a test object (other objects can be created via TestObjects.py)
+
+		CSP_LOG(APP, DEBUG, "INIT:: test vehicle");
 
 		std::string vehicle = g_Config.getPath("Testing", "Vehicle", "sim:vehicles.aircraft.m2k", false);
 		simdata::Ref<AircraftObject> ao = m_DataManager.getObject(vehicle.c_str());
@@ -323,7 +331,12 @@ void CSPSim::init()
 		*/
 
 
+		CSP_LOG(APP, DEBUG, "INIT:: activate test vehicle");
+
 		m_Battlefield->addUnit(ao);
+		setActiveObject(ao);
+
+		CSP_LOG(APP, DEBUG, "INIT:: gamescreen");
 
 		// Following variables should be set before calling GameScreen.init()
 		// because they are used in GameScreen initialization process
@@ -331,9 +344,6 @@ void CSPSim::init()
 		// enable/disable pause at startup
 		m_Paused = false;
 		//m_Paused = true;
-
-		// start in the aircraft
-		setActiveObject(ao);
 
 		// create and initialize screens
 		m_GameScreen = new GameScreen;
@@ -348,7 +358,6 @@ void CSPSim::init()
 
 		changeScreen(m_GameScreen);
 		logoScreen.onExit();
-		/*
 	}
 	catch(csp::Exception & pEx) {
 		csp::FatalException(pEx, "initialization");
@@ -362,7 +371,6 @@ void CSPSim::init()
 	catch (...) {
 		csp::OtherFatalException("initialization");
 	}
-	*/
 
 }
 

@@ -34,13 +34,13 @@ class VectorField
 {
 	unsigned short const m_dimension;
 public:
-	VectorField(unsigned short dimension):
+	VectorField(unsigned short dimension ):
 	  m_dimension(dimension) {
 	  }
 	  unsigned short getDimension() const {
 		  return m_dimension;
 	  }
-	virtual std::vector<double> const& _f(double t, std::vector<double>& y) = 0;
+	  virtual std::vector<double> const& _f(double t, std::vector<double>& y) = 0;
 };
 
 

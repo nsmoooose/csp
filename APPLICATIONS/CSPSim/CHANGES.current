@@ -1,6 +1,11 @@
 Version 0.3.1 (in progress)
 ===========================
 
+2003-04-11: delta
+	    update .net projects.
+
+	    Cleaned code.
+
 2003-04-11: onsight
             Modified autoconf scripts to get the actual python
 	    include path using distutils, rather than just using 

@@ -37,7 +37,6 @@ public:
 	DynamicalSystem(unsigned short dimension);
 	DynamicalSystem(VectorField* pf);
 	virtual ~DynamicalSystem();
-	//void setVectorField(VectorField* pf);
 	void setNumericalMethod(NumericalMethod* pnumericalMethod);
 	std::vector<double> const& flow(std::vector<double>& y0, double t0, double dt) const;
 };

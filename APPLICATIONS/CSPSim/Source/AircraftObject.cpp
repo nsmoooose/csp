@@ -160,8 +160,8 @@ void AircraftObject::onUpdate(double dt)
 {
 	CSP_LOG(CSP_APP, CSP_DEBUG, "AircraftObject::onUpdate ...");
 	// TODO: update AI controller
-	doFCS(dt);
 	updateControls(dt);
+	doFCS(dt);
 	DynamicObject::onUpdate(dt);
 	// TODO: update HUD?
 	CSP_LOG(CSP_APP, CSP_DEBUG, "... AircraftObject::onUpdate");
@@ -175,7 +175,7 @@ int AircraftObject::updateScene()
 
 unsigned int AircraftObject::onRender()
 {
-//	updateScene();
+	// TODO: animation code here
 	return 0;
 }
 
@@ -470,8 +470,8 @@ void AircraftObject::doComplexPhysics(double dt)
 
 	m_FlightModel->setGroundZ(m_GroundZ);
 	m_FlightModel->setGroundN(m_GroundN);
-	m_FlightModel->doSimStep(dt);
-	//m_FlightModel->doSimStep2(dt);
+	//m_FlightModel->doSimStep(dt);
+	m_FlightModel->doSimStep2(dt);
 	updateOrientation();
 	m_Direction = m_Orientation * simdata::Vector3::YAXIS;
 	m_NormalDirection = m_Orientation * simdata::Vector3::ZAXIS;

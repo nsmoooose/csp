@@ -55,7 +55,7 @@ std::vector<double> const& DynamicalSystem::flow(std::vector<double>& y0, double
 	static std::vector<double> y;
         y = _numericalMethod->enhancedSolve(y0, t0, dt);
 		if (_numericalMethod->failed()) {
-			std::cout << "quick solve is required\n";
+			//std::cout << "quick solve is required\n";
 			y = _numericalMethod->quickSolve(y0, t0, dt);
 		}
 

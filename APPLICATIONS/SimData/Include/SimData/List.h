@@ -23,8 +23,8 @@
  */
 
 
-#ifndef __LIST_H__
-#define __LIST_H__
+#ifndef __SIMDATA_LIST_H__
+#define __SIMDATA_LIST_H__
 
 #include <string>
 #include <vector>
@@ -115,5 +115,5 @@ std::string List<T>::asString() const {
 NAMESPACE_END // namespace simdata
 
 
-#endif //__LIST_H__
+#endif //__SIMDATA_LIST_H__
 

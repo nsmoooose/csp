@@ -24,8 +24,8 @@
  */
 
 
-#ifndef __TYPEADAPTER_H__
-#define __TYPEADAPTER_H__
+#ifndef __SIMDATA_TYPEADAPTER_H__
+#define __SIMDATA_TYPEADAPTER_H__
 
 #if defined(_MSC_VER) && (_MSC_VER <= 1300)
 #pragma warning (disable : 4290 4786)
@@ -263,5 +263,5 @@ std::ostream &operator <<(std::ostream &o, TypeAdapter const &t);
 NAMESPACE_END // namespace simdata
 
 
-#endif // __TYPEADAPTER_H__
+#endif // __SIMDATA_TYPEADAPTER_H__
 

@@ -25,8 +25,8 @@
  * Platform independent file utilities.
  */
 
-#ifndef __FILEUTILITY_H__
-#define __FILEUTILITY_H__
+#ifndef __SIMDATA_FILEUTILITY_H__
+#define __SIMDATA_FILEUTILITY_H__
 
 
 #include <string>
@@ -131,5 +131,5 @@ namespace ospath {
 NAMESPACE_END // namespace simdata
 
 
-#endif // __FILEUTILITY_H__
+#endif // __SIMDATA_FILEUTILITY_H__
 

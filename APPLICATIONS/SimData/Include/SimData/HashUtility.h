@@ -25,8 +25,8 @@
  * Hash function utilities.
  */
 
-#ifndef __HASHUTILITY_H__
-#define __HASHUTILITY_H__
+#ifndef __SIMDATA_HASHUTILITY_H__
+#define __SIMDATA_HASHUTILITY_H__
 
 #include <iostream>
 #include <string>
@@ -237,5 +237,5 @@ extern std::ostream & operator<<(std::ostream &o, const hasht &x);
 NAMESPACE_END // namespace simdata
 
 
-#endif // __HASHUTILITY_H__
+#endif // __SIMDATA_HASHUTILITY_H__
 

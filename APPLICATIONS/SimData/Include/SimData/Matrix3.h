@@ -24,8 +24,8 @@
  * Code based on libraries from magic-software.com and Game Programming Gems.
  **/
 
-#ifndef __MATRIX3_H__
-#define __MATRIX3_H__
+#ifndef __SIMDATA_MATRIX3_H__
+#define __SIMDATA_MATRIX3_H__
 
 
 #include <string>
@@ -212,5 +212,5 @@ public:
 
 NAMESPACE_END // namespace simdata
 
-#endif // __MATRIX3_H__
+#endif // __SIMDATA_MATRIX3_H__
 

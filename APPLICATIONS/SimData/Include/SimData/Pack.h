@@ -24,8 +24,8 @@
  */
 
 
-#ifndef __PACK_H__
-#define __PACK_H__
+#ifndef __SIMDATA_PACK_H__
+#define __SIMDATA_PACK_H__
 
 #include <string>
 #include <vector>
@@ -306,5 +306,5 @@ public:
 NAMESPACE_END // namespace simdata
 
 
-#endif //__PACK_H__
+#endif //__SIMDATA_PACK_H__
 

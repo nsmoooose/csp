@@ -24,8 +24,8 @@
  * Code based on libraries from magic-software.com and Game Programming Gems.
  **/
 
-#ifndef __VECTOR3_H__
-#define __VECTOR3_H__
+#ifndef __SIMDATA_VECTOR3_H__
+#define __SIMDATA_VECTOR3_H__
 
 
 #include <iostream>
@@ -292,5 +292,5 @@ public:
 NAMESPACE_END // namespace simdata
 
 
-#endif // __VECTOR3_H__
+#endif // __SIMDATA_VECTOR3_H__
 

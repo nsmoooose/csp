@@ -26,8 +26,8 @@
  * 
  */
 
-#ifndef __CONVERSIONS_H__
-#define __CONVERSIONS_H__
+#ifndef __SIMDATA_CONVERSIONS_H__
+#define __SIMDATA_CONVERSIONS_H__
 
 
 // SWIG template instantiations
@@ -127,5 +127,5 @@ SIMDATA_CVT(mmhg_pa)
 NAMESPACE_END
 
 
-#endif // __CONVERSIONS_H__
+#endif // __SIMDATA_CONVERSIONS_H__
 

@@ -22,8 +22,8 @@
  * @file Integer.h
  */
 
-#ifndef __INTEGER_H__
-#define __INTEGER_H__
+#ifndef __SIMDATA_INTEGER_H__
+#define __SIMDATA_INTEGER_H__
 
 NAMESPACE_SIMDATA
 
@@ -31,4 +31,4 @@ typedef int Integer;
 
 NAMESPACE_END // namespace simdata
 
-#endif //__INTEGER_H__
+#endif //__SIMDATA_INTEGER_H__

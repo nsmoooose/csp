@@ -24,8 +24,8 @@
  */
 
 
-#ifndef __NS_SIMDATA_H__
-#define __NS_SIMDATA_H__
+#ifndef __SIMDATA_NS_SIMDATA_H__
+#define __SIMDATA_NS_SIMDATA_H__
 
 // turn on the simdata namespace by default
 #define USE_NAMESPACE_SIMDATA
@@ -49,6 +49,6 @@
   #define SIMDATA(x) x
 #endif
 
-#endif //__NS_SIMDATA_H__
+#endif //__SIMDATA_NS_SIMDATA_H__
 
 

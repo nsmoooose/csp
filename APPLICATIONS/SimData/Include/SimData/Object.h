@@ -24,8 +24,8 @@
  */
 
 
-#ifndef __OBJECT_H__
-#define __OBJECT_H__
+#ifndef __SIMDATA_OBJECT_H__
+#define __SIMDATA_OBJECT_H__
 
 #include <stdio.h>
 #include <assert.h>
@@ -160,5 +160,5 @@ protected:
 NAMESPACE_END // namespace simdata
 
 
-#endif //__OBJECT_H__
+#endif //__SIMDATA_OBJECT_H__
 

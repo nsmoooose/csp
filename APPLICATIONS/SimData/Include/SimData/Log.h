@@ -24,8 +24,8 @@
  */
 
 
-#ifndef __LOG_H___
-#define __LOG_H__
+#ifndef __SIMDATA_LOG_H___
+#define __SIMDATA_LOG_H__
 
 
 #include <cstdio>
@@ -39,11 +39,13 @@
 
 NAMESPACE_SIMDATA
 
-
+/**
+ * Display a fatal error message to stderr and exit.
+ */
 inline void error(std::string const &msg) {
 	std::cerr << "SIMDATA fatal error:" << std:: endl;
 	std::cerr << msg << std::endl;
-	exit(1);
+	::exit(1);
 }
 
 /**
@@ -67,10 +69,8 @@ log()
  */
 #ifdef SIMDATA_NDEBUG
 # define SIMDATA_LOG(C,P,M)
-#elif defined( __MWERKS__ )
-# define SIMDATA_LOG(C,P,M) simdata::log() << ::loglevel(C,P) << M << std::endl
 #else
-# define SIMDATA_LOG(C,P,M) simdata::log() << loglevel(C,P) << M << std::endl
+# define SIMDATA_LOG(C,P,M) simdata::log() << simdata::loglevel(C,P) << M << std::endl
 #endif
 
 enum { LOG_BULK, LOG_TRACE, LOG_DEBUG, LOG_INFO, LOG_WARNING, LOG_ALERT, LOG_ERROR };
@@ -86,5 +86,5 @@ enum {
 NAMESPACE_END // namespace simdata
 
 
-#endif // __LOG_H__
+#endif // __SIMDATA_LOG_H__
 

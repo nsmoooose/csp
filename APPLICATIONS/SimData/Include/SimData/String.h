@@ -22,8 +22,8 @@
  * @file String.h
  */
 
-#ifndef __STRING_H__
-#define __STRING_H__
+#ifndef __SIMDATA_STRING_H__
+#define __SIMDATA_STRING_H__
 
 #include <string>
 
@@ -33,4 +33,4 @@ typedef std::string String;
 
 NAMESPACE_END // namespace simdata
 
-#endif //__STRING_H__
+#endif //__SIMDATA_STRING_H__

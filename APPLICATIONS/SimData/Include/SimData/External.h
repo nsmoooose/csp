@@ -22,8 +22,8 @@
  * @file External.h
  */
 
-#ifndef __EXTERNAL_H__
-#define __EXTERNAL_H__
+#ifndef __SIMDATA_EXTERNAL_H__
+#define __SIMDATA_EXTERNAL_H__
 
 #include <string>
 #include <SimData/BaseType.h>
@@ -95,5 +95,5 @@ public:
 NAMESPACE_END // namespace simdata
 
 
-#endif //__EXTERNAL_H__
+#endif //__SIMDATA_EXTERNAL_H__
 

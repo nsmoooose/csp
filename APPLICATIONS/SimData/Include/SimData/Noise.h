@@ -26,8 +26,8 @@
  */
 
 
-#ifndef __NOISE_H__
-#define __NOISE_H__
+#ifndef __SIMDATA_NOISE_H__
+#define __SIMDATA_NOISE_H__
 
 #include <cmath>
 #include <vector>
@@ -210,5 +210,5 @@ private:
 NAMESPACE_END // namespace simdata
 
 
-#endif //__NOISE_H__
+#endif //__SIMDATA_NOISE_H__
 

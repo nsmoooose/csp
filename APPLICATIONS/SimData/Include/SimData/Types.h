@@ -18,8 +18,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
-#ifndef __TYPES__
-#define __TYPES__
+#ifndef __SIMDATA_TYPES_H__
+#define __SIMDATA_TYPES_H__
 
 #include <SimData/Date.h>
 #include <SimData/Enum.h>
@@ -37,5 +37,5 @@
 //#include <SimData/Integer.h>
 //#include <SimData/Float.h>
 
-#endif // __TYPES__
+#endif // __SIMDATA_TYPES_H__
 

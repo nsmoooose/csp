@@ -43,10 +43,10 @@
 // Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 // Boston, MA  02111-1307, USA.
 //
-// $Id: LogStream.h,v 1.3 2003/03/26 06:38:03 mkrose Exp $
+// $Id: LogStream.h,v 1.4 2003/04/12 08:56:37 mkrose Exp $
 
-#ifndef __LOGSTREAM_H__
-#define __LOGSTREAM_H__
+#ifndef __SIMDATA_LOGSTREAM_H__
+#define __SIMDATA_LOGSTREAM_H__
 
 #include <iostream>
 #include <fstream>
@@ -278,6 +278,6 @@ logstream::operator<< ( const loglevel& l )
 NAMESPACE_END // namespace simdata
 
 
-#endif // __LOGSTREAM_H__
+#endif // __SIMDATA_LOGSTREAM_H__
 
 

@@ -19,8 +19,8 @@
  */
 
 
-#ifndef __BASETYPE_H__
-#define __BASETYPE_H__
+#ifndef __SIMDATA_BASETYPE_H__
+#define __SIMDATA_BASETYPE_H__
 
 #include <string>
 #include <iostream>
@@ -86,4 +86,4 @@ std::ostream &operator <<(std::ostream &o, BaseType const &t);
 NAMESPACE_END // namespace simdata
 
 
-#endif //__BASETYPE_H__
+#endif //__SIMDATA_BASETYPE_H__

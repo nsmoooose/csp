@@ -26,8 +26,8 @@
  */
 
 
-#ifndef __PATH_H__
-#define __PATH_H__
+#ifndef __SIMDATA_PATH_H__
+#define __SIMDATA_PATH_H__
 
 #if defined(_MSC_VER) && (_MSC_VER <= 1300)
 #pragma warning (disable : 4290)
@@ -504,5 +504,5 @@ protected:
 
 NAMESPACE_END // namespace simdata
 
-#endif //__PATH_H__
+#endif //__SIMDATA_PATH_H__
 

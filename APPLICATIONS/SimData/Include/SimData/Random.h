@@ -26,8 +26,8 @@
  */
 
 
-#ifndef __RANDOM_H__
-#define __RANDOM_H__
+#ifndef __SIMDATA_RANDOM_H__
+#define __SIMDATA_RANDOM_H__
 
 #include <cmath>
 
@@ -171,5 +171,5 @@ SIMDATA_EXPORT extern Random g_Random;
 NAMESPACE_END // namespace simdata
 
 
-#endif //__RANDOM_H__
+#endif //__SIMDATA_RANDOM_H__
 

@@ -35,8 +35,8 @@
  */
 
 
-#ifndef __INTERPOLATE_H__
-#define __INTERPOLATE_H__
+#ifndef __SIMDATA_INTERPOLATE_H__
+#define __SIMDATA_INTERPOLATE_H__
 
 #include <string>
 #include <vector>
@@ -263,5 +263,5 @@ protected:
 NAMESPACE_END // namespace simdata
 
 
-#endif // __INTERPOLATE_H__
+#endif // __SIMDATA_INTERPOLATE_H__
 

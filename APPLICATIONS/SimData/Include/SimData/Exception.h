@@ -24,8 +24,8 @@
  */
 
 
-#ifndef __EXCEPTION_H__
-#define __EXCEPTION_H__
+#ifndef __SIMDATA_EXCEPTION_H__
+#define __SIMDATA_EXCEPTION_H__
 
 #include <string>
 
@@ -112,4 +112,4 @@ SIMDATA_EXCEPTION(PythonException);
 NAMESPACE_END // namespace simdata
 
 
-#endif // __EXCEPTION_H__
+#endif // __SIMDATA_EXCEPTION_H__

@@ -19,8 +19,8 @@
  */
 
 
-#ifndef __REAL_H__
-#define __REAL_H__
+#ifndef __SIMDATA_REAL_H__
+#define __SIMDATA_REAL_H__
 
 #include <string>
 #include <math.h>
@@ -168,4 +168,4 @@ public:
 
 NAMESPACE_END // namespace simdata
 
-#endif //__REAL_H__
+#endif //__SIMDATA_REAL_H__

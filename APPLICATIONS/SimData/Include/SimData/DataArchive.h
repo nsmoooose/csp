@@ -23,8 +23,8 @@
  * @author Mark Rose <mrose@stm.lbl.gov>* 
  */
 
-#ifndef __DATAARCHIVE_H__
-#define __DATAARCHIVE_H__
+#ifndef __SIMDATA_DATAARCHIVE_H__
+#define __SIMDATA_DATAARCHIVE_H__
 
 # if defined(_MSC_VER) && (_MSC_VER <= 1200)
 #pragma warning(disable : 4786)
@@ -297,5 +297,5 @@ private:
 
 NAMESPACE_END // namespace simdata
 
-#endif //__DATAARCHIVE_H__
+#endif //__SIMDATA_DATAARCHIVE_H__
 

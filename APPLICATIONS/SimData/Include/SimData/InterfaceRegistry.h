@@ -24,8 +24,8 @@
  */
 
 
-#ifndef __INTERFACEREGISTRY_H__
-#define __INTERFACEREGISTRY_H__
+#ifndef __SIMDATA_INTERFACEREGISTRY_H__
+#define __SIMDATA_INTERFACEREGISTRY_H__
 
 #include <string>
 #include <vector>
@@ -383,6 +383,6 @@ namespace { \
 NAMESPACE_END // namespace simdata
 
 
-#endif // __INTERFACEREGISTRY_H__
+#endif // __SIMDATA_INTERFACEREGISTRY_H__
 
 

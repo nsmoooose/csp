@@ -19,8 +19,8 @@
  */
 
 
-#ifndef __MATH_H__
-#define __MATH_H__
+#ifndef __SIMDATA_MATH_H__
+#define __SIMDATA_MATH_H__
 
 #include <cmath>
 #include <SimData/ns-simdata.h>
@@ -53,4 +53,4 @@ double angleBetweenTwoVectors(const Vector3 & v1, const Vector3 & v2);
 
 NAMESPACE_END // namespace simdata
 
-#endif //__MATH_H__
+#endif //__SIMDATA_MATH_H__

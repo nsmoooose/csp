@@ -33,8 +33,8 @@
  *
  */
 
-#ifndef __GLIB_CSP_H__
-#define __GLIB_CSP_H__
+#ifndef __SIMDATA_GLIB_CSP_H__
+#define __SIMDATA_GLIB_CSP_H__
 
 #define G_PI		3.14159265358979323846	/* pi */
 #define D2R (G_PI/180.0)
@@ -342,5 +342,5 @@ typedef gint32	GTime;
 #endif /* !NATIVE_WIN32 */
 
 
-#endif // __GLIB_CSP_H__
+#endif // __SIMDATA_GLIB_CSP_H__
 

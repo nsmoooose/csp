@@ -22,8 +22,8 @@
  *
  **/
 
-#ifndef __QUATERNION_H__
-#define __QUATERNION_H__
+#ifndef __SIMDATA_QUATERNION_H__
+#define __SIMDATA_QUATERNION_H__
 
 
 // Modified for CSP by Wolverine
@@ -192,5 +192,5 @@ Quaternion QRotate(Quaternion const& q1, Quaternion const&  q2);
 NAMESPACE_END // namespace simdata
 
 
-#endif // __QUATERNION_H__
+#endif // __SIMDATA_QUATERNION_H__
 

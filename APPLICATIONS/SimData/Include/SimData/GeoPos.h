@@ -25,8 +25,8 @@
  */
 
 
-#ifndef __GEOPOS_H__
-#define __GEOPOS_H__
+#ifndef __SIMDATA_GEOPOS_H__
+#define __SIMDATA_GEOPOS_H__
 
 #include <string>
 #include <SimData/Vector3.h>
@@ -445,5 +445,5 @@ protected:
 NAMESPACE_END
 
 
-#endif //__GEOPOS_H__
+#endif //__SIMDATA_GEOPOS_H__
 

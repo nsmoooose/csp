@@ -54,8 +54,8 @@
  */
 
 
-#ifndef __DATE_H__
-#define __DATE_H__
+#ifndef __SIMDATA_DATE_H__
+#define __SIMDATA_DATE_H__
 
 #include <SimData/Pack.h>
 #include <SimData/Exception.h>
@@ -826,5 +826,5 @@ public:
 
 NAMESPACE_END // namespace simdata
 
-#endif // __DATE_H__
+#endif // __SIMDATA_DATE_H__
 

@@ -24,8 +24,8 @@
  */
 
 
-#ifndef __ENUM_H__
-#define __ENUM_H__
+#ifndef __SIMDATA_ENUM_H__
+#define __SIMDATA_ENUM_H__
 
 # if defined(_MSC_VER) && (_MSC_VER <= 1200)
 #pragma warning (disable : 4786)
@@ -550,4 +550,4 @@ public:
 
 NAMESPACE_END // namespace simdata
 
-#endif //__ENUM_H__
+#endif //__SIMDATA_ENUM_H__

@@ -120,10 +120,10 @@ osg::Matrix getCM(float intensity) {
  *
  * @author unknown
  */
-struct MoveEarthySkyWithEyePointCallback : public osg::Transform::ComputeTransformCallback
+struct MoveEarthySkyWithEyePointCallback : public osg::Transform
 {
 	/** Get the transformation matrix which moves from local coords to world coords.*/
-	virtual bool computeLocalToWorldMatrix(osg::Matrix& matrix,const osg::Transform*, osg::NodeVisitor* nv) const {
+	virtual bool computeLocalToWorldMatrix(osg::Matrix& matrix,osg::NodeVisitor* nv) const {
 		osgUtil::CullVisitor* cv = dynamic_cast<osgUtil::CullVisitor*>(nv);
 		if (cv) {
 			osg::Vec3 eyePointLocal = cv->getEyeLocal();
@@ -134,7 +134,7 @@ struct MoveEarthySkyWithEyePointCallback : public osg::Transform::ComputeTransfo
 	}
 
 	/** Get the transformation matrix which moves from world coords to local coords.*/
-	virtual bool computeWorldToLocalMatrix(osg::Matrix& matrix,const osg::Transform*, osg::NodeVisitor* nv) const {
+	virtual bool computeWorldToLocalMatrix(osg::Matrix& matrix,osg::NodeVisitor* nv) const {
 		osgUtil::CullVisitor* cv = dynamic_cast<osgUtil::CullVisitor*>(nv);
 		if (cv) {
 			osg::Vec3 eyePointLocal = cv->getEyeLocal();
@@ -236,7 +236,7 @@ int VirtualScene::buildScene()
 
 	// set the compute transform callback to do all the work of
 	// determining the transform according to the current eye point.
-	//  m_EyeTransform->setComputeTransformCallback(new MoveEarthySkyWithEyePointCallback);
+	// m_EyeTransform = new MoveEarthySkyWithEyePointCallback;
 	m_EyeTransform->addChild(m_Sky.get());  // bin number -2 so drawn first.
 	m_EyeTransform->addChild(m_SkyLights.get());
 

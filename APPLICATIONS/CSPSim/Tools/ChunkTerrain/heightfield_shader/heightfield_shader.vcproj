@@ -17,14 +17,21 @@
 			ConfigurationType="1">
 			<Tool
 				Name="VCCLCompilerTool"
+				Optimization="0"
 				AdditionalIncludeDirectories=".."
-				PreprocessorDefinitions="WIN32"/>
+				PreprocessorDefinitions="WIN32"
+				DebugInformationFormat="4"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="engine.lib SDL.lib libjpeg.lib SDL_image.lib"
-				AdditionalLibraryDirectories="../lib"/>
+				OutputFile="../bin/$(ProjectName)d.exe"
+				AdditionalLibraryDirectories="../lib"
+				GenerateDebugInformation="TRUE"
+				AssemblyDebug="1"
+				GenerateMapFile="TRUE"
+				MapLines="FALSE"/>
 			<Tool
 				Name="VCMIDLTool"/>
 			<Tool

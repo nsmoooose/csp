@@ -286,6 +286,7 @@ headers = [
 	"osg.h",
     "Pack.h",
     "Path.h",
+	"PTS.h",
     "Quaternion.h",
     "Random.h",
     "Real.h",

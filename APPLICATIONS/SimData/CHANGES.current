@@ -2,6 +2,15 @@ Version 0.3.3 (in progress)
 ===========================
 
 2003-07-18: onsight
+            Separated the __PTS_SIM__ definition into PTS.h.  Partial
+	    template specialization must be simulated on msvc.net
+	    version prior to vc.net 2003.  This is currently done for
+	    the ObjectRegistry classes.  If PTS_SIM is required, the 
+	    new LUT classes are disabled since I don't want to spend 
+	    the (considerable) time that would be required to make them
+	    work with PTS_SIM.  
+
+2003-07-18: onsight
             Enabled method attribute for specifying the interpolation
 	    method for LUT's.  Valid methods are right now are LINEAR 
 	    or SPLINE (case insensitive).  The default is linear.

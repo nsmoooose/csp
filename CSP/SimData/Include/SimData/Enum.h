@@ -41,7 +41,7 @@
 		...
 	};
 	// in the corresponding .cpp file:
-	simdata::Enumeration Foo::Items("apple orange=2 cherry");
+	const simdata::Enumeration Foo::Items("apple orange=2 cherry");
 	void Foo::eat() {
 		std::cout << "Eating one " << m_Snack.getToken() << std::endl;
 		if (m_Snack == "cherry") {

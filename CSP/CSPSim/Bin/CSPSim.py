@@ -46,6 +46,8 @@ def printUsage():
 	print "              --log=classes   set the logging classes"
 	print "              --slog=level    set the simdata logging level"
 	print "              --dump-data     show the contents of sim.dar"
+	print "              --client-node   run networking test client node"
+	print "              --server-node   run networking test server node"
 	print "              --help          help message"
 
 
@@ -135,7 +137,18 @@ def compileData(args):
 		sys.exit(1)
 	compiler.compileAll()
 	print
+	
+def runClientNode(args):
+	print "Starting Test Client Node..."
+	loadCSP()
+	app = CSP.ClientNode()
+	app.run()
 
+def runServerNode(args):
+	print "Starting Test Server Node..."
+	loadCSP()
+	app = CSP.ServerNode()
+	app.run()
 
 def loadSimData():
 	"""Load the SimData module"""
@@ -239,6 +252,10 @@ def main(argv):
 		elif arg.startswith('--dump-data='):
 			action = dumpData
 			other_args.append(arg)
+		elif arg == '--client-node':
+			action = runClientNode
+		elif arg == '--server-node':
+			action = runServerNode
 		elif arg == '--pause':
 			pause = 1
 		elif arg in ("--help", "-h", "-help"):

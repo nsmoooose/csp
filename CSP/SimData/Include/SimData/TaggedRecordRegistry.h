@@ -53,7 +53,9 @@ public:
 	virtual Ref<TaggedRecord> create() const=0;
 	virtual std::string getName() const=0;
 	virtual int getVersion() const=0;
-	virtual int64 getId() const=0;
+	virtual TaggedRecord::Id getId() const=0;
+	virtual void setLocalId(int) const=0;
+	virtual int getLocalId() const=0;
 	virtual ~TaggedRecordFactoryBase() { }
 };
 
@@ -159,6 +161,7 @@ private:
 template <class RECORD>
 class SIMDATA_EXPORT TaggedRecordFactory: public TaggedRecordFactoryBase {
 public:
+	typedef RECORD RecordType;
 	TaggedRecordFactory(): TaggedRecordFactoryBase() {
 		TaggedRecordRegistry &registry = TaggedRecordRegistry::getInstance();
 		registry.registerFactory(this);
@@ -166,7 +169,9 @@ public:
 	virtual Ref<TaggedRecord> create() const { return new RECORD(); }
 	virtual std::string getName() const { return RECORD::_getName(); }
 	virtual int getVersion() const { return RECORD::_getVersion(); }
-	virtual int64 getId() const { return RECORD::_getId(); };
+	virtual TaggedRecord::Id getId() const { return RECORD::_getId(); };
+	virtual void setCustomId(int id) const { RECORD::_setCustomId(id); }
+	virtual int getCustomId() const { return RECORD::_getCustomId(); }
 };
 
 

@@ -39,17 +39,25 @@ import BaseTypes
 
 HEADER="""// generated file --- do not edit!'
 
-#ifndef __%(module_uc)s_TRF_H__
-#define __%(module_uc)s_TRF_H__
+#ifndef __%(module_guard)s_TRF_H__
+#define __%(module_guard)s_TRF_H__
 
 #include <SimData/TaggedRecord.h>
 %(includes)s
 """
 
 FOOTER = """
-#endif // __%(module_uc)s_TRF_H__
+#endif // __%(module_guard)s_TRF_H__
 """
 
+SOURCE_HEADER="""// generated file --- do not edit!'
+
+#include <SimData/TaggedRecordFactory.h>
+#include %(include_as)s
+"""
+
+SOURCE_FOOTER = """
+"""
 
 class DataPackCompiler:
 
@@ -60,16 +68,18 @@ class DataPackCompiler:
   class Node:
     pass
 
-  def __init__(self, file, outfile):
+  def __init__(self, file, header, source):
     self._root = None
     self._active = None
-    self._outfile = outfile
+    self._header = header
+    self._source = source
+    self._header_file = open(header, 'wt')
+    self._source_file = open(source, 'wt')
     self._parse(file)
 
   def _parse(self, source):
     module = os.path.basename(source)
     module = os.path.splitext(module)[0]
-    module = module.replace('.', '_')
     self.source = source
     file = open(source)
     line_number = 0
@@ -81,6 +91,7 @@ class DataPackCompiler:
     toplevel_types = {}
     includes = []
     namespace = ''
+    include_as = '"%s"' % os.path.basename(self._header)
     header = 1
     for line in file:
       line_number = line_number + 1
@@ -88,6 +99,9 @@ class DataPackCompiler:
       if not trim: continue
       if header and trim.startswith('#include'):
         includes.append(trim)
+        continue
+      if header and trim.startswith('#header'):
+        include_as = trim[7:].strip()
         continue
       if header and trim.startswith('namespace'):
         m = DataPackCompiler.re_ns.match(trim)
@@ -170,12 +184,21 @@ class DataPackCompiler:
     if depth > 0:
       self.error(line_number, 'unmatched brace')
     includes = '\n'.join(includes)
-    values = {'module_uc': module.upper(), 'module': module, 'includes': includes};
-    print >>self._outfile, HEADER % values
-    if namespace: print >>self._outfile, 'namespace %s {' % namespace
-    [x.dump(file=self._outfile) for x in toplevel]
-    if namespace: print >>self._outfile, '} // namespace %s' % namespace
-    print >>self._outfile, FOOTER % values
+
+    module_guard = module.replace('.', '_').upper()
+    values = {'module_guard': module_guard, 'module': module, 'includes': includes};
+    print >>self._header_file, HEADER % values
+    if namespace: print >>self._header_file, 'namespace %s {' % namespace
+    [x.dump(file=self._header_file) for x in toplevel]
+    if namespace: print >>self._header_file, '} // namespace %s' % namespace
+    print >>self._header_file, FOOTER % values
+
+    source_values = {'include_as': include_as};
+    print >>self._source_file, SOURCE_HEADER % source_values
+    if namespace: print >>self._source_file, 'namespace %s {' % namespace
+    [x.dump_source(file=self._source_file) for x in toplevel]
+    if namespace: print >>self._source_file, '} // namespace %s' % namespace
+    print >>self._source_file, SOURCE_FOOTER % source_values
 
   def error(self, line_number, msg):
     print >>sys.stderr, 'line %d: %s' % (line_number, msg)
@@ -186,15 +209,18 @@ def main(args):
   if len(args) != 1:
     app.usage()
     return 1
-  output = app.options.output
-  if output:
-    outfile = open(output, 'wt')
-  else:
-    outfile = sys.stdout
   file = args[0]
-  DataPackCompiler(file, outfile)
+  base = os.path.splitext(os.path.basename(file))[0]
+  header = base + '.h'
+  source = base + '.cpp'
+  if app.options.header:
+    header = app.options.header
+  if app.options.source:
+    source = app.options.source
+  DataPackCompiler(file, header, source)
   return 0
 
-app.addOption('-o', '--output', metavar='FILE', default='', help='output file (default stdout)')
+app.addOption('--header', metavar='FILE', default='', help='output header (default infile.h)')
+app.addOption('--source', metavar='FILE', default='', help='output source (default infile.cpp)')
 app.start()
 

@@ -1,5 +1,23 @@
 Version 0.4.0 (in progress)
 ===========================
+2004-07-17: onsight
+  * Add "custom id" static-class field to TaggedRecord subclasses.  This
+    allows applications to assign a short-hand id to each message type,
+    which can be more space efficient than using the full 64-bit id when
+    communicating between servers.  For transient messages, the idea is
+    for all communicating parties to agree upon a compact id space for
+    the messages they will exchange and then store these ids in the
+    message classes for easy retrieval.
+
+    To support the class static variables and the tagged record registry,
+    the tagged record compiler now generates both header and source files
+    for each input file.  In the future, some of the less common tr
+    methods may be moved to the source file.   Another idea is to add an
+    option to the compiler to omit the custom id field so that the source
+    file doesn't need to be generated (in the case that you don't care
+    about this functionality and don't want the overhead of a source file
+    that must be added to the build system).
+
 2004-07-09: onsight
   * Changed the formating of HashT values to use fixed-width hex
     instead of decimal numbers, and cleaned up the data archive

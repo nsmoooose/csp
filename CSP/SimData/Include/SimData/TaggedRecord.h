@@ -62,6 +62,114 @@ NAMESPACE_SIMDATA
 typedef hasht int64;
 
 
+/** Simple Writer class for serializing to a memory buffer.
+ */
+class BufferWriter: public Writer {
+	uint8 *_buffer;
+	uint8 *_write;
+	uint8 *_end;
+
+#define SIMDATA_BW_COPY \
+	assert(_write + sizeof(x) <= _end); \
+	memcpy(_write, &x, sizeof(x)); \
+	_write += sizeof(x); \
+	return *this;
+
+public:
+	BufferWriter(): _buffer(0), _write(0), _end(0) {
+	}
+	uint32 residual() const { return _end - _write; }
+	BufferWriter(uint8 *buffer, uint32 size) {
+		bind(buffer, size);
+	}
+	uint8 *buffer() const { return _buffer; }
+	bool full() const { return _write == _end; }
+	uint32 length() const { return _write - _buffer; }
+	void bind(uint8 *buffer, uint32 size) {
+		_buffer = buffer;
+		_write = buffer;
+		_end = buffer + size;
+	}
+	virtual Writer & operator<<(char const x) { SIMDATA_BW_COPY }
+	virtual Writer & operator<<(int16 const x) { SIMDATA_BW_COPY }
+	virtual Writer & operator<<(int32 const x) { SIMDATA_BW_COPY }
+	virtual Writer & operator<<(int64 const x) { SIMDATA_BW_COPY }
+	virtual Writer & operator<<(uint8 const x) { SIMDATA_BW_COPY }
+	virtual Writer & operator<<(uint16 const x) { SIMDATA_BW_COPY }
+	virtual Writer & operator<<(uint32 const x) { SIMDATA_BW_COPY }
+	virtual Writer & operator<<(float const x) { SIMDATA_BW_COPY }
+	virtual Writer & operator<<(double const x) { SIMDATA_BW_COPY }
+	virtual Writer & operator<<(bool const x) { SIMDATA_BW_COPY }
+	virtual Writer & operator<<(hasht const &x) { SIMDATA_BW_COPY }
+	virtual Writer & operator<<(char const *x) {
+		assert(0);
+		return *this;
+	}
+	virtual Writer & operator<<(BaseType const &x) {
+		x.serialize(*this);
+		return *this;
+	}
+	virtual Writer & operator<<(std::string const &x) {
+		writeLength(x.size());
+		memcpy(_write, x.c_str(), x.size());
+		_write += x.size();
+		return *this;
+	}
+#undef SIMDATA_BW_COPY
+};
+
+/** Simple Reader class for serializing from a memory buffer.
+ */
+class BufferReader: public Reader {
+	uint8 const *_buffer;
+	uint8 const *_read;
+	uint8 const *_end;
+
+#define SIMDATA_BR_COPY \
+	assert(_read + sizeof(x) <= _end); \
+	memcpy(&x, _read, sizeof(x)); \
+	_read += sizeof(x); \
+	return *this;
+
+public:
+	BufferReader(): _buffer(0), _read(0), _end(0) { }
+	BufferReader(uint8 const *buffer, uint32 size) {
+		bind(buffer, size);
+	}
+	bool underflow() const { return _read < _end; }
+	void bind(uint8 const *buffer, uint32 size) {
+		_buffer = buffer;
+		_read = buffer;
+		_end = buffer + size;
+	}
+	virtual Reader & operator>>(char &x) { SIMDATA_BR_COPY }
+	virtual Reader & operator>>(int16 &x) { SIMDATA_BR_COPY }
+	virtual Reader & operator>>(int32 &x) { SIMDATA_BR_COPY }
+	virtual Reader & operator>>(int64 &x) { SIMDATA_BR_COPY }
+	virtual Reader & operator>>(uint8 &x) { SIMDATA_BR_COPY }
+	virtual Reader & operator>>(uint16 &x) { SIMDATA_BR_COPY }
+	virtual Reader & operator>>(uint32 &x) { SIMDATA_BR_COPY }
+	virtual Reader & operator>>(float &x) { SIMDATA_BR_COPY }
+	virtual Reader & operator>>(double &x) { SIMDATA_BR_COPY }
+	virtual Reader & operator>>(bool &x) { SIMDATA_BR_COPY }
+	virtual Reader & operator>>(char * &x) {
+		assert(0);  // avoid allocation issues for now -- no char*'s
+		return *this;
+	}
+	virtual Reader & operator>>(BaseType &x) {
+		x.serialize(*this);
+		return *this;
+	}
+	virtual Reader & operator>>(std::string &x) {
+		unsigned int length = readLength();
+		assert(_read + length <= _end);
+		x.clear();
+		x.append(reinterpret_cast<const char*>(_read), length);
+		_read += length;
+		return *this;
+	}
+};
+
 /** Simple Writer class for serializing to a string buffer.
  */
 class StringWriter: public Writer {
@@ -335,6 +443,7 @@ public:
 	virtual int getVersion() const=0;
 	virtual std::string getName() const=0;
 	virtual void dump(std::ostream &, int indent=0) const=0;
+	virtual int getCustomId() const=0;
 protected:
 	virtual ~TaggedRecord() {}
 };

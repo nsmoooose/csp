@@ -180,6 +180,10 @@ class CompoundType(Declaration):
     self._print(format)
     self._extra(format)
     format.dedent()
+    format.write('private:')
+    format.indent()
+    self._extra_private(format)
+    format.dedent()
     format.write('};')
     format.write()
 
@@ -245,6 +249,9 @@ class CompoundType(Declaration):
     format.write('}')
 
   def _extra(self, format):
+    pass
+
+  def _extra_private(self, format):
     pass
 
   def dump_save(self, format):
@@ -419,6 +426,12 @@ class Message(CompoundType):
     base = self.opts.get('BASE', 'simdata::TaggedRecord')
     self.classdef(format, base)
 
+  def dump_source(self, format=None, file=None):
+    if not format:
+      format = CodeFormat.Format(file=file)
+    format.write('int %s::m_CustomId = 0;' % (self.id))
+    format.write('namespace { simdata::TaggedRecordFactory<%s> __%s_factory; }' % (self.id, self.id))
+
   def _extra(self, format):
     CompoundType._extra(self, format)
     name = self.id
@@ -432,6 +445,10 @@ class Message(CompoundType):
     format.template(Message.TRF_GETID, d)
     format.template(Message.TRF_GETVERSION, d)
     format.template(Message.TRF_GETNAME, d)
+    format.template(Message.TRF_REF, d)
+
+  def _extra_private(self, format):
+    format.write('static int m_CustomId;')
 
   def dump_private(self, format):
     format.write('simdata::Ref<%s> %s;' % (self.typename(), self.varname()))
@@ -441,9 +458,16 @@ class Message(CompoundType):
     format.template(Message.TRF_GET, d)
     format.template(Message.TRF_SET, d)
 
+  TRF_REF = '''
+  typedef simdata::Ref<%(name)s> Ref;
+  '''
+
   TRF_GETID = '''
   virtual Id getId() const { return _getId(); }
   static inline Id _getId() { return Id(%(id0)du, %(id1)du); }
+  virtual int getCustomId() const { return _getCustomId(); }
+  static inline int _getCustomId() { return m_CustomId; }
+  static inline void _setCustomId(int id) { m_CustomId = id; }
   '''
 
   TRF_GETVERSION = '''

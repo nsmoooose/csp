@@ -55,6 +55,11 @@ import applog
 class CustomUsageFormatter(optparse.IndentedHelpFormatter):
   def format_usage(self, usage):
     return usage % {'prog' : programName(), 'progpath' : programPath()}
+  def format_option(self, option):
+    text = optparse.IndentedHelpFormatter.format_option(self, option).rstrip()
+    if not option.default is optparse.NO_DEFAULT and option.default:
+      text += ' [default: %s]' % str(option.default)
+    return text + '\n'
 
 log = logging.getLogger('app')
 

@@ -34,7 +34,7 @@ Action = SCons.Action.Action
 Builder = SCons.Builder.Builder
 Scanner = SCons.Scanner.Base
 
-import os, os.path, re, shutil, glob, sys
+import os, os.path, re, shutil, glob, sys, types
 
 # configure tests (defined below)
 configure_tests = {}
@@ -130,6 +130,11 @@ def CustomConfigure(env):
 	addConfigTests(conf)
 	return conf
 
+def ExpandList(list, arg):
+	if type(arg) == types.ListType:
+		list.extend(arg)
+	else:
+		list.append(arg)
 
 ############################################################################
 # additional builders
@@ -213,7 +218,7 @@ def emitSwig(target, source, env):
 	assert(len(source)==1)
 	ext = env['CXXFILESUFFIX']
 	for s in source:
-		wrapper = os.path.splitext(str(s))[0]+'_wrap.'+ext
+		wrapper = os.path.splitext(str(s))[0]+'_wrap'+ext
 		target.append(wrapper)
 		# XXX 
 		# Module name really should be based on the %module
@@ -520,11 +525,20 @@ class Config:
 	def __init__(self, env):
 		self.__dict__['env'] = env.Dictionary()
 		self.config(env)
+		self.configSwig(env)
 	def __setattr__(self, attr, value):
 		dict = self.__dict__['env']
 		dict[attr] = value
 	def __getattr__(self, attr):
 		dict = self.__dict__['env']
 		return dict.get(attr,None)
+	def configSwig(self, env):
+		version = env['SWIG_VERSION']
+		self.SWIGFLAGS = ' -c++ -python -noexcept -IInclude -I%s' % self.PYTHON_INC
+		if compareVersions(version, '1.3.20') >= 0:
+			self.SWIGFLAGS = self.SWIGFLAGS + ' -runtime'
+		else:
+			self.SWIGFLAGS = self.SWIGFLAGS + ' -c'
+			self.SHLINKLIBS.append('swigpy')
 
 

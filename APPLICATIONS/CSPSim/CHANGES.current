@@ -1,101 +1,108 @@
 Version 0.3.1 (in progress)
 ===========================
 
-2003-03-21 delta
-           CSPSim is back on windows (thx a lot Onsight).
+2003-03-21: onsight
+            CSPSim.PYTHON now compiles the data automatically if Sim.dar is
+            not found. You still need to run with the --compile-data option
+            whenever the XML files change, or when the CPSSim object storage
+            format changes. In the latter case, also specify the --rebuild
+            option to recompile all the source data.
+
+2003-03-21: delta
+            CSPSim is back on windows (thx a lot Onsight).
            
-2003-03-21 onsight
-           Merged delta's changes.
+2003-03-21: onsight
+            Merged delta's changes.
 
-2003-03-19 onsight
-           *** Project Change ***
-           Added LandingGear.cpp and Console.cpp
+2003-03-19: onsight
+            *** Project Change ***
+            Added LandingGear.cpp and Console.cpp
 
-           Cleanup up Linux build a bit:
+            Cleanup up Linux build a bit:
        
-         - Removed SDL_console check.
-         - Added test for correct Python path.
-         - Removed files related to Automake.
-         - Adapted to new SimData installation path.  There should
-           be no more relative paths to SimData in the configure
-           script and Makefiles.
+            - Removed SDL_console check.
+            - Added test for correct Python path.
+            - Removed files related to Automake.
+            - Adapted to new SimData installation path.  There should
+              be no more relative paths to SimData in the configure
+              script and Makefiles.
 
-2003-03-14 onsight
-       *** SimData library and data incompatibility ***
+2003-03-14: onsight
+            *** SimData library and data incompatibility ***
 
-           Added ContactList to ObjectModel for bounding hardpoints that
-           interact with the ground. There is a new osg::Switch called
-           m_DebugMarkers that will contain various visual cues for
-           debugging. Currently you can enable visual markers for the
-           contact points, and eventually other geometries like hierarchical
-           bounding boxes can be added.
+            Added ContactList to ObjectModel for bounding hardpoints that
+            interact with the ground. There is a new osg::Switch called
+            m_DebugMarkers that will contain various visual cues for
+            debugging. Currently you can enable visual markers for the
+            contact points, and eventually other geometries like
+            hierarchical bounding boxes can be added.
 
-           Added ground interaction code for model contact points to
-           AeroDynamics. This should probably be abstracted to a base class
-           for use with other vehicles. Right now the ground acts as a hard,
-           highly damped spring on the points. There is also a large
-           (ad-hoc) tangential friction component. Forces beyond a threshold
-           need to be passed to a damage model for further processing (not
-           yet implemented).
+            Added ground interaction code for model contact points to
+            AeroDynamics. This should probably be abstracted to a base class
+            for use with other vehicles. Right now the ground acts as a
+            hard, highly damped spring on the points. There is also a large
+            (ad-hoc) tangential friction component. Forces beyond a
+            threshold need to be passed to a damage model for further
+            processing (not yet implemented).
 
-           Added landing gear to AircraftObject. This is implemented in two
-           new classes: LandingGearSet and LandingGear. The first is just a
-           container that provides several methods to act on all the gear at
-           once. Each landing gear has a complex physics model (need to add
-           a simplified model as well) including shock absorption, braking,
-           and steering. Gear damage, aerodynamic drag, and continuous
-           retraction/extension are not yet modelled. Hooks in Aerodynamics
-           activate the gear simulation (in the inner loop) when the a/c is
-           near the ground.
+            Added landing gear to AircraftObject. This is implemented in two
+            new classes: LandingGearSet and LandingGear. The first is just a
+            container that provides several methods to act on all the gear
+            at once. Each landing gear has a complex physics model (need to
+            add a simplified model as well) including shock absorption,
+            braking, and steering. Gear damage, aerodynamic drag, and
+            continuous retraction/extension are not yet modelled. Hooks in
+            Aerodynamics activate the gear simulation (in the inner loop)
+            when the a/c is near the ground.
 
-           Added a simple ground effect model to AeroDynamics.
+            Added a simple ground effect model to AeroDynamics.
 
-           Added a wind vector to the AeroDynamics calculations. The
-           magnitude and direction are hard coded right now for testing.
+            Added a wind vector to the AeroDynamics calculations. The
+            magnitude and direction are hard coded right now for testing.
 
-           Changes to all the object pack and unpack methods to ensure that
-           they are inverse operations. Added postCreate() methods as needed
-           (see recent SimData changes for details).
+            Changes to all the object pack and unpack methods to ensure that
+            they are inverse operations. Added postCreate() methods as
+            needed (see recent SimData changes for details).
 
-           New input hooks for wheel brakes.
+            New input hooks for wheel brakes.
 
-           Added new (experimental) Python runtime console.
+            Added new (experimental) Python runtime console.
 
-           Added landing gear parameters to XML/vehicles/aircraft/m2k.xml
+            Added landing gear parameters to XML/vehicles/aircraft/m2k.xml
        
 
-2003-03-12 delta
-           Cleaning code for ScreenInfo and ScreenInfoManager. It still
-           needs some improvements but it should be better now. Note that
-           osgText has been entirely reimplemented. Although, we didn t use
-           it, we ll need to switch to it soon: more flexible interface,
-           robuster and faster code.
+2003-03-12: delta
+            Cleaning code for ScreenInfo and ScreenInfoManager. It still
+            needs some improvements but it should be better now. Note that
+            osgText has been entirely reimplemented. Although, we didn t use
+            it, we ll need to switch to it soon: more flexible interface,
+            robuster and faster code.
 
-           Added a Runge-Kutta method RK_24, with a predictive step and a
-           corrective one; it is implemented as an abstract class in
-           DynamicalSystem (.cpp & .h). A dynamical system is roughly
-           speaking a system of differential equations (ODE); a pure virtual
-           method is the vector field which looks like vector
-           f(time,vector); here, vector is a std::vector<double> of any
-           dimension; you need to pass its size when you instantiate a
-           DynamicalSystem. This class is generic and could be use as soon
-           as a vector field may be defined.
+            Added a Runge-Kutta method RK_24, with a predictive step and a
+            corrective one; it is implemented as an abstract class in
+            DynamicalSystem (.cpp & .h). A dynamical system is roughly
+            speaking a system of differential equations (ODE); a pure
+            virtual method is the vector field which looks like vector
+            f(time,vector); here, vector is a std::vector<double> of any
+            dimension; you need to pass its size when you instantiate a
+            DynamicalSystem. This class is generic and could be use as soon
+            as a vector field may be defined.
 
-           Aerodynamics inherites now from DynamicalSystem. I ve done some
-           minor cleaning in code and implement some helper functions to use
-           with dynamical system. Call to this numerical method occurs in
-           doSimStep2; it will be keep until others will have tested it
-           enough (so, old code is still available and functional - just 1
-           line to be changed to switch back).
+            Aerodynamics inherites now from DynamicalSystem. I ve done some
+            minor cleaning in code and implement some helper functions to
+            use with dynamical system. Call to this numerical method occurs
+            in doSimStep2; it will be keep until others will have tested it
+            enough (so, old code is still available and functional - just 1
+            line to be changed to switch back).
 
-           Added a line in CSPSim.ini to read sound files (still
-           hardcoded). At the moment, SDL API is used but it should be
-           replaced by OpenAL soon (Wolverine is working on it). Looks like
-           that here:
+            Added a line in CSPSim.ini to read sound files (still
+            hardcoded). At the moment, SDL API is used but it should be
+            replaced by OpenAL soon (Wolverine is working on it). Looks like
+            that here:
 
-           SoundPath = ../Data/Sounds
+            SoundPath = ../Data/Sounds
 
-           Changed the radius of skydome to 64000 (hardcoded!, pkz Onsight,
-           check it)
+            Changed the radius of skydome to 64000 (hardcoded!, pkz Onsight,
+            check it)
 
-           Others changes are minor.
+            Others changes are minor.

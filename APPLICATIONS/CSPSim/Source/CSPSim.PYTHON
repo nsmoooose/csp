@@ -23,6 +23,10 @@ def runCSPSim(args):
 		printUsage()
 		print
 		sys.exit(1)
+	datapath = CSP.getDataPath()
+	dar = os.path.join(datapath, "Sim.dar")
+	if not os.path.exists(dar):
+		compileData([])
 	import Shell
 	app = CSP.CSPSim()
 	app.init()

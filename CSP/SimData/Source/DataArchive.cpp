@@ -21,8 +21,9 @@
 #include <SimData/DataArchive.h>
 #include <SimData/DataManager.h>
 #include <SimData/InterfaceRegistry.h>
-#include <SimData/Object.h>
 #include <SimData/Log.h>
+#include <SimData/Object.h>
+#include <SimData/Verify.h>
 
 #include <iomanip>
 #include <iostream>

@@ -116,3 +116,35 @@ int main() {
     [])
 ])
 
+dnl check for python
+AC_DEFUN(CSP_PYTHON, [
+  min_version=$1
+  python=no
+  AC_MSG_CHECKING(for python >= $min_version)
+  version=`python -V 2>&1`
+  major=`echo $version | sed 's/Python \([[0-9]]*\).\([[0-9]]*\).\([[0-9]]*\)/\1/'` 
+  minor=`echo $version | sed 's/Python \([[0-9]]*\).\([[0-9]]*\).\([[0-9]]*\)/\2/'` 
+  micro=`echo $version | sed 's/Python \([[0-9]]*\).\([[0-9]]*\).\([[0-9]]*\)/\3/'` 
+  major_min=`echo $min_version | sed 's/\([[0-9]]*\).\([[0-9]]*\).\([[0-9]]*\)/\1/'` 
+  minor_min=`echo $min_version | sed 's/\([[0-9]]*\).\([[0-9]]*\).\([[0-9]]*\)/\2/'`
+  micro_min=`echo $min_version | sed 's/\([[0-9]]*\).\([[0-9]]*\).\([[0-9]]*\)/\3/'`
+  version_proper=`expr \
+    $major \> $major_min \| \
+    $major \= $major_min \& \
+    $minor \> $minor_min \| \
+    $major \= $major_min \& \
+    $minor \= $minor_min \& \
+    $micro \>= $micro_min `
+  if test "$version_proper" = "1" ; then
+    AC_MSG_RESULT(yes)
+    python=yes
+  else
+    AC_MSG_RESULT(no)
+    AC_MSG_ERROR([
+      Python version >= $min_version must be installed.  Python is
+      avalable in prepackaged binary and source distributions from
+      http://www.python.org.
+    ])
+  fi
+])
+

@@ -22,15 +22,16 @@
  *
  **/
 
-
 #include <osg/Geode>
 #include <osgParticle/ParticleSystemUpdater>
+#include <osgParticle/ModularEmitter>
 
 #include <SimData/Quaternion.h>
 
 #include "DynamicObject.h"
 #include "LogStream.h"
 #include "VirtualBattlefield.h"
+#include "SmokeEffects.h"
 
 extern double g_LatticeXDist;
 extern double g_LatticeYDist;
@@ -58,6 +59,9 @@ DynamicObject::DynamicObject(): SimObject()
 	m_InertiaInv = simdata::Matrix3::IDENTITY;
 
 	m_SmokeSegments = NULL;
+	m_SmokeUpdater = NULL;
+	m_SmokeEmitter = NULL;
+	m_Smoke = false;
 }
 
 DynamicObject::~DynamicObject()
@@ -149,9 +153,20 @@ void DynamicObject::updateGlobalPosition()
 	// simple testing of smoke trails... improve later
 	if (m_SmokeSegments) {
 		simdata::Vector3 motion = m_LocalPosition - m_PrevPosition;
-		simdata::Vector3 motionBody = simdata::QVRotate(m_qOrientation.Bar(), motion);
-		m_SmokeSegments->update(osg::Vec3(motionBody.x, motionBody.y, motionBody.z));
+//		simdata::Vector3 motionBody = simdata::QVRotate(m_qOrientation.Bar(), motion);
+//		osg::Quat q = osg::Quat(m_qOrientation.x, m_qOrientation.y, m_qOrientation.z, m_qOrientation.w);
+		//m_SmokeSegments->update(osg::Vec3(motionBody.x, motionBody.y, motionBody.z), q);
+//		osg::Matrix m, minv;
+	//	m.makeRotate(q);
+	//	minv.makeRotate(q.inverse());
+		m_SmokeSegments->update(motion, m_Orientation, m_OrientationInverse);
 	}
+}
+
+void DynamicObject::updateOrientation() 
+{
+	m_qOrientation.ToRotationMatrix(m_Orientation);
+	m_qOrientation.Inverse().ToRotationMatrix(m_OrientationInverse);
 }
 
 // move
@@ -181,34 +196,58 @@ void DynamicObject::postMotion(double dt)
 	}
 }
 
-void DynamicObject::AddSmoke()
+bool DynamicObject::AddSmoke()
 {
-	if (!m_Battlefield) return;
+	if (!m_Battlefield) return false;
+	if (m_SmokeSegments) return true;
 
-	osgParticle::ParticleSystemUpdater *psu = 0;
-	osgParticle::ParticleSystem *ps;
+	osg::BoundingSphere s = m_rpNode.get()->getBound();
+	m_SmokeSegments = new fx::smoke::SmokeSegments;
+	m_SmokeSegments->addSource(simdata::Vector3(0.0, -0.8 * s.radius(), 0.0));
 
-	if (!m_SmokeSegments) {
-		osg::BoundingSphere s = m_rpNode.get()->getBound();
-		m_SmokeSegments = new effects::smoke::SmokeSegments;
-		m_SmokeSegments->addSource(osg::Vec3(0.0, -0.8 * s.radius(), 0.0));
-	}
-
-	effects::smoke::Trail trail;
+	fx::smoke::Trail trail;
 	trail.setTexture("Images/white-smoke.rgb");
 	trail.setColorRange(osg::Vec4(0.9, 0.9, 1.0, 1.0), osg::Vec4(1.0, 1.0, 1.0, 0.5));
 	trail.setSizeRange(0.2, 4.0);
 	trail.setPlacer(m_SmokeSegments->getSegment(0));
-	trail.setOperator(osgNew effects::smoke::Thinner);
+	trail.setOperator(new fx::smoke::Thinner);
+	trail.setLight(true);
 	trail.setLifeTime(5.5);
 	trail.setExpansion(1.2);
-	ps = trail.create(m_rpTransform.get(), psu);
+	osgParticle::ParticleSystemUpdater *psu = 0;
+	m_SmokeEmitter = trail.create(m_rpTransform.get(), psu);
+	m_SmokeUpdater = psu;
+	m_SmokeEmitter->setEnabled(false);
 	
-	osg::Geode *geode = osgNew osg::Geode;
-	geode->setName("SmokeParticleSystem");
-	geode->addDrawable(ps);
-	m_Battlefield->addNodeToScene(geode);
+	m_SmokeGeode = new osg::Geode;
+	m_SmokeGeode->setName("SmokeParticleSystem");
+	m_SmokeGeode->addDrawable(m_SmokeEmitter->getParticleSystem());
+	m_Battlefield->addNodeToScene(m_SmokeGeode.get());
+	m_rpTransform->addChild(m_SmokeUpdater.get());
 
-	m_rpTransform->addChild(psu);
+	m_Smoke = false;
+
+	return true;
+}
+
+bool DynamicObject::isSmoke() {
+	return m_Smoke;
+}
+
+void DynamicObject::DisableSmoke()
+{
+	if (m_Smoke) {
+		m_SmokeEmitter->setEnabled(false);
+		m_Smoke = false;
+	}
+}
+
+void DynamicObject::EnableSmoke()
+{
+	if (!m_Smoke) {
+		if (!AddSmoke()) return;
+		m_SmokeEmitter->setEnabled(true);
+		m_Smoke = true;
+	}
 }
 

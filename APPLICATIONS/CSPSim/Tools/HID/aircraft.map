@@ -28,4 +28,6 @@ map key:EQUALS	press			INC_THROTTLE
 map key:EQUALS	release			STOP_INC_THROTTLE
 map key:MINUS	press			DEC_THROTTLE
 map key:MINUS	release			STOP_DEC_THROTTLE
+map key:s       press                   SMOKE_ON/B|SMOKE_OFF/B
+#map key:SHIFT-s press                   SMOKE_OFF
 

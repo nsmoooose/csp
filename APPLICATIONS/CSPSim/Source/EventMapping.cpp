@@ -149,7 +149,7 @@ void EventMapping::parseMap(const char *line, EventMapping::Script &script) {
 	std::stringstream s(line+1);
 	Action a;
 	char device_type, type;
-	int device, kmod, jmod, mmod, id, mode, state;
+	int device, kmod, jmod, mmod, id, mode, state = SDL_PRESSED;
 	s >> device_type >> device >> type >> kmod >> jmod >> mmod >> id >> mode;
 	if (type == 'P') {
 		state = SDL_PRESSED; 

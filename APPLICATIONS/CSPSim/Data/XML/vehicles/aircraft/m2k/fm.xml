@@ -63,7 +63,7 @@
 	<Real name="cl_de">0.4</Real>
 
 	<!-- Pitch Moment Parameters -->
-	<Real name="cm0">-0.02</Real>
+	<Real name="cm0">-0.002</Real>
 	<Real name="cm_a">-0.02</Real>
 	<Real name="cm_adot">-1.73</Real>
 	<Real name="cm_q">-3.6</Real>

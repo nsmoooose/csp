@@ -122,7 +122,7 @@ namespace ospath {
 	/**
 	 * Add a path to a list of paths using the platform path separator.
 	 */
-	std::string const &ospath::addpath(std::string &pathlist, const std::string &path);
+	std::string const &addpath(std::string &pathlist, const std::string &path);
 };
 
 

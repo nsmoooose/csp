@@ -32,6 +32,15 @@
 #include "SmokeEffects.h"
 
 
+namespace osgParticle {
+	class Geode;
+	class ParticleSystemUpdater;
+	class ModularEmitter;
+}
+//#include <osg/Geode>
+//#include <osgParticle/ParticleSystemUpdater>
+//#include <osgParticle/ModularEmitter>
+
 /**
  * class DynamicObject - Base class for all mobile objects in the simulation.
  *
@@ -66,10 +75,14 @@ public:
 	void updateLocalPosition();
 	void updateGlobalPosition();
 	void updateGroundPosition();
+	void updateOrientation();
 	
 	virtual void onUpdate(double dt);
 	
-	void AddSmoke();
+	bool AddSmoke();
+	bool isSmoke();
+	void DisableSmoke();
+	void EnableSmoke();
 
 protected:
 
@@ -82,7 +95,12 @@ protected:
 	BaseController * m_pController;
 	unsigned int m_iControllerID;
 	
-	effects::smoke::SmokeSegments *m_SmokeSegments;
+	bool m_Smoke;
+	fx::smoke::SmokeSegments *m_SmokeSegments;
+	osg::ref_ptr<osg::Geode> m_SmokeGeode;
+	osg::ref_ptr<osgParticle::ParticleSystemUpdater> m_SmokeUpdater;
+	osg::ref_ptr<osgParticle::ModularEmitter> m_SmokeEmitter;
+
 
 	// dynamic properties
 	

@@ -45,7 +45,7 @@
 // Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 // Boston, MA  02111-1307, USA.
 //
-// $Id: LogStream.h,v 1.3 2003/02/02 20:53:27 mkrose Exp $
+// $Id: LogStream.h,v 1.4 2003/02/19 11:41:56 mkrose Exp $
 
 #ifndef __LOGSTREAM_H__
 #define __LOGSTREAM_H__
@@ -200,6 +200,9 @@ private:
 inline int
 logbuf::sync()
 {
+	if (!sbuf) return -1;
+	return 0;
+	// this is segfaulting at exit... don't know why...
 #ifdef SG_HAVE_STD_INCLUDES
 	return sbuf->pubsync();
 #else

@@ -339,7 +339,7 @@ public:
 private:
 	class HashString {
 	public:
-     size_t operator()(std::string const &str) const {
+		size_t operator()(std::string const &str) const {
 			return HASH<char const *>()(str.c_str());
 		}
 	};

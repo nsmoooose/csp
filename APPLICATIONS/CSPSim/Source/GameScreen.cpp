@@ -83,6 +83,9 @@ void GameScreen::InitInterface()
 	BIND_ACTION("CAMERA_ZOOM_STEP_OUT", on_ViewZoomStepOut);
 	BIND_ACTION("CAMERA_FOV_STEP_DEC", on_ViewFovStepDec);
 	BIND_ACTION("CAMERA_FOV_STEP_INC", on_ViewFovStepInc);
+	BIND_ACTION("SPIN_THE_WORLD", on_SpinTheWorld);
+	BIND_ACTION("SPIN_THE_WORLD_STOP", on_SpinTheWorldStop);
+	BIND_ACTION("RESET_SPIN", on_ResetSpin);
 	BIND_MOTION("CAMERA_PAN", on_MouseView);
 	EventMapIndex *maps = CSPSim::theSim->getInterfaceMaps();
 	if (maps) {
@@ -410,6 +413,21 @@ void GameScreen::on_ViewFovStepInc()
 	if (fov < 90.0) {
 		m_Battlefield->setViewAngle(fov);
 	}
+}
+
+void GameScreen::on_SpinTheWorld()
+{
+	m_Battlefield->spinTheWorld(true);
+}
+
+void GameScreen::on_SpinTheWorldStop()
+{
+	m_Battlefield->spinTheWorld(false);
+}
+
+void GameScreen::on_ResetSpin()
+{
+	m_Battlefield->resetSpin();
 }
 
 void GameScreen::on_MouseView(int x, int y, int dx, int dy)

@@ -62,9 +62,9 @@ static Geometry *makeTree( _tree const &p_tree)//, StateSet *dstate )
         { -p_tree.w/2.0, 0.0, 2 * p_tree.h },
     };
 
-    Vec3Array& v = *(osgNew Vec3Array(4));
-    Vec2Array& t = *(osgNew Vec2Array(4));
-    Vec4Array& l = *(osgNew Vec4Array(1));
+    Vec3Array& v = *(new Vec3Array(4));
+    Vec2Array& t = *(new Vec2Array(4));
+    Vec4Array& l = *(new Vec4Array(1));
 
     int   i;
 
@@ -82,7 +82,7 @@ static Geometry *makeTree( _tree const &p_tree)//, StateSet *dstate )
     t[2][0] = 1.0; t[2][1] = 1.0;
     t[3][0] = 0.0; t[3][1] = 1.0;
 
-    Geometry *geom = osgNew Geometry;
+    Geometry *geom = new Geometry;
 
     geom->setVertexArray( &v );
 
@@ -91,7 +91,7 @@ static Geometry *makeTree( _tree const &p_tree)//, StateSet *dstate )
     geom->setColorArray( &l );
     geom->setColorBinding( Geometry::BIND_OVERALL );
 
-    geom->addPrimitiveSet( osgNew DrawArrays(PrimitiveSet::QUADS,0,4) );
+    geom->addPrimitiveSet( new DrawArrays(PrimitiveSet::QUADS,0,4) );
 
     //geom->setStateSet( dstate );
 
@@ -118,7 +118,7 @@ std::vector<Geometry*> MakeBaseTreeArray(unsigned short p_ustypeTreeNumber, std:
 	{
 		aTree.h = treeHeightFactor * 8.0;
 		aTree.w = treeWidthFactor  * 8.0;
-		treesArray.push_back(makeTree( aTree));//, osgNew StateSet(*p_pstate[i % 3]) ));
+		treesArray.push_back(makeTree( aTree));//, new StateSet(*p_pstate[i % 3]) ));
 	}
 
 	return treesArray;
@@ -129,7 +129,7 @@ std::vector<Geometry *> g_treesBase;
 Node *makeTreesPatch( float xoff, float yoff, float spacing, float width, 
 					 float height, VirtualBattlefield * pBattlefield)
 {
-    Group *group = osgNew Group;
+    Group *group = new Group;
     unsigned int i,j, icnt, jcnt;
 
 	std::vector<std::string> treefileName;
@@ -155,7 +155,7 @@ Node *makeTreesPatch( float xoff, float yoff, float spacing, float width,
     
 	for (i=0;i<typeTreeNumber;++i)
 	{
-    Texture2D* aTex = osgNew Texture2D;
+    Texture2D* aTex = new Texture2D;
 	osg::Image *image = osgDB::readImageFile ( treefileName[i] );
 	aTex->setImage(image);
     tex.push_back(aTex);
@@ -164,15 +164,15 @@ Node *makeTreesPatch( float xoff, float yoff, float spacing, float width,
     std::vector<StateSet*> state;
 	for (i=0;i<typeTreeNumber;++i)
 	{
-		StateSet *dstate = osgNew StateSet;
+		StateSet *dstate = new StateSet;
 
 		dstate->setTextureAttributeAndModes(0, tex[i], StateAttribute::ON );
 		
-		dstate->setTextureAttribute(0, osgNew TexEnv );
+		dstate->setTextureAttribute(0, new TexEnv );
 		
-		dstate->setAttributeAndModes( osgNew BlendFunc, StateAttribute::ON );
+		dstate->setAttributeAndModes( new BlendFunc, StateAttribute::ON );
 	
-		AlphaFunc* alphaFunc = osgNew AlphaFunc;
+		AlphaFunc* alphaFunc = new AlphaFunc;
 		alphaFunc->setFunction(AlphaFunc::GEQUAL,0.05f);
 		dstate->setAttributeAndModes( alphaFunc, StateAttribute::ON );
 		
@@ -199,7 +199,7 @@ Node *makeTreesPatch( float xoff, float yoff, float spacing, float width,
 
 	for (j=0;j<jcnt;++j)
 	{
-		Billboard *bb = osgNew Billboard;
+		Billboard *bb = new Billboard;
 		//bb->setMode(osg::Billboard::POINT_ROT_EYE );
 		for (i=0;i<icnt;++i)
 		{
@@ -212,7 +212,7 @@ Node *makeTreesPatch( float xoff, float yoff, float spacing, float width,
 			y = fmod(y, 64000.0f);
 			Vec3 pos(x,y,z);
 			unsigned short indice = (2 * count) % typeTreeNumber;
-			Geometry * aGSet = osgNew Geometry(*g_treesBase[indice]);
+			Geometry * aGSet = new Geometry(*g_treesBase[indice]);
             bb->addDrawable( aGSet, pos );
 			++count;
 		}

@@ -41,6 +41,8 @@
 #include <SimData/Types.h>
 
 
+class Sky;
+
 const int MAX_NUM_VISIBLE_TRIANGLES = 30000; // Chosen based on the expected number of triangles that will be visible on-screen at any one time (the terrain mesh will typically have far more triangles than are seen at one time, especially with dynamic tessellation)
 
 
@@ -89,6 +91,8 @@ public:
 	void addNodeToScene( osg::Node * pNode);
 	void removeNodeFromScene( osg::Node * pNode);
 
+	void spinTheWorld(bool spin);
+	void resetSpin();
 
 	void setLookAt(simdata::Vector3 & eyePos, simdata::Vector3 & lookPos, simdata::Vector3 & upVec);
 	void getLookAt(simdata::Vector3 & eyePos, simdata::Vector3 & lookPos, simdata::Vector3 & upVec) const;
@@ -116,14 +120,21 @@ public:
 
 public:
 
-
+	double getSpin();
 
 protected:
+
+	bool m_SpinTheWorld;
+	bool m_ResetTheWorld;
 
 	osgUtil::SceneView* m_pView;
 	osg::ref_ptr<osg::Group> m_rpRootNode;
 	osg::ref_ptr<osg::Group> m_rpObjectRootNode;
 	osg::ref_ptr<osg::FrameStamp> m_rpFrameStamp;
+
+	osg::ref_ptr<osg::Group> m_CelestialLightGroup;
+	osg::ref_ptr<osg::Group> m_LightGroup;
+	osg::ref_ptr<osg::Transform> m_EyeTransform;
 
 	osg::Node * m_pTerrainNode;
 
@@ -136,6 +147,7 @@ protected:
 	float m_ViewAngle;
 
 	simdata::Pointer<TerrainObject> m_ActiveTerrainObject;
+	osg::ref_ptr<Sky> m_Sky;
 };
 
 #endif // __VIRTUALBATTLEFIELD_H__

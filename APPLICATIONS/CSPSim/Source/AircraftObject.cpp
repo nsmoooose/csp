@@ -68,6 +68,13 @@ AircraftObject::AircraftObject(): DynamicObject()
 	m_Rudder = 0.0;
 	m_Throttle = 0.0;
 
+	m_dThrottleInput = 0.0;
+	m_dAileronInput = 0.0;
+	m_dElevatorInput = 0.0;
+	
+	m_decayAileron = 0;
+	m_decayElevator = 0;
+	
 	m_AileronMin = -1.0;
 	m_AileronMax = 1.0;
 	m_ElevatorMin = -1.0;
@@ -84,8 +91,8 @@ AircraftObject::AircraftObject(): DynamicObject()
 	m_dAileronInput = 0;
 	m_dElevatorInput = 0;
 
-    m_decayAileron = 0;
-    m_decayElevator = 0;
+	m_decayAileron = 0;
+	m_decayElevator = 0;
 
 	m_ComplexPhysics = false;
 	m_PhysicsInitialized = false;
@@ -106,7 +113,10 @@ AircraftObject::AircraftObject(): DynamicObject()
 	BIND_ACTION("STOP_INC_ELEVATOR", noIncElevator);
 	BIND_ACTION("DEC_ELEVATOR", DecElevator);
 	BIND_ACTION("STOP_DEC_ELEVATOR", noDecElevator);
-    CSP_LOG(CSP_APP, CSP_DEBUG, "... AircraftObject::AircraftObject()");
+	BIND_ACTION("SMOKE_ON", SmokeOn);
+	BIND_ACTION("SMOKE_OFF", SmokeOff);
+
+	CSP_LOG(CSP_APP, CSP_DEBUG, "... AircraftObject::AircraftObject()");
 }
 
 
@@ -290,6 +300,14 @@ void AircraftObject::DecThrottle() {
 void AircraftObject::noDecThrottle() { 
 	if (m_dThrottleInput < 0.0) m_dThrottleInput = 0.0; 
 }
+
+void AircraftObject::SmokeOn() { 
+	EnableSmoke();
+}
+
+void AircraftObject::SmokeOff() { 
+	DisableSmoke();
+}
 	
 void AircraftObject::setOrientation(double heading, double pitch, double roll)
 {
@@ -377,7 +395,7 @@ void AircraftObject::doComplexPhysics(double dt)
 	m_FlightModel->setThrust(m_Throttle * 70000.0);
 	m_FlightModel->setControlSurfaces(m_Aileron, m_Elevator, m_Rudder);
 	m_FlightModel->doSimStep(dt);
-	m_qOrientation.ToRotationMatrix(m_Orientation);
+	updateOrientation();
 	m_Direction = m_Orientation * simdata::Vector3::YAXIS;
 	m_NormalDirection = m_Orientation * simdata::Vector3::ZAXIS;
 	m_Speed = m_LinearVelocity.Length();

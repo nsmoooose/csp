@@ -77,7 +77,24 @@ public:
 		std::string id;
 	};
 
-	typedef std::vector<Action> Script;
+	class Script: protected std::vector<Action> {
+		friend class EventMapping;
+	public:
+		Script(): idx(0) {}
+		Action const *getAction() const { return &((*this)[idx]); }
+		bool advance() const {
+			idx++;
+			if (idx >= int(this->size())) idx = 0;
+			return (idx > 0);
+		}
+		void jump(int i) const {
+			if (i >= 0 && i < int(this->size())) idx = i;
+		}
+		int getIndex() const { return idx; }
+	private:
+		mutable int idx;
+	};
+
 	typedef HASH_MAP<int, Script> script_map;
 	typedef HASH_MAP<int, Motion> motion_map;
 	typedef script_map::const_iterator EventScript;

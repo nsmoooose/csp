@@ -66,26 +66,36 @@
 #include <cstdio>
 #include <SimData/Random.h>
 
-namespace effects {
+
+namespace fx {
 namespace smoke {
 
-int SmokeSegments::addSource(osg::Vec3 const &v) {
-	if (!m_Sources) {
-		m_Sources = osgNew osg::Vec3Array;
-	}
-	m_Sources->push_back(v);
-	m_Placers.push_back(osgNew osgParticle::SegmentPlacer);
-	return m_Sources->size()-1;
+int SmokeSegments::addSource(simdata::Vector3 const &v) {
+	m_Sources.push_back(v);
+	m_LastPlace.push_back(simdata::Vector3());
+	m_Placers.push_back(new osgParticle::SegmentPlacer);
+	return m_Sources.size()-1;
 }
 
 osgParticle::SegmentPlacer *SmokeSegments::getSegment(int i) { return m_Placers[i].get(); }
 
-void SmokeSegments::update(osg::Vec3 const &motion) {
-	PlacerArray::iterator i;
-	osg::Vec3Array::iterator j = m_Sources->begin();
-	for (i = m_Placers.begin(); i != m_Placers.end(); i++, j++) {
-		(*i)->setVertexA(*j);
-		(*i)->setVertexB(*j - motion);
+inline osg::Vec3 toVec3(simdata::Vector3 const &v) {
+	return osg::Vec3(v.x, v.y, v.z); 
+}
+
+void SmokeSegments::update(simdata::Vector3 const &motion, simdata::Matrix3 const &to_scene, simdata::Matrix3 const &to_body) {
+	size_t i, n;
+	n = m_Placers.size();
+	std::vector<simdata::Vector3>::iterator source = m_Sources.begin();
+	std::vector<simdata::Vector3>::iterator lastplace = m_LastPlace.begin();
+
+	for (i = 0; i < n; i++) {
+		simdata::Vector3 lastbody = to_body * (*lastplace - motion);
+		m_Placers[i]->setVertexA(toVec3(*source));
+		m_Placers[i]->setVertexB(toVec3(lastbody));
+		*lastplace = to_scene * *source;
+		lastplace++;
+		source++;
 	}
 }
 
@@ -129,7 +139,7 @@ void BaseSystem::setDefault() {
 	m_Light = false;
 }
 
-void BaseSystem::setTexture(const string & TextureFile) { m_TextureFile = TextureFile; }
+void BaseSystem::setTexture(const std::string & TextureFile) { m_TextureFile = TextureFile; }
 
 void BaseSystem::setColorRange(const osg::Vec4 &colorMin, const osg::Vec4 &colorMax) {
 	m_Prototype.setColorRange(osgParticle::rangev4(colorMin, colorMax));
@@ -190,13 +200,13 @@ osgParticle::Operator *BaseSystem::getOperator() {
 	return m_UserOperator.get();
 }
 
-osgParticle::ParticleSystem *BaseSystem::create(osg::Transform *base, 
+osgParticle::ModularEmitter *BaseSystem::create(osg::Transform *base, 
 					    osgParticle::ParticleSystemUpdater *&psu) {
-	osgParticle::ParticleSystem *ps = osgNew osgParticle::ParticleSystem;
+	osgParticle::ParticleSystem *ps = new osgParticle::ParticleSystem;
 	ps->setDefaultAttributes(m_TextureFile, m_Emissive, m_Light, 0);
 	ps->setDefaultParticleTemplate(m_Prototype);
 	ps->setFreezeOnCull(false);
-	osgParticle::ModularEmitter *me = osgNew osgParticle::ModularEmitter;
+	osgParticle::ModularEmitter *me = new osgParticle::ModularEmitter;
 	me->setParticleSystem(ps);
 	m_Placer = getPlacer();
 	assert(m_Placer.valid());
@@ -208,7 +218,7 @@ osgParticle::ParticleSystem *BaseSystem::create(osg::Transform *base,
 	assert(m_Shooter.valid());
 	me->setShooter(m_Shooter.get());
 	base->addChild(me);
-	osgParticle::ModularProgram *mp = osgNew osgParticle::ModularProgram;
+	osgParticle::ModularProgram *mp = new osgParticle::ModularProgram;
 	mp->setParticleSystem(ps);
 	// need a better setup to allow multiple operators
 	m_Operator = getOperator();
@@ -217,10 +227,10 @@ osgParticle::ParticleSystem *BaseSystem::create(osg::Transform *base,
 	}
 	base->addChild(mp);
 	if (!psu) {
-		psu = osgNew osgParticle::ParticleSystemUpdater;
+		psu = new osgParticle::ParticleSystemUpdater;
 	}
 	psu->addParticleSystem(ps);
-	return ps;
+	return me;
 }
 
 void Thinner::operate(osgParticle::Particle *p, double dt)
@@ -251,7 +261,7 @@ void Thinner::operate(osgParticle::Particle *p, double dt)
 osgParticle::Shooter *Trail::getShooter() {
 	osgParticle::Shooter *user = BaseSystem::getShooter();
 	if (user) return user;
-	osgParticle::RadialShooter *rs = osgNew osgParticle::RadialShooter;
+	osgParticle::RadialShooter *rs = new osgParticle::RadialShooter;
 	rs->setPhiRange(-0.21, 1.78);
 	rs->setThetaRange(0.0, 1.57);
 	rs->setInitialSpeedRange(0, m_Speed);
@@ -261,7 +271,7 @@ osgParticle::Shooter *Trail::getShooter() {
 osgParticle::Counter *Trail::getCounter() {
 	osgParticle::Counter *user = BaseSystem::getCounter();
 	if (user) return user;
-	osgParticle::RandomRateCounter *rrc = osgNew osgParticle::RandomRateCounter;
+	osgParticle::RandomRateCounter *rrc = new osgParticle::RandomRateCounter;
 	// this should be adjustable, even if these are the defaults
 	rrc->setRateRange(2000, 2400);
 	return rrc;
@@ -273,5 +283,5 @@ void Trail::setExpansion(float speed) {
 
 
 } // smoke
-} // effects
+} // fx
 

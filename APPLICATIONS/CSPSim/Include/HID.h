@@ -160,7 +160,6 @@ protected:
 	InputInterface *m_Object;
 
 	EventMapping::Script const *m_ActiveScript;
-	EventMapping::Script::const_iterator m_ScriptAction;
 	double m_ScriptTime;
 
 	int m_MouseEventX;

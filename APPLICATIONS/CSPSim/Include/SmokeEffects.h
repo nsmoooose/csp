@@ -29,6 +29,10 @@
 #include <osg/ref_ptr>
 #include <osgParticle/Operator>
 #include <osgParticle/SegmentPlacer>
+#include <osgParticle/ModularEmitter>
+
+#include <SimData/Matrix3.h>
+#include <SimData/Vector3.h>
 
 #include <vector>
 #include <string>
@@ -41,22 +45,23 @@ namespace osgParticle {
 	class Shooter;
 }
 
-namespace effects {
+namespace fx {
 namespace smoke {
 
 
 class SmokeSegments {
 	typedef std::vector<osg::ref_ptr<osgParticle::SegmentPlacer> > PlacerArray;
 	PlacerArray m_Placers;
-	osg::ref_ptr<osg::Vec3Array> m_Sources;
+	std::vector<simdata::Vector3> m_Sources;
+	std::vector<simdata::Vector3> m_LastPlace;
 public:
 	SmokeSegments() {
 	}
 	~SmokeSegments() {
 	}
-	int addSource(osg::Vec3 const &v);
+	int addSource(simdata::Vector3 const &v);
 	osgParticle::SegmentPlacer *getSegment(int i);
-	void update(osg::Vec3 const &motion);
+	void update(simdata::Vector3 const &motion, simdata::Matrix3 const &to_body, simdata::Matrix3 const &to_scene);
 };
 
 class VortexExpander: public osgParticle::Operator
@@ -75,7 +80,7 @@ public:
 	BaseSystem();
 	virtual ~BaseSystem();
 	void setDefault();
-	void setTexture(const string & TextureFile);
+	void setTexture(const std::string & TextureFile);
 	void setColorRange(const osg::Vec4 &colorMin, const osg::Vec4 &colorMax);
 	void setAlphaRange(float alpha_0, float alpha_1);
 	void setSizeRange(float size_0, float size_1);
@@ -91,7 +96,7 @@ public:
 	virtual osgParticle::Placer *getPlacer();
 	virtual void setOperator(osgParticle::Operator *op);
 	virtual osgParticle::Operator *getOperator();
-	virtual osgParticle::ParticleSystem *create(osg::Transform *base, 
+	virtual osgParticle::ModularEmitter *create(osg::Transform *base, 
 	                                            osgParticle::ParticleSystemUpdater *&psu);
 						    
 protected:
@@ -134,7 +139,7 @@ protected:
 
 
 } // smoke
-} // effects
+} // fx 
 
 
 #endif // __SMOKEEFFECTS_H__

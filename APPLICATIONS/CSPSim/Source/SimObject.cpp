@@ -211,12 +211,12 @@ void SimObject::initModel()
 	//m_rpNode->setStateSet(stateSet);
     
 	// to switch between various representants of same object (depending on views for example)
-	m_rpSwitch = osgNew osg::Switch;
+	m_rpSwitch = new osg::Switch;
 	m_rpSwitch->setName("MODEL SWITCH");
 	m_rpSwitch->addChild(m_rpNode.get());
 
 	// master object to which all others ones are linked
-	m_rpTransform = osgNew osg::MatrixTransform;
+	m_rpTransform = new osg::MatrixTransform;
 	m_rpTransform->setName("MODEL TRANSFORM");
 
 	m_rpTransform->addChild( m_rpSwitch.get() );
@@ -246,7 +246,7 @@ void SimObject::AddSmoke()
 	float r = s.radius();
 	unsigned short i;
 
-	osgParticle::ParticleSystemUpdater *psu = osgNew osgParticle::ParticleSystemUpdater;
+	osgParticle::ParticleSystemUpdater *psu = new osgParticle::ParticleSystemUpdater;
 	osgParticle::ParticleSystem *ps;
 	ps = setupParticleSystem(m_rpTransform.get(),
 	                         "Images/white-smoke.rgb",
@@ -255,7 +255,7 @@ void SimObject::AddSmoke()
 	                         osg::Vec3(0.0, 0.8 * r, 0.0),
 				 m_Placer, 
 				 5.0);
-	osg::Geode *geode = osgNew osg::Geode;
+	osg::Geode *geode = new osg::Geode;
 	geode->setName("PlayerParticleSystem");
 	geode->addDrawable(ps);
 	m_Battlefield->addNodeToScene(geode);
@@ -274,14 +274,14 @@ void SimObject::AddSmoke()
 	float r = s.radius();
 	unsigned short i;
 
-	osg::Vec3Array* pl = osgNew osg::Vec3Array;
+	osg::Vec3Array* pl = new osg::Vec3Array;
 	
 	for (i = 0; i<1; ++i) {
 		pl->push_back(osg::Vec3(0.0,-(0.8+i/10.0) * r,0.0));
 	}
     
 
-	osgParticle::ParticleSystemUpdater *psu = osgNew osgParticle::ParticleSystemUpdater;
+	osgParticle::ParticleSystemUpdater *psu = new osgParticle::ParticleSystemUpdater;
 
 	for (i = 0; i<pl->size();++i) {
 		osgParticle::ParticleSystem *ps;
@@ -302,7 +302,7 @@ void SimObject::AddSmoke()
 		                         (*pl)[i],
 					 m_Placer, 
 					 5.0);
-		osg::Geode *geode = osgNew osg::Geode;
+		osg::Geode *geode = new osg::Geode;
 		geode->setName("PlayerParticleSystem");
 		geode->addDrawable(ps);
 		m_Battlefield->addNodeToScene(geode);
@@ -317,7 +317,7 @@ void SimObject::AddSmoke()
 		                         osg::Vec4(0,1,0,1), 
 		                         osg::Vec4(0.2, 0.5, 1, 0.8), 
 		                         (*pl)[i],0.01);
-		osg::Geode *geode = osgNew osg::Geode;
+		osg::Geode *geode = new osg::Geode;
 		geode->setName("PlayerParticleSystem");
 		geode->addDrawable(ps);
 		g_pBattlefield->addNodeToScene(geode);

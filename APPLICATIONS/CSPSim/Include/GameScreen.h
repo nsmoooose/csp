@@ -93,20 +93,12 @@ public:
 	ACTION_INTERFACE(GameScreen, on_ViewZoomStepOut);
 	ACTION_INTERFACE(GameScreen, on_ViewFovStepDec);
 	ACTION_INTERFACE(GameScreen, on_ViewFovStepInc);
+	ACTION_INTERFACE(GameScreen, on_SpinTheWorld);
+	ACTION_INTERFACE(GameScreen, on_SpinTheWorldStop);
+	ACTION_INTERFACE(GameScreen, on_ResetSpin);
 	MOTION_INTERFACE(GameScreen, on_MouseView);
 
 	virtual void InitInterface();
-
-	//virtual bool OnKeyDown(char * key); the base class method is not redefined here
-	/*
-	virtual bool OnKeyDown(SDLKey key);
-	virtual bool OnKeyUp(SDLKey key);
-	virtual void OnMouseMove(int x, int y);
-	virtual void OnMouseButtonDown(int num, int x, int y);
-	virtual void OnJoystickAxisMotion(int joynum, int axis, int val);
-	virtual void OnJoystickHatMotion(int joynum, int hat, int val);
-	virtual void OnJoystickButtonDown(int joynum, int butnum);
-	*/
 
 	void SetBattlefield(VirtualBattlefield *);
 

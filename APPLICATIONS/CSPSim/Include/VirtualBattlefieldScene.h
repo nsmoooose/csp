@@ -32,6 +32,10 @@
 #include <osgDB/FileUtils>
 #include <osgUtil/SceneView>
 
+#include <SimData/Types.h>
+
+#include "TerrainObject.h"
+
 
 /**
  * class VirtualBattlefieldScene

@@ -23,7 +23,7 @@
  **/
 
 #include "stdinc.h"
-#include <math.h>
+#include <cmath>
 
 #include <osg/Geode>
 #include <osg/Geometry>
@@ -59,7 +59,7 @@ Node *makeBase( void )
 		c++;
 	}
 
-	Geometry *geom = osgNew Geometry;
+	Geometry *geom = new Geometry;
 
 	geom->setVertexArray( coords );
 
@@ -83,7 +83,7 @@ Node *makeBase( void )
 	dstate->setTextureAttributeAndModes( 0, new TexEnv );
 
 	// clear the depth to the far plane.
-	osg::Depth* depth = osgNew osg::Depth;
+	osg::Depth* depth = new osg::Depth;
 	depth->setFunction(osg::Depth::ALWAYS);
 	depth->setRange(1.0,1.0);   
 	dstate->setAttributeAndModes(depth,StateAttribute::ON );
@@ -92,7 +92,7 @@ Node *makeBase( void )
 
 	geom->setStateSet( dstate );
 
-	Geode *geode = osgNew Geode;
+	Geode *geode = new Geode;
 	geode->addDrawable( geom );
 
 	geode->setName( "Base" );

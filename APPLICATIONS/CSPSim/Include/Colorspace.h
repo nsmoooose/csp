@@ -29,9 +29,9 @@
 #ifndef __COLORSPACE_H__
 #define __COLORSPACE_H__
 
-#include <math.h>
+#include <cmath>
+#include <ostream>
 #include <assert.h>
-#include <ostream.h>
 
 
 /*
@@ -50,7 +50,7 @@ void HSV_to_RGB(float H, float S, float V, float &R, float &G, float &B);
 void HSV_check(float &H, float &S, float &V);
 float RGB_to_hue(float R, float G, float B);
 float T_to_spd(float T, float lambda);
-float T_to_xyz(float T, float &x, float &y, float &z);
+void T_to_xyz(float T, float &x, float &y, float &z);
 void uvp_to_xyz(float uprime, float vprime, float &x, float &y, float &z);
 void uvpY_to_XYZ(float uprime, float vprime, float Y_, float &X, float &Y, float &Z);
 void xy_to_uvwp(float x, float y, float &uprime, float &vprime, float &wprime);
@@ -105,6 +105,7 @@ public:
 	 */
 	const Color &operator=(const Color &color) {
 		_set_nocheck(color.a, color.b, color.c, color.space);
+		return *this;
 	}
 
 	/**
@@ -250,6 +251,33 @@ public:
 	 * Format is "[SPACE: A, B, C]".
 	 */
 	friend std::ostream &operator<<(std::ostream &os, const Color &c);
+
+	/**
+	 * Scale all components by a fixed value.
+	 */
+	void scale(float f);
+
+	/**
+	 * Blend two colors.
+	 *
+	 * @param color color to blend
+	 * @param alpha blend factor (zero is unchanged, one is copy)
+	 */
+	void blend(Color const &color, float alpha);
+
+	/**
+	 * Composite two colors.
+	 *
+	 * @param color second color
+	 * @param alpha1 amount of original color 
+	 * @param alpha2 amount of second color 
+	 */
+	void composite(Color const &color, float alpha1, float alpha2);
+
+	/**
+	 * Force components to valid ranges.
+	 */
+	void check();
 	
 private:
 

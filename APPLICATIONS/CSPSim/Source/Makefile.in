@@ -1,5 +1,7 @@
 TOPDIR = ..
 
+SUBDIRS = FX
+
 DEMETER_PREFIX = $(TOPDIR)/$(DEMETER_RELATIVE)
 DEMETER_INCLUDE = -I$(DEMETER_PREFIX)
 DEMETER_LIBRARY = -L$(DEMETER_PREFIX) -ldemeter_csp #libdemeter_csp.so #$(DEMETER_PREFIX)/libdemeter_csp.so
@@ -22,6 +24,7 @@ SOURCES = \
 	AircraftObject.cpp \
 	base.cpp \
 	BaseScreen.cpp \
+	Colorspace.cpp \
 	Config.cpp \
 	ConsoleCommands.cpp \
 	CSPSim.cpp \
@@ -42,14 +45,15 @@ SOURCES = \
 	Platform.cpp \
 	SimObject.cpp \
 	SimpleConfig.cpp \
-	sky.cpp \
+	Sky.cpp \
 	SmokeEffects.cpp \
 	StaticObject.cpp \
 	TankObject.cpp \
 	TerrainObject.cpp \
 	Tools.cpp \
 	trees.cpp \
-	VirtualBattlefield.cpp 
+	VirtualBattlefield.cpp
+	#VirtualBattlefieldScene.cpp 
 
 OBJECTS = $(SOURCES:%.cpp=%.o) 
 
@@ -120,6 +124,5 @@ CSP_wrap.o: CSP_wrap.cpp
 Makefile: Makefile.in
 	cd $(TOPDIR) && ./configure
 
-all: Makefile _CSP.so #CSPapp
-#all: build-subdirs _CSP.so 
+all: Makefile build-subdirs _CSP.so #CSPapp
 

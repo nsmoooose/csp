@@ -240,9 +240,9 @@ void CSPSim::Init()
 	ao->setVelocity(0, 120.0, 0);
 	ao->addToScene(m_Battlefield);
 	m_Battlefield->addObject(ao);
-	ao->AddSmoke();
+	//ao->AddSmoke();
 	
-	simdata::Pointer<DynamicObject> to = m_DataArchive->getObject("vehicles.tanks.t62");
+	simdata::Pointer<DynamicObject> to = m_DataArchive->getObject("vehicles.aircraft.m2k");
 	assert(to.valid());
 	to->setGlobalPosition(483000, 501000, 0);
 	to->addToScene(m_Battlefield);
@@ -286,6 +286,10 @@ void CSPSim::Cleanup()
 	m_GameScreen = NULL;
 	delete m_InterfaceMaps;
 	m_InterfaceMaps = NULL;
+	if (m_SDLJoystick) {
+		SDL_JoystickClose(m_SDLJoystick);
+		m_SDLJoystick = NULL;
+	}
 }
 
 
@@ -318,9 +322,26 @@ void CSPSim::Run()
 	m_bShowStats = false;
 	m_bFreezeSim = false;
 
-	initTime(simdata::SimDate(2002, 1, 15, 12, 0, 0));
-
+	//initTime(simdata::SimDate(2003, 2, 25, 13, 0, 0));
+	//initTime(simdata::SimDate(2003, 1, 25, 8, 33, 0)); // quarter
+	//initTime(simdata::SimDate(2003, 2, 16, 23, 33, 0)); // full
+	//initTime(simdata::SimDate(2003, 2, 27, 23, 33, 0)); // sliver
+	//initTime(simdata::SimDate(2003, 2, 14, 23, 33, 0)); // nearly full
+	//initTime(simdata::SimDate(2003, 2, 28, 4, 33, 0)); // sliver
+	//initTime(simdata::SimDate(2003, 2, 18, 3, 52, 0)); // quarter
+	std::string date_string = g_Config.getString("Testing", "Date", "2000-01-01 00:00:00.0", true);
+	simdata::SimDate date;
 	try {
+		date.parseXML(date_string.c_str());
+	} 
+	catch (...) {
+		std::cerr << "Invalid starting date in INI file (Testing:Date).\n" << std::endl; 
+		exit(1);
+	}
+	initTime(date);
+
+	try 
+	{
 		while (!m_bFinished) {
 			updateTime();
 			float dt = m_FrameTime;
@@ -446,55 +467,6 @@ void CSPSim::DoInput()
 		if (!handled && m_Interface) {
 			handled = m_Interface->OnEvent(event);
 		}
-
-#if 0
-				switch (event.key.keysym.sym) {
-				case SDLK_ESCAPE:
-				{
-					m_bFinished = TRUE;
-					break;
-				}
-				case SDLK_F9:
-				{
-					m_bConsoleDisplay = !m_bConsoleDisplay;
-					if (m_bConsoleDisplay) {
-						m_bFreezeSim = true;
-						CON_Topmost(m_pConsole);
-						SDL_EnableUNICODE(1);
-					} else {
-						m_bFreezeSim = false;
-						CON_Topmost(NULL);
-						SDL_EnableUNICODE(0);
-					}
-					break;
-				}
-				case SDLK_F10:
-				{
-					m_bShowStats = !m_bShowStats;
-					break;
-				}
-				case SDLK_p:
-				{
-					// don't do pause while in console mode.
-					if (!m_bConsoleDisplay) {
-						// todo: call m_CurrentTime.pause/unpause()
-						if (!m_bFreezeSim)
-							m_bFreezeSim = true;
-						else
-							m_bFreezeSim = false;
-					}
-				}
-				default:
-				{
-// Send the event to the console
-					if (m_bConsoleDisplay)
-						CON_Events(&event);
-					break;
-				}
-				}
-			}
-#endif
-//			break;
 	}
 
 }
@@ -554,8 +526,8 @@ int CSPSim::InitSDL()
 		return 1;
 	}
 
-	struct _SDL_Joystick *joystick = SDL_JoystickOpen(0);
-	if (joystick == NULL) {
+	m_SDLJoystick = SDL_JoystickOpen(0);
+	if (m_SDLJoystick == NULL) {
 		CSP_LOG(CSP_APP, CSP_ERROR, "Failed to open joystick");
 		CSP_LOG(CSP_APP, CSP_ERROR, SDL_GetError());
 	}
@@ -637,6 +609,12 @@ void CSPSim::ShowStats(float fps)
 
 	sprintf(framerate, "%.2f FPS min: %.2f max: %.2f", fps, minFps, maxFps);
 	DT_DrawText(framerate, m_SDLScreen, m_ConsoleFont, 1, 0);
+
+	sprintf(framerate, "%.2f FPS min: %.2f max: %.2f", fps, minFps, maxFps);
+	simdata::SimDate artificial_time = m_CurrentTime;
+	artificial_time.addTime(m_Battlefield->getSpin());
+	std::string date = "Date: " + artificial_time.asString();
+	DT_DrawText(date.c_str(), m_SDLScreen, m_ConsoleFont, 1, 20);
 
 	sprintf(buffer, "Terrain Polygons: %d", m_Battlefield->getTerrainPolygonsRendered());
 	DT_DrawText(buffer, m_SDLScreen, m_ConsoleFont, 1, m_SDLScreen->h - 160);

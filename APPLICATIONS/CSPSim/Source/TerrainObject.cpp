@@ -251,7 +251,7 @@ int TerrainObject::createTerrain()
 		if (m_DetailTextureFile.getSource() == "") {
 			m_pTerrain = new Demeter::Terrain(m_ElevationFile.getSource().c_str(),
 			                                  NULL,
-			                                  m_DetailTextureFile.getSource().c_str(), 
+			                                  NULL, 
 			                                  m_VertexSpacing,
 			                                  m_VertexHeight,
 			                                  m_MaxTriangles, 
@@ -259,7 +259,7 @@ int TerrainObject::createTerrain()
 		} else { 
 			m_pTerrain = new Demeter::Terrain(m_ElevationFile.getSource().c_str(), 
 			                                  NULL,
-			                                  NULL,
+			                                  m_DetailTextureFile.getSource().c_str(),
 			                                  m_VertexSpacing,
 			                                  m_VertexHeight,
 			                                  m_MaxTriangles, 
@@ -306,6 +306,7 @@ int TerrainObject::createTerrainLattice()
 	m_pTerrainLattice = new Demeter::TerrainLattice(m_LatticeBaseName.c_str(),
 			m_LatticeElevExt.c_str(), /*m_LatticeTexExt.c_str() */ NULL,		
 			m_DetailTextureFile.getSource().c_str(), m_VertexSpacing, m_VertexHeight, m_MaxTriangles,
+			//NULL, m_VertexSpacing, m_VertexHeight, m_MaxTriangles,
 			true, m_LatticeWidth, m_LatticeHeight);
 	
 	m_pTerrainTextureFactory = new Demeter::TerrainTextureFactory();
@@ -347,7 +348,7 @@ osg::Node* TerrainObject::createTerrainLatticeNode(Demeter::TerrainLattice* pTer
 
 //		pLatticeDrawable->setStateSet( dstate );
 
-		pGeode = osgNew osg::Geode;
+		pGeode = new osg::Geode;
 		pGeode->addDrawable(pLatticeDrawable);
 	}
 	catch(...) {
@@ -367,7 +368,7 @@ osg::Node* TerrainObject::createTerrainNode(Demeter::Terrain* pTerrain)
 	try {
 		Demeter::DemeterDrawable* pDrawable = new Demeter::DemeterDrawable;
 		pDrawable->SetTerrain(pTerrain);
-		pGeode = osgNew osg::Geode;
+		pGeode = new osg::Geode;
 		pGeode->addDrawable(pDrawable);
 	}
 	catch(...) {

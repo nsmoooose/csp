@@ -251,6 +251,9 @@ protected:
 	double m_beta;     // side slip angle
 	double m_gForce;   // current g acceleration
 	
+	double m_Gravity;  // current gravitational acceleration
+	simdata::Vector3 m_GravityWorld;        // current gravity vector in earth coordinates
+
 	simdata::Vector3 m_EulerAngles;    
 	simdata::Quaternion qOrientation;       // orientation in earth coordinates
 

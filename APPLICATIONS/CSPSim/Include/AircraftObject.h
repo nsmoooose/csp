@@ -64,6 +64,8 @@ public:
 	ACTION_INTERFACE(AircraftObject, noIncThrottle);
 	ACTION_INTERFACE(AircraftObject, DecThrottle);
 	ACTION_INTERFACE(AircraftObject, noDecThrottle);
+	ACTION_INTERFACE(AircraftObject, SmokeOn);
+	ACTION_INTERFACE(AircraftObject, SmokeOff);
 
 	AircraftObject();
 	virtual ~AircraftObject();

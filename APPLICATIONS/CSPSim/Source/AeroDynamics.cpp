@@ -324,6 +324,8 @@ void AeroDynamics::doSimStep(double dt)
 	dt /= m_Maxi; 
 
 	qBarFactor = 0.5 * CalculateAirDensity(m_PositionLocal.z) * m_WingArea;
+	m_Gravity = CalculateGravity(m_PositionLocal.z);
+	m_GravityWorld = - m_Mass * m_Gravity * simdata::Vector3::ZAXIS;
 
 	for (unsigned short modelStepNumber = 0; modelStepNumber < m_Maxi; ++modelStepNumber) {	 
 		m_VelocityBody = LocalToBody(m_VelocityLocal);
@@ -478,8 +480,7 @@ simdata::Vector3 AeroDynamics::CalculateForces( double const p_qBarS )
 	forceBody.y += m_Thrust;
 
 	// Add gravity
-	simdata::Vector3 gravityWorld = - m_Mass * CalculateGravity(m_PositionLocal.z) * simdata::Vector3::ZAXIS;
-	m_GravityBody = LocalToBody( gravityWorld );
+	m_GravityBody = LocalToBody(m_GravityWorld);
 	forceBody += m_GravityBody;
 	
 	return forceBody;

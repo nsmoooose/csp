@@ -12,7 +12,7 @@
  * was done by Mark Rose <mrose@stm.lbl.gov>.
  */
 
-#include "Color.h"
+#include "Colorspace.h"
 #include <cstdio>
 
 #define PI 3.14159265358979323846264338327950288419716939937510
@@ -502,7 +502,7 @@ static float interp(int n, float x, const float *X, const float *Y) {
  *          will result in output values of X and Y at the nearest 
  *          endpoint of the data range.
  */ 
-float T_to_xyz(float T, float &x, float &y, float &z) {
+void T_to_xyz(float T, float &x, float &y, float &z) {
 	static const int n = 53;
 	static const float Tdat[] = {
 		1000.0,  1200.0,  1400.0,  1500.0,  1600.0,
@@ -772,7 +772,7 @@ void uvpY_to_XYZ(float uprime, float vprime, float Y_, float &X, float &Y, float
  */
 void uvp_to_xyz(float uprime, float vprime, float &x, float &y, float &z) {
 	float denom = 6.0 * uprime - 16.0 * vprime + 12.0;
-	if (denom = 0.0) {
+	if (denom == 0.0) {
 		x = y = z = 0.0;
 	} else {
 		x = 9.0 * uprime / denom;
@@ -1067,5 +1067,49 @@ std::ostream &operator<<(std::ostream &os, const Color &c) {
 		<< c.getB() << ", "
 		<< c.getC() << "]";
 	return os;
+}
+
+void Color::scale(float f) {
+	a *= f; 
+	b *= f; 
+	c *= f;
+}
+
+void Color::blend(Color const &color, float alpha) {
+	composite(color, 1.0-alpha, alpha);
+}
+
+void Color::composite(Color const &color, float alpha1, float alpha2) {
+	a = a * alpha1 + color.getA() * alpha2;
+	b = b * alpha1 + color.getB() * alpha2;
+	c = c * alpha1 + color.getC() * alpha2;
+}
+
+void Color::check() {
+	switch (space) {
+		case RGB:
+			RGB_check(a, b, c);
+			break;
+		case CIExyY:
+			xyY_check(a, b, c);
+			break;
+		case CIEXYZ:
+			XYZ_check(a, b, c);
+			break;
+		case HLS:
+			HLS_check(a, b, c);
+			break;
+		case CIELuv:
+			Luv_check(a, b, c);
+			break;
+		case CMY:
+			CMY_check(a, b, c);
+			break;
+		case HSV:
+			HSV_check(a, b, c);
+			break;
+		default:
+			break;
+	}
 }
 

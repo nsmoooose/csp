@@ -2,10 +2,26 @@
 
 import sys
 
-# enable lazy loading of shared library modules
-sys.setdlopenflags(0x101)
+# enable lazy loading of shared library modules if available
+if hasattr(sys, "setdlopenflags"):
+	sys.setdlopenflags(0x101)
 
-import SimData
+try:
+	import SimData
+except:
+	print """
+ERROR: Unable to import SimData module.  
+
+Several problems can cause this error message.  First, check that 
+SimData.py, cSimData.py, and _cSimData.so are in the Python path.  
+This usually means either the current working directory or the 
+Python site-packages directory.  If these files are in the correct 
+place, the problem is probably related to missing symbols during 
+the dynamic link.  Run Python by hand and enter "import SimData"
+to see a more detailed error message.
+"""
+	sys.exit(1)
+
 import CSP
 
 config = "../Data/CSPSim.ini"
@@ -22,3 +38,4 @@ app.Cleanup()
 app.Exit()
 
 print "CSPSim normal exit."
+

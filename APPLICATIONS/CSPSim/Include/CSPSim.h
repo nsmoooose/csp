@@ -32,6 +32,7 @@
 #include "DynamicObject.h"
 
 #include <SDL/SDL.h>
+#include <SDL/SDL_joystick.h>
 #include <SDL/CON_console.h>
 
 #include <SimData/Types.h>
@@ -76,6 +77,8 @@ public:
 	void unpause();
 	void togglePause();
 
+	simdata::DataArchive * getDataArchive() { return m_DataArchive; }
+
 protected:
 	
 	void InitSim();
@@ -92,6 +95,7 @@ protected:
 private:
 
 	SDL_Surface *m_SDLScreen;
+	SDL_Joystick *m_SDLJoystick;
 
 	BaseScreen *m_CurrentScreen;
 	BaseScreen *m_PrevScreen;

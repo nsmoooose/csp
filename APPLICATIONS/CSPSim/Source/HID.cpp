@@ -148,52 +148,55 @@ bool VirtualHID::OnMouseButton(SDL_MouseButtonEvent const &event) {
 }
 
 void VirtualHID::OnUpdate(double dt) {
+	int iterations = 0;
 	if (!m_Object || !m_ActiveScript) return;
 	// wait out the delay until the next action should start
 	// strings of actions with delay = 0 will be executed in
-	// a single call of OnUpdate()
+	// a single call of OnUpdate().  a break after 100 actions
+	// occurs to prevent infinite loops from completely hanging 
+	// the sim.
 	m_ScriptTime += dt;
-	while (m_ScriptAction->time <= m_ScriptTime) {
-		const char *id = m_ScriptAction->id.c_str();
+	EventMapping::Action const *action = m_ActiveScript->getAction();
+	while (action->time <= m_ScriptTime && iterations < 100) {
+		const char *id = action->id.c_str();
 		// action time represents a relative delay instead of absolute
 		m_ScriptTime = 0.0;  
-		if (m_ScriptAction->mode >= 0) {
-			setVirtualMode(m_ScriptAction->mode);
+		if (action->mode >= 0) {
+			setVirtualMode(action->mode);
 		}
-		if (m_ScriptAction->jmod >= 0) {
-			setJoystickModifier(m_ScriptAction->jmod);
+		if (action->jmod >= 0) {
+			setJoystickModifier(action->jmod);
 		}
 		if (!m_Object->OnCommand(id, m_MouseEventX, m_MouseEventY)) {
 			std::cout << "Missing HID interface for command '" << id << "'\n";
 		}
-		/*
-		// execute the action
-		ActionAdapter adapter = m_Actions[id];
-		if (adapter) {
-			adapter(m_Object, m_MouseEventX, m_MouseEventY);
-		} else {
-			std::cout << "Missing HID interface for command '" << id << "'\n";
-		}
-		*/
 		// advance, end, or loop the script
-		int loop = m_ScriptAction->loop;
-		if (loop >= 0 && (unsigned)loop < m_ActiveScript->size()) {
-			m_ScriptAction = m_ActiveScript->begin() + loop;
-			break;
+		int loop = action->loop;
+		int stop = action->stop;
+		if (loop >= 0) {
+			m_ActiveScript->jump(loop);
 		} else {
-			if (++m_ScriptAction == m_ActiveScript->end()) {
+			if (!m_ActiveScript->advance()) {
 				m_ActiveScript = 0;
 				break;
 			}
 		}
+		if (stop) {
+			m_ActiveScript = 0;
+			break;
+		}
+		action = m_ActiveScript->getAction();
+		iterations++;
 	}
 }
 
 void VirtualHID::setScript(EventMapping::Script const *s, int x, int y) {
+	if (m_ActiveScript) {
+		m_ActiveScript->jump(0);
+	}
 	m_MouseEventX = x;
 	m_MouseEventY = y;
 	m_ActiveScript = s;
-	m_ScriptAction = s->begin();
 	m_ScriptTime = 0.0;
 	OnUpdate(0.0);
 }

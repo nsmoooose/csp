@@ -97,7 +97,7 @@ void ObjectModel::loadModel() {
 	osg::BoundingSphere s = m_Node->getBound();
 	m_BoundingSphereRadius = s.radius();
     
-	m_Transform = osgNew osg::MatrixTransform;
+	m_Transform = new osg::MatrixTransform;
 	m_Transform->setName("MODEL TRANSFORM");
 	m_Transform->addChild(m_Node.get());
 

@@ -70,51 +70,51 @@ def copy_dir(src, dst, files, verbose=0):
         dst_name = os.path.join(dst, n)
         if not os.path.isdir(src_name):
             if verbose:
-            	print "%s => %s" % (src_name, dst_name)
+                print "%s => %s" % (src_name, dst_name)
             copy_file(src_name, dst_name)
 
 def make_install(win, args):
-	lib = sysconfig.get_python_lib()
-	inc = sysconfig.get_python_inc()
-	modpath = os.path.join(lib, "SimData")
-	incpath = os.path.join(inc, "SimData")
-	localinc = os.path.normpath("Include/SimData")
-	libpath = default_libpath
-	verbose = 0
-	for arg in args:
-		if arg.startswith("--prefix="):
-			libpath = arg[9:]
-		elif arg=='-v' or arg=='--verbose':
-			verbose = 1
-	package_files = ['__init__.py', 'Debug.py', 'Parse.py', 'Compile.py']
-	if win:
-		package_files.extend(['cSimData.py', '_cSimData.dll', '_cSimData.lib'])
-		src = os.path.join("VisualStudio","cSimData.py")
-		if os.path.exists(src):
-			from distutils.file_util import copy_file
-			copy_file(src, os.path.join("SimData","cSimData.py"))
-	else:
-		package_files.extend(['cSimData.py', '_cSimData.so'])
-	try:
-		print "Installing SimData package to", modpath
-		copy_dir("SimData", modpath, package_files, verbose)
-		print "Installing SimData headers to", incpath
-		copy_dir(localinc, incpath, headers, verbose)
-		copy_dir(localinc, incpath, interfaces, verbose)
-		if not win:
-			print "Installing SimData libraries to", libpath
-			copy_dir("SimData", libpath, ['_cSimData.so', 'libSimData.a'], verbose)
-		print "Byte compiling the Python modules..."
-		import py_compile
-		for file in package_files:
-			if file.endswith(".py"):
-				script = os.path.join(modpath, file)
-				py_compile.compile(script)	
-				os.chmod(script+"c", 0644)
-	except Exception, e:
-		print e
-		sys.exit(1)
-	sys.exit(0)
+    lib = sysconfig.get_python_lib()
+    inc = sysconfig.get_python_inc()
+    modpath = os.path.join(lib, "SimData")
+    incpath = os.path.join(inc, "SimData")
+    localinc = os.path.normpath("Include/SimData")
+    libpath = default_libpath
+    verbose = 0
+    for arg in args:
+        if arg.startswith("--prefix="):
+            libpath = arg[9:]
+        elif arg=='-v' or arg=='--verbose':
+            verbose = 1
+    package_files = ['__init__.py', 'Debug.py', 'Parse.py', 'Compile.py']
+    if win:
+        package_files.extend(['cSimData.py', '_cSimData.dll', '_cSimData.lib','_cSimDatad.dll', '_cSimDatad.lib'])
+        src = os.path.join("VisualStudio","cSimData.py")
+        if os.path.exists(src):
+            from distutils.file_util import copy_file
+            copy_file(src, os.path.join("SimData","cSimData.py"))
+    else:
+        package_files.extend(['cSimData.py', '_cSimData.so'])
+    try:
+        print "Installing SimData package to", modpath
+        copy_dir("SimData", modpath, package_files, verbose)
+        print "Installing SimData headers to", incpath
+        copy_dir(localinc, incpath, headers, verbose)
+        copy_dir(localinc, incpath, interfaces, verbose)
+        if not win:
+            print "Installing SimData libraries to", libpath
+            copy_dir("SimData", libpath, ['_cSimData.so', 'libSimData.a'], verbose)
+        print "Byte compiling the Python modules..."
+        import py_compile
+        for file in package_files:
+            if file.endswith(".py"):
+                script = os.path.join(modpath, file)
+                py_compile.compile(script)  
+                os.chmod(script+"c", 0644)
+    except Exception, e:
+        print e
+        sys.exit(1)
+    sys.exit(0)
 
 class build_swig_ext(build_ext):
     
@@ -209,7 +209,7 @@ sources = [
     "Enum",
     "Exception",
     "External",
-	"FileUtility",
+    "FileUtility",
     "GeoPos",
     "HashUtility",
     "InterfaceRegistry",
@@ -241,7 +241,7 @@ headers = [
     "Exception.h",
     "Export.h",
     "External.h",
-	"FileUtility.h",
+    "FileUtility.h",
     "GeoPos.h",
     "GlibCsp.h",
     "hash_map.h",

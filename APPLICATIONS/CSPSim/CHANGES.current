@@ -1,6 +1,52 @@
 Version 0.3.3 (in progress)
 ===========================
 
+2003-06-19: delta
+
+==========> GCC USERS: add Engine.cpp, BaseDynamics.cpp, Collision.cpp,
+	    PrimaryAeroDynamics.cpp (and remove AeroDynamics.cpp from),
+	    PhysicModel.cpp, AircraftPhysicModel.cpp to the project.
+
+==========> ALL USERS: update APPLICATIONS/CSPSim/Tools/HID/Maps/aircraft-core.map 
+	    and APPLICATIONS/CSPSim/Data/XML/vehicles/aircraft directory then
+	    (python) map2hid aircraft.map and RebuildData(.py).
+
+	    Fixed a depth buffer bug on info view.
+	    Added some optimize calls in VirtualScene.cpp and ObjectModel.cpp.
+	    Added a basic Engine class (it uses F4 data from SP3).    
+	    Added BaseDynamics.cpp to the project which is a base class for 
+	    dynamics.  
+	    Added a GearDynamics class (and removed old one).
+	    Added a post built step in .net project to copy 
+	    VisualStudio/CSPSim*/cCSP.py to Bin.
+	    Added a basic ground Collision class.
+	    Added #ifndef CSP_NDEBUG/#endif blocks to avoid warnings in case 
+	    it s defined in CSPSim.cpp (due to macro CSP_LOG).
+	    Added an altitude information in GeneralStats.
+	    Added a premice of multi smoke_emitter_location support (see 
+	    Engine class).
+	    Hacked debug markers code to gear up/down 'g', and toggle markers 
+	    with 'm'.
+	    Added PrimaryAeroDynamics classes in replacement to AeroDynamics. 
+	    Added AircraftPhysicModel.cpp to the project (it is not entirely 
+	    clear if this derived class will subsist).
+	    Added a serialized class AircraftDynamics which encapsulates 
+	    dynamic aircraft classes.
+	    Distinguished between air speed and speed in aircraft stats and 
+	    general stats.
+	    In an attempt to limit fps drop with info on screen, InfoView will 
+	    be updated only every x (at the moment 5) frame and a 
+	    setDisplayList(false) has 
+	    been added to every text on screen. Need feedback from users about 
+	    that. Also, some "static" osgText::Texts take place in Framerate ...
+	    Removed #include "windows.h" in CSPSim.cpp.
+	    Changed position - attitude initialization.
+	    Changed /Zm1000 to 200.
+	    Moved enabling/disabling smoke osg code into SceneModel.
+	    Made SceneModel to derive from simdata::Referenced.
+	    Made ~ScreenInfo() protected (and its subsequent children); same for
+	    ~SmokeTrailSystem() and ~SceneModel().
+
 2003-05-04: delta
 	    Added a naive control of camera such that it keeps above ground.
 	    Updated .net project. 

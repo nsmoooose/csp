@@ -732,7 +732,7 @@ namespace { \
  *  See @ref InterfaceMacros for details.
  */
 #define SIMDATA_REGISTER_INNER_INTERFACE(prefix, classname) \
-	SIMDATA(ObjectInterface)<classname> *prefix::classname::classname##InterfaceProxy::_interface = 0; \
+	SIMDATA(ObjectInterface)<prefix::classname> *prefix::classname::classname##InterfaceProxy::_interface = 0; \
 namespace { \
 	prefix::classname::classname##InterfaceProxy __##prefix##_##classname##_interface; \
 } /* anonymous namespace */

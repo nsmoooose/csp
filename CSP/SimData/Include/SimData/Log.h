@@ -59,6 +59,7 @@ enum {
 	LOG_ARCHIVE   = 0x00000002,
 	LOG_REGISTRY  = 0x00000004,
 	LOG_THREAD    = 0x00000008,
+	LOG_TIME      = 0x00000010,
 	LOG_ALL       = 0xffffffff
 };
 

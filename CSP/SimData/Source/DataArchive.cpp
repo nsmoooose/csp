@@ -33,9 +33,6 @@
 NAMESPACE_SIMDATA
 
 
-DataArchive* DataArchive::defaultArchive = 0;
-
-
 /*
 long DataArchive::_getOffset() { return ftell(_f); } // for Python use only
 FP DataArchive::_filePointer() {
@@ -235,18 +232,7 @@ DataArchive::~DataArchive() {
 		writeTable();
 	}
 	if (_f != 0) fclose(_f);
-	if (defaultArchive == this) defaultArchive = 0;
 }
-
-void DataArchive::setDefault() {
-	defaultArchive = this;
-}
-
-
-DataArchive *DataArchive::getDefault() {
-	return defaultArchive;
-}
-
 
 void DataArchive::addObject(Object& a, std::string const &path) {
 	if (!_is_read && !_finalized) {
@@ -259,7 +245,6 @@ void DataArchive::addObject(Object& a, std::string const &path) {
 		_addEntry(offset, length, a.getClassHash(), path);
 	}
 }
-
 
 const LinkBase DataArchive::getObject(std::string const &path) {
 	return getObject(Path(path), path);

@@ -27,11 +27,16 @@
 #ifndef __SIMDATA_TIMING_H__
 #define __SIMDATA_TIMING_H__
 
+#include <SimData/ExceptionBase.h>
 #include <SimData/Export.h>
 #include <SimData/Namespace.h>
 
 
 NAMESPACE_SIMDATA
+
+/// Exception: Errors related to time measurement and syncronization.
+SIMDATA_EXCEPTION(TimerError)
+
 
 /////////////////////////////////////////////////////////////
 // 'fast' timing routines (1-2 msec accuracy)
@@ -58,11 +63,45 @@ double SIMDATA_EXPORT tval();
 
 /** Return the current time in seconds.
  *
- *  The offset is platform dependent, so do not use this value for
- *  absolute time.
+ *  The offset is platform dependent, so do not use this value for absolute time.
  */
 SIMDATA_EXPORT timing_t get_realtime();
 
+/** Return seconds since the Unix epoch (1970-01-01T00:00:00Z).  The resolution is
+ *  system dependenent, varying from a few usec on Linux to about 15 ms on WinXP.
+ *  If the system time is accurate (e.g. using NTP), this provides a good but non-
+ *  realtime measure of the true time.
+ */
+SIMDATA_EXPORT double getSecondsSinceUnixEpoch();
+
+/** Calibrate the high-performance counter used for high-resolution timing.  The
+ *  first call establishes the offset between system time and the CPU counter.
+ *  Subsequent calls adjust the counter frequency estimate.
+ *
+ *  On Windows, the first call to this function can block for up to about 150 ms,
+ *  and subsequent calls can block for about 15 ms.  This method should be called
+ *  frequently, as it schedules the actual calibration events internally.  These
+ *  events initally occur every few seconds, with the interval doubling each time
+ *  until a steady rate of about one event per hour is reached.  So even calling
+ *  this function as often as 100 times per second (e.g. in the main simulation
+ *  loop) should produce negligible overhead.
+ *
+ *  This function is a noop on Unix.
+ */
+SIMDATA_EXPORT void calibrateRealTime();
+
+/** Get the current time, in seconds.  Like getSecondsSinceUnixEpoch, the time
+ *  value is relative to the Unix epoch.  Unlike getSecondsSinceUnixEpoch, the
+ *  resolution is a few microseconds on most platforms (including Windows).
+ *  On Windows, the time should agree with the system time to within a few tens
+ *  of ms, provided that the system time and high-performance counters are
+ *  stable.  On Linux this function simply wraps gettimeofday, giving the
+ *  system time with us resolution on most architectures.
+ *
+ *  NB: to obtain accurate calibrated times, you should call calibrateRealTime
+ *  periodically.
+ */
+SIMDATA_EXPORT double getCalibratedRealTime();
 
 /** A simple timing class with standard stopwatch functions.  The
  *  timing precision is equivalent to get_realtime().

@@ -731,7 +731,7 @@ public:
 	 */
 	SimDate(): DateZulu(), BaseType() {
 		paused = false;
-		last_update = get_realtime();
+		last_update = getCalibratedRealTime();
 		setReferenceTime(getTime());
 	}
 
@@ -748,7 +748,7 @@ public:
 		DateZulu(year, month, day, hour, minute, second),
 		BaseType() {
 		paused = false;
-		last_update = get_realtime();
+		last_update = getCalibratedRealTime();
 		setReferenceTime(getTime());
 	}
 
@@ -763,18 +763,18 @@ public:
 		DateZulu(julian, hour, minute, second),
 		BaseType() {
 		paused = false;
-		last_update = get_realtime();
+		last_update = getCalibratedRealTime();
 		setReferenceTime(getTime());
 	}
 
 	/** Copy constructor.
 	 *
-	 *  The new SimDate will be unpaused, regardless of the paused
-	 *  state of the source SimDate.
+	 *  The new SimDate will be unpaused, regardless of the paused state of
+	 *  the source SimDate.
 	 */
 	SimDate(const SimDate &d): DateZulu(d), BaseType(d) {
 		paused = false;
-		last_update = get_realtime();
+		last_update = getCalibratedRealTime();
 		setReferenceTime(getTime());
 	}
 
@@ -811,23 +811,23 @@ public:
 
 	/** Return the current system clock.
 	 *
-	 *  @returns the system time in seconds (~ 3 millisecond
-	 *           accuracy).
+	 *  @returns the system time in seconds since the Unix epoch
+	 *    (microsecond resolution on most systems).
 	 */
-	static SimTime getSystemTime() {
-		return get_realtime();
+	inline static SimTime getSystemTime() {
+		return getCalibratedRealTime();
 	}
 
 	/** Update the current simulation time.
 	 *
-	 *  Called by the simulation loop to update the current
-	 *  simulation time using the system clock.  Time rolls
-	 *  over past midnight and updates the date.  Don't go
-	 *  for more than 24 hrs without calling this or you
-	 *  may lose a day of simulation time.
+	 *  Called by the simulation loop to update the current simulation time
+	 *  using the realtime clock.  Time rolls over past midnight and updates
+	 *  the date.  Don't go for more than 24 hrs without calling this or you
+	 *  may lose a day of simulation time.  For accurate timing, this method
+	 *  should be called at least once per minute.  In fact it can be called
+	 *  many times per second with negligible overhead.
 	 *
-	 *  @returns the elapsed time since the last call in
-	 *           seconds.
+	 *  @returns the elapsed time since the last call in seconds.
 	 */
 	double update();
 
@@ -850,7 +850,7 @@ public:
 	 *         (seconds: 0-86400)
 	 */
 	void setReferenceTime(SimTime target) {
-		reference = get_realtime() - target;
+		reference = getCalibratedRealTime() - target;
 	}
 
 	/** Pause further time updates.
@@ -860,7 +860,7 @@ public:
 	 */
 	void pause() {
 		paused = true;
-		pause_time = get_realtime();
+		pause_time = getCalibratedRealTime();
 	}
 
 	/** Restore time updates.

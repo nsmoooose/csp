@@ -61,17 +61,113 @@ NAMESPACE_SIMDATA
 
 	timing_t get_realtime() {
 		static double scale;
-		static int first = 1;
+		static bool first = true;
 		LARGE_INTEGER x;
 		double now;
 		if (first) {
 			QueryPerformanceFrequency(&x);
-			first = 0;
+			first = false;
 			scale = 1.0 / (double)x.QuadPart;
 		}
 		QueryPerformanceCounter(&x);
 		now = (double)x.QuadPart;
 		return (timing_t) (now * scale);
+	}
+
+	// Return seconds since the Unix epoch (1970-01-01T00:00:00Z), with an accuracy of
+	// about 16 msec (limited by the 64 Hz timer tick rate under WinXP).
+	double getSecondsSinceUnixEpoch() {
+		FILETIME filetime;
+		GetSystemTimeAsFileTime(&filetime);
+		uint64 date_time = (static_cast<uint64>(filetime.dwHighDateTime) << 32) | static_cast<uint64>(filetime.dwLowDateTime);
+		// convert from hectonanoseconds since 1601-01-01T00:00:00Z to milliseconds since 1970-01-01T00:00:00Z
+		return 1e-7 * (date_time - SIMDATA_ULL(116444736000000000));
+	}
+
+	static uint64 first_counter = 0;
+	static uint64 first_time = 0;
+	static double counter_scale = 0.0;
+	static double counter_offset = 0.0;
+	static int calibrations = 0;
+	static uint64 next_calibration = 0;
+	static double calibration_iterval = 10.0;
+
+	inline uint64 cvt_largeint(LARGE_INT const &x) {
+		return (static_cast<uint64>(x.dwHighDateTime) << 32) | static_cast<uint64>(x.dwLowDateTime);
+	}
+
+	inline uint64 getPerformanceFrequency() {
+		LARGE_INTEGER frequency;
+		if (!QueryPerformanceFrequency(&frequency)) {
+			throw TimerError("QueryPerformanceFrequency failed");
+		}
+		return static_cast<uint64>(frequency.QuadPart);
+	}
+
+	inline uint64 getPerformanceCounter() {
+		LARGE_INTEGER counter;
+		if (!QueryPerformanceCounter(&counter)) {
+			throw TimerError("QueryPerformanceCounter failed");
+		}
+		return static_cast<uint64>(counter.QuadPart);
+	}
+
+	void calibrateRealTime() {
+		int max_tries = 1;
+		uint64 counter;
+		if (calibrations == 0) {
+			counter_scale = 1.0 / static_cast<double>(getPerformanceFrequency());
+			max_tries = 10;
+		} else {
+			if (getPerformanceCounter() < next_calibration) return;
+		}
+		FILETIME start_time, update_time;
+		GetSystemTimeAsFileTime(&start_time);
+		// blocks for up to max_tries * 16 ms on WinXP (assuming 64Hz timer tick)
+		for (int tries = 0; tries < max_tries; ) {
+			LARGE_INTEGER lock_counter = getPerformanceCounter();
+			GetSystemTimeAsFileTime(&update_time);
+			if (update_time != start_time) {
+				counter = getPerformanceCounter();
+				// make sure we weren't interrupted between getting the system time and the counter
+				if ((cvt_largeint(counter) - cvt_largeint(lock_counter)) * counter_scale <= 0.0001) break;
+				// make sure we weren't interrupted for more than one timer tick.  it's still
+				// possible that we could be interrupted for less than 20 ms, causing jitter.
+				// not much to do about that, except to hope that the return of control to
+				// this thread corresponded to a timer tick event so that we are at the start
+				// of the tick window.
+				if ((update_time - start_time) < SIMDATA_ULL(200000) /* 20 ms */) break;
+				// we were probably interrupted (>100us between GSTAFT and QPC), so try again
+				++tries;
+			}
+		}
+		if (tries >= max_tries) {
+			if (calibrations == 0) {
+				throw TimerError("Unable to calibrate high resolution timer using system time");
+			}
+			SIMDATA_LOG(TIME, ERROR, "High resolution timer calibration failed");
+		} else {
+			if (calibrations++ == 0) {
+				first_counter = static_cast<uint64>(counter.QuadPart);
+				first_time = cvt_largeint(update_time);
+				counter_offset = 1e-7 * static_cast<double>(first_time - SIMDATA_ULL(116444736000000000));
+			} else {
+				uint64 elapsed_count = static_cast<uint64>(counter.QuadPart) - first_counter;
+				uint64 elapsed_time = cvt_largeint(update_time);
+				double new_scale = static_cast<double>(elapsed_time) * 1e-7 / elapsed_count;
+				// bump the offset to keep the current calibrated time continuous
+				counter_offset += elapsed_count * (counter_scale - new_scale);
+				counter_scale = new_scale;
+				if (calibration_interval < 3600.0) calibration_interval *= 2.0;
+			}
+		}
+		// schedule the next calibration
+		next_calibration = counter.QuadPart + static_cast<LONGLONG>(calibration_iterval / counter_scale);
+	}
+
+	double getCalibratedRealTime() {
+		if (calibrations == 0) calibrateRealTime();
+		return counter_offset + (getPerformanceCounter() - first_counter) * counter_scale;
 	}
 
 #else
@@ -100,6 +196,13 @@ NAMESPACE_SIMDATA
 		gettimeofday(&now, &tz_);
 		return (timing_t) ((double)now.tv_sec + (double)now.tv_usec*1.0e-6);
 	}
+
+	// Return seconds since the Unix epoch (1970-01-01T00:00:00Z), with an accuracy of
+	// a few usec (uses gettimeofday).
+	double getSecondsSinceUnixEpoch() { return get_realtime(); }
+
+	void calibrateRealTime() {}
+	double getCalibratedRealTime() { return get_realtime(); }
 
 #endif
 

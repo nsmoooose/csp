@@ -174,6 +174,8 @@ VirtualScene::VirtualScene()
 	m_FarView = NULL;
 	m_NearView = NULL;
 	m_ViewAngle = 60.0;
+	m_NearPlane = 2.0;
+	m_Aspect =  static_cast<float>(g_ScreenWidth)/g_ScreenHeight;
 	m_ViewDistance = 30000.0;
 	m_SpinTheWorld = false;
 	m_ResetTheWorld = false;
@@ -392,8 +394,7 @@ int VirtualScene::drawScene()
 	osg::Camera * camera = m_FarView->getCamera();
 	camera->setPerspective(m_ViewAngle, 1.0, 2.0f, m_ViewDistance);
 #else
-	float aspect = ((float)g_ScreenWidth) / g_ScreenHeight;
-	m_FarView->setProjectionMatrixAsPerspective(m_ViewAngle, aspect, 2.0f, m_ViewDistance);
+	m_FarView->setProjectionMatrixAsPerspective(m_ViewAngle, m_Aspect, m_NearPlane, m_ViewDistance);
 #endif
 	CullVisitor = m_FarView->getCullVisitor();
 	CullVisitor->setComputeNearFarMode(osgUtil::CullVisitor::COMPUTE_NEAR_FAR_USING_BOUNDING_VOLUMES);
@@ -407,7 +408,7 @@ int VirtualScene::drawScene()
 #ifdef CSP_OSG_094
 		camera->setPerspective(m_ViewAngle, 1.0, 0.01f, 100.0);
 #else
-		m_NearView->setProjectionMatrixAsPerspective(m_ViewAngle, aspect, 0.01f, 100.0);
+		m_NearView->setProjectionMatrixAsPerspective(m_ViewAngle, m_Aspect, 0.01f, 100.0);
 #endif
 		CullVisitor = m_NearView->getCullVisitor();
 		CullVisitor->setComputeNearFarMode(osgUtil::CullVisitor::COMPUTE_NEAR_FAR_USING_BOUNDING_VOLUMES);
@@ -478,37 +479,6 @@ void VirtualScene::setLookAt(simdata::Vector3 & eyePos, simdata::Vector3 & lookP
 	m_FarView->setViewMatrixAsLookAt(osg::Vec3(0.0, 0.0, 0.0), simdata::toOSG(lookPos - eyePos), _up);
 	m_NearView->setViewMatrixAsLookAt(osg::Vec3(0.0, 0.0, 0.0), simdata::toOSG(lookPos - eyePos), _up);
 #endif
-
-/*****
-* code which could be used in replacement of osg::camera
-******/
-
-//osgUtil::SceneView contains all the functionality of the "old" 
-//osg::Camera.  When you think "Camera" and "No Producer", use 
-//osgUtil::SceneView and osg::RefMatrix:
-//
-//
-//  osg::ref_ptr<osg::RefMatrix> projectionMatrix = new osg::RefMatrix;
-//
-//  double verticalFieldOfView = 45.0; // Degrees
-//  double aspectRatio = 1.0;          // verticalFOV == horizontalFOV
-//  double nearClip = 1.0;
-//  double farClip  = 1e4;
-//  projectionMatrix->makeProjection( verticalFieldOfView,
-//                                   aspectRatio,
-//                                   nearClip, farClip );
-//
-//  osg::BoundingSphere bs = rootNode->getBound(); 
-//  osg::ref_ptr<osg::RefMatrix> modelViewMatrix  = new osg::RefMatrix;
-//  modelViewMatrix->setLookAt( 
-//        bs.center() - osg::Vec3(0.0, bs.radius()*2.5, 0.0),  // Eye
-//        bs.center(),                                         // Center
-//        osg::Vec3(0,0,1.0) );                                // Up
-//  
-//  // Here it is.  The next two lines is the sum total of what 
-//  // osgCamera did.
-//  sceneView->setProjectionMatrix( projectionMatrix.get() );
-//  sceneView->setModelViewMatrix( modelViewMatrix.get() );
 
 	m_GlobalFrame->setPosition(simdata::toOSG(-eyePos));
 
@@ -743,6 +713,14 @@ void VirtualScene::setViewDistance(float value)
 void VirtualScene::setViewAngle(float value)
 {
 	m_ViewAngle = value;
+}
+
+void VirtualScene::setNearPlane(float value) {
+	m_NearPlane = value;
+}
+
+void VirtualScene::setAspect(float value) {
+	m_Aspect = value;
 }
 
 void VirtualScene::spinTheWorld(bool spin) {

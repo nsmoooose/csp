@@ -21,12 +21,14 @@
 			CharacterSet="2">
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalOptions="/Zm1000"
 				Optimization="0"
-				AdditionalIncludeDirectories="C:\Python23\include;..\..\Include;..\..\..\..\THIRDPARTYLIBS\demeter;..\..\..\..\THIRDPARTYLIBS\CSPChunkLod\include"
-				PreprocessorDefinitions="WIN32;_DEBUG;_USRDLL;CSPSIMDLL_EXPORTS"
+				ImproveFloatingPointConsistency="FALSE"
+				AdditionalIncludeDirectories="C:/Python23/include;../../Include;../../../../THIRDPARTYLIBS/demeter;../../../../THIRDPARTYLIBS/CSPChunkLod/include"
+				PreprocessorDefinitions="WIN32;_USRDLL;CSPSIMDLL_EXPORTS"
+				StringPooling="FALSE"
 				BasicRuntimeChecks="3"
-				RuntimeLibrary="3"
+				RuntimeLibrary="2"
+				BufferSecurityCheck="FALSE"
 				RuntimeTypeInfo="TRUE"
 				PrecompiledHeaderFile=".\Debug/CSPSimDLL.pch"
 				AssemblerListingLocation=".\Debug/"
@@ -36,21 +38,22 @@
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				DebugInformationFormat="3"
-				CompileAs="0"/>
+				CompileAs="2"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="sigc-1.2d.lib producerd.lib opengl32.lib SDL.lib osgDBd.lib DemeterVisualC6d.lib osgTextd.lib osgUtild.lib osgParticled.lib osgd.lib _cSimDatad.lib odbc32.lib odbccp32.lib"
-				OutputFile="../../Bin/_cCSPd.dll"
+				AdditionalDependencies="osgChunkLodd.lib osgFXd.lib sigc-1.2d.lib producerd.lib opengl32.lib SDL.lib osgDBd.lib DemeterVisualC6d.lib osgTextd.lib osgUtild.lib osgParticled.lib osgd.lib _cSimData.lib"
+				OutputFile="../../Bin/_cCSP.dll"
 				LinkIncremental="2"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="C:/Python23/Lib/site-packages/SimData,C:/Python23/libs, ../../../../THIRDPARTYLIBS/lib"
-				IgnoreDefaultLibraryNames="msvcrt.lib"
+				IgnoreDefaultLibraryNames=""
 				GenerateDebugInformation="TRUE"
 				ProgramDatabaseFile=".\Debug/CSPSimDLL.pdb"
-				ImportLibrary=".\Debug/CSPSimDLL.lib"/>
+				ImportLibrary=".\Debug/CSPSimDLL.lib"
+				TargetMachine="1"/>
 			<Tool
 				Name="VCMIDLTool"
 				PreprocessorDefinitions="_DEBUG"
@@ -90,13 +93,19 @@
 			CharacterSet="2">
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalOptions="/Zm1000"
-				InlineFunctionExpansion="1"
+				Optimization="3"
+				GlobalOptimizations="TRUE"
+				InlineFunctionExpansion="2"
+				EnableIntrinsicFunctions="TRUE"
+				FavorSizeOrSpeed="1"
+				OptimizeForProcessor="3"
 				AdditionalIncludeDirectories="C:/Python23/include;../../Include;../../../../THIRDPARTYLIBS/demeter;../../../../THIRDPARTYLIBS/CSPChunkLod/include"
 				PreprocessorDefinitions="WIN32;NDEBUG;_USRDLL;CSPSIMDLL_EXPORTS"
 				StringPooling="TRUE"
 				RuntimeLibrary="2"
+				BufferSecurityCheck="FALSE"
 				EnableFunctionLevelLinking="TRUE"
+				EnableEnhancedInstructionSet="1"
 				RuntimeTypeInfo="TRUE"
 				PrecompiledHeaderFile=".\Release/CSPSimDLL.pch"
 				AssemblerListingLocation=".\Release/"
@@ -117,7 +126,7 @@
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="../../../../THIRDPARTYLIBS/lib,C:/Python23/libs,C:/Python23/Lib/site-packages/SimData"
-				GenerateDebugInformation="TRUE"
+				GenerateDebugInformation="FALSE"
 				AssemblyDebug="0"
 				GenerateMapFile="FALSE"
 				MapExports="FALSE"
@@ -158,7 +167,7 @@
 	<Files>
 		<Filter
 			Name="Source Files"
-			Filter="cpp;c;cxx;rc;def;r;odl;idl;hpj;bat">
+			Filter="cpp;cc;c;cxx;rc;def;r;odl;idl;hpj;bat">
 			<File
 				RelativePath="..\..\Source\AircraftObject.cpp">
 			</File>
@@ -199,12 +208,6 @@
 			</File>
 			<File
 				RelativePath="..\..\Source\ChunkLodTerrain.cpp">
-				<FileConfiguration
-					Name="Debug|Win32"
-					ExcludedFromBuild="TRUE">
-					<Tool
-						Name="VCCLCompilerTool"/>
-				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\Source\Collision.cpp">

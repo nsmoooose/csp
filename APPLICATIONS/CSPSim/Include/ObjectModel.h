@@ -92,6 +92,7 @@ public:
 
 	osg::ref_ptr<osg::Node> getModel() { return m_Model.get(); }
 	osg::ref_ptr<osg::Node> getDebugMarkers() { return m_DebugMarkers.get(); }
+	osg::ref_ptr<osg::Node> getGearSprites() { return m_GearSprites.get(); }
 	std::string getModelPath() const { return m_ModelPath.getSource(); }
 
 	const simdata::Vector3 &getAxis0() const { return m_Axis0; }

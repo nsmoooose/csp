@@ -607,11 +607,11 @@ private:
 
 osg::Node *addEffect(osg::Node *model_node) {
 	// add an osgFX effect
-	osgFX::SpecularHighlights* effect = new osgFX::SpecularHighlights;
+	osgFX::SpecularHighlights *effect = new osgFX::SpecularHighlights;	
 	effect->setTextureUnit(1);
 	effect->addChild(model_node);
 	return effect;
-}
+}	
 
 SceneModel::SceneModel(simdata::Ref<ObjectModel> const & model) {
 	m_Model = model;
@@ -624,8 +624,9 @@ SceneModel::SceneModel(simdata::Ref<ObjectModel> const & model) {
 
 	// create a working copy
 	ModelCopy model_copy;
-	//model_node = model_copy(model_node);
-	model_node = model_copy(addEffect(model_node));
+	model_node = model_copy(model_node);
+	// XXX add effect or not
+	model_node = addEffect(model_node);
 
 	std::cout << "MODEL COPIED\n";
 

@@ -210,7 +210,7 @@ void VirtualHID::onUpdate(double dt) {
 		}
 		if (*id) {
 			if (!m_Object->onMapEvent(MapEvent::CommandEvent(id, m_MouseEventX, m_MouseEventY))) {
-				std::cout << "Missing HID interface for command '" << id << "'\n";
+				std::cout << "VirtualHID::onUpdate: Missing HID interface for command '" << id << "'\n";
 			}
 		}
 		// advance, end, or loop the script

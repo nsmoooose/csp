@@ -35,7 +35,7 @@
 
 #include <SimData/FileUtility.h>
 
-#include <assert.h>
+#include <cassert>
 
 
 
@@ -64,16 +64,13 @@ void EventMapIndex::load(std::string const &path) {
 }
 
 void EventMapIndex::loadAllMaps() {
-	std::string path;
-	osgDB::DirectoryContents dc;
-	osgDB::DirectoryContents::iterator file;
-	path = getConfigPath("InputMapPath");
+	std::string path = getConfigPath("InputMapPath");
 	CSP_LOG(APP, INFO, "Looking for human interface device mappings in '" << path << "'");
-	dc = osgDB::getDirectoryContents(path);
-	for (file = dc.begin(); file != dc.end(); file++) {
+	osgDB::DirectoryContents dc = osgDB::getDirectoryContents(path);
+	for (osgDB::DirectoryContents::const_iterator file = dc.begin(); file != dc.end(); ++file) {
 		std::string fn = simdata::ospath::join(path, *file);
-		if (osgDB::getFileExtension(fn) != "hid") continue;
-		load(fn);
+		if (osgDB::getFileExtension(fn) == "hid") 
+			load(fn);
 	}
 }
 

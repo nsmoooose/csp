@@ -24,9 +24,8 @@ map key:MINUS   release         STOP_DEC_THROTTLE
 map key:s       press           SMOKE_TOGGLE
 map key:w       press           WHEEL_BRAKE_ON
 map key:w       release         WHEEL_BRAKE_OFF
-map key:m       press           MARKERS_TOGGLE
+map key:m       press           MARKS_TOGGLE
 map key:g       press           GEAR_TOGGLE
 map key:b       press           OPEN_AIRBRAKE/B|CLOSE_AIRBRAKE/B
 map key:SHIFT-b press           INC_AIRBRAKE
-map key:CTRL-b  press		DEC_AIRBRAKE
-
+map key:CTRL-b  press           DEC_AIRBRAKE

@@ -103,6 +103,11 @@ public:
 	void setCameraNode(osg::Node *);
 	inline float getViewAngle() const { return m_ViewAngle; }
 	void setViewAngle(float);
+	inline float getNearPlane() const {return m_NearPlane;}
+	void setNearPlane(float value);
+	inline float getAspect() const {return m_Aspect;}
+	void setAspect(float value);
+	
 
 	void spinTheWorld(bool spin);
 	void resetSpin();
@@ -122,6 +127,8 @@ protected:
 
 	float m_ViewDistance;
 	float m_ViewAngle;
+	float m_NearPlane; // of the near view
+	float m_Aspect; // of the near view
 	
 	float m_FogStart;
 	float m_FogEnd;

@@ -55,7 +55,7 @@ AircraftObject::AircraftObject(): DynamicObject() {
 	BIND_ACTION("SMOKE_ON", SmokeOn);
 	BIND_ACTION("SMOKE_OFF", SmokeOff);
 	BIND_ACTION("SMOKE_TOGGLE", SmokeToggle);
-	BIND_ACTION("MARKERS_TOGGLE", MarkersToggle);
+	BIND_ACTION("MARKS_TOGGLE", MarkersToggle);
 
 	CSP_LOG(OBJECT, DEBUG, "... AircraftObject::AircraftObject()");
 }

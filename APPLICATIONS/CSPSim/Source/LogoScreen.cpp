@@ -131,7 +131,7 @@ void LogoScreen::onInit() {
 	// disable display list so our modified tex show up
     geom->setUseDisplayList(false);
 
-	scale = 0.5f * 0.9f;
+	scale = 0.5f * 1.0f;
 	w = scale * m_width;
 	h = scale * m_height;
     osg::Vec3Array* vertices = new osg::Vec3Array(4);

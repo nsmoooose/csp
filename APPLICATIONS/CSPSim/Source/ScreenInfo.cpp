@@ -80,8 +80,8 @@ ScreenInfo::ScreenInfo(float pos_x, float pos_y, std::string const &name, std::s
 	// are turned on:
 	osg::StateSet *ss = getOrCreateStateSet();
 	ss->setTextureAttributeAndModes(1, new osg::Texture2D, osg::StateAttribute::OFF);
-	ss->setTextureAttributeAndModes(2, new osg::Texture2D, osg::StateAttribute::OFF);
-	ss->setTextureAttributeAndModes(3, new osg::Texture2D, osg::StateAttribute::OFF);
+	//ss->setTextureAttributeAndModes(2, new osg::Texture2D, osg::StateAttribute::OFF);
+	//ss->setTextureAttributeAndModes(3, new osg::Texture2D, osg::StateAttribute::OFF);
 }
 
 osgText::Text *ScreenInfo::makeText(float pos_x, float pos_y, std::string const &string_text) {

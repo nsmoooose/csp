@@ -303,7 +303,8 @@ simdata::Vector3 GameScreen::getNewFixedCamPos(SimObject * const target) const
 	if (dynamic) {
 		simdata::Vector3 upVec = dynamic->getUpDirection();
 		simdata::Vector3 objectDir = dynamic->getDirection();
-		camPos = objectPos + 500.0 * objectDir + ( 12.0 - (rand() % 5) ) * (objectDir^upVec) 
+		double speed_level = dynamic->getSpeed()/50.0;
+		camPos = objectPos + 900.0* objectDir + ( 12.0 - (rand() % 5) ) * (objectDir^upVec) 
 			    + ( 6.0 + (rand () % 3) ) * upVec;
 	} else {
 		camPos = objectPos + 100.0 * simdata::Vector3::ZAXIS + 100.0 * simdata::Vector3::XAXIS;
@@ -769,13 +770,16 @@ void GameScreen::setCamera(double dt)
 		break;
 	}
 	}    
-
-	VirtualBattlefield *battlefield = CSPSim::theSim->getBattlefield();
-	if (battlefield) {
-		float h = 1.0 + battlefield->getGroundElevation(eyePos.x(), eyePos.y(), m_CameraHint);
+		VirtualBattlefield *battlefield = CSPSim::theSim->getBattlefield();
+		if (battlefield) {
+		simdata::Ref<TerrainObject> const terrain = scene->getTerrain();
+		simdata::Vector3 normal;
+		double const SAFETY = 1.0;
+		float h = SAFETY + terrain->getGroundElevation(eyePos.x(), eyePos.y(), normal, m_CameraHint);
 		m_CameraOnGround = (eyePos.z() <= h);
 		if (m_CameraOnGround) {
 			if (m_LookRelative) {
+				
 				simdata::Vector3 adjustment = eyePos - lookPos;
 				double dh = h - lookPos.z();
 				adjustment.z() = 0.0;
@@ -788,9 +792,46 @@ void GameScreen::setCamera(double dt)
 				// camera off the ground... pass on that for now.
 				//m_CameraGroundAngle = asin(dh, m_disToObject) - asin(dz, m_disToObject);
 				//m_PanRateX = 0.0;
-			} else {
-				eyePos.z() = h;
-			}
+				
+				/*double alpha_2 = simdata::toRadians(scene->getViewAngle())/2.0;
+				double near_dist = scene->getNearPlane();
+				double aspect = scene->getAspect();
+				simdata::Vector3 eye_look = lookPos - eyePos;
+				double eye_look_length = eye_look.length();
+				simdata::Vector3 eye_look_unit = (1.0/eye_look_length)*eye_look;
+				simdata::Vector3 up_vec_unit = upVec.normalized();
+				simdata::Vector3 edge=near_dist*eye_look_unit+tan(alpha_2)*near_dist*(up_vec_unit+aspect*eye_look_unit^up_vec_unit);
+				double edge_length = edge.length();
+				double phi = acos(near_dist/edge_length);
+				double b = sqrt(edge_length*edge_length
+							   +eye_look_length*eye_look_length-2.0*eye_look_length*edge_length*cos(phi));
+				double sin_beta = edge_length*sin(phi)/b; 
+				double sin_theta = (lookPos.z()-terrain->getGroundElevation(lookPos.x(),lookPos.y(),m_CameraHint))/b;
+				double gamma = asin(sin_beta)-asin(sin_theta);
+				if (gamma <=0) {
+					simdata::Vector3 u = -cos(gamma)*simdata::Vector3(eye_look.x(),eye_look.y(),0.0).normalized()
+										+sin(gamma)*normal;
+					simdata::Vector3 safe_eye_pos = lookPos + eye_look_length*u;
+					safe_eye_pos.z() += SAFETY;
+					if (eyePos.z() < safe_eye_pos.z()) {
+						static i = 0;
+						//std::cout << "\nold eyePos = " << eyePos << "\n";
+						//std::cout << "ground at eyePos = " << terrain->getGroundElevation(eyePos.x(), eyePos.y(), normal, m_CameraHint) << "\n";
+						if (++i%30 == 0) {
+							std::cout << "edge_length = " << edge_length << "\n";
+							std::cout << "cos_alpha = " << near_dist/edge_length << "\n";
+							std::cout << "phi =" << phi << "\n";
+						}
+						eyePos = safe_eye_pos;
+						//std::cout << "new eyePos = " << safe_eye_pos << "\n";
+					}
+				}
+				if (eyePos.z() < h)
+						eyePos.z() = h;*/
+				}	else {
+					//std::cout << "eyePos.z() = h;\n";
+					eyePos.z() = h;
+				}
 		}
 		battlefield->updateOrigin(eyePos); 
 		battlefield->setCamera(eyePos);

@@ -263,6 +263,7 @@ void CSPSim::init()
 
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+		// should run in its own thread
 		logoScreen.onRender();
 		SDL_GL_SwapBuffers();
 		//--m_RenderSurface.swapBuffers();

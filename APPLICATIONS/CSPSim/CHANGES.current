@@ -1,11 +1,40 @@
  Version 0.4.0 (in progress)
 ===========================
+2003-12-30: delta
+  * Added methods in VirtualScene to access perspective matrix.
+  
+2003-12-29: delta
+  * More investigations on MARKERS_TOGGLE lead to 
+    m_Actions[id.c_str()] from the method onCommand in
+    InputInterface and to the hash string simdata functions.
+    A string with size > 13 may lead to unexpected behaviour.
+    Not fixed yet.
+    
+  * Updated CSPSimDLL.vcproj to be able to debug it. Use debug 
+    built (export symbols are enabled).
+  
+2003-12-22: delta
+  * Reimplemented LogoScreen ala osg. A sequence of screens is
+    loaded.
+==========> All users, update APPLICATIONS/CSPSim/Data/Images.
+  
+  * MARKERS_TOGGLE string behaves weirdly with vc++. For now,
+    it is changed to MARKS_TOGGLE but it will need a complete 
+    fix (problem might be similar for strings longer than N 
+    characters).
+==========> All users, update 
+    APPLICATIONS/CSPSim/Tools/HID/Maps/aircraft-core.map and 
+    RebuilData(.py).
+
 2003-12-21: delta
   * Fixed stars at daytime on windows (GL_BLEND problem).
   
   * Separated gears and markers control.
   
-  * Added an osgFX effect (specular highlight).
+  * Added an osgFX effect (specular highlight). May produce
+    a warning on old generation graphic card.
+
+  * Reenabled texture unit 1 code in ScreenInfo.cpp.
   
   * Other minor changes.
   

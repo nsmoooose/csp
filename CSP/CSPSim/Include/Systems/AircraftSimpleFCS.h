@@ -59,11 +59,11 @@ class AircraftSimpleFCS: public System {
 			double input = 0.0;
 			double output = b_Output->value();
 			if (b_Input.valid()) input = b_Input->value() * m_Limit;
-			double smooth = std::min(1.0, 10.0*fabs(output-input));
+			double smooth = std::min<double>(1.0, 10.0*fabs(output-input));
 			if (output < input) {
-				output = std::min(output + smooth*m_Rate*dt, m_Limit);
+				output = std::min<double>(output + smooth*m_Rate*dt, m_Limit);
 			} else {
-				output = std::max(output - smooth*m_Rate*dt, -m_Limit);
+				output = std::max<double>(output - smooth*m_Rate*dt, -m_Limit);
 			}
 			b_Output->value() = output;
 		}

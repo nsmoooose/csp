@@ -26,7 +26,9 @@
 #ifndef __AIRCRAFTINPUTSYSTEM_H__
 #define __AIRCRAFTINPUTSYSTEM_H__
 
-#include <System.h>
+#include <SimData/Math.h>
+
+#include "System.h"
 
 
 class AircraftInputSystem: public System {
@@ -55,7 +57,7 @@ class AircraftInputSystem: public System {
 				m_DecayCount--;
 				if (m_Increment == 0.0) v *= m_Decay;
 			}
-			m_Channel->value() = std::min(1.0, std::max(-1.0, v));
+			m_Channel->value() = simdata::clampTo(v,-1.0,1.0);
 		}
 		double getValue() {
 			return m_Channel->value();

@@ -64,6 +64,54 @@ double SIMDATA_EXPORT tval();
 timing_t get_realtime();
 
 
+/** A simple timing class with standard stopwatch functions.  The
+ *  timing precision is equivalent to get_realtime().
+ */
+class Timer {
+	timing_t _start;
+	timing_t _elapsed;
+	bool _running;
+
+public:
+	/// Construct a new timer.
+	Timer(): _start(0), _elapsed(0), _running(false) { }
+
+	/// Reset the elapsed time to zero and start the timer running.
+	inline void start() {
+		_elapsed = 0.0;
+		resume();
+	}
+
+	/// Resumes counting without reseting the elapsed time.
+	inline void resume() {
+		if (!_running) {
+			_start = get_realtime();
+			_running = true;
+		}
+	}
+
+	/// Stop the timer.
+	inline timing_t stop() {
+		if (_running) {
+			_elapsed += get_realtime() - _start;
+			_running = false;
+		}
+		return _elapsed;
+	}
+
+	/// Return true if the timer is running.
+	inline bool running() const { return _running; }
+
+	/// Get the total elasped time.
+	inline timing_t elapsed() const {
+		return (_running ? get_realtime() - _start + _elapsed : _elapsed);
+	}
+
+	/// Reset the elapsed time to zero (does not stop the timer).
+	inline void reset() { _elapsed = 0; }
+};
+
+
 /////////////////////////////////////////////////////////////
 // end of timing routines
 

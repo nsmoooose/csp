@@ -4,6 +4,9 @@ Version 0.4.0 (in progress)
 2004-09-29: onsight
  * Clean up warnings and formatting in Date.h/cpp.
 
+ * Add a timer class to wrap get_realtime with basic stopwatch
+   functions.
+
 2004-09-28: delta
  * Added a #undef ERROR after inlcuding windows.h, protected behind
    a #ifdef.

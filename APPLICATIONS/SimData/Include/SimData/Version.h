@@ -23,6 +23,8 @@
 
 #include <SimData/Namespace.h>
 
+#define SIMDATA_API_VERSION 4
+
 NAMESPACE_SIMDATA
 
 const char *getVersion();

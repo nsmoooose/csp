@@ -5,6 +5,9 @@ Version 0.4.0 (in progress)
 
   * Started a new test suite for data type functionality
 
+  * Added SIMDATA_API_VERSION define to Version.h.  This number will
+    be bumped for all backwards-incompatible API changes.
+
 2003-10-20: onsight
   * Added a log message when the interface registry is destroyed.
 

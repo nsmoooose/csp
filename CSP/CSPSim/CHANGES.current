@@ -1,10 +1,20 @@
  Version 0.4.0 (in progress)
 ===========================
+
+2005-02-21: delta
+ * Minor change to the m2k model to correctly retract the right gear.
+ 
+ * Minor patch to CSPSim.py to execute cspinput in case an hid file is 
+   missing. cspinput is not an executable on windows and must be called
+   as an argument of python(.exe). Should be checked on GNU/Linux to be 
+   sure it doesn't break the stuff there.
+   
 2005-02-21: lologramme
- * Add Light pylons in the hangars aera
+ * Add Light pylons in the hangars area.
  
 2005-02-20: onsight
  * Fix path for hid generation under windows.
+ 
  * Add the correct F16DJ binding for the core aircraft.map.
 
 2005-02-18: delta

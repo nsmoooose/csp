@@ -62,7 +62,7 @@ def ensureDefaultHID(hid_file):
 		tool_path = os.path.join('..', 'Tools', 'HID')
 		csp_input = os.path.join(tool_path, 'cspinput')
 		example = os.path.join(tool_path, 'Examples', '%s.map' % hid_file)
-		os.system('%s -I%s -o%s %s' % (csp_input, tool_path, output, example))
+		os.system('python %s -I%s -o%s %s' % (csp_input, tool_path, output, example))
 		if os.path.exists(output):
 			print 'Default input map created for %s.hid; see Tools/HID/README for details.' % hid_file
 		else:

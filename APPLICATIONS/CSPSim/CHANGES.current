@@ -4,6 +4,9 @@ Version 0.3.3 (in progress)
 2003-05-02: onsight
 ==========> VC USERS: add Theater.cpp to the project.
 
+==========> Requires a few new 3D models that can be downloaded from
+	    http://csp.sourceforge.net/new-models.tgz
+
             I've been making many changes and additions, but have been too
 	    lax in updating the changelog.  Here's what I can remember and
 	    I will try to fill in the missing pieces as I come across them.
@@ -41,4 +44,16 @@ Version 0.3.3 (in progress)
             setGrounded() protected. Changes of the 'human' state (when the
             active object changes) must now go through VirtualBattlefield's
             setHuman() method so that the bubbles are updated correctly.
+
+            New WindEmitter for smoke trails that is more efficient and
+	    also incorporates the current wind velocity (and gusts) when
+	    generating the smoke stream.
+
+	    New XML files in Data/XML/theater to support theater loading.
+
+	    CSPSim finds the theater to load from the ini file.  The
+	    terrain is specified in the theater.
+
+            The model path in the ini file is now set to Models, so this
+	    prefix shouldn't be specified in the xml files anymore.
 

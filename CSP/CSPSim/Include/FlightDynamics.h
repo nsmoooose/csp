@@ -61,7 +61,6 @@ protected:
 
 	simdata::Link<FlightModel> m_FlightModel;
 
-	virtual void serialize(simdata::Archive &archive);
 	virtual void registerChannels(Bus*);
 	virtual void importChannels(Bus*);
 	virtual void getInfo(InfoList &info) const;

@@ -58,6 +58,33 @@ private:
 	NonConstructable();
 };
 
+
+/** Restrict template parameters to specific class hierarchies.
+ *
+ *  Example usage:
+ *
+ *  template <class FOO>
+ *  class Widget: HasBase<FOO, Bar>, public WidgetBase {
+ *  ...
+ *  };
+ *
+ *  This will only allow Widget<FOO> to compile if FOO is a subclass of
+ *  class Bar:
+ *
+ *  class BarChild: public Bar { };
+ *  class NotBarChild { };
+ *  Widget<BarChild> bar_widget;  // ok
+ *  Widget<NotBarChild> not_bar_widget;  // compiler error
+ *
+ *  @author Mark Rose <mkrose@users.sourceforge.net>
+ */
+template<class DERIVED, class BASE>
+struct HasBase {
+	static void constraint(DERIVED* pd, const BASE* pb) { pb = pd; }
+	HasBase() { void(*p)(DERIVED*, const BASE*) = constraint; p; }
+};
+
+
 NAMESPACE_SIMDATA_END
 
 

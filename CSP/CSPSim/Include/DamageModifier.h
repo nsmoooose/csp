@@ -60,15 +60,6 @@ public:
 	DamageModifier() {}
 	virtual ~DamageModifier() {}
 
-	virtual void serialize(simdata::Archive& archive) {
-		Object::serialize(archive);
-		archive(m_Incendiary);
-		archive(m_HighExplosive);
-		archive(m_Penetrating);
-		archive(m_ArmorPiercing);
-		archive(m_SmallArms);
-	}
-
 	virtual void postCreate() {}
 };
 

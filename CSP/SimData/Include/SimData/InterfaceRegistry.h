@@ -110,11 +110,13 @@ class SIMDATA_EXPORT InterfaceProxy {
 private:
 
 	typedef std::map<std::string, ObjectInterfaceBase*> InterfaceMap;
+	typedef std::vector<ObjectInterfaceBase*> InterfaceList;
 	std::vector<std::string> _classNames;
 	std::vector<hasht> _classHashes;
 	std::vector<std::string> _variableNames;
 	std::vector<std::string> _requiredNames;
-	InterfaceMap _interfaces;
+	InterfaceList _interfaces;
+	InterfaceMap _interfacesByVariableName;
 
 	/** Default constructor.
 	 *
@@ -301,6 +303,24 @@ public:
 	 */
 	virtual bool isStatic() const { return false; }
 
+#if 0
+	/**
+	 * XXX write me!
+	 */
+	void pack(Object *o, Packer &p) {
+		InterfaceList::const_iterator it = _interfaces.begin();
+		for (; it != _interfaces.end(); ++it) (*it)->pack(o, p);
+	}
+
+	/**
+	 * XXX write me!
+	 */
+	void unpack(Object *o, UnPacker &p) {
+		InterfaceList::const_iterator it = _interfaces.begin();
+		for (; it != _interfaces.end(); ++it) (*it)->unpack(o, p);
+	}
+#endif
+
 
 /////////////////////////////////////////////////////// SWIG
 #ifdef SWIG
@@ -434,7 +454,7 @@ private:
  *
  *  Interface should be defined in a public section of
  *  the enclosing Object class.  The general structure
- *  in a "BEGIN" macro, followed by a number of data
+ *  is a "BEGIN" macro, followed by a number of data
  *  member declarations, terminated by an "END" macro.
  *
  *  There are several forms of "BEGIN" macro, depending
@@ -450,7 +470,7 @@ private:
  *           The @c parent parameter is the first class up
  *           the inheritance chain that defines an interface,
  *           which is often but not necessarily one of the
- *           immidiate base classes.
+ *           immediate base classes.
  *
  *    @li @c BEGIN_SIMDATA_XML_VIRTUAL_INTERFACE(class) is
  *           the same as @c BEGIN_SIMDATA_XML_INTERFACE
@@ -557,10 +577,17 @@ private:
 #define __SIMDATA_XML_INTERFACE_0(classname, baseinterface) \
 class classname##InterfaceProxy; \
 friend class classname##InterfaceProxy; \
+typedef classname##InterfaceProxy _LocalInterfaceProxy; \
 class classname##InterfaceProxy: public baseinterface \
 { \
-	SIMDATA(ObjectInterface)<classname> *_interface; \
-public: 
+	static SIMDATA(ObjectInterface)<classname> *_interface; \
+public: \
+	static inline void serialize(classname *object, SIMDATA(Reader) &reader) { \
+		_interface->serialize(object, reader); \
+	} \
+	static inline void serialize(classname const *object, SIMDATA(Writer) &writer) { \
+		_interface->serialize(object, writer); \
+	}
 
 /** interface macro 1 for normal classes
  *
@@ -596,11 +623,30 @@ public:
 	{ \
 		std::string _classname = #classname; \
 		SIMDATA(hasht) _classhash = classname::_getClassHash(); \
-		_interface = new SIMDATA(ObjectInterface)<classname>; \
-		(*_interface)
+		if (!_interface) { \
+			SIMDATA_LOG(SIMDATA(LOG_ALL), SIMDATA(LOG_ERROR), "constructing interfaceproxy for " << #classname); \
+			_interface = new SIMDATA(ObjectInterface)<classname>; \
+			(*_interface)
 
 //-----------------------------------------
 
+#define __SIMDATA_XML_SERIALIZE_INTERFACE \
+		virtual void _serialize(SIMDATA(Writer) &writer) const { \
+			_base_serialize(writer); \
+			_LocalInterfaceProxy::serialize(this, writer); \
+		} \
+		virtual void _serialize(SIMDATA(Reader) &reader) { \
+			_base_serialize(reader); \
+			_LocalInterfaceProxy::serialize(this, reader); \
+		}
+
+#define __SIMDATA_XML_BASE_SERIALIZE \
+		inline void _base_serialize(SIMDATA(Writer) &writer) const { } \
+		inline void _base_serialize(SIMDATA(Reader) &reader) { } \
+
+#define __SIMDATA_XML_BASE_SERIALIZE_EXTEND(basename) \
+		inline void _base_serialize(SIMDATA(Writer) &writer) const { basename::_serialize(writer); } \
+		inline void _base_serialize(SIMDATA(Reader) &reader) { basename::_serialize(reader); }
 
 #ifdef SWIG
 
@@ -616,6 +662,7 @@ public:
 	 *  See @ref InterfaceMacros for details.
 	 */
 	#define BEGIN_SIMDATA_XML_INTERFACE(classname) \
+		__SIMDATA_XML_BASE_SERIALIZE \
 		__SIMDATA_XML_INTERFACE_0(classname, SIMDATA(InterfaceProxy)) \
 		__SIMDATA_XML_INTERFACE_1(classname) \
 		__SIMDATA_XML_INTERFACE_2(classname, SIMDATA(InterfaceProxy), InterfaceProxy)
@@ -625,6 +672,7 @@ public:
 	 *  See @ref InterfaceMacros for details.
 	 */
 	#define BEGIN_SIMDATA_XML_VIRTUAL_INTERFACE(classname) \
+		__SIMDATA_XML_BASE_SERIALIZE \
 		__SIMDATA_XML_INTERFACE_0(classname, SIMDATA(InterfaceProxy)) \
 		__SIMDATA_XML_INTERFACE_V(classname) \
 		__SIMDATA_XML_INTERFACE_2(classname, SIMDATA(InterfaceProxy), InterfaceProxy)
@@ -634,15 +682,17 @@ public:
 	 *  See @ref InterfaceMacros for details.
 	 */
 	#define EXTEND_SIMDATA_XML_INTERFACE(classname, basename) \
+		__SIMDATA_XML_BASE_SERIALIZE_EXTEND(basename) \
 		__SIMDATA_XML_INTERFACE_0(classname, basename::basename##InterfaceProxy) \
 		__SIMDATA_XML_INTERFACE_1(classname) \
-		__SIMDATA_XML_INTERFACE_2(classname, basename::basename##InterfaceProxy, basename##InterfaceProxy) 
+		__SIMDATA_XML_INTERFACE_2(classname, basename::basename##InterfaceProxy, basename##InterfaceProxy)
 
 	/** Extend an interface declaration for an abstract class.
 	 *
 	 *  See @ref InterfaceMacros for details.
 	 */
 	#define EXTEND_SIMDATA_XML_VIRTUAL_INTERFACE(classname, basename) \
+		__SIMDATA_XML_BASE_SERIALIZE_EXTEND(basename) \
 		__SIMDATA_XML_INTERFACE_0(classname, basename::basename##InterfaceProxy) \
 		__SIMDATA_XML_INTERFACE_V(classname) \
 		__SIMDATA_XML_INTERFACE_2(classname, basename::basename##InterfaceProxy, basename##InterfaceProxy)
@@ -684,18 +734,22 @@ public:
 	#define END_SIMDATA_XML_INTERFACE
 #else
 	#define END_SIMDATA_XML_INTERFACE \
-			.pass(); \
+				.pass(); \
+			} \
 			addInterface(_interface, _classname, _classhash); \
 		} \
-	};
+	}; \
+	__SIMDATA_XML_SERIALIZE_INTERFACE
 #endif
 
-/** Register an object class interface.  
+
+/** Register an object class interface.
  *
  *  See @ref InterfaceMacros for details.
  */
 #define SIMDATA_REGISTER_INTERFACE(classname) \
 namespace { \
+	SIMDATA(ObjectInterface)<classname> *classname::classname##InterfaceProxy::_interface = 0; \
 	classname::classname##InterfaceProxy __##classname##_interface; \
 } /* anonymous namespace */
 
@@ -705,9 +759,9 @@ namespace { \
  */
 #define SIMDATA_REGISTER_INNER_INTERFACE(prefix, classname) \
 namespace { \
-	parent::classname::classname##InterfaceProxy __##prefix##_##classname##_interface; \
+	SIMDATA(ObjectInterface)<classname> *prefix::classname::classname##InterfaceProxy::_interface = 0; \
+	prefix::classname::classname##InterfaceProxy __##prefix##_##classname##_interface; \
 } /* anonymous namespace */
-
 
 
 NAMESPACE_SIMDATA_END

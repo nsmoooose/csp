@@ -38,8 +38,3 @@ StaticObject::~StaticObject()
 {
 }
 
-void StaticObject::serialize(simdata::Archive& archive) {
-	SimObject::serialize(archive);
-}
-
-

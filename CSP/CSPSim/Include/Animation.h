@@ -129,8 +129,6 @@ public:
 	Animation();
 	virtual ~Animation();
 
-	virtual void serialize(simdata::Archive&);
-
 	virtual AnimationCallback *newCallback(osg::Node *node) const =0;
 	inline std::string const &getChannelName() const { return m_ChannelName; }
 	inline simdata::Key const &getModelID() const { return m_ModelID; }
@@ -191,7 +189,6 @@ public:
 	DrivenRotation();
 	virtual ~DrivenRotation();
 
-	virtual void serialize(simdata::Archive&);
 	virtual void postCreate();
 
 	virtual AnimationCallback *newCallback(osg::Node *node) const {

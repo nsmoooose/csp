@@ -42,9 +42,8 @@
 
 NAMESPACE_SIMDATA
 
-class Archive;
-class Packer;
-class UnPacker;
+class Reader;
+class Writer;
 
 
 /** Error parsing XML cdata.
@@ -52,7 +51,7 @@ class UnPacker;
 SIMDATA_EXCEPTION(ParseException)
 
 
-/** Base class for objects that support serialization to data archives.
+/** Base class for objects that support serialization.
  *
  *  @author Mark Rose <mrose@stm.lbl.gov>
  */
@@ -62,9 +61,8 @@ public:
 	 */
 	virtual ~BaseType();
 
-	/** Serialize an object to or from a data archive 
-	 */
-	virtual void serialize(Archive&) {}
+	virtual void serialize(Reader&)=0;
+	virtual void serialize(Writer&) const=0;
 
 	/** Parse cdata from within the XML tags for this object.
 	 */

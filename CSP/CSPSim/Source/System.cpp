@@ -28,6 +28,8 @@
 #include <System.h>
 #include <SystemsModel.h>
 
+SIMDATA_REGISTER_INTERFACE(System)
+
 void System::setModel(SystemsModel *model) {
 	assert(m_Model == 0 || model == 0);
 	m_Model = model;

@@ -74,12 +74,6 @@ public:
 
 	virtual ~Theater();
 
-	virtual void serialize(simdata::Archive& archive) {
-		Object::serialize(archive);
-		archive(m_FeatureGroupList);
-		archive(m_Terrain);
-	}
-
 	/**
 	 * Get the TerrainObject used by the theater.
 	 */

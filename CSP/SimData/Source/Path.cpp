@@ -45,8 +45,12 @@ void Path::setPath(const char* path) {
 	}
 }
 
-void Path::serialize(Archive &archive) {
-	archive(_path);
+void Path::serialize(Reader &reader) {
+	reader >> _path;
+}
+
+void Path::serialize(Writer &writer) const {
+	writer << _path;
 }
 
 std::string Path::asString() const {

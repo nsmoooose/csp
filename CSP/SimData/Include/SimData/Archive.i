@@ -25,7 +25,8 @@
 
 %include "SimData/filemap.i"
 
-%ignore SIMDATA(Archive)::operator();
+%ignore SIMDATA(Reader)::operator>>;
+%ignore SIMDATA(Writer)::operator<<;
 
 %typemap(python, in) (const char* data, int n) {
 	$1 = PyString_AsString($input);

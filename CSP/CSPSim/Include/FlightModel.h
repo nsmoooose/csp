@@ -123,7 +123,6 @@ public:
 
 protected:
 
-	virtual void serialize(simdata::Archive&);
 	virtual void convertXML();
 	virtual void postCreate();
 

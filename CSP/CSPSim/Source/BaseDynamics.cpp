@@ -26,6 +26,9 @@
 #include "PhysicsModel.h"
 
 
+SIMDATA_REGISTER_INTERFACE(BaseDynamics)
+
+
 BaseDynamics::BaseDynamics():
 	m_Force(simdata::Vector3::ZERO),
 	m_Moment(simdata::Vector3::ZERO) 

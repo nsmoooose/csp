@@ -43,7 +43,7 @@ extern int g_ScreenHeight;
 #include <SimData/osg.h>
 
 
-///SIMDATA_REGISTER_INTERFACE(TerrainObject)
+SIMDATA_REGISTER_INTERFACE(TerrainObject)
 
 
 /** 
@@ -60,22 +60,12 @@ TerrainObject::~TerrainObject()
 {
 }
 
-void TerrainObject::serialize(simdata::Archive &archive) {
-	Object::serialize(archive);
-	archive(m_Name);
-	archive(m_Version);
-	archive(m_Center);
-	archive(m_Width);
-	archive(m_Height);
-}
-
 void TerrainObject::postCreate() {
 	CSP_LOG(TERRAIN, INFO, "Terrain " << m_Name << " (version " << m_Version << ")");
 	CSP_LOG(TERRAIN, INFO, "   center = " << getCenter().asString());
 	CSP_LOG(TERRAIN, INFO, "     size = " << getWidth() << " x " << getHeight() << " m");
 	m_Map.set(getCenter(), getWidth(), getHeight());
 }
-
 
 TerrainObject::Intersection::Intersection() {
 	_hit = false;

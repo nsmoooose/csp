@@ -28,15 +28,14 @@ NAMESPACE_SIMDATA
 
 // class Enum
 
-void EnumLink::serialize(Archive& archive) {
+void EnumLink::serialize(Reader &reader) {
 	std::string token;
-	if (archive.isLoading()) {
-		archive(token);
-		set(token);
-	} else {
-		token = getToken();
-		archive(token);
-	}
+	reader >> token;
+	set(token);
+}
+
+void EnumLink::serialize(Writer &writer) const {
+	writer << getToken();
 }
 
 void EnumLink::parseXML(const char* cdata) {

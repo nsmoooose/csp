@@ -125,7 +125,6 @@ protected:
 	
 protected:
 
-	virtual void serialize(simdata::Archive&);
 	virtual void postCreate();
 
 	int createTerrainLattice();

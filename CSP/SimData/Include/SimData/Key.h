@@ -98,7 +98,8 @@ public:
 
 	/** Serialize to or from a data archive.
 	 */
-	virtual void serialize(Archive&);
+	virtual void serialize(Reader&);
+	virtual void serialize(Writer&) const;
 	
 	/** Standard string representation.
 	 */

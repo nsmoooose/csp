@@ -1,18 +1,18 @@
 /* SimData: Data Infrastructure for Simulations
- * Copyright (C) 2002 Mark Rose <tm2@stm.lbl.gov>
- * 
+ * Copyright (C) 2002, 2003, 2004 Mark Rose <tm2@stm.lbl.gov>
+ *
  * This file is part of SimData.
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
@@ -42,7 +42,6 @@
 #include <cassert>
 
 
-
 NAMESPACE_SIMDATA
 
 
@@ -59,9 +58,9 @@ public:
 
 	// SWIG python specific comparisons
 	bool __eq__(const ReferencePointer& other);
-	bool __ne__(const ReferencePointer& other); 
+	bool __ne__(const ReferencePointer& other);
 	
-	/** Construct a ReferencePointer with no object reference (null 
+	/** Construct a ReferencePointer with no object reference (null
 	 *  pointer)
 	 */
 	explicit ReferencePointer(): _reference(0) { }
@@ -105,22 +104,21 @@ public:
 	 */
 	inline void *operator=(void *p) {
 		assert(p==0);
-		_reference = 0;
+		_assign_fast(0);
 		return p;
 	}
 #endif
 
-	/** Clear pointer. 
+	/** Clear pointer.
 	 */
 	inline void setNull() {
 		_assign_fast(0);
 	}
 
-
 	/** Test for null pointer.
 	 */
-	inline bool isNull() const { 
-		return _reference == 0; 
+	inline bool isNull() const {
+		return _reference == 0;
 	}
 
 	/** Test for null pointer.
@@ -153,42 +151,42 @@ protected:
 	 *  type and throws an exception if the cast fails.
 	 */
 	inline void _assign_safe(Object* ptr) {
+		if (ptr) ptr->_incref();
 		_release();
 		_update(ptr);
-		if (!isNull()) _reference->_incref();
 	}
 
 	/** Rebind to a new object, without testing for type compatibility.
 	 *
 	 * Use this method only when you know that the pointer you are
-	 * assignng from has the correct type.
+	 * assigning from has the correct type.
 	 */
 	inline void _assign_fast(Object *ptr) {
+		if (ptr) ptr->_incref();
 		_release();
 		_reference = ptr;
-		if (!isNull()) _reference->_incref();
 	}
 
 	/** Rebind to null.
 	 */
 	inline void _release() {
 		if (!isNull()) {
-			_reference->_decref();
+		    _reference->_decref();
 			_reference = 0;
 		}
 	}
 
-	/** Change object pointer without reference counting. 
+	/** Change object pointer without reference counting.
 	 *
-	 * This method is extended in the Link<> class to test for 
+	 * This method is extended in the Link<> class to test for
 	 * type compatibility.
 	 */
 	virtual void _update(Object* p) { _reference = p; }
 
 	/** Get the current object pointer.
 	 */
-	inline Object* _get() const { 
-		return _reference; 
+	inline Object* _get() const {
+		return _reference;
 	}
 
 	/** The actual object pointer.
@@ -199,7 +197,7 @@ protected:
 
 /**
  * @brief Base class for auto-loading, smart-pointers to Objects.
- * 
+ *
  * This class combines the Path type with reference-counting for Object
  * types.  It should seldom be used directly.  See Link<> and Ref<> for
  * details on how to refer to Objects (and other Referenced types).
@@ -207,14 +205,15 @@ protected:
  * @author Mark Rose <mrose@stm.lbl.gov>
  */
 class SIMDATA_EXPORT LinkBase: public Path, public ReferencePointer {
+    // for _get() when assigning from Link<> to a Ref<>.
 	template <class T> friend class Ref;
 public:
 
 	// SWIG python specific comparisons
 	bool __eq__(const LinkBase& other);
-	bool __ne__(const LinkBase& other); 
+	bool __ne__(const LinkBase& other);
 	
-	/** Construct a LinkBase with no path or object reference (null 
+	/** Construct a LinkBase with no path or object reference (null
 	 *  pointer)
 	 */
 	explicit LinkBase(): Path((const char*)0), ReferencePointer() { }
@@ -225,7 +224,7 @@ public:
 
 	/** Assign an object path and bind to a specific object.
 	 */
-	explicit LinkBase(const Path& path, Object* ptr): 
+	explicit LinkBase(const Path& path, Object* ptr):
 		Path(path), ReferencePointer(ptr) { }
 	
 	/** Assign an object reference, but no path.
@@ -252,11 +251,10 @@ public:
 	}
 #endif
 
-
 	/** Serialize to or from a data archive.
 	 *
 	 *  Saves the path, and also saves the referenced object
-	 *  if the path is 'None'.  Packing a None and Null 
+	 *  if the path is 'None'.  Packing a None and Null
 	 *  LinkBase is an error.
 	 *
 	 *  Reads the saved path and binds to the correct object.
@@ -265,7 +263,8 @@ public:
 	 *  asking the current DataArchive to instantiate an
 	 *  instance of the path.
 	 */
-	virtual void serialize(Archive&);
+	virtual void serialize(Reader&);
+	virtual void serialize(Writer&) const;
 
 	/** String representation.
 	 */
@@ -295,9 +294,9 @@ protected:
 /**
  * @brief Class-specialized, auto-loading smart-pointer to Objects.
  *
- * Use this class for linking to other Objects in a data archive. 
- * The associated Objects will automatically be created by the 
- * archive loader as directed by the external XML data. 
+ * Use this class for linking to other Objects in a data archive.
+ * The associated Objects will automatically be created by the
+ * archive loader as directed by the external XML data.
  *
  * Once loaded, Link<> handles behaves very much like ordinary
  * Ref<> handles.  For storing and passing objects references,
@@ -314,7 +313,7 @@ public:
 	 */
 	typedef std::vector< Link<T> > vector;
 
-	/** Create a null Link 
+	/** Create a null Link
 	 */
 	explicit Link(): LinkBase() {}
 	
@@ -334,22 +333,22 @@ public:
 
 	/** Fast copy constructor.
 	 */
-	Link(const Link<T>& p) { 
+	Link(const Link<T>& p) {
 		_path = p.getPath();
 		_assign_fast(p._reference);
 	}
 	
 	/** Safe copy constructor.
 	 */
-	Link(const LinkBase& p) { 
+	Link(const LinkBase& p) {
 		LinkBase::operator=(p);
 	}
 	
-	/*
-	Link<T>& operator=(const LinkBase& p) {
-		LinkBase::operator=(p);
-	}
-	*/
+private:
+	Link<T>& operator=(const LinkBase& p); /* {
+		return LinkBase::operator=(p);
+	}*/
+public:
 
 	/** Return a string representation of the type.
 	 */
@@ -367,13 +366,13 @@ public:
 
 	/** Dereference.
 	 */
-	T* operator->() { 
+	T* operator->() {
 		return (T*) _reference;
 	}
 	
 	/** Const dereference.
 	 */
-	const T* operator->() const { 
+	const T* operator->() const {
 		return (T*) _reference;
 	}
 	
@@ -404,17 +403,16 @@ public:
 protected:
 	/** Internal pointer update.
 	 *
-	 *  Changes the object pointer without reference counting, checking 
+	 *  Changes the object pointer without reference counting, checking
 	 *  that the new object type matches the template type.
 	 */
 	virtual void _update(Object* ptr) throw(ObjectTypeMismatch) {
 		LinkBase::_update(ptr);
 		T* _special = dynamic_cast<T*>(ptr);
-		if (ptr != 0 && _special == 0) 
+		if (ptr != 0 && _special == 0)
 			throw ObjectTypeMismatch("dynamic_cast<> failed in Link<>::_update()");
 	}
 };
-
 
 
 NAMESPACE_SIMDATA_END

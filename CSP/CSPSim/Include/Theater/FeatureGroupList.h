@@ -55,11 +55,6 @@ public:
 
 	virtual ~FeatureGroupList();
 
-	virtual void serialize(simdata::Archive &archive) {
-		Object::serialize(archive);
-		archive(m_FeatureGroups);
-	}
-
 	/**
 	 * Get the list of FeatureGroups.
 	 */

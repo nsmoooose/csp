@@ -108,15 +108,6 @@ public:
 	 */
 	void makeFeatures(std::vector<Feature> &features, int value) const;
 
-	virtual void serialize(simdata::Archive &archive) {
-		Object::serialize(archive);
-		archive(m_FeatureModel);
-		archive(m_X);
-		archive(m_Y);
-		archive(m_Orientation);
-		archive(m_ValueModifier);
-	}
-
 };
 
 

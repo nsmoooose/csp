@@ -65,7 +65,6 @@ public:
 	LandingGear();
 	//LandingGear(LandingGear const &);
 	//LandingGear const &operator=(LandingGear const &g);
-	virtual void serialize(simdata::Archive&);
 	virtual void postCreate();
 
 	bool getWOW() const { return m_WOW; }
@@ -190,7 +189,7 @@ public:
 	ACTION_INTERFACE(GearDynamics, GearToggle);
 
 	GearDynamics();
-	virtual void serialize(simdata::Archive&);
+
 	virtual void registerChannels(Bus*);
 	virtual void importChannels(Bus*);
 

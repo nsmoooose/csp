@@ -1,18 +1,18 @@
 /* SimData: Data Infrastructure for Simulations
  * Copyright (C) 2002 Mark Rose <tm2@stm.lbl.gov>
- * 
+ *
  * This file is part of SimData.
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
@@ -49,119 +49,7 @@ class DataArchive;
 
 SIMDATA_EXCEPTION(DataUnderflow);
 SIMDATA_EXCEPTION(ConstViolation);
-
-class SIMDATA_EXPORT Archive {
-	bool __loading;
-public:
-	Archive(bool loading): __loading(loading) {}
-	virtual ~Archive() {}
-
-	virtual DataArchive* _getArchive() { return 0; }
-	virtual bool _loadAll() const { return false; }
-	bool isLoading() { return __loading; }
-
-	virtual void operator()(char &x) = 0;
-	virtual void operator()(short &x)=0;
-	virtual void operator()(int &x)=0;
-	virtual void operator()(bool &x)=0;
-	virtual void operator()(float &x)=0;
-	virtual void operator()(double &x)=0;
-	virtual void operator()(char* &x)=0;
-	virtual void operator()(BaseType &x)=0;
-	virtual void operator()(hasht &x)=0;
-	virtual void operator()(std::string &x)=0;
-	template<typename T>
-	void operator()(std::vector<T> &x);
-
-	// explicit packing (use from python)
-
-#ifdef SWIG
-%extend {
-	double _double(double x=0.0) { 
-		double y=x; 
-		self->operator()(y); 
-		return y; 
-	}
-	float _float(double x=0.0f) { 
-		float y=x; 
-		self->operator()(y); 
-		return y; 
-	}
-	bool _bool(bool x=false) { 
-		bool y=x; 
-		self->operator()(y); 
-		return y; 
-	}
-	int _int(int x=0) { 
-		int y=x; 
-		self->operator()(y); 
-		return y; 
-	}
-	short _short(short x=0) { 
-		short y=x; 
-		self->operator()(y); 
-		return y; 
-	}
-	char _char(char x=0) { 
-		char y=x; 
-		self->operator()(y); 
-		return y; 
-	}
-	hasht _hasht(hasht x=0) { 
-		simdata::hasht y=x; 
-		self->operator()(y); 
-		return y; 
-	}
-	std::string _string(std::string const &x="") { 
-		std::string y=x; 
-		self->operator()(y); 
-		return y; 
-	}
-	BaseType &_basetype(BaseType &x) { 
-		self->operator()(x); 
-		return x; 
-	}
-#define __SIMDATA_ARCHIVE(T) SIMDATA(T) _##T() { \
-		SIMDATA(T) x; self->operator()(x); return x; \
-	}
-	__SIMDATA_ARCHIVE(SimDate);
-	__SIMDATA_ARCHIVE(Matrix3);
-	__SIMDATA_ARCHIVE(Vector3);
-	__SIMDATA_ARCHIVE(Quat);
-	__SIMDATA_ARCHIVE(Real);
-	__SIMDATA_ARCHIVE(Curve);
-	__SIMDATA_ARCHIVE(Table);
-	__SIMDATA_ARCHIVE(Table1);
-	__SIMDATA_ARCHIVE(Table2);
-	__SIMDATA_ARCHIVE(Table3);
-	__SIMDATA_ARCHIVE(LLA);
-	__SIMDATA_ARCHIVE(UTM);
-	__SIMDATA_ARCHIVE(ECEF);
-	__SIMDATA_ARCHIVE(GeoPos);
-	__SIMDATA_ARCHIVE(Path);
-	__SIMDATA_ARCHIVE(External);
-	__SIMDATA_ARCHIVE(Key);
-	// TODO List;
-	// TODO Enum
-	// TODO Pointer
-#undef __SIMDATA_ARCHIVE
-}
-	// more explicit methods for python that instantiate,
-	// unpack, and return BaseType data objects.
-%insert("shadow") %{
-	def _Pointer(self):
-		raise "FIXME: NOT IMPLEMENTED"
-	def _Enum(self):
-		raise "FIXME: NOT IMPLEMENTED"
-	def _List(self):
-		raise "FIXME: NOT IMPLEMENTED"
-	def __call__(self, *args):
-		raise "Use explicit _* methods from Python"
-%}
-#endif // SWIG
-	
-
-};
+SIMDATA_EXCEPTION(SerializeError);
 
 
 class SIMDATA_EXPORT PackFile {
@@ -186,6 +74,174 @@ public:
 };
 
 
+
+class SIMDATA_EXPORT Reader {
+public:
+	virtual ~Reader() {}
+
+	virtual DataArchive* _getArchive() { return 0; }
+	virtual bool _loadAll() const { return false; }
+
+	virtual Reader& operator>>(char &x)=0;
+	virtual Reader& operator>>(short &x)=0;
+	virtual Reader& operator>>(int &x)=0;
+	virtual Reader& operator>>(bool &x)=0;
+	virtual Reader& operator>>(float &x)=0;
+	virtual Reader& operator>>(double &x)=0;
+	virtual Reader& operator>>(char* &x)=0;
+	virtual Reader& operator>>(BaseType &x)=0;
+	virtual Reader& operator>>(hasht &x)=0;
+	virtual Reader& operator>>(std::string &x)=0;
+
+	// explicit methods for use from Python
+
+#ifdef SWIG
+%extend {
+	double _double() {
+		double y;
+		(*self) >> y;
+		return y;
+	}
+	float _float() {
+		float y;
+		(*self) >> y;
+		return y;
+	}
+	bool _bool() {
+		bool y;
+		(*self) >> y;
+		return y;
+	}
+	int _int() {
+		int y;
+		(*self) >> y;
+		return y;
+	}
+	short _short() {
+		short y;
+		(*self) >> y;
+		return y;
+	}
+	char _char() {
+		char y;
+		(*self) >> y;
+		return y;
+	}
+	hasht _hasht() {
+		simdata::hasht y;
+		(*self) >> y;
+		return y;
+	}
+	std::string _string() {
+		std::string y;
+		(*self) >> y;
+		return y;
+	}
+	BaseType &_basetype(BaseType &y) {
+		(*self) >> y;
+		return y;
+	}
+
+	// more explicit methods for python that instantiate,
+	// unpack, and return BaseType data objects.
+	
+#define __SIMDATA_ARCHIVE(T) SIMDATA(T) _##T() { \
+		SIMDATA(T) x; (*self) >> x; return x; \
+	}
+	__SIMDATA_ARCHIVE(SimDate);
+	__SIMDATA_ARCHIVE(Matrix3);
+	__SIMDATA_ARCHIVE(Vector3);
+	__SIMDATA_ARCHIVE(Quat);
+	__SIMDATA_ARCHIVE(Real);
+	__SIMDATA_ARCHIVE(Curve);
+	__SIMDATA_ARCHIVE(Table);
+	__SIMDATA_ARCHIVE(Table1);
+	__SIMDATA_ARCHIVE(Table2);
+	__SIMDATA_ARCHIVE(Table3);
+	__SIMDATA_ARCHIVE(LLA);
+	__SIMDATA_ARCHIVE(UTM);
+	__SIMDATA_ARCHIVE(ECEF);
+	__SIMDATA_ARCHIVE(GeoPos);
+	__SIMDATA_ARCHIVE(Path);
+	__SIMDATA_ARCHIVE(External);
+	__SIMDATA_ARCHIVE(Key);
+	// TODO List;
+	// TODO Enum
+	// TODO Pointer
+#undef __SIMDATA_ARCHIVE
+}
+%insert("shadow") %{
+	def _Pointer(self):
+		raise "FIXME: NOT IMPLEMENTED"
+	def _Enum(self):
+		raise "FIXME: NOT IMPLEMENTED"
+	def _List(self):
+		raise "FIXME: NOT IMPLEMENTED"
+	def __call__(self, *args):
+		raise "Use explicit _* methods from Python"
+%}
+#endif // SWIG
+
+};
+
+
+template<typename T>
+Reader& operator>>(Reader& reader, std::vector<T> &y) {
+	int n;
+	reader >> n;
+	y.resize(n);
+	typename std::vector<T>::iterator i = y.begin();
+	while (n-- > 0) reader >> (*i++);
+	return reader;
+}
+
+
+/**
+ *
+ */
+class SIMDATA_EXPORT Writer {
+public:
+	virtual ~Writer() {}
+
+	virtual Writer& operator<<(const char)=0;
+	virtual Writer& operator<<(const short)=0;
+	virtual Writer& operator<<(const int)=0;
+	virtual Writer& operator<<(const bool)=0;
+	virtual Writer& operator<<(const float)=0;
+	virtual Writer& operator<<(const double)=0;
+	virtual Writer& operator<<(const char*)=0;
+	virtual Writer& operator<<(const BaseType &x)=0;
+	virtual Writer& operator<<(const hasht &x)=0;
+	virtual Writer& operator<<(const std::string &x)=0;
+
+	// explicit packing (use from python)
+
+#ifdef SWIG
+%extend {
+	void _double(double x) { (*self) << x; }
+	void _float(float x) { (*self) << x; }
+	void _bool(bool x) { (*self) << x; }
+	void _int(int x) { (*self) << x; }
+	void _short(short x) { (*self) << x; }
+	void _char(char x) { (*self) << x; }
+	void _hasht(hasht const &x) { (*self) << x; }
+	void _string(std::string const &x) { (*self) << x; }
+	void _basetype(BaseType const &x) { (*self) << x; }
+}
+#endif // SWIG
+
+};
+
+
+template<typename T>
+Writer& operator<<(Writer& writer, const std::vector<T> &x) {
+	writer << static_cast<int>(x.size());
+	typename std::vector<T>::const_iterator i = x.begin();
+	while (i != x.end()) writer << (*i++);
+	return writer;
+}
+
+
 /** Utility class for writing raw data to an object archive.
  *
  *  Packer instances are created by the DataArchive class when an
@@ -195,68 +251,63 @@ public:
  *
  *  @author Mark Rose <tm2@stm.lbl.gov>
  */
-class SIMDATA_EXPORT Packer: public Archive {
+class SIMDATA_EXPORT ArchiveWriter: public Writer {
 	FILE *_f;
 	int _n;
 	void write(const void* x, int n) {
 		fwrite(x, n, 1, _f);
 	}
 public:
-	Packer(PackFile f): Archive(false) {
+	ArchiveWriter(PackFile f): Writer(), _n(0) {
 		_f = static_cast<FILE*>(f);
 		assert(_f != 0);
-		resetCount();
 	}
 	void resetCount() { _n = 0; }
 	int getCount() { return _n; }
 
-	void operator()(char &x) {
-		write(&x, sizeof(char));
-		_n += sizeof(char);
+	Writer& operator<<(const char x) {
+		write(&x, sizeof(x)); _n += sizeof(x);
+		return *this;
 	}
-	void operator()(short &x) {
-		write(&x, sizeof(short));
-		_n += sizeof(short);
+	Writer& operator<<(const short x) {
+		write(&x, sizeof(x)); _n += sizeof(x);
+		return *this;
 	}
-	void operator()(int &x) {
-		write(&x, sizeof(int));
-		_n += sizeof(int);
+	Writer& operator<<(const int x) {
+		write(&x, sizeof(x)); _n += sizeof(x);
+		return *this;
 	}
-	void operator()(bool &x) {
-		char c = x ? 1:0;
-		operator()(c);
+	Writer& operator<<(const bool x) {
+		const char c = x ? 1:0;
+		operator<<(c);
+		return *this;
 	}
-	void operator()(double &x) {
-		write(&x, sizeof(double));
-		_n += sizeof(double);
+	Writer& operator<<(const float x) {
+		write(&x, sizeof(x)); _n += sizeof(x);
+		return *this;
 	}
-	void operator()(char* &x) {
+	Writer& operator<<(const double x) {
+		write(&x, sizeof(x)); _n += sizeof(x);
+		return *this;
+	}
+	Writer& operator<<(const char* x) {
 		int n = strlen(x);
-		operator()(n);
+		operator<<(n);
 		write(x, n);
 		_n += n;
+		return *this;
 	}
-	void operator()(BaseType &x) {
+	Writer& operator<<(const BaseType &x) {
 		x.serialize(*this);
+		return *this;
 	}
-	void operator()(float &x) {
-		write(&x, sizeof(float));
-		_n += sizeof(float);
+	Writer& operator<<(const hasht &x) {
+		write(&x, sizeof(x)); _n += sizeof(x);
+		return *this;
 	}
-	void operator()(hasht &x) {
-		write(&x, sizeof(hasht));
-		_n += sizeof(hasht);
-	}
-	void operator()(std::string &x) {
-		char *str = const_cast<char*>(x.c_str());
-		operator()(str);
-	}
-	template<typename T>
-	void operator()(std::vector<T> &x) {
-		int n = static_cast<int>(x.size());
-		operator()(n);
-		typename std::vector<T>::iterator i = x.begin();
-		while (i != x.end()) operator()(*i++);
+	Writer& operator<<(const std::string &x) {
+		operator<<(x.c_str());
+		return *this;
 	}
 };
 
@@ -270,7 +321,7 @@ public:
  *
  *  @author Mark Rose <tm2@stm.lbl.gov>
  */
-class SIMDATA_EXPORT UnPacker: public Archive {
+class SIMDATA_EXPORT ArchiveReader: public Reader {
 	const char* _d;
 	int _n;
 	DataArchive* _archive;
@@ -280,104 +331,86 @@ public:
 	DataArchive* _getArchive() { return _archive; }
 	bool _loadAll() const { return _loadall; }
 
-	UnPacker(const char* data, int n, DataArchive* archive=0, bool loadall = true):
-		Archive(true) {
-		_n = n;
-		_d = data;
-		_archive = archive;
-		_loadall = loadall;
-	}
+	ArchiveReader(const char* data, int n, DataArchive* archive=0, bool loadall = true):
+		Reader(), _d(data), _n(n), _archive(archive), _loadall(loadall) { }
 
 	bool isComplete() const { return _n == 0; }
 	
-	void operator()(double &y) {
+	Reader& operator>>(double &y) {
 		_n -= sizeof(double);
 		if (_n < 0) throw DataUnderflow();
 		memcpy(&y, _d, sizeof(double));
 		_d += sizeof(double);
+		return *this;
 	}
-	void operator()(float &y) {
+	Reader& operator>>(float &y) {
 		_n -= sizeof(float);
 		if (_n < 0) throw DataUnderflow();
 		memcpy(&y, _d, sizeof(float));
 		_d += sizeof(float);
+		return *this;
 	}
-	void operator()(int &y) {
+	Reader& operator>>(int &y) {
 		_n -= sizeof(int);
 		if (_n < 0) throw DataUnderflow();
 		memcpy(&y, _d, sizeof(int));
 		_d += sizeof(int);
+		return *this;
 	}
-	void operator()(bool &y) {
+	Reader& operator>>(bool &y) {
 		char x;
-		operator()(x);
+		operator>>(x);
 		y = (x != 0);
+		return *this;
 	}
-	void operator()(short &y) {
+	Reader& operator>>(short &y) {
 		_n -= sizeof(short);
 		if (_n < 0) throw DataUnderflow();
 		memcpy(&y, _d, sizeof(short));
 		_d += sizeof(short);
+		return *this;
 	}
-	void operator()(char &y) {
+	Reader& operator>>(char &y) {
 		_n -= sizeof(char);
 		if (_n < 0) throw DataUnderflow();
 		memcpy(&y, _d, sizeof(char));
 		_d += sizeof(char);
+		return *this;
 	}
-	void operator()(hasht &y) {
+	Reader& operator>>(hasht &y) {
 		_n -= sizeof(hasht);
 		if (_n < 0) throw DataUnderflow();
 		memcpy(&y, _d, sizeof(hasht));
 		_d += sizeof(hasht);
+		return *this;
 	}
-	void operator()(char* &y) {
+	Reader& operator>>(char* &y) {
 		int n;
-		operator()(n);
+		operator>>(n);
 		// XXX this not really a data underflow
 		if (n < 0) throw DataUnderflow();
 		_n -= n;
 		if (_n < 0) throw DataUnderflow();
+		// XXX UGLY! this leaks memory unless the caller calls free()!!
 		y = (char*) malloc(sizeof(char)*(n+1));
 		assert(y != 0); // XXX should throw a memory exception
 		memcpy(y, _d, sizeof(char)*n);
 		y[n] = 0;
 		_d += n;
+		return *this;
 	}
-	void operator()(std::string &y) {
+	Reader& operator>>(std::string &y) {
 		char* c;
-		operator()(c);
+		operator>>(c);
 		y.assign(c);
 		free(c);
+		return *this;
 	}
-	template<typename T>
-	void operator()(std::vector<T> &y) {
-		int n;
-		operator()(n);
-		y.resize(n);
-		typename std::vector<T>::iterator i = y.begin();
-		while (n-- > 0) operator()(*i++);
-	}
-	void operator()(BaseType &y) {
+	Reader& operator>>(BaseType &y) {
 		y.serialize(*this);
+		return *this;
 	}
 };
-
-/*
- *  Need to do explicit casting in this case, since there's
- *  no way to have a virtual template method.
- */
-template<typename T>
-void Archive::operator()(std::vector<T> &x) {
-	Packer *packer = dynamic_cast<Packer*>(this);
-	if (packer != 0) { 
-		packer->operator()(x);
-		return;
-	}
-	UnPacker *unpacker = dynamic_cast<UnPacker*>(this);
-	assert(unpacker != 0);
-	unpacker->operator()(x);
-}
 
 
 NAMESPACE_SIMDATA_END

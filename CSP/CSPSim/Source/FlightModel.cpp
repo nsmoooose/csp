@@ -53,50 +53,6 @@ FlightModel::FlightModel()
 FlightModel::~FlightModel() {
 }
 
-void FlightModel::serialize(simdata::Archive &archive) {
-	Object::serialize(archive);
-	
-	archive(m_WingSpan);
-	archive(m_WingChord);
-	archive(m_WingArea);
-	archive(m_stallAOA);
-	
-	archive(m_CD0);
-	archive(m_CD_a);
-	archive(m_CD_de);
-	archive(m_CD_db);
-	
-	archive(m_CL0);
-	archive(m_CL_a);
-	archive(m_CL_adot);
-	archive(m_CL_q);
-	archive(m_CL_de);
-	
-	archive(m_CM0);
-	archive(m_CM_a);
-	archive(m_CM_adot);
-	archive(m_CM_q);
-	archive(m_CM_de);
-	
-	archive(m_CY_beta);
-	archive(m_CY_p);
-	archive(m_CY_r);
-	archive(m_CY_da);
-	archive(m_CY_dr);
-	
-	archive(m_CI_beta);
-	archive(m_CI_p);
-	archive(m_CI_r);
-	archive(m_CI_da);
-	archive(m_CI_dr);
-
-	archive(m_Cn_beta);
-	archive(m_Cn_p);
-	archive(m_Cn_r);
-	archive(m_Cn_da);
-	archive(m_Cn_dr);
-}
-
 void FlightModel::convertXML() {
 	// angle data are given in degree
 	m_stallAOA = toRadians(m_stallAOA);

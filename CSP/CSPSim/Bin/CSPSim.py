@@ -21,6 +21,8 @@
 
 import sys, os, os.path
 
+sys.path.insert(0, '../../SimData')
+
 #import Shell
 #from SimData.Compile import Compiler, CompilerUsageError
 
@@ -135,7 +137,11 @@ def compileData(args):
 		compiler.printUsage()
 		print
 		sys.exit(1)
-	compiler.compileAll()
+	try:
+		compiler.compileAll()
+	except RuntimeError, e:
+		print 'Aborting'
+		sys.exit(1)
 	print
 	
 def runClientNode(args):

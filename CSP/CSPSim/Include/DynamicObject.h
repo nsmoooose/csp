@@ -183,7 +183,6 @@ public:
 
 protected:
 
-	virtual void serialize(simdata::Archive&);
 	virtual void postCreate();
 
 	virtual void registerUpdate(UpdateMaster *master);

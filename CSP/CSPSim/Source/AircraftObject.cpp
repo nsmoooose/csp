@@ -64,11 +64,6 @@ AircraftObject::AircraftObject(): DynamicObject() {
 AircraftObject::~AircraftObject() {
 }
 
-void AircraftObject::serialize(simdata::Archive &archive) {
-	DynamicObject::serialize(archive);
-	// XXX archive(m_AircraftDynamics);
-}
-
 void AircraftObject::convertXML() {
 }
 

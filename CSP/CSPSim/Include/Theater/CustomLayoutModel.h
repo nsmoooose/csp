@@ -70,11 +70,6 @@ public:
 
 	virtual ~CustomLayoutModel();
 
-	virtual void serialize(simdata::Archive &archive) {
-		FeatureGroupModel::serialize(archive);
-		archive(m_FeatureLayout);
-	}
-
 };
 
 

@@ -155,11 +155,6 @@ public:
 		SIMDATA_XML("subsystems", System::m_Subsystems, false)
 	END_SIMDATA_XML_INTERFACE
 
-	void serialize(simdata::Archive &archive) {
-		simdata::Object::serialize(archive);
-		archive(m_Subsystems);
-	};
-
 	/** Cannot be a child of multiple parents.
 	 */
 	bool canBeAdded() const { return getNumParents() == 0; }

@@ -136,7 +136,6 @@ protected:
 	std::string m_Name;
 	int m_Version;
 
-	virtual void serialize(simdata::Archive&);
 	virtual void postCreate();
 
 };

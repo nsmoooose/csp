@@ -82,15 +82,6 @@ public:
 	osg::Geometry * getGeometry() const;
 	osg::StateSet * getStateSet() const;
 
-	virtual void serialize(simdata::Archive &archive) {
-		Object::serialize(archive);
-		archive(m_Texture);
-		archive(m_Width);
-		archive(m_Height);
-		archive(m_OffsetX);
-		archive(m_OffsetY);
-		archive(m_Lighting);
-	}
 };
 
 

@@ -1,18 +1,18 @@
 /* SimData: Data Infrastructure for Simulations
  * Copyright (C) 2002 Mark Rose <tm2@stm.lbl.gov>
- * 
+ *
  * This file is part of SimData.
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
@@ -81,10 +81,10 @@ class LinkBase;
  *  This macro adds standard boilerplate code to object classes.  The
  *  first parameter is the object class, while the second and third
  *  are major and minor version numbers.  The class name and version
- *  numbers are used to test binary compatibility during object 
+ *  numbers are used to test binary compatibility during object
  *  deserialization.  This version of the macro declares a non-static
  *  object, meaning that new instances will be created each time a
- *  particular object of this class is loaded from an archive.  To 
+ *  particular object of this class is loaded from an archive.  To
  *  share one instance, see SIMDATA_STATIC_OBJECT.
  */
 #define SIMDATA_OBJECT(a, major, minor)	\
@@ -107,7 +107,7 @@ class LinkBase;
 	__SIMDATA_ISSTATIC(true) \
 	__SIMDATA_NEW(a)
 	
-// Macro to automatically register an object class with the 
+// Macro to automatically register an object class with the
 // object registry.  This macro should be called for each
 // object class, preferably at the start of the cpp file
 // defining the class.
@@ -120,21 +120,21 @@ NAMESPACE_SIMDATA
 /** Base class for all classes representing packable data objects.
  *
  *  Derived classes must include the SIMDATA_OBJECT(classname, major, minor)
- *  macro in their class definition and the SIMDATA_REGISTER(classname) macro 
+ *  macro in their class definition and the SIMDATA_REGISTER(classname) macro
  *  in their implementation.
- * 
+ *
  *  The following methods must be extended in derived classes:
- *  @li @c pack        serialize object to archive (call superclass method 
+ *  @li @c pack        serialize object to archive (call superclass method
  *                     first)
- *  @li @c unpack      unserialize object from archive (call superclass method 
+ *  @li @c unpack      unserialize object from archive (call superclass method
  *  	               first)
  *  @li @c parseXML    parse loose XML cdata if present
  *  @li @c convertXML  post-process XML data
  *  @li @c postCreate  additional processing after deserialization
  *
- *  Objects should never be copied or handled directly by user code.  Use 
+ *  Objects should never be copied or handled directly by user code.  Use
  *  Ref<> handles to manipulate them by reference, and Link<> member variables
- *  to load them from data archives.  Objects set as 'static' are singletons 
+ *  to load them from data archives.  Objects set as 'static' are singletons
  *  managed by the DataArchive.
  *
  *  @author Mark Rose <mrose@stm.lbl.gov>
@@ -159,10 +159,16 @@ protected:
 	 *  Called after the newly created object has been
 	 *  deserialized.
 	 *
-	 *  Extend this method to do any initial processing 
+	 *  Extend this method to do any initial processing
 	 *  of the external data.
 	 */
 	virtual void postCreate() {}
+
+	/** Internal methods for saving the objects xml interface.
+	 *  Do not extend or call these methods.
+	 */
+	virtual void _serialize(Writer&) const { };
+	virtual void _serialize(Reader&) { };
 
 public:
 	explicit Object();
@@ -173,22 +179,48 @@ public:
 	 *  The method is automatically overridden by the SIMDATA_OBJECT
 	 *  macro, so you should never need to extend it manually.
 	 */
-	virtual Object* _new() const { 
-		assert(0); 
-		return 0; 
+	virtual Object* _new() const {
+		assert(0);
+		return 0;
 	}
 
 	__SIMDATA_CLASSDEF(Object, 0, 0)
-		
-	/** Serialize an object to or from a data archive 
+
+	// TODO ////////////////////////////////////////////////////////////////
+	// Remove serialize(), make serializeExtra() const and take a Packer
+	// class (subclass of Writer), and have deserializeExtra() take an
+	// UnPacker class (subclass of Reader).  This will require several
+	// const changes in the pack methods, and new Reader/Writer interfaces.
+	////////////////////////////////////////////////////////////////////////
+	
+	/** Serialize additional state to a data target.
 	 *
-	 *  Extend this method to serialize member variables to and
-	 *  from data archives.  Call the base class method first, then 
-	 *  apply the archive functor to each archived variable.
+	 *  Extend ths method only if the subclass must save additional state
+	 *  not covered by the external variable declarations (which are
+	 *  automatically saved and restored).  Call the base class method
+	 *  before saving state.
+	 *
+	 *  Any data written by this method must be read back in the same order
+	 *  in the deserializeExtra method, and the superclass implementation
+	 *  should be called first.
+	 */
+	virtual void serialize(Writer&) const;
+
+	/** Serialize additional state from a data source.
+	 *
+	 *  Extend ths method only if the subclass must load additional state
+	 *  not covered by the external variable declarations (which are
+	 *  automatically saved and restored).  Call the base class method
+	 *  before reading state.
+	 *
+	 *  Any data loaded by this method must be written in the same order
+	 *  in the serializeExtra method, and the superclass implementation
+	 *  should be called first.
+	 *
 	 *  Any additional processing of the data following retrieval
 	 *  should be done in the postCreate() method.
 	 */
-	virtual void serialize(Archive& archive);
+	virtual void serialize(Reader&);
 
 	/** Get a string representation of the object.
 	 *
@@ -209,7 +241,7 @@ public:
 
 	/** Get the path hash from which the object was instantiated.
 	 *
-	 *  Given the source DataArchive, this path hash can be 
+	 *  Given the source DataArchive, this path hash can be
 	 *  converted back to a path string using getPathString().
 	 */
 	hasht getPath() const;

@@ -30,6 +30,7 @@
 #include <SimData/Math.h>
 
 
+SIMDATA_REGISTER_INTERFACE(Animation)
 SIMDATA_REGISTER_INTERFACE(DrivenRotation)
 
 
@@ -43,14 +44,6 @@ Animation::~Animation()
 {
 }
 
-void Animation::serialize(simdata::Archive &archive) {
-	Object::serialize(archive);
-	archive(m_ModelID);
-	archive(m_ChannelName);
-	archive(m_LOD);
-	archive(m_Default);
-}
-
 DrivenRotation::DrivenRotation(): 
 	m_Axis(0.0f, 0.0f, 0.0f),
 	m_Limit0(-simdata::PI), 
@@ -60,18 +53,8 @@ DrivenRotation::DrivenRotation():
 {
 }
 
-
 DrivenRotation::~DrivenRotation()
 {
-}
-
-void DrivenRotation::serialize(simdata::Archive &archive) {
-	Animation::serialize(archive);
-	archive(m_Limit0);
-	archive(m_Limit1);
-	archive(m_Gain);
-	archive(m_Offset);
-	archive(m_Axis);
 }
 
 void DrivenRotation::postCreate() 

@@ -51,20 +51,6 @@ AircraftSimpleFCS::AircraftSimpleFCS()
 	m_MinG = -2.0;
 }
 
-void AircraftSimpleFCS::serialize(simdata::Archive &archive) {
-	System::serialize(archive);
-	archive(m_ElevatorLimit);
-	archive(m_ElevatorRate);
-	archive(m_AileronLimit);
-	archive(m_AileronRate);
-	archive(m_RudderLimit);
-	archive(m_RudderRate);
-	archive(m_AirbrakeLimit);
-	archive(m_AirbrakeRate);
-	archive(m_MaxG);
-	archive(m_MinG);
-}
-
 void AircraftSimpleFCS::convertXML() {
 	m_ElevatorLimit = toRadians(m_ElevatorLimit);
 	m_AileronLimit = toRadians(m_AileronLimit);

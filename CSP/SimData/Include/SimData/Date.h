@@ -944,7 +944,8 @@ public:
 
 	/** Serialize the date and time to or from a data archive.
 	 */
-	virtual void serialize(Archive&);
+	virtual void serialize(Reader&);
+	virtual void serialize(Writer&) const;
 
 	/** Parse date/time string from XML cdata.
 	 *

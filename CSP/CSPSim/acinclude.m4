@@ -237,14 +237,16 @@ AC_DEFUN(CSP_SIMDATA, [
   min_version=$1
   dnl AC_MSG_CHECKING(for simdata >= $min_version)
   AC_MSG_CHECKING(for simdata)
-  python -c 'import SimData' 1>/dev/null 2>&1
+  python -c 'import sys, os, os.path; path = os.path.abspath(os.path.join(os.getcwd(), "../SimData")); sys.path = [path]; import SimData' 1>foo 2>foo.err
   if test "$?" = "0" ; then
     AC_MSG_RESULT(yes)
+    SIMDATA_INCLUDE="-I../SimData/Include"
+    AC_SUBST(SIMDATA_INCLUDE)
   else
     AC_MSG_RESULT(no)
     AC_MSG_ERROR([
-      SimData does not appear to be installed.  CVS snapshots of SimData
-      are avalable from http://sourceforge.net/projects/csp
+      SimData could not be found.  Be sure to check out the
+      full CSP trunk from https://www.zerobar.net/svn/csp.
     ])
   fi
 ])

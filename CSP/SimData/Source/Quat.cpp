@@ -53,11 +53,12 @@ NAMESPACE_SIMDATA
 const Quat Quat::IDENTITY(0.0, 0.0, 0.0, 1.0);
 const Quat Quat::ZERO(0.0, 0.0, 0.0, 0.0);
 
-void Quat::serialize(Archive &archive) {
-	archive(_w);
-	archive(_x);
-	archive(_y);
-	archive(_z);
+void Quat::serialize(Reader &reader) {
+	reader >> _w >> _x >> _y >> _z;
+}
+
+void Quat::serialize(Writer &writer) const {
+	writer << _w << _x << _y << _z;
 }
 
 void Quat::parseXML(const char* cdata) {

@@ -124,7 +124,8 @@ public:
 	X getValue(std::vector<float> const &) const;
 	void load(std::vector<X> const &values, std::vector< std::vector<X> > const &breaks);
 	void interpolate(std::vector<int> const &dim, Interpolation::Modes mode);
-	virtual void serialize(Archive&);
+	virtual void serialize(Reader&);
+	virtual void serialize(Writer&) const;
 	%rename(__repr__) asString() const;
 	virtual std::string asString() const;
 	virtual std::string typeString() const;

@@ -50,10 +50,6 @@ public:
 
 	virtual ~Objective();
 
-	virtual void serialize(simdata::Archive &archive) {
-		FeatureGroup::serialize(archive);
-		archive(m_StrategicValueModifier);
-	}
 };
 
 

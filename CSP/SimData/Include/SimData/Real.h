@@ -126,7 +126,8 @@ public:
 	 *  Only the distribution parameters (mean and sigma) are saved.
 	 *  A new value will be generated from the saved distribution.
 	 */
-	virtual void serialize(Archive&);
+	virtual void serialize(Reader&);
+	virtual void serialize(Writer&) const;
 
 	/**
 	 * Internal method used by the XML parser.

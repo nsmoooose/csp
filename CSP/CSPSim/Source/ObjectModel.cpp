@@ -184,24 +184,6 @@ ObjectModel::ObjectModel(): simdata::Object() {
 ObjectModel::~ObjectModel() {
 }
 
-void ObjectModel::serialize(simdata::Archive &archive) {
-	Object::serialize(archive);
-	archive(m_ModelPath);
-	archive(m_Axis0);
-	archive(m_Axis1);
-	archive(m_ViewPoint);
-	archive(m_Offset);
-	archive(m_Scale);
-	archive(m_Smooth);
-	archive(m_Filter);
-	archive(m_Contacts);
-	archive(m_ElevationCorrection);
-	archive(m_PolygonOffset);
-	archive(m_CullFace);
-	archive(m_LandingGear);
-	archive(m_Animations);
-}
-
 void ObjectModel::postCreate() {
 	Object::postCreate();
 	loadModel();

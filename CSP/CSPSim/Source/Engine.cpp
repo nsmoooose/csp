@@ -44,13 +44,6 @@ ThrustData::ThrustData() {
 ThrustData::~ThrustData() {
 }
 
-void ThrustData::serialize(simdata::Archive &archive) {
-	Object::serialize(archive);
-	archive(m_idle_thrust); 
-	archive(m_mil_thrust);
-	archive(m_ab_thrust);
-} 
-
 float ThrustData::getMil(float altitude, float mach) const {
 	return m_mil_thrust[altitude][mach];
 }
@@ -70,16 +63,6 @@ Engine::Engine(simdata::Vector3 const &thrustDirection) {
 
 Engine::~Engine() {
 }
-
-void Engine::serialize(simdata::Archive &archive) {
-	Object::serialize(archive);
-	archive(m_ThrustData);
-	archive(m_EngineIdleRpm); 
-	archive(m_EngineAbRpm);
-	archive(m_ThrustDirection);
-	archive(m_EngineOffset);
-	archive(m_SmokeEmitterLocation);
-} 
 
 void Engine::setThrustDirection(simdata::Vector3 const& thrustDirection) {
 	m_ThrustDirection = thrustDirection;
@@ -122,11 +105,6 @@ simdata::Vector3 Engine::getThrust() const {
 //	return thrust;
 //}
  
-
-void EngineDynamics::serialize(simdata::Archive &archive) {
-	Object::serialize(archive);
-	archive(m_Engine);
-} 
 
 void EngineDynamics::postCreate() { 
 }

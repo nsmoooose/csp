@@ -46,11 +46,8 @@
 #include <SimData/Export.h>
 
 
-
-
 NAMESPACE_SIMDATA
 
-class Archive;
 
 /** Base class for interpolated data.
  * 
@@ -85,7 +82,8 @@ public:
 
 	/** Serialize to or from a data archive.
 	 */
-	virtual void serialize(Archive&);
+	virtual void serialize(Reader&);
+	virtual void serialize(Writer&) const;
 	
 	virtual value_t getValue(value_t, value_t) const;
 	virtual value_t getPrecise(value_t, value_t) const;
@@ -145,7 +143,8 @@ public:
 
 	/** Serialize to or from a data archive.
 	 */
-	virtual void serialize(Archive&);
+	virtual void serialize(Reader&);
+	virtual void serialize(Writer&) const;
 
 	/** Get a list of the x values of the source data set.
 	 */
@@ -223,7 +222,8 @@ public:
 
 	/** Serialize to or from a data archive.
 	 */
-	virtual void serialize(Archive&);
+	virtual void serialize(Reader&);
+	virtual void serialize(Writer&) const;
 
 	vector_t getXBreaks() const;
 	vector_t getYBreaks() const;

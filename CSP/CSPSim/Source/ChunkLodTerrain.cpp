@@ -95,19 +95,6 @@ ChunkLodTerrain::~ChunkLodTerrain()
 	}
 }
 
-void ChunkLodTerrain::serialize(simdata::Archive &archive) {
-	TerrainObject::serialize(archive);
-	archive(m_ChunkFile);
-	archive(m_TextureFile);
-	archive(m_ElevationFile);
-	archive(m_ElevationScale);
-	archive(m_UseLoaderThread);
-	archive(m_LatticeWidth);
-	archive(m_LatticeHeight);
-	archive(m_BaseScreenError);
-	archive(m_BaseTexelSize);
-}
-
 void ChunkLodTerrain::unload() {
 	if (m_Active) deactivate();
 	if (m_Loaded) {

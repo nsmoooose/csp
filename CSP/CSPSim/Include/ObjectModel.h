@@ -125,8 +125,7 @@ protected:
 	ContactList m_Contacts;
 	std::vector<simdata::Vector3> m_LandingGear;
 	simdata::Link<Animation>::vector m_Animations;
-	
-	virtual void serialize(simdata::Archive&);
+
 	virtual void postCreate();
 	virtual void loadModel();
 	void addContactMarkers();

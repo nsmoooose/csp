@@ -120,7 +120,8 @@ public:
 
 	/** Serialize to or from a data archive.
 	 */
-	virtual void serialize(Archive&);
+	virtual void serialize(Reader&);
+	virtual void serialize(Writer&) const;
 
 	/**
 	 * Test for 'no-path' (Object ID == 0).
@@ -396,7 +397,8 @@ n
 	 *  asking the current DataArchive to instantiate an
 	 *  instance of the path.
 	 */
-	virtual void serialize(Archive&);
+	virtual void serialize(Reader&);
+	virtual void serialize(Writer&) const;
 
 	/**
 	 * String representation.

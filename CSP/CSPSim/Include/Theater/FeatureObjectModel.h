@@ -95,13 +95,6 @@ public:
 
 	virtual ~FeatureObjectModel();
 
-	virtual void serialize(simdata::Archive &archive) {
-		Object::serialize(archive);
-		archive(m_HitPoints);
-		archive(m_Value);
-		archive(m_ObjectModel);
-	}
-
 };
 
 

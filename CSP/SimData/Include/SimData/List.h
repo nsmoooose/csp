@@ -64,7 +64,8 @@ public:
 
 	/** Serialize to or from a data archive.
 	 */
-	virtual void serialize(Archive&);
+	virtual void serialize(Reader&);
+	virtual void serialize(Writer&) const;
 
 	std::string asString() const;
 
@@ -79,26 +80,13 @@ T& List<T>::extend() {
 }
 
 template<typename T>
-void List<T>::serialize(Archive &archive) {
-	if (archive.isLoading()) {
-		T a;
-		int size;
-		archive(size);
-		assert(size >= 0);
-		this->clear();
-		this->reserve(size);
-		for (int i = 0; i < size; ++i) {
-			archive(a);
-			this->push_back(a);
-		}
-	} else {
-		typename std::vector<T>::iterator a;
-		int s = static_cast<int>(size());
-		archive(s);
-		for (a=begin(); a!=end(); ++a) {
-			archive(*a);
-		}
-	}
+void List<T>::serialize(Reader &reader) {
+	reader >> static_cast<std::vector<T>&>(*this);
+}
+
+template<typename T>
+void List<T>::serialize(Writer &writer) const {
+	writer << static_cast<const std::vector<T>&>(*this);
 }
 
 template<typename T>

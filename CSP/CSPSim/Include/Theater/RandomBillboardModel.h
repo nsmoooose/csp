@@ -75,14 +75,6 @@ public:
 
 	virtual ~RandomBillboardModel();
 
-	virtual void serialize(simdata::Archive &archive) {
-		FeatureGroupModel::serialize(archive);
-		archive(m_Models);
-		archive(m_Density);
-		archive(m_MinimumSpacing);
-		archive(m_Seed);
-	}
-
 	/**
 	 * Generate the layout.
 	 */

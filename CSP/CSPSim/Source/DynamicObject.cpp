@@ -37,6 +37,10 @@
 
 #include "Networking.h"
 
+
+SIMDATA_REGISTER_INTERFACE(DynamicObject)
+
+
 using bus::Kinetics;
 
 
@@ -68,15 +72,6 @@ DynamicObject::DynamicObject(): SimObject()
 
 DynamicObject::~DynamicObject()
 {
-}
-
-void DynamicObject::serialize(simdata::Archive &archive) {
-	SimObject::serialize(archive);
-	archive(m_Model);
-	archive(m_ReferenceMass);
-	archive(m_ReferenceInertia);
-	archive(m_AgentModel);
-	archive(m_HumanModel);
 }
 
 void DynamicObject::postCreate() {

@@ -110,13 +110,11 @@ public:
 		float r;
 		float g;
 		float b;
-		void serialize(simdata::Archive &archive) {
-			archive(Ra);
-			archive(De);
-			archive(I);
-			archive(r);
-			archive(g);
-			archive(b);
+		virtual void serialize(simdata::Writer &writer) const {
+			writer << Ra << De << I << r << g << b;
+		}
+		virtual void serialize(simdata::Reader &reader) {
+			reader >> Ra >> De >> I >> r >> g >> b;
 		}
 		bool parse(StringTokenizer &t) {
 			if (t.size() < 6) return false;
@@ -142,18 +140,23 @@ public:
 		SIMDATA_XML("magnitude_cutoff", StarCatalog::m_MagnitudeCutoff, false)
 	END_SIMDATA_XML_INTERFACE
 
-	void serialize(simdata::Archive &archive) {
-		Object::serialize(archive);
-		archive(m_Source);
-		archive(m_MagnitudeCutoff);
-		int n = static_cast<int>(_stars.size());
-		archive(n);
-		if (archive.isLoading()) {
-			_stars.resize(n);
-		} 
+	void serialize(simdata::Writer &writer) const {
+		Object::serialize(writer);
+		writer << static_cast<int>(_stars.size());
+		std::vector<Star>::const_iterator i;
+		for (i = _stars.begin(); i != _stars.end(); i++) {
+			i->serialize(writer);
+		}
+	}
+
+	void serialize(simdata::Reader &reader) {
+		Object::serialize(reader);
+		int n;
+		reader >> n;
+		_stars.resize(n);
 		std::vector<Star>::iterator i;
 		for (i = _stars.begin(); i != _stars.end(); i++) {
-			i->serialize(archive);
+			i->serialize(reader);
 		}
 	}
 

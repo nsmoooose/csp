@@ -35,12 +35,15 @@ random::Taus2 Real::_rng;
 
 // class Real
 
-void Real::serialize(Archive &archive) {
-	archive(_mean);
-	archive(_sigma);
-	if (archive.isLoading()) {
-		regen();
-	}
+void Real::serialize(Reader &reader) {
+	reader >> _mean;
+	reader >> _sigma;
+	regen();
+}
+
+void Real::serialize(Writer &writer) const {
+	writer << _mean;
+	writer << _sigma;
 }
 
 void Real::parseXML(const char* cdata) {

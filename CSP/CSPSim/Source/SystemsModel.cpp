@@ -67,15 +67,6 @@ void SystemsModel::postCreate() {
 	}
 }
 
-
-void SystemsModel::serialize(simdata::Archive &archive) {
-	System::serialize(archive);
-	archive(m_PhysicsModel);
-	// XXX temporarily disabled (no controller classes yet)
-	//archive(m_Controller);
-}
-
-
 void SystemsModel::getInfo(InfoList &info) {
 	accept(new InfoVisitor(info));
 }

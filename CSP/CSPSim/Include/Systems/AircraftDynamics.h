@@ -97,7 +97,6 @@ public:
 	}
 
 protected:
-	void serialize(simdata::Archive&);
 	void postCreate();
 
 	void registerChannels(Bus::Ref) {

@@ -540,15 +540,15 @@ void GeoPos::parseXML(const char* cdata) {
 	} else throw ParseException("SYNTAX ERROR: empty vector");
 }
 
-
-void GeoPos::serialize(Archive &archive) {
-	Vector3::serialize(archive);
-	if (archive.isLoading()) {
-		_stale_lla = true;
-		_stale_utm = true;
-	}
+void GeoPos::serialize(Reader &reader) {
+	Vector3::serialize(reader);
+	_stale_lla = true;
+	_stale_utm = true;
 }
 
+void GeoPos::serialize(Writer &writer) const {
+	Vector3::serialize(writer);
+}
 
 void GeoPos::_updateLLA() const {
 	_lon = atan2(_y, _x);
@@ -926,15 +926,13 @@ void UTM::parseXML(const char *cdata)
 	} else throw ParseException("SYNTAX ERROR: empty vector");
 }
 
-void UTM::serialize(Archive &archive) 
-{
-	archive(_E);
-	archive(_N);
-	archive(_zone);
-	archive(_designator);
-	archive(_alt);
+void UTM::serialize(Reader &reader) {
+	reader >> _E >> _N >> _zone >> _designator >> _alt;
 }
 
+void UTM::serialize(Writer &writer) const {
+	writer << _E << _N << _zone << _designator << _alt;
+}
 
 
 ////////////////////////////////////////////////////////////////////////////////////
@@ -998,10 +996,12 @@ void LLA::parseXML(const char* cdata) {
 	throw ParseException("SYNTAX ERROR: expecting 'latitude longitude altitude'");
 }
 
-void LLA::serialize(Archive &archive) {
-	archive(_lat);
-	archive(_lon);
-	archive(_alt);
+void LLA::serialize(Reader &reader) {
+	reader >> _lat >> _lon >> _alt;
+}
+
+void LLA::serialize(Writer &writer) const {
+	writer << _lat << _lon << _alt;
 }
 
 void LLA::setDegrees(double lat, double lon, double alt) {

@@ -93,7 +93,6 @@ protected:
 	virtual void importChannels(Bus *bus);
 	virtual void registerChannels(Bus *bus);
 	
-	virtual void serialize(simdata::Archive &);
 	virtual void convertXML();
 	virtual void postCreate();
 	virtual double onUpdate(double dt);

@@ -93,7 +93,7 @@ public:
 
 	EXTEND_SIMDATA_XML_INTERFACE(SystemsModel, System)
 		SIMDATA_XML("physics_model", SystemsModel::m_PhysicsModel, false)
-		SIMDATA_XML("controller", SystemsModel::m_Controller, false)
+		//SIMDATA_XML("controller", SystemsModel::m_Controller, false)
 	END_SIMDATA_XML_INTERFACE
 
 	/** Initialize from an existing model.
@@ -119,7 +119,6 @@ public:
 	}
 
 	virtual void postCreate();
-	virtual void serialize(simdata::Archive &archive);
 
 	simdata::Ref<PhysicsModel> getPhysicsModel() const;
 

@@ -254,9 +254,9 @@ DataArchive *DataArchive::getDefault() {
 void DataArchive::addObject(Object& a, std::string const &path) {
 	if (!_is_read && !_finalized) {
 		int offset = ftell(_f);
-		Packer p(_f);
-		a.serialize(p);
-		int length = p.getCount();
+		ArchiveWriter writer(_f);
+		a.serialize(writer);
+		int length = writer.getCount();
 		SIMDATA_LOG(LOG_ARCHIVE, LOG_DEBUG, "DataArchive: adding " << path << " (" << length << " bytes) [" << hash_string(path) << "]");
 		_addEntry(offset, length, a.getClassHash(), path);
 	}
@@ -375,11 +375,11 @@ const LinkBase DataArchive::getObject(const Path& path, std::string const &path_
 	assert(buffer);
 	fseek(_f, offset, SEEK_SET);
 	fread(buffer, length, 1, _f);
-	UnPacker p(buffer, length, this, _chain);
+	ArchiveReader reader(buffer, length, this, _chain);
 	SIMDATA_LOG(LOG_ARCHIVE, LOG_DEBUG, "got object " << dup->getClassName());
 	dup->_setPath(id);
 	try {
-		dup->serialize(p);
+		dup->serialize(reader);
 	} catch (DataUnderflow &e) {
 		if (temp_buffer.size() == 0) --_buffer;
 		e.clear();	
@@ -390,7 +390,7 @@ const LinkBase DataArchive::getObject(const Path& path, std::string const &path_
 		dup->postCreate();
 	}
 	if (temp_buffer.size() == 0) --_buffer;
-	if (!p.isComplete()) {
+	if (!reader.isComplete()) {
 		SIMDATA_LOG(LOG_ARCHIVE, LOG_ERROR, "INTERNAL ERROR: Object extraction incomplete for class '" << dup->getClassName() << "': " << from << " (data overflow).");
 		throw CorruptArchive("Object extraction incomplete for class '" + std::string(dup->getClassName()) + "'");
 	}

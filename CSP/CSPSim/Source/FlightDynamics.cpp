@@ -58,11 +58,6 @@ FlightDynamics::FlightDynamics():
 FlightDynamics::~FlightDynamics() {
 }
 
-void FlightDynamics::serialize(simdata::Archive &archive) {
-	BaseDynamics::serialize(archive);
-	archive(m_FlightModel);
-}
-
 void FlightDynamics::registerChannels(Bus *bus) {
 	assert(bus!=0);
 	b_Alpha = bus->registerLocalDataChannel<double>("FlightDynamics.Alpha", 0.0);

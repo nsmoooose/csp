@@ -87,7 +87,6 @@ protected:
 	virtual void registerChannels(Bus::Ref bus);
 	virtual void bindChannels(Bus::Ref bus);
 
-	virtual void serialize(simdata::Archive&);
 	virtual void postCreate();
 	virtual void convertXML();
 

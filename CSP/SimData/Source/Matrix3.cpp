@@ -314,16 +314,28 @@ std::string Matrix3::asString() const {
 	return repr.str();
 }
 
-void Matrix3::serialize(Archive &archive) {
-	archive(_mat[0][0]);
-	archive(_mat[0][1]);
-	archive(_mat[0][2]);
-	archive(_mat[1][0]);
-	archive(_mat[1][1]);
-	archive(_mat[1][2]);
-	archive(_mat[2][0]);
-	archive(_mat[2][1]);
-	archive(_mat[2][2]);
+void Matrix3::serialize(Reader &reader) {
+	reader >> _mat[0][0];
+	reader >> _mat[0][1];
+	reader >> _mat[0][2];
+	reader >> _mat[1][0];
+	reader >> _mat[1][1];
+	reader >> _mat[1][2];
+	reader >> _mat[2][0];
+	reader >> _mat[2][1];
+	reader >> _mat[2][2];
+}
+
+void Matrix3::serialize(Writer &writer) const {
+	writer << _mat[0][0];
+	writer << _mat[0][1];
+	writer << _mat[0][2];
+	writer << _mat[1][0];
+	writer << _mat[1][1];
+	writer << _mat[1][2];
+	writer << _mat[2][0];
+	writer << _mat[2][1];
+	writer << _mat[2][2];
 }
 
 void Matrix3::parseXML(const char* cdata) {

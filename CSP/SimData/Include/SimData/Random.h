@@ -388,7 +388,7 @@ class SIMDATA_EXPORT RandomInterface {
 protected:
 	/** Base class for storing the state of a random number generator.
 	 */
-	struct _State: Referenced { };
+	struct _State: Referenced { virtual ~_State() {} };
 public:
 	typedef Ref<_State> State;
 	typedef unsigned long int SeedType;

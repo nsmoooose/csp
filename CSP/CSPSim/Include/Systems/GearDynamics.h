@@ -54,7 +54,7 @@ public:
 	END_SIMDATA_XML_INTERFACE
 
 	GearDynamics();
-	virtual void serialize(simdata::Archive&);
+
 	void Retract();
 	void Extend();
 	bool getExtended() const;

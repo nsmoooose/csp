@@ -47,8 +47,13 @@ InterpolatedData<T>::~InterpolatedData() {
 }
 
 template <typename T>
-void InterpolatedData<T>::serialize(Archive &archive) {
-	archive(method);
+void InterpolatedData<T>::serialize(Reader &reader) {
+	reader >> method;
+}
+
+template <typename T>
+void InterpolatedData<T>::serialize(Writer &writer) const {
+	writer << method;
 }
 
 template <typename T>
@@ -120,23 +125,24 @@ const Curve & Curve::operator=(const Curve &c) {
 	return *this;
 }
 
-void Curve::serialize(Archive &archive) {
-	InterpolatedData<value_t>::serialize(archive);
-	if (archive.isLoading()) {
-		vector_t breaks;
-		archive(breaks);
-		setBreaks(breaks);
-		vector_t data;
-		archive(data);
-		setData(data);
-		value_t spacing;
-		archive(spacing);
-		interpolate(spacing);
-	} else {
-		archive(_breaks);
-		archive(_data);
-		archive(_spacing);
-	}
+void Curve::serialize(Reader &reader) {
+	InterpolatedData<value_t>::serialize(reader);
+	vector_t breaks;
+	vector_t data;
+	value_t spacing;
+	reader >> breaks;
+	reader >> data;
+	reader >> spacing;
+	setBreaks(breaks);
+	setData(data);
+	interpolate(spacing);
+}
+
+void Curve::serialize(Writer &writer) const {
+	InterpolatedData<value_t>::serialize(writer);
+	writer << _breaks;
+	writer << _data;
+	writer << _spacing;
 }
 
 Curve::vector_t Curve::getBreaks() {
@@ -263,29 +269,31 @@ int Table::isValid() const {
 	return _valid; 
 }
 
-void Table::serialize(Archive &archive) {
-	InterpolatedData<value_t>::serialize(archive);
-	if (archive.isLoading()) {
-		vector_t breaks, data;
-		archive(breaks);
-		setXBreaks(breaks);
-		archive(breaks);
-		setYBreaks(breaks);
-		archive(data);
-		setData(data);
-		value_t spacing;
-		archive(spacing);
-		setXSpacing(spacing);
-		archive(spacing);
-		setYSpacing(spacing);
-		interpolate();
-	} else {
-		archive(_x_breaks);
-		archive(_y_breaks);
-		archive(_data);
-		archive(_x_spacing);
-		archive(_y_spacing);
-	}
+void Table::serialize(Reader &reader) {
+	InterpolatedData<value_t>::serialize(reader);
+	vector_t breaks;
+	vector_t data;
+	reader >> breaks;
+	setXBreaks(breaks);
+	reader >> breaks;
+	setYBreaks(breaks);
+	reader >> data;
+	setData(data);
+	value_t spacing;
+	reader >> spacing;
+	setXSpacing(spacing);
+	reader >> spacing;
+	setYSpacing(spacing);
+	interpolate();
+}
+
+void Table::serialize(Writer &writer) const {
+	InterpolatedData<value_t>::serialize(writer);
+	writer << _x_breaks;
+	writer << _y_breaks;
+	writer << _data;
+	writer << _x_spacing;
+	writer << _y_spacing;
 }
 
 Table::vector_t Table::getXBreaks() const {

@@ -433,44 +433,41 @@ void LUT<N,X>::load(std::vector<X> const &values, std::vector< std::vector<X> > 
 	load(values, Breaks(breaks));
 }
 
-/**
- * Serialize an object to or from a data archive.
- */
 template <int N, class X>
-void LUT<N,X>::serialize(Archive &archive)  {
-	if (archive.isLoading()) {
-		checkNotInterpolated();
-		X x0, x1;
-		int dim, n;
-		archive(dim);
-		if (dim != N) {
-			std::stringstream msg;
-			msg << "LUT<" << N << ">::serialize table of dimension " << dim;
-			throw InterpolationUnpackMismatch(msg.str());
-		}
-		archive(x0);
-		archive(x1);
-		archive(n);
-		TableVector *_table = new TableVector(n);
-		for (int i = 0; i < n; i++) {
-			archive((*_table)[i]);
-		}
-		substitute(_table);
-		InterpolationType<X>::postInterpolation(x0, x1, n-1);
-	} else {
-		checkInterpolated();
-		int n = tableSize();
-		int dim = N;
-		archive(dim);
-		archive(m_X0);
-		archive(m_X1);
-		archive(n);
-		for (int i = 0; i < n; ++i) {
-			table(i).serialize(archive);
-		}
+void LUT<N,X>::serialize(Reader &reader) {
+	checkNotInterpolated();
+	X x0, x1;
+	int dim, n;
+	reader >> dim;
+	if (dim != N) {
+		std::stringstream msg;
+		msg << "LUT<" << N << ">::serialize table of dimension " << dim;
+		throw InterpolationUnpackMismatch(msg.str());
 	}
+	reader >> x0;
+	reader >> x1;
+	reader >> n;
+	TableVector *_table = new TableVector(n);
+	for (int i = 0; i < n; i++) {
+		reader >> ((*_table)[i]);
+	}
+	substitute(_table);
+	InterpolationType<X>::postInterpolation(x0, x1, n-1);
 }
 
+template <int N, class X>
+void LUT<N,X>::serialize(Writer &writer) const {
+	checkInterpolated();
+	int n = tableSize();
+	int dim = N;
+	writer << dim;
+	writer << m_X0;
+	writer << m_X1;
+	writer << n;
+	for (int i = 0; i < n; ++i) {
+		table(i).serialize(writer);
+	}
+}
 
 template <int N, class X>
 std::string LUT<N,X>::asString() const {
@@ -694,40 +691,40 @@ void LUT<1,X>::load(std::vector<X> const &values, std::vector< std::vector<X> > 
 	load(values, Breaks(breaks));
 }
 
-/**
- * Serialize an object to or from a data archive.
- */
 template <typename X>
-void LUT<1,X>::serialize(Archive &archive) {
+void LUT<1,X>::serialize(Reader &reader) {
 	int dim = 1;
-	archive(dim);
-	if (archive.isLoading()) {
-		checkNotInterpolated();
-		X x0, x1;
-		int n;
-		if (dim != 1) {
-			std::stringstream msg;
-			msg << "LUT<1>::serialize table of dimension " << dim;
-			throw InterpolationUnpackMismatch(msg.str());
-		}
-		archive(x0);
-		archive(x1);
-		archive(n);
-		TableVector *_table = new TableVector(n);
-		for (int i = 0; i < n; i++) {
-			archive((*_table)[i]);
-		}
-		substitute(_table);
-		InterpolationType<X>::postInterpolation(x0, x1, n-1);
-	} else {
-		checkInterpolated();
-		int n = tableSize();
-		archive(m_X0);
-		archive(m_X1);
-		archive(n);
-		for (int i = 0; i < n; i++) {
-			archive(table(i));
-		}
+	reader >> dim;
+	checkNotInterpolated();
+	X x0, x1;
+	int n;
+	if (dim != 1) {
+		std::stringstream msg;
+		msg << "LUT<1>::serialize table of dimension " << dim;
+		throw InterpolationUnpackMismatch(msg.str());
+	}
+	reader >> x0;
+	reader >> x1;
+	reader >> n;
+	TableVector *_table = new TableVector(n);
+	for (int i = 0; i < n; i++) {
+		reader >> ((*_table)[i]);
+	}
+	substitute(_table);
+	InterpolationType<X>::postInterpolation(x0, x1, n-1);
+}
+
+template <typename X>
+void LUT<1,X>::serialize(Writer &writer) const {
+	int dim = 1;
+	writer << dim;
+	checkInterpolated();
+	int n = tableSize();
+	writer << m_X0;
+	writer << m_X1;
+	writer << n;
+	for (int i = 0; i < n; i++) {
+		writer << table(i);
 	}
 }
 

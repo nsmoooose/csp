@@ -1,5 +1,5 @@
 /* SimData: Data Infrastructure for Simulations
- * Copyright (C) 2002 Mark Rose <tm2@stm.lbl.gov>
+ * Copyright (C) 2002, 2003, 2004 Mark Rose <tm2@stm.lbl.gov>
  * 
  * This file is part of SimData.
  * 
@@ -39,6 +39,10 @@
 #include <SimData/Log.h>
 #include <SimData/Properties.h>
 
+#ifdef SWIG
+// silence SWIG warning about NonCopyable
+%import "SimData/Properties.h"
+#endif
 
 NAMESPACE_SIMDATA
 
@@ -51,6 +55,44 @@ class LinkBase;
 SIMDATA_EXCEPTION(ConversionError);
 
 
+/** Base class for reference counted objects.
+ *
+ *  Inspired by OpenSceneGraph's osg::Referenced class.
+ *
+ *  @author Mark Rose <mrose@stm.lbl.gov>
+ */
+class SIMDATA_EXPORT Referenced: public NonCopyable {
+
+template <class T> friend class Ref;
+friend class ReferencePointer;
+
+protected:
+	Referenced(): __count(0) {
+		//SIMDATA_LOG(LOG_ALL, LOG_ERROR, "Referenced(" << this << ")");
+	}
+
+	virtual ~Referenced() {
+		//SIMDATA_LOG(LOG_ALL, LOG_ERROR, "~Referenced(" << this << ", " << __count << ")");
+		if (__count != 0) {
+			SIMDATA_LOG(LOG_ALL, LOG_ERROR, "simdata::Referenced(" << std::hex << int(this) << ") deleted with non-zero reference count (" << __count << "): memory corruption possible.");
+		}
+	}
+
+private:
+	inline void _incref() const {
+		//SIMDATA_LOG(LOG_ALL, LOG_ERROR, "_incref(" << this << ", " << __count << ")");
+		++__count;
+	}
+	inline void _decref() const {
+		//SIMDATA_LOG(LOG_ALL, LOG_ERROR, "_decref(" << this << ", " << __count << ")");
+		assert(__count > 0);
+		if (0 == --__count) delete this;
+	}
+	inline unsigned _count() const { return __count; }
+	mutable unsigned __count;
+};
+
+
 /** Reference counting smart-pointer.
  *
  *  Reference counting smart-pointer for use with simdata::Referenced
@@ -61,60 +103,57 @@ SIMDATA_EXCEPTION(ConversionError);
  *
  *  @author Mark Rose <mrose@stm.lbl.gov>
  */
-template<class T>
-class Ref {
+template<class CLASS>
+class Ref: protected HasBase<CLASS, Referenced> {
 public:
-	typedef std::vector< Ref<T> > vector;
-	typedef std::list< Ref<T> > list;
+	typedef std::vector< Ref<CLASS> > vector;
+	typedef std::list< Ref<CLASS> > list;
 
 	/* TODO add Python bindings
 	// SWIG python specific comparisons
 	bool __eq__(const Ref& other);
-	bool __ne__(const Ref& other); 
+	bool __ne__(const Ref& other);
 	*/
-	
 
 	/** Create a null reference.
 	 */
-	Ref(): _reference(0) {
-	}
-
+	Ref(): HasBase<CLASS, Referenced>(), _reference(0) { }
 
 	/** Create a new reference.
 	 */
-	Ref(T* ptr): _reference(ptr) {
-		if (ptr) ptr->_incref();
+	Ref(CLASS* ptr): HasBase<CLASS, Referenced>(), _reference(ptr) {
+		if (_reference) _reference->_incref();
 	}
 
 	/** Light-weight copy with reference counting.
 	 */
-	Ref(LinkBase const & r): _reference(0) {
+	Ref(LinkBase const & r): HasBase<CLASS, Referenced>(), _reference(0) {
 		_rebind(r._get());
 	}
 
 	/** Light-weight copy with reference counting.
 	 */
 	template <typename Q>
-	Ref(Ref<Q> const & r): _reference(0) {
+	Ref(Ref<Q> const & r): HasBase<CLASS, Referenced>(), _reference(0) {
 		Q *rp = r.get();
 		if (rp != 0) {
 			//rp->_incref();
-			//_reference = static_cast<T*>(rp);
+			//_reference = static_cast<CLASS*>(rp);
 			_rebind(rp);
 		}
 	}
 
 	/** Light-weight copy with reference counting.
 	 */
-	Ref(Ref const & r): _reference(r._reference) {
-		if (_reference != 0) _reference->_incref();
+	Ref(Ref const & r): HasBase<CLASS, Referenced>(), _reference(r._reference) {
+		if (_reference) _reference->_incref();
 	}
 
 	/** Decrement the reference count, and potentially destroy
 	 *  the referenced object.
 	 */
-	~Ref() {
-		if (_reference) _reference->_decref();
+	~Ref() { 
+		_unbind();
 	}
 
 	/** Returns true if this is the only reference.
@@ -141,6 +180,10 @@ public:
 	}
 
 	/** Light-weight copy with reference counting.
+	 *
+	 *  Although this methods _looks_ redundant with the templated Ref<Q>
+	 *  assignment operator, it is _essential_.  Without it, C++ generates
+	 *  a default copy constructor that breaks reference counting.
 	 */
 	Ref const & operator=(Ref const & r) {
 		_rebind(r.get());
@@ -168,28 +211,27 @@ public:
 	 */
 	inline void *operator=(void *ptr) {
 		assert(ptr==0);
-		if (_reference != 0) _reference->_decref();
+		_unbind();
 		_reference = 0;
 		return ptr;
 	}
 #endif // SWIG
 
-
 	/** Dereference.
 	 */
-	inline T* get() const {
+	inline CLASS* get() const {
 		return _reference;
 	}
 
 	/** Dereference.
 	 */
-	inline T* operator->() const {
+	inline CLASS* operator->() const {
 		return _reference;
 	}
 
 	/** Dereference.
 	 */
-	inline T & operator*() const {
+	inline CLASS & operator*() const {
 		return *_reference;
 	}
 
@@ -233,15 +275,28 @@ public:
 		return _reference != p;
 	}
 
-
 protected:
-	/** Rebind to a new object.
+
+	/** Unbind from the instance, deleting it if we are holding the only reference.
+	 */
+	inline void _unbind() {
+		if (_reference) {
+			_reference->_decref();
+			_reference = 0;
+		}
+	}
+
+	/** Rebind to a new object.  Allows rebinding to base class pointers
+	 *  using dynamic_cast.  For assignments from the same class or child
+	 *  classes this reduces to a simple (fast) static_cast.
+	 *
+	 *  @throws ConversionError if downcasting from an incompatible type.
 	 */
 	template <class Q>
 	void _rebind(Q* ptr) {
 		if (ptr) ptr->_incref();
-		if (_reference != 0) _reference->_decref();
-		_reference = dynamic_cast<T*>(ptr);
+		_unbind();
+		_reference = dynamic_cast<CLASS*>(ptr);
 		if (_reference == 0 && ptr != 0) {
 			SIMDATA_LOG(LOG_ALL, LOG_ERROR, "simdata::Ref() assignment: incompatible types (dynamic cast failed).");
 			throw ConversionError();
@@ -250,47 +305,7 @@ protected:
 
 	/** The actual pointer.
 	 */
-	T* _reference;
-};
-
-
-/** Base class for reference counted objects.
- *
- *  Inspired by OpenSceneGraph's osg::Referenced class.
- *
- *  @author Mark Rose <mrose@stm.lbl.gov>
- */
-class SIMDATA_EXPORT Referenced: public NonCopyable {
-
-template <class T> friend class Ref;
-friend class ReferencePointer;
-
-protected:
-	Referenced(): __count(0) {}
-
-	/** @todo This dtor should be eliminated eventually, or at
-	 *  least made non-virtual if we can be sure that Referenced
-	 *  derived objects will never be deleted via a Referenced*.
-	 *  Since Referenced::_decref() currently handles deletion,
-	 *  this would require moving the deletion responsibility to
-	 *  Ref<>, and declaring a Ref<Referenced> specialization for
-	 *  preventation. --MR
-	 */
-	virtual ~Referenced() {
-		if (__count != 0) {
-			SIMDATA_LOG(LOG_ALL, LOG_ERROR, "simdata::Referenced(" << std::hex << int(this) << ") deleted with non-zero reference count (" << __count << "): memory corruption possible.");
-		}
-	}
-
-private:
-	inline void _incref() const { ++__count; }
-	inline void _decref() const {
-		if (--__count <= 0) {
-			delete this;
-		}
-	}
-	inline unsigned _count() const { return __count; }
-	mutable unsigned __count;
+	CLASS* _reference;
 };
 
 

@@ -128,28 +128,6 @@ LandingGear const &LandingGear::operator=(LandingGear const &g) {
 }
 #endif
 
-void LandingGear::serialize(simdata::Archive &archive) {
-	Object::serialize(archive);
-	archive(m_MaxPosition);
-	archive(m_Motion);
-	archive(m_DamageLimit);
-	archive(m_K);
-	archive(m_Beta);
-	archive(m_Chained);
-	archive(m_BrakeLimit);
-	archive(m_BrakeSlip);
-	archive(m_TireStaticFriction);
-	archive(m_TireSkidFriction);
-	archive(m_CompressionLimit);
-	archive(m_SteeringLimit);
-	archive(m_TireK);
-	archive(m_TireBeta);
-	archive(m_TireRadius);
-	archive(m_ABS);
-	archive(m_RollingFriction);
-	archive(m_BrakeSteeringLinkage);
-}
-
 void LandingGear::postCreate() {
 	Object::postCreate();
 	m_Motion.normalize();
@@ -597,11 +575,6 @@ void GearDynamics::importChannels(Bus *bus) {
 	
 void GearDynamics::computeForceAndMoment(double x) {
 	doComplexPhysics(x);
-}
-
-void GearDynamics::serialize(simdata::Archive &archive) {
-	Object::serialize(archive);
-	archive(m_Gear);
 }
 
 void GearDynamics::GearUp() { 

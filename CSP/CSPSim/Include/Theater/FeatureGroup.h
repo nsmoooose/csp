@@ -132,13 +132,6 @@ public:
 
 	virtual ~FeatureGroup();
 
-	virtual void serialize(simdata::Archive &archive) {
-		SimObject::serialize(archive);
-		archive(m_Model);
-		archive(m_Position);
-		archive(m_Orientation);
-	}
-
 	virtual void postCreate();
 
 	virtual void project(Projection const &);

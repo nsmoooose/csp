@@ -44,8 +44,6 @@ public:
 		SIMDATA_XML("ab_thrust", ThrustData::m_ab_thrust, true)
 	END_SIMDATA_XML_INTERFACE
 
-	virtual void serialize(simdata::Archive&);
-
 	float getMil(float mach, float altitude) const;
 	float getIdle(float mach, float altitude) const;
 	float getAb(float mach, float altitude) const;
@@ -77,8 +75,6 @@ public:
 		SIMDATA_XML("engine_offset", Engine::m_EngineOffset, true)
 		SIMDATA_XML("smoke_emitter_location", Engine::m_SmokeEmitterLocation, true)
 	END_SIMDATA_XML_INTERFACE
-
-	virtual void serialize(simdata::Archive&);
 
 	Engine(simdata::Vector3 const &thrustDirection = simdata::Vector3::YAXIS);
 
@@ -113,7 +109,6 @@ public:
 		SIMDATA_XML("engine_set", EngineDynamics::m_Engine, true)
 	END_SIMDATA_XML_INTERFACE
 
-	virtual void serialize(simdata::Archive&);
 	virtual void postCreate();
 
 	virtual void getInfo(InfoList &info) const;

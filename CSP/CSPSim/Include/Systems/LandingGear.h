@@ -61,7 +61,7 @@ public:
 	LandingGear();
 	//LandingGear(LandingGear const &);
 	//LandingGear const &operator=(LandingGear const &g);
-	virtual void serialize(simdata::Archive&);
+
 	virtual void postCreate();
 
 	bool getWOW() const { return m_WOW; }

@@ -1,6 +1,20 @@
 Version 0.4.0 (in progress)
 ===========================
 
+2004-06-11: onsight
+  * Major refactoring of object and basetype serialization.  Archive,
+    Packer, and UnPacker are replaced by Reader and Writer abstract
+    classes, and ArchiveReader and ArchiveWriter subclasses.  The
+    serialize method is now split in two: one non-const method that
+    takes a Reader reference, and one method that takes a Writer
+    reference.  Object serialization is now automated, meaning that
+    all variables declared in the XML interface are saved and loaded
+    internally.  Object subclasses only need to extend the two
+    serialize() methods to save additional state that isn't included
+    in the public XML interface.
+
+  * Fixed a swig warning from Ref.i.
+
 2004-06-03: onsight
   * Small cleanups in Ref.h.  More substantive changes still
     to come.  Adds a new header Properties.h.

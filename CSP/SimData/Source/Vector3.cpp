@@ -72,10 +72,12 @@ std::ostream & operator << (std::ostream & os, const Vector3& v) {
 	return os;
 }
 
-void Vector3::serialize(Archive &archive) {
-	archive(_x);
-	archive(_y);
-	archive(_z);
+void Vector3::serialize(Reader &reader) {
+	reader >> _x >> _y >> _z;
+}
+
+void Vector3::serialize(Writer &writer) const {
+	writer << _x << _y << _z;
 }
 
 void Vector3::parseXML(const char* cdata) {

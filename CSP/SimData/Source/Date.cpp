@@ -464,20 +464,20 @@ double SimDate::update() {
 	return dt;
 }
 
-void SimDate::serialize(Archive &archive) {
+void SimDate::serialize(Reader &reader) {
 	float time_;
 	int julian_;
-	if (archive.isLoading()) {
-		archive(time_);
-		archive(julian_);
-		setTime(time_);
-		setJulian(julian_);
-	} else {
-		time_ = static_cast<float>(getTime());
-		julian_ = getJulian();
-		archive(time_);
-		archive(julian_);
-	}
+	reader >> time_;
+	reader >> julian_;
+	setTime(time_);
+	setJulian(julian_);
+}
+
+void SimDate::serialize(Writer &writer) const {
+	float time_ = static_cast<float>(getTime());
+	int julian_ = getJulian();
+	writer << time_;
+	writer << julian_;
 }
 
 void SimDate::parseXML(const char* cdata) {

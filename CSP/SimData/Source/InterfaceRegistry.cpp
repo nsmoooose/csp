@@ -74,7 +74,7 @@ void InterfaceProxy::addInterface(ObjectInterfaceBase* objectinterface,
 	std::vector<std::string> names = objectinterface->getVariableNames();
 	std::vector<std::string>::iterator name = names.begin();
 	for (; name != names.end(); ++name) {
-		if (_interfaces.find(*name) != _interfaces.end()) {
+		if (_interfacesByVariableName.find(*name) != _interfacesByVariableName.end()) {
 			// variable multiply defined
 			std::stringstream ss;
 			ss << "variable \"" << *name << "\""
@@ -83,19 +83,20 @@ void InterfaceProxy::addInterface(ObjectInterfaceBase* objectinterface,
 			std::cout << ss.str() << std::endl;
 			throw InterfaceError(ss.str());
 		}
-		_interfaces[*name] = objectinterface;
+		_interfacesByVariableName[*name] = objectinterface;
 		_variableNames.push_back(*name);
 		if (objectinterface->variableRequired(*name)) {
 			_requiredNames.push_back(*name);
 		}
 	}
+	_interfaces.push_back(objectinterface);
 	_classNames.push_back(classname);
 	_classHashes.push_back(classhash);
 }
 
 ObjectInterfaceBase *InterfaceProxy::findInterface(std::string const &varname, bool required) const {
-	InterfaceMap::const_iterator iter = _interfaces.find(varname);
-	if (iter == _interfaces.end()) {
+	InterfaceMap::const_iterator iter = _interfacesByVariableName.find(varname);
+	if (iter == _interfacesByVariableName.end()) {
 		if (!required) return 0;
 		throw InterfaceError("Variable \"" + varname + "\" not defined in interface to class \"" + getClassName() + "\"");
 	}

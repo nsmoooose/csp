@@ -28,7 +28,12 @@
 NAMESPACE_SIMDATA
 
 
-void Object::serialize(Archive&) {
+void Object::serialize(Reader &reader) {
+	_serialize(reader);
+}
+
+void Object::serialize(Writer &writer) const {
+	_serialize(writer);
 }
 
 Object::Object(): Referenced(), BaseType(), _path(0) {

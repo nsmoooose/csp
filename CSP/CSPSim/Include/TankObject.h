@@ -62,11 +62,6 @@ public:
 	virtual ~TankObject();
 	virtual void getStats(std::vector<std::string> &stats) const {}
 
-	virtual void serialize(simdata::Archive& archive) {
-		DynamicObject::serialize(archive);
-		archive(bits);
-	}
-
 	double getMaxViewingRange() { return max_viewing_range; }
 	double getMaxViewingAngle() { return max_viewing_angle; }
 	double getMaxFiringRange() { return max_firing_range; }

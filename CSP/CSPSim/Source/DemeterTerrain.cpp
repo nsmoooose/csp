@@ -89,28 +89,6 @@ DemeterTerrain::~DemeterTerrain()
 	unload();
 }
 
-void DemeterTerrain::serialize(simdata::Archive &archive) {
-	TerrainObject::serialize(archive);
-	archive(m_DynamicTextures);
-	archive(m_TextureCompression);
-	archive(m_PreloadTextures);
-	archive(m_TextureFactory);
-	archive(m_MaxTriangles);
-	archive(m_VertexSpacing);
-	archive(m_VertexHeight);
-	archive(m_Lattice);
-	archive(m_DetailThreshold);
-	archive(m_DetailTextureFile);
-	archive(m_TextureFile);
-	archive(m_ElevationFile);
-	archive(m_LatticeBaseName);
-	archive(m_LatticeElevExt);
-	archive(m_LatticeTexExt);
-	archive(m_LatticeWidth);
-	archive(m_LatticeHeight);
-	archive(m_Lattice);
-}
-
 void DemeterTerrain::unload() {
 	if (m_Active) deactivate();
 	if (m_Loaded) {

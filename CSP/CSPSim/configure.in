@@ -72,11 +72,16 @@ dnl check for libSigC++ type-safe signal libraryy
 dnl CSP_LIB_CONFIG([SIGC], [sigc], [1.0.1], [--cflags], [LibSigC++ Signal Library], [http://libsigc.sourceforge.net/])
 CSP_CONFIG([SIGC], [sigc], [sigc++-1.2], [1.2.0], [--cflags], [LibSigC++ Signal Library], [http://libsigc.sourceforge.net/])
 
-#CSP_LIB_CONFIG([CCGNU2], [ccgnu2], [1.0.6], [--flags], [GNU Common C++ Library], [http://www.gnu.org/software/commonc++/])
+CSP_LIB_CONFIG([CCGNU2], [ccgnu2], [1.0.6], [--flags], [GNU Common C++ Library], [http://www.gnu.org/software/commonc++/])
 
 CSP_PYTHON(2.2.0)
 
-CSP_SIMDATA(0.3.1)
+dnl this test isn't working for some reason, but it should be safe to
+dnl assume that ../SimData exists now that everything is bundled together
+dnl in the subversion repository
+dnl CSP_SIMDATA(0.3.1)
+SIMDATA_INCLUDE="-I../SimData/Include"
+AC_SUBST(SIMDATA_INCLUDE)
 
 AC_OUTPUT([Makefile Source/Makefile], [])
 	      

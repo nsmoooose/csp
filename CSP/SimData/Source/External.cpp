@@ -57,11 +57,13 @@ const std::string& External::getSource() const {
 	return _native_path;
 }
 
-void External::serialize(Archive& archive) {
-	archive(_path);
-	if (archive.isLoading()) {
-		_native_path = ospath::filter(_path.c_str());
-	}
+void External::serialize(Reader &reader) {
+	reader >> _path;
+	_native_path = ospath::filter(_path.c_str());
+}
+
+void External::serialize(Writer &writer) const {
+	writer << _path;
 }
 
 std::string External::asString() const {

@@ -37,15 +37,14 @@ bool Key::operator==(std::string const &id) const {
 	return *this == Key(id);
 }
 
-void Key::serialize(Archive &archive) {
+void Key::serialize(Reader &reader) {
 	int key;
-	if (archive.isLoading()) {
-		archive(key);
-		_key = static_cast<uint32>(key);
-	} else {
-		key = static_cast<int>(_key);
-		archive(key);
-	}
+	reader >> key;
+	_key = static_cast<uint32>(key);
+}
+
+void Key::serialize(Writer &writer) const {
+	writer << static_cast<int>(_key);
 }
 
 std::string Key::asString() const {

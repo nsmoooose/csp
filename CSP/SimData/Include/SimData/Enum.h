@@ -523,7 +523,8 @@ public:
 	}
 
 	/// Serialize to or from a data archive.
-	virtual void serialize(Archive&);
+	virtual void serialize(Reader&);
+	virtual void serialize(Writer&) const;
 
 	/// For internal use by the XML parser.
 	virtual void parseXML(const char* cdata);

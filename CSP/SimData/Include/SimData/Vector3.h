@@ -321,7 +321,8 @@ public:
 	virtual std::string typeString() const { return "type::Vector3"; }
 
 	/// Serialize to or from a data archive.
-	virtual void serialize(Archive&);
+	virtual void serialize(Reader&);
+	virtual void serialize(Writer&) const;
 
 	/** Parse the character data from an XML <Vector> tag.
 	 *

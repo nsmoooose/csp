@@ -45,35 +45,51 @@ bool LinkBase::__ne__(const LinkBase& other) {
 	return !this->operator==(other); 
 }
 
-void LinkBase::serialize(Archive &archive) {
-	Path::serialize(archive);
-	if (archive.isLoading()) {
-		DataArchive *data_archive = archive._getArchive();
+void LinkBase::serialize(Reader &reader) {
+	Path::serialize(reader);
+	ArchiveReader *arc = dynamic_cast<ArchiveReader*>(&reader);
+	// XXX temporary assert for debugging; not exactly sure yet how to
+	// handle Links outside of DataArchives.  the current idea (without
+	// the assert) is to only read and write the path.
+	assert(arc);
+	if (arc) {
+		DataArchive *data_archive = arc->_getArchive();
 		assert(data_archive);
 		if (isNone()) {
 			ObjectID class_id;
-			archive(class_id);
+			reader >> class_id;
 			Object *pobj = data_archive->_createObject(class_id);
-			pobj->serialize(archive);
+			pobj->serialize(reader);
 			// start reference counting before postCreate!
 			_assign_safe(pobj);
-			if (archive._loadAll()) {
+			if (arc->_loadAll()) {
 				pobj->postCreate();
 			}
 			// XXX should we also check that 'static' is not set?
 			// (it makes no sense to have a static immediate object)
 		} else {
-			if (archive._loadAll()) {
+			if (arc->_loadAll()) {
 				_load(data_archive);
 			}
 		}
-	} else {
-		if (isNone()) {
-			// XXX should throw an exception
-			assert(!isNull());
+	}
+}
+
+void LinkBase::serialize(Writer &writer) const {
+	Path::serialize(writer);
+	if (isNone()) {
+		if (isNull()) {
+			throw SerializeError("Attempt to save Link with no path and no object");
+		}
+		ArchiveWriter *arc = dynamic_cast<ArchiveWriter*>(&writer);
+		// XXX temporary assert for debugging; not exactly sure yet how to
+		// handle Links outside of DataArchives.  the current idea (without
+		// the assert) is to only read and write the path.
+		assert(arc);
+		if (arc) {
 			hasht class_hash = _get()->getClassHash();
-			archive(class_hash);
-			_get()->serialize(archive);
+			writer << class_hash;
+			_get()->serialize(writer);
 		}
 	}
 }

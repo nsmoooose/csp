@@ -1,5 +1,3 @@
-
-
 // This file orginated from FlightGear, Modififed by Wolverine
 
 
@@ -24,7 +22,7 @@
 // Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 // Boston, MA  02111-1307, USA.
 //
-// $Id: LogStream.cpp,v 1.2 2003/03/21 20:07:55 mkrose Exp $
+// $Id: LogStream.cpp,v 1.3 2003/03/21 23:49:34 mkrose Exp $
 
 #include "stdinc.h"
 

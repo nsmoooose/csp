@@ -45,7 +45,8 @@
 // Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 // Boston, MA  02111-1307, USA.
 //
-// $Id: LogStream.h,v 1.5 2003/03/21 20:08:35 mkrose Exp $
+// $Id: LogStream.h,v 1.6 2003/03/21 23:49:59 mkrose Exp $
+
 
 #ifndef __LOGSTREAM_H__
 #define __LOGSTREAM_H__

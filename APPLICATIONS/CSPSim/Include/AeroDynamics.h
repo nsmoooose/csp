@@ -130,12 +130,12 @@ protected:
 	double m_WingArea;  // surface area of wings
 	double m_stallAOA;  // stall AOA 
 	
-	float m_DeMax;
-	float m_DeMin;
-	float m_DaMax;
-	float m_DaMin;
-	float m_DrMax;
-	float m_DrMin;
+	double m_DeMax;
+	double m_DeMin;
+	double m_DaMax;
+	double m_DaMin;
+	double m_DrMax;
+	double m_DrMin;
 
 	// the folowing parameters are both structural and controlled in nature
 	float m_GMin; // min number of G that this aircraft model can support (in general < 0)

@@ -16,8 +16,6 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
-#define NDEBUG
-
 /**
  * @file AeroDynamics.cpp
  *
@@ -312,7 +310,7 @@ void run_test(AeroDynamics &a, unsigned short int &m_Maxi,
 bool AeroDynamics::isNearGround() {
 	bool near_ground = false;
 	//height = (m_PositionLocal.z - m_GroundZ)*ZAXIS * m_GroundN 
-	float height = (m_PositionLocal.z - m_GroundZ)* m_GroundN.z;
+	double height = (m_PositionLocal.z - m_GroundZ)* m_GroundN.z;
 	if (height < m_Radius + 5.0) {
 		near_ground = true;
 #if 0
@@ -502,7 +500,7 @@ void AeroDynamics::doSimStep(double dt)
 							if (height < -1.0) height = -1.0;
 							scale = -2.0 * groundK * height;  // 2 G slide
 							// reduce to zero as speed drops
-							float v = V.Length();
+							double v = V.Length();
 							scale = scale / (0.1 + v);
 							// limit to 4G max
 							if (scale * v > m_Mass * 40.0) {
@@ -929,7 +927,7 @@ std::vector<double> const &AeroDynamics::_f(double x, std::vector<double> &y) {
 			std::vector<simdata::Vector3>::const_iterator contact = m_Contacts->begin()+3;
 			std::vector<simdata::Vector3>::const_iterator cEnd =  m_Contacts->end();
 			float const elastic = 0.5;
-			float const friction = 0.9;
+			double const friction = 0.9;
 			bool nonGearContact = false;
 			for (; contact != cEnd; ++contact) {
 				simdata::Vector3 contact_local = BodyToLocal(*contact) + origin;
@@ -944,19 +942,19 @@ std::vector<double> const &AeroDynamics::_f(double x, std::vector<double> &y) {
 						            (m_MassInverse + simdata::Dot(bodyn,angularImpulsionContact));
                     std::cout << "impulsion = " << impulsion << "\n";
 					//if (impulsion > 0) {
-						simdata::Vector3 linearImpulsion =  m_MassInverse * impulsion * (bodyn - friction * Vtangentb);
+						simdata::Vector3 linearImpulsion =  m_MassInverse * fabs(impulsion) * (bodyn - friction * Vtangentb);
 						double normLI = linearImpulsion.Length();
-						double linearLimiter = std::min(2 * m_VelocityBody.Length(), normLI);
-						m_VelocityBody += scaleFactor2 * (linearLimiter / normLI) * linearImpulsion; 
+						double linearLimiter = std::min(m_VelocityBody.Length(), normLI);
+						m_VelocityBody += (linearLimiter / normLI) * linearImpulsion; 
 						simdata::Vector3 angularImpulsion = 
 							impulsion * ( angularImpulsionContact - m_InertiaInverse * (*contact^(friction * Vtangentb)));
 						double normAI = angularImpulsion.Length();
-						double angularLimiter = std::min(2 * m_AngularVelocityBody.Length(), normAI);
-						m_AngularVelocityBody += scaleFactor2 * (angularLimiter / normAI) * angularImpulsion;
+						double angularLimiter = std::min(m_AngularVelocityBody.Length(), normAI);
+						m_AngularVelocityBody += (angularLimiter / normAI) * angularImpulsion;
 					/*}
 					else {
-						m_VelocityBody *= 0.0;
-						m_AngularVelocityBody *= 0.0;
+						m_VelocityBody *= 0.1;
+						m_AngularVelocityBody *= 0.1;
 					}*/
 					//// for now, just  act like a hard surface	
 					//
@@ -1064,73 +1062,82 @@ void AeroDynamics::BodyToLocal() {
 	m_AngularVelocityLocal = BodyToLocal(m_AngularVelocityBody);
 }
 
-void AeroDynamics::doSimStep2(double dt) {  
-	static float cdt = 0;
-	static unsigned long c = 0;
+void AeroDynamics::doSimStep2(double dt) {	
+	static double cdt = 0;
+	static unsigned	long c = 0;
 
-	if (dt == 0.0) dt = 0.01;
-	
-	cdt += dt;
+	if (dt == 0.0) dt =	0.01;
+
+	unsigned short n = 2;
+	double dtlocal = dt/n;
+
+	cdt	+= dt;
 	c++;
-	if (!(c % 10000)) 
-		std::cout << "average dt = " << cdt/c << "\n";
-	m_PositionLocal = *m_Position;
-	m_VelocityLocal = *m_Velocity;
-	m_AngularVelocityLocal = *m_AngularVelocity;
-	qOrientation = *m_Orientation;
-	
-	m_ElevatorScale = (1.0 - dt) * m_ElevatorScale + dt * ControlInputValue( m_gForce );
-	m_Elevator = (1.0 - dt) * m_Elevator  + dt * m_ElevatorInput * m_ElevatorScale;
+	if (!(c	% 10000)) 
+		std::cout << "average dt = " <<	cdt/c << "\n";
+
+	double u = dtlocal/(m_AirSpeed + 1.0);
+	m_ElevatorScale	= (1.0 - u) * m_ElevatorScale + u * ControlInputValue( m_gForce );
+	m_Elevator = (1.0 -	u)* m_Elevator  +	u * m_ElevatorInput * m_ElevatorScale;
 
 	// initial conditions
 
 	m_qBarFactor = 0.5 * m_WingArea;
 	Atmosphere const *atmosphere = CSPSim::theSim->getAtmosphere();
-	if (atmosphere != NULL) {
+	if (atmosphere != NULL)	{
 		double density = atmosphere->getDensity(m_PositionLocal.z);
-		m_qBarFactor *= density;
-		m_Gravity = atmosphere->getGravity(m_PositionLocal.z);
-		m_WindLocal = atmosphere->getWind(m_PositionLocal);
-		m_WindLocal += atmosphere->getTurbulence(m_PositionLocal, m_Distance);
+		m_qBarFactor *=	density;
+		m_Gravity =	atmosphere->getGravity(m_PositionLocal.z);
+		m_WindLocal	= atmosphere->getWind(m_PositionLocal);
+		m_WindLocal	+= atmosphere->getTurbulence(m_PositionLocal, m_Distance);
 	} else {
-		m_qBarFactor *= 1.25;
-		m_Gravity = 9.8;
+		m_qBarFactor *=	1.25;
+		m_Gravity =	9.8;
 	}
-    
-	m_AirflowBody = LocalToBody(m_VelocityLocal - m_WindLocal);
-	m_AirSpeed = m_AirflowBody.Length();
-	// prevent singularities
-	if (m_AirSpeed < 1.0) m_AirSpeed = 1.0;
 
 	m_Distance += m_AirSpeed * dt;
 
-	m_GravityWorld = - m_Mass * m_Gravity * simdata::Vector3::ZAXIS;
+	m_GravityWorld = - m_Mass *	m_Gravity *	simdata::Vector3::ZAXIS;
 
-	m_NearGround = isNearGround();
-	
-	m_VelocityBody = LocalToBody(m_VelocityLocal);
-	m_AngularVelocityBody = LocalToBody(m_AngularVelocityLocal);
-	updateAngles(dt);
-	std::vector<double> y0 = ::bind(simdata::Vector3::ZERO, m_VelocityBody, m_AngularVelocityBody, qOrientation);
-	
-	// solution
-	std::vector<double> y = flow(y0, 0, dt);
+	for	(unsigned short	i = 0; i<n; ++i) {
+		m_PositionLocal	= *m_Position;
+		m_VelocityLocal	= *m_Velocity;
+		m_AngularVelocityLocal = *m_AngularVelocity;
+		qOrientation = *m_Orientation;
 
-	// update all variables
-	// Caution: don t permute these lines
-	bindToBody(y);    
-	updateAngles(dt);
-	m_alpha0 = m_alpha;
-	BodyToLocal();
-	qOrientation = simdata::Quaternion(y[9],y[10],y[11],y[12]);
-	double mag = qOrientation.Magnitude();
-	if (mag != 0.0)
-		qOrientation /= mag;
+		m_AirflowBody =	LocalToBody(m_VelocityLocal	- m_WindLocal);
+		m_AirSpeed = m_AirflowBody.Length();
+		// prevent singularities
+		if (m_AirSpeed < 1.0) m_AirSpeed = 1.0;
 
-	*m_Position = m_PositionLocal;
-	*m_Velocity = m_VelocityLocal;
-	*m_AngularVelocity = m_AngularVelocityLocal;
-	*m_Orientation = qOrientation;	
+		
+
+		m_NearGround = isNearGround();
+
+		m_VelocityBody = LocalToBody(m_VelocityLocal);
+		m_AngularVelocityBody =	LocalToBody(m_AngularVelocityLocal);
+		updateAngles(dt);
+		std::vector<double>	y0 = ::bind(simdata::Vector3::ZERO,	m_VelocityBody,	m_AngularVelocityBody, qOrientation);
+
+		// solution
+		std::vector<double>	y =	flow(y0, 0,	dtlocal);
+
+		// update all variables
+		// Caution:	don	t permute these	lines
+		bindToBody(y);	  
+		updateAngles(dt);
+		m_alpha0 = m_alpha;
+		BodyToLocal();
+		qOrientation = simdata::Quaternion(y[9],y[10],y[11],y[12]);
+		double mag = qOrientation.Magnitude();
+		if (mag	!= 0.0)
+			qOrientation /=	mag;
+
+		*m_Position	= m_PositionLocal;
+		*m_Velocity	= m_VelocityLocal;
+		*m_AngularVelocity = m_AngularVelocityLocal;
+		*m_Orientation = qOrientation;	
+	}
 }
 
 

@@ -399,7 +399,7 @@ void VirtualBattlefield::_updateActiveCells(float dt) {
 	while (iter != end) {
 		if (((*iter)->needsUpdate())) {
 			int steps = 0;
-			bool active = (*iter)->update(dt, steps);
+			bool active = ((*iter)->update(dt, steps)!=0);
 			if (!active) {
 				delete *iter;
 				iter = m_ActiveCells.erase(iter);

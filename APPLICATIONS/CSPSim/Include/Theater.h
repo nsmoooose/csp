@@ -40,7 +40,6 @@
 
 #include <list>
 #include <string>
-#include <algorithm>
 
 #include <SimData/Ref.h>
 #include <SimData/Path.h>

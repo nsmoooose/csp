@@ -379,6 +379,10 @@ void AircraftObject::setAttitude(double pitch, double roll, double heading)
 	m_Roll = roll;
 	m_Heading = heading;
 	
+	/*attitude = simdata::Quaternion::MakeQFromEulerAngles( m_Pitch, 
+														  m_Roll,   
+	                                                     m_Heading);*/
+
 	// use standard Euler convension (X axis is roll, Y is pitch, Z is yaw).
 	attitude = simdata::Quaternion::MakeQFromEulerAngles(m_Roll, m_Pitch, -m_Heading);
 	DynamicObject::setAttitude(attitude);

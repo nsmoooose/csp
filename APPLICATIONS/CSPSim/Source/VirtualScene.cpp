@@ -225,7 +225,12 @@ int VirtualScene::buildScene()
 
 	// construct the view
 	m_View = new osgUtil::SceneView();
+	
+	osg::DisplaySettings* ds = m_View->getDisplaySettings();
+	if (!ds)
+		ds = new osg::DisplaySettings;
 	m_View->setDefaults();
+	ds->setDepthBuffer(true);
 	m_View->setViewport(0, 0, ScreenWidth, ScreenHeight);
 	m_View->setBackgroundColor(osg::Vec4(SKY_RED, SKY_GREEN, SKY_BLUE, SKY_ALPHA));
 	m_View->setComputeNearFarMode(osgUtil::CullVisitor::DO_NOT_COMPUTE_NEAR_FAR);
@@ -507,6 +512,7 @@ void VirtualScene::setLookAt(simdata::Vector3 & eyePos, simdata::Vector3 & lookP
 	}
 
 
+
 	double localEyePosition_x = eyePos.x - m_Origin.x;
 	double localEyePosition_y = eyePos.y - m_Origin.y;
 
@@ -517,7 +523,7 @@ void VirtualScene::setLookAt(simdata::Vector3 & eyePos, simdata::Vector3 & lookP
 	osg::Vec3 _localLook(localLookPosition_x, localLookPosition_y, lookPos.z ) ;
 	osg::Vec3 _up (upVec.x, upVec.y, upVec.z );
     
-	camera->setLookAt(_localEye, _localLook, _up);
+	camera->setLookAt(_localEye, _localLook , _up);
 	camera->ensureOrthogonalUpVector();
 
 	//AdjustCM(m_Sky->getSkyIntensity());
@@ -739,15 +745,14 @@ void VirtualScene::setViewDistance(float value)
 {
 	osg::Camera * camera = m_View->getCamera();
 	m_ViewDistance = value;
-	camera->setNearFar(1.0f, m_ViewDistance);
-	camera->setPerspective(m_ViewAngle, 1.0, 1.0f, m_ViewDistance);
+	camera->setPerspective(m_ViewAngle, 1.0, 0.3f, m_ViewDistance);
 }
 
 void VirtualScene::setViewAngle(float value)
 {
 	osg::Camera * camera = m_View->getCamera();
 	m_ViewAngle = value;
-	camera->setPerspective(m_ViewAngle, 1.0, 1.0f, m_ViewDistance);
+	camera->setPerspective(m_ViewAngle, 1.0, 0.3f, m_ViewDistance);
 }
 
 void VirtualScene::spinTheWorld(bool spin) {

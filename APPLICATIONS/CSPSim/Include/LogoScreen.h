@@ -29,7 +29,7 @@
 #include "BaseScreen.h"
 
 
-class SDL_Surface;
+struct SDL_Surface;
 
 /**
  * class LogoScreen

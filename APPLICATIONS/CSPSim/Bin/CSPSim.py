@@ -139,7 +139,7 @@ the README file in the SimData distribution for details.
 """
 	sys.exit(1)
 
-SimData.log().set_output("SimData.log")
+SimData.log().setOutput("SimData.log")
 SimData.log().setLogLevels(SimData.LOG_ALL, SimData.LOG_DEBUG)
 try:
 	import cCSP as CSP

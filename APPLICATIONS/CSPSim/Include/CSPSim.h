@@ -38,7 +38,7 @@
 
 #include <SDL/SDL_joystick.h>
 
-class SDL_Surface;
+struct SDL_Surface;
 
 class PyShell;
 class DynamicObject;

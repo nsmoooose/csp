@@ -20,6 +20,7 @@
 			CharacterSet="2">
 			<Tool
 				Name="VCCLCompilerTool"
+				AdditionalOptions="/Zm1000"
 				Optimization="0"
 				AdditionalIncludeDirectories="C:/Python22/include,../../../SimData/Include,../../Include,../../../../THIRDPARTYLIBS/include,../../../../THIRDPARTYLIBS/demeter"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;CSPSIMDLL_EXPORTS"
@@ -81,6 +82,7 @@
 			CharacterSet="2">
 			<Tool
 				Name="VCCLCompilerTool"
+				AdditionalOptions="/Zm1000"
 				InlineFunctionExpansion="1"
 				AdditionalIncludeDirectories="../../Include,C:/Python22/include,../../../../THIRDPARTYLIBS/include,../../../../THIRDPARTYLIBS/demeter"
 				PreprocessorDefinitions="CSP_NDEBUG;WIN32;NDEBUG;_WINDOWS;_USRDLL;CSPSIMDLL_EXPORTS"
@@ -212,9 +214,6 @@
 				RelativePath="..\..\Source\LandingGear.cpp">
 			</File>
 			<File
-				RelativePath="..\..\Source\LogStream.cpp">
-			</File>
-			<File
 				RelativePath="..\..\Source\LogoScreen.cpp">
 			</File>
 			<File
@@ -255,6 +254,9 @@
 			</File>
 			<File
 				RelativePath="..\..\Source\TerrainObject.cpp">
+			</File>
+			<File
+				RelativePath="..\..\Source\Theater.cpp">
 			</File>
 			<File
 				RelativePath="..\..\Source\Tools.cpp">
@@ -390,6 +392,9 @@
 				RelativePath="..\..\Include\TerrainObject.h">
 			</File>
 			<File
+				RelativePath="..\..\Include\Theater.h">
+			</File>
+			<File
 				RelativePath="..\..\Include\Tools.h">
 			</File>
 			<File
@@ -414,6 +419,14 @@
 		</Filter>
 		<File
 			RelativePath="..\..\Source\cCSP.i">
+			<FileConfiguration
+				Name="Debug|Win32">
+				<Tool
+					Name="VCCustomBuildTool"
+					CommandLine="C:\progra~1\SWIG-1.3.19\swig -c++ -python -noexcept -DWIN32 -I..\..\Include -IC:\Python22\include -o ..\..\Source\$(InputName)_wrap.cpp ..\..\Source\$(InputName).i
+"
+					Outputs="..\..\Source\$(InputName)_wrap.cpp"/>
+			</FileConfiguration>
 			<FileConfiguration
 				Name="Release|Win32">
 				<Tool

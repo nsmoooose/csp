@@ -126,7 +126,6 @@ public:
 		simdata::Vector3 place, d_place;
 		float distance = (m_VertexB - m_VertexA).Length();
 		int count = int(distance * m_Density);
-		if (count < m_Min) count = m_Min;
 		if (count > m_Max) count = m_Max;
 		d_wind = (m_WindB - m_WindA) / count;
 		d_place = (m_WindB * dt + m_VertexB - m_VertexA) / count;

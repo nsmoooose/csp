@@ -77,7 +77,7 @@ class Atmosphere { //: public simdata::Object {
 public:
 	Atmosphere();
 	double getGravity(double alt) const { return 9.806; }
-	double getTemperature(double alt) const;
+	float getTemperature(double alt) const;
 	double getPressure(double alt) const;
 	double getDensity(double alt) const;
 	simdata::Vector3 getWind(simdata::Vector3 const &) const;
@@ -89,9 +89,9 @@ public:
 	void update(double dt);
 
 	inline double getMach(double speed, double altitude) const;
-	double getSpeedOfSound(double altitude) const;
-	double getPreciseCAS(double mach, double altitude) const;
-	double getCAS(double mach, double altitude) const;
+	float getSpeedOfSound(double altitude) const;
+	float getPreciseCAS(double mach, double altitude) const;
+	float getCAS(double mach, double altitude) const;
 	
 protected:
 	void _update();
@@ -137,8 +137,8 @@ inline double Atmosphere::getMach(double speed, double alt) const {
 	return speed / getSpeedOfSound(alt);
 }
 
-inline double Atmosphere::getCAS(double mach, double altitude) const {
-	return m_CAS.getValue(mach, altitude);
+inline float Atmosphere::getCAS(double mach, double altitude) const {
+	return m_CAS.getValue(float(mach), float(altitude));
 }
 
 

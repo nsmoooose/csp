@@ -20,6 +20,7 @@
 			CharacterSet="2">
 			<Tool
 				Name="VCCLCompilerTool"
+				AdditionalOptions="/Zm1000"
 				InlineFunctionExpansion="1"
 				AdditionalIncludeDirectories="../../Include,../../../../THIRDPARTYLIBS/include,../../../../THIRDPARTYLIBS/Demeter,C:/Python22/include"
 				PreprocessorDefinitions="CSP_NDEBUG;WIN32,NDEBUG,_WINDOWS,__CSPSIM_EXE__"
@@ -77,6 +78,7 @@
 			CharacterSet="2">
 			<Tool
 				Name="VCCLCompilerTool"
+				AdditionalOptions="/Zm1000"
 				Optimization="0"
 				AdditionalIncludeDirectories="../../Include,../../../../THIRDPARTYLIBS/include,../../../../THIRDPARTYLIBS/Demeter,C:/Python22/include"
 				PreprocessorDefinitions="WIN32,_DEBUG,_WINDOWS,__CSPSIM_EXE__"
@@ -207,9 +209,6 @@
 				RelativePath="..\..\Source\LandingGear.cpp">
 			</File>
 			<File
-				RelativePath="..\..\Source\LogStream.cpp">
-			</File>
-			<File
 				RelativePath="..\..\Source\LogoScreen.cpp">
 			</File>
 			<File
@@ -250,6 +249,9 @@
 			</File>
 			<File
 				RelativePath="..\..\Source\TerrainObject.cpp">
+			</File>
+			<File
+				RelativePath="..\..\Source\Theater.cpp">
 			</File>
 			<File
 				RelativePath="..\..\Source\Tools.cpp">
@@ -392,6 +394,9 @@
 			</File>
 			<File
 				RelativePath="..\..\Include\TerrainSymbol.h">
+			</File>
+			<File
+				RelativePath="..\..\Include\Theater.h">
 			</File>
 			<File
 				RelativePath="..\..\Include\Tools.h">

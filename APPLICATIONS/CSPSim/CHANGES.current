@@ -1,6 +1,19 @@
 Version 0.3.3 (in progress)
 ===========================
 
+2003-05-04: delta
+	    Added a naive control of camera such that it keeps above ground.
+	    Updated .net project. 
+	    Added a /Zm 1000 parameter in .net projects to avoid fatal 
+	    compiler error.
+	    Changed vehicle orientation at start.
+	    Changed some Atmosphere function members to return float instead
+	    double to avoid some warnings.
+	    Updated CSPSim.py to take account set_output <-> setOuput for 
+	    log file.
+	    Added a vehicle to load in testing item in ini file. The vehicle 
+	    is specified in Vehicle.
+
 2003-05-03: onsight
             Replaced CSP's logging facilities with SimData's (which 
 	    originally came from CSP).  Some tweaks to the logging

@@ -228,7 +228,7 @@ void GameScreen::onRender()
 			{
 				// Hide the object if internal view
 				// Draw the hud if internal view
-				//m_ActiveObject->hideModel();
+				//m_ActiveObject->hideModel(); 
 			}
 			else
 			{
@@ -542,7 +542,7 @@ void GameScreen::setCamera(double dt)
 		RotX.FromAxisAngle(RotZ * planeRight, - m_fangleRotX);
 		eyePos = planePos;
 		eyePos += m_ActiveObject->getViewPoint();
-		lookPos = 50.0 * RotX * RotZ * planeDir + eyePos;
+		lookPos = 1000 * RotX * RotZ * planeDir + eyePos;
 		upVec = planeUp;
 		break;
 	}
@@ -575,7 +575,7 @@ void GameScreen::setCamera(double dt)
 		RotZ.FromAxisAngle(simdata::Vector3::ZAXIS,  m_fangleRotZ);
 		simdata::Vector3 axisX = - RotZ * m_normalDirection;
 		RotX.FromAxisAngle(simdata::Vector3::ZAXIS^axisX, m_fangleRotX);
-		eyePos = - m_fdisToObject * RotX * RotZ * m_normalDirection;
+		eyePos = m_fdisToObject * RotX * axisX;
 		upVec = simdata::Vector3::ZAXIS;
 		eyePos += planePos;
 		lookPos = planePos;
@@ -612,12 +612,21 @@ void GameScreen::setCamera(double dt)
 	}    
 	VirtualScene *scene = CSPSim::theSim->getScene();
 	if (scene) {	
-		scene->setLookAt(eyePos, lookPos, upVec);
+		// checking if eyePos is under ground.
+		float h = 1.0;
 		VirtualBattlefield *battlefield = CSPSim::theSim->getBattlefield();
 		if (battlefield) {
-			battlefield->updateOrigin(eyePos);
+			h += battlefield->getElevation(eyePos.x, eyePos.y);
+			if (eyePos.z < h) {
+				eyePos = lookPos - m_fdisToObject * simdata::Normalized(simdata::Vector3(lookPos.x - eyePos.x,lookPos.y - eyePos.y,0));
+				m_PanRateX = 0;
+				m_fangleRotX = 0;
+				eyePos.z = h;
+			}
+			battlefield->updateOrigin(eyePos); 
 			battlefield->setCamera(eyePos);
 		}
+		scene->setLookAt(eyePos, lookPos, upVec);
 	}
 }
 

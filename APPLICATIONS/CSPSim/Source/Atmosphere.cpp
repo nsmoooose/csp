@@ -97,15 +97,15 @@ class Perlin1D {
 		std::vector<float> buffer(n);
 		if (n > 0) {
 			int i;
-			double s = timescale/n;
+			float s = static_cast<float>(timescale/n);
 			for (i=0; i<n; i++) {
 				double f = i*s;
 				buffer[i] = (float) (get(f)*scale + offset);
 			}
 			if (periodic) {
-				s = 1.0 / n;
+				s = 1.0f / n;
 				for (i=0; i<n/2; i++) {
-					float f = 0.5 + i*s;
+					float f = 0.5f + i*s;
 					float a = buffer[i];
 					float b = buffer[n-i-1];
 					buffer[i] = f*a+(1-f)*b;
@@ -159,11 +159,11 @@ void Atmosphere::generateWinds() {
 	for (i = 0; i < 1000; i++) {
 		float a;
 		a= m_TurbulenceX[i];
-		m_TurbulenceX[i] *= 10.0 * a * fabs(a);
+		m_TurbulenceX[i] *= 10.0f * a * fabsf(a);
 		a = m_TurbulenceY[i];
-		m_TurbulenceY[i] *= 10.0 * a * fabs(a);
+		m_TurbulenceY[i] *= 10.0f * a * fabsf(a);
 		a = m_TurbulenceZ[i];
-		m_TurbulenceZ[i] *= 10.0 * a * fabs(a);
+		m_TurbulenceZ[i] *= 10.0f * a * fabsf(a);
 	}
 
 	// turbulence altitude buffers (15000 m)
@@ -173,8 +173,8 @@ void Atmosphere::generateWinds() {
 	noise.randomize();
 	m_TurbulenceAltB = noise.generate(1000, false, 10.0, 3.0, -1.5);
 	for (i = 0; i < 1000; i++) {
-		float f = i * 0.015; // f in km
-		f = (12.5 * f + 7.6) / (f*f + 45.0);
+		float f = i * 0.015f; // f in km
+		f = (12.5f * f + 7.6f) / (f*f + 45.0f);
 		m_TurbulenceAltA[i] *= f;
 		m_TurbulenceAltB[i] *= f;
 	}
@@ -223,7 +223,7 @@ simdata::Vector3 Atmosphere::getTurbulence(simdata::Vector3 const &p, double dis
 	int idx = int(p.z * 1000.0 / 15000.0);
 	if (idx < 0) idx = 0;
 	else if (idx > 999) idx = 999;
-	float a = m_TurbulenceAltA[idx];
+	double a = m_TurbulenceAltA[idx];
 	float b = m_TurbulenceAltB[idx];
 	if (a < 0.0) a = 0.0;
 	if (b < 0.0) b = 0.0;
@@ -257,18 +257,18 @@ void Atmosphere::setPrevailingWind(simdata::Vector3 const &wind) {
  *
  * From 1976 Standard Atmosphere, below 32000 m
  */
-double Atmosphere::getTemperature(double h) const {
+float Atmosphere::getTemperature(double h) const {
 	double scale;
 	if (h < 11000.0) {
 		scale = 1.0 - h * 0.0000225586;
 	} else
 	if (h < 20000.0) {
-		scale = 0.751865;
+		scale = 0.751865f;
 	} else {
 		if (h > 32000.0) h = 32000.0;
   		scale = 0.682357 + h * .00000347058;
 	}
-	return m_GroundTemperature*scale;
+	return static_cast<float>(m_GroundTemperature*scale);
 }
 
 /**
@@ -354,8 +354,8 @@ void Atmosphere::update(double dt) {
 			m_TurbulenceBlendUp = false;
 			m_TurbulenceAltA = noise.generate(1000, false, 10.0, 2.0, -1.0);
 			for (int i = 0; i < 1000; i++) {
-				float f = i * 0.015; // f in km
-				f = (12.5 * f + 7.6) / (f*f + 45.0);
+				float f = i * 0.015f; // f in km
+				f = (12.5f * f + 7.6f) / (f*f + 45.0f);
 				m_TurbulenceAltA[i] *= f;
 			}
 		}
@@ -369,8 +369,8 @@ void Atmosphere::update(double dt) {
 			m_TurbulenceBlendUp = true;
 			m_TurbulenceAltB = noise.generate(1000, false, 10.0, 2.0, -1.0);
 			for (int i = 0; i < 1000; i++) {
-				float f = i * 0.015; // f in km
-				f = (12.5 * f + 7.6) / (f*f + 45.0);
+				float f = i * 0.015f; // f in km
+				f = (12.5f * f + 7.6f) / (f*f + 45.0f);
 				m_TurbulenceAltB[i] *= f;
 			}
 		}
@@ -427,15 +427,15 @@ void Atmosphere::reset() {
 }
 
 
-double Atmosphere::getSpeedOfSound(double altitude) const {
-	double T = getTemperature(altitude);
-        return 20.0324 * sqrt(T); // m/s
+float Atmosphere::getSpeedOfSound(double altitude) const {
+	float T = getTemperature(altitude);
+        return 20.0324f * sqrtf(T); // m/s
 }
 
-double Atmosphere::getPreciseCAS(double mach, double altitude) const {
+float Atmosphere::getPreciseCAS(double mach, double altitude) const {
 	double delta = getPressure(altitude) / m_GroundPressure;
 	double gamma = pow(1.0 + 0.2 * mach * mach, 3.5) - 1.0;
-	return 760.369 * sqrt( pow(gamma * delta + 1.0, 0.2857142857) - 1.0 );
+	return 760.369f * static_cast<float>(sqrt( pow(gamma * delta + 1.0, 0.2857142857) - 1.0 ));
 }
 
 
@@ -444,19 +444,19 @@ void Atmosphere::tabulateCAS() {
 	simdata::Table::vector_it cas_i;
 	int i, j;
 	breaks.resize(300);
-	for (i = 0; i < 300; i++) breaks[i] = 0.02 * i;
+	for (i = 0; i < 300; i++) breaks[i] = 0.02f * i;
 	m_CAS.setXBreaks(breaks);
-	m_CAS.setXSpacing(0.02);
+	m_CAS.setXSpacing(0.02f);
 	breaks.resize(300);
-	for (i = 0; i < 300; i++) breaks[i] = 100.0 * i;
+	for (i = 0; i < 300; i++) breaks[i] = 100.0f * i;
 	m_CAS.setYBreaks(breaks);
-	m_CAS.setYSpacing(100.0);
+	m_CAS.setYSpacing(100.0f);
 	cas.resize(300*300);
 	cas_i = cas.begin();
 	for (i = 0; i < 300; i++) {
-		float altitude = 100.0 * i;
+		float altitude = 100.0f * i;
 		for (j = 0; j < 300; j++) {
-			float mach = 0.02 * j;
+			float mach = 0.02f * j;
 			*cas_i++ = getPreciseCAS(mach, altitude);
 		}
 	}

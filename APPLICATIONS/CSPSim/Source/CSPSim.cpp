@@ -46,7 +46,7 @@
 #include "TerrainObject.h"
 #include "Theater.h"
 #include "ConsoleCommands.h"
-#include "Theater.h"      
+   
 
 #include <SimData/Types.h>
 #include <SimData/Exception.h>
@@ -223,13 +223,14 @@ void CSPSim::init()
 			assert(sim);
 			m_DataManager.addArchive(sim);
 		} 
+
 		catch (simdata::Exception &e) {
 			CSP_LOG(APP, ERROR, "Error opening data archive " << archive_file);
 			CSP_LOG(APP, ERROR, e.getType() << ": " << e.getMessage());
 			throw;
 			//::exit(0);
 		}
-		
+	
 		// initialize SDL
 		initSDL();
 
@@ -287,13 +288,15 @@ void CSPSim::init()
 		m_Scene->setFogEnd(fog_end);
 
 		// create a couple test objects
+
 		//simdata::Ref<ObjectModel> test = m_DataManager.getObject("sim:theater.runway_model");
 		//m_Scene->addEffectUpdater(test->getModel().get());
 
-		simdata::Ref<AircraftObject> ao = m_DataManager.getObject("sim:vehicles.aircraft.m2k");
+		std::string vehicle = g_Config.getPath("Testing", "Vehicle", "sim:vehicles.aircraft.m2k", true);
+		simdata::Ref<AircraftObject> ao = m_DataManager.getObject(vehicle.c_str());
 		assert(ao.valid());
 		ao->setGlobalPosition(483000, 499000, 91.2);
-		ao->setAttitude(0.03, 0.0, 0.0);
+		ao->setAttitude(0.03, 0.0, 1.9);
 		ao->setVelocity(0, 2.0, 0);
 		m_Battlefield->addUnit(ao);
 

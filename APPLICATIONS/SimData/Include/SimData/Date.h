@@ -645,33 +645,51 @@ private:
 
 
 
-/**
- * @brief Class combining time and date operations.
- * 
- * @author Mark Rose <mrose@stm.lbl.gov>
- */
+/// Class combining time and date operations.
+///
+/// @author Mark Rose <mrose@stm.lbl.gov>
 
 class SIMDATA_EXPORT DateZulu: public Date, public Zulu {
 
 
 public:
 
+	/// Default constructor 
+	///
+	/// @see Date() and Zulu()
 	DateZulu(): Date(), Zulu() {}
 
+	/// Construct a new DateZulu.
+	///
+	/// @param year the year (e.g. 2000)
+	/// @param the month (1-12)
+	/// @param the day (1-31)
+	/// @param hour the hour (0-23)
+	/// @param minute the minute (0-59)
+	/// @param second the second (0.0-60.0)
 	DateZulu(year_t year, month_t month, day_t day, int hour, int minute, time_t second):
 		Date(year, month, day),
 		Zulu(hour, minute, second) {
 		addDays(reduce());
 	}
 
+	/// Construct a new DateZulu.
+	///
+	/// @param julian the Julian date.
+	/// @param hour the hour (0-23)
+	/// @param minute the minute (0-59)
+	/// @param second the second (0.0-60.0)
 	DateZulu(julian_t julian, int hour, int minute, time_t second):
 		Date(julian),
 		Zulu(hour, minute, second) {
 		addDays(reduce());
 	}
 
+	/// Copy constructor.
 	DateZulu(const DateZulu &dz): Date(dz), Zulu(dz) { }
+
 #ifndef SWIG
+	/// Assignment operator from another DateZulu.
 	const DateZulu &operator=(const DateZulu &dz) {
 		Date::operator=(dz);
 		Zulu::operator=(dz);
@@ -680,46 +698,77 @@ public:
 #endif // SWIG
 		
 	
+	/// Store the time into a standard time structure.
+	///
+	/// @param The time structure to set (see <time.h>)
+	/// @param local Optionally adjust the time for the local 
+	///              timezone.
 	void convert(struct tm *tm, bool local=false) const;
+
+	/// Format the date and time to a string.
+	///
+	/// @param format Identical to the format string used by
+	///               strftime() (Google: strftime)
+	/// @param local Optionally adjust the time for the local 
+	///              timezone.
+	/// @returns The formatted date/time string.
 	std::string formatString(const char *format, bool local=false) const;
+
+	/// Return a string representation of the date and time.
+	///
+	/// The format is "YYYY/MM/DD HH:MM::SSz".
 	virtual std::string asString() const {
 		return formatString("%Y/%m/%d %H:%M:%Sz");
 	}
 
-	/**
-	 * Return a string representation of the type.
-	 */
+	/// Return a string representation of the type.
 	virtual std::string typeString() const { return "type::DateZulu"; }
 	
-	/**
-	 * Increment the current time, with date rollover.
-	 *
-	 * @param dt The time interval (in seconds)
-	 */
+	/// Increment the current time, with date rollover.
+	///
+	/// @param dt The time interval (in seconds)
+	/// @returns The number of rollover days.
 	int addTime(time_t dt) {
 		int days = Zulu::addTime(dt);
 		addDays(days);
 		return days;
 	}
 
-	/**
-	 * Set the current time, with date rollover.
-	 *
-	 * @param t The current time of day (in seconds)
-	 */
+	/// Set the current time, with date rollover.
+	///
+	/// @param t The current time of day (in seconds)
+	/// @returns The number of rollover days.
 	int setTime(time_t t) {
 		int days = Zulu::setTime(t);
 		addDays(days);
 		return days;
 	}
 
+	/// Get the real-valued Julian date.
+	///
+	/// @returns The Julian date and time as a real value,
+	///          with the whole part of the result equal to
+	///          the Julian day, and the fractional part of
+	///          the result encoding the time of day.
 	double getJulianDate() const {
 		double j = getJulian();
 		double t = getTime() * F1p0_86400p0 + 0.5;
 		return j + t;
 	}
 
+	/// Get the (accurate) Mean Sidereal time.
+	///
+	/// @deprecated This routine now calls getMST and remains
+	///             only for backwards compatibility.  It may
+	///             be removed in a future version of SimData.
 	double getAccurateMST(radian_t longitude=0.0L) const;
+
+	/// Get the Mean Sidereal time.
+	///
+	/// @param longitude The local longitude in radians.
+	/// @returns The mean sidereal time (in radians) for the 
+	///          specified latitude using a third-order 
+	///          polynomial approximation.
 	double getMST(radian_t longitude=0.0L) const;
 
 };

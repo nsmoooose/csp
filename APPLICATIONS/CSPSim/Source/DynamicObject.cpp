@@ -147,7 +147,7 @@ void DynamicObject::updateGlobalPosition()
 	// simple testing of smoke trails... improve later
 	if (m_SmokeSegments) {
 		simdata::Vector3 motion = m_LocalPosition - m_PrevPosition;
-		simdata::Vector3 motionBody = QVRotate(m_qOrientation.Bar(), motion);
+		simdata::Vector3 motionBody = simdata::QVRotate(m_qOrientation.Bar(), motion);
 		m_SmokeSegments->update(osg::Vec3(motionBody.x, motionBody.y, motionBody.z));
 	}
 }

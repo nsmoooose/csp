@@ -1,6 +1,10 @@
  Version 0.4.0 (in progress)
 ===========================
 
+2004-08-07: onsight
+  * Cleaned up tree images a bit to remove purple pixels.  Converted
+    tree0.rgba to png.  Adjusted the aspect ratios slightly.
+
 2004-08-06: onsight
   * Fixed a pseudo-bug in demeter, which caused terrain height anomalies
     at the edges of flat and rough terrain blocks.  Essentially, when a

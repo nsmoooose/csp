@@ -52,7 +52,7 @@ NAMESPACE_SIMDATA
  *  a means of serializing access to a shared resource, such that only
  *  one thread may use the resource at a time.
  */
-class ThreadMutex: public NonCopyable {
+class SIMDATA_EXPORT ThreadMutex: public NonCopyable {
 	friend class ThreadCondition;
 public:
 	/** Mutex types:

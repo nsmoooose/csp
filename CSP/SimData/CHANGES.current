@@ -1,6 +1,9 @@
 Version 0.4.0 (in progress)
 ===========================
-
+2004-07-02: delta
+  * Added a #define _WINSOCKAPI_ in AtomicCounter.h (protected
+    behind WIN32) to avoid conflict in the network code.
+    
 2004-07-01: onsight
   * Added a simple but fast memory pool class for allocating fixed
     size buffers.

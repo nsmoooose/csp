@@ -121,9 +121,9 @@ protected:
 	
 	// dynamic properties
 	
-	double m_roll;
-	double m_pitch;
-	double m_heading;
+	double m_Roll;
+	double m_Pitch;
+	double m_Heading;
 	
 	// control inputs
 	

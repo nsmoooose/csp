@@ -41,9 +41,9 @@ AircraftObject::AircraftObject(): DynamicObject()
 	CSP_LOG(CSP_APP, CSP_DEBUG, "AircraftObject::AircraftObject() ...");
 	m_ObjectName = "AIRCRAFT";
 
-	m_heading = 0.0;
-	m_roll = 0.0;
-	m_pitch = 0.0;
+	m_Heading = 0.0;
+	m_Roll = 0.0;
+	m_Pitch = 0.0;
 	
 	m_Aileron = 0.0;
 	m_Elevator = 0.0;
@@ -372,9 +372,12 @@ void AircraftObject::GearToggle() {
 void AircraftObject::setAttitude(double pitch, double roll, double heading)
 {
 	simdata::Quaternion attitude;
-	attitude = simdata::Quaternion::MakeQFromEulerAngles(DegreesToRadians(pitch),
-                                                             DegreesToRadians(roll), 
-	                                                     DegreesToRadians(heading));
+	m_Pitch = DegreesToRadians(pitch);
+	m_Roll = DegreesToRadians(roll);
+	m_Heading = DegreesToRadians(heading);
+	attitude = simdata::Quaternion::MakeQFromEulerAngles(m_Pitch,
+                                                             m_Roll, 
+	                                                     m_Heading);
 	DynamicObject::setAttitude(attitude);
 }
 
@@ -396,9 +399,9 @@ void AircraftObject::doMovement(double dt)
 	updateTransform();
 
 	simdata::Vector3 angles = simdata::Quaternion::MakeEulerAnglesFromQ(m_Attitude);
-	m_heading = RadiansToDegrees(angles.x);
-	m_pitch = RadiansToDegrees(angles.y);
-	m_roll = RadiansToDegrees(angles.z);
+	m_Heading = angles.x;
+	m_Pitch = angles.y;
+	m_Roll = angles.z;
 	m_Speed = m_LinearVelocity.Length();
 }
 
@@ -487,7 +490,9 @@ void AircraftObject::getStats(std::vector<std::string> &stats) const {
 	snprintf(buffer, 255, "Alpha: %+.2f, G: %+.2f, Speed: %.1f", RadiansToDegrees(alpha), G, speed);
 	stats.push_back(buffer);
 	snprintf(buffer, 255, "Heading: %.3f, Pitch: %.3f, Roll: %.3f",
-	         m_heading, m_pitch, m_roll);
+	         RadiansToDegrees(m_Heading), 
+		 RadiansToDegrees(m_Pitch), 
+		 RadiansToDegrees(m_Roll));
 	stats.push_back(buffer);
 }
 

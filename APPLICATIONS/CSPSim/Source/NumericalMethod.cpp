@@ -353,3 +353,4 @@ std::vector<double> const& RungeKuttaCK::enhancedSolve(std::vector<double>& y0, 
  //std::cout << "RungeKuttaCK::enhancedSolve nok = " << nok << "; nbad = " << nbad << "\n" << std::endl;
  return result;               
 }
+

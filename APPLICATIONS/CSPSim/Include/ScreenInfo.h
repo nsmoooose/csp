@@ -29,7 +29,7 @@
 #include <osg/Geode>
 #include <osgText/Text>
 
-#include <simdata/Types.h>
+#include <SimData/Types.h>
 
 #include "DynamicObject.h"
 

@@ -1,6 +1,11 @@
 Version 0.3.2 (in progress)
 ===========================
 
+2003-04-19: onsight
+            Changed AircraftObject:: m_heading, m_pitch, m_roll to m_Heading,
+	    m_Pitch, m_Roll.  These are now in radians, and converted to
+	    degrees only if necessary (for display).  setAttitude(x, y, z)
+	    still takes degrees.
 
 2003-04-18: delta
 	    Added Runge-Kutta Cask-Karp numerical method.doSimStep2() is now 

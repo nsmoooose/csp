@@ -23,7 +23,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				ImproveFloatingPointConsistency="FALSE"
-				AdditionalIncludeDirectories="&quot;$(PYTHON_PATH)/include&quot;;../../../SimData/Include;../../Include;../../../Demeter;../../../CSPChunkLod/include;../../.."
+				AdditionalIncludeDirectories="&quot;$(PYTHON_PATH)/include&quot;;../../../SimData/Include;../../Include;../../Source;../../../Demeter;../../../CSPChunkLod/include;../../.."
 				PreprocessorDefinitions="WIN32;_USRDLL;CSPSIMDLL_EXPORTS"
 				StringPooling="FALSE"
 				BasicRuntimeChecks="3"
@@ -100,7 +100,7 @@
 				EnableIntrinsicFunctions="TRUE"
 				FavorSizeOrSpeed="1"
 				OptimizeForProcessor="0"
-				AdditionalIncludeDirectories="&quot;$(PYTHON_PATH)/include&quot;;../../../SimData/Include;../../Include;../../../Demeter;../../../CSPChunkLod/include;../../.."
+				AdditionalIncludeDirectories="&quot;$(PYTHON_PATH)/include&quot;;../../../SimData/Include;../../Include;../../Source;../../../Demeter;../../../CSPChunkLod/include;../../.."
 				PreprocessorDefinitions="WIN32;NDEBUG;_USRDLL;CSPSIMDLL_EXPORTS"
 				StringPooling="TRUE"
 				RuntimeLibrary="2"
@@ -272,6 +272,22 @@
 			<File
 				RelativePath="..\..\Source\HID.cpp">
 			</File>
+			<Filter
+				Name="HUD"
+				Filter="">
+				<File
+					RelativePath="..\..\Source\HUD\HUD.cpp">
+				</File>
+				<File
+					RelativePath="..\..\Source\HUD\PitchLadder.cpp">
+				</File>
+				<File
+					RelativePath="..\..\Source\HUD\Tape.cpp">
+				</File>
+				<File
+					RelativePath="..\..\Source\HUD\Text.cpp">
+				</File>
+			</Filter>
 			<File
 				RelativePath="..\..\Source\InputEvent.cpp">
 			</File>
@@ -517,6 +533,22 @@
 			<File
 				RelativePath="..\..\Include\HID.h">
 			</File>
+			<Filter
+				Name="HUD"
+				Filter="">
+				<File
+					RelativePath="..\..\Source\HUD\HUD.h">
+				</File>
+				<File
+					RelativePath="..\..\Source\HUD\PitchLadder.h">
+				</File>
+				<File
+					RelativePath="..\..\Source\HUD\Tape.h">
+				</File>
+				<File
+					RelativePath="..\..\Source\HUD\Text.h">
+				</File>
+			</Filter>
 			<File
 				RelativePath="..\..\Include\InputEvent.h">
 			</File>

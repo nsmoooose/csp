@@ -10,6 +10,20 @@
  * Export sensor data from individual landing gears.  Predefine
    channel names for landing gear.
 
+ * Add generic HUD classes for implementing heads up displays.
+
+   Note that the HUD directory follows a new convention where the headers
+   and source files are in the same directory.  This is already done in
+   SimCore and elsewhere, but until now CSPSim has been using a separate
+   Include directory for all headers.  This may cause the windows build to
+   break if CSPSim/Source is not in the include path.  Over time headers
+   may be migrated from Include to Source until eventually Include can be
+   removed altogether.  At that point Source will also be eliminated so
+   that all source and header files related to CSPSim will live in
+   CSP/CSPSim/ and specific subdirectories.  CSP/ will be the common include
+   path for all subcomponents of CSP (e.g. SimCore, SimData, etc.), and
+   headers in CSPSim will be referred to with a CSPSim/ prefix.
+
 2005-04-02: onsight
  * Add a DataChannel constructor that can be used for channel data types
    that don't have public copy constructors.

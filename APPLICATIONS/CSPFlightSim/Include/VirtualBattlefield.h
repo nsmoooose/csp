@@ -106,6 +106,7 @@ protected:
 	osgUtil::SceneView* m_pView;
 	osg::ref_ptr<osg::Group> m_rpRootNode;
 	osg::ref_ptr<osg::Group> m_rpObjectRootNode;
+	osg::ref_ptr<osg::FrameStamp> m_frameStamp;
 
     osg::Node * m_pTerrainNode;
     osg::Transform * m_pTerrainTransform;

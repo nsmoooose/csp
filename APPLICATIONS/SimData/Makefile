@@ -1,5 +1,7 @@
 SUBDIRS = Source 
 
+export PYTHON_INCLUDE = /usr/include/python2.2
+
 export GDEBUGF = -g -Wall
 export GCFLAGS = -fPIC -O2 # -march=athlon-tbird
 export GLDOPTS = -shared -lswigpy -ldl

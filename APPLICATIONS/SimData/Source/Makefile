@@ -102,7 +102,7 @@ cSimData_wrap.cpp: cSimData.i
 	cp cSimData.py $(TOPDIR)/SimData
 
 cSimData_wrap.o: cSimData_wrap.cpp
-	$(CXX) -I/usr/local/include/python2.2 -DSWIG_GLOBAL -c $(SWCXXF) $(@:.o=.cpp)
+	$(CXX) -I$(PYTHON_INCLUDE) -DSWIG_GLOBAL -c $(SWCXXF) $(@:.o=.cpp)
 
 %.o: %.cpp 
 	$(CXX) -c $(CFLAGS) $(@:.o=.cpp)

@@ -26,3 +26,5 @@ sys.argv.append("--rebuild")
 
 import CSPSim
 
+CSPSim.main(sys.argv)
+

@@ -24,19 +24,18 @@ import sys, os, os.path
 #import Shell
 #from SimData.Compile import Compiler, CompilerUsageError
 
-# enable lazy loading of shared library modules if available
-if os.name == 'posix':
-	import dl
-	sys.setdlopenflags(dl.RTLD_GLOBAL|dl.RTLD_LAZY)
+def initDynamicLoading():
+	"""Enable lazy loading of shared library modules if available"""
+	if os.name == 'posix':
+		import dl
+		sys.setdlopenflags(dl.RTLD_GLOBAL|dl.RTLD_LAZY)
 
-#if hasattr(sys, "setdlopenflags"):
-#	sys.setdlopenflags(0x101)
-	
-# is the SDL joystick environment variable isn't set, try a standard value
-if not os.environ.has_key("SDL_JOYSTICK_DEVICE"):
-	# try a reasonable default for linux
-	if os.path.exists("/dev/input/js0"):
-		os.environ["SDL_JOYSTICK_DEVICE"]="/dev/input/js0"
+def setDefaultJoystick():
+	"""Provide a default value for the SDL joystick environment variable"""
+	if not os.environ.has_key("SDL_JOYSTICK_DEVICE"):
+		# try a reasonable default for linux
+		if os.path.exists("/dev/input/js0"):
+			os.environ["SDL_JOYSTICK_DEVICE"]="/dev/input/js0"
 
 def printUsage():
 	print "Combat Simulator Project - CSPSim"
@@ -123,109 +122,134 @@ def compileData(args):
 	print
 
 
-action = None
+def loadSimData():
+	"""Load the SimData module"""
+	global SimData
+	try:
+		import SimData as SD
+	except Exception, e:
+		msg = str(e)
+		if len(msg) > 60:
+			msg = msg.replace(": ", ":\n  ")
+		print """
+	ERROR: Unable to import SimData.  
 
-# do our best to find the correct configuration file
-config_paths = [".", "~/.cspsim", "/etc/cspsim", "../Data"]
+	%s
+	""" % msg,
 
-config = "CSPSim.ini"
-for path in config_paths:
-	path = os.path.join(path, "CSPSim.ini")
-	path = os.path.expanduser(path)
-	if os.path.exists(path):
-		config = path
-		break
+		if str(e).find("symbol") >= 0:
+			print """
+	Unresolved symbols often indicate missing libraries or improper link options.
+	""",
+		print """
+	Please verify that SimData has been properly installed on your system.  See 
+	the README file in the SimData distribution for details.  
+	"""
+		sys.exit(1)
+	SimData = SD
 
-# process command line options
-program = sys.argv[0]
-all_args = sys.argv[1:]
-log_classes = []
-other_args = []
 
-for arg in all_args:
-	if arg == '--compile-data':
-		action = compileData
-	elif arg in ("--help", "-h", "-help"):
-		if action == None:
-			print
-			printUsage()
-			print
-			sys.exit(1)
+def loadCSP():
+	global CSP
+	try:
+		import cCSP
+	except Exception, e:
+		msg = str(e)
+		if len(msg) > 60:
+			msg = msg.replace(": ", ":\n  ")
+		print """
+	ERROR: Unable to import cCSP.py  
+
+	%s
+	""" % msg,
+
+		if str(e).find("No module named") >= 0:
+			print """
+	Some required files appear to be missing.  Please verify that you have
+	successfully built CSPSim.  See the README for details.  If you are
+	still having trouble, ask for help on the forums at 
+
+		http://csp.sourceforge.net/forum
+
+	"""
+		else:
+			print """
+	See the README files for additional information.  If you are still having
+	trouble, ask for help on the forums at 
+
+		http://csp.sourceforge.net/forum
+
+	"""
+		sys.exit(1)
+	CSP = cCSP
+
+
+def findConfig():
+	# do our best to find the correct configuration file
+	config_paths = [".", "~/.cspsim", "/etc/cspsim", "../Data"]
+
+	config = "CSPSim.ini"
+	for path in config_paths:
+		path = os.path.join(path, "CSPSim.ini")
+		path = os.path.expanduser(path)
+		if os.path.exists(path):
+			config = path
+			break
+	return config
+
+
+def main(argv):
+	global log_classes
+
+	initDynamicLoading()
+	setDefaultJoystick()
+
+	action = None
+
+	# process command line options
+	program = argv[0]
+	all_args = argv[1:]
+	log_classes = []
+	other_args = []
+
+	config = findConfig()
+
+	for arg in all_args:
+		if arg == '--compile-data':
+			action = compileData
+		elif arg in ("--help", "-h", "-help"):
+			if action == None:
+				print
+				printUsage()
+				print
+				sys.exit(1)
+			else:
+				other_args.append(arg)
+		elif arg.startswith("--config="):
+			config = arg[9:]
+		elif arg.startswith("--log="):
+			log_classes.extend(arg[6:].split(':'))
 		else:
 			other_args.append(arg)
-	elif arg.startswith("--config="):
-		config = arg[9:]
-	elif arg.startswith("--log="):
-		log_classes.extend(arg[6:].split(':'))
-	else:
-		other_args.append(arg)
 
-if action is None:
-	action = runCSPSim
+	if action is None:
+		action = runCSPSim
 
-# load simdata
-try:
-	import SimData
-except Exception, e:
-	msg = str(e)
-	if len(msg) > 60:
-		msg = msg.replace(": ", ":\n  ")
-	print """
-ERROR: Unable to import SimData.  
+	loadSimData()
+	SimData.log().setOutput("SimData.log")
+	SimData.log().setLogLevels(SimData.LOG_ALL, SimData.LOG_DEBUG)
 
-%s
-""" % msg,
+	loadCSP()
+	SimData.log().setLogLevels(SimData.LOG_ALL, SimData.LOG_ALERT)
 
-	if str(e).find("symbol") >= 0:
-		print """
-Unresolved symbols often indicate missing libraries or improper link options.
-""",
-	print """
-Please verify that SimData has been properly installed on your system.  See 
-the README file in the SimData distribution for details.  
-"""
-	sys.exit(1)
+	print "Loading configuration from '%s'." % config
+	if not CSP.openConfig(config):
+		print "Unable to open primary configuration file (%s)" % config
+		sys.exit(0)
 
-SimData.log().setOutput("SimData.log")
-SimData.log().setLogLevels(SimData.LOG_ALL, SimData.LOG_DEBUG)
-try:
-	import cCSP as CSP
-except Exception, e:
-	msg = str(e)
-	if len(msg) > 60:
-		msg = msg.replace(": ", ":\n  ")
-	print """
-ERROR: Unable to import cCSP.py  
+	action(other_args)
 
-%s
-""" % msg,
 
-	if str(e).find("No module named") >= 0:
-		print """
-Some required files appear to be missing.  Please verify that you have
-successfully built CSPSim.  See the README for details.  If you are
-still having trouble, ask for help on the forums at 
-
-    http://csp.sourceforge.net/forum
-
-"""
-	else:
-		print """
-See the README files for additional information.  If you are still having
-trouble, ask for help on the forums at 
-
-    http://csp.sourceforge.net/forum
-
-"""
-	sys.exit(1)
-
-SimData.log().setLogLevels(SimData.LOG_ALL, SimData.LOG_ALERT)
-
-print "Loading configuration from '%s'." % config
-if not CSP.openConfig(config):
-	print "Unable to open primary configuration file (%s)" % config
-	sys.exit(0)
-
-action(other_args)
-
+if __name__ == "__main__":
+	main(sys.argv)
 

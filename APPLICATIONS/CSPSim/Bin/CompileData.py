@@ -25,3 +25,5 @@ sys.argv.append("--compile-data")
 
 import CSPSim
 
+CSPSim.main(sys.argv)
+

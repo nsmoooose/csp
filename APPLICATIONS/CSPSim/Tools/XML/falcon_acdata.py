@@ -58,11 +58,11 @@ class htable:
 		xbreaks = getattr(data, self.xbreaks)
 		ybreaks = getattr(data, self.ybreaks)
 		self.current += map(float, line.split())
-		if len(self.current) > len(ybreaks): raise "fubar table"
-		if len(self.current) == len(ybreaks):
+		if len(self.current) > len(xbreaks): raise "fubar table"
+		if len(self.current) == len(xbreaks):
 			self.current = map(lambda x, s=self.scale: x*s, self.current)
 			self.table.append(self.current)
-			if len(self.table) == len(xbreaks):
+			if len(self.table) == len(ybreaks):
 				table = Table(xbreaks, ybreaks, self.table)
 				setattr(data, self.id, table)
 				return 1
@@ -98,18 +98,18 @@ class ACData:
 		hnumlist("aero_mach_breaks"),
 		hnumlist("aero_alpha_breaks"),
 		hnum("c_l_multiplier"),
-		htable("c_l", "aero_mach_breaks", "aero_alpha_breaks"),
+		htable("c_l", "aero_alpha_breaks", "aero_mach_breaks"),
 		hnum("c_d_multiplier"),
-		htable("c_d", "aero_mach_breaks", "aero_alpha_breaks"),
+		htable("c_d", "aero_alpha_breaks", "aero_mach_breaks"),
 		hnum("c_y_multiplier"),
-		htable("c_y", "aero_mach_breaks", "aero_alpha_breaks"),
+		htable("c_y", "aero_alpha_breaks", "aero_mach_breaks"),
 		hnum("thrust_multiplier"),
 		hnum("fuel_flow_multiplier"),
 		hnumlist("thrust_mach_breaks"),
 		hnumlist("thrust_altitude_breaks", 0.3048),
-		htable("idle_thrust", "thrust_altitude_breaks", "thrust_mach_breaks", 0.4545),
-		htable("mil_thrust", "thrust_altitude_breaks", "thrust_mach_breaks", 0.4545),
-		htable("ab_thrust", "thrust_altitude_breaks", "thrust_mach_breaks", 0.4545),
+		htable("idle_thrust", "thrust_mach_breaks", "thrust_altitude_breaks", 4.545),
+		htable("mil_thrust", "thrust_mach_breaks", "thrust_altitude_breaks", 4.545),
+		htable("ab_thrust", "thrust_mach_breaks", "thrust_altitude_breaks", 4.545),
 	]
 
 
@@ -166,14 +166,14 @@ class ACData:
 		for curve in table.table:
 			tabpr(*curve)
 		tabpr.indent(-1)
-		tabpr("</Value>")
+		tabpr("</Values>")
 		tabpr.indent(-1)
 		tabpr("</Table>")
 
 	def engine_xml(self):
-		self.table_xml("idle_thrust", self.data.idle_thrust, 1000.0, 0.1, 1)
-		self.table_xml("mil_thrust", self.data.mil_thrust, 1000.0, 0.1, 1)
-		self.table_xml("ab_thrust", self.data.ab_thrust, 1000.0, 0.1, 1)
+		self.table_xml("idle_thrust", self.data.idle_thrust, 0.1, 1000.0, 1)
+		self.table_xml("mil_thrust", self.data.mil_thrust, 0.1, 1000.0, 1)
+		self.table_xml("ab_thrust", self.data.ab_thrust, 0.1, 1000.0, 1)
 
 
 f = sys.stdin

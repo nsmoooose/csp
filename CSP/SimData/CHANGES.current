@@ -25,6 +25,9 @@ Version 0.4.0 (in progress)
   * Updated docs in TaggedRecord.h.  Added a global registry for
     tagged records.
 
+  * Minor fixups to Trace.h (needs more work, and really needs a
+    win32 implementation).
+
 2004-06-16: onsight
   * Doxygen cleanups.
 

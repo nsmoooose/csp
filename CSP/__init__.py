@@ -16,11 +16,17 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
-CSP = 1
 
 import sys
 import os
 import os.path
+
+# ugly kludge to allow us to import dl.  the bootstrap loader removes the
+# original contents of sys.path, and stashes the full path in sys.CSP_PATH.
+# if it has been set we restore the path here and clear the sys attribute.
+if len(sys.path) == 1 and hasattr(sys, 'CSP_PATH'):
+	sys.path = sys.CSP_PATH
+	del sys.CSP_PATH
 
 # make SimData available as CSP.SimData
 __path__ += [os.path.join(os.path.dirname(__file__), 'SimData')]

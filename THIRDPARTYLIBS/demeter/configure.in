@@ -1,4 +1,4 @@
-AC_PREREQ(2.13)
+AC_PREREQ(2.57)
 
 # Process this file with autoconf to produce a configure script.
 AC_INIT(CSP-demeter, 0.1, [http://csp.sourceforge.net])

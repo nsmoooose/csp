@@ -42,15 +42,14 @@ AircraftPhysicsModel::AircraftPhysicsModel():
 Vectord const &AircraftPhysicsModel::f(double x, Vectord &y) {   
 	// dot(p,v,w,q) = f(p,v,w,q)
 
-	// bind(y,p,v,w,q); 
-	m_PositionLocal = b_Position->value() + bodyToLocal(simdata::Vector3(y[0],y[1],y[2]));
-	m_VelocityBody = simdata::Vector3(y[3],y[4],y[5]);
-	m_AngularVelocityBody = simdata::Vector3(y[6],y[7],y[8]);
-	m_Attitude = simdata::Quat(y[10],y[11],y[12],y[9]);
+	// bind(y,p,v,w,q)
+	YToBody(y);
+	m_Attitude.set(y[10],y[11],y[12],y[9]);
 	double mag = m_Attitude.length();
 	if (mag != 0.0) {
 		m_Attitude /= mag;
 	}
+	m_PositionLocal = b_Position->value() + bodyToLocal(m_PositionBody);
 	y[9]  = m_Attitude.w(); y[10] = m_Attitude.x(); y[11] = m_Attitude.y(); y[12] = m_Attitude.z();
 
 	m_ForcesBody = m_MomentsBody = simdata::Vector3::ZERO;
@@ -86,7 +85,8 @@ Vectord const &AircraftPhysicsModel::f(double x, Vectord &y) {
 	m_ForcesBody += m_WeightBody;
 
 	// linear acceleration body: calculate v' = F/m - w^v
-	m_LinearAccelBody =  m_ForcesBody / b_Mass->value() - (m_AngularVelocityBody^m_VelocityBody);
+	m_LinearAccelBody =  m_ForcesBody / b_Mass->value() - (m_AngularVelocityBody ^ m_VelocityBody);
+	
 
 	// angular acceleration body: calculate Iw' = M - w^Iw
 	m_AngularAccelBody = b_InertiaInverse->value() * 
@@ -94,9 +94,9 @@ Vectord const &AircraftPhysicsModel::f(double x, Vectord &y) {
 	
 	// quaternion derivative and w in body coordinates: q' = 0.5 * q * w
 	simdata::Quat qprim = 0.5 * m_Attitude * m_AngularVelocityBody;
-
+	
 	// p' = v
-	m_dy[0] = y[3]; m_dy[1] = y[4]; m_dy[2] = y[5];
+	m_dy[0] = y[3]; m_dy[1] = y[4]; m_dy[2] = y[5]; 
 	// v'
 	m_dy[3] = m_LinearAccelBody.x(); m_dy[4] = m_LinearAccelBody.y(); m_dy[5] = m_LinearAccelBody.z();
 	// w'
@@ -111,7 +111,7 @@ void AircraftPhysicsModel::doSimStep(double dt) {
 
 	if (dt == 0.0) dt = 0.017;
 	//unsigned short n = std::min<unsigned short>(6,static_cast<unsigned short>(180 * dt)) + 1;
-	unsigned short n = std::min<unsigned short>(11,static_cast<unsigned short>(850 * dt)) + 1;
+	unsigned short n = 15*std::min<unsigned short>(1,static_cast<unsigned short>(210*dt)) + 1;
 	double dtlocal = dt/n;
 	std::for_each(m_Dynamics.begin(),m_Dynamics.end(),InitializeSimulationStep(dtlocal));
 
@@ -140,7 +140,8 @@ void AircraftPhysicsModel::doSimStep(double dt) {
 	for (unsigned short i = 0; i<n; ++i) {
 		
 		m_VelocityBody = localToBody(m_VelocityLocal);
-		m_AngularVelocityBody =	localToBody(m_AngularVelocityLocal);
+		
+		m_AngularVelocityBody = localToBody(m_AngularVelocityLocal);
 
 		Vectord y0 = bodyToY(simdata::Vector3::ZERO,m_VelocityBody,m_AngularVelocityBody,m_Attitude);
 
@@ -152,7 +153,7 @@ void AircraftPhysicsModel::doSimStep(double dt) {
 		Vectord y = flow(y0, 0.0, dtlocal);
 
 		// update all variables
-		// Caution: dont permute these	lines
+		// Caution: never permute the following lines
 		// solution to body data members
 		YToBody(y);
 
@@ -171,11 +172,11 @@ void AircraftPhysicsModel::doSimStep(double dt) {
 
 		std::for_each(m_Dynamics.begin(),m_Dynamics.end(),PostSimulationStep(dtlocal));
 
-		// convert body to local coordinates 
+		// convert position, linear velocity and angular velocity from body to local coordinates 
 		physicsBodyToLocal();
 
-		// update attitude and force for a unit quaternion
-		m_Attitude = simdata::Quat(y[10],y[11],y[12],y[9]);
+		// update attitude and normalize the quaternion
+		m_Attitude.set(y[10],y[11],y[12],y[9]);
 		double mag = m_Attitude.length();
 		if (mag	!= 0.0)
 			m_Attitude /= mag;

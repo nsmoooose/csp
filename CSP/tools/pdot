@@ -1,0 +1,329 @@
+#!/usr/bin/python
+#
+# Copyright 2004 Mark Rose <mkrose@users.sourceforge.net>
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+# Inspired by cgprof by Mark Vertes <mvertes@free.fr>
+
+
+usage = """%prog [options] [profile]
+
+Generates a visual call graph from gprof profile data.  See gcc and gprof
+for information about generating profile data.  Requires GraphViz (see
+http://www.graphviz.org) for postscript and X11 output.
+
+Example:
+  $ g++ -pg -g -o myexe myapp.cc          # -pg enables profiling
+  $ ./myexe                               # run to collect profile data
+  $ gprof myexe > myexe.prof              # parse the profile data
+  $ %prog --device=ps myexe.prof > a.ps    # create a postscript call graph
+  $ gv a.ps                               # view it with gv"""
+
+
+import os
+import re
+import sys
+
+
+def wrap(method, width):
+	lines = []
+	while len(method) > width:
+		part = method[:width]
+		idx = part.rfind(' ')
+		if idx >= 0:
+			lines.append(method[:idx])
+			method = method[idx+1:]
+			continue
+		idx = part.rfind(',')
+		if idx >= 0:
+			lines.append(method[:idx+1])
+			method = method[idx+1:]
+		idx = part.rfind('::')
+		if idx >= 0:
+			lines.append(method[:idx+2])
+			method = method[idx+2:]
+		lines.append(method[:width])
+		method = method[width:]
+	if method: lines.append(method)
+	return lines
+
+re_temp = re.compile(r'<.*>')
+re_tparm = re.compile(r'<(.*)>')
+
+def first_template(identifier):
+	m = re_tparm.search(identifier)
+	if m is not None:
+		parms = m.group(1).split(',')
+		repl = first_template(parms[0])
+		if len(parms) > 1: repl += ', ...'
+		return re_temp.sub('<%s>' % repl, identifier)
+	return identifier
+
+def parse_template(id, node):
+	while 1:
+		idx1 = id.find('<')
+		idx2 = id.find('>')
+		if idx1 >= 0 and idx1 < idx2:
+			node.append(id[:idx1])
+			subnode = []
+			rest = parse_template(id[idx1+1:], subnode)
+			node.append(subnode)
+			id = rest
+			continue
+		if idx2 >= 0:
+			node.append(id[:idx2])
+			return id[idx2+1:]
+		return id
+
+
+def abbreviate(node):
+	out = []
+	for item in node:
+		if isinstance(item, str):
+			if item.startswith(','):
+				out.append(', ...')
+				break
+			if item.find(',') >= 0:
+				out.append('%s, ...' % item.split(',')[0])
+				break
+			out.append(item)
+		else:
+			out.append(abbreviate(item))
+	return '<%s>' % ''.join(out)
+
+
+def filter_template(id):
+	tree = []
+	rest = parse_template(id, tree)
+	out = []
+	for item in tree:
+		if isinstance(item, str):
+			out.append(item)
+		else:
+			out.append(abbreviate(item))
+	out.append(rest)
+	return ''.join(out)
+
+
+CUT_FROM_METHOD_NAMES = ['std::', '__gnu_cxx::']
+
+
+def filter_method(method):
+	for cut in CUT_FROM_METHOD_NAMES:
+		method = method.replace(cut, '')
+	method = method.replace('unsigned ', 'u')
+	method = first_template(method)
+	if len(method) > 60:
+		method = '\\n'.join(wrap(method, 60))
+	return method
+
+
+class Node:
+	def __init__(self, fields, ref=False):
+		data = ''
+		if not ref:
+			if float(fields[1]) > 0:
+				data = '\\n(%s%%: %s self, %s child)' % tuple(fields[1:4])
+			if fields[4][0] in '0123456789':
+				method = ' '.join(fields[5:-1])
+				data += '\\n(called: %s)' % fields[4]
+			else:
+				method = ' '.join(fields[4:-1])
+			self.index = fields[0]
+			self.cost = float(fields[1]) / 100.0
+			self.external = False
+		else:
+			method = ' '.join(fields[3:-1])
+			self.index = fields[-1]
+			self.cost = 0.0
+			self.external = True
+		self.method = filter_method(method)
+		self.label = '%s\\n%s' % (self.method, data)
+
+	def dump(self, cdot, size=None, maxcost=1.0):
+		if size is not None:
+			minsize, scale = size
+			sizeopt = ',fontsize="%d"' % (min(30, minsize + scale * self.cost))
+		else:
+			sizeopt = ''
+
+		maxhue = 0.6
+		minsat = 0.1
+		bri = 1.0
+		if self.external:
+			hue = maxhue
+			sat = 0.0
+			bri = 0.8
+		elif self.cost > 0.0:
+			hue = maxhue * (1.0 - min(1.0, self.cost / maxcost))
+			sat = min(1.0, minsat + (3.0 - minsat) * self.cost)
+		else:
+			hue = maxhue
+			sat = minsat
+		print >>cdot, ('  "%s" [fillcolor="%.3f %.3f %.3f",label="%s"%s];' %
+		              (self.index, hue, sat, bri, self.label, sizeopt))
+
+
+class Edge:
+	def __init__(self, fields, target=None, source=None):
+		self.weight = 0
+		self.label = ''
+		if fields[2][0] in '0123456789':
+			try:
+				self.weight = int(fields[2].split('/')[0])
+			except ValueError:
+				self.weight = 1
+			self.label = '(%s ms, %s ms, %s)' % tuple(fields[:3])
+		elif not fields[1][0] in '0123456789':
+			try:
+				self.weight = int(fields[0].split('/')[0])
+			except ValueError:
+				self.weight = 1
+			self.label = '(%s)' % fields[0]
+		call_index = fields[-1]
+		if source is not None:
+			self.source = source
+			self.target = call_index
+		else:
+			self.source = call_index
+			self.target = target
+
+	def dump(self, cdot):
+		print >>cdot, '  "%s" -> "%s" [label="%s",weight="%d"];' % (self.source, self.target, self.label, self.weight)
+	
+	def __hash__(self):
+		return hash('%s->%s' % (self.source, self.target))
+	def __cmp__(self, other):
+		return cmp(str(self), str(other))
+	def __str__(self):
+		return '%s->%s' % (self.source, self.target)
+
+
+def process(cin, filter=None, simple=False):
+
+	if not filter:
+		cdot = sys.stdout
+	else:
+		cdot = open('.pdot~', 'wt')
+
+	start = 0
+
+	called = []
+	caller = ''
+	nodes = {}
+	edges = []
+
+	for line in cin:
+		if line.startswith('index % time'):
+			start = 1
+			continue
+		if not start: continue
+		if not line.strip(): break
+		line = line.strip()
+		if line.startswith('<spontaneous>'): continue
+		if line.startswith('granularity:'): continue
+		if line.startswith('index '): continue
+		fields = line.split()
+		if not fields: continue
+		if line.find('<cycle [0-9]* as a whole>') >= 0: continue
+		if line.startswith('['):
+			node = Node(fields)
+			nodes[node.index] = node
+			caller = node.index
+			continue
+		if line.startswith('---'):
+			target = caller
+			for caller, fields in called:
+				edges.append(Edge(fields, target=target))
+			caller = ''
+			called = []
+			continue
+		source_index = fields[-1]
+		if not caller:
+			if not simple:
+				if not nodes.has_key(source_index):
+					nodes[source_index] = Node(fields, ref=True)
+				called.append((source_index, fields))
+		else:
+			edges.append(Edge(fields, source=caller))
+
+	maxcost = min(1.0, reduce(lambda x, y: max(x, y.cost), nodes.values(), 0.001))
+	minsize = 18 - 6 * maxcost
+	maxsize = 18 + 400 * maxcost
+	fontscale = (maxsize - minsize) / maxcost
+
+	print >>cdot, 'digraph gprof {'
+	print >>cdot, '  rankdir=LR;'
+	print >>cdot, '  node [style=filled];'
+	print >>cdot, '  node [color="0.1 0.1 0.1"];'
+	print >>cdot, '  node [fillcolor="0.1 0.0 1.0"];'
+	print >>cdot, '  node [shape=box];'
+	print >>cdot, '  node [fontsize=%d];' % minsize
+	print >>cdot, '  node [fontname="Helvetica"];'
+	print >>cdot, '  edge [fontsize=%d];' % minsize
+	print >>cdot, '  edge [color="#000060"];'
+	print >>cdot, '  edge [fontname="Helvetica"];'
+
+	edge_set = {}
+	for edge in edges:
+		edge_set[edge] = edge
+
+	for node in nodes.values():
+		node.dump(cdot, size=(minsize, fontscale), maxcost=maxcost)
+	for edge in edge_set.values():
+		edge.dump(cdot)
+
+	print >>cdot, '}'
+	cdot.close()
+
+	if filter:
+		os.system('cat .pdot~ | %s' % filter)
+
+
+if __name__ == '__main__':
+	from optparse import OptionParser
+	parser = OptionParser(usage)
+	parser.add_option('', '--device', default='dot', type='string', dest='device',
+	                  help='output device (X11, ps, or dot)')
+	parser.add_option('-s', '--simple', action='store_true', default=False, dest='simple',
+	                  help='omit inbound calls from unprofiled functions')
+	parser.add_option('', '--cut', default='', dest='cut', help='strings to remove from method names')
+
+	(options, args) = parser.parse_args()
+
+	if len(args) > 1:
+		parser.error('specify at most one profile')
+	if len(args) == 1:
+		cin = open(args[0], 'rt')
+	else:
+		cin = sys.stdin
+
+	device = options.device.upper()
+	if device == 'X11':
+		filter = 'dotty -'
+	elif device == 'PS':
+		filter = 'dot -Tps -Gsize="11,17" -Grotate=90'
+	else:
+		filter = ''
+
+	cut = options.cut.split(',')
+	CUT_FROM_METHOD_NAMES.extend(cut)
+
+	try:
+		process(cin, filter=filter, simple=options.simple)
+	except KeyboardInterrupt:
+		pass
+

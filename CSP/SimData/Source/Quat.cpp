@@ -379,7 +379,7 @@ int Quat::writeBinary(unsigned char * ptrBuf, int size)
 	return 4*sizeof(double);
 }
 
-inline std::ostream& operator << (std::ostream& output, const Quat& quat)
+std::ostream& operator << (std::ostream& output, const Quat& quat)
 {
 	output << "[" << quat._x
 	       << " " << quat._y

@@ -1,5 +1,14 @@
  Version 0.4.0 (in progress)
 ===========================
+2003-12-21: delta
+  * Fixed stars at daytime on windows (GL_BLEND problem).
+  
+  * Separated gears and markers control.
+  
+  * Added an osgFX effect (specular highlight).
+  
+  * Other minor changes.
+  
 2003-10-24: onsight
   * Added some SimData header includes that were included
     implicitly before via SimData/TypeAdapter.h.
@@ -162,4 +171,3 @@
 
 2003-08-20: onsight
   * Tagged version r0_3_4, starting version 0.3.5
-

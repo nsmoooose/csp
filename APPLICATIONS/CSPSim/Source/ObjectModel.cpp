@@ -311,6 +311,9 @@ void ObjectModel::loadModel() {
 
 void ObjectModel::addContactMarkers() {
 	m_ContactMarkers = new osg::Group;
+	osg::CullFace *cf = new osg::CullFace;
+	cf->setMode(osg::CullFace::BACK);
+	m_ContactMarkers->getOrCreateStateSet()->setAttributeAndModes(cf, osg::StateAttribute::ON);
 	for (unsigned i = 0; i < m_Contacts.size(); i++) {
 		osg::Geode *diamond = new osg::Geode;
 		diamond->addDrawable(makeDiamond(m_Contacts[i], 0.2));

@@ -1,6 +1,21 @@
  Version 0.3.3 (in progress)
 ===========================
 
+2003-07-02: onsight
+
+            Added backface culling to model debug markers so that
+	    the initial view is not obstructed by the view placement
+	    marker.
+
+	    Changed ScreenInfo font to use screeninfo.ttf instead of
+	    ltype.ttf (which is cannot be freely distributed).  A new
+	    supplemental data pack CSPSim-Data-Supplement-0.2.1.tgz
+	    is available from the SF project page that includes a
+	    GPL'd screeninfo.ttf font as well as other needed data
+	    files that are missing from the older 0.2.tgz data release.
+	    The fps info character spacing is slightly changed to
+	    accomodate the new font, but this needs is just a bandaid
+	    and needs additional work.
 
 2003-07-01: delta
 

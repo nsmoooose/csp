@@ -83,6 +83,7 @@ public:
 		SIMDATA_XML("elevation_correction", ObjectModel::m_ElevationCorrection, false)
 		SIMDATA_XML("polygon_offset", ObjectModel::m_PolygonOffset, false)
 		SIMDATA_XML("cull_face", ObjectModel::m_CullFace, false)
+		SIMDATA_XML("lighting", ObjectModel::m_Lighting, false)
 		SIMDATA_XML("landing_gear", ObjectModel::m_LandingGear, false)
 		SIMDATA_XML("animations", ObjectModel::m_Animations, false)
 	END_SIMDATA_XML_INTERFACE
@@ -122,6 +123,7 @@ protected:
 	bool m_ElevationCorrection;
 	float m_PolygonOffset;
 	int m_CullFace;
+	bool m_Lighting;
 	ContactList m_Contacts;
 	std::vector<simdata::Vector3> m_LandingGear;
 	simdata::Link<Animation>::vector m_Animations;

@@ -1,6 +1,12 @@
 Version 0.3.1 (in progress)
 ===========================
 
+2003-03-27: onsight
+            Added push_back() methods for int, double, and string to 
+	    InterfaceRegistry.  These are needed for XML <List>'s of these
+	    basic types.  Lists of objects derived from BaseType already
+	    worked.
+	    
 2003-03-26: onsight
             Modified setup.py to byte compile the python scripts during
 	    installation, and to set the file permissions of these to

@@ -114,6 +114,15 @@ public:
 	virtual void set(Object *p, const char *name, BaseType *v) {
 		self->set(p, name, TypeAdapter(v));
 	}
+	virtual void push_back(Object *p, const char *name, const char *v) {
+		self->push_back(p, name, TypeAdapter(v));
+	}
+	virtual void push_back(Object *p, const char *name, int v) {
+		self->push_back(p, name, TypeAdapter(v));
+	}
+	virtual void push_back(Object *p, const char *name, double v) {
+		self->push_back(p, name, TypeAdapter(v));
+	}
 	virtual void push_back(Object *p, const char *name, const BaseType &v) {
 		self->push_back(p, name, TypeAdapter(v));
 	}

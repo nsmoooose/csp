@@ -308,11 +308,15 @@ void PeerInfo::updateTiming(int ping_latency, int last_ping_latency) {
 	correction = m_time_skew_history.add(correction);
 	m_time_skew = m_time_skew * m_time_filter + correction * (1.0 - m_time_filter);
 	m_last_ping_latency = ping_latency;
-	if (m_time_filter < 0.9999) {
-		m_time_filter += (1.0 - m_time_filter) * 0.1;
-	}
-	if (m_time_filter > 0.9999) {
-		m_time_filter = 0.9999;
+
+	// wait for a few values to arrive before increasing the filter time constant
+	if (m_time_skew_history.count() >= 7) {
+		if (m_time_filter < 0.9999) {
+			m_time_filter += (1.0 - m_time_filter) * 0.1;
+		}
+		if (m_time_filter > 0.9999) {
+			m_time_filter = 0.9999;
+		}
 	}
 	//std::cout << "clock skew = " << m_time_skew << "\n";
 	//std::cout << "round trip = " << m_roundtrip_latency << "\n";

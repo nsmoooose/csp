@@ -192,7 +192,7 @@ public:
 	inline bool needsPing() {
 		// ping quickly at first to help establish a stable time offset; and at
 		// least occasionally after that.
-		const double ping_limit = (m_connect_time < 20.0 ? 1.0 : 10.0);
+		const double ping_limit = (m_connect_time < 20.0 ? 0.5 : 10.0);
 		const double quiet_limit = (hasPendingConfirmations() ? 0.0 : 0.5);
 		bool ping = (m_quiet_time > quiet_limit || m_ping_time > ping_limit);
 		if (ping) m_ping_time = 0.0;

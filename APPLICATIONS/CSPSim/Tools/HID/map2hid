@@ -475,55 +475,65 @@ class VirtualDevice:
 		self.mode = 0
 		self.mapping = {}
 
-def usage():
+def usage(program):
 	print "Map script to human interface device definition converter"
 	print "Copyright (C) 2003 Mark Rose <tm2@stm.lbl.gov>"
-	print "usage: %s [--help] infile [outfile]" % sys.argv[0]
+	print "usage: %s [--help] infile [outfile]" % program
 
-file = None
-outfile = None
 
-for arg in sys.argv[1:]:
-	if arg.startswith('--'):
-		if arg == '--help':
-			usage()
-			print "    infile   : input map file"
-			print "    outfile  : output file ('-' for stdout)"
+def main(argv):
+	file = None
+	outfile = None
+
+	for arg in argv[1:]:
+		if arg.startswith('--'):
+			if arg == '--help':
+				usage(argv[0])
+				print "    infile   : input map file"
+				print "    outfile  : output file ('-' for stdout)"
+				sys.exit(1)
+			continue
+		if file is None:
+			file = arg
+		elif outfile is None:
+			outfile = arg
+		else:
+			usage(argv[0])
 			sys.exit(1)
-		continue
+
 	if file is None:
-		file = arg
-	elif outfile is None:
-		outfile = arg
+		usage(argv[0])
+		sys.exit(1)
+			
+	if outfile is None and file.endswith('.map'):
+		outfile = file[:-4] + '.hid'
+
+	outf = None
+	if outfile == '-':
+		outf = sys.stdout
 	else:
-		usage()
-		sys.exit(1)
-		
-if outfile is None and file.endswith('.map'):
-	outfile = file[:-4] + '.hid'
+		try:
+			outf = open(outfile, "wt")
+		except:
+			print "Unable to write to '%s'." % outfile
+			sys.exit(1)
+			
+	v = VirtualDeviceDefinition()
 
-outf = None
-if outfile == '-':
-	outf = sys.stdout
-else:
 	try:
-		outf = open(outfile, "wt")
-	except:
-		print "Unable to write to '%s'." % outfile
+		v.read(file)
+	except Error, e:
+		print e.msg
 		sys.exit(1)
-		
-v = VirtualDeviceDefinition()
 
-try:
-	v.read(file)
-except Error, e:
-	print e.msg
-	sys.exit(1)
+	bindings = v.bind.keys()
+	bindings.sort()
+	for b in bindings:
+		print >>outf, "=%s" % b
+	for m in v.maps:
+		m.write(outf)
 
-bindings = v.bind.keys()
-bindings.sort()
-for b in bindings:
-	print >>outf, "=%s" % b
-for m in v.maps:
-	m.write(outf)
+
+if __name__ == "__main__":
+	main(sys.argv)
 

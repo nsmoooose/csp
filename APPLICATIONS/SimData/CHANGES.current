@@ -1,5 +1,20 @@
 Version 0.4.0 (in progress)
 ===========================
+2003-10-21: onsight
+  * Changed Packer to accept PackFile instead of FILE*.  PackFile is
+    a thin wrapper around FILE* which shouldn't affect other c++ code
+    (it allows coercion to and from FILE*), but prevents Python code
+    from passing file objects to Packer.  The latter is necessary,
+    since under windows Python is currently built with MSVC 1200, and
+    SimData is built with MSVC 1310+.  The runtime libraries for these
+    two versions of MSVC are incompatible with respect to certain FILE* 
+    operations, causing segfaults.  Using PackFile ensures that FILE*
+    are created and used only by the MSVC 1310 library when dealing
+    with data archives.
+
+  * Started adding new data type unit tests.  Key and some SimDate
+    tests so far.
+
 2003-10-20: onsight
   * Removed Pack.cpp from the vcproj file.
 

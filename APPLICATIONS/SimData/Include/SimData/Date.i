@@ -34,5 +34,17 @@ NAMESPACE_SIMDATA
 %rename(__cmp__) SimDate::compare(SimDate const &) const;
 NAMESPACE_SIMDATA_END
 
+%include exception.i
+%exception {
+	try {
+		$function
+	} catch (SIMDATA(InvalidDate) e) {
+		e.clear();
+		SWIG_exception(SWIG_RuntimeError, e.getError().c_str());
+	}
+}
+
 %include "SimData/Date.h"
+
+%exception;
 

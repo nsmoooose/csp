@@ -50,7 +50,7 @@ class DataArchive;
 SIMDATA_EXCEPTION(DataUnderflow);
 SIMDATA_EXCEPTION(ConstViolation);
 
-class Archive {
+class SIMDATA_EXPORT Archive {
 	bool __loading;
 public:
 	Archive(bool loading): __loading(loading) {}
@@ -163,6 +163,29 @@ public:
 
 };
 
+
+class SIMDATA_EXPORT PackFile {
+	FILE *_f;
+	bool _open;
+public:
+#ifndef SWIG
+	operator FILE*() { return _f; }
+	PackFile(FILE* f): _f(f), _open(false) {}
+#endif
+	PackFile(const char *fn, const char *mode) {
+		_f = (FILE*) fopen(fn, mode);
+		assert(_f); // XXX add error handling
+		_open = (_f != 0);
+	}
+	void close() {
+		if (_open) {
+			fclose(_f);
+			_open = false;
+		}
+	}
+};
+
+
 /** Utility class for writing raw data to an object archive.
  *
  *  Packer instances are created by the DataArchive class when an
@@ -172,15 +195,16 @@ public:
  *
  *  @author Mark Rose <tm2@stm.lbl.gov>
  */
-class Packer: public Archive {
+class SIMDATA_EXPORT Packer: public Archive {
 	FILE *_f;
 	int _n;
 	void write(const void* x, int n) {
 		fwrite(x, n, 1, _f);
 	}
 public:
-	Packer(FILE* f): Archive(false) {
-		_f = f;
+	Packer(PackFile f): Archive(false) {
+		_f = static_cast<FILE*>(f);
+		assert(_f != 0);
 		resetCount();
 	}
 	void resetCount() { _n = 0; }
@@ -246,7 +270,7 @@ public:
  *
  *  @author Mark Rose <tm2@stm.lbl.gov>
  */
-class UnPacker: public Archive {
+class SIMDATA_EXPORT UnPacker: public Archive {
 	const char* _d;
 	int _n;
 	DataArchive* _archive;
@@ -354,6 +378,7 @@ void Archive::operator()(std::vector<T> &x) {
 	assert(unpacker != 0);
 	unpacker->operator()(x);
 }
+
 
 NAMESPACE_SIMDATA_END
 

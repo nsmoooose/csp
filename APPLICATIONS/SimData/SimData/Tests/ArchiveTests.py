@@ -9,7 +9,7 @@ def round5(x):
 
 class ArchiveTest(TestCase):
 	def setUp(self):
-		self.f = open('__test__.dar', 'wb')
+		self.f = SimData.PackFile('__test__.dar', 'wb') #open('__test__.dar', 'wb')
 		self.archive = SimData.Packer(self.f)
 	def setRead(self):
 		self.size = self.archive.getCount()

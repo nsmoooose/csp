@@ -173,6 +173,5 @@ std::string ospath::filter(const std::string &path) {
 	return denormalize(normalize(path));
 }
 
-
 NAMESPACE_SIMDATA_END
 

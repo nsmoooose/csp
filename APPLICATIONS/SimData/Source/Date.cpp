@@ -357,7 +357,6 @@ int Zulu::reduce() {
 		days = (int) (m_time * 0.00001157407407407407);
 		if (m_time < 0.0) days--;
 		m_time -= days * 86400.0f;
-		std::cout << m_time << " : " << days << std::endl;
 	}
 	return days;
 }

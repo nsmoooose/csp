@@ -26,6 +26,10 @@
 #ifndef __DATAARCHIVE_H__
 #define __DATAARCHIVE_H__
 
+# if defined(_MSC_VER) && (_MSC_VER <= 1200)
+#pragma warning(disable : 4786)
+# endif
+
 #include <string>
 #include <stdio.h>
 #include <stdlib.h>

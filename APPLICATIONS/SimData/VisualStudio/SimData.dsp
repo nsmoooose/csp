@@ -170,10 +170,6 @@ SOURCE=..\Source\Random.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\Source\SimDataEntryPoint.cpp
-# End Source File
-# Begin Source File
-
 SOURCE=..\Source\Spread.cpp
 # End Source File
 # Begin Source File

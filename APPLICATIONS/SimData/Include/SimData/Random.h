@@ -30,6 +30,11 @@
 #define __RANDOM_H__
 
 #include <math.h>
+
+#ifdef _WIN32
+#include <SimData/Export.h>
+#endif
+
 #include <SimData/ns-simdata.h>
 
 
@@ -49,7 +54,7 @@ float box_muller(float, float);
  *
  * @author Mark Rose <mrose@stm.lbl.gov>
  */
-class Random {
+class SIMDATA_EXPORT Random {
 	long _seed;
 	float _r;
 public:
@@ -88,7 +93,8 @@ public:
 /**
  * Global random number generator.
  */
-extern Random g_Random;
+
+SIMDATA_EXPORT extern Random g_Random;
 
 
 NAMESPACE_END // namespace simdata

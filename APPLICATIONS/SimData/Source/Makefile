@@ -15,6 +15,7 @@ MODULES = \
 	Enum \
 	Exception \
 	External \
+	GeoPos \
 	HashUtility \
 	InterfaceRegistry \
 	Interpolate \
@@ -28,7 +29,8 @@ MODULES = \
 	Random \
 	Spread \
 	TypeAdapter \
-	Vector3
+	Vector3 \
+	Version
 
 SOURCES = $(MODULES:%=%.cpp)
 OBJECTS = $(MODULES:%=%.o) 
@@ -89,13 +91,13 @@ libSimData.a: $(OBJECTS)
 	ranlib $@
 
 _cSimData.so: $(OBJECTS) cSimData_wrap.o
-	$(CXX) $(LDOPTS) -o$@ $^
+	$(CXX) -Wl,-z,lazyload $(LDOPTS) -o$@ $^
 
 cSimData_wrap.cpp: cSimData.i
 	$(SWIG) $(SWOPTS) -o $@ $< 
 
 cSimData_wrap.o: cSimData_wrap.cpp
-	$(CXX) -c $(SWCXXF) $(@:.o=.cpp)
+	$(CXX) -I/usr/local/include/python2.2 -DSWIG_GLOBAL -c $(SWCXXF) $(@:.o=.cpp)
 
 %.o: %.cpp 
 	$(CXX) -c $(CFLAGS) $(@:.o=.cpp)

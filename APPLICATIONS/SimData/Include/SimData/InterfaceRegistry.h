@@ -122,6 +122,18 @@ public:
 };
 
 
+template <class C>
+class Singleton {
+public:
+	static C& getInstance() {
+		static C __instance;
+		return __instance;
+	}
+private:
+	Singleton() {}
+	~Singleton() {}
+};
+
 /**
  * class InterfaceRegistry - Singleton class to store and access all ObjectInterfaces
  * in the application.
@@ -139,10 +151,6 @@ friend class InterfaceProxy;
 public:
 	typedef std::vector<InterfaceProxy *> interface_list;
 
-	InterfaceRegistry();
-	
-	virtual ~InterfaceRegistry(); 
-	
 	InterfaceProxy *getInterface(const char *name);
 	
 	InterfaceProxy *getInterface(hasht key);
@@ -153,23 +161,36 @@ public:
 	
 	std::vector<std::string> getInterfaceNames() const;
 
-	std::vector<InterfaceProxy *> const &getInterfaces() const;
+	std::vector<InterfaceProxy *> getInterfaces() const;
 	
 	void addInterface(const char *name, hasht id, InterfaceProxy *proxy) throw(InterfaceError);
 
+	static InterfaceRegistry &getInterfaceRegistry() {
+		return Singleton<InterfaceRegistry>::getInstance();
+	}
+
+
 private:
+	friend class Singleton<InterfaceRegistry>;
+	InterfaceRegistry();
+	virtual ~InterfaceRegistry(); 
+	void __cleanup();
 	typedef HASH_MAP<const char *, InterfaceProxy *, HASH<const char *>, eqstr> proxy_map;
 	typedef HASH_MAP<hasht, InterfaceProxy *, hasht_hash, hasht_eq> proxy_id_map;
-	proxy_map *map;
-	proxy_id_map *id_map;
-	interface_list list;
+	proxy_map *__map;
+	proxy_id_map *__id_map;
+	interface_list *__list;
 };
 
+
+// #define g_InterfaceRegistry Singleton<InterfaceRegistry>::getInstance()
 
 /**
  * The master interface registry.
  */
+/*
 extern InterfaceRegistry g_InterfaceRegistry;
+*/
 
 
 //-------------------------------------------------------

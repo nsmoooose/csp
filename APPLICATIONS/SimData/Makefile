@@ -1,7 +1,7 @@
 SUBDIRS = Source 
 
 export GDEBUGF = -g -Wall
-export GCFLAGS = -I/usr/local/include/python2.2 -fPIC -DSWIG_GLOBAL -DUSE_NAMESPACE_SIMDATA # -O2
+export GCFLAGS = -fPIC -DUSE_NAMESPACE_SIMDATA -O2
 export GLDOPTS = -shared -lswigpy -ldl
 export GSWOPTS = -c -c++ -python -DUSE_NAMESPACE_SIMDATA -noexcept
 export CXX = g++

@@ -11,4 +11,5 @@
 	#  define SIMDATA_EXPORT
 #endif
 
-#endif __EXPORT_H__
+#endif // __EXPORT_H__
+

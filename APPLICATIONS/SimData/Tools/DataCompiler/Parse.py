@@ -90,6 +90,7 @@ class ElementHandler(ContentHandler):
 		self._attrs = attrs
 		self._paths = []
 		self._externals = []
+		self._c = ""
 
 	def getElement(self):
 		return self._element
@@ -101,7 +102,8 @@ class ElementHandler(ContentHandler):
 			self.cdata(c)
 
 	def cdata(self, c):
-		pass
+ 		self._c = self._c + c
+#		pass
 
 	def endChild(self):
 		self._element = self._handler.getElement()
@@ -168,13 +170,13 @@ class SimpleHandler(ElementHandler):
 
 	def __init__(self, id, base, name, attrs):
 		ElementHandler.__init__(self, id, base, name, attrs)
-		self._c = ""
+#		self._c = ""
 
 	def validateChild(self, name, attrs):
 		return 0
 
-	def cdata(self, c):
- 		self._c = self._c + c
+#	def cdata(self, c):
+# 		self._c = self._c + c
 
 
 class ListHandler(SimpleHandler):
@@ -611,6 +613,7 @@ class ObjectHandler(ElementHandler):
 	def end(self):
 		self._element = self._object
 		self.checkAssigned()
+		self._element.parseXML(self._c)
 		self._element.convertXML()
 
 	def checkAssigned(self):

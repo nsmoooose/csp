@@ -6,6 +6,7 @@
 #include <SimData/Types.h>
 #include <SimData/DataArchive.h>
 #include <SimData/InterfaceRegistry.h>
+#include <SimData/Version.h>
 
 %}
 
@@ -14,6 +15,8 @@
 
 %include "SimData/ns-simdata.h"
 %include "SimData/Export.h"
+%include "SimData/Version.h"
+
 %feature("polymorphic") SIMDATA(InterfaceProxy);
 %feature("polymorphic") SIMDATA(Object);
 

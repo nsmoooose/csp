@@ -293,8 +293,8 @@ const PathPointerBase DataArchive::getObject(const Path& path, const char* path_
 	Object *cached = _getStatic(key);
 	if (cached != 0) return PathPointerBase(path, cached);
 	const TableEntry &t = _lookupPath(path, path_str);
-	printf("getObject using interface registry @ %p\n", &g_InterfaceRegistry);
-	InterfaceProxy *proxy = g_InterfaceRegistry.getInterface(t.classhash);
+	printf("getObject using interface registry @ %p\n", &(InterfaceRegistry::getInterfaceRegistry()));
+	InterfaceProxy *proxy = InterfaceRegistry::getInterfaceRegistry().getInterface(t.classhash);
 	if (!proxy) {
 		if (path_str) {
 			printf("getObject(\"%s\"):\n", path_str);

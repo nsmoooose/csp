@@ -16,6 +16,7 @@
 %exception;
 
 %include "SimData/Vector3.i"
+%include "SimData/GeoPos.i"
 %include "SimData/External.i"
 %include "SimData/Spread.i"
 %include "SimData/String.i"

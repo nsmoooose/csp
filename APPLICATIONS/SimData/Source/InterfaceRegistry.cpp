@@ -52,14 +52,19 @@ NAMESPACE_SIMDATA
 /**
  * The master interface registry.
  */
+
 /*
 #ifdef _WIN32
 #pragma comment(linker, "/SECTION:.shared,RWS")
 #pragma data_seg(".shared")
 #endif
-*/
 
 InterfaceRegistry g_InterfaceRegistry;
+*/
+
+//InterfaceRegistry::proxy_map *InterfaceRegistry::__map = 0;
+//InterfaceRegistry::proxy_id_map *InterfaceRegistry::__id_map = 0;
+//InterfaceRegistry::interface_list *InterfaceRegistry::__list = 0;
 
 /*
 #ifdef _WIN32
@@ -70,13 +75,13 @@ InterfaceRegistry g_InterfaceRegistry;
 InterfaceProxy::InterfaceProxy(const char *cname, hasht (*chash)())
 {
 	assert(chash);
-	g_InterfaceRegistry.addInterface(cname, (*chash)(), this);
+	InterfaceRegistry::getInterfaceRegistry().addInterface(cname, (*chash)(), this);
 }
 
 InterfaceProxy::InterfaceProxy(const char *cname, hasht chash)
 {
 	assert(chash != 0);
-	g_InterfaceRegistry.addInterface(cname, chash, this);
+	InterfaceRegistry::getInterfaceRegistry().addInterface(cname, chash, this);
 }
 
 Object *InterfaceProxy::createObject() const { 
@@ -154,61 +159,69 @@ std::vector<std::string> InterfaceProxy::getRequiredNames() const {
 InterfaceRegistry::InterfaceRegistry() {
 }
 
-
 InterfaceRegistry::~InterfaceRegistry() {
-	if (map) delete map;
-	if (id_map) delete id_map;
+	__cleanup();
+}
+
+void InterfaceRegistry::__cleanup() {
+	if (__map) delete __map;
+	if (__id_map) delete __id_map;
+	if (__list) delete __list;
 }
 
 InterfaceProxy *InterfaceRegistry::getInterface(const char *name) {
-	if (!map) return 0;
-	proxy_map::iterator i = map->find(name);
-	if (i == map->end()) return 0;
+	if (!__map) return 0;
+	proxy_map::iterator i = __map->find(name);
+	if (i == __map->end()) return 0;
 	return i->second;
 }
 
 InterfaceProxy *InterfaceRegistry::getInterface(hasht key) {
-	if (!id_map) return 0;
-	proxy_id_map::iterator i = id_map->find(key);
-	if (i == id_map->end()) return 0;
+	if (!__id_map) return 0;
+	proxy_id_map::iterator i = __id_map->find(key);
+	if (i == __id_map->end()) return 0;
 	return i->second;
 }
 
 bool InterfaceRegistry::hasInterface(const char *name) {
-	if (!map) return false;
-	return (map->find(name) != map->end());
+	if (!__map) return false;
+	return (__map->find(name) != __map->end());
 }
 
 bool InterfaceRegistry::hasInterface(hasht key) {
-	if (!id_map) return false;
-	return (id_map->find(key) != id_map->end());
+	if (!__id_map) return false;
+	return (__id_map->find(key) != __id_map->end());
 }
 
 std::vector<std::string> InterfaceRegistry::getInterfaceNames() const {
 	std::vector<std::string> names;
-	interface_list::const_iterator i;
-	for (i = list.begin(); i != list.end(); i++) {
-		names.push_back((*i)->getClassName());
+	if (__list) {
+		interface_list::const_iterator i;
+		for (i = __list->begin(); i != __list->end(); i++) {
+			names.push_back((*i)->getClassName());
+		}
 	}
 	return names;
 }
 
-std::vector<InterfaceProxy *> const & InterfaceRegistry::getInterfaces() const {
-	return list;
+std::vector<InterfaceProxy *> InterfaceRegistry::getInterfaces() const {
+	if (__list) return *__list;
+	return interface_list();
 }
 
 void InterfaceRegistry::addInterface(const char *name, hasht id, InterfaceProxy *proxy) throw(InterfaceError) {
-	if (map == 0) {
+	if (__map == 0) {
 		cout << "Initializing interface registry." << endl;
-		map = new proxy_map;
-		id_map = new proxy_id_map;
+		__map = new proxy_map;
+		__id_map = new proxy_id_map;
+		__list = new interface_list;
 	}
 	if (hasInterface(name)) {
 		throw InterfaceError("interface \"" + std::string(name) + "\" multiply defined");
 	}
-	(*map)[name] = proxy;
-	(*id_map)[id] = proxy;
-	list.push_back(proxy);
+	(*__map)[name] = proxy;
+	(*__id_map)[id] = proxy;
+	__list->push_back(proxy);
 	cout << "Registering interface<" << name << "> [" << id << "]" << endl;
 }
 

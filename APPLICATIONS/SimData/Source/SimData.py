@@ -44,6 +44,8 @@
 import cSimData
 import exceptions, types
 
+version = cSimData.getVersion()
+
 
 # FIXME is there a more robust means of getting the class name as a 
 # string?  str(class) changed from python2.1 to 2.2 for new-style 
@@ -61,7 +63,8 @@ def getClassName(_class):
 
 
 ## The C++ InterfaceRegistry.
-g_InterfaceRegistry = cSimData.cvar.g_InterfaceRegistry
+#g_InterfaceRegistry = cSimData.cvar.g_InterfaceRegistry
+g_InterfaceRegistry = cSimData.InterfaceRegistry.getInterfaceRegistry()
 
 hash_string = cSimData.hash_string
 

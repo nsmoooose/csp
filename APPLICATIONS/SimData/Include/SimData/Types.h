@@ -22,6 +22,7 @@
 #define __TYPES__
 
 #include <SimData/Date.h>
+#include <SimData/GeoPos.h>
 #include <SimData/Vector3.h>
 #include <SimData/Matrix3.h>
 #include <SimData/Quaternion.h>

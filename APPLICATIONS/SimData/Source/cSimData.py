@@ -27,6 +27,8 @@ except AttributeError:
     _newclass = 0
 
 
+getVersion = _cSimData.getVersion
+
 class Exception(_object):
     __swig_setmethods__ = {}
     __setattr__ = lambda self, name, value: _swig_setattr(self, Exception, name, value)
@@ -656,6 +658,149 @@ class Vector3Ptr(Vector3):
         self.__class__ = Vector3
 _cSimData.Vector3_swigregister(Vector3Ptr)
 cvar = _cSimData.cvar
+
+class ReferenceEllipsoid(_object):
+    __swig_setmethods__ = {}
+    __setattr__ = lambda self, name, value: _swig_setattr(self, ReferenceEllipsoid, name, value)
+    __swig_getmethods__ = {}
+    __getattr__ = lambda self, name: _swig_getattr(self, ReferenceEllipsoid, name)
+    def __init__(self,*args):
+        self.this = apply(_cSimData.new_ReferenceEllipsoid,args)
+        self.thisown = 1
+    __swig_setmethods__["A"] = _cSimData.ReferenceEllipsoid_A_set
+    __swig_getmethods__["A"] = _cSimData.ReferenceEllipsoid_A_get
+    if _newclass:A = property(_cSimData.ReferenceEllipsoid_A_get,_cSimData.ReferenceEllipsoid_A_set)
+    __swig_setmethods__["B"] = _cSimData.ReferenceEllipsoid_B_set
+    __swig_getmethods__["B"] = _cSimData.ReferenceEllipsoid_B_get
+    if _newclass:B = property(_cSimData.ReferenceEllipsoid_B_get,_cSimData.ReferenceEllipsoid_B_set)
+    __swig_setmethods__["R"] = _cSimData.ReferenceEllipsoid_R_set
+    __swig_getmethods__["R"] = _cSimData.ReferenceEllipsoid_R_get
+    if _newclass:R = property(_cSimData.ReferenceEllipsoid_R_get,_cSimData.ReferenceEllipsoid_R_set)
+    __swig_setmethods__["f"] = _cSimData.ReferenceEllipsoid_f_set
+    __swig_getmethods__["f"] = _cSimData.ReferenceEllipsoid_f_get
+    if _newclass:f = property(_cSimData.ReferenceEllipsoid_f_get,_cSimData.ReferenceEllipsoid_f_set)
+    __swig_setmethods__["e"] = _cSimData.ReferenceEllipsoid_e_set
+    __swig_getmethods__["e"] = _cSimData.ReferenceEllipsoid_e_get
+    if _newclass:e = property(_cSimData.ReferenceEllipsoid_e_get,_cSimData.ReferenceEllipsoid_e_set)
+    __swig_setmethods__["A_B"] = _cSimData.ReferenceEllipsoid_A_B_set
+    __swig_getmethods__["A_B"] = _cSimData.ReferenceEllipsoid_A_B_get
+    if _newclass:A_B = property(_cSimData.ReferenceEllipsoid_A_B_get,_cSimData.ReferenceEllipsoid_A_B_set)
+    __swig_setmethods__["B_A"] = _cSimData.ReferenceEllipsoid_B_A_set
+    __swig_getmethods__["B_A"] = _cSimData.ReferenceEllipsoid_B_A_get
+    if _newclass:B_A = property(_cSimData.ReferenceEllipsoid_B_A_get,_cSimData.ReferenceEllipsoid_B_A_set)
+    __swig_setmethods__["B2_A2"] = _cSimData.ReferenceEllipsoid_B2_A2_set
+    __swig_getmethods__["B2_A2"] = _cSimData.ReferenceEllipsoid_B2_A2_get
+    if _newclass:B2_A2 = property(_cSimData.ReferenceEllipsoid_B2_A2_get,_cSimData.ReferenceEllipsoid_B2_A2_set)
+    __swig_setmethods__["A2_B2"] = _cSimData.ReferenceEllipsoid_A2_B2_set
+    __swig_getmethods__["A2_B2"] = _cSimData.ReferenceEllipsoid_A2_B2_get
+    if _newclass:A2_B2 = property(_cSimData.ReferenceEllipsoid_A2_B2_get,_cSimData.ReferenceEllipsoid_A2_B2_set)
+    __swig_setmethods__["e2"] = _cSimData.ReferenceEllipsoid_e2_set
+    __swig_getmethods__["e2"] = _cSimData.ReferenceEllipsoid_e2_get
+    if _newclass:e2 = property(_cSimData.ReferenceEllipsoid_e2_get,_cSimData.ReferenceEllipsoid_e2_set)
+    __swig_setmethods__["e1"] = _cSimData.ReferenceEllipsoid_e1_set
+    __swig_getmethods__["e1"] = _cSimData.ReferenceEllipsoid_e1_get
+    if _newclass:e1 = property(_cSimData.ReferenceEllipsoid_e1_get,_cSimData.ReferenceEllipsoid_e1_set)
+    __swig_setmethods__["ep"] = _cSimData.ReferenceEllipsoid_ep_set
+    __swig_getmethods__["ep"] = _cSimData.ReferenceEllipsoid_ep_get
+    if _newclass:ep = property(_cSimData.ReferenceEllipsoid_ep_get,_cSimData.ReferenceEllipsoid_ep_set)
+    __swig_setmethods__["ep2"] = _cSimData.ReferenceEllipsoid_ep2_set
+    __swig_getmethods__["ep2"] = _cSimData.ReferenceEllipsoid_ep2_get
+    if _newclass:ep2 = property(_cSimData.ReferenceEllipsoid_ep2_get,_cSimData.ReferenceEllipsoid_ep2_set)
+    __swig_setmethods__["m_0"] = _cSimData.ReferenceEllipsoid_m_0_set
+    __swig_getmethods__["m_0"] = _cSimData.ReferenceEllipsoid_m_0_get
+    if _newclass:m_0 = property(_cSimData.ReferenceEllipsoid_m_0_get,_cSimData.ReferenceEllipsoid_m_0_set)
+    __swig_setmethods__["m_1"] = _cSimData.ReferenceEllipsoid_m_1_set
+    __swig_getmethods__["m_1"] = _cSimData.ReferenceEllipsoid_m_1_get
+    if _newclass:m_1 = property(_cSimData.ReferenceEllipsoid_m_1_get,_cSimData.ReferenceEllipsoid_m_1_set)
+    __swig_setmethods__["m_2"] = _cSimData.ReferenceEllipsoid_m_2_set
+    __swig_getmethods__["m_2"] = _cSimData.ReferenceEllipsoid_m_2_get
+    if _newclass:m_2 = property(_cSimData.ReferenceEllipsoid_m_2_get,_cSimData.ReferenceEllipsoid_m_2_set)
+    __swig_setmethods__["m_3"] = _cSimData.ReferenceEllipsoid_m_3_set
+    __swig_getmethods__["m_3"] = _cSimData.ReferenceEllipsoid_m_3_get
+    if _newclass:m_3 = property(_cSimData.ReferenceEllipsoid_m_3_get,_cSimData.ReferenceEllipsoid_m_3_set)
+    __swig_setmethods__["m_f"] = _cSimData.ReferenceEllipsoid_m_f_set
+    __swig_getmethods__["m_f"] = _cSimData.ReferenceEllipsoid_m_f_get
+    if _newclass:m_f = property(_cSimData.ReferenceEllipsoid_m_f_get,_cSimData.ReferenceEllipsoid_m_f_set)
+    __swig_setmethods__["m_a"] = _cSimData.ReferenceEllipsoid_m_a_set
+    __swig_getmethods__["m_a"] = _cSimData.ReferenceEllipsoid_m_a_get
+    if _newclass:m_a = property(_cSimData.ReferenceEllipsoid_m_a_get,_cSimData.ReferenceEllipsoid_m_a_set)
+    __swig_setmethods__["m_b"] = _cSimData.ReferenceEllipsoid_m_b_set
+    __swig_getmethods__["m_b"] = _cSimData.ReferenceEllipsoid_m_b_get
+    if _newclass:m_b = property(_cSimData.ReferenceEllipsoid_m_b_get,_cSimData.ReferenceEllipsoid_m_b_set)
+    __swig_setmethods__["m_c"] = _cSimData.ReferenceEllipsoid_m_c_set
+    __swig_getmethods__["m_c"] = _cSimData.ReferenceEllipsoid_m_c_get
+    if _newclass:m_c = property(_cSimData.ReferenceEllipsoid_m_c_get,_cSimData.ReferenceEllipsoid_m_c_set)
+    def __del__(self, destroy= _cSimData.delete_ReferenceEllipsoid):
+        try:
+            if self.thisown: destroy(self)
+        except: pass
+    def __repr__(self):
+        return "<C ReferenceEllipsoid instance at %s>" % (self.this,)
+
+class ReferenceEllipsoidPtr(ReferenceEllipsoid):
+    def __init__(self,this):
+        self.this = this
+        if not hasattr(self,"thisown"): self.thisown = 0
+        self.__class__ = ReferenceEllipsoid
+_cSimData.ReferenceEllipsoid_swigregister(ReferenceEllipsoidPtr)
+
+class GeoPos(Vector3):
+    __swig_setmethods__ = {}
+    for _s in [Vector3]: __swig_setmethods__.update(_s.__swig_setmethods__)
+    __setattr__ = lambda self, name, value: _swig_setattr(self, GeoPos, name, value)
+    __swig_getmethods__ = {}
+    for _s in [Vector3]: __swig_getmethods__.update(_s.__swig_getmethods__)
+    __getattr__ = lambda self, name: _swig_getattr(self, GeoPos, name)
+    def __init__(self,*args):
+        self.this = apply(_cSimData.new_GeoPos,args)
+        self.thisown = 1
+    def __del__(self, destroy= _cSimData.delete_GeoPos):
+        try:
+            if self.thisown: destroy(self)
+        except: pass
+    def getSlantRange(*args): return apply(_cSimData.GeoPos_getSlantRange,args)
+    def getSurfaceDistance(*args): return apply(_cSimData.GeoPos_getSurfaceDistance,args)
+    def getShellDistance(*args): return apply(_cSimData.GeoPos_getShellDistance,args)
+    def getLocalFrame(*args): return apply(_cSimData.GeoPos_getLocalFrame,args)
+    def getLLA(*args): return apply(_cSimData.GeoPos_getLLA,args)
+    def setLLA(*args): return apply(_cSimData.GeoPos_setLLA,args)
+    def getLongitude(*args): return apply(_cSimData.GeoPos_getLongitude,args)
+    def getLatitude(*args): return apply(_cSimData.GeoPos_getLatitude,args)
+    def getAltitude(*args): return apply(_cSimData.GeoPos_getAltitude,args)
+    def _updateLLA(*args): return apply(_cSimData.GeoPos__updateLLA,args)
+    def getUTM(*args): return apply(_cSimData.GeoPos_getUTM,args)
+    def setUTM(*args): return apply(_cSimData.GeoPos_setUTM,args)
+    def getNorthing(*args): return apply(_cSimData.GeoPos_getNorthing,args)
+    def getEasting(*args): return apply(_cSimData.GeoPos_getEasting,args)
+    def getZoneNumber(*args): return apply(_cSimData.GeoPos_getZoneNumber,args)
+    def getZoneLetter(*args): return apply(_cSimData.GeoPos_getZoneLetter,args)
+    def _updateUTM(*args): return apply(_cSimData.GeoPos__updateUTM,args)
+    __swig_getmethods__["_getUTMDesignator"] = lambda x: _cSimData.GeoPos__getUTMDesignator
+    if _newclass:_getUTMDesignator = staticmethod(_cSimData.GeoPos__getUTMDesignator)
+    def setReferenceEllipsoid(*args): return apply(_cSimData.GeoPos_setReferenceEllipsoid,args)
+    def getReferenceEllipsoid(*args): return apply(_cSimData.GeoPos_getReferenceEllipsoid,args)
+    def setDirty(*args): return apply(_cSimData.GeoPos_setDirty,args)
+    def asString(*args): return apply(_cSimData.GeoPos_asString,args)
+    def pack(*args): return apply(_cSimData.GeoPos_pack,args)
+    def unpack(*args): return apply(_cSimData.GeoPos_unpack,args)
+    def __repr__(self):
+        return "<C GeoPos instance at %s>" % (self.this,)
+
+class GeoPosPtr(GeoPos):
+    def __init__(self,this):
+        self.this = this
+        if not hasattr(self,"thisown"): self.thisown = 0
+        self.__class__ = GeoPos
+_cSimData.GeoPos_swigregister(GeoPosPtr)
+Airy1830 = cvar.Airy1830
+AustralianNational = cvar.AustralianNational
+WGS84 = cvar.WGS84
+GRS80 = cvar.GRS80
+WGS72 = cvar.WGS72
+Clarke1866 = cvar.Clarke1866
+NAD27 = cvar.NAD27
+GeoPos__getUTMDesignator = _cSimData.GeoPos__getUTMDesignator
+
 
 class External(BaseType):
     __swig_setmethods__ = {}
@@ -1901,18 +2046,14 @@ class InterfaceRegistry(_object):
     __setattr__ = lambda self, name, value: _swig_setattr(self, InterfaceRegistry, name, value)
     __swig_getmethods__ = {}
     __getattr__ = lambda self, name: _swig_getattr(self, InterfaceRegistry, name)
-    def __init__(self,*args):
-        self.this = apply(_cSimData.new_InterfaceRegistry,args)
-        self.thisown = 1
-    def __del__(self, destroy= _cSimData.delete_InterfaceRegistry):
-        try:
-            if self.thisown: destroy(self)
-        except: pass
     def getInterface(*args): return apply(_cSimData.InterfaceRegistry_getInterface,args)
     def hasInterface(*args): return apply(_cSimData.InterfaceRegistry_hasInterface,args)
     def getInterfaceNames(*args): return apply(_cSimData.InterfaceRegistry_getInterfaceNames,args)
     def getInterfaces(*args): return apply(_cSimData.InterfaceRegistry_getInterfaces,args)
     def addInterface(*args): return apply(_cSimData.InterfaceRegistry_addInterface,args)
+    __swig_getmethods__["getInterfaceRegistry"] = lambda x: _cSimData.InterfaceRegistry_getInterfaceRegistry
+    if _newclass:getInterfaceRegistry = staticmethod(_cSimData.InterfaceRegistry_getInterfaceRegistry)
+    def __init__(self): raise RuntimeError, "No constructor defined"
     def __repr__(self):
         return "<C InterfaceRegistry instance at %s>" % (self.this,)
 
@@ -1922,5 +2063,7 @@ class InterfaceRegistryPtr(InterfaceRegistry):
         if not hasattr(self,"thisown"): self.thisown = 0
         self.__class__ = InterfaceRegistry
 _cSimData.InterfaceRegistry_swigregister(InterfaceRegistryPtr)
+InterfaceRegistry_getInterfaceRegistry = _cSimData.InterfaceRegistry_getInterfaceRegistry
+
 
 

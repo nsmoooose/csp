@@ -36,7 +36,7 @@
 
 #include "Atmosphere.h"
 #include "Config.h"
-#include "ConsoleCommands.h"
+//#include "ConsoleCommands.h"
 #include "DynamicObject.h"
 #include "EventMapIndex.h"
 #include "Exception.h"
@@ -45,6 +45,7 @@
 #include "InputEvent.h"
 #include "MenuScreen.h"
 #include "LogoScreen.h"
+#include "ObjectModel.h"
 #include "Profile.h"
 #include "Shell.h"
 #include "SimpleSceneManager.h"
@@ -76,7 +77,6 @@
 
 #include <osg/Timer>
 #include <osg/Notify>
-#include <osgDB/FileUtils>
 //--#include <Producer/RenderSurface>
 
 #include <SDL/SDL.h>
@@ -152,7 +152,7 @@ CSPSim::CSPSim():
 	m_Finished = false;
 	m_ConsoleOpen = false;
 
-	m_Console = NULL;
+	//m_Console = NULL;
 
 	m_CurrentScreen = NULL;
 	m_PrevScreen = NULL;
@@ -263,7 +263,7 @@ void CSPSim::init()
 		simdata::ospath::addpath(search_path, image_path);
 		simdata::ospath::addpath(search_path, model_path);
 		simdata::ospath::addpath(search_path, font_path);
-		osgDB::setDataFilePathList(search_path);
+		ObjectModel::setDataFilePathList(search_path);
 
 		// open the primary data archive
 		std::string cache_path = getCachePath();
@@ -712,7 +712,9 @@ void CSPSim::doInput(double dt)
 				endConsole();
 				handled = true;
 			} else {
+				/*
 				handled = m_Console->onKey(event.key.keysym);
+				*/
 			}
 		}
 		if (!handled && m_CurrentScreen) {
@@ -871,21 +873,24 @@ void fillerup(void * /*unused*/, Uint8 *stream, int len)
 }
 
 
-void CSPSim::runConsole(PyConsole *console) {
+void CSPSim::runConsole(PyConsole * /*console*/) {
 	// XXX the console code needs a major rewrite since upgrading to osg 0.9.4
-	return;  // XXX temporarily disabled.
+	/*
 	m_Console = console;
 	if (m_Console.valid()) {
 		m_ConsoleOpen = true;
 		m_Console->bind(m_Shell);
 		m_Console->enable();
 	}
+	*/
 }
 
 void CSPSim::endConsole() {
+	/*
 	m_ConsoleOpen = false;
 	m_Console->disable();
 	m_Console = NULL;
+	*/
 }
 
 simdata::Ref<Theater> CSPSim::getTheater() const {

@@ -31,6 +31,8 @@
 #include "TerrainObject.h"
 
 #include <SimCore/Battlefield/SimObject.h>
+#include <SimData/Quat.h>
+
 
 class NetworkMessage;
 class PhysicsModel;

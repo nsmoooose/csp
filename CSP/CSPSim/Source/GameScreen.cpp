@@ -30,12 +30,15 @@
 
 #include <osg/Image>
 #include <osgDB/WriteFile>
+#include <osgUtil/SceneView>
+#include <osgText/Text>
 #include <Producer/Camera>
 
 #include "ConsoleCommands.h"
 #include "CSPSim.h"
 #include "DynamicObject.h"
 #include "EventMapIndex.h"
+#include "ScreenInfoManager.h"
 #include "VirtualScene.h"
 #include "Views/CameraCommand.h"
 

@@ -25,10 +25,16 @@
 #ifndef __MENUSCREEN_H__
 #define __MENUSCREEN_H__
 
-#include <osgText/Text>
-#include <osg/Group>
-
 #include "BaseScreen.h"
+
+namespace osg {
+	class Group;
+}
+
+namespace osgText {
+	class Text;
+}
+
 
 /**
  * class MenuScreen

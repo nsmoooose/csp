@@ -189,7 +189,7 @@ private:
 	simdata::ScopedPointer<Atmosphere> m_Atmosphere;
 
 	//PyObject* m_Console;
-	osg::ref_ptr<PyConsole> m_Console;
+	//osg::ref_ptr<PyConsole> m_Console;
 	simdata::Ref<PyShell> m_Shell;
 	
 	/**

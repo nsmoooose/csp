@@ -1,17 +1,17 @@
 // Combat Simulator Project - FlightSim Demo
 // Copyright (C) 2002 The Combat Simulator Project
 // http://csp.sourceforge.net
-// 
+//
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
 // as published by the Free Software Foundation; either version 2
 // of the License, or (at your option) any later version.
-// 
+//
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU General Public License
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
@@ -26,6 +26,7 @@
 
 #include <osg/Depth>
 #include <osg/MatrixTransform>
+#include <osgText/Text>
 
 
 void set2dScene(osg::Group *rootNode, int ScreenWidth, int ScreenHeight)
@@ -75,54 +76,56 @@ void ScreenInfoManager::changeObjectStats(int /*ScreenWidth*/, int ScreenHeight,
 
 class FindNamedNodeVisitor: public osg::NodeVisitor {
 	std::string m_NameToFind;
-    osg::Node* m_FoundNode;
-    public:
-        FindNamedNodeVisitor(): 
-			osg::NodeVisitor(TRAVERSE_ALL_CHILDREN),
-			m_FoundNode(0) {
-				setNodeMaskOverride(0x1);
-        }
-		FindNamedNodeVisitor(const std::string& name):
-			osg::NodeVisitor(TRAVERSE_ALL_CHILDREN),
-			m_NameToFind(name),
-			m_FoundNode(0) {
-				setNodeMaskOverride(0x1);
-        }
-        virtual void apply (osg::Node& node) {
-			if (node.getName() == m_NameToFind) {
-				m_FoundNode = &node;
-			}
-			else
-				traverse(node);
-        }
-        void setNameToFind(const std::string& name) {
-			m_NameToFind = name;
+	osg::Node* m_FoundNode;
+public:
+	FindNamedNodeVisitor():
+		osg::NodeVisitor(TRAVERSE_ALL_CHILDREN),
+		m_FoundNode(0)
+	{
+		setNodeMaskOverride(0x1);
+	}
+	FindNamedNodeVisitor(const std::string& name):
+		osg::NodeVisitor(TRAVERSE_ALL_CHILDREN),
+		m_NameToFind(name),
+		m_FoundNode(0)
+	{
+		setNodeMaskOverride(0x1);
+	}
+	virtual void apply (osg::Node& node) {
+		if (node.getName() == m_NameToFind) {
+			m_FoundNode = &node;
+		} else {
+			traverse(node);
 		}
-        osg::Node* foundNode() {
-			return m_FoundNode;
-		}
+	}
+	void setNameToFind(const std::string& name) {
+		m_NameToFind = name;
+	}
+	osg::Node* foundNode() {
+		return m_FoundNode;
+	}
 };
 
 ScreenInfo* ScreenInfoManager::getScreenInfo(std::string const& name)
 {
 	FindNamedNodeVisitor nv(name);
-    m_modelview_abs->accept(nv);
+	m_modelview_abs->accept(nv);
 	return dynamic_cast<ScreenInfo*>(nv.foundNode());
 }
 
 void ScreenInfoManager::setStatus(std::string const& name, bool visible)
 {
 	ScreenInfo* sci = getScreenInfo(name);
-	if (sci)
-		sci->setStatus(visible);
+	if (sci) sci->setStatus(visible);
 }
 
 bool ScreenInfoManager::getStatus(std::string const& name)
 {
 	ScreenInfo *sci = getScreenInfo(name);
-	if (sci)
+	if (sci) {
 		return sci->getStatus();
-	else
+	} else {
 		return false;
+	}
 }
 

@@ -1,6 +1,10 @@
  Version 0.4.0 (in progress)
 ===========================
 
+2004-10-02: onsight
+  * Break more header interdependencies.  Hopefully doesn't also break
+    the Windows build too badly!  Builds on Linux are about 30% faster.
+
 2004-10-01: onsight
   * Clean up header includes slightly.  Use ScopedPointer for some of
     the member variables in class CSPSim.  Break several key header

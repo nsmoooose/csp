@@ -471,6 +471,10 @@ osg::ref_ptr<osg::Node> ObjectModel::getDebugMarkers() {
 	return m_DebugMarkers.get();
 }
 
+void ObjectModel::setDataFilePathList(std::string search_path) {
+	osgDB::setDataFilePathList(search_path);
+}
+
 /**
  * Copy class for cloning model prototypes for use
  * in the scene graph.  Each new SceneModel uses this

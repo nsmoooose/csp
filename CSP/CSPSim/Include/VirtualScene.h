@@ -31,6 +31,7 @@
 #include <SimData/Ref.h>
 
 #include <osg/ref_ptr>
+#include <osg/Vec4>
 
 namespace osg {
 	class Node;

@@ -27,7 +27,10 @@
 #define __SCREENINFO_H__
 
 #include <osg/Geode>
-#include <osgText/Text>
+
+namespace osgText {
+	class Text;
+}
 
 #include <SimData/Ref.h>
 

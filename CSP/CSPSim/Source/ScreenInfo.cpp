@@ -31,6 +31,7 @@
 #include <sstream>
 
 #include <osg/Texture2D>
+#include <osgText/Text>
 
 using std::max;
 using std::min;

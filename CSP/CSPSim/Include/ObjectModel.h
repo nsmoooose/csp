@@ -34,8 +34,8 @@
 #include <SimData/Quat.h>
 #include <SimData/External.h>
 #include <SimData/InterfaceRegistry.h>
-#include <SimData/osg.h>
 
+#include <osg/ref_ptr>
 
 class Animation;
 class AnimationCallback;
@@ -118,6 +118,8 @@ public:
 	void showContactMarkers(bool on);
 
 	bool getMarkersVisible() const;
+
+	static void setDataFilePathList(std::string search_path);
 
 protected:
 

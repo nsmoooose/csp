@@ -29,8 +29,8 @@
 
 #include "EventMapIndex.h"
 
-#include <osgDB/FileUtils>
-#include <osgDB/FileNameUtils>
+//#include <osgDB/FileUtils>
+//#include <osgDB/FileNameUtils>
 
 #include <SimCore/Util/Log.h>
 #include <SimData/FileUtility.h>
@@ -66,11 +66,12 @@ void EventMapIndex::load(std::string const &path) {
 void EventMapIndex::loadAllMaps() {
 	std::string path = getConfigPath("InputMapPath");
 	CSP_LOG(APP, INFO, "Looking for human interface device mappings in '" << path << "'");
-	osgDB::DirectoryContents dc = osgDB::getDirectoryContents(path);
-	for (osgDB::DirectoryContents::const_iterator file = dc.begin(); file != dc.end(); ++file) {
+	simdata::ospath::DirectoryContents dc = simdata::ospath::getDirectoryContents(path);
+	CSP_LOG(APP, INFO, "Found " << dc.size() << " files");
+	for (simdata::ospath::DirectoryContents::const_iterator file = dc.begin(); file != dc.end(); ++file) {
 		std::string fn = simdata::ospath::join(path, *file);
-		if (osgDB::getFileExtension(fn) == "hid") 
-			load(fn);
+		CSP_LOG(APP, INFO, "File: " << *file << ", " << fn << ", " << simdata::ospath::getFileExtension(fn));
+		if (simdata::ospath::getFileExtension(fn) == "hid") load(fn);
 	}
 }
 

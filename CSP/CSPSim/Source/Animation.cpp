@@ -26,6 +26,8 @@
 #include "Animation.h"
 #include "Config.h"
 
+#include <osg/MatrixTransform>
+
 #include <SimCore/Util/Log.h>
 #include <SimData/Math.h>
 

@@ -28,7 +28,6 @@
 #include <Bus.h>
 
 #include <osg/Node>
-#include <osg/MatrixTransform>
 
 #include <SimData/Object.h>
 #include <SimData/Vector3.h>

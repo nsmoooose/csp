@@ -33,6 +33,9 @@
 
 #include "TerrainObject.h"
 
+#include <osg/Matrix>
+
+
 namespace osgChunkLod {
 	class ChunkLodTree;
 	class ChunkLodDrawable;

@@ -32,15 +32,15 @@
 #include <osg/Depth>
 #include <osg/Notify>
 #include <osg/Geode>
+#include <osg/Group>
+#include <osgText/Text>
 
+
+//#include <osgText/Font>
 //#include <osgGA/TrackballManipulator>
 //#include <osgGA/FlightManipulator>
 //#include <osgGA/DriveManipulator>
 
-
-//#include <osgText/Text>
-
-//#include <osgText/Font>
 
 #include "MenuScreen.h"
 

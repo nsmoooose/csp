@@ -29,7 +29,7 @@
 
 #include "ScreenInfo.h"
 
-class ScreenInfoManager:public osg::Projection
+class ScreenInfoManager: public osg::Projection
 {
 public:
 	ScreenInfoManager(int ScreenWidth, int ScreenHeight);

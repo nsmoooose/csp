@@ -26,6 +26,8 @@
 #include <osg/Geode>
 #include <osgParticle/ParticleSystemUpdater>
 
+#include <SimData/Quaternion.h>
+
 #include "DynamicObject.h"
 #include "LogStream.h"
 #include "VirtualBattlefield.h"

@@ -1,0 +1,31 @@
+3-12-2003 delta
+Cleaning code for ScreenInfo and ScreenInfoManager. It still needs 
+some improvements but it should be better now. Note that osgText has 
+been entirely reimplemented. Although, I didn t use it, we ll need to
+switch to it soon: more flexible interface, robuster and faster code.
+
+I added a Runge-Kutta method RK_24, with a predictive step and a 
+corrective one; it is implemented as an abstract class in 
+DynamicalSystem (.cpp & .h). 
+A dynamical system is roughly speaking a system of differential 
+equations (ODE); a pure virtual method is the vector field which looks 
+like vector f(time,vector); here, vector is a 
+std::vector<double> of any dimension; you need to pass its size when you 
+instantiate a DynamicalSystem. This class is generic and could be use as 
+soon as a vector field may be defined.
+
+Aerodynamics inherites now from DynamicalSystem. I ve done some minor 
+cleaning in code and implement some helper functions to use with dynamical 
+system. Call to this numerical method occurs in doSimStep2; it will be keep
+until others will have tested it enough (so, old code is still available and 
+functional - just 1 line to be changed to switch back).
+
+I added a line in CSPSim.ini to read sound files (still hardcoded). At the 
+moment, SDL API is used but it should be replaced by OpenAL soon (Wolverine 
+is working on it). Looks like that here:
+
+SoundPath = ../Data/Sounds
+
+Changed the radius of skydome to 64000 (hardcoded!, pkz Onsight, check it)
+
+Others changes are minor.

@@ -100,12 +100,11 @@ std::string RunCommand(deque<string> & args)
     
     if (!OSPath::isabs(path)) {
     	string base;
-	base = OSPath::join(".", "scripts");
-	path = OSPath::join(base, path);
+		base = "../Data/Scripts";
+		path = OSPath::join(base, path);
     }
 
     path = OSPath::filter(path);
-
     // open file
     ifstream file(path.c_str());
     if (!file)

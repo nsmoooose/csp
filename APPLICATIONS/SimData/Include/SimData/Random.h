@@ -419,7 +419,7 @@ public:
  * typically about 20%.
  */
 template <class RNG>
-class SIMDATA_EXPORT RandomNumberGenerator: public RandomNumberGeneratorInterface {
+class RandomNumberGenerator: public RandomNumberGeneratorInterface {
 	struct RNGState: _State {
 		typename RNG::State _state;
 	};
@@ -653,7 +653,7 @@ public:
  * underlying distributions and distribution (generator) state data.  
  */
 template <class RD>
-class SIMDATA_EXPORT RandomDistribution: public RandomDistributionInterface {
+class RandomDistribution: public RandomDistributionInterface {
 	struct RDState: _State {
 		typename RD::State _state;
 	};

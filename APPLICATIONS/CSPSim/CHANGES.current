@@ -1,5 +1,9 @@
  Version 0.4.0 (in progress)
 ===========================
+2004-01-23: delta
+  * Changed <python.h> to <Python.h> in 
+  APPLICATIONS/CSPSim/Source/CSPSim.cpp (suggested by Wolverine69).
+  
 2003-12-30: delta
   * Added methods in VirtualScene to access perspective matrix.
   

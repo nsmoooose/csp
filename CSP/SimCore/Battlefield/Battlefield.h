@@ -30,6 +30,7 @@
 #ifndef __SIMCORE_BATTLEFIELD_BATTLEFIELD_H__
 #define __SIMCORE_BATTLEFIELD_BATTLEFIELD_H__
 
+#include <limits>
 #include <map>
 #include <vector>
 

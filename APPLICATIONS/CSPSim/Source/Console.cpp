@@ -63,7 +63,7 @@ Console::Console(int x, int y, int w, int h, int border)
 	_cursor = new(osgText::Text);
 	_tabstop = 4;
 	_buffer.push_back(BufferLine());
-	setFont("ltype.ttf", 20);
+	setFont("screeninfo.ttf", 20);
 	setCursorCharacter('_');
 	addDrawable(_text.get());
 	addDrawable(_cursor.get());

@@ -43,22 +43,12 @@ Animation::~Animation()
 {
 }
 
-void Animation::pack(simdata::Packer& p) const
-{
-	Object::pack(p);
-	p.pack(m_ModelID);
-	p.pack(m_ControlID);
-	p.pack(m_LOD);
-	p.pack(m_Default);
-}
-
-void Animation::unpack(simdata::UnPacker& p)
-{
-	Object::unpack(p);
-	p.unpack(m_ModelID);
-	p.unpack(m_ControlID);
-	p.unpack(m_LOD);
-	p.unpack(m_Default);
+void Animation::serialize(simdata::Archive &archive) {
+	Object::serialize(archive);
+	archive(m_ModelID);
+	archive(m_ChannelName);
+	archive(m_LOD);
+	archive(m_Default);
 }
 
 DrivenRotation::DrivenRotation(): 
@@ -75,24 +65,13 @@ DrivenRotation::~DrivenRotation()
 {
 }
 
-void DrivenRotation::pack(simdata::Packer& p) const
-{
-	Animation::pack(p);
-	p.pack(m_Limit0);
-	p.pack(m_Limit1);
-	p.pack(m_Gain);
-	p.pack(m_Offset);
-	p.pack(m_Axis);
-}
-
-void DrivenRotation::unpack(simdata::UnPacker& p)
-{
-	Animation::unpack(p);
-	p.unpack(m_Limit0);
-	p.unpack(m_Limit1);
-	p.unpack(m_Gain);
-	p.unpack(m_Offset);
-	p.unpack(m_Axis);
+void DrivenRotation::serialize(simdata::Archive &archive) {
+	Animation::serialize(archive);
+	archive(m_Limit0);
+	archive(m_Limit1);
+	archive(m_Gain);
+	archive(m_Offset);
+	archive(m_Axis);
 }
 
 void DrivenRotation::postCreate() 

@@ -33,16 +33,18 @@
  *
  */
 
-#include "LandingGear.h"
+#include <LandingGear.h>
+#include <KineticsChannels.h>
 
 #include <SimData/Math.h>
 
 #include <cstdio>
 #include <iostream>
 
+using bus::Kinetics;
+
 using simdata::toRadians;
 using simdata::dot;
-using simdata::toDegrees;
 using simdata::Vector3;
 
 
@@ -126,48 +128,26 @@ LandingGear const &LandingGear::operator=(LandingGear const &g) {
 }
 #endif
 
-void LandingGear::pack(simdata::Packer& p) const {
-	Object::pack(p);
-	p.pack(m_MaxPosition);
-	p.pack(m_Motion);
-	p.pack(m_DamageLimit);
-	p.pack(m_K);
-	p.pack(m_Beta);
-	p.pack(m_Chained);
-	p.pack(m_BrakeLimit);
-	p.pack(m_BrakeSlip);
-	p.pack(m_TireStaticFriction);
-	p.pack(m_TireSkidFriction);
-	p.pack(m_CompressionLimit);
-	p.pack(m_SteeringLimit);
-	p.pack(m_TireK);
-	p.pack(m_TireBeta);
-	p.pack(m_TireRadius);
-	p.pack(m_ABS);
-	p.pack(m_RollingFriction);
-	p.pack(m_BrakeSteeringLinkage);
-}
-
-void LandingGear::unpack(simdata::UnPacker& p) {
-	Object::unpack(p);
-	p.unpack(m_MaxPosition);
-	p.unpack(m_Motion);
-	p.unpack(m_DamageLimit);
-	p.unpack(m_K);
-	p.unpack(m_Beta);
-	p.unpack(m_Chained);
-	p.unpack(m_BrakeLimit);
-	p.unpack(m_BrakeSlip);
-	p.unpack(m_TireStaticFriction);
-	p.unpack(m_TireSkidFriction);
-	p.unpack(m_CompressionLimit);
-	p.unpack(m_SteeringLimit);
-	p.unpack(m_TireK);
-	p.unpack(m_TireBeta);
-	p.unpack(m_TireRadius);
-	p.unpack(m_ABS);
-	p.unpack(m_RollingFriction);
-	p.unpack(m_BrakeSteeringLinkage);
+void LandingGear::serialize(simdata::Archive &archive) {
+	Object::serialize(archive);
+	archive(m_MaxPosition);
+	archive(m_Motion);
+	archive(m_DamageLimit);
+	archive(m_K);
+	archive(m_Beta);
+	archive(m_Chained);
+	archive(m_BrakeLimit);
+	archive(m_BrakeSlip);
+	archive(m_TireStaticFriction);
+	archive(m_TireSkidFriction);
+	archive(m_CompressionLimit);
+	archive(m_SteeringLimit);
+	archive(m_TireK);
+	archive(m_TireBeta);
+	archive(m_TireRadius);
+	archive(m_ABS);
+	archive(m_RollingFriction);
+	archive(m_BrakeSteeringLinkage);
 }
 
 void LandingGear::postCreate() {
@@ -176,11 +156,11 @@ void LandingGear::postCreate() {
 	m_Position = m_MaxPosition;
 }
 
-simdata::Vector3 LandingGear::simulateSubStep(simdata::Vector3 const &origin,
-                                              simdata::Vector3 const &vBody,
+Vector3 LandingGear::simulateSubStep(Vector3 const &origin,
+                                              Vector3 const &vBody,
                                               simdata::Quat const &q, 
                                               double height, 
-                                              simdata::Vector3 const &normalGroundBody) 
+                                              Vector3 const &normalGroundBody) 
 {
 	if (!m_Extended) return Vector3::ZERO;
 	
@@ -246,7 +226,7 @@ void LandingGear::updateBraking(double dt) {
 /**
  * Update Weight-On-Wheels flag and record touchdown point
  */
-void LandingGear::updateWOW(simdata::Vector3 const &origin, simdata::Quat const &q) {
+void LandingGear::updateWOW(Vector3 const &origin, simdata::Quat const &q) {
 	if (m_Compression > 0.0) {
 		// first contact? 
 		if (!m_WOW) {
@@ -270,11 +250,11 @@ void LandingGear::updateWOW(simdata::Vector3 const &origin, simdata::Quat const 
  * @param height height of body origin above ground
  * @param normalGroundBody ground normal vector in body coordinates
  */
-void LandingGear::updateSuspension(simdata::Vector3 const &origin, 
-                                   simdata::Vector3 const &vBody, 
+void LandingGear::updateSuspension(Vector3 const &origin, 
+                                   Vector3 const &vBody, 
                                    simdata::Quat const &q, 
                                    double const height, 
-                                   simdata::Vector3 const &normalGroundBody) 
+                                   Vector3 const &normalGroundBody) 
 {
 	double compression = 0.0;
 	double motionNormal = dot(m_Motion, normalGroundBody);
@@ -320,16 +300,16 @@ void LandingGear::updateSuspension(simdata::Vector3 const &origin,
 }
 
 void LandingGear::resetForces() {
-	m_NormalForce = simdata::Vector3::ZERO;
-	m_TangentForce = simdata::Vector3::ZERO;
+	m_NormalForce = Vector3::ZERO;
+	m_TangentForce = Vector3::ZERO;
 }
 
 void LandingGear::postSimulationStep(double dt,
-                                     simdata::Vector3 const &origin, 
-                                     simdata::Vector3 const &vBody,
+                                     Vector3 const &origin, 
+                                     Vector3 const &vBody,
                                      simdata::Quat const &q, 
 				     double const height,
-                                     simdata::Vector3 const &normalGroundBody) {
+                                     Vector3 const &normalGroundBody) {
 	if (!m_Extended) return;
 	resetForces();
 	// update order matters
@@ -344,16 +324,16 @@ void LandingGear::postSimulationStep(double dt,
  * Update the ground-tire contact point, detect skidding, and set friction coefficients.
  */
 void LandingGear::updateWheel(double dt,
-                              simdata::Vector3 const &origin, 
-                              simdata::Vector3 const &vBody,
+                              Vector3 const &origin, 
+                              Vector3 const &vBody,
                               simdata::Quat const &q, 
-                              simdata::Vector3 const &normalGroundBody,
+                              Vector3 const &normalGroundBody,
                               bool updateContact) 
 {
 	static double XXX_t = 0.0;
 	if (updateContact) XXX_t += dt;
 
-	simdata::Vector3 tirePositionLocal = origin + q.rotate(m_Position);
+	Vector3 tirePositionLocal = origin + q.rotate(m_Position);
 
 	// not in contact
 	if (m_Compression <= 0.0) {
@@ -365,17 +345,17 @@ void LandingGear::updateWheel(double dt,
 	}
 
 	// compute tire deformation and reaction
-	simdata::Vector3 tireDeformation = tirePositionLocal - m_TireContactPoint;
-	simdata::Vector3 tireForce = - tireDeformation * m_TireK;
+	Vector3 tireDeformation = tirePositionLocal - m_TireContactPoint;
+	Vector3 tireForce = - tireDeformation * m_TireK;
 
 	// switch to body coordinates
-	simdata::Vector3 tireForceBody = q.invrotate(tireForce);
+	Vector3 tireForceBody = q.invrotate(tireForce);
 	// project onto the ground 
 	tireForceBody -= dot(tireForceBody, normalGroundBody) * normalGroundBody;
 	// transform to wheel coordinates
-	simdata::Vector3 tireForceWheel = m_SteerTransform.rotate(tireForceBody);
+	Vector3 tireForceWheel = m_SteerTransform.rotate(tireForceBody);
 
-	simdata::Vector3 XXX_tfb = tireForceBody;
+	Vector3 XXX_tfb = tireForceBody;
 
 	// note we are assuming here that the steering axis is very close to the
 	// normal axis.  under normal circumstances this should be approximately 
@@ -409,13 +389,13 @@ void LandingGear::updateWheel(double dt,
 	}
 
 	// ground velocity in body coordinates
-	simdata::Vector3 vGroundBody = vBody - dot(vBody, normalGroundBody) * normalGroundBody;
+	Vector3 vGroundBody = vBody - dot(vBody, normalGroundBody) * normalGroundBody;
 	// transform to wheel coordinates
-	simdata::Vector3 vGroundWheel = m_SteerTransform.rotate(vGroundBody);
+	Vector3 vGroundWheel = m_SteerTransform.rotate(vGroundBody);
 	// normalize to get rolling direction
-	simdata::Vector3 rollingDirectionWheel = Vector3(0.0, vGroundWheel.y(), vGroundWheel.z()).normalized();
+	Vector3 rollingDirectionWheel = Vector3(0.0, vGroundWheel.y(), vGroundWheel.z()).normalized();
 	// compute rolling friction
-	simdata::Vector3 rollingFrictionWheel = - m_RollingFriction * normalForce * rollingDirectionWheel;
+	Vector3 rollingFrictionWheel = - m_RollingFriction * normalForce * rollingDirectionWheel;
 	// add rolling friction to tire force XXX (trying this below!)
 	// XXX tireForceWheel += rollingFrictionWheel;
 
@@ -550,24 +530,23 @@ void LandingGear::updateWheel(double dt,
 
 
 void GearDynamics::doComplexPhysics(double x) {
-	m_Force = m_Moment = simdata::Vector3::ZERO;
+	m_Force = m_Moment = Vector3::ZERO;
 	if (!m_Extended) return;
-	simdata::Vector3 airflow_body = *m_WindBody - *m_VelocityBody;
+	Vector3 airflow_body = m_WindVelocityBody - *m_VelocityBody;
 	double airspeed = airflow_body.length();
-	simdata::Vector3 dynamic_pressure = 0.5 * (*m_qBar) * airflow_body * airspeed;
-	simdata::Vector3 groundNormalBody = m_qOrientation->invrotate(*m_NormalGround);
+	Vector3 dynamic_pressure = 0.5 * (b_Density->value()) * airflow_body * airspeed;
 	size_t n = m_Gear.size();
 	for (size_t i = 0; i < n; ++i) {
 		LandingGear &gear = *(m_Gear[i]);
-		simdata::Vector3 R = gear.getPosition();
-		simdata::Vector3 F = simdata::Vector3::ZERO;
-		if (*m_NearGround) {
-			simdata::Vector3 vBody = *m_VelocityBody + (*m_AngularVelocityBody ^ R);
+		Vector3 R = gear.getPosition();
+		Vector3 F = Vector3::ZERO;
+		if (b_NearGround->value()) {
+			Vector3 vBody = *m_VelocityBody + (*m_AngularVelocityBody ^ R);
 			F += gear.simulateSubStep(*m_PositionLocal, 
 			                          vBody,
-			                          *m_qOrientation,
-			                          *m_Height,
-			                          groundNormalBody);
+			                          *m_Attitude,
+			                          m_Height,
+			                          m_GroundNormalBody);
 		}
 		// TODO torque position should depend on extension
 		F += gear.getDragFactor() * dynamic_pressure;
@@ -583,33 +562,58 @@ void GearDynamics::setStatus(bool on) {
 		m_Gear[i]->setExtended(on);
 	}
 	m_Extended = on;
+	// XXX TEMPORARY HACK
+	b_GearExtended->value() = on;
 }
 
 GearDynamics::GearDynamics():
-	m_WOW(false),
-	m_Extended(true) { 
+	m_Extended(true),
+	m_Height(0.0)
+{ 
+	BIND_ACTION("GEAR_UP", GearUp);
+	BIND_ACTION("GEAR_DOWN", GearDown);
+	BIND_ACTION("GEAR_TOGGLE", GearToggle);
+}
+
+void GearDynamics::registerChannels(Bus *bus) {
+	assert(bus!=0);
+	b_WOW = bus->registerLocalDataChannel<bool>("State.WOW", false);
+	// XXX TEMPORARY HACKS
+	b_GearPosition = bus->registerLocalDataChannel("Animation.GearPosition", std::vector<simdata::Vector3>());
+	b_GearExtended = bus->registerLocalDataChannel<bool>("Animation.GearExtended", true);
+}
+
+void GearDynamics::importChannels(Bus *bus) {
+	assert(bus!=0);
+	b_LeftBrakeInput = bus->getChannel("ControlInputs.LeftBrakeInput");
+	b_RightBrakeInput = bus->getChannel("ControlInputs.RightBrakeInput");
+	b_SteeringInput = bus->getChannel("ControlInputs.RudderInput");
+	b_Density = bus->getChannel("Conditions.Density");
+	b_WindVelocity = bus->getChannel("Conditions.WindVelocity");
+	b_NearGround = bus->getChannel(Kinetics::NearGround);
+	b_GroundN = bus->getChannel(Kinetics::GroundN);
+	b_GroundZ = bus->getChannel(Kinetics::GroundZ);
 }
 	
 void GearDynamics::computeForceAndMoment(double x) {
 	doComplexPhysics(x);
 }
 
-void GearDynamics::pack(simdata::Packer& p) const {
-	Object::pack(p);
-	p.pack(m_Gear);
+void GearDynamics::serialize(simdata::Archive &archive) {
+	Object::serialize(archive);
+	archive(m_Gear);
 }
 
-void GearDynamics::unpack(simdata::UnPacker& p) {
-	Object::unpack(p);
-	p.unpack(m_Gear);
-}
-	
-void GearDynamics::Retract() { 
+void GearDynamics::GearUp() { 
 	setStatus(false);
 }
 	
-void GearDynamics::Extend() {
+void GearDynamics::GearDown() {
 	setStatus(true);
+}
+
+void GearDynamics::GearToggle() {
+	setStatus(!m_Extended);
 }
 	
 bool GearDynamics::getExtended() const {
@@ -617,11 +621,12 @@ bool GearDynamics::getExtended() const {
 }
 
 bool GearDynamics::getWOW() const {
-	return m_WOW;
+	return b_WOW->value();
 }
 
-void GearDynamics::setBraking(double x) {
+void GearDynamics::setBraking(double left, double right) {
 	size_t n = m_Gear.size();
+	double x = (left + right) * 0.5; // FIXME
 	for (size_t i = 0; i < n; ++i) {
 		m_Gear[i]->setBraking(x);
 	}
@@ -643,12 +648,12 @@ size_t GearDynamics::getGearNumber() const {
 	return m_Gear.size();
 }
 
-std::vector<simdata::Vector3> GearDynamics::getGearPosition() const {
-	std::vector<simdata::Vector3> gear_pos;
+std::vector<Vector3> GearDynamics::getGearPosition() const {
+	std::vector<Vector3> gear_pos;
 	size_t n =  m_Gear.size();
 	for (size_t i = 0; i < n; ++i) {
 		LandingGear const *gear = m_Gear[i].get();
-		simdata::Vector3 move = gear->getPosition();
+		Vector3 move = gear->getPosition();
 		// FIXME motion should be projected along gear axis
 		move.z() -= gear->getMaxPosition().z();
 		gear_pos.push_back(move);
@@ -658,9 +663,14 @@ std::vector<simdata::Vector3> GearDynamics::getGearPosition() const {
 
 void GearDynamics::preSimulationStep(double dt) {
 	BaseDynamics::preSimulationStep(dt);
-	m_WOW = false;
+	b_WOW->value() = false;
 	if (!m_Extended) return;
-	if (!(*m_NearGround)) return;
+	if (!b_NearGround->value()) return;
+	m_WindVelocityBody = m_Attitude->invrotate(b_WindVelocity->value());
+	m_GroundNormalBody = m_Attitude->invrotate(b_GroundN->value());
+	setSteering(b_SteeringInput->value());
+	setBraking(b_LeftBrakeInput->value(), b_RightBrakeInput->value());
+	m_Height = m_PositionLocal->z() - b_GroundZ->value();
 	size_t n =  m_Gear.size();
 	for (size_t i = 0; i < n; ++i) {
 		m_Gear[i]->preSimulationStep(dt);
@@ -670,15 +680,16 @@ void GearDynamics::preSimulationStep(double dt) {
 void GearDynamics::postSimulationStep(double dt) {
 	BaseDynamics::postSimulationStep(dt);
 	if (!m_Extended) return;
-	if (!(*m_NearGround)) return;
-	simdata::Vector3 groundNormalBody = m_qOrientation->invrotate(*m_NormalGround);
+	if (!b_NearGround->value()) return;
+	m_Height = m_PositionLocal->z() - b_GroundZ->value();
 	size_t n =  m_Gear.size();
 	for (size_t i = 0; i < n; ++i) {
-		simdata::Vector3 R = m_Gear[i]->getPosition();
-		simdata::Vector3 vBody = *m_VelocityBody + (*m_AngularVelocityBody ^ R);
-		m_Gear[i]->postSimulationStep(dt, *m_PositionLocal, vBody, *m_qOrientation, *m_Height, groundNormalBody);
-		if (m_Gear[i]->getWOW()) m_WOW = true;
+		Vector3 R = m_Gear[i]->getPosition();
+		Vector3 vBody = *m_VelocityBody + (*m_AngularVelocityBody ^ R);
+		m_Gear[i]->postSimulationStep(dt, *m_PositionLocal, vBody, *m_Attitude, m_Height, m_GroundNormalBody);
+		if (m_Gear[i]->getWOW()) b_WOW->value() = true;
 	}
+	b_GearPosition->value() = getGearPosition();
 }
 
 

@@ -33,7 +33,6 @@
 #include <SimData/Object.h>
 #include <SimData/GeoPos.h>
 #include <SimData/Vector3.h>
-#include <SimData/Pack.h>
 #include <SimData/InterfaceRegistry.h>
 #include <SimData/osg.h>
 
@@ -137,8 +136,7 @@ protected:
 	std::string m_Name;
 	int m_Version;
 
-	virtual void pack(simdata::Packer& p) const;
-	virtual void unpack(simdata::UnPacker& p);
+	virtual void serialize(simdata::Archive&);
 	virtual void postCreate();
 
 };

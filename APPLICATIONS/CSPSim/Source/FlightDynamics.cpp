@@ -24,123 +24,90 @@
 #define NOMINMAX
 #endif
 
-#include <algorithm>
-
-#include "FlightDynamics.h"
-#include "FlightModel.h"
-#include "CSPSim.h"
-#include "Log.h" 
+#include <FlightDynamics.h>
+#include <FlightModel.h>
+#include <CSPSim.h>
+#include <Log.h> 
+#include <KineticsChannels.h>
 
 #include <SimData/Math.h>
-#include <SimData/Quat.h>
+
+#include <sstream>
+#include <iomanip>
+#include <algorithm>
 
 
 using simdata::toDegrees;
 using simdata::toRadians;
 
+using bus::Kinetics;
+
+
+SIMDATA_REGISTER_INTERFACE(FlightDynamics)
 
 
 FlightDynamics::FlightDynamics():
-	m_depsilon(0.0),
-	m_ElevatorScale(0.0),
-	m_ElevatorInput(0.0),
-	m_Aileron(0.0),
-	m_Elevator(0.0),
-	m_Rudder(0.0),
-	m_Airbrake(0.0),
+	m_Beta(0.0),
 	m_Alpha(0.0),
 	m_Alpha0(0.0),
 	m_AlphaDot(0.0),
-	m_Beta(0.0),
-	m_GForce(1.0),
-	m_Airspeed(0.0)
+	m_Airspeed(1.0)
 {
 }
 
 FlightDynamics::~FlightDynamics() {
 }
 
-void FlightDynamics::setFlightModel(FlightModel *flight_model) {
-	assert(flight_model);
-	m_FlightModel = flight_model;
+void FlightDynamics::serialize(simdata::Archive &archive) {
+	BaseDynamics::serialize(archive);
+	archive(m_FlightModel);
 }
 
-void FlightDynamics::setControlSurfaces(double aileron, 
-                                        double elevator, 
-                                        double rudder, 
-                                        double airbrake) 
-{
-	m_Aileron = aileron;
-	m_ElevatorInput = elevator;
-	m_Elevator = elevator;
-	m_Rudder = rudder;
-	m_Airbrake = airbrake;
-	m_FlightModel->setControlSurfaces(aileron, elevator, rudder, airbrake);
+void FlightDynamics::registerChannels(Bus *bus) {
+	assert(bus!=0);
+	b_Alpha = bus->registerLocalDataChannel<double>("FlightDynamics.Alpha", 0.0);
+	b_Beta = bus->registerLocalDataChannel<double>("FlightDynamics.Beta", 0.0);
+	b_Airspeed = bus->registerLocalDataChannel<double>("FlightDynamics.Airspeed", 0.0);
 }
 
-void FlightDynamics::setMassInverse(double massInverse) {
-	m_MassInverse = massInverse;
+void FlightDynamics::importChannels(Bus *bus) {
+	assert(bus!=0);
+	b_Aileron = bus->getChannel("ControlSurfaces.AileronDeflection");
+	b_Elevator = bus->getChannel("ControlSurfaces.ElevatorDeflection");
+	b_Rudder = bus->getChannel("ControlSurfaces.RudderDeflection");
+	b_Airbrake = bus->getChannel("ControlSurfaces.AirbrakeDeflection");
+	b_Density = bus->getChannel("Conditions.Density");
+	b_WindVelocity = bus->getChannel("Conditions.WindVelocity");
+	b_GroundZ = bus->getChannel(Kinetics::GroundZ);
 }
 
 void FlightDynamics::initializeSimulationStep(double dt) {
 	BaseDynamics::initializeSimulationStep(dt);
-	double u = 0.05 + dt;
-	m_ElevatorScale	= (1.0 - u) * m_ElevatorScale + u * controlInputValue(m_GForce);
-	m_Elevator = m_ElevatorInput * m_ElevatorScale;
+	m_FlightModel->setControlSurfaces(b_Aileron->value(), b_Elevator->value(), b_Rudder->value(), b_Airbrake->value());
+	m_WindVelocityBody = m_Attitude->invrotate(b_WindVelocity->value());
 }
 
 void FlightDynamics::computeForceAndMoment(double x) {
 	updateAirflow(x);
-	m_FlightModel->setAirstream(m_Alpha, m_AlphaDot, m_Beta, m_Airspeed, *m_qBar);
-	m_FlightModel->setKinetics(*m_AngularVelocityBody, *m_Height);
+	double agl = m_PositionLocal->z() - b_GroundZ->value();
+	m_FlightModel->setAirstream(m_Alpha, m_AlphaDot, m_Beta, m_Airspeed, b_Density->value());
+	m_FlightModel->setKinetics(*m_AngularVelocityBody, agl);
 	m_Force = m_FlightModel->calculateForce();
 	m_Moment = m_FlightModel->calculateMoment();
-	m_GForce = m_MassInverse * m_Force.z() / 9.81;
 }
 
 void FlightDynamics::postSimulationStep(double dt) {
 	updateAirflow(dt);
 	m_Alpha0 = m_Alpha;
-	if (m_Recorder.isEnabled()) {
-		m_Recorder.record(CH_ALPHA, m_Alpha);
-		m_Recorder.record(CH_BETA, m_Beta);
-		m_Recorder.record(CH_GFORCE, m_GForce);
-		m_Recorder.record(CH_AIRSPEED, m_Airspeed);
-	}
-}
-
-double FlightDynamics::controlIVbasis(double p_t) const {
-	double cIV = p_t * p_t  * ( 3.0 - 2.0 * p_t);
-	return cIV;
-}
-
-void FlightDynamics::initDataRecorder(DataRecorder *recorder) {
-	m_Recorder.bind(recorder);
-	m_Recorder.addChannel(CH_ALPHA, "alpha");
-	m_Recorder.addChannel(CH_BETA, "beta");
-	m_Recorder.addChannel(CH_GFORCE, "gforce");
-	m_Recorder.addChannel(CH_AIRSPEED, "airspeed");
-}
-
-double FlightDynamics::controlInputValue(double p_gForce) const { 
-	// to reduce G, decrease deflection control surface
-	/* FIXME move to FCS class
-	if (p_gForce > m_GMax && m_ElevatorInput > 0.0) return 0.0;
-	if (p_gForce < m_GMin && m_ElevatorInput < 0.0) return 0.0;
-	if (m_Alpha > m_stallAOA && m_ElevatorInput > 0.0) return 0.0;
-	if (p_gForce > m_GMax - m_depsilon && m_ElevatorInput > 0.0) {
-		return controlIVbasis((m_GMax - p_gForce) / m_depsilon);
-	} 
-	if ( p_gForce < m_GMin + m_depsilon && m_ElevatorInput < 0.0) {
-		return controlIVbasis((p_gForce - m_GMin) / m_depsilon);
-	}*/
-	return 1.0;
+	b_Alpha->value() = m_Alpha;
+	b_Beta->value() = m_Beta;
+	b_Airspeed->value() = m_Airspeed;
 }
 
 void FlightDynamics::updateAirflow(double h) {
-	m_AirflowBody =	*m_VelocityBody - *m_WindBody;
-	m_Airspeed = m_AirflowBody.length();
-	m_Alpha = -atan2(m_AirflowBody.z(), m_AirflowBody.y()); 
+	simdata::Vector3 airflowBody = *m_VelocityBody - m_WindVelocityBody;
+	m_Airspeed = airflowBody.length();
+	m_Alpha = -atan2(airflowBody.z(), airflowBody.y()); 
 	if (h > 0.0) {
 		m_AlphaDot = ( m_Alpha - m_Alpha0 ) / h;
 	} // else keep previous value
@@ -151,9 +118,15 @@ void FlightDynamics::updateAirflow(double h) {
 	
 	// Calculate side angle
 	// beta is 0 when v velocity (i.e. side velocity) is 0; note here v is m_AirflowBody.x()
-	m_Beta  = atan2(m_AirflowBody.x(), m_AirflowBody.y());
+	m_Beta = atan2(airflowBody.x(), airflowBody.y());
 }
 
-
-
+void FlightDynamics::getInfo(InfoList &info) {
+	std::stringstream line;
+	line.setf(std::ios::fixed | std::ios::showpos);
+	line << "AOA: " << std::setprecision(1) << std::setw(5) << toDegrees(m_Alpha)
+	     << ", Sideslip: " << std::setprecision(1) << std::setw(5) << toDegrees(m_Beta)
+	     << ", Airspeed: " << std::setprecision(1) << std::setw(6) << m_Airspeed;
+	info.push_back(line.str());
+}
 

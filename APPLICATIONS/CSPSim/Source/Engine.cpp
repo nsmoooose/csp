@@ -25,8 +25,18 @@
 
 #include "CSPSim.h"
 #include "Engine.h"
+#include "KineticsChannels.h"
+
+#include <iomanip>
+#include <sstream>
+
+using bus::Kinetics;
+
 
 SIMDATA_REGISTER_INTERFACE(ThrustData)
+SIMDATA_REGISTER_INTERFACE(Engine)
+SIMDATA_REGISTER_INTERFACE(EngineDynamics)
+
 
 ThrustData::ThrustData() {
 }
@@ -34,34 +44,26 @@ ThrustData::ThrustData() {
 ThrustData::~ThrustData() {
 }
 
-void ThrustData::pack(simdata::Packer &p) const { 
-    simdata::Object::pack(p); 
-    p.pack(m_idle_thrust); 
-    p.pack(m_mil_thrust);
-	p.pack(m_ab_thrust);
+void ThrustData::serialize(simdata::Archive &archive) {
+	Object::serialize(archive);
+	archive(m_idle_thrust); 
+	archive(m_mil_thrust);
+	archive(m_ab_thrust);
 } 
 
-void ThrustData::unpack(simdata::UnPacker &p) { 
-    simdata::Object::unpack(p); 
-    p.unpack(m_idle_thrust); 
-    p.unpack(m_mil_thrust);
-	p.unpack(m_ab_thrust);
-}  
-
 float ThrustData::getMil(float altitude, float mach) const {
-	return m_mil_thrust.getValue(mach, altitude);
+	return m_mil_thrust[altitude][mach];
 }
 
 float ThrustData::getIdle(float altitude, float mach) const {
-	return m_idle_thrust.getValue(mach, altitude);
+	return m_idle_thrust[altitude][mach];
 }
 
 float ThrustData::getAb(float altitude, float mach) const {
-	return m_ab_thrust.getValue(mach, altitude);
+	return m_ab_thrust[altitude][mach];
 }
 
 
-SIMDATA_REGISTER_INTERFACE(Engine)
 
 Engine::Engine(simdata::Vector3 const &thrustDirection) {
 }
@@ -69,40 +71,18 @@ Engine::Engine(simdata::Vector3 const &thrustDirection) {
 Engine::~Engine() {
 }
 
-void Engine::pack(simdata::Packer &p) const { 
-    simdata::Object::pack(p); 
-	p.pack(m_ThrustData);
-    p.pack(m_EngineIdleRpm); 
-	p.pack(m_EngineAbRpm);
-	p.pack(m_ThrustDirection);
-	p.pack(m_EngineOffset);
-	p.pack(m_SmokeEmitterLocation);
-} 
-
-void Engine::unpack(simdata::UnPacker &p) { 
-    simdata::Object::unpack(p); 
-	p.unpack(m_ThrustData);
-    p.unpack(m_EngineIdleRpm); 
-	p.unpack(m_EngineAbRpm);
-	p.unpack(m_ThrustDirection);
-	p.unpack(m_EngineOffset);
-	p.unpack(m_SmokeEmitterLocation);
+void Engine::serialize(simdata::Archive &archive) {
+	Object::serialize(archive);
+	archive(m_ThrustData);
+	archive(m_EngineIdleRpm); 
+	archive(m_EngineAbRpm);
+	archive(m_ThrustDirection);
+	archive(m_EngineOffset);
+	archive(m_SmokeEmitterLocation);
 } 
 
 void Engine::setThrustDirection(simdata::Vector3 const& thrustDirection) {
 	m_ThrustDirection = thrustDirection;
-}
-
-void Engine::bindThrottle(float const &throttle) {
-	m_Throttle = &throttle;
-}
-
-void Engine::setMach(float mach) {
-	m_Mach = mach;
-}
-
-void Engine::setAltitude(float altitude) {
-	m_Altitude = altitude;
 }
 
 simdata::Vector3 const &Engine::getSmokeEmitterLocation() const {
@@ -110,9 +90,10 @@ simdata::Vector3 const &Engine::getSmokeEmitterLocation() const {
 }
 
 simdata::Vector3 Engine::getThrust() const {
-	float throttle = *m_Throttle;
-	if (throttle < 0.0)
+	float throttle = m_Throttle;
+	if (throttle < 0.0) {
 		throttle = 0.0;
+	}
 	float milComponent = m_ThrustData->getMil(m_Altitude, m_Mach);
 	float other = 0.0;
 	if (throttle <= 1.0)
@@ -142,33 +123,24 @@ simdata::Vector3 Engine::getThrust() const {
 //}
  
 
-SIMDATA_REGISTER_INTERFACE(EngineDynamics)
-
-void EngineDynamics::pack(simdata::Packer &p) const { 
-    simdata::Object::pack(p); 
-	p.pack(m_Engine);
-} 
-
-void EngineDynamics::unpack(simdata::UnPacker &p) { 
-    simdata::Object::unpack(p); 
-	p.unpack(m_Engine);
+void EngineDynamics::serialize(simdata::Archive &archive) {
+	Object::serialize(archive);
+	archive(m_Engine);
 } 
 
 void EngineDynamics::postCreate() { 
-	if (!m_Engine.empty()) {
-		simdata::Link<Engine>::vector::iterator i = m_Engine.begin();
-		simdata::Link<Engine>::vector::const_iterator iEnd = m_Engine.end();
-			for (; i !=iEnd; ++i)
-				(*i)->bindThrottle(m_Throttle);
-	}
 }
 
-EngineDynamics::EngineDynamics():
-	m_Throttle(0.0f) {
+void EngineDynamics::registerChannels(Bus *bus) {
 }
 
-void EngineDynamics::setThrottle(double const throttle) {
-	m_Throttle = static_cast<float>(throttle);
+void EngineDynamics::importChannels(Bus *bus) {
+	if (!bus) return;
+	b_ThrottleInput = bus->getChannel("ControlInputs.ThrottleInput");
+	b_Mach = bus->getChannel("Conditions.Mach");
+}
+
+EngineDynamics::EngineDynamics() {
 }
 
 std::vector<simdata::Vector3> EngineDynamics::getSmokeEmitterLocation() const {
@@ -187,13 +159,15 @@ void EngineDynamics::preSimulationStep(double dt) {
 	m_Force = m_Moment = simdata::Vector3::ZERO;
 	if (!m_Engine.empty()) {
 		float altitude = static_cast<float>(m_PositionLocal->z());
-		float speed = static_cast<float>(m_VelocityBody->length());
-		float mach = static_cast<float>(CSPSim::theSim->getAtmosphere()->getMach(speed, altitude));
-		simdata::Link<Engine>::vector::iterator i = m_Engine.begin();
-		simdata::Link<Engine>::vector::const_iterator iEnd = m_Engine.end();
+		float mach = static_cast<float>(b_Mach->value());
+		float throttle = static_cast<float>(b_ThrottleInput->value());
+		throttle = throttle * 1.05263 + std::max(0.0, throttle-0.95) * 20.0; 
+		EngineSet::iterator i = m_Engine.begin();
+		EngineSet::const_iterator iEnd = m_Engine.end();
 		for (; i !=iEnd; ++i) {
 			(*i)->setMach(mach);
 			(*i)->setAltitude(altitude);
+			(*i)->setThrottle(throttle);
 			simdata::Vector3 force = (*i)->getThrust();
 			m_Force += force;
 			m_Moment += (*i)->m_EngineOffset^force;
@@ -203,5 +177,13 @@ void EngineDynamics::preSimulationStep(double dt) {
 
 void EngineDynamics::computeForceAndMoment(double x) {
 	// all the work is done by preSimulationStep
+}
+
+void EngineDynamics::getInfo(InfoList &info) const {
+	std::stringstream line;
+	line.setf(std::ios::fixed | std::ios::showpos);
+	line << "Throttle: " << std::setprecision(2) << std::setw(6) << b_ThrottleInput->value()
+	     << ", Thrust: " << std::setprecision(0) << std::setw(8) << m_Force.length();
+	info.push_back(line.str());
 }
 

@@ -37,13 +37,16 @@
 #include <string>
 #include <vector>
 
+#include <SimData/Ref.h>
 #include <SimData/HashUtility.h>
 
 
-class EventMapping 
+class EventMapping: public simdata::Referenced
 {
 public:
 	EventMapping();
+
+	typedef simdata::Ref<EventMapping> Ref;
 
 	struct LinearCorrection {
 		int low, high;

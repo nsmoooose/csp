@@ -79,6 +79,9 @@ class ObjectStats: public ScreenInfo
 {
 	// input device informations
 	std::vector<osg::ref_ptr<osgText::Text> > m_ObjectStats;
+	int m_PosX;
+	int m_PosY;
+	int m_Skip;
 protected:
 	~ObjectStats(){}
 public:

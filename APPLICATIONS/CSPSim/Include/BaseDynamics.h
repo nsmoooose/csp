@@ -26,6 +26,8 @@
 
 #include <SimData/Vector3.h>
 
+#include <System.h>
+
 namespace simdata {
 	class Quat;
 }
@@ -38,17 +40,30 @@ namespace simdata {
  * simulation step.  See documentation associated with this method for 
  * important details.
  */
-class BaseDynamics {
+class BaseDynamics: public System {
+
 protected:
 	simdata::Vector3 m_Force, m_Moment;
-	simdata::Vector3 const *m_PositionLocal, *m_VelocityBody, *m_AngularVelocityBody;
-	simdata::Quat const *m_qOrientation;
+
+	simdata::Vector3 const *m_PositionLocal;
+	simdata::Vector3 const *m_VelocityBody;
+	simdata::Vector3 const *m_AngularVelocityBody;
+	simdata::Quat const *m_Attitude;
+#if 0
 	double const *m_Height;
 	bool const *m_NearGround;
 	simdata::Vector3 const *m_NormalGround;
 	double const *m_qBar;
 	simdata::Vector3 const *m_WindBody;
+#endif
+
 public:
+
+	typedef simdata::Ref<BaseDynamics> Ref;
+
+	EXTEND_SIMDATA_XML_VIRTUAL_INTERFACE(BaseDynamics, System)
+	END_SIMDATA_XML_INTERFACE
+
 	BaseDynamics();
 	virtual ~BaseDynamics();
 
@@ -111,6 +126,8 @@ public:
 	 */
 	inline simdata::Vector3 getMoment() const { return m_Moment; }
 
+	virtual bool needsImpulse() const { return false; }
+
 	/**
 	 * Bind object kinematic state variables.  These values can be
 	 * used freely by any of the simulation step methods.
@@ -119,11 +136,12 @@ public:
 	 * @param velocity_body the velocity of the object in body coordinates
 	 * @param angular_velocity_body the angular velocity of the object in 
 	 *        body cooordinates
-	 * @param orientation the orientation of the object
+	 * @param attitude the orientation of the object
 	 */
 	void bindKinematics(simdata::Vector3 const &position_local, simdata::Vector3 const &velocity_body, 
-					simdata::Vector3 const &angular_velocity_body, simdata::Quat const &orientation);
+	                    simdata::Vector3 const &angular_velocity_body, simdata::Quat const &attitude);
 
+#if 0
 	/**
 	 * Bind parameters related to the ground directly beneath the object.
 	 *
@@ -143,6 +161,7 @@ public:
 	 *  @param wind_body the wind speed in body coordinates.
 	 */
 	void bindAeroParameters(double const &qbar, simdata::Vector3 const &wind_body);
+#endif
 };
 
 
@@ -154,7 +173,7 @@ class InitializeSimulationStep {
 	double m_dt;
 public:
 	InitializeSimulationStep(double dt): m_dt(dt){}
-	void operator()(BaseDynamics *bd) {
+	void operator()(BaseDynamics::Ref bd) {
 		bd->initializeSimulationStep(m_dt);
 	}
 };
@@ -168,7 +187,7 @@ class PostSimulationStep {
 	double m_dt;
 public:
 	PostSimulationStep(double dt): m_dt(dt){}
-	void operator()(BaseDynamics *bd) {
+	void operator()(BaseDynamics::Ref bd) {
 		bd->postSimulationStep(m_dt);
 	}
 };
@@ -182,7 +201,7 @@ class PreSimulationStep {
 	double m_dt;
 public:
 	PreSimulationStep(double dt): m_dt(dt){}
-	void operator()(BaseDynamics *bd) {
+	void operator()(BaseDynamics::Ref bd) {
 		bd->preSimulationStep(m_dt);
 	}
 };

@@ -23,67 +23,72 @@
  **/
 
 
-#include "DynamicObject.h"
-#include "BaseController.h"
-#include "Log.h"
-#include "VirtualBattlefield.h"
-#include "VirtualScene.h"
-#include "TerrainObject.h"
-#include "CSPSim.h"
+#include <DynamicObject.h>
+#include <Controller.h>
+#include <PhysicsModel.h>
+#include <Log.h>
+#include <VirtualBattlefield.h>
+#include <VirtualScene.h>
+#include <TerrainObject.h>
+#include <CSPSim.h>
+#include <KineticsChannels.h>
 
 #include <SimData/Quat.h>
 
 
+using bus::Kinetics;
+
 
 DynamicObject::DynamicObject(): SimObject()
 {
-	m_Mass = 1.0;
-	m_Speed = 0.0;
+	b_GlobalPosition = DataChannel<simdata::Vector3>::newLocal(Kinetics::Position, simdata::Vector3::ZERO);
+	b_Mass = DataChannel<double>::newLocal(Kinetics::Mass, 1.0);
+	b_GroundZ = DataChannel<double>::newLocal(Kinetics::GroundZ, 0.0);
+	b_GroundN = DataChannel<simdata::Vector3>::newLocal(Kinetics::GroundN, simdata::Vector3::ZAXIS);
+	b_NearGround = DataChannel<bool>::newLocal(Kinetics::NearGround, false);
+	b_Inertia = DataChannel<simdata::Matrix3>::newLocal(Kinetics::Inertia, simdata::Matrix3::IDENTITY);
+	b_InertiaInv = DataChannel<simdata::Matrix3>::newLocal(Kinetics::InertiaInverse, simdata::Matrix3::IDENTITY);
+	b_AngularVelocity = DataChannel<simdata::Vector3>::newLocal(Kinetics::AngularVelocity, simdata::Vector3::ZERO);
+	b_LinearVelocity = DataChannel<simdata::Vector3>::newLocal(Kinetics::Velocity, simdata::Vector3::ZERO);
+	b_Attitude = DataChannel<simdata::Quat>::newLocal(Kinetics::Attitude, simdata::Quat::IDENTITY);
 
-	m_GroundZ = 0.0;
-	m_GroundN = simdata::Vector3::ZAXIS;
 	m_GroundHint = 0;
-
-	setAttitude(simdata::Quat::IDENTITY);
-	setGlobalPosition(simdata::Vector3::ZERO);
+	m_ReferenceMass = 1.0;
+	m_ReferenceInertia = simdata::Matrix3::IDENTITY;
 
 	m_Controller = NULL;
 
 	setLocal(true);
 	setHuman(false);
 
+	setGlobalPosition(simdata::Vector3::ZERO);
 	m_PrevPosition = simdata::Vector3::ZERO;
-
-	m_LinearVelocity = simdata::Vector3::ZERO;
-	m_AngularVelocity = simdata::Vector3::ZERO;
-
-	m_Inertia = simdata::Matrix3::IDENTITY;
-	m_InertiaInv = simdata::Matrix3::IDENTITY;
 }
 
 DynamicObject::~DynamicObject()
 {
 }
 
-void DynamicObject::pack(simdata::Packer& p) const {
-	SimObject::pack(p);
-	p.pack(m_Model);
-	p.pack(m_Mass);
-	p.pack(m_Inertia);
+void DynamicObject::serialize(simdata::Archive &archive) {
+	SimObject::serialize(archive);
+	archive(m_Model);
+	archive(m_ReferenceMass);
+	archive(m_ReferenceInertia);
+	archive(m_AgentModel);
+	archive(m_HumanModel);
 }
 
-void DynamicObject::unpack(simdata::UnPacker& p) {
-	SimObject::unpack(p);
-	p.unpack(m_Model);
-	p.unpack(m_Mass);
-	p.unpack(m_Inertia);
+void DynamicObject::postCreate() {
+	b_Mass->value() = m_ReferenceMass;
+	b_Inertia->value() = m_ReferenceInertia;
+	b_InertiaInv->value() = m_ReferenceInertia.getInverse();
 }
 
 void DynamicObject::createSceneModel() {
 	if (!m_SceneModel) {
 		m_SceneModel = new SceneModel(m_Model);
 		assert(m_SceneModel.valid());
-		bindAnimations();
+		bindAnimations(getBus());
 	}
 }
 
@@ -109,60 +114,25 @@ void DynamicObject::setGlobalPosition(simdata::Vector3 const & position)
 
 void DynamicObject::setGlobalPosition(double x, double y, double z)
 {
-	// if the object is on the ground ignore the z component and use the elevation at
-	// the x,y point.
-	m_GlobalPosition.x() = x;
-	m_GlobalPosition.y() = y;
-
 	if (isGrounded())
 	{
+		// if the object is fixed to the ground, ignore the z component 
+		// and use the local elevation (not implemented)
+		// FIXME FIXME FIXME XXX XXX
 		float offset = 0.0;
-		/* FIXME FIXME FIXME XXX XXX
-		if (m_rpNode.valid())
-		{
-			// FIXME this is not a very good way to put a vehicle on the ground...
-			osg::BoundingSphere sphere = m_rpNode->getBound();
-			offset = sphere.radius() - sphere.center().z();
-		}
-		else 
-			offset = 0.0;
-		if (m_Battlefield) {
-			offset += m_Battlefield->getElevation(x,y);
-		}
-		*/
-		m_GlobalPosition.z() = offset; 
+		z = offset; 
 	}
-	else
-	{
-		m_GlobalPosition.z() = z; 
-	}
-
-/*
-	CSP_LOG(APP, DEBUG, "SimObject::setPosition - ID: " << m_ObjectID 
-	        << ", Name: " << m_ObjectName << ", Position: " << m_GlobalPosition );
-*/
+	b_GlobalPosition->value() = simdata::Vector3(x, y, z);
 }
 
 void DynamicObject::setVelocity(simdata::Vector3 const &velocity)
 {
-	m_LinearVelocity = velocity;
-	m_Speed = m_LinearVelocity.length();
-
-/*
-	CSP_LOG(APP, DEBUG, "SimObject::setVelocity - ID: " << m_ObjectID 
-	<< ", Name: " << m_ObjectName << ", Velocity: " << m_LinearVelocity );
-*/
+	b_LinearVelocity->value() = velocity;
 }
 
 void DynamicObject::setVelocity(double Vx, double Vy, double Vz)
 {
-	m_LinearVelocity = simdata::Vector3(Vx, Vy, Vz);
-	m_Speed = m_LinearVelocity.length();
-
-/*
-	CSP_LOG(APP, DEBUG, "SimObject::setVelocity - ID: " << m_ObjectID 
-	<<  ", Name: " << m_ObjectName << ", Velocity: " << m_LinearVelocity );
-*/
+	setVelocity(simdata::Vector3(Vx, Vy, Vz));
 }
 
 void DynamicObject::updateGroundPosition()
@@ -175,79 +145,92 @@ void DynamicObject::updateGroundPosition()
 	else {
 		offset = 0.0;
 	}
-	m_GlobalPosition.z() = CSPSim::theSim->getBattlefield()->getGroundElevation(m_GlobalPosition.x(), m_GlobalPosition.y(), m_GroundHint) + offset; 
-	m_GlobalPosition.z() = offset;
+	CSPSim *sim = CSPSim::theSim;
+	assert(sim);
+	VirtualBattlefield const *battlefield = sim->getBattlefield();
+	assert(battlefield);
+	simdata::Vector3 &pos = b_GlobalPosition->value();
+	pos.z() = battlefield->getGroundElevation(pos.x(), pos.y(), m_GroundHint) + offset; 
 }
 
 
-
-// move
-void DynamicObject::doMovement(double dt)
-{
-	// Save the objects old position
-	m_PrevPosition = m_GlobalPosition;
+void DynamicObject::registerUpdate(UpdateMaster *master) {
+	SimObject::registerUpdate(master);
+	if (m_SystemsModel.valid()) {
+		m_SystemsModel->registerUpdate(master);
+	}
 }
+
 
 // update 
 double DynamicObject::onUpdate(double dt)
 {
-	doMovement(dt);
-	if (m_Controller) {
-		m_Controller->onUpdate(dt);
+	// Save the objects old position
+	m_PrevPosition = b_GlobalPosition->value();
+	// XXX don't move non-human aircraft for now (no ai yet)
+	if (isHuman()) {
+		doControl(dt);
+		doPhysics(dt);
 	}
-	postMotion(dt);
-	onRender();
+	postUpdate(dt);
 	return 0.0;
 }
 
-unsigned int DynamicObject::onRender() {
-	return 0;
+
+void DynamicObject::doControl(double dt) {
+	if (m_Controller.valid()) {
+		m_Controller->doControl(dt);
+	}
 }
 
-// update variables that depend on position
-void DynamicObject::postMotion(double dt) {
-	if (m_SceneModel.valid() && isSmoke()) {
-		m_SceneModel->updateSmoke(dt, m_GlobalPosition, m_Attitude);
+void DynamicObject::doPhysics(double dt) {
+	if (m_PhysicsModel.valid()) {
+		m_PhysicsModel->doSimStep(dt);
 	}
-	// FIXME GroundZ/GroundN should be set for all vehicles
+}
+	
+
+// update variables that depend on position
+void DynamicObject::postUpdate(double dt) {
+	if (m_SceneModel.valid() && isSmoke()) {
+		m_SceneModel->updateSmoke(dt, b_GlobalPosition->value(), b_Attitude->value());
+	}
 	if (isGrounded()) {
+		// FIXME GroundZ/GroundN should be set for all vehicles
 		updateGroundPosition();
 	} else {
-		VirtualBattlefield const *battlefield = CSPSim::theSim->getBattlefield();
+		CSPSim *sim = CSPSim::theSim;
+		assert(sim);
+		VirtualBattlefield const *battlefield = sim->getBattlefield();
 		assert(battlefield);
-		m_GroundZ = battlefield->getGroundElevation(m_GlobalPosition.x(), m_GlobalPosition.y(), m_GroundN, m_GroundHint);
-		/*
-		float h1, h2;
-		h1 = battlefield->getElevation(m_GlobalPosition.x()+1, m_GlobalPosition.y()) - m_GroundZ;
-		h2 = battlefield->getElevation(m_GlobalPosition.x(), m_GlobalPosition.y()+1) - m_GroundZ;
-		m_GroundN = simdata::Vector3(-h1,-h2, 1.0);
-		m_GroundN.normalize();
-		*/
-		/*
-		float nx, ny, nz;
-		m_Battlefield->getNormal(m_GlobalPosition.x(), m_GlobalPosition.y(), nx, ny, nz);
-		m_GroundN = simdata::Vector3(nx, ny, nz);
-		*/
+		b_GroundZ->value() = battlefield->getGroundElevation(
+			b_GlobalPosition->value().x(), 
+			b_GlobalPosition->value().y(), 
+			b_GroundN->value(), 
+			m_GroundHint
+		);
+		double height = (b_GlobalPosition->value().z() - b_GroundZ->value()) * b_GroundN->value().z();
+		b_NearGround->value() = (height < m_Model->getBoundingSphereRadius());
 	}
 }
 
 simdata::Vector3 DynamicObject::getDirection() const
 {
-	return m_Attitude.rotate(simdata::Vector3::YAXIS);
+	return b_Attitude->value().rotate(simdata::Vector3::YAXIS);
 }
 
 simdata::Vector3 DynamicObject::getUpDirection() const
 {
-	return m_Attitude.rotate(simdata::Vector3::ZAXIS);
+	return b_Attitude->value().rotate(simdata::Vector3::ZAXIS);
 }
 
 void DynamicObject::setAttitude(simdata::Quat const &attitude)
 {
-	m_Attitude = attitude;
+	b_Attitude->value() = attitude;
 }
 
 simdata::Vector3 DynamicObject::getViewPoint() const {
-	 return m_Attitude.rotate(m_Model->getViewPoint());
+	 return b_Attitude->value().rotate(m_Model->getViewPoint());
 }
 
 bool DynamicObject::isSmoke() {
@@ -267,10 +250,143 @@ void DynamicObject::enableSmoke() {
 }
 
 void DynamicObject::setDataRecorder(DataRecorder *recorder) {
-	m_DataRecorder = recorder;
-	initDataRecorder();
+	if (!recorder) return;
+	if (m_SystemsModel.valid()) {
+		m_SystemsModel->setDataRecorder(recorder);
+	}
+	recorder->addSource(b_GlobalPosition);
+	recorder->addSource(b_LinearVelocity);
+	recorder->addSource(b_AngularVelocity);
 }
 
-void DynamicObject::initDataRecorder() {
+std::list<DynamicObject::SystemsModelStore> DynamicObject::SystemsModelCache;
+
+void DynamicObject::cacheSystemsModel() {
+	std::list<SystemsModelStore>::iterator cached = SystemsModelCache.begin();
+	for (; cached != SystemsModelCache.end(); ++cached) {
+		if (cached->id == getID()) {
+			SystemsModelCache.erase(cached);
+			break;
+		}
+	}
+	if (SystemsModelCache.size() >= MODELCACHESIZE) {
+		SystemsModelCache.pop_front();
+	}
+	SystemsModelCache.push_back(SystemsModelStore(getID(), m_SystemsModel));
+}
+
+SystemsModel::Ref DynamicObject::getCachedSystemsModel() {
+	std::list<SystemsModelStore>::iterator iter;
+	simdata::Ref<SystemsModel> model;
+	for (iter = SystemsModelCache.begin(); iter != SystemsModelCache.end(); ++iter) {
+		if (iter->id == getID()) {
+			model = iter->model;
+			SystemsModelCache.erase(iter);
+			break;
+		}
+	}
+	return model;
+}
+
+
+void DynamicObject::registerChannels(Bus::Ref bus) {
+	if (!bus) return;
+	bus->registerChannel(b_GlobalPosition.get());
+	bus->registerChannel(b_LinearVelocity.get());
+	bus->registerChannel(b_AngularVelocity.get());
+	bus->registerChannel(b_Attitude.get());
+	bus->registerChannel(b_Mass.get());
+	bus->registerChannel(b_Inertia.get());
+	bus->registerChannel(b_InertiaInv.get());
+	bus->registerChannel(b_GroundN.get());
+	bus->registerChannel(b_GroundZ.get());
+	bus->registerChannel(b_NearGround.get());
+	bus->registerLocalDataChannel< simdata::Ref<ObjectModel> >("Internal.ObjectModel", m_Model);
+}
+
+
+Bus::Ref DynamicObject::getBus() {
+	return (m_SystemsModel.valid() ? m_SystemsModel->getBus(): 0);
+}
+
+void DynamicObject::bindAnimations(Bus::Ref bus) {
+	if (m_SceneModel.valid()) {
+		m_SceneModel->bindAnimationChannels(bus);
+	}
+}
+
+// called whenever the bus (ie systemsmodel) changes
+void DynamicObject::bindChannels(Bus::Ref bus) {
+	bindAnimations(bus);
+}
+
+void DynamicObject::selectVehicleCore() {
+	simdata::Path path;
+	simdata::Ref<SystemsModel> systems;
+	if (isLocal()) {
+		if (isHuman()) {
+			systems = getCachedSystemsModel();
+			path = m_HumanModel;
+		} else {
+			path = m_AgentModel;
+		}
+		if (!systems && !path.isNone()) {
+			CSPSim *sim = CSPSim::theSim;
+			if (sim) {
+				simdata::DataManager &manager = sim->getDataManager();
+				systems = manager.getObject(path);
+				if (systems.valid()) {
+					registerChannels(systems->getBus());
+					systems->bindSystems();
+				}
+			}
+		}
+	} else { // remote control
+		// systems = ...;
+		// etc
+	}
+	setVehicleCore(systems);
+}
+
+void DynamicObject::setVehicleCore(SystemsModel::Ref systems) {
+	if (systems.valid()) {
+		systems->init(m_SystemsModel);
+		m_PhysicsModel = systems->getPhysicsModel();
+		m_Controller = systems->getController();
+	} else {
+		m_PhysicsModel = 0;
+		m_Controller = 0;
+	}
+	if (m_SystemsModel.valid()) {
+		m_SystemsModel->registerUpdate(0);
+	}
+	m_SystemsModel = systems;
+	bindChannels(getBus());
+	if (m_SystemsModel.valid()) {
+		m_SystemsModel->copyRegistration(this);
+	}
+}
+	
+bool DynamicObject::onMapEvent(MapEvent const &event) {
+	if (InputInterface::onMapEvent(event)) {
+		return true;
+	}
+	if (m_SystemsModel.valid() && m_SystemsModel->onMapEvent(event)) {
+		return true;
+	}
+	return false;
+}
+
+void DynamicObject::getInfo(std::vector<std::string> &info) const {
+	if (m_SystemsModel.valid()) {
+		m_SystemsModel->getInfo(info);
+	}
+}
+
+void DynamicObject::updateScene(simdata::Vector3 const &origin) { 
+	if (m_SceneModel.valid()) {
+		m_SceneModel->setPositionAttitude(b_GlobalPosition->value() - origin, b_Attitude->value()); 
+		onRender();
+	}
 }
 

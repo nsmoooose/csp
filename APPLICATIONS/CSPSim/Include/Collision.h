@@ -45,16 +45,31 @@
  * rapid energy loss, and should be coupled with vehicle
  * damage modeling.
  */
-class GroundCollisionDynamics: public simdata::Referenced, public BaseDynamics {
+class GroundCollisionDynamics: public BaseDynamics {
 	std::vector<simdata::Vector3> m_Forces;
 	std::vector<simdata::Vector3> m_Extension;
-	std::vector<simdata::Vector3> const m_Contacts;
+	std::vector<simdata::Vector3> m_Contacts;
 	double m_Mass;
 	double m_ContactSpring;
 	double m_SpringConstant, m_Friction, m_ImpactDamping;
 	double const m_ImpactSpeedTolerance;
 	bool m_NeedsImpulse, m_HasContact;
+
+	DataChannel<double>::CRef b_Mass;
+	DataChannel<simdata::Vector3>::CRef b_GroundN;
+	DataChannel<double>::CRef b_GroundZ;
+	DataChannel<bool>::CRef b_NearGround;
+
+protected:
+	virtual void importChannels(Bus *bus);
+	virtual void registerChannels(Bus *bus);
+
 public:
+
+	SIMDATA_OBJECT(GroundCollisionDynamics, 0, 0)
+	EXTEND_SIMDATA_XML_INTERFACE(GroundCollisionDynamics, BaseDynamics)
+	END_SIMDATA_XML_INTERFACE
+
 	/** 
 	 * Construct a new ground collision dynamics instance.
 	 *
@@ -62,7 +77,7 @@ public:
 	 *       used only to limit extremely violent collisions.
 	 * @contacts the vehicle contact points
 	 */
-	GroundCollisionDynamics(double mass, std::vector<simdata::Vector3> const &contacts);
+	GroundCollisionDynamics(); //double mass, std::vector<simdata::Vector3> const &contacts);
 
 	/**
 	 * Set the dynamic properties of the ground.

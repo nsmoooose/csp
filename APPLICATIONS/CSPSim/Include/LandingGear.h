@@ -64,8 +64,7 @@ public:
 	LandingGear();
 	//LandingGear(LandingGear const &);
 	//LandingGear const &operator=(LandingGear const &g);
-	virtual void pack(simdata::Packer& p) const;
-	virtual void unpack(simdata::UnPacker& p);
+	virtual void serialize(simdata::Archive&);
 	virtual void postCreate();
 
 	bool getWOW() const { return m_WOW; }
@@ -169,7 +168,7 @@ protected:
 };
 
 
-class GearDynamics: public simdata::Object, public BaseDynamics {
+class GearDynamics: public BaseDynamics {
 
 	typedef simdata::Link<LandingGear>::vector GearSet;
 	
@@ -181,29 +180,59 @@ class GearDynamics: public simdata::Object, public BaseDynamics {
 public:
 	SIMDATA_OBJECT(GearDynamics, 0, 0)
 
-	BEGIN_SIMDATA_XML_INTERFACE(GearDynamics)
+	EXTEND_SIMDATA_XML_INTERFACE(GearDynamics, BaseDynamics)
 		SIMDATA_XML("gear_set", GearDynamics::m_Gear, true)
 	END_SIMDATA_XML_INTERFACE
 
+	ACTION_INTERFACE(GearDynamics, GearUp);
+	ACTION_INTERFACE(GearDynamics, GearDown);
+	ACTION_INTERFACE(GearDynamics, GearToggle);
+
 	GearDynamics();
-	virtual void pack(simdata::Packer& p) const;
-	virtual void unpack(simdata::UnPacker& p);
-	void Retract();
-	void Extend();
+	virtual void serialize(simdata::Archive&);
+	virtual void registerChannels(Bus*);
+	virtual void importChannels(Bus*);
+
 	bool getExtended() const;
 	bool getWOW() const;
-	void setBraking(double x);
+
+	void setBraking(double left, double right);
 	void setSteering(double x, double link_brakes=1.0);
+
 	LandingGear const *getGear(unsigned i);
 	size_t getGearNumber() const;
 	std::vector<simdata::Vector3> getGearPosition() const;
+
 	virtual void preSimulationStep(double dt);
 	virtual void postSimulationStep(double dt);
 	void computeForceAndMoment(double x);
+
 protected:
 	GearSet m_Gear;
-	bool m_WOW;
 	bool m_Extended;
+
+	DataChannel<bool>::Ref b_WOW;
+
+	// XXX TEMPORARY
+	DataChannel<std::vector<simdata::Vector3> >::Ref b_GearPosition;
+	DataChannel<bool>::Ref b_GearExtended;
+
+	// XXX add this and other animation channels eventually
+	// (steering angle, wheel rotation, compression, cycle)
+	//DataChannel<double>::Ref b_GearAnimation;
+	
+	DataChannel<bool>::CRef b_NearGround;
+	DataChannel<double>::CRef b_LeftBrakeInput;
+	DataChannel<double>::CRef b_RightBrakeInput;
+	DataChannel<double>::CRef b_SteeringInput;
+	DataChannel<double>::CRef b_Density;
+	DataChannel<double>::CRef b_GroundZ;
+	DataChannel<simdata::Vector3>::CRef b_GroundN;
+	DataChannel<simdata::Vector3>::CRef b_WindVelocity;
+
+	simdata::Vector3 m_GroundNormalBody;
+	simdata::Vector3 m_WindVelocityBody;
+	double m_Height;
 };
 
 

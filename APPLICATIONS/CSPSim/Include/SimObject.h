@@ -27,6 +27,7 @@
 
 
 #include "ObjectModel.h"
+#include "SynchronousUpdate.h"
 
 #include <SimData/Object.h>
 #include <SimData/Vector3.h>
@@ -44,7 +45,7 @@ class ActiveCell;
  * class SimObject - Base class for all objects in the simulation.
  *
  */
-class SimObject: public simdata::Object
+class SimObject: public simdata::Object, public UpdateTarget
 {
 	friend class VirtualScene;
 	friend class VirtualBattlefield;
@@ -87,20 +88,36 @@ protected:
 		return m_Flags & flags;
 	}
 
-	/**
-	 * Called when an object that was deaggregated leaves a human
-	 * player's bubble.  Extend this method to implement aggregation
-	 * logic.  
+	/** Called when an object that was deaggregated leaves a human
+	 *  player's bubble.  
+	 *
+	 *  Extend this method to implement aggregation logic.  
 	 */
 	virtual void aggregate();
 
-	/**
-	 * Called when an object that was aggregated enters a human
-	 * player's bubble.  Extend this method to implement deaggregation
-	 * logic.  
+	/** Called when an object that was aggregated enters a human
+	 *  player's bubble.  
+	 *
+	 *  Extend this method to implement deaggregation logic.  
 	 */
 	virtual void deaggregate();
 
+	/** Set the object's unique identifier number.
+	 *
+	 *  Can only be called once.
+	 */
+	void setID(unsigned int id) {
+		assert(m_ID == 0);
+		m_ID = id; 
+	}
+
+	/** Update callback. 
+	 *
+	 *  @param dt time since elapsed last call to onUpdate()
+	 *  @returns sleep time between updates (return 0.0 for
+	 *           fastest possible updating).
+	 */
+	virtual double onUpdate(double dt) { return 10.0; }
 
 public:
 
@@ -113,36 +130,24 @@ public:
 	virtual void dump() {}
 	virtual void initialize() {}
 
-	/**
-	 * Physics update callback. 
-	 *
-	 * @param dt time since elapsed last call to onUpdate()
-	 * @returns sleep time between updates (return 0.0 for
-	 *          fastest possible updating).
+	/** Get the unique object id of this instance.
 	 */
-	virtual double onUpdate(double dt) { return 10.0; }
+	unsigned int getID() const { return m_ID; }
 
-	/**
-	 * Called before an object is added to the scene graph.
+	/** Called before an object is added to the scene graph.
 	 *
-	 * This method is called even if no scene graph exists (e.g. on an 
-	 * AI client).  
+	 *  This method is called even if no scene graph exists (e.g. on an 
+	 *  AI client).  
 	 */
 	virtual void enterScene();
 
-	/**
-	 * Called before an object is removed from the scene graph.
+	/** Called before an object is removed from the scene graph.
 	 *
-	 * This method is called even if no scene graph exists (e.g. on an 
-	 * AI client).  
+	 *  This method is called even if no scene graph exists (e.g. on an 
+	 *  AI client).  
 	 */
 	virtual void leaveScene();
 
-	/*
-	unsigned int getObjectID() const { return m_ObjectID; }
-	unsigned int getObjectType() const { return m_ObjectType; }
-	*/
-	
 	void setFreezeFlag(bool flag) { setFlags(F_FREEZE, flag); }
 	bool getFreezeFlag() const { return getFlags(F_FREEZE) != 0; }
 	bool getSceneFlag() const { return getFlags(F_INSCENE) != 0; }
@@ -155,9 +160,7 @@ public:
 	
 protected:
 
-	//unsigned int m_ObjectID;
-	//unsigned int m_ObjectType;
-
+	unsigned int m_ID;
 	unsigned int m_Flags;
 };
 

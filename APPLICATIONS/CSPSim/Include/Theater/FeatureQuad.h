@@ -58,7 +58,7 @@ class FeatureQuad: public simdata::Object {
 	osg::StateSet* makeStateSet() const;
 
 public:
-	SIMDATA_OBJECT(FeatureQuad, 0, 0)
+	SIMDATA_STATIC_OBJECT(FeatureQuad, 0, 0)
 
 	BEGIN_SIMDATA_XML_INTERFACE(FeatureQuad)
 		SIMDATA_XML("texture", FeatureQuad::m_Texture, true)
@@ -81,24 +81,14 @@ public:
 	osg::Geometry * getGeometry() const;
 	osg::StateSet * getStateSet() const;
 
-	virtual void pack(simdata::Packer& p) const {
-		Object::pack(p);
-		p.pack(m_Texture);
-		p.pack(m_Width);
-		p.pack(m_Height);
-		p.pack(m_OffsetX);
-		p.pack(m_OffsetY);
-		p.pack(m_Lighting);
-	}
-
-	virtual void unpack(simdata::UnPacker& p) {
-		Object::unpack(p);
-		p.unpack(m_Texture);
-		p.unpack(m_Width);
-		p.unpack(m_Height);
-		p.unpack(m_OffsetX);
-		p.unpack(m_OffsetY);
-		p.unpack(m_Lighting);
+	virtual void serialize(simdata::Archive &archive) {
+		Object::serialize(archive);
+		archive(m_Texture);
+		archive(m_Width);
+		archive(m_Height);
+		archive(m_OffsetX);
+		archive(m_OffsetY);
+		archive(m_Lighting);
 	}
 };
 

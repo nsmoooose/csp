@@ -24,7 +24,6 @@
 
 
 #include "TankObject.h"
-#include "BaseController.h"
 
 
 using namespace std;
@@ -55,51 +54,4 @@ TankObject::~TankObject()
 {
 
 }
-
-void TankObject::initialize()
-{
-	// FIXME the controller interface needs to be carefully rethought...
-	//if (m_Controller) {
-	//	m_Controller->initialize();
-	//}
-}
-
-
-void TankObject::dump()
-{
-/*
-	cout << "ID: " << m_ObjectID
-	     << ", TYPE: " << m_ObjectType
-	     << ", GLOPOSX: " << m_GlobalPosition.x()
-	     << ", GLOPOSY: " << m_GlobalPosition.y()
-	     << ", GLOPOSZ: " << m_GlobalPosition.z()
-	     << ", VELX: " << m_LinearVelocity.x()
-	     << ", VELY: " << m_LinearVelocity.y()
-	     << ", VELZ: " << m_LinearVelocity.z()
-	     << ", GUNANGLE: " << gun_angle
-	     << endl;      
-*/
-}
-
-double TankObject::onUpdate(double dt)
-{
-	return DynamicObject::onUpdate(dt);
-}
-
-void TankObject::doMovement(double dt)
-{
-	DynamicObject::doMovement(dt);
-
-/* FIXME
-	m_Direction.normalize(); 
-	m_LinearVelocity = m_Speed * m_Direction;
-	m_GlobalPosition += dt * m_GlobalVelocity;
-*/
-}
-
-unsigned int TankObject::onRender()
-{
-	return 0;
-}
-
 

@@ -118,8 +118,7 @@ public:
 
 protected:
 
-	virtual void pack(simdata::Packer& p) const;
-	virtual void unpack(simdata::UnPacker& p);
+	virtual void serialize(simdata::Archive&);
 	virtual void convertXML();
 	virtual void postCreate();
 

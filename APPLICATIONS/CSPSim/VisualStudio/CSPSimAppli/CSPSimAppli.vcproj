@@ -1,7 +1,7 @@
-<?xml version="1.0" encoding = "Windows-1252"?>
+<?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="7.00"
+	Version="7.10"
 	Name="CSPSimAppli"
 	SccProjectName=""
 	SccLocalPath="">
@@ -67,7 +67,13 @@
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
 			<Tool
+				Name="VCXMLDataGeneratorTool"/>
+			<Tool
 				Name="VCWebDeploymentTool"/>
+			<Tool
+				Name="VCManagedWrapperGeneratorTool"/>
+			<Tool
+				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
 		</Configuration>
 		<Configuration
 			Name="Debug|Win32"
@@ -131,9 +137,17 @@
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
 			<Tool
+				Name="VCXMLDataGeneratorTool"/>
+			<Tool
 				Name="VCWebDeploymentTool"/>
+			<Tool
+				Name="VCManagedWrapperGeneratorTool"/>
+			<Tool
+				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
 		</Configuration>
 	</Configurations>
+	<References>
+	</References>
 	<Files>
 		<Filter
 			Name="Source Files"
@@ -148,13 +162,28 @@
 				RelativePath="..\..\Source\Atmosphere.cpp">
 			</File>
 			<File
+				RelativePath="..\..\Source\base.cpp">
+			</File>
+			<File
 				RelativePath="..\..\Source\BaseDynamics.cpp">
 			</File>
 			<File
 				RelativePath="..\..\Source\BaseScreen.cpp">
 			</File>
 			<File
-				RelativePath="..\..\Source\CSPSim.cpp">
+				RelativePath="..\..\Source\cCSP_wrap.cpp">
+				<FileConfiguration
+					Name="Release|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						PreprocessorDefinitions="SWIG_NOINCLUDE"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						PreprocessorDefinitions="SWIG_NOINCLUDE"/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\Source\ChunkLodTerrain.cpp">
@@ -187,13 +216,16 @@
 				RelativePath="..\..\Source\ConsoleCommands.cpp">
 			</File>
 			<File
+				RelativePath="..\..\Source\CSPSim.cpp">
+			</File>
+			<File
 				RelativePath="..\..\Source\DemeterTerrain.cpp">
 			</File>
 			<File
-				RelativePath="..\..\Source\DynamicObject.cpp">
+				RelativePath="..\..\Source\DynamicalSystem.cpp">
 			</File>
 			<File
-				RelativePath="..\..\Source\DynamicalSystem.cpp">
+				RelativePath="..\..\Source\DynamicObject.cpp">
 			</File>
 			<File
 				RelativePath="..\..\Source\Engine.cpp">
@@ -221,6 +253,9 @@
 			</File>
 			<File
 				RelativePath="..\..\Source\LogoScreen.cpp">
+			</File>
+			<File
+				RelativePath="..\..\Source\main.cpp">
 			</File>
 			<File
 				RelativePath="..\..\Source\MenuScreen.cpp">
@@ -277,34 +312,13 @@
 				RelativePath="..\..\Source\Tools.cpp">
 			</File>
 			<File
+				RelativePath="..\..\Source\trees.cpp">
+			</File>
+			<File
 				RelativePath="..\..\Source\VirtualBattlefield.cpp">
 			</File>
 			<File
 				RelativePath="..\..\Source\VirtualScene.cpp">
-			</File>
-			<File
-				RelativePath="..\..\Source\base.cpp">
-			</File>
-			<File
-				RelativePath="..\..\Source\cCSP_wrap.cpp">
-				<FileConfiguration
-					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						PreprocessorDefinitions="SWIG_NOINCLUDE"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						PreprocessorDefinitions="SWIG_NOINCLUDE"/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="..\..\Source\main.cpp">
-			</File>
-			<File
-				RelativePath="..\..\Source\trees.cpp">
 			</File>
 			<Filter
 				Name="Theater"
@@ -375,13 +389,13 @@
 				RelativePath="..\..\Include\BaseScreen.h">
 			</File>
 			<File
-				RelativePath="..\..\Include\CSPSim.h">
-			</File>
-			<File
 				RelativePath="..\..\Include\Collision.h">
 			</File>
 			<File
 				RelativePath="..\..\Include\Colorspace.h">
+			</File>
+			<File
+				RelativePath="..\..\Include\compiler.h">
 			</File>
 			<File
 				RelativePath="..\..\Include\Config.h">
@@ -393,16 +407,22 @@
 				RelativePath="..\..\Include\ConsoleCommands.h">
 			</File>
 			<File
+				RelativePath="..\..\Include\CSPSim.h">
+			</File>
+			<File
+				RelativePath="..\..\Include\debug_types.h">
+			</File>
+			<File
 				RelativePath="..\..\Include\DemeterTerrain.h">
 			</File>
 			<File
 				RelativePath="..\..\Include\DirVectorDrawable.h">
 			</File>
 			<File
-				RelativePath="..\..\Include\DynamicObject.h">
+				RelativePath="..\..\Include\DynamicalSystem.h">
 			</File>
 			<File
-				RelativePath="..\..\Include\DynamicalSystem.h">
+				RelativePath="..\..\Include\DynamicObject.h">
 			</File>
 			<File
 				RelativePath="..\..\Include\Engine.h">
@@ -502,12 +522,6 @@
 			</File>
 			<File
 				RelativePath="..\..\Include\VirtualScene.h">
-			</File>
-			<File
-				RelativePath="..\..\Include\compiler.h">
-			</File>
-			<File
-				RelativePath="..\..\Include\debug_types.h">
 			</File>
 		</Filter>
 		<Filter

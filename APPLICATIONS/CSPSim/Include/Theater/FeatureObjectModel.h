@@ -83,7 +83,7 @@ public:
 	 */
 	virtual void makeFeatures(std::vector<Feature> &features, int value) const;
 
-	SIMDATA_OBJECT(FeatureObjectModel, 0, 0)
+	SIMDATA_STATIC_OBJECT(FeatureObjectModel, 0, 0)
 
 	BEGIN_SIMDATA_XML_INTERFACE(FeatureObjectModel)
 		SIMDATA_XML("model", FeatureObjectModel::m_ObjectModel, false)
@@ -95,19 +95,13 @@ public:
 
 	virtual ~FeatureObjectModel();
 
-	virtual void pack(simdata::Packer& p) const {
-		Object::pack(p);
-		p.pack(m_HitPoints);
-		p.pack(m_Value);
-		p.pack(m_ObjectModel);
+	virtual void serialize(simdata::Archive &archive) {
+		Object::serialize(archive);
+		archive(m_HitPoints);
+		archive(m_Value);
+		archive(m_ObjectModel);
 	}
 
-	virtual void unpack(simdata::UnPacker& p) {
-		Object::unpack(p);
-		p.unpack(m_HitPoints);
-		p.unpack(m_Value);
-		p.unpack(m_ObjectModel);
-	}
 };
 
 

@@ -28,14 +28,11 @@
 #include <string>
 
 #include <SDL/SDL_events.h>
-
 #include <SimData/HashUtility.h>
 
 #include "HID.h"
+#include "MapEvent.h"
 
-//class VirtualHID;
-
-using simdata::eqstr;
 
 class InputInterface {
 public:
@@ -50,26 +47,30 @@ public:
 	}
 
 	virtual ~InputInterface() {}
+
 	virtual bool onKey(SDL_KeyboardEvent const &) { return false; }
 	virtual bool onJoystickButton(SDL_JoyButtonEvent const &) { return false; }
 	virtual bool onJoystickAxisMotion(SDL_JoyAxisEvent const &) { return false; }
 	virtual bool onMouseMove(SDL_MouseMotionEvent const &) { return false; }
 	virtual bool onMouseButton(SDL_MouseButtonEvent const &) { return false; }
-
-	virtual bool onCommand(std::string const &id, int x, int y);
-	virtual bool onAxis(std::string const &id, double value);
-	virtual bool onMotion(std::string const &id, int x, int y, int dx, int dy);
+	virtual bool onMapEvent(MapEvent const &);
 
 protected:
-	typedef HASH_MAPS<const char *, ActionAdapter, HASH<const char *>, eqstr>::Type ActionMap;
-	typedef HASH_MAPS<const char *, MotionAdapter, HASH<const char *>, eqstr>::Type MotionMap;
-	typedef HASH_MAPS<const char *, AxisAdapter, HASH<const char *>, eqstr>::Type AxisMap;
-	
+	typedef HASH_MAPS<const char *, ActionAdapter, HASH<const char *>, simdata::eqstr>::Type ActionMap;
+	typedef HASH_MAPS<const char *, MotionAdapter, HASH<const char *>, simdata::eqstr>::Type MotionMap;
+	typedef HASH_MAPS<const char *, AxisAdapter, HASH<const char *>, simdata::eqstr>::Type AxisMap;
+
 	ActionMap m_Actions;
 	MotionMap m_Motions;
 	AxisMap m_Axes;
 	std::string m_LastMotionID;
 	MotionAdapter m_LastMotionAdapter;
+
+private:
+	bool onCommand(std::string const &id, int x, int y);
+	bool onAxis(std::string const &id, double value);
+	bool onMotion(std::string const &id, int x, int y, int dx, int dy);
+	
 };
 
 

@@ -18,39 +18,33 @@
 
 
 /**
- * @file TerrainSymbol.h
+ * @file Controller.h
  *
  **/
 
-#ifndef __TERRAINSYMBOL_H__
-#define __TERRAINSYMBOL_H__
+
+#ifndef __CONTROLLER_H__
+#define __CONTROLLER_H__
+
+#include <Message.h>
+#include <System.h>
 
 
-#include "BaseSymbol.h"
-#include "TerrainObject.h"
-
-
-/**
- * class TerrainSymbol
+/** Interface for controlling dynamic objects.
  *
- * @author unknown
+ *  Used for both AI control and remote (network) control.
  */
-class TerrainSymbol : public BaseSymbol
-{
+class Controller: public System {
+
 public:
-	TerrainSymbol();
-	virtual ~TerrainSymbol();
-	virtual std::string SetCommand(std::deque<std::string> & args);
-	virtual std::string GetCommand(std::deque<std::string> & args);
+	Controller() {}
+	virtual ~Controller() {}
 
-	friend std::ostream & operator << (std::ostream & os, const TerrainSymbol& sym);
-
-
-protected:
-	TerrainObject * m_pTerrainObject;
-
+	virtual void onMessage(const Message *) = 0;
+	virtual void doControl(double dt) = 0;
+	virtual void initialize() = 0;
 
 };
 
-#endif // __TERRAINSYMBOL_H__
+#endif // __CONTROLLER_H__
 

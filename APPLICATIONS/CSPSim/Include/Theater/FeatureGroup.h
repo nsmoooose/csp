@@ -132,18 +132,11 @@ public:
 
 	virtual ~FeatureGroup();
 
-	virtual void pack(simdata::Packer& p) const {
-		Object::pack(p);
-		p.pack(m_Model);
-		p.pack(m_Position);
-		p.pack(m_Orientation);
-	}
-
-	virtual void unpack(simdata::UnPacker& p) {
-		Object::unpack(p);
-		p.unpack(m_Model);
-		p.unpack(m_Position);
-		p.unpack(m_Orientation);
+	virtual void serialize(simdata::Archive &archive) {
+		SimObject::serialize(archive);
+		archive(m_Model);
+		archive(m_Position);
+		archive(m_Orientation);
 	}
 
 	virtual void postCreate();

@@ -1,20 +1,14 @@
-Microsoft Visual Studio Solution File, Format Version 7.00
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CSPSimAppli", "CSPSimAppli\CSPSimAppli.vcproj", "{7A1E754E-EAD6-4F36-8BF4-A5CB5ADD22A3}"
-EndProject
+Microsoft Visual Studio Solution File, Format Version 8.00
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CSPSimDLL", "CSPSimDLL\CSPSimDLL.vcproj", "{A609C12F-9E38-4AFF-8560-B1099F051941}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfiguration) = preSolution
-		ConfigName.0 = Debug
-		ConfigName.1 = Release
-	EndGlobalSection
-	GlobalSection(ProjectDependencies) = postSolution
+		Debug = Debug
+		Release = Release
 	EndGlobalSection
 	GlobalSection(ProjectConfiguration) = postSolution
-		{7A1E754E-EAD6-4F36-8BF4-A5CB5ADD22A3}.Debug.ActiveCfg = Debug|Win32
-		{7A1E754E-EAD6-4F36-8BF4-A5CB5ADD22A3}.Debug.Build.0 = Debug|Win32
-		{7A1E754E-EAD6-4F36-8BF4-A5CB5ADD22A3}.Release.ActiveCfg = Release|Win32
-		{7A1E754E-EAD6-4F36-8BF4-A5CB5ADD22A3}.Release.Build.0 = Release|Win32
 		{A609C12F-9E38-4AFF-8560-B1099F051941}.Debug.ActiveCfg = Debug|Win32
 		{A609C12F-9E38-4AFF-8560-B1099F051941}.Debug.Build.0 = Debug|Win32
 		{A609C12F-9E38-4AFF-8560-B1099F051941}.Release.ActiveCfg = Release|Win32

@@ -51,7 +51,7 @@ class RandomBillboardModel: public FeatureGroupModel {
 	std::vector<std::vector<simdata::Vector3> > m_Offsets;
 	
 public:
-	SIMDATA_OBJECT(RandomBillboardModel, 0, 0)
+	SIMDATA_STATIC_OBJECT(RandomBillboardModel, 0, 0)
 
 	BEGIN_SIMDATA_XML_INTERFACE(RandomBillboardModel)
 		SIMDATA_XML("models", RandomBillboardModel::m_Models, true)
@@ -75,20 +75,12 @@ public:
 
 	virtual ~RandomBillboardModel();
 
-	virtual void pack(simdata::Packer& p) const {
-		FeatureGroupModel::pack(p);
-		p.pack(m_Models);
-		p.pack(m_Density);
-		p.pack(m_MinimumSpacing);
-		p.pack(m_Seed);
-	}
-
-	virtual void unpack(simdata::UnPacker& p) {
-		FeatureGroupModel::unpack(p);
-		p.unpack(m_Models);
-		p.unpack(m_Density);
-		p.unpack(m_MinimumSpacing);
-		p.unpack(m_Seed);
+	virtual void serialize(simdata::Archive &archive) {
+		FeatureGroupModel::serialize(archive);
+		archive(m_Models);
+		archive(m_Density);
+		archive(m_MinimumSpacing);
+		archive(m_Seed);
 	}
 
 	/**

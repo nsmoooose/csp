@@ -28,7 +28,12 @@
 #include "PhysicsModel.h"
 
 class AircraftPhysicsModel: public PhysicsModel {
+	bool m_NeedsImpulse;
 public:
+	SIMDATA_OBJECT(AircraftPhysicsModel,0,0)
+	EXTEND_SIMDATA_XML_INTERFACE(AircraftPhysicsModel, System)
+	END_SIMDATA_XML_INTERFACE
+
 	AircraftPhysicsModel();
 	void doSimStep(double dt);
 	std::vector<double> const& _f(double t, std::vector<double>& y);

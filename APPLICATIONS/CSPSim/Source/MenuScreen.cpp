@@ -25,7 +25,6 @@
 
 #include <osg/Node>
 #include <osg/StateSet>
-#include <osg/GeoSet>
 #include <osg/Material>
 #include <osg/BlendFunc>
 #include <osg/Transform>

@@ -33,18 +33,17 @@
 #include <SimData/HashUtility.h>
 
 
-class EventMapIndex 
+class EventMapIndex: public simdata::Referenced
 {	
 public:
-	~EventMapIndex();
-	EventMapping *getMap(const simdata::hasht &key);
-	EventMapping *getMap(const std::string &id);
+	EventMapping::Ref getMap(const simdata::hasht &key);
+	EventMapping::Ref getMap(const std::string &id);
 	void load(std::string const &path);
 	void loadAllMaps();
 
 protected:
-	typedef simdata::HASHT_MAP<EventMapping*>::Type MapHash;
-	typedef std::vector<EventMapping*> MapVector;
+	typedef simdata::HASHT_MAP<EventMapping::Ref>::Type MapHash;
+	typedef std::vector<EventMapping::Ref> MapVector;
 	MapHash m_Index;
 	MapVector m_Maps;
 };

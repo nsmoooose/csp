@@ -22,22 +22,21 @@
  *
  **/
 
-#ifndef __THRUST_H__
-#define __THRUST_H__
+#ifndef __ENGINE_H__
+#define __ENGINE_H__
 
 #include <SimData/InterfaceRegistry.h>
-#include <SimData/Interpolate.h>
+#include <SimData/LUT.h>
 #include <SimData/Object.h>
-#include <SimData/Pack.h>
 #include <SimData/Vector3.h>
 
-#include "BaseDynamics.h"
+#include <BaseDynamics.h>
 
 
 class ThrustData: public simdata::Object {
-	simdata::Table m_idle_thrust, m_mil_thrust, m_ab_thrust;
+	simdata::Table2 m_idle_thrust, m_mil_thrust, m_ab_thrust;
 public:
-	SIMDATA_OBJECT(ThrustData, 3, 0)
+	SIMDATA_STATIC_OBJECT(ThrustData, 3, 0)
 	
 	BEGIN_SIMDATA_XML_INTERFACE(ThrustData)
 		SIMDATA_XML("idle_thrust", ThrustData::m_idle_thrust, true)
@@ -45,8 +44,7 @@ public:
 		SIMDATA_XML("ab_thrust", ThrustData::m_ab_thrust, true)
 	END_SIMDATA_XML_INTERFACE
 
-	virtual void pack(simdata::Packer& p) const; 
-    virtual void unpack(simdata::UnPacker &p); 
+	virtual void serialize(simdata::Archive&);
 
 	float getMil(float mach, float altitude) const;
 	float getIdle(float mach, float altitude) const;
@@ -62,7 +60,7 @@ class EngineDynamics;
 class Engine:public simdata::Object {
 	simdata::Link<ThrustData> m_ThrustData;
 	simdata::Vector3 m_ThrustDirection, m_EngineOffset;
-	float const *m_Throttle;
+	float m_Throttle;
 	float m_Mach;
 	float m_Altitude;
 	float m_EngineIdleRpm, m_EngineAbRpm;
@@ -80,46 +78,53 @@ public:
 		SIMDATA_XML("smoke_emitter_location", Engine::m_SmokeEmitterLocation, true)
 	END_SIMDATA_XML_INTERFACE
 
-	virtual void pack(simdata::Packer& p) const; 
-    virtual void unpack(simdata::UnPacker &p); 
+	virtual void serialize(simdata::Archive&);
 
 	Engine(simdata::Vector3 const &thrustDirection = simdata::Vector3::YAXIS);
 
 	virtual ~Engine();
 
 	void setThrustDirection(simdata::Vector3 const& thrustDirection);
-	void bindThrottle(float const &throttle);
-	void setMach(float mach);
-	void setAltitude(float altitude);
+
+	void setThrottle(float throttle) { m_Throttle = throttle; }
+	void setMach(float mach) { m_Mach = mach; }
+	void setAltitude(float altitude) { m_Altitude = altitude; }
 
 	simdata::Vector3 getThrust() const;
-	//float getThrust(float rpm, float mach, float altitude) const;
 	simdata::Vector3 const &Engine::getSmokeEmitterLocation() const;
 };
 
 
-class EngineDynamics:public simdata::Object, public BaseDynamics {
-	typedef simdata::Link<Engine>::vector ESet;
-	ESet m_Engine;
-	float m_Throttle;
+class EngineDynamics: public BaseDynamics {
+	typedef simdata::Link<Engine>::vector EngineSet;
+	EngineSet m_Engine;
+	DataChannel<double>::CRef b_ThrottleInput;
+	DataChannel<double>::CRef b_Mach;
+
+protected:
+	virtual void registerChannels(Bus*);
+	virtual void importChannels(Bus*);
+
 public:
 
 	SIMDATA_OBJECT(EngineDynamics, 3, 0)
 	
-	BEGIN_SIMDATA_XML_INTERFACE(EngineDynamics)
+	EXTEND_SIMDATA_XML_INTERFACE(EngineDynamics, BaseDynamics)
 		SIMDATA_XML("engine_set", EngineDynamics::m_Engine, true)
 	END_SIMDATA_XML_INTERFACE
 
-	virtual void pack(simdata::Packer& p) const; 
-    virtual void unpack(simdata::UnPacker &p); 
+	virtual void serialize(simdata::Archive&);
 	virtual void postCreate();
 
+	virtual void getInfo(InfoList &info) const;
+
 	EngineDynamics();
-	void setThrottle(double const throttle);
+
 	virtual void preSimulationStep(double dt);
 	virtual void computeForceAndMoment(double x);
+
 	std::vector<simdata::Vector3> getSmokeEmitterLocation() const;
 };
 
-#endif // __THRUST_H__
+#endif // __ENGINE_H__
 

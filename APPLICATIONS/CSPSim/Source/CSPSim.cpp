@@ -124,7 +124,6 @@ CSPSim::CSPSim()
 	m_GameScreen = NULL;
 	m_MainMenuScreen = NULL;
 
-	m_Interface = NULL;
 	m_Battlefield = NULL;
 	m_Scene = NULL;
 
@@ -158,19 +157,17 @@ void CSPSim::setActiveObject(simdata::Ref<DynamicObject> object) {
 
 	if (m_ActiveObject.valid()) {
 		m_Battlefield->setHuman(m_ActiveObject, false);
-		//m_ActiveObject->setHuman(false);
 	}
 	m_ActiveObject = object;
 	if (m_GameScreen) {
 		m_GameScreen->setActiveObject(m_ActiveObject);
 	}
 	if (m_ActiveObject.valid()) {
-		//m_ActiveObject->setHuman(true);
 		m_Battlefield->setHuman(m_ActiveObject, true);
 		simdata::hasht classhash = m_ActiveObject->getPath();
 		printf("getting map for %s\n", classhash.str().c_str());
-		EventMapping *map = m_InterfaceMaps->getMap(classhash);
-		printf("selecting map @ %p\n", map);
+		simdata::Ref<EventMapping> map = m_InterfaceMaps->getMap(classhash);
+		printf("selecting map @ %p\n", map.get());
 		m_Interface->setMapping(map);
 	}
 	m_Interface->bindObject(m_ActiveObject.get());
@@ -243,8 +240,14 @@ void CSPSim::init()
 		}
 
 		// initialize SDL
-		initSDL();
+		if (initSDL()) {
+			::exit(1);
+		}
 
+		//--m_RenderSurface.setWindowRectangle(-1, -1, m_ScreenWidth, m_ScreenHeight);
+		//--m_RenderSurface.setWindowName("CSPSim");
+		//--m_RenderSurface.fullScreen(0);
+		//--m_RenderSurface.realize();
 		SDL_WM_SetCaption("CSPSim", "");
 
 		// put up Logo screen then do rest of initialization
@@ -255,6 +258,7 @@ void CSPSim::init()
 
 		logoScreen.onRender();
 
+		//--m_RenderSurface.swapBuffers();
 		SDL_GL_SwapBuffers();
 
 		m_Clean = false;
@@ -394,11 +398,9 @@ void CSPSim::cleanup()
 	assert(m_Scene.valid());
 	assert(m_Terrain.valid());
 	assert(m_GameScreen);
-	assert(m_InterfaceMaps);
 	setActiveObject(NULL);
 	delete m_GameScreen;
 	m_GameScreen = NULL;
-	delete m_InterfaceMaps;
 	m_InterfaceMaps = NULL;
 	m_Terrain->deactivate();
 	m_Battlefield->removeAllUnits();
@@ -519,9 +521,11 @@ void CSPSim::run()
 			// Swap OpenGL buffers
 #ifndef __CSPSIM_EXE__
 			Py_BEGIN_ALLOW_THREADS;
+			//--m_RenderSurface.swapBuffers();
 			SDL_GL_SwapBuffers();
 			Py_END_ALLOW_THREADS;
 #else
+			//--m_RenderSurface.swapBuffers();
 			SDL_GL_SwapBuffers();
 #endif
 			// remove marked objects, this should be done at the end of the main loop.
@@ -591,7 +595,7 @@ void CSPSim::doInput(double dt)
 {
 	CSP_LOG(APP, DEBUG, "CSPSim::doInput()...");
 
-	VirtualHID *screen_interface = m_CurrentScreen->getInterface();
+	simdata::Ref<VirtualHID> screen_interface = m_CurrentScreen->getInterface();
 
 	SDL_Event event;
 	int doPoll = 10;
@@ -611,17 +615,21 @@ void CSPSim::doInput(double dt)
 			}
 		}
 		if (!handled && m_CurrentScreen) {
-			if (screen_interface) {
+			if (screen_interface.valid()) {
 				handled = screen_interface->onEvent(event);
 			}
 		}
-		if (!handled && m_Interface) {
+		if (!handled && m_Interface.valid()) {
 			handled = m_Interface->onEvent(event);
 		}
 	}
 	// run input scripts
-	if (screen_interface) screen_interface->onUpdate(dt);
-	if (m_Interface) m_Interface->onUpdate(dt);
+	if (screen_interface.valid()) {
+		screen_interface->onUpdate(dt);
+	}
+	if (m_Interface.valid()) {
+		m_Interface->onUpdate(dt);
+	}
 }
 
 /**
@@ -758,3 +766,8 @@ void CSPSim::endConsole() {
 simdata::Ref<Theater> CSPSim::getTheater() const {
 	return m_Theater;
 }
+
+simdata::Ref<EventMapIndex> CSPSim::getInterfaceMaps() const { 
+	return m_InterfaceMaps; 
+}
+

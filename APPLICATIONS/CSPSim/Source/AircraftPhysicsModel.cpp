@@ -29,9 +29,12 @@
 #include <algorithm>
 
 
+SIMDATA_REGISTER_INTERFACE(AircraftPhysicsModel)
+
+
 AircraftPhysicsModel::AircraftPhysicsModel():
 	PhysicsModel(13) {
-	setNumericalMethod(new RungeKuttaCK(this));
+	setNumericalMethod(new RungeKuttaCK(this, false));
 }
 
 std::vector<double> const &AircraftPhysicsModel::_f(double x, std::vector<double> &y) {   
@@ -39,47 +42,57 @@ std::vector<double> const &AircraftPhysicsModel::_f(double x, std::vector<double
 	static std::vector<double> dy(13);
 
 	// bind(y,p,v,w,q); 
-	m_PositionLocal = *m_Position + bodyToLocal(simdata::Vector3(y[0],y[1],y[2]));
+	m_PositionLocal = b_Position->value() + bodyToLocal(simdata::Vector3(y[0],y[1],y[2]));
 	m_VelocityBody = simdata::Vector3(y[3],y[4],y[5]);
 	m_AngularVelocityBody = simdata::Vector3(y[6],y[7],y[8]);
-	m_qOrientation = simdata::Quat(y[10],y[11],y[12],y[9]);
-	double mag = m_qOrientation.length();
+	m_Attitude = simdata::Quat(y[10],y[11],y[12],y[9]);
+	double mag = m_Attitude.length();
 	if (mag != 0.0) {
-		m_qOrientation /= mag;
+		m_Attitude /= mag;
 	}
-	y[9]  = m_qOrientation.w(); y[10] = m_qOrientation.x(); y[11] = m_qOrientation.y(); y[12] = m_qOrientation.z();
+	y[9]  = m_Attitude.w(); y[10] = m_Attitude.x(); y[11] = m_Attitude.y(); y[12] = m_Attitude.z();
 
 	m_ForcesBody = m_MomentsBody = simdata::Vector3::ZERO;
 	m_WeightBody = localToBody(m_WeightLocal);
 
-	if (m_GroundCollisionDynamics && (m_NearGround || m_GroundCollisionDynamics->hasContact())) {
+/* XXX
+	if (m_GroundCollisionDynamics.valid() && (m_NearGround || m_GroundCollisionDynamics->hasContact())) {
 		m_GroundCollisionDynamics->computeForceAndMoment(x);
 		if (m_GroundCollisionDynamics->hasContact()) {
 			m_ForcesBody += m_GroundCollisionDynamics->getForce();
 			m_MomentsBody += m_GroundCollisionDynamics->getMoment();
 		}
 	}
-						
-	std::vector<BaseDynamics*>::iterator bd = m_Dynamics.begin();
-	std::vector<BaseDynamics*>::const_iterator bdEnd = m_Dynamics.end();
+*/						
+
+	std::vector< simdata::Ref<BaseDynamics> >::iterator bd = m_Dynamics.begin();
+	std::vector< simdata::Ref<BaseDynamics> >::const_iterator bdEnd = m_Dynamics.end();
 	for (;bd != bdEnd; ++bd) {
 		(*bd)->computeForceAndMoment(x);
-		m_ForcesBody += (*bd)->getForce();
-		m_MomentsBody += (*bd)->getMoment();
+		simdata::Vector3 force = (*bd)->getForce();
+		simdata::Vector3 moment = (*bd)->getMoment();
+		if (force.valid() && moment.valid()) {
+			m_ForcesBody += force;
+			m_MomentsBody += moment;
+		} else {
+			CSP_LOG(OBJECT, ERROR, "AircraftPhysicsModel: overflow in dynamics class '" << (*bd)->getClassName() << "'");
+			std::cout << "AircraftPhysicsModel: overflow in dynamics class '" << (*bd)->getClassName() << "'\n";
+		}
+		if ((*bd)->needsImpulse()) m_NeedsImpulse = true;
 	}
 
 	// Add weight; null moment
 	m_ForcesBody += m_WeightBody;
 
 	// linear acceleration body: calculate v' = F/m - w^v
-	m_LinearAccelBody =  m_MassInverse * m_ForcesBody - (m_AngularVelocityBody^m_VelocityBody);
+	m_LinearAccelBody =  m_ForcesBody / b_Mass->value() - (m_AngularVelocityBody^m_VelocityBody);
 
 	// angular acceleration body: calculate Iw' = M - w^Iw
-	m_AngularAccelBody = m_InertiaInverse * 
-	                     (m_MomentsBody - (m_AngularVelocityBody^(m_Inertia * m_AngularVelocityBody)));
+	m_AngularAccelBody = b_InertiaInverse->value() * 
+	                     (m_MomentsBody - (m_AngularVelocityBody^(b_Inertia->value() * m_AngularVelocityBody)));
 	
 	// quaternion derivative and w in body coordinates: q' = 0.5 * q * w
-	simdata::Quat qprim = 0.5 * m_qOrientation * m_AngularVelocityBody;
+	simdata::Quat qprim = 0.5 * m_Attitude * m_AngularVelocityBody;
 
 	// p' = v
 	dy[0] = y[3]; dy[1] = y[4]; dy[2] = y[5];
@@ -98,33 +111,40 @@ void AircraftPhysicsModel::doSimStep(double dt) {
 	if (dt == 0.0) dt = 0.017;
 	unsigned short n = std::min<unsigned short>(6,static_cast<unsigned short>(180 * dt)) + 1;
 	double dtlocal = dt/n;
-
 	std::for_each(m_Dynamics.begin(),m_Dynamics.end(),InitializeSimulationStep(dtlocal));
 
 	Atmosphere const *atmosphere = CSPSim::theSim->getAtmosphere();
-	if (atmosphere)
-		m_Gravity = atmosphere->getGravity(m_PositionLocal.z());
-	else
-		m_Gravity = 9.806;
+	double gravity;
+	if (atmosphere) {
+		gravity = atmosphere->getGravity(m_PositionLocal.z());
+	} else {
+		gravity = 9.806;
+	}
 
-	m_WeightLocal = - m_Mass * m_Gravity * simdata::Vector3::ZAXIS;
+	assert(b_Mass.valid());
+	assert(b_Position.valid());
+	assert(b_Velocity.valid());
+	assert(b_AngularVelocity.valid());
+	assert(b_Attitude.valid());
+	m_WeightLocal = - b_Mass->value() * gravity * simdata::Vector3::ZAXIS;
+	m_PositionLocal	= b_Position->value();
+	m_VelocityLocal	= b_Velocity->value();
+	m_AngularVelocityLocal = b_AngularVelocity->value();
+	m_Attitude = b_Attitude->value();
 
-	m_PositionLocal	= *m_Position;
-	m_VelocityLocal	= *m_Velocity;
-	m_AngularVelocityLocal = *m_AngularVelocity;
-	m_qOrientation = *m_Orientation;
-
-	updateNearGround(dt);
-	updateAeroParameters(dt);
+	///XXX updateNearGround(dt);
+	///XXX updateAeroParameters(dt);
 
 	for (unsigned short i = 0; i<n; ++i) {
 		
 		m_VelocityBody = localToBody(m_VelocityLocal);
 		m_AngularVelocityBody =	localToBody(m_AngularVelocityLocal);
 
-		std::vector<double> y0 = bodyToY(simdata::Vector3::ZERO,m_VelocityBody,m_AngularVelocityBody,m_qOrientation);
+		std::vector<double> y0 = bodyToY(simdata::Vector3::ZERO,m_VelocityBody,m_AngularVelocityBody,m_Attitude);
 
 		std::for_each(m_Dynamics.begin(),m_Dynamics.end(),PreSimulationStep(dtlocal));
+
+		m_NeedsImpulse = false;
 
 		// solution
 		std::vector<double> y = flow(y0, 0.0, dtlocal);
@@ -134,9 +154,15 @@ void AircraftPhysicsModel::doSimStep(double dt) {
 		// solution to body data members
 		YToBody(y);
 
+
+/* XXX
 		// correct an eventual underground position
-		if (m_GroundCollisionDynamics->needsImpulse()) {
-		//	std::cout << "IMPULSE\n";
+		if (m_GroundCollisionDynamics.valid() && m_GroundCollisionDynamics->needsImpulse()) {
+			double scale = 1.0 - std::min(1.0, dtlocal * 100.0);
+			m_VelocityBody *= scale;
+		}
+*/
+		if (m_NeedsImpulse) {
 			double scale = 1.0 - std::min(1.0, dtlocal * 100.0);
 			m_VelocityBody *= scale;
 		}
@@ -147,17 +173,17 @@ void AircraftPhysicsModel::doSimStep(double dt) {
 		physicsBodyToLocal();
 
 		// update attitude and force for a unit quaternion
-		m_qOrientation = simdata::Quat(y[10],y[11],y[12],y[9]);
-		double mag = m_qOrientation.length();
+		m_Attitude = simdata::Quat(y[10],y[11],y[12],y[9]);
+		double mag = m_Attitude.length();
 		if (mag	!= 0.0)
-			m_qOrientation /= mag;
+			m_Attitude /= mag;
 		
-		*m_Position = m_PositionLocal;
+		b_Position->value() = m_PositionLocal;
 	}
 
 	// returns vehicle data members
-	*m_Velocity = m_VelocityLocal;
-	*m_AngularVelocity = m_AngularVelocityLocal;
-	*m_Orientation = m_qOrientation;	
+	b_Velocity->value() = m_VelocityLocal;
+	b_AngularVelocity->value() = m_AngularVelocityLocal;
+	b_Attitude->value() = m_Attitude;	
 }
 

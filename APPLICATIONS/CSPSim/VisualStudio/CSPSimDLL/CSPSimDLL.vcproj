@@ -1,8 +1,9 @@
-<?xml version="1.0" encoding = "Windows-1252"?>
+<?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="7.00"
+	Version="7.10"
 	Name="CSPSimDLL"
+	RootNamespace="CSPSimDLL"
 	SccProjectName=""
 	SccLocalPath="">
 	<Platforms>
@@ -22,7 +23,7 @@
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/Zm1000"
 				Optimization="0"
-				AdditionalIncludeDirectories="C:\Python22\include;..\..\Include;..\..\..\..\THIRDPARTYLIBS\include;..\..\..\..\THIRDPARTYLIBS\demeter;..\..\..\..\THIRDPARTYLIBS\CSPChunkLod\include"
+				AdditionalIncludeDirectories="&quot;E:\CSP\THIRDPARTYLIBS\libsigc++-1.2.5\sigc++\config&quot;;E:\CSP\THIRDPARTYLIBS\OpenThreads\include;E:\CSP\THIRDPARTYLIBS\Producer\include;&quot;E:\CSP\THIRDPARTYLIBS\libsigc++-1.2.5&quot;;C:\Python22\include;..\..\Include;..\..\..\..\THIRDPARTYLIBS\include;..\..\..\..\THIRDPARTYLIBS\demeter;..\..\..\..\THIRDPARTYLIBS\CSPChunkLod\include"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;CSPSIMDLL_EXPORTS"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -71,7 +72,13 @@
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
 			<Tool
+				Name="VCXMLDataGeneratorTool"/>
+			<Tool
 				Name="VCWebDeploymentTool"/>
+			<Tool
+				Name="VCManagedWrapperGeneratorTool"/>
+			<Tool
+				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
 		</Configuration>
 		<Configuration
 			Name="Release|Win32"
@@ -85,7 +92,7 @@
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/Zm1000"
 				InlineFunctionExpansion="1"
-				AdditionalIncludeDirectories="../../Include;C:/Python22/include;../../../../THIRDPARTYLIBS/include;../../../../THIRDPARTYLIBS/demeter;..\..\..\..\\THIRDPARTYLIBS\CSPChunkLod\include"
+				AdditionalIncludeDirectories="E:\CSP\THIRDPARTYLIBS\OpenThreads\include;&quot;E:\CSP\THIRDPARTYLIBS\libsigc++-1.2.5\sigc++\config&quot;;E:\CSP\THIRDPARTYLIBS\Producer\include;&quot;E:\CSP\THIRDPARTYLIBS\libsigc++-1.2.5&quot;;../../Include;C:/Python22/include;../../../../THIRDPARTYLIBS/include;../../../../THIRDPARTYLIBS/demeter;..\..\..\..\\THIRDPARTYLIBS\CSPChunkLod\include"
 				PreprocessorDefinitions="CSP_NDEBUG;WIN32;NDEBUG;_WINDOWS;_USRDLL;CSPSIMDLL_EXPORTS"
 				StringPooling="TRUE"
 				RuntimeLibrary="2"
@@ -103,7 +110,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="osgText.lib DemeterVisualC6.lib opengl32.lib SDL.lib _cSimData.lib osgParticle.lib osgUtil.lib osgDB.lib osg.lib odbc32.lib odbccp32.lib"
+				AdditionalDependencies="osgText.lib DemeterVisualC6.lib opengl32.lib SDL.lib _cSimData.lib osgParticle.lib osgUtil.lib osgDB.lib osg.lib odbc32.lib odbccp32.lib sigc-1.2.lib OpenThreadsWin32.lib"
 				OutputFile="../../Bin/_cCSP.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
@@ -130,9 +137,17 @@
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
 			<Tool
+				Name="VCXMLDataGeneratorTool"/>
+			<Tool
 				Name="VCWebDeploymentTool"/>
+			<Tool
+				Name="VCManagedWrapperGeneratorTool"/>
+			<Tool
+				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
 		</Configuration>
 	</Configurations>
+	<References>
+	</References>
 	<Files>
 		<Filter
 			Name="Source Files"
@@ -150,13 +165,28 @@
 				RelativePath="..\..\Source\Atmosphere.cpp">
 			</File>
 			<File
+				RelativePath="..\..\Source\base.cpp">
+			</File>
+			<File
 				RelativePath="..\..\Source\BaseDynamics.cpp">
 			</File>
 			<File
 				RelativePath="..\..\Source\BaseScreen.cpp">
 			</File>
 			<File
-				RelativePath="..\..\Source\CSPSim.cpp">
+				RelativePath="..\..\Source\cCSP_wrap.cpp">
+				<FileConfiguration
+					Name="Debug|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						PreprocessorDefinitions="SWIG_NOINCLUDE"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						PreprocessorDefinitions="SWIG_NOINCLUDE"/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\Source\ChunkLodTerrain.cpp">
@@ -189,13 +219,16 @@
 				RelativePath="..\..\Source\ConsoleCommands.cpp">
 			</File>
 			<File
+				RelativePath="..\..\Source\CSPSim.cpp">
+			</File>
+			<File
 				RelativePath="..\..\Source\DemeterTerrain.cpp">
 			</File>
 			<File
-				RelativePath="..\..\Source\DynamicObject.cpp">
+				RelativePath="..\..\Source\DynamicalSystem.cpp">
 			</File>
 			<File
-				RelativePath="..\..\Source\DynamicalSystem.cpp">
+				RelativePath="..\..\Source\DynamicObject.cpp">
 			</File>
 			<File
 				RelativePath="..\..\Source\Engine.cpp">
@@ -225,6 +258,9 @@
 				RelativePath="..\..\Source\InputInterface.cpp">
 			</File>
 			<File
+				RelativePath="..\..\Source\KineticsChannels.cpp">
+			</File>
+			<File
 				RelativePath="..\..\Source\LandingGear.cpp">
 			</File>
 			<File
@@ -249,9 +285,6 @@
 				RelativePath="..\..\Source\PhysicsModel.cpp">
 			</File>
 			<File
-				RelativePath="..\..\Source\PrimaryAeroDynamics.cpp">
-			</File>
-			<File
 				RelativePath="..\..\Source\ScreenInfo.cpp">
 			</File>
 			<File
@@ -273,6 +306,15 @@
 				RelativePath="..\..\Source\StaticObject.cpp">
 			</File>
 			<File
+				RelativePath="..\..\Source\SynchronousUpdate.cpp">
+			</File>
+			<File
+				RelativePath="..\..\Source\System.cpp">
+			</File>
+			<File
+				RelativePath="..\..\Source\SystemsModel.cpp">
+			</File>
+			<File
 				RelativePath="..\..\Source\TankObject.cpp">
 			</File>
 			<File
@@ -285,31 +327,13 @@
 				RelativePath="..\..\Source\Tools.cpp">
 			</File>
 			<File
+				RelativePath="..\..\Source\trees.cpp">
+			</File>
+			<File
 				RelativePath="..\..\Source\VirtualBattlefield.cpp">
 			</File>
 			<File
 				RelativePath="..\..\Source\VirtualScene.cpp">
-			</File>
-			<File
-				RelativePath="..\..\Source\base.cpp">
-			</File>
-			<File
-				RelativePath="..\..\Source\cCSP_wrap.cpp">
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						PreprocessorDefinitions="SWIG_NOINCLUDE"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						PreprocessorDefinitions="SWIG_NOINCLUDE"/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="..\..\Source\trees.cpp">
 			</File>
 			<Filter
 				Name="Theater"
@@ -357,6 +381,19 @@
 					RelativePath="..\..\Source\Theater\RandomForestModel.cpp">
 				</File>
 			</Filter>
+			<Filter
+				Name="Systems"
+				Filter="">
+				<File
+					RelativePath="..\..\Source\Systems\AircraftFlightSensors.cpp">
+				</File>
+				<File
+					RelativePath="..\..\Source\Systems\AircraftInputSystem.cpp">
+				</File>
+				<File
+					RelativePath="..\..\Source\Systems\AircraftSimpleFCS.cpp">
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="Header Files"
@@ -386,7 +423,7 @@
 				RelativePath="..\..\Include\BaseScreen.h">
 			</File>
 			<File
-				RelativePath="..\..\Include\CSPSim.h">
+				RelativePath="..\..\Include\Bus.h">
 			</File>
 			<File
 				RelativePath="..\..\Include\ChunkLodTerrain.h">
@@ -398,22 +435,31 @@
 				RelativePath="..\..\Include\Colorspace.h">
 			</File>
 			<File
+				RelativePath="..\..\Include\compiler.h">
+			</File>
+			<File
 				RelativePath="..\..\Include\Config.h">
 			</File>
 			<File
 				RelativePath="..\..\Include\Console.h">
 			</File>
 			<File
+				RelativePath="..\..\Include\CSPSim.h">
+			</File>
+			<File
 				RelativePath="..\..\Include\DataRecorder.h">
+			</File>
+			<File
+				RelativePath="..\..\Include\debug_types.h">
 			</File>
 			<File
 				RelativePath="..\..\Include\DemeterTerrain.h">
 			</File>
 			<File
-				RelativePath="..\..\Include\DynamicObject.h">
+				RelativePath="..\..\Include\DynamicalSystem.h">
 			</File>
 			<File
-				RelativePath="..\..\Include\DynamicalSystem.h">
+				RelativePath="..\..\Include\DynamicObject.h">
 			</File>
 			<File
 				RelativePath="..\..\Include\Engine.h">
@@ -473,9 +519,6 @@
 				RelativePath="..\..\Include\PhysicsModel.h">
 			</File>
 			<File
-				RelativePath="..\..\Include\PrimaryAeroDynamics.h">
-			</File>
-			<File
 				RelativePath="..\..\Include\Profile.h">
 			</File>
 			<File
@@ -500,6 +543,18 @@
 				RelativePath="..\..\Include\StaticObject.h">
 			</File>
 			<File
+				RelativePath="..\..\Include\stdinc.h">
+			</File>
+			<File
+				RelativePath="..\..\Include\SynchronousUpdate.h">
+			</File>
+			<File
+				RelativePath="..\..\Include\System.h">
+			</File>
+			<File
+				RelativePath="..\..\Include\SystemsModel.h">
+			</File>
+			<File
 				RelativePath="..\..\Include\TankObject.h">
 			</File>
 			<File
@@ -516,15 +571,6 @@
 			</File>
 			<File
 				RelativePath="..\..\Include\VirtualBattlefield.h">
-			</File>
-			<File
-				RelativePath="..\..\Include\compiler.h">
-			</File>
-			<File
-				RelativePath="..\..\Include\debug_types.h">
-			</File>
-			<File
-				RelativePath="..\..\Include\stdinc.h">
 			</File>
 			<Filter
 				Name="Theater"
@@ -578,6 +624,25 @@
 					RelativePath="..\..\Include\Theater\RandomForestModel.h">
 				</File>
 			</Filter>
+			<Filter
+				Name="Systems"
+				Filter="">
+				<File
+					RelativePath="..\..\Include\Systems\AircraftDynamics.h">
+				</File>
+				<File
+					RelativePath="..\..\Include\Systems\AircraftFlightSensors.h">
+				</File>
+				<File
+					RelativePath="..\..\Include\Systems\AircraftInputSystem.h">
+				</File>
+				<File
+					RelativePath="..\..\Include\Systems\AircraftSimpleFCS.h">
+				</File>
+				<File
+					RelativePath="..\..\Include\Systems\GearDynamics.h">
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="Resource Files"
@@ -597,7 +662,7 @@
 				Name="Release|Win32">
 				<Tool
 					Name="VCCustomBuildTool"
-					CommandLine="C:\progra~1\SWIG-1.3.19\swig -c++ -python -noexcept -DWIN32 -I..\..\Include -IC:\Python22\include -o ..\..\Source\$(InputName)_wrap.cpp ..\..\Source\$(InputName).i
+					CommandLine="C:\progra~1\SWIG-1.3.16\swig -c++ -python -noexcept -DWIN32 -I..\..\Include -IC:\Python22\include -o ..\..\Source\$(InputName)_wrap.cpp ..\..\Source\$(InputName).i
 "
 					Outputs="..\..\Source\$(InputName)_wrap.cpp"/>
 			</FileConfiguration>

@@ -47,8 +47,7 @@ public:
 	SIMDATA_OBJECT(StaticObject, 0, 0)
 
 protected:
-	virtual void pack(simdata::Packer& p) const;
-	virtual void unpack(simdata::UnPacker& p);
+	virtual void serialize(simdata::Archive&);
 	virtual void dump() {}
 	virtual double onUpdate(double) { return 0.0; }
 	virtual void initialize() {}

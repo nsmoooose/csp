@@ -268,31 +268,15 @@ void GeneralStats::update() {
 }
 
 
-ObjectStats::ObjectStats(int posx,int posy, simdata::Ref<DynamicObject> const& activeObject):
-ScreenInfo(posx,posy,"OBJECT STATS") {
-	if (activeObject.valid()) {
-		if (!m_ObjectStats.empty()) {
-			std::vector<osg::ref_ptr<osgText::Text> >::iterator it = m_ObjectStats.begin();
-			std::vector<osg::ref_ptr<osgText::Text> >::const_iterator iEnd = m_ObjectStats.end();
-			for (;it!=iEnd;++it) {
-				removeDrawable(it->get());
-			}
-			m_ObjectStats.clear();
-		}
-		std::vector<std::string> stringStats;
-		activeObject->getStats(stringStats);
-		short n = stringStats.size();
-		int skip =  static_cast<int>(m_CharacterSize);
-		for (;n-->0;) {
-			posy -= skip;
-			osg::ref_ptr<osgText::Text> aStat = makeText(posx, posy);
-			m_ObjectStats.push_back(aStat);
-			addDrawable(aStat.get());
-		}
-		if (m_Text) 
-			removeDrawable(m_Text);	
-		if (!getUpdateCallback())
-			setUpdateCallback(new UpdateCallback);
+ObjectStats::ObjectStats(int posx,int posy, simdata::Ref<DynamicObject> const& activeObject)
+	: ScreenInfo(posx,posy,"OBJECT STATS"), m_PosX(posx), m_PosY(posy) 
+{
+	m_Skip = static_cast<int>(m_CharacterSize);
+	if (m_Text) {
+		removeDrawable(m_Text);	
+	}
+	if (!getUpdateCallback()) {
+		setUpdateCallback(new UpdateCallback);
 	}
 }
 
@@ -300,12 +284,25 @@ void ObjectStats::update() {
 	simdata::Ref<DynamicObject> activeObject = CSPSim::theSim->getActiveObject();
 	if (activeObject.valid()) {
 		std::vector<std::string> stringStats;
-		activeObject->getStats(stringStats);
+		activeObject->getInfo(stringStats);
 		short n = m_ObjectStats.size();
 		short m = stringStats.size();
-		if (m < n) n = m;
-		for (;--n>=0;)
-			m_ObjectStats[n]->setText(stringStats[n]);
+		if (m < n) {
+			for (int i = m; i < n; i++) {
+				removeDrawable(m_ObjectStats[i].get());
+			}
+			m_ObjectStats.resize(m);
+		} else
+		if (m > n) {
+			m_ObjectStats.resize(m);
+			for (int i = n; i < m; i++) {
+				m_ObjectStats[i] = makeText(m_PosX, m_PosY+i*m_Skip);
+				addDrawable(m_ObjectStats[i].get());
+			}
+		}
+		while (--m >= 0) {
+			m_ObjectStats[m]->setText(stringStats[m]);
+		}
 	}
 }
 

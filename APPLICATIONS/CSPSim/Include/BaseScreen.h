@@ -53,10 +53,10 @@ public:
 	virtual void onUpdate(double dt) = 0;
 	virtual void onRender() = 0;
 
-	virtual VirtualHID *getInterface();
+	virtual simdata::Ref<VirtualHID> getInterface();
 
 protected:
-	VirtualHID *m_Interface;
+	simdata::Ref<VirtualHID> m_Interface;
 };
 
 #endif // __BASESCREEN_H__

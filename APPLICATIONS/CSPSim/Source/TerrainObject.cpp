@@ -60,26 +60,14 @@ TerrainObject::~TerrainObject()
 {
 }
 
-void TerrainObject::pack(simdata::Packer& p) const 
-{
-	Object::pack(p);
-	p.pack(m_Name);
-	p.pack(m_Version);
-	p.pack(m_Center);
-	p.pack(m_Width);
-	p.pack(m_Height);
+void TerrainObject::serialize(simdata::Archive &archive) {
+	Object::serialize(archive);
+	archive(m_Name);
+	archive(m_Version);
+	archive(m_Center);
+	archive(m_Width);
+	archive(m_Height);
 }
-
-void TerrainObject::unpack(simdata::UnPacker& p)
-{
-	Object::unpack(p);
-	p.unpack(m_Name);
-	p.unpack(m_Version);
-	p.unpack(m_Center);
-	p.unpack(m_Width);
-	p.unpack(m_Height);
-}
-
 
 void TerrainObject::postCreate() {
 	CSP_LOG(TERRAIN, INFO, "Terrain " << m_Name << " (version " << m_Version << ")");

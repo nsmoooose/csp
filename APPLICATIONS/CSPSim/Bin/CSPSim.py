@@ -45,6 +45,7 @@ def printUsage():
 	print "              --config=path   path to config (.ini) file"
 	print "              --log=classes   set the logging classes"
 	print "              --slog=level    set the simdata logging level"
+	print "              --dump-data     show the contents of sim.dar"
 	print "              --help          help message"
 
 
@@ -91,11 +92,23 @@ def runCSPSim(args):
 	print "CSPSim normal exit."
 
 
+def dumpData(args):
+	cachepath = CSP.getCachePath()
+	dar = os.path.join(cachepath, "sim.dar")
+	for arg in args:
+		if arg.startswith('--dump-data='):
+			dar = arg[12:]
+	archive = SimData.DataArchive(dar, 1)
+	archive.dump()
+	archive.getObject("sim:terrain.balkan")
+	archive.getObject("sim:theater.balkan")
+	
+
 def compileData(args):
 	datapath = CSP.getDataPath()
 	cachepath = CSP.getCachePath()
 	dar = os.path.join(cachepath, "sim.dar")
-	XML = os.path.join(datapath, "XML")
+	XML = os.path.join(cachepath, "XML")
 	CSP.csplog().setLogLevels(CSP.CSP_ALL, SimData.LOG_ALERT)
 	#print "compile %s %s" % (XML, dar)
 	try:
@@ -219,6 +232,11 @@ def main(argv):
 	for arg in all_args:
 		if arg == '--compile-data':
 			action = compileData
+		elif arg == '--dump-data':
+			action = dumpData
+		elif arg.startswith('--dump-data='):
+			action = dumpData
+			other_args.append(arg)
 		elif arg in ("--help", "-h", "-help"):
 			if action == None:
 				print

@@ -61,3 +61,17 @@ bool InputInterface::onMotion(std::string const &id, int x, int y, int dx, int d
 	return true;
 }
 
+bool InputInterface::onMapEvent(MapEvent const &event) {
+	switch (event.type) {
+		case MapEvent::ID_COMMAND_EVENT: 
+			return onCommand(event.id, event.id_command.x, event.id_command.y);
+		case MapEvent::ID_AXIS_EVENT:
+			return onAxis(event.id, event.id_axis.value);
+		case MapEvent::ID_MOTION_EVENT:
+			return onMotion(event.id, event.id_motion.x, event.id_motion.y, event.id_motion.dx, event.id_motion.dy);
+		default:
+			break;
+	}
+	return false;
+}
+

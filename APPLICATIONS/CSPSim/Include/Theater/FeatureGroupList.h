@@ -45,7 +45,7 @@ class FeatureGroupList: public simdata::Object {
 	simdata::Link<FeatureGroup>::vector m_FeatureGroups;
 public:
 
-	SIMDATA_OBJECT(FeatureGroupList, 0, 0)
+	SIMDATA_STATIC_OBJECT(FeatureGroupList, 0, 0)
 
 	BEGIN_SIMDATA_XML_INTERFACE(FeatureGroupList)
 		SIMDATA_XML("feature_groups", FeatureGroupList::m_FeatureGroups, true)
@@ -55,14 +55,9 @@ public:
 
 	virtual ~FeatureGroupList();
 
-	virtual void pack(simdata::Packer& p) const {
-		Object::pack(p);
-		p.pack(m_FeatureGroups);
-	}
-
-	virtual void unpack(simdata::UnPacker& p) {
-		Object::unpack(p);
-		p.unpack(m_FeatureGroups);
+	virtual void serialize(simdata::Archive &archive) {
+		Object::serialize(archive);
+		archive(m_FeatureGroups);
 	}
 
 	/**

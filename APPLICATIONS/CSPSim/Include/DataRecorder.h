@@ -30,6 +30,9 @@
 #include <cstdio>
 
 
+#include <Bus.h>
+
+
 /**
  * A very preliminary flight data recorder class aimed
  * primarily at flight model testing and validation rather
@@ -43,11 +46,65 @@ class DataRecorder: public simdata::Referenced {
 		DataEntry(unsigned int id_, float value_): id(id_), value(value_) {}
 	};
 	std::vector<DataEntry> m_Cache;
-	char m_Set[256];
-	struct Channel {
-		std::string name;
+
+
+	class DataSource: public simdata::Referenced {
+	protected:
+		mutable bool m_Dirty;
+		std::string m_Name;
+		float m_Last;
+		void update(float value) {
+			m_Dirty = (value != m_Last);
+			if (m_Dirty) {
+				m_Last = value;
+			}
+		}
+	public:
+		typedef simdata::Ref<DataSource> Ref;
+		DataSource(): m_Dirty(false), m_Last(0.0) {}
+		virtual ~DataSource() {}
+		virtual void refresh() = 0;
+		std::string const &getName() const { return m_Name; }
+		float getValue() const { return m_Last; }
+		bool isDirty() const { return m_Dirty; }
 	};
-	std::vector<Channel> m_Channels;
+	
+	class SingleSource: public DataSource {
+		DataChannel<double>::CRef m_Channel;
+	public:
+		SingleSource(DataChannel<double>::CRef const &source): 
+			m_Channel(source) 
+		{
+			m_Name = m_Channel->getName();
+		};
+		void refresh() {
+			float val = static_cast<float>(m_Channel->value());
+			update(val);
+		}
+	};
+
+	class VectorSource: public DataSource {
+		DataChannel<simdata::Vector3>::CRef m_Channel;
+		int m_Index;
+	public:
+		VectorSource(DataChannel<simdata::Vector3>::CRef const &source, int idx): 
+			m_Channel(source), 
+			m_Index(idx) 
+		{
+			assert(m_Channel.valid());
+			assert(idx >= 0 && idx <= 2);
+			m_Name = m_Channel->getName() + "." + static_cast<char>('X' + idx);
+		}
+		void refresh() {
+			simdata::Vector3 const &vec = m_Channel->value();
+			float val = static_cast<float>(vec[m_Index]);
+			update(val);
+		}
+	};
+
+	std::vector<DataSource::Ref> m_Sources;
+
+	unsigned char m_Level;
 	int m_Limit, m_Count;
 	bool m_Enabled;
 	float m_ElapsedTime;
@@ -55,7 +112,11 @@ class DataRecorder: public simdata::Referenced {
 
 	enum {TIME=250, PAUSE=251, RESUME=252, END=255};
 
+
 public:
+
+	enum { LEVEL_NONE=0, LEVEL_OBJECT, LEVEL_VEHICLE, LEVEL_SYSTEMS, LEVEL_DEBUG };
+
 	/**
 	 * Construct a new data recorder, opening the output file
 	 * for writing and allocating an internal cache.  The reorder
@@ -67,75 +128,64 @@ public:
 	 *              flushing the data to the output files.  Each cached
 	 *              value currently requires 8 bytes.
 	 */
-	DataRecorder(std::string const &filename, int cache=20000) {
+	DataRecorder(std::string const &filename, unsigned char level=LEVEL_VEHICLE, int cache=20000) {
 		m_File = (FILE *) fopen(filename.c_str(), "wb");
 		// XXX improve the error handling
 		if (m_File == 0) throw "unable to open flight data recorder output";
 		m_Cache.resize(cache);
-		m_Channels.reserve(16);
+		m_Sources.reserve(16);
 		m_Count = 0;
+		m_Level = level;
 		m_Limit = cache;
 		m_ElapsedTime = 0.0;
 		m_Enabled = true;
 	}
 	
-	/**
-	 * Add a new output channel to the recorder.
-	 *
-	 * Up to 250 output channels can be created.  The name parameter
-	 * will be stored in the output file, and is used by external tools
-	 * to identify the different data streams.  Internally, the integer
-	 * value returned by this method is used to refer to the channel
-	 * during subsequent recording.   Channel names are only used for 
-	 * later analysis, so multiple channels can have the same name and
-	 * will be independent (although there is probably no good reason to
-	 * do this).
-	 *
-	 * @param name The name of the data channel to add.
-	 * @returns The id number of the new channel for use with record().
-	 *          Returns -1 if channel creation failed (e.g. too many
-	 *          channels).
-	 */
-	int addChannel(std::string const &name) {
-		int n = int(m_Channels.size());
-		if (n >= 250) return -1;
-		Channel channel;
-		channel.name = name;
-		m_Channels.push_back(channel);
-		return n;
+	unsigned char getLevel() const { return m_Level; }
+
+	bool addSource(Bus::Ref bus, std::string const &name) {
+		if (!bus) return false;
+		simdata::Ref<const DataChannelBase> channel = bus->getChannel(name);
+		return addSource(channel);
+	}
+
+	bool addSource(simdata::Ref<const DataChannelBase> channel) {
+		if (!channel) return false;
+		DataChannel<double>::CRef dchannel = channel;
+		if (dchannel.valid()) {
+			m_Sources.push_back(new SingleSource(dchannel));
+			return true;
+		} else {
+			DataChannel<simdata::Vector3>::CRef vchannel = channel;
+			if (vchannel.valid()) {
+				m_Sources.push_back(new VectorSource(vchannel, 0));
+				m_Sources.push_back(new VectorSource(vchannel, 1));
+				m_Sources.push_back(new VectorSource(vchannel, 2));
+				return true;
+			}
+		}
+		return false;
 	}
 
 	/**
 	 * Mark the current data stream time.  The recorder monitors only
 	 * elapsed time, not absolute time, so the argument here is a time
 	 * interval.  The elapsed time is managed internally.  This method
-	 * will insert a time marker into the data stream, and also reset
-	 * the channel recording flags.  Each channel can only record one
-	 * value between time stamps, so it is important to call this method
-	 * regularly.
+	 * will insert a time marker into the data stream and store all
+	 * data channels that have changed since the last update.
 	 *
 	 * @param dt The time interval since the last time stamp.
 	 */
 	void timeStamp(float dt) {
+		if (!isEnabled()) return;
 		m_ElapsedTime += dt;
 		_record(TIME, m_ElapsedTime);
-		memset(m_Set, 0, 256);
-	}
-
-	/**
-	 * Record the value of an output channel.  Only one call to record() 
-	 * can be made per channel after each time stamp.  Multiple recordings
-	 * to the same channel between time stamps will be silently ignored.
-	 *
-	 * @param id The channel id returned by addChannel()
-	 * @param value The value to record.
-	 */
-	void record(int id, float value) {
-		if (id >= 0 && id <= int(m_Channels.size())) {
-			// only record one entry per channel per timestamp
-			if (m_Set[id]==0) {
-				_record(id, value);
-				m_Set[id] = 1;
+		unsigned int idx = 0;
+		unsigned int n = m_Sources.size();
+		for (; idx < n; ++idx) {
+			m_Sources[idx]->refresh();
+			if (m_Sources[idx]->isDirty()) {
+				_record(idx, m_Sources[idx]->getValue());
 			}
 		}
 	}
@@ -178,16 +228,16 @@ public:
 			m_Enabled = true;
 			_record(END, 0.0); // end of data
 			_flush();
-			size_t channel_start = ftell(m_File);
-			int n = m_Channels.size();
+			size_t source_start = ftell(m_File);
+			int n = m_Sources.size();
 			fwrite(&n, sizeof(n), 1, m_File);
-			for (size_t i = 0; i < m_Channels.size(); i++) {
-				char channel_name[64];
-				memset(channel_name, 0, 64);
-				strncpy(channel_name, m_Channels[i].name.c_str(), 63);
-				fwrite(channel_name, 64, 1, m_File);
+			for (size_t i = 0; i < m_Sources.size(); i++) {
+				char source_name[100];
+				memset(source_name, 0, 100);
+				strncpy(source_name, m_Sources[i]->getName().c_str(), 99);
+				fwrite(source_name, 100, 1, m_File);
 			}
-			fwrite(&channel_start, sizeof(channel_start), 1, m_File);
+			fwrite(&source_start, sizeof(source_start), 1, m_File);
 			fclose(m_File);
 			m_File = 0;
 		}
@@ -200,9 +250,9 @@ protected:
 	 * the recorder is disabled or closed, and takes care to flush
 	 * the cache to disk when it is full.
 	 */
-	inline void _record(int id, float value) {
+	inline void _record(unsigned int id, float value) {
 		if (m_Enabled && m_File != 0) {
-			m_Cache[m_Count] = DataEntry(static_cast<unsigned int>(id), value);
+			m_Cache[m_Count] = DataEntry(id, value);
 			if (++m_Count >= m_Limit) {
 				_flush();
 			}
@@ -225,83 +275,6 @@ protected:
 	}
 };
 
-
-/**
- * RecorderInterface provides access a DataRecorder and maintains a
- * list of local output channels.  When multiple classes access the
- * same DataRecorder, each one should use a separate RecorderInterface
- * to manage output channels.  Simply bind the DataRecorder to the
- * RecorderInterface and add local channels.  Unlike the raw 
- * DataRecorder interface, fixed channel identifiers (0-249) can
- * be used since the RecorderInterface keeps an internal translation
- * table.  Typically a class will define fixed channel identifiers
- * as protected enums, starting at zero.
- */
-class RecorderInterface {
-protected:
-	// FIXME should use a weakref here
-	simdata::Ref<DataRecorder> m_Recorder;
-	std::vector<int> m_Channels;
-
-public:
-	/**
-	 * Bind to an existing DataRecorder.  Channels must be added
-	 * (or readded) after this method is called.
-	 *
-	 * @param recorder The DataRecorder instance, or NULL to unbind.
-	 */
-	void bind(DataRecorder *recorder) { 
-		m_Recorder = recorder; 
-		m_Channels.clear();
-	}
-
-	/**
-	 * Returns true if a recorder is bound and is enabled.
-	 */
-	inline bool isEnabled() const {
-		return (m_Recorder.valid() && m_Recorder->isEnabled());
-	}
-
-	/**
-	 * Add a new output channel.
-	 *
-	 * @param id A fixed identifier for use with the record() method. 
-	 *           Legal values are 0 to 249.
-	 * @param name The label the output channel.
-	 */
-	void addChannel(int id, std::string const &name) {
-		if (!m_Recorder || id >= 250) return;
-		if (id >= int(m_Channels.size())) {
-			m_Channels.resize(id+1, -1);
-		}
-		m_Channels[id] = m_Recorder->addChannel(name);
-	}
-
-	/**
-	 * Record a data value to an output channel.
-	 *
-	 * @param id The channel id.
-	 * @param value The value to record.
-	 */
-	void record(int id, float value) {
-		if (m_Recorder.valid() && id >= 0 && id < int(m_Channels.size())) {
-			int channel = m_Channels[id];
-			m_Recorder->record(channel, value);
-		}
-	}
-
-	/**
-	 * Mark the current data stream time.  See DataRecorder::stampTime()
-	 * for details.
-	 *
-	 * @param dt The time interval since the last time stamp.
-	 */
-	void timeStamp(float dt) {
-		if (m_Recorder.valid()) {
-			m_Recorder->timeStamp(dt);
-		}
-	}
-};
 
 
 #endif // __DATARECORDER_H__

@@ -60,22 +60,15 @@ public:
 	DamageModifier() {}
 	virtual ~DamageModifier() {}
 
-	virtual void pack(simdata::Packer& p) const {
-		Object::pack(p);
-		p.pack(m_Incendiary);
-		p.pack(m_HighExplosive);
-		p.pack(m_Penetrating);
-		p.pack(m_ArmorPiercing);
-		p.pack(m_SmallArms);
+	virtual void serialize(simdata::Archive& archive) {
+		Object::serialize(archive);
+		archive(m_Incendiary);
+		archive(m_HighExplosive);
+		archive(m_Penetrating);
+		archive(m_ArmorPiercing);
+		archive(m_SmallArms);
 	}
-	virtual void unpack(simdata::UnPacker& p) {
-		Object::unpack(p);
-		p.unpack(m_Incendiary);
-		p.unpack(m_HighExplosive);
-		p.unpack(m_Penetrating);
-		p.unpack(m_ArmorPiercing);
-		p.unpack(m_SmallArms);
-	}
+
 	virtual void postCreate() {}
 };
 

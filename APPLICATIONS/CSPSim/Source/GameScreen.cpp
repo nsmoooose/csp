@@ -112,9 +112,9 @@ void GameScreen::initInterface()
 	BIND_ACTION("SPIN_THE_WORLD_STOP", on_SpinTheWorldStop);
 	BIND_ACTION("RESET_SPIN", on_ResetSpin);
 	BIND_MOTION("CAMERA_PAN", on_MouseView);
-	EventMapIndex *maps = CSPSim::theSim->getInterfaceMaps();
-	if (maps) {
-		EventMapping *map = maps->getMap("__gamescreen__");
+	simdata::Ref<EventMapIndex> maps = CSPSim::theSim->getInterfaceMaps();
+	if (maps.valid()) {
+		EventMapping::Ref map = maps->getMap("__gamescreen__");
 		if (map != NULL) {
 			m_Interface->setMapping(map);
 		} else {
@@ -184,7 +184,6 @@ GameScreen::GameScreen(): BaseScreen() {
 }
 	
 GameScreen::~GameScreen() {
-	if (m_Interface) delete m_Interface;
 }
 
 void GameScreen::onInit()

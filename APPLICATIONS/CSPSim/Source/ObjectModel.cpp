@@ -184,40 +184,22 @@ ObjectModel::ObjectModel(): simdata::Object() {
 ObjectModel::~ObjectModel() {
 }
 
-void ObjectModel::pack(simdata::Packer& p) const {
-	Object::pack(p);
-	p.pack(m_ModelPath);
-	p.pack(m_Axis0);
-	p.pack(m_Axis1);
-	p.pack(m_ViewPoint);
-	p.pack(m_Offset);
-	p.pack(m_Scale);
-	p.pack(m_Smooth);
-	p.pack(m_Filter);
-	p.pack(m_Contacts);
-	p.pack(m_ElevationCorrection);
-	p.pack(m_PolygonOffset);
-	p.pack(m_CullFace);
-	p.pack(m_LandingGear);
-	p.pack(m_Animations);
-}
-
-void ObjectModel::unpack(simdata::UnPacker& p) {
-	Object::unpack(p);
-	p.unpack(m_ModelPath);
-	p.unpack(m_Axis0);
-	p.unpack(m_Axis1);
-	p.unpack(m_ViewPoint);
-	p.unpack(m_Offset);
-	p.unpack(m_Scale);
-	p.unpack(m_Smooth);
-	p.unpack(m_Filter);
-	p.unpack(m_Contacts);
-	p.unpack(m_ElevationCorrection);
-	p.unpack(m_PolygonOffset);
-	p.unpack(m_CullFace);
-	p.unpack(m_LandingGear);
-	p.unpack(m_Animations);
+void ObjectModel::serialize(simdata::Archive &archive) {
+	Object::serialize(archive);
+	archive(m_ModelPath);
+	archive(m_Axis0);
+	archive(m_Axis1);
+	archive(m_ViewPoint);
+	archive(m_Offset);
+	archive(m_Scale);
+	archive(m_Smooth);
+	archive(m_Filter);
+	archive(m_Contacts);
+	archive(m_ElevationCorrection);
+	archive(m_PolygonOffset);
+	archive(m_CullFace);
+	archive(m_LandingGear);
+	archive(m_Animations);
 }
 
 void ObjectModel::postCreate() {
@@ -553,7 +535,7 @@ void ObjectModel::updateGearSprites(std::vector<simdata::Vector3> const &move) {
 		for (size_t j = 0; j < m; ++j) {
 			osg::Node *node = m_GearSprites->getChild(j);
 			osg::PositionAttitudeTransform *pos = dynamic_cast<osg::PositionAttitudeTransform*>(node); 
-			if (pos) {
+			if (pos && i < move.size()) {
 				osg::Vec3 p = osg::Vec3(m_LandingGear[i].x(),m_LandingGear[i].y(),move[i].z());
 				pos->setPosition(p);
 				++i;
@@ -748,15 +730,16 @@ void SceneModel::enableSmoke()
 	}
 }
 
-AnimationChannel *SceneModel::bindAnimationChannel(std::string const &control, AnimationChannel *channel) {
-	simdata::Key id(control);
+void SceneModel::bindAnimationChannels(Bus::Ref bus) {
 	int index, n = m_AnimationCallbacks.size();
 	for (index = 0; index < n; ++index) {
-		if (m_AnimationCallbacks[index]->getControlID() == id) {
-			m_AnimationCallbacks[index]->bindChannel(channel);
+		DataChannel<double>::CRef channel;
+		if (bus.valid()) {
+			std::string name = m_AnimationCallbacks[index]->getChannelName();
+			channel = bus->getChannel(name, false);
 		}
+		m_AnimationCallbacks[index]->bindChannel(channel);
 	}
-	return channel;
 }
 
 

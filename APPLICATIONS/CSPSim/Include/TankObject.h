@@ -60,22 +60,13 @@ public:
 
 	TankObject();
 	virtual ~TankObject();
-	virtual void dump();
-	virtual double onUpdate(double dt);
-	virtual unsigned int onRender();
 	virtual void getStats(std::vector<std::string> &stats) const {}
 
-	virtual void pack(simdata::Packer& p) const {
-		DynamicObject::pack(p);
-		p.pack(bits);
-		//std::cout << "TANK BITS: " << int(bits) << std::endl;
-	}
-	virtual void unpack(simdata::UnPacker& p) {
-		DynamicObject::unpack(p);
-		p.unpack(bits);
+	virtual void serialize(simdata::Archive& archive) {
+		DynamicObject::serialize(archive);
+		archive(bits);
 	}
 
-	virtual void initialize();
 	double getMaxViewingRange() { return max_viewing_range; }
 	double getMaxViewingAngle() { return max_viewing_angle; }
 	double getMaxFiringRange() { return max_firing_range; }
@@ -84,8 +75,6 @@ public:
 
 
 protected:
-
-	void doMovement(double dt);
 
 	double gun_angle;
 

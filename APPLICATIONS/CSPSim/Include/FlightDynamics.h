@@ -29,7 +29,6 @@
 #include <SimData/InterfaceRegistry.h>
 
 #include "BaseDynamics.h"
-#include "DataRecorder.h"
 
 class FlightModel;
 
@@ -38,11 +37,17 @@ class FlightModel;
  * class FlightDynamics - aircraft primary flight model implementation.
  *
  */
-class FlightDynamics: public BaseDynamics, public simdata::Referenced {
+class FlightDynamics: public BaseDynamics {
 	friend class FlightModel;
 	virtual ~FlightDynamics();
 public:
 	FlightDynamics();
+
+	SIMDATA_OBJECT(FlightDynamics, 0, 0)
+
+	EXTEND_SIMDATA_XML_INTERFACE(FlightDynamics, BaseDynamics)
+		SIMDATA_XML("flight_model", FlightDynamics::m_FlightModel, true)
+	END_SIMDATA_XML_INTERFACE
 
 	void computeForceAndMoment(double x);
 	void initializeSimulationStep(double dt);
@@ -50,58 +55,40 @@ public:
 
 	double getAngleOfAttack() const { return m_Alpha; }
 	double getSideSlip() const { return m_Beta; }
-	double getGForce() const { return m_GForce; }
-	double getSpeed() const { return m_Airspeed; }
-
-	void setControlSurfaces(double aileron, 
-	                        double elevator, 
-	                        double rudder, 
-	                        double airbrake);
-
-	void setMassInverse(double massInverse);
-
-	virtual void initDataRecorder(DataRecorder *);
+	double getAirspeed() const { return m_Airspeed; }
 
 protected:
 
-	void setFlightModel(FlightModel *flight_model);
-	simdata::Ref<FlightModel> m_FlightModel;
+	simdata::Link<FlightModel> m_FlightModel;
+
+	virtual void serialize(simdata::Archive &archive);
+	virtual void registerChannels(Bus*);
+	virtual void importChannels(Bus*);
+	virtual void getInfo(InfoList &info);
 
 	void updateAirflow(double dt);
 
-	double controlIVbasis(double p_t) const;
-	double controlInputValue(double p_gForce) const;
-	
-	double m_depsilon;       // G-force control feedback stall
-	double m_ElevatorScale;  // elevator correction
-	double m_ElevatorInput;  // desired elevator deflection
-
 	// control surfaces
-	double m_Aileron;
-	double m_Elevator;
-	double m_Rudder;
-	double m_Airbrake;
+	DataChannel<double>::CRef b_Aileron;
+	DataChannel<double>::CRef b_Elevator;
+	DataChannel<double>::CRef b_Rudder;
+	DataChannel<double>::CRef b_Airbrake;
+	DataChannel<double>::CRef b_Density;
+	DataChannel<double>::CRef b_GroundZ;
+	DataChannel<simdata::Vector3>::CRef b_WindVelocity;
 
-	// derived quantities
-	double m_Alpha;		// current angle of attack
-	double m_Alpha0;	// discrete AOA
-	double m_AlphaDot;	// AOA rate
-	double m_Beta;		// side slip angle
-	double m_GForce;	// current g acceleration
-	
-	double m_MassInverse;
+	// export channels
+	DataChannel<double>::Ref b_Alpha;	// current angle of attack
+	DataChannel<double>::Ref b_Beta;	// side slip angle
+	DataChannel<double>::Ref b_Airspeed;
 
+	double m_Beta;
+	double m_Alpha;
+	double m_Alpha0;			// discrete AOA
+	double m_AlphaDot;
 	double m_Airspeed;
-	simdata::Vector3 m_AirflowBody;         // air flow velocity in body coordinate
 
-private:
-	RecorderInterface m_Recorder;
-	enum { 
-		CH_ALPHA, 
-		CH_BETA,
-		CH_GFORCE,
-		CH_AIRSPEED
-	};
+	simdata::Vector3 m_WindVelocityBody;
 
 };
 

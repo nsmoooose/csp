@@ -89,50 +89,26 @@ DemeterTerrain::~DemeterTerrain()
 	unload();
 }
 
-void DemeterTerrain::pack(simdata::Packer& p) const 
-{
-	TerrainObject::pack(p);
-	p.pack(m_DynamicTextures);
-	p.pack(m_TextureCompression);
-	p.pack(m_PreloadTextures);
-	p.pack(m_TextureFactory);
-	p.pack(m_MaxTriangles);
-	p.pack(m_VertexSpacing);
-	p.pack(m_VertexHeight);
-	p.pack(m_Lattice);
-	p.pack(m_DetailThreshold);
-	p.pack(m_DetailTextureFile);
-	p.pack(m_TextureFile);
-	p.pack(m_ElevationFile);
-	p.pack(m_LatticeBaseName);
-	p.pack(m_LatticeElevExt);
-	p.pack(m_LatticeTexExt);
-	p.pack(m_LatticeWidth);
-	p.pack(m_LatticeHeight);
-	p.pack(m_Lattice);
-}
-
-void DemeterTerrain::unpack(simdata::UnPacker& p)
-{
-	TerrainObject::unpack(p);
-	p.unpack(m_DynamicTextures);
-	p.unpack(m_TextureCompression);
-	p.unpack(m_PreloadTextures);
-	p.unpack(m_TextureFactory);
-	p.unpack(m_MaxTriangles);
-	p.unpack(m_VertexSpacing);
-	p.unpack(m_VertexHeight);
-	p.unpack(m_Lattice);
-	p.unpack(m_DetailThreshold);
-	p.unpack(m_DetailTextureFile);
-	p.unpack(m_TextureFile);
-	p.unpack(m_ElevationFile);
-	p.unpack(m_LatticeBaseName);
-	p.unpack(m_LatticeElevExt);
-	p.unpack(m_LatticeTexExt);
-	p.unpack(m_LatticeWidth);
-	p.unpack(m_LatticeHeight);
-	p.unpack(m_Lattice);
+void DemeterTerrain::serialize(simdata::Archive &archive) {
+	TerrainObject::serialize(archive);
+	archive(m_DynamicTextures);
+	archive(m_TextureCompression);
+	archive(m_PreloadTextures);
+	archive(m_TextureFactory);
+	archive(m_MaxTriangles);
+	archive(m_VertexSpacing);
+	archive(m_VertexHeight);
+	archive(m_Lattice);
+	archive(m_DetailThreshold);
+	archive(m_DetailTextureFile);
+	archive(m_TextureFile);
+	archive(m_ElevationFile);
+	archive(m_LatticeBaseName);
+	archive(m_LatticeElevExt);
+	archive(m_LatticeTexExt);
+	archive(m_LatticeWidth);
+	archive(m_LatticeHeight);
+	archive(m_Lattice);
 }
 
 void DemeterTerrain::unload() {

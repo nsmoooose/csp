@@ -74,16 +74,10 @@ public:
 
 	virtual ~Theater();
 
-	virtual void pack(simdata::Packer& p) const {
-		Object::pack(p);
-		p.pack(m_FeatureGroupList);
-		p.pack(m_Terrain);
-	}
-
-	virtual void unpack(simdata::UnPacker& p) {
-		Object::unpack(p);
-		p.unpack(m_FeatureGroupList);
-		p.unpack(m_Terrain);
+	virtual void serialize(simdata::Archive& archive) {
+		Object::serialize(archive);
+		archive(m_FeatureGroupList);
+		archive(m_Terrain);
 	}
 
 	/**

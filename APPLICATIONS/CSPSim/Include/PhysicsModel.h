@@ -31,10 +31,12 @@
 #include <SimData/Quat.h>
 #include <SimData/Ref.h>
 
-#include "DynamicalSystem.h"
+#include <System.h>
+#include <DynamicalSystem.h>
 
 class BaseDynamics;
-class GroundCollisionDynamics;
+
+// XXX class GroundCollisionDynamics;
 
 
 /**
@@ -47,11 +49,96 @@ class GroundCollisionDynamics;
  * the position and velocity of the object as functions of time.
  *
  */
-class PhysicsModel: public simdata::Referenced, protected DynamicalSystem {  
+class PhysicsModel: public System, protected DynamicalSystem {  
 public:	
 	PhysicsModel(unsigned short dimension);
 	virtual ~PhysicsModel();
 
+	/**
+	 * Integrate the equations of motion over the specified time
+	 * interval.
+	 */
+	virtual void doSimStep(double dt) = 0;
+
+	/**
+	 * Add a dynamics simulation component.  Each BaseDynamics class computes
+	 * a part of the total force and moment that acts on the object.
+	 */
+	void addDynamics(simdata::Ref<BaseDynamics>);
+
+protected:
+	// should it be a priority queue instead?
+	std::vector< simdata::Ref<BaseDynamics> > m_Dynamics;
+	/*
+	simdata::Ref<GroundCollisionDynamics> m_GroundCollisionDynamics;
+	*/
+	double const m_Damping;
+
+	virtual void postCreate();
+
+	/**
+	 * Extract kinematic variables from the vector field variable.
+	 */
+	void YToBody(std::vector<double> const &y);
+
+	/**
+	 * Assemble the vector field variable from individual kinematic variables.
+	 */
+	std::vector<double> const &bodyToY(simdata::Vector3 const &p,
+	                                   simdata::Vector3 const &v,
+	                                   simdata::Vector3 const &w,
+	                                   simdata::Quat const &q);
+
+	/**
+	 * Convert from local (global) to body coordinates.
+	 */
+	simdata::Vector3 localToBody(const simdata::Vector3 & vec);
+
+	/**
+	 * Convert from body to local (global) coordinates.
+	 */
+	simdata::Vector3 bodyToLocal(const simdata::Vector3 & vec);
+
+	/**
+	 * Convert kinematic variables from body to local (global) coordinates.
+	 */
+	void physicsBodyToLocal();
+
+	// internally: X = right, Y = nose, Z = up
+	// externally: X = nose, Y = right, Z = down (for XML input)
+	
+	double m_CollisionRadius;
+
+	simdata::Quat m_Attitude;               // attitude in earth coordinates
+
+	simdata::Vector3 m_ForcesBody;          // total force in body coordinates
+	simdata::Vector3 m_MomentsBody;         // (L,M,N) total moment (torque) in body coordinates
+
+	simdata::Vector3 m_PositionBody;        // position after integration step in body coordinates
+	simdata::Vector3 m_PositionLocal;       // position in earth coordinates
+	simdata::Vector3 m_VelocityLocal;       // velocity in earth coordinates
+	simdata::Vector3 m_VelocityBody;        // (U,V,W) velocity in body coordinates
+	simdata::Vector3 m_AngularVelocityLocal;// angular velocity in earth coordinates
+	simdata::Vector3 m_AngularVelocityBody; // (P,Q,R) angular velocity in body coordinates
+	simdata::Vector3 m_AngularAccelBody;    // (Pdot, Qdot, Rdot)
+	simdata::Vector3 m_LinearAccelBody;     // (Udot, Vdot, Wdot)
+
+	double m_Gravity;
+	simdata::Vector3 m_WeightLocal, m_WeightBody;
+
+	DataChannel<simdata::Vector3>::Ref b_Position;
+	DataChannel<simdata::Vector3>::Ref b_Velocity;
+	DataChannel<simdata::Vector3>::Ref b_AngularVelocity;
+	DataChannel<simdata::Quat>::Ref b_Attitude;
+
+	DataChannel<double>::CRef b_Mass;
+	DataChannel<simdata::Matrix3>::CRef b_Inertia;
+	DataChannel<simdata::Matrix3>::CRef b_InertiaInverse;
+
+	virtual void registerChannels(Bus*);
+	virtual void importChannels(Bus*);
+
+#if 0
 	/**
 	 * Bind the model to the kinematic parameters of an object.
 	 */
@@ -59,12 +146,6 @@ public:
                         simdata::Vector3 &velocity, 
                         simdata::Vector3 &angular_velocity, 
                         simdata::Quat &orientation);
-
-	/**
-	 * Integrate the equations of motion over the specified time
-	 * interval.
-	 */
-	virtual void doSimStep(double dt) = 0;
 
 	/**
 	 * Specify the inertial properties of the object being simulated.
@@ -99,73 +180,17 @@ public:
 	}
 
 	/**
-	 * Add a dynamics simulation component.  Each BaseDynamics class computes
-	 * a part of the total force and moment that acts on the object.
-	 */
-	void addDynamics(BaseDynamics *);
-
-protected:
-	// should it be a priority queue instead?
-	std::vector<BaseDynamics*> m_Dynamics;
-	GroundCollisionDynamics *m_GroundCollisionDynamics;
-	double const m_Damping;
-
-	/**
-	 * Extract kinematic variables from the vector field variable.
-	 */
-	void YToBody(std::vector<double> const &y);
-
-	/**
-	 * Assemble the vector field variable from individual kinematic variables.
-	 */
-	std::vector<double> const &bodyToY(simdata::Vector3 const &p,
-	                                   simdata::Vector3 const &v,
-	                                   simdata::Vector3 const &w,
-	                                   simdata::Quat const &q);
-
-	/**
-	 * Convert from local (global) to body coordinates.
-	 */
-	simdata::Vector3 localToBody(const simdata::Vector3 & vec);
-
-	/**
-	 * Convert from body to local (global) coordinates.
-	 */
-	simdata::Vector3 bodyToLocal(const simdata::Vector3 & vec);
-
-	/**
-	 * Convert kinematic variables from body to local (global) coordinates.
-	 */
-	void physicsBodyToLocal();
-
-	/**
-	 * Check the object bounding sphere against the ground and set
-	 * related flags and parameters.
-	 */
-	virtual void updateNearGround(double dt);
-
-	/**
 	 * Update the aerodynamic parameters, such as air density
 	 * and wind speed, for the current object position.
 	 */
 	virtual void updateAeroParameters(double dt);
 	
-	// internally: X = right, Y = nose, Z = up
-	// externally: X = nose, Y = right, Z = down (for XML input)
-	
-	simdata::Quat m_qOrientation;     // orientation in earth coordinates
+	/**
+	 * Check the object bounding sphere against the ground and set
+	 * related flags and parameters.
+	 */
+	virtual void updateNearGround();
 
-	simdata::Vector3 m_ForcesBody;          // total force in body coordinates
-	simdata::Vector3 m_MomentsBody;         // (L,M,N) total moment (torque) in body coordinates
-
-	simdata::Vector3 m_PositionBody;        // position after integration step in body coordinates
-	simdata::Vector3 m_PositionLocal;       // position in earth coordinates
-	simdata::Vector3 m_VelocityLocal;       // velocity in earth coordinates
-	simdata::Vector3 m_VelocityBody;        // (U,V,W) velocity in body coordinates
-	simdata::Vector3 m_AngularVelocityLocal;// angular velocity in earth coordinates
-	simdata::Vector3 m_AngularVelocityBody; // (P,Q,R) angular velocity in body coordinates
-	simdata::Vector3 m_AngularAccelBody;    // (Pdot, Qdot, Rdot)
-	simdata::Vector3 m_LinearAccelBody;     // (Udot, Vdot, Wdot)
 
 	// kinematic parameter pointers to dynamic object
 	simdata::Vector3 *m_Position;
@@ -193,6 +218,7 @@ protected:
 	double m_qBar;
 	simdata::Vector3 m_WindBody;
 	double m_Distance;  // for tracking motion through turbulence fields
+#endif
 };
 
 #endif  // __PHYSICSMODEL_H__

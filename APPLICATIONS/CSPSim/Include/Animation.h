@@ -25,7 +25,7 @@
 #ifndef __ANIMATION_H__
 #define __ANIMATION_H__
 
-#include <vector>
+#include <Bus.h>
 
 #include <osg/Node>
 #include <osg/MatrixTransform>
@@ -36,24 +36,8 @@
 #include <SimData/InterfaceRegistry.h>
 #include <SimData/osg.h>
 
+#include <vector>
 #include <cstdlib>
-
-/**
- * Base class for connecting animation controls to
- * animation callbacks.
- */
-class AnimationChannel: public simdata::Referenced {};
-
-/**
- * A simple animation channel for sharing a single
- * floating point value.
- */
-class AnimationValueChannel: public AnimationChannel {
-	float m_Value;
-public:
-	inline float &value() { return m_Value; }
-	inline float const &value() const { return m_Value; }
-};
 
 
 /**
@@ -75,7 +59,7 @@ public:
 class AnimationCallback: public osg::NodeCallback {
 protected:
 	int m_DirtyCount;
-	simdata::Key m_ControlID;
+	std::string m_ChannelName;
 	class UpdateCount: public osg::Referenced {
 		int m_UpdateCount;
 	public:
@@ -96,14 +80,14 @@ public:
 		}
 		return false;
 	}
-	inline simdata::Key const &getControlID() const { return m_ControlID; }
-	inline void setControlID(simdata::Key const &id) { m_ControlID = id; }
+	inline std::string const &getChannelName() const { return m_ChannelName; }
+	inline void setChannelName(std::string const &name) { m_ChannelName = name; }
 	inline void bind(osg::Node &node) {
 		node.setCullCallback(this);
 		node.setUserData(new UpdateCount);
 		dirty();
 	}
-	virtual void bindChannel(AnimationChannel *)=0;
+	virtual void bindChannel(simdata::Ref<const DataChannelBase>)=0;
 	virtual void setDefault(float x) {}
 };
 
@@ -121,7 +105,7 @@ class Animation: public simdata::Object
 {
 protected:
 	simdata::Key m_ModelID;
-	simdata::Key m_ControlID;
+	std::string m_ChannelName;
 	int m_LOD;
 	float m_Default;
 	osg::ref_ptr<AnimationCallback> m_Callback;
@@ -130,13 +114,13 @@ protected:
 		assert(node);
 		assert(callback);
 		callback->bind(*node);
-		callback->setControlID(m_ControlID);
+		callback->setChannelName(m_ChannelName);
 		return callback;
 	}
 public:
 	BEGIN_SIMDATA_XML_VIRTUAL_INTERFACE(Animation)
 		SIMDATA_XML("model_id", Animation::m_ModelID, true)
-		SIMDATA_XML("control_id", Animation::m_ControlID, true)
+		SIMDATA_XML("channel_name", Animation::m_ChannelName, true)
 		SIMDATA_XML("lod_limit", Animation::m_LOD, false)
 		SIMDATA_XML("default", Animation::m_Default, false)
 	END_SIMDATA_XML_INTERFACE
@@ -144,11 +128,10 @@ public:
 	Animation();
 	virtual ~Animation();
 
-	virtual void pack(simdata::Packer& p) const;
-	virtual void unpack(simdata::UnPacker& p);
+	virtual void serialize(simdata::Archive&);
 
 	virtual AnimationCallback *newCallback(osg::Node *node) const =0;
-	inline simdata::Key const &getControlID() const { return m_ControlID; }
+	inline std::string const &getChannelName() const { return m_ChannelName; }
 	inline simdata::Key const &getModelID() const { return m_ModelID; }
 };
 
@@ -160,12 +143,12 @@ class DrivenRotation: public Animation
 {
 	class Callback: public AnimationCallback {
 		simdata::Ref<DrivenRotation const> m_Parameters;
-		simdata::Ref<AnimationValueChannel const> m_Channel;
+		DataChannel<double>::CRef m_Channel;
 		float m_Value;
 	public:
 		Callback(DrivenRotation const *param): m_Parameters(param), m_Value(0.0) { assert(param); }
-		virtual void bindChannel(AnimationChannel *channel) {
-			m_Channel = dynamic_cast<AnimationValueChannel *>(channel);
+		virtual void bindChannel(simdata::Ref<const DataChannelBase> channel) {
+			m_Channel = channel;
 		}
 		virtual void operator()(osg::Node* node, osg::NodeVisitor* nv) {
 			if (m_Channel.valid()) {
@@ -207,8 +190,7 @@ public:
 	DrivenRotation();
 	virtual ~DrivenRotation();
 
-	virtual void pack(simdata::Packer& p) const;
-	virtual void unpack(simdata::UnPacker& p);
+	virtual void serialize(simdata::Archive&);
 	virtual void postCreate();
 
 	virtual AnimationCallback *newCallback(osg::Node *node) const {

@@ -29,7 +29,6 @@
 #include <SimData/Object.h>
 #include <SimData/External.h>
 #include <SimData/Vector3.h>
-#include <SimData/Pack.h>
 #include <SimData/InterfaceRegistry.h>
 
 #include "TerrainObject.h"
@@ -107,8 +106,7 @@ protected:
 	
 protected:
 
-	virtual void pack(simdata::Packer& p) const;
-	virtual void unpack(simdata::UnPacker& p);
+	virtual void serialize(simdata::Archive&);
 	virtual void postCreate();
 
 	int createTerrain();

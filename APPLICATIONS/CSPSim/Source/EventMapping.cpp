@@ -27,7 +27,7 @@
 #pragma warning(disable : 4786)
 # endif
 
-#include "EventMapping.h"
+#include <EventMapping.h>
 
 #include <SDL/SDL_events.h>
 

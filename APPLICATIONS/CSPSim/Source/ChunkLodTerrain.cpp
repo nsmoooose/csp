@@ -95,32 +95,17 @@ ChunkLodTerrain::~ChunkLodTerrain()
 	}
 }
 
-void ChunkLodTerrain::pack(simdata::Packer& p) const 
-{
-	TerrainObject::pack(p);
-	p.pack(m_ChunkFile);
-	p.pack(m_TextureFile);
-	p.pack(m_ElevationFile);
-	p.pack(m_ElevationScale);
-	p.pack(m_UseLoaderThread);
-	p.pack(m_LatticeWidth);
-	p.pack(m_LatticeHeight);
-	p.pack(m_BaseScreenError);
-	p.pack(m_BaseTexelSize);
-}
-
-void ChunkLodTerrain::unpack(simdata::UnPacker& p)
-{
-	TerrainObject::unpack(p);
-	p.unpack(m_ChunkFile);
-	p.unpack(m_TextureFile);
-	p.unpack(m_ElevationFile);
-	p.unpack(m_ElevationScale);
-	p.unpack(m_UseLoaderThread);
-	p.unpack(m_LatticeWidth);
-	p.unpack(m_LatticeHeight);
-	p.unpack(m_BaseScreenError);
-	p.unpack(m_BaseTexelSize);
+void ChunkLodTerrain::serialize(simdata::Archive &archive) {
+	TerrainObject::serialize(archive);
+	archive(m_ChunkFile);
+	archive(m_TextureFile);
+	archive(m_ElevationFile);
+	archive(m_ElevationScale);
+	archive(m_UseLoaderThread);
+	archive(m_LatticeWidth);
+	archive(m_LatticeHeight);
+	archive(m_BaseScreenError);
+	archive(m_BaseTexelSize);
 }
 
 void ChunkLodTerrain::unload() {

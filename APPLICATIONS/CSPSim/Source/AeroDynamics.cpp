@@ -65,110 +65,57 @@ AeroDynamics::AeroDynamics():
 AeroDynamics::~AeroDynamics() {
 }
 
-void AeroDynamics::pack(simdata::Packer& p) const {
-	Object::pack(p);
+void AeroDynamics::serialize(simdata::Archive &archive) {
+	Object::serialize(archive);
 	
-	p.pack(m_WingSpan);
-	p.pack(m_WingChord);
-	p.pack(m_WingArea);
-	p.pack(m_stallAOA);
+	archive(m_WingSpan);
+	archive(m_WingChord);
+	archive(m_WingArea);
+	archive(m_stallAOA);
 	
-	p.pack(m_DeMax);
-	p.pack(m_DeMin);
-	p.pack(m_DaMax);
-	p.pack(m_DaMin);
-	p.pack(m_DrMax);
-	p.pack(m_DrMin);
+	archive(m_DeMax);
+	archive(m_DeMin);
+	archive(m_DaMax);
+	archive(m_DaMin);
+	archive(m_DrMax);
+	archive(m_DrMin);
 
-	p.pack(m_GMin);
-	p.pack(m_GMax);
+	archive(m_GMin);
+	archive(m_GMax);
 
-	p.pack(m_CD0);
-	p.pack(m_CD_a);
-	p.pack(m_CD_de);
+	archive(m_CD0);
+	archive(m_CD_a);
+	archive(m_CD_de);
 	
-	p.pack(m_CL0);
-	p.pack(m_CL_a);
-	p.pack(m_CL_adot);
-	p.pack(m_CL_q);
-	p.pack(m_CL_de);
+	archive(m_CL0);
+	archive(m_CL_a);
+	archive(m_CL_adot);
+	archive(m_CL_q);
+	archive(m_CL_de);
 	
-	p.pack(m_CM0);
-	p.pack(m_CM_a);
-	p.pack(m_CM_adot);
-	p.pack(m_CM_q);
-	p.pack(m_CM_de);
+	archive(m_CM0);
+	archive(m_CM_a);
+	archive(m_CM_adot);
+	archive(m_CM_q);
+	archive(m_CM_de);
 	
-	p.pack(m_CY_beta);
-	p.pack(m_CY_p);
-	p.pack(m_CY_r);
-	p.pack(m_CY_da);
-	p.pack(m_CY_dr);
+	archive(m_CY_beta);
+	archive(m_CY_p);
+	archive(m_CY_r);
+	archive(m_CY_da);
+	archive(m_CY_dr);
 	
-	p.pack(m_CI_beta);
-	p.pack(m_CI_p);
-	p.pack(m_CI_r);
-	p.pack(m_CI_da);
-	p.pack(m_CI_dr);
+	archive(m_CI_beta);
+	archive(m_CI_p);
+	archive(m_CI_r);
+	archive(m_CI_da);
+	archive(m_CI_dr);
 
-	p.pack(m_Cn_beta);
-	p.pack(m_Cn_p);
-	p.pack(m_Cn_r);
-	p.pack(m_Cn_da);
-	p.pack(m_Cn_dr);
-}
-
-void AeroDynamics::unpack(simdata::UnPacker& p) {
-	Object::unpack(p);
-
-	p.unpack(m_WingSpan);
-	p.unpack(m_WingChord);
-	p.unpack(m_WingArea);
-	p.unpack(m_stallAOA);
-	
-	p.unpack(m_DeMax);
-	p.unpack(m_DeMin);
-	p.unpack(m_DaMax);
-	p.unpack(m_DaMin);
-	p.unpack(m_DrMax);
-	p.unpack(m_DrMin);
-
-	p.unpack(m_GMin);
-	p.unpack(m_GMax);
-
-	p.unpack(m_CD0);
-	p.unpack(m_CD_a);
-	p.unpack(m_CD_de);
-	
-	p.unpack(m_CL0);
-	p.unpack(m_CL_a);
-	p.unpack(m_CL_adot);
-	p.unpack(m_CL_q);
-	p.unpack(m_CL_de);
-	
-	p.unpack(m_CM0);
-	p.unpack(m_CM_a);
-	p.unpack(m_CM_adot);
-	p.unpack(m_CM_q);
-	p.unpack(m_CM_de);
-	
-	p.unpack(m_CY_beta);
-	p.unpack(m_CY_p);
-	p.unpack(m_CY_r);
-	p.unpack(m_CY_da);
-	p.unpack(m_CY_dr);
-	
-	p.unpack(m_CI_beta);
-	p.unpack(m_CI_p);
-	p.unpack(m_CI_r);
-	p.unpack(m_CI_da);
-	p.unpack(m_CI_dr);
-
-	p.unpack(m_Cn_beta);
-	p.unpack(m_Cn_p);
-	p.unpack(m_Cn_r);
-	p.unpack(m_Cn_da);
-	p.unpack(m_Cn_dr);
+	archive(m_Cn_beta);
+	archive(m_Cn_p);
+	archive(m_Cn_r);
+	archive(m_Cn_da);
+	archive(m_Cn_dr);
 }
 
 
@@ -184,7 +131,7 @@ void AeroDynamics::initialize()
 	m_Rudder = 0.0;
 	m_ThrustForce = simdata::Vector3::ZERO;
 	
-	m_qOrientation = simdata::Quat::IDENTITY;
+	m_Attitude = simdata::Quat::IDENTITY;
 
 	m_AngularAccelBody = simdata::Vector3::ZERO;
 	m_LinearAccelBody = simdata::Vector3::ZERO;
@@ -242,18 +189,18 @@ void AeroDynamics::bindObject(simdata::Vector3 &position, simdata::Vector3 &velo
 
 void AeroDynamics::bindGearDynamics(GearDynamics &gearDynamics) {
 	m_GearDynamics = &gearDynamics;
-	m_GearDynamics->bindObject(m_PositionLocal, m_VelocityBody, m_AngularVelocityBody, m_qOrientation, m_NearGround, m_Height);
+	m_GearDynamics->bindObject(m_PositionLocal, m_VelocityBody, m_AngularVelocityBody, m_Attitude, m_NearGround, m_Height);
 }
 
 void AeroDynamics::bindGroundCollisionDynamics(GroundCollisionDynamics &groundCollisionDynamics) {
 	m_GroundCollisionDynamics = &groundCollisionDynamics;
-	m_GroundCollisionDynamics->bindObject(m_PositionLocal,m_VelocityBody,m_AngularVelocityBody,m_qOrientation, m_NearGround, m_Height);
+	m_GroundCollisionDynamics->bindObject(m_PositionLocal,m_VelocityBody,m_AngularVelocityBody,m_Attitude, m_NearGround, m_Height);
 	m_GroundCollisionDynamics->bindWeight(m_WeightBody);
 }
 
 void AeroDynamics::bindEngineDynamics(EngineDynamics &engineDynamics) {
 	m_EngineDynamics = &engineDynamics;
-	m_EngineDynamics->bindObject(m_PositionLocal,m_VelocityBody,m_AngularVelocityBody,m_qOrientation, m_NearGround, m_Height);
+	m_EngineDynamics->bindObject(m_PositionLocal,m_VelocityBody,m_AngularVelocityBody,m_Attitude, m_NearGround, m_Height);
 }
 
 void AeroDynamics::setControlSurfaces(double aileron, double elevator, double rudder) {
@@ -349,7 +296,7 @@ void AeroDynamics::doSimStep(double dt)
 	m_PositionLocal = *m_Position;
 	m_VelocityLocal = *m_Velocity;
 	m_AngularVelocityLocal = *m_AngularVelocity;
-	m_qOrientation = *m_Orientation;
+	m_Attitude = *m_Orientation;
 
 	if ( dt - m_dprevdt < 0.0 ) {
 		if ( m_Maxi < maxIteration ) {
@@ -447,7 +394,7 @@ void AeroDynamics::doSimStep(double dt)
 				if (m_Gear) {
 					double height = m_PositionLocal.z() - m_GroundZ;
 					simdata::Vector3 force, moment;
-					m_Gear->doComplexPhysics(m_qOrientation, 
+					m_Gear->doComplexPhysics(m_Attitude, 
 						m_VelocityBody, 
 						m_AngularVelocityBody, 
 						height, 
@@ -581,11 +528,11 @@ void AeroDynamics::doSimStep(double dt)
 		m_AngularVelocityLocal = BodyToLocal(angularVelocityBody);
 
 		// Integrate the rotation quaternion
-		m_qOrientation += 0.25f * dt * ( m_qOrientation * (m_AngularVelocityBody + angularVelocityBody));
+		m_Attitude += 0.25f * dt * ( m_Attitude * (m_AngularVelocityBody + angularVelocityBody));
 		// Now normalize the orientation quaternion:
-		double mag = m_qOrientation.length();
+		double mag = m_Attitude.length();
 		if (mag != 0.0) {
-			m_qOrientation /= mag;
+			m_Attitude /= mag;
 		}
 
 		// Update angular velocity
@@ -600,7 +547,7 @@ void AeroDynamics::doSimStep(double dt)
 	*m_Position = m_PositionLocal;
 	*m_Velocity = m_VelocityLocal;
 	*m_AngularVelocity = m_AngularVelocityLocal;
-	*m_Orientation = m_qOrientation;
+	*m_Orientation = m_Attitude;
 
 	CSP_LOG(PHYSICS, DEBUG, "AeroDynamics:   Forces: " << m_ForcesBody );
 	CSP_LOG(PHYSICS, DEBUG, "AeroDynamics:  Moments: " << m_MomentsBody );
@@ -612,7 +559,7 @@ void AeroDynamics::doSimStep(double dt)
 	CSP_LOG(PHYSICS, DEBUG, "AeroDynamics: AngOfAtt: " << toDegrees(m_alpha) );
 	//	CSP_LOG(PHYSICS, DEBUG, "AeroDynamics:   VelDir: " << VelocityDirection );
 	CSP_LOG(PHYSICS, DEBUG, "AeroDynamics: Position: " << m_PositionLocal );
-	CSP_LOG(PHYSICS, DEBUG, "AeroDynamics:   Orient: " << m_qOrientation );
+	CSP_LOG(PHYSICS, DEBUG, "AeroDynamics:   Orient: " << m_Attitude );
 	//	CSP_LOG(PHYSICS, DEBUG, "AeroDynamics:  Euler A: " << m_EulerAngles );
 
 }
@@ -833,13 +780,13 @@ double AeroDynamics::CalculateYawMoment(double const qbarS) const
 
 simdata::Vector3 AeroDynamics::LocalToBody(const simdata::Vector3 & vec )
 {
-	return m_qOrientation.invrotate(vec);
+	return m_Attitude.invrotate(vec);
 }
 
 
 simdata::Vector3 AeroDynamics::BodyToLocal(const simdata::Vector3 & vec )
 {
-	return m_qOrientation.rotate(vec);
+	return m_Attitude.rotate(vec);
 }
 
 double AeroDynamics::CIVbasis(double p_t) const
@@ -902,14 +849,14 @@ std::vector<double> const &AeroDynamics::_f(double x, std::vector<double> &y) {
 	m_PositionLocal = *m_Position + BodyToLocal(simdata::Vector3(y[0],y[1],y[2]));
 	m_VelocityBody = simdata::Vector3(y[3],y[4],y[5]);
 	m_AngularVelocityBody = damping * simdata::Vector3(y[6],y[7],y[8]);
-	m_qOrientation = simdata::Quat(y[10],y[11],y[12],y[9]);
-	double mag = m_qOrientation.length();
+	m_Attitude = simdata::Quat(y[10],y[11],y[12],y[9]);
+	double mag = m_Attitude.length();
 	if (mag != 0.0) 
-		m_qOrientation /= mag;
-	y[9]  = m_qOrientation.w(); 
-	y[10] = m_qOrientation.x(); 
-	y[11] = m_qOrientation.y(); 
-	y[12] = m_qOrientation.z();
+		m_Attitude /= mag;
+	y[9]  = m_Attitude.w(); 
+	y[10] = m_Attitude.x(); 
+	y[11] = m_Attitude.y(); 
+	y[12] = m_Attitude.z();
 
 	m_AirflowBody = m_VelocityBody - LocalToBody(m_WindLocal);
 	m_AirSpeed = m_AirflowBody.length();
@@ -967,7 +914,7 @@ std::vector<double> const &AeroDynamics::_f(double x, std::vector<double> &y) {
 				                  (m_MomentsBody - (m_AngularVelocityBody^(m_Inertia * m_AngularVelocityBody)));
 	
 	// quaternion derivative and w in body coordinates: q' = 0.5 * q * w
-	simdata::Quat qprim = 0.5 * m_qOrientation * m_AngularVelocityBody;
+	simdata::Quat qprim = 0.5 * m_Attitude * m_AngularVelocityBody;
 
 	// p' = v
 	dy[0] = y[3]; dy[1] = y[4]; dy[2] = y[5];
@@ -1000,7 +947,7 @@ void AeroDynamics::bindToBody(std::vector<double> const &y) {
 }
  
 void AeroDynamics::BodyToLocal() {
-	m_qOrientation = *m_Orientation;
+	m_Attitude = *m_Orientation;
 	m_PositionLocal = *m_Position + BodyToLocal(m_PositionBody);
 	m_VelocityLocal = BodyToLocal(m_VelocityBody);
 	m_AngularVelocityLocal = BodyToLocal(m_AngularVelocityBody);
@@ -1047,7 +994,7 @@ void AeroDynamics::doSimStep2(double dt) {
 		m_PositionLocal	= *m_Position;
 		m_VelocityLocal	= *m_Velocity;
 		m_AngularVelocityLocal = *m_AngularVelocity;
-		m_qOrientation = *m_Orientation;
+		m_Attitude = *m_Orientation;
 
 		m_AirflowBody =	LocalToBody(m_VelocityLocal	- m_WindLocal);
 		m_AirSpeed = m_AirflowBody.length();
@@ -1057,7 +1004,7 @@ void AeroDynamics::doSimStep2(double dt) {
 		m_VelocityBody = LocalToBody(m_VelocityLocal);
 		m_AngularVelocityBody =	LocalToBody(m_AngularVelocityLocal);
 		updateAngles(dt);
-		std::vector<double>	y0 = ::bind(simdata::Vector3::ZERO,	m_VelocityBody,	m_AngularVelocityBody, m_qOrientation);
+		std::vector<double>	y0 = ::bind(simdata::Vector3::ZERO,	m_VelocityBody,	m_AngularVelocityBody, m_Attitude);
 
 		// solution
 		std::vector<double>	y =	flow(y0, 0,	dtlocal);
@@ -1077,16 +1024,16 @@ void AeroDynamics::doSimStep2(double dt) {
 		BodyToLocal();
 
 		// update attitude and check for a unit quaternion
-		m_qOrientation = simdata::Quat(y[10],y[11],y[12],y[9]);
-		double mag = m_qOrientation.length();
+		m_Attitude = simdata::Quat(y[10],y[11],y[12],y[9]);
+		double mag = m_Attitude.length();
 		if (mag	!= 0.0)
-			m_qOrientation /=	mag;
+			m_Attitude /=	mag;
 
 		// returns vehicle data members
 		*m_Position	= m_PositionLocal;
 		*m_Velocity	= m_VelocityLocal;
 		*m_AngularVelocity = m_AngularVelocityLocal;
-		*m_Orientation = m_qOrientation;	
+		*m_Orientation = m_Attitude;	
 	}
 }
 

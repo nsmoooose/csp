@@ -29,6 +29,7 @@
 #include "HID.h"
 #include "InputInterface.h"
 #include <SDL/SDL_events.h>
+//#include "Event.h"
 
 #include <cassert>
 #include <iostream>
@@ -116,7 +117,7 @@ VirtualHID::VirtualHID() {
 
 VirtualHID::~VirtualHID() {}
 
-void VirtualHID::setMapping(EventMapping const *map) { 
+void VirtualHID::setMapping(simdata::Ref<EventMapping const> map) { 
 	m_Map = map; 
 }
 
@@ -149,7 +150,9 @@ bool VirtualHID::onJoystickAxisMotion(SDL_JoyAxisEvent const &event) {
 	if (!m_Map) return false;
 	EventMapping::Axis const *a = m_Map->getJoystickAxis(event.which, event.axis);
 	if (a == NULL || a->id == "") return false;
-	m_Object->onAxis(a->id, event.value * (1.0/32768.0));
+	if (!m_Object->onMapEvent(MapEvent::AxisEvent(a->id, event.value * (1.0 / 32768.0)))) {
+		std::cout << "Missing HID interface for command '" << a->id << "'\n";
+	}
 	return true;
 }
 
@@ -168,7 +171,9 @@ bool VirtualHID::onMouseMove(SDL_MouseMotionEvent const &event) {
 	int kmod = SDL_GetModState();
 	EventMapping::Motion const *m = m_Map->getMouseMotion(event.which, event.state, kmod, m_VirtualMode);
 	if (m == NULL || m->id == "") return false;
-	m_Object->onMotion(m->id, event.x, event.y, event.xrel, event.yrel);
+	if (!m_Object->onMapEvent(MapEvent::MotionEvent(m->id, event.x, event.y, event.xrel, event.yrel))) {
+		std::cout << "Missing HID interface for command '" << m->id << "'\n";
+	}
 	return true;
 }
 
@@ -203,8 +208,10 @@ void VirtualHID::onUpdate(double dt) {
 		if (action->jmod >= 0) {
 			setJoystickModifier(action->jmod);
 		}
-		if (*id && !m_Object->onCommand(id, m_MouseEventX, m_MouseEventY)) {
-			std::cout << "Missing HID interface for command '" << id << "'\n";
+		if (*id) {
+			if (!m_Object->onMapEvent(MapEvent::CommandEvent(id, m_MouseEventX, m_MouseEventY))) {
+				std::cout << "Missing HID interface for command '" << id << "'\n";
+			}
 		}
 		// advance, end, or loop the script
 		int loop = action->loop;

@@ -36,8 +36,8 @@ AC_DEFUN(CSP_LIB_ERROR, [
 
 dnl Generic version check for libraries using 'xxx-config' scripts
 AC_DEFUN(CSP_LIB_CONFIG, [
-  lib_min_version=$3
-  lib_flags_opt=$4
+  lib_min_version="$3"
+  lib_flags_opt="$4"
   lib=yes
   AC_PATH_PROG($1[]_CONFIG, $2-config, no)
   AC_MSG_CHECKING(for $1 >= $lib_min_version)
@@ -75,6 +75,84 @@ AC_DEFUN(CSP_LIB_CONFIG, [
    AC_SUBST($1[]_LIBS)
    LIBS="$$1[]_LIBS $LIBS"
 ])
+
+AC_DEFUN(_CSP_CHECK_PKG_CONFIG, [
+	AC_PATH_PROG(PKG_CONFIG, pkg-config, no)
+])
+		
+dnl Generic version check for libraries using 'pkg-config' scripts
+AC_DEFUN(_CSP_PKG_CONFIG, [
+  if test "$PKG_CONFIG" != "no"; then
+  	CSP_LIB_VERSION=`$PKG_CONFIG --silence-errors --modversion $1`
+  	CSP_LIB_LIBS=`$PKG_CONFIG --silence-errors --libs $1`
+  	CSP_LIB_CFLAGS=`$PKG_CONFIG --silence-errors --cflags $1`
+  fi
+])
+
+AC_DEFUN(_CSP_LIB_CONFIG, [
+  AC_PATH_PROG(LIB_CONFIG, $1-config, no)
+  if test "$LIB_CONFIG" != "no"; then
+    CSP_LIB_VERSION=`$LIB_CONFIG --version` 
+    CSP_LIB_LIBS=`$LIB_CONFIG --libs` 
+    CSP_LIB_CFLAGS=`$LIB_CONFIG $2` 
+  fi
+])
+
+
+AC_DEFUN(CSP_CONFIG, [
+  lib_name="$1"
+  lib_id="$2"
+  lib_pkg_id="$3"
+  lib_min_version="$4"
+  lib_flags_opt="$5"
+  lib_fullname="$6"
+  lib_site="$7"
+  lib=yes
+  CSP_LIB_VERSION="0.0.0"
+  CSP_LIB_LIBS=""
+  CSP_LIB_CFLAGS=""
+  _CSP_LIB_CONFIG($lib_id, $lib_flags_opt)
+  if test "$CSP_LIB_VERSION" = "0.0.0"; then
+  	_CSP_PKG_CONFIG($lib_pkg_id)
+  fi
+  AC_MSG_CHECKING(for $lib_pkg_id >= $lib_min_version)
+  no_lib=""
+  lib_version="$CSP_LIB_VERSION"
+  if test "$lib_version" = "0.0.0"; then
+    no_lib=yes
+    AC_MSG_RESULT(no)
+  else
+    lib_major=`echo $lib_version | sed 's/\([[0-9]]*\).\([[0-9]]*\).\([[0-9]]*\)/\1/'` 
+    lib_minor=`echo $lib_version | sed 's/\([[0-9]]*\).\([[0-9]]*\).\([[0-9]]*\)/\2/'`
+    lib_micro=`echo $lib_version | sed 's/\([[0-9]]*\).\([[0-9]]*\).\([[0-9]]*\)/\3/'`
+    lib_major_min=`echo $lib_min_version | sed 's/\([[0-9]]*\).\([[0-9]]*\).\([[0-9]]*\)/\1/'` 
+    lib_minor_min=`echo $lib_min_version | sed 's/\([[0-9]]*\).\([[0-9]]*\).\([[0-9]]*\)/\2/'`
+    lib_micro_min=`echo $lib_min_version | sed 's/\([[0-9]]*\).\([[0-9]]*\).\([[0-9]]*\)/\3/'`
+    lib_version_proper=`expr \
+      $lib_major \> $lib_major_min \| \
+      $lib_major \= $lib_major_min \& \
+      $lib_minor \> $lib_minor_min \| \
+      $lib_major \= $lib_major_min \& \
+      $lib_minor \= $lib_minor_min \& \
+      $lib_micro \>= $lib_micro_min `
+    if test "$lib_version_proper" = "1" ; then
+      AC_MSG_RESULT(yes)
+    else
+      AC_MSG_RESULT(no)
+      no_lib=yes
+    fi
+   fi
+   if test "$no_lib" = "yes"; then
+	CSP_LIB_ERROR($lib_fullname,$lib_min_version,$lib_site,$1[]_CONFIG)
+   fi
+   $1[]_FLAGS="$CSP_LIB_CFLAGS"
+   $1[]_LIBS="$CSP_LIB_LIBS"
+   AC_SUBST($1[]_FLAGS)
+   AC_SUBST($1[]_LIBS)
+   LIBS="$$1[]_LIBS $LIBS"
+])
+  	
+
 
 
 AC_DEFUN(CSP_OSG_CONFIG, [

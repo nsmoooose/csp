@@ -7,18 +7,6 @@
 <Object class="AircraftObject">
 
     <Path name="model">m2k.model</Path>
-    <Bool name="complex_physics">true</Bool>
-
-    <!-- these values come from a FS2k2 add-on -->
-    <Float name="aileron_min">-15.0</Float>
-    <Float name="aileron_max">+19.5</Float>
-    <Float name="elevator_min">-20.6</Float>
-    <Float name="elevator_max">+27.5</Float>
-    <Float name="rudder_min">-23.5</Float>
-    <Float name="rudder_max">+23.5</Float>
-
-    <Float name="airbrake_max">60.0</Float>
-    <Float name="airbrake_rate">20.0</Float>
 
     <!-- Mass/Inertial properties -->
     <!-- empty mass = 7600 kg -->
@@ -30,25 +18,7 @@
 	     0.0     	1764.0  	252326.0
     </Matrix>
 
-    <Object class="AircraftDynamics" name="aircraft_dynamics">
-    
-        <Path name="flight_model">m2k.fm</Path>
-        
-        <Path name="gear_dynamics">m2k.gear</Path>
-    
-        <Object class="EngineDynamics" name="engine_dynamics">
-            <List name="engine_set">
-	    <!-- real engine power is 9700 kg -->
-            <!-- thrustdata values comes from F4SP3: f16.dat -->
-                <Object class="Engine">
-                    <Path name="thrust_data">m2k.thrust</Path>
-                    <Float name="engine_idle_rpm">0.68</Float>
-                    <Float name="engine_ab_thrust">0.95</Float>
-                    <Vector name="thrust_direction">0.0 1.0 0.0</Vector>
-                    <Vector name="engine_offset">0.0 0.0 0.0</Vector>
-		    <Vector name="smoke_emitter_location">0.0 -5.5 0.0</Vector> 
-                </Object>
-            </List>
-        </Object>
-    </Object>
+    <Path name="human_systems">m2k.systems</Path>
+    <Path name="agent_systems">m2k.systems</Path>
+
 </Object>

@@ -89,19 +89,12 @@ public:
 
 	virtual ~RandomForestModel();
 
-	virtual void pack(simdata::Packer& p) const {
-		FeatureGroupModel::pack(p);
-		p.pack(m_Models);
-		p.pack(m_Density);
-		p.pack(m_MinimumSpacing);
-		p.pack(m_Seed);
-	}
-	virtual void unpack(simdata::UnPacker& p) {
-		FeatureGroupModel::unpack(p);
-		p.unpack(m_Models);
-		p.unpack(m_Density);
-		p.unpack(m_MinimumSpacing);
-		p.unpack(m_Seed);
+	virtual void serialize(simdata::Archive &archive) {
+		FeatureGroupModel::serialize(archive);
+		archive(m_Models);
+		archive(m_Density);
+		archive(m_MinimumSpacing);
+		archive(m_Seed);
 	}
 
 	virtual void postCreate();

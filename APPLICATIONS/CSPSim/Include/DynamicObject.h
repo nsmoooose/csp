@@ -28,10 +28,11 @@
 
 #include "SimObject.h"
 #include "InputInterface.h"
-#include "BaseController.h"
+#include "Controller.h"
 #include "SmokeEffects.h"
 #include "TerrainObject.h"
 #include "DataRecorder.h"
+#include "SystemsModel.h"
 
 
 namespace osgParticle {
@@ -52,6 +53,17 @@ class DynamicObject: public SimObject, public InputInterface
 {
 	friend class VirtualBattlefield;
 
+	struct SystemsModelStore {
+		unsigned int id;
+		simdata::Ref<SystemsModel> model;
+		SystemsModelStore(): id(0) {}
+		SystemsModelStore(unsigned int id_, simdata::Ref<SystemsModel> model_): id(id_), model(model_) {}
+	};
+
+	static std::list<SystemsModelStore> SystemsModelCache;
+
+	enum { MODELCACHESIZE = 5 };
+
 private:
 	enum { 
 	       // bits 8-15 reserved for DynamicObject
@@ -62,18 +74,42 @@ private:
 	     };
 
 	// managed by the battlefield
-	void setHuman(bool flag) { setFlags(F_HUMAN, flag); }
-	void setLocal(bool flag) { setFlags(F_LOCAL, flag); }
+	void setHuman(bool flag) { 
+		if (isHuman() == flag) return;
+		setFlags(F_HUMAN, flag); 
+		if (isLocal()) {
+			if (!flag) cacheSystemsModel();
+			selectVehicleCore();
+		}
+	}
+
+	void setLocal(bool flag) { 
+		if (isLocal() == flag) return;
+		setFlags(F_LOCAL, flag); 
+		if (isHuman()) {
+			if (!flag) cacheSystemsModel();
+		}
+		selectVehicleCore();
+	}
+
+	void cacheSystemsModel();
+	SystemsModel::Ref getCachedSystemsModel();
+	void selectVehicleCore();
+	void setVehicleCore(SystemsModel::Ref);
 
 protected:
 	void setAir(bool flag) { setFlags(F_AIR, flag); }
 	void setGrounded(bool flag) { setFlags(F_GROUNDED, flag); }
 
+	Bus::Ref DynamicObject::getBus();
+
 public:
 	EXTEND_SIMDATA_XML_VIRTUAL_INTERFACE(DynamicObject, SimObject)
 		SIMDATA_XML("model", DynamicObject::m_Model, true)
-		SIMDATA_XML("mass", DynamicObject::m_Mass, true)
-		SIMDATA_XML("inertia", DynamicObject::m_Inertia, false)
+		SIMDATA_XML("mass", DynamicObject::m_ReferenceMass, true)
+		SIMDATA_XML("inertia", DynamicObject::m_ReferenceInertia, false)
+		SIMDATA_XML("human_systems", DynamicObject::m_HumanModel, false)
+		SIMDATA_XML("agent_systems", DynamicObject::m_AgentModel, false)
 	END_SIMDATA_XML_INTERFACE
 
 	DynamicObject();
@@ -82,6 +118,7 @@ public:
 	// model and scene related functions
 	simdata::Ref<SceneModel> getSceneModel() { return m_SceneModel; }
 	simdata::Ref<ObjectModel> getModel() const { return m_Model; }
+	simdata::Ref<SystemsModel> getSystemsModel() const { return m_SystemsModel; }
 	virtual void createSceneModel();
 	virtual void destroySceneModel();
 	osg::Node* getOrCreateModelNode();
@@ -89,16 +126,16 @@ public:
 	virtual void showModel() { if (m_SceneModel.valid()) m_SceneModel->show(); }
 	virtual void hideModel() { if (m_SceneModel.valid()) m_SceneModel->hide(); }
 
-	virtual void getStats(std::vector<std::string> &stats) const {};
+	virtual void getInfo(std::vector<std::string> &info) const;
 
-	void setController(BaseController * Controller) { 
+	void setController(Controller * Controller) { 
 		m_Controller = Controller;
 	}
 
 	void setVelocity(simdata::Vector3 const & velocity);
 	void setVelocity(double Vx, double Vy, double Vz);
-	simdata::Vector3 const & getVelocity() const { return m_LinearVelocity; }
-	double getSpeed() const { return m_Speed; }
+	simdata::Vector3 const & getVelocity() const { return b_LinearVelocity->value(); }
+	double getSpeed() const { return b_LinearVelocity->value().length(); }
 
 	virtual simdata::Vector3 getViewPoint() const;
 
@@ -115,9 +152,6 @@ public:
 	virtual void deaggregate() { std::cout << "deaggregate " << int(this) << std::endl; }
 	virtual void setVisible(bool visible) { std::cout << int(this) << ": visible = " << visible << std::endl; }
 	
-	virtual unsigned int onRender();
-	virtual double onUpdate(double dt);
-
 	bool isNearGround();
 
 	// The object name holds an identifier string for in-game display.  It is not 
@@ -127,63 +161,70 @@ public:
 
 	simdata::Vector3 getDirection() const;
 	simdata::Vector3 getUpDirection() const;
-	simdata::Quat & getAttitude() { return m_Attitude; }
+	simdata::Quat & getAttitude() { return b_Attitude->value(); }
 	void setAttitude(simdata::Quat const & attitude);
 
-	virtual simdata::Vector3 getGlobalPosition() const { return m_GlobalPosition; }
+	virtual simdata::Vector3 getGlobalPosition() const { return b_GlobalPosition->value(); }
 	virtual void setGlobalPosition(simdata::Vector3 const & position);
 	virtual void setGlobalPosition(double x, double y, double z);
 
-	virtual void updateScene(simdata::Vector3 const &origin) { 
-		if (m_SceneModel.valid()) m_SceneModel->setPositionAttitude(m_GlobalPosition - origin, m_Attitude); 
-	}
+	virtual void updateScene(simdata::Vector3 const &origin);
 	
 	bool isSmoke();
 	void disableSmoke();
 	void enableSmoke();
 
-	void setDataRecorder(DataRecorder *recorder);
+	virtual void setDataRecorder(DataRecorder *recorder);
 
 protected:
 
-	virtual void initDataRecorder();
-	simdata::Ref<DataRecorder> m_DataRecorder;
+	virtual void serialize(simdata::Archive&);
+	virtual void postCreate();
 
-	virtual void pack(simdata::Packer& p) const;
-	virtual void unpack(simdata::UnPacker& p);
+	virtual void registerUpdate(UpdateMaster *master);
+	virtual double onUpdate(double dt);
+	virtual void postUpdate(double dt);
+	virtual void onRender() {}
 
-	virtual void doMovement(double dt);
-	virtual void postMotion(double dt);
+	virtual void registerChannels(Bus::Ref bus);
+	virtual void bindChannels(Bus::Ref bus);
+	virtual void bindAnimations(Bus::Ref bus);
 
-	virtual void bindAnimations() {}
-
-	BaseController * m_Controller;
+	TerrainObject::IntersectionHint m_GroundHint;
 
 	// dynamic properties
 	
-	simdata::Vector3 m_GlobalPosition;
 	simdata::Vector3 m_PrevPosition;
 
-	double m_Mass;
-	double m_Speed;
-	
-	TerrainObject::IntersectionHint m_GroundHint;
-	double m_GroundZ;
-	simdata::Vector3 m_GroundN;
-	bool m_NearGround;
-
-	simdata::Matrix3 m_Inertia;
-	simdata::Matrix3 m_InertiaInv;
-
-	simdata::Vector3 m_AngularVelocity;
-	simdata::Vector3 m_LinearVelocity;
-
-	simdata::Quat m_Attitude;
+	DataChannel<simdata::Vector3>::Ref b_GlobalPosition;
+	DataChannel<double>::Ref b_Mass;
+	DataChannel<double>::Ref b_GroundZ;
+	DataChannel<simdata::Vector3>::Ref b_GroundN;
+	DataChannel<bool>::Ref b_NearGround;
+	DataChannel<simdata::Matrix3>::Ref b_Inertia;
+	DataChannel<simdata::Matrix3>::Ref b_InertiaInv;
+	DataChannel<simdata::Vector3>::Ref b_AngularVelocity;
+	DataChannel<simdata::Vector3>::Ref b_LinearVelocity;
+	DataChannel<simdata::Quat>::Ref b_Attitude;
 
 	std::string m_ObjectName;
 
 	simdata::Link<ObjectModel> m_Model;
 	simdata::Ref<SceneModel> m_SceneModel;
+	simdata::Ref<SystemsModel> m_SystemsModel;
+	simdata::Ref<PhysicsModel> m_PhysicsModel;
+	simdata::Ref<Controller> m_Controller;
+
+	virtual void doPhysics(double dt);
+	virtual void doControl(double dt);
+
+	virtual bool onMapEvent(MapEvent const &event);
+
+private:
+	double m_ReferenceMass;
+	simdata::Matrix3 m_ReferenceInertia;
+	simdata::Path m_HumanModel;
+	simdata::Path m_AgentModel;
 
 };
 

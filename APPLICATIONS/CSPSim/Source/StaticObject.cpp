@@ -38,12 +38,8 @@ StaticObject::~StaticObject()
 {
 }
 
-void StaticObject::pack(simdata::Packer& p) const {
-	SimObject::pack(p);
-}
-
-void StaticObject::unpack(simdata::UnPacker& p) {
-	SimObject::unpack(p);
+void StaticObject::serialize(simdata::Archive& archive) {
+	SimObject::serialize(archive);
 }
 
 

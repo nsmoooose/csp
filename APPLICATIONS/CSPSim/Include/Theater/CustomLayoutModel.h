@@ -45,7 +45,7 @@ protected:
 	mutable int m_FeatureCount;
 
 public:
-	SIMDATA_OBJECT(CustomLayoutModel, 0, 0)
+	SIMDATA_STATIC_OBJECT(CustomLayoutModel, 0, 0)
 
 	BEGIN_SIMDATA_XML_INTERFACE(CustomLayoutModel)
 		SIMDATA_XML("layout", CustomLayoutModel::m_FeatureLayout, true)
@@ -70,15 +70,11 @@ public:
 
 	virtual ~CustomLayoutModel();
 
-	virtual void pack(simdata::Packer& p) const {
-		FeatureGroupModel::pack(p);
-		p.pack(m_FeatureLayout);
+	virtual void serialize(simdata::Archive &archive) {
+		FeatureGroupModel::serialize(archive);
+		archive(m_FeatureLayout);
 	}
 
-	virtual void unpack(simdata::UnPacker& p) {
-		FeatureGroupModel::unpack(p);
-		p.unpack(m_FeatureLayout);
-	}
 };
 
 

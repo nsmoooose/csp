@@ -34,6 +34,7 @@
 #include "TerrainObject.h"
 #include "VirtualScene.h"
 #include "DynamicObject.h"
+#include "SynchronousUpdate.h"
 
 
 class FeatureGroup;
@@ -321,7 +322,7 @@ public:
  * class VirtualBattlefield
  *
  */
-class VirtualBattlefield: public simdata::Referenced
+class VirtualBattlefield: virtual public simdata::Referenced
 {
 
 	typedef simdata::Ref<DynamicObject> Unit;
@@ -341,14 +342,12 @@ class VirtualBattlefield: public simdata::Referenced
 			unit = u;
 			flags = 0;
 			idx = -1;
-			sleep = 0.0;
-			time = 0.0;
 		}
+		bool operator==(Unit const &u) { return unit == u; }
+		bool operator!=(Unit const &u) { return unit != u; }
 		Unit unit;
 		int flags;
 		int idx;
-		float sleep; // time between updates
-		float time; // time since last update
 		//simdata::Ref<Connection> connection; // remote connection information
 	};
 
@@ -397,13 +396,13 @@ class VirtualBattlefield: public simdata::Referenced
 
 	void _detachUnit(Unit &unit);
 
-	void _updateUnit(UnitWrapper &wrapper, double dt);
-
 	void _removeBubble(int cell, int type);
 		
 	void _addBubble(int cell, int type);
 
 	void _setHuman(UnitWrapper &wrapper, bool human);
+
+	void _moveUnits();
 
 	void saveSnapshot();
 
@@ -414,6 +413,8 @@ class VirtualBattlefield: public simdata::Referenced
 	int m_Deleted;
 	int m_Debug;
 	bool m_Clean;
+
+	UpdateMaster m_UnitUpdateMaster;
 
 	simdata::Vector3 m_Camera;
 	int m_CameraIndex;
@@ -427,14 +428,13 @@ public:
 	int create();
 	void cleanup();
 
-	void onUpdate(float dt);
+	void onUpdate(double dt);
 	void updateOrigin(simdata::Vector3 const &origin);
 
 	void addUnit(Unit const &);
 	void deleteUnit(Unit const &);
 	void removeUnitsMarkedForDelete();
 	void removeAllUnits();
-	void updateAllUnits(float dt);
 	void setHuman(Unit const &, bool human);
 
 	Unit getNextUnit(Unit const &unit, int human, int local, int category);

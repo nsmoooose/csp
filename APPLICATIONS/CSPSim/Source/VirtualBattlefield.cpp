@@ -148,9 +148,10 @@ float VirtualBattlefield::getGroundElevation(float x, float y, simdata::Vector3 
 	}
 }
 
-void VirtualBattlefield::onUpdate(float dt)
+void VirtualBattlefield::onUpdate(double dt)
 {
-	updateAllUnits(dt);
+	m_UnitUpdateMaster.update(dt);
+	_moveUnits();
 	_updateActiveCells(dt);
 }
 
@@ -158,6 +159,7 @@ void VirtualBattlefield::onUpdate(float dt)
 void VirtualBattlefield::addUnit(Unit const &unit)
 {
 	assert(unit.valid());
+	unit->registerUpdate(&m_UnitUpdateMaster);
 	m_UnitList.push_front(UnitWrapper(unit));
 }
 
@@ -165,27 +167,22 @@ void VirtualBattlefield::addUnit(Unit const &unit)
 void VirtualBattlefield::deleteUnit(Unit const &unit)
 {
 	assert(unit.valid());
-	UnitList::iterator i = m_UnitList.begin();
-	UnitList::const_iterator end = m_UnitList.end();
-	for (; i != end; ++i) {
-		if (i->unit == unit) {
-			i->flags |= FLAG_DELETE;
-			m_Deleted++;
-			return;
-		}
+	UnitList::iterator i = std::find(m_UnitList.begin(), m_UnitList.end(), unit);
+	if (i != m_UnitList.end()) {
+		i->unit->registerUpdate(0);
+		i->flags |= FLAG_DELETE;
+		m_Deleted++;
+		return;
 	}
 	assert(0);
 }
 
 void VirtualBattlefield::setHuman(Unit const &unit, bool human) {
 	assert(unit.valid());
-	UnitList::iterator i = m_UnitList.begin();
-	UnitList::const_iterator end = m_UnitList.end();
-	for (; i != end; ++i) {
-		if (i->unit == unit) {
-			_setHuman(*i, human);
-			return;
-		}
+	UnitList::iterator i = std::find(m_UnitList.begin(), m_UnitList.end(), unit);
+	if (i != m_UnitList.end()) {
+		_setHuman(*i, human);
+		return;
 	}
 	assert(0);
 }
@@ -214,12 +211,19 @@ void VirtualBattlefield::removeAllUnits()
 	m_Deleted = 0;
 }
 
-void VirtualBattlefield::updateAllUnits(float dt)
+// XXX this routine does not need to run every cycle, and could
+// in priciple distribute its loop over multiple cycles (although 
+// this is complicated by the fact the that m_UnitList may change)
+void VirtualBattlefield::_moveUnits()
 {
 	UnitList::iterator i = m_UnitList.begin();
 	UnitList::const_iterator end = m_UnitList.end();
 	for (; i != end ; ++i) {
-	  	_updateUnit(*i, dt);
+		simdata::Vector3 const &pos = i->unit->getGlobalPosition();
+		int idx = toCell(pos);
+		if (idx != i->idx) {
+			_moveUnit(*i, idx);
+		}
 	}
 }
 
@@ -235,12 +239,9 @@ void VirtualBattlefield::updateOrigin(simdata::Vector3 const &origin) {
 
 VirtualBattlefield::Unit VirtualBattlefield::getNextUnit(Unit const &unit, int human, int local, int category)
 {
-	UnitList::const_iterator i = m_UnitList.begin();
-	UnitList::const_iterator end = m_UnitList.end();
-	for (; i != end; ++i) {
-		if (i->unit == unit) break;
-	}
-	if (i == end) {
+	UnitList::iterator end = m_UnitList.end();
+	UnitList::iterator i = std::find(m_UnitList.begin(), end, unit);
+	if (i == m_UnitList.end()) {
 		return unit;
 	}
 	do {
@@ -444,19 +445,6 @@ void VirtualBattlefield::_cleanupActiveCells() {
 	m_ActiveCells.clear();
 }
 
-
-void VirtualBattlefield::_updateUnit(UnitWrapper &wrapper, double dt) {
-	wrapper.time += dt;
-	if (wrapper.time >= wrapper.sleep) {
-		wrapper.sleep = wrapper.unit->onUpdate(wrapper.time);
-		wrapper.time = 0.0;
-		simdata::Vector3 const &pos = wrapper.unit->getGlobalPosition();
-		int idx = toCell(pos);
-		if (idx != wrapper.idx) {
-			_moveUnit(wrapper, idx);
-		}
-	}
-}
 
 
 void VirtualBattlefield::setTheater(simdata::Ref<Theater> const &theater) {

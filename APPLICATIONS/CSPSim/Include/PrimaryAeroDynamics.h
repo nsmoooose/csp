@@ -34,11 +34,11 @@
  * class PrimaryAeroDynamics - aircraft primary flight model implementation.
  *
  */
-class PrimaryAeroDynamics: public simdata::Object, public BaseDynamics {                
+class PrimaryAeroDynamics: public BaseDynamics {                
 public:
 	SIMDATA_OBJECT(PrimaryAeroDynamics, 0, 0)
 
-	BEGIN_SIMDATA_XML_INTERFACE(PrimaryAeroDynamics)
+	EXTEND_SIMDATA_XML_INTERFACE(PrimaryAeroDynamics, BaseDynamics)
 		SIMDATA_XML("wing_span", PrimaryAeroDynamics::m_WingSpan, true)
 		SIMDATA_XML("wing_chord", PrimaryAeroDynamics::m_WingChord, true)
 		SIMDATA_XML("wing_area", PrimaryAeroDynamics::m_WingArea, true)
@@ -98,8 +98,7 @@ public:
 
 protected:
 
-	virtual void pack(simdata::Packer& p) const;
-	virtual void unpack(simdata::UnPacker& p);
+	virtual void serialize(simdata::Archive&);
 	virtual void convertXML();
 	virtual void postCreate();
 

@@ -38,26 +38,20 @@
 #include <assert.h>
 
 
-EventMapIndex::~EventMapIndex() {
-	MapVector::iterator i;
-	for (i = m_Maps.begin(); i != m_Maps.end(); i++) {
-		delete *i;
-	}
-}
 
-EventMapping *EventMapIndex::getMap(const simdata::hasht &key) {
+EventMapping::Ref EventMapIndex::getMap(const simdata::hasht &key) {
 	MapHash::iterator i = m_Index.find(key);
 	if (i == m_Index.end()) return NULL;
 	return i->second;
 }
 
-EventMapping *EventMapIndex::getMap(const std::string &id) {
+EventMapping::Ref EventMapIndex::getMap(const std::string &id) {
 	return getMap(simdata::hasht(id));
 }
 
 void EventMapIndex::load(std::string const &path) {
-	EventMapping *m = new EventMapping;
-	assert(m);
+	EventMapping::Ref m = new EventMapping;
+	assert(m.valid());
 	CSP_LOG(APP, INFO, "Loading human interface device mapping '" << path << "'");
 	if (m->load(path)) {
 		m_Maps.push_back(m);
@@ -66,8 +60,6 @@ void EventMapIndex::load(std::string const &path) {
 		for (idx = bindings.begin(); idx != bindings.end(); idx++) {
 			m_Index[*idx] = m;
 		}
-	} else {
-		delete m;
 	}
 }
 

@@ -35,9 +35,16 @@
 #include "Atmosphere.h"
 
 #include <osg/ref_ptr>
-
 #include <SDL/SDL_joystick.h>
 
+#include <Producer/RenderSurface>
+// Producer includes windows.h, which leaks a #define min and max
+#undef min
+#undef max
+
+
+// Uncomment this line if you are using OSG version 0.9.4 or older.
+//#define CSP_OSG_094
 
 struct SDL_Surface;
 
@@ -88,8 +95,7 @@ public:
 	VirtualScene * getScene();
 	VirtualScene const * getScene() const;
 	simdata::Ref<Theater> getTheater() const;
-
-	EventMapIndex *getInterfaceMaps() { return m_InterfaceMaps; }
+	simdata::Ref<EventMapIndex> getInterfaceMaps() const;
 
 	void togglePause();
 	void runConsole(PyConsole *console);
@@ -102,8 +108,9 @@ public:
 
 	simdata::Ref<PyShell> getShell() const;
 
+
 protected:
-	
+
 	void initSim();
 	int initSDL();
 
@@ -148,8 +155,8 @@ private:
 	/**
 	 * The current input device interface
 	 */
-	VirtualHID *m_Interface;
-	EventMapIndex *m_InterfaceMaps;
+	simdata::Ref<VirtualHID> m_Interface;
+	simdata::Ref<EventMapIndex> m_InterfaceMaps;
 	simdata::Ref<DynamicObject> m_ActiveObject;
 
 	/**
@@ -167,6 +174,10 @@ private:
 	//PyObject* m_Console;
 	osg::ref_ptr<PyConsole> m_Console;
 	simdata::Ref<PyShell> m_Shell;
+
+#ifndef CSP_OSG_094
+	osg::ref_ptr<Producer::RenderSurface> m_RenderSurface;
+#endif
 
 };
 

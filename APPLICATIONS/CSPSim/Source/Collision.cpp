@@ -25,16 +25,22 @@
 #include <SimData/Quat.h>
 #include <SimData/Ref.h>
 
-#include "Collision.h"
+#include <Collision.h>
+#include <KineticsChannels.h>
+#include <ObjectModel.h>
+
+using bus::Kinetics;
 
 
+SIMDATA_REGISTER_INTERFACE(GroundCollisionDynamics)
 
-GroundCollisionDynamics::GroundCollisionDynamics(double mass, 
-                                                 std::vector<simdata::Vector3> const &contacts):
-	m_Forces(contacts.size()),
-	m_Extension(contacts.size()),
-	m_Contacts(contacts),
-	m_Mass(mass),
+
+//GroundCollisionDynamics::GroundCollisionDynamics(double mass, 
+//                                                 std::vector<simdata::Vector3> const &contacts):
+GroundCollisionDynamics::GroundCollisionDynamics():
+	//m_Forces(contacts.size()),
+	//m_Extension(contacts.size()),
+	//m_Contacts(contacts),
 	m_ContactSpring(1e+5),
 	m_SpringConstant(5e+6),
 	m_Friction(1.2),
@@ -55,23 +61,37 @@ void GroundCollisionDynamics::setGroundProperties(double spring_constant,
 }
 
 
+void GroundCollisionDynamics::registerChannels(Bus *bus) {
+}
+
+void GroundCollisionDynamics::importChannels(Bus *bus) {
+	assert(bus!=0);
+	b_Mass = bus->getChannel(Kinetics::Mass);
+	b_GroundN = bus->getChannel(Kinetics::GroundN);
+	b_GroundZ = bus->getChannel(Kinetics::GroundZ);
+	b_NearGround = bus->getChannel(Kinetics::NearGround);
+	DataChannel<simdata::Ref<ObjectModel> >::CRef model = bus->getChannel("Internal.ObjectModel");
+	m_Contacts = model->value()->getContacts();
+	m_Forces.resize(m_Contacts.size());
+	m_Extension.resize(m_Contacts.size());
+}
 	
 
 void GroundCollisionDynamics::computeForceAndMoment(double x) {
-
-	simdata::Quat const &q = *m_qOrientation;
-
-	simdata::Vector3 const &velocityBody = *m_VelocityBody;
-	simdata::Vector3 const &angularVelocityBody = *m_AngularVelocityBody;
-	
-	simdata::Vector3 const &normalGroundLocal = *m_NormalGround;
-	simdata::Vector3 origin(0.0, 0.0, *m_Height);
-	simdata::Vector3 normalGroundBody = q.invrotate(normalGroundLocal);
-
 	m_HasContact = false;
 	m_NeedsImpulse = false;
 	m_Force = simdata::Vector3::ZERO;
 	m_Moment = simdata::Vector3::ZERO;
+
+	if (!b_NearGround->value()) return;
+
+	double height = m_PositionLocal->z() - b_GroundZ->value();
+	simdata::Quat const &q = *m_Attitude;
+	simdata::Vector3 const &velocityBody = *m_VelocityBody;
+	simdata::Vector3 const &angularVelocityBody = *m_AngularVelocityBody;
+	simdata::Vector3 const &normalGroundLocal = b_GroundN->value();
+	simdata::Vector3 normalGroundBody = q.invrotate(normalGroundLocal);
+	simdata::Vector3 origin(0.0, 0.0, height);
 
 	for (size_t i = 0; i < m_Contacts.size(); ++i) {
 		simdata::Vector3 forceBody = simdata::Vector3::ZERO;
@@ -126,7 +146,7 @@ void GroundCollisionDynamics::computeForceAndMoment(double x) {
 	} 
 
 	if (m_HasContact) {
-		double acceleration = m_Force.length() / m_Mass;
+		double acceleration = m_Force.length() / b_Mass->value();
 		double limit = 20.0 * 9.8; // 20 G limit for basic response
 		double scale = 1.0;
 		// extreme impact, supply addition reactive impulse

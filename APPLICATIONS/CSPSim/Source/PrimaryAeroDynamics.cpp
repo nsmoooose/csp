@@ -60,110 +60,57 @@ PrimaryAeroDynamics::PrimaryAeroDynamics():
 PrimaryAeroDynamics::~PrimaryAeroDynamics() {
 }
 
-void PrimaryAeroDynamics::pack(simdata::Packer& p) const {
-	Object::pack(p);
+void PrimaryAeroDynamics::serialize(simdata::Archive &archive) {
+	Object::serialize(archive);
 	
-	p.pack(m_WingSpan);
-	p.pack(m_WingChord);
-	p.pack(m_WingArea);
-	p.pack(m_stallAOA);
+	archive(m_WingSpan);
+	archive(m_WingChord);
+	archive(m_WingArea);
+	archive(m_stallAOA);
 	
-	p.pack(m_DeMax);
-	p.pack(m_DeMin);
-	p.pack(m_DaMax);
-	p.pack(m_DaMin);
-	p.pack(m_DrMax);
-	p.pack(m_DrMin);
+	archive(m_DeMax);
+	archive(m_DeMin);
+	archive(m_DaMax);
+	archive(m_DaMin);
+	archive(m_DrMax);
+	archive(m_DrMin);
 
-	p.pack(m_GMin);
-	p.pack(m_GMax);
+	archive(m_GMin);
+	archive(m_GMax);
 
-	p.pack(m_CD0);
-	p.pack(m_CD_a);
-	p.pack(m_CD_de);
+	archive(m_CD0);
+	archive(m_CD_a);
+	archive(m_CD_de);
 	
-	p.pack(m_CL0);
-	p.pack(m_CL_a);
-	p.pack(m_CL_adot);
-	p.pack(m_CL_q);
-	p.pack(m_CL_de);
+	archive(m_CL0);
+	archive(m_CL_a);
+	archive(m_CL_adot);
+	archive(m_CL_q);
+	archive(m_CL_de);
 	
-	p.pack(m_CM0);
-	p.pack(m_CM_a);
-	p.pack(m_CM_adot);
-	p.pack(m_CM_q);
-	p.pack(m_CM_de);
+	archive(m_CM0);
+	archive(m_CM_a);
+	archive(m_CM_adot);
+	archive(m_CM_q);
+	archive(m_CM_de);
 	
-	p.pack(m_CY_beta);
-	p.pack(m_CY_p);
-	p.pack(m_CY_r);
-	p.pack(m_CY_da);
-	p.pack(m_CY_dr);
+	archive(m_CY_beta);
+	archive(m_CY_p);
+	archive(m_CY_r);
+	archive(m_CY_da);
+	archive(m_CY_dr);
 	
-	p.pack(m_CI_beta);
-	p.pack(m_CI_p);
-	p.pack(m_CI_r);
-	p.pack(m_CI_da);
-	p.pack(m_CI_dr);
+	archive(m_CI_beta);
+	archive(m_CI_p);
+	archive(m_CI_r);
+	archive(m_CI_da);
+	archive(m_CI_dr);
 
-	p.pack(m_Cn_beta);
-	p.pack(m_Cn_p);
-	p.pack(m_Cn_r);
-	p.pack(m_Cn_da);
-	p.pack(m_Cn_dr);
-}
-
-void PrimaryAeroDynamics::unpack(simdata::UnPacker& p) {
-	Object::unpack(p);
-
-	p.unpack(m_WingSpan);
-	p.unpack(m_WingChord);
-	p.unpack(m_WingArea);
-	p.unpack(m_stallAOA);
-	
-	p.unpack(m_DeMax);
-	p.unpack(m_DeMin);
-	p.unpack(m_DaMax);
-	p.unpack(m_DaMin);
-	p.unpack(m_DrMax);
-	p.unpack(m_DrMin);
-
-	p.unpack(m_GMin);
-	p.unpack(m_GMax);
-
-	p.unpack(m_CD0);
-	p.unpack(m_CD_a);
-	p.unpack(m_CD_de);
-	
-	p.unpack(m_CL0);
-	p.unpack(m_CL_a);
-	p.unpack(m_CL_adot);
-	p.unpack(m_CL_q);
-	p.unpack(m_CL_de);
-	
-	p.unpack(m_CM0);
-	p.unpack(m_CM_a);
-	p.unpack(m_CM_adot);
-	p.unpack(m_CM_q);
-	p.unpack(m_CM_de);
-	
-	p.unpack(m_CY_beta);
-	p.unpack(m_CY_p);
-	p.unpack(m_CY_r);
-	p.unpack(m_CY_da);
-	p.unpack(m_CY_dr);
-	
-	p.unpack(m_CI_beta);
-	p.unpack(m_CI_p);
-	p.unpack(m_CI_r);
-	p.unpack(m_CI_da);
-	p.unpack(m_CI_dr);
-
-	p.unpack(m_Cn_beta);
-	p.unpack(m_Cn_p);
-	p.unpack(m_Cn_r);
-	p.unpack(m_Cn_da);
-	p.unpack(m_Cn_dr);
+	archive(m_Cn_beta);
+	archive(m_Cn_p);
+	archive(m_Cn_r);
+	archive(m_Cn_da);
+	archive(m_Cn_dr);
 }
 
 void PrimaryAeroDynamics::convertXML() {
@@ -225,7 +172,7 @@ void PrimaryAeroDynamics::initializeSimulationStep(double dt) {
 
 
 void PrimaryAeroDynamics::computeForceAndMoment(double x) {
-	m_AirflowBody =	*m_VelocityBody - *m_WindBody; //m_qOrientation->invrotate(m_WindLocal);
+	m_AirflowBody =	*m_VelocityBody - *m_WindBody; //m_Attitude->invrotate(m_WindLocal);
 	m_AirSpeed = m_AirflowBody.length();
 	// prevent singularities
 	if (m_AirSpeed < 1.0) m_AirSpeed = 1.0;

@@ -68,7 +68,7 @@ class ObjectModel: public simdata::Object
 public:
 	typedef std::vector<simdata::Vector3> ContactList;
 
-	SIMDATA_OBJECT(ObjectModel, 6, 0);
+	SIMDATA_STATIC_OBJECT(ObjectModel, 6, 0);
 	
 	BEGIN_SIMDATA_XML_INTERFACE(ObjectModel)
 		SIMDATA_XML("model_path", ObjectModel::m_ModelPath, true)
@@ -125,8 +125,7 @@ protected:
 	std::vector<simdata::Vector3> m_LandingGear;
 	simdata::Link<Animation>::vector m_Animations;
 	
-	virtual void pack(simdata::Packer& p) const;
-	virtual void unpack(simdata::UnPacker& p);
+	virtual void serialize(simdata::Archive&);
 	virtual void postCreate();
 	virtual void loadModel();
 	void addContactMarkers();
@@ -191,7 +190,7 @@ public:
 		m_Switch->setAllChildrenOff();
 	}
 
-	AnimationChannel *bindAnimationChannel(std::string const &control, AnimationChannel *channel);
+	void bindAnimationChannels(Bus::Ref);
 
 	void setSmokeEmitterLocation(std::vector<simdata::Vector3> const &sel);
 	bool addSmoke();

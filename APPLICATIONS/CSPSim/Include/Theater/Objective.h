@@ -50,13 +50,9 @@ public:
 
 	virtual ~Objective();
 
-	virtual void pack(simdata::Packer& p) const {
-		FeatureGroup::pack(p);
-		p.pack(m_StrategicValueModifier);
-	}
-	virtual void unpack(simdata::UnPacker& p) {
-		FeatureGroup::unpack(p);
-		p.unpack(m_StrategicValueModifier);
+	virtual void serialize(simdata::Archive &archive) {
+		FeatureGroup::serialize(archive);
+		archive(m_StrategicValueModifier);
 	}
 };
 

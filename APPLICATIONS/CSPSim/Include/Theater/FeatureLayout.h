@@ -108,23 +108,15 @@ public:
 	 */
 	void makeFeatures(std::vector<Feature> &features, int value) const;
 
-	virtual void pack(simdata::Packer& p) const {
-		Object::pack(p);
-		p.pack(m_FeatureModel);
-		p.pack(m_X);
-		p.pack(m_Y);
-		p.pack(m_Orientation);
-		p.pack(m_ValueModifier);
+	virtual void serialize(simdata::Archive &archive) {
+		Object::serialize(archive);
+		archive(m_FeatureModel);
+		archive(m_X);
+		archive(m_Y);
+		archive(m_Orientation);
+		archive(m_ValueModifier);
 	}
 
-	virtual void unpack(simdata::UnPacker& p) {
-		Object::unpack(p);
-		p.unpack(m_FeatureModel);
-		p.unpack(m_X);
-		p.unpack(m_Y);
-		p.unpack(m_Orientation);
-		p.unpack(m_ValueModifier);
-	}
 };
 
 

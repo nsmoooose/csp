@@ -110,21 +110,13 @@ public:
 		float r;
 		float g;
 		float b;
-		void pack(simdata::Packer &p) const {
-			p.pack(Ra);
-			p.pack(De);
-			p.pack(I);
-			p.pack(r);
-			p.pack(g);
-			p.pack(b);
-		}
-		void unpack(simdata::UnPacker &p) {
-			p.unpack(Ra);
-			p.unpack(De);
-			p.unpack(I);
-			p.unpack(r);
-			p.unpack(g);
-			p.unpack(b);
+		void serialize(simdata::Archive &archive) {
+			archive(Ra);
+			archive(De);
+			archive(I);
+			archive(r);
+			archive(g);
+			archive(b);
 		}
 		bool parse(StringTokenizer &t) {
 			if (t.size() < 6) return false;
@@ -144,34 +136,27 @@ public:
 		}
 	};
 
-	SIMDATA_OBJECT(StarCatalog, 0, 0)
+	SIMDATA_STATIC_OBJECT(StarCatalog, 0, 0)
 	BEGIN_SIMDATA_XML_INTERFACE(StarCatalog)
 		SIMDATA_XML("source", StarCatalog::m_Source, false)
 		SIMDATA_XML("magnitude_cutoff", StarCatalog::m_MagnitudeCutoff, false)
 	END_SIMDATA_XML_INTERFACE
 
-	virtual void pack(simdata::Packer &p) const {
-		Object::pack(p);
-		p.pack(m_Source);
-		p.pack(m_MagnitudeCutoff);
-		p.pack((int)_stars.size());
-		std::vector<Star>::const_iterator i;
-		for (i = _stars.begin(); i != _stars.end(); i++) {
-			i->pack(p);
-		}
-	}
-	virtual void unpack(simdata::UnPacker &p) {
-		Object::unpack(p);
-		p.unpack(m_Source);
-		p.unpack(m_MagnitudeCutoff);
-		int n;
-		p.unpack(n);
-		_stars.resize(n);
+	void serialize(simdata::Archive &archive) {
+		Object::serialize(archive);
+		archive(m_Source);
+		archive(m_MagnitudeCutoff);
+		int n = static_cast<int>(_stars.size());
+		archive(n);
+		if (archive.isLoading()) {
+			_stars.resize(n);
+		} 
 		std::vector<Star>::iterator i;
 		for (i = _stars.begin(); i != _stars.end(); i++) {
-			i->unpack(p);
+			i->serialize(archive);
 		}
 	}
+
 	virtual void parseXML(const char *cdata) {
 		StringTokenizer t(cdata, " \t\n\r");
 		Star s;
@@ -1083,6 +1068,11 @@ public:
 		addPrimitiveSet(fan);
 		setVertexArray(m_Coords);
 		setColorArray(m_Colors);
+		UShortArray *ci = new UShortArray(m_Segments+1);
+		for (unsigned short i=0; i < m_Segments+1; i++) {
+			(*ci)[i] = i;
+		}
+		setColorIndices(ci);
 		setColorBinding(Geometry::BIND_PER_VERTEX);
 		updateHorizon(1000.0, 120000.0);
 		updateFogColor(Vec4(1.0, 1.0, 1.0, 1.0));
@@ -1091,6 +1081,7 @@ public:
 	void updateHorizonColors(Vec4Array const &colors) {
 		assert(int(colors.size()) == m_Segments);
 		for (int i=0; i < m_Segments; i++) (*m_Colors)[i] = colors[i];
+		dirtyDisplayList();
 	}
 
 	void updateFogColor(Vec4 const &fog) {
@@ -1177,23 +1168,24 @@ void Sky::_init()
 	Vec3Array& coords = *(new Vec3Array(m_nseg*m_nlev));
 	Vec4Array& colors = *m_Colors;
 	Vec2Array& tcoords = *m_TexCoords;
+	assert(m_nseg * m_nlev < 65536);
+	UShortArray *cindex = new UShortArray(m_nseg*m_nlev);
 #ifdef TEXDOME
 	m_HorizonColors = new Vec4Array(192);
 #else
 	m_HorizonColors = new Vec4Array(m_nseg);
 #endif
 
-	int ci, ii;
-	ii = ci = 0;
+	int ci = 0;
 
-	for( i = 0; i < m_nlev; ++i ) {
-		for( j = 0; j < m_nseg; ++j ) {
+	for (i = 0; i < m_nlev; ++i) {
+		for(j = 0; j < m_nseg; ++j) {
 			alpha = osg::DegreesToRadians(m_lev[i]);
 			theta = osg::DegreesToRadians((float)(j*360.0/m_nseg));
 
-			x = radius * cosf( alpha ) * cosf( theta );
-			y = radius * cosf( alpha ) * -sinf( theta );
-			z = radius * sinf( alpha );
+			x = radius * cosf(alpha) *  cosf(theta);
+			y = radius * cosf(alpha) * -sinf(theta);
+			z = radius * sinf(alpha);
 
 			coords[ci][0] = x;
 			coords[ci][1] = y;
@@ -1205,7 +1197,9 @@ void Sky::_init()
 			colors[ci][3] = 1.0;
 
 			tcoords[ci][0] = 0.5f + std::min(0.5f, (90.0f - m_lev[i]) / 180.0f) * cosf(theta);
-            tcoords[ci][1] = 0.5f + std::min(0.5f, (90.0f - m_lev[i]) / 180.0f) * sinf(theta);
+			tcoords[ci][1] = 0.5f + std::min(0.5f, (90.0f - m_lev[i]) / 180.0f) * sinf(theta);
+
+			(*cindex)[ci] = static_cast<unsigned short>(ci);
 
 			++ci;
 		}
@@ -1222,10 +1216,11 @@ void Sky::_init()
 	m_SkyDome->setSupportsDisplayList(false);
 	m_SkyDome->setUseDisplayList(false);
 	m_SkyDome->addPrimitiveSet(drawElements);
-	m_SkyDome->setVertexArray( &coords );
-	m_SkyDome->setTexCoordArray( 0, &tcoords );
-	m_SkyDome->setColorArray( &colors );
-	m_SkyDome->setColorBinding( Geometry::BIND_PER_VERTEX );
+	m_SkyDome->setVertexArray(&coords);
+	m_SkyDome->setTexCoordArray(0, &tcoords);
+	m_SkyDome->setColorArray(&colors);
+	m_SkyDome->setColorIndices(cindex);
+	m_SkyDome->setColorBinding(Geometry::BIND_PER_VERTEX);
 	
 	// XXX XXX StateSet *dstate = new StateSet;
 

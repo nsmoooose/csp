@@ -222,8 +222,12 @@ class NetworkInterface: public simdata::Referenced {
 	 */
 	bool handleDeadPeer(PeerInfo *peer);
 
+	/** Add a peer to the disconnected peer queue, accessible via nextDisconnectedPeerId().
+	 */
+	void notifyPeerDisconnect(PeerId id);
+
 	// Queue of dead peers.  See nextDisconnectedPeerId().
-	std::deque<PeerId> m_DeadPeerQueue;
+	std::deque<PeerId> m_DisconnectedPeerQueue;
 
 	/** Called by ActivePeerList to resend a reliable packet that has not been
 	 *  confirmed by the destination host.
@@ -378,9 +382,9 @@ public:
 	PeerInfo const *getPeer(PeerId id) const;
 
 	/** Returns true if one or more peers have disconnected, but have
-	 *  not yet been processed by nextDeadPeer.
+	 *  not yet been processed by nextDisconnectedPeer.
 	 */
-	inline bool hasDisconnectedPeers() const { return !m_DeadPeerQueue.empty(); }
+	inline bool hasDisconnectedPeers() const { return !m_DisconnectedPeerQueue.empty(); }
 
 	/** Get the id of the next peer that has disconnected, or zero if
 	 *  no disconnection notifications are pending.  This routine can

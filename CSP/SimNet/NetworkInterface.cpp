@@ -259,18 +259,13 @@ bool NetworkInterface::pingPeer(PeerInfo *peer) {
 }
 
 bool NetworkInterface::handleDeadPeer(PeerInfo *peer) {
-	m_DeadPeerQueue.push_back(peer->getId());
-	// if noone is cleaning the queue, do it for them.
-	if (m_DeadPeerQueue.size() > 100) {
-		m_DeadPeerQueue.pop_front();
-	}
 	return true;
 }
 
 PeerId NetworkInterface::nextDisconnectedPeerId() {
-	if (m_DeadPeerQueue.empty()) return 0;
-	PeerId next = m_DeadPeerQueue.front();
-	m_DeadPeerQueue.pop_front();
+	if (m_DisconnectedPeerQueue.empty()) return 0;
+	PeerId next = m_DisconnectedPeerQueue.front();
+	m_DisconnectedPeerQueue.pop_front();
 	return next;
 }
 
@@ -758,12 +753,20 @@ void NetworkInterface::removePeer(PeerId id) {
 	SIMNET_LOG(PEER, INFO, "remove peer " << id);
 	PeerInfo *peer = getPeer(id);
 	assert(peer && peer->isActive());
+	notifyPeerDisconnect(id);
 	ConnectionPoint point = peer->getNode().getConnectionPoint();
 	m_IpPeerMap.erase(point);
 	peer->disable();
 	m_ActivePeers->removePeer(peer);
 }
 
+void NetworkInterface::notifyPeerDisconnect(PeerId id) {
+	m_DisconnectedPeerQueue.push_back(id);
+	// if noone is cleaning the queue, do it for them.
+	if (m_DisconnectedPeerQueue.size() > 100) {
+		m_DisconnectedPeerQueue.pop_front();
+	}
+}
 
 void NetworkInterface::setServer(NetworkNode const &server_node, double incoming, double outgoing) {
 	assert(m_Initialized && m_LocalId == 0);

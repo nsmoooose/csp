@@ -72,6 +72,8 @@ public:
 	ACTION_INTERFACE(AircraftObject, WheelBrakePulse);
 	ACTION_INTERFACE(AircraftObject, WheelBrakeOn);
 	ACTION_INTERFACE(AircraftObject, WheelBrakeOff);
+	ACTION_INTERFACE(AircraftObject, GearUp);
+	ACTION_INTERFACE(AircraftObject, GearDown);
 
 	AircraftObject();
 	virtual ~AircraftObject();
@@ -109,6 +111,8 @@ protected:
 	virtual void pack(simdata::Packer& p) const;
 	virtual void unpack(simdata::UnPacker& p);
 	virtual void postCreate();
+
+	virtual void setGearStatus(bool on);
 
 	simdata::Pointer<AeroDynamics> m_FlightModel;
 	

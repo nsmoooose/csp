@@ -154,8 +154,21 @@ public:
 
 //	doSimplePhysics(float dt) {}
 
-	void Retract() {}
-	void Extend() {}
+	//FIXME: just for some testing purpose
+	void setStatus(bool on) {
+		size_t n = m_Gear.size();
+		for (unsigned short i = 0; i < n; ++i)
+			m_Gear[i]->setExtended(on);
+	}
+
+	void Retract() { 
+		setStatus(false);
+	}
+
+	void Extend() {
+		setStatus(true);
+	}
+
 	bool getWOW() const { return m_WOW; }
 
 	void setBraking(float x) {

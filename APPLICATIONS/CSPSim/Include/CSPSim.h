@@ -82,7 +82,7 @@ public:
 
 	void setActiveObject(simdata::Pointer<DynamicObject> object);
 	simdata::Pointer<DynamicObject const> const getActiveObject() const;
-	VirtualBattlefield * const getBattlefield() const;
+	VirtualBattlefield* const getBattlefield() const;
 
 	void setShell(PyObject *shell) { m_Shell.bind(shell); }
 

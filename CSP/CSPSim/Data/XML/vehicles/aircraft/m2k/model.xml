@@ -54,7 +54,7 @@
             <Int name="lod_limit">1</Int>
             <Vector name="axis">-1 0 0</Vector>
         </Object>
-        
+
         <Object class="DrivenRotation">
             <String name="channel_name">ControlSurfaces.AileronDeflection</String>
             <Key name="model_id">Aircraft.LeftOuterAileron</Key>
@@ -108,17 +108,17 @@
 
         <!--                    Landing gears animation                         -->
 
-			<!--				Front landing gear							-->
-		<Object class="TimedRotation">
+            <!--                Front landing gear                          -->
+        <Object class="TimedRotation">
             <String name="channel_name">Aircraft.GearSequence.ReferenceTime</String>
             <Key name="model_id">Aircraft.FrontGearMainDoor</Key>
             <Float name="limit_0">1.61</Float>
             <Float name="limit_1">-0.02</Float>
             <Vector name="axis">0 1 0</Vector>
-            <Object	class="TimedAnimationProxy" name="timed_animation_proxy">
-				<Float name="t0">0.0</Float>
-				<Float name="t1">1.0</Float>
-			</Object>	
+            <Object class="TimedAnimationProxy" name="timed_animation_proxy">
+                <Float name="t0">0.0</Float>
+                <Float name="t1">1.0</Float>
+            </Object>
         </Object>
         <Object class="TimedRotation">
             <String name="channel_name">Aircraft.GearSequence.ReferenceTime</String>
@@ -126,10 +126,10 @@
             <Float name="limit_0">1.4</Float>
             <Float name="limit_1">0.0</Float>
             <Vector name="axis">0 1 0</Vector>
-            <Object	class="TimedAnimationProxy" name="timed_animation_proxy">
-				<Float name="t0">0.5</Float>
-				<Float name="t1">1.5</Float>
-			</Object>
+            <Object class="TimedAnimationProxy" name="timed_animation_proxy">
+                <Float name="t0">0.5</Float>
+                <Float name="t1">1.5</Float>
+            </Object>
         </Object>
         <Object class="TimedRotation">
             <String name="channel_name">Aircraft.GearSequence.ReferenceTime</String>
@@ -137,10 +137,10 @@
             <Float name="limit_0">-1.4</Float>
             <Float name="limit_1">0.0</Float>
             <Vector name="axis">0 1 0</Vector>
-            <Object	class="TimedAnimationProxy" name="timed_animation_proxy">
-				<Float name="t0">0.5</Float>
-				<Float name="t1">1.5</Float>
-			</Object>
+            <Object class="TimedAnimationProxy" name="timed_animation_proxy">
+                <Float name="t0">0.5</Float>
+                <Float name="t1">1.5</Float>
+            </Object>
         </Object>
         <Object class="TimedRotation">
             <String name="channel_name">Aircraft.GearSequence.ReferenceTime</String>
@@ -148,10 +148,10 @@
             <Float name="limit_0">-1.57</Float>
             <Float name="limit_1">0.0</Float>
             <Vector name="axis">1 0 0</Vector>
-            <Object	class="TimedAnimationProxy" name="timed_animation_proxy">
-				<Float name="t0">0.9</Float>
-				<Float name="t1">3.0</Float>
-			</Object>
+            <Object class="TimedAnimationProxy" name="timed_animation_proxy">
+                <Float name="t0">0.9</Float>
+                <Float name="t1">3.0</Float>
+            </Object>
         </Object>
         <Object class="TimedRotation">
             <String name="channel_name">Aircraft.GearSequence.ReferenceTime</String>
@@ -159,10 +159,10 @@
             <Float name="limit_0">0.2</Float>
             <Float name="limit_1">0.0</Float>
             <Vector name="axis">1 0 0</Vector>
-            <Object	class="TimedAnimationProxy" name="timed_animation_proxy">
-				<Float name="t0">0.9</Float>
-				<Float name="t1">3.0</Float>
-			</Object>
+            <Object class="TimedAnimationProxy" name="timed_animation_proxy">
+                <Float name="t0">0.9</Float>
+                <Float name="t1">3.0</Float>
+            </Object>
         </Object>
         <Object class="TimedRotation">
             <String name="channel_name">Aircraft.GearSequence.ReferenceTime</String>
@@ -170,10 +170,10 @@
             <Float name="limit_0">1.18</Float>
             <Float name="limit_1">0.0</Float>
             <Vector name="axis">-1 0 0</Vector>
-            <Object	class="TimedAnimationProxy" name="timed_animation_proxy">
-				<Float name="t0">0.9</Float>
-				<Float name="t1">3.0</Float>
-			</Object>
+            <Object class="TimedAnimationProxy" name="timed_animation_proxy">
+                <Float name="t0">0.9</Float>
+                <Float name="t1">3.0</Float>
+            </Object>
         </Object>
          <Object class="TimedRotation">
             <String name="channel_name">Aircraft.GearSequence.ReferenceTime</String>
@@ -181,23 +181,23 @@
             <Float name="limit_0">0.0</Float>
             <Float name="limit_1">1.63</Float>
             <Vector name="axis">0 1 0</Vector>
-            <Object	class="TimedAnimationProxy" name="timed_animation_proxy">
-				<Float name="t0">3.0</Float>
-				<Float name="t1">4.0</Float>
-			</Object>
+            <Object class="TimedAnimationProxy" name="timed_animation_proxy">
+                <Float name="t0">3.0</Float>
+                <Float name="t1">4.0</Float>
+            </Object>
         </Object>
-        
-        <!--				Right landing gear							-->
+
+        <!--                Right landing gear                          -->
         <Object class="TimedRotation">
             <String name="channel_name">Aircraft.GearSequence.ReferenceTime</String>
             <Key name="model_id">Aircraft.RightMainGearMainDoor</Key>
             <Float name="limit_0">-1.92</Float>
             <Float name="limit_1">0.0</Float>
             <Vector name="axis">-0.0717 0.9974 0.0</Vector>
-            <Object	class="TimedAnimationProxy" name="timed_animation_proxy">
-				<Float name="t0">0.0</Float>
-				<Float name="t1">1.0</Float>
-			</Object>
+            <Object class="TimedAnimationProxy" name="timed_animation_proxy">
+                <Float name="t0">0.0</Float>
+                <Float name="t1">1.0</Float>
+            </Object>
         </Object>
         <Object class="TimedRotation">
             <String name="channel_name">Aircraft.GearSequence.ReferenceTime</String>
@@ -205,10 +205,10 @@
             <Float name="limit_0">1.53</Float>
             <Float name="limit_1">0.0</Float>
             <Vector name="axis">0 1 0</Vector>
-            <Object	class="TimedAnimationProxy" name="timed_animation_proxy">
-				<Float name="t0">0.5</Float>
-				<Float name="t1">3.3</Float>
-			</Object>
+            <Object class="TimedAnimationProxy" name="timed_animation_proxy">
+                <Float name="t0">0.5</Float>
+                <Float name="t1">3.3</Float>
+            </Object>
         </Object>
         <Object class="TimedMagnitudeTranslation">
             <String name="channel_name">Aircraft.GearSequence.ReferenceTime</String>
@@ -217,10 +217,10 @@
             <Float name="limit_1">0.0</Float>
             <Vector name="direction">0.4 0 1.0</Vector>
             <Vector name="offset">-0.1053 0.0009 -0.8147</Vector>
-            <Object	class="TimedAnimationProxy" name="timed_animation_proxy">
-				<Float name="t0">0.0</Float>
-				<Float name="t1">1.5</Float>
-			</Object>
+            <Object class="TimedAnimationProxy" name="timed_animation_proxy">
+                <Float name="t0">0.0</Float>
+                <Float name="t1">1.5</Float>
+            </Object>
         </Object>
         <Object class="TimedRotation">
             <String name="channel_name">Aircraft.GearSequence.ReferenceTime</String>
@@ -228,10 +228,10 @@
             <Float name="limit_0">1.531</Float>
             <Float name="limit_1">0.0</Float>
             <Vector name="axis">0.5 0.866 0</Vector>
-            <Object	class="TimedAnimationProxy" name="timed_animation_proxy">
-				<Float name="t0">0.6</Float>
-				<Float name="t1">3.5</Float>
-			</Object>
+            <Object class="TimedAnimationProxy" name="timed_animation_proxy">
+                <Float name="t0">0.6</Float>
+                <Float name="t1">3.5</Float>
+            </Object>
         </Object>
         <Object class="TimedRotation">
             <String name="channel_name">Aircraft.GearSequence.ReferenceTime</String>
@@ -239,10 +239,10 @@
             <Float name="limit_0">-1.9</Float>
             <Float name="limit_1">0.0</Float>
             <Vector name="axis">0 1 0</Vector>
-            <Object	class="TimedAnimationProxy" name="timed_animation_proxy">
-				<Float name="t0">0.6</Float>
-				<Float name="t1">3.5</Float>
-			</Object>
+            <Object class="TimedAnimationProxy" name="timed_animation_proxy">
+                <Float name="t0">0.6</Float>
+                <Float name="t1">3.5</Float>
+            </Object>
         </Object>
         <Object class="TimedRotation">
             <String name="channel_name">Aircraft.GearSequence.ReferenceTime</String>
@@ -250,23 +250,23 @@
             <Float name="limit_0">0.0</Float>
             <Float name="limit_1">-1.92</Float>
             <Vector name="axis">-0.072 0.997 0</Vector>
-            <Object	class="TimedAnimationProxy" name="timed_animation_proxy">
-				<Float name="t0">3.0</Float>
-				<Float name="t1">4.0</Float>
-			</Object>
+            <Object class="TimedAnimationProxy" name="timed_animation_proxy">
+                <Float name="t0">3.0</Float>
+                <Float name="t1">4.0</Float>
+            </Object>
         </Object>
-        
-        <!--				Leftt landing gear							-->
+
+        <!--                Leftt landing gear                          -->
          <Object class="TimedRotation">
             <String name="channel_name">Aircraft.GearSequence.ReferenceTime</String>
             <Key name="model_id">Aircraft.LeftMainGearMainDoor</Key>
             <Float name="limit_0">1.92</Float>
             <Float name="limit_1">0.0</Float>
             <Vector name="axis">0.0717 0.9974 0</Vector>
-            <Object	class="TimedAnimationProxy" name="timed_animation_proxy">
-				<Float name="t0">0.0</Float>
-				<Float name="t1">1.0</Float>
-			</Object>
+            <Object class="TimedAnimationProxy" name="timed_animation_proxy">
+                <Float name="t0">0.0</Float>
+                <Float name="t1">1.0</Float>
+            </Object>
         </Object>
         <Object class="TimedRotation">
             <String name="channel_name">Aircraft.GearSequence.ReferenceTime</String>
@@ -274,10 +274,10 @@
             <Float name="limit_0">0.0</Float>
             <Float name="limit_1">1.53</Float>
             <Vector name="axis">0 1 0</Vector>
-            <Object	class="TimedAnimationProxy" name="timed_animation_proxy">
-				<Float name="t0">0.5</Float>
-				<Float name="t1">3.3</Float>
-			</Object>
+            <Object class="TimedAnimationProxy" name="timed_animation_proxy">
+                <Float name="t0">0.5</Float>
+                <Float name="t1">3.3</Float>
+            </Object>
         </Object>
         <Object class="TimedMagnitudeTranslation">
             <String name="channel_name">Aircraft.GearSequence.ReferenceTime</String>
@@ -286,10 +286,10 @@
             <Float name="limit_1">0.0</Float>
             <Vector name="direction">-0.35 0 0.9</Vector>
             <Vector name="offset">0.1196 0.0009 -0.8105</Vector>
-            <Object	class="TimedAnimationProxy" name="timed_animation_proxy">
-				<Float name="t0">0.0</Float>
-				<Float name="t1">1.5</Float>
-			</Object>
+            <Object class="TimedAnimationProxy" name="timed_animation_proxy">
+                <Float name="t0">0.0</Float>
+                <Float name="t1">1.5</Float>
+            </Object>
         </Object>
         <Object class="TimedRotation">
             <String name="channel_name">Aircraft.GearSequence.ReferenceTime</String>
@@ -297,10 +297,10 @@
             <Float name="limit_0">1.523</Float>
             <Float name="limit_1">0.0</Float>
             <Vector name="axis">0.5 -0.866 0</Vector>
-            <Object	class="TimedAnimationProxy" name="timed_animation_proxy">
-				<Float name="t0">0.6</Float>
-				<Float name="t1">3.5</Float>
-			</Object>
+            <Object class="TimedAnimationProxy" name="timed_animation_proxy">
+                <Float name="t0">0.6</Float>
+                <Float name="t1">3.5</Float>
+            </Object>
         </Object>
         <Object class="TimedRotation">
             <String name="channel_name">Aircraft.GearSequence.ReferenceTime</String>
@@ -308,10 +308,10 @@
             <Float name="limit_0">-1.9</Float>
             <Float name="limit_1">0.0</Float>
             <Vector name="axis">0 -1 0</Vector>
-            <Object	class="TimedAnimationProxy" name="timed_animation_proxy">
-				<Float name="t0">0.6</Float>
-				<Float name="t1">3.5</Float>
-			</Object>
+            <Object class="TimedAnimationProxy" name="timed_animation_proxy">
+                <Float name="t0">0.6</Float>
+                <Float name="t1">3.5</Float>
+            </Object>
         </Object>
         <Object class="TimedRotation">
             <String name="channel_name">Aircraft.GearSequence.ReferenceTime</String>
@@ -319,14 +319,14 @@
             <Float name="limit_0">0.0</Float>
             <Float name="limit_1">1.92</Float>
             <Vector name="axis">0.0717 0.9974 0</Vector>
-            <Object	class="TimedAnimationProxy" name="timed_animation_proxy">
-				<Float name="t0">3.0</Float>
-				<Float name="t1">4.0</Float>
-			</Object>
+            <Object class="TimedAnimationProxy" name="timed_animation_proxy">
+                <Float name="t0">3.0</Float>
+                <Float name="t1">4.0</Float>
+            </Object>
         </Object>
-        
-			<!--														-->
-			
+
+            <!--                                                        -->
+
         <!--                            Front gear                         -->
         <Object class="DrivenVectorialTranslation">
             <String name="channel_name">LandingGear.FrontGearDisplacement</String>
@@ -414,4 +414,3 @@
         </Object>
     </List>
 </Object>
-

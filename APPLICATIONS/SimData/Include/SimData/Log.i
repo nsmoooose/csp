@@ -15,7 +15,7 @@ public:
 	logstream(std::ostream& out);
 	~logstream();
 	void _close();
-	void set_output(std::string const &fn);
+	void setOutput(std::string const &fn);
 	void setLogLevels(int c, int p);
 };
 

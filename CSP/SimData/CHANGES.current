@@ -26,6 +26,10 @@ Version 0.4.0 (in progress)
 
   * Add doxygen comments to ThreadLog.h
 
+  * Added doxygen comments to ThreadQueue.h, and generalized
+    ThreadSafePriorityQueue to support all the template parameters
+    of std::priority_queue.
+
 2004-06-22: onsight
   * Added a ScopedUnlock (trivial reversal of ScopedLock)
 

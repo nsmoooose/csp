@@ -23,6 +23,16 @@
  **/
 
 
+// python ends up defining _POSIX_C_SOURCE, without testing if it has
+// previously been defined.  ConsoleCommands.h ultimately includes stl
+// headers than bring in features.h, which also define this constant,
+// but are more careful about overriding previous definitions.  So
+// although we generally put the header file associated with a cpp
+// file first in the includes list, moving Python.h to the front of
+// the list serves to suppress this warning (and the dozen or so lines
+// of diagnostic output that g++ emits).
+#include <Python.h>
+
 #include "ConsoleCommands.h"
 #include "Console.h"
 #include "Shell.h"

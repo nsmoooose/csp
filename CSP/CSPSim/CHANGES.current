@@ -1,6 +1,11 @@
  Version 0.4.0 (in progress)
 ===========================
 
+2004-06-26: onsight
+  * Fixed indentation.
+
+  * Rearrange headers to suppress a warning in py_config.h.
+
 2004-06-20: onsight
   * Changed doxygen control file to recurse into the variou subdirectories
     (Systems, Theater, etc).

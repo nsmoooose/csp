@@ -206,10 +206,10 @@ GameScreen::GameScreen():
 	m_ActiveObject(0),
 	m_CameraAgent(ViewFactory()),
 	m_CurrentCameraCommand(0) {
-		initInterface();
-		createCameraCommand();
+	initInterface();
+	createCameraCommand();
 }
-	
+
 GameScreen::~GameScreen() {
 	deleteCameraCommands();
 }

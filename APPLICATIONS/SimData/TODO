@@ -62,7 +62,5 @@ OTHER
     > This is now partially implemented.  I'm holding off on completing
       this feature for the time being.
       
-    * More cleanup of the Link<> base classes.
 
-    * Add an OSG Math adapter header.
 

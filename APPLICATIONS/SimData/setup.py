@@ -49,7 +49,7 @@ from distutils import sysconfig, dir_util
 import os, os.path, string
 
 # REMEMBER TO 'touch Version.cpp' OR REBUILD ALL
-VERSION = "\"0.3.2\""
+VERSION = "0.3.2"
 
 def copy_dir(src, dst, files, verbose=0):
 	from distutils.file_util import copy_file
@@ -348,7 +348,7 @@ headers_fullpath = fullpath("Include/SimData/", "", headers)
 
 build_swig_ext.options = "-IInclude -noexcept"
 includes = ["Include"]
-defines = [("SIMDATA_VERSION", VERSION)]
+defines = [("SIMDATA_VERSION", '"%s"' % VERSION)]
 libraries = ["swigpy", "dl"]
 cflags = []
 
@@ -374,7 +374,8 @@ setup(name="SimData",
       description="Simulation Data Abstraction Library",
       author="Mark Rose",
       author_email="mrose@stm.lbl.gov",
-      url="http://csp.sourceforge.net/wiki/",
+      url="http://csp.sourceforge.net/wiki/SimData",
+	  license="GNU General Public License, version 2 or later.",
       packages=['SimData'],
       headers = headers_fullpath + interfaces_fullpath + main_interface_fullpath,
       ext_modules = [cSimData],

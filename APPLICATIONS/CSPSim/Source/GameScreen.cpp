@@ -24,6 +24,11 @@
 
 
 #include "GameScreen.h"
+
+#include <osg/Image>
+#include <osgDB/WriteFile>
+#include <Producer/Camera>
+
 #include "CSPSim.h"
 #include "EventMapIndex.h"
 #include "Log.h"
@@ -34,6 +39,7 @@
 
 #include <SimData/Math.h>
 #include <SimData/Types.h>
+
 
 
 /*
@@ -110,6 +116,7 @@ void GameScreen::initInterface()
 	BIND_ACTION("CAMERA_FOV_STEP_INC", on_ViewFovStepInc);
 	BIND_ACTION("SPIN_THE_WORLD", on_SpinTheWorld);
 	BIND_ACTION("SPIN_THE_WORLD_STOP", on_SpinTheWorldStop);
+	BIND_ACTION("PRINT_SCREEN", on_PrintScreen);
 	BIND_ACTION("RESET_SPIN", on_ResetSpin);
 	BIND_MOTION("CAMERA_PAN", on_MouseView);
 	simdata::Ref<EventMapIndex> maps = CSPSim::theSim->getInterfaceMaps();
@@ -125,7 +132,56 @@ void GameScreen::initInterface()
 	}
 }
 
+// XXX: Preparing for the jump to OpenProducer ...
+class SnapImageDrawCallback: public Producer::Camera::Callback {
+	std::string m_Filename, m_Ext;
+    bool m_SnapImageOnNextFrame;
+public:
+	SnapImageDrawCallback(const std::string& filename = "CSPScreen",const std::string& ext = ".bmp"):
+        m_Filename(filename),
+		m_Ext(ext),
+        m_SnapImageOnNextFrame(false){
+    }
+    void setSnapImageOnNextFrame(bool flag) { 
+		m_SnapImageOnNextFrame = flag; 
+	}
+    bool getSnapImageOnNextFrame() const { 
+		return m_SnapImageOnNextFrame; 
+	}
+	std::string buildSuffix() {
+		char tmp_char[128];
+		_strdate(tmp_char);
+		std::string day = tmp_char;
+		day.erase(std::remove(day.begin(),day.end(),'/'),day.end());
+		_strtime(tmp_char);
+		std::string hour = tmp_char;
+		hour.erase(std::remove(hour.begin(),hour.end(),':'),hour.end());
+		return day + '-' + hour;
+	}
+    virtual void operator()(const Producer::Camera& camera) {
+		if (m_SnapImageOnNextFrame) {
+			int x,y,width,height;
+			//unsigned int width,height;
 
+			//camera.getProjectionRectangle(x,y,width,height);
+			VirtualScene* scene = CSPSim::theSim->getScene();
+			scene->getViewport(x,y,width,height);
+
+			osg::ref_ptr<osg::Image> image = new osg::Image;
+			image->readPixels(x,y,width,height,GL_RGB,GL_UNSIGNED_BYTE);
+
+			osgDB::writeImageFile(*image,m_Filename + buildSuffix() + m_Ext);
+			m_SnapImageOnNextFrame = false;
+		}
+    }    
+};
+
+void GameScreen::on_PrintScreen() {
+	SnapImageDrawCallback sn;
+	sn.setSnapImageOnNextFrame(true);
+	osg::ref_ptr<Producer::Camera> camera = new Producer::Camera;
+	sn.operator()(*camera);
+}
 
 void GameScreen::turnViewAboutZ(double dt, double fangleMax)
 {

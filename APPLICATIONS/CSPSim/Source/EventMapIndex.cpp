@@ -66,7 +66,7 @@ void EventMapIndex::load(std::string const &path) {
 void EventMapIndex::loadAllMaps() {
 	std::string path = getConfigPath("InputMapPath");
 	CSP_LOG(APP, INFO, "Looking for human interface device mappings in '" << path << "'");
-	osgDB::DirectoryContents dc = osgDB::getDirectoryContents(path);
+	std::vector<std::string> dc = osgDB::getDirectoryContents(path);
 	for (osgDB::DirectoryContents::const_iterator file = dc.begin(); file != dc.end(); ++file) {
 		std::string fn = simdata::ospath::join(path, *file);
 		if (osgDB::getFileExtension(fn) == "hid") 

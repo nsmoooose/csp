@@ -37,13 +37,18 @@ std::vector<double> const &AircraftPhysicModel::_f(double x, std::vector<double>
 	static std::vector<double> dy(13);
 
 	// bind(y,p,v,w,q); 
-	m_PositionLocal = *m_Position + bodyToLocal(simdata::Vector3(y[0],y[1],y[2]));
+	// XXX the following line is incorrect.
+	//m_PositionLocal = *m_Position + bodyToLocal(simdata::Vector3(y[0],y[1],y[2]));
+	// XXX if, in the future, we need to access the local position here, it should be 
+	// stored in a temporary:
+	// simdata::Vecter3 position = m_LocalPositon + bodyToLocal(simdata::Vector3(y[0],y[1],y[2]));
 	m_VelocityBody = simdata::Vector3(y[3],y[4],y[5]);
 	m_AngularVelocityBody = simdata::Vector3(y[6],y[7],y[8]);
 	m_qOrientation = simdata::Quaternion(y[9],y[10],y[11],y[12]);
 	double mag = m_qOrientation.Magnitude();
-	if (mag != 0.0) 
+	if (mag != 0.0) {
 		m_qOrientation /= mag;
+	}
 	y[9]  = m_qOrientation.w; y[10] = m_qOrientation.x; y[11] = m_qOrientation.y; y[12] = m_qOrientation.z;
 
 	m_ForcesBody = m_MomentsBody = simdata::Vector3::ZERO;
@@ -65,7 +70,8 @@ std::vector<double> const &AircraftPhysicModel::_f(double x, std::vector<double>
 	std::vector<BaseDynamics*>::const_iterator bdEnd = m_Dynamics.end();
 	for (;bd != bdEnd; ++bd) {
 		(*bd)->update(x);
-		m_ForcesBody += (*bd)->getForce();
+		simdata::Vector3 force = (*bd)->getForce();
+		m_ForcesBody += force;
 		m_MomentsBody += (*bd)->getMoment();
 	}
 
@@ -77,7 +83,7 @@ std::vector<double> const &AircraftPhysicModel::_f(double x, std::vector<double>
 
 	// angular acceleration body: calculate Iw' = M - w^Iw
 	m_AngularAccelBody = m_InertiaInverse * 
-				                  (m_MomentsBody - (m_AngularVelocityBody^(m_Inertia * m_AngularVelocityBody)));
+	                     (m_MomentsBody - (m_AngularVelocityBody^(m_Inertia * m_AngularVelocityBody)));
 	
 	// quaternion derivative and w in body coordinates: q' = 0.5 * q * w
 	simdata::Quaternion qprim = 0.5 * m_qOrientation * m_AngularVelocityBody;
@@ -95,41 +101,40 @@ std::vector<double> const &AircraftPhysicModel::_f(double x, std::vector<double>
 }
 
 void AircraftPhysicModel::doSimStep(double dt) {	
-	if (dt == 0.0) 
-		dt = 0.017;
-	unsigned short const n = std::min<short>(2,static_cast<unsigned short>(180 * dt)) + 1;
+	if (dt == 0.0) dt = 0.017;
+	unsigned short n = std::min<short>(6,static_cast<unsigned short>(180 * dt)) + 1;
 	double dtlocal = dt/n;
 
 	std::for_each(m_Dynamics.begin(),m_Dynamics.end(),InitializeSimulationStep(dtlocal));
 
 	Atmosphere const *atmosphere = CSPSim::theSim->getAtmosphere();
 	if (atmosphere)
-		m_Gravity =	atmosphere->getGravity(m_PositionLocal.z);
+		m_Gravity = atmosphere->getGravity(m_PositionLocal.z);
 	else
-		m_Gravity =	9.806;
+		m_Gravity = 9.806;
 
-	m_WeightLocal = - m_Mass *	m_Gravity *	simdata::Vector3::ZAXIS;
+	m_WeightLocal = - m_Mass * m_Gravity * simdata::Vector3::ZAXIS;
 
-	for	(unsigned short	i = 0; i<n; ++i) {
+	m_PositionLocal	= *m_Position;
+	m_VelocityLocal	= *m_Velocity;
+	m_AngularVelocityLocal = *m_AngularVelocity;
+	m_qOrientation = *m_Orientation;
 
-		m_PositionLocal	= *m_Position;
-		m_VelocityLocal	= *m_Velocity;
-		m_AngularVelocityLocal = *m_AngularVelocity;
-		m_qOrientation = *m_Orientation;
+	for (unsigned short i = 0; i<n; ++i) {
 
 		m_VelocityBody = localToBody(m_VelocityLocal);
 		m_AngularVelocityBody =	localToBody(m_AngularVelocityLocal);
 
 		updateNearGround();
 
-		std::vector<double>	y0 = bodyToY(simdata::Vector3::ZERO,m_VelocityBody,m_AngularVelocityBody,m_qOrientation);
+		std::vector<double> y0 = bodyToY(simdata::Vector3::ZERO,m_VelocityBody,m_AngularVelocityBody,m_qOrientation);
 
 		std::for_each(m_Dynamics.begin(),m_Dynamics.end(),PreSimulationStep(dtlocal));
 
 		// solution
-		std::vector<double>	y =	flow(y0, 0,	dtlocal);
+		std::vector<double> y = flow(y0, 0, dtlocal);
 		// update all variables
-		// Caution:	don	t permute these	lines
+		// Caution: dont permute these	lines
 		// solution to body data members
 		YToBody(y);
 		// correct an eventual underground position
@@ -145,13 +150,15 @@ void AircraftPhysicModel::doSimStep(double dt) {
 		m_qOrientation = simdata::Quaternion(y[9],y[10],y[11],y[12]);
 		double mag = m_qOrientation.Magnitude();
 		if (mag	!= 0.0)
-			m_qOrientation /=	mag;
+			m_qOrientation /= mag;
 	}
+
 	// returns vehicle data members
-	*m_Position	= m_PositionLocal;
-	if (m_GroundCollisionDynamics->hasContact() && m_VelocityLocal.z < 0.0)
+	*m_Position = m_PositionLocal;
+	if (m_GroundCollisionDynamics->hasContact() && m_VelocityLocal.z < 0.0) {
 		m_VelocityLocal.z *= 0.99;
-	*m_Velocity	= m_VelocityLocal;
+	}
+	*m_Velocity = m_VelocityLocal;
 	*m_AngularVelocity = m_AngularVelocityLocal;
 	*m_Orientation = m_qOrientation;	
 }

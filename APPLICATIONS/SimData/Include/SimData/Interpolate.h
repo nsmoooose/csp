@@ -47,12 +47,6 @@
 
 
 
-/*
-#define value_t	float
-#define vector_t std::vector<value_t>
-#define vector_it std::vector<value_t>::iterator
-*/
-
 
 NAMESPACE_SIMDATA
 
@@ -79,12 +73,12 @@ class SIMDATA_EXPORT InterpolatedData: public BaseType {
 
 public:
 
-	typedef float value_t;
-	typedef std::vector<value_t> vector_t;
-	typedef std::vector<value_t>::iterator vector_it;
-	typedef std::vector<value_t>::const_iterator vector_cit;
+	typedef T value_t;
+	typedef typename std::vector<value_t> vector_t;
+	typedef typename std::vector<value_t>::iterator vector_it;
+	typedef typename std::vector<value_t>::const_iterator vector_cit;
 
-	static const Enumeration Method;;
+	static const Enumeration Method;
 	Enum method;
 
 	InterpolatedData();
@@ -93,17 +87,32 @@ public:
 	virtual void unpack(UnPacker& p);
 	virtual value_t getValue(value_t, value_t) const;
 	virtual value_t getPrecise(value_t, value_t) const;
-	vector_t compute_second_derivatives(const vector_t& breaks, const vector_t& data);
 	int find(vector_t b, value_t v) const;
+
+protected:
+	vector_t _compute_second_derivatives(const vector_t& breaks, const vector_t& data);
+	virtual void _compute_second_derivatives() = 0;
 };
 
 
+#ifdef SWIG
+%template(InterpolatedFloat) InterpolatedData<float>;
+#endif
+
+
 /**
- * A simple one-dimensional bicubic-interpolated look up table.
+ * A simple one-dimensional bicubic-interpolated look-up table.
+ *
+ * The curve input is a discrete set of (x, y) pairs sampled from a
+ * continuous curve y = F(x).  A smooth curve is formed from these
+ * points using bicubic interpolation, and then resampled at a 
+ * specified number of evenly spaced values of x.  The resampled
+ * values can then be used as a fast lookup table (with linear 
+ * interpolation) to find y(x).
  * 
  * @author Mark Rose <mrose@stm.lbl.gov>
  */
-class Curve: public InterpolatedData {
+class Curve: public InterpolatedData<float> {
 
 	vector_t _breaks, _data, _table, _sd;
 	value_t _range, _spacing, _min;
@@ -113,23 +122,87 @@ class Curve: public InterpolatedData {
 	
 public:
 
+	/**
+	 * Default constructor.
+	 */
 	Curve();
+	
+	/**
+	 * Copy constructor.
+	 */
 	Curve(const Curve &);
+
+	/**
+	 * Destructor.
+	 */
 	virtual ~Curve();
+
 #ifndef SWIG
+	/**
+	 * Assignment operator.
+	 */
 	const Curve &operator=(const Curve &);
 #endif // SWIG
+
+	/**
+	 * Serialize to a data archive.
+	 */
 	virtual void pack(Packer& p) const;
+	
+	/**
+	 * Deserialize from a data archive.
+	 */
 	virtual void unpack(UnPacker& p);
+
+	/**
+	 * Get a list of the x values of the source data set.
+	 */
 	vector_t getBreaks();
+
+	/**
+	 * Set the x values of the source data set.
+	 */
 	void setBreaks(const vector_t& breaks);
+
+	/**
+	 * Set the y values of the source data set.
+	 */
 	void setData(const vector_t& data);
+
+	/**
+	 * Interpolate the source data set and resample at
+	 * at equaly spaced values of x to form the lookup table.
+	 *
+	 * @param spacing the spacing between resampled values of X
+	 */
 	void interpolate(value_t spacing);
-	virtual void _compute_second_derivatives();
-	value_t getPrecise(value_t v) const;
-	value_t getValue(value_t p) const;
+	
+	/**
+	 * Get the "precise" value y(x) from bicubic interpolation.
+	 */
+	value_t getPrecise(value_t x) const;
+
+	/**
+	 * Get the "quick and dirty" value of y(x) from linear interpolation
+	 * of the resampled lookup table.
+	 */
+	value_t getValue(value_t x) const;
+
+	/**
+	 * Dump the y(x) lookup table to an output file.
+	 */
 	void dumpCurve(FILE* f) const;
+
+	/**
+	 * String representation.
+	 */
 	virtual std::string asString() const;
+
+protected:
+	/**
+	 * Compute the second derivative for bicubic interpolation.
+	 */
+	virtual void _compute_second_derivatives();
 };
 
 
@@ -150,7 +223,6 @@ public:
 	int _valid;
 	
 public:
-	
 	Table();
 	Table(const Table &);
 	virtual ~Table();
@@ -175,12 +247,14 @@ public:
 	void interpolate();
 	value_t getPrecise(value_t x, value_t y) const;
 	value_t getValue(value_t x, value_t y) const;
-	virtual void _compute_second_derivatives();
 	void toPGM(FILE *fp) const;
 	void dumpTable(FILE *fp) const;
 	void dumpDRows(FILE *fp) const;
 	void dumpDCols(FILE *fp) const;
 	virtual std::string asString() const;
+
+protected:
+	virtual void _compute_second_derivatives();
 
 };
 

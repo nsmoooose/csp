@@ -20,6 +20,7 @@
 
 #include <SimData/Log.h>
 #include <SimData/DataArchive.h>
+#include <SimData/DataManager.h>
 #include <SimData/InterfaceRegistry.h>
 #include <SimData/GlibCsp.h>
 
@@ -30,9 +31,11 @@ const int DataArchive::AS = 1024;
 const int DataArchive::BUFFERSIZE = 4096;
 const int DataArchive::BUFFERS = 10;
 
-DataArchive* g_defaultArchive;
+
+DataArchive* DataArchive::defaultArchive = 0;
 
 
+/*
 long DataArchive::_getOffset() { return ftell(f); } // for Python use only
 FP DataArchive::_filePointer() { 
 	FP x;
@@ -41,6 +44,7 @@ FP DataArchive::_filePointer() {
 	x.mode = isWrite() ? "wb" : "rb";
 	return x; 
 }
+*/
 
 void DataArchive::_addEntry(int offset, int length, hasht hash, const char* path) {
 	if (n_objects == allocation) {
@@ -107,18 +111,19 @@ void DataArchive::readTable() {
 
 void DataArchive::writeTable() {
 	assert(!is_read);
-	if (closed) return;
+	if (finalized) return;
 	table_offset = ftell(f);
 	fwrite(&n_objects, 4, 1, f);
 	fwrite(table, sizeof(TableEntry), n_objects, f);
 	fseek(f, 8, SEEK_SET);
 	fwrite(&table_offset, 4, 1, f);
-	closed = 1;
+	finalized = 1;
 }	
 
 DataArchive::DataArchive(const char*fn, int read, bool chain_) {
 	chain = chain_;
-	closed = 0;
+	finalized = 0;
+	manager = 0;
 	for (int b = 0; b < BUFFERS; b++) {
 		object_buffer[b] = (char*) malloc(BUFFERSIZE);
 	}
@@ -148,130 +153,44 @@ DataArchive::DataArchive(const char*fn, int read, bool chain_) {
 }
 
 DataArchive::~DataArchive() {
-	if (!is_read && !closed) {
+	assert(manager == 0);
+	if (!is_read && !finalized) {
 		writeTable();
 	}
 	if (f != 0) fclose(f);
 	for (int b = 0; b < BUFFERS; b++) {
 		if (object_buffer[b] != 0) free(object_buffer[b]);
 	}
-	if (g_defaultArchive == this) g_defaultArchive = 0;
+	if (defaultArchive == this) defaultArchive = 0;
 }
 
 void DataArchive::setDefault() {
-	g_defaultArchive = this;
+	defaultArchive = this;
+}
+
+
+DataArchive *DataArchive::getDefault() {
+	return defaultArchive;
 }
 
 
 void DataArchive::addObject(Object& a, const char* path) {
-	if (!is_read && !closed) {
+	if (!is_read && !finalized) {
 		int offset = ftell(f);
 		Packer p(f);
 		a.pack(p);
 		int length = p.getCount();
-		std::cerr << path << " (" << length << " bytes) [" << hash_string(path) << "]" << std::endl;
+		SIMDATA_LOG(LOG_ARCHIVE, LOG_DEBUG, "DataArchive: adding " << path << " (" << length << " bytes) [" << hash_string(path) << "]");
 		_addEntry(offset, length, a.getClassHash(), path);
 	}
 }
 
-// caller creates a local object of the correct type and passes a pointer
-// to it.  if the object is found in the static cache, a pointer to the
-// cached object is returned.  otherwise, the object is loaded from the
-// archive on disk.  if the object is marked as static, it is added to
-// the static cache.  
-
-/**
-Object* DataArchive::getObject(const Object& a, const char* path) {
-	hasht key = hash_string(path);
-	return getObject(a, key, path);
-}
-	
-Object* DataArchive::getObject(const Object& a, hasht key, const char* path) {
-	// look among previously created static objects
-	Object *cached = _getStatic(key);
-	if (cached != 0) return cached;
-	hasht_map::const_iterator i = table_map.find(key);
-	if (i == table_map.end()) {
-		std::string msg;
-		msg = msg + "path '" + path + "' not found in archive '" + _fn + "'";
-		throw IndexError(msg.c_str());
-	}
-	int idx = (*i).second;
-	TableEntry &t = table[idx];
-	printf("object registry @ %p\n", &g_ObjectRegistry);
-	printf("object hashes: %llu %llu\n", t.classhash, a.getClassHash());
-	printf("ok so far\n");
-	if (t.classhash != a.getClassHash()) {
-		std::string msg;
-		printf("mismatch()\n");
-		msg = msg + "object class '" + a.getClassName() + "' does not match saved object '" + path + "' in archive '" + _fn + "'";
-		throw ObjectMismatch(msg.c_str());
-	}
-	printf("match\n");
-	printf("registry length = %d\n", g_ObjectRegistry.size());
-	assert(g_ObjectRegistry.isRegistered(t.classhash));
-	int offset = t.offset;
-	int length = t.length;
-	char* buffer = object_buffer;
-	if (length > BUFFERSIZE) {
-		printf("BUFFERSIZE exceeded, allocating larger buffer\n");
-		buffer = (char*) malloc(length);
-	}
-	//printf("%d", offset);
-	fseek(f, offset, SEEK_SET);
-	fread(buffer, length, 1, f);
-	UnPacker p(buffer, length, this);
-	Object* dup = a._new();
-	printf("%s %s\n",dup->getClassName(),a.getClassName());
-	dup->unpack(p);
-	if (buffer != object_buffer) free(buffer);
-	if (dup->isStatic()) {
-		_addStatic(dup, path, key);
-		dup->ref(); // we own a copy
-	}
-	return dup;
-}
-
-Object* DataArchive::getObject(hasht key) {
-	// look among previously created static objects
-	Object *cached = _getStatic(key);
-	if (cached != 0) return cached;
-	hasht_map::const_iterator i = table_map.find(key);
-	if (i == table_map.end()) {
-		std::string msg;
-		msg = msg + "path not found in archive '" + _fn + "' (human-readable path unavailable)";
-		throw IndexError(msg.c_str());
-	}
-	int idx = (*i).second;
-	TableEntry &t = table[idx];
-	printf("getObject using object registry @ %p\n", &g_ObjectRegistry);
-	Object *dup = g_ObjectRegistry.createObject(t.classhash);
-	int offset = t.offset;
-	int length = t.length;
-	char* buffer = object_buffer;
-	if (length > BUFFERSIZE) {
-		printf("BUFFERSIZE exceeded, allocating larger buffer\n");
-		buffer = (char*) malloc(length);
-	}
-	fseek(f, offset, SEEK_SET);
-	fread(buffer, length, 1, f);
-	UnPacker p(buffer, length, this);
-	printf("got object %s\n",dup->getClassName());
-	dup->unpack(p);
-	if (buffer != object_buffer) free(buffer);
-	if (dup->isStatic()) {
-		_addStatic(dup, 0, key);
-		dup->ref(); // we own a copy
-	}
-	return dup;
-}
-*/
 
 const PointerBase DataArchive::getObject(const char* path) {
 	return getObject(Path(path), path);
 }
 
-const TableEntry& DataArchive::_lookupPath(const Path& path, const char* path_str) {
+const DataArchive::TableEntry* DataArchive::_lookupPath(Path const& path, const char* path_str) const {
 	hasht key = (hasht) path.getPath();
 	hasht_map::const_iterator i = table_map.find(key);
 	if (i == table_map.end()) {
@@ -281,18 +200,16 @@ const TableEntry& DataArchive::_lookupPath(const Path& path, const char* path_st
 		} else {
 			msg = path_str;
 		}
-		msg = "path not found in archive '" + _fn + "' (" + msg + ")" + key.str() + "\n";
-		std::cerr << msg;
+		SIMDATA_LOG(LOG_ARCHIVE, LOG_ERROR, "DataArchive: path not found in '" << _fn << "' (" << msg << ") " + key.str());
 		throw IndexError(msg.c_str());
 	}
 	int idx = (*i).second;
-	return table[idx];
+	return &(table[idx]);
 }
 
 Object *DataArchive::_createObject(hasht classhash) {
 	InterfaceProxy *proxy = InterfaceRegistry::getInterfaceRegistry().getInterface(classhash);
 	if (!proxy) {
-		//std::cout << "Interface proxy [" << classhash << "] not found." << std::endl;
 		SIMDATA_LOG(LOG_ARCHIVE, LOG_ERROR, "Interface proxy [" << classhash << "] not found.");
 		throw MissingInterface("Missing interface for " + classhash.str());
 	}
@@ -301,34 +218,45 @@ Object *DataArchive::_createObject(hasht classhash) {
 	return dup;
 }
 
+
+// if the object is found in the static cache, a pointer to the
+// cached object is returned.  otherwise, the object is loaded from the
+// archive on disk.  if the object is marked as static, it is added to
+// the static cache.  
+
 const PointerBase DataArchive::getObject(const Path& path, const char* path_str) {
 	hasht key = (hasht) path.getPath();
 	// look among previously created static objects
 	Object *cached = _getStatic(key);
 	if (cached != 0) return PointerBase(path, cached);
-	const TableEntry &t = _lookupPath(path, path_str);
-	//printf("getObject using interface registry @ %p\n", &(InterfaceRegistry::getInterfaceRegistry()));
+	TableEntry const *t;
+	try {
+		t = _lookupPath(path, path_str);
+	}
+	catch (IndexError) {
+		if (manager) {
+			return manager->getObject(path, path_str, this);
+		}
+		throw;
+	}
 	SIMDATA_LOG(LOG_ARCHIVE, LOG_DEBUG, "getObject using interface registry @ 0x" << std::hex << int(&(InterfaceRegistry::getInterfaceRegistry())));
-	InterfaceProxy *proxy = InterfaceRegistry::getInterfaceRegistry().getInterface(t.classhash);
+	InterfaceProxy *proxy = InterfaceRegistry::getInterfaceRegistry().getInterface(t->classhash);
 	if (!proxy) {
 		if (path_str) {
-			//printf("getObject(\"%s\"):\n", path_str);
 			SIMDATA_LOG(LOG_ARCHIVE, LOG_ERROR, "getObject(" << path_str << "):");
 		}
-		//std::cout << "Interface proxy [" << t.classhash << "] not found." << std::endl;
-		SIMDATA_LOG(LOG_ARCHIVE, LOG_ERROR, "Interface proxy [" << t.classhash << "] not found.");
-		throw MissingInterface("Missing interface for " + t.classhash.str());
+		SIMDATA_LOG(LOG_ARCHIVE, LOG_ERROR, "Interface proxy [" << t->classhash << "] not found.");
+		throw MissingInterface("Missing interface for " + t->classhash.str());
 	}
 	Object *dup = proxy->createObject();
-	int offset = t.offset;
-	int length = t.length;
+	int offset = t->offset;
+	int length = t->length;
 	char* buffer = 0;
 	bool free_buffer = false;
 	if (n_buffer < BUFFERS && length <= BUFFERSIZE) {
 		buffer = object_buffer[n_buffer];
 		n_buffer++;
 	} else {
-		//std::cout << "BUFFERSIZE exceeded, allocating larger buffer" << std::endl;
 		SIMDATA_LOG(LOG_ARCHIVE, LOG_INFO, "BUFFERSIZE exceeded, allocating larger buffer");
 		buffer = (char*) malloc(length);
 		free_buffer = true;
@@ -337,7 +265,6 @@ const PointerBase DataArchive::getObject(const Path& path, const char* path_str)
 	fseek(f, offset, SEEK_SET);
 	fread(buffer, length, 1, f);
 	UnPacker p(buffer, length, this, chain);
-	//std::cout << "got object " << dup->getClassName() << std::endl;
 	SIMDATA_LOG(LOG_ARCHIVE, LOG_DEBUG, "got object " << dup->getClassName());
 	dup->_setPath(key);
 	dup->unpack(p);
@@ -350,7 +277,6 @@ const PointerBase DataArchive::getObject(const Path& path, const char* path_str)
 		n_buffer--;
 	}
 	if (!p.isComplete()) {
-		//std::cout << "INTERNAL ERROR: Object extraction incomplete for class '" << dup->getClassName() << "'." << std::endl;
 		SIMDATA_LOG(LOG_ARCHIVE, LOG_ERROR, "INTERNAL ERROR: Object extraction incomplete for class '" << dup->getClassName() << "'.");
 		throw CorruptArchive("Object extraction incomplete for class '" + std::string(dup->getClassName()) + "'");
 	}
@@ -374,18 +300,27 @@ Object* DataArchive::_getStatic(hasht key=0) {
 	return (*i).second;
 }
 
-void DataArchive::close() {
+void DataArchive::finalize() {
 	writeTable();
 	if (f != 0) fclose(f);
 	f = 0;
 }
 
-bool DataArchive::isClosed() {
-	return (closed != 0);
+bool DataArchive::isFinalized() {
+	return (finalized != 0);
 }
 
 bool DataArchive::isWrite() {
 	return !is_read;
+}
+
+std::vector<ObjectID> DataArchive::getAllObjects() const {
+	std::vector<ObjectID> ids(n_objects);
+	int i;
+	for (i = 0; i < n_objects; i++) {
+		ids[i] = table[i].pathhash;
+	}
+	return ids;
 }
 
 NAMESPACE_END // namespace simdata

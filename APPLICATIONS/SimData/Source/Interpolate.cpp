@@ -25,14 +25,11 @@
 
 NAMESPACE_SIMDATA
 
-typedef InterpolatedData::value_t value_t;
-typedef InterpolatedData::vector_t vector_t;
-
-
 #define min(a, b) (((a)<(b)) ? (a) : (b))
 #define max(a, b) (((a)>(b)) ? (a) : (b))
 
-const Enumeration InterpolatedData::Method("LINEAR SPLINE");
+template <typename T>
+const Enumeration InterpolatedData<T>::Method("LINEAR SPLINE");
 
 class load_check {
 public:
@@ -47,40 +44,47 @@ public:
 
 // class InterpolatedData
 
-InterpolatedData::InterpolatedData(): method(InterpolatedData::Method) {
+template <typename T>
+InterpolatedData<T>::InterpolatedData(): method(InterpolatedData<T>::Method) {
 }
 	
-InterpolatedData::~InterpolatedData() {
+template <typename T>
+InterpolatedData<T>::~InterpolatedData() {
 }
 
-void InterpolatedData::pack(Packer& p) const {
+template <typename T>
+void InterpolatedData<T>::pack(Packer& p) const {
 	p.pack(method);
 }
 
-void InterpolatedData::unpack(UnPacker& p) {
+template <typename T>
+void InterpolatedData<T>::unpack(UnPacker& p) {
 	p.unpack(method);
 }
 
-value_t InterpolatedData::getValue(value_t, value_t) const { 
+template <typename T>
+T InterpolatedData<T>::getValue(T, T) const { 
 	return 0.0; 
 }
 
-value_t InterpolatedData::getPrecise(value_t, value_t) const { 
+template <typename T>
+T InterpolatedData<T>::getPrecise(T, T) const { 
 	return 0.0; 
 }
 
-vector_t InterpolatedData::compute_second_derivatives(const vector_t& breaks, const vector_t& data) {
+template <typename T>
+typename InterpolatedData<T>::vector_t InterpolatedData<T>::_compute_second_derivatives(const typename InterpolatedData<T>::vector_t& breaks, const typename InterpolatedData<T>::vector_t& data) {
 	int n = breaks.size();
 	vector_t z(n,0.0), u(n,0.0);
 	int i;
 	for (i=1; i<n-1; i++) {
 		value_t d = breaks[i+1] - breaks[i-1];
 		value_t sig = (breaks[i] - breaks[i-1]) / d;
-		value_t p = static_cast<float>(2.0 + sig * z[i-1]);
-		z[i] = static_cast<float>((sig - 1.0) / p);
+		value_t p = static_cast<value_t>(2.0 + sig * z[i-1]);
+		z[i] = static_cast<value_t>((sig - 1.0) / p);
 		value_t a = (data[i+1] - data[i]) / (breaks[i+1] - breaks[i]);
 		value_t b = (data[i] - data[i-1]) / (breaks[i] - breaks[i-1]);
-		u[i] = static_cast<float>((6.0 * (a - b) / d - sig * u[i-1]) / p);
+		u[i] = static_cast<value_t>((6.0 * (a - b) / d - sig * u[i-1]) / p);
 	}
 	z[n-1] = 0.0;
 	for (i=n-2; i>=0; i--)
@@ -88,7 +92,8 @@ vector_t InterpolatedData::compute_second_derivatives(const vector_t& breaks, co
 	return z;
 }
 
-int InterpolatedData::find(vector_t b, value_t v) const {
+template <typename T>
+int InterpolatedData<T>::find(InterpolatedData<T>::vector_t b, T v) const {
 	int lo = 0;
 	int hi = b.size()-1;
 	int i;
@@ -127,14 +132,14 @@ const Curve & Curve::operator=(const Curve &c) {
 }
 
 void Curve::pack(Packer& p) const {
-	InterpolatedData::pack(p);
+	InterpolatedData<value_t>::pack(p);
 	p.pack(_breaks);
 	p.pack(_data);
 	p.pack(_spacing);
 }
 
 void Curve::unpack(UnPacker& p) {
-	InterpolatedData::unpack(p);
+	InterpolatedData<value_t>::unpack(p);
 	vector_t breaks;
 	p.unpack(breaks);
 	setBreaks(breaks);
@@ -146,7 +151,7 @@ void Curve::unpack(UnPacker& p) {
 	interpolate(spacing);
 }
 
-vector_t Curve::getBreaks() {
+Curve::vector_t Curve::getBreaks() {
 	return _breaks;
 }
 
@@ -165,22 +170,22 @@ void Curve::interpolate(value_t spacing) {
 	int n = _breaks.size();
 	_min = _breaks[0];
 	double max = _breaks[n-1];
-	float _range = static_cast<float>(max - _min);
+	value_t _range = static_cast<value_t>(max - _min);
 	_i_n = int(_range / spacing) + 1;
 	_table.resize(_i_n);
 	vector_it element = _table.begin();
 	int i;
 	for (i=0; i<_i_n; i++) {
-		float x = _min + _range * i / (_i_n-1);
+		value_t x = _min + _range * i / (_i_n-1);
 		*element++ = getPrecise(x);
 	}
 }
 
 void Curve::_compute_second_derivatives() {
-	_sd = InterpolatedData::compute_second_derivatives(_breaks, _data);
+	_sd = InterpolatedData<value_t>::_compute_second_derivatives(_breaks, _data);
 }
 
-value_t Curve::getPrecise(value_t v) const {
+Curve::value_t Curve::getPrecise(Curve::value_t v) const {
 	int i = find(_breaks, v);
 	double h = _breaks[i+1] - _breaks[i];
 	double f1 = 1.0 - (v - _breaks[i]) / h;
@@ -190,11 +195,11 @@ value_t Curve::getPrecise(value_t v) const {
 	double y1 = _data[i];
 	double y2 = _data[i+1];
 	double s = h * h / 6.0;
-	v = static_cast<float>(y1*f1 + y2*f2 + (f1*(f1*f1 - 1.0)*d1 + f2*(f2*f2 - 1.0)*d2) * s);
+	v = static_cast<value_t>(y1*f1 + y2*f2 + (f1*(f1*f1 - 1.0)*d1 + f2*(f2*f2 - 1.0)*d2) * s);
 	return v;
 }
 
-value_t Curve::getValue(value_t p) const {
+Curve::value_t Curve::getValue(Curve::value_t p) const {
 	double i = (p - _min) / _range;
 	if (i < 0.0) i = 0.0;
 	else if (i > 1.0) i = 1.0;
@@ -203,7 +208,7 @@ value_t Curve::getValue(value_t p) const {
 	double f = i - idx;
 	double y1 = _table[idx];
 	double y2 = _table[idx+1];
-	float z = static_cast<float>(f * y2 + (1.0 - f) * y1);
+	value_t z = static_cast<value_t>(f * y2 + (1.0 - f) * y1);
 	return z;
 }
 
@@ -267,7 +272,7 @@ int Table::isValid() const {
 }
 
 void Table::pack(Packer &p) const {
-	InterpolatedData::pack(p);
+	InterpolatedData<value_t>::pack(p);
 	p.pack(_x_breaks);
 	p.pack(_y_breaks);
 	p.pack(_data);
@@ -276,7 +281,7 @@ void Table::pack(Packer &p) const {
 }
 
 void Table::unpack(UnPacker &p) {
-	InterpolatedData::unpack(p);
+	InterpolatedData<value_t>::unpack(p);
 	vector_t breaks, data;
 	p.unpack(breaks);
 	setXBreaks(breaks);
@@ -292,55 +297,55 @@ void Table::unpack(UnPacker &p) {
 	interpolate();
 }
 
-vector_t Table::getXBreaks() const {
+Table::vector_t Table::getXBreaks() const {
 	return _x_breaks;
 }
 
-vector_t Table::getYBreaks() const {
+Table::vector_t Table::getYBreaks() const {
 	return _y_breaks;
 }
 
-void Table::setXBreaks(const vector_t& breaks) {
+void Table::setXBreaks(const Table::vector_t& breaks) {
 	_x_breaks = breaks;
 	_x_n = _x_breaks.size();
 	invalidate();
 }
 
-void Table::setYBreaks(const vector_t& breaks) {
+void Table::setYBreaks(const Table::vector_t& breaks) {
 	_y_breaks = breaks;
 	_y_n = _y_breaks.size();
 	invalidate();
 }
 
-void Table::setBreaks(const vector_t& x_breaks, const vector_t& y_breaks) {
+void Table::setBreaks(const Table::vector_t& x_breaks, const Table::vector_t& y_breaks) {
 	setXBreaks(x_breaks);
 	setYBreaks(y_breaks);
 }
 
-void Table::setXSpacing(value_t spacing) {
+void Table::setXSpacing(Table::value_t spacing) {
 	_x_spacing = spacing;
 	invalidate();
 }
 
-void Table::setYSpacing(value_t spacing) {
+void Table::setYSpacing(Table::value_t spacing) {
 	_y_spacing = spacing;
 	invalidate();
 }
 
-void Table::setSpacing(value_t x_spacing, value_t y_spacing) {
+void Table::setSpacing(Table::value_t x_spacing, Table::value_t y_spacing) {
 	setXSpacing(x_spacing);
 	setYSpacing(y_spacing);
 }
 
-value_t Table::getXSpacing() const {
+Table::value_t Table::getXSpacing() const {
 	return _x_spacing;
 }
 
-value_t Table::getYSpacing() const {
+Table::value_t Table::getYSpacing() const {
 	return _y_spacing;
 }
 
-void Table::setData(const vector_t& data) {
+void Table::setData(const Table::vector_t& data) {
 	_data = data;
 	invalidate();
 }
@@ -373,7 +378,7 @@ void Table::interpolate() {
 	}
 }
 
-value_t Table::getPrecise(value_t x, value_t y) const {
+Table::value_t Table::getPrecise(Table::value_t x, Table::value_t y) const {
 	assert(isValid());
 	int x_i = find(_x_breaks, x);
 	int y_i = find(_y_breaks, y);
@@ -413,7 +418,7 @@ value_t Table::getPrecise(value_t x, value_t y) const {
 	return ((value_t) v);
 }
 
-value_t Table::getValue(value_t x, value_t y) const {
+Table::value_t Table::getValue(Table::value_t x, Table::value_t y) const {
 	assert(isValid());
 	double x_i = (x - _x_min) / _x_range;
 	double y_i = (y - _y_min) / _y_range;
@@ -446,7 +451,7 @@ void Table::_compute_second_derivatives() {
 	row_end = row + _x_n;
 	for (j=0; j<_y_n; j++) {
 		vector_t row_data = vector_t(row, row_end);
-		vector_t d = InterpolatedData::compute_second_derivatives(_x_breaks, row_data);
+		vector_t d = InterpolatedData<value_t>::_compute_second_derivatives(_x_breaks, row_data);
 		_drows.insert(_drows.end(), d.begin(), d.end());
 		row = row_end;
 		row_end += _x_n;
@@ -458,7 +463,7 @@ void Table::_compute_second_derivatives() {
 			col_data[j] = _data[idx];
 			idx += _x_n;
 		}
-		vector_t d = InterpolatedData::compute_second_derivatives(_y_breaks, col_data);
+		vector_t d = InterpolatedData<value_t>::_compute_second_derivatives(_y_breaks, col_data);
 		_dcols.insert(_dcols.end(), d.begin(), d.end());
 	}
 	_valid = 1;

@@ -24,7 +24,6 @@
  * Code based on libraries from magic-software.com and Game Programming Gems.
  **/
 
-//#include "stdinc.h"
 
 #include <iomanip>
 
@@ -36,18 +35,16 @@
 NAMESPACE_SIMDATA
 
 
-//namespace Math 
-//{
-
+/// Null vector
 const Vector3 Vector3::ZERO (0.0, 0.0, 0.0);
+/// Unit vector in X
 const Vector3 Vector3::XAXIS(1.0, 0.0, 0.0);
+/// Unit vector in Y
 const Vector3 Vector3::YAXIS(0.0, 1.0, 0.0);
+/// Unit vector in Z
 const Vector3 Vector3::ZAXIS(0.0, 0.0, 1.0);
 
 
-/**
- * Divide a vector by a double 
- */
 Vector3 operator/ (const Vector3 & a, double f) //Checked (delta)
 {
 	Vector3 newVect;
@@ -67,9 +64,6 @@ Vector3 operator/ (const Vector3 & a, double f) //Checked (delta)
 	}
 }
 
-/** 
- * Divide this vector by a double.
- */
 Vector3& Vector3::operator/= (double f)
 {
 	if ( f != 0.0 )
@@ -89,9 +83,6 @@ Vector3& Vector3::operator/= (double f)
 	return *this;
 }
 
-/** 
- * Normalize the vector so its length is 1.
- */
 Vector3& Vector3::Normalize() // Checked (delta)
 {
 	double m = Length();
@@ -106,12 +97,6 @@ Vector3& Vector3::Normalize() // Checked (delta)
 }
 
 
-/**
- * Normalize a vector and return the original length.
- *
- * @param fTolerance Vectors shorter than this length are considered to
- *                   be of length zero and are not normalized.
- */
 double Vector3::Unitize (double fTolerance)
 {
 	double fLength = Length();
@@ -130,32 +115,27 @@ double Vector3::Unitize (double fTolerance)
 	return fLength;
 }
 
-/**
- * Print string representation to a stream.
- */
 void Vector3::Print(FILE * stream) const
 {
 	fprintf(stream, "[%f, %f, %f]\n", x, y, z);
 }
 
-//} // namespace Math
 
 Matrix3 Vector3::StarMatrix() const
 {
 	Matrix3 mat;
+	mat[0][0] = 0.0;
 	mat[0][1] = -z;
 	mat[0][2] = y;
 	mat[1][0] = z;
+	mat[1][1] = 0.0;
 	mat[1][2] = -x;
 	mat[2][0] = -y;
 	mat[2][1] = x;
-
+	mat[2][2] = 0.0;
 	return mat;
 }
 
-/**
- * String representation.
- */
 std::string Vector3::asString() const
 {
 	char buff[128];
@@ -190,27 +170,18 @@ std::vector<double> Vector3::GetElements() const {
 	return elements;
 }
 
-/**
- * Serialize
- */
 void Vector3::pack(Packer& p) const {
 	p.pack(x);
 	p.pack(y);
 	p.pack(z);
 }
 
-/**
- * Deserialize
- */
 void Vector3::unpack(UnPacker& p) {
 	p.unpack(x);
 	p.unpack(y);
 	p.unpack(z);
 }
 
-/**
- * Parse cdata from XML tag <Vector>
- */
 void Vector3::parseXML(const char* cdata) {
 	double X, Y, Z;
 	int n = sscanf(cdata, "%lf %lf %lf", &X, &Y, &Z);
@@ -220,9 +191,6 @@ void Vector3::parseXML(const char* cdata) {
 	if (n!=3) throw ParseException("SYNTAX ERROR: expecting 3 floats");
 }
 
-Vector3 Vector3::__mul__(const Matrix3 & a) const { 
-	return (*this)*a; 
-}
 
 NAMESPACE_END // namespace simdata
 

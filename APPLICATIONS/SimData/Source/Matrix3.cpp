@@ -228,6 +228,7 @@ Matrix3 Matrix3::operator*(const Matrix3& rkMatrix) const
 
 // multiplication (proxy) operators for Python
 
+/*
 Matrix3 Matrix3::__mul__(const Matrix3& m) const {
 	return (*this)*m;
 }
@@ -243,6 +244,7 @@ Matrix3 Matrix3::__rmul__(double v) const {
 Vector3 Matrix3::__mul__(const Vector3& v) const {
 	return (*this)*v;
 }
+*/
 
 
 /*

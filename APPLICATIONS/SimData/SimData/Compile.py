@@ -128,7 +128,8 @@ class Compiler:
 		print
 		print "Compiling '%s' from '%s'" % (self.outfile, self.infile)
 		DEBUG(1, "Opening input archive")
-		master = ObjectXMLArchive(self.infile);
+		prefix = os.path.splitext(os.path.basename(self.outfile))[0]
+		master = ObjectXMLArchive(prefix, self.infile);
 		DEBUG(1, "Loading all objects")
 		resetWarnings()
 		if not self.rebuild:
@@ -159,6 +160,7 @@ class Compiler:
 				pass
 			compiled.addObject(object, id)
 		self.dumpBadPaths(all, paths)
+		print "Finished."
 
 	def dumpBadPaths(self, all, paths):
 		if getWarningLevel() < 1: return

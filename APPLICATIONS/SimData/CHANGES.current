@@ -1,6 +1,17 @@
 Version 0.3.1 (in progress)
 ===========================
 
+2003-03-29: onsight
+            Added a DataManager class to combine access to multiple data
+	    archives simultaneously and transparently.
+
+            *** ANY MSVC USERS: PLEASE UPDATE THE PROJECT FILE TO INCLUDE ***
+	    *** DATAMANAGER.CPP                                           ***
+
+	    Added Quaternion as a base type.  It now has Python bindings
+	    and an XML interface that can specify either a 3x3 matrix
+	    or the 4 quaternion parameters.  The XML tag is <Quat>
+
 2003-03-28: delta
 	    updated .net project (release mode is maintained)
 

@@ -69,9 +69,9 @@ SIMDATA_EXCEPTION(InterfaceError)
 #endif
 
 /**
- * class MemberAccessorBase - Base class for storing and accessing member 
+ * class MemberAccessorBase - base class for storing and accessing member 
  * variable references.
- *
+ * 
  * @author Mark Rose <mrose@stm.lbl.gov>
  */
 class MemberAccessorBase 

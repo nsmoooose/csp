@@ -45,11 +45,15 @@
 
 #include <iostream>
 
-#include <SimData/Matrix3.h>
+#include <SimData/BaseType.h>
 #include <SimData/ns-simdata.h>
+#include <SimData/Export.h>
 
 
 NAMESPACE_SIMDATA
+
+class Vector3;
+class Matrix3;
 
 
 /**
@@ -57,7 +61,7 @@ NAMESPACE_SIMDATA
  *
  * @author unknown
  */
-class SIMDATA_EXPORT Quaternion
+class SIMDATA_EXPORT Quaternion: public BaseType
 {
 public:
 	double w, x, y, z;
@@ -65,6 +69,11 @@ public:
 	// construction and destruction
 	Quaternion (double fW = 1.0f, double fX = 0.0f, double fY = 0.0f, double fZ = 0.0f);
 	Quaternion (const Quaternion& rkQ);
+	
+	// BaseType interface
+	virtual void pack(Packer&) const; 
+	virtual void unpack(UnPacker&);
+	virtual void parseXML(const char* cdata);
 
 	// conversion between Quaternions, matrices, and angle-axes
 	void FromRotationMatrix (const Matrix3& kRot);
@@ -74,38 +83,44 @@ public:
 	void FromAxes (const Vector3* akAxis);
 	void ToAxes (Vector3* akAxis) const;
 
+	// arithmetic operations
+
+#ifndef SWIG
 	Quaternion & operator+=(const Quaternion & q);
 	Quaternion & operator/=(double s);
-
-	// arithmetic operations
 	Quaternion& operator= (const Quaternion& rkQ);
+#endif // SWIG
 
-	inline Quaternion operator+ (const Quaternion& rhs) const
-	{
+	inline Quaternion operator+ (const Quaternion& rhs) const {
 		return Quaternion(w+rhs.w,x+rhs.x,y+rhs.y,z+rhs.z);
 	}
 
-	inline Quaternion operator- (const Quaternion& rhs) const
-	{
+	inline Quaternion operator- (const Quaternion& rhs) const {
 		return Quaternion(w-rhs.w,x-rhs.x,y-rhs.y,z-rhs.z);
 	}
 
-	Quaternion operator* (const Quaternion& rkQ) const;
-
-	inline const Quaternion operator* (const double fScalar) const
-	{
+#ifndef SWIG
+	inline const Quaternion operator* (const double fScalar) const {
 		return Quaternion(fScalar*w,fScalar*x,fScalar*y,fScalar*z);
 	}
-
-	SIMDATA_EXPORT friend Quaternion operator* (double fScalar, const Quaternion& rkQ);
+	/**
+	 * Compare two quaternions for equality.
+	 */
+	SIMDATA_EXPORT friend bool operator==(const Quaternion &a, const Quaternion &b);
+	/**
+	 * Compare two quaternions for inequality.
+	 */
+	SIMDATA_EXPORT friend bool operator!=(const Quaternion &a, const Quaternion &b);
+	SIMDATA_EXPORT friend Quaternion operator*(double fScalar, Quaternion const& rkQ);
+	// Multiplication of a Quaternion and with a Vector, yielding a quaternion.
+	SIMDATA_EXPORT friend Quaternion operator*(Quaternion const& q, Vector3 const& v);
+	SIMDATA_EXPORT friend Quaternion operator*(Vector3 const& v, Quaternion const& q);
+	SIMDATA_EXPORT friend std::ostream& operator<< (std::ostream& os, Quaternion const& m);
+	Quaternion operator* (const Quaternion& rkQ) const;
+#endif // SWIG
 
 	Quaternion operator- () const;
 	Quaternion operator~ (void) const { return Quaternion(w, -x, -y, -z);}
-
-	// Multiplication of a Quaternion and with a Vector, yielding a quaternion.
-	SIMDATA_EXPORT friend Quaternion operator*(Quaternion q, Vector3 v); // const &?
-	friend Quaternion operator*(Vector3 v, Quaternion q); // const &?
-
 
 	// functions of a Quaternion
 	double Dot (const Quaternion& rkQ) const;  // dot product
@@ -115,46 +130,63 @@ public:
 	double	GetScalar(void);
 
 	Quaternion Bar() const;
-	Quaternion Inverse () const;       // apply to non-zero Quaternion
-	Quaternion UnitInverse () const;  // apply to unit-length Quaternion
-	Quaternion Exp () const;
-	Quaternion Log () const;
+	Quaternion Inverse() const;       // apply to non-zero Quaternion
+	Quaternion UnitInverse() const;  // apply to unit-length Quaternion
+	Quaternion Exp() const;
+	Quaternion Log() const;
 
 	// Use QVRotate instead.
 	// rotation of a vector by a Quaternion
 	//    Vector3 operator* (const Vector3& rkVector) const;
 
 	// spherical linear interpolation
-	static Quaternion Slerp (double fT, const Quaternion& rkP, const Quaternion& rkQ);
+	static Quaternion Slerp(double fT, const Quaternion& rkP, const Quaternion& rkQ);
 
-	static Quaternion SlerpExtraSpins (double fT, const Quaternion& rkP, const Quaternion& rkQ,
-	int iExtraSpins);
+	static Quaternion SlerpExtraSpins(double fT, 
+			                  const Quaternion& rkP, 
+	                                  const Quaternion& rkQ,
+	                                  int iExtraSpins);
 
 	// setup for spherical quadratic interpolation
-	static void Intermediate (const Quaternion& rkQ0,
-	const Quaternion& rkQ1, const Quaternion& rkQ2, Quaternion& rka, Quaternion& rkB);
+	static void Intermediate(const Quaternion& rkQ0,
+	                         const Quaternion& rkQ1, 
+	                         const Quaternion& rkQ2, 
+	                         Quaternion& rka, 
+	                         Quaternion& rkB);
 
 	// spherical quadratic interpolation
-	static Quaternion Squad (double fT, 
-	                         const Quaternion& rkP, 
-	                         const Quaternion& rkA, 
-	                         const Quaternion& rkB, 
-	                         const Quaternion& rkQ);
+	static Quaternion Squad(double fT, 
+	                        const Quaternion& rkP, 
+	                        const Quaternion& rkA, 
+	                        const Quaternion& rkB, 
+	                        const Quaternion& rkQ);
 
 	// special values
 	static const Quaternion ZERO;
 	static const Quaternion IDENTITY;
 
-	static Vector3 MakeEulerAnglesFromQ(Quaternion q);
+	static Vector3 MakeEulerAnglesFromQ(Quaternion const &q);
 	static Quaternion MakeQFromEulerAngles(double x, double y, double z);
-
-	SIMDATA_EXPORT friend std::ostream & operator<< (std::ostream & os, const Quaternion & m);
+	
+	std::string asString() const;
+	
+	// explicit operators for Python
+#ifdef SWIG
+	%extend {
+		bool __eq__(Quaternion const& a) { return *self == a; }
+		bool __ne__(Quaternion const& a) { return *self != a; }
+		Quaternion __mul__(double f) { return (*self) * f; }
+		Quaternion __rmul__(double f) { return (*self) * f; }
+		Quaternion __mul__(Vector3 const& v) { return (*self) * v; }
+		Quaternion __mul__(const Quaternion& q) { return (*self) * q; }
+	}
+#endif // SWIG 
 
 };
 
 
-SIMDATA_EXPORT Vector3	QVRotate(Quaternion q, Vector3 v);
-Quaternion QRotate(Quaternion q1, Quaternion q2);
+SIMDATA_EXPORT Vector3 QVRotate(Quaternion const& q, Vector3 const& v);
+Quaternion QRotate(Quaternion const& q1, Quaternion const&  q2);
 
 
 NAMESPACE_END // namespace simdata

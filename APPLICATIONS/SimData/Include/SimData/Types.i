@@ -26,4 +26,5 @@
 %include "SimData/Interpolate.i"
 %include "SimData/List.i"
 %include "SimData/Matrix3.i"
+%include "SimData/Quaternion.i"
 

@@ -59,7 +59,7 @@ class CompilerErrorHandler(ErrorHandler):
 		print "File %s%s - %s" % (self._path, place, ", ".join(error.args))
 		sys.exit(1)
 
-def path_to_id(path):
+def path_to_id(prefix, path):
 	if path.endswith('.gz'): path = path[:-3]
 	if path.endswith('.xml'): path = path[:-4]
 	parts = []
@@ -69,12 +69,27 @@ def path_to_id(path):
 			parts.insert(0, tail)
 		else:
 			break;
-	return '.'.join(parts)
+	return prefix + ":" + '.'.join(parts)
 
 def id_to_path(id):
+	parts = id.split(':')
+	if len(parts) == 2:
+		id = parts[1]
 	return apply(os.path.join, id.split('.'))
 
 	
+# convert to absolute path id
+def adjust_path(base, id):
+	if ':' in id:
+		return id
+	if not id.startswith("."):
+		return base + "." + id
+	parts = base.split(':')
+	if len(parts) == 2:
+		prefix, base = parts
+	else:
+		prefix, base = "", base
+	return prefix + ":" + id[1:]
 
 class ElementHandler(ContentHandler):
 	
@@ -193,7 +208,7 @@ class ListHandler(SimpleHandler):
 			return 0
 		return name in ('List', 'Enum', 'Path', 'Int', 'Bool', 'Number', 'Float', 
 		                'String', 'Date', 'Vector', 'Matrix', 'External', 
-		                'Object')
+		                'Object', 'Quat')
 
 	def end(self):
 		if self._type is not None:
@@ -209,8 +224,9 @@ class ListHandler(SimpleHandler):
 					return y
 				f = spread 
 			elif self._type == "path":
-				def path(x):
+				def path(x, base = self._base):
 					y = SimData.Path()
+					x = adjust_path(base, x)
 					y.setPath(x)
 					return y
 				f = path
@@ -312,6 +328,14 @@ class MatrixHandler(SimpleHandler):
 		self._element = SimData.Matrix3()
 		self._element.parseXML(self._c)
 
+class QuatHandler(SimpleHandler):
+
+	def __init__(self, id, base, name, attrs):
+		SimpleHandler.__init__(self, id, base, name, attrs)
+	
+	def end(self):
+		self._element = SimData.Quaternion()
+		self._element.parseXML(self._c)
 
 class DateHandler(SimpleHandler):
 
@@ -383,10 +407,7 @@ class PathHandler(SimpleHandler):
 			source = self._attrs["source"]
 		else:
 			source = self._c.strip()
-		if not source.startswith("."):
-			source = self._base + "." + source
-		else:
-			source = source[1:]
+		source = adjust_path(self._base, source)
 		self._element = source
 		self._paths.append(source)
 
@@ -540,9 +561,9 @@ class TableHandler(SimpleHandler):
 
 class FileHandler(ElementHandler):
 
-	def __init__(self, path=None, id=None):
+	def __init__(self, prefix="", path=None, id=None):
 		if path is not None:
-			id = path_to_id(path)
+			id = path_to_id(prefix, path)
 		self._id = id
 		id = id.split('.')
 		base = '.'.join(id[:-1])
@@ -631,7 +652,7 @@ class ObjectXMLArchive:
 
 	MASTER = None
 
-	def __init__(self, path):
+	def __init__(self, prefix, path):
 		if ObjectXMLArchive.MASTER is not None:
 			raise "Can only create one ObjectXMLArchive object"
 		ObjectXMLArchive.MASTER = self
@@ -640,16 +661,17 @@ class ObjectXMLArchive:
 		self._paths = {}
 		self._externals = {}
 		self._cache = None
+		self._prefix = prefix
 
-	def getObject(self, id):
-		if not self._objects.has_key(id):
-			self._objects[id] = self.loadObject(id)
-		return self._objects[id]
-
-	def loadObject(self, id):
-		path = id_to_path(id)
-		path = os.path.join(self._basepath, path);
-		return self.loadPath(path, id)
+# 	def getObject(self, id):
+# 		if not self._objects.has_key(id):
+# 			self._objects[id] = self.loadObject(id)
+# 		return self._objects[id]
+# 
+# 	def loadObject(self, id):
+# 		path = id_to_path(id)
+# 		path = os.path.join(self._basepath, path);
+# 		return self.loadPath(path, id)
 		
 	def loadPath(self, path, id):
 		if not os.path.exists(path):
@@ -721,7 +743,7 @@ class ObjectXMLArchive:
 			fullpath = os.path.normpath(os.path.join(self._basepath, filepath))
 			if filename.endswith('.xml') \
 				or filename.endswith('.xml.gz'):
-				id = path_to_id(filepath)
+				id = path_to_id(self._prefix, filepath)
 				DEBUG(2, "Loading object '%s' from '%s'" % (id, fullpath))
 				self._objects[id] = self.loadPath(fullpath, id)
 			elif os.path.isdir(fullpath):

@@ -61,6 +61,12 @@ typedef  guint64  u8;   /* unsigned 8-byte type */
 
 NAMESPACE_SIMDATA
 
+/**
+ * @defgroup HashUtils Hash Utilities
+ */
+
+//@{
+
 struct HashT;
 
 extern SIMDATA_EXPORT u4 newhash4_cstring(const char*);
@@ -223,6 +229,9 @@ typedef HASH_MAPS<hasht, ObjectProxyBase*, hasht_hash, hasht_eq>::Type proxy_map
 //typedef HASH_MAPS<const std::string, int, hashstring, eqstring>::Type string_map;
 
 extern std::ostream & operator<<(std::ostream &o, const hasht &x);
+
+
+//@}
 
 
 NAMESPACE_END // namespace simdata

@@ -11,10 +11,12 @@ SWOPTS = $(GSWOPTS) $(INCLUDE)
 MODULES = \
 	BaseType \
 	DataArchive \
+	DataManager \
 	Date \
 	Enum \
 	Exception \
 	External \
+	FileUtility \
 	GeoPos \
 	HashUtility \
 	InterfaceRegistry \

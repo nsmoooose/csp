@@ -18,12 +18,19 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
+/**
+ * @file GeoPos.h
+ *
+ * Geodetic coordinate class and conversions.
+ */
+
 
 #ifndef __GEOPOS_H__
 #define __GEOPOS_H__
 
 #include <string>
 #include <SimData/Vector3.h>
+#include <SimData/Export.h>
 
 
 NAMESPACE_SIMDATA
@@ -33,7 +40,7 @@ NAMESPACE_SIMDATA
  * Reference ellipsoid parameters.
  *
  */
-struct ReferenceEllipsoid {
+struct SIMDATA_EXPORT ReferenceEllipsoid {
 	ReferenceEllipsoid(double semi_major, double semi_minor) {
 		A          = semi_major;
 		B          = semi_minor;
@@ -59,41 +66,69 @@ struct ReferenceEllipsoid {
 		m_b        = e1 * e1 * (1.3125 - 1.71875*e1*e1);
 		m_c        = 1.5729166666667*e1*e1*e1;
 	}
-	double A;    // equatorial radius
-	double B;    // polar radius
-	double R;    // volumetric mean radius
-	double f;    // flattening
-	double e;    // eccentricity
-	double A_B;
-	double B_A;
-	double B2_A2;
-	double A2_B2;
-	double e2;
-	double e1;
-	double ep;
-	double ep2;
+	double A;    ///< equatorial radius
+	double B;    ///< polar radius
+	double R;    ///< volumetric mean radius (6371010 meters)
+	double f;    ///< flattening @f$((A-B)/A)@f$
+	double e;    ///< eccentricity @f$(\sqrt{2f-f^2})@f$
+	double A_B;  ///< equatorial to polar radius ratio @f$(A/B)@f$
+	double B_A;  ///< polar to equatorial radius ratio @f$(B/A)@f$
+	double B2_A2;///< square of polar to equatorial radius ratio @f$(B^2/A^2)@f$
+	double A2_B2;///< square of equatorial to polar radius ratio @f$(A^2/B^2)@f$
+	double e2;   ///< eccentricity squared @f$(e^2)@f$
+	double e1;   ///< eccentricity one @f$((A-B)/(A+B))@f$
+	double ep;   ///< eccentricity prime @f$(\sqrt{A^2-B^2}/B)@f$
+	double ep2;  ///< eccentricity prime squared @f$({e^{\prime}}^2)@f$
 	
-	double m_0;
-	double m_1;
-	double m_2;
-	double m_3;
+	double m_0;  ///< utm to lat,lon conversion constant m0
+	double m_1;  ///< utm to lat,lon conversion constant m1
+	double m_2;  ///< utm to lat,lon conversion constant m2
+	double m_3;  ///< utm to lat,lon conversion constant m3
 	
-	double m_f;
-	double m_a;
-	double m_b;
-	double m_c;
+	double m_f;  ///< lat,lon to utm conversion constant f
+	double m_a;  ///< lat,lon to utm conversion constant a
+	double m_b;  ///< lat,lon to utm conversion constant b
+	double m_c;  ///< lat,lon to utm conversion constant c
 };
 
 
-// some standard reference ellipsoids
+/**
+ * Some standard reference ellipsoids.
+ *
+ * See for example:
+ *     http://www.colorado.edu/geography/gcraft/notes/datum/datum.html
+ * or
+ *     http://www.nima.mil/GandG/tm83581/toc.htm
+ */
 namespace GeoRef {
-	extern const ReferenceEllipsoid Airy1830;
-	extern const ReferenceEllipsoid AustralianNational;
-	extern const ReferenceEllipsoid WGS84;
-	extern const ReferenceEllipsoid GRS80;
-	extern const ReferenceEllipsoid WGS72;
-	extern const ReferenceEllipsoid Clarke1866;
-	extern const ReferenceEllipsoid NAD27;
+	/**
+	 * Airy 1830
+	 */
+	extern SIMDATA_EXPORT const ReferenceEllipsoid Airy1830;
+	/**
+	 * Australian National
+	 */
+	extern SIMDATA_EXPORT const ReferenceEllipsoid AustralianNational;
+	/**
+	 * World Geodetic System 1984
+	 */
+	extern SIMDATA_EXPORT const ReferenceEllipsoid WGS84;
+	/**
+	 * World Geodetic System 1980
+	 */
+	extern SIMDATA_EXPORT const ReferenceEllipsoid GRS80;
+	/**
+	 * World Geodetic System 1972
+	 */
+	extern SIMDATA_EXPORT const ReferenceEllipsoid WGS72;
+	/**
+	 * Clarke 1866 
+	 */
+	extern SIMDATA_EXPORT const ReferenceEllipsoid Clarke1866;
+	/**
+	 * North American Datum 1927
+	 */
+	extern SIMDATA_EXPORT const ReferenceEllipsoid NAD27;
 }
 
 
@@ -114,7 +149,7 @@ namespace GeoRef {
  * function properly.
  * 
  */
-class GeoPos: public Vector3 {
+class SIMDATA_EXPORT GeoPos: public Vector3 {
 public:
 
 	/**

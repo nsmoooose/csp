@@ -42,6 +42,7 @@ NAMESPACE_SIMDATA
 
 class Vector3;
 
+
 // NOTE.  The (x,y,z) coordinate system is assumed to be right-handed.
 // Coordinate axis rotation matrices are of the form
 //   RX =    1       0       0
@@ -189,19 +190,15 @@ public:
 	friend std::ostream & operator<< (std::ostream & os, const Matrix3 & m);
 #endif // SWIG
 	
-	// explicit multiplication operators for Python
-	Matrix3 __mul__(const Matrix3 &a) const;
-	Matrix3 __mul__(double a) const;
-	Matrix3 __rmul__(double a) const;
-	Vector3 __mul__(const Vector3 &a) const;
-
-#ifdef SWIG_____NOTYETREADY
+	// explicit operators for Python
+#ifdef SWIG
 	%extend {
-//		bool operator==(const Vector3 & a) { return *self == a; }
-//		bool operator!=(const Vector3 & a) { return *self != a; }
-//		Vector3 operator*(const Vector3 & a) { return (*self)*a; }
-//		Matrix3 operator*(const Matrix3 & a) { return (*self)*a; }
-//		Matrix3 operator*(double a) { return (*self)*a; }
+		bool __eq__(const Matrix3 & a) { return *self == a; }
+		bool __ne__(const Matrix3 & a) { return *self != a; }
+		Matrix3 __mul__(const Matrix3& m) const { return (*self)*m; } 
+		Matrix3 __mul__(double v) const { return (*self)*v; }
+		Matrix3 __rmul__(double v) const { return (*self)*v; }
+		Vector3 __mul__(const Vector3& v) const { return (*self)*v; }
 	}
 #endif // SWIG 
 
@@ -212,8 +209,6 @@ public:
 
 };
 
-// shorthand
-//typedef Matrix3 Matrix3;
 
 NAMESPACE_END // namespace simdata
 

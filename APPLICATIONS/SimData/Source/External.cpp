@@ -20,12 +20,7 @@
 
 #include <SimData/External.h>
 #include <SimData/Pack.h>
-
-#include <SimData/GlibCsp.h>
-
-#define WIN_SEPERATOR '\\'
-#define NIX_SEPERATOR '/'
-#define INT_SEPERATOR '/'
+#include <SimData/FileUtility.h>
 
 
 NAMESPACE_SIMDATA
@@ -47,7 +42,7 @@ const External &External::operator=(External const &path) {
 
 void External::setSource(const char* path) {
 	_native_path.assign(path);
-	_path = fromNative(path);
+	_path = ospath::normalize(path);
 }
 
 const std::string& External::getSource() const {
@@ -60,40 +55,13 @@ void External::pack(Packer& p) const {
 
 void External::unpack(UnPacker& p) {
 	p.unpack(_path);
-	_native_path = toNative(_path.c_str());
+	_native_path = ospath::filter(_path.c_str());
 }
 
-std::string External::fromNative(const char *path) {
-	std::string result;
-	char *neutral = strdup(path);
-	char *run=neutral;
-	for (; *run; run++) {
-		if (*run == WIN_SEPERATOR || *run == NIX_SEPERATOR) {
-			*run = INT_SEPERATOR;
-		}
-	}
-	result = neutral;
-	free(neutral);
-	return result;
-}
-
-std::string External::toNative(const char *path) {
-	std::string result;
-	char *neutral = strdup(path);
-	char *run=neutral;
-	for (; *run; run++) {
-		if (*run == INT_SEPERATOR) {
-			*run = G_DIR_SEPARATOR; 
-		}
-	}
-	result = neutral;
-	free(neutral);
-	return result;
-}
-	
 std::string External::asString() const {
 	return _path;
 }
+
 
 NAMESPACE_END // namespace simdata
 

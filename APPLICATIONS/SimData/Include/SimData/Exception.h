@@ -46,13 +46,51 @@ class SIMDATA_EXPORT Exception { //: public std::runtime_error {
 	std::string _type;
 	mutable bool dump;
 public:
+	/**
+	 * Create a new exception.
+	 *
+	 * @param type a string representing the type of error.
+	 * @param msg a string providing additional information about the error.
+	 */
 	Exception(std::string type="Exception", std::string msg="");
+
+	/**
+	 * Copy constructor.
+	 */
 	Exception(Exception const &e);
+
+	/**
+	 * Destructor.
+	 *
+	 * If the exception has not cleared, it will display its
+	 * details to stderr on destruction.
+	 */
 	virtual ~Exception();
+
+	/**
+	 * Get the string describing the error.
+	 */
 	std::string getMessage();
+
+	/**
+	 * Get the string representing the type of error.
+	 */
 	std::string getType();
+
+	/**
+	 * Add additional information to the error description.
+	 */
 	void appendMessage(std::string const &msg);
+
+	/**
+	 * Reset the exception so that it will not print to stderr on 
+	 * destruction.
+	 */
 	void clear();
+
+	/**
+	 * Dump information about the exception to stderr.
+	 */
 	void details();
 };
 
@@ -69,7 +107,6 @@ public: \
  * @author Mark Rose <mrose@stm.lbl.gov>
  */
 SIMDATA_EXCEPTION(PythonException);
-//class PythonException {};
 
 
 NAMESPACE_END // namespace simdata

@@ -18,7 +18,7 @@
 
 
 /**
- * @file Matrix3.cpp
+ * @file Quaternion.cpp
  *
  * Initial CSP version by Wolverine69
  * Modified for SimData by Onsight (Jan 2003)
@@ -37,10 +37,15 @@
 // FREE SOURCE CODE
 // http://www.magic-software.com/License/free.pdf
 
-#include <iomanip>
 
+#include <iomanip>
+#include <sstream>
+#include <cmath>
+
+#include <SimData/Pack.h>
 #include <SimData/Math.h>
 #include <SimData/Vector3.h>
+#include <SimData/Matrix3.h>
 #include <SimData/Quaternion.h>
 
 
@@ -513,7 +518,7 @@ Quaternion Quaternion::MakeQFromEulerAngles(double x, double y, double z)
 	return q;
 }
 
-Vector3	Quaternion::MakeEulerAnglesFromQ(Quaternion q)
+Vector3	Quaternion::MakeEulerAnglesFromQ(Quaternion const& q)
 {
 	double	r11, r21, r31, r32, r33, r12, r13;
 	double	q00, q11, q22, q33;
@@ -551,7 +556,7 @@ Vector3	Quaternion::MakeEulerAnglesFromQ(Quaternion q)
 
 }
 
-Quaternion & Quaternion::operator+=(const Quaternion & q)
+Quaternion & Quaternion::operator+=(const Quaternion& q)
 {
 	w += q.w;
 	x += q.x;
@@ -561,7 +566,7 @@ Quaternion & Quaternion::operator+=(const Quaternion & q)
 }
 
 
-Quaternion operator*(Quaternion q, Vector3 v)
+Quaternion operator*(Quaternion const& q, Vector3 const& v)
 {
 	return Quaternion( -(q.x*v.x + q.y*v.y + q.z*v.z),
 	                     q.w*v.x + q.y*v.z - q.z*v.y,
@@ -569,7 +574,7 @@ Quaternion operator*(Quaternion q, Vector3 v)
 	                     q.w*v.z + q.x*v.y - q.y*v.x);
 }
 
-Quaternion operator*(Vector3 v, Quaternion q)
+Quaternion operator*(Vector3 const& v, Quaternion const& q)
 {
 	return Quaternion( -(q.x*v.x + q.y*v.y + q.z*v.z),
 	                     q.w*v.x + q.z*v.y - q.y*v.z,
@@ -582,11 +587,11 @@ double	Quaternion::Magnitude(void) const
 	return sqrt(w*w + x*x + y*y + z*z);
 }
 
-Vector3	QVRotate(Quaternion q, Vector3 v)
+Vector3	QVRotate(Quaternion const& q, Vector3 const& v)
 {
 	Quaternion t;
 	t = (q*v)*q.Bar();
-	return	t.GetVector();
+	return t.GetVector();
 }
 
 Quaternion Quaternion::Bar() const
@@ -594,12 +599,10 @@ Quaternion Quaternion::Bar() const
 	return Quaternion(w,-x,-y,-z);
 }
 
-Quaternion QRotate(Quaternion q1, Quaternion q2)
+Quaternion QRotate(Quaternion const& q1, Quaternion const& q2)
 {
-	return	q1*q2*(~q1);
+	return q1*q2*(~q1);
 }
-
-
 
 Vector3	Quaternion::GetVector(void)
 {
@@ -612,7 +615,7 @@ double	Quaternion::GetScalar(void)
 }
 
 
-Quaternion & Quaternion::operator/=(double s) // Checked (delta)
+Quaternion& Quaternion::operator/=(double s) // Checked (delta)
 {
 	w /= s;
 	x /= s;
@@ -622,7 +625,7 @@ Quaternion & Quaternion::operator/=(double s) // Checked (delta)
 }
 
 
-ostream & operator<<(ostream & os, const Quaternion & m)
+ostream& operator<<(ostream& os, Quaternion const& m)
 {
 	os << "[" <<  setw(8) << m.w << ", " << setw(8) << m.x 
 	   << ", " << setw(8) << m.y << ", " << setw(8) << m.z << "]";
@@ -632,6 +635,60 @@ ostream & operator<<(ostream & os, const Quaternion & m)
 Quaternion operator* (double fScalar, const Quaternion& rhs)
 {
 	return Quaternion(fScalar*rhs.w,fScalar*rhs.x,fScalar*rhs.y,fScalar*rhs.z);
+}
+
+
+void Quaternion::pack(Packer &p) const {
+	p.pack(w);
+	p.pack(x);
+	p.pack(y);
+	p.pack(z);
+}
+
+void Quaternion::unpack(UnPacker &p) {
+	p.unpack(w);
+	p.unpack(x);
+	p.unpack(y);
+	p.unpack(z);
+}
+
+void Quaternion::parseXML(const char* cdata) {
+	std::stringstream ss(cdata); 
+	std::string token; 
+	double v[9];
+	for (int i = 0; i < 9; i++) {
+		if (!(ss >> token)) {
+			if (i == 4) {
+				w = v[0];
+				x = v[1];
+				y = v[2];
+				z = v[3];
+				return;
+			} else {
+				throw ParseException("Expect either four (4) or  nine (9) elements in quaternion");
+			}
+		}
+    		v[i] = atof(token.c_str());
+	}
+	if (ss >> token) {
+		throw ParseException("Expect exactly four (4) or nine (9) elements in quaternion");
+	}
+	FromRotationMatrix(Matrix3(v[0],v[1],v[2],v[3],v[4],v[5],v[6],v[7],v[8]));
+}
+
+
+std::string Quaternion::asString() const {
+	std::stringstream repr;
+	repr << *this;
+	return repr.str();
+}
+
+bool operator==(const Quaternion &a, const Quaternion &b) {
+	return a.w == b.w && a.x == b.x && a.y == b.y && a.z == b.z;
+}
+
+bool operator!=(const Quaternion &a, const Quaternion &b) {
+	return a.w != b.w || a.x != b.x || a.y != b.y || a.z != b.z;
 }
 
 

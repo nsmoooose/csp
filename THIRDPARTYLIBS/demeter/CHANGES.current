@@ -1,6 +1,10 @@
 Version 0.3.2 (in progress)
 ===========================
 
+2003-05-XX: onsight
+            Minor optimizations in texture generation.  Still needs
+	    its own thread.
+
 2003-04-18: delta
 	    Checked Onsight changes. got ride of some vc++ warnings.
 	    Updated .NET project.

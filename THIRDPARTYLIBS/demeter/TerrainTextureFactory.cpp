@@ -34,7 +34,7 @@ const float texelsPerMeter = 1.0f;
 const float texelSpacing = 1.0f / texelsPerMeter;
 const float textureSize = 256.0f;
 
-float limit255(float a)		//Check for invalid values
+inline float limit255(float a)		//Check for invalid values
 {
 	if(a < 0.0f) {
 		return 0.0f;
@@ -47,7 +47,7 @@ float limit255(float a)		//Check for invalid values
 	}
 }
 
-float texture_factor_low( float h1, float h2, float f)
+inline float texture_factor_low( float h1, float h2, float f)
 {
 	if (f < h1)
 		return 1.0;
@@ -58,7 +58,7 @@ float texture_factor_low( float h1, float h2, float f)
 
 }
 
-float texture_factor_high( float h1, float h2, float f)
+inline float texture_factor_high( float h1, float h2, float f)
 {
 	if (f < h1)
 		return 0.0;
@@ -68,7 +68,7 @@ float texture_factor_high( float h1, float h2, float f)
 		return ( ( f - h2 ) / ( h1 - h2 ));
 }
 
-float texture_factor_mid2( float h1, float h2, float h3, float h4, float f)
+inline float texture_factor_mid2( float h1, float h2, float h3, float h4, float f)
 {
 	if (f < h1)
 		return 0.0f;
@@ -85,7 +85,7 @@ float texture_factor_mid2( float h1, float h2, float h3, float h4, float f)
 
 }
 
-float texture_factor_mid(float h1, float h2, float h3, float f)		//Check for percentage of color
+inline float texture_factor_mid(float h1, float h2, float h3, float f)		//Check for percentage of color
 {
 	//float t;
 	if ( f < h1)
@@ -183,7 +183,7 @@ Texture* TerrainTextureFactory::GetTexture(int index,float originX,float originY
 
 		if (Settings::GetInstance()->IsVerbose())
 		{
-			m_Logfile << "Generating Texture" << endl;
+			m_Logfile << "Generating Texture" << latticeX << ":" << latticeY << endl;
 		}
 
 
@@ -204,11 +204,14 @@ Texture* TerrainTextureFactory::GetTexture(int index,float originX,float originY
 			Uint8* pTex5 = m_BaseTextures[4];
 			Uint8* pTex6 = m_BaseTextures[5];
 
+			//std::cout << "Generating Texture" << latticeX << ":" << latticeY << endl;
+			std::cout << originX << "," << originY << "  " << width << "," << height << "  " << textureSize << "\n";
+
 			Uint8* pImage = new Uint8[(int)((textureSize + 1.0f) * (textureSize + 1.0f)) * 3];
-			int imageIndex = 0;
+			Uint8* Idx = pImage;
 			for (float y = originY; y < originY + height; y += texelSpacing)
 			{
-				for (float x = originX; x < originX + width; x += texelSpacing,imageIndex += 3)
+				for (float x = originX; x < originX + width; x += texelSpacing)
 				{
 					float f0, f1, f2, f3, f4, f5;
 					float elev = m_pTerrain->GetElevation(x,y);
@@ -221,37 +224,37 @@ Texture* TerrainTextureFactory::GetTexture(int index,float originX,float originY
 					f5 = texture_factor_high(1000, 5000, elev);
 
 					Uint8 red     = static_cast<unsigned char>(
-						            limit255(f0*pTex1[imageIndex] +
-									f1*pTex2[imageIndex] +
-									f2*pTex3[imageIndex] +
-									f3*pTex4[imageIndex] +
-									f4*pTex5[imageIndex] +
-									f5*pTex6[imageIndex] )
+						              limit255( f0 * *pTex1++ +
+									f1 * *pTex2++ +
+									f2 * *pTex3++ +
+									f3 * *pTex4++ +
+									f4 * *pTex5++ +
+									f5 * *pTex6++ )
 									);
 
 					Uint8 green   = static_cast<unsigned char>(
-						            limit255(f0*pTex1[imageIndex + 1] +
-									f1*pTex2[imageIndex + 1] +
-									f2*pTex3[imageIndex + 1] +
-									f3*pTex4[imageIndex + 1] +
-									f4*pTex5[imageIndex + 1] +
-									f5*pTex6[imageIndex + 1] )
+						               limit255(f0 * *pTex1++ +
+									f1 * *pTex2++ +
+									f2 * *pTex3++ +
+									f3 * *pTex4++ +
+									f4 * *pTex5++ +
+									f5 * *pTex6++ )
 									);
 							
 					Uint8 blue    = static_cast<unsigned char>(
-						            limit255(f0*pTex1[imageIndex + 2] +
-									f1*pTex2[imageIndex + 2] +
-									f2*pTex3[imageIndex + 2] +
-									f3*pTex4[imageIndex + 2] +
-									f4*pTex5[imageIndex + 2] +
-									f5*pTex6[imageIndex + 2] )
+						               limit255(f0 * *pTex1++ +
+									f1 * *pTex2++ +
+									f2 * *pTex3++ +
+									f3 * *pTex4++ +
+									f4 * *pTex5++ +
+									f5 * *pTex6++ )
 									);
 
 
 
-					pImage[imageIndex]     = red;
-					pImage[imageIndex + 1] = green;
-					pImage[imageIndex + 2] = blue;
+					*Idx++ = red;
+					*Idx++ = green;
+					*Idx++ = blue;
 				}
 			}
 

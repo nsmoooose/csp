@@ -693,6 +693,10 @@ Terrain::Terrain(const float* pElevations,int elevWidth,int elevHeight,const Uin
 
 Terrain::Terrain(const char* szElevationsFilename,const char* szTextureFilename,const char* szDetailTextureFilename,float vertexSpacing,float elevationScale,int maxNumTriangles,bool bUseBorders,float offsetX,float offsetY,int numTexturesX,int numTexturesY)
 {
+    if (numTexturesY == 3) {
+    	char *c = 0;
+	*c++ = 0;
+   }
     m_pCommonTexture = NULL;
     m_pTriangleStrips = NULL;
     m_pTriangleFans = NULL;
@@ -711,6 +715,7 @@ Terrain::Terrain(const char* szElevationsFilename,const char* szTextureFilename,
 	m_LatticePositionX = 0;
 	m_LatticePositionY = 0;
 
+	std::cout << "SetAllElevations " << szElevationsFilename << "\n";
 	SetAllElevations(szElevationsFilename,vertexSpacing,elevationScale);
 
     // Load the texture data.
@@ -823,6 +828,8 @@ void Terrain::Init(const Uint8* pTextureImage,int textureWidth,int textureHeight
 
 void Terrain::SetAllElevations(const char* szElevationsFilename,float vertexSpacing,float elevationScale)
 {
+	std::cout << "SetAllElevations()\n";
+	std::cout << "efilename = " << szElevationsFilename << "\n";
 	bool useRaw = (strstr(szElevationsFilename, ".raw") || strstr(szElevationsFilename, ".RAW") );
 
 #ifdef _USE_GDAL_
@@ -3094,6 +3101,8 @@ TerrainLattice::TerrainLattice(const char* szBaseName,const char* szExtensionEle
     m_TerrainHeight = pTerrain->GetHeight();
     delete pTerrain;
     m_pTextureFactory = NULL;
+    m_FactoryTilesWidth = 1;
+    m_FactoryTilesHeight = 1;
 
 	m_OffsetIndexX[Terrain::DIR_CENTER] = 0;
 	m_OffsetIndexX[Terrain::DIR_NORTH] = 0;
@@ -3152,7 +3161,6 @@ void TerrainLattice::SetTextureFactory(TextureFactory* pFactory,int tilesWidth,i
     m_pTextureFactory = pFactory;
     m_FactoryTilesWidth = tilesWidth;
     m_FactoryTilesHeight = tilesHeight;
-
 }
 
 void TerrainLattice::GenerateTextures(TextureSet* pTextureSet,TextureFactory* pTextureFactory,int tilesWidth,int tilesHeight)
@@ -3183,6 +3191,9 @@ void TerrainLattice::GenerateTextures(TextureSet* pTextureSet,TextureFactory* pT
 
 void TerrainLattice::AddTerrain(Terrain* pTerrain,int positionX,int positionY)
 {
+	//std::cout << "ADDING TERRAIN " << positionX << " " << positionY << std::endl;
+	//char *c = 0;
+	//*c++ = 0;
     m_pTerrains[positionY * m_WidthTerrains + positionX] = pTerrain;
     pTerrain->SetLatticePosition(positionX,positionY);
 }

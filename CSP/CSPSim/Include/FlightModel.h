@@ -96,11 +96,11 @@ public:
 	                         double airspeed,
 	                         double qBar) {
 		// prevent driving the model outside its range of validity
-		m_Alpha = std::max(-0.8, std::min(0.8, alpha));
+		m_Alpha = simdata::clampTo(alpha,-0.8, 0.8);
 		m_AlphaDot = alphaDot;
 		m_Beta = beta;
 		m_qBarS = m_HalfWingArea * qBar * airspeed * airspeed;
-		m_Inv2V = 0.5 / std::max(0.5, airspeed);
+		m_Inv2V = 0.5 / std::max<double>(0.5, airspeed);
 	}
 
 	inline void setControlSurfaces(double aileron, 

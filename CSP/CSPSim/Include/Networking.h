@@ -129,7 +129,8 @@ class NetworkMessage
     public:
     
     bool initialize(simdata::uint16 type, simdata::uint16 payloadLength, NetworkNode * senderNode);
-   
+    void dumpMessageHeader();
+
     simdata::uint16 getType();
 
     void * getPayloadPtr();
@@ -184,9 +185,44 @@ struct ObjectUpdateMessagePayload
 #pragma pack(pop)
 //#endif
 
-class NetworkMessagePool
+
+class NetworkMessageHandler
+{
+	public:
+	virtual void process(NetworkMessage * message) = 0;
+};
+
+class EchoMessageHandler : public NetworkMessageHandler
 {
 
+	public: 
+		virtual void process(NetworkMessage * message);
+	
+};
+
+class PrintMessageHandler : public NetworkMessageHandler
+{
+	protected:
+		int m_frequency;
+		int m_count;
+	public:
+		PrintMessageHandler() { m_frequency = 1; m_count = 0;}
+		virtual void process(NetworkMessage * message);
+
+		void setFrequency(int frequency) { m_frequency = frequency; }
+		int getFrequency() { return m_frequency; }
+};
+
+class NetworkMessagePool
+{
+//	private:
+//	    static NetworkMessage * g_messagePool;
+// 
+//	public:
+//	    NetworkMessage * getMessageFromPool(int type, int payloadLen);
+//	    NetworkMessage * getMessageFromPool();
+//	    void returnMessageToPool(NetworkMessage * message);
+//	    static NetworkMessagePool * getPool();
 
 };
   
@@ -216,6 +252,13 @@ class NetworkNode
     
 };
 
+
+struct RoutedMessage
+{
+	NetworkNode * m_destinationNode;
+	NetworkMessage * m_message;
+};
+
 class MessageSocketDuplex
 {
     ost::UDPSocket * m_UDPReceiverSocket;
@@ -233,46 +276,73 @@ class MessageSocketDuplex
     int sendto(NetworkMessage * message, NetworkNode * node);   
     
     int recvfrom(NetworkMessage ** message);
+
+    int sendto(std::vector<RoutedMessage> * sendArray, int count);
+    int recvfrom(std::vector<RoutedMessage> * receiveArray, int * count);
  
-    ost::InetAddress * getReciverAddress() { return m_receiverAddr; }
+    ost::InetAddress * getReceiverAddress() { return m_receiverAddr; }
     Port getReceiverPort() { return m_receiverPort; }
 
 };
 
 
-struct MessageRoute
-{
-	NetworkNode * m_destinationNode;
-	NetworkMessage * m_message;
-};
-
 class NetworkMessenger
 {
    private: 
-      MessageSocketDuplex * m_messageSocketDuplex;
-      std::vector<MessageRoute> m_messageArray;
-	  int m_messageArrayMax;
-	  int m_messageArrayCount;
-	  int m_messageArrayGrow;
-      NetworkNode * m_orginatorNode;
-      std::list<NetworkMessage*> m_messagePool;
+//    MessageSocketDuplex * m_messageSocketDuplex;
+    std::vector<RoutedMessage> m_messageSendArray;
+    std::vector<RoutedMessage> m_messageReceiveArray;
+    int m_messageSendArrayMax;
+    int m_messageSendArrayCount;
+    int m_messageSendArrayGrow;
+    int m_messageReceiveArrayMax;
+    int m_messageReceiveArrayCount;
+    int m_messageReceiveArrayGrow;
+    NetworkNode * m_originatorNode;
+    std::list<NetworkMessage*> m_messagePool;
+    NetworkMessageHandler * m_ReceiveHandler;
       
+    ost::UDPSocket * m_UDPReceiverSocket;
+    ost::UDPSocket * m_UDPSenderSocket;	
+   
+    ost::InetAddress * m_receiverAddr;
+    Port m_receiverPort;
    public:
       
     NetworkMessenger();
     NetworkMessenger(NetworkNode * orginatorNode);
+//    NetworkMessenger(ost::InetAddress & addr, Port port);
 
     void queueMessage(NetworkNode * remoteNode, NetworkMessage * message);
-    void sendMessages();
+    void sendQueuedMessages();
     void receiveMessages();
 
-    NetworkNode * getOrginatorNode();
-    void setOrginatorNode(NetworkNode * orginatorNode);
+    NetworkNode * getOriginatorNode();
+    void setOriginatorNode(NetworkNode * orginatorNode);
 
-    NetworkMessage * getMessageFromPool(int type, int payloadLen);
-    void returnMessageToPool(NetworkMessage * message);
+    NetworkMessage * allocMessageBuffer(int type, int payloadLen);
+    NetworkMessage * allocMessageBuffer();
+    void freeMessageBuffer(NetworkMessage * message);
     
+    void registerReceiveHandler(NetworkMessageHandler * handler);
+    
+    int sendto(NetworkMessage * message, ost::InetHostAddress * remoteAddress, Port * remotePort);   
+    int sendto(NetworkMessage * message, NetworkNode * node);   
+    
+    int recvfrom(NetworkMessage ** message);
+
+    int sendto(std::vector<RoutedMessage> * sendArray, int count);
+    int recvfrom(std::vector<RoutedMessage> * receiveArray, int * count);
+
+    NetworkMessage * receiveMessage();
+    
+    ost::InetAddress * getReceiverAddress() { return m_receiverAddr; }
+    Port getReceiverPort() { return m_receiverPort; }
+
 };
+
+
+// not currently using these below
 
 class NetworkBroadcaster
 {

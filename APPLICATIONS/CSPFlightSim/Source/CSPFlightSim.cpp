@@ -467,6 +467,7 @@ int CSPFlightSim::InitSDL()
     if (joystick == NULL)
     {
         CSP_LOG(CSP_APP, CSP_ERROR, "Failed to open joystick");
+    	CSP_LOG(CSP_APP, CSP_ERROR, SDL_GetError());
     }
 
 	SDL_EnableUNICODE(1);

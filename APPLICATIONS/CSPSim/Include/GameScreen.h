@@ -25,12 +25,15 @@
 #ifndef __GAMESCREEN_H__
 #define __GAMESCREEN_H__
 
+#include <osgUtil/SceneView>
+
 #include <SimData/Math.h>
 #include <SimData/Vector3.h>
 
 #include "BaseScreen.h"
 #include "DynamicObject.h"
 #include "HID.h"
+#include "ScreenInfoManager.h"
 
 
 class VirtualBattlefield;
@@ -60,13 +63,14 @@ public:
 	virtual void OnInit();
 	virtual void OnExit();
 
-	virtual void OnRender();
-	virtual void OnUpdateObjects(double dt);
+	virtual void onRender();
+	virtual void onUpdate(double dt);
 
 	virtual void setActiveObject(simdata::PointerBase &);
 
 	ACTION_INTERFACE(GameScreen, on_Quit);
 	ACTION_INTERFACE(GameScreen, on_Pause);
+	ACTION_INTERFACE(GameScreen, on_Stats);
 	ACTION_INTERFACE(GameScreen, on_ChangeVehicle);
 	ACTION_INTERFACE(GameScreen, on_View0);
 	ACTION_INTERFACE(GameScreen, on_View1);
@@ -103,21 +107,26 @@ public:
 	void SetBattlefield(VirtualBattlefield *);
 
 protected:
-	static double const angleOffset;
+	static double const OffsetRate;
 	int m_iViewMode;
-	float m_fangleRotX, m_fangleRotZ, m_fdisToObject, m_fangleOffsetX, m_fangleOffsetZ;
-	float m_fscaleFactor;
+	float m_fangleRotX, m_fangleRotZ, m_fdisToObject, m_PanRateX, m_PanRateZ, m_ZoomRate;
 	simdata::Vector3 m_fixedCamPos;
 
 	bool m_bInternalView;
 	bool m_bPreviousState;
 
 	void NormalView();
-	void TurnViewAboutX(double fangleMax = G_PI / 2);
-	void TurnViewAboutZ(double fangleMax = G_PI);
-	void ScaleView();
+	void TurnViewAboutX(double dt, double fangleMax = G_PI / 2);
+	void TurnViewAboutZ(double dt, double fangleMax = G_PI);
+	void ScaleView(double dt);
 	simdata::Vector3 GetNewFixedCamPos(SimObject * const target) const;
-	void SetCamera();
+	void SetCamera(double dt);
+
+	/**
+	* Text informations
+	*/
+    osg::ref_ptr<ScreenInfoManager> m_ScreenInfoManager;
+    osg::ref_ptr<osgUtil::SceneView> m_rpInfosView;
 
 	simdata::Pointer<DynamicObject> m_ActiveObject;
 	VirtualBattlefield *m_Battlefield;

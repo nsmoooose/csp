@@ -22,31 +22,31 @@
  *
  **/
 
-
 #include "stdinc.h"
 
+#include <osg/Depth>
+#include <osg/State>
+
 #include <SimData/Types.h>
+
 #include "GameScreen.h"
 #include "EventMapIndex.h"
 #include "VirtualBattlefield.h"
 #include "CSPSim.h"
 
 
-
-double const GameScreen::angleOffset = 0.02;
+double const GameScreen::OffsetRate =  30.0 * (G_PI / 180.0); // x deg / s, even if it is used for Zoom also ...
 
 simdata::Vector3 m_normalDirection;  
-
-
 
 void GameScreen::NormalView()
 {
 	m_fangleRotX = 0.0;
 	m_fangleRotZ = 0.0;
-	m_fangleOffsetX = 0.0;
-	m_fangleOffsetZ = 0.0;
+	m_PanRateX = 0.0;
+	m_PanRateZ = 0.0;
+	m_ZoomRate = 0.0;
 	m_fdisToObject = 30.0;
-	m_fscaleFactor = 1.0;
 }
 
 
@@ -57,6 +57,7 @@ void GameScreen::InitInterface()
 	m_Interface->bindObject(this);
 	BIND_ACTION("QUIT", on_Quit);
 	BIND_ACTION("PAUSE", on_Pause);
+	BIND_ACTION("STATS", on_Stats);
 	BIND_ACTION("CHANGE_VEHICLE", on_ChangeVehicle);
 	BIND_ACTION("CAMERA_VIEW_0", on_View0);
 	BIND_ACTION("CAMERA_VIEW_1", on_View1);
@@ -98,6 +99,28 @@ void GameScreen::InitInterface()
 	} else {
 		CSP_LOG( CSP_APP , CSP_ERROR, "No HID interface maps defined, '__gamescreen__' not found.");
 	}
+	
+	// add a layer for texts on screen
+	m_rpInfosView = new osgUtil::SceneView();
+	m_rpInfosView->setDefaults();
+
+	int ScreenWidth = CSPSim::theSim->GetSDLScreen()->w;
+	int ScreenHeight = CSPSim::theSim->GetSDLScreen()->h;
+
+	m_rpInfosView->setViewport(0,0,ScreenWidth,ScreenHeight);
+
+	osg::Depth* depth = new osg::Depth;
+    depth->setRange(0.0,0.0);  
+    osg::StateSet* State = new osg::StateSet();
+    State->setAttribute(depth);
+
+	m_rpInfosView->getRenderStage()->setClearMask(0x0);
+
+	m_ScreenInfoManager = new ScreenInfoManager(ScreenWidth,ScreenHeight);
+	m_ScreenInfoManager->setName("ScreenInfoManager");
+    m_ScreenInfoManager->setStateSet(State);
+
+    m_rpInfosView->setSceneData(m_ScreenInfoManager.get() );
 }
 
 
@@ -106,12 +129,12 @@ void GameScreen::SetBattlefield(VirtualBattlefield *battlefield)
 	m_Battlefield = battlefield;
 }
 
-void GameScreen::TurnViewAboutZ(double fangleMax)
+void GameScreen::TurnViewAboutZ(double dt, double fangleMax)
 {
 	CSP_LOG( CSP_APP , CSP_DEBUG, "TurnViewAboutZ: 	m_fangleViewZ = " << m_fangleRotZ 
-		<< "; m_fangleOffsetZ = " << m_fangleOffsetZ);
+		<< "; m_PanRateZ = " << m_PanRateZ);
 	
-	m_fangleRotZ += m_fangleOffsetZ;
+	m_fangleRotZ += m_PanRateZ * dt;
 	/*if ( m_fangleRotZ > fangleMax )
 		if ( fangleMax == pi )
 			m_fangleRotZ -= 2 * pi;
@@ -124,23 +147,24 @@ void GameScreen::TurnViewAboutZ(double fangleMax)
 			m_fangleRotZ = - fangleMax;*/
 }
 
-void GameScreen::TurnViewAboutX(double fangleMax)
+void GameScreen::TurnViewAboutX(double dt, double fangleMax)
 {
 	CSP_LOG( CSP_APP , CSP_DEBUG, "TurnViewAboutX: 	m_fangleViewX = " << m_fangleRotX 
-		     << "; m_fangleOffsetX = " << m_fangleOffsetX);
+		     << "; m_PanRateX = " << m_PanRateX);
 
-	m_fangleRotX += m_fangleOffsetX;
+	m_fangleRotX += m_PanRateX * dt;
 	/*if ( m_fangleRotX > fangleMax )
 		m_fangleRotX = fangleMax;
 	if ( m_fangleRotX < - fangleMax )
 		m_fangleRotX = - fangleMax;*/
 }
 
-void GameScreen::ScaleView()
+void GameScreen::ScaleView(double dt)
 {
-	if ( (m_fdisToObject > 2.0 && m_fscaleFactor < 1.0) ||
-	     (m_fdisToObject < 2000.0 && m_fscaleFactor > 1.0) ) {
-		m_fdisToObject *= m_fscaleFactor;
+	double ScaleFactor = 1.0 + m_ZoomRate * dt;
+	if ( (m_fdisToObject > 2.0 && ScaleFactor < 1.0) ||
+	     (m_fdisToObject < 2000.0 && ScaleFactor > 1.0) ) {
+		m_fdisToObject *= ScaleFactor;
 	}
 	if (m_fdisToObject < 2.0) {
 		m_fdisToObject = 2.0;
@@ -186,10 +210,8 @@ void GameScreen::setActiveObject(simdata::PointerBase &object)
 	}
 }
 
-void GameScreen::OnRender()
+void GameScreen::onRender()
 {
-	SetCamera();
-	
 	if (m_ActiveObject.valid()) {
 		if (m_bPreviousState^m_bInternalView)
 		{
@@ -206,15 +228,18 @@ void GameScreen::OnRender()
 			m_bPreviousState = m_bInternalView;
 		}
 	}
-
 	// Draw the whole scene
 	if (m_Battlefield) {
 		m_Battlefield->drawScene();
 	}
+	 m_rpInfosView->cull();
+	 m_rpInfosView->draw();
 }
 
-void GameScreen::OnUpdateObjects(double dt)
+void GameScreen::onUpdate(double dt)
 {	
+	SetCamera(dt);
+	m_rpInfosView->update();
 }
 
 simdata::Vector3 GameScreen::GetNewFixedCamPos(SimObject * const target) const
@@ -232,7 +257,7 @@ simdata::Vector3 GameScreen::GetNewFixedCamPos(SimObject * const target) const
 	}
 	float h = 0;
 	if (m_Battlefield) {
-		m_Battlefield->getElevation(objectPos.x, objectPos.y);
+		h = m_Battlefield->getElevation(objectPos.x, objectPos.y);
 	}
 	if ( camPos.z < h ) camPos.z = h;
 	return camPos;
@@ -312,6 +337,13 @@ void GameScreen::on_Quit()
 void GameScreen::on_Pause()
 {
 	CSPSim::theSim->togglePause();
+	m_ScreenInfoManager->setStatus("PAUSE", !m_ScreenInfoManager->getStatus("PAUSE"));
+}
+
+void GameScreen::on_Stats()
+{
+	m_ScreenInfoManager->setStatus("GENERAL STATS", !m_ScreenInfoManager->getStatus("GENERAL STATS"));
+	m_ScreenInfoManager->setStatus("OBJECT STATS", !m_ScreenInfoManager->getStatus("OBJECT STATS"));
 }
 
 void GameScreen::on_ChangeVehicle()
@@ -324,84 +356,84 @@ void GameScreen::on_ChangeVehicle()
 void GameScreen::on_ViewPanLeft()
 {
 	if ( m_iViewMode == 1 || m_iViewMode == 2 || m_iViewMode == 3 ) 
-		m_fangleOffsetZ = - angleOffset;
+		m_PanRateZ = - OffsetRate;
 }
 
 void GameScreen::on_ViewPanRight()
 {
 	if ( m_iViewMode == 1 || m_iViewMode == 2 || m_iViewMode == 3 ) 
-		m_fangleOffsetZ = + angleOffset;
+		m_PanRateZ = + OffsetRate;
 }
 
 void GameScreen::on_ViewPanLeftStop() 
 {
 	if ( m_iViewMode == 1 || m_iViewMode == 2 || m_iViewMode == 3 ) 
-		if (m_fangleOffsetZ < 0.0) m_fangleOffsetZ = 0.0;
+		if (m_PanRateZ < 0.0) m_PanRateZ = 0.0;
 }
 
 void GameScreen::on_ViewPanRightStop() 
 {
 	if ( m_iViewMode == 1 || m_iViewMode == 2 || m_iViewMode == 3 ) 
-		if (m_fangleOffsetZ > 0.0) m_fangleOffsetZ = 0.0;
+		if (m_PanRateZ > 0.0) m_PanRateZ = 0.0;
 }
 
 void GameScreen::on_ViewPanUpStop()
 {
 	if ( m_iViewMode == 1 || m_iViewMode == 2 || m_iViewMode == 3 ) 
-		if (m_fangleOffsetX < 0.0) m_fangleOffsetX = 0.0;
+		if (m_PanRateX < 0.0) m_PanRateX = 0.0;
 }
 
 void GameScreen::on_ViewPanDownStop()
 {
 	if ( m_iViewMode == 1 || m_iViewMode == 2 || m_iViewMode == 3 ) 
-		if (m_fangleOffsetX > 0.0) m_fangleOffsetX = 0.0;
+		if (m_PanRateX > 0.0) m_PanRateX = 0.0;
 }
 
 void GameScreen::on_ViewZoomStop()
 {
 	if ( m_iViewMode == 1 || m_iViewMode == 2 || m_iViewMode == 3 ) 
-		m_fscaleFactor = 1.0;
+		m_ZoomRate = 0.0;
 }
 
 void GameScreen::on_ViewPanUp()
 {
 	if ( m_iViewMode == 1 || m_iViewMode == 2 || m_iViewMode == 3 ) 
-		m_fangleOffsetX = - angleOffset;
+		m_PanRateX = - OffsetRate;
 }
 
 void GameScreen::on_ViewPanDown() 
 {
 	if ( m_iViewMode == 1 || m_iViewMode == 2 || m_iViewMode == 3 ) 
-		m_fangleOffsetX = angleOffset;
+		m_PanRateX = OffsetRate;
 }
 
 void GameScreen::on_ViewZoomIn() 
 {
 	if ( m_iViewMode == 2 || m_iViewMode == 3 ) 
-		m_fscaleFactor = (1.00 / 1.05);
+		m_ZoomRate = - OffsetRate;
 }
 
 void GameScreen::on_ViewZoomOut()
 {
 	if ( m_iViewMode == 2 || m_iViewMode == 3 ) 
-		m_fscaleFactor = 1.05;
+		m_ZoomRate = OffsetRate;
 }
 
 void GameScreen::on_ViewZoomStepIn() 
 {
 	if ( m_iViewMode == 2 || m_iViewMode == 3 ) 
-		m_fdisToObject *= 0.75;
+		m_fdisToObject *= 0.8  ;
 }
 
 void GameScreen::on_ViewZoomStepOut()
 {
 	if ( m_iViewMode == 2 || m_iViewMode == 3 ) 
-		m_fdisToObject *= 1.25;
+		m_fdisToObject *= 1.20;
 }
 
 void GameScreen::on_ViewFovStepDec() 
 {
-	float fov = m_Battlefield->getViewAngle() * 0.80;
+	float fov = m_Battlefield->getViewAngle() * 0.8;
 	if (fov > 10.0) {
 		m_Battlefield->setViewAngle(fov);
 	}
@@ -432,8 +464,8 @@ void GameScreen::on_ResetSpin()
 
 void GameScreen::on_MouseView(int x, int y, int dx, int dy)
 {
-	m_fangleOffsetX = 0.0;
-	m_fangleOffsetZ = 0.0;
+	m_PanRateX = 0.0;
+	m_PanRateZ = 0.0;
 	m_fangleRotZ += dx * 0.001;
 	m_fangleRotX += dy * 0.001;
 }
@@ -557,7 +589,7 @@ void GameScreen::OnJoystickButtonDown(int joynum, int butnum)
 
 // TODO All references to planes should be made generic!
 
-void GameScreen::SetCamera()
+void GameScreen::SetCamera(double dt)
 {	
 	simdata::Vector3 eyePos;
 	simdata::Vector3 lookPos;
@@ -566,8 +598,8 @@ void GameScreen::SetCamera()
 	if (!m_ActiveObject) {
 		// temporary view if there are no active objects... probably
 		// should switch to an "action" view mode in this case.
-		TurnViewAboutX();
-		TurnViewAboutZ();
+		TurnViewAboutX(dt);
+		TurnViewAboutZ(dt);
 		eyePos = simdata::Vector3(483000.0, 499000.0, 2000.0);
 		//lookPos = simdata::Vector3(483000.0, 499005.0, 2000.0);
 		upVec = simdata::Vector3::ZAXIS;
@@ -583,8 +615,8 @@ void GameScreen::SetCamera()
 	{
 	case 1: // view_mode one is normal inside the cockpit view
 	{
-		TurnViewAboutX(M_PI / 3);
-		TurnViewAboutZ(M_PI / 3);
+		TurnViewAboutX(dt,M_PI / 3);
+		TurnViewAboutZ(dt,M_PI / 3);
 		simdata::Vector3 planePos = m_ActiveObject->getGlobalPosition();
 		simdata::Vector3 planeDir = m_ActiveObject->getDirection();
 		simdata::Vector3 planeUp = m_ActiveObject->getUpDirection();
@@ -599,9 +631,9 @@ void GameScreen::SetCamera()
 	}
 	case 2: // view mode two is external view; normal view is behind the plane
 	{ 	
-		TurnViewAboutX();
-		TurnViewAboutZ();
-		ScaleView();
+		TurnViewAboutX(dt);
+		TurnViewAboutZ(dt);
+		ScaleView(dt);
 		simdata::Vector3 planePos = m_ActiveObject->getGlobalPosition();
 		simdata::Vector3 planeDir = m_ActiveObject->getDirection();
 		simdata::Vector3 planeUp = m_ActiveObject->getUpDirection();
@@ -618,9 +650,9 @@ void GameScreen::SetCamera()
 	}
 	case 3: // view mode three is external fixed view around the plane
 	{
-		TurnViewAboutX();
-		TurnViewAboutZ();
-		ScaleView();
+		TurnViewAboutX(dt);
+		TurnViewAboutZ(dt);
+		ScaleView(dt);
 		simdata::Vector3 planePos = m_ActiveObject->getGlobalPosition();
 		simdata::Matrix3 RotZ, RotX;
 		RotZ.FromAxisAngle(simdata::Vector3::ZAXIS,  m_fangleRotZ);

@@ -31,16 +31,11 @@
 
 #include <osg/Timer>
 
-
 #include <SDL/SDL.h>
-#include <SDL/CON_console.h>	// console is using SDL_OPENGLBLIT :-( switch to osgConsole?
-#include <SDL/DT_drawtext.h>
-#include "CON_consolecommands.h"
 
 #include "DemeterException.h"
 
-#include "Config.h"
-#include "ConsoleCommands.h"
+#include "Config.h"      
 #include "CSPSim.h"
 #include "EventMapIndex.h"
 #include "GameScreen.h"
@@ -92,7 +87,6 @@ int g_ScreenHeight = 0;
  */
 CSPSim *CSPSim::theSim = 0;
 
-
 CSPSim::CSPSim()
 {
 	if (theSim == 0) {
@@ -107,11 +101,7 @@ CSPSim::CSPSim()
 	m_GameScreen = NULL;
 	m_MainMenuScreen = NULL;
 
-	m_pConsole = NULL;
-
-	m_bConsoleDisplay = false;
 	m_bFreezeSim = true;
-	m_bShowStats = true;
 
 	m_Interface = NULL;
 	m_Battlefield = NULL;
@@ -154,18 +144,18 @@ void CSPSim::setActiveObject(simdata::Pointer<DynamicObject> object) {
 	}
 }
 
-
-void CSPSim::unpause() {
-	m_bFreezeSim = false;
+simdata::Pointer<DynamicObject> const CSPSim::getActiveObject() const {
+	return m_ActiveObject;
 }
 
-void CSPSim::pause() {
-	m_bFreezeSim = true;
+VirtualBattlefield * const CSPSim::getBattlefield() const
+{
+	return m_Battlefield;
 }
 
 void CSPSim::togglePause() {
 	m_bFreezeSim = !m_bFreezeSim;
-}
+} 
 
 void CSPSim::Init()
 {
@@ -196,12 +186,12 @@ void CSPSim::Init()
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	logoScreen.OnRender();
+	logoScreen.onRender();
 
 	SDL_GL_SwapBuffers();
 
 	// do rest of initialization
-	InitConsole();
+	//InitConsole();             // should be replaced by osgConsole if necessary
 
 	// load all interface maps and create a virtual hid for the active object
 	m_InterfaceMaps = new EventMapIndex();
@@ -232,7 +222,6 @@ void CSPSim::Init()
 	m_Battlefield->setFogEnd(fog_end);
 
 	// create a couple test objects
-
 	simdata::Pointer<AircraftObject> ao = m_DataArchive->getObject("vehicles.aircraft.m2k");
 	assert(ao.valid());
 	ao->setGlobalPosition(483000, 499000, 2000);
@@ -264,7 +253,7 @@ void CSPSim::Init()
 #endif
 
 	ChangeScreen(m_GameScreen);
-
+	
 	logoScreen.OnExit();
 }
 
@@ -319,7 +308,7 @@ void CSPSim::Run()
 {
 	CSP_LOG(CSP_APP, CSP_DEBUG, "CSPSim::Run...");
 
-	m_bShowStats = false;
+	//m_bShowStats = true;
 	m_bFreezeSim = false;
 
 	//initTime(simdata::SimDate(2003, 2, 25, 13, 0, 0));
@@ -353,34 +342,28 @@ void CSPSim::Run()
 			if (!m_bFreezeSim) {
 				UpdateObjects(dt);
 			}
-
+			
+			
+			
 			// Display (render) current Screen
-			if (m_CurrentScreen)
-				m_CurrentScreen->OnRender();
-
-			// Do Console
-			if (m_bConsoleDisplay)
-				CON_DrawConsole(m_pConsole);
-
-			if (m_bFreezeSim)
-				ShowPaused();
-
-			// Do fps and other stuff.
-			if (m_bShowStats) {
-				ShowStats(m_FrameRate);
-			//	ShowPlaneInfo();
+			if (m_CurrentScreen) {
+				m_CurrentScreen->onUpdate(dt);
+                m_CurrentScreen->onRender();
 			}
+            
+			// Do Console
+			//if (m_bConsoleDisplay)
+			//	CON_DrawConsole(m_pConsole);
+
 			// Swap OpenGL buffers
 			SDL_GL_SwapBuffers();
 
 			// remove marked objects, this should be done at the end of the main loop.
 			m_Battlefield->removeObjectsMarkedForDelete();
-
-			m_bShowStats = true;
 		}
 		m_Battlefield->dumpObjectHistory();
 	}
-
+   
 	catch(DemeterException * pEx) {
 		CSP_LOG(CSP_APP, CSP_ERROR, "Caught Demeter Exception: " << pEx->GetErrorMessage());
 		Cleanup();
@@ -451,13 +434,7 @@ void CSPSim::DoInput()
 			m_bFinished = TRUE;
 			return;
 		}
-		if (m_bConsoleDisplay) {
-			// handle console key events
-			// if (event.type == SDL_KEYUP || event.type == SDL_KEYDN) {
-			// 	char *key = SDL_GetKeyName(event.key.keysym.sym);
-			//	...
-			// }
-		}
+		
 		if (m_CurrentScreen) {
 			VirtualHID *i = m_CurrentScreen->getInterface();
 			if (i) {
@@ -467,8 +444,55 @@ void CSPSim::DoInput()
 		if (!handled && m_Interface) {
 			handled = m_Interface->OnEvent(event);
 		}
+#if 0
+				switch (event.key.keysym.sym) {
+				case SDLK_ESCAPE:
+				{
+					m_bFinished = TRUE;
+					break;
+				}
+				case SDLK_F9:
+				{
+					m_bConsoleDisplay = !m_bConsoleDisplay;
+					if (m_bConsoleDisplay) {
+						m_bFreezeSim = true;
+						CON_Topmost(m_pConsole);
+						SDL_EnableUNICODE(1);
+					} else {
+						m_bFreezeSim = false;
+						CON_Topmost(NULL);
+						SDL_EnableUNICODE(0);
+					}
+					break;
+				}
+				case SDLK_F10:
+				{
+					m_bShowStats = !m_bShowStats;
+					break;
+				}
+				case SDLK_p:
+				{
+					// don't do pause while in console mode.
+					if (!m_bConsoleDisplay) {
+						// todo: call m_CurrentTime.pause/unpause()
+						if (!m_bFreezeSim)
+							m_bFreezeSim = true;
+						else
+							m_bFreezeSim = false;
+					}
+				}
+				default:
+				{
+// Send the event to the console
+					if (m_bConsoleDisplay)
+						CON_Events(&event);
+					break;
+				}
+				}
+			}
+#endif
+//			break;
 	}
-
 }
 
 /**
@@ -512,14 +536,16 @@ int CSPSim::InitSDL()
 
 	CSP_LOG(CSP_APP, CSP_ERROR, "Initializing video at " << bpp << " BitsPerPixel.");
 
-	Uint32 flags = SDL_HWSURFACE | SDL_ASYNCBLIT | SDL_OPENGLBLIT;
-	//Uint32 flags = SDL_OPENGL | SDL_HWSURFACE;
+	Uint32 flags = SDL_OPENGL | SDL_HWSURFACE | SDL_DOUBLEBUF;
 
 	if (fullscreen) {
 		flags |= SDL_FULLSCREEN;
 	}
 
 	m_SDLScreen = SDL_SetVideoMode(width, height, bpp, flags);
+	SDL_GL_SetAttribute( SDL_GL_DEPTH_SIZE, 32 );
+    SDL_GL_SetAttribute( SDL_GL_DOUBLEBUFFER, 1 );
+
 	if (m_SDLScreen == NULL) {
 		printf("Unable to set video mode: %s\n", SDL_GetError());
 		CSP_LOG(CSP_APP, CSP_ERROR, "ERROR! Unable to initialize SDL: " << SDL_GetError());
@@ -531,12 +557,13 @@ int CSPSim::InitSDL()
 		CSP_LOG(CSP_APP, CSP_ERROR, "Failed to open joystick");
 		CSP_LOG(CSP_APP, CSP_ERROR, SDL_GetError());
 	}
-
+    
 	SDL_EnableUNICODE(1);
 
 	return 0;
 }
 
+/*
 int CSPSim::InitConsole()
 {
 	CSP_LOG(CSP_APP, CSP_DEBUG, "CSPSim::InitConsole()...");
@@ -654,3 +681,4 @@ void CSPSim::ShowStats(float fps)
 }
 
 
+*/

@@ -313,8 +313,8 @@ namespace PTS {
 
 	template <class C, typename T>
 	struct SELECT_ACCESSOR {
-		typedef typename PTS::IF<PTS::ISVECTOR<T>::RET, 
-			VectorMemberAccessor<C, T>, MemberAccessor<C, T> >::RET ACCESSOR;
+		typedef typename IF<ISVECTOR<T>::RET, 
+			simdata::VectorMemberAccessor<C, T>, simdata::MemberAccessor<C, T> >::RET ACCESSOR;
 	};
 }
 

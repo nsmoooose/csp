@@ -45,42 +45,20 @@
 // Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 // Boston, MA  02111-1307, USA.
 //
-// $Id: LogStream.h,v 1.1 2003/03/18 10:04:02 mkrose Exp $
+// $Id: LogStream.h,v 1.2 2003/03/21 18:23:38 deltasf Exp $
 
 #ifndef __LOGSTREAM_H__
 #define __LOGSTREAM_H__
 
 #include <iostream>
-
-// briefly try to find the right sstream header
-#ifdef _MSC_VER
-#  if !defined(_STLP_WIN32)
-#    define STL_SSTREAM  <strstream>
-#  else
-#    define STL_SSTREAM  <sstream>
-#  endif
-#else
-# ifdef __GNUC__
-#   if __GNUC__ < 3
-#    define STL_SSTREAM  <strstream>
-#   else
-#    define STL_SSTREAM  <sstream>
-#   endif
-# else
-#    define STL_SSTREAM  <strstream>
-# endif
-#endif
-
 #include <fstream>
-#include <string>
-
 
 #include <SimData/ns-simdata.h>
 #include <SimData/Export.h>
 
-
 NAMESPACE_SIMDATA
 
+using std::ostream;
 
 //
 // TODO:
@@ -222,12 +200,12 @@ struct loglevel
  * a private base of logstream, declared to the left of ostream, we ensure the
  * correct order of construction and destruction.
  */
-struct logstream_base
+struct SIMDATA_EXPORT logstream_base
 {
 	logstream_base() {}
 	logbuf lbuf;
 };
-
+ 
 /**
  * Class to manage the debug logging stream.
  */
@@ -241,7 +219,7 @@ public:
 	*/
 	logstream( std::ostream& out )
 		: logstream_base(),
-		  std::ostream(&lbuf),
+		ostream(&lbuf), // msvc6 accepts ostream(&lbuf) _using std::ostream_, but not std::ostream(&lbuf) ...
 		  m_out(NULL)
 	{ 
 		lbuf.set_sb(out.rdbuf());
@@ -298,7 +276,6 @@ logstream::operator<< ( const loglevel& l )
 	lbuf.set_log_state( l.logClass, l.logPriority );
 	return *this;
 }
-
 
 NAMESPACE_END // namespace simdata
 

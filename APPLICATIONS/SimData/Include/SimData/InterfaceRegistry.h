@@ -169,11 +169,19 @@ public:
 	static InterfaceRegistry &getInterfaceRegistry() {
 		return Singleton<InterfaceRegistry>::getInstance();
 	}
-    
+
+#if defined(_MSC_VER ) && (_MSC_VER <= 1200)
+    virtual ~InterfaceRegistry();
+#endif
+
 private:
+
+#if !defined(_MSC_VER ) || (_MSC_VER > 1200)
+    virtual ~InterfaceRegistry();
+#endif
+
 	friend class Singleton<InterfaceRegistry>;
 	InterfaceRegistry();
-	virtual ~InterfaceRegistry();
 	
 	void __cleanup();
 
@@ -183,6 +191,7 @@ private:
 	proxy_map *__map;
 	proxy_id_map *__id_map;
 	interface_list *__list;
+
 };
 
 

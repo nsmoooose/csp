@@ -1,9 +1,13 @@
 Version 0.3.1 (in progress)
 ===========================
+
+2003-03-20: delta
+	    Fixes for msvc.
+
 2003-03-20: onsight
             Fixed const cast in matrix * vector routines.  Why doesn't
 	    gcc 3.2.1 -Wall catch this? (!)
-
+	
 	    Changed cSimData.i in Source to include the main version in
 	    Include/SimData.  These differ in their %module directive.
 	    The main one uses SimData.cSimData, which is needed for 3rd
@@ -40,6 +44,13 @@ Version 0.3.1 (in progress)
 	    
 2003-03-17: delta
             Fixes for building with MS VC.Net
+
+	    Changes to hash stuff to make it compile with native stl .net
+	    Restructured some header files
+
+	    Added .net project
+
+            Added a test on using stlport with msvc <= 6.0 in hash_map.h
 
 2003-03-16: onsight
             Created a new setup.py script to allow SimData to be build and
@@ -100,7 +111,7 @@ Version 0.3.1 (in progress)
             *** POTENTIAL INCOMPATIBILITY ***
             Big simplification of the various smart pointer types.
             PathPointer<T> is gone; now just use Pointer<T> for all object
-            references. PathPointerBase is not PointerBase, and what was
+            references. PathPointerBase is now PointerBase, and what was
             originally PointerBase is now ReferencedPointer (although you
             shouldn't need to use these classed directly).
 

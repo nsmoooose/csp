@@ -18,7 +18,7 @@
   #endif
 #else
   #ifdef _MSC_VER 
-   #if (_MSC_VER <= 1200) && defined(_STLP_MSVC)
+   #if (_MSC_VER <= 1200) && defined(_STLP_WIN32)
     #include <hash_map>
     #define HASH_MAP std::hash_map
     #define HASH std::hash

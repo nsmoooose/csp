@@ -126,7 +126,8 @@ NAMESPACE_SIMDATA
 		FILETIME start_time, update_time;
 		GetSystemTimeAsFileTime(&start_time);
 		// blocks for up to max_tries * 16 ms on WinXP (assuming 64Hz timer tick)
-		for (int tries = 0; tries < max_tries; ) {
+		int tries = 0;
+		for (; tries < max_tries; ) {
 			uint64 lock_counter = getPerformanceCounter();
 			GetSystemTimeAsFileTime(&update_time);
 			if (update_time.dwLowDateTime != start_time.dwLowDateTime) {

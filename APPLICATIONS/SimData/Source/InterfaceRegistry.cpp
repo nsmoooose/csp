@@ -36,9 +36,9 @@
 #include <SimData/Path.h>
 #include <SimData/Version.h>
 
+#include <algorithm>
 #include <string>
 #include <vector>
-#include <algorithm>
 
 using std::cout;
 using std::endl;

@@ -199,10 +199,10 @@ struct hashint {
 #if defined(_MSC_VER) && (_MSC_VER >= 1300) 
 	struct eqstr: public HASH<char const*>
 	{
-		size_t operator()(char const* s) const {
+		size_t operator()(char const* const &s) const {
 			return static_cast<size_t>(newhash4_cstring(s));
 		}
-		bool operator()(char const* s1, char const* s2) const {
+		bool operator()(char const* const &s1, char const* const &s2) const {
 			return (strcmp(s1, s2) < 0);
 		}
 	};

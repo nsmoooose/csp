@@ -70,6 +70,7 @@ uint32 newhash(register uint8 const *k, uint32 length, uint32 initval)
    c = initval;         // variable initialization of internal state
 
    // handle most of the key
+  
    while (len >= 12)
    {
       a=a+(k[0]+((uint32)k[1]<<8)+((uint32)k[2]<<16) +((uint32)k[3]<<24));

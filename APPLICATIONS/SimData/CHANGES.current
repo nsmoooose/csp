@@ -1,5 +1,23 @@
 Version 0.4.0 (in progress)
 ===========================
+2003-12-30: delta
+  * Added an environment variable to the project in lieu of 
+    hardcoded Python path; windows users must have defined 
+    PYTHONPATH variable pointing to the current Python install 
+    dir root.
+    
+  * Removed link onto useless specific windows libs. Tweaked 
+    the project file (release build) toward speed optimizations 
+    (note: enabling sse2 optimizations leads to a dll loading 
+    failed on an athlon XP2k+).
+    
+2003-12-25: delta
+  * Updated msvc 7.1 project file with a post built step 
+    (PostBuild.bat) to install SimData and run tests.
+    
+  * Added const& qualifiers in hash string functor parameters
+    (inherited from stdext::hash_compare) for vs.net. 
+    
 2003-11-02: onsight
   * Added #include <algorithm> in InterfaceRegistry.cpp (as 
     suggested by delta).
@@ -192,9 +210,9 @@ Version 0.4.0 (in progress)
    
      void MyClass::serialize(Archive& archive) {
         MyBaseClass::serialize(archive);
-		 archive(member_var1);
-		 archive(member_var2);
-		 ...
+         archive(member_var1);
+         archive(member_var2);
+         ...
      }
 
     See the basic data type implementations for additional examples.
@@ -218,4 +236,3 @@ Version 0.4.0 (in progress)
 2003-08-20: onsight
   * Tagged r0_3_4, version 0_3_5 started.
   * Version 0.4.0 branch started.
-

@@ -24,7 +24,7 @@
 
 #include "Networking.h"
 
-ObjectUpdateMessage::ObjectUpdateMessage(unsigned int id, simdata::Vector3 position, simdata::Vector3 velocity)
+ObjectUpdateMessage::ObjectUpdateMessage(simdata::uint16 id, simdata::Vector3 position, simdata::Vector3 velocity)
 {
     // reserve space to hold 6 doubles.
     double num;

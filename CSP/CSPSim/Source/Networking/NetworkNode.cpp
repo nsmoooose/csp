@@ -31,9 +31,4 @@ NetworkNode::NetworkNode()
 }
 
 
-char * NetworkNode::getNetworkName()
-{
-  //FIXME this needs to be not hardcoded.
-    return "192.168.2.3";
-}
 

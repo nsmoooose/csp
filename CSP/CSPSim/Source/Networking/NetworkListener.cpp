@@ -30,8 +30,3 @@ NetworkListener::NetworkListener()
 {
     
 }
-
-void NetworkListener::receiveAvailableMessages()
-{
-    
-}

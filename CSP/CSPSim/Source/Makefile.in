@@ -12,15 +12,26 @@ CHUNKLOD_PREFIX = $(TOPDIR)/$(CHUNKLOD_RELATIVE)
 CHUNKLOD_LIBRARY = -L$(CHUNKLOD_PREFIX)/lib -losgChunkLod_csp
 CHUNKLOD_INCLUDE = -I$(CHUNKLOD_PREFIX)/include
 
-LIBS = $(DEMETER_LIBRARY) $(CHUNKLOD_LIBRARY)
+LIBS = $(DEMETER_LIBRARY) $(CHUNKLOD_LIBRARY) -lccgnu2
 
-INCLUDE = -I$(TOPDIR)/Include $(DEMETER_INCLUDE) $(CHUNKLOD_INCLUDE) -I@PYTHON_INCLUDE@ 
+INCLUDE = -I$(TOPDIR)/Include $(DEMETER_INCLUDE) $(CHUNKLOD_INCLUDE) -I@PYTHON_INCLUDE@ -I/usr/local/include/cc++2
 
 BASEFL = $(GDEBUGF) $(GCFLAGS) $(INCLUDE) @SDL_FLAGS@ @SIGC_FLAGS@ #@CCGNU2_FLAGS@
 CFLAGS = $(filter-out -I/usr/local/include, $(BASEFL))
 SWCXXF = $(GCFLAGS) $(INCLUDE) @SIGC_FLAGS@
 LDOPTS = -Wl,-z,lazyload $(GLDOPTS) @LIBS@
 SWOPTS = $(GSWOPTS) $(INCLUDE) 
+
+NETWORK_SOURCES = Networking/NetworkNode.cpp \
+		  Networking/NetworkMessage.cpp \
+		  Networking/ObjectUpdateMessage.cpp \
+		  Networking/NetworkMessenger.cpp \
+		  Networking/NetworkBroadcaster.cpp \
+		  Networking/NetworkListener.cpp \
+		  Networking/NetworkSocket.cpp \
+		  Networking/MessageSocketDuplex.cpp \
+		  Networking/NetworkAddress.cpp \
+											  
 
 SOURCES = \
 	Systems/AircraftFlightSensors.cpp \
@@ -34,6 +45,7 @@ SOURCES = \
 	BaseDynamics.cpp \
 	BaseScreen.cpp \
 	ChunkLodTerrain.cpp \
+	ClientNode.cpp \
 	Collision.cpp \
 	Colorspace.cpp \
 	Config.cpp \
@@ -64,12 +76,15 @@ SOURCES = \
 	Networking/NetworkBroadcaster.cpp \
 	Networking/NetworkListener.cpp \
 	Networking/NetworkSocket.cpp \
+	Networking/MessageSocketDuplex.cpp \
+	Networking/NetworkAddress.cpp \
 	NumericalMethod.cpp \
 	ObjectModel.cpp \
 	ObjectRangeInfo.cpp \
 	PhysicsModel.cpp \
 	ScreenInfo.cpp \
 	ScreenInfoManager.cpp \
+	ServerNode.cpp \
 	SimObject.cpp \
 	SimpleConfig.cpp \
 	Sky.cpp \
@@ -102,6 +117,7 @@ SOURCES = \
 	VirtualScene.cpp
 
 OBJECTS = $(SOURCES:%.cpp=%.o) 
+NETWORK_OBJECTS = $(NETWORK_SOURCES:%.cpp=%.o)
 
 DEPDIR = .deps
 MKDEP = $(CXX) -M $(CFLAGS)
@@ -165,6 +181,22 @@ cCSP_wrap.cpp: cCSP.i
 cCSP_wrap.o: cCSP_wrap.cpp
 	$(CXX) -c $(SWCXXF) $(@:.o=.cpp)
 
+ClientNode_StandAlone.o : ClientNode.cpp 
+	$(CXX) -c $(CFLAGS) -DCSP_STANDALONE -o ClientNode_StandAlone.o ClientNode.cpp
+	
+ClientNode: $(NETWORK_OBJECTS) ClientNode_StandAlone.o 
+	$(CXX) -L/usr/local/lib -lccgnu2 -ldl -lpthread -o$(BIN)/$@ $(NETWORK_OBJECTS) ClientNode_StandAlone.o
+
+ServerNode_StandAlone.o : ServerNode.cpp
+	$(CXX) -c $(CFLAGS) -DCSP_STANDALONE -o ServerNode_StandAlone.o ServerNode.cpp
+
+ServerNode: $(NETWORK_OBJECTS) ServerNode_StandAlone.o
+	$(CXX) -L/usr/local/lib -lccgnu2 -ldl -lpthread -o$(BIN)/$@ $(NETWORK_OBJECTS) ServerNode_StandAlone.o
+			
+
+test: ClientNode ServerNode
+
+
 %.o: %.cpp 
 	$(CXX) -c $(CFLAGS) -o $@ $(@:.o=.cpp)
 
@@ -174,5 +206,5 @@ AeroDynamics.o: AeroDynamics.cpp
 Makefile: Makefile.in
 	cd $(TOPDIR) && ./configure
 
-all: Makefile build-subdirs _cCSP.so #CSPapp
+all: Makefile build-subdirs _cCSP.so test #CSPapp
 

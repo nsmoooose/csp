@@ -40,6 +40,8 @@
 //%include "SimpleConfig.i"
 %include "Config.i"
 %include "Log.i"
+%include "ClientNode.i"
+%include "ServerNode.i"
 
 /*
 %include "SimObject.i"

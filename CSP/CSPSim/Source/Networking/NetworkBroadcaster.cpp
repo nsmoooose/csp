@@ -27,15 +27,6 @@
 
 NetworkBroadcaster::NetworkBroadcaster()
 {
-    m_server_port = 2874;
-
-    m_node = new NetworkNode();;
-    m_socket = new NetworkSocket(m_node, m_server_port);
     
-}
-
-void NetworkBroadcaster::sendMessage( int NodeID, NetworkMessage * message)
-{
-    m_socket->sendto(  message );
 }
 

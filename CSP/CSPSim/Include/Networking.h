@@ -32,6 +32,8 @@
 #include <errno.h>
 #include <sys/types.h>
 
+#include <cc++/common.h>
+
 #ifndef _MSC_VER
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -39,17 +41,22 @@
 #endif
 
 #include <SimData/Vector3.h>
+#include <SimData/String.h>
+#include <SimData/Uniform.h>
+
+typedef int SockFd;
+typedef simdata::uint16 Port;
 
 class NetworkMessage
 {
    
     protected: 
     
-    unsigned char * m_Buf;
-    unsigned char * m_PayloadBuf;
-    unsigned short m_BufferLen;
-    unsigned short m_MessageType;
-    unsigned short m_PayloadLen;
+    simdata::uint8 * m_Buf;
+    simdata::uint8 * m_PayloadBuf;
+    simdata::uint16 m_BufferLen;
+    simdata::uint16 m_MessageType;
+    simdata::uint16 m_PayloadLen;
     bool m_Initialized;
 
     static unsigned short magicNumber;
@@ -60,16 +67,16 @@ class NetworkMessage
     NetworkMessage();
     virtual ~NetworkMessage();
 
-    bool initialize(unsigned short type, unsigned short payloadLength);
+    bool initialize(simdata::uint16 type, simdata::uint16 payloadLength);
    
-    unsigned short getType();
+    simdata::uint16 getType();
 
     void * getBufferPtr();
     void * getPayloadPtr();
 
-    unsigned short getBufferLen();
-    unsigned short getPayloadLen();
-    unsigned short getHeaderLen();
+    simdata::uint16 getBufferLen();
+    simdata::uint16 getPayloadLen();
+    simdata::uint16 getHeaderLen();
 
     bool isInitialized();
     bool isHeaderValid();
@@ -86,46 +93,80 @@ class ObjectUpdateMessage : public NetworkMessage
 {
 
     public:
-    ObjectUpdateMessage(unsigned int id, simdata::Vector3 position, simdata::Vector3 velocity);
+    ObjectUpdateMessage(simdata::uint16 id, simdata::Vector3 position, simdata::Vector3 velocity);
     
     
 };
 
-class NetworkNode
+class NetworkAddress
 {
+    private:
+      struct in_addr m_addr;
+      simdata::String m_name;
+      simdata::String m_IPAddress;
     
     public:
-    NetworkNode();
+      NetworkAddress();
+      NetworkAddress(const simdata::String name);
+      NetworkAddress(NetworkAddress & addr);
     
-    char * getNetworkName();
+      simdata::String getNetworkName();
+      simdata::String getNetworkIP();
+      void setByNetworkName(const simdata::String & name);
+      void setByNetworkIP(const simdata::String & address);
     
 };
 
-class NetworkSocket
+
+class MessageSocketDuplex
 {
-    int m_sockfd;
-    struct sockaddr_in * m_servaddr;
+    ost::UDPSocket * m_UDPReceiverSocket;
+    ost::UDPSocket * m_UDPSenderSocket;	
+   
+    /*
+    SockFd m_receiverSockFd;
+    SockFd m_senderSockFd;
+    */
+    
+    /*
+    struct sockaddr_in m_receiverSocketAddress;
+    NetworkAddress * m_receiverAddress;
+    */
+    
+    ost::InetAddress * m_receiverAddr;
+    Port m_receiverPort;
     
     public:
-    NetworkSocket(NetworkNode * node, short port);
-    int sendto(NetworkMessage * message);    
+    MessageSocketDuplex();                                     // set the listener port to unbound.
+    MessageSocketDuplex(ost::InetAddress & Address, Port port);     // set the bound address and port.
+    MessageSocketDuplex(Port port);                            // set the bound port.
+    
+    /*
+    void bind(NetworkAddress * address, Port port);                    // binds the listener port.
+    */
+    
+    int sendto(NetworkMessage & message, ost::InetHostAddress * remoteAddress, Port * remotePort);   
+    int recvfrom(NetworkMessage & message, ost::InetHostAddress * remoteAddress=NULL, Port * remotePort=NULL);
+
+    ost::InetAddress * getReciverAddress() { return m_receiverAddr; }
+    Port getReceiverPort() { return m_receiverPort; }
+
 };
 
 class NetworkMessenger
 {
+   private: 
+      MessageSocketDuplex m_messageSocketDuplex;
+
+   public:
+      
     NetworkMessenger();
 };
 
 class NetworkBroadcaster
 {
-    short  m_server_port;
-    NetworkNode * m_node;
-    NetworkSocket * m_socket;
-    
     public:
    NetworkBroadcaster();
-   
-   void sendMessage( int NodeID, NetworkMessage * message);
     
 };
 
@@ -135,9 +176,22 @@ class NetworkListener
     public:
     
     NetworkListener();
-    void receiveAvailableMessages();
     
 };
+
+class NetworkNode
+{
+  public:
+    NetworkNode();
+};
+
+class NetworkSocket
+{
+
+  public:
+    NetworkSocket();
+};
+
 
 #endif
 

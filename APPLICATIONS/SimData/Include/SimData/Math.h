@@ -33,8 +33,14 @@
 #ifndef __SIMDATA_MATH_H__
 #define __SIMDATA_MATH_H__
 
-#include <cmath>
 #include <SimData/Namespace.h>
+
+#include <cmath>
+
+#if defined(_MSC_VER) && (_MSC_VER >= 1300)
+    #include <float.h>
+#endif
+
 
 
 NAMESPACE_SIMDATA
@@ -98,10 +104,6 @@ inline T inRadians(T angle) { return angle; }
 template<typename T>
 inline void swap(T &a, T &b) { T t = a; a = b; b = t; }
 
-
-#if defined(_MSC_VER) && (_MSC_VER >= 1300)
-    #include <float.h>
-#endif
 
 #if (defined(WIN32) && !(defined(_MSC_VER) && (_MSC_VER >= 1300)) && !defined(__MINGW32__) ) ||  defined (sun)
     #ifndef isnanf

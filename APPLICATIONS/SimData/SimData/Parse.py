@@ -26,7 +26,14 @@ import SimData
 
 from xml.sax import ContentHandler, ErrorHandler, make_parser
 import xml.sax
-from gzip import GzipFile
+
+# zlib is often misinstalled under windows, so don't require it.
+try:
+	from gzip import GzipFileXX
+except Exception, e:
+	GzipFile = None
+	GzipError = str(e)
+
 from zipfile import ZipFile
 import re
 import os.path
@@ -807,6 +814,8 @@ class ObjectXMLArchive:
 			if obj is not None:
 				return obj
 		if path.endswith('.gz'):
+			if GzipFile is None:
+				raise IOError, "Unable to open '%s', since zlib appears to be missing or improperly installed (%s)." % (path, GzipError)
 			f = GzipFile(path, "rb")
 		else:
 			f = open(path, "rt")

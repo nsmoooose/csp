@@ -1,6 +1,10 @@
 Version 0.3.5 (in progress)
 ===========================
 
+2003-09-16: onsight
+            Changed Parse.py to handle misinstalled zlib modules
+	    (usually under windows) more gracefully.
+
 2003-08-20: onsight
             Tagged r0_3_4, version 0_3_5 started.
 	    Version 0.4.0 branch started.

@@ -27,7 +27,6 @@ import SimData
 if __name__ == "__main__":
 	if hasattr(sys, "setdlopenflags"):
 		sys.setdlopenflags(0x101)
-	#sys.path.append("../../Source");
 	try:
 		import SimData
 	except:
@@ -49,7 +48,7 @@ if __name__ == "__main__":
 		pass
 	while 1:
 		try:
-			import CSP
+			import cCSP
 			break
 		except:
 			print

@@ -1,6 +1,10 @@
 Version 0.4.0 (in progress)
 ===========================
 
+2004-10-01: onsight
+ * Fix import SimData statements in Compile.py and Parse.py to
+   find the local SimData package.
+
 2004-09-30: onsight
  * Added explicit casts to silence msvc warnings in GeoPos.cpp.
 

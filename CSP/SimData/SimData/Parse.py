@@ -2,27 +2,31 @@
 
 # SimDataCSP: Data Infrastructure for Simulations
 # Copyright (C) 2002 Mark Rose <tm2@stm.lbl.gov>
-# 
+#
 # This file is part of SimDataCSP.
-# 
+#
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
 # as published by the Free Software Foundation; either version 2
 # of the License, or (at your option) any later version.
-# 
+#
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 
-import sys, types
+import sys
+import types
+import time
+import re
+import os.path
 
-import SimData
+import __init__ as SimData
 
 from xml.sax import ContentHandler, ErrorHandler, make_parser
 import xml.sax
@@ -35,8 +39,6 @@ except Exception, e:
 	GzipError = str(e)
 
 from zipfile import ZipFile
-import re
-import os.path
 from traceback import print_exception
 
 from Debug import *
@@ -117,7 +119,7 @@ class ElementHandler(ContentHandler):
 		return self._element
 
 	def characters(self, c):
-		if self._handler is not None: 
+		if self._handler is not None:
 			self._handler.characters(c)
 		else:
 			self.cdata(c)
@@ -160,7 +162,7 @@ class ElementHandler(ContentHandler):
 				handler_name = name+"Handler"
 				try:
 					handler = eval(handler_name)
-				except: 
+				except:
 					msg = "Unknown child element <%s>" % name
 					raise XMLSyntax, msg
 			self._handler = handler(self._id, self._base, name, attrs)
@@ -213,7 +215,7 @@ class ListHandler(SimpleHandler):
 	def validateChild(self, name, attrs):
 		if self._type is not None:
 			return 0
-		return name in ('List', 'Enum', 'Path', 'Int', 'Bool', 'Number', 'Float', 
+		return name in ('List', 'Enum', 'Path', 'Int', 'Bool', 'Number', 'Float',
 		                'String', 'Date', 'Vector', 'Matrix', 'External', 'Key',
 		                'Object', 'Quat', 'LLA', "UTM", "ECEF")
 
@@ -229,7 +231,7 @@ class ListHandler(SimpleHandler):
 					y = SimData.Real()
 					y.parseXML(x)
 					return y
-				f = spread 
+				f = spread
 			elif self._type == "path":
 				def path(x, base = self._base):
 					y = SimData.Path()
@@ -421,7 +423,7 @@ class EnumHandler(SimpleHandler):
 	def assign(self, interface, object, name):
 		value = self._element.encode('ascii')
 		interface.set_enum(object, name, value)
- 
+
 #		# FIXME this will break if the enum attribute doesn't exist in an Object,
 #		# since it will not be linked to an enumeration
 # 		ext = self.getObjectAttribute(obj, name, None)
@@ -626,7 +628,7 @@ class _LUTHandler(SimpleHandler):
 		SimpleHandler.__init__(self, id, base, name, attrs)
 		self._method = attrs.get("method", "linear")
 		self._required_members = _LUTHandler.required_members
-		for i in range(dim): 
+		for i in range(dim):
 			self._required_members.append("Breaks%d" % i)
 		self._dim = dim
 		self._keys = {}
@@ -798,7 +800,7 @@ class ObjectXMLArchive:
 # 		if not self._objects.has_key(id):
 # 			self._objects[id] = self.loadObject(id)
 # 		return self._objects[id]
-# 
+#
 # 	def loadObject(self, id):
 # 		path = id_to_path(id)
 # 		path = os.path.join(self._basepath, path);
@@ -843,7 +845,7 @@ class ObjectXMLArchive:
 		 	log = open("error.log", "wt")
 			if log is not None:
 				print >>log, "%s[%d:%d] - %s, %s" % (path, line, column, public, system)
-				print_exception(type, value, traceback, file=open("error.log", "wt")) 
+				print_exception(type, value, traceback, file=open("error.log", "wt"))
 				print "Exception traceback saved to error.log"
 			else:
 				raise
@@ -885,7 +887,6 @@ class ObjectXMLArchive:
 		return self._objects
 
 
-import time
 
 def demo():
 	master = ObjectXMLArchive("../XML");
@@ -893,7 +894,7 @@ def demo():
 	pw229 = master.getObject("engines.f100_pw_229")
 	return
 	print "ab_rpm = ", pw229.ab_rpm
-	print "idle table = " 
+	print "idle table = "
 	for i in range(6):
 		for j in range(6):
 			print "%.5f" % pw229.idle.getPrecise(i*0.2, j*0.2),
@@ -903,7 +904,7 @@ def demo():
 
 def demo_show_members(obj):
 	members = obj.__class__.__dict__["__swig_setmethods__"].keys()
-	for member in members: 
+	for member in members:
 		c = getattr(obj, member).__class__
 		print "%30s: %s(%s)" % (member, c, str(getattr(obj, member)))
 	for i in obj.thrusts:

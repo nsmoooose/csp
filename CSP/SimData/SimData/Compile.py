@@ -2,27 +2,27 @@
 
 # SimDataCSP: Data Infrastructure for Simulations
 # Copyright (C) 2002 Mark Rose <tm2@stm.lbl.gov>
-# 
+#
 # This file is part of SimDataCSP.
-# 
+#
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
 # as published by the Free Software Foundation; either version 2
 # of the License, or (at your option) any later version.
-# 
+#
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 
 import sys
-
-import SimData
+import os.path
+import time
 
 if __name__ == "__main__":
 	if hasattr(sys, "setdlopenflags"):
@@ -63,18 +63,18 @@ if __name__ == "__main__":
 			if not new_path:
 				sys.exit(1)
 			sys.path = original_path[:]
-			sys.path.append(new_path) 
+			sys.path.append(new_path)
 	if new_path:
 		f = open(".csp_path", "wt")
 		print >>f, new_path
+else:
+	import __init__ as SimData
+
 
 
 from Parse import ObjectXMLArchive, XMLSyntax
-from SimData import DataArchive, hash_string
-
 from Debug import *
 
-import os.path, time
 
 class Cache:
 	def __init__(self, fn):
@@ -83,7 +83,7 @@ class Cache:
 		if os.path.exists(fn):
 			try:
 			    # open archive for reading, but disable chaining
-				self.source = DataArchive(fn, 1, 0)
+				self.source = SimData.DataArchive(fn, 1, 0)
 				self.timestamp = os.path.getmtime(fn)
 			except:
 				self.source = None
@@ -101,7 +101,7 @@ class Cache:
 		return None
 
 	def isNewer(self, fn):
-		if self.timestamp is None: 
+		if self.timestamp is None:
 			return 1
 		try:
 			mtime = os.path.getmtime(fn)
@@ -114,7 +114,7 @@ class CompilerUsageError:
 	def __init__(self, msg=None):
 		self.msg = msg
 	def getMessage(self):
-		if self.msg is None: 
+		if self.msg is None:
 			return ""
 		return "Usage error: %s\n" % self.msg
 	def __repr__(self):
@@ -141,7 +141,7 @@ class Compiler:
 		DEBUG(1, "XML parse completed.")
 		if warnings > 0:
 			print "%d warnings (severity=%d)." % (warnings, level)
-			if level > 0: 
+			if level > 0:
 				if level > getWarningLevel():
 					print "Run with '--warn=%d' to see all warnings." % level
 				if not self.force:
@@ -150,7 +150,8 @@ class Compiler:
 					sys.exit(1)
 		paths = master.getPaths()
 		DEBUG(1,"Compiling all objects")
-		compiled = DataArchive(self.outfile, 0)
+		compiled = SimData.DataArchive(self.outfile, 0)
+		hash_string = SimData.hash_string
 		for id in all.keys():
 			object = all[id]
 			DEBUG(2, "Compiling object '%s' [%s] %s" % (id, hash_string(id), str(object)))

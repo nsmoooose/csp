@@ -190,15 +190,15 @@ extern InterfaceRegistry g_InterfaceRegistry;
 
 // interface macro 0
 #define __SIMDATA_XML_INTERFACE_0(classname, baseinterface) \
-class InterfaceProxy; \
-friend class InterfaceProxy; \
-class InterfaceProxy: public baseinterface \
+class classname##InterfaceProxy; \
+friend class classname##InterfaceProxy; \
+class classname##InterfaceProxy: public baseinterface \
 { \
 	SIMDATA(ObjectInterface)<classname> *_interface; \
 public: 
 
 // interface macro 1 for normal classes
-#define __SIMDATA_XML_INTERFACE_1(classname, baseinterface) \
+#define __SIMDATA_XML_INTERFACE_1(classname) \
 	virtual SIMDATA(Object)* createObject() const { \
 		SIMDATA(Object) *o = new classname; \
 		assert(o); \
@@ -207,7 +207,7 @@ public:
 	virtual bool isVirtual() const { return false; }
 		
 // interface macro 1 for abstract classes: no createObject
-#define __SIMDATA_XML_INTERFACE_V(classname, baseinterface) \
+#define __SIMDATA_XML_INTERFACE_V(classname) \
 	virtual SIMDATA(Object)* createObject() const { assert(0); return 0; } \
 	virtual bool isVirtual() const { return true; }
 
@@ -230,27 +230,27 @@ public:
 		return p; \
 	} \
 	virtual void pack(SIMDATA(Object) *o, SIMDATA(Packer) &p) const { \
-		baseinterface::pack(o, p); \
+		nqbaseinterface::pack(o, p); \
 		_interface->pack(o, p); \
 	} \
 	virtual void unpack(SIMDATA(Object) *o, SIMDATA(UnPacker) &p) const { \
-		baseinterface::unpack(o, p); \
+		nqbaseinterface::unpack(o, p); \
 		_interface->unpack(o, p); \
 	} \
 	virtual bool variableExists(const char *name) const { \
-		return _interface->variableExists(name) || baseinterface::variableExists(name); \
+		return _interface->variableExists(name) || nqbaseinterface::variableExists(name); \
 	} \
 	virtual bool variableRequired(const char *name) const { \
-		return _interface->variableRequired(name) || baseinterface::variableRequired(name); \
+		return _interface->variableRequired(name) || nqbaseinterface::variableRequired(name); \
 	} \
 	virtual std::vector<std::string> getVariableNames() const { \
-		std::vector<std::string> s = baseinterface::getVariableNames(); \
+		std::vector<std::string> s = nqbaseinterface::getVariableNames(); \
 		std::vector<std::string> t = _interface->getVariableNames(); \
 		s.insert(s.end(), t.begin(), t.end()); \
 		return s; \
 	} \
 	virtual std::vector<std::string> getRequiredNames() const { \
-		std::vector<std::string> s = baseinterface::getRequiredNames(); \
+		std::vector<std::string> s = nqbaseinterface::getRequiredNames(); \
 		std::vector<std::string> t = _interface->getRequiredNames(); \
 		s.insert(s.end(), t.begin(), t.end()); \
 		return s; \
@@ -261,16 +261,18 @@ public:
 		std::vector<std::string> t = _interface->getRequiredNames(); \
 		s.insert(s.end(), t.begin(), t.end()); \
 		for (name = s.begin(); name != s.end(); name++) \
-			if (baseinterface::variableExists(name->c_str())) {\
+			if (nqbaseinterface::variableExists(name->c_str())) {\
+				std::cout << "variable \"" << *name << "\" multiply defined in interface to class " #classname " or parent interface." << std::endl; \
 				throw SIMDATA(InterfaceError)("variable \"" + *name + "\" multiply defined in interface to class " #classname " or parent interface."); \
 			} \
 	} \
-	InterfaceProxy(const char * cname = #classname, SIMDATA(hasht) (*chash)() = &classname::_getClassHash): \
-		CTOR_INIT(baseinterface,InterfaceProxy)(cname, chash) \
+	classname##InterfaceProxy(const char * cname = #classname, SIMDATA(hasht) (*chash)() = &classname::_getClassHash): \
+		baseinterface(cname, chash) \
 	{ \
 		_interface = new SIMDATA(ObjectInterface)<classname>; \
 		(*_interface)
 
+		//CTOR_INIT(baseinterface,InterfaceProxy)(cname, chash) 
 		//baseinterface::InterfaceProxy(cname, chash)
 //-----------------------------------------
 
@@ -280,11 +282,11 @@ public:
 #else
 	#define BEGIN_SIMDATA_XML_INTERFACE(classname) \
 		__SIMDATA_XML_INTERFACE_0(classname, SIMDATA(InterfaceProxy)) \
-		__SIMDATA_XML_INTERFACE_1(classname, SIMDATA(InterfaceProxy)) \
+		__SIMDATA_XML_INTERFACE_1(classname) \
 		__SIMDATA_XML_INTERFACE_2(classname, SIMDATA(InterfaceProxy), InterfaceProxy)
 	#define BEGIN_SIMDATA_XML_VIRTUAL_INTERFACE(classname) \
 		__SIMDATA_XML_INTERFACE_0(classname, SIMDATA(InterfaceProxy)) \
-		__SIMDATA_XML_INTERFACE_V(classname, SIMDATA(InterfaceProxy)) \
+		__SIMDATA_XML_INTERFACE_V(classname) \
 		__SIMDATA_XML_INTERFACE_2(classname, SIMDATA(InterfaceProxy), InterfaceProxy)
 #endif
 
@@ -296,13 +298,13 @@ public:
 	#define EXTEND_SIMDATA_XML_VIRTUAL_INTERFACE(classname, basename)
 #else
 	#define EXTEND_SIMDATA_XML_INTERFACE(classname, basename) \
-		__SIMDATA_XML_INTERFACE_0(classname, basename::InterfaceProxy) \
-		__SIMDATA_XML_INTERFACE_1(classname, basename::InterfaceProxy) \
-		__SIMDATA_XML_INTERFACE_2(classname, basename::InterfaceProxy, basename::InterfaceProxy) 
+		__SIMDATA_XML_INTERFACE_0(classname, basename::basename##InterfaceProxy) \
+		__SIMDATA_XML_INTERFACE_1(classname) \
+		__SIMDATA_XML_INTERFACE_2(classname, basename::basename##InterfaceProxy, basename##InterfaceProxy) 
 	#define EXTEND_SIMDATA_XML_VIRTUAL_INTERFACE(classname, basename) \
-		__SIMDATA_XML_INTERFACE_0(classname, basename::InterfaceProxy) \
-		__SIMDATA_XML_INTERFACE_V(classname, basename::InterfaceProxy) \
-		__SIMDATA_XML_INTERFACE_2(classname, basename::InterfaceProxy, basename::InterfaceProxy)
+		__SIMDATA_XML_INTERFACE_0(classname, basename::basename##InterfaceProxy) \
+		__SIMDATA_XML_INTERFACE_V(classname) \
+		__SIMDATA_XML_INTERFACE_2(classname, basename::basename##InterfaceProxy, basename##InterfaceProxy)
 #endif
 
 //-----------------------------------------
@@ -328,7 +330,7 @@ public:
 
 #define SIMDATA_REGISTER_INTERFACE(classname) \
 namespace { \
-	classname::InterfaceProxy __##classname##_interface; \
+	classname::classname##InterfaceProxy __##classname##_interface; \
 } /* anonymous namespace */
 
 

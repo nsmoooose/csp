@@ -107,6 +107,10 @@ simdata::Vector3 Engine::getThrust() const {
 
 
 void EngineDynamics::postCreate() {
+	// XMLize: A, B & C should be functions of mach
+	m_A = simdata::toRadians(10.0);
+	m_B = simdata::toRadians(15.0);
+	m_C = simdata::toRadians(40.0);
 }
 
 void EngineDynamics::registerChannels(Bus *) {
@@ -116,6 +120,7 @@ void EngineDynamics::importChannels(Bus *bus) {
 	if (!bus) return;
 	b_ThrottleInput = bus->getChannel("ControlInputs.ThrottleInput");
 	b_Mach = bus->getChannel("Conditions.Mach");
+	b_Alpha = bus->getChannel("FlightDynamics.Alpha");
 }
 
 EngineDynamics::EngineDynamics() {
@@ -153,8 +158,34 @@ void EngineDynamics::preSimulationStep(double dt) {
 	}
 }
 
+double EngineDynamics::flatten(double x) {
+	// an increasing picewise linear continuous function f on R such that:
+	//		  / -pi/2 if x = -a
+	// f(x) = | 0     if x in [-a/2,b/2] (0 < a, b)
+	//        \ b     if x = b 
+	double ret = abs(x-m_B/2) + x-m_B/2 + simdata::PI_2*(m_A/2+x - abs(m_A/2+x))/m_A;
+	return ret;
+}
+
+void EngineDynamics::cut() {
+	double alpha = b_Alpha->value();
+	if (alpha < -m_A) {
+		m_Force = simdata::Vector3::ZERO;
+	}
+	else if (alpha < m_B) {
+		m_Force *= cos( flatten(alpha));
+ 	}
+	else if (alpha < m_C) {
+		m_Force *= cos(m_B + (simdata::PI_2 - m_B)*(alpha - m_B)/(m_C-m_B));
+	}
+	else {
+		m_Force = simdata::Vector3::ZERO;
+	}
+}
+
 void EngineDynamics::computeForceAndMoment(double /*x*/) {
 	// all the work is done by preSimulationStep
+	cut();
 }
 
 void EngineDynamics::getInfo(InfoList &info) const {

@@ -96,6 +96,14 @@ class EngineDynamics: public BaseDynamics {
 	EngineSet m_Engine;
 	DataChannel<double>::CRef b_ThrottleInput;
 	DataChannel<double>::CRef b_Mach;
+	DataChannel<double>::CRef b_Alpha;
+
+	// Depending on the AOA (and mach) the engine misses
+	// air flow lowering the thrust. 
+	void cut();
+	double flatten(double x);
+
+	double m_A,m_B,m_C;
 
 protected:
 	virtual void registerChannels(Bus*);

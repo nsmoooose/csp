@@ -426,10 +426,10 @@ void LocalBattlefield::onJoinResponse(simdata::Ref<JoinResponse> const &msg, sim
 		return;
 	}
 	if (!msg->success()) {
-		CSP_LOG(BATTLEFIELD, ERROR, "battlefield failed to connect to server: " << msg->message());
+		CSP_LOG(BATTLEFIELD, ERROR, "battlefield failed to connect to server: " << msg->details());
 		assert(0);
 	}
-	CSP_LOG(BATTLEFIELD, INFO, "battlefield connected to server: " << msg->message());
+	CSP_LOG(BATTLEFIELD, INFO, "battlefield connected to server: " << msg->details());
 	assert(msg->first_id() > 0);
 	assert(msg->id_count() > 63);
 	m_LocalIdPool->next = msg->first_id();

@@ -231,7 +231,7 @@ private:
 		ClientResponse<JoinResponse> response(msg);
 		if (msg->has_user_name()) {
 			response->set_success(true);
-			response->set_message("welcome " + msg->user_name());
+			response->set_details("welcome " + msg->user_name());
 			response->set_first_id(m_NextId);
 			response->set_id_count(100);
 			m_NextId += 100;
@@ -245,7 +245,7 @@ private:
 			announceExistingPlayers(id);
 		} else {
 			response->set_success(false);
-			response->set_message("no user name");
+			response->set_details("no user name");
 			response.send(queue);
 		}
 	}

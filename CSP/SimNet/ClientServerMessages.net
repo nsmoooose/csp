@@ -4,30 +4,32 @@
 
 #include <SimNet/NetworkMessage.h>
 
+typedef simnet::NetworkMessage NetworkMessage;
+
 // message id numbers 0 - 63 are reserved for internal use.
 
-Message Reserved0 BASE=simnet::NetworkMessage ID=0 {
+message Reserved0 : NetworkMessage {  @id=0;
 }
 
-Message Reserved1 BASE=simnet::NetworkMessage ID=1 {
+message Reserved1 : NetworkMessage {  @id=1;
 }
 
-Message Acknowledge BASE=simnet::NetworkMessage ID=2 {
+message Acknowledge : NetworkMessage {  @id=2;
 }
 
-Message Disconnect BASE=simnet::NetworkMessage ID=3 {
+message Disconnect : NetworkMessage {  @id=3;
 }
 
-Message Reset BASE=simnet::NetworkMessage ID=4 {
+message Reset : NetworkMessage {  @id=4;
 }
 
-Message ConnectionRequest BASE=simnet::NetworkMessage ID=5 {
+message ConnectionRequest : NetworkMessage {  @id=5;
 	std::string password;
 	int32 incoming_bw;
 	int32 outgoing_bw;
 }
 
-Message ConnectionResponse BASE=simnet::NetworkMessage ID=6 {
+message ConnectionResponse : NetworkMessage {  @id=6;
 	std::string server_id;
 	std::string response;
 	bool success;

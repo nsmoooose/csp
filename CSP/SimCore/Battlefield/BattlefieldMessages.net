@@ -31,8 +31,10 @@
 // are assigned sequentially for now (although this is somewhat
 // brittle and error prone), so be sure that new messages are
 // added at the end of this file.
-#idbase 64
-#message simnet::NetworkMessage
+//#idbase 64
+//#message simnet::NetworkMessage
+
+typedef simnet::NetworkMessage NetworkMessage;
 
 // TODO a nicer syntax would be:
 //	#define header <...>
@@ -44,7 +46,7 @@
 // to join the game.  this is extremely oversimplified
 // for testing purposes.
 
-Message JoinRequest {
+message JoinRequest : NetworkMessage { @id=64;
 	// any identifier (e.g. callsign)
 	std::string user_name;
 }
@@ -52,16 +54,16 @@ Message JoinRequest {
 // response from the index server to a client indicating if
 // a join request was successful.
 
-Message JoinResponse {
+message JoinResponse : NetworkMessage { @id=65;
 	bool success;
-	std::string message;
+	std::string details;
 
 	// initial allocation of unique object ids
 	int32 first_id;
 	int32 id_count;
 }
 
-Message PlayerJoin {
+message PlayerJoin : NetworkMessage { @id=66;
 	std::string user_name;
 	int16 peer_id;
 	int16 port;
@@ -70,13 +72,13 @@ Message PlayerJoin {
 	int32 outgoing_bw;
 }
 
-Message PlayerQuit {
+message PlayerQuit : NetworkMessage { @id=67;
 	int16 peer_id;
 }
 
 
 // Client-GameServer: register an object owned by the client
-Message RegisterUnit {
+message RegisterUnit : NetworkMessage { @id=68;
 	uint32 unit_id;
 	simdata::Path unit_class;
 	uint8 unit_type;
@@ -85,21 +87,21 @@ Message RegisterUnit {
 }
 
 // Client<->GameServer: owned object has moved
-Message NotifyUnitMotion {
+message NotifyUnitMotion : NetworkMessage { @id=69;
 	uint32 unit_id;
 	uint32 grid_x;
 	uint32 grid_y;
 }
 
 // GameServer->Client: send object updates to peer
-Message CommandUpdatePeer {
+message CommandUpdatePeer : NetworkMessage { @id=70;
 	uint32 unit_id;
 	uint16 peer_id;
 	bool stop;
 }
 
 // GameServer->Client: add a new unit, expect peer updates
-Message CommandAddUnit {
+message CommandAddUnit : NetworkMessage { @id=71;
 	uint32 unit_id;
 	simdata::Path unit_class;
 	uint8 unit_type;
@@ -109,19 +111,19 @@ Message CommandAddUnit {
 }
 
 // GameServer-Client: remove a new unit, disregard peer updates
-Message CommandRemoveUnit {
+message CommandRemoveUnit : NetworkMessage { @id=72;
 	uint32 unit_id;
 }
 
-Message IdAllocationRequest {
+message IdAllocationRequest : NetworkMessage { @id=73;
 }
 
-Message IdAllocationResponse {
+message IdAllocationResponse : NetworkMessage { @id=74;
 	uint32 first_id;
 	uint32 id_count;
 }
 
-Message TestUnitState {
+message TestUnitState : NetworkMessage { @id=75;
 	uint32 timestamp;
 	simdata::Vector3 position;
 	simdata::Vector3 velocity;

@@ -54,7 +54,7 @@ std::string base_path(std::string const &path) {
 }
 
 
-void DataArchive::_addEntry(int offset, int length, hasht hash, const char* path) {
+void DataArchive::_addEntry(int offset, int length, hasht hash, std::string const &path) {
 	if (n_objects == allocation) {
 		allocation += AS;
 		table = (TableEntry*) realloc(table, sizeof(TableEntry)*allocation);
@@ -66,7 +66,7 @@ void DataArchive::_addEntry(int offset, int length, hasht hash, const char* path
 	t.pathhash = hash_string(path);
 	table_map[t.pathhash] = n_objects;
 	n_objects++;
-	hasht parent = hash_string(base_path(path).c_str());
+	hasht parent = hash_string(base_path(path));
 	_children[parent].push_back(t.pathhash);
 	_paths.push_back(path);
 	_pathmap[t.pathhash] = path;
@@ -164,7 +164,7 @@ void DataArchive::_readPaths() {
 			std::string path = cptr;
 			cptr += path.size() + 1;
 			_paths.push_back(path);
-			_pathmap[hash_string(path.c_str())] = path;
+			_pathmap[hash_string(path)] = path;
 			if (cptr >= toc_end && n_paths != 0) {
 				throw CorruptArchive("Path table of contents truncated.");
 			}
@@ -223,7 +223,7 @@ void DataArchive::_writePaths() const {
 	fseek(f, end, SEEK_SET);
 }
 
-DataArchive::DataArchive(const char*fn, int read, bool chain_) {
+DataArchive::DataArchive(std::string const &fn, int read, bool chain_) {
 	chain = chain_;
 	finalized = 0;
 	manager = 0;
@@ -233,7 +233,7 @@ DataArchive::DataArchive(const char*fn, int read, bool chain_) {
 	}
 	n_buffer = 0;
 	_fn = fn;
-	f = (FILE*) fopen(fn, read ? "rb" : "wb");
+	f = (FILE*) fopen(fn.c_str(), read ? "rb" : "wb");
 	if (f == NULL) {
 		std::string msg;
 		msg = msg + "Unable to open DataArchive '" + fn + "'";
@@ -283,7 +283,7 @@ DataArchive *DataArchive::getDefault() {
 }
 
 
-void DataArchive::addObject(Object& a, const char* path) {
+void DataArchive::addObject(Object& a, std::string const &path) {
 	if (!is_read && !finalized) {
 		int offset = ftell(f);
 		Packer p(f);
@@ -295,7 +295,7 @@ void DataArchive::addObject(Object& a, const char* path) {
 }
 
 
-const LinkBase DataArchive::getObject(const char* path) {
+const LinkBase DataArchive::getObject(std::string const &path) {
 	return getObject(Path(path), path);
 }
 
@@ -306,7 +306,7 @@ std::vector<ObjectID> DataArchive::getChildren(ObjectID const &id) const {
 }
 
 std::vector<ObjectID> DataArchive::getChildren(std::string const & path) const {
-	return getChildren(hash_string(path.c_str()));
+	return getChildren(hash_string(path));
 }
 
 bool DataArchive::hasObject(ObjectID const &id) const {
@@ -315,7 +315,7 @@ bool DataArchive::hasObject(ObjectID const &id) const {
 }
 
 bool DataArchive::hasObject(std::string const & path) const {
-	return hasObject(hash_string(path.c_str()));
+	return hasObject(hash_string(path));
 }
 
 std::string DataArchive::getPathString(ObjectID const &id) const {
@@ -324,20 +324,22 @@ std::string DataArchive::getPathString(ObjectID const &id) const {
 	return idx->second;
 }
 
-const DataArchive::TableEntry* DataArchive::_lookupPath(Path const& path, const char* path_str) const {
-	hasht key = (hasht) path.getPath();
-	hasht_map::const_iterator i = table_map.find(key);
+const DataArchive::TableEntry* DataArchive::_lookupPath(Path const &path, std::string const &path_str) const {
+	hasht id = (hasht) path.getPath();
+	return _lookupPath(id, path_str);
+}
+
+const DataArchive::TableEntry* DataArchive::_lookupPath(ObjectID const &id, std::string const &path_str) const {
+	hasht_map::const_iterator i = table_map.find(id);
 	if (i == table_map.end()) {
-		std::string msg;
-		if (path_str==0 || *path_str==0) {
-			msg = getPathString(key);
+		std::string msg = path_str;
+		if (msg=="") {
+			msg = getPathString(id);
 			if (msg == "") {
 				msg = "human-readable path unavailable";
 			}
-		} else {
-			msg = path_str;
-		}
-		SIMDATA_LOG(LOG_ARCHIVE, LOG_ERROR, "DataArchive: path not found in '" << _fn << "' (" << msg << ") " + key.str());
+		} 
+		SIMDATA_LOG(LOG_ARCHIVE, LOG_ERROR, "DataArchive: path not found in '" << _fn << "' (" << msg << ") " + id.str());
 		throw IndexError(msg.c_str());
 	}
 	int idx = (*i).second;
@@ -361,10 +363,10 @@ Object *DataArchive::_createObject(hasht classhash) {
 // archive on disk.  if the object is marked as static, it is added to
 // the static cache.  
 
-const LinkBase DataArchive::getObject(const Path& path, const char* path_str) {
-	hasht key = (hasht) path.getPath();
+const LinkBase DataArchive::getObject(const Path& path, std::string const &path_str) {
+	hasht id = (hasht) path.getPath();
 	// look among previously created static objects
-	LinkBase const *cached = _getStatic(key);
+	LinkBase const *cached = _getStatic(id);
 	if (cached != 0) return *cached;
 	TableEntry const *t;
 	try {
@@ -380,11 +382,11 @@ const LinkBase DataArchive::getObject(const Path& path, const char* path_str) {
 	InterfaceProxy *proxy = InterfaceRegistry::getInterfaceRegistry().getInterface(t->classhash);
 	if (!proxy) {
 		std::string msg = "Missing interface for";
-		if (path_str) {
+		if (path_str != "") {
 			SIMDATA_LOG(LOG_ARCHIVE, LOG_ERROR, "getObject(" << path_str << "):");
 			msg = msg + " '" + path_str + "'";
 		} else {
-			path_map::iterator i = _pathmap.find(key);
+			path_map::iterator i = _pathmap.find(id);
 			if (i != _pathmap.end()) {
 				msg = msg + " '" + i->second + "'";
 			}
@@ -412,7 +414,7 @@ const LinkBase DataArchive::getObject(const Path& path, const char* path_str) {
 	fread(buffer, length, 1, f);
 	UnPacker p(buffer, length, this, chain);
 	SIMDATA_LOG(LOG_ARCHIVE, LOG_DEBUG, "got object " << dup->getClassName());
-	dup->_setPath(key);
+	dup->_setPath(id);
 	try {
 		dup->unpack(p);
 	} catch (DataUnderflow &e) {
@@ -433,7 +435,7 @@ const LinkBase DataArchive::getObject(const Path& path, const char* path_str) {
 		throw CorruptArchive("Object extraction incomplete for class '" + std::string(dup->getClassName()) + "'");
 	}
 	if (dup->isStatic()) {
-		_addStatic(dup, 0, key);
+		_addStatic(dup, "", id);
 		// XXX dup->ref(); // we own a copy
 	}
 	return LinkBase(path, dup);
@@ -441,13 +443,13 @@ const LinkBase DataArchive::getObject(const Path& path, const char* path_str) {
 
 
 
-void DataArchive::_addStatic(Object* ptr, const char* path, hasht key) {
-	if (key == 0) key = hash_string(path);
-	static_map[key] = LinkBase(Path(path), ptr);
+void DataArchive::_addStatic(Object* ptr, std::string const &path, hasht id) {
+	if (id == 0) id = hash_string(path);
+	static_map[id] = LinkBase(Path(path), ptr);
 }
 
-LinkBase const* DataArchive::_getStatic(hasht key=0) {
-	cache_map::const_iterator i = static_map.find(key);
+LinkBase const* DataArchive::_getStatic(hasht id=0) {
+	cache_map::const_iterator i = static_map.find(id);
 	if (i == static_map.end()) return 0;
 	return &(i->second);
 }
@@ -498,6 +500,24 @@ std::vector<ObjectID> DataArchive::getAllObjects() const {
 
 std::vector<std::string> DataArchive::getAllPathStrings() const {
 	return _paths;
+}
+
+InterfaceProxy *DataArchive::getObjectInterface(ObjectID const &id, std::string const &path) const {
+	TableEntry const *t;
+	try {
+		t = _lookupPath(id, path);
+	}
+	catch (IndexError) {
+		if (manager) {
+			return manager->getObjectInterface(id, path, this);
+		}
+		throw;
+	}
+	return InterfaceRegistry::getInterfaceRegistry().getInterface(t->classhash);
+}
+
+InterfaceProxy *DataArchive::getObjectInterface(std::string const &path) const {
+	return getObjectInterface(hash_string(path), path);
 }
 
 NAMESPACE_SIMDATA_END

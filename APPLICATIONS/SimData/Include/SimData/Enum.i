@@ -1,5 +1,5 @@
 /* SimDataCSP: Data Infrastructure for Simulations
- * Copyright (C) 2002 Mark Rose <tm2@stm.lbl.gov>
+ * Copyright (C) 2002, 2003 Mark Rose <tm2@stm.lbl.gov>
  * 
  * This file is part of SimDataCSP.
  * 
@@ -20,30 +20,37 @@
 
 %module "Enum"
 %{
-#include "SimData/Enum.h"
+#include <SimData/Enum.h>
 %}
 
 %include "std_string.i"
-%include "std_vector.i"
+%import "SimData/Ref.h"
 
-%include "SimData/Namespace.h"
+%template(RefEnumerationCore) SIMDATA(Ref)<SIMDATA(EnumerationCore) const>;
 
-%template(vEnum) std::vector<SIMDATA(Enum)>;
+%typemap(out) std::vector<SIMDATA(EnumLink)>
+       "{
+            $result = PyTuple_New($1.size());
+            for (unsigned int i=0; i<$1.size(); i++) {
+                SIMDATA(EnumLink)* ptr = new SIMDATA(EnumLink)((($1_type &)$1)[i]);
+                PyTuple_SetItem($result,i,
+                                SWIG_NewPointerObj((void *) ptr, 
+                                                   $descriptor(simdata::EnumLink *), 1));
+            }
+       }"
 
-// HACK!
-#ifndef VSTRING
-%template(vString) std::vector<string>;
-#define VSTRING
-#endif
+%typemap(out) std::vector<std::string> SIMDATA(Enumeration)::eachString()
+       "{
+            $result = PyTuple_New($1.size());
+            for (unsigned int i=0; i<$1.size(); i++) {
+                PyTuple_SetItem($result,i, PyString_FromString($1[i].c_str()));
+            }
+       }"
 
-//%ignore eqstring;
-//%ignore hashstring;
-//%ignore string_map;
 
 #define TRY	try { $action }
 #define CATCH(a, b) \
 	catch (a& e) {\
-		std::cout << "EXCEPT\n"; \
 		SWIG_exception(b, const_cast<char*>(e.getError().c_str()));\
 	}
 	
@@ -59,10 +66,48 @@
 #undef TRY
 #undef CATCH
 
-%rename(__repr__) SIMDATA(Enum)::asString() const;
-%rename(__repr__) SIMDATA(Enumeration)::asString() const;
 
 %include "SimData/Enum.h"
 
-%exception;
 
+#define SIMDATA_ENUM_WRAP1(T) 			\
+%typemap(in) SIMDATA(Enum)<T> * (int __index, std::string __string, SIMDATA(EnumLink) *__enumlink) \
+       "{ \
+           __index = -1; \
+	   __string = \"\"; \
+	   __enumlink = 0; \
+       	   if (PyInt_Check($input)) { \
+	        __index = PyInt_AsLong($input); \
+	   } else \
+           if (PyString_Check($input)) { \
+                __string = std::string(PyString_AsString($input)); \
+	   } else \
+	   if ((SWIG_ConvertPtr($input,(void **) &$1, $1_descriptor, 0 )) == -1) { \
+	   	if ((SWIG_ConvertPtr($input,(void **) &__enumlink, SWIGTYPE_p_simdata__EnumLink, 0 )) == -1) { \
+    		    PyErr_SetString(PyExc_TypeError, \"string or enum expected\"); \
+		} \
+	   } \
+	}"; \
+
+#define SIMDATA_ENUM_WRAP2(T) \
+%typemap(memberin) SIMDATA(Enum)<T> \
+	"{ \
+		if ($input) { \
+			$1 = *$input; \
+		} else \
+		if (__enumlink2) { \
+			$1 = *__enumlink2; \
+		} else \
+		if (__index2 >=0) { \
+			$1 = __index2; \
+		} else { \
+			$1 = __string2; \
+		} \
+	 }";
+
+#define SIMDATA_ENUM_WRAP(NAME, T) \
+	%template(NAME) simdata::Enum<T>; \
+	SIMDATA_ENUM_WRAP1(T) \
+	SIMDATA_ENUM_WRAP2(T) 
+
+%exception;

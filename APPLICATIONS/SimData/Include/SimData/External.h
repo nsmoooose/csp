@@ -90,6 +90,11 @@ public:
 	 * Standard string representation.
 	 */
 	virtual std::string asString() const;
+
+	/**
+	 * Return a string representation of the type.
+	 */
+	virtual std::string typeString() const { return "type::External"; }
 };
 
 NAMESPACE_SIMDATA_END

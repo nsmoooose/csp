@@ -120,12 +120,18 @@ void InterfaceProxy::clear(Object *o, const char *name) {
 	getAccessor(name)->clear(o);
 }
 
-bool InterfaceProxy::variableExists(const char *name) const {
+bool InterfaceProxy::variableExists(const char *) const {
 	return false;
 }
 
 bool InterfaceProxy::variableRequired(const char *name) const {
+	throw InterfaceError("Variable '"+std::string(name)+"' not found in interface to class '" + getClassName() + "'");
 	return false;
+}
+
+std::string InterfaceProxy::variableType(const char *name) const {
+	throw InterfaceError("Variable '"+std::string(name)+"' not found in interface to class '" + getClassName() + "'");
+	return "";
 }
 
 hasht InterfaceProxy::getClassHash() const { 
@@ -136,6 +142,14 @@ hasht InterfaceProxy::getClassHash() const {
 const char * InterfaceProxy::getClassName() const { 
 	error("INTERNAL ERROR: InterfaceProxy::getClassName()");
 	return 0;
+}
+
+bool InterfaceProxy::isSubclass(std::string const &) const {
+	return false;
+}
+
+bool InterfaceProxy::isSubclass(hasht const &) const {
+	return false;
 }
 
 void InterfaceProxy::pack(Object *, Packer &) const {
@@ -151,6 +165,7 @@ std::vector<std::string> InterfaceProxy::getVariableNames() const {
 std::vector<std::string> InterfaceProxy::getRequiredNames() const {
 	return std::vector<std::string>();
 }
+
 
 
 ///////////////////////////////////////////////////////////////////////////
@@ -226,7 +241,6 @@ void InterfaceRegistry::addInterface(const char *name, hasht id, InterfaceProxy 
 	//cout << "Registering interface<" << name << "> [" << id << "]" << endl;
 	SIMDATA_LOG(LOG_REGISTRY, LOG_DEBUG, "Registering interface<" << name << "> [" << id << "]");
 }
-
 
 
 NAMESPACE_SIMDATA_END

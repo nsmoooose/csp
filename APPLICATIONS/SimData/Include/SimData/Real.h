@@ -86,6 +86,11 @@ public:
 	 */
 	virtual std::string asString() const;
 
+	/**
+	 * Return a string representation of the type.
+	 */
+	virtual std::string typeString() const { return "type::Real"; }
+
 	/*
     	float __neg__();
 	float __pos__();

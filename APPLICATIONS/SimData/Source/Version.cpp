@@ -22,7 +22,7 @@
 #include <SimData/Version.h>
 
 #ifndef SIMDATA_VERSION
-	#define SIMDATA_VERSION "internal"
+	#define SIMDATA_VERSION "[built " __TIME__ " " __DATE__ "]"
 #endif
 
 NAMESPACE_SIMDATA

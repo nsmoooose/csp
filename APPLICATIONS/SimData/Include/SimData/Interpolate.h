@@ -80,7 +80,7 @@ public:
 	typedef typename std::vector<value_t>::const_iterator vector_cit;
 
 	static const Enumeration Method;
-	Enum method;
+	Enum<InterpolatedData<T>::Method> method;
 
 	InterpolatedData();
 	virtual ~InterpolatedData();

@@ -494,9 +494,9 @@ void SimDate::unpack(UnPacker &p) {
 void SimDate::parseXML(const char* cdata) {
 	int dy,dm,dd,th=0,tm=0;
 	float ts=0.0;
-	int ok;
+	int ok = 0;
 	std::string s(cdata);
-	if (s.find(" ") >= 0) {
+	if (s.find(" ") != std::string::npos) {
 		int n = sscanf(s.c_str(), "%d-%d-%d %d:%d:%f", &dy, &dm, &dd, &th, &tm, &ts);
 		ok = (n == 6);
 	} else {

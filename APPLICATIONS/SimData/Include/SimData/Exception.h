@@ -108,12 +108,17 @@ public:
 		ExceptionBase(type, msg) { }
 };
 
-#define SIMDATA_EXCEPTION(a)	\
-class SIMDATA_EXPORT a: public Exception { \
+#define SIMDATA_SUBEXCEPTION(a, b) \
+class a: public b { \
 public: \
-	a(std::string msg=""): \
-		Exception(#a, msg) { } \
+	a(std::string const &msg=""): \
+		b(#a, msg) { } \
+	a(std::string const &type, std::string const &msg): \
+		b(type, msg) { } \
 };
+
+#define SIMDATA_EXCEPTION(a)	SIMDATA_SUBEXCEPTION(a, Exception)
+
 
 /**
  * Exception for marshalling python exceptions through SWIG wrapers.

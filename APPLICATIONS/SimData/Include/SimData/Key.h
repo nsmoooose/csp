@@ -59,7 +59,7 @@ public:
 	/** 
 	 * Copy constructor.
 	 */
-	Key(Key const &k): _key(k._key) {}
+	Key(Key const &k): BaseType(k), _key(k._key) {}
 
 	/**
 	 * Destructor.
@@ -103,6 +103,11 @@ public:
 	 * Standard string representation.
 	 */
 	virtual std::string asString() const;
+
+	/**
+	 * Return a string representation of the type.
+	 */
+	virtual std::string typeString() const { return "type::Key"; }
 };
 
 NAMESPACE_SIMDATA_END

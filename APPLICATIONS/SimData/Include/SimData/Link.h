@@ -298,6 +298,11 @@ public:
 	 * String representation.
 	 */
 	virtual std::string asString() const;
+
+	/**
+	 * Return a string representation of the type.
+	 */
+	virtual std::string typeString() const { return std::string("type::LinkBase"); }
 	
 	/**
 	 * Comparison with other simdata pointers.
@@ -375,6 +380,11 @@ public:
 		LinkBase::operator=(p);
 	}
 	*/
+
+	/**
+	 * Return a string representation of the type.
+	 */
+	virtual std::string typeString() const { return std::string("type::Link::") + T::_getClassName(); }
 
 #ifndef SWIG
 	/**

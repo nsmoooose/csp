@@ -130,6 +130,7 @@ public:
 		return _reference->_count();
 	}
 
+#ifndef SWIG
 	/**
 	 * Light-weight copy with reference counting.
 	 */
@@ -164,6 +165,7 @@ public:
 		_reference = 0;
 		return ptr;
 	}
+#endif // SWIG
 
 
 	/**
@@ -187,12 +189,14 @@ public:
 		return *_reference;
 	}
 
+#ifndef SWIG
 	/**
 	 * Test for null pointer.
 	 */
 	inline bool operator!() const {
 		return _reference == 0;
 	}
+#endif // SWIG
 
 	/**
 	 * Test for non-null pointer.
@@ -269,7 +273,9 @@ friend class ReferencePointer;
 public:
 	Referenced(): __count(0) {}
 	Referenced(Referenced const &): __count(0) {}
+#ifndef SWIG
 	inline Referenced& operator=(Referenced const &) { return *this; }
+#endif // SWIG
 
 protected:
 	virtual ~Referenced() {

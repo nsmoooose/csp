@@ -143,6 +143,11 @@ public:
 	 * String representation.
 	 */
 	virtual std::string asString() const; 
+
+	/**
+	 * Return a string representation of the type.
+	 */
+	virtual std::string typeString() const { return "type::Path"; }
 };
 
 #if 0
@@ -376,7 +381,7 @@ public:
 		_path = r.getPath();
 		return *this;
 	}
-
+n
 
 	/**
 	 * Pack to a data archive.
@@ -402,6 +407,11 @@ public:
 	 * String representation.
 	 */
 	virtual std::string asString() const;
+
+	/**
+	 * Return a string representation of the type.
+	 */
+	virtual std::string typeString() const { return "type::PointerBase" }
 	
 	/**
 	 * Comparison with other simdata pointers.

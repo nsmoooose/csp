@@ -85,6 +85,8 @@ public:
 	
 	virtual bool variableRequired(const char *name) const;
 
+	virtual std::string variableType(const char *variable) const;
+
 	virtual void pack(Object *o, Packer &p) const;
 
 	virtual void unpack(Object *o, UnPacker &p) const;
@@ -96,6 +98,10 @@ public:
 	virtual std::vector<std::string> getVariableNames() const;
 	
 	virtual std::vector<std::string> getRequiredNames() const;
+
+	virtual bool isSubclass(std::string const &cname) const;
+
+	virtual bool isSubclass(hasht const &chash) const;
 
 
 /////////////////////////////////////////////////////// SWIG
@@ -266,10 +272,8 @@ public:
 	virtual SIMDATA(MemberAccessorBase) * getAccessor(const char *name, const char *cname = 0) const { \
 		if (!cname) cname = #classname; \
 		SIMDATA(MemberAccessorBase) *p = _interface->getAccessor(name); \
-		if (!p) { \
-			return nqbaseinterface::getAccessor(name, cname); \
-		} \
-		return p; \
+		if (p) return p; \
+		return nqbaseinterface::getAccessor(name, cname); \
 	} \
 	virtual void pack(SIMDATA(Object) *o, SIMDATA(Packer) &p) const { \
 		nqbaseinterface::pack(o, p); \
@@ -285,6 +289,10 @@ public:
 	virtual bool variableRequired(const char *name) const { \
 		return _interface->variableRequired(name) || nqbaseinterface::variableRequired(name); \
 	} \
+	virtual std::string variableType(const char *name) const { \
+		if (_interface->variableExists(name)) return _interface->variableType(name); \
+		return nqbaseinterface::variableType(name); \
+	} \
 	virtual std::vector<std::string> getVariableNames() const { \
 		std::vector<std::string> s = nqbaseinterface::getVariableNames(); \
 		std::vector<std::string> t = _interface->getVariableNames(); \
@@ -296,6 +304,14 @@ public:
 		std::vector<std::string> t = _interface->getRequiredNames(); \
 		s.insert(s.end(), t.begin(), t.end()); \
 		return s; \
+	} \
+	virtual bool isSubclass(std::string const &cname) const { \
+		return (cname == #classname) || \
+		       nqbaseinterface::isSubclass(cname);\
+	} \
+	virtual bool isSubclass(SIMDATA(hasht) const &chash) const { \
+		return (chash == classname::_getClassHash()) || \
+		       nqbaseinterface::isSubclass(chash);\
 	} \
 	void checkDuplicates() const throw(SIMDATA(InterfaceError)) { \
 		std::vector<std::string>::const_iterator name; \
@@ -338,12 +354,12 @@ public:
 	#define EXTEND_SIMDATA_XML_VIRTUAL_INTERFACE(classname, basename)
 #else
 	#define EXTEND_SIMDATA_XML_INTERFACE(classname, basename) \
-	    __SIMDATA_XML_INTERFACE_0(classname, basename::basename##InterfaceProxy) \
+		__SIMDATA_XML_INTERFACE_0(classname, basename::basename##InterfaceProxy) \
 		__SIMDATA_XML_INTERFACE_1(classname) \
 		__SIMDATA_XML_INTERFACE_2(classname, basename::basename##InterfaceProxy, basename##InterfaceProxy) 
 
 	#define EXTEND_SIMDATA_XML_VIRTUAL_INTERFACE(classname, basename) \
-	    __SIMDATA_XML_INTERFACE_0(classname, basename::basename##InterfaceProxy) \
+		__SIMDATA_XML_INTERFACE_0(classname, basename::basename##InterfaceProxy) \
 		__SIMDATA_XML_INTERFACE_V(classname) \
 		__SIMDATA_XML_INTERFACE_2(classname, basename::basename##InterfaceProxy, basename##InterfaceProxy)
 #endif

@@ -90,7 +90,6 @@ void LinkBase::_load(DataArchive* archive, ObjectID path) {
 		_path = 0;
 		_assign_safe(0);
 	} else {
-		//std::cerr << "loading pointerbase from " << path << " " << _path << std::endl;
 		SIMDATA_LOG(LOG_ARCHIVE, LOG_DEBUG, "loading pointerbase from " << path << " " << _path);
 		Path _p(path);
 		LinkBase _ppb;

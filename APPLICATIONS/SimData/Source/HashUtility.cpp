@@ -50,7 +50,7 @@ HASH<const char*> hashstring::h;
 }
 
 /* The whole new hash function */
-u4 newhash( register u1 *k, u4 length, u4 initval)
+u4 newhash( register u1 const *k, u4 length, u4 initval)
 //register u1 *k;        /* the key */
 //u4           length;   /* the length of the key in bytes */
 //u4           initval;  /* the previous hash, or an arbitrary value */
@@ -100,24 +100,24 @@ u4 newhash( register u1 *k, u4 length, u4 initval)
 /**
  * Generate a 32-bit hash from a string
  */
-u4 newhash4_cstring(const char* str) {
-	return newhash((u1*)str, strlen(str), 0);
+u4 newhash4_cstring(std::string const &str) {
+	return newhash((u1 const*)str.c_str(), str.size(), 0);
 }
 
 /**
  * Generate a 64-bit hash from a string
  */
-u8 newhash8_cstring(const char* str) {
+u8 newhash8_cstring(std::string const &str) {
 	u8 h0, h1;
-	h0 = newhash((u1*)str, strlen(str), 0);
-	h1 = newhash((u1*)str, strlen(str), 1);
+	h0 = newhash((u1 const*)str.c_str(), str.size(), 0);
+	h1 = newhash((u1 const*)str.c_str(), str.size(), 1);
 	return ((h1 << 32) | h0);
 }
 
-HashT newhasht_cstring(const char* str) {
+HashT newhasht_cstring(std::string const &str) {
 	u4 h0, h1;
-	h0 = newhash((u1*)str, strlen(str), 0);
-	h1 = newhash((u1*)str, strlen(str), 1);
+	h0 = newhash((u1 const*)str.c_str(), str.size(), 0);
+	h1 = newhash((u1 const*)str.c_str(), str.size(), 1);
 	return HashT(h1, h0);
 }
 

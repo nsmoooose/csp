@@ -89,33 +89,17 @@ std::string DataManager::getPathString(ObjectID const &id) const {
 	return _archives[idx->second]->getPathString(id);
 }
 
-const LinkBase DataManager::getObject(const char* path) {
+const LinkBase DataManager::getObject(std::string const &path) {
 	return getObject(Path(path), path, 0);
 }
 
-const LinkBase DataManager::getObject(Path const& path, const char* path_str) {
+const LinkBase DataManager::getObject(Path const& path, std::string const &path_str) {
 	return getObject(path, path_str, 0);
 }
 
-const LinkBase DataManager::getObject(Path const& path, const char* path_str, DataArchive *d) {
-	hasht key = (hasht) path.getPath();
-	hasht_map::iterator idx = _archive_map.find(key);
-	DataArchive *archive = 0;
-	if (idx != _archive_map.end()) {
-		assert(idx->second >= 0 && idx->second < int(_archives.size()));
-		archive = _archives[idx->second];
-	}
-	if (archive == 0 || archive == d) {
-		std::string msg;
-		if (path_str==0 || *path_str==0) {
-			msg = "human-readable path unavailable";
-		} else {
-			msg = path_str;
-		}
-		msg = "path not found (" + msg + ")" + key.str() + "\n";
-		SIMDATA_LOG(LOG_ARCHIVE, LOG_ERROR, "DataManager::getObject() : " << msg);
-		throw IndexError(msg.c_str());
-	}
+const LinkBase DataManager::getObject(Path const& path, std::string const &path_str, DataArchive const *d) const {
+	hasht id = (hasht) path.getPath();
+	DataArchive *archive = findArchive(id, path_str, d);
 	return archive->getObject(path, path_str);
 }
 
@@ -126,6 +110,38 @@ void DataManager::cleanStatic() {
 			(*i)->cleanStatic();
 		}
 	}
+}
+
+InterfaceProxy *DataManager::getObjectInterface(ObjectID const &id) const {
+	return getObjectInterface(id, "", 0);
+}
+
+InterfaceProxy *DataManager::getObjectInterface(std::string const &path) const {
+	return getObjectInterface(hash_string(path.c_str()), path, 0);
+}
+
+InterfaceProxy *DataManager::getObjectInterface(ObjectID const &id, std::string const &path_str, DataArchive const *d) const {
+	DataArchive *archive = findArchive(id, path_str, d);
+	return archive->getObjectInterface(id);
+}
+
+DataArchive *DataManager::findArchive(ObjectID const &id, std::string const &path_str, DataArchive const *d) const {
+	hasht_map::const_iterator idx = _archive_map.find(id);
+	DataArchive *archive = 0;
+	if (idx != _archive_map.end()) {
+		assert(idx->second >= 0 && idx->second < int(_archives.size()));
+		archive = _archives[idx->second];
+	}
+	if (archive == 0 || archive == d) {
+		std::string msg = path_str;
+		if (msg=="") {
+			msg = "human-readable path unavailable";
+		}
+		msg = "path not found (" + msg + ")" + id.str() + "\n";
+		SIMDATA_LOG(LOG_ARCHIVE, LOG_ERROR, "DataManager::findArchive() : " << msg);
+		throw IndexError(msg.c_str());
+	}
+	return archive;
 }
 
 NAMESPACE_SIMDATA_END

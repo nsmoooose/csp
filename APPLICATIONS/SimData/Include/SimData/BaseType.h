@@ -76,9 +76,14 @@ public:
 	virtual void convertXML();
 	
 	/**
-	 * Return strig representation of type.
+	 * Return a string representation of the instance.
 	 */
 	virtual std::string asString() const;
+
+	/**
+	 * Return a string representation of the type.
+	 */
+	virtual std::string typeString() const;
 };
 
 

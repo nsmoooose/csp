@@ -43,6 +43,7 @@ NAMESPACE_SIMDATA
 
 class DataArchive;
 class LinkBase;
+class InterfaceProxy;
 
 
 /**
@@ -70,7 +71,7 @@ public:
 	 * @path_str the path identifier string.
 	 * @returns a smart-pointer to the new object.
 	 */
-	const LinkBase getObject(const char* path_str);
+	const LinkBase getObject(std::string const &path_str);
 
 	/**
 	 * Create a new object from a Path instance.
@@ -79,7 +80,7 @@ public:
 	 * @path_str the path identifier string (if available).  This is
 	 *           only used for error logging.
 	 */
-	const LinkBase getObject(Path const& path, const char* path_str=0);
+	const LinkBase getObject(Path const& path, std::string const &path_str="");
 
 	/**
 	 * Add a new data archive to the manager.
@@ -144,7 +145,27 @@ public:
 	 */
 	void cleanStatic();
 
+	/**
+	 * Return the interface proxy corresponding to the specified
+	 * object in the archive.
+	 */
+	InterfaceProxy *getObjectInterface(ObjectID const &id) const;
+
+	/**
+	 * Return the interface proxy corresponding to the specified
+	 * object in the archive.
+	 */
+	InterfaceProxy *getObjectInterface(std::string const &path) const;
+
+
 private:
+	/**
+	 * Find the archive that holds the specified object.
+	 *
+	 * Throws an exception if the object isn't found.
+	 */
+	DataArchive *findArchive(ObjectID const &id, std::string const &path_str, DataArchive const *d) const;
+
 	/**
 	 * Create a new object from a Path instance.
 	 *
@@ -158,7 +179,18 @@ private:
 	 *           only used for error logging.
 	 * @d the data archive that is requesting the object.
 	 */
-	const LinkBase getObject(Path const& path, const char* path_str, DataArchive* d);
+	const LinkBase getObject(Path const& path, std::string const &path_str, DataArchive const *d) const;
+
+	/**
+	 * Return the interface proxy corresponding to the specified
+	 * object in the archive.
+	 *
+	 * For internal use by the DataArchive class.  When a particular
+	 * DataArchive class fails to find an object, it asks the associated
+	 * Manager to create the object.  The last parameter is used to
+	 * prevent unwanted recursion if an object isn't found.
+	 */
+	InterfaceProxy *getObjectInterface(ObjectID const &id, std::string const &path_str, DataArchive const *d) const;
 	
 	std::vector<DataArchive*> _archives;
 	hasht_map _archive_map;

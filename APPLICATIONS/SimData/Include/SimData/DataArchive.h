@@ -200,7 +200,7 @@ public:
 	 * @param read nonzero for read mode.
 	 * @param chain this is for internal use only.
 	 */
-	DataArchive(const char*fn, int read, bool chain=true);
+	DataArchive(std::string const &fn, int read, bool chain=true);
 
 	/**
 	 * Close the data archive and cleanup.
@@ -213,7 +213,7 @@ public:
 	 * @param object the object to add.
 	 * @param path the path string of the object
 	 */
-	void addObject(Object &object, const char* path);
+	void addObject(Object &object, std::string const & path);
 
 	/**
 	 * Write the entry table and close the data archive.
@@ -259,7 +259,7 @@ public:
 	 * @path_str the path identifier string.
 	 * @returns a smart-pointer to the new object.
 	 */
-	const LinkBase getObject(const char* path_str);
+	const LinkBase getObject(std::string const &path_str);
 
 	/**
 	 * Create a new object from a Path instance.
@@ -268,7 +268,7 @@ public:
 	 * @path_str the path identifier string (if available).  This is
 	 *           only used for error logging.
 	 */
-	const LinkBase getObject(const Path& path, const char* path_str=0);
+	const LinkBase getObject(const Path& path, std::string const &path_str="");
 
 	/**
 	 * Get the full path of the archive file.
@@ -341,8 +341,17 @@ public:
 	 */
 	void cleanStatic();
 
-//	InterfaceProxy *getObjectInterface(ObjectID const &id) const;
-//	InterfaceProxy *getObjectInterface(std::string const &path) const;
+	/**
+	 * Return the interface proxy corresponding to the specified
+	 * object in the archive.
+	 */
+	InterfaceProxy *getObjectInterface(ObjectID const &id, std::string const &path="") const;
+
+	/**
+	 * Return the interface proxy corresponding to the specified
+	 * object in the archive.
+	 */
+	InterfaceProxy *getObjectInterface(std::string const &path) const;
 
 
 	// protected methods made public for Python access, don't use!
@@ -360,7 +369,7 @@ protected:
 	 * @param hash the class hash identifier
 	 * @param path the path string of the object
 	 */
-	void _addEntry(int offset, int length, hasht hash, const char* path);
+	void _addEntry(int offset, int length, hasht hash, std::string const &path);
 	
 	/**
 	Object* getObject(const Object &a, const char* path);
@@ -375,7 +384,7 @@ protected:
 	 * @param path_str the path identifier string
 	 * @param key the object identifier hash (path hash)
 	 */
-	void _addStatic(Object* ptr, const char* path_str, hasht key=0);
+	void _addStatic(Object* ptr, std::string const &path_str, hasht key=0);
 
 	/**
 	 * Get an object from the static object cache.
@@ -393,13 +402,22 @@ protected:
 	Object* _createObject(hasht classhash);
 
 	/**
-	 * Find the table entry corresponding to a give object path.
+	 * Find the table entry corresponding to a given object path.
 	 *
 	 * @param path the path to lookup
 	 * @param path_str the path string, if available (only used for
 	 *                 error logging).
 	 */
-	const TableEntry* _lookupPath(Path const& path, const char* path_str=0) const;
+	const TableEntry* _lookupPath(Path const& path, std::string const &path_str="") const;
+
+	/**
+	 * Find the table entry corresponding to a given object.
+	 *
+	 * @param path the object id to lookup
+	 * @param path_str the path string, if available (only used for
+	 *                 error logging).
+	 */
+	const TableEntry* _lookupPath(ObjectID const &id, std::string const &path_str="") const;
 
 private:
 	void setManager(DataManager *m) { manager = m; }

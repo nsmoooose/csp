@@ -409,6 +409,11 @@ public:
 	virtual std::string asString() const {
 		return formatString("%Y/%m/%d");
 	}
+
+	/**
+	 * Return a string representation of the type.
+	 */
+	virtual std::string typeString() const { return "type::Date"; }
 	
 private:
 	static const day_t days_in_months[2][13];
@@ -631,6 +636,11 @@ public:
 		return formatString("%H:%M:%Sz");
 	}
 
+	/**
+	 * Return a string representation of the type.
+	 */
+	virtual std::string typeString() const { return "type::Zulu"; }
+
 private:
 	time_t m_time;
 	int m_tz;
@@ -680,6 +690,11 @@ public:
 	virtual std::string asString() const {
 		return formatString("%Y/%m/%d %H:%M:%Sz");
 	}
+
+	/**
+	 * Return a string representation of the type.
+	 */
+	virtual std::string typeString() const { return "type::DateZulu"; }
 	
 	/**
 	 * Increment the current time, with date rollover.
@@ -758,7 +773,7 @@ public:
 		setReferenceTime(getTime());
 	}
 		
-	SimDate(const SimDate &d): DateZulu(d) {
+	SimDate(const SimDate &d): DateZulu(d), BaseType(d) {
 		paused = false;
 		last_update = get_realtime();
 		setReferenceTime(getTime());
@@ -771,6 +786,11 @@ public:
 	virtual std::string asString() const {
 		return formatString("%Y/%m/%d %H:%M:%Sz");
 	}
+
+	/**
+	 * Return a string representation of the type.
+	 */
+	virtual std::string typeString() const { return "type::SimDate"; }
 	
 	/* The difference between two times.  Both times
 	 * should be in the range [0, 86400).

@@ -73,9 +73,9 @@ NAMESPACE_SIMDATA
 
 struct HashT;
 
-extern SIMDATA_EXPORT u4 newhash4_cstring(const char*);
-extern HashT newhasht_cstring(const char*);
-//extern u8 newhash8_cstring(const char*);
+extern SIMDATA_EXPORT u4 newhash4_cstring(std::string const &);
+extern HashT newhasht_cstring(std::string const &);
+//extern u8 newhash8_cstring(std::string const &);
 
 //typedef  u8       hasht;
 struct SIMDATA_EXPORT HashT {
@@ -93,7 +93,7 @@ struct SIMDATA_EXPORT HashT {
 		a = x.a; b = x.b;
 	}
 	HashT(std::string const &x) {
-		*this = newhasht_cstring(x.c_str());
+		*this = newhasht_cstring(x);
 	}
 	bool operator ==(guint32 x) const {
 		return (b == 0 && a == x);
@@ -108,7 +108,7 @@ struct SIMDATA_EXPORT HashT {
 		return (b != x.b || a != x.a);
 	}
 	HashT & operator =(std::string &x) {
-		*this = newhasht_cstring(x.c_str());
+		*this = newhasht_cstring(x);
 		return *this;
 	}
 	HashT & operator =(guint32 x) {

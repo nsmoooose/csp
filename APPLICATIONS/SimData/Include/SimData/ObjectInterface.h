@@ -90,9 +90,26 @@ public:
 	virtual void unpack(Object *, UnPacker &p) {
 		assert(0);
 	}
+	std::string getType() const { return type; }
+	void setType(BaseType &x) {
+		type = x.typeString(); //XXX
+	}
+	void setType(double &x) { type = "builtin::double"; }
+	void setType(float &x) { type = "builtin::float"; }
+	void setType(unsigned int &x) { type = "builtin::uint"; }
+	void setType(int &x) { type = "builtin::int"; }
+	void setType(unsigned char &x) { type = "builtin::uint8"; }
+	void setType(char &x) { type = "builtin::int8"; }
+	void setType(unsigned short &x) { type = "builtin::uint16"; }
+	void setType(short &x) { type = "builtin::int16"; }
+	void setType(bool &x) { type = "builtin::bool"; }
+	void setType(std::string const &x) { type = "builtin::string"; }
+	virtual unsigned int getMask() const { return 0; }
 protected:
-	MemberAccessorBase() {}
+	MemberAccessorBase(): type("none") {}
 	std::string name;
+	std::string help;
+	std::string type;
 	bool required;
 };
 
@@ -108,6 +125,10 @@ public:
 		name = name_;
 		mask = mask_;
 		required = required_;
+		{
+			T prototype;
+			setType(prototype);
+		}
 	}
 	virtual TypeAdapter const get(Object *o) const throw(TypeMismatch) {
 		C * object = dynamic_cast<C *>(o);
@@ -141,6 +162,7 @@ public:
 		C * object = dynamic_cast<C *>(o);
 		p.unpack(object->*member);
 	}
+	virtual unsigned int getMask() const { return static_cast<unsigned int>(mask); }
 };
 
 
@@ -159,6 +181,10 @@ public:
 		member = pm;
 		name = name_;
 		required = required_;
+		{
+			T prototype;
+			setType(prototype);
+		}
 	}
 	virtual TypeAdapter const get(Object *o) const throw(TypeMismatch) {
 		C * object = dynamic_cast<C *>(o);
@@ -202,6 +228,11 @@ public:
 		member = pm;
 		name = name_;
 		required = required_;
+		{
+			T prototype;
+			setType(prototype);
+			type = "vector::" + type;
+		}
 	}
 	virtual void push_back(Object *o, TypeAdapter const &v) throw(TypeMismatch) {
 		C * object = dynamic_cast<C *>(o);
@@ -251,6 +282,11 @@ public:
 		member = pm;
 		name = name_;
 		required = required_;
+		{
+			T prototype;
+			setType(prototype);
+			type = "vector::" + type;
+		}
 	}
 	virtual void push_back(Object *o, TypeAdapter const &v) throw(TypeMismatch) {
 		C * object = dynamic_cast<C *>(o);
@@ -471,6 +507,7 @@ public:
 	 * interface.
 	 */
 	virtual bool variableExists(const char *name) const = 0;
+
 	/**
 	 * Test if a given variable is tagged as 'required'.  
 	 *
@@ -478,6 +515,13 @@ public:
 	 * 'required' or does not exist in the interface.
 	 */
 	virtual bool variableRequired(const char *name) const = 0;
+
+	/**
+	 * Get a string identifier string for a variable.
+	 *
+	 * @return Returns the type identifier string.
+	 */
+	virtual std::string variableType(const char *name) const = 0;
 
 	/**
 	 * Get the accessor associated with the specified memeber variable.
@@ -495,6 +539,7 @@ public:
 	 * Get the names of required variables defined in the interface.
 	 */
 	virtual std::vector<std::string> getRequiredNames() const = 0;
+
 };
 
 template <class C>
@@ -502,6 +547,11 @@ class ObjectInterface: public ObjectInterfaceBase {
 	
 	typedef ObjectInterface<C> Self;
 	MemberAccessorBase::map table;
+
+protected:
+	void __not_found(std::string const &name) const throw (InterfaceError) {
+		throw InterfaceError("Variable '"+name+"' not found in interface to class '" + C::_getClassName()+"'");
+	}
 
 public:
 	ObjectInterface() {}
@@ -515,7 +565,7 @@ public:
 	 */
 	template<typename T>
 	Self& def(const char *name, T C::*pm, bool required) throw(InterfaceError) {
-		if (variableExists(name)) throw InterfaceError("interface variable \"" + std::string(name) + "\" multiply defined.");
+		if (variableExists(name)) throw InterfaceError("interface variable \"" + std::string(name) + "\" multiply defined in class '" + C::_getClassName() + "'.");
 #ifdef __PTS_SIM__
 		table[name] = new typename PTS::SELECT_ACCESSOR<C, T>::ACCESSOR(pm, name, required);
 #else
@@ -525,7 +575,7 @@ public:
 	}
 	template<typename T>
 	Self& def(const char *name, T C::*pm, int mask, bool required) throw(InterfaceError) {
-		if (variableExists(name)) throw InterfaceError("interface variable \"" + std::string(name) + "\" multiply defined.");
+		if (variableExists(name)) throw InterfaceError("interface variable \"" + std::string(name) + "\" multiply defined in class '" + C::_getClassName() + "'.");
 #ifdef __PTS_SIM__
 		table[name] = new typename PTS::SELECT_ACCESSOR<C, T>::ACCESSOR(pm, name, required);
 #else
@@ -544,6 +594,12 @@ public:
 		MemberAccessorBase::map::const_iterator idx = table.find(name);
 		if (idx == table.end()) return false;
 		return idx->second->isRequired();
+	}
+
+	virtual std::string variableType(const char *name) const {
+		MemberAccessorBase::map::const_iterator idx = table.find(name);
+		if (idx == table.end()) __not_found(name);
+		return idx->second->getType();
 	}
 
 	virtual MemberAccessorBase *getAccessor(const char *name) {

@@ -168,14 +168,14 @@ public:
 	 *
 	 * The WGS84 reference ellipsoid will be set implicity.
 	 */
-	GeoPos(Vector3 const &v): _ref(&GeoRef::WGS84) { *this = v; }
+	GeoPos(Vector3 const &v): Vector3(), _ref(&GeoRef::WGS84) { *this = v; }
 
 	/**
 	 * Copy constructor
 	 *
 	 * The new GeoPos will use the same reference ellipsoid as the source.
 	 */
-	GeoPos(GeoPos const &g): _ref(&GeoRef::WGS84) { *this = g; }
+	GeoPos(GeoPos const &g): Vector3(), _ref(&GeoRef::WGS84) { *this = g; }
 
 	/**
 	 * Copy operator.
@@ -375,6 +375,11 @@ public:
 	 * String representation.
 	 */
 	virtual std::string asString() const { return Vector3::asString(); }
+
+	/**
+	 * Return a string representation of the type.
+	 */
+	virtual std::string typeString() const { return "type::GeoPos"; }
 	
 	/**
 	 * Set the current position from XML character data.
@@ -633,6 +638,11 @@ public:
 	 * String representation.
 	 */
 	virtual std::string asString() const;
+
+	/**
+	 * Return a string representation of the type.
+	 */
+	virtual std::string typeString() const { return "type::LLA"; }
 	
 	/**
 	 * Set the current position from XML character data.
@@ -764,6 +774,11 @@ public:
 	 * String representation.
 	 */
 	virtual std::string asString() const;
+
+	/**
+	 * Return a string representation of the type.
+	 */
+	virtual std::string typeString() const { return "type::UTM"; }
 	
 	/**
 	 * Set the current position from XML character data.
@@ -828,6 +843,11 @@ public:
 	 * Convert from UTM to ECEF (using WGS84)
 	 */
 	ECEF const &operator = (LLA const &);
+
+	/**
+	 * Return a string representation of the type.
+	 */
+	virtual std::string typeString() const { return "type::ECEF"; }
 
 	virtual ~ECEF() {}
 };

@@ -118,7 +118,7 @@ class SIMDATA_EXPORT Object: public Referenced, public BaseType {
 
 private:
 	// Objects should never be copied
-	Object(Object const &) { assert(0); }
+	Object(Object const &o): Referenced(o), BaseType(o) { assert(0); }
 	Object const &operator=(Object const &) { assert(0); return *this; }
 
 	void _setPath(hasht);
@@ -178,6 +178,11 @@ public:
 	 * Get a string representation of the object.
 	 */
 	virtual std::string asString() const;
+
+	/**
+	 * Return a string representation of the type.
+	 */
+	virtual std::string typeString() const { return getClassName(); }
 
 	/**
 	 * Get the path hash from which the object was instantiated.

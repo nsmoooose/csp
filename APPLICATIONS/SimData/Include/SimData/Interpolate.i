@@ -36,7 +36,11 @@ typedef std::vector vector;
 %include "SimData/filemap.i"
 %include "SimData/Namespace.h"
 
+%import "SimData/Enum.h"
+SIMDATA_ENUM_WRAP(enum_InterpolatedData_F_Method, SIMDATA(InterpolatedData<float>::Method));
+
 %rename(__repr__) SIMDATA(Table)::asString() const;
 %rename(__repr__) SIMDATA(Curve)::asString() const;
 
 %include "SimData/Interpolate.h"
+

@@ -116,7 +116,7 @@ Curve::Curve() {
 Curve::~Curve() {
 }
 
-Curve::Curve(const Curve &c) {
+Curve::Curve(const Curve &c): InterpolatedData<float>(c) {
 	*this = c;
 }
 
@@ -237,7 +237,7 @@ Table::Table() {
 Table::~Table() {
 }
 
-Table::Table(const Table &t) {
+Table::Table(const Table &t): InterpolatedData<float>(t) {
 	*this = t;
 }
 

@@ -49,9 +49,9 @@ const Matrix3 Matrix3::IDENTITY(1,0,0,0,1,0,0,0,1);
         
 
 Matrix3::Matrix3(const Vector3& col0, const Vector3& col1, const Vector3& col2) {
-	set(col0.x(), col1.x(), col1.x(),
-	    col0.y(), col1.y(), col1.y(),
-	    col0.z(), col1.z(), col1.z());
+	set(col0.x(), col1.x(), col2.x(),
+	    col0.y(), col1.y(), col2.y(),
+	    col0.z(), col1.z(), col2.z());
 }
 
 bool Matrix3::isNaN() const { 

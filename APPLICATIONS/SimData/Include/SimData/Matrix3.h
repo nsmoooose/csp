@@ -54,16 +54,17 @@ class Quat;
 class SIMDATA_EXPORT Matrix3: public BaseType
 {
 public:
-	std::string asString() const;
-	void pack(Packer &p) const;
-	void unpack(UnPacker &p);
-	void parseXML(const char* cdata);
+	virtual std::string asString() const;
+	virtual std::string typeString() const { return "Matrix3"; }
+	virtual void pack(Packer &p) const;
+	virtual void unpack(UnPacker &p);
+	virtual void parseXML(const char* cdata);
 
 	static const Matrix3 ZERO;
 	static const Matrix3 IDENTITY;
 
         Matrix3() { } // for speed, do not initialize
-        Matrix3(const Matrix3& other) { set(other); }
+        Matrix3(const Matrix3& other): BaseType(other) { set(other); }
         explicit Matrix3(double const * const def) { set(def); }
         Matrix3(double a00, double a01, double a02,
                 double a10, double a11, double a12,

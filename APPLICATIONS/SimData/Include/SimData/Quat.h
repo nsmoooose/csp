@@ -86,7 +86,12 @@ public:
 	/**
 	 * Standard representation string.
 	 */
-	std::string asString() const;
+	virtual std::string asString() const;
+
+	/**
+	 * Return a string representation of the type.
+	 */
+	virtual std::string typeString() const { return "type::Quat"; }
 
 	/**
 	 * Construct a new quaternion.

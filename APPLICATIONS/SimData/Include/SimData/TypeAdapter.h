@@ -55,7 +55,6 @@ class Table;
 class LinkBase;
 class External;
 class Key;
-class Enum;
 class SimDate;
 class ListBase;
 class GeoPos;
@@ -170,7 +169,7 @@ public:
 	void getBaseTypeAs(T * &t) const {
 		BaseCheck();
 		T const *cp = dynamic_cast<T const *>(var.o);
-		TypeCheck(cp!=NULL, "dynamic cast of BaseType* failed");
+		TypeCheck(cp!=NULL, "dynamic cast of BaseType* failed in TypeAdapter::getBaseTypeAs");
 		t = const_cast<T *>(cp);
 	}
 
@@ -178,7 +177,7 @@ public:
 	void setBase(T & x) const {
 		BaseCheck();
 		T const *p = dynamic_cast<T const *>(var.o);
-		TypeCheck(p!=NULL, "dynamic cast of BaseType* failed");
+		TypeCheck(p!=NULL, "dynamic cast of BaseType* failed in TypeAdapter::setBase");
 		T *nc = const_cast<T *>(p);
 		x = *nc;
 	}
@@ -197,7 +196,7 @@ public:
 			return;
 		}
 		ECEF const *ecef = dynamic_cast<ECEF const *>(var.o);
-		TypeCheck(ecef!=NULL, "dynamic cast of BaseType* failed");
+		TypeCheck(ecef!=NULL, "dynamic cast of BaseType* failed in TypeAdapter::setCoordinate");
 		x = *ecef;
 	}
 
@@ -238,7 +237,7 @@ public:
 	void set(double &x) const { DoubleCheck(); x = static_cast<double>(var.d); }
 	void set(unsigned int &x) const { IntCheck(); x = static_cast<unsigned int>(var.i); }
 	void set(std::string &x) const { StringCheck(); x = s; }
-	void set(Enum &x) const { if (isType(STRING)) x = s; else setBase(x); }
+	void set(EnumLink &x) const { if (isType(STRING)) x = s; else setBase(x); }
 	// slightly fancier handling required for path pointers
 	void set(LinkBase &x) const {
 		BaseCheck();

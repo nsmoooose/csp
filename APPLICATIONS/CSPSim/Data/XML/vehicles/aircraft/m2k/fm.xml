@@ -1,0 +1,94 @@
+<?xml version="1.0" standalone="no"?>
+
+<!-- 
+
+	Mirage 2000 aerodynamics model
+
+	many parameters are estimates. 
+	
+-->
+
+<Object class="AeroDynamics">
+
+	<!-- Wing geometry -->
+	<Real name="wing_span">9.13</Real>
+	<Real name="wing_chord">4.5</Real>
+	<Real name="wing_area">41.0</Real>
+
+	<!-- Control surfaces min/max angles -->
+	<Real name="de_max">25.0</Real>
+	<Real name="de_min">-16.0</Real>
+	<Real name="da_max">+17.5</Real>
+	<Real name="da_min">-17.5</Real>
+	<Real name="dr_max">+20.0</Real>
+	<Real name="dr_min">-20.0</Real>
+
+	<!-- A=0.9 10^4 kg m^2       A -F -E -->
+	<!-- C=6.0 10^4 kg m^2  I = -F  B -D -->
+	<!-- B=5.4 10^4 Kg m^2      -E -D  C -->
+	<!-- E=1.8 10^3 kg m^2 -->
+
+	<!-- Mass/Inertial properties -->
+	<!-- max mass -->
+	<!-- <Real name="Mass">17500.0</Real> -->
+	<!-- interceptor mass with a central tank
+	<Real name="mass">12000.0</Real> -->
+	<!-- interceptor mass -->
+	<!-- <Real name="Mass">7500.0</Real> -->
+
+	<!--
+	<Matrix name="inertia">
+		20354.0        0.0    6785.0
+		    0.0   135691.0       0.0
+	         6785.0        0.0  135691.0
+	</Matrix> -->
+
+	<Real name="g_min">-3.0</Real>
+	<Real name="g_max">9.0</Real>
+
+	<!--
+	<Real name="thrust_max">9700.0</Real> -->
+
+	<!-- Drag Parameters cx0 = 2 *">0.074 / ( rc^0.2 ) ; Cx=Cx0+KiCz^2 Ki(trainee induite) 1/pi*AR -->
+	<Real name="cd0">0.02</Real>
+	<Real name="cd_a">0.3</Real>
+	<Real name="cd_de">0.02</Real>
+
+	<!-- Lift Parameters -->
+	<Real name="stall_aoa">31.0</Real>
+	<Real name="cl0">0.14</Real>
+	<Real name="cl_a">4.2</Real>
+	<Real name="cl_adot">1.29</Real>
+	<Real name="cl_q">1.5</Real>
+	<Real name="cl_de">0.4</Real>
+
+	<!-- Pitch Moment Parameters -->
+	<Real name="cm0">-0.02</Real>
+	<Real name="cm_a">-0.02</Real>
+	<Real name="cm_adot">-1.73</Real>
+	<Real name="cm_q">-3.6</Real>
+	<Real name="cm_de">0.3</Real>
+
+	<!-- Side Force Parameters -->
+	<Real name="cy_beta">-0.29</Real>
+	<Real name="cy_p">0.11</Real>
+	<Real name="cy_r">0.0</Real>
+	<Real name="cy_da">0.0</Real>
+	<Real name="cy_dr">-0.01</Real>
+
+	<!-- Roll moment parameters -->
+	<Real name="ci_beta">-0.1</Real>
+	<Real name="ci_p">-0.3</Real>
+	<Real name="ci_r">0.3</Real>
+	<Real name="ci_da">0.2</Real>
+	<Real name="ci_dr">-0.03</Real>
+
+	<!-- Yaw Moment Parameters -->
+	<Real name="cn_beta">0.3</Real>
+	<Real name="cn_p">0.03</Real>
+	<Real name="cn_r">-0.04</Real>
+	<Real name="cn_da">0.03</Real>
+	<Real name="cn_dr">0.08</Real>
+
+</Object>
+

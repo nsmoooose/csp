@@ -1,0 +1,13 @@
+<?xml version="1.0" standalone="no"?>
+
+<Object class="TankObject">
+	<Int name="army">5</Int>
+	<Path name="model">t62.model</Path>
+	<Real name="mass">41500</Real>
+	<Matrix name="inertia">
+		172000.0       0.0       0.0
+		     0.0   63080.0       0.0
+		     0.0       0.0  195000.0
+	</Matrix>
+</Object>
+

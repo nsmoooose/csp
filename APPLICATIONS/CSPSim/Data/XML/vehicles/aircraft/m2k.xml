@@ -1,0 +1,33 @@
+<?xml version="1.0" standalone="no"?>
+
+<!-- 
+
+	Mirage 2000
+
+-->
+
+<Object class="AircraftObject">
+
+	<Path name="model">m2k.model</Path>
+	<Path name="flight_model">m2k.fm</Path>
+	<Bool name="complex_physics">true</Bool>
+
+	<Real name="aileron_min">-25.0</Real>
+	<Real name="aileron_max">25.0</Real>
+	<Real name="elevator_min">-25.0</Real>
+	<Real name="elevator_max">25.0</Real>
+	<Real name="rudder_min">-25.0</Real>
+	<Real name="rudder_max">25.0</Real>
+
+	<Int name="army">0</Int>
+	
+	<!-- Mass/Inertial properties -->
+	<Real name="mass">7500.0</Real>
+	<Matrix name="inertia">
+	       135691.0        0.0       0.0
+		    0.0    20354.0    6785.0
+	            0.0     6785.0  135691.0
+	</Matrix>
+
+</Object>
+

@@ -1,6 +1,15 @@
  Version 0.3.3 (in progress)
 ===========================
 
+2003-07-21: onsight
+            Added Tools/Terrain directory for terrain tools used in
+	    processing DEM data to ChunkLod and other formats.
+
+	    Added Tools/Terrain/dem2dat which has a utility for
+	    convertind DEM to an intermediate binary format.  This
+	    format is similar to .bt but preserves additional
+	    metadata.
+
 2003-07-19: delta
 	    Commented out setTextureAttributeAndModes in SCreenInfo class.
 	    Reenabled TEXDOME with those lines commented out.

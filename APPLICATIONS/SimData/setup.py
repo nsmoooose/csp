@@ -296,7 +296,6 @@ headers = [
     "TypeAdapter.h",
     "Types.h",
     "Vector3.h",
-    "Vector3.inl",
     "Version.h",
 ]
 
@@ -320,7 +319,6 @@ interfaces = [
 	"List.i",
 	"Log.i",
 	"LUT.i",
-	"Math.i",
 	"Matrix3.i",
 	"Noise.i",
 	"Object.i",

@@ -328,6 +328,15 @@ void NetworkInterface::processOutgoing(double timeout) {
 }
 
 
+bool NetworkInterface::waitPending(double timeout) {
+	for (int queue_idx = 0; queue_idx <= 3; ++queue_idx) {
+		if (!m_RxQueues[queue_idx]->isEmpty()) return true;
+		if (!m_TxQueues[queue_idx]->isEmpty()) return true;
+	}
+	return (m_Socket->isPendingReceive(static_cast<int>(timeout * 1000)));
+}
+
+
 static double DEBUG_recvtime;
 
 int NetworkInterface::receivePackets(double timeout) {
@@ -350,7 +359,7 @@ int NetworkInterface::receivePackets(double timeout) {
 	watch.start();
 
 	while (true) {
-		
+
 		if (!m_Socket->isPendingReceive(0)) {
 			watch.calibrate();
 			break;

@@ -138,6 +138,12 @@ public:
 	void processIncoming(double timeout);
 	void processOutgoing(double timeout);
 
+	/** Wait for incoming packets if all incoming and outgoing queues are empty.
+	 *  @param timeout the maximum time to wait, in seconds.
+	 *  @return false if the timeout expired (ie. no pending incoming packets and all queues empty).
+	 */
+	bool waitPending(double timeout);
+
 	void addPacketHandler(PacketHandler::Ref handler);
 	void removePacketHandler(PacketHandler::Ref handler);
 

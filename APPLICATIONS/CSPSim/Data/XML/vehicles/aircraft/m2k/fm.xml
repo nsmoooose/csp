@@ -48,7 +48,7 @@
 	<Float name="cm_a">-1.33</Float>
 	<Float name="cm_adot">-3.61</Float>
 	<Float name="cm_q">-24.58</Float><!-- <0 -->
-	<Float name="cm_de">1.75</Float>
+	<Float name="cm_de">1.25</Float>
 
 	<!-- Side Force Parameters -->
 	<Float name="cy_beta">-0.29</Float>
@@ -61,7 +61,8 @@
 	<Float name="ci_beta">-0.17</Float>
 	<Float name="ci_p">-1.86</Float><!-- <0 -->
 	<Float name="ci_r">0.33</Float>
-	<Float name="ci_da">0.29</Float>
+	<!--Float name="ci_da">0.29</Float-->
+	<Float name="ci_da">1.46</Float>
 	<Float name="ci_dr">-0.03</Float>
 
 	<!-- Yaw Moment Parameters -->

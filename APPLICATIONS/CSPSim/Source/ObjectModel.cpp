@@ -31,6 +31,8 @@
 #include <osgDB/Registry>
 #include <osgDB/ReadFile>
 #include <osgUtil/SmoothingVisitor>
+#include <osgUtil/DisplayListVisitor>
+#include <osgUtil/Optimizer>
 #include <osg/NodeVisitor>
 #include <osg/Geometry>
 #include <osg/Texture>
@@ -93,7 +95,6 @@ std::string g_ModelPath = "";
 
 
 ObjectModel::ObjectModel(): simdata::Object() {
-	m_Rotation = simdata::Matrix3::IDENTITY;
 	m_Axis0 = simdata::Vector3::XAXIS;
 	m_Axis1 = simdata::Vector3::ZAXIS;
 	m_Offset = simdata::Vector3::ZERO;
@@ -109,7 +110,6 @@ ObjectModel::~ObjectModel() {
 void ObjectModel::pack(simdata::Packer& p) const {
 	Object::pack(p);
 	p.pack(m_ModelPath);
-	p.pack(m_Rotation);
 	p.pack(m_Axis0);
 	p.pack(m_Axis1);
 	p.pack(m_ViewPoint);
@@ -123,7 +123,6 @@ void ObjectModel::pack(simdata::Packer& p) const {
 void ObjectModel::unpack(simdata::UnPacker& p) {
 	Object::unpack(p);
 	p.unpack(m_ModelPath);
-	p.unpack(m_Rotation);
 	p.unpack(m_Axis0);
 	p.unpack(m_Axis1);
 	p.unpack(m_ViewPoint);
@@ -206,6 +205,7 @@ void ObjectModel::loadModel() {
 	m_Node = pNode;
 	m_Node->setName(m_ModelPath.getSource());
 	
+	// XXX should do this after scaling, no?
 	osg::BoundingSphere s = m_Node->getBound();
 	m_BoundingSphereRadius = s.radius();
     
@@ -234,6 +234,10 @@ void ObjectModel::loadModel() {
 	);
 	m_Transform->setMatrix(model_orientation);
 
+	if (m_Scale != 1.0) {
+		m_Transform->getOrCreateStateSet()->setMode(GL_NORMALIZE, osg::StateAttribute::ON);
+	}
+
 	//osg::StateSet * stateSet = m_rpNode->getStateSet();
 	//stateSet->setGlobalDefaults();
 	//m_rpNode->setStateSet(stateSet);
@@ -256,6 +260,15 @@ void ObjectModel::loadModel() {
 
 	// create visible markers for each contact point
 	addContactMarkers();
+
+	osgUtil::Optimizer opt;
+	opt.optimize(m_Transform.get());
+
+	osg::ref_ptr<osg::State> state = new osg::State;
+	osgUtil::DisplayListVisitor dlv(osgUtil::DisplayListVisitor::COMPILE_DISPLAY_LISTS);
+	dlv.setState(state.get());
+	dlv.setNodeMaskOverride(0xffffffff);
+	m_Transform->accept(dlv);
 }
 
 void ObjectModel::addContactMarkers() {

@@ -47,6 +47,8 @@
  *
  * One ObjectModel instance is created for each type of model, and shared by
  * many SceneModel instances.
+ * 
+ * TODO: add LOD support here.
  *
  */
 class ObjectModel: public simdata::Object
@@ -54,13 +56,12 @@ class ObjectModel: public simdata::Object
 public:
 	typedef std::vector<simdata::Vector3> ContactList;
 
-	SIMDATA_OBJECT(ObjectModel, 2, 0);
+	SIMDATA_OBJECT(ObjectModel, 3, 0);
 	
 	BEGIN_SIMDATA_XML_INTERFACE(ObjectModel)
 		SIMDATA_XML("model_path", ObjectModel::m_ModelPath, true)
-		SIMDATA_XML("rotation", ObjectModel::m_Rotation, true)
-		SIMDATA_XML("axis_0", ObjectModel::m_Axis0, true)
-		SIMDATA_XML("axis_1", ObjectModel::m_Axis1, true)
+		SIMDATA_XML("axis_0", ObjectModel::m_Axis0, false)
+		SIMDATA_XML("axis_1", ObjectModel::m_Axis1, false)
 		SIMDATA_XML("view_point", ObjectModel::m_ViewPoint, false)
 		SIMDATA_XML("offset", ObjectModel::m_Offset, false)
 		SIMDATA_XML("scale", ObjectModel::m_Scale, false)
@@ -76,7 +77,6 @@ public:
 	osg::ref_ptr<osg::Node> getRawModel() { return m_Node.get(); }
 	std::string getModelPath() const { return m_ModelPath.getSource(); }
 
-	const simdata::Matrix3 &getRotation() const { return m_Rotation; }
 	const simdata::Vector3 &getAxis0() const { return m_Axis0; }
 	const simdata::Vector3 &getAxis1() const { return m_Axis1; }
 	const simdata::Vector3 &getViewPoint() const { return m_ViewPoint; }
@@ -89,7 +89,6 @@ public:
 protected:
 
 	simdata::External m_ModelPath;
-	simdata::Matrix3 m_Rotation;
 	simdata::Vector3 m_Axis0, m_Axis1;
 	simdata::Vector3 m_Offset;
 	simdata::Vector3 m_ViewPoint;

@@ -44,7 +44,9 @@
 #include "VirtualBattlefield.h"
 #include "VirtualScene.h"
 #include "TerrainObject.h"
+#include "Theater.h"
 #include "ConsoleCommands.h"
+#include "Theater.h"      
 
 #include <SimData/Types.h>
 #include <SimData/Exception.h>
@@ -82,9 +84,6 @@
 #endif
 
 
-// very ugly.... please fix ;-)
-double g_LatticeXDist = 64000.0;
-double g_LatticeYDist = 64000.0;
 int g_ScreenWidth = 0;
 int g_ScreenHeight = 0;
 
@@ -133,6 +132,10 @@ CSPSim::CSPSim()
 	m_Battlefield = NULL;
 	m_Scene = NULL;
 
+	m_FrameTime = 0.05;
+	m_FrameRate = 20.0;
+	m_ElapsedTime = 0.0;
+
 	m_Shell = new PyShell();
 
 	int level = g_Config.getInt("Debug", "LoggingLevel", 0, true);
@@ -151,30 +154,30 @@ CSPSim::~CSPSim()
 
 void CSPSim::setActiveObject(simdata::Ref<DynamicObject> object) {
 
+/*
 	CSP_LOG(CSP_APP, CSP_INFO, "CSPSim::setActiveObject - objectID: " << object->getObjectID() 
 		  << ", ObjectType: " << object->getObjectType() 
 		  << ", Position: " << object->getGlobalPosition());
+*/
 
 	if (m_ActiveObject.valid()) {
-		m_ActiveObject->setHuman(false);
+		m_Battlefield->setHuman(m_ActiveObject, false);
+		//m_ActiveObject->setHuman(false);
 	}
 	m_ActiveObject = object;
+	if (m_GameScreen) {
+		m_GameScreen->setActiveObject(m_ActiveObject);
+	}
 	if (m_ActiveObject.valid()) {
-		m_ActiveObject->setHuman();
-		if (m_GameScreen)
-			m_GameScreen->setActiveObject(m_ActiveObject);
+		//m_ActiveObject->setHuman(true);
+		m_Battlefield->setHuman(m_ActiveObject, true);
 		simdata::hasht classhash = m_ActiveObject->getPath();
 		printf("getting map for %s\n", classhash.str().c_str());
 		EventMapping *map = m_InterfaceMaps->getMap(classhash);
 		printf("selecting map @ %p\n", map);
 		m_Interface->setMapping(map);
-		m_Interface->bindObject(m_ActiveObject.get());
-		printf("map set, object bound.\n");
 	}
-	else {
-		CSP_LOG(CSP_APP, CSP_ERROR, "CSPSim::setActiveObject - object was not valid");
-
-	}
+	m_Interface->bindObject(m_ActiveObject.get());
 }
 
 simdata::Ref<PyShell> CSPSim::getShell() const {
@@ -249,18 +252,26 @@ void CSPSim::init()
 		m_InterfaceMaps->loadAllMaps();
 		m_Interface = new VirtualHID();
 
+		std::string theater = g_Config.getPath("Testing", "Theater", "sim:theater.balkan", true);
+		m_Theater = m_DataManager.getObject(theater.c_str());
+		assert(m_Theater.valid());
+		m_Terrain = m_Theater->getTerrain();
+		assert(m_Terrain.valid());
+		m_Terrain->activate();
+		
 		// eventually this will be set in an entirely different way...
-		m_ActiveTerrain = m_DataManager.getObject("sim:terrain.balkan");
-		m_ActiveTerrain->activate();
+		//m_ActiveTerrain = m_DataManager.getObject("sim:terrain.balkan");
+		//m_ActiveTerrain->activate();
 
 		m_Scene = new VirtualScene();
 		m_Scene->buildScene();
-		m_Scene->setTerrain(m_ActiveTerrain);
+		m_Scene->setTerrain(m_Terrain);
 
 		m_Battlefield = new VirtualBattlefield();
 		m_Battlefield->create();
-		m_Battlefield->setTerrain(m_ActiveTerrain);
+		m_Battlefield->setTerrain(m_Terrain);
 		m_Battlefield->setScene(m_Scene);
+		m_Battlefield->setTheater(m_Theater);
 
 		// get view parameters from configuration file.  ultimately there should
 		// be an in-game ui for this and probably a separate config file.
@@ -276,12 +287,15 @@ void CSPSim::init()
 		m_Scene->setFogEnd(fog_end);
 
 		// create a couple test objects
+		//simdata::Ref<ObjectModel> test = m_DataManager.getObject("sim:theater.runway_model");
+		//m_Scene->addEffectUpdater(test->getModel().get());
+
 		simdata::Ref<AircraftObject> ao = m_DataManager.getObject("sim:vehicles.aircraft.m2k");
 		assert(ao.valid());
 		ao->setGlobalPosition(483000, 499000, 91.2);
 		ao->setAttitude(0.03, 0.0, 0.0);
 		ao->setVelocity(0, 2.0, 0);
-		m_Battlefield->addObject(ao);
+		m_Battlefield->addUnit(ao);
 
 #if 0
 		static simdata::Ref<StaticObject> so = m_DataManager.getObject("sim:objects.runway");
@@ -295,7 +309,7 @@ void CSPSim::init()
 
 		// enable/disable pause at startup
 		m_Paused = false;
-	   //m_Paused = true;
+		//m_Paused = true;
 
 		// start in the aircraft
 		setActiveObject(ao);
@@ -337,20 +351,22 @@ void CSPSim::cleanup()
 
 	assert(m_Battlefield.valid());
 	assert(m_Scene.valid());
-	assert(m_ActiveTerrain.valid());
+	assert(m_Terrain.valid());
 	assert(m_GameScreen);
 	assert(m_InterfaceMaps);
-	m_ActiveObject = NULL; //setActiveObject(NULL);
-	m_ActiveTerrain->deactivate();
-	m_Battlefield->removeAllObjects();
-	m_Battlefield->cleanup();
-	m_ActiveTerrain = NULL;
-	m_Battlefield = NULL;
-	m_Scene = NULL;
+//	m_ActiveObject = NULL; 
+	setActiveObject(NULL);
 	delete m_GameScreen;
 	m_GameScreen = NULL;
 	delete m_InterfaceMaps;
 	m_InterfaceMaps = NULL;
+	m_Terrain->deactivate();
+	m_Battlefield->removeAllUnits();
+	m_Battlefield->cleanup();
+	m_Terrain = NULL;
+	m_Theater = NULL;
+	m_Battlefield = NULL;
+	m_Scene = NULL;
 	if (m_SDLJoystick) {
 		SDL_JoystickClose(m_SDLJoystick);
 		m_SDLJoystick = NULL;
@@ -453,6 +469,7 @@ void CSPSim::run()
 			}
             
 			// Swap OpenGL buffers
+#if 0
 #ifndef __CSPSIM_EXE__
 			Py_BEGIN_ALLOW_THREADS;
 			SDL_GL_SwapBuffers();
@@ -460,10 +477,12 @@ void CSPSim::run()
 #else
 			SDL_GL_SwapBuffers();
 #endif
+#endif
+			SDL_GL_SwapBuffers();
 			// remove marked objects, this should be done at the end of the main loop.
-			m_Battlefield->removeObjectsMarkedForDelete();
+			m_Battlefield->removeUnitsMarkedForDelete();
 		}
-		m_Battlefield->dumpObjectHistory();
+		//m_Battlefield->dumpObjectHistory();
 	}
    
 	catch(DemeterException * pEx) {
@@ -673,6 +692,8 @@ void fillerup(void *unused, Uint8 *stream, int len)
 
 
 void CSPSim::runConsole(PyConsole *console) {
+	// XXX the console code needs a major rewrite since upgrading to osg 0.9.4
+	return;  // XXX temporarily disabled.
 	m_Console = console;
 	if (m_Console.valid()) {
 		m_ConsoleOpen = true;

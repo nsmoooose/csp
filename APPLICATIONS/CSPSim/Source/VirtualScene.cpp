@@ -34,6 +34,7 @@
 #include <SimData/Types.h>
 #include <SimData/Math.h>
 #include <SimData/FileUtility.h>
+#include <SimData/osg.h>
 
 #include <osg/Fog>
 #include <osg/Node>
@@ -62,8 +63,6 @@
 extern int g_ScreenWidth;
 extern int g_ScreenHeight;
 
-extern double g_LatticeXDist;
-extern double g_LatticeYDist;
 
 extern osg::Node *makeBase( void );
 extern osg::Node *makeTreesPatch( float xcen, float ycen, float spacing, float width, 
@@ -82,10 +81,6 @@ const float FOG_RED = 0.4f;
 const float FOG_GREEN = 0.4f;
 const float FOG_BLUE = 0.5f;
 const float FOG_ALPHA = 1.0f;
-
-// XXX this value is no longer used
-
-const float MAX_VIEW_DISTANCE = 10000.0f;
 
 
 using simdata::Ref;
@@ -181,6 +176,15 @@ VirtualScene::VirtualScene()
 	m_ViewDistance = 30000.0;
 	m_SpinTheWorld = false;
 	m_ResetTheWorld = false;
+	// FIXME these values are tied to the demeter's terrain lattice block size.
+	// in xml, the vertex spacing is 250 m, which multiplied by 256 x 256 vectex
+	// tiles gives 64000 m.  these values cannot be adjusted independently!
+	// if we switch from demeter to osgCLOD the situation will likely change, so
+	// for now we'll just stick with this hard-coded hack:
+	m_LatticeXDist = 64000.0;
+	m_LatticeYDist = 64000.0;
+	m_LatticeX = 0;
+	m_LatticeY = 0;
 }
 
 VirtualScene::~VirtualScene()
@@ -232,8 +236,12 @@ int VirtualScene::buildScene()
 	m_FreeObjectGroup = new osg::Group;
 	m_FreeObjectGroup->setName("SG_FreeObjects");
 
+	m_FeatureGroup = new osg::PositionAttitudeTransform;
+	m_FeatureGroup->setName("SG_Features");
+
 	m_ObjectGroup = new osg::Group;
 	m_ObjectGroup->setName("SG_Objects");
+	m_ObjectGroup->addChild(m_FeatureGroup.get());
 	m_ObjectGroup->addChild(m_FreeObjectGroup.get());
 
 	// construct the skydome, stars, moon, sunlight, and moonlight
@@ -251,7 +259,7 @@ int VirtualScene::buildScene()
 
 	// set the compute transform callback to do all the work of
 	// determining the transform according to the current eye point.
-	m_EyeTransform->setComputeTransformCallback(new MoveEarthySkyWithEyePointCallback);
+	//0 m_EyeTransform->setComputeTransformCallback(new MoveEarthySkyWithEyePointCallback);
 	m_EyeTransform->addChild(m_Sky.get());  // bin number -2 so drawn first.
 	m_EyeTransform->addChild(m_SkyLights.get());
 
@@ -264,14 +272,37 @@ int VirtualScene::buildScene()
 	background->setRequiresClear(true);
 	background->addChild(m_EyeTransform.get());
 
+	m_TerrainGroup = new osg::PositionAttitudeTransform;
+	m_TerrainGroup->setName("SG_Terrain");
+
+	m_FogGroup = new osg::Group;
+	m_FogGroup->setName("SG_Fog");
+	m_FogGroup->addChild(m_TerrainGroup.get());
+	m_FogGroup->addChild(m_ObjectGroup.get());
+
+	m_GlobalFrame = new osg::PositionAttitudeTransform;
+	m_GlobalFrame->setName("SG_Global");
+	//m_GlobalFrame->setCullingActive(false);
+	//m_GlobalFrame->setReferenceFrame(osg::Transform::RELATIVE_TO_ABSOLUTE);
+
+	m_ParticleEmitterGroup = new osg::Group;
+	m_ParticleEmitterGroup->setName("SG_ParticleEmitter");
+	//m_ParticleEmitterGroup->setCullingActive(false);
+	m_ParticleUpdaterGroup = new osg::Group;
+	m_ParticleUpdaterGroup->setName("SG_ParticleUpdater");
+	//m_ParticleUpdaterGroup->setCullingActive(false);
+
 	// top node
 	m_RootNode = new osg::Group;
 	m_RootNode->setName( "SG_Root" );
 	m_RootNode->addChild(background);
-	m_RootNode->addChild(m_ObjectGroup.get());
+	m_RootNode->addChild(m_FogGroup.get());
+	m_RootNode->addChild(m_ParticleEmitterGroup.get());
+	m_RootNode->addChild(m_GlobalFrame.get());
+	m_RootNode->addChild(m_ParticleUpdaterGroup.get());
 
 	// fog properties: start and end distances are read from CSPSim.ini
-	osg::StateSet * pFogState = m_ObjectGroup->getOrCreateStateSet();
+	osg::StateSet * pFogState = m_FogGroup->getOrCreateStateSet();
 	osg::Fog* fog = new osg::Fog;
 	fog->setMode(osg::Fog::LINEAR);
 	fog->setDensity(0.3f);
@@ -284,7 +315,7 @@ int VirtualScene::buildScene()
 	fog->setStart(20000.0);
 	fog->setEnd(35000.0);
 	pFogState->setAttributeAndModes(fog, osg::StateAttribute::ON);
-	m_ObjectGroup->setStateSet(pFogState);
+	m_FogGroup->setStateSet(pFogState);
 
 	// add the scene graph to the view
 	m_View->setSceneData(m_RootNode.get());
@@ -389,6 +420,7 @@ void VirtualScene::setCameraNode( osg::Node * pNode)
 
 }
 
+
 void VirtualScene::setLookAt(simdata::Vector3 & eyePos, simdata::Vector3 & lookPos, simdata::Vector3 & upVec)
 {
 	CSP_LOG(CSP_APP, CSP_DEBUG, "VirtualScene::setLookAt - eye: " << eyePos << ", look: " << lookPos << ", up: " << upVec);
@@ -396,14 +428,90 @@ void VirtualScene::setLookAt(simdata::Vector3 & eyePos, simdata::Vector3 & lookP
 	assert(m_View.valid());
 	osg::Camera * camera = m_View->getCamera();
     
-	int XLatticePos = (int) (eyePos.x / g_LatticeXDist);
-	int YLatticePos = (int) (eyePos.y / g_LatticeYDist);
+	m_Origin = eyePos;
 
-	double localEyePosition_x = eyePos.x - g_LatticeXDist*XLatticePos;
-	double localEyePosition_y = eyePos.y - g_LatticeYDist*YLatticePos;
+	int XLatticePos = (int) (eyePos.x / m_LatticeXDist);
+	int YLatticePos = (int) (eyePos.y / m_LatticeYDist);
 
-	double localLookPosition_x = lookPos.x - g_LatticeXDist*XLatticePos;
-	double localLookPosition_y = lookPos.y - g_LatticeYDist*YLatticePos;
+	if (m_LatticeX != XLatticePos || m_LatticeY != YLatticePos) {
+		// TODO update battlefield components
+		m_LatticeX = XLatticePos;
+		m_LatticeY = YLatticePos;
+		m_TerrainOrigin = simdata::Vector3(XLatticePos * m_LatticeXDist, YLatticePos * m_LatticeYDist, 0.0);
+		std::cout << "repositioning terrain origin to " << (-m_TerrainOrigin) << std::endl;
+	}
+
+	//m_FeatureGroup->setPosition(osg::Vec3(-eyePos.x, -eyePos.y, -eyePos.z));
+
+	osg::Vec3 _up (upVec.x, upVec.y, upVec.z );
+	camera->setLookAt(osg::Vec3(0.0, 0.0, 0.0), simdata::toOSG(lookPos - eyePos), _up);
+	camera->ensureOrthogonalUpVector();
+
+	m_GlobalFrame->setPosition(simdata::toOSG(-eyePos));
+
+	//AdjustCM(m_Sky->getSkyIntensity());
+	intensity_test = m_Sky->getSkyIntensity();
+	osg::Light *sun = m_Sky->getSunLight();
+	osg::Vec3 sdir_ = sun->getDirection();
+	simdata::Vector3 sdir(sdir_.x(), sdir_.y(), sdir_.z());
+	simdata::Vector3 dir = lookPos - eyePos;
+	dir.Normalize();
+	sdir.Normalize();
+	float sunz = (1.0 - sdir.z);
+	if (sunz > 1.0) sunz = 2.0 - sunz;
+	float eyez = eyePos.z;
+	double a = simdata::Dot(dir, sdir) * sunz;
+	//setFogStart(15000.0 + eyez + 15000.0*a);
+	{
+		osg::StateSet *pStateSet = m_FogGroup->getStateSet();
+		osg::Fog * pFogAttr = (osg::Fog*)pStateSet->getAttribute(osg::StateAttribute::FOG);
+		float angle = atan2(dir.y, dir.x) * 180.0 / 3.14;
+		osg::Vec4 color = m_Sky->getHorizonColor(angle) * 0.8;
+		pFogAttr->setColor(color);
+		pFogAttr->setStart(15000.0 + eyez + 15000.0*a);
+		pStateSet->setAttributeAndModes(pFogAttr ,osg::StateAttribute::ON);
+		m_FogGroup->setStateSet(pStateSet);
+	}
+    
+	if (m_Terrain.valid()) {
+		m_Terrain->setCameraPosition(eyePos.x, eyePos.y, eyePos.z);
+		osg::Vec3 tpos = osg::Vec3(m_TerrainOrigin.x - eyePos.x, m_TerrainOrigin.y - eyePos.y, -eyePos.z);
+		m_TerrainGroup->setPosition(tpos);
+	}
+
+
+	CSP_LOG(CSP_APP, CSP_DEBUG, "VirtualScene::setLookAt - eye: " << camera->getEyePoint()  << 
+	  ", look: " << camera->getCenterPoint()  << ", up: " << camera->getUpVector()  <<
+	  ", near: " << camera->zNear() << ", far: " << camera->zFar() );
+
+}
+
+#if 0
+void VirtualScene::setLookAt(simdata::Vector3 & eyePos, simdata::Vector3 & lookPos, simdata::Vector3 & upVec)
+{
+	CSP_LOG(CSP_APP, CSP_DEBUG, "VirtualScene::setLookAt - eye: " << eyePos << ", look: " << lookPos << ", up: " << upVec);
+
+	assert(m_View.valid());
+	osg::Camera * camera = m_View->getCamera();
+    
+	int XLatticePos = (int) (eyePos.x / m_LatticeXDist);
+	int YLatticePos = (int) (eyePos.y / m_LatticeYDist);
+
+	if (m_LatticeX != XLatticePos || m_LatticeY != YLatticePos) {
+		// TODO update battlefield components
+		m_LatticeX = XLatticePos;
+		m_LatticeY = YLatticePos;
+		m_Origin = simdata::Vector3(XLatticePos * m_LatticeXDist, YLatticePos * m_LatticeYDist, 0.0);
+		std::cout << "repositioning feature origin to " << (-m_Origin) << std::endl;
+		m_FeatureGroup->setPosition(simdata::toOSG(-m_Origin));
+	}
+
+
+	double localEyePosition_x = eyePos.x - m_Origin.x;
+	double localEyePosition_y = eyePos.y - m_Origin.y;
+
+	double localLookPosition_x = lookPos.x - m_Origin.x;
+	double localLookPosition_y = lookPos.y - m_Origin.y;
     
 	osg::Vec3 _localEye( localEyePosition_x,  localEyePosition_y,  eyePos.z) ;
 	osg::Vec3 _localLook(localLookPosition_x, localLookPosition_y, lookPos.z ) ;
@@ -467,6 +575,7 @@ void VirtualScene::setLookAt(simdata::Vector3 & eyePos, simdata::Vector3 & lookP
 	  ", near: " << camera->zNear() << ", far: " << camera->zFar() );
 
 }
+#endif
 
 void VirtualScene::getLookAt(simdata::Vector3 & eyePos, simdata::Vector3 & lookPos, simdata::Vector3 & upVec) const
 {
@@ -487,23 +596,39 @@ void VirtualScene::getLookAt(simdata::Vector3 & eyePos, simdata::Vector3 & lookP
 
 void VirtualScene::addParticleSystem(osg::Node *system, osg::Node *program) {
 // XXX temporary, for testing (should go under a separate branch of the sg)
-	m_RootNode->addChild(system);
-	m_RootNode->addChild(program);
+	std::cout << "ADD PS\n";
+	if (program != 0) m_GlobalFrame->addChild(program);
+	m_GlobalFrame->addChild(system);
+	//m_RootNode->addChild(system);
+	//m_RootNode->addChild(program);
 }
 void VirtualScene::removeParticleSystem(osg::Node *system, osg::Node *program) {
 // XXX temporary, for testing (should go under a separate branch of the sg)
-	m_RootNode->removeChild(system);
-	m_RootNode->removeChild(program);
+	std::cout << "REM PS\n";
+	if (program != 0) m_GlobalFrame->removeChild(program);
+	m_GlobalFrame->removeChild(system);
+	//m_RootNode->removeChild(system);
+	//m_RootNode->removeChild(program);
 }
 
 void VirtualScene::addEffectUpdater(osg::Node *updater) {
-// XXX temporary, for testing (should go under a separate branch of the sg)
-	m_RootNode->addChild(updater);
+	std::cout << "ADD EU\n";
+	m_ParticleUpdaterGroup->addChild(updater);
 }
 
 void VirtualScene::removeEffectUpdater(osg::Node *updater) {
-// XXX temporary, for testing (should go under a separate branch of the sg)
-	m_RootNode->removeChild(updater);
+	std::cout << "REM EU\n";
+	m_ParticleUpdaterGroup->removeChild(updater);
+}
+
+void VirtualScene::addParticleEmitter(osg::Node *emitter) {
+	std::cout << "ADD PE\n";
+	m_ParticleEmitterGroup->addChild(emitter);
+}
+
+void VirtualScene::removeParticleEmitter(osg::Node *emitter) {
+	std::cout << "REM PE\n";
+	m_ParticleEmitterGroup->removeChild(emitter);
 }
 
 void VirtualScene::addObject(simdata::Ref<SimObject> object) {
@@ -519,6 +644,42 @@ void VirtualScene::removeObject(simdata::Ref<SimObject> object) {
 	osg::Node *node = object->getOrCreateModelNode();
 	m_FreeObjectGroup->removeChild(node);
 }
+
+void VirtualScene::addFeatureCell(osg::Node *cell) {
+	assert(cell);
+	m_FeatureGroup->addChild(cell);
+	std::cout << "adding feature to scene";
+	osg::PositionAttitudeTransform *p;
+	p = dynamic_cast<osg::PositionAttitudeTransform *>(cell);
+	if (p) {
+		//p->setPosition(p->getPosition() + osg::Vec3(0.0, 0.0, 90.5));
+		std::cout << " @ position: " << p->getPosition();
+		/*
+		osg::Node *n = p->getChild(0);
+		if (n) {
+			p = dynamic_cast<osg::PositionAttitudeTransform *>(n);
+			if (p) {
+				std::cout << p->getPosition() << std::endl;
+			}
+		}
+		*/
+	}
+	std::cout << std::endl;
+}
+
+void VirtualScene::removeFeatureCell(osg::Node *cell) {
+	assert(cell);
+	std::cout << "removing feature from scene\n";
+	osg::PositionAttitudeTransform *p;
+	p = dynamic_cast<osg::PositionAttitudeTransform *>(cell);
+	if (p) {
+		p->setPosition(p->getPosition() + osg::Vec3(0.0, 0.0, 87.5));
+		std::cout << " @ position: " << p->getPosition();
+	}
+	std::cout << std::endl;
+	m_FeatureGroup->removeChild(cell);
+}
+
 
 void VirtualScene::setWireframeMode(bool flag)
 {
@@ -540,8 +701,7 @@ void VirtualScene::setWireframeMode(bool flag)
 
 void VirtualScene::setFogMode(bool flag)
 {
-	// osg::StateSet * pStateSet = m_RootNode->getStateSet();
-	osg::StateSet * pStateSet = m_ObjectGroup->getStateSet();
+	osg::StateSet * pStateSet = m_FogGroup->getStateSet();
 	osg::StateAttribute * pStateAttr = pStateSet->getAttribute(osg::StateAttribute::FOG);
 
 	if (flag) {
@@ -550,33 +710,29 @@ void VirtualScene::setFogMode(bool flag)
 		pStateSet->setAttributeAndModes(pStateAttr ,osg::StateAttribute::OFF);
 	}
 
-	// m_RootNode->setStateSet(pStateSet);
-	m_ObjectGroup->setStateSet(pStateSet);
+	m_FogGroup->setStateSet(pStateSet);
 }
 
 void VirtualScene::setFogStart(float value)
 {
-	// osg::StateSet * pStateSet = m_RootNode->getStateSet();
-	osg::StateSet * pStateSet = m_ObjectGroup->getStateSet();
+	osg::StateSet * pStateSet = m_FogGroup->getStateSet();
 	osg::Fog * pFogAttr = (osg::Fog*)pStateSet->getAttribute(osg::StateAttribute::FOG);
 
 	pFogAttr->setStart(value);
 
 	pStateSet->setAttributeAndModes(pFogAttr ,osg::StateAttribute::ON);    
-	// m_RootNode->setStateSet(pStateSet);
-	m_ObjectGroup->setStateSet(pStateSet);
+	m_FogGroup->setStateSet(pStateSet);
 }
 
 void VirtualScene::setFogEnd(float value)
 {
-	//    osg::StateSet * pStateSet = m_RootNode->getStateSet();
-	osg::StateSet * pStateSet = m_ObjectGroup->getStateSet();
+	osg::StateSet * pStateSet = m_FogGroup->getStateSet();
 	osg::Fog * pFogAttr = (osg::Fog*)pStateSet->getAttribute(osg::StateAttribute::FOG);
 
 	pFogAttr->setEnd(value);
 
 	pStateSet->setAttributeAndModes(pFogAttr ,osg::StateAttribute::ON);    
-	m_ObjectGroup->setStateSet(pStateSet);
+	m_FogGroup->setStateSet(pStateSet);
 }
 
 void VirtualScene::setViewDistance(float value)
@@ -632,7 +788,7 @@ void VirtualScene::setTerrain(simdata::Ref<TerrainObject> terrain)
 {
 	if (!terrain) {
 		if (m_TerrainNode.valid()) {
-			m_ObjectGroup->removeChild(m_TerrainNode.get());
+			m_TerrainGroup->removeChild(m_TerrainNode.get());
 		}
 		m_TerrainNode = NULL;
 	}
@@ -646,32 +802,8 @@ void VirtualScene::setTerrain(simdata::Ref<TerrainObject> terrain)
 		m_Terrain->setCameraPosition(xPatch, yPatch, 1000);
 		m_TerrainNode = m_Terrain->getNode();
 		if (m_TerrainNode.valid()) {
-#ifdef SHADOW 
-			osg::Group *g = new osg::Group;
-			g->addChild(m_TerrainNode.get());
-			m_ObjectGroup->addChild(g);
-			osg::Vec4 ambientLightColor(0.9f,0.1f,0.1f,1.0f);
-			int texture_unit = 2;
-			osg::NodeCallback* cb = createCullCallback(m_FreeObjectGroup.get(),osg::Vec3(35000.0,51500.0,30000),ambientLightColor,texture_unit);
-    			g->setCullCallback(cb);
-			g->setCullingActive(true);
-			m_TerrainNode->setCullingActive(true);
-			m_ObjectGroup->setCullingActive(true);
-			m_RootNode->setCullingActive(true);
-#else
-			m_ObjectGroup->addChild(m_TerrainNode.get());
-#endif
+			m_TerrainGroup->addChild(m_TerrainNode.get());
 		}
 	}
-	
-	/*
-	for (unsigned short i=0; i < 15; ++i)
-	{
-		osg::Node * pTrees = makeTreesPatch( xPatch, yPatch + 256 * i, 100, 1000,
-			100, this);
-		pTrees->setName("Trees");
-		addNode(pTrees);
-	}
-	*/
 
 }

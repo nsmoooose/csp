@@ -366,7 +366,7 @@ void GameScreen::on_ChangeVehicle()
 {
 	simdata::Ref<DynamicObject> object;
 	VirtualBattlefield *battlefield = CSPSim::theSim->getBattlefield();
-	object = battlefield->getNextObject(m_ActiveObject, -1, -1, -1);
+	object = battlefield->getNextUnit(m_ActiveObject, -1, -1, -1);
 	if (object.valid()) CSPSim::theSim->setActiveObject(object);
 }
 
@@ -613,6 +613,11 @@ void GameScreen::setCamera(double dt)
 	VirtualScene *scene = CSPSim::theSim->getScene();
 	if (scene) {	
 		scene->setLookAt(eyePos, lookPos, upVec);
+		VirtualBattlefield *battlefield = CSPSim::theSim->getBattlefield();
+		if (battlefield) {
+			battlefield->updateOrigin(eyePos);
+			battlefield->setCamera(eyePos);
+		}
 	}
 }
 

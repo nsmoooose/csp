@@ -43,6 +43,7 @@ class SDL_Surface;
 class PyShell;
 class DynamicObject;
 class TerrainObject;
+class Theater;
 class VirtualBattlefield;
 class VirtualScene;
 class VirtualHID;
@@ -85,6 +86,7 @@ public:
 	VirtualBattlefield const * getBattlefield() const;
 	VirtualScene * getScene();
 	VirtualScene const * getScene() const;
+	simdata::Ref<Theater> getTheater() const;
 
 	EventMapIndex *getInterfaceMaps() { return m_InterfaceMaps; }
 
@@ -156,7 +158,8 @@ private:
 	simdata::Ref<VirtualScene> m_Scene;
 
 	// TODO the terrain will eventually be encapsulated in a Theater class
-	simdata::Ref<TerrainObject> m_ActiveTerrain;
+	simdata::Ref<Theater> m_Theater;
+	simdata::Ref<TerrainObject> m_Terrain;
 	simdata::DataManager m_DataManager;
 	Atmosphere m_Atmosphere;
 

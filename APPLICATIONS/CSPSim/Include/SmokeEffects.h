@@ -55,10 +55,14 @@ namespace osgParticle {
 	class Placer;
 	class Counter;
 	class Shooter;
+	class Emitter;
 }
 
 namespace fx {
 
+
+class WindShooter;
+class WindEmitter;
 
 	/*
 class SmokeSegments {
@@ -76,6 +80,7 @@ public:
 	void update(simdata::Vector3 const &motion, simdata::Quaternion const &attitude);
 };
 */
+
 
 class VortexExpander: public osgParticle::Operator
 {
@@ -113,16 +118,16 @@ public:
 	virtual void setShape(osgParticle::Particle::Shape const &shape);
 	virtual void setEmissive(bool emissive);
 	virtual void setLight(bool light);
-	virtual void setParent(osg::Group *parent);
 	virtual void addOperator(osgParticle::Operator* op);
 	virtual void removeOperator(osgParticle::Operator* op);
 	virtual void setEnabled(bool on);
 
 protected:
 
-	virtual osgParticle::Counter* getCounter() = 0;
-	virtual osgParticle::Shooter* getShooter() = 0;
-	virtual osgParticle::Placer* getPlacer() = 0; 
+	virtual osgParticle::Counter* getCounter() { return NULL; }
+	virtual osgParticle::Shooter* getShooter() { return NULL; }
+	virtual osgParticle::Placer* getPlacer()  { return NULL; } 
+	virtual osgParticle::Emitter* getEmitter();
 	virtual void create();
 
 	typedef std::vector<osg::ref_ptr<osgParticle::Operator> > OperatorList;
@@ -130,10 +135,9 @@ protected:
 	OperatorList m_Operators;
 
 	osgParticle::Particle m_Prototype;
-	osg::ref_ptr<osgParticle::ModularEmitter> m_Emitter;
+	osg::ref_ptr<osgParticle::Emitter> m_Emitter;
 	osg::ref_ptr<osgParticle::ModularProgram> m_Program;
 	osg::ref_ptr<osg::Geode> m_Geode;
-	osg::ref_ptr<osg::Group> m_Parent;
 
 	std::string m_TextureFile;
 	bool m_Emissive;
@@ -149,21 +153,25 @@ public:
 
 	void setExpansion(float speed);
 	void setOffset(simdata::Vector3 const &offset);
-	void update(simdata::Vector3 const &motion, simdata::Quaternion const &attitude);
+	void update(double dt, simdata::Vector3 const &motion, simdata::Quaternion const &attitude);
 
 protected:
 
+	virtual osgParticle::Emitter* getEmitter();
+	/*
 	virtual osgParticle::Counter* getCounter();
 	virtual osgParticle::Shooter* getShooter();
 	virtual osgParticle::Placer* getPlacer();
 
 	osg::ref_ptr<osgParticle::RandomRateCounter> m_Counter;
 	osg::ref_ptr<osgParticle::SegmentPlacer> m_Placer;
-	osg::ref_ptr<osgParticle::RadialShooter> m_Shooter;
+	osg::ref_ptr<WindShooter> m_Shooter;
+	*/
 
 	simdata::Vector3 m_Offset;
-	simdata::Vector3 m_LastPlace;
-	float m_Speed;
+	//simdata::Vector3 m_LastPlace;
+	//simdata::Vector3 m_LastWind;
+	//float m_Speed;
 };
 
 
@@ -189,7 +197,7 @@ public:
 	SmokeTrailSystem();
 	virtual ~SmokeTrailSystem();
 	virtual void addSmokeTrail(SmokeTrail *);
-	virtual void update(simdata::Vector3 const &motion, simdata::Quaternion const &attitude);
+	virtual void update(double dt, simdata::Vector3 const &motion, simdata::Quaternion const &attitude);
 	virtual void setEnabled(bool);
 protected:
 	typedef std::vector< osg::ref_ptr<SmokeTrail> > TrailList;

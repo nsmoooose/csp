@@ -39,12 +39,34 @@ namespace osgParticle {
 }
 
 
+class VirtualBattlefield;
+
+
 /**
  * class DynamicObject - Base class for all mobile objects in the simulation.
  *
  */
 class DynamicObject: public SimObject, public InputInterface
 {
+	friend class VirtualBattlefield;
+
+private:
+	enum { 
+	       // bits 8-15 reserved for DynamicObject
+	       F_LOCAL    = 0x00000100,  // controlled internally
+	       F_HUMAN    = 0x00000200,  // controlled by a human
+	       F_AIR      = 0x00000400,  // air object (airplane or helo)
+	       F_GROUNDED = 0x00000800,  // currently on the ground
+	     };
+
+	// managed by the battlefield
+	void setHuman(bool flag) { setFlags(F_HUMAN, flag); }
+	void setLocal(bool flag) { setFlags(F_LOCAL, flag); }
+
+protected:
+	void setAir(bool flag) { setFlags(F_AIR, flag); }
+	void setGrounded(bool flag) { setFlags(F_GROUNDED, flag); }
+
 public:
 	EXTEND_SIMDATA_XML_VIRTUAL_INTERFACE(DynamicObject, SimObject)
 		SIMDATA_XML("mass", DynamicObject::m_Mass, true)
@@ -53,6 +75,8 @@ public:
 
 	DynamicObject();
 	virtual ~DynamicObject();
+
+	virtual void getStats(std::vector<std::string> &stats) const {};
 
 	void setController(BaseController * Controller) { 
 		m_Controller = Controller;
@@ -63,17 +87,24 @@ public:
 	simdata::Vector3 const & getVelocity() const { return m_LinearVelocity; }
 	double getSpeed() const { return m_Speed; }
 
-	bool isLocal() const { return m_Local; }
-	bool isHuman() const { return m_Human; }
-	void setLocal(bool local=true) { m_Local = local; }
-	void setHuman(bool human=true) { m_Human = human; }
+	virtual simdata::Vector3 getViewPoint() const;
+
+	bool isHuman() const { return getFlags(F_HUMAN) != 0; }
+	bool isLocal() const { return getFlags(F_LOCAL) != 0; }
+	bool isAir() const { return getFlags(F_AIR) != 0; }
+	bool isGrounded() const { return getFlags(F_GROUNDED) != 0; }
 
 	void updateLocalPosition();
 	void updateGlobalPosition();
 	void updateGroundPosition();
 	void updateOrientation();
+
+	virtual void setLocalFrame(simdata::Vector3 const &origin = simdata::Vector3::ZERO, osg::Group *group=0);
+	virtual void aggregate() { std::cout << "aggregate " << int(this) << std::endl; }
+	virtual void deaggregate() { std::cout << "deaggregate " << int(this) << std::endl; }
+	virtual void setVisible(bool visible) { std::cout << int(this) << ": visible = " << visible << std::endl; }
 	
-	virtual void onUpdate(double dt);
+	virtual double onUpdate(double dt);
 	
 	bool AddSmoke();
 	bool isSmoke();
@@ -81,6 +112,24 @@ public:
 	void EnableSmoke();
 
 	bool isNearGround();
+
+	// The object name holds an identifier string for in-game display.  It is not 
+	// intended for unique object identification. (e.g. "Callsign", Cowboy11, T-62)
+	void setObjectName(const std::string name) { m_ObjectName = name; }
+	std::string getObjectName() const { return m_ObjectName; }
+
+	simdata::Vector3 getDirection() const;
+	simdata::Vector3 getUpDirection() const;
+	simdata::Quaternion & getAttitude() { return m_Attitude; }
+	void setAttitude(simdata::Quaternion const & attitude);
+
+	virtual simdata::Vector3 const & getGlobalPosition() const { return m_GlobalPosition; }
+	virtual void setGlobalPosition(simdata::Vector3 const & position);
+	virtual void setGlobalPosition(double x, double y, double z);
+
+	virtual void updateScene(simdata::Vector3 const &origin) { 
+		if (m_SceneModel) m_SceneModel->setPositionAttitude(m_GlobalPosition - origin, m_Attitude); 
+	}
 
 protected:
 
@@ -98,7 +147,11 @@ protected:
 
 	// dynamic properties
 	
+	simdata::Vector3 m_GlobalPosition;
 	simdata::Vector3 m_PrevPosition;
+
+	simdata::Vector3 m_LocalOrigin;
+	osg::ref_ptr<osg::Group> m_LocalGroup;
 	
 	double m_Mass;
 	double m_Speed;
@@ -106,8 +159,6 @@ protected:
 	double m_GroundZ;
 	simdata::Vector3 m_GroundN;
 
-	bool m_Local;
-	bool m_Human;
 	bool m_NearGround;
 
 	simdata::Matrix3 m_Inertia;
@@ -115,6 +166,10 @@ protected:
 
 	simdata::Vector3 m_AngularVelocity;
 	simdata::Vector3 m_LinearVelocity;
+
+	simdata::Quaternion m_Attitude;
+
+	std::string m_ObjectName;
 };
 
 

@@ -1,178 +1,44 @@
-Version 0.3.2 (in progress)
+Version 0.3.3 (in progress)
 ===========================
 
-2003-04-23: delta
-	    Added m_CharacterSize to ScreenInfo to control size of character
-	    (m_FontSIze controls now font resolution). 
+2003-05-02: onsight
+==========> VC USERS: add Theater.cpp to the project.
 
-	    Cleaned a bit this code.
+            I've been making many changes and additions, but have been too
+	    lax in updating the changelog.  Here's what I can remember and
+	    I will try to fill in the missing pieces as I come across them.
 
-	    Added average fps.
+	    Jitter fix.  The scene graph has been restructured so that the 
+	    eyepoint is at the origin.  Dynamic objects, feature cells
+	    (more on that below), and the terrain transform are updated 
+	    every frame to compensate for motion of the camera.  Terrain
+	    lattice boundaries (the old local coordinate system) only affect
+	    terrain, so other objects can now move/exist continuously in
+	    adjacent terrain blocks.  Particle effects are now in a global 
+	    coordinate system which causes the to jitter somewhat.  This
+	    could still be improves somewhat by moving the global origin
+	    to the center of the theater.
+	    
+	    Some fixes to CSPSim::cleanup() to avoid segfaults at program
+	    exit.
 
-2003-04-23: onsight 
-            Upgraded configure.in to check for OSG 0.9.4.  The full test,
-	    which was broken in 0.9.3, works again.  The test for osgGLUT
-	    has been removed since it is no longer needed.
+	    Added much infrastructure to VirtualBattlefield.  The battlefield
+	    now consists of a grid of cells that track static and dynamic
+	    objects, manage bubbles and aggregation/deaggregation, and 
+	    dynamically add and remove objects from the scene graph.  
 
-	    Removed osgGLUT from the Linux makefile.
+	    Added theater infrastructure to load static objects into the
+	    battlefield from XML.  The terrain object is now part of the
+	    theater.  There are some new files in Data/XML/theater to
+	    provide some very basic groups of static features for testing.
 
-2003-04-22: onsight 
-            Port to OSG 0.9.4, mostly changes to text display code. The new
-            osgText code seems a bit inefficient, causing a frame rate hit
-            for the onscreen status display. Text under Linux appears to be
-            working again though.
+	    Added aggregate(), deaggregate(), and setVisible() methods to
+	    DynamicObject.  These are called automatically by the battlefield.
+	    They don't do anything in DynamicObject, but can be extended
+	    in subclasses to implement aggregation logic.
 
-            Changed classes that had been inheriting from simdata::Object
-            just for reference counting to use simdata::Referenced instead.
+            Made DynamicObject::setHuman() private, and setAir() and
+            setGrounded() protected. Changes of the 'human' state (when the
+            active object changes) must now go through VirtualBattlefield's
+            setHuman() method so that the bubbles are updated correctly.
 
-            All non-XML simdata references now use simdata::Ref<>, and the
-            XML refences use simdata::Link<>. simdata::Pointer<>, which had
-            been used for both purposes, is no longer available. Ref is the
-            basic smart-pointer class with reference counting. Link is
-            similar but meant only for simdata::Objects that are creating
-            automatically as part of the data archive loading process (ie.
-            members that have SIMDATA_XML(...) lines in the interface.
-
-            Some general header cleanups, which managaed to eliminate some
-            unnecessary interdependency.
-
-2003-04-21: delta
-            Removed non necessaray calls to DegreesToRadians and
-            RadiansToDegrees. Now angles must be specified in radians. If it
-            is needed to display angle in degree call
-            simdata::RadiansToDegrees at this stage.
-
-2003-04-19: delta
-            Got ride of more than one hundred of warnings (complaining about
-            casting from double to float) in ColorSpace.cpp while compiling
-            with vc++.
-
-2003-04-19: onsight
-            Changed AircraftObject:: m_heading, m_pitch, m_roll to
-            m_Heading, m_Pitch, m_Roll. These are now in radians, and
-            converted to degrees only if necessary (for display).
-            setAttitude(x, y, z) still takes degrees.
-
-2003-04-18: delta
-            Added Runge-Kutta Cask-Karp numerical method.doSimStep2() is now
-            calling it.
-
-            Added a note on initialization of 'pause'.
-
-            Added a simdata::Pointer<DynamicalObject> parameter in
-            ObjectStats methods.
-
-            Added a check to non nullitty of m_GameScreen in
-            CSPSim::setActiveObject.
-
-            Fixed a getStats non const method in AircraftObject class.
-
-            Checked Onsight changes: a couple of forward class declarations
-            causing compilation problems in vc++ have been fixed thanks to
-            Onsight.
-
-            Updated .NET project.
-2003-04-18: onsight
-            Lots of changes to many parts of CSPSim. First and foremost, the
-            scene graph is now in VirtualScene. VirtualBattlefield no longer
-            contains scene graph code. Much of VB still needs to be replaced
-            though.
-
-            The scene graph is reorganized slightly, in anticipation of
-            adding more static and dynamic objects:
-
-                    +------------ ROOT -------------+
-                    |                               |
-               BACKGROUND               +--------OBJECTS-----+
-                    |                   |           |        |
-              EYE_TRANSFORM          TERRAIN     STATIC    DYNAMIC
-               |       |
-              SKY  SKYLIGHTS
-                     /    \
-                 SUNLIGHT MOONLIGHT
-
-            Fixed an initialization error in AeroDynamics that could cause
-            m_GE to be NAN.
-
-            Fixed the initialization of the gear retract state.
-
-            Moved the first object update out of the main simloop so that
-            the pause (several seconds) occurs before time starts counting.
-            Limited the FrameTime to 0.2 seconds (was 1.0), which prevents
-            the FM from exploding. Removed the initial 'paused' state.
-
-            Changed SimObject to use quaternions for attitude, no 3x3
-            matrices anymore.
-
-            Added a SceneModel class to separate the model transform and
-            switch from SimObject. The SceneModel member is only constructed
-            if the object is added the scene. The ObjectModel is always
-            loaded, so that bounds checking, collision tests, and model
-            related data are available independent of the scene graph.
-            SceneModel now uses osg::PositionAttitudeTransform instead of
-            MatrixTransform.
-
-            Set a default joystick environment variable for SDL if none is
-            specified. (Linux only)
-
-            Fixed AircraftObject::setAttitude(pitch, roll, heading)
-            parameter order and units. This order is now correct, and the
-            units are degrees. Previously the parameters were mislabelled
-            and doubly converted from degrees to radians (resulting in very
-            small angles).
-
-            Moved access to the core components (Battlefield, Scene, etc)
-            out of various classes that had been storing copies. Most access
-            is now through CSPSim::theSim.
-
-            Switched CSPSim to use simdata::DataManager instead of
-            simdata::DataArchive.
-
-            Major rewrite of the smoke trail code. The design is much
-            cleaner now, but more work remains to be done.
-
-            Various method name changes to conform to the standard case
-            convensions (mixed with lower first letter).
-
-            Removed "m_Army" from SimObject. This will eventually be
-            replaced with a full object class, not just an integer.
-
-            Made several bools in SimObject into bit flags.
-
-            Greater use of smart-pointers (simdata::Pointer and
-            osg::ref_ptr)
-
-            Corrected handling of Terrain object pointers (now all smart
-            pointers). Changed demeter to use osg::Referenced instead of
-            it's own home-built work- alike.
-
-            Moved the eye position in view <1> to the correct cockpit
-            position. The 3D model remains on in the interior view now. The
-            offset to the pilot's head is specified in the ObjectModel XML
-            data. (There's a temporary contact point at the same location to
-            make it easy to see where this is).
-
-            Fixed ThrottleInput so that the throttle starts at zero for
-            keyboard-only input, and has the correct sense ('=' increases,
-            '-' decreases).
-
-            Changed the log sync and closing to ensure that the log is
-            flushed properly under all circumstances and that it doesn't
-            segfault when the program quits. I still don't fully understand
-            all the issues, and it may not work perfectly under Windows as
-            is.
-
-            Reordered various ctor initializers to silence gcc warnings.
-
-            Added Bin/TestObjects.py to allow objects to be added to the sim
-            for testing purposes. Currently, only the active object (created
-            in CSPSim::init at startup) has physics. All other aircraft
-            objects are frozen (this is set in AircraftObject---the physics
-            code is commented out for non-human controlled a/c). To switch
-            the active object, hit <spacebar>.
-
-            Started a Falcon 4 aircraft data file converter in Tools/XML. It
-            is currently can be used to convert the thrust tables to
-            simdata's XML format.
-
-*********** VC USERS: please add VirtualScene.cpp to the VC project files

@@ -35,10 +35,6 @@
 #include <SimData/Math.h>
 
 
-extern double g_LatticeXDist;
-extern double g_LatticeYDist;
-
-
 SIMDATA_REGISTER_INTERFACE(SimObject)
 
 
@@ -50,12 +46,9 @@ SimObject::SimObject()
 
 	m_Flags = 0;
 
-	setAttitude(simdata::Quaternion::IDENTITY);
-	setGlobalPosition(simdata::Vector3::ZERO);
-
-	m_ObjectID = 0;
-	m_ObjectType = 0;
-	m_ObjectName = "";
+	///m_ObjectID = 0;
+	///m_ObjectType = 0;
+	///m_ObjectName = "";
 }
 
 
@@ -74,57 +67,6 @@ void SimObject::pack(simdata::Packer& p) const {
 void SimObject::unpack(simdata::UnPacker& p) {
 	Object::unpack(p);
 	p.unpack(m_Model);
-}
-
-
-void SimObject::setGlobalPosition(simdata::Vector3 const & position)
-{
-	setGlobalPosition(position.x, position.y, position.z);
-}
-
-
-void SimObject::setGlobalPosition(double x, double y, double z)
-{
-	// if the object is on the ground ignore the z component and use the elevation at
-	// the x,y point.
-	m_GlobalPosition.x = x;
-	m_GlobalPosition.y = y;
-
-	m_XLatticePos = (int) (x / g_LatticeXDist);
-	m_YLatticePos = (int) (y / g_LatticeYDist);
-
-	m_LocalPosition.x = m_GlobalPosition.x - g_LatticeXDist*m_XLatticePos;
-	m_LocalPosition.y = m_GlobalPosition.y - g_LatticeYDist*m_YLatticePos;
-
-	if (getGroundFlag())
-	{
-		float offset = 0.0;
-		/* FIXME FIXME FIXME XXX XXX
-		if (m_rpNode.valid())
-		{
-			// FIXME this is not a very good way to put a vehicle on the ground...
-			osg::BoundingSphere sphere = m_rpNode->getBound();
-			offset = sphere.radius() - sphere.center().z();
-		}
-		else 
-			offset = 0.0;
-		if (m_Battlefield) {
-			offset += m_Battlefield->getElevation(x,y);
-		}
-		*/
-		m_GlobalPosition.z = offset; 
-		m_LocalPosition.z = m_GlobalPosition.z;
-	}
-	else
-	{
-		m_GlobalPosition.z = z; 
-		m_LocalPosition.z = z;
-	}
-
-	updateTransform();
-
-	CSP_LOG(CSP_APP, CSP_DEBUG, "SimObject::setPosition - ID: " << m_ObjectID 
-	        << ", Name: " << m_ObjectName << ", Position: " << m_GlobalPosition );
 }
 
 
@@ -149,37 +91,6 @@ osg::Node* SimObject::getOrCreateModelNode() {
 osg::Node* SimObject::getModelNode() { 
 	if (!m_SceneModel) return 0;
 	return m_SceneModel->getRoot();
-}
-
-
-void SimObject::getLatticePosition(int & x, int & y) const
-{
-	x = m_XLatticePos;
-	y = m_YLatticePos;
-}
-
-
-simdata::Vector3 SimObject::getDirection() const
-{
-	return m_Attitude.GetRotated(simdata::Vector3::YAXIS);
-}
-
-
-simdata::Vector3 SimObject::getUpDirection() const
-{
-	return m_Attitude.GetRotated(simdata::Vector3::ZAXIS);
-}
-
-
-void SimObject::setAttitude(simdata::Quaternion const &attitude)
-{
-	m_Attitude = attitude;
-	updateTransform();
-}
-
-
-simdata::Vector3 SimObject::getViewPoint() const {
-	 return m_Attitude.GetRotated(m_Model->getViewPoint());
 }
 
 

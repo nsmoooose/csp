@@ -60,7 +60,10 @@ class UpdateCallback : public osg::NodeCallback
 };
 
 ScreenInfo::ScreenInfo(int posx,int posy, std::string const & name, std::string const & text):
-	m_TTFPath("ltype.ttf"),m_CharacterSize(11),m_FontSize(15), m_Text(new osgText::Text)
+	m_TTFPath("ltype.ttf"), 
+	m_FontSize(15), 
+	m_CharacterSize(11),
+	m_Text(new osgText::Text)
 {
 	m_Text->setFont(m_TTFPath);
 	m_Text->setFontSize(m_FontSize, m_FontSize);
@@ -108,12 +111,15 @@ void Framerate::update()
 GeneralStats::GeneralStats(int posx,int posy):ScreenInfo(posx,posy,"GENERAL STATS")
 {
 	float yOffset = 50.0 - m_CharacterSize;
+
+	/*
 	m_LocalPosition = new osgText::Text();
 	m_LocalPosition->setFont(m_TTFPath);
 	m_LocalPosition->setFontSize(m_FontSize, m_FontSize);
 	m_LocalPosition->setCharacterSize(m_CharacterSize, 1.0);
 	m_LocalPosition->setPosition(osg::Vec3(m_CharacterSize, yOffset, 0));
 	addDrawable(m_LocalPosition);
+	*/
 	
 	yOffset -= m_CharacterSize;
 	m_GlobalPosition = new osgText::Text();
@@ -142,6 +148,7 @@ void GeneralStats::update()
 
 	simdata::Ref<DynamicObject const> const activeObject = CSPSim::theSim->getActiveObject();
 	if (activeObject.valid()) {
+	/*
 		simdata::Vector3 pos = activeObject->getLocalPosition();
 		osstr.str("");
 		osstr << "LocalPosition: (" << setprecision(precision) << fixed 
@@ -149,6 +156,8 @@ void GeneralStats::update()
 		osstr << setw(6 + precision) << setfill('0') << pos.y << ", ";
 		osstr << setw(6 + precision) << setfill('0') << pos.z << ")";
 		m_LocalPosition->setText(osstr.str());
+	*/
+		simdata::Vector3 pos;
 		
 		pos = activeObject->getGlobalPosition();
 		osstr.str("");
@@ -173,7 +182,7 @@ ScreenInfo(posx,posy,"OBJECT STATS")
 		activeObject->getStats(stringStats);
 		short n = stringStats.size();
 		for (;n-->0;) {
-			posy -= m_CharacterSize;
+			posy -= int(m_CharacterSize);
 			osgText::Text* aStat = new osgText::Text();
 			aStat->setFont(m_TTFPath);
 			aStat->setCharacterSize(m_CharacterSize, 1.0);

@@ -69,10 +69,14 @@ public:
 
 	void addEffectUpdater(osg::Node *updater);
 	void removeEffectUpdater(osg::Node *updater);
+	void addParticleEmitter(osg::Node *emitter);
+	void removeParticleEmitter(osg::Node *emitter);
 	void addParticleSystem(osg::Node *system, osg::Node *program);
 	void removeParticleSystem(osg::Node *system, osg::Node *program);
 	void addObject(simdata::Ref<SimObject> object);
 	void removeObject(simdata::Ref<SimObject> object);
+	void addFeatureCell(osg::Node *feature);
+	void removeFeatureCell(osg::Node *feature);
 
 	void setLookAt(simdata::Vector3 & eyePos, simdata::Vector3 & lookPos, simdata::Vector3 & upVec);
 	void getLookAt(simdata::Vector3 & eyePos, simdata::Vector3 & lookPos, simdata::Vector3 & upVec) const;
@@ -83,6 +87,8 @@ public:
 
 	float getViewDistance() const { return m_ViewDistance; }
 	void setViewDistance(float value);
+
+	simdata::Vector3 const &getOrigin() { return m_Origin; }
 
 	void setTerrain(simdata::Ref<TerrainObject>);
 	simdata::Ref<TerrainObject> getTerrain() const { return m_Terrain; }
@@ -100,6 +106,12 @@ public:
 
 protected:
 
+	double m_LatticeXDist;
+	double m_LatticeYDist;
+
+	int m_LatticeX;
+	int m_LatticeY;
+
 	simdata::Ref<TerrainObject> m_Terrain;
 
 	osg::ref_ptr<osgUtil::SceneView> m_View;
@@ -111,16 +123,25 @@ protected:
 	bool m_SpinTheWorld;
 	bool m_ResetTheWorld;
 
+	simdata::Vector3 m_Origin;
+	simdata::Vector3 m_TerrainOrigin;
+
 	osg::ref_ptr<osg::Group> m_RootNode;
 
 	osg::ref_ptr<osg::Transform> m_EyeTransform;
 	osg::ref_ptr<Sky> m_Sky;
 	osg::ref_ptr<osg::Group> m_SkyLights;
 
+	osg::ref_ptr<osg::Group> m_FogGroup;
 	osg::ref_ptr<osg::Group> m_ObjectGroup;
 	osg::ref_ptr<osg::Node> m_TerrainNode;
 	osg::ref_ptr<osg::Group> m_FreeObjectGroup;
 	osg::ref_ptr<osg::Group> m_GridObjectGroup;
+	osg::ref_ptr<osg::Group> m_ParticleEmitterGroup;
+	osg::ref_ptr<osg::Group> m_ParticleUpdaterGroup;
+	osg::ref_ptr<osg::PositionAttitudeTransform> m_GlobalFrame;
+	osg::ref_ptr<osg::PositionAttitudeTransform> m_FeatureGroup;
+	osg::ref_ptr<osg::PositionAttitudeTransform> m_TerrainGroup;
 };
 
 #endif // __VIRTUALBATTLEFIELDSCENE_H__

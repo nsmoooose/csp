@@ -77,6 +77,8 @@ AircraftObject::AircraftObject(): DynamicObject()
 	m_ComplexPhysics = false;
 	m_PhysicsInitialized = false;
 
+	setAir(true);
+
 	BIND_AXIS("THROTTLE", setThrottle);
 	BIND_AXIS("AILERON", setAileron);
 	BIND_AXIS("ELEVATOR", setElevator);
@@ -141,7 +143,7 @@ void AircraftObject::unpack(simdata::UnPacker& p) {
 
 void AircraftObject::postCreate() {
 	DynamicObject::postCreate();
-	m_FlightModel->bindObject(m_LocalPosition, m_LinearVelocity, m_AngularVelocity, m_Attitude);
+	m_FlightModel->bindObject(m_GlobalPosition, m_LinearVelocity, m_AngularVelocity, m_Attitude);
 	m_FlightModel->bindGearSet(*(m_Gear.get()));
 	m_FlightModel->bindContacts(m_Model->getContacts());
 	m_FlightModel->setBoundingRadius(m_Model->getBoundingSphereRadius());
@@ -156,7 +158,7 @@ void AircraftObject::initialize()
 {
 }
 
-void AircraftObject::onUpdate(double dt)
+double AircraftObject::onUpdate(double dt)
 {
 	CSP_LOG(CSP_APP, CSP_DEBUG, "AircraftObject::onUpdate ...");
 	// TODO: update AI controller
@@ -165,6 +167,7 @@ void AircraftObject::onUpdate(double dt)
 	DynamicObject::onUpdate(dt);
 	// TODO: update HUD?
 	CSP_LOG(CSP_APP, CSP_DEBUG, "... AircraftObject::onUpdate");
+	return 0.0;
 }
 
 
@@ -227,7 +230,7 @@ void AircraftObject::doFCS(double dt)
 
 void AircraftObject::setThrottle(double x) 
 { 
-	m_ThrottleInput = (1.0 - x); 
+	m_ThrottleInput = 0.5 * (1.0 - x); 
 }
 
 void AircraftObject::setRudder(double x)
@@ -376,9 +379,8 @@ void AircraftObject::setAttitude(double pitch, double roll, double heading)
 	m_Roll = roll;
 	m_Heading = heading;
 	
-	attitude = simdata::Quaternion::MakeQFromEulerAngles( m_Pitch, 
-														  m_Roll,   
-	                                                     m_Heading);
+	// use standard Euler convension (X axis is roll, Y is pitch, Z is yaw).
+	attitude = simdata::Quaternion::MakeQFromEulerAngles(m_Roll, m_Pitch, -m_Heading);
 	DynamicObject::setAttitude(attitude);
 }
 
@@ -397,9 +399,10 @@ void AircraftObject::doMovement(double dt)
 		//doComplexPhysics(dt);
 	}
 
-	updateTransform();
+	///updateTransform();
 
-	simdata::Vector3 angles = simdata::Quaternion::MakeEulerAnglesFromQ(m_Attitude);
+	// modified Euler angles are the CSP frame (X is pitch, Y is roll, Z is -yaw).
+	simdata::Vector3 angles = simdata::Quaternion::MakeModifiedEulerAnglesFromQ(m_Attitude);
 	
 	m_Pitch = angles.x;
 	m_Roll = angles.y;
@@ -491,10 +494,12 @@ void AircraftObject::getStats(std::vector<std::string> &stats) const {
 	float G = getGForce();
 	snprintf(buffer, 255, "Alpha: %+.2f, G: %+.2f, Speed: %.1f", RadiansToDegrees(alpha), G, speed);
 	stats.push_back(buffer);
+	float heading = RadiansToDegrees(m_Heading);
+	if (heading < 0.0) heading += 360.0;
 	snprintf(buffer, 255, "Heading: %.3f, Pitch: %.3f, Roll: %.3f",
-	         RadiansToDegrees(m_Heading), 
-			 RadiansToDegrees(m_Pitch), 
-			 RadiansToDegrees(m_Roll));
+	         heading,
+	         RadiansToDegrees(m_Pitch), 
+	         RadiansToDegrees(m_Roll));
 	stats.push_back(buffer);
 }
 

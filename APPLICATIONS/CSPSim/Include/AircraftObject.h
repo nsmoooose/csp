@@ -86,7 +86,7 @@ public:
 
 	virtual void initialize();
 
-	virtual void onUpdate(double);
+	virtual double onUpdate(double);
 	void updateControls(double);
 	void doSimplePhysics(double dt);
 	void doComplexPhysics(double dt);
@@ -170,24 +170,6 @@ protected:
 
 };
 
-
 	
-
-//////////////////////////////////////////////////////////////////////////
-
-/*
-class AircraftInterface: public VirtualHID
-{
-public:
-	AircraftInterface() {
-		BIND_AXIS(AircraftObject, "THROTTLE", setThrottle);
-		BIND_AXIS(AircraftObject, "AILERON", setAileron);
-		BIND_AXIS(AircraftObject, "ELEVATOR", setElevator);
-		BIND_AXIS(AircraftObject, "RUDDER", setRudder);
-	}
-};
-*/
-
-
 #endif // __AIRCRAFTOBJECT_H__
 

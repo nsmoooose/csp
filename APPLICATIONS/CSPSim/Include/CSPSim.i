@@ -59,9 +59,10 @@ public:
 		obj->setGlobalPosition(position);
 		obj->setVelocity(velocity);
 		simdata::Quaternion q_attitude;
+		attitude *= 3.1416 / 180.0;
 		q_attitude = simdata::Quaternion::MakeQFromEulerAngles(attitude.x, attitude.y, attitude.z);
 		obj->setAttitude(q_attitude);
-		self->getBattlefield()->addObject(obj);
+		self->getBattlefield()->addUnit(obj);
 	}
 	void setShell(PyObject *shell) { self->getShell()->bind(shell); }
 }

@@ -25,33 +25,6 @@
 class VirtualBattlefield
 {
 public:
-	typedef std::list< simdata::Ref<DynamicObject> > ObjectList;
-
-	void addObject(simdata::Ref<DynamicObject> object);
-	simdata::Ref<DynamicObject> getObjectFromID( unsigned int ID);
-	simdata::Ref<DynamicObject> getObjectFromName( std::string name );
-	BaseController * getControllerFromID(unsigned int ID);
-	void removeObjectWithID( unsigned int ID);
-	void removeObjectsMarkedForDelete();
-	void removeAllObjects();
-	void dumpAllObjects();
-	void dumpObjectHistory();
-	void updateAllObjects(float dt);
-	void initializeAllObjects();
-	simdata::Ref<DynamicObject> getNextObject(simdata::Ref<DynamicObject> object, int human, int local, int category);
-
-	void addController(BaseController * controller);
-	unsigned int getNewObjectID() { return ++latest_object_id; }
-	VirtualBattlefield::ObjectList getObjectList() { return objectList; }
-	
-	float getElevation(float x,float y) const;
-	void getNormal(float x, float y, float & normalX, float & normalY, float & normalZ) const;
-
-	void setTerrain(simdata::Ref<TerrainObject>);
-	simdata::Ref<TerrainObject> getTerrain() const { return m_Terrain; }
-
-	void setScene(simdata::Ref<VirtualScene>);
-	simdata::Ref<VirtualScene> getScene() const { return m_Scene; }
 
 };
 

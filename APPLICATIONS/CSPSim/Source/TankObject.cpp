@@ -37,7 +37,9 @@ TankObject::TankObject(): DynamicObject()
 //	m_ObjectType = TANK_OBJECT_TYPE;
 	m_ObjectName = "TANK";
 
-	setGroundFlag(true);
+	setGrounded(true);
+	setAir(false);
+
 	movement_state = 1;
 	gun_angle = 45.0f;
 	max_viewing_range = 2000.0;
@@ -46,6 +48,7 @@ TankObject::TankObject(): DynamicObject()
 	forward_speed = 5.0;
 	backward_speed = 2.0;
 	turn_speed = 0.15;
+	bits = 0;
 }
 
 TankObject::~TankObject()
@@ -64,6 +67,7 @@ void TankObject::initialize()
 
 void TankObject::dump()
 {
+/*
 	cout << "ID: " << m_ObjectID
 	     << ", TYPE: " << m_ObjectType
 	     << ", GLOPOSX: " << m_GlobalPosition.x
@@ -74,11 +78,13 @@ void TankObject::dump()
 	     << ", VELZ: " << m_LinearVelocity.z
 	     << ", GUNANGLE: " << gun_angle
 	     << endl;      
+*/
 }
 
-void TankObject::onUpdate(double dt)
+double TankObject::onUpdate(double dt)
 {
 	DynamicObject::onUpdate(dt);
+	return 0.0;
 }
 
 void TankObject::doMovement(double dt)
@@ -88,7 +94,7 @@ void TankObject::doMovement(double dt)
 /* FIXME
 	m_Direction.Normalize(); 
 	m_LinearVelocity = m_Speed * m_Direction;
-	m_LocalPosition += dt * m_LinearVelocity;
+	m_GlobalPosition += dt * m_GlobalVelocity;
 */
 }
 

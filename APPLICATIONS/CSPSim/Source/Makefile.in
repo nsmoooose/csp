@@ -55,6 +55,7 @@ SOURCES = \
 	StaticObject.cpp \
 	TankObject.cpp \
 	TerrainObject.cpp \
+	Theater.cpp \
 	Tools.cpp \
 	trees.cpp \
 	VirtualBattlefield.cpp \

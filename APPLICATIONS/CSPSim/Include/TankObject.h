@@ -27,6 +27,9 @@
 
 #include "DynamicObject.h"
 
+#include <cstdio>
+#include <iostream>
+
 // movement states for the tank object
 // 0 - stopped
 // 1 - forward
@@ -47,6 +50,9 @@ public:
 
 	EXTEND_SIMDATA_XML_INTERFACE(TankObject, DynamicObject)
 		SIMDATA_XML("forward_speed", TankObject::forward_speed, false)
+		SIMDATA_BIT("test0", TankObject::bits, 1, false)
+		SIMDATA_BIT("test1", TankObject::bits, 2, false)
+		SIMDATA_BIT("test2", TankObject::bits, 4, false)
 	END_SIMDATA_XML_INTERFACE
 
 	
@@ -55,8 +61,19 @@ public:
 	TankObject();
 	virtual ~TankObject();
 	virtual void dump();
-	virtual void onUpdate(double dt);
+	virtual double onUpdate(double dt);
 	virtual unsigned int onRender();
+	virtual void getStats(std::vector<std::string> &stats) const {}
+
+	virtual void pack(simdata::Packer& p) const {
+		DynamicObject::pack(p);
+		p.pack(bits);
+		//std::cout << "TANK BITS: " << int(bits) << std::endl;
+	}
+	virtual void unpack(simdata::UnPacker& p) {
+		DynamicObject::unpack(p);
+		p.unpack(bits);
+	}
 
 	virtual void initialize();
 	double getMaxViewingRange() { return max_viewing_range; }
@@ -81,6 +98,8 @@ protected:
 	double turn_speed;
 
 	unsigned int movement_state;
+
+	char bits;
 
 };
 

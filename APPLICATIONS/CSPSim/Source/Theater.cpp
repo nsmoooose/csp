@@ -18,32 +18,30 @@
 
 
 /**
- * @file StaticObject.cpp
+ * @file Theater.cpp
  *
  **/
 
 
-#include "StaticObject.h"
+#include "Theater.h"
+#include "LogStream.h"
+#include "Config.h"
 
-#include <SimData/InterfaceRegistry.h>
+SIMDATA_REGISTER_INTERFACE(DamageModifier)
 
-SIMDATA_REGISTER_INTERFACE(StaticObject)
+// models
+SIMDATA_REGISTER_INTERFACE(FeatureObjectModel)
+//SIMDATA_REGISTER_INTERFACE(FeatureGroupModel)
+SIMDATA_REGISTER_INTERFACE(CustomLayoutModel)
 
+// layouts
+SIMDATA_REGISTER_INTERFACE(FeatureLayout)
 
-StaticObject::StaticObject(): SimObject()
-{
-}
+// featrue groups
+SIMDATA_REGISTER_INTERFACE(FeatureGroup)
+SIMDATA_REGISTER_INTERFACE(Objective)
 
-StaticObject::~StaticObject()
-{
-}
-
-void StaticObject::pack(simdata::Packer& p) const {
-	SimObject::pack(p);
-}
-
-void StaticObject::unpack(simdata::UnPacker& p) {
-	SimObject::unpack(p);
-}
-
+// top-level data
+SIMDATA_REGISTER_INTERFACE(FeatureGroupList)
+SIMDATA_REGISTER_INTERFACE(Theater)
 

@@ -23,7 +23,7 @@
  **/
 
 #ifndef __STATICOBJECT_H__
-#define __STATCIOBJECT_H__
+#define __STATICOBJECT_H__
 
 
 #include "SimObject.h"
@@ -40,9 +40,9 @@ public:
 	StaticObject();
 	virtual ~StaticObject();
 
-//	EXTEND_SIMDATA_XML_INTERFACE(StaticObject, SimObject)
-//		SIMDATA_XML("direction", StaticObject::m_Direction, false)
-//	END_SIMDATA_XML_INTERFACE
+	EXTEND_SIMDATA_XML_INTERFACE(StaticObject, SimObject)
+		SIMDATA_XML("hit_points", StaticObject::m_HitPoints, true)
+	END_SIMDATA_XML_INTERFACE
 
 	SIMDATA_OBJECT(StaticObject, 0, 0)
 
@@ -50,9 +50,15 @@ protected:
 	virtual void pack(simdata::Packer& p) const;
 	virtual void unpack(simdata::UnPacker& p);
 	virtual void dump() {}
-	virtual void onUpdate(double) {}
+	virtual double onUpdate(double) { return 0.0; }
 	virtual void initialize() {}
 	virtual unsigned int onRender() { return 0; }
+	virtual simdata::Vector3 const & getGlobalPosition() const { return simdata::Vector3::ZERO; }
+	virtual void setGlobalPosition(simdata::Vector3 const & position) {}
+	virtual void updateScene(simdata::Vector3 const &origin) {}
+	virtual void getStats(std::vector<std::string> &stats) const {}
+
+	short m_HitPoints;
 };
 
 

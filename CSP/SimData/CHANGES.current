@@ -17,6 +17,17 @@ Version 0.4.0 (in progress)
  * Made static thread methods inline to avoid declaring them in multiple
    translation units (silences a g++ warning).
 
+ * Added int64 and uint64 types.  HashT already served this purpose for the
+   most part, but could not be used in switch statements (which are handy
+   for message decoding).  Changed the tagged record compiler to generate
+   uint64 ids.  The types should work on both win32 and gnu/linux.  Use
+   the SIMDATA_LL and SIMDATA_ULL macros for defining 64-bit constants in
+   a platform neutral way.  Note the int64 and uint64 have not been added
+   to the Reader/Writer interfaces yet.
+
+ * Cleanup up tagged record generation slightly to avoid warning messages
+   under g++ (extra comma at end of an enum list).
+
 2004-07-26: delta
  * Removed some not needed SIMDATA_EXPORT for vs 7.1.
 

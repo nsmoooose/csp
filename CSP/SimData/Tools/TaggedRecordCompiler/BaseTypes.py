@@ -129,16 +129,21 @@ class CompoundType(Declaration):
       format.write('enum {')
       format.indent()
       idx = 8
-      for element in self.elements:
+      # write all but the last element tag
+      for element in self.elements[:-1]:
         format.write('TAG_%s = %d,' % (element.id, idx))
+        idx = idx + 1
+      # write last element without a trailing comma to prevent compiler
+      # warnings/errors
+      if self.elements:
+        element = self.elements[-1]
+        format.write('TAG_%s = %d' % (element.id, idx))
         idx = idx + 1
       format.dedent()
       format.write('};')
       format.write()
     for element in self.elements:
       format.write('simdata::int32 m_has_%s : 1;' % (element.id))
-    format.write()
-    for element in self.elements:
       element.dump_private(format);
     format.dedent()
     format.write()
@@ -430,6 +435,7 @@ class Message(CompoundType):
     if not format:
       format = CodeFormat.Format(file=file)
     format.write('int %s::m_CustomId = 0;' % (self.id))
+    format.write('const %s::Id %s::_Id;' % (self.id, self.id))
     format.write('namespace { simdata::TaggedRecordFactory<%s> __%s_factory; }' % (self.id, self.id))
 
   def _extra(self, format):
@@ -440,8 +446,8 @@ class Message(CompoundType):
     except ValueError:
       print >>sys.stderr, 'ERROR: VERSION option on %s must be an integer' % name
       sys.exit(1)
-    id0, id1 = md5hash32('%s_%d' % (name, version))
-    d = {'name': name, 'version': version, 'id0': id0, 'id1': id1}
+    id64 = md5hash64('%s_%d' % (name, version))
+    d = {'name': name, 'version': version, 'id64': id64}
     format.template(Message.TRF_GETID, d)
     format.template(Message.TRF_GETVERSION, d)
     format.template(Message.TRF_GETNAME, d)
@@ -464,7 +470,8 @@ class Message(CompoundType):
 
   TRF_GETID = '''
   virtual Id getId() const { return _getId(); }
-  static inline Id _getId() { return Id(%(id0)du, %(id1)du); }
+  static const Id _Id = SIMDATA_ULL(%(id64)d);
+  static inline Id _getId() { return _Id; }
   virtual int getCustomId() const { return _getCustomId(); }
   static inline int _getCustomId() { return m_CustomId; }
   static inline void _setCustomId(int id) { m_CustomId = id; }

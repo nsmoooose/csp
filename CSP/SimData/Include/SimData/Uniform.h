@@ -54,6 +54,26 @@ typedef signed short int16;
 typedef unsigned short uint16;
 typedef signed int int32;
 typedef unsigned int uint32;
+
+#ifdef _WIN32
+typedef __int64 int64;
+typedef unsigned __int64 uint64;
+# define SIMDATA_ULL(x) x
+# define SIMDATA_LL(x) x
+#else
+// use __extension__ to avoid G++ errors with -pedantic
+#ifndef SWIG
+__extension__
+#endif // SWIG
+typedef long long int64;
+#ifndef SWIG
+__extension__
+#endif // SWIG
+typedef unsigned long long uint64;
+# define SIMDATA_ULL(x) x##ULL
+# define SIMDATA_LL(x) x##LL
+#endif
+
 //@}
 
 /** Test for big-endian byte order */

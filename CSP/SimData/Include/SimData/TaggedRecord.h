@@ -57,10 +57,6 @@
 
 NAMESPACE_SIMDATA
 
-// use our own, platform-neutral int64 representation
-// TODO the base class (hasht) should probably renamed.
-typedef hasht int64;
-
 
 /** Simple Writer class for serializing to a memory buffer.
  */
@@ -94,6 +90,7 @@ public:
 	virtual Writer & operator<<(int16 const x) { SIMDATA_BW_COPY }
 	virtual Writer & operator<<(int32 const x) { SIMDATA_BW_COPY }
 	virtual Writer & operator<<(int64 const x) { SIMDATA_BW_COPY }
+	virtual Writer & operator<<(hasht const x) { SIMDATA_BW_COPY }
 	virtual Writer & operator<<(uint8 const x) { SIMDATA_BW_COPY }
 	virtual Writer & operator<<(uint16 const x) { SIMDATA_BW_COPY }
 	virtual Writer & operator<<(uint32 const x) { SIMDATA_BW_COPY }
@@ -101,7 +98,7 @@ public:
 	virtual Writer & operator<<(double const x) { SIMDATA_BW_COPY }
 	virtual Writer & operator<<(bool const x) { SIMDATA_BW_COPY }
 	virtual Writer & operator<<(hasht const &x) { SIMDATA_BW_COPY }
-	virtual Writer & operator<<(char const *x) {
+	virtual Writer & operator<<(char const *) {
 		assert(0);
 		return *this;
 	}
@@ -146,13 +143,14 @@ public:
 	virtual Reader & operator>>(int16 &x) { SIMDATA_BR_COPY }
 	virtual Reader & operator>>(int32 &x) { SIMDATA_BR_COPY }
 	virtual Reader & operator>>(int64 &x) { SIMDATA_BR_COPY }
+	virtual Reader & operator>>(hasht &x) { SIMDATA_BR_COPY }
 	virtual Reader & operator>>(uint8 &x) { SIMDATA_BR_COPY }
 	virtual Reader & operator>>(uint16 &x) { SIMDATA_BR_COPY }
 	virtual Reader & operator>>(uint32 &x) { SIMDATA_BR_COPY }
 	virtual Reader & operator>>(float &x) { SIMDATA_BR_COPY }
 	virtual Reader & operator>>(double &x) { SIMDATA_BR_COPY }
 	virtual Reader & operator>>(bool &x) { SIMDATA_BR_COPY }
-	virtual Reader & operator>>(char * &x) {
+	virtual Reader & operator>>(char * &) {
 		assert(0);  // avoid allocation issues for now -- no char*'s
 		return *this;
 	}
@@ -191,6 +189,10 @@ public:
 		return *this;
 	}
 	virtual Writer & operator<<(int64 const x) {
+		_buffer.append(reinterpret_cast<const char*>(&x), sizeof(x));
+		return *this;
+	}
+	virtual Writer & operator<<(hasht const x) {
 		_buffer.append(reinterpret_cast<const char*>(&x), sizeof(x));
 		return *this;
 	}
@@ -273,6 +275,13 @@ public:
 	virtual Reader & operator>>(int64 &x) {
 		assert(_bytes >= sizeof(x));
 		x = *(reinterpret_cast<int64 const*>(_data));
+		_data += sizeof(x);
+		_bytes -= sizeof(x);
+		return *this;
+	}
+	virtual Reader & operator>>(hasht &x) {
+		assert(_bytes >= sizeof(x));
+		x = *(reinterpret_cast<hasht const*>(_data));
 		_data += sizeof(x);
 		_bytes -= sizeof(x);
 		return *this;
@@ -436,7 +445,7 @@ class TagReader: public TagBase {
 class TaggedRecord: public Referenced {
 public:
 	typedef Ref<TaggedRecord> Ref;
-	typedef int64 Id;
+	typedef uint64 Id;
 	virtual void serialize(TagReader &reader) = 0;
 	virtual void serialize(TagWriter &writer) const = 0;
 	virtual Id getId() const=0;

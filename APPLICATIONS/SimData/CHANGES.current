@@ -1,6 +1,17 @@
 Version 0.3.3 (in progress)
 ===========================
 
+2003-07-26: onsight
+            Added SConstruct and SConscript scripts for building and
+	    installing with SCons <http://www.scons.org>.  Some helper
+	    routines are in construct.py.  This SCons build system 
+	    testing and evaluation purposes only at this point.  Give
+	    it a try if you like and report problems, suggestions, or
+	    patches to <http://csp.sourceforge.net/forum>.  Note that
+	    no tests have yet been done under Windows, and while it
+	    should work in principle there will certainly be some
+	    significant problems early on.
+
 2003-07-24: onsight
             Removed (commented) type conversion operators in TypeAdapter.
 	    These were dodgey at best, if not outright dangerous.  They

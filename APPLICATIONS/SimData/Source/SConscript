@@ -1,0 +1,178 @@
+# -*-python-*-
+
+# SimData: Data Infrastructure for Simulations
+# Copyright (C) 2002, 2003 Mark Rose <tm2@stm.lbl.gov>
+# 
+# This file is part of SimData.
+# 
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# as published by the Free Software Foundation; either version 2
+# of the License, or (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+
+import os.path
+
+Import('env', 'construct')
+
+headers = """
+	BaseType.h
+	Conversions.h
+	DataArchive.h
+	DataManager.h
+	Date.h
+	Enum.h
+	Exception.h
+	Export.h
+	External.h
+	FileUtility.h
+	GeoPos.h
+	GlibCsp.h
+	hash_map.h
+	HashUtility.h
+	Integer.h
+	InterfaceRegistry.h
+	Interpolate.h
+	Key.h
+	Link.h
+	List.h
+	LUT.h
+	Log.h
+	LogStream.h
+	Math.h
+	Matrix3.h
+	Noise.h
+	ns-simdata.h
+	Object.h
+	ObjectInterface.h
+	osg.h
+	Pack.h
+	Path.h
+	PTS.h
+	Quaternion.h
+	Random.h
+	Real.h
+	Ref.h
+	String.h
+	TypeAdapter.h
+	Types.h
+	Vector3.h
+	Vector3.inl
+	Version.h
+	""".split()
+
+interfaces = """
+	cSimData.i
+	BaseType.i
+	Conversions.i
+	DataArchive.i
+	DataManager.i
+	Date.i
+	Enum.i
+	Exception.i
+	External.i
+	filemap.i
+	GeoPos.i
+	HashUtility.i
+	InterfaceRegistry.i
+	Interpolate.i
+	Key.i
+	Link.i
+	List.i
+	Log.i
+	LUT.i
+	Math.i
+	Matrix3.i
+	Noise.i
+	Object.i
+	Pack.i
+	Path.i
+	Quaternion.i
+	Random.i
+	Real.i
+	String.i
+	Types.i
+	vector.i
+	Vector3.i
+	""".split()
+
+sources = """
+	BaseType.cpp
+	DataArchive.cpp
+	DataManager.cpp
+	Date.cpp
+	Enum.cpp
+	Exception.cpp
+	External.cpp
+	FileUtility.cpp
+	GeoPos.cpp
+	HashUtility.cpp
+	InterfaceRegistry.cpp
+	Interpolate.cpp
+	Key.cpp
+	Link.cpp
+	List.cpp
+	LogStream.cpp
+	LUT.cpp
+	Math.cpp
+	Matrix3.cpp
+	Noise.cpp
+	Object.cpp
+	Pack.cpp
+	Path.cpp
+	Quaternion.cpp
+	Random.cpp
+	Real.cpp
+	TypeAdapter.cpp
+	Vector3.cpp
+	Version.cpp
+	""".split()
+
+package = """
+	__init__.py
+	Parse.py
+	Compile.py
+	Debug.py
+	cSimData.py
+	""".split()
+
+package = map(lambda x: File('#/SimData/'+x), package)
+headers = map(lambda x: File('#/Include/SimData/'+x), headers)
+interfaces = map(lambda x: File('#/Include/SimData/'+x), interfaces)
+
+
+# swig module
+
+env.SwigBuild(['cSimData_wrap.cpp', 'cSimData.py'], 'cSimData')
+wrapper = env.CopyFile('#/SimData/cSimData.py', 'cSimData.py')
+sources.append('cSimData_wrap.cpp')
+
+
+# main libraries
+
+shared_library = env.SharedLibrary('#/SimData/_cSimData', sources, SHLIBPREFIX = '', LIBS = env["SWLIBS"])
+static_library = env.StaticLibrary('#/SimData/libSimData', sources)
+
+
+# installation
+
+package_target = os.path.join(env['PACKAGE_PREFIX'], 'SimData')
+include_target = os.path.join(env['INCLUDE_PREFIX'], 'SimData')
+package = package + [shared_library, static_library]
+install_package = construct.installPythonSources(env, package_target, package)
+install_headers = construct.installPythonSources(env, include_target, headers + interfaces)
+env.Alias('install', install_package + install_headers)
+
+
+# default target(s)
+
+Default(shared_library, wrapper)
+

@@ -1,0 +1,94 @@
+# -*-python-*-
+
+# SimData: Data Infrastructure for Simulations
+# Copyright (C) 2002, 2003 Mark Rose <tm2@stm.lbl.gov>
+# 
+# This file is part of SimData.
+# 
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# as published by the Free Software Foundation; either version 2
+# of the License, or (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+
+
+#############################################################################
+#
+# This is a preliminary build system based on SCons (http://www.scons.org).
+#
+#   * It is intended for testing only at this point, and will 
+#     not immediately replace the existing make, distutils, and 
+#     msvs project systems.  
+#
+#   * So far this script has been developed only under Linux, so
+#     it will likely have major holes under Windows.  
+#
+#   * Please report any problems or patches to 
+#                http://csp.sourceforge.net/forum
+#
+# --MR
+#############################################################################
+
+
+print "================================================"
+print "             SimData Construction"
+print "================================================"
+
+EnsureSConsVersion(0,9)
+EnsurePythonVersion(2,2)
+
+import construct
+
+opt = construct.OptionSet()
+set, add = opt.methods()
+
+set.SWIG_MIN_VERSION = '1.3.16'
+set.PYTHON_INC = construct.getPythonInc()
+set.SUBDIRS = ('Source', 'Doc')
+add.CXXFLAGS = '-g -Wall -O2'
+add.CPPFLAGS = ''
+add.CPPPATH = ['#/Include', set.PYTHON_INC]
+add.SHLINKFLAGS = ' -Wl,-z,lazyload'
+add.SHLINKLIBS = ['dl']
+add.SWFLAGS = '-c -c++ -python -noexcept'
+add.SWLIBS = ['swigpy']
+
+set.PACKAGE_PREFIX = construct.getPythonLib()
+set.INCLUDE_PREFIX = construct.getPythonInc()
+
+options = Options('config.py', ARGUMENTS)
+options.Add('CXX', 'C++ compiler')
+options.Add('LINK', 'linker')
+options.Add('PACKAGE_PREFIX', 'Installation path for the SimData package')
+options.Add('INCLUDE_PREFIX', 'Installation path for the SimData headers and interfaces')
+
+env = Environment(options = options)
+opt.apply(env)
+
+construct.addSwigSupport(env)
+construct.addCopyFile(env)
+construct.addDoxygen(env)
+
+conf = Configure(env)
+construct.addConfigTests(conf)
+if not conf.checkSwig(set.SWIG_MIN_VERSION):
+	print
+	print "   SimData requires SWIG %s or newer.  If a compatible version" % set.SWIG_MIN_VERSION
+	print "   of SWIG is already installed, check that is it in the default"
+	print "   path.  SWIG can be downloaded from http://www.swig.org"
+	print
+	Exit(1)
+
+Export('env', 'construct')
+
+for subdir in set.SUBDIRS:
+	SConscript(subdir+'/SConscript')
+

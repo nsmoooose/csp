@@ -434,66 +434,62 @@ Quaternion Quaternion::Squad (double fT, const Quaternion& rkP,
 Quaternion Quaternion::MakeQFromEulerAngles(double x, double y, double z)
 {
 	Quaternion q;
-	double roll = DegreesToRadians(x);
-	double pitch = DegreesToRadians(y);
-	double yaw = DegreesToRadians(z);
 	
-	double cyaw, cpitch, croll, syaw, spitch, sroll;
-	double cyawcpitch, syawspitch, cyawspitch, syawcpitch;
+	double roll = x;
+	double pitch = y;
+	double yaw = z;
 
-	cyaw = cos(0.5f * yaw);
-	cpitch = cos(0.5f * pitch);
-	croll = cos(0.5f * roll);
-	syaw = sin(0.5f * yaw);
-	spitch = sin(0.5f * pitch);
-	sroll = sin(0.5f * roll);
+	double cyaw = cos(0.5f * yaw);
+	double cpitch = cos(0.5f * pitch);
+	double croll = cos(0.5f * roll);
+	double syaw = sin(0.5f * yaw);
+	double spitch = sin(0.5f * pitch);
+	double sroll = sin(0.5f * roll);
 
-	cyawcpitch = cyaw*cpitch;
-	syawspitch = syaw*spitch;
-	cyawspitch = cyaw*spitch;
-	syawcpitch = syaw*cpitch;
+	double cyawcpitch = cyaw*cpitch;
+	double syawspitch = syaw*spitch;
+	double cyawspitch = cyaw*spitch;
+	double syawcpitch = syaw*cpitch;
 
-	q.w = (double) (cyawcpitch * croll + syawspitch * sroll);
-	q.x = (double) (cyawcpitch * sroll - syawspitch * croll); 
-	q.y = (double) (cyawspitch * croll + syawcpitch * sroll);
-	q.z = (double) (syawcpitch * croll - cyawspitch * sroll);
+	q.w = cyawcpitch * croll + syawspitch * sroll;
+	q.x = cyawcpitch * sroll - syawspitch * croll; 
+	q.y = cyawspitch * croll + syawcpitch * sroll;
+	q.z = syawcpitch * croll - cyawspitch * sroll;
 
 	return q;
 }
 
 Vector3	Quaternion::MakeEulerAnglesFromQ(Quaternion const& q)
 {
-	double	r11, r21, r31, r32, r33, r12, r13;
-	double	q00, q11, q22, q33;
-	double	tmp;
 	Vector3	u;
 
-	q00 = q.w * q.w;
-	q11 = q.x * q.x;
-	q22 = q.y * q.y;
-	q33 = q.z * q.z;
+	double q00 = q.w * q.w;
+	double q11 = q.x * q.x;
+	double q22 = q.y * q.y;
+	double q33 = q.z * q.z;
 
-	r11 = q00 + q11 - q22 - q33;
-	r21 = 2 * (q.x*q.y + q.w*q.z);
-	r31 = 2 * (q.x*q.z - q.w*q.y);
-	r32 = 2 * (q.y*q.z + q.w*q.x);
-	r33 = q00 - q11 - q22 + q33;
+	double r11 = q00 + q11 - q22 - q33;
+	double r21 = 2 * (q.x*q.y + q.w*q.z);
+	double r31 = 2 * (q.x*q.z - q.w*q.y);
+	double r32 = 2 * (q.y*q.z + q.w*q.x);
+	double r33 = q00 - q11 - q22 + q33;
 
-	tmp = fabs(r31);
+	double tmp = fabs(r31);
 	if(tmp > 0.999999)
 	{
-		r12 = 2 * (q.x*q.y - q.w*q.z);
-		r13 = 2 * (q.x*q.z + q.w*q.y);
+		double r12 = 2 * (q.x*q.y - q.w*q.z);
+		double r13 = 2 * (q.x*q.z + q.w*q.y);
 
-		u.x = RadiansToDegrees(0.0f); //roll
-		u.y = RadiansToDegrees((double) (-(G_PI/2) * r31/tmp)); // pitch
-		u.z = RadiansToDegrees((double) atan2(-r12, -r31*r13)); // yaw
-		return u;
+		u.x = 0.0f; //roll
+		u.y = -(G_PI/2) * r31/tmp; // pitch
+		u.z = atan2(-r12, -r31*r13); // yaw
+	}
+	else {
+	u.x = atan2(r32, r33); // roll
+	u.y = asin(-r31); // pitch
+	u.z = atan2(r21, r11); // yaw
 	}
 
-	u.x = RadiansToDegrees((double) atan2(r32, r33)); // roll
-	u.y = RadiansToDegrees((double) asin(-r31)); // pitch
-	u.z = RadiansToDegrees((double) atan2(r21, r11)); // yaw
 	return u;
 	
 

@@ -99,28 +99,6 @@ void GameScreen::InitInterface()
 	} else {
 		CSP_LOG( CSP_APP , CSP_ERROR, "No HID interface maps defined, '__gamescreen__' not found.");
 	}
-	
-	// add a layer for texts on screen
-	m_rpInfosView = new osgUtil::SceneView();
-	m_rpInfosView->setDefaults();
-
-	int ScreenWidth = CSPSim::theSim->GetSDLScreen()->w;
-	int ScreenHeight = CSPSim::theSim->GetSDLScreen()->h;
-
-	m_rpInfosView->setViewport(0,0,ScreenWidth,ScreenHeight);
-
-	osg::Depth* depth = new osg::Depth;
-    depth->setRange(0.0,0.0);  
-    osg::StateSet* State = new osg::StateSet();
-    State->setAttribute(depth);
-
-	m_rpInfosView->getRenderStage()->setClearMask(0x0);
-
-	m_ScreenInfoManager = new ScreenInfoManager(ScreenWidth,ScreenHeight);
-	m_ScreenInfoManager->setName("ScreenInfoManager");
-    m_ScreenInfoManager->setStateSet(State);
-
-    m_rpInfosView->setSceneData(m_ScreenInfoManager.get() );
 }
 
 
@@ -192,6 +170,28 @@ void GameScreen::OnInit()
 	if (m_ActiveObject.valid()) {
 		m_ActiveObject->ShowRepresentant(1);
 	}
+
+	// add a layer for texts on screen
+	m_rpInfosView = new osgUtil::SceneView();
+	m_rpInfosView->setDefaults();
+
+	int ScreenWidth = CSPSim::theSim->GetSDLScreen()->w;
+	int ScreenHeight = CSPSim::theSim->GetSDLScreen()->h;
+
+	m_rpInfosView->setViewport(0,0,ScreenWidth,ScreenHeight);
+
+	osg::Depth* depth = new osg::Depth;
+    depth->setRange(0.0,0.0);  
+    osg::StateSet* State = new osg::StateSet();
+    State->setAttribute(depth);
+
+	m_rpInfosView->getRenderStage()->setClearMask(0x0);
+
+	m_ScreenInfoManager = new ScreenInfoManager(ScreenWidth,ScreenHeight);
+	m_ScreenInfoManager->setName("ScreenInfoManager");
+    m_ScreenInfoManager->setStateSet(State);
+
+    m_rpInfosView->setSceneData(m_ScreenInfoManager.get() );
 }
 
 void GameScreen::OnExit()

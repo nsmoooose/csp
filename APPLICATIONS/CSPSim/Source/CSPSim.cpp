@@ -239,11 +239,13 @@ void CSPSim::Init()
 
 	// create screens
 	m_GameScreen = new GameScreen;
-	m_GameScreen->OnInit();
-	m_GameScreen->SetBattlefield(m_Battlefield);
 	
 	// start in the aircraft
 	setActiveObject(ao);
+
+	// setup screens
+	m_GameScreen->OnInit();
+	m_GameScreen->SetBattlefield(m_Battlefield);
 
 #if 0
 	// set the Main Menu then start the main loop

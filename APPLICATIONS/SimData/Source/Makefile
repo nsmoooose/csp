@@ -1,5 +1,5 @@
 TOPDIR = ..
-INCLUDE = -I$(TOPDIR)/Include
+INCLUDE = -I$(TOPDIR)/Include -I$(PYTHON_INCLUDE)
 
 CFLAGS = $(GCFLAGS) $(INCLUDE) $(GDEBUGF)
 SWCXXF = $(GCFLAGS) $(INCLUDE)
@@ -23,6 +23,7 @@ MODULES = \
 	LogStream \
 	Math \
 	Matrix3 \
+	Noise \
 	Object \
 	Pack \
 	Path \
@@ -92,6 +93,7 @@ $(DEPDIR)/%.swigdep : %
 libSimData.a: $(OBJECTS)
 	ar cru $@ $^
 	ranlib $@
+	cp $@ $(TOPDIR)/SimData
 
 _cSimData.so: $(OBJECTS) cSimData_wrap.o
 	$(CXX) -Wl,-z,lazyload $(LDOPTS) -o$@ $^
@@ -102,7 +104,7 @@ cSimData_wrap.cpp: cSimData.i
 	cp cSimData.py $(TOPDIR)/SimData
 
 cSimData_wrap.o: cSimData_wrap.cpp
-	$(CXX) -I$(PYTHON_INCLUDE) -DSWIG_GLOBAL -c $(SWCXXF) $(@:.o=.cpp)
+	$(CXX) -c $(SWCXXF) -I$(PYTHON_INCLUDE) $(@:.o=.cpp)
 
 %.o: %.cpp 
 	$(CXX) -c $(CFLAGS) $(@:.o=.cpp)

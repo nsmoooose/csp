@@ -29,7 +29,7 @@
 #ifndef __RANDOM_H__
 #define __RANDOM_H__
 
-#include <math.h>
+#include <cmath>
 
 #include <SimData/Export.h>
 #include <SimData/ns-simdata.h>
@@ -60,10 +60,13 @@ public:
 		ran2(_seed);
 		_r = ran2(_seed);
 	}
-	float GetRand() {
+	float getRand() const {
 		return _r;
 	}
-	float NewRand() {
+	long getSeed() const {
+		return _seed;
+	}
+	float newRand() {
 		_r = ran2(_seed);
 		return _r;
 	}
@@ -83,7 +86,7 @@ public:
 	Gauss(float m=0.0, float s=1.0);
 	float box_muller(float, float);
 	float newGauss();
-	float getGauss() { return _g; }
+	float getGauss() const { return _g; }
 };
 	
 

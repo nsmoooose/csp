@@ -1,6 +1,22 @@
 Version 0.3.1 (in progress)
 ===========================
 
+            *** ANY MSVC USERS: PLEASE UPDATE THE PROJECT FILE TO INCLUDE ***
+	    *** NOISE.CPP                                                 ***
+
+2003-03-25: onsight
+            Changed #define types for InterpolatedData to class typedefs.
+	    
+	    Made several methods const, and added a const iterator typedef.
+
+	    Preliminary implementation of a one-dimensional perlin noise
+	    class.
+
+	    Added some basic unit connversion functions.
+
+	    More documentation of date classes, and a couple bug fixes in
+	    Zulu.
+
 2003-03-22: delta
 	    Minor changes to setup.py under make_install_win
 

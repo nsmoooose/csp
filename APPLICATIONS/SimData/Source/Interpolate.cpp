@@ -25,6 +25,9 @@
 
 NAMESPACE_SIMDATA
 
+typedef InterpolatedData::value_t value_t;
+typedef InterpolatedData::vector_t vector_t;
+
 
 #define min(a, b) (((a)<(b)) ? (a) : (b))
 #define max(a, b) (((a)>(b)) ? (a) : (b))
@@ -85,7 +88,7 @@ vector_t InterpolatedData::compute_second_derivatives(const vector_t& breaks, co
 	return z;
 }
 
-int InterpolatedData::find(vector_t b, value_t v) {
+int InterpolatedData::find(vector_t b, value_t v) const {
 	int lo = 0;
 	int hi = b.size()-1;
 	int i;
@@ -177,7 +180,7 @@ void Curve::_compute_second_derivatives() {
 	_sd = InterpolatedData::compute_second_derivatives(_breaks, _data);
 }
 
-value_t Curve::getPrecise(value_t v) {
+value_t Curve::getPrecise(value_t v) const {
 	int i = find(_breaks, v);
 	double h = _breaks[i+1] - _breaks[i];
 	double f1 = 1.0 - (v - _breaks[i]) / h;
@@ -191,7 +194,7 @@ value_t Curve::getPrecise(value_t v) {
 	return v;
 }
 
-value_t Curve::getValue(value_t p) {
+value_t Curve::getValue(value_t p) const {
 	double i = (p - _min) / _range;
 	if (i < 0.0) i = 0.0;
 	else if (i > 1.0) i = 1.0;
@@ -204,10 +207,10 @@ value_t Curve::getValue(value_t p) {
 	return z;
 }
 
-void Curve::dumpCurve(FILE* f) {
+void Curve::dumpCurve(FILE* f) const {
 	double x = _min;
 	double d = _range / _table.size();
-	vector_it element = _table.begin();
+	vector_cit element = _table.begin();
 	while (element != _table.end()) {
 		fprintf(f, "%.4f %.4f\n", x, *element++);
 		x += d;
@@ -259,7 +262,7 @@ void Table::invalidate() {
 	_valid = 0; 
 }
 
-int Table::isValid() {
+int Table::isValid() const {
 	return _valid; 
 }
 
@@ -370,7 +373,7 @@ void Table::interpolate() {
 	}
 }
 
-value_t Table::getPrecise(value_t x, value_t y) {
+value_t Table::getPrecise(value_t x, value_t y) const {
 	assert(isValid());
 	int x_i = find(_x_breaks, x);
 	int y_i = find(_y_breaks, y);
@@ -410,7 +413,7 @@ value_t Table::getPrecise(value_t x, value_t y) {
 	return ((value_t) v);
 }
 
-value_t Table::getValue(value_t x, value_t y) {
+value_t Table::getValue(value_t x, value_t y) const {
 	assert(isValid());
 	double x_i = (x - _x_min) / _x_range;
 	double y_i = (y - _y_min) / _y_range;
@@ -461,10 +464,10 @@ void Table::_compute_second_derivatives() {
 	_valid = 1;
 }
 
-void Table::toPGM(FILE *fp) {
+void Table::toPGM(FILE *fp) const {
 	fprintf(fp, "P2 %d %d 255\n", _x_in, _y_in);
 	int i, j;
-	vector_it element = _table.begin();
+	vector_cit element = _table.begin();
 	double min=1e+10, max=-1e+10, v;
 	for (i=_x_in*_y_in; i>0; i--) {
 		v = *element++;
@@ -484,9 +487,9 @@ void Table::toPGM(FILE *fp) {
 	}
 }
 
-void Table::dumpTable(FILE *fp) {
+void Table::dumpTable(FILE *fp) const {
 	int i, j;
-	vector_it element = _table.begin();
+	vector_cit element = _table.begin();
 	for (j=0; j<_y_in; j++) {
 		for (i=0; i<_x_in; i++) {
 			fprintf(fp, "%0.2f ", (float) *element++);
@@ -495,9 +498,9 @@ void Table::dumpTable(FILE *fp) {
 	}
 }
 
-void Table::dumpDRows(FILE *fp) {
+void Table::dumpDRows(FILE *fp) const {
 	int i, j;
-	vector_it element = _drows.begin();
+	vector_cit element = _drows.begin();
 	for (j=0; j<_y_n; j++) {
 		for (i=0; i<_x_n; i++) {
 			fprintf(fp, "%0.2f ", (float) *element++);
@@ -506,9 +509,9 @@ void Table::dumpDRows(FILE *fp) {
 	}
 }
 
-void Table::dumpDCols(FILE *fp) {
+void Table::dumpDCols(FILE *fp) const {
 	int i, j;
-	vector_it element = _dcols.begin();
+	vector_cit element = _dcols.begin();
 	for (j=0; j<_y_n; j++) {
 		for (i=0; i<_x_n; i++) {
 			fprintf(fp, "%0.2f ", (float) *element++);

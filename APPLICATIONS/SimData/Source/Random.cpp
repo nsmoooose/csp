@@ -45,8 +45,8 @@ float box_muller(float mean, float sigma) {
 	}
 	else {
 		do {
-			x1 = 2.0 * g_Random.NewRand() - 1.0;
-			x2 = 2.0 * g_Random.NewRand() - 1.0;
+			x1 = 2.0 * g_Random.newRand() - 1.0;
+			x2 = 2.0 * g_Random.newRand() - 1.0;
 			w = x1 * x1 + x2 * x2;
 		} while ( w >= 1.0 );
 		w = sqrt( (-2.0 * log( w ) ) / w );
@@ -143,7 +143,7 @@ float Random::ran2(long& idum) {
 
 
 /* 
- * Generate random number with a normal distribution.
+ * Generate a random number with a normal distribution.
  *
  * Classic, fast method using polar coordinates.  See
  * http://mathworld.wolfram.com/Box-MullerTransformation.html
@@ -161,8 +161,8 @@ float Gauss::box_muller(float mean, float sigma) {
 	}
 	else {
 		do {
-			x1 = 2.0 * NewRand() - 1.0;
-			x2 = 2.0 * NewRand() - 1.0;
+			x1 = 2.0 * newRand() - 1.0;
+			x2 = 2.0 * newRand() - 1.0;
 			w = x1 * x1 + x2 * x2;
 		} while ( w >= 1.0 );
 		w = sqrt( (-2.0 * log( w ) ) / w );

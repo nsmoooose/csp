@@ -45,9 +45,11 @@
 
 
 
+/*
 #define value_t	float
 #define vector_t std::vector<value_t>
 #define vector_it std::vector<value_t>::iterator
+*/
 
 
 NAMESPACE_SIMDATA
@@ -75,9 +77,10 @@ class InterpolatedData: public BaseType {
 
 public:
 
-//	typedef float value_t;
-//	typedef vector<value_t> vector_t;
-//	typedef vector<value_t>::iterator vector_it;
+	typedef float value_t;
+	typedef std::vector<value_t> vector_t;
+	typedef std::vector<value_t>::iterator vector_it;
+	typedef std::vector<value_t>::const_iterator vector_cit;
 
 	static const Enumeration Method;;
 	Enum method;
@@ -89,7 +92,7 @@ public:
 	virtual value_t getValue(value_t, value_t) const;
 	virtual value_t getPrecise(value_t, value_t) const;
 	vector_t compute_second_derivatives(const vector_t& breaks, const vector_t& data);
-	int find(vector_t b, value_t v);
+	int find(vector_t b, value_t v) const;
 };
 
 
@@ -121,9 +124,9 @@ public:
 	void setData(const vector_t& data);
 	void interpolate(value_t spacing);
 	virtual void _compute_second_derivatives();
-	value_t getPrecise(value_t v);
-	value_t getValue(value_t p);
-	void dumpCurve(FILE* f);
+	value_t getPrecise(value_t v) const;
+	value_t getValue(value_t p) const;
+	void dumpCurve(FILE* f) const;
 	virtual std::string asString() const;
 };
 
@@ -153,7 +156,7 @@ public:
 	const Table &operator=(const Table &);
 #endif // SWIG
 	void invalidate();
-	int isValid();
+	int isValid() const;
 	virtual void pack(Packer &p) const;
 	virtual void unpack(UnPacker &p);
 	vector_t getXBreaks() const;
@@ -168,13 +171,13 @@ public:
 	value_t getYSpacing() const;
 	void setData(const vector_t& data);
 	void interpolate();
-	value_t getPrecise(value_t x, value_t y);
-	value_t getValue(value_t x, value_t y);
+	value_t getPrecise(value_t x, value_t y) const;
+	value_t getValue(value_t x, value_t y) const;
 	virtual void _compute_second_derivatives();
-	void toPGM(FILE *fp);
-	void dumpTable(FILE *fp);
-	void dumpDRows(FILE *fp);
-	void dumpDCols(FILE *fp);
+	void toPGM(FILE *fp) const;
+	void dumpTable(FILE *fp) const;
+	void dumpDRows(FILE *fp) const;
+	void dumpDCols(FILE *fp) const;
 	virtual std::string asString() const;
 
 };

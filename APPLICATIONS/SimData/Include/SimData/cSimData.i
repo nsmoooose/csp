@@ -51,6 +51,8 @@
 
 %include "SimData/Exception.i"
 %include "SimData/HashUtility.i"
+%include "SimData/Conversions.i"
+%include "SimData/Noise.i"
 %include "SimData/Types.i"
 
 %exception {

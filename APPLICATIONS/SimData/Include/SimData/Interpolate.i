@@ -4,9 +4,12 @@
 %}
 
 %include "std_vector.i"
+#ifndef VFLOAT
+#define VFLOAT
 namespace std {
 	%template(vector_t) vector<float>;
 }
+#endif
 using namespace std;
 typedef std::vector vector;
 

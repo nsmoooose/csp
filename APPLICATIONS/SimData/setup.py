@@ -25,9 +25,15 @@
 # -MR
 
 
+
+
 import sys
 
 min_python_version = "2.2.0"
+
+# this is the default path used by make_install under linux to install the 
+# shared and static libraries.  it can be changed with --prefix=XYZ
+default_libpath = "/usr/local/lib"
 
 if len(sys.argv) == 2:
 	command = sys.argv[1]
@@ -66,12 +72,16 @@ def copy_dir(src, dst, files):
             print "%s => %s" % (src_name, dst_name)
             copy_file(src_name, dst_name)
 
-def make_install(win):
+def make_install(win, args):
 	lib = sysconfig.get_python_lib()
 	inc = sysconfig.get_python_inc()
 	modpath = os.path.join(lib, "SimData")
 	incpath = os.path.join(inc, "SimData")
 	localinc = os.path.normpath("Include/SimData")
+	libpath = default_libpath
+	for arg in args:
+		if arg.startswith("--prefix="):
+			libpath = arg[9:]
 	package_files = ['__init__.py', 'Debug.py', 'Parse.py', 'Compile.py']
 	if win:
 		package_files.extend(['cSimData.py', '_cSimData.dll', '_cSimData.lib'])
@@ -87,6 +97,14 @@ def make_install(win):
 		print "Installing SimData headers to", incpath
 		copy_dir(localinc, incpath, headers)
 		copy_dir(localinc, incpath, interfaces)
+		if not win:
+			print "Installing SimData libraries to", libpath
+			copy_dir("SimData", libpath, ['_cSimData.so', 'libSimData.a'])
+		print "Byte compiling the Python modules..."
+		import py_compile
+		for file in package_files:
+			if file.endswith(".py"):
+				py_compile.compile(os.path.join(modpath, file))	
 	except Exception, e:
 		print e
 		sys.exit(1)
@@ -193,6 +211,7 @@ sources = [
 	"Math",
 	"Matrix3",
 	"Object",
+	"Noise",
 	"Pack",
 	"Path",
 	"Quaternion",
@@ -205,6 +224,7 @@ sources = [
 
 headers = [
 	"BaseType.h",
+	"Conversions.h",
 	"DataArchive.h",
 	"Date.h",
 	"Enum.h",
@@ -223,6 +243,7 @@ headers = [
 	"LogStream.h",
 	"Math.h",
 	"Matrix3.h",
+	"Noise.h",
 	"ns-simdata.h",
 	"Object.h",
 	"ObjectInterface.h",
@@ -243,30 +264,30 @@ headers = [
 interfaces = [
 	"cSimData.i",
 	"BaseType.i",
-	"HashUtility.i",
-	"Object.i",
-	"Vector3.i",
+	"Conversions.i",
 	"DataArchive.i",
-	"InterfaceRegistry.i",
-	"Pack.i",
-	"cSimData.i",
 	"Date.i",
-	"Interpolate.i",
-	"Path.i",
-	"filemap.i",
 	"Enum.i",
-	"List.i",
-	"Random.i",
-	"vector.i",
 	"Exception.i",
-	"Log.i",
-	"Spread.i",
 	"External.i",
-	"Math.i",
-	"String.i",
+	"filemap.i",
 	"GeoPos.i",
+	"HashUtility.i",
+	"InterfaceRegistry.i",
+	"Interpolate.i",
+	"List.i",
+	"Log.i",
+	"Math.i",
 	"Matrix3.i",
+	"Object.i",
+	"Pack.i",
+	"Path.i",
+	"Random.i",
+	"Spread.i",
+	"String.i",
 	"Types.i",
+	"vector.i",
+	"Vector3.i",
 ]
 
 
@@ -287,10 +308,10 @@ libraries = ["swigpy", "dl"]
 cflags = []
 
 
-if len(sys.argv)==2:
+if len(sys.argv)>=2:
 	command = sys.argv[1]
 	if command.startswith("make_install"):
-		make_install(command.endswith("win"))
+		make_install(command.endswith("win"), sys.argv[2:])
 	if command == "python_include_path":
 		print sysconfig.get_python_inc()
 		sys.exit(0)

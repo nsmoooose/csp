@@ -420,43 +420,79 @@ private:
 
 
 
-/*
- * Times are represented as floats in seconds since midnight.  This
+/**
+ * class Zulu
+ * 
+ * This class represents the time of day in "zulu" time (i.e. UTC
+ * or Greenwich Mean).
+ * 
+ * Times are stored as doubles in seconds since midnight.  This
  * makes time based calculations relatively easy.  When the second
- * count exceeds 86000, the day is incremented and the clock reset.
+ * count exceeds 86400, the day is incremented and the clock reset.
  * Resetting the clock can cause problems with calculations involving
  * changes in time, so care must be taken.  The advantage of keeping
  * the clock count small is that precision is not lost for small time
  * intervals.  In computing time intervals that should be small,
  * use the SimDate::interval function.
+ *
+ * A timezone parameter and options for operating on "local" times
+ * are provided.  Care must be taken when using these methods in 
+ * conjunction with dates, since the date may differ depending on 
+ * whether local or zulu time is used.
+ * 
+ * @author Mark Rose <mrose@stm.lbl.gov>
  */
-
 
 class SIMDATA_EXPORT Zulu {
 
 public:
 	typedef double time_t;
 
+	/**
+	 * Default constructor.
+	 *
+	 * Time set to midnight, Greenwich mean.
+	 */
 	Zulu() {
 		m_time = 0;
 		m_tz = 0;
 	}
 	
+	/**
+	 * Construct a Zulu from the hour, minute, and second.
+	 *
+	 * @param hour hour (0-23)
+	 * @param minute minute (0-59)
+	 * @param second second (0.0-60.0)
+	 * @param tz timezone (defaults to Greenwich mean)
+	 */
 	Zulu(int hour, int minute, time_t second, int tz=0) {
 		m_time = hour*3600.0 + minute*60.0 + second;
 		m_tz = tz;
 	}
 	
+	/**
+	 * Construct a Zulu from the seconds since midnight.
+	 * 
+	 * @param second seconds since midnight (0.0-86400.0)
+	 * @param tz timezone (default to Greenwich mean)
+	 */
 	Zulu(time_t second, int tz=0) {
 		m_time = second;
 		m_tz = tz;
 	}
 	
+	/**
+	 * Copy constructor
+	 */
 	Zulu(const Zulu &z) {
 		*this = z;
 	}
 	
 #ifndef SWIG
+	/**
+	 * Copy operator.
+	 */
 	const Zulu &operator=(const Zulu &z) {
 		m_time = z.m_time;
 		m_tz = z.m_tz;
@@ -464,49 +500,113 @@ public:
 	}
 #endif // SWIG
 
+	/**
+	 * Set the timezone (only effects the local time)
+	 *
+	 * @param tz timezone (hour offset from Greenwich mean)
+	 */
 	void setTZ(int tz) {
 		m_tz = tz;
 	}
 
+	/**
+	 * Get the timezone.
+	 */
 	int getTZ() const {
 		return m_tz;
 	}
 	
+	/**
+	 * Wrap time to 24 hour period.
+	 *
+	 * Reduces the seconds since midnight to the range 0-86400.
+	 *
+	 * @returns the number of days subtracted to bring the time into range.
+	 */
 	int reduce();
 	
+	/**
+	 * Get the curret time in seconds since midnight.
+	 *
+	 * @param local adjust the result to reflect the timezone.
+	 */
 	time_t getTime(bool local=false) const { 
 		return m_time + (local ? (m_tz * 3600.0) : 0.0);
 	}
 	
+	/**
+	 * Test if the time accumulator exceeds 24 hours.
+	 */
 	bool overflow() const {
-		return m_time >= 86000.0f;
+		return m_time >= 86400.0f;
 	}
 	
+	/**
+	 * Get the hour.
+	 *
+	 * @param local adjust the result to reflect the timezone.
+	 */
 	int getHour(bool local=false) const {
 		int adjust = local ? m_tz : 0;
 		return ((((int)m_time) / 3600) + adjust) % 24;
 	}
 	
+	/**
+	 * Get the minute.
+	 */
 	int getMinute() const {
 		return (((int)m_time) / 60) % 60;
 	}
 	
+	/**
+	 * Get the second.
+	 */
 	int getSecond() const {
 		return ((int)m_time) % 60;
 	}
 	
-	void addTime(time_t dt) {
+	/**
+	 * Advance the time.
+	 *
+	 * @param dt the number of seconds to add.
+	 * @return true if the time exceeds 24 hours (zulu)
+	 */
+	bool addTime(time_t dt) {
 		m_time += dt;
+		return overflow();
 	}
 	
-	void setTime(time_t t) {
+	/**
+	 * Set the time.
+	 *
+	 * @param t the number of seconds since midnight.
+	 * @param local if true, t represents the local time (not zulu).
+	 */
+	void setTime(time_t t, bool local=false) {
+		if (local) t -= m_tz * 3600.0;
 		m_time = t;
 	}
 
+	/**
+	 * Extract time from a C tm structure.
+	 *
+	 * @param tm a time structure returned by gmtime() and localtime()
+	 * @param local if true, tm represents the local time (not zulu).
+	 */
 	void convert(struct tm *tm, bool local=false) const;
 	
+	/**
+	 * Format the time as a string.
+	 *
+	 * @param format a format string: see the standard C function strftime() for details.
+	 * @param local if true, format the local time (not zulu).
+	 */
 	std::string formatString(const char *format, bool local=false) const;
 	
+	
+	/**
+	 * Return the time as a string in the form "HH:MM::SSz"
+	 */
 	virtual std::string asString() const {
 		return formatString("%H:%M:%Sz");
 	}
@@ -516,6 +616,15 @@ private:
 	int m_tz;
 };
 
+
+
+/**
+ * class DateZulu
+ *
+ * This class combines time and date operations into a single object.
+ * 
+ * @author Mark Rose <mrose@stm.lbl.gov>
+ */
 
 class SIMDATA_EXPORT DateZulu: public Date, public Zulu {
 
@@ -579,6 +688,10 @@ public:
 
 
 
+/**
+ * SimTime is not actually a class, but just a floating point
+ * type that stores seconds since midnight.
+ */
 typedef DateZulu::time_t SimTime;
 
 /**

@@ -1,9 +1,9 @@
 SUBDIRS = Source 
 
-export PYTHON_INCLUDE := -I$(shell python setup.py python_include_path)
+export PYTHON_INCLUDE := $(shell python setup.py python_include_path)
 
 export GDEBUGF = -g -Wall
-export GCFLAGS = -fPIC -O2 $(PYTHON_INCLUDE)# -march=athlon-tbird
+export GCFLAGS = -fPIC -O2# -march=athlon-tbird
 export GLDOPTS = -shared -lswigpy -ldl
 export GSWOPTS = -c -c++ -python -noexcept
 export CXX = g++

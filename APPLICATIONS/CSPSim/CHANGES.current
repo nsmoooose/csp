@@ -1,23 +1,27 @@
 Version 0.3.1 (in progress)
 ===========================
+
+2003-03-21 delta
+           CSPSim is back on windows (thx a lot Onsight).
+           
 2003-03-21 onsight
            Merged delta's changes.
 
 2003-03-19 onsight
            *** Project Change ***
-	   Added LandingGear.cpp and Console.cpp
+           Added LandingGear.cpp and Console.cpp
 
-	   Cleanup up Linux bulid a bit:
-	   
-	     - Removed SDL_console check.
-	     - Added test for correct Python path.
-	     - Removed files related to Automake.
-	     - Adapted to new SimData installation path.  There should
-	       be no more relative paths to SimData in the configure
-	       script and Makefiles.
+           Cleanup up Linux build a bit:
+       
+         - Removed SDL_console check.
+         - Added test for correct Python path.
+         - Removed files related to Automake.
+         - Adapted to new SimData installation path.  There should
+           be no more relative paths to SimData in the configure
+           script and Makefiles.
 
 2003-03-14 onsight
-	   *** SimData library and data incompatibility ***
+       *** SimData library and data incompatibility ***
 
            Added ContactList to ObjectModel for bounding hardpoints that
            interact with the ground. There is a new osg::Switch called
@@ -58,16 +62,16 @@ Version 0.3.1 (in progress)
            Added new (experimental) Python runtime console.
 
            Added landing gear parameters to XML/vehicles/aircraft/m2k.xml
-	   
+       
 
 2003-03-12 delta
            Cleaning code for ScreenInfo and ScreenInfoManager. It still
            needs some improvements but it should be better now. Note that
-           osgText has been entirely reimplemented. Although, I didn t use
+           osgText has been entirely reimplemented. Although, we didn t use
            it, we ll need to switch to it soon: more flexible interface,
            robuster and faster code.
 
-           I added a Runge-Kutta method RK_24, with a predictive step and a
+           Added a Runge-Kutta method RK_24, with a predictive step and a
            corrective one; it is implemented as an abstract class in
            DynamicalSystem (.cpp & .h). A dynamical system is roughly
            speaking a system of differential equations (ODE); a pure virtual
@@ -84,7 +88,7 @@ Version 0.3.1 (in progress)
            enough (so, old code is still available and functional - just 1
            line to be changed to switch back).
 
-           I added a line in CSPSim.ini to read sound files (still
+           Added a line in CSPSim.ini to read sound files (still
            hardcoded). At the moment, SDL API is used but it should be
            replaced by OpenAL soon (Wolverine is working on it). Looks like
            that here:

@@ -266,6 +266,9 @@
 				RelativePath="..\Include\SimData\List.h">
 			</File>
 			<File
+				RelativePath="..\Include\SimData\Log.h">
+			</File>
+			<File
 				RelativePath="..\Include\SimData\LogStream.h">
 			</File>
 			<File

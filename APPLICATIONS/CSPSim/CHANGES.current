@@ -14,6 +14,23 @@
 
 	    Added 'r' key binding to gamescreen-core.map
 
+	    Added Tools/Recorder, which contains utilities for
+	    converting data recorder output into more useful
+	    formats:
+	    
+	    Under Windows, just run:
+
+	         RecCSP --tab data-xxx.rec
+
+	    and load the resulting file into Excel.  You can do 
+	    the same under Linux (substitue your favorite plotting
+	    program for Excel).  If you happen to have jgraph, 
+	    ghosstscript, and (optionally) latex installed you can 
+	    create nice pdf plots of all the recorded data very
+	    easily by running:
+
+	         graph data-xxx.rec
+
 2003-07-22: onsight
 	    Increased the default window size to 800x600 so that
 	    the splash screen will show properly.

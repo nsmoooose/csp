@@ -166,7 +166,7 @@ std::vector<InterfaceProxy *> InterfaceRegistry::getInterfaces() const {
 	return __list;
 }
 
-void InterfaceRegistry::addInterface(const char *name, hasht id, InterfaceProxy *proxy) throw(InterfaceError) {
+void InterfaceRegistry::addInterface(const char *name, hasht id, InterfaceProxy *proxy) {
 	if (hasInterface(name)) {
 		throw InterfaceError("interface \"" + std::string(name) + "\" multiply defined");
 	}

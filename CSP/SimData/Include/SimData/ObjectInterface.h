@@ -114,16 +114,16 @@ public:
 	typedef typename HASH_MAPS<std::string, MemberAccessorBase *, hashstring, eqstring>::Type map;
 
 	
-	virtual void set(OBJECT *, TypeAdapter const &) throw(TypeMismatch) {
+	virtual void set(OBJECT *, TypeAdapter const &) {
 		throw TypeMismatch("Cannot set vector<> '" + name + "' directly, use push_back() instead.");
 	}
-	virtual void push_back(OBJECT *, TypeAdapter const &) throw(TypeMismatch) {
+	virtual void push_back(OBJECT *, TypeAdapter const &) {
 		throw TypeMismatch("Cannot call push_back() on non-vector<> variable '" + name + "'.");
 	}
-	virtual void clear(OBJECT *) throw(TypeMismatch) {
+	virtual void clear(OBJECT *) {
 		throw TypeMismatch("Cannot call clear() on non-vector<> variable '" + name + "'.");
 	}
-	virtual TypeAdapter const get(OBJECT *) const throw(TypeMismatch) {
+	virtual TypeAdapter const get(OBJECT *) const {
 		throw TypeMismatch("get() '" + name + "': not supported for variables of type vector<>.");
 	}
 	bool isRequired() const { return required; };
@@ -195,10 +195,10 @@ public:
 			setType(prototype);
 		}
 	}
-	virtual TypeAdapter const get(OBJECT *object) const throw(TypeMismatch) {
+	virtual TypeAdapter const get(OBJECT *object) const {
 		return TypeAdapter(object->*member);
 	}
-	virtual void set(OBJECT *object, TypeAdapter const &v) throw(TypeMismatch) {
+	virtual void set(OBJECT *object, TypeAdapter const &v) {
 		try {
 			if (mask != 0) {
 				T value;
@@ -248,10 +248,10 @@ public:
 			setType(prototype);
 		}
 	}
-	virtual TypeAdapter const get(OBJECT *object) const throw(TypeMismatch) {
+	virtual TypeAdapter const get(OBJECT *object) const {
 		return TypeAdapter(object->*member);
 	}
-	virtual void set(OBJECT *object, TypeAdapter const &v) throw(TypeMismatch) {
+	virtual void set(OBJECT *object, TypeAdapter const &v) {
 		try {
 			v.set(object->*member);
 		} catch (Exception &e) {
@@ -333,7 +333,7 @@ public:
 			type = "vector::" + type;
 		}
 	}
-	virtual void push_back(OBJECT *object, TypeAdapter const &v) throw(TypeMismatch) {
+	virtual void push_back(OBJECT *object, TypeAdapter const &v) {
 		T value;
 		try {
 			v.set(value);
@@ -343,7 +343,7 @@ public:
 		}
 		(object->*member).push_back(value);
 	}
-	virtual void clear(OBJECT *object) throw(TypeMismatch) {
+	virtual void clear(OBJECT *object) {
 		(object->*member).clear();
 	}
 	virtual void serialize(OBJECT const *object, Writer &writer) const {
@@ -523,7 +523,7 @@ class ObjectInterface: public ObjectInterfaceBase {
 
 	typedef ObjectInterface<C> Self;
 
-	void __not_found(std::string const &name) const throw (InterfaceError) {
+	void __not_found(std::string const &name) const {
 		throw InterfaceError("Variable '"+name+"' not found in interface to class '" + C::_getClassName()+"'");
 	}
 
@@ -544,7 +544,7 @@ public:
 	 *        macro instead.
 	 */
 	template<typename T>
-	Self& def(std::string const &name, T C::*pm, bool required) throw(InterfaceError) {
+	Self& def(std::string const &name, T C::*pm, bool required) {
 		if (variableExists(name)) throw InterfaceError("interface variable \"" + std::string(name) + "\" multiply defined in class '" + C::_getClassName() + "'.");
 #ifdef __SIMDATA_PTS_SIM
 		table[name] = new typename PTS::SELECT_ACCESSOR<C, T>::ACCESSOR(pm, name, required);
@@ -554,7 +554,7 @@ public:
 		return *this;
 	}
 	template<typename T>
-	Self& def(std::string const &name, T C::*pm, int mask, bool required) throw(InterfaceError) {
+	Self& def(std::string const &name, T C::*pm, int mask, bool required) {
 		if (variableExists(name)) throw InterfaceError("interface variable \"" + std::string(name) + "\" multiply defined in class '" + C::_getClassName() + "'.");
 #ifdef __SIMDATA_PTS_SIM
 		table[name] = new typename PTS::SELECT_ACCESSOR<C, T>::ACCESSOR(pm, name, required);

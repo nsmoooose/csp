@@ -1,6 +1,11 @@
 Version 0.4.0 (in progress)
 ===========================
 
+2005-01-19: delta
+ * Got ride of a few throw(Type) for 2 main reasons. It will ease the
+   maintenance and it avoids a few warnings on vs2005. In fact, vs2003 
+   already treats throw(Type) like throw(...).
+   
 2005-01-03: onsight
  * Fix logging priority/category calls in Compile.py.
 

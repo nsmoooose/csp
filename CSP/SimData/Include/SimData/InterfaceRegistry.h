@@ -402,7 +402,7 @@ private:
 	 *  Interfaces are registered automatically by the 
 	 *  SIMDATA_*_INTERFACE macros.
 	 */
-	void addInterface(const char *name, hasht id, InterfaceProxy *proxy) throw(InterfaceError);
+	void addInterface(const char *name, hasht id, InterfaceProxy *proxy);
 
 	//friend class Singleton<InterfaceRegistry>;
 	InterfaceRegistry();

@@ -244,7 +244,7 @@ private:
 		BaseType const *o;
 	} var;
 
-	void TypeCheck(bool test, std::string msg) const throw(TypeMismatch) {
+	void TypeCheck(bool test, std::string msg) const {
 		if (!(test)) {
 			msg = __repr__() + ": " + msg;
 			throw TypeMismatch(msg);

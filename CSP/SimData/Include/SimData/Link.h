@@ -405,7 +405,7 @@ protected:
 	 *  Changes the object pointer without reference counting, checking
 	 *  that the new object type matches the template type.
 	 */
-	virtual void _update(Object* ptr) throw(ObjectTypeMismatch) {
+	virtual void _update(Object* ptr) {
 		LinkBase::_update(ptr);
 		T* _special = dynamic_cast<T*>(ptr);
 		if (ptr != 0 && _special == 0)

@@ -1,5 +1,11 @@
 Version 0.3.2 (in progress)
 ===========================
+
+2004-10-18: delta
+		Changed GL_CLAMP mode to GL_CLAMP_TO_EDGE_EXT in CreateTexture
+		to avoid edge clamping problem on windows. Need to be tested on
+		GNU/Linux.
+		
 2004-09-29: delta
 		Added #NOMINMAX before including windows.h to avoid
 		conflict with std::max/min.
@@ -9,8 +15,7 @@ Version 0.3.2 (in progress)
         
 2003-12-06: delta
         Minor changes to shut up .net 7.1 warnings.
-            Demeter debug version links onto release 
-            SDL_image.lib 
+        Demeter debug version links onto release SDL_image.lib.
 
 2003-07-15: onsight
             Disabled GDAL support by default.

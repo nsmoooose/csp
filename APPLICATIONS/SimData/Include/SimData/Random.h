@@ -90,7 +90,7 @@ namespace rng { // random number generators
  *
  *  The period of this generator is 2^{19937} - 1.
  */
-class MT19937 {
+class SIMDATA_EXPORT MT19937 {
 	static const int N = 624;	/* Period parameters */
 	static const int M = 397;
 
@@ -273,7 +273,7 @@ public:
  * 2274823218 2529502358 3284895257 3539574397 (s2 < 8).
  *
  */
-class Taus2 {
+class SIMDATA_EXPORT Taus2 {
 	// state
 	unsigned long int _s1, _s2, _s3;
 
@@ -384,7 +384,7 @@ public:
 /**
  * Abstract interface for random number generators and random distributions.
  */
-class RandomInterface {
+class SIMDATA_EXPORT RandomInterface {
 protected:
 	struct _State: Referenced { };
 public:
@@ -401,7 +401,7 @@ public:
 /**
  * Abstract interface for random number generators.
  */
-class RandomNumberGeneratorInterface: public RandomInterface {
+class SIMDATA_EXPORT RandomNumberGeneratorInterface: public RandomInterface {
 public:
 	virtual double unit()=0;
 	virtual double uniform(double lower, double upper)=0;
@@ -419,7 +419,7 @@ public:
  * typically about 20%.
  */
 template <class RNG>
-class RandomNumberGenerator: public RandomNumberGeneratorInterface {
+class SIMDATA_EXPORT RandomNumberGenerator: public RandomNumberGeneratorInterface {
 	struct RNGState: _State {
 		typename RNG::State _state;
 	};
@@ -553,7 +553,7 @@ std::string RandomNumberGenerator<RNG>::getName() const {
 
 namespace rd { // random distributions
 
-class Gauss {
+class SIMDATA_EXPORT Gauss {
 	rng::Taus2 _gen;
 	double _mean, _sigma;
 	double _x;
@@ -640,7 +640,7 @@ extern SIMDATA_EXPORT double BoxMueller(RandomNumberGeneratorInterface &_gen, do
 /**
  * Abstract interface for random distributions.
  */
-class RandomDistributionInterface: public RandomInterface {
+class SIMDATA_EXPORT RandomDistributionInterface: public RandomInterface {
 public:
 	virtual double sample()=0;
 };
@@ -653,7 +653,7 @@ public:
  * underlying distributions and distribution (generator) state data.  
  */
 template <class RD>
-class RandomDistribution: public RandomDistributionInterface {
+class SIMDATA_EXPORT RandomDistribution: public RandomDistributionInterface {
 	struct RDState: _State {
 		typename RD::State _state;
 	};
@@ -739,7 +739,7 @@ namespace random { // generators and distributions
 /**
  * Global random number generator.
  */
-SIMDATA_EXPORT extern random::Taus2 g_Random;
+extern SIMDATA_EXPORT random::Taus2 g_Random;
 
 
 NAMESPACE_SIMDATA_END // simdata

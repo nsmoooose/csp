@@ -1,0 +1,65 @@
+.TH "ost::objList" 3 "22 May 2003" "CommonC++" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+ost::objList \- 
+.SH SYNOPSIS
+.br
+.PP
+\fC#include <objlink.h>\fP
+.PP
+.SS "Static Public Methods"
+
+.in +1c
+.ti -1c
+.RI "T * \fBgetObject\fP (const K &key)"
+.br
+.in -1c
+.SS "Protected Methods"
+
+.in +1c
+.ti -1c
+.RI "\fBobjList\fP (const K key)"
+.br
+.in -1c
+.SS "Protected Attributes"
+
+.in +1c
+.ti -1c
+.RI "T * \fBobjNext\fP"
+.br
+.ti -1c
+.RI "const K \fBobjKey\fP"
+.br
+.in -1c
+.SS "Static Protected Attributes"
+
+.in +1c
+.ti -1c
+.RI "T * \fBobjFirst\fP = NULL"
+.br
+.in -1c
+
+.SS "template<class T, typename K> class ost::objList< T, K >"
+
+.SH "CONSTRUCTOR & DESTRUCTOR DOCUMENTATION"
+.PP 
+.SS "template<class T, typename K> ost::objList< T, K >::objList (const K key)\fC [inline, protected]\fP"
+.PP
+.SH "MEMBER FUNCTION DOCUMENTATION"
+.PP 
+.SS "template<class T, typename K> T * ost::objList< T, K >::getObject (const K & key)\fC [static]\fP"
+.PP
+.SH "MEMBER DATA DOCUMENTATION"
+.PP 
+.SS "template<class T, typename K> T * ost::objList< T, K >::objFirst = NULL\fC [static, protected]\fP"
+.PP
+.SS "template<class T, typename K> const K ost::objList< T, K >::objKey\fC [protected]\fP"
+.PP
+.SS "template<class T, typename K> T* ost::objList< T, K >::objNext\fC [protected]\fP"
+.PP
+
+
+.SH "AUTHOR"
+.PP 
+Generated automatically by Doxygen for CommonC++ from the source code.

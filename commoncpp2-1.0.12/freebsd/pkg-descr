@@ -1,0 +1,11 @@
+Common C++ offers a portable highly portable C++ application development
+framework.  Common C++ provides	classes for threads, sockets, daemon
+management, system logging, object synchronization, realtime network
+development, persistant object management, and file access.  commoncpp2
+is the second major release of Common C++.
+
+WWW: http://cplusplus.sourceforge.net/
+     http://www.gnu.org/software/CommonC++
+
+- David Sugar
+dyfet@gnu.org

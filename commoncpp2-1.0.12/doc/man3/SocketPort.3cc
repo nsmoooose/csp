@@ -1,0 +1,320 @@
+.TH "SocketPort" 3 "22 May 2003" "CommonC++" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+SocketPort \- The socket port is an internal class which is attached to and then serviced by a specific \fBSocketService\fP 'object'. base class for realtime and thread pool serviced protocols. 
+.SH SYNOPSIS
+.br
+.PP
+\fC#include <socket.h>\fP
+.PP
+Inherits \fBSocket\fP, and \fBTimerPort\fP.
+.PP
+.SS "Public Methods"
+
+.in +1c
+.ti -1c
+.RI "void \fBsetTimer\fP (\fBtimeout_t\fP timeout=0)"
+.br
+.RI "\fIDerived setTimer to notify the service thread pool of change in expected timeout.\fP"
+.ti -1c
+.RI "void \fBincTimer\fP (\fBtimeout_t\fP timeout)"
+.br
+.RI "\fIDerived incTimer to notify the service thread pool of a change in expected timeout.\fP"
+.in -1c
+.SS "Protected Methods"
+
+.in +1c
+.ti -1c
+.RI "\fBSocketPort\fP (\fBSocketService\fP *svc, \fBTCPSocket\fP &tcp)"
+.br
+.RI "\fIConstruct an accepted TCP socket connection from a specific bound TCP server.\fP"
+.ti -1c
+.RI "\fBSocketPort\fP (\fBSocketService\fP *svc, const \fBInetAddress\fP &ia, \fBtpport_t\fP port)"
+.br
+.RI "\fIConstruct a bound UDP socket for use in deriving realtime UDP streaming protocols handled by thread pool objects.\fP"
+.ti -1c
+.RI "\fBSocketPort\fP (\fBSocketService\fP *svc, const \fBInetHostAddress\fP &ih, \fBtpport_t\fP port)"
+.br
+.RI "\fIA non-blocking constructor for outbound tcp connections.\fP"
+.ti -1c
+.RI "void \fBattach\fP (\fBSocketService\fP *svc)"
+.br
+.RI "\fIAttach yourself to the service pool thread object.\fP"
+.ti -1c
+.RI "virtual \fB~SocketPort\fP ()"
+.br
+.RI "\fIDisconnect the socket from the service thread pool and the remote connection.\fP"
+.ti -1c
+.RI "void \fBsetDetectPending\fP (bool)"
+.br
+.RI "\fIUsed to indicate if the service thread should monitor pending data for us.\fP"
+.ti -1c
+.RI "bool \fBgetDetectPending\fP (void) const"
+.br
+.RI "\fIGet the current state of the DetectPending flag.\fP"
+.ti -1c
+.RI "void \fBsetDetectOutput\fP (bool)"
+.br
+.RI "\fIUsed to indicate if output ready monitoring should be performed by the service thread.\fP"
+.ti -1c
+.RI "bool \fBgetDetectOutput\fP (void) const"
+.br
+.RI "\fIGet the current state of the DetectOutput flag.\fP"
+.ti -1c
+.RI "virtual void \fBexpired\fP (void)"
+.br
+.RI "\fICalled by the service thread pool when the objects timer has expired.\fP"
+.ti -1c
+.RI "virtual void \fBpending\fP (void)"
+.br
+.RI "\fICalled by the service thread pool when input data is pending for this socket.\fP"
+.ti -1c
+.RI "virtual void \fBoutput\fP (void)"
+.br
+.RI "\fICalled by the service thread pool when output data is pending for this socket.\fP"
+.ti -1c
+.RI "virtual void \fBdisconnect\fP (void)"
+.br
+.RI "\fICalled by the service thread pool when a disconnect has occured.\fP"
+.ti -1c
+.RI "\fBError\fP \fBconnect\fP (const \fBInetAddress\fP &ia, \fBtpport_t\fP port)"
+.br
+.RI "\fIConnect a \fBSocket\fP Port to a known peer host.\fP"
+.ti -1c
+.RI "int \fBsend\fP (const void *buf, int len)"
+.br
+.RI "\fITransmit 'send' data to a connected peer host.\fP"
+.ti -1c
+.RI "int \fBreceive\fP (void *buf, size_t len)"
+.br
+.RI "\fIReceive a message from any host.\fP"
+.ti -1c
+.RI "int \fBpeek\fP (void *buf, size_t len)"
+.br
+.RI "\fIExamine the content of the next packet.\fP"
+.in -1c
+.SS "Friends"
+
+.in +1c
+.ti -1c
+.RI "class \fBSocketService\fP"
+.br
+.in -1c
+.SH "DETAILED DESCRIPTION"
+.PP 
+The socket port is an internal class which is attached to and then serviced by a specific \fBSocketService\fP 'object'. base class for realtime and thread pool serviced protocols.
+.PP
+Derived versions of this class offer specific functionality for specific protocols. Both Common C++ supporting frameworks and application objects may be derived from related protocol specific base classes.
+.PP
+A special set of classes, 'SocketPort' and '\fBSocketService\fP', exist for building realtime streaming media servers on top of UDP and TCP protocols. The 'SocketPort' is used to hold a connected or associated TCP or UDP socket which is being 'streamed' and which offers callback methods that are invoked from a '\fBSocketService\fP' thread. \fBSocketService\fP's can be pooled into logical thread pools that can service a group of SocketPorts. A millisecond accurate 'timer' is associated with each SocketPort and can be used to time synchronize SocketPort I/O operations.
+.PP
+\fBAuthor: \fP
+.in +1c
+David Sugar <dyfet@ostel.com> 
+.PP
+.SH "CONSTRUCTOR & DESTRUCTOR DOCUMENTATION"
+.PP 
+.SS "SocketPort::SocketPort (\fBSocketService\fP * svc, \fBTCPSocket\fP & tcp)\fC [protected]\fP"
+.PP
+Construct an accepted TCP socket connection from a specific bound TCP server.
+.PP
+This is meant to derive advanced application specific TCP servers that can be thread pooled.
+.PP
+\fBParameters: \fP
+.in +1c
+.TP
+\fB\fIsvc\fP\fP
+pool thread object. 
+.TP
+\fB\fItcp\fP\fP
+socket object to accept. 
+.SS "SocketPort::SocketPort (\fBSocketService\fP * svc, const \fBInetAddress\fP & ia, \fBtpport_t\fP port)\fC [protected]\fP"
+.PP
+Construct a bound UDP socket for use in deriving realtime UDP streaming protocols handled by thread pool objects.
+.PP
+\fBParameters: \fP
+.in +1c
+.TP
+\fB\fIsvc\fP\fP
+pool thread object. 
+.TP
+\fB\fIia\fP\fP
+address of interface to bind. 
+.TP
+\fB\fIport\fP\fP
+number to bind to. 
+.SS "SocketPort::SocketPort (\fBSocketService\fP * svc, const \fBInetHostAddress\fP & ih, \fBtpport_t\fP port)\fC [protected]\fP"
+.PP
+A non-blocking constructor for outbound tcp connections.
+.PP
+To detect when the connection is established, overload \fBSocketPort::output()\fP. \fBSocketPort::output()\fP get's called by the \fBSocketService\fP when the connection is ready, \fBSocketPort::disconnect()\fP when the connect failed. at the moment you should set the socket state to 'CONNECTED' when \fBSocketPort::output()\fP get's called for the first time.
+.PP
+\fBParameters: \fP
+.in +1c
+.TP
+\fB\fIsvc\fP\fP
+pool thread object. 
+.TP
+\fB\fIih\fP\fP
+addess to connect to. 
+.TP
+\fB\fIport\fP\fP
+number to connect to. 
+.SS "virtual SocketPort::~SocketPort ()\fC [protected, virtual]\fP"
+.PP
+Disconnect the socket from the service thread pool and the remote connection.
+.PP
+.SH "MEMBER FUNCTION DOCUMENTATION"
+.PP 
+.SS "void SocketPort::attach (\fBSocketService\fP * svc)\fC [protected]\fP"
+.PP
+Attach yourself to the service pool thread object.
+.PP
+The later version.
+.PP
+\fBParameters: \fP
+.in +1c
+.TP
+\fB\fIsvc\fP\fP
+pool thread object 
+.SS "\fBError\fP SocketPort::connect (const \fBInetAddress\fP & ia, \fBtpport_t\fP port)\fC [protected]\fP"
+.PP
+Connect a \fBSocket\fP Port to a known peer host.
+.PP
+This is normally used with the UDP constructor. This is also performed as a non-blocking operation under Posix systems to prevent delays in a callback handler.
+.PP
+\fBReturns: \fP
+.in +1c
+0 if successful. 
+.PP
+\fBParameters: \fP
+.in +1c
+.TP
+\fB\fIia\fP\fP
+address of remote host or subnet. 
+.TP
+\fB\fIport\fP\fP
+number of remote peer(s). 
+.SS "virtual void SocketPort::disconnect (void)\fC [inline, protected, virtual]\fP"
+.PP
+Called by the service thread pool when a disconnect has occured.
+.PP
+.SS "virtual void SocketPort::expired (void)\fC [inline, protected, virtual]\fP"
+.PP
+Called by the service thread pool when the objects timer has expired.
+.PP
+Used for timed events. 
+.SS "bool SocketPort::getDetectOutput (void) const\fC [inline, protected]\fP"
+.PP
+Get the current state of the DetectOutput flag.
+.PP
+.SS "bool SocketPort::getDetectPending (void) const\fC [inline, protected]\fP"
+.PP
+Get the current state of the DetectPending flag.
+.PP
+.SS "void SocketPort::incTimer (\fBtimeout_t\fP timeout)"
+.PP
+Derived incTimer to notify the service thread pool of a change in expected timeout.
+.PP
+This allows \fBSocketService\fP to reschedule all timers. Otherwise same as \fBTimerPort\fP.
+.PP
+\fBParameters: \fP
+.in +1c
+.TP
+\fB\fItimeout\fP\fP
+in milliseconds. 
+.PP
+Reimplemented from \fBTimerPort\fP.
+.SS "virtual void SocketPort::output (void)\fC [inline, protected, virtual]\fP"
+.PP
+Called by the service thread pool when output data is pending for this socket.
+.PP
+.SS "int SocketPort::peek (void * buf, size_t len)\fC [inline, protected]\fP"
+.PP
+Examine the content of the next packet.
+.PP
+This can be used to build 'smart' line buffering for derived TCP classes.
+.PP
+\fBParameters: \fP
+.in +1c
+.TP
+\fB\fIbuf\fP\fP
+pointer to packet buffer to examine. 
+.TP
+\fB\fIlen\fP\fP
+of packet buffer to examine. 
+.PP
+\fBReturns: \fP
+.in +1c
+number of bytes actually available. 
+.SS "virtual void SocketPort::pending (void)\fC [inline, protected, virtual]\fP"
+.PP
+Called by the service thread pool when input data is pending for this socket.
+.PP
+.SS "int SocketPort::receive (void * buf, size_t len)\fC [inline, protected]\fP"
+.PP
+Receive a message from any host.
+.PP
+This is used in derived classes to build protocols.
+.PP
+\fBParameters: \fP
+.in +1c
+.TP
+\fB\fIbuf\fP\fP
+pointer to packet buffer to receive. 
+.TP
+\fB\fIlen\fP\fP
+of packet buffer to receive. 
+.PP
+\fBReturns: \fP
+.in +1c
+number of bytes received. 
+.SS "int SocketPort::send (const void * buf, int len)\fC [inline, protected]\fP"
+.PP
+Transmit 'send' data to a connected peer host.
+.PP
+This is not public by default since an overriding protocol is likely to be used in a derived class.
+.PP
+\fBReturns: \fP
+.in +1c
+number of bytes sent. 
+.PP
+\fBParameters: \fP
+.in +1c
+.TP
+\fB\fIbuf\fP\fP
+address of buffer to send. 
+.TP
+\fB\fIlen\fP\fP
+of bytes to send. 
+.SS "void SocketPort::setDetectOutput (bool)\fC [protected]\fP"
+.PP
+Used to indicate if output ready monitoring should be performed by the service thread.
+.PP
+.SS "void SocketPort::setDetectPending (bool)\fC [protected]\fP"
+.PP
+Used to indicate if the service thread should monitor pending data for us.
+.PP
+.SS "void SocketPort::setTimer (\fBtimeout_t\fP timeout = 0)"
+.PP
+Derived setTimer to notify the service thread pool of change in expected timeout.
+.PP
+This allows \fBSocketService\fP to  reschedule all timers. Otherwise same as \fBTimerPort\fP.
+.PP
+\fBParameters: \fP
+.in +1c
+.TP
+\fB\fItimeout\fP\fP
+in milliseconds. 
+.PP
+Reimplemented from \fBTimerPort\fP.
+.SH "FRIENDS AND RELATED FUNCTION DOCUMENTATION"
+.PP 
+.SS "friend class SocketService\fC [friend]\fP"
+.PP
+
+
+.SH "AUTHOR"
+.PP 
+Generated automatically by Doxygen for CommonC++ from the source code.

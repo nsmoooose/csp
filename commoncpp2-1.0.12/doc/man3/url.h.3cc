@@ -1,0 +1,41 @@
+.TH "url.h" 3 "22 May 2003" "CommonC++" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+url.h \- URL streams abstraction. 
+.SH SYNOPSIS
+.br
+.PP
+\fC#include <cc++/config.h>\fP
+.br
+\fC#include <cc++/socket.h>\fP
+.br
+\fC#include <cc++/urlstring.h>\fP
+.br
+.SS "Compounds"
+
+.in +1c
+.ti -1c
+.RI "class \fBURLStream\fP"
+.br
+.RI "\fIA URL processing version of \fBTCPStream\fP. C++ url processing stream class.\fP"
+.in -1c
+.SS "Variables"
+
+.in +1c
+.ti -1c
+.RI "CCXX_CLASS_EXPORT \fBURLStream\fP"
+.br
+.in -1c
+.SH "DETAILED DESCRIPTION"
+.PP 
+URL streams abstraction.
+.PP
+.PP
+.SH "VARIABLE DOCUMENTATION"
+.PP 
+.SS "class CCXX_CLASS_EXPORT URLStream"
+.PP
+.SH "AUTHOR"
+.PP 
+Generated automatically by Doxygen for CommonC++ from the source code.

@@ -1,0 +1,35 @@
+.TH "TypeManager::Registration" 3 "22 May 2003" "CommonC++" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+TypeManager::Registration \- This manages a registration to the typemanager - attempting to remove problems with the optimisers. 
+.SH SYNOPSIS
+.br
+.PP
+\fC#include <persist.h>\fP
+.PP
+.SS "Public Methods"
+
+.in +1c
+.ti -1c
+.RI "\fBRegistration\fP (const char *name, \fBNewBaseObjectFunction\fP func)"
+.br
+.ti -1c
+.RI "virtual \fB~Registration\fP ()"
+.br
+.in -1c
+.SH "DETAILED DESCRIPTION"
+.PP 
+This manages a registration to the typemanager - attempting to remove problems with the optimisers.
+.PP
+.SH "CONSTRUCTOR & DESTRUCTOR DOCUMENTATION"
+.PP 
+.SS "TypeManager::Registration::Registration (const char * name, \fBNewBaseObjectFunction\fP func)\fC [inline]\fP"
+.PP
+.SS "virtual TypeManager::Registration::~Registration ()\fC [inline, virtual]\fP"
+.PP
+
+
+.SH "AUTHOR"
+.PP 
+Generated automatically by Doxygen for CommonC++ from the source code.

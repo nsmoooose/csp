@@ -1,0 +1,76 @@
+.TH "digest.h" 3 "22 May 2003" "CommonC++" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+digest.h \- \fBDigest\fP algorithms: checksum, CRC and MD5. 
+.SH SYNOPSIS
+.br
+.PP
+\fC#include <cc++/config.h>\fP
+.br
+\fC#include <cc++/thread.h>\fP
+.br
+\fC#include <iostream>\fP
+.br
+\fC#include <fstream>\fP
+.br
+.SS "Compounds"
+
+.in +1c
+.ti -1c
+.RI "class \fBChecksumDigest\fP"
+.br
+.RI "\fIA simple checksum digest function. checksum hash function.\fP"
+.ti -1c
+.RI "class \fBCRC16Digest\fP"
+.br
+.RI "\fIA crc16 collection/compution hash accumulator class. crc16 computation hash.\fP"
+.ti -1c
+.RI "class \fBCRC32Digest\fP"
+.br
+.RI "\fIA crc32 collection/computation hash accumulator class. crc32 computation hash.\fP"
+.ti -1c
+.RI "class \fBDigest\fP"
+.br
+.RI "\fIThe digest base class is used for implementing and deriving one way hashing functions. base class for hashing services.\fP"
+.ti -1c
+.RI "class \fBDigestException\fP"
+.br
+.RI "\fIDigestException Exceptions involving digests.\fP"
+.ti -1c
+.RI "class \fBMD5Digest\fP"
+.br
+.RI "\fIA md5 collection/computation accululator class. md5 hash accumulation.\fP"
+.ti -1c
+.RI "class \fBSHA1Digest\fP"
+.br
+.RI "\fISHA1Digest SHA-1 \fBDigest\fP Implementation.\fP"
+.ti -1c
+.RI "class \fBSHA256Digest\fP"
+.br
+.RI "\fISHA256Digest SHA-256 \fBDigest\fP Implementation.\fP"
+.ti -1c
+.RI "class \fBSHA64DigestHelper\fP"
+.br
+.RI "\fISHA64DigestHelper Base class for the 64-bit wide SHA*Digests.\fP"
+.ti -1c
+.RI "class \fBSHAConstant\fP"
+.br
+.RI "\fISHAConstant Contains SHA constants.\fP"
+.ti -1c
+.RI "class \fBSHADigest\fP"
+.br
+.RI "\fISHADigest Base class for the SHA*Digests.\fP"
+.ti -1c
+.RI "class \fBSHATumbler\fP"
+.br
+.RI "\fISHATumbler SHA Helper Class.\fP"
+.in -1c
+.SH "DETAILED DESCRIPTION"
+.PP 
+\fBDigest\fP algorithms: checksum, CRC and MD5.
+.PP
+.PP
+.SH "AUTHOR"
+.PP 
+Generated automatically by Doxygen for CommonC++ from the source code.

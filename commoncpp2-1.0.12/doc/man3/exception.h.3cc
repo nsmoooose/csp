@@ -1,0 +1,20 @@
+.TH "exception.h" 3 "22 May 2003" "CommonC++" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+exception.h \- GNU Common C++ exception model base classes. 
+.SH SYNOPSIS
+.br
+.PP
+\fC#include <cc++/config.h>\fP
+.br
+\fC#include <cc++/strchar.h>\fP
+.br
+.SH "DETAILED DESCRIPTION"
+.PP 
+GNU Common C++ exception model base classes.
+.PP
+.PP
+.SH "AUTHOR"
+.PP 
+Generated automatically by Doxygen for CommonC++ from the source code.

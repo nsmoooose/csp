@@ -1,0 +1,50 @@
+.TH "common.h" 3 "22 May 2003" "CommonC++" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+common.h \- GNU Common C++ global header. 
+.SH SYNOPSIS
+.br
+.PP
+\fC#include <cc++/config.h>\fP
+.br
+\fC#include <cc++/strchar.h>\fP
+.br
+\fC#include <cc++/exception.h>\fP
+.br
+\fC#include <cc++/thread.h>\fP
+.br
+\fC#include <cc++/process.h>\fP
+.br
+\fC#include <cc++/slog.h>\fP
+.br
+\fC#include <cc++/file.h>\fP
+.br
+\fC#include <cc++/socket.h>\fP
+.br
+\fC#include <cc++/network.h>\fP
+.br
+\fC#include <cc++/misc.h>\fP
+.br
+\fC#include <cc++/digest.h>\fP
+.br
+\fC#include <cc++/groups.h>\fP
+.br
+\fC#include <cc++/numbers.h>\fP
+.br
+\fC#include <cc++/persist.h>\fP
+.br
+\fC#include <cc++/serial.h>\fP
+.br
+\fC#include <cc++/url.h>\fP
+.br
+\fC#include <cc++/cmdoptns.h>\fP
+.br
+.SH "DETAILED DESCRIPTION"
+.PP 
+GNU Common C++ global header.
+.PP
+.PP
+.SH "AUTHOR"
+.PP 
+Generated automatically by Doxygen for CommonC++ from the source code.

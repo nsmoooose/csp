@@ -1,0 +1,186 @@
+.TH "UDPReceive" 3 "22 May 2003" "CommonC++" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+UDPReceive \- Representing half of a two-way UDP connection, the UDP receiver can receive data from another peer host or subnet. Unreliable Datagram Peer Associations. 
+.SH SYNOPSIS
+.br
+.PP
+\fC#include <socket.h>\fP
+.PP
+Inherits \fBUDPSocket\fP.
+.PP
+Inherited by \fBUDPDuplex\fP.
+.PP
+.SS "Public Methods"
+
+.in +1c
+.ti -1c
+.RI "int \fBreceive\fP (void *buf, size_t len)"
+.br
+.RI "\fIReceive a data packet from the connected peer host.\fP"
+.ti -1c
+.RI "bool \fBisInputReady\fP (\fBtimeout_t\fP timeout=TIMEOUT_INF)"
+.br
+.RI "\fISee if input queue has data packets available.\fP"
+.in -1c
+.SS "Protected Methods"
+
+.in +1c
+.ti -1c
+.RI "\fBUDPReceive\fP (const \fBInetAddress\fP &bind, \fBtpport_t\fP port)"
+.br
+.RI "\fICreate a UDP receiver, bind it to a specific interface and port address so that other UDP sockets on remote machines (or the same host) may find and send UDP messages to it, and associate it with a given port on a peer host.\fP"
+.ti -1c
+.RI "\fBError\fP \fBconnect\fP (const \fBInetHostAddress\fP &host, \fBtpport_t\fP port)"
+.br
+.RI "\fIAssociate this socket with a specified peer host.\fP"
+.ti -1c
+.RI "\fBError\fP \fBdisconnect\fP (void)"
+.br
+.RI "\fIDisassociate this socket from any host connection.\fP"
+.ti -1c
+.RI "bool \fBisPendingReceive\fP (\fBtimeout_t\fP timeout)"
+.br
+.RI "\fICheck for pending data.\fP"
+.ti -1c
+.RI "void \fBendReceiver\fP (void)"
+.br
+.RI "\fIEnd receiver.\fP"
+.ti -1c
+.RI "\fBSOCKET\fP \fBgetReceiver\fP (void) const"
+.br
+.ti -1c
+.RI "\fBError\fP \fBsetRouting\fP (bool enable)"
+.br
+.ti -1c
+.RI "\fBError\fP \fBsetMulticast\fP (bool enable)"
+.br
+.ti -1c
+.RI "\fBError\fP \fBjoin\fP (const \fBInetMcastAddress\fP &ia)"
+.br
+.ti -1c
+.RI "\fBError\fP \fBdrop\fP (const \fBInetMcastAddress\fP &ia)"
+.br
+.in -1c
+.SH "DETAILED DESCRIPTION"
+.PP 
+Representing half of a two-way UDP connection, the UDP receiver can receive data from another peer host or subnet. Unreliable Datagram Peer Associations.
+.PP
+This class is used exclusivily to derive the \fBUDPDuplex\fP.
+.PP
+\fBAuthor: \fP
+.in +1c
+David Sugar <dyfet@ostel.com> 
+.PP
+.SH "CONSTRUCTOR & DESTRUCTOR DOCUMENTATION"
+.PP 
+.SS "UDPReceive::UDPReceive (const \fBInetAddress\fP & bind, \fBtpport_t\fP port)\fC [protected]\fP"
+.PP
+Create a UDP receiver, bind it to a specific interface and port address so that other UDP sockets on remote machines (or the same host) may find and send UDP messages to it, and associate it with a given port on a peer host.
+.PP
+On failure to bind, an exception is thrown.
+.PP
+\fBParameters: \fP
+.in +1c
+.TP
+\fB\fIbind\fP\fP
+address to bind this socket to. 
+.TP
+\fB\fIport\fP\fP
+number to bind this socket to. 
+.SH "MEMBER FUNCTION DOCUMENTATION"
+.PP 
+.SS "\fBError\fP UDPReceive::connect (const \fBInetHostAddress\fP & host, \fBtpport_t\fP port)\fC [protected]\fP"
+.PP
+Associate this socket with a specified peer host.
+.PP
+The port number from the constructor will be used. All UDP packets will be sent received from the specified host.
+.PP
+\fBReturns: \fP
+.in +1c
+0 on success, -1 on error. 
+.PP
+\fBParameters: \fP
+.in +1c
+.TP
+\fB\fIhost\fP\fP
+host network address to connect socket to. 
+.TP
+\fB\fIport\fP\fP
+host transport port to connect socket to. 
+.PP
+Reimplemented in \fBUDPDuplex\fP.
+.SS "\fBError\fP UDPReceive::disconnect (void)\fC [protected]\fP"
+.PP
+Disassociate this socket from any host connection.
+.PP
+No data should be read or written until a connection is established. 
+.PP
+Reimplemented in \fBUDPDuplex\fP.
+.SS "\fBError\fP UDPReceive::drop (const \fBInetMcastAddress\fP & ia)\fC [inline, protected]\fP"
+.PP
+Reimplemented from \fBSocket\fP.
+.SS "void UDPReceive::endReceiver (void)\fC [inline, protected]\fP"
+.PP
+End receiver.
+.PP
+.SS "\fBSOCKET\fP UDPReceive::getReceiver (void) const\fC [inline, protected]\fP"
+.PP
+.SS "bool UDPReceive::isInputReady (\fBtimeout_t\fP timeout = TIMEOUT_INF)\fC [inline]\fP"
+.PP
+See if input queue has data packets available.
+.PP
+\fBReturns: \fP
+.in +1c
+true if data packets available. 
+.PP
+\fBParameters: \fP
+.in +1c
+.TP
+\fB\fItimeout\fP\fP
+in milliseconds. TIMEOUT_INF if not specified. 
+.SS "bool UDPReceive::isPendingReceive (\fBtimeout_t\fP timeout)\fC [inline, protected]\fP"
+.PP
+Check for pending data.
+.PP
+\fBReturns: \fP
+.in +1c
+true if data is waiting. 
+.PP
+\fBParameters: \fP
+.in +1c
+.TP
+\fB\fItimeout\fP\fP
+in milliseconds. 
+.SS "\fBError\fP UDPReceive::join (const \fBInetMcastAddress\fP & ia)\fC [inline, protected]\fP"
+.PP
+Reimplemented from \fBSocket\fP.
+.SS "int UDPReceive::receive (void * buf, size_t len)\fC [inline]\fP"
+.PP
+Receive a data packet from the connected peer host.
+.PP
+\fBReturns: \fP
+.in +1c
+num of bytes actually received. 
+.PP
+\fBParameters: \fP
+.in +1c
+.TP
+\fB\fIbuf\fP\fP
+address of data receive buffer. 
+.TP
+\fB\fIlen\fP\fP
+size of data receive buffer. 
+.PP
+Reimplemented from \fBUDPSocket\fP.
+.SS "\fBError\fP UDPReceive::setMulticast (bool enable)\fC [inline, protected]\fP"
+.PP
+Reimplemented from \fBSocket\fP.
+.SS "\fBError\fP UDPReceive::setRouting (bool enable)\fC [inline, protected]\fP"
+.PP
+Reimplemented from \fBSocket\fP.
+
+.SH "AUTHOR"
+.PP 
+Generated automatically by Doxygen for CommonC++ from the source code.

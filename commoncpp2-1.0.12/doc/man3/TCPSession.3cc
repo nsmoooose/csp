@@ -1,0 +1,124 @@
+.TH "TCPSession" 3 "22 May 2003" "CommonC++" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+TCPSession \- The TCP session is used to primarily to represent a client connection that can be managed on a seperate thread. Threaded streamable socket with non-blocking constructor. 
+.SH SYNOPSIS
+.br
+.PP
+\fC#include <socket.h>\fP
+.PP
+Inherits \fBTCPStream\fP, and \fBThread\fP.
+.PP
+.SS "Public Methods"
+
+.in +1c
+.ti -1c
+.RI "\fBTCPSession\fP (const \fBInetHostAddress\fP &host, \fBtpport_t\fP port, int \fBsize\fP=512, int pri=0, int stack=0)"
+.br
+.RI "\fICreate a TCP socket that will be connected to a remote TCP server and that will execute under it's own thread.\fP"
+.ti -1c
+.RI "\fBTCPSession\fP (\fBTCPSocket\fP &server, int \fBsize\fP=512, int pri=0, int stack=0)"
+.br
+.RI "\fICreate a TCP socket from a bound TCP server by accepting a pending connection from that server and execute a thread for the accepted connection.\fP"
+.in -1c
+.SS "Protected Methods"
+
+.in +1c
+.ti -1c
+.RI "int \fBwaitConnection\fP (\fBtimeout_t\fP \fBtimeout\fP=TIMEOUT_INF)"
+.br
+.RI "\fINormally called during the thread Initial() method by default, this will wait for the socket connection to complete when connecting to a remote socket.\fP"
+.ti -1c
+.RI "\fBCCXX_MEMBER\fP (void) initial(void)"
+.br
+.RI "\fIThe initial method is used to esablish a connection when delayed completion is used.\fP"
+.ti -1c
+.RI "\fBCCXX_MEMBER\fP (void) final(void)"
+.br
+.RI "\fITCPSession derived objects can be freely created with 'new' and safely terminate their 'run' method on their own by self-deleting when the thread terminates.\fP"
+.in -1c
+.SH "DETAILED DESCRIPTION"
+.PP 
+The TCP session is used to primarily to represent a client connection that can be managed on a seperate thread. Threaded streamable socket with non-blocking constructor.
+.PP
+The TCP session also supports a non-blocking connection scheme which prevents blocking during the constructor and moving the process of completing a connection into the  thread that executes for the session.
+.PP
+\fBAuthor: \fP
+.in +1c
+David Sugar <dyfet@ostel.com> 
+.PP
+.SH "CONSTRUCTOR & DESTRUCTOR DOCUMENTATION"
+.PP 
+.SS "TCPSession::TCPSession (const \fBInetHostAddress\fP & host, \fBtpport_t\fP port, int size = 512, int pri = 0, int stack = 0)"
+.PP
+Create a TCP socket that will be connected to a remote TCP server and that will execute under it's own thread.
+.PP
+\fBParameters: \fP
+.in +1c
+.TP
+\fB\fIhost\fP\fP
+internet address of remote TCP server. 
+.TP
+\fB\fIport\fP\fP
+number of remote server. 
+.TP
+\fB\fIsize\fP\fP
+of streaming buffer. 
+.TP
+\fB\fIpri\fP\fP
+execution priority relative to parent. 
+.TP
+\fB\fIstack\fP\fP
+allocation needed on some platforms. 
+.SS "TCPSession::TCPSession (\fBTCPSocket\fP & server, int size = 512, int pri = 0, int stack = 0)"
+.PP
+Create a TCP socket from a bound TCP server by accepting a pending connection from that server and execute a thread for the accepted connection.
+.PP
+\fBParameters: \fP
+.in +1c
+.TP
+\fB\fIserver\fP\fP
+tcp socket to accept a connection from. 
+.TP
+\fB\fIsize\fP\fP
+of streaming buffer. 
+.TP
+\fB\fIpri\fP\fP
+execution priority relative to parent. 
+.TP
+\fB\fIstack\fP\fP
+allocation needed on some platforms. 
+.SH "MEMBER FUNCTION DOCUMENTATION"
+.PP 
+.SS "TCPSession::CCXX_MEMBER (void)\fC [inline, protected]\fP"
+.PP
+TCPSession derived objects can be freely created with 'new' and safely terminate their 'run' method on their own by self-deleting when the thread terminates.
+.PP
+\fBNote: \fP
+.in +1c
+Since a thread cannot delete its own context or join itself, to make a TCPSession that is a self running object that self-deletes, one has to detach the associated thread by using \fBdetach()\fP instead of \fBstart()\fP. 
+.SS "TCPSession::CCXX_MEMBER (void)\fC [protected]\fP"
+.PP
+The initial method is used to esablish a connection when delayed completion is used.
+.PP
+This assures the constructor terminates without having to wait for a connection request to complete. 
+.SS "int TCPSession::waitConnection (\fBtimeout_t\fP timeout = TIMEOUT_INF)\fC [protected]\fP"
+.PP
+Normally called during the thread Initial() method by default, this will wait for the socket connection to complete when connecting to a remote socket.
+.PP
+One might wish to use \fBsetCompletion()\fP to change the socket back to blocking I/O calls after the connection completes. To implement the session one must create a derived class which implements \fBrun()\fP.
+.PP
+\fBReturns: \fP
+.in +1c
+0 if successful, -1 if timed out. 
+.PP
+\fBParameters: \fP
+.in +1c
+.TP
+\fB\fItimeout\fP\fP
+to wait for completion in milliseconds. 
+
+.SH "AUTHOR"
+.PP 
+Generated automatically by Doxygen for CommonC++ from the source code.

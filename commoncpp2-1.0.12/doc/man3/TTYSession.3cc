@@ -1,0 +1,51 @@
+.TH "TTYSession" 3 "22 May 2003" "CommonC++" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+TTYSession \- The TTYSession aggragates a \fBTTYStream\fP and a Common C++ \fBThread\fP which is assumed to be the execution context that will be used to perform actual I/O operations. This class is very anagolous to \fBTCPSession\fP. 
+.SH SYNOPSIS
+.br
+.PP
+\fC#include <serial.h>\fP
+.PP
+Inherits \fBTTYStream\fP, and \fBThread\fP.
+.PP
+.SS "Public Methods"
+
+.in +1c
+.ti -1c
+.RI "\fBTTYSession\fP (const char *name, int pri=0, int stack=0)"
+.br
+.RI "\fICreate TTY stream that will be managed by it's own thread.\fP"
+.in -1c
+.SH "DETAILED DESCRIPTION"
+.PP 
+The TTYSession aggragates a \fBTTYStream\fP and a Common C++ \fBThread\fP which is assumed to be the execution context that will be used to perform actual I/O operations. This class is very anagolous to \fBTCPSession\fP.
+.PP
+This class is very anagolous to \fBTCPSession\fP.
+.PP
+\fBAuthor: \fP
+.in +1c
+David Sugar <dyfet@ostel.com> 
+.PP
+.SH "CONSTRUCTOR & DESTRUCTOR DOCUMENTATION"
+.PP 
+.SS "TTYSession::TTYSession (const char * name, int pri = 0, int stack = 0)"
+.PP
+Create TTY stream that will be managed by it's own thread.
+.PP
+\fBParameters: \fP
+.in +1c
+.TP
+\fB\fIname\fP\fP
+of tty device to open. 
+.TP
+\fB\fIpri\fP\fP
+execution priority. 
+.TP
+\fB\fIstack\fP\fP
+allocation needed on some platforms. 
+
+.SH "AUTHOR"
+.PP 
+Generated automatically by Doxygen for CommonC++ from the source code.

@@ -1,0 +1,40 @@
+.TH "unix.h" 3 "22 May 2003" "CommonC++" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+unix.h \- UNIX domain sockets, streams and sessions. 
+.SH SYNOPSIS
+.br
+.PP
+\fC#include <cc++/config.h>\fP
+.br
+\fC#include <cc++/socket.h>\fP
+.br
+.SS "Compounds"
+
+.in +1c
+.ti -1c
+.RI "class \fBUnixSession\fP"
+.br
+.RI "\fIThe Unix domain session is used to primarily to represent a client connection that can be managed on a seperate thread. Threaded streamable unix domain socket with non-blocking constructor.\fP"
+.ti -1c
+.RI "class \fBUnixSocket\fP"
+.br
+.RI "\fIUnix domain sockets are used for stream based connected sessions between processes on the same machine. bound server for Unix domain streams and sessions.\fP"
+.ti -1c
+.RI "class \fBunixstream\fP"
+.br
+.RI "\fIA more natural C++ 'unixstream' class for use by non-threaded applications. C++ 'fstream' style unixstream class.\fP"
+.ti -1c
+.RI "class \fBUnixStream\fP"
+.br
+.RI "\fIUnix streams are used to represent Unix domain client connections to a local server for accepting client connections. streamable Unix domain socket connection.\fP"
+.in -1c
+.SH "DETAILED DESCRIPTION"
+.PP 
+UNIX domain sockets, streams and sessions.
+.PP
+.PP
+.SH "AUTHOR"
+.PP 
+Generated automatically by Doxygen for CommonC++ from the source code.

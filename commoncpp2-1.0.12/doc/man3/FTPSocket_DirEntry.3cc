@@ -1,0 +1,142 @@
+.TH "FTPSocket::DirEntry" 3 "22 May 2003" "CommonC++" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+FTPSocket::DirEntry \- direntry represents a entry in a directory 
+.SH SYNOPSIS
+.br
+.PP
+\fC#include <ftp.h>\fP
+.PP
+.SS "Public Methods"
+
+.in +1c
+.ti -1c
+.RI "bool \fBparse\fP (string li)"
+.br
+.RI "\fIset members to the values found in li\fP"
+.ti -1c
+.RI "string \fBgetLine\fP () const"
+.br
+.RI "\fIaccessor for members\fP"
+.ti -1c
+.RI "string \fBgetAccess\fP () const"
+.br
+.ti -1c
+.RI "string \fBgetUser\fP () const"
+.br
+.ti -1c
+.RI "string \fBgetGroup\fP () const"
+.br
+.ti -1c
+.RI "string \fBgetName\fP () const"
+.br
+.ti -1c
+.RI "unsigned int \fBgetSize\fP () const"
+.br
+.ti -1c
+.RI "bool \fBisDir\fP () const"
+.br
+.ti -1c
+.RI "bool \fBisLink\fP () const"
+.br
+.ti -1c
+.RI "bool \fBcanUserRead\fP () const"
+.br
+.ti -1c
+.RI "bool \fBcanUserWrite\fP () const"
+.br
+.ti -1c
+.RI "bool \fBcanGroupRead\fP () const"
+.br
+.ti -1c
+.RI "bool \fBcanGroupWrite\fP () const"
+.br
+.ti -1c
+.RI "bool \fBcanOtherRead\fP () const"
+.br
+.ti -1c
+.RI "bool \fBcanOtherWrite\fP () const"
+.br
+.in -1c
+.SS "Protected Attributes"
+
+.in +1c
+.ti -1c
+.RI "string \fBline\fP"
+.br
+.ti -1c
+.RI "string \fBaccess\fP"
+.br
+.ti -1c
+.RI "string \fBuser\fP"
+.br
+.ti -1c
+.RI "string \fBgroup\fP"
+.br
+.ti -1c
+.RI "string \fBname\fP"
+.br
+.ti -1c
+.RI "unsigned int \fBsize\fP"
+.br
+.in -1c
+.SH "DETAILED DESCRIPTION"
+.PP 
+direntry represents a entry in a directory
+.PP
+.SH "MEMBER FUNCTION DOCUMENTATION"
+.PP 
+.SS "bool FTPSocket::DirEntry::canGroupRead () const\fC [inline]\fP"
+.PP
+.SS "bool FTPSocket::DirEntry::canGroupWrite () const\fC [inline]\fP"
+.PP
+.SS "bool FTPSocket::DirEntry::canOtherRead () const\fC [inline]\fP"
+.PP
+.SS "bool FTPSocket::DirEntry::canOtherWrite () const\fC [inline]\fP"
+.PP
+.SS "bool FTPSocket::DirEntry::canUserRead () const\fC [inline]\fP"
+.PP
+.SS "bool FTPSocket::DirEntry::canUserWrite () const\fC [inline]\fP"
+.PP
+.SS "string FTPSocket::DirEntry::getAccess () const\fC [inline]\fP"
+.PP
+.SS "string FTPSocket::DirEntry::getGroup () const\fC [inline]\fP"
+.PP
+.SS "string FTPSocket::DirEntry::getLine () const\fC [inline]\fP"
+.PP
+accessor for members
+.PP
+.SS "string FTPSocket::DirEntry::getName () const\fC [inline]\fP"
+.PP
+.SS "unsigned int FTPSocket::DirEntry::getSize (void) const\fC [inline]\fP"
+.PP
+.SS "string FTPSocket::DirEntry::getUser () const\fC [inline]\fP"
+.PP
+.SS "bool FTPSocket::DirEntry::isDir () const\fC [inline]\fP"
+.PP
+.SS "bool FTPSocket::DirEntry::isLink () const\fC [inline]\fP"
+.PP
+.SS "bool FTPSocket::DirEntry::parse (string li)"
+.PP
+set members to the values found in li
+.PP
+.SH "MEMBER DATA DOCUMENTATION"
+.PP 
+.SS "string FTPSocket::DirEntry::access\fC [protected]\fP"
+.PP
+.SS "string FTPSocket::DirEntry::group\fC [protected]\fP"
+.PP
+.SS "string FTPSocket::DirEntry::line\fC [protected]\fP"
+.PP
+.SS "string FTPSocket::DirEntry::name\fC [protected]\fP"
+.PP
+.SS "unsigned int FTPSocket::DirEntry::size\fC [protected]\fP"
+.PP
+.SS "string FTPSocket::DirEntry::user\fC [protected]\fP"
+.PP
+
+
+.SH "AUTHOR"
+.PP 
+Generated automatically by Doxygen for CommonC++ from the source code.

@@ -1,0 +1,238 @@
+.TH "Date" 3 "22 May 2003" "CommonC++" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+Date \- The Date class uses a julian date representation of the current year, month, and day. julian number based date class. 
+.SH SYNOPSIS
+.br
+.PP
+\fC#include <numbers.h>\fP
+.PP
+Inherited by \fBDateNumber\fP, and \fBDatetime\fP.
+.PP
+.SS "Public Methods"
+
+.in +1c
+.ti -1c
+.RI "\fBDate\fP (time_t tm)"
+.br
+.ti -1c
+.RI "\fBDate\fP (tm *dt)"
+.br
+.ti -1c
+.RI "\fBDate\fP (char *str, size_t \fBsize\fP=0)"
+.br
+.ti -1c
+.RI "\fBDate\fP (int year, unsigned month, unsigned day)"
+.br
+.ti -1c
+.RI "\fBDate\fP ()"
+.br
+.ti -1c
+.RI "int \fBgetYear\fP (void) const"
+.br
+.ti -1c
+.RI "unsigned \fBgetMonth\fP (void) const"
+.br
+.ti -1c
+.RI "unsigned \fBgetDay\fP (void) const"
+.br
+.ti -1c
+.RI "unsigned \fBgetDayOfWeek\fP (void) const"
+.br
+.ti -1c
+.RI "char * \fBgetDate\fP (char *buffer) const"
+.br
+.ti -1c
+.RI "time_t \fBgetDate\fP (void) const"
+.br
+.ti -1c
+.RI "time_t \fBgetDate\fP (tm *buf) const"
+.br
+.ti -1c
+.RI "long \fBgetValue\fP (void) const"
+.br
+.ti -1c
+.RI "void \fBsetDate\fP (const char *str, size_t \fBsize\fP=0)"
+.br
+.ti -1c
+.RI "bool \fBisValid\fP (void) const"
+.br
+.ti -1c
+.RI "\fBoperator long\fP () const"
+.br
+.ti -1c
+.RI "std::string \fBoperator()\fP () const"
+.br
+.ti -1c
+.RI "Date & \fBoperator++\fP ()"
+.br
+.ti -1c
+.RI "Date & \fBoperator--\fP ()"
+.br
+.ti -1c
+.RI "Date & \fBoperator+=\fP (long val)"
+.br
+.ti -1c
+.RI "Date & \fBoperator-=\fP (long val)"
+.br
+.ti -1c
+.RI "int \fBoperator==\fP (Date &date)"
+.br
+.ti -1c
+.RI "int \fBoperator!=\fP (Date &date)"
+.br
+.ti -1c
+.RI "int \fBoperator<\fP (Date &date)"
+.br
+.ti -1c
+.RI "int \fBoperator<=\fP (Date &date)"
+.br
+.ti -1c
+.RI "int \fBoperator>\fP (Date &date)"
+.br
+.ti -1c
+.RI "int \fBoperator>=\fP (Date &date)"
+.br
+.ti -1c
+.RI "bool \fBoperator!\fP () const"
+.br
+.in -1c
+.SS "Protected Methods"
+
+.in +1c
+.ti -1c
+.RI "void \fBtoJulian\fP (long year, long month, long day)"
+.br
+.ti -1c
+.RI "void \fBfromJulian\fP (char *buf) const"
+.br
+.ti -1c
+.RI "virtual void \fBupdate\fP (void)"
+.br
+.RI "\fIA method to use to 'post' any changed values when shadowing a mixed object class.\fP"
+.in -1c
+.SS "Protected Attributes"
+
+.in +1c
+.ti -1c
+.RI "long \fBjulian\fP"
+.br
+.in -1c
+.SS "Friends"
+
+.in +1c
+.ti -1c
+.RI "Date \fBoperator+\fP (Date &date, long val)"
+.br
+.ti -1c
+.RI "Date \fBoperator-\fP (Date &date, long val)"
+.br
+.ti -1c
+.RI "Date \fBoperator+\fP (long val, Date &date)"
+.br
+.ti -1c
+.RI "Date \fBoperator-\fP (long val, Date &date)"
+.br
+.in -1c
+.SH "DETAILED DESCRIPTION"
+.PP 
+The Date class uses a julian date representation of the current year, month, and day. julian number based date class.
+.PP
+This is then manipulated in several forms and may be exported as needed.
+.PP
+\fBAuthor: \fP
+.in +1c
+David Sugar <dyfet@ostel.com> 
+.PP
+.SH "CONSTRUCTOR & DESTRUCTOR DOCUMENTATION"
+.PP 
+.SS "Date::Date (time_t tm)"
+.PP
+.SS "Date::Date (tm * dt)"
+.PP
+.SS "Date::Date (char * str, size_t size = 0)"
+.PP
+.SS "Date::Date (int year, unsigned month, unsigned day)"
+.PP
+.SS "Date::Date ()"
+.PP
+.SH "MEMBER FUNCTION DOCUMENTATION"
+.PP 
+.SS "void Date::fromJulian (char * buf) const\fC [protected]\fP"
+.PP
+.SS "time_t Date::getDate (tm * buf) const"
+.PP
+.SS "time_t Date::getDate (void) const"
+.PP
+.SS "char* Date::getDate (char * buffer) const"
+.PP
+.SS "unsigned Date::getDay (void) const"
+.PP
+.SS "unsigned Date::getDayOfWeek (void) const"
+.PP
+.SS "unsigned Date::getMonth (void) const"
+.PP
+.SS "long Date::getValue (void) const"
+.PP
+.SS "int Date::getYear (void) const"
+.PP
+.SS "bool Date::isValid (void) const"
+.PP
+Reimplemented in \fBDatetime\fP.
+.SS "Date::operator long () const\fC [inline]\fP"
+.PP
+.SS "bool Date::operator! (void) const\fC [inline]\fP"
+.PP
+.SS "int Date::operator!= (Date & date)"
+.PP
+.SS "std::string Date::operator() ()"
+.PP
+.SS "Date& Date::operator++ ()"
+.PP
+.SS "Date& Date::operator+= (long val)"
+.PP
+.SS "Date& Date::operator-- ()"
+.PP
+.SS "Date& Date::operator-= (long val)"
+.PP
+.SS "int Date::operator< (Date & date)"
+.PP
+.SS "int Date::operator<= (Date & date)"
+.PP
+.SS "int Date::operator== (Date & date)"
+.PP
+.SS "int Date::operator> (Date & date)"
+.PP
+.SS "int Date::operator>= (Date & date)"
+.PP
+.SS "void Date::setDate (const char * str, size_t size = 0)"
+.PP
+.SS "void Date::toJulian (long year, long month, long day)\fC [protected]\fP"
+.PP
+.SS "virtual void Date::update (void)\fC [inline, protected, virtual]\fP"
+.PP
+A method to use to 'post' any changed values when shadowing a mixed object class.
+.PP
+This is used by \fBDateNumber\fP. 
+.PP
+Reimplemented in \fBDateNumber\fP.
+.SH "FRIENDS AND RELATED FUNCTION DOCUMENTATION"
+.PP 
+.SS "Date operator+ (long val, Date & date)\fC [friend]\fP"
+.PP
+.SS "Date operator+ (Date & date, long val)\fC [friend]\fP"
+.PP
+.SS "Date operator- (long val, Date & date)\fC [friend]\fP"
+.PP
+.SS "Date operator- (Date & date, long val)\fC [friend]\fP"
+.PP
+.SH "MEMBER DATA DOCUMENTATION"
+.PP 
+.SS "long Date::julian\fC [protected]\fP"
+.PP
+
+
+.SH "AUTHOR"
+.PP 
+Generated automatically by Doxygen for CommonC++ from the source code.

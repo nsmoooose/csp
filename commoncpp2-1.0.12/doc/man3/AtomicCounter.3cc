@@ -1,0 +1,100 @@
+.PP
+.TH "AtomicCounter" 3 "22 May 2003" "CommonC++" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+AtomicCounter \- The AtomicCounter class offers thread-safe manipulation of an integer counter. atomic counter operation. 
+.SH SYNOPSIS
+.br
+.PP
+\fC#include <thread.h>\fP
+.PP
+.SS "Public Methods"
+
+.in +1c
+.ti -1c
+.RI "\fBAtomicCounter\fP ()"
+.br
+.RI "\fIInitialize an atomic counter to 0.\fP"
+.ti -1c
+.RI "\fBAtomicCounter\fP (int value)"
+.br
+.RI "\fIInitialize an atomic counter to a known value.\fP"
+.ti -1c
+.RI "int \fBoperator++\fP (void)"
+.br
+.ti -1c
+.RI "int \fBoperator--\fP (void)"
+.br
+.ti -1c
+.RI "int \fBoperator+=\fP (int change)"
+.br
+.ti -1c
+.RI "int \fBoperator-=\fP (int change)"
+.br
+.ti -1c
+.RI "int \fBoperator+\fP (int change)"
+.br
+.ti -1c
+.RI "int \fBoperator-\fP (int change)"
+.br
+.ti -1c
+.RI "int \fBoperator=\fP (int value)"
+.br
+.ti -1c
+.RI "bool \fBoperator!\fP (void)"
+.br
+.ti -1c
+.RI "\fBoperator int\fP ()"
+.br
+.in -1c
+.SH "DETAILED DESCRIPTION"
+.PP 
+The AtomicCounter class offers thread-safe manipulation of an integer counter. atomic counter operation.
+.PP
+These are commonly used for building thread-safe 'reference' counters for C++ classes. The AtomicCounter depends on the platforms support for 'atomic' integer operations, and can alternately substitute a 'mutex' if no atomic support exists.
+.PP
+\fBAuthor: \fP
+.in +1c
+Sean Cavanaugh <sean@dimensionalrift.com> 
+.PP
+.SH "CONSTRUCTOR & DESTRUCTOR DOCUMENTATION"
+.PP 
+.SS "AtomicCounter::AtomicCounter ()"
+.PP
+Initialize an atomic counter to 0.
+.PP
+.SS "AtomicCounter::AtomicCounter (int value)"
+.PP
+Initialize an atomic counter to a known value.
+.PP
+\fBParameters: \fP
+.in +1c
+.TP
+\fB\fIvalue\fP\fP
+initial value. 
+.SH "MEMBER FUNCTION DOCUMENTATION"
+.PP 
+.SS "AtomicCounter::operator int ()"
+.PP
+.SS "bool AtomicCounter::operator! (void)"
+.PP
+.SS "int AtomicCounter::operator+ (int change)"
+.PP
+.SS "int AtomicCounter::operator++ (void)"
+.PP
+.SS "int AtomicCounter::operator+= (int change)"
+.PP
+.SS "int AtomicCounter::operator- (int change)"
+.PP
+.SS "int AtomicCounter::operator-- (void)"
+.PP
+.SS "int AtomicCounter::operator-= (int change)"
+.PP
+.SS "int AtomicCounter::operator= (int value)"
+.PP
+
+
+.SH "AUTHOR"
+.PP 
+Generated automatically by Doxygen for CommonC++ from the source code.

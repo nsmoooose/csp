@@ -1,0 +1,97 @@
+.TH "InetHostAddress" 3 "22 May 2003" "CommonC++" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+InetHostAddress \- This object is used to hold the actual and valid internet address of a specific host machine that will be accessed through a socket. Address of a specific Internet host machine. 
+.SH SYNOPSIS
+.br
+.PP
+\fC#include <socket.h>\fP
+.PP
+Inherits \fBInetAddress\fP.
+.PP
+.SS "Public Methods"
+
+.in +1c
+.ti -1c
+.RI "\fBInetHostAddress\fP (const char *host=NULL)"
+.br
+.RI "\fICreate a new host address for a specific internet host.\fP"
+.ti -1c
+.RI "\fBInetHostAddress\fP (struct in_addr addr)"
+.br
+.RI "\fIConvert a system socket binary address such as may be returned through the accept() call or getsockpeer() into an internet host address object.\fP"
+.ti -1c
+.RI "\fBInetAddress\fP & \fBoperator=\fP (unsigned long addr)"
+.br
+.RI "\fIAllows assignment from the return of functions like inet_addr() or htonl().\fP"
+.ti -1c
+.RI "InetHostAddress & \fBoperator &=\fP (const \fBInetMaskAddress\fP &mask)"
+.br
+.RI "\fIMask the internet host address object with a network mask address.\fP"
+.in -1c
+.SS "Friends"
+
+.in +1c
+.ti -1c
+.RI "class \fBInetMaskAddress\fP"
+.br
+.ti -1c
+.RI "InetHostAddress \fBoperator &\fP (const InetHostAddress &addr, const \fBInetMaskAddress\fP &mask)"
+.br
+.in -1c
+.SH "DETAILED DESCRIPTION"
+.PP 
+This object is used to hold the actual and valid internet address of a specific host machine that will be accessed through a socket. Address of a specific Internet host machine.
+.PP
+\fBAuthor: \fP
+.in +1c
+David Sugar <dyfet@ostel.com> 
+.PP
+.SH "CONSTRUCTOR & DESTRUCTOR DOCUMENTATION"
+.PP 
+.SS "InetHostAddress::InetHostAddress (const char * host = NULL)"
+.PP
+Create a new host address for a specific internet host.
+.PP
+The internet host can be specified in a null terminated ASCII string and include either the physical host address or the DNS name of a host machine. Hence, an InetHostAddress ('www.voxilla.org') can be directly declaired in this manner.
+.PP
+Defaults to the IP address that represents the interface matching 'gethostname()'.
+.PP
+\fBParameters: \fP
+.in +1c
+.TP
+\fB\fIhost\fP\fP
+dns or physical address of an Internet host. 
+.SS "InetHostAddress::InetHostAddress (struct in_addr addr)"
+.PP
+Convert a system socket binary address such as may be returned through the accept() call or getsockpeer() into an internet host address object.
+.PP
+\fBParameters: \fP
+.in +1c
+.TP
+\fB\fIaddr\fP\fP
+binary address of internet host. 
+.SH "MEMBER FUNCTION DOCUMENTATION"
+.PP 
+.SS "InetHostAddress& InetHostAddress::operator &= (const \fBInetMaskAddress\fP & mask)"
+.PP
+Mask the internet host address object with a network mask address.
+.PP
+This is commonly used to coerce an address by subnet. 
+.SS "\fBInetAddress\fP& InetHostAddress::operator= (unsigned long addr)\fC [inline]\fP"
+.PP
+Allows assignment from the return of functions like inet_addr() or htonl().
+.PP
+Reimplemented from \fBInetAddress\fP.
+.SH "FRIENDS AND RELATED FUNCTION DOCUMENTATION"
+.PP 
+.SS "friend class InetMaskAddress\fC [friend]\fP"
+.PP
+.SS "InetHostAddress operator & (const InetHostAddress & addr, const \fBInetMaskAddress\fP & mask)\fC [friend]\fP"
+.PP
+
+
+.SH "AUTHOR"
+.PP 
+Generated automatically by Doxygen for CommonC++ from the source code.

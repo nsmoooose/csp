@@ -1,0 +1,17 @@
+.TH "export.h" 3 "22 May 2003" "CommonC++" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+export.h \- export/import definitions for DLL's on Win32. 
+.SH SYNOPSIS
+.br
+.PP
+.SH "DETAILED DESCRIPTION"
+.PP 
+export/import definitions for DLL's on Win32.
+.PP
+ This is used to swap rtl definitions for export vs import on Win32 machines when building a dll so that the remaining headers for my new dll are all 'exports', while the headers for the included ccxx dll are all 'imports'.
+.PP
+.SH "AUTHOR"
+.PP 
+Generated automatically by Doxygen for CommonC++ from the source code.

@@ -1,0 +1,41 @@
+.TH "ZNumber" 3 "22 May 2003" "CommonC++" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+ZNumber \- 
+.SH SYNOPSIS
+.br
+.PP
+\fC#include <numbers.h>\fP
+.PP
+Inherits \fBNumber\fP.
+.PP
+.SS "Public Methods"
+
+.in +1c
+.ti -1c
+.RI "\fBZNumber\fP (char *buf, unsigned \fBsize\fP)"
+.br
+.ti -1c
+.RI "void \fBsetValue\fP (long value)"
+.br
+.ti -1c
+.RI "long \fBoperator=\fP (long value)"
+.br
+.in -1c
+.SH "CONSTRUCTOR & DESTRUCTOR DOCUMENTATION"
+.PP 
+.SS "ZNumber::ZNumber (char * buf, unsigned size)"
+.PP
+.SH "MEMBER FUNCTION DOCUMENTATION"
+.PP 
+.SS "long ZNumber::operator= (long value)"
+.PP
+Reimplemented from \fBNumber\fP.
+.SS "void ZNumber::setValue (long value)"
+.PP
+Reimplemented from \fBNumber\fP.
+
+.SH "AUTHOR"
+.PP 
+Generated automatically by Doxygen for CommonC++ from the source code.

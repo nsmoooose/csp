@@ -1,0 +1,214 @@
+.TH "Pipe" 3 "22 May 2003" "CommonC++" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+Pipe \- The Pipe uses system kernel buffering to hold data being passed either between two execution contexts within the same process, or between different processes. kernel buffering between processes and/or threads. 
+.SH SYNOPSIS
+.br
+.PP
+\fC#include <file.h>\fP
+.PP
+.SS "Public Methods"
+
+.in +1c
+.ti -1c
+.RI "bool \fBoperator!\fP ()"
+.br
+.RI "\fIUsed to see if the pipe has any open entities.\fP"
+.ti -1c
+.RI "int \fBreceive\fP (void *addr)"
+.br
+.RI "\fIPerform an object atomic transfer of data from a pipe.\fP"
+.ti -1c
+.RI "int \fBsend\fP (void *addr)"
+.br
+.RI "\fIPerform an object atomic transfer of data to a pipe.\fP"
+.ti -1c
+.RI "bool \fBisValid\fP (void)"
+.br
+.RI "\fIVerify this object is 'valid'.\fP"
+.in -1c
+.SS "Protected Methods"
+
+.in +1c
+.ti -1c
+.RI "int \fBgetSize\fP (void)"
+.br
+.RI "\fIGet the object size for atomic operations.\fP"
+.ti -1c
+.RI "void \fBendSender\fP (void)"
+.br
+.RI "\fISender is often used for implementing a fork()'d message port between processes.\fP"
+.ti -1c
+.RI "void \fBendReceiver\fP (void)"
+.br
+.RI "\fIReceiver is often used for implementing a fork()'d message port between processes.\fP"
+.ti -1c
+.RI "\fBPipe\fP (int \fBsize\fP=512, int count=1)"
+.br
+.RI "\fICreate a kernel pipe descriptor set using pipe().\fP"
+.ti -1c
+.RI "virtual \fB~Pipe\fP ()"
+.br
+.RI "\fIDestroy the pipe and kernel descriptor resources.\fP"
+.ti -1c
+.RI "\fBPipe\fP (const Pipe &orig)"
+.br
+.RI "\fICreate a pipe as a duplicate of an existing pipe.\fP"
+.ti -1c
+.RI "Pipe & \fBoperator=\fP (const Pipe &orig)"
+.br
+.ti -1c
+.RI "void \fBsender\fP (void)"
+.br
+.ti -1c
+.RI "void \fBreceiver\fP (void)"
+.br
+.ti -1c
+.RI "int \fBread\fP (void *buf, int len)"
+.br
+.ti -1c
+.RI "int \fBwrite\fP (void *buf, int len)"
+.br
+.in -1c
+.SS "Protected Attributes"
+
+.in +1c
+.ti -1c
+.RI "int \fBfd\fP [2]"
+.br
+.ti -1c
+.RI "int \fBobjcount\fP"
+.br
+.ti -1c
+.RI "int \fBobjsize\fP"
+.br
+.in -1c
+.SH "DETAILED DESCRIPTION"
+.PP 
+The Pipe uses system kernel buffering to hold data being passed either between two execution contexts within the same process, or between different processes. kernel buffering between processes and/or threads.
+.PP
+Unlike thread's '\fBBuffer\fP', Pipe uses system descriptors and kernel memory. Under Posix, the size of the pipe and associated kernel memory is always a fixed constant as defined by _PC_PIPE_BUF. The Common C++ 'pipe' class primarily deals with 'atomic' transfers of fixed sized objects through pipes. Pipes may pass data arbitrarily and can also be used through the 'pipestream' class.
+.PP
+The 'Pipe' class is not meant to be a true 'public' class, but as a builder class for deriving other classes.
+.PP
+\fBAuthor: \fP
+.in +1c
+David Sugar <dyfet@ostel.com> 
+.PP
+.SH "CONSTRUCTOR & DESTRUCTOR DOCUMENTATION"
+.PP 
+.SS "Pipe::Pipe (int size = 512, int count = 1)\fC [protected]\fP"
+.PP
+Create a kernel pipe descriptor set using pipe().
+.PP
+On systems which allow the pipe kernel buffer to be defined, a size for aligned atomic transfers can be set, as well as the number of atomic objects the kernel will buffer. On Posix systems, these options are ignored.
+.PP
+\fBParameters: \fP
+.in +1c
+.TP
+\fB\fIsize\fP\fP
+objsize of atomic objects to send. 
+.TP
+\fB\fIcount\fP\fP
+count of atomic objects to kernel buffer. 
+.SS "virtual Pipe::~Pipe ()\fC [protected, virtual]\fP"
+.PP
+Destroy the pipe and kernel descriptor resources.
+.PP
+.SS "Pipe::Pipe (const Pipe & orig)\fC [protected]\fP"
+.PP
+Create a pipe as a duplicate of an existing pipe.
+.PP
+\fBParameters: \fP
+.in +1c
+.TP
+\fB\fIorig\fP\fP
+pipe to duplicate. 
+.SH "MEMBER FUNCTION DOCUMENTATION"
+.PP 
+.SS "void Pipe::endReceiver (void)\fC [inline, protected]\fP"
+.PP
+Receiver is often used for implementing a fork()'d message port between processes.
+.PP
+By stopping the receiver, the current pipe can then only be used for sending, and the receiver is presumed to be in the other half of a fork()'d process.
+.PP
+\fBSee also: \fP
+.in +1c
+\fBendSender\fP 
+.SS "void Pipe::endSender (void)\fC [inline, protected]\fP"
+.PP
+Sender is often used for implementing a fork()'d message port between processes.
+.PP
+By stopping the sender, the current pipe can then only be used for receiving, and the sender is presumed to be in the other half of a fork()'d process.
+.PP
+\fBSee also: \fP
+.in +1c
+\fBendReceiver\fP 
+.SS "int Pipe::getSize (void)\fC [inline, protected]\fP"
+.PP
+Get the object size for atomic operations.
+.PP
+\fBReturns: \fP
+.in +1c
+size of atomic operations. 
+.SS "bool Pipe::isValid (void)"
+.PP
+Verify this object is 'valid'.
+.PP
+\fBReturns: \fP
+.in +1c
+true if valid. 
+.SS "bool Pipe::operator! ()"
+.PP
+Used to see if the pipe has any open entities.
+.PP
+.SS "Pipe& Pipe::operator= (const Pipe & orig)\fC [protected]\fP"
+.PP
+.SS "int Pipe::read (void * buf, int len)\fC [inline, protected]\fP"
+.PP
+.SS "int Pipe::receive (void * addr)\fC [inline]\fP"
+.PP
+Perform an object atomic transfer of data from a pipe.
+.PP
+\fBReturns: \fP
+.in +1c
+number of bytes actually read if successful. 
+.PP
+\fBParameters: \fP
+.in +1c
+.TP
+\fB\fIaddr\fP\fP
+pointer to store read data. 
+.SS "void Pipe::receiver (void)\fC [inline, protected]\fP"
+.PP
+.SS "int Pipe::send (void * addr)\fC [inline]\fP"
+.PP
+Perform an object atomic transfer of data to a pipe.
+.PP
+\fBReturns: \fP
+.in +1c
+number of bytes written if successful. 
+.PP
+\fBParameters: \fP
+.in +1c
+.TP
+\fB\fIaddr\fP\fP
+pointer to write data from. 
+.SS "void Pipe::sender (void)\fC [inline, protected]\fP"
+.PP
+.SS "int Pipe::write (void * buf, int len)\fC [inline, protected]\fP"
+.PP
+.SH "MEMBER DATA DOCUMENTATION"
+.PP 
+.SS "int Pipe::fd[2]\fC [protected]\fP"
+.PP
+.SS "int Pipe::objcount\fC [protected]\fP"
+.PP
+.SS "int Pipe::objsize\fC [protected]\fP"
+.PP
+
+
+.SH "AUTHOR"
+.PP 
+Generated automatically by Doxygen for CommonC++ from the source code.

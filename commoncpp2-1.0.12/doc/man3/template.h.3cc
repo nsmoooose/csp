@@ -1,0 +1,34 @@
+.TH "template.h" 3 "22 May 2003" "CommonC++" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+template.h \- GNU Common C++ template subsystem. 
+.SH SYNOPSIS
+.br
+.PP
+\fC#include <cc++/config.h>\fP
+.br
+\fC#include <cc++/objcount.h>\fP
+.br
+\fC#include <cc++/objlink.h>\fP
+.br
+\fC#include <cc++/objmap.h>\fP
+.br
+\fC#include <cc++/objsync.h>\fP
+.br
+\fC#include <cc++/oststring.h>\fP
+.br
+\fC#include <cc++/functions.h>\fP
+.br
+\fC#include <cc++/pointer.h>\fP
+.br
+\fC#include <cc++/counter.h>\fP
+.br
+.SH "DETAILED DESCRIPTION"
+.PP 
+GNU Common C++ template subsystem.
+.PP
+.PP
+.SH "AUTHOR"
+.PP 
+Generated automatically by Doxygen for CommonC++ from the source code.

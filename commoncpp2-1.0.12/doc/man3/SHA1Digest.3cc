@@ -1,0 +1,71 @@
+.TH "SHA1Digest" 3 "22 May 2003" "CommonC++" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+SHA1Digest \- SHA1Digest SHA-1 \fBDigest\fP Implementation. 
+.SH SYNOPSIS
+.br
+.PP
+\fC#include <digest.h>\fP
+.PP
+Inherits \fBSHA64DigestHelper\fP.
+.PP
+.SS "Public Methods"
+
+.in +1c
+.ti -1c
+.RI "\fBSHA1Digest\fP ()"
+.br
+.ti -1c
+.RI "void \fBinitDigest\fP ()"
+.br
+.ti -1c
+.RI "unsigned \fBgetSize\fP ()"
+.br
+.ti -1c
+.RI "\fBSHA1Digest\fP (const SHA1Digest &other)"
+.br
+.ti -1c
+.RI "SHA1Digest & \fBoperator=\fP (const SHA1Digest &other)"
+.br
+.in -1c
+.SS "Protected Methods"
+
+.in +1c
+.ti -1c
+.RI "void \fBprocessBlock\fP (const unsigned char *buffer)"
+.br
+.in -1c
+.SH "DETAILED DESCRIPTION"
+.PP 
+SHA1Digest SHA-1 \fBDigest\fP Implementation.
+.PP
+SHA1Digest proper.
+.PP
+\fBAuthor: \fP
+.in +1c
+Elizabeth Barham <lizzy@soggytrousers.net> 
+.PP
+.SH "CONSTRUCTOR & DESTRUCTOR DOCUMENTATION"
+.PP 
+.SS "SHA1Digest::SHA1Digest ()"
+.PP
+.SS "SHA1Digest::SHA1Digest (const SHA1Digest & other)"
+.PP
+.SH "MEMBER FUNCTION DOCUMENTATION"
+.PP 
+.SS "unsigned SHA1Digest::getSize (void)\fC [inline, virtual]\fP"
+.PP
+Implements \fBSHADigest< uint64, 64 >\fP.
+.SS "void SHA1Digest::initDigest ()\fC [virtual]\fP"
+.PP
+Reimplemented from \fBSHADigest< uint64, 64 >\fP.
+.SS "SHA1Digest& SHA1Digest::operator= (const SHA1Digest & other)\fC [inline]\fP"
+.PP
+.SS "void SHA1Digest::processBlock (const unsigned char * buffer)\fC [protected, virtual]\fP"
+.PP
+Implements \fBSHADigest< uint64, 64 >\fP.
+
+.SH "AUTHOR"
+.PP 
+Generated automatically by Doxygen for CommonC++ from the source code.

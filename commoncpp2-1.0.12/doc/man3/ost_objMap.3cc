@@ -1,0 +1,75 @@
+.TH "ost::objMap" 3 "22 May 2003" "CommonC++" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+ost::objMap \- 
+.SH SYNOPSIS
+.br
+.PP
+\fC#include <objmap.h>\fP
+.PP
+.SS "Static Public Methods"
+
+.in +1c
+.ti -1c
+.RI "T * \fBgetObject\fP (\fBkeystring\fP key)"
+.br
+.in -1c
+.SS "Protected Methods"
+
+.in +1c
+.ti -1c
+.RI "virtual unsigned \fBkeyIndex\fP (K k)"
+.br
+.ti -1c
+.RI "unsigned \fBgetSize\fP (void)"
+.br
+.ti -1c
+.RI "\fBobjMap\fP (const K key)"
+.br
+.in -1c
+.SS "Protected Attributes"
+
+.in +1c
+.ti -1c
+.RI "T * \fBobjNext\fP"
+.br
+.ti -1c
+.RI "const K \fBobjKey\fP"
+.br
+.in -1c
+.SS "Static Protected Attributes"
+
+.in +1c
+.ti -1c
+.RI "T * \fBobjIndex\fP [S]"
+.br
+.in -1c
+
+.SS "template<class T, class K, unsigned S> class ost::objMap< T, K, S >"
+
+.SH "CONSTRUCTOR & DESTRUCTOR DOCUMENTATION"
+.PP 
+.SS "template<class T, class K, unsigned S> ost::objMap< T, K, S >::objMap (const K key)\fC [inline, protected]\fP"
+.PP
+.SH "MEMBER FUNCTION DOCUMENTATION"
+.PP 
+.SS "template<class T, class K, unsigned S> T * ost::objMap< T, K, S >::getObject (\fBkeystring\fP key)\fC [static]\fP"
+.PP
+.SS "template<class T, class K, unsigned S> unsigned ost::objMap< T, K, S >::getSize (void)\fC [inline, protected]\fP"
+.PP
+.SS "template<class T, class K, unsigned S> virtual unsigned ost::objMap< T, K, S >::keyIndex (K k)\fC [inline, protected, virtual]\fP"
+.PP
+.SH "MEMBER DATA DOCUMENTATION"
+.PP 
+.SS "template<class T, class K, unsigned S> T * ost::objMap< T, K, S >::objIndex\fC [static, protected]\fP"
+.PP
+.SS "template<class T, class K, unsigned S> const K ost::objMap< T, K, S >::objKey\fC [protected]\fP"
+.PP
+.SS "template<class T, class K, unsigned S> T* ost::objMap< T, K, S >::objNext\fC [protected]\fP"
+.PP
+
+
+.SH "AUTHOR"
+.PP 
+Generated automatically by Doxygen for CommonC++ from the source code.

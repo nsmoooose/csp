@@ -1,0 +1,41 @@
+.TH "File::_fcb" 3 "22 May 2003" "CommonC++" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+File::_fcb \- 
+.SH SYNOPSIS
+.br
+.PP
+\fC#include <file.h>\fP
+.PP
+.SS "Public Attributes"
+
+.in +1c
+.ti -1c
+.RI "_fcb * \fBnext\fP"
+.br
+.ti -1c
+.RI "char * \fBaddress\fP"
+.br
+.ti -1c
+.RI "\fBccxx_size_t\fP \fBlen\fP"
+.br
+.ti -1c
+.RI "off_t \fBpos\fP"
+.br
+.in -1c
+.SH "MEMBER DATA DOCUMENTATION"
+.PP 
+.SS "char* File::_fcb::address"
+.PP
+.SS "\fBccxx_size_t\fP File::_fcb::len"
+.PP
+.SS "struct _fcb* File::_fcb::next"
+.PP
+.SS "off_t File::_fcb::pos"
+.PP
+
+
+.SH "AUTHOR"
+.PP 
+Generated automatically by Doxygen for CommonC++ from the source code.

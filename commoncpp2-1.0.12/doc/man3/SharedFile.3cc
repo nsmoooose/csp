@@ -1,0 +1,194 @@
+.TH "SharedFile" 3 "22 May 2003" "CommonC++" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+SharedFile \- This class defines a database I/O file service that can be shared by multiple processes. This class defines a database I/O file service that can be shared by multiple processes. 
+.SH SYNOPSIS
+.br
+.PP
+\fC#include <file.h>\fP
+.PP
+Inherits \fBRandomFile\fP.
+.PP
+.SS "Public Methods"
+
+.in +1c
+.ti -1c
+.RI "\fBSharedFile\fP (const char *path)"
+.br
+.RI "\fIOpen or create a new database file.\fP"
+.ti -1c
+.RI "\fBSharedFile\fP (const SharedFile &file)"
+.br
+.RI "\fICreate a shared file as a duplicate of an existing shared file.\fP"
+.ti -1c
+.RI "virtual \fB~SharedFile\fP ()"
+.br
+.RI "\fIClose and finish a database file.\fP"
+.ti -1c
+.RI "\fBError\fP \fBrestart\fP (void)"
+.br
+.RI "\fIRestart an existing database; close and re-open.\fP"
+.ti -1c
+.RI "\fBError\fP \fBfetch\fP (char *address=NULL, \fBccxx_size_t\fP length=0, off_t position=-1)"
+.br
+.RI "\fILock and Fetch a portion of the file into physical memory.\fP"
+.ti -1c
+.RI "\fBError\fP \fBupdate\fP (char *address=NULL, \fBccxx_size_t\fP length=0, off_t position=-1)"
+.br
+.RI "\fIUpdate a portion of a file from physical memory.\fP"
+.ti -1c
+.RI "\fBError\fP \fBclear\fP (\fBccxx_size_t\fP length=0, off_t pos=-1)"
+.br
+.RI "\fIClear a lock held from a previous fetch operation without updating.\fP"
+.ti -1c
+.RI "\fBError\fP \fBappend\fP (char *address=NULL, \fBccxx_size_t\fP length=0)"
+.br
+.RI "\fIAdd new data to the end of the file.\fP"
+.ti -1c
+.RI "off_t \fBgetPosition\fP (void)"
+.br
+.RI "\fIFetch the current file position marker for this thread.\fP"
+.ti -1c
+.RI "bool \fBoperator++\fP (void)"
+.br
+.ti -1c
+.RI "bool \fBoperator--\fP (void)"
+.br
+.in -1c
+.SH "DETAILED DESCRIPTION"
+.PP 
+This class defines a database I/O file service that can be shared by multiple processes. This class defines a database I/O file service that can be shared by multiple processes.
+.PP
+Each thread should access a dup of the database object, and mutex locks can be used to preserve transaction integrety if multiple threads are used.
+.PP
+SharedFile is used when a database may be shared between multiple processes. SharedFile automatically applies low level byte-range 'file locks', and provides an interface to fetch and release byte-range locked portions of a file.
+.PP
+\fBAuthor: \fP
+.in +1c
+David Sugar <dyfet@ostel.com> 
+.PP
+.SH "CONSTRUCTOR & DESTRUCTOR DOCUMENTATION"
+.PP 
+.SS "SharedFile::SharedFile (const char * path)"
+.PP
+Open or create a new database file.
+.PP
+You should also use Initial.
+.PP
+\fBParameters: \fP
+.in +1c
+.TP
+\fB\fIpath\fP\fP
+pathname of database to open. 
+.SS "SharedFile::SharedFile (const SharedFile & file)"
+.PP
+Create a shared file as a duplicate of an existing shared file.
+.PP
+\fBParameters: \fP
+.in +1c
+.TP
+\fB\fIfile\fP\fP
+original file. 
+.SS "virtual SharedFile::~SharedFile ()\fC [virtual]\fP"
+.PP
+Close and finish a database file.
+.PP
+.SH "MEMBER FUNCTION DOCUMENTATION"
+.PP 
+.SS "\fBError\fP SharedFile::append (char * address = NULL, \fBccxx_size_t\fP length = 0)"
+.PP
+Add new data to the end of the file.
+.PP
+Locks file during append.
+.PP
+\fBParameters: \fP
+.in +1c
+.TP
+\fB\fIaddress\fP\fP
+address to use, or NULL if same as last I/O. 
+.TP
+\fB\fIlength\fP\fP
+length to use, or 0 if same as last I/O. 
+.SS "\fBError\fP SharedFile::clear (\fBccxx_size_t\fP length = 0, off_t pos = -1)"
+.PP
+Clear a lock held from a previous fetch operation without updating.
+.PP
+\fBReturns: \fP
+.in +1c
+errSuccess on success. 
+.PP
+\fBParameters: \fP
+.in +1c
+.TP
+\fB\fIlength\fP\fP
+length to use, or 0 if same as last I/O. 
+.TP
+\fB\fIpos\fP\fP
+file position to use or -1 if same as last I/O. 
+.SS "\fBError\fP SharedFile::fetch (char * address = NULL, \fBccxx_size_t\fP length = 0, off_t position = -1)"
+.PP
+Lock and Fetch a portion of the file into physical memory.
+.PP
+This can use state information to fetch the current record multiple times.
+.PP
+\fBReturns: \fP
+.in +1c
+errSuccess on success. 
+.PP
+\fBParameters: \fP
+.in +1c
+.TP
+\fB\fIaddress\fP\fP
+address to use, or NULL if same as last I/O. 
+.TP
+\fB\fIlength\fP\fP
+length to use, or 0 if same as last I/O. 
+.TP
+\fB\fIposition\fP\fP
+file position to use -1 if same as last I/O. 
+.SS "off_t SharedFile::getPosition (void)"
+.PP
+Fetch the current file position marker for this thread.
+.PP
+\fBReturns: \fP
+.in +1c
+file position offset. 
+.SS "bool SharedFile::operator++ (void)"
+.PP
+.SS "bool SharedFile::operator-- (void)"
+.PP
+.SS "\fBError\fP SharedFile::restart (void)\fC [inline, virtual]\fP"
+.PP
+Restart an existing database; close and re-open.
+.PP
+\fBReturns: \fP
+.in +1c
+errSuccess if successful. 
+.PP
+Reimplemented from \fBRandomFile\fP.
+.SS "\fBError\fP SharedFile::update (char * address = NULL, \fBccxx_size_t\fP length = 0, off_t position = -1)"
+.PP
+Update a portion of a file from physical memory.
+.PP
+This can use state information to commit the last read record. The current lock is also cleared.
+.PP
+\fBReturns: \fP
+.in +1c
+errSuccess on success. 
+.PP
+\fBParameters: \fP
+.in +1c
+.TP
+\fB\fIaddress\fP\fP
+address to use, or NULL if same as last I/O. 
+.TP
+\fB\fIlength\fP\fP
+length to use, or 0 if same as last I/O. 
+.TP
+\fB\fIposition\fP\fP
+file position to use or -1 if same as last I/O. 
+
+.SH "AUTHOR"
+.PP 
+Generated automatically by Doxygen for CommonC++ from the source code.

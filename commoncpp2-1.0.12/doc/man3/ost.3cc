@@ -1,0 +1,71 @@
+.TH "ost" 3 "22 May 2003" "CommonC++" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+ost \- 
+.SH SYNOPSIS
+.br
+.PP
+.SS "Compounds"
+
+.in +1c
+.ti -1c
+.RI "struct \fBcistring_char_traits\fP"
+.br
+.ti -1c
+.RI "class \fBCounter\fP"
+.br
+.ti -1c
+.RI "class \fBkeyMap\fP"
+.br
+.ti -1c
+.RI "class \fBobjCounter\fP"
+.br
+.ti -1c
+.RI "class \fBobjList\fP"
+.br
+.ti -1c
+.RI "class \fBobjMap\fP"
+.br
+.ti -1c
+.RI "class \fBobjSync\fP"
+.br
+.ti -1c
+.RI "class \fBPointer\fP"
+.br
+.in -1c
+.SS "Typedefs"
+
+.in +1c
+.ti -1c
+.RI "typedef std::string_char_traits< char > \fBcstring_char_traits\fP"
+.br
+.ti -1c
+.RI "typedef std::basic_string< char > \fBcstring\fP"
+.br
+.ti -1c
+.RI "typedef std::basic_string< char, \fBcistring_char_traits\fP< char > > \fBcistring\fP"
+.br
+.in -1c
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "template<typename T> const T & \fBabs\fP (const T &v)"
+.br
+.in -1c
+.SH "TYPEDEF DOCUMENTATION"
+.PP 
+.SS "typedef std::basic_string<char, \fBcistring_char_traits\fP<char> > ost::cistring"
+.PP
+.SS "typedef std::basic_string<char> ost::cstring"
+.PP
+.SS "typedef std::string_char_traits<char> ost::cstring_char_traits"
+.PP
+.SH "FUNCTION DOCUMENTATION"
+.PP 
+.SS "template<typename T> const T& abs (const T & v)\fC [inline]\fP"
+.PP
+.SH "AUTHOR"
+.PP 
+Generated automatically by Doxygen for CommonC++ from the source code.

@@ -1,0 +1,43 @@
+.TH "slog.h" 3 "22 May 2003" "CommonC++" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+slog.h \- System logging facilities abstraction. 
+.SH SYNOPSIS
+.br
+.PP
+\fC#include <cc++/config.h>\fP
+.br
+\fC#include <cc++/thread.h>\fP
+.br
+\fC#include <fstream>\fP
+.br
+\fC#include <iostream>\fP
+.br
+.SS "Compounds"
+
+.in +1c
+.ti -1c
+.RI "class \fBSlog\fP"
+.br
+.RI "\fIThe slog class is used to stream messages to the system's logging facility (syslogd). system logging facility class.\fP"
+.in -1c
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "\fBCCXX_EXPORT\fP (\fBSlog\fP) slog"
+.br
+.in -1c
+.SH "DETAILED DESCRIPTION"
+.PP 
+System logging facilities abstraction.
+.PP
+.PP
+.SH "FUNCTION DOCUMENTATION"
+.PP 
+.SS "CCXX_EXPORT (\fBSlog\fP)"
+.PP
+.SH "AUTHOR"
+.PP 
+Generated automatically by Doxygen for CommonC++ from the source code.

@@ -1,0 +1,230 @@
+.TH "Engine" 3 "22 May 2003" "CommonC++" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+Engine \- Engine stream serialization of persistent classes. 
+.SH SYNOPSIS
+.br
+.PP
+\fC#include <persist.h>\fP
+.PP
+.SS "Public Types"
+
+.in +1c
+.ti -1c
+.RI "enum \fBEngineMode\fP { \fBmodeRead\fP, \fBmodeWrite\fP }"
+.br
+.RI "\fIThese are the modes the Persistence::Engine can work in.\fP"
+.in -1c
+.SS "Public Methods"
+
+.in +1c
+.ti -1c
+.RI "\fBCCXX_MEMBER_EXPORT\fP (CCXX_EMPTY) Engine(std"
+.br
+.RI "\fIwrites a \fBBaseObject\fP from a reference.\fP"
+.ti -1c
+.RI "\fBCCXX_MEMBER_EXPORT\fP (void) write(const \fBBaseObject\fP *object) THROWS(\fBException\fP)"
+.br
+.RI "\fIwrites a \fBBaseObject\fP from a pointer.\fP"
+.ti -1c
+.RI "void \fBwrite\fP (\fBint8\fP i) THROWS(\fBException\fP)"
+.br
+.ti -1c
+.RI "void \fBwrite\fP (\fBuint8\fP i) THROWS(\fBException\fP)"
+.br
+.ti -1c
+.RI "void \fBwrite\fP (\fBint16\fP i) THROWS(\fBException\fP)"
+.br
+.ti -1c
+.RI "void \fBwrite\fP (\fBuint16\fP i) THROWS(\fBException\fP)"
+.br
+.ti -1c
+.RI "void \fBwrite\fP (\fBint32\fP i) THROWS(\fBException\fP)"
+.br
+.ti -1c
+.RI "void \fBwrite\fP (\fBuint32\fP i) THROWS(\fBException\fP)"
+.br
+.ti -1c
+.RI "void \fBwrite\fP (\fBint64\fP i) THROWS(\fBException\fP)"
+.br
+.ti -1c
+.RI "void \fBwrite\fP (\fBuint64\fP i) THROWS(\fBException\fP)"
+.br
+.ti -1c
+.RI "void \fBwrite\fP (float i) THROWS(\fBException\fP)"
+.br
+.ti -1c
+.RI "void \fBwrite\fP (double i) THROWS(\fBException\fP)"
+.br
+.ti -1c
+.RI "\fBCCXX_MEMBER_EXPORT\fP (void) write(const std"
+.br
+.RI "\fIreads a \fBBaseObject\fP into a pointer allocating memory for the object if necessary.\fP"
+.ti -1c
+.RI "void \fBread\fP (\fBuint8\fP &i) THROWS(\fBException\fP)"
+.br
+.ti -1c
+.RI "void \fBread\fP (\fBint16\fP &i) THROWS(\fBException\fP)"
+.br
+.ti -1c
+.RI "void \fBread\fP (\fBuint16\fP &i) THROWS(\fBException\fP)"
+.br
+.ti -1c
+.RI "void \fBread\fP (\fBint32\fP &i) THROWS(\fBException\fP)"
+.br
+.ti -1c
+.RI "void \fBread\fP (\fBuint32\fP &i) THROWS(\fBException\fP)"
+.br
+.ti -1c
+.RI "void \fBread\fP (\fBint64\fP &i) THROWS(\fBException\fP)"
+.br
+.ti -1c
+.RI "void \fBread\fP (\fBuint64\fP &i) THROWS(\fBException\fP)"
+.br
+.ti -1c
+.RI "void \fBread\fP (float &i) THROWS(\fBException\fP)"
+.br
+.ti -1c
+.RI "void \fBread\fP (double &i) THROWS(\fBException\fP)"
+.br
+.in -1c
+.SS "Related Functions"
+(Note that these are not member functions.)
+.in +1c
+.ti -1c
+.RI "\fBCCXX_EXPORT\fP(Engine &) operator>>(Engine &ar"
+.br
+.ti -1c
+.RI "template<class T> Engine & \fBoperator<<\fP (Engine &ar, typename std::vector< T > const &ob) THROWS(Engine"
+.br
+.RI "\fIserialize a vector of some serializable content to the engine\fP"
+.ti -1c
+.RI "template<class T> Engine & \fBoperator>>\fP (Engine &ar, typename std::vector< T > &ob) THROWS(Engine"
+.br
+.RI "\fIdeserialize a vector of deserializable content from an engine.\fP"
+.ti -1c
+.RI "template<class T> Engine & \fBoperator<<\fP (Engine &ar, typename std::deque< T > const &ob) THROWS(Engine"
+.br
+.RI "\fIserialize a deque of some serializable content to the engine\fP"
+.ti -1c
+.RI "template<class T> Engine & \fBoperator>>\fP (Engine &ar, typename std::deque< T > &ob) THROWS(Engine"
+.br
+.RI "\fIdeserialize a deque of deserializable content from an engine.\fP"
+.ti -1c
+.RI "template<class Key, class Value> Engine & \fBoperator<<\fP (Engine &ar, typename std::map< Key, Value > const &ob) THROWS(Engine"
+.br
+.RI "\fIserialize a map with keys/values which both are serializeable to an engine.\fP"
+.ti -1c
+.RI "template<class Key, class Value> Engine & \fBoperator>>\fP (Engine &ar, typename std::map< Key, Value > &ob) THROWS(Engine"
+.br
+.RI "\fIdeserialize a map with keys/values which both are serializeable from an engine.\fP"
+.in -1c
+.SH "DETAILED DESCRIPTION"
+.PP 
+Engine stream serialization of persistent classes.
+.PP
+This class constructs on a standard C++ STL stream and then operates in the mode specified. The stream passed into the constructor must be a binary mode to function properly.
+.PP
+\fBAuthor: \fP
+.in +1c
+Daniel Silverstone 
+.PP
+.SH "MEMBER ENUMERATION DOCUMENTATION"
+.PP 
+.SS "enum Engine::EngineMode"
+.PP
+These are the modes the Persistence::Engine can work in.
+.PP
+\fBEnumeration values: \fP
+.in +1c
+.TP
+\fB\fI\fImodeRead\fP \fP\fP
+.TP
+\fB\fI\fImodeWrite\fP \fP\fP
+
+.SH "MEMBER FUNCTION DOCUMENTATION"
+.PP 
+.SS "Engine::CCXX_MEMBER_EXPORT (void) const\fC [inline]\fP"
+.PP
+reads a \fBBaseObject\fP into a pointer allocating memory for the object if necessary.
+.PP
+.SS "Engine::CCXX_MEMBER_EXPORT (void) const"
+.PP
+writes a \fBBaseObject\fP from a pointer.
+.PP
+.SS "Engine::CCXX_MEMBER_EXPORT (CCXX_EMPTY)\fC [inline]\fP"
+.PP
+writes a \fBBaseObject\fP from a reference.
+.PP
+.SS "void Engine::read (double & i)\fC [inline]\fP"
+.PP
+.SS "void Engine::read (float & i)\fC [inline]\fP"
+.PP
+.SS "void Engine::read (\fBuint64\fP & i)\fC [inline]\fP"
+.PP
+.SS "void Engine::read (\fBint64\fP & i)\fC [inline]\fP"
+.PP
+.SS "void Engine::read (\fBuint32\fP & i)\fC [inline]\fP"
+.PP
+.SS "void Engine::read (\fBint32\fP & i)\fC [inline]\fP"
+.PP
+.SS "void Engine::read (\fBuint16\fP & i)\fC [inline]\fP"
+.PP
+.SS "void Engine::read (\fBint16\fP & i)\fC [inline]\fP"
+.PP
+.SS "void Engine::read (\fBuint8\fP & i)\fC [inline]\fP"
+.PP
+.SS "void Engine::write (double i)\fC [inline]\fP"
+.PP
+.SS "void Engine::write (float i)\fC [inline]\fP"
+.PP
+.SS "void Engine::write (\fBuint64\fP i)\fC [inline]\fP"
+.PP
+.SS "void Engine::write (\fBint64\fP i)\fC [inline]\fP"
+.PP
+.SS "void Engine::write (\fBuint32\fP i)\fC [inline]\fP"
+.PP
+.SS "void Engine::write (\fBint32\fP i)\fC [inline]\fP"
+.PP
+.SS "void Engine::write (\fBuint16\fP i)\fC [inline]\fP"
+.PP
+.SS "void Engine::write (\fBint16\fP i)\fC [inline]\fP"
+.PP
+.SS "void Engine::write (\fBuint8\fP i)\fC [inline]\fP"
+.PP
+.SS "void Engine::write (\fBint8\fP i)\fC [inline]\fP"
+.PP
+.SH "FRIENDS AND RELATED FUNCTION DOCUMENTATION"
+.PP 
+.SS "CCXX_EXPORT(Engine &)\fC [related]\fP"
+.PP
+.SS "template<class Key, class Value> Engine & operator<< (Engine & ar, typename std::map< Key, Value > const & ob)\fC [related]\fP"
+.PP
+serialize a map with keys/values which both are serializeable to an engine.
+.PP
+.SS "template<class T> Engine & operator<< (Engine & ar, typename std::deque< T > const & ob)\fC [related]\fP"
+.PP
+serialize a deque of some serializable content to the engine
+.PP
+.SS "template<class T> Engine & operator<< (Engine & ar, typename std::vector< T > const & ob)\fC [related]\fP"
+.PP
+serialize a vector of some serializable content to the engine
+.PP
+.SS "template<class Key, class Value> Engine & operator>> (Engine & ar, typename std::map< Key, Value > & ob)\fC [related]\fP"
+.PP
+deserialize a map with keys/values which both are serializeable from an engine.
+.PP
+.SS "template<class T> Engine & operator>> (Engine & ar, typename std::deque< T > & ob)\fC [related]\fP"
+.PP
+deserialize a deque of deserializable content from an engine.
+.PP
+.SS "template<class T> Engine & operator>> (Engine & ar, typename std::vector< T > & ob)\fC [related]\fP"
+.PP
+deserialize a vector of deserializable content from an engine.
+.PP
+
+
+.SH "AUTHOR"
+.PP 
+Generated automatically by Doxygen for CommonC++ from the source code.

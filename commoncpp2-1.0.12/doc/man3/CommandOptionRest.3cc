@@ -1,0 +1,55 @@
+.TH "CommandOptionRest" 3 "22 May 2003" "CommonC++" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+CommandOptionRest \- It only makes sense to have a single one of these set and it is exclusive with \fBCommandOptionCollect\fP. \fBCommandOption\fP to take the rest of the command line. 
+.SH SYNOPSIS
+.br
+.PP
+\fC#include <cmdoptns.h>\fP
+.PP
+Inherits \fBCommandOptionWithArg\fP.
+.PP
+.SS "Public Methods"
+
+.in +1c
+.ti -1c
+.RI "\fBCommandOptionRest\fP (const char *inOptionName, const char *inOptionLetter, const char *inDescription, bool inRequired=false, \fBCommandOption\fP **ppNext=&\fBdefaultCommandOptionList\fP)"
+.br
+.RI "\fICommandOptionRest contructor.\fP"
+.in -1c
+.SH "DETAILED DESCRIPTION"
+.PP 
+It only makes sense to have a single one of these set and it is exclusive with \fBCommandOptionCollect\fP. \fBCommandOption\fP to take the rest of the command line.
+.PP
+It is the option that takes the rest of the command line options that are not part of any other options. e.g. 'strace -ofile command arg1 arg2'. The 'command arg1 arg2' part is placed in objects of this class. 
+.PP
+.SH "CONSTRUCTOR & DESTRUCTOR DOCUMENTATION"
+.PP 
+.SS "CommandOptionRest::CommandOptionRest (const char * inOptionName, const char * inOptionLetter, const char * inDescription, bool inRequired = false, \fBCommandOption\fP ** ppNext = &\fBdefaultCommandOptionList\fP)"
+.PP
+CommandOptionRest contructor.
+.PP
+This sets the optionType for this object to Trailing.
+.PP
+\fBParameters: \fP
+.in +1c
+.TP
+\fB\fIinOptionName\fP\fP
+long option name 
+.TP
+\fB\fIinOptionLetter\fP\fP
+short letter name 
+.TP
+\fB\fIinDescription\fP\fP
+short description of the option 
+.TP
+\fB\fIinRequired\fP\fP
+true if option is required 
+.TP
+\fB\fIppNext\fP\fP
+the linked list header 
+
+.SH "AUTHOR"
+.PP 
+Generated automatically by Doxygen for CommonC++ from the source code.

@@ -1,0 +1,234 @@
+.TH "socket.h" 3 "22 May 2003" "CommonC++" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+socket.h \- Network addresses and sockets related classes. 
+.SH SYNOPSIS
+.br
+.PP
+\fC#include <cc++/config.h>\fP
+.br
+\fC#include <cc++/thread.h>\fP
+.br
+\fC#include <iostream>\fP
+.br
+.SS "Compounds"
+
+.in +1c
+.ti -1c
+.RI "class \fBBroadcastAddress\fP"
+.br
+.RI "\fIThe broadcast address object is used to store the broadcast address for a specific subnet.\fP"
+.ti -1c
+.RI "class \fBInetAddress\fP"
+.br
+.RI "\fIThe network name and address objects are all derived from a common InetAddress base class. Internet Address binary data type.\fP"
+.ti -1c
+.RI "class \fBInetAddrValidator\fP"
+.br
+.RI "\fIClasses derived from \fBInetAddress\fP would require an specific validator to pass to the \fBInetAddress\fP constructor. Abstract base class for derived inet addresses validators.\fP"
+.ti -1c
+.RI "class \fBInetHostAddress\fP"
+.br
+.RI "\fIThis object is used to hold the actual and valid internet address of a specific host machine that will be accessed through a socket. Address of a specific Internet host machine.\fP"
+.ti -1c
+.RI "class \fBInetMaskAddress\fP"
+.br
+.RI "\fIInternet addresses used specifically as masking addresses (such as ' 255.255.255.0') are held in the InetMaskAddress derived object. Internet Address Mask such as subnet masks.\fP"
+.ti -1c
+.RI "class \fBInetMcastAddress\fP"
+.br
+.RI "\fIA specialization of \fBInetAddress\fP that provides address validation for multicast addresses. A multicast network address.\fP"
+.ti -1c
+.RI "class \fBInetMcastAddrValidator\fP"
+.br
+.RI "\fIClass for the function object that validates multicast addresses. Validating class specialized for multicast addresses.\fP"
+.ti -1c
+.RI "class \fBSocket\fP"
+.br
+.RI "\fIThe Socket is used as the base for all Internet protocol services under Common C++. base class of all sockets.\fP"
+.ti -1c
+.RI "class \fBSocketPort\fP"
+.br
+.RI "\fIThe socket port is an internal class which is attached to and then serviced by a specific \fBSocketService\fP 'object'. base class for realtime and thread pool serviced protocols.\fP"
+.ti -1c
+.RI "class \fBSocketService\fP"
+.br
+.RI "\fIThe SocketService is a thread pool object that is meant to service attached socket ports. \fBThread\fP pool service object for socket ports.\fP"
+.ti -1c
+.RI "class \fBTCPSession\fP"
+.br
+.RI "\fIThe TCP session is used to primarily to represent a client connection that can be managed on a seperate thread. Threaded streamable socket with non-blocking constructor.\fP"
+.ti -1c
+.RI "class \fBTCPSocket\fP"
+.br
+.RI "\fITCP sockets are used for stream based connected sessions between two sockets. bound server for TCP streams and sessions.\fP"
+.ti -1c
+.RI "class \fBtcpstream\fP"
+.br
+.RI "\fIA more natural C++ 'tcpstream' class for use by non-threaded applications. C++ 'fstream' style tcpstream class.\fP"
+.ti -1c
+.RI "class \fBTCPStream\fP"
+.br
+.RI "\fITCP streams are used to represent TCP client connections to a server by TCP protocol servers for accepting client connections. streamable TCP socket connection.\fP"
+.ti -1c
+.RI "class \fBUDPBroadcast\fP"
+.br
+.RI "\fIRepresenting a UDP socket used for subnet broadcasts, this class provides an alternate binding and \fBsetPeer()\fP capability for UDP sockets. Unreliable Datagram for subnet broadcasts.\fP"
+.ti -1c
+.RI "class \fBUDPDuplex\fP"
+.br
+.RI "\fIUDP duplex connections impliment a bi-directional point-to-point UDP session between two peer hosts. Unreliable Datagram Peer Associations.\fP"
+.ti -1c
+.RI "class \fBUDPReceive\fP"
+.br
+.RI "\fIRepresenting half of a two-way UDP connection, the UDP receiver can receive data from another peer host or subnet. Unreliable Datagram Peer Associations.\fP"
+.ti -1c
+.RI "class \fBUDPSocket\fP"
+.br
+.RI "\fIUDP sockets implement the TCP SOCK_DGRAM UDP protocol. Unreliable Datagram Protocol sockets.\fP"
+.ti -1c
+.RI "class \fBUDPTransmit\fP"
+.br
+.RI "\fIRepresenting half of a two-way UDP connection, the UDP transmitter can broadcast data to another selected peer host or to an entire subnet. Unreliable Datagram Peer Associations.\fP"
+.in -1c
+.SS "Defines"
+
+.in +1c
+.ti -1c
+.RI "#define \fBINVALID_SOCKET\fP   -1"
+.br
+.ti -1c
+.RI "#define \fBMSG_DONTWAIT\fP   0"
+.br
+.in -1c
+.SS "Typedefs"
+
+.in +1c
+.ti -1c
+.RI "typedef int \fBSOCKET\fP"
+.br
+.ti -1c
+.RI "typedef unsigned short \fBtpport_t\fP"
+.br
+.RI "\fITransport Protocol Ports.\fP"
+.in -1c
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "\fBCCXX_EXPORT\fP (std::ostream &) operator<<(std"
+.br
+.in -1c
+.SS "Variables"
+
+.in +1c
+.ti -1c
+.RI "CCXX_CLASS_EXPORT \fBInetAddress\fP"
+.br
+.ti -1c
+.RI "CCXX_CLASS_EXPORT \fBInetHostAddress\fP"
+.br
+.ti -1c
+.RI "CCXX_CLASS_EXPORT \fBInetMaskAddress\fP"
+.br
+.ti -1c
+.RI "CCXX_CLASS_EXPORT \fBBroadcastAddress\fP"
+.br
+.ti -1c
+.RI "CCXX_CLASS_EXPORT \fBSocket\fP"
+.br
+.ti -1c
+.RI "CCXX_CLASS_EXPORT \fBUDPSocket\fP"
+.br
+.ti -1c
+.RI "CCXX_CLASS_EXPORT \fBUDPBroadcast\fP"
+.br
+.ti -1c
+.RI "CCXX_CLASS_EXPORT \fBUDPTransmit\fP"
+.br
+.ti -1c
+.RI "CCXX_CLASS_EXPORT \fBUDPReceive\fP"
+.br
+.ti -1c
+.RI "CCXX_CLASS_EXPORT \fBUDPDuplex\fP"
+.br
+.ti -1c
+.RI "CCXX_CLASS_EXPORT \fBTCPSocket\fP"
+.br
+.ti -1c
+.RI "CCXX_CLASS_EXPORT \fBTCPStream\fP"
+.br
+.ti -1c
+.RI "CCXX_CLASS_EXPORT \fBtcpstream\fP"
+.br
+.ti -1c
+.RI "CCXX_CLASS_EXPORT \fBTCPSession\fP"
+.br
+.ti -1c
+.RI "CCXX_CLASS_EXPORT \fBSocketPort\fP"
+.br
+.ti -1c
+.RI "CCXX_CLASS_EXPORT \fBSocketService\fP"
+.br
+.in -1c
+.SH "DETAILED DESCRIPTION"
+.PP 
+Network addresses and sockets related classes.
+.PP
+.PP
+.SH "DEFINE DOCUMENTATION"
+.PP 
+.SS "#define INVALID_SOCKET   -1"
+.PP
+.SS "#define MSG_DONTWAIT   0"
+.PP
+.SH "TYPEDEF DOCUMENTATION"
+.PP 
+.SS "typedef int SOCKET"
+.PP
+.SS "typedef unsigned short tpport_t"
+.PP
+Transport Protocol Ports.
+.PP
+.SH "FUNCTION DOCUMENTATION"
+.PP 
+.SS "CCXX_EXPORT (std::ostream &)"
+.PP
+.SH "VARIABLE DOCUMENTATION"
+.PP 
+.SS "class CCXX_CLASS_EXPORT BroadcastAddress"
+.PP
+.SS "class CCXX_CLASS_EXPORT InetAddress"
+.PP
+.SS "class CCXX_CLASS_EXPORT InetHostAddress"
+.PP
+.SS "class CCXX_CLASS_EXPORT InetMaskAddress"
+.PP
+.SS "class CCXX_CLASS_EXPORT Socket"
+.PP
+.SS "class CCXX_CLASS_EXPORT SocketPort"
+.PP
+.SS "class CCXX_CLASS_EXPORT SocketService"
+.PP
+.SS "class CCXX_CLASS_EXPORT TCPSession"
+.PP
+.SS "class CCXX_CLASS_EXPORT TCPSocket"
+.PP
+.SS "class CCXX_CLASS_EXPORT tcpstream"
+.PP
+.SS "class CCXX_CLASS_EXPORT TCPStream"
+.PP
+.SS "class CCXX_CLASS_EXPORT UDPBroadcast"
+.PP
+.SS "class CCXX_CLASS_EXPORT UDPDuplex"
+.PP
+.SS "class CCXX_CLASS_EXPORT UDPReceive"
+.PP
+.SS "class CCXX_CLASS_EXPORT UDPSocket"
+.PP
+.SS "class CCXX_CLASS_EXPORT UDPTransmit"
+.PP
+.SH "AUTHOR"
+.PP 
+Generated automatically by Doxygen for CommonC++ from the source code.

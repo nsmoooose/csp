@@ -1,0 +1,76 @@
+.TH "ChecksumDigest" 3 "22 May 2003" "CommonC++" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+ChecksumDigest \- A simple checksum digest function. checksum hash function. 
+.SH SYNOPSIS
+.br
+.PP
+\fC#include <digest.h>\fP
+.PP
+Inherits \fBDigest\fP.
+.PP
+.SS "Public Methods"
+
+.in +1c
+.ti -1c
+.RI "\fBChecksumDigest\fP ()"
+.br
+.ti -1c
+.RI "void \fBinitDigest\fP (void)"
+.br
+.ti -1c
+.RI "unsigned \fBgetSize\fP (void)"
+.br
+.ti -1c
+.RI "unsigned \fBgetDigest\fP (unsigned char *buffer)"
+.br
+.ti -1c
+.RI "void \fBputDigest\fP (const unsigned char *buffer, unsigned length)"
+.br
+.in -1c
+.SS "Protected Methods"
+
+.in +1c
+.ti -1c
+.RI "int \fBoverflow\fP (int c)"
+.br
+.ti -1c
+.RI "std::ostream & \fBstrDigest\fP (std::ostream &os)"
+.br
+.in -1c
+.SH "DETAILED DESCRIPTION"
+.PP 
+A simple checksum digest function. checksum hash function.
+.PP
+\fBAuthor: \fP
+.in +1c
+David Sugar <dyfet@ostel.com> 
+.PP
+.SH "CONSTRUCTOR & DESTRUCTOR DOCUMENTATION"
+.PP 
+.SS "ChecksumDigest::ChecksumDigest ()"
+.PP
+.SH "MEMBER FUNCTION DOCUMENTATION"
+.PP 
+.SS "unsigned ChecksumDigest::getDigest (unsigned char * buffer)\fC [virtual]\fP"
+.PP
+Implements \fBDigest\fP.
+.SS "unsigned ChecksumDigest::getSize (void)\fC [inline, virtual]\fP"
+.PP
+Implements \fBDigest\fP.
+.SS "void ChecksumDigest::initDigest (void)\fC [inline, virtual]\fP"
+.PP
+Implements \fBDigest\fP.
+.SS "int ChecksumDigest::overflow (int c)\fC [protected]\fP"
+.PP
+.SS "void ChecksumDigest::putDigest (const unsigned char * buffer, unsigned length)\fC [virtual]\fP"
+.PP
+Implements \fBDigest\fP.
+.SS "std::ostream& ChecksumDigest::strDigest (std::ostream & os)\fC [protected, virtual]\fP"
+.PP
+Implements \fBDigest\fP.
+
+.SH "AUTHOR"
+.PP 
+Generated automatically by Doxygen for CommonC++ from the source code.

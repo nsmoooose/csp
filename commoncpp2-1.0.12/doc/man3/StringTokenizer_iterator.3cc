@@ -1,0 +1,112 @@
+.TH "StringTokenizer::iterator" 3 "22 May 2003" "CommonC++" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+StringTokenizer::iterator \- The input forward iterator for tokens. 
+.SH SYNOPSIS
+.br
+.PP
+\fC#include <misc.h>\fP
+.PP
+.SS "Public Methods"
+
+.in +1c
+.ti -1c
+.RI "\fBiterator\fP ()"
+.br
+.ti -1c
+.RI "virtual \fB~iterator\fP ()"
+.br
+.ti -1c
+.RI "\fBiterator\fP (const iterator &i)"
+.br
+.RI "\fIcopy constructor.\fP"
+.ti -1c
+.RI "iterator & \fBoperator=\fP (const iterator &i)"
+.br
+.RI "\fIassignment operator.\fP"
+.ti -1c
+.RI "iterator & \fBoperator++\fP () THROWS(\fBNoSuchElementException\fP)"
+.br
+.RI "\fIshifts this iterator to the next token in the string.\fP"
+.ti -1c
+.RI "const char * \fBoperator *\fP () THROWS(\fBNoSuchElementException\fP)"
+.br
+.RI "\fIreturns the immutable string this iterator points to or '0' if no token is available (i.e.\fP"
+.ti -1c
+.RI "char \fBnextDelimiter\fP () const"
+.br
+.RI "\fIreturns the next delimiter after the current token or '\\0', if there are no following delimiters.\fP"
+.ti -1c
+.RI "bool \fBoperator==\fP (const iterator &other) const"
+.br
+.RI "\fIcompares to other iterator.\fP"
+.ti -1c
+.RI "bool \fBoperator!=\fP (const iterator &other) const"
+.br
+.RI "\fIcompares to other iterator.\fP"
+.in -1c
+.SS "Friends"
+
+.in +1c
+.ti -1c
+.RI "class \fBStringTokenizer\fP"
+.br
+.in -1c
+.SH "DETAILED DESCRIPTION"
+.PP 
+The input forward iterator for tokens.
+.PP
+\fBAuthor: \fP
+.in +1c
+Henner Zeller 
+.PP
+.SH "CONSTRUCTOR & DESTRUCTOR DOCUMENTATION"
+.PP 
+.SS "StringTokenizer::iterator::iterator ()\fC [inline]\fP"
+.PP
+.SS "virtual StringTokenizer::iterator::~iterator ()\fC [inline, virtual]\fP"
+.PP
+.SS "StringTokenizer::iterator::iterator (const iterator & i)\fC [inline]\fP"
+.PP
+copy constructor.
+.PP
+.SH "MEMBER FUNCTION DOCUMENTATION"
+.PP 
+.SS "char StringTokenizer::iterator::nextDelimiter () const\fC [inline]\fP"
+.PP
+returns the next delimiter after the current token or '\\0', if there are no following delimiters.
+.PP
+It returns the very next delimiter (even if  skipAllDelim=true). 
+.SS "const char* StringTokenizer::iterator::operator * ()"
+.PP
+returns the immutable string this iterator points to or '0' if no token is available (i.e.
+.PP
+i == \fBend()\fP). Do not store pointers to this token, since it is invalidated for each iteration. If you need the token, copy it (e.g. with strdup()); 
+.SS "bool StringTokenizer::iterator::operator!= (const iterator & other) const\fC [inline]\fP"
+.PP
+compares to other iterator.
+.PP
+Usually used to compare against the \fBend()\fP iterator. 
+.SS "iterator& StringTokenizer::iterator::operator++ ()"
+.PP
+shifts this iterator to the next token in the string.
+.PP
+.SS "iterator& StringTokenizer::iterator::operator= (const iterator & i)\fC [inline]\fP"
+.PP
+assignment operator.
+.PP
+.SS "bool StringTokenizer::iterator::operator== (const iterator & other) const\fC [inline]\fP"
+.PP
+compares to other iterator.
+.PP
+Usually used to compare against the \fBend()\fP iterator. 
+.SH "FRIENDS AND RELATED FUNCTION DOCUMENTATION"
+.PP 
+.SS "friend class StringTokenizer\fC [friend]\fP"
+.PP
+
+
+.SH "AUTHOR"
+.PP 
+Generated automatically by Doxygen for CommonC++ from the source code.

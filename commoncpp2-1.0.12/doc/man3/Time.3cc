@@ -1,0 +1,238 @@
+.TH "Time" 3 "22 May 2003" "CommonC++" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+Time \- The Time class uses a integer representation of the current time. Integer based time class. 
+.SH SYNOPSIS
+.br
+.PP
+\fC#include <numbers.h>\fP
+.PP
+Inherited by \fBDatetime\fP.
+.PP
+.SS "Public Methods"
+
+.in +1c
+.ti -1c
+.RI "\fBTime\fP (time_t tm)"
+.br
+.ti -1c
+.RI "\fBTime\fP (tm *dt)"
+.br
+.ti -1c
+.RI "\fBTime\fP (char *str, size_t \fBsize\fP=0)"
+.br
+.ti -1c
+.RI "\fBTime\fP (int hour, int minute, int second)"
+.br
+.ti -1c
+.RI "\fBTime\fP ()"
+.br
+.ti -1c
+.RI "long \fBgetValue\fP (void) const"
+.br
+.ti -1c
+.RI "int \fBgetHour\fP (void) const"
+.br
+.ti -1c
+.RI "int \fBgetMinute\fP (void) const"
+.br
+.ti -1c
+.RI "int \fBgetSecond\fP (void) const"
+.br
+.ti -1c
+.RI "char * \fBgetTime\fP (char *buffer) const"
+.br
+.ti -1c
+.RI "time_t \fBgetTime\fP (void) const"
+.br
+.ti -1c
+.RI "tm * \fBgetTime\fP (tm *buf) const"
+.br
+.ti -1c
+.RI "void \fBsetTime\fP (char *str, size_t \fBsize\fP=0)"
+.br
+.ti -1c
+.RI "bool \fBisValid\fP (void) const"
+.br
+.ti -1c
+.RI "\fBoperator long\fP ()"
+.br
+.ti -1c
+.RI "std::string \fBoperator()\fP () const"
+.br
+.ti -1c
+.RI "Time & \fBoperator++\fP ()"
+.br
+.ti -1c
+.RI "Time & \fBoperator--\fP ()"
+.br
+.ti -1c
+.RI "Time & \fBoperator+=\fP (int val)"
+.br
+.ti -1c
+.RI "Time & \fBoperator-=\fP (int val)"
+.br
+.ti -1c
+.RI "int \fBoperator==\fP (Time &time)"
+.br
+.ti -1c
+.RI "int \fBoperator!=\fP (Time &time)"
+.br
+.ti -1c
+.RI "int \fBoperator<\fP (Time &time)"
+.br
+.ti -1c
+.RI "int \fBoperator<=\fP (Time &time)"
+.br
+.ti -1c
+.RI "int \fBoperator>\fP (Time &time)"
+.br
+.ti -1c
+.RI "int \fBoperator>=\fP (Time &time)"
+.br
+.ti -1c
+.RI "bool \fBoperator!\fP ()"
+.br
+.in -1c
+.SS "Protected Methods"
+
+.in +1c
+.ti -1c
+.RI "void \fBtoSeconds\fP (int hour, int minute, int second)"
+.br
+.ti -1c
+.RI "void \fBfromSeconds\fP (char *buf) const"
+.br
+.ti -1c
+.RI "virtual void \fBUpdate\fP (void)"
+.br
+.in -1c
+.SS "Protected Attributes"
+
+.in +1c
+.ti -1c
+.RI "long \fBseconds\fP"
+.br
+.in -1c
+.SS "Friends"
+
+.in +1c
+.ti -1c
+.RI "Time \fBoperator+\fP (Time &time1, Time &time2)"
+.br
+.ti -1c
+.RI "Time \fBoperator-\fP (Time &time1, Time &time2)"
+.br
+.ti -1c
+.RI "Time \fBoperator+\fP (Time &time, int val)"
+.br
+.ti -1c
+.RI "Time \fBoperator-\fP (Time &time, int val)"
+.br
+.ti -1c
+.RI "Time \fBoperator+\fP (int val, Time &time)"
+.br
+.ti -1c
+.RI "Time \fBoperator-\fP (int val, Time &time)"
+.br
+.in -1c
+.SH "DETAILED DESCRIPTION"
+.PP 
+The Time class uses a integer representation of the current time. Integer based time class.
+.PP
+This is then manipulated in several forms and may be exported as needed.
+.PP
+\fBAuthor: \fP
+.in +1c
+Marcelo Dalmas <mad@brasmap.com.br> 
+.PP
+.SH "CONSTRUCTOR & DESTRUCTOR DOCUMENTATION"
+.PP 
+.SS "Time::Time (time_t tm)"
+.PP
+.SS "Time::Time (tm * dt)"
+.PP
+.SS "Time::Time (char * str, size_t size = 0)"
+.PP
+.SS "Time::Time (int hour, int minute, int second)"
+.PP
+.SS "Time::Time ()"
+.PP
+.SH "MEMBER FUNCTION DOCUMENTATION"
+.PP 
+.SS "void Time::fromSeconds (char * buf) const\fC [protected]\fP"
+.PP
+.SS "int Time::getHour (void) const"
+.PP
+.SS "int Time::getMinute (void) const"
+.PP
+.SS "int Time::getSecond (void) const"
+.PP
+.SS "tm* Time::getTime (tm * buf) const"
+.PP
+.SS "time_t Time::getTime (void) const"
+.PP
+.SS "char* Time::getTime (char * buffer) const"
+.PP
+.SS "long Time::getValue (void) const"
+.PP
+.SS "bool Time::isValid (void) const"
+.PP
+Reimplemented in \fBDatetime\fP.
+.SS "Time::operator long ()\fC [inline]\fP"
+.PP
+.SS "bool Time::operator! (void)\fC [inline]\fP"
+.PP
+Reimplemented in \fBDatetime\fP.
+.SS "int Time::operator!= (Time & time)"
+.PP
+.SS "std::string Time::operator() ()"
+.PP
+.SS "Time& Time::operator++ ()"
+.PP
+.SS "Time& Time::operator+= (int val)"
+.PP
+.SS "Time& Time::operator-- ()"
+.PP
+.SS "Time& Time::operator-= (int val)"
+.PP
+.SS "int Time::operator< (Time & time)"
+.PP
+.SS "int Time::operator<= (Time & time)"
+.PP
+.SS "int Time::operator== (Time & time)"
+.PP
+.SS "int Time::operator> (Time & time)"
+.PP
+.SS "int Time::operator>= (Time & time)"
+.PP
+.SS "void Time::setTime (char * str, size_t size = 0)"
+.PP
+.SS "void Time::toSeconds (int hour, int minute, int second)\fC [protected]\fP"
+.PP
+.SS "virtual void Time::Update (void)\fC [inline, protected, virtual]\fP"
+.PP
+.SH "FRIENDS AND RELATED FUNCTION DOCUMENTATION"
+.PP 
+.SS "Time operator+ (int val, Time & time)\fC [friend]\fP"
+.PP
+.SS "Time operator+ (Time & time, int val)\fC [friend]\fP"
+.PP
+.SS "Time operator+ (Time & time1, Time & time2)\fC [friend]\fP"
+.PP
+.SS "Time operator- (int val, Time & time)\fC [friend]\fP"
+.PP
+.SS "Time operator- (Time & time, int val)\fC [friend]\fP"
+.PP
+.SS "Time operator- (Time & time1, Time & time2)\fC [friend]\fP"
+.PP
+.SH "MEMBER DATA DOCUMENTATION"
+.PP 
+.SS "long Time::seconds\fC [protected]\fP"
+.PP
+
+
+.SH "AUTHOR"
+.PP 
+Generated automatically by Doxygen for CommonC++ from the source code.

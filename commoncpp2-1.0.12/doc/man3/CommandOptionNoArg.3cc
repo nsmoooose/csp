@@ -1,0 +1,79 @@
+.TH "CommandOptionNoArg" 3 "22 May 2003" "CommonC++" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+CommandOptionNoArg \- \fBCommandOption\fP type for flags. 
+.SH SYNOPSIS
+.br
+.PP
+\fC#include <cmdoptns.h>\fP
+.PP
+Inherits \fBCommandOption\fP.
+.PP
+.SS "Public Methods"
+
+.in +1c
+.ti -1c
+.RI "\fBCommandOptionNoArg\fP (const char *inOptionName, const char *inOptionLetter, const char *inDescription, bool inRequired=false, \fBCommandOption\fP **ppNext=&\fBdefaultCommandOptionList\fP)"
+.br
+.RI "\fI\fBCommandOptionArg\fP contructor.\fP"
+.ti -1c
+.RI "virtual void \fBfoundOption\fP (\fBCommandOptionParse\fP *cop, const char *value=0)"
+.br
+.RI "\fI\fBCommandOptionNoArg::foundOption\fP will evpect a nil 'value' passed in.\fP"
+.in -1c
+.SS "Public Attributes"
+
+.in +1c
+.ti -1c
+.RI "int \fBnumSet\fP"
+.br
+.RI "\fIThe number of times this value has been set.\fP"
+.in -1c
+.SH "DETAILED DESCRIPTION"
+.PP 
+\fBCommandOption\fP type for flags.
+.PP
+.SH "CONSTRUCTOR & DESTRUCTOR DOCUMENTATION"
+.PP 
+.SS "CommandOptionNoArg::CommandOptionNoArg (const char * inOptionName, const char * inOptionLetter, const char * inDescription, bool inRequired = false, \fBCommandOption\fP ** ppNext = &\fBdefaultCommandOptionList\fP)"
+.PP
+\fBCommandOptionArg\fP contructor.
+.PP
+This sets the optionType for this object to NoArg.
+.PP
+\fBParameters: \fP
+.in +1c
+.TP
+\fB\fIinOptionName\fP\fP
+long option name 
+.TP
+\fB\fIinOptionLetter\fP\fP
+short letter name 
+.TP
+\fB\fIinDescription\fP\fP
+short description of the option 
+.TP
+\fB\fIinRequired\fP\fP
+true if option is required 
+.TP
+\fB\fIppNext\fP\fP
+the linked list header 
+.SH "MEMBER FUNCTION DOCUMENTATION"
+.PP 
+.SS "virtual void CommandOptionNoArg::foundOption (\fBCommandOptionParse\fP * cop, const char * value = 0)\fC [virtual]\fP"
+.PP
+\fBCommandOptionNoArg::foundOption\fP will evpect a nil 'value' passed in.
+.PP
+Reimplemented from \fBCommandOption\fP.
+.SH "MEMBER DATA DOCUMENTATION"
+.PP 
+.SS "int CommandOptionNoArg::numSet"
+.PP
+The number of times this value has been set.
+.PP
+
+
+.SH "AUTHOR"
+.PP 
+Generated automatically by Doxygen for CommonC++ from the source code.

@@ -1,0 +1,178 @@
+.TH "File" 3 "22 May 2003" "CommonC++" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+File \- 
+.SH SYNOPSIS
+.br
+.PP
+\fC#include <file.h>\fP
+.PP
+Inherited by \fBFIFOSession\fP, \fBfifostream\fP, and \fBRandomFile\fP.
+.PP
+.SS "Public Types"
+
+.in +1c
+.ti -1c
+.RI "typedef enum Error \fBError\fP"
+.br
+.ti -1c
+.RI "typedef enum Access \fBAccess\fP"
+.br
+.ti -1c
+.RI "enum \fBError\fP { \fBerrSuccess\fP =  0, \fBerrNotOpened\fP, \fBerrMmapFailed\fP, \fBerrInitFailed\fP, \fBerrOpenDenied\fP, \fBerrOpenFailed\fP, \fBerrOpenInUse\fP, \fBerrReadInterrupted\fP, \fBerrReadIncomplete\fP, \fBerrReadFailure\fP, \fBerrWriteInterrupted\fP, \fBerrWriteIncomplete\fP, \fBerrWriteFailure\fP, \fBerrExtended\fP }"
+.br
+.ti -1c
+.RI "enum \fBAccess\fP { \fBaccessReadOnly\fP =  O_RDONLY, \fBaccessWriteOnly\fP =  O_WRONLY, \fBaccessReadWrite\fP =  O_RDWR }"
+.br
+.in -1c
+.SS "Protected Types"
+
+.in +1c
+.ti -1c
+.RI "typedef \fBFile::_fcb\fP \fBfcb_t\fP"
+.br
+.ti -1c
+.RI "typedef enum Open \fBOpen\fP"
+.br
+.ti -1c
+.RI "typedef enum Attr \fBAttr\fP"
+.br
+.ti -1c
+.RI "typedef enum Complete \fBComplete\fP"
+.br
+.ti -1c
+.RI "typedef enum Mapping \fBMapping\fP"
+.br
+.ti -1c
+.RI "enum \fBOpen\fP { \fBopenReadOnly\fP =  O_RDONLY, \fBopenWriteOnly\fP =  O_WRONLY, \fBopenReadWrite\fP =  O_RDWR, \fBopenAppend\fP =  O_WRONLY | O_APPEND, \fBopenSync\fP =  O_RDWR, \fBopenTruncate\fP =  O_RDWR | O_TRUNC }"
+.br
+.ti -1c
+.RI "enum \fBAttr\fP { \fBattrInvalid\fP =  0, \fBattrPrivate\fP =   0400  |  0200, \fBattrGroup\fP =  attrPrivate |  0040  |  0020, \fBattrPublic\fP =  attrGroup |  0004  |  0002 }"
+.br
+.ti -1c
+.RI "enum \fBMapping\fP { \fBmappedRead\fP =  accessReadOnly, \fBmappedWrite\fP =  accessWriteOnly, \fBmappedReadWrite\fP =  accessReadWrite }"
+.br
+.ti -1c
+.RI "enum \fBComplete\fP { \fBcompletionImmediate\fP, \fBcompletionDelayed\fP, \fBcompletionDeferred\fP }"
+.br
+.in -1c
+.SH "MEMBER TYPEDEF DOCUMENTATION"
+.PP 
+.SS "typedef enum Access File::Access"
+.PP
+.SS "typedef enum Attr File::Attr\fC [protected]\fP"
+.PP
+.SS "typedef enum Complete File::Complete\fC [protected]\fP"
+.PP
+.SS "typedef enum Error File::Error"
+.PP
+.SS "typedef struct \fBFile::_fcb\fP  File::fcb_t\fC [protected]\fP"
+.PP
+.SS "typedef enum Mapping File::Mapping\fC [protected]\fP"
+.PP
+.SS "typedef enum Open File::Open\fC [protected]\fP"
+.PP
+.SH "MEMBER ENUMERATION DOCUMENTATION"
+.PP 
+.SS "enum File::Access"
+.PP
+\fBEnumeration values: \fP
+.in +1c
+.TP
+\fB\fI\fIaccessReadOnly\fP \fP\fP
+.TP
+\fB\fI\fIaccessWriteOnly\fP \fP\fP
+.TP
+\fB\fI\fIaccessReadWrite\fP \fP\fP
+
+.SS "enum File::Attr\fC [protected]\fP"
+.PP
+\fBEnumeration values: \fP
+.in +1c
+.TP
+\fB\fI\fIattrInvalid\fP \fP\fP
+.TP
+\fB\fI\fIattrPrivate\fP \fP\fP
+.TP
+\fB\fI\fIattrGroup\fP \fP\fP
+.TP
+\fB\fI\fIattrPublic\fP \fP\fP
+
+.SS "enum File::Complete\fC [protected]\fP"
+.PP
+\fBEnumeration values: \fP
+.in +1c
+.TP
+\fB\fI\fIcompletionImmediate\fP \fP\fP
+.TP
+\fB\fI\fIcompletionDelayed\fP \fP\fP
+.TP
+\fB\fI\fIcompletionDeferred\fP \fP\fP
+
+.SS "enum File::Error"
+.PP
+\fBEnumeration values: \fP
+.in +1c
+.TP
+\fB\fI\fIerrSuccess\fP \fP\fP
+.TP
+\fB\fI\fIerrNotOpened\fP \fP\fP
+.TP
+\fB\fI\fIerrMmapFailed\fP \fP\fP
+.TP
+\fB\fI\fIerrInitFailed\fP \fP\fP
+.TP
+\fB\fI\fIerrOpenDenied\fP \fP\fP
+.TP
+\fB\fI\fIerrOpenFailed\fP \fP\fP
+.TP
+\fB\fI\fIerrOpenInUse\fP \fP\fP
+.TP
+\fB\fI\fIerrReadInterrupted\fP \fP\fP
+.TP
+\fB\fI\fIerrReadIncomplete\fP \fP\fP
+.TP
+\fB\fI\fIerrReadFailure\fP \fP\fP
+.TP
+\fB\fI\fIerrWriteInterrupted\fP \fP\fP
+.TP
+\fB\fI\fIerrWriteIncomplete\fP \fP\fP
+.TP
+\fB\fI\fIerrWriteFailure\fP \fP\fP
+.TP
+\fB\fI\fIerrExtended\fP \fP\fP
+
+.SS "enum File::Mapping\fC [protected]\fP"
+.PP
+\fBEnumeration values: \fP
+.in +1c
+.TP
+\fB\fI\fImappedRead\fP \fP\fP
+.TP
+\fB\fI\fImappedWrite\fP \fP\fP
+.TP
+\fB\fI\fImappedReadWrite\fP \fP\fP
+
+.SS "enum File::Open\fC [protected]\fP"
+.PP
+\fBEnumeration values: \fP
+.in +1c
+.TP
+\fB\fI\fIopenReadOnly\fP \fP\fP
+.TP
+\fB\fI\fIopenWriteOnly\fP \fP\fP
+.TP
+\fB\fI\fIopenReadWrite\fP \fP\fP
+.TP
+\fB\fI\fIopenAppend\fP \fP\fP
+.TP
+\fB\fI\fIopenSync\fP \fP\fP
+.TP
+\fB\fI\fIopenTruncate\fP \fP\fP
+
+
+
+.SH "AUTHOR"
+.PP 
+Generated automatically by Doxygen for CommonC++ from the source code.

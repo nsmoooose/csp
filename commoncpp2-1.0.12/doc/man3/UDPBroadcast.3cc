@@ -1,0 +1,64 @@
+.TH "UDPBroadcast" 3 "22 May 2003" "CommonC++" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+UDPBroadcast \- Representing a UDP socket used for subnet broadcasts, this class provides an alternate binding and \fBsetPeer()\fP capability for UDP sockets. Unreliable Datagram for subnet broadcasts. 
+.SH SYNOPSIS
+.br
+.PP
+\fC#include <socket.h>\fP
+.PP
+Inherits \fBUDPSocket\fP.
+.PP
+.SS "Public Methods"
+
+.in +1c
+.ti -1c
+.RI "\fBUDPBroadcast\fP (const \fBInetAddress\fP &ia, \fBtpport_t\fP port)"
+.br
+.RI "\fICreate and bind a subnet broadcast socket.\fP"
+.ti -1c
+.RI "void \fBsetPeer\fP (const \fBBroadcastAddress\fP &subnet, \fBtpport_t\fP port)"
+.br
+.RI "\fISet peer by subnet rather than specific host.\fP"
+.in -1c
+.SH "DETAILED DESCRIPTION"
+.PP 
+Representing a UDP socket used for subnet broadcasts, this class provides an alternate binding and \fBsetPeer()\fP capability for UDP sockets. Unreliable Datagram for subnet broadcasts.
+.PP
+\fBAuthor: \fP
+.in +1c
+David Sugar <dyfet@ostel.com> 
+.PP
+.SH "CONSTRUCTOR & DESTRUCTOR DOCUMENTATION"
+.PP 
+.SS "UDPBroadcast::UDPBroadcast (const \fBInetAddress\fP & ia, \fBtpport_t\fP port)"
+.PP
+Create and bind a subnet broadcast socket.
+.PP
+\fBParameters: \fP
+.in +1c
+.TP
+\fB\fIia\fP\fP
+address to bind socket under locally. 
+.TP
+\fB\fIport\fP\fP
+to bind socket under locally. 
+.SH "MEMBER FUNCTION DOCUMENTATION"
+.PP 
+.SS "void UDPBroadcast::setPeer (const \fBBroadcastAddress\fP & subnet, \fBtpport_t\fP port)"
+.PP
+Set peer by subnet rather than specific host.
+.PP
+\fBParameters: \fP
+.in +1c
+.TP
+\fB\fIsubnet\fP\fP
+of peer hosts to send to. 
+.TP
+\fB\fIport\fP\fP
+number to use. 
+
+.SH "AUTHOR"
+.PP 
+Generated automatically by Doxygen for CommonC++ from the source code.

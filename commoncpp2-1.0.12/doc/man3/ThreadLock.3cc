@@ -1,0 +1,93 @@
+.TH "ThreadLock" 3 "22 May 2003" "CommonC++" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+ThreadLock \- The ThreadLock class impliments a thread rwlock for optimal reader performance on systems which have rwlock support, and reverts to a simple mutex for those that do not. Posix rwlock extension for protected access. 
+.SH SYNOPSIS
+.br
+.PP
+\fC#include <thread.h>\fP
+.PP
+.SS "Public Methods"
+
+.in +1c
+.ti -1c
+.RI "\fBThreadLock\fP ()"
+.br
+.RI "\fICreate a process shared thread lock object.\fP"
+.ti -1c
+.RI "virtual \fB~ThreadLock\fP ()"
+.br
+.RI "\fIDestroy a process shared thread lock object.\fP"
+.ti -1c
+.RI "void \fBreadLock\fP (void)"
+.br
+.RI "\fIAquire a read lock for the current object.\fP"
+.ti -1c
+.RI "void \fBwriteLock\fP (void)"
+.br
+.RI "\fIAquire a write lock for the current object.\fP"
+.ti -1c
+.RI "bool \fBtryReadLock\fP (void)"
+.br
+.RI "\fIAttempt read lock for current object.\fP"
+.ti -1c
+.RI "bool \fBtryWriteLock\fP (void)"
+.br
+.RI "\fIAttempt write lock for current object.\fP"
+.ti -1c
+.RI "void \fBunlock\fP (void)"
+.br
+.RI "\fIRelease any held locks.\fP"
+.in -1c
+.SH "DETAILED DESCRIPTION"
+.PP 
+The ThreadLock class impliments a thread rwlock for optimal reader performance on systems which have rwlock support, and reverts to a simple mutex for those that do not. Posix rwlock extension for protected access.
+.PP
+\fBAuthor: \fP
+.in +1c
+David Sugar <dyfet@ostel.com> 
+.PP
+.SH "CONSTRUCTOR & DESTRUCTOR DOCUMENTATION"
+.PP 
+.SS "ThreadLock::ThreadLock ()"
+.PP
+Create a process shared thread lock object.
+.PP
+.SS "virtual ThreadLock::~ThreadLock ()\fC [virtual]\fP"
+.PP
+Destroy a process shared thread lock object.
+.PP
+.SH "MEMBER FUNCTION DOCUMENTATION"
+.PP 
+.SS "void ThreadLock::readLock (void)"
+.PP
+Aquire a read lock for the current object.
+.PP
+.SS "bool ThreadLock::tryReadLock (void)"
+.PP
+Attempt read lock for current object.
+.PP
+\fBReturns: \fP
+.in +1c
+true on success. 
+.SS "bool ThreadLock::tryWriteLock (void)"
+.PP
+Attempt write lock for current object.
+.PP
+\fBReturns: \fP
+.in +1c
+true on success. 
+.SS "void ThreadLock::unlock (void)"
+.PP
+Release any held locks.
+.PP
+.SS "void ThreadLock::writeLock (void)"
+.PP
+Aquire a write lock for the current object.
+.PP
+
+
+.SH "AUTHOR"
+.PP 
+Generated automatically by Doxygen for CommonC++ from the source code.

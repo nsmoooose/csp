@@ -1,0 +1,275 @@
+.TH "InetAddress" 3 "22 May 2003" "CommonC++" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+InetAddress \- The network name and address objects are all derived from a common InetAddress base class. Internet Address binary data type. 
+.SH SYNOPSIS
+.br
+.PP
+\fC#include <socket.h>\fP
+.PP
+Inherited by \fBBroadcastAddress\fP, \fBInetHostAddress\fP, \fBInetMaskAddress\fP, and \fBInetMcastAddress\fP.
+.PP
+.SS "Public Methods"
+
+.in +1c
+.ti -1c
+.RI "\fBInetAddress\fP (const \fBInetAddrValidator\fP *validator=NULL)"
+.br
+.RI "\fICreate an Internet Address object with an empty (0.0.0.0) address.\fP"
+.ti -1c
+.RI "\fBInetAddress\fP (struct in_addr addr, const \fBInetAddrValidator\fP *validator=NULL)"
+.br
+.RI "\fIConvert the system internet address data type (struct in_addr) into a Common C++ InetAddress object.\fP"
+.ti -1c
+.RI "\fBInetAddress\fP (const char *address, const \fBInetAddrValidator\fP *validator=NULL)"
+.br
+.RI "\fIConvert a null terminated ASCII host address string (example: '127.0.0.1') or host address name (example: 'www.voxilla.org') directly into a Common C++ InetAddress object.\fP"
+.ti -1c
+.RI "\fBInetAddress\fP (const InetAddress &rhs)"
+.br
+.RI "\fICopy constructor.\fP"
+.ti -1c
+.RI "virtual \fB~InetAddress\fP ()"
+.br
+.RI "\fIDestructor.\fP"
+.ti -1c
+.RI "const char * \fBgetHostname\fP (void) const"
+.br
+.RI "\fIProvide a string representation of the value (Internet Address) held in the InetAddress object.\fP"
+.ti -1c
+.RI "bool \fBisInetAddress\fP (void) const"
+.br
+.RI "\fIMay be used to verify if a given InetAddress returned by another function contains a 'valid' address, or '0.0.0.0' which is often used to mark 'invalid' InetAddress values.\fP"
+.ti -1c
+.RI "in_addr \fBgetAddress\fP (void) const"
+.br
+.RI "\fIProvide a low level system usable struct in_addr object from the contents of InetAddress.\fP"
+.ti -1c
+.RI "in_addr \fBgetAddress\fP (size_t i) const"
+.br
+.RI "\fIProvide a low level system usable struct in_addr object from the contents of InetAddress.\fP"
+.ti -1c
+.RI "size_t \fBgetAddressCount\fP () const"
+.br
+.RI "\fIReturns the number of internet addresses that an InetAddress object contains.\fP"
+.ti -1c
+.RI "InetAddress & \fBoperator=\fP (const char *str)"
+.br
+.ti -1c
+.RI "InetAddress & \fBoperator=\fP (struct in_addr addr)"
+.br
+.ti -1c
+.RI "InetAddress & \fBoperator=\fP (const InetAddress &rhs)"
+.br
+.ti -1c
+.RI "InetAddress & \fBoperator=\fP (unsigned long addr)"
+.br
+.RI "\fIAllows assignment from the return of functions like inet_addr() or htonl().\fP"
+.ti -1c
+.RI "InetAddress & \fBoperator=\fP (unsigned int addr)"
+.br
+.ti -1c
+.RI "bool \fBoperator!\fP () const"
+.br
+.ti -1c
+.RI "bool \fBoperator==\fP (const InetAddress &a) const"
+.br
+.RI "\fICompare two internet addresses to see if they are equal (if they specify the physical address of the same internet host).\fP"
+.ti -1c
+.RI "bool \fBoperator!=\fP (const InetAddress &a) const"
+.br
+.RI "\fICompare two internet addresses to see if they are not equal (if they each refer to unique and different physical ip addresses).\fP"
+.in -1c
+.SS "Protected Methods"
+
+.in +1c
+.ti -1c
+.RI "bool \fBsetIPAddress\fP (const char *host)"
+.br
+.RI "\fISets the IP address from a string representation of the numeric address, ie '127.0.0.1'.\fP"
+.ti -1c
+.RI "void \fBsetAddress\fP (const char *host)"
+.br
+.RI "\fIUsed to specify a host name or numeric internet address.\fP"
+.in -1c
+.SS "Protected Attributes"
+
+.in +1c
+.ti -1c
+.RI "in_addr * \fBipaddr\fP"
+.br
+.ti -1c
+.RI "size_t \fBaddr_count\fP"
+.br
+.ti -1c
+.RI "char * \fBhostname\fP"
+.br
+.in -1c
+.SS "Static Protected Attributes"
+
+.in +1c
+.ti -1c
+.RI "\fBMutex\fP \fBmutex\fP"
+.br
+.in -1c
+.SH "DETAILED DESCRIPTION"
+.PP 
+The network name and address objects are all derived from a common InetAddress base class. Internet Address binary data type.
+.PP
+Specific classes, such as \fBInetHostAddress\fP, \fBInetMaskAddress\fP, etc, are defined from InetAddress entirely so that the manner a network address is being used can easily be documented and understood from the code and to avoid common errors and accidental misuse  of the wrong address object. For example, a 'connection' to something that is declared as a '\fBInetHostAddress\fP' can be kept type-safe from a 'connection' accidently being made to something that was declared a  'InetBroadcastAddress'.
+.PP
+\fBAuthor: \fP
+.in +1c
+David Sugar <dyfet@ostel.com> 
+.PP
+.SH "CONSTRUCTOR & DESTRUCTOR DOCUMENTATION"
+.PP 
+.SS "InetAddress::InetAddress (const \fBInetAddrValidator\fP * validator = NULL)"
+.PP
+Create an Internet Address object with an empty (0.0.0.0) address.
+.PP
+\fBParameters: \fP
+.in +1c
+.TP
+\fB\fIvalidator\fP\fP
+optional validator function object, intended for derived classes. 
+.SS "InetAddress::InetAddress (struct in_addr addr, const \fBInetAddrValidator\fP * validator = NULL)"
+.PP
+Convert the system internet address data type (struct in_addr) into a Common C++ InetAddress object.
+.PP
+\fBParameters: \fP
+.in +1c
+.TP
+\fB\fIaddr\fP\fP
+struct of system used binary internet address. 
+.TP
+\fB\fIvalidator\fP\fP
+optional validator function object, intended for derived classes. 
+.SS "InetAddress::InetAddress (const char * address, const \fBInetAddrValidator\fP * validator = NULL)"
+.PP
+Convert a null terminated ASCII host address string (example: '127.0.0.1') or host address name (example: 'www.voxilla.org') directly into a Common C++ InetAddress object.
+.PP
+\fBParameters: \fP
+.in +1c
+.TP
+\fB\fIaddress\fP\fP
+null terminated C string.  
+.TP
+\fB\fIvalidator\fP\fP
+optional validator function object, intended for derived classes. 
+.SS "InetAddress::InetAddress (const InetAddress & rhs)"
+.PP
+Copy constructor.
+.PP
+.SS "virtual InetAddress::~InetAddress ()\fC [virtual]\fP"
+.PP
+Destructor.
+.PP
+.SH "MEMBER FUNCTION DOCUMENTATION"
+.PP 
+.SS "struct in_addr InetAddress::getAddress (size_t i) const"
+.PP
+Provide a low level system usable struct in_addr object from the contents of InetAddress.
+.PP
+This is needed for services such as bind() and connect().
+.PP
+\fBParameters: \fP
+.in +1c
+.TP
+\fB\fIi\fP\fP
+for InetAddresses with multiple addresses, returns the address at this index. User should call \fBgetAddressCount()\fP  to determine the number of address the object contains. 
+.PP
+\fBReturns: \fP
+.in +1c
+system binary coded internet address. If parameter i is out of range, the first address is returned. 
+.SS "struct in_addr InetAddress::getAddress (void) const"
+.PP
+Provide a low level system usable struct in_addr object from the contents of InetAddress.
+.PP
+This is needed for services such as bind() and connect().
+.PP
+\fBReturns: \fP
+.in +1c
+system binary coded internet address. 
+.SS "size_t InetAddress::getAddressCount () const\fC [inline]\fP"
+.PP
+Returns the number of internet addresses that an InetAddress object contains.
+.PP
+This usually only happens with \fBInetHostAddress\fP objects where multiple IP addresses are returned for a DNS lookup 
+.SS "const char* InetAddress::getHostname (void) const"
+.PP
+Provide a string representation of the value (Internet Address) held in the InetAddress object.
+.PP
+\fBReturns: \fP
+.in +1c
+string representation of InetAddress. 
+.SS "bool InetAddress::isInetAddress (void) const"
+.PP
+May be used to verify if a given InetAddress returned by another function contains a 'valid' address, or '0.0.0.0' which is often used to mark 'invalid' InetAddress values.
+.PP
+\fBReturns: \fP
+.in +1c
+true if address != 0.0.0.0. 
+.SS "bool InetAddress::operator! (void) const\fC [inline]\fP"
+.PP
+.SS "bool InetAddress::operator!= (const InetAddress & a) const"
+.PP
+Compare two internet addresses to see if they are not equal (if they each refer to unique and different physical ip addresses).
+.PP
+This is implimented in terms of operator== 
+.SS "InetAddress& InetAddress::operator= (unsigned int addr)\fC [inline]\fP"
+.PP
+.SS "InetAddress& InetAddress::operator= (unsigned long addr)"
+.PP
+Allows assignment from the return of functions like inet_addr() or htonl().
+.PP
+Reimplemented in \fBInetMaskAddress\fP, and \fBInetHostAddress\fP.
+.SS "InetAddress& InetAddress::operator= (const InetAddress & rhs)"
+.PP
+.SS "InetAddress& InetAddress::operator= (struct in_addr addr)"
+.PP
+.SS "InetAddress& InetAddress::operator= (const char * str)"
+.PP
+.SS "bool InetAddress::operator== (const InetAddress & a) const"
+.PP
+Compare two internet addresses to see if they are equal (if they specify the physical address of the same internet host).
+.PP
+If there is more than one IP address in either InetAddress object, this will return true if all of the IP addresses in the smaller are in the larger in any order. 
+.SS "void InetAddress::setAddress (const char * host)\fC [protected]\fP"
+.PP
+Used to specify a host name or numeric internet address.
+.PP
+\fBParameters: \fP
+.in +1c
+.TP
+\fB\fIhost\fP\fP
+The string representation of the IP address or a hostname, , if NULL, it will default to INADDR_ANY 
+.SS "bool InetAddress::setIPAddress (const char * host)\fC [protected]\fP"
+.PP
+Sets the IP address from a string representation of the numeric address, ie '127.0.0.1'.
+.PP
+\fBParameters: \fP
+.in +1c
+.TP
+\fB\fIhost\fP\fP
+The string representation of the IP address 
+.PP
+\fBReturns: \fP
+.in +1c
+true if successful 
+.SH "MEMBER DATA DOCUMENTATION"
+.PP 
+.SS "size_t InetAddress::addr_count\fC [protected]\fP"
+.PP
+.SS "char* InetAddress::hostname\fC [protected]\fP"
+.PP
+.SS "struct in_addr* InetAddress::ipaddr\fC [protected]\fP"
+.PP
+.SS "\fBMutex\fP InetAddress::mutex\fC [static, protected]\fP"
+.PP
+
+
+.SH "AUTHOR"
+.PP 
+Generated automatically by Doxygen for CommonC++ from the source code.

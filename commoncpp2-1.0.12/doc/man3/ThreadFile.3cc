@@ -1,0 +1,159 @@
+.TH "ThreadFile" 3 "22 May 2003" "CommonC++" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+ThreadFile \- This class defines a database I/O file service that can be shared by multiple threads. This class defines a database I/O file service that can be shared by multiple threads. 
+.SH SYNOPSIS
+.br
+.PP
+\fC#include <file.h>\fP
+.PP
+Inherits \fBRandomFile\fP.
+.PP
+.SS "Public Methods"
+
+.in +1c
+.ti -1c
+.RI "\fBThreadFile\fP (const char *path)"
+.br
+.RI "\fIOpen or create a new database file.\fP"
+.ti -1c
+.RI "virtual \fB~ThreadFile\fP ()"
+.br
+.RI "\fIClose and finish a database file.\fP"
+.ti -1c
+.RI "\fBError\fP \fBrestart\fP (void)"
+.br
+.RI "\fIRestart an existing database; close and re-open.\fP"
+.ti -1c
+.RI "\fBError\fP \fBfetch\fP (char *address=NULL, \fBccxx_size_t\fP length=0, off_t position=-1)"
+.br
+.RI "\fIFetch a portion of the file into physical memory.\fP"
+.ti -1c
+.RI "\fBError\fP \fBupdate\fP (char *address=NULL, \fBccxx_size_t\fP length=0, off_t position=-1)"
+.br
+.RI "\fIUpdate a portion of a file from physical memory.\fP"
+.ti -1c
+.RI "\fBError\fP \fBappend\fP (char *address=NULL, \fBccxx_size_t\fP length=0)"
+.br
+.RI "\fIAdd new data to the end of the file.\fP"
+.ti -1c
+.RI "off_t \fBgetPosition\fP (void)"
+.br
+.RI "\fIFetch the current file position marker for this thread.\fP"
+.ti -1c
+.RI "bool \fBoperator++\fP (void)"
+.br
+.ti -1c
+.RI "bool \fBoperator--\fP (void)"
+.br
+.in -1c
+.SH "DETAILED DESCRIPTION"
+.PP 
+This class defines a database I/O file service that can be shared by multiple threads. This class defines a database I/O file service that can be shared by multiple threads.
+.PP
+All threads access a global copy of the database object, and mutex locks can be used to preserve transaction integrety. pread/pwrite calls can be used for optimized I/O when supported.
+.PP
+ThreadFile is meant for use by a threaded database server where multiple threads may each perform semi-independent operations on a given database table stored on disk. A special 'fcb' structure is used to hold file 'state', and pread/pwrite is used whenever possible for optimized I/O. On systems that do not offer pwread/pwrite, a \fBMutex\fP lock is used to protect concurrent lseek and read/write operations. ThreadFile managed databases are assumed to be used only by the local server and through a single file descriptor.
+.PP
+\fBAuthor: \fP
+.in +1c
+David Sugar <dyfet@ostel.com> 
+.PP
+.SH "CONSTRUCTOR & DESTRUCTOR DOCUMENTATION"
+.PP 
+.SS "ThreadFile::ThreadFile (const char * path)"
+.PP
+Open or create a new database file.
+.PP
+You should also use Initial.
+.PP
+\fBParameters: \fP
+.in +1c
+.TP
+\fB\fIpath\fP\fP
+pathname of database to open. 
+.SS "virtual ThreadFile::~ThreadFile ()\fC [virtual]\fP"
+.PP
+Close and finish a database file.
+.PP
+.SH "MEMBER FUNCTION DOCUMENTATION"
+.PP 
+.SS "\fBError\fP ThreadFile::append (char * address = NULL, \fBccxx_size_t\fP length = 0)"
+.PP
+Add new data to the end of the file.
+.PP
+\fBParameters: \fP
+.in +1c
+.TP
+\fB\fIaddress\fP\fP
+address to use, or NULL if same as last I/O. 
+.TP
+\fB\fIlength\fP\fP
+length to use, or 0 if same as last I/O. 
+.SS "\fBError\fP ThreadFile::fetch (char * address = NULL, \fBccxx_size_t\fP length = 0, off_t position = -1)"
+.PP
+Fetch a portion of the file into physical memory.
+.PP
+This can use state information to fetch the current record multiple times.
+.PP
+\fBReturns: \fP
+.in +1c
+errSuccess on success. 
+.PP
+\fBParameters: \fP
+.in +1c
+.TP
+\fB\fIaddress\fP\fP
+address to use, or NULL if same as last I/O. 
+.TP
+\fB\fIlength\fP\fP
+length to use, or 0 if same as last I/O. 
+.TP
+\fB\fIposition\fP\fP
+file position to use -1 if same as last I/O. 
+.SS "off_t ThreadFile::getPosition (void)"
+.PP
+Fetch the current file position marker for this thread.
+.PP
+\fBReturns: \fP
+.in +1c
+file position offset. 
+.SS "bool ThreadFile::operator++ (void)"
+.PP
+.SS "bool ThreadFile::operator-- (void)"
+.PP
+.SS "\fBError\fP ThreadFile::restart (void)\fC [inline, virtual]\fP"
+.PP
+Restart an existing database; close and re-open.
+.PP
+\fBReturns: \fP
+.in +1c
+errSuccess if successful. 
+.PP
+Reimplemented from \fBRandomFile\fP.
+.SS "\fBError\fP ThreadFile::update (char * address = NULL, \fBccxx_size_t\fP length = 0, off_t position = -1)"
+.PP
+Update a portion of a file from physical memory.
+.PP
+This can use state information to commit the last read record.
+.PP
+\fBReturns: \fP
+.in +1c
+errSuccess on success. 
+.PP
+\fBParameters: \fP
+.in +1c
+.TP
+\fB\fIaddress\fP\fP
+address to use, or NULL if same as last I/O. 
+.TP
+\fB\fIlength\fP\fP
+length to use, or 0 if same as last I/O. 
+.TP
+\fB\fIposition\fP\fP
+file position to use or -1 if same as last I/O. 
+
+.SH "AUTHOR"
+.PP 
+Generated automatically by Doxygen for CommonC++ from the source code.

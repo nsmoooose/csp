@@ -1,0 +1,168 @@
+.TH "TCPSocket" 3 "22 May 2003" "CommonC++" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+TCPSocket \- TCP sockets are used for stream based connected sessions between two sockets. bound server for TCP streams and sessions. 
+.SH SYNOPSIS
+.br
+.PP
+\fC#include <socket.h>\fP
+.PP
+Inherits \fBSocket\fP.
+.PP
+.SS "Public Methods"
+
+.in +1c
+.ti -1c
+.RI "\fBTCPSocket\fP (const \fBInetAddress\fP &bind, \fBtpport_t\fP port, int backlog=5)"
+.br
+.RI "\fIA TCP 'server' is created as a TCP socket that is bound to a hardware address and port number on the local machine and that has a backlog queue to listen for remote connection requests.\fP"
+.ti -1c
+.RI "\fBInetHostAddress\fP \fBgetRequest\fP (\fBtpport_t\fP *port=NULL) const"
+.br
+.RI "\fIReturn address and port of next connection request.\fP"
+.ti -1c
+.RI "void \fBreject\fP (void)"
+.br
+.RI "\fIUsed to reject the next incoming connection request.\fP"
+.ti -1c
+.RI "\fBInetHostAddress\fP \fBgetLocal\fP (\fBtpport_t\fP *port=NULL) const"
+.br
+.RI "\fIUsed to get local bound address.\fP"
+.ti -1c
+.RI "bool \fBisPendingConnection\fP (\fBtimeout_t\fP timeout=TIMEOUT_INF)"
+.br
+.RI "\fIUsed to wait for pending connection requests.\fP"
+.ti -1c
+.RI "virtual \fB~TCPSocket\fP ()"
+.br
+.RI "\fIUse base socket handler for ending this socket.\fP"
+.in -1c
+.SS "Protected Methods"
+
+.in +1c
+.ti -1c
+.RI "virtual bool \fBonAccept\fP (const \fBInetHostAddress\fP &ia, \fBtpport_t\fP port)"
+.br
+.RI "\fIA method to call in a derived TCPSocket class that is acting as a server when a connection request is being accepted.\fP"
+.in -1c
+.SS "Friends"
+
+.in +1c
+.ti -1c
+.RI "class \fBTCPStream\fP"
+.br
+.ti -1c
+.RI "class \fBSocketPort\fP"
+.br
+.ti -1c
+.RI "class \fBtcpstream\fP"
+.br
+.in -1c
+.SH "DETAILED DESCRIPTION"
+.PP 
+TCP sockets are used for stream based connected sessions between two sockets. bound server for TCP streams and sessions.
+.PP
+Both error recovery and flow control operate transparently for a TCP socket connection. The TCP socket base class is primary used to bind a TCP 'server' for accepting TCP streams.
+.PP
+An implicit and unique TCPSocket object exists in Common C++ to represent a bound TCP socket acting as a 'server' for receiving connection requests. This class is not part of \fBTCPStream\fP because such objects normally perform no physical I/O (read or write operations) other than to specify a listen backlog queue and perform 'accept' operations for pending connections. The Common C++ TCPSocket offers a Peek method to examine where the next pending connection is coming from, and a Reject method to flush the next request from the queue without having to create a session.
+.PP
+The TCPSocket also supports a 'OnAccept' method which can be called when a \fBTCPStream\fP related object is created from a TCPSocket. By creating a \fBTCPStream\fP from a TCPSocket, an accept operation automatically occurs, and the TCPSocket can then still reject the client connection through the return status of it's OnAccept method.
+.PP
+\fBAuthor: \fP
+.in +1c
+David Sugar <dyfet@tycho.com> 
+.PP
+.SH "CONSTRUCTOR & DESTRUCTOR DOCUMENTATION"
+.PP 
+.SS "TCPSocket::TCPSocket (const \fBInetAddress\fP & bind, \fBtpport_t\fP port, int backlog = 5)"
+.PP
+A TCP 'server' is created as a TCP socket that is bound to a hardware address and port number on the local machine and that has a backlog queue to listen for remote connection requests.
+.PP
+If the server cannot be created, an exception is thrown.
+.PP
+\fBParameters: \fP
+.in +1c
+.TP
+\fB\fIbind\fP\fP
+local ip address or interface to use. 
+.TP
+\fB\fIport\fP\fP
+number to bind socket under. 
+.TP
+\fB\fIbacklog\fP\fP
+size of connection request queue. 
+.SS "virtual TCPSocket::~TCPSocket ()\fC [inline, virtual]\fP"
+.PP
+Use base socket handler for ending this socket.
+.PP
+.SH "MEMBER FUNCTION DOCUMENTATION"
+.PP 
+.SS "\fBInetHostAddress\fP TCPSocket::getLocal (\fBtpport_t\fP * port = NULL) const\fC [inline]\fP"
+.PP
+Used to get local bound address.
+.PP
+Reimplemented from \fBSocket\fP.
+.SS "\fBInetHostAddress\fP TCPSocket::getRequest (\fBtpport_t\fP * port = NULL) const\fC [inline]\fP"
+.PP
+Return address and port of next connection request.
+.PP
+This can be used instead of OnAccept() to pre-evaluate connection requests.
+.PP
+\fBReturns: \fP
+.in +1c
+host requesting a connection. 
+.PP
+\fBParameters: \fP
+.in +1c
+.TP
+\fB\fIport\fP\fP
+number of requestor. 
+.SS "bool TCPSocket::isPendingConnection (\fBtimeout_t\fP timeout = TIMEOUT_INF)\fC [inline]\fP"
+.PP
+Used to wait for pending connection requests.
+.PP
+\fBReturns: \fP
+.in +1c
+true if data packets available. 
+.PP
+\fBParameters: \fP
+.in +1c
+.TP
+\fB\fItimeout\fP\fP
+in milliseconds. TIMEOUT_INF if not specified. 
+.SS "virtual bool TCPSocket::onAccept (const \fBInetHostAddress\fP & ia, \fBtpport_t\fP port)\fC [inline, protected, virtual]\fP"
+.PP
+A method to call in a derived TCPSocket class that is acting as a server when a connection request is being accepted.
+.PP
+The server can implement protocol specific rules to exclude the remote socket from being accepted by returning false. The Peek method can also be used for this purpose.
+.PP
+\fBReturns: \fP
+.in +1c
+true if client should be accepted. 
+.PP
+\fBParameters: \fP
+.in +1c
+.TP
+\fB\fIia\fP\fP
+internet host address of the client. 
+.TP
+\fB\fIport\fP\fP
+number of the client. 
+.SS "void TCPSocket::reject (void)"
+.PP
+Used to reject the next incoming connection request.
+.PP
+.SH "FRIENDS AND RELATED FUNCTION DOCUMENTATION"
+.PP 
+.SS "friend class SocketPort\fC [friend]\fP"
+.PP
+.SS "friend class tcpstream\fC [friend]\fP"
+.PP
+.SS "friend class TCPStream\fC [friend]\fP"
+.PP
+
+
+.SH "AUTHOR"
+.PP 
+Generated automatically by Doxygen for CommonC++ from the source code.

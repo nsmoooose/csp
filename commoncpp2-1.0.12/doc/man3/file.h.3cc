@@ -1,0 +1,135 @@
+.TH "file.h" 3 "22 May 2003" "CommonC++" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+file.h \- Files, fifos, directories, pipes and dynamic loader services. 
+.SH SYNOPSIS
+.br
+.PP
+\fC#include <cc++/config.h>\fP
+.br
+\fC#include <cc++/thread.h>\fP
+.br
+\fC#include <iostream>\fP
+.br
+\fC#include <fstream>\fP
+.br
+\fC#include <cstdio>\fP
+.br
+\fC#include <dirent.h>\fP
+.br
+\fC#include <sys/stat.h>\fP
+.br
+\fC#include <sys/mman.h>\fP
+.br
+.SS "Compounds"
+
+.in +1c
+.ti -1c
+.RI "class \fBDSO\fP"
+.br
+.RI "\fIThe DSO dynamic loader class is used to load object files. Dynamic class file loader.\fP"
+.ti -1c
+.RI "class \fBMappedFile\fP"
+.br
+.RI "\fICreate and map a disk file into memory. Map a named disk file into memory.\fP"
+.ti -1c
+.RI "class \fBPipe\fP"
+.br
+.RI "\fIThe Pipe uses system kernel buffering to hold data being passed either between two execution contexts within the same process, or between different processes. kernel buffering between processes and/or threads.\fP"
+.ti -1c
+.RI "class \fBDir\fP"
+.br
+.RI "\fIA low level portable directory class. low level directory access class.\fP"
+.ti -1c
+.RI "class \fBFIFOSession\fP"
+.br
+.RI "\fIThe FIFOSession produces a seperate thread which can manage a fifo stream session.\fP"
+.ti -1c
+.RI "class \fBfifostream\fP"
+.br
+.RI "\fIThis class provides a few alterations to the standard fstream class for dealing with fifo devices.\fP"
+.ti -1c
+.RI "struct \fB_fcb\fP"
+.br
+.ti -1c
+.RI "class \fBFile\fP"
+.br
+.ti -1c
+.RI "class \fBRandomFile\fP"
+.br
+.RI "\fIThe purpose of this class is to define a base class for low level random file access that is portable between Win32 and Posix systems. Portable random disk file access.\fP"
+.ti -1c
+.RI "class \fBSharedFile\fP"
+.br
+.RI "\fIThis class defines a database I/O file service that can be shared by multiple processes. This class defines a database I/O file service that can be shared by multiple processes.\fP"
+.ti -1c
+.RI "class \fBThreadFile\fP"
+.br
+.RI "\fIThis class defines a database I/O file service that can be shared by multiple threads. This class defines a database I/O file service that can be shared by multiple threads.\fP"
+.in -1c
+.SS "Defines"
+
+.in +1c
+.ti -1c
+.RI "#define \fBcaddr_t\fP   char *"
+.br
+.ti -1c
+.RI "#define \fBS_IRUSR\fP   0400"
+.br
+.ti -1c
+.RI "#define \fBS_IWUSR\fP   0200"
+.br
+.ti -1c
+.RI "#define \fBS_IRGRP\fP   0040"
+.br
+.ti -1c
+.RI "#define \fBS_IWGRP\fP   0020"
+.br
+.ti -1c
+.RI "#define \fBS_IROTH\fP   0004"
+.br
+.ti -1c
+.RI "#define \fBS_IWOTH\fP   0002"
+.br
+.in -1c
+.SS "Typedefs"
+
+.in +1c
+.ti -1c
+.RI "typedef unsigned long \fBpos_t\fP"
+.br
+.ti -1c
+.RI "typedef size_t \fBccxx_size_t\fP"
+.br
+.in -1c
+.SH "DETAILED DESCRIPTION"
+.PP 
+Files, fifos, directories, pipes and dynamic loader services.
+.PP
+.PP
+.SH "DEFINE DOCUMENTATION"
+.PP 
+.SS "#define caddr_t   char *"
+.PP
+.SS "#define S_IRGRP   0040"
+.PP
+.SS "#define S_IROTH   0004"
+.PP
+.SS "#define S_IRUSR   0400"
+.PP
+.SS "#define S_IWGRP   0020"
+.PP
+.SS "#define S_IWOTH   0002"
+.PP
+.SS "#define S_IWUSR   0200"
+.PP
+.SH "TYPEDEF DOCUMENTATION"
+.PP 
+.SS "typedef size_t ccxx_size_t"
+.PP
+.SS "typedef unsigned long pos_t"
+.PP
+.SH "AUTHOR"
+.PP 
+Generated automatically by Doxygen for CommonC++ from the source code.

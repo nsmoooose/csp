@@ -1,0 +1,142 @@
+.TH "Datetime" 3 "22 May 2003" "CommonC++" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+Datetime \- The Datetime class uses a julian date representation of the current year, month, and day and a integer representation of the current time. Integer based time class. 
+.SH SYNOPSIS
+.br
+.PP
+\fC#include <numbers.h>\fP
+.PP
+Inherits \fBDate\fP, and \fBTime\fP.
+.PP
+.SS "Public Methods"
+
+.in +1c
+.ti -1c
+.RI "\fBDatetime\fP (time_t tm)"
+.br
+.ti -1c
+.RI "\fBDatetime\fP (tm *dt)"
+.br
+.ti -1c
+.RI "\fBDatetime\fP (char *str, size_t \fBsize\fP=0)"
+.br
+.ti -1c
+.RI "\fBDatetime\fP (int year, unsigned month, unsigned day, int hour, int minute, int second)"
+.br
+.ti -1c
+.RI "\fBDatetime\fP ()"
+.br
+.ti -1c
+.RI "char * \fBgetDatetime\fP (char *buffer) const"
+.br
+.ti -1c
+.RI "time_t \fBgetDatetime\fP (void) const"
+.br
+.ti -1c
+.RI "bool \fBisValid\fP (void) const"
+.br
+.ti -1c
+.RI "Datetime & \fBoperator=\fP (Datetime datetime)"
+.br
+.ti -1c
+.RI "Datetime & \fBoperator+=\fP (Datetime &datetime)"
+.br
+.ti -1c
+.RI "Datetime & \fBoperator-=\fP (Datetime &datetime)"
+.br
+.ti -1c
+.RI "Datetime & \fBoperator+=\fP (\fBTime\fP &time)"
+.br
+.ti -1c
+.RI "Datetime & \fBoperator-=\fP (\fBTime\fP &time)"
+.br
+.ti -1c
+.RI "int \fBoperator==\fP (Datetime &)"
+.br
+.ti -1c
+.RI "int \fBoperator!=\fP (Datetime &)"
+.br
+.ti -1c
+.RI "int \fBoperator<\fP (Datetime &)"
+.br
+.ti -1c
+.RI "int \fBoperator<=\fP (Datetime &)"
+.br
+.ti -1c
+.RI "int \fBoperator>\fP (Datetime &)"
+.br
+.ti -1c
+.RI "int \fBoperator>=\fP (Datetime &)"
+.br
+.ti -1c
+.RI "bool \fBoperator!\fP ()"
+.br
+.ti -1c
+.RI "std::string \fBstrftime\fP (const char *format) const"
+.br
+.in -1c
+.SH "DETAILED DESCRIPTION"
+.PP 
+The Datetime class uses a julian date representation of the current year, month, and day and a integer representation of the current time. Integer based time class.
+.PP
+This is then manipulated in several forms and may be exported as needed.
+.PP
+\fBAuthor: \fP
+.in +1c
+Marcelo Dalmas <mad@brasmap.com.br> 
+.PP
+.SH "CONSTRUCTOR & DESTRUCTOR DOCUMENTATION"
+.PP 
+.SS "Datetime::Datetime (time_t tm)"
+.PP
+.SS "Datetime::Datetime (tm * dt)"
+.PP
+.SS "Datetime::Datetime (char * str, size_t size = 0)"
+.PP
+.SS "Datetime::Datetime (int year, unsigned month, unsigned day, int hour, int minute, int second)"
+.PP
+.SS "Datetime::Datetime ()"
+.PP
+.SH "MEMBER FUNCTION DOCUMENTATION"
+.PP 
+.SS "time_t Datetime::getDatetime (void) const"
+.PP
+.SS "char* Datetime::getDatetime (char * buffer) const"
+.PP
+.SS "bool Datetime::isValid (void) const"
+.PP
+Reimplemented from \fBDate\fP.
+.SS "bool Datetime::operator! ()"
+.PP
+Reimplemented from \fBTime\fP.
+.SS "int Datetime::operator!= (Datetime &)"
+.PP
+.SS "Datetime& Datetime::operator+= (\fBTime\fP & time)"
+.PP
+.SS "Datetime& Datetime::operator+= (Datetime & datetime)"
+.PP
+.SS "Datetime& Datetime::operator-= (\fBTime\fP & time)"
+.PP
+.SS "Datetime& Datetime::operator-= (Datetime & datetime)"
+.PP
+.SS "int Datetime::operator< (Datetime &)"
+.PP
+.SS "int Datetime::operator<= (Datetime &)"
+.PP
+.SS "Datetime& Datetime::operator= (Datetime datetime)"
+.PP
+.SS "int Datetime::operator== (Datetime &)"
+.PP
+.SS "int Datetime::operator> (Datetime &)"
+.PP
+.SS "int Datetime::operator>= (Datetime &)"
+.PP
+.SS "std::string Datetime::strftime (const char * format) const"
+.PP
+
+
+.SH "AUTHOR"
+.PP 
+Generated automatically by Doxygen for CommonC++ from the source code.

@@ -1,0 +1,50 @@
+* Use "itimer" instead of alarm when available for higher resolution
+  timing in setTimer/getTimer.
+
+* Determine more pthread targets which may allow SIGALRM to be used
+  beyond Linux for multiple timer instances.
+
+* Optional support for Posix timers rather than alarm or setitimer
+  for getTimer/setTimer when available on target platform.
+
+* Introduce "stream" support for Pipe.
+
+* Manual and overview documentation.
+
+* GNU PTH specific source tree.
+
+* redo exception handling
+
+* why Solaris use select instead of poll for TCPService ???
+
+* cleanup configure.in and config.h (two configure for public and private?)
+
+WIN32
+
+* merge Thread implementation (main cancellation)
+
+* serial support (Serial, TTYStream, ttystream, TTYSession, SerialPort,
+  SerialService)
+
+* CommandOption and related class
+
+* fifostream, FIFOSession classes (use NamedPipe ??) or document 
+  not win32 support
+
+* completion mode in RandomFile
+
+* MappedFile class
+
+* Conditional class
+
+TESTS
+
+* Detached behaviour
+  - detached thread release all resources on termination
+  - you can't wait termination of detached
+
+* Do not restart if already started
+
+* Test if Thread::isRunning say the truth (check all combination
+  started suspended detached ended)
+

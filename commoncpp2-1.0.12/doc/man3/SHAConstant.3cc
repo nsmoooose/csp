@@ -1,0 +1,36 @@
+.TH "SHAConstant" 3 "22 May 2003" "CommonC++" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+SHAConstant \- SHAConstant Contains SHA constants. 
+.SH SYNOPSIS
+.br
+.PP
+\fC#include <digest.h>\fP
+.PP
+Inherited by \fBSHA256Digest\fP.
+.PP
+.SS "Static Protected Attributes"
+
+.in +1c
+.ti -1c
+.RI "const \fBuint64\fP \fBK\fP []"
+.br
+.in -1c
+.SH "DETAILED DESCRIPTION"
+.PP 
+SHAConstant Contains SHA constants.
+.PP
+Note that this constant is set in sha.cpp and that each constant in the array is 64 bits wide. The constants themselves pertain to both SHA-256 and SHA-512, the only difference is that SHA-256 expects her constants to be 32 bits wide and only 64 are needed.
+.PP
+@auther Elizabeth Barham <lizzy@soggytrousers.net> 
+.PP
+.SH "MEMBER DATA DOCUMENTATION"
+.PP 
+.SS "const \fBuint64\fP SHAConstant::K[]\fC [static, protected]\fP"
+.PP
+
+
+.SH "AUTHOR"
+.PP 
+Generated automatically by Doxygen for CommonC++ from the source code.

@@ -1,0 +1,54 @@
+.TH "InetAddrValidator" 3 "22 May 2003" "CommonC++" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+InetAddrValidator \- Classes derived from \fBInetAddress\fP would require an specific validator to pass to the \fBInetAddress\fP constructor. Abstract base class for derived inet addresses validators. 
+.SH SYNOPSIS
+.br
+.PP
+\fC#include <socket.h>\fP
+.PP
+Inherited by \fBInetMcastAddrValidator\fP.
+.PP
+.SS "Public Methods"
+
+.in +1c
+.ti -1c
+.RI "\fBInetAddrValidator\fP ()"
+.br
+.RI "\fIConstructor.\fP"
+.ti -1c
+.RI "virtual void \fBoperator()\fP (const in_addr address) const=0"
+.br
+.RI "\fIPure virtual application operator.\fP"
+.in -1c
+.SH "DETAILED DESCRIPTION"
+.PP 
+Classes derived from \fBInetAddress\fP would require an specific validator to pass to the \fBInetAddress\fP constructor. Abstract base class for derived inet addresses validators.
+.PP
+This is a base class for classes of function objects used by such derived classes.
+.PP
+\fBAuthor: \fP
+.in +1c
+Federico Montesino <p5087@quintero.fie.us.es> 
+.PP
+.SH "CONSTRUCTOR & DESTRUCTOR DOCUMENTATION"
+.PP 
+.SS "InetAddrValidator::InetAddrValidator ()\fC [inline]\fP"
+.PP
+Constructor.
+.PP
+Does not deal with any state. 
+.SH "MEMBER FUNCTION DOCUMENTATION"
+.PP 
+.SS "virtual void InetAddrValidator::operator() (const in_addr address) const\fC [inline, pure virtual]\fP"
+.PP
+Pure virtual application operator.
+.PP
+Apply the validation algorithm specific to derived classes. 
+.PP
+Implemented in \fBInetMcastAddrValidator\fP.
+
+.SH "AUTHOR"
+.PP 
+Generated automatically by Doxygen for CommonC++ from the source code.

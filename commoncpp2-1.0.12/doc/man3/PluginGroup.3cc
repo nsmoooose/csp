@@ -1,0 +1,88 @@
+.TH "PluginGroup" 3 "22 May 2003" "CommonC++" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+PluginGroup \- A plugin group is used to manage a chain of associated plugins. Plugin grouping class. 
+.SH SYNOPSIS
+.br
+.PP
+\fC#include <groups.h>\fP
+.PP
+Inherits \fBDSO\fP.
+.PP
+.SS "Public Methods"
+
+.in +1c
+.ti -1c
+.RI "\fBCCXX_MEMBER_EXPORT\fP (CCXX_EMPTY) PluginGroup(const char *path"
+.br
+.ti -1c
+.RI "\fBCCXX_MEMBER_EXPORT\fP (CCXX_EMPTY) PluginGroup(PluginGroup **grp"
+.br
+.in -1c
+.SS "Public Attributes"
+
+.in +1c
+.ti -1c
+.RI "bool \fBresolve\fP = true)"
+.br
+.ti -1c
+.RI "const char * \fBpath\fP"
+.br
+.ti -1c
+.RI "const char bool \fBresolve\fP = true)"
+.br
+.in -1c
+.SS "Friends"
+
+.in +1c
+.ti -1c
+.RI "const char * \fBpath\fP"
+.br
+.ti -1c
+.RI "const char const char * \fBext\fP"
+.br
+.ti -1c
+.RI "const char const char bool \fBflag\fP"
+.br
+.ti -1c
+.RI "void \fBloadPlugins\fP (const char *path, const char *ext, bool flag)"
+.br
+.in -1c
+.SH "DETAILED DESCRIPTION"
+.PP 
+A plugin group is used to manage a chain of associated plugins. Plugin grouping class.
+.PP
+\fBAuthor: \fP
+.in +1c
+David Sugar <dyfet@ostel.com> 
+.PP
+.SH "MEMBER FUNCTION DOCUMENTATION"
+.PP 
+.SS "PluginGroup::CCXX_MEMBER_EXPORT (CCXX_EMPTY)"
+.PP
+.SS "PluginGroup::CCXX_MEMBER_EXPORT (CCXX_EMPTY) const"
+.PP
+.SH "FRIENDS AND RELATED FUNCTION DOCUMENTATION"
+.PP 
+.SS "friend const char const char* ext\fC [friend]\fP"
+.PP
+.SS "friend const char const char bool flag\fC [friend]\fP"
+.PP
+.SS "void loadPlugins (const char * path, const char * ext, bool flag)\fC [friend]\fP"
+.PP
+.SS "friend const char* path\fC [friend]\fP"
+.PP
+.SH "MEMBER DATA DOCUMENTATION"
+.PP 
+.SS "const char* PluginGroup::path"
+.PP
+.SS "const char bool PluginGroup::resolve = true)"
+.PP
+.SS "bool PluginGroup::resolve = true)"
+.PP
+
+
+.SH "AUTHOR"
+.PP 
+Generated automatically by Doxygen for CommonC++ from the source code.

@@ -1,0 +1,58 @@
+.TH "Dir" 3 "22 May 2003" "CommonC++" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+Dir \- A low level portable directory class. low level directory access class. 
+.SH SYNOPSIS
+.br
+.PP
+\fC#include <file.h>\fP
+.PP
+.SS "Public Methods"
+
+.in +1c
+.ti -1c
+.RI "\fBDir\fP (const char *name)"
+.br
+.ti -1c
+.RI "virtual \fB~Dir\fP ()"
+.br
+.ti -1c
+.RI "char * \fBgetName\fP (void)"
+.br
+.ti -1c
+.RI "bool \fBoperator!\fP ()"
+.br
+.ti -1c
+.RI "bool \fBisValid\fP (void)"
+.br
+.in -1c
+.SH "DETAILED DESCRIPTION"
+.PP 
+A low level portable directory class. low level directory access class.
+.PP
+Used to support ccstd Directory container. This provides a basic mechanism for allocating and accessing file entries.
+.PP
+\fBAuthor: \fP
+.in +1c
+David Sugar <dyfet@ostel.com> 
+.PP
+.SH "CONSTRUCTOR & DESTRUCTOR DOCUMENTATION"
+.PP 
+.SS "Dir::Dir (const char * name)"
+.PP
+.SS "virtual Dir::~Dir ()\fC [virtual]\fP"
+.PP
+.SH "MEMBER FUNCTION DOCUMENTATION"
+.PP 
+.SS "char* Dir::getName (void)"
+.PP
+.SS "bool Dir::isValid (void)"
+.PP
+.SS "bool Dir::operator! ()\fC [inline]\fP"
+.PP
+
+
+.SH "AUTHOR"
+.PP 
+Generated automatically by Doxygen for CommonC++ from the source code.

@@ -1,0 +1,38 @@
+.TH "groups.h" 3 "22 May 2003" "CommonC++" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+groups.h \- Groups of plugins, scheduled entities and thread. 
+.SH SYNOPSIS
+.br
+.PP
+\fC#include <cc++/config.h>\fP
+.br
+\fC#include <cc++/thread.h>\fP
+.br
+\fC#include <cc++/file.h>\fP
+.br
+.SS "Compounds"
+
+.in +1c
+.ti -1c
+.RI "class \fBPluginGroup\fP"
+.br
+.RI "\fIA plugin group is used to manage a chain of associated plugins. Plugin grouping class.\fP"
+.ti -1c
+.RI "class \fBThreadGroup\fP"
+.br
+.RI "\fIA thread grouping class for a set of server classes that may be started and stopped together as a common group. \fBThread\fP grouping class for server processes.\fP"
+.ti -1c
+.RI "class \fBTimedGroup\fP"
+.br
+.RI "\fIA timed group is a scheduled entity that involves things that must be processed on some kind of interval. Timed grouping class for server processes.\fP"
+.in -1c
+.SH "DETAILED DESCRIPTION"
+.PP 
+Groups of plugins, scheduled entities and thread.
+.PP
+.PP
+.SH "AUTHOR"
+.PP 
+Generated automatically by Doxygen for CommonC++ from the source code.

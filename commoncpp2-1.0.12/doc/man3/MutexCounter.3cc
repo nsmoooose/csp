@@ -1,0 +1,55 @@
+.TH "MutexCounter" 3 "22 May 2003" "CommonC++" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+MutexCounter \- The \fBMutex\fP Counter is a counter variable which can safely be incremented or decremented by multiple threads. \fBThread\fP protected integer counter. 
+.SH SYNOPSIS
+.br
+.PP
+\fC#include <thread.h>\fP
+.PP
+Inherits \fBMutex\fP.
+.PP
+.SS "Public Methods"
+
+.in +1c
+.ti -1c
+.RI "\fBMutexCounter\fP ()"
+.br
+.ti -1c
+.RI "\fBMutexCounter\fP (int initial)"
+.br
+.ti -1c
+.RI "friend \fBCCXX_EXPORT\fP (int) operator++(MutexCounter &mc)"
+.br
+.ti -1c
+.RI "friend \fBCCXX_EXPORT\fP (int) operator--(MutexCounter &mc)"
+.br
+.in -1c
+.SH "DETAILED DESCRIPTION"
+.PP 
+The \fBMutex\fP Counter is a counter variable which can safely be incremented or decremented by multiple threads. \fBThread\fP protected integer counter.
+.PP
+A \fBMutex\fP is used to protect access to the counter variable (an integer). An initial value can be specified  for the counter, and it can be manipulated with the ++ and -- operators.
+.PP
+\fBAuthor: \fP
+.in +1c
+David Sugar <dyfet@ostel.com> 
+.PP
+.SH "CONSTRUCTOR & DESTRUCTOR DOCUMENTATION"
+.PP 
+.SS "MutexCounter::MutexCounter ()"
+.PP
+.SS "MutexCounter::MutexCounter (int initial)"
+.PP
+.SH "MEMBER FUNCTION DOCUMENTATION"
+.PP 
+.SS "MutexCounter::CCXX_EXPORT (int)"
+.PP
+.SS "MutexCounter::CCXX_EXPORT (int)"
+.PP
+
+
+.SH "AUTHOR"
+.PP 
+Generated automatically by Doxygen for CommonC++ from the source code.

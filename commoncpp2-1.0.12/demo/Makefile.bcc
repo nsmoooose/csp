@@ -1,0 +1,28 @@
+# GNU Makefile to build CommonC++ using Borland CC 5.5.1
+
+prefix = c:\\borland
+includedir = $(prefix)\\include
+bindir = $(prefix)\\bin
+libdir = $(prefix)\\lib
+
+BCC = bcc32.exe -tWM -I..\\win32 -I..\\common -I..\\posix -I..\\include -I$(includedir)
+ILIB = ilink32.exe -c -Tpd -L..\\win32 -L..\\common -L$(libdir)
+ILINK = ilink32.exe -c -Tpe -L..\\win32 -L..\\common -L$(libdir)
+IMPLIB = implib.exe
+
+LIBS = ccxx ccstd cw32mt import32
+
+%.obj: %.cpp
+	$(BCC) -c $<
+
+%.dll %.lib:
+	$(ILIB) c0d32 $^, $@, ,$(LIBS)
+	$(IMPLIB) $*.lib $*.dll
+
+%.exe: %.obj
+	$(ILINK) c0x32 $^, $@, ,$(LIBS)
+
+all:  tcp.exe tcpthread.exe bug1.exe
+
+clean:
+	$(RM) *.exe *.dll *.lib *.ilc *.ild *.ilf *.ils *.map *.tds *.obj

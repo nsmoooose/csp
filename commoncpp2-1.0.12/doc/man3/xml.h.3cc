@@ -1,0 +1,28 @@
+.TH "xml.h" 3 "22 May 2003" "CommonC++" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+xml.h \- XML streams abstraction and RPC services. 
+.SH SYNOPSIS
+.br
+.PP
+\fC#include <cc++/config.h>\fP
+.br
+\fC#include <cc++/thread.h>\fP
+.br
+\fC#include <cc++/slog.h>\fP
+.br
+\fC#include <fstream>\fP
+.br
+\fC#include <iostream>\fP
+.br
+\fC#include <strstream>\fP
+.br
+.SH "DETAILED DESCRIPTION"
+.PP 
+XML streams abstraction and RPC services.
+.PP
+.PP
+.SH "AUTHOR"
+.PP 
+Generated automatically by Doxygen for CommonC++ from the source code.

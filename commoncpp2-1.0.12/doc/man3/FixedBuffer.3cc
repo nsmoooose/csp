@@ -1,0 +1,142 @@
+.TH "FixedBuffer" 3 "22 May 2003" "CommonC++" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+FixedBuffer \- A buffer class that holds a known capacity of fixed sized objects defined during creation. producer/consumer buffer for fixed size objects. 
+.SH SYNOPSIS
+.br
+.PP
+\fC#include <thread.h>\fP
+.PP
+Inherits \fBBuffer\fP.
+.PP
+.SS "Public Methods"
+
+.in +1c
+.ti -1c
+.RI "\fBFixedBuffer\fP (size_t capacity, size_t objsize)"
+.br
+.RI "\fICreate a buffer of known capacity for objects of a specified size.\fP"
+.ti -1c
+.RI "\fBFixedBuffer\fP (const FixedBuffer &fb)"
+.br
+.RI "\fICreate a copy of an existing fixed size buffer and duplicate it's contents.\fP"
+.ti -1c
+.RI "virtual \fB~FixedBuffer\fP ()"
+.br
+.RI "\fIDestroy the fixed buffer and free the memory used to store objects.\fP"
+.ti -1c
+.RI "FixedBuffer & \fBoperator=\fP (const FixedBuffer &fb)"
+.br
+.ti -1c
+.RI "bool \fBisValid\fP (void)"
+.br
+.in -1c
+.SS "Protected Methods"
+
+.in +1c
+.ti -1c
+.RI "int \fBonPeek\fP (void *buf)"
+.br
+.RI "\fIReturn the first object in the buffer.\fP"
+.ti -1c
+.RI "int \fBonWait\fP (void *buf)"
+.br
+.RI "\fIWait for and return a fixed object in the buffer.\fP"
+.ti -1c
+.RI "int \fBonPost\fP (void *buf)"
+.br
+.RI "\fIPost an object of the appropriate size into the buffer.\fP"
+.in -1c
+.SH "DETAILED DESCRIPTION"
+.PP 
+A buffer class that holds a known capacity of fixed sized objects defined during creation. producer/consumer buffer for fixed size objects.
+.PP
+\fBAuthor: \fP
+.in +1c
+David Sugar <dyfet@ostel.com> 
+.PP
+.SH "CONSTRUCTOR & DESTRUCTOR DOCUMENTATION"
+.PP 
+.SS "FixedBuffer::FixedBuffer (size_t capacity, size_t objsize)"
+.PP
+Create a buffer of known capacity for objects of a specified size.
+.PP
+\fBParameters: \fP
+.in +1c
+.TP
+\fB\fIcapacity\fP\fP
+of the buffer. 
+.TP
+\fB\fIobjsize\fP\fP
+for each object held in the buffer. 
+.SS "FixedBuffer::FixedBuffer (const FixedBuffer & fb)"
+.PP
+Create a copy of an existing fixed size buffer and duplicate it's contents.
+.PP
+\fBParameters: \fP
+.in +1c
+.TP
+\fB\fIfb\fP\fP
+existing FixedBuffer object. 
+.SS "virtual FixedBuffer::~FixedBuffer ()\fC [virtual]\fP"
+.PP
+Destroy the fixed buffer and free the memory used to store objects.
+.PP
+.SH "MEMBER FUNCTION DOCUMENTATION"
+.PP 
+.SS "bool FixedBuffer::isValid (void)\fC [virtual]\fP"
+.PP
+Reimplemented from \fBBuffer\fP.
+.SS "int FixedBuffer::onPeek (void * buf)\fC [protected, virtual]\fP"
+.PP
+Return the first object in the buffer.
+.PP
+\fBReturns: \fP
+.in +1c
+predefined size of this buffers objects. 
+.PP
+\fBParameters: \fP
+.in +1c
+.TP
+\fB\fIbuf\fP\fP
+pointer to copy contents of head of buffer to. 
+.PP
+Implements \fBBuffer\fP.
+.SS "int FixedBuffer::onPost (void * buf)\fC [protected, virtual]\fP"
+.PP
+Post an object of the appropriate size into the buffer.
+.PP
+\fBReturns: \fP
+.in +1c
+predefined size of this buffers objects. 
+.PP
+\fBParameters: \fP
+.in +1c
+.TP
+\fB\fIbuf\fP\fP
+pointer to data to copy into the buffer. 
+.PP
+Implements \fBBuffer\fP.
+.SS "int FixedBuffer::onWait (void * buf)\fC [protected, virtual]\fP"
+.PP
+Wait for and return a fixed object in the buffer.
+.PP
+\fBReturns: \fP
+.in +1c
+predefined size of this buffers objects. 
+.PP
+\fBParameters: \fP
+.in +1c
+.TP
+\fB\fIbuf\fP\fP
+pointer to hold object returned from the buffer. 
+.PP
+Implements \fBBuffer\fP.
+.SS "FixedBuffer& FixedBuffer::operator= (const FixedBuffer & fb)"
+.PP
+
+
+.SH "AUTHOR"
+.PP 
+Generated automatically by Doxygen for CommonC++ from the source code.

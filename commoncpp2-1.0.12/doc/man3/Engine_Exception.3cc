@@ -1,0 +1,21 @@
+.TH "Engine::Exception" 3 "22 May 2003" "CommonC++" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+Engine::Exception \- If problems happen which are fatal - expect one of these thrown at you. 
+.SH SYNOPSIS
+.br
+.PP
+\fC#include <persist.h>\fP
+.PP
+Inherits \fBPersistException\fP.
+.PP
+.SH "DETAILED DESCRIPTION"
+.PP 
+If problems happen which are fatal - expect one of these thrown at you.
+.PP
+
+
+.SH "AUTHOR"
+.PP 
+Generated automatically by Doxygen for CommonC++ from the source code.

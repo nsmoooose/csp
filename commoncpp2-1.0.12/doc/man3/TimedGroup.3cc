@@ -1,0 +1,70 @@
+.TH "TimedGroup" 3 "22 May 2003" "CommonC++" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+TimedGroup \- A timed group is a scheduled entity that involves things that must be processed on some kind of interval. Timed grouping class for server processes. 
+.SH SYNOPSIS
+.br
+.PP
+\fC#include <groups.h>\fP
+.PP
+.SS "Public Methods"
+
+.in +1c
+.ti -1c
+.RI "\fBCCXX_MEMBER_EXPORT\fP (void) stop(void)"
+.br
+.ti -1c
+.RI "\fBCCXX_MEMBER_EXPORT\fP (void) start(void)"
+.br
+.in -1c
+.SS "Protected Methods"
+
+.in +1c
+.ti -1c
+.RI "\fBCCXX_MEMBER_EXPORT\fP (CCXX_EMPTY) TimedGroup(TimedGroup **group=NULL)"
+.br
+.ti -1c
+.RI "virtual \fB~TimedGroup\fP ()"
+.br
+.ti -1c
+.RI "\fBCCXX_MEMBER_EXPORT\fP (bool) isRunnable(void)"
+.br
+.ti -1c
+.RI "virtual void \fBinitial\fP (void)"
+.br
+.ti -1c
+.RI "virtual void \fBrun\fP (void)=0"
+.br
+.in -1c
+.SH "DETAILED DESCRIPTION"
+.PP 
+A timed group is a scheduled entity that involves things that must be processed on some kind of interval. Timed grouping class for server processes.
+.PP
+\fBAuthor: \fP
+.in +1c
+David Sugar <dyfet@ostel.com> 
+.PP
+.SH "CONSTRUCTOR & DESTRUCTOR DOCUMENTATION"
+.PP 
+.SS "virtual TimedGroup::~TimedGroup ()\fC [inline, protected, virtual]\fP"
+.PP
+.SH "MEMBER FUNCTION DOCUMENTATION"
+.PP 
+.SS "TimedGroup::CCXX_MEMBER_EXPORT (void)"
+.PP
+.SS "TimedGroup::CCXX_MEMBER_EXPORT (void)"
+.PP
+.SS "TimedGroup::CCXX_MEMBER_EXPORT (bool)\fC [protected]\fP"
+.PP
+.SS "TimedGroup::CCXX_MEMBER_EXPORT (CCXX_EMPTY)\fC [protected]\fP"
+.PP
+.SS "virtual void TimedGroup::initial (void)\fC [inline, protected, virtual]\fP"
+.PP
+.SS "virtual void TimedGroup::run (void)\fC [protected, pure virtual]\fP"
+.PP
+
+
+.SH "AUTHOR"
+.PP 
+Generated automatically by Doxygen for CommonC++ from the source code.

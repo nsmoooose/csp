@@ -1,0 +1,34 @@
+i pkginfo
+f none /usr/lib/libccgnu2-@LT_RELEASE@.so.@VERSION@=/opt/GNU/lib/libccgnu2-@LT_RELEASE@.so.@VERSION@ 0755 bin bin
+s none /usr/lib/libccgnu2-@LT_RELEASE@.so.@LT_MAJOR@=libccgnu2-@LT_RELEASE@.so.@VERSION@
+s none /usr/lib/libccgnu2.so=libccgnu2-@LT_RELEASE@.so.@VERSION@
+f none /usr/lib/libccext2-@LT_RELEASE@.so.@VERSION@=/opt/GNU/lib/libccext2-@LT_RELEASE@.so.@VERSION@ 0755 bin bin
+s none /usr/lib/libccext2-@LT_RELEASE@.so.@LT_MAJOR@=libccext2-@LT_RELEASE@.so.@VERSION@
+s none /usr/lib/libccext2.so=libccext2-@LT_RELEASE@.so.@VERSION@
+f none /usr/lib/libccgnu2.a=/opt/GNU/lib/libccgnu2.a 0644 bin bin
+f none /usr/lib/libccext2.a=/opt/GNU/lib/libccext2.a 0644 bin bin
+d none /usr/include/cc++2 0775 root bin
+f none /usr/include/cc++2/thread.h=/opt/GNU/include/cc++2/thread.h 0644 bin bin
+f none /usr/include/cc++2/socket.h=/opt/GNU/include/cc++2/socket.h 0664 bin bin
+f none /usr/include/cc++2/file.h=/opt/GNU/include/cc++2/file.h 0664 bin bin
+f none /usr/include/cc++2/serial.h=/opt/GNU/include/cc++2/serial.h 0644 bin bin
+f none /usr/include/cc++2/slog.h=/opt/GNU/include/cc++2/slog.h 0644 bin bin
+f none /usr/include/cc++2/config.h=/opt/GNU/include/cc++2/config.h 0664 bin bin
+f none /usr/include/cc++2/misc.h=/opt/GNU/include/cc++2/misc.h 0664 bin bin
+f none /usr/include/cc++2/config.h=/opt/GNU/include/cc++2/config.h 0664 bin bin
+f none /usr/include/cc++2/persist.h=/opt/GNU/include/cc++2/persist.h 0664 bin bin
+f none /usr/include/cc++2/url.h=/opt/GNU/include/cc++2/url.h 0664 bin bin
+f none /usr/include/cc++2/xml.h=/opt/GNU/include/cc++2/xml.h 0664 bin bin
+f none /usr/include/cc++2/exception.h=/opt/GNU/include/cc++2/exception.h 0664 bin bin
+f none /usr/include/cc++2/strchar.h=/opt/GNU/include/cc++2/strchar.h 0664 bin bin
+f none /usr/include/cc++2/numbers.h=/opt/GNU/include/cc++2/numbers.h 0664 bin bin
+f none /usr/include/cc++2/template.h=/opt/GNU/include/cc++2/template.h 0664 bin bin
+f none /usr/include/cc++2/objkeys.h=/opt/GNU/include/cc++2/objkeys.h 0664 bin bin
+f none /usr/include/cc++2/objcount.h=/opt/GNU/include/cc++2/objcount.h 0664 bin bin
+f none /usr/include/cc++2/objlink.h=/opt/GNU/include/cc++2/objlink.h 0664 bin bin
+f none /usr/include/cc++2/objmap.h=/opt/GNU/include/cc++2/objmap.h 0664 bin bin
+f none /usr/include/cc++2/objsync.h=/opt/GNU/include/cc++2/objsync.h 0664 bin bin
+f none /usr/include/cc++2/objstring.h=/opt/GNU/include/cc++2/objstring.h 0664 bin bin
+f none /usr/include/cc++2/functions.h=/opt/GNU/include/cc++2/functions.h 0664 bin bin
+f none /usr/include/cc++2/pointer.h=/opt/GNU/include/cc++2/pointer.h 0664 bin bin
+f none /usr/include/cc++2/counter.h=/opt/GNU/include/cc++2/counter.h 0664 bin bin

@@ -1,0 +1,44 @@
+.TH "ost::cistring_char_traits" 3 "22 May 2003" "CommonC++" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+ost::cistring_char_traits \- 
+.SH SYNOPSIS
+.br
+.PP
+\fC#include <oststring.h>\fP
+.PP
+.SS "Static Public Methods"
+
+.in +1c
+.ti -1c
+.RI "bool \fBeq\fP (char c1, char c2)"
+.br
+.ti -1c
+.RI "bool \fBne\fP (char c1, char c2)"
+.br
+.ti -1c
+.RI "bool \fBlt\fP (char c1, char c2)"
+.br
+.ti -1c
+.RI "int \fBcompare\fP (const char *s1, const char *s2, size_t n)"
+.br
+.in -1c
+
+.SS "template<class charT> struct ost::cistring_char_traits< charT >"
+
+.SH "MEMBER FUNCTION DOCUMENTATION"
+.PP 
+.SS "template<class charT> int ost::cistring_char_traits< charT >::compare (const char * s1, const char * s2, size_t n)\fC [inline, static]\fP"
+.PP
+.SS "template<class charT> bool ost::cistring_char_traits< charT >::eq (char c1, char c2)\fC [inline, static]\fP"
+.PP
+.SS "template<class charT> bool ost::cistring_char_traits< charT >::lt (char c1, char c2)\fC [inline, static]\fP"
+.PP
+.SS "template<class charT> bool ost::cistring_char_traits< charT >::ne (char c1, char c2)\fC [inline, static]\fP"
+.PP
+
+
+.SH "AUTHOR"
+.PP 
+Generated automatically by Doxygen for CommonC++ from the source code.

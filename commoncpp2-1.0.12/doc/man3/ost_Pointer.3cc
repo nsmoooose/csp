@@ -1,0 +1,101 @@
+.TH "ost::Pointer" 3 "22 May 2003" "CommonC++" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+ost::Pointer \- 
+.SH SYNOPSIS
+.br
+.PP
+\fC#include <pointer.h>\fP
+.PP
+.SS "Public Methods"
+
+.in +1c
+.ti -1c
+.RI "\fBPointer\fP (T *ptr=NULL)"
+.br
+.ti -1c
+.RI "\fBPointer\fP (const Pointer< T > &ref)"
+.br
+.ti -1c
+.RI "virtual \fB~Pointer\fP ()"
+.br
+.ti -1c
+.RI "Pointer & \fBoperator=\fP (const Pointer< T > &ref)"
+.br
+.ti -1c
+.RI "T & \fBoperator *\fP () const"
+.br
+.ti -1c
+.RI "T * \fBgetObject\fP () const"
+.br
+.ti -1c
+.RI "T * \fBoperator->\fP () const"
+.br
+.ti -1c
+.RI "bool \fBoperator!\fP () const"
+.br
+.ti -1c
+.RI "int \fBoperator++\fP () const"
+.br
+.ti -1c
+.RI "int \fBoperator--\fP () const"
+.br
+.in -1c
+.SS "Protected Methods"
+
+.in +1c
+.ti -1c
+.RI "void \fBptrDetach\fP (void)"
+.br
+.in -1c
+.SS "Protected Attributes"
+
+.in +1c
+.ti -1c
+.RI "unsigned * \fBptrCount\fP"
+.br
+.ti -1c
+.RI "T * \fBptrObject\fP"
+.br
+.in -1c
+
+.SS "template<class T> class ost::Pointer< T >"
+
+.SH "CONSTRUCTOR & DESTRUCTOR DOCUMENTATION"
+.PP 
+.SS "template<class T> ost::Pointer< T >::Pointer (T * ptr = NULL)\fC [inline, explicit]\fP"
+.PP
+.SS "template<class T> ost::Pointer< T >::Pointer (const Pointer< T > & ref)\fC [inline]\fP"
+.PP
+.SS "template<class T> virtual ost::Pointer< T >::~Pointer ()\fC [inline, virtual]\fP"
+.PP
+.SH "MEMBER FUNCTION DOCUMENTATION"
+.PP 
+.SS "template<class T> T* ost::Pointer< T >::getObject () const\fC [inline]\fP"
+.PP
+.SS "template<class T> T& ost::Pointer< T >::operator * () const\fC [inline]\fP"
+.PP
+.SS "template<class T> bool ost::Pointer< T >::operator! (void) const\fC [inline]\fP"
+.PP
+.SS "template<class T> int ost::Pointer< T >::operator++ (void) const\fC [inline]\fP"
+.PP
+.SS "template<class T> int ost::Pointer< T >::operator-- (void) const\fC [inline]\fP"
+.PP
+.SS "template<class T> T* ost::Pointer< T >::operator-> () const\fC [inline]\fP"
+.PP
+.SS "template<class T> Pointer& ost::Pointer< T >::operator= (const Pointer< T > & ref)\fC [inline]\fP"
+.PP
+.SS "template<class T> void ost::Pointer< T >::ptrDetach (void)\fC [inline, protected]\fP"
+.PP
+.SH "MEMBER DATA DOCUMENTATION"
+.PP 
+.SS "template<class T> unsigned* ost::Pointer< T >::ptrCount\fC [protected]\fP"
+.PP
+.SS "template<class T> T* ost::Pointer< T >::ptrObject\fC [protected]\fP"
+.PP
+
+
+.SH "AUTHOR"
+.PP 
+Generated automatically by Doxygen for CommonC++ from the source code.

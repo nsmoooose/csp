@@ -1,0 +1,89 @@
+.TH "SHA64DigestHelper" 3 "22 May 2003" "CommonC++" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+SHA64DigestHelper \- SHA64DigestHelper Base class for the 64-bit wide SHA*Digests. 
+.SH SYNOPSIS
+.br
+.PP
+\fC#include <digest.h>\fP
+.PP
+Inherits \fBSHADigest< uint64, 64 >\fP.
+.PP
+Inherited by \fBSHA1Digest\fP, and \fBSHA256Digest\fP.
+.PP
+.SS "Public Methods"
+
+.in +1c
+.ti -1c
+.RI "unsigned \fBgetDigest\fP (unsigned char *buffer)"
+.br
+.ti -1c
+.RI "std::ostream & \fBstrDigest\fP (std::ostream &os)"
+.br
+.ti -1c
+.RI "\fBSHA64DigestHelper\fP (const SHA64DigestHelper &other)"
+.br
+.ti -1c
+.RI "SHA64DigestHelper & \fBoperator=\fP (const SHA64DigestHelper &other)"
+.br
+.in -1c
+.SS "Protected Methods"
+
+.in +1c
+.ti -1c
+.RI "\fBSHA64DigestHelper\fP (unsigned)"
+.br
+.ti -1c
+.RI "\fBSHATumbler\fP< \fBuint32\fP > \fBgetDigest\fP ()"
+.br
+.in -1c
+.SS "Protected Attributes"
+
+.in +1c
+.ti -1c
+.RI "\fBSHATumbler\fP< \fBuint32\fP > \fBh\fP"
+.br
+.ti -1c
+.RI "\fBSHATumbler\fP< \fBuint32\fP > \fBa\fP"
+.br
+.in -1c
+.SH "DETAILED DESCRIPTION"
+.PP 
+SHA64DigestHelper Base class for the 64-bit wide SHA*Digests.
+.PP
+Simply a base class for the SHA*\fBDigest\fP classes that share functionality after their 'unsigned int' type and block size are known (uint64 and 64)
+.PP
+\fBAuthor: \fP
+.in +1c
+Elizabeth Barham <lizzy@soggytrousers.net> 
+.PP
+.SH "CONSTRUCTOR & DESTRUCTOR DOCUMENTATION"
+.PP 
+.SS "SHA64DigestHelper::SHA64DigestHelper (unsigned)\fC [protected]\fP"
+.PP
+.SS "SHA64DigestHelper::SHA64DigestHelper (const SHA64DigestHelper & other)"
+.PP
+.SH "MEMBER FUNCTION DOCUMENTATION"
+.PP 
+.SS "unsigned SHA64DigestHelper::getDigest (unsigned char * buffer)\fC [inline, virtual]\fP"
+.PP
+Implements \fBDigest\fP.
+.SS "\fBSHATumbler\fP<\fBuint32\fP> SHA64DigestHelper::getDigest ()\fC [protected]\fP"
+.PP
+.SS "SHA64DigestHelper& SHA64DigestHelper::operator= (const SHA64DigestHelper & other)"
+.PP
+.SS "std::ostream& SHA64DigestHelper::strDigest (std::ostream & os)\fC [virtual]\fP"
+.PP
+Implements \fBSHADigest< uint64, 64 >\fP.
+.SH "MEMBER DATA DOCUMENTATION"
+.PP 
+.SS "\fBSHATumbler\fP<\fBuint32\fP> SHA64DigestHelper::a\fC [protected]\fP"
+.PP
+.SS "\fBSHATumbler\fP<\fBuint32\fP> SHA64DigestHelper::h\fC [protected]\fP"
+.PP
+
+
+.SH "AUTHOR"
+.PP 
+Generated automatically by Doxygen for CommonC++ from the source code.

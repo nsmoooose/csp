@@ -1,0 +1,17 @@
+.TH "PersistException" 3 "22 May 2003" "CommonC++" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+PersistException \- 
+.SH SYNOPSIS
+.br
+.PP
+\fC#include <persist.h>\fP
+.PP
+Inherited by \fBEngine::Exception\fP.
+.PP
+
+
+.SH "AUTHOR"
+.PP 
+Generated automatically by Doxygen for CommonC++ from the source code.

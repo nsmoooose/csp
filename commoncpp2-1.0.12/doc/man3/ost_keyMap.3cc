@@ -1,0 +1,19 @@
+.TH "ost::keyMap" 3 "22 May 2003" "CommonC++" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+ost::keyMap \- 
+.SH SYNOPSIS
+.br
+.PP
+\fC#include <objmap.h>\fP
+.PP
+Inherits \fBost::objMap< T, keystring, S >\fP.
+.PP
+
+.SS "template<class T, unsigned S> class ost::keyMap< T, S >"
+
+
+.SH "AUTHOR"
+.PP 
+Generated automatically by Doxygen for CommonC++ from the source code.

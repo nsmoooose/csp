@@ -1,0 +1,117 @@
+.TH "SHADigest" 3 "22 May 2003" "CommonC++" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+SHADigest \- SHADigest Base class for the SHA*Digests. 
+.SH SYNOPSIS
+.br
+.PP
+\fC#include <digest.h>\fP
+.PP
+Inherits \fBDigest\fP.
+.PP
+.SS "Public Methods"
+
+.in +1c
+.ti -1c
+.RI "unsigned \fBgetSize\fP (void)=0"
+.br
+.ti -1c
+.RI "void \fBputDigest\fP (const unsigned char *buffer, unsigned length)  throw (DigestException)"
+.br
+.ti -1c
+.RI "std::ostream & \fBstrDigest\fP (std::ostream &os)=0"
+.br
+.in -1c
+.SS "Protected Methods"
+
+.in +1c
+.ti -1c
+.RI "void \fBinitDigest\fP (void)"
+.br
+.ti -1c
+.RI "virtual void \fBprocessBlock\fP (const unsigned char *buffer)=0"
+.br
+.ti -1c
+.RI "void \fBpadBuffer\fP (unsigned char *buffer)"
+.br
+.ti -1c
+.RI "\fBSHADigest\fP ()"
+.br
+.ti -1c
+.RI "\fBSHADigest\fP (const SHADigest &other)"
+.br
+.ti -1c
+.RI "SHADigest & \fBoperator=\fP (const SHADigest &other)"
+.br
+.in -1c
+.SS "Protected Attributes"
+
+.in +1c
+.ti -1c
+.RI "unsigned char \fBtempBlock\fP [blockSizeInBytes]"
+.br
+.ti -1c
+.RI "bool \fBcompleted\fP"
+.br
+.in -1c
+.SH "DETAILED DESCRIPTION"
+.PP 
+
+.SS "template<class uint_type, unsigned blockSizeInBytes> class SHADigest< uint_type, blockSizeInBytes >"
+SHADigest Base class for the SHA*Digests.
+.PP
+Generic Class that is the base class of the various SHA*\fBDigest\fP classes.
+.PP
+uint_type == The 'Unsigned Integer Type' which is large enough to hold the total length of a given message in bits. For SHA1 and SHA256, this is 64 bits, so we use 'uint64';
+.PP
+'blockSizeInBytes' == various SHA digests use different message size blocks - the basic units in which to split a message up in. For example, SHA1 and SHA256 use 512 bit blocks, and so in bytes this is 64.
+.PP
+\fBAuthor: \fP
+.in +1c
+Elizabeth Barham <lizzy@soggytrousers.net> 
+.PP
+.SH "CONSTRUCTOR & DESTRUCTOR DOCUMENTATION"
+.PP 
+.SS "template<class uint_type, unsigned blockSizeInBytes> SHADigest< uint_type, blockSizeInBytes >::SHADigest ()\fC [protected]\fP"
+.PP
+.SS "template<class uint_type, unsigned blockSizeInBytes> SHADigest< uint_type, blockSizeInBytes >::SHADigest (const SHADigest< uint_type, blockSizeInBytes > & other)\fC [protected]\fP"
+.PP
+.SH "MEMBER FUNCTION DOCUMENTATION"
+.PP 
+.SS "template<class uint_type, unsigned blockSizeInBytes> unsigned SHADigest< uint_type, blockSizeInBytes >::getSize (void)\fC [pure virtual]\fP"
+.PP
+Implements \fBDigest\fP.
+.PP
+Implemented in \fBSHA1Digest\fP, and \fBSHA256Digest\fP.
+.SS "template<class uint_type, unsigned blockSizeInBytes> void SHADigest< uint_type, blockSizeInBytes >::initDigest (void)\fC [protected, virtual]\fP"
+.PP
+Implements \fBDigest\fP.
+.PP
+Reimplemented in \fBSHA1Digest\fP, and \fBSHA256Digest\fP.
+.SS "template<class uint_type, unsigned blockSizeInBytes> SHADigest& SHADigest< uint_type, blockSizeInBytes >::operator= (const SHADigest< uint_type, blockSizeInBytes > & other)\fC [protected]\fP"
+.PP
+.SS "template<class uint_type, unsigned blockSizeInBytes> void SHADigest< uint_type, blockSizeInBytes >::padBuffer (unsigned char * buffer)\fC [protected]\fP"
+.PP
+.SS "template<class uint_type, unsigned blockSizeInBytes> virtual void SHADigest< uint_type, blockSizeInBytes >::processBlock (const unsigned char * buffer)\fC [protected, pure virtual]\fP"
+.PP
+Implemented in \fBSHA1Digest\fP, and \fBSHA256Digest\fP.
+.SS "template<class uint_type, unsigned blockSizeInBytes> void SHADigest< uint_type, blockSizeInBytes >::putDigest (const unsigned char * buffer, unsigned length)  throw (\fBDigestException\fP)\fC [virtual]\fP"
+.PP
+Implements \fBDigest\fP.
+.SS "template<class uint_type, unsigned blockSizeInBytes> std::ostream& SHADigest< uint_type, blockSizeInBytes >::strDigest (std::ostream & os)\fC [pure virtual]\fP"
+.PP
+Implements \fBDigest\fP.
+.PP
+Implemented in \fBSHA64DigestHelper\fP.
+.SH "MEMBER DATA DOCUMENTATION"
+.PP 
+.SS "template<class uint_type, unsigned blockSizeInBytes> bool SHADigest< uint_type, blockSizeInBytes >::completed\fC [protected]\fP"
+.PP
+.SS "template<class uint_type, unsigned blockSizeInBytes> unsigned char SHADigest< uint_type, blockSizeInBytes >::tempBlock[blockSizeInBytes]\fC [protected]\fP"
+.PP
+
+
+.SH "AUTHOR"
+.PP 
+Generated automatically by Doxygen for CommonC++ from the source code.

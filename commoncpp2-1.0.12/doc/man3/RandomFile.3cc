@@ -1,0 +1,321 @@
+.TH "RandomFile" 3 "22 May 2003" "CommonC++" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+RandomFile \- The purpose of this class is to define a base class for low level random file access that is portable between Win32 and Posix systems. Portable random disk file access. 
+.SH SYNOPSIS
+.br
+.PP
+\fC#include <file.h>\fP
+.PP
+Inherits \fBMutex\fP, and \fBFile\fP.
+.PP
+Inherited by \fBMappedFile\fP, \fBSharedFile\fP, and \fBThreadFile\fP.
+.PP
+.SS "Public Methods"
+
+.in +1c
+.ti -1c
+.RI "virtual \fB~RandomFile\fP ()"
+.br
+.RI "\fIDestroy a random access file or it's derived class.\fP"
+.ti -1c
+.RI "bool \fBinitial\fP (void)"
+.br
+.RI "\fIThis method should be called right after a RandomFile derived object has been created.\fP"
+.ti -1c
+.RI "off_t \fBgetCapacity\fP (void)"
+.br
+.RI "\fIGet current file capacity.\fP"
+.ti -1c
+.RI "virtual \fBError\fP \fBrestart\fP (void)"
+.br
+.RI "\fIThis method is commonly used to close and re-open an existing database.\fP"
+.ti -1c
+.RI "\fBError\fP \fBgetErrorNumber\fP (void)"
+.br
+.RI "\fIReturn current error id.\fP"
+.ti -1c
+.RI "char * \fBgetErrorString\fP (void)"
+.br
+.RI "\fIReturn current error string.\fP"
+.ti -1c
+.RI "bool \fBoperator!\fP (void)"
+.br
+.in -1c
+.SS "Protected Methods"
+
+.in +1c
+.ti -1c
+.RI "\fBRandomFile\fP ()"
+.br
+.RI "\fICreate an unopened random access file.\fP"
+.ti -1c
+.RI "\fBRandomFile\fP (const RandomFile &rf)"
+.br
+.RI "\fIDefault copy constructor.\fP"
+.ti -1c
+.RI "\fBError\fP \fBerror\fP (\fBError\fP errid, char *errstr=NULL)"
+.br
+.RI "\fIPost an error event.\fP"
+.ti -1c
+.RI "\fBError\fP \fBerror\fP (char *errstr)"
+.br
+.RI "\fIPost an extended string error message.\fP"
+.ti -1c
+.RI "void \fBsetError\fP (bool enable)"
+.br
+.RI "\fIUsed to enable or disable throwing of exceptions on errors.\fP"
+.ti -1c
+.RI "\fBError\fP \fBsetCompletion\fP (\fBComplete\fP mode)"
+.br
+.RI "\fIUsed to set file completion modes.\fP"
+.ti -1c
+.RI "void \fBsetTemporary\fP (bool enable)"
+.br
+.RI "\fIUsed to set the temporary attribute for the file.\fP"
+.ti -1c
+.RI "virtual \fBAttr\fP \fBinitialize\fP (void)"
+.br
+.RI "\fIThis method is used to initialize a newly created file as indicated by the 'initial' flag.\fP"
+.ti -1c
+.RI "void \fBfinal\fP (void)"
+.br
+.RI "\fIClose the file.\fP"
+.in -1c
+.SS "Protected Attributes"
+
+.in +1c
+.ti -1c
+.RI "int \fBfd\fP"
+.br
+.ti -1c
+.RI "\fBAccess\fP \fBaccess\fP"
+.br
+.ti -1c
+.RI "char * \fBpathname\fP"
+.br
+.ti -1c
+.RI "struct {"
+.br
+.ti -1c
+.RI "   unsigned \fBcount\fP: 16"
+.br
+.ti -1c
+.RI "   bool \fBthrown\fP: 1"
+.br
+.ti -1c
+.RI "   bool \fBinitial\fP: 1"
+.br
+.ti -1c
+.RI "   bool \fBimmediate\fP: 1"
+.br
+.ti -1c
+.RI "   bool \fBtemp\fP: 1"
+.br
+.ti -1c
+.RI "} \fBflags\fP"
+.br
+.RI ""
+.br
+.in -1c
+.SS "Related Functions"
+(Note that these are not member functions.)
+.in +1c
+.ti -1c
+.RI "bool \fBisDir\fP (const char *path)"
+.br
+.ti -1c
+.RI "bool \fBisFile\fP (const char *path)"
+.br
+.ti -1c
+.RI "bool \fBisDevice\fP (const char *path)"
+.br
+.ti -1c
+.RI "bool \fBcanAccess\fP (const char *path)"
+.br
+.ti -1c
+.RI "bool \fBcanModify\fP (const char *path)"
+.br
+.in -1c
+.SH "DETAILED DESCRIPTION"
+.PP 
+The purpose of this class is to define a base class for low level random file access that is portable between Win32 and Posix systems. Portable random disk file access.
+.PP
+This class is a foundation both for optimized thread shared and traditional locked file access that is commonly used to build database services, rather than the standard C++ streaming file classes.
+.PP
+\fBAuthor: \fP
+.in +1c
+David Sugar <dyfet@ostel.com> 
+.PP
+.SH "CONSTRUCTOR & DESTRUCTOR DOCUMENTATION"
+.PP 
+.SS "RandomFile::RandomFile ()\fC [protected]\fP"
+.PP
+Create an unopened random access file.
+.PP
+.SS "RandomFile::RandomFile (const RandomFile & rf)\fC [protected]\fP"
+.PP
+Default copy constructor.
+.PP
+.SS "virtual RandomFile::~RandomFile ()\fC [inline, virtual]\fP"
+.PP
+Destroy a random access file or it's derived class.
+.PP
+.SH "MEMBER FUNCTION DOCUMENTATION"
+.PP 
+.SS "\fBError\fP RandomFile::error (char * errstr)\fC [inline, protected]\fP"
+.PP
+Post an extended string error message.
+.PP
+\fBReturns: \fP
+.in +1c
+errExtended. 
+.PP
+\fBParameters: \fP
+.in +1c
+.TP
+\fB\fIerrstr\fP\fP
+error string. 
+.SS "\fBError\fP RandomFile::error (\fBError\fP errid, char * errstr = NULL)\fC [protected]\fP"
+.PP
+Post an error event.
+.PP
+\fBReturns: \fP
+.in +1c
+error code. 
+.PP
+\fBParameters: \fP
+.in +1c
+.TP
+\fB\fIerrid\fP\fP
+error code. 
+.TP
+\fB\fIerrstr\fP\fP
+error message string. 
+.SS "void RandomFile::final (void)\fC [protected]\fP"
+.PP
+Close the file.
+.PP
+.SS "off_t RandomFile::getCapacity (void)"
+.PP
+Get current file capacity.
+.PP
+\fBReturns: \fP
+.in +1c
+total file size. 
+.SS "\fBError\fP RandomFile::getErrorNumber (void)\fC [inline]\fP"
+.PP
+Return current error id.
+.PP
+\fBReturns: \fP
+.in +1c
+last error identifier set. 
+.SS "char* RandomFile::getErrorString (void)\fC [inline]\fP"
+.PP
+Return current error string.
+.PP
+\fBReturns: \fP
+.in +1c
+last error string set. 
+.SS "bool RandomFile::initial (void)"
+.PP
+This method should be called right after a RandomFile derived object has been created.
+.PP
+This method will invoke initialize if the object is newly created, and set file access permissions appropriately.
+.PP
+\fBReturns: \fP
+.in +1c
+true if file had to be initialized. 
+.SS "virtual \fBAttr\fP RandomFile::initialize (void)\fC [inline, protected, virtual]\fP"
+.PP
+This method is used to initialize a newly created file as indicated by the 'initial' flag.
+.PP
+This method also returns the file access permissions that should be associated with the file. This method should never be called directly, but is instead used to impliment the 'Initial' method. Typically one would use this to build an empty database shell when a previously empty database file is created.
+.PP
+\fBReturns: \fP
+.in +1c
+access, or attrInvalid if should be removed. 
+.SS "bool RandomFile::operator! (void)"
+.PP
+.SS "virtual \fBError\fP RandomFile::restart (void)\fC [inline, virtual]\fP"
+.PP
+This method is commonly used to close and re-open an existing database.
+.PP
+This may be used when the database has been unlinked and an external process provides a new one to use. 
+.PP
+Reimplemented in \fBThreadFile\fP, and \fBSharedFile\fP.
+.SS "\fBError\fP RandomFile::setCompletion (\fBComplete\fP mode)\fC [protected]\fP"
+.PP
+Used to set file completion modes.
+.PP
+\fBReturns: \fP
+.in +1c
+errSuccess if okay. 
+.PP
+\fBParameters: \fP
+.in +1c
+.TP
+\fB\fImode\fP\fP
+completion mode. 
+.PP
+\fBTodo: \fP
+.in +1c
+ implement in win32  
+.SS "void RandomFile::setError (bool enable)\fC [inline, protected]\fP"
+.PP
+Used to enable or disable throwing of exceptions on errors.
+.PP
+\fBParameters: \fP
+.in +1c
+.TP
+\fB\fIenable\fP\fP
+true if errors will be thrown. 
+.SS "void RandomFile::setTemporary (bool enable)\fC [inline, protected]\fP"
+.PP
+Used to set the temporary attribute for the file.
+.PP
+Temporary files are automatically deleted when closed.
+.PP
+\fBParameters: \fP
+.in +1c
+.TP
+\fB\fIenable\fP\fP
+true for marking as temporary. 
+.SH "FRIENDS AND RELATED FUNCTION DOCUMENTATION"
+.PP 
+.SS "bool canAccess (const char * path)\fC [related]\fP"
+.PP
+.SS "bool canModify (const char * path)\fC [related]\fP"
+.PP
+.SS "bool isDevice (const char * path)\fC [related]\fP"
+.PP
+.SS "bool isDir (const char * path)\fC [related]\fP"
+.PP
+.SS "bool isFile (const char * path)\fC [related]\fP"
+.PP
+.SH "MEMBER DATA DOCUMENTATION"
+.PP 
+.SS "\fBAccess\fP RandomFile::access\fC [protected]\fP"
+.PP
+.SS "unsigned RandomFile::count\fC [protected]\fP"
+.PP
+.SS "int RandomFile::fd\fC [protected]\fP"
+.PP
+.SS "struct { ... }   RandomFile::flags\fC [protected]\fP"
+.PP
+.SS "bool RandomFile::immediate\fC [protected]\fP"
+.PP
+.SS "bool RandomFile::initial\fC [protected]\fP"
+.PP
+.SS "char* RandomFile::pathname\fC [protected]\fP"
+.PP
+.SS "bool RandomFile::temp\fC [protected]\fP"
+.PP
+.SS "bool RandomFile::thrown\fC [protected]\fP"
+.PP
+
+
+.SH "AUTHOR"
+.PP 
+Generated automatically by Doxygen for CommonC++ from the source code.

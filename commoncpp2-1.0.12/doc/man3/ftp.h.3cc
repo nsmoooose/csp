@@ -1,0 +1,51 @@
+.TH "ftp.h" 3 "22 May 2003" "CommonC++" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+ftp.h \- \fBFile\fP Transfer Protocol sockets and streams. 
+.SH SYNOPSIS
+.br
+.PP
+\fC#include <cc++/config.h>\fP
+.br
+\fC#include <cc++/socket.h>\fP
+.br
+\fC#include <string>\fP
+.br
+\fC#include <set>\fP
+.br
+\fC#include <iostream>\fP
+.br
+\fC#include <utility>\fP
+.br
+.SS "Compounds"
+
+.in +1c
+.ti -1c
+.RI "struct \fBCompare\fP"
+.br
+.ti -1c
+.RI "class \fBDirEntry\fP"
+.br
+.RI "\fIdirentry represents a entry in a directory\fP"
+.ti -1c
+.RI "class \fBFTPSocket\fP"
+.br
+.RI "\fIThis class represents a FTP-client to be used in c++-programms. ftp access stream class.\fP"
+.ti -1c
+.RI "class \fBiftpstream\fP"
+.br
+.RI "\fIiftpstream is a inputstream from a remote file\fP"
+.ti -1c
+.RI "class \fBoftpstream\fP"
+.br
+.RI "\fIoftpstream is a outputstream to a remote file\fP"
+.in -1c
+.SH "DETAILED DESCRIPTION"
+.PP 
+\fBFile\fP Transfer Protocol sockets and streams.
+.PP
+.PP
+.SH "AUTHOR"
+.PP 
+Generated automatically by Doxygen for CommonC++ from the source code.

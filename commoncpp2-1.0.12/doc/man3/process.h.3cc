@@ -1,0 +1,28 @@
+.TH "process.h" 3 "22 May 2003" "CommonC++" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+process.h \- \fBProcess\fP services. 
+.SH SYNOPSIS
+.br
+.PP
+\fC#include <cc++/config.h>\fP
+.br
+\fC#include <cc++/thread.h>\fP
+.br
+.SS "Compounds"
+
+.in +1c
+.ti -1c
+.RI "class \fBProcess\fP"
+.br
+.RI "\fIA class for containing portable process related functions that help create portable code. Peocess wrapper class.\fP"
+.in -1c
+.SH "DETAILED DESCRIPTION"
+.PP 
+\fBProcess\fP services.
+.PP
+.PP
+.SH "AUTHOR"
+.PP 
+Generated automatically by Doxygen for CommonC++ from the source code.

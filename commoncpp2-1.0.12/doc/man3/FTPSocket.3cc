@@ -1,0 +1,317 @@
+.TH "FTPSocket" 3 "22 May 2003" "CommonC++" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+FTPSocket \- This class represents a FTP-client to be used in c++-programms. ftp access stream class. 
+.SH SYNOPSIS
+.br
+.PP
+\fC#include <ftp.h>\fP
+.PP
+.SS "Public Types"
+
+.in +1c
+.ti -1c
+.RI "typedef set< \fBDirEntry\fP, \fBDirEntry::Compare\fP > \fBDirType\fP"
+.br
+.RI "\fIset of direntries\fP"
+.in -1c
+.SS "Public Methods"
+
+.in +1c
+.ti -1c
+.RI "void \fBsendCommand\fP (string cmd)"
+.br
+.RI "\fIlow level functions\fP"
+.ti -1c
+.RI "int \fBgetResponse\fP (string *resp=0)"
+.br
+.ti -1c
+.RI "\fBFTPSocket\fP ()"
+.br
+.RI "\fIempty constructor\fP"
+.ti -1c
+.RI "\fBFTPSocket\fP (\fBInetHostAddress\fP host, \fBtimeout_t\fP to=0)"
+.br
+.RI "\fIconstructor; connects to a host on creation\fP"
+.ti -1c
+.RI "\fBFTPSocket\fP (\fBInetHostAddress\fP host, string user, string passwd, \fBtimeout_t\fP to=0)"
+.br
+.RI "\fIconstructor; connects to a host and logs in\fP"
+.ti -1c
+.RI "\fB~FTPSocket\fP ()"
+.br
+.RI "\fIdestructor; logs out and disconnects if needed\fP"
+.ti -1c
+.RI "void \fBsetAscii\fP ()"
+.br
+.RI "\fIset ascii-mode for datatransfer\fP"
+.ti -1c
+.RI "void \fBsetEbcdic\fP ()"
+.br
+.RI "\fIset ebcdic-mode for datatransfer\fP"
+.ti -1c
+.RI "void \fBsetBinary\fP ()"
+.br
+.RI "\fIset binary-mode for datatransfer\fP"
+.ti -1c
+.RI "string \fBcommand\fP (string cmd)"
+.br
+.RI "\fIprocess a ftp-command\fP"
+.ti -1c
+.RI "void \fBopen\fP (\fBInetHostAddress\fP host, \fBtimeout_t\fP to=0)"
+.br
+.RI "\fIsessionmanagement\fP"
+.ti -1c
+.RI "void \fBopen\fP (\fBInetHostAddress\fP host, string user, string passwd, \fBtimeout_t\fP to=0)"
+.br
+.RI "\fIcreates a connection to host and logs in\fP"
+.ti -1c
+.RI "void \fBlogin\fP (string user, string passwd)"
+.br
+.RI "\fIlogs in to a host; connection must be set up\fP"
+.ti -1c
+.RI "void \fBclose\fP (void)"
+.br
+.RI "\fIlog out\fP"
+.ti -1c
+.RI "void \fBquit\fP (void)"
+.br
+.RI "\fIclose connection\fP"
+.ti -1c
+.RI "\fBDirType\fP \fBgetDir\fP (string dir='', \fBtimeout_t\fP to=0)"
+.br
+.RI "\fIget directory\fP"
+.ti -1c
+.RI "string \fBpwd\fP (void)"
+.br
+.RI "\fIget current working directory on the server\fP"
+.ti -1c
+.RI "void \fBcwd\fP (string dir)"
+.br
+.RI "\fIchange current working directory on the server\fP"
+.ti -1c
+.RI "void \fBcdup\fP (void)"
+.br
+.RI "\fIchange current working directory\fP"
+.ti -1c
+.RI "void \fBput\fP (string file, string rfilename, \fBtimeout_t\fP to=0)"
+.br
+.RI "\fIsend local file to remote\fP"
+.ti -1c
+.RI "void \fBput\fP (string file, \fBtimeout_t\fP to=0)"
+.br
+.RI "\fIsend local file to remote; local and remote filenames are identical\fP"
+.ti -1c
+.RI "void \fBget\fP (string file, string lfilename, \fBtimeout_t\fP to=0)"
+.br
+.RI "\fIget file from server\fP"
+.ti -1c
+.RI "void \fBget\fP (string file, \fBtimeout_t\fP to=0)"
+.br
+.RI "\fIget file from server; local and remote filenames are identical\fP"
+.ti -1c
+.RI "void \fBremove\fP (string file)"
+.br
+.RI "\fIdelete file from server\fP"
+.ti -1c
+.RI "void \fBrename\fP (string from, string to)"
+.br
+.RI "\fIrename file on server\fP"
+.ti -1c
+.RI "void \fBmkdir\fP (string dir)"
+.br
+.RI "\fIcreate directory on server\fP"
+.ti -1c
+.RI "void \fBrmdir\fP (string dir)"
+.br
+.RI "\fIremove directory on server\fP"
+.in -1c
+.SS "Static Public Methods"
+
+.in +1c
+.ti -1c
+.RI "void \fBsetDebug\fP (int d=1)"
+.br
+.RI "\fIenable debugging\fP"
+.ti -1c
+.RI "int \fBgetDebug\fP ()"
+.br
+.RI "\fIqueries debugging\fP"
+.in -1c
+.SS "Protected Attributes"
+
+.in +1c
+.ti -1c
+.RI "\fBTCPStream\fP * \fBcs\fP"
+.br
+.in -1c
+.SS "Static Protected Attributes"
+
+.in +1c
+.ti -1c
+.RI "int \fBdebug\fP"
+.br
+.in -1c
+.SS "Friends"
+
+.in +1c
+.ti -1c
+.RI "class \fBoftpstream\fP"
+.br
+.ti -1c
+.RI "class \fBiftpstream\fP"
+.br
+.in -1c
+.SH "DETAILED DESCRIPTION"
+.PP 
+This class represents a FTP-client to be used in c++-programms. ftp access stream class.
+.PP
+It is based on the CommonC++-Framework.
+.PP
+\fBAuthor: \fP
+.in +1c
+Dr. Eckhardt and Partner GmbH 
+.PP
+.SH "MEMBER TYPEDEF DOCUMENTATION"
+.PP 
+.SS "typedef set<\fBDirEntry\fP, \fBDirEntry::Compare\fP> FTPSocket::DirType"
+.PP
+set of direntries
+.PP
+.SH "CONSTRUCTOR & DESTRUCTOR DOCUMENTATION"
+.PP 
+.SS "FTPSocket::FTPSocket ()"
+.PP
+empty constructor
+.PP
+.SS "FTPSocket::FTPSocket (\fBInetHostAddress\fP host, \fBtimeout_t\fP to = 0)\fC [explicit]\fP"
+.PP
+constructor; connects to a host on creation
+.PP
+.SS "FTPSocket::FTPSocket (\fBInetHostAddress\fP host, string user, string passwd, \fBtimeout_t\fP to = 0)"
+.PP
+constructor; connects to a host and logs in
+.PP
+.SS "FTPSocket::~FTPSocket ()"
+.PP
+destructor; logs out and disconnects if needed
+.PP
+.SH "MEMBER FUNCTION DOCUMENTATION"
+.PP 
+.SS "void FTPSocket::cdup (void)"
+.PP
+change current working directory
+.PP
+.SS "void FTPSocket::close (void)"
+.PP
+log out
+.PP
+.SS "string FTPSocket::command (string cmd)"
+.PP
+process a ftp-command
+.PP
+.SS "void FTPSocket::cwd (string dir)"
+.PP
+change current working directory on the server
+.PP
+.SS "void FTPSocket::get (string file, \fBtimeout_t\fP to = 0)\fC [inline]\fP"
+.PP
+get file from server; local and remote filenames are identical
+.PP
+.SS "void FTPSocket::get (string file, string lfilename, \fBtimeout_t\fP to = 0)"
+.PP
+get file from server
+.PP
+.SS "int FTPSocket::getDebug ()\fC [inline, static]\fP"
+.PP
+queries debugging
+.PP
+.SS "\fBDirType\fP FTPSocket::getDir (string dir = '', \fBtimeout_t\fP to = 0)"
+.PP
+get directory
+.PP
+.SS "int FTPSocket::getResponse (string * resp = 0)"
+.PP
+.SS "void FTPSocket::login (string user, string passwd)"
+.PP
+logs in to a host; connection must be set up
+.PP
+.SS "void FTPSocket::mkdir (string dir)"
+.PP
+create directory on server
+.PP
+.SS "void FTPSocket::open (\fBInetHostAddress\fP host, string user, string passwd, \fBtimeout_t\fP to = 0)"
+.PP
+creates a connection to host and logs in
+.PP
+.SS "void FTPSocket::open (\fBInetHostAddress\fP host, \fBtimeout_t\fP to = 0)"
+.PP
+sessionmanagement
+.PP
+creates a connection to host 
+.SS "void FTPSocket::put (string file, \fBtimeout_t\fP to = 0)\fC [inline]\fP"
+.PP
+send local file to remote; local and remote filenames are identical
+.PP
+.SS "void FTPSocket::put (string file, string rfilename, \fBtimeout_t\fP to = 0)"
+.PP
+send local file to remote
+.PP
+.SS "string FTPSocket::pwd (void)"
+.PP
+get current working directory on the server
+.PP
+.SS "void FTPSocket::quit (void)"
+.PP
+close connection
+.PP
+.SS "void FTPSocket::remove (string file)"
+.PP
+delete file from server
+.PP
+.SS "void FTPSocket::rename (string from, string to)"
+.PP
+rename file on server
+.PP
+.SS "void FTPSocket::rmdir (string dir)"
+.PP
+remove directory on server
+.PP
+.SS "void FTPSocket::sendCommand (string cmd)"
+.PP
+low level functions
+.PP
+.SS "void FTPSocket::setAscii ()"
+.PP
+set ascii-mode for datatransfer
+.PP
+.SS "void FTPSocket::setBinary ()"
+.PP
+set binary-mode for datatransfer
+.PP
+.SS "void FTPSocket::setDebug (int d = 1)\fC [inline, static]\fP"
+.PP
+enable debugging
+.PP
+.SS "void FTPSocket::setEbcdic ()"
+.PP
+set ebcdic-mode for datatransfer
+.PP
+.SH "FRIENDS AND RELATED FUNCTION DOCUMENTATION"
+.PP 
+.SS "friend class iftpstream\fC [friend]\fP"
+.PP
+.SS "friend class oftpstream\fC [friend]\fP"
+.PP
+.SH "MEMBER DATA DOCUMENTATION"
+.PP 
+.SS "\fBTCPStream\fP* FTPSocket::cs\fC [protected]\fP"
+.PP
+.SS "int FTPSocket::debug\fC [static, protected]\fP"
+.PP
+
+
+.SH "AUTHOR"
+.PP 
+Generated automatically by Doxygen for CommonC++ from the source code.

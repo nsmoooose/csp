@@ -1,0 +1,150 @@
+.TH "Process" 3 "22 May 2003" "CommonC++" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+Process \- A class for containing portable process related functions that help create portable code. Peocess wrapper class. 
+.SH SYNOPSIS
+.br
+.PP
+\fC#include <process.h>\fP
+.PP
+.SS "Public Types"
+
+.in +1c
+.ti -1c
+.RI "typedef RETSIGTYPE(* \fBTrap\fP )(int)"
+.br
+.in -1c
+.SS "Static Public Methods"
+
+.in +1c
+.ti -1c
+.RI "void \fBdetach\fP (void)"
+.br
+.RI "\fIDetach current process into a daemon, posix only.\fP"
+.ti -1c
+.RI "\fBTrap\fP \fBsetPosixSignal\fP (int signo, \fBTrap\fP handler)"
+.br
+.RI "\fISet a posix compliant signal handler.\fP"
+.ti -1c
+.RI "\fBTrap\fP \fBsetInterruptSignal\fP (int signo, \fBTrap\fP handler)"
+.br
+.RI "\fISet system call interuptable signal handler.\fP"
+.ti -1c
+.RI "int \fBspawn\fP (const char *exec, const char **argv)"
+.br
+.RI "\fISpawn a process and wait for it's exit code.\fP"
+.ti -1c
+.RI "const char * \fBgetEnv\fP (const char *name)"
+.br
+.RI "\fIGet system environment.\fP"
+.ti -1c
+.RI "void \fBsetEnv\fP (const char *name, const char *value, bool overwrite)"
+.br
+.RI "\fISet system environment in a standard manner.\fP"
+.in -1c
+.SH "DETAILED DESCRIPTION"
+.PP 
+A class for containing portable process related functions that help create portable code. Peocess wrapper class.
+.PP
+These are typically referenced thru Process::xxx static member functions. Many of these members are used both for win32 and posix systems although some may be platform specific.
+.PP
+\fBAuthor: \fP
+.in +1c
+David Sugar <dyfet@ostel.com> 
+.PP
+.SH "MEMBER TYPEDEF DOCUMENTATION"
+.PP 
+.SS "typedef RETSIGTYPE(* Process::Trap)(int)"
+.PP
+.SH "MEMBER FUNCTION DOCUMENTATION"
+.PP 
+.SS "void Process::detach (void)\fC [static]\fP"
+.PP
+Detach current process into a daemon, posix only.
+.PP
+Perhaps a similar method can be used for creating win32 'services'? 
+.SS "const char* Process::getEnv (const char * name)\fC [static]\fP"
+.PP
+Get system environment.
+.PP
+\fBReturns: \fP
+.in +1c
+system environ symbol. 
+.PP
+\fBParameters: \fP
+.in +1c
+.TP
+\fB\fIname\fP\fP
+of symbol. 
+.SS "void Process::setEnv (const char * name, const char * value, bool overwrite)\fC [static]\fP"
+.PP
+Set system environment in a standard manner.
+.PP
+\fBParameters: \fP
+.in +1c
+.TP
+\fB\fIname\fP\fP
+of environment symbol to set. 
+.TP
+\fB\fIvalue\fP\fP
+of environment symbol. 
+.TP
+\fB\fIoverwrite\fP\fP
+true if replace existing symbol. 
+.SS "\fBTrap\fP Process::setInterruptSignal (int signo, \fBTrap\fP handler)\fC [static]\fP"
+.PP
+Set system call interuptable signal handler.
+.PP
+return previous handler. 
+.PP
+\fBParameters: \fP
+.in +1c
+.TP
+\fB\fIsigno\fP\fP
+signal no. 
+.TP
+\fB\fIhandler\fP\fP
+trap handler. 
+.SS "\fBTrap\fP Process::setPosixSignal (int signo, \fBTrap\fP handler)\fC [static]\fP"
+.PP
+Set a posix compliant signal handler.
+.PP
+\fBReturns: \fP
+.in +1c
+previous handler. 
+.PP
+\fBParameters: \fP
+.in +1c
+.TP
+\fB\fIsigno\fP\fP
+signal no. 
+.TP
+\fB\fIhandler\fP\fP
+trap handler. 
+.SS "int Process::spawn (const char * exec, const char ** argv)\fC [static]\fP"
+.PP
+Spawn a process and wait for it's exit code.
+.PP
+In win32 this is done with the spawn system call. In posix, this is done with a fork, an execvp, and a waitpid.
+.PP
+\fBWarning: \fP
+.in +1c
+The implementation differences between posix and win32 systems may cause side effects. For instance, if you use atexit() and this spawn method, on posix systems the function set up with atexit() will be called when the parent process of the fork exits, which will not happen on Win32 systems.
+.PP
+\fBReturns: \fP
+.in +1c
+error code from process. 
+.PP
+\fBParameters: \fP
+.in +1c
+.TP
+\fB\fIexec\fP\fP
+name of executable. 
+.TP
+\fB\fIargv\fP\fP
+list of command arguments. 
+
+.SH "AUTHOR"
+.PP 
+Generated automatically by Doxygen for CommonC++ from the source code.

@@ -1,0 +1,79 @@
+.TH "ThreadGroup" 3 "22 May 2003" "CommonC++" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+ThreadGroup \- A thread grouping class for a set of server classes that may be started and stopped together as a common group. \fBThread\fP grouping class for server processes. 
+.SH SYNOPSIS
+.br
+.PP
+\fC#include <groups.h>\fP
+.PP
+Inherits \fBThread\fP.
+.PP
+.SS "Protected Methods"
+
+.in +1c
+.ti -1c
+.RI "\fBCCXX_MEMBER_EXPORT\fP (CCXX_EMPTY) ThreadGroup(int \fBpri\fP"
+.br
+.ti -1c
+.RI "\fBCCXX_MEMBER_EXPORT\fP (CCXX_EMPTY) ThreadGroup(ThreadGroup **group"
+.br
+.ti -1c
+.RI "virtual \fB~ThreadGroup\fP ()"
+.br
+.ti -1c
+.RI "virtual void \fBstop\fP (void)"
+.br
+.ti -1c
+.RI "virtual void \fBstart\fP (void)"
+.br
+.in -1c
+.SS "Protected Attributes"
+
+.in +1c
+.ti -1c
+.RI "unsigned \fBstack\fP"
+.br
+.ti -1c
+.RI "int \fBpri\fP"
+.br
+.ti -1c
+.RI "int unsigned \fBstack\fP"
+.br
+.in -1c
+.SH "DETAILED DESCRIPTION"
+.PP 
+A thread grouping class for a set of server classes that may be started and stopped together as a common group. \fBThread\fP grouping class for server processes.
+.PP
+\fBAuthor: \fP
+.in +1c
+David Sugar <dyfet@ostel.com> 
+.PP
+.SH "CONSTRUCTOR & DESTRUCTOR DOCUMENTATION"
+.PP 
+.SS "virtual ThreadGroup::~ThreadGroup ()\fC [inline, protected, virtual]\fP"
+.PP
+.SH "MEMBER FUNCTION DOCUMENTATION"
+.PP 
+.SS "ThreadGroup::CCXX_MEMBER_EXPORT (CCXX_EMPTY)\fC [protected]\fP"
+.PP
+.SS "ThreadGroup::CCXX_MEMBER_EXPORT (CCXX_EMPTY)\fC [protected]\fP"
+.PP
+.SS "virtual void ThreadGroup::start (void)\fC [inline, protected, virtual]\fP"
+.PP
+.SS "virtual void ThreadGroup::stop (void)\fC [inline, protected, virtual]\fP"
+.PP
+.SH "MEMBER DATA DOCUMENTATION"
+.PP 
+.SS "int ThreadGroup::pri\fC [protected]\fP"
+.PP
+.SS "int unsigned ThreadGroup::stack\fC [protected]\fP"
+.PP
+.SS "unsigned ThreadGroup::stack\fC [protected]\fP"
+.PP
+
+
+.SH "AUTHOR"
+.PP 
+Generated automatically by Doxygen for CommonC++ from the source code.

@@ -1,0 +1,43 @@
+.TH "FIFOSession" 3 "22 May 2003" "CommonC++" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+FIFOSession \- The FIFOSession produces a seperate thread which can manage a fifo stream session. 
+.SH SYNOPSIS
+.br
+.PP
+\fC#include <file.h>\fP
+.PP
+Inherits \fBThread\fP, and \fBFile\fP.
+.PP
+.SS "Public Methods"
+
+.in +1c
+.ti -1c
+.RI "\fBFIFOSession\fP (const char *session, long access=(long) attrGroup, int pri=0, int stack=0)"
+.br
+.ti -1c
+.RI "virtual \fB~FIFOSession\fP ()"
+.br
+.in -1c
+.SH "DETAILED DESCRIPTION"
+.PP 
+The FIFOSession produces a seperate thread which can manage a fifo stream session.
+.PP
+This is somewhat similar to \fBTTYSession\fP and \fBTCPSession\fP in purpose. 
+.PP
+\fBTodo: \fP
+.in +1c
+ implement in win32  
+.PP
+.SH "CONSTRUCTOR & DESTRUCTOR DOCUMENTATION"
+.PP 
+.SS "FIFOSession::FIFOSession (const char * session, long access = (long) attrGroup, int pri = 0, int stack = 0)"
+.PP
+.SS "virtual FIFOSession::~FIFOSession ()\fC [virtual]\fP"
+.PP
+
+
+.SH "AUTHOR"
+.PP 
+Generated automatically by Doxygen for CommonC++ from the source code.

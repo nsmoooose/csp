@@ -1,0 +1,34 @@
+.TH "ost::objSync" 3 "22 May 2003" "CommonC++" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+ost::objSync \- 
+.SH SYNOPSIS
+.br
+.PP
+\fC#include <objsync.h>\fP
+.PP
+.SS "Protected Methods"
+
+.in +1c
+.ti -1c
+.RI "void \fBobjLock\fP (void)"
+.br
+.ti -1c
+.RI "void \fBobjUnlock\fP (void)"
+.br
+.in -1c
+
+.SS "template<class T> class ost::objSync< T >"
+
+.SH "MEMBER FUNCTION DOCUMENTATION"
+.PP 
+.SS "template<class T> void ost::objSync< T >::objLock (void)\fC [inline, protected]\fP"
+.PP
+.SS "template<class T> void ost::objSync< T >::objUnlock (void)\fC [inline, protected]\fP"
+.PP
+
+
+.SH "AUTHOR"
+.PP 
+Generated automatically by Doxygen for CommonC++ from the source code.

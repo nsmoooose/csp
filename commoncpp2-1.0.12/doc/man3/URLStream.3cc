@@ -1,0 +1,570 @@
+.TH "URLStream" 3 "22 May 2003" "CommonC++" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+URLStream \- A URL processing version of \fBTCPStream\fP. C++ url processing stream class. 
+.SH SYNOPSIS
+.br
+.PP
+\fC#include <url.h>\fP
+.PP
+Inherits \fBTCPStream\fP.
+.PP
+.SS "Public Types"
+
+.in +1c
+.ti -1c
+.RI "enum \fBError\fP { \fBerrSuccess\fP =  0, \fBerrUnreachable\fP, \fBerrMissing\fP, \fBerrDenied\fP, \fBerrInvalid\fP, \fBerrForbidden\fP, \fBerrUnauthorized\fP, \fBerrRelocated\fP, \fBerrFailure\fP, \fBerrTimeout\fP }"
+.br
+.RI "\fIReturn error for url fetch.\fP"
+.ti -1c
+.RI "enum \fBAuthentication\fP { \fBauthAnonymous\fP =  0, \fBauthBasic\fP }"
+.br
+.RI "\fIType of authentication.\fP"
+.ti -1c
+.RI "enum \fBEncoding\fP { \fBencodingBinary\fP =  0, \fBencodingChunked\fP }"
+.br
+.RI "\fIEncoding used in transfer.\fP"
+.ti -1c
+.RI "enum \fBMethod\fP { \fBmethodHttpGet\fP, \fBmethodHttpPut\fP, \fBmethodHttpPost\fP, \fBmethodFtpGet\fP, \fBmethodFtpPut\fP, \fBmethodFileGet\fP, \fBmethodFilePut\fP }"
+.br
+.RI "\fIType of fetch.\fP"
+.ti -1c
+.RI "enum \fBProtocol\fP { \fBprotocolHttp1_0\fP, \fBprotocolHttp1_1\fP }"
+.br
+.RI "\fIhttp protocol version\fP"
+.in -1c
+.SS "Public Methods"
+
+.in +1c
+.ti -1c
+.RI "\fBURLStream\fP (\fBtimeout_t\fP to=0)"
+.br
+.RI "\fIConstruct an instance of URL stream.\fP"
+.ti -1c
+.RI "URLStream & \fBgetline\fP (char *buffer, size_t len)"
+.br
+.RI "\fILine parsing with conversion.\fP"
+.ti -1c
+.RI "\fBError\fP \fBget\fP (const char *url, int buffer=512)"
+.br
+.RI "\fIGet URL data from a named stream of a known buffer size.\fP"
+.ti -1c
+.RI "\fBError\fP \fBsubmit\fP (const char *url, const char **vars, int buffer=512)"
+.br
+.RI "\fISubmit URL with vars passed as argument array.\fP"
+.ti -1c
+.RI "\fBError\fP \fBpost\fP (const char *url, const char **vars, int buffer=512)"
+.br
+.RI "\fIPost URL vars with post method.\fP"
+.ti -1c
+.RI "\fBError\fP \fBhead\fP (const char *url, int buffer=512)"
+.br
+.RI "\fIUsed to fetch header information for a resource.\fP"
+.ti -1c
+.RI "void \fBclose\fP ()"
+.br
+.RI "\fIClose the URL stream for a new connection.\fP"
+.ti -1c
+.RI "void \fBsetReferer\fP (const char *str)"
+.br
+.RI "\fISet the referer url.\fP"
+.ti -1c
+.RI "void \fBsetCookie\fP (const char *str)"
+.br
+.RI "\fISet the cookie to pass.\fP"
+.ti -1c
+.RI "void \fBsetUser\fP (const char *str)"
+.br
+.RI "\fISet user id for the url.\fP"
+.ti -1c
+.RI "void \fBsetPassword\fP (const char *str)"
+.br
+.RI "\fISet password for the url.\fP"
+.ti -1c
+.RI "void \fBsetAuthentication\fP (\fBAuthentication\fP a, const char *str=NULL)"
+.br
+.RI "\fISet authentication type for the url.\fP"
+.ti -1c
+.RI "void \fBsetPragma\fP (const char *str)"
+.br
+.RI "\fISet the pragmas.\fP"
+.ti -1c
+.RI "void \fBsetProxy\fP (const char *host, \fBtpport_t\fP port)"
+.br
+.RI "\fISet the proxy server used.\fP"
+.ti -1c
+.RI "void \fBsetAgent\fP (const char *str)"
+.br
+.RI "\fISet the agent.\fP"
+.ti -1c
+.RI "\fBMethod\fP \fBgetMethod\fP (void)"
+.br
+.RI "\fIGet url method (and protocol) employed.\fP"
+.ti -1c
+.RI "void \fBsetTimeout\fP (\fBtimeout_t\fP to)"
+.br
+.RI "\fISet socket timeout characteristics for processing URL requests.\fP"
+.ti -1c
+.RI "void \fBsetFollow\fP (bool enable)"
+.br
+.RI "\fISpecify url following.\fP"
+.ti -1c
+.RI "void \fBsetProtocol\fP (\fBProtocol\fP pro)"
+.br
+.RI "\fISpecify http protocol level being used.\fP"
+.ti -1c
+.RI "void \fBsetLocalInterface\fP (const char *intf)"
+.br
+.RI "\fISpecify local interface to use.\fP"
+.in -1c
+.SS "Protected Methods"
+
+.in +1c
+.ti -1c
+.RI "\fBError\fP \fBsendHTTPHeader\fP (const char *url, const char **vars, int \fBbufsize\fP)"
+.br
+.ti -1c
+.RI "int \fBunderflow\fP (void)"
+.br
+.ti -1c
+.RI "virtual int \fBaRead\fP (char *buffer, size_t len, \fBtimeout_t\fP \fBtimeout\fP)"
+.br
+.ti -1c
+.RI "virtual int \fBaWrite\fP (char *buffer, size_t len, \fBtimeout_t\fP \fBtimeout\fP)"
+.br
+.ti -1c
+.RI "virtual void \fBhttpHeader\fP (const char *header, const char *value)"
+.br
+.RI "\fIDerived method to receive and parse http 'headers'.\fP"
+.ti -1c
+.RI "virtual char ** \fBextraHeader\fP (void)"
+.br
+.RI "\fIA virtual to insert additional header info into the request.\fP"
+.in -1c
+.SS "Related Functions"
+(Note that these are not member functions.)
+.in +1c
+.ti -1c
+.RI "\fBCCXX_EXPORT\fP(char *) urlDecode(char *source"
+.br
+.RI "\fIDecode an url parameter (ie '%20' -> ' ').\fP"
+.ti -1c
+.RI "\fBCCXX_EXPORT\fP(char *) urlEncode(const char *source"
+.br
+.RI "\fIEncode an url parameter (ie ' ' -> '+').\fP"
+.ti -1c
+.RI "\fBCCXX_EXPORT\fP(size_t) b64Encode(const unsigned char *src"
+.br
+.RI "\fIEncode a octet stream using base64 coding.\fP"
+.in -1c
+.SH "DETAILED DESCRIPTION"
+.PP 
+A URL processing version of \fBTCPStream\fP. C++ url processing stream class.
+.PP
+\fBAuthor: \fP
+.in +1c
+David Sugar <dyfet@ostel.com> 
+.PP
+.SH "MEMBER ENUMERATION DOCUMENTATION"
+.PP 
+.SS "enum URLStream::Authentication"
+.PP
+Type of authentication.
+.PP
+\fBEnumeration values: \fP
+.in +1c
+.TP
+\fB\fI\fIauthAnonymous\fP \fP\fP
+.TP
+\fB\fI\fIauthBasic\fP \fP\fP
+
+.SS "enum URLStream::Encoding"
+.PP
+Encoding used in transfer.
+.PP
+\fBEnumeration values: \fP
+.in +1c
+.TP
+\fB\fI\fIencodingBinary\fP \fP\fP
+.TP
+\fB\fI\fIencodingChunked\fP \fP\fP
+
+.SS "enum URLStream::Error"
+.PP
+Return error for url fetch.
+.PP
+\fBEnumeration values: \fP
+.in +1c
+.TP
+\fB\fI\fIerrSuccess\fP \fP\fP
+.TP
+\fB\fI\fIerrUnreachable\fP \fP\fP
+.TP
+\fB\fI\fIerrMissing\fP \fP\fP
+.TP
+\fB\fI\fIerrDenied\fP \fP\fP
+.TP
+\fB\fI\fIerrInvalid\fP \fP\fP
+.TP
+\fB\fI\fIerrForbidden\fP \fP\fP
+.TP
+\fB\fI\fIerrUnauthorized\fP \fP\fP
+.TP
+\fB\fI\fIerrRelocated\fP \fP\fP
+.TP
+\fB\fI\fIerrFailure\fP \fP\fP
+.TP
+\fB\fI\fIerrTimeout\fP \fP\fP
+
+.PP
+Reimplemented from \fBSocket\fP.
+.SS "enum URLStream::Method"
+.PP
+Type of fetch.
+.PP
+\fBEnumeration values: \fP
+.in +1c
+.TP
+\fB\fI\fImethodHttpGet\fP \fP\fP
+.TP
+\fB\fI\fImethodHttpPut\fP \fP\fP
+.TP
+\fB\fI\fImethodHttpPost\fP \fP\fP
+.TP
+\fB\fI\fImethodFtpGet\fP \fP\fP
+.TP
+\fB\fI\fImethodFtpPut\fP \fP\fP
+.TP
+\fB\fI\fImethodFileGet\fP \fP\fP
+.TP
+\fB\fI\fImethodFilePut\fP \fP\fP
+
+.SS "enum URLStream::Protocol"
+.PP
+http protocol version
+.PP
+\fBEnumeration values: \fP
+.in +1c
+.TP
+\fB\fI\fIprotocolHttp1_0\fP \fP\fP
+.TP
+\fB\fI\fIprotocolHttp1_1\fP \fP\fP
+
+.SH "CONSTRUCTOR & DESTRUCTOR DOCUMENTATION"
+.PP 
+.SS "URLStream::URLStream (\fBtimeout_t\fP to = 0)"
+.PP
+Construct an instance of URL stream.
+.PP
+\fBParameters: \fP
+.in +1c
+.TP
+\fB\fIto\fP\fP
+default timeout. 
+.SH "MEMBER FUNCTION DOCUMENTATION"
+.PP 
+.SS "virtual int URLStream::aRead (char * buffer, size_t len, \fBtimeout_t\fP timeout)\fC [inline, protected, virtual]\fP"
+.PP
+.SS "virtual int URLStream::aWrite (char * buffer, size_t len, \fBtimeout_t\fP timeout)\fC [inline, protected, virtual]\fP"
+.PP
+.SS "void URLStream::close ()"
+.PP
+Close the URL stream for a new connection.
+.PP
+.SS "virtual char** URLStream::extraHeader (void)\fC [inline, protected, virtual]\fP"
+.PP
+A virtual to insert additional header info into the request.
+.PP
+\fBReturns: \fP
+.in +1c
+array of header attributes to add. 
+.SS "\fBError\fP URLStream::get (const char * url, int buffer = 512)"
+.PP
+Get URL data from a named stream of a known buffer size.
+.PP
+\fBReturns: \fP
+.in +1c
+url error code. 
+.PP
+\fBParameters: \fP
+.in +1c
+.TP
+\fB\fIurl\fP\fP
+name of resource. 
+.TP
+\fB\fIbuffer\fP\fP
+size of buffer. 
+.SS "URLStream& URLStream::getline (char * buffer, size_t len)"
+.PP
+Line parsing with conversion.
+.PP
+\fBReturns: \fP
+.in +1c
+URLStream object. 
+.PP
+\fBParameters: \fP
+.in +1c
+.TP
+\fB\fIbuffer\fP\fP
+to store. 
+.TP
+\fB\fIlen\fP\fP
+maximum buffer size. 
+.SS "\fBMethod\fP URLStream::getMethod (void)\fC [inline]\fP"
+.PP
+Get url method (and protocol) employed.
+.PP
+\fBReturns: \fP
+.in +1c
+url method in effect. 
+.SS "\fBError\fP URLStream::head (const char * url, int buffer = 512)"
+.PP
+Used to fetch header information for a resource.
+.PP
+\fBReturns: \fP
+.in +1c
+url error code. 
+.PP
+\fBParameters: \fP
+.in +1c
+.TP
+\fB\fIurl\fP\fP
+name of resource. 
+.TP
+\fB\fIbuffer\fP\fP
+size of buffer. 
+.SS "virtual void URLStream::httpHeader (const char * header, const char * value)\fC [inline, protected, virtual]\fP"
+.PP
+Derived method to receive and parse http 'headers'.
+.PP
+\fBParameters: \fP
+.in +1c
+.TP
+\fB\fIheader\fP\fP
+keyword. 
+.TP
+\fB\fIvalue\fP\fP
+header keyword value. 
+.SS "\fBError\fP URLStream::post (const char * url, const char ** vars, int buffer = 512)"
+.PP
+Post URL vars with post method.
+.PP
+\fBReturns: \fP
+.in +1c
+url error code. 
+.PP
+\fBParameters: \fP
+.in +1c
+.TP
+\fB\fIurl\fP\fP
+name of resource. 
+.TP
+\fB\fIvars\fP\fP
+to set. 
+.TP
+\fB\fIbuffer\fP\fP
+size of buffer. 
+.SS "\fBError\fP URLStream::sendHTTPHeader (const char * url, const char ** vars, int bufsize)\fC [protected]\fP"
+.PP
+.SS "void URLStream::setAgent (const char * str)\fC [inline]\fP"
+.PP
+Set the agent.
+.PP
+\fBParameters: \fP
+.in +1c
+.TP
+\fB\fIstr\fP\fP
+agent value. 
+.SS "void URLStream::setAuthentication (\fBAuthentication\fP a, const char * str = NULL)"
+.PP
+Set authentication type for the url.
+.PP
+\fBParameters: \fP
+.in +1c
+.TP
+\fB\fIa\fP\fP
+authentication. 
+.TP
+\fB\fIstr\fP\fP
+string. 
+.SS "void URLStream::setCookie (const char * str)\fC [inline]\fP"
+.PP
+Set the cookie to pass.
+.PP
+\fBParameters: \fP
+.in +1c
+.TP
+\fB\fIstr\fP\fP
+cookie string. 
+.SS "void URLStream::setFollow (bool enable)\fC [inline]\fP"
+.PP
+Specify url following.
+.PP
+Set to false to disable following of relocation requests.
+.PP
+\fBParameters: \fP
+.in +1c
+.TP
+\fB\fIenable\fP\fP
+true to enable following. 
+.SS "void URLStream::setLocalInterface (const char * intf)\fC [inline]\fP"
+.PP
+Specify local interface to use.
+.PP
+\fBParameters: \fP
+.in +1c
+.TP
+\fB\fIintf\fP\fP
+Local interface name 
+.SS "void URLStream::setPassword (const char * str)\fC [inline]\fP"
+.PP
+Set password for the url.
+.PP
+\fBParameters: \fP
+.in +1c
+.TP
+\fB\fIstr\fP\fP
+password. 
+.SS "void URLStream::setPragma (const char * str)\fC [inline]\fP"
+.PP
+Set the pragmas.
+.PP
+\fBParameters: \fP
+.in +1c
+.TP
+\fB\fIstr\fP\fP
+pragma setting. 
+.SS "void URLStream::setProtocol (\fBProtocol\fP pro)\fC [inline]\fP"
+.PP
+Specify http protocol level being used.
+.PP
+\fBParameters: \fP
+.in +1c
+.TP
+\fB\fIpro\fP\fP
+protocol level. 
+.SS "void URLStream::setProxy (const char * host, \fBtpport_t\fP port)"
+.PP
+Set the proxy server used.
+.PP
+\fBParameters: \fP
+.in +1c
+.TP
+\fB\fIhost\fP\fP
+proxy host. 
+.TP
+\fB\fIport\fP\fP
+proxy port. 
+.SS "void URLStream::setReferer (const char * str)"
+.PP
+Set the referer url.
+.PP
+\fBParameters: \fP
+.in +1c
+.TP
+\fB\fIstr\fP\fP
+referer string. 
+.SS "void URLStream::setTimeout (\fBtimeout_t\fP to)\fC [inline]\fP"
+.PP
+Set socket timeout characteristics for processing URL requests.
+.PP
+Set to 0 for no default timeouts.
+.PP
+\fBParameters: \fP
+.in +1c
+.TP
+\fB\fIto\fP\fP
+timeout to set. 
+.PP
+Reimplemented from \fBTCPStream\fP.
+.SS "void URLStream::setUser (const char * str)\fC [inline]\fP"
+.PP
+Set user id for the url.
+.PP
+\fBParameters: \fP
+.in +1c
+.TP
+\fB\fIstr\fP\fP
+user id. 
+.SS "\fBError\fP URLStream::submit (const char * url, const char ** vars, int buffer = 512)"
+.PP
+Submit URL with vars passed as argument array.
+.PP
+This submit assumes 'GET' method. Use 'post' member to perform post.
+.PP
+\fBReturns: \fP
+.in +1c
+url error code. 
+.PP
+\fBParameters: \fP
+.in +1c
+.TP
+\fB\fIurl\fP\fP
+name of resource. 
+.TP
+\fB\fIvars\fP\fP
+to set. 
+.TP
+\fB\fIbuffer\fP\fP
+size of buffer. 
+.SS "int URLStream::underflow (void)\fC [protected]\fP"
+.PP
+Reimplemented from \fBTCPStream\fP.
+.SH "FRIENDS AND RELATED FUNCTION DOCUMENTATION"
+.PP 
+.SS "CCXX_EXPORT(size_t) const\fC [related]\fP"
+.PP
+Encode a octet stream using base64 coding.
+.PP
+Destination size should be at least (srcsize+2)/3*4+1. Destination will be a string, so is always terminated  (unless you pass dstsize == 0). 
+.PP
+\fBReturns: \fP
+.in +1c
+size of string written not counting terminator 
+.PP
+\fBParameters: \fP
+.in +1c
+.TP
+\fB\fIsrc\fP\fP
+source buffer 
+.TP
+\fB\fIsrcsize\fP\fP
+source buffer size 
+.TP
+\fB\fIdst\fP\fP
+destination buffer 
+.TP
+\fB\fIdstsize\fP\fP
+destination buffer size 
+.SS "CCXX_EXPORT(char *) const\fC [related]\fP"
+.PP
+Encode an url parameter (ie ' ' -> '+').
+.PP
+\fBParameters: \fP
+.in +1c
+.TP
+\fB\fIsource\fP\fP
+string 
+.TP
+\fB\fIdest\fP\fP
+destination buffer. Do not overlap with source 
+.TP
+\fB\fIsize\fP\fP
+destination buffer size. 
+.SS "CCXX_EXPORT(char *)\fC [related]\fP"
+.PP
+Decode an url parameter (ie '%20' -> ' ').
+.PP
+\fBParameters: \fP
+.in +1c
+.TP
+\fB\fIsource\fP\fP
+string 
+.TP
+\fB\fIdest\fP\fP
+destination buffer. If NULL source is used 
+
+.SH "AUTHOR"
+.PP 
+Generated automatically by Doxygen for CommonC++ from the source code.

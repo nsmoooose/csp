@@ -1,0 +1,284 @@
+.TH "UnixStream" 3 "22 May 2003" "CommonC++" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+UnixStream \- Unix streams are used to represent Unix domain client connections to a local server for accepting client connections. streamable Unix domain socket connection. 
+.SH SYNOPSIS
+.br
+.PP
+\fC#include <unix.h>\fP
+.PP
+Inherits \fBSocket\fP.
+.PP
+Inherited by \fBUnixSession\fP, and \fBunixstream\fP.
+.PP
+.SS "Public Methods"
+
+.in +1c
+.ti -1c
+.RI "\fBUnixStream\fP (\fBUnixSocket\fP &server, int \fBsize\fP=512, bool throwflag=true, \fBtimeout_t\fP \fBtimeout\fP=0)"
+.br
+.RI "\fICreate a Unix domain stream by accepting a connection from a bound Unix domain socket acting as a server.\fP"
+.ti -1c
+.RI "\fBUnixStream\fP (const char *pathname, int \fBsize\fP=512, bool throwflag=true, \fBtimeout_t\fP to=0)"
+.br
+.RI "\fICreate a Unix domain stream by connecting to a Unix domain socket.\fP"
+.ti -1c
+.RI "void \fBsetTimeout\fP (\fBtimeout_t\fP to)"
+.br
+.RI "\fISet the I/O operation timeout for socket I/O operations.\fP"
+.ti -1c
+.RI "\fBUnixStream\fP (const UnixStream &source)"
+.br
+.RI "\fIA copy constructor creates a new stream buffer.\fP"
+.ti -1c
+.RI "virtual \fB~UnixStream\fP ()"
+.br
+.RI "\fIFlush and empty all buffers, and then remove the allocated buffers.\fP"
+.ti -1c
+.RI "int \fBsync\fP (void)"
+.br
+.RI "\fIFlushes the stream input and output buffers, writes pending output.\fP"
+.ti -1c
+.RI "bool \fBisPending\fP (\fBPending\fP pend, \fBtimeout_t\fP \fBtimeout\fP=TIMEOUT_INF)"
+.br
+.RI "\fIGet the status of pending stream data.\fP"
+.ti -1c
+.RI "int \fBgetBufferSize\fP (void) const"
+.br
+.RI "\fIReturn the size of the current stream buffering used.\fP"
+.in -1c
+.SS "Protected Methods"
+
+.in +1c
+.ti -1c
+.RI "\fBUnixStream\fP (bool throwflag=true)"
+.br
+.RI "\fIThe constructor required for 'unixstream', a more C++ style version of the \fBTCPStream\fP class.\fP"
+.ti -1c
+.RI "void \fBallocate\fP (int \fBsize\fP)"
+.br
+.RI "\fIUsed to allocate the buffer space needed for iostream operations.\fP"
+.ti -1c
+.RI "void \fBendStream\fP (void)"
+.br
+.RI "\fIUsed to terminate the buffer space and cleanup the socket connection.\fP"
+.ti -1c
+.RI "virtual int \fBunderflow\fP (void)"
+.br
+.RI "\fIThis streambuf method is used to load the input buffer through the established unix domain socket connection.\fP"
+.ti -1c
+.RI "int \fBuflow\fP (void)"
+.br
+.RI "\fIThis streambuf method is used for doing unbuffered reads through the established unix domain socket connection when in interactive mode.\fP"
+.ti -1c
+.RI "int \fBoverflow\fP (int ch)"
+.br
+.RI "\fIThis streambuf method is used to write the output buffer through the established unix domain connection.\fP"
+.ti -1c
+.RI "void \fBconnect\fP (const char *pathname, int \fBsize\fP)"
+.br
+.RI "\fICreate a Unix domain stream by connecting to a Unix domain socket.\fP"
+.ti -1c
+.RI "std::iostream * \fBunixstr\fP (void)"
+.br
+.RI "\fIUsed in derived classes to refer to the current object via it's iostream.\fP"
+.in -1c
+.SS "Protected Attributes"
+
+.in +1c
+.ti -1c
+.RI "\fBtimeout_t\fP \fBtimeout\fP"
+.br
+.ti -1c
+.RI "int \fBbufsize\fP"
+.br
+.ti -1c
+.RI "char * \fBgbuf\fP"
+.br
+.ti -1c
+.RI "char * \fBpbuf\fP"
+.br
+.in -1c
+.SH "DETAILED DESCRIPTION"
+.PP 
+Unix streams are used to represent Unix domain client connections to a local server for accepting client connections. streamable Unix domain socket connection.
+.PP
+The Unix stream is a C++ 'stream' class, and can accept streaming of data to and from other C++ objects using the << and >> operators.
+.PP
+Unix Stream itself can be formed either by connecting to a bound network address of a Unix domain server, or can be created when 'accepting' a network connection from a Unix domain server.
+.PP
+\fBAuthor: \fP
+.in +1c
+Alex Pavloff <alex@pavloff.net> 
+.PP
+.SH "CONSTRUCTOR & DESTRUCTOR DOCUMENTATION"
+.PP 
+.SS "UnixStream::UnixStream (bool throwflag = true)\fC [protected]\fP"
+.PP
+The constructor required for 'unixstream', a more C++ style version of the \fBTCPStream\fP class.
+.PP
+.SS "UnixStream::UnixStream (\fBUnixSocket\fP & server, int size = 512, bool throwflag = true, \fBtimeout_t\fP timeout = 0)"
+.PP
+Create a Unix domain stream by accepting a connection from a bound Unix domain socket acting as a server.
+.PP
+This performs an 'accept' call.
+.PP
+\fBParameters: \fP
+.in +1c
+.TP
+\fB\fIserver\fP\fP
+socket listening. 
+.TP
+\fB\fIsize\fP\fP
+of streaming input and output buffers. 
+.TP
+\fB\fIthrowflag\fP\fP
+flag to throw errors. 
+.TP
+\fB\fItimeout\fP\fP
+for all operations. 
+.SS "UnixStream::UnixStream (const char * pathname, int size = 512, bool throwflag = true, \fBtimeout_t\fP to = 0)"
+.PP
+Create a Unix domain stream by connecting to a Unix domain socket.
+.PP
+\fBParameters: \fP
+.in +1c
+.TP
+\fB\fIpathname\fP\fP
+path to socket 
+.TP
+\fB\fIsize\fP\fP
+of streaming input and output buffers. 
+.TP
+\fB\fIthrowflag\fP\fP
+flag to throw errors. 
+.TP
+\fB\fIto\fP\fP
+timeout for all operations. 
+.SS "UnixStream::UnixStream (const UnixStream & source)"
+.PP
+A copy constructor creates a new stream buffer.
+.PP
+\fBParameters: \fP
+.in +1c
+.TP
+\fB\fIsource\fP\fP
+of copy. 
+.SS "virtual UnixStream::~UnixStream ()\fC [inline, virtual]\fP"
+.PP
+Flush and empty all buffers, and then remove the allocated buffers.
+.PP
+.SH "MEMBER FUNCTION DOCUMENTATION"
+.PP 
+.SS "void UnixStream::allocate (int size)\fC [protected]\fP"
+.PP
+Used to allocate the buffer space needed for iostream operations.
+.PP
+This function is called by the constructor.
+.PP
+\fBParameters: \fP
+.in +1c
+.TP
+\fB\fIsize\fP\fP
+of stream buffers from constructor. 
+.SS "void UnixStream::connect (const char * pathname, int size)\fC [protected]\fP"
+.PP
+Create a Unix domain stream by connecting to a Unix domain socket.
+.PP
+\fBParameters: \fP
+.in +1c
+.TP
+\fB\fIpathname\fP\fP
+path to socket 
+.TP
+\fB\fIsize\fP\fP
+of streaming input and output buffers. 
+.SS "void UnixStream::endStream (void)\fC [protected]\fP"
+.PP
+Used to terminate the buffer space and cleanup the socket connection.
+.PP
+This fucntion is called by the destructor. 
+.SS "int UnixStream::getBufferSize (void) const\fC [inline]\fP"
+.PP
+Return the size of the current stream buffering used.
+.PP
+\fBReturns: \fP
+.in +1c
+size of stream buffers. 
+.SS "bool UnixStream::isPending (\fBPending\fP pend, \fBtimeout_t\fP timeout = TIMEOUT_INF)\fC [virtual]\fP"
+.PP
+Get the status of pending stream data.
+.PP
+This can be used to examine if input or output is waiting, or if an error or disconnect has occured on the stream. If a read buffer contains data then input is ready and if write buffer contains data it is first flushed and then checked. 
+.PP
+Reimplemented from \fBSocket\fP.
+.SS "int UnixStream::overflow (int ch)\fC [protected]\fP"
+.PP
+This streambuf method is used to write the output buffer through the established unix domain connection.
+.PP
+\fBParameters: \fP
+.in +1c
+.TP
+\fB\fIch\fP\fP
+char to push through. 
+.PP
+\fBReturns: \fP
+.in +1c
+char pushed through. 
+.SS "void UnixStream::setTimeout (\fBtimeout_t\fP to)\fC [inline]\fP"
+.PP
+Set the I/O operation timeout for socket I/O operations.
+.PP
+\fBParameters: \fP
+.in +1c
+.TP
+\fB\fIto\fP\fP
+timeout to set. 
+.SS "int UnixStream::sync (void)"
+.PP
+Flushes the stream input and output buffers, writes pending output.
+.PP
+\fBReturns: \fP
+.in +1c
+0 on success. 
+.SS "int UnixStream::uflow (void)\fC [protected]\fP"
+.PP
+This streambuf method is used for doing unbuffered reads through the established unix domain socket connection when in interactive mode.
+.PP
+Also this method will handle proper use of buffers if not in interative mode.
+.PP
+\fBReturns: \fP
+.in +1c
+char from unix domain socket connection, EOF if not connected. 
+.SS "virtual int UnixStream::underflow (void)\fC [protected, virtual]\fP"
+.PP
+This streambuf method is used to load the input buffer through the established unix domain socket connection.
+.PP
+\fBReturns: \fP
+.in +1c
+char from get buffer, EOF if not connected. 
+.SS "std::iostream* UnixStream::unixstr (void)\fC [inline, protected]\fP"
+.PP
+Used in derived classes to refer to the current object via it's iostream.
+.PP
+For example, to send a set of characters in a derived method, one might use *tcp() << 'test'.
+.PP
+\fBReturns: \fP
+.in +1c
+stream pointer of this object. 
+.SH "MEMBER DATA DOCUMENTATION"
+.PP 
+.SS "int UnixStream::bufsize\fC [protected]\fP"
+.PP
+.SS "char* UnixStream::gbuf\fC [protected]\fP"
+.PP
+.SS "char * UnixStream::pbuf\fC [protected]\fP"
+.PP
+.SS "\fBtimeout_t\fP UnixStream::timeout\fC [protected]\fP"
+.PP
+
+
+.SH "AUTHOR"
+.PP 
+Generated automatically by Doxygen for CommonC++ from the source code.

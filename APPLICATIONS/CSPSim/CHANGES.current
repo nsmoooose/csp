@@ -1,11 +1,20 @@
  Version 0.4.0 (in progress)
 ===========================
 
+2004-04-07: delta
+  * Corrected a bug in the handling of mouse's scroll up/down.
+    Added CameraCommands and extended CameraKinematics to achieve
+    it.
+  
+  * Renamed CameraAgent::notifyToObjectToView to setObject.
+  
+  * Experimenting a smaller time step in physic model.
+
 2004-04-04: onsight
   * Minor fixes to get the build going under linux.
 
 2004-04-04: delta
-  * Add views classes to help in GameScreen. These files are 
+  * Added views classes to help in GameScreen. These files are 
     located under Views folders.
 ==========> Linux users: add CSPSim/Source/Views folder to the 
     build.

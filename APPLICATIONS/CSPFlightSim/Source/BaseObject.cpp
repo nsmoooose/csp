@@ -230,7 +230,7 @@ void BaseObject::setOrientation(StandardMatrix3 & mOrientation)
     m_CurrentNormDir = m_Orientation*m_InitialNormDir;
 }
 
-void BaseObject::setOrientation(StandardQuaternion & qOrientation)
+void BaseObject::setOrientation(StandardQuaternion const & qOrientation)
 {
 	m_qOrientation = qOrientation;
     qOrientation.ToRotationMatrix(m_Orientation);
@@ -241,9 +241,9 @@ void BaseObject::setOrientation(StandardQuaternion & qOrientation)
 
 void BaseObject::setOrientation(double heading, double pitch, double roll)
 {
-    m_Orientation.FromEulerAnglesZXY (DegreesToRadians(heading),
-                                      DegreesToRadians(-pitch), 
-                                      DegreesToRadians(roll) );
+    m_Orientation.FromEulerAnglesZXY (osg::DegreesToRadians(heading),
+		osg::DegreesToRadians(-pitch), 
+		osg::DegreesToRadians(roll) );
     m_Direction = m_Orientation*m_InitialDirection;
     m_CurrentNormDir = m_Orientation*m_InitialNormDir;
 
@@ -359,13 +359,13 @@ void BaseObject::AddSmoke()
 	osg::Vec3 c = s.center();
 	unsigned short i;
 
-	osg::Vec3Array* pl = osgNew osg::Vec3Array;
+	osg::Vec3Array* pl = new osg::Vec3Array;
 	
-	for (i = 0; i<10; ++i)
-	pl->push_back(osg::Vec3(0.0,-(0.8+i/20.0) * r,0.0));
+	for (i = 0; i<5; ++i)
+	pl->push_back(osg::Vec3(0.0,-(0.6+i/20.0) * r,0.0));
     
 
-	osgParticle::ParticleSystemUpdater *psu = osgNew osgParticle::ParticleSystemUpdater;
+	osgParticle::ParticleSystemUpdater *psu = new osgParticle::ParticleSystemUpdater;
 
 	for (i = 0; i<pl->size();++i)
 	{
@@ -373,7 +373,7 @@ void BaseObject::AddSmoke()
 		                                                  osg::Vec4(0.2, 0.5, 1, 0.8), 
 														  osg::Vec4(0,0.5,1,1), 
 														  (*pl)[i],0.05);
-	osg::Geode *geode = osgNew osg::Geode;
+	osg::Geode *geode = new osg::Geode;
 	geode->setName("PlayerParticleSystem");
 	geode->addDrawable(ps);
 	g_pBattlefield->addNodeToScene(geode);
@@ -386,15 +386,15 @@ void BaseObject::AddSmoke()
 		                                                  osg::Vec4(0,1,0,1), 
 														  osg::Vec4(0.2, 0.5, 1, 0.8), 
 														  (*pl)[i],0.01);
-	osg::Geode *geode = osgNew osg::Geode;
+	osg::Geode *geode = new osg::Geode;
 	geode->setName("PlayerParticleSystem");
 	geode->addDrawable(ps);
 	g_pBattlefield->addNodeToScene(geode);
 	psu->addParticleSystem(ps);
 	}
     
-	//g_pBattlefield->addNodeToScene(psu);
-    m_rpTransform.get()->addChild(psu);
+	g_pBattlefield->addNodeToScene(psu);
+    //m_rpTransform.get()->addChild(psu);
 }
 
 void BaseObject::addToScene()
@@ -402,12 +402,12 @@ void BaseObject::addToScene()
     CSP_LOG(CSP_APP, CSP_DEBUG, "BaseObject::addToScene() - ID: " << m_iObjectID);
 
 	// master object to which all others ones are linked
-    m_rpTransform = osgNew osg::MatrixTransform;
+    m_rpTransform = new osg::MatrixTransform;
 	m_rpTransform->setName("m_sObjectName");
 	
 	if (m_sObjectName == "PLAYER" )
 	{
-	 //AddSmoke();
+	 AddSmoke();
 	}
 
     m_rpTransform->addChild( m_rpSwitch.get() );
@@ -445,7 +445,7 @@ void BaseObject::addToScene()
 int BaseObject::updateScene()
 { // this needs 2 upgrades; 
   // first one is: working with quat and only quat; 
-  // second is: make an osg app() callback
+  // second is: make an osg update() callback
 
     CSP_LOG(CSP_APP, CSP_DEBUG, "BaseObject::updateScene() ID:"  << m_iObjectID );
 
@@ -473,10 +473,24 @@ int BaseObject::updateScene()
 
     m_rpTransform->setMatrix(worldMat);
     */
+    
 
 	osg::Quat q = osg::Quat(m_qOrientation.x,m_qOrientation.y,m_qOrientation.z, m_qOrientation.w);
 	m_rpTransform->setMatrix(osg::Matrix::rotate(q) 
-		                   * osg::Matrix::translate(m_LocalPosition.x,m_LocalPosition.y, m_LocalPosition.z));
+	                       * osg::Matrix::translate(m_LocalPosition.x,m_LocalPosition.y, m_LocalPosition.z));
+
+	/*
+    double round = 10000.0;
+	osg::Quat q = osg::Quat(floor(round * m_qOrientation.x) / round,
+		                    floor(round * m_qOrientation.y) / round,
+							floor(round * m_qOrientation.z) / round, 
+							floor(round * m_qOrientation.w) / round);
+	osg::Vec3 t = osg::Vec3(floor(round * m_LocalPosition.x) / round,
+		                    floor(round * m_LocalPosition.y) / round,
+							floor(round * m_LocalPosition.z) / round);
+	m_rpTransform->setMatrix(osg::Matrix::rotate(q) 
+		                   * osg::Matrix::translate(t));
+    */
 
 	CSP_LOG(CSP_APP, CSP_DEBUG, "BaseObject::updateScene() - Position: " <<
 		m_LocalPosition );

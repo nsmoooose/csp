@@ -1,18 +1,22 @@
 Version 0.4.0 (in progress)
 ===========================
 
+2004-07-01: onsight
+  * Added a simple but fast memory pool class for allocating fixed
+    size buffers.
+
 2004-06-28: delta. Mainly vs .net's fixes. Here's a few details:
   * Added Source/Timing.cpp, ThreadBase.cpp to the vs .net build.
-  
+
   * Added pthread (linked against pthreadVC.lib for now) to the build.
 ==> Windows users need to update their dev pack.
-  
+
   * Changed min/max macros to std::min/std::max in Interpolate.cpp.
-  
+
   * Added export symbols in Include/Timing.h
-  
+
   * Moved public keyword outside #ifdef ___GNUC___ in class Trace.
-  
+
   * Changed macro min/max to using std:min/max in Interpolate.cpp.
 
 2004-06-27: onsight

@@ -1,0 +1,95 @@
+<html>
+<body>
+<pre>
+<h1>Build Log</h1>
+<h3>
+--------------------Configuration: FWObjectTest - Win32 Debug--------------------
+</h3>
+<h3>Command Lines</h3>
+Creating temporary file "C:\WINDOWS\TEMP\RSPB124.TMP" with contents
+[
+/nologo /MLd /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_CONSOLE" /D "_MBCS" /D "_WINDOWS" /D "DirectInput" /D "OGL" /D "D3D" /D "DSound" /D "DirectMath" /Fp"Debug/FWObjectTest.pch" /YX /Fo"Debug/" /Fd"Debug/" /FD /GZ /c 
+"E:\PROJECTS\CVSROOT\CSP\SRC\APPS\FWOBJECTTEST\App.cpp"
+]
+Creating command line "cl.exe @C:\WINDOWS\TEMP\RSPB124.TMP" 
+Creating temporary file "C:\WINDOWS\TEMP\RSPB125.TMP" with contents
+[
+kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib ws2_32.lib dsound.lib d3d8.lib dxguid.lib dinput8.lib winmm.lib d3dx8.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib opengl32.lib glaux.lib glu32.lib /nologo /subsystem:console /incremental:yes /pdb:"Debug/FWObjectTest.pdb" /debug /machine:I386 /out:"Debug/FWObjectTest.exe" /pdbtype:sept 
+.\Debug\App.obj
+.\Debug\AppBase.obj
+.\Debug\ConfigDlg.obj
+.\Debug\Main.obj
+.\Debug\StatesDlg.obj
+.\Debug\Audio_DX.obj
+.\Debug\AudioData.obj
+.\Debug\Bitmap.obj
+.\Debug\ChildWindow.obj
+.\Debug\D3D.obj
+.\Debug\D3DCamera.obj
+.\Debug\D3DFont2D.obj
+.\Debug\D3DMaterialObject.obj
+.\Debug\D3DPolygonListObject.obj
+.\Debug\D3DTexture2D.obj
+.\Debug\DirectInput.obj
+.\Debug\FactoryAudio.obj
+.\Debug\FactoryGraphics.obj
+.\Debug\FactoryInput.obj
+.\Debug\FactoryMath.obj
+.\Debug\FactoryNetwork.obj
+.\Debug\FactoryPlatform.obj
+.\Debug\Font.obj
+.\Debug\FrameworkError.obj
+.\Debug\gl_globals.obj
+.\Debug\GLCamera.obj
+.\Debug\GLFont2D.obj
+.\Debug\GLMaterialObject.obj
+.\Debug\GLPolygonListObject.obj
+.\Debug\GLTexture2D.obj
+.\Debug\MaterialFormat.obj
+.\Debug\mtxlib.obj
+.\Debug\NoAudio.obj
+.\Debug\NoGraphics.obj
+.\Debug\NoInput.obj
+.\Debug\NoNetwork.obj
+.\Debug\NoPlatform.obj
+.\Debug\openglgraphics.obj
+.\Debug\OpenGLMath.obj
+.\Debug\StandardPlatform.obj
+.\Debug\Texture.obj
+.\Debug\TextureFormat.obj
+.\Debug\TextWindow.obj
+.\Debug\WindowsNetwork.obj
+.\Debug\WindowsPlatform.obj
+.\Debug\Script1.res
+]
+Creating command line "link.exe @C:\WINDOWS\TEMP\RSPB125.TMP"
+<h3>Output Window</h3>
+Compiling...
+App.cpp
+E:\PROJECTS\CVSROOT\CSP\SRC\APPS\FWOBJECTTEST\App.cpp(39) : warning C4305: '=' : truncation from 'const double' to 'float'
+E:\PROJECTS\CVSROOT\CSP\SRC\APPS\FWOBJECTTEST\App.cpp(57) : warning C4305: '=' : truncation from 'const double' to 'float'
+E:\PROJECTS\CVSROOT\CSP\SRC\APPS\FWOBJECTTEST\App.cpp(101) : warning C4800: 'short' : forcing value to bool 'true' or 'false' (performance warning)
+E:\PROJECTS\CVSROOT\CSP\SRC\APPS\FWOBJECTTEST\App.cpp(118) : warning C4800: 'short' : forcing value to bool 'true' or 'false' (performance warning)
+E:\PROJECTS\CVSROOT\CSP\SRC\APPS\FWOBJECTTEST\App.cpp(143) : warning C4804: '%' : unsafe use of type 'bool' in operation
+E:\PROJECTS\CVSROOT\CSP\SRC\APPS\FWOBJECTTEST\App.cpp(253) : warning C4244: 'argument' : conversion from 'double' to 'float', possible loss of data
+E:\PROJECTS\CVSROOT\CSP\SRC\APPS\FWOBJECTTEST\App.cpp(254) : warning C4244: 'argument' : conversion from 'double' to 'float', possible loss of data
+E:\PROJECTS\CVSROOT\CSP\SRC\APPS\FWOBJECTTEST\App.cpp(255) : warning C4244: 'argument' : conversion from 'double' to 'float', possible loss of data
+E:\PROJECTS\CVSROOT\CSP\SRC\APPS\FWOBJECTTEST\App.cpp(268) : warning C4244: 'argument' : conversion from 'double' to 'float', possible loss of data
+E:\PROJECTS\CVSROOT\CSP\SRC\APPS\FWOBJECTTEST\App.cpp(351) : warning C4305: '+=' : truncation from 'const double' to 'float'
+E:\PROJECTS\CVSROOT\CSP\SRC\APPS\FWOBJECTTEST\App.cpp(360) : warning C4305: '-=' : truncation from 'const double' to 'float'
+E:\PROJECTS\CVSROOT\CSP\SRC\APPS\FWOBJECTTEST\App.cpp(405) : warning C4244: 'initializing' : conversion from 'double' to 'float', possible loss of data
+E:\PROJECTS\CVSROOT\CSP\SRC\APPS\FWOBJECTTEST\App.cpp(407) : warning C4305: 'argument' : truncation from 'const double' to 'float'
+E:\PROJECTS\CVSROOT\CSP\SRC\APPS\FWOBJECTTEST\App.cpp(436) : warning C4244: 'argument' : conversion from 'int' to 'float', possible loss of data
+E:\PROJECTS\CVSROOT\CSP\SRC\APPS\FWOBJECTTEST\App.cpp(673) : warning C4244: '=' : conversion from 'double' to 'float', possible loss of data
+E:\PROJECTS\CVSROOT\CSP\SRC\APPS\FWOBJECTTEST\App.cpp(676) : warning C4244: '=' : conversion from 'double' to 'float', possible loss of data
+E:\PROJECTS\CVSROOT\CSP\SRC\APPS\FWOBJECTTEST\App.cpp(680) : warning C4244: '=' : conversion from 'double' to 'float', possible loss of data
+E:\PROJECTS\CVSROOT\CSP\SRC\APPS\FWOBJECTTEST\App.cpp(681) : warning C4244: '=' : conversion from 'double' to 'float', possible loss of data
+Linking...
+
+
+
+<h3>Results</h3>
+FWObjectTest.exe - 0 error(s), 18 warning(s)
+</pre>
+</body>
+</html>

@@ -1,0 +1,2 @@
+SOCK_STREAM=1, SOCK_DGRAM=2
+2 mögliche network-modes

@@ -1,0 +1,8 @@
+Hello !
+
+BIG WARNING !
+I ceased my work on StandardMath since I am not sure if the
+current MathClass makes sense.
+
+However .. if somebody want to continue the work .. right on,
+but maybe we should discuss the math-stuff before.

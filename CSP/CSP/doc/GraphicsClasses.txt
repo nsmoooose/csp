@@ -1,0 +1,94 @@
+Overview of framework GraphicsClasses for the Combat Simulator Project
+by Wolverine69.
+
+Goals: To provide a platform independent graphics library.
+       This library should be vendor api independent, but
+       still provide the functionality of using direct graphics api's.
+       The library should also be easy to program. Performance
+       is also a concern but the other goals are taking precedence
+       during the early phases of development.
+
+To achieve these goals a set of classes are being developed that
+will hide the underlying api's from the end user developer. These
+classes will also provide a higher level of basic functionality
+then is provided with native api's thus making programming easier.
+These class also fit into the general csp framework. One was of
+possible enhancing performance will be by using fast methods sending
+data to graphics hardware like display lists or vertex buffers. 
+The classes will shield some of the details of using these methods
+promoting easy end user programming. Finally the classes can
+encapsulate differences in hardware and exploit various features
+and extensions of certain GPU boards without effecting the rest
+of the application.
+
+The basic class and there functionality are as follows
+(note some of the current classes may need to be renamed,
+and these names open to more changes.
+
+GraphicsWindow - This is currently known as StandardGraphics, D3D etc.
+This class encapsulates an operating system window and provides a
+graphics display surface. However this class does not handle normal
+OS event messaging as this function is being performed by the application
+class. Each GraphicsWindow object will contain a list of child views.
+
+GraphicsView - This class provides the mechanism to have multiple views
+on the GraphicsWindow. These views can be 3D, 2D or text. The views can
+be tiled or overlayed. The GraphicsView will serve as a base class of 
+more specific 3D, 2D and text views. Each view object will contain a 
+parent pointer to a GraphicsWindow. The view will be placed over this
+parent GraphicsWindow. To achieve resolution independence the 
+views will be positioned and sized using homogeneous coordinates (0..1).
+
+GraphicsGeometry - This class will provide a base class for geometry
+rendering classes either primitive or hierarchieral. The framework itself
+will only provide primitive ones. Currently a PolygonListObject class
+has been developed which provides vertex based polygons of various
+types including points, lines, triangles etc. Geometry class provide
+the applity to render themselves using a draw() method. A geometry
+class may include additional data for each vertex including normals
+and texture coordinates.
+
+GraphicsCamera - This class provides a rendering viewpoint. The camera
+can be positioned, moved, rotated, zoomed, oriented. The camera will
+also provide a means to determine a set of clipping planes (culling) so objects
+can be removed from the drawing list before they are rendered. 
+
+GraphicsTexture - This class encapsulates the 2D bitmap data of a texture.
+It will provide numerous options and the same texture can be used
+in a number of places in the drawing scene. The Texture class will 
+also encapsulate the details of mipmaping to provide texture for
+various levels of detail. The texture object will also be able to use
+both 8 bit and 24 bit bitmap files.
+
+GraphicsFont - This class will provide a graphics font to use for
+drawing on text strings. These fonts will be able to be used in
+TextViews, 2DViews and 3Dviews.
+
+Formatting class - a number of additional class will be provided to 
+provide formatting options to the above classes. All of these classes
+will provide a apply() method. Invoking this method will apply the
+particular format to subsequent objects (geometry, textures, ...) until
+another similar format is applied.
+
+TextureFormat - This class will provide texture related formating.
+
+ColorFormat - This class will provide a color for geometries.
+
+MaterialFormat - This class will provide a set of material properties
+(Ambient, diffuse, etc.) to geometries.
+
+Others may be necessary.
+
+remaining design issues. The set of classes should be usable in a 
+graphics api independent manner. To achieve this several options
+are available. One method will be to have a platform specific class
+for each api that calls the api directly. To achieve this the object
+must be created using either an enhanced graphics factory or by overriding
+new methods in the base classes. Another option is to
+have the api specific GraphicsWindow class implement the complete api
+and have just one set of all the remaining classes that call the
+GraphicsWindow.
+
+
+
+

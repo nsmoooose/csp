@@ -17,7 +17,7 @@
 			ConfigurationType="1">
 			<Tool
 				Name="VCCLCompilerTool"
-				RuntimeLibrary="5"
+				RuntimeLibrary="3"
 				WarningLevel="4"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
@@ -60,6 +60,7 @@
 				EnableFiberSafeOptimizations="TRUE"
 				OptimizeForProcessor="3"
 				OptimizeForWindowsApplication="TRUE"
+				RuntimeLibrary="2"
 				WarningLevel="3"/>
 			<Tool
 				Name="VCCustomBuildTool"/>

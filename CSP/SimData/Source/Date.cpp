@@ -97,7 +97,7 @@ void Date::addMonths(int nmonths) {
 	year_t years = static_cast<year_t>(nmonths / 12);
 	month_t months = static_cast<month_t>(nmonths % 12);
 	m_month = months + 1;
-	m_year += static_cast<year_t>(years);
+	m_year += years;
 	int index = isLeap() ? 1 : 0;
 	if (m_day > days_in_months[index][m_month]) {
 		m_day = days_in_months[index][m_month];
@@ -108,7 +108,7 @@ void Date::addMonths(int nmonths) {
 void Date::subtractMonths(int nmonths) {
 	year_t years = static_cast<year_t>(nmonths / 12);
 	month_t months = static_cast<month_t>(nmonths % 12);
-	m_year -= static_cast<year_t>(years);
+	m_year -= years;
 	if (m_month > months) {
 		m_month -= months;
 	} else {
@@ -124,7 +124,7 @@ void Date::subtractMonths(int nmonths) {
 }
 
 void Date::addYears(int nyears) {
-	m_year += static_cast<year_t>(nyears);
+	m_year += nyears;
 	if (m_month == 2 && m_day == 29) {
 		if (!isLeap()) m_day = 28;
 	}
@@ -132,7 +132,7 @@ void Date::addYears(int nyears) {
 }
 
 void Date::subtractYears(int nyears) {
-	m_year -= static_cast<year_t>(nyears);
+	m_year -= nyears;
 	if (m_month == 2 && m_day == 29) {
 		if (!isLeap()) m_day = 28;
 	}

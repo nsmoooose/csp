@@ -181,9 +181,16 @@
 			<File
 				RelativePath="..\Source\cSimData_wrap.cpp">
 				<FileConfiguration
+					Name="Release|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						WarningLevel="3"/>
+				</FileConfiguration>
+				<FileConfiguration
 					Name="Debug|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
+						WarningLevel="3"
 						UndefinePreprocessorDefinitions="_DEBUG"/>
 				</FileConfiguration>
 			</File>

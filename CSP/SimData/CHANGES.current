@@ -1,6 +1,14 @@
 Version 0.4.0 (in progress)
 ===========================
 
+2004-12-06: delta
+ * Changed the level of warnings of cSimData_wrap.cpp and 
+   compiled Config as a multithreads dll (vc project files).
+   
+ * Cleaned a useless vc specific pragma.
+ 
+ * Removed useless static_cast<> in Date.cpp.
+
 2004-12-06: onsight
  * Define correct 64-bit integer suffixes for msvc.
  * Separate 64-bit definitions from other compiler definitions.

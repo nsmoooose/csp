@@ -37,11 +37,6 @@
 #include <SimData/Export.h>
 #include <SimData/ThreadBase.h>
 
-#if defined(_MSC_VER)
-# pragma warning(disable: 4275)
-#endif
-
-
 NAMESPACE_SIMDATA
 
 

@@ -54,7 +54,6 @@ SOURCES = [
 	'LandingGear.cpp',
 	'LogoScreen.cpp',
 	'MenuScreen.cpp',
-	'Message.cpp',
 	'NumericalMethod.cpp',
 	'ObjectModel.cpp',
 	'PhysicsModel.cpp',

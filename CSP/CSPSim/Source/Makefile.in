@@ -55,7 +55,6 @@ SOURCES = \
 	BaseDynamics.cpp \
 	BaseScreen.cpp \
 	ChunkLodTerrain.cpp \
-	ClientNode.cpp \
 	Collision.cpp \
 	Colorspace.cpp \
 	Config.cpp \
@@ -63,10 +62,8 @@ SOURCES = \
 	ConsoleCommands.cpp \
 	CSPSim.cpp \
 	DemeterTerrain.cpp \
-	DispatchCenter.cpp \
 	DynamicObject.cpp \
 	DynamicalSystem.cpp \
-	EchoServerNode.cpp \
 	Engine.cpp \
 	EventMapIndex.cpp \
 	EventMapping.cpp \
@@ -81,19 +78,9 @@ SOURCES = \
 	LandingGear.cpp \
 	LogoScreen.cpp \
 	MenuScreen.cpp \
- 	Message.cpp \
-	SimNet/NetworkNode.cpp \
-	SimNet/NetworkMessage.cpp \
-	SimNet/ObjectUpdateMessage.cpp \
-	SimNet/NetworkMessenger.cpp \
-	SimNet/PrintMessageHandler.cpp \
-	SimNet/RedirectMessageHandler.cpp \
-	SimNet/EchoMessageHandler.cpp \
-	SimNet/DispatchMessageHandler.cpp \
 	NumericalMethod.cpp \
 	ObjectModel.cpp \
 	PhysicsModel.cpp \
-	RedirectServerNode.cpp \
 	ScreenInfo.cpp \
 	ScreenInfoManager.cpp \
 	SimpleSceneManager.cpp \

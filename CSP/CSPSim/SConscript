@@ -69,4 +69,3 @@ env.Append(LIBS=['spatialindex'], LIBPATH=['#/SpatialIndex/.bin'])
 
 build.BuildModules(env, MODULES)
 
-

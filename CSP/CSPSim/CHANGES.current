@@ -14,6 +14,8 @@
  * Hack upon hack to prevent engine cutoff when stationary in a light
    tailwind (AOA near 180 deg).
 
+ * Cleanup old Message files.
+
 2004-12-18: delta
  * Until we make a more accurate FCS, we'll use the animation binding to
    provide a better visual approximation of the animations of the "ailerons"

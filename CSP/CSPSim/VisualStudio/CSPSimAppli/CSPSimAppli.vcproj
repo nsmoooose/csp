@@ -261,9 +261,6 @@
 				RelativePath="..\..\Source\MenuScreen.cpp">
 			</File>
 			<File
-				RelativePath="..\..\Source\Message.cpp">
-			</File>
-			<File
 				RelativePath="..\..\Source\NumericalMethod.cpp">
 			</File>
 			<File
@@ -456,9 +453,6 @@
 			</File>
 			<File
 				RelativePath="..\..\Include\MenuScreen.h">
-			</File>
-			<File
-				RelativePath="..\..\Include\Message.h">
 			</File>
 			<File
 				RelativePath="..\..\Include\NumericalMethod.h">

@@ -52,6 +52,8 @@ NAMESPACE_SIMDATA
 class DataArchive;
 
 typedef hasht ObjectID;
+typedef hasht_eq ObjectID_eq;
+typedef hasht_hash ObjectID_hash;
 
 
 SIMDATA_EXCEPTION(ObjectTypeMismatch)

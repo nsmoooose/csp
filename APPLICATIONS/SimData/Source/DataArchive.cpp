@@ -50,7 +50,7 @@ std::string base_path(std::string const &path) {
 }
 
 
-void DataArchive::_addEntry(int offset, int length, hasht hash, std::string const &path) {
+void DataArchive::_addEntry(int offset, int length, ObjectID hash, std::string const &path) {
 	TableEntry t;
 	t.offset = offset;
 	t.length = length;
@@ -58,7 +58,7 @@ void DataArchive::_addEntry(int offset, int length, hasht hash, std::string cons
 	t.pathhash = hash_string(path);
 	_table_map[t.pathhash] = _table.size();
 	_table.push_back(t);
-	hasht parent = hash_string(base_path(path));
+	ObjectID parent = hash_string(base_path(path));
 	_children[parent].push_back(t.pathhash);
 	_paths.push_back(path);
 	_pathmap[t.pathhash] = path;
@@ -125,15 +125,15 @@ void DataArchive::_readPaths() {
 	uint32 n_paths = *iptr++;
 	uint32 n_directories = *iptr++;
 	_paths.reserve(n_paths);
-	hasht *hptr = reinterpret_cast<hasht *>(iptr);
+	ObjectID *hptr = reinterpret_cast<ObjectID *>(iptr);
 	while (n_directories-- > 0) {
-		hasht node = *hptr++;
+		ObjectID node = *hptr++;
 		uint32 n = hptr->a;
 		++hptr;
 		if (n > n_paths) {
 			throw CorruptArchive("Path table of contents.");
 		}
-		std::vector<hasht> &childlist = _children[node];
+		std::vector<ObjectID> &childlist = _children[node];
 		childlist.reserve(n);
 		while (n-- > 0) {
 			childlist.push_back(*hptr++);
@@ -178,13 +178,13 @@ void DataArchive::_writePaths() const {
 	size = _children.size();
 	fwrite(&size, sizeof(size), 1, _f);
 	for (iter = _children.begin(); iter != _children.end(); iter++) {
-		hasht size = iter->second.size();
-		fwrite(&(iter->first), sizeof(hasht), 1, _f);
+		ObjectID size = iter->second.size();
+		fwrite(&(iter->first), sizeof(ObjectID), 1, _f);
 		fwrite(&size, sizeof(size), 1, _f);
-		std::vector<hasht>::const_iterator child = iter->second.begin();
-		std::vector<hasht>::const_iterator last_child = iter->second.end();
+		std::vector<ObjectID>::const_iterator child = iter->second.begin();
+		std::vector<ObjectID>::const_iterator last_child = iter->second.end();
 		while (child != last_child) {
-			fwrite(&(*child++), sizeof(hasht), 1, _f);
+			fwrite(&(*child++), sizeof(ObjectID), 1, _f);
 		}
 	}
 	std::vector<std::string>::const_iterator path = _paths.begin();
@@ -291,7 +291,7 @@ std::string DataArchive::getPathString(ObjectID const &id) const {
 }
 
 const DataArchive::TableEntry* DataArchive::_lookupPath(Path const &path, std::string const &path_str) const {
-	hasht id = (hasht) path.getPath();
+	ObjectID id = (ObjectID) path.getPath();
 	return _lookupPath(id, path_str);
 }
 
@@ -312,7 +312,7 @@ const DataArchive::TableEntry* DataArchive::_lookupPath(ObjectID const &id, std:
 	return &(_table[idx]);
 }
 
-Object *DataArchive::_createObject(hasht classhash) {
+Object *DataArchive::_createObject(ObjectID classhash) {
 	InterfaceProxy *proxy = InterfaceRegistry::getInterfaceRegistry().getInterface(classhash);
 	if (!proxy) {
 		SIMDATA_LOG(LOG_ARCHIVE, LOG_ERROR, "Interface proxy [" << classhash << "] not found.");
@@ -330,7 +330,7 @@ Object *DataArchive::_createObject(hasht classhash) {
 // the static cache.  
 
 const LinkBase DataArchive::getObject(const Path& path, std::string const &path_str) {
-	hasht id = (hasht) path.getPath();
+	ObjectID id = (ObjectID) path.getPath();
 	// look among previously created static objects
 	LinkBase const *cached = _getStatic(id);
 	if (cached != 0) return *cached;
@@ -339,10 +339,8 @@ const LinkBase DataArchive::getObject(const Path& path, std::string const &path_
 		t = _lookupPath(path, path_str);
 	}
 	catch (IndexError) {
-		if (_manager) {
-			return _manager->getObject(path, path_str, this);
-		}
-		throw;
+		if (_manager == 0) throw;
+		return _manager->getObject(path, path_str, this);
 	}
 	SIMDATA_LOG(LOG_ARCHIVE, LOG_DEBUG, "getObject using interface registry @ 0x" << std::hex << int(&(InterfaceRegistry::getInterfaceRegistry())));
 	InterfaceProxy *proxy = InterfaceRegistry::getInterfaceRegistry().getInterface(t->classhash);
@@ -405,12 +403,12 @@ const LinkBase DataArchive::getObject(const Path& path, std::string const &path_
 
 
 
-void DataArchive::_addStatic(Object* ptr, std::string const &path, hasht id) {
+void DataArchive::_addStatic(Object* ptr, std::string const &path, ObjectID id) {
 	if (id == 0) id = hash_string(path);
 	_static_map[id] = LinkBase(Path(path), ptr);
 }
 
-LinkBase const* DataArchive::_getStatic(hasht id=0) {
+LinkBase const* DataArchive::_getStatic(ObjectID id=0) {
 	CacheMap::const_iterator i = _static_map.find(id);
 	if (i == _static_map.end()) return 0;
 	return &(i->second);
@@ -470,10 +468,8 @@ InterfaceProxy *DataArchive::getObjectInterface(ObjectID const &id, std::string 
 		t = _lookupPath(id, path);
 	}
 	catch (IndexError) {
-		if (_manager) {
-			return _manager->getObjectInterface(id, path, this);
-		}
-		throw;
+		if (_manager == 0) throw;
+		return _manager->getObjectInterface(id, path, this);
 	}
 	return InterfaceRegistry::getInterfaceRegistry().getInterface(t->classhash);
 }
@@ -481,6 +477,12 @@ InterfaceProxy *DataArchive::getObjectInterface(ObjectID const &id, std::string 
 InterfaceProxy *DataArchive::getObjectInterface(std::string const &path) const {
 	return getObjectInterface(hash_string(path), path);
 }
+
+void DataArchive::setManager(DataManager *m) {
+	assert(_manager == 0 || m == 0);
+	_manager = m; 
+}
+
 
 NAMESPACE_SIMDATA_END
 

@@ -1,5 +1,5 @@
 /* SimData: Data Infrastructure for Simulations
- * Copyright (C) 2002 Mark Rose <tm2@stm.lbl.gov>
+ * Copyright (C) 2002, 2003 Mark Rose <tm2@stm.lbl.gov>
  * 
  * This file is part of SimData.
  * 
@@ -27,9 +27,10 @@
 #define __SIMDATA_DATAMANAGER_H__
 
 #include <SimData/Export.h>
+#include <SimData/Namespace.h>
 #include <SimData/Path.h>
 #include <SimData/HashUtility.h>
-#include <SimData/Namespace.h>
+#include <SimData/Ref.h>
 
 #include <string>
 #include <cstdio>
@@ -46,157 +47,149 @@ class LinkBase;
 class InterfaceProxy;
 
 
-/**
- * @brief Class for managing read access to multiple data archives.
+/** Class for managing read access to multiple data archives.
  *
- * @author Mark Rose <mrose@stm.lbl.gov>
+ *  @author Mark Rose <mrose@stm.lbl.gov>
  */
 class SIMDATA_EXPORT DataManager {
 	friend class DataArchive;
 
 public:
-	/**
-	 * Construct a new (empty) data manager.
+	/** Construct a new (empty) data manager.
 	 */
 	DataManager();
 
-	/**
-	 * Destroy the data manager and all the archives it contains.
+	/** Destroy the data manager and all the archives it contains.
 	 */
 	virtual ~DataManager();
 	
-	/**
-	 * Create a new object from a path identifier string.
+	/** Create a new object from a path identifier string.
 	 *
-	 * @param path_str the path identifier string.
-	 * @returns a smart-pointer to the new object.
+	 *  @param path_str the path identifier string.
+	 *  @returns a smart-pointer to the new object.
 	 */
 	const LinkBase getObject(std::string const &path_str);
 
-	/**
-	 * Create a new object from a Path instance.
+	/** Create a new object from a Path instance.
 	 *
-	 * @param path the Path instance.
-	 * @param path_str the path identifier string (if available).  This is
-	 *                 only used for error logging.
+	 *  @param path the Path instance.
+	 *  @param path_str the path identifier string (if available).  This is
+	 *                  only used for error logging.
 	 */
 	const LinkBase getObject(Path const& path, std::string const &path_str="");
 
-	/**
-	 * Add a new data archive to the manager.
+	/** Add a new data archive to the manager.
 	 * 
-	 * All objects in the archive will subsequently be available from the
-	 * manager.  The manager "owns" the pointer and will delete it when the
-	 * manager is destroyed.
+	 *  All objects in the archive will subsequently be available from the
+	 *  manager.  The manager "owns" the pointer and will delete it when the
+	 *  manager is destroyed.
 	 */
 	void addArchive(DataArchive *);
 
-	/**
-	 * Get all children of a given object id.
+	/** Get all children of a given object id.
 	 *
-	 * For id "A:X.Y", returns all object id's "A:X.Y.*".  The id's
-	 * can be converted to human-readable form by getPathString().
+	 *  For id "A:X.Y", returns all object id's "A:X.Y.*".  The id's
+	 *  can be converted to human-readable form by getPathString().
 	 *
-	 * @param id the object id to search for children
-	 * @returns a list of object id's immediately below the given path.
+	 *  @param id the object id to search for children
+	 *  @returns a list of object id's immediately below the given path.
 	 */
 	std::vector<ObjectID> getChildren(ObjectID const &id) const;
 
-	/**
-	 * Get all children of a given path.
+	/** Get all children of a given path.
 	 *
-	 * For path "A:X.Y", returns all object id's "A:X.Y.*".  The id's
-	 * can be converted to human-readable form by getPathString().
+	 *  For path "A:X.Y", returns all object id's "A:X.Y.*".  The id's
+	 *  can be converted to human-readable form by getPathString().
 	 *
-	 * @param path the path to search for children
-	 * @returns a list of object id's immediately below the given path.
+	 *  @param path the path to search for children
+	 *  @returns a list of object id's immediately below the given path.
 	 */
 	std::vector<ObjectID> getChildren(std::string const & path) const;
 
-	/**
-	 * Check for the existance of an object in the archives.
+	/** Check for the existance of an object in the archives.
 	 *
-	 * @returns true if the object id exists.
+	 *  @returns true if the object id exists.
 	 */
 	bool hasObject(ObjectID const &id) const;
 
-	/**
-	 * Check for the existance of an object in the archives.
+	/** Check for the existance of an object in the archives.
 	 *
-	 * @returns true if the object id exists.
+	 *  @returns true if the object id exists.
 	 */
 	bool hasObject(std::string const & path) const;
 
-	/** 
-	 * Get the path string corresponding to a give object id.
+	/** Get the path string corresponding to a give object id.
 	 *
-	 * This provides a human-readable path string that is useful
-	 * for error and debugging messages.
+	 *  This provides a human-readable path string that is useful
+	 *  for error and debugging messages.
 	 *
-	 * @returns the path string if found, otherwise an empty string.
+	 *  @returns the path string if found, otherwise an empty string.
 	 */
 	std::string getPathString(ObjectID const &id) const; 
 
-	/**
-	 * Remove unused static objects from the cache.
+	/** Remove unused static objects from the cache.
 	 *
-	 * Call this method after many objects have been deleted
-	 * to free any unused cache entries.
+	 *  Call this method after many objects have been deleted
+	 *  to free any unused cache entries.
 	 */
 	void cleanStatic();
 
-	/**
-	 * Return the interface proxy corresponding to the specified
-	 * object in the archive.
+	/** Return the interface proxy corresponding to the specified
+	 *  object in the archive.
 	 */
 	InterfaceProxy *getObjectInterface(ObjectID const &id) const;
 
-	/**
-	 * Return the interface proxy corresponding to the specified
-	 * object in the archive.
+	/** Return the interface proxy corresponding to the specified
+	 *  object in the archive.
 	 */
 	InterfaceProxy *getObjectInterface(std::string const &path) const;
 
+	/** Close all managed archives.
+	 */
+	void closeAll();
 
 private:
-	/**
-	 * Find the archive that holds the specified object.
+	/** Find the archive that holds the specified object.
 	 *
-	 * Throws an exception if the object isn't found.
+	 *  Throws an exception if the object isn't found.
 	 */
 	DataArchive *findArchive(ObjectID const &id, std::string const &path_str, DataArchive const *d) const;
 
-	/**
-	 * Create a new object from a Path instance.
+	/** Create a new object from a Path instance.
 	 *
-	 * For internal use by the DataArchive class.  When a particular
-	 * DataArchive class fails to find an object, it asks the associated
-	 * Manager to create the object.  The last parameter is used to
-	 * prevent unwanted recursion if an object isn't found.
+	 *  For internal use by the DataArchive class.  When a particular
+	 *  DataArchive class fails to find an object, it asks the associated
+	 *  Manager to create the object.  The last parameter is used to
+	 *  prevent unwanted recursion if an object isn't found.
 	 *
-	 * @param path the Path instance.
-	 * @param path_str the path identifier string (if available).  This is
-	 *        only used for error logging.
-	 * @param d the data archive that is requesting the object.
+	 *  @param path the Path instance.
+	 *  @param path_str the path identifier string (if available).  This is
+	 *         only used for error logging.
+	 *  @param d the data archive that is requesting the object.
 	 */
 	const LinkBase getObject(Path const& path, std::string const &path_str, DataArchive const *d) const;
 
-	/**
-	 * Return the interface proxy corresponding to the specified
-	 * object in the archive.
+	/** Return the interface proxy corresponding to the specified
+	 *  object in the archive.
 	 *
-	 * For internal use by the DataArchive class.  When a particular
-	 * DataArchive class fails to find an object, it asks the associated
-	 * Manager to create the object.  The last parameter is used to
-	 * prevent unwanted recursion if an object isn't found.
+	 *  For internal use by the DataArchive class.  When a particular
+	 *  DataArchive class fails to find an object, it asks the associated
+	 *  Manager to create the object.  The last parameter is used to
+	 *  prevent unwanted recursion if an object isn't found.
 	 */
 	InterfaceProxy *getObjectInterface(ObjectID const &id, std::string const &path_str, DataArchive const *d) const;
 	
-	std::vector<DataArchive*> _archives;
-	hasht_map _archive_map;
+	typedef std::vector<DataArchive *> Archives;
+	/// The collection of managed archives.
+	Archives _archives;
 
-	typedef HASH_MAPS<hasht, std::vector<hasht>, hasht_hash, hasht_eq>::Type child_map;
-	child_map _children;
+	typedef HASH_MAPS<ObjectID, std::size_t, ObjectID_hash, ObjectID_eq>::Type ArchiveMap;
+	/// A map for finding the index of an archive.
+	ArchiveMap _archive_map;
+
+	typedef HASH_MAPS<ObjectID, std::vector<hasht>, ObjectID_hash, ObjectID_eq>::Type ChildMap;
+	/// A map of all parent-child relationships in the managed archives.
+	ChildMap _children;
 };
 
 

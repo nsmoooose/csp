@@ -100,9 +100,9 @@ private:
 	 */
 	struct TableEntry {
 		/// the object path identifier hash
-		hasht pathhash;
+		ObjectID pathhash;
 		/// the class identifier hash
-		hasht classhash;
+		ObjectID classhash;
 		/// the file offset of the serialized object
 		uint32 offset;
 		/// the size of the serialized object data (in bytes) 
@@ -150,19 +150,19 @@ private:
 	unsigned int _buffer;
 
 	
-	typedef HASH_MAPS<hasht, std::vector<hasht>, hasht_hash, hasht_eq>::Type ChildMap;
+	typedef HASH_MAPS<ObjectID, std::vector<ObjectID>, ObjectID_hash, ObjectID_eq>::Type ChildMap;
 	/// A map of all parent-child relationships in the archive.
 	ChildMap _children;
 
-	typedef HASH_MAPS<hasht, std::string, hasht_hash, hasht_eq>::Type PathMap;
+	typedef HASH_MAPS<ObjectID, std::string, ObjectID_hash, ObjectID_eq>::Type PathMap;
 	/// A map for accessing the path string of any object id in the archive.
 	PathMap _pathmap;
 
-	typedef HASH_MAPS<hasht, std::size_t, hasht_hash, hasht_eq>::Type TableMap;
+	typedef HASH_MAPS<ObjectID, std::size_t, ObjectID_hash, ObjectID_eq>::Type TableMap;
 	/// A map for finding the table index of an object id in the archive.
 	TableMap _table_map;
 
-	typedef HASH_MAPS<hasht, LinkBase, hasht_hash, hasht_eq>::Type CacheMap;
+	typedef HASH_MAPS<ObjectID, LinkBase, ObjectID_hash, ObjectID_eq>::Type CacheMap;
 	/// A map of all cached objects indexed by object id.
 	CacheMap _static_map;
 
@@ -375,12 +375,12 @@ protected:
 	 *  @param hash the class hash identifier
 	 *  @param path the path string of the object
 	 */
-	void _addEntry(int offset, int length, hasht hash, std::string const &path);
+	void _addEntry(int offset, int length, ObjectID hash, std::string const &path);
 	
 	/*
 	Object* getObject(const Object &a, const char* path);
-	Object* getObject(const Object &a, hasht path, const char* path="");
-	Object* getObject(hasht path);
+	Object* getObject(const Object &a, ObjectID path, const char* path="");
+	Object* getObject(ObjectID path);
 	*/
 
 	/** Add an object to the static object cache.
@@ -389,20 +389,20 @@ protected:
 	 *  @param path_str the path identifier string
 	 *  @param key the object identifier hash (path hash)
 	 */
-	void _addStatic(Object* ptr, std::string const &path_str, hasht key=0);
+	void _addStatic(Object* ptr, std::string const &path_str, ObjectID key=0);
 
 	/** Get an object from the static object cache.
 	 *
 	 *  @returns the object if found, otherwise NULL.
 	 */
-	LinkBase const * _getStatic(hasht key);
+	LinkBase const * _getStatic(ObjectID key);
 
 	/** Create an a new instance using a class identifier hash.
 	 *
 	 *  @param classhash the identifier hash of the class to create.
 	 *  @returns the newly created object.
 	 */
-	Object* _createObject(hasht classhash);
+	Object* _createObject(ObjectID classhash);
 
 	/** Find the table entry corresponding to a given object path.
 	 *
@@ -420,8 +420,14 @@ protected:
 	 */
 	const TableEntry* _lookupPath(ObjectID const &id, std::string const &path_str="") const;
 
+	/** Get the associated data manager instance, if any.
+	 */
+	DataManager *getManager() const { return _manager; }
+
 private:
-	void setManager(DataManager *m) { _manager = m; }
+	/** Called by DataManager to bind the archive.
+	 */
+	void setManager(DataManager *m);
 	ChildMap const &getChildMap() const { return _children; }
 };
 

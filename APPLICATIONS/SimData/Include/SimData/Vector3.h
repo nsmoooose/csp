@@ -230,13 +230,13 @@ public:
 	}
 		
 #ifndef SWIG
-	friend inline double dot(const Vector3& a, const Vector3& b) { return a*b; }
+	friend double dot(const Vector3& a, const Vector3& b); // inline
 
-	friend inline const Vector3 cross(const Vector3& a, const Vector3& b) { return a^b; }
+	friend const Vector3 cross(const Vector3& a, const Vector3& b); // inline
 
 	friend SIMDATA_EXPORT std::ostream& operator << (std::ostream& output, const Vector3& vec);
 
-	friend inline Vector3 operator * (double lhs, const Vector3 &rhs) { return rhs*lhs; }
+	friend Vector3 operator * (double lhs, const Vector3 &rhs); // inline
 #endif // SWIG
 
 	std::vector<double> getElements() const {
@@ -303,6 +303,11 @@ public:
 
 };	// end of class Vector3
 
+inline double dot(const Vector3& a, const Vector3& b) { return a*b; }
+
+inline const Vector3 cross(const Vector3& a, const Vector3& b) { return a^b; }
+
+inline Vector3 operator * (double lhs, const Vector3 &rhs) { return rhs*lhs; }
 
 NAMESPACE_SIMDATA_END // simdata
 

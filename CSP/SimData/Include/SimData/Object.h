@@ -1,5 +1,5 @@
 /* SimData: Data Infrastructure for Simulations
- * Copyright (C) 2002 Mark Rose <tm2@stm.lbl.gov>
+ * Copyright 2002, 2003, 2004 Mark Rose <mkrose@users.sourceforge.net>
  *
  * This file is part of SimData.
  *
@@ -21,8 +21,7 @@
 
 /**
  * @file Object.h
- *
- * Object class and related boilerplate macros.
+ * @brief Object class and related boilerplate macros.
  */
 
 
@@ -186,13 +185,7 @@ public:
 
 	__SIMDATA_CLASSDEF(Object, 0, 0)
 
-	// TODO ////////////////////////////////////////////////////////////////
-	// Remove serialize(), make serializeExtra() const and take a Packer
-	// class (subclass of Writer), and have deserializeExtra() take an
-	// UnPacker class (subclass of Reader).  This will require several
-	// const changes in the pack methods, and new Reader/Writer interfaces.
-	////////////////////////////////////////////////////////////////////////
-	
+
 	/** Serialize additional state to a data target.
 	 *
 	 *  Extend ths method only if the subclass must save additional state

@@ -1,18 +1,18 @@
 /* SimData: Data Infrastructure for Simulations
- * Copyright (C) 2002 Mark Rose <tm2@stm.lbl.gov>
- * 
+ * Copyright 2002, 2003, 2004 Mark Rose <mkrose@users.sourceforge.net>
+ *
  * This file is part of SimData.
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
@@ -20,7 +20,7 @@
 
 
 /**
- * @file BaseException.h
+ * @file ExceptionBase.h
  * @brief Exception base classes and macros for creating new exceptions.
  */
 
@@ -83,7 +83,7 @@ public:
 	 */
 	void addMessage(std::string const &msg);
 
-	/** Reset the exception so that it will not print to stderr on 
+	/** Reset the exception so that it will not print to stderr on
 	 *  destruction.
 	 */
 	void clear();
@@ -97,7 +97,7 @@ public:
  */
 class SIMDATA_EXPORT Exception: public ExceptionBase {
 public:
-	Exception(std::string const &type="Exception", std::string const &msg=""): 
+	Exception(std::string const &type="Exception", std::string const &msg=""):
 		ExceptionBase(type, msg) { }
 };
 

@@ -1,18 +1,18 @@
- /* SimData: Data Infrastructure for Simulations
- * Copyright (C) 2002, 2003 Mark Rose <tm2@stm.lbl.gov>
- * 
+/* SimData: Data Infrastructure for Simulations
+ * Copyright 2002, 2003, 2004 Mark Rose <mkrose@users.sourceforge.net>
+ *
  * This file is part of SimData.
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
@@ -28,8 +28,8 @@
  * Examples:
  *
  * @code
- 
- 	// C++ example /////////////////////////////////////////////////////
+
+	// C++ example /////////////////////////////////////////////////////
 	
 	#include <SimData/Enum.h>
 	class Foo {
@@ -141,8 +141,8 @@ friend class Enumeration;
 	///
 	/// @see EnumerationCore(std::string const &s)
 	void __init(std::string const &s) {
-		std::stringstream ss(s); 
-		std::string token; 
+		std::stringstream ss(s);
+		std::string token;
 		int value = 0;
 		for (int idx = 0; ss >> token; idx++) {
 			std::string::size_type eq = token.find("=");
@@ -219,12 +219,12 @@ friend class Enumeration;
 
 	/// Test if this enumeration contains a given token.
 	bool containsToken(std::string const &token) const {
-		return __s2idx.find(token) != __s2idx.end(); 
+		return __s2idx.find(token) != __s2idx.end();
 	}
 
 	/// Test if this enumeration contains a given value.
 	bool containsValue(int value) const {
-		return __i2idx.find(value) != __i2idx.end(); 
+		return __i2idx.find(value) != __i2idx.end();
 	}
 
 	/// Test if an index is valid.
@@ -264,7 +264,7 @@ friend class Enumeration;
  * can be indexed by number or token.
  *
  * Enumerations are usually created as static const class
- * members, together with Enum<> members that use the 
+ * members, together with Enum<> members that use the
  * static Enumeration as the template argument.  For example:
  *
  * @code
@@ -294,7 +294,7 @@ friend class EnumLink;
 	/// Copy constructor, just share the EnumerationCore.
 	Enumeration(Enumeration const &e) {
 		__core = e.__core;
-		assert(__core.valid()); 
+		assert(__core.valid());
 	}
 
 	/// Check if we are unbound (no EnumerationCore).
@@ -306,7 +306,7 @@ friend class EnumLink;
 	/// Copy by sharing the EnumerationCore.
 	Enumeration const &operator =(Enumeration const &e) {
 		__core = e.__core;
-		assert(__core.valid()); 
+		assert(__core.valid());
 		return *this;
 	}
 
@@ -396,7 +396,7 @@ public:
 		std::stringstream ss;
 		ss << "<Enumeration:";
 		for (int i = 0; i < size(); i++) {
-			ss << " " << __core->getTokenByIndex(i) 
+			ss << " " << __core->getTokenByIndex(i)
 			   << "=" << __core->getValueByIndex(i);
 		}
 		ss << ">";
@@ -425,7 +425,7 @@ public:
 	inline bool contains(EnumLink const &x) const;
 
 	/// Test for inclusion in the Enumeration set.
-	bool contains(int value) const { 
+	bool contains(int value) const {
 		assert(__core.valid());
 		return __core->containsValue(value);
 	}
@@ -474,9 +474,9 @@ public:
  * @brief Represents an element in an Enumeration set.
  *
  * This class is used internally to return Enum instances
- * from an Enumeration, which is unable to directly create templated Enum 
+ * from an Enumeration, which is unable to directly create templated Enum
  * instances.  EnumLinks can also be used to create Enums on the fly by
- * specifying an existing Enumeration in the constructor.  EnumLink's and 
+ * specifying an existing Enumeration in the constructor.  EnumLink's and
  * Enum templates can be used interchangeably.
  *
  * @ingroup BaseTypes
@@ -499,8 +499,8 @@ protected:
 	int getIndex() const { return _idx; }
 
 	/// Construct a new EnumLink bound to a given Enumeration.
-	EnumLink(int idx, Enumeration const &E): __E(E), _idx(idx) { 
-		E.__checkIndex(idx); 
+	EnumLink(int idx, Enumeration const &E): __E(E), _idx(idx) {
+		E.__checkIndex(idx);
 	}
 
 	/// Construct a new EnumLink bound to the current Enumeration.
@@ -513,13 +513,13 @@ public:
 	EnumLink(Enumeration const &E): __E(E), _idx(0) { }
 
 	// Create a new EnumLink bound to an existing Enumeration.
-	EnumLink(Enumeration const &E, int value): __E(E), _idx(0) { 
-		_idx = __E.getIndexByValue(value); 
+	EnumLink(Enumeration const &E, int value): __E(E), _idx(0) {
+		_idx = __E.getIndexByValue(value);
 	}
 
 	// Create a new EnumLink bound to an existing Enumeration.
-	EnumLink(Enumeration const &E, std::string const &token): __E(E), _idx(0) { 
-		_idx = __E.getIndexByToken(token); 
+	EnumLink(Enumeration const &E, std::string const &token): __E(E), _idx(0) {
+		_idx = __E.getIndexByToken(token);
 	}
 
 	/// Serialize to or from a data archive.
@@ -560,9 +560,9 @@ public:
 	std::string getToken() const { return __E.getTokenByIndex(_idx); }
 
 	/// Return a string representation (for SWIG/Python).
-	std::string __repr__() const { 
+	std::string __repr__() const {
 		std::stringstream repr;
-		repr << "<Enum:" << getToken() << "=" << getValue() << ">"; 
+		repr << "<Enum:" << getToken() << "=" << getValue() << ">";
 		return repr.str();
 	}
 
@@ -595,7 +595,7 @@ public:
 	EnumLink const &operator =(std::string const &token) { set(token); return *this; }
 
 	/// copy
-	EnumLink const &operator=(EnumLink const &e) { 
+	EnumLink const &operator=(EnumLink const &e) {
 		if (!__E) {
 			__E = e.__E;
 		} else {

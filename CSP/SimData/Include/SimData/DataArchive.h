@@ -1,18 +1,18 @@
 /* SimData: Data Infrastructure for Simulations
- * Copyright (C) 2002, 2003 Mark Rose <tm2@stm.lbl.gov>
- * 
+ * Copyright 2002, 2003, 2004 Mark Rose <mkrose@users.sourceforge.net>
+ *
  * This file is part of SimData.
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
@@ -74,7 +74,7 @@ class InterfaceProxy;
 
 
 /** Interface for reading and writing data archive files.
- * 
+ *
  *  The DataArchive class provides read and write access to data archive
  *  files.  Write mode is primarily intended for use by the data complier.
  *  In read mode, objects can be created dynamically from their path
@@ -106,7 +106,7 @@ private:
 		ObjectID classhash;
 		/// the file offset of the serialized object
 		uint32 offset;
-		/// the size of the serialized object data (in bytes) 
+		/// the size of the serialized object data (in bytes)
 		uint32 length;
 	};
 
@@ -115,9 +115,9 @@ private:
 	 *  This provides an optional means to share a data archive
 	 *  globally in an application.  In principle this is not a
 	 *  very safe thing to do, but is provided for the convenience
-	 *  of hanging yourself.  You've been warned. 
+	 *  of hanging yourself.  You've been warned.
 	 *
-	 *  Use getDefault() and setDefault() to access this variable 
+	 *  Use getDefault() and setDefault() to access this variable
 	 *  (which may be null).
 	 *
 	 *  @deprecated No longer necessary; do not use!
@@ -140,8 +140,8 @@ private:
 	/** Object read buffers.
 	 *
 	 *  An additional buffer is required for every subobject deserialized
-	 *  by Link<>.  If more than BUFFER objects must be deserialized 
-	 *  concurrently, or any object exceeds BUFFERSIZE, additional storage 
+	 *  by Link<>.  If more than BUFFER objects must be deserialized
+	 *  concurrently, or any object exceeds BUFFERSIZE, additional storage
 	 *  will be allocated dynamically.  The use of these fixed buffers
 	 *  reduces the need for repeated buffer allocation and deallocation
 	 *  when deserializing many small to medium sized objects.
@@ -255,12 +255,12 @@ public:
 	 */
 	bool isWrite();
 
-	/** Make this archive the "default" archive.  
+	/** Make this archive the "default" archive.
 	 *
 	 *  It will remain so until another archive is assigned or it
-	 *  is deleted (in which case the dafault reverts to NULL).  
+	 *  is deleted (in which case the dafault reverts to NULL).
 	 *
-	 *  @deprecated <em>Use of this default utility is not 
+	 *  @deprecated <em>Use of this default utility is not
 	 *              recommended.</em>
 	 */
 	void setDefault();
@@ -269,7 +269,7 @@ public:
 	 *
 	 *  @returns the current default or NULL if there is none.
 	 *
-	 *  @deprecated <em>Use of this default utility is not 
+	 *  @deprecated <em>Use of this default utility is not
 	 *              recommended.</em>
 	 */
 	static DataArchive* getDefault();
@@ -284,7 +284,7 @@ public:
 	/** Create a new object from a Path instance.
 	 *
 	 *  @param path the Path instance.
-	 *  @param path_str The path identifier string (if available).  This 
+	 *  @param path_str The path identifier string (if available).  This
 	 *                  is only used for error logging.
 	 */
 	const LinkBase getObject(const Path& path, std::string const &path_str="");
@@ -334,7 +334,7 @@ public:
 	 *
 	 *  @returns the path string if found, otherwise an empty string.
 	 */
-	std::string getPathString(ObjectID const &id) const; 
+	std::string getPathString(ObjectID const &id) const;
 
 	/** Get a list of all objects in the archive.
 	 */
@@ -368,7 +368,7 @@ public:
 
 	// protected methods made public for Python access, don't use!
 	/*
-	long _getOffset(); 
+	long _getOffset();
 	FP _filePointer();
 	*/
 

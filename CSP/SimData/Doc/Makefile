@@ -3,7 +3,8 @@ DATESTR := $(shell date +'%Y%m%d')
 default: all
 
 all:
-	doxygen Doxyfile
+	@echo 'generating doxygen documentation...'
+	@doxygen Doxyfile >doxygen.log 2>doxygen.err
 
 dist:
 	ln -s html simdata-docs-$(DATESTR)

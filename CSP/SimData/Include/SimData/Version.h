@@ -1,5 +1,5 @@
 /* SimData: Data Infrastructure for Simulations
- * Copyright (C) 2002 Mark Rose <tm2@stm.lbl.gov>
+ * Copyright 2002, 2003, 2004 Mark Rose <mkrose@users.sourceforge.net>
  * 
  * This file is part of SimData.
  * 
@@ -18,6 +18,11 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
+/**
+ * @file Version.h
+ * @brief Functions and constants related to the version of SimData.
+ */
+
 #ifndef __SIMDATA_VERSION_H__
 #define __SIMDATA_VERSION_H__
 
@@ -27,7 +32,19 @@
 
 NAMESPACE_SIMDATA
 
+/**
+ * Returns a string representing the SimData version
+ * number.  For unversioned releases, this string will
+ * include the build date.  No fixed format for the
+ * version string has been set yet.
+ */
 const char *getVersion();
+
+/**
+ * Returns a string containing the date and time at
+ * which SimData was built.
+ */
+const char *buildDate();
 
 NAMESPACE_SIMDATA_END
 

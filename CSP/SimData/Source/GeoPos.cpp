@@ -1,18 +1,18 @@
 /* SimDataCSP: Data Infrastructure for Simulations
- * Copyright (C) 2002 Mark Rose <tm2@stm.lbl.gov>
- * 
+ * Copyright 2002, 2003, 2004 Mark Rose <mkrose@users.sourceforge.net>
+ *
  * This file is part of SimDataCSP.
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
@@ -21,8 +21,7 @@
 
 /**
  * @file GeoPos.cpp
- * 
- *
+ * @brief Geodetic coordinate class and conversions.
  */
 
 
@@ -61,7 +60,7 @@ void _iterateECEF(double &_lat, double &_alt, double p, double z_, double x_, do
 	double h = 1.0/sqrt(sy*sy + x_*x_);
 	double dz = z - y_ - alt * sy * h;
 	double dp = p - x_ - alt * x_ * h;
-	if (iter > 15) { 
+	if (iter > 15) {
 		_lat = atan2(sy, x_);
 		_alt = alt;
 	} else {
@@ -147,16 +146,16 @@ LLA UTMtoLLA(UTM const &utm, ReferenceEllipsoid const &_ref)
 	lat = phi - (nu*T/R)*(D2*(0.5 - D2*((120.0+90.0*T2+CP*(300.0-120.0*CP)-270.0*_ref.ep2)
 			+(61.0+90.0*T2+298.0*CP+45.0*T2*T2-252.0*_ref.ep2-3.0*CP*CP)*D2)/720.0));
 			
-	lon = D * ( 1.0 - 
-	            D2*( (1.0+2.0*T2+CP)/6.0 - 
-	                  ( 5.0 - 
-			    CP*(2.0 + 3.0*CP) + 
-			    8.0*_ref.ep2 + 
+	lon = D * ( 1.0 -
+	            D2*( (1.0+2.0*T2+CP)/6.0 -
+	                  ( 5.0 -
+			    CP*(2.0 + 3.0*CP) +
+			    8.0*_ref.ep2 +
 			    T2*(28.0 + 24.0*T2)
 			  )*D2/120.0
 			)
 		  ) / C;
-		  
+		
 	lon += lon0;
 
 	return LLA(lat, lon, utm.altitude());
@@ -193,19 +192,19 @@ UTM LLAtoUTM(LLA const &lla, ReferenceEllipsoid const &_ref, char _zone)
 			case 33:
 				lon0 = 0.261799387799149;
 				break;
-			case 35: 
+			case 35:
 				lon0 = 0.471238898038469;
 				break;
-			case 37: 
+			case 37:
 				lon0 = 0.654498469497874;
 				break;
 			default:
-				lon0 = toRadians((int(_zone) - 1)*6.0 - 180.0 + 3.0); 
+				lon0 = toRadians((int(_zone) - 1)*6.0 - 180.0 + 3.0);
 		}
 	}
 
   	// special zone for Norway, lat 56 - 64 deg, lon 3 - 12 deg
-  	if (lat >= 0.9773843811168 && lat < 1.1170107212764 && 
+  	if (lat >= 0.9773843811168 && lat < 1.1170107212764 &&
 	    lon >= 0.0523598775598 && lon < 0.2094395102393) {
 		_zone = 32;
 		lon0 = 0.1308996938996;
@@ -213,28 +212,28 @@ UTM LLAtoUTM(LLA const &lla, ReferenceEllipsoid const &_ref, char _zone)
   	// special zones for Svalbard, lat 72 - 84
 	if( lat >= 1.2566370614359 && lat < 1.4660765716752) {
 		if (lon < 0.0) {
-		} else 
+		} else
 		if (lon < 0.157079632679490) { // 0 - 9 deg
-			_zone = 31; 
+			_zone = 31;
 			lon0 = 0.078539816339744;
-		} else 
+		} else
 		if (lon < 0.366519142918809) { // 9 - 21 deg
-			_zone = 33; 
+			_zone = 33;
 			lon0 = 0.261799387799149;
 		} else
 		if (lon < 0.575958653158129) { // 21 - 33 deg
-			_zone = 35; 
+			_zone = 35;
 			lon0 = 0.471238898038469;
 		} else
 		if (lon < 0.733038285837618) { // 33 - 42 deg
-			_zone = 37; 
+			_zone = 37;
 			lon0 = 0.654498469497874;
 		}
 	}
 	
 	if (_zone == -1) {
 		_zone = char((lon / PI + 1.0) * 30.0) + 1;
-		lon0 = toRadians((int(_zone) - 1)*6.0 - 180.0 + 3.0); 
+		lon0 = toRadians((int(_zone) - 1)*6.0 - 180.0 + 3.0);
 	}
 
 	S = sin(lat);
@@ -253,8 +252,8 @@ UTM LLAtoUTM(LLA const &lla, ReferenceEllipsoid const &_ref, char _zone)
 	
 	double _easting, _northing;
 
-	_easting = k0 * nu * ( A + 
-	                      (1.0 - T2 + CP) * A2 * A / 6 + 
+	_easting = k0 * nu * ( A +
+	                      (1.0 - T2 + CP) * A2 * A / 6 +
 	                      (5.0 + T2*(T2-18.0) + 72*CP - 58.0*_ref.ep2) * A4 *A / 120.0
 	                     ) + 500000.0;
 
@@ -274,7 +273,7 @@ UTM LLAtoUTM(LLA const &lla, ReferenceEllipsoid const &_ref, char _zone)
 }
 
 
-void SurfaceDistance(LLA const &p, LLA const &q, double &distance, double &bearing, ReferenceEllipsoid const &_ref) 
+void SurfaceDistance(LLA const &p, LLA const &q, double &distance, double &bearing, ReferenceEllipsoid const &_ref)
 {
 	double U1 = atan2((1-_ref.f) * tan(p.latitude()), 1.0);
 	double U2 = atan2((1-_ref.f) * tan(q.latitude()), 1.0);
@@ -473,7 +472,7 @@ void GeoPos::getSurfaceDistance(GeoPos const &p, double &distance, double &beari
 	bearing = atan2(c_U2 * sin(lam), c_U1 * s_U2 - s_U1 * c_U2 * cos(lam));
 }
 
-void GeoPos::getShellDistance(GeoPos const &p, double &distance, double &bearing) const { 
+void GeoPos::getShellDistance(GeoPos const &p, double &distance, double &bearing) const {
 	double da = getAltitude() - p.getAltitude();
         getSurfaceDistance(p, distance, bearing);
 	distance = sqrt(distance*distance + da*da);
@@ -603,23 +602,23 @@ void GeoPos::setUTM(double northing, double easting, char zone, char designator,
 	lat = phi - (nu*T/R)*(D2*(0.5 - D2*((120.0+90.0*T2+CP*(300.0-120.0*CP)-270.0*_ref->ep2)
 			+(61.0+90.0*T2+298.0*CP+45.0*T2*T2-252.0*_ref->ep2-3.0*CP*CP)*D2)/720.0));
 			
-	lon = D * ( 1.0 - 
-	            D2*( (1.0+2.0*T2+CP)/6.0 - 
-	                  ( 5.0 - 
-			    CP*(2.0 + 3.0*CP) + 
-			    8.0*_ref->ep2 + 
+	lon = D * ( 1.0 -
+	            D2*( (1.0+2.0*T2+CP)/6.0 -
+	                  ( 5.0 -
+			    CP*(2.0 + 3.0*CP) +
+			    8.0*_ref->ep2 +
 			    T2*(28.0 + 24.0*T2)
 			  )*D2/120.0
 			)
 		  ) / C;
-		  
+		
 	lon += lon0;
 
 	setLLA(lat, lon, alt);
 	_stale_utm = false;
 }
 
-void GeoPos::setUTM(double northing, double easting, const char *code, double alt) 
+void GeoPos::setUTM(double northing, double easting, const char *code, double alt)
 {
 	char zone=0, designator='Z';
 	if (code) {
@@ -659,7 +658,7 @@ void GeoPos::_updateUTM() const
 	_zone = -1;
 	
   	// special zone for Norway, lat 56 - 64 deg, lon 3 - 12 deg
-  	if (lat >= 0.9773843811168 && lat < 1.1170107212764 && 
+  	if (lat >= 0.9773843811168 && lat < 1.1170107212764 &&
 	    lon >= 0.0523598775598 && lon < 0.2094395102393) {
 		_zone = 32;
 		lon0 = 0.1308996938996;
@@ -667,28 +666,28 @@ void GeoPos::_updateUTM() const
   	// special zones for Svalbard, lat 72 - 84
 	if( lat >= 1.2566370614359 && lat < 1.4660765716752) {
 		if (lon < 0.0) {
-		} else 
+		} else
 		if (lon < 0.157079632679490) { // 0 - 9 deg
-			_zone = 31; 
+			_zone = 31;
 			lon0 = 0.078539816339744;
-		} else 
+		} else
 		if (lon < 0.366519142918809) { // 9 - 21 deg
-			_zone = 33; 
+			_zone = 33;
 			lon0 = 0.261799387799149;
 		} else
 		if (lon < 0.575958653158129) { // 21 - 33 deg
-			_zone = 35; 
+			_zone = 35;
 			lon0 = 0.471238898038469;
 		} else
 		if (lon < 0.733038285837618) { // 33 - 42 deg
-			_zone = 37; 
+			_zone = 37;
 			lon0 = 0.654498469497874;
 		}
 	}
 	
 	if (_zone == -1) {
 		_zone = char((lon / PI + 1.0) * 30.0) + 1;
-		lon0 = toRadians((int(_zone) - 1) * 6.0 - 180.0 + 3.0); 
+		lon0 = toRadians((int(_zone) - 1) * 6.0 - 180.0 + 3.0);
 	}
 
 	S = sin(lat);
@@ -705,8 +704,8 @@ void GeoPos::_updateUTM() const
 	// approximation for length of arc of a meridian from equator to lat
 	M = _ref->A*(_ref->m_0*lat + _ref->m_1*sin(2.0*lat) + _ref->m_2*sin(4.0*lat) - _ref->m_3*sin(6.0*lat));
 	
-	_easting = k0 * nu * ( A + 
-	                      (1.0 - T2 + CP) * A2 * A / 6 + 
+	_easting = k0 * nu * ( A +
+	                      (1.0 - T2 + CP) * A2 * A / 6 +
 	                      (5.0 + T2*(T2-18.0) + 72*CP - 58.0*_ref->ep2) * A4 *A / 120.0
 	                     ) + 500000.0;
 
@@ -790,7 +789,7 @@ void GeoPos::iterateECEF(double p, double z_, double x_, double y_, int iter) co
 	double h = 1.0/sqrt(sy*sy + x_*x_);
 	double dz = _z - y_ - alt * sy * h;
 	double dp =  p - x_ - alt * x_ * h;
-	if (iter > 15) { 
+	if (iter > 15) {
 		_lat = atan2(sy, x_);
 		_alt = alt;
 	} else {
@@ -821,7 +820,7 @@ void GeoPos::iterateECEF(double p, double z, double lat, int iter=0) {
 
 /*
  * TODO
- * 
+ *
  * doxygen comments
  * ECEF class
  * specialized XML tags: LLA, UTM, ECEF
@@ -938,7 +937,7 @@ void UTM::serialize(Writer &writer) const {
 ////////////////////////////////////////////////////////////////////////////////////
 // LLA
 
-LLA::LLA(UTM const &utm, ReferenceEllipsoid const &ref) 
+LLA::LLA(UTM const &utm, ReferenceEllipsoid const &ref)
 {
 	*this = UTMtoLLA(utm, ref);
 }
@@ -947,13 +946,13 @@ LLA::LLA(ECEF const &ecef, ReferenceEllipsoid const &ref) {
 	*this = ECEFtoLLA(ecef, ref);
 }
 
-LLA const &LLA::operator = (UTM const &utm) 
+LLA const &LLA::operator = (UTM const &utm)
 {
 	*this = UTMtoLLA(utm);
 	return *this;
 }
 
-LLA const &LLA::operator = (ECEF const &ecef) 
+LLA const &LLA::operator = (ECEF const &ecef)
 {
 	*this = ECEFtoLLA(ecef);
 	return *this;
@@ -963,9 +962,9 @@ std::string LLA::asString() const
 {
 	std::stringstream ss;
 	ss << std::fixed << std::setprecision(3);
-	ss << "[" << toDegrees(_lat) 
-	   << " " << toDegrees(_lon) 
-	   << ", " << _alt 
+	ss << "[" << toDegrees(_lat)
+	   << " " << toDegrees(_lon)
+	   << ", " << _alt
 	   << "]";
 	return ss.str();
 }

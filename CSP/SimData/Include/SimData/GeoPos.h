@@ -1,18 +1,18 @@
 /* SimData: Data Infrastructure for Simulations
- * Copyright (C) 2002, 2003 Mark Rose <mrose@stm.lbl.gov>
- * 
+ * Copyright 2002, 2003, 2004 Mark Rose <mkrose@users.sourceforge.net>
+ *
  * This file is part of SimData.
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
@@ -20,8 +20,7 @@
 
 /**
  * @file GeoPos.h
- *
- * Geodetic coordinate class and conversions.
+ * @brief Geodetic coordinate class and conversions.
  */
 
 
@@ -113,7 +112,7 @@ namespace GeoRef {
 	/** World Geodetic System 1972
 	 */
 	extern SIMDATA_EXPORT const ReferenceEllipsoid WGS72;
-	/** Clarke 1866 
+	/** Clarke 1866
 	 */
 	extern SIMDATA_EXPORT const ReferenceEllipsoid Clarke1866;
 	/** North American Datum 1927
@@ -125,7 +124,7 @@ namespace GeoRef {
 
 /** Position class using ECEF coordinates.
  *
- *  Extends a cartesian 3-vector to Earth-Centered, Earth-Fixed (ECEF) 
+ *  Extends a cartesian 3-vector to Earth-Centered, Earth-Fixed (ECEF)
  *  coordinates.  Helper methods are provided for lazy conversion to
  *  and from Geodetic and UTM coordinates using a standard reference
  *  ellipsoid.
@@ -136,7 +135,7 @@ namespace GeoRef {
  *  the underlying ECEF vector, you *must* call setDirty() manually to
  *  ensure that subsequent conversions to Geodetic and UTM coordinates
  *  function properly.
- * 
+ *
  *  @ingroup BaseTypes
  *  @deprecated Use LLA, UTM, and/or ECEF instead.
  */
@@ -153,7 +152,7 @@ public:
 		_stale_utm = true;
 	}
 	
-	/** Copy constructor from a standard vector.  
+	/** Copy constructor from a standard vector.
 	 *
 	 *  The WGS84 reference ellipsoid will be set implicity.
 	 */
@@ -183,17 +182,17 @@ public:
 
 	/** Get the absolute distance between two points in ECEF coordinates.
 	 *
-	 *  This is the normal cartesian distance between two points;  the 
+	 *  This is the normal cartesian distance between two points;  the
 	 *  curvature of the ellipsoid is not involved.
 	 */
 	double getSlantRange(GeoPos const &) const;
 
-	/** Get the distance between to points along the surface of the 
+	/** Get the distance between to points along the surface of the
 	 *  reference ellipsoid.
 	 *
 	 *  Both points are projected to altitude = 0, and the distance
 	 *  calculated along a geodesic path of the reference ellipsoid.
-	 * 
+	 *
 	 *  @return distance the geodesic distance
 	 *  @return bearing the bearing to the specified point (in radians relative to true north)
 	 */
@@ -205,8 +204,8 @@ public:
 	 *  This method is very similar to getSurfaceDistance, but includes the altitude
 	 *  difference between the two points in an approximate way that can be used both
 	 *  at close range and globally.
-	 * 
-	 *  @return distance a combined geodesic and altitude distance 
+	 *
+	 *  @return distance a combined geodesic and altitude distance
 	 *  @return bearing the bearing to the specified point (in radians relative to true north)
 	 */
 	void getShellDistance(GeoPos const &, double &distance, double &bearing) const;
@@ -228,7 +227,7 @@ public:
 	void getLLA(double &lat, double &lon, double &alt) const;
 	
 	/** Set the position using latitude, longitude, and altitude.
-	 * 
+	 *
 	 *  @param lat latitude in radians
 	 *  @param lon longitude in radians
 	 *  @param alt altitude in meters
@@ -236,13 +235,13 @@ public:
 	void setLLA(double lat, double lon, double alt = 0.0);
 
 	/** Get the current latitude.
-	 * 
+	 *
 	 *  @return latitude in radians
 	 */
 	double getLongitude() const { if (_stale_lla) _updateLLA(); return _lon; }
 
 	/** Get the current longitude.
-	 * 
+	 *
 	 *  @return longitude in radians
 	 */
 	double getLatitude() const { if (_stale_lla) _updateLLA(); return _lat; }
@@ -347,7 +346,7 @@ public:
 	 *  @li ECEF coordinate format (x, y, z):
 	 * 	<tt>x.x x.x x.x</tt>
 	 *
-	 *  @li LLA coordinate format (lat, lon, alt): 
+	 *  @li LLA coordinate format (lat, lon, alt):
 	 * 	<tt>G x.x x.x x.x</tt>
 	 *
 	 *  @li LLA coordinate format 2 (lat, lon, alt):
@@ -355,7 +354,7 @@ public:
 	 *
 	 *  @li UTM coordinate format (northing, easting, zone, alt):
 	 * 	<tt>G x.x x.x zone x.x</tt>
-	 *      @n where 'zone' is an integer followed by a UTM latitude 
+	 *      @n where 'zone' is an integer followed by a UTM latitude
 	 *      designator, such as "10T".
 	 *
 	 *  Note that the letters preceeding all formats other than ECEF are
@@ -408,8 +407,8 @@ class ECEF;
 /** Convert from Earth centered, Earth fixed (ECEF) coondinates
  *  to latitude, longitude, and altitude (LLA).
  *
- *  @param ecef the source coordinates in ECEF 
- *  @param _ref the reference ellipsoid (the default is WGS-84)  
+ *  @param ecef the source coordinates in ECEF
+ *  @param _ref the reference ellipsoid (the default is WGS-84)
  *  @return the coordinates in LLA
  */
 LLA ECEFtoLLA(ECEF const &ecef, ReferenceEllipsoid const &_ref = GeoRef::WGS84);
@@ -417,8 +416,8 @@ LLA ECEFtoLLA(ECEF const &ecef, ReferenceEllipsoid const &_ref = GeoRef::WGS84);
 /** Convert from Earth centered, Earth fixed (ECEF) coondinates
  *  to Universal Transverse Mercator (UTM) coordinates.
  *
- *  @param ecef the source coordinates in ECEF 
- *  @param _ref the reference ellipsoid (the default is WGS-84)  
+ *  @param ecef the source coordinates in ECEF
+ *  @param _ref the reference ellipsoid (the default is WGS-84)
  *  @return the coordinates in UTM
  */
 UTM ECEFtoUTM(ECEF const &ecef, ReferenceEllipsoid const &_ref = GeoRef::WGS84);
@@ -426,9 +425,9 @@ UTM ECEFtoUTM(ECEF const &ecef, ReferenceEllipsoid const &_ref = GeoRef::WGS84);
 /** Convert from latitude, longitude, and altitude (LLA) to
  *  Earth centered, Earth fixed (ECEF) coondinates.
  *
- *  @param lla the source coordinates in LLA 
- *  @param _ref the reference ellipsoid (the default is WGS-84)  
- *  @return the coordinates in ECEF 
+ *  @param lla the source coordinates in LLA
+ *  @param _ref the reference ellipsoid (the default is WGS-84)
+ *  @return the coordinates in ECEF
  */
 ECEF LLAtoECEF(LLA const &lla, ReferenceEllipsoid const &_ref = GeoRef::WGS84);
 
@@ -436,8 +435,8 @@ ECEF LLAtoECEF(LLA const &lla, ReferenceEllipsoid const &_ref = GeoRef::WGS84);
  *  Earth centered, Earth fixed (ECEF) coondinates.
  *
  *  @param utm the source coordinates in UTM
- *  @param _ref the reference ellipsoid (the default is WGS-84)  
- *  @return the coordinates in ECEF 
+ *  @param _ref the reference ellipsoid (the default is WGS-84)
+ *  @return the coordinates in ECEF
  */
 ECEF UTMtoECEF(UTM const &utm, ReferenceEllipsoid const &_ref = GeoRef::WGS84);
 
@@ -445,22 +444,22 @@ ECEF UTMtoECEF(UTM const &utm, ReferenceEllipsoid const &_ref = GeoRef::WGS84);
  *  latitude, longitude, and altitude (LLA).
  *
  *  @param utm the source coordinates in UTM
- *  @param _ref the reference ellipsoid (the default is WGS-84)  
+ *  @param _ref the reference ellipsoid (the default is WGS-84)
  *  @return the coordinates in LLA
  */
 LLA UTMtoLLA(UTM const &utm, ReferenceEllipsoid const &_ref = GeoRef::WGS84);
 
-/** Convert from latitude, longitude, and altitude (LLA) to Universal 
+/** Convert from latitude, longitude, and altitude (LLA) to Universal
  *  Transverse Mercator (UTM) coordinates.
  *
- *  @param lla the source coordinates in LLA 
- *  @param _ref the reference ellipsoid (the default is WGS-84)  
+ *  @param lla the source coordinates in LLA
+ *  @param _ref the reference ellipsoid (the default is WGS-84)
  *  @param _zone for a specific zone, independent of longitude
  *  @return the coordinates in UTM
  */
 UTM LLAtoUTM(LLA const &lla, ReferenceEllipsoid const &_ref = GeoRef::WGS84, char _zone=-1);
 
-/** Get the distance between two points along the surface of the 
+/** Get the distance between two points along the surface of the
  *  reference ellipsoid.
  *
  *  Both points are projected to altitude = 0, and the distance
@@ -470,12 +469,12 @@ UTM LLAtoUTM(LLA const &lla, ReferenceEllipsoid const &_ref = GeoRef::WGS84, cha
  *  @param q point 2
  *  @param distance Output: the geodesic distance
  *  @param bearing Output: the bearing to the specified point (in radians relative to true north)
- *  @param _ref the reference ellipsoid (the default is WGS-84)  
+ *  @param _ref the reference ellipsoid (the default is WGS-84)
  */
-void SurfaceDistance(LLA const &p, 
-                     LLA const &q, 
-                     double &distance, 
-                     double &bearing, 
+void SurfaceDistance(LLA const &p,
+                     LLA const &q,
+                     double &distance,
+                     double &bearing,
                      ReferenceEllipsoid const &_ref = GeoRef::WGS84);
 
 
@@ -485,17 +484,17 @@ void SurfaceDistance(LLA const &p,
  *  This method is very similar to SurfaceDistance, but includes the altitude
  *  difference between the two points in an approximate way that can be used both
  *  at close range and globally.
- * 
+ *
  *  @param p point 1
  *  @param q point 2
- *  @param distance Output: a combined geodesic and altitude distance 
+ *  @param distance Output: a combined geodesic and altitude distance
  *  @param bearing Output: the bearing to the specified point (in radians relative to true north)
- *  @param _ref the reference ellipsoid (the default is WGS-84)  
+ *  @param _ref the reference ellipsoid (the default is WGS-84)
  */
-void ShellDistance(LLA const &p, 
-                   LLA const &q, 
-                   double &distance, 
-                   double &bearing, 
+void ShellDistance(LLA const &p,
+                   LLA const &q,
+                   double &distance,
+                   double &bearing,
                    ReferenceEllipsoid const &_ref = GeoRef::WGS84);
 
 
@@ -508,10 +507,10 @@ void ShellDistance(LLA const &p,
  *  latitude and longitude in degrees, followed by altitude in meters.
  *  The second uses a degree-minute-second notation for the latitude and
  *  longitude.  The notation for the second format is slighly non-standard
- *  to avoid using the degree symbol.  Examples: 
+ *  to avoid using the degree symbol.  Examples:
  *
  *      @code <LLA>37.1 -122.43 100.0</LLA> @endcode
- *  and 
+ *  and
  *      @code <LLA>37'6"0.0 -122'25"48.0 100.0</LLA> @endcode
  *
  *  @ingroup BaseTypes
@@ -601,9 +600,9 @@ public:
 /** Universal Transverse Mercator and altitude coordinates.
  *
  *  A geospatial coordinate class using Universal Transverse Mercator (UTM)
- *  coordinates plus altitude. 
+ *  coordinates plus altitude.
  *
- *  A sample XML tag for this type is <tt> <UTM>704300 3390210 13T 100.0</UTM> </tt>
+ *  A sample XML tag for this type is @code <UTM>704300 3390210 13T 100.0</UTM> @endcode
  *  which represents 704300E 3390210N 13T, 100.0 m above the reference ellipsoid.
  *
  *  @ingroup BaseTypes
@@ -652,7 +651,7 @@ public:
 	 *  @param designator_ UTM zone letter
 	 *  @param alt altitude above the reference ellipse (in meters)
 	 */
-	void set(double easting_, double northing_, 
+	void set(double easting_, double northing_,
 	         char zone_, char designator_, double alt=0.0) {
 		_E = easting_;
 		_N = northing_;
@@ -723,7 +722,7 @@ public:
  *  A geospatial coordinate class representing Earth Centered, Earth
  *  Fixed coordinates.
  *
- *  The XML format for this type is <tt> <ECEF> X Y Z </ECEF> </tt>
+ *  The XML format for this type is @code <ECEF> X Y Z </ECEF> @endcode
  *
  *  @ingroup BaseTypes
  */

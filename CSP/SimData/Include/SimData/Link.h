@@ -1,5 +1,5 @@
 /* SimData: Data Infrastructure for Simulations
- * Copyright (C) 2002, 2003, 2004 Mark Rose <tm2@stm.lbl.gov>
+ * Copyright 2002, 2003, 2004 Mark Rose <mkrose@users.sourceforge.net>
  *
  * This file is part of SimData.
  *
@@ -21,7 +21,7 @@
 
 /**
  * @file Link.h
- *
+ * @brief Smart pointers to Object classes in data archives.
  */
 
 

@@ -1,5 +1,5 @@
 /* SimDataCSP: Data Infrastructure for Simulations
- * Copyright (C) 2002 Mark Rose <tm2@stm.lbl.gov>
+ * Copyright 2002, 2003, 2004 Mark Rose <mkrose@users.sourceforge.net>
  * 
  * This file is part of SimDataCSP.
  * 
@@ -18,15 +18,23 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
+/**
+ * @file Version.cpp
+ * @brief Functions and constants related to the version of SimData.
+ */
+
 
 #include <SimData/Version.h>
 #include <cstdio>
 #include <iostream>
 #include <iomanip>
 
+#define SIMDATA_BUILD_DATE __TIME__ " " __DATE__
+
 #ifndef SIMDATA_VERSION
-	#define SIMDATA_VERSION "[built " __TIME__ " " __DATE__ "]"
+	#define SIMDATA_VERSION  "[built " SIMDATA_BUILD_DATE "]"
 #endif
+
 
 NAMESPACE_SIMDATA
 
@@ -36,6 +44,9 @@ const char *getVersion() {
 	return SIMDATA_VERSION;
 }
 
+const char *buildDate() {
+	return SIMDATA_BUILD_DATE;
+}
 
 NAMESPACE_SIMDATA_END
 

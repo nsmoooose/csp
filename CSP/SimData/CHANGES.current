@@ -1,6 +1,13 @@
 Version 0.4.0 (in progress)
 ===========================
 
+2004-06-16: onsight
+  * Doxygen cleanups.
+
+  * Minor cleanup of initial version string display (now logged).
+
+  * Updated some copyright notices.
+
 2004-06-13: onsight
   * Fixup python call for saving/restoring ints from archives (now
     _int32).

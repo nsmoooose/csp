@@ -18,6 +18,11 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
+/**
+ * @file Types.h
+ * @brief Convenience header for including all BaseType headers.
+ */
+
 #ifndef __SIMDATA_TYPES_H__
 #define __SIMDATA_TYPES_H__
 

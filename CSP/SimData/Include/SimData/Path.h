@@ -1,18 +1,18 @@
 /* SimData: Data Infrastructure for Simulations
- * Copyright (C) 2002 Mark Rose <tm2@stm.lbl.gov>
- * 
+ * Copyright 2002, 2003, 2004 Mark Rose <mkrose@users.sourceforge.net>
+ *
  * This file is part of SimData.
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
@@ -21,8 +21,7 @@
 
 /**
  * @file Path.h
- *
- * Classes for referring to data sources.
+ * @brief Classes for referring to data sources.
  */
 
 
@@ -63,16 +62,16 @@ SIMDATA_EXCEPTION(ObjectTypeMismatch)
 /**
  * @brief Path to an object record in a data archive.
  *
- * Object paths use '.' to separate path elements, and uniquely 
+ * Object paths use '.' to separate path elements, and uniquely
  * identify objects in a data archive.  Path objects store the
  * path as a 64-bit hash of the path string, called an Object ID.
- * 
+ *
  * @author Mark Rose <mrose@stm.lbl.gov>
  * @ingroup BaseTypes
  */
 class SIMDATA_EXPORT Path: public BaseType {
 protected:
-	ObjectID _path; 
+	ObjectID _path;
 public:
 
 	/**
@@ -94,12 +93,12 @@ public:
 	/**
 	 * Assign to a specific Object ID.
 	 */
-	inline void setPath(ObjectID path) { 
+	inline void setPath(ObjectID path) {
 	        _path = path;
 	}
 
 	/**
-	 * Assign to an object path string (after converting to an 
+	 * Assign to an object path string (after converting to an
 	 * Object ID).
 	 */
 	void setPath(const char* path);
@@ -145,7 +144,7 @@ public:
 	/**
 	 * String representation.
 	 */
-	virtual std::string asString() const; 
+	virtual std::string asString() const;
 
 	/**
 	 * Return a string representation of the type.
@@ -167,10 +166,10 @@ public:
 
 	// SWIG python specific comparisons
 	bool __eq__(const ReferencePointer& other);
-	bool __ne__(const ReferencePointer& other); 
+	bool __ne__(const ReferencePointer& other);
 	
 	/**
-	 * Construct a PathReferencePointer with no path or object reference (null 
+	 * Construct a PathReferencePointer with no path or object reference (null
 	 * pointer)
 	 */
 	explicit ReferencePointer(): _reference(0) { }
@@ -226,7 +225,7 @@ public:
 #endif
 
 	/**
-	 * Clear pointer. 
+	 * Clear pointer.
 	 */
 	inline void setNull() {
 		_assign_fast(0);
@@ -236,8 +235,8 @@ public:
 	/**
 	 * Test for null pointer.
 	 */
-	inline bool isNull() const { 
-		return _reference == 0; 
+	inline bool isNull() const {
+		return _reference == 0;
 	}
 
 	/**
@@ -302,9 +301,9 @@ protected:
 	}
 
 	/**
-	 * Change object pointer without reference counting. 
+	 * Change object pointer without reference counting.
 	 *
-	 * This method is extended in the Pointer<> class to test for 
+	 * This method is extended in the Pointer<> class to test for
 	 * type compatibility.
 	 */
 	virtual void _update(Object* p) { _reference = p; }
@@ -312,8 +311,8 @@ protected:
 	/**
 	 * Get the current object pointer.
 	 */
-	inline Object* _get() const { 
-		return _reference; 
+	inline Object* _get() const {
+		return _reference;
 	}
 
 	/**
@@ -325,10 +324,10 @@ protected:
 
 /**
  * @brief Base class for "smart-pointer" to Objects.
- * 
+ *
  * Use this and the template Pointer<> class below for all Object references.
  * This class serves as a generic version of the specialized Pointer template
- * class.  It contains most of the smart-pointer functionality, except 
+ * class.  It contains most of the smart-pointer functionality, except
  * dereferencing to a specific object type.
  *
  * @author Mark Rose <mrose@stm.lbl.gov>
@@ -339,10 +338,10 @@ public:
 
 	// SWIG python specific comparisons
 	bool __eq__(const PointerBase& other);
-	bool __ne__(const PointerBase& other); 
+	bool __ne__(const PointerBase& other);
 	
 	/**
-	 * Construct a PointerBase with no path or object reference (null 
+	 * Construct a PointerBase with no path or object reference (null
 	 * pointer)
 	 */
 	explicit PointerBase(): Path((const char*)0), ReferencePointer() { }
@@ -355,7 +354,7 @@ public:
 	/**
 	 * Assign an object path and bind to a specific object.
 	 */
-	explicit PointerBase(const Path& path, Object* ptr): 
+	explicit PointerBase(const Path& path, Object* ptr):
 		Path(path), ReferencePointer(ptr) { }
 	
 	/**
@@ -388,7 +387,7 @@ n
 	/** Serialize to or from a data archive.
 	 *
 	 *  Saves the path, and also saves the referenced object
-	 *  if the path is 'None'.  Packing a None and Null 
+	 *  if the path is 'None'.  Packing a None and Null
 	 *  PointerBase is an error.
 	 *
 	 *  Reads the saved path and binds to the correct object.
@@ -433,9 +432,9 @@ protected:
  * @brief Class-specialized "smart-pointer" to Objects.
  *
  * Use this class as you would an ordinary pointer to refer to all
- * objects descended from simdata::Object.  Given that all objects 
- * should be referred to by Pointers, when creating a new 
- * Pointer you have a couple of options.  You can instantiate the 
+ * objects descended from simdata::Object.  Given that all objects
+ * should be referred to by Pointers, when creating a new
+ * Pointer you have a couple of options.  You can instantiate the
  * new Pointer by assigning from an existing Pointer.  This
  * is purely a reference counting operation; no actual copying
  * of the underlying object takes place.  The other primary means
@@ -479,13 +478,13 @@ public:
 	}
 
 	// fast copy
-	Pointer(const Pointer<T>& p) { 
+	Pointer(const Pointer<T>& p) {
 		_path = p.getPath();
 		_assign_fast(p._reference);
 	}
 	
 	// safe copy
-	Pointer(const PointerBase& p) { 
+	Pointer(const PointerBase& p) {
 		PointerBase::operator=(p);
 	}
 	
@@ -509,14 +508,14 @@ public:
 	/**
 	 * Dereference.
 	 */
-	T* operator->() { 
+	T* operator->() {
 		return (T*) _reference;
 	}
 	
 	/**
 	 * Const dereference.
 	 */
-	const T* operator->() const { 
+	const T* operator->() const {
 		return (T*) _reference;
 	}
 	
@@ -556,7 +555,7 @@ protected:
 	virtual void _update(Object* ptr) throw(ObjectTypeMismatch) {
 		PointerBase::_update(ptr);
 		T* _special = dynamic_cast<T*>(ptr);
-		if (ptr != 0 && _special == 0) 
+		if (ptr != 0 && _special == 0)
 			throw ObjectTypeMismatch("dynamic_cast<> failed in Pointer<>::_update()");
 	}
 };

@@ -1,18 +1,18 @@
 /* SimData: Data Infrastructure for Simulations
- * Copyright (C) 2002 Mark Rose <tm2@stm.lbl.gov>
- * 
+ * Copyright 2002, 2003, 2004 Mark Rose <mkrose@users.sourceforge.net>
+ *
  * This file is part of SimData.
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
@@ -21,8 +21,7 @@
 
 /**
  * @file Noise.h
- *
- * Noise distribution classes.
+ * @brief Noise distribution classes.
  */
 
 
@@ -41,10 +40,10 @@ NAMESPACE_SIMDATA
 
 /**
  * @brief Encapsulates a perlin noise generator in one-dimension.
- * 
+ *
  * Many introductions to perlin noise and its uses are available online,
  * via Google.  Here's one such site:
- * 
+ *
  *   http://freespace.virgin.net/hugo.elias/models/m_perlin.htm
  *
  * @author Mark Rose <mrose@stm.lbl.gov>
@@ -92,7 +91,7 @@ public:
 	 * Randomize the offset.
 	 *
 	 * Subsequent noise will generally be uncorrelated to previously
-	 * generated noise.  Be aware that the random offset is in the 
+	 * generated noise.  Be aware that the random offset is in the
 	 * range 10^9, so for large noise sets this property will break down.
 	 */
 	void randomize();
@@ -108,7 +107,7 @@ public:
 		return (1.0 -
 		        ((x * (x * x * 15731 + 789221) + 1376312589) & 0x7fffffff) /
 		        1073741824.0);
-	} 
+	}
 
 	/**
 	 * Get a weighted sum of adjacent random numbers to smooth the distribution.
@@ -118,7 +117,7 @@ public:
 	 */
 	double _getSmoothedNoise(int x) {
 		return 0.5 * (_simpleRandom(x) + 0.5 * (_simpleRandom(x - 1) + _simpleRandom(x + 1)));
-	} 
+	}
 
 	/**
 	 * Linear interpolation.
@@ -148,7 +147,7 @@ public:
 	/**
 	 * Cubic interpolation.
 	 *
-	 * @param v0 value(i-1) 
+	 * @param v0 value(i-1)
 	 * @param v1 value(i)
 	 * @param v2 value(i+1)
 	 * @param v3 value(i+2)
@@ -187,7 +186,7 @@ public:
 	 * value at the start and at the end).  The noise field can be scaled in X and
 	 * Y (e.g. time and amplitude), as well as offset so that the mean value is
 	 * non-zero.
-	 * 
+	 *
 	 * @param n the number of noise values
 	 * @param periodic if true, the lists ends are blended to make them continuous
 	 * @param scale the scaling factor from the list index to the noise function

@@ -1,21 +1,27 @@
 /* SimDataCSP: Data Infrastructure for Simulations
- * Copyright (C) 2002 Mark Rose <tm2@stm.lbl.gov>
- * 
+ * Copyright 2002, 2003, 2004 Mark Rose <mkrose@users.sourceforge.net>
+ *
  * This file is part of SimDataCSP.
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ */
+
+
+/**
+ * @file Noise.cpp
+ * @brief Noise distribution classes.
  */
 
 
@@ -37,7 +43,7 @@ Perlin1D::Perlin1D(double persistence, int octaves, Interpolation interpolation)
 void Perlin1D::setParameters(double persistence, int octaves) {
 	m_persistence = persistence;
 	m_octaves = octaves;
-} 
+}
 
 
 void Perlin1D::setInterpolation(Interpolation interpolation) {
@@ -73,7 +79,7 @@ double Perlin1D::_getInterpolatedNoise(double x) {
 	double v3 = _getSmoothedNoise(integer_X + 2);
 
 	return _cubicInterpolate(v0, v1, v2, v3, fractional_X);
-} 
+}
 
 double Perlin1D::getValue(double x) {
 	double total = 0.0;
@@ -83,7 +89,7 @@ double Perlin1D::getValue(double x) {
 		amplitude *= m_persistence;
 		total += _getInterpolatedNoise(x * frequency + m_offset) * amplitude;
 		frequency *= 2.0;
-	} 
+	}
 	return total;
 }
 

@@ -1,22 +1,28 @@
 /* SimDataCSP: Data Infrastructure for Simulations
- * Copyright (C) 2002 Mark Rose <tm2@stm.lbl.gov>
- * 
+ * Copyright 2002, 2003, 2004 Mark Rose <mkrose@users.sourceforge.net>
+ *
  * This file is part of SimDataCSP.
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
+
+/**
+ * @file Real.cpp
+ * @brief A guassian distributed floating-point value.
+ */
+
 
 #include <SimData/Real.h>
 #include <SimData/Random.h>
@@ -29,7 +35,7 @@ NAMESPACE_SIMDATA
 
 // shared random number generator for Real instances
 // XXX in multithreaded environments this *must* be replaced
-// with a thread-safe generator. 
+// with a thread-safe generator.
 random::Taus2 Real::_rng;
 
 
@@ -73,7 +79,7 @@ void Real::set(float mean, float sigma) {
 	regen();
 }
 
-void Real::regen() { 
+void Real::regen() {
 	if (_sigma <= 0.0) {
 		_value = _mean;
 	} else {
@@ -88,7 +94,7 @@ float Real::getSigma() const { return _sigma; }
 
 float Real::getValue() const { return _value; }
 
-std::string Real:: asString() const { 
+std::string Real:: asString() const {
 	std::stringstream ss;
 	ss << _value;
 	return ss.str();

@@ -1,6 +1,9 @@
 Version 0.3.2 (in progress)
 ===========================
 
+2005-01-01: delta
+		Linked the debug build against OpenThreadsWin32d.lib.
+
 2004-12-23: delta
 		Demeter is linked against osg which, since 0.9.8 depends on
 		OpenThreads.

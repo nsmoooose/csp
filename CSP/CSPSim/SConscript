@@ -1,0 +1,70 @@
+# -*- python -*-
+#
+# Copyright 2004 Mark Rose <mkrose@users.sourceforge.net>
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+Import('env build')
+
+
+CPPPATH = ['#/CSPSim/Include'] + env['CPPPATH'] + [
+	'/usr/local/include/SDL',
+	'/usr/lib/sigc++-1.2/include',
+	'/usr/include/sigc++-1.2',
+	'/usr/include/cc++2'
+]
+
+CXXFLAGS = env['CXXFLAGS'].replace('-pedantic', '').replace('-W ', '')
+
+MODULES = [
+	'Source',
+]
+
+
+def PackageConfig(env):
+	print '<< CSPSim Config >>'
+	conf = build.CustomConfigure(env)
+	conf.CheckSwig('1.3.20')
+	conf.CheckLib('SDL_image', 'IMG_Load')
+	conf.CheckOSGVersion('osg', '0.9.6')
+	conf.CheckOSGVersion('osgUtil', '0.9.6')
+	conf.CheckOSGVersion('osgText', '0.9.6')
+	conf.CheckOSGVersion('osgParticle', '0.9.6')
+	conf.CheckLib('osgFX')  # doesn't have a GetVersion function
+	conf.CheckCommandVersion('sdl', 'sdl-config --version', '1.2.5')
+	conf.CheckCommandVersion('ccgnu2', 'ccgnu2-config --version', '1.0.13')
+	conf.CheckPkgConfig('sigc++-1.2', version='1.2.5', lib_name='sigc')
+	env = conf.Finish()
+	env.ParseConfig('sdl-config --cflags --libs')
+	env.ParseConfig('ccgnu2-config --flags --libs')
+	env.ParseConfig('pkg-config --cflags --libs sigc++-1.2')
+
+env = env.Copy(CPPPATH=CPPPATH, CXXFLAGS=CXXFLAGS)
+
+env.SetConfig(PackageConfig)
+
+env.Documentation('#/CSPSim/Doc', '#/CSPSim/Doc/Doxyfile',
+                  '#/CSPSim/Include/*.{h,i}',
+                  '#/CSPSim/Include/*/*.{h,i}',
+                  '#/CSPSim/Source/*/*.cpp',
+                  '#/CSPSim/Source/*.cpp')
+
+env.Append(LIBS=['demeter_csp'], LIBPATH=['#/Demeter/.bin'])
+env.Append(LIBS=['osgChunkLod'], LIBPATH=['#/CSPChunkLod/.bin'])
+env.Append(LIBS=['spatialindex'], LIBPATH=['#/SpatialIndex/.bin'])
+
+build.BuildModules(env, MODULES)
+
+

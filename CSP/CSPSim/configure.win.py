@@ -26,7 +26,7 @@ if len(sys.argv) == 2:
 		sys.exit(old)
 		
 try:
-	import SimData
+	from CSP import SimData
 	if SimData.getVersion() < min_simdata_version:
 		print
 		print "SimData version %s or greater is required, but version %s is installed." % (min_simdata_version, SimData.getVersion())

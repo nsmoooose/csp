@@ -17,9 +17,9 @@
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 
-import cCSP as CSP
+from CSP.CSPSim import cCSP
 
-theSim = CSP.cvar.CSPSim_theSim
+theSim = cCSP.cvar.CSPSim_theSim
 
 copyright = """
 Combat Simulator Project - FlightSim Demo

@@ -98,7 +98,7 @@ osg::Node* DynamicObject::getOrCreateModelNode() {
 	return m_SceneModel->getRoot();
 }
 
-osg::Node* DynamicObject::getModelNode() { 
+osg::Node* DynamicObject::getModelNode() {
 	if (!m_SceneModel) return 0;
 	return m_SceneModel->getRoot();
 }

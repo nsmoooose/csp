@@ -1,0 +1,120 @@
+# -*- python -*-
+#
+# Copyright 2004 Mark Rose <mkrose@users.sourceforge.net>
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+Import('env build')
+
+SOURCES = [
+	'Systems/AircraftFlightSensors.cpp',
+	'Systems/AircraftInputSystem.cpp',
+	'Systems/AircraftSimpleFCS.cpp',
+	'AircraftObject.cpp',
+	'AircraftPhysicsModel.cpp',
+	'Animation.cpp',
+	'Atmosphere.cpp',
+	'BaseDynamics.cpp',
+	'BaseScreen.cpp',
+	'Battlefield.cpp',
+	'ChunkLodTerrain.cpp',
+	'ClientNode.cpp',
+	'Collision.cpp',
+	'Colorspace.cpp',
+	'Config.cpp',
+	'Console.cpp',
+	'ConsoleCommands.cpp',
+	'CSPSim.cpp',
+	'DemeterTerrain.cpp',
+	'DispatchCenter.cpp',
+	'DynamicObject.cpp',
+	'DynamicalSystem.cpp',
+	'EchoServerNode.cpp',
+	'Engine.cpp',
+	'EventMapIndex.cpp',
+	'EventMapping.cpp',
+	'Exception.cpp',
+	'FlightDynamics.cpp',
+	'FlightModel.cpp',
+	'GameScreen.cpp',
+	'HID.cpp',
+	'InputEvent.cpp',
+	'InputInterface.cpp',
+	'KineticsChannels.cpp',
+	'LandingGear.cpp',
+	'LogoScreen.cpp',
+	'MenuScreen.cpp',
+ 	'Message.cpp',
+	'SimNet/NetworkNode.cpp',
+	'SimNet/NetworkMessage.cpp',
+	'SimNet/ObjectUpdateMessage.cpp',
+	'SimNet/NetworkMessenger.cpp',
+	'SimNet/PrintMessageHandler.cpp',
+	'SimNet/RedirectMessageHandler.cpp',
+	'SimNet/EchoMessageHandler.cpp',
+	'SimNet/DispatchMessageHandler.cpp',
+	'NumericalMethod.cpp',
+	'ObjectModel.cpp',
+	'PhysicsModel.cpp',
+	'RedirectServerNode.cpp',
+	'SceneManager.cpp',
+	'ScreenInfo.cpp',
+	'ScreenInfoManager.cpp',
+	'SimObject.cpp',
+	'SimpleConfig.cpp',
+	'SimpleSceneManager.cpp',
+	'Sky.cpp',
+	'SmokeEffects.cpp',
+	'SynchronousUpdate.cpp',
+	'System.cpp',
+	'SystemsModel.cpp',
+	'TankObject.cpp',
+	'TerrainObject.cpp',
+	'Theater.cpp',
+	'Theater/CustomLayoutModel.cpp',
+	'Theater/ElevationCorrection.cpp',
+	'Theater/Feature.cpp',
+	'Theater/FeatureGroup.cpp',
+	'Theater/FeatureGroupList.cpp',
+	'Theater/FeatureLayout.cpp',
+	'Theater/FeatureObjectModel.cpp',
+	'Theater/FeatureQuad.cpp',
+	'Theater/FeatureSceneModel.cpp',
+	'Theater/LayoutTransform.cpp',
+	'Theater/Objective.cpp',
+	'Theater/RandomBillboardModel.cpp',
+	'Theater/RandomForestModel.cpp',
+	'Tools.cpp',
+	'Views/CameraAgent.cpp',
+	'Views/CameraKinematics.cpp',
+	'Views/View.cpp',
+	'VirtualScene.cpp',
+]
+
+
+cCSP_wrap, cCSP_module = env.Swig('cCSP.i', SWIGINCLUDES='-ICSPSim/Include -ISimData/Include')
+INTERFACES = [env.SwigWrapper(cCSP_wrap)]
+
+cCSP = env.SharedLibrary('cCSP', INTERFACES + SOURCES, SHLIBPREFIX='_')
+Alias('all', cCSP)
+
+#$(WRAPED_LIB) : $(OBJECTS) cCSP_wrap.o
+#	$(CXX) $(LDOPTS) -o$@ $^ $(LIBS)
+#	cp $(WRAPED_LIB) $(BIN)/$(WRAPED_LIB)
+	
+#cCSP_wrap.cpp: cCSP.i
+#	$(SWIG) $(SWOPTS) -o $@ $< 
+#	mv cCSP.py $(BIN)
+

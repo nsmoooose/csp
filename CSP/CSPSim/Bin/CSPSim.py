@@ -19,19 +19,27 @@
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 
-import sys, os, os.path
+import sys
+import os
+import os.path
 
-sys.path.insert(0, '../../SimData')
+try:
+	import CSP
+except ImportError:
+	print 'Unable to import CSP bootstrap module.  Check that you have run'
+	print 'CSP/setup.py successfully to initialize the workspace.'
+	sys.exit(1)
+
 
 #import Shell
 #from SimData.Compile import Compiler, CompilerUsageError
 
 
-def initDynamicLoading():
-	"""Enable lazy loading of shared library modules if available"""
-	if os.name == 'posix':
-		import dl
-		sys.setdlopenflags(dl.RTLD_GLOBAL|dl.RTLD_LAZY)
+#def initDynamicLoading():
+#	"""Enable lazy loading of shared library modules if available"""
+#	if os.name == 'posix':
+#		import dl
+#		sys.setdlopenflags(dl.RTLD_GLOBAL|dl.RTLD_LAZY)
 
 
 def setDefaultJoystick():
@@ -70,19 +78,19 @@ def setLogCategory():
 			class_name = class_name[1:]
 			invert = 1
 		try:
-			class_flag = getattr(CSP, "CSP_"+class_name);
+			class_flag = getattr(cCSP, "CSP_"+class_name);
 			if invert:
 				flags = flags & ~class_flag
 			else:
 				flags = flags | class_flag
 		except:
 			print "Unrecognized log class:", class_name
-	CSP.csplog().setLogCategory(flags)
+	cCSP.csplog().setLogCategory(flags)
 
 
 def setLogPriority():
 	if log_priority is None: return
-	CSP.csplog().setLogPriority(log_priority)
+	cCSP.csplog().setLogPriority(log_priority)
 	SimData.log().setLogPriority(log_priority)
 
 
@@ -101,7 +109,7 @@ def runCSPSim(args):
 		print
 		sys.exit(1)
 
-	cachepath = CSP.getCachePath()
+	cachepath = cCSP.getCachePath()
 	dar = os.path.join(cachepath, "sim.dar")
 	if not os.path.exists(dar):
 		print
@@ -109,7 +117,7 @@ def runCSPSim(args):
 		compileData([])
 
 	import Shell
-	app = CSP.CSPSim()
+	app = cCSP.CSPSim()
 
 	# logging will have already been configured from the ini file at this point,
 	# so we can safely override the settings.
@@ -133,7 +141,7 @@ def runCSPSim(args):
 
 
 def dumpData(args):
-	cachepath = CSP.getCachePath()
+	cachepath = cCSP.getCachePath()
 	dar = os.path.join(cachepath, "sim.dar")
 	for arg in args:
 		if arg.startswith('--dump-data='):
@@ -143,15 +151,15 @@ def dumpData(args):
 
 
 def compileData(args):
-	datapath = CSP.getDataPath()
-	cachepath = CSP.getCachePath()
+	datapath = cCSP.getDataPath()
+	cachepath = cCSP.getCachePath()
 	dar = os.path.join(cachepath, "sim.dar")
 	XML = os.path.join(datapath, "XML")
-	CSP.csplog().setLogCategory(CSP.CSP_ALL)
-	CSP.csplog().setLogPriority(SimData.LOG_ALERT)
+	cCSP.csplog().setLogCategory(cCSP.CSP_ALL)
+	cCSP.csplog().setLogPriority(SimData.LOG_ALERT)
 	#print "compile %s %s" % (XML, dar)
 	try:
-		from SimData.Compile import Compiler, CompilerUsageError
+		from CSP.SimData.Compile import Compiler, CompilerUsageError
 	except:
 		print
 		print "ERROR: unable to load the SimData data compiler module."
@@ -184,7 +192,7 @@ def runClientNode(args):
 	print "CSPSim.py - runClientNode - calling loadCSP"
 	loadCSP()
 	print "CSPSim.py - runClientNode - calling CSP.ClientNode"
-	app = CSP.ClientNode()
+	app = cCSP.ClientNode()
 	print "CSPSim.py - runClientNode - calling app.run"
 	app.run()
 
@@ -192,7 +200,7 @@ def runClientNode(args):
 def runEchoServerNode(args):
 	print "Starting Test Echo Server Node..."
 	loadCSP()
-	app = CSP.EchoServerNode()
+	app = cCSP.EchoServerNode()
 	app.run()
 
 
@@ -201,7 +209,7 @@ def loadSimData():
 	global SimData
 	os.environ.setdefault('SIMDATA_LOGFILE', 'SimData.log')
 	try:
-		import SimData as SD
+		import CSP.SimData as SD
 	except Exception, e:
 		msg = str(e)
 		if len(msg) > 60:
@@ -225,9 +233,9 @@ def loadSimData():
 
 
 def loadCSP():
-	global CSP
+	global cCSP
 	try:
-		import cCSP
+		import CSP.CSPSim.cCSP
 	except Exception, e:
 		msg = str(e)
 		if len(msg) > 60:
@@ -256,7 +264,7 @@ def loadCSP():
 
 	"""
 		sys.exit(1)
-	CSP = cCSP
+	cCSP = CSP.CSPSim.cCSP
 
 
 def findConfig():
@@ -277,7 +285,7 @@ def main(argv):
 	global log_categories
 	global log_priority
 
-	initDynamicLoading()
+	#initDynamicLoading()
 	setDefaultJoystick()
 
 	action = None
@@ -342,7 +350,7 @@ def main(argv):
 	loadCSP()
 
 	print "Loading configuration from '%s'." % config
-	if not CSP.openConfig(config):
+	if not cCSP.openConfig(config):
 		print "Unable to open primary configuration file (%s)" % config
 		sys.exit(0)
 

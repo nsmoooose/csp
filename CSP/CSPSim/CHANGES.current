@@ -3,7 +3,17 @@
 
 2004-09-24: onsight
   * Fix a few compiler warnings under gcc.
+
   * Add 'clean' target to tools makefiles.
+
+  * Add a new build system for linux using scons.
+
+  * Changed the Demeter header includes to use the prefix "Demeter/".
+    This may require an update to the header search path in MSVS.
+
+  * Changed the cCSP and SimData module import paths to use the new
+    CSP.py bootstrap module.  You need to run setup.py first for this
+    to work.
 
 2004-09-18: delta
   * Updated VisualStudio/CSPSimDLL/CSPSimDLL.vcproj linking onto

@@ -1,17 +1,17 @@
 // Combat Simulator Project - FlightSim Demo
-// Copyright (C) 2002 The Combat Simulator Project
+// Copyright (C) 2002, 2004 The Combat Simulator Project
 // http://csp.sourceforge.net
-// 
+//
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
 // as published by the Free Software Foundation; either version 2
 // of the License, or (at your option) any later version.
-// 
+//
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU General Public License
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
@@ -27,9 +27,9 @@
 #include "Config.h"
 #include "Log.h"
 
-#include "Terrain.h"
-#include "DemeterDrawable.h"
-#include "TerrainTextureFactory.h"
+#include <Demeter/Terrain.h>
+#include <Demeter/DemeterDrawable.h>
+#include <Demeter/TerrainTextureFactory.h>
 
 #include <SimData/InterfaceRegistry.h>
 
@@ -51,7 +51,7 @@ SIMDATA_REGISTER_INTERFACE(DemeterTerrain)
 // When the SetActive function is called the Terrain Engine will be
 // Initialized and a Drawable node will be added to the scene graph.
 
-/** 
+/**
  * Default constructor for the Terrain Object. Sets default values.
  */
 DemeterTerrain::DemeterTerrain()
@@ -136,7 +136,7 @@ void DemeterTerrain::activate()
 	if (!m_Active) {
 		m_Active = true;
 		load();
-	} 
+	}
 }
 
 /**
@@ -231,7 +231,7 @@ int DemeterTerrain::createTerrain()
 			                                  m_VertexHeight,
 			                                  m_MaxTriangles, 
 			                                  false, 0, 0, 4,4);
-		} else { 
+		} else {
 			m_Terrain = new Demeter::Terrain(m_ElevationFile.getSource().c_str(), 
 			                                  NULL,
 			                                  m_DetailTextureFile.getSource().c_str(),

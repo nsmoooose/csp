@@ -31,7 +31,7 @@
 %include std_vector.i
 
 
-%import "SimData/cSimData.i"
+//%import "SimData/cSimData.i"
 
 
 //%include "Battlefield.i"

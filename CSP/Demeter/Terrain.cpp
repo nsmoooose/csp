@@ -45,7 +45,7 @@ Boston, MA  02111-1307, USA.
 
 #ifndef _WIN32
  #define GL_GLEXT_PROTOTYPES
- #include "SDL_opengl.h"
+ #include "SDL/SDL_opengl.h"
  
  #define _O_BINARY 0
  #define _open(a,b) open((a),(b))
@@ -228,7 +228,7 @@ void TerrainBlock::Tessellate(const double* pMatModelView,const double* pMatProj
     // tessellation levels.  By overestimating the bounding box for the culling test,
     // we ensure that blocks that are just outside of the field of view will be tesselated
     // to the correct level, keeping the visible triangle fans intact.  -MR 2004-08-05
-    int oversize = width * 2.0;
+    float oversize = width * 2.0;
     boundingBox.m_Min.x = pTerrain->m_pVertices[m_HomeIndex].x - oversize;
     boundingBox.m_Min.y = pTerrain->m_pVertices[m_HomeIndex].y - oversize;
     boundingBox.m_Min.z = m_MinElevation;

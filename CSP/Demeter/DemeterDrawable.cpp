@@ -45,8 +45,8 @@ namespace Demeter
 
 DemeterDrawable::DemeterDrawable()
 {
-    // force the support of display list off for this Drawable
-    // since it is not appropriate for dynamic geometry.
+	// force the support of display list off for this Drawable
+	// since it is not appropriate for dynamic geometry.
 	setSupportsDisplayList(false);
 }
 
@@ -60,23 +60,23 @@ DemeterDrawable::~DemeterDrawable()
 {
 }
 
-DemeterDrawable& DemeterDrawable::operator = (const DemeterDrawable& other) 
-{        
-    if (&other==this) return *this; // don't copy if assigning to self. 
+DemeterDrawable& DemeterDrawable::operator = (const DemeterDrawable& other)
+{
+	if (&other==this) return *this; // don't copy if assigning to self.
 	m_RefTerrain = other.m_RefTerrain; // Increments ref count
 	return *this;
 }
 
-Object* DemeterDrawable::cloneType() const 
-{ 
-    // return a clone of this type of drawable.
+Object* DemeterDrawable::cloneType() const
+{
+	// return a clone of this type of drawable.
 	return new DemeterDrawable();
 }
 
 Object* DemeterDrawable::clone(const osg::CopyOp& copyop) const
 {
-    // return a clone of this object, via the copy constructor.
-    return new DemeterDrawable(*this,copyop);
+	// return a clone of this object, via the copy constructor.
+	return new DemeterDrawable(*this,copyop);
 }
 
 void DemeterDrawable::SetTerrain(Terrain* pTerrain)
@@ -84,9 +84,9 @@ void DemeterDrawable::SetTerrain(Terrain* pTerrain)
 	m_RefTerrain = pTerrain;
 }
 
-const char* DemeterDrawable::className() const 
-{ 
-	return "DemeterDrawable"; 
+const char* DemeterDrawable::className() const
+{
+	return "DemeterDrawable";
 }
 
 void DemeterDrawable::drawImplementation(State& state) const

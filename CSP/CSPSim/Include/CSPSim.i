@@ -1,17 +1,17 @@
 // Combat Simulator Project - FlightSim Demo
 // Copyright (C) 2002 The Combat Simulator Project
 // http://csp.sourceforge.net
-// 
+//
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
 // as published by the Free Software Foundation; either version 2
 // of the License, or (at your option) any later version.
-// 
+//
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU General Public License
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
@@ -41,14 +41,14 @@ void _createVehicleHelper(CSPSim *self, const char *path, simdata::Vector3 posit
 	self->getBattlefield()->addUnit(obj, false);
 	if (!self->getActiveObject()) self->setActiveObject(obj);
 }
-
+	
 %}
 
 class CSPSim
 {
 public:
 	static CSPSim *theSim;
-    
+
 	CSPSim();
 	virtual ~CSPSim();
 	virtual void init();
@@ -72,24 +72,24 @@ public:
 
 
 %exception CSPSim::createVehicle {
-        try {
-                $action
-        } catch (simdata::Exception &e) {
-		std::string msg = e.getType() + ": " + e.getMessage();
-                PyErr_SetString(PyExc_RuntimeError, msg.c_str());
-                SWIG_fail;
-        } catch (...) {
-                PyErr_SetString(PyExc_RuntimeError, "Caught an (unknown) exception in CSPSim::createVehicle");
-                SWIG_fail;
-        }
+	try {
+		$action
+	} catch (simdata::Exception &e) {
+	std::string msg = e.getType() + ": " + e.getMessage();
+		PyErr_SetString(PyExc_RuntimeError, msg.c_str());
+		SWIG_fail;
+	} catch (...) {
+		PyErr_SetString(PyExc_RuntimeError, "Caught an (unknown) exception in CSPSim::createVehicle");
+		SWIG_fail;
+	}
 }
 
 %extend CSPSim {
-	void createVehicle(const char *path, simdata::Vector3 position, 
-	                       simdata::Vector3 velocity, simdata::Vector3 attitude) {
+	void createVehicle(const char *path, simdata::Vector3 position,
+	                   simdata::Vector3 velocity, simdata::Vector3 attitude) {
 		_createVehicleHelper(self, path, position, velocity, attitude);
 	}
-	void createVehicle(const char *path, simdata::LLA lla, 
+	void createVehicle(const char *path, simdata::LLA lla,
 	                   simdata::Vector3 velocity, simdata::Vector3 attitude) {
 		Projection const &map = CSPSim::theSim->getTheater()->getTerrain()->getProjection();
 		simdata::Vector3 position = map.convert(lla);

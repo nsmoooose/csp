@@ -1,0 +1,64 @@
+# -*- python -*-
+#
+# Copyright 2004 Mark Rose <mkrose@users.sourceforge.net>
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+Import('env build')
+
+def PackageConfig(env):
+	print '<< SimNet Config >>'
+	conf = build.CustomConfigure(env)
+	conf.CheckCommandVersion('ccgnu2', 'ccgnu2-config --version', '1.0.13')
+	env = conf.Finish()
+	env.ParseConfig('ccgnu2-config --flags --libs')
+
+env = env.Copy()
+env.Append(CXXFLAGS=' -Wno-long-long')
+env.AppendUnique(SHLINKFLAGS = '-Wl,-z,lazyload')
+env.Replace(CXXFLAGS=env['CXXFLAGS'].replace('-W ', ''))
+
+env.SetConfig(PackageConfig)
+env.Documentation('#/SimNet/.dox', '#/SimNet/Doxyfile', '#/SimNet/*.{h,cpp}')
+
+
+SOURCES = [
+	'NetRandom.cpp',
+	'NetworkInterface.cpp',
+	'NetworkNode.cpp',
+	'PeerInfo.cpp',
+	'RecordCodec.cpp',
+]
+
+MESSAGES = [
+	#'IndexMessages.net',
+	#'ObjectUpdate.net',
+	#'TestMessage.net',
+]
+
+libsimnet = env.StaticLibrary('SimNet', SOURCES)
+Alias(['all', 'simnet'], [libsimnet])
+
+libmessages = env.SharedLibrary('SimNetMessages', MESSAGES)
+Alias(['all', 'simnet'], [libmessages])
+
+"""
+test = env.Program('test', ['test.cpp'] + libsimnet + libmessages)
+#	g++ -pg -o $@ $^ $(CXXFLAGS) $(SIMDATA_LIB) $(SIMNET_LIB) -lpthread -ldl -lccgnu2 -Wl,-R. -lSimNetMessages
+shadow_test = env.Program('ShadowTest', ['ShadowTest.cpp'] + libsimnet + libmessages)
+#   g++ -pg -o $@ $^ $(CXXFLAGS) $(SIMDATA_LIB) $(SIMNET_LIB) -lpthread -ldl -lccgnu2 -Wl,-R. -lSimNetMessages
+"""
+
+

@@ -1,0 +1,83 @@
+# -*- python -*-
+#
+# Copyright 2004 Mark Rose <mkrose@users.sourceforge.net>
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+
+print 'COMBAT SIMULATOR PROJECT - Build System'
+
+HELP = """
+COMMON TARGETS:
+
+  scons config        check for necessary headers and libraries
+  scons CSPSim        build the main flight simulator client
+  scons IndexServer   build the master server needed for multiplayer
+  scons all           build everything
+  scons dox           generate doxygen documentation
+"""
+
+from tools import build
+import sys
+import os
+
+
+build.CheckSConsVersion('0.9.6')
+build.CheckPythonVersion('2.2.2')
+
+# several global targets (e.g. 'all') are shared between copied subenvironments;
+# this is ok and the warning is annoying
+import SCons.Warnings
+SCons.Warnings.suppressWarningClass(SCons.Warnings.DuplicateEnvironmentWarning)
+
+
+PACKAGES = [
+	#'Battlefield',
+	'Demeter',
+	'CSPChunkLod',
+	'CSPSim',
+	'SimData',
+	'SimNet',
+	#'SimTools',
+	'SpatialIndex',
+]
+
+INCLUDE = [
+	'.',
+	'#/SimData/Include',
+	'#/CSPChunkLod/include',
+	'#',
+	build.PYTHON_INCLUDE,
+]
+
+
+CXXFLAGS = '-O2 -g -W -Wall -pedantic'
+SWIGCXXFLAGS = '-O2 -g'
+SWIGFLAGS = '-noruntime -python -c++'
+
+opts = Options()
+
+env = Environment(CPPPATH=INCLUDE,
+                  CXXFLAGS=CXXFLAGS,
+                  CXXFILESUFFIX='.cpp',
+                  SWIGFLAGS=SWIGFLAGS,
+                  SWIGCXXFLAGS=SWIGCXXFLAGS,
+                  options=opts)
+
+Help(HELP + opts.GenerateHelpText(env))
+
+build.GlobalSetup(env, default_message='No targets specified; try scons -h for help.')
+build.BuildPackages(env, PACKAGES)
+

@@ -1,0 +1,43 @@
+# -*- python -*-
+#
+# Copyright 2004 Mark Rose <mkrose@users.sourceforge.net>
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+Import('env build')
+
+def PackageConfig(env):
+	print '<< Demeter Config >>'
+	conf = build.CustomConfigure(env)
+	conf.CheckCommandVersion('sdl', 'sdl-config --version', '1.2.5')
+	env = conf.Finish()
+	env.ParseConfig('sdl-config --cflags --libs')
+
+# demeter generates lots of warnings; feel free to clean it up and then
+# remove this line
+CXXFLAGS = env['CXXFLAGS'].replace('-pedantic', '').replace('-W ', '').replace('-Wall', '')
+
+env = env.Copy(CXXFLAGS=CXXFLAGS)
+build.UpdateEnvironment(env, config=PackageConfig)
+
+SOURCES = [
+	'DemeterDrawable.cpp',
+	'Terrain.cpp',
+	'TerrainTextureFactory.cpp',
+]
+
+libdemeter = env.StaticLibrary('demeter_csp', SOURCES)
+Alias('all', libdemeter)
+

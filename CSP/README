@@ -1,0 +1,48 @@
+=============================================================================
+COMBAT SIMULATOR PROJECT
+=============================================================================
+
+
+INTRODUCTION
+
+The Combat Simulator Project (CSP) is an open-source community united by the
+common interest in combat simulator development. We are developing standards,
+technologies, code libraries, tools and artwork that can be used to build a
+wide variety of real-time combat simulators. Our ultimate goal is to realize
+concurrent and networked cross-platform simulation of large-scale multi-
+vehicle combat scenarios.
+
+CSP is open for all to join.  We invite everyone with interest in simulators
+and simulator development to support, join, or in any way participate and
+contribute to this project.  Please visit our forum and wiki for more
+information (links below).
+
+Current development is centered around CSPSim, which implements a single
+player flight simulation, as well as constructing a general simulation
+framework.
+
+
+BUILDING CSPSIM
+
+Start by installing all the external dependencies (OpenSceneGraph, SDL, etc);
+see http://csp.sf.net/wiki/CurrentBuildDependecies for more info.
+
+The bare bones instructions for linux are setup, build, and run:
+	$ sudo ./setup.py
+	$ scons all
+	$ cd CSPSim/Bin && ./CSPSim.py
+
+The bare bones instructions for windows are:
+	Run ./setup.py (as admin under XP)
+	Open and build the various projects found in the top-level subdirectories.
+	Run CSPSim/Bin/CSPSim.py
+
+
+CONTACT INFO AND HELP
+
+Forum ... http://csp.sf.net/forum
+Wiki .... http://csp.sf.net/wiki
+
+If you have trouble, please post a message to the developers forum.  More
+information is also available on the wiki under DeveloperPages.
+

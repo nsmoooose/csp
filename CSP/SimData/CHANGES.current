@@ -4,6 +4,12 @@ Version 0.4.0 (in progress)
 2004-09-24: onsight
  * Minor cleanups, mostly doxygen related.
 
+ * Add a new build system for linux using scons.  The old scons build
+   system for SimData is currently deprecated (moved to *.old), but
+   parts may eventually be resurrected.  The scons build is now
+   dependent on CSP/SConstruct, but will need to be made optionally
+   independent for use outside of CSP.
+
 2004-09-16: delta
  * Tried to reduce the impact of including windows API headers on the
    code.

@@ -77,7 +77,7 @@
 #include <SDL/SDL.h>
 #include <SDL/SDL_audio.h>
 
-#include "DemeterException.h"
+#include <Demeter/DemeterException.h>
 
 
 ////////////////////////////////////////////////

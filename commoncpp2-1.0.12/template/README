@@ -1,9 +1,0 @@
-The Common C++ template library will focus on many design elements 
-commonly used in Common C++ applications.  These include things like
-self-organizing objects, which I often use in place of "containers".
-This set of template libraries is kept seperate from the main Common C++
-distribution sources to clearify which are part of the template library
-and which are part of the mainline source distribution.
-
-This is being written for Common C++ 2.0.
-

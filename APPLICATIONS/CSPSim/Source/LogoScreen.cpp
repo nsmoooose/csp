@@ -44,7 +44,7 @@
 #include "Config.h"
 #include "Exception.h"
 
-extern OpenThreads::Barrier bar;
+//extern OpenThreads::Barrier bar;
 
 LogoScreen::LogoScreen(int width, int height) {
 	m_width = width;

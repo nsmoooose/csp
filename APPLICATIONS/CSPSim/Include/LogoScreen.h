@@ -29,7 +29,7 @@
 #include "BaseScreen.h"
 
 #include <osg/ref_ptr>
-#include <osgProducer/Viewer>
+//#include <osgProducer/Viewer>
 
 namespace osg {
 	class Texture2D;

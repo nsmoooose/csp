@@ -111,7 +111,7 @@ void AircraftPhysicsModel::doSimStep(double dt) {
 
 	if (dt == 0.0) dt = 0.017;
 	//unsigned short n = std::min<unsigned short>(6,static_cast<unsigned short>(180 * dt)) + 1;
-	unsigned short n = std::min<unsigned short>(10,static_cast<unsigned short>(600 * dt)) + 1;
+	unsigned short n = std::min<unsigned short>(11,static_cast<unsigned short>(850 * dt)) + 1;
 	double dtlocal = dt/n;
 	std::for_each(m_Dynamics.begin(),m_Dynamics.end(),InitializeSimulationStep(dtlocal));
 

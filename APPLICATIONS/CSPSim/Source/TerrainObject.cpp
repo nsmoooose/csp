@@ -2,6 +2,7 @@
 #include <osg/Geode>
 #include <osg/StateSet>
 
+#include "Config.h"
 #include "LogStream.h"
 #include "Platform.h"
 #include "TerrainObject.h"

@@ -38,6 +38,7 @@
 
 #include "LogoScreen.h"
 #include "Platform.h"
+#include "Config.h"
 
 
 
@@ -54,7 +55,7 @@ LogoScreen::~LogoScreen()
 void LogoScreen::OnInit()
 {
 	std::string image_path = g_Config.getPath("Paths", "ImagePath", ".", true);
-	std::string path = ospath.join(image_path, "CSPLogo.bmp");
+	std::string path = ospath::join(image_path, "CSPLogo.bmp");
 	m_image = SDL_LoadBMP(path.c_str());
 	if (m_image == NULL)
 	{

@@ -197,7 +197,7 @@ int VirtualBattlefield::buildScene()
 	ospath::addpath(search_path, image_path);
 	ospath::addpath(search_path, model_path);
 	ospath::addpath(search_path, font_path);
-	osgDB::setDataFilePathList(searchpath);
+	osgDB::setDataFilePathList(search_path);
 
 	// we don't need this on Linux since libs are usually
 	// installed in /usr/local/lib/osgPlugins or /usr/lib/osgPlugins.

@@ -24,8 +24,6 @@
 
 #include <sstream>
 
-#include <sstream>
-
 
 NAMESPACE_SIMDATA
 

@@ -150,11 +150,11 @@ public:
 	// unpack, and return BaseType data objects.
 %insert("shadow") %{
 	def _Pointer(self):
-		raise "FIXME: NOT IMPLMENTED"
+		raise "FIXME: NOT IMPLEMENTED"
 	def _Enum(self):
-		raise "FIXME: NOT IMPLMENTED"
+		raise "FIXME: NOT IMPLEMENTED"
 	def _List(self):
-		raise "FIXME: NOT IMPLMENTED"
+		raise "FIXME: NOT IMPLEMENTED"
 	def __call__(self, *args):
 		raise "Use explicit _* methods from Python"
 %}

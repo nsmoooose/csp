@@ -31,14 +31,6 @@
 	#include <unistd.h>
 #endif
 
-#ifdef _WIN32
-	#include <Windows.h>
-	#include <ctime>
-#else
-	#include <sys/time.h>
-	#include <unistd.h>
-#endif
-
 
 NAMESPACE_SIMDATA
 

@@ -44,7 +44,7 @@ class PacketDecoder: public PacketHandler {
 	class Callback {
 		NetworkMessage::Ref m_msg;
 	public:
-		Callback(NetworkMessage::Ref &msg): m_msg(msg) { }
+		Callback(NetworkMessage::Ref const &msg): m_msg(msg) { }
 		inline void operator()(MessageHandler::Ref handler) { handler->handleMessage(m_msg); }
 	};
 
@@ -83,6 +83,13 @@ public:
 	 */
 	bool removeMessageHandler(MessageHandler::Ref handler) {
 		return m_MessageHandlers.removeHandler(handler);
+	}
+
+	/** Pass a message directly to the handlers (FOR DEBUGGING ONLY!)
+	 */
+	void injectMessage(NetworkMessage::Ref const &msg) {
+		Callback callback(msg);
+		m_MessageHandlers.apply(callback);
 	}
 };
 

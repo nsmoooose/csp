@@ -31,6 +31,7 @@
 namespace simnet {
 
 
+
 /** Abstract interface for handlers of received network messages.
  *
  *  Subclass MessageHandler and add your handler to a PacketDecoder
@@ -42,39 +43,10 @@ public:
 
 	/** Called by PacketDecoder to handle an incoming message.
 	 */
-	virtual void handleMessage(NetworkMessage::Ref message)=0;
+	virtual void handleMessage(NetworkMessage::Ref const &message)=0;
 
 	virtual ~MessageHandler() { }
 };
-
-
-// TODO under construction
-#if 0
-/**
- * macros for building MessageHandler subclasses that dispatch messages
- * to handlers.
- */
-#define SIMNET_DISPATCH_BEGIN(TARGET) \
-class TARGET##Dispatch: public simnet::MessageHandler { \
-	TARGET *m_target; \
-public: \
-	TARGET##Dispatch(TARGET *target): simnet::MessageHandler(), m_target(target) { } \
-	virtual void handleMessage(simnet::NetworkMessage::Ref msg) { \
-		switch (msg->getId()) {
-
-#define SIMNET_DISPATCH(MESSAGE, HANDLER) \
-		case MESSAGE::_Id(): \
-			m_target->HANDLER(simnet::NetworkMessage::FastCast<MESSAGE>(msg)); \
-			break;
-
-#define SIMNET_DISPATCH_END \
-		default: target->defaultMessageHandler(msg); \
-		} \
-	} \
-};
-
-#define SIMNET_DISPATCH_CLASS(TARGET) TARGET##Dispatch
-#endif
 
 
 } // namespace simnet

@@ -135,8 +135,16 @@ public:
 	/** Get the priority of this message.  See setPriority for details.
 	 */
 	int getPriority() const { return m_priority; }
+
+	template <class TR>
+	static inline simdata::Ref<TR> FastCast(Ref const &record) {
+		return (record->getId() == TR::_getId() ? static_cast<TR*>(record.get()) : 0);
+	}
+
 };
 
+template <>
+inline simdata::Ref<NetworkMessage> NetworkMessage::FastCast(Ref const &record) { return record; }
 
 } // namespace simnet
 

@@ -24,13 +24,10 @@
 
 using bus::Kinetics;
 
-RedirectServerNode::RedirectServerNode()
-{
-
+RedirectServerNode::RedirectServerNode() {
 }
 
-int RedirectServerNode::run()
-{
+int RedirectServerNode::run() {
 	int level = g_Config.getInt("Debug", "LoggingLevel", 0, true);
 	csplog().setLogCategory(CSP_ALL);
 	csplog().setLogPriority(level);
@@ -66,14 +63,12 @@ int RedirectServerNode::run()
 		networkMessenger->sendQueuedMessages();
 
 		simdata::tstart();
-
 		simdata::tend();
 		double etime;
 		etime = simdata::tval();
 		while((etime = simdata::tval()) < 3.0 ) {
 			simdata::tend();
 		}
-
 	}
 
 	return 0;

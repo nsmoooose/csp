@@ -1,6 +1,9 @@
  Version 0.4.0 (in progress)
 ===========================
 
+2004-07-17: onsight
+  * Cleaned up indentation in some more network code.
+
 2004-07-10: onsight
   * Small formatting cleanup in DynamicObject.cpp.
 

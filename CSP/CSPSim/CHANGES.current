@@ -6,6 +6,9 @@
 
   * Rearrange headers to suppress a warning in py_config.h.
 
+  * Several fixups for changes in the SimData api related to logging and
+    exceptions.
+
 2004-06-20: onsight
   * Changed doxygen control file to recurse into the variou subdirectories
     (Systems, Theater, etc).

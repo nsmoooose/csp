@@ -67,19 +67,20 @@ void DemeterFatalException(DemeterException &e,  std::string const &location) {
 }
 
 void SimDataFatalException(simdata::Exception &e,  std::string const &location) {
-	CSP_LOG(APP, ERROR, "CSPSim: caught SimData exception in " 
-	                            << location << ": " << e.getMessage());
+	CSP_LOG(APP, ERROR, "CSPSim: caught SimData exception in "
+	                            << location << ": " << e.getType() << "\n  "
+	                            << e.getMessage() << "\n\n"
+	                            << e.getTrace());
 	std::cerr << "\n";
 	e.details();
 	std::cerr << "\n";
-	std::cerr << "CSPSim: caught an SimData exception.  Please report this along\n"
-		  << "with as much information as possible about what was happening at \n"
-		  << "the time of the error to the CSP forum at\n"
-		  << "                http://csp.sourceforge.net/forum\n"
-		  << "If you built CSPSim from CVS, you may wish to check that your\n"
-		  << "installed version of SimData is also the latest available from\n"
-		  << "CVS.\n";
-	std::cerr << "\n";
+	std::cerr \
+		  << "CSPSim: caught a SimData exception.  Please report this along\n"
+		  << "with the last 100 or so lines of CSPSim.log and as much\n"
+		  << "information as possible about what was happening at the time\n"
+		  << "of the error to the CSP forum at\n"
+		  << "                http://csp.sourceforge.net/forum\n";
+	std::cerr << std::endl;
 	::exit(1);
 }
 

@@ -55,31 +55,26 @@ class TraceBase {
 private:
 	typedef void (*Callback)();
 	Callback _precallback, _postcallback;
-	logstream *_log;
+	LogStream *_log;
 	bool _traced;
-	void *_reference;
 
 protected:
-	TraceBase(): _precallback(0), _postcallback(0), _log(0), _traced(false), _reference(0) { }
+	TraceBase(): _precallback(0), _postcallback(0), _log(0), _traced(false) { }
 
 	void setCallbacks_impl(Callback precallback, Callback postcallback) {
 		_precallback = precallback;
 		_postcallback = postcallback;
 	}
 
-	void setReference(void *ref) {
-		_reference = ref;
-	}
-
-	void setLog_impl(logstream &log) {
-		_log = &log;
+	void setLog_impl(LogStream &log_) {
+		_log = &log_;
 	}
 
 	std::ostream &log() {
 		if (_log) {
-			return (*_log) << loglevel(LOG_ALL, LOG_ERROR);
+			return _log->entry(LOG_ERROR, LOG_ALL);
 		} else {
-			return simdata::log() << loglevel(LOG_ALL, LOG_ERROR);
+			return simdata::log().entry(LOG_ERROR, LOG_ALL);
 		}
 	}
 
@@ -96,16 +91,13 @@ protected:
 		_traced = true;
 		if (segv) {
 			log() << "FATAL ERROR: segmentation fault." << std::endl;
-			if (_reference) {
-				log() << "reference = " << _reference << std::endl;
-			}
 		}
 		_preCallback();
-		_backtrace(skip, segv);
+		_backtrace(log(), skip);
 		_postCallback();
 	}
 
-	virtual void _backtrace(int skip, bool segv) {}
+	virtual void _backtrace(std::ostream&, int skip) {}
 };
 
 
@@ -114,28 +106,35 @@ protected:
 class Trace: public TraceBase {
 
 #ifdef __GNUC__
-	virtual void _backtrace(int skip, bool segv=false) {
+
+public:
+	static void StackDump(std::ostream &out, int skip=0) {
 		void *trace[64];
 		char **messages = (char **)NULL;
 		int i, trace_size = 0;
 
 		trace_size = backtrace(trace, 64);
-		log() << "backtrace:" << std::endl;
-		if (0 && segv) { // XXX needed?
-			backtrace_symbols_fd(trace, trace_size, fileno(stderr));
-			return;
-		}
+		out << "CALL STACK BACKTRACE:" << std::endl;
 		messages = backtrace_symbols(trace, trace_size);
 		if (messages) {
 			for (i=skip; i<trace_size; ++i) {
-				log() << "  " << messages[i] << std::endl;
+				out << "  " << messages[i] << std::endl;
 			}
 			free(messages);
 		} else {
-			log() << "  unavailable!" << std::endl;
+			out << "  unavailable!" << std::endl;
 		}
 	}
 
+#else
+
+	static void StackDump(std::ostream &, int=0) { }
+
+#endif // __GNUC__
+
+#ifdef __GNUC__
+
+private:
 	static void __sigsegv(int sign) {
 		getTrace().error(3, true);
 		abort();
@@ -144,7 +143,12 @@ class Trace: public TraceBase {
 	static void __sigabort(int sign) {
 		getTrace().error(3);
 	}
+
 #endif // __GNUC__
+
+	virtual void _backtrace(std::ostream& out, int skip) {
+		StackDump(out, skip);
+	}
 
 	friend class Singleton<Trace>;
 	static Trace &getTrace() {
@@ -160,9 +164,8 @@ public:
 	 *
 	 *  @returns true if succesful.
 	 */
-	static bool install(void *reference) {
+	static bool install() {
 #ifdef __GNUC__
-		getTrace().setReference(reference);
 		signal(SIGABRT, __sigabort);
 		signal(SIGSEGV, __sigsegv);
 		return true;
@@ -179,7 +182,7 @@ public:
 
 	/** Set the active log (defaults to the simdata log).
 	 */
-	static void setLog(logstream &log) {
+	static void setLog(LogStream &log) {
 		getTrace().setLog_impl(log);
 	}
 

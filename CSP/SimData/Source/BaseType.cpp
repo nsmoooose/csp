@@ -51,7 +51,7 @@ NAMESPACE_SIMDATA
 class load_check {
 public:
 	load_check() {
-		log() << loglevel(LOG_ALL, LOG_INFO)
+		log().entry(LOG_INFO, LOG_ALL)
 		      << "SimData " << getVersion() << " loaded @ " << this
 		      << std::endl;
 	}

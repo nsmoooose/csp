@@ -25,15 +25,20 @@
  */
 
 
+#ifndef SIMDATA_NOTHREADS
+
 #ifndef __SIMDATA_THREADBASE_H__
 #define __SIMDATA_THREADBASE_H__
 
 #include <SimData/Namespace.h>
 #include <SimData/Properties.h>
 #include <SimData/Timing.h>
-#include <SimData/Ref.h>
-#include <SimData/AtomicCounter.h>
+#include <SimData/ExceptionBase.h>
+
+#include <cerrno>
+#include <cmath>
 #include <string>
+#include <sstream>
 #include <pthread.h>
 
 
@@ -41,74 +46,36 @@ NAMESPACE_SIMDATA
 
 
 // TODO
-// do something smart with thread return values
-// semaphores
-// inline some methods; move others to cpp?
+// semaphore
+// barrier
 // unit tests
-// integrate win32 pthreads
 
 
-/**
+/** Exception class for thread-related errors.  Wraps a small subset
+ *  of cerrno constants.
  */
-class ThreadException: public std::exception {
+class ThreadException: public Exception {
 public:
-	typedef enum {
-		NONE,
-		BUSY,
-		INTERNAL,
-		DENIED,
-		DESTROYED,
-		DEADLOCK,
-		REENTRANT,
-	} ErrorType;
+	ThreadException(const int error);
 
-	ThreadException(const int error): m_error(NONE), m_message() {
-		translate(error);
-	}
+	static void checkThrow(const int result);
 
-	virtual ~ThreadException() throw() {}
-
-	static void check(const int result) {
-		if (result != 0) throw ThreadException(result);
-	}
+	static void checkLog(const int result);
 
 	int getError() const { return m_error; }
-	std::string getMessage() const { return m_message; }
 
 private:
+	void translateError();
 
-	void translate(const int error) {
-		switch (error) {
-			case EDEADLK:
-				m_error = DEADLOCK;
-				break;
-			case EAGAIN:
-				m_error = REENTRANT;
-				break;
-			case EBUSY:
-				m_error = BUSY;
-			case EPERM:
-				m_error = DENIED;
-			default:
-				m_error = error + 1000; //INTERNAL;
-		}
-	}
-
-private:
 	int m_error;
-	std::string m_message;
 };
-
-
-// forward declaration for friend relationship with ThreadMutex
-class ThreadCondition;
 
 
 /** Thin wrapper for pthreads mutually exclusive locks, which provide
  *  a means of serializing access to a shared resource, such that only
  *  one thread may use the resource at a time.
  */
-class ThreadMutex {
+class ThreadMutex: public NonCopyable {
 	friend class ThreadCondition;
 public:
 	/** Mutex types:
@@ -155,7 +122,8 @@ public:
 	 */
 	~ThreadMutex() {
 		const int result = pthread_mutex_destroy(&m_mutex);
-		ThreadException::check(result);
+		// not safe to throw from a dtor, so just log the error
+		ThreadException::checkLog(result);
 	}
 
 	/** Lock the mutex to gain exclusive use of the resources the mutex
@@ -168,7 +136,7 @@ public:
 	 */
 	void lock() {
 		const int result = pthread_mutex_lock(&m_mutex);
-		ThreadException::check(result);
+		ThreadException::checkThrow(result);
 	}
 
 	/** Try to lock the mutex.
@@ -179,7 +147,7 @@ public:
 	bool tryLock() {
 		const int result = pthread_mutex_trylock(&m_mutex);
 		if (result == EBUSY) return false;
-		ThreadException::check(result);
+		ThreadException::checkThrow(result);
 		return true;
 	}
 
@@ -188,7 +156,7 @@ public:
 	 */
 	void unlock() {
 		const int result = pthread_mutex_unlock(&m_mutex);
-		ThreadException::check(result);
+		ThreadException::checkThrow(result);
 	}
 private:
 	pthread_mutex_t m_mutex;
@@ -211,20 +179,21 @@ private:
  *  threads (reader or writer) can obtain a lock, giving the writer
  *  exclusive access to the resource.
  */
-class ReadWriteLock {
+class ReadWriteLock: public NonCopyable {
 public:
 	/** Construct a new lock
 	 */
 	ReadWriteLock() {
 		const int result = pthread_rwlock_init(&m_lock, 0);
-		ThreadException::check(result);
+		ThreadException::checkThrow(result);
 	}
 
 	/** Delete the lock and free internal resources.
 	 */
 	~ReadWriteLock() {
 		const int result = pthread_rwlock_destroy(&m_lock);
-		ThreadException::check(result);
+		// not safe to throw from a dtor, so just log the error
+		ThreadException::checkLog(result);
 	}
 
 	/** Obtain a lock for reading.
@@ -235,7 +204,7 @@ public:
 	 */
 	void lockRead() {
 		const int result = pthread_rwlock_rdlock(&m_lock);
-		ThreadException::check(result);
+		ThreadException::checkThrow(result);
 	}
 
 	/** Obtain a lock for writing.
@@ -246,7 +215,7 @@ public:
 	 */
 	void lockWrite() {
 		const int result = pthread_rwlock_wrlock(&m_lock);
-		ThreadException::check(result);
+		ThreadException::checkThrow(result);
 	}
 
 	/** Try to acquire a read lock.
@@ -259,7 +228,7 @@ public:
 	bool tryLockRead() {
 		const int result = pthread_rwlock_tryrdlock(&m_lock);
 		if (result == EBUSY) return false;
-		ThreadException::check(result);
+		ThreadException::checkThrow(result);
 		return true;
 	}
 
@@ -273,7 +242,7 @@ public:
 	bool tryLockWrite() {
 		const int result = pthread_rwlock_trywrlock(&m_lock);
 		if (result == EBUSY) return false;
-		ThreadException::check(result);
+		ThreadException::checkThrow(result);
 		return true;
 	}
 
@@ -284,7 +253,7 @@ public:
 	 */
 	void unlock() {
 		const int result = pthread_rwlock_unlock(&m_lock);
-		ThreadException::check(result);
+		ThreadException::checkThrow(result);
 	}
 
 private:
@@ -306,28 +275,21 @@ public:
 	 */
 	ThreadCondition(): m_mutex(m_local_mutex) {
 		int result = pthread_cond_init(&m_cond, 0);
-		ThreadException::check(result);
+		ThreadException::checkThrow(result);
 		result = pthread_mutex_init(&m_local_mutex, 0);
-		ThreadException::check(result);
+		ThreadException::checkThrow(result);
 	}
 
 	/** Construct a condition variable, using an external mutex.
 	 */
 	ThreadCondition(ThreadMutex &mutex): m_mutex(mutex.getRawMutex()) {
 		int result = pthread_cond_init(&m_cond, 0);
-		ThreadException::check(result);
+		ThreadException::checkThrow(result);
 	}
 
 	/** Delete the condition variable and free internal resources.
 	 */
-	~ThreadCondition() {
-		int result = pthread_cond_destroy(&m_cond);
-		ThreadException::check(result);
-		if (&m_local_mutex == &m_mutex) {
-			result = pthread_mutex_destroy(&m_local_mutex);
-			ThreadException::check(result);
-		}
-	}
+	~ThreadCondition();
 
 	/** Signal threads waiting on this condition variable to execute.
 	 *
@@ -337,7 +299,7 @@ public:
 	void signal(int n = 1) {
 		while (--n >= 0) {
 			const int result = pthread_cond_signal(&m_cond);
-			ThreadException::check(result);
+			ThreadException::checkThrow(result);
 		}
 	}
 
@@ -347,7 +309,7 @@ public:
 	 */
 	void signalAll() {
 		const int result = pthread_cond_broadcast(&m_cond);
-		ThreadException::check(result);
+		ThreadException::checkThrow(result);
 	}
 
 	/** Lock the underlying mutex.  This must be done before calling
@@ -355,7 +317,7 @@ public:
 	 */
 	void lock() {
 		const int result = pthread_mutex_lock(&m_mutex);
-		ThreadException::check(result);
+		ThreadException::checkThrow(result);
 	}
 
 	/** Try to lock the underlying mutex.
@@ -366,7 +328,7 @@ public:
 	bool tryLock() {
 		const int result = pthread_mutex_trylock(&m_mutex);
 		if (result == EBUSY) return false;
-		ThreadException::check(result);
+		ThreadException::checkThrow(result);
 		return true;
 	}
 
@@ -374,7 +336,7 @@ public:
 	 */
 	void unlock() {
 		const int result = pthread_mutex_unlock(&m_mutex);
-		ThreadException::check(result);
+		ThreadException::checkThrow(result);
 	}
 
 	/** Wait for the condition variable to be signaled.  Note that you must
@@ -385,22 +347,7 @@ public:
 	 *    variable.  If less than zero, this method will wait indefinitely.
 	 *  @returns true if a signal occured, or false if the wait timed out.
 	 */
-	bool wait(double timeout = -1.0) {
-		if (timeout < 0) {
-			const int result = pthread_cond_wait(&m_cond, &m_mutex);
-			ThreadException::check(result);
-		} else {
-			double abstime_sec = get_realtime() + timeout;
-			timespec abstime;
-			double sec = floor(abstime_sec);
-			abstime.tv_sec = static_cast<int>(sec);
-			abstime.tv_nsec = static_cast<int>(1e+9 * (abstime_sec - sec));
-			const int result = pthread_cond_timedwait(&m_cond, &m_mutex, &abstime);
-			if (result == ETIMEDOUT) return false;
-			ThreadException::check(result);
-		}
-		return true;
-	}
+	bool wait(double timeout = -1.0);
 
 private:
 	pthread_cond_t m_cond;
@@ -415,6 +362,7 @@ private:
  *
  *  For example:
  *
+ *  @code
  *  void foo() {
  *    static int x = 0;
  *    static ThreadMutex mutex;
@@ -425,9 +373,10 @@ private:
  *    }
  *    // mutex is now unlocked
  *  }
+ *  @endcode
  */
 template <class LOCK>
-class ScopedLock {
+class ScopedLock: public NonCopyable {
 public:
 	/** Construct a new scoped lock for a existing lockable instance.  If constructed
 	 *  an the stack, this will immediately lock the instance for the duration of the
@@ -440,7 +389,12 @@ public:
 	/** Release the underlying lock.
 	 */
 	~ScopedLock() {
-		m_lock.unlock();
+		// never throw from a dtor; log instead.
+		try {
+			m_lock.unlock();
+		} catch (ThreadException &e) {
+			e.logAndClear(LOG_THREAD);
+		}
 	}
 
 private:
@@ -448,24 +402,29 @@ private:
 };
 
 
-/** Similar to ScopedLock, but unlocks the mutex for the duration of
- *  its existence, then relocks the mutex on destruction.
+/** Similar to ScopedLock, but unlocks the mutex when created and relocks it
+ *  on destruction.
  */
 template <class LOCK>
-class ScopedUnlock {
+class ScopedUnlock: public NonCopyable {
 public:
-	/** Construct a new scoped lock for a existing lockable instance.  If constructed
-	 *  an the stack, this will immediately lock the instance for the duration of the
+	/** Construct a new scoped unlock for a existing lockable instance.  If constructed
+	 *  on the stack, this will immediately unlock the instance for the duration of the
 	 *  current scope.
 	 */
 	ScopedUnlock(LOCK &lock): m_lock(lock) {
 		m_lock.unlock();
 	}
 
-	/** Release the underlying lock.
+	/** Reacquire the underlying lock.
 	 */
 	~ScopedUnlock() {
-		m_lock.lock();
+		// never throw from a dtor; log instead.
+		try {
+			m_lock.lock();
+		} catch (ThreadException &e) {
+			e.logAndClear(LOG_THREAD);
+		}
 	}
 
 private:
@@ -482,10 +441,24 @@ private:
  *  for when, and when not, to use this pattern.
  */
 template <class TYPE>
-class ThreadSpecific {
+class ThreadSpecific: public NonCopyable {
+
 public:
 	typedef TYPE ValueType;
 
+protected:
+	/** Create a new instance of ValueType for a thread.
+	 *
+	 *  Called on demand, as new threads first access the thread-specific
+	 *  pointer.  Override this method to provide customized construction.
+	 *  The returned pointer must be allocated with new (it will be freed
+	 *  with delete when the thread terminates).
+	 */
+	virtual ValueType * createNew() const {
+		return new ValueType;
+	}
+
+public:
 	/** Construct a thread specific instance.  The underlying instance is
 	 *  <i>not</i> created; it will be allocated and initialized on first
 	 *  access.
@@ -495,14 +468,7 @@ public:
 
 	/** Destroy the thread-specific instances and release internal resources.
 	 */
-	~ThreadSpecific() {
-		if (m_once) {
-			TYPE *object = this->operator->();
-			const int result = pthread_key_delete(m_key);
-			ThreadException::check(result);
-			delete object;
-		}
-	}
+	virtual ~ThreadSpecific();
 
 	/** Access the underlying instance for the current thread.
 	 *
@@ -511,50 +477,24 @@ public:
 	 *  @returns a pointer to the instance that is unique to the calling
 	 *    thread.
 	 */
-	ValueType *operator->() {
-		// the first call needs to construct a shared key that is
-		// used to access the thread-specific data.
-		if (!this->m_once) {
-			ScopedLock<ThreadMutex> lock(this->m_keylock);
-			if (!this->m_once) {
-				const int result = pthread_key_create(&this->m_key, &this->cleanup_hook);
-				ThreadException::check(result);
-				this->m_once = true;
-			}
-		}
-
-		// use the shared key to retrieve the data (ValueType*) for
-		// this thread.
-		ValueType *tss_data = reinterpret_cast<ValueType*>(pthread_getspecific(this->m_key));
-
-		// if the pointer is null, this is the first access from this
-		// thread and we need to allocate a new instance.
-		if (tss_data == 0) {
-			tss_data = new ValueType;
-			const int result = pthread_setspecific(this->m_key, reinterpret_cast<void*>(tss_data));
-			ThreadException::check(result);
-		}
-
-		// return the instance specific to the current thread.
-		return tss_data;
-	}
+	ValueType *operator->();
 
 	/** Access the underlying instance for the current thread as a non-const
 	 *  reference.
 	 *
 	 *  @see operator->()
 	 */
-	ValueType &operator*() {
+	inline ValueType &operator*() {
 		return *(this->operator->());
 	}
 
 private:
-	pthread_key_t m_key;
 	bool m_once;
+	pthread_key_t m_key;
 	ThreadMutex m_keylock;
 
-	/** Callback hook to deallocate the thread-specific instances when
-	 *  the shared key is deleted.
+	/** Callback hook to deallocate the thread-specific instances as
+	 *  each thread finishes.
 	 */
 	static void cleanup_hook(void *ptr) {
 		delete static_cast<ValueType*>(ptr);
@@ -568,7 +508,7 @@ private:
  *  until an event occurs.  The event condition is indicated by
  *  an internal flag that is shared between threads.
  */
-class Event {
+class Event: public NonCopyable {
 public:
 
     /** Initialize a new event instance.
@@ -614,13 +554,8 @@ private:
 };
 
 
-/** Base class for referenced counted objects that are shared between
- *  multiple threads.  Thread-safe, supporting atomic updates of the
- *  internal reference counter.
- */
-typedef Referenced<AtomicCounter> ThreadSafeReferenced;
-
-
 NAMESPACE_SIMDATA_END
 
 #endif // __SIMDATA_THREADBASE_H__
+
+#endif // SIMDATA_NOTHREADS

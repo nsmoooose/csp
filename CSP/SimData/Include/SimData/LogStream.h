@@ -42,185 +42,204 @@
 #include <fstream>
 #include <string>
 #include <cassert>
+#include <ctime>
 
 #include <SimData/Namespace.h>
 #include <SimData/Export.h>
+#include <SimData/ThreadBase.h>
 
 #if defined(_MSC_VER)
 # pragma warning(disable: 4275)
 #endif
 
+
 NAMESPACE_SIMDATA
 
-using std::ostream;
 
-// TODO:
-//
-// 1. Change output destination. Done.
-// 2. Make logbuf thread safe.
-// 3. Read environment for default debugClass and debugPriority.
+/** Standard logging interface:
+	void _close()=0;
+	void setOutput(std::ostream &)=0;
+	void setOutput(std::string const &filename)=0;
+	void setLogPriority(int priority)=0;
+	void setLogCategory(int category)=0;
+	std::ostream & entry(int priority, int category=LOG_ALL, const char *file=0, int line=0);
+*/
+
 
 /** An output-only, category-based log stream.
  *
- *  logbuf is an output-only streambuf with the ability to disable sets of
- *  messages at runtime. Only messages with priority >= logbuf::logPriority
- *  and debugClass == logbuf::logClass are output.
+ *  LogBuffer is an output-only streambuf with the ability to disable sets of
+ *  messages at runtime.  Messages can be suppressed based on priority and
+ *  category.
  */
-class SIMDATA_EXPORT logbuf : public std::streambuf
+class SIMDATA_EXPORT LogBuffer: public NonCopyable, public std::streambuf
 {
 public:
 
 	/** Constructor */
-	logbuf();
+	LogBuffer();
 
 	/** Destructor */
-	~logbuf();
+	~LogBuffer();
 
-	/** Is logging enabled?
-	 *
-	 * @return true or false
+	/** Test if logging is enabled.
 	 */
-	bool enabled() { return logging_enabled; }
+	bool enabled() { return m_enabled; }
 
 	/** Set the logging level of subsequent messages.
 	 *
-	 *  @param c debug class
-	 *  @param p priority
+	 *  @param p message priority
+	 *  @param c message category
 	 */
-	void set_log_state(int c, int p);
+	void setLogState(int p, int c) {
+		m_enabled = ((c & m_category) != 0 && p >= m_priority);
+	}
 
-	/** Set the global logging level.
+	/** Set the allowed logging categories.
 	 *
-	 *  @param c debug class
-	 *  @param p priority
+	 *  @param c Logging categories to enable (bitwise AND of one or more
+	 *    category constants); zero suppresses all categories.
 	 */
-	void set_log_level(int c, int p);
+	void setLogCategory(int c);
 
-
-	/** Set the allowed logging classes.
+	/** Get the logging categories currently enabled.
 	 *
-	 *  @param c All enabled logging classes anded together.
+	 *  @return bitwise AND of logging category constants
 	 */
-	void set_log_classes(int c);
+	int getLogCategory();
 
-
-	/** Get the logging classes currently enabled.
-	 *  @return All enabled debug logging anded together.
-	 */
-	int get_log_classes();
-
-
-	/** Set the logging priority.
+	/** Set the logging priority.  Messages with a lower priority will
+	 *  be suppressed.
 	 *
-	 *  @param p The priority cutoff for logging messages.
+	 *  @param p the priority cutoff for logging messages
 	 */
-	void set_log_priority(int p);
-
+	void setLogPriority(int p);
 
 	/** Get the current logging priority.
 	 *
-	 *  @return The priority cutoff for logging messages.
+	 *  @return the priority cutoff for logging messages
 	 */
-	int get_log_priority ();
+	int getLogPriority();
 
-
-	/** Set the stream buffer
+	/** Set the underlying stream buffer
 	 *
-	 *  @param sb stream buffer
+	 *  @param sb stream buffer used for output
 	 */
 	void set_sb(std::streambuf* sb);
 
 protected:
 
-	/** sync/flush */
-	inline virtual int sync();
+	/** sync/flush the underlying streambuf */
+	virtual int sync() {
+		if (!m_buffer) return -1;
+		return m_buffer->pubsync();
+	}
 
-	/** overflow */
-	int overflow(int ch);
+	/** overflow (write characters to the underlying streambuf) */
+	virtual int overflow(int c) {
+		return m_enabled ? m_buffer->sputc(static_cast<char>(c)) : (EOF == 0 ? 1: 0);
+	}
 
 private:
 
 	// The streambuf used for actual output. Defaults to cerr.rdbuf().
-	std::streambuf* sbuf;
+	std::streambuf* m_buffer;
 
-	bool logging_enabled;
-	int logClass;
-	int logPriority;
-
-private:
-
-	// Not defined.
-	logbuf( const logbuf& );
-	void operator= ( const logbuf& );
+	bool m_enabled;
+	int m_category;
+	int m_priority;
 };
 
 
-inline int logbuf::sync() {
-	if (!sbuf) return -1;
-	return sbuf->pubsync();
-}
-
-
-inline void logbuf::set_log_state(int c, int p) {
-	logging_enabled = ((c & logClass) != 0 && p >= logPriority);
-}
-
-
-//inline logbuf::int_type
-inline int logbuf::overflow(int c) {
-	return logging_enabled ? sbuf->sputc(static_cast<char>(c)) : (EOF == 0 ? 1: 0);
-}
-
-/** LogStream manipulator for setting the log level of a message.
- */
-struct loglevel {
-	loglevel(int c, int p): logClass(c), logPriority(p) {}
-
-	int logClass;
-	int logPriority;
-};
-
-
-/** A helper class for logstream construction.
+/** A helper class for LogStream construction.
  *
  *  A helper class that ensures a streambuf and ostream are constructed and
  *  destroyed in the correct order.  The streambuf must be created before the
  *  ostream but bases are constructed before members.  Thus, making this class
- *  a private base of logstream, declared to the left of ostream, we ensure the
+ *  a private base of LogStream, declared to the left of ostream, we ensure the
  *  correct order of construction and destruction.
  */
-struct SIMDATA_EXPORT logstream_base
+struct SIMDATA_EXPORT LogStreamBase
 {
-	logstream_base() {}
-	logbuf lbuf;
+	LogStreamBase() {}
+	LogBuffer m_log_buffer;
 };
 
 
 /** Class to manage the debug logging stream.
  */
-class SIMDATA_EXPORT logstream : private logstream_base, public std::ostream
+class SIMDATA_EXPORT LogStream : private LogStreamBase, protected std::ostream
 {
 	std::ofstream *m_out;
+	bool m_log_point;
+	bool m_log_time;
+
+#ifndef SIMDATA_NOTHREADS
+	ThreadMutex m_mutex;
+public:
+	void lock() { m_mutex.lock(); }
+	void unlock() { m_mutex.unlock(); }
+#endif // SIMDATA_NOTHREADS
+
 public:
 	/** The default is to send messages to cerr.
 	 *
 	 *  @param out_ output stream
 	 */
-	logstream(std::ostream& out_)
-	    : logstream_base(),
-	      ostream(&lbuf), // msvc6 accepts ostream(&lbuf) _using std::ostream_, but not std::ostream(&lbuf) ...
-	      m_out(NULL)
-	{
-		lbuf.set_sb(out_.rdbuf());
+	LogStream(std::ostream& out_)
+	        : LogStreamBase(),
+	          std::ostream(&m_log_buffer),
+	          m_out(NULL),
+	          m_log_point(true),
+	          m_log_time(false) {
+		m_log_buffer.set_sb(out_.rdbuf());
 	}
 
-	~logstream() {
-		_close();
-	}
+	/** Destructor; closes the output stream */
+	virtual ~LogStream() { _close(); }
 
+	/** Enable or disable point logging.
+	 *
+	 *  When point logging is enabled, log messages generated with macros that
+	 *  pass __FILE__ and __LINE__ to LogStream::log will include the source
+	 *  file and line number of the code that generated the log entry.  When
+	 *  disabled, this information will be suppressed.
+	 */
+	void setPointLogging(bool enabled) { m_log_point = enabled; }
+
+	/** Get the current point logging state.
+	 *
+	 *  @returns true if point logging is enabled; false otherwise.
+	 */
+	bool getPointLogging() const { return m_log_point; }
+
+	/** Enable or disable time logging.
+	 *
+	 *  When time logging is enabled, each log entry will be time stamped.
+	 */
+	void setTimeLogging(bool enabled) { m_log_time = enabled; }
+
+	/** Get the current time logging state.
+	 *
+	 *  @returns true if time logging is enabled; false otherwise.
+	 */
+	bool getTimeLogging() const { return m_log_time; }
+
+	/** Configure logging parameters and destination base on
+	 *  environment variables.  The default implementation uses
+	 *  SIMDATA_LOGFILE and SIMDATA_PRIORITY to set the output
+	 *  file and priority threshold.  This method is not called
+	 *  by the constructor; call it explicitly if needed.
+	 */
+	virtual void initFromEnvironment();
+
+	/** Close the underlying output stream.
+	 *
+	 *  Idempotent, and will not close cerr or cout.
+	 */
 	void _close() {
-		lbuf.set_sb(NULL);
-		if (m_out != NULL) {
+		m_log_buffer.set_sb(NULL);
+		if (m_out != NULL && m_out != std::cerr && m_out != std::cout) {
 			m_out->close();
 			delete m_out;
 			m_out = NULL;
@@ -233,44 +252,60 @@ public:
 	 */
 	void setOutput(std::ostream& out_) {
 		_close();
-		lbuf.set_sb(out_.rdbuf());
+		m_log_buffer.set_sb(out_.rdbuf());
 	}
 
 	/** Set the output stream
 	 *
-	 *  @param fn output file path
+	 *  @param filename output file path
 	 */
-	void setOutput(std::string const &fn) {
+	void setOutput(std::string const &filename) {
 		_close();
-		m_out = new std::ofstream(fn.c_str());
+		m_out = new std::ofstream(filename.c_str());
 		assert(m_out != NULL);
-		lbuf.set_sb(m_out->rdbuf());
+		m_log_buffer.set_sb(m_out->rdbuf());
 	}
 
-	/** Set the global log class and priority level.
+	/** Set the global log priority level.
+	 *  Log entries with priority lower than this value will be suppressed.
 	 *
-	 *  @param c debug class
 	 *  @param p priority
 	 */
-	void setLogLevels(int c, int p);
+	void setLogPriority(int p);
 
-	/** Set the global log class.
+	/** Set the global log categories.
+	 *  Log entries in categories not included in this set will be suppressed.
 	 *
-	 *  @param c debug class
+	 *  @param c categories (bitwise AND of one or more logging categories).
 	 */
-	void setLogClasses(int c);
+	void setLogCategory(int c);
 
-	/** Output operator to capture the debug level and priority of a message.
-	 *  @param l log level
+	/** Method for logging a message to the stream.
+	 *
+	 *  @param priority priority of this message.
+	 *  @param category category of this message (default ALL).
+	 *  @param file source file that generated this message; typically __FILE__.
+	 *  @param line line number of the code that generated this message (typically __LINE__).
+	 *  @return an output stream to receive the message contents.
 	 */
-	inline std::ostream& operator<< (const loglevel& l);
+	std::ostream & entry(int priority, int category=~0, const char *file=0, int line=0) {
+		m_log_buffer.setLogState(priority, category);
+		*this << priority << ' ';
+		if (m_log_time) {
+			char time_stamp[32];
+			time_t now;
+			time(&now);
+			strftime(time_stamp, 32, "%Y%m%d %H%M%S", gmtime(&now));
+			*this << time_stamp << ' ';
+		}
+		if (file && m_log_point) {
+			*this << '(' << file << ':' << line << ") ";
+		}
+		return *this;
+	}
+
 };
 
-
-inline std::ostream& logstream::operator<< (const loglevel& l) {
-	lbuf.set_log_state(l.logClass, l.logPriority);
-	return *this;
-}
 
 NAMESPACE_SIMDATA_END
 

@@ -59,6 +59,7 @@
 #include <SimData/DataManager.h>
 #include <SimData/FileUtility.h>
 #include <SimData/GeoPos.h>
+#include <SimData/Trace.h>
 
 #include <GL/gl.h>		// Header File For The OpenGL32 Library
 #include <GL/glu.h>		// Header File For The GLu32 Library
@@ -122,7 +123,8 @@ CSPSim::CSPSim()
 	}
 
 	int level = g_Config.getInt("Debug", "LoggingLevel", 0, true);
-	csplog().setLogLevels(CSP_ALL, level);
+	csplog().setLogCategory(CSP_ALL);
+	csplog().setLogPriority(level);
 	csplog().setOutput("CSPSim.log");
 
 	CSP_LOG(APP, INFO, "Constructing CSPSim Object...");
@@ -168,14 +170,15 @@ CSPSim::~CSPSim()
 
 void CSPSim::setActiveObject(simdata::Ref<DynamicObject> object) {
 
-  /*
+	/*
 	CSP_LOG(APP, INFO, "CSPSim::setActiveObject - objectID: " << object->getObjectID() 
-		  << ", ObjectType: " << object->getObjectType() 
-		  << ", Position: " << object->getGlobalPosition());
-  */
-  
-  CSP_LOG(APP, INFO, "CSPSim::setActiveObject()");
+	                   << ", ObjectType: " << object->getObjectType() 
+	                   << ", Position: " << object->getGlobalPosition());
+	*/
 
+	CSP_LOG(APP, INFO, "CSPSim::setActiveObject()");
+
+	if (object == m_ActiveObject) return;
 	if (m_ActiveObject.valid()) {
 		m_Battlefield->setHuman(m_ActiveObject, false);
 	}
@@ -186,9 +189,9 @@ void CSPSim::setActiveObject(simdata::Ref<DynamicObject> object) {
 	if (m_ActiveObject.valid()) {
 		m_Battlefield->setHuman(m_ActiveObject, true);
 		simdata::hasht classhash = m_ActiveObject->getPath();
-		printf("getting map for %s\n", classhash.str().c_str());
+		CSP_LOG(APP, INFO, "getting map for " << classhash.str());
 		simdata::Ref<EventMapping> map = m_InterfaceMaps->getMap(classhash);
-		printf("selecting map @ %p\n", map.get());
+		CSP_LOG(APP, INFO, "selecting map @ " << map.get());
 		m_Interface->setMapping(map);
 	}
 	m_Interface->bindObject(m_ActiveObject.get());
@@ -231,6 +234,9 @@ OpenThreads::Barrier bar;
 void CSPSim::init()
 {
 	try {
+		CSP_LOG(APP, INFO, "Installing stack trace handler...");
+		simdata::Trace::install();
+
 		CSP_LOG(APP, INFO, "Starting CSPSim...");
 
 		// setup osg search path for external data files

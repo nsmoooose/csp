@@ -25,6 +25,8 @@
  */
 
 
+#ifndef SIMDATA_NOTHREADS
+
 #ifndef __SIMDATA_THREAD_H__
 #define __SIMDATA_THREAD_H__
 
@@ -71,39 +73,44 @@ namespace thread {
 	 */
 	static void enableCancel() {
 		const int result = pthread_setcancelstate(PTHREAD_CANCEL_ENABLE, 0);
-		ThreadException::check(result);
+		ThreadException::checkThrow(result);
 	}
 
 	/** Set the thread cancellation state to disabled.  Requests to cancel
-	 *  this thread will be ignored.
+	 *  this thread will be remain pending until cancellation is reenabled.
 	 */
 	static void disableCancel() {
 		const int result = pthread_setcancelstate(PTHREAD_CANCEL_DISABLE, 0);
-		ThreadException::check(result);
+		ThreadException::checkThrow(result);
 	}
 
-	/** Terminate the current thread if there are any pending cancellation
-	 *  requests.  @see Thread::cancel().
+	/** Create an explicit cancellation point.  Threads with cancellation
+	 *  enabled and a deferred cancellation policy will only be terminated
+	 *  at cancellation points (most blocking functions).
+	 *  @see Thread::cancel().
 	 */
 	static void testCancel() {
 		pthread_testcancel();
 	}
 
 	/** Set the cancellation type to be asynchronous.  The current thread will
-	 *  be terminated immediately if cancelled by another thread.
+	 *  be terminated immediately if cancelled by another thread.  Be careful
+	 *  with this cancellation type, since absolutely no cleanup will occur.
+	 *  Asynchronous cancellation should only be used in very tight loops,
+	 *  where calls to testCancel would be too expensive.
 	 */
 	static void useAsynchronousCancel() {
 		const int result = pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, 0);
-		ThreadException::check(result);
+		ThreadException::checkThrow(result);
 	}
 
 	/** Set the cancellation type to be deferred.  Cancellation requests will be
-	 * deferred until a cancellation checkpoint is reached (e.g a blocking wait
-	 * or an explicit call to testCancel()).
+	 *  deferred until a cancellation point is reached, i.e most blocking functions
+	 *  or an explicit call to testCancel().
 	 */
 	static void useDeferredCancel() {
 		const int result = pthread_setcanceltype(PTHREAD_CANCEL_DEFERRED, 0);
-		ThreadException::check(result);
+		ThreadException::checkThrow(result);
 	}
 
 	/** Suspend execution of the current thread the specified amount of time.
@@ -113,9 +120,8 @@ namespace thread {
 	 */
 	static void sleep(double seconds) {
 		static ThreadCondition m_condition;
-		m_condition.lock();
+		ScopedLock<ThreadCondition> lock(m_condition);
 		m_condition.wait(seconds);
-		m_condition.unlock();
 	}
 
 } // namespace thread
@@ -213,7 +219,12 @@ private:
 	void _execute() {
 		m_running = true;
 		m_thread_id = pthread_self();
-		run();
+		try {
+			run();
+		} catch (Exception &e) {
+			SIMDATA_ERROR(LOG_THREAD, "Uncaught exception in thread " << m_name << std::endl << e);
+			e.clear();
+		}
 		m_complete = true;
 		// signal any threads waiting to join with us
 		m_exit.signalAll();
@@ -267,7 +278,11 @@ protected:
 	 */
 	BaseThread(Task *task, std::string const &name): m_task(task), m_thread_id(0), m_cancelled(false) {
 		assert(task);
-		task->setName(name);
+		if (name.size()) {
+			task->setName(name);
+		} else {
+			task->setName("<unknown>");
+		}
 	}
 
 	/** Accessor used by Thread<> to provide type-specialized access to the
@@ -283,7 +298,12 @@ public:
 	 */
 	virtual ~BaseThread() {
 		if (isActive() && !isDetached()) {
-			cancel();
+			// never throw from a dtor; log instead
+			try {
+				cancel();
+			} catch (ThreadException const &e) {
+				e.logAndClear(LOG_THREAD);
+			}
 		}
 	}
 
@@ -293,7 +313,7 @@ public:
 		assert(isStarted());
 		assert(!isDetached());
 		const int result = pthread_join(m_thread_id, 0);
-		ThreadException::check(result);
+		ThreadException::checkThrow(result);
 	}
 
 	/** Wait for at most a limited amount of time for this thread to finish.
@@ -317,7 +337,7 @@ public:
 		assert(isStarted());
 		assert(!isDetached());
 		const int result = pthread_detach(m_thread_id);
-		ThreadException::check(result);
+		ThreadException::checkThrow(result);
 		m_task->setDetached();
 	}
 
@@ -333,7 +353,7 @@ public:
 		if (m_cancelled) return;
 		assert(isStarted());
 		const int result = pthread_cancel(m_thread_id);
-		ThreadException::check(result);
+		ThreadException::checkThrow(result);
 		m_cancelled = true;
 		//m_thread_id = 0;
 	}
@@ -354,7 +374,14 @@ public:
 		// create a new Ref<Task> to ensure that m_task remains referenced until _start
 		// is called.  _start takes care of deleting the reference.
 		int result = pthread_create(&m_thread_id, 0, &Task::_start, new Ref<Task>(m_task));
-		ThreadException::check(result);
+		ThreadException::checkThrow(result);
+	}
+
+	/** Start the thread running and detach it.
+	 */
+	void startDetached() {
+		start();
+		detach();
 	}
 
 	/** Returns true if this thread has been started successfully via start().
@@ -449,3 +476,5 @@ public:
 NAMESPACE_SIMDATA_END
 
 #endif // __SIMDATA_THREAD_H__
+
+#endif // SIMDATA_NOTHREADS

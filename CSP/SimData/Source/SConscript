@@ -29,6 +29,7 @@ Import('env')
 headers = Prefix("#/Include/SimData",
     """
     Archive.h
+    AtomicCounter.h
     BaseType.h
     Composite.h
     Conversions.h
@@ -69,6 +70,12 @@ headers = Prefix("#/Include/SimData",
     ScopedPointer.h
     Singleton.h
     String.h
+    TaggedRecord.h
+    TaggedRecordRegistry.h
+    Thread.h
+    ThreadBase.h
+    ThreadQueue.h
+    Timing.h
     Trace.h
     TypeAdapter.h
     Types.h
@@ -138,6 +145,9 @@ sources = """
     Quat.cpp
     Random.cpp
     Real.cpp
+    TaggedRecordRegistry.cpp
+    ThreadBase.cpp
+    Timing.cpp
     TypeAdapter.cpp
     Vector3.cpp
     Version.cpp

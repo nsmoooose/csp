@@ -64,7 +64,7 @@ InterfaceProxy::InterfaceProxy(const char *cname, hasht chash)
 }
 
 Object *InterfaceProxy::createObject() const { 
-	error("INTERNAL ERROR: InterfaceProxy::createObject()");
+	fatal("INTERNAL ERROR: InterfaceProxy::createObject()");
 	return 0;
 }
 
@@ -104,12 +104,12 @@ ObjectInterfaceBase *InterfaceProxy::findInterface(std::string const &varname, b
 }
 
 hasht InterfaceProxy::getClassHash() const { 
-	error("INTERNAL ERROR: InterfaceProxy::getClassHash()");
+	fatal("INTERNAL ERROR: InterfaceProxy::getClassHash()");
 	return 0;
 }
 
 const char * InterfaceProxy::getClassName() const { 
-	error("INTERNAL ERROR: InterfaceProxy::getClassName()");
+	fatal("INTERNAL ERROR: InterfaceProxy::getClassName()");
 	return 0;
 }
 

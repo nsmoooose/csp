@@ -35,6 +35,7 @@ MODULES = \
 	Random \
 	Real \
 	Timing \
+	ThreadBase \
 	TypeAdapter \
 	Vector3 \
 	Version

@@ -7,6 +7,23 @@ Version 0.4.0 (in progress)
 
   * Fix tabs in Matrix.h
 
+  * Major overhaul of the logging system.  Added threadsafe logging.
+    Added (optional) timestamps and source file/line.  Priority
+    value now logged as first character.  Environment variables
+    SIMDATA_LOGFILE and SIMDATA_LOGPRIORITY override the default
+    values of stderr and 0 (BULK).
+
+  * Several bug fixes in the thread code, and much better handling
+    of error codes.  Split larger functions out of ThreadBase.h
+    into ThreadBase.cpp.
+
+  * Enhanced the exception classes to record stack traces (linux
+    only for now).  Additional convenience methods for logging
+    and outputing to streams.
+
+  * Improved the traceback generation under linux.  Tracebacks
+    can be decoded with the tools/trace program.
+
 2004-06-22: onsight
   * Added a ScopedUnlock (trivial reversal of ScopedLock)
 

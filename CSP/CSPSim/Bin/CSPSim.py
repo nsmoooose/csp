@@ -3,17 +3,17 @@
 # Combat Simulator Project - CSPSim
 # Copyright (C) 2002 The Combat Simulator Project
 # http://csp.sourceforge.net
-# 
+#
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
 # as published by the Free Software Foundation; either version 2
 # of the License, or (at your option) any later version.
-# 
+#
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
@@ -53,7 +53,7 @@ def printUsage():
 	print "              --help          help message"
 
 
-def setLogClasses():
+def setLogCategory():
 	if len(log_classes) == 0: return
 	flags = 0
 	for class_name in log_classes:
@@ -62,7 +62,7 @@ def setLogClasses():
 			flags = flags | class_flag
 		except:
 			print "Unrecognized log class:", class_name
-	CSP.csplog().setLogClasses(flags)
+	CSP.csplog().setLogCategory(flags)
 
 
 def runCSPSim(args):
@@ -80,7 +80,7 @@ def runCSPSim(args):
 		compileData([])
 	import Shell
 	app = CSP.CSPSim()
-	setLogClasses()
+	setLogCategory()
 	app.init()
 
 	try:
@@ -114,7 +114,8 @@ def compileData(args):
 	cachepath = CSP.getCachePath()
 	dar = os.path.join(cachepath, "sim.dar")
 	XML = os.path.join(datapath, "XML")
-	CSP.csplog().setLogLevels(CSP.CSP_ALL, SimData.LOG_ALERT)
+	CSP.csplog().setLogCategory(CSP.CSP_ALL)
+	CSP.csplog().setLogPriority(SimData.LOG_ALERT)
 	#print "compile %s %s" % (XML, dar)
 	try:
 		from SimData.Compile import Compiler, CompilerUsageError
@@ -159,6 +160,7 @@ def runServerNode(args):
 def loadSimData():
 	"""Load the SimData module"""
 	global SimData
+	os.environ.setdefault('SIMDATA_LOGFILE', 'SimData.log')
 	try:
 		import SimData as SD
 	except Exception, e:
@@ -166,7 +168,7 @@ def loadSimData():
 		if len(msg) > 60:
 			msg = msg.replace(": ", ":\n  ")
 		print """
-	ERROR: Unable to import SimData.  
+	ERROR: Unable to import SimData.
 
 	%s
 	""" % msg,
@@ -176,8 +178,8 @@ def loadSimData():
 	Unresolved symbols often indicate missing libraries or improper link options.
 	""",
 		print """
-	Please verify that SimData has been properly installed on your system.  See 
-	the README file in the SimData distribution for details.  
+	Please verify that SimData has been properly installed on your system.  See
+	the README file in the SimData distribution for details.
 	"""
 		sys.exit(1)
 	SimData = SD
@@ -192,7 +194,7 @@ def loadCSP():
 		if len(msg) > 60:
 			msg = msg.replace(": ", ":\n  ")
 		print """
-	ERROR: Unable to import cCSP.py  
+	ERROR: Unable to import cCSP.py
 
 	%s
 	""" % msg,
@@ -201,7 +203,7 @@ def loadCSP():
 			print """
 	Some required files appear to be missing.  Please verify that you have
 	successfully built CSPSim.  See the README for details.  If you are
-	still having trouble, ask for help on the forums at 
+	still having trouble, ask for help on the forums at
 
 		http://csp.sourceforge.net/forum
 
@@ -209,7 +211,7 @@ def loadCSP():
 		else:
 			print """
 	See the README files for additional information.  If you are still having
-	trouble, ask for help on the forums at 
+	trouble, ask for help on the forums at
 
 		http://csp.sourceforge.net/forum
 
@@ -285,8 +287,8 @@ def main(argv):
 		action = runCSPSim
 
 	loadSimData()
-	SimData.log().setOutput("SimData.log")
-	SimData.log().setLogLevels(SimData.LOG_ALL, SimData.LOG_DEBUG)
+	SimData.log().setLogCategory(SimData.LOG_ALL)
+	SimData.log().setLogPriority(SimData.LOG_DEBUG)
 
 	loadCSP()
 
@@ -296,7 +298,7 @@ def main(argv):
 		print "Invalid SimData logging level, defaulting to 'ALERT'"
 		simdata_loglevel = SimData.LOG_ALERT
 
-	SimData.log().setLogLevels(SimData.LOG_ALL, simdata_loglevel)
+	SimData.log().setLogPriority(simdata_loglevel)
 
 	print "Loading configuration from '%s'." % config
 	if not CSP.openConfig(config):

@@ -34,7 +34,8 @@ int ServerNode::run()
   int count = 0;
   
   int level = g_Config.getInt("Debug", "LoggingLevel", 0, true);
-  csplog().setLogLevels(CSP_ALL, level);
+  csplog().setLogCategory(CSP_ALL);
+  csplog().setLogPriority(level);
   csplog().setOutput("ServerNode.log");
   
   printf("Network test server starting up...\n");

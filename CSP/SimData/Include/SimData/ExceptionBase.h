@@ -30,11 +30,12 @@
 
 #include <string>
 
-
 #include <SimData/Export.h>
 #include <SimData/Namespace.h>
 
+
 NAMESPACE_SIMDATA
+
 
 /** General exception base class with error reporting.
  *
@@ -43,16 +44,19 @@ NAMESPACE_SIMDATA
 class SIMDATA_EXPORT ExceptionBase { //: public std::runtime_error {
 	std::string _msg;
 	std::string _type;
-	mutable bool dump;
+	std::string _trace;
+	mutable bool _dump;
 public:
 	/** Create a new exception.
 	 *
 	 *  @param type a string representing the type of error.
 	 *  @param msg a string providing additional information about the error.
+	 *  @param trace collect a stack trace that can later be accessed using
+	 *    getTrace().
 	 */
-	ExceptionBase(std::string const &type="Exception", std::string const &msg="");
+	ExceptionBase(std::string const &type="Exception", std::string const &msg="", bool trace=true);
 
-	/** Copy constructor.
+	/** Copy constructor (required for exceptions)
 	 */
 	ExceptionBase(ExceptionBase const &e);
 
@@ -65,15 +69,27 @@ public:
 
 	/** Get the string describing the error.
 	 */
-	std::string getMessage();
+	std::string getMessage() const;
 
 	/** Get the string representing the type of error.
 	 */
-	std::string getType();
+	std::string getType() const;
+
+	/** Get the string showing a stack trace at the time the
+	 *  exception was generated.  The default behavior is to
+	 *  save a stack trace, but this can be disabled in the
+	 *  constructor.  If disabled, this method returns an
+	 *  empty string.
+	 */
+	std::string getTrace() const;
+
+	/** Returns true if a stack trace was collected.
+	 */
+	bool hasTrace() const;
 
 	/** Get the full error message (type + message).
 	 */
-	std::string getError();
+	std::string getError() const;
 
 	/** Append additional information to the error description.
 	 */
@@ -90,16 +106,30 @@ public:
 
 	/** Dump information about the exception to stderr.
 	 */
-	void details();
+	void details() const;
+
+	/** Log the exception and reset so that it will not print to stderr
+	 *  on destruction.
+	 */
+	virtual void logAndClear(int category=~0) const;
+
+#ifndef SWIG
+	/** Dump details of an exception to an output stream
+	 */
+	friend SIMDATA_EXPORT std::ostream& operator<< (std::ostream&, const ExceptionBase&);
+#endif // SWIG
+
 };
+
 
 /** Base class for all SimData specific exceptions.
  */
 class SIMDATA_EXPORT Exception: public ExceptionBase {
 public:
-	Exception(std::string const &type="Exception", std::string const &msg=""):
-		ExceptionBase(type, msg) { }
+	Exception(std::string const &type="Exception", std::string const &msg="", bool trace=true):
+		ExceptionBase(type, msg, trace) { }
 };
+
 
 #define SIMDATA_SUBEXCEPTION(a, b) \
 class a: public b { \
@@ -120,6 +150,7 @@ public: \
 SIMDATA_EXCEPTION(PythonException);
 
 NAMESPACE_SIMDATA_END
+
 
 #endif // __SIMDATA_EXCEPTION_H__
 

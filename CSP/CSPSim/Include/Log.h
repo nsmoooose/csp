@@ -62,23 +62,24 @@ enum {
 
 
 /**
- * @relates logstream
- * Return the one and only csp logstream instance.
+ * @relates LogStream
+ * Return the one and only csp LogStream instance.
  * We use a function together with lazy construction so we are assured 
  * that cerr has been initialised.
- * @return csp logstream
+ * @return csp LogStream
  */
-inline simdata::logstream& csplog() {
-	static simdata::logstream *logstrm = 0;
-	if (logstrm == 0) logstrm = new simdata::logstream(std::cerr);
-	return *logstrm;
+inline simdata::LogStream& csplog() {
+	static simdata::LogStream *log_stream = 0;
+	if (log_stream == 0) log_stream = new simdata::LogStream(std::cerr);
+	return *log_stream;
 }
 
 
 #ifdef CSP_NDEBUG
 # define CSP_LOG(C,P,M)
 #else
-# define CSP_LOG(C,P,M) ::csplog() << simdata::loglevel(CSP_##C, simdata::LOG_##P) << M << std::endl
+# define CSP_LOG(C,P,M) \
+	::csplog().entry(simdata::LOG_##P, CSP_##C, __FILE__, __LINE__) << M << std::endl
 #endif
 
 

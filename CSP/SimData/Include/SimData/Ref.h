@@ -38,6 +38,7 @@
 #include <SimData/ExceptionBase.h>
 #include <SimData/Log.h>
 #include <SimData/Properties.h>
+#include <SimData/AtomicCounter.h>
 
 #ifdef SWIG
 // silence SWIG warning about NonCopyable
@@ -99,6 +100,13 @@ private:
  */
 typedef ReferencedBase<int> Referenced;
 
+#ifndef SIMDATA_NOTHREADS
+/** Base class for referenced counted objects that are shared between
+ *  multiple threads.  Thread-safe, supporting atomic updates of the
+ *  internal reference counter.
+ */
+typedef ReferencedBase<AtomicCounter> ThreadSafeReferenced;
+#endif // SIMDATA_NOTHREADS
 
 /** Reference counting smart-pointer.
  *

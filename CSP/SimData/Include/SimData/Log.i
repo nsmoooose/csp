@@ -28,15 +28,15 @@
 
 NAMESPACE_SIMDATA
 
-class logstream 
+class LogStream 
 {
 public:
-	logstream(std::ostream& out);
-	~logstream();
+	LogStream(std::ostream& out);
+	~LogStream();
 	void _close();
 	void setOutput(std::string const &fn);
-	void setLogLevels(int c, int p);
-	void setLogClasses(int c);
+	void setLogPriority(int p);
+	void setLogCategory(int c);
 };
 
 NAMESPACE_SIMDATA_END // namespace simdata

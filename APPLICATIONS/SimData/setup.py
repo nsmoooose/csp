@@ -62,6 +62,7 @@ def make_install():
 		copy_dir("SimData", modpath, ['__init__.py', 'Debug.py', 'Parse.py', 'Compile.py', 'cSimData.py', '_cSimData.so'])
 		print "Installing SimData headers to", incpath
 		copy_dir("Include/SimData", incpath, headers)
+		copy_dir("Include/SimData", incpath, interfaces)
 	except Exception, e:
 		print e
 		sys.exit(1)
@@ -216,14 +217,43 @@ headers = [
 ]
 
 interfaces = [
-	"cSimData"
+	"cSimData.i",
+	"BaseType.i",
+	"HashUtility.i",
+	"Object.i",
+	"Vector3.i",
+	"DataArchive.i",
+	"InterfaceRegistry.i",
+	"Pack.i",
+	"cSimData.i",
+	"Date.i",
+	"Interpolate.i",
+	"Path.i",
+	"filemap.i",
+	"Enum.i",
+	"List.i",
+	"Random.i",
+	"vector.i",
+	"Exception.i",
+	"Log.i",
+	"Spread.i",
+	"External.i",
+	"Math.i",
+	"String.i",
+	"GeoPos.i",
+	"Matrix3.i",
+	"Types.i",
 ]
+
 
 def fullpath(path, ext, list):
 	return map(lambda x: path+x+ext, list)
 
+main_interface = ["cSimData.i"]
+
 sources = fullpath("Source/", ".cpp", sources)
-interfaces = fullpath("Source/", ".i", interfaces)
+main_interface_fullpath = fullpath("Source/", "", main_interface)
+interfaces_fullpath = fullpath("Include/SimData/", "", interfaces)
 headers_fullpath = fullpath("Include/SimData/", "", headers)
 
 build_swig_ext.options = "-IInclude -noexcept"
@@ -237,7 +267,7 @@ if len(sys.argv)==2 and sys.argv[1]=="make_install":
 	make_install()
 
 cSimData = Extension("SimData._cSimData", 
-                     sources + interfaces, 
+                     sources + main_interface_fullpath, 
 					 include_dirs = includes,
 					 define_macros = defines,
 					 libraries = libraries, 
@@ -251,7 +281,7 @@ setup(name="SimData",
       author_email="mrose@stm.lbl.gov",
       url="http://csp.sourceforge.net/wiki/",
       packages=['SimData'],
-	  headers = headers_fullpath,
+	  headers = headers_fullpath + interfaces_fullpath + main_interface_fullpath,
 	  ext_modules = [cSimData],
 	  )
 

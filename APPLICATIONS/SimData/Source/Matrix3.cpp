@@ -274,11 +274,11 @@ Vector3 operator* (const Vector3& rkPoint, const Matrix3& rkMatrix)
 }
 */
 
-Vector3 operator*(const Matrix3& rkMatrix, const Vector3& rkPoint) 
+Vector3 operator*(Matrix3 const & rkMatrix, Vector3 const & rkPoint) 
 {
-	double *row0 = &(rkMatrix.rowcol[0][0]);
-	double *row1 = &(rkMatrix.rowcol[1][0]);
-	double *row2 = &(rkMatrix.rowcol[2][0]);
+	double const *row0 = &(rkMatrix.rowcol[0][0]);
+	double const *row1 = &(rkMatrix.rowcol[1][0]);
+	double const *row2 = &(rkMatrix.rowcol[2][0]);
 	double x, y, z;
 	x  = rkPoint.x * *row0++;
 	x += rkPoint.y * *row0++;
@@ -293,11 +293,11 @@ Vector3 operator*(const Matrix3& rkMatrix, const Vector3& rkPoint)
 }
 
 
-Vector3 operator* (const Vector3& rkPoint, const Matrix3& rkMatrix)
+Vector3 operator* (Vector3 const & rkPoint, Matrix3 const & rkMatrix)
 {
-	double *row0 = &(rkMatrix.rowcol[0][0]);
-	double *row1 = &(rkMatrix.rowcol[1][0]);
-	double *row2 = &(rkMatrix.rowcol[2][0]);
+	double const *row0 = &(rkMatrix.rowcol[0][0]);
+	double const *row1 = &(rkMatrix.rowcol[1][0]);
+	double const *row2 = &(rkMatrix.rowcol[2][0]);
 	double x, y, z;
 	x = rkPoint.x * *row0++ + rkPoint.y * *row1++ + rkPoint.z * *row2++;
 	y = rkPoint.x * *row0++ + rkPoint.y * *row1++ + rkPoint.z * *row2++;

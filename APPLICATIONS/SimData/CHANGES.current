@@ -1,5 +1,16 @@
 Version 0.3.1 (in progress)
 ===========================
+2003-03-20: onsight
+            Fixed const cast in matrix * vector routines.  Why doesn't
+	    gcc 3.2.1 -Wall catch this? (!)
+
+	    Changed cSimData.i in Source to include the main version in
+	    Include/SimData.  These differ in their %module directive.
+	    The main one uses SimData.cSimData, which is needed for 3rd
+	    party apps than import the SimData interface for SWIG.  The
+	    version used to build SimData (in Source) uses just
+	    %module SimData.
+
 2003-03-19: onsight
             Changed Enumeration implementation to use std::map<> instead
 	    of (non-)std::hash_map<>.

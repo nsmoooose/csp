@@ -9,6 +9,10 @@ Version 0.4.0 (in progress)
   * Clean up base class construction of ThreadLog, removing suspect
     references to 'this' in ctor initializer list.
 
+  * Small fixes to the main makefile and the unit test makefile.
+
+  * Small fixes to TaggedRecord.h
+
 2004-06-26: onsight
   * Remove superflous logging in interface registry, and suppress
     swig warnings.

@@ -1,6 +1,6 @@
 SUBDIRS = Source 
 
-export PYTHON_INCLUDE := $(shell python setup.py python_include_path)
+export PYTHON_INCLUDE = $(shell python setup.py python_include_path)
 export GSWOPTS = $(shell python setup.py swigopts)
 export GLDOPTS = $(shell python setup.py ldopts)
 
@@ -32,7 +32,7 @@ install:
 
 tests:
 	@$(MAKE) --no-print-directory -C SimData/Tests all
-	python SimData/Tests/RunTests.py
+	@SIMDATA_LOGFILE=SimData/Tests/.testlog python SimData/Tests/RunTests.py
 
 tests-clean:
 	@$(MAKE) --no-print-directory -C SimData/Tests clean

@@ -127,7 +127,7 @@ public:
 		_buffer.append(x);
 		return *this;
 	}
-	std::string str() const {
+	std::string const & str() const {
 		return _buffer;
 	}
 };
@@ -327,6 +327,7 @@ class TagReader: public TagBase {
  */
 class TaggedRecord: public Referenced {
 public:
+	typedef Ref<TaggedRecord> Ref;
 	typedef int64 Id;
 	virtual void serialize(TagReader &reader) = 0;
 	virtual void serialize(TagWriter &writer) const = 0;

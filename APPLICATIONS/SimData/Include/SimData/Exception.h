@@ -30,12 +30,19 @@
 
 #include <string>
 
+
 #include <SimData/Export.h>
 #include <SimData/Namespace.h>
 
-
+#ifndef NAMESPACE_SIMDATA
+namespace simdata {
+#else
 NAMESPACE_SIMDATA
+#endif
 
+#ifndef SIMDATA_EXPORT
+#define SIMDATA_EXPORT
+#endif
 
 /** General exception base class with error reporting.
  *
@@ -120,9 +127,11 @@ public: \
  */
 SIMDATA_EXCEPTION(PythonException);
 
-
+#ifndef NAMESPACE_SIMDATA_END
+}
+#else
 NAMESPACE_SIMDATA_END
-
+#endif
 
 #endif // __SIMDATA_EXCEPTION_H__
 

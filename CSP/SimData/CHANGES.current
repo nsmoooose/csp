@@ -1,6 +1,21 @@
 Version 0.4.0 (in progress)
 ===========================
 
+2004-11-19: delta
+* Added a few more SIMDATA_EXPORT to export symbols.
+
+* Updated vcproj.
+
+2004-11-15: delta
+* Replaced every WIN32 by _WIN32 (windows native). Removed WIN32
+  definition in the preprocessor (vcproj).
+  
+* Added a function object nohash64 (hashing function) for the 
+  vc7.x compilers' STL std/stdext::hash_map non standard container (must
+  inheritate from std/stdext::hash_compare).
+  
+* Updated vcproj.
+
 2004-11-14: onsight
 * Added a method to Timer to both return and reset the elapsed time.
 

@@ -61,7 +61,7 @@ double SIMDATA_EXPORT tval();
  *  The offset is platform dependent, so do not use this value for
  *  absolute time.
  */
-timing_t get_realtime();
+SIMDATA_EXPORT timing_t get_realtime();
 
 
 /** A simple timing class with standard stopwatch functions.  The

@@ -40,7 +40,7 @@ NAMESPACE_SIMDATA
  *
  *  @author Mark Rose <mkrose@users.sourceforge.net>
  */
-class NonCopyable {
+class SIMDATA_EXPORT NonCopyable {
 protected:
 	NonCopyable() { }
 private:

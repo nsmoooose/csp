@@ -433,6 +433,9 @@
 				RelativePath="..\Include\SimData\ThreadQueue.h">
 			</File>
 			<File
+				RelativePath="..\Include\SimData\ThreadUtil.h">
+			</File>
+			<File
 				RelativePath="..\Include\SimData\Timing.h">
 			</File>
 			<File

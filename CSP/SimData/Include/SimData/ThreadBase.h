@@ -245,7 +245,7 @@ private:
  *  signals the condition variable, one (or all) of the threads waiting
  *  on that variable will be activated.
  */
-class ThreadCondition: public NonCopyable {
+class SIMDATA_EXPORT ThreadCondition: public NonCopyable {
 public:
 
 	/** Construct a condition variable, using an internal mutex.
@@ -453,7 +453,6 @@ private:
 	ThreadCondition m_cond;
 	bool m_flag;
 };
-
 
 NAMESPACE_SIMDATA_END
 

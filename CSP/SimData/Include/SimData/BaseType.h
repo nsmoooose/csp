@@ -93,7 +93,7 @@ public:
 
 /** Convenience function for printing BaseTypes to ostreams.
  */
-std::ostream &operator <<(std::ostream &o, BaseType const &t);
+SIMDATA_EXPORT std::ostream &operator <<(std::ostream &o, BaseType const &t);
 
 
 NAMESPACE_SIMDATA_END

@@ -39,7 +39,7 @@ NAMESPACE_SIMDATA
 /** Exception class for thread-related errors.  Wraps a small subset
  *  of cerrno constants.
  */
-class ThreadException: public Exception {
+class SIMDATA_EXPORT ThreadException: public Exception {
 public:
 	ThreadException(const int error);
 

@@ -404,7 +404,7 @@ public:
 #ifndef SWIG
 	/** Format to an output stream.
 	 */
-	friend std::ostream& operator << (std::ostream& output, const Quat& q);
+	SIMDATA_EXPORT friend std::ostream& operator << (std::ostream& output, const Quat& q);
 	/** Multiply a Quat by a scalar value on the left.
 	 */
 	friend inline Quat operator * (double lhs, const Quat& rhs) { return rhs*lhs; }
@@ -461,7 +461,6 @@ public:
 
 
 };	// end of class prototype
-
 
 NAMESPACE_SIMDATA_END
 

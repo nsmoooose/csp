@@ -21,43 +21,43 @@ AC_DEFUN(CSP_SDL_ERROR, [
 ])
       
 
-AC_DEFUN(CSP_TEST_SDL, [
-  sdl_min_version=ifelse([$1], , 0.0.0, $1)
-  sdl=yes
-  SDL_FLAGS=''
-  AC_PATH_PROG(SDL_CONFIG, sdl-config, no)
-  AC_MSG_CHECKING(for SDL > $sdl_min_version)
-  no_sdl=""
-  if test "$SDL_CONFIG" = "no"; then
-    no_sdl=yes
+dnl Generic version check for libraries using 'xxx-config' scripts
+AC_DEFUN(CSP_LIB_CONFIG, [
+  lib_min_version=ifelse([$3], , 0.0.0, $3)
+  lib=yes
+  LIB_FLAGS=''
+  AC_PATH_PROG(LIB_CONFIG, $2-config, no)
+  AC_MSG_CHECKING(for $1 > $lib_min_version)
+  no_lib=""
+  if test "$LIB_CONFIG" = "no"; then
+    no_lib=yes
   else
-    sdl_version=`$SDL_CONFIG --version` 
-    sdl_major=`echo $sdl_version | sed 's/\([[0-9]]*\).\([[0-9]]*\).\([[0-9]]*\)/\1/'` 
-    sdl_minor=`echo $sdl_version | sed 's/\([[0-9]]*\).\([[0-9]]*\).\([[0-9]]*\)/\2/'`
-    sdl_micro=`echo $sdl_version | sed 's/\([[0-9]]*\).\([[0-9]]*\).\([[0-9]]*\)/\3/'`
-    sdl_major_min=`echo $sdl_min_version | sed 's/\([[0-9]]*\).\([[0-9]]*\).\([[0-9]]*\)/\1/'` 
-    sdl_minor_min=`echo $sdl_min_version | sed 's/\([[0-9]]*\).\([[0-9]]*\).\([[0-9]]*\)/\2/'`
-    sdl_micro_min=`echo $sdl_min_version | sed 's/\([[0-9]]*\).\([[0-9]]*\).\([[0-9]]*\)/\3/'`
-    sdl_version_proper=`expr \
-      $sdl_major \> $sdl_major_min \| \
-      $sdl_major \= $sdl_major_min \& \
-      $sdl_minor \> $sdl_minor_min \| \
-      $sdl_major \= $sdl_major_min \& \
-      $sdl_minor \= $sdl_minor_min \& \
-      $sdl_micro \>= $sdl_micro_min `
-    if test "$sdl_version_proper" = "1" ; then
+    lib_version=`$LIB_CONFIG --version` 
+    lib_major=`echo $lib_version | sed 's/\([[0-9]]*\).\([[0-9]]*\).\([[0-9]]*\)/\1/'` 
+    lib_minor=`echo $lib_version | sed 's/\([[0-9]]*\).\([[0-9]]*\).\([[0-9]]*\)/\2/'`
+    lib_micro=`echo $lib_version | sed 's/\([[0-9]]*\).\([[0-9]]*\).\([[0-9]]*\)/\3/'`
+    lib_major_min=`echo $lib_min_version | sed 's/\([[0-9]]*\).\([[0-9]]*\).\([[0-9]]*\)/\1/'` 
+    lib_minor_min=`echo $lib_min_version | sed 's/\([[0-9]]*\).\([[0-9]]*\).\([[0-9]]*\)/\2/'`
+    lib_micro_min=`echo $lib_min_version | sed 's/\([[0-9]]*\).\([[0-9]]*\).\([[0-9]]*\)/\3/'`
+    lib_version_proper=`expr \
+      $lib_major \> $lib_major_min \| \
+      $lib_major \= $lib_major_min \& \
+      $lib_minor \> $lib_minor_min \| \
+      $lib_major \= $lib_major_min \& \
+      $lib_minor \= $lib_minor_min \& \
+      $lib_micro \>= $lib_micro_min `
+    if test "$lib_version_proper" = "1" ; then
       AC_MSG_RESULT(yes)
-      SDL_FLAGS=`$SDL_CONFIG --cflags`
+      LIB_FLAGS=`$LIB_CONFIG --cflags`
     else
       AC_MSG_RESULT(no)
-      no_sdl=yes
+      no_lib=yes
     fi
    fi
-   if test "$no_sdl" = "yes"; then
-	CSP_SDL_ERROR
+   if test "$no_lib" = "yes"; then
+	$4
    fi
-   AC_SUBST(SDL_FLAGS)
+   $2_FLAGS=$LIB_FLAGS
+   AC_SUBST($2_FLAGS)
 ])
-
-  
 

@@ -36,7 +36,7 @@ CODE_BINARY=demeter_csp.a
 SHARED_LIB=libdemeter_csp.so
 
 CXXFLAGS+=-Wall 
-CXXFLAGS+=@SDL_FLAGS@
+CXXFLAGS+=@sdl_FLAGS@
 CXXFLAGS+=-D_USE_GDAL_
 CXXFLAGS+=-w
 

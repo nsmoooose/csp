@@ -70,14 +70,3 @@
    if it is not supported. */
 #undef inline
 
-/* Define to 1 if hash_map is <ext/hash_map> */
-#undef HASHMAP_PATH_EXT
-
-/* Define to 1 if hash_map is <hash_map> */
-#undef HASHMAP_PATH
-
-/* Define to 1 if g++ 2.x.x */
-#undef GNU_CXX_V2
-
-/* Define to 1 if g++ 3.x.x */
-#undef GNU_CXX_V3

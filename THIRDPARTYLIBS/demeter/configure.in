@@ -31,7 +31,8 @@ AC_STRUCT_TM
 AC_CHECK_FUNCS([memset pow sqrt strerror strstr])
 
 # Checks for other libraries
-CSP_TEST_SDL(1.2.5)
+#CSP_TEST_SDL(1.2.5)
+CSP_LIB_CONFIG([SDL], [sdl], [1.2.5], [CSP_SDL_ERROR])
 
 AC_CONFIG_FILES([Makefile])
 AC_OUTPUT(,echo timestamp > stamp-h)

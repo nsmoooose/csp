@@ -72,7 +72,7 @@ NAMESPACE_SIMDATA_END
  * object creation capability of SimData provides a very simple way to
  * extend the simulation functionality using third-party plugin components.
  *
- * See http://csp.sourcforge.net/wiki/SimData for more information
+ * See http://csp.sourceforge.net/wiki/SimData for more information
  * or post to http://csp.sourceforge.net/forum if you have suggestions
  * or need help.
  *

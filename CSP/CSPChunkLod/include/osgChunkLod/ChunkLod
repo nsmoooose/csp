@@ -54,7 +54,7 @@
 #include <osgChunkLod/MultiTextureDetails>
 
 //#define USE_CG
-#define USE_NV
+//#define USE_NV
 
 #ifdef USE_CG
 #include <osgNVCg/Context>

@@ -32,6 +32,7 @@
 #include <ControlSurfacesChannels.h>
 #include <FlightDynamicsChannels.h>
 #include <KineticsChannels.h>
+#include <LandingGearChannels.h>
 #include <NavigationChannels.h>
 
 
@@ -81,6 +82,14 @@ namespace bus {
 
 	const char *Navigation::ActiveSteerpoint = "Navigation.ActiveSteerpoint";
 
+	const char *LandingGear::WOW = "LandingGear.WOW";
+	const char *LandingGear::FullyExtended = "LandingGear.FullyExtended";
+	const char *LandingGear::FullyRetracted = "LandingGear.FullyRetracted";
+	const char *LandingGear::GearExtendSelected = "LandingGear.GearExtendSelected";
+	std::string LandingGear::selectWOW(std::string const &gearname) { return "LandingGear." + gearname + ".WOW"; }
+	std::string LandingGear::selectFullyExtended(std::string const &gearname) { return "LandingGear." + gearname + ".FullyExtended"; }
+	std::string LandingGear::selectFullyRetracted(std::string const &gearname) { return "LandingGear." + gearname + ".FullyRetracted"; }
+	std::string LandingGear::selectAntilockBrakingActive(std::string const &gearname) { return "LandingGear." + gearname + ".AntilockBrakingActive"; }
 }
 
 

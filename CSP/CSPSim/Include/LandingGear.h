@@ -89,8 +89,10 @@ public:
 	// as the associated animations use the same convention.
 	const std::string& getName() const {return m_Name;}
 
+	double getWheelSpeed() const { return m_TireRotationRate * m_TireRadius; }
+
 	// Returns true if there is weight on this gear (weight-on-wheel).
-	bool getWOW() const { return m_WOW; }
+	bool getWOW() const { return b_WOW->value(); }
 
 	// Returns true if the wheel is locked and skidding in contact with the ground.
 	double getSkidding() const { return m_Skidding; }
@@ -169,9 +171,9 @@ public:
 	void registerChannels(Bus* bus);
 
 	// Returns true if the gear is fully retracted.
-	bool isFullyExtended() const { return m_FullyExtended; }
+	bool isFullyExtended() const { return b_FullyExtended->value(); }
 	// Returns true if the gear is fully extended.
-	bool isFullyRetracted() const { return m_FullyRetracted; }
+	bool isFullyRetracted() const { return b_FullyRetracted->value(); }
 
 	// Returns the gear extension from 0.0 when fully retracted to 1.0 when fully extended.
 	double getExtension() const;
@@ -182,16 +184,16 @@ protected:
 	void updateBraking(double dt);
 	void updateBrakeTemperature(double dt, double dissipation, double airspeed);
 	void updateWheel(double dt,
-                         simdata::Vector3 const &origin,
-                         simdata::Vector3 const &vBody,
-                         simdata::Quat const &q,
-                         simdata::Vector3 const &normalGroundBody,
-                         bool updateContact);
+	                 simdata::Vector3 const &origin,
+	                 simdata::Vector3 const &vBody,
+	                 simdata::Quat const &q,
+	                 simdata::Vector3 const &normalGroundBody,
+	                 bool updateContact);
 	void updateSuspension(simdata::Vector3 const &origin,
-                              simdata::Vector3 const &vBody,
-                              simdata::Quat const &q,
-                              double const height,
-                              simdata::Vector3 const &normalGroundBody);
+	                      simdata::Vector3 const &vBody,
+	                      simdata::Quat const &q,
+	                      double const height,
+	                      simdata::Vector3 const &normalGroundBody);
 	void updateTireRotation(double dt);
 
 
@@ -232,10 +234,13 @@ protected:
 	double m_SteeringLimit;
 	simdata::Quat m_SteerTransform;
 
-	bool m_FullyExtended;
-	bool m_FullyRetracted;
+	// Export sensor data
+	DataChannel<bool>::Ref b_FullyExtended;
+	DataChannel<bool>::Ref b_FullyRetracted;
+	DataChannel<bool>::Ref b_WOW;
+	DataChannel<bool>::Ref b_AntilockBrakingActive;
+
 	bool m_Extend;
-	bool m_WOW;
 	bool m_ABS;
 	bool m_Skidding;
 	bool m_SkidFlag;
@@ -487,6 +492,8 @@ protected:
 	GearSet m_Gear;
 
 	DataChannel<bool>::Ref b_GearExtendSelected;  // tracks intent, not actual state.
+	DataChannel<bool>::Ref b_FullyRetracted;
+	DataChannel<bool>::Ref b_FullyExtended;
 	DataChannel<bool>::Ref b_WOW;
 	DataChannel<bool>::CRef b_NearGround;
 	DataChannel<double>::CRef b_LeftBrakeInput;
@@ -500,7 +507,6 @@ protected:
 	simdata::Vector3 m_GroundNormalBody;
 	simdata::Vector3 m_WindVelocityBody;
 	double m_Height;
-	bool m_FullyRetracted;
 
 	virtual double onUpdate(double dt);
 };

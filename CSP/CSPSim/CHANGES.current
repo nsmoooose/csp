@@ -7,6 +7,9 @@
 
  * Make the input event handlers in AircraftInputSystem virtual.
 
+ * Export sensor data from individual landing gears.  Predefine
+   channel names for landing gear.
+
 2005-04-02: onsight
  * Add a DataChannel constructor that can be used for channel data types
    that don't have public copy constructors.

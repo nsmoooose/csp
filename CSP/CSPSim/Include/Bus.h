@@ -1,17 +1,17 @@
 // Combat Simulator Project - FlightSim Demo
-// Copyright (C) 2003 The Combat Simulator Project
+// Copyright 2003, 2004 The Combat Simulator Project
 // http://csp.sourceforge.net
-// 
+//
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
 // as published by the Free Software Foundation; either version 2
 // of the License, or (at your option) any later version.
-// 
+//
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU General Public License
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
@@ -19,6 +19,25 @@
 
 /**
  * @file Bus.h
+ * @brief Classes for sharing data between vehicle subsystems.
+ *
+ * The bus and data channel infrastructure provides a higly flexible way
+ * of interfacing disparate vehicle subsystems.  Rather than relying on
+ * base class interfaces and virtual dispatch to connect subsystems, the
+ * bus architecture provides dynamic data channels that are constructed
+ * when the systems are first connected.  Individual systems export named
+ * channels, which provide strongly-typed access to internal data.  These
+ * channels are registered with a bus, which acts as a broker between the
+ * subsystems in a vehicle.  To retrieve external data, systems request
+ * specific channels by name from the bus.  Once a channel is retrieved,
+ * the channel instance can be used to efficiently retrieve data from the
+ * system providing the channel.  The two subsystems need no specific
+ * knowledge of each other, just an agreed set of channel names and types.
+ * Since the binding is dynamic (at runtime), systems can provide fallback
+ * behavior in the event that a particular channel is unavailable.
+ * Channels provide both passive data transfer, as well as push-style
+ * data updates and active (multi-parameter) callbacks via the sigc++
+ * library.
  *
  **/
 
@@ -28,7 +47,7 @@
 
 
 /* TODO
- * 	add warning/debug logging
+ *   add warning/debug logging
  */
 
 #include <Tools.h>
@@ -37,7 +56,6 @@
 #include <SimData/Ref.h>
 
 #include <sigc++/sigc++.h> // 1.2 style
-//#include <sigc++/signal_system.h> // 1.0 style
 #include <map>
 
 
@@ -45,16 +63,15 @@ class Bus;
 
 /** Base class for channels on a bus.
  *
- *  Channels are reference counted objects that are stored in
- *  a bus and can be shared by components with access to the
- *  bus.  Each component can provide channels to the bus and
- *  access channels provided by other components.  Since the
- *  channels are identified by strings, this provides a very
- *  flexible way to share interfaces.  Although the initial
- *  retrieval and connection of a channel involves some over-
- *  head, references to channels can be stored locally to
- *  provide low-overhead data and method sharing between
- *  components.
+ *  Channels are reference counted objects that are stored in a bus
+ *  and can be shared by components with access to the bus. Each
+ *  component can provide channels to the bus and access channels
+ *  provided by other components. Since the channels are identified
+ *  by strings, this provides a very flexible way to share
+ *  interfaces. Although the initial retrieval and connection of a
+ *  channel involves some over- head, references to channels can be
+ *  stored locally to provide low-overhead data and method sharing
+ *  between components.
  */
 class ChannelBase: public simdata::Referenced {
 friend class Bus;
@@ -75,24 +92,33 @@ protected:
 	      DERIVED_MASK = 0xffff0000
 	};
 
+	/** Access mode.
+	 *
+	 *  Local channels can only be modified by the owner, whereas
+	 *  shared channel can be modified by all systems.
+	 */
 	typedef enum {
 		ACCESS_LOCAL,
 		ACCESS_SHARED
 	} AccessType;
 
-	bool isMask(unsigned int bits) const {
+	/// Test bit flags used by derived classes (>= 0x10000).
+	inline bool isMask(unsigned int bits) const {
 		return (m_Mask & bits & DERIVED_MASK) != 0;
 	}
 
-	void setMask(unsigned int bits) const {
+	/// Set bit flags used by derived classes (>= 0x10000).
+	inline void setMask(unsigned int bits) const {
 		m_Mask |= (bits & DERIVED_MASK);
 	}
 
-	void clearMask(unsigned int bits) const {
+	/// Clear bit flags used by derived classes (>= 0x10000).
+	inline void clearMask(unsigned int bits) const {
 		m_Mask &= ~(bits & DERIVED_MASK);
 	}
 
-	unsigned int getMask() const { return m_Mask; }
+	/// Get the flag state for derived classes (>= 0x10000).
+	inline unsigned int getMask() const { return m_Mask & DERIVED_MASK; }
 
 	/** Mark a channel as enabled or disabled.
 	 *
@@ -101,7 +127,7 @@ protected:
 	 *  the channel to test the channel status and behave
 	 *  accordingly.
 	 */
-	void setEnabled(bool enabled) {
+	inline void setEnabled(bool enabled) {
 		m_Mask = (m_Mask & ~MASK_ENABLED) | (enabled ? MASK_ENABLED : 0U);
 	}
 
@@ -118,20 +144,24 @@ public:
 
 	/** Test if a channel is enabled.
 	 */
-	bool isEnabled() const { return (m_Mask & MASK_ENABLED) != 0; }
+	inline bool isEnabled() const { return (m_Mask & MASK_ENABLED) != 0; }
 
 	/** Test if this channel is shared.
-	 * 
+	 *
 	 *  Shared channels can be updated by any system, whereas non-shared
 	 *  channels are read-only (except for the system that creates them).
 	 */
-	bool isShared() const { return (m_Mask & MASK_SHARED) != 0; }
+	inline bool isShared() const { return (m_Mask & MASK_SHARED) != 0; }
 
 protected:
 	/** Constructor.
+	 *
+	 *  @param name The name of the channel (must be unique on a bus).
+	 *  @param access The access mode for the channel.  Once established
+	 *    this cannot be changed.
 	 */
-	ChannelBase(std::string const &name, AccessType access = ACCESS_LOCAL): 
-		m_Name(name), m_Mask(0) 
+	ChannelBase(std::string const &name, AccessType access = ACCESS_LOCAL):
+		m_Name(name), m_Mask(0)
 	{
 		m_Mask |= (access == ACCESS_SHARED) ? MASK_SHARED : 0U;
 	}
@@ -140,12 +170,12 @@ protected:
 
 /** A channel for calling methods of a remote object.
  *
- *  Method channels to allow components on a bus to call
- *  methods of other components (and retrieve the results).
- *  This is somewhat similar to "pull" data channels, except
- *  that the called method can take arguments.  The calling
- *  mechanism is based on libsigc++ signals (see the
- *  libsigc++ documentation for details on using signals).
+ *  Method channels to allow components on a bus to call methods of
+ *  other components (and retrieve the results). This is somewhat
+ *  similar to "pull" data channels, except that the called method
+ *  can take arguments. The calling mechanism is based on libsigc++
+ *  signals (see the libsigc++ documentation for details on using
+ *  signals).
  */
 template <class SIGNAL>
 class MethodChannel: public ChannelBase {
@@ -167,21 +197,21 @@ public:
 
 /** Base class for data channels on a bus.
  *
- *  This class provides basic data channel functionality without 
+ *  This class provides basic data channel functionality without
  *  specializing to a particular data type.  Data channels are
- *  reference counted objects.  The references are stored both in 
- *  the bus (which provides name-based channel lookups) and in 
+ *  reference counted objects.  The references are stored both in
+ *  the bus (which provides name-based channel lookups) and in
  *  individual systems as member variable references.  The data
  *  channel may therefore persist even if the system originally
  *  defining the channel is destroyed.
  *
  *  Data channels support either push and pull based value updates,
- *  and must be specialized when the first signal handler is 
- *  connected.  For push channels, any change to the channel value 
- *  will send a signal to all callbacks connected to the channel.  
- *  For pull channels, any attempt to read a channel value will 
- *  first send a signal to a callback that can update the value.  
- *  In this case only one callback may be connected to the channel, 
+ *  and must be specialized when the first signal handler is
+ *  connected.  For push channels, any change to the channel value
+ *  will send a signal to all callbacks connected to the channel.
+ *  For pull channels, any attempt to read a channel value will
+ *  first send a signal to a callback that can update the value.
+ *  In this case only one callback may be connected to the channel,
  *  usually by the system that creates the channel.
  */
 class DataChannelBase: public ChannelBase {
@@ -207,13 +237,14 @@ protected:
 	/** Construct a new channel.
 	 *
 	 *  @param name The name of the channel (used to generate the
-	 *              identifier key).
-	 *  @param shared Shared channels may be accessed via the bus as
-	 *                non-const references, allowing any system to
-	 *                update the channel value.
+	 *     identifier key).
+	 *  @param access_ Shared channels may be accessed via the bus as
+	 *     non-const references, allowing any system to update the channel
+	 *     value.
+	 *  @param signal_ Signal type to be used when the value changes.
 	 */
-	DataChannelBase(std::string const &name, 
-	                AccessType access_=ACCESS_LOCAL, 
+	DataChannelBase(std::string const &name,
+	                AccessType access_=ACCESS_LOCAL,
 	                SignalType signal_=NO_SIGNAL):
 		ChannelBase(name, access_)
 	{
@@ -227,8 +258,8 @@ protected:
 
 	/** Test if the channel has had at least one signal handler
 	 *  connected.
-	 * 
-	 *  Note that handlers are not tracked beyond their initial 
+	 *
+	 *  Note that handlers are not tracked beyond their initial
 	 *  connection to the channel, so it is possible for this
 	 *  method to return true even if no handlers are currently
 	 *  connected.  This flag is used as an internal optimization
@@ -245,15 +276,34 @@ protected:
 	 */
 	void signal() const { m_Signal.emit(); }
 
-	/** Test if this is a push (or pull) channel.
-	 */
+	/// Test if this is a push channel.
 	bool isPush() const { return isMask(MASK_PUSH); }
+	
+	/// Test if this is a pull channel.
 	bool isPull() const { return isMask(MASK_PULL); }
 
 public:
 
+	/** Mark this channel as dirty.
+	 *
+	 *  Used by pull channels to inform users of the channel that the
+	 *  current data value is stale.  Calls to pull() when the channel
+	 *  is dirty will result in a signal being sent to the channel
+	 *  provider, which should update the value and clear the dirty flag
+	 *  by calling setClean().
+	 */
 	void setDirty() { setMask(MASK_DIRTY); }
+
+	/** Mark this channel as clean.
+	 *
+	 *  @see setDirty().
+	 */
 	void setClean() { clearMask(MASK_DIRTY); }
+
+	/** Test if the channel is dirty or clean.
+	 *
+	 *  @see setDirty().
+	 */
 	bool isDirty() const { return isMask(MASK_DIRTY); }
 
 	/** A convenience class for defining Python signal handlers using SWIG.
@@ -269,7 +319,7 @@ public:
 	 *
 	 *  If push is true, this method may be called any number of times to
 	 *  connect multiple handlers.  If push is false, no additional calls
-	 *  to <tt>connect</tt> may be made.  The first call to <tt>connect</tt>
+	 *  to connect() may be made.  The first call to connect()
 	 *  permanently establishes whether the channel is push or pull.
 	 *
 	 *  @param object The instance providing the handler.
@@ -285,8 +335,8 @@ public:
 
 	/** Connect a signal handler to this channel.
 	 *
-	 *  See <tt>connect(T*, void (T::*)(), bool)</tt>.
-	 * 
+	 *  @see connect(T*, void (T::*)(), bool).
+	 *
 	 *  @param handler The callback handler.
 	 *  @param push Connect a push (or pull) handler.
 	 */
@@ -297,7 +347,7 @@ public:
 };
 
 /** Channel for passing data between systems over a Bus.
- *  
+ *
  *  Channels are type-specialized objects which store a data
  *  value and can be shared (by reference) by multiple systems
  *  connected to a data bus.  In addition to the push/pull
@@ -320,11 +370,15 @@ class DataChannel: public DataChannelBase {
 public:
 
 	/// Channel reference (convenience) type for shared channels.
-	typedef simdata::Ref< DataChannel<T> > Ref;
+	typedef simdata::Ref<DataChannel<T> > Ref;
 
 	/// Channel reference (convenience) type for non-shared channels.
-	typedef simdata::Ref< DataChannel<T> const > CRef;
+	typedef simdata::Ref<DataChannel<T> const> CRef;
 
+	/** Push data to listeners on this channel.
+	 *
+	 *  Should only be called for push channels (asserts false otherwise).
+	 */
 	void push() const {
 		assert(isPush());
 		if (hasHandler() && isPush()) {
@@ -332,23 +386,30 @@ public:
 		}
 	}
 
-	T &value() { 
-		return m_Value; 
+	/**
+	 * Get the current value of this channel as a non-const reference.
+	 *
+	 * This method can be used as an lvalue to assign a new value to the
+	 * channel.  Setting the value does not notify any listeners on this
+	 * channel, so for push channels you may need to call push() explicitly.
+	 */
+	inline T &value() {
+		return m_Value;
 	}
 
 	/** Get the value of a channel.
-	 * 
+	 *
 	 *  For pull channels, this method sends a signal to the update
 	 *  handler before reading the data value.
 	 */
-	T const &value() const { 
+	inline T const &value() const {
 		if (isPull()) pull();
-		return m_Value; 
+		return m_Value;
 	}
 
 	/** Construct and initialize a new channel.
 	 *
-	 *  This constructor can be used to create either a shared or 
+	 *  This constructor can be used to create either a shared or
 	 *  non-shared channel, and allows the channel data value to be
 	 *  explicitly initialized.
 	 *
@@ -382,7 +443,7 @@ public:
 /** A data bus class for passing data between multiple Systems.
  *
  *  Bus instances are essentially just collections of data channels,
- *  providing some convenience methods for accessing channels and 
+ *  providing some convenience methods for accessing channels and
  *  connecting systems.  Systems connected by a Bus can exchange
  *  information synchonously or asynchronously using an efficient
  *  string-based interface.  No detailed (compile-time) knowledge
@@ -409,7 +470,7 @@ class Bus: public simdata::Referenced {
 	/// The identifier string of this bus.
 	std::string m_Name;
 
-	/// The status (0-1) used for damage modelling.
+	/// The status [0, 1] used for damage modelling.
 	float m_Status;
 	
 public:
@@ -417,6 +478,8 @@ public:
 	typedef simdata::Ref<Bus> Ref;
 
 	/** Test if a particular data channel is available.
+	 *
+	 *  @param name the name of the channel.
 	 */
 	bool hasChannel(std::string const &name) {
 		return getChannel(name, false).valid();
@@ -428,6 +491,10 @@ public:
 	 *  method to register all data channels that the system provides
 	 *  via this bus.  The return value can be used to store a local
 	 *  reference to the new channel.
+	 *
+	 *  @param channel The channel to register.
+	 *  @param groups A space-separated list of group names.  The channel
+	 *    will be associated wich each of these groups (not currently used).
 	 */
 	ChannelBase* registerChannel(ChannelBase *channel, std::string const &groups = "") {
 		assert(channel);
@@ -549,6 +616,12 @@ public:
 	 *  This method is identical to getSharedChannel, but returns a
 	 *  const reference to the channel so that the data value may be
 	 *  read but not modified.
+	 *
+	 *  @param name The name of the channel.
+	 *  @param required If true, an assertion will be raised if the
+	 *                  requested channel does not exist.  Otherwise
+	 *                  missing channels will be returned as null
+	 *                  references.
 	 */
 	ChannelBase::CRef getChannel(std::string const &name, bool required = true) {
 		ChannelMap::iterator iter = m_Channels.find(name);
@@ -560,6 +633,15 @@ public:
 		return iter->second;
 	}
 
+	/** Convenience method to get or create a local data channel.
+	 *
+	 *  @param bus The bus providing the channel; may be null.
+	 *  @param name The name of the channel.
+	 *  @param default_value The default value for the new channel, if created.
+	 *  @returns The named channel if it already exists.  Otherwise a new
+	 *    local data channel with the specified default value is created and
+	 *    returned.
+	 */
 	template <typename T>
 	static ChannelBase::CRef defaultDataChannel(Bus::Ref bus, std::string const &name, T const &default_value) {
 		typename DataChannel<T>::CRef channel;
@@ -572,14 +654,28 @@ public:
 	}
 
 	/** Get the bus status value.
+	 *
+	 *  Bus degradation is not currently implemented.
+	 *
+	 *  @returns a value in the range [0, 1] representing the health of
+	 *     the bus.  0 is completely non-functional, 1 is completely
+	 *     functional.
 	 */
 	float getStatus() const { return m_Status; }
 
 	/** Test if the bus is enabled.
+	 *
+	 *  If disabled, all data channels provided by the bus will be inactive.
+	 *
+	 *  @returns True if the bus is enabled.
 	 */
 	bool isEnabled() const { return m_Enabled; }
 
 	/** Enable or disable the bus.
+	 *
+	 *  All data channel in the bus will be set to the corresponding state.
+	 *
+	 *  @param enabled True to enable the bus, False to disable it.
 	 */
 	void setEnabled(bool enabled) {
 		if (enabled == m_Enabled) return;
@@ -591,6 +687,13 @@ public:
 	}
 
 	/** Change the bus status value.
+	 *
+	 *  Will enable or disable a proportionate number of channels.  Not
+	 *  currently implemented.
+	 *
+	 *  @param status a value in the range [0, 1] representing the health
+	 *    of the bus.  0 is completely non-functional, 1 is completely
+	 *    functional.
 	 */
 	virtual void setStatus(float status) {
 		m_Status = status;
@@ -601,12 +704,12 @@ public:
 	 *
 	 *  The bus is enabled by default.
 	 *
-	 *  @param name The name of the bus.
+	 *  @param name The name of the bus (currently only used for logging).
 	 */
-	Bus(std::string const &name): 
-		m_Bound(false), 
+	Bus(std::string const &name):
+		m_Bound(false),
 		m_Enabled(true),
-		m_Name(name), 
+		m_Name(name),
 		m_Status(1.0)
 	{
 		CSP_LOG(OBJECT, DEBUG, "Bus(" << name << ") created.");

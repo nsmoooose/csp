@@ -69,6 +69,7 @@ class NetworkMessage
     private:
 
     NetworkMessage();
+	NetworkMessage(NetworkMessage &);
 
     public:
     

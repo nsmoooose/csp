@@ -29,7 +29,7 @@ MODULES = \
 	Path \
 	Quaternion \
 	Random \
-	Spread \
+	Real \
 	TypeAdapter \
 	Vector3 \
 	Version

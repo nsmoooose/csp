@@ -17,6 +17,9 @@ all clean clean-deps:
 		$(MAKE) -C $${dir} $@ || exit 1; \
 	done
 
+doc:
+	$(MAKE) -C Doc
+
 default: 
 	@python setup.py check_version
 	@for dir in $(SUBDIRS); do \

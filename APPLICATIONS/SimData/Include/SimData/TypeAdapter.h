@@ -45,7 +45,7 @@
 NAMESPACE_SIMDATA
 
 class BaseType;
-class Spread;
+class Real;
 class Vector3;
 class Matrix3;
 class Curve;
@@ -153,7 +153,7 @@ public:
 	void set(GeoPos & x) const { setBase(x); }
 	void set(Vector3 & x) const { setBase(x); }
 	void set(Matrix3 & x) const { setBase(x); }
-	void set(Spread & x) const { setBase(x); }
+	void set(Real & x) const { setBase(x); }
 	void set(Curve & x) const { setBase(x); }
 	void set(Table & x) const { setBase(x); }
 	void set(External & x) const { setBase(x); }
@@ -217,7 +217,7 @@ public:
 	void set(Table &x) const;
 	void set(PathPointerBase &x) const;
 	void set(External &x) const;
-	void set(Spread &x) const;
+	void set(Real &x) const;
 	void set(Enum &x) const;
 	void set(ListBase &x) const;
 	void set(Object &x) const;

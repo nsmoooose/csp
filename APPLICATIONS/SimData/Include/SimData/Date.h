@@ -59,6 +59,7 @@
 
 #include <SimData/Pack.h>
 #include <SimData/Exception.h>
+#include <SimData/BaseType.h>
 
 
 

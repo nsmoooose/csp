@@ -266,7 +266,7 @@ public:
 	 * @param easting UTM easting
 	 * @param zone UTM zone
 	 * @param designator UTM zone letter
-	 * @alt altitude above the reference ellipse (in meters)
+	 * @param alt altitude above the reference ellipse (in meters)
 	 */
 	void setUTM(double northing, double easting, char zone, char designator, double alt = 0.0);
 	
@@ -276,7 +276,7 @@ public:
 	 * @param northing UTM northing
 	 * @param easting UTM easting
 	 * @param zone UTM zone (e.g. "10T")
-	 * @alt altitude above the reference ellipse (in meters)
+	 * @param alt altitude above the reference ellipse (in meters)
 	 */
 	void setUTM(double northing, double easting, const char *zone, double alt = 0.0);
 	

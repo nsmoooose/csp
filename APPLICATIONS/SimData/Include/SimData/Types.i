@@ -20,7 +20,7 @@
 %include "SimData/Vector3.i"
 %include "SimData/GeoPos.i"
 %include "SimData/External.i"
-%include "SimData/Spread.i"
+%include "SimData/Real.i"
 %include "SimData/String.i"
 %include "SimData/Enum.i"
 %include "SimData/Interpolate.i"

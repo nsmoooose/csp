@@ -59,7 +59,7 @@ void TypeAdapter::set(Curve &x) const { setBase(x); }
 void TypeAdapter::set(Table &x) const { setBase(x); }
 void TypeAdapter::set(PathPointerBase &x) const { setBase(x); }
 void TypeAdapter::set(External &x) const { setBase(x); }
-void TypeAdapter::set(Spread &x) const { setBase(x); }
+void TypeAdapter::set(Real &x) const { setBase(x); }
 void TypeAdapter::set(Enum &x) const { if (isType(STRING)) x = s; else setBase(x); }
 void TypeAdapter::set(ListBase &x) const { setBase(x); }
 void TypeAdapter::set(Object &x) const { setBase(x); }

@@ -18,17 +18,72 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
-/**
- * @file Real.h
- */
 
 #ifndef __REAL_H__
 #define __REAL_H__
 
+#include <string>
+#include <math.h>
+#include <SimData/BaseType.h>
+
+
 NAMESPACE_SIMDATA
 
-typedef double Real;
+
+/**
+ * class Real
+ */
+class SIMDATA_EXPORT Real: public BaseType {
+	float _mean, _sigma;
+	float _value;
+public:
+	Real(float mean=0.0, float sigma=0.0);
+	void set(float mean, float sigma);
+	void regen();
+	float getMean();
+	float getSigma();
+	float getValue();
+
+	virtual std::string  asString() const;
+
+    	float __neg__();
+	float __pos__();
+	float __abs__();
+    	int __nonzero__();
+	float __float__();
+	int __int__();
+	long __long__();
+	float __add__(float v);
+	float __radd__(float v);
+	float __sub__(float v);
+	float __rsub__(float v);
+	float __mul__(float v);
+	float __rmul__(float v);
+	float __div__(float v);
+	float __rdiv__(float v);
+	float __rpow__(float v);
+	float __pow__(float v);
+
+#ifndef SWIG
+	inline operator float() { return _value; }
+#endif
+
+	virtual void pack(Packer &p) const;
+	virtual void unpack(UnPacker &p);
+	virtual void parseXML(const char* cdata);
+
+// insert Python shadow class code to emulate "operator float()"
+#ifdef SWIG______NONO
+%insert("shadow") %{
+    def __coerce__(self, other):
+        if isinstance(other, Real):
+            return (self.getValue(), other.getValue())
+        return (self.getValue(), other)
+%}
+#endif // SWIG
+
+};
 
 NAMESPACE_END // namespace simdata
 
-#endif //__INTEGER_H__
+#endif //__REAL_H__

@@ -1,7 +1,7 @@
 %module List
 %{
 #include "SimData/List.h"
-#include "SimData/Spread.h"
+#include "SimData/Real.h"
 #include "SimData/Vector3.h"
 #include "SimData/Path.h"
 #include "SimData/Interpolate.h"
@@ -29,7 +29,7 @@
 //#ifdef __LIST_TEMPLATES__
 //#define __LIST_TEMPLATES__
 new_list(Int, int);
-new_list(Spread, SIMDATA(Spread));
+new_list(Real, SIMDATA(Real));
 //new_list(Vector3, SIMDATA(Vector3));
 new_list(Path, SIMDATA(Path));
 

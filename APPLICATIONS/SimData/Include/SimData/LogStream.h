@@ -20,11 +20,9 @@
 /**
  * @file LogStream.h
  *
+ * Stream based logging mechanism.
  **/
 
-/** \file logstream.hxx
- * Stream based logging mechanism.
- */
 
 // Written by Bernie Bright, 1998
 //
@@ -45,7 +43,7 @@
 // Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 // Boston, MA  02111-1307, USA.
 //
-// $Id: LogStream.h,v 1.2 2003/03/21 18:23:38 deltasf Exp $
+// $Id: LogStream.h,v 1.3 2003/03/26 06:38:03 mkrose Exp $
 
 #ifndef __LOGSTREAM_H__
 #define __LOGSTREAM_H__
@@ -119,7 +117,7 @@ public:
 
 	/**
 	* Set the logging priority.
-	* @param c The priority cutoff for logging messages.
+	* @param p The priority cutoff for logging messages.
 	*/
 	static void set_log_priority(int p);
 
@@ -248,7 +246,7 @@ public:
 
 	/**
 	* Set the output stream
-	* @param out output stream
+	* @param fn output file path
 	*/
 	void set_output( std::string const &fn ) { 
 		_close();

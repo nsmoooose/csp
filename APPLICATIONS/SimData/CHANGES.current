@@ -2,7 +2,7 @@ Version 0.3.1 (in progress)
 ===========================
 
             *** ANY MSVC USERS: PLEASE UPDATE THE PROJECT FILE TO INCLUDE ***
-	    *** NOISE.CPP                                                 ***
+	    *** NOISE.CPP AND REAL.CPP, AND REMOVE SPREAD.CPP             ***
 
 2003-03-25: onsight
             Changed #define types for InterpolatedData to class typedefs.
@@ -16,6 +16,14 @@ Version 0.3.1 (in progress)
 
 	    More documentation of date classes, and a couple bug fixes in
 	    Zulu.
+
+	    Renamed Spread to Real.
+
+	    Removed Integer and (the old) Real, which were just placeholders
+	    for int and double that didn't appear to serve any purpose.
+
+	    Added Doc directory with DOxygen config file and makefile.  Make
+	    doc now runs doxygen.
 
 2003-03-22: delta
 	    Minor changes to setup.py under make_install_win

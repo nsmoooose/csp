@@ -20,7 +20,7 @@
 
 
 /**
- * @file ns-simdata
+ * @file ns-simdata.h
  */
 
 

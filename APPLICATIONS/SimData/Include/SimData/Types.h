@@ -22,19 +22,20 @@
 #define __TYPES__
 
 #include <SimData/Date.h>
+#include <SimData/Enum.h>
+#include <SimData/External.h>
 #include <SimData/GeoPos.h>
-#include <SimData/Vector3.h>
-#include <SimData/Matrix3.h>
-#include <SimData/Quaternion.h>
+#include <SimData/Interpolate.h>
 #include <SimData/List.h>
-#include <SimData/Spread.h>
+#include <SimData/Matrix3.h>
 #include <SimData/Path.h>
-#include <SimData/Integer.h>
+#include <SimData/Quaternion.h>
 #include <SimData/Real.h>
 #include <SimData/String.h>
-#include <SimData/Interpolate.h>
-#include <SimData/External.h>
-#include <SimData/Enum.h>
+#include <SimData/Vector3.h>
+
+//#include <SimData/Integer.h>
+//#include <SimData/Float.h>
 
 #endif // __TYPES__
 

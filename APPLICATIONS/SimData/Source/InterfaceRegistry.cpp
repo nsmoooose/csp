@@ -238,7 +238,7 @@ NAMESPACE_END // namespace simdata
 #ifdef TEST0
 
 #include <vector>
-#include <SimData/Spread.h>
+#include <SimData/Real.h>
 #include <SimData/Path.h>
 
 class X: public simdata::Object {
@@ -265,15 +265,15 @@ public:
 		SIMDATA_XML("q", A::q, false)
 	END_SIMDATA_XML_INTERFACE
 	int size;
-	simdata::Spread x;
-	std::vector<simdata::Spread> y;
+	simdata::Real x;
+	std::vector<simdata::Real> y;
 	std::vector<X> z;
 	X q;
 	virtual ~A() {
 		cout << size << endl;
 		cout << (float)x << endl;
 		cout << "y has " << y.size() << " items:" << endl;
-		std::vector<simdata::Spread>::iterator i;
+		std::vector<simdata::Real>::iterator i;
 		for (i=y.begin(); i != y.end(); i++) cout << "   " << (float)(*i) << endl;
 		cout << "z has " << z.size() << " items:" << endl;
 		std::vector<X>::iterator j;
@@ -337,7 +337,7 @@ public:
 	int int_test;
 	float float_test;
 	std::string string_test;
-	simdata::Spread spread_test;
+	simdata::Real spread_test;
 	simdata::SimDate date_test;
 	simdata::Vector3 vector_test;
 	simdata::Matrix3 matrix_test;
@@ -347,7 +347,7 @@ public:
 	simdata::Curve curve_test;
 	simdata::Table table_test;
 	simdata::PathPointer<A> path_test;
-	std::vector<simdata::Spread> list_test;
+	std::vector<simdata::Real> list_test;
 	TEST(): simdata::Object(), enumeration("A B C D"), enum_test(enumeration) {}
 	virtual void pack(simdata::Packer &) const {
 		cout << "PACKING C++ TEST CLASS" << endl;
@@ -364,7 +364,7 @@ public:
 		cout << "    curve_test " << curve_test.asString() << endl;
 		cout << "    table_test " << table_test.asString() << endl;
 		cout << "     list_test ";
-		std::vector<simdata::Spread>::const_iterator j;
+		std::vector<simdata::Real>::const_iterator j;
 		for (j=list_test.begin(); j != list_test.end(); j++) cout << j->asString();
 		cout << endl;
 	}

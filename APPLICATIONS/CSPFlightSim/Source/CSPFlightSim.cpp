@@ -53,7 +53,7 @@ double g_LatticeXDist = 64000.0;
 double g_LatticeYDist = 64000.0;
 
 // urgent to clarify the following or to use a real viewer!
-// it seems that this class looks more and more like an (osgSDL) viewer!
+// it seems that this class looks more and more like an osg(SDL) viewer!
 osg::Timer _timer;
 osg::Timer_t _initialTick, _lastFrameTick, _frameTick;
 
@@ -483,9 +483,9 @@ int CSPFlightSim::InitConsole()
 	Con_rect.x = Con_rect.y = 0;
 	Con_rect.w = Con_rect.h = 300;
     
-	ConsoleFont = DT_LoadFont("Fonts/ConsoleFont.bmp", 0);
+	ConsoleFont = DT_LoadFont("../Data/Fonts/ConsoleFont.bmp", 0);
 
-    m_pConsole = CON_Init("Fonts/ConsoleFont.bmp", m_SDLScreen, 100, Con_rect);
+    m_pConsole = CON_Init("../Data/Fonts/ConsoleFont.bmp", m_SDLScreen, 100, Con_rect);
     CON_Alpha( m_pConsole, 50 );
 
 	// Add some commands to the console

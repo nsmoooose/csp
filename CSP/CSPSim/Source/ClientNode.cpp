@@ -126,7 +126,8 @@ void ClientNode::init()
   printf("Network test client starting up...\n");
   printf("ClientNode::init()\n");
   int level = g_Config.getInt("Debug", "LoggingLevel", 0, true);
-  csplog().setLogLevels(CSP_ALL, level);
+  csplog().setLogCategory(CSP_ALL);
+  csplog().setLogPriority(level);
   csplog().setOutput("ClientNode.log");
 
   m_battlefield = new VirtualBattlefield();

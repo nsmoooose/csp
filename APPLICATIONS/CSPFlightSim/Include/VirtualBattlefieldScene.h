@@ -29,7 +29,6 @@
 #include <osg/MatrixTransform>
 
 #include <osg/Depth>
-#include <osgDB/FileUtils>
 #include <osgUtil/SceneView>
 
 

@@ -62,7 +62,7 @@
         $action
         } catch (SIMDATA(PythonException) &e) {
 		printf("SWIG: passing Python exception back\n");
-		e.datails();
+		e.details();
 		return NULL;
         } catch (SIMDATA(Exception) e) {
 		printf("SWIG: caught a SimData Exception\n");

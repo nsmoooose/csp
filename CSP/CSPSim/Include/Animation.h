@@ -110,6 +110,7 @@ private:
 	simdata::Key m_ModelID;
 	std::string m_ChannelName;
 	int m_LOD;
+	float m_Default;
 	float m_Limit0;
 	float m_Limit1;
 	float m_Gain;
@@ -168,8 +169,6 @@ protected:
 		virtual ~Callback_A(){}
 	};
 
-	float m_Default;
-
 	template <class A, class C>  AnimationCallback *newCallback_(osg::Node *node) const {
 		AnimationCallback *callback = new C(dynamic_cast<const A* const>(this));
 		init(callback);
@@ -201,12 +200,12 @@ public:
 		SIMDATA_XML("gain", Animation::m_Gain, false)
 	END_SIMDATA_XML_INTERFACE
 
-	Animation();
+	Animation(float default_value=0.0);
 	virtual ~Animation() {}
 
 	// typically, this method will call newCallback_
 	virtual AnimationCallback *newCallback(osg::Node *node) const = 0;
-	virtual AnimationCallback *newCallback(osg::NodeCallback *nodeCallback) const {
+	virtual AnimationCallback *newCallback(osg::NodeCallback*) const {
 		 CSP_LOG(OBJECT, WARNING, typeid(*this).name() << ": nested callback not implemented" );
 		 return 0;
 	}
@@ -503,9 +502,7 @@ public:
 	EXTEND_SIMDATA_XML_INTERFACE(DrivenSwitch, Animation)
 	END_SIMDATA_XML_INTERFACE
 
-	DrivenSwitch() {
-		m_Default = 1.0f;
-	}
+	DrivenSwitch(): Animation(1.0) { }
 	virtual ~DrivenSwitch(){}
 
 	virtual AnimationCallback *newCallback(osg::Node *node) const {

@@ -1,6 +1,9 @@
  Version 0.4.0 (in progress)
 ===========================
 
+2005-03-05: onsight
+ * Fix a couple minor warnings under gcc.
+
 2005-03-05: delta
  * Extended Animation class with a direct children of AnimationPathCallback.
    It should allow to export (simple) animations from max thanks to osgExp.
@@ -8,15 +11,15 @@
    ObjectModel. Due to the changes in the animation classes, a few xml files 
    have been updated. F16DJ model.osg has been slightly updated too. 
    It's a work in progress!
-  
+
  * Added toggles for refuelling doors and canopy (only f16dj). Hot keys added
    to aircraft-core.map.
- 
+
  * Fix for animation binded on 2 channels (near future will tell us if such
    a binding will survive or not).
- 
+
  * Small cleaning in LandingGear.
- 
+
 ==> ALL USERS: RebuildData.py and rebuild aircraft.hid to get these changes.
 
 2005-02-23: delta

@@ -34,6 +34,7 @@
 #include <sys/types.h>
 #include <list>
 #include <map>
+#include <set>
 
 #include <SimData/Vector3.h>
 #include <SimData/String.h>
@@ -144,7 +145,6 @@ class NetworkMessage
     Port getOriginatorPort();
     NetworkNode * getOriginatorNode();
     
-    bool isInitialized();
     bool isHeaderValid();
    
 };
@@ -219,20 +219,23 @@ class NetworkNode
   private:
     ost::InetHostAddress m_addr;
     Port m_port;
-    uint16 m_node_id;
+    //uint16 m_node_id;
     
   public:
     NetworkNode();
-    NetworkNode(int node_id, ost::InetHostAddress addr, Port port);
-    NetworkNode(int node_id, simdata::uint32 addr, Port port);
-    NetworkNode(int node_id, const char * hostname, Port port);
+//    NetworkNode(int node_id, ost::InetHostAddress addr, Port port);
+//    NetworkNode(int node_id, simdata::uint32 addr, Port port);
+//    NetworkNode(int node_id, const char * hostname, Port port);
 
+    NetworkNode(ost::InetHostAddress addr, Port port);
+    NetworkNode(simdata::uint32 addr, Port port);
+    NetworkNode(const char * hostname, Port port);
 
     void setAddress(ost::InetHostAddress addr);
     void setPort(Port port);
-    void setId(short node_id);
+//    void setId(short node_id);
 
-    short getId();
+//    short getId();
     Port getPort();
     ost::InetHostAddress getAddress();
     const char * getHostname();
@@ -249,34 +252,97 @@ struct RoutedMessage
 
 class DynamicObject;
 
-class RemoteObjectWrapper 
+//class RemoteObjectWrapper 
+//{
+//  public:
+//   RemoteObjectWrapper(simdata::Ref<DynamicObject> & object) { m_Object = object; }
+//   NetworkNode * getObjectHost() { return m_Host; }
+//   simdata::Ref<DynamicObject> getWrappedObject() { return m_Object; }
+//  private:
+//   simdata::Ref<DynamicObject> m_Object;
+//   NetworkNode   * m_Host;
+//	 
+//
+//};
+
+class RemoteObjectKey
 {
+  protected:
+    int m_ipaddr;
+    short m_port;
+    int m_id;
+
   public:
-   RemoteObjectWrapper(simdata::Ref<DynamicObject> & object) { m_Object = object; }
-   NetworkNode * getObjectHost() { return m_Host; }
-   simdata::Ref<DynamicObject> getWrappedObject() { return m_Object; }
-  private:
-   simdata::Ref<DynamicObject> m_Object;
-   NetworkNode   * m_Host;
-	 
+    RemoteObjectKey() { m_ipaddr = 0; m_port = 0; m_id = 0; }
+    
+    RemoteObjectKey(const RemoteObjectKey & key) 
+      { m_ipaddr = key.m_ipaddr; m_port = key.m_port; m_id = key.m_id; }
+    
+    RemoteObjectKey(int ipaddr, short port, int id)
+      { m_ipaddr = ipaddr; m_port = port; m_id = id; }
+
+    const RemoteObjectKey & operator=(const RemoteObjectKey & key)
+      { 
+	m_ipaddr = key.m_ipaddr; m_port = key.m_port; m_id = key.m_id;
+	return *this;
+      }
+
+
+    bool operator==(const RemoteObjectKey & key)
+      { return ( (m_ipaddr == key.m_ipaddr) && (m_port == key.m_port) && (m_id == key.m_id) ); }
+	      
+    bool operator!=(const RemoteObjectKey & key)
+      { return ( (m_ipaddr != key.m_ipaddr) || (m_port != key.m_port) || (m_id == key.m_id) ); }
+
+    friend bool operator<( const RemoteObjectKey & lhs, const RemoteObjectKey & rhs);
+
+    //    bool operator>( RemoteObjectKey & key)
+//      { 
+//	if ( m_ipaddr != key.m_ipaddr )
+//	  return ( m_ipaddr > key.m_ipaddr);
+//	if ( m_port != key.m_port )
+//	  return ( m_port > key.m_port );
+//	return ( m_id > key.m_id );
+//      }
+//    bool operator<=( RemoteObjectKey & key)
+//      { 
+//	if ( m_ipaddr != key.m_ipaddr )
+//	  return ( m_ipaddr <= key.m_ipaddr);
+//	if ( m_port != key.m_port )
+//	  return ( m_port <= key.m_port );
+//	return ( m_id <= key.m_id );
+//     }
+//    bool operator>=( RemoteObjectKey & key)
+//      { 
+//	if ( m_ipaddr != key.m_ipaddr )
+//	  return ( m_ipaddr >= key.m_ipaddr);
+//	if ( m_port != key.m_port )
+//	  return ( m_port >= key.m_port );
+//	return ( m_id >= key.m_id );
+//      }
 
 };
+
+bool operator<( const RemoteObjectKey & lhs, const RemoteObjectKey & rhs);
 
 class RemoteObjectTable
 {
   public:
-  RemoteObjectWrapper * getRemoteObject(int ipaddr, short port, int id)
+  simdata::Ref<DynamicObject> getRemoteObject(RemoteObjectKey key)
   {
-    return m_table[ipaddr][port][id];
+    printf("RemoteObjectTable::getRemoteObject()\n");
+    return m_table[key];
   }
 
-  void putRemoteObject(int ipaddr, short port, int id, RemoteObjectWrapper * object)
+  void putRemoteObject(RemoteObjectKey key, simdata::Ref<DynamicObject> object)
   {
-    m_table[ipaddr][port][id] = object;
+    printf("RemoteObjectTable::putRemoteObject() - entering\n");
+    m_table[key] = object;
+    printf("RemoteObjectTable::putRemoteObject() - exiting\n");
   }
 
   private:
-    std::map< int , std::map < short, std::map < short, RemoteObjectWrapper * > > > m_table;
+    std::map< RemoteObjectKey, simdata::Ref<DynamicObject> > m_table;
 
 };
 
@@ -296,7 +362,7 @@ class NetworkMessenger
     int m_messageReceiveArrayGrow;
     NetworkNode * m_originatorNode;
     std::list<NetworkMessage*> m_messagePool;
-    std::list<NetworkMessageHandler *> m_ReceiveHandlerList;
+    std::list<NetworkMessageHandler *> m_MessageHandlerList;
       
     ost::UDPSocket * m_UDPReceiverSocket;
     ost::UDPSocket * m_UDPSenderSocket;	
@@ -322,7 +388,7 @@ class NetworkMessenger
     NetworkMessage * allocMessageBuffer();
     void freeMessageBuffer(NetworkMessage * message);
     
-    void registerReceiveHandler(NetworkMessageHandler * handler);
+    void registerMessageHandler(NetworkMessageHandler * handler);
     
     int sendto(NetworkMessage * message, ost::InetHostAddress * remoteAddress, Port * remotePort);   
     int sendto(NetworkMessage * message, NetworkNode * node);   
@@ -354,6 +420,24 @@ class EchoMessageHandler : public NetworkMessageHandler
 		EchoMessageHandler();
 		virtual void process(NetworkMessage * message);
 		virtual ~EchoMessageHandler();
+
+		
+		virtual void setMessenger(NetworkMessenger * messenger)
+		             { m_messenger = messenger; }
+		virtual NetworkMessenger * getMessenger()
+			     { return m_messenger; }
+	
+};
+
+class RedirectMessageHandler : public NetworkMessageHandler
+{
+        protected:
+		NetworkMessenger * m_messenger;
+		std::set<NetworkNode *> m_ClientNodeList;
+	public: 
+		RedirectMessageHandler();
+		virtual void process(NetworkMessage * message);
+		virtual ~RedirectMessageHandler();
 
 		
 		virtual void setMessenger(NetworkMessenger * messenger)
@@ -411,6 +495,21 @@ class DispatchMessageHandler : public NetworkMessageHandler
 
 };
 
+class CallHandler 
+{
+  private:
+    NetworkMessage* m_NetworkMessage;
+  public:
+    CallHandler(NetworkMessage* network_message):
+	   m_NetworkMessage(network_message) {  }
+    void operator()(NetworkMessageHandler* network_message_handler) 
+    {
+      network_message_handler->process(m_NetworkMessage);
+    }
+};
+
+
+//        NetworkMessage * message = (NetworkMessage*)(new simdata::uint8[512]);
 // not currently using these below
 
 class NetworkBroadcaster

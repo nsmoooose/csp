@@ -1,17 +1,17 @@
 // Combat Simulator Project - FlightSim Demo
 // Copyright (C) 2002 The Combat Simulator Project
 // http://csp.sourceforge.net
-// 
+//
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
 // as published by the Free Software Foundation; either version 2
 // of the License, or (at your option) any later version.
-// 
+//
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU General Public License
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
@@ -69,6 +69,7 @@ public:
 
 	bool getWOW() const { return m_WOW; }
 	double getSkidding() const { return m_Skidding; }
+	double getBrakeTemperature() const { return m_BrakeTemperature; }
 	bool getTouchdown() const { return m_Touchdown; }
 	simdata::Vector3 const &getTouchdownPoint() const { return m_TouchdownPoint; }
 	void resetTouchdown() { m_Touchdown = false; }
@@ -88,31 +89,34 @@ public:
 	// dynamics interface
 	virtual void preSimulationStep(double dt);
 	virtual void postSimulationStep(double dt,
-                                        simdata::Vector3 const &origin, 
-                                        simdata::Vector3 const &vBody,
-                                        simdata::Quat const &q, 
-		                        double const height,
-                                        simdata::Vector3 const &normalGroundBody);
+                                    simdata::Vector3 const &origin,
+                                    simdata::Vector3 const &vBody,
+                                    simdata::Quat const &q,
+                                    double const height,
+                                    simdata::Vector3 const &normalGroundBody);
 	simdata::Vector3 simulateSubStep(simdata::Vector3 const &origin,
-                                         simdata::Vector3 const &vBody,
-                                         simdata::Quat const &q, 
-                                         double height, 
-                                         simdata::Vector3 const &normalGroundBody);
+                                     simdata::Vector3 const &vBody,
+                                     simdata::Quat const &q,
+                                     double height,
+                                     simdata::Vector3 const &normalGroundBody);
+
+	void residualUpdate(double dt, double airspeed);
 
 protected:
 	void resetForces();
 	void updateWOW(simdata::Vector3 const &origin, simdata::Quat const &q);
 	void updateBraking(double dt);
+	void updateBrakeTemperature(double dt, double dissipation, double airspeed);
 	void updateWheel(double dt,
-                         simdata::Vector3 const &origin, 
+                         simdata::Vector3 const &origin,
                          simdata::Vector3 const &vBody,
-                         simdata::Quat const &q, 
+                         simdata::Quat const &q,
                          simdata::Vector3 const &normalGroundBody,
                          bool updateContact);
-	void updateSuspension(simdata::Vector3 const &origin, 
-                              simdata::Vector3 const &vBody, 
-                              simdata::Quat const &q, 
-                              double const height, 
+	void updateSuspension(simdata::Vector3 const &origin,
+                              simdata::Vector3 const &vBody,
+                              simdata::Quat const &q,
+                              double const height,
                               simdata::Vector3 const &normalGroundBody);
 
 
@@ -192,6 +196,7 @@ public:
 
 	virtual void registerChannels(Bus*);
 	virtual void importChannels(Bus*);
+	virtual void getInfo(InfoList &info) const;
 
 	bool getExtended() const;
 	bool getWOW() const;

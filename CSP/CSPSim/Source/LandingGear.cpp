@@ -1,17 +1,17 @@
 // Combat Simulator Project - FlightSim Demo
 // Copyright (C) 2002 The Combat Simulator Project
 // http://csp.sourceforge.net
-// 
+//
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
 // as published by the Free Software Foundation; either version 2
 // of the License, or (at your option) any later version.
-// 
+//
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU General Public License
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
@@ -40,6 +40,8 @@
 
 #include <cstdio>
 #include <iostream>
+#include <iomanip>
+#include <sstream>
 
 using bus::Kinetics;
 
@@ -136,9 +138,9 @@ void LandingGear::postCreate() {
 
 Vector3 LandingGear::simulateSubStep(Vector3 const &origin,
                                               Vector3 const &vBody,
-                                              simdata::Quat const &q, 
-                                              double height, 
-                                              Vector3 const &normalGroundBody) 
+                                              simdata::Quat const &q,
+                                              double height,
+                                              Vector3 const &normalGroundBody)
 {
 	if (!m_Extended) return Vector3::ZERO;
 	
@@ -158,10 +160,10 @@ Vector3 LandingGear::simulateSubStep(Vector3 const &origin,
 }
 
 
-void LandingGear::setBraking(double setting) { 
+void LandingGear::setBraking(double setting) {
 	if (setting < 0.0) setting = 0.0;
 	if (setting > 1.0) setting = 1.0;
-	m_BrakeSetting = setting; 
+	m_BrakeSetting = setting;
 }
 
 double LandingGear::setSteering(double setting, double link_brakes) {
@@ -206,7 +208,7 @@ void LandingGear::updateBraking(double dt) {
  */
 void LandingGear::updateWOW(Vector3 const &origin, simdata::Quat const &q) {
 	if (m_Compression > 0.0) {
-		// first contact? 
+		// first contact?
 		if (!m_WOW) {
 			// yes, flag the touchdown
 			m_Touchdown = true;
@@ -228,15 +230,15 @@ void LandingGear::updateWOW(Vector3 const &origin, simdata::Quat const &q) {
  * @param height height of body origin above ground
  * @param normalGroundBody ground normal vector in body coordinates
  */
-void LandingGear::updateSuspension(Vector3 const &origin, 
-                                   Vector3 const &vBody, 
-                                   simdata::Quat const &q, 
-                                   double const height, 
-                                   Vector3 const &normalGroundBody) 
+void LandingGear::updateSuspension(Vector3 const &origin,
+                                   Vector3 const &vBody,
+                                   simdata::Quat const &q,
+                                   double const height,
+                                   Vector3 const &normalGroundBody)
 {
 	double compression = 0.0;
 	double motionNormal = dot(m_Motion, normalGroundBody);
-	if (motionNormal > 0.0) { 
+	if (motionNormal > 0.0) {
 		compression = - (dot(m_MaxPosition, normalGroundBody) + height) / motionNormal;
 	}
 
@@ -261,13 +263,13 @@ void LandingGear::updateSuspension(Vector3 const &origin,
 
 		// determine reaction force
 		//
-		// FIXME in computing vCompression, only the normal force is taken into 
-		// account, but other components can matter if m_Motion isn't vertical. 
+		// FIXME in computing vCompression, only the normal force is taken into
+		// account, but other components can matter if m_Motion isn't vertical.
 		// (e.g. when brakes are applied)
 	
 		// calculate strut compression speed
 		double vCompression = - dot(vBody, normalGroundBody) * motionNormal;
-		// restrict to reasonable limits (faster than this means the gear will 
+		// restrict to reasonable limits (faster than this means the gear will
 		// probably break in a moment anyway)
 		vCompression = simdata::clampTo(vCompression, -10.0, 10.0);
 		// ground support (in response to strut compression + damping)
@@ -283,10 +285,10 @@ void LandingGear::resetForces() {
 }
 
 void LandingGear::postSimulationStep(double dt,
-                                     Vector3 const &origin, 
+                                     Vector3 const &origin,
                                      Vector3 const &vBody,
-                                     simdata::Quat const &q, 
-				     double const height,
+                                     simdata::Quat const &q,
+                                     double const height,
                                      Vector3 const &normalGroundBody) {
 	if (!m_Extended) return;
 	resetForces();
@@ -297,16 +299,48 @@ void LandingGear::postSimulationStep(double dt,
 	updateWheel(dt, origin, vBody, q, normalGroundBody, true);
 }
 
+void LandingGear::residualUpdate(double dt, double airspeed) {
+	updateBrakeTemperature(dt, 0.0, airspeed);
+}
+
+void LandingGear::updateBrakeTemperature(double dt, double dissipation, double airspeed) {
+	double T2 = m_BrakeTemperature * m_BrakeTemperature;
+	double R2 = m_TireRadius * m_TireRadius;
+	// approximate brake disc surface area (2 sides)
+	double surfaceArea = R2 * 4.0;
+	// compute black body radiation (approximating emmisivity and surface area)
+	double radiation = 5.7e-8 * (T2*T2-8.1e+9) * surfaceArea;
+	// total guess
+	double aircooling = 30.0 * (m_BrakeTemperature - 300.0) * surfaceArea * (airspeed + 1.0);
+	// arbitrary universal scaling (approximate volume as R3, specific heat
+	// near that of steel)
+	double heatCapacity = R2 * m_TireRadius * 2e+6;
+	m_BrakeTemperature += (dissipation - radiation - aircooling) / heatCapacity * dt;
+	/*
+	static int yyy = 0; yyy++;
+	if (yyy % 240 == 1) {
+		if (m_Skidding) {
+			std::cout << "SKID\n";
+		} else
+		if (brakeSlip) {
+			std::cout << "SLIP\n";
+		} else {
+			std::cout << "NOSLIP: brakelimit " << brakeLimit << " > " << alignedForce << "?\n";
+		}
+		std::cout << "BRAKE T=" << m_BrakeTemperature << "\n";
+	}
+	*/
+}
 
 /**
  * Update the ground-tire contact point, detect skidding, and set friction coefficients.
  */
 void LandingGear::updateWheel(double dt,
-                              Vector3 const &origin, 
+                              Vector3 const &origin,
                               Vector3 const &vBody,
-                              simdata::Quat const &q, 
+                              simdata::Quat const &q,
                               Vector3 const &normalGroundBody,
-                              bool updateContact) 
+                              bool updateContact)
 {
 	static double XXX_t = 0.0;
 	if (updateContact) XXX_t += dt;
@@ -328,7 +362,7 @@ void LandingGear::updateWheel(double dt,
 
 	// switch to body coordinates
 	Vector3 tireForceBody = q.invrotate(tireForce);
-	// project onto the ground 
+	// project onto the ground
 	tireForceBody -= dot(tireForceBody, normalGroundBody) * normalGroundBody;
 	// transform to wheel coordinates
 	Vector3 tireForceWheel = m_SteerTransform.rotate(tireForceBody);
@@ -336,7 +370,7 @@ void LandingGear::updateWheel(double dt,
 	Vector3 XXX_tfb = tireForceBody;
 
 	// note we are assuming here that the steering axis is very close to the
-	// normal axis.  under normal circumstances this should be approximately 
+	// normal axis.  under normal circumstances this should be approximately
 	// true for any wheel that can be steered.
 
 	// normal force on tire/ground interface
@@ -391,7 +425,7 @@ void LandingGear::updateWheel(double dt,
 	// FIXME wheels currently have zero inertia.  the current implementation
 	// isn't well suited to modelling wheel spin, and only very crude tracking
 	// of wheel rotation is done.  the code should be redesigned at some point
-	// to model braking and ground contact forces as torques acting on wheel 
+	// to model braking and ground contact forces as torques acting on wheel
 	// rotation, and thereby accounting for wheel inertia, etc.
 
 	// check if tire is skidding
@@ -449,7 +483,7 @@ void LandingGear::updateWheel(double dt,
 		m_TireContactPoint = tirePositionLocal + tireForce / m_TireK;
 	}
 
-	if (updateContact) { 
+	if (updateContact) {
 		static double t = 0.0;
 		static bool reset = false;
 		if (m_BrakeLimit == 0.0) reset = true;
@@ -462,37 +496,19 @@ void LandingGear::updateWheel(double dt,
 	}
 
 	// model brake temperature (very ad-hoc at the moment)
-	if (updateContact && m_BrakeLimit > 0.0) {
-		// XXX if skidding, the dissipation will be nearly zero since the wheel
-		// is locked.  we should model tire damage under this condition, so that
-		// blowouts can result from extended skids.
-		double dissipation = fabs(alignedForce * m_TireRotationRate * m_TireRadius);
-		double T2 = m_BrakeTemperature * m_BrakeTemperature;
-		double R2 = m_TireRadius * m_TireRadius;
-		// approximate brake disc surface area (2 sides)
-		double surfaceArea = R2 * 4.0;
-		// compute black body radiation (approximating emmisivity and surface area)
-		double radiation = 5.7e-8 * (T2*T2-8.1e+9) * surfaceArea;
-		// total guess
-		double aircooling = 30.0 * (m_BrakeTemperature - 300.0) * surfaceArea * (vBody.length() + 1.0);
-		// arbitrary universal scaling (approximate volume as R3, specific heat 
-		// near that of steel) 
-		double heatCapacity = R2 * m_TireRadius * 2e+6; 
-		m_BrakeTemperature += (dissipation - radiation - aircooling) / heatCapacity * dt;
-		static int yyy = 0; yyy++;
-		if (yyy % 240 == 1) {
-			if (m_Skidding) {
-				std::cout << "SKID\n";
-			} else 
-			if (brakeSlip) {
-				std::cout << "SLIP\n";
-			} else {
-				std::cout << "NOSLIP: brakelimit " << brakeLimit << " > " << alignedForce << "?\n";
-			}
-			std::cout << "BRAKE T=" << m_BrakeTemperature << "\n";
+	if (updateContact) {
+		double dissipation = 0.0;
+		if (m_BrakeLimit > 0.0) {
+			// XXX if skidding, the dissipation will be nearly zero since the wheel
+			// is locked.  we should model tire damage under this condition, so that
+			// blowouts can result from extended skids.
+			dissipation = fabs(alignedForce * m_TireRotationRate * m_TireRadius);
 		}
+		double airspeed = vBody.length();
+		updateBrakeTemperature(dt, dissipation, airspeed);
 	}
 
+	/*
 	if (0 && XXX_t > 90.0 && (tireForceBody-XXX_tfb).length() > 0.001) {
 		std::cout << "DIFFERENCE: " << (tireForceBody-XXX_tfb).asString() << " " << skidding << " " << brakeSlip << ", " << tireForceBody << " " << brakeLimit << " " << m_Brake << " " << m_BrakeFriction << m_BrakeLimit << "\n";
 	}
@@ -502,6 +518,7 @@ void LandingGear::updateWheel(double dt,
 		std::cout << "TFB ---> " << XXX_tfb.asString() << "\n";
 		std::cout << "VGW ---> " << vGroundWheel.asString() << "\n";
 	}
+	*/
 	m_TangentForce += tireForceBody;
 	//m_TangentForce += XXX_tfb;
 }
@@ -520,7 +537,7 @@ void GearDynamics::doComplexPhysics(double x) {
 		Vector3 F = Vector3::ZERO;
 		if (b_NearGround->value()) {
 			Vector3 vBody = *m_VelocityBody + (*m_AngularVelocityBody ^ R);
-			F += gear.simulateSubStep(*m_PositionLocal, 
+			F += gear.simulateSubStep(*m_PositionLocal,
 			                          vBody,
 			                          *m_Attitude,
 			                          m_Height,
@@ -547,7 +564,7 @@ void GearDynamics::setStatus(bool on) {
 GearDynamics::GearDynamics():
 	m_Extended(true),
 	m_Height(0.0)
-{ 
+{
 	BIND_ACTION("GEAR_UP", GearUp);
 	BIND_ACTION("GEAR_DOWN", GearDown);
 	BIND_ACTION("GEAR_TOGGLE", GearToggle);
@@ -577,7 +594,7 @@ void GearDynamics::computeForceAndMoment(double x) {
 	doComplexPhysics(x);
 }
 
-void GearDynamics::GearUp() { 
+void GearDynamics::GearUp() {
 	setStatus(false);
 }
 	
@@ -652,10 +669,13 @@ void GearDynamics::preSimulationStep(double dt) {
 
 void GearDynamics::postSimulationStep(double dt) {
 	BaseDynamics::postSimulationStep(dt);
-	if (!m_Extended) return;
-	if (!b_NearGround->value()) return;
-	m_Height = m_PositionLocal->z() - b_GroundZ->value();
 	size_t n =  m_Gear.size();
+	if (!m_Extended || !b_NearGround->value()) {
+		double airspeed = m_Extended ? m_VelocityBody->length() : 0.0;  // approx
+		for (size_t i = 0; i < n; ++i) { m_Gear[i]->residualUpdate(dt, airspeed); }
+		return;
+	}
+	m_Height = m_PositionLocal->z() - b_GroundZ->value();
 	for (size_t i = 0; i < n; ++i) {
 		Vector3 R = m_Gear[i]->getPosition();
 		Vector3 vBody = *m_VelocityBody + (*m_AngularVelocityBody ^ R);
@@ -665,5 +685,17 @@ void GearDynamics::postSimulationStep(double dt) {
 	b_GearPosition->value() = getGearPosition();
 }
 
+void GearDynamics::getInfo(InfoList &info) const {
+	std::stringstream line;
+	line.setf(std::ios::fixed | std::ios::showpos);
+	line.precision(0);
+	simdata::Ref<LandingGear> main = m_Gear[1];
+	line << "Gear: ";
+	if (!getExtended()) line << "UP"; else line << "DOWN";
+	line << " T_brakes " << std::setw(3) << main->getBrakeTemperature() << "K";
+	if (getWOW()) line << " WOW";
+	if (main->getSkidding()) line << " SKID";
+	info.push_back(line.str());
+}
 
 

@@ -16,6 +16,9 @@
 
   * Move some debug info from stdout to the log.
 
+  * Move some debug/status info for landing gear from stdout to the onscreen
+    display.  Also fix brake temperature updates to continue while airborne.
+
 2004-07-01: delta
   * CameraKinematics now uses spherical coordinates terminology
     (theta,phi,radius).

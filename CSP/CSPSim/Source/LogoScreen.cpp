@@ -73,6 +73,7 @@ public:
 		// serialized?
 		typedef std::vector<std::string> StrVec;
 		StrVec file_name;
+		/*
 		file_name.push_back("CSPLogo.bmp");
 		file_name.push_back("moonrise1.png");
 		file_name.push_back("crescent.png");
@@ -84,6 +85,19 @@ public:
 		file_name.push_back("vista.png");
 		file_name.push_back("ground-fog.png");
 		file_name.push_back("fx2.jpeg");
+		*/
+
+		file_name.push_back("CSPLogo.jpg");
+		file_name.push_back("moonrise1.jpg");
+		file_name.push_back("crescent.jpg");
+		file_name.push_back("sunlight2.jpg");
+		file_name.push_back("sunset4.jpg");
+		file_name.push_back("console2.jpg");
+		file_name.push_back("TLabMultitex.jpg");
+		file_name.push_back("landing-2.jpg");
+		file_name.push_back("vista.jpg");
+		file_name.push_back("ground-fog.jpg");
+		file_name.push_back("fx2.jpg");
 
 		std::string image_path = getDataPath("ImagePath");
 		StrVec::const_iterator iEnd = file_name.end();

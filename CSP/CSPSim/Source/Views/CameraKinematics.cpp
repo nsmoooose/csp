@@ -90,7 +90,7 @@ void CameraKinematics::reset() {
 void CameraKinematics::resetDistance() {
 	const simdata::Ref<DynamicObject> active_object = CSPSim::theSim->getActiveObject();
 	if (active_object.valid())
-		m_MinimumDistance =	active_object->getModel()->getBoundingSphereRadius()+CSPSim::theSim->getScene()->getNearPlane();
+		m_MinimumDistance =	1.0 + active_object->getModel()->getBoundingSphereRadius() + CSPSim::theSim->getScene()->getNearPlane();
 	else
 		m_MinimumDistance = m_MinimumDistanceOffset;
 	m_DistanceToObject = m_MinimumDistance + m_MinimumDistanceOffset;
@@ -152,11 +152,7 @@ void CameraKinematics::displacement(int x, int y, int dx, int dy) {
 }
 
 void CameraKinematics::accept(CameraCommand* cc) {
-	if (cc) {
-		if (std::find(m_CameraCommandList.begin(),m_CameraCommandList.end(),cc) == m_CameraCommandList.end()) {
-			m_CameraCommandList.push_back(cc);
-			cc->setCameraKinematics(this);
-		}
-		cc->execute();
-	}
+	if (cc) 
+		cc->execute(this);
 }
+

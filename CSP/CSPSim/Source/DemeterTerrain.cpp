@@ -56,6 +56,7 @@ SIMDATA_REGISTER_INTERFACE(DemeterTerrain)
  */
 DemeterTerrain::DemeterTerrain()
 {
+	CSP_LOG(TERRAIN, DEBUG, "DemeterTerrain::DemeterTerrain" );
 	m_TerrainLattice = NULL;
 	m_Terrain = NULL;
 	m_TerrainTextureFactory = NULL;

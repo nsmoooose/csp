@@ -39,12 +39,18 @@ class AircraftSimpleFCS: public System {
 		DataChannel<double>::CRef b_Input;
 		DataChannel<double>::Ref b_Output;
 		double m_Rate;
-		double m_Limit;
+		double m_Limit0, m_Limit1, m_Limit;
 	public:
-		Deflection(): m_Rate(0.5), m_Limit(0.3) {}
+		Deflection(): m_Rate(0.5), m_Limit0(-0.3), m_Limit1(-m_Limit0), m_Limit(m_Limit1) {}
 		void setParameters(double rate, double limit) {
+			limit = abs(limit);
+			setParameters(rate,-limit,limit);
+		}
+		void setParameters(double rate, double limit0, double limit1) {
 			m_Rate = rate;
-			m_Limit = limit;
+			m_Limit0 = limit0;
+			m_Limit1 = limit1;
+			m_Limit = std::max<double>(abs(m_Limit0),abs(m_Limit1));
 		}
 		void bindInput(Bus *bus, std::string const &name) {
 			b_Input = bus->getChannel(name, false);
@@ -59,11 +65,11 @@ class AircraftSimpleFCS: public System {
 			double input = 0.0;
 			double output = b_Output->value();
 			if (b_Input.valid()) input = b_Input->value() * m_Limit;
-			double smooth = std::min<double>(1.0, 10.0*fabs(output-input));
+			double smooth = std::min<double>(1.0, 10.0*abs(output-input));
 			if (output < input) {
-				output = std::min<double>(output + smooth*m_Rate*dt, m_Limit);
+				output = std::min<double>(output + smooth*m_Rate*dt, m_Limit1);
 			} else {
-				output = std::max<double>(output - smooth*m_Rate*dt, -m_Limit);
+				output = std::max<double>(output - smooth*m_Rate*dt, m_Limit0);
 			}
 			b_Output->value() = output;
 		}
@@ -75,8 +81,10 @@ public:
 	SIMDATA_OBJECT(AircraftSimpleFCS, 0, 0)
 
 	EXTEND_SIMDATA_XML_INTERFACE(AircraftSimpleFCS, System)
-		SIMDATA_XML("elevator_limit", AircraftSimpleFCS::m_ElevatorLimit, false)
-		SIMDATA_XML("aileron_limit", AircraftSimpleFCS::m_AileronLimit, false)
+		SIMDATA_XML("elevator_limit0", AircraftSimpleFCS::m_ElevatorLimit0, false)
+		SIMDATA_XML("elevator_limit1", AircraftSimpleFCS::m_ElevatorLimit1, false)
+		SIMDATA_XML("aileron_limit0", AircraftSimpleFCS::m_AileronLimit0, false)
+		SIMDATA_XML("aileron_limit1", AircraftSimpleFCS::m_AileronLimit1, false)
 		SIMDATA_XML("rudder_limit", AircraftSimpleFCS::m_RudderLimit, false)
 		SIMDATA_XML("airbrake_limit", AircraftSimpleFCS::m_AirbrakeLimit, false)
 		SIMDATA_XML("elevator_rate", AircraftSimpleFCS::m_ElevatorRate, false)
@@ -104,8 +112,8 @@ private:
 	Deflection m_Rudder;
 	Deflection m_Airbrake;
 
-	double m_ElevatorLimit;
-	double m_AileronLimit;
+	double m_ElevatorLimit0,m_ElevatorLimit1;
+	double m_AileronLimit0, m_AileronLimit1;
 	double m_RudderLimit;
 	double m_AirbrakeLimit;
 	double m_ElevatorRate;

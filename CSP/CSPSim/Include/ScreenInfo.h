@@ -31,7 +31,7 @@
 
 #include <SimData/Ref.h>
 
-#include "DynamicObject.h"
+class DynamicObject;
 
 class ScreenInfo: public osg::Geode 
 {
@@ -43,17 +43,17 @@ protected:
 	osgText::Text *makeText(float pos_x, float pos_y,std::string const &string_text = "");
 	virtual ~ScreenInfo() {}
 public:
-	ScreenInfo(float pos_x, float posy, std::string const &name, std::string const &text = "");
+	ScreenInfo(float pos_x, float pos_y, std::string const &name, std::string const &text = "");
 	virtual void update(){}
 	void setStatus(bool const visible) {if (visible) setNodeMask(0x1); else setNodeMask(0x0);}
-	bool getStatus() const {return getNodeMask() != 0;}
+	bool getStatus() const {return getNodeMask() != 0x0;}
 };
 
 
 class Framerate: public ScreenInfo 
 {
-	float m_minFps, m_maxFps, m_cumul;
-	osgText::Text* m_Date, *m_MinFps, *m_MaxFps, *m_Av;
+	float m_MinFps, m_MaxFps, m_Cumul;
+	osgText::Text* m_Date;
 protected:
 	~Framerate(){}
 public:
@@ -66,7 +66,7 @@ class GeneralStats: public ScreenInfo
 {
 	osgText::Text* m_Altitude;
 	osgText::Text* m_GlobalPosition;
-	osgText::Text* m_Velocity, *m_Magnitude;
+	osgText::Text* m_Velocity;
 protected:
 	~GeneralStats(){}
 public:

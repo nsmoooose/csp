@@ -27,29 +27,17 @@
 
 #include "Views/CameraKinematics.h"
 
-class Command {
+class CameraCommand {
 public:
-	virtual void execute() = 0;
-	virtual ~Command(){}
-};
-
-
-class CameraCommand: public Command {
-protected:
-	CameraKinematics* m_CameraKinematics;
-public:
-	CameraCommand(): m_CameraKinematics(0){}
-	void setCameraKinematics(CameraKinematics* cm) {
-		m_CameraKinematics = cm;
-	}
+	virtual void execute(CameraKinematics* ck) = 0;
 	virtual ~CameraCommand(){}
 };
 
 
 class CameraReset: public CameraCommand {
 public:
-	virtual void execute() {
-		m_CameraKinematics->reset();
+	virtual void execute(CameraKinematics* ck) {
+		ck->reset();
 	}
 	virtual ~CameraReset(){}
 };
@@ -57,8 +45,8 @@ public:
 
 class PanLeft: public CameraCommand {
 public:
-	virtual void execute() {
-		m_CameraKinematics->panLeft();
+	virtual void execute(CameraKinematics* ck) {
+		ck->panLeft();
 	}
 	virtual ~PanLeft(){}
 };
@@ -66,8 +54,8 @@ public:
 
 class PanRight: public CameraCommand {
 public:
-	virtual void execute() {
-		m_CameraKinematics->panRight();
+	virtual void execute(CameraKinematics* ck) {
+		ck->panRight();
 	}
 	virtual ~PanRight(){}
 };
@@ -75,8 +63,8 @@ public:
 
 class PanLeftRightStop: public CameraCommand {
 public:
-	virtual void execute() {
-		m_CameraKinematics->panLeftRightStop();
+	virtual void execute(CameraKinematics* ck) {
+		ck->panLeftRightStop();
 	}
 	virtual ~PanLeftRightStop(){}
 };
@@ -84,16 +72,16 @@ public:
 
 class PanUp: public CameraCommand {
 public:
-	virtual void execute() {
-		m_CameraKinematics->panUp();
+	virtual void execute(CameraKinematics* ck) {
+		ck->panUp();
 	}
 	virtual ~PanUp(){}
 };
 
 class PanDown: public CameraCommand {
 public:
-	virtual void execute() {
-		m_CameraKinematics->panDown();
+	virtual void execute(CameraKinematics* ck) {
+		ck->panDown();
 	}
 	virtual ~PanDown(){}
 };
@@ -101,8 +89,8 @@ public:
 
 class PanUpDownStop: public CameraCommand {
 public:
-	virtual void execute() {
-		m_CameraKinematics->panUpDownStop();
+	virtual void execute(CameraKinematics* ck) {
+		ck->panUpDownStop();
 	}
 	virtual ~PanUpDownStop(){}
 };
@@ -110,8 +98,8 @@ public:
 
 class ZoomIn: public CameraCommand {
 public:
-	virtual void execute() {
-		m_CameraKinematics->zoomIn();
+	virtual void execute(CameraKinematics* ck) {
+		ck->zoomIn();
 	}
 	virtual ~ZoomIn(){}
 };
@@ -119,8 +107,8 @@ public:
 
 class ZoomOut: public CameraCommand {
 public:
-	virtual void execute() {
-		m_CameraKinematics->zoomOut();
+	virtual void execute(CameraKinematics* ck) {
+		ck->zoomOut();
 	}
 	virtual ~ZoomOut(){}
 };
@@ -128,16 +116,16 @@ public:
 
 class ZoomStop: public CameraCommand {
 public:
-	virtual void execute() {
-		m_CameraKinematics->zoomStop();
+	virtual void execute(CameraKinematics* ck) {
+		ck->zoomStop();
 	}
 	virtual ~ZoomStop(){}
 };
 
 class ZoomStepIn: public CameraCommand {
 public:
-	virtual void execute() {
-		m_CameraKinematics->zoomStepIn();
+	virtual void execute(CameraKinematics* ck) {
+		ck->zoomStepIn();
 	}
 	virtual ~ZoomStepIn(){}
 };
@@ -145,8 +133,8 @@ public:
 
 class ZoomStepOut: public CameraCommand {
 public:
-	virtual void execute() {
-		m_CameraKinematics->zoomStepOut();
+	virtual void execute(CameraKinematics* ck) {
+		ck->zoomStepOut();
 	}
 	virtual ~ZoomStepOut(){}
 };
@@ -169,8 +157,8 @@ public:
 		m_dx = dx;
 		m_dy = dy;
 	}
-	virtual void execute() {
-		m_CameraKinematics->displacement(m_x,m_y,m_dx,m_dy);
+	virtual void execute(CameraKinematics* ck) {
+		ck->displacement(m_x,m_y,m_dx,m_dy);
 		reset();
 	}
 	virtual ~MouseCommand(){}

@@ -1,0 +1,27 @@
+<?xml version="1.0" standalone="no"?> 
+
+<Object	class="RandomBillboardModel">
+	<List name="models">
+		<Object class="FeatureQuad">
+			<External name="texture">Images/tree0.rgba</External>
+			<Float name="width">4</Float>
+			<Float name="height">8</Float>
+		</Object>
+		<!--Object class="FeatureQuad">
+			<External name="texture">Images/tree1.gif</External>
+			<Float name="width">4</Float>
+			<Float name="height">8</Float>
+		</Object>
+		<Object class="FeatureQuad">
+			<External name="texture">Images/tree2.bmp</External>
+			<Float name="width">8</Float>
+			<Float name="height">16</Float>
+		</Object-->
+	</List>
+	<List name="density">
+		<Float>0.01</Float>
+	</List>
+	<Float name="minimum_spacing">2</Float>
+</Object>
+
+

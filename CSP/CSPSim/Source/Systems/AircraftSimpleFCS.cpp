@@ -39,9 +39,11 @@ SIMDATA_REGISTER_INTERFACE(AircraftSimpleFCS)
 
 AircraftSimpleFCS::AircraftSimpleFCS()
 {
-	m_ElevatorLimit = 0.3;
+	m_ElevatorLimit1 = 0.3;
+	m_ElevatorLimit0 = -m_ElevatorLimit1;
 	m_ElevatorRate = 0.5;
-	m_AileronLimit = 0.3;
+	m_AileronLimit1 = 0.3;
+	m_AileronLimit0 = -m_AileronLimit1;
 	m_AileronRate = 0.5;
 	m_RudderLimit = 0.3;
 	m_RudderRate = 0.5;
@@ -52,8 +54,10 @@ AircraftSimpleFCS::AircraftSimpleFCS()
 }
 
 void AircraftSimpleFCS::convertXML() {
-	m_ElevatorLimit = toRadians(m_ElevatorLimit);
-	m_AileronLimit = toRadians(m_AileronLimit);
+	m_ElevatorLimit1 = toRadians(m_ElevatorLimit1);
+	m_ElevatorLimit0 = toRadians(m_ElevatorLimit0);
+	m_AileronLimit1 = toRadians(m_AileronLimit1);
+	m_AileronLimit0 = toRadians(m_AileronLimit0);
 	m_RudderLimit = toRadians(m_RudderLimit);
 	m_AirbrakeLimit = toRadians(m_AirbrakeLimit);
 	m_ElevatorRate = toRadians(m_ElevatorRate);
@@ -63,8 +67,8 @@ void AircraftSimpleFCS::convertXML() {
 }
 
 void AircraftSimpleFCS::postCreate() {
-	m_Elevator.setParameters(m_ElevatorRate, m_ElevatorLimit);
-	m_Aileron.setParameters(m_AileronRate, m_AileronLimit);
+	m_Elevator.setParameters(m_ElevatorRate, m_ElevatorLimit0, m_ElevatorLimit1);
+	m_Aileron.setParameters(m_AileronRate, m_AileronLimit0, m_AileronLimit1);
 	m_Rudder.setParameters(m_RudderRate, m_RudderLimit);
 	m_Airbrake.setParameters(m_AirbrakeRate, m_AirbrakeLimit);
 	

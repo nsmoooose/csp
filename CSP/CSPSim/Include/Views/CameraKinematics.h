@@ -30,9 +30,6 @@
 class CameraCommand;
 
 class CameraKinematics {
-	typedef std::deque<CameraCommand*> CameraCommandList;
-	CameraCommandList m_CameraCommandList;
-
 	// XXX: serialize
 	const float m_BaseRate, m_DisplacementCoefficient;
 	const float m_MinimumDistanceOffset, m_AbsoluteMaximumDistance;

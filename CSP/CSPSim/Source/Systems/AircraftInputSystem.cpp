@@ -83,7 +83,7 @@ void AircraftInputSystem::IncRudder() {
 
 void AircraftInputSystem::noIncRudder() { 
 	m_RudderInput.stopIncrement();
-	m_RudderInput.setDecay(-30);
+	m_RudderInput.setDecay(30);
 }
 
 void AircraftInputSystem::DecRudder() { 

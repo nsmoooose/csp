@@ -181,9 +181,6 @@
 				RelativePath="..\..\Source\Atmosphere.cpp">
 			</File>
 			<File
-				RelativePath="..\..\Source\base.cpp">
-			</File>
-			<File
 				RelativePath="..\..\Source\BaseDynamics.cpp">
 			</File>
 			<File
@@ -232,6 +229,20 @@
 			</File>
 			<File
 				RelativePath="..\..\Source\DemeterTerrain.cpp">
+			</File>
+			<File
+				RelativePath="..\..\Source\DispatchCenter.cpp">
+				<FileConfiguration
+					Name="Debug|Win32"
+					ExcludedFromBuild="TRUE">
+					<Tool
+						Name="VCCLCompilerTool"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32">
+					<Tool
+						Name="VCCLCompilerTool"/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\Source\DynamicalSystem.cpp">
@@ -321,9 +332,6 @@
 				RelativePath="..\..\Source\SmokeEffects.cpp">
 			</File>
 			<File
-				RelativePath="..\..\Source\StaticObject.cpp">
-			</File>
-			<File
 				RelativePath="..\..\Source\SynchronousUpdate.cpp">
 			</File>
 			<File
@@ -343,9 +351,6 @@
 			</File>
 			<File
 				RelativePath="..\..\Source\Tools.cpp">
-			</File>
-			<File
-				RelativePath="..\..\Source\trees.cpp">
 			</File>
 			<File
 				RelativePath="..\..\Source\VirtualBattlefield.cpp">
@@ -468,13 +473,15 @@
 				<File
 					RelativePath="..\..\Source\SimNet\MessageSocketDuplex.cpp">
 					<FileConfiguration
-						Name="Debug|Win32">
+						Name="Debug|Win32"
+						ExcludedFromBuild="TRUE">
 						<Tool
 							Name="VCCLCompilerTool"
 							ObjectFile="$(IntDir)/$(InputName)1.obj"/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Release|Win32">
+						Name="Release|Win32"
+						ExcludedFromBuild="TRUE">
 						<Tool
 							Name="VCCLCompilerTool"
 							ObjectFile="$(IntDir)/$(InputName)1.obj"/>
@@ -483,13 +490,15 @@
 				<File
 					RelativePath="..\..\Source\SimNet\NetworkAddress.cpp">
 					<FileConfiguration
-						Name="Debug|Win32">
+						Name="Debug|Win32"
+						ExcludedFromBuild="TRUE">
 						<Tool
 							Name="VCCLCompilerTool"
 							ObjectFile="$(IntDir)/$(InputName)1.obj"/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Release|Win32">
+						Name="Release|Win32"
+						ExcludedFromBuild="TRUE">
 						<Tool
 							Name="VCCLCompilerTool"
 							ObjectFile="$(IntDir)/$(InputName)1.obj"/>
@@ -498,13 +507,15 @@
 				<File
 					RelativePath="..\..\Source\SimNet\NetworkBroadcaster.cpp">
 					<FileConfiguration
-						Name="Debug|Win32">
+						Name="Debug|Win32"
+						ExcludedFromBuild="TRUE">
 						<Tool
 							Name="VCCLCompilerTool"
 							ObjectFile="$(IntDir)/$(InputName)1.obj"/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Release|Win32">
+						Name="Release|Win32"
+						ExcludedFromBuild="TRUE">
 						<Tool
 							Name="VCCLCompilerTool"
 							ObjectFile="$(IntDir)/$(InputName)1.obj"/>
@@ -513,13 +524,15 @@
 				<File
 					RelativePath="..\..\Source\SimNet\NetworkListener.cpp">
 					<FileConfiguration
-						Name="Debug|Win32">
+						Name="Debug|Win32"
+						ExcludedFromBuild="TRUE">
 						<Tool
 							Name="VCCLCompilerTool"
 							ObjectFile="$(IntDir)/$(InputName)1.obj"/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Release|Win32">
+						Name="Release|Win32"
+						ExcludedFromBuild="TRUE">
 						<Tool
 							Name="VCCLCompilerTool"
 							ObjectFile="$(IntDir)/$(InputName)1.obj"/>
@@ -573,13 +586,15 @@
 				<File
 					RelativePath="..\..\Source\SimNet\NetworkSocket.cpp">
 					<FileConfiguration
-						Name="Debug|Win32">
+						Name="Debug|Win32"
+						ExcludedFromBuild="TRUE">
 						<Tool
 							Name="VCCLCompilerTool"
 							ObjectFile="$(IntDir)/$(InputName)1.obj"/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Release|Win32">
+						Name="Release|Win32"
+						ExcludedFromBuild="TRUE">
 						<Tool
 							Name="VCCLCompilerTool"
 							ObjectFile="$(IntDir)/$(InputName)1.obj"/>
@@ -648,13 +663,7 @@
 				RelativePath="..\..\Include\Atmosphere.h">
 			</File>
 			<File
-				RelativePath="..\..\Include\BaseController.h">
-			</File>
-			<File
 				RelativePath="..\..\Include\BaseDynamics.h">
-			</File>
-			<File
-				RelativePath="..\..\Include\BasePhysics.h">
 			</File>
 			<File
 				RelativePath="..\..\Include\BaseScreen.h">
@@ -675,22 +684,22 @@
 				RelativePath="..\..\Include\Colorspace.h">
 			</File>
 			<File
-				RelativePath="..\..\Include\compiler.h">
-			</File>
-			<File
 				RelativePath="..\..\Include\Config.h">
 			</File>
 			<File
 				RelativePath="..\..\Include\Console.h">
 			</File>
 			<File
+				RelativePath="..\..\Include\ConsoleCommands.h">
+			</File>
+			<File
 				RelativePath="..\..\Include\CSPSim.h">
 			</File>
 			<File
-				RelativePath="..\..\Include\DataRecorder.h">
+				RelativePath="..\..\Include\DamageModifier.h">
 			</File>
 			<File
-				RelativePath="..\..\Include\debug_types.h">
+				RelativePath="..\..\Include\DataRecorder.h">
 			</File>
 			<File
 				RelativePath="..\..\Include\DemeterTerrain.h">
@@ -699,10 +708,16 @@
 				RelativePath="..\..\Include\Dispatch.h">
 			</File>
 			<File
+				RelativePath="..\..\Include\DispatchCenter.h">
+			</File>
+			<File
 				RelativePath="..\..\Include\DynamicalSystem.h">
 			</File>
 			<File
 				RelativePath="..\..\Include\DynamicObject.h">
+			</File>
+			<File
+				RelativePath="..\..\Include\EchoServerNode.h">
 			</File>
 			<File
 				RelativePath="..\..\Include\Engine.h">
@@ -715,9 +730,6 @@
 			</File>
 			<File
 				RelativePath="..\..\Include\Exception.h">
-			</File>
-			<File
-				RelativePath="..\..\Include\FLCS.h">
 			</File>
 			<File
 				RelativePath="..\..\Include\FlightDynamics.h">
@@ -736,6 +748,9 @@
 			</File>
 			<File
 				RelativePath="..\..\Include\InputInterface.h">
+			</File>
+			<File
+				RelativePath="..\..\Include\KineticsChannels.h">
 			</File>
 			<File
 				RelativePath="..\..\Include\LandingGear.h">
@@ -774,6 +789,9 @@
 				RelativePath="..\..\Include\Projection.h">
 			</File>
 			<File
+				RelativePath="..\..\Include\RedirectServerNode.h">
+			</File>
+			<File
 				RelativePath="..\..\Include\ScreenInfo.h">
 			</File>
 			<File
@@ -781,6 +799,9 @@
 			</File>
 			<File
 				RelativePath="..\..\Include\ServerNode.h">
+			</File>
+			<File
+				RelativePath="..\..\Include\Shell.h">
 			</File>
 			<File
 				RelativePath="..\..\Include\SimObject.h">
@@ -883,9 +904,6 @@
 				Name="Systems"
 				Filter="">
 				<File
-					RelativePath="..\..\Include\Systems\AircraftDynamics.h">
-				</File>
-				<File
 					RelativePath="..\..\Include\Systems\AircraftFlightSensors.h">
 				</File>
 				<File
@@ -893,9 +911,6 @@
 				</File>
 				<File
 					RelativePath="..\..\Include\Systems\AircraftSimpleFCS.h">
-				</File>
-				<File
-					RelativePath="..\..\Include\Systems\GearDynamics.h">
 				</File>
 			</Filter>
 			<Filter
@@ -918,7 +933,31 @@
 				Name="SimNet"
 				Filter="">
 				<File
+					RelativePath="..\..\Include\SimNet\DispatchMessageHandler.h">
+				</File>
+				<File
+					RelativePath="..\..\Include\SimNet\EchoMessageHandler.h">
+				</File>
+				<File
 					RelativePath="..\..\Include\SimNet\Networking.h">
+				</File>
+				<File
+					RelativePath="..\..\Include\SimNet\NetworkMessage.h">
+				</File>
+				<File
+					RelativePath="..\..\Include\SimNet\NetworkMessageHandler.h">
+				</File>
+				<File
+					RelativePath="..\..\Include\SimNet\NetworkMessenger.h">
+				</File>
+				<File
+					RelativePath="..\..\Include\SimNet\NetworkNode.h">
+				</File>
+				<File
+					RelativePath="..\..\Include\SimNet\PrintMessageHandler.h">
+				</File>
+				<File
+					RelativePath="..\..\Include\SimNet\RedirectMessageHandler.h">
 				</File>
 			</Filter>
 		</Filter>
@@ -932,7 +971,7 @@
 				Name="Debug|Win32">
 				<Tool
 					Name="VCCustomBuildTool"
-					CommandLine="$(SWIG_PATH)\swig -runtime -c++ -python -noexcept -I..\..\Include -I$(PYTHON_PATH)\include -o ..\..\Source\$(InputName)_wrap.cpp ..\..\Source\$(InputName).i
+					CommandLine="$(SWIG_PATH)\swig -runtime -c++ -python -noexcept -I..\..\Include -I..\..\..\SimData\Include -o ..\..\Source\$(InputName)_wrap.cpp ..\..\Source\$(InputName).i
 "
 					Outputs="..\..\Source\$(InputName)_wrap.cpp"/>
 			</FileConfiguration>

@@ -188,7 +188,7 @@ void PadlockView::activate() {
 		m_Padlock = battlefield->getNextUnit(m_Padlock, -1, -1, -1);
 	}
 	if (m_Padlock != m_ActiveObject) {
-		m_NeckTheta = m_CameraKinematics->getPhi() - 0.5*simdata::PI;
+		m_NeckTheta = m_CameraKinematics->getPhi() - simdata::PI_2;
 		m_NeckPhi = m_CameraKinematics->getTheta();
 	}
 }

@@ -217,10 +217,10 @@ public:
 */
 class RKCK_VS_VO: public NumericalMethod {
 	/**
-	* Evaluate the approximated soluation at a+h (entire step size)
+	* Evaluate the approximated solution at a+h (entire step size)
 	* control is defered to vrkf to adjust step size and order.
 	* @return the error between RK(n+1) and RK(n)
-	* @warning a and h don t design the same as a,h in vrkfBound (because they are variable in vrkf)
+	* @warning a and h don't design the same as a,h in vrkfBound (they are variable in vrkf)
 	*/
     double rkck12(double a, double h, Vector::Vectord const &ystart);
     double rkck23(double a, double h, Vector::Vectord const &ystart);
@@ -229,7 +229,7 @@ class RKCK_VS_VO: public NumericalMethod {
 	/**
 	* @return to vrkfBound the solution at a+h
 	* @param hdone is the step size which has been done, in respect to error criteria
-	* @param hnext is a prevision of step size for next integration in [a,a+h0]
+	* @param hnext is a prevision of the step size for next integration in [a,a+h0]
 	*/
     Vector::Vectord const &vrkf(Vector::Vectord &ystart, double a, double h, double &hdone, double &hnext);
 

@@ -133,7 +133,7 @@ public:
 		place = m_VertexA;
 		osgParticle::rangev3 push;
 		push.set(osg::Vec3(-0.4, -0.4, -0.4), osg::Vec3(0.4, 0.4, 0.4));
-		for (int i = 0; i < count; i++) {
+		for (int i = 0; i < count; ++i) {
 			osgParticle::Particle *P = getParticleSystem()->createParticle(getUseDefaultTemplate()? 0: &getParticleTemplate()); 
 			if (P) {
 				P->setPosition(simdata::toOSG(place));
@@ -142,6 +142,7 @@ public:
 				wind += d_wind;
 				if (getReferenceFrame() == RELATIVE_TO_PARENTS) {
 					P->transformPositionVelocity(getLocalToWorldMatrix());
+					//P->transformPositionVelocity(getWorldToLocalMatrix());
 				}
 			}
 		}
@@ -218,9 +219,9 @@ void VortexExpander::operate(osgParticle::Particle *p, double dt)
 
 void SmokeThinner::operate(osgParticle::Particle *p, double dt)
 {
-	float lifetime = p->getRadius();
+	float radius = p->getRadius();
 	// check if we've already operated on this particle
-	if (lifetime > 1000.0) {
+	if (radius > 1000.0) {
 		float x = simdata::g_Random.unit();
 		float old_lifetime = p->getLifeTime();
 		// this needs to be made into a member variable, set by
@@ -229,7 +230,7 @@ void SmokeThinner::operate(osgParticle::Particle *p, double dt)
 		x *= x;
 		x *= x;
 		// adjust the lifetime, weighted toward small t
-		lifetime = x * x * (max-0.5) + 0.5;
+		float lifetime = x * x * (max-0.5) + 0.5;
 		p->setLifeTime(lifetime);
 		// mark this particle as "thinned"
 		p->setRadius(1.0);
@@ -409,7 +410,8 @@ SmokeTrail::~SmokeTrail() {
 
 osgParticle::Emitter* SmokeTrail::getEmitter() {
 	WindEmitter *emitter = new WindEmitter();
-	emitter->setDensity(20.0, 10, 1000);
+	//emitter->setDensity(20.0, 10, 1000);
+	emitter->setDensity(4.0, 4, 8);
 	emitter->setParticleSystem(this);
 	return emitter;
 }

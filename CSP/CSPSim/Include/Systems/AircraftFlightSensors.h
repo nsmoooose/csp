@@ -36,7 +36,7 @@ public:
 	END_SIMDATA_XML_INTERFACE
 
 protected:
-	double onUpdate(double dt);
+	virtual double onUpdate(double dt);
 	virtual void importChannels(Bus *bus);
 	virtual void registerChannels(Bus *bus);
 	virtual void getInfo(InfoList &info) const;

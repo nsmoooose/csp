@@ -119,6 +119,8 @@ public:
 	virtual void computeForceAndMoment(double x);
 
 	std::vector<simdata::Vector3> getSmokeEmitterLocation() const;
+
+	virtual std::string getName() const { return "EngineDynamics"; }
 };
 
 #endif // __ENGINE_H__

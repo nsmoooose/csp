@@ -1,6 +1,50 @@
  Version 0.4.0 (in progress)
 ===========================
 
+2004-07-26: delta
+  * Added #undef ERROR in Log.h & System.h.
+  
+  * Moved AeroDynamics.cpp, base.cpp, main.cpp and trees.cpp 
+    to Source/old.
+    
+  * Small cleanup in CameraAgent. Simplified CameraCommand.
+  
+  * Added a balkan dir under CSPSim/Data/XML/theater. 
+    CSPSim/Data/XML/theater/balkan.xml should now refers to 
+    files in this dir. A special area of the Balkan terrain 
+    (balkanMapElev.7-7.bmp) has been flatten out to receive 
+    an airbase (see note below).
+    Changed the starting position of the m2k in createBalkan 
+    from TestObjects.py.
+    
+  * Mapped the rudder to US_keyboard:COMMA (dec) and 
+    US_keyboard:PERIOD (inc) in file 
+    CSPSim/Tools/HID/Maps/aircraft-core.map.
+    
+  * Fixed a small bug(typo?) in the rudder decay.
+  
+  * Added limit min and max to AircraftSimpleFCS::Deflection for 
+    elevators' and ailerons' deflection. 
+    XML/vehicles/aircraft/m2k/systems.xml has been patched.
+    
+  * Changed various logo image file formats to jpg to save bandwith
+    (LogoScreen).
+  
+  * Simplified derived classes of ScreenInfo. Slighty modified the
+    position of texts.
+  
+  * A few changes in SmokeEffects.
+  
+  * Updated vs project. Many network source files are in the project 
+    but excluded from the built.
+  
+  * Other minor changes.
+  
+==> All users: rebuild sim.dar and aircraft.hid.
+               Copy balkanMapElev.7-7.bmp from CSPSim/Images
+               to CSPSim/Terrain
+==> Linux users: update the makefile (moved files to Source/old).
+
 2004-07-17: onsight
   * Cleaned up indentation in some more network code.
 
@@ -80,7 +124,7 @@
     to fix a gcc syntax error.
 
   * Added a lighting bool attribute to disable lighting in ObjectModel.
-   (lightint is on by default).
+   (lighting is on by default).
 
 2004-06-29: delta
   * Corrected a shaking bug in the flyby view when PAUSE was enabled.

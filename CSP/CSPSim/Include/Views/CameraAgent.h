@@ -42,6 +42,21 @@ class CameraAgent {
 	void validate(double dt);
 	void deleteViews();
 	void notifyCameraKinematicsToViews();
+
+	struct DestroyView {
+		void operator()(std::pair<const size_t,View*>& vm) const {
+			delete vm.second;
+		}
+	};
+
+	template <class T> class Accept {
+		T m_t;
+	public:
+		Accept(const T t):m_t(t){}
+		void operator()(std::pair<const size_t,View*>& vm) const {
+			vm.second->accept(m_t);
+		}
+	};
 public:
 	CameraAgent(const ViewFactory& vf);
 	~CameraAgent();

@@ -32,9 +32,8 @@
 
 #include <SimData/TaggedRecordRegistry.h>
 
-
 DispatchCenter::DispatchCenter() {
-	simdata::TaggedRecordRegistry const &registry = simdata::TaggedRecordRegistry::getInstance();
+	simdata::TaggedRecordRegistry const &registry = simdata::TaggedRecordRegistry::getConstInstance();
 	// TODO will need to be sorted and validated eventually!
 	m_factories = registry.getFactories();
 }

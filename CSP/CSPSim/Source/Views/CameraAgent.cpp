@@ -48,7 +48,7 @@ void CameraAgent::validate(double dt)	{
 	VirtualScene* scene	= CSPSim::theSim->getScene();
 	const simdata::Ref<TerrainObject> terrain =	scene->getTerrain();
 	TerrainObject::IntersectionHint	camera_hint	= 0;
-	double const SAFETY	= 2.0;
+	double const SAFETY	= 3.0;
 	float h	= SAFETY + terrain->getGroundElevation(m_EyePoint.x(),m_EyePoint.y(),camera_hint);
 	if (m_EyePoint.z() < h) {
 		double alpha_2 = simdata::toRadians(0.5*scene->getViewAngle());
@@ -73,7 +73,7 @@ void CameraAgent::validate(double dt)	{
 			}
 		double dh =	abs(h - m_LookPoint.z() - min_elev);
 		double angle_x = std::max(simdata::toRadians(1.0),asin(dh/m_CameraKinematics.getDistance()));
-		if (abs(m_CameraKinematics.getPhi()) < simdata::PI_2) 
+		if (abs(m_CameraKinematics.getPhi()) < simdata::PI_2)
 			m_CameraKinematics.setPhi(angle_x);
 		else
 			m_CameraKinematics.setPhi(simdata::PI-angle_x);
@@ -104,39 +104,15 @@ void CameraAgent::updateCamera(double dt)	{
 	}
 }
 
-struct DestroyView {
-	void operator()(std::pair<const size_t,View*>& vm) {
-		delete vm.second;
-	}
-};
-
 void CameraAgent::deleteViews() {
 	std::for_each(m_ViewList.begin(),m_ViewList.end(),DestroyView());
 }
 
-class AcceptObject {
-	simdata::Ref<DynamicObject> m_ActiveObject;
-public:
-	AcceptObject(const simdata::Ref<DynamicObject> object):m_ActiveObject(object){}
-	void operator()(std::pair<const size_t,View*>& vm) {
-		vm.second->accept(m_ActiveObject);
-	}
-};
-
 void CameraAgent::setObject(simdata::Ref<DynamicObject> object) {
-	std::for_each(m_ViewList.begin(),m_ViewList.end(),AcceptObject(object));
+	std::for_each(m_ViewList.begin(),m_ViewList.end(),Accept<simdata::Ref<DynamicObject> >(object));
 	m_CameraKinematics.reset();
 }
 
-class AcceptCameraKinematics {
-	CameraKinematics* m_CameraKinematics;
-public:
-	AcceptCameraKinematics(CameraKinematics* ck):m_CameraKinematics(ck) {}
-	void operator()(std::pair<const size_t,View*>& vm) {
-		vm.second->accept(m_CameraKinematics);
-	}
-};
-
 void CameraAgent::notifyCameraKinematicsToViews() {
-	std::for_each(m_ViewList.begin(),m_ViewList.end(),AcceptCameraKinematics(&m_CameraKinematics));
+	std::for_each(m_ViewList.begin(),m_ViewList.end(),Accept<CameraKinematics*>(&m_CameraKinematics));
 }

@@ -17,6 +17,10 @@ map key:RIGHT   press           INC_AILERON
 map key:RIGHT   release         STOP_INC_AILERON
 map key:LEFT    press           DEC_AILERON
 map key:LEFT    release         STOP_DEC_AILERON
+map key:COMMA   press           DEC_RUDDER
+map key:COMMA   release         STOP_DEC_RUDDER
+map key:PERIOD  press           INC_RUDDER
+map key:PERIOD  release         STOP_INC_RUDDER
 map key:EQUALS  press           INC_THROTTLE
 map key:EQUALS  release         STOP_INC_THROTTLE
 map key:MINUS   press           DEC_THROTTLE

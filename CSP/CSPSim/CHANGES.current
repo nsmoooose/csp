@@ -1,6 +1,9 @@
  Version 0.4.0 (in progress)
 ===========================
 
+2004-06-13: onsight
+  * Added many detailed comments to System.h, as well as a general overview.
+
 2004-06-13: wolverine
   * Added DispatchMessageHandler to the networking layer to forward incoming
     messages to the correct object.

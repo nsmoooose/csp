@@ -169,6 +169,8 @@ double EngineDynamics::flatten(double x) {
 
 void EngineDynamics::cut() {
 	double alpha = b_Alpha->value();
+	if (abs(alpha) > simdata::PI_2)
+		alpha -= simdata::sign(alpha)*simdata::PI;
 	if (alpha < -m_A) {
 		m_Force = simdata::Vector3::ZERO;
 	}

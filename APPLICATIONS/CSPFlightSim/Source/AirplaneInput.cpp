@@ -3,6 +3,8 @@
 #include "AirplaneInput.h"
 #include "AirplaneObject.h"
 
+extern double frameSeconds();
+
 double const AirplaneInput::offsetControl = 0.05;
 
 AirplaneInput::AirplaneInput()
@@ -11,29 +13,38 @@ AirplaneInput::AirplaneInput()
   m_foffsetElevator = 0.0;
   m_foffsetRudder = 0.0;
   m_foffsetThrottle = 0.0;
+  m_oldsetting = 0.0;
 }
 
-void AirplaneInput::SetObject(BaseObject * pObject)
+void AirplaneInput::SetObject(BaseObject * pObject) 
 {
 	m_pAirplaneObject = dynamic_cast<AirplaneObject* >(pObject);
 }
 
-double AirplaneInput::Clamp(double p_setting) const
+double AirplaneInput::Smooth(double p_setting)
 {
-  if ( p_setting < - 1.0)
-			p_setting = - 1.0;
-		else 
-			if ( p_setting > 1.0 )
-				p_setting = 1.0;
-  return p_setting;
+ double u = 0.8 * frameSeconds();
+ p_setting = u * m_oldsetting + (1.0 - u) * p_setting;
+ m_oldsetting = p_setting;
+ return p_setting;
 }
 
-void AirplaneInput::OnUpdate() const
+double AirplaneInput::Clamp(double p_setting) const
+{
+	if ( p_setting < - 1.0)
+		p_setting = - 1.0;
+	else 
+		if ( p_setting > 1.0 )
+			p_setting = 1.0;
+	return p_setting;
+}
+
+void AirplaneInput::OnUpdate()
 {
 	if (m_foffsetAileron != 0.0)
 	{
 		double setting = m_pAirplaneObject->getAileron() + m_foffsetAileron;
-		setting = Clamp(setting);
+		setting = Smooth(Clamp(setting));
 		m_pAirplaneObject->setAileron( setting );
 	}
 	else
@@ -41,7 +52,7 @@ void AirplaneInput::OnUpdate() const
 		if (m_foffsetElevator != 0.0)
 		{
 			double setting = m_pAirplaneObject->getElevator() + m_foffsetElevator;
-			setting = Clamp(setting);
+			setting = Smooth(Clamp(setting));
 			m_pAirplaneObject->setElevator( setting );
 		}
 		else
@@ -49,14 +60,14 @@ void AirplaneInput::OnUpdate() const
 			if (m_foffsetRudder != 0.0)
 			{
 				double setting = m_pAirplaneObject->getRudder() + m_foffsetRudder;
-				setting = Clamp(setting);
+				setting = Smooth(Clamp(setting));
 				m_pAirplaneObject->setRudder( setting );
 			}
 			else
 				if (m_foffsetThrottle != 0.0)
 				{
 					double setting = m_pAirplaneObject->getThrottle() + m_foffsetThrottle;
-					setting = Clamp(setting);
+					setting = Smooth(Clamp(setting));
 					m_pAirplaneObject->setThrottle( setting );
 				}
 		}
@@ -146,7 +157,7 @@ void AirplaneInput::OnJoystickAxisMotion(int joynum, int axis, int val)
     CSP_LOG(CSP_APP, CSP_DEBUG, "AirplaneInput::OnJoystickAxisMotion, joystick: " << joynum
                 << ", axis: " << axis << ", val: " << val );
 
-    float setting = val / 32768.0;
+    float setting = Smooth(val / 32768.0);
 
 	switch ( joynum )
 	{

@@ -49,14 +49,16 @@ public:
     virtual void OnJoystickAxisMotion(int joynum, int axis, int val);
 	virtual void OnJoystickHatMotion(int joynum, int hat, int val);
     virtual void OnJoystickButtonDown(int joynum, int butnum);
-    virtual void OnUpdate() const;
+    virtual void OnUpdate();
 
 	virtual void SetObject(BaseObject * );
 
 protected:
 	AirplaneObject * m_pAirplaneObject;
 	double Clamp(double p_setting) const;
+    double Smooth(double p_setting);
 
+	double m_oldsetting;
 	double m_foffsetAileron;
 	double m_foffsetElevator;
 	double m_foffsetRudder;

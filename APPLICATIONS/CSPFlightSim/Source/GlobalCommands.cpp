@@ -99,8 +99,7 @@ std::string RunCommand(deque<string> & args)
     string path = args[0];
     
     if (!OSPath::isabs(path)) {
-    	string base;
-		base = "../Data/Scripts";
+		string base = "../Data/Scripts";
 		path = OSPath::join(base, path);
     }
 

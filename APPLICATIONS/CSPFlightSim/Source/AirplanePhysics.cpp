@@ -1,5 +1,6 @@
 #include "stdinc.h"
 
+#include <osg/Math>
 
 #include "AirplanePhysics.h"
 #include "SimTime.h"
@@ -95,7 +96,7 @@ void AirplanePhysics::setAeroParams(AeroParam * pAeroParam )
 		m_fCL_adot = pAeroParam->m_fCL_adot;
 		m_fCL_q = pAeroParam->m_fCL_q;
 		m_fCL_de = pAeroParam->m_fCL_de;
-		m_fstallAOA = DegreesToRadians(pAeroParam->m_fstallAOA);
+		m_fstallAOA = osg::DegreesToRadians(pAeroParam->m_fstallAOA);
 
 		m_fCM0 = pAeroParam->m_fCM0;         
 		m_fCM_a = pAeroParam->m_fCM_a;        
@@ -250,7 +251,7 @@ void AirplanePhysics::DoSimStep(double dt)
 		CSP_LOG(CSP_PHYSICS, CSP_DEBUG, "AirplanePhysics: Velocity: " << m_VelocityLocal);
 		CSP_LOG(CSP_PHYSICS, CSP_DEBUG, "AirplanePhysics:    Speed: " << m_fSpeedLocal);
 		
-		CSP_LOG(CSP_PHYSICS, CSP_DEBUG, "AirplanePhysics: AngOfAtt: " << RadiansToDegrees(m_falpha) );
+		CSP_LOG(CSP_PHYSICS, CSP_DEBUG, "AirplanePhysics: AngOfAtt: " << osg::RadiansToDegrees(m_falpha) );
 		
 		//CSP_LOG(CSP_PHYSICS, CSP_DEBUG, "AirplanePhysics:   VelDir: " << VelocityDirection );
 		
@@ -310,7 +311,7 @@ double AirplanePhysics::CalculateLiftCoefficient() const
 			       + m_fCL_de * m_Elevator);
 
 	CSP_LOG(CSP_PHYSICS, CSP_DEBUG, "AirplanePhysics::CalculateLiftCoefficient() " << 
-		lift_coe << " at alpha = " << RadiansToDegrees(m_falpha) << 
+		lift_coe << " at alpha = " << osg::RadiansToDegrees(m_falpha) << 
 		", Elevator: " << m_Elevator );
     return lift_coe;
 }
@@ -342,7 +343,7 @@ double AirplanePhysics::CalculateDragCoefficient() const
     drag_coe =  m_fCD0 + m_fCD_a * m_falpha + m_fCD_de * m_Elevator;
 
 		CSP_LOG(CSP_PHYSICS, CSP_DEBUG, "AirplanePhysics::CalculateDragCoefficient() " << 
-		drag_coe << " at alpha = " << RadiansToDegrees(m_falpha) << 
+			drag_coe << " at alpha = " << osg::RadiansToDegrees(m_falpha) << 
 		", Elevator: " << m_Elevator );
 
     return drag_coe;

@@ -36,7 +36,7 @@ void AIAirplaneController::OnUpdate(unsigned int dt)
 {
     AirplaneObject * airplaneObject = (AirplaneObject *)g_pBattlefield->getObjectFromID(object_id);
 
-    float pitchDeg = RadiansToDegrees(airplaneObject->getPitch())/2;
+    float pitchDeg = osg::RadiansToDegrees(airplaneObject->getPitch())/2;
 
     // set controls to for altitude
     if (airplaneObject->getLocalPosition().z < (targetAltitude - altitudeTol) )

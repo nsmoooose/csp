@@ -74,6 +74,7 @@ m_usiformat(p_usiformat)
     setFont(font);
     setDrawMode( osgText::Text::TEXT );
     setAlignment(osgText::Text::LEFT_BOTTOM);
+	//setAxisAlignment(XZ_PLANE);
 	setColor(fontColor);	
 	setPosition(p_position);
 	SetValue(0.0);
@@ -177,7 +178,7 @@ void HudTextElement::SetValueHEAD()
 void HudTextElement::SetValueAOA()
 {
   AirplaneObject * pplayerPlane = dynamic_cast<AirplaneObject*>(g_pPlayerObject);
-  SetValue ( RadiansToDegrees(pplayerPlane->getAngleOfAttack()) );
+  SetValue ( osg::RadiansToDegrees(pplayerPlane->getAngleOfAttack()) );
 }
 
 void HudTextElement::SetValueG()

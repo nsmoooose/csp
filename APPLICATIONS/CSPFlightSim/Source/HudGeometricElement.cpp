@@ -1,6 +1,5 @@
 #include <osg/Geode>
 #include <osg/Geometry>
-#include <osg/Math>
 
 #include "BaseObject.h"
 #include "HudGeometricElement.h"
@@ -34,21 +33,21 @@ HudGeometricElement::~HudGeometricElement()
 void HudGeometricElement::MakeHsi()
 {
 	unsigned short const levelsNumber = 9;
-	double const hsiStepSize = .1;
+	double const hsiStepSize = .1; 
 
 	osg::Vec3Array* vertices = osgNew osg::Vec3Array;
 	osg::Geometry* linesGeom = osgNew osg::Geometry;
 	
 	// middle segment
-	vertices->push_back(osg::Vec3(-0.15 * g_ScreenWidth, 0.0, 0.0));
-	vertices->push_back(osg::Vec3(0.15 * g_ScreenWidth, 0.0, 0.0));
+	vertices->push_back(osg::Vec3(-0.15 , 0.0, 0.0));
+	vertices->push_back(osg::Vec3(0.15 , 0.0, 0.0));
 	
 	// fondamental vertices top: generate others segments with those ones
 	osg::Vec3Array* fondVerticesTop = osgNew osg::Vec3Array;
 	
-	fondVerticesTop->push_back(osg::Vec3(-0.06 * g_ScreenWidth, 0.0, 0.05 * g_ScreenHeight));
-	fondVerticesTop->push_back(osg::Vec3(-0.06 * g_ScreenWidth, 0.0, 0.07 * g_ScreenHeight));
-	fondVerticesTop->push_back(osg::Vec3(-0.01 * g_ScreenWidth, 0.0, 0.07 * g_ScreenHeight));
+	fondVerticesTop->push_back(osg::Vec3(-0.06 , 0.0, 0.05 ));
+	fondVerticesTop->push_back(osg::Vec3(-0.06 , 0.0, 0.07 ));
+	fondVerticesTop->push_back(osg::Vec3(-0.01 , 0.0, 0.07 ));
 
 	unsigned short i;
 
@@ -57,7 +56,7 @@ void HudGeometricElement::MakeHsi()
 		for (unsigned short j = 0; j < fondVerticesTop->size(); ++j)
 		{
 			osg::Vec3 u((*fondVerticesTop)[j]);
-			vertices->push_back(u + osg::Vec3(0.0, 0.0, hsiStepSize * i * g_ScreenHeight));
+			vertices->push_back(u + osg::Vec3(0.0, 0.0, hsiStepSize * i ));
 		}
 
 	// top right
@@ -66,23 +65,23 @@ void HudGeometricElement::MakeHsi()
 		{
 			osg::Vec3 u((*fondVerticesTop)[j]);
 			u.x() =  - u.x();
-			vertices->push_back(u + osg::Vec3(0.0, 0.0, hsiStepSize * i * g_ScreenHeight));
+			vertices->push_back(u + osg::Vec3(0.0, 0.0, hsiStepSize * i ));
 		}
     
 	// fondamental vertices bottom: generate others segments with those ones
 	osg::Vec3Array* fondVerticesBottom = osgNew osg::Vec3Array;
 	
-	fondVerticesBottom->push_back(osg::Vec3(-0.06 * g_ScreenWidth, 0.0, 0.05 * g_ScreenHeight));
-	fondVerticesBottom->push_back(osg::Vec3(-0.06 * g_ScreenWidth, 0.0, 0.07 * g_ScreenHeight));
+	fondVerticesBottom->push_back(osg::Vec3(-0.06 , 0.0, 0.05 ));
+	fondVerticesBottom->push_back(osg::Vec3(-0.06 , 0.0, 0.07 ));
 
-    fondVerticesBottom->push_back(osg::Vec3(-0.06 * g_ScreenWidth, 0.0, 0.07 * g_ScreenHeight));
-	fondVerticesBottom->push_back(osg::Vec3(-0.05 * g_ScreenWidth, 0.0, 0.07 * g_ScreenHeight));
+    fondVerticesBottom->push_back(osg::Vec3(-0.06 , 0.0, 0.07 ));
+	fondVerticesBottom->push_back(osg::Vec3(-0.05 , 0.0, 0.07 ));
 
-    fondVerticesBottom->push_back(osg::Vec3(-0.04 * g_ScreenWidth, 0.0, 0.07 * g_ScreenHeight));
-	fondVerticesBottom->push_back(osg::Vec3(-0.03 * g_ScreenWidth, 0.0, 0.07 * g_ScreenHeight));
+    fondVerticesBottom->push_back(osg::Vec3(-0.04 , 0.0, 0.07 ));
+	fondVerticesBottom->push_back(osg::Vec3(-0.03 , 0.0, 0.07 ));
 
-    fondVerticesBottom->push_back(osg::Vec3(-0.02 * g_ScreenWidth, 0.0, 0.07 * g_ScreenHeight));
-	fondVerticesBottom->push_back(osg::Vec3(-0.01 * g_ScreenWidth, 0.0, 0.07 * g_ScreenHeight));
+    fondVerticesBottom->push_back(osg::Vec3(-0.02 , 0.0, 0.07 ));
+	fondVerticesBottom->push_back(osg::Vec3(-0.01 , 0.0, 0.07 ));
 
 	// bottom left
 	for (i = 0; i < levelsNumber; ++i)
@@ -90,7 +89,7 @@ void HudGeometricElement::MakeHsi()
 		{
 			osg::Vec3 u((*fondVerticesBottom)[j]);
 			u.z() =  - u.z();
-			vertices->push_back(u - osg::Vec3(0.0, 0.0, hsiStepSize * i * g_ScreenHeight));
+			vertices->push_back(u - osg::Vec3(0.0, 0.0, hsiStepSize * i ));
 		}
 
 	// bottom right
@@ -100,7 +99,7 @@ void HudGeometricElement::MakeHsi()
 			osg::Vec3 u((*fondVerticesBottom)[j]);
 			u.x() =  - u.x();
 			u.z() =  - u.z();
-			vertices->push_back(u - osg::Vec3(0.0, 0.0, hsiStepSize * i * g_ScreenHeight));
+			vertices->push_back(u - osg::Vec3(0.0, 0.0, hsiStepSize * i ));
 		}
 
 	// pass the created vertex array to the points geometry object.
@@ -130,7 +129,7 @@ void HudGeometricElement::MakeHsi()
 
 void HudGeometricElement::MakeFpm(float const p_radius, float const p_segLengthH, float const p_segLengthV)
 {
-	unsigned short const verticesCircleNumber = 30;
+	unsigned short const verticesCircleNumber = 10;
 
 	osg::Vec3Array* vertices = osgNew osg::Vec3Array;
 	osg::Geometry* linesGeom = osgNew osg::Geometry;
@@ -186,8 +185,8 @@ void HudGeometricElement::OnUpdate(osg::Vec3 const & p_position, float p_fangle)
 
 void HudGeometricElement::OnUpdateHsi()
 {
-  m_fheadingAngle = - g_pPlayerObject->getRoll() / 60.0 ;
-  m_fpitchAngle = - 8.0 * g_pPlayerObject->getPitch();
+  m_fheadingAngle = - osg::DegreesToRadians(g_pPlayerObject->getRoll()) / 2.0;
+  m_fpitchAngle = - osg::DegreesToRadians(g_pPlayerObject->getPitch()) / 2.0;
 
   setPosition(osg::Vec3(0.0, 0.0, m_fpitchAngle));
   osg::Quat quat(m_fheadingAngle, osg::Vec3(0.0, 1.0, 0.0));
@@ -196,7 +195,8 @@ void HudGeometricElement::OnUpdateHsi()
 
 void HudGeometricElement::OnUpdateFpm()
 {
-	StandardVector3 t1 = g_pPlayerObject->getVelocity() - g_pPlayerObject->getSpeed() * g_pPlayerObject->getDirection();
-	osg::Vec3 t = osg::Vec3(t1.x, t1.y, t1.z); 
+	StandardVector3 t1 = g_pPlayerObject->getVelocity() / g_pPlayerObject->getSpeed() - g_pPlayerObject->getDirection();
+	osg::Vec3 t = osg::Vec3(t1.x, t1.y, t1.z) / 4.0; 
+	//t.normalize();
 	setPosition(t);
 } 

@@ -47,3 +47,17 @@ double Atan(double const p_a, double const p_b)
 	else 
 		return atan( p_b / p_a );
 }
+
+float UnsignedRandomNumber()
+// returns a random number in [0,1]
+{
+	float fnum = static_cast<float>(rand())/RAND_MAX;
+	return fnum;
+}
+
+float SignedRandomNumber()
+// returns a random number in [0,1]
+{
+	float fnum = 2.0 * UnsignedRandomNumber() - 1.0;
+	return fnum;
+}

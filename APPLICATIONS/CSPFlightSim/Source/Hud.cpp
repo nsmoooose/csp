@@ -12,13 +12,10 @@
 #include "HudGeometricElement.h"
 #include "HudTextElement.h"
 
-extern int g_ScreenWidth; 
-extern int g_ScreenHeight;
-
 Hud::Hud(StandardVector3 const & p_direction)
 {
   setName("Hud");
-  double const scale = 750.0;
+  double const scale = 0.8;
   StandardVector3 t1  = scale * p_direction;
   setPosition(osg::Vec3(t1.x, t1.y, t1.z));
 }
@@ -45,7 +42,7 @@ HudTextElement Hud::ReadHudTextElement(std::istream & p_istream) const
  if (sstaticString == "#") 
 	 sstaticString = "";
 
- osg::Vec3 position( x * g_ScreenWidth, y, z * g_ScreenHeight);
+ osg::Vec3 position( x , 0, z );
 
  std::string sfontName;
  unsigned short fontSize;
@@ -79,7 +76,7 @@ void Hud::BuildHud(std::string const & p_hudFileName)
 	iFStream.getline(buf, lineSize);
 
 	// read the "static" text part of the hud in a unique geode
-	osg::Geode * staticHud = osgNew osg::Geode;
+	osg::Geode * staticHud = new osg::Geode;
 
 	// static part is stored in a geode which contains all osgtext drawables 
 	staticHud->setName("Static " + p_hudFileName);
@@ -94,7 +91,7 @@ void Hud::BuildHud(std::string const & p_hudFileName)
 		}
 		else
 		{
-		HudTextElement * phudTextElement = osgNew HudTextElement;
+		HudTextElement * phudTextElement = new HudTextElement;
 		std::istringstream isStream(buf);
 		// read every hud element
 		*phudTextElement = ReadHudTextElement(isStream);	
@@ -109,17 +106,17 @@ void Hud::BuildHud(std::string const & p_hudFileName)
 
 	{
 	// next, add hsi to the hud
-	HudGeometricElement * phsi = osgNew HudGeometricElement(std::string("HSI"), osg::Vec3(0.0,0.0,0.0));
+	HudGeometricElement * phsi = new HudGeometricElement(std::string("HSI"), osg::Vec3(0.0,0.0,0.0));
     // add hsi to hud (master transform)
 	addChild(phsi);
 
-	HudGeometricElement * pfpm = osgNew HudGeometricElement(std::string("FPM"), osg::Vec3(0.0,0.0,0.0));
+	HudGeometricElement * pfpm = new HudGeometricElement(std::string("FPM"), osg::Vec3(0.0,0.0,0.0));
 	addChild(pfpm);
     }
 	
     
-	osg::StateSet * state = osgNew osg::StateSet;
-	osg::Depth* depth = osgNew osg::Depth;
+	osg::StateSet * state = new osg::StateSet;
+	osg::Depth* depth = new osg::Depth;
     depth->setRange(0.0,0.0);
      
     state->setAttribute(depth);

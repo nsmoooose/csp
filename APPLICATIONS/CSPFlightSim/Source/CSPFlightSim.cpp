@@ -7,6 +7,9 @@
 
 #include <osg/Timer>
 
+#include <osgDB/FileUtils>
+#include <osgDB/ReadFile>
+
 
 #include "SDL.h"
 #include "CON_console.h" // console is using SDL_OPENGLBLIT :-( switch to osgConsole?
@@ -83,9 +86,9 @@ osg::Timer_t updateFrameTick()
     	_timeLag = _timeStep - 1.0;
 	_timeStep = 1.0;
     } 
-    if (_timeStep < 0.01) {
+    if (_timeStep < 0.001) {
     	// todo: microsleep
-    	_timeStep = 0.01;
+    	_timeStep = 0.001;
     	_timeLag = 0.0;
     } else {
     	_timeLag = 0.0;
@@ -157,8 +160,22 @@ void CSPFlightSim::Init()
     // Do rest of initialization.
     InitConsole();
 
-    g_pObjectFactory->initialize();
+#ifdef _WIN32
+	std::string sep = ";";
+#else
+	std::string sep = ":";
+#endif
 
+	osgDB::setDataFilePathList("../Data" + sep + "../Data/Models" + sep + "../Data/Images" + sep + "../Data/Fonts");
+
+	// we don't need this on Linux since libs are usually
+	// installed in /usr/local/lib/osgPlugins or /usr/lib/osgPlugins.
+	// OSG can find itself the plugins.
+#ifdef _WIN32
+	osgDB::setLibraryFilePathList("../Bin");
+#endif
+
+    g_pObjectFactory->initialize();
 
     g_pBattlefield->create();
     g_pBattlefield->buildScene();

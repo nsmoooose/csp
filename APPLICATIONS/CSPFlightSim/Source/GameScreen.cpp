@@ -288,9 +288,9 @@ void GameScreen::OnJoystickButtonDown(int joynum, int butnum)
   if (butnum == 0 && missile_delay > 0.5)
   {
 
-      MissileObject * pMissile = (MissileObject * )g_pObjectFactory->createNamedObject("AMRAAM", "UNNAMED MISSILE");
+      MissileObject * pMissile = dynamic_cast<MissileObject *>(g_pObjectFactory->createNamedObject("AMRAAM", "UNNAMED MISSILE"));
 
-      pMissile->setOrientation( g_pPlayerObject->getOrientation());
+      pMissile->setOrientation( g_pPlayerObject->getqOrientation());
       pMissile->setGlobalPosition( g_pPlayerObject->getGlobalPosition() 
 		                         - 3.0 * ( g_pPlayerObject->getUpDirection() ) 
 								 - 8.0 * (  g_pPlayerObject->getDirection()) );

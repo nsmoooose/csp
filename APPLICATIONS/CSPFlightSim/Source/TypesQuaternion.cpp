@@ -406,7 +406,6 @@ StandardQuaternion StandardQuaternion::Squad (double fT, const StandardQuaternio
 }
 //----------------------------------------------------------------------------
 
-
 StandardQuaternion	StandardQuaternion::MakeQFromEulerAngles(double x, double y, double z)
 {
 	StandardQuaternion	q;

@@ -1,11 +1,6 @@
-#include "stdinc.h"
-
-#include <iostream>
-
 #include "BaseInput.h"
 #include "AirplaneObject.h"
-#include "BaseObject.h"
-#include "BaseController.h"
+#include "LogStream.h"
 #include "MessageQueue.h"
 #include "SimTime.h"
 #include "VirtualBattlefield.h"
@@ -177,9 +172,9 @@ void AirplaneObject::doMovement(double dt)
 
     m_Orientation.ToEulerAnglesZXY(m_heading, m_pitch, m_roll);
 
-    m_heading = RadiansToDegrees( m_heading );
-    m_pitch = RadiansToDegrees ( m_pitch );
-    m_roll = RadiansToDegrees( m_roll );
+    m_heading = osg::RadiansToDegrees( m_heading );
+    m_pitch = osg::RadiansToDegrees ( m_pitch );
+    m_roll = osg::RadiansToDegrees( m_roll );
 }
 
 void AirplaneObject::doSimplePhysics(double dt)

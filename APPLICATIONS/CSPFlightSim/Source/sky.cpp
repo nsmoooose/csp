@@ -11,9 +11,10 @@
 #include <osg/Group>
 #include <osg/Geometry>
 #include <osg/Light>
-#include <osgDB/ReadFile>
 #include <osg/Texture2D>
 #include <osg/TexEnv>
+
+#include <osgDB/ReadFile>
 
 using namespace osg;
 

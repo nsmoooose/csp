@@ -1,15 +1,9 @@
-#include "stdinc.h"
-
-#include <stdlib.h>
+#include <sstream>
 
 #include <osg/Billboard>
-#include <osg/Group>
-#include <osg/Geode>
+#include <osg/BlendFunc>
 #include <osg/Geometry>
 #include <osg/Texture2D>
-#include <osg/TexEnv>
-#include <osg/BlendFunc>
-#include <osg/AlphaFunc>
 
 #include <osgDB/ReadFile>
 
@@ -98,15 +92,15 @@ std::vector<Geometry*> MakeBaseTreeArray(unsigned short p_ustypeTreeNumber, std:
 
 	for (unsigned short i=0;i<p_ustypeTreeNumber;++i)
 	{
-		aTree.h = treeHeightFactor * 10.0;
-		aTree.w = treeWidthFactor  * 5.0;
+		aTree.h = treeHeightFactor * 8.0;
+		aTree.w = treeWidthFactor  * 8.0;
 		treesArray.push_back(makeTree( aTree));//, osgNew StateSet(*p_pstate[i % 3]) ));
 	}
 
 	return treesArray;
 }
 
-std::vector<Geometry *> g_treesBase(1);
+std::vector<Geometry *> g_treesBase;
 
 Node *makeTreesPatch( float xoff, float yoff, float spacing, float width, 
 					 float height, VirtualBattlefield * pBattlefield)
@@ -116,12 +110,21 @@ Node *makeTreesPatch( float xoff, float yoff, float spacing, float width,
 
 	std::vector<std::string> treefileName;
 
-	treefileName.push_back("Images/tree0.rgba");
-    treefileName.push_back("Images/tree1.gif");
+    treefileName.push_back("Images/tree0.rgba");
+
+	for (i=5;i<15;++i)
+	{
+	 std::ostringstream osStream;
+	 osStream << "Images/tree" << i << ".png";
+	 string a = osStream.str();
+     treefileName.push_back(osStream.str());
+	}
+    
+	treefileName.push_back("Images/tree1.gif");
 	treefileName.push_back("Images/tree2.gif");
 	treefileName.push_back("Images/tree3.gif");
     treefileName.push_back("Images/tree4.gif");
-
+    
 	unsigned short typeTreeNumber = treefileName.size();
 
 	std::vector<Texture2D*> tex;
@@ -160,7 +163,7 @@ Node *makeTreesPatch( float xoff, float yoff, float spacing, float width,
 	icnt = 10; //width/spacing;
 	jcnt = 10; //height/spacing;
 
-	if (!g_treesBase[0]) 
+	if (g_treesBase.empty()) 
 	{
 		g_treesBase = MakeBaseTreeArray(typeTreeNumber,state);
     }
@@ -168,11 +171,11 @@ Node *makeTreesPatch( float xoff, float yoff, float spacing, float width,
 	unsigned short count = 0;
 	float baseRadius = 64.0 + 32.0 * RandomNumber();
 
-	for (j=0;j<jcnt;++j)
+	unsigned short iState = static_cast<unsigned short>(RandomNumber() * typeTreeNumber);
 
+	for (j=0;j<jcnt;++j)
 	{
 		Billboard *bb = osgNew Billboard;
-		unsigned short indice;
 		//bb->setMode(osg::Billboard::POINT_ROT_EYE );
 		for (i=0;i<icnt;++i)
 		{
@@ -184,14 +187,13 @@ Node *makeTreesPatch( float xoff, float yoff, float spacing, float width,
 			x = fmod(x, 64000.0f);
 			y = fmod(y, 64000.0f);
 			Vec3 pos(x,y,z);
-			
-			indice = (2 * count) % typeTreeNumber;
+			unsigned short indice = (2 * count) % typeTreeNumber;
 			Geometry * aGSet = osgNew Geometry(*g_treesBase[indice]);
             bb->addDrawable( aGSet, pos );
 			++count;
 		}
 		group->addChild( bb );
 	}
-    group->setStateSet( state[static_cast<unsigned short>(RandomNumber() * typeTreeNumber)] );
+	group->setStateSet( state[iState] );
     return group;
 }

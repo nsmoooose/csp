@@ -38,8 +38,6 @@
 #include <stdio.h>
 #include <string.h>
 #include <errno.h>
-#include <unistd.h>
-
 
 #ifdef NATIVE_WIN32
 #  define STRICT			/* Strict typing, please */
@@ -50,10 +48,11 @@
 #  ifdef _MSC_VER
 #    include <io.h>
 #  endif /* _MSC_VER */
-#endif /* NATIVE_WIN32 */
+#else /* NATIVE_WIN32 */
+#  include <unistd.h>
+#endif
 
-
-std::string OSPath::basename(const string &path)
+std::string OSPath::basename(const std::string &path)
 {
 	std::string::size_type base;
 	base = path.rfind(DIR_SEPARATOR);
@@ -142,7 +141,7 @@ std::string OSPath::stringreplace(const std::string &path, char search, char rep
 	char *str = strdup(path.c_str());
 	char *idx = str;
 	for (; *idx; idx++) {
-		if (*idx == '\\') *idx = '/';
+		if (*idx == '/') *idx = '\\';
 	}
 	result = str;
 	free(str);

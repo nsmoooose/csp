@@ -71,17 +71,17 @@ Replay::~Replay() {
 
 bool Replay::operator()(SDL_Event& event) {
 	SDL_Event e;
-	bool result = SDL_PollEvent(&e) !=0;
+	bool result = SDL_PollEvent(&e) != 0;
 	if (e.type != SDL_QUIT && (e.type != SDL_KEYDOWN || e.key.keysym.sym != SDLK_ESCAPE)) {
 		float d2 = CSPSim::theSim->getElapsedTime();
 		if (d2 - m_EventTime > 2*m_Sampling) {
 			m_if.read(reinterpret_cast<char*>(&event),sizeof(SDL_Event));
 			m_if.read(reinterpret_cast<char*>(&m_EventTime),sizeof(float));
 		}
-	}
-	else 
+	} else {
 		event = e;
-	return true;
+	}
+	return result;
 }
 
 InputEvent::InputEvent() {
@@ -99,7 +99,7 @@ InputEvent::InputEvent() {
 			break;
 		}
 	}
-	catch(const exception& e) {
+	catch(const std::exception& e) {
 		std::cerr << "\nException caught in InputEvent::InputEvent(): " << e.what() << ".\n";
 		std::cerr << "Using play handle.\n" << std::endl;
 		m_Handle.reset(new Play);

@@ -61,6 +61,9 @@
 
  */
 
+
+const simdata::Enumeration ObjectModel::EffectItems("None SpecularHighlights");
+
 SIMDATA_REGISTER_INTERFACE(ObjectModel)
 
 
@@ -198,8 +201,6 @@ public:
 
 
 std::string g_ModelPath = "";
-
-const simdata::Enumeration ObjectModel::EffectItems("None SpecularHighlights");
 
 ObjectModel::ObjectModel(): simdata::Object() {
 	m_Axis0 = simdata::Vector3::XAXIS;

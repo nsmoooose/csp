@@ -88,7 +88,7 @@ MatrixTransform {
                   GL_TEXTURE_2D ON
                   Texture2D {
                     DataVariance STATIC
-                    file "RUNWAY.JPG"
+                    file "runway01.jpg"
                     wrap_s REPEAT
                     wrap_t REPEAT
                     wrap_r REPEAT

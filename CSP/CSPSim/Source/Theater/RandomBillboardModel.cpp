@@ -96,8 +96,8 @@ public:
 	END_SIMDATA_XML_INTERFACE
 
 	RectangularCurve(float width = 20.0f, float height = 50.0f):
-		m_Width(width != 0.0f ? abs(width) : 20.0f),
-		m_Height(height != 0.0f ? abs(height) : 50.0f) {
+		m_Width(width != 0.0f ? fabs(width) : 20.0f),
+		m_Height(height != 0.0f ? fabs(height) : 50.0f) {
 			if (width * height == 0.0f) {
 				CSP_LOG(APP, WARNING, "Rectangle: [" << width << "," << height << "corrected to 20x50]");  
 			}

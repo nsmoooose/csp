@@ -1,6 +1,32 @@
  Version 0.4.0 (in progress)
 ===========================
 
+2004-07-29: onsight
+  * Removed a couple obsolete files from the Makefile, and added InputEvent.
+
+  * Added missing std:: prefix in InputEvent.cpp.
+
+  * Fixed a compiler warning in RandomBillboardModel.
+
+  * Temporary hack to CSPSim/Tools/Terrain/*/Makefile to find SimData in
+    relative path.  These build files are in poor shape.
+
+  * Renamed Data/Models/Runway/RUNWAY.jpg to runway01.jpg.  The OSG model
+    loader was tripping on case sensitivity.
+
+  * Reordered the static constructor calls in ObjectModel.cpp.  There's an
+    ugly bug in the way that Enum<> and Enumeration bind as far as static
+    construction goes.  The Enumeration of an Enum<> must be created first,
+    but this isn't guaranteed for static constructors (as in a class static
+    Enumeration and the static ObjectInterface for importing Enum<> values
+    from XML (which is a common case).  This "fix" may break under Windows
+    (you'll see an assert in Enum.h if so).
+
+  * Added Terrain link on my local client.  Right now we die when the
+    terrain files aren't found without printing a helpful diagnostic
+    message.  You can track down the cause in the logs (below level 5),
+    but this isn't a great way to handle a common failure mode.
+
 2004-07-29: delta
   * Added a filter_value member in ObjectModel's interface.
 

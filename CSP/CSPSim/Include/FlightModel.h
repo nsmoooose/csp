@@ -28,9 +28,12 @@
 
 
 #include <SimData/InterfaceRegistry.h>
+#include <SimData/LUT.h>
 #include <SimData/Math.h>
 #include <SimData/Vector3.h>
 
+#include "Atmosphere.h"
+#include "CSPSim.h"
 
 /**
  * class FlightModel
@@ -57,25 +60,34 @@ public:
 		SIMDATA_XML("wing_chord", FlightModel::m_WingChord, true)
 		SIMDATA_XML("wing_area", FlightModel::m_WingArea, true)
 		SIMDATA_XML("stall_aoa", FlightModel::m_stallAOA, true)
+
 		SIMDATA_XML("cd0", FlightModel::m_CD0, true)
 		SIMDATA_XML("cd_a", FlightModel::m_CD_a, true)
 		SIMDATA_XML("cd_de", FlightModel::m_CD_de, true)
 		SIMDATA_XML("cd_db", FlightModel::m_CD_db, true)
+		SIMDATA_XML("cd_m_a", FlightModel::m_CD_m_a, false)
+
 		SIMDATA_XML("cl0", FlightModel::m_CL0, true)
 		SIMDATA_XML("cl_a", FlightModel::m_CL_a, true)
 		SIMDATA_XML("cl_adot", FlightModel::m_CL_adot, true)
 		SIMDATA_XML("cl_q", FlightModel::m_CL_q, true)
 		SIMDATA_XML("cl_de", FlightModel::m_CL_de, true)
+		SIMDATA_XML("cl_m_a", FlightModel::m_CL_m_a, false)
+
 		SIMDATA_XML("cm0", FlightModel::m_CM0, true)
 		SIMDATA_XML("cm_a", FlightModel::m_CM_a, true)
 		SIMDATA_XML("cm_adot", FlightModel::m_CM_adot, true)
 		SIMDATA_XML("cm_q", FlightModel::m_CM_q, true)
 		SIMDATA_XML("cm_de", FlightModel::m_CM_de, true)
+		SIMDATA_XML("delta_cm_de", FlightModel::m_Delta_CM_de,false)
+
 		SIMDATA_XML("cy_beta", FlightModel::m_CY_beta, true)
 		SIMDATA_XML("cy_p", FlightModel::m_CY_p, true)
 		SIMDATA_XML("cy_r", FlightModel::m_CY_r, true)
 		SIMDATA_XML("cy_da", FlightModel::m_CY_da, true)
 		SIMDATA_XML("cy_dr", FlightModel::m_CY_dr, true)
+		SIMDATA_XML("cy_m_a", FlightModel::m_CY_m_a, false)
+
 		SIMDATA_XML("ci_beta", FlightModel::m_CI_beta, true)
 		SIMDATA_XML("ci_p", FlightModel::m_CI_p, true)
 		SIMDATA_XML("ci_r", FlightModel::m_CI_r, true)
@@ -98,8 +110,11 @@ public:
 	                         double qBar) {
 		// prevent driving the model outside its range of validity
 		m_Alpha = simdata::clampTo(alpha,-0.8, 0.8);
+		m_Alpha_float = static_cast<float>(m_Alpha);
 		m_AlphaDot = alphaDot;
 		m_Beta = beta;
+		m_Beta_float = static_cast<float>(m_Beta);
+		m_AirSpeed = airspeed;
 		m_qBarS = m_HalfWingArea * qBar * airspeed * airspeed;
 		m_Inv2V = 0.5 / std::max(0.5, airspeed);
 	}
@@ -116,6 +131,8 @@ public:
 
 	inline void setKinetics(simdata::Vector3 const &angular_velocity_body, double height) {
 		m_AngularVelocityBody = angular_velocity_body;
+		const Atmosphere* atmosphere = CSPSim::theSim->getAtmosphere();
+		m_AirSpeedM = static_cast<float>(atmosphere->getMach(m_AirSpeed, height));
 		updateGroundEffect(height);
 	}
 
@@ -141,18 +158,22 @@ protected:
 	double m_CD_a;    // CDa is the drag curve slope
 	double m_CD_de;   // CDde is the drag due to elevator
 	double m_CD_db;   // CDdb is the drag due to the airbrake(s)
+	simdata::Table2 m_CD_m_a;
 	
 	double m_CL0;     // CLo is the reference lift at zero angle of attack
 	double m_CL_a;    // CLa is the lift curve slope
-	double m_CL_adot;
+	simdata::Table1 m_CL_adot;
 	double m_CL_q;
 	double m_CL_de;   // CLde is the lift due to elevator
+	simdata::Table2 m_CL_m_a; // lift curve vs (mach,aoa)
 	
 	double m_CM0;     // CMo is the pitch moment coefficient
 	double m_CM_a;    // CMa is the pitch moment coefficient due to angle of attack
 	double m_CM_adot;
 	double m_CM_q;    // CMq is the pitch moment coefficient due to pitch rate
 	double m_CM_de;   // CMde is the pitch coefficient due to elevator
+	simdata::Table2 m_CY_m_a;
+	simdata::Table1 m_Delta_CM_de;
 	
 	double m_CY_beta; // CLb - the dihedral effect
 	double m_CY_p;    // Clp - roll damping
@@ -198,11 +219,15 @@ protected:
 
 	// airstream parameters
 	double m_Alpha;
+	float m_Alpha_float;
 	double m_AlphaDot;
 	double m_Beta;
+	float m_Beta_float;
 	double m_qBarS;
 	double m_Inv2V;
 	double m_GE;
+	double m_AirSpeed;
+	float m_AirSpeedM;
 
 	// control surfaces
 	double m_Aileron;
@@ -212,7 +237,7 @@ protected:
 
 	// kinetics
 	simdata::Vector3 m_AngularVelocityBody;
-
+	
 };
 
 

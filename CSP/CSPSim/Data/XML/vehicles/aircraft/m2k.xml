@@ -10,7 +10,7 @@
 
     <!-- Mass/Inertial properties -->
     <!-- empty mass = 7600 kg -->
-    <Float name="mass">10000.0</Float>
+    <Float name="mass">11000.0</Float>
     <!-- these values come from a FS2k2 add-on -->
     <Matrix name="inertia">
     171554.0      0.0       0.0

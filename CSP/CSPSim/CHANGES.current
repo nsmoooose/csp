@@ -1,15 +1,24 @@
  Version 0.4.0 (in progress)
 ===========================
+2004-12-17: delta
+ * Updated FlightModel and m2k xml related files.
+ 
+==> ALL USERS: run RebuildData.py.
+ 
 2004-12-17: Lologramme
   * Add hangar
   
 2004-12-16: Lologramme
   * add control tower
 
-2004-12-13: Lologramme
-  * Replace Runway by New runway with taxi and roads
+2004-12-15: delta
+ * Lologramme checked in the runway for a new airbase.
+ 
+ * Added a new version of balkanMapElev.7-7.bmp to be used
+   with this new airbase (Data/Images).
+  
+ * Moved the aircraft to be on the runway at start up.
 
-=======
 2004-12-15: onsight
  * Fix m2k animations bound to different channels.  An driven rotation
    animation can only use a single input channel.  More complex animations,
@@ -27,6 +36,16 @@
 
 2004-12-14: onsight
  * Minor fix for the engine cutoff function under linux.
+ 
+2004-12-13: Lologramme
+  * Replace Runway by New runway with taxi and roads
+
+2004-12-14: delta
+ * Minor anti-warnings changes in SimCore/Battlefield/LocalBattlefield.cpp.
+ 
+ * Slighty flatten the joystick inputs.
+
+ * Other minor changes.
 
 2004-12-13: delta
  * Updated Data/XML/vehicles/aircraft/m2k/thrust.xml with more accurate

@@ -79,6 +79,7 @@ Vectord const &AircraftPhysicsModel::f(double x, Vectord &y) {
 		} else {
 			CSP_LOG(OBJECT, ERROR, "AircraftPhysicsModel: overflow in dynamics class '" << (*bd)->getClassName() << "'");
 			std::cout << "AircraftPhysicsModel: overflow in dynamics class '" << (*bd)->getClassName() << "'\n";
+			std::cout << "(f,m) = (" << force << ", " << moment <<")\n";
 		}
 		if ((*bd)->needsImpulse()) m_NeedsImpulse = true;
 	}

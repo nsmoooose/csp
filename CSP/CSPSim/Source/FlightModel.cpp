@@ -59,16 +59,22 @@ void FlightModel::postCreate() {
 	m_AspectRatio = m_WingSpan * m_WingSpan / m_WingArea;
 	m_CD_i = 1.0 / (0.9 * simdata::PI * m_AspectRatio);
 	m_HalfWingArea = 0.5 * m_WingArea;
+	m_AirSpeedM = 1.0f;
+	m_Alpha_float = 0.0f;
 }
 
 
 simdata::Vector3 FlightModel::calculateLiftVector() { 
 
-	m_CL = ((m_CL0) + 
-	        (m_CL_a * m_Alpha) + 
-	        (m_CL_q * m_AngularVelocityBody.x() + m_CL_adot * m_AlphaDot ) * m_WingChord * m_Inv2V + 
-	        (m_CL_de * m_Elevator)
-	       );
+	//m_CL = ((m_CL0) + 
+	//        (m_CL_a * m_Alpha) + 
+	//        (m_CL_q * m_AngularVelocityBody.x() + m_CL_adot * m_AlphaDot ) * m_WingChord * m_Inv2V + 
+	//        (m_CL_de * m_Elevator)
+	//       );
+
+	m_CL = m_CL_m_a[m_AirSpeedM][m_Alpha_float]
+	     + (m_CL_q * m_AngularVelocityBody.x() +  m_CL_adot[m_AirSpeedM] * m_AlphaDot) * m_WingChord * m_Inv2V
+	     +   m_CL_de * m_Elevator;
 
 	if (fabs(m_Alpha) > m_stallAOA) {
 		double c = fabs(m_Alpha) - m_stallAOA;
@@ -90,8 +96,13 @@ simdata::Vector3 FlightModel::calculateDragVector() {
 
 	double CL = m_CL - 0.04; //m_CL_md;
 
-	m_CD =  m_CD0 + \
-	        m_CD_de * fabs(m_Elevator) + \
+	//m_CD =  m_CD0 + \
+	//        m_CD_de * fabs(m_Elevator) + \
+	//        m_CD_db * fabs(m_Airbrake) + \
+	//	m_CD_i * CL * CL;
+
+	m_CD =  m_CD_m_a[m_AirSpeedM][m_Alpha_float]
+	     +  m_CD_de * fabs(m_Elevator) + \
 	        m_CD_db * fabs(m_Airbrake) + \
 		m_CD_i * CL * CL;
 
@@ -100,9 +111,9 @@ simdata::Vector3 FlightModel::calculateDragVector() {
 
 simdata::Vector3 FlightModel::calculateSideVector() {
 
-	m_CY = m_CY_beta * m_Beta + m_CY_dr * m_Rudder - m_CY_r * m_AngularVelocityBody.z();
+	m_CY = m_CY_m_a[m_AirSpeedM][m_Alpha_float]*m_Beta + m_CY_dr * m_Rudder - m_CY_r * m_AngularVelocityBody.z();
 
-	return simdata::Vector3(m_CY * cos(m_Beta), m_CY * sin(m_Beta), 0.0);
+	return simdata::Vector3(m_CY * cos(m_Beta), - m_CY * sin(m_Beta), 0.0);
 }
 
 
@@ -130,7 +141,7 @@ double FlightModel::calculatePitchMoment() const {
 	return ( (m_CM0) + 
 	         (m_CM_a * m_Alpha) +
 	         (m_CM_q * m_AngularVelocityBody.x() + m_CM_adot * m_AlphaDot) * m_WingChord * m_Inv2V +
-	         (m_CM_de * m_Elevator)
+	         (m_CM_de + m_Delta_CM_de[m_AirSpeedM]) * m_Elevator
 	       ) * m_qBarS * m_WingChord;
 }
 

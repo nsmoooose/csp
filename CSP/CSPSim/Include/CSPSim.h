@@ -55,8 +55,10 @@
 #include <SimData/DataManager.h>
 
 #include "Atmosphere.h"
+#include "InputEvent.h"
 
 #include <osg/ref_ptr>
+
 #include <SDL/SDL_joystick.h>
 
 #include <Producer/RenderSurface>
@@ -82,7 +84,6 @@ class NetworkMessenger;
 class NetworkNode;
 
 void fillerup(void *unused, unsigned char *stream, int len);
-
 
 /**
  * class CSPSim - The primary simulation engine for CSP.
@@ -206,6 +207,8 @@ private:
 	bool b_networkingFlag;
 	
 	osg::ref_ptr<Producer::RenderSurface> m_RenderSurface;
+
+	InputEvent m_InputEvent;
 };
 
 #endif // __CSPSIM_H__

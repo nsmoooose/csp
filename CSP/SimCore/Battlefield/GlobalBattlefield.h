@@ -186,7 +186,7 @@ private:
 		dispatch->registerHandler(this, &GlobalBattlefield::onRegisterUnit);
 	}
 
-	PlayerJoin::Ref makeJoin(const PeerId id) {
+	PlayerJoin::Ref makeJoin(const PeerId id, bool local) {
 		PlayerJoin::Ref join = new PlayerJoin();
 		join->setRoutingType(ROUTE_COMMAND);
 		join->setReliable();
@@ -197,29 +197,23 @@ private:
 		join->set_outgoing_bw(static_cast<int>(peer_info->outgoingBandwidth()));
 		join->set_incoming_bw(static_cast<int>(peer_info->incomingBandwidth()));
 		join->set_port(peer_info->getNode().getPort());
-		// default to the external ip (overridden in announceJoin)
-		join->set_ip_addr(data.external_ip_addr);
+		join->set_ip_addr(local ? data.internal_ip_addr : data.external_ip_addr);
 		return join;
 	}
 
 	void announceJoin(const PeerId id) {
-		//ClientData &new_client_data = m_ClientData[id];
-		PlayerJoin::Ref join = makeJoin(id);
+		ClientData &new_client_data = m_ClientData[id];
+		PlayerJoin::Ref local_join = makeJoin(id, true);
+		PlayerJoin::Ref remote_join = makeJoin(id, false);
 		for (ClientDataMap::const_iterator iter = m_ClientData.begin(); iter != m_ClientData.end(); ++iter) {
 			// don't announce to ourself
 			if (iter->first == id) continue;
 
 			// if the external ips match, these hosts are probably on a LAN and should communicate via their
 			// internal interfaces; otherwise use the external ip.
-			/*  XXX broken since join is shared for all outbound messages
-			if (iter->second.external_ip_addr == new_client_data.external_ip_addr) {
-				join->set_ip_addr(new_client_data.internal_ip_addr);
-			} else {
-				join->set_ip_addr(new_client_data.external_ip_addr);
-			}
-			*/
-
-			m_NetworkServer->queue()->queueMessage(join, iter->first);
+			PlayerJoin::Ref join;
+			bool local = (iter->second.external_ip_addr == new_client_data.external_ip_addr);
+			m_NetworkServer->queue()->queueMessage(local ? local_join : remote_join, iter->first);
 		}
 	}
 
@@ -234,12 +228,14 @@ private:
 	}
 
 
-	// FIXME sends one message for each existing player.
+	// FIXME sends one message for each existing player (should be batched into one, or a few, messages).
 	void announceExistingPlayers(const PeerId new_id) {
+		ClientData &new_client_data = m_ClientData[new_id];
 		for (ClientDataMap::const_iterator iter = m_ClientData.begin(); iter != m_ClientData.end(); ++iter) {
 			const PeerId id = iter->first;
 			if (id == new_id) continue;
-			PlayerJoin::Ref join = makeJoin(id);
+			bool local = (iter->second.external_ip_addr == new_client_data.external_ip_addr);
+			PlayerJoin::Ref join = makeJoin(id, local);
 			m_NetworkServer->queue()->queueMessage(join, new_id);
 		}
 	}
@@ -258,25 +254,17 @@ private:
 
 		PeerId id = msg->getSource();
 		simnet::PeerInfo const *peer_info = m_NetworkServer->getPeer(id);
+
 		uint32 inbound_ip_addr = peer_info->getNode().getIp();
 		uint32 internal_ip_addr = msg->has_internal_ip_addr() ? msg->internal_ip_addr() : inbound_ip_addr;
-		uint32 external_ip_addr = msg->has_external_ip_addr() ? msg->external_ip_addr() : inbound_ip_addr;
 
-		ost::InetAddress decode_addr;
-		CSP_LOG(BATTLEFIELD, INFO, "join request from " << (decode_addr = inbound_ip_addr).getHostname());
-		CSP_LOG(BATTLEFIELD, INFO, "      internal ip " << (decode_addr = internal_ip_addr).getHostname());
-		CSP_LOG(BATTLEFIELD, INFO, "      external ip " << (decode_addr = external_ip_addr).getHostname());
+		CSP_LOG(BATTLEFIELD, INFO, "join request from " << peer_info->getNode());
+		CSP_LOG(BATTLEFIELD, INFO, "      internal ip " << simnet::NetworkNode::ipToString(internal_ip_addr));
 
 		// basic sanity checking on ip addresses
-		if (simnet::NetworkNode::isRoutable(internal_ip_addr) && (internal_ip_addr != external_ip_addr)) {
+		if (simnet::NetworkNode::isRoutable(internal_ip_addr) && (internal_ip_addr != inbound_ip_addr)) {
 			CSP_LOG(BATTLEFIELD, ERROR, "join rejected: internal ip routable, but does not match external ip");
 			response->set_details("internal ip routable, but does not match external ip");
-			response.send(queue);
-			return;
-		}
-		if (simnet::NetworkNode::isRoutable(inbound_ip_addr) && (external_ip_addr != inbound_ip_addr)) {
-			CSP_LOG(BATTLEFIELD, ERROR, "join rejected: inbound ip routable, but does not match external ip");
-			response->set_details("inbound ip is routable, but does not match external ip");
 			response.send(queue);
 			return;
 		}
@@ -286,6 +274,18 @@ private:
 			response.send(queue);
 			return;
 		}
+		if (simnet::NetworkNode::isRoutable(inbound_ip_addr) && (!m_NetworkServer->getExternalNode().isRoutable())) {
+			CSP_LOG(BATTLEFIELD, ERROR, "join rejected: inbound ip routable, but server is not configured to accept remote connections (no external ip set).");
+			response->set_details("server not configured to accept remote connections");
+			response.send(queue);
+			return;
+		}
+
+		// the correct "external" ip for remote clients is the ip the packets come from.  for clients
+		// on the same lan, use the server's "external" ip address.  this simplifies the configuration,
+		// since only the server needs to specify an external ip address; the clients can just bind to
+		// their local interfaces and the server will decide which ip to use when introducing two peers.
+		uint32 external_ip_addr = simnet::NetworkNode::isRoutable(inbound_ip_addr) ? inbound_ip_addr : m_NetworkServer->getExternalNode().getIp();
 
 		ClientData &data = m_ClientData[id];
 		response->set_success(true);

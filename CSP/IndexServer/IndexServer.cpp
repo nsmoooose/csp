@@ -42,7 +42,9 @@ IndexServer::~IndexServer() {
 
 void IndexServer::initPrimaryInterface() {
 	assert(m_NetworkServer.isNull());
-	const std::string server_interface = g_Config.getString("Network", "Bind", "127.0.0.1:4999", true);
+	simnet::NetworkNode default_node;
+	const std::string server_interface = g_Config.getString("Network", "Bind", default_node.getIpString() + ":3160", true);
+	const std::string external_ip = g_Config.getString("Network", "ExternalIp", "", false);
 	const std::string::size_type colon = server_interface.find(':');
 	std::string address;
 	simnet::Port port = 0;
@@ -55,11 +57,32 @@ void IndexServer::initPrimaryInterface() {
 		std::cerr << "Should be of the form www.xxx.yyy.zzz:port\n";
 		::exit(1);
 	}
-	CSP_LOG(APP, INFO, "binding to interface " << address << ":" << port);
-	simnet::NetworkNode local(address, port);
+	simnet::NetworkNode local_node(address, port);
+	CSP_LOG(APP, INFO, "binding to interface " << local_node);
+
 	const int incoming_bw = g_Config.getInt("Network", "IncomingBandwidth", 12000, true);
 	const int outgoing_bw = g_Config.getInt("Network", "OutgoingBandwidth", 12000, true);
-	m_NetworkServer = new simnet::Server(local, incoming_bw, outgoing_bw);
+	m_NetworkServer = new simnet::Server(local_node, incoming_bw, outgoing_bw);
+
+	if (external_ip.empty()) {
+		if (!local_node.isRoutable()) {
+			CSP_LOG(APP, WARNING, "no external ip address specified; accepting only local (LAN) connections");
+		}
+	} else {
+		if (!local_node.isRoutable()) {
+			simnet::NetworkNode external_node(external_ip, port);
+			CSP_LOG(APP, INFO, "external interface is " << external_node);
+			if (external_node.isRoutable()) {
+				m_NetworkServer->setExternalNode(external_node);
+			} else {
+				CSP_LOG(APP, ERROR, "external interface is not routable; ignoring ExternalIp and accepting only local (LAN) connections");
+			}
+		} else {
+			if (external_ip != address) {
+				CSP_LOG(APP, ERROR, "binding to a routable interface that does not match the specified external ip (" << external_ip << "); ignoring ExternalIp");
+			}
+		}
+	}
 }
 
 void IndexServer::initialize() {

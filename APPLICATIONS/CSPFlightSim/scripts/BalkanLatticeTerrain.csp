@@ -1,24 +1,19 @@
 ADD TERRAIN balkanLatticeTerrain
 
 SET balkanLatticeTerrain LATTICE TRUE
-SET balkanLatticeTerrain DETAILTHRESHOLD 5.0
-SET balkanLatticeTerrain DETAILTEXTUREFILE STONE4.bmp
-SET balkanLatticeTerrain LATTICEBASENAME BalkanMap
-SET balkanLatticeTerrain LATTICEELEVEXT PNG
-SET balkanLatticeTerrain LATTICETEXEXT BMP
+SET balkanLatticeTerrain DETAILTHRESHOLD 8
+SET balkanLatticeTerrain DETAILTEXTUREFILE Stone4.bmp
+SET balkanLatticeTerrain LATTICEBASENAME balkanMap
+SET balkanLatticeTerrain LATTICEELEVEXT bmp
+SET balkanLatticeTerrain LATTICETEXEXT bmp
 SET balkanLatticeTerrain LATTICEWIDTH 16
 SET balkanLatticeTerrain LATTICEHEIGHT 16
 SET balkanLatticeTerrain VERTEXHEIGHT 0.38
 SET balkanLatticeTerrain VERTEXSPACING 250
-SET balkanLatticeTerrain MAXTRIANGLES 1000000
-SET balkanLatticeTerrain TEXTUREFACTORY TRUE
-
+SET balkanLatticeTerrain MAXTRIANGLES 60000
 SET balkanLatticeTerrain DYNAMICTEXTURES FALSE
-REM SET balkanLatticeTerrain DYNAMICTEXTURES TRUE
-
 SET balkanLatticeTerrain TEXTURECOMPRESSION TRUE
 SET balkanLatticeTerrain PRELOADTEXTURES TRUE
-REM SET balkanLatticeTerrain PRELOADTEXTURES FALSE
 
 REM ACTIVE properly should be set last.
 SET balkanLatticeTerrain ACTIVE TRUE

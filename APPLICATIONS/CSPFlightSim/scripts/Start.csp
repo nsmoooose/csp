@@ -4,7 +4,7 @@ REM Startup script for CSPFlightSim
 REM Load Flight Models
 Run AeroF4.csp
 Run AeroM2k.csp
-RUN AeroM3c.csp
+Run AeroM3c.csp
 
 REM Load Terrain
 REM RUN BalkanTerrain.csp
@@ -15,10 +15,10 @@ REM Load models
 Run AddModels.csp
 
 REM Load Planes
-REM Run AddPlanes.csp
+Run AddPlanes.csp
 
 REM Load Tanks
-REM Run AddTanks.csp
+Run AddTanks.csp
 
 REM Set player
 Run SetPlayer.csp

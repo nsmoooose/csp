@@ -2,6 +2,8 @@ REM F4 aerodynamics model
 REM Reference UIUC Model from FlightGear
 
 REM Units currently in English need to convert
+REM 1 slug = 14.60567 kg
+REM 1 feet = 0.3048 m
 
 REM Cruise Conditions
 REM altitude 35000 ft
@@ -12,9 +14,9 @@ REM Dyanmic_pressure   283.2 lb/ft^2
 Add Aero F4_aero
 
 REM Wing geometry
-set F4_aero WingSpan     38.7
-Set F4_aero WingChord    16
-Set F4_aero WingArea     530
+set F4_aero WingSpan     27.5
+Set F4_aero WingChord    10.8
+Set F4_aero WingArea     260
 
 REM Control surfaces min/max angles
 Set F4_aero demax        +20
@@ -25,52 +27,51 @@ Set F4_aero drmax        +20
 Set F4_aero drmin        -20
 
 REM Mass/Inertial properties
-Set F4_aero Mass         39000
-Set F4_aero I_XX         25000
-Set F4_aero I_YY         122200
-Set F4_aero I_ZZ         139800
-Set F4_aero I_XZ         2200
+Set F4_aero Mass         546
+Set F4_aero I_XX         25900
+Set F4_aero I_YY         8090
+Set F4_aero I_ZZ         29200
+Set F4_aero I_XZ         1300
 
 REM Engine Thrust
-Set F4_aero ThrustMax    35800
+Set F4_aero ThrustMax    8000
 
 REM Drag Parameters
-Set F4_aero CD0          0.0205
+Set F4_aero CD0          0.03
 Set F4_aero CD_a         0.3
-Set F4_aero CD_de        -0.1
+Set F4_aero CD_de        0
 
 REM Lift Parameters
-Set F4_aero CL0          0.1
-Set F4_aero CL_a         3.75
-Set F4_aero CL_adot      0.86
-Set F4_aero CL_q         1.8
-Set F4_aero CL_de        0.4
+Set F4_aero CL0          0.28
+Set F4_aero CL_a         3.45
+Set F4_aero CL_adot      0.72
+Set F4_aero CL_q         0
+Set F4_aero CL_de        0.36
 
 REM Pitch Moment Parameters
-Set F4_aero CM0          0.025
-Set F4_aero CM_a         -0.4
-Set F4_aero CM_adot      -1.3
-Set F4_aero CM_q         -2.7
-Set F4_aero CM_de        -0.58
+Set F4_aero CM0          0
+Set F4_aero CM_a         -0.38
+Set F4_aero CM_adot      -1.1
+Set F4_aero CM_q         -3.6
+Set F4_aero CM_de        0.5
 
 REM Side Force Parameters
-Set F4_aero CY_Beta      -0.68
+Set F4_aero CY_Beta      -0.98
 Set F4_aero CY_p          0
 Set F4_aero CY_r          0
-Set F4_aero CY_da         0.016
-Set F4_aero CY_dr         0.095
+Set F4_aero CY_da         0
+Set F4_aero CY_dr         0.17
 
 REM Roll moment parameters
-Set F4_aero CI_beta       -0.08
-Set F4_aero CI_p          -0.24
-Set F4_aero CI_r           0.07
-Set F4_aero CI_da         -0.042
-Set F4_aero CI_dr          0.006
+Set F4_aero CI_beta       -0.12
+Set F4_aero CI_p          -0.26
+Set F4_aero CI_r           0.14
+Set F4_aero CI_da          0.08
+Set F4_aero CI_dr          0.105
 
 Rem Yaw Moment Parameters
-Set F4_aero CI_beta       -0.08
-Set F4_aero CI_p          -0.24
-Set F4_aero CI_r           0.07
-Set F4_aero CI_da         -0.042
-Set F4_aero CI_dr          0.006
-
+Set F4_aero Cn_beta       0.25
+Set F4_aero Cn_p          0.022
+Set F4_aero Cn_r          -0.35
+Set F4_aero Cn_da         0.06
+Set F4_aero Cn_dr         0.032

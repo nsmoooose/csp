@@ -40,7 +40,10 @@ public:
 	~CFractal();
 	
 	void DiamondSquare(float fFactorD);
+	void DiamondSquareAlt(float fFactorD);
 	void SmoothStep(float fSmoothFactor);
+	void SmoothStepAlternative(float fSmoothFactor);
+	float MiddleRandomPoint(float a, float b, float c, float d, float rnd);
 
 	float *m_pFractMap;
 };

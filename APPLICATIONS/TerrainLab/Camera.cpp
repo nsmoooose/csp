@@ -27,7 +27,7 @@
 CCamera::CCamera()
 {
 	m_fPosX = 2500;
-	m_fPosY = 0;
+	m_fPosY = 500;
 	m_fPosZ = 1500;
 	m_fRotX = 0;
 	m_fRotY = 0;

@@ -44,16 +44,18 @@ public:
 
 	char	m_sMeshFileName[MAX_STR_LENGTH];
 	int		m_iMeshWidth;
+	int		m_iMeshWidthOld;
 	int		m_iMeshGridDistance;
 	int		m_iMeshGridDistanceBasis;
 	float  *m_pHeightmap;							// pointer will be set by WinMain
-	float  **m_paNormals;
-	float  **m_paVertices;
+	float  *m_paNormals;
+	float  *m_paVertices;
+	float  *m_paVertexColours;
 	float	m_fDeltaZ;
 	BOOL	m_bStartupAction;
 	BOOL	m_bMapType;
 	BOOL	m_bActivateVSync;
-	BOOL	m_bLight;
+	BOOL	m_bRenderMode;
 	float	m_fFactorD;
 	float	m_fIterations;
 	int		m_iIterationLevel;

@@ -21,8 +21,12 @@
 #if !defined(TERRAIN_H)
 #define TERRAIN_H
 
+#include <gl/gl.h>														// Header File For The OpenGL32 Library
+#include <gl/glu.h>														// Header File For The GLu32 Library
+
 #include "BaseCode.h"
 #include "TerrainData.h"
+#include "OGLText.h"
 
 class CTerrain
 {
@@ -35,7 +39,10 @@ public:
 	void LoadRAWData(char *filename);
 	void Iterate(float fFactorD);
 	void BuildVertexArray(int MeshWidth);
-	void CalcTriangleNormal(float afNormal[], float afVec1[], float afVec2[], float afVec3[]);
+	void CalcTriangleNormal(float *afNormal, float afVec1[], float afVec2[], float afVec3[]);
+	void RenderSquares();
+	void RenderTriangles();
+	void RenderShaded();
 };
 
 #endif

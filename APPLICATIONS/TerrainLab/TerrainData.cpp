@@ -25,14 +25,14 @@ CTerrainData::CTerrainData()
 	m_pHeightmap = 0;
 	m_pLoadedMesh = 0;
 	m_paNormals = 0;
-//	m_paNormalsR = 0;
 	m_paVertices = 0;
+	m_paVertexColours = 0;
 	m_iIterationLevel = 0;
 	m_fFactorD = 1.0;
 	m_aFLP[0].fFactorD = 1.0;
 	m_BenchRes.iFPSmax = 0;
 	m_BenchRes.iFPSmin = 0;
-	m_bLight = FALSE;
+	m_bRenderMode = RENDER_MODE_TRIANGLES;
 	m_faLightPos[0] = 6000.0f;
 	m_faLightPos[1] = 6000.0f;
 	m_faLightPos[2] = 8000.0f;

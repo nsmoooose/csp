@@ -140,11 +140,24 @@ void Update (DWORD milliseconds)								// Perform Motion Updates Here
 		cSwapInterval.SetInterval(m_pTerrainData->m_bActivateVSync);
 	} 
 
-	if (g_keys->keyDown ['L'] == TRUE)
+	if (g_keys->keyDown ['S'] == TRUE)
 	{
-		m_pTerrainData->m_bLight = 1-m_pTerrainData->m_bLight;
-		g_keys->keyDown ['L'] = FALSE;
+		m_pTerrainData->m_bRenderMode = m_pTerrainData->m_bRenderMode = RENDER_MODE_SHADED;
+		g_keys->keyDown ['S'] = FALSE;
 	} 
+
+	if (g_keys->keyDown ['W'] == TRUE)
+	{
+		m_pTerrainData->m_bRenderMode = m_pTerrainData->m_bRenderMode = RENDER_MODE_TRIANGLES;
+		g_keys->keyDown ['W'] = FALSE;
+	} 
+
+	if (g_keys->keyDown ['S'] == TRUE)
+	{
+		m_pTerrainData->m_bRenderMode = m_pTerrainData->m_bRenderMode = RENDER_MODE_SQUARES;
+		g_keys->keyDown ['S'] = FALSE;
+	} 
+
 
 	if (g_keys->keyDown [VK_F1] == TRUE)
 	{
@@ -202,10 +215,21 @@ void UpdateCamera(void)
 
 void Draw (void)
 {
-	if(iMode == MODE_FRACTAL)	DrawFractalMesh();
+	switch(m_pTerrainData->m_bRenderMode)
+	{
+//	case RENDER_MODE_SQUARES:
+//		m_pTerrain->RenderSquares();
+		break;
+	case RENDER_MODE_TRIANGLES:
+		m_pTerrain->RenderTriangles();
+		break;
+	case RENDER_MODE_SHADED:
+		m_pTerrain->RenderShaded();
+		break;
+	}
 }
 
-void DrawFractalMesh(void)
+/*void DrawFractalMesh(void)
 {
 	short x, y, gd;
 	int tricount = 0, vertcount = 0;
@@ -316,7 +340,7 @@ void DrawFractalMesh(void)
 
 	glFlush ();													// Flush The GL Rendering Pipeline
 }
-
+*/
 void CalculateFPS(DWORD milliseconds)
 {
 	if(milliseconds > 0)
@@ -377,6 +401,15 @@ void ProcessFractKeys(DWORD milliseconds)
 		m_pTerrain->BuildVertexArray(m_pTerrainData->m_iMeshWidth);
 		g_keys->keyDown [VK_MULTIPLY] = FALSE;
 	}
+
+	if (g_keys->keyDown [VK_DIVIDE] == TRUE && m_pTerrainData->m_iIterationLevel > 0)
+	{
+		// Do the smooth step
+		Fractal.SmoothStepAlternative(0.1f);
+		m_pTerrain->BuildVertexArray(m_pTerrainData->m_iMeshWidth);
+		g_keys->keyDown [VK_DIVIDE] = FALSE;
+	}
+
 
 	if (g_keys->keyDown [VK_NUMPAD8] == TRUE)
 	{

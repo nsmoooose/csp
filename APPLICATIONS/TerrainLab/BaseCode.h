@@ -33,6 +33,10 @@
 #define MODE_FRACTAL			1
 #define MODE_QUAD_MAP			2
 
+#define RENDER_MODE_SQUARES		1
+#define RENDER_MODE_TRIANGLES	2
+#define RENDER_MODE_SHADED		3
+
 
 #include <windows.h>								// Header File For Windows
 

@@ -290,7 +290,8 @@ public:
 	 *  in seconds.  This value may change quickly for the first few seconds
 	 *  after connecting to the server, but will eventually settle to a stable
 	 *  offset.  This assumes that the client and server times progress at
-	 *  very nearly the same rate.
+	 *  very nearly the same rate.  Positive offsets mean that the server time
+	 *  is ahead of the local system time.
 	 */
 	double getServerTimeOffset() const;
 };

@@ -248,7 +248,7 @@ void Client::disconnectPeer(PeerId id) {
 double Client::getServerTimeOffset() const {
 	if (!m_Connected) return 0.0;
 	const PeerInfo *info = getPeer(NetworkInterface::ServerId);
-	return (info == 0) ? 0.0 : info->getTimeSkew() * 0.001;
+	return (info == 0) ? 0.0 : (-0.001 * info->getTimeSkew());
 }
 
 void Client::setExternalNode(NetworkNode const &external_node) {

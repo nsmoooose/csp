@@ -71,6 +71,10 @@ TaggedRecord::Ref RecordCodec::decode(int local_id, simdata::uint8 const *buffer
 		record->serialize(m_TagReader);
 	} catch (simdata::DataUnderflow const &/*err*/) {
 		SIMNET_LOG(MESSAGE, ERROR, "buffer underflow decoding message");
+		// TODO need to modify tagged record serialization so that compound blocks
+		// are prefixed with their length (instead of start/end tags).  this will
+		// allow the deserializer to skip unknown tags at the end of each compound
+		// block so that new fields remain backwards compatible.
 		return 0;
 	}
 	return record;

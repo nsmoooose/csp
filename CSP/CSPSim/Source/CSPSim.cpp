@@ -138,8 +138,8 @@ CSPSim::CSPSim():
 	int level = g_Config.getInt("Debug", "LoggingLevel", 0, true);
 	csplog().setLogCategory(CSP_ALL);
 	csplog().setLogPriority(level);
-        std::string logfile = g_Config.getString("Debug", "LogFile", "CSPSim.log", true);
-        csplog().setOutput(logfile);
+	std::string logfile = g_Config.getString("Debug", "LogFile", "CSPSim.log", true);
+	csplog().setOutput(logfile);
 
 	CSP_LOG(APP, INFO, "Constructing CSPSim Object...");
 
@@ -366,6 +366,8 @@ void CSPSim::init()
 
 		// create the networking layer
 		if (g_Config.getBool("Networking", "UseNetworking", false, true)) {
+			std::string netlogfile = g_Config.getString("Debug", "NetLogFile", "SimNet.log", true);
+			simnet::netlog().setOutput(netlogfile);
 			simnet::netlog().setLogPriority(simdata::LOG_INFO);
 			std::string default_ip = simnet::NetworkNode().getIpString();
 			std::string local_address = g_Config.getString("Networking", "LocalIp", default_ip, true);

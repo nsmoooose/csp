@@ -65,6 +65,7 @@ class RemoteController: public System {
 	DataChannel<simdata::Vector3>::CRef b_Position;
 	DataChannel<simdata::Vector3>::CRef b_Velocity;
 	DataChannel<simdata::Vector3>::CRef b_AngularVelocity;
+	DataChannel<simdata::Vector3>::CRef b_AccelerationBody;
 	DataChannel<simdata::Quat>::CRef b_Attitude;
 	RemoteAnimationUpdate m_GearExtension;
 	RemoteAnimationUpdate m_AileronDeflection;

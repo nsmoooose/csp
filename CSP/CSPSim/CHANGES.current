@@ -1,9 +1,21 @@
  Version 0.4.0 (in progress)
 ===========================
+2005-01-01: onsight
+ * Fixed a sign error on the server time offset that made it impossible
+   to correct significant clock skew between peers.  Also simplified the
+   (broken) timestamp logic for object updates, under the assumption that
+   the clock skew correction will do the right thing.  Shouldn't be any
+   worse that before at least.
+
+ * Added update throttling based on acceleration.  Still experimental,
+   and in need of tuning.
+
+ * Added a config variable to set the logfile for network messages, as
+   opposed to stderr.
 
 2004-12-26: delta
  * Linked the release vesrion against pthreadVC1.lib.
- 
+
  * Removed 0SG096 tag in the source files.
 
 2004-12-22: onsight

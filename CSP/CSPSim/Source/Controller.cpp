@@ -48,6 +48,7 @@ void RemoteController::importChannels(Bus *bus) {
 	b_Velocity = bus->getChannel(bus::Kinetics::Velocity);
 	b_AngularVelocity = bus->getChannel(bus::Kinetics::AngularVelocity);
 	b_Attitude = bus->getChannel(bus::Kinetics::Attitude);
+	b_AccelerationBody = bus->getChannel(bus::Kinetics::AccelerationBody);
 	m_GearExtension.bind(bus->getChannel("LandingGear.GearExtended"));
 	m_AileronDeflection.bind(bus->getChannel("ControlSurfaces.AileronDeflection"));
 	m_ElevatorDeflection.bind(bus->getChannel("ControlSurfaces.ElevatorDeflection"));
@@ -97,12 +98,62 @@ simdata::Ref<simnet::NetworkMessage> RemoteController::getUpdate(simcore::TimeSt
 	// based on expected error.  For example, there is no need to send fast updates for
 	// vehicles moving at nearly constant velocity.  This optimization needs further
 	// investigation.
+	// ^^^^^
+	// Note: a rudementary form of error estimation is implemented below.  This approach
+	// does not attempt to estimate the actual error on each host, but instead uses
+	// linear acceleration and angular velocity to obtain a rough upper bound on the
+	// error and throttle updates accordingly.  This is significantly simpler and less
+	// CPU intensive than maintaining per-host error budgets, and potentially just as
+	// effective.
 
 	interval = 0; // silence warnings for now
 
 	// occasionally force updates even when nothing has changed, in case packets were
 	// dropped and we are in an inconsistent state.
 	const bool force = ((++m_UpdateDelay & 15) == 1);
+
+	// XXX test to reduce the update rate at low acceleration / rotation rates.  the values and
+	// formulas here are ad-hoc and require tuning.  the lower bound of the clamp forces the
+	// update rate to be at least 1/5 the nominal update rate for this detail level.  the rate
+	// increases toward the nominal rate as the linear acceleration and/or rotation rate increase.
+	// with the current parameters, the rate quickly saturates at the nominal update rate.  the
+	// maximum error at which we skip packets depends exponentially on the detail level (ie
+	// linearly with separation), so that lower detail levels will skip packets at significantly
+	// higher acceleration/rotation rates.  as it stands this optimization will be most useful
+	// for large numbers of AI (mostly ground) vehicles moving at constant speed, however with
+	// proper tweaking it may prove more widely beneficial.
+#define CSP_ERROR_THROTTLING  // experimental
+#ifdef CSP_ERROR_THROTTLING
+	double acceleration_error = b_AccelerationBody->value().length2();
+	double rotation_error = b_AngularVelocity->value().length2();
+	double error = simdata::clampTo(sqrt(acceleration_error + 350 * rotation_error) * (1 << detail) * 0.001, 0.2, 1.0);
+	int skip_count = static_cast<int>(1.0 / error + 0.5);
+#else
+	int skip_count = 1;
+#endif
+
+	//if (m_UpdateDelay % 20 == 0) {
+	//	CSP_LOG(APP, ERROR, "skip: " << acceleration_error << " " << rotation_error << " " << skip_count);
+	//}
+
+	bool update_elevator = false;
+	bool update_aileron = false;
+	bool update_rudder = false;
+	bool update_airbrake = false;
+
+	if (detail > 6) {
+		update_elevator = (m_ElevatorDeflection.update() || force);
+		update_aileron = (m_AileronDeflection.update() || force);
+		update_rudder = (m_RudderDeflection.update() || force);
+		update_airbrake = (m_AirbrakeDeflection.update() || force);
+	}
+
+	bool has_updates = update_elevator || update_aileron || update_rudder || update_airbrake;
+
+	// skip packets only if the error is low _and_ the animated control surfaces are stationary.
+	if ((m_UpdateDelay % skip_count > 0) && !has_updates) {
+		return 0;
+	}
 
 	ObjectUpdate::Ref update = new ObjectUpdate();
 	update->set_timestamp(current_timestamp);
@@ -122,17 +173,17 @@ simdata::Ref<simnet::NetworkMessage> RemoteController::getUpdate(simcore::TimeSt
 			update->set_gear_up(gear_up);
 		}
 	}
-	if (detail > 7) {
-		if (m_ElevatorDeflection.update() || force) {
+	if (detail > 6) {
+		if (update_elevator) {
 			update->set_elevator_deflection(m_ElevatorDeflection.value());
 		}
-		if (m_AileronDeflection.update() || force) {
+		if (update_aileron) {
 			update->set_aileron_deflection(m_AileronDeflection.value());
 		}
-		if (m_RudderDeflection.update() || force) {
+		if (update_rudder) {
 			update->set_rudder_deflection(m_RudderDeflection.value());
 		}
-		if (m_AirbrakeDeflection.update() || force) {
+		if (update_airbrake) {
 			update->set_airbrake_deflection(m_AirbrakeDeflection.value());
 		}
 	}
@@ -179,26 +230,55 @@ void LocalController::importChannels(Bus *bus) {
 }
 
 bool LocalController::sequentialUpdate(simcore::TimeStamp stamp, simcore::TimeStamp now, simdata::SimTime &dt) {
+#if 0
 	static double hack_offset = 0.0;
+
+	//-----------------
+	std::cerr << "update " << stamp << " " << m_LastStamp << " i=" << simcore::timeStampDelta(stamp, m_LastStamp) << " o=" << simcore::timeStampDelta(now, stamp) << " h=" << hack_offset << "\n";
+	//-----------------
+#endif
+
 	if (m_LastStamp != 0) {
 		simdata::SimTime sequence = simcore::timeStampDelta(stamp, m_LastStamp);
-		if (sequence <= 0) return false;
+		if (sequence <= 0) {
+			static int XXX = 0; if (++XXX % 10 == 0) std::cout << "dropped 10 stale updates (" << stamp << ", " << m_LastStamp << ")\n";
+			return false;
+		}
 	}
+
+	dt = simcore::timeStampDelta(now, stamp);
+
+	if (std::abs(dt) > 0.200) {
+		static int XXX = 0;
+		if (++XXX % 5 == 0) std::cout << "WARNING: large update skew (" << (dt * 1e+3) << " ms)\n";
+	}
+
+#if 0
 	dt = simcore::timeStampDelta(now, stamp) + hack_offset;
 	// if dt < -200 ms the clocks are badly skewed.  may need a recovery mode
 	// note that we need to allow negative time differences, since "now"
 	// corresponds to the start of this message processing cycle rather than
 	// the current time.
+	// XXX hack
+	if (dt < -30) {
+		hack_offset += -dt;
+		std::cout << "huge hack offset correction: " << hack_offset << " (" << dt << ")\n";
+		dt = 0.0;
+		m_LastStamp = stamp;
+		return true;
+	}
+	// XXX ^^^ hack
 	if (dt < -0.200) {
 		// XXX hack
 		hack_offset += 0.025;  // XXX temporary bandaid for clock skew problems
-		std::cout << "hack offset now " << hack_offset << "\n";
+		std::cout << "hack offset now " << hack_offset << " (" << dt << ")\n";
 		dt = 0.0;
 		m_LastStamp = stamp;
 		return true;
 		// XXX ^^^ hack
 		return false;
 	}
+#endif
 	m_LastStamp = stamp;
 	return true;
 }

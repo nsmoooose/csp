@@ -27,6 +27,7 @@
 
 #include <SimData/Ref.h>
 #include <SimData/ScopedPointer.h>
+#include <SimData/Timing.h>
 
 #include <SimCore/Battlefield/SimObject.h>
 #include <SimCore/Battlefield/Battlefield.h>
@@ -250,6 +251,17 @@ private:
 			response->set_details("no user name");
 			response.send(queue);
 			return;
+		}
+
+		if (msg->has_local_time()) {
+			int skew = static_cast<int>(static_cast<double>(msg->local_time()) - simdata::getSecondsSinceUnixEpoch());
+			// 10 seconds is somewhat arbitrary, but reasonable
+			if (std::abs(skew) > 10) {
+				CSP_LOG(BATTLEFIELD, ERROR, "join rejected: large clock skew (" << skew << "s)");
+				response->set_details("excessive clock skew");
+				response.send(queue);
+				return;
+			}
 		}
 
 		PeerId id = msg->getSource();

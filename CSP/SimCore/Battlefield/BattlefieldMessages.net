@@ -41,6 +41,7 @@ message JoinRequest : NetworkMessage { @id=64;
 	std::string user_name;
 	uint32 internal_ip_addr;
 	uint32 external_ip_addr;
+	uint32 local_time;
 }
 
 // response from the index server to a client indicating if

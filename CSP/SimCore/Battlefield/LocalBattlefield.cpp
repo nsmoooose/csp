@@ -34,6 +34,7 @@
 #include <SimData/Link.h>
 #include <SimData/DataArchive.h>
 #include <SimData/DataManager.h>
+#include <SimData/Timing.h>
 
 #include <cmath>
 
@@ -355,6 +356,7 @@ void LocalBattlefield::connectToServer(std::string const &name) {
 	msg->set_user_name(name);
 	msg->set_internal_ip_addr(m_NetworkClient->getLocalNode().getIp());
 	msg->set_external_ip_addr(m_NetworkClient->getExternalNode().getIp());
+	msg->set_local_time(simdata::getSecondsSinceUnixEpoch());
 	sendServerCommand(msg);
 	m_ConnectionState = CONNECTION_JOIN;
 }

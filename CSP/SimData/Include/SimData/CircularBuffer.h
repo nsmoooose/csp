@@ -277,7 +277,7 @@ public:
 			if (read - m_write <= RESERVE) return 0;
 			return read - m_write - RESERVE - 1;
 		}
-		uint32 space = std::max(read, m_size - m_write);
+		uint32 space = std::max<uint32>(read, m_size - m_write);
 		if (space > RESERVE) return space - RESERVE - 1;
 		return 0;
 	}

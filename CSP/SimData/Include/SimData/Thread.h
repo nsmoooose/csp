@@ -199,11 +199,11 @@ private:
 	 */
 	static void *_start(void *param) {
 		Ref<Task> *task_ptr = static_cast<Ref<Task>*>(param);
-		assert(task_ptr);
+		assert(task_ptr != 0);
 		Ref<Task> task = *task_ptr;
 		// delete param (we own it and it has served its purpose)
 		delete task_ptr;
-		assert(task);
+		assert(task.valid());
 		// execute the task
 		task->_execute();
 		// drop our reference to the task

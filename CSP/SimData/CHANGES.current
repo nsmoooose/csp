@@ -1,8 +1,13 @@
 Version 0.4.0 (in progress)
 ===========================
 
+2004-10-17: delta
+ * Fix a few asserts making vs angry (Thread.h).
+ 
+ * Fix a few cast warnings under vs.
+ 
 2004-10-09: onsight
- * Fix Timer::reset()
+ * Fix Timer::reset().
 
  * Move TaggedRecordRegistry methods to .cpp file, add a factory
    lookup method.
@@ -28,13 +33,13 @@ Version 0.4.0 (in progress)
 
  * Used Interlocked* instead of _Interlocked* in AtomicCounter.h.
 
- * Removed ospath namespace in front of stripFileExtension.
+ * Removed ospath namespace in front of stripFileExtension (FileUtility.h).
 
  * Added #define NOMINMAX in FileUtility.cpp to avoid usual conflicts
-   including windows.h.
+   when including windows.h.
 
  * Changed "contents" into "entries" in getDirectoryContents (_WIN32) from
-   FileUtility.cpp. Changed FileClosed into FindClose.
+   FileUtility.cpp. Changed FileClose into FindClose.
 
  * Exported _log_reference_count_error & _log_reference_conversion_error from
    LogStream.cpp.

@@ -68,6 +68,7 @@ extern "C" {
 #	define SIMDATA_ATOMIC_INC(x) InterlockedIncrement(&x) ? false : true;
 #	define SIMDATA_ATOMIC_GET(x) x
 #	define SIMDATA_ATOMIC_TYPE volatile LONG
+// XXX: eventually, rewrite it with intrinsic functions.
 //#	pragma intrinsic (_InterlockedExchange)
 //#	pragma intrinsic (_InterlockedDecrement)
 //#	pragma intrinsic (_InterlockedIncrement)

@@ -408,7 +408,7 @@ void TerrainObject::updateDemeterSettings()
 	Demeter::Settings::GetInstance()->SetPreloadTextures(m_PreloadTextures);
 	Demeter::Settings::GetInstance()->SetTextureCompression(m_TextureCompression);
 	Demeter::Settings::GetInstance()->SetUseDynamicTextures(m_DynamicTextures);
-	Demeter::Settings::GetInstance()->SetDetailTextureRepeats(3);
+	Demeter::Settings::GetInstance()->SetDetailTextureRepeats(32);
 	Demeter::Settings::GetInstance()->SetUseNormals(true);
 }
 

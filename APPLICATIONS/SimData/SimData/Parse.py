@@ -393,7 +393,6 @@ class StringHandler(SimpleHandler):
 	# convert them to wrapped c++ std::strings which the set
 	# method that swig generates will accept.  yuck!
 	def assign(self, interface, obj, name):
-		print "ASSIGN: ", obj, name, len(self._element)
 		interface.set(obj, name, str(self._element))
 # 		return
 # 		try:

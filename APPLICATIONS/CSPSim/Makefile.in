@@ -4,7 +4,7 @@ export DEMETER_RELATIVE = ../../THIRDPARTYLIBS/demeter
 export SIMDATA_RELATIVE = ../SimData
 
 export GDEBUGF = -g -Wall
-export GCFLAGS = -I/usr/local/include/python2.2 -fPIC -Wall -DSWIG_GLOBAL -O2 -march=athon-tbird
+export GCFLAGS = -I/usr/local/include/python2.2 -fPIC -Wall -DSWIG_GLOBAL -O2
 export GLDOPTS = -shared -lswigpy -ldl
 export GSWOPTS = -c -c++ -python -noexcept
 export CXX = g++

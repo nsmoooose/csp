@@ -29,6 +29,21 @@
 #include <osgDB/ReadFile>
 #include <string>
 
+#ifndef GL_MAX_TEXTURE_UNITS_ARB	
+#define GL_MAX_TEXTURE_UNITS_ARB          0x84E2
+#endif
+
+#ifndef GL_COMBINE_RGB_EXT
+#define GL_COMBINE_RGB_EXT                0x8571
+#endif
+
+/*
+#ifndef GL_VERSION_1_3 
+#include <GL/glext.h>
+#endif
+*/
+
+
 namespace osgChunkLod {
 
 class MultiTextureDetails {

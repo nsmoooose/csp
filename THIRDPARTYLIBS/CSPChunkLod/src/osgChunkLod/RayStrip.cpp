@@ -68,7 +68,7 @@ bool intersectRayStrip(osg::LineSegment const *segment,
 			std::cout << "infinite loop\n";
 			std::cout << n_indices << " " << start << " " << i << "\n";
 		}
-		if (watchdog < 0 && fabs(start - i) < 10) {
+		if (watchdog < 0 && abs(start - i) < 10) {
 			std::cout << i << " " << start << "\n";
 		}
 			

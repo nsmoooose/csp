@@ -36,7 +36,7 @@
 namespace osgChunkLod {
 
 	struct ChunkLodVertex;
-	struct ChunkLodElevationTest;
+	class ChunkLodElevationTest;
 
 	/**
 	 * Compute an intersection between a line segment and a triangle

@@ -1,6 +1,9 @@
 Version 0.4.0 (in progress)
 ===========================
 
+2004-04-04: onsight
+ * Add 32-bit and 64-bit pass-through hash functions.
+
 2004-04-03: onsight
  * Added a generic most-recently-used cache class.  Initial use will be
    for caching network message dispatch handlers in SimNet.

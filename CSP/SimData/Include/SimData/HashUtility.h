@@ -1,18 +1,18 @@
 /* SimData: Data Infrastructure for Simulations
  * Copyright (C) 2002 Mark Rose <tm2@stm.lbl.gov>
- * 
+ *
  * This file is part of SimData.
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
@@ -69,7 +69,7 @@ struct SIMDATA_EXPORT HashT {
 	}
 
 	/** Construct a specific hash value.
-	 * 
+	 *
 	 *  The high 32-bits will be zero.
 	 *
 	 *  @param x The low 32-bits of the hash value.
@@ -101,7 +101,7 @@ struct SIMDATA_EXPORT HashT {
 
 	/** Compare this hash value for equality.
 	 *
-	 *  @param x The low 32-bits of the hash value to compare to.  The 
+	 *  @param x The low 32-bits of the hash value to compare to.  The
 	 *           high 32-bits are zero.
 	 */
 	bool operator ==(uint32 x) const {
@@ -110,7 +110,7 @@ struct SIMDATA_EXPORT HashT {
 
 	/** Compare this hash value for inequality.
 	 *
-	 *  @param x The low 32-bits of the hash value to compare to.  The 
+	 *  @param x The low 32-bits of the hash value to compare to.  The
 	 *           high 32-bits are zero.
 	 */
 	bool operator !=(uint32 x) const {
@@ -165,10 +165,22 @@ typedef HashT hasht;
 inline HashT hash_string(std::string const &key) { return newhasht_cstring(key); }
 
 
+/** Pass through (nop) hash function for 64-bit hash keys.
+ */
+struct nohash64 {
+	inline size_t operator()(uint64 x) const { return static_cast<size_t>(x); }
+};
+
+/** Pass through (nop) hash function for 32-bit hash keys.
+ */
+struct nohash32 {
+	inline size_t operator()(uint32 x) const { return static_cast<size_t>(x); }
+};
+
 
 /** Integer equality functor for hash_map.
  */
-#if defined(_MSC_VER) && (_MSC_VER >= 1300) 
+#if defined(_MSC_VER) && (_MSC_VER >= 1300)
 	struct eqint: public HASH<int const> {
 		size_t operator ()(int const& i) const {
 			return static_cast<size_t>(i);
@@ -196,7 +208,7 @@ struct hashint {
 
 /** const char* equality functor for hash_map.
  */
-#if defined(_MSC_VER) && (_MSC_VER >= 1300) 
+#if defined(_MSC_VER) && (_MSC_VER >= 1300)
 	struct eqstr: public HASH<char const*>
 	{
 		size_t operator()(char const* const &s) const {

@@ -34,10 +34,12 @@ namespace simcore {
 class Callback0;
 template <typename M> class Callback1;
 template <typename M, typename N> class Callback2;
+template <typename R> class Callback0R;
 
 class Signal0;
 template <typename M> class Signal1;
 template <typename M, typename N> class Signal2;
+template <typename R> class Signal0R;
 
 struct ScopedCallback0: public simdata::ScopedPointer<Callback0> {
 	template <class C> ScopedCallback0(C *instance, void (C::*method)());
@@ -51,6 +53,11 @@ struct ScopedCallback1: public simdata::ScopedPointer<Callback1<M> > {
 template <typename M, typename N>
 struct ScopedCallback2: public simdata::ScopedPointer<Callback2<M, N> > {
 	template <class C> ScopedCallback2(C *instance, void (C::*method)(M, N));
+};
+
+template <typename R>
+struct ScopedCallback0R: public simdata::ScopedPointer<Callback0R<R> > {
+	template <class C> ScopedCallback0R(C *instance, R (C::*method)());
 };
 
 } // namespace simcore

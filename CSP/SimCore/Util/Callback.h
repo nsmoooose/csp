@@ -19,16 +19,16 @@
 
 /**
  * @file Callback.h
- * @brief Provides an adaptor for sigc++-1.2 member function slots.
+ * @brief Provides adaptors for sigc++-1.2 member function slots.
  *
  * The adaptors do not require the target class to subclass SigC::Object,
  * but are equally safe (unlike SigC::slot_class).  Automatic disconnect
  * is handled by making the callbacks instance variables, so they are
- * destroyed (and thereby disconnect) at the same time the target object
+ * destroyed (and thereby disconnected) at the same time the target object
  * is destroyed.
  *
- * At present the signal and callback classes only support slots with no
- * return value and a limited number of arguements.
+ * At present the signal and callback classes only support slots with a
+ * limited number of argument and return value combinations.
  *
  * Sample use:
  *
@@ -67,6 +67,23 @@
 namespace simcore {
 
 
+// Signals ----------------------------------------------------------------------------
+
+class Signal0: public SigC::Signal0<void> { };
+
+template <typename M>
+class Signal1: public SigC::Signal1<void, M> { };
+
+template <typename M, typename N>
+class Signal2: public SigC::Signal2<void, M, N> { };
+
+template <typename R>
+class Signal0R: public SigC::Signal0<R> { };
+
+template <typename R, typename M>
+class Signal1R: public SigC::Signal1<R, M> { };
+
+
 // Callbacks --------------------------------------------------------------------------
 
 template <class C>
@@ -81,6 +98,7 @@ public:
 
 class Callback0: private simdata::ScopedPointer<SigC::Object>, public SigC::Slot0<void> {
 public:
+	typedef Signal0 Signal;
 	template <class C>
 	Callback0(C *instance, void (C::*method)()) :
 		simdata::ScopedPointer<SigC::Object>(new _CallbackAdaptor0<C>(instance, method)),
@@ -100,6 +118,7 @@ public:
 template <typename M>
 class Callback1: private simdata::ScopedPointer<SigC::Object>, public SigC::Slot1<void, M> {
 public:
+	typedef Signal1<M> Signal;
 	template <class C>
 	Callback1(C *instance, void (C::*method)(M)) :
 		simdata::ScopedPointer<SigC::Object>(new _CallbackAdaptor1<C, M>(instance, method)),
@@ -119,22 +138,32 @@ public:
 template <typename M, typename N>
 class Callback2: private simdata::ScopedPointer<SigC::Object>, public SigC::Slot2<void, M, N> {
 public:
+	typedef Signal2<M, N> Signal;
 	template <class C>
 	Callback2(C *instance, void (C::*method)(M, N)) :
 		simdata::ScopedPointer<SigC::Object>(new _CallbackAdaptor2<C, M, N>(instance, method)),
 		SigC::Slot2<void, M, N>(SigC::slot(*dynamic_cast<_CallbackAdaptor2<C, M, N>*>(get()), &_CallbackAdaptor2<C, M, N>::bounce)) { }
 };
 
+template <class C, typename R>
+class _CallbackAdaptor0R: public SigC::Object {
+	typedef R (C::*Method)();
+	C *_instance;
+	Method _method;
+public:
+	inline R bounce() { return (_instance->*_method)(); }
+	_CallbackAdaptor0R(C *instance, Method method) : _instance(instance), _method(method) { }
+};
 
-// Signals ----------------------------------------------------------------------------
-
-class Signal0: public SigC::Signal0<void> { };
-
-template <typename M>
-class Signal1: public SigC::Signal1<void, M> { };
-
-template <typename M, typename N>
-class Signal2: public SigC::Signal2<void, M, N> { };
+template <typename R>
+class Callback0R: private simdata::ScopedPointer<SigC::Object>, public SigC::Slot0<R> {
+public:
+	typedef Signal0R<R> Signal;
+	template <class C>
+	Callback0R(C *instance, R (C::*method)()) :
+		simdata::ScopedPointer<SigC::Object>(new _CallbackAdaptor0R<C, R>(instance, method)),
+		SigC::Slot0<R>(SigC::slot(*dynamic_cast<_CallbackAdaptor0R<C, R>*>(get()), &_CallbackAdaptor0R<C, R>::bounce)) { }
+};
 
 
 // ScopedPointer Callbacks  -----------------------------------------------------------
@@ -152,6 +181,11 @@ template <typename M, typename N>
 template <class C>
 ScopedCallback2<M, N>::ScopedCallback2(C *instance, void (C::*method)(M, N))
 	: simdata::ScopedPointer<Callback2<M, N> >(new Callback2<M, N>(instance, method)) { }
+
+template <typename R>
+template <class C>
+ScopedCallback0R<R>::ScopedCallback0R(C *instance, R (C::*method)())
+	: simdata::ScopedPointer<Callback0R<R> >(new Callback0R<R>(instance, method)) { }
 
 
 } // namespace simcore

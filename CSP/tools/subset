@@ -33,8 +33,7 @@ Run "%(prog)s help <command>" for help on a specific command.
 # TODO
 # clean up error reporting of review submit
 # diffstats
-# work with tkdiff by piping through undiff
-
+# complete svn wrapping
 
 import sys
 import os
@@ -618,7 +617,8 @@ class Command:
     self._options.append((args, kw))
 
   def _makeOpt(self):
-    opt = optparse.OptionParser(usage=self._long,
+    usage = '%s\n' % self._long
+    opt = optparse.OptionParser(usage=usage,
                                 add_help_option=0,
                                 formatter=app.CustomUsageFormatter())
     for optargs, optkw in self._options:
@@ -640,10 +640,58 @@ class Command:
   run = staticmethod(run)
 
 
+class SVNCommand(Command):
+
+  def _start(self, args):
+    command = self._keys[0]
+    os.execvp('svn', ['svn', command] + args)
+
+  def help(self):
+    command = self._keys[0]
+    os.execvp('svn', ['svn', 'help', command])
+
+
+class Blame(SVNCommand):
+  def _define(self):
+    self._addKeys('blame', 'praise', 'annotate', 'ann')
+    self._short = 'show revision and author for each line in a file'
+
+
+class Log(SVNCommand):
+  def _define(self):
+    self._addKeys('log')
+    self._short = 'show log messages for revisions and/or files'
+
+
+class Info(SVNCommand):
+  def _define(self):
+    self._addKeys('info')
+    self._short = 'display information about a path'
+
+
+class List(SVNCommand):
+  def _define(self):
+    self._addKeys('list', 'ls')
+    self._short = 'list diretory entries in the repository'
+
+
+class Status(SVNCommand):
+  def _define(self):
+    self._addKeys('status', 'stat', 's')
+    self._short = 'show the status of working copy files and directories'
+
+
+class Cat(SVNCommand):
+  def _define(self):
+    self._addKeys('cat', 'print')
+    self._short = 'output the content of specified files or URLs'
+
+
 class Opened(Command):
 
   def _define(self):
-    self._long = ('opened (o): Show open files.\n'
+    self._long = ('opened (o): list files that have been modified, added, or deleted.\n'
+                  '\n'
                   'usage: %prog opened [path]')
     self._short = 'show opened files'
     self._addKeys('opened', 'o')
@@ -656,7 +704,8 @@ class Opened(Command):
 class Changes(Command):
 
   def _define(self):
-    self._long = ('changes: Show all active changesets.\n'
+    self._long = ('changes: list all active changesets.\n'
+                  '\n'
                   'usage: %prog changes [options]')
     self._short = 'show active changesets'
     self._addKeys('changes')
@@ -671,9 +720,11 @@ class Assign(Command):
 
   def _define(self):
     self._long = ('assign (a): assign files to an existing changeset, or move files\n'
-                  '            from one changeset to another\n'
+                  'from one changeset to another\n'
+                  '\n'
                   'usage: %prog assign changeset file [file...]\n'
-                  'If changeset is "default", the files will be removed from all changesets.')
+                  '\n'
+                  'If changeset is "default", the files will be removed from named changesets.')
     self._short = 'reassign open files to a different changeset'
     self._addKeys('assign', 'a')
 
@@ -690,6 +741,7 @@ class Change(Command):
 
   def _define(self):
     self._long = ('change: create or edit a changeset\n'
+                  '\n'
                   'usage: %prog change [options] changeset')
     self._short = 'create or edit a changeset'
     self._addKeys('change')
@@ -710,6 +762,7 @@ class Review(Command):
 
   def _define(self):
     self._long = ('review: distribute a changeset for review\n'
+                  '\n'
                   'usage: %prog review [options] changeset\n'
                   '\n'
                   'Creates a zipfile containing diffs of all files in the changeset.\n'
@@ -753,6 +806,7 @@ class Submit(Command):
 
   def _define(self):
     self._long = ('submit: submit (commit) a changeset to the repository\n'
+                  '\n'
                   'usage: %prog submit changeset')
     self._short = 'submit a changeset to the repository'
     self._addKeys('submit')
@@ -768,8 +822,9 @@ class Submit(Command):
 class Abandon(Command):
 
   def _define(self):
-    self._long = ('abandon: discard an existing changeset.  open files will be reassigned\n'
+    self._long = ('abandon: discard a named changeset.  files in that changeset will be reassigned\n'
                   'to the default changeset.\n'
+                  '\n'
                   'usage: %prog abandon changeset')
     self._short = 'abandon a changeset'
     self._addKeys('abandon')
@@ -786,6 +841,7 @@ class Describe(Command):
 
   def _define(self):
     self._long = ('describe (d): show information about a changeset.\n'
+                  '\n'
                   'usage: %prog describe changeset')
     self._short = 'describe a changeset'
     self._addKeys('describe', 'd')
@@ -802,7 +858,11 @@ class Diff(Command):
 
   def _define(self):
     self._long = ('diff: generate diffs for files or changesets.\n'
-                  'usage: %prog diff [changeset|file]')
+                  '\n'
+                  'usage: %prog diff [changeset|file]'
+                  '\n'
+                  'If no arguments are specified, all files in the default changeset\n'
+                  'will be diffed')
     self._short = 'generate diffs'
     self._addKeys('diff')
 
@@ -821,6 +881,7 @@ class Help(Command):
 
   def _define(self):
     self._long = ('help (?, h): Describe the usage of this program or its subcommands.\n'
+                  '\n'
                   'usage: %prog help [SUBCOMMAND...]')
     self._short = 'describe subcommands'
     self._addKeys('help', 'h', '?')
@@ -849,12 +910,8 @@ class Help(Command):
     primaries.sort()
     for primary in primaries:
       command = commands[primary]
-      aliases = command._keys[1:]
-      aliases = ', '.join(aliases)
       subcommand = primary
-      if aliases:
-        subcommand = subcommand + ' (%s)' % aliases
-      print '  %-20s %s' % (subcommand, command._short)
+      print '  %-14s %s' % (subcommand, command._short)
     print
 
 
@@ -869,6 +926,14 @@ Help()
 Opened()
 Review()
 Submit()
+
+# svn subcommands
+Blame()
+Cat()
+Info()
+List()
+Log()
+Status()
 
 
 def main(args):

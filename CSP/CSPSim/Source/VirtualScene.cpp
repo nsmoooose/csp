@@ -48,8 +48,6 @@
 #include <osgUtil/CullVisitor>
 #include <osgUtil/DisplayListVisitor>
 
-//#include "Terrain.h"
-
 
 // SHADOW is an *extremely* experimental feature.  It is based on the
 // osgShadow demo, and does (did) work to some extent, but only for a 
@@ -60,28 +58,8 @@
 #include "shadow.h"
 #endif
 
-extern int g_ScreenWidth;
-extern int g_ScreenHeight;
-
-
-extern osg::Node *makeBase( void );
 extern osg::Node *makeTreesPatch( float xcen, float ycen, float spacing, float width, 
 					 float height, VirtualBattlefield * pBattlefield);
-
-// XXX these values are no longer used
-
-const float SKY_RED = 0.1f;
-const float SKY_GREEN = 0.1f;
-const float SKY_BLUE = 0.6f;
-const float SKY_ALPHA = 1.0f;
-
-// XXX these values are no longer used
-
-const float FOG_RED = 0.4f;
-const float FOG_GREEN = 0.4f;
-const float FOG_BLUE = 0.5f;
-const float FOG_ALPHA = 1.0f;
-
 
 using simdata::Ref;
 
@@ -175,7 +153,7 @@ VirtualScene::VirtualScene()
 	m_NearView = NULL;
 	m_ViewAngle = 60.0;
 	m_NearPlane = 2.0;
-	m_Aspect =  static_cast<float>(g_ScreenWidth)/g_ScreenHeight;
+	m_Aspect =  static_cast<float>(CSPSim::theSim->getSDLScreen()->w)/CSPSim::theSim->getSDLScreen()->h;
 	m_ViewDistance = 30000.0;
 	m_SpinTheWorld = false;
 	m_ResetTheWorld = false;
@@ -190,8 +168,8 @@ int VirtualScene::buildScene()
 {
 	CSP_LOG(APP, INFO, "VirtualScene::buildScene() ");
 
-	int ScreenWidth = g_ScreenWidth;
-	int ScreenHeight = g_ScreenHeight;
+	int ScreenWidth = CSPSim::theSim->getSDLScreen()->w;
+	int ScreenHeight = CSPSim::theSim->getSDLScreen()->h;
 
 	/////////////////////////////////////
 	//
@@ -213,7 +191,6 @@ int VirtualScene::buildScene()
 	m_FarView->setDefaults();
 	ds->setDepthBuffer(true);
 	m_FarView->setViewport(0, 0, ScreenWidth, ScreenHeight);
-	m_FarView->setBackgroundColor(osg::Vec4(SKY_RED, SKY_GREEN, SKY_BLUE, SKY_ALPHA));
 	m_FarView->setComputeNearFarMode(osgUtil::CullVisitor::DO_NOT_COMPUTE_NEAR_FAR);
 	m_FarView->getCullVisitor()->setImpostorsActive(true);
 	// override default HEADLIGHT mode, we provide our own lights.
@@ -306,17 +283,6 @@ int VirtualScene::buildScene()
 	osg::Fog* fog = new osg::Fog;
 	fog->setMode(osg::Fog::LINEAR);
 	fog->setDensity(0.3f);
-	osg::Vec4 fogColor;
-	fogColor[0] = FOG_RED;
-	fogColor[1] = FOG_GREEN; 
-	fogColor[2] = FOG_BLUE; 
-	fogColor[3] = FOG_ALPHA;
-	m_FogEnabled = true;
-	m_FogStart = 20000.0;
-	m_FogEnd = 40000.0;
-	fog->setColor(fogColor);
-	fog->setStart(m_FogStart);
-	fog->setEnd(m_FogEnd);
 	if (m_FogEnabled) {
 		pFogState->setAttributeAndModes(fog, osg::StateAttribute::ON);
 	} else {
@@ -336,12 +302,6 @@ int VirtualScene::buildScene()
 	m_NearGroup->addChild(m_NearObjectGroup.get());
 	m_NearView->setSceneData(m_NearGroup.get());
 	m_NearView->setFrameStamp(m_FrameStamp.get());
-#ifdef CSP_OSG_094
-	m_NearView->setCamera(m_FarView->getCamera());
-#else
-	//m_NearView->setProjectionMatrix(m_FarView->getProjectionMatrix());
-	//m_NearView->setViewMatrix(m_FarView->getViewMatrix());
-#endif
 	m_NearView->getRenderStage()->setClearMask(GL_DEPTH_BUFFER_BIT);
 
 	//FIXME: why ALL_OPTIMIZATIONS don t work as expected?
@@ -390,12 +350,7 @@ int VirtualScene::drawScene()
     
 	osgUtil::CullVisitor * CullVisitor;
 
-#ifdef CSP_OSG_094
-	osg::Camera * camera = m_FarView->getCamera();
-	camera->setPerspective(m_ViewAngle, 1.0, 2.0f, m_ViewDistance);
-#else
 	m_FarView->setProjectionMatrixAsPerspective(m_ViewAngle, m_Aspect, m_NearPlane, m_ViewDistance);
-#endif
 	CullVisitor = m_FarView->getCullVisitor();
 	CullVisitor->setComputeNearFarMode(osgUtil::CullVisitor::COMPUTE_NEAR_FAR_USING_BOUNDING_VOLUMES);
 	CullVisitor->setCullingMode(osgUtil::CullVisitor::ENABLE_ALL_CULLING);
@@ -405,11 +360,7 @@ int VirtualScene::drawScene()
 	m_FarView->draw();
 
 	if (m_NearObjectGroup->getNumChildren() > 0) {
-#ifdef CSP_OSG_094
-		camera->setPerspective(m_ViewAngle, 1.0, 0.01f, 100.0);
-#else
 		m_NearView->setProjectionMatrixAsPerspective(m_ViewAngle, m_Aspect, 0.01f, 100.0);
-#endif
 		CullVisitor = m_NearView->getCullVisitor();
 		CullVisitor->setComputeNearFarMode(osgUtil::CullVisitor::COMPUTE_NEAR_FAR_USING_BOUNDING_VOLUMES);
 		CullVisitor->setCullingMode(osgUtil::CullVisitor::ENABLE_ALL_CULLING);
@@ -471,14 +422,9 @@ void VirtualScene::setLookAt(const simdata::Vector3& eyePos, const simdata::Vect
 	assert(m_FarView.valid());
 	m_Origin = eyePos;
 	osg::Vec3 _up (upVec.x(), upVec.y(), upVec.z() );
-#ifdef CSP_OSG_094
-	osg::Camera * camera = m_FarView->getCamera();
-	camera->setLookAt(osg::Vec3(0.0, 0.0, 0.0), simdata::toOSG(lookPos - eyePos), _up);
-	camera->ensureOrthogonalUpVector();
-#else
+
 	m_FarView->setViewMatrixAsLookAt(osg::Vec3(0.0, 0.0, 0.0), simdata::toOSG(lookPos - eyePos), _up);
 	m_NearView->setViewMatrixAsLookAt(osg::Vec3(0.0, 0.0, 0.0), simdata::toOSG(lookPos - eyePos), _up);
-#endif
 
 	m_GlobalFrame->setPosition(simdata::toOSG(-eyePos));
 
@@ -493,15 +439,6 @@ void VirtualScene::setLookAt(const simdata::Vector3& eyePos, const simdata::Vect
 		m_TerrainGroup->setPosition(simdata::toOSG(tpos));
 	}
 
-#ifdef CSP_OSG_094
-	CSP_LOG(APP, DEBUG, 
-		"VirtualScene::setLookAt - eye: " << camera->getEyePoint()  
-		<< ", look: " << camera->getCenterPoint()  
-		<< ", up: " << camera->getUpVector()  
-		<< ", near: " << camera->zNear() 
-		<< ", far: " << camera->zFar() 
-	);
-#else
 	// FIXME this shouldn't run in debug builds
 	osg::Vec3 _camEyePos;
 	osg::Vec3 _camLookPos;
@@ -512,8 +449,6 @@ void VirtualScene::setLookAt(const simdata::Vector3& eyePos, const simdata::Vect
 		<< ", look: " << _camLookPos  
 		<< ", up: " << _camUpVec 
 	);
-#endif
-
 }
 
 // TODO externalize a couple fixed parameters
@@ -547,22 +482,6 @@ void VirtualScene::_updateFog(simdata::Vector3 const &lookPos, simdata::Vector3 
 	m_Sky->updateHorizon(m_FogColor, eyePos.z(), m_ViewDistance);
 }
 
-#ifdef CSP_OSG_094
-void VirtualScene::getLookAt(simdata::Vector3 & eyePos, simdata::Vector3 & lookPos, simdata::Vector3 & upVec) const
-{
-	assert(m_FarView.valid());
-	osg::Camera const * camera = m_FarView->getCamera();
-
-	osg::Vec3 _eye = camera->getEyePoint();
-	eyePos = simdata::Vector3(_eye.x(), _eye.y(),_eye.z());
-	osg::Vec3 _center = camera->getCenterPoint();
-	lookPos = simdata::Vector3(_center.x(), _center.y(),_center.z());
-	osg::Vec3 _up = camera->getUpVector();
-	upVec = simdata::Vector3(_up.x(), _up.y(),_up.z());
-
-	CSP_LOG(APP, DEBUG, "VirtualScene::getLookAt - eye: " << eyePos << ", look: " << lookPos << ", up: " << upVec);
-}
-#else
 void VirtualScene::getLookAt(simdata::Vector3 & eyePos, simdata::Vector3 & lookPos, simdata::Vector3 & upVec) const
 {
 	assert(m_FarView.valid());
@@ -576,7 +495,6 @@ void VirtualScene::getLookAt(simdata::Vector3 & eyePos, simdata::Vector3 & lookP
 
 	CSP_LOG(APP, DEBUG, "VirtualScene::getLookAt - eye: " << eyePos << ", look: " << lookPos << ", up: " << upVec);
 }
-#endif
 
 
 void VirtualScene::addParticleSystem(osg::Node *system, osg::Node *program) {

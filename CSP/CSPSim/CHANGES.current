@@ -10,6 +10,8 @@
     Building CSPSim now builds terrain lib dependencies.
   
   * Adjusted paths in CSPSim project.
+  
+  * Cleaned up VirtualScene.cpp.
 
 2004-04-17: delta
   * Minor fixes to get the build going under windows.

@@ -55,6 +55,8 @@ AircraftObject::AircraftObject(): DynamicObject()
 {
 	//m_iObjectType = AIRPLANE_OBJECT_TYPE;
 	//m_iObjectID = g_pBattlefield->getNewObjectID();
+
+	CSP_LOG(CSP_APP, CSP_DEBUG, "AircraftObject::AircraftObject() ...");
 	m_sObjectName = "AIRCRAFT";
 
 	m_heading = 0.0;
@@ -78,6 +80,13 @@ AircraftObject::AircraftObject(): DynamicObject()
 	m_RudderInput = 0.0;
 	m_ThrottleInput = 0.0;
 
+	m_dThrottleInput = 0;
+	m_dAileronInput = 0;
+	m_dElevatorInput = 0;
+
+    m_decayAileron = 0;
+    m_decayElevator = 0;
+
 	m_ComplexPhysics = false;
 	m_PhysicsInitialized = false;
 
@@ -97,6 +106,7 @@ AircraftObject::AircraftObject(): DynamicObject()
 	BIND_ACTION("STOP_INC_ELEVATOR", noIncElevator);
 	BIND_ACTION("DEC_ELEVATOR", DecElevator);
 	BIND_ACTION("STOP_DEC_ELEVATOR", noDecElevator);
+    CSP_LOG(CSP_APP, CSP_DEBUG, "... AircraftObject::AircraftObject()");
 }
 
 
@@ -165,6 +175,10 @@ unsigned int AircraftObject::onRender()
 
 void AircraftObject::updateControls(double dt)
 {
+	CSP_LOG(CSP_APP, CSP_DEBUG, "AircraftObject::updateControls ...");
+	CSP_LOG(CSP_APP, CSP_DEBUG, "AircraftObject::m_dThrottleInput = " << m_dThrottleInput);
+	CSP_LOG(CSP_APP, CSP_DEBUG, "AircraftObject::m_dAileronInput = " << m_dAileronInput);
+	CSP_LOG(CSP_APP, CSP_DEBUG, "AircraftObject::m_dElevatorInput = " << m_dElevatorInput);
 	m_ThrottleInput += m_dThrottleInput * dt * 0.2;
 	m_AileronInput += m_dAileronInput * dt * 0.4;
 	m_ElevatorInput += m_dElevatorInput * dt * 0.4;
@@ -179,15 +193,20 @@ void AircraftObject::updateControls(double dt)
 	CLIP(m_ThrottleInput, -1.0, 1.0);
 	CLIP(m_AileronInput, -1.0, 1.0);
 	CLIP(m_ElevatorInput, -1.0, 1.0);
+	CSP_LOG(CSP_APP, CSP_DEBUG, "AircraftObject::m_decayElevator = " << m_decayElevator);
+	CSP_LOG(CSP_APP, CSP_DEBUG, "AircraftObject::m_ElevatorInput = " << m_ElevatorInput);
+	CSP_LOG(CSP_APP, CSP_DEBUG, "... AircraftObject::updateControls");
 }
 
 void AircraftObject::doFCS(double dt)
 {
+	CSP_LOG(CSP_APP, CSP_DEBUG, "AircraftObject::doFCS ...");
 	// FIXME: very temporary fcs mappings
 	m_Rudder = m_RudderInput * m_RudderMax * 0.017;
 	m_Aileron = m_AileronInput * m_AileronMax * 0.017;
 	m_Elevator = m_ElevatorInput * m_ElevatorMax * 0.017;
 	m_Throttle = (1.0 - m_ThrottleInput) * 0.5;
+	CSP_LOG(CSP_APP, CSP_DEBUG, " ... AircraftObject::doFCS");
 }
 
 void AircraftObject::setThrottle(double x) 
@@ -207,25 +226,35 @@ void AircraftObject::setAileron(double x)
 
 void AircraftObject::setElevator(double x)
 { 
+	CSP_LOG(CSP_APP, CSP_DEBUG, "AircraftObject::setElevator ...");
 	m_ElevatorInput = x; 
+	CSP_LOG(CSP_APP, CSP_DEBUG, "m_ElevatorInput = " << m_ElevatorInput << " ...AircraftObject::setElevator");
 }
 
 void AircraftObject::IncElevator() { 
+	CSP_LOG(CSP_APP, CSP_DEBUG, "AircraftObject::IncElevator ...");
 	m_dElevatorInput = 1.0; 
+	CSP_LOG(CSP_APP, CSP_DEBUG, "... AircraftObject::IncElevator");
 }	
 
 void AircraftObject::noIncElevator() { 
+	CSP_LOG(CSP_APP, CSP_DEBUG, "AircraftObject::noIncElevator ...");
 	if (m_dElevatorInput > 0.0) m_dElevatorInput = 0.0; 
 	m_decayElevator = 30;
+	CSP_LOG(CSP_APP, CSP_DEBUG, "... AircraftObject::noIncElevator");
 }
 
 void AircraftObject::DecElevator() { 
+	CSP_LOG(CSP_APP, CSP_DEBUG, "AircraftObject::DecElevator ...");
 	m_dElevatorInput = -1.0; 
+	CSP_LOG(CSP_APP, CSP_DEBUG, "... AircraftObject::DecElevator");
 }
 
 void AircraftObject::noDecElevator() { 
+	CSP_LOG(CSP_APP, CSP_DEBUG, "AircraftObject::noDecElevator ...");
 	if (m_dElevatorInput < 0.0) m_dElevatorInput = 0.0; 
 	m_decayElevator = 30;
+	CSP_LOG(CSP_APP, CSP_DEBUG, "... AircraftObject::noDecElevator");
 }
 
 void AircraftObject::IncAileron() { 
@@ -374,7 +403,35 @@ void AircraftObject::getStats(std::vector<std::string> &stats) {
 	stats.push_back(buffer);
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 #if 0
+/*
 void AircraftObject::initialize()
 {
   if (m_sObjectName == "PLAYER" )
@@ -383,7 +440,7 @@ void AircraftObject::initialize()
 
 void AircraftObject::initializeHud()
 {
-  m_phud = osgNew Hud(m_InitialDirection);
+  m_phud = new Hud(m_InitialDirection);
   m_phud->BuildHud("../Data/Scripts/HudM2k.csp");
   m_rpSwitch->addChild(m_phud);
 }
@@ -548,7 +605,7 @@ void AircraftObject::doComplexPhysics(double dt)
 	CSP_LOG(CSP_APP, CSP_DEBUG, "");
 }
 
-
+*/
 #endif
 
 

@@ -1,3 +1,29 @@
+#!/usr/bin/python
+#
+# Copyright 2004 Mark Rose <mkrose@users.sourceforge.net>
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+
+"""
+Trivial library for accessing subversion via the command line
+tool.  This should really be replaced by either the subversion
+python bindings (or a thin wrapper around them) once they reach
+a stable state with decent documentation.
+"""
+
 import os
 import os.path
 import popen2

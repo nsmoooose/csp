@@ -148,14 +148,14 @@ ChunkLodDrawable::drawImplementation (osg::State& state) const
 		osg::Timer_t update_t = t.tick();
 
 		tree->update (viewpoint, state);
-		osg::Timer_t render_t = t.tick();
+		//osg::Timer_t render_t = t.tick();
 		_triangles_rendered = tree->render(state, *_details);
 		_triangle_count += _triangles_rendered;
 
 
 		float dt = t.delta_s(update_t, t.tick());
 		if (dt > 0.0030) {
-			float utime = t.delta_s(update_t, render_t) * 1000.0;
+			//float utime = t.delta_s(update_t, render_t) * 1000.0;
 			dt *= 1000.0;
 			//std::cout << "PAUSE c-lod render " << dt << " ms (" << utime << ", " << (dt - utime) << ")\n";
 		}

@@ -210,7 +210,7 @@ TextureQuadTree::loadImage (int level, int col, int row) const
 	jmd.decompress();
 
 	osg::Image* img = new osg::Image();
-	unsigned int pf;
+	unsigned int pf = 0;
 	if (jmd.depth == 1) pf = GL_LUMINANCE;
 	else if (jmd.depth == 2) pf = GL_LUMINANCE_ALPHA;
 	else if (jmd.depth == 3) pf = GL_RGB;

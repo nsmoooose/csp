@@ -75,8 +75,9 @@ def make_install(win):
 	package_files = ['__init__.py', 'Debug.py', 'Parse.py', 'Compile.py']
 	if win:
 		package_files.extend(['cSimData.py', '_cSimData.dll', '_cSimData.lib'])
-		src = os.path.join("Source","cSimData.py")
+		src = os.path.join("VisualStudio","cSimData.py")
 		if os.path.exists(src):
+			from distutils.file_util import copy_file
 			copy_file(src, os.path.join("SimData","cSimData.py"))
 	else:
 		package_files.extend(['cSimData.py', '_cSimData.so'])

@@ -64,7 +64,7 @@ SIMDATA_EXCEPTION(InterfaceError)
  * warranty, and with no claim as to its suitability for any purpose.
  */
 
-#ifdef _WIN32 
+#if defined(_MSC_VER) && (_MSC_VER <= 1300)
 	#define __PTS_SIM__
 #endif
 
@@ -193,7 +193,7 @@ public:
 			p.pack(*idx);
 		}
 	}
-	virtual void unpack(Object *, UnPacker &p) {
+	virtual void unpack(Object *o, UnPacker &p) {
 		C * object = dynamic_cast<C *>(o);
 		T &m = object->*member;
 		typename T::value_type temp;

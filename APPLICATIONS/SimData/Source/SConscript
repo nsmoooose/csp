@@ -22,12 +22,15 @@
 # source dist
 
 import os.path
+from build_support import *
 
-Import('env', 'construct', 'Package')
+Import('env')
 
-headers = construct.Prefix("#/Include/SimData",
+headers = Prefix("#/Include/SimData",
 	"""
+	Archive.h
 	BaseType.h
+	Composite.h
 	Conversions.h
 	DataArchive.h
 	DataManager.h
@@ -38,7 +41,6 @@ headers = construct.Prefix("#/Include/SimData",
 	External.h
 	FileUtility.h
 	GeoPos.h
-	GlibCsp.h
 	hash_map.h
 	HashUtility.h
 	Integer.h
@@ -57,24 +59,30 @@ headers = construct.Prefix("#/Include/SimData",
 	Object.h
 	ObjectInterface.h
 	osg.h
-	Pack.h
 	Path.h
 	PTS.h
 	Quat.h
 	Random.h
 	Real.h
 	Ref.h
+	Singleton.h
 	String.h
+	Trace.h
 	TypeAdapter.h
 	Types.h
+	Uniform.h
 	Vector3.h
-	Vector3.inl
 	Version.h
 	""")
 
-interfaces = construct.Prefix("#/Include/SimData",
+top_interfaces = Prefix("#/Source/",
 	"""
 	cSimData.i
+	""")
+
+sub_interfaces = Prefix("#/Include/SimData",
+	"""
+	Archive.i
 	BaseType.i
 	Conversions.i
 	DataArchive.i
@@ -93,11 +101,9 @@ interfaces = construct.Prefix("#/Include/SimData",
 	List.i
 	Log.i
 	LUT.i
-	Math.i
 	Matrix3.i
 	Noise.i
 	Object.i
-	Pack.i
 	Path.i
 	Quat.i
 	Random.i
@@ -130,7 +136,6 @@ sources = """
 	Matrix3.cpp
 	Noise.cpp
 	Object.cpp
-	Pack.cpp
 	Path.cpp
 	Quat.cpp
 	Random.cpp
@@ -140,7 +145,7 @@ sources = """
 	Version.cpp
 	""".split()
 
-package = construct.Prefix("#/SimData", 
+package_files = Prefix("#/SimData", 
 	"""
 	__init__.py
 	Parse.py
@@ -149,7 +154,7 @@ package = construct.Prefix("#/SimData",
 	cSimData.py
 	""")
 
-extra = construct.Prefix("#",
+extra_files = Prefix("#",
 	"""
 	README
 	COPYING
@@ -161,26 +166,27 @@ extra = construct.Prefix("#",
 	Source/SConscript
 	""")
 
-# swig module
-
-env.SwigBuild(['cSimData_wrap.cpp', 'cSimData.py'], 'cSimData')
+# swig wrappers
 wrapper = env.CopyFile('#/SimData/cSimData.py', 'cSimData.py')
-sources.append('cSimData_wrap.cpp')
 
 # main libraries
+shared_library = env.SharedLibrary('#/SimData/_cSimData', 
+                                   sources + top_interfaces, 
+				   SHLIBPREFIX = '', 
+				   LIBS=env.get('LIBS',[])+env.get('SHLINKLIBS',[]))
 
-shared_library = env.SharedLibrary('#/SimData/_cSimData', sources, SHLIBPREFIX = '', LIBS = env["SWLIBS"])
 static_library = env.StaticLibrary('#/SimData/libSimData', sources)
+
 libraries = [shared_library, static_library]
+package_targets = libraries + [wrapper]
 
 # installation
-
-Package.installTarget(package + libraries, headers + interfaces)
-Package.add(sources, 'source')
-Package.add(libraries, 'binary')
-Package.add(package + headers + interfaces + extra, 'both')
+package = env['PACKAGE']
+package.installTarget(package_files + libraries, headers + sub_interfaces)
+package.add(sources, 'source')
+package.add(libraries, 'binary')
+package.add(package_files + headers + sub_interfaces + extra_files, 'both')
 
 # default target(s)
-
-Default(shared_library, wrapper)
+Default(package_targets)
 

@@ -31,6 +31,7 @@
 #include <SimData/InterfaceRegistry.h>
 
 #include <cstdlib>
+#include <cassert>
 
 
 class TestObject: public simdata::Object

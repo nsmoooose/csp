@@ -46,7 +46,7 @@ $(DEPDIR)/%.d : %
 %: %.cpp 
 	@echo -n "Building $@..."
 	@for foo in a; do \
-		$(CXX) -o $@ $(CFLAGS) $(@:=.cpp) -L$(TOPDIR)/SimData -lSimData 2>.testlog 1>/dev/null; \
+		$(CXX) -o $@ $(CFLAGS) $(@:=.cpp) -L$(TOPDIR)/SimData -lSimData 2>.buildlog 1>/dev/null; \
 		if [ $$? = "0" ]; then echo "ok"; else echo "failed!"; exit 1; fi; \
 	done
 	$
@@ -54,8 +54,8 @@ $(DEPDIR)/%.d : %
 run:
 	@for test in $(TESTS); do \
 	   echo -n "Running  $$test..."; \
-	   ./$$test 2>.testlog 1>/dev/null; \
-	   if [ $$? = "0" ]; then echo "ok"; else echo "failed!"; fi; \
+	   ./$$test 2>$$test.log 1>/dev/null; \
+	   if [ $$? = "0" ]; then echo "ok"; rm $$test.log; else echo "failed!"; fi; \
 	done
 
 all: $(TESTS) run

@@ -67,7 +67,7 @@ SIMDATA_CVT(kts_mps)
 
 /// meters per second to knots
 template <typename T>
-T mps_kts(T x) { return x * 1.94385; }
+T mps_kts(T x) { return x * 1.943846; }
 SIMDATA_CVT(mps_kts)
 
 /// feet to meters
@@ -87,7 +87,7 @@ SIMDATA_CVT(kg_lb)
 
 /// pounds to kilograms
 template <typename T>
-T lb_kg(T x) { return x * 0.45360; }
+T lb_kg(T x) { return x * 0.453597; }
 SIMDATA_CVT(lb_kg)
 
 /// nautical miles to meters
@@ -102,12 +102,12 @@ SIMDATA_CVT(m_nm)
 
 /// pascals to millimeters of mercury
 template <typename T>
-T pa_mmhg(T x) { return x * 0.00752; }
+T pa_mmhg(T x) { return x * 0.00750062; }
 SIMDATA_CVT(pa_mmhg)
 
 /// millimeters of mercury to pascals
 template <typename T>
-T mmhg_pa(T x) { return x * 133.0; }
+T mmhg_pa(T x) { return x * 133.3224; }
 SIMDATA_CVT(mmhg_pa)
 
 /// pounds to newtons
@@ -117,7 +117,7 @@ SIMDATA_CVT(lb_n)
 
 /// newtons to pounds
 template <typename T>
-T n_lb(T x) { return x * 0.22481; }
+T n_lb(T x) { return x * 0.224809; }
 SIMDATA_CVT(n_lb)
 
 } // namespace convert

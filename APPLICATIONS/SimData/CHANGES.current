@@ -1,5 +1,18 @@
 Version 0.4.0 (in progress)
 ===========================
+2003-11-01: onsight
+  * Some tweaking of the Scons scripts.  Added a platform-specific
+    configuration (see build_config.py).  Seems to work well under
+    Linux, but the MSVC side is untested.
+
+  * Changed the SCons swig version check to reject versions 1.3.18 
+    and 1.3.19.
+
+2003-10-25: onsight
+  * Added a unit conversion test and tweaked some of the conversion
+    functions to be more accurate.  The test ensures that inverse
+    conversions are accurate to at least one part in 10^6.
+
 2003-10-24: onsight
   * Moved some inline set() methods out of TypeAdapter.h to avoid
     including all the data type headers.  Code using SimData that

@@ -1,6 +1,9 @@
  Version 0.4.0 (in progress)
 ===========================
 
+2004-04-04: onsight
+  * Minor fixes to get the build going under linux.
+
 2004-04-04: delta
   * Add views classes to help in GameScreen. These files are 
     located under Views folders.

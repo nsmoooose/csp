@@ -49,13 +49,13 @@ public:
 	View(size_t vm);
 	virtual void activate(){}
 	virtual void update(simdata::Vector3& ep,simdata::Vector3& lp,simdata::Vector3& up, double dt) = 0;
-	void accept(const simdata::Ref<DynamicObject> object) {m_ActiveObject = object;}
+	void accept(const simdata::Ref<DynamicObject> object);
 	void accept(CameraKinematics* ck) {m_CameraKinematics = ck;}
 	virtual void recalculate(simdata::Vector3& ep,simdata::Vector3& lp,simdata::Vector3& up, double dt){
 		update(ep,lp,up,dt);
 	}
 	void cull();
-	virtual ~View(){}
+	virtual ~View();
 };
 
 class InternalView: public View {

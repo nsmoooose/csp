@@ -65,7 +65,7 @@ public:
 private:
 	osg::ref_ptr<osgUtil::SceneView> m_LogoView; 
 	osg::ref_ptr<osg::Texture2D> m_Texture;
-	osgProducer::Viewer m_Viewer;
+	//osgProducer::Viewer m_Viewer;
 	//SDL_Surface * m_image;
 	int m_width, m_height;
 };

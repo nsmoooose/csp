@@ -88,6 +88,9 @@ SOURCES = \
 	Theater/RandomForestModel.cpp \
 	Tools.cpp \
 	trees.cpp \
+	Views/CameraAgent.cpp \
+	Views/CameraKinematics.cpp \
+	Views/View.cpp \
 	VirtualBattlefield.cpp \
 	VirtualScene.cpp
 

@@ -29,6 +29,12 @@
 #include "DynamicObject.h"
 
 
+void View::accept(const simdata::Ref<DynamicObject> object) {
+	m_ActiveObject = object;
+}
+
+View::~View() { }
+
 void View::updateBody(simdata::Vector3& ep,simdata::Vector3& lp,simdata::Vector3& up) {
 	simdata::Vector3 object_up = m_ActiveObject->getUpDirection();
 	simdata::Vector3 object_dir = m_ActiveObject->getDirection();

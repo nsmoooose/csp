@@ -1,6 +1,10 @@
  Version 0.4.0 (in progress)
 ===========================
 
+2004-06-13: wolverine
+  * Added DispatchMessageHandler to the networking layer to forward incoming
+    messages to the correct object.
+
 2004-06-12: wolverine
   * Added Dispatch.h as a possible way to dispatch network messages through
     object hierarchies.  Not integrated with the build yet.

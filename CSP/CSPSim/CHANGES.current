@@ -1,6 +1,11 @@
  Version 0.4.0 (in progress)
 ===========================
 
+2004-06-10: wolverine
+  * Merged the networking classes MessageSocketDuplex into
+    NetworkMessenger. Also added a callback mechanism to handle
+    received messages.
+
 2004-05-30: wolverine
   * 2004-05-30: wolverine
   * Changed the router queue in NetworkMessagener to be a vector that

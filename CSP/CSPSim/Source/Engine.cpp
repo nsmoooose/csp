@@ -163,15 +163,13 @@ double EngineDynamics::flatten(double x) {
 	//		  / -pi/2 if x = -a
 	// f(x) = | 0     if x in [-a/2,b/2] (0 < a, b)
 	//        \ b     if x = b 
-	double ret = abs(x-m_B/2) + x-m_B/2 + simdata::PI_2*(m_A/2+x - abs(m_A/2+x))/m_A;
+	double ret = std::abs(x-m_B/2) + x-m_B/2 + simdata::PI_2*(m_A/2+x - std::abs(m_A/2+x))/m_A;
 	return ret;
 }
 
 void EngineDynamics::cut() {
 	double alpha = b_Alpha->value();
-	if (abs(alpha) > simdata::PI_2)
-		alpha -= simdata::sign(alpha)*simdata::PI;
-	if (alpha < -m_A) {
+	if ((std::abs(alpha) > simdata::PI_2) || (alpha < -m_A)) {
 		m_Force = simdata::Vector3::ZERO;
 	}
 	else if (alpha < m_B) {

@@ -268,7 +268,7 @@ bool PeerInfo::isDuplicate(const ConfirmationId id) {
 	if (m_duplicate_filter_low && (id >= 65536/32*3/4)) {
 		m_duplicate_filter_low = false;
 		memset(reinterpret_cast<char*>(m_duplicate_filter), 0, 65536/2);
-	} else if (!m_duplicate_filter_low && (id >= 65536/32/4)) {
+	} else if (!m_duplicate_filter_low && (id >= 65536/32/4) && (id < 65536/32/2)) {
 		m_duplicate_filter_low = true;
 		memset(reinterpret_cast<char*>(m_duplicate_filter) + 65536/2, 0, 65536/2);
 	}

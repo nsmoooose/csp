@@ -1,12 +1,15 @@
  Version 0.4.0 (in progress)
 ===========================
 
+2004-12-14: onsight
+ * Minor fix for the engine cutoff function under linux.
+
 2004-12-13: delta
- * Updated Data/XML/vehicles/aircraft/m2k/thrust.xml with more accurate 
+ * Updated Data/XML/vehicles/aircraft/m2k/thrust.xml with more accurate
    m2k data.
- 
+
  * Added a cutting function on the engine when aoa is too low or high.
- 
+
  * Slightly moved the aircraft at startup.
 
 2004-12-12: onsight
@@ -33,9 +36,9 @@
     interpolating positions.
 
 2004-12-12: delta
-  * Updated Data/Models/Mirage2000/m2k/model.osg and associated 
+  * Updated Data/Models/Mirage2000/m2k/model.osg and associated
     textures (adding T1.jpg) by Lologramme.
-    
+
 2004-12-05: delta
   * Updated CSPSim.vcproj, added SimNet to the build, cleaned up
     source and header directories and added a custom build step on

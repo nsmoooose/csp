@@ -1,6 +1,9 @@
  Version 0.4.0 (in progress)
 ===========================
 
+2004-06-27: wolverine
+  * Fixed a number of problems with the new callback handling code.
+
 2004-06-27: onsight
   * Added DispatchCenter.h, and DispatchCenter.cpp.  Rough outline for
     adding tagged record support to the network layer.  Not yet integrated

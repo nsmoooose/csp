@@ -183,7 +183,8 @@ private:
 	NetworkMessenger * m_NetworkMessenger;
 	NetworkNode * m_RemoteServerNode;
 	NetworkNode * m_localNode;
-
+	bool b_networkingFlag;
+	
 	osg::ref_ptr<Producer::RenderSurface> m_RenderSurface;
 };
 

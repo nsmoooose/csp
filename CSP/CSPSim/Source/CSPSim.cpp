@@ -153,6 +153,7 @@ CSPSim::CSPSim()
 	m_NetworkMessenger = NULL;
 	m_RemoteServerNode = NULL;
 	m_localNode = NULL;
+	b_networkingFlag = false;
 
 }
 
@@ -414,6 +415,7 @@ void CSPSim::init()
 		m_GameScreen->onInit();
 		
 		// create the networking layer
+		b_networkingFlag = g_Config.getBool("Networking", "UseNetworking", false, true);
 		int localMessagePort = g_Config.getInt("Networking", "LocalMessagePort", 10000, true);
 		CSP_LOG(APP, DEBUG, "init() - Creating Message listener on port: " << localMessagePort);
                 std::string remoteAddr = g_Config.getString("Networking", "RemoteMessageHost", "127.0.0.1", true);
@@ -716,20 +718,20 @@ void CSPSim::updateObjects(double dt)
 	// be moved elsewhere.  Currently commenting out so we can move to subversion.
 	CSP_LOG(APP, DEBUG, "CSPSim::run... beginning network updates");
         
-        simdata::Ref<DynamicObject> dynamicObject = (simdata::Ref<DynamicObject>)m_ActiveObject;
-        NetworkMessage * message = dynamicObject->getUpdateMessage();
+        if (b_networkingFlag)
+	{
+		simdata::Ref<DynamicObject> dynamicObject = (simdata::Ref<DynamicObject>)m_ActiveObject;
+        	NetworkMessage * message = dynamicObject->getUpdateMessage();
 
-	CSP_LOG(APP, DEBUG, "CSPSim::run... queuing test network updates");
-	m_NetworkMessenger->queueMessage(m_RemoteServerNode, message);
-	m_NetworkMessenger->sendMessages();
-	m_NetworkMessenger->receiveMessages();
+//		CSP_LOG(APP, DEBUG, "CSPSim::run... queuing test network updates");
+		m_NetworkMessenger->queueMessage(m_RemoteServerNode, message);
+		m_NetworkMessenger->sendMessages();
+		m_NetworkMessenger->receiveMessages();
 
-//        dynamicObject->putUpdateMessage( message );
 			
-	CSP_LOG(APP, DEBUG, "CSPSim::run... finished network updates");
-
+//		CSP_LOG(APP, DEBUG, "CSPSim::run... finished network updates");
+	}
 			// this may not be necessary. especially if a memory pool of messages objects is used.
-//	delete message;
 
 
 }

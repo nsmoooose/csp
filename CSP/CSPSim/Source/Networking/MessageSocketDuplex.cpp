@@ -74,8 +74,8 @@ int MessageSocketDuplex::recvfrom(NetworkMessage ** message)
 	// get addr of next packet
 	Port port;
 	ost::InetHostAddress addr = m_UDPReceiverSocket->getPeer(&port);
-        printf("MessageSocketDuplex::recvfrom() - port: %d\n", port);
-	printf("MessageSocketDuplex::recvfrom() - hostname: %s\n", addr.getHostname());
+        //printf("MessageSocketDuplex::recvfrom() - port: %d\n", port);
+//	printf("MessageSocketDuplex::recvfrom() - hostname: %s\n", addr.getHostname());
 	
 	// peek at packet to verify this is a valid CSP packet. and if so get the packet type.
 	

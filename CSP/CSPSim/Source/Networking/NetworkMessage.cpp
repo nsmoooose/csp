@@ -140,3 +140,7 @@ Port NetworkMessage::getOriginatorPort()
    return m_header.m_port;
 }
 
+NetworkNode * NetworkMessage::getOriginatorNode()
+{
+  return new NetworkNode(m_header.m_id, m_header.m_ipaddr, m_header.m_port);
+}

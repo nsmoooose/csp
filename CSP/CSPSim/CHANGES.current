@@ -1,6 +1,12 @@
  Version 0.4.0 (in progress)
 ===========================
 
+2004-05-16: wolverine
+  * changes to networking include configuration from CSPSim.ini
+    which includes ports, server node, option to disable/enable
+    networking. Also removed a few extra printf statesments. 
+    Added NetworkMessage pooling/memory manage.
+
 2004-05-15: wolverine
   * Changes to and cleanup to networking code.
 

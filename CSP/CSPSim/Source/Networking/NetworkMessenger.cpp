@@ -50,19 +50,28 @@ void NetworkMessenger::queueMessage(NetworkNode * node, NetworkMessage * message
 void NetworkMessenger::sendMessages()
 {
   CSP_LOG(APP, DEBUG, "NetworkMessenger::sendMessages()");
-  std::list<NetworkMessage*>::iterator i = m_messageList.begin();
-  std::list<NetworkMessage*>::const_iterator end = m_messageList.end();
-  for ( ; i != end ; ++i )
+  while(!m_messageList.empty())
   {
-	m_messageSocketDuplex->sendto((*i), g_node);
+    NetworkMessage * message = m_messageList.front();
+    m_messageSocketDuplex->sendto(message, g_node);
+    m_messageList.pop_front();
+    returnMessageToPool(message);
+	    
   }
+//  std::list<NetworkMessage*>::iterator i = m_messageList.begin();
+//  std::list<NetworkMessage*>::const_iterator end = m_messageList.end();
+//  for ( ; i != end ; ++i )
+//  {
+//	m_messageSocketDuplex->sendto((*i), g_node);
+//  }
 	
 }
 
 void NetworkMessenger::receiveMessages()
 {
   CSP_LOG(APP, DEBUG, "NetworkMessenger::ReceiveMessage()");
-
+  NetworkMessage * networkMessageHandle;
+  m_messageSocketDuplex->recvfrom(&networkMessageHandle);
 }
 
 NetworkNode * NetworkMessenger::getOrginatorNode()
@@ -79,8 +88,18 @@ void NetworkMessenger::setOrginatorNode(NetworkNode * orginatorNode)
 // buffer then cast it to a NetworkMessage pointer.
 NetworkMessage * NetworkMessenger::getMessageFromPool(int messageType, int payloadLen)
 {
-  simdata::uint8 * buffer  = new simdata::uint8[NETWORK_PACKET_SIZE]; 
-  NetworkMessage * message = (NetworkMessage*)buffer;
+  printf("NetworkMessenger::getMessageFromPool() - CurrentPoolSize: %d\n", m_messagePool.size());
+  if (m_messagePool.empty())
+  {
+    for(int i=0;i<100;i++)
+    {
+      simdata::uint8 * buffer  = new simdata::uint8[NETWORK_PACKET_SIZE]; 
+      NetworkMessage * message = (NetworkMessage*)buffer;
+      m_messagePool.push_back(message);
+    }
+  }
+  NetworkMessage * message = m_messagePool.front();
+  m_messagePool.pop_front();
   message->initialize( messageType, payloadLen, m_orginatorNode);
   return message;
 }
@@ -88,7 +107,8 @@ NetworkMessage * NetworkMessenger::getMessageFromPool(int messageType, int paylo
 // cast the NetworkMessage pointer back to a binary buffer then free the buffer.
 void NetworkMessenger::returnMessageToPool(NetworkMessage * message)
 {
-  simdata::uint8 * buffer = (simdata::uint8 *)message;
-  delete buffer;
+  printf("NetworkMessenger::returnMessageToPool() - CurrentPoolSize: %d\n", m_messagePool.size());
+  m_messagePool.push_back(message);	
 }
+
 

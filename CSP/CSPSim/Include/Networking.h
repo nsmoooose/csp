@@ -78,7 +78,8 @@ class NetworkMessage
     simdata::uint16 getPayloadLen();
 
     Port getOriginatorPort();
-
+    NetworkNode * getOriginatorNode();
+    
     bool isInitialized();
     bool isHeaderValid();
    
@@ -110,6 +111,7 @@ class NetworkNode
   public:
     NetworkNode();
     NetworkNode(int node_id, ost::InetHostAddress addr, Port port);
+    NetworkNode(int node_id, simdata::uint32 addr, Port port);
     NetworkNode(int node_id, const char * hostname, Port port);
 
 
@@ -120,6 +122,7 @@ class NetworkNode
     short getId();
     Port getPort();
     ost::InetHostAddress getAddress();
+    const char * getHostname();
     
 };
 
@@ -153,7 +156,8 @@ class NetworkMessenger
       MessageSocketDuplex * m_messageSocketDuplex;
       std::list<NetworkMessage*> m_messageList;
       NetworkNode * m_orginatorNode;
-
+      std::list<NetworkMessage*> m_messagePool;
+      
    public:
       
     NetworkMessenger();

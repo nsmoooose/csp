@@ -403,7 +403,7 @@ NetworkMessage * DynamicObject::getUpdateMessage()
 
   unsigned char * ptrBuf = (unsigned char*)message->getPayloadPtr();
 
-  printf("Generating network update message for object id: %d\n", m_ID);
+//  printf("Generating network update message for object id: %d\n", m_ID);
   memcpy((void*)ptrBuf, (void*)&m_ID, sizeof(unsigned int)); ptrBuf += sizeof(unsigned int);
 
   simdata::SimTime timeStamp = CSPSim::theSim->getElapsedTime();
@@ -448,11 +448,11 @@ void DynamicObject::putUpdateMessage(NetworkMessage* message)
   // verify we have the correct id in the packet for this object.
   if (m_ID == idValue)
   {
-	printf("Loading update message of object %d\n", m_ID);
+//	printf("Loading update message of object %d\n", m_ID);
   }
   else
   {
-	printf("Error loading update message, object id (%d) does not match\n", idValue);
+//	printf("Error loading update message, object id (%d) does not match\n", idValue);
   }
 
   // get timestamp

@@ -47,6 +47,14 @@ NetworkNode::NetworkNode(int node_id, const char * hostname, Port port)
   m_port = port;
 }
 
+NetworkNode::NetworkNode(int node_id, simdata::uint32 addr, Port port)
+{
+  m_node_id = node_id;
+  struct in_addr my_in_addr;
+  my_in_addr.s_addr = addr;
+  m_addr = ost::InetHostAddress(my_in_addr);
+  m_port = port;
+}
 void NetworkNode::setAddress(ost::InetHostAddress addr)
 {
   m_addr = addr;
@@ -77,3 +85,7 @@ short NetworkNode::getId()
   return m_node_id;
 }
 
+const char * NetworkNode::getHostname()
+{
+  m_addr.getHostname();
+}

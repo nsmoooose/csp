@@ -2,6 +2,7 @@
 #include "ClientNode.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include "Config.h"      
 
 ClientNode::ClientNode()
 {
@@ -11,18 +12,24 @@ ClientNode::ClientNode()
 int ClientNode::run()
 {
   printf("Network test client starting up...\n");
-  Port localPort = 3150;
-  Port remotePort = 3160;
-  NetworkNode localNode(1,  "localhost", localPort);
-  NetworkNode remoteNode(1, "localhost", remotePort);
-  NetworkMessenger * messenger = new NetworkMessenger(&localNode);
-  NetworkMessage * message = messenger->getMessageFromPool(1, 100);
+  Port localPort = g_Config.getInt("Networking", "LocalMessagePort", 10000, true);
+  std::string localHost = g_Config.getString("Networking", "LocalMessageHost", "127.0.0.1", true);
+
+  Port remotePort = (Port)g_Config.getInt("Networking", "RemoteMessagePort", 0, true);
+  std::string remoteHost = g_Config.getString("Networking", "RemoteMessageHost", "127.0.0.1", true);
+		   
+  
+  NetworkNode * remoteNode = new NetworkNode(1, remoteHost.c_str(), remotePort );
+  NetworkNode * localNode =  new NetworkNode(1, localHost.c_str(), localPort);
+  NetworkMessenger * networkMessenger = new NetworkMessenger(localNode);
+
+  NetworkMessage * message = networkMessenger->getMessageFromPool(1, 100);
   char * payloadPtr = (char*)message->getPayloadPtr();
   memset(payloadPtr, 0 , 100);
   strcpy(payloadPtr, "Hello From CSP Network Test Client!");
   Port port = message->getOriginatorPort();
-  messenger->queueMessage(&remoteNode, message);
-  messenger->sendMessages();
+  networkMessenger->queueMessage(remoteNode, message);
+  networkMessenger->sendMessages();
   
   return 0;
 }

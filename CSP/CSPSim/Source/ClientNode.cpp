@@ -46,13 +46,17 @@ int ClientNode::run()
   printf("sizeof(NetworkMessage) = %d\n", sizeof(NetworkMessage));
   printf("sizeof(ObjectUpdateMessagePayload) = %d\n", sizeof(ObjectUpdateMessagePayload)); 
   
+  VirtualBattlefield * battlefield = new VirtualBattlefield();
+  battlefield->create();
+  simdata::DataManager dataManager;
+  
   MessageHeader header;
   header.dumpOffsets();
 	
   printf("Network test client starting up...\n");
   Port localPort = g_Config.getInt("Networking", "LocalMessagePort", 10000, true);
   std::string localHost = g_Config.getString("Networking", "LocalMessageHost", "127.0.0.1", true);
-
+  
   Port remotePort = (Port)g_Config.getInt("Networking", "RemoteMessagePort", 0, true);
   std::string remoteHost = g_Config.getString("Networking", "RemoteMessageHost", "127.0.0.1", true);
 		   
@@ -63,7 +67,14 @@ int ClientNode::run()
   PrintMessageHandler * printMessageHandler = new PrintMessageHandler();
   printMessageHandler->setFrequency(1);
   networkMessenger->registerReceiveHandler(printMessageHandler);
-
+  DispatchMessageHandler * dispatchMessageHandler = new DispatchMessageHandler();
+  dispatchMessageHandler->setLocalAddress( localNode->getAddress().getAddress().s_addr );
+  dispatchMessageHandler->setLocalPort(localPort);
+  dispatchMessageHandler->setVirtualBattlefield(battlefield);
+  dispatchMessageHandler->setDataManager(dataManager);
+  networkMessenger->registerReceiveHandler(dispatchMessageHandler);
+  
+  
   unsigned short messageType = 2;
   unsigned short payloadLen  = sizeof(int) + sizeof(double) + 3*sizeof(simdata::Vector3) +
 	                       sizeof(simdata::Quat) /* + sizeof(simdata::Matrix3) + sizeof(double) */;
@@ -99,31 +110,34 @@ int ClientNode::run()
   b_Attitude->value() = simdata::Quat(1.0, 1.0, 1.0, 0.0);
 
  // ptrPayload->id = 1;
- // ptrPayload->timeStamp = 1.0;
-
-  simdata::MemoryWriter writer((simdata::uint8 *)ptrPayload);
-  writer << id;
-  writer << type;
-  writer << timestamp;
+  while(1)
+  {
+    timestamp += 1.0;
+    ptrPayload->timeStamp = timestamp;
+    b_GlobalPosition->value() = simdata::Vector3(timestamp*1.0, timestamp*0.5, 1.0);
+    
+    simdata::MemoryWriter writer((simdata::uint8 *)ptrPayload);
+    writer << id;
+    writer << type;
+    writer << timestamp;
   
 //  b_GlobalPosition->value().writeBinary((unsigned char *)&(ptrPayload->globalPosition),24);
 //  b_LinearVelocity->value().writeBinary((unsigned char *)&(ptrPayload->linearVelocity),24);
 //  b_AngularVelocity->value().writeBinary((unsigned char *)&(ptrPayload->angularVelocity),24);
 //  b_Attitude->value().writeBinary((unsigned char *)&(ptrPayload->attitude),32);
 
-  b_GlobalPosition->value().serialize(writer);
-  b_LinearVelocity->value().serialize(writer);
-  b_AngularVelocity->value().serialize(writer);
-  b_Attitude->value().serialize(writer);
+    b_GlobalPosition->value().serialize(writer);
+    b_LinearVelocity->value().serialize(writer);
+    b_AngularVelocity->value().serialize(writer);
+    b_Attitude->value().serialize(writer);
   
-  ptrPayload->dump();
+    ptrPayload->dump();
   
-  networkMessenger->queueMessage(remoteNode, message);
+    networkMessenger->queueMessage(remoteNode, message);
   
-  while(1)
-  {
     networkMessenger->sendQueuedMessages();
     networkMessenger->receiveMessages();
+    sleep(1);
   }
   return 0;
 }

@@ -53,6 +53,7 @@ namespace IQuadTree {
 typedef unsigned uint32;
 typedef int int32;
 
+typedef uint32 Coordinate;
 
 /** A simple 2D point class, using usigned 32-bit integer coordinates.
  */
@@ -210,7 +211,12 @@ public:
 
 
 /** Element class stored in the quadtree, consisting of a unique id number
- *  and a Point.
+ *  and a Point.  Child is meant to be subclassed.  Subclass instances may
+ *  be stored in the quadtree as base class pointers.  If only one type of
+ *  subclass is stored in the quadtree (recommended), then query results
+ *  can be static_cast back to the subclass.  Child subclasses should only
+ *  be deleted via a subclass pointer, since Child does not define a virtual
+ *  destructor.
  */
 class Child {
 	int _id;
@@ -241,6 +247,15 @@ public:
 	// accessors
 	inline int id() const { return _id; }
 	inline Point const &point() const { return _point; }
+	
+	/** Returns a non-const reference to the coordinates of the child.
+	 *  <b>Use this method with extreme care!</b>  The coordinates cannot
+	 *  be modified without updating all quadtrees that contain this child.
+	 *  The safest approach is to remove the child from all quadtrees,
+	 *  update coordinates, and reinsert the child.
+	 */
+	inline Point &mutablePoint() { return _point; }
+
 	inline uint32 x() const { return _point.x(); }
 	inline uint32 y() const { return _point.y(); }
 
@@ -305,40 +320,44 @@ public:
 
 	/** Insert a new element.
 	 *
-	 *  @param id The unique id of the element being added.  Ensuring
-	 *    uniqueness is the responsibility of the caller.
-	 *  @param x The x coordinate of the element in the range [-2**31, 2**31].
-	 *  @param y The y coordinate of the element in the range [-2**31, 2**31].
+	 *  @param child A Child instance to insert.  The object pointer must remain
+	 *    valid for as long as the child is stored in the index.
 	 */
-	void insert(int id, int32 x, int32 y);
+	void insert(Child &child);
 
 	/** Remove an element.
 	 *
-	 *  @param id The unique id of the element being removed.
-	 *  @param x The x coordinate of the element in the range [-2**31, 2**31].
-	 *  @param y The y coordinate of the element in the range [-2**31, 2**31].
+	 *  @param child A Child instance to remove.
 	 *  @return true if the element was found and removed.
 	 */
-	bool remove(int id, int32 x, int32 y);
+	bool remove(Child &child);
 
 	/** Update the position of an element.
 	 *  This is slightly more efficient than removing and reinserting the element.
 	 *
-	 *  @param id The unique id of the element being updated.
-	 *  @param old_x The old x coordinate of the element in the range [-2**31, 2**31].
-	 *  @param old_y The old y coordinate of the element in the range [-2**31, 2**31].
-	 *  @param new_x The new x coordinate of the element in the range [-2**31, 2**31].
-	 *  @param new_y The new y coordinate of the element in the range [-2**31, 2**31].
+	 *  Note: this method is problematic with regard to child coordinate updates
+	 *  for children stored in multiple quadtrees.  It has been disabled for now;
+	 *  use remove + insert to update coordinates.
+	 *
+	 *  @param child A Child instance to update.
+	 *  @param new_x The new x coordinate of the element in the range [0, 2**32).
+	 *  @param new_y The new y coordinate of the element in the range [0, 2**32).
 	 *  @return true if the element was found and updated.
 	 */
-	bool update(int id, int32 old_x, int32 old_y, int32 new_x, int32 new_y);
+	/* disabled (see above)
+	bool update(Child &child, uint32 old_x, uint32 old_y);
+	*/
 
 	/** Query the index to find all elements within a region.
 	 *
 	 *  @param region The region to search.
 	 *  @param result A vector to accumulate elements found within the region.
 	 */
-	void query(Region const &region, std::vector<Child> &result) const;
+	void query(Region const &region, std::vector<Child*> &result) const;
+
+	/** Remove all children from the index.
+	 */
+	void clear();
 
 	/** Get the number of child elements stored in the quadtree.
 	 */

@@ -45,10 +45,10 @@ public:
 	}
 	virtual ~Node() { __n_destroyed++; }
 	virtual bool isLeaf() const=0;
-	virtual bool insert(Child const &child, uint32 x, uint32 y, Node *& replacement, TreeConstraint &constaint)=0;
-	virtual bool remove(Child const &child, uint32 x, uint32 y)=0;
-	virtual bool update(Child const &child, uint32 x, uint32 y, uint32 x_new, uint32 y_new, TreeConstraint &constraint)=0;
-	virtual void query(const Region &region, std::vector<Child> &result) const=0;
+	virtual bool insert(Child *child, uint32 x, uint32 y, Node *& replacement, TreeConstraint &constaint)=0;
+	virtual bool remove(Child *child, uint32 x, uint32 y)=0;
+	virtual bool update(Child *child, uint32 x, uint32 y, uint32 x_new, uint32 y_new, TreeConstraint &constraint)=0;
+	virtual void query(const Region &region, std::vector<Child*> &result) const=0;
 	virtual void dump(std::ostream &os) const=0;
 	virtual uint32 childCount() const=0;
 	inline bool overlaps(const Region &region) const { return _region.overlaps(region); }
@@ -109,11 +109,11 @@ public:
 		for (uint32 i = 0; i < 4; ++i) { delete _subnodes[i]; }
 	}
 	virtual bool isLeaf() const { return false; }
-	virtual bool insert(Child const &child, uint32 x, uint32 y, Node *&, TreeConstraint &constraint);
+	virtual bool insert(Child *child, uint32 x, uint32 y, Node *&, TreeConstraint &constraint);
 	virtual void dump(std::ostream &os) const;
-	virtual bool update(Child const &child, uint32 x, uint32 y, uint32 x_new, uint32 y_new, TreeConstraint &constraint);
-	virtual bool remove(Child const &child, uint32 x, uint32 y);
-	virtual void query(Region const &region, std::vector<Child> &result) const;
+	virtual bool update(Child *child, uint32 x, uint32 y, uint32 x_new, uint32 y_new, TreeConstraint &constraint);
+	virtual bool remove(Child *child, uint32 x, uint32 y);
+	virtual void query(Region const &region, std::vector<Child*> &result) const;
 	virtual uint32 childCount() const { return _child_count; }
 };
 
@@ -122,12 +122,12 @@ public:
  *  child elements.  A leaf has no finer subdivisions.
  */
 class Leaf: public Node {
-	std::vector<Child> _children;
+	std::vector<Child*> _children;
 
 public:
 	Leaf(uint32 level, Region const &region): Node(level, region) { }
 
-	virtual bool insert(Child const &child, uint32 x, uint32 y, Node *&replacement, TreeConstraint &constraint) {
+	virtual bool insert(Child *child, uint32 x, uint32 y, Node *&replacement, TreeConstraint &constraint) {
 		assert(contains(child.point()));
 		//std::cout << "LI: " << x << " " << y << "\n";
 		if (_children.size() >= constraint.getLeafLimit() && getLevel() <= constraint.getMaxDepth()) {
@@ -136,7 +136,7 @@ public:
 			Node *subreplace;
 			for (uint32 i = 0; i < _children.size(); ++i) {
 				uint32 rx, ry;
-				_children[i].getLevelCoordinates(rx, ry, getLevel());
+				_children[i]->getLevelCoordinates(rx, ry, getLevel());
 				b->insert(_children[i], rx, ry, subreplace, constraint);
 			}
 			b->insert(child, x, y, subreplace, constraint);
@@ -148,9 +148,9 @@ public:
 		}
 	}
 
-	virtual bool update(Child const &child, uint32, uint32, uint32, uint32, TreeConstraint &) {
+	virtual bool update(Child *child, uint32, uint32, uint32, uint32, TreeConstraint &) {
 		for (uint32 i = 0; i < _children.size(); ++i) {
-			if (_children[i].id() == child.id()) {
+			if (_children[i]->id() == child->id()) {
 				_children[i] = child;
 				return true;
 			}
@@ -159,9 +159,9 @@ public:
 		return false;
 	}
 
-	virtual bool remove(Child const &child, uint32, uint32) {
+	virtual bool remove(Child *child, uint32, uint32) {
 		for (uint32 i = 0; i < _children.size(); ++i) {
-			if (_children[i].id() == child.id()) {
+			if (_children[i]->id() == child->id()) {
 				_children.erase(_children.begin() + i);
 				return true;
 			}
@@ -170,9 +170,9 @@ public:
 		return false;
 	}
 
-	virtual void query(Region const &region, std::vector<Child> &result) const {
+	virtual void query(Region const &region, std::vector<Child*> &result) const {
 		for (uint32 i = 0; i < _children.size(); ++i) {
-			if (region.contains(_children[i].point())) {
+			if (region.contains(_children[i]->point())) {
 				result.push_back(_children[i]);
 			}
 		}
@@ -183,7 +183,7 @@ public:
 	virtual void dump(std::ostream &os) const {
 		os << "LEAF " << getLevel() << " {";
 		for (uint32 i = 0; i < _children.size(); ++i) {
-			os << " " << _children[i].id();
+			os << " " << _children[i]->id();
 		}
 		os << " }\n";
 	}
@@ -200,7 +200,7 @@ Branch::Branch(uint32 level, Region const &region): Node(level, region), _child_
 	}
 }
 
-bool Branch::insert(Child const &child, uint32 x, uint32 y, Node *&, TreeConstraint &constraint) {
+bool Branch::insert(Child *child, uint32 x, uint32 y, Node *&, TreeConstraint &constraint) {
 	_child_count++;
 	uint32 idx = getIndex(x, y);
 	//std::cout << "BI: " << x << " " << y << " : " << idx << "\n";
@@ -219,7 +219,7 @@ bool Branch::insert(Child const &child, uint32 x, uint32 y, Node *&, TreeConstra
 	return false;
 }
 
-bool Branch::update(Child const &child, uint32 x, uint32 y, uint32 x_new, uint32 y_new, TreeConstraint &constraint) {
+bool Branch::update(Child *child, uint32 x, uint32 y, uint32 x_new, uint32 y_new, TreeConstraint &constraint) {
 	uint32 idx = getIndex(x, y);
 	uint32 idx_new = getIndex(x_new, y_new);
 	if (idx == idx_new) {
@@ -233,7 +233,7 @@ bool Branch::update(Child const &child, uint32 x, uint32 y, uint32 x_new, uint32
 	return true;
 }
 
-bool Branch::remove(Child const &child, uint32 x, uint32 y) {
+bool Branch::remove(Child *child, uint32 x, uint32 y) {
 	uint32 idx = getIndex(x, y);
 	Node *subnode = _subnodes[idx];
 	if (!subnode) {
@@ -249,7 +249,7 @@ bool Branch::remove(Child const &child, uint32 x, uint32 y) {
 	return true;
 }
 
-void Branch::query(Region const &region, std::vector<Child> &result) const {
+void Branch::query(Region const &region, std::vector<Child*> &result) const {
 	//std::cout << "querying branch\n";
 	for (uint32 i = 0; i < 4; ++i) {
 		Node *subnode = _subnodes[i];
@@ -279,45 +279,57 @@ QuadTree::~QuadTree() {
 	delete _root;
 }
 
-void QuadTree::insert(int id, int32 x, int32 y) {
-	Child c(id, x, y);
+void QuadTree::insert(Child &child) {
 	if (!_root) {
 		_root = new Leaf(0, Region(0, 0, 0xfffffffful, 0xfffffffful));
 	}
 	uint32 rx, ry;
-	c.getLevelCoordinates(rx, ry);
+	child.getLevelCoordinates(rx, ry);
 
 	Node *replacement;
-	bool replace = _root->insert(c, rx, ry, replacement, _constraint);
+	bool replace = _root->insert(&child, rx, ry, replacement, _constraint);
 	if (replace) {
 		delete _root;
 		_root = replacement;
 	}
 }
 
-bool QuadTree::remove(int id, int32 x, int32 y) {
+bool QuadTree::remove(Child &child) {
 	if (!_root) return false;
-	Child c(id, x, y);
 	uint32 rx, ry;
-	c.getLevelCoordinates(rx, ry);
-	return _root->remove(c, rx, ry);
+	child.getLevelCoordinates(rx, ry);
+	return _root->remove(&child, rx, ry);
 }
 
-bool QuadTree::update(int id, int32 old_x, int32 old_y, int32 new_x, int32 new_y) {
+/*
+ update is somewhat dangerous, since the child object's coordinates
+ must be changed.  this can safely be done in one quadtree, but fails
+ if the child is stored in multiple quadtrees.  for now, delete and
+ reinsert the child.
+
+bool QuadTree::update(Child &child, uint32 new_x, uint32 new_y) {
 	if (!_root) return false;
-	Child c_old(id, old_x, old_y);
-	uint32 rx_old, ry_old;
-	c_old.getLevelCoordinates(rx_old, ry_old);
-	Child c_new(id, new_x, new_y);
-	uint32 rx_new, ry_new;
-	c_new.getLevelCoordinates(rx_new, ry_new);
-	return _root->update(c_new, rx_old, ry_old, rx_new, ry_new, _constraint);
+	uint32 old_x = child.x();
+	uint32 old_y = child.y();
+	child.point() = Point(new_x, new_y);
+	bool success = _root->update(&child, old_x, old_y, new_x, new_y, _constraint);
+	if (!success) {
+		// restore coordinates
+		child.point() = Point(old_x, old_y);
+	}
+	return success;
 }
+*/
 
-void QuadTree::query(Region const &region, std::vector<Child> &result) const {
+void QuadTree::query(Region const &region, std::vector<Child*> &result) const {
 	if (_root != 0) {
 		_root->query(region, result);
 	}
+}
+
+void QuadTree::clear() {
+	delete _root;
+	_root = 0;
 }
 
 uint32 QuadTree::childCount() const {

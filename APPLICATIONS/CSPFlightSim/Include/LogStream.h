@@ -21,7 +21,7 @@
 // Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 // Boston, MA  02111-1307, USA.
 //
-// $Id: LogStream.h,v 1.2 2002/12/05 03:23:31 mkrose Exp $
+// $Id: LogStream.h,v 1.3 2002/12/06 18:45:14 deltasf Exp $
 
 #ifndef _LOGSTREAM_H
 #define _LOGSTREAM_H
@@ -33,7 +33,7 @@
 #include <char_traits.h>
 #endif
 
-#ifdef __GCC_3.0__
+#ifdef __GCC_3_0__
   #ifdef SG_HAVE_STD_INCLUDES
     # include <streambuf>
     # include <iostream>

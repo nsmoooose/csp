@@ -15,8 +15,8 @@
 			OutputDirectory="Debug"
 			IntermediateDirectory="Debug"
 			ConfigurationType="2"
-			CharacterSet="2"
-			ManagedExtensions="TRUE">
+			CharacterSet="0"
+			ManagedExtensions="FALSE">
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
@@ -36,7 +36,7 @@
 				OutputFile="..\..\..\APPLICATIONS\CSPSim\Bin\osgChunkLodd.dll"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="..\..\lib"
-				IgnoreDefaultLibraryNames="msvcrtd.lib"
+				IgnoreDefaultLibraryNames="libc"
 				GenerateDebugInformation="TRUE"
 				ImportLibrary="..\..\lib\osgChunkLodd.lib"/>
 			<Tool
@@ -66,15 +66,16 @@
 			IntermediateDirectory="Release"
 			ConfigurationType="2"
 			CharacterSet="2"
-			ManagedExtensions="TRUE">
+			ManagedExtensions="FALSE">
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				InlineFunctionExpansion="1"
 				AdditionalIncludeDirectories="..\..\include;..\include"
-				PreprocessorDefinitions="WIN32;NDEBUG;OSGCHUNKLOD_LIBRARY"
+				PreprocessorDefinitions="WIN32;_WINDOWS;NDEBUG;OSGCHUNKLOD_LIBRARY"
 				MinimalRebuild="FALSE"
 				RuntimeLibrary="2"
+				BufferSecurityCheck="FALSE"
 				RuntimeTypeInfo="TRUE"
 				WarningLevel="3"/>
 			<Tool
@@ -85,7 +86,7 @@
 				OutputFile="..\..\..\APPLICATIONS\CSPSim\Bin\osgChunkLod.dll"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="..\..\lib"
-				IgnoreDefaultLibraryNames="msvcrt.lib"
+				IgnoreDefaultLibraryNames="libc"
 				GenerateDebugInformation="TRUE"
 				ImportLibrary="..\..\lib\osgChunkLod.lib"/>
 			<Tool

@@ -62,7 +62,7 @@ int ClientNode::run()
 
   NetworkMessage * message = networkMessenger->getMessageFromPool(messageType, payloadLen);
   ObjectUpdateMessagePayload * ptrPayload = (ObjectUpdateMessagePayload*)message->getPayloadPtr();
-
+  ptrPayload->dumpOffsets();
 	   
 //  NetworkMessage * message = networkMessenger->getMessageFromPool(1, 100);
 //  memset(payloadPtr, 0 , 100);

@@ -36,7 +36,8 @@ int ServerNode::run()
 	{
 	  NetworkNode * node = message->getOriginatorNode();
 	  MessageHeader * header = (MessageHeader*)message;
-          printf("Received Data From Client:\n");
+	  header->dumpOffsets();
+      printf("Received Data From Client:\n");
 	  printf("Client addr: %s\n", node->getHostname());
 	  printf("Client port: %d\n", node->getPort());
 
@@ -47,8 +48,9 @@ int ServerNode::run()
 	  printf("Port: %u\n", header->m_port);
 	  printf("ID: %u\n", header->m_id);
 			  
-          ObjectUpdateMessagePayload * ptrPayload = (ObjectUpdateMessagePayload*)message->getPayloadPtr();
-          printf("ID: %u\n", ptrPayload->id);
+      ObjectUpdateMessagePayload * ptrPayload = (ObjectUpdateMessagePayload*)message->getPayloadPtr();
+      ptrPayload->dumpOffsets();
+      printf("ID: %u\n", ptrPayload->id);
 	  printf("TimeStamp: %u\n", ptrPayload->timeStamp);
 	  printf("PositionX: %f, PositionY: %f, PositionZ: %f\n", 
 			ptrPayload->globalPosition.x,

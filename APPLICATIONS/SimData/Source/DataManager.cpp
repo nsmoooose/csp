@@ -55,8 +55,8 @@ void DataManager::addArchive(DataArchive *d) {
 			_archive_map[*i] = n;
 		}
 		d->setManager(this);
-		DataArchive::child_map const &map = d->getChildMap();
-		DataArchive::child_map::const_iterator imap = map.begin();
+		DataArchive::ChildMap const &map = d->getChildMap();
+		DataArchive::ChildMap::const_iterator imap = map.begin();
 		for (; imap != map.end(); imap++) {
 			std::vector<ObjectID> &childlist = _children[imap->first];
 			childlist.insert(childlist.begin(), imap->second.begin(), imap->second.end());
@@ -65,7 +65,7 @@ void DataManager::addArchive(DataArchive *d) {
 }
 
 std::vector<ObjectID> DataManager::getChildren(ObjectID const &id) const {
-	child_map::const_iterator idx = _children.find(id);
+	DataArchive::ChildMap::const_iterator idx = _children.find(id);
 	if (idx == _children.end()) { return std::vector<ObjectID>(); }
 	return idx->second;
 }

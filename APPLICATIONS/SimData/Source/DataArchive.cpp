@@ -33,10 +33,10 @@ DataArchive* DataArchive::defaultArchive = 0;
 
 
 /*
-long DataArchive::_getOffset() { return ftell(f); } // for Python use only
+long DataArchive::_getOffset() { return ftell(_f); } // for Python use only
 FP DataArchive::_filePointer() { 
 	FP x;
-	x.f = f;
+	x.f = _f;
 	x.name = _fn;
 	x.mode = isWrite() ? "wb" : "rb";
 	return x; 
@@ -51,17 +51,13 @@ std::string base_path(std::string const &path) {
 
 
 void DataArchive::_addEntry(int offset, int length, hasht hash, std::string const &path) {
-	if (n_objects == allocation) {
-		allocation += AS;
-		table = (TableEntry*) realloc(table, sizeof(TableEntry)*allocation);
-	}
-	TableEntry &t = table[n_objects];
+	TableEntry t;
 	t.offset = offset;
 	t.length = length;
 	t.classhash = hash;
 	t.pathhash = hash_string(path);
-	table_map[t.pathhash] = n_objects;
-	n_objects++;
+	_table_map[t.pathhash] = _table.size();
+	_table.push_back(t);
 	hasht parent = hash_string(base_path(path));
 	_children[parent].push_back(t.pathhash);
 	_paths.push_back(path);
@@ -69,12 +65,12 @@ void DataArchive::_addEntry(int offset, int length, hasht hash, std::string cons
 }
 
 void DataArchive::writeMagic() {
-	fprintf(f, "RAWDAT-%c", (G_BYTE_ORDER == G_LITTLE_ENDIAN) ? 'L' : 'B');
+	fprintf(_f, "RAWDAT-%c", (G_BYTE_ORDER == G_LITTLE_ENDIAN) ? 'L' : 'B');
 }
 
 void DataArchive::readMagic() {
 	char magic[9];
-	fread(magic, 8, 1, f);
+	fread(magic, 8, 1, _f);
 	magic[8] = 0;
 	if (strncmp(magic, "RAWDAT-", 7)) {
 		std::string msg;
@@ -92,145 +88,129 @@ void DataArchive::readMagic() {
 
 void DataArchive::readTable() {
 	size_t n;
-	n = fread(&table_offset, sizeof(table_offset), 1, f);
+	n = fread(&_table_offset, sizeof(_table_offset), 1, _f);
 	if (n != 1) {
 		throw CorruptArchive("Lookup table offset.");
 	}
-	fseek(f, table_offset, SEEK_SET);
-	n = fread(&n_objects, sizeof(n_objects), 1, f);
-	if (n != 1 || n_objects < 0 || n_objects > 100000) {
+	fseek(_f, _table_offset, SEEK_SET);
+	uint32 n_objects;
+	n = fread(&n_objects, sizeof(n_objects), 1, _f);
+	if (n != 1 || n_objects > 100000) {
 		throw CorruptArchive("Number of objects.");
 	}
-	allocation = n_objects;
-	table = (TableEntry*) malloc(sizeof(TableEntry)*n_objects);
-	assert(table != 0);
-	n = fread(table, sizeof(TableEntry), n_objects, f);
-	if ((int) n != n_objects) {
+	_table.resize(n_objects);
+	n = fread(&(_table[0]), sizeof(TableEntry), n_objects, _f);
+	if (static_cast<uint32>(n) != n_objects) {
 		throw CorruptArchive("Lookup table truncated.");
 	}
-	int i;
-	for (i = 0; i < n_objects; i++) {
-		//printf("%6d %d\n", i, table[i].pathhash);
-		table_map[table[i].pathhash] = i;
-		//printf("%02d: ", i);
-		//std::cout << table[i].pathhash << " " << table[i].classhash;
-		//printf(" %08x %d\n", table[i].offset, table[i].length);
+	for (std::size_t i = 0; i < static_cast<std::size_t>(n_objects); i++) {
+		_table_map[_table[i].pathhash] = i;
 	}
 	_readPaths();
 }
 
 void DataArchive::_readPaths() {
-	int path_toc_size;
-	char *toc_buffer = 0;
+	uint32 path_toc_size;
 	size_t n;
-	try {
-		n = fread(&path_toc_size, sizeof(int), 1, f);
-		if (n != 1 || path_toc_size < int(sizeof(int)*2) || path_toc_size > 1000000) {
+	n = fread(&path_toc_size, sizeof(path_toc_size), 1, _f);
+	if (n != 1 || path_toc_size < static_cast<uint32>(sizeof(uint32)*2) || path_toc_size > 1000000) {
+		throw CorruptArchive("Path table of contents.");
+	}
+	std::vector<char> toc_buffer(path_toc_size);
+	n = fread(&(toc_buffer[0]), 1, path_toc_size, _f);
+	if (static_cast<uint32>(n) != path_toc_size || toc_buffer[path_toc_size-1] != 0) {
+		throw CorruptArchive("Path table of contents truncated.");
+	}
+	uint32 *iptr = reinterpret_cast<uint32*>(&toc_buffer[0]);
+	uint32 n_paths = *iptr++;
+	uint32 n_directories = *iptr++;
+	_paths.reserve(n_paths);
+	hasht *hptr = reinterpret_cast<hasht *>(iptr);
+	while (n_directories-- > 0) {
+		hasht node = *hptr++;
+		uint32 n = hptr->a;
+		++hptr;
+		if (n > n_paths) {
 			throw CorruptArchive("Path table of contents.");
 		}
-		toc_buffer = (char*) malloc(path_toc_size);
-		assert(toc_buffer);
-		n = fread(toc_buffer, 1, path_toc_size, f);
-		if ((int) n != path_toc_size || toc_buffer[path_toc_size-1] != 0) {
-			throw CorruptArchive("Path table of contents truncated.");
+		std::vector<hasht> &childlist = _children[node];
+		childlist.reserve(n);
+		while (n-- > 0) {
+			childlist.push_back(*hptr++);
 		}
-		int *iptr;
-		hasht *hptr;
-		iptr = (int*) toc_buffer;
-		int n_paths = *iptr++;
-		int n_directories = *iptr++;
-		_paths.reserve(n_paths);
-		hptr = (hasht *) iptr;
-		while (n_directories-- > 0) {
-			hasht node = *hptr++;
-			int n = hptr->a;
-			hptr++;
-			if (n < 0 || n > n_paths) {
-				throw CorruptArchive("Path table of contents.");
-			}
-			std::vector<hasht> &childlist = _children[node];
-			childlist.reserve(n);
-			while (n-- > 0) {
-				childlist.push_back(*hptr++);
-			}
-		}
-		char *cptr = (char*) hptr;
-		char *toc_end = toc_buffer + path_toc_size;
-		while (n_paths-- > 0) {
-			std::string path = cptr;
-			cptr += path.size() + 1;
-			_paths.push_back(path);
-			_pathmap[hash_string(path)] = path;
-			if (cptr >= toc_end && n_paths != 0) {
-				throw CorruptArchive("Path table of contents truncated.");
-			}
-		}
-		if (cptr != toc_end) {
+	}
+	char *cptr = reinterpret_cast<char*>(hptr);
+	char *toc_end = &(toc_buffer[0]) + path_toc_size;
+	while (n_paths-- > 0) {
+		std::string path = cptr;
+		cptr += path.size() + 1;
+		_paths.push_back(path);
+		_pathmap[hash_string(path)] = path;
+		if (cptr >= toc_end && n_paths != 0) {
 			throw CorruptArchive("Path table of contents truncated.");
 		}
 	}
-	catch (...) {
-		if (toc_buffer != 0) free(toc_buffer);
-		throw;
+	if (cptr != toc_end) {
+		throw CorruptArchive("Path table of contents truncated.");
 	}
-	free(toc_buffer);
 }
 
 void DataArchive::writeTable() {
-	assert(!is_read);
-	if (finalized) return;
-	table_offset = ftell(f);
-	fwrite(&n_objects, 4, 1, f);
-	fwrite(table, sizeof(TableEntry), n_objects, f);
+	assert(!_is_read);
+	if (_finalized) return;
+	_table_offset = static_cast<uint32>(ftell(_f));
+	uint32 n_objects = static_cast<uint32>(_table.size());
+	fwrite(&n_objects, sizeof(n_objects), 1, _f);
+	fwrite(&(_table[0]), sizeof(TableEntry), _table.size(), _f);
 	_writePaths();
-	fseek(f, 8, SEEK_SET);
-	fwrite(&table_offset, 4, 1, f);
-	finalized = 1;
+	fseek(_f, 8, SEEK_SET);
+	fwrite(&_table_offset, sizeof(_table_offset), 1, _f);
+	_finalized = true;
 }	
 
 void DataArchive::_writePaths() const {
-	child_map::const_iterator iter;
-	long start = ftell(f);
-	int size = 0;
-	fwrite(&size, sizeof(size), 1, f);
+	ChildMap::const_iterator iter;
+	long start = ftell(_f);
+	uint32 size = 0;
+	fwrite(&size, sizeof(size), 1, _f);
 	size = _paths.size();
-	fwrite(&size, sizeof(size), 1, f);
+	fwrite(&size, sizeof(size), 1, _f);
 	size = _children.size();
-	fwrite(&size, sizeof(size), 1, f);
+	fwrite(&size, sizeof(size), 1, _f);
 	for (iter = _children.begin(); iter != _children.end(); iter++) {
 		hasht size = iter->second.size();
-		fwrite(&(iter->first), sizeof(hasht), 1, f);
-		fwrite(&size, sizeof(size), 1, f);
+		fwrite(&(iter->first), sizeof(hasht), 1, _f);
+		fwrite(&size, sizeof(size), 1, _f);
 		std::vector<hasht>::const_iterator child = iter->second.begin();
 		std::vector<hasht>::const_iterator last_child = iter->second.end();
 		while (child != last_child) {
-			fwrite(&(*child++), sizeof(hasht), 1, f);
+			fwrite(&(*child++), sizeof(hasht), 1, _f);
 		}
 	}
 	std::vector<std::string>::const_iterator path = _paths.begin();
 	std::vector<std::string>::const_iterator last_path = _paths.end();
 	for (; path != last_path; path++) {
-		fwrite(path->c_str(), path->size()+1, 1, f);
+		fwrite(path->c_str(), path->size()+1, 1, _f);
 	}
-	long end = ftell(f);
-	fseek(f, start, SEEK_SET);
-	size = end - start - sizeof(int);
-	fwrite(&size, sizeof(size), 1, f);
-	fseek(f, end, SEEK_SET);
+	long end = ftell(_f);
+	fseek(_f, start, SEEK_SET);
+	size = static_cast<uint32>(end - start - sizeof(int));
+	fwrite(&size, sizeof(size), 1, _f);
+	fseek(_f, end, SEEK_SET);
 }
 
-DataArchive::DataArchive(std::string const &fn, int read, bool chain_) {
-	chain = chain_;
-	finalized = 0;
-	manager = 0;
+DataArchive::DataArchive(std::string const &fn, bool read, bool chain) {
+	_chain = chain;
+	_finalized = false;
+	_manager = 0;
+	_buffers.resize(BUFFERS);
 	for (int b = 0; b < BUFFERS; b++) {
-		object_buffer[b] = (char*) malloc(BUFFERSIZE);
-		assert(object_buffer[b] != 0);
+		_buffers[b].resize(BUFFERSIZE);
 	}
-	n_buffer = 0;
+	_buffer = 0;
 	_fn = fn;
-	f = (FILE*) fopen(fn.c_str(), read ? "rb" : "wb");
-	if (f == NULL) {
+	_f = (FILE*) fopen(fn.c_str(), read ? "rb" : "wb");
+	if (_f == NULL) {
 		std::string msg;
 		msg = msg + "Unable to open DataArchive '" + fn + "'";
 		if (read)
@@ -239,33 +219,23 @@ DataArchive::DataArchive(std::string const &fn, int read, bool chain_) {
 			msg += " for writing.";
 		throw IOError(msg.c_str());
 	}
-	is_read = read;
-	if (is_read) {
+	_is_read = read;
+	if (_is_read) {
 		readMagic();
 		readTable();
 	} else {
-		n_objects = 0;
-		table = (TableEntry*) malloc(sizeof(TableEntry)*AS);
-		assert(table != 0);
-		allocation = AS;
+		_table.reserve(AS);
 		writeMagic();
-		fwrite(&table_offset, 4, 1, f);
+		fwrite(&_table_offset, sizeof(_table_offset), 1, _f);
 	}
 }
 
 DataArchive::~DataArchive() {
-	assert(manager == 0);
-	if (!is_read && !finalized) {
+	assert(_manager == 0);
+	if (!_is_read && !_finalized) {
 		writeTable();
 	}
-	if (f != 0) fclose(f);
-	for (int b = 0; b < BUFFERS; b++) {
-		if (object_buffer[b] != 0) free(object_buffer[b]);
-	}
-	if (table != 0) {
-		free(table);
-		table = 0;
-	}
+	if (_f != 0) fclose(_f);
 	if (defaultArchive == this) defaultArchive = 0;
 }
 
@@ -280,9 +250,9 @@ DataArchive *DataArchive::getDefault() {
 
 
 void DataArchive::addObject(Object& a, std::string const &path) {
-	if (!is_read && !finalized) {
-		int offset = ftell(f);
-		Packer p(f);
+	if (!_is_read && !_finalized) {
+		int offset = ftell(_f);
+		Packer p(_f);
 		a.pack(p);
 		int length = p.getCount();
 		SIMDATA_LOG(LOG_ARCHIVE, LOG_DEBUG, "DataArchive: adding " << path << " (" << length << " bytes) [" << hash_string(path) << "]");
@@ -296,7 +266,7 @@ const LinkBase DataArchive::getObject(std::string const &path) {
 }
 
 std::vector<ObjectID> DataArchive::getChildren(ObjectID const &id) const {
-	child_map::const_iterator idx = _children.find(id);
+	ChildMap::const_iterator idx = _children.find(id);
 	if (idx == _children.end()) { return std::vector<ObjectID>(); }
 	return idx->second;
 }
@@ -306,7 +276,7 @@ std::vector<ObjectID> DataArchive::getChildren(std::string const & path) const {
 }
 
 bool DataArchive::hasObject(ObjectID const &id) const {
-	child_map::const_iterator idx = _children.find(id);
+	ChildMap::const_iterator idx = _children.find(id);
 	return (idx != _children.end());
 }
 
@@ -315,7 +285,7 @@ bool DataArchive::hasObject(std::string const & path) const {
 }
 
 std::string DataArchive::getPathString(ObjectID const &id) const {
-	path_map::const_iterator idx = _pathmap.find(id);
+	PathMap::const_iterator idx = _pathmap.find(id);
 	if (idx == _pathmap.end()) return "";
 	return idx->second;
 }
@@ -326,8 +296,8 @@ const DataArchive::TableEntry* DataArchive::_lookupPath(Path const &path, std::s
 }
 
 const DataArchive::TableEntry* DataArchive::_lookupPath(ObjectID const &id, std::string const &path_str) const {
-	hasht_map::const_iterator i = table_map.find(id);
-	if (i == table_map.end()) {
+	TableMap::const_iterator i = _table_map.find(id);
+	if (i == _table_map.end()) {
 		std::string msg = path_str;
 		if (msg=="") {
 			msg = getPathString(id);
@@ -339,7 +309,7 @@ const DataArchive::TableEntry* DataArchive::_lookupPath(ObjectID const &id, std:
 		throw IndexError(msg.c_str());
 	}
 	int idx = (*i).second;
-	return &(table[idx]);
+	return &(_table[idx]);
 }
 
 Object *DataArchive::_createObject(hasht classhash) {
@@ -369,8 +339,8 @@ const LinkBase DataArchive::getObject(const Path& path, std::string const &path_
 		t = _lookupPath(path, path_str);
 	}
 	catch (IndexError) {
-		if (manager) {
-			return manager->getObject(path, path_str, this);
+		if (_manager) {
+			return _manager->getObject(path, path_str, this);
 		}
 		throw;
 	}
@@ -382,7 +352,7 @@ const LinkBase DataArchive::getObject(const Path& path, std::string const &path_
 			SIMDATA_LOG(LOG_ARCHIVE, LOG_ERROR, "getObject(" << path_str << "):");
 			msg = msg + " '" + path_str + "'";
 		} else {
-			path_map::iterator i = _pathmap.find(id);
+			PathMap::iterator i = _pathmap.find(id);
 			if (i != _pathmap.end()) {
 				msg = msg + " '" + i->second + "'";
 			}
@@ -392,40 +362,36 @@ const LinkBase DataArchive::getObject(const Path& path, std::string const &path_
 		throw MissingInterface(msg);
 	}
 	Object *dup = proxy->createObject();
-	int offset = t->offset;
-	int length = t->length;
+	uint32 offset = t->offset;
+	uint32 length = t->length;
 	char* buffer = 0;
-	bool free_buffer = false;
-	if (n_buffer < BUFFERS && length <= BUFFERSIZE) {
-		buffer = object_buffer[n_buffer];
-		n_buffer++;
+	Buffer temp_buffer;
+	if (_buffer < _buffers.size() && length <= _buffers[_buffer].size()) {
+		buffer = &(_buffers[_buffer][0]);
+		++_buffer;
 	} else {
 		SIMDATA_LOG(LOG_ARCHIVE, LOG_INFO, "BUFFERSIZE exceeded, allocating larger buffer");
-		buffer = (char*) malloc(length);
-		assert(buffer != 0);
-		free_buffer = true;
+		temp_buffer.resize(length);
+		buffer = &(temp_buffer[0]);
 	}
 	assert(buffer);
-	fseek(f, offset, SEEK_SET);
-	fread(buffer, length, 1, f);
-	UnPacker p(buffer, length, this, chain);
+	fseek(_f, offset, SEEK_SET);
+	fread(buffer, length, 1, _f);
+	UnPacker p(buffer, length, this, _chain);
 	SIMDATA_LOG(LOG_ARCHIVE, LOG_DEBUG, "got object " << dup->getClassName());
 	dup->_setPath(id);
 	try {
 		dup->unpack(p);
 	} catch (DataUnderflow &e) {
+		if (temp_buffer.size() == 0) --_buffer;
 		e.clear();	
 		SIMDATA_LOG(LOG_ARCHIVE, LOG_ERROR, "INTERNAL ERROR: Object extraction incomplete for class '" << dup->getClassName() << "'.");
 		throw CorruptArchive("Object extraction incomplete for class '" + std::string(dup->getClassName()) + "'");
 	}
-	if (chain) {
+	if (_chain) {
 		dup->postCreate();
 	}
-	if (free_buffer) {
-		free(buffer);
-	} else {
-		n_buffer--;
-	}
+	if (temp_buffer.size() == 0) --_buffer;
 	if (!p.isComplete()) {
 		SIMDATA_LOG(LOG_ARCHIVE, LOG_ERROR, "INTERNAL ERROR: Object extraction incomplete for class '" << dup->getClassName() << "'.");
 		throw CorruptArchive("Object extraction incomplete for class '" + std::string(dup->getClassName()) + "'");
@@ -441,21 +407,21 @@ const LinkBase DataArchive::getObject(const Path& path, std::string const &path_
 
 void DataArchive::_addStatic(Object* ptr, std::string const &path, hasht id) {
 	if (id == 0) id = hash_string(path);
-	static_map[id] = LinkBase(Path(path), ptr);
+	_static_map[id] = LinkBase(Path(path), ptr);
 }
 
 LinkBase const* DataArchive::_getStatic(hasht id=0) {
-	cache_map::const_iterator i = static_map.find(id);
-	if (i == static_map.end()) return 0;
+	CacheMap::const_iterator i = _static_map.find(id);
+	if (i == _static_map.end()) return 0;
 	return &(i->second);
 }
 
 void DataArchive::cleanStatic() {
 	std::vector<ObjectID> unused;
 	unused.reserve(64);
-	if (!static_map.empty()) {
-		cache_map::const_iterator i = static_map.begin();
-		cache_map::const_iterator j = static_map.end();
+	if (!_static_map.empty()) {
+		CacheMap::const_iterator i = _static_map.begin();
+		CacheMap::const_iterator j = _static_map.end();
 		for (; i != j; i++) {
 			if (i->second.unique()) {
 				unused.push_back(i->first);
@@ -466,30 +432,30 @@ void DataArchive::cleanStatic() {
 		std::vector<ObjectID>::iterator i = unused.begin();
 		std::vector<ObjectID>::iterator j = unused.end();
 		for (; i != j; i++) {
-			static_map.erase(static_map.find(*i));
+			_static_map.erase(_static_map.find(*i));
 		}
 	}
 }
 
 void DataArchive::finalize() {
 	writeTable();
-	if (f != 0) fclose(f);
-	f = 0;
+	if (_f != 0) fclose(_f);
+	_f = 0;
 }
 
 bool DataArchive::isFinalized() {
-	return (finalized != 0);
+	return _finalized;
 }
 
 bool DataArchive::isWrite() {
-	return !is_read;
+	return !_is_read;
 }
 
 std::vector<ObjectID> DataArchive::getAllObjects() const {
+	std::size_t n_objects = _table.size();
 	std::vector<ObjectID> ids(n_objects);
-	int i;
-	for (i = 0; i < n_objects; i++) {
-		ids[i] = table[i].pathhash;
+	for (unsigned int i = 0; i < n_objects; i++) {
+		ids[i] = _table[i].pathhash;
 	}
 	return ids;
 }
@@ -504,8 +470,8 @@ InterfaceProxy *DataArchive::getObjectInterface(ObjectID const &id, std::string 
 		t = _lookupPath(id, path);
 	}
 	catch (IndexError) {
-		if (manager) {
-			return manager->getObjectInterface(id, path, this);
+		if (_manager) {
+			return _manager->getObjectInterface(id, path, this);
 		}
 		throw;
 	}

@@ -90,6 +90,8 @@ class SIMDATA_EXPORT DataArchive {
 
 private:
 
+	typedef std::vector<char> Buffer;
+
 	/** An entry in the data archive lookup table.
 	 *
 	 *  The lookup table is an index of all objects in the
@@ -102,9 +104,9 @@ private:
 		/// the class identifier hash
 		hasht classhash;
 		/// the file offset of the serialized object
-		int32 offset;
+		uint32 offset;
 		/// the size of the serialized object data (in bytes) 
-		int32 length;
+		uint32 length;
 	};
 
 	/** Global default archive.
@@ -132,66 +134,47 @@ private:
 
 	/** A table that indexes all objects in the archive.
 	 */
-	TableEntry* table;
-	int n_objects, allocation;
-
-	/**
-	 * BUFFERS default buffers of size BUFFERSIZE.
-	 *
-	 * An additional buffer is required for every subobject deserialized
-	 * by Link<>.  If more than BUFFER objects must be deserialized 
-	 * concurrently, or any object exceeds BUFFERSIZE, additional storage 
-	 * will be allocated dynamically.  The use of these fixed buffers
-	 * reduces the need for repeated buffer allocation and deallocation
-	 * when deserializing many small to medium sized objects.
-	 */
-	char* object_buffer[BUFFERS]; // vector<string> here?
-	int n_buffer;
-
-	/////////// 
-	
-	/* TODO: explore using C++ constructs for data archive storage
-	 
-	enum { 
-		DEFAULT_BUFFERSIZE = 4096,
-		DEFAULT_BUFFERS = 10,
-	};
-
-	struct Buffer {
-		char *cbuf;
-		Buffer(int size=DEFAULT_BUFFERSIZE) { cbuf = new char[size]; }
-		~Buffer() { delete[] cbuf; }
-	};
-
 	std::vector<TableEntry> _table;
+
+	/** Object read buffers.
+	 *
+	 *  An additional buffer is required for every subobject deserialized
+	 *  by Link<>.  If more than BUFFER objects must be deserialized 
+	 *  concurrently, or any object exceeds BUFFERSIZE, additional storage 
+	 *  will be allocated dynamically.  The use of these fixed buffers
+	 *  reduces the need for repeated buffer allocation and deallocation
+	 *  when deserializing many small to medium sized objects.
+	 */
 	std::vector<Buffer> _buffers;
-	*/
+	/// The number of buffers currently in use.
+	unsigned int _buffer;
 
-	/////////// 
 	
-	typedef HASH_MAPS<hasht, std::vector<hasht>, hasht_hash, hasht_eq>::Type child_map;
+	typedef HASH_MAPS<hasht, std::vector<hasht>, hasht_hash, hasht_eq>::Type ChildMap;
 	/// A map of all parent-child relationships in the archive.
-	child_map _children;
+	ChildMap _children;
 
-	typedef HASH_MAPS<hasht, std::string, hasht_hash, hasht_eq>::Type path_map;
+	typedef HASH_MAPS<hasht, std::string, hasht_hash, hasht_eq>::Type PathMap;
 	/// A map for accessing the path string of any object id in the archive.
-	path_map _pathmap;
+	PathMap _pathmap;
+
+	typedef HASH_MAPS<hasht, std::size_t, hasht_hash, hasht_eq>::Type TableMap;
+	/// A map for finding the table index of an object id in the archive.
+	TableMap _table_map;
+
+	typedef HASH_MAPS<hasht, LinkBase, hasht_hash, hasht_eq>::Type CacheMap;
+	/// A map of all cached objects indexed by object id.
+	CacheMap _static_map;
 
 	std::vector<std::string> _paths;
 	
-	FILE *f;
-	int is_read;
-	long table_offset;
-	int bytes;
-	int finalized;
-	hasht_map table_map;
+	FILE *_f;
+	bool _is_read;
+	uint32 _table_offset;
+	bool _finalized;
 	std::string _fn;
-	bool chain;
-	DataManager *manager;
-
-	typedef HASH_MAPS<hasht, LinkBase, hasht_hash, hasht_eq>::Type cache_map;
-	/// A map of all cached objects indexed by object id.
-	cache_map static_map;
+	bool _chain;
+	DataManager *_manager;
 
 	/** Write a "magic" string to the start of the file to
 	 *  identify it as a data archive.
@@ -236,10 +219,10 @@ public:
 	/** Open a new data archive.
 	 *
 	 *  @param fn the full path to the archive file
-	 *  @param read nonzero for read mode.
+	 *  @param read true for read mode, false for write mode.
 	 *  @param chain this is for internal use only.
 	 */
-	DataArchive(std::string const &fn, int read, bool chain=true);
+	DataArchive(std::string const &fn, bool read, bool chain=true);
 
 	/** Close the data archive and cleanup.
 	 */
@@ -438,8 +421,8 @@ protected:
 	const TableEntry* _lookupPath(ObjectID const &id, std::string const &path_str="") const;
 
 private:
-	void setManager(DataManager *m) { manager = m; }
-	child_map const &getChildMap() const { return _children; }
+	void setManager(DataManager *m) { _manager = m; }
+	ChildMap const &getChildMap() const { return _children; }
 };
 
 

@@ -38,13 +38,17 @@ class AircraftInputSystem: public System {
 		double m_Decay;
 		int m_DecayCount;
 		double m_Increment;
+		double m_Minimum;
+		double m_Maximum;
 		DataChannel<double>::Ref m_Channel;
 	public:
-		CombinedInput(double rate=0.4, double decay=0.9): 
+		CombinedInput(double rate=0.4, double decay=0.9, double minimum=-1.0, double maximum=1.0): 
 			m_Rate(rate),
-			m_Decay(decay), 
-			m_DecayCount(0), 
-			m_Increment(0.0) 
+			m_Decay(decay),
+			m_DecayCount(0),
+			m_Increment(0.0),
+			m_Minimum(minimum),
+			m_Maximum(maximum)
 		{
 		}
 		void connect(Bus *bus, std::string const &name) {
@@ -57,7 +61,7 @@ class AircraftInputSystem: public System {
 				m_DecayCount--;
 				if (m_Increment == 0.0) v *= m_Decay;
 			}
-			m_Channel->value() = simdata::clampTo(v,-1.0,1.0);
+			m_Channel->value() = simdata::clampTo(v, m_Minimum, m_Maximum);
 		}
 		double getValue() {
 			return m_Channel->value();

@@ -1,6 +1,9 @@
  Version 0.4.0 (in progress)
 ===========================
 
+2004-08-08: onsight
+  * Clamp throttle to [0,1] when using keyboard controls (was [-1,1]).
+
 2004-08-07: onsight
   * Cleaned up tree images a bit to remove purple pixels.  Converted
     tree0.rgba to png.  Adjusted the aspect ratios slightly.

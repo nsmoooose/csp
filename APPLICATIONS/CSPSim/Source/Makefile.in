@@ -2,7 +2,7 @@ TOPDIR = ..
 
 BIN = $(TOPDIR)/Bin
 
-SUBDIRS = Theater 
+SUBDIRS = Theater Networking Views 
 
 DEMETER_PREFIX = $(TOPDIR)/$(DEMETER_RELATIVE)
 DEMETER_INCLUDE = -I$(DEMETER_PREFIX)
@@ -57,6 +57,13 @@ SOURCES = \
 	LogoScreen.cpp \
 	MenuScreen.cpp \
  	Message.cpp \
+	Networking/NetworkNode.cpp \
+	Networking/NetworkMessage.cpp \
+	Networking/ObjectUpdateMessage.cpp \
+	Networking/NetworkMessenger.cpp \
+	Networking/NetworkBroadcaster.cpp \
+	Networking/NetworkListener.cpp \
+	Networking/NetworkSocket.cpp \
 	NumericalMethod.cpp \
 	ObjectModel.cpp \
 	ObjectRangeInfo.cpp \
@@ -101,7 +108,7 @@ MKDEP = $(CXX) -M $(CFLAGS)
 SWDEP = $(SWIG) -M $(SWOPTS)
 DEPFILES = $(addprefix $(DEPDIR)/,$(addsuffix .d, $(SOURCES))) $(DEPDIR)/cCSP.i.swigdep
 DEPFILTER = 
-DEPS_MAGIC := $(shell mkdir $(DEPDIR) $(DEPDIR)/Theater $(DEPDIR)/Systems > /dev/null 2>&1 || :)
+DEPS_MAGIC := $(shell mkdir $(DEPDIR) $(DEPDIR)/Theater $(DEPDIR)/Systems $(DEPDIR)/Networking $(DEPDIR)/Views > /dev/null 2>&1 || :)
 
 .PHONY: clean-deps clean all default
 

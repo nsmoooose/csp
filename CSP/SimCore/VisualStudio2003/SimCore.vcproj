@@ -160,6 +160,9 @@
 				Name="Util"
 				Filter="">
 				<File
+					RelativePath="..\Util\Callback.h">
+				</File>
+				<File
 					RelativePath="..\Util\Dispatch.h">
 				</File>
 				<File

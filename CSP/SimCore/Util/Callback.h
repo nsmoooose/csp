@@ -145,12 +145,12 @@ ScopedCallback0::ScopedCallback0(C *instance, void (C::*method)())
 
 template <typename M>
 template <class C>
-ScopedCallback1<M>::ScopedCallback1<M>(C *instance, void (C::*method)(M))
+ScopedCallback1<M>::ScopedCallback1(C *instance, void (C::*method)(M))
 	: simdata::ScopedPointer<Callback1<M> >(new Callback1<M>(instance, method)) { }
 
 template <typename M, typename N>
 template <class C>
-ScopedCallback2<M, N>::ScopedCallback2<M, N>(C *instance, void (C::*method)(M, N))
+ScopedCallback2<M, N>::ScopedCallback2(C *instance, void (C::*method)(M, N))
 	: simdata::ScopedPointer<Callback2<M, N> >(new Callback2<M, N>(instance, method)) { }
 
 

@@ -1,5 +1,9 @@
 Version 0.4.0 (in progress)
 ===========================
+
+2004-07-26: delta
+ * Removed some not needed SIMDATA_EXPORT for vs 7.1.
+
 2004-07-25: onsight
   * Add a fast typecast operator to TaggedRecord, which checks record
     ids and performs a static cast if the ids match.  This is much

@@ -17,6 +17,8 @@
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 
+
+
 /**
  * @file Vector3.inl
  *
@@ -25,17 +27,25 @@
  **/
 
 
+
+
 #ifndef __VECTOR3_INL__
 #define __VECTOR3_INL__
+
+
 
 
 //namespace Math
 //{
 
 
+
+
 ////////////////////////////////////////////////////////
 // Vector3
 ////////////////////////////////////////////////////////
+
+
 
 
 /**
@@ -47,6 +57,7 @@ inline Vector3::Vector3()
 	// don't initialize 
 }
 
+
 /**
  * Vector3(double x, double y, double z)
  * Constructor from doubles
@@ -56,6 +67,7 @@ inline Vector3::Vector3(double _x, double _y, double _z)
 	x = _x; y = _y; z = _z;
 }
 
+
 /** 
  * Vector3(Vector3 &v) 
  * Copy constructor
@@ -64,6 +76,7 @@ inline Vector3::Vector3(const Vector3 &v)
 {
 	x = v.x; y = v.y; z = v.z;
 }
+
 
 /**
  * Array Indexing
@@ -83,8 +96,10 @@ inline Vector3::operator double * ()
 	return (double *)&x;
 }
 
+
 /* Arithmatic assignment operators
  */
+
 
 /**
  * Set this vector equal to another one.
@@ -98,6 +113,8 @@ inline Vector3 & Vector3::operator=(const Vector3 &v)
 }
 
 
+
+
 /** 
  * Add another vector to this one.
  */
@@ -108,7 +125,8 @@ inline Vector3 & Vector3::operator+=(const Vector3 & v)
 	z += v.z;
 	return *this;
 }
-   
+
+
 /** 
  * Subtract another vector from this one.
  */ 
@@ -119,6 +137,7 @@ inline Vector3 & Vector3::operator-=(const Vector3 & v)
 	z -= v.z;
 	return *this;
 }
+
 
 /**
  * Multiply this vector by a double 
@@ -131,6 +150,8 @@ inline Vector3 & Vector3::operator*=(double f)
 	return *this;
 }
 
+
+
 /** 
  * Equality operator
  */
@@ -138,6 +159,7 @@ inline bool operator==(const Vector3 &a, const Vector3 &b)
 {
 	return ((a.x == b.x) && (a.y == b.y) && (a.z == b.z));
 }
+
 
 /** 
  * Inequality operator
@@ -147,6 +169,7 @@ inline bool operator!=(const Vector3 &a, const Vector3 &b)
 	return ((a.x != b.x) || (a.y != b.y) || (a.z != b.z));
 }
 
+
 /** 
  * Negation operator
  */
@@ -154,7 +177,8 @@ inline Vector3 Vector3::operator-() const
 {
 	return Vector3(-x,-y,-z);
 }
-   
+  
+
 /** 
  * Add two vectors
  */ 
@@ -162,7 +186,8 @@ inline Vector3 Vector3::operator-() const
 //{
 //  return Vector3(a.x+b.x, a.y+b.y, a.z+b.z);
 //}
-   
+
+
 /** 
  * Subtract one vector from another.
  */
@@ -172,6 +197,7 @@ inline Vector3 Vector3::operator-(const Vector3 &b) const
 	aVector3 -= b;
 	return aVector3;
 }
+
    
 /** 
  * Multiply a scalar by a vector.
@@ -181,10 +207,6 @@ inline Vector3 operator*(double f, const Vector3 &a)
 	return Vector3(f*a.x, f*a.y, f*a.z);
 }
 
-inline Vector3 operator*(double f, Vector3 &a)
-{
-	return Vector3(f*a.x, f*a.y, f*a.z);
-}
 
 
 /** 
@@ -195,13 +217,17 @@ inline void Vector3::Set(double _x, double _y, double _z)
 	x = _x; y = _y; z = _z;
 }
 
+
+
 /** 
  * Calculate the length of the Vector3
  */
 inline double Vector3::Length() const // Checked (delta)
 {
-	return (double)(sqrt(x*x + y*y + z*z));
+	return static_cast<double>(sqrt(x*x + y*y + z*z));
 }
+
+
 
 /**
  * Calculate the length of the vector squared.
@@ -213,6 +239,7 @@ inline double Vector3::LengthSquared() const
 {
 	return (x*x+y*y+z*z);
 }
+
   
 /** 
  * Determine if all the components of the vector are zero.
@@ -231,6 +258,7 @@ inline double Dot (const Vector3& aVector,
 	return aVector.x*bVector.x + aVector.y*bVector.y + aVector.z*bVector.z;
 }
 
+
 /** 
  * Compute the cross product of two vectors
  */
@@ -243,19 +271,23 @@ inline Vector3 Cross (const Vector3& aVector,
 		aVector.x*bVector.y-aVector.y*bVector.x);
 }
 
+
 /** 
  * Return a normalized vector of the input vector.
  */
 inline Vector3 Normalized(const Vector3 &a)
+
 {
 	Vector3 ret(a);
 	return ret.Normalize();
 }                
 
+
 /**
  * Vector cross product (u cross v)
  */
 inline	Vector3 operator^(const Vector3 & u, const Vector3  & v)
+
 {
 	return Vector3(	
 		 u.y*v.z - u.z*v.y,
@@ -264,7 +296,11 @@ inline	Vector3 operator^(const Vector3 & u, const Vector3  & v)
 }
 
 
+
 //} // namespace Math
 
+
 #endif // __VECTOR3_INL__
+
+
 

@@ -25,9 +25,9 @@
 NAMESPACE_SIMDATA
 
 
-/**
- * Calculates the angle between two vectors (with orientation)
- */
+//
+// Calculates the angle between two vectors (with orientation)
+//
 double angleBetweenTwoVectors(const Vector3 & v1, const Vector3 & v2)
 {
 	double l1 = v1.Length(), l = l1 * v2.Length();
@@ -49,7 +49,6 @@ double angleBetweenTwoVectors(const Vector3 & v1, const Vector3 & v2)
 		return -acos(cosa);
 	}
 }
-
 
 
 NAMESPACE_END // namespace simdata

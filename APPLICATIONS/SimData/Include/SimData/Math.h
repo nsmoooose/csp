@@ -31,7 +31,6 @@ NAMESPACE_SIMDATA
 
 class Vector3;
 
-
 inline double DegreesToRadians(double deg)
 {
         return deg * G_PI / 180.0f;

@@ -112,7 +112,7 @@ G_GNUC_EXTENSION typedef unsigned long long guint64;
  *  defined then the current definition is correct.
  */
 #ifndef	NULL
-#define	NULL	((void*) 0)
+#define	NULL	0
 #endif
 
 #undef	MAX

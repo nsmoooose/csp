@@ -9,6 +9,7 @@ NAMESPACE_SIMDATA
  *
  */
 
+
 // class Enum
 
 Enum::Enum(const Enumeration& parent, const std::string &s, int idx): _parent(&parent), _name(s), _id(idx) {

@@ -29,15 +29,17 @@
 #ifndef __PATH_H__
 #define __PATH_H__
 
-#if defined(_MSC_VER) && (_MSC_VER <= 1200)
+#if defined(_MSC_VER) && (_MSC_VER <= 1300)
 #pragma warning (disable : 4290)
+#endif
+
+
+#if defined(_MSC_VER) && (_MSC_VER <= 1300)
+#include <cassert>
 #endif
 
 #include <string>
 
-#if defined(_MSC_VER) && (_MSC_VER <= 1300)
-#include <assert.h>
-#endif
 
 #include <SimData/HashUtility.h>
 #include <SimData/BaseType.h>

@@ -30,6 +30,7 @@
 #include <string>
 #include <vector>
 
+#include <SimData/Export.h>
 #include <SimData/HashUtility.h>
 #include <SimData/TypeAdapter.h>
 #include <SimData/ObjectInterface.h>
@@ -92,7 +93,7 @@ public:
 	
 	virtual const char *getClassName() const;
 	
-	virtual std::vector<std::string> getVariableNames() const;
+   virtual std::vector<std::string> getVariableNames() const;
 	
 	virtual std::vector<std::string> getRequiredNames() const;
 
@@ -168,15 +169,17 @@ public:
 	static InterfaceRegistry &getInterfaceRegistry() {
 		return Singleton<InterfaceRegistry>::getInstance();
 	}
-
-
+    
+    virtual ~InterfaceRegistry();
 private:
 	friend class Singleton<InterfaceRegistry>;
 	InterfaceRegistry();
-	virtual ~InterfaceRegistry(); 
+	
 	void __cleanup();
-	typedef HASH_MAP<const char *, InterfaceProxy *, HASH<const char *>, eqstr> proxy_map;
-	typedef HASH_MAP<hasht, InterfaceProxy *, hasht_hash, hasht_eq> proxy_id_map;
+
+	typedef HASH_MAPS<const char *, InterfaceProxy *, HASH<const char *>, eqstr>::Type proxy_map;
+	typedef HASH_MAPS<hasht, InterfaceProxy *, hasht_hash, hasht_eq>::Type proxy_id_map;
+
 	proxy_map *__map;
 	proxy_id_map *__id_map;
 	interface_list *__list;

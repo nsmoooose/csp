@@ -18,8 +18,10 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
-#include <SimData/BaseType.h>
 #include <string>
+
+#include <SimData/BaseType.h>
+
 
 NAMESPACE_SIMDATA
 

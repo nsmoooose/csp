@@ -114,7 +114,6 @@ public:
 	// friend arithmetic operators
 	friend Vector3 operator/(const Vector3 &a, double f);
 	friend Vector3 operator*(double f, const Vector3 &a);
-	friend Vector3 operator*(double f, Vector3 &a);
 	friend Vector3 operator^(const Vector3 & u, const Vector3 & v);
 #endif // SWIG
 

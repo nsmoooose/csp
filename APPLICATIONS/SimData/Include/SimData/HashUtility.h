@@ -28,12 +28,12 @@
 #ifndef __HASHUTILITY_H__
 #define __HASHUTILITY_H__
 
-#include <string>
 #include <iostream>
+#include <string>
 
 #include <SimData/Export.h>
-#include <SimData/hash_map.h>
 #include <SimData/GlibCsp.h>
+#include <SimData/hash_map.h>
 #include <SimData/ns-simdata.h>
 
 //typedef int int32;
@@ -63,7 +63,7 @@ NAMESPACE_SIMDATA
 
 struct HashT;
 
-extern u4 newhash4_cstring(const char*);
+extern SIMDATA_EXPORT u4 newhash4_cstring(const char*);
 extern HashT newhasht_cstring(const char*);
 //extern u8 newhash8_cstring(const char*);
 
@@ -115,17 +115,22 @@ struct SIMDATA_EXPORT HashT {
 typedef HashT hasht;
 
 
-struct eqstr {
-	bool operator()(const char* s1, const char* s2) const {
-		return (strcmp(s1, s2) == 0);
-	}
-};
-
-struct eqint {
-	bool operator()(int i1, int i2) const {
-		return (i1 == i2);
-	}
-};
+#if defined(_MSC_VER) && (_MSC_VER == 1300) 
+	struct eqint: public std::hash_compare<int const> {
+		size_t operator ()(int const& i) const {
+			return i;
+		}
+		bool operator()(int const& i1, int const& i2) const {
+			return (i1 < i2);
+		}
+	};
+#else
+	struct eqint {
+		bool operator()(int i1, int i2) const {
+			return (i1 == i2);
+		}
+	};
+#endif
 
 struct hashint {
 	int operator()(int i) const {
@@ -134,17 +139,48 @@ struct hashint {
 };
 
 
-struct hasht_eq {
-	bool operator()(hasht i1, hasht i2) const {
-		return ((i1.a == i2.a) && (i1.b == i2.b));
-	}
-};
+#if defined(_MSC_VER) && (_MSC_VER == 1300) 
+	struct eqstr: public std::hash_compare<char const*>
+		{
+			size_t operator()(char const* s ) const {
+				return newhash4_cstring(s);
+			}
+			bool operator()(char const* s1, char const* s2) const {
+				return (strcmp(s1, s2) < 0);
+			}
+		};
+#else
+	struct eqstr {
+		bool operator()(const char* s1, const char* s2) const {
+			return (strcmp(s1, s2) == 0);
+		}
+	
+	};
+#endif
+
 
 struct hasht_hash {
 	guint32 operator()(hasht i1) const {
 		return i1.a;
 	}
 };
+
+#if defined(_MSC_VER) && (_MSC_VER == 1300) 
+	struct hasht_eq: public std::hash_compare<hasht const> {
+		size_t operator()( hasht const& i1 ) const {
+		return i1.a;
+			}
+		bool operator()(hasht const& i1, hasht const& i2) const {
+			return (i1.a < i2.a || (i1.a == i2.a && i1.b < i2.b));
+		}
+	};
+#else
+	struct hasht_eq {
+		bool operator()(hasht i1, hasht i2) const {
+			return ((i1.a == i2.a) && (i1.b == i2.b));
+		}
+	};
+#endif
 
 /*
 struct equ8 {
@@ -160,18 +196,46 @@ struct hashu8 {
 };
 */
 
+/*
+ * Helpers for storing a hash map of string->int.
+*/
+struct SIMDATA_EXPORT hashstring {
+	static HASH<const char*> h;
+	int operator()(const std::string &s) const {
+		return h(s.c_str());
+	}
+};
+
+#if defined(_MSC_VER) && (_MSC_VER == 1300) 
+	struct eqstring: public std::hash_compare<std::string const> {
+		size_t operator()( std::string const& a ) const {
+			return eqstr()(a.c_str());
+		}
+		bool operator()(std::string const& a, std::string const& b) const {
+				return (a.compare(b) < 0);
+		}
+	};
+#else
+	struct eqstring {
+		bool operator()(const std::string &a, const std::string &b) const {
+			return a == b;
+		}
+	};
+#endif
+
 
 class Object;
 class ObjectProxyBase;
 
 template <class T>
-struct HASHT_MAP {
-	typedef HASH_MAP<hasht, T, hasht_hash, hasht_eq> Type;
-};
+	struct HASHT_MAP {
+		typedef HASH_MAPS<hasht, T, hasht_hash, hasht_eq>::Type Type;
+	};
+typedef HASH_MAPS<hasht, int, hasht_hash, hasht_eq>::Type hasht_map;
+typedef HASH_MAPS<hasht, Object*, hasht_hash, hasht_eq>::Type cache_map;
+typedef HASH_MAPS<hasht, ObjectProxyBase*, hasht_hash, hasht_eq>::Type proxy_map;
 
-typedef HASH_MAP<hasht, int, hasht_hash, hasht_eq> hasht_map;
-typedef HASH_MAP<hasht, Object*, hasht_hash, hasht_eq> cache_map;
-typedef HASH_MAP<hasht, ObjectProxyBase*, hasht_hash, hasht_eq> proxy_map;
+typedef HASH_MAPS<const std::string, int, hashstring, eqstring>::Type string_map;
 
 extern std::ostream & operator<<(std::ostream &o, const hasht &x);
 

@@ -122,6 +122,10 @@ SOURCE=..\Source\External.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\Source\GeoPos.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\Source\HashUtility.cpp
 # End Source File
 # Begin Source File
@@ -179,6 +183,10 @@ SOURCE=..\Source\TypeAdapter.cpp
 # Begin Source File
 
 SOURCE=..\Source\Vector3.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\Source\Version.cpp
 # End Source File
 # End Group
 # Begin Group "Header Files"

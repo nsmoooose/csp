@@ -1,4 +1,4 @@
-/* SimDataCSP: Data Infrastructure for Simulations
+ /* SimDataCSP: Data Infrastructure for Simulations
  * Copyright (C) 2002 Mark Rose <tm2@stm.lbl.gov>
  * 
  * This file is part of SimDataCSP.
@@ -31,13 +31,13 @@
 #pragma warning (disable : 4786)
 # endif
 
-
 #include <string>
 #include <vector>
 #include <cstdio>
 #include <iostream>
-#include <SimData/hash_map.h>
+
 #include <SimData/BaseType.h>
+#include <SimData/HashUtility.h>
 
 
 NAMESPACE_SIMDATA
@@ -59,32 +59,6 @@ class UnPacker;
  *
  */
 
-
-namespace {
-
-/*
- * Helpers for storing a hash map of string->int.
- */
-struct eqstring {
-	int operator()(const std::string &a, const std::string &b) const {
-		return a == b;
-	}
-};
-
-struct hashstring {
-	static HASH<const char*> h;
-	int operator()(const std::string &s) const {
-		return h(s.c_str());
-	}
-};
-
-HASH<const char*> hashstring::h;
-
-} // namespace
-
-typedef HASH_MAP<const std::string, int, hashstring, eqstring> string_map; 
-
-
 /**
  * Base class for Enum exceptions.
  */
@@ -93,8 +67,8 @@ protected:
 	std::string _msg;
 	bool _armed;
 public:
-	EnumError(const std::string s=""): _msg(s), _armed(1) {}
-	void disarm() { _armed = 0; }
+	EnumError(const std::string s=""): _msg(s), _armed(true) {}
+	void disarm() { _armed = false; }
 	~EnumError() { if (_armed) std::cerr << _msg << std::endl; }
 	const std::string& getError() { return _msg; }
 };

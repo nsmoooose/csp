@@ -30,7 +30,6 @@
 
 #include <SimData/Vector3.h>
 #include <SimData/Matrix3.h>
-#include <SimData/Vector3.inl>
 #include <SimData/Pack.h>
 
 

@@ -27,7 +27,7 @@
 #ifndef __TYPEADAPTER_H__
 #define __TYPEADAPTER_H__
 
-#if defined(_MSC_VER) && (_MSC_VER <= 1200)
+#if defined(_MSC_VER) && (_MSC_VER <= 1300)
 #pragma warning (disable : 4290 4786)
 #endif
 

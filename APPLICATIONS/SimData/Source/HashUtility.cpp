@@ -25,13 +25,16 @@
  * by Robert J. Jenkins Jr., <http://burtleburtle.net/bob/hash/evahash.html>
  *
  */
-
-#include <SimData/HashUtility.h>
 #include <sstream>
+
+#include <Simdata/Export.h>
+#include <SimData/HashUtility.h>
+
 
 
 NAMESPACE_SIMDATA
 
+HASH<const char*> hashstring::h;
 
 /* The mixing step */
 #define mix(a,b,c) \

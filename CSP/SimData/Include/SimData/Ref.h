@@ -47,7 +47,6 @@
 NAMESPACE_SIMDATA
 
 
-class Referenced;
 class ReferencePointer;
 class LinkBase;
 
@@ -61,20 +60,21 @@ SIMDATA_EXCEPTION(ConversionError);
  *
  *  @author Mark Rose <mrose@stm.lbl.gov>
  */
-class SIMDATA_EXPORT Referenced: public NonCopyable {
+template <typename COUNTER>
+class SIMDATA_EXPORT ReferencedBase: public NonCopyable {
 
 template <class T> friend class Ref;
 friend class ReferencePointer;
 
 protected:
-	Referenced(): __count(0) {
-		//SIMDATA_LOG(LOG_ALL, LOG_ERROR, "Referenced(" << this << ")");
+	ReferencedBase(): __count(0) {
+		//SIMDATA_LOG(LOG_ALL, LOG_ERROR, "ReferencedBase(" << this << ")");
 	}
 
-	virtual ~Referenced() {
-		//SIMDATA_LOG(LOG_ALL, LOG_ERROR, "~Referenced(" << this << ", " << __count << ")");
+	virtual ~ReferencedBase() {
+		//SIMDATA_LOG(LOG_ALL, LOG_ERROR, "~ReferencedBase(" << this << ", " << __count << ")");
 		if (__count != 0) {
-			SIMDATA_LOG(LOG_ALL, LOG_ERROR, "simdata::Referenced(" << std::hex << int(this) << ") deleted with non-zero reference count (" << __count << "): memory corruption possible.");
+			SIMDATA_LOG(LOG_ALL, LOG_ERROR, "simdata::ReferencedBase(" << std::hex << int(this) << ") deleted with non-zero reference count (" << __count << "): memory corruption possible.");
 		}
 	}
 
@@ -86,11 +86,18 @@ private:
 	inline void _decref() const {
 		//SIMDATA_LOG(LOG_ALL, LOG_ERROR, "_decref(" << this << ", " << __count << ")");
 		assert(__count > 0);
-		if (0 == --__count) delete this;
+		if (!--__count) delete this;
 	}
-	inline unsigned _count() const { return __count; }
-	mutable unsigned __count;
+	inline int _count() const { return static_cast<int>(__count); }
+	mutable COUNTER __count;
 };
+
+
+/** Base class for referenced counted objects that are used within a single
+ *  thread.  <b>Not thread-safe</b>, use ThreadSafeReferenced for references
+ *  that are shared between threads.
+ */
+typedef ReferencedBase<int> Referenced;
 
 
 /** Reference counting smart-pointer.
@@ -104,7 +111,7 @@ private:
  *  @author Mark Rose <mrose@stm.lbl.gov>
  */
 template<class CLASS>
-class Ref: protected HasBase<CLASS, Referenced> {
+class Ref {
 public:
 	typedef std::vector< Ref<CLASS> > vector;
 	typedef std::list< Ref<CLASS> > list;
@@ -117,24 +124,24 @@ public:
 
 	/** Create a null reference.
 	 */
-	Ref(): HasBase<CLASS, Referenced>(), _reference(0) { }
+	Ref(): _reference(0) { }
 
 	/** Create a new reference.
 	 */
-	Ref(CLASS* ptr): HasBase<CLASS, Referenced>(), _reference(ptr) {
+	Ref(CLASS* ptr): _reference(ptr) {
 		if (_reference) _reference->_incref();
 	}
 
 	/** Light-weight copy with reference counting.
 	 */
-	Ref(LinkBase const & r): HasBase<CLASS, Referenced>(), _reference(0) {
+	Ref(LinkBase const & r): _reference(0) {
 		_rebind(r._get());
 	}
 
 	/** Light-weight copy with reference counting.
 	 */
 	template <typename Q>
-	Ref(Ref<Q> const & r): HasBase<CLASS, Referenced>(), _reference(0) {
+	Ref(Ref<Q> const & r): _reference(0) {
 		Q *rp = r.get();
 		if (rp != 0) {
 			//rp->_incref();
@@ -145,14 +152,14 @@ public:
 
 	/** Light-weight copy with reference counting.
 	 */
-	Ref(Ref const & r): HasBase<CLASS, Referenced>(), _reference(r._reference) {
+	Ref(Ref const & r): _reference(r._reference) {
 		if (_reference) _reference->_incref();
 	}
 
 	/** Decrement the reference count, and potentially destroy
 	 *  the referenced object.
 	 */
-	~Ref() { 
+	~Ref() {
 		_unbind();
 	}
 
@@ -263,8 +270,10 @@ public:
 	}
 
 	/** Comparison with other simdata pointers.
+	 *  XXX the base class NonCopyable is used here instead of CLASS since
+	 *  swig generates bad code if CLASS is const (const const).
 	 */
-	inline bool operator==(Referenced const * p) const {
+	inline bool operator==(NonCopyable const * p) const {
 		return _reference == p;
 	}
 
@@ -276,8 +285,10 @@ public:
 	}
 
 	/** Comparison with other simdata pointers.
+	 *  XXX the base class NonCopyable is used here instead of CLASS since
+	 *  swig generates bad code if CLASS is const (const const).
 	 */
-	inline bool operator!=(Referenced const * p) const {
+	inline bool operator!=(NonCopyable const * p) const {
 		return _reference != p;
 	}
 

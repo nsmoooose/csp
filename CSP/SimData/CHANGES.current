@@ -4,6 +4,10 @@ Version 0.4.0 (in progress)
 2004-06-20: onsight
   * Doxygen and copyright notice updates.
 
+  * Refactored Referenced class to a templated base class, allowing
+    different counter types to be used in anticipation of adding
+    thread-safe reference counting.
+
 2004-06-16: onsight
   * Doxygen cleanups.
 

@@ -1005,7 +1005,7 @@ class Help(Command):
     return Result(0)
 
   def help(self):
-    print __doc__ % {'prog': app.programName()}
+    app.usage()
     print 'Available commands:'
     commands = {}
     for command in Command.Index.values():

@@ -108,7 +108,12 @@ public:
 	}
 
 	/// Reset the elapsed time to zero (does not stop the timer).
-	inline void reset() { _elapsed = 0; }
+	inline void reset() {
+		if (_running) {
+			_start = get_realtime();
+		}
+		_elapsed = 0;
+	}
 };
 
 

@@ -1,19 +1,22 @@
 Version 0.4.0 (in progress)
 ===========================
 
-2004-04-04: onsight
+2004-10-09: onsight
+ * Fix Timer::reset()
+
+2004-10-04: onsight
  * Add 32-bit and 64-bit pass-through hash functions.
 
  * Fix quat stream output method.
 
-2004-04-03: onsight
+2004-10-03: onsight
  * Added a generic most-recently-used cache class.  Initial use will be
    for caching network message dispatch handlers in SimNet.
 
  * Added a unittest for the new cache class, and cleaned up the scons
    build script for the c++ unittests.
 
-2004-04-03: delta
+2004-10-03: delta
  * Updated vcproj.
 
  * Exported EnumerationCore from Enum.h.

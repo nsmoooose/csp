@@ -22,11 +22,13 @@
  *
  **/
 
-#include "Views/View.h"
-#include "Views/CameraAgent.h"
-#include "VirtualBattlefield.h"
 #include "CSPSim.h"
 #include "DynamicObject.h"
+#include "VirtualBattlefield.h"
+
+#include "Views/View.h"
+#include "Views/CameraAgent.h"
+
 
 
 void View::accept(const simdata::Ref<DynamicObject> object) {
@@ -57,8 +59,7 @@ void View::updateWorld(simdata::Vector3& ep,simdata::Vector3& lp,simdata::Vector
 
 View::View(size_t vm):
 	m_ViewMode(vm),
-	m_InternalView(false),
-	m_ActiveObject(CSPSim::theSim->getActiveObject()){
+	m_InternalView(false) {
 }
 
 void View::cull() {

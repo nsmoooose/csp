@@ -125,36 +125,36 @@ public:
 	END_INPUT_INTERFACE
 
 public:
-	void setThrottle(double);
-	void setRudder(double);
-	void setRoll(double);
-	void setPitch(double);
-	void setWheelBrake(double);
-	void setAirbrake(double);
-	void IncPitch();
-	void noIncPitch();
-	void DecPitch();
-	void noDecPitch();
-	void IncRoll();
-	void noIncRoll();
-	void DecRoll();
-	void noDecRoll();
-	void IncRudder();
-	void noIncRudder();
-	void DecRudder();
-	void noDecRudder();
-	void IncThrottle();
-	void noIncThrottle();
-	void DecThrottle();
-	void noDecThrottle();
-	void WheelBrakePulse();
-	void WheelBrakeOn();
-	void WheelBrakeOff();
-	void WheelBrakeToggle();
-	void OpenAirbrake();
-	void CloseAirbrake();
-	void IncAirbrake();
-	void DecAirbrake();
+	virtual void setThrottle(double);
+	virtual void setRudder(double);
+	virtual void setRoll(double);
+	virtual void setPitch(double);
+	virtual void setWheelBrake(double);
+	virtual void setAirbrake(double);
+	virtual void IncPitch();
+	virtual void noIncPitch();
+	virtual void DecPitch();
+	virtual void noDecPitch();
+	virtual void IncRoll();
+	virtual void noIncRoll();
+	virtual void DecRoll();
+	virtual void noDecRoll();
+	virtual void IncRudder();
+	virtual void noIncRudder();
+	virtual void DecRudder();
+	virtual void noDecRudder();
+	virtual void IncThrottle();
+	virtual void noIncThrottle();
+	virtual void DecThrottle();
+	virtual void noDecThrottle();
+	virtual void WheelBrakePulse();
+	virtual void WheelBrakeOn();
+	virtual void WheelBrakeOff();
+	virtual void WheelBrakeToggle();
+	virtual void OpenAirbrake();
+	virtual void CloseAirbrake();
+	virtual void IncAirbrake();
+	virtual void DecAirbrake();
 
 protected:
 	virtual void importChannels(Bus *bus);

@@ -27,7 +27,6 @@
 #define __SIMNET_CALLBACKS_H__
 
 
-#include <SimNet/NetBase.h>
 #include <SimNet/NetworkMessage.h>
 #include <SimNet/MessageHandler.h>
 #include <SimNet/MessageQueue.h>

@@ -485,12 +485,6 @@ void LocalBattlefield::onUnitUpdate(simdata::Ref<simnet::NetworkMessage> const &
 			// TODO other setup?
 			unit->setId(unit_id);
 			unit->setRemote();
-			// FIXME hack to ensure the correct systems model is loaded
-			//unit->setHuman();
-			//unit->setAgent();
-			//unit->setLocal();
-			//if (unit->isLocal()) unit->setRemote();
-			// ^ end-of-hack
 			unit->registerUpdate(m_UnitUpdateMaster.get());
 			GridPoint old_point = wrapper->point();
 			// hack: move the unit to 0,0 so we will reevaluate bubble overlaps on

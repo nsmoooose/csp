@@ -187,7 +187,7 @@ void NetworkInterface::sendPackets(double timeout) {
 			first = false;
 		}
 
-		if (header->reliable) {
+		if (header->reliable()) {
 			SIMNET_LOG(PACKET, DEBUG, "send reliable header to " << peer->getId() << ", size=" << size);
 		}
 		int len = socket->transmit((char*)ptr, size);
@@ -233,14 +233,14 @@ bool NetworkInterface::pingPeer(PeerInfo *peer) {
 	simdata::uint8 *ptr = queue->getWriteBuffer(packet_size);
 	if (!ptr) return false;
 	PacketHeader *header = reinterpret_cast<PacketHeader*>(ptr);
-	header->reliable = 0;
-	header->priority = queue_idx;
+	header->setReliable(false);
+	header->setPriority(queue_idx);
 	header->source = m_LocalId;
 	header->destination = peer->getId();
 	header->message_id = PingID;
 	if (confirm) {
 		PacketReceiptHeader *receipt = reinterpret_cast<PacketReceiptHeader*>(ptr);
-		header->reliable = 1;
+		header->setReliable(true);
 		peer->setReceipt(receipt, false /*reliable*/, 0 /*payload_length*/);
 	}
 	std::cout << "PING " << peer->getId() << " .......\n";
@@ -320,13 +320,13 @@ void NetworkInterface::processOutgoing(double timeout) {
 		const bool reliable = (queue_idx == 3);
 		if (reliable || peer->hasPendingConfirmations()) {
 			SIMNET_LOG(PACKET, DEBUG, "send reliable header to " << destination);
-			header->reliable = 1;
+			header->setReliable(true);
 			header_size = ReceiptHeaderSize;
 			receipt = reinterpret_cast<PacketReceiptHeader*>(ptr);
 		} else {
-			header->reliable = 0;
+			header->setReliable(false);
 		}
-		header->priority = queue_idx;
+		header->setPriority(queue_idx);
 		header->source = m_LocalId;
 
 		simdata::uint8 *payload = ptr + header_size;
@@ -414,7 +414,7 @@ int NetworkInterface::receivePackets(double timeout) {
 
 		simdata::uint32 packet_length = m_Socket->receive((void*)buffer, sizeof(buffer));
 
-		if (peek_bytes < HeaderSize) {
+		if (packet_length < HeaderSize) {
 			m_BadPackets++;
 			continue;
 		}
@@ -451,12 +451,12 @@ int NetworkInterface::receivePackets(double timeout) {
 		DEBUG_count++;
 
 		// handle reliable udp encoding
-		if (header->reliable) {
-			SIMNET_LOG(PACKET, DEBUG, "received a reliable header, pri " << header->priority << ", id0=" << header->id0);
-			if (peek_bytes >= ReceiptHeaderSize) {
+		if (header->reliable()) {
+			SIMNET_LOG(PACKET, DEBUG, "received a reliable header " << *header);
+			if (packet_length >= ReceiptHeaderSize) {
 				// if this packet is priority 3, it requires confirmation (id stored in id0)
 				// there may also be confirmation receipts in the remaining id slots
-				if (header->priority == 3) {
+				if (header->priority() == 3) {
 					peer->pushConfirmation(header->id0);
 				} else {
 					if (header->id0 != 0) peer->popConfirmation(header->id0);
@@ -477,14 +477,14 @@ int NetworkInterface::receivePackets(double timeout) {
 			continue;
 		}
 
-		int queue_idx = header->priority;
+		int queue_idx = header->priority();
 		SIMNET_LOG(PACKET, INFO, "receiving packet in queue " << queue_idx);
 		queue = m_RxQueues[queue_idx];
 
 		ptr = queue->getWriteBuffer(packet_length);
 		if (ptr) {
-			SIMNET_LOG(PACKET, INFO, "copying packet data (" << peek_bytes << " bytes) " << *header);
-			memcpy((void*)ptr, (const void*)buffer, peek_bytes);
+			SIMNET_LOG(PACKET, INFO, "copying packet data (" << packet_length << " bytes) " << *header);
+			memcpy((void*)ptr, (const void*)buffer, packet_length);
 			// rewrite the source field, in case we have assigned a new one.
 			reinterpret_cast<PacketHeader*>(ptr)->source = source;
 
@@ -591,7 +591,7 @@ void NetworkInterface::processIncoming(double timeout) {
 		SIMNET_LOG(PACKET, INFO, "reading packet from receive queue");
 		simdata::uint8 *ptr = queue->getReadBuffer(size);
 		PacketHeader *header = reinterpret_cast<PacketHeader*>(ptr);
-		simdata::uint32 header_size = (header->reliable ? ReceiptHeaderSize : HeaderSize);
+		simdata::uint32 header_size = (header->reliable() ? ReceiptHeaderSize : HeaderSize);
 		simdata::uint8 *payload = ptr + header_size;
 		simdata::uint32 payload_length = size - header_size;
 		// XXX remove me!

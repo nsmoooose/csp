@@ -28,6 +28,7 @@
 #include <SimData/Uniform.h>
 #include <ostream>
 
+
 namespace simnet {
 
 /** UDP/TCP port number.
@@ -69,21 +70,46 @@ typedef std::pair<simdata::uint32, Port> ConnectionPoint;
  *  (at the same offsets) as well as extra fields for implementing
  *  reliable udp.
  */
+#pragma pack(push, 1)
 struct PacketHeader {
-	simdata::uint16 reliable:1;      // if true, header is actually a PacketReceiptHeader
-	simdata::uint16 reserved:2;      // reserved for future use
-	simdata::uint16 priority:2;      // 0 = non-realtime, 1=realtime, lopri, 2=realtime, hipri, 3=reliable
-	simdata::uint16 statmode:1;      // 0 = desired send rate, 1 = fractional allocation
-	simdata::uint16 connstat:10;     // if statmode == 0, the desired send rate as a fraction of the
-	                                 // nominal receiver bandwidth: C * BW / 100
-	                                 // if statmode == 1, the fraction of the sender's inbound bandwidth
-	                                 // allocated to the receiving peer (0->BW)
+
+	// flags bits:
+	//     0  reliable: if true, header is actually a PacketReceiptHeader
+	//   1-2  priority: 0=non-realtime, 1=realtime, lopri, 2=realtime, hipri, 3=reliable
+	//   3-4  reserved for future use
+	//     5  statmode: 0=desired send rate, 1=fractional allocation
+	//  6-15  connstat: if statmode == 0, the desired send rate as a fraction of the
+	//                  nominal receiver bandwidth: C * BW / 100
+	//                  if statmode == 1, the fraction of the sender's inbound bandwidth
+	//                  allocated to the receiving peer (0->BW)
+	simdata::uint16 flags;
+
 	simdata::uint16 source;          // id of the sender
 	simdata::uint16 destination;     // id of the intended receiver
 	simdata::uint16 message_id;      // id of the message
 	simdata::uint32 routing_type:8;  // routing type (e.g. object update, server handshake, etc.)
 	simdata::uint32 routing_data:24; // routing data (e.g. ObjectId for object update routing)
+
+	inline bool reliable() const { return (flags & 1) != 0; }
+	inline int priority() const { return (flags >> 1) & 3; }
+	inline int statmode() const { return (flags >> 5) & 1; }
+	inline int connstat() const { return (flags >> 6); }
+
+	inline void setReliable(bool reliable) {
+		if (reliable) flags |= 1; else flags &= ~1;
+	}
+	inline void setPriority(int priority) {
+		flags = (flags & ~0x06) | ((priority & 3) << 1);
+	}
+	inline void setStatMode(int statmode) {
+		flags = (flags & ~0x20) | ((statmode & 1) << 5);
+	}
+	inline void setConnStat(int connstat) {
+		flags = (flags & 0x3f) | (connstat << 6);
+	}
+
 };
+#pragma pack(pop)
 
 
 /** Used in place of PacketHeader when reliable is set to 1.  If
@@ -91,19 +117,21 @@ struct PacketHeader {
  *  All other non-zero ids are confirmations of past messages that
  *  have been successfully received from the destination host.
  */
+#pragma pack(push, 1)
 struct PacketReceiptHeader: public PacketHeader {
 	ConfirmationId id0;
 	ConfirmationId id1;
 	ConfirmationId id2;
 	ConfirmationId id3;
 };
+#pragma pack(pop)
 
 
 /** Helper class for debugging.  Dumps a packet header to an output stream.
  */
 inline std::ostream &operator <<(std::ostream &os, PacketHeader const &header) {
-	return os << (header.reliable ? 'R' : 'U') << header.priority << ':' << header.statmode
-	          << "*" << header.connstat << ':' << header.source << '>' << header.destination
+	return os << (header.reliable() ? 'R' : 'U') << header.priority() << ':' << header.statmode()
+	          << "*" << header.connstat() << ':' << header.source << '>' << header.destination
 	          << ':' << header.message_id << ":"
 	          << header.routing_type << ":" << header.routing_data;
 }

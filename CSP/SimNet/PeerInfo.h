@@ -233,10 +233,10 @@ public:
 	 */
 	inline void getConnStat(PacketHeader const *header) {
 		resetDeadTime();
-		if (header->statmode == 1) {
-			m_desired_rate_peer_to_self = header->connstat;
+		if (header->statmode() == 1) {
+			m_desired_rate_peer_to_self = header->connstat();
 		} else {
-			m_allocation_self_to_peer = header->connstat;
+			m_allocation_self_to_peer = header->connstat();
 		}
 	}
 
@@ -311,11 +311,11 @@ public:
 	 */
 	inline void setConnStat(PacketHeader *header) {
 		if (m_statmode_toggle) {
-			header->statmode = 1;
-			header->connstat = m_desired_rate_self_to_peer;
+			header->setStatMode(1);
+			header->setConnStat(m_desired_rate_self_to_peer);
 		} else {
-			header->statmode = 0;
-			header->connstat = m_allocation_peer_to_self;
+			header->setStatMode(0);
+			header->setConnStat(m_allocation_peer_to_self);
 		}
 		m_statmode_toggle = !m_statmode_toggle;
 	}

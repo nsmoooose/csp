@@ -24,22 +24,12 @@
 
 ///////////////////////////////////////////////////////////////////
 // TESTING ONLY -- REMOVE ME!
+//
 #include <SimData/Vector3.h>
 #include <SimData/Quat.h>
 
-// battlefield messages use fixed ids in the range 64-511.  ids
-// are assigned sequentially for now (although this is somewhat
-// brittle and error prone), so be sure that new messages are
-// added at the end of this file.
-//#idbase 64
-//#message simnet::NetworkMessage
-
+// battlefield messages use fixed ids in the range 64-511.
 typedef simnet::NetworkMessage NetworkMessage;
-
-// TODO a nicer syntax would be:
-//	#define header <...>
-//	#define idbase 64
-//	#define Message simnet::NetworkMessage
 
 
 // request sent to the index server by a client wishing

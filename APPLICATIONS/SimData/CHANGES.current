@@ -1,8 +1,16 @@
 Version 0.3.1 (in progress)
 ===========================
 
+2003-04-12: onsight
+            Changed all the #ifndef/#define blocks surrounding the
+	    headers to use __SIMDATA_ as a prefix.  This should ensure 
+	    the identifiers are unique when the headers are used in
+	    another project.
+
 2003-04-11: onsight
             Updated setup.py to install FileUtility.h.
+
+	    Minor changes to log macro and fatal error function.
             
 2003-04-11: delta
 	    Finally got the changes from Onsight compile on .net ;-)

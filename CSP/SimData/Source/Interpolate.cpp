@@ -26,8 +26,8 @@
 
 NAMESPACE_SIMDATA
 
-#define min(a, b) (((a)<(b)) ? (a) : (b))
-#define max(a, b) (((a)>(b)) ? (a) : (b))
+using std::min;
+using std::max;
 
 template <typename T>
 const Enumeration InterpolatedData<T>::Method("LINEAR SPLINE");

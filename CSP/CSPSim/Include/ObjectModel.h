@@ -37,6 +37,8 @@
 
 #include <osg/ref_ptr>
 
+#include <Export.h>
+
 class Animation;
 class AnimationCallback;
 class AnimationChannel;
@@ -68,13 +70,13 @@ namespace fx {
  * TODO: add LOD support here.
  *
  */
-class ObjectModel: public simdata::Object {
+class CSPSIM_EXPORT ObjectModel: public simdata::Object {
 	static const simdata::Enumeration EffectItems;
 
 	osg::ref_ptr<osg::MatrixTransform> m_Transform;
 	osg::ref_ptr<osg::Node> m_Model;
 	osg::ref_ptr<osg::Switch> m_DebugMarkers;
-	osg::ref_ptr<osg::Group> m_ContactMarkers;
+	osg::ref_ptr<osg::Switch> m_ContactMarkers;
 public:
 	typedef std::vector<simdata::Vector3> ContactList;
 

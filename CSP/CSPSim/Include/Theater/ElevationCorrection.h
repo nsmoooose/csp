@@ -40,7 +40,7 @@ class TerrainObject;
  * A helper class for correcting the elevation of static objects to match
  * the local terrain.
  */
-class ElevationCorrection: public LayoutTransform {
+class CSPSIM_EXPORT ElevationCorrection: public LayoutTransform {
 	TerrainObject *m_Terrain;
 	ElevationCorrection() {}
 public:

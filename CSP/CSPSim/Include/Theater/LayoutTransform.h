@@ -28,6 +28,8 @@
 
 #include <osg/Vec3>
 
+#include <Export.h>
+
 namespace simdata {
 	class Vector3;
 }
@@ -38,7 +40,7 @@ namespace simdata {
  *
  * A helper class for accumulationg and applying 2D displacements and rotations.
  */
-class LayoutTransform {
+class CSPSIM_EXPORT LayoutTransform {
 	float m_X, m_Y, m_Angle;
 	float c, s;
 public:

@@ -5,6 +5,12 @@
  * Added Include/Export.h
  
  * Minor tweak to the vs project file to send _cCSP.lib to Bin/
+ 
+ * Exported a few symbols for the layout loader.
+ 
+ * Uncomment the optimizer in ObjectModel.cpp (I don't get 
+   anymore a systematic segfault like before). Changed 
+   m_ContactMarkers to be an osg::Switch.
 
 2005-02-05: onsight
  * Disable displaylist/stateset compiler visitor when creating

@@ -442,14 +442,15 @@ void ObjectModel::loadModel() {
 	// 4) The bug only occurs when CSP is run from command line or clicking CSPSim.py;
 	//    it never occurs when running csp in debug mode from the ide.
 	// 5) I'm unable to trace it :)
-	//CSP_LOG(APP, DEBUG, "LoadModel: Optimizer run");
-	//osgUtil::Optimizer opt;
-	//opt.optimize(m_Model.get());
-	//CSP_LOG(APP, DEBUG, "LoadModel: Optimizer done");
+
+	CSP_LOG(APP, DEBUG, "LoadModel: Optimizer run");
+	osgUtil::Optimizer opt;
+	opt.optimize(m_Model.get());
+	CSP_LOG(APP, DEBUG, "LoadModel: Optimizer done");
 }
 
 void ObjectModel::addContactMarkers() {
-	m_ContactMarkers = new osg::Group;
+	m_ContactMarkers = new osg::Switch;
 	osg::CullFace *cf = new osg::CullFace;
 	cf->setMode(osg::CullFace::BACK);
 	m_ContactMarkers->getOrCreateStateSet()->setAttributeAndModes(cf, osg::StateAttribute::ON);
@@ -459,15 +460,15 @@ void ObjectModel::addContactMarkers() {
 		m_ContactMarkers->addChild(diamond);
 	}
 	// set markers not visible by default
-	m_ContactMarkers->setNodeMask(0x0);
+	m_ContactMarkers->setAllChildrenOff();
 	m_DebugMarkers->addChild(m_ContactMarkers.get());
 }
 
 void ObjectModel::showContactMarkers(bool on) {
 	if (on)
-		m_ContactMarkers->setNodeMask(0xffffffff);
+		m_ContactMarkers->setAllChildrenOff();
 	else
-		m_ContactMarkers->setNodeMask(0x0);
+		m_ContactMarkers->setAllChildrenOn();
 }
 
 bool ObjectModel::getMarkersVisible() const {

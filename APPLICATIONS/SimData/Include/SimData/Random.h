@@ -39,10 +39,15 @@ NAMESPACE_SIMDATA
 
 
 /**
- * Implementation of the Box Muller algorithm for generating a random
- * gaussian distribution.
+ * Generate random number with a normal distribution.
+ *
+ * Classic, fast method using polar coordinates.  See
+ * http://mathworld.wolfram.com/Box-MullerTransformation.html
+ *
+ * @param mean Mean value of the distribution.
+ * @param sigma Standard deviation of the distribution.
  */
-float box_muller(float, float);
+float box_muller(float mean, float sigma);
 
 
 /**
@@ -52,25 +57,64 @@ float box_muller(float, float);
  * @author Mark Rose <mrose@stm.lbl.gov>
  */
 class SIMDATA_EXPORT Random {
-	long _seed;
+	long _state;
 	float _r;
 public:
+	/**
+	 * Create a new random number generator.
+	 *
+	 * @param seed seed value for the ran2 generator.
+	 */
 	Random(long seed=-1) {
-		_seed = seed;
-		ran2(_seed);
-		_r = ran2(_seed);
+		_state = seed;
+		ran2(_state);
+		_r = ran2(_state);
 	}
+
+	/**
+	 * Get the current random number.
+	 *
+	 * Multiple calls will return the same value.
+	 */
 	float getRand() const {
 		return _r;
 	}
-	long getSeed() const {
-		return _seed;
+
+	/**
+	 * Get the current state variable of the ran2 generator.
+	 */
+	long getState() const {
+		return _state;
 	}
+
+	/**
+	 * Generate a new (pseude) random number and return it.
+	 *
+	 * @return pseudo-random number in the range 0-1
+	 */
 	float newRand() {
-		_r = ran2(_seed);
+		_r = ran2(_state);
 		return _r;
 	}
-	float ran2(long&);
+
+	/**
+	 * Random number generator.
+	 * 
+	 * Return a random floating point value between 0.0 and 1.0 exclusive.  
+	 * If idum is negative, a new series starts (and idum is made positive 
+	 * so that subsequent calls using an unchanged idum will continue in 
+	 * the same sequence).
+	 *
+	 * This random number generator is from William H. Press, et al.,
+	 * _Numerical Recipes in C_, Second Ed. with corrections (1994), 
+	 * p. 282.  This excellent book is available through the
+	 * WWW at http://nr.harvard.edu/nr/bookc.html.
+	 * The specific section concerning ran2, Section 7.1, is in
+	 * http://cfatab.harvard.edu/nr/bookc/c7-1.ps
+	 *
+	 * @param idum state variable.
+	 */
+	float ran2(long &idum);
 };
 
 
@@ -80,12 +124,39 @@ public:
  *
  * @author Mark Rose <mrose@stm.lbl.gov>
  */
-class Gauss: public Random {
+class SIMDATA_EXPORT Gauss: public Random {
 	float _mean, _sigma, _g;
 public:
-	Gauss(float m=0.0, float s=1.0);
-	float box_muller(float, float);
+	/**
+ 	 * Create a new gaussian random number with the specified 
+	 * distribution.
+	 *
+	 * @param mean the center of the distribution
+	 * @param sigma the standard deviation of the distribution
+	 */
+	Gauss(float mean=0.0, float sigma=1.0);
+
+	/**
+	 * Generate a random number with a normal distribution.
+	 *
+	 * Classic, fast method using polar coordinates.  See
+	 * http://mathworld.wolfram.com/Box-MullerTransformation.html
+	 *
+	 * @param mean Mean value of the distribution.
+	 * @param sigma Standard deviation of the distribution.
+	 */
+	float box_muller(float mean, float sigma);
+
+	/**
+	 * Generate a new (pseudo) random number with a gaussian distribution 
+	 */
 	float newGauss();
+
+	/**
+	 * Return the last gaussion random number.
+	 *
+	 * Repeated calls will return the same value.
+	 */
 	float getGauss() const { return _g; }
 };
 	

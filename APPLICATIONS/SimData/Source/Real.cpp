@@ -73,11 +73,11 @@ void Real::regen() {
 		_value = box_muller(_mean, _sigma);
 }
 
-float Real::getMean() { return _mean; }
+float Real::getMean() const { return _mean; }
 
-float Real::getSigma() { return _sigma; }
+float Real::getSigma() const { return _sigma; }
 
-float Real::getValue() { return _value; }
+float Real::getValue() const { return _value; }
 
 std::string Real:: asString() const { 
 	char fmt[128];
@@ -85,6 +85,7 @@ std::string Real:: asString() const {
 	return std::string(fmt);
 }
 
+/*
 float Real::__neg__() { return -_value; }
 float Real::__pos__() { return _value; }
 float Real::__abs__() { return static_cast<float>(fabs(_value)); }
@@ -102,6 +103,7 @@ float Real::__div__(float v) { assert(v != 0.0); return _value / v; }
 float Real::__rdiv__(float v) { assert(_value != 0.0); return v / _value; }
 float Real::__rpow__(float v) { return static_cast<float>(pow(v, _value)); }
 float Real::__pow__(float v) { return static_cast<float>(pow(_value, v)); }
+*/
 
 
 NAMESPACE_END // namespace simdata

@@ -26,15 +26,6 @@ NAMESPACE_SIMDATA
 Random g_Random;
 
 
-/* 
- * Generate random number with a normal distribution.
- *
- * Classic, fast method using polar coordinates.  See
- * http://mathworld.wolfram.com/Box-MullerTransformation.html
- *
- * @param mean Mean value of the distribution.
- * @param sigma Standard deviation of the distribution.
- */
 float box_muller(float mean, float sigma) {
 	double x1, x2, w, y1;
 	static double y2;
@@ -69,17 +60,7 @@ float box_muller(float mean, float sigma) {
  */
 
 
-/**
- * Random number generator.
- * 
- * Return a random floating point value between 0.0 and 1.0 exclusive.  
- * If idum is negative, a new series starts (and idum is made positive 
- * so that subsequent calls using an unchanged idum will continue in 
- * the same sequence).
- *
- * @param idum state variable.
- */
-float Random::ran2(long& idum) {
+float Random::ran2(long &idum) {
 	const long IM1=2147483563;
 	const long IM2=2147483399;
 	const double AM=(1.0/IM1);
@@ -142,15 +123,6 @@ float Random::ran2(long& idum) {
 }
 
 
-/* 
- * Generate a random number with a normal distribution.
- *
- * Classic, fast method using polar coordinates.  See
- * http://mathworld.wolfram.com/Box-MullerTransformation.html
- *
- * @param mean Mean value of the distribution.
- * @param sigma Standard deviation of the distribution.
- */
 float Gauss::box_muller(float mean, float sigma) {
 	double x1, x2, w, y1;
 	static double y2;
@@ -174,21 +146,12 @@ float Gauss::box_muller(float mean, float sigma) {
 }
 
 
-/**
- * Construct a new gaussian random number with the specified distribution.
- *
- * @param mean Mean value of the distribution.
- * @param sigma Standard deviation of the distribution.
- */
 Gauss::Gauss(float mean, float sigma) {
 	_mean = mean;
 	_sigma = sigma;
 	_g = box_muller(_mean, _sigma);
 }
 
-/**
- * Generate a new random number from the instance's normal distribution.
- */
 float Gauss::newGauss() {
 	_g = box_muller(_mean, _sigma);
 	return _g;

@@ -10,6 +10,17 @@ Version 0.3.1 (in progress)
 	    of setup.py.  If set then all the copy operations will be
 	    displayed.
 
+	    Partial rewrite of the Enum/Enumeration class to share a
+	    reference counted instance that hold the string to int and
+	    int to string lookups.  This way, stray Enums can exist
+	    happily after their Enumeration parent has died.  Probably
+	    not to common, but much more pleasing aesthetically.
+
+	    Added doxygen comments to Enum.h, Random.h, and Real.h.
+
+	    Moved some SWIG/Python special methods to SWIG %extend
+	    directives.  Still more to be done.
+
             *** ANY MSVC USERS: PLEASE UPDATE THE PROJECT FILE TO INCLUDE ***
 	    *** NOISE.CPP AND REAL.CPP, AND REMOVE SPREAD.CPP             ***
 

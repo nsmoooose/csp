@@ -28,4 +28,4 @@ default:
 
 install:
 	@python setup.py check_version
-	@python setup.py make_install
+	@python setup.py make_install --verbose

@@ -7,6 +7,8 @@ dnl   how to fix them, please do so and commit the changes to CVS.  Thanks!
 dnl
 dnl   -OS
 
+AC_PREREQ(2.57)
+
 dnl Process this file with autoconf to produce a configure script.
 AC_INIT(Source/CSPSim.cpp)
 #AM_INIT_AUTOMAKE(CSPSim, 0.1.0)
@@ -40,14 +42,14 @@ If SDL_image is already installed, please specify a library
 path when running configure: --sdl_image_path=xxx])], [])
 
 dnl check for SDL Console Library
-AC_CHECK_LIB(SDL_console, CON_DrawConsole, [], [AC_MSG_ERROR([
-SDL_console does not appear to be installed.  You can download
-this library from http://sdlconsole.tuxfamily.org
-If SDL_console is already installed, please specify a library 
-path when running configure: --sdl_image_path=xxx])], [])
+#AC_CHECK_LIB(SDL_console, CON_DrawConsole, [], [AC_MSG_ERROR([
+#SDL_console does not appear to be installed.  You can download
+#this library from http://sdlconsole.tuxfamily.org
+#If SDL_console is already installed, please specify a library 
+#path when running configure: --sdl_image_path=xxx])], [])
 
 dnl check for Geospatial Data Abstraction Library 
-CSP_LIB_CONFIG([GDAL], [gdal], [1.1.7], [Geospatial Data Abstraction Library], [http://remotesensing.org/gdal/])
+#CSP_LIB_CONFIG([GDAL], [gdal], [1.1.7], [Geospatial Data Abstraction Library], [http://remotesensing.org/gdal/])
 
 dnl check for OpenSceneGraph
 CSP_OSG_CONFIG(osg, 0.9.3, [OpenSceneGraph])
@@ -68,17 +70,16 @@ AC_CHECK_LIB(osgParticle, osgParticleGetVersion, ,
 #CSP_OSG_CONFIG(osgText, 0.9.3, [OpenSceneGraph Util library])
 #CSP_OSG_CONFIG(osgParticle, 0.9.3, [OpenSceneGraph Particle library])
 
+AC_CHECK_LIB(osgGLUT, osgGLUTGetVersion, ,
+     [AC_MSG_ERROR(OpenSceneGraph GLUT library not found. See http://www.openscenegraph.org)],)
+AC_CHECK_LIB(osgUtil, osgUtilGetVersion, ,
+     [AC_MSG_ERROR(OpenSceneGraph Util library not found. See http://www.openscenegraph.org)],)
+AC_CHECK_LIB(osgText, osgTextGetVersion, ,
+     [AC_MSG_ERROR(OpenSceneGraph Text library not found. See http://www.openscenegraph.org)],)
+AC_CHECK_LIB(osgParticle, osgParticleGetVersion, ,
+     [AC_MSG_ERROR(OpenSceneGraph Particle library not found. See http://www.openscenegraph.org)],)
+
 CSP_PYTHON(2.2.0)
-
-#AC_CHECK_LIB(osgGLUT, osgGLUTGetVersion, ,
-#     [AC_MSG_ERROR(OpenSceneGraph GLUT library not found. See http://www.openscenegraph.org)],)
-#AC_CHECK_LIB(osgUtil, osgUtilGetVersion, ,
-#     [AC_MSG_ERROR(OpenSceneGraph Util library not found. See http://www.openscenegraph.org)],)
-#AC_CHECK_LIB(osgText, osgTextGetVersion, ,
-#     [AC_MSG_ERROR(OpenSceneGraph Text library not found. See http://www.openscenegraph.org)],)
-#AC_CHECK_LIB(osgParticle, osgParticleGetVersion, ,
-#     [AC_MSG_ERROR(OpenSceneGraph Particle library not found. See http://www.openscenegraph.org)],)
-
 
 AC_OUTPUT([Makefile Source/Makefile], [])
 	      

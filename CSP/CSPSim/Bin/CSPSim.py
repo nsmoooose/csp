@@ -49,7 +49,7 @@ def printUsage():
 	print "              --slog=level    set the simdata logging level"
 	print "              --dump-data     show the contents of sim.dar"
 	print "              --client-node   run networking test client node"
-	print "              --server-node   run networking test server node"
+	print "              --echo-server-node   run networking test echo server node"
 	print "              --help          help message"
 
 
@@ -146,15 +146,18 @@ def compileData(args):
 	print
 	
 def runClientNode(args):
-	print "Starting Test Client Node..."
+	print "CSPSim.py - runClientNode - Starting Test Client Node..."
+	print "CSPSim.py - runClientNode - calling loadCSP"
 	loadCSP()
+	print "CSPSim.py - runClientNode - calling CSP.ClientNode"
 	app = CSP.ClientNode()
+	print "CSPSim.py - runClientNode - calling app.run"
 	app.run()
 
-def runServerNode(args):
-	print "Starting Test Server Node..."
+def runEchoServerNode(args):
+	print "Starting Test Echo Server Node..."
 	loadCSP()
-	app = CSP.ServerNode()
+	app = CSP.EchoServerNode()
 	app.run()
 
 def loadSimData():
@@ -262,8 +265,8 @@ def main(argv):
 			other_args.append(arg)
 		elif arg == '--client-node':
 			action = runClientNode
-		elif arg == '--server-node':
-			action = runServerNode
+		elif arg == '--echo-server-node':
+			action = runEchoServerNode
 		elif arg == '--pause':
 			pause = 1
 		elif arg in ("--help", "-h", "-help"):

@@ -119,7 +119,7 @@ protected:
 	// that keep the model alive.  the model pointer is only
 	// for internal use by the system instance, which will be
 	// destroyed when the model goes out of scope.
-	Model* System::getModel() const { return m_Model; }
+	Model* getModel() const { return m_Model; }
 
 public:
 	bool canBeAdded() const { return getNumParents() == 0; }
@@ -177,7 +177,7 @@ class Model: public System {
 
 	Bus::Ref m_Bus;
 
-	virtual void setModel(Model *model) {}
+	virtual void setModel(Model *) {}
 
 	class FindSystemByNameVisitor: public simdata::FindVisitor<System,SystemVisitor> {
 		std::string m_Name;

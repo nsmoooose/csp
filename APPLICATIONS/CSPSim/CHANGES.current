@@ -8,6 +8,8 @@
 	    flight model need to be refactored to use this new
 	    interface.
 
+	    Minor warning cleanups in System.h and Bus.h.
+
 2003-08-20: onsight
             Tagged version r0_3_4, starting version 0.3.5
 

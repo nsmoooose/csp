@@ -64,12 +64,12 @@ protected:
 	      MASK_ENABLED = 0x00000001,
 	      MASK_BLOCKED = 0x00000002,
 	      MASK_SHARED  = 0x00000004,
-	      DERIVED_MASK = 0xffff0000,
+	      DERIVED_MASK = 0xffff0000
 	};
 
 	typedef enum {
 		ACCESS_LOCAL,
-		ACCESS_SHARED,
+		ACCESS_SHARED
 	} AccessType;
 
 	bool isMask(unsigned int bits) const {
@@ -94,7 +94,7 @@ protected:
 	 *  accordingly.
 	 */
 	void setEnabled(bool enabled) {
-		m_Mask = (m_Mask & ~MASK_ENABLED) | (enabled ? MASK_ENABLED : 0);
+		m_Mask = (m_Mask & ~MASK_ENABLED) | (enabled ? MASK_ENABLED : 0U);
 	}
 
 public:
@@ -125,7 +125,7 @@ protected:
 	ChannelBase(std::string const &name, AccessType access = ACCESS_LOCAL): 
 		m_Name(name), m_Mask(0) 
 	{
-		m_Mask |= (access == ACCESS_SHARED) ? MASK_SHARED : 0;
+		m_Mask |= (access == ACCESS_SHARED) ? MASK_SHARED : 0U;
 	}
 };
 
@@ -185,7 +185,7 @@ private:
 	      MASK_HANDLER = 0x00010000,
 	      MASK_PUSH    = 0x00020000,
 	      MASK_PULL    = 0x00040000,
-	      MASK_DIRTY   = 0x00080000,
+	      MASK_DIRTY   = 0x00080000
 	};
 
 protected:
@@ -193,7 +193,7 @@ protected:
 	typedef enum {
 		NO_SIGNAL,
 		PUSH_SIGNAL,
-		PULL_SIGNAL,
+		PULL_SIGNAL
 	} SignalType;
 
 	/** Construct a new channel.
@@ -348,7 +348,7 @@ public:
 	 *  @param value The initial value of the channel data.
 	 *  @param shared Create a shared (or non-shared) channel.
 	 */
-	DataChannel(std::string const &name, T const &value, AccessType access=ACCESS_LOCAL, SignalType signal=NO_SIGNAL): m_Value(value), DataChannelBase(name, access, signal) {}
+	DataChannel(std::string const &name, T const &value, AccessType access=ACCESS_LOCAL, SignalType signal=NO_SIGNAL): DataChannelBase(name, access, signal), m_Value(value) {}
 
 	static DataChannel<T> *newLocal(std::string const &name, T const &value) {
 		return new DataChannel(name, value, ACCESS_LOCAL, NO_SIGNAL);
@@ -582,8 +582,8 @@ public:
 	 *  @param name The name of the bus.
 	 */
 	Bus(std::string const &name): 
-		m_Name(name), 
 		m_Bound(false), 
+		m_Name(name), 
 		m_Status(1.0), 
 		m_Enabled(true) 
 	{

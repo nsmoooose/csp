@@ -246,31 +246,6 @@ struct RoutedMessage
 	NetworkMessage * m_message;
 };
 
-class MessageSocketDuplex
-{
-    ost::UDPSocket * m_UDPReceiverSocket;
-    ost::UDPSocket * m_UDPSenderSocket;	
-   
-    ost::InetAddress * m_receiverAddr;
-    Port m_receiverPort;
-    
-    public:
-    MessageSocketDuplex();                                     // set the listener port to unbound.
-    MessageSocketDuplex(ost::InetAddress & Address, Port port);     // set the bound address and port.
-    MessageSocketDuplex(Port port);                            // set the bound port.
-    
-    int sendto(NetworkMessage * message, ost::InetHostAddress * remoteAddress, Port * remotePort);   
-    int sendto(NetworkMessage * message, NetworkNode * node);   
-    
-    int recvfrom(NetworkMessage ** message);
-
-    int sendto(std::vector<RoutedMessage> * sendArray, int count);
-    int recvfrom(std::vector<RoutedMessage> * receiveArray, int * count);
- 
-    ost::InetAddress * getReceiverAddress() { return m_receiverAddr; }
-    Port getReceiverPort() { return m_receiverPort; }
-
-};
 
 class DynamicObject;
 
@@ -337,6 +312,8 @@ class NetworkMessenger
     void queueMessage(NetworkNode * remoteNode, NetworkMessage * message);
     void sendQueuedMessages();
     void receiveMessages();
+    void receiveMessages(int max);
+    int getSendQueueCount() { return m_messageSendArrayCount; }
 
     NetworkNode * getOriginatorNode();
     void setOriginatorNode(NetworkNode * orginatorNode);
@@ -366,16 +343,23 @@ class NetworkMessenger
 class NetworkMessageHandler
 {
 	public:
-	virtual void process(NetworkMessage * message, NetworkMessenger * messenger) = 0;
+	virtual void process(NetworkMessage * message) = 0;
 };
 
 class EchoMessageHandler : public NetworkMessageHandler
 {
-
+        protected:
+		NetworkMessenger * m_messenger;
 	public: 
 		EchoMessageHandler();
-		virtual void process(NetworkMessage * message, NetworkMessenger * messenger);
+		virtual void process(NetworkMessage * message);
 		virtual ~EchoMessageHandler();
+
+		
+		virtual void setMessenger(NetworkMessenger * messenger)
+		             { m_messenger = messenger; }
+		virtual NetworkMessenger * getMessenger()
+			     { return m_messenger; }
 	
 };
 
@@ -386,7 +370,7 @@ class PrintMessageHandler : public NetworkMessageHandler
 		int m_count;
 	public:
 		PrintMessageHandler(); 
-		virtual void process(NetworkMessage * message, NetworkMessenger * messenger);
+		virtual void process(NetworkMessage * message);
 		virtual ~PrintMessageHandler();
 
 		void setFrequency(int frequency) { m_frequency = frequency; }
@@ -397,12 +381,21 @@ class DispatchMessageHandler : public NetworkMessageHandler
 {
   public:
     DispatchMessageHandler();
-    virtual void process(NetworkMessage * message, NetworkMessenger * messenger);
+    virtual void process(NetworkMessage * message);
     virtual ~DispatchMessageHandler();
+    
     void setLocalAddress(unsigned int addr) { _addr = addr; }
+    unsigned int getLocalAddress() { return _addr; }
+    
     void setLocalPort(unsigned short port) { _port = port; }
+    unsigned short getLocalPort() { return _port; }
+    
     void setVirtualBattlefield(VirtualBattlefield * battlefield) { _virtualBattlefield = battlefield; }
+    VirtualBattlefield * getVirtualBattlefield() { return _virtualBattlefield; }
+    
     void setDataManager(simdata::DataManager & dataManager) { _dataManager = dataManager; }
+    simdata::DataManager getDataManager() { return _dataManager; }
+		
     
   protected:
     bool isLocal(unsigned int addr, unsigned short port);
@@ -465,5 +458,30 @@ class NetworkAddress
 };
 
 
+class MessageSocketDuplex
+{
+    ost::UDPSocket * m_UDPReceiverSocket;
+    ost::UDPSocket * m_UDPSenderSocket;	
+   
+    ost::InetAddress * m_receiverAddr;
+    Port m_receiverPort;
+    
+    public:
+    MessageSocketDuplex();                                     // set the listener port to unbound.
+    MessageSocketDuplex(ost::InetAddress & Address, Port port);     // set the bound address and port.
+    MessageSocketDuplex(Port port);                            // set the bound port.
+    
+    int sendto(NetworkMessage * message, ost::InetHostAddress * remoteAddress, Port * remotePort);   
+    int sendto(NetworkMessage * message, NetworkNode * node);   
+    
+    int recvfrom(NetworkMessage ** message);
+
+    int sendto(std::vector<RoutedMessage> * sendArray, int count);
+    int recvfrom(std::vector<RoutedMessage> * receiveArray, int * count);
+ 
+    ost::InetAddress * getReceiverAddress() { return m_receiverAddr; }
+    Port getReceiverPort() { return m_receiverPort; }
+
+};
 #endif
 

@@ -1,1 +1,0 @@
-Primary=splash.tga

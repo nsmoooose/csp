@@ -82,7 +82,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				InlineFunctionExpansion="1"
-				AdditionalIncludeDirectories="../../Include,../../../SimData/Include,../../../../THIRDPARTYLIBS/include,../../../../THIRDPARTYLIBS/Demeter,C:/Python22/include,../../SimData/include"
+				AdditionalIncludeDirectories="../../Include,C:/Python22/include,../../../../THIRDPARTYLIBS/include,../../../../THIRDPARTYLIBS/Demeter"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;CSPSIMDLL_EXPORTS;_STLP_USE_OWN_NAMESPACE"
 				StringPooling="TRUE"
 				RuntimeLibrary="2"
@@ -104,7 +104,7 @@
 				OutputFile="../../Bin/_CSP.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="../../../../THIRDPARTYLIBS/lib,C:/Python22/libs"
+				AdditionalLibraryDirectories="../../../../THIRDPARTYLIBS/lib,C:/Python22/libs,C:/Python22/Lib/site-packages/SimData"
 				ImportLibrary=".\Release/_CSP.lib"/>
 			<Tool
 				Name="VCMIDLTool"

@@ -52,7 +52,7 @@ class InterfaceProxy;
  *
  *  @author Mark Rose <mrose@stm.lbl.gov>
  */
-class SIMDATA_EXPORT DataManager {
+class SIMDATA_EXPORT DataManager: public Referenced {
 	friend class DataArchive;
 
 public:

@@ -5,6 +5,10 @@
   * Explicitly save and restore gl state when rendering the scene
     views.  Fixes some rendering anomalies.
 
+  * Minor fix now that DataManager is a referenced type.  Also undid
+    some of the SimCore/Battlefield/SConscript changes that shouldn't
+    have been checked in yet.
+
 2004-11-14: onsight
   * Moved SimObject.* to OldSimObject.*, to be replaced when the
     network-enabled battlefield is checked in (soon).

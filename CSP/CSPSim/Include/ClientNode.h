@@ -16,7 +16,7 @@ class ClientNode
     void initNetworking();
 
     Battlefield * m_battlefield;
-    simdata::DataManager m_DataManager;
+    simdata::Ref<simdata::DataManager> m_DataManager;
     NetworkMessenger * m_networkMessenger;
     NetworkNode * m_remoteNode;
     NetworkNode * m_localNode;

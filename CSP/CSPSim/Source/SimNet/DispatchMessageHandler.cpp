@@ -93,7 +93,7 @@ simdata::Ref<DynamicObject> DispatchMessageHandler::addRemoteObject(NetworkMessa
 	CSP_LOG(NETWORK, DEBUG, "DispatchMessageHandler::addRemoteObject() - calling dataManager using path: "
 	<< vehicle.c_str());
 
-	simdata::Ref<DynamicObject> ao = _dataManager.getObject(vehicle.c_str());
+	simdata::Ref<DynamicObject> ao = _dataManager->getObject(vehicle.c_str());
 	CSP_LOG(NETWORK, DEBUG, "DispatchMessageHandler::addRemoteObject() - asserting validity of new object");
 	assert(ao.valid());
 

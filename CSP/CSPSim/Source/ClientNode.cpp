@@ -69,7 +69,7 @@ using bus::Kinetics;
 #include "ObjectModel.h"
 
 
-ClientNode::ClientNode() {
+ClientNode::ClientNode(): m_DataManager(new simdata::DataManager()) {
 	CSP_LOG(NETWORK, INFO, "ClientNode::ClientNode()");
 	m_battlefield = NULL;
 	m_networkMessenger = NULL;
@@ -188,7 +188,7 @@ void ClientNode::init() {
 	try {
 		simdata::DataArchive *sim = new simdata::DataArchive(archive_file.c_str(), 1);
 		assert(sim);
-		m_DataManager.addArchive(sim);
+		m_DataManager->addArchive(sim);
 	}
 	catch (simdata::Exception &e) {
 		CSP_LOG(APP, ERROR, "Error opening data archive " << archive_file);
@@ -258,7 +258,7 @@ void ClientNode::initNetworking() {
 	dispatchMessageHandler->setLocalAddress( m_localNode->getAddress().getAddress().s_addr );
 	dispatchMessageHandler->setLocalPort(m_localPort);
 	dispatchMessageHandler->setBattlefield(m_battlefield);
-	dispatchMessageHandler->setDataManager(m_DataManager);
+	dispatchMessageHandler->setDataManager(m_DataManager.get());
 
 	m_networkMessenger->registerMessageHandler(dispatchMessageHandler);
 

@@ -21,8 +21,8 @@ public:
 	void setBattlefield(Battlefield * battlefield) { _battlefield = battlefield; }
 	Battlefield * getBattlefield() { return _battlefield; }
 
-	void setDataManager(simdata::DataManager & dataManager) { _dataManager = dataManager; }
-	simdata::DataManager getDataManager() { return _dataManager; }
+	void setDataManager(simdata::DataManager * dataManager) { _dataManager = dataManager; }
+	simdata::DataManager& getDataManager() { return *_dataManager; }
 
 protected:
 	bool isLocal(unsigned int addr, unsigned short port);
@@ -34,7 +34,7 @@ private:
 	unsigned int _addr;
 	unsigned short _port;
 	Battlefield * _battlefield;
-	simdata::DataManager _dataManager;
+	simdata::Ref<simdata::DataManager> _dataManager;
 };
 
 

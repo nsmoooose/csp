@@ -185,7 +185,7 @@ private:
 	// TODO the terrain will eventually be encapsulated in a Theater class
 	simdata::Ref<Theater> m_Theater;
 	simdata::Ref<TerrainObject> m_Terrain;
-	simdata::ScopedPointer<simdata::DataManager> m_DataManager;
+	simdata::Ref<simdata::DataManager> m_DataManager;
 	simdata::ScopedPointer<Atmosphere> m_Atmosphere;
 
 	//PyObject* m_Console;

@@ -461,7 +461,7 @@ void CSPSim::init()
 		DispatchMessageHandler * dispatchMessageHandler = new DispatchMessageHandler();
 		dispatchMessageHandler->setLocalAddress( m_localNode->getAddress().getAddress().s_addr );
 		dispatchMessageHandler->setLocalPort( localMessagePort );
-		dispatchMessageHandler->setDataManager(*m_DataManager);
+		dispatchMessageHandler->setDataManager(m_DataManager.get());
 		dispatchMessageHandler->setBattlefield(getBattlefield());
 		m_NetworkMessenger->registerMessageHandler(dispatchMessageHandler);
 

@@ -110,20 +110,6 @@ private:
 		uint32 length;
 	};
 
-	/** Global default archive.
-	 *
-	 *  This provides an optional means to share a data archive
-	 *  globally in an application.  In principle this is not a
-	 *  very safe thing to do, but is provided for the convenience
-	 *  of hanging yourself.  You've been warned.
-	 *
-	 *  Use getDefault() and setDefault() to access this variable
-	 *  (which may be null).
-	 *
-	 *  @deprecated No longer necessary; do not use!
-	 */
-	static DataArchive* defaultArchive;
-
 	enum {
 		/// number of entries to allocate when growing the entry table
 		AS = 1024,
@@ -254,25 +240,6 @@ public:
 	 *  @returns true if in write mode.
 	 */
 	bool isWrite();
-
-	/** Make this archive the "default" archive.
-	 *
-	 *  It will remain so until another archive is assigned or it
-	 *  is deleted (in which case the dafault reverts to NULL).
-	 *
-	 *  @deprecated <em>Use of this default utility is not
-	 *              recommended.</em>
-	 */
-	void setDefault();
-
-	/** Get the current default archive.
-	 *
-	 *  @returns the current default or NULL if there is none.
-	 *
-	 *  @deprecated <em>Use of this default utility is not
-	 *              recommended.</em>
-	 */
-	static DataArchive* getDefault();
 
 	/** Create a new object from a path identifier string.
 	 *

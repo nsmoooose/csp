@@ -3,6 +3,7 @@ Version 0.4.0 (in progress)
 
 2004-12-05: onsight
  * Fix a couple minor warnings under msvc.
+ * Removed deprecated "default" data archive feature.
 
 2004-12-03: delta
  * Updated SimData project files adding a simple project to build

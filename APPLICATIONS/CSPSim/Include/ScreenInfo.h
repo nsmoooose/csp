@@ -38,6 +38,7 @@ class ScreenInfo: public osg::Geode
 protected:
 	std::string m_TTFPath;
 	int m_FontSize;
+	float m_CharacterSize;
 	osgText::Text* m_Text;
 public:
 	ScreenInfo(int posx,int posy, std::string const & name, std::string const & text = "");
@@ -50,7 +51,7 @@ public:
 
 class Framerate: public ScreenInfo 
 {
-	float m_minFps, m_maxFps;
+	float m_minFps, m_maxFps, m_cumul;
 	osgText::Text* m_Date;
 public:
 	Framerate(int posx,int posy);

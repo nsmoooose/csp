@@ -1,6 +1,14 @@
 Version 0.3.2 (in progress)
 ===========================
 
+2003-04-23: delta
+	    Added m_CharacterSize to ScreenInfo to control size of character
+	    (m_FontSIze controls now font resolution). 
+
+	    Cleaned a bit this code.
+
+	    Added average fps.
+
 2003-04-23: onsight 
             Upgraded configure.in to check for OSG 0.9.4.  The full test,
 	    which was broken in 0.9.3, works again.  The test for osgGLUT

@@ -30,9 +30,10 @@
 
 void set2dScene(osg::Group* rootNode, int ScreenWidth, int ScreenHeight)
 {
-	osg::ref_ptr<Framerate> framerate = new Framerate(11,ScreenHeight - 11);
-	osg::ref_ptr<ScreenInfo> pause = new ScreenInfo(ScreenWidth - 5 * 8 - 11, ScreenHeight - 11,"PAUSE", "PAUSE");
-	osg::ref_ptr<GeneralStats> generalStats = new GeneralStats(11, ScreenHeight / 3);
+	const unsigned short offsetpos = 11;
+	osg::ref_ptr<Framerate> framerate = new Framerate(offsetpos,ScreenHeight - offsetpos);
+	osg::ref_ptr<ScreenInfo> pause = new ScreenInfo(ScreenWidth-5*offsetpos,ScreenHeight-offsetpos,"PAUSE", "PAUSE");
+	osg::ref_ptr<GeneralStats> generalStats = new GeneralStats(offsetpos, ScreenHeight / 3);
 
 	rootNode->addChild(framerate.get());
 	rootNode->addChild(pause.get());
@@ -62,7 +63,7 @@ void ScreenInfoManager::changeObjectStats(int ScreenWidth, int ScreenHeight,simd
 	ScreenInfo* os = getScreenInfo("OBJECT STATS");
 	if (os)
 		m_modelview_abs->removeChild(os);
-	osg::ref_ptr<ObjectStats> objectStats = new ObjectStats(11, 2 * ScreenHeight / 3,vehicle);
+	osg::ref_ptr<ObjectStats> objectStats = new ObjectStats(12, 2 * ScreenHeight / 3,vehicle);
 	m_modelview_abs->addChild(objectStats.get());
 }
 

@@ -60,14 +60,12 @@ class UpdateCallback : public osg::NodeCallback
 };
 
 ScreenInfo::ScreenInfo(int posx,int posy, std::string const & name, std::string const & text):
-	m_TTFPath("ltype.ttf"),m_FontSize(11),
-	m_Text(new osgText::Text)
+	m_TTFPath("ltype.ttf"),m_CharacterSize(11),m_FontSize(15), m_Text(new osgText::Text)
 {
-	int heightFont = m_FontSize;
 	m_Text->setFont(m_TTFPath);
 	m_Text->setFontSize(m_FontSize, m_FontSize);
-	m_Text->setCharacterSize(m_FontSize, 1.0);
-	m_Text->setPosition(osg::Vec3(posx,posy - heightFont,0));
+	m_Text->setCharacterSize(m_CharacterSize, 1.0);
+	m_Text->setPosition(osg::Vec3(posx, posy - m_CharacterSize, 0));
 	setUpdateCallback(new UpdateCallback());
 	m_Text->setText(text);
 	addDrawable(m_Text);
@@ -75,29 +73,31 @@ ScreenInfo::ScreenInfo(int posx,int posy, std::string const & name, std::string 
 	setName(name);
 }
 
-Framerate::Framerate(int posx, int posy): ScreenInfo(posx, posy, "FRAMERATE"), m_minFps(60), m_maxFps(25) 
+Framerate::Framerate(int posx, int posy): ScreenInfo(posx, posy, "FRAMERATE"), m_minFps(60), m_maxFps(25), m_cumul(0.0)
 {	
 	m_Date = new osgText::Text();
 	m_Date->setFont(m_TTFPath);
 	m_Date->setFontSize(m_FontSize, m_FontSize);
-	m_Date->setCharacterSize(m_FontSize, 1.0);
-	m_Date->setPosition(osg::Vec3(posx,posy - 2 * m_FontSize,0));
+	m_Date->setCharacterSize(m_CharacterSize, 1.0);
+	m_Date->setPosition(osg::Vec3(posx, posy - 2 * m_CharacterSize, 0));
 	addDrawable(m_Date);
 }
 
 void Framerate::update()
 {
+	static unsigned long count = 0;
 	float fps = CSPSim::theSim->getFrameRate();
-	static int i = 0;
-	if (i++ >= 1000) { // reset occasionally
+	
+	if ((count++)%1000 == 0) { // reset occasionally
 		m_minFps = 100.0;
 		m_maxFps = 0.0;
-		i = 0;
 	}
 	m_minFps = min(m_minFps,fps);
 	m_maxFps = max(m_maxFps,fps);
+	m_cumul += fps;
 	std::ostringstream osstr;
-	osstr << setprecision(1) << setw(5) << fixed << fps << " FPS min: " << m_minFps << " max: " << m_maxFps;
+	osstr << setprecision(1) << setw(5) << fixed << fps << " FPS min: " << m_minFps << " max: " << m_maxFps << " av:"
+		  << m_cumul / count;
 	m_Text->setText(osstr.str());
 
 	simdata::SimDate artificial_time = CSPSim::theSim->getCurrentTime();
@@ -107,30 +107,28 @@ void Framerate::update()
 
 GeneralStats::GeneralStats(int posx,int posy):ScreenInfo(posx,posy,"GENERAL STATS")
 {
-	unsigned int yOffset;
-
-	yOffset = 50 - m_FontSize;
+	float yOffset = 50.0 - m_CharacterSize;
 	m_LocalPosition = new osgText::Text();
 	m_LocalPosition->setFont(m_TTFPath);
 	m_LocalPosition->setFontSize(m_FontSize, m_FontSize);
-	m_LocalPosition->setCharacterSize(m_FontSize, 1.0);
-	m_LocalPosition->setPosition(osg::Vec3(0, yOffset, 0));
+	m_LocalPosition->setCharacterSize(m_CharacterSize, 1.0);
+	m_LocalPosition->setPosition(osg::Vec3(m_CharacterSize, yOffset, 0));
 	addDrawable(m_LocalPosition);
 	
-	yOffset -= m_FontSize;
+	yOffset -= m_CharacterSize;
 	m_GlobalPosition = new osgText::Text();
 	m_GlobalPosition->setFont(m_TTFPath);
 	m_GlobalPosition->setFontSize(m_FontSize, m_FontSize);
-	m_GlobalPosition->setCharacterSize(m_FontSize, 1.0);
-	m_GlobalPosition->setPosition(osg::Vec3(0, yOffset, 0));
+	m_GlobalPosition->setCharacterSize(m_CharacterSize, 1.0);
+	m_GlobalPosition->setPosition(osg::Vec3(m_CharacterSize, yOffset, 0));
 	addDrawable(m_GlobalPosition);
 	
-	yOffset -= m_FontSize;
+	yOffset -= m_CharacterSize;
 	m_Velocity = new osgText::Text();
 	m_Velocity->setFont(m_TTFPath);
 	m_Velocity->setFontSize(m_FontSize, m_FontSize);
-	m_Velocity->setCharacterSize(m_FontSize, 1.0);
-	m_Velocity->setPosition(osg::Vec3(0, yOffset, 0));
+	m_Velocity->setCharacterSize(m_CharacterSize, 1.0);
+	m_Velocity->setPosition(osg::Vec3(m_CharacterSize, yOffset, 0));
 	addDrawable(m_Velocity);
 }
 
@@ -175,10 +173,10 @@ ScreenInfo(posx,posy,"OBJECT STATS")
 		activeObject->getStats(stringStats);
 		short n = stringStats.size();
 		for (;n-->0;) {
-			posy -= m_FontSize;
+			posy -= m_CharacterSize;
 			osgText::Text* aStat = new osgText::Text();
 			aStat->setFont(m_TTFPath);
-			aStat->setCharacterSize(m_FontSize, 1.0);
+			aStat->setCharacterSize(m_CharacterSize, 1.0);
 			aStat->setPosition(osg::Vec3(posx, posy, 0));
 			m_ObjectStats.push_back(aStat);
 			addDrawable(aStat);
@@ -197,10 +195,7 @@ void ObjectStats::update()
 		short n = m_ObjectStats.size();
 		short m = stringStats.size();
 		if (m < n) n = m;
-		for (;--n>=0;) {
+		for (;--n>=0;)
 			m_ObjectStats[n]->setText(stringStats[n]);
-			//			std::cout << stringStats[n] << std::endl;
-		}
-		//		std::cout << stringStats.size() << std::endl;
 	}
 }

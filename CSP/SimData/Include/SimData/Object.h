@@ -149,7 +149,7 @@ private:
 	Object const &operator=(Object const &);
 
 	void _setPath(hasht);
-	
+
 	hasht _path;
 
 protected:
@@ -243,6 +243,12 @@ public:
 	 */
 	static hasht _getHash(const char* c);
 
+	/** Expose the postCreate method.   Experimental --- use with great caution.
+	 *  Ordinarily postCreate is called only by DataArchive after deserializing
+	 *  an object.  This method is intended to assist with object creation directly
+	 *  from XML data (typically in Python).
+	 */
+	void _postCreate() { postCreate(); }
 };
 
 

@@ -5,6 +5,8 @@ Version 0.4.0 (in progress)
   * Remove superflous logging in interface registry, and suppress
     swig warnings.
 
+  * Fix tabs in Matrix.h
+
 2004-06-22: onsight
   * Added a ScopedUnlock (trivial reversal of ScopedLock)
 

@@ -1,18 +1,18 @@
 /* SimData: Data Infrastructure for Simulations
  * Copyright (C) 2002, 2003 Mark Rose <tm2@stm.lbl.gov>
- * 
+ *
  * This file is part of SimData.
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
@@ -24,11 +24,11 @@
  *
  * A three-by-three matrix class.
  *
- * This source code was originally based on the Matrix class of 
+ * This source code was originally based on the Matrix class of
  * the OpenSceneGraph library, Copyright 1998-2003 Robert Osfield.
  * Source code from OpenSceneGraph is used here under the GNU General
- * Public License version 2 or later, as permitted under the 
- * OpenSceneGraph Public License version 0.0 (exception 3) and the GNU 
+ * Public License version 2 or later, as permitted under the
+ * OpenSceneGraph Public License version 0.0 (exception 3) and the GNU
  * Lesser Public  License version 2 (clause 3).
  **/
 
@@ -93,24 +93,24 @@ public:
 	 *
 	 *  @note The default constructor does @b not initialize the
 	 *  matrix for the sake of efficiency.  If you do not explicitly
-	 *  set the matrix, the elements will generally assume random 
+	 *  set the matrix, the elements will generally assume random
 	 *  values.
 	 */
-        Matrix3() { } // for speed, do not initialize
+	Matrix3() { } // for speed, do not initialize
 
 	/** Copy constructor.
 	 */
-        Matrix3(const Matrix3& other): BaseType(other) { set(other); }
+	Matrix3(const Matrix3& other): BaseType(other) { set(other); }
 
 	/** Construct and initialize a matrix from a double[9] array.
 	 */
-        explicit Matrix3(double const * const def) { set(def); }
-        Matrix3(double a00, double a01, double a02,
-                double a10, double a11, double a12,
-                double a20, double a21, double a22) { 
-		set(a00, a01, a02, 
-		    a10, a11, a12, 
-		    a20, a21, a22); 
+	explicit Matrix3(double const * const def) { set(def); }
+	Matrix3(double a00, double a01, double a02,
+	        double a10, double a11, double a12,
+	        double a20, double a21, double a22) {
+		set(a00, a01, a02,
+		    a10, a11, a12,
+		    a20, a21, a22);
 	}
 
 	/** Construct and initialize a matrix from three column vectors.
@@ -119,34 +119,34 @@ public:
 
 	/** Destructor.
 	 */
-        ~Matrix3() {}
+	~Matrix3() {}
 
 	/** Compare two matrices.
-	 * 
+	 *
 	 *  Compares two matrices byte-by-byte.  The sign of the return value is
 	 *  useless, since the byte comparisons are inequivalent to floating point
 	 *  comparisions.  Used only to test for equality.
 	 *
 	 *  @returns 0 if equal, non-zero if unequal.
 	 */
-        int compare(const Matrix3& m) const { return memcmp(_mat, m._mat, sizeof(_mat)); }
+	int compare(const Matrix3& m) const { return memcmp(_mat, m._mat, sizeof(_mat)); }
 
 	/** Compare two matrices for (byte) equality.
 	 */
-        bool operator == (const Matrix3& m) const { return compare(m)==0; }
+	bool operator == (const Matrix3& m) const { return compare(m)==0; }
 
 	/** Compare two matrices for (byte) inequality.
 	 */
-        bool operator != (const Matrix3& m) const { return compare(m)!=0; }
+	bool operator != (const Matrix3& m) const { return compare(m)!=0; }
 
 #ifndef SWIG
 	/** Get the value (reference) of a matrix element.
 	 */
-        inline double& operator()(int row_, int col_) { return _mat[row_][col_]; }
+	inline double& operator()(int row_, int col_) { return _mat[row_][col_]; }
 
 	/** Get the (const) value of a matrix element.
 	 */
-        inline double operator()(int row_, int col_) const { return _mat[row_][col_]; }
+	inline double operator()(int row_, int col_) const { return _mat[row_][col_]; }
 #endif // SWIG
 
 	/** Get the value of a matrix element.
@@ -159,39 +159,39 @@ public:
 
 	/** Return true if all elements are valid floating point numbers.
 	 */
-        inline bool valid() const { return !isNaN(); }
+	inline bool valid() const { return !isNaN(); }
 
 	/** Return true if any elements are NaN (not-a-number).
 	 */
-        bool isNaN() const;
+	bool isNaN() const;
 
 #ifndef SWIG
 	/** Copy operator.
 	 */
-        inline Matrix3& operator = (const Matrix3& other) {
+	inline Matrix3& operator = (const Matrix3& other) {
 		if (&other == this) return *this;
 		std::copy((double*)other._mat, (double*)other._mat+9, (double*)(_mat));
 		return *this;
-        }
+	}
 #endif // SWIG
-        
+
 	/** Set this matrix from another matrix.
 	 */
-        inline void set(const Matrix3& other) {
+	inline void set(const Matrix3& other) {
 		std::copy((double*)other._mat, (double*)other._mat+9, (double*)(_mat));
-        }
-        
+	}
+
 	/** Set this matrix from a double[9] array.
 	 */
-        inline void set(double const * const ptr_) {
+	inline void set(double const * const ptr_) {
 		std::copy(ptr_, ptr_+9, (double*)(_mat));
-        }
-        
+	}
+
 	/** Set this matrix from a list of element values.
 	 */
-        void set(double a00, double a01, double a02,
-                 double a10, double a11, double a12,
-                 double a20, double a21, double a22) {
+	void set(double a00, double a01, double a02,
+	         double a10, double a11, double a12,
+	         double a20, double a21, double a22) {
 		_mat[0][0] = a00;
 		_mat[0][1] = a01;
 		_mat[0][2] = a02;
@@ -202,7 +202,7 @@ public:
 		_mat[2][1] = a21;
 		_mat[2][2] = a22;
 	}
-                  
+
 	/** Get the matrix elements as a vector<double>.
 	 */
 	std::vector<double> getElements() const;
@@ -213,16 +213,16 @@ public:
 
 	/** Get a row vector of this matrix.
 	 */
-	Vector3 getRow(int i) { 
-		assert(i>=0 && i<3); 
-		return Vector3(_mat[i][0], _mat[i][1], _mat[i][2]); 
+	Vector3 getRow(int i) {
+		assert(i>=0 && i<3);
+		return Vector3(_mat[i][0], _mat[i][1], _mat[i][2]);
 	}
 
 	/** Get a column vector of this matrix.
 	 */
-	Vector3 getCol(int i) { 
-		assert(i>=0 && i<3); 
-		return Vector3(_mat[0][i], _mat[1][i], _mat[2][i]); 
+	Vector3 getCol(int i) {
+		assert(i>=0 && i<3);
+		return Vector3(_mat[0][i], _mat[1][i], _mat[2][i]);
 	}
 
 	/** Set a row of this matrix from a vector.
@@ -249,22 +249,22 @@ public:
 	
 	/** Get a pointer to the first element of this matrix.
 	 */
-        double * ptr() { return (double *)_mat; }
+	double * ptr() { return (double *)_mat; }
 
 	/** Get a const pointer to the first element of this matrix.
 	 */
-        double const * ptr() const { return (double const *)_mat; }
+	double const * ptr() const { return (double const *)_mat; }
 
 	/** Set this matrix equal to the identity matrix.
 	 */
-        inline void makeIdentity() { set(IDENTITY); }
+	inline void makeIdentity() { set(IDENTITY); }
 
 	/** Set all matrix elements to zero.
 	 */
 	inline void makeZero() { set(ZERO); }
 
 	/** Set this matrix to a scaling matrix.
-	 * 
+	 *
 	 *  The resulting matrix has the components
 	 *  of the input vector along the diagonal,
 	 *  with all off-diagonal elements equal to
@@ -273,39 +273,39 @@ public:
 	 *  @param v A vector specifying the scale factor for
 	 *           each axis.
 	 */
-        inline void makeScale(const Vector3& v) {
+	inline void makeScale(const Vector3& v) {
 		makeScale(v.x(), v.y(), v.z());
 	}
 
 	/** Set this matrix to a scaling matrix.
-	 *  
+	 *
 	 *  See makeScale(const Vector3&).
 	 */
-        void makeScale(double, double, double);
-        
+	void makeScale(double, double, double);
+
 	/** Make a rotation matrix to transform one vector into another.
 	 *
 	 *  The resulting matrix will rotate the @c from vector
 	 *  into the @c to vector.
 	 */
-        void makeRotate(const Vector3& from, const Vector3& to);
+	void makeRotate(const Vector3& from, const Vector3& to);
 
 	/** Make a rotation matrix to rotate around a given axis.
 	 *
 	 *  @param angle The angle of rotation.
 	 *  @param axis The axis of rotation.
 	 */
-        void makeRotate(double angle, const Vector3& axis);
+	void makeRotate(double angle, const Vector3& axis);
 
 	/** Make a rotation matrix to rotate around a given axis.
 	 *
 	 *  See makeRotate(double angle, const Vector3& axis).
 	 */
-        void makeRotate(double angle, double x, double y, double z);
+	void makeRotate(double angle, double x, double y, double z);
 
 	/** Make a rotation matrix from a quaternion.
 	 */
-        void makeRotate(const Quat&);
+	void makeRotate(const Quat&);
 
 	/** Make a rotation matrix from euler angles.
 	 *
@@ -313,7 +313,7 @@ public:
 	 *  @param pitch the y-axis rotation.
 	 *  @param yaw the z-axis rotation.
 	 */
-        void makeRotate(double roll, double pitch, double yaw);
+	void makeRotate(double roll, double pitch, double yaw);
 
 	/** Make a rotation from combining three rotations.
 	 *
@@ -324,9 +324,9 @@ public:
 	 *  @param angle3 The angle of the third rotation.
 	 *  @param axis3 The axis of the third rotation.
 	 */
-        void makeRotate(double angle1, const Vector3& axis1, 
-                        double angle2, const Vector3& axis2,
-                        double angle3, const Vector3& axis3);
+	void makeRotate(double angle1, const Vector3& axis1,
+	                double angle2, const Vector3& axis2,
+	                double angle3, const Vector3& axis3);
 
 	/** Construct the inverse of a matrix.
 	 *
@@ -336,7 +336,7 @@ public:
 	 *           true otherwise.  If false, the matrix elements are
 	 *           copied directly from the input matrx.
 	 */
-        bool invert(const Matrix3 &m, double tolerance=1e-12);
+	bool invert(const Matrix3 &m, double tolerance=1e-12);
 
 	/** Invert this matrix.
 	 *
@@ -345,7 +345,7 @@ public:
 	 *           true otherwise.  If false, the matrix elements are
 	 *           unchanged.
 	 */
-        inline bool invert(double tolerance=1e-12) { return invert(*this, tolerance); }
+	inline bool invert(double tolerance=1e-12) { return invert(*this, tolerance); }
 
 	/** Construct the transpose of a matrix.
 	 *
@@ -369,10 +369,10 @@ public:
 
 	/** Get the transpose of this matrix.
 	 */
-	inline Matrix3 getTranspose() const { 
+	inline Matrix3 getTranspose() const {
 		return Matrix3(_mat[0][0], _mat[1][0], _mat[2][0],
 		               _mat[0][1], _mat[1][1], _mat[2][1],
-			       _mat[0][2], _mat[1][2], _mat[2][2]);
+		               _mat[0][2], _mat[1][2], _mat[2][2]);
 	}
 
 	/** Compute the determinant of this matrix.
@@ -385,28 +385,28 @@ public:
 
 	/** Create a new scaling matrix.
 	 */
-        inline static Matrix3 scale(const Vector3& sv);
+	inline static Matrix3 scale(const Vector3& sv);
 
 	/** Create a new scaling matrix.
 	 */
-        inline static Matrix3 scale(double sx, double sy, double sz);
+	inline static Matrix3 scale(double sx, double sy, double sz);
 
 	/** Create a new rotation matrix.
 	 */
-        inline static Matrix3 rotate(const Vector3& from, const Vector3& to);
+	inline static Matrix3 rotate(const Vector3& from, const Vector3& to);
 
 	/** Create a new rotation matrix.
 	 */
-        inline static Matrix3 rotate(double angle, double x, double y, double z);
+	inline static Matrix3 rotate(double angle, double x, double y, double z);
 	/** Create a new rotation matrix.
 	 */
-        inline static Matrix3 rotate(double angle, const Vector3& axis);
+	inline static Matrix3 rotate(double angle, const Vector3& axis);
 
 	/** Create a new rotation matrix.
 	 */
-        inline static Matrix3 rotate(double angle1, const Vector3& axis1, 
-                                     double angle2, const Vector3& axis2,
-                                     double angle3, const Vector3& axis3);
+	inline static Matrix3 rotate(double angle1, const Vector3& axis1,
+	                             double angle2, const Vector3& axis2,
+	                             double angle3, const Vector3& axis3);
 
 	/** Create a new rotation matrix.
 	 */
@@ -414,11 +414,11 @@ public:
 
 	/** Create a new rotation matrix.
 	 */
-        inline static Matrix3 rotate(const Quat& quat);
+	inline static Matrix3 rotate(const Quat& quat);
 
 	/** Get the inverse of a matrix.
 	 */
-        inline static Matrix3 inverse(const Matrix3& matrix, double tolerance=1e-12);
+	inline static Matrix3 inverse(const Matrix3& matrix, double tolerance=1e-12);
 	/** Get the tensor product of two vectors.
 	 */
 	inline static Matrix3 tensor(const Vector3&a, const Vector3 &b);
@@ -430,18 +430,18 @@ public:
 	/** Get the Euler angles of this matrix.
 	 */
 	void getEulerAngles(double &roll, double &pitch, double &yaw);
-        
+
 	/** Multiply this matrix by a row vector (v*M).
 	 */
-        inline Vector3 preMult(const Vector3& v) const;
+	inline Vector3 preMult(const Vector3& v) const;
 
 	/** Multiply this matrix by a column vector (M*v).
 	 */
-        inline Vector3 postMult(const Vector3& v) const;
+	inline Vector3 postMult(const Vector3& v) const;
 
 	/** Multiply this matrix by a column vector (M*v).
 	 */
-        inline Vector3 operator* (const Vector3& v) const { return postMult(v); }
+	inline Vector3 operator* (const Vector3& v) const { return postMult(v); }
 #ifndef SWIG
 	/** Multiply a matrix by a row vector (v*M).
 	 */
@@ -450,38 +450,38 @@ public:
 
 	/** Get the diagonal elements of this matrix as a vector.
 	 */
-        inline Vector3 getScale() const { return Vector3(_mat[0][0],_mat[1][1],_mat[2][2]); }
+	inline Vector3 getScale() const { return Vector3(_mat[0][0],_mat[1][1],_mat[2][2]); }
 
 	/** Get the trace of this matrix.
 	 */
 	inline double getTrace() const { return _mat[0][0] + _mat[1][1] + _mat[2][2]; }
-        
+
 	/** Matrix multipliation (M*M)
 	 */
-        void mult(const Matrix3&, const Matrix3&);
+	void mult(const Matrix3&, const Matrix3&);
 
 	/** Multiply this matrix by another matrix on the left.
 	 */
-        void preMult(const Matrix3&);
+	void preMult(const Matrix3&);
 
 	/** Multiply this matrix by another matrix on the right.
 	 */
-        void postMult(const Matrix3&);
+	void postMult(const Matrix3&);
 
 	/** Multiply this matrix by another matrix on the right.
 	 */
-        inline void operator *= (const Matrix3& other) {
+	inline void operator *= (const Matrix3& other) {
 		if (this == &other) {
 			Matrix3 temp(other);
 			postMult(temp);
 		} else {
-			postMult(other); 
+			postMult(other);
 		}
-        }
+	}
 
 	/** Get the product of this matrix and another matrix.
 	 */
-        inline Matrix3 operator * (const Matrix3& m) const {
+	inline Matrix3 operator * (const Matrix3& m) const {
 		Matrix3 r;
 		r.mult(*this, m);
 		return r;
@@ -593,7 +593,7 @@ public:
 
 protected:
 	/** The matrix elements */
-        double _mat[3][3];
+	double _mat[3][3];
 
 };
 
@@ -630,9 +630,9 @@ inline Matrix3 Matrix3::rotate(double angle, const Vector3& axis) {
 	return m;
 }
 
-inline Matrix3 Matrix3::rotate(double angle1, const Vector3& axis1, 
-                               double angle2, const Vector3& axis2,
-                               double angle3, const Vector3& axis3)
+inline Matrix3 Matrix3::rotate(double angle1, const Vector3& axis1,
+	                           double angle2, const Vector3& axis2,
+	                           double angle3, const Vector3& axis3)
 {
 	Matrix3 m;
 	m.makeRotate(angle1, axis1, angle2, axis2, angle3, axis3);

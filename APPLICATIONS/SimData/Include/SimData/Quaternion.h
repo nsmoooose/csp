@@ -332,14 +332,31 @@ public:
 
 	/**
 	 * Convert a quaternion to Euler angles.
+	 *
+	 * X axis is roll.
+	 * Y axis is pitch.
+	 * Z axis is yaw.
 	 */
 	static Vector3 MakeEulerAnglesFromQ(Quaternion const &q);
 
 	/**
+	 * Convert a quaternion to Modified Euler angles.
+	 *
+	 * X axis is pitch.
+	 * Y axis is roll.
+	 * Z axis is -yaw.
+	 */
+	static Vector3 MakeModifiedEulerAnglesFromQ(Quaternion const &q);
+
+	/**
 	 * Construct a new quaternion from Euler angles.
+	 *
+	 * @param x roll angle (radians)
+	 * @param y pitch angle (radians)
+	 * @param z yaw angle (radians)
 	 */
 	static Quaternion MakeQFromEulerAngles(double x, double y, double z);
-	
+
 	/**
 	 * String representation.
 	 */

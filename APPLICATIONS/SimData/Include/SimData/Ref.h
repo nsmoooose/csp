@@ -216,6 +216,21 @@ public:
 		return _reference == p;
 	}
 
+	/**
+	 * Comparison with other simdata pointers.
+	 */
+	template <class Q>
+	inline bool operator!=(Ref<Q> const & p) const {
+		return _reference != p.get();
+	}
+
+	/**
+	 * Comparison with other simdata pointers.
+	 */
+	inline bool operator!=(Referenced const * p) const {
+		return _reference != p;
+	}
+
 
 protected:
 	/**

@@ -458,6 +458,40 @@ Quaternion Quaternion::MakeQFromEulerAngles(double x, double y, double z)
 	return q;
 }
 
+Vector3	Quaternion::MakeModifiedEulerAnglesFromQ(Quaternion const& q)
+{
+	Vector3	u;
+
+	double q00 = q.w * q.w;
+	double q11 = q.x * q.x;
+	double q22 = q.y * q.y;
+	double q33 = q.z * q.z;
+
+	double r11 = q00 + q22 - q11 - q33;
+	double r21 = 2 * (  q.x*q.y  - q.w*q.z);
+	double r31 = 2 * (- q.y*q.z  - q.w*q.x);
+	double r32 = 2 * (- q.x*q.z  + q.w*q.y);
+	double r33 = q00 - q22 - q11 + q33;
+
+	double tmp = fabs(r31);
+	if(tmp > 0.999999)
+	{
+		double r12 = 2 * (  q.x*q.y + q.w*q.z);
+		double r13 = 2 * (- q.y*q.z + q.w*q.x);
+
+		u.x = -(G_PI/2) * r31/tmp; // pitch
+		u.y = 0.0f; //roll
+		u.z = atan2(-r12, -r31*r13); // yaw
+	}
+	else {
+		u.x = asin(-r31); // pitch
+		u.y = atan2(r32, r33); // roll
+		u.z = atan2(r21, r11); // yaw
+	}
+
+	return u;
+}
+
 Vector3	Quaternion::MakeEulerAnglesFromQ(Quaternion const& q)
 {
 	Vector3	u;
@@ -484,14 +518,12 @@ Vector3	Quaternion::MakeEulerAnglesFromQ(Quaternion const& q)
 		u.z = atan2(-r12, -r31*r13); // yaw
 	}
 	else {
-	u.x = atan2(r32, r33); // roll
-	u.y = asin(-r31); // pitch
-	u.z = atan2(r21, r11); // yaw
+		u.x = atan2(r32, r33); // roll
+		u.y = asin(-r31); // pitch
+		u.z = atan2(r21, r11); // yaw
 	}
 
 	return u;
-	
-
 }
 
 Quaternion & Quaternion::operator+=(const Quaternion& q)

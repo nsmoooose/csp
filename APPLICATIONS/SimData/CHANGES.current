@@ -1,6 +1,13 @@
 Version 0.3.2 (in progress)
 ===========================
 
+2003-04-25: onsight
+            Added != operator to Ref<>.
+
+	    Added MakeModifiedEulerAnglesFromQ() method to Quaternion
+	    to provide direct support CSP's coordinate frame.  This
+	    is still experimental and may not ultimately be needed.
+
 2003-04-25: delta
 	    Updated .net project file.
 

@@ -29,8 +29,17 @@ using SIMDATA(TypeAdapter);
 %include "SimData/vector.i"
 
 NAMESPACE_SIMDATA
+
 %newobject InterfaceProxy::createObject;
+
+// silence swig warningns about unknown base class Singleton<InterfaceRegistry>
+class InterfaceRegistry;
+template <class T> class Singleton;
+%template(SingletonInterfaceRegistry) Singleton<InterfaceRegistry>;
+%warnfilter(402) InterfaceRegistry;
+
 NAMESPACE_SIMDATA_END
+
 
 %exception {
         try {

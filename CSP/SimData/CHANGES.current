@@ -1,6 +1,10 @@
 Version 0.4.0 (in progress)
 ===========================
 
+2004-06-26: onsight
+  * Remove superflous logging in interface registry, and suppress
+    swig warnings.
+
 2004-06-22: onsight
   * Added a ScopedUnlock (trivial reversal of ScopedLock)
 

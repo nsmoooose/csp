@@ -599,7 +599,6 @@ public: \
 		std::string _classname = #classname; \
 		SIMDATA(hasht) _classhash = classname::_getClassHash(); \
 		if (!_interface) { \
-			SIMDATA_LOG(SIMDATA(LOG_ALL), SIMDATA(LOG_ERROR), "constructing interfaceproxy for " << #classname); \
 			_interface = new SIMDATA(ObjectInterface)<classname>; \
 			(*_interface)
 

@@ -20,6 +20,9 @@ extern "C" {
 #include <engine/geometry.h>
 #include <engine/jpeg.h>
 
+#ifdef _MSC_VER
+#define snprintf _snprintf
+#endif 
 
 //void	initialize_tileset(array<texture_tile>* tileset);
 //const texture_tile*	choose_tile(const array<texture_tile>& tileset, int r, int g, int b);

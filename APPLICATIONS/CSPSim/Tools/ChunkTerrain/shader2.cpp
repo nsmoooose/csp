@@ -28,6 +28,10 @@ extern "C" {
 #include <vector>
 #include <iostream>
 
+#ifdef _MSC_VER
+#define snprintf _snprintf
+#endif
+
 void ReadPixel(SDL_Surface *s, int x, int y, Uint8* R, Uint8* G, Uint8* B, Uint8* A);
 
 class Blender {

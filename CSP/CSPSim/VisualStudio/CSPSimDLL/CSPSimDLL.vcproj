@@ -127,7 +127,7 @@
 				OutputFile="../../Bin/_cCSP.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="../../../SimNet/.bin;../../../lib;&quot;$(PYTHON_PATH)/libs&quot;;../../../SimData/SimData;../../../SpatialIndex/.bin;../../../SimCore/.bin"
+				AdditionalLibraryDirectories="../../../SimNet/.bin;../../../lib;$(PYTHON_PATH)/libs;../../../SimData/SimData;../../../SpatialIndex/.bin;../../../SimCore/.bin"
 				IgnoreDefaultLibraryNames=""
 				GenerateDebugInformation="FALSE"
 				AssemblyDebug="0"
@@ -361,6 +361,9 @@
 				</File>
 				<File
 					RelativePath="..\..\Source\Theater\FeatureSceneModel.cpp">
+				</File>
+				<File
+					RelativePath="..\..\Source\Theater\IsoContour.cpp">
 				</File>
 				<File
 					RelativePath="..\..\Source\Theater\LayoutTransform.cpp">
@@ -621,6 +624,9 @@
 				</File>
 				<File
 					RelativePath="..\..\Include\Theater\FeatureSceneModel.h">
+				</File>
+				<File
+					RelativePath="..\..\Include\Theater\IsoContour.h">
 				</File>
 				<File
 					RelativePath="..\..\Include\Theater\LayoutTransform.h">

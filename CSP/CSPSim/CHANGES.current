@@ -1,8 +1,21 @@
  Version 0.4.0 (in progress)
 ===========================
 
+2004-05-09
+  * Minor cleanings in Include/CSPSim.h. 
+  
+  * Commented out glFinish() in Source/VirtualScene.cpp which can be 
+    responsible of performance hits. Must be tested.
+    
+  * Decreased Radius of the skydome (Source/Sky.cpp) to provide a quick 
+    and dirty hack of the "black sky" symptom on ATI hardware.
+    
+  * Minor changes to VisualStudio/CSPSimDLL.vcproj.
+  
+  * Changed the date in Data/CSPSim.ini.
+  
 2004-05-08: Wolverine
-  * more updates to networking. Including changes so both windows and unix
+  * More updates to networking. Including changes so both windows and unix
     can compile.
 
 2004-05-02: wolverine

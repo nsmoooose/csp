@@ -24,8 +24,6 @@
 
 #include <vector>
 
-#include <osg/ShapeDrawable>
-
 #include "ObjectModel.h"
 #include "Animation.h"
 #include "Log.h"
@@ -38,14 +36,16 @@
 #include <osgUtil/SmoothingVisitor>
 #include <osgUtil/DisplayListVisitor>
 #include <osgUtil/Optimizer>
+#include <osg/CullFace>
 #include <osg/NodeVisitor>
 #include <osg/Geometry>
 #include <osg/Texture>
 #include <osg/Geode>
 #include <osg/Depth>
+#include <osg/ShapeDrawable>
 #include <osgText/Text>
 #include <osg/PolygonOffset>
-#include <osg/CullFace>
+
 
 #include <SimData/FileUtility.h>
 #include <SimData/osg.h>

@@ -370,7 +370,7 @@ int VirtualScene::drawScene()
 		m_NearView->draw();
 	}
 
-	glFinish();
+	//glFinish();
 
 	if (m_Terrain.valid()) m_Terrain->endDraw();
 

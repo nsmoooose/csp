@@ -1157,7 +1157,8 @@ void Sky::_init()
 	int i, j;
 	float x, y, z;
 	float alpha, theta;
-	float radius = 1100000.0f; 
+	//float radius = 1100000.0f;
+	float radius = 64000.0f;
 	m_Horizon = new FalseHorizon;
 #ifdef TEXDOME
 	m_Horizon->init(192);

@@ -44,10 +44,6 @@
 #undef min
 #undef max
 
-
-// Uncomment this line if you are using OSG version 0.9.4 or older.
-//#define CSP_OSG_094
-
 struct SDL_Surface;
 
 class PyShell;
@@ -186,10 +182,7 @@ private:
 	NetworkMessenger * m_NetworkMessenger;
 	NetworkNode * m_RemoteServerNode;
 
-#ifndef CSP_OSG_094
 	osg::ref_ptr<Producer::RenderSurface> m_RenderSurface;
-#endif
-
 };
 
 #endif // __CSPSIM_H__

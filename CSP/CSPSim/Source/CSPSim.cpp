@@ -236,13 +236,6 @@ void CSPSim::init()
 		simdata::ospath::addpath(search_path, font_path);
 		osgDB::setDataFilePathList(search_path);
 
-		// we don't need this on Linux since libs are usually
-		// installed in /usr/local/lib/osgPlugins or /usr/lib/osgPlugins.
-		// OSG can find itself the plugins.
-//#ifdef _WIN32
-//		osgDB::setLibraryFilePathList(".");
-//#endif
-
 		// open the primary data archive
 		std::string cache_path = getCachePath();
 		std::string archive_file = simdata::ospath::join(cache_path, "sim.dar");

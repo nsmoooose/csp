@@ -32,8 +32,6 @@
 #define NOMINMAX
 #endif
 
-#include <algorithm>
-
 #include "CSPSim.h"
 #include "Log.h" 
 #include "FlightModel.h"
@@ -203,7 +201,6 @@ void FlightModel::updateGroundEffect(double height) {
 		m_GE = 1.0;
 	}
 }
-
 
 
 

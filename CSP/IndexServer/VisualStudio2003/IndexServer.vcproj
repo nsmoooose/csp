@@ -19,6 +19,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				AdditionalIncludeDirectories="../../SimData/Include;../.."
+				PreprocessorDefinitions="PTHREADS_WIN"
 				RuntimeLibrary="3"
 				RuntimeTypeInfo="TRUE"
 				ExpandAttributedSource="TRUE"
@@ -75,6 +76,7 @@
 				OptimizeForProcessor="0"
 				OptimizeForWindowsApplication="FALSE"
 				AdditionalIncludeDirectories="../../SimData/Include;../.."
+				PreprocessorDefinitions="PTHREADS_WIN"
 				RuntimeLibrary="2"
 				EnableEnhancedInstructionSet="0"
 				RuntimeTypeInfo="TRUE"
@@ -84,7 +86,7 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="ws2_32.lib pthreadVC.lib SpatialIndex.lib SimNet.lib _cSimData.lib ccgnu2.lib SimCore.lib"
+				AdditionalDependencies="ws2_32.lib pthreadVC1.lib SpatialIndex.lib SimNet.lib _cSimData.lib ccgnu2.lib SimCore.lib"
 				OutputFile="../$(ProjectName).exe"
 				LinkIncremental="0"
 				AdditionalLibraryDirectories="../../SpatialIndex/.bin;../../SimNet/.bin;../../SimData/SimData;../../SimCore/.bin"/>

@@ -13,6 +13,9 @@ Version 0.4.0 (in progress)
 
   * Added tagged record compiler and associated header.
 
+  * Disallowed copying of Referenced derived classes (should always
+    use Ref<> pointers).
+
 2004-16-12: wolverine
   * added a MemoryWriter class to write out a SimData object to
     a binary memory buffer.  Added a MemoryReader class. Added

@@ -1,0 +1,35 @@
+REM Start.csp
+REM Startup script for CSPFlightSim
+
+REM Load Flight Models
+Run AeroF4.csp
+Run AeroM2k.csp
+Run AeroM3c.csp
+
+REM Load Terrain
+REM RUN BalkanTerrain.csp
+REM RUN BalkanTestTerrain.csp
+RUN BalkanLatticeTerrain.csp
+
+REM Load models
+Run AddModels.csp
+
+REM Load Planes
+Run AddPlanes.csp
+
+REM Load Tanks
+Run AddTanks.csp
+
+REM Set player
+Run SetPlayer.csp
+
+REM Set fog start distance
+Set FOG_START 20000
+
+Set FOG_END 35000
+
+Set View_DISTANCE 35000
+
+Set wireframe off
+
+set FOG On

@@ -1,0 +1,197 @@
+//Microsoft Developer Studio generated resource script.
+//
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#include "afxres.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// Deutsch (Deutschland) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_DEU)
+#ifdef _WIN32
+LANGUAGE LANG_GERMAN, SUBLANG_GERMAN
+#pragma code_page(1252)
+#endif //_WIN32
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "#include ""afxres.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+#endif    // Deutsch (Deutschland) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+/////////////////////////////////////////////////////////////////////////////
+// Englisch (USA) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+#ifdef _WIN32
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+#pragma code_page(1252)
+#endif //_WIN32
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_DIALOG_STARTUP DIALOG DISCARDABLE  50, 50, 196, 173
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "CSP Terrain Lab"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,139,146,50,14
+    PUSHBUTTON      "Abort",IDCANCEL,87,146,50,14
+    GROUPBOX        "Terrain Mesh",IDC_STATIC,6,7,182,105
+    CONTROL         "Generate new random mesh",IDC_RAND_MESH,"Button",
+                    BS_AUTORADIOBUTTON | WS_DISABLED,10,46,118,10
+    CONTROL         "Load Mesh File",IDC_LOADNEWMESH,"Button",
+                    BS_AUTORADIOBUTTON,10,16,90,10
+    EDITTEXT        IDC_EDIT_FILENAME,55,31,85,12,ES_AUTOHSCROLL
+    PUSHBUTTON      "Browse",IDBROWSE,147,29,35,15
+    EDITTEXT        IDC_WIDTH,70,60,50,12,ES_AUTOHSCROLL | WS_DISABLED
+    LTEXT           "Width",IDC_STATIC,10,63,20,8
+    EDITTEXT        IDC_GRID_DIST,70,80,50,12,ES_AUTOHSCROLL | WS_DISABLED
+    LTEXT           "Grid Distance",IDC_STATIC,10,82,44,8
+    LTEXT           "Filename",IDC_STATIC,10,32,29,8
+    GROUPBOX        "Renderer",IDC_STATIC,7,113,182,31
+    LTEXT           "DeltaZ",IDC_STATIC,15,127,22,8
+    EDITTEXT        IDC_DELTAZ,43,124,50,12,ES_AUTOHSCROLL
+    CONTROL         "Load default mesh",IDC_LOADDEFMESH,"Button",
+                    BS_AUTORADIOBUTTON,10,97,95,10
+    CONTROL         "VSync",IDC_SET_VSYNC,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,106,126,37,10
+END
+
+IDD_DIALOG_GENERATE DIALOG DISCARDABLE  100, 100, 198, 133
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Build CSP Terrain"
+FONT 8, "MS Sans Serif"
+BEGIN
+    PUSHBUTTON      "Abort",IDCANCEL,86,108,50,14
+    EDITTEXT        IDC_SRC_FILENAME,49,12,100,12,ES_AUTOHSCROLL | 
+                    WS_DISABLED
+    PUSHBUTTON      "Browse",ID_BROWSE_SRC,153,11,35,15
+    LTEXT           "Source",IDC_STATIC,7,13,24,8
+    EDITTEXT        IDC_DEST_FILENAME,49,32,100,12,ES_AUTOHSCROLL | 
+                    WS_DISABLED
+    PUSHBUTTON      "Browse",ID_BROWSE_DEST,153,31,35,15
+    LTEXT           "Destination",IDC_STATIC,7,33,36,8
+    DEFPUSHBUTTON   "Build",ID_BUILD,141,108,50,14
+    LTEXT           "Iterations",IDC_STATIC,7,54,30,8
+    EDITTEXT        IDC_ITERATIONS,49,52,41,12,ES_AUTOHSCROLL
+    LTEXT           "QuadWidth:",IDC_STATIC,99,54,39,8
+    LTEXT           "Width",IDC_QUADWIDTH,142,54,40,8
+    LTEXT           "Processing:",IDC_STATIC,7,71,38,8
+    LTEXT           "X:",IDC_STATIC,49,81,8,8
+    LTEXT           "Processing",IDC_QUADX,62,81,21,8
+    LTEXT           "Y:",IDC_STATIC,108,81,8,8
+    LTEXT           "Processing",IDC_QUADY,119,81,36,8
+    LTEXT           "Iteration:",IDC_STATIC,49,71,28,8
+    LTEXT           "Processing:",IDC_PROC_ITERATION,82,71,15,8
+    LTEXT           "Size:",IDC_STATIC,107,71,16,8
+    LTEXT           "Processing",IDC_TARGETSIZE,128,71,57,8
+END
+
+IDD_DIALOG_EXTRACT DIALOG DISCARDABLE  100, 100, 213, 98
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Extract"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,156,77,50,14
+    PUSHBUTTON      "Abort",IDCANCEL,98,77,50,14
+    EDITTEXT        IDC_SRC_FILENAME,49,13,107,12,ES_AUTOHSCROLL | 
+                    WS_DISABLED
+    PUSHBUTTON      "Browse",ID_BROWSE_SRC,165,12,35,15
+    LTEXT           "Source",IDC_STATIC,7,15,24,8
+    EDITTEXT        IDC_DEST_FILENAME,49,33,107,12,ES_AUTOHSCROLL | 
+                    WS_DISABLED
+    PUSHBUTTON      "Browse",ID_BROWSE_DEST,165,32,35,15
+    LTEXT           "Destination",IDC_STATIC,7,35,36,8
+    LTEXT           "X:",IDC_STATIC,13,56,8,8
+    LTEXT           "Width:",IDC_STATIC,135,56,22,8
+    LTEXT           "Y:",IDC_STATIC,74,56,8,8
+    EDITTEXT        IDC_SETX,25,54,40,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_SETY,85,54,40,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_DESTWIDTH,162,54,40,14,ES_AUTOHSCROLL
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO DISCARDABLE 
+BEGIN
+    IDD_DIALOG_STARTUP, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 189
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 166
+    END
+
+    IDD_DIALOG_GENERATE, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 191
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 126
+    END
+
+    IDD_DIALOG_EXTRACT, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 206
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 91
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+#endif    // Englisch (USA) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+

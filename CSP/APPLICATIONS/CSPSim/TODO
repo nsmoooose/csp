@@ -1,0 +1,24 @@
+////////////////////////////////////////////////////////
+// CODE RELATED
+
+Send useful error messages to stderr for missing files
+(especially during startup!) and make sure these are
+also logged to CSPSim.log no matter what logging level
+is set.  The error messages should detail what file is
+missing, where it belongs, and where to download it.
+
+Catch exceptions / assertion from the mainloop and 
+print more useful error messages.  Some CSP exception 
+classes probably need to be written. [PARTIALLY DONE]
+
+
+////////////////////////////////////////////////////////
+// DATA RELATED
+
+Change Models/m2kg2.3DS to Models/m2kg2.3ds
+
+Add Images/moon.png to a supplemental data distribution
+
+Change the root path in the BalkanTerrain distribution
+so it can be unpacked in the main CSPSim directory (right
+now you have to unpack it in CSPSim/Data)

@@ -1,0 +1,381 @@
+SimData release change log.  See CHANGES.current for the latest updates
+to CVS.
+
+Version 0.3.2 (2003-05-02)
+===========================
+
+2003-04-26: onsight
+            Removed exception surpression from Link<>.  If a link isn't
+	    found in the archive, the exception will now propagate out
+	    of SimData.  Beware that this can leave objects in an
+	    inconsistent state.  It may be necessary to do exception
+	    handling in the unpack() method if you want to gracefully
+	    recover.
+
+            Added cleanStatics() methods to DataArchive and DataManager
+	    that purge any cached objects not in use.  Calling this
+	    method after you delete many objects can free up unused
+	    memory.
+
+            Fixed a date rollover bug in SimData that cause the clock to
+	    advance by one day for every update call after midnight!
+
+	    Fixed some other date bugs related to the number of seconds
+	    in a day (some methods were using 86000 instead of 86400).
+
+            The XML parser now supports hex notation for integers, such
+	    as '0xF00' and '0x9a'.
+
+            Added support for char and short data types. This is primarily
+            to allow more memory efficient object types. There are no plans
+            to support unsigned versions of char, short, and int at this
+            point. The same XML tag (<Int>) is used for all the types, and
+            no range checking is done, although this could be easily added
+            to TypeAdapter::set().
+
+            Added support for bit-packed booleans. In the interface
+            definition use:
+
+	       SIMDATA_BIT("var_name", class::memvar, mask, req)
+
+            instead of the usual SIMDATA_XML. The data type for memvar can
+            be either char, short, or int. The mask field is the bit mask
+            that will be or'd with memvar if the boolean is true. If the
+            boolean is false, the mask complement is and'd with memvar. So
+            for instance, you might have:
+
+	       SIMDATA_BIT("flag0", myclass::flags, 0x01, false)
+	       SIMDATA_BIT("flag1", myclass::flags, 0x02, false)
+	       SIMDATA_BIT("flag2", myclass::flags, 0x04, false)
+
+	    In the xml data, if you specify:
+
+	       <Bool name="flag0">true</Bool>
+	       <Bool name="flag2">true</Bool>
+
+            then flags will be set to 5, assuming it was zero to begin with.
+            Since bits are set and cleared by true and false XML tags, you
+            can specify default bit settings (both true and false) by
+            initializing flags in the myclass ctor.
+
+            *** NOTE: Bit-packed booleans are *not* supported under VC6 by
+            the partial template specialization (PTS) hack. Since the
+            arrival of VC.net, PTS is deprecated and I have no plans to add
+            new enhancements (such as bit-packed booleans) to it.
+
+2003-04-25: onsight
+            Added != operator to Ref<>.
+
+            Added MakeModifiedEulerAnglesFromQ() method to Quaternion to
+            provide direct support CSP's coordinate frame. This is still
+            experimental and may not ultimately be needed.
+
+2003-04-25: delta
+	    Updated .net project file.
+
+2003-04-24: onsight
+            Fix for Object::operator=() return value.
+
+	    Added list and vector typedefs to class Ref.
+
+2003-04-22: onsight
+            Data archive files now store the parent/child relationship
+	    between object paths, so it is possible to search for all
+	    objects in a given path.   The full list of human-readable
+	    paths is also stored now, allowing path hash values to be
+	    converted to more informative debugging messages.
+
+	    Various methods have been added to DataArchive to access
+	    this new information:
+
+	      getChildren, getPathString, hasObject, getAllPathStrings
+
+	    Integrated these changes with the DataManager class.
+
+            *** WARNING: ALL DAR FILES MUST NOW BE REBUILT ***
+
+2003-04-21: onsight
+            Abstracted the reference counting interface from class Object 
+	    to class Referenced.  
+	    
+	    Added a Ref<> smart-pointer for Referenced objects.
+
+	    Renamed PointerBase and Pointer<> to LinkBase and Link.  Moved
+	    them out of Path.h/cpp into Link.h/cpp.
+
+2003-04-21: delta
+	    Removed RadiansToDegrees and DegreesToRadians calls in 
+	    Quaternion::MakeQFromEulerAngles and 
+	    Quaternion::MakeEulerAnglesFromQ; now you must specify your 
+	    angles in radians. 
+
+	    Cleaned the code in these functions.
+
+2003-04-20: onsight
+            Fix for a nasty little bug in ObjectInterface.h that could
+	    cause memory corruption during data compiling.   Rebuild
+	    SimData, install it, then rebuild CSPSim from scratch (just
+	    to be sure).
+
+2003-04-19: delta
+	    Use swig 1.3.19 on windows now so need to change custom build.
+
+
+2003-04-18: onsight
+            Wrote a specialized vector rotation method for quaternions
+	    that should be a little bit faster.
+	    
+	    Added DataManager.* to setup.py so it is now installed
+	    properly.  DataManager is also wrapped by SWIG now.
+
+	    More documentation in Quaternion.h.
+
+
+
+Version 0.3.1 (2003-04-18)
+===========================
+
+2003-04-15: onsight
+            Added vector rotation and inverse rotation methods to
+	    Quaternion (in addition to QVRotate).
+
+	    Made many Quaternion methods inline.
+
+2003-04-12: onsight
+            Changed all the #ifndef/#define blocks surrounding the
+	    headers to use __SIMDATA_ as a prefix.  This should ensure 
+	    the identifiers are unique when the headers are used in
+	    another project.
+
+	    Moved Exception to ExceptionBase for use in other projects
+	    and added an Exception subclass to serve as the base class
+	    for all SimData exceptions.
+
+2003-04-11: onsight
+            Updated setup.py to install FileUtility.h.
+
+	    Minor changes to log macro and fatal error function.
+            
+2003-04-11: delta
+	    Finally got the changes from Onsight compile on .net ;-)
+	    ^- aah, it wasn't that bad ;-) --OS
+
+2003-03-29: onsight
+            Added a DataManager class to combine access to multiple data
+	    archives simultaneously and transparently.
+
+            *** ANY MSVC USERS: PLEASE UPDATE THE PROJECT FILE TO INCLUDE ***
+	    *** DATAMANAGER.CPP                                           ***
+
+	    Added Quaternion as a base type.  It now has Python bindings
+	    and an XML interface that can specify either a 3x3 matrix
+	    or the 4 quaternion parameters.  The XML tag is <Quat>
+
+	    Moved the ospath routines from CSPSim's Platform.h to
+	    SimData.  They are now in FileUtility.h.
+
+2003-03-28: delta
+	    updated .net project (release mode is maintained)
+
+	    Once SimData is compiled, in command line, type:
+	    setup.py make_install_win
+	    from APPLICATIONS/SimData to copy all headers and binaries needed
+	    for csp.
+
+2003-03-27: onsight
+            Added push_back() methods for int, double, and string to 
+	    InterfaceRegistry.  These are needed for XML <List>'s of these
+	    basic types.  Lists of objects derived from BaseType already
+	    worked.
+	    
+2003-03-26: onsight
+            Modified setup.py to byte compile the python scripts during
+	    installation, and to set the file permissions of these to
+	    0644.
+
+	    Added '-v' and '--verbose' flags to make_install* commands
+	    of setup.py.  If set then all the copy operations will be
+	    displayed.
+
+	    Partial rewrite of the Enum/Enumeration class to share a
+	    reference counted instance that hold the string to int and
+	    int to string lookups.  This way, stray Enums can exist
+	    happily after their Enumeration parent has died.  Probably
+	    not to common, but much more pleasing aesthetically.
+
+	    Added doxygen comments to Enum.h, Random.h, and Real.h.
+
+	    Moved some SWIG/Python special methods to SWIG %extend
+	    directives.  Still more to be done.
+
+2003-03-26: delta
+	    Removed Spread.cpp and added Noise.cpp and Real.cpp
+
+	    Added export symbol to Table and InterpolatedData classes.
+
+2003-03-25: onsight
+            Changed #define types for InterpolatedData to class typedefs.
+	    
+	    Made several methods const, and added a const iterator typedef.
+
+	    Preliminary implementation of a one-dimensional perlin noise
+	    class.
+
+	    Added some basic unit connversion functions.
+
+	    More documentation of date classes, and a couple bug fixes in
+	    Zulu.
+
+	    Renamed Spread to Real.
+
+	    Removed Integer and (the old) Real, which were just placeholders
+	    for int and double that didn't appear to serve any purpose.
+
+	    Added Doc directory with DOxygen config file and makefile.  Make
+	    doc now runs doxygen.
+
+2003-03-22: delta
+	    Minor changes to setup.py under make_install_win
+
+2003-03-21: onsight
+            Moved Python include path setting to the main Makefile.
+
+            Added export modifiers to Spread and enumeration classes.
+
+            Fixed pack(unsigned) in ObjectInterface.h with static cast for
+            windows.
+
+            Got rid of generic template set() method in TypeAdapter that was
+            causing problems under windows (ambiguity between set(T&) and
+            set(Pointer<T>&)). Now all the set(BaseType&) methods are
+            written explicitly, and must be updated by hand whenever new
+            types are added.
+
+	    Added Python version check to setup.py (also called from
+	    Makefile).
+
+	    Makefile gets Python include path automatically.
+
+	    To facilitate the build under Windows, setup.py now copies 
+	    cSimData.py from Source to SimData for make_install_win.
+
+2003-03-20: delta
+	    Fixes for msvc.
+
+2003-03-20: onsight
+            Fixed const cast in matrix * vector routines. Why doesn't gcc
+            3.2.1 -Wall catch this? (!)
+
+            Changed cSimData.i in Source to include the main version in
+            Include/SimData. These differ in their %module directive. The
+            main one uses SimData.cSimData, which is needed for 3rd party
+            apps than import the SimData interface for SWIG. The version
+            used to build SimData (in Source) uses just %module SimData.
+
+2003-03-19: onsight
+            Changed Enumeration implementation to use std::map<> instead
+	    of (non-)std::hash_map<>.
+
+	    Enumeration __getattr__ in Python now returns new Enum objects 
+	    to prevent const subversion (the Enumeration members were
+	    mutable from Python).  The logic for __getattr__ is more robust
+	    as well.
+
+            Added __mul__ and __rmul__ operators to Vector3 and Matrix3 to
+            allow: V*V, M*M, V*M, M*V, M*F, F*M, V*F, F*V.
+
+            Optimized Matrix3*Vector3 and Vector3*Matrix3 slightly by using
+            vector members instead of integer indexing (which required nine
+            extra function calls). Access to the matrix elements is also
+            faster using pointer arithmatic, and the for loops have been
+            unrolled by hand.
+
+            Fixed setup.py to preserve file and directory permissions during
+            installation.
+
+            Added make_install target to setup.py which is used by the
+            standard Makefile to install SimData (make install).
+	    
+2003-03-17: onsight
+            Fixes to MS VC.net fixes.  Lather, rinse, repeat... ;-)
+	    
+2003-03-17: delta
+            Fixes for building with MS VC.Net
+
+	    Changes to hash stuff to make it compile with native stl .net
+	    Restructured some header files
+
+	    Added .net project
+
+            Added a test on using stlport with msvc <= 6.0 in hash_map.h
+
+2003-03-16: onsight
+            Created a new setup.py script to allow SimData to be build and
+            installed using Python DistUtils. This works on Linux/GCC but
+            needs to be tested on other platforms. The Makefile will remain
+            as a backup until the setup.py script is stable.
+
+            Restructured the installation as a SimData packages, with the
+            extension module (cSimData) and tools (DataCompiler) underneath.
+            SimData/__init__.py now contains the code that was in
+            SimData.py. The net effect is that you just import SimData as
+            usual, but the data compiler is now SimData.Compiler. I'm moving
+            away from a standalone compiler approach, since it depends on
+            the external library that you are compiling for. Instead, the
+            external program should load SimData, register its object
+            interfaces, and run the compiler if needed by creating an
+            instance of class Compile (from SimData.Compiler).
+
+            Restructured the argument processing and usage messages of
+            Compiler.Compile to interact better with the calling code (when
+            not used as a standalone compiler). The main application should
+            process any command line arguments it recognizes and pass the
+            rest to Compile.parse(), catching any exceptions that are
+            raised.
+           
+2003-03-13: onsight
+            Fixed several bugs related to std::vector types
+	    
+	    Fix to allow inplace (anonymous) object definitions in xml
+
+            Added a logging facility so we can filter and redirect messages
+            to a file. The syntax is similar to that used in CSP:
+
+            SIMDATA_LOG(type, severity, msg)
+
+            Where type is one of (LOG_TYPE, LOG_ARCHIVE, LOG_REGISTRY, ...)
+            and severity is one of (LOG_TRACE, LOG_DEBUG, LOG_INFO,
+            LOG_WARN, LOG_ALERT, LOG_ERROR). The msg field can include the
+            usual ostream operators (<<).
+	    
+            *** BUILD CHANGE ***
+	    Added Source/LogStream.cpp to do logging.
+
+	    *** NEW FEATURE ***
+            *** POTENTIAL INCOMPATIBILITY ***
+            Added a new postCreate() method in Object which is called after
+            unpack() is complete. You can extend this to do additional
+            object setup once the data is loaded. From now on, unpack() must
+            be the exact inverse operation of pack().
+
+	    *** NEW FEATURE ***
+            Data compiler enhancements, mainly the ability to only reparse
+            xml files that have changed since the archive was last
+            generated. This significantly speeds up the processing.
+            Specifying '--rebuild' on the command line will rebuild the
+            entire archive from scratch.
+
+            *** POTENTIAL INCOMPATIBILITY ***
+            Big simplification of the various smart pointer types.
+            PathPointer<T> is gone; now just use Pointer<T> for all object
+            references. PathPointerBase is now PointerBase, and what was
+            originally PointerBase is now ReferencedPointer (although you
+            shouldn't need to use these classed directly).
+
+
+Version 0.3.0 (2003-03-14)
+===========================
+2003-03-14: onsight
+            CHANGES and CHANGES.current started. First tagged version of
+            SimData: 0.3.0
+

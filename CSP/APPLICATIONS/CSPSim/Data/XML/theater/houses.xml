@@ -1,0 +1,31 @@
+<?xml version="1.0" standalone="no"?>
+
+<Object class="CustomLayoutModel" static="1">
+	<List name="layout">
+		<Object class="FeatureLayout">
+			<Path name="model">house</Path>
+			<Float name="x">0</Float>
+			<Float name="y">20</Float>
+			<Float name="orientation">0.0</Float>
+		</Object>
+		<Object class="FeatureLayout">
+			<Path name="model">house</Path>
+			<Float name="x">0</Float>
+			<Float name="y">70</Float>
+			<Float name="orientation">0.0</Float>
+		</Object>
+		<Object class="FeatureLayout">
+			<Path name="model">house</Path>
+			<Float name="x">0</Float>
+			<Float name="y">120</Float>
+			<Float name="orientation">0.0</Float>
+		</Object>
+		<Object class="FeatureLayout">
+			<Path name="model">house</Path>
+			<Float name="x">0</Float>
+			<Float name="y">170</Float>
+			<Float name="orientation">0.0</Float>
+		</Object>
+	</List>
+</Object>
+

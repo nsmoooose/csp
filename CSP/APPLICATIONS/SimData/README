@@ -1,0 +1,165 @@
+SimData - A library for efficient use of data XML in simulations.
+
+Release 0.4.0
+
+Copyright (C) 2002, 2003 Mark Rose <mrose@stm.lbl.gov>
+
+See COPYING for details.
+
+----------------------------------------------------------------------
+
+CAVEATS
+
+This library is ALPHA! Do not expect it to be polished in any way. It
+does work, at least under the proper conditions, which is why it has
+been released. Only through testing and use will it evolve into a robust
+and stable platform for utilizing XML data in simulations.
+
+SimData is written primarily for the Combat Simulator Project (CSP)
+<http://csp.sourceforge.net>. It is, nonetheless, intended to be a fully
+independent library that can be used with any application desiring fast
+runtime access to large, static XML data sets.
+
+SimData was initially developed under Linux using GCC 2.95 and 3.0.
+Current development occurs mainly under GCC 3.2. The library also
+receives routine testing under MS VC6 and now .NET as part of the Combat
+Simulator Project. If you encounter problems, please report them (with
+patches if possible) to the CSP developer's forum at
+http://csp.sourceforge.net/forum.
+
+
+REQUIREMENTS
+
+Minimally, SimData can operate as a standalone library that provides
+a number of C++ data classes useful for simulations.  In this mode
+there are no external dependencies.
+
+To use the XML interface and data archiving features, however, requires
+both SWIG and Python.  SWIG is available from http://www.swig.org, and
+should be version 1.3.16 or newer.  Python is preinstalled on many
+Linux systems, and prepackaged distributions for both Windows and
+Linux are available from http://www.python.org.  Python version 2.2 or
+newer is required.  Under Windows, be sure to add the Python path to 
+your global path so that VC can find it.
+
+If you are using MS VC6 you will also need have at least SP5 installed
+and a functional STL implementation, such as STLport (version 4.5.3 or
+newer).
+
+
+BUILDING: ANNOUNCEMENT
+
+The build process is currently depends on Makefiles (Linux) and VC
+project files (Windows), but will likely transition to Python's
+DistUtils soon.  Stay tuned....
+
+
+BUILDING: LINUX
+
+On Linux, edit the top level Makefile to customize any settings to your
+particular system. The path to the Python headers is an example of a
+parameter you might want to check.
+
+Next, just run make in the top-level directory. If all goes well this
+will create cSimData.py, _cSimData.so, and libSimData.a in the Source
+directory.
+
+
+BUILDING: VC6/.NET
+
+Load SimDataMSVC.dsw and build it in release mode. In the process, it
+should create a new file called cSimData_wrap.cpp (this file name should
+already be in project/Source) from cSimData.i which is parsed by SWIG.
+
+
+TESTING
+
+As a quick test, change to the Source directory and run Python.  
+Try typing "import SimData".  You should see a line similar to 
+"loaded @ 0x4883012".  If not, something went wrong... post to 
+the CSP developer's forum and we can try to find the problem.
+
+
+USING SIMDATA WITH CSPSIM
+
+The new CSP application called CSPSim relies on SimData in
+two ways.  First, libSimData.a is statically linked to make
+the CSPSim executable.  Second, the simulation data for CSPSim
+needs to be compiled from XML source files to a binary data 
+archive using the data compiler application included with
+SimData.  This Python program is found in the directory
+Tools/DataCompiler.  Once you have built your CSPSim executable,
+go to Tools/DataCompiler and run Compiler.py (from a command
+prompt on windows you would probably need to type something like
+"python Compiler.py").  If the Compiler can't find CSPSim
+initially, it will prompt you to enter a path to CSPSim.  This
+path is saved in a file named .csp_path so you shouldn't have
+to do this more than once.  The Compiler will then print a
+usage message and exit.  To compile the data for CSPSim, you
+must specify the top level data directory to archive, and the
+name of the output archive.  Given the standard location of
+the files in CVS, you would type:
+
+./Compiler.py ../../../CSPSim/Data/Sim ../../../CSPSim/Data/Sim.dar
+
+This will parse all the XML files under CSPSim/Data/Sim and create
+the binary archive (named Sim.dar) needed to run CSPSim.  A
+script named "make_simdar" that runs the above command is provided 
+for your convienience.  This must be rerun whenever you modify
+the XML data files to incorporate the changes into Sim.dar.
+
+
+BUILDING on Windows with msvc++6(sp5), stlport-4.5.3 (hints)
+
+1) Install python2.2 and swig 1.3.17
+2) Add python path to your global path
+3) Load SimDataMSVC.dsw
+4) Build it in release mode; in process, it should create a new file
+called cSimData_wrap.cpp (this file name should already be in
+project/Source) from cSimData.i which is parsed by swig.
+5) Testing procedure is same as above:
+As a quick test, change to the Source directory and run Python. Try
+typing "import SimData". You should see a line similar to "loaded @
+0x4883012". If not, something went wrong... post to the CSP developer's
+forum and we can try to find the problem.
+
+
+INSTALLING AND USING SIMDATA
+
+Note that installation under Windows is not yet supported.  This is
+being worked on, and information will be added here as soon as it is
+available.
+
+----------
+
+2003-03-20: Edited - work on progress. On windows, you have to
+do:
+
+> python setup.py make_install_win
+
+It will install files and folders in python directory (better to be 
+power user or admin for that on xp).
+
+----------
+
+
+Under Linux, depending on which method you used to build SimData, do
+either:
+
+
+$ make install
+
+or 
+
+$ python setup.py install
+
+
+SimData installs itself as a package in the Python site-packages
+directory. The C++ headers are placed under SimData in the same
+directory as Python.h.
+
+To use the SimData headers for development, just add the usual Python
+include path (e.g. /usr/local/include/python2.2) to your list of include
+paths, and include the header using the prefix "SimData/". For example,
+
+#include <SimData/Types.h>

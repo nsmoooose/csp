@@ -1,0 +1,27 @@
+Tutorial 1
+An empty shell for a Framework Program.
+
+Tutorial 2
+A simple application using a Text Window.
+
+Tutorial 3
+An empty shell that creates and initializes the 3d system
+
+Tutorial 4
+An empty shell that creates and initializes the 3d, input, and GUI systems.
+
+Tutorial 5
+A simple application that calculates and display FPS using all the systems.
+
+Tutorial 6
+A simple application that sets up the camera, materials, texture, and draws a 3d triangle.
+
+Tutorial 7
+A simple application that draws a 3d triangle but lets you rotate it with the keyboard.
+
+Tutorial 8
+A simple application that adds in a GUI window.
+
+Tutorial 9
+A simple application that loads in a 3d triangle from a file on the machine.
+  Converting the bytes to the correct endian format and draws the triangle.

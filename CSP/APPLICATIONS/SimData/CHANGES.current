@@ -1,0 +1,27 @@
+Version 0.3.3 (in progress)
+===========================
+
+2003-05-13: onsight
+            Added exception handling to file copying in setup.py.  Copy errors
+	    will be printed as warnings, and the installation will continue.
+
+2003-05-13: delta
+	    Added a post built step to copy VisualStudio/cSimData.py to SimData.
+	    Corrected a vc project bug (Ref.cpp)
+
+2003-05-08: onsight
+            Added a dummy 'pass()' method to Interface to prevent warning
+	    messages when a class defines an empty interface.
+
+2003-05-04: delta
+	    Updated .net project. 
+	    Finally added some pragma to get ride of dll interface warnings ...		
+
+2003-05-03: onsight
+            Made static log variables into class members, so that multiple logs
+	    can exist in one application.  Since SimData itself uses the logging
+	    classes, this was necessary for it to be useful as a library class
+	    (and just makes much more sense).
+	   
+            Changed the log method set_output() to setOutput().
+

@@ -1,0 +1,66 @@
+Input mapping language description.
+========================================================================
+
+
+
+1 Primary statements
+	
+	include filename
+		Processes commands in the specified file.  Included files
+		may include additional files to arbitrary depth.  The specified
+		file is completely processed before the rest of the current
+		file is processed.  Attempts to include a file more than once
+		are silently ignored.
+
+	device type number label definition
+		Declare a new device.  The type can be one of (keyboard, joystick,
+		mouse), and the device number is system dependent (usually 0).
+		The label is arbitrary, and is used subsequently to refer to this 
+		device.  The definition provides a mapping between human readable
+		string identifiers and the raw device scan codes (see the 'define'
+		statement below).
+
+	bind identifier
+		Specifies an object identifier to which this map can be bound.
+		Multiple bind statements can be used to bind to multiple objects.
+		When a specific object is used in the simulation, an input mapping
+		is chosen that has been bound to that object type.  If multiple
+		maps bind to a single object, no priority for selecting among them
+		is defined at present.  The identifiers typically refer to the
+		XML path identifiers (e.g. 'vehicles.aircraft.f16'), but special
+		identifiers for fixed user interface components also exist.  The
+		latter typically start and end with double underscores (e.g.
+		__gamescreen__).
+
+	mode identifier
+		Declares a virtual mode for the virtual input device.  Identifier
+		can be any string identifier, and any number of modes can be
+		declared.  Modes must be declared before they can be used.  See
+		the 'map' statement below for more information on using modes.
+
+	define definition:identifier code
+		Defines a more readable alias for a device scan code.  Devices
+		like keyboards and joysticks usually use numeric codes to represent
+		input events.  Since these are difficult to remember, it is a good
+		idea to define more readable identifier.  Each define statement
+		contributes to the overall definition.  Definitions for devices
+		are typically grouped into separate map files that can be included
+		as needed.  Use these definitions when declaring devices, and then
+		use the identifiers, rather than the scan codes, to refer to events.
+
+	map device:event type [modes] action	
+		Map an input event to an action.  The device here is the label set
+		in one of the prior device statements.  The event is a combination
+		of an event identifier for this device (see 'define' above) and
+		optional modifiers.  The type can be one of (axis, press, release,
+		move).  Axis events are for continuous input ranges typically
+		associated with joysticks.  Press and release are for keyboard or
+		button events.  Move is for mouse or trackball motion.  The modes
+		field is optional, and all modes are assumed if it is omitted. If
+		present, this map will only be used when the virtual device is in
+		one of the specified virtual modes.  Multiple modes are separated
+		by '|'.  Action is a script of commands to execute in response to
+		this input event.  See the 'script' statement below for details.
+
+	script
+		

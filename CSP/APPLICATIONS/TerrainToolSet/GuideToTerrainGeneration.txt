@@ -1,0 +1,25 @@
+A quick guide to CSP terrain generation
+
+Building a terrain for the CSP Flight Simulator or the CSP Terrain Demo needs several steps, which are described in this document.
+
+The easiest way is converting an existing Falcon 4.0 terrain set to the CSP terrain format, and enhancing its detail with the CSP terrain tools. 
+
+If you want to model an area which isn't covered by one of the Falcon 4.0 mod groups, you will first have to build this landscape from any DEM data source in the Falcon 4.0 format. Very good instructions on this topic can be found at http://falcon4.nekromantix.com/docs/terrain.php
+
+As soon as you have got your Falcon 4.0 terrain set, you can convert it to the CSP format. For this task you need the F4Map2CSP map converter. Select your new F4 map file as source, and specify the name of the CSP map you want to create as destination. Then select "L2" as the level. Falcon stores several detail levels of each map, where L2 contains the original DEM data, so this is the one we want. The other levels contain either less detail, or are artificially enhanced by simple interpolation.
+
+After the conversion you should find the resulting .raw file. If you have Adobe Photo Shop or any other image processing tool capable of reading 16bit raw data, you can load your map in there and have a look at it (hint: in photoshop you first have to select 16bit, one channel, ibm byte order to load the map properly, and then apply "auto contrast" before you can see anything). 
+
+This map can already be used as a data source for the CSP Terrain Demo. However, it won't look very convincing. You have to consider that the distance between two points on this map is as much as 1km in the real world!
+
+What we want to do now is to enhance the map's detail. There are only few sources for high resolution elevation data on the WWW, most of them not freely available. So we have to add artificial detail to our map. We want this detail to look "natural", and therefore we use a fractal methods to get it. These methods are based on the "diamond square" or "midpoint displacement" algorithm. Detailed descriptions of this algorithm are available on the web.
+
+All operations needed for this task can be done with the FracBuild tool. Open a dos shell and start FracBuild without any parameters. A description with the command line parameters will be displayed. You'll have to call FracBuild several times, beacuse every call builds one iteration on the map, halving the distance between two points on the map. So in our example the point distance after the first iteration will be 500m, instead of 1000m.
+
+To learn about how the resulting map is influenced by the scaling factor you have to specify when running FracBuild, i recommend TerrainLab as a testing environment. Here you can see the result on a very small map in real time, while FracBuild may need hours to finish a continental size terrain.
+
+As the last step we want to smooth our map. This reduces artifacs created by the fractalisation. Smoothing is also done by FracBuild, calling it with the "s:standard" or "s:gauss" option.
+
+As mentioned above every .raw file can be used with the CSP Terrain Demo. Creating a new terrain for the CSP Flight Simulator is a bit more complicated.
+
+[Delta or Wolverine, could you please write a few lines about that?]

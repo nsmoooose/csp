@@ -1,0 +1,22 @@
+<?xml version="1.0" standalone="no"?>
+
+<Object class="TerrainObject">
+	<Int name="use_dynamic_textures">0</Int>
+	<Int name="use_texture_compression">1</Int>
+	<Int name="preload_textures">1</Int>
+	<Int name="use_texture_factory">0</Int>
+	<Int name="max_triangles">60000</Int>
+	<Int name="lattice">1</Int>
+	<Int name="lattice_width">16</Int>
+	<Int name="lattice_height">16</Int>
+	<External name="detail_texture_file">Stone4.bmp</External>
+	<String name="lattice_basename">balkanMap</String>
+	<String name="lattice_elevation_extension">bmp</String>
+	<String name="lattice_texture_extension">bmp</String>
+	<External name="texture_file"></External>
+	<External name="elevation_file"></External>
+	<Float name="vertex_spacing">250</Float>
+	<Float name="vertex_height">0.38</Float>
+	<Float name="detail_threshold">8</Float>
+</Object>
+

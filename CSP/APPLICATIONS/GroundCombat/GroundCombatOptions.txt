@@ -1,0 +1,6 @@
+-1024
+-render=RenderDirectX
+-windowed
+-WindowCentered
+-res=.\data\2d\UI
+-Jet=D:\Development\Auran

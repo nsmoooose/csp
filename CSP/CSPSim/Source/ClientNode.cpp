@@ -24,6 +24,8 @@ int ClientNode::run()
   printf("sizeof(simdata::Vector3) = %d\n", sizeof(simdata::Vector3));
   printf("sizeof(simdata::Quat) = %d\n", sizeof(simdata::Quat));
   printf("sizeof(simdata::SimTime) = %d\n", sizeof(simdata::SimTime));
+  printf("sizeof(_Vector3Struct) = %d\n", sizeof(_Vector3Struct));
+  printf("sizeof(_QuatStruct) = %d\n", sizeof(_QuatStruct));
   
 	
   printf("Network test client starting up...\n");

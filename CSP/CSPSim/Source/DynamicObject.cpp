@@ -404,10 +404,10 @@ NetworkMessage * DynamicObject::getUpdateMessage()
   ObjectUpdateMessagePayload * ptrPayload = (ObjectUpdateMessagePayload*)message->getPayloadPtr();
   ptrPayload->id = m_ID;
   ptrPayload->timeStamp = CSPSim::theSim->getElapsedTime();
-  ptrPayload->globalPosition = b_GlobalPosition->value();
-  ptrPayload->linearVelocity = b_LinearVelocity->value();
-  ptrPayload->angularVelocity = b_AngularVelocity->value();
-  ptrPayload->attitude = b_Attitude->value();
+  b_GlobalPosition->value().writeBinary((unsigned char *)&(ptrPayload->globalPosition),24);
+  b_LinearVelocity->value().writeBinary((unsigned char *)&(ptrPayload->linearVelocity),24);
+  b_AngularVelocity->value().writeBinary((unsigned char *)&(ptrPayload->angularVelocity),24);
+  b_Attitude->value().writeBinary((unsigned char *)&(ptrPayload->attitude),24);
   
   CSP_LOG(APP, DEBUG, "DynamicObject::getUpdateMessage() - returning message");
 
@@ -436,10 +436,10 @@ void DynamicObject::putUpdateMessage(NetworkMessage* message)
   //ptrPayload->timeStamp = CSPSim::theSim->getElapsedTime();
   //
   //load the other values.
-  b_GlobalPosition->value() = ptrPayload->globalPosition;
-  b_LinearVelocity->value() = ptrPayload->linearVelocity;
-  b_AngularVelocity->value() = ptrPayload->angularVelocity; 
-  b_Attitude->value() = ptrPayload->attitude;
+  b_GlobalPosition->value().readBinary((unsigned char*)&(ptrPayload->globalPosition),24);
+  b_LinearVelocity->value().readBinary((unsigned char *)&(ptrPayload->linearVelocity),24);
+  b_AngularVelocity->value().readBinary((unsigned char *)&(ptrPayload->angularVelocity),24);
+  b_Attitude->value().readBinary((unsigned char *)&(ptrPayload->attitude),24);
   
 }
 

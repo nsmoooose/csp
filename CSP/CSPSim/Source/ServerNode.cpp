@@ -37,9 +37,9 @@ int ServerNode::run()
 	printf("Client port: %d\n", node->getPort());
         ObjectUpdateMessagePayload * ptrPayload = (ObjectUpdateMessagePayload*)message->getPayloadPtr();
 	printf("PositionX: %f, PositionY: %f, PositionZ: %f\n", 
-			ptrPayload->globalPosition.x(),
-			ptrPayload->globalPosition.y(),
-			ptrPayload->globalPosition.z());
+			ptrPayload->globalPosition.x,
+			ptrPayload->globalPosition.y,
+			ptrPayload->globalPosition.z);
     }
     else
     {

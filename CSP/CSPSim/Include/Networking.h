@@ -93,7 +93,25 @@ class NetworkMessagePool
 
 
 };
-                                            
+                       
+// Define some structs that will only used for data transfers.
+// These differ from SimData structs in that they have no virtual
+// functions and hence have more predictable binary sizes.
+struct _Vector3Struct
+{
+  double x;
+  double y;
+  double z;
+};
+
+struct _QuatStruct
+{
+  double x;
+  double y;
+  double z;
+  double w;
+};
+
 class ObjectUpdateMessagePayload 
 {
 
@@ -103,10 +121,10 @@ class ObjectUpdateMessagePayload
     public:
       unsigned int id;
       simdata::SimTime timeStamp;
-      simdata::Vector3 globalPosition;
-      simdata::Vector3 linearVelocity;
-      simdata::Vector3 angularVelocity;
-      simdata::Quat  attitude;
+      _Vector3Struct globalPosition;
+      _Vector3Struct linearVelocity;
+      _Vector3Struct angularVelocity;
+      _QuatStruct attitude;
     
     
 };

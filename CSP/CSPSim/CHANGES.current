@@ -1,6 +1,15 @@
  Version 0.4.0 (in progress)
 ===========================
 
+2004-05-28: wolverine
+  * Created special data transfer structures that contain no virtual
+    functions and have the same fundamental binary structure as SimData types
+    minus the virutal function tables. These structures really just 
+    create memory place holders in the object network messages that
+    the regular SimData types can be mem copied over, the elements of the
+    transfer structures do not need to be directly accessed except
+    for debugging purposes.
+
 2004-05-23: wolverine
   * Changes to the format of the object update message. Now There
     is a special class for the object update payload section that

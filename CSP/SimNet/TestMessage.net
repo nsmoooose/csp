@@ -2,6 +2,8 @@
 
 #include <SimNet/NetworkMessage.h>
 
+// simple message used for testing the network layer.
+// the fields have no particular meaning.
 Message TestMessage BASE=simnet::NetworkMessage {
 	int32 number;
 	std::string helo;

@@ -29,33 +29,49 @@
 #define _WINSOCKAPI_
 #include <cc++/network.h>
 
-
 namespace simnet {
 
+
+/** Minimal wrapper for GNU CommonC++ UDPReceive.
+ *
+ *  Exposes several protected methods.
+ */
 class DatagramReceiveSocket: public ost::UDPReceive {
 public:
 	DatagramReceiveSocket(const ost::InetHostAddress &host, ost::tpport_t port):
 	    ost::UDPReceive(host, port) { }
+
 	Error connect(const ost::InetHostAddress &host, ost::tpport_t port) {
 		return ost::UDPReceive::connect(host, port);
 	}
+
 	Error disconnect(void) { return ost::UDPReceive::disconnect(); }
-	bool isPendingReceive(timeout_t timeout) {
+
+	inline bool isPendingReceive(timeout_t timeout) {
 		return ost::UDPReceive::isPendingReceive(timeout);
 	}
+
 	inline int peek(void *buf, size_t len) {
 		return ost::UDPReceive::peek(buf, len);
 	}
 };
 
+
+/** Minimal wrapper for GNU CommonC++ UDPTransmit.
+ *
+ *  Exposes several protected methods.
+ */
 class DatagramTransmitSocket: public ost::UDPTransmit {
 public:
 	DatagramTransmitSocket(): ost::UDPTransmit() { }
-	Error connect(const ost::InetHostAddress &host, ost::tpport_t port) {
+
+	inline Error connect(const ost::InetHostAddress &host, ost::tpport_t port) {
 		return ost::UDPTransmit::connect(host, port);
 	}
-	Error disconnect(void) { return ost::UDPTransmit::disconnect(); }
+
+	inline Error disconnect(void) { return ost::UDPTransmit::disconnect(); }
 };
+
 
 } // namespace simnet
 

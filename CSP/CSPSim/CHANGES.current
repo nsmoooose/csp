@@ -1,6 +1,9 @@
  Version 0.4.0 (in progress)
 ===========================
 
+2005-02-23: delta
+ * Removed GearAnimation:getExtension() not used (use the bus mechanism).
+
 2005-02-21: onsight
  * Fix rudder yaw coefficients; new values work for rudder angle in radians.
 

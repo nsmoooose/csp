@@ -299,10 +299,6 @@ public:
 		if (m_GearSequenceAnimation.valid())
 			m_GearSequenceAnimation->rstart();
 	}
-	double getExtension() const {
-		if (m_GearSequenceAnimation.valid())
-			return m_GearSequenceAnimation->getNormalizedTime();
-	}
 
 	// Helper classes
 	class BindChannels {

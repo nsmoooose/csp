@@ -24,6 +24,9 @@
 
 
 #include "Theater/FeatureQuad.h"
+#include "Config.h"
+
+#include <SimData/FileUtility.h>
 
 #include <osg/Geometry>
 #include <osg/Texture2D>
@@ -35,10 +38,7 @@
 #include <osg/Material>
 
 
-
-
 SIMDATA_REGISTER_INTERFACE(FeatureQuad)
-
 
 
 osg::Geometry *FeatureQuad::makeGeometry() const {
@@ -82,7 +82,9 @@ osg::Geometry *FeatureQuad::makeGeometry() const {
 
 osg::StateSet* FeatureQuad::makeStateSet() const {
 	osg::Texture2D* tex = new osg::Texture2D;
-	osg::Image *image = osgDB::readImageFile("../Data/Images/"+m_Texture.getSource());
+	std::string image_path = getDataPath("ImagePath");
+	std::string path = simdata::ospath::join(image_path, m_Texture.getSource());
+	osg::Image* image = osgDB::readImageFile(path);
 	tex->setImage(image);
 	osg::StateSet *state = new osg::StateSet;
 	state->setTextureAttributeAndModes(0, tex, osg::StateAttribute::ON);

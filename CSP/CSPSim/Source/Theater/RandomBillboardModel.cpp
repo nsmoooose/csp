@@ -123,7 +123,7 @@ void RandomBillboardModel::makeFeatures(std::vector<Feature> &features, int valu
 
 RandomBillboardModel::RandomBillboardModel():
 	m_Seed(0),
-		m_IsoContour(new RectangularCurve()) {
+	m_IsoContour(new RectangularCurve()) {
 }
 
 RandomBillboardModel::~RandomBillboardModel() {
@@ -153,7 +153,17 @@ void RandomBillboardModel::postCreate() {
 void RandomBillboardModel::addSceneModel(FeatureSceneGroup *group, LayoutTransform const &transform, ElevationCorrection const &correction) {
 	int i, n = m_Models.size();
 	std::vector<simdata::Vector3>::iterator ofs, end;
-	FeatureSceneModel *scene_model = new FeatureSceneModel(transform);
+	
+	// the drawables in the billboard are already offset to the correct positions
+	// relative to the root scene group (ie. including all parent transformations),
+	// so the scene model should not reapply the same transformations.
+	// alternatively, we could set the transform in the scene model and set the
+	// x,y offsets of the drawables to be the local offsets.  since each drawable
+	// will generally have a unique z position, the latter doesn't offer any
+	// obvious advantage.
+	//FeatureSceneModel *scene_model = new FeatureSceneModel(transform);
+	FeatureSceneModel *scene_model = new FeatureSceneModel(LayoutTransform());
+
 	for (i = 0; i < n; i++) {
 		osg::Billboard *bb = new osg::Billboard();
 		bb->setStateSet(m_Models[i]->getStateSet());
@@ -161,13 +171,17 @@ void RandomBillboardModel::addSceneModel(FeatureSceneGroup *group, LayoutTransfo
 		end = m_Offsets[i].end();
 		osg::Geometry *model = m_Models[i]->getGeometry();
 		for (; ofs != end; ofs++) {
-			bb->addDrawable(new osg::Geometry(*model), correction(transform(*ofs)));
+			// pos has the x, y coordinates of the drawable relative to the root
+			// FeatureSceneGroup.
+			osg::Vec3 pos = correction(transform(*ofs));
+			bb->addDrawable(new osg::Geometry(*model), pos);
 		}
 		scene_model->addChild(bb);
 	}
 	group->addChild(scene_model);
-	osgUtil::Optimizer optimizer;
-	optimizer.optimize(group);
+	// FIXME this should be done at a higher level when the full FSG is complete
+	//osgUtil::Optimizer optimizer;
+	//optimizer.optimize(group);
 }
 
 

@@ -25,6 +25,7 @@
 
 #include "Theater/ElevationCorrection.h"
 #include "TerrainObject.h"
+#include "Log.h"
 
 
 ElevationCorrection::ElevationCorrection(TerrainObject *terrain, float x, float y, float angle): LayoutTransform(x, y, angle) {
@@ -34,12 +35,14 @@ ElevationCorrection::ElevationCorrection(TerrainObject *terrain, float x, float 
 osg::Vec3 ElevationCorrection::operator()(osg::Vec3 const &offset) const {
 	osg::Vec3 absolute = LayoutTransform::operator()(offset);
 	float elevation = 0.0;
+	CSP_LOG(SCENE, DEBUG, "Placing feature at absolute position " << absolute);
 	if (m_Terrain != 0) {
 		TerrainObject::IntersectionHint hint;
 		elevation = m_Terrain->getGroundElevation(absolute.x(), absolute.y(), hint);
+		CSP_LOG(SCENE, DEBUG, "Feature elevation " << elevation << " m, offset " << offset);
+	} else {
+		CSP_LOG(SCENE, ERROR, "No elevation data available for feature!");
 	}
-	std::cout << "PLACING FEATURE @ " << absolute << "\n";
-	std::cout << "ELEVATION = " << elevation << ", offset = " << offset << "\n";
 	return offset + osg::Z_AXIS * elevation;
 }
 

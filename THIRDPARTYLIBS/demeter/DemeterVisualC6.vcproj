@@ -40,14 +40,14 @@
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
 				AdditionalDependencies="SDL_imaged.lib SDLd.lib osgd.lib opengl32.lib glu32.lib"
-				OutputFile="Debug/DemeterVisualC6d.dll"
+				OutputFile="../../APPLICATIONS/CSPSim/Bin/DemeterVisualC6d.dll"
 				LinkIncremental="2"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\lib"
 				IgnoreDefaultLibraryNames="libcmt.lib"
 				GenerateDebugInformation="TRUE"
 				ProgramDatabaseFile=".\Debug/DemeterVisualC6d.pdb"
-				ImportLibrary=".\Debug/DemeterVisualC6d.lib"/>
+				ImportLibrary="../lib/DemeterVisualC6d.lib"/>
 			<Tool
 				Name="VCMIDLTool"
 				PreprocessorDefinitions="_DEBUG"
@@ -100,12 +100,12 @@
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
 				AdditionalDependencies="osg.lib opengl32.lib glu32.lib SDL.lib SDL_image.lib"
-				OutputFile=".\Release/DemeterVisualC6.dll"
+				OutputFile="../../APPLICATIONS/CSPSim/Bin/DemeterVisualC6.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\lib"
 				ProgramDatabaseFile=".\Release/DemeterVisualC6.pdb"
-				ImportLibrary=".\Release/DemeterVisualC6.lib"/>
+				ImportLibrary="../lib/DemeterVisualC6.lib"/>
 			<Tool
 				Name="VCMIDLTool"
 				PreprocessorDefinitions="NDEBUG"

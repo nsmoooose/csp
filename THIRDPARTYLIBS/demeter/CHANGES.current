@@ -5,8 +5,13 @@ Version 0.3.2 (in progress)
             Minor optimizations in texture generation.  Still needs
 	    its own thread.
 
+2003-05-15: delta
+	    Updated .net project such that dlls are now sent to 
+	    ../../APPLICATIONS/CSPSim/Bin and libs to ../lib.
+
 2003-04-18: delta
-	    Checked Onsight changes. got ride of some vc++ warnings.
+	    Checked Onsight changes. 
+	    Got ride of some vc++ warnings.
 	    Updated .NET project.
 
 2003-04-18: onsight

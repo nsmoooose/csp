@@ -43,7 +43,7 @@ RSC=rc.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /MT /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "DEMETERVISUALC6_EXPORTS" /YX /FD /c
-# ADD CPP /nologo /MT /W3 /GR /GX /O2 /I "..\include" /D "NDEBUG" /D "WIN32" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "DEMETERVISUALC6_EXPORTS" /D "TERRAIN_EXPORTS" /D "_USE_GDAL_" /D "_PROTECT_ACCESS_" /D "_STLP_USE_OWN_NAMESPACE" /FD /c
+# ADD CPP /nologo /MT /W3 /GR /GX /O2 /I "..\include" /D "NDEBUG" /D "WIN32" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "DEMETERVISUALC6_EXPORTS" /D "TERRAIN_EXPORTS" /D "_STLP_USE_OWN_NAMESPACE" /FD /c
 # SUBTRACT CPP /YX
 # ADD BASE MTL /nologo /D "NDEBUG" /mktyplib203 /win32
 # ADD MTL /nologo /D "NDEBUG" /mktyplib203 /win32
@@ -54,7 +54,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /dll /machine:I386
-# ADD LINK32 gdal_i.lib osg.lib opengl32.lib glu32.lib SDL.lib SDL_image.lib /nologo /dll /machine:I386 /libpath:"..\lib"
+# ADD LINK32 osg.lib opengl32.lib glu32.lib SDL.lib SDL_image.lib /nologo /dll /machine:I386 /libpath:"..\lib"
 
 !ELSEIF  "$(CFG)" == "DemeterVisualC6 - Win32 Debug"
 
@@ -81,7 +81,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /dll /debug /machine:I386 /pdbtype:sept
-# ADD LINK32 SDL_imaged.lib SDLd.lib osgd.lib gdal_i.lib opengl32.lib glu32.lib /nologo /dll /debug /machine:I386 /nodefaultlib:"libcmt.lib" /out:"Debug/DemeterVisualC6d.dll" /pdbtype:sept /libpath:"..\lib"
+# ADD LINK32 SDL_imaged.lib SDLd.lib osgd.lib opengl32.lib glu32.lib /nologo /dll /debug /machine:I386 /nodefaultlib:"libcmt.lib" /out:"Debug/DemeterVisualC6d.dll" /pdbtype:sept /libpath:"..\lib"
 
 !ENDIF 
 

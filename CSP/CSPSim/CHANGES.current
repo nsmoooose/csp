@@ -1,6 +1,16 @@
  Version 0.4.0 (in progress)
 ===========================
 
+2004-08-06: onsight
+  * Fixed a pseudo-bug in demeter, which caused terrain height anomalies
+    at the edges of flat and rough terrain blocks.  Essentially, when a
+    rough block left the fov and was culled, the triangle fans used to
+    match that block to adjacent blocks at different detail levels would
+    be removed, even though they were still within the field of view.
+    The could cause the apparent terrain height to discontinuously change
+    by tens of cm, even when the camera was close enough that the block
+    was being rendered with maximum detail.
+
 2004-07-29: onsight
   * Removed a couple obsolete files from the Makefile, and added InputEvent.
 

@@ -222,15 +222,27 @@ void TerrainBlock::Tessellate(const double* pMatModelView,const double* pMatProj
 {
     Box boundingBox;
     float width = m_Stride * pTerrain->GetVertexSpacing();
-    boundingBox.m_Min.x = pTerrain->m_pVertices[m_HomeIndex].x;
-    boundingBox.m_Min.y = pTerrain->m_pVertices[m_HomeIndex].y;
+
+    // Hack to fix terrain anomalies at block boundaries.  If a block is culled, it
+    // may affect the triangle fans used to join adjacent (visible) blocks with differing
+    // tessellation levels.  By overestimating the bounding box for the culling test,
+    // we ensure that blocks that are just outside of the field of view will be tesselated
+    // to the correct level, keeping the visible triangle fans intact.  -MR 2004-08-05
+    int oversize = width * 2.0;
+    boundingBox.m_Min.x = pTerrain->m_pVertices[m_HomeIndex].x - oversize;
+    boundingBox.m_Min.y = pTerrain->m_pVertices[m_HomeIndex].y - oversize;
     boundingBox.m_Min.z = m_MinElevation;
-    boundingBox.m_Max.x = boundingBox.m_Min.x + width;
-    boundingBox.m_Max.y = boundingBox.m_Min.y + width;
+    boundingBox.m_Max.x = boundingBox.m_Min.x + 2 * oversize + width;
+    boundingBox.m_Max.y = boundingBox.m_Min.y + 2 * oversize + width;
     boundingBox.m_Max.z = m_MaxElevation;
 
     if ((*pCountStrips < pTerrain->m_MaxNumberOfPrimitives) && pTerrain->CuboidInFrustum(boundingBox))
     {
+        // restore the bounding box to the correct size for estimating tessellation level.
+        boundingBox.m_Min.x = pTerrain->m_pVertices[m_HomeIndex].x;
+        boundingBox.m_Min.y = pTerrain->m_pVertices[m_HomeIndex].y;
+        boundingBox.m_Max.x = boundingBox.m_Min.x + width;
+        boundingBox.m_Max.y = boundingBox.m_Min.y + width;
         if (m_Stride == 2)
         {
             int offset;
@@ -3059,6 +3071,7 @@ TerrainLattice::TerrainLattice(const char* szBaseName,const char* szExtensionEle
 	}
     
 	
+	m_fThreshold = 8.0;
 	m_szBaseName = new char[strlen(szBaseName)+1];
     sprintf(m_szBaseName,szBaseName);
     m_szExtensionElev = new char[strlen(szExtensionElev)+1];
@@ -3349,8 +3362,9 @@ void TerrainLattice::LoadTerrain(int index)
         m_TerrainWidth = pTerrain->GetWidth();
         m_TerrainHeight = pTerrain->GetHeight();
     }
-	if (pTerrain)
+	if (pTerrain) {
 		pTerrain->SetDetailThreshold(m_fThreshold);
+	}
     AddTerrain(pTerrain,indexX,indexY);
 }
 

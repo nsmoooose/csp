@@ -54,8 +54,8 @@ public:
 	virtual std::string getName() const=0;
 	virtual int getVersion() const=0;
 	virtual TaggedRecord::Id getId() const=0;
-	virtual void setLocalId(int) const=0;
-	virtual int getLocalId() const=0;
+	virtual void setCustomId(int) const=0;
+	virtual int getCustomId() const=0;
 	virtual ~TaggedRecordFactoryBase() { }
 };
 

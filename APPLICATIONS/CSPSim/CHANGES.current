@@ -3,6 +3,12 @@
 
 2003-07-02: onsight
 
+            Reverted to Sky.cpp 1.15, disabled TEXDOME, and fixed
+	    a bug that applied a texture to the sky dome even when 
+	    TEXDOME was not defined.
+
+2003-07-02: onsight
+
             Added an automatic build target to the main Makefile to
 	    generate default hid mappings for aircraft.hid and 
 	    gamescreen.hid if they don't already exist.  These are
@@ -27,6 +33,16 @@
 	    The fps info character spacing is slightly changed to
 	    accomodate the new font, but this needs is just a bandaid
 	    and needs additional work.
+
+2003-07-01: onsight
+   
+            Changed Makefile.in and Source/Makefile.in to link
+	    to the ChunkLod library the same way the Demeter
+	    link is done.  The ChunkLod static library that is
+	    used is now CSPChunkLod/lib/libosgChunkLod_csp.a.
+
+	    Added a README file that points to the wiki
+	    VBuildingCSP page, as well as the forums.
 
 2003-07-01: delta
 

@@ -528,6 +528,8 @@ public:
 		return *this;
 	}
 
+	inline Self& pass() { return *this; }
+
 	virtual bool variableExists(const char *name) const {
 		return table.find(name) != table.end();
 	}

@@ -370,7 +370,7 @@ public:
 	#define END_SIMDATA_XML_INTERFACE
 #else
 	#define END_SIMDATA_XML_INTERFACE \
-			; \
+			.pass(); \
 			checkDuplicates(); \
 		} \
 	};

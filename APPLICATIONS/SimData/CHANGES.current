@@ -1,6 +1,10 @@
 Version 0.3.3 (in progress)
 ===========================
 
+2003-05-08: onsight
+            Added a dummy 'pass()' method to Interface to prevent warning
+	    messages when a class defines an empty interface.
+
 2003-05-04: delta
 	    Updated .net project. 
 	    Finally added some pragma to get ride of dll interface warnings ...		

@@ -12,6 +12,8 @@ Version 0.3.4 (in progress)
 
 	    NAMESPACE_END renamed NAMESPACE_SIMDATA_END
 
+==========> VS USERS: remove Quaternion.cpp from the project and add Quat.cpp
+
 2003-08-04: onsight
             Tagged r0_3_3, version 0.3.4 started.
 

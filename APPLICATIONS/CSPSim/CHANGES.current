@@ -11,6 +11,12 @@ Version 0.3.1 (in progress)
 	    Added configure.win.py.  This simple script does some minimal
 	    checking and setup to prepare the build under Windows/MSVC.
 
+            Added CSPWin.py, CompileData.py, and RebuildData.py to
+            VisualStuVdio. It should be possible to double-click on these
+            from Windows to launch CSPSim, compile changes to the data, or
+            rebuild the data from scratch. This assumes of course that
+            Python has hooked the .py extension properly.
+
 2003-03-21: delta
             CSPSim is back on windows (thx a lot Onsight).
            

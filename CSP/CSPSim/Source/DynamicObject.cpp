@@ -406,8 +406,7 @@ NetworkMessage * DynamicObject::getUpdateMessage()
  
   simdata::MemoryWriter writer((simdata::uint8*)ptrPayload);
   writer << m_ID;
-  simdata::uint32 objType = 1;
-  writer << objType;
+  writer << m_Type;
   writer << CSPSim::theSim->getElapsedTime();
   b_GlobalPosition->value().serialize(writer);
   b_LinearVelocity->value().serialize(writer);

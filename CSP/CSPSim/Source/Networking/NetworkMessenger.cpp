@@ -46,7 +46,7 @@ NetworkMessenger::NetworkMessenger()
   m_messageReceiveArrayCount = 0;
   m_messageReceiveArray.reserve(m_messageReceiveArrayMax);
 
-  m_ReceiveHandler = NULL;
+//  m_ReceiveHandler = NULL;
 }
 
 NetworkMessenger::NetworkMessenger(NetworkNode * originatorNode)
@@ -68,7 +68,7 @@ NetworkMessenger::NetworkMessenger(NetworkNode * originatorNode)
   m_messageReceiveArrayCount = 0;
   m_messageReceiveArray.reserve(m_messageReceiveArrayMax);
 
-  m_ReceiveHandler = NULL;
+//  m_ReceiveHandler = NULL;
 }
 
 //NetworkMessenger::NetworkMessenger(ost::InetAddress & addr, Port port)
@@ -138,8 +138,14 @@ void NetworkMessenger::receiveMessages()
 	  
     NetworkMessage * networkMessage = receiveMessage();
     if ( networkMessage ) {
-      if ( m_ReceiveHandler )
-	  m_ReceiveHandler->process(networkMessage, this);
+      std::list<NetworkMessageHandler *>::iterator iter = m_ReceiveHandlerList.begin();
+      std::list<NetworkMessageHandler *>::const_iterator end = m_ReceiveHandlerList.end();
+      for (;iter != end ; ++iter) {
+	  NetworkMessageHandler * handler = (NetworkMessageHandler*)(*iter);    
+	  if (handler != NULL) {
+            handler->process(networkMessage, this);
+	  }
+      }
     }
     else
       return;	    
@@ -158,7 +164,7 @@ void NetworkMessenger::setOriginatorNode(NetworkNode * originatorNode)
 
 void NetworkMessenger::registerReceiveHandler(NetworkMessageHandler * handler)
 {
-  m_ReceiveHandler = handler;
+  m_ReceiveHandlerList.push_back(handler);
 }
 
 

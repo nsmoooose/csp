@@ -29,6 +29,16 @@
 
 #include "Networking.h"
 
+EchoMessageHandler::EchoMessageHandler()
+{
+
+}
+
+EchoMessageHandler::~EchoMessageHandler()
+{
+
+}
+
 void EchoMessageHandler::process(NetworkMessage * message, NetworkMessenger * messenger)
 {
 

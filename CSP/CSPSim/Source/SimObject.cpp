@@ -37,11 +37,14 @@
 
 SIMDATA_REGISTER_INTERFACE(SimObject)
 
+unsigned int SimObject::localObjectInstance = 0;
 
 SimObject::SimObject()
 { 
 	CSP_LOG(APP, DEBUG, "SimObject::SimObject()" );
 
+	m_ID = ++SimObject::localObjectInstance;
+	m_Type = 1;   // TODO change this
 	m_Flags = 0;
 
 	setAggregateFlag(true);

@@ -78,6 +78,7 @@ SOURCES = \
 	Networking/NetworkAddress.cpp \
 	Networking/PrintMessageHandler.cpp \
 	Networking/EchoMessageHandler.cpp \
+	Networking/DispatchMessageHandler.cpp \
 	NumericalMethod.cpp \
 	ObjectModel.cpp \
 	ObjectRangeInfo.cpp \

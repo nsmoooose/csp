@@ -425,6 +425,15 @@ void CSPSim::init()
 		m_RemoteServerNode = new NetworkNode(1, remoteAddr.c_str(), remotePort );
 		m_localNode =  new NetworkNode(1, localAddr.c_str(), localMessagePort);
 		m_NetworkMessenger = new NetworkMessenger(m_localNode);
+		PrintMessageHandler * printMessageHandler = new PrintMessageHandler();
+		printMessageHandler->setFrequency(100);
+		m_NetworkMessenger->registerReceiveHandler(printMessageHandler);
+		DispatchMessageHandler * dispatchMessageHandler = new DispatchMessageHandler();
+		dispatchMessageHandler->setLocalAddress( m_localNode->getAddress().getAddress().s_addr );
+		dispatchMessageHandler->setLocalPort( localMessagePort );
+		dispatchMessageHandler->setDataManager(m_DataManager);
+		dispatchMessageHandler->setVirtualBattlefield(getBattlefield());
+		m_NetworkMessenger->registerReceiveHandler(dispatchMessageHandler);
 
 #if 0
 		// set the Main Menu then start the main loop

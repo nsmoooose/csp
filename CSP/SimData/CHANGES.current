@@ -1,6 +1,13 @@
 Version 0.4.0 (in progress)
 ===========================
 
+2004-06-12: onsight
+  * Commented out throw statement for assignment to Ref<> from an
+    incompatible type.  Callers must check that the ref is not null
+    after assignment.
+
+  * Added isNull() method to Ref.
+
 2004-16-12: wolverine
   * added a MemoryWriter class to write out a SimData object to
     a binary memory buffer.  Added a MemoryReader class. Added

@@ -248,6 +248,12 @@ public:
 	inline bool valid() const {
 		return _reference != 0;
 	}
+
+	/** Test for null pointer.
+	 */
+	inline bool isNull() const {
+		return _reference == 0;
+	}
 	
 	/** Comparison with other simdata pointers.
 	 */
@@ -299,7 +305,7 @@ protected:
 		_reference = dynamic_cast<CLASS*>(ptr);
 		if (_reference == 0 && ptr != 0) {
 			SIMDATA_LOG(LOG_ALL, LOG_ERROR, "simdata::Ref() assignment: incompatible types (dynamic cast failed).");
-			throw ConversionError();
+			//throw ConversionError();
 		}
 	}
 

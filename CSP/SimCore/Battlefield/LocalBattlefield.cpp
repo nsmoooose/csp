@@ -356,7 +356,7 @@ void LocalBattlefield::connectToServer(std::string const &name) {
 	msg->set_user_name(name);
 	msg->set_internal_ip_addr(m_NetworkClient->getLocalNode().getIp());
 	msg->set_external_ip_addr(m_NetworkClient->getExternalNode().getIp());
-	msg->set_local_time(simdata::getSecondsSinceUnixEpoch());
+	msg->set_local_time(static_cast<simdata::uint32>(simdata::getSecondsSinceUnixEpoch()));
 	sendServerCommand(msg);
 	m_ConnectionState = CONNECTION_JOIN;
 }
@@ -590,7 +590,9 @@ void LocalBattlefield::moveUnit(UnitWrapper *wrapper, GridPoint const &old_posit
 }
 
 bool LocalBattlefield::updateUnitVisibility(UnitWrapper *wrapper, GridPoint const &old_position, GridPoint const &new_position) {
+	assert(wrapper->unit().valid());
 	if (!m_SceneManager.valid()) return false;
+	if (!wrapper->unit().valid()) return false;
 	const double vis_bubble = m_SceneManager->getVisibleRange();
 	const double vis_r2 = vis_bubble * vis_bubble;
 	const bool in_old_bubble = (globalDistance2(m_CameraGridPosition, old_position) <= vis_r2) && !isNullPoint(old_position);
@@ -659,13 +661,27 @@ void LocalBattlefield::updateVisibility(GridPoint old_camera_position, GridPoint
 	CSP_LOG(BATTLEFIELD, DEBUG, "updateVisibility(): hiding " << hide.size() << " objects");
 	for (unsigned i = 0; i < hide.size(); ++i) {
 		Object object = static_cast<ObjectWrapper*>(hide[i])->object();
-		m_SceneManager->scheduleHide(object);
+		// object will be null if we have not received any peer updates yet.  in this case
+		// the object isn't really visible, and there is nothing to do. this situation can
+		// arise transiently when new objects are added to the global battlefield, but in
+		// general we should have received peer updates before an object enters or leaves
+		// visible range.
+		if (object.valid()) {
+			m_SceneManager->scheduleHide(object);
+		}
 	}
 
 	CSP_LOG(BATTLEFIELD, DEBUG, "updateVisibility(): showing " << show.size() << " objects");
 	for (unsigned i = 0; i < show.size(); ++i) {
 		Object object = static_cast<ObjectWrapper*>(show[i])->object();
-		m_SceneManager->scheduleShow(object);
+		// object will be null if we have not received any peer updates yet.  in this case
+		// we can't show the object, but the visibility will be reevaluated when the first
+		// update arives and the object is created.  this situation can arise transiently
+		// when new objects are added to the global battlefield, but in general we should
+		// receive peer updates before an object enters visible range.
+		if (object.valid()) {
+			m_SceneManager->scheduleShow(object);
+		}
 	}
 }
 

@@ -262,6 +262,8 @@ private:
 				response.send(queue);
 				return;
 			}
+		} else {
+			CSP_LOG(BATTLEFIELD, WARNING, "join request missing local time");
 		}
 
 		PeerId id = msg->getSource();

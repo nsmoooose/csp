@@ -63,19 +63,32 @@ public:
 		m_notFull.unlock();
 		m_notEmpty.signal();
 	}
-	TYPE get(bool block = true) {
+	bool get(TYPE &item, bool block = true) {
 		m_notEmpty.lock();
 		while (empty()) {
 			if (!block) {
 				m_notEmpty.unlock();
-				throw Empty();
+				return false;
 			}
 			m_notEmpty.wait();
 		}
-		TYPE item = popItem();
+		item = popItem();
 		m_notEmpty.unlock();
 		m_notFull.signal();
-		return item;
+		return true;
+	}
+	bool get(TYPE &item, double timeout) {
+		m_notEmpty.lock();
+		while (empty()) {
+			if (!m_notEmpty.wait(timeout)) {
+				m_notEmpty.unlock();
+				return false;
+			}
+		}
+		item = popItem();
+		m_notEmpty.unlock();
+		m_notFull.signal();
+		return true;
 	}
 protected:
 	ThreadSafeQueueBase(int maxsize)
@@ -103,7 +116,8 @@ protected:
 		m_queue.push(item);
 	}
 	virtual TYPE popItem() {
-		TYPE item = m_queue.top();
+		assert(size() > 0);
+		TYPE item = m_queue.front();
 		m_queue.pop();
 		return item;
 	}
@@ -124,7 +138,8 @@ protected:
 		m_queue.push(item);
 	}
 	virtual TYPE popItem() {
-		TYPE item = m_queue.top();
+		assert(size() > 0);
+		TYPE item = m_queue.front();
 		m_queue.pop();
 		return item;
 	}

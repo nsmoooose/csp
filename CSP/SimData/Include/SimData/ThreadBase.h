@@ -72,6 +72,9 @@ public:
 		if (result != 0) throw ThreadException(result);
 	}
 
+	int getError() const { return m_error; }
+	std::string getMessage() const { return m_message; }
+
 private:
 
 	void translate(const int error) {
@@ -87,7 +90,7 @@ private:
 			case EPERM:
 				m_error = DENIED;
 			default:
-				m_error = INTERNAL;
+				m_error = error + 1000; //INTERNAL;
 		}
 	}
 
@@ -296,7 +299,7 @@ private:
  *  signals the condition variable, one (or all) of the threads waiting
  *  on that variable will be activated.
  */
-class ThreadCondition {
+class ThreadCondition: public NonCopyable {
 public:
 
 	/** Construct a condition variable, using an internal mutex.
@@ -403,8 +406,6 @@ private:
 	pthread_cond_t m_cond;
 	pthread_mutex_t m_local_mutex;
 	pthread_mutex_t &m_mutex;
-	ThreadCondition(const ThreadCondition &);
-	ThreadCondition &operator=(const ThreadCondition &);
 };
 
 

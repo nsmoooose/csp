@@ -60,7 +60,7 @@ def make_install(win):
 	incpath = os.path.join(inc, "SimData")
 	package_files = ['__init__.py', 'Debug.py', 'Parse.py', 'Compile.py']
 	if win:
-		package_files.extend(['cSimData.py', '_cSimData.dll'])
+		package_files.extend(['cSimData.py', '_cSimData.dll', '_cSimData.lib'])
 	else:
 		package_files.extend(['cSimData.py', '_cSimData.so'])
 	try:

@@ -1,6 +1,12 @@
 Version 0.4.0 (in progress)
 ===========================
 
+2004-12-12: delta
+ * Fixed a few warnings in Random.h under msvc. Hopefully gcc 
+   won't complain.
+   
+  * Updated Config project file.
+
 2004-12-11: onsight
  * Fix a dumb bug in the timing code that caused wildly inaccurate
    times on windows.
@@ -9,7 +15,7 @@ Version 0.4.0 (in progress)
  * Changed the level of warnings of cSimData_wrap.cpp and 
    compiled Config as a multithreads dll (vc project files).
 
- * Cleaned a useless vc specific pragma.
+ * Cleaned up a useless vc specific pragma.
 
  * Removed useless static_cast<> in Date.cpp.
 

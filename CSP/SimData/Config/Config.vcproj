@@ -18,6 +18,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				RuntimeLibrary="3"
+				RuntimeTypeInfo="TRUE"
 				WarningLevel="4"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
@@ -61,6 +62,7 @@
 				OptimizeForProcessor="3"
 				OptimizeForWindowsApplication="TRUE"
 				RuntimeLibrary="2"
+				RuntimeTypeInfo="TRUE"
 				WarningLevel="3"/>
 			<Tool
 				Name="VCCustomBuildTool"/>

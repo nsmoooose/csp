@@ -464,28 +464,41 @@ public:
 	 *
 	 *  @param seed the new seed.
 	 */
-	virtual void setSeed(SeedType seed);
+	virtual void setSeed(SeedType seed) {
+		_gen.setSeed(seed);
+	}
 
 	/** Save the current state of the generator. 
 	 *  
 	 *  The state can be restored at any time with setState().
 	 */
-	virtual State getState() const;
+	virtual State getState() const {
+		RNGState *rng_state = new RNGState;
+		_gen.getState(rng_state->_state);
+		return rng_state;
+	}
 
 	/** Restore the generator to a specific state saved with getState().
 	 *
 	 *  The subsequent random numbers will be identical to the sequence
 	 *  following the corresponding getState() call.
 	 */
-	virtual void setState(State const &);
+	virtual void setState(State const &state) {
+		Ref<RNGState> rng_state = state;
+		_gen.setState(rng_state->_state);
+	}
 
 	/** Return a random floating point value in the range [0,1).
 	 */ 
-	virtual double unit();
+	virtual double unit() {
+		return _gen.unit();
+	}
 
 	/** Return a random floating point value in the range [lower,upper).
 	 */
-	virtual double uniform(double, double);
+	virtual double uniform(double lower, double upper) {
+		return _gen.uniform(lower, upper);
+	}
 
 	/** Return a random integer in the range lower to upper-1 (inclusive)
 	 *
@@ -493,11 +506,15 @@ public:
 	 *  @param upper upper bound (exclusive)
 	 *  @returns a random integer int the range lower to upper-1 (inclusive)
 	 */
-	virtual long uniformInt(long lower, long upper);
+	virtual long uniformInt(long lower, long upper) {
+		return _gen.uniformInt(lower, upper);
+	}
 
 	/** Equivalent to uniformInt(0, upper)
 	 */
-	virtual long uniformInt(long upper);
+	virtual long uniformInt(long upper) {
+		return _gen.uniformInt(upper);
+	}
 
 	/** Return a random integer in the range lower to upper-1 (inclusive)
 	 *
@@ -505,15 +522,21 @@ public:
 	 *  @param upper upper bound (exclusive)
 	 *  @returns a random integer int the range lower to upper-1 (inclusive)
 	 */
-	virtual unsigned long uniformUInt(unsigned long lower, unsigned long upper);
+	virtual unsigned long uniformUInt(unsigned long lower, unsigned long upper) {
+		return _gen.uniformInt(lower, upper);
+	}
 
 	/** Equivalent to uniformUInt(0, upper)
 	 */
-	virtual unsigned long uniformUInt(unsigned long upper);
+	virtual unsigned long uniformUInt(unsigned long upper) {
+		return _gen.uniformInt(upper);
+	}
 
 	/** Get the name of this generator
 	 */
-	virtual std::string getName() const;
+	virtual std::string getName() const {
+		return _gen.getName(); 
+	}
 
 	/** Direct access to the underlying generator.
 	 *
@@ -522,61 +545,6 @@ public:
 	 */
 	inline RNG *operator->() { return &_gen; }
 };
-
-
-template <class RNG>
-RandomInterface::State RandomNumberGenerator<RNG>::getState() const {
-	RNGState *rng_state = new RNGState;
-	_gen.getState(rng_state->_state);
-	return rng_state;
-}
-
-template <class RNG>
-void RandomNumberGenerator<RNG>::setState(RandomInterface::State const &state) {
-	Ref<RNGState> rng_state = state;
-	_gen.setState(rng_state->_state);
-}
-
-template <class RNG>
-void RandomNumberGenerator<RNG>::setSeed(RandomInterface::SeedType seed) {
-	_gen.setSeed(seed);
-}
-
-template <class RNG>
-double RandomNumberGenerator<RNG>::unit() {
-	return _gen.unit();
-}
-
-template <class RNG>
-double RandomNumberGenerator<RNG>::uniform(double low, double high) {
-	return _gen.uniform(low, high);
-}
-
-template <class RNG>
-long RandomNumberGenerator<RNG>::uniformInt(long low, long high) {
-	return _gen.uniformInt(low, high);
-}
-
-template <class RNG>
-long RandomNumberGenerator<RNG>::uniformInt(long high) {
-	return _gen.uniformInt(high);
-}
-
-template <class RNG>
-unsigned long RandomNumberGenerator<RNG>::uniformUInt(unsigned long low, unsigned long high) {
-	return _gen.uniformInt(low, high);
-}
-
-template <class RNG>
-unsigned long RandomNumberGenerator<RNG>::uniformUInt(unsigned long high) {
-	return _gen.uniformInt(high);
-}
-
-template <class RNG>
-std::string RandomNumberGenerator<RNG>::getName() const { 
-	return _gen.getName(); 
-}
-
 
 ///////////////////////////////////////////////////////////////////////////////////
 // Random Distributions

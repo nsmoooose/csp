@@ -342,7 +342,7 @@ public:
 	 * Comparison with other simdata pointers.
 	 */
 	bool operator==(PointerBase const &p) const {
-		return PointerBase::operator==(p);
+		return ReferencePointer::operator==(p);
 	}
 
 	/**

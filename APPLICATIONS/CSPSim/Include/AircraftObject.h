@@ -1,4 +1,4 @@
-// Combat Simulator Project - FlightSim Demo
+// Combat Simulator Project - CSPSim
 // Copyright (C) 2002 The Combat Simulator Project
 // http://csp.sourceforge.net
 // 
@@ -30,22 +30,35 @@
 #include "Engine.h"
 #include "HID.h"
 #include "LandingGear.h"
-#include "PrimaryAeroDynamics.h"
+//#include "PrimaryAeroDynamics.h"
+#include "FlightDynamics.h"
+
+
+class FlightModel;
+class AnimationValueChannel;
 
 
 class AircraftDynamics: public simdata::Object {
-	simdata::Link<PrimaryAeroDynamics> m_PrimaryAeroDynamics;
+	//simdata::Link<PrimaryAeroDynamics> m_PrimaryAeroDynamics;
+	simdata::Ref<FlightDynamics> m_FlightDynamics;
+	simdata::Link<FlightModel> m_FlightModel;
 	simdata::Link<GearDynamics> m_GearDynamics;
 	simdata::Link<EngineDynamics> m_EngineDynamics;
 public:
-	SIMDATA_OBJECT(AircraftDynamics, 3, 0)
+	SIMDATA_OBJECT(AircraftDynamics, 4, 0)
 	BEGIN_SIMDATA_XML_INTERFACE(AircraftDynamics)
-		SIMDATA_XML("primary_aero_dynamics", AircraftDynamics::m_PrimaryAeroDynamics, true)
+		//SIMDATA_XML("primary_aero_dynamics", AircraftDynamics::m_PrimaryAeroDynamics, true)
+		SIMDATA_XML("flight_model", AircraftDynamics::m_FlightModel, true)
 		SIMDATA_XML("gear_dynamics", AircraftDynamics::m_GearDynamics, true) 
 		SIMDATA_XML("engine_dynamics", AircraftDynamics::m_EngineDynamics, true)
 	END_SIMDATA_XML_INTERFACE
+	/*
 	simdata::Ref<PrimaryAeroDynamics> getAeroDynamics() const {
 		return m_PrimaryAeroDynamics;
+	}
+	*/
+	simdata::Ref<FlightDynamics> getFlightDynamics() const {
+		return m_FlightDynamics;
 	}
 	simdata::Ref<GearDynamics> getGearDynamics() const {
 		return m_GearDynamics;
@@ -56,6 +69,7 @@ public:
 protected:
 	void pack(simdata::Packer& p) const;
 	void unpack(simdata::UnPacker& p);
+	void postCreate();
 };
 
 
@@ -75,6 +89,8 @@ public:
 		SIMDATA_XML("elevator_max", AircraftObject::m_ElevatorMax, true)
 		SIMDATA_XML("rudder_min", AircraftObject::m_RudderMin, true)
 		SIMDATA_XML("rudder_max", AircraftObject::m_RudderMax, true)
+		SIMDATA_XML("airbrake_max", AircraftObject::m_AirbrakeMax, true)
+		SIMDATA_XML("airbrake_rate", AircraftObject::m_AirbrakeRate, true)
 		SIMDATA_XML("aircraft_dynamics", AircraftObject::m_AircraftDynamics, true)
 	END_SIMDATA_XML_INTERFACE
 
@@ -82,6 +98,7 @@ public:
 	AXIS_INTERFACE(AircraftObject, setRudder);
 	AXIS_INTERFACE(AircraftObject, setAileron);
 	AXIS_INTERFACE(AircraftObject, setElevator);
+	AXIS_INTERFACE(AircraftObject, setAirbrake);
 	ACTION_INTERFACE(AircraftObject, IncElevator);
 	ACTION_INTERFACE(AircraftObject, noIncElevator);
 	ACTION_INTERFACE(AircraftObject, DecElevator);
@@ -106,6 +123,10 @@ public:
 	ACTION_INTERFACE(AircraftObject, GearDown);
 	ACTION_INTERFACE(AircraftObject, GearToggle);
 	ACTION_INTERFACE(AircraftObject, MarkersToggle);
+	ACTION_INTERFACE(AircraftObject, OpenAirbrake);
+	ACTION_INTERFACE(AircraftObject, CloseAirbrake);
+	ACTION_INTERFACE(AircraftObject, IncAirbrake);
+	ACTION_INTERFACE(AircraftObject, DecAirbrake);
 
 	AircraftObject();
 	virtual ~AircraftObject();
@@ -126,17 +147,21 @@ public:
 
 	void setComplexPhysics(bool flag) { m_ComplexPhysics = flag; }
 
-	double getAngleOfAttack() const {  
-		return m_PrimaryAeroDynamics->getAngleOfAttack();
+	inline double getAngleOfAttack() const {  
+		//return m_PrimaryAeroDynamics->getAngleOfAttack();
+		return m_FlightDynamics->getAngleOfAttack();
 	}
-	double getSideSlip() const {  
-		return m_PrimaryAeroDynamics->getSideSlip();
+	inline double getSideSlip() const {  
+		//return m_PrimaryAeroDynamics->getSideSlip();
+		return m_FlightDynamics->getSideSlip();
 	}
-	virtual double getGForce() const { 
-		return m_PrimaryAeroDynamics->getGForce();
+	inline double getGForce() const { 
+		//return m_PrimaryAeroDynamics->getGForce();
+		return m_FlightDynamics->getGForce();
 	}
-	virtual double getSpeed() const { 
-		return m_PrimaryAeroDynamics->getSpeed();
+	inline double getSpeed() const { 
+		//return m_PrimaryAeroDynamics->getSpeed();
+		return m_FlightDynamics->getSpeed();
 	}
 
 	void getStats(std::vector<std::string> &stats) const;
@@ -150,10 +175,20 @@ protected:
 	virtual void pack(simdata::Packer& p) const;
 	virtual void unpack(simdata::UnPacker& p);
 	virtual void postCreate();
+	virtual void convertXML();
+
+	virtual void bindAnimations();
+	simdata::Ref<AnimationValueChannel> m_AnimateRudder;
+	simdata::Ref<AnimationValueChannel> m_AnimateElevator;
+	simdata::Ref<AnimationValueChannel> m_AnimateAileron;
+	simdata::Ref<AnimationValueChannel> m_AnimateAirbrake;
 
 	virtual void setGearStatus(bool on);
 	bool isGearRetracted() const;
-	
+
+	// data recording
+	virtual void initDataRecorder();
+
 	// dynamic properties	
 	double m_Roll;
 	double m_Pitch;
@@ -164,6 +199,7 @@ protected:
 	double m_ElevatorInput;
 	double m_RudderInput;
 	double m_ThrottleInput;
+	double m_AirbrakeInput;
 
 	// keyboard inputs	
 	double m_dAileronInput;
@@ -183,6 +219,7 @@ protected:
 	double m_Elevator;
 	double m_Rudder;
 	double m_Throttle;
+	double m_Airbrake;
 
 	// control surface limits
 	double m_AileronMin;
@@ -191,18 +228,30 @@ protected:
 	double m_ElevatorMax;
 	double m_RudderMin;
 	double m_RudderMax;
+	double m_AirbrakeMax;
+	double m_AirbrakeRate;
 
 	simdata::Ref<AircraftPhysicsModel> m_AircraftPhysicsModel;
 
 	// various torques
 	simdata::Link<AircraftDynamics> m_AircraftDynamics;
-	simdata::Ref<PrimaryAeroDynamics> m_PrimaryAeroDynamics;
+	//simdata::Ref<PrimaryAeroDynamics> m_PrimaryAeroDynamics;
+	simdata::Ref<FlightDynamics> m_FlightDynamics;
 	simdata::Ref<GearDynamics> m_GearDynamics;
 	simdata::Ref<GroundCollisionDynamics> m_GroundCollisionDynamics;
 	simdata::Ref<EngineDynamics> m_EngineDynamics;
 	
 	bool m_PhysicsInitialized;
 	bool m_ComplexPhysics;
+
+private:
+	enum {
+		CH_AILERON_DEFLECTION, 
+		CH_ELEVATOR_DEFLECTION, 
+		CH_RUDDER_DEFLECTION,
+	};
+	RecorderInterface m_Recorder;
+	
 };
 
 	

@@ -27,6 +27,7 @@
 #include <osg/ShapeDrawable>
 
 #include "ObjectModel.h"
+#include "Animation.h"
 #include "Log.h"
 #include "Config.h"
 
@@ -40,14 +41,80 @@
 #include <osg/Geometry>
 #include <osg/Texture>
 #include <osg/Geode>
+#include <osg/Depth>
+#include <osgText/Text>
 #include <osg/PolygonOffset>
 #include <osg/CullFace>
 
 #include <SimData/FileUtility.h>
 #include <SimData/osg.h>
 
+/*
+	TODO
+
+		o adjust contact markers and view point for model
+		  transform
+
+		o implement ModelProcessor
+
+ */
 
 SIMDATA_REGISTER_INTERFACE(ObjectModel)
+
+
+/**
+ * Animation binding helper that can be attached to model
+ * nodes (using osg::Object user data).  When the model
+ * prototype is cloned, these bindings help to connect the
+ * new animation transform nodes to the correct animation 
+ * callback.
+ */
+class AnimationBinding: public osg::Referenced {
+	simdata::Ref<Animation const> m_Animation;
+public:
+	AnimationBinding(Animation const* animation): m_Animation(animation) {}
+	inline AnimationCallback *bind(osg::Node *node) const {
+		return m_Animation->newCallback(node);
+	}
+};
+
+
+/**
+ * A visitor for model prototypes to attach animation
+ * bindings to the appropriate nodes.  Each prototype
+ * only needs to be processed once, immediately after
+ * loading the model.  The bindings are used when the
+ * model is later cloned by SceneModel to attach
+ * animation callbacks.
+ */
+class ModelProcessor: public osg::NodeVisitor {
+	osg::ref_ptr<osg::Node> m_Root;
+	simdata::Link<Animation>::vector const *m_Animations;
+public:
+	ModelProcessor(): NodeVisitor(TRAVERSE_ALL_CHILDREN), m_Animations(0) { }
+	void setAnimations(simdata::Link<Animation>::vector const *animations) {
+		m_Animations = animations;
+	}
+	virtual void apply(osg::Transform &node) {
+		if (!m_Animations) return;
+		std::string name = node.getName();
+		std::cout << "MODEL TRANSFORM: " << name << "\n";
+		if (name.substr(0,6) == "ANIM: ") {
+			simdata::Key id = name.substr(6);
+			simdata::Link<Animation>::vector::const_iterator i = m_Animations->begin();
+			std::cout << "SEARCHING FOR " << name.substr(6) << " (" << id << ")\n";
+			for (; i != m_Animations->end(); ++i) {
+				std::cout << "COMPARING TO " << (*i)->getModelID() << "\n";
+				if ((*i)->getModelID() == id) {
+					node.setUserData(new AnimationBinding(i->get()));
+					std::cout << "FOUND\n";
+					break;
+				}
+			}
+		}
+	}
+};
+
 
 
 /** 
@@ -132,6 +199,7 @@ void ObjectModel::pack(simdata::Packer& p) const {
 	p.pack(m_PolygonOffset);
 	p.pack(m_CullFace);
 	p.pack(m_LandingGear);
+	p.pack(m_Animations);
 }
 
 void ObjectModel::unpack(simdata::UnPacker& p) {
@@ -149,6 +217,7 @@ void ObjectModel::unpack(simdata::UnPacker& p) {
 	p.unpack(m_PolygonOffset);
 	p.unpack(m_CullFace);
 	p.unpack(m_LandingGear);
+	p.unpack(m_Animations);
 }
 
 void ObjectModel::postCreate() {
@@ -201,13 +270,6 @@ osg::Geometry *makeDiamond(simdata::Vector3 const &pos, float s) {
 }
 
 void ObjectModel::loadModel() {
-/*
-	if (g_ModelPath == "") {
-		g_ModelPath = getDataPath("ModelPath");
-	}
-
-	std::string source = simdata::ospath::filter(simdata::ospath::join(g_ModelPath, m_ModelPath.getSource()));
-	*/
 	std::string source = m_ModelPath.getSource();
 
 	CSP_LOG(APP, DEBUG, "ObjectModel::loadModel: " << source);
@@ -222,11 +284,11 @@ void ObjectModel::loadModel() {
 
 	assert(pNode);
 
-	m_Node = pNode;
-	m_Node->setName(m_ModelPath.getSource());
+	m_Model = pNode;
+	m_Model->setName(m_ModelPath.getSource());
 
 	if (m_PolygonOffset != 0.0) {
-		osg::StateSet *ss = m_Node->getOrCreateStateSet();
+		osg::StateSet *ss = m_Model->getOrCreateStateSet();
 		osg::PolygonOffset *po = new osg::PolygonOffset;
 		po->setFactor(-1.0);
 		po->setUnits(m_PolygonOffset);
@@ -235,19 +297,34 @@ void ObjectModel::loadModel() {
 
 	if (m_CullFace != 0) {
 		// XXX should reuse a single static CullFace instance.
-		osg::StateSet *ss = m_Node->getOrCreateStateSet();
+		osg::StateSet *ss = m_Model->getOrCreateStateSet();
 		osg::CullFace *cf = new osg::CullFace;
 		cf->setMode(m_CullFace < 0 ? osg::CullFace::BACK : osg::CullFace::FRONT);
 		ss->setAttributeAndModes(cf, osg::StateAttribute::ON);
 	}
 
-	// XXX should do this after scaling, no?
-	osg::BoundingSphere s = m_Node->getBound();
-	m_BoundingSphereRadius = s.radius();
-    
-	m_Transform = new osg::MatrixTransform;
-	m_Transform->setName("MODEL TRANSFORM");
-	m_Transform->addChild(m_Node.get());
+	if (m_Smooth) {
+		osgUtil::SmoothingVisitor sv;
+		m_Model->accept(sv);
+	}
+
+	if (m_Filter) {
+		// FIXME: level should come from global graphics settings
+		TrilinearFilterVisitor tfv(16.0);
+		m_Model->accept(tfv);
+	}
+
+	osgUtil::Optimizer opt;
+	opt.optimize(m_Model.get());
+
+	// add animation hooks to user data field of animation
+	// transform nodes
+	ModelProcessor processor;
+	std::cout << "ANIMATIONS AVAILABLE: " << m_Animations.size() << "\n";
+	processor.setAnimations(&m_Animations);
+	std::cout << "PROCESSING MODEL\n";
+	m_Model->accept(processor);
+	std::cout << "PROCESSING MODEL DONE\n";
 
 	assert(m_Axis0.Length() > 0.0);
 	m_Axis0.Normalize();
@@ -255,42 +332,54 @@ void ObjectModel::loadModel() {
 	m_Axis1 = m_Axis1 - m_Axis0 * simdata::Dot(m_Axis0, m_Axis1);
 	assert(m_Axis1.Length() > 0.0);
 	m_Axis1.Normalize();
-	// find third axis
-	simdata::Vector3 axis2 = simdata::Cross(m_Axis0, m_Axis1);
-	
-	simdata::Matrix3 o(m_Axis0.x, m_Axis0.y, m_Axis0.z, m_Axis1.x, m_Axis1.y, m_Axis1.z, axis2.x, axis2.y, axis2.z);
-	o = o.Inverse() * m_Scale;
-	simdata::Matrix3::M_t (&R)[3][3] = o.rowcol;
-	osg::Matrix model_orientation;
-	model_orientation.set(
-		R[0][0], R[1][0], R[2][0], 0.0,
-		R[0][1], R[1][1], R[2][1], 0.0,
-		R[0][2], R[1][2], R[2][2], 0.0,
-		m_Offset.x, m_Offset.y, m_Offset.z, 1.0
-	);
-	m_Transform->setMatrix(model_orientation);
 
-	if (m_Scale != 1.0) {
-		m_Transform->getOrCreateStateSet()->setMode(GL_NORMALIZE, osg::StateAttribute::ON);
+	// insert an adjustment matrix at the head of the model only
+	// if necessary.
+	if (m_Axis0 != simdata::Vector3::XAXIS ||
+	    m_Axis1 != simdata::Vector3::YAXIS ||
+	    m_Scale != 1.0 ||
+	    m_Offset != simdata::Vector3::ZERO) {
+		// find third axis and make the transform matrix
+		simdata::Vector3 axis2 = simdata::Cross(m_Axis0, m_Axis1);
+		simdata::Matrix3 o(m_Axis0.x, m_Axis0.y, m_Axis0.z, 
+		                   m_Axis1.x, m_Axis1.y, m_Axis1.z, 
+		                   axis2.x, axis2.y, axis2.z);
+		o = o.Inverse() * m_Scale;
+		simdata::Matrix3::M_t (&R)[3][3] = o.rowcol;
+		osg::Matrix model_orientation;
+		model_orientation.set(
+			R[0][0], R[1][0], R[2][0], 0.0,
+			R[0][1], R[1][1], R[2][1], 0.0,
+			R[0][2], R[1][2], R[2][2], 0.0,
+			m_Offset.x, m_Offset.y, m_Offset.z, 1.0
+		);
+		osg::MatrixTransform *adjust = new osg::MatrixTransform;
+		if (m_Scale != 1.0) {
+			adjust->getOrCreateStateSet()->setMode(GL_NORMALIZE, osg::StateAttribute::ON);
+		}
+		adjust->setName("XML_ADJUSTMENT");
+		adjust->setDataVariance(osg::Object::STATIC);
+		adjust->setMatrix(model_orientation);
+		adjust->addChild(m_Model.get());
+		m_Model = adjust;
+		simdata::Matrix3 sd_adjust = simdata::fromOSG(model_orientation).Inverse();
+		for (unsigned i = 0; i < m_Contacts.size(); i++) {
+			m_Contacts[i] = sd_adjust * m_Contacts[i] + m_Offset;
+		}
+		m_ViewPoint = sd_adjust * m_ViewPoint + m_Offset;
 	}
+
+	osg::BoundingSphere s = m_Model->getBound();
+	m_BoundingSphereRadius = s.radius();
 
 	//osg::StateSet * stateSet = m_rpNode->getStateSet();
 	//stateSet->setGlobalDefaults();
 	//m_rpNode->setStateSet(stateSet);
      
-	if (m_Smooth) {
-		osgUtil::SmoothingVisitor sv;
-		m_Transform->accept(sv);
-	}
-
-	if (m_Filter) {
-		// FIXME: level should come from global graphics settings
-		TrilinearFilterVisitor tfv(16.0);
-		m_Transform->accept(tfv);
-	}
-
 	m_DebugMarkers = new osg::Switch;
-	m_Transform->addChild(m_DebugMarkers.get());
+	// XXX should reuse a single static stateset?
+	m_DebugMarkers->getOrCreateStateSet()->setMode(GL_LIGHTING, osg::StateAttribute::OFF);
+	m_DebugMarkers->getOrCreateStateSet()->setAttributeAndModes(new osg::CullFace, osg::StateAttribute::ON);
 
 	// create visible markers for each contact point
 	addContactMarkers();
@@ -298,15 +387,12 @@ void ObjectModel::loadModel() {
 	// create landing gear wheels
 	addGearSprites();
 
-	// TODO: run an optimizer to flatten the model transform (if it differs from identity)
-	osgUtil::Optimizer opt;
-	opt.optimize(m_Transform.get());
-
 	osg::ref_ptr<osg::State> state = new osg::State;
 	osgUtil::DisplayListVisitor dlv(osgUtil::DisplayListVisitor::COMPILE_DISPLAY_LISTS);
 	dlv.setState(state.get());
 	dlv.setNodeMaskOverride(0xffffffff);
-	m_Transform->accept(dlv);
+	m_Model->accept(dlv);
+	m_DebugMarkers->accept(dlv);
 }
 
 void ObjectModel::addContactMarkers() {
@@ -456,7 +542,7 @@ void ObjectModel::addGearSprites() {
 		makeFrontGear(m_LandingGear[0]);
 		makeLeftGear(m_LandingGear[1]);
 		makeRightGear(m_LandingGear[2]);
-		m_Transform->addChild(m_GearSprites.get());
+		m_DebugMarkers->addChild(m_GearSprites.get());
 	}
 }
 
@@ -498,18 +584,98 @@ bool ObjectModel::getMarkersVisible() const {
 }
 
 
+
+/**
+ * Copy class for cloning model prototypes for use
+ * in the scene graph.  Each new SceneModel uses this
+ * class to create a copy of the associated ObjectModel
+ * prototype.
+ */
+class ModelCopy: public osg::CopyOp {
+public:
+	typedef std::vector<osg::ref_ptr<AnimationCallback> > AnimationCallbackVector;
+	inline AnimationCallbackVector const &getAnimationCallbacks() const { 
+		return m_AnimationCallbacks; 
+	}
+	virtual osg::Node* operator() (const osg::Node* node) const {
+		osg::Referenced const *data = node->getUserData();
+		// user data bound to nodes is used to modify the copy operations
+		if (data) {
+			AnimationBinding const *binding = dynamic_cast<AnimationBinding const *>(data);
+			// nodes with animation bindings need a callback
+			if (binding) {
+				osg::Node *new_node = dynamic_cast<osg::Node*>(node->clone(*this));
+				m_AnimationCallbacks.push_back(binding->bind(new_node));
+				std::cout << "ADDED CALLBACK\n";
+				return new_node;
+			}
+		}
+		if (dynamic_cast<osg::Group const *>(node)) {
+			// clone groups
+			return dynamic_cast<osg::Node*>(node->clone(*this));
+		} else {
+			// copy other leaf nodes by reference
+			return const_cast<osg::Node*>(node);
+		}
+	}
+private:
+	mutable AnimationCallbackVector m_AnimationCallbacks;
+};
+
 SceneModel::SceneModel(simdata::Ref<ObjectModel> const & model) {
 	m_Model = model;
 	assert(m_Model.valid());
 	CSP_LOG(APP, INFO, "create SceneModel for " << m_Model->getModelPath());
+
+	// get the prototype model scene graph
 	osg::Node *model_node = m_Model->getModel().get();
 	assert(model_node);
+
+	// create a working copy
+	ModelCopy model_copy;
+	model_node = model_copy(model_node);
+
+	std::cout << "MODEL COPIED\n";
+
+	std::cout << "MODEL animation count = " << model_copy.getAnimationCallbacks().size() << "\n";
+
+	m_AnimationCallbacks.resize(model_copy.getAnimationCallbacks().size());
+
+	// store all the animation update callbacks
+	std::copy(model_copy.getAnimationCallbacks().begin(), 
+	          model_copy.getAnimationCallbacks().end(), 
+		  m_AnimationCallbacks.begin());
+
+	std::cout << "MODEL animation count = " << m_AnimationCallbacks.size() << "\n";
+
+	m_Label = new osgText::Text();
+	m_Label->setFont("screeninfo.ttf");
+	m_Label->setFontSize(16, 16);
+	m_Label->setColor(osg::Vec4(0.3f, 0.4f, 1.0f, 1.0f));
+	m_Label->setCharacterSize(100.0, 1.0);
+	m_Label->setPosition(osg::Vec3(6, 0, 0));
+	m_Label->setText("AIRCRAFT");
+	osg::Geode *label = new osg::Geode;
+	osg::Depth *depth = new osg::Depth;
+	depth->setFunction(osg::Depth::ALWAYS);
+	depth->setRange(1.0, 1.0);
+	label->getOrCreateStateSet()->setAttributeAndModes(depth, osg::StateAttribute::OFF);
+	label->getOrCreateStateSet()->setMode(GL_LIGHTING, osg::StateAttribute::OFF);
+	//setMatrix(osg::Matrix::ortho2D(0,ScreenWidth,0,ScreenHeight));
+	osg::MatrixTransform *m_modelview_abs = new osg::MatrixTransform;
+	m_modelview_abs->setReferenceFrame(osg::Transform::RELATIVE_TO_ABSOLUTE);
+	m_modelview_abs->setMatrix(osg::Matrix::identity());
+	m_modelview_abs->addChild(label);
+
+	// XXX the switch node is probably not necessary in most cases and should be removed
 	// to switch between various representations of the same object (depending on views for example)
 	m_Switch = new osg::Switch;
 	m_Switch->addChild(model_node);
 	m_Switch->setAllChildrenOn();
 	m_Transform = new osg::PositionAttitudeTransform;
 	m_Transform->addChild(m_Switch.get());
+	m_Transform->addChild(m_Model->getDebugMarkers().get());
+	m_Transform->addChild(m_modelview_abs);
 	m_Smoke = false;
 	//show();
 }
@@ -519,6 +685,10 @@ SceneModel::~SceneModel() {
 	assert(model_node);
 	m_Switch->removeChild(model_node);
 	m_Transform->removeChild(m_Switch.get()); 
+}
+
+void SceneModel::setLabel(std::string const &label) {
+	m_Label->setText(label);
 }
 
 void SceneModel::updateSmoke(double dt, simdata::Vector3 const &global_position, simdata::Quaternion const &attitude) {
@@ -578,72 +748,16 @@ void SceneModel::enableSmoke()
 		m_Smoke = true;
 	}
 }
-// FIXME: from SimObject.... needs to be incorparated:
-/*
-void SimObject::initModel()
-{ 
-	CSP_LOG(APP, DEBUG, "SimObject::initModel() - ID: " << m_iObjectID);
 
-	assert(m_rpNode == NULL && m_rpSwitch == NULL && m_rpTransform == NULL);
-	assert(m_Model.valid());
-
-	std::cout << "INIT MODEL\n";
-
-	m_rpNode = m_Model->getModel();
-    
-	//osg::StateSet * stateSet = m_rpNode->getStateSet();
-	//stateSet->setGlobalDefaults();
-	//m_rpNode->setStateSet(stateSet);
-    
-	// to switch between various representants of same object (depending on views for example)
-	m_rpSwitch = new osg::Switch;
-	m_rpSwitch->setName("MODEL SWITCH");
-	m_rpSwitch->addChild(m_rpNode.get());
-
-	// master object to which all others ones are linked
-	m_rpTransform = new osg::MatrixTransform;
-	m_rpTransform->setName("MODEL TRANSFORM");
-
-	m_rpTransform->addChild( m_rpSwitch.get() );
-	//m_rpSwitch->setAllChildrenOn();
-}
-
-	if (m_rpTransform != NULL && m_rpSwitch != NULL) {
-		m_rpTransform->removeChild( m_rpSwitch.get() ); 
+AnimationChannel *SceneModel::bindAnimationChannel(std::string const &control, AnimationChannel *channel) {
+	simdata::Key id(control);
+	int index, n = m_AnimationCallbacks.size();
+	for (index = 0; index < n; ++index) {
+		if (m_AnimationCallbacks[index]->getControlID() == id) {
+			m_AnimationCallbacks[index]->bindChannel(channel);
+		}
 	}
-
-void SimObject::ShowRepresentant(unsigned short const p_usflag)
-{
-	m_rpSwitch->setAllChildrenOff();
-	m_rpSwitch->setValue(p_usflag, true);
+	return channel;
 }
 
-	osg::Matrix worldMat;
-	simdata::Matrix3::M_t (&R)[3][3] = m_Orientation.rowcol;
-	worldMat.set(R[0][0], R[1][0], R[2][0], 0.0,
-	             R[0][1], R[1][1], R[2][1], 0.0,
-		     R[0][2], R[1][2], R[2][2], 0.0,
-		     m_LocalPosition.x, m_LocalPosition.y, m_LocalPosition.z, 1.0);
 
-	//m_rpTransform->setReferenceFrame(osg::Transform::RELATIVE_TO_PARENTS);
-
-	m_rpTransform->setMatrix(worldMat);
-	
-	// FIXME: call specific versions of this from derived classes:
-	//scene->addNodeToScene(m_rpTransform.get());
-
-	setCullingActive(true);
-
-	//CSP_LOG(APP, DEBUG, "NodeName: " << m_rpNode->getName() <<
-	//	", BoundingPos: " << sphere.center() << ", BoundingRadius: " << 
-	//	sphere.radius() );
-
-
-void SimObject::setCullingActive(bool flag)
-{
-	if (m_rpTransform.valid()) {
-		m_rpTransform->setCullingActive(flag);
-	}
-}
-
-*/

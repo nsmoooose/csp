@@ -42,6 +42,14 @@
 
 #include "SmokeEffects.h"
 
+class Animation;
+class AnimationCallback;
+class AnimationChannel;
+
+namespace osgText {
+	class Text;
+}
+
 
 /**
  * class ObjectModel - Static representation of 3D models in the simulation.
@@ -73,13 +81,14 @@ public:
 		SIMDATA_XML("polygon_offset", ObjectModel::m_PolygonOffset, false)
 		SIMDATA_XML("cull_face", ObjectModel::m_CullFace, false)
 		SIMDATA_XML("landing_gear", ObjectModel::m_LandingGear, false)
+		SIMDATA_XML("animations", ObjectModel::m_Animations, false)
 	END_SIMDATA_XML_INTERFACE
 
 	ObjectModel();
 	virtual ~ObjectModel();
 
-	osg::ref_ptr<osg::Node> getModel() { return m_Transform.get(); }
-	osg::ref_ptr<osg::Node> getRawModel() { return m_Node.get(); }
+	osg::ref_ptr<osg::Node> getModel() { return m_Model.get(); }
+	osg::ref_ptr<osg::Node> getDebugMarkers() { return m_DebugMarkers.get(); }
 	std::string getModelPath() const { return m_ModelPath.getSource(); }
 
 	const simdata::Vector3 &getAxis0() const { return m_Axis0; }
@@ -111,6 +120,7 @@ protected:
 	int m_CullFace;
 	ContactList m_Contacts;
 	std::vector<simdata::Vector3> m_LandingGear;
+	simdata::Link<Animation>::vector m_Animations;
 	
 	virtual void pack(simdata::Packer& p) const;
 	virtual void unpack(simdata::UnPacker& p);
@@ -130,8 +140,8 @@ protected:
 
 private:
 	osg::ref_ptr<osg::Group> m_GearSprites;
-	osg::ref_ptr<osg::Node> m_Node;
 	osg::ref_ptr<osg::MatrixTransform> m_Transform;
+	osg::ref_ptr<osg::Node> m_Model;
 	osg::ref_ptr<osg::Switch> m_DebugMarkers;
 	osg::ref_ptr<osg::Group> m_ContactMarkers;
 };
@@ -149,10 +159,12 @@ class SceneModel: public simdata::Referenced {
 private:
 	osg::ref_ptr<osg::PositionAttitudeTransform> m_Transform;
 	osg::ref_ptr<osg::Switch> m_Switch;
+	osg::ref_ptr<osgText::Text> m_Label;
 	simdata::Ref<ObjectModel> m_Model;
 	bool m_Smoke;
 	osg::ref_ptr<fx::SmokeTrailSystem> m_SmokeTrails;
 	std::vector<simdata::Vector3> m_SmokeEmitterLocation;
+	std::vector< osg::ref_ptr<AnimationCallback> > m_AnimationCallbacks;
 protected:
 	virtual ~SceneModel();
 public:
@@ -176,12 +188,15 @@ public:
 		m_Switch->setAllChildrenOff();
 	}
 
+	AnimationChannel *bindAnimationChannel(std::string const &control, AnimationChannel *channel);
+
 	void setSmokeEmitterLocation(std::vector<simdata::Vector3> const &sel);
 	bool addSmoke();
 	bool isSmoke();
 	void disableSmoke();
 	void enableSmoke();
 	void updateSmoke(double dt, simdata::Vector3 const & global_position, simdata::Quaternion const &attitude);
+	void setLabel(std::string const &);
 };
 
 

@@ -31,6 +31,7 @@
 #include "BaseController.h"
 #include "SmokeEffects.h"
 #include "TerrainObject.h"
+#include "DataRecorder.h"
 
 
 namespace osgParticle {
@@ -141,13 +142,20 @@ public:
 	void disableSmoke();
 	void enableSmoke();
 
+	void setDataRecorder(DataRecorder *recorder);
+
 protected:
+
+	virtual void initDataRecorder();
+	simdata::Ref<DataRecorder> m_DataRecorder;
 
 	virtual void pack(simdata::Packer& p) const;
 	virtual void unpack(simdata::UnPacker& p);
 
 	virtual void doMovement(double dt);
 	virtual void postMotion(double dt);
+
+	virtual void bindAnimations() {}
 
 	BaseController * m_Controller;
 

@@ -83,6 +83,7 @@ void DynamicObject::createSceneModel() {
 	if (!m_SceneModel) {
 		m_SceneModel = new SceneModel(m_Model);
 		assert(m_SceneModel.valid());
+		bindAnimations();
 	}
 }
 
@@ -263,5 +264,13 @@ void DynamicObject::enableSmoke() {
 	if (m_SceneModel.valid() && !isSmoke()) {
 		m_SceneModel->enableSmoke();
 	}
+}
+
+void DynamicObject::setDataRecorder(DataRecorder *recorder) {
+	m_DataRecorder = recorder;
+	initDataRecorder();
+}
+
+void DynamicObject::initDataRecorder() {
 }
 

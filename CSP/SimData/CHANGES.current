@@ -1,5 +1,13 @@
 Version 0.4.0 (in progress)
 ===========================
+
+2004-19-07: delta
+  * Small mingw32 macro fix in Trace.h.
+ 
+  * .vcproj update.
+  
+  * SIMDATA_EXPORT symbol to export simdata::EnumLink class.
+
 2004-07-17: onsight
   * Add "custom id" static-class field to TaggedRecord subclasses.  This
     allows applications to assign a short-hand id to each message type,

@@ -68,10 +68,10 @@ Alias(['all', 'SimNet'], [libsimnet])
 
 #env.Depends(SOURCES, libmessages)
 
-server = env.Program('test-server', ['test-server.cpp', 'ObjectUpdate.net'] + libsimnet + ['#/SimData/SimData/libSimData.a'])
-Alias('testnet', server)
-client = env.Program('test-client', ['test-client.cpp', 'ObjectUpdate.net'] + libsimnet + ['#/SimData/SimData/libSimData.a'])
-Alias('testnet', client)
+#server = env.Program('test-server', ['test-server.cpp', 'ObjectUpdate.net'] + libsimnet + ['#/SimData/SimData/libSimData.a'])
+#Alias('testnet', server)
+#client = env.Program('test-client', ['test-client.cpp', 'ObjectUpdate.net'] + libsimnet + ['#/SimData/SimData/libSimData.a'])
+#Alias('testnet', client)
 
 """
 test = env.Program('test', ['test.cpp'] + libsimnet + libmessages)

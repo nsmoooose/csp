@@ -124,6 +124,10 @@ class PeerInfo: public simdata::NonCopyable {
 	// the time elapsed since the last packet received from this peer.
 	double m_dead_time;
 
+	// the last time this connection was deactivated, used to inhibit recycling
+	// recently used connections.
+	double m_last_deactivation_time;
+
 	simdata::ScopedPointer<DatagramTransmitSocket> m_socket;
 
 	/** Update packet throttling parameters based on data received in the last batch
@@ -254,6 +258,13 @@ public:
 	 */
 	inline void resetDeadTime() {
 		m_dead_time = 0.0;
+	}
+
+	/** Gets the time (as returned by simdata::get_realtime) at which this connection
+	 *  was deactivated, or 0 if never deactivated.
+	 */
+	inline double getLastDeactivationTime() const {
+		return m_last_deactivation_time;
 	}
 
 	/** Register a reliable packet being sent to this peer and/or confirm receipt of one or more

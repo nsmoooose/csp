@@ -7,7 +7,7 @@ SOURCES = \
 	PeerInfo \
 	RecordCodec
 
-MESSAGES = \
+#MESSAGES = \
 	IndexMessages \
 	ObjectUpdate \
 	TestMessage

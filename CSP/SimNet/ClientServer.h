@@ -148,7 +148,7 @@ public:
 
 	/** Add a dispatch manager to the network interface.
 	 *
-	 *  @cache_size The maximum number of entries in the MRU dispatch cache (see DispatchManager).
+	 *  @param cache_size The maximum number of entries in the MRU dispatch cache (see DispatchManager).
 	 */
 	void addDispatchManager(int cache_size);
 
@@ -168,6 +168,19 @@ public:
 	/** Get the network node of this client or server.
 	 */
 	NetworkNode const &getLocalNode() const { return m_LocalNode; }
+
+	/** Returns true if one or more peers have disconnected, but have
+	 *  not yet been processed by nextDeadPeer.
+	 */
+	inline bool hasDisconnectedPeers() const { return m_NetworkInterface->hasDisconnectedPeers(); };
+
+	/** Get the id of the next peer that has disconnected, or zero if
+	 *  no disconnection notifications are pending.  This routine can
+	 *  be used to cleanup after peers disconnect, but it should be
+	 *  called frequently so that reassigned ids aren't mistaken as
+	 *  recently disconnected.
+	 */
+	PeerId nextDisconnectedPeerId() { return m_NetworkInterface->nextDisconnectedPeerId(); }
 };
 
 
@@ -245,6 +258,12 @@ public:
 	/** Sends a message to the server (if connected).
 	 */
 	void sendToServer(NetworkMessage::Ref const &msg);
+
+	/** Drop a peer connection.  Further packets from this peer will be disregarded.
+	 *  The peer id will NOT be added to the list of disconnected peers accessible
+	 *  by hasDisconnectedPeers() and nextDisconnectedPeer().
+	 */
+	void disconnectPeer(PeerId id);
 };
 
 

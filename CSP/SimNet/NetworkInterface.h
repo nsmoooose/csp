@@ -32,6 +32,7 @@
 #include <SimNet/HandlerSet.h>
 
 #include <map>
+#include <deque>
 
 
 namespace simnet {
@@ -48,6 +49,8 @@ class PeerInfo;
 class ActivePeerList;
 
 
+/** Low level interface for sending and receiving packets over UDP.
+ */
 class NetworkInterface: public simdata::Referenced {
 	friend class ActivePeerList;
 
@@ -82,6 +85,9 @@ class NetworkInterface: public simdata::Referenced {
 
 	// The peer id of this host/client/server.
 	PeerId m_LocalId;
+
+	// The last peer id assigned when establishing a connection.
+	PeerId m_LastAssignedPeerId;
 
 	// A simple lookup table from peer id to PeerInfo.
 	simdata::ScopedArray<PeerInfo> m_PeerIndex;
@@ -190,6 +196,9 @@ class NetworkInterface: public simdata::Referenced {
 	 */
 	bool handleDeadPeer(PeerInfo *peer);
 
+	// Queue of dead peers.  See nextDisconnectedPeerId().
+	std::deque<PeerId> m_DeadPeerQueue;
+
 	/** Called by ActivePeerList to resend a reliable packet that has not been
 	 *  confirmed by the destination host.
 	 */
@@ -258,13 +267,13 @@ public:
 	 */
 	void addPeer(PeerId id, NetworkNode const &remote_node, double incoming_bw, double outgoing_bw);
 
-	/** Called by a server to disconnect from a client.  This is a local
-	 *  change only.  The caller is responsible for notifying the client
-	 *  if appropriate.
+	/** Called by a server to disconnect from a client, or by a client to
+	 *  disconnect from a peer.  This is a local change only.  The caller
+	 *  is responsible for notifying the peer if appropriate.
 	 *
-	 *  @param id The id of the client to disconnect.
+	 *  @param id The id of the peer to disconnect.
 	 */
-	void disconnectClient(PeerId id);
+	void disconnectPeer(PeerId id);
 
 	/** Used by servers to indicate that connections from unknown peers will be
 	 *  accepted.
@@ -319,6 +328,19 @@ public:
 	/** Get the peer info for a given peer id.
 	 */
 	PeerInfo const *getPeer(PeerId id) const;
+
+	/** Returns true if one or more peers have disconnected, but have
+	 *  not yet been processed by nextDeadPeer.
+	 */
+	inline bool hasDisconnectedPeers() const { return !m_DeadPeerQueue.empty(); }
+
+	/** Get the id of the next peer that has disconnected, or zero if
+	 *  no disconnection notifications are pending.  This routine can
+	 *  be used to cleanup after peers disconnect, but it should be
+	 *  called frequently so that reassigned ids aren't mistaken as
+	 *  recently disconnected.
+	 */
+	PeerId nextDisconnectedPeerId();
 };
 
 } // namespace simnet

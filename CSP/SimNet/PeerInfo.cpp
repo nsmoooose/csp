@@ -24,6 +24,7 @@
 #include <SimNet/PeerInfo.h>
 #include <SimNet/NetLog.h>
 #include <SimNet/NetworkInterface.h>
+#include <SimData/Timing.h>
 #include <SimData/Verify.h>
 
 #include <vector>
@@ -70,6 +71,7 @@ PeerInfo::PeerInfo():
 	m_total_peer_outgoing_bandwidth(0.0),
 	m_quiet_time(0.0),
 	m_dead_time(0.0),
+	m_last_deactivation_time(0.0),
 	m_socket(0) {
 }
 
@@ -115,7 +117,7 @@ void PeerInfo::update(double dt, double scale_desired_rate_to_self) {
 	const double throttle_fraction = std::min(0.99, std::max(0.0, 1.0 - (allocated_bandwidth / desired_bandwidth)));
 	m_throttle_threshold = static_cast<simdata::uint32>(0xfffffffful * throttle_fraction);
 
-	if (((DEBUG_connection_display_loop % 10) == 0)) {
+	if (((DEBUG_connection_display_loop % 100) == 0)) {
 		if (m_packets_self_to_peer > 0) {
 			std::cout << "outgoing to " << m_id << ":\n";
 			std::cout << "  avg packet size    : " << m_average_outgoing_packet_size << "\n";
@@ -246,6 +248,9 @@ void PeerInfo::setReceipt(PacketReceiptHeader *receipt, bool reliable, simdata::
 
 
 void PeerInfo::disable() {
+	if (m_active) {
+		m_last_deactivation_time = simdata::get_realtime();
+	}
 	m_active = false;
 	if (m_socket.valid()) m_socket->disconnect();
 }
@@ -289,11 +294,8 @@ void ActivePeerList::update(double dt, NetworkInterface *ni) {
 	for (unsigned i=0; i < remove_peers.size(); ++i) {
 		// note that there's a slight race condition here, in that we may expire
 		// a provisional connection just as the other side receives the connection
-		// response. if this turns out to be a problem, we can (a) send a "cease
-		// & desist" packet back to the errant peer, (b) change the peer id
-		// assignment strategy such that it is less likely another connection will
-		// reuse the same id right away (e.g. cycle the starting point of the search
-		// for inactive PeerInfos).
+		// response. if this turns out to be a problem, we can send a "cease
+		// & desist" packet back to the errant peer.
 		ni->removePeer(remove_peers[i]->getId());
 	}
 	m_DesiredRateToSelf = desired_rate_to_self;

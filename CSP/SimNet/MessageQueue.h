@@ -65,7 +65,7 @@ class MessageQueue: public PacketSource {
 	 *  broadcast messages.
 	 */
 	char m_PayloadCache[4096];
-	bool m_PayloadCacheLength;
+	simdata::uint32 m_PayloadCacheLength;
 
 public:
 
@@ -125,6 +125,7 @@ public:
 			if (m_PayloadCacheLength <= payload_length) {
 				memcpy(payload, m_PayloadCache, m_PayloadCacheLength);
 				payload_length = m_PayloadCacheLength;
+				SIMNET_LOG(MESSAGE, ALERT, "SENDING CACHED PAYLOAD, length = " << payload_length);
 			} else {
 				SIMNET_LOG(MESSAGE, WARNING, "buffer overflow sending " << message->getName());
 			}

@@ -134,7 +134,7 @@ void Server::onAcknowledge(simdata::Ref<Acknowledge> const &msg, simdata::Ref<Me
 
 void Server::onDisconnect(simdata::Ref<Disconnect> const &msg, simdata::Ref<MessageQueue> const &queue) {
 	SIMNET_LOG(HANDSHAKE, DEBUG, "received disconnect notice " << *msg);
-	m_NetworkInterface->disconnectClient(msg->getSource());
+	m_NetworkInterface->disconnectPeer(msg->getSource());
 }
 
 Client::Client(NetworkNode const &bind, int inbound_bw, int outbound_bw):
@@ -201,6 +201,8 @@ void Client::disconnectFromServer(bool immediate) {
 		}
 		m_MessageQueue->queueMessage(disconnect);
 		m_Connected = false;
+		// TODO need to call disconnectPeer, but only after the outbound messages
+		// have been flushed!
 	}
 }
 
@@ -211,5 +213,8 @@ void Client::sendToServer(NetworkMessage::Ref const &msg) {
 	queueMessage(msg);
 }
 
+void Client::disconnectPeer(PeerId id) {
+	m_NetworkInterface->disconnectPeer(id);
+}
 
 } // namespace simnet

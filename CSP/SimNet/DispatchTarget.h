@@ -35,7 +35,7 @@
  *  macro.
  *
  *  @param CLASS the current class.
- *  @param PARANT the base class that is a subclass of DispatchTarget.
+ *  @param PARENT the base class that is a subclass of DispatchTarget.
  */
 #define SIMNET_DECLARE_DISPATCH(CLASS, PARENT) \
 	virtual bool dispatch(simnet::DispatchManager *helper) { \

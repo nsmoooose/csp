@@ -145,7 +145,16 @@ void NetworkInterface::sendPackets(double timeout) {
 		assert(ptr);
 		PacketHeader *header = reinterpret_cast<PacketHeader*>(ptr);
 		PeerInfo *peer = getPeer(header->destination);
-		assert(peer && peer->isActive());
+
+		// drop packets destined for inactive peers (it can take some time to flush
+		// queued packets when a peer disconnects).
+		if (!peer || !peer->isActive()) {
+			// check that this peer id was previously active (not a very stringent test).
+			assert(peer->getLastDeactivationTime() > 0);
+			queue->releaseReadBuffer();
+			continue;
+		}
+
 		peer->setConnStat(header);
 		DatagramTransmitSocket *socket = peer->getSocket();
 		assert(socket);
@@ -239,11 +248,22 @@ bool NetworkInterface::pingPeer(PeerInfo *peer) {
 }
 
 bool NetworkInterface::handleDeadPeer(PeerInfo *peer) {
-	// TODO provide a callback
+	m_DeadPeerQueue.push_back(peer->getId());
+	// if noone is cleaning the queue, do it for them.
+	if (m_DeadPeerQueue.size() > 100) {
+		m_DeadPeerQueue.pop_front();
+	}
 	return true;
 }
 
-void NetworkInterface::disconnectClient(PeerId id) {
+PeerId NetworkInterface::nextDisconnectedPeerId() {
+	if (m_DeadPeerQueue.empty()) return 0;
+	PeerId next = m_DeadPeerQueue.front();
+	m_DeadPeerQueue.pop_front();
+	return next;
+}
+
+void NetworkInterface::disconnectPeer(PeerId id) {
 	removePeer(id);
 }
 
@@ -410,7 +430,7 @@ int NetworkInterface::receivePackets(double timeout) {
 		// for initial connection to the index server, source id will be zero.
 		// we need to create a new id on the fly and translate the source id until
 		// the sender is informed of the correct id to use.
-		// TODO whenever source id is zero, routing_data will be set to the receive
+		// note: whenever source id is zero, routing_data will be set to the receive
 		// port number, and routing type will be zero
 		if (source == 0 && m_AllowUnknownPeers && header.routing_type == 0) {
 			ost::InetHostAddress addr = m_Socket->getSender(0);
@@ -617,6 +637,7 @@ void NetworkInterface::processIncoming(double timeout) {
 
 NetworkInterface::NetworkInterface():
 	m_LocalId(0),
+	m_LastAssignedPeerId(99),  // must be > 1, see getSourceId
 	m_PeerIndex(new PeerInfo[PeerIndexSize]),
 	m_ActivePeers(new ActivePeerList),
 	m_AllowUnknownPeers(false),
@@ -753,17 +774,27 @@ void NetworkInterface::setAllowUnknownPeers(bool allow) {
 
 PeerId NetworkInterface::getSourceId(ConnectionPoint const &point) {
 	IpPeerMap::iterator iter = m_IpPeerMap.find(point);
+	// if the ip is unknown ip, allocate a new peer id
 	if (iter == m_IpPeerMap.end()) {
-		// unknown ip; allocate a new peer id
-		for (PeerId id = 2; id < PeerIndexSize; ++id) {
+		// a connection must be disconnected for 60 seconds before the id can be reused.
+		double cutoff = simdata::get_realtime() - 60;
+		// use LastAssignedPeerId to rotate through assignments, rather than always
+		// reassigning low ids.  greatly increases the average time to recycle an id.
+		assert(m_LastAssignedPeerId > 1);
+		for (PeerId id = m_LastAssignedPeerId + 1; true; ++id) {
+			if (id == PeerIndexSize) id = 2;
 			if (!m_PeerIndex[id].isActive()) {
-				// TODO add a callback mechanism for validating ips?
-				NetworkNode node(point);
-				// restrict to a low initial bandwidth; will be reconfigured once the
-				// connection is cemplete.
-				addPeer(id, node, true /*provisional*/, 1024 /*inbw*/, 1024 /*outbw*/);
-				return id;
+				if (m_PeerIndex[id].getLastDeactivationTime() < cutoff) {
+					// TODO add a callback mechanism for validating ips?
+					NetworkNode node(point);
+					// restrict to a low initial bandwidth; will be reconfigured once the
+					// connection is complete.
+					addPeer(id, node, true /*provisional*/, 1024 /*inbw*/, 1024 /*outbw*/);
+					m_LastAssignedPeerId = id;
+					return id;
+				}
 			}
+			if (id == m_LastAssignedPeerId) break;
 		}
 		SIMNET_LOG(HANDSHAKE, WARNING, "all peer ids in use; rejecting connection");
 		return 0;

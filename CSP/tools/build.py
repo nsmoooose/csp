@@ -491,9 +491,11 @@ def AddLinkFile(env):
 def EmitNet(target, source, env):
 	assert(len(source)==1)
 	source = source[0]
+	name = os.path.splitext(source.name)[0]
+	dir = source.srcnode().dir
 	target = [
-		source.target_from_source('', env['CXXFILESUFFIX']),
-		source.target_from_source('', '.h')
+		dir.File(name + env['CXXFILESUFFIX']),
+		dir.File(name + '.h'),
 	]
 	return (target, source)
 

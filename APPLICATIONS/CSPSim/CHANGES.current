@@ -21,12 +21,15 @@
 
 	    Added missing license statement to Colorspace.cpp.
 
+	    Added missing license statement to cCSP.i.
+
 	    Added missing license statements to Bin/CSPSim.py,
 	    Bin/CompileData.py, Bin/RebuildData.py, Bin/Shell.py,
 	    Bin/ShellEnvironment.py, and Bin/TestObjects.py
 
             Removed Include/OGLText.h, which seemed to have been
 	    misplaced (part of TerrainTools?).
+
 	    
 2003-07-21: onsight
             Added Tools/Terrain directory for terrain tools used in

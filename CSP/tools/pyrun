@@ -40,16 +40,21 @@ from modulefinder import ModuleFinder
 import bootstrap
 from CSP.base import app
 
+
+ENTRY_MODULE = '__pyrun__'
+
+
 DEFAULT_STUB = ("python2.3 -c \""
                 "import sys;"
                 "sys.path.insert(0, '$0');"
                 "sys.argv[0]='$0';"
                 "import %s"
                 "\" ${1+\"$@\"};"
-                "exit $?")
+                "exit $?;" % ENTRY_MODULE)
 
-PROGRAM_MODULE = '__main__'
-
+# attempt at using a universal stub; doesn't seem promising (requires that
+# the stub script be installed in a fixed location).
+#DEFAULT_STUB = '#!/usr/bin/python /usr/lib/python2.3/site-packages/pystub.py'
 
 def main(args):
   if len(args) != 1:
@@ -59,7 +64,7 @@ def main(args):
   program = os.path.abspath(args[0])
   target = app.options.output
   if not target:
-    target =os.path.basename(program) + '.run'
+    target = os.path.basename(program) + '.run'
 
   assemble(program, target)
 
@@ -69,7 +74,7 @@ def findCustomModules(modules):
   Filter a list of modules, returning only those that are not part of the
   standard python libraries.
   """
-  re_stdlib = re.compile(r'[/\\][pP]ython[\.0-9]*[/\\]')
+  re_stdlib = re.compile(r'[/\\][pP](ython|YTHON)[\.0-9]*[/\\]')
   custom = []
   for mod in modules:
     file = mod.__file__
@@ -121,7 +126,6 @@ def makeZip(zipname, program, modules, path):
   """
   # PyZipFile automatically precompiles python sources.
   out = zipfile.PyZipFile(zipname, 'w', compression=zipfile.ZIP_DEFLATED)
-  main_module = ''
   uniq_modules = {}
   # modules may appear multiple times, depending on the use of relative
   # import statements, but the absolute filenames are unique.
@@ -166,23 +170,30 @@ def makeZip(zipname, program, modules, path):
     name, basename = uniq_modules[file]
     # special case for the main program module
     if file == program:
-      program_filename = PROGRAM_MODULE + '.py'
-      f = open(program_filename, 'w')
+      f = open('__main__.py', 'wt')
       # big ol' hack.  insert some magic to make the main script look like it
       # was run directly instead of imported.  better solutions welcome.  note
       # than setting __name__ to '__main__' is not always sufficient (e.g.
       # pickle can complain about missing classes when loading).
       inject = 1
-      for line in open(program):
+      for line in open(program, 'rt'):
         if (inject and (line.startswith('app.start(') or line.startswith('if __name__ =='))):
           inject = 0
           print >>f, "import sys; sys.modules['__main__'] = sys.modules[__name__]; __name__ = '__main__';"
         print >>f, line,
       f.close()
-      out.writepy(program_filename, basename)
-      main_module = '.'.join(basename.split(os.sep) + [PROGRAM_MODULE])
+      out.writepy('__main__.py', basename)
       for ext in ('.py', '.pyc', '.pyo'):
-        prog_name = PROGRAM_MODULE + ext
+        prog_name = '__main__' + ext
+        if os.path.exists(prog_name): os.unlink(prog_name)
+      main_module = '.'.join(basename.split(os.sep) + ['__main__'])
+      # add a stub so that the entry point is always import <ENTRY_MODULE>
+      f = open(ENTRY_MODULE+'.py', 'wt')
+      f.write('import %s\n' % main_module)
+      f.close()
+      out.writepy(ENTRY_MODULE+'.py', '')
+      for ext in ('.py', '.pyc', '.pyo'):
+        prog_name = ENTRY_MODULE + ext
         if os.path.exists(prog_name): os.unlink(prog_name)
     elif file.endswith('.py'):
       out.writepy(file, basename)
@@ -194,19 +205,18 @@ def makeZip(zipname, program, modules, path):
     if not app.options.quiet:
       print '.. Added %s (%s)' % (name, file)
   out.close()
-  assert main_module
-  return main_module
 
 
-def addStub(stub, main_module, tmpname, target):
+def addStub(stub, tmpname, target):
   """
   Add a stub to the start of the zipfile to bootstrap the main program.
   The stub puts the zipfile at the start of sys.path, and tweaks sys.argv
   before importing the main module.
   """
-  zip = open(tmpname, 'r')
-  out = open(target, 'w')
-  out.write((stub % main_module) + '\n')
+  zip = open(tmpname, 'rb')
+  out = open(target, 'wt')
+  out.write(stub + '\n')
+  out = open(target, 'ab')
   out.write(zip.read())
   zip.close()
   out.close()
@@ -238,7 +248,7 @@ def assemble(program, target):
     if not os.path.exists(stub):
       print 'Stub file %s not found, aborting' % stub
       sys.exit(1)
-    stub = open(stub).read()
+    stub = open(stub, 'rt').read()
   else:
     stub = DEFAULT_STUB
 
@@ -255,8 +265,8 @@ def assemble(program, target):
     print 'Creating executable %s' % target
 
   tmpname = target + "~"
-  main_module = makeZip(tmpname, program, modules, path)
-  addStub(stub, main_module, tmpname, target)
+  makeZip(tmpname, program, modules, path)
+  addStub(stub, tmpname, target)
 
   os.unlink(tmpname)
   os.chmod(target, 0755)

@@ -199,7 +199,7 @@ public:
             returns the previous length of the vector*/
         inline double normalize() {
 		double norm = length();
-		if (norm>0.0f) {
+		if (norm > 0.0) {
 			_x /= norm;
 			_y /= norm;
 			_z /= norm;
@@ -209,7 +209,7 @@ public:
 
 	inline const Vector3 normalized() const {
 		double norm = length();
-		if (norm>0.0f) {
+		if (norm > 0.0) {
 			return (*this / norm);
 		}                
 		return *this;

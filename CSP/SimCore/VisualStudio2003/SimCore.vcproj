@@ -22,7 +22,8 @@
 				PreprocessorDefinitions="WIN32"
 				RuntimeLibrary="3"
 				RuntimeTypeInfo="TRUE"
-				WarningLevel="4"/>
+				WarningLevel="4"
+				DisableSpecificWarnings="4511;4512"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
 			<Tool
@@ -102,10 +103,10 @@
 					RelativePath="..\Battlefield\OldBattlefield.cpp">
 				</File>
 				<File
-					RelativePath="..\Battlefield\SceneManager.cpp">
+					RelativePath="..\Battlefield\OldSimObject.cpp">
 				</File>
 				<File
-					RelativePath="..\Battlefield\OldSimObject.cpp">
+					RelativePath="..\Battlefield\SceneManager.cpp">
 				</File>
 			</Filter>
 			<Filter
@@ -133,10 +134,10 @@
 					RelativePath="..\Battlefield\OldBattlefield.h">
 				</File>
 				<File
-					RelativePath="..\Battlefield\SceneManager.h">
+					RelativePath="..\Battlefield\OldSimObject.h">
 				</File>
 				<File
-					RelativePath="..\Battlefield\OldSimObject.h">
+					RelativePath="..\Battlefield\SceneManager.h">
 				</File>
 			</Filter>
 			<Filter

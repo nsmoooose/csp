@@ -37,18 +37,18 @@ class CameraKinematics {
 	const float m_BaseRate, m_DisplacementCoefficient;
 	const float m_MinimumDistanceOffset, m_AbsoluteMaximumDistance;
 
-	double m_AngleRotX, m_AngleRotZ;
-	float m_PanRateX, m_PanRateZ, m_ZoomRate;
+	double m_Phi, m_Theta;
+	float m_PanRatePhi, m_PanRateTheta, m_ZoomRate;
 	double m_DistanceToObject, m_MinimumDistance;
-	void rotateAboutZ(double dt) {m_AngleRotZ += m_PanRateZ	* dt;}
-	void rotateAboutX(double dt) {m_AngleRotX += m_PanRateX	* dt;}
+	void rotateTheta(double dt) {m_Theta += m_PanRateTheta	* dt;}
+	void rotatePhi(double dt) {m_Phi += m_PanRatePhi	* dt;}
 	void scale(double dt);
 	float smooth(double value, float min_value,float max_value) const;
 public:
 	CameraKinematics();
 	virtual ~CameraKinematics(){}
-	void clampX(double& value,float min_value,float max_value, bool smooth_on = true);
-	void clampZ(double& value,float min_value,float max_value, bool smooth_on = true);
+	void clampPhi(double& phi,float min_phi,float max_phi, bool smooth_on = true);
+	void clampTheta(double& theta,float min_theta,float max_theta, bool smooth_on = true);
 	void reset();
 	void resetDistance();
 	void update(double dt);
@@ -64,13 +64,13 @@ public:
 	void zoomStepIn();
 	void zoomStepOut();
 	void displacement(int x, int y, int dx, int dy);
-	void setAngleX(double angle_x) {m_AngleRotX = angle_x;}
-	double& getAngleX() {return	m_AngleRotX;}
-	void setAngleZ(double angle_z) {m_AngleRotZ = angle_z;}
-	double& getAngleZ() {return	m_AngleRotZ;}
+	void setPhi(double phi) {m_Phi = phi;}
+	double& getPhi() {return	m_Phi;}
+	void setTheta(double theta) {m_Theta = theta;}
+	double& getTheta() {return	m_Theta;}
 	void setDistance(float d) {m_DistanceToObject = d;}
 	double getDistance() const {return m_DistanceToObject;}
-	void accept(CameraCommand* cm);
+	void accept(CameraCommand* cc);
 };
 
 #endif //__CAMERAKINEMATICS_H__

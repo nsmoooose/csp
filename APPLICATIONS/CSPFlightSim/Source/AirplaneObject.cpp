@@ -111,7 +111,7 @@ void AirplaneObject::initialize()
 void AirplaneObject::initializeHud()
 {
   m_phud = osgNew Hud(m_InitialDirection);
-  m_phud->BuildHud("HudM2k.csp");
+  m_phud->BuildHud("../Data/Scripts/HudM2k.csp");
   m_rpSwitch->addChild(m_phud);
 }
 

@@ -1,10 +1,10 @@
 all: dem2dat
 
 dem2dat: dem2dat.cpp dem2dat.h
-	g++ -O2 -g dem2dat.cpp -o dem2dat -I/usr/include/python2.2 -lSimData
+	g++ -O2 -g dem2dat.cpp -o dem2dat -I/usr/include/python2.2 -lSimData -lz
 
 python: dem2dat_wrap.o
-	g++ -shared -lswigpy -ldl -o _dem2dat.so dem2dat_wrap.o  -lSimData
+	g++ -shared -lswigpy -ldl -o _dem2dat.so dem2dat_wrap.o  -lSimData -lz
 
 dem2dat_wrap.o: dem2dat_wrap.cxx
 	g++ -c -fPIC -O2 -g dem2dat_wrap.cxx -I/usr/include/python2.2

@@ -28,6 +28,7 @@
 #include <SimData/Matrix3.h>
 #include <SimData/Random.h>
 #include <SimData/Math.h>
+#include <SimData/FileUtility.h>
 #include <cstdio>
 #include <string>
 #include <iostream>
@@ -283,7 +284,7 @@ public:
 	 * @la latitude contained in the quad (in degrees)
 	 * @lo longitude contained in the quad (in degrees)
 	 */
-	DEM(double la, double lo): zero(true) {
+	DEM(double la, double lo, std::string const &datpath): zero(true) {
 		DEM_count++;
 		//std::cout << DEM_count << "\n";
 		char fn[80];
@@ -296,10 +297,10 @@ public:
 		sprintf(fn, "%04d_%04d.dat.gz", lat_idx, lon_idx);
 		bool show = false;
 		//std::cout << fn << "\n";
-		filename = fn;
-		gzFile fp = gzopen(fn, "rb");
+		filename = simdata::ospath::join(datpath, fn);
+		gzFile fp = gzopen(filename.c_str(), "rb");
 		if (fp==0) {
-			fprintf(LOG, "missing quad %s (%f %f)\n", fn, la, lo);
+			fprintf(LOG, "missing quad %s (%f %f)\n", filename.c_str(), la, lo);
 			return;
 		}
 		int source_index;
@@ -348,10 +349,11 @@ public:
 			READD(d.N);
 			READI(n);
 			if (n > 10000) {
-				std::cout << d.E << " " << d.N << " " << n << "\n";
-				std::cout << i << " of " << n_col << "\n";
-				std::cout << fn << "\n";
-				std::cout << res.x << " " << res.y << " " << res.z << "\n";
+				std::cout << "Column count exceeds 10000\n";
+				std::cout << "  > " << d.E << " " << d.N << " " << n << "\n";
+				std::cout << "  > " << i << " of " << n_col << "\n";
+				std::cout << "  > " << filename << "\n";
+				std::cout << "  > " << res.x << " " << res.y << " " << res.z << "\n";
 			}
 			if (n > 0) {
 				//std::cout << "ROWS = " << n << " " << d.E << " " << res.x << "\n";
@@ -375,7 +377,13 @@ public:
 		if (show) std::cout << "loaded ok\n";
 		gscale = 1.0;
 		if (gnd_units == 1) gscale *= 12 * 0.0254;
-		assert(fabs(cols.begin()->E - cor0.x) < 500.0);
+		if (fabs(cols.begin()->E - cor0.x) >= 500.0) {
+			std::cout << "Problem with DAT input for quad " << filename << "\n";
+			std::cout << "Corner0.x = " << cor0.x << "\n";
+			std::cout << "Cols[0].E = " << cols.begin()->E << "\n";
+			std::cout << "Differ by more than 500 m, possible zone mismatch?\n";
+			::exit(1);
+		}
 	}
 	~DEM() {
 		DEM_count--;
@@ -674,7 +682,25 @@ public:
 		FILE *fp = (FILE*) fopen(getFileName(".ppm").c_str(), "wb");
 		if (fp) {
 			fprintf(fp, "P6 %d %d %d\n", _num_rows, _num_cols, 255);
-			fwrite(_image, _size, 3, fp);
+			//fwrite(_image, _size, 3, fp);
+			_idx = _image;
+			unsigned char *buffer = new unsigned char[_size*3];
+			assert(buffer != 0);
+			unsigned char *out = buffer;
+			bool warned = false;
+			for (int n = _size; --n >=0; ) {
+				int v = *_idx++;
+				if (v<0 && !warned) {
+					std::cerr << "WARNING: negative elevations not supported by Demeter.\n";
+					warned = true;
+				}
+				if (v<0) v = 0; // XXX
+				*out++ = (v>>16) & 0xff;
+				*out++ = (v>>8) & 0xff;
+				*out++ = v & 0xff;
+			}
+			fwrite(buffer, _size*3, 1, fp);
+			delete[] buffer;
 			fclose(fp);
 		}
 	}
@@ -725,8 +751,16 @@ public:
 
 	OutputBT() { 
 		_size = 0; 
+		_buffer_size = 32768;
+		_buffer = new short[_buffer_size];
+		assert(_buffer);
+		_bindex = 0;
 	}
 	~OutputBT() { 
+		if (_buffer != 0) {
+			delete[] _buffer;
+			_buffer = 0;
+		}
 		finish();
 	}
 	void getLineStride(double &dx, double &dy) {
@@ -759,17 +793,28 @@ public:
 	}
 	void finish() {
 		if (_fp == 0) return;
+		if (_bindex > 0) {
+			fwrite(_buffer, sizeof(short), _bindex, _fp);
+			_bindex = 0;
+		}
 		fclose(_fp);
 		_fp = 0;
 	}
 	void setSample(double z) {
 		assert(++_count <= _size);
-		short v = static_cast<short>(z*_z_scale + _z_offset);
-		fwrite(&v, sizeof(short), 1, _fp);
+		//short v = static_cast<short>(z*_z_scale + _z_offset);
+		//fwrite(&v, sizeof(short), 1, _fp);
+		_buffer[_bindex] = static_cast<short>(z*_z_scale + _z_offset);
+		if (++_bindex >= _buffer_size) {
+			fwrite(_buffer, sizeof(short), _bindex, _fp);
+			_bindex = 0;
+		}
 	}
 protected:
 	int _size, _count;
 	FILE *_fp;
+	short *_buffer;
+	int _bindex, _buffer_size;
 };
 
 /**
@@ -810,7 +855,9 @@ public:
 	/**
 	 * Read configuration setting from an ini file.
 	 */
-	bool initialize(char const *fn) {
+	bool initialize(char const *fn, char const *datpath, bool quiet=true) {
+		_datpath = datpath;
+		_quiet = quiet;
 		if (fn == 0) return false;
 		FILE *f = (FILE*) fopen(fn, "rt");
 		if (f == 0) return false;
@@ -1001,11 +1048,15 @@ public:
 		project(+width*0.5, +height*0.5, right, top);
 		//output->setExtentDegrees(left, right, bottom, top);
 		output->setExtentMeters(-width*0.5, +width*0.5, -height*0.5, height*0.5);
+		bool verbose = (n < 9) && !_quiet;
 		for (i = 0; i < x_tiles; i++) {
 			for (j = 0; j < y_tiles; j++) {
+				if (!_quiet) {
+					std::cout << "generating tile " << (idx+1) << " of " << n << std::endl;
+				}
 				output->start(prefix, i, j);
 				//output->setExtent();
-				generateTile(i, j, output);
+				generateTile(i, j, output, verbose);
 				output->finish();
 				/*
 				switch (output_format) {
@@ -1024,7 +1075,6 @@ public:
 				}
 				*/
 				idx++;
-				std::cout << "tile " << idx << " of " << n << std::endl;
 			}
 		}
 		if (output != 0) delete output;
@@ -1082,7 +1132,7 @@ private:
 			*out++ = (v>>8) & 0xff;
 			*out++ = v & 0xff;
 		}
-		fwrite(buffer, n, 3, fp);
+		fwrite(buffer, n*3, 1, fp);
 		fclose(fp);
 		delete[] buffer;
 	}
@@ -1146,7 +1196,7 @@ private:
 			dem.erase(i);
 			used.pop_back();
 		}
-		DEM *d = new DEM(lat, lon);
+		DEM *d = new DEM(lat, lon, _datpath);
 		dem[index] = d;
 		return d;
 	}
@@ -1176,6 +1226,7 @@ private:
 			quads++;
 		}
 		if (finder.getElevation() == 10000.0) {
+			std::cout << "Got elevation = 10000.0\n";
 			std::cout << quads << "\n";
 			std::cout << utm.asString() << "\n";
 			std::cout << lla.asString() << "\n";
@@ -1187,7 +1238,7 @@ private:
 	/**
 	 * Generate the projected elevation data for one tile.
 	 */
-	void generateTile(int tx, int ty, OutputHeightMap *output) {
+	void generateTile(int tx, int ty, OutputHeightMap *output, bool verbose) {
 		int i, j;
 		double x, y, z;
 		double x0, y0;
@@ -1198,7 +1249,7 @@ private:
 		output->getSampleStride(dx, dy);
 		output->getLineStride(dx0, dy0);
 		output->getCounts(lines, samples_per_line);
-		while (--lines >= 0) {
+		for (int line=0; line < lines; line++) {
 			x = x0;
 			y = y0;
 			for (int s=samples_per_line; --s >= 0; ) {
@@ -1218,6 +1269,9 @@ private:
 			}
 			x0 += dx0;
 			y0 += dy0;
+			if (verbose && ((line+1) % 10 == 0)) {
+				std::cout << "  line " << (line+1) << " of " << lines << std::endl;
+			}
 		}
 	}
 
@@ -1264,6 +1318,8 @@ private:
 	}
 		
 	Matrix3 R_center;
+	std::string _datpath;
+	bool _quiet;
 	short *tile;
 	int x_tiles, y_tiles;
 	int tile_x_size, tile_y_size;
@@ -1289,6 +1345,10 @@ private:
 	int flip_x, flip_y;
 };
 
+void usage() {
+	std::cerr << "Usage: tile [--help] [--datpath=path] [--quiet] [ini]\n";
+}
+
 void help() {
 	std::cerr << "\n";
 	std::cerr << "TerrainTiler (pre-version)\n";
@@ -1299,6 +1359,12 @@ void help() {
 	std::cerr << "directory.  The output tiles are saved as either 16-bit PGM format, PPM, or\n";
 	std::cerr << "BT format.  Only one type of projection is currently supported, namely a\n";
 	std::cerr << "secant gnomonic projection.\n";
+	std::cerr << "\n";
+	usage();
+	std::cerr << "\n";
+	std::cerr << "Options:\n";
+	std::cerr << "             --help                 Display this message\n";
+	std::cerr << "             --datpath=path         Path to the input quads\n";
 	std::cerr << "\n";
 	std::cerr << "The ini file contains lines of the form 'option = value'.  Options include:\n";
 	std::cerr << "   center_latitude (in degrees)\n";
@@ -1315,18 +1381,16 @@ void help() {
 	std::cerr << "   flip_y (0 or 1)\n";
 	std::cerr << "   overlap (0 or 1)\n";
 	std::cerr << "   subsamples (integer)\n";
+	std::cerr << "   dat_path (path to input dat files)\n";
 	std::cerr << "   prefix (the base name for output files)\n";
 	std::cerr << "   restrict (latitude and longitude restrictions, in degrees)\n";
 	std::cerr << "       e.g. '36.0,-120.0,42.0,-114.0'\n";
 	std::cerr << "\n";
 }
 
-void usage() {
-	std::cerr << "Usage: tile [--help] [ini]\n";
-	::exit(1);
-}
-
 int main(int argc, char **argv) {
+	const char *datpath = ".";
+	bool quiet = false;
 	LOG = (FILE*) fopen("tile.log", "wt");
 	char *ini = 0;
 	while (--argc >= 1) {
@@ -1335,18 +1399,27 @@ int main(int argc, char **argv) {
 			if (!strcmp(arg, "--help")) {
 				help(); 
 				::exit(0);
+			} else
+			if (!strncmp(arg, "--datpath=", 10)) {
+				datpath = arg+10;
+				continue;
+			} else
+			if (!strcmp(arg, "--quiet")) {
+				quiet = true;
+				continue;
 			}
 			usage();
+			::exit(1);
 		} else {
 			ini = arg;
 		}
 	}
 	if (ini == 0) {
-		help();
+		usage();
 		::exit(0);
 	}
 	Tiler tiler;
-	if (tiler.initialize(ini)) {
+	if (tiler.initialize(ini, datpath, quiet)) {
 		tiler.run();
 	}
 	if (LOG != 0) fclose(LOG);

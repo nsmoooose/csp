@@ -36,6 +36,7 @@
 #include <string>
 #include <iostream>
 #include <vector>
+#include <zlib.h>
 
 using namespace simdata;
 
@@ -453,8 +454,11 @@ public:
 		sscanf(_title.c_str()+x, "LONG:: %lf %lf %lf", &lo0, &lo1, &_lon);
 		x = _title.find("SCALE::");
 		sscanf(_title.c_str()+x, "SCALE:: %d", &_scale);
-		_lat = la0 + la1/60.0 + _lat / 3600.0;
-		_lon = lo0 + lo1/60.0 + _lon / 3600.0;
+		int sign;
+		sign = la0 >= 0 ? 1 : -1; // XXX what about lat = -0.X?
+		_lat = sign*(fabs(la0) + la1/60.0 + _lat / 3600.0);
+		sign = lo0 >= 0 ? 1 : -1; // XXX what about lon = -0.X?
+		_lon = sign*(fabs(lo0) + lo1/60.0 + _lon / 3600.0);
 		_title = std::string(_title, 0, _title.find_last_not_of(" \t\r\n"));
 	}
 
@@ -601,10 +605,10 @@ public:
 	}
 	
 	bool read(std::string fn) {
-		FILE *fp = (FILE*) fopen(fn.c_str(), "rb");
+		gzFile fp = gzopen(fn.c_str(), "rb");
 		if (!fp) return false;
 		_read(fp);
-		fclose(fp);
+		gzclose(fp);
 	}
 
 	bool read(double lat, double lon) {
@@ -615,11 +619,11 @@ public:
 	inline double getReferenceLongitude() const { return _ref_lon; }
 
 protected:
-	#define READD(x) fread(&(x), sizeof(double), 1, fp);
-	#define READI(x) fread(&(x), sizeof(int), 1, fp);
-	#define READS(x) fread(&(x), sizeof(unsigned short), 1, fp);
-	#define READN(x,n) fread(x, sizeof(char), n, fp);
-	void _read(FILE *fp) {
+	#define READD(x) gzread(fp, &(x), sizeof(double));
+	#define READI(x) gzread(fp, &(x), sizeof(int));
+	#define READS(x) gzread(fp, &(x), sizeof(unsigned short));
+	#define READN(x,n) gzread(fp, x, sizeof(char) * n);
+	void _read(gzFile &fp) {
 		char buffer[256];
 		READN(buffer, 64);
 		_region = buffer;

@@ -100,6 +100,7 @@ public:
  * by multiple SceneModel instances.
  */
 class Animation: public simdata::Object {
+protected:
 	/**
 	* Small template class to reduce & simplify writing.
 	* It's the heart of the animation in overriding
@@ -127,6 +128,7 @@ class Animation: public simdata::Object {
 		}
 		virtual ~Callback_A_C(){}
 	};
+
 	template <class A> class Callback_A: public Callback_A_C<A, double> {
 	protected:
 		virtual void updateValue() {
@@ -143,6 +145,8 @@ class Animation: public simdata::Object {
 			Callback_A_C<A,double>(param) {}
 		virtual ~Callback_A(){}
 	};
+
+private:
 
 	simdata::Key m_ModelID;
 	std::string m_ChannelName;

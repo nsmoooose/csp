@@ -31,19 +31,19 @@ map key:KP_PLUS		press		CAMERA_ZOOM_IN
 map key:KP_PLUS		release		CAMERA_ZOOM_STOP
 map key:ESCAPE		press		QUIT
 map key:p		press		PAUSE
-map key:F12             press           STATS
+map key:F12		press		STATS
 map key:HOME		press		CONSOLE
 map key:SPACE		press		CHANGE_VEHICLE
 map key:KP_MINUS	press		CAMERA_ZOOM_OUT
 map key:KP_MINUS	release		CAMERA_ZOOM_STOP
 
-map key:F1		press		SPIN_THE_WORLD/B|SPIN_THE_WORLD_STOP/B
-map key:F2              press           RESET_SPIN
+map key:F1			press		SPIN_THE_WORLD/B|SPIN_THE_WORLD_STOP/B
+map key:F2			press           RESET_SPIN
 
 map mouse:WHEELUP		press		CAMERA_ZOOM_STEP_IN
 map mouse:WHEELDOWN		press		CAMERA_ZOOM_STEP_OUT
 map mouse:SHIFT-WHEELUP		press		CAMERA_FOV_STEP_DEC
 map mouse:SHIFT-WHEELDOWN	press		CAMERA_FOV_STEP_INC
 
-map mouse:LEFT			move		CAMERA_PAN
+map mouse:LEFT		move		CAMERA_PAN
 

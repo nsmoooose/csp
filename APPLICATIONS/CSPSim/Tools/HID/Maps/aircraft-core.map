@@ -1,20 +1,13 @@
 include mouse.map
 include keys.map
-include F16CS.map
 
 device keyboard 0 key US_keyboard 
-device joystick 0 F16CS CH_F16CS
 device mouse 0 mouse standard_mouse
 
 bind vehicles.aircraft.m2k
 bind vehicles.aircraft.f16
 
 mode base
-
-map F16CS:Stick_X 	axis		AILERON
-map F16CS:Stick_Y	axis		ELEVATOR
-map F16CS:Rudder	axis		RUDDER
-map F16CS:Throttle	axis		THROTTLE
 
 map key:DOWN	press			INC_ELEVATOR
 map key:DOWN	release			STOP_INC_ELEVATOR
@@ -28,6 +21,8 @@ map key:EQUALS	press			INC_THROTTLE
 map key:EQUALS	release			STOP_INC_THROTTLE
 map key:MINUS	press			DEC_THROTTLE
 map key:MINUS	release			STOP_DEC_THROTTLE
-map key:s       press                   SMOKE_ON/B|SMOKE_OFF/B
-map key:g       press                   GEAR_UP/B|GEAR_DOWN/B
+map key:s       press                   SMOKE_TOGGLE
+map key:w       press                   WHEEL_BRAKE_ON
+map key:w       release                 WHEEL_BRAKE_OFF
+map key:g       press                   GEAR_TOGGLE
 

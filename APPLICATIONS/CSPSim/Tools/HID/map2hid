@@ -23,6 +23,7 @@
 
 
 import sys
+import os.path
 
 
 KMODS = {
@@ -111,7 +112,7 @@ class Mapping:
 		self.mode = mode
 		self.script = script
 
-	def write(self):
+	def write(self, outf=sys.stdout):
 		for action in self.script:
 			script = "@%05.2f %+03d %+05d %+03d %+03d %s" % (action.time, 
 			                                             action.mode, 
@@ -119,14 +120,14 @@ class Mapping:
 														 action.stop, 
 														 action.loop, 
 														 action.id)
-			print script
+			print >>outf, script
 		code = "+"
 		code = code + self.device.upper()[0]
 		code = code + " %1d " % self.number
 		code = code + self.type.upper()[0]
 		code = code + " %04d %04d %04d %04d" % (self.kmod, self.jmod, self.mmod, self.event_id)
 		code = code + " %02d" % self.mode
-		print code
+		print >>outf, code
 		
 	def dump(self):
 		print "%s:%d" % (self.device.upper(), self.number),
@@ -176,6 +177,7 @@ class VirtualDeviceDefinition:
 		self.definitions = {}
 		self.devices = {}
 		self.filestack = []
+		self.pathstack = ['.']
 		self.line = 0
 		self.file = ""
 		self.bind = {}
@@ -214,7 +216,12 @@ class VirtualDeviceDefinition:
 			if not self.included.has_key(fn):
 				self.included[fn] = 1
 				self.filestack.append((self.file, self.line))
+				basepath = self.pathstack[-1]
+				if not os.path.isabs(fn):
+					fn = os.path.join(basepath, fn)
+				self.pathstack.append(os.path.dirname(fn))
 				self.read(fn)
+				self.pathstack.pop()
 				self.file, self.line = self.filestack.pop()
 		else:
 			raise Error("incorrect number of parameters for 'include' statement.")
@@ -468,14 +475,43 @@ class VirtualDevice:
 		self.mode = 0
 		self.mapping = {}
 
-
-if len(sys.argv) != 2:
+def usage():
 	print "Map script to human interface device definition converter"
 	print "Copyright (C) 2003 Mark Rose <tm2@stm.lbl.gov>"
-	print "usage: %s input" % sys.argv[0]
-	sys.exit(1)
+	print "usage: %s [--help] infile [outfile]" % sys.argv[0]
 
-file = sys.argv[1]
+file = None
+outfile = None
+
+for arg in sys.argv[1:]:
+	if arg.startswith('--'):
+		if arg == '--help':
+			usage()
+			print "    infile   : input map file"
+			print "    outfile  : output file ('-' for stdout)"
+			sys.exit(1)
+		continue
+	if file is None:
+		file = arg
+	elif outfile is None:
+		outfile = arg
+	else:
+		usage()
+		sys.exit(1)
+		
+if outfile is None and file.endswith('.map'):
+	outfile = file[:-4] + '.hid'
+
+outf = None
+if outfile == '-':
+	outf = sys.stdout
+else:
+	try:
+		outf = open(outfile, "wt")
+	except:
+		print "Unable to write to '%s'." % outfile
+		sys.exit(1)
+		
 v = VirtualDeviceDefinition()
 
 try:
@@ -487,7 +523,7 @@ except Error, e:
 bindings = v.bind.keys()
 bindings.sort()
 for b in bindings:
-	print "=%s" % b
+	print >>outf, "=%s" % b
 for m in v.maps:
-	m.write()
+	m.write(outf)
 

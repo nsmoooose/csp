@@ -1,0 +1,13 @@
+include Maps/aircraft-core.map
+include Maps/x36.map
+
+device joystick 0 x36 Saitek_X36
+
+map x36:Stick_X 	axis		AILERON
+map x36:Stick_Y		axis		ELEVATOR
+map x36:Rudder		axis		RUDDER
+map x36:Throttle	axis		THROTTLE
+map x36:FireA   	press           SMOKE_TOGGLE
+map x36:FireB   	press           WHEEL_BRAKE_ON
+map x36:FireB   	release         WHEEL_BRAKE_OFF
+

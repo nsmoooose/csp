@@ -34,6 +34,13 @@ define Saitek_X36:Aux1		11
 define Saitek_X36:Aux2		12
 define Saitek_X36:Aux3		13
 
+# hat 2
+
+define Saitek_X36:H2_Up		14
+define Saitek_X36:H2_Right	15
+define Saitek_X36:H2_Down	16
+define Saitek_X36:H2_Left	17
+
 # hat 3
 
 define Saitek_X36:H3_Up		18

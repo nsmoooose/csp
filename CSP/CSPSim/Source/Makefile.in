@@ -73,11 +73,6 @@ SOURCES = \
 	SimNet/NetworkMessage.cpp \
 	SimNet/ObjectUpdateMessage.cpp \
 	SimNet/NetworkMessenger.cpp \
-	SimNet/NetworkBroadcaster.cpp \
-	SimNet/NetworkListener.cpp \
-	SimNet/NetworkSocket.cpp \
-	SimNet/MessageSocketDuplex.cpp \
-	SimNet/NetworkAddress.cpp \
 	SimNet/PrintMessageHandler.cpp \
 	SimNet/RedirectMessageHandler.cpp \
 	SimNet/EchoMessageHandler.cpp \

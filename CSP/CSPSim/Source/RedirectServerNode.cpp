@@ -1,4 +1,9 @@
 #include <SimNet/Networking.h>
+#include <SimNet/NetworkNode.h>
+#include <SimNet/NetworkMessenger.h>
+#include <SimNet/PrintMessageHandler.h>
+#include <SimNet/EchoMessageHandler.h>
+
 #include "RedirectServerNode.h"
 #include <stdio.h>
 #include <stdlib.h>

@@ -52,6 +52,11 @@
 #include "Profile.h"
 
 #include <SimNet/Networking.h>
+#include <SimNet/NetworkMessage.h>
+#include <SimNet/NetworkNode.h>
+#include <SimNet/NetworkMessenger.h>
+#include <SimNet/DispatchMessageHandler.h>
+#include <SimNet/PrintMessageHandler.h>
 
 #include <SimData/Types.h>
 #include <SimData/ExceptionBase.h>

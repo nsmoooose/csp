@@ -28,6 +28,7 @@
 #include "Log.h"
 #include "Config.h"
 #include <SimNet/Networking.h>
+#include <SimNet/NetworkMessage.h>
 
 #include <SimData/TaggedRecordRegistry.h>
 

@@ -1,17 +1,17 @@
 // Combat Simulator Project - FlightSim Demo
 // Copyright (C) 2002 The Combat Simulator Project
 // http://csp.sourceforge.net
-//
+// 
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
 // as published by the Free Software Foundation; either version 2
 // of the License, or (at your option) any later version.
-//
+// 
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
-//
+// 
 // You should have received a copy of the GNU General Public License
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
@@ -21,12 +21,9 @@
  * @file DynamicObject.cpp
  *
  **/
+
+
 #include <DynamicObject.h>
-
-#include <SimData/Quat.h>
-
-#include <SimNet/Networking.h>
-
 #include <Controller.h>
 #include <PhysicsModel.h>
 #include <Log.h>
@@ -36,6 +33,11 @@
 #include <CSPSim.h>
 #include <KineticsChannels.h>
 
+#include <SimData/Quat.h>
+
+#include <SimNet/Networking.h>
+#include <SimNet/NetworkMessage.h>
+#include <SimNet/NetworkMessenger.h>
 
 SIMDATA_REGISTER_INTERFACE(DynamicObject)
 
@@ -95,10 +97,12 @@ osg::Node* DynamicObject::getOrCreateModelNode() {
 	if (!m_SceneModel) createSceneModel();
 	return m_SceneModel->getRoot();
 }
-osg::Node* DynamicObject::getModelNode() {
+
+osg::Node* DynamicObject::getModelNode() { 
 	if (!m_SceneModel) return 0;
 	return m_SceneModel->getRoot();
 }
+
 
 void DynamicObject::setGlobalPosition(simdata::Vector3 const & position)
 {
@@ -109,11 +113,11 @@ void DynamicObject::setGlobalPosition(double x, double y, double z)
 {
 	if (isGrounded())
 	{
-		// if the object is fixed to the ground, ignore the z component
+		// if the object is fixed to the ground, ignore the z component 
 		// and use the local elevation (not implemented)
 		// FIXME FIXME FIXME XXX XXX
 		float offset = 0.0;
-		z = offset;
+		z = offset; 
 	}
 	b_GlobalPosition->value() = simdata::Vector3(x, y, z);
 }
@@ -143,7 +147,7 @@ void DynamicObject::updateGroundPosition()
 	VirtualBattlefield const *battlefield = sim->getBattlefield();
 	assert(battlefield);
 	simdata::Vector3 &pos = b_GlobalPosition->value();
-	pos.z() = battlefield->getGroundElevation(pos.x(), pos.y(), m_GroundHint) + offset;
+	pos.z() = battlefield->getGroundElevation(pos.x(), pos.y(), m_GroundHint) + offset; 
 }
 
 
@@ -154,6 +158,8 @@ void DynamicObject::registerUpdate(UpdateMaster *master) {
 	}
 }
 
+
+// update 
 double DynamicObject::onUpdate(double dt)
 {
 	// Save the objects old position
@@ -166,6 +172,7 @@ double DynamicObject::onUpdate(double dt)
 	postUpdate(dt);
 	return 0.0;
 }
+
 
 void DynamicObject::doControl(double dt) {
 	if (m_Controller.valid()) {
@@ -194,9 +201,9 @@ void DynamicObject::postUpdate(double dt) {
 		VirtualBattlefield const *battlefield = sim->getBattlefield();
 		assert(battlefield);
 		b_GroundZ->value() = battlefield->getGroundElevation(
-			b_GlobalPosition->value().x(),
-			b_GlobalPosition->value().y(),
-			b_GroundN->value(),
+			b_GlobalPosition->value().x(), 
+			b_GlobalPosition->value().y(), 
+			b_GroundN->value(), 
 			m_GroundHint
 		);
 		double height = (b_GlobalPosition->value().z() - b_GroundZ->value()) * b_GroundN->value().z();
@@ -278,6 +285,7 @@ SystemsModel::Ref DynamicObject::getCachedSystemsModel() {
 	return model;
 }
 
+
 void DynamicObject::registerChannels(Bus::Ref bus) {
 	if (!bus) return;
 	bus->registerChannel(b_GlobalPosition.get());
@@ -292,6 +300,7 @@ void DynamicObject::registerChannels(Bus::Ref bus) {
 	bus->registerChannel(b_NearGround.get());
 	bus->registerLocalDataChannel< simdata::Ref<ObjectModel> >("Internal.ObjectModel", m_Model);
 }
+
 
 Bus::Ref DynamicObject::getBus() {
 	return (m_SystemsModel.valid() ? m_SystemsModel->getBus(): 0);
@@ -359,7 +368,7 @@ bool DynamicObject::onMapEvent(MapEvent const &event) {
 	if (InputInterface::onMapEvent(event)) {
 		return true;
 	}
-	if (m_SystemsModel.valid() && m_SystemsModel->onMapEvent(event)) {
+if (m_SystemsModel.valid() && m_SystemsModel->onMapEvent(event)) {
 		return true;
 	}
 	return false;
@@ -378,69 +387,77 @@ void DynamicObject::updateScene(simdata::Vector3 const &origin) {
 	}
 }
 
-NetworkMessage * DynamicObject::getUpdateMessage() {
-	CSP_LOG(NETWORK, DEBUG, "DynamicObject::getUpdateMessage()");
-	unsigned short messageType = 2;
-	unsigned short payloadLen  = sizeof(int) + sizeof(double) + 3*sizeof(simdata::Vector3) + sizeof(simdata::Quat) /* + sizeof(simdata::Matrix3) + sizeof(double) */;
 
-	NetworkMessage * message = CSPSim::theSim->getNetworkMessenger()->allocMessageBuffer(messageType, payloadLen);
+NetworkMessage * DynamicObject::getUpdateMessage()
+{
+  CSP_LOG(APP, DEBUG, "DynamicObject::getUpdateMessage()");
+  unsigned short messageType = 2;
+  unsigned short payloadLen  = sizeof(int) + sizeof(double) + 3*sizeof(simdata::Vector3) +
+	                       sizeof(simdata::Quat) /* + sizeof(simdata::Matrix3) + sizeof(double) */;
 
-	ObjectUpdateMessagePayload * ptrPayload = (ObjectUpdateMessagePayload*)message->getPayloadPtr();
-	ptrPayload->id = m_ID;
-	ptrPayload->timeStamp = CSPSim::theSim->getElapsedTime();
-	b_GlobalPosition->value().writeBinary((unsigned char *)&(ptrPayload->globalPosition),24);
-	b_LinearVelocity->value().writeBinary((unsigned char *)&(ptrPayload->linearVelocity),24);
-	b_AngularVelocity->value().writeBinary((unsigned char *)&(ptrPayload->angularVelocity),24);
-	b_Attitude->value().writeBinary((unsigned char *)&(ptrPayload->attitude),32);
+  NetworkMessage * message = CSPSim::theSim->getNetworkMessenger()->allocMessageBuffer(messageType, payloadLen);
 
-	//  simdata::MemoryWriter writer((simdata::uint8*)ptrPayload);
-	//  writer << m_ID;
-	//  writer << m_Type;
-	//  writer << CSPSim::theSim->getElapsedTime();
-	//  b_GlobalPosition->value().serialize(writer);
-	//  b_LinearVelocity->value().serialize(writer);
-	//  b_AngularVelocity->value().serialize(writer);
-	//  b_Attitude->value().serialize(writer);
+    ObjectUpdateMessagePayload * ptrPayload = (ObjectUpdateMessagePayload*)message->getPayloadPtr();
+    ptrPayload->id = m_ID;
+    ptrPayload->timeStamp = CSPSim::theSim->getElapsedTime();
+    b_GlobalPosition->value().writeBinary((unsigned char *)&(ptrPayload->globalPosition),24);
+    b_LinearVelocity->value().writeBinary((unsigned char *)&(ptrPayload->linearVelocity),24);
+    b_AngularVelocity->value().writeBinary((unsigned char *)&(ptrPayload->angularVelocity),24);
+    b_Attitude->value().writeBinary((unsigned char *)&(ptrPayload->attitude),32);
+ 
+//  simdata::MemoryWriter writer((simdata::uint8*)ptrPayload);
+//  writer << m_ID;
+//  writer << m_Type;
+//  writer << CSPSim::theSim->getElapsedTime();
+//  b_GlobalPosition->value().serialize(writer);
+//  b_LinearVelocity->value().serialize(writer);
+//  b_AngularVelocity->value().serialize(writer);
+//  b_Attitude->value().serialize(writer);
+  
+  CSP_LOG(APP, DEBUG, "DynamicObject::getUpdateMessage() - returning message");
 
-	CSP_LOG(NETWORK, DEBUG, "DynamicObject::getUpdateMessage() - returning message");
 
-	return message;
+  return message;
 }
 
-void DynamicObject::putUpdateMessage(NetworkMessage* message) {
-	// read message
+void DynamicObject::putUpdateMessage(NetworkMessage* message)
+{
+  // read message
 
-	ObjectUpdateMessagePayload * ptrPayload = (ObjectUpdateMessagePayload*)message->getPayloadPtr();
-	// verify we have the correct id in the packet for this object.
-	if (m_ID == ptrPayload->id) {
-		//printf("Loading update message of object %d\n", m_ID);
-	} else {
-		//printf("Error loading update message, object id (%d) does not match\n", idValue);
-	}
+  ObjectUpdateMessagePayload * ptrPayload = (ObjectUpdateMessagePayload*)message->getPayloadPtr();
+  // verify we have the correct id in the packet for this object.
+  if (m_ID == ptrPayload->id)
+  {
+//	printf("Loading update message of object %d\n", m_ID);
+  }
+  else
+  {
+//	printf("Error loading update message, object id (%d) does not match\n", idValue);
+  }
 
-	// we can disregard this message if the timestamp is older then the most
-	// recent update.
-
-	ptrPayload->timeStamp = CSPSim::theSim->getElapsedTime();
-
-	// load the other values.
-	b_GlobalPosition->value().readBinary((unsigned char*)&(ptrPayload->globalPosition),24);
-	b_LinearVelocity->value().readBinary((unsigned char *)&(ptrPayload->linearVelocity),24);
-	b_AngularVelocity->value().readBinary((unsigned char *)&(ptrPayload->angularVelocity),24);
-	b_Attitude->value().readBinary((unsigned char *)&(ptrPayload->attitude),32);
-
-	//unsigned int _id;
-	//unsigned  _type;
-	//float _timestamp;
-	//
-	//simdata::MemoryReader reader((simdata::uint8*)ptrPayload);
-	//reader >> _id;
-	//reader >> _type;
-	//reader >> _timestamp;
-	//b_GlobalPosition->value().serialize(reader);
-	//b_LinearVelocity->value().serialize(reader);
-	//b_AngularVelocity->value().serialize(reader);
-	//b_Attitude->value().serialize(reader);
+  // we can disregard this message if the timestamp is older then the most
+  // recent update.
+  
+    ptrPayload->timeStamp = CSPSim::theSim->getElapsedTime();
+    //
+    //load the other values.
+    b_GlobalPosition->value().readBinary((unsigned char*)&(ptrPayload->globalPosition),24);
+    b_LinearVelocity->value().readBinary((unsigned char *)&(ptrPayload->linearVelocity),24);
+    b_AngularVelocity->value().readBinary((unsigned char *)&(ptrPayload->angularVelocity),24);
+    b_Attitude->value().readBinary((unsigned char *)&(ptrPayload->attitude),32);
+  
+//  unsigned int _id;
+//  unsigned  _type;
+//  float _timestamp;
+//  
+//  simdata::MemoryReader reader((simdata::uint8*)ptrPayload);
+//  reader >> _id;
+//  reader >> _type;
+//  reader >> _timestamp;
+//  b_GlobalPosition->value().serialize(reader);
+//  b_LinearVelocity->value().serialize(reader);
+//  b_AngularVelocity->value().serialize(reader);
+//  b_Attitude->value().serialize(reader);
 }
 
 

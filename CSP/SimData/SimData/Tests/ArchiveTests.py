@@ -1,16 +1,20 @@
 import SimData
+
 import os
 from unittest import TestCase, TestSuite, makeSuite
 
+
 def round8(x):
 	return long((x*1e+8)+0.5)*1e-8;
+
 def round5(x):
 	return long((x*1e+5)+0.5)*1e-5;
+
 
 class ArchiveTest(TestCase):
 	def setUp(self):
 		self.f = SimData.PackFile('__test__.dar', 'wb') #open('__test__.dar', 'wb')
-		self.archive = SimData.Packer(self.f)
+		self.archive = SimData.ArchiveWriter(self.f)
 	def setRead(self):
 		self.size = self.archive.getCount()
 		self.archive = None
@@ -19,9 +23,10 @@ class ArchiveTest(TestCase):
 		self.data = self.f.read(self.size)
 		self.f.close()
 		os.unlink('__test__.dar')
-		self.archive = SimData.UnPacker(self.data)
+		self.archive = SimData.ArchiveReader(self.data)
 	def tearDown(self):
 		self.failUnless(self.archive.isComplete())
+
 
 class TypeArchiveTest(ArchiveTest):
 	def testSimDate(self):
@@ -234,7 +239,10 @@ class TypeArchiveTest(ArchiveTest):
 		x1 = self.archive._bool()
 		self.assertEqual(x0, x1)
 
+
 TypeArchiveSuite = makeSuite(TypeArchiveTest, 'test')
 
-suites = [TypeArchiveSuite]
+
+import TestSuites
+TestSuites.AddSuite(TypeArchiveSuite)
 

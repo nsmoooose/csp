@@ -1,11 +1,15 @@
 import SimData
+
 import os
 from unittest import TestCase, TestSuite, makeSuite
 
+
 def round8(x):
 	return long((x*1e+8)+0.5)*1e-8;
+
 def round5(x):
 	return long((x*1e+5)+0.5)*1e-5;
+
 
 class KeyTest(TestCase):
 	"""Test functionality Key"""
@@ -66,5 +70,7 @@ class DateTest(TestCase):
 DateSuite = makeSuite(DateTest, 'test')
 
 
-suites = [KeySuite, DateSuite]
+import TestSuites
+TestSuites.AddSuite(KeySuite)
+TestSuites.AddSuite(DateSuite)
 

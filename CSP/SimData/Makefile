@@ -5,7 +5,7 @@ export GSWOPTS = $(shell python setup.py swigopts)
 export GLDOPTS = $(shell python setup.py ldopts)
 
 export GDEBUGF = -g -W -Wall -pedantic -Wmissing-prototypes -Wconversion -Wshadow #-DSIMDATA_NOLOADCHECK
-export GCFLAGS = -fPIC -O2
+export GCFLAGS = -fPIC -O2 -g
 export CXX = g++
 export SWIG = swig
 
@@ -32,6 +32,7 @@ install:
 
 tests:
 	@$(MAKE) --no-print-directory -C SimData/Tests all
+	python SimData/Tests/RunTests.py
 
 tests-clean:
 	@$(MAKE) --no-print-directory -C SimData/Tests clean

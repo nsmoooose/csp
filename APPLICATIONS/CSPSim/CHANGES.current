@@ -1,6 +1,10 @@
 Version 0.3.1 (in progress)
 ===========================
 
+           ALL USERS: you will need to remake your aircraft.hid file.
+	   Go to Tools/HID, and run map2hid aicraft.map, then copy the
+	   resulting aicraft.hid file to your Data/Input directory.
+
 2003-04-10: onsight
             NumericalMethods.cpp added.
 
@@ -8,6 +12,9 @@ Version 0.3.1 (in progress)
 
 	    Data archive paths now use the new 'sim:' prefix.  See
 	    SimData CHANGES.current for details.
+
+	    Updates to aircraft-core to use the new 'sim:' prefix
+	    when binding to the m2k and other aircraft.
 
 	   LINUX USERS: you need to add NumericalMethod.cpp to your Makefile.
 2003-04-09: delta

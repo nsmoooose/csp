@@ -1,6 +1,74 @@
  Version 0.3.3 (in progress)
 ===========================
 
+2003-07-17: onsight
+            Changed SimpleConfig.h to use windows-specific hash 
+	    code for msvc version >= 1300 (instead of == 1300).
+
+2003-07-09: onsight
+	    
+	    Added DataRecorder and RecorderInterface classes for
+	    saving runtime data to disk.  DynamicObject has basic
+	    support and hooks for using a data recorder, and 
+	    AircraftObject and FlightDynamics defines several
+	    output channels.  Gamescreen toggles the recorder on
+	    and off for the active object using the 
+	    TOGGLE_RECORDING input hook, which is bound to the 
+	    'r' key by default.  A new screeninfo tag in the
+	    upper right corner of the screen displays "RECORD"
+	    when the recorder is on.
+	    
+	    The output from each recording goes to a sequentially 
+	    numbered file in the current directory: data-XXX.rec,
+	    where XXX starts at 000 each time CSPSim is run.  A
+	    utility called rec under Tools/Recorder can convert
+	    the data recording to either tab-delimited text or
+	    jgraph (a text based graph description language for
+	    generating postscript).  The shell script 'graph'
+	    in the same directory will run the output of rec
+	    through jgraph and ps2pdf to generate a pdf file
+	    containing plots of all the data in one shot (if
+	    you have jgraph and ghostscript installed that is).
+
+2003-07-07: onsight
+
+            Various animation improvements.  Using cull callback
+	    now instead of update so that only visible models are
+	    animated.  Changed simulation-animation binding to use
+	    a shared (ref counted) instance to transfer the 
+	    animation control variable. 
+
+	    Static model transforms (offset, scale, orientation)
+	    are now applied to the contact points and view point.
+	    Thus these points should be specified in the original
+	    model coordinates in the XML file.
+
+2003-07-03: onsight
+
+            Initial animation infrastructure.  Added Animation.h
+	    and Animation.cpp, plus changes to ObjectModel and
+	    SceneModel.  AircraftObject also has hooks into the
+	    model animation to set control surface deflections.
+
+	    The m2k model.xml file has been modified to add control
+	    surface animation parameters, and a new model is used
+	    that implements transformation nodes around the major
+	    control surfaces and speed brakes.
+
+	    Speedbrake support added to AircraftObject.  This is
+	    hooked into new input commands: 
+	    	* OPEN_AIRBRAKE
+		* CLOSE_AIRBRAKE
+		* INC_AIRBRAKE
+		* DEC_AIRBRAKE
+		* AIRBRAKE (continuous axis)
+	    
+	    PrimaryAeroDynamics now receives speedbrake deflection
+	    from AicraftObject and adds a new linear drag term to
+	    the drag coefficient (Cd_db * db).
+
+==========> VC users add Animation.cpp to the project.
+
 2003-07-02: onsight
 
             Reverted to Sky.cpp 1.15, disabled TEXDOME, and fixed

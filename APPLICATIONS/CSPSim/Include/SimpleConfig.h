@@ -335,7 +335,7 @@ public:
 		
 private:
 
-# if defined(_MSC_VER) && (_MSC_VER == 1300)
+# if defined(_MSC_VER) && (_MSC_VER >= 1300)
 	typedef HASH_MAP<std::string, ConfigElement*, simdata::eqstring> ConfigDictionary;
 #else
 	typedef HASH_MAP<std::string, ConfigElement*, simdata::hashstring> ConfigDictionary;

@@ -1,6 +1,9 @@
 Version 0.3.2 (in progress)
 ===========================
-
+2004-09-29: delta
+		Added #NOMINMAX before including windows.h to avoid
+		conflict with std::max/min.
+		
 2004-04-25: delta
         Adjusted paths.
         

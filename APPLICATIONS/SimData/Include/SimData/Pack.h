@@ -45,11 +45,8 @@ class Packer;
 class UnPacker;
 class DataArchive;
 
-/**
- * Base class for objects that support serialization to data archives.
- *
- * @author Mark Rose <mrose@stm.lbl.gov>
- */
+
+SIMDATA_EXCEPTION(DataUnderflow);
 
 
 
@@ -78,6 +75,14 @@ public:
 	int getCount() { return _n; }
 
 	// overloaded packing
+	void pack(char x) {
+		write(&x, sizeof(char));
+		_n += sizeof(char);
+	}
+	void pack(short x) {
+		write(&x, sizeof(short));
+		_n += sizeof(short);
+	}
 	void pack(int x) {
 		write(&x, sizeof(int));
 		_n += sizeof(int);
@@ -175,19 +180,19 @@ public:
 	// overloaded unpacking
 	void unpack(double& y) {
 		_n -= sizeof(double);
-		assert(_n >= 0);
+		if (_n < 0) throw DataUnderflow();
 		memcpy(&y, _d, sizeof(double));
 		_d += sizeof(double);
 	}
 	void unpack(float& y) {
 		_n -= sizeof(float);
-		assert(_n >= 0);
+		if (_n < 0) throw DataUnderflow();
 		memcpy(&y, _d, sizeof(float));
 		_d += sizeof(float);
 	}
 	void unpack(int& y) {
 		_n -= sizeof(int);
-		assert(_n >= 0);
+		if (_n < 0) throw DataUnderflow();
 		memcpy(&y, _d, sizeof(int));
 		_d += sizeof(int);
 	}
@@ -196,9 +201,21 @@ public:
 		unpack(x);
 		y = (x != 0);
 	}
+	void unpack(short& y) {
+		_n -= sizeof(short);
+		if (_n < 0) throw DataUnderflow();
+		memcpy(&y, _d, sizeof(short));
+		_d += sizeof(short);
+	}
+	void unpack(char& y) {
+		_n -= sizeof(char);
+		if (_n < 0) throw DataUnderflow();
+		memcpy(&y, _d, sizeof(char));
+		_d += sizeof(char);
+	}
 	void unpack(hasht& y) {
 		_n -= sizeof(hasht);
-		assert(_n >= 0);
+		if (_n < 0) throw DataUnderflow();
 		memcpy(&y, _d, sizeof(hasht));
 		_d += sizeof(hasht);
 	}
@@ -207,7 +224,7 @@ public:
 		unpack(n);
 		y = (char*) malloc(sizeof(char)*(n+1));
 		_n -= n;
-		assert(_n >= 0);
+		if (_n < 0) throw DataUnderflow();
 		memcpy(y, _d, sizeof(char)*n);
 		y[n] = 0;
 		_d += n;

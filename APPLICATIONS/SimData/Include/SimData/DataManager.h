@@ -138,6 +138,14 @@ public:
 	 */
 	std::string getPathString(ObjectID const &id) const; 
 
+	/**
+	 * Remove unused static objects from the cache.
+	 *
+	 * Call this method after many objects have been deleted
+	 * to free any unused cache entries.
+	 */
+	void cleanStatic();
+
 private:
 	/**
 	 * Create a new object from a Path instance.

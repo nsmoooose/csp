@@ -359,6 +359,14 @@ public:
 //-----------------------------------------
 
 #ifdef SWIG
+	#define SIMDATA_BIT(id, var, bit, req)
+#else
+	#define SIMDATA_BIT(id, var, bit, req)  .def(id, &var, bit, req) 
+#endif
+		
+//-----------------------------------------
+
+#ifdef SWIG
 	#define END_SIMDATA_XML_INTERFACE
 #else
 	#define END_SIMDATA_XML_INTERFACE \

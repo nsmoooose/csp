@@ -259,6 +259,7 @@ headers = [
     "ns-simdata.h",
     "Object.h",
     "ObjectInterface.h",
+	"osg.h",
     "Pack.h",
     "Path.h",
     "Quaternion.h",

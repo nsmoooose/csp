@@ -357,9 +357,11 @@ std::string Date::formatString(const char *format) const {
 
 int Zulu::reduce() {
 	int days = 0;
-	if (overflow()) {
-		days = (int) (m_time * 0.00001162790697674418);
-		m_time -= days * 86000.0f;
+	if (overflow() || m_time < 0.0) {
+		days = (int) (m_time * 0.00001157407407407407);
+		if (m_time < 0.0) days--;
+		m_time -= days * 86400.0f;
+		std::cout << m_time << " : " << days << std::endl;
 	}
 	return days;
 }

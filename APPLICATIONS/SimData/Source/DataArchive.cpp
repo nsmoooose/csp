@@ -376,11 +376,19 @@ const LinkBase DataArchive::getObject(const Path& path, const char* path_str) {
 	SIMDATA_LOG(LOG_ARCHIVE, LOG_DEBUG, "getObject using interface registry @ 0x" << std::hex << int(&(InterfaceRegistry::getInterfaceRegistry())));
 	InterfaceProxy *proxy = InterfaceRegistry::getInterfaceRegistry().getInterface(t->classhash);
 	if (!proxy) {
+		std::string msg = "Missing interface for";
 		if (path_str) {
 			SIMDATA_LOG(LOG_ARCHIVE, LOG_ERROR, "getObject(" << path_str << "):");
+			msg = msg + " '" + path_str + "'";
+		} else {
+			path_map::iterator i = _pathmap.find(key);
+			if (i != _pathmap.end()) {
+				msg = msg + " '" + i->second + "'";
+			}
 		}
 		SIMDATA_LOG(LOG_ARCHIVE, LOG_ERROR, "Interface proxy [" << t->classhash << "] not found.");
-		throw MissingInterface("Missing interface for " + t->classhash.str());
+		msg = msg + " " + t->classhash.str();
+		throw MissingInterface(msg);
 	}
 	Object *dup = proxy->createObject();
 	int offset = t->offset;
@@ -402,7 +410,13 @@ const LinkBase DataArchive::getObject(const Path& path, const char* path_str) {
 	UnPacker p(buffer, length, this, chain);
 	SIMDATA_LOG(LOG_ARCHIVE, LOG_DEBUG, "got object " << dup->getClassName());
 	dup->_setPath(key);
-	dup->unpack(p);
+	try {
+		dup->unpack(p);
+	} catch (DataUnderflow &e) {
+		e.clear();	
+		SIMDATA_LOG(LOG_ARCHIVE, LOG_ERROR, "INTERNAL ERROR: Object extraction incomplete for class '" << dup->getClassName() << "'.");
+		throw CorruptArchive("Object extraction incomplete for class '" + std::string(dup->getClassName()) + "'");
+	}
 	if (chain) {
 		dup->postCreate();
 	}
@@ -432,7 +446,28 @@ void DataArchive::_addStatic(Object* ptr, const char* path, hasht key) {
 LinkBase const* DataArchive::_getStatic(hasht key=0) {
 	cache_map::const_iterator i = static_map.find(key);
 	if (i == static_map.end()) return 0;
-	return &((*i).second);
+	return &(i->second);
+}
+
+void DataArchive::cleanStatic() {
+	std::vector<ObjectID> unused;
+	unused.reserve(64);
+	if (!static_map.empty()) {
+		cache_map::const_iterator i = static_map.begin();
+		cache_map::const_iterator j = static_map.end();
+		for (; i != j; i++) {
+			if (i->second.unique()) {
+				unused.push_back(i->first);
+			}
+		}
+	}
+	if (!unused.empty()) {
+		std::vector<ObjectID>::iterator i = unused.begin();
+		std::vector<ObjectID>::iterator j = unused.end();
+		for (; i != j; i++) {
+			static_map.erase(static_map.find(*i));
+		}
+	}
 }
 
 void DataArchive::finalize() {

@@ -88,14 +88,24 @@ void LinkBase::_load(DataArchive* archive, ObjectID path) {
 		SIMDATA_LOG(LOG_ARCHIVE, LOG_DEBUG, "loading pointerbase from " << path << " " << _path);
 		Path _p(path);
 		LinkBase _ppb;
-		try {
+		/*
+		 * XXX this is a bit tricky.  if we don't surpress the exception,
+		 * we probably leave partially constructed objects in an incomplete
+		 * state.  if we eat the exception, the object ends up with a null
+		 * pointer, but there's no way to globally catch the error...
+		 * XXX for now, pass on the exception.
+		 */
+		//try {
+
 			_ppb = archive->getObject(_p);
-		}
+		//}
+		/*
 		catch (Exception e) {
 			e.details();
 			e.clear();
 			return;
 		}
+		*/
 		*this = _ppb;
 		Object* p = _reference;
 		assert(p);

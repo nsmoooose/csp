@@ -34,40 +34,40 @@
 #include <SimData/Matrix3.h>
 #include <SimData/Quaternion.h>
 
-#include <osg::Vec3>
-#include <osg::Matrix>
-#include <osg::Quat>
+#include <osg/Vec3>
+#include <osg/Matrix>
+#include <osg/Quat>
 
 NAMESPACE_SIMDATA
 
 
-osg::Vec3 toOSG(Vector3 const &v) {
+inline osg::Vec3 toOSG(Vector3 const &v) {
 	return osg::Vec3(v.x, v.y, v.z);
 }
 
-Vector3 fromOSG(osg::Vec3 const &v) {
-	return Vector3(v.x, v.y, v.z);
+inline Vector3 fromOSG(osg::Vec3 const &v) {
+	return Vector3(v.x(), v.y(), v.z());
 }
 
-osg::Matrix toOSG(Matrix3 const &m) {
+inline osg::Matrix toOSG(Matrix3 const &m) {
 	return osg::Matrix(m[0][0], m[0][1], m[0][2], 0.0,
 	                   m[1][0], m[1][1], m[1][2], 0.0,
 			   m[2][0], m[2][1], m[2][2], 0.0,
 			   0.0, 0.0, 0.0, 1.0);
 }
 
-Matrix3 fromOSG(osg::Matrix const &m) {
-	return osg::Matrix(m(0, 0), m(0, 1), m(0, 2),
-	                   m(1, 0), m(1, 1), m(1, 2),
-			   m(2, 0), m(2, 1), m(2, 2));
+inline Matrix3 fromOSG(osg::Matrix const &m) {
+	return Matrix3(m(0, 0), m(0, 1), m(0, 2),
+	               m(1, 0), m(1, 1), m(1, 2),
+	               m(2, 0), m(2, 1), m(2, 2));
 }
 
-osg::Quat toOSG(Quaternion const &q) {
+inline osg::Quat toOSG(Quaternion const &q) {
 	return osg::Quat(q.w, q.x, q.y, q.z);
 }
 
-Quaternion fromOSG(osg::Quat const &q) {
-	return Quaterion(q.w(), q.x(), q.y(), q.z());
+inline Quaternion fromOSG(osg::Quat const &q) {
+	return Quaternion(q.w(), q.x(), q.y(), q.z());
 }
 
 

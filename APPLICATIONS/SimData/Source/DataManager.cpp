@@ -102,6 +102,7 @@ const LinkBase DataManager::getObject(Path const& path, const char* path_str, Da
 	hasht_map::iterator idx = _archive_map.find(key);
 	DataArchive *archive = 0;
 	if (idx != _archive_map.end()) {
+		assert(idx->second >= 0 && idx->second < _archives.size());
 		archive = _archives[idx->second];
 	}
 	if (archive == 0 || archive == d) {
@@ -118,6 +119,14 @@ const LinkBase DataManager::getObject(Path const& path, const char* path_str, Da
 	return archive->getObject(path, path_str);
 }
 
+void DataManager::cleanStatic() {
+	std::vector<DataArchive*>::iterator i;
+	for (i = _archives.begin(); i != _archives.end(); i++) {
+		if (*i) {
+			(*i)->cleanStatic();
+		}
+	}
+}
 
 NAMESPACE_END // namespace simdata
 

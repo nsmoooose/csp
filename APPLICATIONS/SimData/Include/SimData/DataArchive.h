@@ -335,6 +335,14 @@ public:
 	 */
 	std::vector<std::string> getAllPathStrings() const;
 
+	/**
+	 * Remove unused static objects from the cache.
+	 *
+	 * Call this method after many objects have been deleted
+	 * to free any unused cache entries.
+	 */
+	void cleanStatic();
+
 	// protected methods made public for Python access, don't use!
 	/*
 	long _getOffset(); 

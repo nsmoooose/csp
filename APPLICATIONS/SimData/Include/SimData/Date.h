@@ -106,7 +106,7 @@ timing_t get_realtime();
 #define F1p0_60p0      0.016666666666666667L
 #define F1p0_24p0      0.041666666666666667L
 #define F1p0_36525p0   0.000027378507871321L
-#define F1p0_86000p0   0.000011627906976744L
+#define F1p0_86400p0   0.000011574074074074L
 
 
 typedef double radian_t;
@@ -565,16 +565,26 @@ public:
 	int getSecond() const {
 		return ((int)m_time) % 60;
 	}
+
+	int rollover() {
+		int days = 0;
+		if (overflow()) {
+			days = (int) (m_time * 0.00001157407407407407);
+			if (m_time < 0.0) days--;
+			m_time -= days * 86400.0f;
+		}
+		return days;
+	}
 	
 	/**
-	 * Advance the time.
+	 * Advance the time, with 24 hour clock rollover.
 	 *
 	 * @param dt the number of seconds to add.
-	 * @return true if the time exceeds 24 hours (zulu)
+	 * @return the number days added or subtracted
 	 */
-	bool addTime(time_t dt) {
+	int addTime(time_t dt) {
 		m_time += dt;
-		return overflow();
+		return rollover();
 	}
 	
 	/**
@@ -583,9 +593,10 @@ public:
 	 * @param t the number of seconds since midnight.
 	 * @param local if true, t represents the local time (not zulu).
 	 */
-	void setTime(time_t t, bool local=false) {
+	int setTime(time_t t, bool local=false) {
 		if (local) t -= m_tz * 3600.0;
 		m_time = t;
+		return rollover();
 	}
 
 	/**
@@ -667,18 +678,26 @@ public:
 	 *
 	 * @param dt The time interval (in seconds)
 	 */
-	void addTime(time_t dt) {
-		Zulu::addTime(dt);
-		addDays(reduce());
+	int addTime(time_t dt) {
+		int days = Zulu::addTime(dt);
+		addDays(days);
+		return days;
 	}
-	void setTime(time_t t) {
-		Zulu::setTime(t);
-		addDays(reduce());
+
+	/**
+	 * Set the current time, with date rollover.
+	 *
+	 * @param t The current time of day (in seconds)
+	 */
+	int setTime(time_t t) {
+		int days = Zulu::setTime(t);
+		addDays(days);
+		return days;
 	}
 
 	double getJulianDate() const {
 		double j = getJulian();
-		double t = getTime() * F1p0_86000p0 + 0.5;
+		double t = getTime() * F1p0_86400p0 + 0.5;
 		return j + t;
 	}
 
@@ -746,14 +765,14 @@ public:
 	}
 	
 	/* The difference between two times.  Both times
-	 * should be in the range [0, 86000).
+	 * should be in the range [0, 86400).
 	 *
 	 * @param a A time value.
 	 * @param b A time value.
 	 */
 	static SimTime interval(SimTime a, SimTime b) {
 		a -= b;
-		if (a < 0.0) return a + 86000.0;
+		if (a < 0.0) return a + 86400.0;
 		return a;
 	}
 
@@ -780,7 +799,7 @@ public:
 	/**
 	 * Set the time reference to produce the desired target time
 	 *
-	 * @param target The desired simulation time, right NOW! (seconds: 0-86000)
+	 * @param target The desired simulation time, right NOW! (seconds: 0-86400)
 	 */
 	void setReferenceTime(SimTime target) {
 		reference = get_realtime() - target;
@@ -805,6 +824,32 @@ public:
 
 	bool isPaused() {
 		return paused;
+	}
+
+	/**
+	 * Increment the current time, with date rollover and reference fixup.
+	 *
+	 * @param dt The time interval (in seconds)
+	 */
+	int addTime(time_t dt) {
+		int days = DateZulu::addTime(dt);
+		if (days != 0) {
+			reference += days * 86400.0;
+		}
+		return days;
+	}
+
+	/**
+	 * Set the current time, with date rollover and reference fixup.
+	 *
+	 * @param t The current time of day (in seconds)
+	 */
+	int setTime(time_t t) {
+		int days = DateZulu::setTime(t);
+		if (days != 0) {
+			reference += days * 86400.0;
+		}
+		return days;
 	}
 
 	virtual void pack(Packer &p) const;

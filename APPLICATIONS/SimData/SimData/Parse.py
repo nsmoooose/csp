@@ -274,7 +274,10 @@ class IntHandler(SimpleHandler):
 		SimpleHandler.__init__(self, id, base, name, attrs)
 	
 	def end(self):
-		self._element = int(self._c)
+		if self._c.startswith('0x'):
+			self._element = int(self._c, 16)
+		else:
+			self._element = int(self._c)
 		
 class BoolHandler(SimpleHandler):
 

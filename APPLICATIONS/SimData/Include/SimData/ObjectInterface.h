@@ -109,6 +109,53 @@ protected:
 };
 
 
+template <class C, typename T> 
+class MemberMaskAccessor: public MemberAccessorBase 
+{
+	T C::* member;
+	T mask;
+public:
+	MemberMaskAccessor(T C::*pm, std::string name_, int mask_, bool required_) {
+		member = pm;
+		name = name_;
+		mask = mask_;
+		required = required_;
+	}
+	virtual TypeAdapter const get(Object *o) const throw(TypeMismatch) {
+		C * object = dynamic_cast<C *>(o);
+		if (object == NULL) {
+			throw TypeMismatch("get(\"" + name + "\"): Object class does not match interface.");
+		}
+		return TypeAdapter(object->*member);
+	}
+	virtual void set(Object *o, TypeAdapter const &v) throw(TypeMismatch) {
+		C * object = dynamic_cast<C *>(o);
+		if (object == NULL) {
+			throw TypeMismatch("set(\"" + name + "\"): Object class does not match interface.");
+		}
+		if (mask != 0) {
+			T value;
+			v.set(value);
+			if (value != 0) {
+				object->*member |= mask;
+			} else {
+				object->*member &= ~mask;
+			}
+		} else {
+			v.set(object->*member);
+		}
+	}
+	virtual void pack(Object *o, Packer &p) const {
+		C * object = dynamic_cast<C *>(o);
+		p.pack(object->*member);
+	}
+	virtual void unpack(Object *o, UnPacker &p) {
+		C * object = dynamic_cast<C *>(o);
+		p.unpack(object->*member);
+	}
+};
+
+
 /**
  * class MemberAccessor - Class for storing and accessing member variable 
  * references.
@@ -257,6 +304,87 @@ public:
 		}
 	}
 };
+
+template <class C> 
+class MemberAccessor< C, int >: public MemberMaskAccessor<C, int> {
+public:
+	MemberAccessor(int C::*pm, std::string name_, bool required_):
+		MemberMaskAccessor<C, int>(pm, name_, 0, required_) { }
+	MemberAccessor(int C::*pm, std::string name_, int mask_, bool required_):
+		MemberMaskAccessor<C, int>(pm, name_, mask_, required_) { }
+};
+
+template <class C> 
+class MemberAccessor< C, short >: public MemberMaskAccessor<C, short> {
+public:
+	MemberAccessor(short C::*pm, std::string name_, bool required_):
+		MemberMaskAccessor<C, short>(pm, name_, 0, required_) { }
+	MemberAccessor(short C::*pm, std::string name_, int mask_, bool required_):
+		MemberMaskAccessor<C, short>(pm, name_, mask_, required_) { }
+};
+
+template <class C> 
+class MemberAccessor< C, char >: public MemberMaskAccessor<C, char> {
+public:
+	MemberAccessor(char C::*pm, std::string name_, bool required_):
+		MemberMaskAccessor<C, char>(pm, name_, 0, required_) { }
+	MemberAccessor(char C::*pm, std::string name_, int mask_, bool required_):
+		MemberMaskAccessor<C, char>(pm, name_, mask_, required_) { }
+};
+
+/*
+template <class C> 
+class MemberAccessor< C, int >: public MemberAccessorBase 
+{
+	int C::* member;
+	int mask;
+public:
+	MemberAccessor(int C::*pm, std::string name_, bool required_) {
+		member = pm;
+		name = name_;
+		mask = 0;
+		required = required_;
+	}
+	MemberAccessor(int C::*pm, std::string name_, int mask_, bool required_) {
+		member = pm;
+		name = name_;
+		mask = mask_;
+		required = required_;
+	}
+	virtual TypeAdapter const get(Object *o) const throw(TypeMismatch) {
+		C * object = dynamic_cast<C *>(o);
+		if (object == NULL) {
+			throw TypeMismatch("get(\"" + name + "\"): Object class does not match interface.");
+		}
+		return TypeAdapter(object->*member);
+	}
+	virtual void set(Object *o, TypeAdapter const &v) throw(TypeMismatch) {
+		C * object = dynamic_cast<C *>(o);
+		if (object == NULL) {
+			throw TypeMismatch("set(\"" + name + "\"): Object class does not match interface.");
+		}
+		if (mask != 0) {
+			int value;
+			v.set(value);
+			if (value != 0) {
+				object->*member |= mask;
+			} else {
+				object->*member &= ~mask;
+			}
+		} else {
+			v.set(object->*member);
+		}
+	}
+	virtual void pack(Object *o, Packer &p) const {
+		C * object = dynamic_cast<C *>(o);
+		p.pack(object->*member);
+	}
+	virtual void unpack(Object *o, UnPacker &p) {
+		C * object = dynamic_cast<C *>(o);
+		p.unpack(object->*member);
+	}
+};
+*/
 #endif
 
 
@@ -385,6 +513,16 @@ public:
 		table[name] = new typename PTS::SELECT_ACCESSOR<C, T>::ACCESSOR(pm, name, required);
 #else
 		table[name] = new MemberAccessor<C, T>(pm, name, required);
+#endif
+		return *this;
+	}
+	template<typename T>
+	Self& def(const char *name, T C::*pm, int mask, bool required) throw(InterfaceError) {
+		if (variableExists(name)) throw InterfaceError("interface variable \"" + std::string(name) + "\" multiply defined.");
+#ifdef __PTS_SIM__
+		table[name] = new typename PTS::SELECT_ACCESSOR<C, T>::ACCESSOR(pm, name, required);
+#else
+		table[name] = new MemberAccessor<C, T>(pm, name, mask, required);
 #endif
 		return *this;
 	}

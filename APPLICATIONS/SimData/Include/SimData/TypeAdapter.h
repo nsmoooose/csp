@@ -160,6 +160,9 @@ public:
 	void set(Path & x) const { setBase(x); }
 	// list
 
+	void set(short &x) const { IntCheck(); x = static_cast<short>(var.i); }
+	void set(char &x) const { IntCheck(); x = static_cast<char>(var.i); }
+
 	void set(int &x) const { IntCheck(); x = static_cast<int>(var.i); }
 	void set(bool &x) const { IntCheck(); x = (var.i != 0); }
 	void set(float &x) const { DoubleCheck(); x = static_cast<float>(var.d); }

@@ -74,6 +74,7 @@ protected:
 	DataChannel<double>::CRef b_Airbrake;
 	DataChannel<double>::CRef b_Density;
 	DataChannel<double>::CRef b_GroundZ;
+	DataChannel<simdata::Vector3>::CRef b_AccelerationBody;
 	DataChannel<simdata::Vector3>::CRef b_WindVelocity;
 
 	// export channels

@@ -71,6 +71,7 @@ void FlightDynamics::importChannels(Bus *bus) {
 	b_Density = bus->getChannel("Conditions.Density");
 	b_WindVelocity = bus->getChannel("Conditions.WindVelocity");
 	b_GroundZ = bus->getChannel(Kinetics::GroundZ);
+	b_AccelerationBody = bus->getChannel(Kinetics::AccelerationBody);
 }
 
 void FlightDynamics::initializeSimulationStep(double dt) {
@@ -116,10 +117,13 @@ void FlightDynamics::updateAirflow(double h) {
 
 void FlightDynamics::getInfo(InfoList &info) const {
 	std::stringstream line;
+	double G = m_Attitude->invrotate(simdata::Vector3::ZAXIS).z();
+	G += b_AccelerationBody->value().z() / 9.806;
 	line.setf(std::ios::fixed | std::ios::showpos);
 	line << "AOA: " << std::setprecision(1) << std::setw(5) << toDegrees(m_Alpha)
 	     << ", Sideslip: " << std::setprecision(1) << std::setw(5) << toDegrees(m_Beta)
-	     << ", Airspeed: " << std::setprecision(1) << std::setw(6) << m_Airspeed;
+	     << ", Airspeed: " << std::setprecision(1) << std::setw(6) << m_Airspeed
+	     << ", G: " << std::setprecision(1) << std::setw(4) << G;
 	info.push_back(line.str());
 }
 

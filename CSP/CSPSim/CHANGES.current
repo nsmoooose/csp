@@ -18,6 +18,9 @@
   * Update ini with new networking options.  Networking is disabled by
     default.
 
+  * Add vehicle acceleration to the bus, and display G-force on the
+    screen.
+
 2004-12-05: delta
   * Updated CSPSim.vcproj, added SimNet to the build, cleaned up
     source and header directories and added a custom build step on

@@ -20,6 +20,7 @@
  * @file AircraftPhysicsModel.cpp
  *
  **/
+
 #include "AircraftPhysicsModel.h"
 #include "Atmosphere.h"
 #include "BaseDynamics.h"
@@ -42,8 +43,8 @@ AircraftPhysicsModel::AircraftPhysicsModel():
 
 Vectord const &AircraftPhysicsModel::f(double x, Vectord &y) {
 	// dot(p,v,w,q) = f(p,v,w,q)
-
 	// bind(y,p,v,w,q)
+
 	YToBody(y);
 	m_Attitude.set(y[10],y[11],y[12],y[9]);
 	double mag = m_Attitude.length();
@@ -51,7 +52,7 @@ Vectord const &AircraftPhysicsModel::f(double x, Vectord &y) {
 		m_Attitude /= mag;
 	}
 	m_PositionLocal = b_Position->value() + bodyToLocal(m_PositionBody);
-	y[9]  = m_Attitude.w(); y[10] = m_Attitude.x(); y[11] = m_Attitude.y(); y[12] = m_Attitude.z();
+	y[9] = m_Attitude.w(); y[10] = m_Attitude.x(); y[11] = m_Attitude.y(); y[12] = m_Attitude.z();
 
 	m_ForcesBody = m_MomentsBody = simdata::Vector3::ZERO;
 	m_WeightBody = localToBody(m_WeightLocal);
@@ -64,11 +65,11 @@ Vectord const &AircraftPhysicsModel::f(double x, Vectord &y) {
 			m_MomentsBody += m_GroundCollisionDynamics->getMoment();
 		}
 	}
-*/						
+*/
 
 	std::vector< simdata::Ref<BaseDynamics> >::iterator bd = m_Dynamics.begin();
 	std::vector< simdata::Ref<BaseDynamics> >::const_iterator bdEnd = m_Dynamics.end();
-	for (;bd != bdEnd; ++bd) {
+	for (; bd != bdEnd; ++bd) {
 		(*bd)->computeForceAndMoment(x);
 		simdata::Vector3 force = (*bd)->getForce();
 		simdata::Vector3 moment = (*bd)->getMoment();
@@ -86,8 +87,7 @@ Vectord const &AircraftPhysicsModel::f(double x, Vectord &y) {
 	m_ForcesBody += m_WeightBody;
 
 	// linear acceleration body: calculate v' = F/m - w^v
-	m_LinearAccelBody =  m_ForcesBody / b_Mass->value() - (m_AngularVelocityBody ^ m_VelocityBody);
-	
+	m_LinearAccelBody = m_ForcesBody / b_Mass->value() - (m_AngularVelocityBody ^ m_VelocityBody);
 
 	// angular acceleration body: calculate Iw' = M - w^Iw
 	m_AngularAccelBody = b_InertiaInverse->value() *
@@ -103,12 +103,12 @@ Vectord const &AircraftPhysicsModel::f(double x, Vectord &y) {
 	// w'
 	m_dy[6] = m_AngularAccelBody.x(); m_dy[7] = m_AngularAccelBody.y(); m_dy[8] = m_AngularAccelBody.z();
 	// q'
-	m_dy[9]  = qprim.w(); m_dy[10] = qprim.x(); m_dy[11] = qprim.y(); m_dy[12] = qprim.z();
+	m_dy[9] = qprim.w(); m_dy[10] = qprim.x(); m_dy[11] = qprim.y(); m_dy[12] = qprim.z();
 	
 	return m_dy;
 }
 
-void AircraftPhysicsModel::doSimStep(double dt) {	
+void AircraftPhysicsModel::doSimStep(double dt) {
 
 	if (dt == 0.0) dt = 0.017;
 	//unsigned short n = std::min<unsigned short>(6,static_cast<unsigned short>(180 * dt)) + 1;
@@ -129,9 +129,10 @@ void AircraftPhysicsModel::doSimStep(double dt) {
 	assert(b_Velocity.valid());
 	assert(b_AngularVelocity.valid());
 	assert(b_Attitude.valid());
+	assert(b_AccelerationBody.valid());
 	m_WeightLocal = - b_Mass->value() * gravity * simdata::Vector3::ZAXIS;
-	m_PositionLocal	= b_Position->value();
-	m_VelocityLocal	= b_Velocity->value();
+	m_PositionLocal = b_Position->value();
+	m_VelocityLocal = b_Velocity->value();
 	m_AngularVelocityLocal = b_AngularVelocity->value();
 	m_Attitude = b_Attitude->value();
 
@@ -179,7 +180,7 @@ void AircraftPhysicsModel::doSimStep(double dt) {
 		// update attitude and normalize the quaternion
 		m_Attitude.set(y[10],y[11],y[12],y[9]);
 		double mag = m_Attitude.length();
-		if (mag	!= 0.0)
+		if (mag != 0.0)
 			m_Attitude /= mag;
 		
 		b_Position->value() = m_PositionLocal;
@@ -188,6 +189,13 @@ void AircraftPhysicsModel::doSimStep(double dt) {
 	// returns vehicle data members
 	b_Velocity->value() = m_VelocityLocal;
 	b_AngularVelocity->value() = m_AngularVelocityLocal;
-	b_Attitude->value() = m_Attitude;	
+	b_Attitude->value() = m_Attitude;
+	// the fixed-frame acceleration in body coordinates, *not* m_LinearAccelBody, which is the
+	// rotating-frame acceleration.  to clarify the difference, note that for an aircraft in a
+	// high-G, 90 deg bank turn, the linear velocity is not changing in body coordinates (it
+	// is always directly ahead), so m_LinearAccelBody is approximately zero.  on the other
+	// hand, the fixed-frame acceleration is the number of G's being pulled, directed "up" in
+	// the pilot's frame of reference.
+	b_AccelerationBody->value() = m_ForcesBody / b_Mass->value();
 }
 

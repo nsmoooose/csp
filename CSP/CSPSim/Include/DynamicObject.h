@@ -127,6 +127,7 @@ public:
 
 	void setVelocity(simdata::Vector3 const & velocity);
 	void setVelocity(double Vx, double Vy, double Vz);
+	simdata::Vector3 const & getAccelerationBody() const { return b_AccelerationBody->value(); }
 	simdata::Vector3 const & getVelocity() const { return b_LinearVelocity->value(); }
 	double getSpeed() const { return b_LinearVelocity->value().length(); }
 	virtual double getAltitude() const { return (b_GlobalPosition->value().z() - b_GroundZ->value()); }
@@ -195,6 +196,7 @@ protected:
 	DataChannel<simdata::Matrix3>::Ref b_InertiaInv;
 	DataChannel<simdata::Vector3>::Ref b_AngularVelocity;
 	DataChannel<simdata::Vector3>::Ref b_LinearVelocity;
+	DataChannel<simdata::Vector3>::Ref b_AccelerationBody;
 	DataChannel<simdata::Quat>::Ref b_Attitude;
 
 	std::string m_ObjectName;

@@ -1,17 +1,17 @@
 // Combat Simulator Project - FlightSim Demo
 // Copyright (C) 2002 The Combat Simulator Project
 // http://csp.sourceforge.net
-// 
+//
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
 // as published by the Free Software Foundation; either version 2
 // of the License, or (at your option) any later version.
-// 
+//
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU General Public License
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
@@ -40,8 +40,8 @@ class BaseDynamics;
 
 
 /**
- * class PhysicsModel - Base class for implementing classical mechanics 
- * models. 
+ * class PhysicsModel - Base class for implementing classical mechanics
+ * models.
  *
  * PhysicsModel classes contain multiple BaseDynamics instances, each
  * contributing to the total force and moment that act on the object.
@@ -49,7 +49,7 @@ class BaseDynamics;
  * the position and velocity of the object as functions of time.
  *
  */
-class PhysicsModel: public System, protected DynamicalSystem {  
+class PhysicsModel: public System, protected DynamicalSystem {
 public:	
 	PhysicsModel(size_type dimension);
 	virtual ~PhysicsModel();
@@ -129,6 +129,7 @@ protected:
 	DataChannel<simdata::Vector3>::Ref b_Position;
 	DataChannel<simdata::Vector3>::Ref b_Velocity;
 	DataChannel<simdata::Vector3>::Ref b_AngularVelocity;
+	DataChannel<simdata::Vector3>::Ref b_AccelerationBody;
 	DataChannel<simdata::Quat>::Ref b_Attitude;
 
 	DataChannel<double>::CRef b_Mass;
@@ -142,9 +143,9 @@ protected:
 	/**
 	 * Bind the model to the kinematic parameters of an object.
 	 */
-	void bindObject(simdata::Vector3 &position, 
-                        simdata::Vector3 &velocity, 
-                        simdata::Vector3 &angular_velocity, 
+	void bindObject(simdata::Vector3 &position,
+                        simdata::Vector3 &velocity,
+                        simdata::Vector3 &angular_velocity,
                         simdata::Quat &orientation);
 
 	/**
@@ -168,7 +169,7 @@ protected:
 	 * Specify the normal (unit) vector of the ground directly beneath
 	 * the object.
 	 */
-	void setGroundN(simdata::Vector3 const &groundn) { 
+	void setGroundN(simdata::Vector3 const &groundn) {
 		// FIXME: just testing to see if smoothing normal transitions
 		// will reduce bad physics at terrain triangle boundaries.  if
 		// it is promising, we need to tie the time constant to the frame
@@ -176,7 +177,7 @@ protected:
 		// first test: seems to help with convex transitions.  to deal
 		// with concave sections probably requires multiple elevation
 		// tests.
-		m_GroundN = 0.98 * m_GroundN + 0.02 * groundn; 
+		m_GroundN = 0.98 * m_GroundN + 0.02 * groundn;
 	}
 
 	/**

@@ -58,6 +58,7 @@ DynamicObject::DynamicObject(TypeId type): SimObject(type) {
 	b_InertiaInv = DataChannel<simdata::Matrix3>::newLocal(Kinetics::InertiaInverse, simdata::Matrix3::IDENTITY);
 	b_AngularVelocity = DataChannel<simdata::Vector3>::newLocal(Kinetics::AngularVelocity, simdata::Vector3::ZERO);
 	b_LinearVelocity = DataChannel<simdata::Vector3>::newLocal(Kinetics::Velocity, simdata::Vector3::ZERO);
+	b_AccelerationBody = DataChannel<simdata::Vector3>::newLocal(Kinetics::AccelerationBody, simdata::Vector3::ZERO);
 	b_Attitude = DataChannel<simdata::Quat>::newLocal(Kinetics::Attitude, simdata::Quat::IDENTITY);
 
 	m_GroundHint = 0;
@@ -262,6 +263,7 @@ void DynamicObject::registerChannels(Bus::Ref bus) {
 	if (!bus) return;
 	bus->registerChannel(b_GlobalPosition.get());
 	bus->registerChannel(b_LinearVelocity.get());
+	bus->registerChannel(b_AccelerationBody.get());
 	bus->registerChannel(b_AngularVelocity.get());
 	bus->registerChannel(b_Attitude.get());
 	bus->registerChannel(b_Mass.get());

@@ -4,6 +4,7 @@
 	Version="7.10"
 	Name="SimNet"
 	ProjectGUID="{BAEB17DE-B639-4182-B1F6-9448CA73F916}"
+	RootNamespace="SimNet"
 	Keyword="MakeFileProj">
 	<Platforms>
 		<Platform
@@ -24,7 +25,7 @@
 				RuntimeTypeInfo="TRUE"
 				WarningLevel="4"
 				DebugInformationFormat="3"
-				DisableSpecificWarnings="4275;4100;4512"/>
+				DisableSpecificWarnings="4275;4100;4512;4511"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
 			<Tool
@@ -101,6 +102,21 @@
 			Filter="cpp;c;cxx;def;odl;idl;hpj;bat;asm;asmx"
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}">
 			<File
+				RelativePath="..\ClientServer.cpp">
+			</File>
+			<File
+				RelativePath="..\ClientServerMessages.cpp">
+			</File>
+			<File
+				RelativePath="..\DispatchHandler.cpp">
+			</File>
+			<File
+				RelativePath="..\DispatchManager.cpp">
+			</File>
+			<File
+				RelativePath="..\DispatchTarget.cpp">
+			</File>
+			<File
 				RelativePath="..\NetRandom.cpp">
 			</File>
 			<File
@@ -115,11 +131,32 @@
 			<File
 				RelativePath="..\RecordCodec.cpp">
 			</File>
+			<File
+				RelativePath="..\RoutingHandler.cpp">
+			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
 			Filter="h;hpp;hxx;hm;inl;inc;xsd"
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}">
+			<File
+				RelativePath="..\Callbacks.h">
+			</File>
+			<File
+				RelativePath="..\ClientServer.h">
+			</File>
+			<File
+				RelativePath="..\DispatchCache.h">
+			</File>
+			<File
+				RelativePath="..\DispatchHandler.h">
+			</File>
+			<File
+				RelativePath="..\DispatchManager.h">
+			</File>
+			<File
+				RelativePath="..\DispatchTarget.h">
+			</File>
 			<File
 				RelativePath="..\HandlerSet.h">
 			</File>
@@ -169,6 +206,12 @@
 				RelativePath="..\ReliablePacket.h">
 			</File>
 			<File
+				RelativePath="..\RoutingHandler.h">
+			</File>
+			<File
+				RelativePath="..\SimNet.h">
+			</File>
+			<File
 				RelativePath="..\Sockets.h">
 			</File>
 			<File
@@ -181,7 +224,22 @@
 			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}">
 		</Filter>
 		<File
-			RelativePath=".\readme.txt">
+			RelativePath="..\ClientServerMessages.net">
+			<FileConfiguration
+				Name="Debug|Win32">
+				<Tool
+					Name="VCCustomBuildTool"
+					CommandLine="..\..\SimData\Tools\TaggedRecordCompiler\trc.py --header=..\$(InputName).h --source=..\$(InputName).cpp ..\$(InputName).net"
+					Outputs="$(InputName).h $(InputName).cpp"/>
+			</FileConfiguration>
+			<FileConfiguration
+				Name="Release|Win32">
+				<Tool
+					Name="VCCustomBuildTool"
+					CommandLine="..\..\SimData\Tools\TaggedRecordCompiler\trc.py --source=..\$(InputName).cpp --header=..\$(InputName).h ..\$(InputName).net
+"
+					Outputs="$(InputName).h $(InputName).cpp"/>
+			</FileConfiguration>
 		</File>
 	</Files>
 	<Globals>

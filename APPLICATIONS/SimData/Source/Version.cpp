@@ -31,5 +31,5 @@ const char *getVersion() {
 	return SIMDATA_VERSION;
 }
 
-NAMESPACE_END
+NAMESPACE_SIMDATA_END
 

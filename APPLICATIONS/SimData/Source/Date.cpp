@@ -513,7 +513,7 @@ void SimDate::parseXML(const char* cdata) {
 	}
 }
 
-NAMESPACE_END // namespace simdata
+NAMESPACE_SIMDATA_END
 
 
 /*

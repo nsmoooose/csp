@@ -1,7 +1,7 @@
-/* SimDataCSP: Data Infrastructure for Simulations
- * Copyright (C) 2002 Mark Rose <tm2@stm.lbl.gov>
+/* SimData: Data Infrastructure for Simulations
+ * Copyright (C) 2002, 2003 Mark Rose <tm2@stm.lbl.gov>
  * 
- * This file is part of SimDataCSP.
+ * This file is part of SimData.
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -19,145 +19,169 @@
  */
 
 
+/**
+ * @file Random.cpp
+ *
+ * Random number generators and distributions.
+ *
+ */
+
 #include <SimData/Random.h>
 
 
 NAMESPACE_SIMDATA
 
-Random g_Random;
+
+namespace rng { // random number generators
 
 
-float box_muller(float mean, float sigma) {
-	double x1, x2, w, y1;
-	static double y2;
-	static int use_last = 0;
-	if (use_last) {
-		y1 = y2;
-		use_last = 0;
+void MT19937::update() {
+	int kk;
+
+	for (kk = 0; kk < N - M; kk++) {
+		unsigned long y = (_mt[kk] & UPPER_MASK) | (_mt[kk + 1] & LOWER_MASK);
+		_mt[kk] = _mt[kk + M] ^ (y >> 1) ^ MAGIC(y);
 	}
-	else {
-		do {
-			x1 = 2.0 * g_Random.newRand() - 1.0;
-			x2 = 2.0 * g_Random.newRand() - 1.0;
-			w = x1 * x1 + x2 * x2;
-		} while ( w >= 1.0 );
-		w = sqrt( (-2.0 * log( w ) ) / w );
-		y1 = x1 * w;
-		y2 = x2 * w;
-		use_last = 1;
+	for (; kk < N - 1; kk++) {
+		unsigned long y = (_mt[kk] & UPPER_MASK) | (_mt[kk + 1] & LOWER_MASK);
+		_mt[kk] = _mt[kk + (M - N)] ^ (y >> 1) ^ MAGIC(y);
 	}
-	return static_cast<float>( mean + y1 * sigma );
+
+	unsigned long y = (_mt[N - 1] & UPPER_MASK) | (_mt[0] & LOWER_MASK);
+	_mt[N - 1] = _mt[M - 1] ^ (y >> 1) ^ MAGIC(y);
+
+	_mti = 0;
+}
+
+void MT19937::setSeed(unsigned long int s) {
+	if (s == 0) {
+		s = 4357;	// the default seed is 4357
+	}
+	_mt[0]= s & 0xffffffffUL;
+	for (int i = 1; i < N; i++) {
+		// See Knuth's "Art of Computer Programming" Vol. 2, 3rd
+		// Ed. p.106 for multiplier. 
+		_mt[i] = (1812433253UL * (_mt[i-1] ^ (_mt[i-1] >> 30)) + i);
+		_mt[i] &= 0xffffffffUL;
+	}
+	_mti = N;
+}
+
+void MT19937::getState(State &state) const {
+	for (int i = 0; i < N; i++) {
+		state._mt[i] = _mt[i];
+	}
+	state._mti = _mti;
+}
+
+void MT19937::setState(State const &state) {
+	for (int i = 0; i < N; i++) {
+		_mt[i] = state._mt[i];
+	}
+	_mti = state._mti;
 }
 
 
-/*
- * This random number generator is from William H. Press, et al.,
- * _Numerical Recipes in C_, Second Ed. with corrections (1994), 
- * p. 282.  This excellent book is available through the
- * WWW at http://nr.harvard.edu/nr/bookc.html.
- * The specific section concerning ran2, Section 7.1, is in
- * http://cfatab.harvard.edu/nr/bookc/c7-1.ps
- *
- */
 
-
-float Random::ran2(long &idum) {
-	const long IM1=2147483563;
-	const long IM2=2147483399;
-	const double AM=(1.0/IM1);
-	const long IMM1=(IM1-1);
-	const long IA1=40014;
-	const long IA2=40692;
-	const long IQ1=53668;
-	const long IQ2=52774;
-	const long IR1=12211;
-	const long IR2=3791;
-	const long NTAB=32;
-	const long NDIV=(1+IMM1/NTAB);
-	const double EPS=1.2e-7;
-	const double RNMX=(1.0-EPS);
-
-	int j;
-	long k;
-	static long idum2=123456789;
-	static long iy=0;
-	static long iv[NTAB];
-	float temp;
-
-	if(idum <= 0) {
-		if(-(idum) < 1)
-			idum = 1;
-		else
-			idum = -(idum);
-		idum2 = (idum);
-		for(j=NTAB+7;j >= 0;j--) {
-			k=(idum)/IQ1;
-			idum=IA1*(idum-k*IQ1)-k*IR1;
-			if(idum < 0)
-				idum+=IM1;
-			if(j < NTAB)
-	  			iv[j] =idum;
-		}
-
-		iy = iv[0];
+void Taus2::setSeed(unsigned long int s) {
+	if (s == 0) {
+		s = 1;	// default seed is 1
 	}
 
-	k = idum/IQ1;
+	_s1 = LCG(s);
+	if (_s1 < 2) _s1 += 2UL;
+	_s2 = LCG(_s1);
+	if (_s2 < 8) _s2 += 8UL;
+	_s3 = LCG(_s2);
+	if (_s3 < 16) _s3 += 16UL;
 
-	idum = IA1*(idum - k*IQ1) - k*IR1;
-	if(idum < 0)
-		idum += IM1;
-
-	k = idum2/IQ2;
-	idum2 = IA2*(idum2-k*IQ2)-k*IR2;
-	if(idum2 < 0)
-		idum2 += IM2;
-	j=iy/NDIV;
-	iy=iv[j]-idum2;
-	iv[j] = idum;
-	if (iy < 1)
-		iy += IMM1;
-	if ((temp = static_cast<float>(AM*iy)) > RNMX)
-		return static_cast<float>(RNMX);
-	else
-		return temp;
-}
-
-
-float Gauss::box_muller(float mean, float sigma) {
-	double x1, x2, w, y1;
-	static double y2;
-	static int use_last = 0;
-	if (use_last) {
-		y1 = y2;
-		use_last = 0;
+	// "warm it up" 
+	for (int i=0; i < 6; i++) {
+		generate();
 	}
-	else {
-		do {
-			x1 = 2.0 * newRand() - 1.0;
-			x2 = 2.0 * newRand() - 1.0;
-			w = x1 * x1 + x2 * x2;
-		} while ( w >= 1.0 );
-		w = sqrt( (-2.0 * log( w ) ) / w );
-		y1 = x1 * w;
-		y2 = x2 * w;
-		use_last = 1;
+}
+
+
+void Taus2::getState(State &state) const {
+	state._s1 = _s1;
+	state._s2 = _s2;
+	state._s3 = _s3;
+}
+
+
+void Taus2::setState(State const &state) {
+	_s1 = state._s1;
+	_s2 = state._s2;
+	_s3 = state._s3;
+}
+
+
+} // namespace rng
+
+
+RandomInterface::~RandomInterface() {
+}
+
+
+
+namespace rd { // random distributions
+
+
+double Gauss::sample() {
+	_odd = !_odd;
+	// each pass generates 2 values; return 2nd
+	if (_odd) {
+		return _x;
 	}
-	return static_cast<float>( mean + y1 * sigma );
+	// Polar (Box-Mueller) method; See Knuth v2, 3rd ed, p122
+	double x, y, r2;
+	do {
+		x = -1.0 + 2.0 * _gen.unit();
+		y = -1.0 + 2.0 * _gen.unit();
+		r2 = x*x + y*y;
+	} while (r2 > 1.0 || r2 == 0.0);
+	double f = _sigma * ::sqrt(-2.0 * ::log(r2) / r2);
+	// save one value for the next call and return the other
+	_x = _mean + x * f;
+	return _mean + y * f;
 }
 
-
-Gauss::Gauss(float mean, float sigma) {
-	_mean = mean;
-	_sigma = sigma;
-	_g = box_muller(_mean, _sigma);
+void Gauss::getState(State &state) const {
+	_gen.getState(state._state);
+	state._mean = _mean;
+	state._sigma = _sigma;
+	state._x = _x;
+	state._odd = _odd;
 }
 
-float Gauss::newGauss() {
-	_g = box_muller(_mean, _sigma);
-	return _g;
+void Gauss::setState(State const &state) {
+	_gen.setState(state._state);
+	_mean = state._mean;
+	_sigma = state._sigma;
+	_x = state._x;
+	_odd = state._odd;
 }
 
+double BoxMueller(RandomNumberGeneratorInterface &_gen, double _mean, double _sigma) {
+	// Polar (Box-Mueller) method; See Knuth v2, 3rd ed, p122
+	double x, y, r2;
+	do {
+		x = -1.0 + 2.0 * _gen.unit();
+		y = -1.0 + 2.0 * _gen.unit();
+		r2 = x*x + y*y;
+	} while (r2 > 1.0 || r2 == 0.0);
+	double f = _sigma * ::sqrt(-2.0 * ::log(r2) / r2);
+	// discard one value in the name of thread safety
+	return _mean + y * f;
+}
 
-NAMESPACE_END // namespace simdata
+} // namespace rd
+
+
+
+
+random::Taus2 g_Random;
+
+
+NAMESPACE_SIMDATA_END // simdata
 

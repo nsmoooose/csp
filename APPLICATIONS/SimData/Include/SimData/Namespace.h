@@ -1,7 +1,7 @@
-/* SimDataCSP: Data Infrastructure for Simulations
+/* SimData: Data Infrastructure for Simulations
  * Copyright (C) 2002 Mark Rose <tm2@stm.lbl.gov>
  * 
- * This file is part of SimDataCSP.
+ * This file is part of SimData.
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -18,24 +18,37 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
-%module Math
-%{
-#include "SimData/Matrix3.h"
-#include "SimData/Vector3.h"
-%}
 
-%include "std_string.i"
-%include "std_vector.i"
+/**
+ * @file Namespace.h
+ */
 
-#define new_vector(a, b)	\
-	%template(v##a) std::vector< b >;
 
-namespace std {
-	%template(vector_d) vector<double>;
-}
+#ifndef __SIMDATA_NAMESPACE_H__
+#define __SIMDATA_NAMESPACE_H__
 
-//%import "SimData/Pack.i"
-//%include "SimData/Matrix3.h"
+// turn on the simdata namespace by default
+#define USE_NAMESPACE_SIMDATA
 
-%include "SimData/Matrix3.i"
-%include "SimData/Vector3.i"
+#ifdef NO_NAMESPACE_SIMDATA
+#undef USE_NAMESPACE_SIMDATA
+#endif // USE_NAMESPACE_SIMDATA
+
+// simdata namespace macros, to easily turn namespace support
+// on or off.
+
+#ifdef USE_NAMESPACE_SIMDATA
+  #define USING_SIMDATA using namespace simdata;
+  #define NAMESPACE_SIMDATA namespace simdata {
+  #define NAMESPACE_SIMDATA_END }
+  #define SIMDATA(x) simdata::x
+#else
+  #define USING_SIMDATA
+  #define NAMESPACE_SIMDATA
+  #define NAMESPACE_SIMDATA_END
+  #define SIMDATA(x) x
+#endif
+
+#endif //__SIMDATA_NAMESPACE_H__
+
+

@@ -1,7 +1,7 @@
-/* SimDataCSP: Data Infrastructure for Simulations
+/* SimData: Data Infrastructure for Simulations
  * Copyright (C) 2002 Mark Rose <tm2@stm.lbl.gov>
  * 
- * This file is part of SimDataCSP.
+ * This file is part of SimData.
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -31,6 +31,6 @@ NAMESPACE_SIMDATA
 
 typedef std::string String;
 
-NAMESPACE_END // namespace simdata
+NAMESPACE_SIMDATA_END
 
 #endif //__SIMDATA_STRING_H__

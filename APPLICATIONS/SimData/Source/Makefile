@@ -32,7 +32,7 @@ MODULES = \
 	Object \
 	Pack \
 	Path \
-	Quaternion \
+	Quat \
 	Random \
 	Real \
 	TypeAdapter \

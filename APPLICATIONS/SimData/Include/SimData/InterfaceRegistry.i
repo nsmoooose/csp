@@ -21,16 +21,16 @@
 %module InterfaceRegistry
 %{
 #include <SimData/InterfaceRegistry.h>
-#include <SimData/ns-simdata.h>
+#include <SimData/Namespace.h>
 using SIMDATA(TypeAdapter);
 %}
 
-%include "SimData/ns-simdata.h"
+%include "SimData/Namespace.h"
 %include "exception.i"
 
 NAMESPACE_SIMDATA
 %newobject InterfaceProxy::createObject;
-NAMESPACE_END
+NAMESPACE_SIMDATA_END
 
 %exception {
         try {

@@ -27,8 +27,8 @@
 
 %import "SimData/Exception.i"
 
-typedef  unsigned long long  hasht;   /* unsigned 8-byte type */
-typedef  int		     int32;
+//typedef  unsigned long long  hasht;   /* unsigned 8-byte type */
+//typedef  int		     int32;
 
 %include exception.i
 %exception SIMDATA(DataArchive) {

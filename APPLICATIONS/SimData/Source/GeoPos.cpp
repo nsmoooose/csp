@@ -72,12 +72,12 @@ void _iterateECEF(double &_lat, double &_alt, double p, double z_, double x_, do
 
 LLA ECEFtoLLA(ECEF const &ecef, ReferenceEllipsoid const &_ref)
 {
-	double _lon = atan2(ecef.y, ecef.x);
+	double _lon = atan2(ecef.y(), ecef.x());
 	double _lat, _alt;
-	double p = sqrt(ecef.x*ecef.x+ecef.y*ecef.y);
-	double q = _ref.A_B * ecef.z;
+	double p = sqrt(ecef.x()*ecef.x()+ecef.y()*ecef.y());
+	double q = _ref.A_B * ecef.z();
 	double h = 1.0 / sqrt(p*p+q*q);
-	_iterateECEF(_lat, _alt, p, ecef.z, p*h, q*h, ecef.z, _ref);
+	_iterateECEF(_lat, _alt, p, ecef.z(), p*h, q*h, ecef.z(), _ref);
 	return LLA(_lon, _lat, _alt);
 }
 
@@ -363,18 +363,18 @@ void ShellDistance(LLA const &p, LLA const &q, double &distance, double &bearing
 // GeoPos
 
 GeoPos const &GeoPos::operator=(Vector3 const &v) {
-	x = v.x;
-	y = v.y;
-	z = v.z;
+	_x = v.x();
+	_y = v.y();
+	_z = v.z();
 	_stale_lla = true;
 	_stale_utm = true;
 	return *this;
 }
 
 GeoPos const &GeoPos::operator=(GeoPos const &g) {
-	x = g.x;
-	y = g.y;
-	z = g.z;
+	_x = g._x;
+	_y = g._y;
+	_z = g._z;
 	_ref = g._ref;
 	_stale_lla = g._stale_lla;
 	_stale_utm = g._stale_utm;
@@ -393,7 +393,7 @@ GeoPos const &GeoPos::operator=(GeoPos const &g) {
 }
 
 double GeoPos::getSlantRange(GeoPos const &p) const {
-	return (*this - p).Length();
+	return (*this - p).length();
 }
 
 void GeoPos::getSurfaceDistance(GeoPos const &p, double &distance, double &bearing) const {
@@ -481,14 +481,14 @@ void GeoPos::getLocalFrame(Vector3 &localX, Vector3 &localY, Vector3 &localZ) co
 	GeoPos up;
 	up.setLLA(getLatitude(), getLongitude(), getAltitude()+1.0);
 	localZ = up - *this;
-	localZ.Normalize();
-	localX = simdata::Cross(Vector3::ZAXIS, localZ);
-	if (localX.LengthSquared() == 0.0) {
+	localZ.normalize();
+	localX = Vector3::ZAXIS ^ localZ;
+	if (localX.length2() == 0.0) {
 		localX = Vector3::XAXIS;
 	} else {
-		localX.Normalize();
+		localX.normalize();
 	}
-	localY = simdata::Cross(localZ, localX);
+	localY = localZ ^ localX;
 }
 
 void GeoPos::parseXML(const char* cdata) {
@@ -531,9 +531,9 @@ void GeoPos::parseXML(const char* cdata) {
 		} else {
 			int n = sscanf(c, "%lf %lf %lf", &X, &Y, &Z);
 			if (n != 3) throw ParseException("SYNTAX ERROR: expecting 'x y z'");
-			x = X;
-			y = Y;
-			z = Z;
+			_x = X;
+			_y = Y;
+			_z = Z;
 		}
 	} else throw ParseException("SYNTAX ERROR: empty vector");
 }
@@ -550,11 +550,11 @@ void GeoPos::unpack(UnPacker &p) {
 
 
 void GeoPos::_updateLLA() const {
-	_lon = atan2(y, x);
-	double p = sqrt(x*x+y*y);
-	double q = _ref->A_B * z;
+	_lon = atan2(_y, _x);
+	double p = sqrt(_x*_x+_y*_y);
+	double q = _ref->A_B * _z;
 	double h = 1.0 / sqrt(p*p+q*q);
-	iterateECEF(p, z, p*h, q*h);
+	iterateECEF(p, _z, p*h, q*h);
 }
 
 void GeoPos::setUTM(double northing, double easting, char zone, char designator, double alt)
@@ -757,9 +757,9 @@ void GeoPos::setLLA(double lat, double lon, double alt) {
 	_lat = lat;
 	_lon = lon;
 	_alt = alt;
-	x = x0 + p_delta * c_lon;
-	y = y0 + p_delta * s_lon;
-	z = z0 + z_delta;
+	_x = x0 + p_delta * c_lon;
+	_y = y0 + p_delta * s_lon;
+	_z = z0 + z_delta;
 	_stale_utm = true;
 	_stale_lla = false;
 }
@@ -787,8 +787,8 @@ void GeoPos::iterateECEF(double p, double z_, double x_, double y_, int iter) co
 	double alt = sqrt((z_-y_)*(z_-y_)+(p-x_)*(p-x_));
 	double sy = _ref->A2_B2 * y_;
 	double h = 1.0/sqrt(sy*sy + x_*x_);
-	double dz = z - y_ - alt * sy * h;
-	double dp = p - x_ - alt * x_ * h;
+	double dz = _z - y_ - alt * sy * h;
+	double dp =  p - x_ - alt * x_ * h;
 	if (iter > 15) { 
 		_lat = atan2(sy, x_);
 		_alt = alt;
@@ -973,7 +973,7 @@ LLA const &LLA::operator = (ECEF const &ecef)
 std::string LLA::asString() const
 {
 	char buff[128];
-	sprintf(buff, "[%.3f %.3f, %.3f]", RadiansToDegrees(_lat), RadiansToDegrees(_lon), _alt);
+	sprintf(buff, "[%.3f %.3f, %.3f]", toDegrees(_lat), toDegrees(_lon), _alt);
 	return buff;
 }
 
@@ -988,14 +988,14 @@ void LLA::parseXML(const char* cdata) {
 			int lat, latm, lon, lonm;
 			int n = sscanf(c, "%d'%d\"%lf %d'%d\"%lf %lf", &lat, &latm, &X, &lon, &lonm, &Y, &Z);
 			if (n != 7) throw ParseException("SYNTAX ERROR: expecting 'lat'min\"sec lon'min\"sec altitude'");
-			_lat = DegreesToRadians(lat + latm / 60.0 + X / 3600.0);
-			_lon = DegreesToRadians(lon + lonm / 60.0 + Y / 3600.0);
+			_lat = toRadians(lat + latm / 60.0 + X / 3600.0);
+			_lon = toRadians(lon + lonm / 60.0 + Y / 3600.0);
 			_alt = Z;
 		} else {
 			int n = sscanf(c, "%lf %lf %lf", &X, &Y, &Z);
 			if (n != 3) throw ParseException("SYNTAX ERROR: expecting 'latitude longitude altitude'");
-			_lat = DegreesToRadians(X);
-			_lon = DegreesToRadians(Y);
+			_lat = toRadians(X);
+			_lon = toRadians(Y);
 			_alt = Z;
 		}
 		return;
@@ -1016,8 +1016,8 @@ void LLA::unpack(UnPacker &p) {
 }
 
 void LLA::setDegrees(double lat, double lon, double alt) {
-	_lat = DegreesToRadians(lat);
-	_lon = DegreesToRadians(lon);
+	_lat = toRadians(lat);
+	_lon = toRadians(lon);
 	_alt = alt;
 }
 
@@ -1049,5 +1049,5 @@ ECEF const &ECEF::operator = (LLA const &lla)
 }
 
 
-NAMESPACE_END
+NAMESPACE_SIMDATA_END
 

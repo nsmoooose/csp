@@ -1,7 +1,7 @@
-/* SimDataCSP: Data Infrastructure for Simulations
+/* SimData: Data Infrastructure for Simulations
  * Copyright (C) 2002 Mark Rose <tm2@stm.lbl.gov>
  * 
- * This file is part of SimDataCSP.
+ * This file is part of SimData.
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -35,7 +35,7 @@
 #include <SimData/BaseType.h>
 #include <SimData/HashUtility.h>
 #include <SimData/Exception.h>
-#include <SimData/ns-simdata.h>
+#include <SimData/Namespace.h>
 
 
 NAMESPACE_SIMDATA
@@ -331,7 +331,7 @@ public:
 			items.append(unpack())
 		return items
 */
-NAMESPACE_END // namespace simdata
+NAMESPACE_SIMDATA_END
 
 
 #endif //__SIMDATA_PACK_H__

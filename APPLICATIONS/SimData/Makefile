@@ -3,10 +3,10 @@ SUBDIRS = Source
 export PYTHON_INCLUDE := $(shell python setup.py python_include_path)
 
 export GDEBUGF = -g -Wall
-export GCFLAGS = -fPIC -O2# -march=athlon-tbird
+export GCFLAGS = -fPIC -O2 -pedantic# -march=athlon-tbird
 export GLDOPTS = -shared -lswigpy -ldl
 export GSWOPTS = -c -c++ -python -noexcept
-export CXX = g++
+export CXX = g++-3.3
 export SWIG = swig 
 
 .PHONY: all clean clean-deps

@@ -531,6 +531,6 @@ std::string Table::asString() const {
 }
 
 
-NAMESPACE_END // namespace simdata
+NAMESPACE_SIMDATA_END
 
 

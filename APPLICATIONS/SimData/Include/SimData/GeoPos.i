@@ -41,7 +41,7 @@ NAMESPACE_SIMDATA
 %ignore LLA::operator=(ECEF const&);
 %ignore ECEF::operator=(UTM const&);
 %ignore ECEF::operator=(LLA const&);
-NAMESPACE_END
+NAMESPACE_SIMDATA_END
 
 %include "SimData/GeoPos.h"
 

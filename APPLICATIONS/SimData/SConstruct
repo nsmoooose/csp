@@ -47,9 +47,21 @@ EnsurePythonVersion(2,2)
 
 import construct
 
+env = Environment()
+
+Package = construct.Package(env)
+
+info = Package.info
+info.package = 'SimData'
+info.description = 'Simulation Data Library'
+info.version = '0.3.2'
+info.author = 'Mark Rose'
+info.contact = '<mkrose@users.sourceforge.net>'
+info.homepage = 'http://csp.sourceforge.net/wiki/SimData'
+info.license = 'GNU General Public License, version 2 or later'
+
 opt = construct.OptionSet()
 set, add = opt.methods()
-
 set.SWIG_MIN_VERSION = '1.3.16'
 set.PYTHON_INC = construct.getPythonInc()
 set.SUBDIRS = ('Source', 'Doc')
@@ -60,22 +72,21 @@ add.SHLINKFLAGS = ' -Wl,-z,lazyload'
 add.SHLINKLIBS = ['dl']
 add.SWFLAGS = '-c -c++ -python -noexcept'
 add.SWLIBS = ['swigpy']
-
 set.PACKAGE_PREFIX = construct.getPythonLib()
 set.INCLUDE_PREFIX = construct.getPythonInc()
+set.ARCHIVE_FORMATS = None
+opt.apply(env)
 
 options = Options('config.py', ARGUMENTS)
 options.Add('CXX', 'C++ compiler')
 options.Add('LINK', 'linker')
+options.Add('ARCHIVE_FORMATS', 'File format(s) for distribution archives')
 options.Add('PACKAGE_PREFIX', 'Installation path for the SimData package')
 options.Add('INCLUDE_PREFIX', 'Installation path for the SimData headers and interfaces')
-
-env = Environment(options = options)
-opt.apply(env)
+options.Update(env)
+Help(options.GenerateHelpText(env))
 
 construct.addSwigSupport(env)
-construct.addCopyFile(env)
-construct.addDoxygen(env)
 
 conf = Configure(env)
 construct.addConfigTests(conf)
@@ -87,8 +98,12 @@ if not conf.checkSwig(set.SWIG_MIN_VERSION):
 	print
 	Exit(1)
 
-Export('env', 'construct')
+Export('env', 'construct', 'Package')
 
 for subdir in set.SUBDIRS:
 	SConscript(subdir+'/SConscript')
+
+Package.addManifest("MANIFEST.IN")
+Package.sdist()
+Package.bdist()
 

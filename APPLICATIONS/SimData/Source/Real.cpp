@@ -25,6 +25,11 @@
 
 NAMESPACE_SIMDATA
 
+// shared random number generator for Real instances
+// XXX in multithreaded environments this *must* be replaced
+// with a thread-safe generator. 
+random::Taus2 Real::_rng;
+
 
 // class Real
 
@@ -67,10 +72,12 @@ void Real::set(float mean, float sigma) {
 }
 
 void Real::regen() { 
-	if (_sigma <= 0.0)
+	if (_sigma <= 0.0) {
 		_value = _mean;
-	else
-		_value = box_muller(_mean, _sigma);
+	} else {
+		_value = static_cast<float>(rd::BoxMueller(Real::_rng, _mean, _sigma));
+		//box_muller(_mean, _sigma);
+	}
 }
 
 float Real::getMean() const { return _mean; }
@@ -81,30 +88,11 @@ float Real::getValue() const { return _value; }
 
 std::string Real:: asString() const { 
 	char fmt[128];
-	snprintf(fmt, 128, "%f", _value);
+	snprintf(fmt, 127, "%f", _value);
 	return std::string(fmt);
 }
 
-/*
-float Real::__neg__() { return -_value; }
-float Real::__pos__() { return _value; }
-float Real::__abs__() { return static_cast<float>(fabs(_value)); }
-int Real::__nonzero__() { return _value != 0.0; }
-float Real::__float__() { return _value; }
-int Real::__int__() { return (int)_value; }
-long Real::__long__() { return (long)_value; }
-float Real::__add__(float v) { return v + _value; }
-float Real::__radd__(float v) { return v + _value; }
-float Real::__sub__(float v) { return _value - v; }
-float Real::__rsub__(float v) { return v - _value; }
-float Real::__mul__(float v) { return v * _value; }
-float Real::__rmul__(float v) { return v * _value; }
-float Real::__div__(float v) { assert(v != 0.0); return _value / v; }
-float Real::__rdiv__(float v) { assert(_value != 0.0); return v / _value; }
-float Real::__rpow__(float v) { return static_cast<float>(pow(v, _value)); }
-float Real::__pow__(float v) { return static_cast<float>(pow(_value, v)); }
-*/
 
 
-NAMESPACE_END // namespace simdata
+NAMESPACE_SIMDATA_END
 

@@ -28,7 +28,7 @@
 %include "std_vector.i"
 
 
-%include "SimData/ns-simdata.h"
+%include "SimData/Namespace.h"
 
 %rename(__repr__) SIMDATA(Matrix3)::asString() const;
 

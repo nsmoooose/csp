@@ -132,6 +132,6 @@ std::ostream & operator<<(std::ostream &o, const hasht &x) {
 }
 
 
-NAMESPACE_END // namespace simdata
+NAMESPACE_SIMDATA_END
 
 

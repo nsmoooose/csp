@@ -1,7 +1,7 @@
-/* SimDataCSP: Data Infrastructure for Simulations
+/* SimData: Data Infrastructure for Simulations
  * Copyright (C) 2002 Mark Rose <tm2@stm.lbl.gov>
  * 
- * This file is part of SimDataCSP.
+ * This file is part of SimData.
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -22,9 +22,11 @@
 #ifndef __SIMDATA_REAL_H__
 #define __SIMDATA_REAL_H__
 
+#include <SimData/BaseType.h>
+#include <SimData/Random.h>
+
 #include <string>
 #include <cmath>
-#include <SimData/BaseType.h>
 
 
 NAMESPACE_SIMDATA
@@ -39,6 +41,7 @@ NAMESPACE_SIMDATA
  * generated from this distribution.
  */
 class SIMDATA_EXPORT Real: public BaseType {
+	static random::Taus2 _rng;
 	float _mean, _sigma;
 	float _value;
 public:
@@ -166,6 +169,6 @@ public:
 #endif // SWIG
 
 
-NAMESPACE_END // namespace simdata
+NAMESPACE_SIMDATA_END
 
 #endif //__SIMDATA_REAL_H__

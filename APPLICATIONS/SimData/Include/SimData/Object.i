@@ -24,7 +24,7 @@
 %}
 
 %include "std_string.i"
-%include "SimData/ns-simdata.h"
+%include "SimData/Namespace.h"
 %include "SimData/Export.h"
 
 %feature("polymorphic") SIMDATA(Object);
@@ -34,7 +34,7 @@
 NAMESPACE_SIMDATA
 	%ignore Referenced;
 	class Referenced {};
-NAMESPACE_END
+NAMESPACE_SIMDATA_END
 
 %include "SimData/Object.h"
 

@@ -51,7 +51,7 @@ void Perlin1D::setOffset(int idx) {
 
 
 void Perlin1D::randomize() {
-	m_offset = int(g_Random.newRand()*1.0e+9);
+	m_offset = int(g_Random.unit()*1.0e+9);
 }
 
 
@@ -111,6 +111,6 @@ std::vector<float> Perlin1D::generate(int n, bool periodic, double timescale, do
 }
 
 
-NAMESPACE_END // namespace simdata
+NAMESPACE_SIMDATA_END
 
 

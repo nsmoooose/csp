@@ -27,12 +27,13 @@ import SCons.Action
 import SCons.Builder
 import SCons.Scanner 
 import SCons.Util
+import SCons.Errors
 
 Action = SCons.Action.Action
 Builder = SCons.Builder.Builder
 Scanner = SCons.Scanner.Base
 
-import os, os.path, re, shutil
+import os, os.path, re, shutil, glob
 
 # configure tests (defined below)
 configure_tests = {}
@@ -148,6 +149,25 @@ def addCopyFile(env):
 	CopyFile = Builder(action=Action(copy, report))
 	env.Append(BUILDERS = {'CopyFile': CopyFile})
 
+def addLinkFile(env):
+	def copy(target, source, env):
+		source = str(source[0])
+		target = str(target[0])
+		if os.name=='posix':
+			os.link(source, target)
+		else:
+			shutil.copy(source, target)
+	def report(target, source, env):
+		source = str(source[0])
+		target = str(target[0])
+		return 'copying %s -> %s' % (source, target)
+	CopyFile = Builder(action=Action(copy, report))
+	env.Append(BUILDERS = {'LinkFile': CopyFile})
+
+def addBuilders(env):
+	addDoxygen(env)
+	addCopyFile(env)
+	addLinkFile(env)
 
 ############################################################################
 # SWIG support
@@ -207,6 +227,39 @@ def addSwigSupport(env):
 	addSwigLib(env)
 	addSwigBuild(env)
 
+# def addSDist(env):
+# 	def copy(target, source, env):
+# 		info = env["PACKAGE_INFO"]
+# 		base = '%s-%s' % (info.package, info.version)
+# 		dist = os.path.join('dist', base)
+# 		makepaths = {}
+# 		for src in map(str, source):
+# 			dir = os.path.join(dist, os.path.dirname(src))
+# 			dst = os.path.join(dist, src)
+# 			if not makepaths.has_key(dir):
+# 				makepaths[dir] = 1
+# 				if not os.path.exists(dir):
+# 					os.makedirs(dir)
+			#print "copy %s -> %s" % (src, dst)
+# 			shutil.copy2(src, dst)
+		#print str(target[0])
+		#os.system('tar -C %s -zcf %s.tgz %s' % ('dist', base, base))
+		#---------
+		#env["TARFLAGS"] = '-C dist -cz'
+		#Action(env["TARCOM"])(base+'.tgz', dist, env)
+# 	def emitter(target, source, env):
+# 		info = env["PACKAGE_INFO"]
+# 		base = '%s-%s' % (info.package, info.version)
+# 		dist = os.path.join('#/dist', base)
+# 		return (dist+'.tgz', source)
+# 	def report(target, source, env):
+# 		info = env["PACKAGE_INFO"]
+# 		base = '%s-%s' % (info.package, info.version)
+# 		dist = os.path.join('dist', base)
+# 		return 'copying sources to %s...' % dist 
+# 	SDist = Builder(action=Action(copy, report), emitter=emitter)
+# 	env.Append(BUILDERS = {"SDist": SDist})
+
 
 ############################################################
 # helper classes
@@ -238,4 +291,194 @@ class Globals:
 	def set(self):
 		for key, value in self.set.__dict__.iteritems():
 			eval("%s=%s" % (key, value), globals(), globals())
+
+	
+
+class Package:
+	def _addDistBuilder(self):
+		def DistAction(target, source, env):
+			dist = str(target[0])
+			assert dist.startswith('dist')
+			if dist.endswith('.tar.gz'):
+				base = dist[5:-7]
+				command = "tar -vc --gzip -C dist -f %s %s" % (dist, base)
+			elif dist.endswith('.tar.bz2'):
+				base = dist[5:-8]
+				command = "tar -vc --bzip2 -C dist -f %s %s" % (dist, base)
+			elif dist.endswith('.tar.Z'):
+				base = dist[5:-6]
+				command = "tar -vc --compress -C dist -f %s %s" % (dist, base)
+			elif dist.endswith('.tar'):
+				base = dist[5:-4]
+				command = "tar -vc -C dist -f %s %s" % (dist, base)
+			elif dist.endswith('.zip'):
+				base = dist[:-4]
+				try:
+					import zipfile
+				except ImportError:
+					raise SCons.Errors.InternalError('Internal zip module (zipfile) not available')
+				def visit(z, dirname, names):
+					for name in names:
+						path = os.path.normpath(os.path.join(dirname, name))
+						if os.path.isfile(path):
+							z.write(path, path[5:])
+				z = zipfile.ZipFile(dist, "w", compression=zipfile.ZIP_DEFLATED)
+				os.path.walk(base, visit, z)
+				z.close()
+				return 0 
+			else: 
+				error = "Unknown archive format extension '%s'" % os.path.splitext(dist)[1]
+				raise SCons.Errors.UserError(error)
+				return 0
+			Action(command)(target, "", env)
+		def DistReport(target, source, env):
+			print "Creating package archive %s..." % str(target[0])
+		env = self.env
+		try:
+			bld = env['BUILDERS']['DistArchive']
+		except KeyError:
+			bld = Builder(action=Action(DistAction, DistReport), 
+			              source_factory=SCons.Node.FS.default_fs.Entry)
+			env['BUILDERS']['DistArchive'] = bld
+
+	class Info: pass
+
+	def __init__(self, env, **kw):
+		addBuilders(env)
+		self.env = env
+		self._addDistBuilder()
+		self.info = Package.Info()
+		self.info.__dict__.update(kw)
+		self.source_content = []
+		self.binary_content = []
+
+	def addManifest(self, filename, type='both'):
+		if not os.path.exists(filename): return
+		f = open(filename, 'rt')
+		include = []
+		exclude = []
+		for entry in f.readlines():
+			cmd = entry.strip().split()
+			if len(cmd) == 0: continue
+			if len(cmd) == 1: 
+				action, args = 'include', cmd
+			else:
+				action, args = cmd[0], cmd[1:]
+			if action == 'include':
+				for arg in args:
+					include.extend(glob.glob(arg))
+			elif action == 'prune':
+				for arg in args:
+					exclude.extend(glob.glob(arg))
+			elif action == 'recursive-include':
+				dir, patterns = args[0], args[1:]
+				def visit(arg, dir, names):
+					include, patters = arg
+					for pattern in patterns:
+						include.extend(glob.glob(os.path.join(dir, pattern)))
+				os.path.walk(dir, visit, (include, patterns))
+		self.add(include, type)
+		self.remove(exclude, type)
+
+	def add(self, content, type='both'):
+		content = SCons.Node.arg2nodes(content, self.env.fs.File)
+		if type == 'source' or type == 'both':
+			self.source_content.extend(content)
+		if type == 'binary' or type == 'both':
+			self.binary_content.extend(content)
+
+	def _filter_content(self, content, list):
+		return filter(lambda x, y=map(str,list): not str(x) in y, content)
+
+	def remove(self, content, type='both'):
+		content = SCons.Node.arg2nodes(content, self.env.fs.File)
+		if type == 'source' or type == 'both':
+			self.source_content = self._filter_content(self.source_content, content)
+		if type == 'binary' or type == 'both':
+			self.binary_content = self._filter_content(self.binary_content, content)
+
+	def dump(self):
+		print map(str, self.content)
+
+	def distpath(self, base=''):
+		return os.path.join('dist', base)
+
+	def base(self, extra=''):
+		return '%s-%s%s' % (self.info.package, self.info.version, extra)
+
+	def sdist(self, alias='sdist'):
+		dist = self.distpath(self.base('-src'))
+		self._dist(self.source_content, dist , alias)
+
+	def bdist(self, alias='bdist'):
+		dist = self.distpath(self.base())
+		self._dist(self.binary_content, dist, alias)
+
+	def writeInfo(self, base_dir):
+		out = open(os.path.join(base_dir, "PKG-INFO"), 'wt')
+		info = self.info.__dict__
+		for key, value in info.iteritems():
+			out.write("%s: %s\n" % (key, value))
+		out.close()
+
+	default_format = {'posix': 'tgz', 'nt': 'zip'}
+	def _getArchiveFormats(self):
+		env = self.env
+		try:
+			formats = env['ARCHIVE_FORMATS']
+		except KeyError:
+			formats = None
+		if formats is None:
+			try:
+				formats = [self.default_format[os.name]]
+			except KeyError:
+				error = "Don't know how to create archive on platform '%s'" % os.name
+				raise SCons.Errors.UserError(error)
+		else:
+			formats = formats.split()
+		return formats
+
+	def _archiveExtension(self, format):
+		if format in ['gztar', 'tar.gz', 'gzip', 'gz', 'tgz']:
+			return '.tar.gz'
+		if format in ['bztar', 'tar.bz2', 'bzip2', 'bz2', 'tbz2', 'tbz']:
+			return '.tar.bz2'
+		if format in ['ztar', 'tar.Z', 'compress', 'Z']:
+			return '.tar.Z'
+		if format in ['tar']:
+			return '.tar'
+		if format in ['zip']:
+			return '.zip'
+		return None
+
+	def _dist(self, content, target, alias):
+		env = self.env
+		formats = self._getArchiveFormats()
+		dist = target
+		src = map(str, content)
+		dst = map(lambda x: os.path.join(dist, x), src)
+		src = SCons.Node.arg2nodes(src, env.fs.File)
+		dst = SCons.Node.arg2nodes(dst, env.fs.File)
+		ret = []
+		for source, target in map(lambda x, y: (x,y), src, dst):
+			ret.append(env.LinkFile(target, source))
+		for format in formats:
+			ext = self._archiveExtension(format)
+			if ext is None:
+				error = "Don't know how to create distribution archive format '%s'" % format
+				raise SCons.Errors.UserError(error)
+			ret.append(env.DistArchive(dist+ext, dst))
+  		env.Alias(alias, ret)
+
+	def installTarget(self, package_files, include_files):
+		env = self.env
+		info = self.info
+		package_target = os.path.join(env['PACKAGE_PREFIX'], info.package)
+		include_target = os.path.join(env['INCLUDE_PREFIX'], info.package)
+		install_package = installPythonSources(env, package_target, package_files)
+		install_headers = installPythonSources(env, include_target, include_files)
+		env.Alias('install', install_package + install_headers)
+
+def Prefix(dir, names):
+	return map(lambda x: os.path.normpath(os.path.join(dir, x)), names.split())
 

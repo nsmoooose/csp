@@ -30,7 +30,7 @@
 #include <SimData/HashUtility.h>
 #include <SimData/TypeAdapter.h>
 #include <SimData/ObjectInterface.h>
-#include <SimData/ns-simdata.h>
+#include <SimData/Namespace.h>
 #include <SimData/Exception.h>
 #include <SimData/Enum.h>
 #include <SimData/Path.h>
@@ -229,6 +229,6 @@ void InterfaceRegistry::addInterface(const char *name, hasht id, InterfaceProxy 
 
 
 
-NAMESPACE_END // namespace simdata
+NAMESPACE_SIMDATA_END
 
 

@@ -26,7 +26,7 @@
 #ifndef __NO_LUT__
 
 %include "std_vector.i"
-%include "SimData/ns-simdata.h"
+%include "SimData/Namespace.h"
 
 %include "std_vector.i"
 
@@ -146,7 +146,7 @@ public:
 %exception;
 
 
-NAMESPACE_END // simdata
+NAMESPACE_SIMDATA_END // simdata
 
 #endif // __NO_LUT__
 

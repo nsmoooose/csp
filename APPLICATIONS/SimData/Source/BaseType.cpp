@@ -26,6 +26,9 @@
 NAMESPACE_SIMDATA
 
 
+BaseType::~BaseType() {
+}
+
 void BaseType::pack(Packer&) const {
 }
 
@@ -51,5 +54,5 @@ std::ostream &operator <<(std::ostream &o, BaseType const &t) {
 	return o << t.asString();
 }
 
-NAMESPACE_END // namespace simdata
+NAMESPACE_SIMDATA_END
 

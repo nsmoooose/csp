@@ -741,7 +741,7 @@ std::string LUT<1,X>::asString() const {
 
 
 
-NAMESPACE_END // simdata
+NAMESPACE_SIMDATA_END // simdata
 
 
 #endif // __SIMDATA_NO_LUT__

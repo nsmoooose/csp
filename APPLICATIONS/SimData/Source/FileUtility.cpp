@@ -174,5 +174,5 @@ std::string ospath::filter(const std::string &path) {
 }
 
 
-NAMESPACE_END // namespace simdata
+NAMESPACE_SIMDATA_END
 

@@ -1,7 +1,7 @@
-/* SimDataCSP: Data Infrastructure for Simulations
+/* SimData: Data Infrastructure for Simulations
  * Copyright (C) 2002 Mark Rose <tm2@stm.lbl.gov>
  * 
- * This file is part of SimDataCSP.
+ * This file is part of SimData.
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -90,7 +90,7 @@ public:
 	/**
 	 * Returns true if this is the only reference to an object.
 	 */
-	inline bool ReferencePointer::unique() const {
+	inline bool unique() const {
 		return (_reference ? _reference->_count()==1 : true);
 	}
 
@@ -447,7 +447,7 @@ protected:
 
 
 
-NAMESPACE_END // namespace simdata
+NAMESPACE_SIMDATA_END
 
 #endif //__SIMDATA_LINK_H__
 

@@ -23,7 +23,7 @@
 #include "SimData/HashUtility.h"
 %}
 
-#include "SimData/ns-simdata.h"
+#include "SimData/Namespace.h"
 
 typedef  unsigned long  int  u4;   /* unsigned 4-byte type */
 typedef  unsigned      char  u1;   /* unsigned 1-byte type */
@@ -47,5 +47,5 @@ typedef HashT hasht;
 
 HashT newhasht_cstring(const char*);
 
-NAMESPACE_END
+NAMESPACE_SIMDATA_END
 

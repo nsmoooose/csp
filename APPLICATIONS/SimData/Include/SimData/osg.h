@@ -1,7 +1,7 @@
-/* SimDataCSP: Data Infrastructure for Simulations
+/* SimData: Data Infrastructure for Simulations
  * Copyright (C) 2002 Mark Rose <tm2@stm.lbl.gov>
  * 
- * This file is part of SimDataCSP.
+ * This file is part of SimData.
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -29,10 +29,10 @@
 #ifndef __SIMDATA_OSG_H__
 #define __SIMDATA_OSG_H__
 
-#include <SimData/ns-simdata.h>
+#include <SimData/Namespace.h>
 #include <SimData/Vector3.h>
 #include <SimData/Matrix3.h>
-#include <SimData/Quaternion.h>
+#include <SimData/Quat.h>
 
 #include <osg/Vec3>
 #include <osg/Matrix>
@@ -42,7 +42,7 @@ NAMESPACE_SIMDATA
 
 
 inline osg::Vec3 toOSG(Vector3 const &v) {
-	return osg::Vec3(v.x, v.y, v.z);
+	return osg::Vec3(v.x(), v.y(), v.z());
 }
 
 inline Vector3 fromOSG(osg::Vec3 const &v) {
@@ -50,9 +50,9 @@ inline Vector3 fromOSG(osg::Vec3 const &v) {
 }
 
 inline osg::Matrix toOSG(Matrix3 const &m) {
-	return osg::Matrix(m[0][0], m[0][1], m[0][2], 0.0,
-	                   m[1][0], m[1][1], m[1][2], 0.0,
-			   m[2][0], m[2][1], m[2][2], 0.0,
+	return osg::Matrix(m(0, 0), m(0, 1), m(0, 2), 0.0,
+	                   m(1, 0), m(1, 1), m(1, 2), 0.0,
+			   m(2, 0), m(2, 1), m(2, 2), 0.0,
 			   0.0, 0.0, 0.0, 1.0);
 }
 
@@ -62,16 +62,16 @@ inline Matrix3 fromOSG(osg::Matrix const &m) {
 	               m(2, 0), m(2, 1), m(2, 2));
 }
 
-inline osg::Quat toOSG(Quaternion const &q) {
-	return osg::Quat(q.w, q.x, q.y, q.z);
+inline osg::Quat toOSG(Quat const &q) {
+	return osg::Quat(q.x(), q.y(), q.z(), q.w());
 }
 
-inline Quaternion fromOSG(osg::Quat const &q) {
-	return Quaternion(q.w(), q.x(), q.y(), q.z());
+inline Quat fromOSG(osg::Quat const &q) {
+	return Quat(q.x(), q.y(), q.z(), q.w());
 }
 
 
-NAMESPACE_END // namespace simdata
+NAMESPACE_SIMDATA_END
 
 
 #endif //__SIMDATA_OSG_H__

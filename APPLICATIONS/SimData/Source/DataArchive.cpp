@@ -500,5 +500,5 @@ std::vector<std::string> DataArchive::getAllPathStrings() const {
 	return _paths;
 }
 
-NAMESPACE_END // namespace simdata
+NAMESPACE_SIMDATA_END
 

@@ -1,11 +1,7 @@
-/* SimDataCSP: Data Infrastructure for Simulations
- * Copyright (C) 2002 Mark Rose <tm2@stm.lbl.gov>
+/* SimData: Data Infrastructure for Simulations
+ * Copyright (C) 2002, 2003 Mark Rose <tm2@stm.lbl.gov>
  * 
- * Combat Simulator Project - FlightSim Demo
- * Copyright (C) 2002 The Combat Simulator Project
- * http://csp.sourceforge.net
- *
- * This file is part of SimDataCSP.
+ * This file is part of SimData.
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -22,12 +18,15 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
-
 /**
  * @file Vector3.cpp
  *
- * Initial CSP version by Wolverine69
- * Code based on libraries from magic-software.com and Game Programming Gems.
+ * This source code was originally based on the Vec3 class of 
+ * the OpenSceneGraph library, Copyright 1998-2003 Robert Osfield.
+ * Source code from OpenSceneGraph is used here under the GNU General
+ * Public License Version 2 or later, as permitted under the 
+ * OpenSceneGraph Public License Version 0.0 (exception 3) and the GNU 
+ * Lesser Public  License Version 2 (clause 3).
  **/
 
 
@@ -36,6 +35,7 @@
 #include <SimData/Pack.h>
 
 #include <iomanip>
+#include <sstream>
 
 
 NAMESPACE_SIMDATA
@@ -50,153 +50,43 @@ const Vector3 Vector3::YAXIS(0.0, 1.0, 0.0);
 /// Unit vector in Z
 const Vector3 Vector3::ZAXIS(0.0, 0.0, 1.0);
 
-
-Vector3 operator/ (const Vector3 & a, double f) //Checked (delta)
-{
-	Vector3 newVect;
-
-	if ( f != 0.0 )
-	{
-		double fInv = 1.0f/f;
-		newVect.x = fInv*a.x;
-		newVect.y = fInv*a.y;
-		newVect.z = fInv*a.z;
-		return newVect;
-	}
-	else
-	{
-		// need to properly handle error condition
-		return Vector3::ZERO;
-	}
+Matrix3 Vector3::starMatrix() const {
+	return Matrix3(0.0, -_z, _y, _z, 0.0, -_x, -_y, _x, 0.0);
 }
 
-Vector3& Vector3::operator/= (double f)
-{
-	if ( f != 0.0 )
-	{
-		double fInv = 1.0f/f;
-		x *= fInv;
-		y *= fInv;
-		z *= fInv;
-	}
-	else
-	{
-		// need to properly handle error condition.
-		x = 0;
-		y = 0;
-		z = 0;
-	}
-	return *this;
-}
-
-Vector3& Vector3::Normalize() // Checked (delta)
-{
-	double m = Length();
-	if (m > 0.0F)
-		m = 1.0F / m;
-	else
-		m = 0.0F;
-	x *= m;
-	y *= m;
-	z *= m;
-	return *this;
-}
-
-
-double Vector3::Unitize (double fTolerance)
-{
-	double fLength = Length();
-
-	if ( fLength > fTolerance )
-	{
-		double fInvLength = 1.0f/fLength;
-		x *= fInvLength;
-		y *= fInvLength;
-		z *= fInvLength;
-	}
-	else
-	{
-		fLength = 0.0;
-	}
-	return fLength;
-}
-
-void Vector3::Print(FILE * stream) const
-{
-	fprintf(stream, "[%f, %f, %f]\n", x, y, z);
-}
-
-
-Matrix3 Vector3::StarMatrix() const
-{
-	Matrix3 mat;
-	mat[0][0] = 0.0;
-	mat[0][1] = -z;
-	mat[0][2] = y;
-	mat[1][0] = z;
-	mat[1][1] = 0.0;
-	mat[1][2] = -x;
-	mat[2][0] = -y;
-	mat[2][1] = x;
-	mat[2][2] = 0.0;
-	return mat;
-}
-
-std::string Vector3::asString() const
-{
-	char buff[128];
-	sprintf(buff, "[%.3f, %.3f, %.3f]", x, y, z);
-	return buff;
+std::string Vector3::asString() const {
+	std::stringstream repr;
+	repr << *this;
+	return repr.str();
 }
 
 /**
  * Print string representation to a stream.
  */
-std::ostream & operator << (std::ostream & os, const Vector3& v)
-{
-  os << "["  << std::setw(8) << v.x 
-     << ", " << std::setw(8) << v.y 
-     << ", " << std::setw(8) << v.z << "]";
-  return os;
-}
-
-Vector3 Vector3::Cross(const Vector3 & a) const {
-	return SIMDATA(Cross)(*this, a);
-}
-
-double Vector3::Dot(const Vector3 & a) const {
-	return SIMDATA(Dot)(*this, a);
-}
-
-std::vector<double> Vector3::GetElements() const {
-	std::vector<double> elements;
-	elements.push_back(x);
-	elements.push_back(y);
-	elements.push_back(z);
-	return elements;
+std::ostream & operator << (std::ostream & os, const Vector3& v) {
+	os << "[" << std::setw(8) << v.x() 
+	   << " " << std::setw(8) << v.y() 
+ 	   << " " << std::setw(8) << v.z() << "]";
+	return os;
 }
 
 void Vector3::pack(Packer& p) const {
-	p.pack(x);
-	p.pack(y);
-	p.pack(z);
+	p.pack(_x);
+	p.pack(_y);
+	p.pack(_z);
 }
 
 void Vector3::unpack(UnPacker& p) {
-	p.unpack(x);
-	p.unpack(y);
-	p.unpack(z);
+	p.unpack(_x);
+	p.unpack(_y);
+	p.unpack(_z);
 }
 
 void Vector3::parseXML(const char* cdata) {
-	double X, Y, Z;
-	int n = sscanf(cdata, "%lf %lf %lf", &X, &Y, &Z);
-	x = X;
-	y = Y;
-	z = Z;
+	int n = sscanf(cdata, "%lf %lf %lf", &_x, &_y, &_z);
 	if (n!=3) throw ParseException("SYNTAX ERROR: expecting 3 floats");
 }
 
 
-NAMESPACE_END // namespace simdata
+NAMESPACE_SIMDATA_END
 

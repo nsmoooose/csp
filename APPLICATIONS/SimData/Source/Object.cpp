@@ -81,5 +81,5 @@ hasht Object::getPath() const {
 }
 
 
-NAMESPACE_END // namespace simdata
+NAMESPACE_SIMDATA_END
 

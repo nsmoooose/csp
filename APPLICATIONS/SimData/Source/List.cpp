@@ -58,5 +58,5 @@ template<class T> std::string List<T>::__repr__() {
 */
 
 
-NAMESPACE_END // namespace simdata
+NAMESPACE_SIMDATA_END
 

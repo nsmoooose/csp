@@ -22,7 +22,7 @@
 #include <SimData/Log.h>
 #include <SimData/Pack.h>
 #include <SimData/DataArchive.h>
-#include <SimData/ns-simdata.h>
+#include <SimData/Namespace.h>
 
 #include <sstream>
 
@@ -134,5 +134,5 @@ bool ReferencePointer::__ne__(const ReferencePointer& other) {
 }
 
 
-NAMESPACE_END // namespace simdata
+NAMESPACE_SIMDATA_END
 

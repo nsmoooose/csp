@@ -1,7 +1,7 @@
-/* SimDataCSP: Data Infrastructure for Simulations
+/* SimData: Data Infrastructure for Simulations
  * Copyright (C) 2002 Mark Rose <tm2@stm.lbl.gov>
  * 
- * This file is part of SimDataCSP.
+ * This file is part of SimData.
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -18,39 +18,17 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
+/*
+ * @file Math.cpp
+ *
+ **/
+
 
 #include <SimData/Math.h>
-#include <SimData/Vector3.h>
 
 
 NAMESPACE_SIMDATA
 
 
-//
-// Calculates the angle between two vectors (with orientation)
-//
-double angleBetweenTwoVectors(const Vector3 & v1, const Vector3 & v2)
-{
-	double l1 = v1.Length(), l = l1 * v2.Length();
-
-	if (l == 0.0) return 0.0;
-
-	double cosa = Dot(v1, v2) / l;
-	Vector3 crossVec = v1^v2;
-
-	double orientation = Dot(Vector3(0,0,1),crossVec);
-	if (orientation == 0.0)
-		orientation = Dot(Vector3(1,0,0), crossVec);
-	if (orientation == 0.0)
-		orientation = - Dot(Vector3(0,1,0), crossVec);
-	// if the orientation is negative then the angle is negative.
-	if (orientation > 0.0) {
-		return acos(cosa);
-	} else {
-		return -acos(cosa);
-	}
-}
-
-
-NAMESPACE_END // namespace simdata
+NAMESPACE_SIMDATA_END
 

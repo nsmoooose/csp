@@ -1,49 +1,38 @@
-// Combat Simulator Project - FlightSim Demo
-// Copyright (C) 2002 The Combat Simulator Project
-// http://csp.sourceforge.net
-// 
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation; either version 2
-// of the License, or (at your option) any later version.
-// 
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-// 
-// You should have received a copy of the GNU General Public License
-// along with this program; if not, write to the Free Software
-// Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+/* SimData: Data Infrastructure for Simulations
+ * Copyright (C) 2002, 2003 Mark Rose <tm2@stm.lbl.gov>
+ * 
+ * This file is part of SimData.
+ * 
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ */
 
 
 /**
  * @file LogStream.h
  *
  * Stream based logging mechanism.
- **/
+ * 
+ * Based on the LogStream library written by Bernie Bright, 1998
+ * Copyright (C) 1998  Bernie Bright - bbright@c031.aone.net.au
+ *
+ * Source code from Bernie Bright's LogStream library is used
+ * here under the turms of the GNU General Public License
+ * version 2 or later, as allowed by the GNU Library General 
+ * Public License Version 2 (clause 3).
+ */
 
-
-// Written by Bernie Bright, 1998
-//
-// Copyright (C) 1998  Bernie Bright - bbright@c031.aone.net.au
-//
-// This library is free software; you can redistribute it and/or
-// modify it under the terms of the GNU Library General Public
-// License as published by the Free Software Foundation; either
-// version 2 of the License, or (at your option) any later version.
-//
-// This library is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-// Library General Public License for more details.
-//
-// You should have received a copy of the GNU Library General Public
-// License along with this library; if not, write to the
-// Free Software Foundation, Inc., 59 Temple Place - Suite 330,
-// Boston, MA  02111-1307, USA.
-//
-// $Id: LogStream.h,v 1.7 2003/06/10 23:31:30 mkrose Exp $
 
 #ifndef __SIMDATA_LOGSTREAM_H__
 #define __SIMDATA_LOGSTREAM_H__
@@ -52,7 +41,7 @@
 #include <fstream>
 #include <string>
 
-#include <SimData/ns-simdata.h>
+#include <SimData/Namespace.h>
 #include <SimData/Export.h>
 
 NAMESPACE_SIMDATA
@@ -282,7 +271,7 @@ logstream::operator<< ( const loglevel& l )
 	return *this;
 }
 
-NAMESPACE_END // namespace simdata
+NAMESPACE_SIMDATA_END
 
 
 #endif // __SIMDATA_LOGSTREAM_H__

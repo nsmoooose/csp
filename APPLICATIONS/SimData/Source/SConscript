@@ -19,11 +19,14 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
+# source dist
+
 import os.path
 
-Import('env', 'construct')
+Import('env', 'construct', 'Package')
 
-headers = """
+headers = construct.Prefix("#/Include/SimData",
+	"""
 	BaseType.h
 	Conversions.h
 	DataArchive.h
@@ -50,14 +53,14 @@ headers = """
 	Math.h
 	Matrix3.h
 	Noise.h
-	ns-simdata.h
+	Namespace.h
 	Object.h
 	ObjectInterface.h
 	osg.h
 	Pack.h
 	Path.h
 	PTS.h
-	Quaternion.h
+	Quat.h
 	Random.h
 	Real.h
 	Ref.h
@@ -67,9 +70,10 @@ headers = """
 	Vector3.h
 	Vector3.inl
 	Version.h
-	""".split()
+	""")
 
-interfaces = """
+interfaces = construct.Prefix("#/Include/SimData",
+	"""
 	cSimData.i
 	BaseType.i
 	Conversions.i
@@ -95,14 +99,14 @@ interfaces = """
 	Object.i
 	Pack.i
 	Path.i
-	Quaternion.i
+	Quat.i
 	Random.i
 	Real.i
 	String.i
 	Types.i
 	vector.i
 	Vector3.i
-	""".split()
+	""")
 
 sources = """
 	BaseType.cpp
@@ -128,7 +132,7 @@ sources = """
 	Object.cpp
 	Pack.cpp
 	Path.cpp
-	Quaternion.cpp
+	Quat.cpp
 	Random.cpp
 	Real.cpp
 	TypeAdapter.cpp
@@ -136,18 +140,26 @@ sources = """
 	Version.cpp
 	""".split()
 
-package = """
+package = construct.Prefix("#/SimData", 
+	"""
 	__init__.py
 	Parse.py
 	Compile.py
 	Debug.py
 	cSimData.py
-	""".split()
+	""")
 
-package = map(lambda x: File('#/SimData/'+x), package)
-headers = map(lambda x: File('#/Include/SimData/'+x), headers)
-interfaces = map(lambda x: File('#/Include/SimData/'+x), interfaces)
-
+extra = construct.Prefix("#",
+	"""
+	README
+	COPYING
+	TODO
+	Makefile
+	SConstruct
+	construct.py
+	setup.py
+	Source/SConscript
+	""")
 
 # swig module
 
@@ -155,22 +167,18 @@ env.SwigBuild(['cSimData_wrap.cpp', 'cSimData.py'], 'cSimData')
 wrapper = env.CopyFile('#/SimData/cSimData.py', 'cSimData.py')
 sources.append('cSimData_wrap.cpp')
 
-
 # main libraries
 
 shared_library = env.SharedLibrary('#/SimData/_cSimData', sources, SHLIBPREFIX = '', LIBS = env["SWLIBS"])
 static_library = env.StaticLibrary('#/SimData/libSimData', sources)
-
+libraries = [shared_library, static_library]
 
 # installation
 
-package_target = os.path.join(env['PACKAGE_PREFIX'], 'SimData')
-include_target = os.path.join(env['INCLUDE_PREFIX'], 'SimData')
-package = package + [shared_library, static_library]
-install_package = construct.installPythonSources(env, package_target, package)
-install_headers = construct.installPythonSources(env, include_target, headers + interfaces)
-env.Alias('install', install_package + install_headers)
-
+Package.installTarget(package + libraries, headers + interfaces)
+Package.add(sources, 'source')
+Package.add(libraries, 'binary')
+Package.add(package + headers + interfaces + extra, 'both')
 
 # default target(s)
 

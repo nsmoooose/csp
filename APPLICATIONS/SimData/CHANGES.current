@@ -1,6 +1,11 @@
 Version 0.3.4 (in progress)
 ===========================
 
+2003-08-05: onsight
+            Replaced Random, Vector3, Matrix3, and Quaternion classes with
+	    GPL'd code.  The APIs for these classes have changed significatly,
+	    although the overall functionality should be similar.
+
 2003-08-04: onsight
             Tagged r0_3_3, version 0.3.4 started.
 

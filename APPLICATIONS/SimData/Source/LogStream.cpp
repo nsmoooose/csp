@@ -22,7 +22,7 @@
 // Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 // Boston, MA  02111-1307, USA.
 //
-// $Id: LogStream.cpp,v 1.3 2003/06/10 23:31:32 mkrose Exp $
+// $Id: LogStream.cpp,v 1.4 2003/08/06 06:36:25 mkrose Exp $
 
 
 #include <SimData/LogStream.h>
@@ -88,5 +88,5 @@ void logstream::setLogClasses(int c)
 }
 
 
-NAMESPACE_END // namespace simdata
+NAMESPACE_SIMDATA_END
 

@@ -25,7 +25,7 @@
 %}
 
 %include "std_string.i"
-%include "SimData/ns-simdata.h"
+%include "SimData/Namespace.h"
 
 NAMESPACE_SIMDATA
 
@@ -40,6 +40,7 @@ public:
 	void setLogClasses(int c);
 };
 
-NAMESPACE_END // namespace simdata
+NAMESPACE_SIMDATA_END // namespace simdata
 
 %include "SimData/Log.h"
+

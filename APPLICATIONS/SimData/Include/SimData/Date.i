@@ -33,7 +33,7 @@ NAMESPACE_SIMDATA
 %rename(__repr__) SimDate::asString() const;
 %rename(__cmp__) Date::compare(Date const &) const;
 %rename(__cmp__) SimDate::compare(SimDate const &) const;
-NAMESPACE_END
+NAMESPACE_SIMDATA_END
 
 %include "SimData/Date.h"
 

@@ -295,7 +295,7 @@ bool Enumeration::contains(const std::string& x) const {
 }
 
 
-NAMESPACE_END // namespace simdata
+NAMESPACE_SIMDATA_END
 
 
 /*

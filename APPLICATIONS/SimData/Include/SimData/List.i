@@ -32,7 +32,7 @@
 %include "std_string.i"
 %include "std_vector.i"
 
-%include "SimData/ns-simdata.h"
+%include "SimData/Namespace.h"
 
 %rename (__repr__) SIMDATA(List)::asString() const;
 

@@ -31,7 +31,7 @@
 %ignore SIMDATA(PointerBase)::operator=(const PointerBase& r);
 
 %include "std_string.i"
-%include "SimData/ns-simdata.h"
+%include "SimData/Namespace.h"
 
 %rename(__repr__) SIMDATA(PathPointerBase)::asString() const;
 %rename(__not__) SIMDATA(PointerBase)::operator!() const; 

@@ -128,5 +128,5 @@ void DataManager::cleanStatic() {
 	}
 }
 
-NAMESPACE_END // namespace simdata
+NAMESPACE_SIMDATA_END
 

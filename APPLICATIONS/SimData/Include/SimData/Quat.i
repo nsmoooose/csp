@@ -18,37 +18,17 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
+%module Quat
+%{
+#include "SimData/Quat.h"
+%}
 
-/**
- * @file ns-simdata.h
- */
+%include "std_string.i"
+%include "std_vector.i"
 
+%include "SimData/Namespace.h"
 
-#ifndef __SIMDATA_NS_SIMDATA_H__
-#define __SIMDATA_NS_SIMDATA_H__
+%rename(__repr__) SIMDATA(Quat)::asString() const;
 
-// turn on the simdata namespace by default
-#define USE_NAMESPACE_SIMDATA
-
-#ifdef NO_NAMESPACE_SIMDATA
-#undef USE_NAMESPACE_SIMDATA
-#endif // USE_NAMESPACE_SIMDATA
-
-// simdata namespace macros, to easily turn namespace support
-// on or off.
-
-#ifdef USE_NAMESPACE_SIMDATA
-  #define USING_SIMDATA using namespace simdata;
-  #define NAMESPACE_SIMDATA namespace simdata {
-  #define NAMESPACE_END }
-  #define SIMDATA(x) simdata::x
-#else
-  #define USING_SIMDATA
-  #define NAMESPACE_SIMDATA
-  #define NAMESPACE_END
-  #define SIMDATA(x) x
-#endif
-
-#endif //__SIMDATA_NS_SIMDATA_H__
-
+%include "SimData/Quat.h"
 

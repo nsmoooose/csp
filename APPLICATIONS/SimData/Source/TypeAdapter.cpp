@@ -46,5 +46,5 @@ std::ostream &operator <<(std::ostream &o, TypeAdapter const &t) {
 }
 
 
-NAMESPACE_END // namespace simdata
+NAMESPACE_SIMDATA_END
 

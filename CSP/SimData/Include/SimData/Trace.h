@@ -105,9 +105,10 @@ protected:
  */
 class Trace: public TraceBase {
 
+public:
+
 #ifdef __GNUC__
 
-public:
 	static void StackDump(std::ostream &out, int skip=0) {
 		void *trace[64];
 		char **messages = (char **)NULL;

@@ -27,6 +27,7 @@
 #ifndef __SIMDATA_TIMING_H__
 #define __SIMDATA_TIMING_H__
 
+#include <SimData/Export.h>
 #include <SimData/Namespace.h>
 
 
@@ -42,18 +43,18 @@ typedef double timing_t;
 
 /** Start the timer.
  */
-void tstart(void);
+void SIMDATA_EXPORT tstart(void);
 
 /** Stop the timer.
  */
-void tend(void);
+void SIMDATA_EXPORT tend(void);
 
 /** Get the time interval (in seconds) between last calls to tstart()
  *  and tend().
  *
  *  The precision should be about 1-2 ms on most platforms.
  */
-double tval();
+double SIMDATA_EXPORT tval();
 
 /** Return the current time in seconds.
  *

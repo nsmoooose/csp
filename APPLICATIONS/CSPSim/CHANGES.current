@@ -2,6 +2,13 @@ Version 0.3.3 (in progress)
 ===========================
 
 2003-06-25: onsight
+            
+	    Small but important fixes to Source/Makefile.in:
+	    Added a line to create .deps/Theater if it doesn't 
+	    exist, and commented the gnucc2 flags since these
+	    aren't part of autoconf yet.
+
+2003-06-25: onsight
 
 ==========> GCC: Large parts of ChunkLodTerrain are checked in
             now, but actually running it requires that the shared

@@ -73,22 +73,13 @@ void BaseType::parseXML(const char* cdata) {
 	throw ParseException("WARNING: #cdata ignored");
 }
 
-
 void BaseType::convertXML() {
-}
-
-
-std::string BaseType::asString() const {
-	return "";
-}
-
-std::string BaseType::typeString() const {
-	return "";
 }
 
 std::ostream &operator <<(std::ostream &o, BaseType const &t) {
 	return o << t.asString();
 }
+
 
 NAMESPACE_SIMDATA_END
 

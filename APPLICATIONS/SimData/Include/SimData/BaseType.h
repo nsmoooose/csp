@@ -87,11 +87,11 @@ public:
 	 *  the object for output to ostreams (using <<), and also 
 	 *  serves as __repr__ in Python.
 	 */
-	virtual std::string asString() const;
+	virtual std::string asString() const=0;
 
 	/** Return a string representation of the type.
 	 */
-	virtual std::string typeString() const;
+	virtual std::string typeString() const=0;
 };
 
 

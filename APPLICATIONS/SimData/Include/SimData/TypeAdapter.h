@@ -121,46 +121,6 @@ public:
 
 	// objects
 
-	/*
-	 * XXX 
-	 * These implicit casts are not currently used.  The templated
-	 * versions, in particular, are rather dangerous (and break under
-	 * GCC-3.3).  After a short testing period this cast code can be
-	 * be completely removed.  --MR 7/03
-	 
-	template <typename T>
-	operator T const &() const { 
-		BaseCheck();
-		T const *p = dynamic_cast<T const *>(var.o);
-		TypeCheck(p!=NULL, "dynamic cast of BaseType* failed");
-		return *p;
-	}
-	
-	template <typename T>
-	operator T &() const { 
-		BaseCheck();
-		T const *p = dynamic_cast<T const *>(var.o);
-		TypeCheck(p!=NULL, "dynamic cast of BaseType* failed");
-		T *nc = const_cast<T *>(p);
-		return *nc;
-	}
-	
-	// basic types
-	operator int const() const { IntCheck(); return var.i; }
-
-	// can add range checking if desired
-	operator short int const() const { IntCheck(); return (short int)var.i; }
-	operator unsigned int const() const { IntCheck(); return (unsigned int)var.i; }
-	operator unsigned short int const() const { IntCheck(); return (unsigned short int)var.i; }
-	operator char const() const { IntCheck(); return (char)var.i; }
-	operator unsigned char const() const { IntCheck(); return (unsigned char)var.i; }
-
-	operator double const() const { DoubleCheck(); return var.d; }
-	operator float const() const { DoubleCheck(); return static_cast<float>(var.d); }
-
-	operator std::string const() const { StringCheck(); return s; }
-	*/
-
 	int getInteger() const { IntCheck(); return var.i; }
 	double getFloatingPoint() const { DoubleCheck(); return var.d; }
 	std::string getString() const { StringCheck(); return s; }
@@ -168,9 +128,11 @@ public:
 	
 	template<typename T>
 	void getBaseTypeAs(T * &t) const {
+		T proto;
 		BaseCheck();
 		T const *cp = dynamic_cast<T const *>(var.o);
-		TypeCheck(cp!=NULL, "dynamic cast of BaseType* failed in TypeAdapter::getBaseTypeAs");
+		TypeCheck(cp!=NULL, "dynamic cast of BaseType* to " + proto.typeString() +
+				    "failed in TypeAdapter::getBaseTypeAs");
 		t = const_cast<T *>(cp);
 	}
 
@@ -178,7 +140,8 @@ public:
 	void setBase(T & x) const {
 		BaseCheck();
 		T const *p = dynamic_cast<T const *>(var.o);
-		TypeCheck(p!=NULL, "dynamic cast of BaseType* failed in TypeAdapter::setBase");
+		TypeCheck(p!=NULL, "dynamic cast of BaseType* to " + x.typeString() + 
+				   " failed in TypeAdapter::setBase");
 		T *nc = const_cast<T *>(p);
 		x = *nc;
 	}
@@ -197,7 +160,7 @@ public:
 			return;
 		}
 		ECEF const *ecef = dynamic_cast<ECEF const *>(var.o);
-		TypeCheck(ecef!=NULL, "dynamic cast of BaseType* failed in TypeAdapter::setCoordinate");
+		TypeCheck(ecef!=NULL, "dynamic casts of BaseType* to {LLA,UTM,ECEF} failed in TypeAdapter::setCoordinate");
 		x = *ecef;
 	}
 
@@ -267,7 +230,19 @@ public:
 			
 	bool isType(TYPE t) const { return type==t; }
 
-	const std::string __repr__() const { return std::string("TypeAdapter<") + TypeNames[type] + ">"; }
+	const std::string __repr__() const { 
+		std::string repr;
+		if (type==BASE) {
+			if (var.o == 0) {
+				repr += "BaseType, NULL";
+			} else {
+				repr += "BaseType, " + var.o->typeString();
+			}
+		} else {
+			repr += TypeNames[type];
+		}
+		return "TypeAdapter<" + repr + ">";
+	}
 
 private:
 	TYPE type;
@@ -282,7 +257,10 @@ private:
 	} var;
 
 	void TypeCheck(bool test, std::string msg) const throw(TypeMismatch) {
-		if (!(test)) throw TypeMismatch(__repr__() + ": " + msg);
+		if (!(test)) {
+			msg = __repr__() + ": " + msg;
+			throw TypeMismatch(msg);
+		}
 	}
 	void IntCheck() const {
 		TypeCheck(type==INT, "integer type expected");

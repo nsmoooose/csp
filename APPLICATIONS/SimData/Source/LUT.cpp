@@ -21,6 +21,8 @@
 
 #include <SimData/LUT.h>
 
+#include <sstream>
+
 #ifndef __SIMDATA_NO_LUT__
 
 
@@ -472,16 +474,19 @@ void LUT<N,X>::unpack(UnPacker& p) {
 	InterpolationType<X>::postInterpolation(x0, x1, n-1);
 }
 
-/**
- * Return strig representation of type.
- */
 template <int N, class X>
 std::string LUT<N,X>::asString() const {
-	char buff[128];
-	sprintf(buff, "<%d-Dimensional Lookup Table>", N);
-	return buff;
+	std::stringstream ss;
+	ss << "<simdata::" << N << "D Lookup Table>";
+	return ss.str();
 }
 
+template <int N, class X>
+std::string LUT<N,X>::typeString() const { 
+	std::stringstream ss;
+	ss << "type::LUT<" << N << ">";
+	return ss.str();
+}
 
 
 template <typename X>
@@ -737,9 +742,13 @@ void LUT<1,X>::unpack(UnPacker& p) {
  */
 template <typename X>
 std::string LUT<1,X>::asString() const {
-	return "<1-Dimensional Lookup Table>";
+	return "<simdata::1D Lookup Table>";
 }
 
+template <typename X>
+std::string LUT<1,X>::typeString() const { 
+	return "type::LUT<1>";
+}
 
 
 

@@ -61,17 +61,52 @@ class Quat;
 class SIMDATA_EXPORT Matrix3: public BaseType
 {
 public:
+	/** String representation.
+	 */
 	virtual std::string asString() const;
+
+	/** Type representation.
+	 */
 	virtual std::string typeString() const { return "Matrix3"; }
+
+	/** Serialize to a data archive.
+	 */
 	virtual void pack(Packer &p) const;
+
+	/** Deseerialize from a data archive.
+	 */
 	virtual void unpack(UnPacker &p);
+	
+	/** Extract the matrix values from XML character data.
+	 *
+	 *  The nine values should be separated by white-space
+	 *  and arranged in order (0,0), (0,1), (0,2), (1,0), etc.
+	 */
 	virtual void parseXML(const char* cdata);
 
+	/** Null matrix.
+	 */
 	static const Matrix3 ZERO;
+
+	/** Identity matrix.
+	 */
 	static const Matrix3 IDENTITY;
 
+	/** Default constructor.
+	 *
+	 *  @note The default constructor does @b not initialize the
+	 *  matrix for the sake of efficiency.  If you do not explicitly
+	 *  set the matrix, the elements will generally assume random 
+	 *  values.
+	 */
         Matrix3() { } // for speed, do not initialize
+
+	/** Copy constructor.
+	 */
         Matrix3(const Matrix3& other): BaseType(other) { set(other); }
+
+	/** Construct and initialize a matrix from a double[9] array.
+	 */
         explicit Matrix3(double const * const def) { set(def); }
         Matrix3(double a00, double a01, double a02,
                 double a10, double a11, double a12,
@@ -80,28 +115,62 @@ public:
 		    a10, a11, a12, 
 		    a20, a21, a22); 
 	}
+
+	/** Construct and initialize a matrix from three column vectors.
+	 */
 	Matrix3(const Vector3& col0, const Vector3& col1, const Vector3& col2);
 
+	/** Destructor.
+	 */
         ~Matrix3() {}
 
+	/** Compare two matrices.
+	 * 
+	 *  Compares two matrices byte-by-byte.  The sign of the return value is
+	 *  useless, since the byte comparisons are inequivalent to floating point
+	 *  comparisions.  Used only to test for equality.
+	 *
+	 *  @returns 0 if equal, non-zero if unequal.
+	 */
         int compare(const Matrix3& m) const { return memcmp(_mat, m._mat, sizeof(_mat)); }
 
-        bool operator < (const Matrix3& m) const { return compare(m)<0; }
+	/** Compare two matrices for (byte) equality.
+	 */
         bool operator == (const Matrix3& m) const { return compare(m)==0; }
+
+	/** Compare two matrices for (byte) inequality.
+	 */
         bool operator != (const Matrix3& m) const { return compare(m)!=0; }
 
 #ifndef SWIG
+	/** Get the value (reference) of a matrix element.
+	 */
         inline double& operator()(int row, int col) { return _mat[row][col]; }
+
+	/** Get the (const) value of a matrix element.
+	 */
         inline double operator()(int row, int col) const { return _mat[row][col]; }
 #endif // SWIG
 
+	/** Get the value of a matrix element.
+	 */
 	inline double getElement(int row, int col) { return _mat[row][col]; }
+
+	/** Set the value of a matrix element.
+	 */
 	inline void setElement(int row, int col, double value) { _mat[row][col]=value; }
 
+	/** Return true if all elements are valid floating point numbers.
+	 */
         inline bool valid() const { return !isNaN(); }
+
+	/** Return true if any elements are NaN (not-a-number).
+	 */
         bool isNaN() const;
 
 #ifndef SWIG
+	/** Copy operator.
+	 */
         inline Matrix3& operator = (const Matrix3& other) {
 		if (&other == this) return *this;
 		std::copy((double*)other._mat, (double*)other._mat+9, (double*)(_mat));
@@ -109,14 +178,20 @@ public:
         }
 #endif // SWIG
         
+	/** Set this matrix from another matrix.
+	 */
         inline void set(const Matrix3& other) {
 		std::copy((double*)other._mat, (double*)other._mat+9, (double*)(_mat));
         }
         
+	/** Set this matrix from a double[9] array.
+	 */
         inline void set(double const * const ptr) {
 		std::copy(ptr, ptr+9, (double*)(_mat));
         }
         
+	/** Set this matrix from a list of element values.
+	 */
         void set(double a00, double a01, double a02,
                  double a10, double a11, double a12,
                  double a20, double a21, double a22) {
@@ -131,19 +206,30 @@ public:
 		_mat[2][2] = a22;
 	}
                   
+	/** Get the matrix elements as a vector<double>.
+	 */
 	std::vector<double> getElements() const;
+
+	/** Set this matrix from a vector<double>.
+	 */
 	void setElements(std::vector<double> const &v) const;
 
+	/** Get a row vector of this matrix.
+	 */
 	Vector3 getRow(int i) { 
 		assert(i>=0 && i<3); 
 		return Vector3(_mat[i][0], _mat[i][1], _mat[i][2]); 
 	}
 
+	/** Get a column vector of this matrix.
+	 */
 	Vector3 getCol(int i) { 
 		assert(i>=0 && i<3); 
 		return Vector3(_mat[0][i], _mat[1][i], _mat[2][i]); 
 	}
 
+	/** Set a row of this matrix from a vector.
+	 */
 	void setRow(int i, const Vector3& v) {
 		assert(i>=0 && i<3);
 		_mat[i][0] = v.x();
@@ -151,6 +237,8 @@ public:
 		_mat[i][2] = v.z();
 	}
 
+	/** Set a column of this matrix from a vector.
+	 */
 	void setCol(int i, const Vector3& v) {
 		assert(i>=0 && i<3);
 		_mat[0][i] = v.x();
@@ -158,46 +246,140 @@ public:
 		_mat[2][i] = v.z();
 	}
 
+	/** Get a pointer to a row of this matrix.
+	 */
 	double * row(int i) { assert(i>=0 && i<3); return (double*)(_mat[i]); }
+	
+	/** Get a pointer to the first element of this matrix.
+	 */
         double * ptr() { return (double *)_mat; }
-        double * ptr() const { return (double *)_mat; }
 
+	/** Get a const pointer to the first element of this matrix.
+	 */
+        double const * ptr() const { return (double const *)_mat; }
+
+	/** Set this matrix equal to the identity matrix.
+	 */
         inline void makeIdentity() { set(IDENTITY); }
+
+	/** Set all matrix elements to zero.
+	 */
 	inline void makeZero() { set(ZERO); }
 
+	/** Set this matrix to a scaling matrix.
+	 * 
+	 *  The resulting matrix has the components
+	 *  of the input vector along the diagonal,
+	 *  with all off-diagonal elements equal to
+	 *  zero.
+	 *
+	 *  @param v A vector specifying the scale factor for
+	 *           each axis.
+	 */
         inline void makeScale(const Vector3& v) {
 		makeScale(v.x(), v.y(), v.z());
 	}
 
+	/** Set this matrix to a scaling matrix.
+	 *  
+	 *  See makeScale(const Vector3&).
+	 */
         void makeScale(double, double, double);
         
+	/** Make a rotation matrix to transform one vector into another.
+	 *
+	 *  The resulting matrix will rotate the @c from vector
+	 *  into the @c to vector.
+	 */
         void makeRotate(const Vector3& from, const Vector3& to);
+
+	/** Make a rotation matrix to rotate around a given axis.
+	 *
+	 *  @param angle The angle of rotation.
+	 *  @param axis The axis of rotation.
+	 */
         void makeRotate(double angle, const Vector3& axis);
+
+	/** Make a rotation matrix to rotate around a given axis.
+	 *
+	 *  See makeRotate(double angle, const Vector3& axis).
+	 */
         void makeRotate(double angle, double x, double y, double z);
+
+	/** Make a rotation matrix from a quaternion.
+	 */
         void makeRotate(const Quat&);
+
+	/** Make a rotation matrix from euler angles.
+	 *
+	 *  @param roll the x-axis rotation.
+	 *  @param pitch the y-axis rotation.
+	 *  @param yaw the z-axis rotation.
+	 */
         void makeRotate(double roll, double pitch, double yaw);
+
+	/** Make a rotation from combining three rotations.
+	 *
+	 *  @param angle1 The angle of the first rotation.
+	 *  @param axis1 The axis of the first rotation.
+	 *  @param angle2 The angle of the second rotation.
+	 *  @param axis2 The axis of the second rotation.
+	 *  @param angle3 The angle of the third rotation.
+	 *  @param axis3 The axis of the third rotation.
+	 */
         void makeRotate(double angle1, const Vector3& axis1, 
                         double angle2, const Vector3& axis2,
                         double angle3, const Vector3& axis3);
 
-        bool invert(const Matrix3&, double tolerance=1e-12);
+	/** Construct the inverse of a matrix.
+	 *
+	 *  @param m The input matrix.
+	 *  @param tolerance The minimum value of the deteriminant.
+	 *  @returns false if the deteriminant less than the tolerance,
+	 *           true otherwise.  If false, the matrix elements are
+	 *           copied directly from the input matrx.
+	 */
+        bool invert(const Matrix3 &m, double tolerance=1e-12);
+
+	/** Invert this matrix.
+	 *
+	 *  @param tolerance The minimum value of the deteriminant.
+	 *  @returns false if the deteriminant less than the tolerance,
+	 *           true otherwise.  If false, the matrix elements are
+	 *           unchanged.
+	 */
         inline bool invert(double tolerance=1e-12) { return invert(*this, tolerance); }
 
+	/** Construct the transpose of a matrix.
+	 *
+	 *  @param The input matrix to transpose.
+	 */
 	void transpose(const Matrix3& other);
 
+	/** Transpose this matrix.
+	 */
 	inline void transpose() {
 		swap(_mat[0][1], _mat[1][0]);
 		swap(_mat[0][2], _mat[2][0]);
 		swap(_mat[1][2], _mat[2][1]);
 	}
 
+	/** Get the inverse of this matrix.
+	 *
+	 *  See invert(double).
+	 */
 	inline Matrix3 getInverse(double tolerance=1e-12) const { return inverse(*this, tolerance); }
+
+	/** Get the transpose of this matrix.
+	 */
 	inline Matrix3 getTranspose() const { 
 		return Matrix3(_mat[0][0], _mat[1][0], _mat[2][0],
 		               _mat[0][1], _mat[1][1], _mat[2][1],
 			       _mat[0][2], _mat[1][2], _mat[2][2]);
 	}
 
+	/** Compute the determinant of this matrix.
+	 */
 	double determinant() const;
 
 	inline static Matrix3 const &identity(void) { return IDENTITY; }

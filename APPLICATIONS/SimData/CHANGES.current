@@ -1,6 +1,29 @@
 Version 0.3.4 (in progress)
 ===========================
 
+2003-08-19: onsight
+            Added documentation.
+
+	    Made BaseType::asString and BaseType::typeString pure virtual
+	    to force them to be defined in each derived type.
+
+	    Implemented typeString in LUT, Table, and Curve.
+
+	    Added more complete error messages (including variable types)
+	    to the TypeAdapter functions.
+
+	    Added additional error information to the MemberAccessor
+	    classes to include the name of the variable being set if
+	    TypeAdapter throws an exception.
+
+	    Added an 'addMessage()' method to Exception, which prepends
+	    a newline-terminated string to the existing message.  The
+	    original 'appendMessage()' is unchanged.
+
+	    Added typeString to the SWIG interface for LUT to prevent
+	    SWIG from thinking its is an abstract class.
+
+
 2003-08-18: onsight
             More Doxygen fixes, reorganization, and added
 	    documentation.

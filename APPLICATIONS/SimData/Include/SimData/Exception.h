@@ -77,9 +77,13 @@ public:
 	 */
 	std::string getError();
 
-	/** Add additional information to the error description.
+	/** Append additional information to the error description.
 	 */
 	void appendMessage(std::string const &msg);
+
+	/** Add (prepend) additional information to the error description.
+	 */
+	void addMessage(std::string const &msg);
 
 	/** Reset the exception so that it will not print to stderr on 
 	 *  destruction.

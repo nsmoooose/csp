@@ -220,6 +220,10 @@ std::string Curve::asString() const {
 	return std::string("<simdata::Curve>");
 }
 
+std::string Curve::typeString() const {
+	return std::string("type::Curve");
+}
+
 
 // class Table
 
@@ -521,6 +525,10 @@ void Table::dumpDCols(FILE *fp) const {
 
 std::string Table::asString() const {
 	return std::string("<simdata::Table>");
+}
+
+std::string Table::typeString() const {
+	return std::string("type::Table");
 }
 
 

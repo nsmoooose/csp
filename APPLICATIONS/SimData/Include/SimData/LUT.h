@@ -482,46 +482,117 @@ private:
 	void __getDimension(std::vector<int> &dim);
 
 public:
+	/** An integer array type for dimensioning the table */
 	typedef VEC<N, int> Dim;
+	/** A floating point array for specifying table coordinates */
 	typedef VEC<N, X> Vec;
+	/** An array of breakpoint sets for specifying the input data coordinates */
 	typedef VEC<N, std::vector<X> > Breaks;
 
+	/** Default constructor.
+	 */
 	LUT();
+
+	/** Copy constructor.
+	 */
 	LUT(LUT<N, X> const &copy);
+
+	/** Destructor.
+	 */
 	virtual ~LUT();
+
+	/** Copy operator
+	 */
 	LUT<N, X> const &operator=(LUT<N, X> const &copy);
 
+	/** Interpolate the input data.
+	 *
+	 *  The resulting table will have uniformly spaced data points,
+	 *  with the specified number of points in each dimension.
+	 *
+	 *  @param dim The number of (evenly-spaced) points in each table
+	 *             dimension after interpolation.
+	 *  @param mode The interpolation mode (e.g. linear)
+	 */
 	void interpolate(Dim const &dim, Interpolation::Modes mode);
+
+	/** Interpolate the input data.
+	 *
+	 *  The resulting table will have uniformly spaced data points,
+	 *  with the specified number of points in each dimension.
+	 *
+	 *  @param dim The number of (evenly-spaced) points in each table
+	 *             dimension after interpolation.
+	 *  @param mode The interpolation mode (e.g. linear)
+	 */
 	void interpolate(std::vector<int> const &dim, Interpolation::Modes mode);
 
+	/** Lookup the value at a given point in the table.
+	 *
+	 *  The value is calculated by linear interpolation of the evenly-
+	 *  spaced table values, which in turn were generated from the
+	 *  source data by the interpolate() method.
+	 *
+	 *  @param v The coordinates to sample.
+	 */
 	X getValue(Vec const &v) const;
 
+	/** Lookup the value at a given point in the table.
+	 *
+	 *  The value is calculated by linear interpolation of the evenly-
+	 *  spaced table values, which in turn were generated from the
+	 *  source data by the interpolate() method.
+	 *
+	 *  @param x The coordinates to sample.
+	 */
 	inline X getValue(std::vector<X> const &x) const {
 		return getValue(Vec(x));
 	}
 
+
+	/** Lookup the value at a given point in the table.
+	 *
+	 *  This method returns a WRAP instance which allows
+	 *  further coordinates to be specified by indexing.
+	 *  The result is equivalent to the getValue() methods,
+	 *  but the syntax is different: @b
+	 *  <tt>table[c0][c1][c2] == table.getValue(Vec(c0)(c1)(c2))</tt>
+	 *
+	 *  @param x The first coordinate to sample.
+	 */
 	inline WRAP<N,X> operator[](X x) const {
 		checkInterpolated();
 		return WRAP<N,X>(this, x);
 	}
 
+	/** Load the initial data value and breakpoints.
+	 *  
+	 *  The order of table values is last index first.  So
+	 *  for a 3x3 table, the order would be [0][0], [0][1],
+	 *  [0][2], [1][0], [1][1], etc.
+	 *
+	 *  @param values the table values.
+	 *  @param breaks the breakpoints for each dimension.
+	 *  @param index for internal use only.
+	 */
 	void load(std::vector<X> const &values, Breaks const &breaks, int *index = 0);
 	void load(std::vector<X> const &values, std::vector< std::vector<X> > const &breaks);
 
-	/**
-	 * Serialize an object to a data archive.
+	/** Serialize an object to a data archive.
 	 */
 	virtual void pack(Packer& p) const;
 	
-	/**
-	 * Deserialize an object from a data archive.
+	/** Deserialize an object from a data archive.
 	 */
 	virtual void unpack(UnPacker& p);
 
-	/**
-	 * Return strig representation of type.
+	/** Return a string representation of LUT.
 	 */
 	virtual std::string asString() const;
+
+	/** Return a string representation of the type.
+	 */
+	virtual std::string typeString() const;
 };
 
 /**
@@ -653,20 +724,21 @@ public:
 	void load(std::vector<X> const &values, Breaks const &breaks, int *index = 0);
 	void load(std::vector<X> const &values, std::vector< std::vector<X> > const &breaks);
 
-	/**
-	 * Serialize an object to a data archive.
+	/** Serialize an object to a data archive.
 	 */
 	virtual void pack(Packer& p) const;
 	
-	/**
-	 * Deserialize an object from a data archive.
+	/** Deserialize an object from a data archive.
 	 */
 	virtual void unpack(UnPacker& p);
 
-	/**
-	 * Return strig representation of type.
+	/** Return a string representation of LUT.
 	 */
 	virtual std::string asString() const;
+
+	/** Return a string representation of the type.
+	 */
+	virtual std::string typeString() const;
 };
 
 /**

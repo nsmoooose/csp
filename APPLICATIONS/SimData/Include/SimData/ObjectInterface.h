@@ -89,9 +89,9 @@ public:
 		assert(0);
 	}
 	std::string getType() const { return type; }
-	void setType(BaseType &x) {
-		type = x.typeString(); //XXX
-	}
+	virtual unsigned int getMask() const { return 0; }
+protected:
+	void setType(BaseType &x) { type = x.typeString(); }
 	void setType(double &x) { type = "builtin::double"; }
 	void setType(float &x) { type = "builtin::float"; }
 	void setType(unsigned int &x) { type = "builtin::uint"; }
@@ -102,8 +102,6 @@ public:
 	void setType(short &x) { type = "builtin::int16"; }
 	void setType(bool &x) { type = "builtin::bool"; }
 	void setType(std::string const &x) { type = "builtin::string"; }
-	virtual unsigned int getMask() const { return 0; }
-protected:
 	MemberAccessorBase(): type("none") {}
 	std::string name;
 	std::string help;
@@ -144,16 +142,21 @@ public:
 		if (object == NULL) {
 			throw TypeMismatch("set(\"" + name + "\"): Object class does not match interface.");
 		}
-		if (mask != 0) {
-			T value;
-			v.set(value);
-			if (value != 0) {
-				object->*member |= mask;
+		try {
+			if (mask != 0) {
+				T value;
+				v.set(value);
+				if (value != 0) {
+					object->*member |= mask;
+				} else {
+					object->*member &= ~mask;
+				}
 			} else {
-				object->*member &= ~mask;
+				v.set(object->*member);
 			}
-		} else {
-			v.set(object->*member);
+		} catch (Exception &e) {
+			e.addMessage("MemberMaskAccessor::set(" + name + "):");
+			throw;
 		}
 	}
 	virtual void pack(Object *o, Packer &p) const {
@@ -198,9 +201,12 @@ public:
 		if (object == NULL) {
 			throw TypeMismatch("set(\"" + name + "\"): Object class does not match interface.");
 		}
-		v.set(object->*member);
-		//T const &value = v.operator T const();
-		//object->*member = value;
+		try {
+			v.set(object->*member);
+		} catch (Exception &e) {
+			e.addMessage("MemberAccessor::set(" + name + "):");
+			throw;
+		}
 	}
 	virtual void pack(Object *o, Packer &p) const {
 		C * object = dynamic_cast<C *>(o);
@@ -239,7 +245,12 @@ public:
 			throw TypeMismatch("push_back(\"" + name + "\"): Object class does not match interface.");
 		}
 		typename T::value_type value;
-		v.set(value);
+		try {
+			v.set(value);
+		} catch (Exception &e) {
+			e.addMessage("VectorMemberAccessor::push_back(" + name + "):");
+			throw;
+		}
 		(object->*member).push_back(value);
 	}
 	virtual void clear(Object *o) throw(TypeMismatch) {
@@ -271,7 +282,7 @@ public:
 	}
 };
 
-#else
+#else // #if !defined(__SIMDATA_PTS_SIM)
 template <class C, typename T> 
 class MemberAccessor< C, std::vector<T> >: public MemberAccessorBase 
 {
@@ -293,8 +304,12 @@ public:
 			throw TypeMismatch("push_back(\"" + name + "\"): Object class does not match interface.");
 		}
 		T value;
-		v.set(value);
-		//T const &value = v.operator T const();
+		try {
+			v.set(value);
+		} catch (Exception &e) {
+			e.addMessage("MemberAccessor::push_back(" + name + "):");
+			throw;
+		}
 		(object->*member).push_back(value);
 	}
 	virtual void clear(Object *o) throw(TypeMismatch) {
@@ -366,60 +381,7 @@ public:
 		MemberMaskAccessor<C, char>(pm, name_, mask_, required_) { }
 };
 
-/*
-template <class C> 
-class MemberAccessor< C, int >: public MemberAccessorBase 
-{
-	int C::* member;
-	int mask;
-public:
-	MemberAccessor(int C::*pm, std::string name_, bool required_) {
-		member = pm;
-		name = name_;
-		mask = 0;
-		required = required_;
-	}
-	MemberAccessor(int C::*pm, std::string name_, int mask_, bool required_) {
-		member = pm;
-		name = name_;
-		mask = mask_;
-		required = required_;
-	}
-	virtual TypeAdapter const get(Object *o) const throw(TypeMismatch) {
-		C * object = dynamic_cast<C *>(o);
-		if (object == NULL) {
-			throw TypeMismatch("get(\"" + name + "\"): Object class does not match interface.");
-		}
-		return TypeAdapter(object->*member);
-	}
-	virtual void set(Object *o, TypeAdapter const &v) throw(TypeMismatch) {
-		C * object = dynamic_cast<C *>(o);
-		if (object == NULL) {
-			throw TypeMismatch("set(\"" + name + "\"): Object class does not match interface.");
-		}
-		if (mask != 0) {
-			int value;
-			v.set(value);
-			if (value != 0) {
-				object->*member |= mask;
-			} else {
-				object->*member &= ~mask;
-			}
-		} else {
-			v.set(object->*member);
-		}
-	}
-	virtual void pack(Object *o, Packer &p) const {
-		C * object = dynamic_cast<C *>(o);
-		p.pack(object->*member);
-	}
-	virtual void unpack(Object *o, UnPacker &p) {
-		C * object = dynamic_cast<C *>(o);
-		p.unpack(object->*member);
-	}
-};
-*/
-#endif
+#endif // !defined(__SIMDATA_PTS_SIM)
 
 
 #ifdef __SIMDATA_PTS_SIM

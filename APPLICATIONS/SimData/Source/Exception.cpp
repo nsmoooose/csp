@@ -56,6 +56,10 @@ void ExceptionBase::appendMessage(std::string const &msg) {
 	_msg += "\n" + msg;
 }
 
+void ExceptionBase::addMessage(std::string const &msg) { 
+	_msg = msg + "\n" + _msg;
+}
+
 void ExceptionBase::clear() { 
 	dump = false; 
 }

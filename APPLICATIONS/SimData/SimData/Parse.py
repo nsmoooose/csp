@@ -715,7 +715,7 @@ class ObjectHandler(ElementHandler):
 			interface_names = map(lambda x: x.split(":")[0], g_InterfaceRegistry.getInterfaceNames())
 			interface_names.sort()
 			print "Known classes are:"
-			print "  ", "\n  ".join(interface_names)
+			print "  " + "\n  ".join(interface_names)
 			raise NameError, msg
 		if getDebugLevel() > 0:
 			obj = self._interface.createObject()

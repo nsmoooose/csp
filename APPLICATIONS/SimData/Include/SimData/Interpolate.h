@@ -53,10 +53,9 @@ NAMESPACE_SIMDATA
 class Packer;
 class UnPacker;
 
-/**
- * @brief Base class for interpolated data.
+/** Base class for interpolated data.
  * 
- * @author Mark Rose <mrose@stm.lbl.gov>
+ *  @author Mark Rose <mrose@stm.lbl.gov>
  */
 template <typename T>
 class SIMDATA_EXPORT InterpolatedData: public BaseType {
@@ -101,19 +100,18 @@ protected:
 #endif
 
 
-/**
- * @brief A one-dimensional bicubic-interpolated look-up table.
+/** A one-dimensional bicubic-interpolated look-up table.
  *
- * The curve input is a discrete set of (x, y) pairs sampled from a
- * continuous curve y = F(x).  A smooth curve is formed from these
- * points using bicubic interpolation, and then resampled at a 
- * specified number of evenly spaced values of x.  The resampled
- * values can then be used as a fast lookup table (with linear 
- * interpolation) to find y(x).
+ *  The curve input is a discrete set of (x, y) pairs sampled from a
+ *  continuous curve y = F(x).  A smooth curve is formed from these
+ *  points using bicubic interpolation, and then resampled at a 
+ *  specified number of evenly spaced values of x.  The resampled
+ *  values can then be used as a fast lookup table (with linear 
+ *  interpolation) to find y(x).
  * 
- * @author Mark Rose <mrose@stm.lbl.gov>
- * @ingroup BaseTypes
- * @deprecated Use Table1 instead.
+ *  @author Mark Rose <mrose@stm.lbl.gov>
+ *  @ingroup BaseTypes
+ *  @deprecated Use Table1 instead.
  */
 class SIMDATA_EXPORT Curve: public InterpolatedData<float> {
 
@@ -125,97 +123,85 @@ class SIMDATA_EXPORT Curve: public InterpolatedData<float> {
 	
 public:
 
-	/**
-	 * Default constructor.
+	/** Default constructor.
 	 */
 	Curve();
 	
-	/**
-	 * Copy constructor.
+	/** Copy constructor.
 	 */
 	Curve(const Curve &);
 
-	/**
-	 * Destructor.
+	/** Destructor.
 	 */
 	virtual ~Curve();
 
 #ifndef SWIG
-	/**
-	 * Assignment operator.
+	/** Assignment operator.
 	 */
 	const Curve &operator=(const Curve &);
 #endif // SWIG
 
-	/**
-	 * Serialize to a data archive.
+	/** Serialize to a data archive.
 	 */
 	virtual void pack(Packer& p) const;
 	
-	/**
-	 * Deserialize from a data archive.
+	/** Deserialize from a data archive.
 	 */
 	virtual void unpack(UnPacker& p);
 
-	/**
-	 * Get a list of the x values of the source data set.
+	/** Get a list of the x values of the source data set.
 	 */
 	vector_t getBreaks();
 
-	/**
-	 * Set the x values of the source data set.
+	/** Set the x values of the source data set.
 	 */
 	void setBreaks(const vector_t& breaks);
 
-	/**
-	 * Set the y values of the source data set.
+	/** Set the y values of the source data set.
 	 */
 	void setData(const vector_t& data);
 
-	/**
-	 * Interpolate the source data set and resample at
-	 * at equaly spaced values of x to form the lookup table.
+	/** Interpolate the source data set and resample at
+	 *  at equaly spaced values of x to form the lookup table.
 	 *
-	 * @param spacing the spacing between resampled values of X
+	 *  @param spacing the spacing between resampled values of X
 	 */
 	void interpolate(value_t spacing);
 	
-	/**
-	 * Get the "precise" value y(x) from bicubic interpolation.
+	/** Get the "precise" value y(x) from bicubic interpolation.
 	 */
 	value_t getPrecise(value_t x) const;
 
-	/**
-	 * Get the "quick and dirty" value of y(x) from linear interpolation
-	 * of the resampled lookup table.
+	/** Get the "quick and dirty" value of y(x) from linear interpolation
+	 *  of the resampled lookup table.
 	 */
 	value_t getValue(value_t x) const;
 
-	/**
-	 * Dump the y(x) lookup table to an output file.
+	/** Dump the y(x) lookup table to an output file.
 	 */
 	void dumpCurve(FILE* f) const;
 
-	/**
-	 * String representation.
+	/** String representation.
 	 */
 	virtual std::string asString() const;
 
+	/** Type representation.
+	 */
+	virtual std::string typeString() const;
+
 protected:
-	/**
-	 * Compute the second derivative for bicubic interpolation.
+	/** Compute the second derivative for bicubic interpolation.
 	 */
 	virtual void _compute_second_derivatives();
 };
 
 
 
-/**
- * @brief A two-dimensional bicubic-interpolated look up table.
+/** A two-dimensional bicubic-interpolated look up table.
  * 
- * @author Mark Rose <mrose@stm.lbl.gov>
- * @ingroup BaseTypes
- * @deprecated Use Table2 instead.
+ *  @author Mark Rose <mrose@stm.lbl.gov>
+ *  @ingroup BaseTypes
+ *  @deprecated Use Table2 instead.
  */
 class SIMDATA_EXPORT Table: public InterpolatedData<float> {
 
@@ -257,6 +243,10 @@ public:
 	void dumpDRows(FILE *fp) const;
 	void dumpDCols(FILE *fp) const;
 	virtual std::string asString() const;
+
+	/** Type representation.
+	 */
+	virtual std::string typeString() const;
 
 protected:
 	virtual void _compute_second_derivatives();

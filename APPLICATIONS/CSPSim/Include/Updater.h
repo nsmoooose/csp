@@ -30,6 +30,7 @@
 #include <SimData/Ref.h>
 #include <sigc++/signal_system.h>
 #include <list>
+#include <algorithm>
 
 
 /** An interface for implementing synchronous timed updates.
@@ -60,7 +61,7 @@ protected:
 	/**
 	 * Default constructor.
 	 */
-	Updater(): m_Sleep(0.0), m_Time(0.0) {}
+	Updater(): m_Sleep(0.0), m_Interval(0.0) {}
 
 private:
 
@@ -123,15 +124,6 @@ private:
 	 */
 	std::list< simdata::Ref<TimedUpdate> > m_TimedUpdates;
 
-	/** An internal predicate for updating child objects.
-	 */
-	class UpdateOp {
-		double m_dt;
-	public:
-		UpdateOp(double dt): m_dt(dt) {}
-		void operator()(Updater::Ref u) { u->update(m_dt); }
-	};
-
 	/// Time remaining until next onUpdate() call.
 	double m_Sleep;
 
@@ -140,12 +132,22 @@ private:
 
 	/** Internal method to drive timed updates and call onUpdate().
 	 */
-	void __update() {
+	double __update() {
 		double dt = m_Interval - m_Sleep;
 		UpdateAndCull(m_TimedUpdates, UpdateAndExpireOp(dt));
 		m_Interval = onUpdate(dt);
 		m_Sleep = m_Interval;
+		return dt;
 	}
+
+	/** An internal predicate for updating child objects.
+	 */
+	class UpdateOp {
+		double m_dt;
+	public:
+		UpdateOp(double dt): m_dt(dt) {}
+		void operator()(Updater::Ref u) { u->update(m_dt); }
+	};
 
 protected:
 	/** Create a new timed update signal.
@@ -178,14 +180,14 @@ protected:
 			      MatchesSignalOp(signal));
 	}
 
-	/** A helper template for updating child objects.
+	/** A helper template for updating a collection of objects.
 	 *
-	 *  @param children An STL forward container supporting begin() and end().
+	 *  @param collection An STL forward container supporting begin() and end().
 	 *  @param dt The time interval since the last update.
 	 */
 	template <typename C>
-	void updateChildren(C &children, double dt) {
-		std::for_each(children.begin(), children.end(), UpdateOp(dt));
+	void updateCollection(C &collection, double dt) {
+		std::for_each(collection.begin(), collection.end(), UpdateOp(dt));
 	}
 
 	/** An update method to be implemented in derived classes.
@@ -222,9 +224,12 @@ public:
 	 *
 	 *  @param dt The time interval since the last call to update().
 	 */
-	inline void update(double dt) {
+	inline double update(double dt) {
 		m_Sleep -= dt;
-		if (m_Sleep < 0.0) __update();
+		if (m_Sleep < 0.0) {
+			return __update();
+		}
+		return 0.0;
 	}
 
 };

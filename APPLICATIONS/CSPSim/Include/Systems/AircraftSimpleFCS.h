@@ -95,7 +95,7 @@ protected:
 	virtual void convertXML();
 	virtual void postCreate();
 	virtual double onUpdate(double dt);
-	virtual void getInfo(InfoList &info);
+	virtual void getInfo(InfoList &info) const;
 
 private:
 	Deflection m_Elevator;

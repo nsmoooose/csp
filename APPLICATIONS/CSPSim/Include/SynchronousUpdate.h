@@ -46,9 +46,11 @@ private:
 
 	/** Detach from the update proxy.
 	 */
-	void detachUpdateProxy() { m_UpdateProxy = 0; }
+	void detachUpdateProxy();
 
-protected:
+	UpdateMaster *getMaster() const;
+
+public:
 	/** Register our update callback with an UpdateMaster.
 	 *
 	 *  Note that the UpdateMaster itself must be updated in order
@@ -56,8 +58,13 @@ protected:
 	 *  instance is usually updated as part of the main simulation
 	 *  loop.
 	 */
-	void registerUpdate(UpdateMaster *master);
-public:
+	virtual void registerUpdate(UpdateMaster *master);
+
+	virtual void copyRegistration(UpdateTarget const *target) {
+		if (target) {
+			registerUpdate(target->getMaster());
+		}
+	}
 
 	/** Disconnect our update callback.
 	 */
@@ -152,6 +159,11 @@ private:
 	/** Test if connected to an UpdateMaster.
 	 */
 	bool hasMaster() const { return m_Master != 0; }
+
+	/** Get the connected UpdateMaster (if any).
+	 */
+	UpdateMaster *getMaster() const { return m_Master; }
+
 };
 
 

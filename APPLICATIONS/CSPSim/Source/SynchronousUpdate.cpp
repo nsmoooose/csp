@@ -60,7 +60,7 @@ void UpdateMaster::update(double dt) {
 	m_Transfer.clear();
 	if (!m_ShortList.empty()) {
 		UpdateList::iterator iter = m_ShortList.begin();
-		UpdateList::iterator end = m_ShortList.begin();
+		UpdateList::iterator end = m_ShortList.end();
 		UpdateList::iterator remove;
 		while (iter != end) {
 			int op = (*iter)->update(m_Time);
@@ -109,11 +109,15 @@ void UpdateMaster::update(double dt) {
 	}
 }
 
+void UpdateTarget::detachUpdateProxy() { 
+	m_UpdateProxy = 0; 
+}
 
 void UpdateTarget::registerUpdate(UpdateMaster *master) {
 	if (master) {
 		if (m_UpdateProxy.valid()) m_UpdateProxy->targetSelfDetach();
 		m_UpdateProxy = master->registerUpdate(this);
+		std::cout << "REGISTERING UPDATE WITH MASTER\n";
 	}
 }
 
@@ -121,4 +125,9 @@ UpdateTarget::~UpdateTarget() {
 	if (m_UpdateProxy.valid()) m_UpdateProxy->targetSelfDetach();
 }
 
+
+UpdateMaster *UpdateTarget::getMaster() const { 
+	if (!m_UpdateProxy) return 0;
+	return m_UpdateProxy->getMaster();
+}
 

@@ -39,10 +39,6 @@ using simdata::toRadians;
 using simdata::toDegrees;
 
 
-#ifdef _WIN32
-#define snprintf _snprintf
-#endif
-
 SIMDATA_REGISTER_INTERFACE(AircraftObject)
 
 AircraftObject::AircraftObject(): DynamicObject() {

@@ -64,7 +64,7 @@ protected:
 	virtual void serialize(simdata::Archive &archive);
 	virtual void registerChannels(Bus*);
 	virtual void importChannels(Bus*);
-	virtual void getInfo(InfoList &info);
+	virtual void getInfo(InfoList &info) const;
 
 	void updateAirflow(double dt);
 

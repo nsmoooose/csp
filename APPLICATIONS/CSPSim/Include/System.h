@@ -24,16 +24,22 @@
  *
  **/
 
+#ifndef __SYSTEM_H__
+#define __SYSTEM_H__
 
 #include <Bus.h>
-#include <Updater.h>
+#include <Log.h>
+#include <SynchronousUpdate.h>
 #include <InputInterface.h>
+
 #include <SimData/Object.h>
+#include <SimData/InterfaceRegistry.h>
 #include <SimData/Composite.h>
 
 
 class System;
-class Model;
+class SystemsModel;
+class DataRecorder;
 
 
 /// A visitor interface for traversing System graphs 
@@ -41,7 +47,7 @@ class SystemVisitor: public simdata::Visitor<SystemVisitor> {
 public:
 	SIMDATA_VISITOR(SystemVisitor);
 	virtual void apply(System &system) { apply((Node&)system); }
-	virtual void apply(Model &model) { apply((System&)model); }
+	virtual void apply(SystemsModel &model) { apply((System&)model); }
 };
 
 typedef simdata::Composite<SystemVisitor> SystemNode;
@@ -50,92 +56,128 @@ typedef simdata::Composite<SystemVisitor> SystemNode;
 /** Base class for vehicle system components that can be connected
  *  to a data bus.
  *
- *  Subclasses should implement registerChannels() and bind().  The
- *  former is used to expose internal data that can be accessed by 
+ *  Subclasses should implement registerChannels() and importChannels().  
+ *  The former is used to expose internal data that can be accessed by 
  *  other systems over the bus, and is called automatically by the
- *  bus when the system is first attached.  The bind() method is
- *  called once by the bus after all systems have been attached and
+ *  bus when the system is first attached.  The importChannels() method 
+ *  is called once by the bus after all systems have been attached and
  *  registered.  Use this method to bind to data channels provided 
  *  by other systems over the bus.
  */
-class System: public simdata::Object, public SystemNode, public Updater, public InputInterface {
-friend class Model;
+class System: public simdata::Object, public SystemNode, public UpdateTarget, public InputInterface {
+friend class SystemsModel;
 
 public:
-
 	/// System reference (convenience) type.
 	typedef simdata::Ref<System> Ref;
+	typedef std::vector<std::string> InfoList;
 
 private:
 
-	Model *m_Model;
+	simdata::Link<System>::vector m_Subsystems;
 
-	std::string m_Name;
+	SystemsModel *m_Model;
 
 	class SetModelVisitor: public SystemVisitor {
-		Model *m_Model;
+		SystemsModel *m_Model;
 	public:
-		SetModelVisitor(Model *model): m_Model(model) {}
+		SetModelVisitor(SystemsModel *model): m_Model(model) {}
 		virtual void apply(System &s) { 
 			s.setModel(m_Model); 
 			traverse(s); 
 		}
 	};
 
-	virtual void setModel(Model *model);
+	virtual void setModel(SystemsModel *model);
 
+	void _registerUpdate(UpdateMaster *master) {
+		UpdateTarget::registerUpdate(master);
+	}
 
 protected:
 
 	/** Register channels for access to internal data by other 
 	 *  systems on the bus.
-	 *
-	 *  Use bus->getName() to select which channels to register 
-	 *  if the system may be attached to more than one bus. 
 	 */
-	virtual void registerChannels(Bus*) {}
+	virtual void registerChannels(Bus*)=0;
 
 	class BindVisitor: public SystemVisitor {
 		Bus* m_Bus;
 	public:
 		BindVisitor(Bus *bus): m_Bus(bus) {}
 		void apply(System &s) {
-			s.bind(m_Bus);
+			s.importChannels(m_Bus);
 			traverse(s);
 		}
 	};
 
-	/** Bind to channels provided by other systems on the bus.
+	class UpdateMasterVisitor: public SystemVisitor {
+		UpdateMaster* m_Master;
+	public:
+		UpdateMasterVisitor(UpdateMaster* master): m_Master(master) {}
+		void apply(System &s) {
+			s._registerUpdate(m_Master);
+			traverse(s);
+		}
+	};
+
+	/** Import channels provided by other systems on the bus.
 	 * 
 	 *  Call bus->getChannel() and bus->getSharedChannel() to
 	 *  obtain references to data channels available on the
 	 *  bus.  These references should generally be stored as
 	 *  system member variables for later use.
 	 */
-	virtual void bind(Bus*) {}
+	virtual void importChannels(Bus*)=0;
 
 
 	// XXX use raw pointers here to prevent circular references
 	// that keep the model alive.  the model pointer is only
 	// for internal use by the system instance, which will be
 	// destroyed when the model goes out of scope.
-	Model* getModel() const { return m_Model; }
+	SystemsModel* getModel() const { return m_Model; }
+
+	/** Add and register all subsystems.
+	 */
+	void postCreate() {
+		CSP_LOG(OBJECT, DEBUG, "System::postCreate() " << getClassName() << ", adding " << m_Subsystems.size() << " subsystems.");
+		simdata::Link<System>::vector::iterator iter = m_Subsystems.begin();
+		for (; iter != m_Subsystems.end(); ++iter) {
+			CSP_LOG(OBJECT, DEBUG, "System::addChild() " << (*iter)->getClassName());
+			addChild(iter->get());
+		}
+		m_Subsystems.clear();
+	}
 
 public:
+
+	BEGIN_SIMDATA_XML_VIRTUAL_INTERFACE(System)
+		SIMDATA_XML("subsystems", System::m_Subsystems, false)
+	END_SIMDATA_XML_INTERFACE
+
+	void serialize(simdata::Archive &archive) {
+		simdata::Object::serialize(archive);
+		archive(m_Subsystems);
+	};
+
+	/** Cannot be a child of multiple parents.
+	 */
 	bool canBeAdded() const { return getNumParents() == 0; }
 
 	/** Constructor.
-	 *
-	 *  @param name The identifier string of this system.
 	 */
-	System(std::string const &name): m_Name(name) {}
+	System(): m_Model(0) {
+	}
 
 	/** Get the system identifier string (name).
 	 */
-	std::string const &getName() const { return m_Name; }
+	virtual std::string getName() const { return ""; }
 
 	virtual bool addChild(SystemNode *node) {
-		if (!SystemNode::addChild(node)) return false;
+		if (!SystemNode::addChild(node)) {
+			CSP_LOG(OBJECT, ERROR, "SystemNode::addChild() failed.");
+			return false;
+		}
 		node->accept(new SetModelVisitor(getModel()));
 		return true;
 	}
@@ -146,6 +188,16 @@ public:
 		return 0;
 	}
 
+	void registerUpdate(UpdateMaster *master) {
+		accept(new UpdateMasterVisitor(master));
+	}
+
+	virtual void getInfo(InfoList &info) const {}
+
+	virtual void bindRecorder(DataRecorder *) const {}
+
+
+#if 0	//XXX XXX
 private:
 	class UpdateChildrenVisitor: public SystemVisitor {
 		double m_dt;
@@ -161,133 +213,11 @@ public:
 		descend(new UpdateChildrenVisitor(dt));
 		return 0.0;
 	}
+#endif
 
 	SIMDATA_VISITABLE(SystemVisitor);
 };
 
 
-
-/** Base class for detailed vehicle models.
- *
- *  Model classes serve as the root node of System trees.  The
- *  model defines a data bus shared by all systems it contains,
- *  and serves as the external interface of the composite system.
- */
-class Model: public System {
-
-	Bus::Ref m_Bus;
-
-	virtual void setModel(Model *) {}
-
-	class FindSystemByNameVisitor: public simdata::FindVisitor<System,SystemVisitor> {
-		std::string m_Name;
-	public:
-		FindSystemByNameVisitor(std::string const &name): 
-			simdata::FindVisitor<System,SystemVisitor>(), m_Name(name) {}
-		virtual bool match(System &s) { return s.getName() == m_Name; }
-	};
-
-protected:
-	virtual ~Model() {
-	}
-
-public:
-
-	bool canBeAdded() const { return false; }
-
-	Bus::Ref getBus() const { 
-		assert(m_Bus.valid());
-		return m_Bus; 
-	}
-
-	System::Ref getSystem(std::string const &name, bool required = true) {
-		simdata::Ref< simdata::FindVisitor<System,SystemVisitor> > visitor;
-		visitor = accept(new FindSystemByNameVisitor(name));
-		System::Ref found = visitor->getNode();
-		if (!found) {
-			assert(!required);
-			return 0;
-		}
-		return found;
-	}
-
-	void bindSystems() {
-		accept(new BindVisitor(m_Bus.get()));
-	}
-
-	Model(std::string const &name): System(name) {
-		m_Model = this;
-		m_Bus = new Bus("MODEL_BUS");
-	}
-
-	SIMDATA_VISITABLE(SystemVisitor);
-};
-
-
-void System::setModel(Model *model) {
-	assert(m_Model == 0 || model == 0);
-	m_Model = model;
-	if (model != 0) {
-		Bus::Ref bus = model->getBus();
-		registerChannels(bus.get());
-	}
-}
-
-
-
-// interface event visitors
-
-class EventVisitor: public SystemVisitor {
-	bool m_handled;
-public:
-	typedef simdata::Ref<EventVisitor> Ref;
-	EventVisitor(): m_handled(false) {}
-	bool handled() const { return m_handled; }
-	void apply(System &system) {
-		if (m_handled) return;
-		m_handled = check(system);
-		if (!m_handled) traverse(system);
-	}
-protected:
-	virtual bool check(System &system) = 0;
-};
-
-
-class OnCommandVisitor: public EventVisitor {
-	std::string const &m_id;
-	int m_x, m_y;
-public:
-	OnCommandVisitor(std::string const &id, int x, int y):
-		EventVisitor(), m_id(id), m_x(x), m_y(y) {}
-protected:
-	bool check(System &system) {
-		return system.onCommand(m_id, m_x, m_y); 
-	}
-};
-
-
-class OnAxisVisitor: public EventVisitor {
-	std::string const &m_id;
-	double m_value;
-public:
-	OnAxisVisitor(std::string const &id, double value):
-		EventVisitor(), m_id(id), m_value(value) {}
-protected:
-	bool check(System &system) {
-		return system.onAxis(m_id, m_value);
-	}
-};
-
-
-class OnMotionVisitor: public EventVisitor {
-	std::string const &m_id;
-	int m_x, m_y, m_dx, m_dy;
-public:
-	OnMotionVisitor(std::string const &id, int x, int y, int dx, int dy):
-		EventVisitor(), m_id(id), m_x(x), m_y(y), m_dx(dx), m_dy(dy) {}
-protected:
-	virtual bool check(System &system) {
-		return system.onMotion(m_id, m_x, m_y, m_dx, m_dy); 
-	}
-};
+#endif // __SYSTEM_H__
 

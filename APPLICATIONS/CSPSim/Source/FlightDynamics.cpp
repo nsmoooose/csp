@@ -121,7 +121,7 @@ void FlightDynamics::updateAirflow(double h) {
 	m_Beta = atan2(airflowBody.x(), airflowBody.y());
 }
 
-void FlightDynamics::getInfo(InfoList &info) {
+void FlightDynamics::getInfo(InfoList &info) const {
 	std::stringstream line;
 	line.setf(std::ios::fixed | std::ios::showpos);
 	line << "AOA: " << std::setprecision(1) << std::setw(5) << toDegrees(m_Alpha)

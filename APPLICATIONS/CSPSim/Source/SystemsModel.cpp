@@ -31,10 +31,20 @@
 
 SIMDATA_REGISTER_INTERFACE(SystemsModel)
 
+class BindRecorderVisitor: public SystemVisitor {
+	DataRecorder *m_Recorder;
+public:
+	BindRecorderVisitor(DataRecorder *recorder): m_Recorder(recorder) {}
+	void apply(System &system) {
+		system.bindRecorder(m_Recorder);
+		traverse(system);
+	}
+	void apply(SystemsModel &model) { traverse(model); }
+};
 
 void SystemsModel::setDataRecorder(DataRecorder *recorder) {
 	if (!recorder) return;
-	// TODO pass recorder to subsystems
+	accept(new BindRecorderVisitor(recorder));
 }
 
 simdata::Ref<PhysicsModel> SystemsModel::getPhysicsModel() const {

@@ -22,14 +22,22 @@
  *
  **/
 
+
+#ifndef __BUS_H__
+#define __BUS_H__
+
+
 /* TODO
  * 	add warning/debug logging
  */
 
 #include <Tools.h>
+#include <Log.h>
+
 #include <SimData/Ref.h>
 
-#include <sigc++/signal_system.h>
+#include <sigc++/sigc++.h> // 1.2 style
+//#include <sigc++/signal_system.h> // 1.0 style
 #include <map>
 
 
@@ -110,14 +118,14 @@ public:
 
 	/** Test if a channel is enabled.
 	 */
-	bool isEnabled() const { return m_Mask & MASK_ENABLED; }
+	bool isEnabled() const { return (m_Mask & MASK_ENABLED) != 0; }
 
 	/** Test if this channel is shared.
 	 * 
 	 *  Shared channels can be updated by any system, whereas non-shared
 	 *  channels are read-only (except for the system that creates them).
 	 */
-	bool isShared() const { return m_Mask & MASK_SHARED; }
+	bool isShared() const { return (m_Mask & MASK_SHARED) != 0; }
 
 protected:
 	/** Constructor.
@@ -185,7 +193,7 @@ private:
 	      MASK_HANDLER = 0x00010000,
 	      MASK_PUSH    = 0x00020000,
 	      MASK_PULL    = 0x00040000,
-	      MASK_DIRTY   = 0x00080000
+	      MASK_DIRTY   = 0x00080000,
 	};
 
 protected:
@@ -205,14 +213,14 @@ protected:
 	 *                update the channel value.
 	 */
 	DataChannelBase(std::string const &name, 
-	                AccessType access=ACCESS_LOCAL, 
-	                SignalType signal=NO_SIGNAL): 
-		ChannelBase(name, access)
+	                AccessType access_=ACCESS_LOCAL, 
+	                SignalType signal_=NO_SIGNAL):
+		ChannelBase(name, access_)
 	{
-		if (signal == PUSH_SIGNAL) {
+		if (signal_ == PUSH_SIGNAL) {
 			setMask(MASK_PUSH);
 		} else
-		if (signal == PULL_SIGNAL) {
+		if (signal_ == PULL_SIGNAL) {
 			setMask(MASK_PULL | MASK_DIRTY);
 		}
 	}
@@ -272,7 +280,7 @@ public:
 	SigC::Connection connect(T *object, void (T::*callback)()) const {
 		assert(isPush() || (isPull() && !hasHandler()));
 		setMask(MASK_HANDLER);
-		return m_Signal.connect(SigC::slot(object, callback));
+		return m_Signal.connect(SigC::slot(*object, callback));
 	}
 
 	/** Connect a signal handler to this channel.
@@ -334,7 +342,7 @@ public:
 	 *  handler before reading the data value.
 	 */
 	T const &value() const { 
-		pull();
+		if (isPull()) pull();
 		return m_Value; 
 	}
 
@@ -345,28 +353,28 @@ public:
 	 *  explicitly initialized.
 	 *
 	 *  @param name The string indetifier of the channel.
-	 *  @param value The initial value of the channel data.
+	 *  @param val The initial value of the channel data.
 	 *  @param shared Create a shared (or non-shared) channel.
 	 */
-	DataChannel(std::string const &name, T const &value, AccessType access=ACCESS_LOCAL, SignalType signal=NO_SIGNAL): DataChannelBase(name, access, signal), m_Value(value) {}
+	DataChannel(std::string const &name, T const &val, AccessType access_=ACCESS_LOCAL, SignalType signal_=NO_SIGNAL): DataChannelBase(name, access_, signal_), m_Value(val) {}
 
-	static DataChannel<T> *newLocal(std::string const &name, T const &value) {
-		return new DataChannel(name, value, ACCESS_LOCAL, NO_SIGNAL);
+	static DataChannel<T> *newLocal(std::string const &name, T const &val) {
+		return new DataChannel(name, val, ACCESS_LOCAL, NO_SIGNAL);
 	}
-	static DataChannel<T> *newLocalPull(std::string const &name, T const &value) {
-		return new DataChannel(name, value, ACCESS_LOCAL, PULL_SIGNAL);
+	static DataChannel<T> *newLocalPull(std::string const &name, T const &val) {
+		return new DataChannel(name, val, ACCESS_LOCAL, PULL_SIGNAL);
 	}
-	static DataChannel<T> *newLocalPush(std::string const &name, T const &value) {
-		return new DataChannel(name, value, ACCESS_LOCAL, PUSH_SIGNAL);
+	static DataChannel<T> *newLocalPush(std::string const &name, T const &val) {
+		return new DataChannel(name, val, ACCESS_LOCAL, PUSH_SIGNAL);
 	}
-	static DataChannel<T> *newShared(std::string const &name, T const &value) {
-		return new DataChannel(name, value, ACCESS_SHARED, NO_SIGNAL);
+	static DataChannel<T> *newShared(std::string const &name, T const &val) {
+		return new DataChannel(name, val, ACCESS_SHARED, NO_SIGNAL);
 	}
-	static DataChannel<T> *newSharedPull(std::string const &name, T const &value) {
-		return new DataChannel(name, value, ACCESS_SHARED, PULL_SIGNAL);
+	static DataChannel<T> *newSharedPull(std::string const &name, T const &val) {
+		return new DataChannel(name, val, ACCESS_SHARED, PULL_SIGNAL);
 	}
-	static DataChannel<T> *newSharedPush(std::string const &name, T const &value) {
-		return new DataChannel(name, value, ACCESS_SHARED, PUSH_SIGNAL);
+	static DataChannel<T> *newSharedPush(std::string const &name, T const &val) {
+		return new DataChannel(name, val, ACCESS_SHARED, PUSH_SIGNAL);
 	}
 };
 
@@ -395,14 +403,14 @@ class Bus: public simdata::Referenced {
 	/// Internal flag to help ensure proper bus construction.
 	bool m_Bound;
 
+	/// Internal state of the bus.
+	bool m_Enabled;
+
 	/// The identifier string of this bus.
 	std::string m_Name;
 
 	/// The status (0-1) used for damage modelling.
 	float m_Status;
-
-	/// Internal state of the bus.
-	bool m_Enabled;
 	
 public:
 	/// Bus reference (convenience) type
@@ -411,7 +419,7 @@ public:
 	/** Test if a particular data channel is available.
 	 */
 	bool hasChannel(std::string const &name) {
-		return getChannel(name).valid();
+		return getChannel(name, false).valid();
 	}
 		
 	/** Register a new channel.
@@ -424,6 +432,7 @@ public:
 	ChannelBase* registerChannel(ChannelBase *channel, std::string const &groups = "") {
 		assert(channel);
 		std::string name = channel->getName();
+		CSP_LOG(OBJECT, DEBUG, "Bus::registerChannel(" << name << ")");
 		assert(m_Channels.find(name) == m_Channels.end());
 		m_Channels[name] = channel;
 		StringTokenizer grouplist(groups, " ");
@@ -524,13 +533,14 @@ public:
 	 *           reference if the data channel is not found and required
 	 *           is false.
 	 */
-	ChannelBase::Ref getSharedChannel(std::string const &name, bool required = true) {
+	ChannelBase::Ref getSharedChannel(std::string const &name, bool required = true, bool override = false) {
 		ChannelMap::iterator iter = m_Channels.find(name);
 		if (iter == m_Channels.end()) {
+			CSP_LOG(OBJECT, DEBUG, "Bus::getSharedChannel(" << name << ") failed.");
 			assert(!required);
 			return 0;
 		}
-		assert(iter->second->isShared());
+		assert(iter->second->isShared() || override);
 		return iter->second;
 	}
 
@@ -543,10 +553,22 @@ public:
 	ChannelBase::CRef getChannel(std::string const &name, bool required = true) {
 		ChannelMap::iterator iter = m_Channels.find(name);
 		if (iter == m_Channels.end()) {
+			CSP_LOG(OBJECT, DEBUG, "Bus::getChannel(" << name << ") failed.");
 			assert(!required);
 			return 0;
 		}
 		return iter->second;
+	}
+
+	template <typename T>
+	static ChannelBase::CRef defaultDataChannel(Bus::Ref bus, std::string const &name, T const &default_value) {
+		typename DataChannel<T>::CRef channel;
+		if (bus.valid()) channel = bus->getChannel(name, false);
+		if (!channel) {
+			CSP_LOG(OBJECT, DEBUG, "Bus::defaultDataChannel(" << name << ") creating default.");
+			channel = DataChannel<T>::newLocal(name, default_value);
+		}
+		return channel;
 	}
 
 	/** Get the bus status value.
@@ -583,11 +605,15 @@ public:
 	 */
 	Bus(std::string const &name): 
 		m_Bound(false), 
+		m_Enabled(true),
 		m_Name(name), 
-		m_Status(1.0), 
-		m_Enabled(true) 
+		m_Status(1.0)
 	{
+		CSP_LOG(OBJECT, DEBUG, "Bus(" << name << ") created.");
 	}
 
 };
 	
+
+#endif // __BUS_H__
+

@@ -109,7 +109,7 @@ double AircraftSimpleFCS::onUpdate(double dt)
 	return 0.0;
 }
 
-void AircraftSimpleFCS::getInfo(InfoList &info) {
+void AircraftSimpleFCS::getInfo(InfoList &info) const {
 	std::stringstream line;
 	line.setf(std::ios::fixed | std::ios::showpos);
 	line.precision(0);

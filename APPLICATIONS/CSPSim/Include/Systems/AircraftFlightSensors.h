@@ -38,6 +38,7 @@ protected:
 	double onUpdate(double dt);
 	virtual void importChannels(Bus *bus);
 	virtual void registerChannels(Bus *bus);
+	virtual void getInfo(InfoList &info) const;
 
 	DataChannel<simdata::Vector3>::CRef b_Position;
 	DataChannel<simdata::Vector3>::CRef b_Velocity;
@@ -45,6 +46,8 @@ protected:
 	DataChannel<double>::Ref b_Temperature;
 	DataChannel<double>::Ref b_Pressure;
 	DataChannel<double>::Ref b_Density;
+	DataChannel<double>::Ref b_Mach;
+	DataChannel<double>::Ref b_CAS;
 
 private:
 	double m_Distance;

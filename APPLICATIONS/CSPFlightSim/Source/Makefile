@@ -78,6 +78,7 @@ CSP_SOURCES = ./AAAController.cpp \
 	./ObjectSymbol.cpp \
 	./ObjectTypeSymbol.cpp \
 	./ParticleObject.cpp \
+	./Platform.cpp \
 	./ProjectileController.cpp \
 	./ProjectileObject.cpp \
 	./SimTime.cpp \

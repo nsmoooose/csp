@@ -3,6 +3,7 @@
 #endif
 
 #include "global.h"
+#include "Platform.h"
 #include "GlobalCommands.h"
 #include "VirtualBattlefield.h"
 #include "AirplaneObject.h"
@@ -95,12 +96,21 @@ std::string RunCommand(deque<string> & args)
     CSP_LOG(CSP_APP, CSP_DEBUG, "RunCommand " );
 
     char buff[255];
+    string path = args[0];
+    
+    if (!OSPath::isabs(path)) {
+    	string base;
+	base = OSPath::join(".", "scripts");
+	path = OSPath::join(base, path);
+    }
+
+    path = OSPath::filter(path);
 
     // open file
-    ifstream file(args[0].c_str());
+    ifstream file(path.c_str());
     if (!file)
     {
-        return "Unable to find script file " + args[0];
+        return "Unable to find script file " + path;
     }
 
 	// RUN Scriptfile.

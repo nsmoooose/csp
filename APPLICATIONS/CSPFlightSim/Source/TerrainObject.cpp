@@ -308,14 +308,9 @@ int TerrainObject::getTerrainPolygonsRendered()
 
 void TerrainObject::UpdateDemeterSettings()
 {
-    #ifdef _WIN32
-        char fileSeparator = '\\';
-    #else
-        char fileSeparator = '/';
-    #endif
-        char szMediaPath[9];
+    char szMediaPath[9];
 
-	sprintf(szMediaPath,".%cterrain%c",fileSeparator,fileSeparator);
+    sprintf(szMediaPath,".%cterrain%c",DIR_SEPARATOR,DIR_SEPARATOR);
     Demeter::Settings::GetInstance()->SetMediaPath(szMediaPath);
 
     Demeter::Settings::GetInstance()->SetVerbose(false);

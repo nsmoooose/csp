@@ -1,6 +1,15 @@
  Version 0.4.0 (in progress)
 ===========================
 
+2004-05-23: wolverine
+  * Changes to the format of the object update message. Now There
+    is a special class for the object update payload section that
+    contains fields for the payload data members. This should be
+    uptained by casting the payload ptr to a ObjectUpdateMessagePayload
+    pointer for both send and receive. Loading and Unloading can be
+    performed with object assignments instead of memcpys to make
+    the code a little clearer.
+
 2004-05-16: wolverine
   * changes to networking include configuration from CSPSim.ini
     which includes ports, server node, option to disable/enable

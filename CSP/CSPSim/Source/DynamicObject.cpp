@@ -372,7 +372,7 @@ bool DynamicObject::onMapEvent(MapEvent const &event) {
 	if (InputInterface::onMapEvent(event)) {
 		return true;
 	}
-	if (m_SystemsModel.valid() && m_SystemsModel->onMapEvent(event)) {
+if (m_SystemsModel.valid() && m_SystemsModel->onMapEvent(event)) {
 		return true;
 	}
 	return false;
@@ -401,33 +401,14 @@ NetworkMessage * DynamicObject::getUpdateMessage()
 
   NetworkMessage * message = CSPSim::theSim->getNetworkMessenger()->getMessageFromPool(messageType, payloadLen);
 
-  unsigned char * ptrBuf = (unsigned char*)message->getPayloadPtr();
-
-//  printf("Generating network update message for object id: %d\n", m_ID);
-  memcpy((void*)ptrBuf, (void*)&m_ID, sizeof(unsigned int)); ptrBuf += sizeof(unsigned int);
-
-  simdata::SimTime timeStamp = CSPSim::theSim->getElapsedTime();
-  memcpy((void*)ptrBuf, (void*)&timeStamp, sizeof(simdata::SimTime)); ptrBuf += sizeof(simdata::SimTime);
-
-  int bytescopied;
-  bytescopied = b_GlobalPosition->value().writeBinary(ptrBuf, sizeof(simdata::Vector3));
-  ptrBuf += bytescopied;
-
-  bytescopied = b_LinearVelocity->value().writeBinary(ptrBuf, sizeof(simdata::Vector3));
-  ptrBuf += bytescopied;
-
-  bytescopied = b_AngularVelocity->value().writeBinary(ptrBuf, sizeof(simdata::Vector3));
-  ptrBuf += bytescopied;
-
-  bytescopied = b_Attitude->value().writeBinary(ptrBuf, sizeof(simdata::Quat));
-  ptrBuf += bytescopied;
-
-//  bytescopied = b_Inertia->value().writeBinary(ptrBuf, sizeof(simdata::Quat));
-//  ptrBuf += bytescopied;
+  ObjectUpdateMessagePayload * ptrPayload = (ObjectUpdateMessagePayload*)message->getPayloadPtr();
+  ptrPayload->id = m_ID;
+  ptrPayload->timeStamp = CSPSim::theSim->getElapsedTime();
+  ptrPayload->globalPosition = b_GlobalPosition->value();
+  ptrPayload->linearVelocity = b_LinearVelocity->value();
+  ptrPayload->angularVelocity = b_AngularVelocity->value();
+  ptrPayload->attitude = b_Attitude->value();
   
-//  memcpy((void*)ptrBuf, (void*)&b_Mass->value(), sizeof(double));
-//  ptrBuf += bytescopied;
-
   CSP_LOG(APP, DEBUG, "DynamicObject::getUpdateMessage() - returning message");
 
 
@@ -438,15 +419,9 @@ void DynamicObject::putUpdateMessage(NetworkMessage* message)
 {
   // read message
 
-  unsigned char * ptrBuf = (unsigned char*)message->getPayloadPtr();
-
-  // skip object id
-  unsigned int idValue;
-  memcpy((void*)&idValue, (void*)ptrBuf, sizeof(unsigned int));
-  ptrBuf += sizeof(unsigned int);
-
+  ObjectUpdateMessagePayload * ptrPayload = (ObjectUpdateMessagePayload*)message->getPayloadPtr();
   // verify we have the correct id in the packet for this object.
-  if (m_ID == idValue)
+  if (m_ID == ptrPayload->id)
   {
 //	printf("Loading update message of object %d\n", m_ID);
   }
@@ -455,32 +430,17 @@ void DynamicObject::putUpdateMessage(NetworkMessage* message)
 //	printf("Error loading update message, object id (%d) does not match\n", idValue);
   }
 
-  // get timestamp
-  simdata::SimTime timeStamp; 
-  memcpy((void*)&timeStamp, (void*)ptrBuf, sizeof(simdata::SimTime)); ptrBuf += sizeof(simdata::SimTime);
-
-  int bytescopied;
-  bytescopied = b_GlobalPosition->value().readBinary(ptrBuf, sizeof(simdata::Vector3));
-  ptrBuf += bytescopied;
-  bytescopied = b_LinearVelocity->value().readBinary(ptrBuf, sizeof(simdata::Vector3));
-  ptrBuf += bytescopied;
-  bytescopied = b_AngularVelocity->value().readBinary(ptrBuf, sizeof(simdata::Vector3));
-  ptrBuf += bytescopied;
-  bytescopied = b_Attitude->value().readBinary(ptrBuf, sizeof(simdata::Quat));
-  ptrBuf += bytescopied;
-//  bytescopied = b_Inertia->value().readBinary(ptrBuf, sizeof(simdata::Matrix3));
-//  ptrBuf += bytescopied;
+  // we can disregard this message if the timestamp is older then the most
+  // recent update.
   
-//  double *pValue = &b_Mass->value();
-//  memcpy((void*)&pValue, (void*)ptrBuf, sizeof(double));
+  //ptrPayload->timeStamp = CSPSim::theSim->getElapsedTime();
+  //
+  //load the other values.
+  b_GlobalPosition->value() = ptrPayload->globalPosition;
+  b_LinearVelocity->value() = ptrPayload->linearVelocity;
+  b_AngularVelocity->value() = ptrPayload->angularVelocity; 
+  b_Attitude->value() = ptrPayload->attitude;
   
-  //ptrBuf += sizeof(double);
-
-  // return message to shared pool.
-  //  NetworkMessagePool.putMessageObject(message);
-//  delete message;
-//
-//  CSPSim::theSim->getNetworkMessenger()->returnMessageToPool(message);
 }
 
 

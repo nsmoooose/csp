@@ -37,6 +37,8 @@
 #include <SimData/Vector3.h>
 #include <SimData/String.h>
 #include <SimData/Uniform.h>
+#include <SimData/Quat.h>
+#include <SimData/Date.h>
 
 typedef int SockFd;
 typedef simdata::uint16 Port;
@@ -91,14 +93,22 @@ class NetworkMessagePool
 
 };
                                             
-//class ObjectUpdateMessage : public NetworkMessage
-//{
-//
-//    public:
-//    ObjectUpdateMessage(simdata::uint16 id, simdata::Vector3 position, simdata::Vector3 velocity);
-//    
-//    
-//};
+class ObjectUpdateMessagePayload 
+{
+
+    private:
+      ObjectUpdateMessagePayload();
+
+    public:
+      unsigned int id;
+      simdata::SimTime timeStamp;
+      simdata::Vector3 globalPosition;
+      simdata::Vector3 linearVelocity;
+      simdata::Vector3 angularVelocity;
+      simdata::Quat  attitude;
+    
+    
+};
 
 
 class NetworkNode

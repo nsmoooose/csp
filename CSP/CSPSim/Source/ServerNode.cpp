@@ -35,6 +35,11 @@ int ServerNode::run()
         printf("Received Data From Client:\n");
 	printf("Client addr: %s\n", node->getHostname());
 	printf("Client port: %d\n", node->getPort());
+        ObjectUpdateMessagePayload * ptrPayload = (ObjectUpdateMessagePayload*)message->getPayloadPtr();
+	printf("PositionX: %f, PositionY: %f, PositionZ: %f\n", 
+			ptrPayload->globalPosition.x(),
+			ptrPayload->globalPosition.y(),
+			ptrPayload->globalPosition.z());
     }
     else
     {

@@ -320,7 +320,7 @@ class RealHandler(SimpleHandler):
 	
 	def end(self):
 		self._element = SimData.Real()
-		self._element.parseXML(self._c)
+		self._element.parseXML(self._c.encode('ascii'))
 
 class ECEFHandler(SimpleHandler):
 
@@ -329,7 +329,7 @@ class ECEFHandler(SimpleHandler):
 	
 	def end(self):
 		self._element = SimData.ECEF()
-		self._element.parseXML(self._c)
+		self._element.parseXML(self._c.encode('ascii'))
 
 class LLAHandler(SimpleHandler):
 
@@ -338,7 +338,7 @@ class LLAHandler(SimpleHandler):
 	
 	def end(self):
 		self._element = SimData.LLA()
-		self._element.parseXML(self._c)
+		self._element.parseXML(self._c.encode('ascii'))
 
 class UTMHandler(SimpleHandler):
 
@@ -347,7 +347,7 @@ class UTMHandler(SimpleHandler):
 	
 	def end(self):
 		self._element = SimData.UTM()
-		self._element.parseXML(self._c)
+		self._element.parseXML(self._c.encode('ascii'))
 
 class VectorHandler(SimpleHandler):
 
@@ -356,7 +356,7 @@ class VectorHandler(SimpleHandler):
 	
 	def end(self):
 		self._element = SimData.Vector3()
-		self._element.parseXML(self._c)
+		self._element.parseXML(self._c.encode('ascii'))
 
 
 class MatrixHandler(SimpleHandler):
@@ -366,7 +366,7 @@ class MatrixHandler(SimpleHandler):
 	
 	def end(self):
 		self._element = SimData.Matrix3()
-		self._element.parseXML(self._c)
+		self._element.parseXML(self._c.encode('ascii'))
 
 class QuatHandler(SimpleHandler):
 
@@ -375,7 +375,7 @@ class QuatHandler(SimpleHandler):
 	
 	def end(self):
 		self._element = SimData.Quaternion()
-		self._element.parseXML(self._c)
+		self._element.parseXML(self._c.encode('ascii'))
 
 class DateHandler(SimpleHandler):
 
@@ -384,7 +384,7 @@ class DateHandler(SimpleHandler):
 	
 	def end(self):
 		self._element = SimData.SimDate()
-		self._element.parseXML(self._c)
+		self._element.parseXML(self._c.encode('ascii'))
 
 
 class StringHandler(SimpleHandler):
@@ -426,10 +426,10 @@ class EnumHandler(SimpleHandler):
 
 #		# FIXME this will break if the enum attribute doesn't exist in an Object,
 #		# since it will not be linked to an enumeration
-# 		ext = self.getObjectAttribute(obj, name, None)
-# 		if ext is None:
-# 			raise XMLSyntax, "Object enumeration member undefined (no Enumeration class)"
-# 		ext.parseXML(self._c)
+#		ext = self.getObjectAttribute(obj, name, None)
+#		if ext is None:
+#			raise XMLSyntax, "Object enumeration member undefined (no Enumeration class)"
+#		ext.parseXML(self._c.encode('ascii'))
 
 
 class PathHandler(SimpleHandler):
@@ -483,10 +483,10 @@ class ExternalHandler(SimpleHandler):
 
 	def assign(self, interface, obj, name):
 		ext = SimData.External()
-		ext.setSource(self._element)
+		ext.setSource(self._element.encode('ascii'))
 		interface.set(obj, name, ext)	
 # 		ext = self.getObjectAttribute(obj, name, SimData.External())
-# 		ext.setSource(self._element)
+# 		ext.setSource(self._element.encode('ascii'))
 
 
 class KeyHandler(SimpleHandler):
@@ -761,7 +761,7 @@ class ObjectHandler(ElementHandler):
 	def end(self):
 		self._element = self._object
 		self.checkAssigned()
-		self._element.parseXML(self._c)
+		self._element.parseXML(self._c.encode('ascii'))
 		self._element.convertXML()
 
 	def checkAssigned(self):
@@ -836,16 +836,22 @@ class ObjectXMLArchive:
 			line = locator.getLineNumber()
 			public = locator.getPublicId()
 			system = locator.getSystemId()
-			print "In source file \"%s\" [line %d, col %d]" % (path, line, column),
+			if column is None:
+				print "In source file \"%s\" [line %d]" % (path, line),
+			else:
+				print "In source file \"%s\" [line %d, col %d]" % (path, line, column),
 			if public is not None or system is not None:
 				print " - %s, %s" % (public, system)
 			print
 			print "Exception:", e
-			type, value, traceback = sys.exc_info()
+			type_, value, traceback = sys.exc_info()
 		 	log = open("error.log", "wt")
 			if log is not None:
-				print >>log, "%s[%d:%d] - %s, %s" % (path, line, column, public, system)
-				print_exception(type, value, traceback, file=open("error.log", "wt"))
+				if column is None:
+					print >>log, "%s[%d] - %s, %s" % (path, line, public, system)
+				else:
+					print >>log, "%s[%d:%d] - %s, %s" % (path, line, column, public, system)
+				print_exception(type_, value, traceback, file=open("error.log", "wt"))
 				print "Exception traceback saved to error.log"
 			else:
 				raise

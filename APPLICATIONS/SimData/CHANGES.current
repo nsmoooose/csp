@@ -1,6 +1,36 @@
 Version 0.3.1 (in progress)
 ===========================
 
+2003-03-17: onsight
+            Fixes to MS VC.net fixes.  Lather, rinse, repeat... ;-)
+	    
+2003-03-17: delta
+            Fixes for building with MS VC.Net
+
+2003-03-16: onsight
+            Created a new setup.py script to allow SimData to be build and
+            installed using Python DistUtils. This works on Linux/GCC but
+            needs to be tested on other platforms. The Makefile will remain
+            as a backup until the setup.py script is stable.
+
+            Restructured the installation as a SimData packages, with the
+            extension module (cSimData) and tools (DataCompiler) underneath.
+            SimData/__init__.py now contains the code that was in
+            SimData.py. The net effect is that you just import SimData as
+            usual, but the data compiler is now SimData.Compiler. I'm moving
+            away from a standalone compiler approach, since it depends on
+            the external library that you are compiling for. Instead, the
+            external program should load SimData, register its object
+            interfaces, and run the compiler if needed by creating an
+            instance of class Compile (from SimData.Compiler).
+
+            Restructured the argument processing and usage messages of
+            Compiler.Compile to interact better with the calling code (when
+            not used as a standalone compiler). The main application should
+            process any command line arguments it recognizes and pass the
+            rest to Compile.parse(), catching any exceptions that are
+            raised.
+           
 2003-03-13: onsight
             Fixed several bugs related to std::vector types
 	    
@@ -16,17 +46,21 @@ Version 0.3.1 (in progress)
             LOG_WARN, LOG_ALERT, LOG_ERROR). The msg field can include the
             usual ostream operators (<<).
 
+	    *** NEW FEATURE ***
+            *** POTENTIAL INCOMPATIBILITY ***
             Added a new postCreate() method in Object which is called after
             unpack() is complete. You can extend this to do additional
             object setup once the data is loaded. From now on, unpack() must
             be the exact inverse operation of pack().
 
+	    *** NEW FEATURE ***
             Data compiler enhancements, mainly the ability to only reparse
             xml files that have changed since the archive was last
             generated. This significantly speeds up the processing.
             Specifying '--rebuild' on the command line will rebuild the
             entire archive from scratch.
 
+            *** POTENTIAL INCOMPATIBILITY ***
             Big simplification of the various smart pointer types.
             PathPointer<T> is gone; now just use Pointer<T> for all object
             references. PathPointerBase is not PointerBase, and what was

@@ -51,6 +51,7 @@ SIMDATA_EXCEPTION(CorruptArchive)
 SIMDATA_EXCEPTION(IndexError)
 SIMDATA_EXCEPTION(ObjectMismatch)
 SIMDATA_EXCEPTION(IOError)
+SIMDATA_EXCEPTION(MissingInterface);
 
 	// was nested in DataArchive
 	// separated for SWIG
@@ -71,10 +72,10 @@ struct FP { FILE* f; std::string name; std::string mode; };
  */
 class SIMDATA_EXPORT DataArchive {
 
-	friend class PathPointerBase;
+	friend class PointerBase;
 
-	//template <class T> friend class PathPointer;
-	//template <class T> friend PathPointer<T> getObject(DataArchive&, const char*);
+	//template <class T> friend class Pointer;
+	//template <class T> friend Pointer<T> getObject(DataArchive&, const char*);
 	
 	static const int AS;
 	static const int BUFFERSIZE;
@@ -91,13 +92,14 @@ class SIMDATA_EXPORT DataArchive {
 	hasht_map table_map;
 	cache_map static_map;
 	std::string _fn;
+	bool chain;
 
 	void writeMagic();
 	void readMagic();
 	void readTable();
 	void writeTable();
 public:
-	DataArchive(const char*fn, int read);
+	DataArchive(const char*fn, int read, bool chain=true);
 	~DataArchive();
 	void _addEntry(int offset, int length, hasht hash, const char* path);
 	void addObject(Object &a, const char* path);
@@ -105,8 +107,8 @@ public:
 	bool isClosed();
 	bool isWrite();
 	void setDefault();
-	const PathPointerBase getObject(const char*);
-	const PathPointerBase getObject(const Path&, const char* =0);
+	const PointerBase getObject(const char*);
+	const PointerBase getObject(const Path&, const char* =0);
 
 	// protected methods made public for Python access, don't use!
 	long _getOffset(); 
@@ -121,6 +123,7 @@ protected:
 	*/
 	void _addStatic(Object* ptr, const char* path, hasht key=0);
 	Object* _getStatic(hasht key);
+	Object* _createObject(hasht classhash);
 };
 
 

@@ -97,10 +97,11 @@ NAMESPACE_SIMDATA
  * 	            first)
  * 	parseXML    parse loose XML cdata if present
  * 	convertXML  post-process XML data
+ * 	postCreate  additional processing after deserialization
  *
  * Objects should never be copied or handled directly by user code.  Use 
- * Pointer<> or PathPointer<> handles to manipulate them by reference.  
- * Objects set as 'static' are singletons managed by the DataArchive.
+ * Pointer<> handles to manipulate them by reference.  Objects set as 'static' 
+ * are singletons managed by the DataArchive.
  *
  * @author Mark Rose <mrose@stm.lbl.gov>
  */
@@ -125,6 +126,7 @@ public:
 	// archive serializaiton
 	virtual void pack(Packer& p) const;
 	virtual void unpack(UnPacker& p);
+	virtual void postCreate() {}
 
 	// static management (don't touch!)
 	void setStatic(int s);

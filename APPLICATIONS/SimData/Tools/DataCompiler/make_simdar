@@ -1,1 +1,1 @@
-./Compile.py ../../../CSPSim/Data/XML ../../../CSPSim/Data/Sim.dar
+./Compile.py $* ../../../CSPSim/Data/XML ../../../CSPSim/Data/Sim.dar

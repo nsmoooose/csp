@@ -18,7 +18,6 @@
 
 
 
-
 /**
  * @file Vector3.inl
  *
@@ -28,10 +27,8 @@
 
 
 
-
 #ifndef __VECTOR3_INL__
 #define __VECTOR3_INL__
-
 
 
 
@@ -40,11 +37,9 @@
 
 
 
-
 ////////////////////////////////////////////////////////
 // Vector3
 ////////////////////////////////////////////////////////
-
 
 
 
@@ -55,6 +50,8 @@
 inline Vector3::Vector3()
 {
 	// don't initialize 
+	// why not? safer and only very slightly slower --MR
+	x = y = z = 0.0;
 }
 
 
@@ -301,6 +298,5 @@ inline	Vector3 operator^(const Vector3 & u, const Vector3  & v)
 
 
 #endif // __VECTOR3_INL__
-
 
 

@@ -20,6 +20,7 @@
 
 #include <SimData/Interpolate.h>
 #include <SimData/Pack.h>
+#include <SimData/Version.h>
 
 
 NAMESPACE_SIMDATA
@@ -33,7 +34,7 @@ const Enumeration InterpolatedData::Method("LINEAR SPLINE");
 class load_check {
 public:
 	load_check() {
-		printf("loaded @ %p\n", this);
+		printf("SimData %s loaded @ %p\n", getVersion(), this);
 	}
 } check_interpolate;
 

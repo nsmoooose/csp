@@ -45,6 +45,7 @@ std::ostream &operator <<(std::ostream &o, TypeAdapter const &t) {
 	return o << "TypeAdapter<UNKNOWN>";
 }
 
+#if 0 // old implementation
 void TypeAdapter::set(int &x) const { IntCheck(); x = static_cast<int>(var.i); }
 void TypeAdapter::set(bool &x) const { IntCheck(); x = (var.i != 0); }
 void TypeAdapter::set(float &x) const { DoubleCheck(); x = static_cast<float>(var.d); }
@@ -62,6 +63,7 @@ void TypeAdapter::set(Spread &x) const { setBase(x); }
 void TypeAdapter::set(Enum &x) const { if (isType(STRING)) x = s; else setBase(x); }
 void TypeAdapter::set(ListBase &x) const { setBase(x); }
 void TypeAdapter::set(Object &x) const { setBase(x); }
+#endif
 
 
 NAMESPACE_END // namespace simdata

@@ -238,18 +238,19 @@ public:
 	virtual void pack(Object *o, Packer &p) const {
 		C * object = dynamic_cast<C *>(o);
 		std::vector<T> &m = object->*member;
-		p.pack(m.size());
+		p.pack((int)m.size());
 		typename std::vector<T>::iterator idx;
 		for (idx = m.begin(); idx != m.end(); idx++) {
 			p.pack(*idx);
 		}
 	}
-	virtual void unpack(Object *, UnPacker &p) {
+	virtual void unpack(Object *o, UnPacker &p) {
 		C * object = dynamic_cast<C *>(o);
 		std::vector<T> &m = object->*member;
 		T temp;
 		int n;
 		p.unpack(n);
+		m.reserve(n);
 		while (n-- > 0) {
 			p.unpack(temp);
 			m.push_back(temp);

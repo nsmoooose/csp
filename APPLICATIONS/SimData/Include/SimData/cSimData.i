@@ -13,6 +13,9 @@
 %include "std_vector.i"
 
 %include "SimData/ns-simdata.h"
+%include "SimData/Export.h"
+
+%include "SimData/Log.i"
 
 %feature("polymorphic") SIMDATA(InterfaceProxy);
 %feature("polymorphic") SIMDATA(Object);

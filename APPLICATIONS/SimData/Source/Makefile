@@ -20,6 +20,7 @@ MODULES = \
 	InterfaceRegistry \
 	Interpolate \
 	List \
+	LogStream \
 	Math \
 	Matrix3 \
 	Object \

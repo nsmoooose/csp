@@ -18,6 +18,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
+#include <SimData/Log.h>
 #include <SimData/DataArchive.h>
 #include <SimData/InterfaceRegistry.h>
 #include <SimData/GlibCsp.h>
@@ -115,7 +116,8 @@ void DataArchive::writeTable() {
 	closed = 1;
 }	
 
-DataArchive::DataArchive(const char*fn, int read) {
+DataArchive::DataArchive(const char*fn, int read, bool chain_) {
+	chain = chain_;
 	closed = 0;
 	for (int b = 0; b < BUFFERS; b++) {
 		object_buffer[b] = (char*) malloc(BUFFERSIZE);
@@ -265,7 +267,7 @@ Object* DataArchive::getObject(hasht key) {
 }
 */
 
-const PathPointerBase DataArchive::getObject(const char* path) {
+const PointerBase DataArchive::getObject(const char* path) {
 	return getObject(Path(path), path);
 }
 
@@ -287,20 +289,35 @@ const TableEntry& DataArchive::_lookupPath(const Path& path, const char* path_st
 	return table[idx];
 }
 
-const PathPointerBase DataArchive::getObject(const Path& path, const char* path_str) {
+Object *DataArchive::_createObject(hasht classhash) {
+	InterfaceProxy *proxy = InterfaceRegistry::getInterfaceRegistry().getInterface(classhash);
+	if (!proxy) {
+		//std::cout << "Interface proxy [" << classhash << "] not found." << std::endl;
+		SIMDATA_LOG(LOG_ARCHIVE, LOG_ERROR, "Interface proxy [" << classhash << "] not found.");
+		throw MissingInterface("Missing interface for " + classhash.str());
+	}
+	Object *dup = proxy->createObject();
+	dup->_setPath(0);
+	return dup;
+}
+
+const PointerBase DataArchive::getObject(const Path& path, const char* path_str) {
 	hasht key = (hasht) path.getPath();
 	// look among previously created static objects
 	Object *cached = _getStatic(key);
-	if (cached != 0) return PathPointerBase(path, cached);
+	if (cached != 0) return PointerBase(path, cached);
 	const TableEntry &t = _lookupPath(path, path_str);
-	printf("getObject using interface registry @ %p\n", &(InterfaceRegistry::getInterfaceRegistry()));
+	//printf("getObject using interface registry @ %p\n", &(InterfaceRegistry::getInterfaceRegistry()));
+	SIMDATA_LOG(LOG_ARCHIVE, LOG_DEBUG, "getObject using interface registry @ 0x" << std::hex << int(&(InterfaceRegistry::getInterfaceRegistry())));
 	InterfaceProxy *proxy = InterfaceRegistry::getInterfaceRegistry().getInterface(t.classhash);
 	if (!proxy) {
 		if (path_str) {
-			printf("getObject(\"%s\"):\n", path_str);
+			//printf("getObject(\"%s\"):\n", path_str);
+			SIMDATA_LOG(LOG_ARCHIVE, LOG_ERROR, "getObject(" << path_str << "):");
 		}
-		std::cout << "Interface proxy [" << t.classhash << "] not found." << std::endl;
-		assert(0);
+		//std::cout << "Interface proxy [" << t.classhash << "] not found." << std::endl;
+		SIMDATA_LOG(LOG_ARCHIVE, LOG_ERROR, "Interface proxy [" << t.classhash << "] not found.");
+		throw MissingInterface("Missing interface for " + t.classhash.str());
 	}
 	Object *dup = proxy->createObject();
 	int offset = t.offset;
@@ -311,31 +328,37 @@ const PathPointerBase DataArchive::getObject(const Path& path, const char* path_
 		buffer = object_buffer[n_buffer];
 		n_buffer++;
 	} else {
-		std::cout << "BUFFERSIZE exceeded, allocating larger buffer" << std::endl;
+		//std::cout << "BUFFERSIZE exceeded, allocating larger buffer" << std::endl;
+		SIMDATA_LOG(LOG_ARCHIVE, LOG_INFO, "BUFFERSIZE exceeded, allocating larger buffer");
 		buffer = (char*) malloc(length);
 		free_buffer = true;
 	}
 	assert(buffer);
 	fseek(f, offset, SEEK_SET);
 	fread(buffer, length, 1, f);
-	UnPacker p(buffer, length, this);
-	std::cout << "got object " << dup->getClassName() << std::endl;
+	UnPacker p(buffer, length, this, chain);
+	//std::cout << "got object " << dup->getClassName() << std::endl;
+	SIMDATA_LOG(LOG_ARCHIVE, LOG_DEBUG, "got object " << dup->getClassName());
 	dup->_setPath(key);
 	dup->unpack(p);
+	if (chain) {
+		dup->postCreate();
+	}
 	if (free_buffer) {
 		free(buffer);
 	} else {
 		n_buffer--;
 	}
 	if (!p.isComplete()) {
-		std::cout << "INTERNAL ERROR: Object extraction incomplete for class '" << dup->getClassName() << "'." << std::endl;
-		assert(0);
+		//std::cout << "INTERNAL ERROR: Object extraction incomplete for class '" << dup->getClassName() << "'." << std::endl;
+		SIMDATA_LOG(LOG_ARCHIVE, LOG_ERROR, "INTERNAL ERROR: Object extraction incomplete for class '" << dup->getClassName() << "'.");
+		throw CorruptArchive("Object extraction incomplete for class '" + std::string(dup->getClassName()) + "'");
 	}
 	if (dup->isStatic()) {
 		_addStatic(dup, 0, key);
 		dup->ref(); // we own a copy
 	}
-	return PathPointerBase(path, dup);
+	return PointerBase(path, dup);
 }
 
 

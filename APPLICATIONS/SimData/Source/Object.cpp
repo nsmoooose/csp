@@ -83,7 +83,7 @@ Object::~Object() {
  * Should access to the reference count be protected by a
  * mutex, or just let the users of the object deal with
  * mt issues?  Since reference counts may be changed at
- * the start and end of methods due to PathPointer 
+ * the start and end of methods due to Pointer 
  * instantiation and destruction, it may be wise to wrap
  * the reference counting operations here.
  */

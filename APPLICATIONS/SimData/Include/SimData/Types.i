@@ -1,3 +1,5 @@
+%include "SimData/Export.h"
+%include "SimData/ns-simdata.h"
 %include "SimData/BaseType.i"
 
 %exception {

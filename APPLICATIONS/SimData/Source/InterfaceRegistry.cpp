@@ -27,8 +27,8 @@
 #include <string>
 #include <vector>
 
+#include <SimData/Log.h>
 #include <SimData/InterfaceRegistry.h>
-
 #include <SimData/Object.h>
 #include <SimData/HashUtility.h>
 #include <SimData/TypeAdapter.h>
@@ -85,7 +85,7 @@ InterfaceProxy::InterfaceProxy(const char *cname, hasht chash)
 }
 
 Object *InterfaceProxy::createObject() const { 
-	assert(0); 
+	error("INTERNAL ERROR: InterfaceProxy::createObject()");
 	return 0;
 }
 
@@ -129,12 +129,12 @@ bool InterfaceProxy::variableRequired(const char *name) const {
 }
 
 hasht InterfaceProxy::getClassHash() const { 
-	assert(0); 
+	error("INTERNAL ERROR: InterfaceProxy::getClassHash()");
 	return 0;
 }
 
 const char * InterfaceProxy::getClassName() const { 
-	assert(0); 
+	error("INTERNAL ERROR: InterfaceProxy::getClassName()");
 	return 0;
 }
 
@@ -211,7 +211,8 @@ std::vector<InterfaceProxy *> InterfaceRegistry::getInterfaces() const {
 
 void InterfaceRegistry::addInterface(const char *name, hasht id, InterfaceProxy *proxy) throw(InterfaceError) {
 	if (__map == 0) {
-		cout << "Initializing interface registry." << endl;
+		//cout << "Initializing interface registry." << endl;
+		SIMDATA_LOG(LOG_REGISTRY, LOG_DEBUG, "Initializing interface registry.");
 		__map = new proxy_map;
 		__id_map = new proxy_id_map;
 		__list = new interface_list;
@@ -222,7 +223,8 @@ void InterfaceRegistry::addInterface(const char *name, hasht id, InterfaceProxy 
 	(*__map)[name] = proxy;
 	(*__id_map)[id] = proxy;
 	__list->push_back(proxy);
-	cout << "Registering interface<" << name << "> [" << id << "]" << endl;
+	//cout << "Registering interface<" << name << "> [" << id << "]" << endl;
+	SIMDATA_LOG(LOG_REGISTRY, LOG_DEBUG, "Registering interface<" << name << "> [" << id << "]");
 }
 
 

@@ -17,6 +17,8 @@
 %include "SimData/Export.h"
 %include "SimData/Version.h"
 
+%include "SimData/Log.i"
+
 %feature("polymorphic") SIMDATA(InterfaceProxy);
 %feature("polymorphic") SIMDATA(Object);
 

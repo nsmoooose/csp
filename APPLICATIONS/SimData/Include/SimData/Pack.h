@@ -155,13 +155,17 @@ class UnPacker {
 	const char* _d;
 	int _n;
 	DataArchive* _archive;
+	bool _loadall;
 	
 public:
 	DataArchive* _getArchive() { return _archive; }
-	UnPacker(const char* data, int n, DataArchive* archive=0) {
+	bool _loadAll() const { return _loadall; }
+
+	UnPacker(const char* data, int n, DataArchive* archive=0, bool loadall = true) {
 		_n = n;
 		_d = data;
 		_archive = archive;
+		_loadall = loadall;
 	}
 
 	bool isComplete() const {
@@ -218,7 +222,7 @@ public:
 	void unpack(std::vector<T>& y) {
 		int n;
 		unpack(n);
-		y.resize(n, 0.0);
+		y.resize(n);
 		typename std::vector<T>::iterator i = y.begin();
 		while (n-- > 0) unpack(*i++);
 	}
@@ -280,8 +284,9 @@ public:
 		return self.unpack_basetype(External())
 	def unpack_List(self, unpack):
 		return self.unpack_basetype(List())
-	def unpack_PathPointer(self):
-		return self.unpack_basetype(PathPointer())
+	def unpack_Pointer(self):
+		raise "FIXME: NOT IMPLMENTED"
+		return self.unpack_basetype(Pointer())
 	def unpack_Enum(self, y):
 		self.unpack_basetype(y)
 	def unpack(self):

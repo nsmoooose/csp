@@ -229,7 +229,7 @@ class ObjectProxyBase;
 
 template <class T>
 	struct HASHT_MAP {
-		typedef HASH_MAPS<hasht, T, hasht_hash, hasht_eq>::Type Type;
+		typedef typename HASH_MAPS<hasht, T, hasht_hash, hasht_eq>::Type Type;
 	};
 typedef HASH_MAPS<hasht, int, hasht_hash, hasht_eq>::Type hasht_map;
 typedef HASH_MAPS<hasht, Object*, hasht_hash, hasht_eq>::Type cache_map;

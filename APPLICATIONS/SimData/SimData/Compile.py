@@ -22,6 +22,8 @@
 
 import sys
 
+import SimData
+
 if __name__ == "__main__":
 	if hasattr(sys, "setdlopenflags"):
 		sys.setdlopenflags(0x101)
@@ -113,8 +115,8 @@ class CompilerUsageError:
 	def __init__(self, msg=None):
 		self.msg = msg
 	def getMessage(self):
-		if self.msg is None:
-			return "Usage error"
+		if self.msg is None: 
+			return ""
 		return "Usage error: %s\n" % self.msg
 	def __repr__(self):
 		return self.getMessage()
@@ -183,6 +185,7 @@ class Compiler:
 			print >>out, "              --warn=level     show warning message (< level)"
 			print >>out, "              --debug=level    show debug messages (< level)"
 			print >>out, "              --rebuild        rebuild entire archive"
+			print >>out, "              --help           help message"
 
 	def usage(self, msg=None):
 		if self.standalone:
@@ -197,26 +200,30 @@ class Compiler:
 		self._name = args[0]
 		args = args[1:]
 		for arg in args:
-			if arg.startswith('--'):
-				try:
-					unknown = 0
-					if arg.startswith('--warn='):
+			if arg.startswith('-'):
+				if arg.startswith('--warn='):
+					try:
 						level = int(arg[7:])
-						setWarningLevel(level)
-						if level > 0:
-							SimData.log().setLogLevels(SimData.LOG_ALL, SimData.LOG_WARN)
-					elif arg.startswith('--debug='):
+					except:
+						self.usage("invalid option '%s'" % arg)
+					setWarningLevel(level)
+					if level > 0:
+						SimData.log().setLogLevels(SimData.LOG_ALL, SimData.LOG_WARNING)
+				elif arg.startswith('--debug='):
+					try:
 						level = int(arg[8:])
-						setDebugLevel(level)
-						if level > 0:
-							SimData.log().setLogLevels(SimData.LOG_ALL, SimData.LOG_DEBUG)
-					elif arg == '--rebuild':
-						self.rebuild = 1
-					else:
-						unknown = 1
-				except:
-					self.usage("invalid option '%s'" % arg)
-				if unknown:
+					except:
+						self.usage("invalid option '%s'" % arg)
+					setDebugLevel(level)
+					if level > 1:
+						SimData.log().setLogLevels(SimData.LOG_ALL, SimData.LOG_TRACE)
+					elif level > 0:
+						SimData.log().setLogLevels(SimData.LOG_ALL, SimData.LOG_DEBUG)
+				elif arg == '--rebuild':
+					self.rebuild = 1
+				elif arg in ("--help", "-h", "-help"):
+					self.usage()
+				else:
 					self.usage("unknown option '%s'" % arg)
 			else:
 				if self.infile is None:
@@ -226,7 +233,7 @@ class Compiler:
 				else:
 					self.usage("invalid argument '%s'" % arg)
 		if self.infile is None or self.outfile is None:
-			self.usage()
+			self.usage("no input path or output archive specified")
 					
 	def __init__(self, standalone=0):
 		setWarningLevel(1)

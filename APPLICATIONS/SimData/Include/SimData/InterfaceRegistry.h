@@ -170,10 +170,10 @@ public:
 		return Singleton<InterfaceRegistry>::getInstance();
 	}
     
-    virtual ~InterfaceRegistry();
 private:
 	friend class Singleton<InterfaceRegistry>;
 	InterfaceRegistry();
+	virtual ~InterfaceRegistry();
 	
 	void __cleanup();
 
@@ -354,6 +354,11 @@ public:
 #define SIMDATA_REGISTER_INTERFACE(classname) \
 namespace { \
 	classname::classname##InterfaceProxy __##classname##_interface; \
+} /* anonymous namespace */
+
+#define SIMDATA_REGISTER_INNER_INTERFACE(parent, classname) \
+namespace { \
+	parent::classname::classname##InterfaceProxy __##parent##_##classname##_interface; \
 } /* anonymous namespace */
 
 

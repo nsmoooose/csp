@@ -63,10 +63,10 @@ class GeodesicRestriction: public Restriction {
 	GeodesicRestriction();
 public:
 	GeodesicRestriction(double lat0, double lon0, double lat1, double lon1) {
-		_lat0 = DegreesToRadians(lat0);
-		_lon0 = DegreesToRadians(lon0);
-		_lat1 = DegreesToRadians(lat1);
-		_lon1 = DegreesToRadians(lon1);
+		_lat0 = simdata::toRadians(lat0);
+		_lon0 = simdata::toRadians(lon0);
+		_lat1 = simdata::toRadians(lat1);
+		_lon1 = simdata::toRadians(lon1);
 		assert(lat1 >= lat0);
 		assert(lon1 >= lon0);
 	}
@@ -315,18 +315,18 @@ public:
 		READI(datum);
 		READI(zone);
 		gzread(fp, buffer, 4*sizeof(int));
-		READD(cor0.x);
-		READD(cor1.x);
-		READD(cor2.x);
-		READD(cor3.x);
-		READD(cor0.y);
-		READD(cor1.y);
-		READD(cor2.y);
-		READD(cor3.y);
-		//std::cout << cor0.x << ", " << cor0.y << " utm\n";
-		READD(res.x);
-		READD(res.y);
-		READD(res.z);
+		READD(cor0.x());
+		READD(cor1.x());
+		READD(cor2.x());
+		READD(cor3.x());
+		READD(cor0.y());
+		READD(cor1.y());
+		READD(cor2.y());
+		READD(cor3.y());
+		//std::cout << cor0.x() << ", " << cor0.y() << " utm\n";
+		READD(res.x());
+		READD(res.y());
+		READD(res.z());
 		READI(gnd_units);
 		READI(elev_units);
 		READI(bias);
@@ -335,7 +335,7 @@ public:
 		READI(n_row);
 		int n_col;
 		READI(n_col);
-		if (res.x != 30.0 || res.y != 30.0 || res.z != 1.0) {
+		if (res.x() != 30.0 || res.y() != 30.0 || res.z() != 1.0) {
 			//std::cout << "10m\n";
 			//gzclose(fp);
 			//return;
@@ -353,10 +353,10 @@ public:
 				std::cout << "  > " << d.E << " " << d.N << " " << n << "\n";
 				std::cout << "  > " << i << " of " << n_col << "\n";
 				std::cout << "  > " << filename << "\n";
-				std::cout << "  > " << res.x << " " << res.y << " " << res.z << "\n";
+				std::cout << "  > " << res.x() << " " << res.y() << " " << res.z() << "\n";
 			}
 			if (n > 0) {
-				//std::cout << "ROWS = " << n << " " << d.E << " " << res.x << "\n";
+				//std::cout << "ROWS = " << n << " " << d.E << " " << res.x() << "\n";
 				d.setSize(n);
 				gzread(fp, d.elev, n * sizeof(unsigned short));
 			}
@@ -377,9 +377,9 @@ public:
 		if (show) std::cout << "loaded ok\n";
 		gscale = 1.0;
 		if (gnd_units == 1) gscale *= 12 * 0.0254;
-		if (fabs(cols.begin()->E - cor0.x) >= 500.0) {
+		if (fabs(cols.begin()->E - cor0.x()) >= 500.0) {
 			std::cout << "Problem with DAT input for quad " << filename << "\n";
-			std::cout << "Corner0.x = " << cor0.x << "\n";
+			std::cout << "Corner0.x = " << cor0.x() << "\n";
 			std::cout << "Cols[0].E = " << cols.begin()->E << "\n";
 			std::cout << "Differ by more than 500 m, possible zone mismatch?\n";
 			::exit(1);
@@ -400,41 +400,41 @@ public:
 	 * the finder (along with hints for neighboring quads to check).
 	 */
 	int addNearest(std::vector<DEMcol>::iterator &i, UTM const &utm, ElevationFinder &finder) {
-		double fN = (utm.northing() - i->N) / (res.y*gscale);
+		double fN = (utm.northing() - i->N) / (res.y()*gscale);
 		double dN, dE = (utm.easting() - i->E);
 		//std::cout << gscale << " " << fN << "  " << dE << "  <----\n";
 		int idx = int(fN);
 		//std::cout << ":\n";
-		if (idx < -10 || idx >= i->n+10 || fabs(dE) > 10.0*res.x) {
+		if (idx < -10 || idx >= i->n+10 || fabs(dE) > 10.0*res.x()) {
 			//std::cout << "OUT_OF_RANGE " << dE << "dE " << idx << " " << i->E << "E " << utm.asString() << "\n";
 			if (idx < -10) return -1;
 			if (idx >= i->n+10) return 1;
 			return 0;
 		}
 		if (idx < 0) {
-			int xside = cor0.x + cor3.x - 2.0*utm.easting() > 0 ? -1 : 1;
+			int xside = cor0.x() + cor3.x() - 2.0*utm.easting() > 0 ? -1 : 1;
 			//std::cout << "DOWN\n";
 			finder.setHint(0, -1);
 			finder.setHint(xside, -1);
-			dN = fN * res.y * gscale;
+			dN = fN * res.y() * gscale;
 			//std::cout << "C- " << fN << " " << dN << "  " << dE << std::endl;
 			finder.setPartialElevation(_scale(i->elev[0]), dE*dE + dN*dN);
 			return -1;
 		}
 		if (idx >= i->n-1) {
 			//std::cout << "UP\n";
-			int xside = cor0.x + cor3.x - 2.0*utm.easting() > 0 ? -1 : 1;
+			int xside = cor0.x() + cor3.x() - 2.0*utm.easting() > 0 ? -1 : 1;
 			finder.setHint(0, +1);
 			finder.setHint(xside, +1);
-			dN = (fN - (i->n-1)) * res.y * gscale;
+			dN = (fN - (i->n-1)) * res.y() * gscale;
 			//std::cout << "C+ " << (fN - (i->n-1)) << "|" << dN << "  " << dE << std::endl;
 			finder.setPartialElevation(_scale(i->elev[i->n-1]), dE*dE + dN*dN);
 			return +1;
 		}
-		dN = (fN - idx) * res.y * gscale;
+		dN = (fN - idx) * res.y() * gscale;
 		//std::cout << "CA " << dN << "  " << dE << std::endl;
 		finder.setPartialElevation(_scale(i->elev[idx]), dE*dE + dN*dN);
-		dN = (fN - idx - 1.0) * res.y * gscale;
+		dN = (fN - idx - 1.0) * res.y() * gscale;
 		//std::cout << "CB " << dN << "  " << dE << std::endl;
 		finder.setPartialElevation(_scale(i->elev[idx+1]), dE*dE + dN*dN);
 		return -2;
@@ -444,7 +444,7 @@ public:
 	 * Scale an elevation sample to meters above mean sea level.
 	 */
 	inline double _scale(double elevation) {
-		double scale = res.z;
+		double scale = res.z();
 		if (elev_units == 1) scale *= 12*0.0254; // feet to meters
 		return (elevation - bias) * scale;
 	}
@@ -474,7 +474,7 @@ public:
 			col_idx++;
 			t_idx++;
 		}
-		int yside = cor0.y + cor1.y - 2.0*utm.northing() > 0 ? -1 : 1;
+		int yside = cor0.y() + cor1.y() - 2.0*utm.northing() > 0 ? -1 : 1;
 		if (i == j) {
 			//std::cout << "END\n";
 			finder.setHint(+1, yside);
@@ -559,10 +559,10 @@ public:
 		_prefix = prefix;
 	}
 	virtual void setExtentDegrees(double left, double right, double bottom, double top) {
-		_left = RadiansToDegrees(left);
-		_right = RadiansToDegrees(right);
-		_bottom = RadiansToDegrees(bottom);
-		_top = RadiansToDegrees(top);
+		_left = simdata::toDegrees(left);
+		_right = simdata::toDegrees(right);
+		_bottom = simdata::toDegrees(bottom);
+		_top = simdata::toDegrees(top);
 	}
 	virtual void setExtentMeters(double left, double right, double bottom, double top) {
 		_left = left;
@@ -977,8 +977,8 @@ public:
 		tile_dx = tile_width / (tile_x_size-overlap);
 		tile_dy = tile_height / (tile_y_size-overlap);
 		Matrix3 Ry, Rz;
-		Rz = RotationZMatrix3(center.longitude());
-		Ry = RotationYMatrix3(-center.latitude());
+		Rz.makeRotate(center.longitude(), Vector3::ZAXIS);
+		Ry.makeRotate(-center.latitude(), Vector3::YAXIS);
 		R_center = Rz * Ry; 
 		R = 6371010.0; // nominal radius of the earth
 		double angle = 0.5 * std::max(width, height) / R;
@@ -995,14 +995,15 @@ public:
 	}
 
 	void prepareSampling() {
-		Gauss g(0.0, 1.0);
+		simdata::random::Gauss g;
+		g->setDistribution(0.0, 1.0);
 		int i;
 		double avg_x = 0.0;
 		double avg_y = 0.0;
 		if (subsamples < 1) subsamples = 1;
 		for (i = 0; i < subsamples; i++) {
-			double x = g.newRand();
-			double y = g.newRand();
+			double x = g.sample();
+			double y = g.sample();
 			x_subsamples.push_back(x);
 			y_subsamples.push_back(y);
 			avg_x += x;
@@ -1156,9 +1157,9 @@ private:
 	 */
 	void project(double x, double y, double &lat, double &lon) {
 		Vector3 pos(R, x, y);
-		pos = Normalized(R_center * pos);
-		lon = atan2(pos.y, pos.x);
-		lat = asin(pos.z);
+		pos = (R_center * pos).normalized();
+		lon = atan2(pos.y(), pos.x());
+		lat = asin(pos.z());
 	}
 
 	/**
@@ -1167,8 +1168,8 @@ private:
 	 * data.
 	 */
 	DEM* getDEM(double lat, double lon) {
-		lat *= 180.0/G_PI;
-		lon *= 180.0/G_PI;
+		lat *= 180.0/simdata::PI;
+		lon *= 180.0/simdata::PI;
 		int index = int((lat+90)*8)*10000 + int((lon+180)*8);
 		//std::cout << lat << " " << lon << " " << index << std::endl;
 		DEMmap::iterator i = dem.find(index);
@@ -1176,11 +1177,11 @@ private:
 			DEM *d = i->second;
 			// double check indexing
 			UTM corner;
-			corner.set(d->cor0.x, d->cor0.y, d->zone, 'X');
+			corner.set(d->cor0.x(), d->cor0.y(), d->zone, 'X');
 			LLA cor0(corner, GeoRef::NAD27);
-			corner.set(d->cor2.x, d->cor2.y, d->zone, 'X');
+			corner.set(d->cor2.x(), d->cor2.y(), d->zone, 'X');
 			LLA cor2(corner, GeoRef::NAD27);
-			if (!d->isZero() && !(lon+0.0001 >= cor0.longitude()*180.0/G_PI && lon-0.0001 <= cor2.longitude()*180.0/G_PI)) {
+			if (!d->isZero() && !(lon+0.0001 >= cor0.longitude()*180.0/simdata::PI && lon-0.0001 <= cor2.longitude()*180.0/simdata::PI)) {
 				std::cout << cor0.asString() << cor2.asString() << "\n";
 				std::cout << lat << " " << lon << "\n";
 				std::cout << d->filename << "\n";
@@ -1220,7 +1221,7 @@ private:
 		int quads = 1;
 		while (finder.getHint(dx, dy)) {
 			//std::cout << dx << " | " << dy << std::endl;
-			dem = getDEM(lat + dy * 0.125 * G_PI / 180.0, lon + dx * 0.125 * G_PI / 180.0);
+			dem = getDEM(lat + dy * 0.125 * simdata::PI / 180.0, lon + dx * 0.125 * simdata::PI / 180.0);
 			//std::cout << "Looking for more " << lon << " - " << dx << ":" << dy << "\n";
 			dem->getElevation(finder);
 			quads++;

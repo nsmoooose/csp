@@ -33,6 +33,7 @@
   
   * Added an osgFX effect (specular highlight). May produce
     a warning on old generation graphic card.
+==========> Linux users, link onto osgFX lib.
 
   * Reenabled texture unit 1 code in ScreenInfo.cpp.
   

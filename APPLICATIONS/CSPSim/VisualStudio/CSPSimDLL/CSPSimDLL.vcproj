@@ -22,7 +22,7 @@
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/Zm1000"
 				Optimization="0"
-				AdditionalIncludeDirectories="C:/Python22/include,../../../SimData/Include,../../Include,../../../../THIRDPARTYLIBS/include,../../../../THIRDPARTYLIBS/demeter"
+				AdditionalIncludeDirectories="C:\Python22\include;..\..\Include;..\..\..\..\THIRDPARTYLIBS\include;..\..\..\..\THIRDPARTYLIBS\demeter;..\..\..\..\THIRDPARTYLIBS\CSPChunkLod\include"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;CSPSIMDLL_EXPORTS"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -41,8 +41,8 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="opengl32.lib SDL.lib osgDBd.lib DemeterVisualC6d.lib osgTextd.lib osgUtild.lib osgParticled.lib osgd.lib _cSimDatad.lib odbc32.lib odbccp32.lib"
-				OutputFile=".\Debug/CSPSimDLL.dll"
+				AdditionalDependencies="osgChunkLodd.lib opengl32.lib SDL.lib osgDBd.lib DemeterVisualC6d.lib osgTextd.lib osgUtild.lib osgParticled.lib osgd.lib _cSimDatad.lib odbc32.lib odbccp32.lib"
+				OutputFile="../../Bin/_cCSPd.dll"
 				LinkIncremental="2"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="C:/Python22/Lib/site-packages/SimData,C:/Python22/libs, ../../../../THIRDPARTYLIBS/lib"
@@ -85,7 +85,7 @@
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/Zm1000"
 				InlineFunctionExpansion="1"
-				AdditionalIncludeDirectories="../../Include,C:/Python22/include,../../../../THIRDPARTYLIBS/include,../../../../THIRDPARTYLIBS/demeter"
+				AdditionalIncludeDirectories="../../Include;C:/Python22/include;../../../../THIRDPARTYLIBS/include;../../../../THIRDPARTYLIBS/demeter;..\..\..\..\\THIRDPARTYLIBS\CSPChunkLod\include"
 				PreprocessorDefinitions="CSP_NDEBUG;WIN32;NDEBUG;_WINDOWS;_USRDLL;CSPSIMDLL_EXPORTS"
 				StringPooling="TRUE"
 				RuntimeLibrary="2"
@@ -103,7 +103,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="osgText.lib DemeterVisualC6.lib opengl32.lib SDL.lib _cSimData.lib osgParticle.lib osgUtil.lib osgDB.lib osg.lib odbc32.lib odbccp32.lib"
+				AdditionalDependencies="osgChunkLod.lib osgText.lib DemeterVisualC6.lib opengl32.lib SDL.lib _cSimData.lib osgParticle.lib osgUtil.lib osgDB.lib osg.lib odbc32.lib odbccp32.lib"
 				OutputFile="../../Bin/_cCSP.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
@@ -138,25 +138,10 @@
 			Name="Source Files"
 			Filter="cpp;c;cxx;rc;def;r;odl;idl;hpj;bat">
 			<File
-				RelativePath="..\..\Source\AircraftModel.cpp">
-				<FileConfiguration
-					Name="Debug|Win32"
-					ExcludedFromBuild="TRUE">
-					<Tool
-						Name="VCCLCompilerTool"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32"
-					ExcludedFromBuild="TRUE">
-					<Tool
-						Name="VCCLCompilerTool"/>
-				</FileConfiguration>
-			</File>
-			<File
 				RelativePath="..\..\Source\AircraftObject.cpp">
 			</File>
 			<File
-				RelativePath="..\..\Source\AircraftPhysicModel.cpp">
+				RelativePath="..\..\Source\AircraftPhysicsModel.cpp">
 			</File>
 			<File
 				RelativePath="..\..\Source\Atmosphere.cpp">
@@ -169,6 +154,9 @@
 			</File>
 			<File
 				RelativePath="..\..\Source\CSPSim.cpp">
+			</File>
+			<File
+				RelativePath="..\..\Source\ChunkLodTerrain.cpp">
 			</File>
 			<File
 				RelativePath="..\..\Source\Collision.cpp">
@@ -184,6 +172,9 @@
 			</File>
 			<File
 				RelativePath="..\..\Source\ConsoleCommands.cpp">
+			</File>
+			<File
+				RelativePath="..\..\Source\DemeterTerrain.cpp">
 			</File>
 			<File
 				RelativePath="..\..\Source\DynamicObject.cpp">
@@ -202,9 +193,6 @@
 			</File>
 			<File
 				RelativePath="..\..\Source\Exception.cpp">
-			</File>
-			<File
-				RelativePath="..\..\Source\F16Model.cpp">
 			</File>
 			<File
 				RelativePath="..\..\Source\GameScreen.cpp">
@@ -237,7 +225,7 @@
 				RelativePath="..\..\Source\ObjectRangeInfo.cpp">
 			</File>
 			<File
-				RelativePath="..\..\Source\PhysicModel.cpp">
+				RelativePath="..\..\Source\PhysicsModel.cpp">
 			</File>
 			<File
 				RelativePath="..\..\Source\PrimaryAeroDynamics.cpp">
@@ -253,6 +241,9 @@
 			</File>
 			<File
 				RelativePath="..\..\Source\SimpleConfig.cpp">
+			</File>
+			<File
+				RelativePath="..\..\Source\Sky.cpp">
 			</File>
 			<File
 				RelativePath="..\..\Source\SmokeEffects.cpp">
@@ -283,19 +274,77 @@
 			</File>
 			<File
 				RelativePath="..\..\Source\cCSP_wrap.cpp">
-			</File>
-			<File
-				RelativePath="..\..\Source\sky.cpp">
+				<FileConfiguration
+					Name="Debug|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						PreprocessorDefinitions="SWIG_NOINCLUDE"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						PreprocessorDefinitions="SWIG_NOINCLUDE"/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\Source\trees.cpp">
 			</File>
+			<Filter
+				Name="Theater"
+				Filter="">
+				<File
+					RelativePath="..\..\Source\Theater\CustomLayoutModel.cpp">
+				</File>
+				<File
+					RelativePath="..\..\Source\Theater\DamageModifier.cpp">
+				</File>
+				<File
+					RelativePath="..\..\Source\Theater\ElevationCorrection.cpp">
+				</File>
+				<File
+					RelativePath="..\..\Source\Theater\Feature.cpp">
+				</File>
+				<File
+					RelativePath="..\..\Source\Theater\FeatureGroup.cpp">
+				</File>
+				<File
+					RelativePath="..\..\Source\Theater\FeatureGroupList.cpp">
+				</File>
+				<File
+					RelativePath="..\..\Source\Theater\FeatureLayout.cpp">
+				</File>
+				<File
+					RelativePath="..\..\Source\Theater\FeatureObjectModel.cpp">
+				</File>
+				<File
+					RelativePath="..\..\Source\Theater\FeatureQuad.cpp">
+				</File>
+				<File
+					RelativePath="..\..\Source\Theater\FeatureSceneModel.cpp">
+				</File>
+				<File
+					RelativePath="..\..\Source\Theater\LayoutTransform.cpp">
+				</File>
+				<File
+					RelativePath="..\..\Source\Theater\Objective.cpp">
+				</File>
+				<File
+					RelativePath="..\..\Source\Theater\RandomBillboardModel.cpp">
+				</File>
+				<File
+					RelativePath="..\..\Source\Theater\RandomForestModel.cpp">
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="Header Files"
 			Filter="h;hpp;hxx;hm;inl">
 			<File
 				RelativePath="..\..\Include\AircraftObject.h">
+			</File>
+			<File
+				RelativePath="..\..\Include\AircraftPhysicsModel.h">
 			</File>
 			<File
 				RelativePath="..\..\Include\Atmosphere.h">
@@ -316,6 +365,9 @@
 				RelativePath="..\..\Include\CSPSim.h">
 			</File>
 			<File
+				RelativePath="..\..\Include\ChunkLodTerrain.h">
+			</File>
+			<File
 				RelativePath="..\..\Include\Collision.h">
 			</File>
 			<File
@@ -326,6 +378,9 @@
 			</File>
 			<File
 				RelativePath="..\..\Include\Console.h">
+			</File>
+			<File
+				RelativePath="..\..\Include\DemeterTerrain.h">
 			</File>
 			<File
 				RelativePath="..\..\Include\DynamicObject.h">
@@ -361,7 +416,7 @@
 				RelativePath="..\..\Include\LandingGear.h">
 			</File>
 			<File
-				RelativePath="..\..\Include\LogStream.h">
+				RelativePath="..\..\Include\Log.h">
 			</File>
 			<File
 				RelativePath="..\..\Include\LogoScreen.h">
@@ -382,10 +437,13 @@
 				RelativePath="..\..\Include\ObjectRangeInfo.h">
 			</File>
 			<File
-				RelativePath="..\..\Include\PhysicModel.h">
+				RelativePath="..\..\Include\PhysicsModel.h">
 			</File>
 			<File
 				RelativePath="..\..\Include\PrimaryAeroDynamics.h">
+			</File>
+			<File
+				RelativePath="..\..\Include\Profile.h">
 			</File>
 			<File
 				RelativePath="..\..\Include\ScreenInfo.h">
@@ -435,6 +493,58 @@
 			<File
 				RelativePath="..\..\Include\stdinc.h">
 			</File>
+			<Filter
+				Name="Theater"
+				Filter="">
+				<File
+					RelativePath="..\..\Include\Theater\CustomLayoutModel.h">
+				</File>
+				<File
+					RelativePath="..\..\Include\Theater\ElevationCorrection.h">
+				</File>
+				<File
+					RelativePath="..\..\Include\Theater\Feature.h">
+				</File>
+				<File
+					RelativePath="..\..\Include\Theater\FeatureGroup.h">
+				</File>
+				<File
+					RelativePath="..\..\Include\Theater\FeatureGroupList.h">
+				</File>
+				<File
+					RelativePath="..\..\Include\Theater\FeatureGroupModel.h">
+				</File>
+				<File
+					RelativePath="..\..\Include\Theater\FeatureLayout.h">
+				</File>
+				<File
+					RelativePath="..\..\Include\Theater\FeatureModel.h">
+				</File>
+				<File
+					RelativePath="..\..\Include\Theater\FeatureObjectModel.h">
+				</File>
+				<File
+					RelativePath="..\..\Include\Theater\FeatureQuad.h">
+				</File>
+				<File
+					RelativePath="..\..\Include\Theater\FeatureSceneGroup.h">
+				</File>
+				<File
+					RelativePath="..\..\Include\Theater\FeatureSceneModel.h">
+				</File>
+				<File
+					RelativePath="..\..\Include\Theater\LayoutTransform.h">
+				</File>
+				<File
+					RelativePath="..\..\Include\Theater\Objective.h">
+				</File>
+				<File
+					RelativePath="..\..\Include\Theater\RandomBillboardModel.h">
+				</File>
+				<File
+					RelativePath="..\..\Include\Theater\RandomForestModel.h">
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="Resource Files"
@@ -446,7 +556,7 @@
 				Name="Debug|Win32">
 				<Tool
 					Name="VCCustomBuildTool"
-					CommandLine="C:\progra~1\SWIG-1.3.19\swig -c++ -python -noexcept -DWIN32 -I..\..\Include -IC:\Python22\include -o ..\..\Source\$(InputName)_wrap.cpp ..\..\Source\$(InputName).i
+					CommandLine="C:\progra~1\SWIG-1.3.19\swig -c++ -python -noexcept -DSWIG_NOINCLUDE -DWIN32 -I..\..\Include -IC:\Python22\include -o ..\..\Source\$(InputName)_wrap.cpp ..\..\Source\$(InputName).i
 "
 					Outputs="..\..\Source\$(InputName)_wrap.cpp"/>
 			</FileConfiguration>

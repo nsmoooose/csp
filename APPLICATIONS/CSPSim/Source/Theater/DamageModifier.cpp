@@ -22,5 +22,7 @@
  *
  **/
 
+#include "DamageModifier.h"
+
 SIMDATA_REGISTER_INTERFACE(DamageModifier)
 

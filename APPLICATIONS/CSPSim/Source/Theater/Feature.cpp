@@ -25,6 +25,8 @@
 #include "Theater/Feature.h"
 #include "Theater/FeatureObjectModel.h"
 
+#include "ObjectModel.h"
+
 Feature::Feature(FeatureObjectModel const *model, char value_) : 
 	m_Damage(0), 
 	m_Value(value_),

@@ -1,5 +1,28 @@
-Version 0.3.3 (in progress)
+ Version 0.3.3 (in progress)
 ===========================
+
+
+2003-06-21: delta
+
+==========> VC USERS: you need to reinstall simdata.
+
+	    Changed VectorField::m_dimension to protected and 
+	    class DynamicalSystem now publicly inherites from 
+	    VectorField.
+	    Changed general stats implementation to use some 
+	    "static" texts.
+	    Corrected a bug in ScreenInfo ctor (m_Text allocated 
+	    2 times).
+	    Added a conditional test in PrimaryAeroDynamics::updateAngles() 
+	    to check for a division by 0 (!).
+	    Changed updating m_InfoView every 3 frame.
+	    Changed ObjectStats implementation to use osg::ref_ptr 
+	    and clean up data when changin object.
+	    Changed XML/Data/m2k/fm.xml.
+	    Added SWIG_NOINCLUDE on ccSP_wrap.cpp to enable log 
+	    level from python scripts
+	    Merged Onsight changes; can t find a bug in Sky class 
+	    when TEXDOME is defined on windows.
 
 2003-06-25: onsight
             
@@ -98,8 +121,10 @@ Version 0.3.3 (in progress)
 	    braking force is still constrained to [0, brake_limit] of
 	    course.
 
+>>>>>>> 1.34
 2003-06-20: delta
 	    Moved updateNearGround() outside loop in AircraftPhysicModel::doSimStep.
+	    Corrected kinetic parameters update in AircraftPhysicModel::doSimStep.
 	    Reenabled position update in _f.
 	    Changed RungeKuttaCK::MAXSTP = 16.
 	    Changed binding methods for throttle in EngineDynamics/Engine class: added 

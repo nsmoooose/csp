@@ -53,7 +53,7 @@ protected:
 	virtual double onUpdate(double) { return 0.0; }
 	virtual void initialize() {}
 	virtual unsigned int onRender() { return 0; }
-	virtual simdata::Vector3 const & getGlobalPosition() const { return simdata::Vector3::ZERO; }
+	virtual simdata::Vector3 getGlobalPosition() const { return simdata::Vector3::ZERO; }
 	virtual void setGlobalPosition(simdata::Vector3 const & position) {}
 	virtual void updateScene(simdata::Vector3 const &origin) {}
 	virtual void getStats(std::vector<std::string> &stats) const {}

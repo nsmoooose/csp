@@ -81,7 +81,7 @@ public:
 	void removeObject(simdata::Ref<DynamicObject> object);
 	void addFeatureCell(osg::Node *feature);
 	void removeFeatureCell(osg::Node *feature);
-	void setNearObject(simdata::Ref<DynamicObject> object, bool near);
+	void setNearObject(simdata::Ref<DynamicObject> object, bool isNear);
 
 	void setLookAt(simdata::Vector3 & eyePos, simdata::Vector3 & lookPos, simdata::Vector3 & upVec);
 	void getLookAt(simdata::Vector3 & eyePos, simdata::Vector3 & lookPos, simdata::Vector3 & upVec) const;

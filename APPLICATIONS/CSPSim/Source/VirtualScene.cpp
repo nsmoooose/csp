@@ -184,7 +184,6 @@ VirtualScene::~VirtualScene()
 {
 }
 
-
 int VirtualScene::buildScene()
 {
 	CSP_LOG(APP, INFO, "VirtualScene::buildScene() ");
@@ -258,7 +257,7 @@ int VirtualScene::buildScene()
 
 	// set the compute transform callback to do all the work of
 	// determining the transform according to the current eye point.
-	//0 m_EyeTransform->setComputeTransformCallback(new MoveEarthySkyWithEyePointCallback);
+	//  m_EyeTransform->setComputeTransformCallback(new MoveEarthySkyWithEyePointCallback);
 	m_EyeTransform->addChild(m_Sky.get());  // bin number -2 so drawn first.
 	m_EyeTransform->addChild(m_SkyLights.get());
 
@@ -624,13 +623,13 @@ void VirtualScene::removeObject(simdata::Ref<DynamicObject> object) {
 	}
 }
 
-void VirtualScene::setNearObject(simdata::Ref<DynamicObject> object, bool near) {
+void VirtualScene::setNearObject(simdata::Ref<DynamicObject> object, bool isNear) {
 	assert(object.valid());
-	if (object->getNearFlag() == near) return;
-	object->setNearFlag(near);
+	if (object->getNearFlag() == isNear) return;
+	object->setNearFlag(isNear);
 	if (object->getSceneFlag()) {
 		osg::Node *node = object->getOrCreateModelNode();
-		if (near) {
+		if (isNear) {
 			m_FreeObjectGroup->removeChild(node);
 			m_NearObjectGroup->addChild(node);
 		} else {

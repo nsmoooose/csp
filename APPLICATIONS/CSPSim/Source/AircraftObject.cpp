@@ -518,13 +518,15 @@ void AircraftObject::getStats(std::vector<std::string> &stats) const {
 	char buffer[256];
 	snprintf(buffer, 255, "Throttle: %.3f", m_Throttle);
 	stats.push_back(buffer);
-	snprintf(buffer, 255, "Elevator: %.3f, Aileron %.3f, Rudder %.3f",
-	         m_Elevator, m_Aileron, m_Rudder);
+	//snprintf(buffer, 255, "Elevator: %.3f, Aileron %.3f, Rudder %.3f",
+	//         m_Elevator, m_Aileron, m_Rudder);
+	snprintf(buffer, 255, "de: %.3f, da: %.3f, dr: %.3f", m_Elevator, m_Aileron, m_Rudder);
 	stats.push_back(buffer);
 	float speed = getSpeed();
 	float alpha = getAngleOfAttack();
 	float G = getGForce();
-	snprintf(buffer, 255, "Alpha: %+.2f, G: %+.2f, Air speed: %.1f", RadiansToDegrees(alpha), G, speed);
+	//snprintf(buffer, 255, "Alpha: %+.2f, G: %+.2f, Air speed: %.1f", RadiansToDegrees(alpha), G, speed);
+	snprintf(buffer, 255, "AOA: %+.2f, G: %+.2f, Air speed: %.1f", RadiansToDegrees(alpha), G, speed);
 	stats.push_back(buffer);
 	float heading = RadiansToDegrees(m_Heading);
 	if (heading < 0.0) heading += 360.0;
@@ -533,6 +535,14 @@ void AircraftObject::getStats(std::vector<std::string> &stats) const {
 	         RadiansToDegrees(m_Pitch), 
 	         RadiansToDegrees(m_Roll));
 	stats.push_back(buffer);
+	/*static float aoa = 0.0;
+	if (fabsf(RadiansToDegrees(alpha)) > aoa) {
+		aoa = fabsf(RadiansToDegrees(alpha));
+		std::cout << "\naoa max = " << aoa << "\n";
+	}
+	static int i = 0;
+	if (!((++i)%1000))
+		std::cout << "\naoa max = " << aoa << "\n";*/
 }
 
 

@@ -1,6 +1,9 @@
 Version 0.3.3 (in progress)
 ===========================
 
+2003-07-01: delta
+	    Added a SWIG_GLOBAL define on cSimData_wrap.cpp to enable log level.
+
 2003-06-19: onsight
             Fixed a bug in Link::unpack(). The Object::postCreate() method
             was not being called correctly for immediate Objects (those

@@ -31,7 +31,7 @@
 #include "NumericalMethod.h"
 
 
-class DynamicalSystem: protected VectorField {
+class DynamicalSystem: public VectorField {
 	NumericalMethod* _numericalMethod;
 public:
 	DynamicalSystem(unsigned short dimension = 0);

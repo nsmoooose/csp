@@ -96,7 +96,7 @@ std::vector<double> const &AircraftPhysicsModel::_f(double x, std::vector<double
 void AircraftPhysicsModel::doSimStep(double dt) {	
 
 	if (dt == 0.0) dt = 0.017;
-	unsigned short n = std::min<short>(6,static_cast<unsigned short>(180 * dt)) + 1;
+	unsigned short n = std::min<unsigned short>(6,static_cast<unsigned short>(180 * dt)) + 1;
 	double dtlocal = dt/n;
 
 	std::for_each(m_Dynamics.begin(),m_Dynamics.end(),InitializeSimulationStep(dtlocal));
@@ -127,7 +127,7 @@ void AircraftPhysicsModel::doSimStep(double dt) {
 		std::for_each(m_Dynamics.begin(),m_Dynamics.end(),PreSimulationStep(dtlocal));
 
 		// solution
-		std::vector<double> y = flow(y0, 0, dtlocal);
+		std::vector<double> y = flow(y0, 0.0, dtlocal);
 
 		// update all variables
 		// Caution: dont permute these	lines
@@ -137,7 +137,7 @@ void AircraftPhysicsModel::doSimStep(double dt) {
 		// correct an eventual underground position
 		if (m_GroundCollisionDynamics->needsImpulse()) {
 		//	std::cout << "IMPULSE\n";
-			float scale = 1.0 - std::min(1.0, dtlocal * 100.0);
+			double scale = 1.0 - std::min(1.0, dtlocal * 100.0);
 			m_VelocityBody *= scale;
 		}
 

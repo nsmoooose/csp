@@ -41,7 +41,8 @@
 
 class TerrainObject;
 class FeatureGroup;
-class FeatureGroupList;
+
+#include "Theater/FeatureGroupList.h"
 
 
 /**

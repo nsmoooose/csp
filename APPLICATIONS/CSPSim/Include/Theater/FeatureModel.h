@@ -27,7 +27,7 @@
 #define __THEATER_FEATUREMODEL_H__
 
 
-#include "Theater/Feature.h"
+class Feature;
 
 #include <SimData/Path.h>
 #include <SimData/Object.h>

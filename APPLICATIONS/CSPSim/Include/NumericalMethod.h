@@ -33,6 +33,7 @@
 
 class VectorField
 {
+protected:
 	unsigned short const m_dimension;
 public:
 	VectorField(unsigned short dimension ):

@@ -30,6 +30,7 @@
 #include "InputInterface.h"
 #include <SDL/SDL_events.h>
 
+#include <cassert>
 #include <iostream>
 #include <sstream>
 #include <fstream>

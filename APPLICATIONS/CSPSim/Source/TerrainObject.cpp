@@ -77,7 +77,7 @@ void TerrainObject::unpack(simdata::UnPacker& p)
 
 
 void TerrainObject::postCreate() {
-	CSP_LOG(TERRAIN, INFO, "Terrain Center @ " << getCenter());
+	CSP_LOG(TERRAIN, INFO, "Terrain Center @ " << getCenter().asString());
 	CSP_LOG(TERRAIN, INFO, "Terrain Size " << getWidth() << " x " << getHeight() << " m");
 	m_Map.set(getCenter(), getWidth(), getHeight());
 }

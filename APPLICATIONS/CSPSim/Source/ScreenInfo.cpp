@@ -52,7 +52,7 @@ using std::setfill;
 
 // 6/18/03:
 // 1) update is done every x frame - see void GameScreen::onUpdate(double)
-// 2) Framerate class implements these static texts
+// 2) Framerate & GeneralStats classes implement these static texts
 
 
 class UpdateCallback : public osg::NodeCallback {
@@ -264,7 +264,6 @@ ScreenInfo(posx,posy,"OBJECT STATS") {
 	}
 }
 
-
 void ObjectStats::update() {
 	simdata::Ref<DynamicObject> activeObject = CSPSim::theSim->getActiveObject();
 	if (activeObject.valid()) {
@@ -277,3 +276,4 @@ void ObjectStats::update() {
 			m_ObjectStats[n]->setText(stringStats[n]);
 	}
 }
+

@@ -284,7 +284,7 @@ void GameScreen::onRender()
 void GameScreen::onUpdate(double dt) {
 	static short i = 0;
 	setCamera(dt);
-	if ((++i)%5 == 0)
+	if ((++i)%3 == 0)
 		m_InfoView->update();
 }
 
@@ -583,11 +583,11 @@ void GameScreen::setCamera(double dt)
 	VirtualScene *scene = CSPSim::theSim->getScene();
 
 	if ((scene != 0) && m_ActiveObject.valid()) {
-		bool near = m_ActiveObject->getNearFlag();
-		if (near && m_ViewMode != 1 && m_ViewMode != 9) {
+		bool isNear = m_ActiveObject->getNearFlag();
+		if (isNear && m_ViewMode != 1 && m_ViewMode != 9) {
 			scene->setNearObject(m_ActiveObject, false);
 		} else
-		if (!near && (m_ViewMode == 1 || m_ViewMode == 9)) {
+		if (!isNear && (m_ViewMode == 1 || m_ViewMode == 9)) {
 			scene->setNearObject(m_ActiveObject, true);		
 		}
 	}

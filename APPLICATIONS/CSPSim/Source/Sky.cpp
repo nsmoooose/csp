@@ -82,7 +82,7 @@ const float TURBIDITY = 3.0f;
  * texture, but this requires more time to reevaluate and would have to
  * be computed over multiple frames.
  */
-#define TEXDOME
+//#define TEXDOME
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -187,7 +187,7 @@ SIMDATA_REGISTER_INTERFACE(StarCatalog)
 
 
 // TODO reimplement this as an osg::Geometry using a vertex list PrimitiveSet
-// and GL_POINTS.  the current routine is called infrequently (the stars are
+// and GL_POINTS (osgSim::osgLightPoint?).  the current routine is called infrequently (the stars are
 // rendered from a display list between updates), but requires a few ms to
 // update the stars one at a time
 class StarSystem: public osg::Drawable {
@@ -1183,8 +1183,8 @@ void Sky::_init()
 	int ci, ii;
 	ii = ci = 0;
 
-	for( i = 0; i < m_nlev; i++ ) {
-		for( j = 0; j < m_nseg; j++ ) {
+	for( i = 0; i < m_nlev; ++i ) {
+		for( j = 0; j < m_nseg; ++j ) {
 			alpha = osg::DegreesToRadians(m_lev[i]);
 			theta = osg::DegreesToRadians((float)(j*360.0/m_nseg));
 
@@ -1201,22 +1201,23 @@ void Sky::_init()
 			colors[ci][2] = 1.0;
 			colors[ci][3] = 1.0;
 
-			tcoords[ci][0] = (float)j/(float)(m_nseg-1);
-			tcoords[ci][1] = (float)i/(float)(m_nlev-1);
+			tcoords[ci][0] = 0.5f + std::min(0.5f, (90.0f - m_lev[i]) / 180.0f) * cosf(theta);
+            tcoords[ci][1] = 0.5f + std::min(0.5f, (90.0f - m_lev[i]) / 180.0f) * sinf(theta);
 
-			ci++;
+			++ci;
 		}
 	}
 
 	DrawElementsUShort* drawElements = new DrawElementsUShort(PrimitiveSet::TRIANGLE_STRIP);
 	drawElements->reserve(m_nlev*(m_nseg+1)*2);
-	for (i = 0; i < m_nlev-1; i++) {
-		for (j = 0; j <= m_nseg; j++) {
-			drawElements->push_back((i+1)*m_nseg+j%m_nseg);
-			drawElements->push_back((i+0)*m_nseg+j%m_nseg);
+	for (i = 0; i < m_nlev-1; ++i) {
+		for (j = 0; j <= m_nseg; ++j) {
+			drawElements->push_back((i+1)*m_nseg+(j%m_nseg));
+			drawElements->push_back((i+0)*m_nseg+(j%m_nseg));
 		}
 	}
-
+	m_SkyDome->setSupportsDisplayList(false);
+	m_SkyDome->setUseDisplayList(false);
 	m_SkyDome->addPrimitiveSet(drawElements);
 	m_SkyDome->setVertexArray( &coords );
 	m_SkyDome->setTexCoordArray( 0, &tcoords );
@@ -1229,13 +1230,14 @@ void Sky::_init()
 		Image *image = new Image();
 		image->allocateImage(64, 64, 1, GL_RGB, GL_UNSIGNED_BYTE);
 		assert(image->data() != NULL);
-		memset(image->data(), 0, 64*64*3);
+		memset(image->data(), 255, 64*64*3);
 		// setting the internal texture format is required, but
 		// its not clear how to determine the correct value.  the
 		// following is just what the png loader does, setting
 		// the format to the number of color bytes.
-		image->setInternalTextureFormat(3); 
+		image->setInternalTextureFormat(GL_RGB); 
 		Texture2D *tex = new Texture2D;
+		tex->setDataVariance(osg::Object::DYNAMIC);
 		tex->setImage(image);
 		tex->setWrap(Texture::WRAP_S, Texture::CLAMP);
 		tex->setWrap(Texture::WRAP_T, Texture::CLAMP);
@@ -1245,6 +1247,7 @@ void Sky::_init()
 		//tex->setFilter(Texture::MAG_FILTER, Texture::NEAREST);
 		tex->setUseHardwareMipMapGeneration(false);
 		tex->setUnRefImageDataAfterApply(false);
+		tex->setInternalFormatMode(osg::Texture::USE_IMAGE_DATA_FORMAT);
 		m_SkyDomeTextureImage = image;
 		m_SkyDomeTexture = tex;
 		StateSet *dome_state = m_SkyDome->getOrCreateStateSet();
@@ -1309,7 +1312,7 @@ osg::Light *Sky::getMoonLight() {
 }
 
 // TODO
-// take altitide into account for turbidity
+// take altitude into account for turbidity
 // relate night sky color to moon brighness (and altitude)
 // maybe modify SkyColor it consider moon position:
 //   if moon is up and sun is down (or nearly so), add in a glow and background color
@@ -1358,12 +1361,12 @@ void Sky::_updateShading(double sun_h, double sun_A) {
 	m_AverageIntensity = 0.0;
 	float dark = m_Moon.getApparentBrightness();
 	osg::Vec4 horizon_average;
-	for (i = 0; i < m_nlev; i++) {
+	for (i = 0; i < m_nlev; ++i) {
 		double elev = m_lev[i] * D2R;
 		if (elev < 0.0) elev = 0.0; // sub horizon colors aren't correct 
 		double azimuth = -sun_A - 0.5 * G_PI;
 		bool at_vertex = fabs(elev - sun_h) < min_a; // this is only a rough measure
-		for (j = 0; j < m_nseg; j++) {
+		for (j = 0; j < m_nseg; ++j) {
 			float intensity;
 			// if the sun lines up very close to a vertex, the vertex will be
 			// pure white and create a noticible artifact on the surrounding
@@ -1383,7 +1386,7 @@ void Sky::_updateShading(double sun_h, double sun_A) {
 				(*m_HorizonColors)[j] = colors[ci];
 				horizon_average += colors[ci];
 			}
-			ci++;
+			++ci;
 			m_AverageIntensity += intensity;
 		}
 	}
@@ -1396,7 +1399,6 @@ void Sky::_updateShading(double sun_h, double sun_A) {
 #ifdef TEXDOME
 void Sky::_updateShading(double sun_h, double sun_A) {
 	Vec2Array& tex = *(dynamic_cast<Vec2Array*>(m_SkyDome->getTexCoordArray(0)));
-	Vec4Array& col = *(dynamic_cast<Vec4Array*>(m_SkyDome->getColorArray()));
 	int i, j;
 
 	m_AverageIntensity = 0.0;
@@ -1408,10 +1410,14 @@ void Sky::_updateShading(double sun_h, double sun_A) {
 	{ // update skydome texture
 		unsigned char *shade = m_SkyDomeTextureImage->data();
 		assert(shade);
-		for (j = 0; j < 64; j++) {
+		static unsigned char k = 128;
+		++k;
+		unsigned int n = 2;
+		//memset(shade, k, 3);
+		for (j = 0; j < 64; ++j) {
 			int idx = (j * 64 + 32) * 3;
 			double y = (j-32) / 30.0; 
-			for (i = 0; i < 32; i++) {
+			for (i = 0; i < 32; ++i) {
 				double x = i / 30.0;
 				double elevation = (1.0 - sqrt(x*x+y*y)) * 0.5 * G_PI;
 				if (elevation >= -0.15) {
@@ -1421,46 +1427,55 @@ void Sky::_updateShading(double sun_h, double sun_A) {
 					Color c = m_SkyShader.SkyColor(elevation, azimuth, dark, intensity);
 					int i0 = idx + i*3 - 1;
 					int i1 = idx - i*3 - 1;
-					shade[++i0] = shade[++i1] = static_cast<unsigned char>(c.getA() * 255.0);
-					shade[++i0] = shade[++i1] = static_cast<unsigned char>(c.getB() * 255.0);
-					shade[++i0] = shade[++i1] = static_cast<unsigned char>(c.getC() * 255.0);
+					shade[++i0] = shade[++i1] = k;//static_cast<unsigned char>(c.getA() * 255.0);
+					shade[++i0] = shade[++i1] = 0;//static_cast<unsigned char>(c.getB() * 255.0);
+					shade[++i0] = shade[++i1] = 0;//static_cast<unsigned char>(c.getC() * 255.0);
 					m_AverageIntensity += intensity;
 					++n_average;
 				}
 			}
 		}
+		//for (int i = 0; i < 64*64*3; i++) shade[i] = static_cast<unsigned char>((i/3) %256);
+
+		/*int n = 0;
+		for (i=0; i < 64*64*3;i += 3)
+			if (shade[i] == k && shade[i+1] == k && shade[i+2] == k)
+				++n;
+		std::cout << "\n" << n << " values are equal to " << k << "\n\n";*/
 	}
+	
 
 	{ // separate evaluation for horizon colors
 		int n = m_HorizonColors->size();
 		double da = 2.0 * G_PI / n;
 		double azimuth = -sun_A - 0.5 * G_PI;
-		for (i = 0; i < n; i++) {
+		for (i = 0; i < n; ++i) {
 			float intensity;
 			Color c = m_SkyShader.SkyColor(0.0, azimuth, dark, intensity);
 			(*m_HorizonColors)[i] = Vec4(c.getA(), c.getB(), c.getC(), 1.0);
 			azimuth += da;
 		}
 	}
-
+	
 	{ // update texture coordinates
 		int ci = 0;
 		double da = 2.0 * G_PI / (m_nseg);
-		for (i = 0; i < m_nlev; i++) {
+		for (i = 0; i < m_nlev; ++i) {
 			double elev = m_lev[i] * D2R;
 			if (elev < 0.0) elev = 0.0; // sub horizon colors aren't correct 
 			double azimuth = -sun_A - 0.5 * G_PI;
 			float factor = (1.0 - 2.0 * elev / G_PI) * 30.0 / 32.0;
-			for (j = 0; j < m_nseg; j++) {
+			for (j = 0; j < m_nseg; ++j) {
 				float x = 0.5 * (1.0 + sin(azimuth) * factor) + 0.5 / 64.0;
 				float y = 0.5 * (1.0 + cos(azimuth) * factor) + 0.5 / 64.0;
 				tex[ci][0] = x;
 				tex[ci][1] = y;
-				ci++;
+				++ci;
 				azimuth += da;
 			}
 		}
 	}
+	
 
 	simdata::SimTime u = simdata::SimDate::getSystemTime();
 	std::cout << "SKY UPDATE TIME: " << ((u-t)*1000.0) << " ms\n";
@@ -1470,8 +1485,8 @@ void Sky::_updateShading(double sun_h, double sun_A) {
 
 	m_SkyDomeTextureImage->dirty();
 	m_SkyDomeTexture->dirtyTextureObject();
+	m_SkyDomeTexture->dirtyTextureParameters();
 	m_SkyDomeTexture->setImage(m_SkyDomeTextureImage.get());
-	m_SkyDome->dirtyDisplayList(); 
 }
 #endif
 
@@ -1490,7 +1505,7 @@ void Sky::update(double lat, double lon, simdata::SimDate const &t) {
 	m_Latitude = lat;
 	_updateSun();
 	// do a full moon update every 300 seconds (orbital position and lighting)
-	if (fabs(m_JD - m_LastMoonFullUpdate) > 1.15741e-5 * 5.0) { // 300.0) {
+	if (fabs(m_JD - m_LastMoonFullUpdate) > 0.0000578705) {// = 1.15741e-5 * 5.0 // 300.0) {
 		m_LastMoonFullUpdate = m_JD;
 		_updateMoon(false);
 	} else {
@@ -1522,7 +1537,7 @@ osg::Vec4 Sky::getHorizonColor(float angle) {
 	assert(m_HorizonColors);
 	osg::Vec4 color;
 	color = (*m_HorizonColors)[(idx-avg)%n] * (1.0-da);
-	for (int i = 1-avg; i <= avg; i++) {
+	for (int i = 1-avg; i <= avg; ++i) {
 		color += (*m_HorizonColors)[(idx+i)%n];
 	}
 	color += (*m_HorizonColors)[(idx+avg+1)%n] * da;

@@ -37,6 +37,7 @@
 #include <iostream>
 #include <cstdio>
 
+using simdata::Normalized;
 
 /**
  * A gnomonic projection of a sphere onto a tangent (or secant) plane.

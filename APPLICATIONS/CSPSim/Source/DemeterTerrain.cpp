@@ -446,7 +446,7 @@ void DemeterTerrain::updateDemeterSettings()
 
 void DemeterTerrain::postCreate() {
 	TerrainObject::postCreate();
-	CSP_LOG(TERRAIN, INFO, "Terrain Center @ " << getCenter());
+	CSP_LOG(TERRAIN, INFO, "Terrain Center @ " << getCenter().asString());
 	CSP_LOG(TERRAIN, INFO, "Terrain Size " << getWidth() << " x " << getHeight() << " m");
 	m_Offset.Set(getWidth()*0.5, getHeight()*0.5, 0.0);
 	m_CellWidth = getWidth() / m_LatticeWidth;

@@ -1,17 +1,17 @@
-// Combat Simulator Project - FlightSim Demo
-// Copyright (C) 2002 The Combat Simulator Project
+// Combat Simulator Project
+// Copyright (C) 2002, 2004 The Combat Simulator Project
 // http://csp.sourceforge.net
-// 
+//
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
 // as published by the Free Software Foundation; either version 2
 // of the License, or (at your option) any later version.
-// 
+//
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU General Public License
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
@@ -22,15 +22,15 @@
  *
  * There are a number of aspects of these classes that are not ideal,
  * however the interface is simple enough to be stable and the
- * implementation can be "purified" later (if desired) without 
+ * implementation can be "purified" later (if desired) without
  * affecting its use.
  *
  * @author Mark Rose <mrose@stm.lbl.gov>
  */
 
 
-#ifndef __SIMPLECONFIG_H__
-#define __SIMPLECONFIG_H__
+#ifndef __SIMCORE_UTIL_SIMPLECONFIG_H__
+#define __SIMCORE_UTIL_SIMPLECONFIG_H__
 
 # if defined(_MSC_VER) && (_MSC_VER <= 1200)
 #pragma warning (disable : 4786)
@@ -46,7 +46,7 @@
 /**
  * Basic exception class.
  *
- * The error message will automatically be dumped to stderr when the object 
+ * The error message will automatically be dumped to stderr when the object
  * is destroyed unless the clear() method is called.
  *
  * @author Mark Rose <mrose@stm.lbl.gov>
@@ -64,7 +64,7 @@ public:
 	 * Maybe a little too fancy, but the clear() is needed so that
 	 * multiple automatic copies yield only a single error message.
 	 */
-	Error(const Error &e): m_msg(e.m_msg), 
+	Error(const Error &e): m_msg(e.m_msg),
 	                       m_fullerror(e.m_fullerror),
 			       m_display(e.m_display) { e.clear(); }
 	
@@ -108,7 +108,7 @@ public:
 	/**
 	 * Set the error information.
 	 */
-	ConfigError(const std::string &msg, const std::string &filename, 
+	ConfigError(const std::string &msg, const std::string &filename,
 	            int line_no, const std::string &line);
 	
 	/**
@@ -146,7 +146,7 @@ class ConfigValue;
  *
  * This will often be created as a global object so that configuration
  * data can be accessed and saved throughout the program.
- * 
+ *
  * @author Mark Rose <mrose@stm.lbl.gov>
  */
 class SimpleConfig {
@@ -198,7 +198,7 @@ public:
 	void addComment(const std::string &comment);
 
 	/**
-	 * Open a new configuration file.  Any changes to the previous file are saved 
+	 * Open a new configuration file.  Any changes to the previous file are saved
 	 * first.
 	 */
 	bool open(const std::string &fn);
@@ -364,8 +364,8 @@ private:
 	ConfigDictionary m_dict, m_last;
 	ElementList m_elements;
 	
-	void _addComment(const std::string &comment); 
-	void _addSection(const std::string &section); 
+	void _addComment(const std::string &comment);
+	void _addSection(const std::string &section);
 	std::string _hash_index(const std::string &section, const std::string &key) const;
 	void _addValue(const std::string &section, const std::string &key, const std::string &value);
 	void _parse(std::istream &is);
@@ -374,5 +374,5 @@ private:
 };
 
 
-#endif // __SIMPLECONFIG_H__
+#endif // __SIMCORE_UTIL_SIMPLECONFIG_H__
 

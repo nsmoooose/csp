@@ -1,17 +1,17 @@
-// Combat Simulator Project - FlightSim Demo
-// Copyright (C) 2002 The Combat Simulator Project
+// Combat Simulator Project
+// Copyright (C) 2002, 2004 The Combat Simulator Project
 // http://csp.sourceforge.net
-// 
+//
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
 // as published by the Free Software Foundation; either version 2
 // of the License, or (at your option) any later version.
-// 
+//
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU General Public License
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
@@ -22,7 +22,7 @@
  *
  * There are a number of aspects of these classes that are not ideal,
  * however the interface is simple enough to be stable and the
- * implementation can be "purified" later (if desired) without 
+ * implementation can be "purified" later (if desired) without
  * affecting its use.
  *
  * @author Mark Rose <mrose@stm.lbl.gov>
@@ -36,7 +36,7 @@
 #define snprintf _snprintf
 #endif
 
-#include "SimpleConfig.h"
+#include <SimCore/Util/SimpleConfig.h>
 
 #include <algorithm>
 #include <string>
@@ -93,7 +93,7 @@ Error::~Error() {
 
 // class ConfigError
 
-ConfigError::ConfigError(const std::string &msg, const std::string &filename, 
+ConfigError::ConfigError(const std::string &msg, const std::string &filename,
 	    int line_no, const std::string &line):
 	    Error(msg) {
 	char lstr[20];
@@ -115,7 +115,7 @@ class ConfigElement {
 public:
 	ConfigElement() {}
 	virtual ~ConfigElement() {}
-	virtual void write(std::ostream &os) const {}
+	virtual void write(std::ostream &) const {}
 };
 
 // internal class for storing config comments
@@ -282,7 +282,7 @@ void SimpleConfig::_parse(std::istream &is) {
 				std::string value = Trim(line.substr(eq+1));
 				_addValue(section, key, value);
 			}
-		} 
+		}
 	}
 }
 
@@ -301,7 +301,7 @@ int SimpleConfig::getInt(const std::string &section, const std::string &key, int
 	ConfigValue *v = _find(section, key);
 	if (v) {
 		return atoi(v->getValue().c_str());
-	} else 
+	} else
 	if (set) {
 		setInt(section, key, default_);
 	}
@@ -317,7 +317,7 @@ bool SimpleConfig::getBool(const std::string &section, const std::string &key, b
 		} else {
 			return false;
 		}
-	} else 
+	} else
 	if (set) {
 		setBool(section, key, default_);
 	}
@@ -329,7 +329,7 @@ double SimpleConfig::getFloat(const std::string &section, const std::string &key
 	ConfigValue *v = _find(section, key);
 	if (v) {
 		return atof(v->getValue().c_str());
-	} else 
+	} else
 	if (set) {
 		setFloat(section, key, default_);
 	}
@@ -341,7 +341,7 @@ std::string SimpleConfig::getString(const std::string &section, const std::strin
 	ConfigValue *v = _find(section, key);
 	if (v) {
 		return v->getValue();
-	} else 
+	} else
 	if (set) {
 		setString(section, key, default_);
 	}
@@ -353,7 +353,7 @@ std::string SimpleConfig::getPath(const std::string &section, const std::string 
 	std::string native = simdata::ospath::filter(default_);
 	if (v) {
 		return simdata::ospath::filter(v->getValue());
-	} else 
+	} else
 	if (set) {
 		setString(section, key, native);
 	}
@@ -471,8 +471,8 @@ bool SimpleConfig::hasSection(std::string const &section) const {
 // This is a rather ugly and slow way to delete a section.  It
 // can leave stay comments in the middle of sections, but will
 // remove the section entirely, even if it is multiply declared.
-// This whole function was a bit of an afterthought, since it 
-// isn't very likely to be used in the application this class 
+// This whole function was a bit of an afterthought, since it
+// isn't very likely to be used in the application this class
 // was written for.  Sorry to all the purists out there.  :-(
 void SimpleConfig::delSection(std::string const &section_name) {
 	ConfigDictionary::iterator i = m_last.find(section_name);

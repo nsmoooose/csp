@@ -19,6 +19,7 @@
 Import('env build')
 
 SOURCES = [
+	'SimpleConfig.cpp',
 	'StringTools.cpp',
 	'SynchronousUpdate.cpp'
 ]

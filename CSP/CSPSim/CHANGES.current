@@ -1,6 +1,30 @@
  Version 0.4.0 (in progress)
 ===========================
 
+2004-06-29: delta
+  * Corrected a shaking bug in the flyby view when PAUSE was enabled.
+    (also could solve a possible bug in internal view). 
+    Added bool isInternal().
+  
+  * Changed various Vector3 ctors to simple set method (mostly in 
+    PhysicsModel and AircraftPhysicsModel classes).
+  
+  * Increased the number of iterations in AircraftPhysicsModel::doSimStep.
+  
+  * Various corrections related to m_PositionLocal.
+  
+  * Added a RECORD/REPLAY mode via a flag in CSPSim.ini.
+    Position the flag to RECORD will record the current run, saving the 
+    events in a file (binary format). This file can be played back with 
+    REPLAY value. Standard run is obtained by PLAY keyword (default value).
+==> Linux users: add InputEvent.cpp to the build.
+
+  * Fixed a bug with the gear sprite at initialization.
+
+  * Minor others changes.
+  
+  * Checking mods before situation gets worse due to an svn's problem ;)
+  
 2004-06-28: wolverine
   * Changed subdirectory name from Networking to SimNet. Also moved the
     Networking.h include file to a SimNet subdirectory.
@@ -83,7 +107,6 @@
     received messages.
 
 2004-05-30: wolverine
-  * 2004-05-30: wolverine
   * Changed the router queue in NetworkMessagener to be a vector that
     contains a struct with a node and message pointers. This allows
     a destination node to be associated with each outgoing message. This
@@ -119,9 +142,9 @@
 
 2004-05-12: delta
   * Removed obsolete ComputeTransformCallback in Source/VirtualScene.cpp
-    and replaced it by an osg::Transform (lunalog's post).
+    and replaced it by an osg::Transform (lunadog's post).
     
-2004-05-09
+2004-05-09: delta
   * Minor cleanings in Include/CSPSim.h. 
   
   * Commented out glFinish() in Source/VirtualScene.cpp which can be 

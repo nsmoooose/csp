@@ -47,11 +47,11 @@ CameraAgent::~CameraAgent() {
 void CameraAgent::validate(double dt)	{
 	VirtualScene* scene	= CSPSim::theSim->getScene();
 	const simdata::Ref<TerrainObject> terrain =	scene->getTerrain();
-	double const SAFETY	= 2.0;
 	TerrainObject::IntersectionHint	camera_hint	= 0;
+	double const SAFETY	= m_LookPoint.z()- terrain->getGroundElevation(m_LookPoint.x(),m_LookPoint.y(),camera_hint);
 	float h	= SAFETY + terrain->getGroundElevation(m_EyePoint.x(),m_EyePoint.y(),camera_hint);
-	if (m_EyePoint.z() <= h) {
-		double alpha_2 = simdata::toRadians(scene->getViewAngle()/2.0);
+	if (m_EyePoint.z() < h) {
+		double alpha_2 = simdata::toRadians(0.5*scene->getViewAngle());
 		double near_dist = scene->getNearPlane();
 		double aspect =	scene->getAspect();
 		simdata::Vector3 eye_look =	m_LookPoint	- m_EyePoint;
@@ -67,13 +67,13 @@ void CameraAgent::validate(double dt)	{
 				simdata::Vector3 edge_vector = near_dist * (eye_look_unit 
 					+ tan_alpha_2 *	( i	* up_vec_unit +	j *	aspect * right_unit));
 				simdata::Vector3 edge =	m_EyePoint + edge_vector;
-				double edge_elev = edge.z()-(SAFETY+terrain->getGroundElevation(edge.x(),edge.y(),camera_hint));
+				double edge_elev = edge.z()-terrain->getGroundElevation(edge.x(),edge.y(),camera_hint);
 				if (min_elev > edge_elev)
 					min_elev = edge_elev;
 			}
 		double dh =	abs(h - m_LookPoint.z() - min_elev);
-		double angle_x = asin(dh/m_CameraKinematics.getDistance());
-		if (abs(m_CameraKinematics.getAngleX()) < 0.5*simdata::PI) 
+		double angle_x = std::max(simdata::toRadians(1.0),asin(dh/m_CameraKinematics.getDistance()));
+		if (abs(m_CameraKinematics.getAngleX()) < simdata::PI_2) 
 			m_CameraKinematics.setAngleX(angle_x);
 		else
 			m_CameraKinematics.setAngleX(simdata::PI-angle_x);
@@ -98,7 +98,8 @@ void CameraAgent::updateCamera(double dt)	{
 	if (view != m_ViewList.end()) {
 		m_CameraKinematics.update(dt);
 		view->second->update(m_EyePoint,m_LookPoint,m_UpVector,dt);
-		validate(dt);
+		if (!view->second->isInternal()) 
+			validate(dt);
 		view->second->cull();
 	}
 }

@@ -178,6 +178,7 @@ VirtualScene::VirtualScene()
 	m_ViewDistance = 30000.0;
 	m_SpinTheWorld = false;
 	m_ResetTheWorld = false;
+	m_Wireframe = false;
 }
 
 VirtualScene::~VirtualScene()
@@ -641,6 +642,8 @@ void VirtualScene::removeFeatureCell(osg::Node *cell) {
 
 void VirtualScene::setWireframeMode(bool flag)
 {
+	if (m_Wireframe == flag) return;
+	m_Wireframe = flag;
 	osg::StateSet* globalStateSet = m_FarView->getGlobalStateSet();
 	if (!globalStateSet) {
 		globalStateSet = new osg::StateSet;

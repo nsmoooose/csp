@@ -86,6 +86,7 @@ public:
 	void setLookAt(simdata::Vector3 & eyePos, simdata::Vector3 & lookPos, simdata::Vector3 & upVec);
 	void getLookAt(simdata::Vector3 & eyePos, simdata::Vector3 & lookPos, simdata::Vector3 & upVec) const;
 	void setWireframeMode(bool flag);
+	bool getWireframeMode() const { return m_Wireframe; }
 	void setFogMode(bool flag);
 	void setFogStart(float value);
 	void setFogEnd(float value);
@@ -126,6 +127,8 @@ protected:
 	float m_FogEnd;
 	bool m_FogEnabled;
 	osg::Vec4 m_FogColor;
+
+	bool m_Wireframe;
 
 	bool m_SpinTheWorld;
 	bool m_ResetTheWorld;

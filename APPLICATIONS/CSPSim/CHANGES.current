@@ -2,6 +2,13 @@
 ===========================
 
 2003-07-23: onsight
+            Added wireframe toggle keybinding (alt-w by default).
+	    Note you have to rebuild your input maps to use newly
+	    added keybindings.  If you are using the default
+	    bindings you can just delete them (in Data/Input) and 
+	    run make (Linux only) to generate a new set.  
+
+2003-07-23: onsight
             Committed changes to GameScreen to enable toggling of
 	    the DataRecorder.  By default this function is mapped
 	    to the 'r' key.  The output goes to data-xxx.rec where

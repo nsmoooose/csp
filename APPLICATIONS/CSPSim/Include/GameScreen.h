@@ -65,6 +65,7 @@ public:
 	ACTION_INTERFACE(GameScreen, on_Quit);
 	ACTION_INTERFACE(GameScreen, on_Pause);
 	ACTION_INTERFACE(GameScreen, on_ToggleRecorder);
+	ACTION_INTERFACE(GameScreen, on_ToggleWireframe);
 	ACTION_INTERFACE(GameScreen, on_Stats);
 	ACTION_INTERFACE(GameScreen, on_Console);
 	ACTION_INTERFACE(GameScreen, on_ChangeVehicle);

@@ -79,6 +79,7 @@ void GameScreen::initInterface()
 	BIND_ACTION("QUIT", on_Quit);
 	BIND_ACTION("PAUSE", on_Pause);
 	BIND_ACTION("TOGGLE_RECORDER", on_ToggleRecorder);
+	BIND_ACTION("TOGGLE_WIREFRAME", on_ToggleWireframe);
 	BIND_ACTION("STATS", on_Stats);
 	BIND_ACTION("CONSOLE", on_Console);
 	BIND_ACTION("CHANGE_VEHICLE", on_ChangeVehicle);
@@ -444,6 +445,13 @@ void GameScreen::setRecorder(bool on) {
 
 void GameScreen::on_ToggleRecorder() {
 	setRecorder(!m_DataRecorder);
+}
+
+void GameScreen::on_ToggleWireframe() {
+	VirtualScene *scene = CSPSim::theSim->getScene();
+	if (scene) {
+		scene->setWireframeMode(!scene->getWireframeMode());
+	}
 }
 
 void GameScreen::on_Stats()

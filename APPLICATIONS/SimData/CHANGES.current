@@ -12,6 +12,9 @@ Version 0.3.1 (in progress)
 	    and an XML interface that can specify either a 3x3 matrix
 	    or the 4 quaternion parameters.  The XML tag is <Quat>
 
+	    Moved the ospath routines from CSPSim's Platform.h to
+	    SimData.  They are now in FileUtility.h.
+
 2003-03-28: delta
 	    updated .net project (release mode is maintained)
 

@@ -45,6 +45,10 @@
 #include <SimData/Namespace.h>
 #include <SimData/Export.h>
 
+#if defined(_MSC_VER)
+# pragma warning(disable: 4275)
+#endif
+
 NAMESPACE_SIMDATA
 
 using std::ostream;

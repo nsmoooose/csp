@@ -1,6 +1,10 @@
 Version 0.4.0 (in progress)
 ===========================
 2003-10-21: onsight
+  * Fixed InterfaceRegistry ctor to properly initialize the registry
+    pointers to zero.
+
+2003-10-21: onsight
   * Changed Packer to accept PackFile instead of FILE*.  PackFile is
     a thin wrapper around FILE* which shouldn't affect other c++ code
     (it allows coercion to and from FILE*), but prevents Python code

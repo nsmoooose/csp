@@ -125,7 +125,7 @@ bool InterfaceProxy::isSubclass(hasht const &classhash) const {
 // InterfaceRegistry
 
 
-InterfaceRegistry::InterfaceRegistry() {
+InterfaceRegistry::InterfaceRegistry(): __map(0), __id_map(0), __list(0) {
 }
 
 InterfaceRegistry::~InterfaceRegistry() {

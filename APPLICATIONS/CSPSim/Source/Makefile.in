@@ -29,6 +29,7 @@ SOURCES = \
 	ConsoleCommands.cpp \
 	CSPSim.cpp \
 	DynamicObject.cpp \
+	DynamicalSystem.cpp \
 	EventMapIndex.cpp \
 	EventMapping.cpp \
 	F16Model.cpp \

@@ -24,7 +24,6 @@
  * @brief Classes for storing and retrieving data from data archives.
  */
 
-
 #ifndef __SIMDATA_ARCHIVE_H__
 #define __SIMDATA_ARCHIVE_H__
 
@@ -34,8 +33,9 @@
 #include <cstdio>
 #include <cassert>
 #include <SimData/BaseType.h>
-#include <SimData/HashUtility.h>
+#include <SimData/Endian.h>
 #include <SimData/ExceptionBase.h>
+#include <SimData/HashUtility.h>
 #include <SimData/Namespace.h>
 
 
@@ -50,8 +50,8 @@ SIMDATA_EXCEPTION(ConstViolation);
 SIMDATA_EXCEPTION(SerializeError);
 
 
-/** A trivial FILE * wrapper to provide a uniform file interface for both
- *  C++ and Python.
+/** A trivial FILE * wrapper to provide a uniform file interface for both C++
+ *  and Python.
  */
 class SIMDATA_EXPORT PackFile {
 	FILE *_f;
@@ -90,122 +90,210 @@ public:
 };
 
 
-/**
- * Abstract base class for serializing standard types and BaseTypes
- * from a data source.
+/** Base class for serializing standard types and BaseTypes from a data source.
  */
 class SIMDATA_EXPORT Reader {
+	uint8 const *_buffer;
+	uint8 const *_read;
+	uint8 const *_end;
+	DataArchive *_data_archive;
+	bool _load_all;
+
+protected:
+	Reader(uint8 const *buffer, uint32 length, DataArchive *data_archive=0, bool load_all=false) :
+		_buffer(buffer),
+		_read(buffer),
+		_end(buffer + length),
+		_data_archive(data_archive),
+		_load_all(load_all) { }
+
+	void bind(uint8 const *buffer, uint32 length) {
+		_buffer = buffer;
+		_read = buffer;
+		_end = buffer + length;
+	}
+
 public:
 	virtual ~Reader() {}
 
-	virtual DataArchive* _getArchive() { return 0; }
-	virtual bool _loadAll() const { return false; }
+	DataArchive* _getArchive() { return _data_archive; }
+	bool _loadAll() const { return _load_all; }
+	bool isComplete() const { return _read >= _end; }
 
-	virtual Reader& operator>>(char &x)=0;
-	virtual Reader& operator>>(int16 &x)=0;
-	virtual Reader& operator>>(int32 &x)=0;
-	virtual Reader& operator>>(uint8 &x)=0;
-	virtual Reader& operator>>(uint16 &x)=0;
-	virtual Reader& operator>>(uint32 &x)=0;
-	virtual Reader& operator>>(bool &x)=0;
-	virtual Reader& operator>>(float &x)=0;
-	virtual Reader& operator>>(double &x)=0;
-	virtual Reader& operator>>(char* &x)=0;
-	virtual Reader& operator>>(BaseType &x)=0;
-	virtual Reader& operator>>(hasht &x)=0;
-	virtual Reader& operator>>(std::string &x)=0;
-	virtual int32 readLength() { int32 n; operator>>(n); return n; }
+	Reader& operator>>(char &x) {
+		if (_read >= _end) throw DataUnderflow();
+		x = *_read++;
+		return *this;
+	}
+
+	Reader& operator>>(int8 &x) {
+		if (_read >= _end) throw DataUnderflow();
+		x = static_cast<int8>(*_read++);
+		return *this;
+	}
+
+	Reader& operator>>(uint8 &x) {
+		if (_read >= _end) throw DataUnderflow();
+		x = static_cast<uint8>(*_read++);
+		return *this;
+	}
+
+	Reader& operator>>(int16 &x) {
+		if (_read + sizeof(x) > _end) throw DataUnderflow();
+		const int16 le = *(reinterpret_cast<int16 const*>(_read));
+		x = SIMDATA_INT16_FROM_LE(le);
+		_read += sizeof(x);
+		return *this;
+	}
+
+	Reader& operator>>(uint16 &x) {
+		if (_read + sizeof(x) > _end) throw DataUnderflow();
+		const uint16 le = *(reinterpret_cast<uint16 const*>(_read));
+		x = SIMDATA_UINT16_FROM_LE(le);
+		_read += sizeof(x);
+		return *this;
+	}
+
+	Reader& operator>>(int32 &x) {
+		if (_read + sizeof(x) > _end) throw DataUnderflow();
+		const int32 le = *(reinterpret_cast<int32 const*>(_read));
+		x = SIMDATA_INT32_FROM_LE(le);
+		_read += sizeof(x);
+		return *this;
+	}
+
+	Reader& operator>>(uint32 &x) {
+		if (_read + sizeof(x) > _end) throw DataUnderflow();
+		const uint32 le = *(reinterpret_cast<uint32 const*>(_read));
+		x = SIMDATA_UINT32_FROM_LE(le);
+		_read += sizeof(x);
+		return *this;
+	}
+
+	Reader& operator>>(int64 &x) {
+		if (_read + sizeof(x) > _end) throw DataUnderflow();
+		const int64 le = *(reinterpret_cast<int64 const*>(_read));
+		x = SIMDATA_INT64_FROM_LE(le);
+		_read += sizeof(x);
+		return *this;
+	}
+
+	Reader& operator>>(uint64 &x) {
+		if (_read + sizeof(x) > _end) throw DataUnderflow();
+		const uint64 le = *(reinterpret_cast<uint64 const*>(_read));
+		x = SIMDATA_UINT64_FROM_LE(le);
+		_read += sizeof(x);
+		return *this;
+	}
+
+	Reader& operator>>(bool &x) {
+		if (_read >= _end) throw DataUnderflow();
+		char b = *_read++;
+		x = (b != 0);
+		return *this;
+	}
+
+	Reader& operator>>(float &x) {
+		if (_read + sizeof(x) > _end) throw DataUnderflow();
+		x = *(reinterpret_cast<float const*>(_read));
+		_read += sizeof(x);
+		return *this;
+	}
+
+	Reader& operator>>(double &x) {
+		if (_read + sizeof(x) > _end) throw DataUnderflow();
+		x = *(reinterpret_cast<double const*>(_read));
+		_read += sizeof(x);
+		return *this;
+	}
+
+	Reader& operator>>(BaseType &x) {
+		x.serialize(*this);
+		return *this;
+	}
+
+	Reader& operator>>(hasht &x) {
+		uint64 val;
+		operator>>(val);
+		x = hasht(static_cast<uint32>(val >> 32), static_cast<uint32>(val));
+		return *this;
+	}
+
+	Reader& operator>>(std::string &x) {
+		int32 n = readLength();
+		if (_read + n > _end) throw DataUnderflow();
+		x.assign(reinterpret_cast<char const*>(_read), n);
+		_read += n;
+		return *this;
+	}
+
+	// old, fixed-width length implementation (DISABLED)
+	// int32 _readLength() { int32 n; operator>>(n); return n; }
+
+	int32 readLength() {
+		if (_read >= _end) throw DataUnderflow();
+		const uint32 bytes = (static_cast<uint32>(*_read) & 3) + 1;
+		if (_read + bytes > _end) throw DataUnderflow();
+		uint8 val[4] = {0,0,0,0};
+		for (uint32 i=0; i < bytes; ++i) val[i] = *_read++;
+		const uint32 le = *(reinterpret_cast<uint32*>(val));
+		const uint32 length = SIMDATA_UINT32_FROM_LE(le);
+		return static_cast<int32>(length >> 2);
+	}
 
 	// explicit methods for use from Python
 
 #ifdef SWIG
 %extend {
-	double _double() {
-		double y;
-		(*self) >> y;
-		return y;
+
+	// more explicit methods for python that instantiate,
+	// unpack, and return BaseType data objects.
+	
+#define __SIMDATA_ARCHIVE(T, NAME) T NAME() { \
+		T x; (*self) >> x; return x; \
 	}
-	float _float() {
-		float y;
-		(*self) >> y;
-		return y;
-	}
-	bool _bool() {
-		bool y;
-		(*self) >> y;
-		return y;
-	}
-	int32 _int32() {
-		SIMDATA(int32) y;
-		(*self) >> y;
-		return y;
-	}
-	int16 _int16() {
-		SIMDATA(int16) y;
-		(*self) >> y;
-		return y;
-	}
-	char _char() {
-		char y;
-		(*self) >> y;
-		return y;
-	}
-	uint8 _uint8() {
-		SIMDATA(uint8) y;
-		(*self) >> y;
-		return y;
-	}
-	uint16 _uint16() {
-		SIMDATA(uint16) y;
-		(*self) >> y;
-		return y;
-	}
-	uint32 _uint32() {
-		SIMDATA(uint32) y;
-		(*self) >> y;
-		return y;
-	}
-	hasht _hasht() {
-		simdata::hasht y;
-		(*self) >> y;
-		return y;
-	}
-	std::string _string() {
-		std::string y;
-		(*self) >> y;
-		return y;
-	}
+
+	__SIMDATA_ARCHIVE(double, _double)
+	__SIMDATA_ARCHIVE(float, _float)
+	__SIMDATA_ARCHIVE(bool, _bool)
+	__SIMDATA_ARCHIVE(char, _char)
+	__SIMDATA_ARCHIVE(std::string, _string)
+	__SIMDATA_ARCHIVE(SIMDATA(int64), _int64)
+	__SIMDATA_ARCHIVE(SIMDATA(int32), _int32)
+	__SIMDATA_ARCHIVE(SIMDATA(int16), _int16)
+	__SIMDATA_ARCHIVE(SIMDATA(int8), _int8)
+	__SIMDATA_ARCHIVE(SIMDATA(uint64), _uint64)
+	__SIMDATA_ARCHIVE(SIMDATA(uint32), _uint32)
+	__SIMDATA_ARCHIVE(SIMDATA(uint16), _uint16)
+	__SIMDATA_ARCHIVE(SIMDATA(uint8), _uint8)
+	__SIMDATA_ARCHIVE(SIMDATA(hasht), _hasht)
+	__SIMDATA_ARCHIVE(SIMDATA(SimDate), _SimDate);
+	__SIMDATA_ARCHIVE(SIMDATA(Matrix3), _Matrix3);
+	__SIMDATA_ARCHIVE(SIMDATA(Vector3), _Vector3);
+	__SIMDATA_ARCHIVE(SIMDATA(Quat), _Quat);
+	__SIMDATA_ARCHIVE(SIMDATA(Real), _Real);
+	__SIMDATA_ARCHIVE(SIMDATA(Curve), _Curve);
+	__SIMDATA_ARCHIVE(SIMDATA(Table), _Table);
+	__SIMDATA_ARCHIVE(SIMDATA(Table1), _Table1);
+	__SIMDATA_ARCHIVE(SIMDATA(Table2), _Table2);
+	__SIMDATA_ARCHIVE(SIMDATA(Table3), _Table3);
+	__SIMDATA_ARCHIVE(SIMDATA(LLA), _LLA);
+	__SIMDATA_ARCHIVE(SIMDATA(UTM), _UTM);
+	__SIMDATA_ARCHIVE(SIMDATA(ECEF), _ECEF);
+	__SIMDATA_ARCHIVE(SIMDATA(GeoPos), _GeoPos);
+	__SIMDATA_ARCHIVE(SIMDATA(Path), _Path);
+	__SIMDATA_ARCHIVE(SIMDATA(External), _External);
+	__SIMDATA_ARCHIVE(SIMDATA(Key), _Key);
+
+	// TODO List;
+	// TODO Enum
+	// TODO Pointer
+
 	BaseType &_basetype(BaseType &y) {
 		(*self) >> y;
 		return y;
 	}
 
-	// more explicit methods for python that instantiate,
-	// unpack, and return BaseType data objects.
-	
-#define __SIMDATA_ARCHIVE(T) SIMDATA(T) _##T() { \
-		SIMDATA(T) x; (*self) >> x; return x; \
-	}
-	__SIMDATA_ARCHIVE(SimDate);
-	__SIMDATA_ARCHIVE(Matrix3);
-	__SIMDATA_ARCHIVE(Vector3);
-	__SIMDATA_ARCHIVE(Quat);
-	__SIMDATA_ARCHIVE(Real);
-	__SIMDATA_ARCHIVE(Curve);
-	__SIMDATA_ARCHIVE(Table);
-	__SIMDATA_ARCHIVE(Table1);
-	__SIMDATA_ARCHIVE(Table2);
-	__SIMDATA_ARCHIVE(Table3);
-	__SIMDATA_ARCHIVE(LLA);
-	__SIMDATA_ARCHIVE(UTM);
-	__SIMDATA_ARCHIVE(ECEF);
-	__SIMDATA_ARCHIVE(GeoPos);
-	__SIMDATA_ARCHIVE(Path);
-	__SIMDATA_ARCHIVE(External);
-	__SIMDATA_ARCHIVE(Key);
-	// TODO List;
-	// TODO Enum
-	// TODO Pointer
 #undef __SIMDATA_ARCHIVE
 }
 %insert("shadow") %{
@@ -225,8 +313,7 @@ public:
 
 template<typename T>
 Reader& operator>>(Reader& reader, std::vector<T> &y) {
-	int32 n;
-	reader >> n;
+	int32 n = reader.readLength();
 	y.resize(n);
 	typename std::vector<T>::iterator i = y.begin();
 	while (n-- > 0) reader >> (*i++);
@@ -239,40 +326,121 @@ Reader& operator>>(Reader& reader, std::vector<T> &y) {
  * to a data source.
  */
 class SIMDATA_EXPORT Writer {
+protected:
+	virtual void write(void const* data, uint32 bytes)=0;
+
 public:
 	virtual ~Writer() {}
 
-	virtual Writer& operator<<(const char)=0;
-	virtual Writer& operator<<(const int16)=0;
-	virtual Writer& operator<<(const int32)=0;
-	virtual Writer& operator<<(const uint8)=0;
-	virtual Writer& operator<<(const uint16)=0;
-	virtual Writer& operator<<(const uint32)=0;
-	virtual Writer& operator<<(const bool)=0;
-	virtual Writer& operator<<(const float)=0;
-	virtual Writer& operator<<(const double)=0;
-	virtual Writer& operator<<(const char*)=0;
-	virtual Writer& operator<<(const BaseType &x)=0;
-	virtual Writer& operator<<(const hasht &x)=0;
-	virtual Writer& operator<<(const std::string &x)=0;
-	virtual void writeLength(int32 n) { operator<<(n); }
+	Writer& operator<<(const char y) {
+		write(&y, sizeof(y));
+		return *this;
+	}
+	Writer& operator<<(const int8 y) {
+		write(&y, sizeof(y));
+		return *this;
+	}
+	Writer& operator<<(const uint8 y) {
+		write(&y, sizeof(y));
+		return *this;
+	}
+	Writer& operator<<(const int16 y) {
+		const int16 le = SIMDATA_INT16_TO_LE(y);
+		write(&le, sizeof(le));
+		return *this;
+	}
+	Writer& operator<<(const uint16 y) {
+		const uint16 le = SIMDATA_UINT16_TO_LE(y);
+		write(&le, sizeof(le));
+		return *this;
+	}
+	Writer& operator<<(const int32 y) {
+		const int32 le = SIMDATA_INT32_TO_LE(y);
+		write(&le, sizeof(le));
+		return *this;
+	}
+	Writer& operator<<(const uint32 y) {
+		const uint32 le = SIMDATA_UINT32_TO_LE(y);
+		write(&le, sizeof(le));
+		return *this;
+	}
+	Writer& operator<<(const int64 y) {
+		const int64 le = SIMDATA_INT64_TO_LE(y);
+		write(&le, sizeof(le));
+		return *this;
+	}
+	Writer& operator<<(const uint64 y) {
+		const uint64 le = SIMDATA_UINT64_TO_LE(y);
+		write(&le, sizeof(le));
+		return *this;
+	}
+	Writer& operator<<(const bool y) {
+		char b = y ? 1 : 0;
+		write(&b, sizeof(b));
+		return *this;
+	}
+	Writer& operator<<(const float y) {
+		write(&y, sizeof(y));
+		return *this;
+	}
+	Writer& operator<<(const double y) {
+		write(&y, sizeof(y));
+		return *this;
+	}
+	Writer& operator<<(const BaseType &y) {
+		y.serialize(*this);
+		return *this;
+	}
+	Writer& operator<<(const hasht &y) {
+		uint64 val = y.b;
+		val = (val << 32) | y.a;
+		return operator<<(val);
+	}
+	Writer& operator<<(const std::string &y) {
+		const int32 n = y.length();
+		writeLength(n);
+		write(y.data(), n);
+		return *this;
+	}
+
+	// old, fixed-width length implementation (DISABLED)
+	// void _writeLength(int32 n) { operator<<(n); }
+
+	void writeLength(int32 length) {
+		assert(length >= 0 && length <= 1073741823);
+		uint32 bf0 = static_cast<uint32>(length - 0x40) & 0x80000000;
+		uint32 bf1 = static_cast<uint32>(length - 0x4000) & 0x80000000;
+		// 0-63             : bf0=00b, 1 byte representation
+		// 64-16383         : bf0=01b, 2 byte representation
+		// 16384-1073741823 : bf0=11b, 4 byte representation
+		bf0 = (((bf0 >> 1) | bf1) >> 30) ^ 3;
+		uint32 output = static_cast<int32>((length << 2) | bf0);
+		// store little-endian so the bits indicating the number of bytes
+		// stored are in the first byte, and the length value is packed
+		// toward the front of the stream.
+		output = SIMDATA_UINT32_TO_LE(output);
+		write(&output, bf0 + 1);
+	}
 
 	// explicit packing (use from python)
 
 #ifdef SWIG
 %extend {
-	void _double(double x) { (*self) << x; }
-	void _float(float x) { (*self) << x; }
-	void _bool(bool x) { (*self) << x; }
-	void _int32(int32 x) { (*self) << x; }
-	void _int16(int16 x) { (*self) << x; }
-	void _char(char x) { (*self) << x; }
-	void _uint8(uint8 x) { (*self) << x; }
-	void _uint16(uint16 x) { (*self) << x; }
-	void _uint32(uint32 x) { (*self) << x; }
-	void _hasht(hasht const &x) { (*self) << x; }
-	void _string(std::string const &x) { (*self) << x; }
-	void _basetype(BaseType const &x) { (*self) << x; }
+	inline void _double(double x) { (*self) << x; }
+	inline void _float(float x) { (*self) << x; }
+	inline void _bool(bool x) { (*self) << x; }
+	inline void _int64(int64 x) { (*self) << x; }
+	inline void _int32(int32 x) { (*self) << x; }
+	inline void _int16(int16 x) { (*self) << x; }
+	inline void _int8(int8 x) { (*self) << x; }
+	inline void _char(char x) { (*self) << x; }
+	inline void _uint8(uint8 x) { (*self) << x; }
+	inline void _uint16(uint16 x) { (*self) << x; }
+	inline void _uint32(uint32 x) { (*self) << x; }
+	inline void _uint64(uint64 x) { (*self) << x; }
+	inline void _hasht(hasht const &x) { (*self) << x; }
+	inline void _string(std::string const &x) { (*self) << x; }
+	inline void _basetype(BaseType const &x) { (*self) << x; }
 }
 #endif // SWIG
 
@@ -281,28 +449,32 @@ public:
 
 template<typename T>
 Writer& operator<<(Writer& writer, const std::vector<T> &x) {
-	writer << static_cast<int>(x.size());
+	writer.writeLength(x.size());
 	typename std::vector<T>::const_iterator i = x.begin();
-	while (i != x.end()) writer << (*i++);
+	for (; i != x.end(); ++i) writer << (*i);
 	return writer;
 }
 
 
 /** Utility class for writing raw data to an object archive.
  *
- *  Packer instances are created by the DataArchive class when an
- *  object is being serialized.  The instance stores a FILE object
- *  and provides methods to write variables of various types to
- *  the file in a standard format.
+ *  ArchiveWriter instances are created by the DataArchive class when an
+ *  object is being serialized.  The instance stores a FILE object and
+ *  provides methods to write variables of various types to the file in
+ *  a standard format.
  *
  *  @author Mark Rose <mkrose@users.sourceforge.net>
  */
 class SIMDATA_EXPORT ArchiveWriter: public Writer {
 	FILE *_f;
 	int32 _n;
-	void write(const void* x, int32 n) {
+
+protected:
+	virtual void write(const void* x, uint32 n) {
 		fwrite(x, n, 1, _f);
+		_n += n;
 	}
+
 public:
 	ArchiveWriter(PackFile f): Writer(), _n(0) {
 		_f = static_cast<FILE*>(f);
@@ -310,356 +482,22 @@ public:
 	}
 	void resetCount() { _n = 0; }
 	int32 getCount() { return _n; }
-
-	Writer& operator<<(const char x) {
-		write(&x, sizeof(x)); _n += sizeof(x);
-		return *this;
-	}
-	Writer& operator<<(const int16 x) {
-		write(&x, sizeof(x)); _n += sizeof(x);
-		return *this;
-	}
-	Writer& operator<<(const int32 x) {
-		write(&x, sizeof(x)); _n += sizeof(x);
-		return *this;
-	}
-	Writer& operator<<(const uint8 x) {
-		write(&x, sizeof(x)); _n += sizeof(x);
-		return *this;
-	}
-	Writer& operator<<(const uint16 x) {
-		write(&x, sizeof(x)); _n += sizeof(x);
-		return *this;
-	}
-	Writer& operator<<(const uint32 x) {
-		write(&x, sizeof(x)); _n += sizeof(x);
-		return *this;
-	}
-	Writer& operator<<(const bool x) {
-		const char c = x ? 1:0;
-		operator<<(c);
-		return *this;
-	}
-	Writer& operator<<(const float x) {
-		write(&x, sizeof(x)); _n += sizeof(x);
-		return *this;
-	}
-	Writer& operator<<(const double x) {
-		write(&x, sizeof(x)); _n += sizeof(x);
-		return *this;
-	}
-	Writer& operator<<(const char* x) {
-		int32 n = strlen(x);
-		writeLength(n);
-		write(x, n);
-		_n += n;
-		return *this;
-	}
-	Writer& operator<<(const BaseType &x) {
-		x.serialize(*this);
-		return *this;
-	}
-	Writer& operator<<(const hasht &x) {
-		write(&x, sizeof(x)); _n += sizeof(x);
-		return *this;
-	}
-	Writer& operator<<(const std::string &x) {
-		operator<<(x.c_str());
-		return *this;
-	}
 };
 
 
 /** Utility class for extracting raw data from an object archive.
  *
- *  UnPacker instances are created by the DataArchive class when an
- *  object is being deserialized.  The instance stores all the data
- *  needed to reconstruct the object, and provides access methods
- *  for translating the raw bytes into variables of various types.
+ *  ArchiveReader instances are created by the DataArchive class when an
+ *  object is being deserialized.  The instance stores all the data needed
+ *  to reconstruct the object, and provides access methods for translating
+ *  the raw bytes into variables of various types.
  *
  *  @author Mark Rose <mkrose@users.sourceforge.net>
  */
 class SIMDATA_EXPORT ArchiveReader: public Reader {
-	const char* _d;
-	int32 _n;
-	DataArchive* _archive;
-	bool _loadall;
-	
 public:
-	DataArchive* _getArchive() { return _archive; }
-	bool _loadAll() const { return _loadall; }
-
-	ArchiveReader(const char* data, int32 n, DataArchive* archive=0, bool loadall = true):
-		Reader(), _d(data), _n(n), _archive(archive), _loadall(loadall) { }
-
-	bool isComplete() const { return _n == 0; }
-	
-	Reader& operator>>(double &y) {
-		_n -= sizeof(double);
-		if (_n < 0) throw DataUnderflow();
-		memcpy(&y, _d, sizeof(double));
-		_d += sizeof(double);
-		return *this;
-	}
-	Reader& operator>>(float &y) {
-		_n -= sizeof(float);
-		if (_n < 0) throw DataUnderflow();
-		memcpy(&y, _d, sizeof(float));
-		_d += sizeof(float);
-		return *this;
-	}
-	Reader& operator>>(int32 &y) {
-		_n -= sizeof(int);
-		if (_n < 0) throw DataUnderflow();
-		memcpy(&y, _d, sizeof(int));
-		_d += sizeof(int);
-		return *this;
-	}
-	Reader& operator>>(uint32 &y) {
-		_n -= sizeof(unsigned int);
-		if (_n < 0) throw DataUnderflow();
-		memcpy(&y, _d, sizeof(unsigned int));
-		_d += sizeof(unsigned int);
-		return *this;
-	}
-	Reader& operator>>(bool &y) {
-		char x;
-		operator>>(x);
-		y = (x != 0);
-		return *this;
-	}
-	Reader& operator>>(int16 &y) {
-		_n -= sizeof(int16);
-		if (_n < 0) throw DataUnderflow();
-		memcpy(&y, _d, sizeof(int16));
-		_d += sizeof(int16);
-		return *this;
-	}
-	Reader& operator>>(uint16 &y) {
-		_n -= sizeof(uint16);
-		if (_n < 0) throw DataUnderflow();
-		memcpy(&y, _d, sizeof(uint16));
-		_d += sizeof(uint16);
-		return *this;
-	}
-	Reader& operator>>(char &y) {
-		_n -= sizeof(char);
-		if (_n < 0) throw DataUnderflow();
-		y = static_cast<char>(*_d++);
-		return *this;
-	}
-	Reader& operator>>(uint8 &y) {
-		_n -= sizeof(uint8);
-		if (_n < 0) throw DataUnderflow();
-		y = static_cast<uint8>(*_d++);
-		return *this;
-	}
-	Reader& operator>>(hasht &y) {
-		_n -= sizeof(hasht);
-		if (_n < 0) throw DataUnderflow();
-		memcpy(&y, _d, sizeof(hasht));
-		_d += sizeof(hasht);
-		return *this;
-	}
-	Reader& operator>>(char* &y) {
-		int32 n = readLength();
-		// XXX this not really a data underflow
-		if (n < 0) throw DataUnderflow();
-		_n -= n;
-		if (_n < 0) throw DataUnderflow();
-		// XXX UGLY! this leaks memory unless the caller calls free()!!
-		y = (char*) malloc(sizeof(char)*(n+1));
-		assert(y != 0); // XXX should throw a memory exception
-		memcpy(y, _d, sizeof(char)*n);
-		y[n] = 0;
-		_d += n;
-		return *this;
-	}
-	Reader& operator>>(std::string &y) {
-		char* c;
-		operator>>(c);
-		y.assign(c);
-		free(c);
-		return *this;
-	}
-	Reader& operator>>(BaseType &y) {
-		y.serialize(*this);
-		return *this;
-	}
-};
-
-
-/** Writer class for serializing data to a memory buffer.
- *
- *  This class currently uses a fixed size memory buffer, that
- *  must be preallocated with sufficient space to store all
- *  data that is serialized.
- */
-class SIMDATA_EXPORT MemoryWriter: public Writer {
-	uint8 * _ptr;
-	int _n;
-public:
-	MemoryWriter(uint8 * ptr): Writer(), _n(0) {
-		_ptr = ptr;
-		assert(_ptr != 0);
-	}
-	void resetCount() { _n = 0; }
-	int getCount() { return _n; }
-
-	Writer& operator<<(const char x) {
-		memcpy(_ptr+_n, &x, sizeof(char));
-		_n += sizeof(char);
-		return *this;
-	}
-	Writer& operator<<(const int16 x) {
-		memcpy(_ptr+_n, &x, sizeof(x));
-		_n += sizeof(x);
-		return *this;
-	}
-	Writer& operator<<(const int32 x) {
-		memcpy(_ptr+_n, &x, sizeof(x));
-		_n += sizeof(x);
-		return *this;
-	}
-	Writer& operator<<(const uint8 x) {
-		memcpy(_ptr+_n, &x, sizeof(x));
-		_n += sizeof(x);
-		return *this;
-	}
-	Writer& operator<<(const uint16 x) {
-		memcpy(_ptr+_n, &x, sizeof(x));
-		_n += sizeof(x);
-		return *this;
-	}
-	Writer& operator<<(const uint32 x) {
-		memcpy(_ptr+_n, &x, sizeof(x));
-		_n += sizeof(x);
-		return *this;
-	}
-	Writer& operator<<(const bool x) {
-		const char c = x ? 1:0;
-		operator<<(c);
-		return *this;
-	}
-	Writer& operator<<(const float x) {
-		memcpy(_ptr+_n, &x, sizeof(x)); 
-		_n += sizeof(x);
-		return *this;
-	}
-	Writer& operator<<(const double x) {
-		memcpy(_ptr+_n, &x, sizeof(x)); 
-		_n += sizeof(x);
-		return *this;
-	}
-	Writer& operator<<(const char* x) {
-		int32 n = strlen(x);
-		operator<<(n);
-		memcpy(_ptr+_n, x, n);
-		_n += n;
-		return *this;
-	}
-	Writer& operator<<(const BaseType &x) {
-		x.serialize(*this);
-		return *this;
-	}
-	Writer& operator<<(const hasht &x) {
-		memcpy(_ptr+_n, &x, sizeof(x)); 
-		_n += sizeof(x);
-		return *this;
-	}
-	Writer& operator<<(const std::string &x) {
-		operator<<(x.c_str());
-		return *this;
-	}
-};
-
-
-/** Reader class for serializing data from a memory buffer.
- *
- *  The current implementation does not check for serialization
- *  underflows or overflows.
- */
-class SIMDATA_EXPORT MemoryReader: public Reader {
-	uint8 * _ptr;
-	int _n;
-public:
-	MemoryReader(uint8 * ptr): Reader(), _n(0) {
-		_ptr = ptr;
-		assert(_ptr != 0);
-	}
-	void resetCount() { _n = 0; }
-	int getCount() { return _n; }
-
-	Reader& operator>>(char &x) {
-		memcpy(&x, _ptr+_n, sizeof(char));
-		_n += sizeof(char);
-		return *this;
-	}
-	Reader& operator>>(int16 &x) {
-		memcpy(&x, _ptr+_n, sizeof(int16));
-		_n += sizeof(int16);
-		return *this;
-	}
-	Reader& operator>>(int32 &x) {
-		memcpy(&x, _ptr+_n, sizeof(int32)); 
-		_n += sizeof(int32);
-		return *this;
-	}
-	Reader& operator>>(unsigned char &x) {
-		memcpy(&x, _ptr+_n, sizeof(unsigned char));
-		_n += sizeof(unsigned char);
-		return *this;
-	}
-	Reader& operator>>(uint16 &x) {
-		memcpy(&x, _ptr+_n, sizeof(uint16));
-		_n += sizeof(uint16);
-		return *this;
-	}
-	Reader& operator>>(uint32 &x) {
-		memcpy(&x, _ptr+_n, sizeof(uint32));
-		_n += sizeof(uint32);
-		return *this;
-	}
-	Reader& operator>>(bool &y) {
-		char x;
-		operator>>(x);
-		y = (x != 0);
-		_n += sizeof(char);
-		return *this;
-	}
-	Reader& operator>>(float &x) {
-		memcpy(&x, _ptr+_n, sizeof(x)); 
-		_n += sizeof(x);
-		return *this;
-	}
-	Reader& operator>>(double &x) {
-		memcpy(&x, _ptr+_n, sizeof(x)); 
-		_n += sizeof(x);
-		return *this;
-	}
-	Reader& operator>>(char* &x) {
-		int32 n = strlen(x);
-		operator>>(n);
-		memcpy(x, _ptr+_n, n);
-		_n += n;
-		return *this;
-	}
-	Reader& operator>>(BaseType &x) {
-		x.serialize(*this);
-		return *this;
-	}
-	Reader& operator>>(hasht &x) {
-		memcpy(&x, _ptr+_n, sizeof(x)); 
-		_n += sizeof(x);
-		return *this;
-	}
-	Reader& operator>>(std::string &y) {
-		char* c;
-		operator>>(c);
-		y.assign(c);
-		free(c);
-		return *this;
-	}
+	ArchiveReader(const char* data, int32 n, DataArchive* archive=0, bool loadall=true):
+		Reader(reinterpret_cast<const uint8*>(data), n, archive, loadall) { }
 };
 
 NAMESPACE_SIMDATA_END

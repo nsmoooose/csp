@@ -1,6 +1,27 @@
 Version 0.4.0 (in progress)
 ===========================
 
+2004-12-02: onsight
+ * Refactored the Reader and Writer classes, and their subclasses.  Most
+   of the logic is now in non-virtual base class methods, with a virtual
+   interface for reading/writing raw byte strings implemented by the
+   subclass.  Also added support for serializing int64 and uint64, and
+   made length codes variable-width.
+
+ * Added a configuration program to generate a header file with machine
+   and compiler specific definitions.
+
+=> WINDOWS users need to set up a custom build rule to first build
+   Source/Config.cpp as a standalone binary, and then run it to
+   generate Include/SimData/Config.h.  This header must be created
+   before the rest of SimData is built.  Note that the Config binary
+   writes the header text to stdout, so that must be redirected to
+   the appropriate file path.
+
+ * Added an endian conversion header based on GLib.  Converted the
+   Reader and Writer classes to be endian independent (all values are
+   stored as little-endian, regardless of the machine architecture).
+
 2004-12-02: delta
  * Minor update of SimData.vcproj.
 

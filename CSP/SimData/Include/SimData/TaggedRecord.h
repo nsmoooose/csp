@@ -65,286 +65,57 @@ class BufferWriter: public Writer {
 	uint8 *_write;
 	uint8 *_end;
 
-#define SIMDATA_BW_COPY \
-	assert(_write + sizeof(x) <= _end); \
-	memcpy(_write, &x, sizeof(x)); \
-	_write += sizeof(x); \
-	return *this;
+protected:
+	virtual void write(void const* data, uint32 bytes) {
+		assert(_write + bytes <= _end);
+		memcpy(_write, data, bytes);
+		_write += bytes;
+	}
 
 public:
-	BufferWriter(): _buffer(0), _write(0), _end(0) {
-	}
-	uint32 residual() const { return _end - _write; }
-	BufferWriter(uint8 *buffer, uint32 size) {
+	BufferWriter(): Writer() { }
+	BufferWriter(uint8 *buffer, uint32 size): Writer() {
 		bind(buffer, size);
 	}
-	uint8 *buffer() const { return _buffer; }
-	bool full() const { return _write == _end; }
-	uint32 length() const { return _write - _buffer; }
+	inline uint32 residual() const { return _end - _write; }
+	inline uint8 *buffer() const { return _buffer; }
+	inline bool full() const { return _write == _end; }
+	inline uint32 length() const { return _write - _buffer; }
 	void bind(uint8 *buffer, uint32 size) {
 		_buffer = buffer;
 		_write = buffer;
 		_end = buffer + size;
 	}
-	virtual Writer & operator<<(char const x) { SIMDATA_BW_COPY }
-	virtual Writer & operator<<(int16 const x) { SIMDATA_BW_COPY }
-	virtual Writer & operator<<(int32 const x) { SIMDATA_BW_COPY }
-	virtual Writer & operator<<(int64 const x) { SIMDATA_BW_COPY }
-	virtual Writer & operator<<(hasht const x) { SIMDATA_BW_COPY }
-	virtual Writer & operator<<(uint8 const x) { SIMDATA_BW_COPY }
-	virtual Writer & operator<<(uint16 const x) { SIMDATA_BW_COPY }
-	virtual Writer & operator<<(uint32 const x) { SIMDATA_BW_COPY }
-	virtual Writer & operator<<(float const x) { SIMDATA_BW_COPY }
-	virtual Writer & operator<<(double const x) { SIMDATA_BW_COPY }
-	virtual Writer & operator<<(bool const x) { SIMDATA_BW_COPY }
-	virtual Writer & operator<<(hasht const &x) { SIMDATA_BW_COPY }
-	virtual Writer & operator<<(char const *) {
-		assert(0);
-		return *this;
-	}
-	virtual Writer & operator<<(BaseType const &x) {
-		x.serialize(*this);
-		return *this;
-	}
-	virtual Writer & operator<<(std::string const &x) {
-		writeLength(x.size());
-		memcpy(_write, x.c_str(), x.size());
-		_write += x.size();
-		return *this;
-	}
-#undef SIMDATA_BW_COPY
 };
 
 /** Simple Reader class for serializing from a memory buffer.
  */
 class BufferReader: public Reader {
-	uint8 const *_buffer;
-	uint8 const *_read;
-	uint8 const *_end;
-
-#define SIMDATA_BR_COPY \
-	assert(_read + sizeof(x) <= _end); \
-	memcpy(&x, _read, sizeof(x)); \
-	_read += sizeof(x); \
-	return *this;
-
 public:
-	BufferReader(): _buffer(0), _read(0), _end(0) { }
-	BufferReader(uint8 const *buffer, uint32 size) {
-		bind(buffer, size);
-	}
-	bool underflow() const { return _read < _end; }
-	void bind(uint8 const *buffer, uint32 size) {
-		_buffer = buffer;
-		_read = buffer;
-		_end = buffer + size;
-	}
-	virtual Reader & operator>>(char &x) { SIMDATA_BR_COPY }
-	virtual Reader & operator>>(int16 &x) { SIMDATA_BR_COPY }
-	virtual Reader & operator>>(int32 &x) { SIMDATA_BR_COPY }
-	virtual Reader & operator>>(int64 &x) { SIMDATA_BR_COPY }
-	virtual Reader & operator>>(hasht &x) { SIMDATA_BR_COPY }
-	virtual Reader & operator>>(uint8 &x) { SIMDATA_BR_COPY }
-	virtual Reader & operator>>(uint16 &x) { SIMDATA_BR_COPY }
-	virtual Reader & operator>>(uint32 &x) { SIMDATA_BR_COPY }
-	virtual Reader & operator>>(float &x) { SIMDATA_BR_COPY }
-	virtual Reader & operator>>(double &x) { SIMDATA_BR_COPY }
-	virtual Reader & operator>>(bool &x) { SIMDATA_BR_COPY }
-	virtual Reader & operator>>(char * &) {
-		assert(0);  // avoid allocation issues for now -- no char*'s
-		return *this;
-	}
-	virtual Reader & operator>>(BaseType &x) {
-		x.serialize(*this);
-		return *this;
-	}
-	virtual Reader & operator>>(std::string &x) {
-		unsigned int length = readLength();
-		assert(_read + length <= _end);
-		x.clear();
-		x.append(reinterpret_cast<const char*>(_read), length);
-		_read += length;
-		return *this;
-	}
+	BufferReader(): Reader(0, 0) { }
+	BufferReader(uint8 const *buffer, uint32 size): Reader(buffer, size) { }
+	void bind(uint8 const *buffer, uint32 size) { Reader::bind(buffer, size); }
 };
 
 /** Simple Writer class for serializing to a string buffer.
  */
 class StringWriter: public Writer {
 	std::string _buffer;
+protected:
+	virtual void write(void const* data, uint32 bytes) {
+		_buffer.append(reinterpret_cast<const char*>(data), bytes);
+	}
 public:
-	StringWriter() {
-		_buffer.reserve(1024);
-	}
-	virtual Writer & operator<<(char const x) {
-		_buffer.append(reinterpret_cast<const char*>(&x), sizeof(x));
-		return *this;
-	}
-	virtual Writer & operator<<(int16 const x) {
-		_buffer.append(reinterpret_cast<const char*>(&x), sizeof(x));
-		return *this;
-	}
-	virtual Writer & operator<<(int32 const x) {
-		_buffer.append(reinterpret_cast<const char*>(&x), sizeof(x));
-		return *this;
-	}
-	virtual Writer & operator<<(int64 const x) {
-		_buffer.append(reinterpret_cast<const char*>(&x), sizeof(x));
-		return *this;
-	}
-	virtual Writer & operator<<(hasht const x) {
-		_buffer.append(reinterpret_cast<const char*>(&x), sizeof(x));
-		return *this;
-	}
-	virtual Writer & operator<<(uint8 const x) {
-		_buffer.append(reinterpret_cast<const char*>(&x), sizeof(x));
-		return *this;
-	}
-	virtual Writer & operator<<(uint16 const x) {
-		_buffer.append(reinterpret_cast<const char*>(&x), sizeof(x));
-		return *this;
-	}
-	virtual Writer & operator<<(uint32 const x) {
-		_buffer.append(reinterpret_cast<const char*>(&x), sizeof(x));
-		return *this;
-	}
-	virtual Writer & operator<<(float const x) {
-		_buffer.append(reinterpret_cast<const char*>(&x), sizeof(x));
-		return *this;
-	}
-	virtual Writer & operator<<(double const x) {
-		_buffer.append(reinterpret_cast<const char*>(&x), sizeof(x));
-		return *this;
-	}
-	virtual Writer & operator<<(bool const x) {
-		_buffer.append(reinterpret_cast<const char*>(&x), sizeof(x));
-		return *this;
-	}
-	virtual Writer & operator<<(hasht const &x) {
-		_buffer.append(reinterpret_cast<const char*>(&x), sizeof(x));
-		return *this;
-	}
-	virtual Writer & operator<<(char const *) {
-		assert(0);
-		return *this;
-	}
-	virtual Writer & operator<<(BaseType const &x) {
-		x.serialize(*this);
-		return *this;
-	}
-	virtual Writer & operator<<(std::string const &x) {
-		writeLength(x.size());
-		_buffer.append(x);
-		return *this;
-	}
-	std::string const & str() const {
-		return _buffer;
-	}
+	StringWriter(): Writer() { _buffer.reserve(1024); }
+	inline std::string const & str() const { return _buffer; }
 };
 
 /** Simple Reader class for serializing from a string buffer.
  */
 class StringReader: public Reader {
-	const unsigned char *_data;
-	unsigned int _bytes;
 public:
-	StringReader(std::string const &buffer)
-		: _data(reinterpret_cast<const unsigned char *>(buffer.data())),
-			_bytes(buffer.size()) { }
-	virtual Reader & operator>>(char &x) {
-		assert(_bytes >= sizeof(x));
-		x = *(reinterpret_cast<char const*>(_data));
-		_data += sizeof(x);
-		_bytes -= sizeof(x);
-		return *this;
-	}
-	virtual Reader & operator>>(int16 &x) {
-		assert(_bytes >= sizeof(x));
-		x = *(reinterpret_cast<int16 const*>(_data));
-		_data += sizeof(x);
-		_bytes -= sizeof(x);
-		return *this;
-	}
-	virtual Reader & operator>>(int32 &x) {
-		assert(_bytes >= sizeof(x));
-		x = *(reinterpret_cast<int32 const*>(_data));
-		_data += sizeof(x);
-		_bytes -= sizeof(x);
-		return *this;
-	}
-	virtual Reader & operator>>(int64 &x) {
-		assert(_bytes >= sizeof(x));
-		x = *(reinterpret_cast<int64 const*>(_data));
-		_data += sizeof(x);
-		_bytes -= sizeof(x);
-		return *this;
-	}
-	virtual Reader & operator>>(hasht &x) {
-		assert(_bytes >= sizeof(x));
-		x = *(reinterpret_cast<hasht const*>(_data));
-		_data += sizeof(x);
-		_bytes -= sizeof(x);
-		return *this;
-	}
-	virtual Reader & operator>>(uint8 &x) {
-		assert(_bytes >= sizeof(x));
-		x = *(reinterpret_cast<uint8 const*>(_data));
-		_data += sizeof(x);
-		_bytes -= sizeof(x);
-		return *this;
-	}
-	virtual Reader & operator>>(uint16 &x) {
-		assert(_bytes >= sizeof(x));
-		x = *(reinterpret_cast<uint16 const*>(_data));
-		_data += sizeof(x);
-		_bytes -= sizeof(x);
-		return *this;
-	}
-	virtual Reader & operator>>(uint32 &x) {
-		assert(_bytes >= sizeof(x));
-		x = *(reinterpret_cast<uint32 const*>(_data));
-		_data += sizeof(x);
-		_bytes -= sizeof(x);
-		return *this;
-	}
-	virtual Reader & operator>>(float &x) {
-		assert(_bytes >= sizeof(x));
-		x = *(reinterpret_cast<float const*>(_data));
-		_data += sizeof(x);
-		_bytes -= sizeof(x);
-		return *this;
-	}
-	virtual Reader & operator>>(double &x) {
-		assert(_bytes >= sizeof(x));
-		x = *(reinterpret_cast<double const*>(_data));
-		_data += sizeof(x);
-		_bytes -= sizeof(x);
-		return *this;
-	}
-	virtual Reader & operator>>(bool &x) {
-		assert(_bytes >= sizeof(x));
-		x = *(reinterpret_cast<bool const*>(_data));
-		_data += sizeof(x);
-		_bytes -= sizeof(x);
-		return *this;
-	}
-	virtual Reader & operator>>(char * &) {
-		assert(0);  // avoid allocation issues for now -- no char*'s
-		return *this;
-	}
-	virtual Reader & operator>>(BaseType &x) {
-		x.serialize(*this);
-		return *this;
-	}
-	virtual Reader & operator>>(std::string &x) {
-		unsigned int length = readLength();
-		assert(_bytes >= length);
-		x.clear();
-		x.append(reinterpret_cast<const char*>(_data), length);
-		_data += length;
-		_bytes -= length;
-		return *this;
-	}
+	StringReader(std::string const &buffer):
+		Reader(reinterpret_cast<uint8 const*>(buffer.data()), buffer.size()) { }
 };
 
 
@@ -401,13 +172,8 @@ class TagWriter: public TagBase {
 		_lasttag = _tagstack.top();
 		_tagstack.pop();
 	}
-	void writeLength(int x) {
-		assert(x >= 0);
-		while (x >= 128) {
-			writer << static_cast<unsigned char>(0x80 | (x & 0x7f));
-			x >>= 7;
-		}
-		writer << static_cast<unsigned char>(x);
+	inline void writeLength(int x) {
+		writer.writeLength(x);
 	}
 	inline TagWriter &operator << (TaggedGroup const &group) { group.serialize(*this); return *this; }
 };
@@ -439,16 +205,8 @@ class TagReader: public TagBase {
 		_lasttag = _tagstack.top();
 		_tagstack.pop();
 	}
-	unsigned int readLength() {
-		unsigned int length = 0;
-		int sh = 0;
-		unsigned char x;
-		do {
-			reader >> x;
-			length |= (x & 0x7f) << sh;
-			sh += 7;
-		} while (x & 0x80);
-		return length;
+	inline unsigned int readLength() {
+		return reader.readLength();
 	}
 	template <typename T>
 	inline TagReader &operator >> (T &t) { reader >> t; return *this; }

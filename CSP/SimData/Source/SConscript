@@ -57,6 +57,9 @@ SOURCES = [
 ]
 
 
+config = env.Program('SimDataConfig', ['Config.cpp'])
+config_h = env.Command('#SimData/Include/SimData/Config.h', config, '$SOURCES > $TARGET')
+
 cSimData_wrap, cSimData_module = env.Swig('cSimData.i', SWIGINCLUDES='-ISimData/Include')
 copy_module = env.CopyFile('#/SimData/SimData/cSimData.py', cSimData_module)
 env.Alias(['shared', 'all'], copy_module)

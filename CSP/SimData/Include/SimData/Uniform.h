@@ -27,6 +27,9 @@
 #ifndef __SIMDATA_UNIFORM_H__
 #define __SIMDATA_UNIFORM_H__
 
+// generated using Source/Config.cpp during the build.
+#include <SimData/Config.h>
+
 #include <SimData/Namespace.h>
 
 NAMESPACE_SIMDATA;
@@ -41,26 +44,37 @@ NAMESPACE_SIMDATA;
  *  not true, these typedefs make it easy to adjust
  *  the mapping by hand (or by autoconf).
  *
- *  @note SimData currently uses internal structures to
- *  represent 64-bit integer types, but these may be
- *  optimized in the future to use long ints on 64-bit
- *  hardware.
- *
  *  @name Integer Types
  */
 typedef signed char int8;
 typedef unsigned char uint8;
+
+#ifdef SIMDATA_I16
+typedef signed SIMDATA_I16 int16;
+typedef unsigned SIMDATA_I16 uint16;
+#else
 typedef signed short int16;
 typedef unsigned short uint16;
+#endif
+
+#ifdef SIMDATA_I32
+typedef signed SIMDATA_I32 int32;
+typedef unsigned SIMDATA_I32 uint32;
+#else
 typedef signed int int32;
 typedef unsigned int uint32;
+#endif
 
 #ifdef _WIN32
+# define SIMDATA_STATIC_CONST_DEF(x)
+# define SIMDATA_PACKED
 typedef __int64 int64;
 typedef unsigned __int64 uint64;
 # define SIMDATA_ULL(x) x
 # define SIMDATA_LL(x) x
 #else
+# define SIMDATA_STATIC_CONST_DEF(x) const x
+# define SIMDATA_PACKED __attribute__((packed))
 // use __extension__ to avoid G++ errors with -pedantic
 #ifndef SWIG
 __extension__
@@ -75,18 +89,6 @@ typedef unsigned long long uint64;
 #endif
 
 //@}
-
-/** Test for big-endian byte order */
-inline bool isBigEndian() {
-	static uint16 test=0x1234;
-	return (*reinterpret_cast<uint8*>(&test)) == 0x12;
-}
-
-/** Test for little-endian byte order */
-inline bool isLittleEndian() {
-	return !isBigEndian();
-}
-
 
 NAMESPACE_SIMDATA_END
 

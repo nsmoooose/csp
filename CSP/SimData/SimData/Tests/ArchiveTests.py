@@ -109,7 +109,7 @@ class TypeArchiveTest(ArchiveTest):
 		self.archive._basetype(x0)
 		self.assertEqual(x0, y0)
 		self.setRead()
-		self.assertEqual(self.size, len(path)+4)
+		self.assertEqual(self.size, len(path)+1)
 		x1 = self.archive._External()
 		self.assertEqual(x0, x1)
 
@@ -194,22 +194,84 @@ class TypeArchiveTest(ArchiveTest):
 		self.assertEqual(x0.z, x1.z)
 
 	def testString(self):
-		"""Test storage and retrieval of String"""
+		"""Test storage and retrieval of a short string"""
 		x0 = "hello world"
-		y0 = "hello world"
 		self.archive._string(x0)
 		self.setRead()
-		self.assertEqual(self.size, 15)
+		self.assertEqual(self.size, 12)
 		x1 = self.archive._string()
 		self.assertEqual(x0, x1)
 
-	def testInt(self):
-		"""Test storage and retrieval of Int"""
+	def testLongString(self):
+		"""Test storage and retrieval of a long string"""
+		x0 = "START_" + ("0123456789" * 26) + "_END";
+		self.archive._string(x0)
+		self.setRead()
+		self.assertEqual(self.size, 270 + 2)
+		x1 = self.archive._string()
+		self.assertEqual(x0, x1)
+
+	def testInt8(self):
+		"""Test storage and retrieval of int8"""
+		x0 = 42  # FIXME negative values assert from python
+		self.archive._int8(x0)
+		self.setRead()
+		self.assertEqual(self.size, 1)
+		x1 = self.archive._int8()
+		self.assertEqual(x0, x1)
+
+	def testInt16(self):
+		"""Test storage and retrieval of int16"""
+		x0 = 42
+		self.archive._int16(x0)
+		self.setRead()
+		self.assertEqual(self.size, 2)
+		x1 = self.archive._int16()
+		self.assertEqual(x0, x1)
+
+	def testInt32(self):
+		"""Test storage and retrieval of int32"""
 		x0 = 42
 		self.archive._int32(x0)
 		self.setRead()
 		self.assertEqual(self.size, 4)
 		x1 = self.archive._int32()
+		self.assertEqual(x0, x1)
+
+	def testInt64(self):
+		"""Test storage and retrieval of int64"""
+		x0 = 42
+		self.archive._int64(x0)
+		self.setRead()
+		self.assertEqual(self.size, 8)
+		x1 = self.archive._int64()
+		self.assertEqual(x0, x1)
+
+	def testLength1(self):
+		"""Test storage and retrieval of one-byte length"""
+		x0 = 42
+		self.archive.writeLength(x0)
+		self.setRead()
+		self.assertEqual(self.size, 1)
+		x1 = self.archive.readLength()
+		self.assertEqual(x0, x1)
+
+	def testLength2(self):
+		"""Test storage and retrieval of two-byte length"""
+		x0 = 70
+		self.archive.writeLength(x0)
+		self.setRead()
+		self.assertEqual(self.size, 2)
+		x1 = self.archive.readLength()
+		self.assertEqual(x0, x1)
+
+	def testLength4(self):
+		"""Test storage and retrieval of four-byte length"""
+		x0 = 20000
+		self.archive.writeLength(x0)
+		self.setRead()
+		self.assertEqual(self.size, 4)
+		x1 = self.archive.readLength()
 		self.assertEqual(x0, x1)
 
 	def testDouble(self):

@@ -68,7 +68,7 @@ void DataArchive::_addEntry(int offset, int length, ObjectID hash, std::string c
 }
 
 void DataArchive::writeMagic() {
-	fprintf(_f, "RAWDAT-%c", isLittleEndian() ? 'L' : 'B');
+	fprintf(_f, "RAWDAT-L");
 }
 
 void DataArchive::readMagic() {
@@ -80,13 +80,8 @@ void DataArchive::readMagic() {
 		msg = msg + "incorrect magic '" + magic + "' in archive '" + _fn + "'";
 		throw BadMagic(msg.c_str());
 	}
-	bool data_little = (magic[7] == 'L');
-	bool machine_little = isLittleEndian();
-	if (data_little != machine_little) {
-		std::stringstream msg;
-		msg << "le(machine, data) = (" << machine_little << ", " << data_little << ")";
-		throw BadByteOrder(msg.str());
-	}
+	const bool data_little = (magic[7] == 'L');
+	SIMDATA_VERIFY(data_little);
 }
 
 void DataArchive::readTable() {

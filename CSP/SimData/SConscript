@@ -37,4 +37,6 @@ env.Documentation('#/SimData/Doc', '#/SimData/Doc/Doxyfile', '#/SimData/Include/
 
 build.BuildModules(env, MODULES)
 
-
+runtests_action = Action('python $SOURCE', lambda a,b,c: '\n<<Running SimData Tests>>')
+runtests = env.Command('RUNTESTS', 'runtests.py', runtests_action, ENV={'SIMDATA_LOGPRIORITY': '4'})
+env.Alias('test', runtests)

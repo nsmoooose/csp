@@ -27,6 +27,7 @@ COMMON TARGETS:
   scons IndexServer   build the master server needed for multiplayer
   scons all           build everything
   scons dox           generate doxygen documentation
+  scons test          run unittests
 """
 
 from tools import build

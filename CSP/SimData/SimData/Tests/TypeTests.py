@@ -40,6 +40,7 @@ class DateTest(TestCase):
 		self.assertEqual(str(d), "1903/01/09 05:06:07z")
 		self.assertEqual(d.typeString(), "type::SimDate")
 	def testErrors(self):
+		"""Test error handling for invalid dates and times"""
 		def catch(code, err=1):
 			caught = 0
 			try:
@@ -61,6 +62,7 @@ class DateTest(TestCase):
 		catch("SimData.SimDate(2003, 2, 0, 22, 51, 7)")
 		catch("SimData.SimDate(2003, 10, 32, 22, 51, 7)")
 	def testRollover(self):
+		"""Test date rollover."""
 		sd = SimData.SimDate
 		test = self.assertEqual
 		test(sd(2003, 3, 1, -1, -1, -1), sd(2003, 2, 28, 22, 58, 59))

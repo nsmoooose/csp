@@ -13,5 +13,5 @@ def AddSuite(suite):
   suites.append(suite)
 
 def Run():
-  runner = unittest.TextTestRunner()
+  runner = unittest.TextTestRunner(descriptions=1, verbosity=2)
   runner.run(unittest.TestSuite(suites))

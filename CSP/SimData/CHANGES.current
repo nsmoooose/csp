@@ -1,6 +1,10 @@
 Version 0.4.0 (in progress)
 ===========================
 
+2004-09-25: onsight
+ * Add scons build target 'test' which runs the simdata unittests
+   (so far).
+
 2004-09-24: onsight
  * Minor cleanups, mostly doxygen related.
 

@@ -236,7 +236,7 @@ public:
         }
 
         /// Get the length squared of the vector = v*v
-        inline doublelength2() const {
+        inline double length2() const {
 		return _x*_x + _y*_y + _z*_z;
         }
 

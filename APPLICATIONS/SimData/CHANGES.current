@@ -1,6 +1,9 @@
 Version 0.3.4 (in progress)
 ===========================
 
+2003-08-20: onsight
+            Fixed typo in Vector3.h
+
 2003-08-19: onsight
             Added documentation.
 

@@ -2,6 +2,33 @@
 ===========================
 
 2003-07-21: onsight
+            Moved a couple accessor methods in Theater and 
+	    FeatureLayout out of the class declarations.  This
+	    fixes two compiler errors under GCC 3.3 related to
+	    the use of simdata::Ref<T> where T is a forward class
+	    declaration.  CSPSim now builds correctly with 3.3.
+
+	    Added GPL license in COPYING
+
+	    Removed nommgr.h, mmgr.h, and mmgr.cpp.  These libraries
+	    were not being used and are incompatible with the GPL.
+
+	    Removed stdinc.h which wasn't being used.
+
+	    Removed compiler.h, which had some compiler-specific
+	    portability macros which were only minimally used
+	    by SimpleConfig.cpp.
+
+	    Added missing license statement to Colorspace.cpp.
+
+	    Added missing license statements to Bin/CSPSim.py,
+	    Bin/CompileData.py, Bin/RebuildData.py, Bin/Shell.py,
+	    Bin/ShellEnvironment.py, and Bin/TestObjects.py
+
+            Removed Include/OGLText.h, which seemed to have been
+	    misplaced (part of TerrainTools?).
+	    
+2003-07-21: onsight
             Added Tools/Terrain directory for terrain tools used in
 	    processing DEM data to ChunkLod and other formats.
 

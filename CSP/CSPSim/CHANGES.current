@@ -1,42 +1,48 @@
  Version 0.4.0 (in progress)
 ===========================
+
+2004-07-06: onsight
+  * Moved unreferenced headers and source files to old/ subdirectories.
+
+  * Updated doxygen control file to exclude */old/*.
+
 2004-07-01: delta
-  * CameraKinematics now uses spherical coordinates terminology 
+  * CameraKinematics now uses spherical coordinates terminology
     (theta,phi,radius).
-    
-  * Fixed a bug in view 3 when aircraft in the air: the camera could'nt 
+
+  * Fixed a bug in view 3 when aircraft in the air: the camera could'nt
     move below the plane.
-    
-  * Changed exception(char*) by std::runtime_error(const string&) trying 
+
+  * Changed exception(char*) by std::runtime_error(const string&) trying
     to fix a gcc syntax error.
 
   * Added a lighting bool attribute to disable lighting in ObjectModel.
    (lightint is on by default).
-  
+
 2004-06-29: delta
   * Corrected a shaking bug in the flyby view when PAUSE was enabled.
-    (also could solve a possible bug in internal view). 
+    (also could solve a possible bug in internal view).
     Added bool isInternal().
-  
-  * Changed various Vector3 ctors to simple set method (mostly in 
+
+  * Changed various Vector3 ctors to simple set method (mostly in
     PhysicsModel and AircraftPhysicsModel classes).
-  
+
   * Increased the number of iterations in AircraftPhysicsModel::doSimStep.
-  
+
   * Various corrections related to m_PositionLocal.
-  
+
   * Added a RECORD/REPLAY mode via a flag in CSPSim.ini.
-    Position the flag to RECORD will record the current run, saving the 
-    events in a file (binary format). This file can be played back with 
+    Position the flag to RECORD will record the current run, saving the
+    events in a file (binary format). This file can be played back with
     REPLAY value. Standard run is obtained by PLAY keyword (default value).
 ==> Linux users: add InputEvent.cpp to the build.
 
   * Fixed a bug with the gear sprite at initialization.
 
   * Minor others changes.
-  
+
   * Checking mods before situation gets worse due to an svn's problem ;)
-  
+
 2004-06-28: wolverine
   * Changed subdirectory name from Networking to SimNet. Also moved the
     Networking.h include file to a SimNet subdirectory.
@@ -83,7 +89,7 @@
 
 2004-06-12: wolverine
   * Switching the writing of network buffers to use a SimData MemoryWriter.
-    Switched the code that reads network buffers to use a SimData 
+    Switched the code that reads network buffers to use a SimData
     MemoryReader
 
 2004-06-11: onsight
@@ -123,12 +129,12 @@
     contains a struct with a node and message pointers. This allows
     a destination node to be associated with each outgoing message. This
     approach hopefully avoids any object creation steps during the queueing
-    and dequeing processes. 
+    and dequeing processes.
 
 2004-05-28: wolverine
   * Created special data transfer structures that contain no virtual
     functions and have the same fundamental binary structure as SimData types
-    minus the virutal function tables. These structures really just 
+    minus the virutal function tables. These structures really just
     create memory place holders in the object network messages that
     the regular SimData types can be mem copied over, the elements of the
     transfer structures do not need to be directly accessed except
@@ -146,7 +152,7 @@
 2004-05-16: wolverine
   * changes to networking include configuration from CSPSim.ini
     which includes ports, server node, option to disable/enable
-    networking. Also removed a few extra printf statesments. 
+    networking. Also removed a few extra printf statesments.
     Added NetworkMessage pooling/memory manage.
 
 2004-05-15: wolverine
@@ -155,20 +161,20 @@
 2004-05-12: delta
   * Removed obsolete ComputeTransformCallback in Source/VirtualScene.cpp
     and replaced it by an osg::Transform (lunadog's post).
-    
+
 2004-05-09: delta
-  * Minor cleanings in Include/CSPSim.h. 
-  
-  * Commented out glFinish() in Source/VirtualScene.cpp which can be 
+  * Minor cleanings in Include/CSPSim.h.
+
+  * Commented out glFinish() in Source/VirtualScene.cpp which can be
     responsible of performance hits. Must be tested.
-    
-  * Decreased Radius of the skydome (Source/Sky.cpp) to provide a quick 
+
+  * Decreased Radius of the skydome (Source/Sky.cpp) to provide a quick
     and dirty hack of the "black sky" symptom on ATI hardware.
-    
+
   * Minor changes to VisualStudio/CSPSimDLL.vcproj.
-  
+
   * Changed the date in Data/CSPSim.ini.
-  
+
 2004-05-08: Wolverine
   * More updates to networking. Including changes so both windows and unix
     can compile.
@@ -179,19 +185,19 @@
 2004-05-02: delta
   * Corrected a PYTHONPATH instead of PYTHON_PATH in the debug
     vs project file.
-    
+
   * Minor others changes.
-  
+
 2004-04-25: delta
   * Added CSPSim/Data/Fonts.
-  
+
   * Added Data/Models/Mirage2000/Glass.tga
-  
+
   * Added Demeter & CSPChunkLod projects to CSPSim as dependencies.
     Building CSPSim now builds terrain lib dependencies.
-  
+
   * Adjusted paths in CSPSim project.
-  
+
   * Cleaned up VirtualScene.cpp.
 
 2004-04-17: delta
@@ -206,61 +212,61 @@
     windows.
 
 2004-04-17: delta
-  * Changed COLOR to COLOR0 to enforce arbvp1 compatibility in 
+  * Changed COLOR to COLOR0 to enforce arbvp1 compatibility in
     nvMorph.cg.
-    
+
   * Added a debug project file for heightfield_shader.
-  
+
   * Removed osgProducer dependency on CSPSimDLL (not needed yet).
-  
+
   * Commented out thread managing in LogoScreen.cpp.
-  
-  * Increased the number of local steps in 
+
+  * Increased the number of local steps in
     void AircraftPhysicsModel::doSimStep(double dt).
 
 2004-04-07: delta
   * Corrected a bug in the handling of mouse's scroll up/down.
     Added CameraCommands and extended CameraKinematics to achieve
     it.
-  
+
   * Renamed CameraAgent::notifyToObjectToView to setObject.
-  
+
   * Experimenting a smaller time step in physic model.
 
 2004-04-04: onsight
   * Minor fixes to get the build going under linux.
 
 2004-04-04: delta
-  * Added views classes to help in GameScreen. These files are 
+  * Added views classes to help in GameScreen. These files are
     located under Views folders.
-==========> Linux users: add CSPSim/Source/Views folder to the 
+==========> Linux users: add CSPSim/Source/Views folder to the
     build.
 
 2004-03-19: delta
-  * Added a vectors' arithmetic implemented with expression 
-    template (mainly needed due to the poor performance of vs 
-    7.1's std::valarray<T>; recent version of g++'s std::valrray<T> 
-    is really fancy) in Vector.h; Vector class is protected behind 
-    a Vector namespace. By default, very few vector's arithmetic is 
-    used and the valarray alternative is only used on vs 7.1. Two 
-    macros parametrize its use: NOT_USE_VALARRAY (in Vector.h) and 
+  * Added a vectors' arithmetic implemented with expression
+    template (mainly needed due to the poor performance of vs
+    7.1's std::valarray<T>; recent version of g++'s std::valrray<T>
+    is really fancy) in Vector.h; Vector class is protected behind
+    a Vector namespace. By default, very few vector's arithmetic is
+    used and the valarray alternative is only used on vs 7.1. Two
+    macros parametrize its use: NOT_USE_VALARRAY (in Vector.h) and
     USE_VALARRAY_ARITHMETIC (in NumericalMethod.h).
-    
+
   * The abstract class VectorField has moved in VectorField.h.
-    
-  * Reformated numerical code (NumericalMethod.*); added a new 
-    numerical method based on Cash Karp original article. Old 
+
+  * Reformated numerical code (NumericalMethod.*); added a new
+    numerical method based on Cash Karp original article. Old
     methods are kept during tests.
-  
-  * Changed PYTHONPATH environment variable to PYTHON_PATH and 
-    SWIGPATH to SWIG_PATH to avoid possible names conflict with 
-    predefined environment variables (that does only affect vs 
+
+  * Changed PYTHONPATH environment variable to PYTHON_PATH and
+    SWIGPATH to SWIG_PATH to avoid possible names conflict with
+    predefined environment variables (that does only affect vs
     project file).
-  
+
   * Changed 0x1 value osg node mask to the safer 0xffffffff value.
-  
+
   * Other minor changes.
-   
+
 2004-01-31: onsight
   * Patched acinclude.m4, configure.in, and Source/Makefile.in to
     handle SWIG 1.3.20 and newer.  When used with a newer version
@@ -272,71 +278,71 @@
 
 2004-01-27: delta
   * Added a method to access viewport dimensions in VirtualScene.
-  
-  * Added a print screen command in GameScreen class to take 
-    a snapshot of the main window (feature requested by MrIch). 
-    Command is mapped to 'o' key. The image is currently saved 
-    (by default) as a bmp file in APPLICATIONS/CSPSim/Bin; the 
+
+  * Added a print screen command in GameScreen class to take
+    a snapshot of the main window (feature requested by MrIch).
+    Command is mapped to 'o' key. The image is currently saved
+    (by default) as a bmp file in APPLICATIONS/CSPSim/Bin; the
     filename format is: CSPScreenmmddyy-hhmmss.bmp
-==========> All users, update 
+==========> All users, update
     APPLICATIONS/CSPSim/Tools/HID/Maps/gamescreen-core.map, rebuild
     gamescreen.hid and RebuilData(.py).
 
 2004-02-24: delta
-  * Fixed a bug in ScreenInfoManager causing an incomplete texts 
+  * Fixed a bug in ScreenInfoManager causing an incomplete texts
     display when changing vehicule.
-    
-  * Renamed std::string SnapImageDrawCallback:builSuffix() to 
+
+  * Renamed std::string SnapImageDrawCallback:builSuffix() to
     getDate() in GameScreen.cpp.
-  
-  * Changed implementation in views 1 & 2. Added a safer control 
+
+  * Changed implementation in views 1 & 2. Added a safer control
     of the cam position when on ground.
-    
+
   * Other minor changes.
-    
+
 2004-01-23: delta (suggested by Wolverine69)
-  * Changed <python.h> to <Python.h> in 
+  * Changed <python.h> to <Python.h> in
     APPLICATIONS/CSPSim/Source/CSPSim.cpp.
-  
+
 2003-12-30: delta
   * Added methods in VirtualScene to access projection/mv matrix.
-  
+
 2003-12-29: delta
-  * More investigations on MARKERS_TOGGLE lead to 
+  * More investigations on MARKERS_TOGGLE lead to
     m_Actions[id.c_str()] from the method onCommand in
     InputInterface and to the hash string simdata functions.
     A string with size > 13 may lead to unexpected behaviour.
     Not fixed yet.
-    
-  * Updated CSPSimDLL.vcproj to be able to debug it. Use debug 
+
+  * Updated CSPSimDLL.vcproj to be able to debug it. Use debug
     built (export symbols are enabled).
-  
+
 2003-12-22: delta
   * Reimplemented LogoScreen a la osg. A sequence of screens is
     now loaded.
 ==========> All users, update APPLICATIONS/CSPSim/Data/Images.
-  
+
   * MARKERS_TOGGLE string behaves weirdly with vc++. For now,
-    it is changed to MARKS_TOGGLE but it will need a complete 
-    fix (problem might be similar for strings longer than N 
+    it is changed to MARKS_TOGGLE but it will need a complete
+    fix (problem might be similar for strings longer than N
     characters).
-==========> All users, update 
+==========> All users, update
     APPLICATIONS/CSPSim/Tools/HID/Maps/aircraft-core.map, rebuild
     aircraft.hid and RebuilData(.py).
 
 2003-12-21: delta
   * Fixed stars at daytime on windows (GL_BLEND problem).
-  
+
   * Separated gears and markers control.
-  
+
   * Added an osgFX effect (specular highlight). May produce
     a warning on old generation graphic card.
 ==========> Linux users, link onto osgFX lib.
 
   * Reenabled texture unit 1 code in ScreenInfo.cpp.
-  
+
   * Other minor changes.
-  
+
 2003-10-24: onsight
   * Added some SimData header includes that were included
     implicitly before via SimData/TypeAdapter.h.
@@ -364,8 +370,8 @@
 
 2003-10-19: onsight
   * Updated configure script to check for osg 0.9.6.  Version
-    0.9.4 can still be used, if necessary.  To do so, change 
-    configure.in to check for 0.9.4, run autoconf, then 
+    0.9.4 can still be used, if necessary.  To do so, change
+    configure.in to check for 0.9.4, run autoconf, then
     ./configure.  Finally, edit Include/CSPSim.h and uncomment
     the #define CSP_OSG_094 line.
 
@@ -384,14 +390,14 @@
     deprecated simdata::Table class.  Note that the XML thrust
     tables must be modified to use this new class, but that these
     changes will not be checked into cvs (to prevent clashes with
-    the trunk).  The corrected files will be posted at 
+    the trunk).  The corrected files will be posted at
     http://csp.sourceforge.net/downloads (soon) until the systems
     branch is merged to make v0.4.0.
 
-  * SIMDATA_OBJECT(...) changed to SIMDATA_STATIC_OBJECT(...) for 
+  * SIMDATA_OBJECT(...) changed to SIMDATA_STATIC_OBJECT(...) for
     object classes that are static.  This was previously specified
     per object in the associated xml file using the 'static' attr.
-    That use is deprecated in simdata 0.4; now object classes are 
+    That use is deprecated in simdata 0.4; now object classes are
     either static or not.
 
 2003-10-14: onsight
@@ -414,9 +420,9 @@
 2003-10-09: onsight
   * Fixed minor snprintf problem under msvc.
 
-  * Split the SystemsModel class out of System.h/cpp into 
+  * Split the SystemsModel class out of System.h/cpp into
     SystemsModel.h/cpp.  This seems to be a better arrangement,
-    and hopefully circumventns a problem with forward 
+    and hopefully circumventns a problem with forward
     declarations + simdata::Link<> under msvc.
 
 2003-10-05: onsight
@@ -478,15 +484,15 @@
   * Input events are chained to the systems model if the dynamic
     object doesn't handle them.
 
-  * Changed the mapped input event interface.  The onCommand, 
+  * Changed the mapped input event interface.  The onCommand,
     onAxis, and onMotion methods of InputInterface are now
     private, and all mapped events are passed via the onMapEvent
-    method.  Overriding these methods was generally used to pass 
-    events to subobjects, so it is easier now that only one method 
-    needs to be extended.  The raw event handlers were excluded 
-    from this interface, since raw events are more often handled 
-    by top-level objects.  MapEvent is a wrapper type that 
-    encompasses the three original types of events. 
+    method.  Overriding these methods was generally used to pass
+    events to subobjects, so it is easier now that only one method
+    needs to be extended.  The raw event handlers were excluded
+    from this interface, since raw events are more often handled
+    by top-level objects.  MapEvent is a wrapper type that
+    encompasses the three original types of events.
 
 2003-09-07: onsight
   * Added Include/System.h and Include/Bus.h, which provide

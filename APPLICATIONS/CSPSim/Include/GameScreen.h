@@ -27,6 +27,7 @@
 
 #include <osgUtil/SceneView>
 
+#include <SimData/Ref.h>
 #include <SimData/Math.h>
 #include <SimData/Vector3.h>
 
@@ -37,8 +38,6 @@
 
 
 class PyConsole;
-class VirtualBattlefield;
-class VirtualBattlefieldScene;
 
 
 
@@ -59,7 +58,7 @@ public:
 	virtual void onRender();
 	virtual void onUpdate(double dt);
 
-	virtual void setActiveObject(simdata::PointerBase &);
+	virtual void setActiveObject(simdata::Ref<DynamicObject> const &);
 
 	ACTION_INTERFACE(GameScreen, on_Quit);
 	ACTION_INTERFACE(GameScreen, on_Pause);
@@ -122,7 +121,7 @@ protected:
 	osg::ref_ptr<osg::Group> m_InfoGroup;
 	osg::ref_ptr<PyConsole> m_Console;
 
-	simdata::Pointer<DynamicObject> m_ActiveObject;
+	simdata::Ref<DynamicObject> m_ActiveObject;
 };
 
 #endif // __GAMESCREEN_H__

@@ -28,7 +28,7 @@
 #include <list>
 #include <string>
 
-#include <SimData/Object.h>
+#include <SimData/Ref.h>
 #include <SimData/Path.h>
 
 #include "TerrainObject.h"
@@ -43,10 +43,10 @@ class BaseController;
  *
  * @author unknown
  */
-class VirtualBattlefield: public simdata::Object
+class VirtualBattlefield: public simdata::Referenced
 {
 public:
-	typedef std::list< simdata::Pointer<DynamicObject> > ObjectList;
+	typedef std::list< simdata::Ref<DynamicObject> > ObjectList;
 
 	VirtualBattlefield();
 	virtual ~VirtualBattlefield();
@@ -54,11 +54,11 @@ public:
 	int create();
 	void cleanup();
 
-	void addObject(simdata::Pointer<DynamicObject> object);
+	void addObject(simdata::Ref<DynamicObject> object);
 	void onUpdate(float dt);
 
-	simdata::Pointer<DynamicObject> getObjectFromID(unsigned int ID);
-	simdata::Pointer<DynamicObject> getObjectFromName(std::string name);
+	simdata::Ref<DynamicObject> getObjectFromID(unsigned int ID);
+	simdata::Ref<DynamicObject> getObjectFromName(std::string name);
 	BaseController* getControllerFromID(unsigned int ID);
 	void removeObjectWithID( unsigned int ID);
 	void removeObjectsMarkedForDelete();
@@ -67,7 +67,7 @@ public:
 	void dumpObjectHistory();
 	void updateAllObjects(float dt);
 	void initializeAllObjects();
-	simdata::Pointer<DynamicObject> getNextObject(simdata::Pointer<DynamicObject> object, int human, int local, int category);
+	simdata::Ref<DynamicObject> getNextObject(simdata::Ref<DynamicObject> object, int human, int local, int category);
 
 	void addController(BaseController * controller);
 	unsigned int getNewObjectID() { return ++latest_object_id; }
@@ -80,11 +80,11 @@ public:
 	float getElevation(float x,float y) const;
 	void getNormal(float x, float y, float & normalX, float & normalY, float & normalZ) const;
 
-	void setTerrain(simdata::Pointer<TerrainObject>);
-	simdata::Pointer<TerrainObject> getTerrain() const { return m_Terrain; }
+	void setTerrain(simdata::Ref<TerrainObject>);
+	simdata::Ref<TerrainObject> getTerrain() const { return m_Terrain; }
 
-	void setScene(simdata::Pointer<VirtualScene>);
-	simdata::Pointer<VirtualScene> getScene() const { return m_Scene; }
+	void setScene(simdata::Ref<VirtualScene>);
+	simdata::Ref<VirtualScene> getScene() const { return m_Scene; }
 
 protected:
 
@@ -93,8 +93,8 @@ protected:
 	std::list<std::string> objectListHistory;
 	std::list<BaseController *> controllerList;
 
-	simdata::Pointer<TerrainObject> m_Terrain;
-	simdata::Pointer<VirtualScene> m_Scene;
+	simdata::Ref<TerrainObject> m_Terrain;
+	simdata::Ref<VirtualScene> m_Scene;
 };
 
 #endif // __VIRTUALBATTLEFIELD_H__

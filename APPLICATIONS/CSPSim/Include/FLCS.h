@@ -29,6 +29,7 @@
 #include "SimObject.h"
 #include "HID.h"
 
+
 class FlightControlSystem: public simdata::Object
 {
 public:
@@ -89,7 +90,7 @@ class FlightControlSystem_Mirage {
 
 protected:
 
-	simdata::Pointer<AeroDynamics> m_FlightModel;
+	simdata::Ref<AeroDynamics> m_FlightModel;
 	
 	bool m_PhysicsInitialized;
 	bool m_ComplexPhysics;

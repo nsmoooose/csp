@@ -35,7 +35,7 @@
 #include <iostream>
 
 
-using simdata::Pointer;
+using simdata::Link;
 using simdata::Vector3;
 using simdata::Matrix3;
 
@@ -59,7 +59,7 @@ public:
 	virtual ~System() {}
 	virtual void onUpdate(double, bool) {}
 protected:
-	Pointer<Model> m_Model;
+	Link<Model> m_Model;
 };
 
 }
@@ -203,7 +203,7 @@ public:
 		m_HUD->onUpdate(dt, true);
 	}
 
-	Pointer<F16Hud> m_HUD;
+	Link<F16Hud> m_HUD;
 
 protected:
 	

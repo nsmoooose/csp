@@ -28,8 +28,9 @@
 #define __SHELL_H__
 
 #include <Python.h>
+#include <SimData/Ref.h>
 
-class PyShell {
+class PyShell: public simdata::Referenced {
 public:
 	PyShell() {
 		m_Shell = 0;

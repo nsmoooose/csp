@@ -29,7 +29,9 @@
 #include "ObjectModel.h"
 
 #include <SimData/Object.h>
-#include <SimData/Types.h>
+#include <SimData/Vector3.h>
+#include <SimData/Quaternion.h>
+#include <SimData/Link.h>
 #include <SimData/InterfaceRegistry.h>
 
 
@@ -87,7 +89,7 @@ public:
 
 	// model and scene related functions
 	SceneModel * getSceneModel() { return m_SceneModel; }
-	simdata::Pointer<ObjectModel> getModel() const { return m_Model; }
+	simdata::Ref<ObjectModel> getModel() const { return m_Model; }
 	virtual void createSceneModel();
 	virtual void destroySceneModel();
 	osg::Node* getOrCreateModelNode();
@@ -122,7 +124,7 @@ protected:
 	virtual void pack(simdata::Packer& p) const;
 	virtual void unpack(simdata::UnPacker& p);
 
-	simdata::Pointer<ObjectModel> m_Model;
+	simdata::Link<ObjectModel> m_Model;
 	SceneModel *m_SceneModel;
 
 	simdata::Quaternion m_Attitude;

@@ -28,6 +28,7 @@
 
 #include <limits>
 #include <vector>
+#include <iostream>
 
 
 class VectorField

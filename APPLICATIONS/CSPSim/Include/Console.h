@@ -1,41 +1,36 @@
 #ifndef OSGCONSOLE_CONSOLE_
 #define OSGCONSOLE_CONSOLE_
-#include <osg/Drawable>
-#include <osg/State>
+
+#include <osg/Geode>
 #include <osgText/Text>
-#include <osgText/Font>
 
 #include <streambuf>
 #include <string>
 #include <deque>
+
+
 namespace osgConsole
 {
 
-	class Console: public osg::Drawable, public std::basic_streambuf<char> {
+	class Console: public osg::Geode, public std::basic_streambuf<char> {
 	public:
 		Console(int x=0, int y=0, int w=1024, int h=768, int border=10);
 		Console(const Console &copy, const osg::CopyOp &copyop = osg::CopyOp::SHALLOW_COPY);
 
 		META_Object(osgConsole, Console);
 
-		inline float getLeft() const { return left_; }
-		inline float getBottom() const { return bottom_; }
-		inline float getWidth() const { return width_; }
-		inline float getHeight() const { return height_; }
+		inline float getLeft() const { return _left; }
+		inline float getBottom() const { return _bottom; }
+		inline float getWidth() const { return _width; }
+		inline float getHeight() const { return _height; }
 		inline void setRect(float l, float t, float w, float h);
-		inline int getTabSize() const { return tab_size_; }
-		inline void setTabSize(int s) { tab_size_ = s; buffer_.clear(); dirtyDisplayList(); }
-		inline bool getCursorEnabled() const { return cursor_enabled_; }
-		inline void setCursorEnabled(bool e) { cursor_enabled_ = e; dirtyDisplayList(); }
-		inline char getCursorCharacter() const { return cursor_char_; }
-		inline void setCursorCharacter(char c) { cursor_char_ = c; dirtyDisplayList(); }
-
-		inline void setCursorBlinkPhase(float p) { csr_blink_phase_ = p; dirtyDisplayList(); }
-		inline float getCursorBlinkPhase() const { return csr_blink_phase_; }
-
-		inline void setFont(osgText::Font *font);
-		inline const osgText::Font *getFont() const;
-		inline osgText::Font *getFont();
+		inline bool getCursorEnabled() const { return _cursor_enabled; }
+		inline void setCursorEnabled(bool e);
+		inline char getCursorCharacter() const { return _cursor_char; }
+		void setCursorCharacter(char c);
+		void setFont(std::string const &font, int size);
+		inline int getTabStop() const { return _tabstop; }
+		void setTabStop(int tabstop);
 
 		inline const osg::Vec4 &getTextColor() const;
 		inline void setTextColor(const osg::Vec4 &c);
@@ -45,125 +40,96 @@ namespace osgConsole
 
 		inline void clearBuffer();
 
-		void print(char c);
+		void print(char c, bool layout=true);
 		void print(const char *s);
 		void print(const std::string &s);
 		void eat();
-		void setline(const std::string &s);
+		void setLine(const std::string &s);
 		void setCursor(int pos);
-
-		virtual void drawImplementation(osg::State &state) const;
-		inline virtual bool computeBound() const;
 
 	protected:
 		virtual ~Console() {}
 		Console &operator=(const Console &) { return *this; }
 
-		void draw_text(osg::State &state) const;
-		void split_buffer_lines() const;
-		std::string expand_tabs(const std::string &s) const;
+		void splitBufferLines() const;
+		std::string expandTabs(const std::string &s) const;
+		float getTextWidth(std::string const &text) const;
+		float getTextWidth(char c) const;
+		void doLayout();
 
-		inline virtual int_type overflow(int_type c = traits_type::eof());
+		void _setFont(osg::ref_ptr<osgText::Text> &text, std::string const &font, int size);
 
 	private:
-		mutable osg::ref_ptr<osgText::Text> text_;	
-		mutable osg::ref_ptr<osgText::Text> token_;
-		struct Buffer_line {
+		mutable osg::ref_ptr<osgText::Text> _text;
+		mutable osg::ref_ptr<osgText::Text> _cursor;	
+		mutable osg::ref_ptr<osgText::Text> _token;
+
+		struct BufferLine {
 			std::string line;
 			float width;
-			Buffer_line(): width(0) {}
-			Buffer_line(const std::string &l, float w): line(l), width(w) {}
+			BufferLine(): width(0) {}
+			BufferLine(const std::string &l, float w): line(l), width(w) {}
 		};
 
-		typedef std::deque<Buffer_line> Buffer_type;
-		mutable Buffer_type buffer_;
+		typedef std::deque<BufferLine> BufferType;
+		mutable BufferType _buffer;
 
-		int tab_size_;
+		int _tabstop;
 
-		float left_;
-		float bottom_;
-		float width_;
-		float height_;
-		float border_;
+		float _left;
+		float _bottom;
+		float _width;
+		float _height;
+		float _border;
 
-		bool cursor_enabled_;
-		char cursor_char_;
-		int cursor_pos_;
-		float cursor_x_;
-		float csr_blink_phase_;
+		float _cursor_width;
+		bool _cursor_enabled;
+		char _cursor_char;
+		int _cursor_pos;
+		float _cursor_x;
+		float _cursor_y;
+		float _cursor_blink_phase;
 
-		int buf_lines_;
+		int _buf_lines;
 	};
 
 	// INLINE METHODS
 
 	inline void Console::setRect(float l, float t, float w, float h)
 	{
-		left_ = l; 
-		bottom_ = t; 
-		width_ = w; 
-		height_ = h; 
-		dirtyBound();
-		dirtyDisplayList();
-	}
-
-	inline void Console::setFont(osgText::Font *font)
-	{ 
-		text_->setFont(font);
-		buffer_.clear();
-		dirtyDisplayList();
-	}
-
-	inline bool Console::computeBound() const
-	{
-		_bbox._min.set(left_, bottom_, 0);
-		_bbox._max.set(left_+width_, bottom_+height_, 0);
-		_bbox_computed = true;
-		return true;
-	}
-
-	inline const osgText::Font *Console::getFont() const
-	{
-		return text_->getFont();
-	}
-
-	inline osgText::Font *Console::getFont()
-	{
-		return text_->getFont();
+		_left = l; 
+		_bottom = t; 
+		_width = w; 
+		_height = h; 
+		doLayout();
 	}
 
 	inline const osg::Vec4 &Console::getTextColor() const
 	{
-		return text_->getColor();
+		return _text->getColor();
 	}
 
 	inline void Console::setTextColor(const osg::Vec4 &c)
 	{
-		text_->setColor(c);
+		_text->setColor(c);
+		_cursor->setColor(c);
 	}
 
 	inline void Console::clearBuffer()
 	{
-		buffer_.clear();
-		dirtyDisplayList();
-	}
-
-	inline Console::int_type Console::overflow(int_type c)
-	{
-		if (c == traits_type::eof()) return traits_type::not_eof(c);
-		print(traits_type::to_char_type(c));
-		return c;
+		_buffer.clear();
+		doLayout();
 	}
 
 	inline int Console::getMaxBufferLines() const
 	{
-		return buf_lines_;
+		return _buf_lines;
 	}
 
 	inline void Console::setMaxBufferLines(int n)
 	{
-		buf_lines_ = n;
-		dirtyDisplayList();
+		_buf_lines = n;
+		doLayout();
 	}
 
 }

@@ -27,21 +27,23 @@
 #ifndef __CSPSIM_H__
 #define __CSPSIM_H__
 
-#include <SDL/SDL.h>
-#include <SDL/SDL_joystick.h>
 
-#include <SimData/Types.h>
+#include <SimData/Ref.h>
+#include <SimData/Date.h>
 #include <SimData/DataManager.h>
 
-
-#include "DynamicObject.h"
-#include "TerrainObject.h"
 #include "Atmosphere.h"
-#include "Shell.h"
-#include "VirtualBattlefield.h"
 
-#include <Python.h>
+#include <osg/ref_ptr>
 
+#include <SDL/SDL_joystick.h>
+
+class SDL_Surface;
+
+class PyShell;
+class DynamicObject;
+class TerrainObject;
+class VirtualBattlefield;
 class VirtualScene;
 class VirtualHID;
 class BaseScreen;
@@ -49,14 +51,8 @@ class GameScreen;
 class EventMapIndex;
 class PyConsole;
 
-struct SDLWave {
-	SDL_AudioSpec spec;
-	Uint8   *sound;			/* Pointer to wave data */
-	Uint32   soundlen;		/* Length of wave data */
-	int      soundpos;		/* Current play position */
-};
 
-void fillerup(void *unused, Uint8 *stream, int len);
+void fillerup(void *unused, unsigned char *stream, int len);
 
 
 /**
@@ -83,14 +79,12 @@ public:
 	simdata::SimDate & getCurrentTime() { return m_CurrentTime; }
 	simdata::SimTime const & getFrameRate() const{ return m_FrameRate; }
 
-	void setActiveObject(simdata::Pointer<DynamicObject> object);
-	simdata::Pointer<DynamicObject const> const getActiveObject() const;
+	void setActiveObject(simdata::Ref<DynamicObject> object);
+	simdata::Ref<DynamicObject> getActiveObject() const;
 	VirtualBattlefield * getBattlefield();
 	VirtualBattlefield const * getBattlefield() const;
 	VirtualScene * getScene();
 	VirtualScene const * getScene() const;
-
-	void setShell(PyObject *shell) { m_Shell.bind(shell); }
 
 	EventMapIndex *getInterfaceMaps() { return m_InterfaceMaps; }
 
@@ -103,6 +97,7 @@ public:
 
 	Atmosphere const * getAtmosphere() const { return &m_Atmosphere; }
 
+	simdata::Ref<PyShell> getShell() const;
 
 protected:
 	
@@ -152,22 +147,23 @@ private:
 	 */
 	VirtualHID *m_Interface;
 	EventMapIndex *m_InterfaceMaps;
-	simdata::Pointer<DynamicObject> m_ActiveObject;
+	simdata::Ref<DynamicObject> m_ActiveObject;
 
 	/**
 	 * The virtual battlefield
 	 */
-	simdata::Pointer<VirtualBattlefield> m_Battlefield;
-	simdata::Pointer<VirtualScene> m_Scene;
+	simdata::Ref<VirtualBattlefield> m_Battlefield;
+	simdata::Ref<VirtualScene> m_Scene;
 
 	// TODO the terrain will eventually be encapsulated in a Theater class
-	simdata::Pointer<TerrainObject> m_ActiveTerrain;
+	simdata::Ref<TerrainObject> m_ActiveTerrain;
 	simdata::DataManager m_DataManager;
 	Atmosphere m_Atmosphere;
 
 	//PyObject* m_Console;
 	osg::ref_ptr<PyConsole> m_Console;
-	PyShell m_Shell;
+	simdata::Ref<PyShell> m_Shell;
+
 };
 
 #endif // __CSPSIM_H__

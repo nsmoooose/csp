@@ -28,7 +28,9 @@
 
 
 #include <SimData/Object.h>
-#include <SimData/Types.h>
+#include <SimData/Matrix3.h>
+#include <SimData/Vector3.h>
+#include <SimData/Quaternion.h>
 #include <SimData/InterfaceRegistry.h>
 
 #include "LandingGear.h"

@@ -28,7 +28,7 @@
 
 #include <SimData/Path.h>
 #include <SimData/Vector3.h>
-#include <SimData/Object.h>
+#include <SimData/Ref.h>
 
 #include <osg/ref_ptr>
 
@@ -54,7 +54,7 @@ namespace osgUtil {
  * @author unknown
  */
 
-class VirtualScene: public simdata::Object
+class VirtualScene: public simdata::Referenced
 {
 public:
 	VirtualScene();
@@ -71,8 +71,8 @@ public:
 	void removeEffectUpdater(osg::Node *updater);
 	void addParticleSystem(osg::Node *system, osg::Node *program);
 	void removeParticleSystem(osg::Node *system, osg::Node *program);
-	void addObject(simdata::Pointer<SimObject> object);
-	void removeObject(simdata::Pointer<SimObject> object);
+	void addObject(simdata::Ref<SimObject> object);
+	void removeObject(simdata::Ref<SimObject> object);
 
 	void setLookAt(simdata::Vector3 & eyePos, simdata::Vector3 & lookPos, simdata::Vector3 & upVec);
 	void getLookAt(simdata::Vector3 & eyePos, simdata::Vector3 & lookPos, simdata::Vector3 & upVec) const;
@@ -84,8 +84,8 @@ public:
 	float getViewDistance() const { return m_ViewDistance; }
 	void setViewDistance(float value);
 
-	void setTerrain(simdata::Pointer<TerrainObject>);
-	simdata::Pointer<TerrainObject> getTerrain() const { return m_Terrain; }
+	void setTerrain(simdata::Ref<TerrainObject>);
+	simdata::Ref<TerrainObject> getTerrain() const { return m_Terrain; }
 	int getTerrainPolygonsRendered();
 
 	void setCameraNode(osg::Node *);
@@ -100,7 +100,7 @@ public:
 
 protected:
 
-	simdata::Pointer<TerrainObject> m_Terrain;
+	simdata::Ref<TerrainObject> m_Terrain;
 
 	osg::ref_ptr<osgUtil::SceneView> m_View;
 	osg::ref_ptr<osg::FrameStamp> m_FrameStamp;

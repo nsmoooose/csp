@@ -117,7 +117,7 @@ protected:
 	virtual void setGearStatus(bool on);
 	bool isGearRetracted() const;
 
-	simdata::Pointer<AeroDynamics> m_FlightModel;
+	simdata::Link<AeroDynamics> m_FlightModel;
 	
 	// dynamic properties
 	
@@ -163,7 +163,7 @@ protected:
 	double m_RudderMax;
 
 	// landing gear
-	simdata::Pointer<LandingGearSet> m_Gear;
+	simdata::Link<LandingGearSet> m_Gear;
 	
 	bool m_PhysicsInitialized;
 	bool m_ComplexPhysics;

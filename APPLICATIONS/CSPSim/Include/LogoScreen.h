@@ -26,9 +26,10 @@
 #define __LOGOSCREEN_H__
 
 
-#include <SDL/SDL.h>
 #include "BaseScreen.h"
 
+
+class SDL_Surface;
 
 /**
  * class LogoScreen

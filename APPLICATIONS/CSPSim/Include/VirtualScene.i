@@ -25,8 +25,8 @@
 class VirtualScene
 {
 public:
-	void addObject(simdata::Pointer<SimObject> object);
-	void removeObject(simdata::Pointer<SimObject> object);
+	void addObject(simdata::Ref<SimObject> object);
+	void removeObject(simdata::Ref<SimObject> object);
 
 	void spinTheWorld(bool spin);
 	void resetSpin();

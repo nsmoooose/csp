@@ -19,6 +19,7 @@
 
 %{
 #include "CSPSim.h"
+#include "Shell.h"
 #include <SimData/Math.h>
 %}
 
@@ -39,10 +40,9 @@ public:
 	SDL_Surface * getSDLScreen() {return m_SDLScreen;};
 	simdata::SimDate & getCurrentTime() { return m_CurrentTime; }
 	simdata::SimTime const & getFrameRate() const{ return m_FrameRate; }
-	void setActiveObject(simdata::Pointer<DynamicObject> object);
-	simdata::Pointer<DynamicObject> const getActiveObject() const;
+	void setActiveObject(simdata::Ref<DynamicObject> object);
+	simdata::Ref<DynamicObject> const getActiveObject() const;
 	VirtualBattlefield * const getBattlefield() const;
-	void setShell(PyObject *shell) { m_Shell.bind(shell); }
 	EventMapIndex *getInterfaceMaps() { return m_InterfaceMaps; }
 	void togglePause();
 	void runConsole(PyConsole *console);
@@ -55,7 +55,7 @@ public:
 %extend CSPSim {
 	void createVehicle(const char *path, simdata::Vector3 position, 
 	                   simdata::Vector3 velocity, simdata::Vector3 attitude) {
-		simdata::Pointer<DynamicObject> obj = self->getDataManager().getObject(path);
+		simdata::Ref<DynamicObject> obj = self->getDataManager().getObject(path);
 		obj->setGlobalPosition(position);
 		obj->setVelocity(velocity);
 		simdata::Quaternion q_attitude;
@@ -63,4 +63,5 @@ public:
 		obj->setAttitude(q_attitude);
 		self->getBattlefield()->addObject(obj);
 	}
+	void setShell(PyObject *shell) { self->getShell()->bind(shell); }
 }

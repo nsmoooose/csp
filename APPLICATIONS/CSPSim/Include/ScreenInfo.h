@@ -29,16 +29,15 @@
 #include <osg/Geode>
 #include <osgText/Text>
 
-#include <SimData/Types.h>
+#include <SimData/Ref.h>
 
 #include "DynamicObject.h"
 
-class ScreenInfo:public osg::Geode 
+class ScreenInfo: public osg::Geode 
 {
 protected:
 	std::string m_TTFPath;
 	int m_FontSize;
-	osgText::BitmapFont* m_BitmapFont;
 	osgText::Text* m_Text;
 public:
 	ScreenInfo(int posx,int posy, std::string const & name, std::string const & text = "");
@@ -49,7 +48,7 @@ public:
 };
 
 
-class Framerate:public ScreenInfo 
+class Framerate: public ScreenInfo 
 {
 	float m_minFps, m_maxFps;
 	osgText::Text* m_Date;
@@ -77,7 +76,7 @@ class ObjectStats: public ScreenInfo
 	// input device informations
 	std::vector<osgText::Text*> m_ObjectStats;
 public:
-	ObjectStats(int posx,int posy, simdata::Pointer<DynamicObject> const& activeObject);
+	ObjectStats(int posx,int posy, simdata::Ref<DynamicObject> const& activeObject);
 	virtual void update();
 	virtual ~ObjectStats(){}
 };

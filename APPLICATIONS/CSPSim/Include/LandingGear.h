@@ -29,7 +29,9 @@
 
 #include <SimData/InterfaceRegistry.h>
 #include <SimData/Object.h>
-#include <SimData/Types.h>
+#include <SimData/Vector3.h>
+#include <SimData/Quaternion.h>
+#include <SimData/Link.h>
 
 
 class LandingGear: public simdata::Object {
@@ -111,7 +113,7 @@ protected:
 
 class LandingGearSet: public simdata::Object {
 
-	typedef simdata::Pointer<LandingGear>::vector GearSet;
+	typedef simdata::Link<LandingGear>::vector GearSet;
 	
 public:
 	SIMDATA_OBJECT(LandingGearSet, 0, 0)

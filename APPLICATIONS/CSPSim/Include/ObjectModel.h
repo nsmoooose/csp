@@ -33,7 +33,10 @@
 #include <osg/PositionAttitudeTransform>
 
 #include <SimData/Object.h>
-#include <SimData/Types.h>
+#include <SimData/Vector3.h>
+#include <SimData/Matrix3.h>
+#include <SimData/Quaternion.h>
+#include <SimData/External.h>
 #include <SimData/InterfaceRegistry.h>
 
 #include <vector>
@@ -113,8 +116,6 @@ private:
 };
 
 
-class VirtualBattlefieldScene;
-
 
 /**
  * SceneModel - Represents an object in the scene graph.
@@ -126,10 +127,10 @@ class VirtualBattlefieldScene;
 class SceneModel {
 	
 public:
-	SceneModel(simdata::Pointer<ObjectModel> const & model);
+	SceneModel(simdata::Ref<ObjectModel> const & model);
 	virtual ~SceneModel();
 	
-	simdata::Pointer<ObjectModel> getModel() { return m_Model; }
+	simdata::Ref<ObjectModel> getModel() { return m_Model; }
 	osg::Group* getRoot() { return m_Transform.get(); }
 
 	void setPositionAttitude(simdata::Vector3 const &position, simdata::Quaternion const &attitude) {
@@ -150,7 +151,7 @@ public:
 private:
 	osg::ref_ptr<osg::PositionAttitudeTransform> m_Transform;
 	osg::ref_ptr<osg::Switch> m_Switch;
-	simdata::Pointer<ObjectModel> m_Model;
+	simdata::Ref<ObjectModel> m_Model;
 };
 
 

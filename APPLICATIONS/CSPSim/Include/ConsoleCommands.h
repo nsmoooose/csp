@@ -26,13 +26,15 @@
 #define __CONSOLECOMMANDS_H__
 
 #include <osg/Projection>
+
+#include <SimData/Ref.h>
+
 #include <SDL/SDL_keyboard.h>
 
-#include "Shell.h"
+class PyShell;
 
 namespace osg {
 	class Group;
-	class Geode;
 	class MatrixTransform;
 }
 namespace osgConsole {
@@ -48,12 +50,11 @@ public:
 	bool onKey(SDL_keysym const &key);
 	void setPrompt(std::string prompt);
 	void update();
-	void bind(PyShell &shell) { m_Shell = &shell; }
+	void bind(simdata::Ref<PyShell> const &shell);
 protected:
 	virtual ~PyConsole();
 	osg::ref_ptr<osgConsole::Console> m_Console;
 	osg::ref_ptr<osg::Group> m_Parent;
-	osg::ref_ptr<osg::Geode> m_Geode;
 	osg::ref_ptr<osg::MatrixTransform> m_ModelViewAbs;
 	std::ostream *m_Out;
 	std::string m_Command;
@@ -65,23 +66,8 @@ protected:
 	bool onCharacter(SDL_keysym const &key);
 	bool onEnter(SDL_keysym const &key);
 	void setCursor(int pos);
-	PyShell *m_Shell;
+	simdata::Ref<PyShell> m_Shell;
 };
-
-
-
-/*
-#include <SDL/SDL.h>
-#include <SDL/CON_console.h>
-#include "CON_consolecommands.h"
-
-void ListCommands(ConsoleInformation *console, char *string);
-void Resize(ConsoleInformation *console, char *string);
-void Move(ConsoleInformation *console, char *string);
-void AlphaChange(ConsoleInformation *console, char *alpha);
-void KillProgram(ConsoleInformation *console, char *String);
-void DefaultCommand(ConsoleInformation *console, char *string);
-*/
 
 
 #endif // __CONSOLECOMMANDS_H__

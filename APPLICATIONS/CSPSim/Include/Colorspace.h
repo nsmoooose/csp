@@ -29,6 +29,8 @@
 #ifndef __COLORSPACE_H__
 #define __COLORSPACE_H__
 
+#include <ostream>
+
 /*
  * Colorspace conversions and corrections.
  */

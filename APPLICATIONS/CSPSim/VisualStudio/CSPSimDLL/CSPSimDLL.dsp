@@ -43,7 +43,7 @@ RSC=rc.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /MT /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "CSPSIMDLL_EXPORTS" /YX /FD /c
-# ADD CPP /nologo /MD /W3 /GR /GX /O2 /I "../../Include" /I "../../../SimData/Include" /I "../../../../THIRDPARTYLIBS/include" /I "../../../../THIRDPARTYLIBS/Demeter" /I "C:/Python22/include" /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "CSPSIMDLL_EXPORTS" /D "_STLP_USE_OWN_NAMESPACE" /FD /c
+# ADD CPP /nologo /MD /W3 /GR /GX /O2 /I "../../Include" /I "../../../SimData/Include" /I "../../../../THIRDPARTYLIBS/include" /I "../../../../THIRDPARTYLIBS/Demeter" /I "C:/Python22/include" /I "../../SimData/include" /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "CSPSIMDLL_EXPORTS" /D "_STLP_USE_OWN_NAMESPACE" /FD /c
 # SUBTRACT CPP /YX
 # ADD BASE MTL /nologo /D "NDEBUG" /mktyplib203 /win32
 # ADD MTL /nologo /D "NDEBUG" /mktyplib203 /win32
@@ -68,9 +68,10 @@ LINK32=link.exe
 # PROP Use_Debug_Libraries 1
 # PROP Output_Dir "Debug"
 # PROP Intermediate_Dir "Debug"
+# PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /MTd /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "CSPSIMDLL_EXPORTS" /YX /FD /GZ /c
-# ADD CPP /nologo /MDd /W3 /Gm /GR /GX /Zi /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "CSPSIMDLL_EXPORTS" /D "_STLP_USE_OWN_NAMESPACE" /FR /FD /GZ /c
+# ADD CPP /nologo /MDd /W3 /Gm /GR /GX /Zi /Od /I "../../SimData/include" /I "../../../THIRDPARTYLIBS/demeter" /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "CSPSIMDLL_EXPORTS" /D "_STLP_USE_OWN_NAMESPACE" /FR /FD /GZ /c
 # SUBTRACT CPP /YX
 # ADD BASE MTL /nologo /D "_DEBUG" /mktyplib203 /win32
 # ADD MTL /nologo /D "_DEBUG" /mktyplib203 /win32
@@ -124,13 +125,6 @@ SOURCE=..\..\Source\BaseScreen.cpp
 # Begin Source File
 
 SOURCE=..\..\Source\Colorspace.cpp
-
-!IF  "$(CFG)" == "CSPSimDLL - Win32 Release"
-
-!ELSEIF  "$(CFG)" == "CSPSimDLL - Win32 Debug"
-
-!ENDIF 
-
 # End Source File
 # Begin Source File
 
@@ -143,6 +137,10 @@ SOURCE=..\..\Source\CSP_wrap.cpp
 # Begin Source File
 
 SOURCE=..\..\Source\CSPSim.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\Source\DynamicalSystem.cpp
 # End Source File
 # Begin Source File
 
@@ -175,10 +173,6 @@ SOURCE=..\..\Source\InputInterface.cpp
 # Begin Source File
 
 SOURCE=..\..\Source\LogoScreen.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\Source\LogStream.cpp
 # End Source File
 # Begin Source File
 

@@ -39,11 +39,12 @@
 #include "SimpleConfig.h"
 #include "Platform.h"
 
+#include <algorithm>
 #include <string>
 #include <vector>
 #include <iostream>
 #include <fstream>
-#include <assert.h>
+#include <cassert>
 
 #include "compiler.h"
 #include STL_SSTREAM

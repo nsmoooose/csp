@@ -1,22 +1,18 @@
 #ifndef OSGCONSOLE_CONSOLE_
 #define OSGCONSOLE_CONSOLE_
-
 #include <osg/Drawable>
 #include <osg/State>
-
 #include <osgText/Text>
 #include <osgText/Font>
 
 #include <streambuf>
 #include <string>
-#include <deque>
-
+#include <deque>
 namespace osgConsole
 {
 
 	class Console: public osg::Drawable, public std::basic_streambuf<char> {
-	public:
-
+	public:
 		Console(int x=0, int y=0, int w=1024, int h=768, int border=10);
 		Console(const Console &copy, const osg::CopyOp &copyop = osg::CopyOp::SHALLOW_COPY);
 
@@ -27,13 +23,10 @@ namespace osgConsole
 		inline float getWidth() const { return width_; }
 		inline float getHeight() const { return height_; }
 		inline void setRect(float l, float t, float w, float h);
-
 		inline int getTabSize() const { return tab_size_; }
-		inline void setTabSize(int s) { tab_size_ = s; buffer_.clear(); dirtyDisplayList(); }
-
+		inline void setTabSize(int s) { tab_size_ = s; buffer_.clear(); dirtyDisplayList(); }
 		inline bool getCursorEnabled() const { return cursor_enabled_; }
-		inline void setCursorEnabled(bool e) { cursor_enabled_ = e; dirtyDisplayList(); }
-
+		inline void setCursorEnabled(bool e) { cursor_enabled_ = e; dirtyDisplayList(); }
 		inline char getCursorCharacter() const { return cursor_char_; }
 		inline void setCursorCharacter(char c) { cursor_char_ = c; dirtyDisplayList(); }
 
@@ -73,8 +66,7 @@ namespace osgConsole
 		inline virtual int_type overflow(int_type c = traits_type::eof());
 
 	private:
-		mutable osg::ref_ptr<osgText::Text> text_;
-
+		mutable osg::ref_ptr<osgText::Text> text_;		mutable osg::ref_ptr<osgText::Text> token_;
 		struct Buffer_line {
 			std::string line;
 			float width;

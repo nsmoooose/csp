@@ -1,4 +1,3 @@
-//#include <osg/Depth>
 #include <osg/Geode>
 #include <osg/StateSet>
 

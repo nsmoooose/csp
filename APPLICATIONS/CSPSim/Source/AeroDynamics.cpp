@@ -21,19 +21,22 @@
  * @file AeroDynamics.cpp
  *
  **/
-
-#include "AeroDynamics.h"
-#include "CSPSim.h"
-#include "LogStream.h"
+#include <algorithm>
 
 #include <SimData/InterfaceRegistry.h>
 #include <SimData/Math.h>
 #include <SimData/Quaternion.h>
 
-#include <algorithm>
+#include "AeroDynamics.h"
+#include "CSPSim.h"
+#include "LogStream.h"
+
+
+using std::min;
 
 using simdata::RadiansToDegrees;
 using simdata::DegreesToRadians;
+
 
 double	const	g	= 9.806; // acceleration due to gravity, m/s^2
 
@@ -221,7 +224,7 @@ void AeroDynamics::convertXML() {
 void AeroDynamics::postCreate()
 {
 	Object::postCreate();
-	m_depsilon = std::min(static_cast<double>(m_GMax),static_cast<double>(fabs(m_GMin))) / 2.0;
+	m_depsilon = min(static_cast<double>(m_GMax),static_cast<double>(fabs(m_GMin))) / 2.0;
 	m_AspectRatio = m_WingSpan * m_WingSpan / m_WingArea;
 	m_CD_i = m_WingArea / (0.9 * G_PI * m_WingSpan * m_WingSpan);
 }
@@ -518,8 +521,8 @@ void AeroDynamics::doSimStep(double dt)
 						simdata::Vector3 V = BodyToLocal(Vb);
 						static const float groundK = 1.0e+7;
 						static const float groundBeta = 1.0e+6;
-						float scale;
-						float impact = simdata::Dot(V, m_GroundN);
+						double scale;
+						double impact = simdata::Dot(V, m_GroundN);
 						scale = - (height*groundK + impact*fabs(impact)*groundBeta);
 						if (fabs(scale)>groundK) {
 							// dissipate some extra energy
@@ -538,7 +541,7 @@ void AeroDynamics::doSimStep(double dt)
 								scale = -groundK;
 							}
 						}
-						simdata::Vector3 force = bodyn * scale;
+						simdata::Vector3 force = scale * bodyn;
 						
 						V -= impact * m_GroundN;
 						V = LocalToBody(V);

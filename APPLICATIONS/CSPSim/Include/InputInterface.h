@@ -29,12 +29,13 @@
 
 #include <SDL/SDL_events.h>
 
-#include <SimData/hash_map.h>
+#include <SimData/HashUtility.h>
 
 #include "HID.h"
 
 //class VirtualHID;
 
+using simdata::eqstr;
 
 class InputInterface {
 public:
@@ -60,15 +61,9 @@ public:
 	virtual bool OnMotion(std::string const &id, int x, int y, int dx, int dy);
 
 protected:
-	struct eqstr {
-		bool operator()(const char* s1, const char* s2) const {
-			return strcmp(s1, s2) == 0;
-		}
-	};
-	
-	typedef HASH_MAP<const char *, ActionAdapter, HASH<const char *>, eqstr> ActionMap;
-	typedef HASH_MAP<const char *, MotionAdapter, HASH<const char *>, eqstr> MotionMap;
-	typedef HASH_MAP<const char *, AxisAdapter, HASH<const char *>, eqstr> AxisMap;
+	typedef HASH_MAPS<const char *, ActionAdapter, HASH<const char *>, eqstr>::Type ActionMap;
+	typedef HASH_MAPS<const char *, MotionAdapter, HASH<const char *>, eqstr>::Type MotionMap;
+	typedef HASH_MAPS<const char *, AxisAdapter, HASH<const char *>, eqstr>::Type AxisMap;
 	
 	ActionMap m_Actions;
 	MotionMap m_Motions;

@@ -63,7 +63,7 @@ public:
 	float getSkidding() const { return m_Skidding; }
 	bool getTouchdown() const { return m_Touchdown; }
 	void resetTouchdown() { m_Touchdown = false; }
-	float getCompression() const { return m_Compression; }
+	double getCompression() const { return m_Compression; }
 	float getDamage() const { return m_Damage; }
 	bool getExtended() const { return m_Extended; }
 	void setExtended(bool e) { m_Extended = e; }
@@ -103,7 +103,7 @@ protected:
 	float m_Skidding;
 	float m_TireShiftX;
 	float m_TireShiftY;
-	float m_Compression;
+	double m_Compression;
 	bool m_ABS;
 	simdata::Vector3 m_Position;
 };
@@ -143,12 +143,12 @@ public:
 	}
 
 	virtual void pack(simdata::Packer& p) const {
-		simdata::Object::pack(p);
+		Object::pack(p);
 		p.pack(m_Gear);
 	}
 
 	virtual void unpack(simdata::UnPacker& p) {
-		simdata::Object::unpack(p);
+		Object::unpack(p);
 		p.unpack(m_Gear);
 	}
 

@@ -43,7 +43,7 @@ RSC=rc.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /YX /FD /c
-# ADD CPP /nologo /MD /W3 /GR /GX /O2 /I "../../Include" /I "../../../SimData/Include" /I "../../../../THIRDPARTYLIBS/include" /I "../../../../THIRDPARTYLIBS/Demeter" /I "C:/Python22/include" /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /FD /c
+# ADD CPP /nologo /MD /W3 /GR /GX /O2 /I "../../Include" /I "../../../SimData/Include" /I "../../../../THIRDPARTYLIBS/include" /I "../../../../THIRDPARTYLIBS/Demeter" /I "C:/Python22/include" /I "../../SimData/include" /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /FD /c
 # SUBTRACT CPP /YX
 # ADD BASE MTL /nologo /D "NDEBUG" /mktyplib203 /win32
 # ADD MTL /nologo /D "NDEBUG" /mktyplib203 /win32
@@ -65,12 +65,12 @@ LINK32=link.exe
 # PROP BASE Target_Dir ""
 # PROP Use_MFC 0
 # PROP Use_Debug_Libraries 1
-# PROP Output_Dir "Debug"
+# PROP Output_Dir "../../Bin"
 # PROP Intermediate_Dir "Debug"
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /YX /FD /GZ /c
-# ADD CPP /nologo /MDd /W3 /Gm /GR /GX /Zi /Od /I "../../Include" /I "../../../SimData/Include" /I "../../../../THIRDPARTYLIBS/include" /I "../../../../THIRDPARTYLIBS/Demeter" /I "C:/Python22/include" /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /D "_STLP_USE_OWN_NAMESPACE" /FR /FD /GZ /c
+# ADD CPP /nologo /MDd /W3 /Gm /GR /GX /Zi /Od /I "../../Include" /I "../../../SimData/Include" /I "../../../../THIRDPARTYLIBS/include" /I "../../../../THIRDPARTYLIBS/Demeter" /I "C:/Python22/include" /I "../../SimData/include" /I "../../../THIRDPARTYLIBS/demeter" /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /FAs /FR /FD /GZ /c
 # SUBTRACT CPP /YX
 # ADD BASE MTL /nologo /D "_DEBUG" /mktyplib203 /win32
 # ADD MTL /nologo /D "_DEBUG" /mktyplib203 /win32
@@ -81,7 +81,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /debug /machine:I386 /pdbtype:sept
-# ADD LINK32 DemeterVisualC6d.lib opengl32.lib SDLmain.lib SDLd.lib SDL_Console.lib gdal_i.lib _cSimDatad.lib osgParticled.lib osgUtild.lib osgDBd.lib osgd.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /incremental:no /pdb:"../../Bin/CSPSimd.pdb" /debug /machine:I386 /nodefaultlib:"msvcrt.lib" /out:"../../Bin/CSPSimd.exe" /pdbtype:sept /libpath:"C:/Python22/libs" /libpath:"../../../../THIRDPARTYLIBS/lib"
+# ADD LINK32 DemeterVisualC6d.lib opengl32.lib SDLmain.lib SDLd.lib _cSimDatad.lib osgTextd.lib osgParticled.lib osgUtild.lib osgDBd.lib osgd.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /incremental:no /debug /machine:I386 /nodefaultlib:"msvcrt.lib" /out:"../../Bin/CSPSimd.exe" /pdbtype:sept /libpath:"C:/Python22/libs" /libpath:"../../../../THIRDPARTYLIBS/lib"
 # SUBTRACT LINK32 /pdb:none
 
 !ENDIF 
@@ -100,15 +100,7 @@ SOURCE=..\..\Source\AeroDynamics.cpp
 # Begin Source File
 
 SOURCE=..\..\Source\AircraftModel.cpp
-
-!IF  "$(CFG)" == "CSPSimAppli - Win32 Release"
-
 # PROP Exclude_From_Build 1
-
-!ELSEIF  "$(CFG)" == "CSPSimAppli - Win32 Debug"
-
-!ENDIF 
-
 # End Source File
 # Begin Source File
 
@@ -125,13 +117,6 @@ SOURCE=..\..\Source\BaseScreen.cpp
 # Begin Source File
 
 SOURCE=..\..\Source\Colorspace.cpp
-
-!IF  "$(CFG)" == "CSPSimAppli - Win32 Release"
-
-!ELSEIF  "$(CFG)" == "CSPSimAppli - Win32 Debug"
-
-!ENDIF 
-
 # End Source File
 # Begin Source File
 
@@ -144,6 +129,10 @@ SOURCE=..\..\Source\CSP_wrap.cpp
 # Begin Source File
 
 SOURCE=..\..\Source\CSPSim.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\Source\DynamicalSystem.cpp
 # End Source File
 # Begin Source File
 
@@ -303,6 +292,10 @@ SOURCE=..\..\Include\DirVectorDrawable.h
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\Include\DynamicalSystem.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\Include\DynamicObject.h
 # End Source File
 # Begin Source File
@@ -312,6 +305,10 @@ SOURCE=..\..\Include\EventMapIndex.h
 # Begin Source File
 
 SOURCE=..\..\Include\EventMapping.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\Include\FLCS.h
 # End Source File
 # Begin Source File
 
@@ -405,10 +402,6 @@ SOURCE=..\..\Include\VehicleModel.h
 
 SOURCE=..\..\Include\VirtualBattlefield.h
 # End Source File
-# Begin Source File
-
-SOURCE=..\..\Include\VirtualBattlefieldScene.h
-# End Source File
 # End Group
 # Begin Group "Resource Files"
 
@@ -436,7 +429,7 @@ InputPath=..\..\Source\CSP.i
 InputName=CSP
 
 "..\..\Source\$(InputName)_wrap.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	C:\progra~1\SWIG-1.3.17\swig -c++ -python -noexcept -DWIN32 -I..\Include -o ..\..\Source\$(InputName)_wrap.cpp $(InputPath)
+	C:\progra~1\SWIG-1.3.17\swig -c++ -python -noexcept -DWIN32 -I..\..\Include -o ..\..\Source\$(InputName)_wrap.cpp $(InputPath)
 
 # End Custom Build
 

@@ -39,6 +39,7 @@ using namespace osgConsole;
 Console::Console(int x, int y, int w, int h, int border)
 :	osg::Drawable(),
 	text_(new osgText::Text(new osgText::BitmapFont("arial.ttf", 20))),
+	token_(new osgText::Text),
 	tab_size_(4),
 	left_(x),
 	bottom_(y),
@@ -60,6 +61,7 @@ Console::Console(int x, int y, int w, int h, int border)
 Console::Console(const Console &copy, const osg::CopyOp &copyop)
 :	osg::Drawable(copy, copyop),
 	text_(static_cast<osgText::Text *>(copyop(copy.text_.get()))),
+	token_(static_cast<osgText::Text *>(copyop(copy.token_.get()))),
 	tab_size_(copy.tab_size_),
 	left_(copy.left_),
 	bottom_(copy.bottom_),
@@ -72,6 +74,7 @@ Console::Console(const Console &copy, const osg::CopyOp &copyop)
 	cursor_x_(copy.cursor_x_),
 	buffer_(copy.buffer_),
 	buf_lines_(copy.buf_lines_)
+
 {
 }
 
@@ -104,7 +107,7 @@ void Console::drawImplementation(osg::State &state) const
 	// background: first pass, with depth mask disabled
 
 	glDepthMask(false);
-	glColor4f(0, 0, 0.2, 0.4);
+	glColor4f(0.0f, 0.0f, 0.2f, 0.4f);
 	glEnable(GL_BLEND);
 
 	glBegin(GL_QUADS);
@@ -137,13 +140,17 @@ void Console::split_buffer_lines() const
 			char str[2];
 			str[0] = *j;
 			str[1] = 0;
-			osgText::EncodedText text;
+			//osgText::EncodedText text;
 			if (*j == '\t') {
-				text.setText((unsigned char*)" ");
-				line_width += text_->getFont()->getWidth(&text) * tab_size_;
+				//text.setText((unsigned char*)" ");
+				//line_width += text_->getFont()->getWidth(&text) * tab_size_;
+				token_->setText(" "); 
+				line_width += text_->getFont()->getWidth(token_->getEncodedText()) * tab_size_;
 			} else {
-				text.setText((unsigned char*)str);
-				line_width += text_->getFont()->getWidth(&text);
+				//text.setText((unsigned char*)str);
+				//line_width += text_->getFont()->getWidth(&text);
+				token_->setText(str); 
+				line_width += text_->getFont()->getWidth(token_->getEncodedText());
 			}
 			if (line_width >= width_ - 2*border_) {
 				temp_buf.push_back(Buffer_line(new_line, line_width));
@@ -166,13 +173,17 @@ void Console::eat()
 			char str[2];
 			str[0] = *buffer_.back().line.rbegin();
 			str[1] = 0;
-			osgText::EncodedText text;
+			//osgText::EncodedText text;
 			if (str[0] == '\t') {
-				text.setText((unsigned char*)" ");
-				buffer_.back().width -= text_->getFont()->getWidth(&text) * tab_size_;
+				//text.setText((unsigned char*)" ");
+				//buffer_.back().width -= text_->getFont()->getWidth(&text) * tab_size_;
+				token_->setText(" "); 
+				buffer_.back().width -= text_->getFont()->getWidth(token_->getEncodedText()) * tab_size_;
 			} else {
-				text.setText((unsigned char*)str);
-				buffer_.back().width -= text_->getFont()->getWidth(&text);
+				//text.setText((unsigned char*)str);
+				//buffer_.back().width -= text_->getFont()->getWidth(&text);
+				token_->setText(str); 
+				buffer_.back().width -= text_->getFont()->getWidth(token_->getEncodedText());
 			}
 		}
 		buffer_.back().line.resize(buffer_.back().line.size()-1);
@@ -198,10 +209,12 @@ void Console::setCursor(int pos)
 	cursor_pos_ = pos;
 	cursor_x_ = 0;
 	if (text_->getFont()->isCreated()) {
-		osgText::EncodedText text;
+		//osgText::EncodedText text;
 		std::string left(buffer_.back().line, 0, pos);
-		text.setText((unsigned char const *)left.c_str());
-		cursor_x_ = text_->getFont()->getWidth(&text);
+		//text.setText((unsigned char const *)left.c_str());
+		//cursor_x_ = text_->getFont()->getWidth(&text);
+		token_->setText(left); 
+		cursor_x_ -= text_->getFont()->getWidth(token_->getEncodedText());
 		dirtyDisplayList();
 	} 
 }
@@ -221,13 +234,17 @@ void Console::print(char c)
 		str[0] = c;
 		str[1] = 0;
 		float char_width;
-		osgText::EncodedText text;
+		//osgText::EncodedText text;
 		if (c == '\t') {
-			text.setText((unsigned char*)" ");
-			char_width = text_->getFont()->getWidth(&text) * tab_size_;
+			//text.setText((unsigned char*)" ");
+			//char_width = text_->getFont()->getWidth(&text) * tab_size_;
+			token_->setText(" "); 
+			char_width = text_->getFont()->getWidth(token_->getEncodedText()) * tab_size_;
 		} else {
-			text.setText((unsigned char*)str);
-			char_width = text_->getFont()->getWidth(&text);
+			//text.setText((unsigned char*)str);
+			//char_width = text_->getFont()->getWidth(&text);
+			token_->setText(str); 
+			char_width = text_->getFont()->getWidth(token_->getEncodedText());
 		}
 		float line_width = buffer_.back().width + char_width;
 		if (line_width >= width_-2*border_) {
@@ -263,9 +280,11 @@ void Console::draw_text(osg::State &state) const
 		csr_str[0] = cursor_char_;
 		csr_str[1] = 0;
 		text_->setText(csr_str);
-		osgText::EncodedText text;
-		text.setText((unsigned char*)csr_str);
-		float cursor_width = text_->getFont()->getWidth(&text);
+		//osgText::EncodedText text;
+		//text.setText((unsigned char*)csr_str);
+		//float cursor_width = text_->getFont()->getWidth(&text);
+		token_->setText(csr_str); 
+		float cursor_width = text_->getFont()->getWidth(token_->getEncodedText());
 		float cursor_x = cursor_x_; //buffer_.back().width;
 		float cursor_y = y - font_height;
 		if (cursor_x + cursor_width >= width_-border_) {

@@ -93,7 +93,7 @@ int g_ScreenHeight = 0;
 CSPSim *CSPSim::theSim = 0;
 
 CSPSim::CSPSim()
-{
+{ 
 	if (theSim == 0) {
 		theSim = this;
 	}

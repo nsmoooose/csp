@@ -145,7 +145,8 @@ ObjectStats::ObjectStats(int posx,int posy):ScreenInfo(posx,posy,"OBJECT STATS")
 			m_ObjectStats.push_back(aStat);
 			addDrawable( aStat );
 		}
-		removeDrawable(m_Text);	
+		if (m_Text) 
+			removeDrawable(m_Text);	
 	}
 }
 

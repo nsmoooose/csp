@@ -46,8 +46,8 @@
  *
  */
 
-# if defined(_MSC_VER) && (_MSC_VER <= 1200)
-#include <assert.h>
+# if defined(_MSC_VER) && (_MSC_VER <= 1300)
+#include <cassert>
 # endif
 
 #include "SmokeEffects.h"

@@ -40,11 +40,8 @@
 #include <vector>
 #include <iostream>
 #include <fstream>
-//#include <cstdio>
-//#include <cstdlib>
 
-#include <SimData/hash_map.h>
-
+#include <SimData/HashUtility.h>
 
 /**
  * Basic exception class.
@@ -337,14 +334,13 @@ public:
 	void setPath(const std::string &section, const std::string &key, const std::string &value);
 		
 private:
-	class HashString {
-	public:
-		size_t operator()(std::string const &str) const {
-			return HASH<char const *>()(str.c_str());
-		}
-	};
 
-	typedef HASH_MAP<std::string, ConfigElement*, HashString> ConfigDictionary;
+# if defined(_MSC_VER) && (_MSC_VER == 1300)
+	typedef HASH_MAP<std::string, ConfigElement*, simdata::eqstring> ConfigDictionary;
+#else
+	typedef HASH_MAP<std::string, ConfigElement*, simdata::hashstring> ConfigDictionary;
+#endif
+
 	typedef std::vector<ConfigElement *> ElementList;
 
 	bool m_modified, m_autosave;

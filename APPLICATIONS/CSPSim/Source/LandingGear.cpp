@@ -41,10 +41,10 @@
 #include <iostream>
 
 using simdata::DegreesToRadians;
+using simdata::Dot;
 using simdata::RadiansToDegrees;
 using simdata::QVRotate;
 using simdata::Vector3;
-using simdata::Dot;
 
 
 SIMDATA_REGISTER_INTERFACE(LandingGear)
@@ -189,7 +189,7 @@ simdata::Vector3 LandingGear::simulate(simdata::Quaternion const &q,
 	// calculate strut compression speed
 	Vector3 v_normal_local = Dot(v_local, normal) * normal;
 	Vector3 v_normal_body = QVRotate(q.Bar(), v_normal_local);
-	float v = - simdata::Dot(v_normal_body, m_Motion);
+	float v = - Dot(v_normal_body, m_Motion);
 	// restrict v to reasonable limits
 	if (v > 10.0) v = 10.0;
 	if (v < -10.0) v = -10.0;
@@ -209,7 +209,7 @@ simdata::Vector3 LandingGear::simulate(simdata::Quaternion const &q,
 	y_tangent_local.Normalize();
 	Vector3 x_tangent_local = y_tangent_local ^ normal;
 
-	float forward_speed = Dot(v_tangent_local, y_tangent_local);
+	double forward_speed = Dot(v_tangent_local, y_tangent_local);
 	Vector3 v_y_local = forward_speed * y_tangent_local;
 	Vector3 v_x_local = v_tangent_local - v_y_local;
 

@@ -22,9 +22,9 @@
 // Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 // Boston, MA  02111-1307, USA.
 //
-// $Id: LogStream.cpp,v 1.3 2003/03/21 23:49:34 mkrose Exp $
+// $Id: LogStream.cpp,v 1.4 2003/03/22 02:24:58 deltasf Exp $
 
-#include "stdinc.h"
+#include "LogStream.h"
 
 bool            logbuf::logging_enabled = true;
 cspDebugClass    logbuf::logClass        = CSP_NONE;

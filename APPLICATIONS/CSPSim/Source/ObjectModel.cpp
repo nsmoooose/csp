@@ -23,8 +23,8 @@
  **/
 
 
-#include "LogStream.h"
 #include "ObjectModel.h"
+#include "LogStream.h"
 #include "Config.h"
 
 #include <osgDB/FileUtils>
@@ -273,7 +273,7 @@ void ObjectModel::showContactMarkers(bool on) {
 }
 
 
-SceneModel::SceneModel(simdata::Pointer<ObjectModel> const & model) {
+SceneModel::SceneModel(simdata::Ref<ObjectModel> const & model) {
 	m_Model = model;
 	assert(m_Model.valid());
 	CSP_LOG(CSP_APP, CSP_INFO, "create SceneModel for " << m_Model->getModelPath());

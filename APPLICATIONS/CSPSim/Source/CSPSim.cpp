@@ -26,18 +26,11 @@
 #include <windows.h>
 #endif
 
-#include <GL/gl.h>		// Header File For The OpenGL32 Library
-#include <GL/glu.h>		// Header File For The GLu32 Library
+#include <Python.h>
 
-#include <osg/Timer>
-
-#include <SDL/SDL.h>
-#include <SDL/SDL_audio.h>
-
-#include "DemeterException.h"
-
-#include "Config.h"      
 #include "CSPSim.h"
+#include "Config.h"      
+#include "DynamicObject.h"
 #include "EventMapIndex.h"
 #include "Exception.h"
 #include "GameScreen.h"
@@ -45,10 +38,12 @@
 #include "MenuScreen.h"
 #include "LogoScreen.h"
 #include "LogStream.h"
+#include "Shell.h"
 #include "SimObject.h"
 #include "StaticObject.h"
 #include "VirtualBattlefield.h"
 #include "VirtualScene.h"
+#include "TerrainObject.h"
 #include "ConsoleCommands.h"
 
 #include <SimData/Types.h>
@@ -58,7 +53,15 @@
 #include <SimData/Exception.h>
 #include <SimData/FileUtility.h>
 
-SDLWave  m_audioWave;
+#include <GL/gl.h>		// Header File For The OpenGL32 Library
+#include <GL/glu.h>		// Header File For The GLu32 Library
+
+#include <osg/Timer>
+
+#include <SDL/SDL.h>
+#include <SDL/SDL_audio.h>
+
+#include "DemeterException.h"
 
 
 ////////////////////////////////////////////////
@@ -85,6 +88,15 @@ double g_LatticeYDist = 64000.0;
 int g_ScreenWidth = 0;
 int g_ScreenHeight = 0;
 
+
+struct SDLWave {
+	SDL_AudioSpec spec;
+	Uint8   *sound;			/* Pointer to wave data */
+	Uint32   soundlen;		/* Length of wave data */
+	int      soundpos;		/* Current play position */
+};
+
+SDLWave  m_audioWave;
 
 
 ///////////////////////////////////////////////////////////////////////
@@ -121,6 +133,8 @@ CSPSim::CSPSim()
 	m_Battlefield = NULL;
 	m_Scene = NULL;
 
+	m_Shell = new PyShell();
+
 	int level = g_Config.getInt("Debug", "LoggingLevel", 0, true);
 	csplog().setLogLevels(CSP_ALL, (cspDebugPriority)level);
 	csplog().set_output("CSPSim.log");
@@ -135,7 +149,7 @@ CSPSim::~CSPSim()
 	}
 }
 
-void CSPSim::setActiveObject(simdata::Pointer<DynamicObject> object) {
+void CSPSim::setActiveObject(simdata::Ref<DynamicObject> object) {
 
 	CSP_LOG(CSP_APP, CSP_INFO, "CSPSim::setActiveObject - objectID: " << object->getObjectID() 
 		  << ", ObjectType: " << object->getObjectType() 
@@ -163,7 +177,11 @@ void CSPSim::setActiveObject(simdata::Pointer<DynamicObject> object) {
 	}
 }
 
-simdata::Pointer<DynamicObject const> const CSPSim::getActiveObject() const {
+simdata::Ref<PyShell> CSPSim::getShell() const {
+	return m_Shell;
+}
+
+simdata::Ref<DynamicObject> CSPSim::getActiveObject() const {
 	return m_ActiveObject;
 }
 
@@ -202,10 +220,11 @@ void CSPSim::init()
 			assert(sim);
 			m_DataManager.addArchive(sim);
 		} 
-		catch (simdata::Exception e) {
+		catch (simdata::Exception &e) {
 			CSP_LOG(CSP_APP, CSP_ERROR, "Error opening data archive " << archive_file);
 			CSP_LOG(CSP_APP, CSP_ERROR, e.getType() << ": " << e.getMessage());
-			::exit(0);
+			throw;
+			//::exit(0);
 		}
 		
 		// initialize SDL
@@ -257,7 +276,7 @@ void CSPSim::init()
 		m_Scene->setFogEnd(fog_end);
 
 		// create a couple test objects
-		simdata::Pointer<AircraftObject> ao = m_DataManager.getObject("sim:vehicles.aircraft.m2k");
+		simdata::Ref<AircraftObject> ao = m_DataManager.getObject("sim:vehicles.aircraft.m2k");
 		assert(ao.valid());
 		ao->setGlobalPosition(483000, 499000, 91.2);
 		ao->setAttitude(0.03, 0.0, 0.0);
@@ -265,7 +284,7 @@ void CSPSim::init()
 		m_Battlefield->addObject(ao);
 
 #if 0
-		static simdata::Pointer<StaticObject> so = m_DataManager.getObject("sim:objects.runway");
+		static simdata::Ref<StaticObject> so = m_DataManager.getObject("sim:objects.runway");
 		assert(so.valid());
 		so->setGlobalPosition(483000, 499000, 100.0);
 		so->addToScene(m_Battlefield);
@@ -325,11 +344,8 @@ void CSPSim::cleanup()
 	m_ActiveTerrain->deactivate();
 	m_Battlefield->removeAllObjects();
 	m_Battlefield->cleanup();
-	//m_ActiveTerrain = simdata::PointerBase();
 	m_ActiveTerrain = NULL;
-	//delete m_Battlefield;
 	m_Battlefield = NULL;
-	//delete m_Scene;
 	m_Scene = NULL;
 	delete m_GameScreen;
 	m_GameScreen = NULL;

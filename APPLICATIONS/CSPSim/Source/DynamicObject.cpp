@@ -23,20 +23,21 @@
  **/
 
 
-#include <osg/Geode>
-#include <osgParticle/ParticleSystemUpdater>
-#include <osgParticle/ModularEmitter>
-
-#include <SimData/Quaternion.h>
-
-#include "BaseController.h"
 #include "DynamicObject.h"
+#include "BaseController.h"
 #include "LogStream.h"
 #include "VirtualBattlefield.h"
 #include "VirtualScene.h"
 #include "TerrainObject.h"
 #include "SmokeEffects.h"
 #include "CSPSim.h"
+
+#include <osg/Geode>
+#include <osgParticle/ParticleSystemUpdater>
+#include <osgParticle/ModularEmitter>
+
+#include <SimData/Quaternion.h>
+
 
 extern double g_LatticeXDist;
 extern double g_LatticeYDist;

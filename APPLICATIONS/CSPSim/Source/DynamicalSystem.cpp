@@ -22,11 +22,12 @@
  *
  **/
 
+
+#include "DynamicalSystem.h"
+
 #include <cmath>
 #include <iostream>
 #include <limits>
-
-#include "DynamicalSystem.h"
 
 
 DynamicalSystem::DynamicalSystem(unsigned short dimension):

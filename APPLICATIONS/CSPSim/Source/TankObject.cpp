@@ -23,7 +23,6 @@
  **/
 
 
-#include "SimObject.h"
 #include "TankObject.h"
 #include "BaseController.h"
 

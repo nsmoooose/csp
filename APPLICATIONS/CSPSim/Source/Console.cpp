@@ -22,6 +22,14 @@
  *
  **/
 
+// TODO
+//  doing a full page layout is just too damned slow.  need to
+//  convert to a line-based approach, where only the last line
+//  is formatted.  even then, the getTextWidth routine is really
+//  inefficient.  maybe there are some font querry methods that
+//  are faster?  seems osg needs an optimized fixed-font text
+//  class.
+
 #include "Console.h"
 
 #include <string>
@@ -36,58 +44,87 @@
 using namespace osgConsole;
 
 
+
 Console::Console(int x, int y, int w, int h, int border)
-:	osg::Drawable(),
-	text_(new osgText::Text(new osgText::BitmapFont("arial.ttf", 20))),
-	token_(new osgText::Text),
-	tab_size_(4),
-	left_(x),
-	bottom_(y),
-	width_(w),
-	height_(h),
-	border_(border),
-	cursor_enabled_(true),
-	cursor_char_('_'),
-	cursor_pos_(0),
-	cursor_x_(0.0),
-	csr_blink_phase_(0),
-	buf_lines_(256)
 {
-	setStateSet(new osg::StateSet);
-	text_->setColor(osg::Vec4(1, 1, 1, 1));
-	text_->setAlignment(osgText::Text::LEFT_TOP);
-	token_->setAlignment(osgText::Text::LEFT_TOP);
+	_left = x;
+	_bottom = y;
+	_width = w;
+	_height = h;
+	_border = border;
+	_cursor_enabled = true;
+	_cursor_pos = 0;
+	_cursor_x = 0.0;
+	_cursor_y = 0.0;
+	_cursor_blink_phase = 0;
+	_buf_lines = 256;
+	_text = new(osgText::Text);
+	_token = new(osgText::Text);
+	_cursor = new(osgText::Text);
+	_tabstop = 4;
+	_buffer.push_back(BufferLine());
+	setFont("ltype.ttf", 20);
+	setCursorCharacter('_');
+	addDrawable(_text.get());
+	addDrawable(_cursor.get());
 }
 
 Console::Console(const Console &copy, const osg::CopyOp &copyop)
-:	osg::Drawable(copy, copyop),
-	text_(static_cast<osgText::Text *>(copyop(copy.text_.get()))),
-	token_(static_cast<osgText::Text *>(copyop(copy.token_.get()))),
-	buffer_(copy.buffer_),
-	tab_size_(copy.tab_size_),
-	left_(copy.left_),
-	bottom_(copy.bottom_),
-	width_(copy.width_),
-	height_(copy.height_),
-	border_(copy.border_),
-	cursor_enabled_(copy.cursor_enabled_),
-	cursor_char_(copy.cursor_char_),
-	cursor_pos_(copy.cursor_pos_),
-	cursor_x_(copy.cursor_x_),
-	buf_lines_(copy.buf_lines_)
-
+:	osg::Geode(copy, copyop),
+	_text(static_cast<osgText::Text *>(copyop(copy._text.get()))),
+	_cursor(static_cast<osgText::Text *>(copyop(copy._cursor.get()))),
+	_token(static_cast<osgText::Text *>(copyop(copy._token.get()))),
+	_buffer(copy._buffer),
+	_tabstop(copy._tabstop),
+	_left(copy._left),
+	_bottom(copy._bottom),
+	_width(copy._width),
+	_height(copy._height),
+	_border(copy._border),
+	_cursor_width(copy._cursor_width),
+	_cursor_enabled(copy._cursor_enabled),
+	_cursor_char(copy._cursor_char),
+	_cursor_pos(copy._cursor_pos),
+	_cursor_x(copy._cursor_x),
+	_buf_lines(copy._buf_lines)
 {
 }
 
+void Console::setCursorCharacter(char c) {
+	_cursor_char = c;
+	std::string cursor;
+	cursor += c;
+	_cursor->setText(cursor);
+	_cursor_width = getTextWidth(cursor);
+}
+
+void Console::setFont(std::string const &font, int size) {
+	_setFont(_text, font, size);
+	_setFont(_token, font, size);
+	_setFont(_cursor, font, size);
+	setCursorCharacter(_cursor_char);
+	setTabStop(_tabstop);
+}
+
+void Console::_setFont(osg::ref_ptr<osgText::Text> &text, std::string const &font, int size) {
+	text->setFont(font);
+	text->setFontSize(size, size);
+	text->setCharacterSize(size, 1.0);
+	text->setColor(osg::Vec4(1, 1, 1, 1));
+	text->setAlignment(osgText::Text::LEFT_TOP);
+}
+
+void Console::setTabStop(int tabstop) {
+	_tabstop = tabstop;
+}
+	
+
+#if 0
 void Console::drawImplementation(osg::State &state) const
 {
-	// if the font has not been created yet, create it
-	// and split the buffer lines where they exceed the
-	// maximum line width
-	if (!text_->getFont()->isCreated()) {
-		text_->getFont()->create(state);
-		split_buffer_lines();
-	}
+#ifdef OSG093
+	split_buffer_lines();
+#endif
 
 	// if the buffer is empty, then we add a blank line,
 	// it's needed to properly draw the cursor character;
@@ -128,182 +165,129 @@ void Console::drawImplementation(osg::State &state) const
 	// restore GL attributes
 	glPopAttrib();
 }
+#endif
 
-void Console::split_buffer_lines() const
+float Console::getTextWidth(std::string const &text) const {
+	_token->setText(expandTabs(text));
+	osg::BoundingBox const &bbox = _token->getBound();
+	return bbox.xMax() - bbox.xMin();
+}
+
+float Console::getTextWidth(char c) const {
+	std::string text;
+	text += c;
+	return getTextWidth(text);
+}
+
+void Console::splitBufferLines() const
 {
-	Buffer_type temp_buf;
-	Buffer_type::const_iterator i;
-	for (i=buffer_.begin(); i!=buffer_.end(); ++i) {
+	BufferType temp_buf;
+	BufferType::const_iterator i;
+	for (i=_buffer.begin(); i!=_buffer.end(); ++i) {
 		float line_width = 0;
 		std::string new_line;
 		std::string::const_iterator j;
 		for (j=i->line.begin(); j!=i->line.end(); ++j) {
-			char str[2];
-			str[0] = *j;
-			str[1] = 0;
-			//osgText::EncodedText text;
-			if (*j == '\t') {
-				//text.setText((unsigned char*)" ");
-				//line_width += text_->getFont()->getWidth(&text) * tab_size_;
-				token_->setText(" "); 
-				line_width += text_->getFont()->getWidth(token_->getEncodedText()) * tab_size_;
-			} else {
-				//text.setText((unsigned char*)str);
-				//line_width += text_->getFont()->getWidth(&text);
-				token_->setText(str); 
-				line_width += text_->getFont()->getWidth(token_->getEncodedText());
-			}
-			if (line_width >= width_ - 2*border_) {
-				temp_buf.push_back(Buffer_line(new_line, line_width));
+			line_width += getTextWidth(*j);
+			if (line_width >= _width - 2*_border) {
+				temp_buf.push_back(BufferLine(new_line, line_width));
 				new_line.clear();
 				line_width = 0;
 			}
 			new_line.push_back(*j);
 		}
-		temp_buf.push_back(Buffer_line(new_line, line_width));
+		temp_buf.push_back(BufferLine(new_line, line_width));
 	}
-	buffer_.swap(temp_buf);
+	_buffer.swap(temp_buf);
 }
 
 void Console::eat()
 {
-	if (buffer_.empty()) return;
+	if (_buffer.empty()) return;
 
-	if (!buffer_.back().line.empty()) {
-		if (text_->getFont()->isCreated()) {
-			char str[2];
-			str[0] = *buffer_.back().line.rbegin();
-			str[1] = 0;
-			//osgText::EncodedText text;
-			if (str[0] == '\t') {
-				//text.setText((unsigned char*)" ");
-				//buffer_.back().width -= text_->getFont()->getWidth(&text) * tab_size_;
-				token_->setText(" "); 
-				buffer_.back().width -= text_->getFont()->getWidth(token_->getEncodedText()) * tab_size_;
-			} else {
-				//text.setText((unsigned char*)str);
-				//buffer_.back().width -= text_->getFont()->getWidth(&text);
-				token_->setText(str); 
-				buffer_.back().width -= text_->getFont()->getWidth(token_->getEncodedText());
-			}
-		}
-		buffer_.back().line.resize(buffer_.back().line.size()-1);
+	if (!_buffer.back().line.empty()) {
+		char c = *_buffer.back().line.rbegin();
+		//_buffer.back().width -= getTextWidth(c);
+		_buffer.back().line.resize(_buffer.back().line.size()-1);
 	} else {
-		if (buffer_.size() > 1) {
-			buffer_.pop_back();
-			if (!buffer_.empty()) {
+		if (_buffer.size() > 1) {
+			_buffer.pop_back();
+			if (!_buffer.empty()) {
 				eat();
 			}
 		}
 	}
-
-	dirtyDisplayList();
+	doLayout();
 }
 
-void Console::setline(const std::string &line) {
-	buffer_.back().line = line;
-	dirtyDisplayList();
+void Console::setLine(const std::string &line) {
+	_buffer.back().line = line;
+	doLayout();
 }
 
 void Console::setCursor(int pos)
 {
-	cursor_pos_ = pos;
-	cursor_x_ = 0;
-	if (text_->getFont()->isCreated()) {
-		//osgText::EncodedText text;
-		std::string left(buffer_.back().line, 0, pos);
-		//text.setText((unsigned char const *)left.c_str());
-		//cursor_x_ = text_->getFont()->getWidth(&text);
-		token_->setText(left); 
-		cursor_x_ = text_->getFont()->getWidth(token_->getEncodedText());
-		dirtyDisplayList();
-	} 
+	_cursor_pos = pos;
+	std::string left(_buffer.back().line, 0, pos);
+	_cursor_x = getTextWidth(left);
+	_cursor->setPosition(osg::Vec3(_left+_border+_cursor_x, _bottom+_height-_border-_cursor_y, 0));
 }
 
-void Console::print(char c)
+void Console::print(char c, bool layout)
 {
-	if (buffer_.empty()) buffer_.push_back(Buffer_line(std::string(), 0));
+	if (_buffer.empty()) _buffer.push_back(BufferLine(std::string(), 0));
 
 	if (c == '\n' || c == '\r') {
-		buffer_.push_back(Buffer_line(std::string(), 0));
-		dirtyDisplayList();
+		_buffer.push_back(BufferLine(std::string(), 0));
+		if (layout) doLayout();
 		return;
 	}
 
-	if (text_->getFont()->isCreated()) {
-		char str[2];
-		str[0] = c;
-		str[1] = 0;
-		float char_width;
-		//osgText::EncodedText text;
-		if (c == '\t') {
-			//text.setText((unsigned char*)" ");
-			//char_width = text_->getFont()->getWidth(&text) * tab_size_;
-			token_->setText(" "); 
-			char_width = text_->getFont()->getWidth(token_->getEncodedText()) * tab_size_;
-		} else {
-			//text.setText((unsigned char*)str);
-			//char_width = text_->getFont()->getWidth(&text);
-			token_->setText(str); 
-			char_width = text_->getFont()->getWidth(token_->getEncodedText());
-		}
-		float line_width = buffer_.back().width + char_width;
-		if (line_width >= width_-2*border_) {
-			buffer_.push_back(Buffer_line(std::string(), char_width));
-		} else {
-			buffer_.back().width += char_width;
-		}
-	}		
+	/*
+	float char_width = getTextWidth(c);
+	float line_width = _buffer.back().width + char_width;
+	if (line_width >= _width - 2*_border) {
+		_buffer.push_back(BufferLine(std::string(), char_width));
+	} else {
+		_buffer.back().width += char_width;
+	}
+	*/
 
-	buffer_.back().line.push_back(c);
+	_buffer.back().line.push_back(c);
 
-	dirtyDisplayList();
+	if (layout) doLayout();
 }
 
-void Console::draw_text(osg::State &state) const
+void Console::doLayout()
 {
-	float font_height = text_->getFont()->getHeight() + 2;
-	Buffer_type::size_type num_lines = (Buffer_type::size_type) ((height_ - 2*border_) / font_height);
-	if (num_lines > buffer_.size()) num_lines = buffer_.size();
+//	splitBufferLines();
+
+	float font_height = _text->getCharacterHeight();
+	BufferType::size_type num_lines = (BufferType::size_type) ((_height - 2*_border) / font_height);
+	if (num_lines > _buffer.size()) num_lines = _buffer.size();
 
 	float y = 0; 
-	for (Buffer_type::size_type n=buffer_.size()-num_lines; n<buffer_.size(); ++n) {
-		// TODO linewrap!
-		//text_->setText(expand_tabs(buffer_[n].line));
-		text_->setText(buffer_[n].line);
-		text_->setPosition(osg::Vec3(left_ + border_, bottom_ + height_ - border_ - y, 0));
-		text_->drawImplementation(state);
+
+	std::string text = "";
+	for (BufferType::size_type n=_buffer.size()-num_lines; n<_buffer.size(); ++n) {
+		text = text + expandTabs(_buffer[n].line) + "\n";
 		y += font_height;
 	}
+	_text->setPosition(osg::Vec3(_left + _border, _bottom + _height - _border, 0));
+	_text->setText(text);
 
-	if (cursor_enabled_ && csr_blink_phase_ < 0.5f) {
-		char csr_str[2];
-		csr_str[0] = cursor_char_;
-		csr_str[1] = 0;
-		text_->setText(csr_str);
-		//osgText::EncodedText text;
-		//text.setText((unsigned char*)csr_str);
-		//float cursor_width = text_->getFont()->getWidth(&text);
-		token_->setText(csr_str); 
-		float cursor_width = text_->getFont()->getWidth(token_->getEncodedText());
-		float cursor_x = cursor_x_; //buffer_.back().width;
-		float cursor_y = y - font_height;
-		if (cursor_x + cursor_width >= width_-border_) {
-			cursor_x = 0;
-			cursor_y += font_height;
-		}
-		text_->setPosition(osg::Vec3(left_+border_+cursor_x, bottom_+height_-border_-cursor_y, 0));
-		text_->drawImplementation(state);
-	}
+	_cursor_y = y; // - font_height;
+	_cursor->setPosition(osg::Vec3(_left+_border+_cursor_x, _bottom+_height-_border-_cursor_y, 0));
 }
 
-std::string Console::expand_tabs(const std::string &s) const
+std::string Console::expandTabs(const std::string &s) const
 {
 	std::string r;
+	r.reserve(s.size());
 	std::string::const_iterator i;
 	for (i=s.begin(); i!=s.end(); ++i) {
 		if (*i == '\t') {
-			for (int j=0; j<tab_size_; ++j) {
+			for (int j=0; j<_tabstop; ++j) {
 				r.push_back(' ');
 			}
 		} else {
@@ -316,12 +300,14 @@ std::string Console::expand_tabs(const std::string &s) const
 void Console::print(const char *s)
 {
 	while (*s) {
-		print(*s);
+		print(*s, false);
 		++s;
 	}
+	doLayout();
 }
 
 void Console::print(const std::string &s)
 {
 	print(s.c_str());
 }
+

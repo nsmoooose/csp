@@ -21,13 +21,14 @@
  * @file ScreenInfo.cpp
  *
  **/
-#include <iomanip>
-#include <sstream>
 
-#include "CSPSim.h"
 #include "ScreenInfo.h"
+#include "CSPSim.h"
 #include "VirtualBattlefield.h"
 #include "VirtualScene.h"
+
+#include <iomanip>
+#include <sstream>
 
 using std::max;
 using std::min;
@@ -36,23 +37,36 @@ using std::setw;
 using std::fixed;
 using std::setfill;
 
+/*
+  NOTE: as of OSG 0.9.4, updating text is a costly operation since
+  the text class redoes the complete layout from scratch, glyph by
+  glyph.  in principle we don't need to update after every frame, or
+  perhaps can implement our own simplified version of osgText::Text
+  for single lines without kerning, and cache the portions that don't
+  change.  Actually, the latter could be done within the current
+  implementation by having both static text nodes for labels and 
+  dynamic nodes for values that change frequently.
+*/
 class UpdateCallback : public osg::NodeCallback
 {
 	virtual void operator()(osg::Node* node, osg::NodeVisitor* nv)
 	{ 
 		ScreenInfo* aScreenInfo = dynamic_cast<ScreenInfo*>(node);
-		if (aScreenInfo && aScreenInfo->getStatus()) 
+		if (aScreenInfo && aScreenInfo->getStatus()) {
 			aScreenInfo->update();
+		}
 		traverse(node,nv);
 	}
 };
 
 ScreenInfo::ScreenInfo(int posx,int posy, std::string const & name, std::string const & text):
 	m_TTFPath("ltype.ttf"),m_FontSize(11),
-	m_BitmapFont(new osgText::BitmapFont(m_TTFPath,m_FontSize)),
-	m_Text(new osgText::Text(m_BitmapFont))
+	m_Text(new osgText::Text)
 {
 	int heightFont = m_FontSize;
+	m_Text->setFont(m_TTFPath);
+	m_Text->setFontSize(m_FontSize, m_FontSize);
+	m_Text->setCharacterSize(m_FontSize, 1.0);
 	m_Text->setPosition(osg::Vec3(posx,posy - heightFont,0));
 	setUpdateCallback(new UpdateCallback());
 	m_Text->setText(text);
@@ -61,9 +75,12 @@ ScreenInfo::ScreenInfo(int posx,int posy, std::string const & name, std::string 
 	setName(name);
 }
 
-Framerate::Framerate(int posx, int posy):ScreenInfo(posx,posy,"FRAMERATE"),m_minFps(60),m_maxFps(25) 
+Framerate::Framerate(int posx, int posy): ScreenInfo(posx, posy, "FRAMERATE"), m_minFps(60), m_maxFps(25) 
 {	
-	m_Date = new  osgText::Text(m_BitmapFont);
+	m_Date = new osgText::Text();
+	m_Date->setFont(m_TTFPath);
+	m_Date->setFontSize(m_FontSize, m_FontSize);
+	m_Date->setCharacterSize(m_FontSize, 1.0);
 	m_Date->setPosition(osg::Vec3(posx,posy - 2 * m_FontSize,0));
 	addDrawable(m_Date);
 }
@@ -93,19 +110,28 @@ GeneralStats::GeneralStats(int posx,int posy):ScreenInfo(posx,posy,"GENERAL STAT
 	unsigned int yOffset;
 
 	yOffset = 50 - m_FontSize;
-	m_LocalPosition = new  osgText::Text(m_BitmapFont);
-	m_LocalPosition->setPosition(osg::Vec3(posx,yOffset,0));
-	addDrawable( m_LocalPosition );
+	m_LocalPosition = new osgText::Text();
+	m_LocalPosition->setFont(m_TTFPath);
+	m_LocalPosition->setFontSize(m_FontSize, m_FontSize);
+	m_LocalPosition->setCharacterSize(m_FontSize, 1.0);
+	m_LocalPosition->setPosition(osg::Vec3(0, yOffset, 0));
+	addDrawable(m_LocalPosition);
 	
 	yOffset -= m_FontSize;
-	m_GlobalPosition = new  osgText::Text(m_BitmapFont);
-	m_GlobalPosition->setPosition(osg::Vec3(posx,yOffset,0));
-	addDrawable( m_GlobalPosition );
+	m_GlobalPosition = new osgText::Text();
+	m_GlobalPosition->setFont(m_TTFPath);
+	m_GlobalPosition->setFontSize(m_FontSize, m_FontSize);
+	m_GlobalPosition->setCharacterSize(m_FontSize, 1.0);
+	m_GlobalPosition->setPosition(osg::Vec3(0, yOffset, 0));
+	addDrawable(m_GlobalPosition);
 	
 	yOffset -= m_FontSize;
-	m_Velocity = new  osgText::Text(m_BitmapFont);
-	m_Velocity->setPosition(osg::Vec3(posx,yOffset,0));
-	addDrawable( m_Velocity );
+	m_Velocity = new osgText::Text();
+	m_Velocity->setFont(m_TTFPath);
+	m_Velocity->setFontSize(m_FontSize, m_FontSize);
+	m_Velocity->setCharacterSize(m_FontSize, 1.0);
+	m_Velocity->setPosition(osg::Vec3(0, yOffset, 0));
+	addDrawable(m_Velocity);
 }
 
 void GeneralStats::update()
@@ -116,8 +142,8 @@ void GeneralStats::update()
 	osstr << "Terrain Polygons: " << CSPSim::theSim->getScene()->getTerrainPolygonsRendered();
 	m_Text->setText(osstr.str());
 
-	simdata::Pointer<DynamicObject const> const activeObject = CSPSim::theSim->getActiveObject();
-	if (!activeObject.isNull()) {
+	simdata::Ref<DynamicObject const> const activeObject = CSPSim::theSim->getActiveObject();
+	if (activeObject.valid()) {
 		simdata::Vector3 pos = activeObject->getLocalPosition();
 		osstr.str("");
 		osstr << "LocalPosition: (" << setprecision(precision) << fixed 
@@ -141,19 +167,21 @@ void GeneralStats::update()
 	}
 }
 
-ObjectStats::ObjectStats(int posx,int posy, simdata::Pointer<DynamicObject> const& activeObject):
+ObjectStats::ObjectStats(int posx,int posy, simdata::Ref<DynamicObject> const& activeObject):
 ScreenInfo(posx,posy,"OBJECT STATS")
 {
-	if (!activeObject.isNull()) {
+	if (activeObject.valid()) {
 		std::vector<std::string> stringStats;
 		activeObject->getStats(stringStats);
 		short n = stringStats.size();
 		for (;n-->0;) {
 			posy -= m_FontSize;
-			osgText::Text* aStat = new  osgText::Text(m_BitmapFont);
-			aStat->setPosition(osg::Vec3(posx,posy,0));
+			osgText::Text* aStat = new osgText::Text();
+			aStat->setFont(m_TTFPath);
+			aStat->setCharacterSize(m_FontSize, 1.0);
+			aStat->setPosition(osg::Vec3(posx, posy, 0));
 			m_ObjectStats.push_back(aStat);
-			addDrawable( aStat );
+			addDrawable(aStat);
 		}
 		if (m_Text) 
 			removeDrawable(m_Text);	
@@ -162,8 +190,8 @@ ScreenInfo(posx,posy,"OBJECT STATS")
 
 void ObjectStats::update() 
 {
-	simdata::Pointer<DynamicObject> activeObject = CSPSim::theSim->getActiveObject();
-	if (!activeObject.isNull()) {
+	simdata::Ref<DynamicObject> activeObject = CSPSim::theSim->getActiveObject();
+	if (activeObject.valid()) {
 		std::vector<std::string> stringStats;
 		activeObject->getStats(stringStats);
 		short n = m_ObjectStats.size();

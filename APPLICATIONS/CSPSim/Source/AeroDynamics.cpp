@@ -25,15 +25,15 @@
 #define NOMINMAX
 #endif
 
-#include <algorithm>
+#include "AeroDynamics.h"
+#include "CSPSim.h"
+#include "LogStream.h"
 
 #include <SimData/InterfaceRegistry.h>
 #include <SimData/Math.h>
 #include <SimData/Quaternion.h>
 
-#include "AeroDynamics.h"
-#include "CSPSim.h"
-#include "LogStream.h"
+#include <algorithm>
 
 using simdata::RadiansToDegrees;
 using simdata::DegreesToRadians;

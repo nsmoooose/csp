@@ -22,15 +22,15 @@
  *
  **/
 
+#include "ScreenInfoManager.h"
+
 #include <osg/Depth>
 #include <osg/MatrixTransform>
 
-#include "ScreenInfoManager.h"
 
 void set2dScene(osg::Group* rootNode, int ScreenWidth, int ScreenHeight)
 {
-    osg::ref_ptr<Framerate> framerate = new Framerate(11,ScreenHeight - 11);
-	//float textWidth = bitmapFont->getWidth(pause->getEncodedText());
+	osg::ref_ptr<Framerate> framerate = new Framerate(11,ScreenHeight - 11);
 	osg::ref_ptr<ScreenInfo> pause = new ScreenInfo(ScreenWidth - 5 * 8 - 11, ScreenHeight - 11,"PAUSE", "PAUSE");
 	osg::ref_ptr<GeneralStats> generalStats = new GeneralStats(11, ScreenHeight / 3);
 
@@ -38,32 +38,26 @@ void set2dScene(osg::Group* rootNode, int ScreenWidth, int ScreenHeight)
 	rootNode->addChild(pause.get());
 	rootNode->addChild(generalStats.get());
 
-    // now add a depth attribute to the scene to force it to draw on top.
-    osg::Depth* depth = new osg::Depth;
-    depth->setRange(0.0,0.0);
-    
-    osg::StateSet* rootState = new osg::StateSet();
-    rootState->setAttribute(depth);
-    rootState->setMode(GL_LIGHTING,osg::StateAttribute::OFF);
-    
-    rootNode->setStateSet(rootState);
+	osg::StateSet* rootState = rootNode->getOrCreateStateSet();
+	rootState->setMode(GL_LIGHTING,osg::StateAttribute::OFF);
+	rootState->setMode(GL_DEPTH_TEST,osg::StateAttribute::OFF);
 }
 
 ScreenInfoManager::ScreenInfoManager(int ScreenWidth, int ScreenHeight)
 {
-    setMatrix(osg::Matrix::ortho2D(0,ScreenWidth,0,ScreenHeight));
-    
-    m_modelview_abs = new osg::MatrixTransform;
-    m_modelview_abs->setReferenceFrame(osg::Transform::RELATIVE_TO_ABSOLUTE);
-    m_modelview_abs->setMatrix(osg::Matrix::identity());
-    
-    set2dScene(m_modelview_abs,ScreenWidth,ScreenHeight);
+	setMatrix(osg::Matrix::ortho2D(0,ScreenWidth,0,ScreenHeight));
 
-    addChild(m_modelview_abs);
+	m_modelview_abs = new osg::MatrixTransform;
+	m_modelview_abs->setReferenceFrame(osg::Transform::RELATIVE_TO_ABSOLUTE);
+	m_modelview_abs->setMatrix(osg::Matrix::identity());
+
+	set2dScene(m_modelview_abs,ScreenWidth,ScreenHeight);
+
+	addChild(m_modelview_abs);
 	setCullingActive(true);
 }
 
-void ScreenInfoManager::changeObjectStats(int ScreenWidth, int ScreenHeight,simdata::Pointer<DynamicObject> const& vehicle)
+void ScreenInfoManager::changeObjectStats(int ScreenWidth, int ScreenHeight,simdata::Ref<DynamicObject> const& vehicle)
 {
 	ScreenInfo* os = getScreenInfo("OBJECT STATS");
 	if (os)
@@ -119,3 +113,4 @@ bool ScreenInfoManager::getStatus(std::string const& name)
 	else
 		return false;
 }
+

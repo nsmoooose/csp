@@ -22,10 +22,11 @@
  *
  **/
 
-#include <algorithm>
 
-#include "LogStream.h"
 #include "Tools.h"
+#include "LogStream.h"
+
+#include <algorithm>
 
 
 // catches non-existent files to open, displays an error and exits the program

@@ -56,6 +56,7 @@
 #include <osg/ColorMatrix>
 #include <osg/AlphaFunc>
 #include <osg/Billboard>
+#include <osg/MatrixTransform>
 
 
 using namespace osg;
@@ -274,7 +275,7 @@ public:
 private:
 	ref_ptr<Vec3Array> _positionList;
 	ref_ptr<Vec4Array> _colorList;
-	simdata::Pointer<StarCatalog> _catalog;
+	simdata::Ref<StarCatalog> _catalog;
 	double rx, rz;
 	double alpha;
 };

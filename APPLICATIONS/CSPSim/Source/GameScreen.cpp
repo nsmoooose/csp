@@ -23,19 +23,18 @@
  **/
 
 
-//#include <osg/DisplaySettings>
-
-#include <SimData/Math.h>
-#include <SimData/Types.h>
-
-#include "CSPSim.h"
 #include "GameScreen.h"
+#include "CSPSim.h"
 #include "EventMapIndex.h"
 #include "LogStream.h"
 #include "VirtualBattlefield.h"
 #include "VirtualScene.h"
 #include "CSPSim.h"
 #include "ConsoleCommands.h"
+
+#include <SimData/Math.h>
+#include <SimData/Types.h>
+
 
 
 double const GameScreen::OffsetRate =  30.0 * (G_PI / 180.0); // x deg / s, even if it is used for Zoom also ...
@@ -195,7 +194,7 @@ void GameScreen::onInit()
 
 	m_InfoView->setSceneData(m_InfoGroup.get());
 
-	simdata::Pointer<DynamicObject> ao = CSPSim::theSim->getActiveObject();
+	simdata::Ref<DynamicObject> ao = CSPSim::theSim->getActiveObject();
 	if (ao.valid())
 		setActiveObject(ao);
 }
@@ -205,19 +204,18 @@ void GameScreen::onExit()
 
 }
 
-void GameScreen::setActiveObject(simdata::PointerBase &object) 
+void GameScreen::setActiveObject(simdata::Ref<DynamicObject> const &object) 
 {
 	m_ActiveObject = object;
-	simdata::Pointer<DynamicObject> vehicle = object;
-	if (vehicle.valid() && vehicle->isHuman() && vehicle->isLocal()) {
+	if (object.valid() && object->isHuman() && object->isLocal()) {
 		on_View1();
 	} else {
 		on_View2();
 	}
-	if (vehicle.valid()) {
+	if (object.valid()) {
 		int ScreenWidth = CSPSim::theSim->getSDLScreen()->w;
 		int ScreenHeight = CSPSim::theSim->getSDLScreen()->h;
-		m_ScreenInfoManager->changeObjectStats(ScreenWidth,ScreenHeight,vehicle);
+		m_ScreenInfoManager->changeObjectStats(ScreenWidth,ScreenHeight,object);
 	}
 }
 
@@ -366,7 +364,7 @@ void GameScreen::on_Console()
 
 void GameScreen::on_ChangeVehicle()
 {
-	simdata::Pointer<DynamicObject> object;
+	simdata::Ref<DynamicObject> object;
 	VirtualBattlefield *battlefield = CSPSim::theSim->getBattlefield();
 	object = battlefield->getNextObject(m_ActiveObject, -1, -1, -1);
 	if (object.valid()) CSPSim::theSim->setActiveObject(object);

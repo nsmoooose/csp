@@ -27,20 +27,20 @@
 #pragma warning(disable : 4786)
 # endif
 
-#include <iostream>
-
 #ifdef WIN32
 #include <windows.h>
 #endif
 
-#include <GL/gl.h>			// Header File For The OpenGL32 Library
-#include <GL/glu.h>			// Header File For The GLu32 Library
-
-#include "Config.h"
 #include "LogoScreen.h"
 #include "Config.h"
 
 #include <SimData/FileUtility.h>
+
+#include <iostream>
+#include <GL/gl.h>			// Header File For The OpenGL32 Library
+#include <GL/glu.h>			// Header File For The GLu32 Library
+
+#include <SDL/SDL.h>
 
 
 LogoScreen::LogoScreen(int width, int height) 

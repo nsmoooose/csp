@@ -22,21 +22,17 @@
  *
  **/
 
-#define NOSHADOW
-
-
-#include <sstream>
-
-
-#include "LogStream.h"
 
 #include "VirtualBattlefield.h"
 #include "VirtualScene.h"
 #include "TerrainObject.h"
 #include "DynamicObject.h"
+#include "LogStream.h"
 
 #include <SimData/Types.h>
 #include <SimData/Math.h>
+
+#include <sstream>
 
 
 extern int g_ScreenWidth;
@@ -48,7 +44,7 @@ extern double g_LatticeYDist;
 
 unsigned int VirtualBattlefield::latest_object_id = 0;
 
-using simdata::Pointer;
+using simdata::Ref;
 
 
 
@@ -70,7 +66,7 @@ void VirtualBattlefield::cleanup()
 {
 }
 
-void VirtualBattlefield::setScene(simdata::Pointer<VirtualScene> scene) 
+void VirtualBattlefield::setScene(simdata::Ref<VirtualScene> scene) 
 {
 	m_Scene = scene;
 }
@@ -89,7 +85,7 @@ void VirtualBattlefield::getNormal(float x, float y, float & normalX,
                                    float & normalY, float & normalZ ) const
 {
 	normalX = 0; normalY = 0; normalZ = 1;
-	if (!m_Terrain.isNull()) {
+	if (m_Terrain.valid()) {
 		m_Terrain->getNormal(x,y, normalX, normalY, normalZ);
 	}
 }
@@ -153,7 +149,7 @@ void VirtualBattlefield::onUpdate(float dt)
 
 
 
-void VirtualBattlefield::addObject(Pointer<DynamicObject> obj)
+void VirtualBattlefield::addObject(Ref<DynamicObject> obj)
 {
 	CSP_LOG(CSP_APP, CSP_DEBUG, "ObjectManager::addObject, object_id: " << obj->getObjectID() );
 	assert(obj.valid());
@@ -175,7 +171,7 @@ void VirtualBattlefield::addController(BaseController * controller)
 // look for the object given an id, return null if object
 // is not found, in the future to speed this up a map could
 // be used.
-Pointer<DynamicObject> VirtualBattlefield::getObjectFromID( unsigned int ID)
+Ref<DynamicObject> VirtualBattlefield::getObjectFromID( unsigned int ID)
 {
 	CSP_LOG(CSP_APP, CSP_DEBUG, "Getting ObjectFromID, ID: " << ID );
 	ObjectList::iterator i;
@@ -184,12 +180,12 @@ Pointer<DynamicObject> VirtualBattlefield::getObjectFromID( unsigned int ID)
 			return *i;
 		}
 	}
-	return Pointer<DynamicObject>();
+	return Ref<DynamicObject>();
 }
 
 // look for an object given a name. return null if object is not found.
 // this needs to be improved with a map.
-Pointer<DynamicObject> VirtualBattlefield::getObjectFromName( string name )
+Ref<DynamicObject> VirtualBattlefield::getObjectFromName( string name )
 {
 	CSP_LOG(CSP_APP, CSP_DEBUG, "Getting ObjectFromName, name: " << name );
 	ObjectList::iterator i;
@@ -198,7 +194,7 @@ Pointer<DynamicObject> VirtualBattlefield::getObjectFromName( string name )
 			return *i;
 		}
 	}
-	return Pointer<DynamicObject>();
+	return Ref<DynamicObject>();
 }
 
 // removing object with ID. 
@@ -238,7 +234,7 @@ void VirtualBattlefield::removeAllObjects()
 	CSP_LOG(CSP_APP, CSP_INFO, "RemoveAllObjects()" );
 
 	while (!objectList.empty()) {
-		Pointer<DynamicObject> object = objectList.front();
+		Ref<DynamicObject> object = objectList.front();
 		objectList.pop_front();
 
 		std::ostringstream strg;
@@ -257,7 +253,7 @@ void VirtualBattlefield::dumpAllObjects()
 	ObjectList::const_iterator i = objectList.begin();
 	ObjectList::const_iterator iEnd = objectList.end();
 	for (; i != iEnd ; ++i) {
-		Pointer<DynamicObject> object = *i;
+		Ref<DynamicObject> object = *i;
 		object->dump();
 	}
 	std::cout << "dumpAllObjects() - Finished Dumping List of Game Objects" << std::endl;
@@ -296,7 +292,7 @@ void VirtualBattlefield::updateAllObjects(float dt) // before: unsigned int dt ?
 	ObjectList::const_iterator iEnd = objectList.end();
 
 	for (; i != iEnd ; ++i) {
-		Pointer<DynamicObject> object = *i;
+		Ref<DynamicObject> object = *i;
 	  	object->onUpdate(dt);
 	}
 	std::cout << "updateAllObjects - Leaving" << std::endl;
@@ -307,12 +303,12 @@ void VirtualBattlefield::initializeAllObjects()
 	std::cout << "ObjectManager::initializeAllObjects" << std::endl;
 	ObjectList::iterator i;
 	for (i = objectList.begin() ; i != objectList.end() ; ++i) {
-		Pointer<DynamicObject> object = *i;
+		Ref<DynamicObject> object = *i;
 	  	object->initialize();
 	}
 }
 
-simdata::Pointer<DynamicObject> VirtualBattlefield::getNextObject(simdata::Pointer<DynamicObject> object, int human, int local, int category)
+simdata::Ref<DynamicObject> VirtualBattlefield::getNextObject(simdata::Ref<DynamicObject> object, int human, int local, int category)
 {
 	ObjectList::iterator i = std::find(objectList.begin(), objectList.end(), object);
 	if (i == objectList.end()) {
@@ -390,6 +386,6 @@ void VirtualBattlefield::getObjectDistance(SimObject * fromObject, SimObject * t
 
 
 
-void VirtualBattlefield::setTerrain(simdata::Pointer<TerrainObject> terrain) {
+void VirtualBattlefield::setTerrain(simdata::Ref<TerrainObject> terrain) {
 	m_Terrain = terrain;
 }

@@ -23,6 +23,18 @@
  **/
 
 
+#include "VirtualScene.h"
+#include "VirtualBattlefield.h"
+#include "TerrainObject.h"
+#include "CSPSim.h"
+#include "Config.h"
+#include "LogStream.h"
+#include "Sky.h"
+
+#include <SimData/Types.h>
+#include <SimData/Math.h>
+#include <SimData/FileUtility.h>
+
 #include <osg/Fog>
 #include <osg/Node>
 #include <osg/Notify>
@@ -36,13 +48,6 @@
 
 #include "Terrain.h"
 
-#include "VirtualScene.h"
-#include "VirtualBattlefield.h"
-#include "TerrainObject.h"
-#include "CSPSim.h"
-#include "Config.h"
-#include "LogStream.h"
-#include "Sky.h"
 
 // SHADOW is an *extremely* experimental feature.  It is based on the
 // osgShadow demo, nad does (did) work to some extent, but only for a 
@@ -52,10 +57,6 @@
 #ifdef SHADOW
 #include "shadow.h"
 #endif
-
-#include <SimData/Types.h>
-#include <SimData/Math.h>
-#include <SimData/FileUtility.h>
 
 
 extern int g_ScreenWidth;
@@ -87,7 +88,7 @@ const float FOG_ALPHA = 1.0f;
 const float MAX_VIEW_DISTANCE = 10000.0f;
 
 
-using simdata::Pointer;
+using simdata::Ref;
 
 
 ///////////////////////////////////////////////////////////////////////
@@ -428,7 +429,7 @@ void VirtualScene::setLookAt(simdata::Vector3 & eyePos, simdata::Vector3 & lookP
 		osg::StateSet *pStateSet = m_ObjectGroup->getStateSet();
 		osg::Fog * pFogAttr = (osg::Fog*)pStateSet->getAttribute(osg::StateAttribute::FOG);
 		float angle = atan2(dir.y, dir.x) * 180.0 / 3.14;
-		osg::Vec4 color = m_Sky->getHorizonColor(angle);
+		osg::Vec4 color = m_Sky->getHorizonColor(angle) * 0.8;
 		pFogAttr->setColor(color);
 		pFogAttr->setStart(15000.0 + eyez + 15000.0*a);
 		pStateSet->setAttributeAndModes(pFogAttr ,osg::StateAttribute::ON);
@@ -457,7 +458,7 @@ void VirtualScene::setLookAt(simdata::Vector3 & eyePos, simdata::Vector3 & lookP
 	}
 
 
-	if (!m_Terrain.isNull())
+	if (m_Terrain.valid())
 		m_Terrain->setCameraPosition( eyePos.x, eyePos.y, eyePos.z );
 
 
@@ -505,14 +506,14 @@ void VirtualScene::removeEffectUpdater(osg::Node *updater) {
 	m_RootNode->removeChild(updater);
 }
 
-void VirtualScene::addObject(simdata::Pointer<SimObject> object) {
+void VirtualScene::addObject(simdata::Ref<SimObject> object) {
 	assert(object.valid());
 	assert(m_FreeObjectGroup.valid());
 	osg::Node *node = object->getOrCreateModelNode();
 	m_FreeObjectGroup->addChild(node);
 }
 
-void VirtualScene::removeObject(simdata::Pointer<SimObject> object) {
+void VirtualScene::removeObject(simdata::Ref<SimObject> object) {
 	assert(object.valid());
 	assert(m_FreeObjectGroup.valid());
 	osg::Node *node = object->getOrCreateModelNode();
@@ -627,7 +628,7 @@ int VirtualScene::getTerrainPolygonsRendered()
 }
 
 
-void VirtualScene::setTerrain(simdata::Pointer<TerrainObject> terrain)
+void VirtualScene::setTerrain(simdata::Ref<TerrainObject> terrain)
 {
 	if (!terrain) {
 		if (m_TerrainNode.valid()) {

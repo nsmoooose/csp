@@ -26,10 +26,9 @@
 #define NOMINMAX
 #endif
 
-#include <cmath>
-#include <iostream>
-
 #include "NumericalMethod.h"
+
+#include <cmath>
 
 bool NumericalMethod::failed() const {
 		return m_failed;

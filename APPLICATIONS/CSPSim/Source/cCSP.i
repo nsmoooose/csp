@@ -1,4 +1,4 @@
-%module CSP
+%module cCSP 
 %{
 #include <SimData/HashUtility.h>
 #include <SimData/Exception.h>

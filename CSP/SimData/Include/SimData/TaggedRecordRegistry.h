@@ -116,8 +116,8 @@ public:
 	
 	/** Get a list of all interfaces in the registry.
 	 */
-	std::vector<TaggedRecordFactoryBase *> getFactories() const {
-		std::vector<TaggedRecordFactoryBase *> list;
+	FactoryList getFactories() const {
+		FactoryList list;
 		FactoryIdMap::const_iterator it = _id_map.begin();
 		for (; it != _id_map.end(); ++it) {
 			list.push_back(it->second);

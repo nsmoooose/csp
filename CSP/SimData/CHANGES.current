@@ -9,6 +9,9 @@ Version 0.4.0 (in progress)
   * Fix parsing of options by the tagged record compiler to allow
     namespace prefixes on base classes.
 
+  * Fix ambiguous use of Ref for MSVC.  Use FactoryList typedef in
+    TaggedRecordRegistry.
+
 2004-07-21: onsight
   * Add missing include.
 

@@ -37,7 +37,8 @@ if __name__ == "__main__":
 		print "more information or ask for help on the forums at"
 		print "http://csp.sourcforge.net/forum"
 		sys.exit(1)
-	SimData.log().setLogLevels(SimData.LOG_ALL, SimData.LOG_ALERT)
+	SimData.log().setLogPriority(SimData.LOG_ALERT)
+	SimData.log().setLogCategory(SimData.LOG_ALL)
 	original_path = sys.path[:]
 	new_path = ""
 	try:
@@ -214,7 +215,8 @@ class Compiler:
 						self.usage("invalid option '%s'" % arg)
 					setWarningLevel(level)
 					if level > 0:
-						SimData.log().setLogLevels(SimData.LOG_ALL, SimData.LOG_WARNING)
+						SimData.log().setLogPriority(SimData.LOG_WARNING)
+						SimData.log().setLogCategory(SimData.LOG_ALL)
 				elif arg.startswith('--debug='):
 					try:
 						level = int(arg[8:])
@@ -222,9 +224,11 @@ class Compiler:
 						self.usage("invalid option '%s'" % arg)
 					setDebugLevel(level)
 					if level > 1:
-						SimData.log().setLogLevels(SimData.LOG_ALL, SimData.LOG_TRACE)
+						SimData.log().setLogPriority(SimData.LOG_TRACE)
+						SimData.log().setLogCategory(SimData.LOG_ALL)
 					elif level > 0:
-						SimData.log().setLogLevels(SimData.LOG_ALL, SimData.LOG_DEBUG)
+						SimData.log().setLogPriority(SimData.LOG_DEBUG)
+						SimData.log().setLogCategory(SimData.LOG_ALL)
 				elif arg == '--rebuild':
 					self.rebuild = 1
 				elif arg == '--force':

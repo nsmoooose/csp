@@ -1,6 +1,9 @@
 Version 0.4.0 (in progress)
 ===========================
 
+2005-01-03: onsight
+ * Fix logging priority/category calls in Compile.py.
+
 2004-12-23: delta
  * Latest version of pthreads for win changed the type of pthread_t.
    A small wrapper for Task:ThreadId is provided to garanty compatibility 
@@ -11,7 +14,7 @@ Version 0.4.0 (in progress)
 2004-12-12: delta
  * Fixed a few warnings in Random.h under msvc. Hopefully gcc 
    won't complain.
-   
+
   * Updated Config project file.
 
 2004-12-11: onsight

@@ -572,6 +572,34 @@ public:
 	 */
 	inline double altitude() const { return _alt; }
 
+	/** Get the latitude in degrees.
+	 */
+	inline double latitudeInDegrees() const { return toDegrees(_lat); }
+
+	/** Get the longitude in degrees.
+	 */
+	inline double longitudeInDegrees() const { return toDegrees(_lon); }
+
+	/** Set the latitude in degrees.
+	 */
+	inline void setLatitudeInDegrees(double latitude) { _lat = toRadians(latitude); }
+
+	/** Set the longitude in degrees.
+	 */
+	inline void setLongitudeInDegrees(double longitude) { _lon = toDegrees(longitude); }
+
+	/** Set the latitude in radians.
+	 */
+	inline void setLatitude(double latitude) { _lat = latitude; }
+
+	/** Set the longitude in radians.
+	 */
+	inline void setLongitude(double longitude) { _lon = longitude; }
+
+	/** Set the altitude in meters.
+	 */
+	inline void setAltitude(double altitude) { _alt = altitude; }
+
 	/** String representation.
 	 */
 	virtual std::string asString() const;
@@ -583,10 +611,10 @@ public:
 	/** Set the current position from XML character data.
 	 *
 	 *  LLA coordinate format (lat, lon, alt): @n
-	 * 	<tt> x.x x.x x.x </tt>
+	 *   <tt> x.x x.x x.x </tt>
 	 *
 	 *  LLA coordinate format 2 (lat, lon, alt): @n
-	 * 	<tt> x'x"x.x x'x"x.x x.x </tt>
+	 *   <tt> x'x"x.x x'x"x.x x.x </tt>
 	 */
 	void parseXML(const char *);
 
@@ -701,7 +729,7 @@ public:
 	/** Set the current position from XML character data.
 	 *
 	 *  UTM coordinate format (easting, northing, zone, alt): @n
-	 *  	<tt>x.x x.x zone x.x</tt> @n
+	 *    <tt>x.x x.x zone x.x</tt> @n
 	 *  where @c zone is an integer followed by a UTM latitude designator,
 	 *  such as @c 10T
 	 */

@@ -71,7 +71,7 @@ protected:
 public:
 	AnimationCallback(): m_DirtyCount(0) {}
 	virtual ~AnimationCallback() {}
-	inline void dirty() { m_DirtyCount++; }
+	inline void dirty() { ++m_DirtyCount; }
 	inline bool needsUpdate(osg::Node& node) {
 		UpdateCount *count = dynamic_cast<UpdateCount*>(node.getUserData());
 		assert(count);
@@ -81,13 +81,17 @@ public:
 		}
 		return false;
 	}
+	bool needsUpdate(osg::NodeCallback& node_callback);
 	inline std::string const &getChannelName() const { return m_ChannelName; }
 	inline void setChannelName(std::string const &name) { m_ChannelName = name; }
 	inline void bind(osg::Node &node) {
-		node.setCullCallback(this);
+		// XXX
+		//node.setCullCallback(this);
+		node.setUpdateCallback(this);
 		node.setUserData(new UpdateCount);
 		dirty();
 	}
+	void bind(osg::NodeCallback &node_callback);
 	virtual void bindChannel(simdata::Ref<const DataChannelBase>)=0;
 	virtual void setDefault(float x) {}
 };
@@ -118,6 +122,14 @@ protected:
 		callback->setChannelName(m_ChannelName);
 		return callback;
 	}
+
+	virtual AnimationCallback *newCallback(osg::NodeCallback* node_callback, AnimationCallback *callback) const {
+		assert(node_callback);
+		assert(callback);
+		callback->bind(*node_callback);
+		callback->setChannelName(m_ChannelName);
+		return callback;
+	}
 public:
 	BEGIN_SIMDATA_XML_VIRTUAL_INTERFACE(Animation)
 		SIMDATA_XML("model_id", Animation::m_ModelID, true)
@@ -130,6 +142,7 @@ public:
 	virtual ~Animation();
 
 	virtual AnimationCallback *newCallback(osg::Node *node) const =0;
+	virtual AnimationCallback *newCallback(osg::NodeCallback *nodeCallback) const =0;
 	inline std::string const &getChannelName() const { return m_ChannelName; }
 	inline simdata::Key const &getModelID() const { return m_ModelID; }
 };
@@ -149,25 +162,7 @@ class DrivenRotation: public Animation
 		virtual void bindChannel(simdata::Ref<const DataChannelBase> channel) {
 			m_Channel = channel;
 		}
-		virtual void operator()(osg::Node* node, osg::NodeVisitor* nv) {
-			if (m_Channel.valid()) {
-				float value = m_Channel->value();
-				if (value != m_Value) {
-					m_Value = value;
-					dirty();
-				}
-			}
-			if (needsUpdate(*node)) {
-				osg::MatrixTransform *t = dynamic_cast<osg::MatrixTransform*>(node);
-				assert(t);
-				if (t) {
-					osg::Matrix m = osg::Matrix::rotate(m_Value, m_Parameters->getAxis());
-					m.setTrans(t->getMatrix().getTrans());
-					t->setMatrix(m);
-				}
-			}
-			traverse(node, nv);
-		}
+		virtual void operator()(osg::Node* node, osg::NodeVisitor* nv);
 		virtual void setDefault(float x) {
 			m_Value = x;
 			dirty();
@@ -198,6 +193,13 @@ public:
 		return callback;
 	}
 
+	virtual AnimationCallback *newCallback(osg::NodeCallback *nodeCallback) const {
+		AnimationCallback *callback = Animation::newCallback(nodeCallback, new Callback(this));
+		//callback->update(m_Default);
+		callback->setDefault(m_Default);
+		return callback;
+	}
+
 	inline osg::Vec3 getAxis() const { return simdata::toOSG(m_Axis); }
 	inline float getLimit0() const { return m_Limit0; }
 	inline float getLimit1() const { return m_Limit1; }
@@ -212,6 +214,183 @@ protected:
 	float m_Offset;
 };
 
+/**
+ * A simple, driven translation animation in which the translation
+ * magnitude does not vary between updates.
+ */
+class DrivenMagnitudeTranslation: public Animation
+{
+	class Callback: public AnimationCallback {
+		simdata::Ref<DrivenMagnitudeTranslation const> m_Parameters;
+		DataChannel<double>::CRef m_Channel;
+		float m_Value;
+	public:
+		Callback(DrivenMagnitudeTranslation const *param): m_Parameters(param), m_Value(0.0) { assert(param); }
+		virtual void bindChannel(simdata::Ref<const DataChannelBase> channel) {
+			m_Channel = channel;
+		}
+		virtual void operator()(osg::Node* node, osg::NodeVisitor* nv);
+		virtual void setDefault(float x) {
+			m_Value = x;
+			dirty();
+		}
+	};
+
+public:
+
+	SIMDATA_OBJECT(DrivenMagnitudeTranslation, 0, 0);
+	
+	EXTEND_SIMDATA_XML_INTERFACE(DrivenMagnitudeTranslation, Animation)
+		SIMDATA_XML("limit_0", DrivenMagnitudeTranslation::m_Limit0, false)
+		SIMDATA_XML("limit_1", DrivenMagnitudeTranslation::m_Limit1, false)
+		SIMDATA_XML("gain", DrivenMagnitudeTranslation::m_Gain, false)
+		SIMDATA_XML("direction", DrivenMagnitudeTranslation::m_Direction, false)
+		SIMDATA_XML("offset", DrivenMagnitudeTranslation::m_Offset, false)
+	END_SIMDATA_XML_INTERFACE
+
+	DrivenMagnitudeTranslation();
+	virtual ~DrivenMagnitudeTranslation();
+
+	virtual void postCreate();
+
+	virtual AnimationCallback *newCallback(osg::Node *node) const {
+		AnimationCallback *callback = Animation::newCallback(node, new Callback(this));
+		//callback->update(m_Default);
+		callback->setDefault(m_Default);
+		return callback;
+	}
+
+	virtual AnimationCallback *newCallback(osg::NodeCallback *nodeCallback) const {
+		AnimationCallback *callback = Animation::newCallback(nodeCallback, new Callback(this));
+		//callback->update(m_Default);
+		callback->setDefault(m_Default);
+		return callback;
+	}
+
+	inline osg::Vec3 getDirection() const { return simdata::toOSG(m_Direction); }
+	inline float getLimit0() const { return m_Limit0; }
+	inline float getLimit1() const { return m_Limit1; }
+	inline float getGain() const { return m_Gain; }
+	inline const osg::Vec3& getOffset() const { return m_OSGOffset;}
+
+protected:
+	simdata::Vector3 m_Direction, m_Offset;
+	osg::Vec3 m_OSGOffset;
+	float m_Limit0;
+	float m_Limit1;
+	float m_Gain;
+};
+
+class DrivenVectorialTranslation: public Animation
+{
+	class Callback: public AnimationCallback {
+		simdata::Ref<DrivenVectorialTranslation const> m_Parameters;
+		DataChannel<simdata::Vector3>::CRef m_Channel;
+		float m_Value;
+	public:
+		Callback(DrivenVectorialTranslation const *param): m_Parameters(param), m_Value(0.0) { assert(param); }
+		virtual void bindChannel(simdata::Ref<const DataChannelBase> channel) {
+			m_Channel = channel;
+		}
+		virtual void operator()(osg::Node* node, osg::NodeVisitor* nv);
+		virtual void setDefault(float x) {
+			m_Value = x;
+			dirty();
+		}
+	};
+
+public:
+
+	SIMDATA_OBJECT(DrivenVectorialTranslation, 0, 0)
+	
+	EXTEND_SIMDATA_XML_INTERFACE(DrivenVectorialTranslation, Animation)
+		SIMDATA_XML("limit_0", DrivenVectorialTranslation::m_Limit0, false)
+		SIMDATA_XML("limit_1", DrivenVectorialTranslation::m_Limit1, false)
+		SIMDATA_XML("gain", DrivenVectorialTranslation::m_Gain, false)
+		SIMDATA_XML("direction", DrivenVectorialTranslation::m_Direction, false)
+		SIMDATA_XML("offset", DrivenVectorialTranslation::m_Offset, false)
+	END_SIMDATA_XML_INTERFACE
+
+	DrivenVectorialTranslation();
+	virtual ~DrivenVectorialTranslation();
+
+	virtual void postCreate();
+
+	virtual AnimationCallback *newCallback(osg::Node *node) const {
+		AnimationCallback *callback = Animation::newCallback(node, new Callback(this));
+		//callback->update(m_Default);
+		callback->setDefault(m_Default);
+		return callback;
+	}
+
+	virtual AnimationCallback *newCallback(osg::NodeCallback *nodeCallback) const {
+		AnimationCallback *callback = Animation::newCallback(nodeCallback, new Callback(this));
+		//callback->update(m_Default);
+		callback->setDefault(m_Default);
+		return callback;
+	}
+
+	inline osg::Vec3 getDirection() const { return simdata::toOSG(m_Direction); }
+	inline float getLimit0() const { return m_Limit0; }
+	inline float getLimit1() const { return m_Limit1; }
+	inline float getGain() const { return m_Gain; }
+	inline const osg::Vec3& getOffset() const { return m_OSGOffset;}
+
+protected:
+	simdata::Vector3 m_Direction, m_Offset;
+	osg::Vec3 m_OSGOffset;
+	float m_Limit0;
+	float m_Limit1;
+	float m_Gain;
+};
+
+/**
+ * A simple, driven switch animation in which the culling
+ * value does not vary between updates.
+ */
+class DrivenSwitch: public Animation
+{
+	class Callback: public AnimationCallback {
+		simdata::Ref<DrivenSwitch const> m_Parameters;
+		DataChannel<double>::CRef m_Channel;
+		double m_Value;
+	public:
+		Callback(DrivenSwitch const *param): m_Parameters(param), m_Value(1.0) { assert(param); }
+		virtual void bindChannel(simdata::Ref<const DataChannelBase> channel) {
+			m_Channel = channel;
+		}
+		virtual void operator()(osg::Node* node, osg::NodeVisitor* nv);
+		virtual void setDefault(double x) {
+			m_Value = x;
+			dirty();
+		}
+	};
+
+public:
+
+	SIMDATA_OBJECT(DrivenSwitch, 0, 0);
+	
+	EXTEND_SIMDATA_XML_INTERFACE(DrivenSwitch, Animation)
+	END_SIMDATA_XML_INTERFACE
+
+	DrivenSwitch();
+	virtual ~DrivenSwitch();
+
+	virtual void postCreate();
+
+	virtual AnimationCallback *newCallback(osg::Node *node) const {
+		AnimationCallback *callback = Animation::newCallback(node, new Callback(this));
+		callback->setDefault(1.0);
+		return callback;
+	}
+
+	virtual AnimationCallback *newCallback(osg::NodeCallback *nodeCallback) const {
+		AnimationCallback *callback = Animation::newCallback(nodeCallback, new Callback(this));
+		//callback->update(m_Default);
+		callback->setDefault(1.0);
+		return callback;
+	}
+};
 
 #endif // __ANIMATION_H__
 

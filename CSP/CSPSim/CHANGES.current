@@ -2,6 +2,50 @@
 ===========================
 
 2004-07-29: delta
+  * Added a filter_value member in ObjectModel's interface.
+
+  * Changed the linear look-up of animations in ModelProcessor
+    into a std::multimap look-up.
+
+  * Changed the CullCallback from AnimationCallback into an 
+    UpdateCallback to be threads safe w.r.t. the scenegraph.
+
+  * Extended animation toolkit such that a node can be bound to
+    2 different channels. This method might be extended to support
+    a finite number of channels. Only handled in DrivenRotation yet
+    but it should be straightforward to do the same for others
+    animations.
+    Added DrivenMagnitudeTranslation, DrivenVectorialTranslation
+    and DrivenSwitch Animation classes.
+    Change to SceneModel::bindAnimationChannels to handle others
+    channels than DataChannel<double> only.
+
+  * Removed old gear sprites from ObjectModel. Removed
+    ObjectModel::m_Switch and related code.
+
+  * Removed gear related code from AircraftObject.
+    First attempt to tackle gear animation: a few simple and incomplete
+    animations are provided. For this purpose, a GearAnimation
+    simdata::Object class has been added (currently in LandingGear.h)
+    using on bus' registration.
+
+  * Added an Enum to ObjectModel's interface for an osgFX; currently
+    only supports "None" and "SpecularHighlights" ;)
+
+  * XML/vehicles/aircraft/m2k/model.xml has been patched to reflect
+    a differential system on the Mirage 2000. The mirage 2000 model
+    itself has been grantly improved by Lologramme. Furthermore, more
+    animation hooks are now present. 
+    Finally, Sony Tuckson improved the textures' set.
+
+  * Reenabled smoke effects but that will need more work in the near 
+    future.
+  
+  * Added Images/Smoke.
+    
+==> All users: rebuild sim.dar
+  
+2004-07-28: delta
   * Added an IsoContour class in RandomBillboardModel 
     describing the "boundary" of the region. Currently 
     supports circle and rectangle.
@@ -10,8 +54,10 @@
     and Images/Logo containing images for LogoScreen.
     Patched LogoScreen.cpp, Data/theater/balkan/airbase.xml
     and Data/theater/balkan/forest.xml to use this stuff.
+    
+==> All users: rebuild sim.dar
 
-2004-07-28: delta
+2004-07-27: delta
   * Added #undef ERROR in Log.h & System.h.
   
   * Moved AeroDynamics.cpp, base.cpp, main.cpp and trees.cpp 

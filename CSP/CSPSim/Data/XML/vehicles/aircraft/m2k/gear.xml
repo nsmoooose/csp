@@ -1,67 +1,102 @@
-<?xml version="1.0" standalone="no"?>
+<?xml version="1.0"	standalone="no"?>
 
 <!-- 
-    Mirage 2000 gear
+	Mirage 2000	gear
 -->
 
 
-        
-<Object class="GearDynamics" name="gear_dynamics">
+		
+<Object	class="GearDynamics" name="gear_dynamics">
 	<List name="gear_set">
-        <!-- all of these values are complete guesses for testing only! -->
-                <Object class="LandingGear"> <!-- nosewheel -->
-                    <Vector name="max_position">0.0 4.20 -2.0</Vector>
-                    <Vector name="motion">0 0 1.0</Vector>
-                    <Real name="damage_limit">80000.0:10000.0</Real>
-                    <Float name="compression_limit">0.5</Float>
-                    <Float name="K">200000.0</Float>
-                    <Float name="beta">40000.0</Float>
+		<!-- all of	these values are complete guesses for testing only!	-->
+				<Object	class="LandingGear"> <!-- nosewheel	-->
+					<String	name="gear_name">FrontGear</String>
+					<Vector	name="max_position">0.0	4.423 -1.668</Vector>
+					<Vector	name="motion">0	0 1.0</Vector>
+					<Real name="damage_limit">80000.0:10000.0</Real>
+					<Float name="compression_limit">0.5</Float>
+					<Float name="K">200000.0</Float>
+					<Float name="beta">40000.0</Float>
 
-		    <!--Float name="brake_limit">10000.0</Float>
-                    <Float name="brake_slip">0.8</Float-->
-                    <Float name="steering_limit">45.0</Float>
-
-		    <Float name="tire_static_friction">0.8</Float>
-                    <Float name="tire_skid_friction">0.4</Float>
-                    <Float name="tire_K">600000.0</Float>
-                    <Float name="tire_beta">100000.0</Float>
-                    <Float name="rolling_friction">0.02</Float>
-                </Object>
-                <Object class="LandingGear"> <!-- left main -->
-                    <Vector name="max_position">-1.75 -0.7 -2.0</Vector>
-                    <Vector name="motion">0 0 1.0</Vector>
-                    <Real name="damage_limit">80000.0</Real>
-                    <Float name="compression_limit">0.5</Float>
-                    <Float name="K">300000.0</Float>
-                    <Float name="beta">60000.0</Float>
-                    <Float name="brake_limit">40000.0</Float>
-                    <Float name="brake_slip">0.8</Float>
-                    <Float name="brake_steering_linkage">-1.0</Float>
-                    <Float name="tire_static_friction">0.8</Float>
-                    <Float name="tire_skid_friction">0.4</Float>
-                    <Float name="tire_K">600000.0</Float>
-                    <Float name="tire_beta">100000.0</Float>
-                    <Float name="rolling_friction">0.02</Float>
-		    <Bool name="abs">true</Bool>
-                </Object>
-                <Object class="LandingGear"> <!-- right main -->
-                    <Vector name="max_position">1.75 -0.7 -2.0</Vector>
-                    <Vector name="motion">0 0 1.0</Vector>
-                    <Real name="damage_limit">80000.0:10000.0</Real>
-                    <Float name="compression_limit">0.5</Float>
-                    <Float name="K">300000.0</Float>
-                    <Float name="beta">60000.0</Float>
-                    <Float name="brake_limit">40000.0</Float>
-                    <Float name="brake_slip">0.8</Float>
-                    <Float name="brake_steering_linkage">1.0</Float>
-                    <Float name="tire_static_friction">0.8</Float>
-                    <Float name="tire_skid_friction">0.4</Float>
-                    <Float name="tire_K">600000.0</Float>
-                    <Float name="tire_beta">100000.0</Float>
-                    <Float name="rolling_friction">0.02</Float>
-		    <Bool name="abs">true</Bool>
-                </Object>
+					<!--Float name="brake_limit">10000.0</Float>
+					<Float name="brake_slip">0.8</Float-->
+					<Float name="steering_limit">45.0</Float>
+					
+					<Float name="tire_radius">0.2</Float>
+					<Float name="tire_static_friction">0.8</Float>
+					<Float name="tire_skid_friction">0.4</Float>
+					<Float name="tire_K">600000.0</Float>
+					<Float name="tire_beta">100000.0</Float>
+					<Float name="rolling_friction">0.02</Float>
+				</Object>
+				<Object	class="LandingGear"> <!-- left main	-->
+					<String	name="gear_name">LeftGear</String>
+					<Vector	name="max_position">-1.815 -0.496 -1.721</Vector>
+					<Vector	name="motion">0	0 1.0</Vector>
+					<Real name="damage_limit">80000.0</Real>
+					<Float name="compression_limit">0.5</Float>
+					<Float name="K">300000.0</Float>
+					<Float name="beta">60000.0</Float>
+					<Float name="brake_limit">40000.0</Float>
+					<Float name="brake_slip">0.8</Float>
+					<Float name="brake_steering_linkage">-1.0</Float>
+					<Float name="tire_radius">0.4</Float>
+					<Float name="tire_static_friction">0.8</Float>
+					<Float name="tire_skid_friction">0.4</Float>
+					<Float name="tire_K">600000.0</Float>
+					<Float name="tire_beta">100000.0</Float>
+					<Float name="rolling_friction">0.02</Float>
+					<Bool name="abs">true</Bool>
+				</Object>
+				<Object	class="LandingGear"> <!-- right	main -->
+					<String	name="gear_name">RightGear</String>
+					<Vector	name="max_position">1.815 -0.496 -1.721</Vector>
+					<Vector	name="motion">0	0 1.0</Vector>
+					<Real name="damage_limit">80000.0:10000.0</Real>
+					<Float name="compression_limit">0.5</Float>
+					<Float name="K">300000.0</Float>
+					<Float name="beta">60000.0</Float>
+					<Float name="brake_limit">40000.0</Float>
+					<Float name="brake_slip">0.8</Float>
+					<Float name="brake_steering_linkage">1.0</Float>
+					<Float name="tire_radius">0.4</Float>
+					<Float name="tire_static_friction">0.8</Float>
+					<Float name="tire_skid_friction">0.4</Float>
+					<Float name="tire_K">600000.0</Float>
+					<Float name="tire_beta">100000.0</Float>
+					<Float name="rolling_friction">0.02</Float>
+					<Bool name="abs">true</Bool>
+				</Object>
+	</List>
+	<List name="gear_set_animation">
+		<Object	class="GearAnimation">
+			<String	name="displacement_channel">LandingGear.FrontGearDisplacement</String>
+			<Vector	name="displacement_axis">0 0 1</Vector>
+			<String	name="absorber02_channel">LandingGear.FrontGearAbsorber02</String>
+			<String	name="absorber03_channel">LandingGear.FrontGearAbsorber03</String>
+			<Float name="absorber02_length">0.298</Float>
+			<Float name="absorber03_length">0.298</Float>
+			<Float name="offset">0.03</Float>
+		</Object>
+		<Object	class="GearAnimation">
+			<String	name="displacement_channel">LandingGear.LeftGearDisplacement</String>
+			<Vector	name="displacement_axis">-0.134513 0 0.990912</Vector>
+			<String	name="absorber02_channel">LandingGear.LeftGearAbsorber02</String>
+			<String	name="absorber03_channel">LandingGear.LeftGearAbsorber03</String>
+			<Float name="absorber02_length">0.315</Float>
+			<Float name="absorber03_length">0.315</Float>
+			<Float name="offset">0.09</Float>
+		</Object>
+		<Object	class="GearAnimation">
+			<String	name="displacement_channel">LandingGear.RightGearDisplacement</String>
+			<Vector	name="displacement_axis">0.127615 -0.00447771 0.991814</Vector>
+			<String	name="absorber02_channel">LandingGear.RightGearAbsorber02</String>
+			<String	name="absorber03_channel">LandingGear.RightGearAbsorber03</String>
+			<Float name="absorber02_length">0.315</Float>
+			<Float name="absorber03_length">0.315</Float>
+			<Float name="offset">0.09</Float>
+		</Object>
 	</List>
 </Object>
-    
-    
+	
+	

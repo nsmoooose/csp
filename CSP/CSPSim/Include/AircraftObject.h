@@ -104,9 +104,6 @@ protected:
 	DataChannel<double>::Ref b_Roll;
 	DataChannel<double>::Ref b_Pitch;
 	DataChannel<double>::Ref b_Heading;
-
-	DataChannel<std::vector<simdata::Vector3> >::CRef b_GearPosition;
-	DataChannel<bool>::CRef b_GearExtended;
 };
 
 	

@@ -21,8 +21,9 @@
  * @file ObjectModel.cpp
  *
  **/
-
+#include <algorithm>
 #include <vector>
+#include <utility>
 
 #include "ObjectModel.h"
 #include "Animation.h"
@@ -42,12 +43,12 @@
 #include <osg/Texture>
 #include <osg/Geode>
 #include <osg/Depth>
-#include <osg/ShapeDrawable>
 #include <osgText/Text>
 #include <osg/PolygonOffset>
 
 
 #include <SimData/FileUtility.h>
+#include <SimData/HashUtility.h>
 #include <SimData/osg.h>
 
 /*
@@ -72,10 +73,20 @@ SIMDATA_REGISTER_INTERFACE(ObjectModel)
  */
 class AnimationBinding: public osg::Referenced {
 	simdata::Ref<Animation const> m_Animation;
+	simdata::Ref<Animation const> m_NestedAnimation;
 public:
 	AnimationBinding(Animation const* animation): m_Animation(animation) {}
 	inline AnimationCallback *bind(osg::Node *node) const {
 		return m_Animation->newCallback(node);
+	}
+	void setNestedAnimation(Animation const* animation) {
+		m_NestedAnimation = animation;
+	}
+	bool hasNestedAnimation() const {
+		return m_NestedAnimation.valid();
+	}
+	AnimationCallback* bindNested(osg::Node* node) const {
+		return m_NestedAnimation->newCallback(node->getUpdateCallback());
 	}
 };
 
@@ -90,29 +101,50 @@ public:
  */
 class ModelProcessor: public osg::NodeVisitor {
 	osg::ref_ptr<osg::Node> m_Root;
-	simdata::Link<Animation>::vector const *m_Animations;
+	typedef std::multimap<simdata::Key,simdata::Link<Animation> > AnimationsMap;
+	//typedef HASH_MULTIMAP<simdata::Key,simdata::Link<Animation> > AnimationsMap_;
+	AnimationsMap m_AnimationsMap;
+	void fillMap(simdata::Link<Animation>::vector const *animations) {
+		simdata::Link<Animation>::vector::const_iterator i = animations->begin();
+		simdata::Link<Animation>::vector::const_iterator i_end = animations->end();
+		for (; i != i_end; ++i)
+			m_AnimationsMap.insert(std::make_pair((*i)->getModelID(),*i));
+	}
+	struct KeyToCompare: std::unary_function<simdata::Key,bool> {
+		const simdata::Key m_KeyToCompare;
+	public:
+		KeyToCompare(const simdata::Key& key): m_KeyToCompare(key) {}
+		bool operator()(const std::pair<simdata::Key,simdata::Link<Animation> >& e) const {
+			return m_KeyToCompare == e.first;
+		}
+	};
 public:
-	ModelProcessor(): NodeVisitor(TRAVERSE_ALL_CHILDREN), m_Animations(0) { }
+	ModelProcessor(): NodeVisitor(TRAVERSE_ALL_CHILDREN) { }
 	void setAnimations(simdata::Link<Animation>::vector const *animations) {
-		m_Animations = animations;
+		fillMap(animations);
 	}
 	virtual void apply(osg::Transform &node) {
-		if (!m_Animations) return;
+		if (m_AnimationsMap.empty()) return;
 		std::string name = node.getName();
 		CSP_LOG(APP, DEBUG, "MODEL TRANSFORM: " << name);
 		if (name.substr(0,6) == "ANIM: ") {
 			simdata::Key id = name.substr(6);
-			simdata::Link<Animation>::vector::const_iterator i = m_Animations->begin();
 			CSP_LOG(APP, DEBUG, "SEARCHING FOR " << name.substr(6) << " (" << id.asString() << ")");
-			for (; i != m_Animations->end(); ++i) {
-				CSP_LOG(APP, DEBUG, "COMPARING TO " << (*i)->getModelID().asString());
-				if ((*i)->getModelID() == id) {
-					node.setUserData(new AnimationBinding(i->get()));
-					CSP_LOG(APP, DEBUG, "FOUND");
-					break;
+			AnimationsMap::iterator i = m_AnimationsMap.find(id);
+			AnimationsMap::const_iterator i_end = m_AnimationsMap.end();
+			if (i != i_end) {
+				CSP_LOG(APP, DEBUG, "FOUND"); 
+				node.setDataVariance(osg::Object::DYNAMIC);
+				AnimationBinding* animation_binding = new AnimationBinding(i->second.get());
+				node.setUserData(animation_binding);
+				i = std::find_if(++i, m_AnimationsMap.end(), KeyToCompare(id));
+				if (i != i_end) {
+					CSP_LOG(APP, DEBUG, "FOUND 2nd");
+					animation_binding->setNestedAnimation(i->second.get());
 				}
 			}
 		}
+		traverse(node);
 	}
 };
 
@@ -125,13 +157,13 @@ class TrilinearFilterVisitor: public osg::NodeVisitor
 {
 	float m_MaxAnisotropy;
 public:
-	TrilinearFilterVisitor(float MaxAnisotropy=16.0): 
+	TrilinearFilterVisitor(float MaxAnisotropy=16.0f): 
 		osg::NodeVisitor(osg::NodeVisitor::TRAVERSE_ALL_CHILDREN),
 		m_MaxAnisotropy(MaxAnisotropy) {
 	}
 
 	virtual void apply(osg::Node& node) { 
-	    	osg::StateSet* ss = node.getStateSet();
+	    osg::StateSet* ss = node.getStateSet();
 		filter(ss);
 		traverse(node);
 	}
@@ -167,6 +199,7 @@ public:
 
 std::string g_ModelPath = "";
 
+const simdata::Enumeration ObjectModel::EffectItems("None SpecularHighlights");
 
 ObjectModel::ObjectModel(): simdata::Object() {
 	m_Axis0 = simdata::Vector3::XAXIS;
@@ -176,10 +209,12 @@ ObjectModel::ObjectModel(): simdata::Object() {
 	m_Scale = 1.0;
 	m_Smooth = true;
 	m_Filter = true;
+	m_FilterValue = 16.0f;
 	m_ElevationCorrection = true;
 	m_PolygonOffset = 0.0;
 	m_CullFace = -1;
 	m_Lighting = true;
+	m_Effect = "None";
 }
 
 ObjectModel::~ObjectModel() {
@@ -234,6 +269,22 @@ osg::Geometry *makeDiamond(simdata::Vector3 const &pos, float s) {
     return geom;
 }
 
+//#include <osgFX/BumpMapping>
+osg::Node* addSpecularHighlights(osg::Node* model_node) {
+	// add an osgFX effect
+	osgFX::SpecularHighlights *effect = new osgFX::SpecularHighlights;	
+	effect->setTextureUnit(1);
+	effect->addChild(model_node);
+
+	/*osgFX::BumpMapping* effect = new osgFX::BumpMapping;
+	effect->setUpDemo();
+	effect->setNormalMapTextureUnit(2);
+	effect->addChild(model_node);
+	effect->prepareChildren();*/
+	
+	return effect;
+}	
+
 void ObjectModel::loadModel() {
 	std::string source = m_ModelPath.getSource();
 
@@ -255,7 +306,7 @@ void ObjectModel::loadModel() {
 	if (m_PolygonOffset != 0.0) {
 		osg::StateSet *ss = m_Model->getOrCreateStateSet();
 		osg::PolygonOffset *po = new osg::PolygonOffset;
-		po->setFactor(-1.0);
+		po->setFactor(-1);
 		po->setUnits(m_PolygonOffset);
 		ss->setAttributeAndModes(po, osg::StateAttribute::ON);
 	}
@@ -279,13 +330,9 @@ void ObjectModel::loadModel() {
 	}
 
 	if (m_Filter) {
-		// FIXME: level should come from global graphics settings
-		TrilinearFilterVisitor tfv(16.0);
+		TrilinearFilterVisitor tfv(m_FilterValue);
 		m_Model->accept(tfv);
 	}
-
-	osgUtil::Optimizer opt;
-	opt.optimize(m_Model.get());
 
 	// add animation hooks to user data field of animation
 	// transform nodes
@@ -296,6 +343,7 @@ void ObjectModel::loadModel() {
 	m_Model->accept(processor);
 	CSP_LOG(APP, INFO, "PROCESSING MODEL DONE");
 
+	CSP_LOG(APP, INFO, "LoadModel: XML adjustements");
 	assert(m_Axis0.length() > 0.0);
 	m_Axis0.normalize();
 	// orthogonalize
@@ -344,6 +392,11 @@ void ObjectModel::loadModel() {
 	//osg::StateSet * stateSet = m_rpNode->getStateSet();
 	//stateSet->setGlobalDefaults();
 	//m_rpNode->setStateSet(stateSet);
+
+	// add an osgFX::effect
+	if (m_Effect == "SpecularHighlights") {
+		m_Model = addSpecularHighlights(m_Model.get());
+	};
      
 	m_DebugMarkers = new osg::Switch;
 	// XXX should reuse a single static stateset?
@@ -351,10 +404,8 @@ void ObjectModel::loadModel() {
 	m_DebugMarkers->getOrCreateStateSet()->setAttributeAndModes(new osg::CullFace, osg::StateAttribute::ON);
 
 	// create visible markers for each contact point
+	CSP_LOG(APP, DEBUG, "LoadModel: add contact markers");
 	addContactMarkers();
-
-	// create landing gear wheels
-	addGearSprites();
 
 	osg::ref_ptr<osg::State> state = new osg::State;
 	osgUtil::DisplayListVisitor dlv(osgUtil::DisplayListVisitor::COMPILE_DISPLAY_LISTS);
@@ -362,6 +413,22 @@ void ObjectModel::loadModel() {
 	dlv.setNodeMaskOverride(0xffffffff);
 	m_Model->accept(dlv);
 	m_DebugMarkers->accept(dlv);
+
+	// XXX: there is a really weird bug on vs with the optimizer:
+	// 1) it rarely appears in the release built (never when called from this exact line)
+	// 2) it appears in the debug built systematically on the second times the 
+	//    program is run but only if a few seconds separate the 2 runs. Wait 
+	//	  for 5 minutes or so (or run another process) and the bug will not occur 
+	//    (thread related?).
+	// 3) I haven't noticed the bug in the debug built when the optimizer is run in this 
+	//    line (like for the release built) but called it 10 lines above and it segfaults.
+	// 4) The bug only occurs when CSP is run from command line or clicking CSPSim.py; 
+	//    it never occurs when running csp in debug mode from the ide.
+	// 5) I'm unable to trace it :)
+	CSP_LOG(APP, DEBUG, "LoadModel: Optimizer run");
+	osgUtil::Optimizer opt;
+	opt.optimize(m_Model.get());
+	CSP_LOG(APP, DEBUG, "LoadModel: Optimizer done");
 }
 
 void ObjectModel::addContactMarkers() {
@@ -379,164 +446,6 @@ void ObjectModel::addContactMarkers() {
 	m_DebugMarkers->addChild(m_ContactMarkers.get());
 }
 
-// temporary hack to deal with gear objects
-void ObjectModel::makeFrontGear(simdata::Vector3 const &point) {
-	//FIXME: harcoded  gravity center height
-	double const offset = -0.75;
-	double const radius1 = 0.22;
-	double const e1 = 0.11;
-
-	osg::Vec3 p = simdata::toOSG(point);
-
-	osg::Quat q;
-	q.makeRotate(osg::DegreesToRadians(90.0),osg::Vec3(0.0,1.0,0.0)); 
-	osg::Cylinder *cyl1 = new osg::Cylinder(osg::Vec3(e1,0.0,p.z()+radius1), radius1, e1);
-	cyl1->setRotation(q);
-	osg::ShapeDrawable *wheel_front1 = new osg::ShapeDrawable(cyl1);
-	wheel_front1->setColor(osg::Vec4(0.2,0.2,0.2,1.0));
-
-	osg::Cylinder *cyl2 = new osg::Cylinder(osg::Vec3(-e1,0.0,p.z()+radius1), radius1, e1);
-	cyl2->setRotation(q);
-	osg::ShapeDrawable *wheel_front2 = new osg::ShapeDrawable(cyl2);
-	wheel_front2->setColor(osg::Vec4(0.2,0.2,0.2,1.0));
-
-	osg::Geode *geode = new osg::Geode;
-	geode->addDrawable(wheel_front1);
-	geode->addDrawable(wheel_front2);
-
-
-	double l = (- p.z() + offset - radius1) / 2.0;
-	osg::ShapeDrawable *tube_mobile = 
-		new osg::ShapeDrawable(new osg::Cylinder(osg::Vec3(0.0,0.0,offset - l), e1/4.0, 2.0 * l));
-	tube_mobile->setColor(osg::Vec4(0.4,0.4,0.4,1.0));
-	geode->addDrawable(tube_mobile);
-
-	osg::PositionAttitudeTransform *mobile_group = new osg::PositionAttitudeTransform; 
-	mobile_group->addChild(geode);
-
-	osg::ShapeDrawable *tube_static = 
-		new osg::ShapeDrawable(new osg::Cylinder(osg::Vec3(p.x(),p.y(),offset), e1/2.0, l));
-	tube_static->setColor(osg::Vec4(0.4,0.4,0.4,1.0));
-	osg::Geode *geode2 = new osg::Geode;
-	geode2->addDrawable(tube_static);
-	osg::Group *static_group = new osg::Group;
-	static_group->addChild(geode2);
-
-	m_GearSprites->addChild(mobile_group);
-	m_GearSprites->addChild(static_group);
-}
-
-void ObjectModel::makeLeftGear(simdata::Vector3 const &point) {
-	//FIXME: harcoded  gravity center height
-	double const offset = -0.67;
-	double const radius = 0.44;
-	double const e = 0.22;
-
-	osg::Vec3 p = simdata::toOSG(point);
-
-	osg::Quat q;
-	q.makeRotate(osg::DegreesToRadians(90.0),osg::Vec3(0.0,1.0,0.0)); 
-	osg::Cylinder *cyl = new osg::Cylinder(osg::Vec3(-0.75 * e,0.0,p.z()+radius), radius, e);
-	cyl->setRotation(q);
-	osg::ShapeDrawable *wheel = new osg::ShapeDrawable(cyl);
-	wheel->setColor(osg::Vec4(0.2,0.2,0.2,1.0));
-
-	osg::Geode *geode = new osg::Geode;
-	geode->addDrawable(wheel);
-
-	double l1 = (- p.z() + offset - radius) / 2.0;
-	double l = l1 - l1 / 4.0;
-	osg::ShapeDrawable *tube_mobile = 
-		new osg::ShapeDrawable(new osg::Cylinder(osg::Vec3(0.0,0.0,offset - l1 /4.0 - l), e/4.0, 2.0 * l));
-	tube_mobile->setColor(osg::Vec4(0.4,0.4,0.4,1.0));
-	geode->addDrawable(tube_mobile);
-
-	osg::PositionAttitudeTransform *mobile_group = new osg::PositionAttitudeTransform; 
-	mobile_group->addChild(geode);
-
-	osg::ShapeDrawable *tube_static = 
-		new osg::ShapeDrawable(new osg::Cylinder(osg::Vec3(p.x(),p.y(),offset), e/2.0, l1/2.0));
-	tube_static->setColor(osg::Vec4(0.4,0.4,0.4,1.0));
-	osg::Geode *geode2 = new osg::Geode;
-	geode2->addDrawable(tube_static);
-	osg::Group *static_group = new osg::Group;
-	static_group->addChild(geode2);
-
-	m_GearSprites->addChild(mobile_group);
-	m_GearSprites->addChild(static_group);
-}
-
-void ObjectModel::makeRightGear(simdata::Vector3 const &point) {
-	//FIXME: harcoded  gravity center height
-	double const offset = -0.67;
-	double const radius = 0.44;
-	double const e = 0.22;
-
-	osg::Vec3 p = simdata::toOSG(point);
-
-	osg::Quat q;
-	q.makeRotate(osg::DegreesToRadians(90.0),osg::Vec3(0.0,1.0,0.0)); 
-	osg::Cylinder *cyl = new osg::Cylinder(osg::Vec3(0.75 * e,0.0,p.z()+radius), radius, e);
-	cyl->setRotation(q);
-	osg::ShapeDrawable *wheel = new osg::ShapeDrawable(cyl);
-	wheel->setColor(osg::Vec4(0.2,0.2,0.2,1.0));
-
-	osg::Geode *geode = new osg::Geode;
-	geode->addDrawable(wheel);
-
-	double l1 = (- p.z() + offset - radius) / 2.0;
-	double l = l1 - l1 / 4.0;
-	osg::ShapeDrawable *tube_mobile = 
-		new osg::ShapeDrawable(new osg::Cylinder(osg::Vec3(0.0,0.0,offset - l1 /4.0 - l), e/4.0, 2.0 * l));
-	tube_mobile->setColor(osg::Vec4(0.4,0.4,0.4,1.0));
-	geode->addDrawable(tube_mobile);
-
-	osg::PositionAttitudeTransform *mobile_group = new osg::PositionAttitudeTransform; 
-	mobile_group->addChild(geode);
-
-	osg::ShapeDrawable *tube_static = 
-		new osg::ShapeDrawable(new osg::Cylinder(osg::Vec3(p.x(),p.y(),offset), e/2.0, l1/2.0));
-	tube_static->setColor(osg::Vec4(0.4,0.4,0.4,1.0));
-	osg::Geode *geode2 = new osg::Geode;
-	geode2->addDrawable(tube_static);
-	osg::Group *static_group = new osg::Group;
-	static_group->addChild(geode2);
-
-	m_GearSprites->addChild(mobile_group);
-	m_GearSprites->addChild(static_group);
-}
-
-void ObjectModel::addGearSprites() {
-	size_t n = m_LandingGear.size();
-	if (n>0) {
-		m_GearSprites = new osg::Group;
-		m_GearSprites->setName("GearSprites");
-		makeFrontGear(m_LandingGear[0]);
-		makeLeftGear(m_LandingGear[1]);
-		makeRightGear(m_LandingGear[2]);
-		m_DebugMarkers->addChild(m_GearSprites.get());
-		simdata::Vector3 move[3] = {simdata::Vector3::ZERO,simdata::Vector3::ZERO,simdata::Vector3::ZERO};
-		updateGearSprites(std::vector<simdata::Vector3>(move,move+3));
-	}
-}
-
-//FIXME: to be moved in AircraftModel?
-void ObjectModel::updateGearSprites(std::vector<simdata::Vector3> const &move) {
-	if (m_GearSprites.valid()) {
-		size_t m =  m_GearSprites->getNumChildren();
-		size_t i = 0;
-		for (size_t j = 0; j < m; ++j) {
-			osg::Node *node = m_GearSprites->getChild(j);
-			osg::PositionAttitudeTransform *pos = dynamic_cast<osg::PositionAttitudeTransform*>(node); 
-			if (pos && i < move.size()) {
-				osg::Vec3 p(m_LandingGear[i].x(),m_LandingGear[i].y(),move[i].z());
-				pos->setPosition(p);
-				++i;
-			}
-		}
-	}
-}
-
 void ObjectModel::showContactMarkers(bool on) {
 	if (on) 
 		m_ContactMarkers->setNodeMask(0xffffffff);
@@ -544,19 +453,9 @@ void ObjectModel::showContactMarkers(bool on) {
 		m_ContactMarkers->setNodeMask(0x0);
 }
 
-//FIXME: to be moved in AircraftModel?
-void ObjectModel::showGearSprites(bool on) {
-	if (on)
-		m_GearSprites->setNodeMask(0xffffffff);
-	else
-		m_GearSprites->setNodeMask(0x0);
-}
-
 bool ObjectModel::getMarkersVisible() const {
 	return (m_ContactMarkers->getNodeMask() != 0x0);
 }
-
-
 
 /**
  * Copy class for cloning model prototypes for use
@@ -579,6 +478,8 @@ public:
 			if (binding) {
 				osg::Node *new_node = dynamic_cast<osg::Node*>(node->clone(*this));
 				m_AnimationCallbacks.push_back(binding->bind(new_node));
+				if (binding->hasNestedAnimation())
+					m_AnimationCallbacks.push_back(binding->bindNested(new_node));
 				CSP_LOG(APP, INFO, "ADDED CALLBACK");
 				return new_node;
 			}
@@ -586,23 +487,13 @@ public:
 		if (dynamic_cast<osg::Group const *>(node)) {
 			// clone groups
 			return dynamic_cast<osg::Node*>(node->clone(*this));
-		} else {
+		}	else
 			// copy other leaf nodes by reference
 			return const_cast<osg::Node*>(node);
-		}
 	}
 private:
 	mutable AnimationCallbackVector m_AnimationCallbacks;
 };
-
-
-osg::Node *addEffect(osg::Node *model_node) {
-	// add an osgFX effect
-	osgFX::SpecularHighlights *effect = new osgFX::SpecularHighlights;	
-	effect->setTextureUnit(1);
-	effect->addChild(model_node);
-	return effect;
-}	
 
 SceneModel::SceneModel(simdata::Ref<ObjectModel> const & model) {
 	m_Model = model;
@@ -616,8 +507,6 @@ SceneModel::SceneModel(simdata::Ref<ObjectModel> const & model) {
 	// create a working copy
 	ModelCopy model_copy;
 	model_node = model_copy(model_node);
-	// XXX add effect or not
-	model_node = addEffect(model_node);
 
 	CSP_LOG(APP, DEBUG, "MODEL COPIED");
 
@@ -651,24 +540,17 @@ SceneModel::SceneModel(simdata::Ref<ObjectModel> const & model) {
 	m_modelview_abs->setMatrix(osg::Matrix::identity());
 	m_modelview_abs->addChild(label);
 
-	// XXX the switch node is probably not necessary in most cases and should be removed
-	// to switch between various representations of the same object (depending on views for example)
-	m_Switch = new osg::Switch;
-	m_Switch->addChild(model_node);
-	m_Switch->setAllChildrenOn();
 	m_Transform = new osg::PositionAttitudeTransform;
-	m_Transform->addChild(m_Switch.get());
+	m_Transform->addChild(model_node);
 	m_Transform->addChild(m_Model->getDebugMarkers().get());
 	m_Transform->addChild(m_modelview_abs);
 	m_Smoke = false;
-	//show();
 }
 
 SceneModel::~SceneModel() {
 	osg::Node *model_node = m_Model->getModel().get();
 	assert(model_node);
-	m_Switch->removeChild(model_node);
-	m_Transform->removeChild(m_Switch.get()); 
+	m_Transform->removeChild(model_node);
 }
 
 void SceneModel::setLabel(std::string const &label) {
@@ -692,13 +574,23 @@ bool SceneModel::addSmoke() {
 			for (std::vector<simdata::Vector3>::iterator i = m_SmokeEmitterLocation.begin(); i != iEnd; ++i) {
 				fx::SmokeTrail *trail = new fx::SmokeTrail();
 				trail->setEnabled(false);
-				trail->setTexture("Images/white-smoke-hilite.rgb");
-				trail->setColorRange(osg::Vec4(0.9, 0.9, 1.0, 1.0), osg::Vec4(1.0, 1.0, 1.0, 0.5));
-				trail->setSizeRange(0.2, 4.0);
+				trail->setTexture("Smoke/white-smoke-hilite.rgb");
+
+				// short blue trail slowly evasing
+				trail->setColorRange(osg::Vec4(0.9, 0.9, 1.0, 0.2), osg::Vec4(0.97, 0.97, 0.99, 0.08));
+				trail->setSizeRange(0.7, 1.5);
+				trail->setLifeTime(0.2);
+
+				// short red trail
+				//trail->setColorRange(osg::Vec4(0.9, 0.1, 0.1, 0.3), osg::Vec4(0.99, 0.97, 0.97, 0.1));
+				//trail->setSizeRange(0.8, 0.6);
+				//trail->setLifeTime(0.1);
+
 				trail->setLight(false);
-				trail->setLifeTime(5.5);
-				trail->setExpansion(1.2);
-				trail->addOperator(new fx::SmokeThinner);
+				trail->setExpansion(1.0);
+
+				// Author: please, document this SmokeThinner operator.
+				//trail->addOperator(new fx::SmokeThinner);
 
 				trail->setOffset(*i);
 
@@ -736,14 +628,28 @@ void SceneModel::enableSmoke()
 }
 
 void SceneModel::bindAnimationChannels(Bus::Ref bus) {
-	int index, n = m_AnimationCallbacks.size();
-	for (index = 0; index < n; ++index) {
-		DataChannel<double>::CRef channel;
-		if (bus.valid()) {
-			std::string name = m_AnimationCallbacks[index]->getChannelName();
-			channel = bus->getChannel(name, false);
+	// XXX: not sure how to handle this situation.
+	if (bus.valid()) {
+		int index, n = m_AnimationCallbacks.size();
+		for (index = 0; index < n; ++index) {
+			std::string name = m_AnimationCallbacks[index]->getChannelName(); 
+			DataChannel<double>::CRef channel = bus->getChannel(name, false);
+			if (channel.valid())
+				m_AnimationCallbacks[index]->bindChannel(channel);
+			else {
+				DataChannel<simdata::Vector3>::CRef channel = bus->getChannel(name, false);
+				if (channel.valid()) 
+					m_AnimationCallbacks[index]->bindChannel(channel);
+				else {
+					DataChannel<bool>::CRef channel = bus->getChannel(name, false);
+					if (channel.valid()) 
+						m_AnimationCallbacks[index]->bindChannel(channel);
+					else {
+						CSP_LOG(OBJECT, ERROR, "SceneModel::bindAnimationChannels: animation channel's type not supported");
+					}
+				}
+			}
 		}
-		m_AnimationCallbacks[index]->bindChannel(channel);
 	}
 }
 

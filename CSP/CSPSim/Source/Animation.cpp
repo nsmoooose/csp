@@ -32,7 +32,26 @@
 
 SIMDATA_REGISTER_INTERFACE(Animation)
 SIMDATA_REGISTER_INTERFACE(DrivenRotation)
+SIMDATA_REGISTER_INTERFACE(DrivenMagnitudeTranslation)
+SIMDATA_REGISTER_INTERFACE(DrivenVectorialTranslation)
+SIMDATA_REGISTER_INTERFACE(DrivenSwitch)
 
+void AnimationCallback::bind(osg::NodeCallback &node_callback) {
+	node_callback.setNestedCallback(this);
+	node_callback.setUserData(new UpdateCount);
+	dirty();
+}
+
+bool AnimationCallback::needsUpdate(osg::NodeCallback& node_callback) {
+	UpdateCount *count = dynamic_cast<UpdateCount*>(node_callback.getUserData());
+	if (count) {
+		if (count->getCount() < m_DirtyCount) {
+			count->updateCount(m_DirtyCount);
+			return true;
+		}
+	}
+	return false;
+}
 
 Animation::Animation():
 	m_LOD(0),
@@ -59,5 +78,135 @@ DrivenRotation::~DrivenRotation()
 
 void DrivenRotation::postCreate() 
 {
+}
+
+void DrivenRotation::Callback::operator()(osg::Node* node, osg::NodeVisitor* nv) {
+	if (m_Channel.valid()) {
+		float value = m_Channel->value();
+		if (value != m_Value) {
+			m_Value = value;
+			dirty();
+		}
+	}
+	if (needsUpdate(*node)) {
+		osg::MatrixTransform* t = dynamic_cast<osg::MatrixTransform*>(node);
+		assert(t);
+		if (t) {
+			osg::Matrix m = osg::Matrix::rotate(m_Parameters->getGain()*m_Value, m_Parameters->getAxis());
+			m.setTrans(t->getMatrix().getTrans());
+			t->setMatrix(m);
+		}
+	}
+	else if (needsUpdate(*node->getUpdateCallback())) {
+			osg::MatrixTransform* t = dynamic_cast<osg::MatrixTransform*>(node);
+			if (t) {
+				osg::Matrix m = osg::Matrix::rotate(m_Parameters->getGain()*m_Value, m_Parameters->getAxis());
+				osg::Vec3 translation = t->getMatrix().getTrans();
+				m.preMult(t->getMatrix());
+				m.setTrans(translation);
+				t->setMatrix(m);
+			}
+		}
+	traverse(node, nv);
+}
+
+DrivenMagnitudeTranslation::DrivenMagnitudeTranslation(): 
+	m_Direction(simdata::Vector3::ZERO),
+	m_Offset(simdata::Vector3::ZERO),
+	m_Limit0(-1), 
+	m_Limit1(1),
+	m_Gain(1.0f) {
+}
+
+DrivenMagnitudeTranslation::~DrivenMagnitudeTranslation() {
+}
+
+void DrivenMagnitudeTranslation::postCreate() {
+	m_OSGOffset = simdata::toOSG(m_Offset);
+}
+
+void DrivenMagnitudeTranslation::Callback::operator()(osg::Node* node, osg::NodeVisitor* nv) {
+	if (m_Channel.valid()) {
+		float value = m_Channel->value();
+		if (value != m_Value) {
+			m_Value = value;
+			dirty();
+		}
+	}
+	if (needsUpdate(*node)) {
+		osg::MatrixTransform *t = dynamic_cast<osg::MatrixTransform*>(node);
+		assert(t);
+		if (t) {
+			osg::Vec3 translation = m_Parameters->getDirection()*m_Value + m_Parameters->getOffset();
+			osg::Matrix m = t->getMatrix();
+			m.setTrans(translation);
+			t->setMatrix(m);
+		}
+	}
+	traverse(node, nv);
+}
+
+DrivenVectorialTranslation::DrivenVectorialTranslation(): 
+	m_Direction(simdata::Vector3::ZERO),
+	m_Offset(simdata::Vector3::ZERO),
+	m_Limit0(-1), 
+	m_Limit1(1),
+	m_Gain(1.0f) {
+}
+
+DrivenVectorialTranslation::~DrivenVectorialTranslation() {
+}
+
+void DrivenVectorialTranslation::postCreate() {
+	m_OSGOffset = simdata::toOSG(m_Offset);
+	m_Direction.normalized();
+}
+
+void DrivenVectorialTranslation::Callback::operator()(osg::Node* node, osg::NodeVisitor* nv) {
+	if (m_Channel.valid()) {
+		double value = m_Parameters->getDirection() * simdata::toOSG(m_Channel->value());
+		if (value != m_Value) {
+			m_Value = value;
+			dirty();
+		}
+	}
+	if (needsUpdate(*node)) {
+		osg::MatrixTransform *t = dynamic_cast<osg::MatrixTransform*>(node);
+		assert(t);
+		if (t) {
+			osg::Vec3 translation = m_Parameters->getDirection()*m_Value + m_Parameters->getOffset();
+			osg::Matrix m = t->getMatrix();
+			m.setTrans(translation);
+			t->setMatrix(m);
+		}
+	}
+	traverse(node, nv);
+}
+
+DrivenSwitch::DrivenSwitch() {
+}
+
+DrivenSwitch::~DrivenSwitch() {
+}
+
+void DrivenSwitch::postCreate() {
+}
+
+void DrivenSwitch::Callback::operator()(osg::Node* node, osg::NodeVisitor* nv) {
+	if (m_Channel.valid()) {
+		double value = m_Channel->value();
+		if (value != m_Value) {
+			m_Value = value;
+			dirty();
+		}
+	}
+	if (needsUpdate(*node)) {
+		assert(node);
+		if (m_Value != 0.0)
+			node->setNodeMask(0x3);
+		else
+			node->setNodeMask(0x1);
+	}
+	traverse(node, nv);
 }
 

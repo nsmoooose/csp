@@ -126,8 +126,6 @@ public:
 	virtual void destroySceneModel();
 	osg::Node* getOrCreateModelNode();
 	osg::Node* getModelNode();
-	virtual void showModel() { if (m_SceneModel.valid()) m_SceneModel->show(); }
-	virtual void hideModel() { if (m_SceneModel.valid()) m_SceneModel->hide(); }
 
 	virtual void getInfo(std::vector<std::string> &info) const;
 
@@ -231,7 +229,6 @@ private:
 	simdata::Matrix3 m_ReferenceInertia;
 	simdata::Path m_HumanModel;
 	simdata::Path m_AgentModel;
-
 };
 
 

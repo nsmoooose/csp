@@ -36,6 +36,7 @@
 #include <SimData/Object.h>
 #include <SimData/Vector3.h>
 #include <SimData/Matrix3.h>
+#include <SimData/Enum.h>
 #include <SimData/Quat.h>
 #include <SimData/External.h>
 #include <SimData/InterfaceRegistry.h>
@@ -63,8 +64,13 @@ namespace osgText {
  * TODO: add LOD support here.
  *
  */
-class ObjectModel: public simdata::Object
-{
+class ObjectModel: public simdata::Object {
+	static const simdata::Enumeration EffectItems;
+
+	osg::ref_ptr<osg::MatrixTransform> m_Transform;
+	osg::ref_ptr<osg::Node> m_Model;
+	osg::ref_ptr<osg::Switch> m_DebugMarkers;
+	osg::ref_ptr<osg::Group> m_ContactMarkers;
 public:
 	typedef std::vector<simdata::Vector3> ContactList;
 
@@ -79,12 +85,13 @@ public:
 		SIMDATA_XML("scale", ObjectModel::m_Scale, false)
 		SIMDATA_XML("smooth", ObjectModel::m_Smooth, false)
 		SIMDATA_XML("filter", ObjectModel::m_Filter, false)
+		SIMDATA_XML("filter_value", ObjectModel::m_FilterValue, false)
+		SIMDATA_XML("effect", ObjectModel::m_Effect, false)
 		SIMDATA_XML("contacts", ObjectModel::m_Contacts, false)
 		SIMDATA_XML("elevation_correction", ObjectModel::m_ElevationCorrection, false)
 		SIMDATA_XML("polygon_offset", ObjectModel::m_PolygonOffset, false)
 		SIMDATA_XML("cull_face", ObjectModel::m_CullFace, false)
 		SIMDATA_XML("lighting", ObjectModel::m_Lighting, false)
-		SIMDATA_XML("landing_gear", ObjectModel::m_LandingGear, false)
 		SIMDATA_XML("animations", ObjectModel::m_Animations, false)
 	END_SIMDATA_XML_INTERFACE
 
@@ -93,7 +100,6 @@ public:
 
 	osg::ref_ptr<osg::Node> getModel() { return m_Model.get(); }
 	osg::ref_ptr<osg::Node> getDebugMarkers() { return m_DebugMarkers.get(); }
-	osg::ref_ptr<osg::Node> getGearSprites() { return m_GearSprites.get(); }
 	std::string getModelPath() const { return m_ModelPath.getSource(); }
 
 	const simdata::Vector3 &getAxis0() const { return m_Axis0; }
@@ -106,8 +112,6 @@ public:
 	bool getElevationCorrection() const { return m_ElevationCorrection; }
 
 	void showContactMarkers(bool on);
-	void showGearSprites(bool on);
-	void updateGearSprites(std::vector<simdata::Vector3> const &landing_gear);
 
 	bool getMarkersVisible() const;
 
@@ -118,34 +122,28 @@ protected:
 	simdata::Vector3 m_Offset;
 	simdata::Vector3 m_ViewPoint;
 	double m_Scale;
+
 	bool m_Smooth;
 	bool m_Filter;
+	float m_FilterValue;
+	simdata::Enum<EffectItems> m_Effect;
+
 	bool m_ElevationCorrection;
 	float m_PolygonOffset;
 	int m_CullFace;
 	bool m_Lighting;
+
 	ContactList m_Contacts;
-	std::vector<simdata::Vector3> m_LandingGear;
+
 	simdata::Link<Animation>::vector m_Animations;
 
 	virtual void postCreate();
 	virtual void loadModel();
 	void addContactMarkers();
-	void addGearSprites();
-	void makeFrontGear(simdata::Vector3 const &point);
-	void makeLeftGear(simdata::Vector3 const &point);
-	void makeRightGear(simdata::Vector3 const &point);
 
 	double m_BoundingSphereRadius;
 
 	enum { CONTACT_MARKERS };
-
-private:
-	osg::ref_ptr<osg::Group> m_GearSprites;
-	osg::ref_ptr<osg::MatrixTransform> m_Transform;
-	osg::ref_ptr<osg::Node> m_Model;
-	osg::ref_ptr<osg::Switch> m_DebugMarkers;
-	osg::ref_ptr<osg::Group> m_ContactMarkers;
 };
 
 
@@ -160,7 +158,6 @@ private:
 class SceneModel: public simdata::Referenced {
 private:
 	osg::ref_ptr<osg::PositionAttitudeTransform> m_Transform;
-	osg::ref_ptr<osg::Switch> m_Switch;
 	osg::ref_ptr<osgText::Text> m_Label;
 	simdata::Ref<ObjectModel> m_Model;
 	bool m_Smoke;
@@ -178,16 +175,6 @@ public:
 	void setPositionAttitude(simdata::Vector3 const &position, simdata::Quat const &attitude) {
 		m_Transform->setAttitude(simdata::toOSG(attitude));
 		m_Transform->setPosition(simdata::toOSG(position));
-	}
-
-	// XXX 
-	// these two methods are temporary, and will probably change when
-	// animation code becomes available.
-	void show() { 
-		m_Switch->setAllChildrenOn();
-	}
-	void hide() {
-		m_Switch->setAllChildrenOff();
 	}
 
 	void bindAnimationChannels(Bus::Ref);

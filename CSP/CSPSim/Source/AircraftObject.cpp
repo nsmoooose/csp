@@ -25,11 +25,10 @@
 #include <SimData/Math.h>
 
 #include "AircraftObject.h"
+#include "Engine.h"
 //#include "AircraftPhysicsModel.h"
 #include "FlightModel.h"
-#include "Animation.h"
 #include "Collision.h"
-#include "Profile.h"
 #include "Log.h"
 
 #include <sstream>
@@ -79,8 +78,6 @@ void AircraftObject::registerChannels(Bus::Ref bus) {
 
 void AircraftObject::bindChannels(Bus::Ref bus) {
 	DynamicObject::bindChannels(bus);
-	b_GearPosition = bus->getChannel("Animation.GearPosition", false);
-	b_GearExtended = bus->getChannel("Animation.GearExtended", false);
 }
 
 void AircraftObject::dump() {
@@ -98,14 +95,12 @@ double AircraftObject::onUpdate(double dt)
 void AircraftObject::onRender() {
 	DynamicObject::onRender();
 	if (m_SceneModel.valid()) {
-		// XXX TEMPORARY HACKS
-		if (b_GearPosition.valid()) {
-			m_Model->updateGearSprites(b_GearPosition->value());
+		// XXX TEMPORARY HACK
+		if (getSystemsModel().valid()) {
+			simdata::Ref<EngineDynamics> ed = getSystemsModel()->getSystem("EngineDynamics",false);
+			if (ed.valid())
+				m_SceneModel->setSmokeEmitterLocation(ed->getSmokeEmitterLocation());
 		}
-		if (b_GearExtended.valid()) {
-			m_Model->showGearSprites(b_GearExtended->value());
-		}
-		//m_SceneModel->setSmokeEmitterLocation(m_EngineDynamics->getSmokeEmitterLocation());
 	}
 }
 

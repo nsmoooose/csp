@@ -30,6 +30,7 @@
  *  Extension/retract modelling + 3D hooks
  *  Rough terrain damage
  *  Generic damage modelling, gear collapse,  etc.
+ *	wheels' inerty?
  *
  */
 
@@ -42,6 +43,7 @@
 #include <iostream>
 #include <iomanip>
 #include <sstream>
+#include <stdexcept>
 
 using bus::Kinetics;
 
@@ -52,9 +54,11 @@ using simdata::Vector3;
 
 SIMDATA_REGISTER_INTERFACE(LandingGear)
 SIMDATA_REGISTER_INTERFACE(GearDynamics)
+SIMDATA_REGISTER_INTERFACE(GearAnimation)
 
 
 LandingGear::LandingGear() {
+	m_Name = "Nonamed gear";
 	m_Chained = false;
 	m_K = 0.0;
 	m_Beta = 0.0;
@@ -526,7 +530,7 @@ void LandingGear::updateWheel(double dt,
 
 void GearDynamics::doComplexPhysics(double x) {
 	m_Force = m_Moment = Vector3::ZERO;
-	if (!m_Extended) return;
+	if (!isGearExtended()) return;
 	Vector3 airflow_body = m_WindVelocityBody - *m_VelocityBody;
 	double airspeed = airflow_body.length();
 	Vector3 dynamic_pressure = 0.5 * (b_Density->value()) * airflow_body * airspeed;
@@ -550,21 +554,8 @@ void GearDynamics::doComplexPhysics(double x) {
 	}
 }
 
-//FIXME: just for some testing purpose
-void GearDynamics::setStatus(bool on) {
-	size_t n = m_Gear.size();
-	for (size_t i = 0; i < n; ++i) {
-		m_Gear[i]->setExtended(on);
-	}
-	m_Extended = on;
-	// XXX TEMPORARY HACK
-	b_GearExtended->value() = on;
-}
-
 GearDynamics::GearDynamics():
-	m_Extended(true),
-	m_Height(0.0)
-{
+	m_Height(0.0) {
 }
 
 DEFINE_INPUT_INTERFACE(GearDynamics);
@@ -572,9 +563,22 @@ DEFINE_INPUT_INTERFACE(GearDynamics);
 void GearDynamics::registerChannels(Bus *bus) {
 	assert(bus!=0);
 	b_WOW = bus->registerLocalDataChannel<bool>("State.WOW", false);
-	// XXX TEMPORARY HACKS
-	b_GearPosition = bus->registerLocalDataChannel("Animation.GearPosition", std::vector<simdata::Vector3>());
-	b_GearExtended = bus->registerLocalDataChannel<bool>("Animation.GearExtended", true);
+	b_GearExtension = bus->registerLocalDataChannel<double>("LandingGear.GearExtended", 1.0);
+
+	size_t n(getGearNumber());
+	b_GearDisplacement.resize(n);
+	b_TireRotation.resize(n);
+	for(size_t i = 0; i<n; ++i) {
+		std::string gear_name = "LandingGear." + m_Gear[i]->getName();
+		CSP_LOG(OBJECT, INFO, "GearDynamics: gear name = " << m_Gear[i]->getName());
+		b_GearDisplacement[i] = bus->registerLocalDataChannel<Vector3>(gear_name + "Displacement",Vector3::ZERO);
+		b_TireRotation[i] = bus->registerLocalDataChannel<double>(gear_name+"TireRotation",0.0);
+		//b_GearDisplacement.push_back(bus->registerLocalDataChannel<Vector3>(gear_name + "Displacement",Vector3::ZERO));
+		//b_TireRotation.push_back(bus->registerLocalDataChannel<double>(gear_name+"TireRotation",0.0));
+	}
+	
+	m_GearSetAnimation.size();
+	std::for_each(m_GearSetAnimation.begin(),m_GearSetAnimation.end(),GearAnimation::RegisterChannels(bus));
 }
 
 void GearDynamics::importChannels(Bus *bus) {
@@ -587,26 +591,40 @@ void GearDynamics::importChannels(Bus *bus) {
 	b_NearGround = bus->getChannel(Kinetics::NearGround);
 	b_GroundN = bus->getChannel(Kinetics::GroundN);
 	b_GroundZ = bus->getChannel(Kinetics::GroundZ);
+	
+	std::for_each(m_GearSetAnimation.begin(),m_GearSetAnimation.end(),GearAnimation::BindChannels(bus));
 }
 	
 void GearDynamics::computeForceAndMoment(double x) {
 	doComplexPhysics(x);
 }
 
+void GearDynamics::setGearExtension(double on) {
+	size_t n = m_Gear.size();
+	bool extended = on != 0.0;
+	for (size_t i = 0; i < n; ++i) {
+		m_Gear[i]->setExtended(extended);
+	}
+	b_GearExtension->value() = on;
+}
+
 void GearDynamics::GearUp() {
-	setStatus(false);
+	setGearExtension(0.0);
 }
 	
 void GearDynamics::GearDown() {
-	setStatus(true);
+	setGearExtension(1.0);
 }
 
 void GearDynamics::GearToggle() {
-	setStatus(!m_Extended);
+	if (isGearExtended())
+		setGearExtension(0.0);
+	else
+		setGearExtension(1.0);
 }
 	
-bool GearDynamics::getExtended() const {
-	return m_Extended;
+bool GearDynamics::isGearExtended() const {
+	return b_GearExtension->value() != 0.0;
 }
 
 bool GearDynamics::getWOW() const {
@@ -628,8 +646,8 @@ void GearDynamics::setSteering(double x, double link_brakes) {
 	}
 }
 
-LandingGear const *GearDynamics::getGear(unsigned i) {
-	assert(i <= m_Gear.size());
+LandingGear const *GearDynamics::getGear(size_t i) {
+	assert(i < m_Gear.size());
 	return m_Gear[i].get();
 }
 
@@ -637,23 +655,19 @@ size_t GearDynamics::getGearNumber() const {
 	return m_Gear.size();
 }
 
-std::vector<Vector3> GearDynamics::getGearPosition() const {
-	std::vector<Vector3> gear_pos;
-	size_t n =  m_Gear.size();
-	for (size_t i = 0; i < n; ++i) {
-		LandingGear const *gear = m_Gear[i].get();
-		Vector3 move = gear->getPosition();
-		// FIXME motion should be projected along gear axis
-		move.z() -= gear->getMaxPosition().z();
-		gear_pos.push_back(move);
-	}
-	return gear_pos;
+Vector3 GearDynamics::getGearDisplacement(size_t i) const {
+	if (i >= m_Gear.size()) 
+		throw std::out_of_range("invalid index in GearDynamics::getGearDisplacement");
+	const LandingGear& gear = *m_Gear[i];
+	Vector3 move = gear.getPosition();
+	move -= gear.getMaxPosition();
+	return move;
 }
 
 void GearDynamics::preSimulationStep(double dt) {
 	BaseDynamics::preSimulationStep(dt);
 	b_WOW->value() = false;
-	if (!m_Extended) return;
+	if (!isGearExtended()) return;
 	if (!b_NearGround->value()) return;
 	m_WindVelocityBody = m_Attitude->invrotate(b_WindVelocity->value());
 	m_GroundNormalBody = m_Attitude->invrotate(b_GroundN->value());
@@ -669,8 +683,8 @@ void GearDynamics::preSimulationStep(double dt) {
 void GearDynamics::postSimulationStep(double dt) {
 	BaseDynamics::postSimulationStep(dt);
 	size_t n =  m_Gear.size();
-	if (!m_Extended || !b_NearGround->value()) {
-		double airspeed = m_Extended ? m_VelocityBody->length() : 0.0;  // approx
+	if (!isGearExtended() || !b_NearGround->value()) {
+		double airspeed = b_GearExtension->value() ? m_VelocityBody->length() : 0.0;  // approx
 		for (size_t i = 0; i < n; ++i) { m_Gear[i]->residualUpdate(dt, airspeed); }
 		return;
 	}
@@ -681,7 +695,16 @@ void GearDynamics::postSimulationStep(double dt) {
 		m_Gear[i]->postSimulationStep(dt, *m_PositionLocal, vBody, *m_Attitude, m_Height, m_GroundNormalBody);
 		if (m_Gear[i]->getWOW()) b_WOW->value() = true;
 	}
-	b_GearPosition->value() = getGearPosition();
+}
+
+double GearDynamics::onUpdate(double dt) {
+	size_t n =  m_Gear.size();
+	for (size_t i = 0; i < n; ++i) {
+		b_GearDisplacement[i]->value() = getGearDisplacement(i);
+		b_TireRotation[i]->value() = getGear(i)->getTireRotation();
+	}
+	std::for_each(m_GearSetAnimation.begin(),m_GearSetAnimation.end(),GearAnimation::OnUpdate(dt));
+	return 0.016;
 }
 
 void GearDynamics::getInfo(InfoList &info) const {
@@ -690,11 +713,10 @@ void GearDynamics::getInfo(InfoList &info) const {
 	line.precision(0);
 	simdata::Ref<LandingGear> main = m_Gear[1];
 	line << "Gear: ";
-	if (!getExtended()) line << "UP"; else line << "DOWN";
+	if (!isGearExtended()) line << "UP"; else line << "DOWN";
 	line << " T_brakes " << std::setw(3) << main->getBrakeTemperature() << "K";
 	if (getWOW()) line << " WOW";
 	if (main->getSkidding()) line << " SKID";
 	info.push_back(line.str());
 }
-
 

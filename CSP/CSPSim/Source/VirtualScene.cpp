@@ -347,30 +347,40 @@ void VirtualScene::buildSky()
 int VirtualScene::drawScene()
 {
 	CSP_LOG(APP, DEBUG, "VirtualScene::drawScene()...");
-    
-	osgUtil::CullVisitor * CullVisitor;
 
 	m_FarView->setProjectionMatrixAsPerspective(m_ViewAngle, m_Aspect, m_NearPlane, m_ViewDistance);
-	CullVisitor = m_FarView->getCullVisitor();
+
+	osg::NodeVisitor* UpdateVisitor = m_FarView->getUpdateVisitor();
+	UpdateVisitor->setTraversalMask(0x1);
+	m_FarView->setUpdateVisitor(UpdateVisitor);
+	m_FarView->update();
+
+	osgUtil::CullVisitor* CullVisitor = m_FarView->getCullVisitor();
 	CullVisitor->setComputeNearFarMode(osgUtil::CullVisitor::COMPUTE_NEAR_FAR_USING_BOUNDING_VOLUMES);
 	CullVisitor->setCullingMode(osgUtil::CullVisitor::ENABLE_ALL_CULLING);
+	m_FarView->setCullMask(0x2);
 	m_FarView->setCullVisitor(CullVisitor);
-	m_FarView->update();
 	m_FarView->cull();
+
 	m_FarView->draw();
 
 	if (m_NearObjectGroup->getNumChildren() > 0) {
 		m_NearView->setProjectionMatrixAsPerspective(m_ViewAngle, m_Aspect, 0.01f, 100.0);
+		
+		osg::NodeVisitor* UpdateVisitor = m_NearView->getUpdateVisitor();
+		UpdateVisitor->setTraversalMask(0x1);
+		m_NearView->setUpdateVisitor(UpdateVisitor);
+		m_NearView->update();
+
 		CullVisitor = m_NearView->getCullVisitor();
 		CullVisitor->setComputeNearFarMode(osgUtil::CullVisitor::COMPUTE_NEAR_FAR_USING_BOUNDING_VOLUMES);
 		CullVisitor->setCullingMode(osgUtil::CullVisitor::ENABLE_ALL_CULLING);
+		m_NearView->setCullMask(0x2);
 		m_NearView->setCullVisitor(CullVisitor);
-		m_NearView->update();
 		m_NearView->cull();
+
 		m_NearView->draw();
 	}
-
-	//glFinish();
 
 	if (m_Terrain.valid()) m_Terrain->endDraw();
 

@@ -22,12 +22,15 @@
 #ifndef _OSGMULTITEXTUREDETAILS_H_
 #define _OSGMULTITEXTUREDETAILS_H_
 
+#include <iostream>
+#include <string>
+
 #include <osg/Texture2D>
 #include <osg/Image>
 #include <osg/State>
 #include <osg/StateSet>
 #include <osgDB/ReadFile>
-#include <string>
+
 
 #ifndef GL_MAX_TEXTURE_UNITS_ARB	
 #define GL_MAX_TEXTURE_UNITS_ARB          0x84E2

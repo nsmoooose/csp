@@ -56,6 +56,7 @@ double g_LatticeYDist = 64000.0;
 // it seems that this class looks more and more like an osg(SDL) viewer!
 osg::Timer _timer;
 osg::Timer_t _initialTick, _lastFrameTick, _frameTick;
+double _timeStep, _frameTime, _timeLag = 0.0;
 
 osg::Timer_t clockTick()
 {
@@ -68,21 +69,39 @@ double clockSeconds()
 }
 
 // update time from the current frame update and the previous one.
+// the timestep for updates is restricted to 1 second max.  greater
+// delays will accumulate in _timeLag to be made up in subsequent 
+// frames.  this prevents long delays from destabilizing the update
+// computations.
 osg::Timer_t updateFrameTick()
 {
     _lastFrameTick = _frameTick;
     _frameTick = _timer.tick();
+    _frameTime = _timer.delta_s(_lastFrameTick,_frameTick);
+    _timeStep = _frameTime + _timeLag;
+    if (_timeStep > 1.0) {
+    	_timeLag = _timeStep - 1.0;
+	_timeStep = 1.0;
+    } 
+    if (_timeStep < 0.01) {
+    	// todo: microsleep
+    	_timeStep = 0.01;
+    	_timeLag = 0.0;
+    } else {
+    	_timeLag = 0.0;
+    }
     return _frameTick;
 }
 
 double frameSeconds() 
 { 
-	return _timer.delta_s(_lastFrameTick,_frameTick); 
+	return _frameTime; //_timer.delta_s(_lastFrameTick,_frameTick); 
 }
 
 double frameRate() 
 { 
-	return 1.0/frameSeconds(); 
+	if (_frameTime < 0.005) return 200.0;
+	return 1.0/_frameTime; //frameSeconds(); 
 }
 
 CSPFlightSim::CSPFlightSim()
@@ -192,13 +211,19 @@ void CSPFlightSim::Run()
 {	
     CSP_LOG(CSP_APP, CSP_DEBUG, "CSPFlightSim::Run..." );
     m_bFreezeSim = false;
+    
+    // reset to frame time so we don't jump in one frame through
+    // all the time it took to initialize.  just a hack for now.
+	_initialTick = _timer.tick();
+	_frameTick = _initialTick;
+	_lastFrameTick = _initialTick;
 	
     try
     {
 		while(!m_bFinished)
 		{
 			updateFrameTick();
-			float dt = frameSeconds();
+			float dt = _timeStep; //frameSeconds();
 
 			g_pSimTime->updateSimTime(dt);    
 			float simtime = g_pSimTime->getSimTime();
@@ -528,7 +553,7 @@ void CSPFlightSim::ShowPaused()
 void CSPFlightSim::ShowPlaneInfo()
 {
 	int width = m_SDLScreen->w;
-	char buffer[128];
+	char buffer[256];
 	StandardVector3 direction = g_pPlayerObject->getDirection();
 	StandardVector3 upVector = g_pPlayerObject->getUpDirection();
 
@@ -550,8 +575,8 @@ void CSPFlightSim::ShowPlaneInfo()
 
 void CSPFlightSim::ShowStats(float fps)
 {
-    char framerate[30];
-    char buffer[128];
+    char framerate[64];
+    char buffer[256];
     static float maxFps = 0.0, minFps = 500.0;
 
 	maxFps = max(maxFps, fps);

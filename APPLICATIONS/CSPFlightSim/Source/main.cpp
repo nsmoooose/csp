@@ -11,7 +11,7 @@ int main(int argc, char *argv[])
 {
 
 	// config file found!
-	Config.ReadConfigFile("CSPFlightSim.ini");
+	Config.ReadConfigFile("../Data/CSPFlightSim.ini");
 
     int level = Config.GetInteger("LoggingLevel");
 

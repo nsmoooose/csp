@@ -34,7 +34,8 @@ int EchoServerNode::run()
   int count = 0;
   
   int level = g_Config.getInt("Debug", "LoggingLevel", 0, true);
-  csplog().setLogLevels(CSP_ALL, level);
+  csplog().setLogCategory(CSP_ALL);
+  csplog().setLogPriority(level);
   std::string logfile = g_Config.getString("Debug", "LogFile", "ServerNode.log", true);
   csplog().setOutput(logfile);
   

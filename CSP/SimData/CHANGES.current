@@ -11,6 +11,8 @@ Version 0.4.0 (in progress)
   * Minor tweaks to unsigned Reader/Writer classes to used fixed
     size integers.
 
+  * Added tagged record compiler and associated header.
+
 2004-16-12: wolverine
   * added a MemoryWriter class to write out a SimData object to
     a binary memory buffer.  Added a MemoryReader class. Added

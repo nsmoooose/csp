@@ -4,11 +4,10 @@
 #include <osg/Notify>
 #include <osg/PolygonMode>
 
-#include <osgDB/FileUtils>
-
 #include <osgUtil/CullVisitor>
 
 #include "LogStream.h"
+#include "Trees.h"
 #include "VirtualBattlefield.h"
 
 extern int g_ScreenWidth;
@@ -19,8 +18,6 @@ extern double g_LatticeYDist;
 
 extern osg::Node *makeSky( void );
 extern osg::Node *makeBase( void );
-extern osg::Node *makeTreesPatch( float xcen, float ycen, float spacing, float width, 
-					 float height, VirtualBattlefield * pBattlefield);
 
 const float SKY_RED = 0.1f;
 const float SKY_GREEN = 0.1f;
@@ -122,22 +119,6 @@ int VirtualBattlefield::buildScene()
     int ScreenWidth = g_ScreenWidth;
     int ScreenHeight = g_ScreenHeight;
 
-	// must be updated to match your file path configuration
-#ifdef _WIN32
-	std::string sep = ";";
-#else
-	std::string sep = ":";
-#endif
-
-	osgDB::setDataFilePathList("../Data" + sep + "../Data/Images" + sep + "../Data/Models" + sep + "../Data/Fonts");
-
-	// we don't need this on Linux since libs are usually
-	// installed in /usr/local/lib/osgPlugins or /usr/lib/osgPlugins.
-	// OSG can find itself the plugins.
-#ifdef _WIN32
-	osgDB::setLibraryFilePathList("../DemoPackage");
-#endif
-
 	/////////////////////////////////////
     //
 	//(Un)comment to (enable) disable debug info from osg
@@ -146,18 +127,17 @@ int VirtualBattlefield::buildScene()
 	//
     /////////////////////////////////////
 
-    m_rpRootNode = osgNew osg::Group;
+    m_rpRootNode = new osg::Group;
 	m_rpRootNode->setName( "RootSceneGroup" );
 
-	m_rpObjectRootNode = osgNew osg::Group;
+	m_rpObjectRootNode = new osg::Group;
 	m_rpObjectRootNode->setName("ObjectRootSceneGraph.");
 
-	osg::ClearNode* earthSky = osgNew osg::ClearNode;
-    	earthSky->setRequiresClear(false); // we've got base and sky to do it.
-    	//earthSky->setRequiresClear(true); // we've got base and sky to do it.
+	osg::ClearNode* earthSky = new osg::ClearNode;
+    earthSky->setRequiresClear(false); // we've got base and sky to do it.
 	
     // use a transform to make the sky and base around with the eye point.
-    osg::Transform* transform = osgNew osg::Transform;
+    osg::Transform* transform = new osg::Transform ;
 	
     // transform's value isn't knowm until in the cull traversal so its bounding
     // volume can't be determined, therefore culling will be invalid,
@@ -168,7 +148,7 @@ int VirtualBattlefield::buildScene()
     
     // set the compute transform callback to do all the work of
     // determining the transform according to the current eye point.
-    transform->setComputeTransformCallback(osgNew MoveEarthySkyWithEyePointCallback);
+    transform->setComputeTransformCallback(new MoveEarthySkyWithEyePointCallback);
     
     // add the sky and base layer.
     transform->addChild(makeSky());  // bin number -2 so drawn first.
@@ -180,7 +160,7 @@ int VirtualBattlefield::buildScene()
     // add to earth sky to the scene.
 	m_rpRootNode->addChild(earthSky);
 
-    m_pView = osgNew osgUtil::SceneView();
+    m_pView = new osgUtil::SceneView();
     m_pView->setDefaults();
     m_pView->setViewport(0,0,ScreenWidth,ScreenHeight);
 
@@ -194,8 +174,8 @@ int VirtualBattlefield::buildScene()
 	m_pView->getCullVisitor()->setImpostorsActive(true);
 
 	// Fog properties: start and end distances are read from Start.csp
-    osg::StateSet * pFogState = osgNew osg::StateSet;
-    osg::Fog* fog = osgNew osg::Fog;
+    osg::StateSet * pFogState = new osg::StateSet;
+    osg::Fog* fog = new osg::Fog;
     fog->setMode(osg::Fog::LINEAR);
     fog->setDensity(0.3f);
 
@@ -208,13 +188,13 @@ int VirtualBattlefield::buildScene()
     pFogState->setAttributeAndModes(fog ,osg::StateAttribute::ON);
 	
 	// light properties
-	osg::Light * pLight = osgNew osg::Light;
+	osg::Light * pLight = new osg::Light;
 
 	pLight->setDirection( osg::Vec3(0,0,-1) );
 	pLight->setAmbient( osg::Vec4(0.2f,0.2f,0.2f,1.0f) );
 	pLight->setDiffuse( osg::Vec4(0.8f,0.8f,0.8f,1.0f) );
 	pLight->setSpecular( osg::Vec4(0.75f,0.75f,0.75f,1.0f) );
-	osg::StateSet * pLightSet = osgNew osg::StateSet;
+	osg::StateSet * pLightSet = new osg::StateSet;
 	
 	pFogState->setAttributeAndModes(pLight, osg::StateAttribute::ON);
 	
@@ -227,11 +207,9 @@ int VirtualBattlefield::buildScene()
 
     m_pView->setSceneData(m_rpRootNode.get() );
 
-	m_rpFrameStamp = osgNew osg::FrameStamp;
+	m_rpFrameStamp = new osg::FrameStamp;
 
 	m_pView->setFrameStamp(m_rpFrameStamp.get());
-
-    osgDB::Registry::instance();
 
     osg::Camera * pCamera = m_pView->getCamera();
     pCamera->setNearFar(1.0f,20000);
@@ -388,11 +366,11 @@ void VirtualBattlefield::setWireframeMode(bool flag)
     osg::StateSet* globalStateSet = m_pView->getGlobalStateSet();
     if (!globalStateSet)
     {
-        globalStateSet = osgNew osg::StateSet;
+        globalStateSet = new osg::StateSet;
         m_pView->setGlobalStateSet(globalStateSet);
     }
 
-    osg::PolygonMode* polyModeObj = osgNew osg::PolygonMode;
+    osg::PolygonMode* polyModeObj = new osg::PolygonMode;
 
     if (flag)
         polyModeObj->setMode(osg::PolygonMode::FRONT_AND_BACK, osg::PolygonMode::LINE);
@@ -742,17 +720,17 @@ void VirtualBattlefield::setActiveTerrain( TerrainObject * pTerrainObject)
 
 	if (m_pActiveTerrainObject)
 		 m_pActiveTerrainObject->setCameraPosition( xPatch, yPatch, 1000);
+    
 	
-	for (unsigned short i=0; i < 15;++i)
-	{
-		osg::Node * pTrees = makeTreesPatch( xPatch, yPatch + 256 * i, 100, 1000,
-			100, this);
-        pTrees->setName("Trees");
-		addNodeToScene(pTrees);
-
-	}
-	
-
+	for (unsigned short i=0; i < 10;++i)
+		for (unsigned short j = 0; j <3; ++j)
+		{
+			osg::ref_ptr<Forest> rpforest = new Forest(osg::Vec2(xPatch,yPatch + 2048.0 * (i+1)),1024, this);
+			rpforest->setName("Forest");
+			addNodeToScene(rpforest.get());
+		}
+    
 }
+
 
 

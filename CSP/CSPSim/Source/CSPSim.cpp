@@ -104,7 +104,6 @@ struct SDLWave {
 
 SDLWave  m_audioWave;
 
-
 ///////////////////////////////////////////////////////////////////////
 // CSPSim
 
@@ -115,9 +114,7 @@ SDLWave  m_audioWave;
  */
 CSPSim *CSPSim::theSim = 0;
 
-CSPSim::CSPSim()
-{ 
-
+CSPSim::CSPSim() { 
 	if (theSim == 0) {
 		theSim = this;
 	}
@@ -673,7 +670,6 @@ void CSPSim::updateTime()
 	}
 }
 
-
 void CSPSim::doInput(double dt)
 {
 	CSP_LOG(APP, DEBUG, "CSPSim::doInput()...");
@@ -681,8 +677,9 @@ void CSPSim::doInput(double dt)
 	simdata::Ref<VirtualHID> screen_interface = m_CurrentScreen->getInterface();
 
 	SDL_Event event;
-	int doPoll = 10;
-	while (doPoll-- && SDL_PollEvent(&event)) {
+	short doPoll = 5;
+	while (doPoll-- && m_InputEvent(event)) {
+	//while (doPoll-- && SDL_PollEvent(&event)) {	
 		bool handled = false;
 		HID::translate(event);
 		if (event.type == SDL_QUIT) {
@@ -707,6 +704,7 @@ void CSPSim::doInput(double dt)
 			handled = m_Interface->onEvent(event);
 		}
 	}
+
 	// run input scripts
 	if (screen_interface.valid()) {
 		screen_interface->onUpdate(dt);

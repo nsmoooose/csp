@@ -26,6 +26,7 @@
 #include <Theater/FeatureSceneGroup.h>
 #include <Theater/ElevationCorrection.h>
 #include <Theater/LayoutTransform.h>
+#include <Animation.h>
 #include <ObjectModel.h>
 
 #include <osgDB/ReadFile>

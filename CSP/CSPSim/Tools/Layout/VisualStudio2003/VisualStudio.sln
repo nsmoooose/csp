@@ -3,6 +3,10 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Layout", "Layout\Layout.vcp
 	ProjectSection(ProjectDependencies) = postProject
 	EndProjectSection
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Loader", "Loader\Loader.vcproj", "{8E5E75D5-0A46-40EB-AB25-676CA88EE05C}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfiguration) = preSolution
 		Debug = Debug
@@ -13,6 +17,10 @@ Global
 		{93A0D0F8-4393-42B1-9BB6-B8DB08952FB7}.Debug.Build.0 = Debug|Win32
 		{93A0D0F8-4393-42B1-9BB6-B8DB08952FB7}.Release.ActiveCfg = Release|Win32
 		{93A0D0F8-4393-42B1-9BB6-B8DB08952FB7}.Release.Build.0 = Release|Win32
+		{8E5E75D5-0A46-40EB-AB25-676CA88EE05C}.Debug.ActiveCfg = Debug|Win32
+		{8E5E75D5-0A46-40EB-AB25-676CA88EE05C}.Debug.Build.0 = Debug|Win32
+		{8E5E75D5-0A46-40EB-AB25-676CA88EE05C}.Release.ActiveCfg = Release|Win32
+		{8E5E75D5-0A46-40EB-AB25-676CA88EE05C}.Release.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 	EndGlobalSection

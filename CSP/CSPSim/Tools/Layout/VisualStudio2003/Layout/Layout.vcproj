@@ -28,7 +28,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="osgd.lib OpenThreadsWin32d.lib osgGAd.lib osgProducerd.lib osgDBd.lib Producerd.lib osgUtild.lib"
-				OutputFile="../../.bin/$(ProjectName)d.dll"
+				OutputFile="../../_c$(ProjectName)d.dll"
 				AdditionalLibraryDirectories="$(PYTHON_PATH)/libs"
 				OptimizeReferences="2"
 				ImportLibrary="$(OutDir)/$(TargetName).lib"/>
@@ -70,7 +70,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="osg.lib OpenThreadsWin32.lib osgGA.lib osgProducer.lib osgDB.lib Producer.lib osgUtil.lib"
-				OutputFile="../../.bin/$(ProjectName).dll"
+				OutputFile="../../_c$(ProjectName).dll"
 				AdditionalLibraryDirectories="$(PYTHON_PATH)/libs"/>
 			<Tool
 				Name="VCMIDLTool"/>
@@ -168,7 +168,8 @@
 				Name="Release|Win32">
 				<Tool
 					Name="VCCustomBuildTool"
-					CommandLine="$(SWIG_PATH)\swig -runtime -c++ -python -noexcept -I..\..\..\SimData\Include -I..\..\.. -o ..\..\$(InputName)_wrap.cpp ..\..\$(InputName).i"
+					CommandLine="$(SWIG_PATH)\swig -runtime -c++ -python -noexcept -I..\..\..\SimData\Include -I..\..\.. -o ..\..\$(InputName)_wrap.cpp ..\..\$(InputName).i
+"
 					Outputs="..\..\$(InputName)_wrap.cpp"/>
 			</FileConfiguration>
 		</File>

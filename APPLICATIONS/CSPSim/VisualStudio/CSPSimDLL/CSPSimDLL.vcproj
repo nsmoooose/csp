@@ -22,7 +22,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				AdditionalIncludeDirectories="C:/Python22/include,../../../SimData/Include,../../Include,../../../../THIRDPARTYLIBS/include,../../../../THIRDPARTYLIBS/demeter"
-				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;CSPSIMDLL_EXPORTS;_STLP_USE_OWN_NAMESPACE"
+				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;CSPSIMDLL_EXPORTS"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
 				RuntimeTypeInfo="TRUE"

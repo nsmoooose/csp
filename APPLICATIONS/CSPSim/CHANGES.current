@@ -2,9 +2,11 @@ Version 0.3.1 (in progress)
 ===========================
 
 	   LINUX USERS: you need to add NumericalMethod.cpp to your Makefile.
+2003-04-09: delta
+	    updated .net project.
 
 2003-04-03: delta
-	    .net project updated; debug and release are maintained. 
+	    updated .net project; debug and release are maintained. 
 
 	    Rewritten DynamicalSystem interface; you need now, to define a 
 	    vector field as a method of DynamicalSystem (which inherites from

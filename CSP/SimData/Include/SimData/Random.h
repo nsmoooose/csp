@@ -451,7 +451,7 @@ public:
  *  typically about 20%.
  */
 template <class RNG>
-class RandomNumberGenerator: public RandomNumberGeneratorInterface {
+class SIMDATA_EXPORT RandomNumberGenerator: public RandomNumberGeneratorInterface {
 
 	/** Random number generator state.
 	 */

@@ -116,7 +116,7 @@ typedef ReferencedBase<AtomicCounter> ThreadSafeReferenced;
  *  @author Mark Rose <mrose@stm.lbl.gov>
  */
 template<class CLASS>
-class Ref {
+class SIMDATA_EXPORT Ref {
 public:
 	typedef std::vector< Ref<CLASS> > vector;
 	typedef std::list< Ref<CLASS> > list;

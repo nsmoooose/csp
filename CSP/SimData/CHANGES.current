@@ -1,6 +1,9 @@
 Version 0.4.0 (in progress)
 ===========================
 
+2005-02-14:delta
+ * Exported more symbols to help compilation with vs 2005.
+
 2005-02-05: onsight
  * Expose _postCreate so that complete objects can be created from
    Python + XML data.  This is experimental (used by CSP layout),

@@ -245,7 +245,7 @@ friend class Enumeration;
  *     Enumeration Foo::MyEnumeration("apple orange cherry");
  * @endcode
  */
-class Enumeration {
+class SIMDATA_EXPORT Enumeration {
 friend class EnumLink;
 	/// Reference counted smart-pointer to the associated EnumerationCore.
 	Ref<EnumerationCore const> __core;
@@ -624,7 +624,7 @@ public:
  * @ingroup BaseTypes
  */
 template <Enumeration const &E>
-class Enum: public EnumLink {
+class SIMDATA_EXPORT Enum: public EnumLink {
 public:
 	Enum(std::string const &token): EnumLink(E, token) {}
 	Enum(): EnumLink(E) {}

@@ -17,6 +17,7 @@ public:
 	void _close();
 	void setOutput(std::string const &fn);
 	void setLogLevels(int c, int p);
+	void setLogClasses(int c);
 };
 
 NAMESPACE_END // namespace simdata

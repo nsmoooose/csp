@@ -56,6 +56,9 @@ class Enum;
 class SimDate;
 class ListBase;
 class GeoPos;
+class LLA;
+class UTM;
+class ECEF;
 class Object;
 
 
@@ -144,20 +147,44 @@ public:
 		x = *nc;
 	}
 
+	template <typename T>
+	void setCoordinate(T & x) const {
+		BaseCheck();
+		LLA const *lla = dynamic_cast<LLA const *>(var.o);
+		if (lla != 0) {
+			x = *lla;
+			return;
+		}
+		UTM const *utm = dynamic_cast<UTM const *>(var.o);
+		if (utm != 0) {
+			x = *utm;
+			return;
+		}
+		ECEF const *ecef = dynamic_cast<ECEF const *>(var.o);
+		TypeCheck(ecef!=NULL, "dynamic cast of BaseType* failed");
+		x = *ecef;
+	}
+
 	/*
 	template <typename T> 
 	void set(T & x) const { setBase(x); }
 	*/
 
-	void set(SimDate & x) const { setBase(x); }
-	void set(GeoPos & x) const { setBase(x); }
-	void set(Vector3 & x) const { setBase(x); }
-	void set(Matrix3 & x) const { setBase(x); }
-	void set(Real & x) const { setBase(x); }
-	void set(Curve & x) const { setBase(x); }
-	void set(Table & x) const { setBase(x); }
-	void set(External & x) const { setBase(x); }
-	void set(Path & x) const { setBase(x); }
+	inline void set(SimDate & x) const { setBase(x); }
+
+	inline void set(GeoPos & x) const { setBase(x); }
+
+	inline void set(LLA & x) const { setCoordinate(x); }
+	inline void set(UTM & x) const { setCoordinate(x); }
+	inline void set(ECEF & x) const { setCoordinate(x); }
+
+	inline void set(Vector3 & x) const { setBase(x); }
+	inline void set(Matrix3 & x) const { setBase(x); }
+	inline void set(Real & x) const { setBase(x); }
+	inline void set(Curve & x) const { setBase(x); }
+	inline void set(Table & x) const { setBase(x); }
+	inline void set(External & x) const { setBase(x); }
+	inline void set(Path & x) const { setBase(x); }
 	// list
 
 	void set(short &x) const { IntCheck(); x = static_cast<short>(var.i); }

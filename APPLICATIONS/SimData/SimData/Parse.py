@@ -208,7 +208,7 @@ class ListHandler(SimpleHandler):
 			return 0
 		return name in ('List', 'Enum', 'Path', 'Int', 'Bool', 'Number', 'Float', 
 		                'String', 'Date', 'Vector', 'Matrix', 'External', 
-		                'Object', 'Quat')
+		                'Object', 'Quat', 'LLA', "UTM", "ECEF")
 
 	def end(self):
 		if self._type is not None:
@@ -311,6 +311,32 @@ class RealHandler(SimpleHandler):
 		self._element = SimData.Real()
 		self._element.parseXML(self._c)
 
+class ECEFHandler(SimpleHandler):
+
+	def __init__(self, id, base, name, attrs):
+		SimpleHandler.__init__(self, id, base, name, attrs)
+	
+	def end(self):
+		self._element = SimData.ECEF()
+		self._element.parseXML(self._c)
+
+class LLAHandler(SimpleHandler):
+
+	def __init__(self, id, base, name, attrs):
+		SimpleHandler.__init__(self, id, base, name, attrs)
+	
+	def end(self):
+		self._element = SimData.LLA()
+		self._element.parseXML(self._c)
+
+class UTMHandler(SimpleHandler):
+
+	def __init__(self, id, base, name, attrs):
+		SimpleHandler.__init__(self, id, base, name, attrs)
+	
+	def end(self):
+		self._element = SimData.UTM()
+		self._element.parseXML(self._c)
 
 class VectorHandler(SimpleHandler):
 

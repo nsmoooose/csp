@@ -43,7 +43,7 @@
 // Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 // Boston, MA  02111-1307, USA.
 //
-// $Id: LogStream.h,v 1.6 2003/05/04 07:23:23 mkrose Exp $
+// $Id: LogStream.h,v 1.7 2003/06/10 23:31:30 mkrose Exp $
 
 #ifndef __SIMDATA_LOGSTREAM_H__
 #define __SIMDATA_LOGSTREAM_H__
@@ -261,6 +261,12 @@ public:
 	* @param p priority
 	*/
 	void setLogLevels(int c, int p);
+
+	/**
+	* Set the global log class.
+	* @param c debug class
+	*/
+	void setLogClasses(int c);
 
 	/**
 	* Output operator to capture the debug level and priority of a message.

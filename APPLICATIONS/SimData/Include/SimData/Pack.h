@@ -222,9 +222,10 @@ public:
 	void unpack(char*& y) {
 		int n;
 		unpack(n);
-		y = (char*) malloc(sizeof(char)*(n+1));
 		_n -= n;
 		if (_n < 0) throw DataUnderflow();
+		y = (char*) malloc(sizeof(char)*(n+1));
+		assert(y != 0); // XXX should throw a memory exception
 		memcpy(y, _d, sizeof(char)*n);
 		y[n] = 0;
 		_d += n;

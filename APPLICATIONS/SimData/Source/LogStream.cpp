@@ -22,15 +22,13 @@
 // Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 // Boston, MA  02111-1307, USA.
 //
-// $Id: LogStream.cpp,v 1.2 2003/05/04 07:23:23 mkrose Exp $
+// $Id: LogStream.cpp,v 1.3 2003/06/10 23:31:32 mkrose Exp $
 
 
 #include <SimData/LogStream.h>
 
 
 NAMESPACE_SIMDATA
-
-
 
 
 logbuf::logbuf()
@@ -74,14 +72,19 @@ void logbuf::set_log_priority(int p)
     logPriority = p;
 }
 
-int logbuf::get_log_priority ()
+int logbuf::get_log_priority()
 {
     return logPriority;
 }
 
 void logstream::setLogLevels(int c, int p)
 {
-    lbuf.set_log_level( c, p );
+    lbuf.set_log_level(c, p);
+}
+
+void logstream::setLogClasses(int c)
+{
+    lbuf.set_log_classes(c);
 }
 
 

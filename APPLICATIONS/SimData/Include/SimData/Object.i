@@ -11,5 +11,10 @@
 
 %rename(__repr__) SIMDATA(Object)::asString() const;
 
+NAMESPACE_SIMDATA
+	%ignore Referenced;
+	class Referenced {};
+NAMESPACE_END
+
 %include "SimData/Object.h"
 

@@ -5,6 +5,20 @@ Version 0.3.3 (in progress)
 	    Added help methods to convert feet to meters and pounds to newtons
 	    in math.h.
 
+2003-05-14: onsight
+            Added LLA, UTM, and ECEF classes.  This some functionality is 
+	    inclueded in GeoPos, but that class is a bit bloated.  Eventually
+	    GeoPos will be rewritten as an ECEF derived class that contains
+	    LLA and UTM members with lazy evaluation.
+
+	    Added <LLA>, <UTM>, and <ECEF> XML tags to the parser.  These
+	    can be used interchangeably with variables of any of the three
+	    corresponding types.
+
+            Finally fixed the SWIG warning about Referenced.
+
+	    Added setLogClasses method to LogStream.
+
 2003-05-13: onsight
             Added exception handling to file copying in setup.py.  Copy errors
 	    will be printed as warnings, and the installation will continue.

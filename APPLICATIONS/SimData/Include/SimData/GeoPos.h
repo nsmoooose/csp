@@ -374,7 +374,7 @@ public:
 	/**
 	 * String representation.
 	 */
-	virtual std::string asString() { return Vector3::asString(); }
+	virtual std::string asString() const { return Vector3::asString(); }
 	
 	/**
 	 * Set the current position from XML character data.
@@ -441,6 +441,396 @@ protected:
 };
 
 
+class UTM;
+class LLA;
+class ECEF;
+
+/**
+ * Convert from Earth centered, Earth fixed (ECEF) coondinates
+ * to latitude, longitude, and altitude (LLA).
+ *
+ * @param ecef the source coordinates in ECEF 
+ * @param _ref the reference ellipsoid (the default is WGS-84)  
+ * @return the coordinates in LLA
+ */
+LLA ECEFtoLLA(ECEF const &ecef, ReferenceEllipsoid const &_ref = GeoRef::WGS84);
+
+/**
+ * Convert from Earth centered, Earth fixed (ECEF) coondinates
+ * to Universal Transverse Mercator (UTM) coordinates.
+ *
+ * @param ecef the source coordinates in ECEF 
+ * @param _ref the reference ellipsoid (the default is WGS-84)  
+ * @return the coordinates in UTM
+ */
+UTM ECEFtoUTM(ECEF const &ecef, ReferenceEllipsoid const &_ref = GeoRef::WGS84);
+
+/**
+ * Convert from latitude, longitude, and altitude (LLA) to
+ * Earth centered, Earth fixed (ECEF) coondinates.
+ *
+ * @param lla the source coordinates in LLA 
+ * @param _ref the reference ellipsoid (the default is WGS-84)  
+ * @return the coordinates in ECEF 
+ */
+ECEF LLAtoECEF(LLA const &lla, ReferenceEllipsoid const &_ref = GeoRef::WGS84);
+
+/**
+ * Convert from Universal Transverse Mercator (UTM) coordinates to
+ * Earth centered, Earth fixed (ECEF) coondinates.
+ *
+ * @param utm the source coordinates in UTM
+ * @param _ref the reference ellipsoid (the default is WGS-84)  
+ * @return the coordinates in ECEF 
+ */
+ECEF UTMtoECEF(UTM const &utm, ReferenceEllipsoid const &_ref = GeoRef::WGS84);
+
+/**
+ * Convert from Universal Transverse Mercator (UTM) coordinates to
+ * latitude, longitude, and altitude (LLA).
+ *
+ * @param utm the source coordinates in UTM
+ * @param _ref the reference ellipsoid (the default is WGS-84)  
+ * @return the coordinates in LLA
+ */
+LLA UTMtoLLA(UTM const &utm, ReferenceEllipsoid const &_ref = GeoRef::WGS84);
+
+/**
+ * Convert from latitude, longitude, and altitude (LLA) to Universal 
+ * Transverse Mercator (UTM) coordinates.
+ *
+ * @param lla the source coordinates in LLA 
+ * @param _ref the reference ellipsoid (the default is WGS-84)  
+ * @param _zone for a specific zone, independent of longitude
+ * @return the coordinates in UTM
+ */
+UTM LLAtoUTM(LLA const &lla, ReferenceEllipsoid const &_ref = GeoRef::WGS84, char _zone=-1);
+
+/**
+ * Get the distance between two points along the surface of the 
+ * reference ellipsoid.
+ *
+ * Both points are projected to altitude = 0, and the distance
+ * calculated along a geodesic path of the reference ellipsoid.
+ *
+ * @param p point 1
+ * @param q point 2
+ * @param _ref the reference ellipsoid (the default is WGS-84)  
+ * @return distance the geodesic distance
+ * @return bearing the bearing to the specified point (in radians relative to true north)
+ */
+void SurfaceDistance(LLA const &p, 
+                     LLA const &q, 
+                     double &distance, 
+                     double &bearing, 
+                     ReferenceEllipsoid const &_ref = GeoRef::WGS84);
+
+
+/**
+ * Get the distance between two points along the surface of the
+ * reference ellipsoid, including altitude.
+ *
+ * This method is very similar to SurfaceDistance, but includes the altitude
+ * difference between the two points in an approximate way that can be used both
+ * at close range and globally.
+ * 
+ * @param p point 1
+ * @param q point 2
+ * @param _ref the reference ellipsoid (the default is WGS-84)  
+ * @return distance a combined geodesic and altitude distance 
+ * @return bearing the bearing to the specified point (in radians relative to true north)
+ */
+void ShellDistance(LLA const &p, 
+                   LLA const &q, 
+                   double &distance, 
+                   double &bearing, 
+                   ReferenceEllipsoid const &_ref = GeoRef::WGS84);
+
+
+/**
+ * A geospatial coordinate class representing latitude, longitude, and
+ * altitude.
+ *
+ * There are two distinct XML formats for this type.  The first lists
+ * latitude and longitude in degrees, followed by altitude in meters.
+ * The second uses a degree-minute-second notation for the latitude and
+ * longitude.  The notation for the second format is slighly non-standard
+ * to avoid using the degree symbol.  Examples: 
+ *
+ *     @code <LLA>37.1 -122.43 100.0</LLA> @endcode
+ * and 
+ *     @code <LLA>37'6"0.0 -122'25"48.0 100.0</LLA> @endcode
+ */
+class SIMDATA_EXPORT LLA: public BaseType {
+	double _lat, _lon, _alt;
+public:
+	/**
+	 * Construct a default LLA.
+	 */
+	LLA(): _lat(0.0), _lon(0.0), _alt(0.0) {}
+
+	/**
+	 * Construct a new LLA.
+	 *
+	 * @param lat latitude in radians.
+	 * @param lon longitude in radians.
+	 * @param alt altitude in meters relative to the reference ellipsoid.
+	 */
+	LLA(double lat, double lon, double alt=0.0): _lat(lat), _lon(lon), _alt(alt) {}
+
+	/**
+	 * Copy constructor to convert from UTM
+	 */
+	LLA(UTM const &, ReferenceEllipsoid const & = GeoRef::WGS84);
+
+	/**
+	 * Copy constructor to convert from ECEF
+	 */
+	LLA(ECEF const &, ReferenceEllipsoid const & = GeoRef::WGS84);
+
+	/**
+	 * Convert from UTM to LLA (using WGS84)
+	 */
+	LLA const &operator = (UTM const &);
+
+	/**
+	 * Convert from ECEF to LLA (using WGS84)
+	 */
+	LLA const &operator = (ECEF const &);
+
+	virtual ~LLA() {}
+
+	/**
+	 * Set latitude, longitude, and altitude in radians
+	 */
+	void set(double lat, double lon, double alt=0.0) {
+		_lat = lat;
+		_lon = lon;
+		_alt = alt;
+	}
+
+	/**
+	 * Set latitude, longitude, and altitude in degrees
+	 */
+	void setDegrees(double lat, double lon, double alt=0.0);
+
+	/**
+	 * Get latitude in radians.
+	 */
+	inline double latitude() const { return _lat; }
+
+	/**
+	 * Get longitude in radians.
+	 */
+	inline double longitude() const { return _lon; }
+
+	/**
+	 * Get altitude in meters.
+	 */
+	inline double altitude() const { return _alt; }
+
+	/**
+	 * String representation.
+	 */
+	virtual std::string asString() const;
+	
+	/**
+	 * Set the current position from XML character data.
+	 *
+	 * LLA coordinate format (lat, lon, alt): 
+	 * 	x.x x.x x.x
+	 *
+	 * LLA coordinate format 2 (lat, lon, alt):
+	 * 	x'x"x.x x'x"x.x x.x
+	 */
+	void parseXML(const char *);
+
+	/**
+	 * Serialize to a data archive
+	 */
+	virtual void pack(Packer&) const; 
+	
+	/**
+	 * Deserialize from a data archive
+	 */
+	virtual void unpack(UnPacker&);
+};
+
+
+/**
+ * A geospatial coordinate class using Universal Transverse Mercator (UTM)
+ * coordinates plus altitude. 
+ *
+ * A sample XML tag for this type is @code<UTM>704300 3390210 13T 100.0</UTM>@endcode
+ * which represents 704300E 3390210N 13T, 100.0 m above the reference ellipsoid.
+ */
+class SIMDATA_EXPORT UTM: public BaseType {
+	double _E, _N, _alt;
+	char _zone, _designator;
+public:
+	/**
+	 * Get the designator character for a given latitude.
+	 */
+	static char getDesignator(double latitude);
+
+	/**
+	 * Construct a default (invalid) UTM
+	 */
+	UTM(): _E(0.0), _N(0.0), _alt(0.0), _zone(0), _designator('X') {}
+
+	/**
+	 * Construct a UTM.
+	 */
+	UTM(double easting, double northing, char zone, char designator, double alt=0.0) {
+		set(easting, northing, zone, designator, alt);
+	}
+
+	/**
+	 * Convert from LLA to UTM
+	 */
+	UTM(LLA const &, ReferenceEllipsoid const & = GeoRef::WGS84, char zone = -1);
+
+	/**
+	 * Convert from ECEF to UTM
+	 */
+	UTM(ECEF const &, ReferenceEllipsoid const & = GeoRef::WGS84);
+
+	/**
+	 * Convert from LLA to UTM (using WGS84)
+	 */
+	UTM const &operator = (LLA const &);
+
+	/**
+	 * Convert from ECEF to UTM (using WGS84)
+	 */
+	UTM const &operator = (ECEF const &);
+
+	virtual ~UTM() {}
+
+	/**
+	 * Set the current position from UTM coordinates.
+	 *
+	 * @param easting UTM easting
+	 * @param northing UTM northing
+	 * @param zone UTM zone
+	 * @param designator UTM zone letter
+	 * @param alt altitude above the reference ellipse (in meters)
+	 */
+	void set(double easting, double northing, char zone, char designator, double alt=0.0) {
+		_E = easting;
+		_N = northing;
+		_zone = zone;
+		_designator = designator;
+		_alt = alt;
+		// XXX check values
+	}
+	
+	/**
+	 * Set the current position from UTM coordinates.
+	 *
+	 * @param easting UTM easting
+	 * @param northing UTM northing
+	 * @param zone UTM zone (e.g. "10T")
+	 * @param alt altitude above the reference ellipse (in meters)
+	 */
+	void set(double easting, double northing, const char *zone, double alt = 0.0);
+
+	/**
+	 * Get the easting coordinate.
+	 */
+	inline double easting() const { return _E; }
+
+	/**
+	 * Get the northing coordinate.
+	 */
+	inline double northing() const { return _N; }
+
+	/**
+	 * Get the zone.
+	 */
+	inline char zone() const { return _zone; }
+
+	/**
+	 * Get the latitude designator letter.
+	 */
+	inline char designator() const { return _designator; }
+
+	/**
+	 * Get altitude in meters.
+	 */
+	inline double altitude() const { return _alt; }
+
+	/**
+	 * String representation.
+	 */
+	virtual std::string asString() const;
+	
+	/**
+	 * Set the current position from XML character data.
+	 *
+	 * UTM coordinate format (easting, northing, zone, alt):
+	 * 	x.x x.x zone x.x
+	 * where 'zone' is an integer followed by a UTM latitude designator,
+	 * such as "10T"
+	 */
+	void parseXML(const char *);
+
+	/**
+	 * Check that the UTM coordinates are valid.
+	 */
+	bool valid() const;
+
+	/**
+	 * Serialize to a data archive
+	 */
+	virtual void pack(Packer&) const; 
+	
+	/**
+	 * Deserialize from a data archive
+	 */
+	virtual void unpack(UnPacker&);
+};
+
+/**
+ * A geospatial coordinate class representing Earth Centered, Earth
+ * Fixed coordinates.
+ *
+ * The XML format for this type is @code <ECEF> X Y Z </ECEF> @endcode.
+ */
+class SIMDATA_EXPORT ECEF: public Vector3 {
+public:
+	/**
+	 * Construct a default ECEF (at the center of the Earth).
+	 */
+	ECEF(): Vector3(0.0, 0.0, 0.0) {}
+
+	/**
+	 * Construct a new ECEF
+	 */
+	ECEF(double x, double y, double z): Vector3(x, y, z) {}
+
+	/**
+	 * Copy constructor to convert from UTM
+	 */
+	ECEF(UTM const &, ReferenceEllipsoid const & = GeoRef::WGS84);
+
+	/**
+	 * Copy constructor to convert from LLA
+	 */
+	ECEF(LLA const &, ReferenceEllipsoid const & = GeoRef::WGS84);
+
+	/**
+	 * Convert from UTM to ECEF (using WGS84)
+	 */
+	ECEF const &operator = (UTM const &);
+
+	/**
+	 * Convert from UTM to ECEF (using WGS84)
+	 */
+	ECEF const &operator = (LLA const &);
+
+	virtual ~ECEF() {}
+};
 
 NAMESPACE_END
 

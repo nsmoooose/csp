@@ -1,0 +1,125 @@
+TOPDIR = ..
+
+DEMETER_PREFIX = $(TOPDIR)/$(DEMETER_RELATIVE)
+DEMETER_INCLUDE = -I$(DEMETER_PREFIX)
+DEMETER_LIBRARY = -L$(DEMETER_PREFIX) -ldemeter_csp #libdemeter_csp.so #$(DEMETER_PREFIX)/libdemeter_csp.so
+
+SIMDATA_PREFIX = $(TOPDIR)/$(SIMDATA_RELATIVE)
+SIMDATA_INCLUDE = -I$(SIMDATA_PREFIX)/Include
+SIMDATA_LIBRARY = #_cSimData.so #$(SIMDATA_PREFIX)/Source/_cSimData.so
+
+LIBS = $(SIMDATA_LIBRARY) $(DEMETER_LIBRARY)
+
+INCLUDE = -I$(TOPDIR)/Include $(DEMETER_INCLUDE) $(SIMDATA_INCLUDE)
+
+CFLAGS = $(GCFLAGS) $(INCLUDE) $(GDEBUGF)  @SDL_FLAGS@ @GDAL_FLAGS@
+SWCXXF = $(GCFLAGS) $(INCLUDE)
+LDOPTS = -Wl,-z,lazyload $(GLDOPTS) @LIBS@
+SWOPTS = $(GSWOPTS) $(INCLUDE)
+
+SOURCES = \
+	AeroDynamics.cpp \
+	AircraftObject.cpp \
+	base.cpp \
+	BaseScreen.cpp \
+	Config.cpp \
+	ConsoleCommands.cpp \
+	CSPSim.cpp \
+	DynamicObject.cpp \
+	EventMapIndex.cpp \
+	EventMapping.cpp \
+	F16Model.cpp \
+	GameScreen.cpp \
+	HID.cpp \
+	InputInterface.cpp \
+	LogoScreen.cpp \
+	LogStream.cpp \
+	MenuScreen.cpp \
+ 	Message.cpp \
+	mmgr.cpp \
+	ObjectModel.cpp \
+	ObjectRangeInfo.cpp \
+	Platform.cpp \
+	SimObject.cpp \
+	SimpleConfig.cpp \
+	sky.cpp \
+	SmokeEffects.cpp \
+	StaticObject.cpp \
+	TankObject.cpp \
+	TerrainObject.cpp \
+	Tools.cpp \
+	trees.cpp \
+	VirtualBattlefield.cpp 
+
+OBJECTS = $(SOURCES:%.cpp=%.o) 
+
+DEPDIR = .deps
+MKDEP = $(CXX) -M $(CFLAGS)
+SWDEP = $(SWIG) -M $(SWOPTS)
+DEPFILES = $(addprefix $(DEPDIR)/,$(addsuffix .d, $(SOURCES))) $(DEPDIR)/cSimData.i.swigdep
+DEPFILTER =
+DEPS_MAGIC := $(shell mkdir $(DEPDIR) > /dev/null 2>&1 || :)
+
+.PHONY: clean-deps clean all default
+
+default:
+	@echo "run make from top-level directory only"
+	
+clean-objects:
+	rm -f $(SOURCES:%.cpp=%.o)
+	rm -f lib*.a
+	rm -f _CSP.so CSP_wrap.*
+	rm -f $(DEPDIR)/*.d
+
+clean-dependencies:
+	@echo $(RM) -r $(RMFLAGS) $(DEPDIR)
+
+clean-deps: clean-dependencies
+
+clean: clean-deps clean-objects
+
+ifeq ($(findstring clean,$(MAKECMDGOALS)),)
+ifneq ($(strip $(DEPFILES)),)
+-include $(DEPFILES)
+endif
+endif
+
+#clean clean-deps:
+#	for dir in $(SUBDIRS); do \
+#		$(MAKE) -C $${dir} $@; \
+#	done
+	
+build-subdirs:
+	@for dir in $(SUBDIRS); do \
+		$(MAKE) -C $${dir} all; \
+	done
+
+$(DEPDIR)/%.d : %
+	@echo "Computing dependencies for $<..."
+	@$(MKDEP) $< $(DEPFILTER) > $@
+	
+$(DEPDIR)/%.swigdep : %
+	@echo "Computing dependencies for $<..."
+	@$(SWDEP) $(DEPFILTER) -o $(<:.i=_wrap.cpp) $< > $@
+
+_CSP.so: $(OBJECTS) CSP_wrap.o
+	$(CXX) $(LDOPTS) -o$@ $^ $(LIBS)
+	
+CSPapp: $(OBJECTS) main.o
+	$(CXX) -lswigpy -lpython2.2 -o$@ $^ $(LIBS)
+
+CSP_wrap.cpp: CSP.i
+	$(SWIG) $(SWOPTS) -o $@ $< 
+
+CSP_wrap.o: CSP_wrap.cpp
+	$(CXX) -c $(SWCXXF) $(@:.o=.cpp)
+
+%.o: %.cpp 
+	$(CXX) -c $(CFLAGS) $(@:.o=.cpp)
+
+Makefile: Makefile.in
+	cd $(TOPDIR) && ./configure
+
+all: Makefile _CSP.so #CSPapp
+#all: build-subdirs _CSP.so 
+

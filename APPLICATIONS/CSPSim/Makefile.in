@@ -1,0 +1,35 @@
+SUBDIRS = Source 
+
+export DEMETER_RELATIVE = ../../THIRDPARTYLIBS/demeter
+export SIMDATA_RELATIVE = ../SimData
+
+export GDEBUGF = -g -Wall
+export GCFLAGS = -I/usr/local/include/python2.2 -I/usr/local/include -fPIC -DSWIG_GLOBAL # -O2
+export GLDOPTS = -shared -lswigpy -ldl
+export GSWOPTS = -c -c++ -python -noexcept
+export CXX = g++
+export SWIG = swig 
+
+.PHONY: all clean clean-deps swig default
+
+default: all
+
+all clean clean-deps: Makefile
+	@for dir in $(SUBDIRS); do \
+		$(MAKE) -C $${dir} $@ || exit 1; \
+	done
+
+#default: 
+#	@for dir in $(SUBDIRS); do \
+#		$(MAKE) -C $${dir} $@ || exit 1; \
+#	done
+
+swig:
+	rm Source/cSimData_wrap.cpp || true;
+	make -C Source all
+
+Makefile: Makefile.in configure.in aclocal.m4
+	./configure
+
+
+

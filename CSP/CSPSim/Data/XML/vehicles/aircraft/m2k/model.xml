@@ -110,7 +110,7 @@
 
             <!--                Front landing gear                          -->
         <Object class="TimedRotation">
-            <String name="channel_name">Aircraft.GearSequence.ReferenceTime</String>
+            <String name="channel_name">Aircraft.GearSequence.FrontGear.ReferenceTime</String>
             <Key name="model_id">Aircraft.FrontGearMainDoor</Key>
             <Float name="limit_0">1.61</Float>
             <Float name="limit_1">-0.02</Float>
@@ -121,7 +121,7 @@
             </Object>
         </Object>
         <Object class="TimedRotation">
-            <String name="channel_name">Aircraft.GearSequence.ReferenceTime</String>
+            <String name="channel_name">Aircraft.GearSequence.FrontGear.ReferenceTime</String>
             <Key name="model_id">Aircraft.FrontGearDoor02</Key>
             <Float name="limit_0">1.4</Float>
             <Float name="limit_1">0.0</Float>
@@ -132,7 +132,7 @@
             </Object>
         </Object>
         <Object class="TimedRotation">
-            <String name="channel_name">Aircraft.GearSequence.ReferenceTime</String>
+            <String name="channel_name">Aircraft.GearSequence.FrontGear.ReferenceTime</String>
             <Key name="model_id">Aircraft.FrontGearDoor01</Key>
             <Float name="limit_0">-1.4</Float>
             <Float name="limit_1">0.0</Float>
@@ -143,7 +143,7 @@
             </Object>
         </Object>
         <Object class="TimedRotation">
-            <String name="channel_name">Aircraft.GearSequence.ReferenceTime</String>
+            <String name="channel_name">Aircraft.GearSequence.FrontGear.ReferenceTime</String>
             <Key name="model_id">Aircraft.FrontGearMainTube</Key>
             <Float name="limit_0">-1.57</Float>
             <Float name="limit_1">0.0</Float>
@@ -154,7 +154,7 @@
             </Object>
         </Object>
         <Object class="TimedRotation">
-            <String name="channel_name">Aircraft.GearSequence.ReferenceTime</String>
+            <String name="channel_name">Aircraft.GearSequence.FrontGear.ReferenceTime</String>
             <Key name="model_id">Aircraft.FrontGearTube03</Key>
             <Float name="limit_0">0.2</Float>
             <Float name="limit_1">0.0</Float>
@@ -165,7 +165,7 @@
             </Object>
         </Object>
         <Object class="TimedRotation">
-            <String name="channel_name">Aircraft.GearSequence.ReferenceTime</String>
+            <String name="channel_name">Aircraft.GearSequence.FrontGear.ReferenceTime</String>
             <Key name="model_id">Aircraft.FrontGearDoor03</Key>
             <Float name="limit_0">1.18</Float>
             <Float name="limit_1">0.0</Float>
@@ -176,7 +176,7 @@
             </Object>
         </Object>
          <Object class="TimedRotation">
-            <String name="channel_name">Aircraft.GearSequence.ReferenceTime</String>
+            <String name="channel_name">Aircraft.GearSequence.FrontGear.ReferenceTime</String>
             <Key name="model_id">Aircraft.FrontGearMainDoor</Key>
             <Float name="limit_0">0.0</Float>
             <Float name="limit_1">1.63</Float>
@@ -189,7 +189,7 @@
 
         <!--                Right landing gear                          -->
         <Object class="TimedRotation">
-            <String name="channel_name">Aircraft.GearSequence.ReferenceTime</String>
+            <String name="channel_name">Aircraft.GearSequence.RightGear.ReferenceTime</String>
             <Key name="model_id">Aircraft.RightMainGearMainDoor</Key>
             <Float name="limit_0">-1.92</Float>
             <Float name="limit_1">0.0</Float>
@@ -200,7 +200,7 @@
             </Object>
         </Object>
         <Object class="TimedRotation">
-            <String name="channel_name">Aircraft.GearSequence.ReferenceTime</String>
+            <String name="channel_name">Aircraft.GearSequence.RightGear.ReferenceTime</String>
             <Key name="model_id">Aircraft.RightMainGearDoor01</Key>
             <Float name="limit_0">1.53</Float>
             <Float name="limit_1">0.0</Float>
@@ -211,7 +211,7 @@
             </Object>
         </Object>
         <Object class="TimedMagnitudeTranslation">
-            <String name="channel_name">Aircraft.GearSequence.ReferenceTime</String>
+            <String name="channel_name">Aircraft.GearSequence.RightGear.ReferenceTime</String>
             <Key name="model_id">Aircraft.RightMainGearAxis</Key>
             <Float name="limit_0">-0.34</Float>
             <Float name="limit_1">0.0</Float>
@@ -223,7 +223,7 @@
             </Object>
         </Object>
         <Object class="TimedRotation">
-            <String name="channel_name">Aircraft.GearSequence.ReferenceTime</String>
+            <String name="channel_name">Aircraft.GearSequence.RightGear.ReferenceTime</String>
             <Key name="model_id">Aircraft.RightMainGearMainTube</Key>
             <Float name="limit_0">1.531</Float>
             <Float name="limit_1">0.0</Float>
@@ -234,7 +234,7 @@
             </Object>
         </Object>
         <Object class="TimedRotation">
-            <String name="channel_name">Aircraft.GearSequence.ReferenceTime</String>
+            <String name="channel_name">Aircraft.GearSequence.RightGear.ReferenceTime</String>
             <Key name="model_id">Aircraft.RightMainGearTube02</Key>
             <Float name="limit_0">-1.9</Float>
             <Float name="limit_1">0.0</Float>
@@ -245,7 +245,7 @@
             </Object>
         </Object>
         <Object class="TimedRotation">
-            <String name="channel_name">Aircraft.GearSequence.ReferenceTime</String>
+            <String name="channel_name">Aircraft.GearSequence.RightGear.ReferenceTime</String>
             <Key name="model_id">Aircraft.RightMainGearMainDoor</Key>
             <Float name="limit_0">0.0</Float>
             <Float name="limit_1">-1.92</Float>
@@ -256,9 +256,9 @@
             </Object>
         </Object>
 
-        <!--                Leftt landing gear                          -->
+        <!--                Left landing gear                          -->
          <Object class="TimedRotation">
-            <String name="channel_name">Aircraft.GearSequence.ReferenceTime</String>
+            <String name="channel_name">Aircraft.GearSequence.LeftGear.ReferenceTime</String>
             <Key name="model_id">Aircraft.LeftMainGearMainDoor</Key>
             <Float name="limit_0">1.92</Float>
             <Float name="limit_1">0.0</Float>
@@ -269,7 +269,7 @@
             </Object>
         </Object>
         <Object class="TimedRotation">
-            <String name="channel_name">Aircraft.GearSequence.ReferenceTime</String>
+            <String name="channel_name">Aircraft.GearSequence.LeftGear.ReferenceTime</String>
             <Key name="model_id">Aircraft.LeftMainGearDoor01</Key>
             <Float name="limit_0">0.0</Float>
             <Float name="limit_1">1.53</Float>
@@ -280,7 +280,7 @@
             </Object>
         </Object>
         <Object class="TimedMagnitudeTranslation">
-            <String name="channel_name">Aircraft.GearSequence.ReferenceTime</String>
+            <String name="channel_name">Aircraft.GearSequence.LeftGear.ReferenceTime</String>
             <Key name="model_id">Aircraft.LeftMainGearAxis</Key>
             <Float name="limit_0">-0.35</Float>
             <Float name="limit_1">0.0</Float>
@@ -292,7 +292,7 @@
             </Object>
         </Object>
         <Object class="TimedRotation">
-            <String name="channel_name">Aircraft.GearSequence.ReferenceTime</String>
+            <String name="channel_name">Aircraft.GearSequence.LeftGear.ReferenceTime</String>
             <Key name="model_id">Aircraft.LeftMainGearMainTube</Key>
             <Float name="limit_0">1.523</Float>
             <Float name="limit_1">0.0</Float>
@@ -303,7 +303,7 @@
             </Object>
         </Object>
         <Object class="TimedRotation">
-            <String name="channel_name">Aircraft.GearSequence.ReferenceTime</String>
+            <String name="channel_name">Aircraft.GearSequence.LeftGear.ReferenceTime</String>
             <Key name="model_id">Aircraft.LeftMainGearTube02</Key>
             <Float name="limit_0">-1.9</Float>
             <Float name="limit_1">0.0</Float>
@@ -314,7 +314,7 @@
             </Object>
         </Object>
         <Object class="TimedRotation">
-            <String name="channel_name">Aircraft.GearSequence.ReferenceTime</String>
+            <String name="channel_name">Aircraft.GearSequence.LeftGear.ReferenceTime</String>
             <Key name="model_id">Aircraft.LeftMainGearMainDoor</Key>
             <Float name="limit_0">0.0</Float>
             <Float name="limit_1">1.92</Float>

@@ -19,6 +19,12 @@
    Projection base class, use reference counting instead of hard
    references for accessing the active projection.
 
+ * Refactor landing gear classes and animations.  Tighten the binding
+   between LandingGear and the classes that drive the gear animations,
+   removing some channels from the bus that are now passed directly.
+   Also added comments to the landing gear classes and expanded the
+   TimedSequence interface.
+
 2005-03-12: delta
  * Reformated GearAnimation and related classes as Systems. Adjusted 
    xml files consequently. Cleaned up GearDynamics.

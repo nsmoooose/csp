@@ -544,14 +544,17 @@ class TimedSequence: public simdata::Object {
 	SigC::Connection m_Connection;
 	
 	void setTimeValues(double t) {
-		b_NormalizedTime->value() = 
+		b_NormalizedTime->value() =
 			simdata::clampTo(m_TimeAnimationProxy->getDelta_t0(t)/m_TimeAnimationProxy->getTimeLength(),0.0f,1.0f);
 		setReferenceTime();
 	}
+
 	void setReferenceTime() {
-		b_ReferenceTime->value() = 
+		b_ReferenceTime->value() =
 			m_TimeAnimationProxy->clamp(m_TimeAnimationProxy->gett_0()+b_NormalizedTime->value()*m_TimeAnimationProxy->getTimeLength());
 	}
+
+protected:
 	bool isEnd() const {
 		return 1.0 - b_NormalizedTime->value() < 0.0001;
 	}
@@ -571,13 +574,22 @@ class TimedSequence: public simdata::Object {
 	void backward() {
 		setDirection(-m_PreviousDirection);
 	}
+	void jumpToBeginning() {
+		stop();
+		setTimeValues(m_TimeAnimationProxy->gett_0());
+	}
+	void jumpToEnd() {
+		stop();
+		setTimeValues(m_TimeAnimationProxy->gett_1());
+	}
+
 public:
 	SIMDATA_OBJECT(TimedSequence, 0, 0)
 
 	BEGIN_SIMDATA_XML_INTERFACE(TimedSequence)
 		SIMDATA_XML("timed_animation_proxy", TimedSequence::m_TimeAnimationProxy, true)
 		SIMDATA_XML("initial_time", TimedSequence::m_InitialTime, false)
-		SIMDATA_XML("name", TimedSequence::m_Name, true)
+		SIMDATA_XML("name", TimedSequence::m_Name, false)
 	END_SIMDATA_XML_INTERFACE
 
 	TimedSequence():
@@ -586,12 +598,14 @@ public:
 		m_PreviousDirection(0.0f),
 		m_UpdateReferenceTime(0) {
 	}
+
 	virtual ~TimedSequence(){
 		if (m_UpdateReferenceTime) {
 			delete m_UpdateReferenceTime;
 			m_UpdateReferenceTime = 0;
 		}
 	}
+
 	double onUpdate(double dt) {
 		double t = b_ReferenceTime->value();
 		t += m_Direction*dt;
@@ -599,6 +613,7 @@ public:
 		setTimeValues(t);
 		return 0.016;
 	}
+
 	void start() {
 		// do not allow to start again until the current sequence is not over
 		if (isBegin()) {
@@ -606,6 +621,7 @@ public:
 			setDirection(1.0);
 		}
 	}
+
 	void rstart() {
 		// do not allow to rstart again until the current sequence is not over
 		if (isEnd()) {
@@ -613,19 +629,50 @@ public:
 			setDirection(-1.0);
 		}
 	}
+
 	void toggle() {
 		if (isEnd())
 			rstart();
 		else if (isBegin())
 			start();
 	}
+
+	void setNormalizedTime(double t) {
+		t = simdata::clampTo(t, 0.0, 1.0);
+		b_NormalizedTime->value() = t;
+		setReferenceTime();
+	}
+
+	double getReferenceTime() const {
+		return b_ReferenceTime->value();
+	}
+
+	double getNormalizedTime() const {
+		return b_NormalizedTime->value();
+	}
+
+	double getDirection() const {
+		return m_Direction;
+	}
+
+	void setNameIfEmpty(std::string const &name) {
+		if (m_Name.empty()) m_Name = name;
+	}
+
+	std::string const &getName() const {
+		return m_Name;
+	}
+
 	void bindChannels(Bus::Ref bus) {
+		assert(!m_Name.empty());
 		if (!b_ReferenceTime.valid()) {
 			std::string name = m_Name + ".ReferenceTime";
 			b_ReferenceTime = bus->getSharedChannel(name);
 		}
 	}
+
 	void registerChannels(Bus::Ref bus) {
+		assert(!m_Name.empty());
 		std::string name = m_Name + ".ReferenceTime";
 		if (!bus->hasChannel(name)) {
 			 b_ReferenceTime = bus->registerSharedDataChannel(name, m_InitialTime);

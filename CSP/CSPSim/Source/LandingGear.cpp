@@ -59,13 +59,13 @@ using simdata::Vector3;
 
 SIMDATA_REGISTER_INTERFACE(LandingGear)
 SIMDATA_REGISTER_INTERFACE(GearDynamics)
-SIMDATA_REGISTER_INTERFACE(GearAnimation)
+SIMDATA_REGISTER_INTERFACE(GearSequenceAnimation)
 SIMDATA_REGISTER_INTERFACE(GearStructureAnimation)
 SIMDATA_REGISTER_INTERFACE(M2kGearStructureAnimation)
 
 
 LandingGear::LandingGear() {
-	m_Name = "Nonamed gear";
+	m_Name = "Unnamed gear";
 	m_Chained = false;
 	m_K = 0.0;
 	m_Beta = 0.0;
@@ -76,7 +76,9 @@ LandingGear::LandingGear() {
 	m_TireK = 200000.0;
 	m_TireBeta = 500.0;
 	m_Damage = 0.0;
-	m_Extended = true;
+	m_Extend = true;
+	m_FullyExtended = true;
+	m_FullyRetracted = false;
 	m_Compression = 0.0;
 	m_CompressionLimit = 0.0;
 	m_WOW = false;
@@ -108,7 +110,6 @@ LandingGear::LandingGear() {
 	m_DragFactor = 0.8;
 }
 
-
 void LandingGear::postCreate() {
 	Object::postCreate();
 	m_Motion.normalize();
@@ -117,13 +118,12 @@ void LandingGear::postCreate() {
 
 
 Vector3 LandingGear::simulateSubStep(Vector3 const &origin,
-                                              Vector3 const &vBody,
-                                              simdata::Quat const &q,
-                                              double height,
-                                              Vector3 const &normalGroundBody)
+                                     Vector3 const &vBody,
+                                     simdata::Quat const &q,
+                                     double height,
+                                     Vector3 const &normalGroundBody)
 {
-	if (!m_Extended) return Vector3::ZERO;
-	
+	if (m_FullyRetracted) return Vector3::ZERO;
 	resetForces();
 
 	// do suspension physics to get normal force
@@ -139,12 +139,28 @@ Vector3 LandingGear::simulateSubStep(Vector3 const &origin,
 	return m_NormalForce + m_TangentForce;
 }
 
+void LandingGear::extend() {
+	if (!m_Extend && m_GearSequenceAnimation.valid()) {
+		m_Extend = true;
+		m_FullyExtended = false;
+		m_FullyRetracted = false;
+		m_GearSequenceAnimation->extend();
+	}
+}
+
+void LandingGear::retract() {
+	if (m_Extend && m_GearSequenceAnimation.valid()) {
+		m_Extend = false;
+		m_FullyExtended = false;
+		m_FullyRetracted = false;
+		m_GearSequenceAnimation->retract();
+	}
+}
 
 void LandingGear::setBraking(double setting) {
 	setting = simdata::clampTo(setting,-1.0,1.0);
 	m_BrakeSetting = setting;
 }
-
 
 double LandingGear::setSteering(double setting, double link_brakes) {
 	setting = simdata::clampTo(setting,-1.0,1.0);
@@ -155,19 +171,17 @@ double LandingGear::setSteering(double setting, double link_brakes) {
 	return m_SteerAngle;
 }
 
-
 double LandingGear::getDragFactor() const {
+	if (m_FullyRetracted) return 0.0;
 	// XXX very temporary hack (need xml, partial extension, etc)
-	if (m_Extended) return m_DragFactor;
-	return 0.0;
+	return m_DragFactor;
 }
 
 
 void LandingGear::preSimulationStep(double /*dt*/) {
-	if (!m_Extended) return;
+	if (m_FullyRetracted) return;
 	// XXX anything to do here?
 }
-
 
 /**
  * Update the brake caliper in response to brake input.
@@ -182,7 +196,6 @@ void LandingGear::updateBraking(double dt) {
 	if (m_Brake < 0.0) m_Brake = 0.0;
 	if (m_Brake > 1.0) m_Brake = 1.0;
 }
-
 
 /**
  * Update Weight-On-Wheels flag and record touchdown point
@@ -200,7 +213,6 @@ void LandingGear::updateWOW(Vector3 const &origin, simdata::Quat const &q) {
 		m_WOW = false;
 	}
 }
-
 
 void LandingGear::updateTireRotation(double dt) {
 	// spindown due to friction when not in contact
@@ -223,12 +235,6 @@ void LandingGear::updateTireRotation(double dt) {
 		}
 	}
 	m_TireRotation += m_TireRotationRate * dt;
-}
-
-simdata::Vector3 LandingGear::getDisplacement() const {
-	Vector3 move = getPosition();
-	move -= getMaxPosition();
-	return move;
 }
 
 /**
@@ -301,7 +307,7 @@ void LandingGear::postSimulationStep(double dt,
                                      simdata::Quat const &q,
                                      double const height,
                                      Vector3 const &normalGroundBody) {
-	if (!m_Extended) return;
+	if (m_FullyRetracted) return;
 	resetForces();
 	// update order matters
 	updateBraking(dt);
@@ -314,6 +320,24 @@ void LandingGear::postSimulationStep(double dt,
 void LandingGear::residualUpdate(double dt, double airspeed) {
 	updateBrakeTemperature(dt, 0.0, airspeed);
 	updateTireRotation(dt);
+}
+
+void LandingGear::updateAnimations(double dt) {
+	if (m_GearStructureAnimation.valid()) {
+		m_GearStructureAnimation->update(getDisplacement(), getTireRotation(), dt);
+	}
+	if (m_GearSequenceAnimation.valid()) {
+		m_GearSequenceAnimation->update(dt);
+		if (m_Extend && !m_FullyExtended) {
+			m_FullyExtended = (getExtension() > 0.99);
+		} else if (!m_Extend && !m_FullyRetracted) {
+			m_FullyRetracted = (getExtension() < 0.01);
+		}
+	}
+}
+
+double LandingGear::getExtension() const {
+	return !m_GearSequenceAnimation ? 1.0 : m_GearSequenceAnimation->getExtension();
 }
 
 void LandingGear::updateBrakeTemperature(double dt, double dissipation, double airspeed) {
@@ -552,29 +576,46 @@ void LandingGear::updateWheel(double dt,
 	//m_TangentForce += XXX_tfb;
 }
 
-DEFINE_INPUT_INTERFACE(GearAnimation);
+void LandingGear::registerChannels(Bus* bus) {
+	CSP_LOG(OBJECT, INFO, "Registering " << getName() << " channels");
+	if (m_GearSequenceAnimation.valid()) {
+		m_GearSequenceAnimation->setGearName(getName());
+		m_GearSequenceAnimation->registerChannels(bus);
+	} else {
+		CSP_LOG(OBJECT, DEBUG, "GearSequenceAnimation for " << getName() << " not valid");
+	}
+	if (m_GearStructureAnimation.valid()) {
+		m_GearStructureAnimation->setGearName(getName());
+		m_GearStructureAnimation->registerChannels(bus);
+	} else {
+		CSP_LOG(OBJECT, DEBUG, "GearStructureAnimation for " << getName() << " not valid");
+	}
+}
+
+
+DEFINE_INPUT_INTERFACE(GearDynamics);
 
 void GearDynamics::doComplexPhysics(double) {
+	if (m_FullyRetracted && !isGearExtendSelected()) return;
 	m_Force = m_Moment = Vector3::ZERO;
-	if (!isGearExtended()) return;
 	Vector3 airflow_body = m_WindVelocityBody - *m_VelocityBody;
-	double airspeed = airflow_body.length();
+	const double airspeed = airflow_body.length();
 	Vector3 dynamic_pressure = 0.5 * (b_Density->value()) * airflow_body * airspeed;
-	size_t n = m_Gear.size();
+	m_FullyRetracted = true;
+	const size_t n = m_Gear.size();
 	for (size_t i = 0; i < n; ++i) {
 		LandingGear &gear = *(m_Gear[i]);
-		double extension = 1.0;
-		if (b_GearExtension.valid())
-			extension = b_GearExtension->value();
+		if (gear.isFullyRetracted()) continue;
+		m_FullyRetracted = false;
+		const double extension = gear.getExtension();
+		// Approx: gear move to center with retraction.  currently LandingGear does not take
+		// extension into account when computing forces, so really only effects wind drag.
+		// at least it _shouldn't_ be common to retract gear while touching the ground...
 		Vector3 R = extension * gear.getPosition();
 		Vector3 F = Vector3::ZERO;
 		if (b_NearGround->value()) {
 			Vector3 vBody = *m_VelocityBody + (*m_AngularVelocityBody ^ R);
-			F += gear.simulateSubStep(*m_PositionLocal,
-			                          vBody,
-			                          *m_Attitude,
-			                          m_Height,
-			                          m_GroundNormalBody);
+			F += gear.simulateSubStep(*m_PositionLocal, vBody, *m_Attitude, m_Height, m_GroundNormalBody);
 		}
 		F += extension * gear.getDragFactor() * dynamic_pressure;
 		m_Force += F;
@@ -583,23 +624,16 @@ void GearDynamics::doComplexPhysics(double) {
 }
 
 GearDynamics::GearDynamics():
-	m_Height(0.0) {
+	m_Height(0.0),
+	m_FullyRetracted(false) {
 }
 
 void GearDynamics::registerChannels(Bus *bus) {
 	assert(bus!=0);
 	b_WOW = bus->registerLocalDataChannel<bool>("State.WOW", false);
-
-	size_t n(m_Gear.size());
-	b_GearDisplacement.resize(n);
-	b_TireRotation.resize(n);
-	for(size_t i = 0; i<n; ++i) {
-		std::string gear_name = "LandingGear." + m_Gear[i]->getName();
-		CSP_LOG(OBJECT, INFO, "GearDynamics: gear name = " << m_Gear[i]->getName());
-		b_GearDisplacement[i] = bus->registerLocalDataChannel<Vector3>(gear_name + "Displacement",Vector3::ZERO);
-		b_TireRotation[i] = bus->registerLocalDataChannel<double>(gear_name + "TireRotation",0.0);
-		//b_GearDisplacement.push_back(bus->registerLocalDataChannel<Vector3>(gear_name + "Displacement",Vector3::ZERO));
-		//b_TireRotation.push_back(bus->registerLocalDataChannel<double>(gear_name+"TireRotation",0.0));
+	b_GearExtendSelected = bus->registerLocalDataChannel<bool>("State.GearExtendSelected", false);
+	for (unsigned i = 0; i < m_Gear.size(); ++i) {
+		m_Gear[i]->registerChannels(bus);
 	}
 }
 
@@ -613,19 +647,14 @@ void GearDynamics::importChannels(Bus *bus) {
 	b_NearGround = bus->getChannel(Kinetics::NearGround);
 	b_GroundN = bus->getChannel(Kinetics::GroundN);
 	b_GroundZ = bus->getChannel(Kinetics::GroundZ);
-	b_GearExtension = bus->getChannel("Aircraft.GearSequence.NormalizedTime"); 
 }
-	
+
 void GearDynamics::computeForceAndMoment(double x) {
 	doComplexPhysics(x);
 }
 
-bool GearDynamics::isGearExtended() const {
-	// TODO: different extension for each gear
-	if (b_GearExtension.valid())
-		return b_GearExtension->value() > 0.1;
-	else 
-		return true;
+bool GearDynamics::isGearExtendSelected() const {
+	return b_GearExtendSelected->value();
 }
 
 bool GearDynamics::getWOW() const {
@@ -652,7 +681,7 @@ void GearDynamics::preSimulationStep(double dt) {
 	b_WOW->value() = false;
 	setSteering(b_SteeringInput->value());
 	setBraking(b_LeftBrakeInput->value(), b_RightBrakeInput->value());
-	if (!isGearExtended()) return;
+	if (m_FullyRetracted) return;
 	if (!b_NearGround->value()) return;
 	m_WindVelocityBody = m_Attitude->invrotate(b_WindVelocity->value());
 	m_GroundNormalBody = m_Attitude->invrotate(b_GroundN->value());
@@ -666,9 +695,11 @@ void GearDynamics::preSimulationStep(double dt) {
 void GearDynamics::postSimulationStep(double dt) {
 	BaseDynamics::postSimulationStep(dt);
 	size_t n =  m_Gear.size();
-	if (!isGearExtended() || !b_NearGround->value()) {
-		double airspeed = b_GearExtension->value() ? m_VelocityBody->length() : 0.0;  // approx	
-		for (size_t i = 0; i < n; ++i) { m_Gear[i]->residualUpdate(dt, airspeed); }
+	if (m_FullyRetracted || !b_NearGround->value()) {
+		for (size_t i = 0; i < n; ++i) {
+			double airspeed = m_Gear[i]->isFullyRetracted() ? 0.0 : m_VelocityBody->length();  // approx
+			m_Gear[i]->residualUpdate(dt, airspeed);
+		}
 		return;
 	}
 	m_Height = m_PositionLocal->z() - b_GroundZ->value();
@@ -682,11 +713,7 @@ void GearDynamics::postSimulationStep(double dt) {
 
 double GearDynamics::onUpdate(double dt) {
 	size_t n =  m_Gear.size();
-	for (size_t i = 0; i < n; ++i) {
-		const LandingGear &gear = *m_Gear[i];
-		b_GearDisplacement[i]->value() = gear.getDisplacement();
-		b_TireRotation[i]->value() = gear.getTireRotation();
-	}
+	for (size_t i = 0; i < n; ++i) m_Gear[i]->updateAnimations(dt);
 	return 0.016;
 }
 
@@ -696,11 +723,29 @@ void GearDynamics::getInfo(InfoList &info) const {
 	line.precision(0);
 	simdata::Ref<LandingGear> main = m_Gear[1];
 	line << "Gear: ";
-	if (!isGearExtended()) line << "UP"; else line << "DOWN";
+	if (m_FullyRetracted) line << "UP"; else line << "DOWN";
 	line << " T_brakes " << std::setw(3) << main->getBrakeTemperature() << "K";
 	if (getWOW()) line << " WOW";
 	if (main->getSkidding()) line << " SKID";
 	if (main->getABSActive()) line << " ABS";
 	info.push_back(line.str());
+}
+
+void GearDynamics::GearUp() {
+	for (unsigned i = 0; i < m_Gear.size(); ++i) m_Gear[i]->retract();
+	b_GearExtendSelected->value() = false;
+}
+
+void GearDynamics::GearDown() {
+	for (unsigned i = 0; i < m_Gear.size(); ++i) m_Gear[i]->extend();
+	b_GearExtendSelected->value() = true;
+}
+
+void GearDynamics::GearToggle() {
+	if (isGearExtendSelected()) {
+		GearUp();
+	} else {
+		GearDown();
+	}
 }
 

@@ -22,6 +22,20 @@
  *
  **/
 
+// XXX GEARFIX
+// remote landing gear extension/retraction is completely broken at the moment.
+// the message is currently set up for sending a binary gear state flag and an
+// optional gear extension value (0->1).  in principle this state should be
+// sent for each individual gear, but that is not the most immediate problem.
+// landing gear animation is driven by a TimedSequence that is created by
+// children of GearDynamics.  Since remote objects currently don't have a
+// GearDynamics system we will have to drive the timed sequence channels
+// ourselves.  This should be relatively easy.  To make the gear look good on
+// the ground however, we also need the to drive the tire rotation, steering,
+// and displacement animations.  alternatively we could drive these with a
+// local (highly simplified) physics engine, but since these will only matter
+// at close range on the ground it is probably worth using a little bandwidth
+// to save cpu and reduce code complexity.
 
 #include <Controller.h>
 #include <KineticsChannels.h>
@@ -51,9 +65,8 @@ void RemoteController::importChannels(Bus *bus) {
 	b_AngularVelocityBody = bus->getChannel(bus::Kinetics::AngularVelocityBody);
 	b_Attitude = bus->getChannel(bus::Kinetics::Attitude);
 	b_AccelerationBody = bus->getChannel(bus::Kinetics::AccelerationBody);
-	// XXX: FIXME, it doesn'nt work.
-	//m_GearExtension.bind(bus->getChannel("LandingGear.GearExtended"));
-	m_GearExtension.bind(bus->getChannel("Aircraft.GearSequence.NormalizedTime"));
+	// TODO send extension of each gear
+	//m_GearExtension.bind(bus->getChannel(bus::State::GearExtension));
 	m_AileronDeflection.bind(bus->getChannel(bus::ControlSurfaces::AileronDeflection));
 	m_ElevatorDeflection.bind(bus->getChannel(bus::ControlSurfaces::ElevatorDeflection));
 	m_RudderDeflection.bind(bus->getChannel(bus::ControlSurfaces::RudderDeflection));
@@ -169,6 +182,8 @@ simdata::Ref<simnet::NetworkMessage> RemoteController::getUpdate(simcore::TimeSt
 	if (detail > 4) {
 		// only a single bit for now.  if we don't set the bit every time it will
 		// assume its default value (gear up).
+		// XXX broken (see GEARFIX)
+		/*
 		m_GearExtension.update();
 		const bool gear_up = m_GearExtension.value() == 128;  // 0.0 -> 128
 		if (!gear_up || force) {
@@ -176,6 +191,7 @@ simdata::Ref<simnet::NetworkMessage> RemoteController::getUpdate(simcore::TimeSt
 			// the gear is up.  there are probably better ways to optimize this.
 			update->set_gear_up(gear_up);
 		}
+		*/
 	}
 	if (detail > 6) {
 		if (update_elevator) {
@@ -213,9 +229,8 @@ LocalController::~LocalController() {
 }
 
 void LocalController::registerChannels(Bus *bus) {
-	// XXX: FIXME, it doesn'nt work.
-	//b_GearExtension = bus->registerLocalDataChannel<double>("LandingGear.GearExtended", 0.0);
-	b_GearExtension = bus->registerLocalDataChannel<double>("Aircraft.GearSequence.NormalizedTime", 0.0);
+	// XXX broken (see GEARFIX)
+	// b_GearExtension = bus->registerLocalDataChannel<double>("Aircraft.GearSequence.NormalizedTime", 0.0);
 	b_AileronDeflection = bus->registerLocalDataChannel<double>("ControlSurfaces.AileronDeflection", 0.0);
 	b_ElevatorDeflection = bus->registerLocalDataChannel<double>("ControlSurfaces.ElevatorDeflection", 0.0);
 	b_RudderDeflection = bus->registerLocalDataChannel<double>("ControlSurfaces.RudderDeflection", 0.0);
@@ -228,7 +243,8 @@ void LocalController::importChannels(Bus *bus) {
 	b_Velocity = bus->getSharedChannel(bus::Kinetics::Velocity, true, true);
 	b_AngularVelocity = bus->getSharedChannel(bus::Kinetics::AngularVelocity, true, true);
 	b_Attitude = bus->getSharedChannel(bus::Kinetics::Attitude, true, true);
-	m_GearExtension.bind(b_GearExtension);
+	// XXX broken (see GEARFIX)
+	//m_GearExtension.bind(b_GearExtension);
 	m_AileronDeflection.bind(b_AileronDeflection);
 	m_ElevatorDeflection.bind(b_ElevatorDeflection);
 	m_RudderDeflection.bind(b_RudderDeflection);
@@ -301,7 +317,8 @@ void LocalController::onUpdate(simdata::Ref<simnet::NetworkMessage> const &msg, 
 			setTargetAttitude(update->attitude().Quat());
 		}
 		setTargetPosition(update->position().Vector3() + m_TargetVelocity * dt);
-		b_GearExtension->value() = (update->gear_up() ? 0.0 : 1.0);
+		// XXX broken (see GEARFIX)
+		// b_GearExtension->value() = (update->gear_up() ? 0.0 : 1.0);
 		if (update->has_elevator_deflection()) {
 			m_ElevatorDeflection.setTarget(update->elevator_deflection());
 		}

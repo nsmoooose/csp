@@ -400,6 +400,30 @@ def GlobalSetup(env, distributed=1, short_messages=None, default_message=None, w
 	SConsEnvironment.Documentation = MakeDocumentation
 
 
+class GlobalSettings:
+	def __init__(self, config=None):
+		self._platform = sys.platform
+		self._config = config
+		self._dict = {}
+	def IsWindows(self):
+		return self._platform.startswith('win')
+	def IsLinux(self):
+		return self._platform.startswith('linux')
+	def UnsupportedPlatform(self):
+		print 'Platform "%s" not supported' % self._platform
+		sys.exit(1)
+	def __setattr__(self, key, value):
+		if key.startswith('_'):
+			self.__dict__[key] = value
+		else:
+			self._dict[key] = value
+	def env(self):
+		env = SCons.Environment.Environment(**self._dict)
+		GlobalSetup(env)
+		if self._config is not None:
+			env.SetConfig(self._config)
+		return env
+
 
 ############################################################################
 # ENHANCED SWIG SUPPORT
@@ -430,7 +454,7 @@ def AddSwigBuild(env):
 
 def AddSwigDep(env):
 	def SwigScanner(node, env, path, arg=None):
-		cmd = env.subst('$SWIG -MM $_CPPINCFLAGS %s' % str(node))
+		cmd = env.subst('$SWIG $SWIGFLAGS $SWIGINCLUDES -MM %s' % str(node))
 		stdin, stdout, stderr = os.popen3(cmd, 't')
 		deps = ''.join(map(lambda x: x.strip(), stdout.readlines()))
 		deps = map(lambda x: "#/"+x.strip(), deps.split('\\'))[1:]

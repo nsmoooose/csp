@@ -37,7 +37,7 @@
 #include <SimData/Log.h>
 #include <SimData/Singleton.h>
 
-#ifdef __GNUC__
+#if defined(__GNUC__) && !defined(__MINGW32__)
 # include <csignal>
 # include <execinfo.h>
 # include <exception>
@@ -107,7 +107,7 @@ class Trace: public TraceBase {
 
 public:
 
-#ifdef __GNUC__
+#if defined(__GNUC__) && !defined(__MINGW32__)
 
 	static void StackDump(std::ostream &out, int skip=0) {
 		void *trace[64];
@@ -133,7 +133,7 @@ public:
 
 #endif // __GNUC__
 
-#ifdef __GNUC__
+#if defined(__GNUC__) && !defined(__MINGW32__)
 
 private:
 	static void __sigsegv(int sign) {
@@ -166,7 +166,7 @@ public:
 	 *  @returns true if succesful.
 	 */
 	static bool install() {
-#ifdef __GNUC__
+#if defined(__GNUC__) && !defined(__MINGW32__)
 		signal(SIGABRT, __sigabort);
 		signal(SIGSEGV, __sigsegv);
 		return true;

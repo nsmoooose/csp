@@ -318,6 +318,7 @@ headers = [
     "Random.h",
     "Real.h",
     "Ref.h",
+    "ScopedPointer.h",
     "Singleton.h",
     "String.h",
     "Trace.h",

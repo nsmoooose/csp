@@ -376,7 +376,7 @@ int Quat::writeBinary(unsigned char * ptrBuf, int size)
   memcpy((void*)ptrBuf, (void*)&_x, sizeof(double)); ptrBuf += sizeof(double);
   memcpy((void*)ptrBuf, (void*)&_y, sizeof(double)); ptrBuf += sizeof(double);
   memcpy((void*)ptrBuf, (void*)&_z, sizeof(double)); ptrBuf += sizeof(double);
-  memcpy((void*)ptrBuf, (void*)&_w, sizeof(double)); ptrBuf += sizeof(double); 
+  memcpy((void*)ptrBuf, (void*)&_w, sizeof(double)); ptrBuf += sizeof(double);
   return 4*sizeof(double);
 }
 

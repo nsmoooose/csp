@@ -1,5 +1,17 @@
 Version 0.4.0 (in progress)
 ===========================
+
+2004-05-28: wolverine
+  * It was determined that Vector3 and Quad have extra bytes
+    to handle there virtual function tables. The networking
+    code now has matching transfer functions that mimic the 
+    corresponding SimData ones minus the virtual functions. A
+    slight change was made to Vector3 and Quad so that the 
+    check during WriteBinary and ReadBinary looks for a size
+    that only includes the functamental members. So that a
+    to read and write a Vector3 a 24 bytes binary buffer would
+    be passed in to the proper Vector3 functions.
+
 2004-04-25: delta
   * Removed obsolete SimDataMSVC folder.
   

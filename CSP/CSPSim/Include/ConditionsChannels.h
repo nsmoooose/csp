@@ -1,5 +1,5 @@
-// Combat Simulator Project - FlightSim Demo
-// Copyright (C) 2003, 2005 The Combat Simulator Project
+// Combat Simulator Project
+// Copyright (C) 2003-2005 The Combat Simulator Project
 // http://csp.sourceforge.net
 //
 // This program is free software; you can redistribute it and/or
@@ -18,36 +18,27 @@
 
 
 /**
- * @file KineticsChannels.h
+ * @file ConditionsChannels.h
  *
  **/
 
 
-#ifndef __KINETICS_CHANNELS_H__
-#define __KINETICS_CHANNELS_H__
+#ifndef __CONDITIONS_CHANNELS_H__
+#define __CONDITIONS_CHANNELS_H__
 
 
 namespace bus {
 
-struct Kinetics {
-	static const char *NearGround;
-	static const char *Position;
-	static const char *Velocity;
-	static const char *AngularVelocity;
-	static const char *AngularVelocityBody;
-	static const char *AccelerationBody;
-	static const char *Attitude;
-	static const char *Mass;
-	static const char *Inertia;
-	static const char *InertiaInverse;
-	static const char *GroundN;
-	static const char *GroundZ;
-	static const char *Heading;
-	static const char *Roll;
-	static const char *Pitch;
+struct Conditions {
+	static const char *WindVelocity;
+	static const char *Pressure;
+	static const char *Density;
+	static const char *Temperature;
+	static const char *Mach;
+	static const char *CAS;
 };
 
 }
 
-#endif // __KINETICS_CHANNELS_H__
+#endif // __CONDITIONS_CHANNELS_H__
 

@@ -207,6 +207,9 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath="..\..\Source\Channels.cpp">
+			</File>
+			<File
 				RelativePath="..\..\Source\ChunkLodTerrain.cpp">
 			</File>
 			<File
@@ -274,9 +277,6 @@
 			</File>
 			<File
 				RelativePath="..\..\Source\InputInterface.cpp">
-			</File>
-			<File
-				RelativePath="..\..\Source\KineticsChannels.cpp">
 			</File>
 			<File
 				RelativePath="..\..\Source\LandingGear.cpp">

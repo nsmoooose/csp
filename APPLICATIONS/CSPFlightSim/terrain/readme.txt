@@ -1,1 +1,0 @@
-this directory is for terrain elevation and texture files.

@@ -22,6 +22,9 @@ Version 0.4.0 (in progress)
     generate the record class id.  The single 64-bit id was being
     truncated when used to construct the simdata::hasht identifier.
 
+  * Updated docs in TaggedRecord.h.  Added a global registry for
+    tagged records.
+
 2004-06-16: onsight
   * Doxygen cleanups.
 

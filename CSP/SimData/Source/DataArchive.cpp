@@ -255,9 +255,10 @@ void DataArchive::addObject(Object& a, std::string const &path) {
 	if (!_is_read && !_finalized) {
 		int offset = ftell(_f);
 		ArchiveWriter writer(_f);
+		SIMDATA_LOG(LOG_ARCHIVE, LOG_DEBUG, "DataArchive: adding " << path << " [" << hash_string(path) << "]");
 		a.serialize(writer);
 		int length = writer.getCount();
-		SIMDATA_LOG(LOG_ARCHIVE, LOG_DEBUG, "DataArchive: adding " << path << " (" << length << " bytes) [" << hash_string(path) << "]");
+		SIMDATA_LOG(LOG_ARCHIVE, LOG_DEBUG, "DataArchive: stored " << length << " bytes (" << path << ")");
 		_addEntry(offset, length, a.getClassHash(), path);
 	}
 }
@@ -376,7 +377,7 @@ const LinkBase DataArchive::getObject(const Path& path, std::string const &path_
 	fseek(_f, offset, SEEK_SET);
 	fread(buffer, length, 1, _f);
 	ArchiveReader reader(buffer, length, this, _chain);
-	SIMDATA_LOG(LOG_ARCHIVE, LOG_DEBUG, "got object " << dup->getClassName());
+	SIMDATA_LOG(LOG_ARCHIVE, LOG_DEBUG, "loading new object " << dup->getClassName() << " from " << from);
 	dup->_setPath(id);
 	try {
 		dup->serialize(reader);
@@ -397,6 +398,7 @@ const LinkBase DataArchive::getObject(const Path& path, std::string const &path_
 	if (proxy->isStatic()) {
 		_addStatic(dup, "", id);
 	}
+	SIMDATA_LOG(LOG_ARCHIVE, LOG_DEBUG, "finished loading " << dup->getClassName() << " from " << from);
 	return LinkBase(path, dup);
 }
 

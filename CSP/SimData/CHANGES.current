@@ -1,6 +1,19 @@
 Version 0.4.0 (in progress)
 ===========================
 
+2004-08-08: onsight
+ * Removed restriction on serializing null+none Links.  Added a
+   validation callback in ObjectInterface to catch null+none Links
+   for required fields.
+
+ * Changed Ref assignment back to throwing an exception for incompatible
+   types.  This is the correct default behavior.  If you expect a Ref
+   assignment to fail, either use Ref<FOO>::compatible() to explicitly
+   test for compatibility without throwing an exception, or catch the
+   ConversionError.
+
+ * Minor logging improvements.
+
 2004-07-26: delta
  * Removed some not needed SIMDATA_EXPORT for vs 7.1.
 

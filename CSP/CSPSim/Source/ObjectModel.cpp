@@ -634,21 +634,18 @@ void SceneModel::bindAnimationChannels(Bus::Ref bus) {
 		int index, n = m_AnimationCallbacks.size();
 		for (index = 0; index < n; ++index) {
 			std::string name = m_AnimationCallbacks[index]->getChannelName(); 
-			DataChannel<double>::CRef channel = bus->getChannel(name, false);
-			if (channel.valid())
+			simdata::Ref<const DataChannelBase> channel = bus->getChannel(name, false);
+			if (!channel.valid()) {
+				CSP_LOG(OBJECT, ERROR, "bindAnimationChannels: animation channel '" << name << "' not found; skipping");
+				continue;
+			}
+			bool compatible = (DataChannel<double>::CRef::compatible(channel) || \
+			                   DataChannel<bool>::CRef::compatible(channel) || \
+			                   DataChannel<simdata::Vector3>::CRef::compatible(channel));
+			if (compatible) {
 				m_AnimationCallbacks[index]->bindChannel(channel);
-			else {
-				DataChannel<simdata::Vector3>::CRef channel = bus->getChannel(name, false);
-				if (channel.valid()) 
-					m_AnimationCallbacks[index]->bindChannel(channel);
-				else {
-					DataChannel<bool>::CRef channel = bus->getChannel(name, false);
-					if (channel.valid()) 
-						m_AnimationCallbacks[index]->bindChannel(channel);
-					else {
-						CSP_LOG(OBJECT, ERROR, "SceneModel::bindAnimationChannels: animation channel's type not supported");
-					}
-				}
+			} else {
+				CSP_LOG(OBJECT, ERROR, "bindAnimationChannels: animation channel '" << name << "' type not supported; skipping");
 			}
 		}
 	}

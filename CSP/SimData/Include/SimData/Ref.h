@@ -292,6 +292,14 @@ public:
 		return _reference != p.get();
 	}
 
+	/** Test assignment compatability.  If this test fails, then assignment
+	 *  would generate a ConversionError exception.
+	 */
+	template <class Q>
+	static inline bool compatible(Ref<Q> const & p) {
+		return p.isNull() || dynamic_cast<CLASS*>(p.get()) != 0;
+	}
+
 	/** Comparison with other simdata pointers.
 	 *  XXX the base class NonCopyable is used here instead of CLASS since
 	 *  swig generates bad code if CLASS is const (const const).
@@ -324,7 +332,7 @@ protected:
 		_reference = dynamic_cast<CLASS*>(ptr);
 		if (_reference == 0 && ptr != 0) {
 			SIMDATA_LOG(LOG_ALL, LOG_ERROR, "simdata::Ref() assignment: incompatible types (dynamic cast failed).");
-			//throw ConversionError();
+			throw ConversionError();
 		}
 	}
 

@@ -4,6 +4,10 @@
 2004-08-08: onsight
   * Clamp throttle to [0,1] when using keyboard controls (was [-1,1]).
 
+  * Tweaked animation channel binding to explicitly test type-
+    compatibility before assigning.  Assigning incompatible Ref types
+    now throws an exception (SimData).
+
 2004-08-07: onsight
   * Cleaned up tree images a bit to remove purple pixels.  Converted
     tree0.rgba to png.  Adjusted the aspect ratios slightly.

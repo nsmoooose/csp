@@ -38,6 +38,7 @@
 #include <SimData/TypeAdapter.h>
 #include <SimData/Namespace.h>
 #include <SimData/Archive.h>
+#include <SimData/Link.h>
 
 /*
  * Simulated Partial Template Specialization
@@ -57,6 +58,46 @@ class Object;
 
 SIMDATA_EXCEPTION(InterfaceError)
 
+
+template <typename T>
+struct MemberValidator
+{
+	static inline void validate(T const &, bool /*required*/, bool /*write*/) { }
+};
+
+
+template <typename T>
+struct MemberValidator< Link<T> >
+{
+	static void validate(Link<T> const &link, bool required, bool write) {
+		if (required) {
+			if (link.isNone() && link.isNull()) {
+				if (write) {
+					throw SerializeError("Attempt to save Link with no path and no object");
+				} else {
+					throw SerializeError("Attempt to load Link with no path and no object");
+				}
+			}
+		}
+	}
+};
+
+template <typename T>
+struct MemberValidator< std::vector< Link<T> > >
+{
+	static void validate(std::vector< Link<T> > const &link, bool required, bool write) {
+		typename std::vector< Link<T> >::const_iterator iter = link.begin();
+		for (; iter != link.end(); ++iter) {
+			if (iter->isNone() && iter->isNull()) {
+				if (write) {
+					throw SerializeError("Attempt to save Link with no path and no object");
+				} else {
+					throw SerializeError("Attempt to load Link with no path and no object");
+				}
+			}
+		}
+	}
+};
 
 
 /** Base class for storing and accessing member variable references.
@@ -219,10 +260,12 @@ public:
 		}
 	}
 	virtual void serialize(OBJECT const *object, Writer &writer) const {
+		MemberValidator<T>::validate(object->*member, required, true /*write*/);
 		writer << (object->*member);
 	}
 	virtual void serialize(OBJECT *object, Reader &reader) const {
 		reader >> (object->*member);
+		MemberValidator<T>::validate(object->*member, required, false /*write*/);
 	}
 };
 
@@ -263,11 +306,13 @@ public:
 	}
 	virtual void serialize(OBJECT const *object, Writer &writer) const {
 		T &m = object->*member;
+		MemberValidator<T>::validate(m, required, true /*write*/);
 		writer << m;
 	}
 	virtual void serialize(OBJECT *object, Reader &reader) const {
 		T &m = object->*member;
 		reader >> m;
+		MemberValidator<T>::validate(m, required, false /*write*/);
 	}
 };
 
@@ -275,7 +320,8 @@ public:
 template <class OBJECT, typename T>
 class MemberAccessor< OBJECT, std::vector<T> >: public MemberAccessorBase<OBJECT>
 {
-	std::vector<T> OBJECT::* member;
+	typedef std::vector<T> VT;
+	VT OBJECT::* member;
 public:
 	MemberAccessor(std::vector<T> OBJECT::*pm, std::string name_, bool required_) {
 		member = pm;
@@ -301,12 +347,14 @@ public:
 		(object->*member).clear();
 	}
 	virtual void serialize(OBJECT const *object, Writer &writer) const {
-		std::vector<T> const &m = object->*member;
+		VT const &m = object->*member;
+		MemberValidator<VT>::validate(m, required, true /*write*/);
 		writer << m;
 	}
 	virtual void serialize(OBJECT *object, Reader &reader) const {
-		std::vector<T> &m = object->*member;
+		VT &m = object->*member;
 		reader >> m;
+		MemberValidator<VT>::validate(m, required, false /*write*/);
 	}
 };
 

@@ -65,15 +65,19 @@ void LinkBase::serialize(Reader &reader) {
 		if (isNone()) {
 			ObjectID class_id;
 			reader >> class_id;
-			Object *pobj = data_archive->_createObject(class_id);
-			pobj->serialize(reader);
-			// start reference counting before postCreate!
-			_assign_safe(pobj);
-			if (arc->_loadAll()) {
-				pobj->postCreate();
+			if (class_id == 0) {
+				SIMDATA_LOG(LOG_ARCHIVE, LOG_ERROR, "loading Link with no path and no object");
+			} else {
+				Object *pobj = data_archive->_createObject(class_id);
+				pobj->serialize(reader);
+				// start reference counting before postCreate!
+				_assign_safe(pobj);
+				if (arc->_loadAll()) {
+					pobj->postCreate();
+				}
+				// XXX should we also check that 'static' is not set?
+				// (it makes no sense to have a static immediate object)
 			}
-			// XXX should we also check that 'static' is not set?
-			// (it makes no sense to have a static immediate object)
 		} else {
 			if (arc->_loadAll()) {
 				_load(data_archive);
@@ -85,15 +89,21 @@ void LinkBase::serialize(Reader &reader) {
 void LinkBase::serialize(Writer &writer) const {
 	Path::serialize(writer);
 	if (isNone()) {
-		if (isNull()) {
-			throw SerializeError("Attempt to save Link with no path and no object");
-		}
 		ArchiveWriter *arc = dynamic_cast<ArchiveWriter*>(&writer);
 		// XXX temporary assert for debugging; not exactly sure yet how to
 		// handle Links outside of DataArchives.  the current idea (without
 		// the assert) is to only read and write the path.
 		assert(arc);
-		if (arc) {
+
+		if (isNull()) {
+			// saving a null+none link is now allowed.  in the context of xml interfaces,
+			// however, required links cannot be null+none.  this restriction is enforced
+			// by specialized validation classes in ObjectInterface.h.  here we just log
+			// a debug message (although this is probably not very useful).
+			SIMDATA_LOG(LOG_ARCHIVE, LOG_DEBUG, "attempt to save Link with no path and no object");
+			hasht class_hash = 0;
+			writer << class_hash;
+		} else {
 			hasht class_hash = _get()->getClassHash();
 			writer << class_hash;
 			_get()->serialize(writer);
@@ -138,7 +148,7 @@ void LinkBase::_load(DataArchive* archive, ObjectID path) {
 		*this = _ppb;
 		Object* p = _reference;
 		assert(p);
-		SIMDATA_LOG(LOG_ARCHIVE, LOG_DEBUG, "got 0x" << std::hex << int(p) << ")");
+		SIMDATA_LOG(LOG_ARCHIVE, LOG_DEBUG, "loaded " << p->getClassName() << " @ 0x" << std::hex << int(p));
 	}
 }
 

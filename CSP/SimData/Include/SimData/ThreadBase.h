@@ -109,15 +109,17 @@ class ThreadMutex {
 	friend class ThreadCondition;
 public:
 	/** Mutex types:
-	 *   DEFAULT    : same as NORMAL
-	 *   NORMAL     : non-reentrant; attempts to relock by a single thread,
-	 *                or to lock a mutex held by another thread that terminated
-	 *                will cause a deadlock.
-	 *   RECURSIVE  : reentrant; can be relocked by a thread without causing
-	 *                a deadlock.  The mutex will be held until it has been
-	 *                unlocked as many times as it was locked.
-	 *   ERRORCHECK : like NORMAL; but returns an error in situations that would
-	 *                normally result in a deadlock.
+	 *   <dl>
+	 *   <dt>DEFAULT    <dd>same as NORMAL
+	 *   <dt>NORMAL     <dd>non-reentrant; attempts to relock by a single thread,
+	 *                      or to lock a mutex held by another thread that terminated
+	 *                      will cause a deadlock.
+	 *   <dt>RECURSIVE  <dd>reentrant; can be relocked by a thread without causing
+	 *                      a deadlock.  The mutex will be held until it has been
+	 *                      unlocked as many times as it was locked.
+	 *   <dt>ERRORCHECK <dd>like NORMAL; but returns an error in situations that would
+	 *                      normally result in a deadlock.
+	 *   </dl>
 	 */
 	typedef enum { DEFAULT, NORMAL, RECURSIVE, ERRORCHECK } MutexType;
 
@@ -158,8 +160,8 @@ public:
 	 *
 	 *  This method will block if another thread holds the mutex lock.
 	 *  If the current thread has already locked the mutex, the behavior
-	 *  depends on the type of mutex specified during construction (@see
-	 *  MutexType).
+	 *  depends on the type of mutex specified during construction (see
+	 *  ThreadMutex::MutexType).
 	 */
 	void lock() {
 		const int result = pthread_mutex_lock(&m_mutex);
@@ -438,6 +440,31 @@ public:
 	 */
 	~ScopedLock() {
 		m_lock.unlock();
+	}
+
+private:
+	LOCK &m_lock;
+};
+
+
+/** Similar to ScopedLock, but unlocks the mutex for the duration of
+ *  its existence, then relocks the mutex on destruction.
+ */
+template <class LOCK>
+class ScopedUnlock {
+public:
+	/** Construct a new scoped lock for a existing lockable instance.  If constructed
+	 *  an the stack, this will immediately lock the instance for the duration of the
+	 *  current scope.
+	 */
+	ScopedUnlock(LOCK &lock): m_lock(lock) {
+		m_lock.unlock();
+	}
+
+	/** Release the underlying lock.
+	 */
+	~ScopedLock() {
+		m_lock.lock();
 	}
 
 private:

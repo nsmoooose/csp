@@ -40,6 +40,11 @@
 NAMESPACE_SIMDATA
 
 
+/**
+ * @namespace thread
+ *
+ * @brief Global functions for manipulating threads.
+ */
 
 namespace thread {
 
@@ -78,7 +83,7 @@ namespace thread {
 	}
 
 	/** Terminate the current thread if there are any pending cancellation
-	 *  requests.  @see cancel().
+	 *  requests.  @see Thread::cancel().
 	 */
 	static void testCancel() {
 		pthread_testcancel();
@@ -92,7 +97,7 @@ namespace thread {
 		ThreadException::check(result);
 	}
 
-	/* Set the cancellation type to be deferred.  Cancellation requests will be
+	/** Set the cancellation type to be deferred.  Cancellation requests will be
 	 * deferred until a cancellation checkpoint is reached (e.g a blocking wait
 	 * or an explicit call to testCancel()).
 	 */
@@ -217,10 +222,10 @@ private:
 };
 
 
-/** Object oriented wrapper for a Posix thread.
+/** Base class for wrapping a Posix thread.
  *
- *  To create a thread, subclass Thread and implement the run() method.
- *  Then instantiate the class and call start().
+ *  This class is not used directly. To create a thread, subclass Task and
+ *  implement the run() method. @see Thread for details.
  */
 class BaseThread: public NonCopyable {
 
@@ -334,6 +339,39 @@ private:
 };
 
 
+/** Class for starting and manipulating a posix thread.
+ *
+ *  To create a new thread, subclass Task and implement the run() method.
+ *  Then instantiate Thread<YourTaskSubclass>, and call the start() method.
+ *
+ *  For example:
+ *  @code
+ *  // implement a task to run in a separate thread; this is just a
+ *  // silly example.
+ *  class MyTask: public simdata::Task {
+ *  protected:
+ *    // the task action; the thread running this task will terminate when
+ *    // when run() returns.
+ *    virtual void run() {
+ *      for (int i = 0; i < 1000; i++) std::cout << "hello " << i << "\n";
+ *    }
+ *  };
+ *
+ *  void start_a_couple_tasks() {
+ *    // construct a couple threads to execute MyTask
+ *    simdata::Thread<MyTask> task1("hello writer 1");
+ *    simdata::Thread<MyTask> task2("hello writer 2");
+ *
+ *    // start both tasks
+ *    task1.start();
+ *    task2.start();
+ *
+ *    // wait for both tasks to finish
+ *    task1.join()
+ *    task2.join()
+ *  }
+ *  @endcode
+ */
 template <class TASK>
 class Thread: public BaseThread {
 

@@ -1,6 +1,11 @@
 Version 0.4.0 (in progress)
 ===========================
 
+2004-06-22: onsight
+  * Added a ScopedUnlock (trivial reversal of ScopedLock)
+
+  * Cleaned doxygen comments for some thread classes.
+
 2004-06-20: onsight
   * Doxygen and copyright notice updates.
 

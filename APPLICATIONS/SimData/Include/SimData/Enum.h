@@ -77,7 +77,7 @@
 #include <SimData/Namespace.h>
 #include <SimData/BaseType.h>
 #include <SimData/Ref.h>
-#include <SimData/Exception.h>
+#include <SimData/ExceptionBase.h>
 
 #include <string>
 #include <vector>

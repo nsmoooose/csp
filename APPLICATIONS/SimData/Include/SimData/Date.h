@@ -56,7 +56,7 @@
 #define __SIMDATA_DATE_H__
 
 #include <SimData/Archive.h>
-#include <SimData/BaseException.h>
+#include <SimData/ExceptionBase.h>
 #include <SimData/BaseType.h>
 
 

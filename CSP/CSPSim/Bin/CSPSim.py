@@ -55,10 +55,14 @@ def ensureDefaultHID(hid_file):
 	Verify that the specified hid input definition exists.  If not, generate it from
 	from the example input maps in ../Tools/HID/Examples
 	"""
-	if not os.path.exists('../Data/Input'): return
-	output = '../Data/Input/%s.hid' % hid_file
+	input_path = os.path.join('..', 'Data', 'Input')
+	if not os.path.exists(input_path): return
+	output = os.path.join(input_path, '%s.hid' % hid_file)
 	if not os.path.exists(output):
-		os.system('../Tools/HID/cspinput -I../Tools/HID -o%s ../Tools/HID/Examples/%s.map' % (output, hid_file))
+		tool_path = os.path.join('..', 'Tools', 'HID')
+		csp_input = os.path.join(tool_path, 'cspinput')
+		example = os.path.join(tool_path, 'Examples', '%s.map' % hid_file)
+		os.system('%s -I%s -o%s %s' % (csp_input, tool_path, output, example))
 		if os.path.exists(output):
 			print 'Default input map created for %s.hid; see Tools/HID/README for details.' % hid_file
 		else:

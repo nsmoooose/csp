@@ -5,7 +5,7 @@ device keyboard 0 key US_keyboard
 device mouse 0 mouse standard_mouse
 
 bind sim:vehicles.aircraft.m2k
-bind sim:vehicles.aircraft.f16
+bind sim:vehicles.aircraft.F16DJ
 
 mode base
 

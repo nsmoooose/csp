@@ -1,9 +1,13 @@
  Version 0.4.0 (in progress)
 ===========================
 
+2005-02-20: onsight
+ * Fix path for hid generation under windows.
+ * Add the correct F16DJ binding for the core aircraft.map.
+
 2005-02-18: delta
  * Fixed a bug with ContactMarkers.
- 
+
 2005-02-17: lologramme
  * Added F16 D
 

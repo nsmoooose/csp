@@ -470,8 +470,8 @@ void AircraftObject::doComplexPhysics(double dt)
 
 	m_FlightModel->setGroundZ(m_GroundZ);
 	m_FlightModel->setGroundN(m_GroundN);
-	//m_FlightModel->doSimStep(dt);
-	m_FlightModel->doSimStep2(dt);
+	m_FlightModel->doSimStep(dt);
+	//m_FlightModel->doSimStep2(dt);
 	updateOrientation();
 	m_Direction = m_Orientation * simdata::Vector3::YAXIS;
 	m_NormalDirection = m_Orientation * simdata::Vector3::ZAXIS;

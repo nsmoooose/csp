@@ -25,6 +25,9 @@
 
 #include "GameScreen.h"
 
+#include <ctime>
+#include <iomanip>
+
 #include <osg/Image>
 #include <osgDB/WriteFile>
 #include <Producer/Camera>
@@ -136,6 +139,19 @@ void GameScreen::initInterface()
 class SnapImageDrawCallback: public Producer::Camera::Callback {
 	std::string m_Filename, m_Ext;
     bool m_SnapImageOnNextFrame;
+	std::string buildSuffix() {
+		time_t timer;
+		time(&timer);
+		tm* time_ptr = localtime(&timer);
+		std::ostringstream os;
+		os.fill( '0' );
+		os << std::setw(2) << time_ptr->tm_mon + 1 <<  std::setw(2) << time_ptr->tm_mday << std::setw(2) << time_ptr->tm_year - 100;
+		std::string day = os.str();
+		os.str("");
+		os << std::setw(2) << time_ptr->tm_hour << std::setw(2) << time_ptr->tm_min << std::setw(2) << time_ptr->tm_sec;
+		std::string hour = os.str();
+		return day + '-' + hour;
+	}
 public:
 	SnapImageDrawCallback(const std::string& filename = "CSPScreen",const std::string& ext = ".bmp"):
         m_Filename(filename),
@@ -147,16 +163,6 @@ public:
 	}
     bool getSnapImageOnNextFrame() const { 
 		return m_SnapImageOnNextFrame; 
-	}
-	std::string buildSuffix() {
-		char tmp_char[128];
-		_strdate(tmp_char);
-		std::string day = tmp_char;
-		day.erase(std::remove(day.begin(),day.end(),'/'),day.end());
-		_strtime(tmp_char);
-		std::string hour = tmp_char;
-		hour.erase(std::remove(hour.begin(),hour.end(),':'),hour.end());
-		return day + '-' + hour;
 	}
     virtual void operator()(const Producer::Camera& camera) {
 		if (m_SnapImageOnNextFrame) {
@@ -177,6 +183,7 @@ public:
 };
 
 void GameScreen::on_PrintScreen() {
+	// for now, it is on previous frame ... but that should work.
 	SnapImageDrawCallback sn;
 	sn.setSnapImageOnNextFrame(true);
 	osg::ref_ptr<Producer::Camera> camera = new Producer::Camera;
@@ -359,7 +366,7 @@ simdata::Vector3 GameScreen::getNewFixedCamPos(SimObject * const target) const
 	if (dynamic) {
 		simdata::Vector3 upVec = dynamic->getUpDirection();
 		simdata::Vector3 objectDir = dynamic->getDirection();
-		double speed_level = dynamic->getSpeed()/50.0;
+		//double speed_level = dynamic->getSpeed()/50.0;
 		camPos = objectPos + 900.0* objectDir + ( 12.0 - (rand() % 5) ) * (objectDir^upVec) 
 			    + ( 6.0 + (rand () % 3) ) * upVec;
 	} else {

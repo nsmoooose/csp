@@ -18,11 +18,11 @@ all clean clean-deps:
 	done
 
 default: 
-	@python setup.py version
+	@python setup.py check_version
 	@for dir in $(SUBDIRS); do \
 		$(MAKE) -C $${dir} $@ || exit 1; \
 	done
 
 install:
-	@python setup.py version
+	@python setup.py check_version
 	@python setup.py make_install

@@ -35,7 +35,7 @@
 #include <osgText/Text>
 #include <Producer/Camera>
 
-#include <Simdata/FileUtility.h>
+#include <SimData/FileUtility.h>
 
 #include "Animation.h"
 #include "ConsoleCommands.h"

@@ -100,17 +100,18 @@ void FlightDynamics::updateAirflow(double h) {
 	simdata::Vector3 airflowBody = *m_VelocityBody - m_WindVelocityBody;
 	m_Airspeed = airflowBody.length();
 	m_Alpha = -atan2(airflowBody.z(), airflowBody.y()); 
+	
 	if (h > 0.0) {
 		m_AlphaDot = ( m_Alpha - m_Alpha0 ) / h;
 	} // else keep previous value
 
 	// restrict m_alphaDot in vertical stalls
-	if (m_AlphaDot > 1.0) m_AlphaDot = 1.0;
-	if (m_AlphaDot < -1.0) m_AlphaDot = -1.0;
+	m_AlphaDot = simdata::clampTo(m_AlphaDot,-1.0,1.0);
 	
 	// Calculate side angle
 	// beta is 0 when v velocity (i.e. side velocity) is 0; note here v is m_AirflowBody.x()
-	m_Beta = atan2(airflowBody.x(), airflowBody.y());
+	//m_Beta = atan2(airflowBody.x(), airflowBody.y());
+	m_Beta = asin(airflowBody.x()/(1.0 + m_Airspeed));
 }
 
 void FlightDynamics::getInfo(InfoList &info) const {

@@ -38,10 +38,10 @@
 
 #if defined(WIN32)
 #  define WIN_ATOMIC
-#  define _WINSOCKAPI_
-#  define NOMINMAX
-#  include <Windows.h>
-#  undef ERROR
+//#  define _WINSOCKAPI_
+//#  define NOMINMAX
+//#  include <Windows.h>
+//#  undef ERROR
 #else
 #  define LIN_ATOMIC
 extern "C" {
@@ -52,6 +52,56 @@ extern "C" {
 };
 #endif
 
+// Atomic counter using linux-specific atomic counter primitives (much
+// faster than mutex locking).
+#if defined(LIN_ATOMIC)
+#	define SIMDATA_ATOMIC_SET(x, count) atomic_set(&x, count)
+#	define SIMDATA_ATOMIC_DEC(x) atomic_dec_and_test(&x) ? false : true;
+#	define SIMDATA_ATOMIC_INC(x) atomic_inc_and_test(&x) ? false : true;
+#	define SIMDATA_ATOMIC_GET(x) atomic_read(&x);
+#	define SIMDATA_ATOMIC_TYPE atomic_t
+// Atomic counter using windows-specific atomic counter primitives (much
+// faster than mutex locking).
+#elif defined(WIN_ATOMIC)
+#	define SIMDATA_ATOMIC_SET(x, count) _InterlockedExchange(&x, count)
+#	define SIMDATA_ATOMIC_DEC(x) _InterlockedDecrement(&x) ? false : true;
+#	define SIMDATA_ATOMIC_INC(x) _InterlockedIncrement(&x) ? false : true;
+#	define SIMDATA_ATOMIC_GET(x) x
+#	define SIMDATA_ATOMIC_TYPE volatile LONG
+#	pragma intrinsic (_InterlockedExchange)
+#	pragma intrinsic (_InterlockedDecrement)
+#	pragma intrinsic (_InterlockedIncrement)
+// Atomic counter using pthreads locking (slow but safe).
+#else
+	NAMESPACE_SIMDATA
+	class _AtomicCounter {
+	private:
+		int __count;
+		ThreadMutex __mutex;
+	public:
+		_AtomicCounter(): __count(0) { }
+		inline void set(int count) {
+			ScopedLock<ThreadMutex> lock(__mutex);
+			__count = count;
+		}
+		inline bool dec() {
+			ScopedLock<ThreadMutex> lock(__mutex);
+			return --__count != 0;
+		}
+		inline bool inc() {
+			ScopedLock<ThreadMutex> lock(__mutex);
+			return ++__count != 0;
+		}
+		inline int get() { return __count; }
+	};
+	NAMESPACE_SIMDATA_END
+#	define SIMDATA_ATOMIC_SET(x, count) x.set(count)
+#	define SIMDATA_ATOMIC_DEC(x) x.dec();
+#	define SIMDATA_ATOMIC_INC(x) x.inc();
+#	define SIMDATA_ATOMIC_GET(x) x.get();
+#	define SIMDATA_ATOMIC_TYPE SIMDATA(_AtomicCounter)
+#endif
+
 
 NAMESPACE_SIMDATA
 
@@ -60,20 +110,15 @@ NAMESPACE_SIMDATA
  *  implement thread-safe reference counting.
  */
 class SIMDATA_EXPORT AtomicCounter: public NonCopyable {
-
-// Atomic counter using linux-specific atomic counter primitives (much
-// faster than mutex locking).
-#if defined(LIN_ATOMIC)
-
 private:
-	atomic_t __count;
+	SIMDATA_ATOMIC_TYPE __count;
 
 public:
 
 	/** Construct a new atomic counter initialized to zero.
 	 */
 	AtomicCounter() {
-		atomic_set(&__count, 0);
+		SIMDATA_ATOMIC_SET(__count, 0);
 	}
 
 	/** Construct a new atomic counter.
@@ -81,7 +126,7 @@ public:
 	 *  @param count the initial value of the counter.
 	 */
 	AtomicCounter(int count) {
-		atomic_set(&__count, count);
+		SIMDATA_ATOMIC_SET(__count, count);
 	}
 
 	/** Increment the counter.
@@ -92,7 +137,7 @@ public:
 	 *  decremented past zero).
 	 */
 	inline bool operator++() {
-		return atomic_inc_and_test(&__count) ? false : true;
+		return SIMDATA_ATOMIC_INC(__count);
 	}
 
 	/** Decrement the counter.
@@ -101,70 +146,12 @@ public:
 	 *  regardless of the actual value; false otherwise.
 	 */
 	inline bool operator--() {
-		return atomic_dec_and_test(&__count) ? false : true;
+		return SIMDATA_ATOMIC_DEC(__count);
 	}
 
 	/** Return the counter value.
 	 */
-	inline operator int() { return atomic_read(&__count); }
-
-// TODO implement using windows atomic functions.
-//
-// probably involves the microsoft specific functions described at
-//   http://msdn.microsoft.com/library/en-us/vclang/html/vclrf_InterlockedDecrement.asp
-//
-//#elif defined(WIN_ATOMIC)
-
-// otherwise, fallback on pthread mutex locking (slow but safe)
-#else
-
-private:
-	int __count;
-	ThreadMutex __mutex;
-
-public:
-
-	/** Construct a new atomic counter initialized to zero.
-	 */
-	AtomicCounter(): __count(0) { }
-
-	/** Construct a new atomic counter.
-	 *
-	 *  @param count the initial value of the counter.
-	 */
-	AtomicCounter(int count): __count(count) { }
-
-	/** Increment the counter.
-	 *
-	 *  @returns 1 if the incremented count is non-zero, regardless
-	 *  of the actual value.  Since this is a preincrement operator, it
-	 *  will always return 1 (unless the count overflows or is otherwise
-	 *  decremented past zero).
-	 */
-	inline bool operator++() {
-		__mutex.lock();
-		int count = ++__count;
-		__mutex.unlock();
-		return count != 0;
-	}
-
-	/** Decrement the counter.
-	 *
-	 *  @returns true if the pre-decremented count is non-zero,
-	 *  regardless of the actual value; false otherwise.
-	 */
-	inline bool operator--() {
-		__mutex.lock();
-		int count = --__count;
-		__mutex.unlock();
-		return count != 0;
-	}
-
-	/** Return the counter value.
-	 */
-	inline operator int() { return __count; }
-
-#endif
+	inline operator int() { return SIMDATA_ATOMIC_GET(__count); }
 
 };
 

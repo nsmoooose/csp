@@ -23,12 +23,51 @@
  *
  * This class encapsulates a node in the simulation network.
  */
+
+#include <cc++/network.h>
 #include "Networking.h"
 
 NetworkNode::NetworkNode()
 {
-    
+  m_node_id = 0;
+  m_addr = "0.0.0.0";
+  m_port = 0;
 }
 
+NetworkNode::NetworkNode(int node_id, ost::InetHostAddress addr, Port port)
+{
+  m_node_id = node_id;
+  m_addr = addr;
+  m_port = port;
+}
 
+void NetworkNode::setAddress(ost::InetHostAddress addr)
+{
+  m_addr = addr;
+}
+
+void NetworkNode::setPort(Port port)
+{
+  m_port = port;
+}
+
+void NetworkNode::setId(int node_id)
+{
+  m_node_id = node_id;
+}
+
+ost::InetHostAddress NetworkNode::getAddress()
+{
+  return m_addr;
+}
+
+Port NetworkNode::getPort()
+{
+  return m_port;
+}
+
+int NetworkNode::getId()
+{
+  return m_node_id;
+}
 

@@ -21,11 +21,9 @@
  * @file NetworkSocket.cpp:
  * @author Scott Flicker (Wolverine)
  */
-#if _MSC_VER
-#include <WinSock2.h>
-#endif
-
+#include <cc++/network.h>
 #include "Networking.h"
+#include "Log.h"
 
 MessageSocketDuplex::MessageSocketDuplex()
 {
@@ -81,7 +79,7 @@ void MessageSocketDuplex::bind(NetworkAddress * address, Port port)
 
 int MessageSocketDuplex::sendto(NetworkMessage & message, ost::InetHostAddress * remoteAddress, Port * remotePort)
 {
-    printf("Sending Network Packet\n");
+//    CSP_LOG(NETWORK, DEBUG, "Sending Network Packet");
 
     m_UDPSenderSocket->setPeer(*remoteAddress, *remotePort);
     
@@ -111,7 +109,7 @@ int MessageSocketDuplex::sendto(NetworkMessage & message, ost::InetHostAddress *
 
 int MessageSocketDuplex::recvfrom(NetworkMessage & message, ost::InetHostAddress * remoteAddress, Port * remotePort)
 {
-    printf("Receving Network Packet\n");
+//    CSP_LOG(NETWORK, DEBUG, "Receving Network Packet");
 
     if (m_UDPReceiverSocket->isPending(ost::Socket::pendingInput, 0))
     {
@@ -153,4 +151,26 @@ int MessageSocketDuplex::recvfrom(NetworkMessage & message, ost::InetHostAddress
 		    */
 
 }
+
+    
+int MessageSocketDuplex::sendto(NetworkMessage & message, NetworkNode * node)
+{
+
+//  CSP_LOG(NETWORK, DEBUG, "Sending Network Packet");
+  ost::InetHostAddress address = node->getAddress();
+  Port port = node->getPort();
+  return sendto(message, &address, &port);
+//  return 0;
+}
+
+
+int MessageSocketDuplex::recvfrom(NetworkMessage & message, NetworkNode * node)
+{
+//  CSP_LOG(NETWORK, DEBUG, "Receiving Network Packet");
+  ost::InetHostAddress address = node->getAddress();
+  Port port = node->getPort();
+  return recvfrom(message, &address, &port);
+//    return 0;
+}
+ 
 

@@ -22,7 +22,8 @@
  *
  **/
 
-
+#include <cc++/network.h>
+#include "Networking.h"
 #include <DynamicObject.h>
 #include <Controller.h>
 #include <PhysicsModel.h>

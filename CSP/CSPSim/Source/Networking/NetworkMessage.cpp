@@ -25,6 +25,7 @@
  * Currently contains for header and buffer routines
  */
 
+#include <cc++/network.h>
 #include "Networking.h"
 
 unsigned short NetworkMessage::magicNumber = 0xFCCF;
@@ -50,6 +51,7 @@ NetworkMessage::NetworkMessage()
    m_Initialized = false;
   
 }
+
 
 /**
  * ~NetworkMessage

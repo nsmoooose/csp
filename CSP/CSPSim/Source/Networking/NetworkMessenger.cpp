@@ -21,10 +21,31 @@
  * @file NetworkMessenger.cpp:
  * @author Scott Flicker (Wolverine)
  */
+
+#include <cc++/network.h>
 #include "Networking.h"
 
 NetworkMessenger::NetworkMessenger()
 {
-    
+  m_messageSocketDuplex = new MessageSocketDuplex();
 }
 
+NetworkMessenger::NetworkMessenger(Port port)
+{
+ m_messageSocketDuplex = new MessageSocketDuplex(port);
+}
+
+void NetworkMessenger::queueMessage(NetworkNode * node, NetworkMessage * message)
+{
+  m_messageList.push_back(message);
+}
+
+void NetworkMessenger::sendMessages()
+{
+
+}
+
+void NetworkMessenger::receiveMessages()
+{
+
+}

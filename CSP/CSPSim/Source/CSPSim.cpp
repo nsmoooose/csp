@@ -48,8 +48,10 @@
 #include "Theater.h"
 #include "ConsoleCommands.h"
 #include "Profile.h"
+
+#include <cc++/network.h>
 #include "Networking.h"
-   
+
 #include <SimData/Types.h>
 #include <SimData/ExceptionBase.h>
 #include <SimData/DataArchive.h>
@@ -147,7 +149,7 @@ CSPSim::CSPSim()
 
 	m_Shell = new PyShell();
 	
-	m_NetworkBroadcaster = NULL;
+	m_NetworkMessenger = NULL;
 
 }
 
@@ -412,7 +414,9 @@ void CSPSim::init()
 		m_GameScreen->onInit();
 		
 		// create the networking layer
-		m_NetworkBroadcaster = new NetworkBroadcaster;
+		int localMessagePort = g_Config.getInt("Networking", "LocalMessagePort", 10000, true);
+		CSP_LOG(APP, DEBUG, "init() - Creating Message listener on port: " << localMessagePort);
+		m_NetworkMessenger = new NetworkMessenger(localMessagePort);
 
 #if 0
 		// set the Main Menu then start the main loop
@@ -705,19 +709,21 @@ void CSPSim::updateObjects(double dt)
 	// call networking layer.
         // TODO the code below tests the networking section. Later it probably needs to 
 	// be moved elsewhere.  Currently commenting out so we can move to subversion.
-//	CSP_LOG(APP, DEBUG, "CSPSim::run... beginning network updates");
+	CSP_LOG(APP, DEBUG, "CSPSim::run... beginning network updates");
+        
+        simdata::Ref<DynamicObject> dynamicObject = (simdata::Ref<DynamicObject>)m_ActiveObject;
+        NetworkMessage * message = dynamicObject->getUpdateMessage();
 
-//        simdata::Ref<DynamicObject> dynamicObject = (simdata::Ref<DynamicObject>)m_ActiveObject;
-//       NetworkMessage * message = dynamicObject->getUpdateMessage();
-
-//	m_NetworkBroadcaster->sendMessage(1, message );
+	m_NetworkMessenger->queueMessage(m_RemoteServerNode, message);
+	m_NetworkMessenger->sendMessages();
+	m_NetworkMessenger->receiveMessages();
 
 //        dynamicObject->putUpdateMessage( message );
 			
-//	CSP_LOG(APP, DEBUG, "CSPSim::run... finished network updates");
+	CSP_LOG(APP, DEBUG, "CSPSim::run... finished network updates");
 
 			// this may not be necessary. especially if a memory pool of messages objects is used.
-//			delete message;
+//	delete message;
 
 
 }

@@ -21,10 +21,8 @@
  * @file NetworkSocket.cpp:
  * @author Scott Flicker (Wolverine)
  */
-#if _MSC_VER
-#include <WinSock2.h>
-#endif
 
+#include <cc++/network.h>
 #include "Networking.h"
 
 NetworkSocket::NetworkSocket()

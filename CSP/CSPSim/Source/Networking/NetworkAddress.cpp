@@ -23,6 +23,8 @@
  *
  * This class encapsulates a node in the simulation network.
  */
+
+#include <cc++/network.h>
 #include "Networking.h"
 
 NetworkAddress::NetworkAddress()

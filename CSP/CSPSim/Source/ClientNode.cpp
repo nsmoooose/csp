@@ -1,11 +1,11 @@
 
 
-#include "ClientNode.h"
 
-#include <cc++/common.h>
+#include <cc++/network.h>
 #include "Networking.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include "ClientNode.h"
 
 ClientNode::ClientNode()
 {

@@ -59,8 +59,9 @@ class BaseScreen;
 class GameScreen;
 class EventMapIndex;
 class PyConsole;
-class NetworkBroadcaster;
 
+class NetworkMessenger;
+class NetworkNode;
 
 void fillerup(void *unused, unsigned char *stream, int len);
 
@@ -180,7 +181,8 @@ private:
 	/** 
 	  * The network layer
 	  */
-	NetworkBroadcaster * m_NetworkBroadcaster;
+	NetworkMessenger * m_NetworkMessenger;
+	NetworkNode * m_RemoteServerNode;
 
 #ifndef CSP_OSG_094
 	osg::ref_ptr<Producer::RenderSurface> m_RenderSurface;

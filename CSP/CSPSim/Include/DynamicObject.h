@@ -34,8 +34,7 @@
 #include "DataRecorder.h"
 #include "SystemsModel.h"
 
-#include "Networking.h"
-
+class NetworkMessage;
 
 namespace osgParticle {
 	class Geode;

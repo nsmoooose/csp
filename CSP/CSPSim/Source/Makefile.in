@@ -182,13 +182,13 @@ cCSP_wrap.o: cCSP_wrap.cpp
 	$(CXX) -c $(SWCXXF) $(@:.o=.cpp)
 
 ClientNode_StandAlone.o : ClientNode.cpp 
-	$(CXX) -c $(CFLAGS) -DCSP_STANDALONE -o ClientNode_StandAlone.o ClientNode.cpp
+	$(CXX) -c $(CFLAGS) $(INCLUDE) -DCSP_STANDALONE -o ClientNode_StandAlone.o ClientNode.cpp
 	
 ClientNode: $(NETWORK_OBJECTS) ClientNode_StandAlone.o 
 	$(CXX) -L/usr/local/lib -lccgnu2 -ldl -lpthread -o$(BIN)/$@ $(NETWORK_OBJECTS) ClientNode_StandAlone.o
 
 ServerNode_StandAlone.o : ServerNode.cpp
-	$(CXX) -c $(CFLAGS) -DCSP_STANDALONE -o ServerNode_StandAlone.o ServerNode.cpp
+	$(CXX) -c $(CFLAGS) $(INCLUDE) -DCSP_STANDALONE -o ServerNode_StandAlone.o ServerNode.cpp
 
 ServerNode: $(NETWORK_OBJECTS) ServerNode_StandAlone.o
 	$(CXX) -L/usr/local/lib -lccgnu2 -ldl -lpthread -o$(BIN)/$@ $(NETWORK_OBJECTS) ServerNode_StandAlone.o

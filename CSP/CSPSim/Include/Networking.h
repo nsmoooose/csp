@@ -31,14 +31,7 @@
 #include <assert.h>
 #include <errno.h>
 #include <sys/types.h>
-
-#include <cc++/common.h>
-
-#ifndef _MSC_VER
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
-#endif
+#include <list>
 
 #include <SimData/Vector3.h>
 #include <SimData/String.h>
@@ -98,25 +91,27 @@ class ObjectUpdateMessage : public NetworkMessage
     
 };
 
-class NetworkAddress
+
+class NetworkNode
 {
-    private:
-      struct in_addr m_addr;
-      simdata::String m_name;
-      simdata::String m_IPAddress;
+  private:
+    uint32 m_node_id;
+    ost::InetHostAddress m_addr;
+    Port m_port;
     
-    public:
-      NetworkAddress();
-      NetworkAddress(const simdata::String name);
-      NetworkAddress(NetworkAddress & addr);
-    
-      simdata::String getNetworkName();
-      simdata::String getNetworkIP();
-      void setByNetworkName(const simdata::String & name);
-      void setByNetworkIP(const simdata::String & address);
+  public:
+    NetworkNode();
+    NetworkNode(int node_id, ost::InetHostAddress addr, Port port);
+
+    void setAddress(ost::InetHostAddress addr);
+    void setPort(Port port);
+    void setId(int node_id);
+
+    int getId();
+    Port getPort();
+    ost::InetHostAddress getAddress();
     
 };
-
 
 class MessageSocketDuplex
 {
@@ -148,19 +143,30 @@ class MessageSocketDuplex
     int sendto(NetworkMessage & message, ost::InetHostAddress * remoteAddress, Port * remotePort);   
     int recvfrom(NetworkMessage & message, ost::InetHostAddress * remoteAddress=NULL, Port * remotePort=NULL);
 
+    int sendto(NetworkMessage & message, NetworkNode * node);   
+    int recvfrom(NetworkMessage & message, NetworkNode * node);
+ 
     ost::InetAddress * getReciverAddress() { return m_receiverAddr; }
     Port getReceiverPort() { return m_receiverPort; }
 
 };
 
+
 class NetworkMessenger
 {
    private: 
-      MessageSocketDuplex m_messageSocketDuplex;
+      MessageSocketDuplex * m_messageSocketDuplex;
+      std::list<NetworkMessage*> m_messageList;
 
    public:
       
     NetworkMessenger();
+    NetworkMessenger(Port port);
+
+    void queueMessage(NetworkNode * node, NetworkMessage * message);
+    void sendMessages();
+    void receiveMessages();
+    
 };
 
 class NetworkBroadcaster
@@ -179,17 +185,32 @@ class NetworkListener
     
 };
 
-class NetworkNode
-{
-  public:
-    NetworkNode();
-};
 
 class NetworkSocket
 {
 
   public:
     NetworkSocket();
+};
+
+
+class NetworkAddress
+{
+    private:
+      struct in_addr m_addr;
+      simdata::String m_name;
+      simdata::String m_IPAddress;
+    
+    public:
+      NetworkAddress();
+      NetworkAddress(const simdata::String name);
+      NetworkAddress(NetworkAddress & addr);
+    
+      simdata::String getNetworkName();
+      simdata::String getNetworkIP();
+      void setByNetworkName(const simdata::String & name);
+      void setByNetworkIP(const simdata::String & address);
+    
 };
 
 

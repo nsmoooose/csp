@@ -2,6 +2,9 @@
 ===========================
 
 2004-09-12: onsight
+  * removed VirtualBattlefield.*
+
+2004-09-12: onsight
   * Implemented a new Battlefield class to replace VirtualBattlefield.
     This class uses quadtree spatial indices instead of a fixed grid
     structure, and has a looser coupling to other components of CSP

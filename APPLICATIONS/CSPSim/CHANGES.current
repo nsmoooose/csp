@@ -1,5 +1,10 @@
  Version 0.4.0 (in progress)
 ===========================
+2003-10-21: onsight
+            Cleaned up the code that initializes the test sound.  The
+	    sim won't abort if it can't find the sound file or open
+	    an audio device, but a warning is written to the log.
+
 2003-10-19: onsight
             Updated configure script to check for osg 0.9.6.  Version
 	    0.9.4 can still be used, if necessary.  To do so, change 

@@ -663,7 +663,7 @@ int CSPSim::initSDL()
 	g_ScreenWidth = width;
 
 	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK | SDL_INIT_AUDIO) != 0) {
-		printf("Unable to initialize SDL: %s\n", SDL_GetError());
+		std::cerr << "Unable to initialize SDL: " << SDL_GetError() << "\n";
 		CSP_LOG(APP, ERROR, "ERROR! Unable to initialize SDL: " << SDL_GetError());
 		return 1;
 	}
@@ -687,7 +687,7 @@ int CSPSim::initSDL()
 	SDL_GL_SetAttribute( SDL_GL_DOUBLEBUFFER, 1 );
 
 	if (m_SDLScreen == NULL) {
-		printf("Unable to set video mode: %s\n", SDL_GetError());
+		std::cerr << "Unable to set video mode: " << SDL_GetError() << "\n";
 		CSP_LOG(APP, ERROR, "ERROR! Unable to initialize SDL: " << SDL_GetError());
 		return 1;
 	}
@@ -701,20 +701,20 @@ int CSPSim::initSDL()
     
 	SDL_EnableUNICODE(1);
 
-
+	// some simple sdl sound testing
 	std::string sound_path = getDataPath("SoundPath");
-	if ( SDL_LoadWAV(simdata::ospath::join(sound_path, "avionturbine5.wav").c_str(),
-		&m_audioWave.spec, &m_audioWave.sound, &m_audioWave.soundlen) == NULL ) {
-		CSP_LOG(APP, ERROR,  "Couldn't load " << sound_path << "/avionturbine5.wav: " << SDL_GetError());
-		::exit(1);
-	}
-	m_audioWave.spec.callback = fillerup;
+	std::string test_sound = simdata::ospath::join(sound_path, "avionturbine5.wav");
+	if (SDL_LoadWAV(test_sound.c_str(), &m_audioWave.spec, &m_audioWave.sound, 
+	                &m_audioWave.soundlen) == NULL) {
+		CSP_LOG(APP, WARNING,  "Couldn't load '" << test_sound << "': " << SDL_GetError());
+	} else {
+		m_audioWave.spec.callback = fillerup;
 
-	/* Initialize fillerup() variables */
-	if ( SDL_OpenAudio(&m_audioWave.spec, NULL) < 0 ) {
-		fprintf(stderr, "Couldn't open audio: %s\n", SDL_GetError());
-		SDL_FreeWAV(m_audioWave.sound);
-		::exit(2);
+		/* Initialize fillerup() variables */
+		if (SDL_OpenAudio(&m_audioWave.spec, NULL) < 0)  {
+			CSP_LOG(APP, ERROR, "Couldn't open audio: " << SDL_GetError());
+			SDL_FreeWAV(m_audioWave.sound);
+		}
 	}
 	bool mute = g_Config.getBool("Testing", "Mute", false, true);
 	SDL_PauseAudio(mute);

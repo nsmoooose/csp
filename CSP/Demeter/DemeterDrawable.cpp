@@ -216,14 +216,13 @@ void DemeterLatticeDrawable::drawImplementation(State& state) const
 	if (m_RefTerrainLattice.valid())
 	{
 		m_RefTerrainLattice->Tessellate();
-	    m_RefTerrainLattice->Render();
+		m_RefTerrainLattice->Render();
 	}
 }
 
 void DemeterLatticeDrawable::SetCameraPosition(float x, float y, float z)
 {
 	m_RefTerrainLattice->SetCameraPosition(x, y, z);
-
 }
 
 

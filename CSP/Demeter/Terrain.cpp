@@ -3497,8 +3497,12 @@ void TerrainLattice::Tessellate()
 void TerrainLattice::Render()
 {
 	m_LatticePolygonsRendered = 0;
-    for (int i = 0; i < 9; i++)
-    {
+	int old_mode = -1;
+	glGetIntegerv(GL_MATRIX_MODE, &old_mode);
+	glPushAttrib(GL_ALL_ATTRIB_BITS);
+	glPushClientAttrib(GL_CLIENT_ALL_ATTRIB_BITS);
+	for (int i = 0; i < 9; i++)
+	{
         if (m_CurrentTerrainIndex[i] != -1)
 		{
 			if (m_pTextureFactory)
@@ -3519,6 +3523,9 @@ void TerrainLattice::Render()
 			m_LatticePolygonsRendered += m_TerrainPolygonsRendered;
 		}
     }
+	glPopClientAttrib();
+	glPopAttrib();
+	glMatrixMode(old_mode);
 }
 
 void TerrainLattice::AddTerrainLoadListener(TerrainLoadListener& listener)

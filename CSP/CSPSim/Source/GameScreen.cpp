@@ -48,6 +48,7 @@
 #include "VirtualScene.h"
 
 #include <SimCore/Battlefield/LocalBattlefield.h>
+#include <SimCore/Util/Callback.h>
 #include <SimCore/Util/Log.h>
 
 /*
@@ -182,13 +183,14 @@ GameScreen::GameScreen():
 	m_ActiveObject(0),
 	m_CameraAgent(new CameraAgent(ViewFactory())),
 	m_CameraCommands(new CameraCommands),
-	m_CurrentCameraCommand(0) {
+	m_CurrentCameraCommand(0),
+	m_OnPlayerJoin(this, &GameScreen::onPlayerJoin),
+	m_OnPlayerQuit(this, &GameScreen::onPlayerQuit)
+{
 	initInterface();
-	//createCameraCommand();
 }
 
 GameScreen::~GameScreen() {
-	//deleteCameraCommands();
 	m_CurrentCameraCommand = 0;
 }
 
@@ -219,9 +221,25 @@ void GameScreen::onInit() {
 	m_InfoView->setSceneData(m_InfoGroup.get());
 
 	simdata::Ref<DynamicObject> ao = CSPSim::theSim->getActiveObject();
-	if (ao.valid())
+	if (ao.valid()) {
 		setActiveObject(ao);
+	}
+
+	LocalBattlefield *bf = CSPSim::theSim->getBattlefield();
+	if (bf) {
+		bf->registerPlayerJoinCallback(*m_OnPlayerJoin);
+		bf->registerPlayerQuitCallback(*m_OnPlayerQuit);
+	}
 }
+
+void GameScreen::onPlayerJoin(int, const std::string& name) {
+	m_ScreenInfoManager->addMessage(name + " has joined the game");
+}
+
+void GameScreen::onPlayerQuit(int, const std::string& name) {
+	m_ScreenInfoManager->addMessage(name + " has left the game");
+}
+
 
 void GameScreen::onExit() {
 }

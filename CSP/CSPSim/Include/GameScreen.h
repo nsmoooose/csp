@@ -28,6 +28,7 @@
 #include <osg/ref_ptr>
 #include <SimData/Ref.h>
 #include <SimData/ScopedPointer.h>
+#include <SimCore/Util/CallbackDecl.h>
 #include "BaseScreen.h"
 
 class PyConsole;
@@ -149,7 +150,7 @@ public:
 
 	virtual void initInterface();
 
-protected:
+private:
 	size_t m_ViewMode;
 
 	void setCamera(double dt);
@@ -170,15 +171,11 @@ protected:
 	simdata::ScopedPointer<CameraAgent> m_CameraAgent;
 	simdata::ScopedPointer<CameraCommands> m_CameraCommands;
 	CameraCommand* m_CurrentCameraCommand;
-	/*
-	CameraCommand *m_PanLeft,*m_PanRight,*m_PanLeftRightStop;
-	CameraCommand *m_PanUp,*m_PanDown,*m_PanUpDownStop;
-	CameraCommand *m_ZoomIn,*m_ZoomOut,*m_ZoomStop,*m_ZoomStepIn,*m_ZoomStepOut;
-	MouseCommand* m_Mouse;
-	CameraCommand* m_CurrentCameraCommand;
-	void createCameraCommand();
-	void deleteCameraCommands();
-	*/
+
+	void onPlayerJoin(int, const std::string&);
+	void onPlayerQuit(int, const std::string&);
+	simcore::ScopedCallback2<int, const std::string&> m_OnPlayerJoin;
+	simcore::ScopedCallback2<int, const std::string&> m_OnPlayerQuit;
 };
 
 #endif // __GAMESCREEN_H__

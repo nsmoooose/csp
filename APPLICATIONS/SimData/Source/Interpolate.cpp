@@ -94,7 +94,7 @@ typename InterpolatedData<T>::vector_t InterpolatedData<T>::_compute_second_deri
 }
 
 template <typename T>
-int InterpolatedData<T>::find(InterpolatedData<T>::vector_t b, T v) const {
+int InterpolatedData<T>::find(vector_t b, T v) const {
 	int lo = 0;
 	int hi = b.size()-1;
 	int i;

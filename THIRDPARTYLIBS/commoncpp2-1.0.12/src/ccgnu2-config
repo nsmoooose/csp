@@ -1,0 +1,86 @@
+#!/bin/sh
+# Copyright (C) 2000-2001 Open Source Telecom Corporation.
+#
+# This file is free software; as a special exception the author gives
+# unlimited permission to copy and/or distribute it, with or without
+# modifications, as long as this notice is preserved.
+#
+# This program is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY, to the extent permitted by law; without even the
+# implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+ost_cv_dynloader="yes"      
+modflags="-module -shared"
+ccflags="  -I/usr/local/include -D_GNU_SOURCE"
+cclink="   -pthread"
+ccload="-ldl"
+ccstd="-L/usr/lib -lxml2 -lz -lm -lz"
+prefix="/usr/local"
+exec_prefix="${prefix}"
+libdir="-L${exec_prefix}/lib"
+
+includes="${prefix}/include/cc++2"
+includedir="-I${prefix}/include/cc++2"
+
+usage()
+{
+	cat <<EOF
+Usage: ccgnu2-config [OPTIONS]
+Options:
+	[--prefix]
+	[--version]
+	[--flags]
+	[--libs]
+	[--gnulibs]
+	[--iolibs]
+	[--extlibs]
+	[--stdlibs]
+	[--includes]
+	[--module]
+EOF
+	exit $1
+}
+
+if test $# -eq 0 ; then
+	usage 1 1>&2
+fi
+
+while test $# -gt 0 ; do
+	case "$1" in
+	--prefix)
+		echo /usr/local
+		;;
+	--version)
+		echo 1.0.12
+		;;
+	--flags)
+		echo $includedir $ccflags
+		;;
+	--libs | --gnulibs)
+		echo $libdir -lccgnu2 $ccload $cclink
+		;;
+	--iolibs)
+		echo $libdir -lccgnu2 $ccload $cclink
+		;;
+	--stdlibs)
+		echo $libdir -lccext2 -lccgnu2 $ccstd $ccload $cclink
+		;;
+	--extlibs)
+		echo -lccext2 $ccstd
+		;;
+	--includes)
+		echo $includes
+		;;
+	--dyn | --dso)
+		echo $ost_cv_dynloader
+		;;
+	--modflags | --module)
+		echo $modflags
+		;;
+	*)
+		usage 1 1>&2
+		;;
+	esac
+	shift
+done
+

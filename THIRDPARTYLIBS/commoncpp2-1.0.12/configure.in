@@ -1,0 +1,148 @@
+# Copyright (C) 1999-2002 Open Source Telecom Corporation.
+#
+# This file is free software; as a special exception the author gives
+# unlimited permission to copy and/or distribute it, with or without
+# modifications, as long as this notice is preserved.
+#
+# This program is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY, to the extent permitted by law; without even the
+# implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+AC_INIT(src/thread.cpp)
+VERSION="1.0.12"
+LT_RELEASE="1.0"
+LT_VERSION="0:10"
+AC_CONFIG_AUX_DIR(config)
+AC_CANONICAL_SYSTEM
+AC_PROG_CC
+OST_PROG_CC_POSIX
+NP_PROG_MSC
+AM_PROG_LIBTOOL
+AM_INIT_AUTOMAKE(commoncpp2, [$VERSION])
+AM_CONFIG_HEADER(include/config.h)
+
+if test "$prefix" != "/usr" ; then
+	if test -d "$prefix" ; then
+		bprefix="$prefix"
+	else
+		bprefix=/usr/local
+	fi
+	if test -d $bprefix/include ; then
+		CXXFLAGS="$CXXFLAGS -I$bprefix/include"
+	fi
+	if test -d $bprefix/lib ; then
+		LIBS="$LIBS -L$bprefix/lib"
+	fi
+fi
+
+OST_PROG_COMMON
+OST_PROG_LIBVER
+OST_PROG_LIBRARY(CCXX,[$LT_VERSION])
+OST_AUTOMAKE_MODE
+OST_MAINTAINER_MODE
+OST_WINVER
+OST_WIN32
+OST_CC_ENDIAN
+OST_CC_FCNTL
+OST_CC_TYPES
+OST_CC_SIGNAL
+OST_CC_STRING
+OST_CC_GETOPT
+OST_CC_DYNAMIC
+OST_LIB_PTHREAD
+OST_LIB_REENTRANT
+OST_LIB_SOCKET
+OST_LIB_POLL
+OST_LIB_ZLIB
+
+AC_ARG_WITH(xml,      [  --without-xml           Disable xml support],
+        ost_cv_xml_config=false,
+        [OST_LIB_XML])
+
+AC_ARG_WITH(ftp,      [  --with-ftp              Enable ftp support],
+	[AC_DEFINE(COMMON_FTP_SUPPORT)])
+
+AC_ARG_WITH(memaudit,      [  --with-memaudit         Enable memory auditing],
+	[AC_DEFINE(COMMON_MEMORY_AUDIT)])
+
+AC_CHECK_HEADERS(sys/file.h sys/lockf.h syslog.h posix_evlog.h ss.h)
+
+# C++ stuff must done after library and header
+# (some C++ define require some header)
+OST_CXX_PROGRAMMING
+OST_CXX_EXCEPTIONS
+OST_CXX_MUTABLE
+OST_CXX_NAMESPACE
+OST_CXX_IOSTREAM
+OST_CXX_NEW_INIT
+OST_SGI_STLPORT
+
+# Are we using the GNU compiler?
+if test $GCC = yes ; then
+        WARN_FLAGS="-Wall -ansi -pedantic"
+else
+        WARN_FLAGS=""
+fi
+AC_SUBST(WARN_FLAGS)
+
+# This should be integrated with the other OST_CXX_ functions in m4/ost_cxx.m4
+AC_LANG_SAVE
+AC_LANG_CPLUSPLUS
+AC_CHECK_HEADERS(sstream)
+AC_LANG_RESTORE
+
+AC_DEFINE(CCXX_CONFIG_H_)
+OST_DEBUG
+if test $ost_cv_gnuwin32 = yes ; then
+	CCXX_DIR="\$(top_srcdir)/win32"
+else
+	if test $np_cv_prog_msc = yes ; then
+		CCXX_DIR="\$(top_srcdir)/win32"
+	else
+		CCXX_DIR="\$(top_srcdir)/include"
+	fi
+fi
+KDOC_DIR="\$(top_srcdir)/doc"
+AC_SUBST(LT_RELEASE)
+AC_SUBST(KDOC_DIR)
+AC_SUBST(CCXX_DIR)
+AC_SUBST(incprefix)
+AM_CONDITIONAL(WIN32, test $ost_cv_gnuwin32 = yes)
+AC_SUBST(ost_cv_dynloader)
+
+# some peculiar things needed for cygwin dll builds and the currently broken toolchain...
+
+BASE_LIB=""           
+case "$target" in
+	*-*-cygwin*)
+	BASE_LIB="libccgnu2.la $XML_LIBS $ZSTREAM_LIBS"
+	AC_DEFINE(CYGWIN_IMPORTS)
+	;;
+esac
+
+#AC_ARG_WITH(dllserver,     [--with-cygwindll        Build cygwin as DLL],
+#        BASE_LIB="libccgnu2.la",
+#        BASE_LIB="")
+
+AC_SUBST(BASE_LIB)
+
+AM_CONDITIONAL(GETOPT_LONG, [test ! -z "$LIBGETOPTOBJS"])
+
+AC_OUTPUT(src/ccgnu2-config src/Makefile win32/Makefile m4/Makefile \
+config/Makefile doc/Makefile demo/Makefile include/Makefile \
+include/cc++/Makefile Makefile template/Makefile commoncpp2.spec \
+tests/Makefile commoncpp2.proto freebsd/Makefile freebsd/pkg-plist \
+pkginfo win32/CCXX2.rc)
+
+if test -f doc/html/index.html ; then
+	ls doc/man3/*.3cc | sed -e 's:^doc/man3/:man/man3/:' | grep -v todo >>freebsd/pkg-plist
+#	ls doc/html | sed -e 's:^:share/doc/commoncpp2/:'>>freebsd/pkg-plist
+fi
+
+cd include/cc++
+cp -f ../config.h config.tmp
+sed -e s!"@thrprefix@"!"$thrprefix"! -e s!"@USR_PREFIX@"!"$prefix"! \
+	-e s!PACKAGE!CCXX_PACKAGE! -e s!VERSION!CCXX_VERSION! <config.tmp >config.h
+cd ../..
+
+

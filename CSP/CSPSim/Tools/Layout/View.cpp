@@ -63,6 +63,7 @@
 #include <osg/Drawable>
 #include <osg/ref_ptr>
 #include <osg/Vec3>
+#include <OpenThreads/Thread>
 
 #include <iostream>
 #include <cstdio>
@@ -70,6 +71,8 @@
 
 
 View::View(): m_Viewer(0), m_FeatureGraph(0), m_Manipulator(0) {
+	// TODO move elsewhere in startup logic
+	OpenThreads::Thread::Init();
 }
 
 int View::init(int argc, char **argv) {
@@ -157,20 +160,29 @@ void View::run() {
 #endif
 	m_Viewer->realize();
 	while (!m_Viewer->done() && !m_Quit) {
-		m_Viewer->sync();
-		m_Viewer->update();
-		m_Viewer->frame();
-		m_DynamicGrid->setLook(getCameraTarget(), getCameraPosition());
+		if (trylock() == 0) {
+			m_Viewer->sync();
+			m_Viewer->update();
+			m_Viewer->frame();
+			m_DynamicGrid->setLook(getCameraTarget(), getCameraPosition());
+			unlock();
+		}
 		Py_BEGIN_ALLOW_THREADS;
-#ifndef _MSC_VER
-		nanosleep(&sleeptime, 0);
-#else
-		Sleep(1);
-#endif
+		OpenThreads::Thread::YieldCurrentThread();
 		Py_END_ALLOW_THREADS;
 	}
-	//m_Viewer->sync();
-	delete m_Viewer;
+
+	// XXX
+	// Intentionally leak Viewer to prevent an xlib error on exit:
+	//
+	//   Xlib: unexpected async reply (sequence 0x2e)!
+	//
+	// More likely than not we are only masking the problem, which
+	// probably results from asynchronous xlib access from the 2d
+	// and 3d threads.  This hasn't caused any other noticible problems
+	// and by not deleting the viewer we get a clean exit.
+	//
+	//delete m_Viewer;
 	m_Viewer = 0;
 }
 
@@ -190,6 +202,7 @@ void View::setCamera(float x0, float y0, float z0, float x1, float y1, float z1)
 	}
 	Producer::Matrix view_matrix;
 	view_matrix.makeLookAt(from ,to, up);
+	assert(m_Viewer);
 	m_Viewer->setViewByMatrix(view_matrix);
 }
 
@@ -221,6 +234,7 @@ void View::setViewZ() {
 }
 
 osg::Vec3 View::getCameraPosition() const {
+	assert(m_Viewer);
 	const Producer::Matrix::value_type *view_matrix = m_Viewer->getCamera(0)->getPositionAndAttitudeMatrix();
 	Producer::Matrix matrix(view_matrix);
 	Producer::Vec3 offset(matrix(3, 0), matrix(3, 1), matrix(3, 2));
@@ -247,6 +261,7 @@ void View::centerViewOnNode(LayoutNodePath *path, LayoutNode *node) {
 void View::screenToSurface(float x, float y, float &surface_x, float &surface_y) {
 	surface_x = surface_y = 0.0;
 	float pixel_x, pixel_y;
+	assert(m_Viewer);
 	if (m_Viewer->computePixelCoords(x, y, 0 /*camera_num*/, pixel_x, pixel_y)) {
 		Producer::Camera *camera = m_Viewer->getCamera(0);
 		int pr_wx, pr_wy;
@@ -278,6 +293,7 @@ void View::screenToSurface(float x, float y, float &surface_x, float &surface_y)
 }
 
 bool View::computePixelCoords(float x, float y, float& pixel_x, float& pixel_y) {
+	assert(m_Viewer);
 	return m_Viewer->computePixelCoords(x, y, 0 /*camera_num*/, pixel_x, pixel_y);
 }
 
@@ -345,6 +361,7 @@ void View::sendKey(std::string const &key) {
 }
 
 void View::prepareScene() {
+	assert(m_Viewer);
 	osg::Group *group = new osg::Group;
 	makeLights(group);
 	makeGround(group);

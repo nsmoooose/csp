@@ -171,6 +171,21 @@ public:
 	 */
 	float getGridScale() const;
 
+	/** Mutex synchronization for 2d and 3d threads. */
+	int trylock() {
+		return m_Mutex.trylock();
+	}
+
+	/** Mutex synchronization for 2d and 3d threads. */
+	int lock() {
+		return m_Mutex.lock();
+	}
+
+	/** Mutex synchronization for 2d and 3d threads. */
+	int unlock() {
+		return m_Mutex.unlock();
+	}
+
 private:
 	void setViewAxis(osg::Vec3 const &axis, osg::Vec3 const &up);
 	void prepareScene();
@@ -190,6 +205,7 @@ private:
 
 	typedef std::list< osg::ref_ptr<ViewCallback> > ViewCallbackList;
 	ViewCallbackList m_ViewCallbacks;
+	OpenThreads::Mutex m_Mutex;
 };
 
 

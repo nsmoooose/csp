@@ -21,7 +21,7 @@ CSP Theater Layout Tool
 """
 
 import sys
-import threading
+import thread
 import os.path
 
 import cLayout
@@ -29,34 +29,23 @@ import UI
 
 from CSP.base import app
 
-
-class UIThread(threading.Thread):
-
-	def __init__(self, view, xml_path, model_path):
-		threading.Thread.__init__(self)
-		self.setDaemon(1)
-		self._view = view
-		self._ui = UI.Init(view, xml_path, model_path)
-
-	def run(self):
-		print "Combat Simulator Project Theater Layout Tool"
-		print "============================================"
-		self._ui.MainLoop()
-		self._view.quit()
+def run(view, ui):
+	view.run()
+	ui.ExitMainLoop()
 
 
 def main(args):
+	print "Combat Simulator Project Theater Layout Tool"
+	print "============================================"
 	view = cLayout.View()
-	# was sys.argv, now argument parsing handled in python.  at some point
-	# we may want to declare options for some of the flags that the osg
-	# ArgumentParser accepts and pass them explicitly (e.g. --stereo).
-	argv = [app.programName()]
+	argv = [app.programName()] + list(args)
 	if view.init(argv):
 		sys.exit(1)
 
-	ui = UIThread(view, app.options.xml, app.options.model)
-	ui.start()
-	view.run()
+	ui = UI.Init(view, app.options.xml, app.options.model)
+	thread.start_new_thread(run, (view, ui))
+	ui.MainLoop()
+	view.quit()
 
 # find the root of the CSP workspace
 base = os.path.dirname(os.path.dirname(app.__file__))
@@ -70,4 +59,4 @@ model_path = os.path.join(data, 'Models')
 app.addOption('--xml', default=xml_path, type='string', help='path to theater data')
 app.addOption('--model', default=model_path, type='string', help='path to 3d models')
 app.start()
-
+print 'end'

@@ -801,7 +801,12 @@ class MainWindow(wxFrame):
 			wxMessageDialog(self, 'Inserting "%s" into the active group would create an infinite recursion.' % path, "Load", style = wxOK|wxICON_ERROR).ShowModal()
 			return None
 
+		# stop the 3d rendering loop while we modify the scene graph
+		self._view.lock();
 		feature_layout.realizeAsChild(parent, node_map)
+		# restart the 3d rendering loop
+		self._view.unlock();
+
 		model = node_map.getRoot()
 		self.UpdateTree(model)
 
@@ -878,7 +883,6 @@ class MainWindow(wxFrame):
 		self.Close()
 
 	def OnItemActivated(self, event):
-		print 'activated'
 		id = event.GetItem()
 		path = self.GetItemPath(id)
 		if path:
@@ -991,11 +995,15 @@ class MainWindow(wxFrame):
 			wxMessageDialog(self, "Cannot open leaf node FeatureModels; use insert instead.", "Error loading feature", style = wxOK|wxICON_ERROR).ShowModal()
 			return 0
 
+		# stop the 3d rendering loop while we load the new scene graph
+		self._view.lock();
 		node_map = graph.realize()
 		self._node_map = node_map
 		node = node_map.getRoot()
 		assert(node is not None and node.isGroup())
 		self._view.graph().setRoot(node)
+		# restart the 3d rendering loop
+		self._view.unlock();
 
 		node.thisown = 0
 		self.UpdateTree(node)

@@ -1,1 +1,0 @@
-python2.3 -c "import sys; sys.path[0]='$0'; sys.argv[0]='$0'; import pyx_program" ${1+"$@"}; exit $?

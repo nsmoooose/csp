@@ -40,7 +40,15 @@ from modulefinder import ModuleFinder
 import bootstrap
 from CSP.base import app
 
-DEFAULT_STUB = 'pyrun.stub'
+DEFAULT_STUB = ("python2.3 -c \""
+                "import sys;"
+                "sys.path.insert(0, '$0');"
+                "sys.argv[0]='$0';"
+                "import %s"
+                "\" ${1+\"$@\"};"
+                "exit $?")
+
+PROGRAM_MODULE = '__main__'
 
 
 def main(args):
@@ -57,6 +65,10 @@ def main(args):
 
 
 def findCustomModules(modules):
+  """
+  Filter a list of modules, returning only those that are not part of the
+  standard python libraries.
+  """
   re_stdlib = re.compile(r'[/\\][pP]ython[\.0-9]*[/\\]')
   custom = []
   for mod in modules:
@@ -73,12 +85,21 @@ def findCustomModules(modules):
 
 
 def findDependencies(program, path):
+  """
+  Use the python modulefinder to find all modules that the main program
+  imports (directly and indirectly).  We then filter out the ones that
+  are part of the standard python library.
+  """
   mf = ModuleFinder(path)
   mf.run_script(program)
   custom = findCustomModules(mf.modules.values())
   names = [x.__name__ for x in custom]
   missing = {}
   ignore = app.options.ignore
+  # ModuleFinder generally reports some modules as missing.  It seems
+  # sufficient to ignore any that aren't directly imported by any of
+  # the custom modules.  Others false alarms (such as os.path) can be
+  # explicitly ignored via command-line flags.
   for name, calldict in mf.badmodules.items():
     for caller in calldict.keys():
       if caller in names:
@@ -94,56 +115,108 @@ def findDependencies(program, path):
 
 
 def makeZip(zipname, program, modules, path):
+  """
+  Assemble the custom modules into a zip archive.  We try to construct the
+  archive to mirror the path hierarchy of the custom modules.
+  """
+  # PyZipFile automatically precompiles python sources.
   out = zipfile.PyZipFile(zipname, 'w', compression=zipfile.ZIP_DEFLATED)
+  main_module = ''
+  uniq_modules = {}
+  # modules may appear multiple times, depending on the use of relative
+  # import statements, but the absolute filenames are unique.
   for module in modules:
     name = module.__name__
     file = module.__file__
+    if uniq.has_key(file): continue
+    # determine the full module path relative to sys.path
     basename = ''
+    # loop through all the paths in sys.path, finding the first one that
+    # can be used to import the module.  in principle, we really should
+    # check that all intermediate directories (see basename below) are
+    # actually packages.
     for p in path:
       if file.startswith(p):
+        # this module can be imported using 'from basename import name'
         basename = os.path.dirname(file)[len(p):]
+        if os.path.isabs(basename): basename = basename[1:]
         break
-    if os.path.isabs(basename):
-      basename = basename[1:]
+    if basename:
+      # now look at all the intermediate directories (which we assume
+      # are packages) and add the '__init__.py' modules by hand.  this
+      # is necessary because modulefinder won't always notice them.
+      search = basename
+      while search:
+        package_dir = os.path.join(p, search)
+        init = os.path.join(package_dir, '__init__.py')
+        if os.path.exists(init):
+          uniq_modules[init] = ('__init__', search)
+        else:
+          # if our assumption fails, at least warn the user.  if this
+          # happens at all frequently, the package search should be
+          # moved inside the path search loop.
+          print 'WARNING: expected %s to be a package, but' % package_dir
+          print '         __init__.py does not exist.'
+        # walk up the package hierarchy
+        search = os.path.dirname(search)
+    uniq_modules[file] = (name, basename)
+
+  # now add all unique modules to the zip archive
+  for file in uniq_modules.keys():
+    name, basename = uniq_modules[file]
+    # special case for the main program module
     if file == program:
-      f = open('pyx_program.py', 'w')
+      program_filename = PROGRAM_MODULE + '.py'
+      f = open(program_filename, 'w')
       # big ol' hack.  insert some magic to make the main script look like it
-      # was run directly instead of imported.  better solutions welcome...
+      # was run directly instead of imported.  better solutions welcome.  note
+      # than setting __name__ to '__main__' is not always sufficient (e.g.
+      # pickle can complain about missing classes when loading).
       inject = 1
       for line in open(program):
-        if (inject and (line.startswith('import') or line.startswith('app.start(') or
-           line.startswith('if __name__ =='))):
+        if (inject and (line.startswith('app.start(') or line.startswith('if __name__ =='))):
           inject = 0
           print >>f, "import sys; sys.modules['__main__'] = sys.modules[__name__]; __name__ = '__main__';"
         print >>f, line,
       f.close()
-      out.writepy('pyx_program.py')
+      out.writepy(program_filename, basename)
+      main_module = '.'.join(basename.split(os.sep) + [PROGRAM_MODULE])
       for ext in ('.py', '.pyc', '.pyo'):
-        pyx_name = 'pyx_program' + ext
-        if os.path.exists(pyx_name): os.unlink(pyx_name)
+        prog_name = PROGRAM_MODULE + ext
+        if os.path.exists(prog_name): os.unlink(prog_name)
     elif file.endswith('.py'):
       out.writepy(file, basename)
-      if os.path.dirname(file) == os.path.dirname(program):
-        out.writepy(file)
     else:
+      # in principle anything can be added to the archive, but we don't
+      # actively support arbitrary data and shared libaries yet.
+      print 'WARNING: adding non-python file %s' % file
       out.write(file, os.path.basename(file))
     if not app.options.quiet:
       print '.. Added %s (%s)' % (name, file)
   out.close()
+  assert main_module
+  return main_module
 
 
-def addStub(stub, tmpname, target):
+def addStub(stub, main_module, tmpname, target):
+  """
+  Add a stub to the start of the zipfile to bootstrap the main program.
+  The stub puts the zipfile at the start of sys.path, and tweaks sys.argv
+  before importing the main module.
+  """
   zip = open(tmpname, 'r')
-  stub = open(stub, 'r')
   out = open(target, 'w')
-  out.write(stub.read())
+  out.write((stub % main_module) + '\n')
   out.write(zip.read())
-  stub.close()
   zip.close()
   out.close()
 
 
 def getPath(program):
+  """
+  Get sys.path as seen by the application program, including any paths
+  specified by --addpath flags.
+  """
   path = sys.path[:]
   path[0] = os.path.dirname(program)
   addpaths = app.options.addpath[:]
@@ -154,12 +227,20 @@ def getPath(program):
 
 
 def assemble(program, target):
+  """
+  Find all module dependencies, construct the zip archive, and prepend the
+  bootstrap stub.
+  """
   path = getPath(program)
 
   stub = app.options.stub
-  if not os.path.exists(stub):
-    print 'Stub file %s not found, aborting' % stub
-    sys.exit(1)
+  if stub:
+    if not os.path.exists(stub):
+      print 'Stub file %s not found, aborting' % stub
+      sys.exit(1)
+    stub = open(stub).read()
+  else:
+    stub = DEFAULT_STUB
 
   if os.path.exists(target) and not app.options.force:
     print '%s already exists, aborting' % target
@@ -174,8 +255,8 @@ def assemble(program, target):
     print 'Creating executable %s' % target
 
   tmpname = target + "~"
-  makeZip(tmpname, program, modules, path)
-  addStub(stub, tmpname, target)
+  main_module = makeZip(tmpname, program, modules, path)
+  addStub(stub, main_module, tmpname, target)
 
   os.unlink(tmpname)
   os.chmod(target, 0755)
@@ -184,11 +265,12 @@ def assemble(program, target):
     print 'Done.'
 
 
+# command line options
 app.addOption('--addpath', metavar='PATH', action='append', default=[], help='add path to sys.path')
 app.addOption('-q', '--quiet', action='store_true', default=False, help='quiet mode (less verbose)')
 app.addOption('--output', metavar='FILE', default=None, help='specify output file')
 app.addOption('-f', '--force', action='store_true', default=False, help='overwrite existing output file')
-app.addOption('--stub', metavar='STUBFILE', default=DEFAULT_STUB, help='stub file to use')
+app.addOption('--stub', metavar='STUBFILE', default='', help='stub file to use')
 app.addOption('--ignore', metavar='MODULE', action='append', default=['os.path'], help='ignore unresolved module dependency')
 
 app.start()

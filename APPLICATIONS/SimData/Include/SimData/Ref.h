@@ -30,6 +30,8 @@
 #define __SIMDATA_REF_H__
 
 #include <cassert>
+#include <list>
+#include <vector>
 
 #include <SimData/ns-simdata.h>
 #include <SimData/Export.h>
@@ -60,6 +62,8 @@ SIMDATA_EXCEPTION(ConversionError);
 template<class T>
 class SIMDATA_EXPORT Ref {
 public:
+	typedef std::vector< Ref<T> > vector;
+	typedef std::list< Ref<T> > list;
 
 	/* TODO add Python bindings
 	// SWIG python specific comparisons

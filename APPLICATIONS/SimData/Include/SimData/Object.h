@@ -119,7 +119,7 @@ class SIMDATA_EXPORT Object: public Referenced, public BaseType {
 private:
 	// Objects should never be copied
 	Object(Object const &) { assert(0); }
-	Object const &operator=(Object const &) { assert(0); }
+	Object const &operator=(Object const &) { assert(0); return *this; }
 
 	void _setPath(hasht);
 	

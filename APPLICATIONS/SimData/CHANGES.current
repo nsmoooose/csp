@@ -1,6 +1,11 @@
 Version 0.3.2 (in progress)
 ===========================
 
+2003-04-24: onsight
+            Fix for Object::operator=() return value.
+
+	    Added list and vector typedefs to class Ref.
+
 2003-04-22: onsight
             Data archive files now store the parent/child relationship
 	    between object paths, so it is possible to search for all

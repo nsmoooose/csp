@@ -99,16 +99,16 @@ public:
 	virtual void apply(osg::Transform &node) {
 		if (!m_Animations) return;
 		std::string name = node.getName();
-		std::cout << "MODEL TRANSFORM: " << name << "\n";
+		CSP_LOG(APP, DEBUG, "MODEL TRANSFORM: " << name);
 		if (name.substr(0,6) == "ANIM: ") {
 			simdata::Key id = name.substr(6);
 			simdata::Link<Animation>::vector::const_iterator i = m_Animations->begin();
-			std::cout << "SEARCHING FOR " << name.substr(6) << " (" << id.asString() << ")\n";
+			CSP_LOG(APP, DEBUG, "SEARCHING FOR " << name.substr(6) << " (" << id.asString() << ")");
 			for (; i != m_Animations->end(); ++i) {
-				std::cout << "COMPARING TO " << (*i)->getModelID().asString() << "\n";
+				CSP_LOG(APP, DEBUG, "COMPARING TO " << (*i)->getModelID().asString());
 				if ((*i)->getModelID() == id) {
 					node.setUserData(new AnimationBinding(i->get()));
-					std::cout << "FOUND\n";
+					CSP_LOG(APP, DEBUG, "FOUND");
 					break;
 				}
 			}
@@ -290,11 +290,11 @@ void ObjectModel::loadModel() {
 	// add animation hooks to user data field of animation
 	// transform nodes
 	ModelProcessor processor;
-	std::cout << "ANIMATIONS AVAILABLE: " << m_Animations.size() << "\n";
+	CSP_LOG(APP, INFO, "ANIMATIONS AVAILABLE: " << m_Animations.size());
 	processor.setAnimations(&m_Animations);
-	std::cout << "PROCESSING MODEL\n";
+	CSP_LOG(APP, INFO, "PROCESSING MODEL");
 	m_Model->accept(processor);
-	std::cout << "PROCESSING MODEL DONE\n";
+	CSP_LOG(APP, INFO, "PROCESSING MODEL DONE");
 
 	assert(m_Axis0.length() > 0.0);
 	m_Axis0.normalize();
@@ -579,7 +579,7 @@ public:
 			if (binding) {
 				osg::Node *new_node = dynamic_cast<osg::Node*>(node->clone(*this));
 				m_AnimationCallbacks.push_back(binding->bind(new_node));
-				std::cout << "ADDED CALLBACK\n";
+				CSP_LOG(APP, INFO, "ADDED CALLBACK");
 				return new_node;
 			}
 		}
@@ -619,18 +619,18 @@ SceneModel::SceneModel(simdata::Ref<ObjectModel> const & model) {
 	// XXX add effect or not
 	model_node = addEffect(model_node);
 
-	std::cout << "MODEL COPIED\n";
+	CSP_LOG(APP, DEBUG, "MODEL COPIED");
 
-	std::cout << "MODEL animation count = " << model_copy.getAnimationCallbacks().size() << "\n";
+	CSP_LOG(APP, INFO, "MODEL animation count = " << model_copy.getAnimationCallbacks().size());
 
 	m_AnimationCallbacks.resize(model_copy.getAnimationCallbacks().size());
 
 	// store all the animation update callbacks
-	std::copy(model_copy.getAnimationCallbacks().begin(), 
-	          model_copy.getAnimationCallbacks().end(), 
-		  m_AnimationCallbacks.begin());
+	std::copy(model_copy.getAnimationCallbacks().begin(),
+	          model_copy.getAnimationCallbacks().end(),
+	          m_AnimationCallbacks.begin());
 
-	std::cout << "MODEL animation count = " << m_AnimationCallbacks.size() << "\n";
+	CSP_LOG(APP, INFO, "MODEL animation count = " << m_AnimationCallbacks.size());
 
 	m_Label = new osgText::Text();
 	m_Label->setFont("screeninfo.ttf");

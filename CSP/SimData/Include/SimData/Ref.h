@@ -90,11 +90,6 @@ private:
 	}
 	inline unsigned _count() const { return __count; }
 	mutable unsigned __count;
-
-	// Referenced objects should never be copied; always allocate them on the
-	// heap and use Ref<> smart-pointers to refer to them.
-	Referenced const & operator=(Referenced const &);
-	Referenced(Referenced const &);
 };
 
 

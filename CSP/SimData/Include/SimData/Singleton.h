@@ -29,13 +29,16 @@
 #define __SIMDATA_SINGLETON_H__
 
 #include <SimData/Namespace.h>
+#include <SimData/Properties.h>
 
 NAMESPACE_SIMDATA
 
 /** Creates a single, static instance of the templated class.
+ *  TODO could stand lots of improvement (delete priority, thread
+ *  safety, etc).
  */
 template <class C>
-class Singleton {
+class Singleton: public NonCopyable {
 public:
 	/** Get the one instance of the template class.
 	 */
@@ -43,7 +46,10 @@ public:
 		static C __instance;
 		return __instance;
 	}
-private:
+	static C const & getConstInstance() {
+		return getInstance();
+	}
+protected:
 	Singleton() {}
 	~Singleton() {}
 };

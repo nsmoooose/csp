@@ -45,6 +45,7 @@ void DataManager::closeAll() {
 			*i = 0;
 		}
 	}
+	_archives.clear();
 }
 
 void DataManager::addArchive(DataArchive *d) {

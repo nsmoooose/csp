@@ -1,6 +1,14 @@
 Version 0.3.1 (in progress)
 ===========================
 
+2003-03-28: delta
+	    updated .net project (release mode is maintained)
+
+	    Once SimData is compiled, in command line, write:
+	    setup.py make_install_win
+	    from APPLICATIONS/SimData to copy all headers and binaries needed
+	    for csp.
+
 2003-03-27: onsight
             Added push_back() methods for int, double, and string to 
 	    InterfaceRegistry.  These are needed for XML <List>'s of these
@@ -27,8 +35,10 @@ Version 0.3.1 (in progress)
 	    Moved some SWIG/Python special methods to SWIG %extend
 	    directives.  Still more to be done.
 
-            *** ANY MSVC USERS: PLEASE UPDATE THE PROJECT FILE TO INCLUDE ***
-	    *** NOISE.CPP AND REAL.CPP, AND REMOVE SPREAD.CPP             ***
+2003-03-26: delta
+	    Removed Spread.cpp and added Noise.cpp and Real.cpp
+
+	    Added export symbol to Table and InterpolatedData classes.
 
 2003-03-25: onsight
             Changed #define types for InterpolatedData to class typedefs.

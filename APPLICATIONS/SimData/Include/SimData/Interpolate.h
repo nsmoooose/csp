@@ -41,7 +41,9 @@
 #include <string>
 #include <vector>
 #include <cstdio>
+
 #include <SimData/Enum.h>
+#include <SimData/Export.h>
 
 
 
@@ -62,7 +64,7 @@ class UnPacker;
  * 
  * @author Mark Rose <mrose@stm.lbl.gov>
  */
-class InterpolatedData: public BaseType {
+class SIMDATA_EXPORT InterpolatedData: public BaseType {
 
 	/*
 	
@@ -137,7 +139,7 @@ public:
  * 
  * @author Mark Rose <mrose@stm.lbl.gov>
  */
-class Table: public InterpolatedData {
+class SIMDATA_EXPORT Table: public InterpolatedData {
 
 public:
 	std::string _x_label, _y_label;

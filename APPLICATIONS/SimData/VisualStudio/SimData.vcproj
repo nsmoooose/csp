@@ -175,6 +175,9 @@
 				RelativePath="..\Source\Matrix3.cpp">
 			</File>
 			<File
+				RelativePath="..\Source\Noise.cpp">
+			</File>
+			<File
 				RelativePath="..\Source\Object.cpp">
 			</File>
 			<File
@@ -190,7 +193,7 @@
 				RelativePath="..\Source\Random.cpp">
 			</File>
 			<File
-				RelativePath="..\Source\Spread.cpp">
+				RelativePath="..\Source\Real.cpp">
 			</File>
 			<File
 				RelativePath="..\Source\TypeAdapter.cpp">
@@ -297,9 +300,6 @@
 			</File>
 			<File
 				RelativePath="..\Include\SimData\Real.h">
-			</File>
-			<File
-				RelativePath="..\Include\SimData\Spread.h">
 			</File>
 			<File
 				RelativePath="..\Include\SimData\String.h">

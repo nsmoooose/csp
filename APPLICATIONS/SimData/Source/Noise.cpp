@@ -93,12 +93,12 @@ std::vector<float> Perlin1D::generate(int n, bool periodic, double timescale, do
 		double s = timescale/n;
 		for (i=0; i<n; i++) {
 			double f = i*s;
-			buffer[i] = (float) (getValue(f)*amplitude + offset);
+			buffer[i] = static_cast<float>(getValue(f)*amplitude + offset);
 		}
 		if (periodic) {
 			s = 1.0 / n;
 			for (i=0; i<n/2; i++) {
-				float f = 0.5 + i*s;
+				float f = static_cast<float>(0.5 + i*s);
 				float a = buffer[i];
 				float b = buffer[n-i-1];
 				buffer[i] = f*a+(1-f)*b;

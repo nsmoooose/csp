@@ -116,7 +116,7 @@ NAMESPACE_SIMDATA
 
 	void calibrateRealTime() {
 		int max_tries = 1;
-		uint64 counter;
+		uint64 counter = 0;
 		if (calibrations == 0) {
 			counter_scale = 1.0 / static_cast<double>(getPerformanceFrequency());
 			max_tries = 10;

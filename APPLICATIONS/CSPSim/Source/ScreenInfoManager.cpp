@@ -25,7 +25,6 @@
 #include <osg/Depth>
 #include <osg/MatrixTransform>
 
-#include "CSPSim.h"
 #include "ScreenInfoManager.h"
 
 void set2dScene(osg::Group* rootNode, int ScreenWidth, int ScreenHeight)
@@ -33,7 +32,6 @@ void set2dScene(osg::Group* rootNode, int ScreenWidth, int ScreenHeight)
     osg::ref_ptr<Framerate> framerate = new Framerate(0,ScreenHeight);
 	//float textWidth = bitmapFont->getWidth(pause->getEncodedText());
 	osg::ref_ptr<ScreenInfo> pause = new ScreenInfo(ScreenWidth - 5 * 8, ScreenHeight,"PAUSE", "PAUSE");
-	pause->setStatus(CSPSim::theSim->isPaused());
 	osg::ref_ptr<GeneralStats> generalStats = new GeneralStats(0, ScreenHeight / 3);
 
 	rootNode->addChild(framerate.get());

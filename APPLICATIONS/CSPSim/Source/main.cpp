@@ -8,10 +8,10 @@ int main(int argc, char *argv[])
 	
 	CSPSim app;
 
-	app.Init();
-	app.Run();
-	app.Cleanup();
-	app.Exit();
+	app.init();
+	app.run();
+	app.cleanup();
+	app.quit();
 
 	return 0;
 }

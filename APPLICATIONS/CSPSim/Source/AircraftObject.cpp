@@ -99,6 +99,8 @@ AircraftObject::AircraftObject(): DynamicObject()
 	BIND_ACTION("WHEEL_BRAKE_ON", WheelBrakeOn);
 	BIND_ACTION("WHEEL_BRAKE_OFF", WheelBrakeOff);
 	BIND_AXIS("WHEEL_BRAKE", setWheelBrake);
+	BIND_ACTION("GEAR_UP", GearUp);
+	BIND_ACTION("GEAR_DOWN", GearDown);
 
 	CSP_LOG(CSP_APP, CSP_DEBUG, "... AircraftObject::AircraftObject()");
 }
@@ -331,7 +333,23 @@ void AircraftObject::WheelBrakeOff() {
 void AircraftObject::setWheelBrake(double x) {
 	m_BrakeInput = x;
 }
+
+void AircraftObject::setGearStatus(bool on) {
+ if (on) 
+	m_Gear->Extend();
+ else
+	m_Gear->Retract();
+ m_Model->showContactMarkers(on);
+}
 	
+void AircraftObject::GearUp() {
+	setGearStatus(false);
+}
+
+void AircraftObject::GearDown() {
+	setGearStatus(true);
+}
+
 void AircraftObject::setOrientation(double heading, double pitch, double roll)
 {
 	simdata::Matrix3 Orientation;

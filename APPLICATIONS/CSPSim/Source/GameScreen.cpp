@@ -187,6 +187,7 @@ void GameScreen::OnInit()
 
 	m_ScreenInfoManager = new ScreenInfoManager(ScreenWidth,ScreenHeight);
 	m_ScreenInfoManager->setName("ScreenInfoManager");
+	m_ScreenInfoManager->setStatus("PAUSE", CSPSim::theSim->isPaused());
 
 	m_Console = new PyConsole(ScreenWidth, ScreenHeight);
 	m_Console->setName("PyConsole");

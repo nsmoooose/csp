@@ -180,7 +180,7 @@ void ObjectModel::loadModel() {
 	//osg::StateSet * stateSet = m_rpNode->getStateSet();
 	//stateSet->setGlobalDefaults();
 	//m_rpNode->setStateSet(stateSet);
-    
+     
 	if (m_Smooth) {
 		osgUtil::SmoothingVisitor sv;
 		m_Transform->accept(sv);

@@ -56,6 +56,7 @@ Console::Console(int x, int y, int w, int h, int border)
 	setStateSet(new osg::StateSet);
 	text_->setColor(osg::Vec4(1, 1, 1, 1));
 	text_->setAlignment(osgText::Text::LEFT_TOP);
+	token_->setAlignment(osgText::Text::LEFT_TOP);
 }
 
 Console::Console(const Console &copy, const osg::CopyOp &copyop)
@@ -214,7 +215,7 @@ void Console::setCursor(int pos)
 		//text.setText((unsigned char const *)left.c_str());
 		//cursor_x_ = text_->getFont()->getWidth(&text);
 		token_->setText(left); 
-		cursor_x_ -= text_->getFont()->getWidth(token_->getEncodedText());
+		cursor_x_ = text_->getFont()->getWidth(token_->getEncodedText());
 		dirtyDisplayList();
 	} 
 }

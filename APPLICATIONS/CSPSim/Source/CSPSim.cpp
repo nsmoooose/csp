@@ -170,7 +170,7 @@ simdata::Pointer<DynamicObject const> const CSPSim::getActiveObject() const {
 	return m_ActiveObject;
 }
 
-VirtualBattlefield * const CSPSim::getBattlefield() const
+VirtualBattlefield* const CSPSim::getBattlefield() const
 {
 	return m_Battlefield;
 }
@@ -226,7 +226,7 @@ void CSPSim::init()
 	// eventually this will be set in an entirely different way...
 	m_ActiveTerrain = m_DataArchive->getObject("terrain.balkan");
 	m_ActiveTerrain->activate(m_Battlefield);
-
+	
 	// get view parameters from configuration file.  ultimately there should
 	// be an in-game ui for this and probably a separate config file.
 	bool wireframe = g_Config.getBool("View", "Wireframe", false, true);
@@ -391,10 +391,13 @@ void CSPSim::run()
 			}
             
 			// Swap OpenGL buffers
+#ifndef __CSPSIM_EXE__
 			Py_BEGIN_ALLOW_THREADS;
 			SDL_GL_SwapBuffers();
 			Py_END_ALLOW_THREADS;
-
+#else
+			SDL_GL_SwapBuffers();
+#endif
 			// remove marked objects, this should be done at the end of the main loop.
 			m_Battlefield->removeObjectsMarkedForDelete();
 		}

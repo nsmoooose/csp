@@ -274,6 +274,13 @@ void CSPSim::init()
 		m_Terrain = m_Theater->getTerrain();
 		assert(m_Terrain.valid());
 		m_Terrain->activate();
+
+		// configure the atmosphere for the theater location
+		// this affects mean temperatures, and should not need
+		// to be updated for motion within a given theater.
+		double lat = m_Terrain->getCenter().latitude();
+		double lon = m_Terrain->getCenter().longitude();
+		m_Atmosphere.setPosition(lat, lon);
 		
 		CSP_LOG(APP, DEBUG, "INIT:: scene");
 
@@ -304,6 +311,7 @@ void CSPSim::init()
 		m_Scene->setFogEnd(fog_end);
 
 		// create a test object (other objects can be created via TestObjects.py)
+#if 0
 
 		CSP_LOG(APP, DEBUG, "INIT:: test vehicle");
 
@@ -336,6 +344,7 @@ void CSPSim::init()
 		m_Battlefield->addUnit(ao);
 		setActiveObject(ao);
 
+#endif
 		CSP_LOG(APP, DEBUG, "INIT:: gamescreen");
 
 		// Following variables should be set before calling GameScreen.init()
@@ -455,10 +464,6 @@ void CSPSim::run()
 
 	initTime(date);
 	
-	// XXX move this elsewhere
-	double lat = simdata::DegreesToRadians(g_Config.getFloat("Testing", "Latitude", 0, true));
-	double lon = simdata::DegreesToRadians(g_Config.getFloat("Testing", "Longitude", 0, true));
-	m_Atmosphere.setPosition(lat, lon);
 	m_Atmosphere.setDate(date);
 	m_Atmosphere.reset();
 

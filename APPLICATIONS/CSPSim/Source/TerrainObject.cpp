@@ -53,6 +53,7 @@ TerrainObject::TerrainObject()
 {
 	m_Width = 0;
 	m_Height = 0;
+	m_Version = 0;
 }
 
 TerrainObject::~TerrainObject()
@@ -62,6 +63,8 @@ TerrainObject::~TerrainObject()
 void TerrainObject::pack(simdata::Packer& p) const 
 {
 	Object::pack(p);
+	p.pack(m_Name);
+	p.pack(m_Version);
 	p.pack(m_Center);
 	p.pack(m_Width);
 	p.pack(m_Height);
@@ -70,6 +73,8 @@ void TerrainObject::pack(simdata::Packer& p) const
 void TerrainObject::unpack(simdata::UnPacker& p)
 {
 	Object::unpack(p);
+	p.unpack(m_Name);
+	p.unpack(m_Version);
 	p.unpack(m_Center);
 	p.unpack(m_Width);
 	p.unpack(m_Height);
@@ -77,8 +82,9 @@ void TerrainObject::unpack(simdata::UnPacker& p)
 
 
 void TerrainObject::postCreate() {
-	CSP_LOG(TERRAIN, INFO, "Terrain Center @ " << getCenter().asString());
-	CSP_LOG(TERRAIN, INFO, "Terrain Size " << getWidth() << " x " << getHeight() << " m");
+	CSP_LOG(TERRAIN, INFO, "Terrain " << m_Name << " (version " << m_Version << ")");
+	CSP_LOG(TERRAIN, INFO, "   center = " << getCenter().asString());
+	CSP_LOG(TERRAIN, INFO, "     size = " << getWidth() << " x " << getHeight() << " m");
 	m_Map.set(getCenter(), getWidth(), getHeight());
 }
 

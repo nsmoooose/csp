@@ -1,6 +1,8 @@
 <?xml version="1.0" standalone="no"?>
 
 <Object class="DemeterTerrain">
+	<String name="name">Balkan Terrain</String>
+	<Int name="version">0</Int>
 	<Int name="use_dynamic_textures">0</Int>
 	<Int name="use_texture_compression">1</Int>
 	<Int name="preload_textures">1</Int>

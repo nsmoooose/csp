@@ -2,6 +2,24 @@
 ===========================
 
 2003-07-22: onsight
+	    Increased the default window size to 800x600 so that
+	    the splash screen will show properly.
+
+	    Added a name and version number to the XML metadata
+	    for terrains.  The name is used by TestObjects.py to
+	    create theater-specific vehicles at startup until a
+	    proper campaign engine is written to generate them.
+
+	    The default vehicle construction in CSPSim.cpp has
+	    been removed.  The first vehicle created in
+	    TestObjects.py now serves this purpose.
+
+	    Lat/Lon removed from CSPSim.ini.  These were used
+	    to set the mean seasonal temperature in Atmosphere.cpp,
+	    but the center of the terrain (set in the terrain XML
+	    metadata) is used directly now.
+
+2003-07-22: onsight
             Modified CSPSim.ini to reduce the default window
 	    size to 640x480.
 	    

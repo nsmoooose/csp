@@ -416,18 +416,6 @@ void VirtualScene::onUpdate(float dt)
 {
 	static float t = 0.0;
 
-	/*
-	// temporary testing purposes only
-	static bool init = false;
-	static float lat = 0.0;
-	static float lon = 0.0;
-	if (!init) {
-		lat = simdata::DegreesToRadians(g_Config.getFloat("Testing", "Latitude", 0, true));
-		lon = simdata::DegreesToRadians(g_Config.getFloat("Testing", "Longitude", 0, true));
-		init = true;
-	}
-	*/
-
 	if (m_SpinTheWorld || m_ResetTheWorld || (int(t) % 10) == 0 ||
 		(m_SkyPoint - m_Origin).LengthSquared() > 25.0e+6) {
 		m_SkyPoint = m_Origin;
@@ -442,7 +430,6 @@ void VirtualScene::onUpdate(float dt)
 		} else {
 			m_Sky->update(0.0, 0.0, CSPSim::theSim->getCurrentTime());
 		}
-		//m_Sky->update(lat, lon, CSPSim::theSim->getCurrentTime());
 		// greenwich, england (for testing)
 		//m_Sky->update(0.8985, 0.0, CSPSim::theSim->getCurrentTime());
 		t = 1.0;

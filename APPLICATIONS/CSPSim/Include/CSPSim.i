@@ -78,6 +78,7 @@ public:
 		q_attitude = simdata::Quaternion::MakeQFromEulerAngles(attitude.x, attitude.y, attitude.z);
 		obj->setAttitude(q_attitude);
 		self->getBattlefield()->addUnit(obj);
+		if (!self->getActiveObject()) self->setActiveObject(obj);
 	}
 	void createVehicle(const char *path, simdata::LLA lla, 
 	                   simdata::Vector3 velocity, simdata::Vector3 attitude) {
@@ -91,8 +92,11 @@ public:
 		q_attitude = simdata::Quaternion::MakeQFromEulerAngles(attitude.x, attitude.y, attitude.z);
 		obj->setAttitude(q_attitude);
 		self->getBattlefield()->addUnit(obj);
+		if (!self->getActiveObject()) self->setActiveObject(obj);
 	}
 	void setShell(PyObject *shell) { self->getShell()->bind(shell); }
+	std::string const &getTerrainName() { return self->getTheater()->getTerrain()->getName(); }
+	int getTerrainVersion() { return self->getTheater()->getTerrain()->getVersion(); }
 }
 
 %exception;

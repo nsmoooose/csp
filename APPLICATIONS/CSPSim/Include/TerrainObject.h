@@ -90,15 +90,17 @@ public:
 		inline void reset() { _hit = false; }
 		void setHit(float ratio, simdata::Vector3 const &normal);
 	protected:
-		bool				_hit;
-		float				_ratio;
-		simdata::Vector3	_start;
-		simdata::Vector3	_end;
-		simdata::Vector3    _point;
-		simdata::Vector3    _normal;
+		bool _hit;
+		float _ratio;
+		simdata::Vector3 _start;
+		simdata::Vector3 _end;
+		simdata::Vector3 _point;
+		simdata::Vector3 _normal;
 	};
 
 	BEGIN_SIMDATA_XML_VIRTUAL_INTERFACE(TerrainObject)
+		SIMDATA_XML("name", TerrainObject::m_Name, true)
+		SIMDATA_XML("version", TerrainObject::m_Version, true)
 		SIMDATA_XML("center", TerrainObject::m_Center, true)
 		SIMDATA_XML("width", TerrainObject::m_Width, true)
 		SIMDATA_XML("height", TerrainObject::m_Height, true)
@@ -121,6 +123,8 @@ public:
 	simdata::LLA const & getCenter() const { return m_Center; }
 	inline float getWidth() const { return m_Width; }
 	inline float getHeight() const { return m_Height; }
+	inline std::string const &getName() const { return m_Name; }
+	inline int getVersion() const { return m_Version; }
 	Projection const & getProjection() const { return m_Map; }
 	virtual simdata::Vector3 getOrigin(simdata::Vector3 const &) const = 0;
 	virtual void endDraw() {}
@@ -130,6 +134,8 @@ protected:
 	simdata::LLA m_Center;
 	float m_Width, m_Height;
 	Projection m_Map;
+	std::string m_Name;
+	int m_Version;
 
 	virtual void pack(simdata::Packer& p) const;
 	virtual void unpack(simdata::UnPacker& p);

@@ -92,6 +92,7 @@ def runCSPSim(args):
 
 
 def compileData(args):
+	datapath = CSP.getDataPath()
 	cachepath = CSP.getCachePath()
 	dar = os.path.join(cachepath, "sim.dar")
 	XML = os.path.join(datapath, "XML")

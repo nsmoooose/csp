@@ -1,7 +1,7 @@
 #!/usr/bin/python -O
 
 # Combat Simulator Project - CSPSim
-# Copyright (C) 2002 The Combat Simulator Project
+# Copyright (C) 2002, 2004 The Combat Simulator Project
 # http://csp.sourceforge.net
 #
 # This program is free software; you can redistribute it and/or
@@ -26,11 +26,13 @@ sys.path.insert(0, '../../SimData')
 #import Shell
 #from SimData.Compile import Compiler, CompilerUsageError
 
+
 def initDynamicLoading():
 	"""Enable lazy loading of shared library modules if available"""
 	if os.name == 'posix':
 		import dl
 		sys.setdlopenflags(dl.RTLD_GLOBAL|dl.RTLD_LAZY)
+
 
 def setDefaultJoystick():
 	"""Provide a default value for the SDL joystick environment variable"""
@@ -39,48 +41,81 @@ def setDefaultJoystick():
 		if os.path.exists("/dev/input/js0"):
 			os.environ["SDL_JOYSTICK_DEVICE"]="/dev/input/js0"
 
+
 def printUsage():
 	print "Combat Simulator Project - CSPSim"
 	print
 	print "  Primary options:"
-	print "              --compile-data  run the data compiler"
-	print "              --config=path   path to config (.ini) file"
-	print "              --log=classes   set the logging classes"
-	print "              --slog=level    set the simdata logging level"
-	print "              --dump-data     show the contents of sim.dar"
-	print "              --client-node   run networking test client node"
-	print "              --echo-server-node   run networking test echo server node"
-	print "              --help          help message"
+	print "    --compile-data       run the data compiler"
+	print "    --config=path        path to config (.ini) file"
+	print "    --logcat=categories  set the logging categories (colon-delimited)"
+	print "                         examples: --logcat=APP:TERRAIN:PHYSICS"
+	print "                                   --logcat=ALL:-NETWORK  (all but network)"
+	print "    --logpri=priority    set the logging priority threshold (overrides .ini)"
+	print "                         examples: --logpri=INFO"
+	print "                                   --logpri=5"
+	print "    --pause              pause on startup for attaching a debug session"
+	print "    --dump-data          show the contents of sim.dar"
+	print "    --client-node        run networking test client node"
+	print "    --echo-server-node   run networking test echo server node"
+	print "    --help               help message"
 
 
 def setLogCategory():
-	if len(log_classes) == 0: return
+	if len(log_categories) == 0: return
 	flags = 0
-	for class_name in log_classes:
+	for class_name in log_categories:
+		invert = 0
+		if class_name.startswith('-'):
+			class_name = class_name[1:]
+			invert = 1
 		try:
 			class_flag = getattr(CSP, "CSP_"+class_name);
-			flags = flags | class_flag
+			if invert:
+				flags = flags & ~class_flag
+			else:
+				flags = flags | class_flag
 		except:
 			print "Unrecognized log class:", class_name
 	CSP.csplog().setLogCategory(flags)
 
 
+def setLogPriority():
+	if log_priority is None: return
+	CSP.csplog().setLogPriority(log_priority)
+	SimData.log().setLogPriority(log_priority)
+
+
+def parseLogPriority(priority):
+	try:
+		priority = int(priority)
+	except ValueError:
+		priority = getattr(SimData, "LOG_" + priority.upper(), None)
+	return priority
+
+
 def runCSPSim(args):
 	if len(args):
-		print "Unrecognized option '%s'" % args[0]
-		print
+		print "Unrecognized option '%s'\n" % args[0]
 		printUsage()
 		print
 		sys.exit(1)
+
 	cachepath = CSP.getCachePath()
 	dar = os.path.join(cachepath, "sim.dar")
 	if not os.path.exists(dar):
 		print
 		print "Static data archive '%s' not found." % dar
 		compileData([])
+
 	import Shell
 	app = CSP.CSPSim()
+
+	# logging will have already been configured from the ini file at this point,
+	# so we can safely override the settings.
 	setLogCategory()
+	setLogPriority()
+
 	app.init()
 
 	try:
@@ -105,9 +140,7 @@ def dumpData(args):
 			dar = arg[12:]
 	archive = SimData.DataArchive(dar, 1)
 	archive.dump()
-	archive.getObject("sim:terrain.balkan")
-	archive.getObject("sim:theater.balkan")
-	
+
 
 def compileData(args):
 	datapath = CSP.getDataPath()
@@ -144,7 +177,8 @@ def compileData(args):
 		print 'Aborting'
 		sys.exit(1)
 	print
-	
+
+
 def runClientNode(args):
 	print "CSPSim.py - runClientNode - Starting Test Client Node..."
 	print "CSPSim.py - runClientNode - calling loadCSP"
@@ -154,11 +188,13 @@ def runClientNode(args):
 	print "CSPSim.py - runClientNode - calling app.run"
 	app.run()
 
+
 def runEchoServerNode(args):
 	print "Starting Test Echo Server Node..."
 	loadCSP()
 	app = CSP.EchoServerNode()
 	app.run()
+
 
 def loadSimData():
 	"""Load the SimData module"""
@@ -238,7 +274,8 @@ def findConfig():
 
 
 def main(argv):
-	global log_classes
+	global log_categories
+	global log_priority
 
 	initDynamicLoading()
 	setDefaultJoystick()
@@ -248,10 +285,11 @@ def main(argv):
 	# process command line options
 	program = argv[0]
 	all_args = argv[1:]
-	log_classes = []
+	log_categories = []
+	log_priority = None
+	log_priority_arg = None
 	other_args = []
 	pause = 0
-	simdata_loglevel = "ALERT"
 
 	config = findConfig()
 
@@ -279,29 +317,29 @@ def main(argv):
 				other_args.append(arg)
 		elif arg.startswith("--config="):
 			config = arg[9:]
-		elif arg.startswith("--log="):
-			log_classes.extend(arg[6:].split(':'))
-		elif arg.startswith("--slog="):
-			simdata_loglevel = arg[7:]
+		elif arg.startswith("--logcat="):
+			log_categories.extend(arg[9:].split(':'))
+		elif arg.startswith("--logpri="):
+			log_priority_arg = arg[9:]
 		else:
 			other_args.append(arg)
 
 	if action is None:
 		action = runCSPSim
 
+
 	loadSimData()
+
+	if log_priority_arg is not None:
+		log_priority = parseLogPriority(log_priority_arg)
+		if log_priority is None:
+			print "Invalid logging priority, using .ini setting."
+
+    # capture Object class registration and other errors when CSP loads
 	SimData.log().setLogCategory(SimData.LOG_ALL)
 	SimData.log().setLogPriority(SimData.LOG_DEBUG)
 
 	loadCSP()
-
-	try:
-		simdata_loglevel = eval("SimData.LOG_%s" % simdata_loglevel.upper())
-	except:
-		print "Invalid SimData logging level, defaulting to 'ALERT'"
-		simdata_loglevel = SimData.LOG_ALERT
-
-	SimData.log().setLogPriority(simdata_loglevel)
 
 	print "Loading configuration from '%s'." % config
 	if not CSP.openConfig(config):
@@ -309,9 +347,23 @@ def main(argv):
 		sys.exit(0)
 
 	if pause:
-		print "Hit <ctrl-break> to temporarily exit and set breakpoints."
-		print "When you are done, continue execution and hit <enter>."
-		sys.stdin.readline()
+		print
+		print "CSPSim has loaded all extension modules, and is now paused to give you"
+		print "an opportunity to attach a debugging session.  Under GNU/Linux run the"
+		print "following command from a separate shell to attach a debug session:"
+		print
+		print "   gdb python %d" % os.getpid()
+		print
+		print "This will run gdb and attach to the CSPSim process.  Once gdb finishes"
+		print "loading symbols for all the modules, you can set breakpoints as needed"
+		print "and then enter 'c' to continue."
+		print
+		print "Finally, return to this window and press <enter> to resume CSPSim."
+		print
+		try:
+			sys.stdin.readline()
+		except KeyboardInterrupt:
+			sys.exit(1)
 
 	action(other_args)
 

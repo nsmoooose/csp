@@ -1,6 +1,22 @@
  Version 0.4.0 (in progress)
 ===========================
 
+2004-07-08: onsight
+  * Slight tweak of the logging macros.  See the SimData changelog for
+    details.
+
+  * Added instructions for using the --pause option for debugging under
+    GNU/Linux.
+
+  * Changed the --log to --logcat, and added the ability to specify
+    category exclusions.   For example, --logcat=PHYSICS:NETWORK:TERRAIN
+    will only log messages in those three categories, while
+    --logcat=ALL:-NETWORK will log all categories _except_ NETWORK.
+
+  * Replaced the --slog parameter with --logpri, which overrides the
+    logging priority for both simdata and cspsim.  Accepts either
+    numeric values (e.g. 5) or symbolic names (e.g. "INFO").
+
 2004-07-07: onsight
   * More network code reformatting and redirecting messages from stdout
     to the csp log.  Changed logging class to NETWORK.

@@ -64,7 +64,7 @@ public:
  *
  *  @author Mark Rose <mrose@stm.lbl.gov>
  */
-class TaggedRecordRegistry: public Singleton<TaggedRecordRegistry> {
+class SIMDATA_EXPORT TaggedRecordRegistry: public Singleton<TaggedRecordRegistry> {
 
 friend class Singleton<TaggedRecordRegistry>;
 

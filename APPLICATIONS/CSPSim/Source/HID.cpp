@@ -167,7 +167,7 @@ void VirtualHID::OnUpdate(double dt) {
 		if (action->jmod >= 0) {
 			setJoystickModifier(action->jmod);
 		}
-		if (!m_Object->OnCommand(id, m_MouseEventX, m_MouseEventY)) {
+		if (*id && !m_Object->OnCommand(id, m_MouseEventX, m_MouseEventY)) {
 			std::cout << "Missing HID interface for command '" << id << "'\n";
 		}
 		// advance, end, or loop the script

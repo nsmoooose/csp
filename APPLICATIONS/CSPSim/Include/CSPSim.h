@@ -103,7 +103,7 @@ protected:
 	void initSim();
 	int initSDL();
 
-	void doInput();
+	void doInput(double dt);
 	void updateObjects(double dt);
 	void doStartupScript();
 

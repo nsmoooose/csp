@@ -364,7 +364,7 @@ void CSPSim::run()
 			float dt = m_FrameTime;
 
 			// Do Input loop
-			doInput();
+			doInput(dt);
 
 			// Miscellaneous Updates
 			low_priority += dt;
@@ -459,9 +459,11 @@ void CSPSim::updateTime()
 }
 
 
-void CSPSim::doInput()
+void CSPSim::doInput(double dt)
 {
 	CSP_LOG(CSP_APP, CSP_DEBUG, "CSPSim::doInput()...");
+
+	VirtualHID *screen_interface = m_CurrentScreen->getInterface();
 
 	SDL_Event event;
 	int doPoll = 10;
@@ -480,15 +482,17 @@ void CSPSim::doInput()
 			}
 		}
 		if (!handled && m_CurrentScreen) {
-			VirtualHID *i = m_CurrentScreen->getInterface();
-			if (i) {
-				handled = i->OnEvent(event);
+			if (screen_interface) {
+				handled = screen_interface->OnEvent(event);
 			}
 		}
 		if (!handled && m_Interface) {
 			handled = m_Interface->OnEvent(event);
 		}
 	}
+	// run input scripts
+	if (screen_interface) screen_interface->OnUpdate(dt);
+	if (m_Interface) m_Interface->OnUpdate(dt);
 }
 
 /**
@@ -548,6 +552,7 @@ int CSPSim::initSDL()
 		return 1;
 	}
 
+	SDL_JoystickEventState(SDL_ENABLE);
 	m_SDLJoystick = SDL_JoystickOpen(0);
 	if (m_SDLJoystick == NULL) {
 		CSP_LOG(CSP_APP, CSP_ERROR, "Failed to open joystick");

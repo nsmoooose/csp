@@ -159,6 +159,7 @@ public:
 		size_t n = m_Gear.size();
 		for (unsigned short i = 0; i < n; ++i)
 			m_Gear[i]->setExtended(on);
+		m_Extended = on;
 	}
 
 	void Retract() { 
@@ -167,6 +168,10 @@ public:
 
 	void Extend() {
 		setStatus(true);
+	}
+
+	bool getExtended() const {
+		return m_Extended;
 	}
 
 	bool getWOW() const { return m_WOW; }
@@ -191,6 +196,7 @@ public:
 protected:
 	GearSet m_Gear;
 	bool m_WOW;
+	bool m_Extended;
 };
 
 

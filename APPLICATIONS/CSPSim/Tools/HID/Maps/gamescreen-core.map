@@ -1,9 +1,7 @@
 include mouse.map
 include keys.map
-include x36.map
 
 device keyboard 0 key US_keyboard 
-device joystick 0 x36 Saitek_X36
 device mouse 0 mouse standard_mouse
 
 bind __gamescreen__

@@ -68,12 +68,15 @@ public:
 	ACTION_INTERFACE(AircraftObject, noDecThrottle);
 	ACTION_INTERFACE(AircraftObject, SmokeOn);
 	ACTION_INTERFACE(AircraftObject, SmokeOff);
+	ACTION_INTERFACE(AircraftObject, SmokeToggle);
 	AXIS_INTERFACE(AircraftObject, setWheelBrake);
 	ACTION_INTERFACE(AircraftObject, WheelBrakePulse);
 	ACTION_INTERFACE(AircraftObject, WheelBrakeOn);
 	ACTION_INTERFACE(AircraftObject, WheelBrakeOff);
+	ACTION_INTERFACE(AircraftObject, WheelBrakeToggle);
 	ACTION_INTERFACE(AircraftObject, GearUp);
 	ACTION_INTERFACE(AircraftObject, GearDown);
+	ACTION_INTERFACE(AircraftObject, GearToggle);
 
 	AircraftObject();
 	virtual ~AircraftObject();
@@ -113,6 +116,7 @@ protected:
 	virtual void postCreate();
 
 	virtual void setGearStatus(bool on);
+	bool isGearRetracted() const;
 
 	simdata::Pointer<AeroDynamics> m_FlightModel;
 	

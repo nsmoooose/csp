@@ -95,12 +95,15 @@ AircraftObject::AircraftObject(): DynamicObject()
 	BIND_ACTION("STOP_DEC_ELEVATOR", noDecElevator);
 	BIND_ACTION("SMOKE_ON", SmokeOn);
 	BIND_ACTION("SMOKE_OFF", SmokeOff);
+	BIND_ACTION("SMOKE_TOGGLE", SmokeToggle);
 	BIND_ACTION("WHEEL_BRAKE_PULSE", WheelBrakePulse);
 	BIND_ACTION("WHEEL_BRAKE_ON", WheelBrakeOn);
 	BIND_ACTION("WHEEL_BRAKE_OFF", WheelBrakeOff);
+	BIND_ACTION("WHEEL_BRAKE_TOGGLE", WheelBrakeToggle);
 	BIND_AXIS("WHEEL_BRAKE", setWheelBrake);
 	BIND_ACTION("GEAR_UP", GearUp);
 	BIND_ACTION("GEAR_DOWN", GearDown);
+	BIND_ACTION("GEAR_TOGGLE", GearToggle);
 
 	CSP_LOG(CSP_APP, CSP_DEBUG, "... AircraftObject::AircraftObject()");
 }
@@ -318,6 +321,14 @@ void AircraftObject::SmokeOff() {
 	DisableSmoke();
 }
 
+void AircraftObject::SmokeToggle() { 
+	if (isSmoke()) {
+		DisableSmoke();
+	} else {
+		EnableSmoke();
+	}
+}
+
 void AircraftObject::WheelBrakePulse() { 
 	m_BrakePulse = 2.0;
 }
@@ -330,16 +341,25 @@ void AircraftObject::WheelBrakeOff() {
 	m_BrakeInput = 0.0;
 }
 
+void AircraftObject::WheelBrakeToggle() {
+	if (m_BrakeInput < 0.5) {
+		m_BrakeInput = 1.0;
+	} else {
+		m_BrakeInput = 0.0;
+	}
+}
+
 void AircraftObject::setWheelBrake(double x) {
 	m_BrakeInput = x;
 }
 
 void AircraftObject::setGearStatus(bool on) {
- if (on) 
-	m_Gear->Extend();
- else
-	m_Gear->Retract();
- m_Model->showContactMarkers(on);
+	if (on) {
+		m_Gear->Extend();
+	} else {
+		m_Gear->Retract();
+	}
+	m_Model->showContactMarkers(on);
 }
 	
 void AircraftObject::GearUp() {
@@ -348,6 +368,10 @@ void AircraftObject::GearUp() {
 
 void AircraftObject::GearDown() {
 	setGearStatus(true);
+}
+
+void AircraftObject::GearToggle() {
+	setGearStatus(!m_Gear->getExtended());
 }
 
 void AircraftObject::setOrientation(double heading, double pitch, double roll)

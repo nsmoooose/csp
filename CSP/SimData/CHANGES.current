@@ -1,6 +1,10 @@
 Version 0.4.0 (in progress)
 ===========================
 
+2004-16-12: wolverine
+  * added a MemoryWriter class to write out a SimData object to
+    a binary memory buffer.
+
 2004-06-12: delta
   * Added Properties.h to SimData.vcproj header folder.
 

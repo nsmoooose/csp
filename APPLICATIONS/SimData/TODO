@@ -1,0 +1,67 @@
+THE BIG PICTURE
+----------------------------------------------------------------
+
+This version is incomplete in the sense of being ALPHA,
+but also in a more fundamental sense.
+
+The original concept for SimData relied on Python/SWIG
+(with special support for cross-language polymorphism) to 
+provide an interface for dynamically setting class member 
+variables as indicated by the source XML stream.  While 
+this approach worked, it forced the application using 
+SimData to wrap all classes that loaded external data 
+with SWIG.
+
+Somewhere (well) along the way, I thought of a less intrusive
+way to allow SimData to access class member variables in
+the target application.  The application still must define
+a minimal Python module in order to initialize the class
+interfaces, but this is much less onerous than the previous
+approach.  The downside is this new method relies on nested
+classes to provide XML interfaces.  Since SWIG does not
+currently support nested classes, it is no longer possible 
+to extend XML interfaces of application classes using 
+Python.  Also, much of the Python code found in SimData.py 
+which was intended to assist in such extension is now 
+obsolete.  Once a future version of SWIG supports nested 
+classes (which appears to be a priority for SWIG's developers), 
+new Python code will need to be written to replace much of 
+what is now in SimData.py.
+
+
+OTHER 
+----------------------------------------------------------------
+
+    * Improve the build on Linux.
+
+    * Creae a build for Windows.
+
+    * Install target to put SimData.py and _cSimData.so in
+      the Python site-local directory, and libSimData.a in
+      $prefix/lib.
+    
+    * Eliminate most inline code from headers.
+    
+    * Check for unnecessary header includes
+    
+    * Bug Dave about adding nested class support to SWIG
+    
+    * Add filename parameter and reporting to data archive exceptions
+    
+    * Eliminate excessive header interdependencies
+    
+    * Consider eliminating pack/unpack object methods, instead using the 
+      interface proxy classes to serialize objects. This may be much less 
+      error-prone.
+
+    > This is now partially implemented.  I'm holding off on completing
+      this feature for the time being.
+      
+    * Store path hash in loaded simdata::Object instances
+
+    * Change getClassName() to return just the classname, without version 
+      number
+      
+    * Add getClassVersion() method to simdata::Object. Return "major:minor".
+
+

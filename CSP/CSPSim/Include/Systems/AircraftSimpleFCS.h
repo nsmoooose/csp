@@ -44,6 +44,7 @@ class AircraftSimpleFCS: public System {
 		double m_Limit0, m_Limit1, m_Limit;
 	public:
 		Deflection(): m_Rate(0.5), m_Limit0(-0.3), m_Limit1(-m_Limit0), m_Limit(m_Limit1) {}
+		virtual ~Deflection() {}
 		void setParameters(double rate, double limit) {
 			limit = std::abs(limit);
 			setParameters(rate,-limit,limit);

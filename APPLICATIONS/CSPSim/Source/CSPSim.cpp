@@ -48,6 +48,7 @@
 #include "Theater.h"
 #include "ConsoleCommands.h"
 #include "Profile.h"
+#include "Networking.h"
    
 #include <SimData/Types.h>
 #include <SimData/ExceptionBase.h>
@@ -112,9 +113,16 @@ CSPSim *CSPSim::theSim = 0;
 
 CSPSim::CSPSim()
 { 
+
 	if (theSim == 0) {
 		theSim = this;
 	}
+
+	int level = g_Config.getInt("Debug", "LoggingLevel", 0, true);
+	csplog().setLogLevels(CSP_ALL, level);
+	csplog().setOutput("CSPSim.log");
+
+	CSP_LOG(APP, INFO, "Constructing CSPSim Object...");
 
 	m_Clean = true;
 
@@ -138,10 +146,9 @@ CSPSim::CSPSim()
 	m_ElapsedTime = 0.0;
 
 	m_Shell = new PyShell();
+	
+	m_NetworkBroadcaster = NULL;
 
-	int level = g_Config.getInt("Debug", "LoggingLevel", 0, true);
-	csplog().setLogLevels(CSP_ALL, level);
-	csplog().setOutput("CSPSim.log");
 }
 
 
@@ -155,11 +162,13 @@ CSPSim::~CSPSim()
 
 void CSPSim::setActiveObject(simdata::Ref<DynamicObject> object) {
 
-/*
+  /*
 	CSP_LOG(APP, INFO, "CSPSim::setActiveObject - objectID: " << object->getObjectID() 
 		  << ", ObjectType: " << object->getObjectType() 
 		  << ", Position: " << object->getGlobalPosition());
-*/
+  */
+  
+  CSP_LOG(APP, INFO, "CSPSim::setActiveObject()");
 
 	if (m_ActiveObject.valid()) {
 		m_Battlefield->setHuman(m_ActiveObject, false);
@@ -401,6 +410,9 @@ void CSPSim::init()
 		// create and initialize screens
 		m_GameScreen = new GameScreen;
 		m_GameScreen->onInit();
+		
+		// create the networking layer
+		m_NetworkBroadcaster = new NetworkBroadcaster;
 
 #if 0
 		// set the Main Menu then start the main loop
@@ -493,7 +505,7 @@ void CSPSim::run()
 	simdata::SimDate date;
 	try {
 		date.parseXML(date_string.c_str());
-	} 
+	}
 	catch (...) {
 		std::cerr << "Invalid starting date in INI file (Testing:Date).\n" << std::endl; 
 		::exit(1);
@@ -557,7 +569,10 @@ void CSPSim::run()
 				m_CurrentScreen->onRender();
 				PROF1(_screen_render, 60);
 			}
-            
+  
+
+			
+			
 			// Swap OpenGL buffers
 #ifndef __CSPSIM_EXE__
 			Py_BEGIN_ALLOW_THREADS;
@@ -660,6 +675,7 @@ void CSPSim::doInput(double dt)
 			}
 		}
 		if (!handled && m_Interface.valid()) {
+		  CSP_LOG(APP, DEBUG, "CSPSim::doInput()-Calling m_Interface->onEvent()");	
 			handled = m_Interface->onEvent(event);
 		}
 	}
@@ -679,12 +695,31 @@ void CSPSim::updateObjects(double dt)
 {
 	CSP_LOG(APP, DEBUG, "CSPSim::updateObjects...");
 
-    	if (m_Battlefield.valid()) {
+ 	if (m_Battlefield.valid()) {
 		m_Battlefield->onUpdate(dt);
 	}
 	if (m_Scene.valid()) {
 		m_Scene->onUpdate(dt);
 	}
+
+	// call networking layer.
+        // TODO the code below tests the networking section. Later it probably needs to 
+	// be moved elsewhere.  Currently commenting out so we can move to subversion.
+//	CSP_LOG(APP, DEBUG, "CSPSim::run... beginning network updates");
+
+//        simdata::Ref<DynamicObject> dynamicObject = (simdata::Ref<DynamicObject>)m_ActiveObject;
+//       NetworkMessage * message = dynamicObject->getUpdateMessage();
+
+//	m_NetworkBroadcaster->sendMessage(1, message );
+
+//        dynamicObject->putUpdateMessage( message );
+			
+//	CSP_LOG(APP, DEBUG, "CSPSim::run... finished network updates");
+
+			// this may not be necessary. especially if a memory pool of messages objects is used.
+//			delete message;
+
+
 }
 
 

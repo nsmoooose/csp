@@ -39,6 +39,7 @@
 #if defined(WIN32)
 #  define WIN_ATOMIC
 #  define _WINSOCKAPI_
+#  define NOMINMAX
 #  include <Windows.h>
 #else
 #  define LIN_ATOMIC

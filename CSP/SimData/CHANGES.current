@@ -1,6 +1,10 @@
 Version 0.4.0 (in progress)
 ===========================
 
+2004-09-16: delta
+ * Tried to reduce the impact of including windows API headers on the 
+	code.
+
 2004-09-12: onsight
  * Add an interface for creating and retrieving log streams based on
    a unique id string.  This allows multiple related libraries in an

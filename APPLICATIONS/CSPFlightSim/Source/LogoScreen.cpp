@@ -14,10 +14,10 @@ extern int g_ScreenHeight;
 
 void LogoScreen::OnInit()
 {
-    m_image = SDL_LoadBMP("Images/CSPLogo.bmp");
+    m_image = SDL_LoadBMP("../Data/Images/CSPLogo.bmp");
     if (m_image == NULL)
     {
-        printf("Unable to load bitmap Images/CSPLogo.bmp\n");
+        printf("Unable to load bitmap ../Data/Images/CSPLogo.bmp\n");
     }
 
 

@@ -1,6 +1,11 @@
 Version 0.3.2 (in progress)
 ===========================
 
+2003-12-06: delta
+	    Minor changes to shut up .net 7.1 warnings.
+            Demeter debug version links onto release 
+            SDL_image.lib 
+
 2003-07-15: onsight
             Disabled GDAL support by default.
 	    Moved LoadRawImage into an #ifdef _USE_GDAL_ block.

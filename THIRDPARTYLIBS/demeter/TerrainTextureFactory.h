@@ -6,19 +6,39 @@
 #include <map>
 #include <vector>
 
-#ifdef _WIN32 
- #include <hash_map>
- using std::hash_map;
+#if defined(__GNUC__) || defined(__INTEL_COMPILER)
+  #if __GNUC__ >= 3
+    #include <ext/hash_map>
+    #if __GNUC_MINOR__ > 0
+	#define HASH_MAP __gnu_cxx::hash_map
+        #define HASH __gnu_cxx::hash
+    #else
+	#define HASH_MAP std::hash_map
+	#define HASH std::hash
+    #endif
+  #else
+    #include <hash_map>
+    #define HASH_MAP std::hash_map
+    #define HASH std::hash
+  #endif
 #else
- #ifdef __GNUC__
-   #if __GNUC__ >= 3
-     #include <ext/hash_map>  
-     using __gnu_cxx::hash_map;
-   #else
-     #include <hash_map>  
-     using std::hash_map;
-   #endif
- #endif
+  #ifdef _MSC_VER 
+   #if (_MSC_VER <= 1200) && defined(_STLP_WIN32)
+    #include <hash_map>
+    #define HASH_MAP std::hash_map
+    #define HASH std::hash
+  #elif (_MSC_VER == 1300) 
+    #include <hash_map>
+    #define HASH_MAP std::hash_map
+    #define HASH std::hash_compare
+  #elif (_MSC_VER > 1300)
+    #include <hash_map>
+    #define HASH_MAP stdext::hash_map
+    #define HASH stdext::hash_compare
+  #endif
+  #else
+    #error "PLEASE PROVIDE CORRECT #INCLUDE<HASH_MAP> STATEMENT FOR YOUR PLATFORM!"
+  #endif
 #endif
    
 
@@ -44,7 +64,7 @@ protected:
 	Terrain* m_pTerrain;
 	TerrainLattice * m_pTerrainLattice;
 
-	hash_map<int,Texture*>   m_Textures;
+	HASH_MAP<int,Texture*>   m_Textures;
 	std::vector<Uint8*> m_BaseTextures;
 
 

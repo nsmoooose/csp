@@ -26,9 +26,10 @@ Boston, MA  02111-1307, USA.
 
 #ifdef _WIN32
     #include <crtdbg.h>
+	#include <cmath>
 #endif
 
-#include "assert.h"
+#include <cassert>
 
 #define DETAIL_TEXTURE_SIZE 512 
 
@@ -1296,7 +1297,7 @@ void Terrain::BuildBlocks()
     for (int i = m_WidthVertices - 1; 2 <= i; i /= 2)
         numLevels += 1.0f;
     for (double j = 0.0f; j < numLevels; j += 1.0f)
-        numBlocks += pow(4,j);
+		numBlocks += powf(4,j);
     if (Settings::GetInstance()->IsVerbose())
     {
         m_Logfile  << "TERRAIN: Building " << numBlocks << " blocks; please wait..." << endl;
@@ -2680,7 +2681,7 @@ bool IsPowerOf2(double number)
     bool isPowerOf2 = false;
     for(int i = 0; (i < MAX_POWER) && (!isPowerOf2); i++)
     {
-       if (pow(2,(double)i) == number)
+       if (powf(2,(double)i) == number)
             isPowerOf2 = true;
     }
     return isPowerOf2;
@@ -4084,7 +4085,7 @@ void DimensionPowerOf2(int origX,int origY,int& newX,int& newY)
         int* powers = new int[numPows];
         int i;
         for (i = 0; i < numPows; i++)
-            powers[i] = (int)pow(2,(double)i);
+            powers[i] = (int)powf(2,(double)i);
         newX = 0;
         for (i = 0; i < numPows && newX == 0; i++)
         {

@@ -577,7 +577,7 @@ class Workspace:
     for file in cs.files():
       path = file.abspath()
       exit_code, out = sublib.runo('svn --non-interactive --diff-cmd=/usr/bin/diff'
-                                 ' --extensions=-U%d diff %s' % (context, path))
+                                   ' --extensions=-U%d diff %s' % (context, path))
       if exit_code:
         return Error('unable to diff %s' % path)
 

@@ -1,0 +1,84 @@
+# -*-python-*-
+#
+# Copyright 2003-2005 Mark Rose <mkrose@users.sourceforge.net>
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+print 'COMBAT SIMULATOR PROJECT - CSP Theater Layout Tool'
+
+import sys
+from CSP.tools import build
+
+build.CheckSConsVersion('0.9.6')
+build.CheckPythonVersion('2.2.0')
+
+def Configure(env):
+	conf = build.CustomConfigure(env)
+	conf.CheckSwig('1.3.20')
+	conf.CheckOSGVersion('osg', '0.9.6')
+	conf.CheckOSGVersion('osgDB', '0.9.6')
+	conf.CheckOSGVersion('osgProducer', '0.9.6')
+	conf.CheckOSGVersion('osgUtil', '0.9.6')
+
+
+settings = build.GlobalSettings(Configure)
+
+# global settings
+settings.SWIGFLAGS = '-python -c++'
+settings.CXXFILESUFFIX = '.cpp'
+settings.CPPPATH = ['.', build.PYTHON_INCLUDE, '#/../../../SimData/Include', '#/../../Include']
+
+# platform settings
+if settings.IsLinux():
+	settings.CXXFLAGS = '-g -Wall -O2'
+	settings.SWIGCXXFLAGS = '-O2 -g'
+else:
+	settings.UnsupportedPlatform()
+
+# create the environment
+env = settings.env()
+
+
+layout_sources = """
+	DynamicGrid.cpp
+	FeatureGraph.cpp
+	LayoutNodes.cpp
+	PickHandler.cpp
+	View.cpp
+	ViewEventHandler.cpp
+	""".split()
+
+# layout module
+cLayout_wrap, cLayout_module = env.Swig('cLayout.i')
+layout_sources.append(env.SwigWrapper(cLayout_wrap))
+
+# layout shared library
+cLayout = env.SharedLibrary("#/_cLayout", layout_sources, SHLIBPREFIX = '')
+Default(cLayout)
+
+
+loader_sources = """
+	Loader.cpp
+	Handle.cpp
+	""".split()
+
+# loader module
+cLoader_wrap, cLoader_module = env.Swig('cLoader.i')
+loader_sources.append(env.SwigWrapper(cLoader_wrap))
+
+# loader shared library
+cLoader = env.SharedLibrary("#/_cLoader", loader_sources, SHLIBPREFIX = '')
+Default(cLoader)
+

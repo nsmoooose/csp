@@ -1,30 +1,13 @@
-<?xml version="1.0"	standalone="no"?>
+<?xml version="1.0" standalone="no"?>
 
-<Object	class="CustomLayoutModel">
-	<List name="layout">
-		<Object	class="FeatureLayout">
-			<Path name="model">.theater.runway</Path>
-			<Float name="x">0</Float>
-			<Float name="y">-240</Float>
-			<Float name="orientation">0.0</Float>
-		</Object>
-		<Object	class="FeatureLayout">
-			<Path name="model">.theater.runway</Path>
-			<Float name="x">100</Float>
-			<Float name="y">-240</Float>
-			<Float name="orientation">3.1416</Float>
-		</Object>
-		<Object	class="FeatureLayout">
-			<Path name="model">.theater.hangar</Path>
-			<Float name="x">115.5</Float>
-			<Float name="y">700</Float>
-			<Float name="orientation">1.57</Float>
-		</Object>
-		<Object	class="FeatureLayout">
-			<Path name="model">forest</Path>
-			<Float name="x">150</Float>
-			<Float name="y">-200</Float>
-			<Float name="orientation">0</Float>
-		</Object>
-	</List>
+<Object class="CustomLayoutModel">
+    <List name="layout">
+        <Object class="FeatureLayout">
+            <Path name="model">runway</Path>
+            <Float name="x">0</Float>
+            <Float name="y">0</Float>
+            <Float name="orientation">0.0</Float>
+        </Object>
+
+    </List>
 </Object>

@@ -59,6 +59,7 @@ class BaseScreen;
 class GameScreen;
 class EventMapIndex;
 class PyConsole;
+class NetworkBroadcaster;
 
 
 void fillerup(void *unused, unsigned char *stream, int len);
@@ -87,7 +88,8 @@ public:
 
 	simdata::SimDate & getCurrentTime() { return m_CurrentTime; }
 	simdata::SimTime const & getFrameRate() const{ return m_FrameRate; }
-
+	simdata::SimTime const & getElapsedTime() const { return m_ElapsedTime; }
+	
 	void setActiveObject(simdata::Ref<DynamicObject> object);
 	simdata::Ref<DynamicObject> getActiveObject() const;
 	VirtualBattlefield * getBattlefield();
@@ -174,6 +176,11 @@ private:
 	//PyObject* m_Console;
 	osg::ref_ptr<PyConsole> m_Console;
 	simdata::Ref<PyShell> m_Shell;
+	
+	/** 
+	  * The network layer
+	  */
+	NetworkBroadcaster * m_NetworkBroadcaster;
 
 #ifndef CSP_OSG_094
 	osg::ref_ptr<Producer::RenderSurface> m_RenderSurface;

@@ -1,6 +1,12 @@
  Version 0.4.0 (in progress)
 ===========================
 2003-10-19: onsight
+            Updated the xml files to remove the 'static' attribute (now
+	    set in the class definition), and convert the engine thrust
+	    tables to use simdata::Table2.  Added systems.xml to
+	    vehicles/aircraft/m2k.
+
+2003-10-19: onsight
             Tagged r0_3_5 and started branch b0_3.  Merged 'systems'
 	    branch into the trunk to start version 0.4.0.
 

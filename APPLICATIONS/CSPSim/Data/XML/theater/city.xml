@@ -1,6 +1,6 @@
 <?xml version="1.0" standalone="no"?>
 
-<Object class="CustomLayoutModel" static="1">
+<Object class="CustomLayoutModel">
 	<List name="layout">
 		<Object class="FeatureLayout">
 			<Path name="model">town</Path>

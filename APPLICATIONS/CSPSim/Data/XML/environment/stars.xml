@@ -1,6 +1,6 @@
 <?xml version="1.0" standalone="no"?>
 
-<Object class="StarCatalog" static="1">
+<Object class="StarCatalog">
 
 	<String name="source">Yale Bright Star Catalog</String>
 	<Float name="magnitude_cutoff">5.8</Float>

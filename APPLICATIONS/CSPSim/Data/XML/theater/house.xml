@@ -1,6 +1,6 @@
 <?xml version="1.0" standalone="no"?>
 
-<Object class="FeatureObjectModel" static="1">
+<Object class="FeatureObjectModel">
 	<Path name="model">house.model</Path>
 	<Int name="hit_points">20</Int>
 </Object>

@@ -1,6 +1,6 @@
 <?xml version="1.0" standalone="no"?>
 
-<Object class="ObjectModel" static="1">
+<Object class="ObjectModel">
 	<!--External name="model_path">f35.3DS</External-->
 	<External name="model_path">s.osg</External>
 	<!--External name="model_path">m2k2g.3ds</External-->

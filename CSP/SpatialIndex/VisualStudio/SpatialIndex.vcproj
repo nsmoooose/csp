@@ -22,13 +22,15 @@
 				AdditionalIncludeDirectories=".."
 				RuntimeLibrary="3"
 				RuntimeTypeInfo="TRUE"
+				ExpandAttributedSource="FALSE"
 				BrowseInformation="1"
+				WarningLevel="4"
 				DebugInformationFormat="4"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLibrarianTool"
-				OutputFile="../../lib/$(ProjectName)d.lib"/>
+				OutputFile="../.bin/$(ProjectName)d.lib"/>
 			<Tool
 				Name="VCMIDLTool"/>
 			<Tool
@@ -67,7 +69,7 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLibrarianTool"
-				OutputFile="../../lib/$(ProjectName).lib"/>
+				OutputFile="../.bin/$(ProjectName).lib"/>
 			<Tool
 				Name="VCMIDLTool"/>
 			<Tool

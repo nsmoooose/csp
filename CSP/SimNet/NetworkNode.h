@@ -26,6 +26,7 @@
 #define __SIMNET_NETWORKNODE_H__
 
 
+#include <SimNet/NetBase.h>
 #include <SimData/Uniform.h>
 #include <cc++/socket.h>
 
@@ -57,6 +58,12 @@ public:
 	 */
 	NetworkNode(simdata::uint32 addr, ost::tpport_t port);
 
+	/** Construct a new node from a ConnectionPoint.
+	 *
+	 *  @param point ConnectionPoint with the node's ip address and port.
+	 */
+	explicit NetworkNode(ConnectionPoint const &point);
+
 	/** Construct a new node, from hostname and receive port.
 	 *
 	 *  @param hostname the physical host address or the DNS name of a
@@ -80,6 +87,12 @@ public:
 	/** Get the host ip address.
 	 */
 	ost::InetHostAddress const &getAddress() const;
+
+	/** Convert ip address and port to a ConnectionPoint.
+	 */
+	inline ConnectionPoint getConnectionPoint() const {
+		return ConnectionPoint(m_addr.getAddress().s_addr, m_port);
+	}
 
 	/** Get the host name.
 	 */

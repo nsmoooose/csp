@@ -25,12 +25,51 @@
 #include <SimNet/NetLog.h>
 #include <SimNet/NetworkInterface.h>
 
+#include <vector>
+
 namespace simnet {
+
+
+template <unsigned int MILLISECONDS>
+inline double lowpass(const double dt, const double x, const double y) {
+	double f = std::min(1.0, dt * (1000.0/MILLISECONDS));
+	return x * (1.0 - f) + y * f;
+}
+
 
 const simdata::uint32 PeerInfo::UDP_OVERHEAD;
 
 
 static int DEBUG_connection_display_loop = 0;
+
+
+PeerInfo::PeerInfo():
+	m_id(0),
+	m_active(false),
+	m_provisional(false),
+	m_lifetime(0.0),
+	m_next_confirmation_id(1000),
+	m_statmode_toggle(false),
+	m_throttle_threshold(0),
+	m_packets_peer_to_self(0),
+	m_packets_self_to_peer(0),
+	m_bytes_peer_to_self(0),
+	m_bytes_self_to_peer(0),
+	m_average_outgoing_packet_size(100.0),
+	m_packets_throttled(0),
+	m_desired_rate_self_to_peer(0),
+	m_desired_rate_peer_to_self(0),
+	m_allocation_peer_to_self(100),  // ~10% of inbound bandwidth initially
+	m_allocation_self_to_peer(100),  // ~10% of inbound bandwidth initially
+	m_desired_bandwidth_peer_to_self(0.0),
+	m_desired_bandwidth_self_to_peer(0.0),
+	m_measured_bandwidth_peer_to_self(0.0),
+	m_measured_bandwidth_self_to_peer(0.0),
+	m_total_peer_incoming_bandwidth(0.0),
+	m_total_peer_outgoing_bandwidth(0.0),
+	m_quiet_time(0.0),
+	m_socket(0) {
+}
 
 
 void PeerInfo::update(double dt, double scale_desired_rate_to_self) {
@@ -97,6 +136,10 @@ void PeerInfo::update(double dt, double scale_desired_rate_to_self) {
 	m_packets_peer_to_self = 0;
 	m_bytes_peer_to_self = 0;
 	m_packets_throttled = 0;
+
+	if (m_provisional) {
+		m_lifetime -= dt;
+	}
 }
 
 
@@ -119,7 +162,14 @@ ReliablePacket::Ref PeerInfo::getNextResend(double now) {
 }
 
 
+void PeerInfo::updateBandwidth(double incoming, double outgoing) {
+	m_total_peer_incoming_bandwidth = incoming;
+	m_total_peer_outgoing_bandwidth = outgoing;
+}
+
+
 void PeerInfo::setNode(NetworkNode const &node, double incoming, double outgoing) {
+	m_node = node;
 	m_socket.reset(new DatagramTransmitSocket());
 	m_socket->connect(node.getAddress(), node.getPort());
 	m_total_peer_incoming_bandwidth = incoming;
@@ -185,7 +235,7 @@ void PeerInfo::setReceipt(PacketReceiptHeader *receipt, bool reliable, simdata::
 }
 
 
-bool PeerInfo::disable() {
+void PeerInfo::disable() {
 	m_active = false;
 	if (m_socket.valid()) m_socket->disconnect();
 }
@@ -198,6 +248,7 @@ void ActivePeerList::update(double dt, NetworkInterface *ni) {
 	double now = simdata::get_realtime();
 	simdata::uint32 desired_rate_to_self = 0;
 	double scale_desired_peer_to_self = 1024.0 / std::max(1U, m_DesiredRateToSelf);
+	std::vector<PeerInfo*> remove_peers;
 	for (PeerList::iterator iter = m_ActivePeers.begin(); iter != m_ActivePeers.end(); ++iter) {
 		PeerInfo *peer = (*iter);
 		// we use the total desired rate to self from the previous update to avoid making
@@ -212,6 +263,19 @@ void ActivePeerList::update(double dt, NetworkInterface *ni) {
 			if (!packet) break;
 			ni->resend(packet);
 		}
+		if (peer->isProvisionalExpired()) remove_peers.push_back(peer);
+	}
+	for (unsigned i=0; i < remove_peers.size(); ++i) {
+		// note that there's a slight race condition here, in that we may expire
+		// a provisional connection just as the other side receives the connection
+		// response. if this turns out to be a problem, we can (a) send a "cease
+		// & desist" packet back to the errant peer, (b) change the peer id
+		// assignment strategy such that it is less likely another connection will
+		// reuse the same id right away (e.g. cycle the starting point of the search
+		// for inactive PeerInfos).
+
+		// XXX XXX removePeer is private.  ActivePeerList should probably be an inner class of NI
+		//ni->removePeer(remove_peers[i]->getId());
 	}
 	m_DesiredRateToSelf = desired_rate_to_self;
 	m_ElapsedTime = 0.0;

@@ -49,6 +49,9 @@ class PacketDecoder: public PacketHandler {
 	};
 
 public:
+
+	typedef simdata::Ref<PacketDecoder> Ref;
+
 	/** Called by the network interface to handle an incoming packet.
 	 *
 	 *  The packet payload is decoded using RecordCodec into the appropriate
@@ -62,6 +65,9 @@ public:
 	virtual void handlePacket(PacketHeader const *header, simdata::uint8 *payload, simdata::uint32 payload_length) {
 		NetworkMessage::Ref msg = m_Codec.decode(header->message_id, payload, payload_length);
 		assert(msg.valid());
+		msg->setSource(header->source);
+		msg->setRoutingType(header->routing_type);
+		msg->setRoutingData(header->routing_data);
 		Callback callback(msg);
 		m_MessageHandlers.apply(callback);
 	}

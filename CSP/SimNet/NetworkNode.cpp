@@ -49,6 +49,13 @@ NetworkNode::NetworkNode(simdata::uint32 addr, ost::tpport_t port) {
 	m_port = port;
 }
 
+NetworkNode::NetworkNode(ConnectionPoint const &point) {
+	struct in_addr my_in_addr;
+	my_in_addr.s_addr = point.first;
+	m_addr = ost::InetHostAddress(my_in_addr);
+	m_port = point.second;
+}
+
 void NetworkNode::setAddress(ost::InetHostAddress addr) {
 	m_addr = addr;
 }

@@ -34,6 +34,8 @@
 #include <SimNet/PacketSource.h>
 #include <SimNet/PacketQueue.h>
 
+#include <map>
+
 
 namespace simnet {
 
@@ -69,6 +71,15 @@ class NetworkInterface: public simdata::Referenced {
 
 	simdata::ScopedPointer<ActivePeerList> m_ActivePeers;
 
+	typedef std::map<ConnectionPoint, PeerId> IpPeerMap;
+	IpPeerMap m_IpPeerMap;
+
+	// look up the peer id for a ip/port.
+	PeerId getSourceId(ConnectionPoint const &point);
+
+	// used by the index server to bootstrap new clients
+	bool m_AllowUnknownPeers;
+
 	bool m_Initialized;
 
 	simdata::ScopedPointer<DatagramReceiveSocket> m_Socket;
@@ -95,10 +106,14 @@ class NetworkInterface: public simdata::Referenced {
 	int receivePackets(double timeout);
 
 	// bandwidths are in bytes per second
-	void addPeer(PeerId id, NetworkNode const &remote_node, double incoming_bw, double outgoing_bw);
+	void addPeer(PeerId id, NetworkNode const &remote_node, bool provisional, double incoming_bw, double outgoing_bw);
 	void removePeer(PeerId id);
 
+	PeerInfo *getPeer(PeerId id);
+
 public:
+
+	static void hackBuildMessageIndex();
 
 	typedef simdata::Ref<NetworkInterface> Ref;
 
@@ -111,10 +126,12 @@ public:
 	// TODO internalize
 	void setServerId(PeerId id);
 	void hackPeerIndex(PeerId id, NetworkNode const &remote_node, double incoming_bw, double outgoing_bw);
-	void setPacketSource(PacketSource::Ref source) {
-		m_PacketSource = source;
-		m_PacketSource->bind(this);
-	}
+	void establishConnection(PeerId id, double incoming_bw, double outgoing_bw);
+
+	void setAllowUnknownPeers(bool allow);
+
+	void setPacketSource(PacketSource::Ref source);
+
 	bool pingPeer(PeerInfo *peer);
 	void resend(simdata::Ref<ReliablePacket> &packet);
 

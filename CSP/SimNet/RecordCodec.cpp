@@ -40,7 +40,7 @@ size_t RecordCodec::encode(TaggedRecord::Ref record, simdata::uint8 *buffer, siz
 
 TaggedRecord::Ref RecordCodec::decode(int local_id, simdata::uint8 const *buffer, const size_t buffer_length) {
 	assert(buffer != 0 && buffer_length > 0);
-	assert(local_id < m_factories.size());
+	assert(local_id < static_cast<int>(m_factories.size()));
 	simdata::TaggedRecordFactoryBase *factory = m_factories[local_id];
 	TaggedRecord::Ref record = factory->create();
 	m_Reader.bind(buffer, buffer_length);

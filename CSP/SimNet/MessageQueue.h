@@ -27,6 +27,7 @@
 
 #include <SimNet/PacketSource.h>
 #include <SimNet/NetworkMessage.h>
+#include <SimNet/NetLog.h>
 #include <SimData/TaggedRecordRegistry.h>
 #include <deque>
 
@@ -41,6 +42,8 @@ class MessageQueue: public PacketSource {
 
 public:
 
+	typedef simdata::Ref<MessageQueue> Ref;
+
 	/** Create a new message queue.
 	 */
 	MessageQueue(): m_TagWriter(m_Writer) { }
@@ -48,7 +51,12 @@ public:
 	/** Add a message to the queue.
 	 */
 	inline void queueMessage(NetworkMessage::Ref msg) {
-		m_Queue.push_back(msg);
+		// messsage id 0 is reserved for "unknown" messages, which should never be sent.
+		if (msg->getCustomId() > 0) {
+			m_Queue.push_back(msg);
+		} else {
+			SIMNET_LOG(PACKET, ERROR, "attempt to send message id=0");
+		}
 	}
 
 	/** Get the number of pending message in the queue.

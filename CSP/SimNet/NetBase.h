@@ -30,6 +30,9 @@
 
 namespace simnet {
 
+/** UDP/TCP port number.
+ */
+typedef simdata::uint16 Port;
 
 /** Peer id, used as an index to the PeerInfo table.
  */
@@ -50,6 +53,9 @@ typedef simdata::uint32 ObjectId;
  */
 typedef simdata::uint16 ConfirmationId;
 
+/** Shorthand for NetworkNode for use as a std::map key type.
+ */
+typedef std::pair<simdata::uint32, Port> ConnectionPoint;
 
 /** Header attached to all transmitted network packets.  This is the
  *  short form of the header, used for unreliable transmissions.  If

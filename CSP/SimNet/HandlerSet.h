@@ -61,7 +61,11 @@ public:
 	 */
 	bool removeHandler(HandlerRef handler) {
 		typename Handlers::iterator iter = std::find(m_Handlers.begin(), m_Handlers.end(), handler);
-		if (iter != m_Handlers.end()) m_Handlers.erase(iter);
+		if (iter != m_Handlers.end()) {
+			m_Handlers.erase(iter);
+			return true;
+		}
+		return false;
 	}
 
 	/** Test if a handler is in the set.  All the performance implications of

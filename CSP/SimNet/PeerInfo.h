@@ -47,18 +47,19 @@ namespace simnet {
 class NetworkInterface;
 
 
-template <unsigned int MILLISECONDS>
-inline double lowpass(const double dt, const double x, const double y) {
-	double f = std::min(1.0, dt * (1000.0/MILLISECONDS));
-	return x * (1.0 - f) + y * f;
-}
-
-
+/**
+ * PeerInfo encapsulates the state of a remote connection.  It records
+ * connection statistics, manages bandwidth and packet throttling,
+ * and tracks reliable packet transmission and receipts.
+ */
 class PeerInfo: public simdata::NonCopyable {
 	friend class ActivePeerList;
 
 	PeerId m_id;
 	bool m_active;
+	bool m_provisional;
+	double m_lifetime;
+	NetworkNode m_node;
 
 	typedef std::map<ConfirmationId, ReliablePacket::Ref> ReliablePacketMap;
 	typedef std::vector<ReliablePacket::Ref> ReliablePacketVector;
@@ -123,32 +124,7 @@ class PeerInfo: public simdata::NonCopyable {
 
 public:
 
-	PeerInfo():
-		m_id(0),
-		m_active(false),
-		m_statmode_toggle(false),
-		m_next_confirmation_id(1000),
-		m_throttle_threshold(0),
-		m_packets_peer_to_self(0),
-		m_packets_self_to_peer(0),
-		m_bytes_peer_to_self(0),
-		m_bytes_self_to_peer(0),
-		m_average_outgoing_packet_size(100.0),
-		m_packets_throttled(0),
-		m_desired_rate_self_to_peer(0),
-		m_desired_rate_peer_to_self(0),
-		m_allocation_peer_to_self(100),  // ~10% of inbound bandwidth initially
-		m_allocation_self_to_peer(100),  // ~10% of inbound bandwidth initially
-		m_desired_bandwidth_peer_to_self(0.0),
-		m_desired_bandwidth_self_to_peer(0.0),
-		m_measured_bandwidth_peer_to_self(0.0),
-		m_measured_bandwidth_self_to_peer(0.0),
-		m_total_peer_incoming_bandwidth(0.0),
-		m_total_peer_outgoing_bandwidth(0.0),
-		m_quiet_time(0.0),
-		m_socket(0)
-		{ }
-
+	PeerInfo();
 
 	void setId(PeerId id) {
 		assert(m_id == 0);
@@ -183,7 +159,10 @@ public:
 
 	ReliablePacket::Ref getNextResend(double now);
 
+	void updateBandwidth(double incoming, double outgoing);
+
 	void setNode(NetworkNode const &node, double incoming, double outgoing);
+	NetworkNode const &getNode() const { return m_node; }
 
 	inline void getConnStat(PacketHeader const *header) {
 		if (header->statmode == 1) {
@@ -230,9 +209,16 @@ public:
 		m_statmode_toggle = !m_statmode_toggle;
 	}
 
-	bool disable();
+	void disable();
 
 	inline bool isActive() const { return m_active; }
+	inline bool isProvisional() const { return m_provisional; }
+	inline bool isProvisionalExpired() const { return m_provisional && m_lifetime <= 0.0; }
+
+	void setProvisional(bool provisional=true, double lifetime=10.0) {
+		m_provisional = provisional;
+		m_lifetime = lifetime;
+	}
 
 	inline bool throttlePacket(int priority) {
 		return (m_throttle_threshold > 0) ? (NetRandom::random() < m_throttle_threshold) : false;
@@ -242,6 +228,16 @@ public:
 };
 
 
+/**
+ * ActivePeerList is a tool for managing active connections.  PeerInfo
+ * instances are allocated by NetworkInterface as a linear array to allow
+ * fast id to instance lookups.  Typically only a small number of these
+ * instances will be active, so iterating over the entire array to update
+ * connections is ineffecient.  This class keeps a separate list of
+ * pointers to the active PeerInfo instances, and handles periodic
+ * connection updates (bandwidth shaping, reliable message retransmission,
+ * and heartbeats).
+ */
 class ActivePeerList: public simdata::NonCopyable {
 	double m_ElapsedTime;
 	simdata::uint32 m_DesiredRateToSelf;

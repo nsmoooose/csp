@@ -42,6 +42,7 @@ namespace simnet {
  *  stored in files ending with ".net".
  */
 class NetworkMessage: public simdata::TaggedRecord {
+	PeerId m_source;
 	PeerId m_destination;
 	simdata::uint8 m_routing_type;
 	simdata::uint32 m_routing_data;
@@ -53,7 +54,7 @@ public:
 	/** Default constructor.  Initializes to a non-reliable, low-priority
 	 *  message.
 	 */
-	NetworkMessage(): m_destination(0), m_routing_type(0), m_routing_data(0), m_priority(0) { }
+	NetworkMessage(): m_source(0), m_destination(0), m_routing_type(0), m_routing_data(0), m_priority(0) { }
 
 	/** Get the peer id of the destination host.
 	 */
@@ -77,6 +78,16 @@ public:
 	 *  depends on the message routing type.
 	 */
 	simdata::uint32 getRoutingData() const { return m_routing_data; }
+
+	/** Store the id of the peer that sent the message.
+	 */
+	void setSource(PeerId source) {
+		m_source = source;
+	}
+
+	/** Get the id of the peer that sent the message.
+	 */
+	PeerId getSource() const { return m_source; }
 
 	/** Set the message routing type.  Routing types are used to determine
 	 *  how to handle incoming messages.  For example, if the routing type

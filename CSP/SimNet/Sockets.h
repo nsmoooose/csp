@@ -51,6 +51,10 @@ public:
 		return ost::UDPReceive::isPendingReceive(timeout);
 	}
 
+	ost::InetHostAddress getSender(ost::tpport_t *port = NULL) const {
+		return ost::UDPReceive::getSender(port);
+	}
+
 	inline int peek(void *buf, size_t len) {
 		return ost::UDPReceive::peek(buf, len);
 	}

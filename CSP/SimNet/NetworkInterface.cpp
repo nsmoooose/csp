@@ -31,6 +31,7 @@
 #include <SimNet/StopWatch.h>
 #include <SimNet/NetLog.h>
 
+#include <SimData/TaggedRecordRegistry.h>
 #include <SimData/Timing.h>
 #include <SimData/Thread.h>
 
@@ -64,15 +65,37 @@
 
 namespace simnet {
 
-struct PacketHandlerCallback {
-	PacketHandlerCallback(PacketHeader *header, simdata::uint8 *payload, simdata::uint32 payload_length):
-		m_header(header), m_payload(payload), m_payload_length(payload_length) { }
-	inline void operator()(PacketHandler::Ref handler) {
-		handler->handlePacket(m_header, m_payload, m_payload_length);
+// XXX hack
+void NetworkInterface::hackBuildMessageIndex() {
+	simdata::TaggedRecordRegistry const &registry = simdata::TaggedRecordRegistry::getInstance();
+	std::vector<simdata::TaggedRecordFactoryBase *> factories = registry.getFactories();
+	for (unsigned i = 0; i < factories.size(); ++i) {
+		factories[i]->setCustomId(i);
 	}
+}
+
+
+/** Callback for HandlerSet<PacketHandler>::apply, to call the handlePacket
+ *  method of each of the handlers in the set.
+ */
+class PacketHandlerCallback {
 	PacketHeader *m_header;
 	simdata::uint8 *m_payload;
 	simdata::uint32 m_payload_length;
+
+public:
+	/** Construct a new callback, storing information about the packet to be
+	 *  handled.
+	 */
+	PacketHandlerCallback(PacketHeader *header, simdata::uint8 *payload, simdata::uint32 payload_length):
+		m_header(header), m_payload(payload), m_payload_length(payload_length) { }
+
+	/** Callback function that calls handler->handlePacket with the current
+	 *  packet information.
+	 */
+	inline void operator()(PacketHandler::Ref handler) {
+		handler->handlePacket(m_header, m_payload, m_payload_length);
+	}
 };
 
 
@@ -110,12 +133,15 @@ void NetworkInterface::sendPackets(double timeout) {
 		}
 		--count;
 
+		// TODO replace asserts with more robust error handling
 		ptr = queue->getReadBuffer(size);
 		assert(ptr);
 		PacketHeader *header = reinterpret_cast<PacketHeader*>(ptr);
-		PeerInfo *peer = &(m_PeerIndex[header->destination]);
+		PeerInfo *peer = getPeer(header->destination);
+		assert(peer->isActive());
 		peer->setConnStat(header);
 		DatagramTransmitSocket *socket = peer->getSocket();
+		assert(socket);
 
 		// make sure the socket is ready; otherwise if we have already
 		// sent some packets then try waiting for one millisecond (approx)
@@ -226,9 +252,7 @@ void NetworkInterface::processOutgoing(double timeout) {
 	// first transfer packets from a packet source to the appropriate tx queue
 	while (m_PacketSource->peek(destination, queue_idx)) {
 		assert(queue_idx >= 0 && queue_idx < 4);
-		assert(destination < PeerIndexSize);
-
-		PeerInfo *peer = &(m_PeerIndex[destination]);
+		PeerInfo *peer = getPeer(destination);
 		if (queue_idx < 3) {
 			if (peer->throttlePacket(queue_idx)) {
 				m_PacketSource->skipPacket();
@@ -283,7 +307,7 @@ void NetworkInterface::processOutgoing(double timeout) {
 
 	double DEBUG_elapsed = watch.elapsed();
 	timeout -= watch.elapsed();
-	double DEBUG_remaining = timeout;
+	//double DEBUG_remaining = timeout;
 
 	// next flush the tx queue to the outgoing sockets
 	sendPackets(timeout);
@@ -332,9 +356,9 @@ int NetworkInterface::receivePackets(double timeout) {
 			break;
 		}
 
-		int read = m_Socket->peek(&header, ReceiptHeaderSize);
+		simdata::uint32 peek_bytes = m_Socket->peek(&header, ReceiptHeaderSize);
 
-		if (read < HeaderSize) {
+		if (peek_bytes < HeaderSize) {
 			// bad packet, dump it to the bit bucket
 			m_Socket->receive((void*)null, sizeof(null));
 			m_BadPackets++;
@@ -348,8 +372,23 @@ int NetworkInterface::receivePackets(double timeout) {
 			continue;
 		}
 
+		PeerInfo *peer = 0;
+
 		simdata::uint16 source = header.source;
-		PeerInfo *peer = (source < PeerIndexSize) ? &(m_PeerIndex[source]) : 0;
+
+		// for initial connection to the index server, source id will be zero.
+		// we need to create a new id on the fly and translate the source id until
+		// the sender is informed of the correct id to use.
+		// TODO whenever source id is zero, routing_data will be set to the receive
+		// port number, and routing type will be zero
+		if (source == 0 && m_AllowUnknownPeers && header.routing_type == 0) {
+			ost::InetHostAddress addr = m_Socket->getSender(0);
+			simdata::uint32 ip = addr.getAddress().s_addr;
+			ConnectionPoint point(ip, header.routing_data);
+			source = getSourceId(point);
+		}
+
+		if (source > 0 && source < PeerIndexSize) peer = &(m_PeerIndex[source]);
 		if (!peer || !peer->isActive()) {
 			SIMNET_LOG(PACKET, ALERT, "received packet from unknown source: " << header);
 			m_Socket->receive((void*)null, sizeof(null));
@@ -363,7 +402,7 @@ int NetworkInterface::receivePackets(double timeout) {
 		// handle reliable udp encoding
 		if (header.reliable) {
 			std::cout << "RECEIVED A RELIABLE HEADER, PRI " << header.priority << ", ID0=" << header.id0 << "\n";
-			if (read >= ReceiptHeaderSize) {
+			if (peek_bytes >= ReceiptHeaderSize) {
 				// if this packet is priority 3, it requires confirmation (id stored in id0)
 				// there may also be confirmation receipts in the remaining id slots
 				if (header.priority == 3) {
@@ -383,6 +422,8 @@ int NetworkInterface::receivePackets(double timeout) {
 		}
 
 		if (header.message_id == PingID) {
+			// we've already collected stats from the header (there is no body),
+			// so just drop the packet and we're done.
 			m_Socket->receive((void*)null, sizeof(null));
 			continue;
 		}
@@ -393,7 +434,11 @@ int NetworkInterface::receivePackets(double timeout) {
 		ptr = queue->getWriteBuffer(allocation_size);
 		if (ptr) {
 			simdata::uint32 packet_length = m_Socket->receive((void*)ptr, allocation_size);
-			assert(packet_length >= read);
+			// rewrite the source field, in case we have assigned a new one.
+			reinterpret_cast<PacketHeader*>(ptr)->source = source;
+
+			// sanity check
+			assert(packet_length >= peek_bytes);
 
 			peer->tallyReceivedPacket(packet_length);
 			m_ReceivedPackets++;
@@ -402,7 +447,7 @@ int NetworkInterface::receivePackets(double timeout) {
 			queue->commitWriteBuffer(packet_length);
 
 		} else {
-			// this is a bad state; we have no room left to receive the incoming packet
+			// this is a bad state; we have no room left to receive the incoming packet.
 			// for now we just dump it; maybe we can do something smarter eventually.
 			// at least reliable packets will be resent.
 			simdata::uint32 packet_length = m_Socket->receive((void*)null, sizeof(null));
@@ -459,6 +504,7 @@ void NetworkInterface::processIncoming(double timeout) {
 	// cases), we will have extra time to process those messages.
 	double receive_timeout = 0.60 * timeout;
 	int received_packets = receivePackets(receive_timeout);
+	received_packets += 0; // silence unused variable warning
 
 	double receive_dt = simdata::get_realtime() - start_time;
 	receive_dt = DEBUG_recvtime;  // XXX XXX remove me when debug logging is removed from receivePackets
@@ -538,9 +584,10 @@ NetworkInterface::NetworkInterface():
 	m_ServerId(0),
 	m_PeerIndex(new PeerInfo[PeerIndexSize]),
 	m_ActivePeers(new ActivePeerList),
+	m_AllowUnknownPeers(false),
 	m_Initialized(false)
 {
-	for (int i = 0; i < PeerIndexSize; ++i) {
+	for (unsigned i = 0; i < PeerIndexSize; ++i) {
 		m_PeerIndex[i].setId(static_cast<PeerId>(i));
 	}
 	resetStats();
@@ -588,24 +635,44 @@ void NetworkInterface::setServerId(PeerId id) {
 }
 
 
-void NetworkInterface::addPeer(PeerId id, NetworkNode const &remote_node, double incoming, double outgoing) {
-	assert(id > 0 && id < PeerIndexSize);
-	assert(!m_PeerIndex[id].isActive());
-	m_PeerIndex[id].setNode(remote_node, incoming, outgoing);
-	m_ActivePeers->addPeer(&(m_PeerIndex[id]));
+void NetworkInterface::addPeer(PeerId id, NetworkNode const &remote_node, bool provisional, double incoming, double outgoing) {
+	PeerInfo *peer = getPeer(id);
+	assert(!peer->isActive());
+	peer->setNode(remote_node, incoming, outgoing);
+	peer->setProvisional(provisional);
+	m_ActivePeers->addPeer(peer);
+	m_IpPeerMap[remote_node.getConnectionPoint()] = id;
 }
 
+
 void NetworkInterface::removePeer(PeerId id) {
-	assert(id > 0 && id < PeerIndexSize);
-	assert(!m_PeerIndex[id].isActive());
-	m_PeerIndex[id].disable();
-	m_ActivePeers->removePeer(&(m_PeerIndex[id]));
+	PeerInfo *peer = getPeer(id);
+	assert(peer->isActive());
+	ConnectionPoint point = peer->getNode().getConnectionPoint();
+	m_IpPeerMap.erase(point);
+	peer->disable();
+	m_ActivePeers->removePeer(peer);
 }
 
 
 void NetworkInterface::hackPeerIndex(PeerId id, NetworkNode const &remote_node, double incoming, double outgoing) {
 	m_RemoteNode.reset(new NetworkNode(remote_node));
-	addPeer(id, remote_node, incoming, outgoing);
+	addPeer(id, remote_node, false /*provisional*/, incoming, outgoing);
+}
+
+
+PeerInfo *NetworkInterface::getPeer(PeerId id) {
+	assert(id > 0 && id < PeerIndexSize);
+	return &(m_PeerIndex[id]);
+}
+
+
+void NetworkInterface::establishConnection(PeerId id, double incoming, double outgoing) {
+	PeerInfo *peer = getPeer(id);
+	if (peer->isActive() && peer->isProvisional()) {
+		peer->updateBandwidth(incoming, outgoing);
+		peer->setProvisional(false);
+	}
 }
 
 
@@ -619,6 +686,39 @@ void NetworkInterface::removePacketHandler(PacketHandler::Ref handler) {
 	if (m_PacketHandlers.removeHandler(handler)) {
 		handler->bind(0);
 	}
+}
+
+
+void NetworkInterface::setPacketSource(PacketSource::Ref source) {
+	if (m_PacketSource.valid()) m_PacketSource->bind(0);
+	m_PacketSource = source;
+	m_PacketSource->bind(this);
+}
+
+
+void NetworkInterface::setAllowUnknownPeers(bool allow) {
+	m_AllowUnknownPeers = allow;
+}
+
+
+PeerId NetworkInterface::getSourceId(ConnectionPoint const &point) {
+	IpPeerMap::iterator iter = m_IpPeerMap.find(point);
+	if (iter == m_IpPeerMap.end()) {
+		// unknown ip; allocate a new peer id
+		for (PeerId id = 2; id < PeerIndexSize; ++id) {
+			if (!m_PeerIndex[id].isActive()) {
+				// TODO add a callback mechanism for validating ips?
+				NetworkNode node(point);
+				// restrict to a low initial bandwidth; will be reconfigured once the
+				// connection is cemplete.
+				addPeer(id, node, true /*provisional*/, 1024 /*inbw*/, 1024 /*outbw*/);
+				return id;
+			}
+		}
+		SIMNET_LOG(HANDSHAKE, WARNING, "all peer ids in use; rejecting connection");
+		return 0;
+	}
+	return iter->second;
 }
 
 

@@ -164,6 +164,10 @@ private:
 	bool m_DEBUG_extra;
 	double m_timeout;
 	double m_start_time;
+
+	// set m_count and m_counts based on the current iteration time
+	// estimate and the available time; also updates tally to keep
+	// track of the total number of iterations.
 	inline void resetCount(double timeout) {
 		m_tally += m_counts - m_count;
 		m_counts = int(timeout * m_data.scale);

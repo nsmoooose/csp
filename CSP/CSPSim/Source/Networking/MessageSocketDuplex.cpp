@@ -21,7 +21,6 @@
  * @file NetworkSocket.cpp:
  * @author Scott Flicker (Wolverine)
  */
-#include <cc++/network.h>
 #include "Networking.h"
 #include "Log.h"
 

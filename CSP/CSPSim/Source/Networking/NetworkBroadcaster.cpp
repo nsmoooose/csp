@@ -23,7 +23,6 @@
  * 
  * Broadcasts network messages
  */
-#include <cc++/network.h>
 #include "Networking.h"
 
 NetworkBroadcaster::NetworkBroadcaster()

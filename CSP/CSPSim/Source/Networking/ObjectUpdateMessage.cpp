@@ -22,7 +22,6 @@
  * @author Scott Flicker (Wolverine)
  */
 
-#include <cc++/network.h>
 #include "Networking.h"
 
 ObjectUpdateMessage::ObjectUpdateMessage(simdata::uint16 id, simdata::Vector3 position, simdata::Vector3 velocity)

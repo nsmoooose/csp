@@ -22,6 +22,7 @@
  *
  **/
 
+
 #include <DynamicObject.h>
 #include <Controller.h>
 #include <PhysicsModel.h>
@@ -34,7 +35,6 @@
 
 #include <SimData/Quat.h>
 
-#include <cc++/network.h>
 #include "Networking.h"
 
 using bus::Kinetics;

@@ -25,6 +25,12 @@
 #ifndef __NETWORKING_H__
 #define __NETWORKING_H__
 
+// use this to fix compile problems with mulitple includes of windows and winsock headers.
+#define _WINSOCKAPI_
+
+#include <cc++/network.h>
+
+
 #include <sys/types.h>
 #include <list>
 

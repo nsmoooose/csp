@@ -22,7 +22,6 @@
  * @author Scott Flicker (Wolverine)
  */
 
-#include <cc++/network.h>
 #include "Networking.h"
 
 NetworkSocket::NetworkSocket()

@@ -29,6 +29,7 @@
 
 #define _WINSOCKAPI_
 
+
 #include <SimData/Ref.h>
 #include <SimData/Date.h>
 #include <SimData/DataManager.h>

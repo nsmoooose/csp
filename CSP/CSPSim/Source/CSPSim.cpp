@@ -51,7 +51,6 @@
 #include "ConsoleCommands.h"
 #include "Profile.h"
 
-#include <cc++/network.h>
 #include "Networking.h"
 
 #include <SimData/Types.h>

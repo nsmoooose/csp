@@ -64,7 +64,6 @@ void testRandomUse() {
 	CircularBuffer b(1024);
 	std::deque<uint8*> q_ptr;
 	std::deque<uint32> q_size;
-	int n = 0;
 	for (int i = 0; i < TEST_LOOP_COUNT; ++i) {
 		if (DBG) std::cerr << "iteration: " << i << "\n";
 		if (rand() & 1) {
@@ -100,6 +99,7 @@ void testRandomUse() {
 void test() {
 	testRandomUse();
 	testOneByte();
+	std::cout << "OK\n";
 	::exit(0);
 }
 

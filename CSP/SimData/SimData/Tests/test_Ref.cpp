@@ -27,6 +27,7 @@
 
 #include <SimData/Ref.h>
 
+#include <iostream>
 #include <cstdlib>
 #include <cassert>
 
@@ -60,6 +61,7 @@ void test() {
 		assert(count == 1);
 	}
 	assert(count == 0);
+	std::cout << "OK\n";
 	::exit(0);
 }
 

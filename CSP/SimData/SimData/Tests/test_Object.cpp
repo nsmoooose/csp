@@ -30,6 +30,7 @@
 #include <SimData/Link.h>
 #include <SimData/InterfaceRegistry.h>
 
+#include <iostream>
 #include <cstdlib>
 #include <cassert>
 
@@ -123,6 +124,7 @@ void test() {
 	assert(i->isStatic());
 	testTestObjectInterface(i);
 	testSubObjectInterface(i);
+	std::cout << "OK\n";
 	::exit(0);
 }
 

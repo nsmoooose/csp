@@ -21,7 +21,7 @@ Import('env build')
 SWIGFLAGS = '-runtime -noexcept -python -c++'
 SHLIBS = ['dl', 'pthread']
 
-MODULES = ['Source']
+MODULES = ['Source', 'SimData/Tests']
 
 def PackageConfig(env):
 	print '<< SimData Config >>'

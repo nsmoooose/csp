@@ -14,6 +14,10 @@ Version 0.4.0 (in progress)
 ==>WINDOWS USERS: warning -- directory reading has only been tested under
    Linux.  If it builds it should work though.
 
+  * Add a C++ unittest for new SimData file utilities.
+  * Fix up the SimData C++ unittests to run under scons.
+  * Add a header that provides enhanced assert/verify macros.
+
 2004-10-01: onsight
  * Fix import SimData statements in Compile.py and Parse.py to
    find the local SimData package.

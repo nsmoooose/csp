@@ -1,0 +1,71 @@
+# -*- python -*-
+#
+# Copyright 2004 Mark Rose <mkrose@users.sourceforge.net>
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+Import('env build')
+
+testenv = env.Copy(LIBS=["SimData", "pthread"], LIBPATH=["#/SimData/SimData"])
+
+import glob
+import os.path
+import popen2
+import sys
+
+TEST_GLOB = str(testenv.File('test_*.cpp'))
+TEST_SOURCES = glob.glob(TEST_GLOB)
+
+tests = []
+test_programs = []
+for source in TEST_SOURCES:
+	target = source.replace('.cpp', '')
+	test_program = testenv.Program(target, source)
+	test_programs.append(test_program)
+	tests.append(test_program[0].abspath)
+
+
+def RunTests(target, source, env, tests=tests):
+	if not tests: return
+	failures = 0
+	print
+	print '<<Running SimData C++ Tests>>'
+	log_path = str(env.File('.cpp-tests.log').abspath)
+	log = open(log_path, 'wt')
+	for test in tests:
+		print >>log, "_____________________________________________________"
+		print >>log, "RUNNING: %s" % os.path.basename(test)
+		print "Running %s ..." % os.path.basename(test),
+		job = popen2.Popen4('SIMDATA_LOGPRIORITY=5 %s' % test)
+		status = job.wait()
+		print >>log, "EXIT CODE: %d" % status
+		print >>log, ':', ': '.join(job.fromchild.readlines()), '\n'
+		if status == 0:
+			print "ok"
+		else:
+			print "failed!"
+			failures += 1
+	if failures:
+		print '********************************************'
+		print '            %d TEST(S) FAILED!' % failures
+		print '********************************************'
+		print 'Log file written to %s' % log_path
+		sys.exit(1)
+
+
+runtests = env.Command('SimData_tests', test_programs, Action(RunTests, strfunction=None))
+testenv.Alias("test", runtests)
+
+

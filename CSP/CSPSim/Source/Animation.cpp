@@ -87,8 +87,8 @@ void DrivenRotation::Callback::operator()(osg::Node* node, osg::NodeVisitor* nv)
 	else if (needsUpdate(*node->getUpdateCallback())) {
 			osg::MatrixTransform* t = dynamic_cast<osg::MatrixTransform*>(node);
 			if (t) {
-				osg::Matrix m = osg::Matrix::rotate(m_Parameters->getGain()*m_Value + m_Parameters->getPhase()
-												  + m_Parameters->getPhase(), m_Parameters->getAxis());
+				osg::Matrix m = osg::Matrix::rotate(m_Parameters->getGain()*m_Value + m_Parameters->getPhase(), 
+													  m_Parameters->getAxis());
 				osg::Vec3 translation = t->getMatrix().getTrans();
 				m.preMult(t->getMatrix());
 				m.setTrans(translation);
@@ -191,4 +191,5 @@ void DrivenSwitch::Callback::operator()(osg::Node* node, osg::NodeVisitor* nv) {
 	}
 	traverse(node, nv);
 }
+
 

@@ -1,5 +1,10 @@
  Version 0.4.0 (in progress)
 ===========================
+
+2005-02-16: delta
+ * Small changes in the Animation class. Fixed a bug (copy/paste typo) in 
+   DrivenRotation::Callback operator.
+ 
 2005-02-15: lologramme
  * Addes Taxi signalisation
 

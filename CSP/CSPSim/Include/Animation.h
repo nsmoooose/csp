@@ -27,6 +27,7 @@
 
 #include <typeinfo>
 
+#include <osg/AnimationPath>
 #include <osg/Node>
 
 #include <SimData/Key.h>
@@ -52,7 +53,7 @@
  * is not used and the transform is updated after
  * every callback.
  */
-class AnimationCallback: public osg::NodeCallback {
+class AnimationCallback: public osg::AnimationPathCallback {
 protected:
 	int m_DirtyCount;
 	std::string m_ChannelName;
@@ -109,6 +110,11 @@ private:
 	float m_Limit1;
 	float m_Gain;
 
+	void init(AnimationCallback *callback) const {
+		assert(callback);
+		callback->setChannelName(m_ChannelName);
+		callback->setDefault(m_Default);
+	}
 protected:
 	/**
 	* Small template class to reduce & simplify writing.
@@ -116,15 +122,15 @@ protected:
 	* virtual void operator()(osg::Node* node, osg::NodeVisitor* nv)
 	* in derived classes.
 	*/
-	template <class A, class CT, class VT = float> class Callback_A_C: public AnimationCallback {
+	template <class A, class CT = double, class VT = float> class Callback_A_C: public AnimationCallback {
 	protected:
 		simdata::Ref<const A> m_Parameters;
 		simdata::Ref<const DataChannel<CT> > m_Channel;
 		VT m_Value;
 		virtual void updateValue() = 0;
 	public:
-		Callback_A_C(const Animation *const param): 
-			m_Parameters(dynamic_cast<const A *const>(param)),
+		Callback_A_C(const A *const param):
+			m_Parameters(param),
 			m_Value(0.0f) { 
 				assert(param); 
 		}
@@ -138,7 +144,7 @@ protected:
 		virtual ~Callback_A_C(){}
 	};
 
-	template <class A> class Callback_A: public Callback_A_C<A, double> {
+	template <class A> class Callback_A: public Callback_A_C<A> {
 	protected:
 		virtual void updateValue() {
 			if (m_Channel.valid()) {
@@ -150,35 +156,25 @@ protected:
 			}
 		}
 	public:
-		Callback_A(const Animation *const param): 
-			Callback_A_C<A,double>(param) {}
+		Callback_A(const A *const param):
+			Callback_A_C<A>(param) {}
 		virtual ~Callback_A(){}
 	};
 
 	float m_Default;
 
-	virtual AnimationCallback *newCallback(osg::Node *node, AnimationCallback *callback) const {
-		assert(node);
-		assert(callback);
-		callback->bind(*node);
-		callback->setChannelName(m_ChannelName);
-		return callback;
-	}
 	template <class A, class C>  AnimationCallback *newCallback_(osg::Node *node) const {
-		AnimationCallback *callback = Animation::newCallback(node, new C(dynamic_cast<const A* const>(this)));
-		callback->setDefault(m_Default);
+		AnimationCallback *callback = new C(dynamic_cast<const A* const>(this));
+		init(callback);
+		assert(node);
+		callback->bind(*node);
 		return callback;
 	}
-	virtual AnimationCallback *newCallback(osg::NodeCallback* node_callback, AnimationCallback *callback) const {
+	template <class A, class C>  AnimationCallback *newCallback_(osg::NodeCallback *node_callback) const {
+		AnimationCallback *callback = new C(dynamic_cast<const A* const>(this));
+		init(callback);
 		assert(node_callback);
-		assert(callback);
 		callback->bind(*node_callback);
-		callback->setChannelName(m_ChannelName);
-		return callback;
-	}
-	template <class A, class C>  AnimationCallback *newCallback_(osg::NodeCallback *nodeCallback) const {
-		AnimationCallback *callback = Animation::newCallback(nodeCallback, new C(dynamic_cast<const A* const>(this)));
-		callback->setDefault(m_Default);
 		return callback;
 	}
 public:
@@ -212,7 +208,7 @@ public:
 
 /**
 * Abstract class regrouping usual infos (in its SimData interface) 
-* to make an Animation behaces like a rotation 
+* to make an Animation behaves like a rotation 
 */ 
 class Rotation: public Animation {
 	simdata::Vector3 m_Axis;
@@ -244,7 +240,7 @@ protected:
 class DrivenRotation: public Rotation {
 	class Callback: public Callback_A<DrivenRotation> {
 	public:
-		Callback(const Animation * const param): Callback_A<DrivenRotation>(param){}
+		Callback(const DrivenRotation * const param): Callback_A<DrivenRotation>(param){}
 		virtual void operator()(osg::Node* node, osg::NodeVisitor* nv);
 		virtual ~Callback(){}
 	};
@@ -258,10 +254,10 @@ public:
 	virtual ~DrivenRotation(){}
 
 	virtual AnimationCallback *newCallback(osg::Node *node) const {
-		return Animation::newCallback_<DrivenRotation,Callback>(node);
+		return newCallback_<DrivenRotation,Callback>(node);
 	}
 	virtual AnimationCallback *newCallback(osg::NodeCallback *nodeCallback) const {
-		return Animation::newCallback_<DrivenRotation,Callback>(nodeCallback);
+		return newCallback_<DrivenRotation,Callback>(nodeCallback);
 	}
 };
 
@@ -304,7 +300,7 @@ protected:
 class TimedRotation: public Rotation {
 	class Callback: public Callback_A<TimedRotation> {
 	public:
-		Callback(const Animation * const param): Callback_A<TimedRotation>(param){}
+		Callback(const TimedRotation * const param): Callback_A<TimedRotation>(param){}
 		virtual void operator()(osg::Node* node, osg::NodeVisitor* nv);
 		virtual ~Callback(){}
 	};
@@ -321,10 +317,10 @@ public:
 	virtual ~TimedRotation(){}
 
 	virtual AnimationCallback *newCallback(osg::Node *node) const {
-		return Animation::newCallback_<TimedRotation,Callback>(node);
+		return newCallback_<TimedRotation,Callback>(node);
 	}
 	virtual AnimationCallback *newCallback(osg::NodeCallback *nodeCallback) const {
-		return Animation::newCallback_<TimedRotation,Callback>(nodeCallback);
+		return newCallback_<TimedRotation,Callback>(nodeCallback);
 	}
 	double getTimedAngle(double t) const {
 		return getLimit0() + m_TimedAnimationProxy->getRate() * m_TimedAnimationProxy->getDelta_t0(t);
@@ -374,7 +370,7 @@ protected:
 class DrivenMagnitudeTranslation: public Translation {
 	class Callback: public Callback_A<DrivenMagnitudeTranslation> {
 		public:
-		Callback(const Animation * const param):Callback_A<DrivenMagnitudeTranslation>(param){}
+		Callback(const DrivenMagnitudeTranslation * const param):Callback_A<DrivenMagnitudeTranslation>(param){}
 		virtual void operator()(osg::Node* node, osg::NodeVisitor* nv);
 		virtual ~Callback(){}
 	};
@@ -388,7 +384,7 @@ public:
 	virtual ~DrivenMagnitudeTranslation(){}
 
 	virtual AnimationCallback *newCallback(osg::Node *node) const {
-		return Animation::newCallback_<DrivenMagnitudeTranslation,Callback>(node);
+		return newCallback_<DrivenMagnitudeTranslation,Callback>(node);
 	}
 };
 
@@ -421,7 +417,7 @@ public:
 	virtual ~DrivenVectorialTranslation(){}
 
 	virtual AnimationCallback *newCallback(osg::Node *node) const {
-		return Animation::newCallback_<DrivenVectorialTranslation,Callback>(node);
+		return newCallback_<DrivenVectorialTranslation,Callback>(node);
 	}
 };
 
@@ -450,7 +446,7 @@ public:
 	virtual ~TimedMagnitudeTranslation(){}
 
 	virtual AnimationCallback *newCallback(osg::Node *node) const {
-		return Animation::newCallback_<TimedMagnitudeTranslation,Callback>(node);
+		return newCallback_<TimedMagnitudeTranslation,Callback>(node);
 	}
 
 	osg::Vec3 getTimedTranslation(double t) const {
@@ -486,10 +482,9 @@ public:
 	virtual ~DrivenSwitch(){}
 
 	virtual AnimationCallback *newCallback(osg::Node *node) const {
-		return Animation::newCallback_<DrivenSwitch,Callback>(node);
+		return newCallback_<DrivenSwitch,Callback>(node);
 	}
 };
-
 
 /**
 * TimedSequence controls TimedAnimation providing a basic time counter.

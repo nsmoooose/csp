@@ -49,13 +49,14 @@ public:
 	virtual void doSimStep(double dt) = 0;
 };
 
+class AeroVectorField;
 
 /**
  * class AeroDynamics - aircraft flight model implementation.
  *
  */
 class AeroDynamics: public simdata::Object, public Physics, protected DynamicalSystem
-{
+{                
 public:
 	SIMDATA_OBJECT(AeroDynamics, 0, 0)
 
@@ -119,10 +120,13 @@ protected:
 
 protected:
 
+    //vector field which determines trajectory and behaviour of this dynamical system
+	std::vector<double> const& _f(double x, std::vector<double>& y);
+
 	float m_WingSpan;
 	double m_WingChord; // chord length        
 	double m_WingArea;  // surface area of wings
-	double m_stallAOA; // stall AOA 
+	double m_stallAOA;  // stall AOA 
 	
 	float m_DeMax;
 	float m_DeMin;
@@ -200,6 +204,10 @@ public:
 	
 
 protected:
+	// FIXME: needs to be moved in a mother class
+	bool isNearGround();
+
+
 	std::vector<double> const &f(double x, std::vector<double> &y);
 	void bindToBody(std::vector<double> const &y);
 
@@ -209,9 +217,6 @@ protected:
 	double CalculateLiftCoefficient() const; 
 	double CalculateDragCoefficient() const;
 	double CalculateSideCoefficient() const;
-	double CalculateDynamicPressure(double alt) const;
-	double CalculateGravity(double const p_altitude) const;
-	double CalculateAirDensity(double const alt) const;
 	double CalculateRollMoment(double const qbarS) const;
 	double CalculatePitchMoment(double const qbarS) const;
 	double CalculateYawMoment(double const qbarS) const;
@@ -222,18 +227,10 @@ protected:
 	simdata::Vector3 LocalToBody(const simdata::Vector3 & vec);
 	simdata::Vector3 BodyToLocal(const simdata::Vector3 & vec);
 	void BodyToLocal();
-
-	simdata::Matrix3 MakeAngularVelocityMatrix(simdata::Vector3 u);
 	
 	simdata::Vector3 const& LiftVector(); 
 	simdata::Vector3 const& DragVector() const;
 	simdata::Vector3 const& SideVector() const;
-
-	/*
-	double ControlSensibility(double p_x) const;       // control joystick sensibility
-	double ControlInputValue(double p_gForce) const;  // decrease deflection value to lower G
-	double CIVbasis(double p_t) const;
-	*/
 
 	double m_depsilon;       // Gforce control feedback stall
 	unsigned short m_Maxi;   // number of FM iteration
@@ -241,17 +238,12 @@ protected:
 	double m_ElevatorScale;  // elevator correction
 	double m_ElevatorInput;  // desired elevator deflection
 
-	//double SetControl(double const p_setting, double const & p_mMax, double const & p_mMin) const;
-
 	// control surfaces
 	double m_Aileron;
 	double m_Elevator;
 	double m_Rudder;
 
 	double m_Thrust;
-
-	// calculated forces
-	double m_qBarFactor;
 
 	simdata::Vector3 m_CurrentForceTotal;
 	simdata::Vector3 m_GravityForce;
@@ -266,6 +258,7 @@ protected:
 	double m_beta;     // side slip angle
 	double m_gForce;   // current g acceleration
 	
+	double m_qBarFactor;                    // 0.5 * WingSpan * density (updated 1 time in a simulation step)
 	double m_Gravity;                       // current gravitational acceleration
 	simdata::Vector3 m_GravityWorld;        // current gravity vector in earth coordinates
 
@@ -287,6 +280,8 @@ protected:
 	simdata::Vector3 m_PositionLocal;       // position in earth coordinates
 	simdata::Vector3 m_VelocityLocal;       // velocity in earth coordinates
 	simdata::Vector3 m_VelocityBody;        // (U,V,W) velocity in body coordinates
+	simdata::Vector3 m_AirflowBody;         // air flow velocity in body coordinate
+	simdata::Vector3 m_WindLocal;           // wind velocity in local coordinates
 	simdata::Vector3 m_AngularVelocityLocal;// angular velocity in earth coordinates
 	simdata::Vector3 m_AngularVelocityBody; // (P,Q,R) angular velocity in body coordinates
 
@@ -294,6 +289,7 @@ protected:
 	simdata::Vector3 m_ExtraMomentBody;     // Landing gear, etc
 
 	bool m_Bound;
+	bool m_NearGround;
 	simdata::Vector3 *m_Position;
 	simdata::Vector3 *m_Velocity;
 	simdata::Vector3 *m_AngularVelocity;

@@ -1,6 +1,23 @@
 Version 0.3.1 (in progress)
 ===========================
 
+	   LINUX USERS: you need to add NumericalMethod.cpp to your Makefile.
+
+2003-04-03: delta
+	    .net project updated; debug and release are maintained. 
+
+	    Rewritten DynamicalSystem interface; you need now, to define a 
+	    vector field as a method of DynamicalSystem (which inherites from
+	    VectorField). You need to furnish the NumericalMethod used to approximate
+	    the exact solution of your ODE (use setNumericalMethod). AeroDynamics is
+	    now a DynamicalSystem. 
+
+	    Merging Onsight code on airflow, collision and landing gear; this code is not 
+	    yet enabled.
+
+	    Cleaning code in CSPSim.cpp, AeroDynamics.cpp and .h; added NumericalMethod.cpp
+	    and NumericalMethod.h.
+
 2003-03-28: delta
 	    .net project updated: CSPSimDLL (release mode is maintained)
 	    You can run python scripts from commandline without invoking python 

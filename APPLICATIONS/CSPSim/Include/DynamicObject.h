@@ -84,6 +84,8 @@ public:
 	void DisableSmoke();
 	void EnableSmoke();
 
+	bool isNearGround();
+
 protected:
 
 	virtual void pack(simdata::Packer& p) const;
@@ -114,6 +116,7 @@ protected:
 
 	bool m_Local;
 	bool m_Human;
+	bool m_NearGround;
 
 	simdata::Matrix3 m_Inertia;
 	simdata::Matrix3 m_InertiaInv;

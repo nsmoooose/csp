@@ -467,7 +467,6 @@ void AircraftObject::doComplexPhysics(double dt)
 	//  gear travel and force limits
 	//flightmodel needs to return out of spec parameters for subsequent
 	//damage modelling.
-	//m_FlightModel->setGroundPosition(m_GroundZ);
 
 	m_FlightModel->setGroundZ(m_GroundZ);
 	m_FlightModel->setGroundN(m_GroundN);

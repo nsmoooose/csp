@@ -26,49 +26,21 @@
 #ifndef __DYNAMICALSYSTEM_H__
 #define __DYNAMICALSYSTEM_H__
 
-#include <limits>
 #include <vector>
 
-class DynamicalSystem
-{
-	unsigned short const m_NVariable;
-	std::vector<double> const & rkqc(std::vector<double> &y, 
-		std::vector<double> &dyx, 
-		double &x, double htry, double eps, 
-		std::vector<double> const &yscal, 
-		double &hdid, double &hnext);
-	std::vector<double> const &odeint(std::vector<double> const & ystart,
-		double x1, double x2, 
-		double eps, double h1, double hmin, 
-		unsigned int &nok, unsigned int &nbad);
-	
-	static double const PGROW ;
-	static double const PSHRNK;
-	static double const FCOR;
-	
-	static double const SAFETY;
-	static double const ERRCON;
-	
-	static unsigned int const MAXSTP;
-    static double const TINY;
-	double m_precision, m_hmin, m_hestimate;
+#include "NumericalMethod.h"
+
+
+class DynamicalSystem: public VectorField {
+	NumericalMethod* _numericalMethod;
 public:
-	std::vector<double> const & rk4(std::vector<double> const & y, 
-		                            std::vector<double> const & dyx, 
-		                            double x, double h);
-	std::vector<double> const & RungeKutta(std::vector<double> const &y0,
-		                                   double t1, double t2);
-	DynamicalSystem(
-		unsigned short NVariable, 
-		double Precision = 1.e-3, //1.e-4
-		double Hmin = 0.0, 
-		double Hestimate = 1.e-2):
-	m_NVariable(NVariable),
-		m_precision(Precision),
-		m_hmin(Hmin),
-		m_hestimate(Hestimate)
-	{;};
-protected:
-	virtual std::vector<double> const &f(double, std::vector<double> &) = 0;
+	DynamicalSystem(unsigned short dimension);
+	DynamicalSystem(VectorField* pf);
+	~DynamicalSystem();
+	//void setVectorField(VectorField* pf);
+    void setNumericalMethod(NumericalMethod* pnumericalMethod);
+	std::vector<double> const& flow(std::vector<double>& y0, double t0, double dt) const;
 };
-#endif
+
+#endif //__DYNAMICALSYSTEM_H__
+

@@ -45,28 +45,12 @@ NAMESPACE_SIMDATA
 
 
 // exceptions:
-class BadMagic: public Exception { 
-	public: BadMagic(const char* msg): 
-		Exception("BadMagic", msg) {}
-};
-class BadByteOrder: public Exception {
-	public: BadByteOrder(const char* msg): 
-		Exception("BadByteOrder", msg) {}
-};
-class CorruptArchive: public Exception {
-	public: CorruptArchive(const char* msg): 
-		Exception("CorruptArchive", msg) {}
-};
-class IndexError: public Exception {
-	public: IndexError(const char* msg): 
-		Exception("IndexError", msg) {}
-};
-class ObjectMismatch: public Exception {
-	public: ObjectMismatch(const char* msg): 
-		Exception("ObjectMismatch", msg) {}
-};
-
-EXCEPTION(IOError)
+SIMDATA_EXCEPTION(BadMagic)
+SIMDATA_EXCEPTION(BadByteOrder)
+SIMDATA_EXCEPTION(CorruptArchive)
+SIMDATA_EXCEPTION(IndexError)
+SIMDATA_EXCEPTION(ObjectMismatch)
+SIMDATA_EXCEPTION(IOError)
 
 	// was nested in DataArchive
 	// separated for SWIG

@@ -43,7 +43,7 @@ NAMESPACE_SIMDATA
 class Object;
 
 
-EXCEPTION(InterfaceError)
+SIMDATA_EXCEPTION(InterfaceError)
 
 
 /*

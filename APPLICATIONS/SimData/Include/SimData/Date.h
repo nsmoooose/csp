@@ -58,6 +58,7 @@
 #define __DATE_H__
 
 #include <SimData/Pack.h>
+#include <SimData/Exception.h>
 
 
 
@@ -125,7 +126,7 @@ typedef unsigned char uint08;
  * Exception thrown by the Data class when invalid dates are
  * detected.
  */
-class InvalidDate {};
+SIMDATA_EXCEPTION(InvalidDate);
 
 /**
  * Date class for YMD and julian dates.

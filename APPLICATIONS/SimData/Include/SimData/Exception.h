@@ -56,7 +56,7 @@ public:
 	void details();
 };
 
-#define EXCEPTION(a)	\
+#define SIMDATA_EXCEPTION(a)	\
 class a: public Exception { \
 public: \
 	a(std::string msg=""): \
@@ -68,7 +68,8 @@ public: \
  *
  * @author Mark Rose <mrose@stm.lbl.gov>
  */
-class PythonException {};
+SIMDATA_EXCEPTION(PythonException);
+//class PythonException {};
 
 
 NAMESPACE_END // namespace simdata

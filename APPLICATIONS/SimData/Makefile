@@ -1,7 +1,7 @@
 SUBDIRS = Source 
 
 export GDEBUGF = -g -Wall
-export GCFLAGS = -fPIC -DUSE_NAMESPACE_SIMDATA -O2
+export GCFLAGS = -fPIC -DUSE_NAMESPACE_SIMDATA -O2 # -march=athlon-tbird
 export GLDOPTS = -shared -lswigpy -ldl
 export GSWOPTS = -c -c++ -python -DUSE_NAMESPACE_SIMDATA -noexcept
 export CXX = g++

@@ -51,7 +51,7 @@ class DataArchive;
 typedef hasht ObjectID;
 
 
-EXCEPTION(ObjectTypeMismatch)
+SIMDATA_EXCEPTION(ObjectTypeMismatch)
 
 
 

@@ -35,7 +35,7 @@ class Packer;
 class UnPacker;
 
 
-EXCEPTION(ParseException)
+SIMDATA_EXCEPTION(ParseException)
 
 
 /**

@@ -54,7 +54,7 @@ class ListBase;
 class Object;
 
 
-EXCEPTION(TypeMismatch)
+SIMDATA_EXCEPTION(TypeMismatch)
 
 	
 /**

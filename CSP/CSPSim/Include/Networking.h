@@ -195,33 +195,6 @@ struct ObjectUpdateMessagePayload
 //#endif
 
 
-class NetworkMessageHandler
-{
-	public:
-	virtual void process(NetworkMessage * message) = 0;
-};
-
-class EchoMessageHandler : public NetworkMessageHandler
-{
-
-	public: 
-		virtual void process(NetworkMessage * message);
-	
-};
-
-class PrintMessageHandler : public NetworkMessageHandler
-{
-	protected:
-		int m_frequency;
-		int m_count;
-	public:
-		PrintMessageHandler() { m_frequency = 1; m_count = 0;}
-		virtual void process(NetworkMessage * message);
-
-		void setFrequency(int frequency) { m_frequency = frequency; }
-		int getFrequency() { return m_frequency; }
-};
-
 class NetworkMessagePool
 {
 //	private:
@@ -294,6 +267,7 @@ class MessageSocketDuplex
 
 };
 
+class NetworkMessageHandler;
 
 class NetworkMessenger
 {
@@ -350,6 +324,33 @@ class NetworkMessenger
 
 };
 
+
+class NetworkMessageHandler
+{
+	public:
+	virtual void process(NetworkMessage * message, NetworkMessenger * messenger) = 0;
+};
+
+class EchoMessageHandler : public NetworkMessageHandler
+{
+
+	public: 
+		virtual void process(NetworkMessage * message, NetworkMessenger * messenger);
+	
+};
+
+class PrintMessageHandler : public NetworkMessageHandler
+{
+	protected:
+		int m_frequency;
+		int m_count;
+	public:
+		PrintMessageHandler() { m_frequency = 1; m_count = 0;}
+		virtual void process(NetworkMessage * message, NetworkMessenger * messenger);
+
+		void setFrequency(int frequency) { m_frequency = frequency; }
+		int getFrequency() { return m_frequency; }
+};
 
 // not currently using these below
 

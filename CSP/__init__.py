@@ -22,8 +22,8 @@ import sys
 import os
 import os.path
 
-# make SimData available without qualification
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'SimData'))
+# make SimData available as CSP.SimData
+__path__ += [os.path.join(os.path.dirname(__file__), 'SimData')]
 
 def initDynamicLoading():
 	"""Enable lazy loading of shared library modules if available"""

@@ -20,7 +20,7 @@
 
 
 """
-CSP Workspace Setup Script
+Combat Simulator Project - Workspace Setup Script
 
 Installs a stub module CSP.py into the Python site-packages directory,
 allowing CSP and its submodules to be imported from the current client
@@ -33,7 +33,9 @@ Usage: %(prog)s [flags]
 """
 
 import sys
+import os
 import os.path
+import commands
 from distutils import sysconfig
 from distutils import file_util
 from distutils import util
@@ -62,16 +64,56 @@ def InstallLoader(force):
 	util.byte_compile(target)
 
 
-def main(args):
-	do_install = app.options.force
+def CheckSCons():
+	status, output = commands.getstatusoutput('scons --version')
+	return status == 0
+
+def TestBootstrapModule():
 	try:
 		import CSP
+		return 1
 	except ImportError:
+		return 0
+
+def IsUnix():
+	return os.name == 'posix'
+
+
+def main(args):
+	print 'Combat Simulator Project - Workspace Setup Script'
+
+	do_install = app.options.force
+	nothing_to_do = 1
+
+	if not TestBootstrapModule():
 		do_install = 1
+
 	if do_install:
 		InstallLoader(app.options.force)
+		if not TestBootstrapModule():
+			print 'ERROR: bootstrap CSP module installation failed.'
+			return 1
+		nothing_to_do = 0
+
+	if IsUnix() and not CheckSCons():
+		print
+		print 'WARNING: SCons software construction tool (scons) not found.'
+		print
+		print 'SCons is required to build CSP on non-Windows platforms.  See '
+		print 'http://scons.sf.net for more information and to download installable'
+		print 'packages.  You may also be able to install the latest version of'
+		print 'SCons for your distribution using a package tool such as apt-get'
+		print '(e.g. "apt-get install scons").'
+		return 1
+
+	if IsUnix():
+		print 'Setup complete.  Run "scons <target>" to build CSP, or see the README'
+		print 'file for more information.'
 	else:
-		print 'Nothing to do; try %s --help for more options.' % app.programName()
+		print 'Setup complete.  Open the project files in VisualStudio to build'
+		print 'CSP, or see the README file for more information.'
+
+	return 0
 
 
 app.addOption('-f', '--force', action='store_true', default=False, help='force reinstall')

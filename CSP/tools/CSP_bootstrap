@@ -53,7 +53,7 @@ while parts[-1] != 'CSP':
 
 ROOT = os.path.sep.join(parts[:-1])
 
-if not os.path.exists(os.path.join(ROOT, '.svn')):
+if not os.path.exists(os.path.join(ROOT, 'CSP', '.svn')):
 	print 'Warning: %s does not contain .svn and may not be a valid CSP workspace.' % ROOT
 
 # load the real CSP package

@@ -37,6 +37,7 @@
 #include <iostream>
 #include <vector>
 #include <zlib.h>
+#include <cassert>
 
 using namespace simdata;
 
@@ -340,8 +341,8 @@ protected:
 		char fn[64];
 		UTM ref_utm = getReferenceUTM();
 		LLA ref_lla = getReferenceLLA();
-		int l0 = int((ref_lla.latitude()*180.0/G_PI+90)*8+0.5);
-		int l1 = int((ref_lla.longitude()*180.0/G_PI+180)*8+0.5);
+		int l0 = int((ref_lla.latitude()*180.0/simdata::PI+90)*8+0.5);
+		int l1 = int((ref_lla.longitude()*180.0/simdata::PI+180)*8+0.5);
 		sprintf(fn, "%04d_%04d.dat", l0, l1);
 		_fn = fn;
 		return (FILE*) fopen(fn, opts);
@@ -597,8 +598,8 @@ public:
 	DAT() {}
 
 	static std::string DATname(double lat, double lon) {
-		int l0 = int((RadiansToDegrees(lat)+90)*8+0.5);
-		int l1 = int((RadiansToDegrees(lon)+180)*8+0.5);
+		int l0 = int((simdata::toDegrees(lat)+90)*8+0.5);
+		int l1 = int((simdata::toDegrees(lon)+180)*8+0.5);
 		char fn[60];
 		sprintf(fn, "%04d_%04d.dat", l0, l1);
 		return fn;
@@ -612,7 +613,7 @@ public:
 	}
 
 	bool read(double lat, double lon) {
-		read(DATname(DegreesToRadians(lat), DegreesToRadians(lon)));
+		read(DATname(simdata::toRadians(lat), simdata::toRadians(lon)));
 	}
 
 	inline double getReferenceLatitude() const { return _ref_lat; }

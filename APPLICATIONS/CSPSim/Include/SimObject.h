@@ -121,14 +121,10 @@ public:
 	simdata::Vector3 const & getDirection() const { return m_Direction; }
 	simdata::Vector3 const & getUpDirection() const { return m_NormalDirection; }
 	
-	void AddSmoke();
-
 protected:
 
 	int m_Army;
 	simdata::PathPointer<ObjectModel> m_Model;
-
-	osgParticle::SegmentPlacer *m_Placer;
 
 	virtual void pack(simdata::Packer& p) const;
 	virtual void unpack(simdata::UnPacker& p);

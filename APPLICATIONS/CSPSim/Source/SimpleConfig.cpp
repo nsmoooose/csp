@@ -28,6 +28,13 @@
  * @author Mark Rose <mrose@stm.lbl.gov>
  */
 
+# if defined(_MSC_VER) && (_MSC_VER <= 1200)
+#pragma warning (disable : 4786)
+# endif
+
+#ifdef _WIN32
+#define snprintf _snprintf
+#endif
 
 #include "SimpleConfig.h"
 #include "Platform.h"
@@ -38,6 +45,7 @@
 #include <fstream>
 #include <cstdio>
 #include <cstdlib>
+#include <assert.h>
 
 #include "compiler.h"
 #include STL_SSTREAM

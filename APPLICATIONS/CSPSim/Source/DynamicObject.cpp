@@ -23,6 +23,9 @@
  **/
 
 
+#include <osg/Geode>
+#include <osgParticle/ParticleSystemUpdater>
+
 #include "DynamicObject.h"
 #include "LogStream.h"
 #include "VirtualBattlefield.h"
@@ -51,10 +54,15 @@ DynamicObject::DynamicObject(): SimObject()
 
 	m_Inertia = simdata::Matrix3::IDENTITY;
 	m_InertiaInv = simdata::Matrix3::IDENTITY;
+
+	m_SmokeSegments = NULL;
 }
 
 DynamicObject::~DynamicObject()
 {
+	if (m_SmokeSegments) {
+		delete m_SmokeSegments;
+	}
 }
 
 void DynamicObject::pack(simdata::Packer& p) const {
@@ -137,16 +145,10 @@ void DynamicObject::updateGlobalPosition()
 	m_GlobalPosition.y = m_LocalPosition.y + m_YLatticePos*g_LatticeYDist;
 	m_GlobalPosition.z = m_LocalPosition.z;
 	// simple testing of smoke trails... improve later
-	if (m_Placer) {
-		simdata::Vector3 motion = m_PrevPosition - m_LocalPosition;
+	if (m_SmokeSegments) {
+		simdata::Vector3 motion = m_LocalPosition - m_PrevPosition;
 		simdata::Vector3 motionBody = QVRotate(m_qOrientation.Bar(), motion);
-		osg::BoundingSphere s = m_rpNode.get()->getBound();
-		float r = s.radius();
-		osg::Vec3 c = s.center();
-		osg::Vec3Array* pl = osgNew osg::Vec3Array;
-		osg::Vec3 B(0.0,-0.8 * r, 0.0);
-		B = B + osg::Vec3(motionBody.x, motionBody.y, motionBody.z);
-		m_Placer->setVertexB(B);
+		m_SmokeSegments->update(osg::Vec3(motionBody.x, motionBody.y, motionBody.z));
 	}
 }
 
@@ -175,5 +177,36 @@ void DynamicObject::postMotion(double dt)
 	if (m_bOnGround) {
 		updateGroundPosition();
 	}
+}
+
+void DynamicObject::AddSmoke()
+{
+	if (!m_Battlefield) return;
+
+	osgParticle::ParticleSystemUpdater *psu = 0;
+	osgParticle::ParticleSystem *ps;
+
+	if (!m_SmokeSegments) {
+		osg::BoundingSphere s = m_rpNode.get()->getBound();
+		m_SmokeSegments = new effects::smoke::SmokeSegments;
+		m_SmokeSegments->addSource(osg::Vec3(0.0, -0.8 * s.radius(), 0.0));
+	}
+
+	effects::smoke::Trail trail;
+	trail.setTexture("Images/white-smoke.rgb");
+	trail.setColorRange(osg::Vec4(0.9, 0.9, 1.0, 1.0), osg::Vec4(1.0, 1.0, 1.0, 0.5));
+	trail.setSizeRange(0.2, 4.0);
+	trail.setPlacer(m_SmokeSegments->getSegment(0));
+	trail.setOperator(osgNew effects::smoke::Thinner);
+	trail.setLifeTime(5.5);
+	trail.setExpansion(1.2);
+	ps = trail.create(m_rpTransform.get(), psu);
+	
+	osg::Geode *geode = osgNew osg::Geode;
+	geode->setName("SmokeParticleSystem");
+	geode->addDrawable(ps);
+	m_Battlefield->addNodeToScene(geode);
+
+	m_rpTransform->addChild(psu);
 }
 

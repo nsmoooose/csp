@@ -1,7 +1,9 @@
 <?xml version="1.0" standalone="no"?>
 
 <Object class="ObjectModel" static="1">
-	<External name="model_path">Models/m2k2g.3ds</External>
+	<!--External name="model_path">Models/f35.3DS</External-->
+	<External name="model_path">Models/f35.3DS</External>
+	<!--External name="model_path">Models/m2k2g.3ds</External-->
 	<Vector name="axis_0">1 0 0</Vector>
 	<Vector name="axis_1">0 1 0</Vector>
 	<Matrix name="rotation">1 0 0 0 1 0 0 0 1</Matrix>

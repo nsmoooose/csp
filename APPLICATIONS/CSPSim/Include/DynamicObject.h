@@ -29,6 +29,7 @@
 #include "SimObject.h"
 #include "InputInterface.h"
 #include "BaseController.h"
+#include "SmokeEffects.h"
 
 
 /**
@@ -67,6 +68,8 @@ public:
 	void updateGroundPosition();
 	
 	virtual void onUpdate(double dt);
+	
+	void AddSmoke();
 
 protected:
 
@@ -79,6 +82,7 @@ protected:
 	BaseController * m_pController;
 	unsigned int m_iControllerID;
 	
+	effects::smoke::SmokeSegments *m_SmokeSegments;
 
 	// dynamic properties
 	

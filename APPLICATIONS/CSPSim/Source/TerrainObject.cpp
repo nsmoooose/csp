@@ -68,7 +68,7 @@ TerrainObject::~TerrainObject()
 
 void TerrainObject::pack(simdata::Packer& p) const 
 {
-	simdata::Object::pack(p);
+	Object::pack(p);
 	p.pack(m_DynamicTextures);
 	p.pack(m_TextureCompression);
 	p.pack(m_PreloadTextures);
@@ -94,7 +94,7 @@ void TerrainObject::pack(simdata::Packer& p) const
 
 void TerrainObject::unpack(simdata::UnPacker& p)
 {
-	simdata::Object::unpack(p);
+	Object::unpack(p);
 	p.unpack(m_DynamicTextures);
 	p.unpack(m_TextureCompression);
 	p.unpack(m_PreloadTextures);
@@ -131,10 +131,12 @@ void TerrainObject::unload() {
 			delete m_pTerrain;
 			m_pTerrain= NULL;
 		}
+		/*
 		if (m_pTerrainTextureFactory) {
 			delete m_pTerrainTextureFactory;
 			m_pTerrainTextureFactory = NULL;
 		}
+		*/
 		m_Loaded = false;
 	}
 }

@@ -29,6 +29,7 @@
 
 #include <SimData/InterfaceRegistry.h>
 #include <SimData/Math.h>
+#include <SimData/Quaternion.h>
 
 using simdata::RadiansToDegrees;
 using simdata::DegreesToRadians;
@@ -52,7 +53,7 @@ AeroDynamics::~AeroDynamics() {
 }
 
 void AeroDynamics::pack(simdata::Packer& p) const {
-	simdata::Object::pack(p);
+	Object::pack(p);
 	
 	p.pack(m_WingSpan);
 	p.pack(m_WingChord);
@@ -105,7 +106,7 @@ void AeroDynamics::pack(simdata::Packer& p) const {
 }
 
 void AeroDynamics::unpack(simdata::UnPacker& p) {
-	simdata::Object::unpack(p);
+	Object::unpack(p);
 
 	p.unpack(m_WingSpan);
 	p.unpack(m_WingChord);
@@ -698,13 +699,13 @@ double AeroDynamics::CalculateGravity(double const p_altitude) const
 
 simdata::Vector3 AeroDynamics::LocalToBody(const simdata::Vector3 & vec )
 {
-	return QVRotate( qOrientation.Bar(), vec );
+	return simdata::QVRotate( qOrientation.Bar(), vec );
 }
 
 
 simdata::Vector3 AeroDynamics::BodyToLocal(const simdata::Vector3 & vec )
 {
-	return QVRotate( qOrientation, vec );
+	return simdata::QVRotate( qOrientation, vec );
 }
 
 

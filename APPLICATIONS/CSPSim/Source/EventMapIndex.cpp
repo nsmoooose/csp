@@ -22,12 +22,19 @@
  *
  **/
 
+
+# if defined(_MSC_VER) && (_MSC_VER <= 1200)
+#pragma warning(disable : 4786)
+# endif
+
 #include "EventMapIndex.h"
 #include "LogStream.h"
 #include "Platform.h"
 
 #include <osgDB/FileUtils>
 #include <osgDB/FileNameUtils>
+
+#include <assert.h>
 
 
 EventMapIndex::~EventMapIndex() {

@@ -22,14 +22,20 @@
  *
  **/
 
+
+# if defined(_MSC_VER) && (_MSC_VER <= 1200)
+#pragma warning(disable : 4786)
+# endif
+
 #include "EventMapping.h"
-//#include "InputInterface.h"
-#include "SDL_events.h"
+
+#include <SDL/SDL_events.h>
 
 #include <iostream>
 #include <sstream>
 #include <fstream>
 #include <string>
+#include <assert.h>
 
 
 

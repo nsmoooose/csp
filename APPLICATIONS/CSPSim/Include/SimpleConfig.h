@@ -32,6 +32,10 @@
 #ifndef __SIMPLECONFIG_H__
 #define __SIMPLECONFIG_H__
 
+# if defined(_MSC_VER) && (_MSC_VER <= 1200)
+#pragma warning (disable : 4786)
+# endif
+
 #include <string>
 #include <vector>
 #include <iostream>
@@ -138,16 +142,6 @@ private:
 
 class ConfigElement;
 class ConfigValue;
-
-class HashString {
-public:
-	bool operator()(std::string const &str) const {
-		return HASH<char const *>()(str.c_str());
-	}
-};
-
-typedef HASH_MAP<std::string, ConfigElement*, HashString> ConfigDictionary;
-typedef std::vector<ConfigElement *> ElementList;
 
 
 /**
@@ -343,6 +337,16 @@ public:
 	void setPath(const std::string &section, const std::string &key, const std::string &value);
 		
 private:
+	class HashString {
+	public:
+		bool operator()(std::string const &str) const {
+			return HASH<char const *>()(str.c_str());
+		}
+	};
+
+	typedef HASH_MAP<std::string, ConfigElement*, HashString> ConfigDictionary;
+	typedef std::vector<ConfigElement *> ElementList;
+
 	bool m_modified, m_autosave;
 	std::string m_file;
 	ConfigDictionary m_dict, m_last;

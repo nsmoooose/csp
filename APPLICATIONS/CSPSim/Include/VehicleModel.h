@@ -84,14 +84,14 @@ public:
 	END_SIMDATA_XML_INTERFACE
 
 	void pack(simdata::Packer &p) const {
-		vehicle::System::pack(p);
+		System::pack(p);
 		p.pack(m_Center);
 		p.pack(m_Width);
 		p.pack(m_Height);
 	}
 
 	void unpack(simdata::UnPacker &p) {
-		vehicle::System::unpack(p);
+		System::unpack(p);
 		p.unpack(m_Center);
 		p.unpack(m_Width);
 		p.unpack(m_Height);
@@ -188,12 +188,12 @@ public:
 	}
 	
 	void pack(simdata::Packer &p) const {
-		vehicle::Model::pack(p);
+		Model::pack(p);
 		p.pack(m_HUD);
 	}
 
 	void unpack(simdata::UnPacker &p) {
-		vehicle::Model::unpack(p);
+		Model::unpack(p);
 		p.unpack(m_HUD);
 		m_HUD->bind(this);
 	}

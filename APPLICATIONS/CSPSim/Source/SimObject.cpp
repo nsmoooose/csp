@@ -27,8 +27,8 @@
 
 #include "LogStream.h"
 #include "VirtualBattlefield.h"
+#include "SmokeEffects.h"
 
-#include <osg/Geode>
 #include <osg/NodeVisitor>
 #include <osg/Quat>
 
@@ -48,7 +48,7 @@
 
 extern double g_LatticeXDist;
 extern double g_LatticeYDist;
-
+/*
 extern osgParticle::ParticleSystem *setupParticleSystem(osg::MatrixTransform *base, 
                                                         const string & p_textureFile,
                                                         const osg::Vec4 &colorMin,
@@ -56,7 +56,7 @@ extern osgParticle::ParticleSystem *setupParticleSystem(osg::MatrixTransform *ba
                                                         const osg::Vec3 &center, 
 							osgParticle::SegmentPlacer *&placer,
                                                         float lifetime);
-
+*/
 using std::string;
 
 
@@ -71,7 +71,6 @@ SimObject::SimObject()
 	m_rpTransform = NULL;
 	m_rpSwitch = NULL;
 	m_rpNode = NULL;
-	m_Placer = NULL;
 
 	m_bFreezeFlag = false;
 	m_bDeleteFlag = false;
@@ -98,13 +97,13 @@ SimObject::~SimObject()
 }
 
 void SimObject::pack(simdata::Packer& p) const {
-	simdata::Object::pack(p);
+	Object::pack(p);
 	p.pack(m_Army);
 	p.pack(m_Model);
 }
 
 void SimObject::unpack(simdata::UnPacker& p) {
-	simdata::Object::unpack(p);
+	Object::unpack(p);
 	p.unpack(m_Army);
 	p.unpack(m_Model);
 }
@@ -238,13 +237,41 @@ void SimObject::ShowRepresentant(unsigned short const p_usflag)
 	m_rpSwitch->setValue(p_usflag, true);
 }
 
+/*
 void SimObject::AddSmoke()
 {
 	if (!m_Battlefield) return;
 
 	osg::BoundingSphere s = m_rpNode.get()->getBound();
 	float r = s.radius();
-	osg::Vec3 c = s.center();
+	unsigned short i;
+
+	osgParticle::ParticleSystemUpdater *psu = osgNew osgParticle::ParticleSystemUpdater;
+	osgParticle::ParticleSystem *ps;
+	ps = setupParticleSystem(m_rpTransform.get(),
+	                         "Images/white-smoke.rgb",
+	                         osg::Vec4(0.9, 0.9, 1.0, 1.0), 
+	                         osg::Vec4(1.0, 1.0, 1.0, 0.5), 
+	                         osg::Vec3(0.0, 0.8 * r, 0.0),
+				 m_Placer, 
+				 5.0);
+	osg::Geode *geode = osgNew osg::Geode;
+	geode->setName("PlayerParticleSystem");
+	geode->addDrawable(ps);
+	m_Battlefield->addNodeToScene(geode);
+	psu->addParticleSystem(ps);
+    
+	m_rpTransform.get()->addChild(psu);
+}
+*/
+
+#if 0
+void SimObject::AddSmoke()
+{
+	if (!m_Battlefield) return;
+
+	osg::BoundingSphere s = m_rpNode.get()->getBound();
+	float r = s.radius();
 	unsigned short i;
 
 	osg::Vec3Array* pl = osgNew osg::Vec3Array;
@@ -301,7 +328,7 @@ void SimObject::AddSmoke()
 	//g_pBattlefield->addNodeToScene(psu);
 	m_rpTransform.get()->addChild(psu);
 }
-
+#endif
 
 void SimObject::addToScene(VirtualBattlefield *battlefield)
 {
@@ -344,7 +371,7 @@ int SimObject::updateScene()
 { 
 	// this needs 2 upgrades; 
 	// first one is: working with quat and only quat; 
-	// second is: make an osg app() callback
+	// second is: make an osg upgrade()/draw() callback
 
 	CSP_LOG(CSP_APP, CSP_DEBUG, "SimObject::updateScene() ID:"  << m_iObjectID );
 

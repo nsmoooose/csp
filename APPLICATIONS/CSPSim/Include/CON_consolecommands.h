@@ -25,7 +25,7 @@
 #ifndef __CON_CONSOLECOMMANDS_H__
 #define __CON_CONSOLECOMMANDS_H__
 
-#include "CON_console.h"
+#include <SDL/CON_console.h>
 
 #ifdef __cplusplus
 extern "C" {

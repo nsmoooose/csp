@@ -29,17 +29,16 @@
 
 
 #include "TerrainObject.h"
+#include "DynamicObject.h"
 
-#include "SDL.h"
-#include "CON_console.h"
+#include <SDL/SDL.h>
+#include <SDL/CON_console.h>
 
 #include <SimData/Types.h>
 
 
-class DynamicObject;
 class VirtualBattlefield;
 class VirtualHID;
-class DynamicObject;
 class BaseScreen;
 class GameScreen;
 class EventMapIndex;

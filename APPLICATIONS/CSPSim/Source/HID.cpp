@@ -22,9 +22,13 @@
  *
  **/
 
+# if defined(_MSC_VER) && (_MSC_VER <= 1200)
+#pragma warning(disable : 4786)
+# endif
+
 #include "HID.h"
 #include "InputInterface.h"
-#include "SDL_events.h"
+#include <SDL/SDL_events.h>
 
 #include <iostream>
 #include <sstream>
@@ -118,7 +122,7 @@ void VirtualHID::setVirtualMode(int mode) {
 }
 
 void VirtualHID::setJoystickModifier(int jmod) {
-	m_JoystickModifier = jmod;
+	m_JoystickModifier = (jmod != 0);
 }
 
 bool VirtualHID::OnMouseMove(SDL_MouseMotionEvent const &event) {

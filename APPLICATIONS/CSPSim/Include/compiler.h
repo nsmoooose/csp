@@ -21,7 +21,7 @@
  * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA  02111-1307, USA.
  *
- * $Id: compiler.h,v 1.2 2003/01/26 23:34:13 mkrose Exp $
+ * $Id: compiler.h,v 1.3 2003/02/02 20:53:27 mkrose Exp $
  *
  **************************************************************************/
 
@@ -227,7 +227,11 @@
 #    define STL_STDEXCEPT  <stdexcept>
 #    define STL_STRING     <string>
 #    define STL_STRSTREAM  <strstream>
+#if !defined(_STLP_WIN32)
 #    define STL_SSTREAM    STL_STRSTREAM
+#else
+#    define STL_SSTREAM    <sstream>
+#endif
 
 #    pragma warning(disable: 4786) // identifier was truncated to '255' characters
 #    pragma warning(disable: 4244) // conversion from double to float

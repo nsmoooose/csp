@@ -26,7 +26,7 @@
 #define __LOGOSCREEN_H__
 
 
-#include "SDL.h"
+#include <SDL/SDL.h>
 #include "BaseScreen.h"
 
 

@@ -25,13 +25,13 @@
 #ifndef __GAMESCREEN_H__
 #define __GAMESCREEN_H__
 
+#include <SimData/Math.h>
+#include <SimData/Vector3.h>
+
 #include "BaseScreen.h"
-//#include "SDL_keysym.h"
-//#include "SDL_joystick.h"
 #include "DynamicObject.h"
 #include "HID.h"
 
-#include <SimData/Vector3.h>
 
 class VirtualBattlefield;
 
@@ -121,8 +121,8 @@ protected:
 	bool m_bPreviousState;
 
 	void NormalView();
-	void TurnViewAboutX(double fangleMax = M_PI / 2);
-	void TurnViewAboutZ(double fangleMax = M_PI);
+	void TurnViewAboutX(double fangleMax = G_PI / 2);
+	void TurnViewAboutZ(double fangleMax = G_PI);
 	void ScaleView();
 	simdata::Vector3 GetNewFixedCamPos(SimObject * const target) const;
 	void SetCamera();

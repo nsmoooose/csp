@@ -40,9 +40,9 @@
 #ifndef __HID_H__
 #define __HID_H__
 
-#include "SDL_events.h"
-#include "SDL_keysym.h"
-#include "SDL_keyboard.h"
+#include <SDL/SDL_events.h>
+#include <SDL/SDL_keysym.h>
+#include <SDL/SDL_keyboard.h>
 
 #include <string>
 #include <vector>
@@ -58,6 +58,8 @@ class InputInterface;
 /**
  * class HID - Base class for Human Interface Device mapping and scripting.
  *
+ * This class provides an interface for handling various SDL input events,
+ * and implements an event dispatch routine.
  */
 class HID
 {
@@ -67,24 +69,68 @@ public:
 	HID() {}
 	virtual ~HID() {}
 
+	/**
+	 * SDL key event handler
+	 */
 	virtual bool OnKey(SDL_KeyboardEvent const &) = 0;
+
+	/**
+	 * SDL joystick button handler
+	 */
 	virtual bool OnJoystickButton(SDL_JoyButtonEvent const &) = 0;
+	
+	/**
+	 * SDL joystick axis handler
+	 */
 	virtual bool OnJoystickAxisMotion(SDL_JoyAxisEvent const &) = 0;
+	
+	/**
+	 * SDL mouse movement handler
+	 */
 	virtual bool OnMouseMove(SDL_MouseMotionEvent const &) = 0;
+	
+	/**
+	 * SDL mouse button handler
+	 */
 	virtual bool OnMouseButton(SDL_MouseButtonEvent const &) = 0;
 	/*
 	virtual void OnJoystickHatMotion(int joynum, int hat, int val) = 0;
 	*/
 
+	/**
+	 * Update routine to drive the active script(s).
+	 */
 	virtual void OnUpdate(double) = 0;
+	
+	/**
+	 * Bind to an object.
+	 *
+	 * The object must implement the InputInterface.  All mapped
+	 * events are passed to this object (which may in turn selectively
+	 * pass events on to its children).
+	 */
 	virtual void bindObject(InputInterface *) = 0;
 
+	/**
+	 * Primary event dispatch routine.
+	 */
 	virtual bool OnEvent(SDL_Event &event);
 };
 
 
 
-
+/**
+ * class VirtualHID - Simulates a composite, programmable human interface device.
+ *
+ * VirtualHID instances use event mappings to translate raw SDL input events into
+ * commands that are passed to associated objects.  Each VirtualHID can handle
+ * multiple real human interface devices (keyboard, mice, joysticks), and can be 
+ * placed into one of several user-defined modes that alters the event mapping.  
+ * Events such as button and key presses translate into scripts that are executed 
+ * by the VirtualHID to generate a series of commands.  These commands, which are 
+ * simple string identifiers, are passed to objects (implementing the InputInterface
+ * interface) that understand and can respond to them.
+ */
 class VirtualHID: public HID
 {
 public:

@@ -25,8 +25,8 @@
 #ifndef __CONSOLECOMMANDS_H__
 #define __CONSOLECOMMANDS_H__
 
-#include "SDL.h"
-#include "CON_console.h"
+#include <SDL/SDL.h>
+#include <SDL/CON_console.h>
 #include "CON_consolecommands.h"
 
 

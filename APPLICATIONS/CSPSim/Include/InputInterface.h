@@ -27,7 +27,7 @@
 
 #include <string>
 
-#include "SDL_events.h"
+#include <SDL/SDL_events.h>
 
 #include <SimData/hash_map.h>
 

@@ -22,7 +22,7 @@
  *
  */
 
-#ifdef WIN32
+#ifdef _WIN32
 #include <windows.h>
 #endif
 
@@ -32,10 +32,10 @@
 #include <osg/Timer>
 
 
-#include "SDL.h"
-#include "CON_console.h"	// console is using SDL_OPENGLBLIT :-( switch to osgConsole?
+#include <SDL/SDL.h>
+#include <SDL/CON_console.h>	// console is using SDL_OPENGLBLIT :-( switch to osgConsole?
+#include <SDL/DT_drawtext.h>
 #include "CON_consolecommands.h"
-#include "DT_drawtext.h"
 
 #include "DemeterException.h"
 
@@ -115,6 +115,10 @@ CSPSim::CSPSim()
 
 	m_Interface = NULL;
 	m_Battlefield = NULL;
+
+	int level = g_Config.getInt("Debug", "LoggingLevel", 0, true);
+	csplog().setLogLevels(CSP_ALL, (cspDebugPriority)level);
+	csplog().set_output("CSPSim.log");
 }
 
 
@@ -129,6 +133,7 @@ CSPSim::~CSPSim()
 	if (m_GameScreen) {
 		delete m_GameScreen;
 	}
+	csplog().set_output(cerr);
 }
 
 void CSPSim::setActiveObject(simdata::Pointer<DynamicObject> object) {

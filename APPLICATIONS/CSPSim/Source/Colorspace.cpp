@@ -13,7 +13,7 @@
  */
 
 #include "Color.h"
-#include <stdio.h>
+#include <cstdio>
 
 #define PI 3.14159265358979323846264338327950288419716939937510
 
@@ -814,7 +814,7 @@ const char * Color::space_labels[] = {
 	"INVALID", "CIELab", "CIEL*u*v*", "CIExyY", "CIEXYZ", "CMY",
 	"HLS", "HSV", "RGB"};
 
-void Color::set(float A, float B, float C, space_t S=RGB, bool check) {
+void Color::set(float A, float B, float C, space_t S, bool check) {
 	if (check) {
 		switch (S) {
 			case RGB:
@@ -1066,5 +1066,6 @@ std::ostream &operator<<(std::ostream &os, const Color &c) {
 		<< c.getA() << ", "
 		<< c.getB() << ", "
 		<< c.getC() << "]";
+	return os;
 }
 

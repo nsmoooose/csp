@@ -1,8 +1,33 @@
+// Combat Simulator Project - FlightSim Demo
+// Copyright (C) 2002 The Combat Simulator Project
+// http://csp.sourceforge.net
+// 
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public License
+// as published by the Free Software Foundation; either version 2
+// of the License, or (at your option) any later version.
+// 
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+
+
+/**
+ * @file VirtualBattlefield.cpp
+ *
+ **/
+
 #include <sstream>
 
 #include <osg/Fog>
 #include <osg/Notify>
 #include <osg/PolygonMode>
+#include <osg/ColorMatrix>
 
 #include <osgDB/FileUtils>
 
@@ -62,9 +87,21 @@ public:
 	SmokeExpander(const SmokeExpander &copy, const osg::CopyOp &copyop): Operator(copy, copyop) {}
 	virtual void operate(osgParticle::Particle *p, double dt)
 	{
+		static int x = 0;
 		if (p && isEnabled()) {
 			float age = p->getAge();
-			p->setRadius(age*2.0);
+			if (age > 1.0 && age < 2.0) {
+				float dt = age-1.0;
+				float r = 0.25+dt*dt;
+				p->setSizeRange(osgParticle::rangef(0.0, r * 5.0 / age));
+			} else
+			if (age > 2.0) {
+				float dt = age-2.0;
+				float r = 1.25 + sqrt(dt);
+				p->setSizeRange(osgParticle::rangef(0.0, r * 5.0 / age));
+			}
+			x++;
+			if (age > 1.0 && (x % 300)==0) p->setLifeTime(age);
 		}
 	}
 };
@@ -82,6 +119,7 @@ osgParticle::ParticleSystem *setupParticleSystem(osg::MatrixTransform *base,
 	ptemp.setLifeTime(lifetime);
 	ptemp.setAlphaRange(osgParticle::rangef(1,0));
 	ptemp.setSizeRange(osgParticle::rangef(0.25, 5.0));
+	//ptemp.setSizeRange(osgParticle::rangef(0.25, 0.25));
 	ptemp.setPosition(osg::Vec3(0,0,0));
 	ptemp.setVelocity(osg::Vec3(0,0,0));
 	ptemp.setColorRange(osgParticle::rangev4(colorMin, colorMax));
@@ -222,7 +260,7 @@ int VirtualBattlefield::buildScene()
 	// installed in /usr/local/lib/osgPlugins or /usr/lib/osgPlugins.
 	// OSG can find itself the plugins.
 #ifdef _WIN32
-	osgDB::setLibraryFilePathList("../DemoPackage");
+	osgDB::setLibraryFilePathList("../Bin");
 #endif
 
 	/////////////////////////////////////
@@ -297,10 +335,22 @@ int VirtualBattlefield::buildScene()
 	// light properties
 	osg::Light * pLight = osgNew osg::Light;
 
+#ifndef DARK_TEST
 	pLight->setDirection( osg::Vec3(0,0,-1) );
 	pLight->setAmbient( osg::Vec4(0.3f,0.3f,0.3f,1.0f) );
 	pLight->setDiffuse( osg::Vec4(0.8f,0.8f,0.8f,1.0f) );
 	pLight->setSpecular( osg::Vec4(0.75f,0.75f,0.75f,1.0f) );
+#else
+	osg::ref_ptr<osg::ColorMatrix> cm = osgNew osg::ColorMatrix;
+	cm->setMatrix(osg::Matrix(0.5,0.2,0.2,0.0,0.3,0.6,0.3,0.0,0.2,0.2,0.5,0,0,0,0,1));
+	osg::State state;
+	cm->apply(state);
+	pLight->setDirection( osg::Vec3(0,0,-1) );
+	pLight->setAmbient( osg::Vec4(0.1f,0.1f,0.1f,1.0f) );
+	pLight->setDiffuse( osg::Vec4(0.3f,0.3f,0.3f,1.0f) );
+	pLight->setSpecular( osg::Vec4(0.25f,0.25f,0.25f,1.0f) );
+#endif
+
 	osg::StateSet * pLightSet = osgNew osg::StateSet;
 
 	pFogState->setAttributeAndModes(pLight, osg::StateAttribute::ON);
@@ -674,8 +724,8 @@ simdata::Pointer<DynamicObject> VirtualBattlefield::getNextObject(simdata::Point
 	}
 	do {
 		if (++i == objectList.end()) i = objectList.begin();
-		if ((human >= 0) && (*i)->isHuman() != (bool)human) continue;
-		if ((local >= 0) && (*i)->isLocal() != (bool)local) continue;
+		if ((human >= 0) && (*i)->isHuman() != (human != 0)) continue;
+		if ((local >= 0) && (*i)->isLocal() != (local != 0)) continue;
 		break;
 	} while (object.ptr() != (*i).ptr());
 	return *i;

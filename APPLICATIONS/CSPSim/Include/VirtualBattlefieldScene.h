@@ -38,24 +38,54 @@
  *
  * @author unknown
  */
-class VirtualBattlefieldScene
-{
-	public:
-	   VirtualBattlefieldScene();
-	   virtual ~VirtualBattlefieldScene();
 
-	   int BuildScene();
-	   int DrawScene();
+class VirtualBattlefieldScene {
+public:
+	VirtualBattlefieldScene();
+	virtual ~VirtualBattlefieldScene();
 
+	int buildScene();
+	int drawScene();
 
+	void onUpdate(float dt);
 
-	protected:
+	void addNodeToScene( osg::Node * pNode);
+	void removeNodeFromScene( osg::Node * pNode);
+
+	void setLookAt(simdata::Vector3 & eyePos, simdata::Vector3 & lookPos, simdata::Vector3 & upVec);
+	void getLookAt(simdata::Vector3 & eyePos, simdata::Vector3 & lookPos, simdata::Vector3 & upVec) const;
+	void setWireframeMode(bool flag);
+	void setFogMode(bool flag);
+	void setFogStart(float value);
+	void setFogEnd(float value);
+
+	float getViewDistance() const { return m_ViewDistance; }
+	void setViewDistance(float value);
+
+	void drawPlayerInterface();
+
+	void setCameraNode(osg::Node * pNode);
+	void setActiveTerrain(TerrainObject *pTerrainObject);
+
+	int getTerrainPolygonsRendered();
+
+	float getViewAngle() const { return m_ViewAngle; }
+	void setViewAngle(float);
+
+protected:
 
 	osgUtil::SceneView* m_pView;
-	osg::Group * m_pRootNode;
+	osg::ref_ptr<osg::Group> m_rpRootNode;
+	osg::ref_ptr<osg::Group> m_rpObjectRootNode;
+	osg::ref_ptr<osg::FrameStamp> m_rpFrameStamp;
 
-	osg::Node * m_pPlaneNode;
-	osg::MatrixTransform * m_pPlaneTransform;
+	osg::Node * m_pTerrainNode;
+
+	float m_ViewDistance;
+	float m_ViewAngle;
+
+	simdata::Pointer<TerrainObject> m_ActiveTerrainObject;
+
 };
 
 #endif // __VIRTUALBATTLEFIELDSCENE_H__

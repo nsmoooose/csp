@@ -52,7 +52,7 @@ ObjectModel::~ObjectModel() {
 }
 
 void ObjectModel::pack(simdata::Packer& p) const {
-	simdata::Object::pack(p);
+	Object::pack(p);
 	p.pack(m_ModelPath);
 	p.pack(m_Rotation);
 	p.pack(m_Axis0);
@@ -62,7 +62,7 @@ void ObjectModel::pack(simdata::Packer& p) const {
 }
 
 void ObjectModel::unpack(simdata::UnPacker& p) {
-	simdata::Object::unpack(p);
+	Object::unpack(p);
 	p.unpack(m_ModelPath);
 	p.unpack(m_Rotation);
 	p.unpack(m_Axis0);
@@ -104,11 +104,11 @@ void ObjectModel::loadModel() {
 	assert(m_Axis0.Length() > 0.0);
 	m_Axis0.Normalize();
 	// orthogonalize
-	m_Axis1 = m_Axis1 - m_Axis0 * Dot(m_Axis0, m_Axis1);
+	m_Axis1 = m_Axis1 - m_Axis0 * simdata::Dot(m_Axis0, m_Axis1);
 	assert(m_Axis1.Length() > 0.0);
 	m_Axis1.Normalize();
 	// find third axis
-	simdata::Vector3 axis2 = Cross(m_Axis0, m_Axis1);
+	simdata::Vector3 axis2 = simdata::Cross(m_Axis0, m_Axis1);
 	
 	simdata::Matrix3 o(m_Axis0.x, m_Axis0.y, m_Axis0.z, m_Axis1.x, m_Axis1.y, m_Axis1.z, axis2.x, axis2.y, axis2.z);
 	// TODO test for o approx equal to identity.  if so, skip transform and return model node directly.

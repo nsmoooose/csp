@@ -26,9 +26,13 @@
 #ifndef __EVENTMAPPING_H__
 #define __EVENTMAPPING_H__
 
-#include "SDL_events.h"
-#include "SDL_keysym.h"
-#include "SDL_keyboard.h"
+#include <SDL/SDL_events.h>
+#include <SDL/SDL_keysym.h>
+#include <SDL/SDL_keyboard.h>
+
+# if defined(_MSC_VER) && (_MSC_VER <= 1200)
+#pragma warning (disable : 4786)
+# endif
 
 #include <string>
 #include <vector>
@@ -103,7 +107,7 @@ public:
 	void parseMap(const char *line, EventMapping::Script &script);
 	void parseAction(const char *line, EventMapping::Script &script);
 	void parseBinding(const char *line);
-	virtual bool load(std::string const &path);
+	bool load(std::string const &path);
 
 	const std::vector<simdata::hasht> &getBindings() const { return m_Bindings; }
 

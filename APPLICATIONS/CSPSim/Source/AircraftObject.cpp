@@ -187,7 +187,7 @@ void AircraftObject::doFCS(double dt)
 	m_Rudder = m_RudderInput * m_RudderMax * 0.017;
 	m_Aileron = m_AileronInput * m_AileronMax * 0.017;
 	m_Elevator = m_ElevatorInput * m_ElevatorMax * 0.017;
-	m_Throttle = (m_ThrottleInput+1.0) * 0.5;
+	m_Throttle = (1.0 - m_ThrottleInput) * 0.5;
 }
 
 void AircraftObject::setThrottle(double x) 

@@ -169,17 +169,20 @@ double EngineDynamics::flatten(double x) {
 
 void EngineDynamics::cut() {
 	double alpha = b_Alpha->value();
+	// f is a totally ad-hoc means of preventing a slight tailwind from killing
+	// the engine when we aren't moving.
+	double f = simdata::clampTo(4.0 * (b_Mach->value() - 0.25), 0.0, 1.0);
 	if ((std::abs(alpha) > simdata::PI_2) || (alpha < -m_A)) {
-		m_Force = simdata::Vector3::ZERO;
+		m_Force *= (1.0 - f);
 	}
 	else if (alpha < m_B) {
-		m_Force *= cos( flatten(alpha));
+		m_Force *= (1.0 - f) + f * cos(flatten(alpha));
  	}
 	else if (alpha < m_C) {
-		m_Force *= cos(m_B + (simdata::PI_2 - m_B)*(alpha - m_B)/(m_C-m_B));
+		m_Force *= (1.0 - f) + f * cos(m_B + (simdata::PI_2 - m_B)*(alpha - m_B)/(m_C-m_B));
 	}
 	else {
-		m_Force = simdata::Vector3::ZERO;
+		m_Force *= (1.0 - f);
 	}
 }
 

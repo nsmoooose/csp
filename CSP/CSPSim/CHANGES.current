@@ -11,6 +11,9 @@
    3160.  You still need to specify ServerIp to connect to remote index
    servers.
 
+ * Hack upon hack to prevent engine cutoff when stationary in a light
+   tailwind (AOA near 180 deg).
+
 2004-12-18: delta
  * Until we make a more accurate FCS, we'll use the animation binding to
    provide a better visual approximation of the animations of the "ailerons"

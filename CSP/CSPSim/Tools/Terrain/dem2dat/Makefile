@@ -1,5 +1,5 @@
-PYTHONLIB = /usr/lib/python2.2/site-packages
-PYTHONINC = /usr/include/python2.2
+PYTHONLIB = /usr/lib/python2.3/site-packages
+PYTHONINC = /usr/include/python2.3
 
 CXX = g++
 CXXFLAGS = -O2 -g -W -Wall

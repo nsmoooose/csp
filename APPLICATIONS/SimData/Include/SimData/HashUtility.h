@@ -30,6 +30,7 @@
 
 #include <string>
 #include <iostream>
+#include <SimData/Export.h>
 #include <SimData/hash_map.h>
 #include <SimData/GlibCsp.h>
 #include <SimData/ns-simdata.h>

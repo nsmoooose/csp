@@ -45,6 +45,7 @@
 
 #include <iostream>
 
+#include <SimData/Export.h>
 #include <SimData/Matrix3.h>
 #include <SimData/ns-simdata.h>
 

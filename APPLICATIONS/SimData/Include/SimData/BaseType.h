@@ -24,6 +24,8 @@
 
 #include <string>
 #include <iostream>
+
+#include <SimData/Export.h>
 #include <SimData/ns-simdata.h>
 #include <SimData/Exception.h>
 
@@ -42,7 +44,7 @@ EXCEPTION(ParseException)
  *
  * @author Mark Rose <mrose@stm.lbl.gov>
  */
-class BaseType {
+class SIMDATA_EXPORT BaseType {
 public:
 	/**
 	 * Serialize an object to a data archive.

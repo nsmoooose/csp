@@ -30,6 +30,7 @@
 #include <string>
 #include <vector>
 
+#include <SimData/Export.h>
 #include <SimData/HashUtility.h>
 #include <SimData/TypeAdapter.h>
 #include <SimData/ObjectInterface.h>
@@ -169,8 +170,11 @@ private:
 /**
  * The master interface registry.
  */
+#ifdef _WIN32
 extern InterfaceRegistry g_InterfaceRegistry;
-
+#else
+extern InterfaceRegistry g_InterfaceRegistry;
+#endif
 
 //-------------------------------------------------------
 // macros to create an interface to a specific class.
@@ -211,7 +215,7 @@ public:
 	virtual SIMDATA(Object)* createObject() const { assert(0); return 0; } \
 	virtual bool isVirtual() const { return true; }
 
-#ifdef _WIN32
+#ifdef _MSC_VER
 	#define CTOR_INIT(a, b) b
 #else
 	#define CTOR_INIT(a, b) a::b
@@ -272,8 +276,6 @@ public:
 		_interface = new SIMDATA(ObjectInterface)<classname>; \
 		(*_interface)
 
-		//CTOR_INIT(baseinterface,InterfaceProxy)(cname, chash) 
-		//baseinterface::InterfaceProxy(cname, chash)
 //-----------------------------------------
 
 #ifdef SWIG
@@ -298,11 +300,12 @@ public:
 	#define EXTEND_SIMDATA_XML_VIRTUAL_INTERFACE(classname, basename)
 #else
 	#define EXTEND_SIMDATA_XML_INTERFACE(classname, basename) \
-		__SIMDATA_XML_INTERFACE_0(classname, basename::basename##InterfaceProxy) \
+	    __SIMDATA_XML_INTERFACE_0(classname, basename::basename##InterfaceProxy) \
 		__SIMDATA_XML_INTERFACE_1(classname) \
 		__SIMDATA_XML_INTERFACE_2(classname, basename::basename##InterfaceProxy, basename##InterfaceProxy) 
+
 	#define EXTEND_SIMDATA_XML_VIRTUAL_INTERFACE(classname, basename) \
-		__SIMDATA_XML_INTERFACE_0(classname, basename::basename##InterfaceProxy) \
+	    __SIMDATA_XML_INTERFACE_0(classname, basename::basename##InterfaceProxy) \
 		__SIMDATA_XML_INTERFACE_V(classname) \
 		__SIMDATA_XML_INTERFACE_2(classname, basename::basename##InterfaceProxy, basename##InterfaceProxy)
 #endif

@@ -64,7 +64,7 @@ EXCEPTION(InterfaceError)
  * warranty, and with no claim as to its suitability for any purpose.
  */
 
-#ifdef WIN32 
+#ifdef _WIN32 
 	#define __PTS_SIM__
 #endif
 

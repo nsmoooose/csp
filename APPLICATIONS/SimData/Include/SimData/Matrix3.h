@@ -31,6 +31,8 @@
 #include <string>
 #include <vector>
 #include <cstdio>
+
+#include <SimData/Export.h>
 #include <SimData/BaseType.h>
 
 

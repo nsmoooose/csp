@@ -34,6 +34,7 @@
 #include <string>
 #include <iostream>
 
+#include <SimData/Export.h>
 #include <SimData/Exception.h>
 #include <SimData/ns-simdata.h>
 

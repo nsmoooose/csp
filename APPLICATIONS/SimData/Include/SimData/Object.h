@@ -30,6 +30,8 @@
 #include <stdio.h>
 #include <assert.h>
 #include <string>
+
+#include <SimData/Export.h>
 #include <SimData/HashUtility.h>
 #include <SimData/Pack.h>
 

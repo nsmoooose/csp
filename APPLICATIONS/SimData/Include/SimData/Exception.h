@@ -28,6 +28,8 @@
 #define __EXCEPTION_H__
 
 #include <string>
+
+#include <SimData/Export.h>
 #include <SimData/ns-simdata.h>
 
 

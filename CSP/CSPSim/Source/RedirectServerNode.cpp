@@ -1,4 +1,4 @@
-#include "Networking.h"
+#include <SimNet/Networking.h>
 #include "RedirectServerNode.h"
 #include <stdio.h>
 #include <stdlib.h>

@@ -51,7 +51,7 @@
 #include "ConsoleCommands.h"
 #include "Profile.h"
 
-#include "Networking.h"
+#include <SimNet/Networking.h>
 
 #include <SimData/Types.h>
 #include <SimData/ExceptionBase.h>

@@ -35,7 +35,7 @@
 
 #include <SimData/Quat.h>
 
-#include "Networking.h"
+#include <SimNet/Networking.h>
 
 
 SIMDATA_REGISTER_INTERFACE(DynamicObject)

@@ -27,7 +27,7 @@
 #include "Dispatch.h"
 #include "Log.h"
 #include "Config.h"
-#include "Networking.h"
+#include <SimNet/Networking.h>
 
 #include <SimData/TaggedRecordRegistry.h>
 

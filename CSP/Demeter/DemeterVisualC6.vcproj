@@ -106,7 +106,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="osg.lib opengl32.lib glu32.lib SDL.lib SDL_image.lib"
+				AdditionalDependencies="OpenThreadsWin32.lib osg.lib opengl32.lib glu32.lib SDL.lib SDL_image.lib"
 				OutputFile="../CSPSim/Bin/DemeterVisualC6.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"

@@ -135,8 +135,8 @@ void CameraKinematics::zoomStop() {
 void CameraKinematics::displacement(int x, int y, int dx, int dy) {
 	m_PanRateX = 0.0;
 	m_PanRateZ = 0.0;
-	m_AngleRotZ	+= dx *	m_DisplacementCoefficient;
-	m_AngleRotX	+= dy *	m_DisplacementCoefficient;
+	m_AngleRotZ	-= dx *	m_DisplacementCoefficient;
+	m_AngleRotX	-= dy *	m_DisplacementCoefficient;
 }
 
 void CameraKinematics::accept(CameraCommand* cm) {

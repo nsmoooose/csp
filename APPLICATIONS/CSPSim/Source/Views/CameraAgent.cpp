@@ -47,10 +47,9 @@ CameraAgent::~CameraAgent() {
 void CameraAgent::validate(double dt)	{
 	VirtualScene* scene	= CSPSim::theSim->getScene();
 	const simdata::Ref<TerrainObject> terrain =	scene->getTerrain();
-	simdata::Vector3 normal;
 	double const SAFETY	= 2.0;
 	TerrainObject::IntersectionHint	camera_hint	= 0;
-	float h	= SAFETY + terrain->getGroundElevation(m_EyePoint.x(),m_EyePoint.y(),normal,camera_hint);
+	float h	= SAFETY + terrain->getGroundElevation(m_EyePoint.x(),m_EyePoint.y(),camera_hint);
 	if (m_EyePoint.z() <= h) {
 		double alpha_2 = simdata::toRadians(scene->getViewAngle()/2.0);
 		double near_dist = scene->getNearPlane();

@@ -37,22 +37,27 @@
 #include <SimData/Log.h>
 
 #include <cstdlib>
+#include <map>
 
 
 NAMESPACE_SIMDATA
 
 
-void LogStream::initFromEnvironment() {
-	char *env_logfile = getenv("SIMDATA_LOGFILE");
-	if (env_logfile && *env_logfile) {
-		setOutput(env_logfile);
+void LogStream::initFromEnvironment(const char *log_file, const char *log_priority) {
+	if (log_file) {
+		char *env_logfile = getenv(log_file);
+		if (env_logfile && *env_logfile) {
+			setOutput(env_logfile);
+		}
 	}
-	char *env_priority = getenv("SIMDATA_LOGPRIORITY");
-	if (env_priority && *env_priority) {
-		int priority = atoi(env_priority);
-		if (priority < 0) priority = 0;
-		if (priority > LOG_ERROR) priority = LOG_ERROR;
-		setLogPriority(priority);
+	if (log_priority) {
+		char *env_priority = getenv(log_priority);
+		if (env_priority && *env_priority) {
+			int priority = atoi(env_priority);
+			if (priority < 0) priority = 0;
+			if (priority > LOG_ERROR) priority = LOG_ERROR;
+			setLogPriority(priority);
+		}
 	}
 }
 
@@ -72,6 +77,23 @@ std::ostream & LogStream::entry(int priority, int category, const char *file, in
 		out << '(' << file << ':' << line << ") ";
 	}
 	return out;
+}
+
+
+// nothing very fancy.  the logstreams persist unless explicitly
+// deleted by a caller, since they may be needed even during static
+// destruction.
+typedef std::map<std::string, LogStream *> LogStreamRegistry;
+LogStreamRegistry NamedLogStreamRegistry;
+
+LogStream *LogStream::getOrCreateNamedLog(const std::string &name) {
+	LogStreamRegistry::iterator iter = NamedLogStreamRegistry.find(name);
+	if (iter == NamedLogStreamRegistry.end()) {
+		LogStream *logstream = new LogStream(std::cerr);
+		NamedLogStreamRegistry[name] = logstream;
+		return logstream;
+	}
+	return iter->second;
 }
 
 

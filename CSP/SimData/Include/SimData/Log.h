@@ -90,7 +90,7 @@ inline SIMDATA_EXPORT LogStream& log() {
 		// settings.  note that this LogStream instance is never freed, so
 		// it is safe to log messages from static destructors.
 		log_stream = new LogStream(std::cerr);
-		log_stream->initFromEnvironment();
+		log_stream->initFromEnvironment("SIMDATA_LOGFILE", "SIMDATA_LOGPRIORITY");
 	}
 	return *log_stream;
 }

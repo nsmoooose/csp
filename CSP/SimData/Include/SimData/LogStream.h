@@ -111,12 +111,15 @@ public:
 	bool getTimeLogging() const { return m_log_time; }
 
 	/** Configure logging parameters and destination base on
-	 *  environment variables.  The default implementation uses
-	 *  SIMDATA_LOGFILE and SIMDATA_PRIORITY to set the output
-	 *  file and priority threshold.  This method is not called
-	 *  by the constructor; call it explicitly if needed.
+	 *  environment variables.  This method is not called by
+	 *  the constructor; call it explicitly if needed.
+	 *
+	 *  @param log_file the environment variable specifying the log
+	 *    output path (e.g. "SIMDATA_LOGFILE").
+	 *  @param log_priority the environment variable specifying the log
+	 *    priority threshold (e.g. "SIMDATA_LOGPRIORITY").
 	 */
-	virtual void initFromEnvironment();
+	void initFromEnvironment(const char *log_file, const char *log_priority);
 
 	/** Close the underlying output stream.
 	 *
@@ -203,7 +206,19 @@ public:
 	 */
 	std::ostream & entry(int priority, int category=~0, const char *file=0, int line=0);
 
+	/** Get or create a new log stream assocated with a string identifier.
+	 *
+	 *  This method can be used to easily share one log file across multiple
+	 *  components.
+	 *
+	 *  @param name a unique identifier for the log stream.
+	 *  @return the existing logstream associated with the identifier, or a
+	 *    new logstream.
+	 */
+	static LogStream *getOrCreateNamedLog(const std::string &name);
+
 };
+
 
 
 NAMESPACE_SIMDATA_END

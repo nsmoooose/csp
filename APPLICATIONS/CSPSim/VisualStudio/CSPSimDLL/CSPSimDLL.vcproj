@@ -23,7 +23,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				ImproveFloatingPointConsistency="FALSE"
-				AdditionalIncludeDirectories="$(PYTHONPATH)/include;../../Include;../../../../THIRDPARTYLIBS/demeter;../../../../THIRDPARTYLIBS/CSPChunkLod/include"
+				AdditionalIncludeDirectories="$(PYTHON_PATH)/include;../../Include;../../../../THIRDPARTYLIBS/demeter;../../../../THIRDPARTYLIBS/CSPChunkLod/include"
 				PreprocessorDefinitions="WIN32;_USRDLL;CSPSIMDLL_EXPORTS"
 				StringPooling="FALSE"
 				BasicRuntimeChecks="3"
@@ -44,11 +44,11 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="OpenThreadsWin32d.lib osgChunkLodd.lib osgFXd.lib sigc-1.2d.lib producerd.lib opengl32.lib SDL.lib osgDBd.lib DemeterVisualC6d.lib osgTextd.lib osgUtild.lib osgParticled.lib osgd.lib _cSimData.lib"
+				AdditionalDependencies="osgProducerd.lib OpenThreadsWin32d.lib osgChunkLodd.lib osgFXd.lib sigc-1.2d.lib producerd.lib opengl32.lib SDL.lib osgDBd.lib DemeterVisualC6d.lib osgTextd.lib osgUtild.lib osgParticled.lib osgd.lib _cSimData.lib"
 				OutputFile="../../Bin/_cCSP.dll"
 				LinkIncremental="2"
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="$(PYTHONPATH)/Lib/site-packages/SimData,$(PYTHONPATH)/libs, ../../../../THIRDPARTYLIBS/lib"
+				AdditionalLibraryDirectories="$(PYTHON_PATH)/Lib/site-packages/SimData,$(PYTHON_PATH)/libs, ../../../../THIRDPARTYLIBS/lib"
 				IgnoreDefaultLibraryNames=""
 				GenerateDebugInformation="TRUE"
 				ProgramDatabaseFile=".\Debug/CSPSimDLL.pdb"
@@ -99,7 +99,7 @@
 				EnableIntrinsicFunctions="TRUE"
 				FavorSizeOrSpeed="1"
 				OptimizeForProcessor="0"
-				AdditionalIncludeDirectories="$(PYTHONPATH)/include;../../Include;../../../../THIRDPARTYLIBS/demeter;../../../../THIRDPARTYLIBS/CSPChunkLod/include"
+				AdditionalIncludeDirectories="$(PYTHON_PATH)/include;../../Include;../../../../THIRDPARTYLIBS/demeter;../../../../THIRDPARTYLIBS/CSPChunkLod/include"
 				PreprocessorDefinitions="WIN32;NDEBUG;_USRDLL;CSPSIMDLL_EXPORTS"
 				StringPooling="TRUE"
 				RuntimeLibrary="2"
@@ -121,11 +121,11 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="osgFX.lib osgChunkLod.lib producer.lib osgText.lib DemeterVisualC6.lib opengl32.lib SDL.lib _cSimData.lib osgParticle.lib osgUtil.lib osgDB.lib osg.lib  sigc-1.2.lib OpenThreadsWin32.lib"
+				AdditionalDependencies="osgProducer.lib osgFX.lib osgChunkLod.lib producer.lib osgText.lib DemeterVisualC6.lib opengl32.lib SDL.lib _cSimData.lib osgParticle.lib osgUtil.lib osgDB.lib osg.lib  sigc-1.2.lib OpenThreadsWin32.lib"
 				OutputFile="../../Bin/_cCSP.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="../../../../THIRDPARTYLIBS/lib,C:/Python23/libs,C:/Python23/Lib/site-packages/SimData"
+				AdditionalLibraryDirectories="../../../../THIRDPARTYLIBS/lib,$(PYTHON_PATH)/libs,$(PYTHON_PATH)/Lib/site-packages/SimData"
 				GenerateDebugInformation="FALSE"
 				AssemblyDebug="0"
 				GenerateMapFile="FALSE"
@@ -400,6 +400,19 @@
 					RelativePath="..\..\Source\Systems\AircraftSimpleFCS.cpp">
 				</File>
 			</Filter>
+			<Filter
+				Name="Views"
+				Filter="">
+				<File
+					RelativePath="..\..\Source\Views\CameraAgent.cpp">
+				</File>
+				<File
+					RelativePath="..\..\Source\Views\CameraKinematics.cpp">
+				</File>
+				<File
+					RelativePath="..\..\Source\Views\View.cpp">
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="Header Files"
@@ -475,6 +488,9 @@
 			</File>
 			<File
 				RelativePath="..\..\Include\EventMapping.h">
+			</File>
+			<File
+				RelativePath="..\..\Include\Exception.h">
 			</File>
 			<File
 				RelativePath="..\..\Include\FLCS.h">
@@ -570,6 +586,9 @@
 				RelativePath="..\..\Include\Tools.h">
 			</File>
 			<File
+				RelativePath="..\..\Include\Vector.h">
+			</File>
+			<File
 				RelativePath="..\..\Include\VirtualBattlefield.h">
 			</File>
 			<File
@@ -646,6 +665,22 @@
 					RelativePath="..\..\Include\Systems\GearDynamics.h">
 				</File>
 			</Filter>
+			<Filter
+				Name="Views"
+				Filter="">
+				<File
+					RelativePath="..\..\Include\Views\CameraAgent.h">
+				</File>
+				<File
+					RelativePath="..\..\Include\Views\CameraCommand.h">
+				</File>
+				<File
+					RelativePath="..\..\Include\Views\CameraKinematics.h">
+				</File>
+				<File
+					RelativePath="..\..\Include\Views\View.h">
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="Resource Files"
@@ -657,7 +692,7 @@
 				Name="Debug|Win32">
 				<Tool
 					Name="VCCustomBuildTool"
-					CommandLine="$(SWIG)\swig -runtime -c++ -python -noexcept -I..\..\Include -IC:\Python23\include -o ..\..\Source\$(InputName)_wrap.cpp ..\..\Source\$(InputName).i
+					CommandLine="$(SWIG_PATH)\swig -runtime -c++ -python -noexcept -I..\..\Include -I$(PYTHONPATH)\include -o ..\..\Source\$(InputName)_wrap.cpp ..\..\Source\$(InputName).i
 "
 					Outputs="..\..\Source\$(InputName)_wrap.cpp"/>
 			</FileConfiguration>
@@ -665,7 +700,7 @@
 				Name="Release|Win32">
 				<Tool
 					Name="VCCustomBuildTool"
-					CommandLine="$(SWIG)\swig -runtime -c++ -python -noexcept -I..\..\Include -IC:\Python23\include -o ..\..\Source\$(InputName)_wrap.cpp ..\..\Source\$(InputName).i
+					CommandLine="$(SWIG_PATH)\swig -runtime -c++ -python -noexcept -I..\..\Include -I$(PYTHON_PATH)\include -o ..\..\Source\$(InputName)_wrap.cpp ..\..\Source\$(InputName).i
 "
 					Outputs="..\..\Source\$(InputName)_wrap.cpp"/>
 			</FileConfiguration>

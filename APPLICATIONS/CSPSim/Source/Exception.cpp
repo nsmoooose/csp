@@ -30,7 +30,7 @@
 #include <iostream>
 
 #include "DemeterException.h"
-#include <SimData/Exception.h>
+#include <SimData/ExceptionBase.h>
 
 
 namespace csp {

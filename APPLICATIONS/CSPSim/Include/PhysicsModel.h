@@ -51,7 +51,7 @@ class BaseDynamics;
  */
 class PhysicsModel: public System, protected DynamicalSystem {  
 public:	
-	PhysicsModel(unsigned short dimension);
+	PhysicsModel(size_type dimension);
 	virtual ~PhysicsModel();
 
 	/**
@@ -79,12 +79,12 @@ protected:
 	/**
 	 * Extract kinematic variables from the vector field variable.
 	 */
-	void YToBody(std::vector<double> const &y);
+	void YToBody(Vector::Vectord const &y);
 
 	/**
 	 * Assemble the vector field variable from individual kinematic variables.
 	 */
-	std::vector<double> const &bodyToY(simdata::Vector3 const &p,
+	Vector::Vectord const &bodyToY(simdata::Vector3 const &p,
 	                                   simdata::Vector3 const &v,
 	                                   simdata::Vector3 const &w,
 	                                   simdata::Quat const &q);

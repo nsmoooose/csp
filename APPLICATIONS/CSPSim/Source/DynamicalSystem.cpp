@@ -1,5 +1,5 @@
-// Combat Simulator Project - FlightSim Demo
-// Copyright (C) 2002 The Combat Simulator Project
+// Combat Simulator Project - CSPSim
+// Copyright (C) 2003, 2004 The Combat Simulator Project
 // http://csp.sourceforge.net
 // 
 // This program is free software; you can redistribute it and/or
@@ -22,44 +22,44 @@
  *
  **/
 
-
 #include "DynamicalSystem.h"
-#include "Profile.h"
 
-#include <cmath>
 #include <iostream>
-#include <limits>
+
+#include "NumericalMethod.h"
+//#include "Profile.h"
 
 
-DynamicalSystem::DynamicalSystem(unsigned short dimension):
+DynamicalSystem::DynamicalSystem(size_type dimension):
 	VectorField(dimension),
-	_numericalMethod(0) 
-{
+	m_NumericalMethod(0) {
 }
 
-DynamicalSystem::~DynamicalSystem() 
-{ 
-	if (_numericalMethod) {
-		delete _numericalMethod;
-		_numericalMethod = 0;
-	} 
+void DynamicalSystem::setNumericalMethod(NumericalMethod *pnumericalMethod) {
+	if (m_NumericalMethod && m_NumericalMethod != pnumericalMethod)
+		delete m_NumericalMethod;
+	m_NumericalMethod = pnumericalMethod;
+	m_NumericalMethod->setVectorField(this);
 }
 
-void DynamicalSystem::setNumericalMethod(NumericalMethod* pnumericalMethod)
-{
-	_numericalMethod = pnumericalMethod;
+DynamicalSystem::~DynamicalSystem() {
 }
 
-std::vector<double> const& DynamicalSystem::flow(std::vector<double>& y0, double t0, double dt) const 
-{
-	static std::vector<double> y;
+NumericalMethod *const DynamicalSystem::getNumericalMethod() const { 
+	return m_NumericalMethod;
+}
+
+Vector::Vectord const &DynamicalSystem::flow(Vector::Vectord &y0, double t0, double dt){
 	//PROF0(FLOW);
-	y = _numericalMethod->enhancedSolve(y0, t0, dt);
+	return m_NumericalMethod->enhancedSolve(y0, t0, dt);
 	//PROF1(FLOW, 200);
-	if (_numericalMethod->failed()) {
-		//std::cout << "quick solve is required\n";
-		y = _numericalMethod->quickSolve(y0, t0, dt);
+	if (neededQuickSolve()) {
+		//std::cerr << "quick solve is required\n";
+		return m_NumericalMethod->quickSolve(y0, t0, dt);
 	}
-	return y;
+}
+
+bool DynamicalSystem::neededQuickSolve() const {
+	return m_NumericalMethod->hasFailed();
 }
 

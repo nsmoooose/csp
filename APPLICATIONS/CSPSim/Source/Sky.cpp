@@ -1475,8 +1475,9 @@ void Sky::_updateShading(double sun_h, double sun_A) {
 		m_AverageIntensity /= n_average;
 	
 	m_SkyDomeTextureImage->dirty();
-	m_SkyDomeTexture->dirtyTextureObject(); 
-	m_SkyDomeTexture->dirtyTextureParameters();
+	// XXX these lines don t seem to be needed?
+	//m_SkyDomeTexture->dirtyTextureObject(); 
+	//m_SkyDomeTexture->dirtyTextureParameters();
 	//m_SkyDomeTexture->setImage(m_SkyDomeTextureImage.get());
 }
 #endif

@@ -36,7 +36,7 @@ public:
 
 	AircraftPhysicsModel();
 	void doSimStep(double dt);
-	std::vector<double> const& _f(double t, std::vector<double>& y);
+	Vector::Vectord const& f(double t, Vector::Vectord& y);
 };
 
 #endif //__AIRCRAFTPHYSICSMODEL_H__

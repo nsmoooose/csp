@@ -33,7 +33,7 @@
 using bus::Kinetics;
 
 
-PhysicsModel::PhysicsModel(unsigned short dimension):
+PhysicsModel::PhysicsModel(size_type dimension):
 	DynamicalSystem(dimension),
 	m_Damping(1.0),
 	m_Attitude(simdata::Quat::IDENTITY),
@@ -94,11 +94,11 @@ simdata::Vector3 PhysicsModel::bodyToLocal(simdata::Vector3 const &vec ) {
 	return m_Attitude.rotate(vec);
 }
 
-std::vector<double> const &PhysicsModel::bodyToY(simdata::Vector3 const &p,
+Vector::Vectord const &PhysicsModel::bodyToY(simdata::Vector3 const &p,
                                 simdata::Vector3 const &v,
                                 simdata::Vector3 const &w,
                                 simdata::Quat const &q) {
-	static std::vector<double> y(13);
+	static Vector::Vectord y(13);
 	y[0] = p.x(); y[1] = p.y(); y[2] = p.z();
 	y[3] = v.x(); y[4] = v.y(); y[5] = v.z();
 	y[6] = w.x(); y[7] = w.y(); y[8] = w.z();
@@ -106,10 +106,11 @@ std::vector<double> const &PhysicsModel::bodyToY(simdata::Vector3 const &p,
 	return y;
 }
 
-void PhysicsModel::YToBody(std::vector<double> const &y) {
+void PhysicsModel::YToBody(Vector::Vectord const &y) {
 	m_PositionBody = simdata::Vector3(y[0],y[1],y[2]);
 	m_VelocityBody = simdata::Vector3(y[3],y[4],y[5]);
-	m_AngularVelocityBody = m_Damping * simdata::Vector3(y[6],y[7],y[8]);
+	//m_AngularVelocityBody = m_Damping * simdata::Vector3(y[6],y[7],y[8]);
+	m_AngularVelocityBody = simdata::Vector3(y[6],y[7],y[8]);
 }
  
 void PhysicsModel::physicsBodyToLocal() {

@@ -62,50 +62,59 @@ ScreenInfoManager::ScreenInfoManager(int ScreenWidth, int ScreenHeight)
 
 void ScreenInfoManager::changeObjectStats(int ScreenWidth, int ScreenHeight,simdata::Ref<DynamicObject> const& vehicle)
 {
-	ScreenInfo *os = getScreenInfo("OBJECT STATS");
-	if (os)
+	ScreenInfo* os = getScreenInfo("OBJECT STATS");
+	bool visible = getScreenInfo("GENERAL STATS")->getStatus();
+	if (os) {
 		m_modelview_abs->removeChild(os);
+		visible = os->getStatus();
+	}
 	osg::ref_ptr<ObjectStats> objectStats = new ObjectStats(12, 2 * ScreenHeight / 3,vehicle);
+	objectStats->setStatus(visible);
 	m_modelview_abs->addChild(objectStats.get());
 }
 
-class FindNamedNodeVisitor : public osg::NodeVisitor
-{
-    public :
-        FindNamedNodeVisitor() : osg::NodeVisitor( TRAVERSE_ALL_CHILDREN )
-        {
-			setNodeMaskOverride(1);
-            _found_node = 0L;
+class FindNamedNodeVisitor: public osg::NodeVisitor {
+	std::string m_NameToFind;
+    osg::Node* m_FoundNode;
+    public:
+        FindNamedNodeVisitor(): 
+			osg::NodeVisitor(TRAVERSE_ALL_CHILDREN),
+			m_FoundNode(0) {
+				setNodeMaskOverride(1);
         }
-
-        virtual void apply( osg::Node& node )
-        {
-            if( node.getName() == _name_to_find )
-            _found_node = &node;
+		FindNamedNodeVisitor(const std::string& name):
+			osg::NodeVisitor(TRAVERSE_ALL_CHILDREN),
+			m_NameToFind(name),
+			m_FoundNode(0) {
+				setNodeMaskOverride(1);
+        }
+        virtual void apply (osg::Node& node) {
+			if (node.getName() == m_NameToFind) {
+				m_FoundNode = &node;
+				return;
+			}
             traverse(node);
         }
-
-        void setNameToFind( std::string const& name ) { _name_to_find = name; }
-        osg::Node *foundNode() { return _found_node; }
-
-    private :
-        std::string _name_to_find;
-        osg::Node *_found_node;
+        void setNameToFind(const std::string& name) {
+			m_NameToFind = name;
+		}
+        osg::Node* foundNode() {
+			return m_FoundNode;
+		}
 };
 
 ScreenInfo* ScreenInfoManager::getScreenInfo(std::string const& name)
 {
-	FindNamedNodeVisitor nv;
-	nv.setNameToFind(name);
+	FindNamedNodeVisitor nv(name);
     m_modelview_abs->accept(nv);
 	return dynamic_cast<ScreenInfo*>(nv.foundNode());
 }
 
-void ScreenInfoManager::setStatus(std::string const& name, bool bvisible)
+void ScreenInfoManager::setStatus(std::string const& name, bool visible)
 {
-	ScreenInfo *sci = getScreenInfo(name);
+	ScreenInfo* sci = getScreenInfo(name);
 	if (sci)
-		sci->setStatus(bvisible);
+		sci->setStatus(visible);
 }
 
 bool ScreenInfoManager::getStatus(std::string const& name)

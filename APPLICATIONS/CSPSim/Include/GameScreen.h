@@ -28,20 +28,16 @@
 #include <osgUtil/SceneView>
 
 #include <SimData/Ref.h>
-#include <SimData/Math.h>
-#include <SimData/Vector3.h>
 
 #include "BaseScreen.h"
-#include "DynamicObject.h"
-#include "HID.h"
 #include "ScreenInfoManager.h"
-#include "TerrainObject.h"
 #include "DataRecorder.h"
-
+#include "Views/CameraAgent.h"
 
 class PyConsole;
-
-
+class CameraCommand;
+class DynamicObject;
+class MouseCommand;
 
 /**
  * class GameScreen - Describe me!
@@ -102,28 +98,10 @@ public:
 
 	virtual void initInterface();
 
-protected:
-	static double const OffsetRate;
-	int m_ViewMode;
-	float m_AngleRotX, m_AngleRotZ, m_DistanceToObject, m_PanRateX, m_PanRateZ, m_ZoomRate;
-	simdata::Vector3 m_FixedCameraPosition;
-	simdata::Vector3 m_NormalDirection;  
+protected: 
+	size_t m_ViewMode;
 
-	bool m_InternalView;
-	bool m_PreviousState;
-	bool m_CameraOnGround;
-	bool m_LookRelative;
-	float m_CameraGroundAngle;
-	float m_MinimumDistance;
-
-	void normalView();
-	void turnViewAboutX(double dt, double AngleMax = simdata::PI / 2.0);
-	void turnViewAboutZ(double dt, double AngleMax = simdata::PI);
-	void scaleView(double dt);
-	simdata::Vector3 getNewFixedCamPos(SimObject * const target) const;
 	void setCamera(double dt);
-
-	TerrainObject::IntersectionHint m_CameraHint;
 
 	// text information
 	osg::ref_ptr<ScreenInfoManager> m_ScreenInfoManager;
@@ -133,15 +111,19 @@ protected:
 
 	simdata::Ref<DynamicObject> m_ActiveObject;
 
-	// padlock testing
-	simdata::Ref<DynamicObject> m_Padlock;
-	float m_NeckPhi;
-	float m_NeckTheta;
-	bool m_NeckLimit;
-
 	// data recorder
 	simdata::Ref<DataRecorder> m_DataRecorder;
 	void setRecorder(bool on);
+
+	// camera management by a command
+	CameraAgent m_CameraAgent;
+	CameraCommand *m_PanLeft,*m_PanRight,*m_PanLeftRightStop;
+	CameraCommand *m_PanUp,*m_PanDown,*m_PanUpDownStop;
+	CameraCommand *m_ZoomIn,*m_ZoomOut,*m_ZoomStop;
+	MouseCommand* m_Mouse;
+	CameraCommand* m_CurrentCameraCommand;
+	void createCameraCommand();
+	void deleteCameraCommands();
 };
 
 #endif // __GAMESCREEN_H__

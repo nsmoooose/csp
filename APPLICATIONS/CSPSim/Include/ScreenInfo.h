@@ -45,8 +45,8 @@ protected:
 public:
 	ScreenInfo(float pos_x, float posy, std::string const &name, std::string const &text = "");
 	virtual void update(){}
-	void setStatus(bool const bvisible) {if (bvisible) setNodeMask(0x1); else setNodeMask(0x0);};
-	bool getStatus() const {return getNodeMask() != 0;};
+	void setStatus(bool const visible) {if (visible) setNodeMask(0x1); else setNodeMask(0x0);}
+	bool getStatus() const {return getNodeMask() != 0;}
 };
 
 

@@ -386,8 +386,8 @@ void ObjectModel::addContactMarkers() {
 		diamond->addDrawable(makeDiamond(m_Contacts[i], 0.2));
 		m_ContactMarkers->addChild(diamond);
 	}
-	// set markers visible by default
-	m_ContactMarkers->setNodeMask(0x1);
+	// set markers not visible by default
+	m_ContactMarkers->setNodeMask(0x0);
 	m_DebugMarkers->addChild(m_ContactMarkers.get());
 }
 
@@ -548,7 +548,7 @@ void ObjectModel::updateGearSprites(std::vector<simdata::Vector3> const &move) {
 
 void ObjectModel::showContactMarkers(bool on) {
 	if (on) 
-		m_ContactMarkers->setNodeMask(0x1);
+		m_ContactMarkers->setNodeMask(0xffffffff);
 	else
 		m_ContactMarkers->setNodeMask(0x0);
 }
@@ -556,7 +556,7 @@ void ObjectModel::showContactMarkers(bool on) {
 //FIXME: to be moved in AircraftModel?
 void ObjectModel::showGearSprites(bool on) {
 	if (on)
-		m_GearSprites->setNodeMask(0x1);
+		m_GearSprites->setNodeMask(0xffffffff);
 	else
 		m_GearSprites->setNodeMask(0x0);
 }

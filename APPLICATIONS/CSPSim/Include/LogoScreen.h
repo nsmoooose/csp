@@ -1,5 +1,5 @@
 // Combat Simulator Project - FlightSim Demo
-// Copyright (C) 2002 The Combat Simulator Project
+// Copyright (C) 2002-2004 The Combat Simulator Project
 // http://csp.sourceforge.net
 // 
 // This program is free software; you can redistribute it and/or
@@ -29,6 +29,7 @@
 #include "BaseScreen.h"
 
 #include <osg/ref_ptr>
+#include <osgProducer/Viewer>
 
 namespace osg {
 	class Texture2D;
@@ -47,8 +48,7 @@ namespace osgUtil {
  *
  * @author unknown
  */
-class LogoScreen : public BaseScreen
-{
+class LogoScreen : public BaseScreen { //, public osgProducer::Viewer, public virtual OpenThreads::Thread {
 public:
 	LogoScreen(int width, int height);
 	virtual ~LogoScreen();
@@ -59,9 +59,13 @@ public:
 	virtual void onRender();
 	virtual void onUpdate(double dt);
 
+	void run();
+	void stop();
+
 private:
 	osg::ref_ptr<osgUtil::SceneView> m_LogoView; 
 	osg::ref_ptr<osg::Texture2D> m_Texture;
+	osgProducer::Viewer m_Viewer;
 	//SDL_Surface * m_image;
 	int m_width, m_height;
 };

@@ -79,7 +79,10 @@ ScreenInfo::ScreenInfo(float pos_x, float pos_y, std::string const &name, std::s
 	// HACK to prevent text from disappearing when chunklod multitexture details
 	// are turned on:
 	osg::StateSet *ss = getOrCreateStateSet();
-	ss->setTextureAttributeAndModes(1, new osg::Texture2D, osg::StateAttribute::OFF);
+	ss->setTextureMode(1,GL_TEXTURE_2D,osg::StateAttribute::OFF);
+	//ss->setTextureMode(2,GL_TEXTURE_2D,osg::StateAttribute::OFF);
+	//ss->setTextureMode(3,GL_TEXTURE_2D,osg::StateAttribute::OFF);
+	//ss->setTextureAttributeAndModes(1, new osg::Texture2D, osg::StateAttribute::OFF);
 	//ss->setTextureAttributeAndModes(2, new osg::Texture2D, osg::StateAttribute::OFF);
 	//ss->setTextureAttributeAndModes(3, new osg::Texture2D, osg::StateAttribute::OFF);
 }

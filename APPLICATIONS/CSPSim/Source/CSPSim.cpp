@@ -1,5 +1,5 @@
 // Combat Simulator Project - FlightSim Demo
-// Copyright (C) 2002 The Combat Simulator Project
+// Copyright (C) 2002-2004 The Combat Simulator Project
 // http://csp.sourceforge.net
 // 
 // This program is free software; you can redistribute it and/or
@@ -50,10 +50,9 @@
 #include "Profile.h"
    
 #include <SimData/Types.h>
-#include <SimData/Exception.h>
+#include <SimData/ExceptionBase.h>
 #include <SimData/DataArchive.h>
 #include <SimData/DataManager.h>
-#include <SimData/Exception.h>
 #include <SimData/FileUtility.h>
 #include <SimData/GeoPos.h>
 
@@ -208,6 +207,7 @@ void CSPSim::togglePause() {
 	m_Paused = !m_Paused;
 } 
 
+OpenThreads::Barrier bar;
 
 void CSPSim::init()
 {
@@ -258,7 +258,19 @@ void CSPSim::init()
 		SDL_WM_SetCaption("CSPSim", "");
 
 		// put up Logo screen then do rest of initialization
+		/*int height = g_Config.getInt("Screen", "Height", 768, true);
+		int width = g_Config.getInt("Screen", "Width", 1024, true);
+		int fullscreen = g_Config.getInt("Screen", "FullScreen", 0, true);
+
+		m_ScreenHeight = height;
+		m_ScreenWidth = width;
+	
+		g_ScreenHeight = height;
+		g_ScreenWidth = width;*/
+
 		LogoScreen logoScreen(m_ScreenWidth, m_ScreenHeight);
+		//logoScreen.start();
+		//logoScreen.join();
 		logoScreen.onInit();
 
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -267,6 +279,7 @@ void CSPSim::init()
 		logoScreen.onRender();
 		SDL_GL_SwapBuffers();
 		//--m_RenderSurface.swapBuffers();
+		logoScreen.run();
 
 		m_Clean = false;
 
@@ -397,7 +410,7 @@ void CSPSim::init()
 #endif
 
 		changeScreen(m_GameScreen);
-		logoScreen.onExit();
+		
 	}
 	catch(csp::Exception & pEx) {
 		csp::FatalException(pEx, "initialization");

@@ -1,5 +1,5 @@
-// Combat Simulator Project - FlightSim Demo
-// Copyright (C) 2002 The Combat Simulator Project
+// Combat Simulator Project - CSPSim
+// Copyright (C) 2003, 2004 The Combat Simulator Project
 // http://csp.sourceforge.net
 // 
 // This program is free software; you can redistribute it and/or
@@ -28,38 +28,46 @@
 
 #include <vector>
 
-#include "NumericalMethod.h"
+#include "VectorField.h"
+
+class NumericalMethod;
 
 
 /**
  * DynamicalSystem is a base class for physics models that can
  * be solved by numerical integration.  The dynamical variables
  * are stored in a vector field, and are integrated by an 
- * associated numerical method (e.g. Runge-Kutta).  The _f()
+ * associated numerical method (e.g. Runge-Kutta).  The f()
  * function of VectorField provides the driving term, which
  * must be implemented in derived classes.  Implementations of 
- * _f() typically involve evaluation of one or more BaseDynamics
+ * f() typically involve evaluation of one or more BaseDynamics
  * instances to determine the total force and moment acting on
  * the body at each instant.
- *
  */
-class DynamicalSystem: protected VectorField {
-	NumericalMethod* _numericalMethod;
+class DynamicalSystem: public VectorField {
+	NumericalMethod *m_NumericalMethod;
 public:
-	DynamicalSystem(unsigned short dimension = 0);
+	DynamicalSystem(size_type dimension = 0);
 	virtual ~DynamicalSystem();
-	
 	/**
 	 * Set the numerical integration method used to integrate
 	 * the equations of motion.
 	 */
-	void setNumericalMethod(NumericalMethod* pnumericalMethod);
+	void setNumericalMethod(NumericalMethod *pnumericalMethod);
+
+	virtual NumericalMethod *const getNumericalMethod() const;
 
 	/**
 	 * Integrate the model over a specified time interval (dt) given
-	 * a set of initial conditions (y0, t0).
+	 * a set of initial conditions (y0, t0). 
+	 * @return the value of the ODE flow at (t0,y0,t0+dt).
 	 */
-	std::vector<double> const& flow(std::vector<double>& y0, double t0, double dt) const;
+	Vector::Vectord const &flow(Vector::Vectord &y0, double t0, double dt);
+
+	/**
+	* @return true if the enhanced solver has failed and a quick solver has been called
+	*/
+	bool neededQuickSolve() const;
 };
 
 #endif //__DYNAMICALSYSTEM_H__

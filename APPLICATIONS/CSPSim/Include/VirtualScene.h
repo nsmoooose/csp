@@ -83,7 +83,7 @@ public:
 	void removeFeatureCell(osg::Node *feature);
 	void setNearObject(simdata::Ref<DynamicObject> object, bool isNear);
 
-	void setLookAt(simdata::Vector3 & eyePos, simdata::Vector3 & lookPos, simdata::Vector3 & upVec);
+	void setLookAt(const simdata::Vector3& eyePos,const simdata::Vector3& lookPos,const simdata::Vector3& upVec);
 	void getLookAt(simdata::Vector3 & eyePos, simdata::Vector3 & lookPos, simdata::Vector3 & upVec) const;
 	void setWireframeMode(bool flag);
 	bool getWireframeMode() const { return m_Wireframe; }
@@ -91,21 +91,21 @@ public:
 	void setFogStart(float value);
 	void setFogEnd(float value);
 
-	inline float getViewDistance() const { return m_ViewDistance; }
+	float getViewDistance() const { return m_ViewDistance; }
 	void setViewDistance(float value);
 
-	inline simdata::Vector3 const &getOrigin() { return m_Origin; }
+	simdata::Vector3 const &getOrigin() { return m_Origin; }
 
 	void setTerrain(simdata::Ref<TerrainObject>);
 	inline simdata::Ref<TerrainObject> getTerrain() const { return m_Terrain; }
 	int getTerrainPolygonsRendered();
 
 	void setCameraNode(osg::Node *);
-	inline float getViewAngle() const { return m_ViewAngle; }
+	float getViewAngle() const { return m_ViewAngle; }
 	void setViewAngle(float);
-	inline float getNearPlane() const {return m_NearPlane;}
+	float getNearPlane() const {return m_NearPlane;}
 	void setNearPlane(float value);
-	inline float getAspect() const {return m_Aspect;}
+	float getAspect() const {return m_Aspect;}
 	void setAspect(float value);
 	void getViewport(int& x,int& y,int& width,int& height);
 

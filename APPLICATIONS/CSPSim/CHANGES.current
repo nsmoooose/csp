@@ -1,5 +1,36 @@
  Version 0.4.0 (in progress)
 ===========================
+
+2004-04-04: delta
+  * Add views classes to help in GameScreen. These files are 
+    located under Views folders.
+==========> Linux users: add CSPSim/Source/Views folder to the 
+    build.
+
+2004-03-19: delta
+  * Added a vectors' arithmetic implemented with expression 
+    template (mainly needed due to the poor performance of vs 
+    7.1's std::valarray<T>; recent version of g++'s std::valrray<T> 
+    is really fancy) in Vector.h; Vector class is protected behind 
+    a Vector namespace. By default, very few vector's arithmetic is 
+    used and the valarray alternative is only used on vs 7.1. Two 
+    macros parametrize its use: NOT_USE_VALARRAY (in Vector.h) and 
+    USE_VALARRAY_ARITHMETIC (in NumericalMethod.h).
+    
+  * The abstract class VectorField has moved in VectorField.h.
+    
+  * Reformated numerical code (NumericalMethod.*); added a new 
+    numerical method based on Cash Karp original article. Old 
+    methods are kept during tests.
+  
+  * Changed PYTHONPATH environment variable to PYTHON_PATH and 
+    SWIGPATH to SWIG_PATH to avoid possible names conflict with 
+    predefined environment variables (that does only affect vs 
+    project file).
+  
+  * Changed 0x1 value osg node mask to the safer 0xffffffff value.
+  
+  * Other minor changes.
    
 2004-01-31: onsight
   * Patched acinclude.m4, configure.in, and Source/Makefile.in to
@@ -21,6 +52,18 @@
 ==========> All users, update 
     APPLICATIONS/CSPSim/Tools/HID/Maps/gamescreen-core.map, rebuild
     gamescreen.hid and RebuilData(.py).
+
+2004-02-24: delta
+  * Fixed a bug in ScreenInfoManager causing an incomplete texts 
+    display when changing vehicule.
+    
+  * Renamed std::string SnapImageDrawCallback:builSuffix() to 
+    getDate() in GameScreen.cpp.
+  
+  * Changed implementation in views 1 & 2. Added a safer control 
+    of the cam position when on ground.
+    
+  * Other minor changes.
     
 2004-01-23: delta
   * Changed <python.h> to <Python.h> in 

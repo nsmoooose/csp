@@ -24,22 +24,23 @@
 #include "BaseDynamics.h"
 #include "Collision.h"
 #include "CSPSim.h"
+#include "NumericalMethod.h"
 #include "Profile.h"
 
 #include <algorithm>
 
+using Vector::Vectord;
 
 SIMDATA_REGISTER_INTERFACE(AircraftPhysicsModel)
 
 
 AircraftPhysicsModel::AircraftPhysicsModel():
 	PhysicsModel(13) {
-	setNumericalMethod(new RungeKuttaCK(this, false));
+		setNumericalMethod(new RKCK_VS_VO(this));
 }
 
-std::vector<double> const &AircraftPhysicsModel::_f(double x, std::vector<double> &y) {   
+Vectord const &AircraftPhysicsModel::f(double x, Vectord &y) {   
 	// dot(p,v,w,q) = f(p,v,w,q)
-	static std::vector<double> dy(13);
 
 	// bind(y,p,v,w,q); 
 	m_PositionLocal = b_Position->value() + bodyToLocal(simdata::Vector3(y[0],y[1],y[2]));
@@ -95,15 +96,15 @@ std::vector<double> const &AircraftPhysicsModel::_f(double x, std::vector<double
 	simdata::Quat qprim = 0.5 * m_Attitude * m_AngularVelocityBody;
 
 	// p' = v
-	dy[0] = y[3]; dy[1] = y[4]; dy[2] = y[5];
+	m_dy[0] = y[3]; m_dy[1] = y[4]; m_dy[2] = y[5];
 	// v'
-	dy[3] = m_LinearAccelBody.x(); dy[4] = m_LinearAccelBody.y(); dy[5] = m_LinearAccelBody.z();
+	m_dy[3] = m_LinearAccelBody.x(); m_dy[4] = m_LinearAccelBody.y(); m_dy[5] = m_LinearAccelBody.z();
 	// w'
-	dy[6] = m_AngularAccelBody.x(); dy[7] = m_AngularAccelBody.y(); dy[8] = m_AngularAccelBody.z();
+	m_dy[6] = m_AngularAccelBody.x(); m_dy[7] = m_AngularAccelBody.y(); m_dy[8] = m_AngularAccelBody.z();
 	// q'
-	dy[9]  = qprim.w(); dy[10] = qprim.x(); dy[11] = qprim.y(); dy[12] = qprim.z();
+	m_dy[9]  = qprim.w(); m_dy[10] = qprim.x(); m_dy[11] = qprim.y(); m_dy[12] = qprim.z();
 	
-	return dy;
+	return m_dy;
 }
 
 void AircraftPhysicsModel::doSimStep(double dt) {	
@@ -140,14 +141,14 @@ void AircraftPhysicsModel::doSimStep(double dt) {
 		m_VelocityBody = localToBody(m_VelocityLocal);
 		m_AngularVelocityBody =	localToBody(m_AngularVelocityLocal);
 
-		std::vector<double> y0 = bodyToY(simdata::Vector3::ZERO,m_VelocityBody,m_AngularVelocityBody,m_Attitude);
+		Vectord y0 = bodyToY(simdata::Vector3::ZERO,m_VelocityBody,m_AngularVelocityBody,m_Attitude);
 
 		std::for_each(m_Dynamics.begin(),m_Dynamics.end(),PreSimulationStep(dtlocal));
 
 		m_NeedsImpulse = false;
 
 		// solution
-		std::vector<double> y = flow(y0, 0.0, dtlocal);
+		Vectord y = flow(y0, 0.0, dtlocal);
 
 		// update all variables
 		// Caution: dont permute these	lines

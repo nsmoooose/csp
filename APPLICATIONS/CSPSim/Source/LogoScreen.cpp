@@ -1,5 +1,5 @@
 // Combat Simulator Project - CSPSim
-// Copyright (C) 2002, 2003, 2004 The Combat Simulator Project
+// Copyright (C) 2002-2004 The Combat Simulator Project
 // http://csp.sourceforge.net
 // 
 // This program is free software; you can redistribute it and/or
@@ -33,6 +33,8 @@
 
 #include <osg/Geode>
 #include <osg/Geometry>
+#include <osg/MatrixTransform>
+#include <osg/LightSource>
 #include <osg/Texture2D>
 #include <osgDB/ReadFile>
 #include <osgUtil/SceneView>
@@ -42,6 +44,7 @@
 #include "Config.h"
 #include "Exception.h"
 
+extern OpenThreads::Barrier bar;
 
 LogoScreen::LogoScreen(int width, int height) {
 	m_width = width;
@@ -49,6 +52,7 @@ LogoScreen::LogoScreen(int width, int height) {
 }
 
 LogoScreen::~LogoScreen() {
+	//cancel();
 }
 
 class ImageUpdateCallback: public osg::NodeCallback {
@@ -56,8 +60,11 @@ class ImageUpdateCallback: public osg::NodeCallback {
 	osg::ref_ptr<osg::Texture2D> m_Texture;
 	double m_Delay;
 	ImageList m_ImageList;
-	size_t m_CurrPos;
+	ImageList::size_type m_CurrPos;
 	double m_PrevTime;
+	void setValue() {
+		m_Texture->setImage(m_ImageList[m_CurrPos].get());
+	}
 public:
 	ImageUpdateCallback(osg::Texture2D *texture, double delay):
 	m_Texture(texture),
@@ -109,12 +116,11 @@ public:
 			//}
 		}
 	}
-	void setValue() {
-		m_Texture->setImage(m_ImageList[m_CurrPos].get());
-	}
 };
 
 void LogoScreen::onInit() {
+	//bar.block(2);
+	
 	m_LogoView = new osgUtil::SceneView();
 	m_LogoView->setDefaults();
 	m_LogoView->setViewport(0,0,m_width,m_height);
@@ -134,18 +140,22 @@ void LogoScreen::onInit() {
 	w = scale * m_width;
 	h = scale * m_height;
 	osg::Vec3Array* vertices = new osg::Vec3Array(4);
-	(*vertices)[0] = osg::Vec3(-w,h,0.0f);//top left
-	(*vertices)[1] = osg::Vec3(-w,-h,0.0f);//bottom left
-	(*vertices)[2] = osg::Vec3(w,-h,0.0f);//bottom right
-	(*vertices)[3] = osg::Vec3(w,h,0.0f);//top right
+	(*vertices)[0] = osg::Vec3(w,h,0.0f);//top right
+	(*vertices)[1] = osg::Vec3(w,-h,0.0f);//bottom right
+	(*vertices)[2] = osg::Vec3(-w,-h,0.0f);//bottom left
+	(*vertices)[3] = osg::Vec3(-w,h,0.0f);//top left
+
+	//(*vertices)[0] = osg::Vec3(w,0.0f,h);//top right
+	//(*vertices)[1] = osg::Vec3(w,0.0f,-h);//bottom right
+	//(*vertices)[2] = osg::Vec3(-w,0.0f,-h);//bottom left
+	//(*vertices)[3] = osg::Vec3(-w,0.0f,h);//top left
 	geom->setVertexArray(vertices);
     
 	osg::Vec2Array* texcoords = new osg::Vec2Array(4);
-	(*texcoords)[0].set(0.0f, 1.0f);
-	(*texcoords)[1].set(0.0f, 0.0f);
-	(*texcoords)[2].set(1.0f, 0.0f);
-	(*texcoords)[3].set(1.0f, 1.0f);
-	 
+	(*texcoords)[3].set(0.0f, 1.0f);
+	(*texcoords)[2].set(0.0f, 0.0f);
+	(*texcoords)[1].set(1.0f, 0.0f);
+	(*texcoords)[0].set(1.0f, 1.0f); 
 	geom->setTexCoordArray(0,texcoords);
 
 	osg::Vec4Array* colors = new osg::Vec4Array(1);
@@ -157,18 +167,59 @@ void LogoScreen::onInit() {
 	m_Texture = new osg::Texture2D;
 
 	// setup state
-	osg::StateSet *stateset = geom->getOrCreateStateSet();
+	osg::StateSet* stateset = geom->getOrCreateStateSet();
 	stateset->setTextureAttributeAndModes(0, m_Texture.get(), osg::StateAttribute::ON);
+	stateset->setMode(GL_LIGHTING, osg::StateAttribute::OFF);
 	geom->setStateSet(stateset);
 
-	osg::Geode *geode = new osg::Geode;
+	//getCamera(0)->setSyncBarrier(new Producer::RefBarrier);
+
+	osg::Geode* geode = new osg::Geode;
 	geode->addDrawable(geom);
 	geode->setUpdateCallback(new ImageUpdateCallback(m_Texture.get(),0.5));
 
 	m_LogoView->setSceneData(geode);
+
+	//setUpViewer(osgProducer::Viewer::ViewerOptions::TRACKBALL_MANIPULATOR);
+	//setUpViewer(osgProducer::Viewer::ViewerOptions::NO_EVENT_HANDLERS);
+	
+	//osg::ref_ptr<osg::Group> group = new osg::Group;
+	//group->addChild(geode);
+	//osg::MatrixTransform* mt = new osg::MatrixTransform();
+	//const double a = 1;
+	//mt->setMatrix(osg::Matrix::scale(a,a,a));
+	//mt->addChild(osgDB::readNodeFile("cessna.osg"));
+	//group->addChild(mt);
+
+	//setSceneData(group.get());
+
+	//osg::StateSet* ss = getGlobalStateSet();
+	//osg::StateAttribute* sa = ss->getAttribute(osg::StateAttribute::LIGHT);
+	//osg::Light* light = dynamic_cast<osg::Light*>(sa);
+
+	//osg::LightSource* ls = dynamic_cast<osg::LightSource*>(getSceneDecorator());
+	//osg::Light* light = static_cast<osg::Light*>(ls->getLight());
+
+	//osg::Vec4 p = osg::Vec4(1,0,0,0);
+	//light->setPosition(p);
+	//light->setDirection(-osg::Vec3(p.x(),p.y(),p.z()));
+
+	//const double b = 1500;
+	//Producer::Matrix lookat;
+	//lookat.makeLookAt(Producer::Vec3(0,-b,0),Producer::Vec3(0,0,0),Producer::Vec3(0,0,1));
+	//setViewByMatrix(lookat);
+
+	//Producer::RenderSurface* rs = getCamera(0)->getRenderSurface();
+	//rs->setWindowName("CSPSim");
+	//rs->setWindowRectangle(100,100,m_width,m_height);
+
+	// create the windows and run the threads.
+	//realize(ThreadPerCamera);
+	//realize();
+	//bar.block(2);
 }
 
-void LogoScreen::onExit() {	
+void LogoScreen::onExit() {
 }	
 
 void LogoScreen::onRender() {
@@ -180,8 +231,28 @@ void LogoScreen::onUpdate(double dt) {
 	m_LogoView->update();
 }
 
+void LogoScreen::run() {
+	/*static int i = 0;
+	setDone(false);
+    while (!done()) {
+		//bar.block(2);
+        // wait for all cull and draw threads to complete.
+        sync();
+        // update the scene by traversing it with the the update visitor which will
+        // call all node update callbacks and animations.
+		if (++i == 10) setDone(true);
+        update();
+        // fire off the cull and draw traversals of the scene.
+        frame();
+		//bar.block(2);
+    }
+    // wait for all cull and draw threads to complete before exit.
+    sync();*/
+}
 
-
+void LogoScreen::stop() {
+	//setDone(true);
+}
 
 
 

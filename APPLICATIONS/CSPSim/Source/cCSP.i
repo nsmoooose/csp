@@ -19,7 +19,7 @@
 %module cCSP 
 %{
 #include <SimData/HashUtility.h>
-#include <SimData/Exception.h>
+#include <SimData/ExceptionBase.h>
 #include <SimData/Types.h>
 #include <SimData/DataArchive.h>
 #include <SimData/InterfaceRegistry.h>

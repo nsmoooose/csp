@@ -44,6 +44,7 @@ NAMESPACE_SIMDATA
 
 
 class DataArchive;
+class LinkBase;
 
 
 /**
@@ -71,7 +72,7 @@ public:
 	 * @path_str the path identifier string.
 	 * @returns a smart-pointer to the new object.
 	 */
-	const PointerBase getObject(const char* path_str);
+	const LinkBase getObject(const char* path_str);
 
 	/**
 	 * Create a new object from a Path instance.
@@ -80,7 +81,7 @@ public:
 	 * @path_str the path identifier string (if available).  This is
 	 *           only used for error logging.
 	 */
-	const PointerBase getObject(Path const& path, const char* path_str=0);
+	const LinkBase getObject(Path const& path, const char* path_str=0);
 
 	/**
 	 * Add a new data archive to the manager.
@@ -90,6 +91,52 @@ public:
 	 * manager is destroyed.
 	 */
 	void addArchive(DataArchive *);
+
+	/**
+	 * Get all children of a given path.
+	 *
+	 * For path "A:X.Y", returns all object id's "A:X.Y.*".  The id's
+	 * can be converted to human-readable form by getPathString().
+	 *
+	 * @param path the path to search for children
+	 * @returns a list of object id's immediately below the given path.
+	 */
+	std::vector<ObjectID> getChildren(ObjectID const &id) const;
+
+	/**
+	 * Get all children of a given path.
+	 *
+	 * For path "A:X.Y", returns all object id's "A:X.Y.*".  The id's
+	 * can be converted to human-readable form by getPathString().
+	 *
+	 * @param path the path to search for children
+	 * @returns a list of object id's immediately below the given path.
+	 */
+	std::vector<ObjectID> getChildren(std::string const & path) const;
+
+	/**
+	 * Check for the existance of an object in the archives.
+	 *
+	 * @returns true if the object id exists.
+	 */
+	bool hasObject(ObjectID const &id) const;
+
+	/**
+	 * Check for the existance of an object in the archives.
+	 *
+	 * @returns true if the object id exists.
+	 */
+	bool hasObject(std::string const & path) const;
+
+	/** 
+	 * Get the path string corresponding to a give object id.
+	 *
+	 * This provides a human-readable path string that is useful
+	 * for error and debugging messages.
+	 *
+	 * @returns the path string if found, otherwise an empty string.
+	 */
+	std::string getPathString(ObjectID const &id) const; 
 
 private:
 	/**
@@ -105,10 +152,13 @@ private:
 	 *           only used for error logging.
 	 * @d the data archive that is requesting the object.
 	 */
-	const PointerBase getObject(Path const& path, const char* path_str, DataArchive* d);
+	const LinkBase getObject(Path const& path, const char* path_str, DataArchive* d);
 	
-	std::vector<DataArchive*> archives;
-	hasht_map archive_map;
+	std::vector<DataArchive*> _archives;
+	hasht_map _archive_map;
+
+	typedef HASH_MAPS<hasht, std::vector<hasht>, hasht_hash, hasht_eq>::Type child_map;
+	child_map _children;
 };
 
 

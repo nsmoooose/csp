@@ -79,7 +79,7 @@ class MemberAccessorBase
 public:
 	virtual ~MemberAccessorBase() {}
 
-    typedef HASH_MAPS<const char *, MemberAccessorBase *, HASH<const char*>, eqstr>::Type map;
+	typedef HASH_MAPS<const char *, MemberAccessorBase *, HASH<const char*>, eqstr>::Type map;
 
 	
 	virtual void set(Object *, TypeAdapter const &) throw(TypeMismatch) { 

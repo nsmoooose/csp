@@ -23,7 +23,7 @@
 #define __SIMDATA_REAL_H__
 
 #include <string>
-#include <math.h>
+#include <cmath>
 #include <SimData/BaseType.h>
 
 

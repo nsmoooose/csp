@@ -28,21 +28,26 @@ classes (which appears to be a priority for SWIG's developers),
 new Python code will need to be written to replace much of 
 what is now in SimData.py.
 
+Recently (April 2003) I've been considering Boost::Python
+bindings as well.  Boost supports nested classes and poly-
+morphism, but requires more hands-on wrapping.  A new
+project called Pyste promises to provide much more automated
+wrapping capabilities to Boost, using an interface design
+that is very similar to SWIG.  This is still a bit too
+immature for use in SimData, but it may be a viable option
+before long.
+
 
 OTHER 
 ----------------------------------------------------------------
 
-    * Improve the build on Linux.
+    * Improve the build on Linux and Windows.  This has already
+      gotten considerably better, but there's always more work
+      to do.
 
-    * Create a build for Windows. (in progress)
-
-    * Install target to put SimData.py and _cSimData.so in
-      the Python site-local directory, and libSimData.a in
-      $prefix/lib.
+    * Eliminate unnecessary inline code from headers.
     
-    * Eliminate most inline code from headers.
-    
-    * Check for unnecessary header includes
+    * Check for unnecessary header includes.
     
     * Bug Dave about adding nested class support to SWIG
     
@@ -57,12 +62,7 @@ OTHER
     > This is now partially implemented.  I'm holding off on completing
       this feature for the time being.
       
-    * Store path hash in loaded simdata::Object instances (done)
+    * More cleanup of the Link<> base classes.
 
-    * Change getClassName() to return just the classname, without version 
-      number (done)
-      
-    * Add getClassVersion() method to simdata::Object. Return 
-      "major:minor". (done)
-
+    * Add an OSG Math adapter header.
 

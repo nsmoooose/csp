@@ -31,7 +31,7 @@
 #include <vector>
 #include <cstdlib>
 #include <cstdio>
-#include <assert.h>
+#include <cassert>
 #include <SimData/BaseType.h>
 #include <SimData/HashUtility.h>
 #include <SimData/Exception.h>

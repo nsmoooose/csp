@@ -34,8 +34,7 @@
 #include <cstdio>
 #include <cstdlib>
 
-#include <SimData/Object.h>
-#include <SimData/Path.h>
+#include <SimData/Link.h>
 #include <SimData/Exception.h>
 #include <SimData/HashUtility.h>
 #include <SimData/ns-simdata.h>
@@ -55,6 +54,7 @@ SIMDATA_EXCEPTION(MissingInterface);
 
 
 class DataManager;
+class Object;
 
 //For SWIG (not currently used):
 //struct FP { FILE* f; std::string name; std::string mode; };
@@ -74,17 +74,18 @@ class DataManager;
  */
 class SIMDATA_EXPORT DataArchive {
 
-	friend class PointerBase;
+	friend class LinkBase;
 	friend class DataManager;
 
 private:
+
 	struct TableEntry {
 		hasht pathhash;
 		hasht classhash;
 		gint32 offset;
 		gint32 length;
 	};
-	
+
 	/**
 	 * This provides an optional means to share a data archive
 	 * globally in an application.  In principle this is not a
@@ -99,20 +100,53 @@ private:
 	static const int AS;
 	static const int BUFFERSIZE;
 	static const int BUFFERS; 
+
+	
 	TableEntry* table;
+	int n_objects, allocation;
+
+	char* object_buffer[10]; // vector<string> here?
+	int n_buffer;
+
+	/////////// 
+	
+	/* TODO: explore using C++ constructs for data archive storage
+	 
+	enum { 
+		DEFAULT_BUFFERSIZE = 4096,
+		DEFAULT_BUFFERS = 10,
+	};
+
+	struct Buffer {
+		char *cbuf;
+		Buffer(int size=DEFAULT_BUFFERSIZE) { cbuf = new char[size]; }
+		~Buffer() { delete[] cbuf; }
+	};
+
+	std::vector<TableEntry> _table;
+	std::vector<Buffer> _buffers;
+	*/
+
+	/////////// 
+	
+	typedef HASH_MAPS<hasht, std::vector<hasht>, hasht_hash, hasht_eq>::Type child_map;
+	child_map _children;
+	typedef HASH_MAPS<hasht, std::string, hasht_hash, hasht_eq>::Type path_map;
+	path_map _pathmap;
+	std::vector<std::string> _paths;
+	
 	FILE *f;
 	int is_read;
 	long table_offset;
-	int n_objects, allocation;
 	int bytes;
 	int finalized;
-	char* object_buffer[10]; // vector<string> here?
-	int n_buffer;
 	hasht_map table_map;
-	cache_map static_map;
 	std::string _fn;
 	bool chain;
 	DataManager *manager;
+
+	typedef HASH_MAPS<hasht, LinkBase, hasht_hash, hasht_eq>::Type cache_map;
+	cache_map static_map;
 
 	/**
 	 * Write a "magic" string to the start of the file to
@@ -141,6 +175,23 @@ private:
 	 * Write the completed object table to the end of the file.
 	 */
 	void writeTable();
+
+	/**
+	 * Read the path table of contents from the archive.
+	 *
+	 * The table of contents associates each path node with
+	 * its parent directory to enable searching for all
+	 * objects below a given path.  It also includes all
+	 * path strings so that path hash values can be translated
+	 * back to human readible form for debugging.
+	 */
+	void _readPaths();
+
+	/**
+	 * Write the path table of contents to the archive.
+	 */
+	void _writePaths() const;
+
 public:
 
 
@@ -210,7 +261,7 @@ public:
 	 * @path_str the path identifier string.
 	 * @returns a smart-pointer to the new object.
 	 */
-	const PointerBase getObject(const char* path_str);
+	const LinkBase getObject(const char* path_str);
 
 	/**
 	 * Create a new object from a Path instance.
@@ -219,7 +270,7 @@ public:
 	 * @path_str the path identifier string (if available).  This is
 	 *           only used for error logging.
 	 */
-	const PointerBase getObject(const Path& path, const char* path_str=0);
+	const LinkBase getObject(const Path& path, const char* path_str=0);
 
 	/**
 	 * Get the full path of the archive file.
@@ -227,6 +278,62 @@ public:
 	 * @returns the full path of the archive file.
 	 */
 	std::string getFileName() const { return _fn; }
+
+	/**
+	 * Get all children of a given path.
+	 *
+	 * For path "A:X.Y", returns all object id's "A:X.Y.*".  The id's
+	 * can be converted to human-readable form by getPathString().
+	 *
+	 * @param path the path to search for children
+	 * @returns a list of object id's immediately below the given path.
+	 */
+	std::vector<ObjectID> getChildren(ObjectID const &id) const;
+	
+	/**
+	 * Get all children of a given path.
+	 *
+	 * For path "A:X.Y", returns all object id's "A:X.Y.*".  The id's
+	 * can be converted to human-readable form by getPathString().
+	 *
+	 * @param path the path to search for children
+	 * @returns a list of object id's immediately below the given path.
+	 */
+	std::vector<ObjectID> getChildren(std::string const & path) const;
+
+	/**
+	 * Check for the existance of an object in the archive.
+	 *
+	 * @returns true if the object id exists.
+	 */
+	bool hasObject(ObjectID const &id) const;
+
+	/**
+	 * Check for the existance of an object in the archive.
+	 *
+	 * @returns true if the object id exists.
+	 */
+	bool hasObject(std::string const & path) const;
+
+	/** 
+	 * Get the path string corresponding to a give object id.
+	 *
+	 * This provides a human-readable path string that is useful
+	 * for error and debugging messages.
+	 *
+	 * @returns the path string if found, otherwise an empty string.
+	 */
+	std::string getPathString(ObjectID const &id) const; 
+
+	/**
+	 * Get a list of all objects in the archive.
+	 */
+	std::vector<ObjectID> getAllObjects() const;
+
+	/**
+	 * Get a list of all object paths in the archive.
+	 */
+	std::vector<std::string> getAllPathStrings() const;
 
 	// protected methods made public for Python access, don't use!
 	/*
@@ -237,9 +344,6 @@ public:
 protected:
 	/**
 	 * Add a new entry to the object table.
-	 *
-	 * This is for internal use only.  It is public only
-	 * so that it may be accessed from Python.
 	 *
 	 * @param offset the byte offset of the start of the object data
 	 * @param length the number of bytes in the serialized object
@@ -268,7 +372,7 @@ protected:
 	 *
 	 * @returns the object if found, otherwise NULL.
 	 */
-	Object* _getStatic(hasht key);
+	LinkBase const * _getStatic(hasht key);
 
 	/**
 	 * Create an a new instance using a class identifier hash.
@@ -288,8 +392,8 @@ protected:
 	const TableEntry* _lookupPath(Path const& path, const char* path_str=0) const;
 
 private:
-	std::vector<ObjectID> getAllObjects() const;
 	void setManager(DataManager *m) { manager = m; }
+	child_map const &getChildMap() const { return _children; }
 };
 
 

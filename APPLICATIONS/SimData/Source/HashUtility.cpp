@@ -27,7 +27,6 @@
  */
 #include <sstream>
 
-#include <SimData/Export.h>
 #include <SimData/HashUtility.h>
 
 

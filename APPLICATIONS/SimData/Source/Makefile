@@ -21,6 +21,7 @@ MODULES = \
 	HashUtility \
 	InterfaceRegistry \
 	Interpolate \
+	Link \
 	List \
 	LogStream \
 	Math \

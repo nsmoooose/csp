@@ -19,8 +19,8 @@
  */
 
 
-#include <SimData/DataArchive.h>
 #include <SimData/DataManager.h>
+#include <SimData/DataArchive.h>
 #include <SimData/Log.h>
 #include <SimData/Exception.h>
 
@@ -34,7 +34,7 @@ DataManager::DataManager() {
 
 DataManager::~DataManager() {
 	std::vector<DataArchive*>::iterator i;
-	for (i = archives.begin(); i != archives.end(); i++) {
+	for (i = _archives.begin(); i != _archives.end(); i++) {
 		if (*i) {
 			(*i)->setManager(0);
 			delete *i;
@@ -44,35 +44,65 @@ DataManager::~DataManager() {
 
 void DataManager::addArchive(DataArchive *d) {
 	if (d) {
-		int n = archives.size();
-		archives.push_back(d);
+		int n = _archives.size();
+		_archives.push_back(d);
 		std::vector<ObjectID> ids = d->getAllObjects();
 		std::vector<ObjectID>::iterator i;
 		for (i = ids.begin(); i != ids.end(); i++) {
-			if (archive_map.find(*i) != archive_map.end()) {
+			if (_archive_map.find(*i) != _archive_map.end()) {
 				SIMDATA_LOG(LOG_ARCHIVE, LOG_ERROR, "Duplicate object ID [" << (*i) << "] adding data archive '" << d->getFileName() << "' to data manager.");
 			}
-			archive_map[*i] = n;
+			_archive_map[*i] = n;
 		}
 		d->setManager(this);
+		DataArchive::child_map const &map = d->getChildMap();
+		DataArchive::child_map::const_iterator imap = map.begin();
+		for (; imap != map.end(); imap++) {
+			std::vector<ObjectID> &childlist = _children[imap->first];
+			childlist.insert(childlist.begin(), imap->second.begin(), imap->second.end());
+		}
 	}
 }
 
-const PointerBase DataManager::getObject(const char* path) {
+std::vector<ObjectID> DataManager::getChildren(ObjectID const &id) const {
+	child_map::const_iterator idx = _children.find(id);
+	if (idx == _children.end()) { return std::vector<ObjectID>(); }
+	return idx->second;
+}
+
+std::vector<ObjectID> DataManager::getChildren(std::string const & path) const {
+	return getChildren(hash_string(path.c_str()));
+}
+
+bool DataManager::hasObject(ObjectID const &id) const {
+	hasht_map::const_iterator idx = _archive_map.find(id);
+	return (idx != _archive_map.end());
+}
+
+bool DataManager::hasObject(std::string const & path) const {
+	return hasObject(hash_string(path.c_str()));
+}
+
+std::string DataManager::getPathString(ObjectID const &id) const {
+	hasht_map::const_iterator idx = _archive_map.find(id);
+	if (idx == _archive_map.end()) return "";
+	return _archives[idx->second]->getPathString(id);
+}
+
+const LinkBase DataManager::getObject(const char* path) {
 	return getObject(Path(path), path, 0);
 }
 
-
-const PointerBase DataManager::getObject(Path const& path, const char* path_str) {
+const LinkBase DataManager::getObject(Path const& path, const char* path_str) {
 	return getObject(path, path_str, 0);
 }
 
-const PointerBase DataManager::getObject(Path const& path, const char* path_str, DataArchive *d) {
+const LinkBase DataManager::getObject(Path const& path, const char* path_str, DataArchive *d) {
 	hasht key = (hasht) path.getPath();
-	hasht_map::iterator idx = archive_map.find(key);
+	hasht_map::iterator idx = _archive_map.find(key);
 	DataArchive *archive = 0;
-	if (idx != archive_map.end()) {
-		archive = archives[idx->second];
+	if (idx != _archive_map.end()) {
+		archive = _archives[idx->second];
 	}
 	if (archive == 0 || archive == d) {
 		std::string msg;

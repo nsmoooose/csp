@@ -91,18 +91,18 @@ class PyInterfaceProxy(cSimData.InterfaceProxy):
 			self.interface_by_variable[i.variable] = i
 			self.interface_by_name[i.name] = i
 	def createObject(self):
-		return Pointer(self._class())
+		return Link(self._class())
 #	def createObject(self, disown=1):
 		# Reference counting the newly created object is a bit subtle.
 		# if returned to python as an object, we would want python to
 		# retain ownership.  The only caller of createObject(), however,
 		# should be the DataArchive class, which wraps the resulting
-		# object in a Pointer<>.  The Pointer maintains its own
+		# object in a Link<>.  The Link maintains its own
 		# reference count and deletes the C++ object (and its associated 
 		# Python object) when the referencecount goes to zero.
 		#
 		# Keep in mind that if you use this method elsewhere and don't
-		# wrap the object in a Pointer<>, you will be responsible 
+		# wrap the object in a Link<>, you will be responsible 
 		# for deleting the object (which can only be done from C++).
 #		o = self._class()
 #		if disown:
@@ -228,21 +228,21 @@ def XML_INTERFACE(_class, major, minor, *args):
 # Export all cSimData classes
 from cSimData import *
 
-## Specialized Pointer class for Python.  This class behaves like
+## Specialized Link class for Python.  This class behaves like
 ## Object, but automatically combines C++ and Python reference 
 ## counting to handle object lifetime in a sane way.  Both C++
-## and Python createObject methods return Pointer class objects
+## and Python createObject methods return Link class objects
 ## under Python, so it should never be necessary to handle a
 ## raw Object instance.
-class Pointer(cSimData.Object):
+class Link(cSimData.Object):
 	def __init__(self, obj):
 		# NOTE: skip base class __init__
 		# preserve a pointer to the C++ object
 		self.this = obj.this
 		# increase the reference count of the C++ object
-		self.ptr = PointerBase(obj)
+		self.ptr = LinkBase(obj)
 		# disown the C++ object from Python, C++ reference
-		# counting by PointerBase is now responsible for
+		# counting by LinkBase is now responsible for
 		# the C++ object's lifetime.  when self.ptr is
 		# destroyed, the reference count will decrease.
 		self.thisown = 0
@@ -252,9 +252,9 @@ class Pointer(cSimData.Object):
 			obj.thisown = 0
 		
 
-## Override createObject to return a Pointer(Object)
+## Override createObject to return a Link(Object)
 cSimData.InterfaceProxy.createObject = \
-	lambda self, method=cSimData.InterfaceProxy.createObject: Pointer(method(self))
+	lambda self, method=cSimData.InterfaceProxy.createObject: Link(method(self))
 
 
 class List(cSimData.ListBase, list):

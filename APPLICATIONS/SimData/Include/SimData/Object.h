@@ -27,14 +27,19 @@
 #ifndef __SIMDATA_OBJECT_H__
 #define __SIMDATA_OBJECT_H__
 
-#include <stdio.h>
-#include <assert.h>
+
+#include <cstdio>
+#include <cassert>
 #include <string>
 
 #include <SimData/HashUtility.h>
-#include <SimData/Pack.h>
+#include <SimData/BaseType.h>
+#include <SimData/Export.h>
+#include <SimData/Ref.h>
+
 
 class DataArchive;
+class LinkBase;
 
 
 // Various object macros for internal use only.
@@ -100,60 +105,104 @@ NAMESPACE_SIMDATA
  * 	postCreate  additional processing after deserialization
  *
  * Objects should never be copied or handled directly by user code.  Use 
- * Pointer<> handles to manipulate them by reference.  Objects set as 'static' 
- * are singletons managed by the DataArchive.
+ * Ref<> handles to manipulate them by reference, and Link<> member variables
+ * to load them from data archives.  Objects set as 'static' are singletons 
+ * managed by the DataArchive.
  *
  * @author Mark Rose <mrose@stm.lbl.gov>
  */
 
-class SIMDATA_EXPORT Object: public BaseType {
+class SIMDATA_EXPORT Object: public Referenced, public BaseType {
 	friend class DataArchive;
+	friend class LinkBase;
+
+private:
+	// Objects should never be copied
+	Object(Object const &) { assert(0); }
+	Object const &operator=(Object const &) { assert(0); }
+
+	void _setPath(hasht);
+	
+	bool _static;
+	hasht _path;
+
+protected:
+	/**
+	 * Called after the newly created object has been
+	 * deserialized by unpack().
+	 *
+	 * Extend this method to do any initial processing 
+	 * of the external data.
+	 */
+	virtual void postCreate() {}
+
 public:
 	explicit Object();
 	virtual ~Object();
 
+	/**
+	 * Create a new instance of the class.
+	 *
+	 * The method is automatically overridden by the SIMDATA_OBJECT
+	 * macro, so you should never need to extend it manually.
+	 */
 	virtual Object* _new() const { 
 		assert(0); 
 		return 0; 
 	}
 
-	// Objects should never be copied
-	// Object(const Object& o) { assert(0); }
-	Object(const Object& o);
-	
 	__CLASSDEF(Object, 0, 0)
 		
-	// archive serializaiton
+	/**
+	 * Serialize to a data archive.
+	 *
+	 * Extend this method to serialize member variables specified
+	 * by external data.  Be sure to call the base class method
+	 * first.  Note that the pack() method must be the exact inverse 
+	 * of the unpack() method.
+	 */
 	virtual void pack(Packer& p) const;
+
+	/**
+	 * Deserialize from a data archive.
+	 *
+	 * Extend this method to deserialize member variables stored
+	 * by pack().  Call the base class method first, then unpack
+	 * each variable in the exact same order as in the pack()
+	 * method.  Any additional processing of the data should be
+	 * done in postCreate() method.
+	 */
 	virtual void unpack(UnPacker& p);
-	virtual void postCreate() {}
 
-	// static management (don't touch!)
-	void setStatic(int s);
-	int isStatic() const;
-	
-#ifndef SWIG
-	Object& operator=(const Object& o);
-#endif // SWIG
-
-	// reference counting helpers (may move to pointer class)
-	unsigned ref() const;
-	unsigned deref() const;
-	unsigned getCount() const;
-	
+	/**
+	 * Get a string representation of the object.
+	 */
 	virtual std::string asString() const;
 
+	/**
+	 * Get the path hash from which the object was instantiated.
+	 */
 	hasht getPath() const;
 
-protected:
-	
+	/**
+	 * Hash function for converting data archive paths to path
+	 * hashes.
+	 */
 	static hasht _getHash(const char* c);
-	void _setPath(hasht);
-	
-	int _static;
-	mutable unsigned _count;
-	hasht _path;
 
+	/**
+	 * Set this instance as static or non-static. 
+	 *
+	 * Static objects are cached by the DataArchive class so that
+	 * only one instance is created.  You should never call this
+	 * method directly; it is public only so that SWIG can wrap it.
+	 */
+	void setStatic(bool);
+
+	/**
+	 * Test whether this object is static.
+	 */
+	bool isStatic() const;
 };
 
 

@@ -50,7 +50,7 @@ class Vector3;
 class Matrix3;
 class Curve;
 class Table;
-class PointerBase;
+class LinkBase;
 class External;
 class Enum;
 class SimDate;
@@ -168,61 +168,31 @@ public:
 	void set(std::string &x) const { StringCheck(); x = s; }
 	void set(Enum &x) const { if (isType(STRING)) x = s; else setBase(x); }
 	// slightly fancier handling required for path pointers
-	void set(PointerBase &x) const {
+	void set(LinkBase &x) const {
 		BaseCheck();
 		// are we assigning to a pointerbase?
-		PointerBase const *p = dynamic_cast<PointerBase const *>(var.o);
+		LinkBase const *p = dynamic_cast<LinkBase const *>(var.o);
 		if (p != 0) {
-			x = *(const_cast<PointerBase *>(p));
+			x = *(const_cast<LinkBase *>(p));
 		} else {
 			// last chance, is it a path?
 			Path const *p = dynamic_cast<Path const *>(var.o);
-			TypeCheck(p!=NULL, "dynamic cast of BaseType* to PointerBase failed");
-			x = PointerBase(*(const_cast<Path *>(p)), 0);
+			TypeCheck(p!=NULL, "dynamic cast of BaseType* to LinkBase failed");
+			x = LinkBase(*(const_cast<Path *>(p)), 0);
 		}
 	}
 	template <typename Q>
-	void set(Pointer<Q> &x) const {
+	void set(Link<Q> &x) const {
 		// first try to assign as an object reference
 		Q const *q = dynamic_cast<Q const*>(var.o);
 		if (q != 0) {
 			x = const_cast<Q*>(q);
 		} else {
 			// if not, try as a pointerbase or path
-			set((PointerBase &)x);
+			set((LinkBase &)x);
 		}
 	}
 			
-
-
-#if 0 // old implementation (doesn't work for Object classes)
-	template <typename T> 
-	void setBase(T & x) const {
-		BaseCheck();
-		T const *p = dynamic_cast<T const *>(var.o);
-		TypeCheck(p!=NULL, "dynamic cast of BaseType* failed");
-		T *nc = const_cast<T *>(p);
-		x = *nc;
-	}
-	void set(int &x) const;
-	void set(bool &x) const;
-	void set(float &x) const;
-	void set(double &x) const;
-	void set(unsigned int &x) const;
-	void set(std::string &x) const;
-	void set(SimDate &x) const;
-	void set(Vector3 &x) const;
-	void set(Matrix3 &x) const;
-	void set(Curve &x) const;
-	void set(Table &x) const;
-	void set(PathPointerBase &x) const;
-	void set(External &x) const;
-	void set(Real &x) const;
-	void set(Enum &x) const;
-	void set(ListBase &x) const;
-	void set(Object &x) const;
-#endif
-	
 	bool isType(TYPE t) const { return type==t; }
 
 	const std::string __repr__() const { return std::string("TypeAdapter<") + TypeNames[type] + ">"; }

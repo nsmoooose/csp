@@ -224,7 +224,6 @@ template <class T>
 		typedef typename HASH_MAPS<hasht, T, hasht_hash, hasht_eq>::Type Type;
 	};
 typedef HASH_MAPS<hasht, int, hasht_hash, hasht_eq>::Type hasht_map;
-typedef HASH_MAPS<hasht, Object*, hasht_hash, hasht_eq>::Type cache_map;
 typedef HASH_MAPS<hasht, ObjectProxyBase*, hasht_hash, hasht_eq>::Type proxy_map;
 //typedef HASH_MAPS<const std::string, int, hashstring, eqstring>::Type string_map;
 

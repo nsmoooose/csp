@@ -43,13 +43,14 @@
 // Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 // Boston, MA  02111-1307, USA.
 //
-// $Id: LogStream.h,v 1.4 2003/04/12 08:56:37 mkrose Exp $
+// $Id: LogStream.h,v 1.5 2003/04/23 09:14:20 mkrose Exp $
 
 #ifndef __SIMDATA_LOGSTREAM_H__
 #define __SIMDATA_LOGSTREAM_H__
 
 #include <iostream>
 #include <fstream>
+#include <string>
 
 #include <SimData/ns-simdata.h>
 #include <SimData/Export.h>

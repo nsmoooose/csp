@@ -45,26 +45,6 @@ std::ostream &operator <<(std::ostream &o, TypeAdapter const &t) {
 	return o << "TypeAdapter<UNKNOWN>";
 }
 
-#if 0 // old implementation
-void TypeAdapter::set(int &x) const { IntCheck(); x = static_cast<int>(var.i); }
-void TypeAdapter::set(bool &x) const { IntCheck(); x = (var.i != 0); }
-void TypeAdapter::set(float &x) const { DoubleCheck(); x = static_cast<float>(var.d); }
-void TypeAdapter::set(double &x) const { DoubleCheck(); x = static_cast<double>(var.d); }
-void TypeAdapter::set(unsigned int &x) const { IntCheck(); x = static_cast<unsigned int>(var.i); }
-void TypeAdapter::set(std::string &x) const { StringCheck(); x = s; }
-void TypeAdapter::set(SimDate &x) const { setBase(x); }
-void TypeAdapter::set(Vector3 &x) const { setBase(x); }
-void TypeAdapter::set(Matrix3 &x) const { setBase(x); }
-void TypeAdapter::set(Curve &x) const { setBase(x); }
-void TypeAdapter::set(Table &x) const { setBase(x); }
-void TypeAdapter::set(PathPointerBase &x) const { setBase(x); }
-void TypeAdapter::set(External &x) const { setBase(x); }
-void TypeAdapter::set(Real &x) const { setBase(x); }
-void TypeAdapter::set(Enum &x) const { if (isType(STRING)) x = s; else setBase(x); }
-void TypeAdapter::set(ListBase &x) const { setBase(x); }
-void TypeAdapter::set(Object &x) const { setBase(x); }
-#endif
-
 
 NAMESPACE_END // namespace simdata
 

@@ -1,6 +1,31 @@
 Version 0.3.2 (in progress)
 ===========================
 
+2003-04-22: onsight
+            Data archive files now store the parent/child relationship
+	    between object paths, so it is possible to search for all
+	    objects in a given path.   The full list of human-readable
+	    paths is also stored now, allowing path hash values to be
+	    converted to more informative debugging messages.
+
+	    Various methods have been added to DataArchive to access
+	    this new information:
+
+	      getChildren, getPathString, hasObject, getAllPathStrings
+
+	    Integrated these changes with the DataManager class.
+
+            *** WARNING: ALL DAR FILES MUST NOW BE REBUILT ***
+
+2003-04-21: onsight
+            Abstracted the reference counting interface from class Object 
+	    to class Referenced.  
+	    
+	    Added a Ref<> smart-pointer for Referenced objects.
+
+	    Renamed PointerBase and Pointer<> to LinkBase and Link.  Moved
+	    them out of Path.h/cpp into Link.h/cpp.
+
 2003-04-21: delta
 	    Removed RadiansToDegrees and DegreesToRadians calls in 
 	    Quaternion::MakeQFromEulerAngles and 

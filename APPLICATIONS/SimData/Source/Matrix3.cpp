@@ -26,15 +26,15 @@
 
 
 
+#include <SimData/Matrix3.h>
+#include <SimData/Vector3.h>
+#include <SimData/Pack.h>
+
 #include <iomanip>
 #include <sstream>
 #include <cmath>
 
 #define HALF_PI (G_PI*0.5)
-
-#include <SimData/Matrix3.h>
-#include <SimData/Vector3.h>
-#include <SimData/Pack.h>
 
 
 NAMESPACE_SIMDATA

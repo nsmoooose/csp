@@ -29,6 +29,7 @@
 #include <SimData/List.h>
 #include <SimData/Matrix3.h>
 #include <SimData/Path.h>
+#include <SimData/Link.h>
 #include <SimData/Quaternion.h>
 #include <SimData/Real.h>
 #include <SimData/String.h>

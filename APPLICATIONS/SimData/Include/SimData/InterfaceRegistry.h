@@ -62,7 +62,7 @@ public:
 	InterfaceProxy(const char *cname, hasht (*chash)());
 #endif // SWIG
 
-	virtual ~InterfaceProxy() {}
+	virtual ~InterfaceProxy() { }
 
 	virtual Object *createObject() const;
 
@@ -93,7 +93,7 @@ public:
 	
 	virtual const char *getClassName() const;
 	
-   virtual std::vector<std::string> getVariableNames() const;
+	virtual std::vector<std::string> getVariableNames() const;
 	
 	virtual std::vector<std::string> getRequiredNames() const;
 

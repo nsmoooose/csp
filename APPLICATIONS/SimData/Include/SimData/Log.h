@@ -24,13 +24,12 @@
  */
 
 
-#ifndef __SIMDATA_LOG_H___
+#ifndef __SIMDATA_LOG_H__
 #define __SIMDATA_LOG_H__
 
 
 #include <cstdio>
-#include<string>
-
+#include <string>
 
 #include <SimData/LogStream.h>
 #include <SimData/ns-simdata.h>

@@ -18,15 +18,15 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
+
 #include <SimData/Object.h>
+#include <SimData/Pack.h>
 
 #include <sstream>
 
 
 NAMESPACE_SIMDATA
 
-
-//INIT_OBJECTS
 
 /*
 void releaseObject(Object* ptr, int force) {
@@ -47,67 +47,25 @@ void Object::unpack(UnPacker& p) {
 } 
 
 // static management (don't touch!)
-void Object::setStatic(int s) { 
+void Object::setStatic(bool s) { 
 	_static = s;
 }
 
-int Object::isStatic() const { 
+bool Object::isStatic() const { 
 	return _static; 
 }
 
-Object::Object(): BaseType(), _static(0), _count(0), _path(0) {
+Object::Object(): Referenced(), BaseType(), _static(false), _path(0) {
 }
-
-// Objects should never be copied
-// Object(const Object& o) { assert(0); }
-
-Object::Object(const Object& o): BaseType(), _count(0) {
-	_path = o._path;
-	_static = o._static; 
-}
-
-#ifndef SWIG
-Object& Object::operator=(const Object& o) { 
-	//assert(0); 
-	_path = o._path;
-	_static = o._static;
-	return *this;
-}
-#endif
 
 Object::~Object() { 
 	//printf("~Object %p\n", this); 
-}
-
-/*
- * Should access to the reference count be protected by a
- * mutex, or just let the users of the object deal with
- * mt issues?  Since reference counts may be changed at
- * the start and end of methods due to Pointer 
- * instantiation and destruction, it may be wise to wrap
- * the reference counting operations here.
- */
-
-// reference counting helpers (may move to proxy class)
-unsigned Object::ref() const { 
-	//printf("ref(%p): %d\n", this, _count); 
-	return ++_count; 
-}
-
-unsigned Object::deref() const { 
-	//printf("deref(%p): %d\n", this, _count); 
-	assert(_count != 0); 
-	return --_count; 
 }
 
 std::string Object::asString() const {
 	std::ostringstream tag;
 	tag << "<" << getClassName() << " Object instance [" << getClassHash() << "] at " << (void*)this << ">";
 	return tag.str();
-}
-
-unsigned Object::getCount() const { 
-	return _count; 
 }
 
 hasht Object::_getHash(const char* c) {

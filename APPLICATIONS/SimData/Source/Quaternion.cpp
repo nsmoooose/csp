@@ -38,16 +38,15 @@
 // http://www.magic-software.com/License/free.pdf
 
 
-#include <iomanip>
-#include <sstream>
-#include <cmath>
-
+#include <SimData/Quaternion.h>
 #include <SimData/Pack.h>
 #include <SimData/Math.h>
 #include <SimData/Vector3.h>
 #include <SimData/Matrix3.h>
-#include <SimData/Quaternion.h>
 
+#include <iomanip>
+#include <sstream>
+#include <cmath>
 
 using namespace std;
 

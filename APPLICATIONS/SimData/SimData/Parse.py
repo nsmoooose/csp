@@ -398,7 +398,7 @@ class PathHandler(SimpleHandler):
 		SimpleHandler.__init__(self, id, base, name, attrs)
 
 	def getElement(self):
-		p = SimData.PointerBase()
+		p = SimData.LinkBase()
 		p.setPath(self._element.encode('ascii'))
 		return p
 		

@@ -24,11 +24,8 @@
  */
 
 
-#include <string>
-#include <vector>
-
-#include <SimData/Log.h>
 #include <SimData/InterfaceRegistry.h>
+#include <SimData/Log.h>
 #include <SimData/Object.h>
 #include <SimData/HashUtility.h>
 #include <SimData/TypeAdapter.h>
@@ -37,6 +34,9 @@
 #include <SimData/Exception.h>
 #include <SimData/Enum.h>
 #include <SimData/Path.h>
+
+#include <string>
+#include <vector>
 
 using std::cout;
 using std::endl;
@@ -232,146 +232,3 @@ void InterfaceRegistry::addInterface(const char *name, hasht id, InterfaceProxy 
 NAMESPACE_END // namespace simdata
 
 
-
-////////////////////////////////////////////////////////////////////////////
-
-#ifdef TEST0
-
-#include <vector>
-#include <SimData/Real.h>
-#include <SimData/Path.h>
-
-class X: public simdata::Object {
-public:
-	SIMDATA_OBJECT(X, 0, 0);
-	BEGIN_SIMDATA_XML_INTERFACE(X)
-		SIMDATA_XML("x", X::x, true);
-	END_SIMDATA_XML_INTERFACE
-	X() { x = 0; }
-	int x;
-	void dump() { cout << "HI from X!: " << x << endl; }
-	virtual ~X() { cout << "~X: " << x << endl; }
-};
-
-
-class A: public simdata::Object {
-public:
-	SIMDATA_OBJECT(A, 0, 0);
-	BEGIN_SIMDATA_XML_INTERFACE(A)
-		SIMDATA_XML("size", A::size, true)
-		SIMDATA_XML("x", A::x, true)
-		SIMDATA_XML("y", A::y, true)
-		SIMDATA_XML("z", A::z, false)
-		SIMDATA_XML("q", A::q, false)
-	END_SIMDATA_XML_INTERFACE
-	int size;
-	simdata::Real x;
-	std::vector<simdata::Real> y;
-	std::vector<X> z;
-	X q;
-	virtual ~A() {
-		cout << size << endl;
-		cout << (float)x << endl;
-		cout << "y has " << y.size() << " items:" << endl;
-		std::vector<simdata::Real>::iterator i;
-		for (i=y.begin(); i != y.end(); i++) cout << "   " << (float)(*i) << endl;
-		cout << "z has " << z.size() << " items:" << endl;
-		std::vector<X>::iterator j;
-		for (j=z.begin(); j != z.end(); j++) j->dump();
-	}
-};
-
-
-
-class I: public simdata::Object {
-public:
-        SIMDATA_OBJECT(I, 0, 0);
-	BEGIN_SIMDATA_XML_INTERFACE(I)
-		SIMDATA_XML("size_i", I::size_i, true)
-	END_SIMDATA_XML_INTERFACE
-	int size_i;
-};
-
-
-class J: public I {
-public:
-        SIMDATA_OBJECT(J, 0, 0);
-	EXTEND_SIMDATA_XML_INTERFACE(J, I)
-		SIMDATA_XML("size_j", J::size_j, true)
-	END_SIMDATA_XML_INTERFACE
-	int size_j;
-};
-
-SIMDATA_REGISTER_INTERFACE(I)
-SIMDATA_REGISTER_INTERFACE(J)
-SIMDATA_REGISTER_INTERFACE(X)
-SIMDATA_REGISTER_INTERFACE(A)
-
-#endif
-
-
-////////////////////////////////////////////////////////////////////////////
-
-#ifdef TEST
-
-#include <SimData/Types.h>
-
-class TEST: public simdata::Object {
-public:
-	SIMDATA_OBJECT(TEST, 0, 0);
-	BEGIN_SIMDATA_XML_INTERFACE(TEST)
-		SIMDATA_XML("int", TEST::int_test, false)
-		SIMDATA_XML("float", TEST::float_test, false)
-		SIMDATA_XML("string", TEST::string_test, false)
-		SIMDATA_XML("spread", TEST::spread_test, false)
-		SIMDATA_XML("date", TEST::date_test, false)
-		SIMDATA_XML("vector", TEST::vector_test, false)
-		SIMDATA_XML("matrix", TEST::matrix_test, false)
-		SIMDATA_XML("external", TEST::external_test, false)
-		SIMDATA_XML("enum", TEST::enum_test, false)
-		SIMDATA_XML("curve", TEST::curve_test, false)
-		SIMDATA_XML("table", TEST::table_test, false)
-		SIMDATA_XML("path", TEST::path_test, false)
-		SIMDATA_XML("list", TEST::list_test, false)
-	END_SIMDATA_XML_INTERFACE
-	int int_test;
-	float float_test;
-	std::string string_test;
-	simdata::Real spread_test;
-	simdata::SimDate date_test;
-	simdata::Vector3 vector_test;
-	simdata::Matrix3 matrix_test;
-	simdata::External external_test;
-	simdata::Enumeration enumeration;
-	simdata::Enum enum_test;
-	simdata::Curve curve_test;
-	simdata::Table table_test;
-	simdata::PathPointer<A> path_test;
-	std::vector<simdata::Real> list_test;
-	TEST(): simdata::Object(), enumeration("A B C D"), enum_test(enumeration) {}
-	virtual void pack(simdata::Packer &) const {
-		cout << "PACKING C++ TEST CLASS" << endl;
-		cout << "      int_test " << int_test << endl;
-		cout << "    float_test " << float_test << endl;
-		cout << "   string_test " << string_test << endl;
-		cout << "     date_test " << date_test.asString() << endl;
-		cout << "  vector3_test " << vector_test.asString() << endl;
-		cout << "  matrix3_test " << matrix_test.asString() << endl;
-		cout << " external_test " << external_test.asString() << endl;
-		cout << "   spread_test " << spread_test.asString() << endl;
-		cout << "     path_test " << path_test.asString() << endl;
-		cout << "     enum_test " << enum_test.asString() << endl;
-		cout << "    curve_test " << curve_test.asString() << endl;
-		cout << "    table_test " << table_test.asString() << endl;
-		cout << "     list_test ";
-		std::vector<simdata::Real>::const_iterator j;
-		for (j=list_test.begin(); j != list_test.end(); j++) cout << j->asString();
-		cout << endl;
-	}
-	virtual void unpack(simdata::UnPacker &) {
-	}
-};
-
-SIMDATA_REGISTER_INTERFACE(TEST)
-
-#endif // !NOTEST

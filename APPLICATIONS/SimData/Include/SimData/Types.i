@@ -13,6 +13,7 @@
 %include "SimData/Object.i"
 %include "SimData/Pack.i"
 %include "SimData/Path.i"
+%include "SimData/Link.i"
 %include "SimData/Date.i"
 
 %exception;

@@ -20,14 +20,13 @@
 
 
 /**
- * @file Path.h
+ * @file Link.h
  *
- * Classes for referring to data sources.
  */
 
 
-#ifndef __SIMDATA_PATH_H__
-#define __SIMDATA_PATH_H__
+#ifndef __SIMDATA_LINK_H__
+#define __SIMDATA_LINK_H__
 
 
 #if defined(_MSC_VER) && (_MSC_VER <= 1300)
@@ -42,116 +41,15 @@
 #include <string>
 
 
-#include <SimData/HashUtility.h>
-#include <SimData/BaseType.h>
+
+#include <SimData/Path.h>
+#include <SimData/Object.h>
 
 
 NAMESPACE_SIMDATA
 
 
 class DataArchive;
-
-typedef hasht ObjectID;
-
-
-SIMDATA_EXCEPTION(ObjectTypeMismatch)
-
-
-
-/**
- * BaseType path to a data source.
- *
- * Object paths use '.' to separate path elements, and uniquely 
- * identify objects in a data archive.  Path objects store the
- * path as a 64-bit hash of the path string, called an Object ID.
- * 
- * @author Mark Rose <mrose@stm.lbl.gov>
- */
-class SIMDATA_EXPORT Path: public BaseType {
-protected:
-	ObjectID _path; 
-public:
-
-	/**
-	 * Create a new Path using a path string.
-	 */
-	explicit Path(const char* path=0) {
-		setPath(path);
-	}
-
-	/**
-	 * Create a new Path from an Object ID.
-	 */
-	explicit Path(ObjectID path): _path(path) {
-	}
-
-	virtual ~Path() {
-	}
-
-	/**
-	 * Assign to a specific Object ID.
-	 */
-	inline void setPath(ObjectID path) { 
-	        _path = path;
-	}
-
-	/**
-	 * Assign to an object path string (after converting to an 
-	 * Object ID).
-	 */
-	void setPath(const char* path);
-	
-	/**
-	 * Assign to Object ID 0 (no-path).
-	 */
-	inline void setNone() {
-		setPath((ObjectID) 0);
-	}
-
-	/**
-	 * Get the path's Object ID.
-	 */
-	inline const ObjectID getPath() const {
-		return _path;
-	}
-
-	/**
-	 * Serialize.
-	 */
-	virtual void pack(Packer& p) const;
-	
-	/**
-	 * Deserialize.
-	 */
-	virtual void unpack(UnPacker& p);
-
-	/**
-	 * Test for 'no-path' (Object ID == 0).
-	 */
-	inline bool isNone() const {
-		return (_path == (ObjectID) 0);
-	}
-
-	/**
-	 * Test for equality of two paths.
-	 */
-	inline bool operator==(Path const &p) const {
-		return _path == p._path;
-	}
-
-	/**
-	 * String representation.
-	 */
-	virtual std::string asString() const; 
-};
-
-#if 0
-
-NAMESPACE_END // namespace simdata
-
-#include <SimData/Object.h>
-
-NAMESPACE_SIMDATA
 
 
 class SIMDATA_EXPORT ReferencePointer {
@@ -162,13 +60,13 @@ public:
 	bool __ne__(const ReferencePointer& other); 
 	
 	/**
-	 * Construct a PathReferencePointer with no path or object reference (null 
+	 * Construct a ReferencePointer with no object reference (null 
 	 * pointer)
 	 */
 	explicit ReferencePointer(): _reference(0) { }
 
 	/**
-	 * Assign an object path and bind to a specific object.
+	 * Assign to a specific object.
 	 */
 	explicit ReferencePointer(Object* ptr): _reference(0) {
 		_assign_safe(ptr);
@@ -296,7 +194,7 @@ protected:
 	/**
 	 * Change object pointer without reference counting. 
 	 *
-	 * This method is extended in the Pointer<> class to test for 
+	 * This method is extended in the Link<> class to test for 
 	 * type compatibility.
 	 */
 	virtual void _update(Object* p) { _reference = p; }
@@ -316,66 +214,67 @@ protected:
 
 
 /**
- * Base class for "smart-pointer" to Objects.
+ * Base class for "auto-loading smart-pointers" to Objects.
  * 
- * Use this and the template Pointer<> class below for all Object references.
- * This class serves as a generic version of the specialized Pointer template
- * class.  It contains most of the smart-pointer functionality, except 
- * dereferencing to a specific object type.
+ * This class combines the Path type with reference-counting for Object
+ * types.  It should seldom be used directly.  See Link<> and Ref<> for
+ * details on how to refer to Objects (and other Referenced types).
  *
  * @author Mark Rose <mrose@stm.lbl.gov>
  */
-class SIMDATA_EXPORT PointerBase: public Path, public ReferencePointer {
+class SIMDATA_EXPORT LinkBase: public Path, public ReferencePointer {
 	template <class T> friend class Ref;
 public:
 
 	// SWIG python specific comparisons
-	bool __eq__(const PointerBase& other);
-	bool __ne__(const PointerBase& other); 
+	bool __eq__(const LinkBase& other);
+	bool __ne__(const LinkBase& other); 
 	
 	/**
-	 * Construct a PointerBase with no path or object reference (null 
+	 * Construct a LinkBase with no path or object reference (null 
 	 * pointer)
 	 */
-	explicit PointerBase(): Path((const char*)0), ReferencePointer() { }
+	explicit LinkBase(): Path((const char*)0), ReferencePointer() { }
 
 	/**
 	 * Assign an object path with no referenced object (null pointer)
 	 */
-	PointerBase(const char* path): Path(path), ReferencePointer() { }
+	LinkBase(const char* path): Path(path), ReferencePointer() { }
 
 	/**
 	 * Assign an object path and bind to a specific object.
 	 */
-	explicit PointerBase(const Path& path, Object* ptr): 
+	explicit LinkBase(const Path& path, Object* ptr): 
 		Path(path), ReferencePointer(ptr) { }
 	
 	/**
 	 * Assign an object reference, but no path.
 	 */
-	explicit PointerBase(Object* ptr): Path(), ReferencePointer(ptr) {}
+	explicit LinkBase(Object* ptr): Path(), ReferencePointer(ptr) {}
 
 	/**
 	 * Decrements the object's reference count and destroys the
 	 * object if the count reaches zero.
 	 */
-	virtual ~PointerBase() { }
+	virtual ~LinkBase() { }
 
 	/**
 	 * Light-weight copy with reference counting.
 	 */
-	PointerBase(const PointerBase& r): Path(r.getPath()), ReferencePointer(r) {
+	LinkBase(const LinkBase& r): Path(r.getPath()), ReferencePointer(r) {
 	//	*this = r;
 	}
 
 	/**
 	 * Light-weight copy with reference counting.
 	 */
-	PointerBase& operator=(const PointerBase& r) {
+#ifndef SWIG
+	LinkBase& operator=(const LinkBase& r) {
 		ReferencePointer::operator=(r);
 		_path = r.getPath();
 		return *this;
 	}
+#endif
 
 
 	/**
@@ -383,7 +282,7 @@ public:
 	 *
 	 * Saves the path, and also saves the referenced object
 	 * if the path is 'None'.  Packing a None and Null 
-	 * PointerBase is an error.
+	 * LinkBase is an error.
 	 */
 	virtual void pack(Packer& p) const;
 
@@ -406,7 +305,7 @@ public:
 	/**
 	 * Comparison with other simdata pointers.
 	 */
-	bool operator==(PointerBase const &p) const {
+	bool operator==(LinkBase const &p) const {
 		return ReferencePointer::operator==(p);
 	}
 
@@ -423,68 +322,60 @@ protected:
 
 
 /**
- * Class-specialized "smart-pointer" to Objects.
+ * Class-specialized, auto-loading smart-pointer to Objects.
  *
- * Use this class as you would an ordinary pointer to refer to all
- * objects descended from simdata::Object.  Given that all objects 
- * should be referred to by Pointers, when creating a new 
- * Pointer you have a couple of options.  You can instantiate the 
- * new Pointer by assigning from an existing Pointer.  This
- * is purely a reference counting operation; no actual copying
- * of the underlying object takes place.  The other primary means
- * of instantiating a Pointer is to unpack it from a data
- * archive.   The archive stores the object path that the Pointer
- * should refer to, and the deserialization process automatically
- * finds (and if need be creates) the appropriate object and binds
- * the Pointer to it.
+ * Use this class for linking to other Objects in a data archive. 
+ * The associated Objects will automatically be created by the 
+ * archive loader as directed by the external XML data. 
  *
- * Note that because of dynamic type checking (dynamic_cast) you
- * must define the template class (forward declarations will not
- * work under VC).
+ * Once loaded, Link<> handles behaves very much like ordinary
+ * Ref<> handles.  For storing and passing objects references,
+ * and for manually instantiating Objects from a data archive,
+ * you should use a Ref<> handle instead of Link<>.
  *
  * @author Mark Rose <mrose@stm.lbl.gov>
  */
-template<class T> class Pointer: public PointerBase {
+template<class T> class Link: public LinkBase {
 public:
 
-	typedef std::vector< Pointer<T> > vector;
+	typedef std::vector< Link<T> > vector;
 
 	/**
-	 * Create a null Pointer
+	 * Create a null Link 
 	 */
-	explicit Pointer(): PointerBase() {}
+	explicit Link(): LinkBase() {}
 	
 	/**
-	 * Create a Pointer with both a path and an object
+	 * Create a Link with both a path and an object
 	 */
-	explicit Pointer(const Path& path, T* ptr): PointerBase(path, ptr) {}
+	explicit Link(const Path& path, T* ptr): LinkBase(path, ptr) {}
 	
 	/**
-	 * Create a Pointer with a path but no object (null)
+	 * Create a Link with a path but no object (null)
 	 */
-	explicit Pointer(const char* path): PointerBase(path) {}
+	explicit Link(const char* path): LinkBase(path) {}
 
 	/**
-	 * Create a Pointer with an object referenc, but no path
+	 * Create a Link with an object reference, but no path
 	 */
-	explicit Pointer(T* t): PointerBase() {
+	explicit Link(T* t): LinkBase() {
 		*this = t;
 	}
 
 	// fast copy
-	Pointer(const Pointer<T>& p) { 
+	Link(const Link<T>& p) { 
 		_path = p.getPath();
 		_assign_fast(p._reference);
 	}
 	
 	// safe copy
-	Pointer(const PointerBase& p) { 
-		PointerBase::operator=(p);
+	Link(const LinkBase& p) { 
+		LinkBase::operator=(p);
 	}
 	
 	/*
-	Pointer<T>& operator=(const PointerBase& p) {
-		PointerBase::operator=(p);
+	Link<T>& operator=(const LinkBase& p) {
+		LinkBase::operator=(p);
 	}
 	*/
 
@@ -547,16 +438,16 @@ protected:
 	 * new object type matches the template type.
 	 */
 	virtual void _update(Object* ptr) throw(ObjectTypeMismatch) {
-		PointerBase::_update(ptr);
+		LinkBase::_update(ptr);
 		T* _special = dynamic_cast<T*>(ptr);
 		if (ptr != 0 && _special == 0) 
-			throw ObjectTypeMismatch("dynamic_cast<> failed in Pointer<>::_update()");
+			throw ObjectTypeMismatch("dynamic_cast<> failed in Link<>::_update()");
 	}
 };
 
-#endif // 0
+
 
 NAMESPACE_END // namespace simdata
 
-#endif //__SIMDATA_PATH_H__
+#endif //__SIMDATA_LINK_H__
 

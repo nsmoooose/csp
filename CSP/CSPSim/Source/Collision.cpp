@@ -1,17 +1,17 @@
 // Combat Simulator Project - FlightSim Demo
 // Copyright (C) 2002 The Combat Simulator Project
 // http://csp.sourceforge.net
-// 
+//
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
 // as published by the Free Software Foundation; either version 2
 // of the License, or (at your option) any later version.
-// 
+//
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU General Public License
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
@@ -35,7 +35,7 @@ using bus::Kinetics;
 SIMDATA_REGISTER_INTERFACE(GroundCollisionDynamics)
 
 
-//GroundCollisionDynamics::GroundCollisionDynamics(double mass, 
+//GroundCollisionDynamics::GroundCollisionDynamics(double mass,
 //                                                 std::vector<simdata::Vector3> const &contacts):
 GroundCollisionDynamics::GroundCollisionDynamics():
 	//m_Forces(contacts.size()),
@@ -45,14 +45,14 @@ GroundCollisionDynamics::GroundCollisionDynamics():
 	m_SpringConstant(5e+6),
 	m_Friction(1.2),
 	m_ImpactDamping(1e+6),
-	m_ImpactSpeedTolerance(3.0), 
+	m_ImpactSpeedTolerance(3.0),
 	m_NeedsImpulse(false),
 	m_HasContact(false)
 {
 }
 
-void GroundCollisionDynamics::setGroundProperties(double spring_constant, 
-                                                  double friction, 
+void GroundCollisionDynamics::setGroundProperties(double spring_constant,
+                                                  double friction,
                                                   double impact_damping)
 {
 	m_SpringConstant = spring_constant;
@@ -61,7 +61,7 @@ void GroundCollisionDynamics::setGroundProperties(double spring_constant,
 }
 
 
-void GroundCollisionDynamics::registerChannels(Bus *bus) {
+void GroundCollisionDynamics::registerChannels(Bus *) {
 }
 
 void GroundCollisionDynamics::importChannels(Bus *bus) {
@@ -77,7 +77,7 @@ void GroundCollisionDynamics::importChannels(Bus *bus) {
 }
 	
 
-void GroundCollisionDynamics::computeForceAndMoment(double x) {
+void GroundCollisionDynamics::computeForceAndMoment(double) {
 	m_HasContact = false;
 	m_NeedsImpulse = false;
 	m_Force = simdata::Vector3::ZERO;
@@ -127,7 +127,7 @@ void GroundCollisionDynamics::computeForceAndMoment(double x) {
 					m_Extension[i] /= frictionScale;
 					slidingFriction /= frictionScale;
 				} else {
-					double beta = 0.2*m_ContactSpring; 
+					double beta = 0.2*m_ContactSpring;
 					slidingFriction -= beta * slidingVelocityBody;
 				}
 				*/
@@ -143,7 +143,7 @@ void GroundCollisionDynamics::computeForceAndMoment(double x) {
 			m_Extension[i] = simdata::Vector3::ZERO;
 		}
 		m_Forces[i] = forceBody;
-	} 
+	}
 
 	if (m_HasContact) {
 		double acceleration = m_Force.length() / b_Mass->value();

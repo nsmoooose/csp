@@ -83,7 +83,7 @@ bool DispatchMessageHandler::isLocal(unsigned int addr, unsigned short port)
 }
 
 
-simdata::Ref<DynamicObject> DispatchMessageHandler::addRemoteObject( NetworkMessage * message ) {
+simdata::Ref<DynamicObject> DispatchMessageHandler::addRemoteObject(NetworkMessage * /*message*/) {
 	CSP_LOG(NETWORK, DEBUG, "DispatchMessageHandler::addRemoteObject() - adding new object");
 
 	// use hard coded mirage for now.

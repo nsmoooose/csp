@@ -1,17 +1,17 @@
 // Combat Simulator Project - FlightSim Demo
 // Copyright (C) 2002, 2003 The Combat Simulator Project
 // http://csp.sourceforge.net
-// 
+//
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
 // as published by the Free Software Foundation; either version 2
 // of the License, or (at your option) any later version.
-// 
+//
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU General Public License
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
@@ -30,7 +30,7 @@ SIMDATA_REGISTER_INTERFACE(AircraftInputSystem)
 
 DEFINE_INPUT_INTERFACE(AircraftInputSystem);
 
-AircraftInputSystem::AircraftInputSystem(): 
+AircraftInputSystem::AircraftInputSystem():
 	m_ThrottleInput(0.2 /*rate*/, 1.0 /*decay*/, 0.0 /*min*/, 1.0 /*max*/)
 {
 }
@@ -45,7 +45,7 @@ void AircraftInputSystem::registerChannels(Bus *bus) {
 	m_AirbrakeInput.connect(bus, "ControlInputs.AirbrakeInput");
 }
 
-void AircraftInputSystem::importChannels(Bus *bus) {
+void AircraftInputSystem::importChannels(Bus *) {
 }
 
 
@@ -64,100 +64,100 @@ double AircraftInputSystem::onUpdate(double dt)
 
 // input event callbacks
 
-void AircraftInputSystem::setAirbrake(double x) { 
-	m_AirbrakeInput.setValue(x); 
+void AircraftInputSystem::setAirbrake(double x) {
+	m_AirbrakeInput.setValue(x);
 }
 
-void AircraftInputSystem::setThrottle(double x) { 
-	m_ThrottleInput.setValue(0.5 *(1.0 - x)); 
+void AircraftInputSystem::setThrottle(double x) {
+	m_ThrottleInput.setValue(0.5 *(1.0 - x));
 }
 
 void AircraftInputSystem::setRudder(double x)
-{ 
-	m_RudderInput.setValue(x); 
+{
+	m_RudderInput.setValue(x);
 }
 
-void AircraftInputSystem::IncRudder() { 
-	m_RudderInput.setIncrement(1.0); 
+void AircraftInputSystem::IncRudder() {
+	m_RudderInput.setIncrement(1.0);
 }
 
-void AircraftInputSystem::noIncRudder() { 
+void AircraftInputSystem::noIncRudder() {
 	m_RudderInput.stopIncrement();
 	m_RudderInput.setDecay(30);
 }
 
-void AircraftInputSystem::DecRudder() { 
-	m_RudderInput.setIncrement(-1.0); 
+void AircraftInputSystem::DecRudder() {
+	m_RudderInput.setIncrement(-1.0);
 }
 
-void AircraftInputSystem::noDecRudder() { 
+void AircraftInputSystem::noDecRudder() {
 	m_RudderInput.stopDecrement();
 	m_RudderInput.setDecay(30);
 }
 
 void AircraftInputSystem::setRoll(double x)
-{ 
-	m_RollInput.setValue(x); 
+{
+	m_RollInput.setValue(x);
 }
 
 void AircraftInputSystem::setPitch(double x)
-{ 
-	m_PitchInput.setValue(x); 
+{
+	m_PitchInput.setValue(x);
 }
 
-void AircraftInputSystem::IncPitch() { 
-	m_PitchInput.setIncrement(1.0); 
+void AircraftInputSystem::IncPitch() {
+	m_PitchInput.setIncrement(1.0);
 }	
 
-void AircraftInputSystem::noIncPitch() { 
+void AircraftInputSystem::noIncPitch() {
 	m_PitchInput.stopIncrement();
 	m_PitchInput.setDecay(30);
 }
 
-void AircraftInputSystem::DecPitch() { 
-	m_PitchInput.setIncrement(-1.0); 
+void AircraftInputSystem::DecPitch() {
+	m_PitchInput.setIncrement(-1.0);
 }
 
-void AircraftInputSystem::noDecPitch() { 
+void AircraftInputSystem::noDecPitch() {
 	m_PitchInput.stopDecrement();
 	m_PitchInput.setDecay(30);
 }
 
-void AircraftInputSystem::IncRoll() { 
+void AircraftInputSystem::IncRoll() {
 	m_RollInput.setIncrement(1.0);
 }
 
-void AircraftInputSystem::noIncRoll() { 
+void AircraftInputSystem::noIncRoll() {
 	m_RollInput.stopIncrement();
 	m_RollInput.setDecay(30);
 }
 
-void AircraftInputSystem::DecRoll() { 
+void AircraftInputSystem::DecRoll() {
 	m_RollInput.setIncrement(-1.0);
 }
 
-void AircraftInputSystem::noDecRoll() { 
+void AircraftInputSystem::noDecRoll() {
 	m_RollInput.stopDecrement();
 	m_RollInput.setDecay(30);
 }
 
-void AircraftInputSystem::IncThrottle() { 
-	m_ThrottleInput.setIncrement(1.0); 
+void AircraftInputSystem::IncThrottle() {
+	m_ThrottleInput.setIncrement(1.0);
 }
 
-void AircraftInputSystem::noIncThrottle() { 
+void AircraftInputSystem::noIncThrottle() {
 	m_ThrottleInput.stopIncrement();
 }
 
-void AircraftInputSystem::DecThrottle() { 
-	m_ThrottleInput.setIncrement(-1.0); 
+void AircraftInputSystem::DecThrottle() {
+	m_ThrottleInput.setIncrement(-1.0);
 }
 
-void AircraftInputSystem::noDecThrottle() { 
+void AircraftInputSystem::noDecThrottle() {
 	m_ThrottleInput.stopDecrement();
 }
 
-void AircraftInputSystem::WheelBrakePulse() { 
+void AircraftInputSystem::WheelBrakePulse() {
 	m_LeftBrakeInput.setValue(1.0);
 	m_LeftBrakeInput.setDecay(30);
 	m_RightBrakeInput.setValue(1.0);

@@ -1,17 +1,17 @@
 // Combat Simulator Project - CSPSim
 // Copyright (C) 2002-2004 The Combat Simulator Project
 // http://csp.sourceforge.net
-// 
+//
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
 // as published by the Free Software Foundation; either version 2
 // of the License, or (at your option) any later version.
-// 
+//
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU General Public License
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
@@ -138,7 +138,7 @@ void LogoScreen::onInit() {
 	m_LogoView = new osgUtil::SceneView();
 	m_LogoView->setDefaults();
 	m_LogoView->setViewport(0,0,m_width,m_height);
-	float scale = 0.5f; 
+	float scale = 0.5f;
 	float w = scale * m_width, h = scale * m_height;
 	m_LogoView->setProjectionMatrixAsOrtho2D(-w,w,-h,h);
 	osg::FrameStamp *fs = new osg::FrameStamp();
@@ -164,12 +164,12 @@ void LogoScreen::onInit() {
 	//(*vertices)[2] = osg::Vec3(-w,0.0f,-h);//bottom left
 	//(*vertices)[3] = osg::Vec3(-w,0.0f,h);//top left
 	geom->setVertexArray(vertices);
-    
+
 	osg::Vec2Array* texcoords = new osg::Vec2Array(4);
 	(*texcoords)[3].set(0.0f, 1.0f);
 	(*texcoords)[2].set(0.0f, 0.0f);
 	(*texcoords)[1].set(1.0f, 0.0f);
-	(*texcoords)[0].set(1.0f, 1.0f); 
+	(*texcoords)[0].set(1.0f, 1.0f);
 	geom->setTexCoordArray(0,texcoords);
 
 	osg::Vec4Array* colors = new osg::Vec4Array(1);
@@ -241,7 +241,7 @@ void LogoScreen::onRender() {
 	m_LogoView->draw();
 }
 
-void LogoScreen::onUpdate(double dt) {
+void LogoScreen::onUpdate(double /*dt*/) {
 	m_LogoView->update();
 }
 
@@ -312,7 +312,7 @@ void LogoScreen::stop() {
 #include <SDL/SDL.h>
 
 
-LogoScreen::LogoScreen(int width, int height) 
+LogoScreen::LogoScreen(int width, int height)
 {
 	m_width = width;
 	m_height = height;

@@ -1,17 +1,17 @@
 // Combat Simulator Project - FlightSim Demo
 // Copyright (C) 2002 The Combat Simulator Project
 // http://csp.sourceforge.net
-// 
+//
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
 // as published by the Free Software Foundation; either version 2
 // of the License, or (at your option) any later version.
-// 
+//
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU General Public License
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
@@ -57,7 +57,7 @@
 #include <cmath>
 
 // SHADOW is an *extremely* experimental feature.  It is based on the
-// osgShadow demo, and does (did) work to some extent, but only for a 
+// osgShadow demo, and does (did) work to some extent, but only for a
 // single localized object.  A more robust approach needs to be taken
 // but the code remains for reference.
 #define NOSHADOW
@@ -318,10 +318,10 @@ int VirtualScene::buildScene()
 	// use a transform to make the sky and base around with the eye point.
 	m_EyeTransform = new osg::PositionAttitudeTransform;
 
-	// transform's value isn't knowm until in the cull traversal so its 
-	// bounding volume can't be determined, therefore culling will be 
-	// invalid, so switch it off.  this will cause all our parents to 
-	// switch culling off as well, but culling will be remain on 
+	// transform's value isn't knowm until in the cull traversal so its
+	// bounding volume can't be determined, therefore culling will be
+	// invalid, so switch it off.  this will cause all our parents to
+	// switch culling off as well, but culling will be remain on
 	// underneath this node or any other branch above this transform.
 	m_EyeTransform->setCullingActive(false);
 
@@ -335,7 +335,7 @@ int VirtualScene::buildScene()
 	// in general the earth and sky should cover the entire field of
 	// view, but at high altitude it is still possible to see around the
 	// terrain (either past the clipping plane or beyond the edge of the
-	// terrain lattice).  when low detail terrain is eventually extended 
+	// terrain lattice).  when low detail terrain is eventually extended
 	// without clipping then this can be set to false.
 	background->setRequiresClear(true);
 	background->addChild(m_EyeTransform.get());
@@ -406,7 +406,7 @@ int VirtualScene::buildScene()
 float CM_intensity=0.0;
 
 
-void VirtualScene::buildSky() 
+void VirtualScene::buildSky()
 {
 	osg::StateSet* globalStateSet = m_FarView->getGlobalStateSet();
 	assert(globalStateSet);
@@ -512,7 +512,7 @@ void VirtualScene::onUpdate(float dt)
 }
 
 
-void VirtualScene::setCameraNode( osg::Node * pNode)
+void VirtualScene::setCameraNode(osg::Node *)
 {
 }
 
@@ -545,15 +545,15 @@ void VirtualScene::_setLookAt(const simdata::Vector3& eyePos, const simdata::Vec
 	osg::Vec3 _camLookPos;
 	osg::Vec3 _camUpVec;
 	m_FarView->getViewMatrixAsLookAt(_camEyePos, _camLookPos, _camUpVec);
-	CSP_LOG(APP, DEBUG, 
-			"VirtualScene::setLookAt - eye: " << _camEyePos  
-			<< ", look: " << _camLookPos  
-			<< ", up: " << _camUpVec 
+	CSP_LOG(APP, DEBUG,
+			"VirtualScene::setLookAt - eye: " << _camEyePos
+			<< ", look: " << _camLookPos
+			<< ", up: " << _camUpVec
 		   );
 }
 
 // TODO externalize a couple fixed parameters
-void VirtualScene::_updateFog(simdata::Vector3 const &lookPos, simdata::Vector3 const &eyePos) 
+void VirtualScene::_updateFog(simdata::Vector3 const &lookPos, simdata::Vector3 const &eyePos)
 {
 	if (!m_FogEnabled) return;
 	//AdjustCM(m_Sky->getSkyIntensity());
@@ -768,7 +768,7 @@ void VirtualScene::resetSpin() {
  * does not directly effect normal "simtime".
  */
 double VirtualScene::getSpin() {
-	return m_Sky->getSpin(); 
+	return m_Sky->getSpin();
 }
 
 void VirtualScene::drawPlayerInterface()

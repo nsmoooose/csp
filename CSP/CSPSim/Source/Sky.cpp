@@ -1,17 +1,17 @@
 // Combat Simulator Project - FlightSim Demo
 // Copyright (C) 2002 The Combat Simulator Project
 // http://csp.sourceforge.net
-// 
+//
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
 // as published by the Free Software Foundation; either version 2
 // of the License, or (at your option) any later version.
-// 
+//
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU General Public License
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
@@ -73,7 +73,7 @@ const float TURBIDITY = 3.0f;
  * add earthshine effects
  * organize/cleanup code
  * dim the stars when the moon is full
- * 
+ *
  */
 
 
@@ -203,7 +203,7 @@ public:
 		float phi, theta;
 		for (i=0; i<n; i++) {
 			float I = _catalog->_stars[i].I;
-			// C is used to reduce star color saturation as an 
+			// C is used to reduce star color saturation as an
 			// ad hoc approximation to human color vision response
 			// at low light levels
 			float C = I - 0.8;
@@ -249,7 +249,7 @@ public:
 	}
 
 	//const bool computeBound() const { return true; }
-	virtual void drawImplementation(osg::State &state) const {
+	virtual void drawImplementation(osg::State &/*state*/) const {
 		PROF0(_stars);
 		int i = _positionList->size();
 		Vec3Array::const_iterator p = _positionList->begin();
@@ -364,7 +364,7 @@ void Sun::updateScene(double h, double A, Color const &color, float intensity, f
 	_updateLighting(x, y, z, h, color, intensity, background);
 }
 
-void Sun::_updateLighting(float x, float y, float z, float h, Color const &color, float intensity, float background) {
+void Sun::_updateLighting(float x, float y, float z, float /*h*/, Color const &color, float intensity, float background) {
 	float specular_scale = 1.0;
 	float diffuse_scale = 1.0;
 	float ambient = background;
@@ -391,7 +391,7 @@ void Sun::_updateLighting(float x, float y, float z, float h, Color const &color
 		double ciex = 0.3233 + 0.08 * atmospheric_distance;
 		double ciey = 0.556 + 2.3*(ciex-0.33) - 2.0*ciex*ciex;
 		// completely ad-hoc
-		double cieY = 1.0 - 0.4 * atmospheric_distance * atmospheric_distance; 
+		double cieY = 1.0 - 0.4 * atmospheric_distance * atmospheric_distance;
 		float weight = z * 2.0;
 		if (weight > 1.0) weight = 1.0;
 		m_Color.blend(Color(ciex, ciey, cieY, Color::CIExyY, false).toRGB(true), weight);
@@ -408,11 +408,11 @@ void Sun::_updateLighting(float x, float y, float z, float h, Color const &color
 
 	// below horizon?
 	if (z < 0.0) {
-		// 0.5 cuts light level in half exactly at sunset 
+		// 0.5 cuts light level in half exactly at sunset
 		// (give or take the sun's diameter)
 		diffuse_scale = 0.5;
 		// fade out specular faster as sun drops below the horizon
-		specular_scale = 0.5 + 9.0*z;  
+		specular_scale = 0.5 + 9.0*z;
 		if (specular_scale < 0.0) specular_scale = 0.0;
 		// get the "sun shine" from the horizion, not below.
 		z = 0.0;
@@ -445,8 +445,8 @@ void Sun::updatePosition(double julian_date) {
 	double L = M - 77.11;
 	M = toRadians(M);
 	double C = 1.915 * sin(M) + 0.0201 * sin(2*M);
-	// in AU = 1.496x10^11 m (23455 R_earth) 
-	// double R = 1.00140 - 0.016708*cos(M) - 0.000141*cos(2*M) 
+	// in AU = 1.496x10^11 m (23455 R_earth)
+	// double R = 1.00140 - 0.016708*cos(M) - 0.000141*cos(2*M)
 	_beta = 0.0;
 	_lambda = toRadians(L + C);
 	_pi = 0.00004263; // just taking an average orbital radius of the earth
@@ -467,35 +467,35 @@ void Moon::updatePosition(double julian_date) {
 
 	_lambda = \
 		l
-		+ 0.1098*sin(mp) 
-		+ 0.0222*sin(2*d-mp) 
-		+ 0.0115*sin(2*d) 
-		+ 0.0037*sin(2*mp) 
-		- 0.0032*sin(m) 
-		- 0.0020*sin(2*f) 
-		+ 0.0010*sin(2*d-2*mp) 
-		+ 0.0010*sin(2*d-m-mp) 
-		+ 0.0009*sin(2*d+mp) 
-		+ 0.0008*sin(2*d-m) 
-		+ 0.0007*sin(mp-m) 
-		- 0.0006*sin(d) 
+		+ 0.1098*sin(mp)
+		+ 0.0222*sin(2*d-mp)
+		+ 0.0115*sin(2*d)
+		+ 0.0037*sin(2*mp)
+		- 0.0032*sin(m)
+		- 0.0020*sin(2*f)
+		+ 0.0010*sin(2*d-2*mp)
+		+ 0.0010*sin(2*d-m-mp)
+		+ 0.0009*sin(2*d+mp)
+		+ 0.0008*sin(2*d-m)
+		+ 0.0007*sin(mp-m)
+		- 0.0006*sin(d)
 		- 0.0005*sin(m+mp);
 	_beta = \
-		+ 0.0895*sin(f) 
-		+ 0.0049*sin(mp+f) 
-		+ 0.0048*sin(mp-f) 
-		+ 0.0030*sin(2*d-f) 
-		+ 0.0010*sin(2*d+f-mp) 
-		+ 0.0008*sin(2*d-f-mp) 
+		+ 0.0895*sin(f)
+		+ 0.0049*sin(mp+f)
+		+ 0.0048*sin(mp-f)
+		+ 0.0030*sin(2*d-f)
+		+ 0.0010*sin(2*d+f-mp)
+		+ 0.0008*sin(2*d-f-mp)
 		+ 0.0006*sin(2*d+f);
 	/*
 	_pi = \
-		+ 0.016593 
-		+ 0.000904 * cos(mp) 
-		+ 0.000166 * cos(2*d - mp) 
-		+ 0.000137 * cos(2*d) 
-		+ 0.000049 * cos(2*mp) 
-		+ 0.000015 * cos(2*d + mp) 
+		+ 0.016593
+		+ 0.000904 * cos(mp)
+		+ 0.000166 * cos(2*d - mp)
+		+ 0.000137 * cos(2*d)
+		+ 0.000049 * cos(2*mp)
+		+ 0.000015 * cos(2*d + mp)
 		+ 0.000009 * cos(2*d - m);
 	*/
 	// save some time: for now no distance scaling variation
@@ -550,7 +550,7 @@ Moon::Moon(): AstronomicalBody() {
 	
 	m_RenderDistance = 950000.0;
 	float x, y;
-	x = y = 1.0; 
+	x = y = 1.0;
 	m_Image = osgDB::readImageFile("moon.png");
 	if (!m_Image.valid()) throw csp::DataError("unable to open \"moon.png\"");
 
@@ -727,7 +727,7 @@ void Moon::_updateIllumination(Sun const &sun) {
 /**
  * Generate a texture with the correct lunar phase.
  *
- * The original full moon image is masked with alpha equal to 1 in the 
+ * The original full moon image is masked with alpha equal to 1 in the
  * shadow and a soft terminus.  Beta, the angle of the moon above the
  * ecliptic plane is not used, since the effect is relatively small and
  * the computation much simpler without it.
@@ -746,7 +746,7 @@ void Moon::_maskPhase(float phi, float beta) {
 	// alpha component
 	data += 3;
 	// adhoc, gives a maximum value of 10 for a full earth (new moon)
-	float dark = m_EarthShine * 105.0; 
+	float dark = m_EarthShine * 105.0;
 	if (dark < 0.0) dark = 0.0;
 	if (dark > 10.0) dark = 10.0;
 	unsigned char darkalpha = (unsigned char) dark;
@@ -769,7 +769,7 @@ void Moon::_maskPhase(float phi, float beta) {
 			float x = i*sx-1.0;
 			float x2 = x*x;
 			int c = int(*data);
-			if (x2 > edge) { 
+			if (x2 > edge) {
 				// outside the disc
 				c = 0;
 			} else {
@@ -819,7 +819,7 @@ osg::Node* Moon::getNode() {
 #define OVER_LUMINESCENCE 1.2 //1.5
 // parameters for the attenuation function which cuts the intensity
 // as the sun nears the horizon.  Large values of SUNSET_SHARPNESS localizes
-// the drop at the horizon.  NIGHT_BASE is the scaling when the sun is 90 
+// the drop at the horizon.  NIGHT_BASE is the scaling when the sun is 90
 // degrees below the horizon.
 #define SUNSET_SHARPNESS 4.0
 #define NIGHT_BASE 0.02
@@ -971,7 +971,7 @@ void SkyShader::_computeBase() {
 #ifdef CUSTOM
 	// F(sun_h) is my own attenuation function which cuts the intensity
 	// as the sun nears the horizon.  Large values of SHARPNESS localize
-	// the drop at the horizon.  NightBase is scaling with the sun 90 
+	// the drop at the horizon.  NightBase is scaling with the sun 90
 	// degrees below the horizon.
 	m_F =(atan(m_SunElevation*m_SunsetSharpness)/simdata::PI+0.5)*(1.0-m_NightBase) + m_NightBase;
 #endif
@@ -984,7 +984,7 @@ Color SkyShader::SkyColor(float elevation, float azimuth, float dark, float &int
 	float A = azimuth + m_AzimuthCorrection;
 	float v[3] = {sin(A)*sin(theta), cos(A)*sin(theta), cos(theta)};
 	float dot = v[0]*m_SunVector[0]+v[1]*m_SunVector[1]+v[2]*m_SunVector[2];
-	// numerical error can cause abs(dot) to exceed 1... 
+	// numerical error can cause abs(dot) to exceed 1...
 	if (dot < -1.0) dot = -1.0; else
 	if (dot >  1.0) dot =  1.0;
 	float gamma = acos(dot);
@@ -1005,7 +1005,7 @@ Color SkyShader::SkyColor(float elevation, float azimuth, float dark, float &int
 	// taking sqrt(Y) softens the sky a bit, spreading the blue more
 	// unformly.  this should probably be done instead by blending with
 	// a single blue translucent surface across the field of view, where
-	// the transparency depends on altitude 
+	// the transparency depends on altitude
 	//float oldY = cieY;
 	if (cieY < 0.0) cieY = 0.0;
 	cieY = pow((double)cieY, (double)m_HaloSharpness) * m_F;
@@ -1047,7 +1047,7 @@ public:
 		dstate->setMode(GL_DEPTH_TEST, osg::StateAttribute::OFF);
 		osg::Depth *depth = new osg::Depth;
 		depth->setFunction(osg::Depth::ALWAYS);
-		depth->setRange(1.0, 1.0);   
+		depth->setRange(1.0, 1.0);
 		dstate->setAttributeAndModes(depth, osg::StateAttribute::OFF);
 		setStateSet(dstate);
 	}
@@ -1115,7 +1115,7 @@ private:
 	int m_Segments;
 	Vec4 m_FogColor;
 	Vec4Array *m_Colors;
-	Vec3Array *m_Coords; 
+	Vec3Array *m_Coords;
 	float m_Radius;
 };
 
@@ -1148,10 +1148,10 @@ void Sky::_init()
 		m_lev[m_nlev] = elev;
 		m_nlev++;
 		if (elev <= -5.0 || elev >= 5.0) {
-			elev += 5.0; 
+			elev += 5.0;
 		} else
 		if (elev <  1.0) {
-			elev = 1.0; 
+			elev = 1.0;
 			m_HorizonIndex = m_nlev-1;
 		} else {
 			elev = 5.0;
@@ -1246,7 +1246,7 @@ void Sky::_init()
 		// its not clear how to determine the correct value.  the
 		// following is just what the png loader does, setting
 		// the format to the number of color bytes.
-		image->setInternalTextureFormat(GL_RGB); 
+		image->setInternalTextureFormat(GL_RGB);
 		Texture2D *tex = new Texture2D;
 		tex->setDataVariance(osg::Object::DYNAMIC);
 		tex->setImage(image);
@@ -1278,7 +1278,7 @@ void Sky::_init()
 		dome_state->setRenderBinDetails(-2,"RenderBin");
 		osg::Depth* depth = new osg::Depth;
 		depth->setFunction(osg::Depth::ALWAYS);
-		depth->setRange(1.0, 1.0);   
+		depth->setRange(1.0, 1.0);
 		dome_state->setAttributeAndModes(depth,StateAttribute::OFF);
 	}
 
@@ -1286,7 +1286,7 @@ void Sky::_init()
 	/* XXX XXX
 	osg::Depth* depth = new osg::Depth;
 	depth->setFunction(osg::Depth::ALWAYS);
-	depth->setRange(1.0, 1.0);   
+	depth->setRange(1.0, 1.0);
 	dstate->setAttributeAndModes(depth,StateAttribute::OFF);
 	*/
 
@@ -1298,7 +1298,7 @@ void Sky::_init()
 	star_state->setMode(GL_FOG, osg::StateAttribute::OFF);
 	osg::Depth* depth = new osg::Depth;
 	depth->setFunction(osg::Depth::ALWAYS);
-	depth->setRange(1.0, 1.0);   
+	depth->setRange(1.0, 1.0);
 	star_state->setAttributeAndModes(depth,StateAttribute::OFF);
 
 	osg::Geode *geode = new osg::Geode();
@@ -1381,14 +1381,14 @@ void Sky::_updateShading(double sun_h, double sun_A) {
 	osg::Vec4 horizon_average;
 	for (i = 0; i < m_nlev; ++i) {
 		double elev = toRadians(m_lev[i]);
-		if (elev < 0.0) elev = 0.0; // sub horizon colors aren't correct 
+		if (elev < 0.0) elev = 0.0; // sub horizon colors aren't correct
 		double azimuth = -sun_A - 0.5 * simdata::PI;
 		bool at_vertex = fabs(elev - sun_h) < min_a; // this is only a rough measure
 		for (j = 0; j < m_nseg; ++j) {
 			float intensity;
 			// if the sun lines up very close to a vertex, the vertex will be
 			// pure white and create a noticible artifact on the surrounding
-			// triangles.  
+			// triangles.
 			if (at_vertex && (fabs(azimuth) < min_a)) {
 				jitter = 0.0; //da;
 			} else {
@@ -1410,12 +1410,12 @@ void Sky::_updateShading(double sun_h, double sun_A) {
 	}
 	m_Horizon->updateHorizonColors(*m_HorizonColors);
 	m_AverageIntensity /= m_nlev*m_nseg;
-	m_SkyDome->dirtyDisplayList(); 
+	m_SkyDome->dirtyDisplayList();
 }
 #endif
 
 #ifdef TEXDOME
-void Sky::_updateShading(double sun_h, double sun_A) {
+void Sky::_updateShading(double /*sun_h*/, double sun_A) {
 	Vec2Array& tex = *(dynamic_cast<Vec2Array*>(m_SkyDome->getTexCoordArray(0)));
 	int i, j;
 
@@ -1424,13 +1424,13 @@ void Sky::_updateShading(double sun_h, double sun_A) {
 
 	float dark = m_Moon.getApparentBrightness();
 	simdata::SimTime t = simdata::SimDate::getSystemTime();
-    
+
 	{ // update skydome texture
-		unsigned char *shade = m_SkyDomeTextureImage->data(); 
+		unsigned char *shade = m_SkyDomeTextureImage->data();
 		assert(shade);
 		for (j = 0; j < 64; ++j) {
 			int idx = (j * 64 + 32) * 3;
-			double y = (j-32) / 30.0; 
+			double y = (j-32) / 30.0;
 			for (i = 0; i < 32; ++i) {
 				double x = i / 30.0;
 				double elevation = (1.0 - sqrt(x*x+y*y)) * 0.5 * simdata::PI;
@@ -1470,7 +1470,7 @@ void Sky::_updateShading(double sun_h, double sun_A) {
 		double da = 2.0 * simdata::PI / (m_nseg);
 		for (i = 0; i < m_nlev; ++i) {
 			double elev = toRadians(m_lev[i]);
-			if (elev < 0.0) elev = 0.0; // sub horizon colors aren't correct 
+			if (elev < 0.0) elev = 0.0; // sub horizon colors aren't correct
 			double azimuth = -sun_A - 0.5 * simdata::PI;
 			float factor = (1.0 - 2.0 * elev / simdata::PI) * 30.0 / 32.0;
 			for (j = 0; j < m_nseg; ++j) {
@@ -1489,12 +1489,12 @@ void Sky::_updateShading(double sun_h, double sun_A) {
 	CSP_LOG(APP, DEBUG, "Sky update time: " << ((u-t)*1000.0) << " ms");
 
 	m_Horizon->updateHorizonColors(*m_HorizonColors);
-	if (n_average != 0) 
+	if (n_average != 0)
 		m_AverageIntensity /= n_average;
 	
 	m_SkyDomeTextureImage->dirty();
 	// XXX these lines don t seem to be needed?
-	//m_SkyDomeTexture->dirtyTextureObject(); 
+	//m_SkyDomeTexture->dirtyTextureObject();
 	//m_SkyDomeTexture->dirtyTextureParameters();
 	//m_SkyDomeTexture->setImage(m_SkyDomeTextureImage.get());
 }
@@ -1507,7 +1507,7 @@ void Sky::spinTheWorld(bool noreset) {
 	} else {
 		m_SpinTheWorld = 0.0;
 	}
-} 
+}
 
 void Sky::update(double lat, double lon, simdata::SimDate const &t) {
 	m_LMST = t.getMST(lon) + m_SpinTheWorld * 2.0 * simdata::PI;
@@ -1531,7 +1531,7 @@ void Sky::update(double lat, double lon, simdata::SimDate const &t) {
 // near the center of the field of view.  it is much better
 // than a fixed fog color, but produces bad effects around
 // sunrise/set for wide fields of view.  2 point interpolation
-// (avg=0) seems to look better than the multipoint averaging 
+// (avg=0) seems to look better than the multipoint averaging
 // implemented below for avg > 0.
 osg::Vec4 Sky::getHorizonColor(float angle) {
 	static int avg = 0;

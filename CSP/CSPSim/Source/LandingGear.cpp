@@ -161,7 +161,7 @@ double LandingGear::getDragFactor() const {
 }
 
 
-void LandingGear::preSimulationStep(double dt) {
+void LandingGear::preSimulationStep(double /*dt*/) {
 	if (!m_Extended) return;
 	// XXX anything to do here?
 }
@@ -234,9 +234,9 @@ void LandingGear::updateTireRotation(double dt) {
  * @param height height of body origin above ground
  * @param normalGroundBody ground normal vector in body coordinates
  */
-void LandingGear::updateSuspension(Vector3 const &origin,
+void LandingGear::updateSuspension(Vector3 const &/*origin*/,
                                    Vector3 const &vBody,
-                                   simdata::Quat const &q,
+                                   simdata::Quat const &/*q*/,
                                    double const height,
                                    Vector3 const &normalGroundBody)
 {
@@ -546,7 +546,7 @@ void LandingGear::updateWheel(double dt,
 }
 
 
-void GearDynamics::doComplexPhysics(double x) {
+void GearDynamics::doComplexPhysics(double) {
 	m_Force = m_Moment = Vector3::ZERO;
 	if (!isGearExtended()) return;
 	Vector3 airflow_body = m_WindVelocityBody - *m_VelocityBody;

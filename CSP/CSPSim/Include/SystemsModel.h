@@ -1,17 +1,17 @@
 // Combat Simulator Project - FlightSim Demo
 // Copyright (C) 2003 The Combat Simulator Project
 // http://csp.sourceforge.net
-// 
+//
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
 // as published by the Free Software Foundation; either version 2
 // of the License, or (at your option) any later version.
-// 
+//
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU General Public License
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
@@ -51,7 +51,7 @@ class SystemsModel: public System {
 	class FindSystemByNameVisitor: public simdata::FindVisitor<System,SystemVisitor> {
 		std::string m_Name;
 	public:
-		FindSystemByNameVisitor(std::string const &name): 
+		FindSystemByNameVisitor(std::string const &name):
 			simdata::FindVisitor<System,SystemVisitor>(), m_Name(name) {}
 		virtual bool match(System &s) { return s.getName() == m_Name; }
 	};
@@ -97,13 +97,13 @@ public:
 	END_SIMDATA_XML_INTERFACE
 
 	/** Initialize from an existing model.
-	 *  
+	 *
 	 *  This method is called when a new model is bound to a vehicle,
 	 *  allowing relevant state data from the old model to be preserved.
 	 *
 	 *  @param other The previous model (may be NULL).
 	 */
-	virtual void init(SystemsModel::Ref other) {}
+	virtual void init(SystemsModel::Ref other);
 
 	bool canBeAdded() const { return false; }
 
@@ -113,9 +113,9 @@ public:
 		m_Bus->registerLocalDataChannel(name, value);
 	}
 
-	Bus::Ref getBus() const { 
+	Bus::Ref getBus() const {
 		assert(m_Bus.valid());
-		return m_Bus; 
+		return m_Bus;
 	}
 
 	virtual void postCreate();
@@ -156,8 +156,8 @@ public:
 		return visitor->handled();
 	}
 
-	virtual void registerChannels(Bus *bus) {}
-	virtual void importChannels(Bus *bus) {}
+	virtual void registerChannels(Bus *) {}
+	virtual void importChannels(Bus *) {}
 
 	SIMDATA_VISITABLE(SystemVisitor);
 };

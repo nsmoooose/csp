@@ -26,7 +26,6 @@ def PackageConfig(env):
 	env.ParseConfig('ccgnu2-config --flags --libs')
 
 env = env.Copy()
-env.Append(CXXFLAGS=' -Wno-long-long')
 env.AppendUnique(SHLINKFLAGS = '-Wl,-z,lazyload')
 env.Replace(CXXFLAGS=env['CXXFLAGS'].replace('-W ', ''))
 

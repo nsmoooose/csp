@@ -1,17 +1,17 @@
 // Combat Simulator Project - CSPSim
 // Copyright (C) 2002 The Combat Simulator Project
 // http://csp.sourceforge.net
-// 
+//
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
 // as published by the Free Software Foundation; either version 2
 // of the License, or (at your option) any later version.
-// 
+//
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU General Public License
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
@@ -63,9 +63,9 @@ Animation::~Animation()
 {
 }
 
-DrivenRotation::DrivenRotation(): 
+DrivenRotation::DrivenRotation():
 	m_Axis(0.0f, 0.0f, 0.0f),
-	m_Limit0(-simdata::PI), 
+	m_Limit0(-simdata::PI),
 	m_Limit1(simdata::PI),
 	m_Gain(1.0f),
 	m_Offset(0.0f)
@@ -76,7 +76,7 @@ DrivenRotation::~DrivenRotation()
 {
 }
 
-void DrivenRotation::postCreate() 
+void DrivenRotation::postCreate()
 {
 }
 
@@ -110,10 +110,10 @@ void DrivenRotation::Callback::operator()(osg::Node* node, osg::NodeVisitor* nv)
 	traverse(node, nv);
 }
 
-DrivenMagnitudeTranslation::DrivenMagnitudeTranslation(): 
+DrivenMagnitudeTranslation::DrivenMagnitudeTranslation():
 	m_Direction(simdata::Vector3::ZERO),
 	m_Offset(simdata::Vector3::ZERO),
-	m_Limit0(-1), 
+	m_Limit0(-1),
 	m_Limit1(1),
 	m_Gain(1.0f) {
 }
@@ -146,10 +146,10 @@ void DrivenMagnitudeTranslation::Callback::operator()(osg::Node* node, osg::Node
 	traverse(node, nv);
 }
 
-DrivenVectorialTranslation::DrivenVectorialTranslation(): 
+DrivenVectorialTranslation::DrivenVectorialTranslation():
 	m_Direction(simdata::Vector3::ZERO),
 	m_Offset(simdata::Vector3::ZERO),
-	m_Limit0(-1), 
+	m_Limit0(-1),
 	m_Limit1(1),
 	m_Gain(1.0f) {
 }

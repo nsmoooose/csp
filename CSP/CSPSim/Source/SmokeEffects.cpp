@@ -1,17 +1,17 @@
 // Combat Simulator Project - FlightSim Demo
 // Copyright (C) 2002 The Combat Simulator Project
 // http://csp.sourceforge.net
-// 
+//
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
 // as published by the Free Software Foundation; either version 2
 // of the License, or (at your option) any later version.
-// 
+//
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU General Public License
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
@@ -55,7 +55,7 @@
  * camera.
  *
  *
- * flare class: ***** several overlapping, emitting particles + halo? 
+ * flare class: ***** several overlapping, emitting particles + halo?
  * can probably implement as a subclass of particle.
  *
  */
@@ -134,7 +134,7 @@ public:
 		osgParticle::rangev3 push;
 		push.set(osg::Vec3(-0.4, -0.4, -0.4), osg::Vec3(0.4, 0.4, 0.4));
 		for (int i = 0; i < count; ++i) {
-			osgParticle::Particle *P = getParticleSystem()->createParticle(getUseDefaultTemplate()? 0: &getParticleTemplate()); 
+			osgParticle::Particle *P = getParticleSystem()->createParticle(getUseDefaultTemplate()? 0: &getParticleTemplate());
 			if (P) {
 				P->setPosition(simdata::toOSG(place));
 				P->setVelocity(simdata::toOSG(wind) + push.get_random());
@@ -191,7 +191,7 @@ public:
 // VortexExpander
 
 
-void VortexExpander::operate(osgParticle::Particle *p, double dt)
+void VortexExpander::operate(osgParticle::Particle *p, double /*dt*/)
 {
 	static int x = 0;
 	if (p && isEnabled()) {
@@ -217,7 +217,7 @@ void VortexExpander::operate(osgParticle::Particle *p, double dt)
 // SmokeThinner
 
 
-void SmokeThinner::operate(osgParticle::Particle *p, double dt)
+void SmokeThinner::operate(osgParticle::Particle *p, double /*dt*/)
 {
 	float radius = p->getRadius();
 	// check if we've already operated on this particle
@@ -239,7 +239,7 @@ void SmokeThinner::operate(osgParticle::Particle *p, double dt)
 		if (old_lifetime > 0.0) scale = lifetime / (1.0 + old_lifetime); // can old_lifetime be < 1.0?
 		osgParticle::rangef const &r = p->getSizeRange();
 		p->setSizeRange(osgParticle::rangef(r.minimum, r.maximum * scale));
-	} 
+	}
 }
 
 
@@ -273,8 +273,8 @@ void ParticleEffect::setDefault() {
 	m_Light = true;
 }
 
-void ParticleEffect::setTexture(const std::string & TextureFile) { 
-	m_TextureFile = TextureFile; 
+void ParticleEffect::setTexture(const std::string & TextureFile) {
+	m_TextureFile = TextureFile;
 }
 
 void ParticleEffect::setColorRange(const osg::Vec4 &colorMin, const osg::Vec4 &colorMax) {
@@ -297,12 +297,12 @@ void ParticleEffect::setShape(osgParticle::Particle::Shape const &shape) {
 	m_Prototype.setShape(shape);
 }
 
-void ParticleEffect::setEmissive(bool emissive) { 
-	m_Emissive = emissive; 
+void ParticleEffect::setEmissive(bool emissive) {
+	m_Emissive = emissive;
 }
 
-void ParticleEffect::setLight(bool light) { 
-	m_Light = light; 
+void ParticleEffect::setLight(bool light) {
+	m_Light = light;
 }
 
 void ParticleEffect::setEnabled(bool on) {
@@ -370,12 +370,12 @@ void ParticleEffect::removeOperator(osgParticle::Operator* op) {
 // ParticleEffectUpdater
 
 
-ParticleEffectUpdater::ParticleEffectUpdater() { 
+ParticleEffectUpdater::ParticleEffectUpdater() {
 	m_Enabled = false;
 	m_InScene = false;
 }
 
-ParticleEffectUpdater::~ParticleEffectUpdater() { 
+ParticleEffectUpdater::~ParticleEffectUpdater() {
 }
 
 
@@ -421,7 +421,7 @@ void SmokeTrail::setOffset(simdata::Vector3 const &offset) {
 }
 
 
-void SmokeTrail::setExpansion(float speed) {
+void SmokeTrail::setExpansion(float /*speed*/) {
 //	m_Speed = speed;
 }
 
@@ -457,7 +457,7 @@ void SmokeTrail::update(double dt, simdata::Vector3 const &position, simdata::Qu
 }
 */
 
-void SmokeTrail::update(double dt, simdata::Vector3 const &position, simdata::Quat const &attitude) {
+void SmokeTrail::update(double /*dt*/, simdata::Vector3 const &position, simdata::Quat const &attitude) {
 	WindEmitter *emitter = dynamic_cast<WindEmitter*>(m_Emitter.get());
 	if (emitter) {
 		simdata::Vector3 place = position + attitude.rotate(m_Offset);

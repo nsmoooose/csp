@@ -1,17 +1,17 @@
 // Combat Simulator Project - CSPSim
 // Copyright (C) 2002 The Combat Simulator Project
 // http://csp.sourceforge.net
-// 
+//
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
 // as published by the Free Software Foundation; either version 2
 // of the License, or (at your option) any later version.
-// 
+//
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU General Public License
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
@@ -19,7 +19,7 @@
 
 /**
  * @file Colorspace.cpp
- * 
+ *
  * The vast majority of the colorspace manipulation routines
  * included here are adapted from Fortran90 functions written
  * by John Burkardt.  His excellent colorspace library is
@@ -27,7 +27,7 @@
  *
  *    http://www.psc.edu/~burkardt/src/colors/colors.html
  *
- * Translation of John's routines from Fortran90 to C/C++ 
+ * Translation of John's routines from Fortran90 to C/C++
  * was done by Mark Rose <mrose@stm.lbl.gov>.
  */
 
@@ -55,8 +55,8 @@ float unprime, vnprime, wnprime;
  * 'D50' or 'D5000', the CIE illuminant used in graphics printing,
  * bright tunsten illumination;
  *
- * 'D55' or 'D5500', a CIE illuminant that approximates a cloudy bright 
- * day; 
+ * 'D55' or 'D5500', a CIE illuminant that approximates a cloudy bright
+ * day;
  *
  * 'D65' or 'D6500', the CIE illuminant that approximates daylight;
  * This is used as the reference white for SMPTE, PAL/EBU, and HDTV
@@ -83,25 +83,25 @@ float whitepoint_xyz[][3] = {
  * Set the whitepoint reference.
  *
  * In additive image reproduction, the white point is the chromaticity of
- * the colour reproduced by equal red, green and blue components.  White 
- * point is a function of the ratio (or balance) of power among the 
- * primaries. In subtractive reproduction, white is the SPD of the 
- * illumination, multiplied by the SPD of the media. There is no unique 
- * physical or perceptual definition of white, so to achieve accurate 
+ * the colour reproduced by equal red, green and blue components.  White
+ * point is a function of the ratio (or balance) of power among the
+ * primaries. In subtractive reproduction, white is the SPD of the
+ * illumination, multiplied by the SPD of the media. There is no unique
+ * physical or perceptual definition of white, so to achieve accurate
  * colour interchange you must specify the characteristics of your white.
  *
- * It is often convenient for purposes of calculation to define white as 
- * a uniform SPD. This white reference is known as the equal-energy 
+ * It is often convenient for purposes of calculation to define white as
+ * a uniform SPD. This white reference is known as the equal-energy
  * illuminant, or CIE Illuminant E.
  *
  * (text excerpt from Poynton's Color FAQ, Copyright Charles Poynton 1997)
  */
-void setWhite(float x, float y, float z) {
+void setWhite(float x, float y, float /*z*/) {
 	float X, Y, Z;
 	xyY_to_XYZ(x, y, 1.0, X, Y, Z);
 	XYZ_check(X, Y, Z);
 	Xn = X;
-	Yn = Y; 
+	Yn = Y;
 	Zn = Z;
 	XYZ_to_uvwp(X, Y, Z, unprime, vnprime, wnprime);
 }
@@ -109,11 +109,11 @@ void setWhite(float x, float y, float z) {
 /**
  * Set the whitepoint reference to CIE illuminant D65.
  *
- * You should use this unless you have a good reason to use something else. 
- * The print industry commonly uses D50 and photography commonly uses D55. 
- * These represent compromises between the conditions of indoor (tungsten) 
+ * You should use this unless you have a good reason to use something else.
+ * The print industry commonly uses D50 and photography commonly uses D55.
+ * These represent compromises between the conditions of indoor (tungsten)
  * and daylight viewing.
- * 
+ *
  * (text excerpt from Poynton's Color FAQ, Copyright Charles Poynton 1997)
  */
 void setWhiteD65() {
@@ -229,7 +229,7 @@ static float hls_value(float n1, float n2, float H) {
 
 /**
  * Convert HLS to RGB.
- * 
+ *
  * The HLS color system describes a color based on the qualities of
  * hue, lightness, and saturation.  A particular color has three
  * coordinates, (H,L,S).  The L and S coordinates must be between
@@ -260,7 +260,7 @@ void HLS_to_RGB(float H, float L, float S, float &R, float &G, float &B) {
 
 /**
  * Convert RGB to HLS.
- * 
+ *
  * The HLS color system describes a color based on the qualities of
  * hue, lightness, and saturation.  A particular color has three
  * coordinates, (H,L,S).  The L and S coordinates must be between
@@ -293,7 +293,7 @@ void RGB_to_HLS(float R, float G, float B, float &H, float &L, float &S) {
 		bc = (rgbmax - B) * s;
 		if (R == rgbmax) {
 			H = bc - gc;
-		} else 
+		} else
 		if (G == rgbmax) {
 			H = 2.0f + rc - bc;
 		} else {
@@ -413,7 +413,7 @@ void RGB_to_HSV(float R, float G, float B, float &H, float &S, float &V) {
 		bc = (rgbmax - B) * s;
 		if (R == rgbmax) {
 			H = bc - gc;
-		} else 
+		} else
 		if (G == rgbmax) {
 			H = 2.0f + rc - bc;
 		} else {
@@ -445,7 +445,7 @@ float RGB_to_hue(float R, float G, float B) {
 	if (d == 0.0)  return -1.0; // no hue
 	if (R == rgbmax) {
 		H = B - G;
-	} else 
+	} else
 	if (G == rgbmax) {
 		H = 2.0f + R - B;
 	} else {
@@ -463,14 +463,14 @@ float RGB_to_hue(float R, float G, float B) {
  * Planck's law gives the spectral power distribution function of
  * radiation from a black body, per unit volume per infinitesimal
  * increment of wavelength, as:
- * 
+ *
  *     SPD(Lambda,T)
  *        = 1/Volume * dPower / dLambda
  *        = 8 * Pi * H * C /
  *          ( (10**(-9))**4 * Lambda**5 * ( EXP ( P ) - 1 ) )
- * 
+ *
  * where
- * 
+ *
  *   P = H * C / ( ( Lambda * 10**(-9) ) * K * T );
  *   Lambda = Wavelength, in nanometers;
  *   T = Temperature of the black body, in degrees Kelvin;
@@ -485,7 +485,7 @@ float T_to_spd(float T, float lambda) {
 	static float k = 1.38066E-23f;
 	static float nmtom = 1.0E-09f;
 	float expon = h * c / ( nmtom * lambda * k * T );
-	float denom = powf(nmtom,4.0f) * powf(lambda, 5.0f) * (expf(expon) - 1.0f); 
+	float denom = powf(nmtom,4.0f) * powf(lambda, 5.0f) * (expf(expon) - 1.0f);
 	float power = 8.0f * PI * h * c / denom;
 	return power;
 }
@@ -513,17 +513,17 @@ static float interp(int n, float x, const float *X, const float *Y) {
 
 /**
  * Returns CIE xyz chromaticities for black body radiation.
- * 
+ *
  * The CIE xyz system defines a color in terms of its normalized
  * chromaticities (x,y,z), without reference to the absolute strength
  * or luminance of the color.
- * 
- * @param T Temperature, in degrees Kelvin, of the black body.  
- *          Data is only available for T in the range of 1,000 to 
- *          30,000 degrees.  Input values of T outside this range 
- *          will result in output values of X and Y at the nearest 
+ *
+ * @param T Temperature, in degrees Kelvin, of the black body.
+ *          Data is only available for T in the range of 1,000 to
+ *          30,000 degrees.  Input values of T outside this range
+ *          will result in output values of X and Y at the nearest
  *          endpoint of the data range.
- */ 
+ */
 void T_to_xyz(float T, float &x, float &y, float &z) {
 	static const int n = 53;
 	static const float Tdat[] = {
@@ -537,7 +537,7 @@ void T_to_xyz(float T, float &x, float &y, float &z) {
 		4700.0f,  4800.0f,  4900.0f,  5000.0f,  5200.0f,
 		5400.0f,  5600.0f,  5800.0f,  6000.0f,  6500.0f,
 		7000.0f,  7500.0f,  8000.0f,  8500.0f,  9000.0f,
-		10000.0f, 15000.0f, 30000.0f 
+		10000.0f, 15000.0f, 30000.0f
 	};
 	static const float xdat[] = {
 		0.6526f, 0.6249f, 0.5984f, 0.5856f, 0.5731f,
@@ -568,7 +568,7 @@ void T_to_xyz(float T, float &x, float &y, float &z) {
 	if (T < Tdat[0]) {
 		x = xdat[0];
 		y = ydat[0];
-	} else 
+	} else
 		if (T > Tdat[n-1]) {
 			x = xdat[n-1];
 			y = ydat[n-1];
@@ -618,7 +618,7 @@ float getY709(float R, float G, float B) {
  * The CIE xyY system defines a color in terms of its normalized
  * chromaticities (x,y), plus the value of Y, which allows the
  * normalizing factor to be determined.
- * 
+ *
  * The CIE XYZ color system describes a color in terms of its components
  * of X, Y and Z primaries.  In ordinary circumstances, all three of
  * these components must be nonnegative.
@@ -658,7 +658,7 @@ void XYZ_check(float &X, float &Y, float &Z) {
 	if (X < 0.0) X = 0.0;
 	if (Y < 0.0) Y = 0.0;
 	if (Z < 0.0) Z = 0.0;
-}    
+}
 
 /**
  * Convert CIE XYZ to CIE xyY color coordinates.
@@ -666,7 +666,7 @@ void XYZ_check(float &X, float &Y, float &Z) {
  * The CIE xyY system defines a color in terms of its normalized
  * chromaticities (x,y), plus the value of Y, which allows the
  * normalizing factor to be determined.
- * 
+ *
  * The CIE XYZ color system describes a color in terms of its components
  * of X, Y and Z primaries.  In ordinary circumstances, all three of
  * these components must be nonnegative.
@@ -684,12 +684,12 @@ void XYZ_to_xyY(float X, float Y, float Z, float &x, float &y, float &Y_) {
 
 /**
  * Convert CIE XYZ to CIE L*u*v* color coordinates.
- * 
- * The CIE L*u*v* color system describes a color based on three 
- * qualities: L* is CIE lightness, u* and v* contain chromatic 
- * information.  A given color will be represented by three 
+ *
+ * The CIE L*u*v* color system describes a color based on three
+ * qualities: L* is CIE lightness, u* and v* contain chromatic
+ * information.  A given color will be represented by three
  * numbers, (L*,u*,v*).  L* ranges between 0 and 100.
- * 
+ *
  * The CIE XYZ color system describes a color in terms of its components
  * of X, Y and Z primaries.  In ordinary circumstances, all three of
  * these components must be nonnegative.
@@ -718,12 +718,12 @@ void XYZ_to_Luv(float X, float Y, float Z, float &Lstar, float &ustar, float &vs
 
 /**
  * Convert CIE L*u*v* to CIE XYZ color coordinates.
- * 
- * The CIE L*u*v* color system describes a color based on three 
- * qualities: L* is CIE lightness, u* and v* contain chromatic 
- * information.  A given color will be represented by three 
+ *
+ * The CIE L*u*v* color system describes a color based on three
+ * qualities: L* is CIE lightness, u* and v* contain chromatic
+ * information.  A given color will be represented by three
  * numbers, (L*,u*,v*).  L* ranges between 0 and 100.
- * 
+ *
  * The CIE XYZ color system describes a color in terms of its components
  * of X, Y and Z primaries.  In ordinary circumstances, all three of
  * these components must be nonnegative.
@@ -749,14 +749,14 @@ void Luv_to_XYZ(float Lstar, float ustar, float vstar, float &X, float &Y, float
 /**
  * Correct out-of-range CIE L*u*v* color coordinates.
  */
-void Luv_check(float &Lstar, float &ustar, float &vstar) {
+void Luv_check(float &Lstar, float &/*ustar*/, float &/*vstar*/) {
 	if (Lstar < 0.0) Lstar = 0.0;
 	else if (Lstar > 100.0) Lstar = 100.0;
 }
 
 /**
  * Convert CIE XYZ to CIE u'v'w' color coordinates.
- * 
+ *
  * The CIE XYZ color system describes a color in terms of its components
  * of X, Y and Z primaries.  In ordinary circumstances, all three of
  * these components must be nonnegative.
@@ -774,7 +774,7 @@ void XYZ_to_uvwp(float X, float Y, float Z, float &uprime, float &vprime, float 
 
 /**
  * Convert CIE u'v'Y to CIE XYZ color coordinates.
- * 
+ *
  * The CIE XYZ color system describes a color in terms of its components
  * of X, Y and Z primaries.  In ordinary circumstances, all three of
  * these components must be nonnegative.
@@ -787,7 +787,7 @@ void uvpY_to_XYZ(float uprime, float vprime, float Y_, float &X, float &Y, float
 
 /**
  * Convert CIE u'v' to CIE xyz color coordinates.
- * 
+ *
  * The CIE XYZ color system describes a color in terms of its components
  * of X, Y and Z primaries.  In ordinary circumstances, all three of
  * these components must be nonnegative.
@@ -875,7 +875,7 @@ Color Color::toRGB(bool internal_check) const {
 	float R, G, B;
 	float X, Y, Z;
 	switch (space) {
-		case RGB: 
+		case RGB:
 			return *this;
 		case CMY:
 			CMY_to_RGB(a, b, c, R, G, B);
@@ -1084,7 +1084,7 @@ Color Color::toHLS(bool internal_check) const {
 }
 
 std::ostream &operator<<(std::ostream &os, const Color &c) {
-	os << "[" << c.getSpaceLabel() << ": " 
+	os << "[" << c.getSpaceLabel() << ": "
 		<< c.getA() << ", "
 		<< c.getB() << ", "
 		<< c.getC() << "]";
@@ -1092,8 +1092,8 @@ std::ostream &operator<<(std::ostream &os, const Color &c) {
 }
 
 void Color::scale(float f) {
-	a *= f; 
-	b *= f; 
+	a *= f;
+	b *= f;
 	c *= f;
 }
 

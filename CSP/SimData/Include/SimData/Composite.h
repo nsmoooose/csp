@@ -1,18 +1,18 @@
 /* SimData: Data Infrastructure for Simulations
  * Copyright (C) 2002, 2003 Mark Rose <tm2@stm.lbl.gov>
- * 
+ *
  * This file is part of SimData.
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
@@ -71,14 +71,14 @@ class VisitorBase: public virtual Referenced { };
 
 
 /** Core visitor functionality.
- * 
+ *
  *  N is a context specific visitable node type.
  */
 template <class N>
 class VisitorCore: public VisitorBase {
 public:
 	/// Composite traversal modes.
-	typedef enum { 
+	typedef enum {
 		TRAVERSE_NONE,     //< Act on only the current node.
 		TRAVERSE_CHILDREN, //< Act on the current node and all children
 		TRAVERSE_PARENTS   //< Act on the current node and all parents
@@ -95,7 +95,7 @@ public:
 	 *
 	 *  This method is overloaded in the actual visitor classes
 	 *  to apply distinct operations to each type of node.  Apply
-	 *  methods should generally conclude with a call to 
+	 *  methods should generally conclude with a call to
 	 *  traverse(node) to continue progagation of the visitor
 	 *  through the graph.
 	 */
@@ -106,7 +106,7 @@ public:
 	 *  @param mode The initial traversal mode.  The default is
 	 *              TRAVERSE_CHILDREN.
 	 */
-	VisitorCore(TraversalMode mode = TRAVERSE_CHILDREN): 
+	VisitorCore(TraversalMode mode = TRAVERSE_CHILDREN):
 		_traversal_mode(mode) {}
 
 protected:
@@ -114,7 +114,7 @@ protected:
 	 *  mode.
 	 *
 	 *  TRAVERSE_CHILDREN will visit the subgraph of the node
-	 *  (depth first), while TRAVERSE_PARENTS will visit all 
+	 *  (depth first), while TRAVERSE_PARENTS will visit all
 	 *  parents until the root of the graph is reached.
 	 */
 	void traverse(Node &node) {
@@ -127,10 +127,10 @@ protected:
 	}
 
 	/** Change the traversal mode.
-	 *  
+	 *
 	 *  The initial traversal mode can be set as a contructor parameter.
 	 *  This method allows the traversal mode to be changed on the fly,
-	 *  for example to abort traversal of a graph once a condition is 
+	 *  for example to abort traversal of a graph once a condition is
 	 *  met (such as finding a matching node during a search).
 	 */
 	void setTraversalMode(TraversalMode mode) { _traversal_mode = mode; }
@@ -188,9 +188,9 @@ protected:
  *  accept() method, which is just a couple lines of
  *  boilerplate code handled by the SIMDATA_VISITABLE
  *  macro (feel free to write it out by hand if you
- *  despise macros).  Defining accept() in each subclass 
- *  allows the overloaded apply() method in MyNodeVisitor 
- *  to be correctly selected based on the type of each 
+ *  despise macros).  Defining accept() in each subclass
+ *  allows the overloaded apply() method in MyNodeVisitor
+ *  to be correctly selected based on the type of each
  *  node.
  *
  *  Notes:
@@ -198,18 +198,18 @@ protected:
  *  Although Composite supports multiple parents, this
  *  capability can easily be disabled within a given
  *  context by overriding the addChild() method of the
- *  primary node class and testing that getNumOfParents() 
+ *  primary node class and testing that getNumOfParents()
  *  equals zero for each child to be added.
  *
  *  The current implementation does not support non-
- *  composite leaf nodes.  Any node can contain other 
- *  nodes, although again this feature can be disabled 
- *  for specific node classes simply by overriding 
+ *  composite leaf nodes.  Any node can contain other
+ *  nodes, although again this feature can be disabled
+ *  for specific node classes simply by overriding
  *  addChild().
  *
  *  @param V is a context specific visitor class.
  */
-template <class V> 
+template <class V>
 class Composite: public Visitable<V>, public CompositeBase< Visitable<V> > {
 public:
 	typedef Composite Node;
@@ -224,15 +224,15 @@ public:
 
 	/** Accept a visitor.
 	 *
-	 *  This method must be implemented in each subclasses to 
+	 *  This method must be implemented in each subclasses to
 	 *  ensure proper dispatch of the visitor's apply methods.
 	 *  See the Composite class documentation for details.
 	 */
 	virtual VisitorRef accept(VisitorRef v)=0;
 
 	/** Add a child to this node.
-	 *  
-	 *  Extend this method to inforce constraints on the graph structure, 
+	 *
+	 *  Extend this method to inforce constraints on the graph structure,
 	 *  such as preventing nodes from having multiple parents.
 	 *
 	 *  @returns True if the child was added, false if it already exists.
@@ -299,8 +299,8 @@ public:
 	 *
 	 *  @returns True if the child was replaced, false otherwise.
 	 */
-	virtual bool setChild(unsigned int i, Node* node) { 
-		if (i >= _children.size() || !node) return false; 
+	virtual bool setChild(unsigned int i, Node* node) {
+		if (i >= _children.size() || !node) return false;
 		NodeRef original = _children[i];
 		original->removeParent(this);
 		_children[i] = node;
@@ -312,18 +312,18 @@ public:
 	 *
 	 *  @returns 0 if the index is out of range.
 	 */
-	inline Node* getChild(unsigned int i) { 
+	inline Node* getChild(unsigned int i) {
 		if (i >= _children.size()) return 0;
-		return _children[i].get(); 
+		return _children[i].get();
 	}
 
 	/** Get a child by index number.
 	 *
 	 *  @returns 0 if the index is out of range.
 	 */
-	inline const Node* getChild(unsigned int i) const { 
+	inline const Node* getChild(unsigned int i) const {
 		if (i >= _children.size()) return 0;
-		return _children[i].get(); 
+		return _children[i].get();
 	}
 
 	/** Get a list of immediate children of this node.
@@ -343,7 +343,7 @@ public:
 	 *
 	 *  @returns The index if found, otherwise the number of children.
 	 */
-	inline unsigned int getChildIndex(Node const *node) const { 
+	inline unsigned int getChildIndex(Node const *node) const {
 		for (unsigned int idx = 0; idx < _children.size(); ++idx) {
 			if (_children[idx] == node) return idx;
 		}
@@ -358,18 +358,18 @@ public:
 	 *
 	 *  @returns 0 if the index is out of range.
 	 */
-	inline Node* getParent(unsigned int i)  { 
+	inline Node* getParent(unsigned int i)  {
 		if (i >= _parents.size()) return 0;
-		return _parents[i]; 
+		return _parents[i];
 	}
 
 	/** Get a parent by index number.
 	 *
 	 *  @returns 0 if the index is out of range.
 	 */
-	inline const Node* getParent(unsigned int i) const  { 
+	inline const Node* getParent(unsigned int i) const  {
 		if (i >= _parents.size()) return 0;
-		return _parents[i]; 
+		return _parents[i];
 	}
 
 	/** Get the number of immediate parents of this node.
@@ -450,8 +450,8 @@ public:
 
 
 /** A context specific visitor class.
- * 
- *  Subclass Visitor to define a custom visitor class 
+ *
+ *  Subclass Visitor to define a custom visitor class
  *  for a specific context.  Although somewhat counter
  *  intuitive, the template parameter must be the sub-
  *  class being defined.  For example:
@@ -469,14 +469,14 @@ public:
  *     }
  *
  *  Note first that the base class apply() method must be brought
- *  into scope with a using directive.  There is also a macro 
+ *  into scope with a using directive.  There is also a macro
  *  SIMDATA_VISITOR() which does this and defines a Ref typedef,
  *  if you prefer using macros for boilerplate.
  *
- *  The rest of the class should define apply() stubs for each of 
- *  the node classes in the current context.  Each of these node 
- *  classes must be forward declared, and the apply stubs should 
- *  chain from subclass to baseclass, ending finally with a call 
+ *  The rest of the class should define apply() stubs for each of
+ *  the node classes in the current context.  Each of these node
+ *  classes must be forward declared, and the apply stubs should
+ *  chain from subclass to baseclass, ending finally with a call
  *  to apply((Node&)node), where Node is a type defined by Visitor
  *  that will be a base class of MyNode as long as MyNode
  *  derives from Composite<>.  See Composite for more details.
@@ -486,11 +486,11 @@ class Visitor: public VisitorCore< Visitable<V> > {};
 
 
 /** A visitor class for searching a node graph.
- *  
+ *
  *  The visitor traverses the graph until the match()
  *  method returns true.  Implement this method in a
  *  derived class to specify the search condition.
- *  Traversal stops as soon as a match is found. After 
+ *  Traversal stops as soon as a match is found. After
  *  traversal the getNode() method can be used
  *  to retrieve the matching node (if any).
  */
@@ -505,7 +505,7 @@ public:
 	virtual bool match(N &node) = 0;
 
 	/** Search for a matching node.
-	 *  
+	 *
 	 *  Don't call this directly; use node->accept(visitor);
 	 */
 	void apply(N &node) {
@@ -528,7 +528,7 @@ private:
 
 
 /** A visitor class for searching a node graph.
- *  
+ *
  *  This visitor is similar to FindVisitor, but retrieves
  *  all nodes that match the condition.
  */
@@ -545,13 +545,13 @@ public:
 	virtual bool match(N &node) = 0;
 
 	/** Search for and accumulate matching nodes.
-	 *  
+	 *
 	 *  Don't call this directly; use node->accept(visitor);
 	 */
 	void apply(N &node) {
 		if (match(node)) {
 			_nodes.push_back(&node);
-		} 
+		}
 		traverse(node);
 	}
 	/** Get all nodes that match the search condition.

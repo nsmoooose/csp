@@ -154,12 +154,12 @@ bool DemeterTerrain::isActive() {
 }
 
 
-void DemeterTerrain::testLineOfSight(Intersection &test, IntersectionHint &hint) {
+void DemeterTerrain::testLineOfSight(Intersection &, IntersectionHint &) {
 	// FIXME not implemented
 	return;
 }
 
-float DemeterTerrain::getGroundElevation(double x, double y, IntersectionHint &hint) {
+float DemeterTerrain::getGroundElevation(double x, double y, IntersectionHint &) {
 	x += m_Offset.x();
 	y += m_Offset.y();
 	float z = 0.0;
@@ -175,7 +175,7 @@ float DemeterTerrain::getGroundElevation(double x, double y, IntersectionHint &h
 	return z;
 }
 
-float DemeterTerrain::getGroundElevation(double x, double y, simdata::Vector3 &normal, IntersectionHint &hint) {
+float DemeterTerrain::getGroundElevation(double x, double y, simdata::Vector3 &normal, IntersectionHint &) {
 	x += m_Offset.x();
 	y += m_Offset.y();
 	float z = 0.0;

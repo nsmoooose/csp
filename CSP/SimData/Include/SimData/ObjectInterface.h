@@ -85,7 +85,7 @@ struct MemberValidator< Link<T> >
 template <typename T>
 struct MemberValidator< std::vector< Link<T> > >
 {
-	static void validate(std::vector< Link<T> > const &link, bool required, bool write) {
+	static void validate(std::vector< Link<T> > const &link, bool /*required*/, bool write) {
 		typename std::vector< Link<T> >::const_iterator iter = link.begin();
 		for (; iter != link.end(); ++iter) {
 			if (iter->isNone() && iter->isNull()) {

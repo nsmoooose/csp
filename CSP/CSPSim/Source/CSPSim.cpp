@@ -1,17 +1,17 @@
 // Combat Simulator Project - FlightSim Demo
 // Copyright (C) 2002-2004 The Combat Simulator Project
 // http://csp.sourceforge.net
-// 
+//
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
 // as published by the Free Software Foundation; either version 2
 // of the License, or (at your option) any later version.
-// 
+//
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU General Public License
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
@@ -122,7 +122,7 @@ SDLWave  m_audioWave;
  */
 CSPSim *CSPSim::theSim = 0;
 
-CSPSim::CSPSim() { 
+CSPSim::CSPSim() {
 	if (theSim == 0) {
 		theSim = this;
 	}
@@ -174,8 +174,8 @@ CSPSim::~CSPSim()
 void CSPSim::setActiveObject(simdata::Ref<DynamicObject> object) {
 
 	/*
-	CSP_LOG(APP, INFO, "CSPSim::setActiveObject - objectID: " << object->getObjectID() 
-	                   << ", ObjectType: " << object->getObjectType() 
+	CSP_LOG(APP, INFO, "CSPSim::setActiveObject - objectID: " << object->getObjectID()
+	                   << ", ObjectType: " << object->getObjectType()
 	                   << ", Position: " << object->getGlobalPosition());
 	*/
 
@@ -230,7 +230,7 @@ VirtualScene const * CSPSim::getScene() const {
 
 void CSPSim::togglePause() {
 	m_Paused = !m_Paused;
-} 
+}
 
 OpenThreads::Barrier bar;
 
@@ -261,7 +261,7 @@ void CSPSim::init()
 			simdata::DataArchive *sim = new simdata::DataArchive(archive_file.c_str(), 1);
 			assert(sim);
 			m_DataManager.addArchive(sim);
-		} 
+		}
 		catch (simdata::Exception &e) {
 			CSP_LOG(APP, ERROR, "Error opening data archive " << archive_file);
 			CSP_LOG(APP, ERROR, e.getType() << ": " << e.getMessage());
@@ -438,7 +438,7 @@ void CSPSim::init()
 		std::string localAddr = g_Config.getString("Networking", "LocalMessageHost", "127.0.0.1", true);
 		CSP_LOG(APP, DEBUG, "init() - Creating Message listener on port: " << localMessagePort);
                 std::string remoteAddr = g_Config.getString("Networking", "RemoteMessageHost", "127.0.0.1", true);
-		   
+		
 		Port remotePort = (Port)g_Config.getInt("Networking", "RemoteMessagePort", 0, true);
 		m_RemoteServerNode = new NetworkNode(remoteAddr.c_str(), remotePort );
 		m_localNode =  new NetworkNode(localAddr.c_str(), localMessagePort);
@@ -545,7 +545,7 @@ void CSPSim::run()
 		date.parseXML(date_string.c_str());
 	}
 	catch (...) {
-		std::cerr << "Invalid starting date in INI file (Testing:Date).\n" << std::endl; 
+		std::cerr << "Invalid starting date in INI file (Testing:Date).\n" << std::endl;
 		::exit(1);
 	}
 
@@ -561,7 +561,7 @@ void CSPSim::run()
 	m_Atmosphere.setDate(date);
 	m_Atmosphere.reset();
 
-	try 
+	try
 	{
 		while (!m_Finished) {
 			CSP_LOG(APP, DEBUG, "CSPSim::run... Starting loop iteration");
@@ -607,7 +607,7 @@ void CSPSim::run()
 				m_CurrentScreen->onRender();
 				PROF1(_screen_render, 60);
 			}
-  
+
 
 			
 			
@@ -652,10 +652,10 @@ void CSPSim::initTime(simdata::SimDate const &date)
 	
 // update time from the current frame update and the previous one.
 // the timestep for updates is restricted to 1 second max.  greater
-// delays will accumulate in _timeLag to be made up in subsequent 
+// delays will accumulate in _timeLag to be made up in subsequent
 // frames.  this prevents long delays from destabilizing the update
 // computations.
-void CSPSim::updateTime() 
+void CSPSim::updateTime()
 {
 	m_FrameTime = m_CurrentTime.update();
 	m_ElapsedTime += m_FrameTime;
@@ -739,10 +739,10 @@ void CSPSim::updateObjects(double dt)
 	}
 
 	// call networking layer.
-        // TODO the code below tests the networking section. Later it probably needs to 
+        // TODO the code below tests the networking section. Later it probably needs to
 	// be moved elsewhere.  Currently commenting out so we can move to subversion.
 	CSP_LOG(APP, DEBUG, "CSPSim::run... beginning network updates");
-        
+
         if (b_networkingFlag)
 	{
 		simdata::Ref<DynamicObject> dynamicObject = (simdata::Ref<DynamicObject>)m_ActiveObject;
@@ -790,7 +790,7 @@ int CSPSim::initSDL()
 
 	CSP_LOG(APP, ERROR, "Initializing video at " << bpp << " BitsPerPixel.");
 
-	Uint32 flags = SDL_OPENGL | SDL_HWSURFACE | SDL_DOUBLEBUF; 
+	Uint32 flags = SDL_OPENGL | SDL_HWSURFACE | SDL_DOUBLEBUF;
 
 	if (fullscreen) {
 		flags |= SDL_FULLSCREEN;
@@ -812,13 +812,13 @@ int CSPSim::initSDL()
 		CSP_LOG(APP, ERROR, "Failed to open joystick");
 		CSP_LOG(APP, ERROR, SDL_GetError());
 	}
-    
+
 	SDL_EnableUNICODE(1);
 
 	// some simple sdl sound testing
 	std::string sound_path = getDataPath("SoundPath");
 	std::string test_sound = simdata::ospath::join(sound_path, "avionturbine5.wav");
-	if (SDL_LoadWAV(test_sound.c_str(), &m_audioWave.spec, &m_audioWave.sound, 
+	if (SDL_LoadWAV(test_sound.c_str(), &m_audioWave.spec, &m_audioWave.sound,
 	                &m_audioWave.soundlen) == NULL) {
 		CSP_LOG(APP, WARNING,  "Couldn't load '" << test_sound << "': " << SDL_GetError());
 	} else {
@@ -837,7 +837,7 @@ int CSPSim::initSDL()
 }
 
 
-void fillerup(void *unused, Uint8 *stream, int len)
+void fillerup(void * /*unused*/, Uint8 *stream, int len)
 {
 	Uint8 *waveptr;
 	int    waveleft;
@@ -889,7 +889,7 @@ TerrainObject const * CSPSim::getTerrain() const {
 	return m_Terrain.get();
 }
 
-simdata::Ref<EventMapIndex> CSPSim::getInterfaceMaps() const { 
-	return m_InterfaceMaps; 
+simdata::Ref<EventMapIndex> CSPSim::getInterfaceMaps() const {
+	return m_InterfaceMaps;
 }
 

@@ -1,17 +1,17 @@
 // Combat Simulator Project - FlightSim Demo
 // Copyright (C) 2002 The Combat Simulator Project
 // http://csp.sourceforge.net
-// 
+//
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
 // as published by the Free Software Foundation; either version 2
 // of the License, or (at your option) any later version.
-// 
+//
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU General Public License
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
@@ -58,7 +58,7 @@ float ThrustData::getAb(float altitude, float mach) const {
 
 
 
-Engine::Engine(simdata::Vector3 const &thrustDirection) {
+Engine::Engine(simdata::Vector3 const &/*thrustDirection*/) {
 }
 
 Engine::~Engine() {
@@ -104,12 +104,12 @@ simdata::Vector3 Engine::getThrust() const {
 //	}
 //	return thrust;
 //}
- 
 
-void EngineDynamics::postCreate() { 
+
+void EngineDynamics::postCreate() {
 }
 
-void EngineDynamics::registerChannels(Bus *bus) {
+void EngineDynamics::registerChannels(Bus *) {
 }
 
 void EngineDynamics::importChannels(Bus *bus) {
@@ -139,7 +139,7 @@ void EngineDynamics::preSimulationStep(double dt) {
 		float altitude = static_cast<float>(m_PositionLocal->z());
 		float mach = static_cast<float>(b_Mach->value());
 		float throttle = static_cast<float>(b_ThrottleInput->value());
-		throttle = throttle * 1.05263 + std::max(0.0, throttle-0.95) * 20.0; 
+		throttle = throttle * 1.05263 + std::max(0.0, throttle-0.95) * 20.0;
 		EngineSet::iterator i = m_Engine.begin();
 		EngineSet::const_iterator iEnd = m_Engine.end();
 		for (; i !=iEnd; ++i) {
@@ -153,7 +153,7 @@ void EngineDynamics::preSimulationStep(double dt) {
 	}
 }
 
-void EngineDynamics::computeForceAndMoment(double x) {
+void EngineDynamics::computeForceAndMoment(double /*x*/) {
 	// all the work is done by preSimulationStep
 }
 

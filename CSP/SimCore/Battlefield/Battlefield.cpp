@@ -22,6 +22,7 @@
  *
  */
 
+#include <SimCore/Util/Log.h>
 #include <SimCore/Battlefield/Battlefield.h>
 #include <SimCore/Battlefield/SceneManager.h>
 

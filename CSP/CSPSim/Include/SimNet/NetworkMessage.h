@@ -44,7 +44,7 @@ class NetworkMessage
 
 	protected:
 	MessageHeader m_header;
-	simdata::uint8 m_payloadBuf[];
+	simdata::uint8 m_payloadBuf[512];
 
 	static unsigned short m_magicNumber;
 	static unsigned short m_HeaderLen;

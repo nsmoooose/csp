@@ -1,6 +1,12 @@
  Version 0.4.0 (in progress)
 ===========================
 
+2004-09-26: onsight
+  * Fix a large number of small warnings when building CSPSim with
+    g++ -W -Wall -pendantic.  The only remaining warning is produced
+    by gnu-commoncpp.  Hopefully should have a positive impact on
+    MSVC warnings as well, but you never know.
+
 2004-09-25: onsight
   * Moved several source and header files to SimCore.  This code
     will be shared with other CSP applications, such as the index

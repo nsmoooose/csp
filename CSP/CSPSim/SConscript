@@ -26,7 +26,7 @@ CPPPATH = ['#/CSPSim/Include'] + env['CPPPATH'] + [
 	'/usr/include/cc++2'
 ]
 
-CXXFLAGS = env['CXXFLAGS'].replace('-pedantic', '').replace('-W ', '')
+CXXFLAGS = env['CXXFLAGS']
 
 MODULES = [
 	'Source',

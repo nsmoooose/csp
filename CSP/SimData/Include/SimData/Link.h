@@ -333,15 +333,14 @@ public:
 
 	/** Fast copy constructor.
 	 */
-	Link(const Link<T>& p) {
+	Link(const Link<T>& p): LinkBase() {
 		_path = p.getPath();
 		_assign_fast(p._reference);
 	}
 	
 	/** Safe copy constructor.
 	 */
-	Link(const LinkBase& p) {
-		LinkBase::operator=(p);
+	Link(const LinkBase& p): LinkBase(p) {
 	}
 	
 private:

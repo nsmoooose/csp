@@ -1,17 +1,17 @@
 // Combat Simulator Project - FlightSim Demo
 // Copyright (C) 2002 The Combat Simulator Project
 // http://csp.sourceforge.net
-// 
+//
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
 // as published by the Free Software Foundation; either version 2
 // of the License, or (at your option) any later version.
-// 
+//
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU General Public License
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
@@ -40,7 +40,7 @@
  * ground.  These contact points are specified in the
  * vehicle ObjectModel and should be placed at the external
  * points of the model (e.g. wingtips, tail tip, nose, etc).
- * Collisions are treated as a damped harmonic oscillators, 
+ * Collisions are treated as a damped harmonic oscillators,
  * with additional sliding friction.  Hard impacts induce
  * rapid energy loss, and should be coupled with vehicle
  * damage modeling.
@@ -70,7 +70,7 @@ public:
 	EXTEND_SIMDATA_XML_INTERFACE(GroundCollisionDynamics, BaseDynamics)
 	END_SIMDATA_XML_INTERFACE
 
-	/** 
+	/**
 	 * Construct a new ground collision dynamics instance.
 	 *
 	 * @mass the (approximate) total vehicle mass, which is
@@ -95,7 +95,7 @@ public:
 
 	/**
 	 * Returns true if a collision is sufficiently violent to require
-	 * additional external damping (e.g. by directly attenuating the 
+	 * additional external damping (e.g. by directly attenuating the
 	 * vehicle's velocity.
 	 */
 	bool needsImpulse() const { return m_NeedsImpulse; }

@@ -1,17 +1,17 @@
 // Combat Simulator Project - FlightSim Demo
 // Copyright (C) 2002 The Combat Simulator Project
 // http://csp.sourceforge.net
-// 
+//
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
 // as published by the Free Software Foundation; either version 2
 // of the License, or (at your option) any later version.
-// 
+//
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU General Public License
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
@@ -84,7 +84,7 @@ public:
 class RectangularCurve: public IsoContour {
 	float m_Width, m_Height;
 protected:
-	virtual float f(float x, float y) const {
+	virtual float f(float /*x*/, float /*y*/) const {
 		return 0.0f;
 	}
 public:
@@ -99,7 +99,7 @@ public:
 		m_Width(width != 0.0f ? fabs(width) : 20.0f),
 		m_Height(height != 0.0f ? fabs(height) : 50.0f) {
 			if (width * height == 0.0f) {
-				CSP_LOG(APP, WARNING, "Rectangle: [" << width << "," << height << "corrected to 20x50]");  
+				CSP_LOG(APP, WARNING, "Rectangle: [" << width << "," << height << "corrected to 20x50]");
 			}
 	}
 	virtual simdata::Vector3 getPoint(float x, float y) const {
@@ -114,11 +114,11 @@ public:
 SIMDATA_REGISTER_INTERFACE(Circle)
 SIMDATA_REGISTER_INTERFACE(RectangularCurve)
 
-int RandomBillboardModel::getFeatureCount() const { 
+int RandomBillboardModel::getFeatureCount() const {
 	return 0; // TODO
 }
 
-void RandomBillboardModel::makeFeatures(std::vector<Feature> &features, int value) const {
+void RandomBillboardModel::makeFeatures(std::vector<Feature> &, int) const {
 }
 
 RandomBillboardModel::RandomBillboardModel():

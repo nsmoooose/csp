@@ -311,7 +311,7 @@ public:
 	 *  screen should be formatted as individual lines and added
 	 *  to the InfoList instance.
 	 */
-	virtual void getInfo(InfoList &info) const {}
+	virtual void getInfo(InfoList &) const {}
 
 	/** Connect this system to a DataRecorder instance.  Use this
 	 *  method to bind exported data channels to the recorder.  When

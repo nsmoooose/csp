@@ -216,7 +216,7 @@ public:
 		m_Absorber03Length(1.0f),
 		m_Offset(0.0f) {
 	}
-	virtual double onUpdate(double dt) {
+	virtual double onUpdate(double /*dt*/) {
 		double vertical_displacement = b_GearDisplacement->value()*m_DisplacementAxis;
 		b_WheelRotation->value() = b_GearTireRotation->value();
 		b_Absorber02Angle->value() = asin((vertical_displacement-m_Offset)/(2*m_Absorber02Length));

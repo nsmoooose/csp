@@ -60,7 +60,7 @@ ScreenInfoManager::ScreenInfoManager(int ScreenWidth, int ScreenHeight)
 	setCullingActive(true);
 }
 
-void ScreenInfoManager::changeObjectStats(int ScreenWidth, int ScreenHeight,simdata::Ref<DynamicObject> const& vehicle)
+void ScreenInfoManager::changeObjectStats(int /*ScreenWidth*/, int ScreenHeight,simdata::Ref<DynamicObject> const& vehicle)
 {
 	ScreenInfo* os = getScreenInfo("OBJECT STATS");
 	bool visible = getScreenInfo("GENERAL STATS")->getStatus();

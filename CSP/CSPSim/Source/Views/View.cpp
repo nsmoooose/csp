@@ -1,17 +1,17 @@
 // Combat Simulator Project - FlightSim Demo
 // Copyright (C) 2004 The Combat Simulator Project
 // http://csp.sourceforge.net
-// 
+//
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
 // as published by the Free Software Foundation; either version 2
 // of the License, or (at your option) any later version.
-// 
+//
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU General Public License
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
@@ -84,7 +84,7 @@ void InternalView::constrain() {
 	m_CameraKinematics->clampTheta(m_CameraKinematics->getTheta(), -limit, limit);
 }
 
-void InternalView::update(simdata::Vector3& ep, simdata::Vector3& lp, simdata::Vector3& up, double dt) {
+void InternalView::update(simdata::Vector3& ep, simdata::Vector3& lp, simdata::Vector3& up, double /*dt*/) {
 	constrain();
 	simdata::Vector3 object_up = m_ActiveObject->getUpDirection();
 	simdata::Vector3 object_dir = m_ActiveObject->getDirection();
@@ -102,7 +102,7 @@ void InternalView::activate() {
 
 void InternalViewHist::update(simdata::Vector3& ep, simdata::Vector3& lp, simdata::Vector3& up, double dt) {
 	const float c = 0.001;
-	simdata::Vector3 displ = c*dt*m_ActiveObject->getVelocity();
+	simdata::Vector3 displ = c * dt * m_ActiveObject->getVelocity();
 	static simdata::Vector3 prev_displ = displ;
 
 	InternalView::update(ep, lp, up, dt);
@@ -115,7 +115,7 @@ void ExternalViewBody::activate() {
 	m_CameraKinematics->resetDistance();
 }
 
-void ExternalViewBody::update(simdata::Vector3& ep, simdata::Vector3& lp, simdata::Vector3& up, double dt) {
+void ExternalViewBody::update(simdata::Vector3& ep, simdata::Vector3& lp, simdata::Vector3& up, double /*dt*/) {
 	updateBody(ep, lp, up);
 }
 
@@ -123,7 +123,7 @@ void ExternalViewWorld::activate() {
 	m_CameraKinematics->resetDistance();
 }
 
-void ExternalViewWorld::update(simdata::Vector3& ep, simdata::Vector3& lp, simdata::Vector3& up, double dt) {
+void ExternalViewWorld::update(simdata::Vector3& ep, simdata::Vector3& lp, simdata::Vector3& up, double /*dt*/) {
 	updateWorld(ep, lp, up);
 }
 
@@ -165,7 +165,7 @@ void FlybyView::activate() {
 }
 
 
-void FlybyView::update(simdata::Vector3& ep, simdata::Vector3& lp, simdata::Vector3& up, double dt) {
+void FlybyView::update(simdata::Vector3& ep, simdata::Vector3& lp, simdata::Vector3& up, double /*dt*/) {
 	lp = m_ActiveObject->getGlobalPosition();
 	ep = m_FixedCameraPosition;
 	if ((lp - ep).length() > 1000.0) {
@@ -174,7 +174,7 @@ void FlybyView::update(simdata::Vector3& ep, simdata::Vector3& lp, simdata::Vect
 	up = simdata::Vector3::ZAXIS;
 }
 
-void FlybyView::recalculate(simdata::Vector3& ep, simdata::Vector3& lp, simdata::Vector3& up, double dt) {
+void FlybyView::recalculate(simdata::Vector3& ep, simdata::Vector3& /*lp*/, simdata::Vector3& /*up*/, double /*dt*/) {
 	TerrainObject* terrain = CSPSim::theSim->getTerrain();
 	if (terrain) {
 		const float SAFETY = 2.0f;
@@ -191,7 +191,7 @@ void SatelliteView::activate() {
 	m_CameraKinematics->setDistance(500.0);
 }
 
-void SatelliteView::update(simdata::Vector3& ep, simdata::Vector3& lp, simdata::Vector3& up, double dt) {
+void SatelliteView::update(simdata::Vector3& ep, simdata::Vector3& lp, simdata::Vector3& up, double /*dt*/) {
 	updateWorld(ep, lp, up);
 }
 
@@ -215,7 +215,7 @@ void PadlockView::activate() {
 	}
 }
 
-void PadlockView::constrain(simdata::Vector3& ep, simdata::Vector3& lp, simdata::Vector3& up, double dt) {
+void PadlockView::constrain(simdata::Vector3& ep, simdata::Vector3& /*lp*/, simdata::Vector3& /*up*/, double dt) {
 	if (m_Padlock.valid()) {
 		ep = m_ActiveObject->getGlobalPosition();
 		m_Attitude = m_ActiveObject->getAttitude();

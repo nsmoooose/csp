@@ -63,7 +63,7 @@ INCLUDE = [
 ]
 
 
-CXXFLAGS = '-O2 -g -W -Wall -pedantic'
+CXXFLAGS = '-O2 -g -W -Wall -pedantic -Wno-long-long'
 SWIGCXXFLAGS = '-O2 -g'
 SWIGFLAGS = '-noruntime -python -c++'
 

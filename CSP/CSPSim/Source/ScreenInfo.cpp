@@ -1,17 +1,17 @@
 // Combat Simulator Project - FlightSim Demo
 // Copyright (C) 2002 The Combat Simulator Project
 // http://csp.sourceforge.net
-// 
+//
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
 // as published by the Free Software Foundation; either version 2
 // of the License, or (at your option) any later version.
-// 
+//
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU General Public License
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
@@ -46,7 +46,7 @@ using std::setfill;
   perhaps can implement our own simplified version of osgText::Text
   for single lines without kerning, and cache the portions that don't
   change.  Actually, the latter could be done within the current
-  implementation by having both static text nodes for labels and 
+  implementation by having both static text nodes for labels and
   dynamic nodes for values that change frequently.
 */
 
@@ -58,7 +58,7 @@ using std::setfill;
 
 
 class UpdateCallback : public osg::NodeCallback {
-	virtual void operator()(osg::Node* node, osg::NodeVisitor* nv) { 
+	virtual void operator()(osg::Node* node, osg::NodeVisitor* nv) {
 		ScreenInfo* aScreenInfo = dynamic_cast<ScreenInfo*>(node);
 		if (aScreenInfo && aScreenInfo->getStatus()) {
 			aScreenInfo->update();
@@ -70,7 +70,7 @@ class UpdateCallback : public osg::NodeCallback {
 
 ScreenInfo::ScreenInfo(float pos_x, float pos_y, std::string const &name, std::string const &text):
 	m_TTFPath("screeninfo.ttf"),
-	m_FontSize(20), 
+	m_FontSize(20),
 	//m_CharacterSize(14),
 	m_CharacterSize(11),
 	m_Text(makeText(pos_x,pos_y - m_CharacterSize, text)) {
@@ -96,10 +96,10 @@ osgText::Text *ScreenInfo::makeText(float pos_x, float pos_y, std::string const 
 }
 
 
-Framerate::Framerate(int pos_x, int pos_y): 
-	ScreenInfo(pos_x, pos_y, "FRAMERATE"), 
-	m_MinFps(99.0f), 
-	m_MaxFps(10.0f), 
+Framerate::Framerate(int pos_x, int pos_y):
+	ScreenInfo(pos_x, pos_y, "FRAMERATE"),
+	m_MinFps(99.0f),
+	m_MaxFps(10.0f),
 	m_Cumul(0.0f),
 	m_Date(makeText(pos_x, pos_y - 2*m_CharacterSize)) {
 		m_Text->setUseDisplayList(false);
@@ -124,7 +124,7 @@ void Framerate::update() {
 	std::stringstream line;
 	line.precision(0);
 	line.setf(std::ios::fixed);
-	line << setw(3) << setfill(' ') << fps 
+	line << setw(3) << setfill(' ') << fps
 		 << " fps min: "  << setw(3) << m_MinFps
 		 << " max: " << setw(3) << m_MaxFps
 		 << " avg: "  << m_Cumul / count;
@@ -178,15 +178,15 @@ void GeneralStats::update() {
 	
 		simdata::Vector3 vel = activeObject->getVelocity();
 		osstr.str("");
-		osstr << "Velocity: " << setw(6) << setprecision(2) << setfill(' ') << fixed 
+		osstr << "Velocity: " << setw(6) << setprecision(2) << setfill(' ') << fixed
 			  << vel << " magnitude: " << std::noshowpos << vel.length();
 		m_Velocity->setText(osstr.str());
 	}
 }
 
 
-ObjectStats::ObjectStats(int posx,int posy, simdata::Ref<DynamicObject> const& activeObject)
-	: ScreenInfo(posx,posy,"OBJECT STATS"), m_PosX(posx), m_PosY(posy) 
+ObjectStats::ObjectStats(int posx,int posy, simdata::Ref<DynamicObject> const& /*activeObject*/)
+	: ScreenInfo(posx,posy,"OBJECT STATS"), m_PosX(posx), m_PosY(posy)
 {
 	m_Skip = static_cast<int>(m_CharacterSize);
 	if (m_Text) {

@@ -1,17 +1,17 @@
 // Combat Simulator Project - FlightSim Demo
 // Copyright (C) 2002 The Combat Simulator Project
 // http://csp.sourceforge.net
-// 
+//
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
 // as published by the Free Software Foundation; either version 2
 // of the License, or (at your option) any later version.
-// 
+//
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU General Public License
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
@@ -54,7 +54,7 @@ int    gFontSize=18;
 
 void MenuScreen::OnInit()
 {
-    
+
     /*
 	std::string    ttfPath("fonts/times.ttf");
     osgText::Text*    text;
@@ -67,11 +67,11 @@ void MenuScreen::OnInit()
     rootNode = new osg::Group();
 
     int    gFontSize1=24;
-    
+
     osgText::BitmapFont*    bitmapFont=new osgText::BitmapFont(ttfPath,
                                                                gFontSize1);
     m_text=new osgText::Text(bitmapFont);
-    
+
     std::vector<osg::ref_ptr<osgText::Text > >    gTextList;
     gTextList.push_back(m_text);
     m_text->setText(std::string("2d ")+std::string(TEXT_BITMAP));
@@ -107,32 +107,32 @@ void MenuScreen::onRender()
 
 }
 
-bool MenuScreen::OnKeyDown(char * key)
+bool MenuScreen::OnKeyDown(char * /*key*/)
 {
     return false;
 }
 
-void MenuScreen::OnKeyUp(char * key)
-{
-
-}
- 
-void MenuScreen::OnMouseMove(int x, int y)
-{
-
-}
- 
-void MenuScreen::OnMouseButtonDown(int num, int x, int y)
+void MenuScreen::OnKeyUp(char * /*key*/)
 {
 
 }
 
-void MenuScreen::OnJoystickAxisMotion(int joynum, int axis, int val)
+void MenuScreen::OnMouseMove(int /*x*/, int /*y*/)
 {
 
 }
 
-void MenuScreen::OnJoystickButtonDown(int joynum, int butnum)
+void MenuScreen::OnMouseButtonDown(int /*num*/, int /*x*/, int /*y*/)
+{
+
+}
+
+void MenuScreen::OnJoystickAxisMotion(int /*joynum*/, int /*axis*/, int /*val*/)
+{
+
+}
+
+void MenuScreen::OnJoystickButtonDown(int /*joynum*/, int /*butnum*/)
 {
 
 }

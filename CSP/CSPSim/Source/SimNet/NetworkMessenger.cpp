@@ -302,12 +302,12 @@ int NetworkMessenger::sendto(NetworkMessage * message, NetworkNode * node) {
 }
 
 
-int NetworkMessenger::sendto(std::vector<RoutedMessage> * sendArray, int count) {
+int NetworkMessenger::sendto(std::vector<RoutedMessage> * /*sendArray*/, int /*count*/) {
 	CSP_LOG(NETWORK, DEBUG, "NetworkMessenger::sendto(RoutedMessageArray,Count) - Sending Network Packet");
 	return 0;
 }
 
-int NetworkMessenger::recvfrom(std::vector<RoutedMessage> * receiveArray, int * count) {
+int NetworkMessenger::recvfrom(std::vector<RoutedMessage> * /*receiveArray*/, int * /*count*/) {
 	CSP_LOG(NETWORK, DEBUG, "NetworkMessenger::recvfrom(RoutedMessageArray, count) - Receving Network Packet");
 
 	if (m_UDPReceiverSocket->isPending(ost::Socket::pendingInput, 0)) {

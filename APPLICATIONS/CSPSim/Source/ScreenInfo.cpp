@@ -66,8 +66,14 @@ Framerate::Framerate(int posx, int posy):ScreenInfo(posx,posy,"FRAMERATE"),m_min
 void Framerate::update()
 {
 	float fps = CSPSim::theSim->getFrameRate();
-	m_minFps = min(m_minFps,fps)+0.01;
-	m_maxFps = max(m_maxFps,fps)-0.01;
+	static int i = 0;
+	if (i++ >= 1000) { // reset occasionally
+		m_minFps = 100.0;
+		m_maxFps = 0.0;
+		i = 0;
+	}
+	m_minFps = min(m_minFps,fps);
+	m_maxFps = max(m_maxFps,fps);
 	std::ostringstream osstr;
 	osstr << setprecision(1) << fixed << fps << " FPS min: " << m_minFps << " max: " << m_maxFps;
     m_Text->setText(osstr.str());

@@ -1,5 +1,26 @@
 Version 0.4.0 (in progress)
 ===========================
+2004-03-30: delta
+  * Changed Exception.* files to ExceptionBase.* to avoid
+    swig's conflicts between exception.* and Exception.* 
+    under Windows. This change is pretty invasive and 
+    needs double checking on GNU/Linux.
+    
+  * The previous renaming simplifies (and unifies with GNU/Linux) 
+    the swig's command line in the vs.net custom build step.
+    
+  * Renamed PYTHONPATH environment variable to PYTHON_PATH and
+    SWIG to SWIG_PATH (it doesn't affect GNU/Linux platform).
+    
+  * Changed Exception to ExceptionBase in 
+    APPLICATIONS/SimData/Source/Makefile.
+  
+  * Tweaked scons scripts to reflect the current options in
+    vs.net 7.1 project file. A lot of scons' features have been 
+    disabled to make it work under Windows. A command to generate 
+    vs.net 7.1's .sln/.vcproj (currently commented out) has been 
+    added to SConstruct. 
+
 2004-03-18: onsight
   * After some effort debugging the scons scripts under windows
     with delta, I've checked in some of the necessary changes.

@@ -31,6 +31,7 @@ class Config_win32(Config):
         self.CPPFLAGS = '/EHsc /DWIN32=1 /DSIMDATA_EXPORTS=1 /GR /GX /W3 /MD'
         self.CPPPATH = ['#/Include', self.PYTHON_INC]
         self.SHLINKFLAGS = '/MACHINE:I386 /LIBPATH:%s /DLL' % self.PYTHON_LIBS
+        self.CXXFILESUFFIX = '.cpp'
         self.ARCHIVE_FORMATS = ['.zip']
         
         

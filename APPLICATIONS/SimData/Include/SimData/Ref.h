@@ -35,7 +35,7 @@
 
 #include <SimData/Namespace.h>
 #include <SimData/Export.h>
-#include <SimData/Exception.h>
+#include <SimData/ExceptionBase.h>
 #include <SimData/Log.h>
 
 

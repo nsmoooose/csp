@@ -50,7 +50,7 @@
 
 
 #include <SimData/Archive.h>
-#include <SimData/Exception.h>
+#include <SimData/ExceptionBase.h>
 #include <SimData/BaseType.h>
 
 

@@ -32,7 +32,7 @@
 #endif
 
 #include <SimData/Export.h>
-#include <SimData/Exception.h>
+#include <SimData/ExceptionBase.h>
 #include <SimData/Namespace.h>
 #include <SimData/Enum.h>
 #include <SimData/Path.h>

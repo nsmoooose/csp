@@ -2,6 +2,43 @@
 ===========================
 
 2003-07-17: onsight
+            Added speedbrake and data recording bindings
+	    to the default input mappings.
+
+	    Revised the m2k xml files to use the new FM
+	    classes and define various animation.
+
+            Added some comments to NumericalMethod and 
+	    VectorField.
+
+            Inlined a few accessor methods in VirtualScene.
+
+            Revisions to SceneObject to support animations.
+
+            Revisions to DynamicObject to support animations
+	    and data recording.
+
+            Revised AircraftDynamics to use FlightDynamics
+	    instead of PrimaryAeroDynamics.  Added support in
+	    AircraftObject for animations and data recording.
+	    
+	    Added speedbrake support to AircraftObject and 
+	    the FlightModel.
+
+            Added Animation, which provides a framework for
+	    3D model animations.
+
+            Added FlightDynamics, FlightModel, and DataRecorder.
+	    The first two implement an alternate flight model
+	    layout in which the static flight model data is
+	    reused by all aircraft of a given type.  The
+	    DataRecorder class allows arbitrary data output
+	    channels to be defined and saved efficiently to
+	    disk.  An external tool (not yet checked in) parses
+	    the files to produce tab-delimited tables or
+	    pdf charts (linux only for the latter).
+
+2003-07-17: onsight
             Changed SimpleConfig.h to use windows-specific hash 
 	    code for msvc version >= 1300 (instead of == 1300).
 

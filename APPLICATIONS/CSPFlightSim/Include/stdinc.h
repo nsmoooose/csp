@@ -24,6 +24,7 @@
 
 #include <fcntl.h>
 
+#include "Platform.h"
 #include "Config.h"
 #include "LogStream.h"
 #include "Tools.h"

@@ -1,6 +1,9 @@
  Version 0.4.0 (in progress)
 ===========================
 
+2005-02-14: delta
+ * Added Tools/Loader vs project.
+ 
 2005-02-09: delta
  * Added Include/Export.h
  

@@ -61,25 +61,6 @@ const Quaternion Quaternion::IDENTITY(1.0f,0.0f,0.0f,0.0f);
 
 //----------------------------------------------------------------------------
 
-Quaternion::Quaternion (double fW, double fX, double fY, double fZ)
-{
-	w = fW;
-	x = fX;
-	y = fY;
-	z = fZ;
-}
-
-//----------------------------------------------------------------------------
-
-Quaternion::Quaternion (const Quaternion& rkQ)
-{
-	w = rkQ.w;
-	x = rkQ.x;
-	y = rkQ.y;
-	z = rkQ.z;
-}
-
-//----------------------------------------------------------------------------
 
 void Quaternion::FromRotationMatrix (const Matrix3& kRot)
 {
@@ -226,16 +207,6 @@ void Quaternion::ToAxes (Vector3* akAxis) const
 
 //----------------------------------------------------------------------------
 
-Quaternion& Quaternion::operator= (const Quaternion& rkQ)
-{
-	w = rkQ.w;
-	x = rkQ.x;
-	y = rkQ.y;
-	z = rkQ.z;
-	return *this;
-}
-
-//----------------------------------------------------------------------------
 
 //Quaternion Quaternion::operator+ (const Quaternion& rkQ) const
 //{
@@ -282,26 +253,6 @@ Quaternion Quaternion::operator* (const Quaternion& rkQ) const //checked
 
 //----------------------------------------------------------------------------
 
-Quaternion Quaternion::operator- () const
-{
-	return Quaternion(-w,-x,-y,-z);
-}
-
-//----------------------------------------------------------------------------
-
-double Quaternion::Dot (const Quaternion& rkQ) const
-{
-	return w*rkQ.w+x*rkQ.x+y*rkQ.y+z*rkQ.z;
-}
-
-//----------------------------------------------------------------------------
-
-double Quaternion::Norm () const
-{
-	return w*w+x*x+y*y+z*z;
-}
-
-//----------------------------------------------------------------------------
 
 Quaternion Quaternion::Inverse () const //checked (delta)
 {
@@ -316,14 +267,6 @@ Quaternion Quaternion::Inverse () const //checked (delta)
 		// return an invalid result to flag the error
 		return ZERO;
 	}
-}
-
-//----------------------------------------------------------------------------
-
-Quaternion Quaternion::UnitInverse () const //checked (delta)
-{
-	// assert:  'this' is unit length
-	return Quaternion(w,-x,-y,-z);
 }
 
 //----------------------------------------------------------------------------
@@ -582,38 +525,6 @@ Quaternion operator*(Vector3 const& v, Quaternion const& q)
 	                     q.w*v.z + q.y*v.x - q.x*v.y);
 }
 
-double	Quaternion::Magnitude(void) const
-{
-	return sqrt(w*w + x*x + y*y + z*z);
-}
-
-Vector3	QVRotate(Quaternion const& q, Vector3 const& v)
-{
-	Quaternion t;
-	t = (q*v)*q.Bar();
-	return t.GetVector();
-}
-
-Quaternion Quaternion::Bar() const
-{
-	return Quaternion(w,-x,-y,-z);
-}
-
-Quaternion QRotate(Quaternion const& q1, Quaternion const& q2)
-{
-	return q1*q2*(~q1);
-}
-
-Vector3	Quaternion::GetVector(void)
-{
-	return Vector3(x, y, z);
-}
-
-double	Quaternion::GetScalar(void)
-{
-	return w;
-}
-
 
 Quaternion& Quaternion::operator/=(double s) // Checked (delta)
 {
@@ -689,6 +600,30 @@ bool operator==(const Quaternion &a, const Quaternion &b) {
 
 bool operator!=(const Quaternion &a, const Quaternion &b) {
 	return a.w != b.w || a.x != b.x || a.y != b.y || a.z != b.z;
+}
+
+Vector3 Quaternion::GetRotated(Vector3 const &v) const
+{
+	//Quaternion t = (*this*v)*Bar();
+	//return t.GetVector();
+	double qw = w;
+	double qx = x;
+	double qy = y;
+	double qz = z;
+	double vx = v.x;
+	double vy = v.y;
+	double vz = v.z;
+
+	double uw =-(qx*vx + qy*vy + qz*vz);
+	double ux =  qw*vx + qy*vz - qz*vy;
+	double uy =  qw*vy + qz*vx - qx*vz;
+	double uz =  qw*vz + qx*vy - qy*vx;
+
+	vx = -uw*qx+ux*qw-uy*qz+uz*qy;
+	vy = -uw*qy+uy*qw-uz*qx+ux*qz;
+	vz = -uw*qz+uz*qw-ux*qy+uy*qx;
+
+	return Vector3(vx, vy, vz);
 }
 
 

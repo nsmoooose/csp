@@ -204,6 +204,7 @@ if os.name == "posix":
 sources = [
     "BaseType",
     "DataArchive",
+    "DataManager",
     "Date",
     "Enum",
     "Exception",
@@ -233,6 +234,7 @@ headers = [
     "BaseType.h",
     "Conversions.h",
     "DataArchive.h",
+    "DataManager.h",
     "Date.h",
     "Enum.h",
     "Exception.h",
@@ -273,6 +275,7 @@ interfaces = [
 	"BaseType.i",
 	"Conversions.i",
 	"DataArchive.i",
+	"DataManager.i",
 	"Date.i",
 	"Enum.i",
 	"Exception.i",

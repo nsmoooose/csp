@@ -25,6 +25,7 @@
 #include <SimData/Exception.h>
 #include <SimData/Types.h>
 #include <SimData/DataArchive.h>
+#include <SimData/DataManager.h>
 #include <SimData/InterfaceRegistry.h>
 #include <SimData/Version.h>
 
@@ -73,5 +74,6 @@
 }
 
 %include "SimData/DataArchive.i"
+%include "SimData/DataManager.i"
 %include "SimData/InterfaceRegistry.i"
 %exception;

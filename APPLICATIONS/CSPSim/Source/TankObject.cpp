@@ -70,12 +70,12 @@ void TankObject::dump()
 /*
 	cout << "ID: " << m_ObjectID
 	     << ", TYPE: " << m_ObjectType
-	     << ", GLOPOSX: " << m_GlobalPosition.x
-	     << ", GLOPOSY: " << m_GlobalPosition.y
-	     << ", GLOPOSZ: " << m_GlobalPosition.z
-	     << ", VELX: " << m_LinearVelocity.x
-	     << ", VELY: " << m_LinearVelocity.y
-	     << ", VELZ: " << m_LinearVelocity.z
+	     << ", GLOPOSX: " << m_GlobalPosition.x()
+	     << ", GLOPOSY: " << m_GlobalPosition.y()
+	     << ", GLOPOSZ: " << m_GlobalPosition.z()
+	     << ", VELX: " << m_LinearVelocity.x()
+	     << ", VELY: " << m_LinearVelocity.y()
+	     << ", VELZ: " << m_LinearVelocity.z()
 	     << ", GUNANGLE: " << gun_angle
 	     << endl;      
 */
@@ -91,7 +91,7 @@ void TankObject::doMovement(double dt)
 	DynamicObject::doMovement(dt);
 
 /* FIXME
-	m_Direction.Normalize(); 
+	m_Direction.normalize(); 
 	m_LinearVelocity = m_Speed * m_Direction;
 	m_GlobalPosition += dt * m_GlobalVelocity;
 */

@@ -47,7 +47,7 @@ std::vector<double> const &AircraftPhysicsModel::_f(double x, std::vector<double
 	if (mag != 0.0) {
 		m_qOrientation /= mag;
 	}
-	y[9]  = m_qOrientation.w; y[10] = m_qOrientation.x; y[11] = m_qOrientation.y; y[12] = m_qOrientation.z;
+	y[9]  = m_qOrientation.w(); y[10] = m_qOrientation.x(); y[11] = m_qOrientation.y(); y[12] = m_qOrientation.z();
 
 	m_ForcesBody = m_MomentsBody = simdata::Vector3::ZERO;
 	m_WeightBody = localToBody(m_WeightLocal);
@@ -84,11 +84,11 @@ std::vector<double> const &AircraftPhysicsModel::_f(double x, std::vector<double
 	// p' = v
 	dy[0] = y[3]; dy[1] = y[4]; dy[2] = y[5];
 	// v'
-	dy[3] = m_LinearAccelBody.x; dy[4] = m_LinearAccelBody.y; dy[5] = m_LinearAccelBody.z;
+	dy[3] = m_LinearAccelBody.x(); dy[4] = m_LinearAccelBody.y(); dy[5] = m_LinearAccelBody.z();
 	// w'
-	dy[6] = m_AngularAccelBody.x; dy[7] = m_AngularAccelBody.y; dy[8] = m_AngularAccelBody.z;
+	dy[6] = m_AngularAccelBody.x(); dy[7] = m_AngularAccelBody.y(); dy[8] = m_AngularAccelBody.z();
 	// q'
-	dy[9]  = qprim.w; dy[10] = qprim.x; dy[11] = qprim.y; dy[12] = qprim.z;
+	dy[9]  = qprim.w(); dy[10] = qprim.x(); dy[11] = qprim.y(); dy[12] = qprim.z();
 	
 	return dy;
 }
@@ -103,7 +103,7 @@ void AircraftPhysicsModel::doSimStep(double dt) {
 
 	Atmosphere const *atmosphere = CSPSim::theSim->getAtmosphere();
 	if (atmosphere)
-		m_Gravity = atmosphere->getGravity(m_PositionLocal.z);
+		m_Gravity = atmosphere->getGravity(m_PositionLocal.z());
 	else
 		m_Gravity = 9.806;
 

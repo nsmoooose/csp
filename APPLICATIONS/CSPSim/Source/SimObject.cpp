@@ -86,7 +86,7 @@ void SimObject::leaveScene() {
 #if 0
 void SimObject::setLocalPosition(simdata::Vector3 const & position)
 {
-	setLocalPosition(position.x, position.y, position.z);
+	setLocalPosition(position.x(), position.y(), position.z());
 }
 
 void SimObject::setLocalPosition(double x, double y, double z)
@@ -94,21 +94,21 @@ void SimObject::setLocalPosition(double x, double y, double z)
 	// if the object is on the ground ignore the z component and use the elevation at
 	// the x,y point.
 
-	m_LocalPosition.x = x;
-	m_LocalPosition.y = y;
+	m_LocalPosition.x() = x;
+	m_LocalPosition.y() = y;
 
-	m_GlobalPosition.x = g_LatticeXDist*m_XLatticePos + x;
-	m_GlobalPosition.y = g_LatticeYDist*m_YLatticePos + y;
+	m_GlobalPosition.x() = g_LatticeXDist*m_XLatticePos + x;
+	m_GlobalPosition.y() = g_LatticeYDist*m_YLatticePos + y;
 
 	if(m_bOnGround)
 	{
-		m_GlobalPosition.z = g_pBattlefield->getElevation(x,y); 
-		m_LocalPosition.z = m_GlobalPosition.z;
+		m_GlobalPosition.z() = g_pBattlefield->getElevation(x,y); 
+		m_LocalPosition.z() = m_GlobalPosition.z();
 	}
 	else
 	{
-		m_GlobalPosition.z = z; 
-		m_LocalPosition.z = z;
+		m_GlobalPosition.z() = z; 
+		m_LocalPosition.z() = z;
 	}
 
 	CSP_LOG(APP, DEBUG, "SimObject::setPosition - ID: " << m_ObjectID 

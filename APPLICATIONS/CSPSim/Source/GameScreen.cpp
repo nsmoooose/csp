@@ -312,9 +312,9 @@ simdata::Vector3 GameScreen::getNewFixedCamPos(SimObject * const target) const
 	float h = 0.0;
 	VirtualBattlefield *battlefield = CSPSim::theSim->getBattlefield();
 	if (battlefield) {
-		h = battlefield->getGroundElevation(objectPos.x, objectPos.y);
+		h = battlefield->getGroundElevation(objectPos.x(), objectPos.y());
 	}
-	if ( camPos.z < h ) camPos.z = h;
+	if ( camPos.z() < h ) camPos.z() = h;
 	return camPos;
 }
 
@@ -706,8 +706,8 @@ void GameScreen::setCamera(double dt)
 		break;
 	case 5: // view mode five is sat view
 		lookPos = eyePos = m_ActiveObject->getGlobalPosition();
-		eyePos.z += 1000;
-		lookPos.z = 0;
+		eyePos.z() += 1000;
+		lookPos.z() = 0;
 		upVec = simdata::Vector3::XAXIS;
 		break;
 	case 6: // view mode six is 50 meters above plane
@@ -735,10 +735,10 @@ void GameScreen::setCamera(double dt)
 		eyePos = planePos;
 		eyePos += m_ActiveObject->getViewPoint();
 		lookPos = m_Padlock->getGlobalPosition();
-		simdata::Vector3 dir = simdata::Normalized(lookPos - eyePos);
+		simdata::Vector3 dir = (lookPos - eyePos).normalized();
 		attitude.InverseRotate(dir);
-		float phi = atan2(-dir.x, dir.y);
-		float theta = acos(dir.z);
+		float phi = atan2(-dir.x(), dir.y());
+		float theta = acos(dir.z());
 		float phi_max = 2.6 - std::max(0.0, 1.57 - 2.0*theta);
 		if (phi > phi_max) {
 			phi = phi_max; 
@@ -762,7 +762,7 @@ void GameScreen::setCamera(double dt)
 		m_NeckPhi = phi;
 		dir.Set(-sin(theta)*sin(phi), sin(theta)*cos(phi), cos(theta));
 		simdata::Vector3 d(sin(psi), -cos(psi), 0.0);
-		upVec.Set(d.x*cos(theta), d.y*cos(theta), sin(theta));
+		upVec.Set(d.x()*cos(theta), d.y()*cos(theta), sin(theta));
 		attitude.Rotate(upVec);
 		eyePos += attitude.GetRotated(offset * simdata::Vector3::XAXIS);
 		attitude.Rotate(dir);
@@ -773,16 +773,16 @@ void GameScreen::setCamera(double dt)
 
 	VirtualBattlefield *battlefield = CSPSim::theSim->getBattlefield();
 	if (battlefield) {
-		float h = 1.0 + battlefield->getGroundElevation(eyePos.x, eyePos.y, m_CameraHint);
-		m_CameraOnGround = (eyePos.z <= h);
+		float h = 1.0 + battlefield->getGroundElevation(eyePos.x(), eyePos.y(), m_CameraHint);
+		m_CameraOnGround = (eyePos.z() <= h);
 		if (m_CameraOnGround) {
 			if (m_LookRelative) {
 				simdata::Vector3 adjustment = eyePos - lookPos;
-				double dh = h - lookPos.z;
-				adjustment.z = 0.0;
-				adjustment.Normalize();
+				double dh = h - lookPos.z();
+				adjustment.z() = 0.0;
+				adjustment.normalize();
 				adjustment *= sqrt(m_DistanceToObject*m_DistanceToObject - dh*dh);
-				adjustment.z = dh;
+				adjustment.z() = dh;
 				eyePos = adjustment + lookPos;
 				// view 2 would be a bit tricky to adjust so that any
 				// upward camera motion would immediately bring the
@@ -790,7 +790,7 @@ void GameScreen::setCamera(double dt)
 				//m_CameraGroundAngle = asin(dh, m_disToObject) - asin(dz, m_disToObject);
 				//m_PanRateX = 0.0;
 			} else {
-				eyePos.z = h;
+				eyePos.z() = h;
 			}
 		}
 		battlefield->updateOrigin(eyePos); 

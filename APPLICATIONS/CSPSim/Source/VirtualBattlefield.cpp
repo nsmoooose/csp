@@ -633,7 +633,7 @@ bool ActiveCell::isVisible() const { return m_Visible; }
 void ActiveCell::updateScene(simdata::Vector3 const & origin) {
 	if (m_SceneFeatureCell.valid()) {
 		simdata::Vector3 pos = m_Origin - origin;
-		m_SceneFeatureCell->setPosition(osg::Vec3(pos.x, pos.y, pos.z));
+		m_SceneFeatureCell->setPosition(osg::Vec3(pos.x(), pos.y(), pos.z()));
 		Unit::list::iterator i = m_Cell->getUnits().begin();
 		Unit::list::iterator j = m_Cell->getUnits().end();
 		for (; i != j; i++) {
@@ -689,7 +689,7 @@ bool ActiveCell::setVisible(bool visible) {
 	m_NeedsUpdate = true;
 	if (visible && m_Scene.valid() && !m_SceneFeatureCell) {
 		m_SceneFeatureCell = new osg::PositionAttitudeTransform;
-		m_SceneFeatureCell->setPosition(osg::Vec3(m_Origin.x, m_Origin.y, 0.0));
+		m_SceneFeatureCell->setPosition(osg::Vec3(m_Origin.x(), m_Origin.y(), 0.0));
 		m_Scene->addFeatureCell(m_SceneFeatureCell.get());
 	}
 	m_UnitVisualWalker.setDirection(visible);
@@ -1004,7 +1004,7 @@ void VirtualBattlefield::getObjectsInRange(SimObject * fromObj, float range, flo
 		if (fromObj->getObjectID() != toObj->getObjectID() && toObj->getArmy() == army) {
 			simdata::Vector3 distVect = toObj->getGlobalPosition() - fromObj->getGlobalPosition();
 			float dist = distVect.length();
-			simdata::Vector3 distVectNormalized = Normalized(distVect);
+			simdata::Vector3 distVectNormalized = distVect.normalized();
 			float angle = simdata::angleBetweenTwoVectors(fromObj->getDirection(), distVectNormalized);
 			angle = angle*360.0/3.1415/2.0;
 
@@ -1049,7 +1049,7 @@ void VirtualBattlefield::getObjectDistance(SimObject * fromObject, SimObject * t
 {
 	simdata::Vector3 distVect = fromObject->getGlobalPosition() - toObject->getGlobalPosition();
 	distance = distVect.length();
-	direction = Normalized(distVect);
+	direction = distVect.normalized();
 }
 */
 

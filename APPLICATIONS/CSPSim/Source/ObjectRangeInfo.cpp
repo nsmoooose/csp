@@ -58,8 +58,8 @@ ObjectRangeInfo & ObjectRangeInfo::operator=(const ObjectRangeInfo & rhs)
 void ObjectRangeInfo::dump()
 {
   cout << "Object_id: " << object_id << ", range: " 
-       << range << ", dir_x " << direction.x << " dir_y " 
-       << direction.y << ", dir_z " << direction.z << std::endl;
+       << range << ", dir_x " << direction.x() << " dir_y " 
+       << direction.y() << ", dir_z " << direction.z() << std::endl;
 }
 
 void ObjectRangeInfo::clear()

@@ -205,8 +205,8 @@ void DemeterTerrain::testLineOfSight(Intersection &test, IntersectionHint &hint)
 }
 
 float DemeterTerrain::getGroundElevation(double x, double y, IntersectionHint &hint) {
-	x += m_Offset.x;
-	y += m_Offset.y;
+	x += m_Offset.x();
+	y += m_Offset.y();
 	float z = 0.0;
 	if (!m_Lattice) {
 		if (m_Terrain.valid()) {
@@ -221,8 +221,8 @@ float DemeterTerrain::getGroundElevation(double x, double y, IntersectionHint &h
 }
 
 float DemeterTerrain::getGroundElevation(double x, double y, simdata::Vector3 &normal, IntersectionHint &hint) {
-	x += m_Offset.x;
-	y += m_Offset.y;
+	x += m_Offset.x();
+	y += m_Offset.y();
 	float z = 0.0;
 	float zx = 0.0, zy = 0.0;
 	if (!m_Lattice) {
@@ -250,7 +250,7 @@ float DemeterTerrain::getGroundElevation(double x, double y, simdata::Vector3 &n
 	}
 	// poor man's normal
 	normal.Set(-zx, -zy, 1.0);
-	normal.Normalize();
+	normal.normalize();
 	return z;
 }
 
@@ -363,7 +363,7 @@ void DemeterTerrain::setCameraPosition(double x, double y, double z)
 {
 	if (m_TerrainLattice.valid()) {
 		CSP_LOG(TERRAIN, DEBUG, "Terrain camera @ " << (m_Offset + simdata::Vector3(x,y,z)));
-		m_TerrainLattice->SetCameraPosition(x+m_Offset.x, y+m_Offset.y, z+m_Offset.z);
+		m_TerrainLattice->SetCameraPosition(x+m_Offset.x(), y+m_Offset.y(), z+m_Offset.z());
 	}
 }
 
@@ -454,9 +454,9 @@ void DemeterTerrain::postCreate() {
 }
 
 simdata::Vector3 DemeterTerrain::getOrigin(simdata::Vector3 const &pos) const {
-	int X = (int) ((pos.x + m_Offset.x) / getCellWidth());
-	int Y = (int) ((pos.y + m_Offset.y) / getCellHeight());
-	return simdata::Vector3(X * getCellWidth() - m_Offset.x, Y * getCellHeight() - m_Offset.y, 0.0);
+	int X = (int) ((pos.x() + m_Offset.x()) / getCellWidth());
+	int Y = (int) ((pos.y() + m_Offset.y()) / getCellHeight());
+	return simdata::Vector3(X * getCellWidth() - m_Offset.x(), Y * getCellHeight() - m_Offset.y(), 0.0);
 }
 
 void DemeterTerrain::endDraw() {

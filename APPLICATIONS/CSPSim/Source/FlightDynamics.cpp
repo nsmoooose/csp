@@ -95,7 +95,7 @@ void FlightDynamics::computeForceAndMoment(double x) {
 	m_FlightModel->setKinetics(*m_AngularVelocityBody, *m_Height);
 	m_Force = m_FlightModel->calculateForce();
 	m_Moment = m_FlightModel->calculateMoment();
-	m_GForce = m_MassInverse * m_Force.z / 9.81;
+	m_GForce = m_MassInverse * m_Force.z() / 9.81;
 }
 
 void FlightDynamics::postSimulationStep(double dt) {
@@ -140,7 +140,7 @@ double FlightDynamics::controlInputValue(double p_gForce) const {
 void FlightDynamics::updateAirflow(double h) {
 	m_AirflowBody =	*m_VelocityBody - *m_WindBody;
 	m_Airspeed = m_AirflowBody.length();
-	m_Alpha = -atan2(m_AirflowBody.z, m_AirflowBody.y); 
+	m_Alpha = -atan2(m_AirflowBody.z(), m_AirflowBody.y()); 
 	if (h > 0.0) {
 		m_AlphaDot = ( m_Alpha - m_Alpha0 ) / h;
 	} // else keep previous value
@@ -150,8 +150,8 @@ void FlightDynamics::updateAirflow(double h) {
 	if (m_AlphaDot < -1.0) m_AlphaDot = -1.0;
 	
 	// Calculate side angle
-	// beta is 0 when v velocity (i.e. side velocity) is 0; note here v is m_AirflowBody.x
-	m_Beta  = atan2(m_AirflowBody.x, m_AirflowBody.y);
+	// beta is 0 when v velocity (i.e. side velocity) is 0; note here v is m_AirflowBody.x()
+	m_Beta  = atan2(m_AirflowBody.x(), m_AirflowBody.y());
 }
 
 

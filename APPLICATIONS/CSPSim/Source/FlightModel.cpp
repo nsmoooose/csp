@@ -166,7 +166,7 @@ simdata::Vector3 FlightModel::calculateLiftVector() {
 
 	m_CL = ((m_CL0) + 
 	        (m_CL_a * m_Alpha) + 
-	        (m_CL_q * m_AngularVelocityBody.x + m_CL_adot * m_AlphaDot ) * m_WingChord * m_Inv2V + 
+	        (m_CL_q * m_AngularVelocityBody.x() + m_CL_adot * m_AlphaDot ) * m_WingChord * m_Inv2V + 
 	        (m_CL_de * m_Elevator)
 	       );
 
@@ -200,7 +200,7 @@ simdata::Vector3 FlightModel::calculateDragVector() {
 
 simdata::Vector3 FlightModel::calculateSideVector() {
 
-	m_CY = m_CY_beta * m_Beta + m_CY_dr * m_Rudder - m_CY_r * m_AngularVelocityBody.z;
+	m_CY = m_CY_beta * m_Beta + m_CY_dr * m_Rudder - m_CY_r * m_AngularVelocityBody.z();
 
 	return simdata::Vector3(m_CY * cos(m_Beta), m_CY * sin(m_Beta), 0.0);
 }
@@ -212,16 +212,16 @@ simdata::Vector3 FlightModel::calculateForce() {
 
 simdata::Vector3 FlightModel::calculateMoment() {
 	simdata::Vector3 moment;
-	moment.x = calculatePitchMoment(); 
-	moment.y = calculateRollMoment(); 
-	moment.z = calculateYawMoment(); 
+	moment.x() = calculatePitchMoment(); 
+	moment.y() = calculateRollMoment(); 
+	moment.z() = calculateYawMoment(); 
 	return moment;
 }
 
 double FlightModel::calculateRollMoment() const {
 	return ( (m_CI_beta * m_Beta) + 
 	         (m_CI_da * m_Aileron) +
-	         (m_CI_p * m_AngularVelocityBody.y - m_CI_r * m_AngularVelocityBody.z)* m_WingSpan * m_Inv2V +
+	         (m_CI_p * m_AngularVelocityBody.y() - m_CI_r * m_AngularVelocityBody.z())* m_WingSpan * m_Inv2V +
 	         (m_CI_dr * m_Rudder)
 	       ) * m_qBarS * m_WingSpan;
 }
@@ -229,7 +229,7 @@ double FlightModel::calculateRollMoment() const {
 double FlightModel::calculatePitchMoment() const {
 	return ( (m_CM0) + 
 	         (m_CM_a * m_Alpha) +
-	         (m_CM_q * m_AngularVelocityBody.x + m_CM_adot * m_AlphaDot) * m_WingChord * m_Inv2V +
+	         (m_CM_q * m_AngularVelocityBody.x() + m_CM_adot * m_AlphaDot) * m_WingChord * m_Inv2V +
 	         (m_CM_de * m_Elevator)
 	       ) * m_qBarS * m_WingChord;
 }
@@ -237,7 +237,7 @@ double FlightModel::calculatePitchMoment() const {
 
 double FlightModel::calculateYawMoment() const {   
 	return - ( (m_Cn_beta * m_Beta) + 
-	           (m_Cn_p * m_AngularVelocityBody.y - m_Cn_r * m_AngularVelocityBody.z) * m_WingSpan * m_Inv2V +
+	           (m_Cn_p * m_AngularVelocityBody.y() - m_Cn_r * m_AngularVelocityBody.z()) * m_WingSpan * m_Inv2V +
 	           (m_Cn_da * m_Aileron + m_Cn_dr * m_Rudder)
 	         ) * m_qBarS *  m_WingSpan; 
 } 

@@ -216,11 +216,11 @@ float ChunkLodTerrain::getGroundElevation(double x, double y, IntersectionHint &
 	if (!m_Terrain) return 0.0;
 	m_ElevationTest->setIndex(hint);
 	/*
-	m_ElevationTest->setElevationTest(x - m_Origin.x, -(y - m_Origin.y));
+	m_ElevationTest->setElevationTest(x - m_Origin.x(), -(y - m_Origin.y()));
 	m_ElevationTest->setExhaustive(false);
 	m_Terrain->intersect(*m_ElevationTest);
 	*/
-	m_ElevationTest->setPosition(x - m_Origin.x, -(y - m_Origin.y));
+	m_ElevationTest->setPosition(x - m_Origin.x(), -(y - m_Origin.y()));
 	m_Terrain->findElevation(*m_ElevationTest);
 	if (m_ElevationTest->getHit()) {
 		hint = m_ElevationTest->getIndex();
@@ -236,19 +236,19 @@ float ChunkLodTerrain::getGroundElevation(double x, double y, simdata::Vector3 &
 	}
 	m_ElevationTest->setIndex(hint);
 	/*
-	m_ElevationTest->setElevationTest(x - m_Origin.x, -(y - m_Origin.y));
+	m_ElevationTest->setElevationTest(x - m_Origin.x(), -(y - m_Origin.y()));
 	m_ElevationTest->setExhaustive(false);
 	m_Terrain->intersect(*m_ElevationTest);
 	*/
-	m_ElevationTest->setPosition(x - m_Origin.x, -(y - m_Origin.y));
+	m_ElevationTest->setPosition(x - m_Origin.x(), -(y - m_Origin.y()));
 	//simdata::SimTime t1 = simdata::SimDate::getSystemTime();
 	m_Terrain->findElevation(*m_ElevationTest);
 	//simdata::SimTime t2 = simdata::SimDate::getSystemTime();
 	if (m_ElevationTest->getHit()) {
 		osg::Vec3 norm = m_ElevationTest->getNormal();
 		normal.Set(norm.x(), -norm.z(), norm.y());
-		if (normal.z <= 0.0) std::cout << normal << "\n";
-		assert(normal.z > 0.0);
+		if (normal.z() <= 0.0) std::cout << normal << "\n";
+		assert(normal.z() > 0.0);
 		/*
 		static int XXX = 0; XXX++; // XXX XXX
 		//if ((XXX % 30 == 0))

@@ -168,7 +168,7 @@ bool VirtualHID::onMouseMove(SDL_MouseMotionEvent const &event) {
 	int kmod = SDL_GetModState();
 	EventMapping::Motion const *m = m_Map->getMouseMotion(event.which, event.state, kmod, m_VirtualMode);
 	if (m == NULL || m->id == "") return false;
-	m_Object->onMotion(m->id, event.x, event.y, event.xrel, event.yrel);
+	m_Object->onMotion(m->id, event.x(), event.y(), event.xrel, event.yrel);
 	return true;
 }
 
@@ -179,7 +179,7 @@ bool VirtualHID::onMouseButton(SDL_MouseButtonEvent const &event) {
 	int kmod = SDL_GetModState();
 	EventMapping::Script const *s = m_Map->getMouseButtonScript(event.which, event.button, event.state, kmod, m_VirtualMode);
 	if (s == NULL) return false;
-	setScript(s, event.x, event.y);
+	setScript(s, event.x(), event.y());
 	return true;
 }
 

@@ -173,7 +173,7 @@ void LandingGear::unpack(simdata::UnPacker& p) {
 
 void LandingGear::postCreate() {
 	Object::postCreate();
-	m_Motion.Normalize();
+	m_Motion.normalize();
 	m_Position = m_MaxPosition;
 }
 
@@ -388,7 +388,7 @@ void LandingGear::updateWheel(double dt,
 	double brakeLimit = m_BrakeFriction * m_Brake * m_BrakeLimit;
 
 	// check if brakes are slipping
-	double alignedForce = sqrt(tireForceWheel.y * tireForceWheel.y + tireForceWheel.z * tireForceWheel.z);
+	double alignedForce = sqrt(tireForceWheel.y() * tireForceWheel.y() + tireForceWheel.z() * tireForceWheel.z());
 	bool brakeSlip = alignedForce > brakeLimit;
 	if (brakeSlip) {
 		if (updateContact) {
@@ -400,8 +400,8 @@ void LandingGear::updateWheel(double dt,
 		// reduce the aligned force to account for brake slippage
 		double scale = brakeLimit / alignedForce;
 		alignedForce *= scale;
-		tireForceWheel.y *= scale;
-		tireForceWheel.z *= scale;
+		tireForceWheel.y() *= scale;
+		tireForceWheel.z() *= scale;
 	} else {
 		if (updateContact) {
 			// not slipping so use the static friction from now on
@@ -414,7 +414,7 @@ void LandingGear::updateWheel(double dt,
 	// transform to wheel coordinates
 	simdata::Vector3 vGroundWheel = QVRotate(m_SteerTransform, vGroundBody);
 	// normalize to get rolling direction
-	simdata::Vector3 rollingDirectionWheel = simdata::Normalized(Vector3(0.0, vGroundWheel.y, vGroundWheel.z));
+	simdata::Vector3 rollingDirectionWheel = Vector3(0.0, vGroundWheel.y(), vGroundWheel.z()).normalized();
 	// compute rolling friction
 	simdata::Vector3 rollingFrictionWheel = - m_RollingFriction * normalForce * rollingDirectionWheel;
 	// add rolling friction to tire force XXX (trying this below!)
@@ -423,7 +423,7 @@ void LandingGear::updateWheel(double dt,
 	// is this wheel steerable?
 	if (m_SteeringLimit > 0.0) {
 		// partial (approx) castering of steerable wheels to reduce instability
-		tireForceWheel.x *= (0.1 + 0.9 * fabs(m_SteerAngle/m_SteeringLimit));
+		tireForceWheel.x() *= (0.1 + 0.9 * fabs(m_SteerAngle/m_SteeringLimit));
 	}
 
 	// maximum traction
@@ -473,7 +473,7 @@ void LandingGear::updateWheel(double dt,
 			// tire isn't skidding, so use static friction from now on
 			m_TireFriction = m_TireStaticFriction;
 			// XXX see note above
-			double rollingSpeed = sqrt(vGroundWheel.y*vGroundWheel.y + vGroundWheel.z*vGroundWheel.z);
+			double rollingSpeed = sqrt(vGroundWheel.y()*vGroundWheel.y() + vGroundWheel.z()*vGroundWheel.z());
 			if (brakeSlip) {
 				m_TireRotationRate = rollingSpeed / m_TireRadius;
 				m_TireRotation += m_TireRotationRate * dt;
@@ -500,7 +500,7 @@ void LandingGear::updateWheel(double dt,
 			reset = false;
 			if (t == 0.0) { std::cerr << "time\tcontact\tvbody_y\tvgrndw_y\tforceb_y\tskid\tslip\ttire_grip\tbrake_grip\n"; }
 			t += dt;
-			std::cerr << t << "\t" << m_TireContactPoint.y << "\t" << vBody.y << "\t" << vGroundWheel.y << "\t" << tireForceBody.y << "\t" << (m_Skidding*1000.0) << "\t" << (brakeSlip*1000.0) << "\t" << skidLimit << "\t" << brakeLimit << "\n";
+			std::cerr << t << "\t" << m_TireContactPoint.y() << "\t" << vBody.y() << "\t" << vGroundWheel.y() << "\t" << tireForceBody.y() << "\t" << (m_Skidding*1000.0) << "\t" << (brakeSlip*1000.0) << "\t" << skidLimit << "\t" << brakeLimit << "\n";
 		}
 	}
 
@@ -651,7 +651,7 @@ std::vector<simdata::Vector3> GearDynamics::getGearPosition() const {
 		LandingGear const *gear = m_Gear[i].get();
 		simdata::Vector3 move = gear->getPosition();
 		// FIXME motion should be projected along gear axis
-		move.z -= gear->getMaxPosition().z;
+		move.z() -= gear->getMaxPosition().z();
 		gear_pos.push_back(move);
 	}
 	return gear_pos;

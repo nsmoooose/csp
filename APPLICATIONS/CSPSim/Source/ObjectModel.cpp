@@ -254,9 +254,9 @@ osg::Geometry *makeDiamond(simdata::Vector3 const &pos, float s) {
 
     for( i = 0; i < 12; i++ )
     {
-        v[i][0] = vv[i][0] + pos.x;
-        v[i][1] = vv[i][1] + pos.y;
-        v[i][2] = vv[i][2] + pos.z;
+        v[i][0] = vv[i][0] + pos.x();
+        v[i][1] = vv[i][1] + pos.y();
+        v[i][2] = vv[i][2] + pos.z();
     }
 
     osg::Geometry *geom = new osg::Geometry;
@@ -327,11 +327,11 @@ void ObjectModel::loadModel() {
 	std::cout << "PROCESSING MODEL DONE\n";
 
 	assert(m_Axis0.length() > 0.0);
-	m_Axis0.Normalize();
+	m_Axis0.normalize();
 	// orthogonalize
 	m_Axis1 = m_Axis1 - m_Axis0 * simdata::Dot(m_Axis0, m_Axis1);
 	assert(m_Axis1.length() > 0.0);
-	m_Axis1.Normalize();
+	m_Axis1.normalize();
 
 	// insert an adjustment matrix at the head of the model only
 	// if necessary.
@@ -341,9 +341,9 @@ void ObjectModel::loadModel() {
 	    m_Offset != simdata::Vector3::ZERO) {
 		// find third axis and make the transform matrix
 		simdata::Vector3 axis2 = simdata::Cross(m_Axis0, m_Axis1);
-		simdata::Matrix3 o(m_Axis0.x, m_Axis0.y, m_Axis0.z, 
-		                   m_Axis1.x, m_Axis1.y, m_Axis1.z, 
-		                   axis2.x, axis2.y, axis2.z);
+		simdata::Matrix3 o(m_Axis0.x(), m_Axis0.y(), m_Axis0.z(), 
+		                   m_Axis1.x(), m_Axis1.y(), m_Axis1.z(), 
+		                   axis2.x(), axis2.y(), axis2.z());
 		o = o.Inverse() * m_Scale;
 		simdata::Matrix3::M_t (&R)[3][3] = o.rowcol;
 		osg::Matrix model_orientation;
@@ -351,7 +351,7 @@ void ObjectModel::loadModel() {
 			R[0][0], R[1][0], R[2][0], 0.0,
 			R[0][1], R[1][1], R[2][1], 0.0,
 			R[0][2], R[1][2], R[2][2], 0.0,
-			m_Offset.x, m_Offset.y, m_Offset.z, 1.0
+			m_Offset.x(), m_Offset.y(), m_Offset.z(), 1.0
 		);
 		osg::MatrixTransform *adjust = new osg::MatrixTransform;
 		if (m_Scale != 1.0) {
@@ -555,7 +555,7 @@ void ObjectModel::updateGearSprites(std::vector<simdata::Vector3> const &move) {
 			osg::Node *node = m_GearSprites->getChild(j);
 			osg::PositionAttitudeTransform *pos = dynamic_cast<osg::PositionAttitudeTransform*>(node); 
 			if (pos) {
-				osg::Vec3 p = osg::Vec3(m_LandingGear[i].x,m_LandingGear[i].y,move[i].z);
+				osg::Vec3 p = osg::Vec3(m_LandingGear[i].x(),m_LandingGear[i].y(),move[i].z());
 				pos->setPosition(p);
 				++i;
 			}

@@ -846,16 +846,16 @@ SkyShader::SkyShader() {
 }
 
 void SkyShader::getSkyCoefficients(float T, sky_c &skylight) {
-	skylight.x[0] = -0.0193 * T - 0.2592;
-	skylight.x[1] = -0.0665 * T + 0.0008;
-	skylight.x[2] = -0.0004 * T + 0.2125;
-	skylight.x[3] = -0.0641 * T - 0.8989;
-	skylight.x[4] = -0.0033 * T + 0.0452;
-	skylight.y[0] = -0.0167 * T - 0.2608;
-	skylight.y[1] = -0.0950 * T + 0.0092;
-	skylight.y[2] = -0.0079 * T + 0.2102;
-	skylight.y[3] = -0.0441 * T - 1.6537;
-	skylight.y[4] = -0.0109 * T + 0.0529;
+	skylight.x()[0] = -0.0193 * T - 0.2592;
+	skylight.x()[1] = -0.0665 * T + 0.0008;
+	skylight.x()[2] = -0.0004 * T + 0.2125;
+	skylight.x()[3] = -0.0641 * T - 0.8989;
+	skylight.x()[4] = -0.0033 * T + 0.0452;
+	skylight.y()[0] = -0.0167 * T - 0.2608;
+	skylight.y()[1] = -0.0950 * T + 0.0092;
+	skylight.y()[2] = -0.0079 * T + 0.2102;
+	skylight.y()[3] = -0.0441 * T - 1.6537;
+	skylight.y()[4] = -0.0109 * T + 0.0529;
 	skylight.Y[0] =  0.1787 * T - 1.4630;
 	skylight.Y[1] = -0.3554 * T + 0.4275;
 	skylight.Y[2] = -0.0227 * T + 5.3251;
@@ -953,12 +953,12 @@ void SkyShader::_computeBase() {
 	float theta = m_SunTheta;
 	if (theta >  1.50) theta = 1.50 + ((m_SunTheta-1.50) * 0.5);
 	float denom;
-	denom = F(0.0, theta, m_Coefficients.x);
+	denom = F(0.0, theta, m_Coefficients.x());
 	if (denom == 0.0) denom = 1.0;
-	m_PerezFactor.x = 1.0 / denom;
-	denom = F(0.0, theta, m_Coefficients.y);
+	m_PerezFactor.x() = 1.0 / denom;
+	denom = F(0.0, theta, m_Coefficients.y());
 	if (denom == 0.0) denom = 1.0;
-	m_PerezFactor.y = 1.0 / denom;
+	m_PerezFactor.y() = 1.0 / denom;
 	denom = F(0.0, theta, m_Coefficients.Y);
 	if (denom == 0.0) denom = 1.0;
 	m_PerezFactor.Y = 1.0 / denom;
@@ -995,8 +995,8 @@ Color SkyShader::SkyColor(float elevation, float azimuth, float dark, float &int
 	if (dot < -1.0) dot = -1.0; else
 	if (dot >  1.0) dot =  1.0;
 	float gamma = acos(dot);
-	float ciex = FastPerez(theta, gamma, m_PerezFactor.x, m_Zenith.getA(), m_Coefficients.x);
-	float ciey = FastPerez(theta, gamma, m_PerezFactor.y, m_Zenith.getB(), m_Coefficients.y);
+	float ciex = FastPerez(theta, gamma, m_PerezFactor.x(), m_Zenith.getA(), m_Coefficients.x());
+	float ciey = FastPerez(theta, gamma, m_PerezFactor.y(), m_Zenith.getB(), m_Coefficients.y());
 	float cieY = FastPerez(theta, gamma, m_PerezFactor.Y, m_Zenith.getC(), m_Coefficients.Y);
 
 #ifdef CUSTOM

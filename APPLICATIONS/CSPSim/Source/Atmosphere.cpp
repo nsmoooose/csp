@@ -202,7 +202,7 @@ void Atmosphere::generateWinds() {
 
 simdata::Vector3 Atmosphere::getWind(simdata::Vector3 const &p) const {
 	simdata::Vector3 wind = m_AverageWind;
-	double h = p.z * 0.0033;
+	double h = p.z() * 0.0033;
 	int idx = int(h);
 	double f = 0.0;
 	if (h < 0) {
@@ -215,13 +215,13 @@ simdata::Vector3 Atmosphere::getWind(simdata::Vector3 const &p) const {
 	}
 	double alt_scale = 1.0 + h*h*0.0025;
 	if (alt_scale > 2.0) alt_scale = 2.0;
-	wind.x += m_WindAltX[idx]*(1.0-f) + m_WindAltX[idx+1]*f;
-	wind.y += m_WindAltY[idx]*(1.0-f) + m_WindAltY[idx+1]*f;
+	wind.x() += m_WindAltX[idx]*(1.0-f) + m_WindAltX[idx+1]*f;
+	wind.y() += m_WindAltY[idx]*(1.0-f) + m_WindAltY[idx+1]*f;
 	return wind * m_WindScale * m_GustModulation * alt_scale;
 }
 
 simdata::Vector3 Atmosphere::getTurbulence(simdata::Vector3 const &p, double dist) const {
-	int idx = int(p.z * 1000.0 / 15000.0);
+	int idx = int(p.z() * 1000.0 / 15000.0);
 	if (idx < 0) idx = 0;
 	else if (idx > 999) idx = 999;
 	double a = m_TurbulenceAltA[idx];

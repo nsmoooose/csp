@@ -553,9 +553,9 @@ void AircraftObject::doMovement(double dt)
 	// modified Euler angles are the CSP frame (X is pitch, Y is roll, Z is -yaw).
 	simdata::Vector3 angles = simdata::Quat::MakeModifiedEulerAnglesFromQ(m_Attitude);
 	
-	m_Pitch = angles.x;
-	m_Roll = angles.y;
-	m_Heading = angles.z;
+	m_Pitch = angles.x();
+	m_Roll = angles.y();
+	m_Heading = angles.z();
 	m_Speed = m_LinearVelocity.length();
 }
 
@@ -595,7 +595,7 @@ void AircraftObject::doSimplePhysics(double dt)
 	// update direction
 	m_Direction = m_Orientation * m_InitialDirection; //+ 0.5 * dt * m_GravityForce;
 
-	m_AngleOfAttack = angleBetweenTwoVectors(m_Direction, simdata::Vector3(m_Direction.x,m_Direction.y,0.0));
+	m_AngleOfAttack = angleBetweenTwoVectors(m_Direction, simdata::Vector3(m_Direction.x(),m_Direction.y(),0.0));
 
 	// update normal vector to wings aircraft plane
 	m_CurrentNormDir = m_Orientation * m_InitialNormDir;
@@ -604,7 +604,7 @@ void AircraftObject::doSimplePhysics(double dt)
 	m_Speed += dt * m_Thrust * m_Speed / (sqrt(m_Speed) + 1.0); 
 
 	// update linear velocity and position
-	m_Direction.Normalize(); 
+	m_Direction.normalize(); 
 	m_LinearVelocity = m_Speed * m_Direction;
 	//  setVelocity(m_LinearVelocity);
 	m_LocalPosition += dt * m_LinearVelocity;
@@ -729,15 +729,15 @@ void AircraftObject::dump()
   cout << "ID: " << m_iObjectID
            << ", TYPE: " << m_iObjectType
            << ", ARMY: " << m_iArmy
-           << ", GLOPOSX: " << m_GlobalPosition.x
-           << ", GLOPOSY: " << m_GlobalPosition.y
-           << ", GLOPOSZ: " << m_GlobalPosition.z
-           << ", DIRX: " << m_Direction.x
-           << ", DIRY: " << m_Direction.y
-           << ", DIRZ: " << m_Direction.z
-           << ", VELX: " << m_LinearVelocity.x
-	   << ", VELY: " << m_LinearVelocity.y
-           << ", VELZ: " << m_LinearVelocity.z
+           << ", GLOPOSX: " << m_GlobalPosition.x()
+           << ", GLOPOSY: " << m_GlobalPosition.y()
+           << ", GLOPOSZ: " << m_GlobalPosition.z()
+           << ", DIRX: " << m_Direction.x()
+           << ", DIRY: " << m_Direction.y()
+           << ", DIRZ: " << m_Direction.z()
+           << ", VELX: " << m_LinearVelocity.x()
+	   << ", VELY: " << m_LinearVelocity.y()
+           << ", VELZ: " << m_LinearVelocity.z()
            << endl;      
 
 }
@@ -817,7 +817,7 @@ void AircraftObject::doSimplePhysics(double dt)
   // update direction
   m_Direction = m_Orientation * m_InitialDirection; //+ 0.5 * dt * m_GravityForce;
   
-  m_AngleOfAttack = angleBetweenTwoVectors(m_Direction, simdata::Vector3(m_Direction.x,m_Direction.y,0.0));
+  m_AngleOfAttack = angleBetweenTwoVectors(m_Direction, simdata::Vector3(m_Direction.x(),m_Direction.y(),0.0));
 
   // update normal vector to wings aircraft plane
   m_CurrentNormDir = m_Orientation * m_InitialNormDir;
@@ -826,7 +826,7 @@ void AircraftObject::doSimplePhysics(double dt)
   m_Speed += dt * m_Thrust * m_Speed / (sqrt(m_Speed) + 1.0); 
   
   // update linear velocity and position
-  m_Direction.Normalize(); 
+  m_Direction.normalize(); 
   m_LinearVelocity = m_Speed * m_Direction;
 //  setVelocity(m_LinearVelocity);
   m_LocalPosition += dt * m_LinearVelocity;

@@ -95,10 +95,10 @@ std::vector<double> const &PhysicsModel::bodyToY(simdata::Vector3 const &p,
                                 simdata::Vector3 const &w,
                                 simdata::Quat const &q) {
 	static std::vector<double> y(13);
-	y[0] = p.x; y[1] = p.y; y[2] = p.z;
-	y[3] = v.x; y[4] = v.y; y[5] = v.z;
-	y[6] = w.x; y[7] = w.y; y[8] = w.z;
-	y[9] = q.w; y[10] = q.x; y[11] = q.y; y[12] = q.z;
+	y[0] = p.x(); y[1] = p.y(); y[2] = p.z();
+	y[3] = v.x(); y[4] = v.y(); y[5] = v.z();
+	y[6] = w.x(); y[7] = w.y(); y[8] = w.z();
+	y[9] = q.w(); y[10] = q.x(); y[11] = q.y(); y[12] = q.z();
 	return y;
 }
 
@@ -119,13 +119,13 @@ void PhysicsModel::updateNearGround(double dt) {
 /*
 	VirtualBattlefield const *vbf = CSPSim::theSim->getBattlefield();
 	float x,y,z;
-	vbf->getNormal(m_PositionLocal.x,m_PositionLocal.y,x,y,z);
+	vbf->getNormal(m_PositionLocal.x(),m_PositionLocal.y(),x,y,z);
 	m_NormalGround = simdata::Vector3(x,y,z);
-	m_Height = (m_PositionLocal.z - vbf->getElevation(m_PositionLocal.x,m_PositionLocal.y))* z;
+	m_Height = (m_PositionLocal.z() - vbf->getElevation(m_PositionLocal.x(),m_PositionLocal.y()))* z;
 */
 	// XXX NormalGround and GroundN are redundant.... remove one of them!
 	m_NormalGround = m_GroundN;
-	m_Height = (m_PositionLocal.z - m_GroundZ) * m_GroundN.z;
+	m_Height = (m_PositionLocal.z() - m_GroundZ) * m_GroundN.z();
 	if (m_Height < m_Radius) 
 		m_NearGround = true;
 	else
@@ -139,7 +139,7 @@ void PhysicsModel::setBoundingRadius(double radius) {
 void PhysicsModel::updateAeroParameters(double dt) {
 	Atmosphere const *atmosphere = CSPSim::theSim->getAtmosphere();
 	if (atmosphere)	{
-		m_qBar = atmosphere->getDensity(m_PositionLocal.z);
+		m_qBar = atmosphere->getDensity(m_PositionLocal.z());
 		simdata::Vector3 wind = atmosphere->getWind(m_PositionLocal);
 		wind += atmosphere->getTurbulence(m_PositionLocal, m_Distance);
 		m_WindBody = simdata::QVRotate(m_qOrientation.Bar(), wind);

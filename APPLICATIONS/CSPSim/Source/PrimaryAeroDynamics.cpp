@@ -208,7 +208,7 @@ void PrimaryAeroDynamics::initializeSimulationStep(double dt) {
 	Atmosphere const *atmosphere = CSPSim::theSim->getAtmosphere();
 	if (atmosphere)	{
 		simdata::Vector3 const &p = *m_PositionLocal;
-		double density = atmosphere->getDensity(p.z);
+		double density = atmosphere->getDensity(p.z());
 		m_qBarFactor *=	density;
 		m_WindLocal	= atmosphere->getWind(p);
 		m_WindLocal	+= atmosphere->getTurbulence(p, m_Distance);
@@ -241,12 +241,12 @@ void PrimaryAeroDynamics::computeForceAndMoment(double x) {
 
 	// Evaluate g's
 	// FIXME: m_MassInverse is constant? ;-)
-	m_gForce = m_MassInverse * m_Force.z / 9.81;
+	m_gForce = m_MassInverse * m_Force.z() / 9.81;
 	// Drag and sideforce
 	m_Force += m_qBarS * (dragVector() + sideVector());
-	m_Moment.x = calculatePitchMoment(); // Pitch
-	m_Moment.y = calculateRollMoment();  // Roll
-	m_Moment.z = calculateYawMoment();   // Yaw
+	m_Moment.x() = calculatePitchMoment(); // Pitch
+	m_Moment.y() = calculateRollMoment();  // Roll
+	m_Moment.z() = calculateYawMoment();   // Yaw
 }
 
 void PrimaryAeroDynamics::postSimulationStep(double dt) {
@@ -284,13 +284,13 @@ simdata::Vector3 const &PrimaryAeroDynamics::liftVector() {
 		m_CL -= c * c * 3.0;
 		if (m_CL < 0.0) m_CL = 0.0;
 		//c *= c;
-		//lift.y -= c;
-		//lift.z /= 1.0 + c;
+		//lift.y() -= c;
+		//lift.z() /= 1.0 + c;
 	}
 	
-	lift.x = 0.0;
-	lift.y = m_CL * sin(m_alpha);
-	lift.z = m_CL * cos(m_alpha);
+	lift.x() = 0.0;
+	lift.y() = m_CL * sin(m_alpha);
+	lift.z() = m_CL * cos(m_alpha);
 
 	return lift;
 }
@@ -330,9 +330,9 @@ simdata::Vector3 const& PrimaryAeroDynamics::dragVector() {
 	
 	calculateDragCoefficient();
 	
-	drag.x = 0.0;
-	drag.y = - m_CD * cos(m_alpha);
-	drag.z = m_CD * sin(m_alpha);
+	drag.x() = 0.0;
+	drag.y() = - m_CD * cos(m_alpha);
+	drag.z() = m_CD * sin(m_alpha);
 
 	return drag;
 }
@@ -371,11 +371,11 @@ simdata::Vector3 const&  PrimaryAeroDynamics::sideVector() {
 		
 	calculateSideCoefficient();
 	
-	side.x = m_CY * cos(m_beta);
-	side.y = - m_CY * sin(m_beta);
-	//side.x = Cs * sin(m_beta);
-	//side.y = - Cs * cos(m_beta);
-	side.z = 0.0;
+	side.x() = m_CY * cos(m_beta);
+	side.y() = - m_CY * sin(m_beta);
+	//side.x() = Cs * sin(m_beta);
+	//side.y() = - Cs * cos(m_beta);
+	side.z() = 0.0;
 
 	return side;
 }
@@ -425,7 +425,7 @@ double PrimaryAeroDynamics::controlInputValue(double p_gForce) const {
 }
 
 void PrimaryAeroDynamics::updateAngles(double h) {
-	m_alpha = - atan2( m_AirflowBody.z, m_AirflowBody.y ); 
+	m_alpha = - atan2( m_AirflowBody.z(), m_AirflowBody.y() ); 
 	if (h > 0.0) {
 		m_alphaDot = ( m_alpha - m_alpha0 ) / h;
 	} // else keep previous value
@@ -435,8 +435,8 @@ void PrimaryAeroDynamics::updateAngles(double h) {
 	if (m_alphaDot < -1.0) m_alphaDot = -1.0;
 	
 	// Calculate side angle
-	// beta is 0 when v velocity (i.e. side velocity) is 0; note here v is m_AirflowBody.x
-	m_beta  = atan2(m_AirflowBody.x, m_AirflowBody.y);
+	// beta is 0 when v velocity (i.e. side velocity) is 0; note here v is m_AirflowBody.x()
+	m_beta  = atan2(m_AirflowBody.x(), m_AirflowBody.y());
 }
 
 void PrimaryAeroDynamics::calculateGroundEffectCoefficient() {

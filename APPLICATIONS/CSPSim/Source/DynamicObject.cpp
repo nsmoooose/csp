@@ -104,15 +104,15 @@ osg::Node* DynamicObject::getModelNode() {
 
 void DynamicObject::setGlobalPosition(simdata::Vector3 const & position)
 {
-	setGlobalPosition(position.x, position.y, position.z);
+	setGlobalPosition(position.x(), position.y(), position.z());
 }
 
 void DynamicObject::setGlobalPosition(double x, double y, double z)
 {
 	// if the object is on the ground ignore the z component and use the elevation at
 	// the x,y point.
-	m_GlobalPosition.x = x;
-	m_GlobalPosition.y = y;
+	m_GlobalPosition.x() = x;
+	m_GlobalPosition.y() = y;
 
 	if (isGrounded())
 	{
@@ -130,11 +130,11 @@ void DynamicObject::setGlobalPosition(double x, double y, double z)
 			offset += m_Battlefield->getElevation(x,y);
 		}
 		*/
-		m_GlobalPosition.z = offset; 
+		m_GlobalPosition.z() = offset; 
 	}
 	else
 	{
-		m_GlobalPosition.z = z; 
+		m_GlobalPosition.z() = z; 
 	}
 
 /*
@@ -175,8 +175,8 @@ void DynamicObject::updateGroundPosition()
 	else {
 		offset = 0.0;
 	}
-	m_GlobalPosition.z = CSPSim::theSim->getBattlefield()->getGroundElevation(m_GlobalPosition.x, m_GlobalPosition.y, m_GroundHint) + offset; 
-	m_GlobalPosition.z = offset;
+	m_GlobalPosition.z() = CSPSim::theSim->getBattlefield()->getGroundElevation(m_GlobalPosition.x(), m_GlobalPosition.y(), m_GroundHint) + offset; 
+	m_GlobalPosition.z() = offset;
 }
 
 
@@ -215,17 +215,17 @@ void DynamicObject::postMotion(double dt) {
 	} else {
 		VirtualBattlefield const *battlefield = CSPSim::theSim->getBattlefield();
 		assert(battlefield);
-		m_GroundZ = battlefield->getGroundElevation(m_GlobalPosition.x, m_GlobalPosition.y, m_GroundN, m_GroundHint);
+		m_GroundZ = battlefield->getGroundElevation(m_GlobalPosition.x(), m_GlobalPosition.y(), m_GroundN, m_GroundHint);
 		/*
 		float h1, h2;
-		h1 = battlefield->getElevation(m_GlobalPosition.x+1, m_GlobalPosition.y) - m_GroundZ;
-		h2 = battlefield->getElevation(m_GlobalPosition.x, m_GlobalPosition.y+1) - m_GroundZ;
+		h1 = battlefield->getElevation(m_GlobalPosition.x()+1, m_GlobalPosition.y()) - m_GroundZ;
+		h2 = battlefield->getElevation(m_GlobalPosition.x(), m_GlobalPosition.y()+1) - m_GroundZ;
 		m_GroundN = simdata::Vector3(-h1,-h2, 1.0);
-		m_GroundN.Normalize();
+		m_GroundN.normalize();
 		*/
 		/*
 		float nx, ny, nz;
-		m_Battlefield->getNormal(m_GlobalPosition.x, m_GlobalPosition.y, nx, ny, nz);
+		m_Battlefield->getNormal(m_GlobalPosition.x(), m_GlobalPosition.y(), nx, ny, nz);
 		m_GroundN = simdata::Vector3(nx, ny, nz);
 		*/
 	}

@@ -1,6 +1,10 @@
 Version 0.4.0 (in progress)
 ===========================
 
+2004-06-13: onsight
+  * Fixup python call for saving/restoring ints from archives (now
+    _int32).
+
 2004-06-12: onsight
   * Commented out throw statement for assignment to Ref<> from an
     incompatible type.  Callers must check that the ref is not null
@@ -14,7 +18,14 @@ Version 0.4.0 (in progress)
   * Added tagged record compiler and associated header.
 
   * Disallowed copying of Referenced derived classes (should always
-    use Ref<> pointers).
+    use Ref<> pointers); then reverted because we already inherit
+    from NonCopyable.
+
+  * Minor fix to DataManager cleanup.
+
+  * TaggedRecord.h copyright notice.
+
+  * Singleton now NonCopyable, with const accessor.
 
 2004-16-12: wolverine
   * added a MemoryWriter class to write out a SimData object to

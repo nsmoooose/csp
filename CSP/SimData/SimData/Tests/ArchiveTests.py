@@ -206,10 +206,10 @@ class TypeArchiveTest(ArchiveTest):
 	def testInt(self):
 		"""Test storage and retrieval of Int"""
 		x0 = 42
-		self.archive._int(x0)
+		self.archive._int32(x0)
 		self.setRead()
 		self.assertEqual(self.size, 4)
-		x1 = self.archive._int()
+		x1 = self.archive._int32()
 		self.assertEqual(x0, x1)
 
 	def testDouble(self):

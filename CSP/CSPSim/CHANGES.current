@@ -1,6 +1,18 @@
  Version 0.4.0 (in progress)
 ===========================
+2004-07-01: delta
+  * CameraKinematics now uses spherical coordinates terminology 
+    (theta,phi,radius).
+    
+  * Fixed a bug in view 3 when aircraft in the air: the camera could'nt 
+    move below the plane.
+    
+  * Changed exception(char*) by std::runtime_error(const string&) trying 
+    to fix a gcc syntax error.
 
+  * Added a lighting bool attribute to disable lighting in ObjectModel.
+   (lightint is on by default).
+  
 2004-06-29: delta
   * Corrected a shaking bug in the flyby view when PAUSE was enabled.
     (also could solve a possible bug in internal view). 

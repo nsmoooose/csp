@@ -99,7 +99,7 @@
 				Name="Battlefield"
 				Filter="">
 				<File
-					RelativePath="..\Battlefield\Battlefield.cpp">
+					RelativePath="..\Battlefield\OldBattlefield.cpp">
 				</File>
 				<File
 					RelativePath="..\Battlefield\SceneManager.cpp">
@@ -130,7 +130,7 @@
 				Name="Battlefield"
 				Filter="">
 				<File
-					RelativePath="..\Battlefield\Battlefield.h">
+					RelativePath="..\Battlefield\OldBattlefield.h">
 				</File>
 				<File
 					RelativePath="..\Battlefield\SceneManager.h">

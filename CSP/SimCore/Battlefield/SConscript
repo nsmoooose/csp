@@ -22,7 +22,7 @@ LIBS = env.get('LIBS', []) + ['spatialindex']
 LIBPATH= env.get('LIBPATH', []) + ['#/SpatialIndex/.bin']
 
 SOURCES = [
-	'Battlefield.cpp',
+	'OldBattlefield.cpp',
 	'SceneManager.cpp',
 	'SimObject.cpp',
 ]

@@ -24,7 +24,7 @@
 
 #include <cmath>
 
-#include <SimCore/Battlefield/Battlefield.h>
+#include <SimCore/Battlefield/OldBattlefield.h>
 
 #include "Views/View.h"
 #include "Views/CameraAgent.h"

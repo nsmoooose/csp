@@ -44,7 +44,7 @@
 #include "VirtualScene.h"
 #include "Views/CameraCommand.h"
 
-#include <SimCore/Battlefield/Battlefield.h>
+#include <SimCore/Battlefield/OldBattlefield.h>
 #include <SimCore/Util/Log.h>
 
 

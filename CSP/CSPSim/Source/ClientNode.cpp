@@ -50,7 +50,7 @@
 #include <SimData/FileUtility.h>
 #include <SimData/GeoPos.h>
 
-#include <SimCore/Battlefield/Battlefield.h>
+#include <SimCore/Battlefield/OldBattlefield.h>
 
 #include <osgDB/FileUtils>
 

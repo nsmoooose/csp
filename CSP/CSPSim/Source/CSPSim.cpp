@@ -60,7 +60,7 @@
 #include <SimNet/DispatchMessageHandler.h>
 #include <SimNet/PrintMessageHandler.h>
 
-#include <SimCore/Battlefield/Battlefield.h>
+#include <SimCore/Battlefield/OldBattlefield.h>
 #include <SimCore/Battlefield/SimObject.h>
 #include <SimCore/Util/Log.h>
 

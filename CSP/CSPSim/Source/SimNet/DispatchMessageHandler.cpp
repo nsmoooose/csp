@@ -33,7 +33,7 @@
 #include "Config.h"
 #include "ObjectModel.h"
 
-#include <SimCore/Battlefield/Battlefield.h>
+#include <SimCore/Battlefield/OldBattlefield.h>
 #include <SimData/FileUtility.h>
 
 extern SimpleConfig g_Config;

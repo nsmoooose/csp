@@ -36,6 +36,7 @@
 #include <GL/gl.h>			// Header File For The OpenGL32 Library
 #include <GL/glu.h>			// Header File For The GLu32 Library
 
+#include "Config.h"
 #include "LogoScreen.h"
 #include "Platform.h"
 #include "Config.h"
@@ -68,7 +69,7 @@ void LogoScreen::OnExit()
 	SDL_FreeSurface(m_image);
 }
 
-void LogoScreen::OnRender()
+void LogoScreen::onRender()
 {
     if (!m_image) 
         return;

@@ -38,13 +38,11 @@
 #include <SimData/InterfaceRegistry.h>
 
 
-class VirtualBattlefield;
-
-
 /**
  * class SimObject - Base class for all objects in the simulation.
  *
  */
+class VirtualBattlefield;
 
 class SimObject: public simdata::Object
 {

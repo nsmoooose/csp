@@ -137,7 +137,7 @@ public:
 	END_SIMDATA_XML_INTERFACE
 
 	virtual void pack(simdata::Packer &p) const {
-		simdata::Object::pack(p);
+		Object::pack(p);
 		p.pack(m_Source);
 		p.pack(m_MagnitudeCutoff);
 		p.pack((int)_stars.size());
@@ -147,7 +147,7 @@ public:
 		}
 	}
 	virtual void unpack(simdata::UnPacker &p) {
-		simdata::Object::unpack(p);
+		Object::unpack(p);
 		p.unpack(m_Source);
 		p.unpack(m_MagnitudeCutoff);
 		int n;
@@ -659,6 +659,7 @@ void Moon::updateScene(double lat, double lmst, Sun const &sun, float intensity)
 	osg::Matrix T = osg::Matrix::translate(x*m_RenderDistance, y*m_RenderDistance, z*m_RenderDistance);
 	m_Transform->setMatrix(S*T);
 	_updateLighting(x, y, z, h, intensity);
+	
 }
 
 void Moon::_updateIllumination(Sun const &sun) {
@@ -1227,6 +1228,7 @@ void Sky::update(double lat, double lon, simdata::SimDate const &t) {
 		_updateMoon(true);  // quick update
 	}
 	_updateStars();
+	
 }
 
 

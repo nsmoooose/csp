@@ -210,8 +210,10 @@ bool DynamicObject::AddSmoke()
 	trail.setColorRange(osg::Vec4(0.9, 0.9, 1.0, 1.0), osg::Vec4(1.0, 1.0, 1.0, 0.5));
 	trail.setSizeRange(0.2, 4.0);
 	trail.setPlacer(m_SmokeSegments->getSegment(0));
+
 	trail.setOperator(new fx::smoke::Thinner);
 	trail.setLight(true);
+
 	trail.setLifeTime(5.5);
 	trail.setExpansion(1.2);
 	osgParticle::ParticleSystemUpdater *psu = 0;

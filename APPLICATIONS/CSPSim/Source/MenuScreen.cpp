@@ -105,7 +105,7 @@ void MenuScreen::OnExit()
 
 }
 
-void MenuScreen::OnRender()
+void MenuScreen::onRender()
 {
 
 }

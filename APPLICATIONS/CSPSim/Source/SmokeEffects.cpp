@@ -70,6 +70,7 @@
 namespace fx {
 namespace smoke {
 
+
 int SmokeSegments::addSource(simdata::Vector3 const &v) {
 	m_Sources.push_back(v);
 	m_LastPlace.push_back(simdata::Vector3());
@@ -89,13 +90,13 @@ void SmokeSegments::update(simdata::Vector3 const &motion, simdata::Matrix3 cons
 	std::vector<simdata::Vector3>::iterator source = m_Sources.begin();
 	std::vector<simdata::Vector3>::iterator lastplace = m_LastPlace.begin();
 
-	for (i = 0; i < n; i++) {
+	for (i = 0; i < n; ++i) {
 		simdata::Vector3 lastbody = to_body * (*lastplace - motion);
 		m_Placers[i]->setVertexA(toVec3(*source));
 		m_Placers[i]->setVertexB(toVec3(lastbody));
 		*lastplace = to_scene * *source;
-		lastplace++;
-		source++;
+		++lastplace;
+		++source;
 	}
 }
 
@@ -130,9 +131,9 @@ void BaseSystem::setDefault() {
 	m_Prototype.setShape(osgParticle::Particle::QUAD);
 	m_Prototype.setLifeTime(1.0);
 	m_Prototype.setAlphaRange(osgParticle::rangef(1,0));
-	m_Prototype.setSizeRange(osgParticle::rangef(0.2, 0.2));
-	m_Prototype.setPosition(osg::Vec3(0,0,0));
-	m_Prototype.setVelocity(osg::Vec3(0,0,0));
+	m_Prototype.setSizeRange(osgParticle::rangef(0.2f, 0.2f));
+	m_Prototype.setPosition(osg::Vec3(0.0f,0.0f,0.0f));
+	m_Prototype.setVelocity(osg::Vec3(0.0,0.0,0.0));
 	m_Prototype.setColorRange(osgParticle::rangev4(osg::Vec4(1,1,1,1), osg::Vec4(1,1,1,1)));
 	m_Prototype.setRadius(10000.0);
 	m_Emissive = false;
@@ -252,7 +253,7 @@ void Thinner::operate(osgParticle::Particle *p, double dt)
 		p->setRadius(1.0);
 		// rescale the size range to match the new lifetime
 		float scale = 1.0;
-		if (old_lifetime > 0.0) scale = lifetime / old_lifetime;
+		if (old_lifetime > 0.0) scale = lifetime / (1.0 + old_lifetime); // can old_lifetime be < 1.0?
 		osgParticle::rangef const &r = p->getSizeRange();
 		p->setSizeRange(osgParticle::rangef(r.minimum, r.maximum * scale));
 	} 
@@ -261,9 +262,10 @@ void Thinner::operate(osgParticle::Particle *p, double dt)
 osgParticle::Shooter *Trail::getShooter() {
 	osgParticle::Shooter *user = BaseSystem::getShooter();
 	if (user) return user;
+
 	osgParticle::RadialShooter *rs = new osgParticle::RadialShooter;
-	rs->setPhiRange(-0.21, 1.78);
-	rs->setThetaRange(0.0, 1.57);
+	rs->setPhiRange(-0.21f, 1.78f);
+	rs->setThetaRange(0.0f, 1.57f);
 	rs->setInitialSpeedRange(0, m_Speed);
 	return rs;
 }

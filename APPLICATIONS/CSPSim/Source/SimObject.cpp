@@ -24,10 +24,9 @@
 
 
 #include "SimObject.h"
-
 #include "LogStream.h"
-#include "VirtualBattlefield.h"
 #include "SmokeEffects.h"
+#include "VirtualBattlefield.h"
 
 #include <osg/NodeVisitor>
 #include <osg/Quat>
@@ -58,7 +57,6 @@ extern osgParticle::ParticleSystem *setupParticleSystem(osg::MatrixTransform *ba
                                                         float lifetime);
 */
 using std::string;
-
 
 SIMDATA_REGISTER_INTERFACE(SimObject)
 
@@ -232,8 +230,7 @@ osg::Node* SimObject::getNode()
 
 void SimObject::ShowRepresentant(unsigned short const p_usflag)
 {
-	//m_rpSwitch->setAllChildrenOff();
-	m_rpSwitch->setValue(1-p_usflag, false);
+	m_rpSwitch->setAllChildrenOff();
 	m_rpSwitch->setValue(p_usflag, true);
 }
 
@@ -371,7 +368,7 @@ int SimObject::updateScene()
 { 
 	// this needs 2 upgrades; 
 	// first one is: working with quat and only quat; 
-	// second is: make an osg upgrade()/draw() callback
+	// second is: make an osg update()/draw() callback
 
 	CSP_LOG(CSP_APP, CSP_DEBUG, "SimObject::updateScene() ID:"  << m_iObjectID );
 

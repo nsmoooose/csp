@@ -41,7 +41,7 @@ public:
     virtual void OnInit();
     virtual void OnExit();
 
-    virtual void OnRender();
+    virtual void onRender();
 
     virtual bool OnKeyDown(char * key);
     virtual void OnKeyUp(char * key);

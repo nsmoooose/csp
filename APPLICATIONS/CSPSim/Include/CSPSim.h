@@ -27,15 +27,13 @@
 #ifndef __CSPSIM_H__
 #define __CSPSIM_H__
 
-
-#include "TerrainObject.h"
-#include "DynamicObject.h"
-
 #include <SDL/SDL.h>
 #include <SDL/SDL_joystick.h>
-#include <SDL/CON_console.h>
 
 #include <SimData/Types.h>
+
+#include "DynamicObject.h"
+#include "TerrainObject.h"
 
 
 class VirtualBattlefield;
@@ -68,13 +66,15 @@ public:
 	SDL_Surface * GetSDLScreen() {return m_SDLScreen;};
 
 	simdata::SimDate & getCurrentTime() { return m_CurrentTime; }
+	simdata::SimTime const & getFrameRate() const{ return m_FrameRate; }
 
 	void setActiveObject(simdata::Pointer<DynamicObject> object);
+	simdata::Pointer<DynamicObject> const getActiveObject() const;
+	VirtualBattlefield * const getBattlefield() const;
+
 
 	EventMapIndex *getInterfaceMaps() { return m_InterfaceMaps; }
 
-	void pause();
-	void unpause();
 	void togglePause();
 
 	simdata::DataArchive * getDataArchive() { return m_DataArchive; }
@@ -83,10 +83,6 @@ protected:
 	
 	void InitSim();
 	int InitSDL();
-	int InitConsole();
-	void ShowStats(float fps);
-	void ShowPlaneInfo();
-	void ShowPaused();
 
 	void DoInput();
 	void UpdateObjects(double dt);
@@ -107,11 +103,7 @@ private:
 	int m_ScreenWidth;
 	int m_ScreenHeight;
 
-	ConsoleInformation * m_pConsole;
-
-	bool m_bConsoleDisplay;
 	bool m_bFreezeSim;
-	bool m_bShowStats;
 	bool m_bFinished;
 
 	//SimPlayer *m_Player;
@@ -136,8 +128,6 @@ private:
 	EventMapIndex *m_InterfaceMaps;
 	simdata::Pointer<DynamicObject> m_ActiveObject;
 
-	int m_ConsoleFont;
-
 	/**
 	 * The virtual battlefield
 	 */
@@ -147,7 +137,6 @@ private:
 	simdata::PathPointer<TerrainObject> m_ActiveTerrain;
 	simdata::DataArchive *m_DataArchive;
 };
-
 
 #endif // __CSPSIM_H__
 

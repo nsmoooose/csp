@@ -40,8 +40,8 @@
 #include <vector>
 #include <iostream>
 #include <fstream>
-#include <cstdio>
-#include <cstdlib>
+//#include <cstdio>
+//#include <cstdlib>
 
 #include <SimData/hash_map.h>
 

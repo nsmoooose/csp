@@ -44,8 +44,8 @@ public:
 	virtual void OnInit();
 	virtual void OnExit();
 
-	virtual void OnRender();
-	virtual void OnUpdateObjects(double dt)  {;  }
+	virtual void onRender();
+	virtual void onUpdate(double dt)  {;  }
 
 
 private:

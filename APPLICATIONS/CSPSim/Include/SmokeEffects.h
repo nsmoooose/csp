@@ -37,6 +37,8 @@
 #include <vector>
 #include <string>
 
+using std::string;
+
 namespace osgParticle {
 	class ParticleSystem;
 	class ParticleSystemUpdater;

@@ -32,7 +32,7 @@
 // BaseScreen represents a generic screen
 // Each screen within the Game/Sim should
 // Derive a class from class. Each Screen
-// class must support a OnRender() function
+// class must support a onRender() function
 // that knows how to draw the screen.
 
 
@@ -50,8 +50,8 @@ public:
 	virtual void OnInit() = 0;
 	virtual void OnExit() = 0;
 
-	virtual void OnUpdateObjects(double dt) = 0;
-	virtual void OnRender() = 0;
+	virtual void onUpdate(double dt) = 0;
+	virtual void onRender() = 0;
 
 	virtual VirtualHID *getInterface();
 

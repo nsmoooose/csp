@@ -48,13 +48,13 @@ enum { CIE_A, CIE_B, CIE_C, CIE_D50, CIE_D55, CIE_D65, CIE_E } CIE_illuminants;
  * CIE xyz coordinates of various CIE defined standard illuminants.
  */
 float whitepoint_xyz[][3] = {
-	{ 0.448, 0.407, 0.145 },          /* A   */
-	{ 0.349, 0.352, 0.299 },          /* B   */
-	{ 0.3101, 0.3162, 0.3737},        /* C   */
-	{ 0.34570, 0.35854, 0.29576},     /* D50 */
-	{ 0.3324, 0.3474, 0.3202},        /* D55 */
-	{ 0.31271, 0.32899, 0.35830},     /* D65 */
-	{ 0.333333, 0.333333, 0.333334},  /* E   */
+	{ 0.448f, 0.407f, 0.145f },          /* A   */
+	{ 0.349f, 0.352f, 0.299f },          /* B   */
+	{ 0.3101f, 0.3162f, 0.3737f},        /* C   */
+	{ 0.34570f, 0.35854f, 0.29576f},     /* D50 */
+	{ 0.3324f, 0.3474f, 0.3202f},        /* D55 */
+	{ 0.31271f, 0.32899f, 0.35830f},     /* D65 */
+	{ 0.333333f, 0.333333f, 0.333334f},  /* E   */
 };
 
 /**
@@ -155,9 +155,9 @@ void CMY_check(float &C, float &M, float &Y) {
  * 0 and 1.
  */
 void CMY_to_RGB(float C, float M, float Y, float &R, float &G, float &B) {
-	R = 1.0 - C;
-	G = 1.0 - M;
-	B = 1.0 - Y;
+	R = 1.0f - C;
+	G = 1.0f - M;
+	B = 1.0f - Y;
 }
 
 /**
@@ -174,9 +174,9 @@ void CMY_to_RGB(float C, float M, float Y, float &R, float &G, float &B) {
  * 0 and 1.
  */
 void RGB_to_CMY(float R, float G, float B, float &C, float &M, float &Y) {
-	C = 1.0 - R;
-	M = 1.0 - G;
-	Y = 1.0 - B;
+	C = 1.0f - R;
+	M = 1.0f - G;
+	Y = 1.0f - B;
 }
 
 /**
@@ -226,7 +226,7 @@ void HLS_to_RGB(float H, float L, float S, float &R, float &G, float &B) {
 	} else {
 		m2 = L + S - L*S;
 	}
-	m1 = 2.0 * L - m2;
+	m1 = 2.0f * L - m2;
 	if (S == 0.0) {
 		R = G = B = L;
 	} else {

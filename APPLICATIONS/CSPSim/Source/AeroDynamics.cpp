@@ -21,7 +21,7 @@
  * @file AeroDynamics.cpp
  *
  **/
-
+#include <algorithm>
 
 #include "AeroDynamics.h"
 #include "AircraftObject.h"
@@ -288,9 +288,7 @@ void AeroDynamics::doSimStep(double dt)
 		test = false;
 		run_test(*this, m_Maxi, *m_Position, *m_Velocity, *m_AngularVelocity, *m_Orientation);
 	}
-*/
-	double qBarFactor;
-	
+*/	
 	CSP_LOG(CSP_PHYSICS, CSP_DEBUG, "AeroDynamics: DoSimStep");
 
 	assert(m_Bound);
@@ -323,12 +321,18 @@ void AeroDynamics::doSimStep(double dt)
 	m_dprevdt = dt;
 	dt /= m_Maxi; 
 
-	qBarFactor = 0.5 * CalculateAirDensity(m_PositionLocal.z) * m_WingArea;
+
+	double qBarFactor = 0.5 * CalculateAirDensity(m_PositionLocal.z) * m_WingArea;
+
+	//qBarFactor = 0.5 * CalculateAirDensity(m_PositionLocal.z) * m_WingArea;
 	m_Gravity = CalculateGravity(m_PositionLocal.z);
 	m_GravityWorld = - m_Mass * m_Gravity * simdata::Vector3::ZAXIS;
 
 	for (unsigned short modelStepNumber = 0; modelStepNumber < m_Maxi; ++modelStepNumber) {	 
+
+		m_AngularAccelBody = LocalToBody(m_AngularAccelLocal);
 		m_VelocityBody = LocalToBody(m_VelocityLocal);
+		m_AngularVelocityBody = LocalToBody(m_AngularVelocityLocal);
 		
 		// Calculate angle of attack, rate of AOA
 		// alpha is 0 when w velocity (i.e. vertical velocity) is 0
@@ -345,9 +349,9 @@ void AeroDynamics::doSimStep(double dt)
 		// beta is 0 when v velocity (i.e. side velocity) is 0; note here v is m_VelocityBody.x
 		m_beta  = atan2(m_VelocityBody.x, m_VelocityBody.y); 
 		
-		simdata::Vector3 currentAngularAccel;
-		simdata::Vector3 currentAngularVelocity;
-		simdata::Vector3 currentLinearAccel;
+		simdata::Vector3 angularAccelBody;
+		simdata::Vector3 angularVelocityBody;
+		simdata::Vector3 linearAccelBody;
 		unsigned short GControlNumber = 0;
 
 		//do // Testing some feedback control
@@ -362,30 +366,24 @@ void AeroDynamics::doSimStep(double dt)
 			m_MomentsBody = CalculateMoments(qBarS);
 			
 			// First, calculate angular acceleration
-			currentAngularAccel = m_InertiaInverse * (m_MomentsBody - (m_AngularVelocityBody^(m_Inertia * m_AngularVelocityBody)));
-
-				// add a damping term
-				;//- 0.5 * m_AngularVelocityBody.Length() * m_AngularVelocityBody; //.Unitize();
+			angularAccelBody = m_InertiaInverse * 
+				                  (m_MomentsBody - (m_AngularVelocityBody^(m_Inertia * m_AngularVelocityBody)));
 			
 			// Angular acceleration mean
-			currentAngularAccel += m_AngularAccelBody;
-			currentAngularAccel *= 0.5;
+			simdata::Vector3 angularAccelMeanBody = angularAccelBody;
+			angularAccelMeanBody += m_AngularAccelBody;
+			angularAccelMeanBody *= 0.5;
 			
 			// Integrate angular acceleration gives angular velocity
-			currentAngularVelocity = dt * currentAngularAccel + m_AngularVelocityBody;
+			angularVelocityBody = dt * angularAccelMeanBody + m_AngularVelocityBody;
 			// Games gems advice
-			currentAngularVelocity *= 0.999; 
+			angularVelocityBody *= 0.999; 
 			
 			// Calculate force
 			m_ForcesBody = CalculateForces(qBarS);  
 			
 			// Deduce linear acceleration
-			currentLinearAccel =  m_MassInverse * m_ForcesBody - (currentAngularVelocity^m_VelocityBody) 
-				;  //- 0.05 * m_VelocityBody;
-
-			// Linear acceleration mean
-			currentLinearAccel += m_LinearAccelBody;
-			currentLinearAccel *= 0.5;
+			linearAccelBody =  m_MassInverse * m_ForcesBody - (angularVelocityBody^m_VelocityBody);
 			
 			++GControlNumber;
 		}
@@ -394,39 +392,46 @@ void AeroDynamics::doSimStep(double dt)
 		//	  && GControlNumber < 1 ); 
 		
 		
-		// Update angular accel
-		m_AngularAccelBody = currentAngularAccel;
+		// Update angular accelerations
+		m_AngularAccelBody = angularAccelBody;
+		m_AngularAccelLocal = BodyToLocal(m_AngularAccelBody);
 		
-		// Update angular velocity
-		m_AngularVelocityBody = currentAngularVelocity;
+		// Update linear acceleration body
+		// Linear acceleration mean
+		simdata::Vector3 linearAccelMeanBody = m_LinearAccelBody;
+		linearAccelMeanBody += linearAccelBody;
+		linearAccelMeanBody *= 0.5;
+		m_LinearAccelBody = linearAccelBody;
 		
-		// Update linear acceleration
-		m_LinearAccelBody = currentLinearAccel;
-		
-		// Integrate linear velocity
-		m_VelocityBody += dt * m_LinearAccelBody;
+		// Integrate linear velocity body
+		m_VelocityBody += dt * linearAccelMeanBody;
 		
 		m_Speed = m_VelocityBody.Length();
 		if (m_Speed < 1.0) m_Speed = 1.0;
-		
+
+		// Update local linear velocity
 		// Calculate local velocity before changing coordinates
-		simdata::Vector3 currentLinVelocity = BodyToLocal(m_VelocityBody);
+		simdata::Vector3 linearVelocityLocal = BodyToLocal(m_VelocityBody);
+		simdata::Vector3 linearVelocityMeanLocal = m_VelocityLocal;
+        linearVelocityMeanLocal += linearVelocityLocal;
+		linearVelocityMeanLocal *= 0.5;
+		m_VelocityLocal = linearVelocityLocal;
 		
+		m_AngularVelocityLocal = BodyToLocal(angularVelocityBody);
+
 		// Integrate the rotation quaternion
-		qOrientation += 0.5f * dt * ( qOrientation * m_AngularVelocityBody);
+		qOrientation += 0.25f * dt * ( qOrientation * (m_AngularVelocityBody + angularVelocityBody));
 		// Now normalize the orientation quaternion:
 		double mag = qOrientation.Magnitude();
 		if (mag != 0.0) {
 			qOrientation /= mag;
 		}
-		
-		// Update local linear velocity
-		// m_VelocityLocal += currentLinVelocity;
-		// m_VelocityLocal *= 0.5;
-		m_VelocityLocal = currentLinVelocity;
+
+		// Update angular velocity
+		m_AngularVelocityBody = angularVelocityBody;
 		
 		// Update position in local frame
-		m_PositionLocal += dt * m_VelocityLocal;
+		m_PositionLocal += dt * linearVelocityMeanLocal;
 		
 	}
 
@@ -500,7 +505,7 @@ simdata::Vector3 AeroDynamics::CalculateMoments( double const p_qBarS ) const
 
 
 double AeroDynamics::CalculateLiftCoefficient() const
-{
+{ // Cl should be calculated before Cd (IF it is used in Cd as induced drag)
 	double lift_coe;
 	double alpha = m_alpha;
 
@@ -557,11 +562,11 @@ double AeroDynamics::CalculateDragCoefficient() const
 	if (alpha > 0.8) alpha = 0.8;
 	if (alpha < -0.8) alpha = -0.8;
 	
-	//drag_coe =  m_CD0 + m_CD_a * fabs(alpha) + m_CD_de * fabs(m_Elevator);
-	drag_coe =  -0.0194 + 0.0214 * alpha + (- 0.29 * m_Elevator + 0.0033 + 0.206 * alpha) * m_Elevator + (-0.699 - 0.903 * alpha) * alpha * alpha;
-	drag_coe = - drag_coe;
+	drag_coe =  m_CD0 + m_CD_a * fabs(alpha) + m_CD_de * fabs(m_Elevator);
+	//drag_coe =  -0.0194 + 0.0214 * alpha + (- 0.29 * m_Elevator + 0.0033 + 0.206 * alpha) * m_Elevator + (-0.699 - 0.903 * alpha) * alpha * alpha;
+	//drag_coe = - drag_coe;
 
-	double induced = lift_coe*lift_coe*m_WingArea / (3.14 * 0.9 * m_WingSpan*m_WingSpan);
+	double induced = lift_coe*lift_coe*m_WingArea / (3.145926536 * m_WingSpan*m_WingSpan);
 	if (induced < 0.0) induced = 0.0;
 
 	if (x++ % 1000 == 0) {
@@ -764,7 +769,7 @@ void AeroDynamics::setVelocity(const simdata::Vector3 & velo)
 
 double AeroDynamics::CIVbasis(double p_t) const
 {
-	double cIV = p_t * p_t  * ( 2 * p_t + 3 );
+	double cIV = p_t * p_t  * ( 3.0 - 2.0 * p_t);
 	return cIV;
 }
 

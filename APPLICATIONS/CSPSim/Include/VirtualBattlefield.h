@@ -45,6 +45,7 @@ class Sky;
 
 const int MAX_NUM_VISIBLE_TRIANGLES = 30000; // Chosen based on the expected number of triangles that will be visible on-screen at any one time (the terrain mesh will typically have far more triangles than are seen at one time, especially with dynamic tessellation)
 
+class DynamicObject;
 
 /**
  * class VirtualBattlefield

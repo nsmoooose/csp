@@ -34,6 +34,8 @@
 
 #include <osgUtil/CullVisitor>
 
+#include "Config.h"
+#include "CSPSim.h"
 #include "LogStream.h"
 #include "VirtualBattlefield.h"
 #include "Sky.h"
@@ -75,6 +77,7 @@ using simdata::Pointer;
 
 
 float intensity_test = 0.0;
+
 
 void setCM(osg::ColorMatrix* cm, float intensity) {
 	assert(cm);
@@ -225,6 +228,7 @@ int VirtualBattlefield::buildScene()
 	earthSky->setRequiresClear(true); // we've got base and sky to do it.
 
 	// use a transform to make the sky and base around with the eye point.
+
 	m_EyeTransform = new osg::Transform;
 
 	// transform's value isn't knowm until in the cull traversal so its bounding
@@ -334,7 +338,7 @@ int VirtualBattlefield::drawScene()
 	for (i = objectList.begin(); i != objectList.end(); i++) {
 		(*i)->updateScene();
 	}
-
+    
 	osgUtil::CullVisitor * pCullVisitor = m_pView->getCullVisitor();
 	pCullVisitor->setComputeNearFarMode(osgUtil::CullVisitor::COMPUTE_NEAR_FAR_USING_BOUNDING_VOLUMES);
 	pCullVisitor->setCullingMode(osgUtil::CullVisitor::ENABLE_ALL_CULLING);
@@ -385,9 +389,9 @@ void VirtualBattlefield::onUpdate(float dt)
 			m_ResetTheWorld = false;
 		}
 		if (m_SpinTheWorld) m_Sky->spinTheWorld();
-		m_Sky->update(lat, lon, CSPSim::theSim->getCurrentTime());
+		//m_Sky->update(lat, lon, CSPSim::theSim->getCurrentTime());
 		// greenwich, england (for testing)
-		//m_Sky->update(0.8985, 0.0, CSPSim::theSim->getCurrentTime());
+		m_Sky->update(0.8985, 0.0, CSPSim::theSim->getCurrentTime());
 		t+=1.0;
 	} else {
 		t += dt;
@@ -420,20 +424,20 @@ void VirtualBattlefield::setLookAt(simdata::Vector3 & eyePos, simdata::Vector3 &
 	CSP_LOG(CSP_APP, CSP_DEBUG, "VirtualBattlefield::setLookAt - eye: " << eyePos << ", look: " << lookPos << ", up: " << upVec);
 
 	osg::Camera * pCamera = m_pView->getCamera();
-
+    
 	int XLatticePos = (int) (eyePos.x / g_LatticeXDist);
 	int YLatticePos = (int) (eyePos.y / g_LatticeYDist);
 
-	float localEyePosition_x = eyePos.x - g_LatticeXDist*XLatticePos;
-	float localEyePosition_y = eyePos.y - g_LatticeYDist*YLatticePos;
+	double localEyePosition_x = eyePos.x - g_LatticeXDist*XLatticePos;
+	double localEyePosition_y = eyePos.y - g_LatticeYDist*YLatticePos;
 
-	float localLookPosition_x = lookPos.x - g_LatticeXDist*XLatticePos;
-	float localLookPosition_y = lookPos.y - g_LatticeYDist*YLatticePos;
-
+	double localLookPosition_x = lookPos.x - g_LatticeXDist*XLatticePos;
+	double localLookPosition_y = lookPos.y - g_LatticeYDist*YLatticePos;
+    
 	osg::Vec3 _localEye( localEyePosition_x,  localEyePosition_y,  eyePos.z) ;
 	osg::Vec3 _localLook(localLookPosition_x, localLookPosition_y, lookPos.z ) ;
 	osg::Vec3 _up (upVec.x, upVec.y, upVec.z );
-
+    
 	pCamera->setLookAt(_localEye, _localLook, _up);
 	pCamera->ensureOrthogonalUpVector();
 

@@ -1,12 +1,28 @@
  Version 0.3.3 (in progress)
 ===========================
 
+2003-07-26: onsight
+            Renamed several utilities to help with distribution
+	    and installation (particularly under Linux at this
+	    point):
+	    	map2hid 		-> cspinput
+		tile			-> csptile
+		RecCSP.py		-> csprec
+		falcon_acdata.py	-> cspf4dat
+
 2003-07-23: onsight
             Added wireframe toggle keybinding (alt-w by default).
 	    Note you have to rebuild your input maps to use newly
 	    added keybindings.  If you are using the default
 	    bindings you can just delete them (in Data/Input) and 
 	    run make (Linux only) to generate a new set.  
+
+	    Some general cleanup in Bin/*.py.  
+	    
+	    Added MakeDefaultInputMaps.py to regenerate the
+	    default hid input maps in a cross-platform way.
+
+	    Minor cleanup in map2hid.
 
 2003-07-23: onsight
             Committed changes to GameScreen to enable toggling of

@@ -239,7 +239,7 @@ void Thinner::operate(osgParticle::Particle *p, double dt)
 	float lifetime = p->getRadius();
 	// check if we've already operated on this particle
 	if (lifetime > 1000.0) {
-		float x = simdata::g_Random.NewRand();
+		float x = simdata::g_Random.newRand();
 		float old_lifetime = p->getLifeTime();
 		// this needs to be made into a member variable, set by
 		// a constructor argument

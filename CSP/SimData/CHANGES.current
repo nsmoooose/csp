@@ -4,6 +4,8 @@ Version 0.4.0 (in progress)
 2004-06-27: onsight
   * Opps, forgot Source/ThreadBase.cpp
 
+  * Added ThreadLog.h to setup.py
+
 2004-06-26: onsight
   * Remove superflous logging in interface registry, and suppress
     swig warnings.

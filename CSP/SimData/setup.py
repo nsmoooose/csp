@@ -1,18 +1,18 @@
 # SimDataCSP: Data Infrastructure for Simulations
 # Copyright (C) 2002 Mark Rose <tm2@stm.lbl.gov>
-# 
+#
 # This file is part of SimDataCSP.
-# 
+#
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
 # as published by the Free Software Foundation; either version 2
 # of the License, or (at your option) any later version.
-# 
+#
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
@@ -38,7 +38,7 @@ if len(sys.argv) == 2:
             print >>sys.stderr, "SimData requires Python version %s or higher. (current version is %s)" % \
                         (min_python_version, sys.version[:5])
         sys.exit(old)
-        
+
 from distutils.core import setup
 from distutils.core import Extension
 import distutils.command.build_ext
@@ -149,7 +149,7 @@ def make_install(win, args):
             if file.endswith(".py"):
                 script = os.path.join(modpath, file)
                 if os.path.exists(script):
-                    py_compile.compile(script)  
+                    py_compile.compile(script)
                     os.chmod(script+"c", 0644)
     except Exception, e:
         print e
@@ -164,13 +164,13 @@ def make_install(win, args):
     sys.exit(0)
 
 class build_swig_ext(build_ext):
-    
+
     options = []
 
     def build_extension(self, ext):
         self.ext = ext
         build_ext.build_extension(self, ext)
-        
+
     def swig_sources (self, sources):
 
         """Walk the list of source files in 'sources', looking for SWIG
@@ -209,7 +209,7 @@ class build_swig_ext(build_ext):
 
         swig = self.find_swig()
         swig_cmd = [swig] + build_swig_ext.options
-        
+
         if 1 or self.inplace:
             fullname = self.get_ext_fullname(self.ext.name)
             modpath = string.split(fullname, '.')
@@ -329,6 +329,7 @@ headers = [
     "TaggedRecordRegistry.h",
     "Thread.h",
     "ThreadBase.h",
+    "ThreadLog.h",
     "ThreadQueue.h",
     "Timing.h",
     "Trace.h",
@@ -411,11 +412,11 @@ if len(sys.argv)>=2:
         print ' '.join(swigopts)
         sys.exit(0)
 
-cSimData = Extension("SimData._cSimData", 
-                     sources + main_interface_fullpath, 
+cSimData = Extension("SimData._cSimData",
+                     sources + main_interface_fullpath,
                      include_dirs = includes,
                      define_macros = defines,
-                     libraries = libraries, 
+                     libraries = libraries,
                      extra_compile_args = cflags,
                      )
 

@@ -522,7 +522,7 @@ void GeoPos::parseXML(const char* cdata) {
 					char B;
 					int n = sscanf(c, "%lf %lf %d%c %lf", &X, &Y, &A, &B, &Z);
 					if (n != 5) throw ParseException("SYNTAX ERROR: expecting 'northing easting zone altitude'");
-					setUTM(X, Y, A, B, Z);
+					setUTM(X, Y, static_cast<char>(A), B, Z);
 				} else {
 					int n = sscanf(c, "%lf %lf %lf", &X, &Y, &Z);
 					if (n != 3) throw ParseException("SYNTAX ERROR: expecting 'latitude longitude altitude'");
@@ -880,8 +880,8 @@ void UTM::set(double easting_, double northing_, const char *zone_, double alt)
 		if (c2) {
 			_zone *= 10;
 			_zone += c1 - '0';
-			_designator = toupper(c2);
-		} else _designator = toupper(c1);
+			_designator = static_cast<char>(toupper(c2));
+		} else _designator = static_cast<char>(toupper(c1));
 	}
 	if (!valid()) {
 		// TODO
@@ -917,8 +917,8 @@ void UTM::parseXML(const char *cdata)
 		char designator_;
 		int n = sscanf(c, "%lf %lf %d%c %lf", &_E, &_N, &zone_, &designator_, &_alt);
 		if (n != 5) throw ParseException("SYNTAX ERROR: expecting 'easting northing zone altitude'");
-		_zone = zone_;
-		_designator = toupper(designator_);
+		_zone = static_cast<char>(zone_);
+		_designator = static_cast<char>(toupper(designator_));
 		if (!valid()) {
 			throw ParseException("SYNTAX ERROR: invalid UTM code");
 		}

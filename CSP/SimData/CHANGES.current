@@ -1,6 +1,9 @@
 Version 0.4.0 (in progress)
 ===========================
 
+2004-09-30: onsight
+ * Added explicit casts to silence msvc warnings in GeoPos.cpp.
+
 2004-09-29: onsight
  * Clean up warnings and formatting in Date.h/cpp.
 

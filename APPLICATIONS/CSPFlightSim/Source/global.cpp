@@ -20,17 +20,17 @@
 //
 ///////////////////////////////////////////////////////////////////////////
 
-#include "stdinc.h"
+#include<algorithm>
+
+#include "LogStream.h"
 
 #include "global.h"
-
-using namespace std;
 
 // catches non existent files to open, displays an error and exits the program
 FILE* fileopen(const char *cFilename, const char *cMode)
 {
 
-	CSP_LOG(CSP_TERRAIN, CSP_TRACE, "fileopen() - " << cFilename);
+	//CSP_LOG(CSP_TERRAIN, CSP_TRACE, "fileopen() - " << cFilename);
 
 	FILE *f = fopen(cFilename, cMode);
 	
@@ -45,7 +45,7 @@ FILE* fileopen(const char *cFilename, const char *cMode)
 
 void ConvertStringToUpper(string & str)
 {
-    transform(str.begin(), str.end(), str.begin(), toupper);
+    transform(str.begin(), str.end(), str.begin(), ::toupper);
 
 }
 

@@ -8,6 +8,12 @@
 
 class Message;
 
+
+/**
+ * class AirplaneController - Describe me!
+ *
+ * @author unknown
+ */
 class AirplaneController : public BaseController
 {
 

@@ -7,6 +7,11 @@
 
 class TerrainSymbol;
 
+/**
+ * class TerrainObject
+ *
+ * @author unknown
+ */
 class TerrainObject
 {
 public:

@@ -3,6 +3,11 @@
 
 #include "TypesMath.h"
 
+/**
+ * class ObjectRangeInfo
+ *
+ * @author unknown
+ */
 class ObjectRangeInfo
 {
 

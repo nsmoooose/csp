@@ -3,6 +3,12 @@
 
 #include "BaseSymbol.h"
 
+
+/**
+ * class SymbolTable
+ *
+ * @author unknown
+ */
 class SymbolTable : public std::map<std::string, BaseSymbol *> 
 {
 public:

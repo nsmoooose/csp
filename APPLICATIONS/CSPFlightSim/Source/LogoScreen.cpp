@@ -4,7 +4,7 @@
 #include <windows.h>
 #endif
 
-#include "GL\GL.h"
+//#include "GL\GL.h"
 
 #include <GL/gl.h>			// Header File For The OpenGL32 Library
 #include <GL/glu.h>			// Header File For The GLu32 Library
@@ -24,22 +24,10 @@ extern int g_ScreenHeight;
 
 void LogoScreen::OnInit()
 {
-    char imageDir[256];
-	char fullImageName[256];
-
-	// Get Image Directory from config file.
-	Config.GetString(imageDir, "ImageDirectory");
-
-	// Add the logo screen to the image directory
-	if (imageDir[strlen(imageDir)] == '\\')
-		sprintf(fullImageName, "%sCSPLogo.bmp", imageDir);
-	else
-		sprintf(fullImageName, "%s\\CSPLogo.bmp", imageDir);
-
-    m_image = SDL_LoadBMP(fullImageName);
+    m_image = SDL_LoadBMP("Images/CSPLogo.bmp");
     if (m_image == NULL)
     {
-        printf("Unable to load bitmap.\n");
+        printf("Unable to load bitmap Images/CSPLogo.bmp\n");
     }
 
 

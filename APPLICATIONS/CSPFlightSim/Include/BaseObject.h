@@ -1,9 +1,8 @@
 #ifndef __BASEOBJECT_H__
 #define __BASEOBJECT_H__
 
-#include <osg/node>
-#include <osg/transform>
-#include <osg/Drawable>
+#include <osg/Node>
+#include <osg/MatrixTransform>
 #include "TypesMath.h"
 #include <BaseController.h>
 #include <osg/Switch>
@@ -21,6 +20,12 @@ using namespace std;
 
 
 
+
+/**
+ * class BaseObject - Describe me!
+ *
+ * @author unknown
+ */
 class BaseObject
 {
  public:
@@ -44,7 +49,7 @@ class BaseObject
   void setOrientation(StandardMatrix3 & mOrientation);
   void setOrientation(StandardQuaternion & qOrientation);
   void setOrientation(double heading, double pitch, double roll);
-  void setVelocity(StandardVector3 & velocity);
+  void setVelocity(StandardVector3 const & velocity);
   void setVelocity(double Vx, double Vy, double Vz);
   void addToScene();
   virtual int updateScene();
@@ -76,7 +81,7 @@ class BaseObject
   double getRoll() { return m_roll; } 
 
   double getSpeed() const { return m_Speed; }
-  StandardVector3 & getVelocity() { return m_LinearVelocity; }
+  StandardVector3 const & getVelocity() const { return m_LinearVelocity; }
 
   void setCullingActive(bool flag);
 
@@ -99,15 +104,12 @@ class BaseObject
   void setObjectName(string name) { m_sObjectName = name; }
   string getObjectName() { return m_sObjectName; }
 
-  void hideObject(bool flag)
+  void ShowRepresentant(unsigned short const p_usflag)
   {
-	  if(flag)
-		  m_rpSwitch->setValue(osg::Switch::ALL_CHILDREN_OFF);
-	  else
-		  m_rpSwitch->setValue(osg::Switch::ALL_CHILDREN_ON);
-
+    m_rpSwitch->setValue(p_usflag);
   }
 
+  virtual double getGForce() {return 1.0;};
 
  protected:
 
@@ -159,7 +161,7 @@ class BaseObject
   int m_iArmy;
 
   osg::ref_ptr<osg::Node>      m_rpNode;
-  osg::ref_ptr<osg::Transform> m_rpTransform;
+  osg::ref_ptr<osg::MatrixTransform> m_rpTransform;
   osg::ref_ptr<osg::Switch> m_rpSwitch;
 
   unsigned int m_iObjectID;
@@ -168,11 +170,6 @@ class BaseObject
   bool m_bDeleteFlag;
   bool m_bFreezeFlag;
   bool m_bOnGround;
-
-
-
-//  StandardColor * m_color;
-
 };
 
 #endif

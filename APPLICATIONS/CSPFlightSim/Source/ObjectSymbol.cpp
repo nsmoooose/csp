@@ -1,10 +1,16 @@
 #include "stdinc.h"
 
+#ifdef _WIN32
+#include <typeinfo.h>
+#endif
+#include <typeinfo>
+
 #include "ObjectSymbol.h"
 #include "BaseObject.h"
 #include "AirplaneObject.h"
 #include "ObjectFactory.h"
 #include "VirtualBattlefield.h"
+#include "global.h"
 
 
 extern ObjectFactory * g_pObjectFactory;
@@ -21,6 +27,7 @@ std::string ObjectSymbol::SetCommand(std::deque<std::string> & args)
 	std::string propString = args[0];
 	std::string argString;
 
+       	ConvertStringToUpper(propString);
 	if (propString == "POSITION" || propString == "POS")
 	{
 		float x,y,z;
@@ -74,6 +81,7 @@ std::string ObjectSymbol::SetCommand(std::deque<std::string> & args)
 	else if (propString == "FREEZE" || propString == "SLEEP" )
 	{
 	  string argString = args[1];
+       	  ConvertStringToUpper(argString);
 
       BaseObject * pObject = g_pBattlefield->getObjectFromName(m_Identifier);
 
@@ -107,6 +115,7 @@ std::string ObjectSymbol::SetCommand(std::deque<std::string> & args)
 		{
 			AirplaneObject * pAirplane = dynamic_cast<AirplaneObject*>(pObject);
 	        string argString = args[1];
+       	        ConvertStringToUpper(argString);
 
 	        if (argString == "ON")
 				pAirplane->setComplexPhysics(true);
@@ -133,6 +142,7 @@ std::string ObjectSymbol::SetCommand(std::deque<std::string> & args)
 std::string ObjectSymbol::GetCommand(std::deque<std::string> & args)
 {
   	std::string propString = args[0];
+       	ConvertStringToUpper(propString);
 
 	if (propString == "POSITION" || propString == "POS" )
     {

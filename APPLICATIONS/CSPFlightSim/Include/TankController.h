@@ -29,6 +29,12 @@
 
 class Message;
 
+
+/**
+ * class TankController - Describe me!
+ *
+ * @author unknown
+ */
 class TankController : public BaseController
 {
 

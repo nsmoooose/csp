@@ -23,10 +23,9 @@
 #if !defined(GLOBAL_H)
 #define GLOBAL_H
 
-//#include <stdio.h>
 #include <string>
-//#include <vector>
 #include <deque>
+#include <cstdio>
 
 using namespace std;
 
@@ -39,6 +38,12 @@ FILE* fileopen(const char *cFilename, const char *cMode);
 
 void ConvertStringToUpper(string & str);
 
+
+/**
+ * class StringTokenizer
+ *
+ * @author unknown
+ */
 class StringTokenizer : public deque<string>
 {
 	public:
@@ -48,4 +53,3 @@ class StringTokenizer : public deque<string>
 
 
 #endif
-

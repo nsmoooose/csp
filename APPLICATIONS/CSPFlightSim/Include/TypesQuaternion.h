@@ -21,6 +21,11 @@
 #include "TypesMatrix3.h"
 
 
+/**
+ * class StandardQuaternion
+ *
+ * @author unknown
+ */
 class StandardQuaternion
 {
 public:

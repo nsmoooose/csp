@@ -12,7 +12,7 @@
 #include "SymbolTable.h"
 #include "AeroParamSymbol.h"
 
-
+#include <osg/CullFace>
 #include <osg/Node>
 #include <osgDB/FileUtils>
 #include <osgDB/Registry>
@@ -54,12 +54,13 @@ void ObjectFactory::setObjectTypeModel(const string & nameString,
 
 	if (pNode)
 	{
-
+		CSP_LOG(CSP_APP, CSP_DEBUG, "ObjectFactory::setObjectTypeModel: readNodeFile() succeeded, objectTypeList.size() = " << objectTypeList.size());
 		std::list<ObjectType *>::iterator i;
 		for (i = objectTypeList.begin(); i != objectTypeList.end(); ++i)
 		{
 
 			ObjectType *pType = *i;
+			CSP_LOG(CSP_APP, CSP_DEBUG, "ObjectFactory::setObjectTypeModel: searching " << pType->m_name);
 			if (pType->m_name == nameString)
 			{
 				pType->m_rpNode = pNode;
@@ -67,17 +68,19 @@ void ObjectFactory::setObjectTypeModel(const string & nameString,
 				return;
 			}
 		}
+	} else {
+		CSP_LOG(CSP_APP, CSP_DEBUG, "ObjectFactory::setObjectTypeModel: readNodeFile() failed.");
 	}
 }
 
 void ObjectFactory::createObjectType(const string & nameString, 
-                                  /*   const string & modelString , */
+                                  //   const string & modelString ,
                                      const string & baseString)
 {
 
     CSP_LOG(CSP_APP, CSP_DEBUG, "ObjectFactory::createObjectType name: "
         << nameString <<  ", base: " << baseString );
-//    osgDB::setFilePath("Models");
+    //osgDB:: setDataFilePathList("Models");
 
 //    osg::Node * pNode = osgDB::readNodeFile(modelString);
     bool bUsed = isTypeNameUsed(nameString);
@@ -148,7 +151,7 @@ ObjectType * ObjectFactory::getObjectTypeFromName(const string & name)
 void ObjectFactory::initialize()
 {
     CSP_LOG(CSP_APP, CSP_INFO, "ObjectFactory::initialize() " );
-//    osgDB::setFilePath("Models");
+    //osgDB:: setDataFilePathList("Models");
 }
 
 
@@ -161,7 +164,6 @@ void ObjectFactory::Cleanup()
 	objectTypeList.pop_front();
 	delete pType;
   }
-
 }
 
 

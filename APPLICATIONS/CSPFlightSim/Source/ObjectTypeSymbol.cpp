@@ -2,6 +2,7 @@
 
 #include "ObjectTypeSymbol.h"
 #include "ObjectFactory.h"
+#include "global.h"
 
 extern ObjectFactory * g_pObjectFactory;
 
@@ -15,6 +16,7 @@ std::string ObjectTypeSymbol::SetCommand(std::deque<std::string> & args)
 {
 	std::string propString = args[0];
 	
+       	ConvertStringToUpper(propString);
 	if (propString == "MODEL")
 	{
 		std::string valueString = args[1];

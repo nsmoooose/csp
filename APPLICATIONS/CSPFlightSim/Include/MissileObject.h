@@ -3,6 +3,11 @@
 
 #include "BaseObject.h"
 
+/**
+ * class MissileObject
+ *
+ * @author unknown
+ */
 class MissileObject : public BaseObject
 {
  public:
@@ -17,25 +22,11 @@ class MissileObject : public BaseObject
 
   virtual int updateScene();
 
-
-//  StandardVector3 m_Position;
-//  StandardVector3 m_Velocity;
-
   void doMovement(double dt);
-
-//  StandardMatrix3  m_Orientation;
-//  StandardVector3  m_InitialDirection;
-//  StandardVector3  m_CurrentDirection;
-//  StandardVector3  m_CurrentPosition;
-//  StandardVector3  m_InitialNormDir;
-//  StandardVector3  m_CurrentNormDir;
-//  StandardVector3  m_CurrentVelocity;
-//  StandardVector3  m_CurrentVelocityDir;
 
  protected:
 
 
-  double m_Speed;
   double m_Thrust;
   double m_ThrustMin;
   double m_ThrustMax;

@@ -7,12 +7,6 @@ const double pi = 3.1415926536;
 #define HALF_PI 1.57f
 #endif
 
-#ifndef PI
-#define PI 3.1415f
-#endif
-
-
-
 #include "math.h"
 #include "TypesVector3.h"
 #include "TypesVector4.h"
@@ -20,6 +14,11 @@ const double pi = 3.1415926536;
 #include "TypesMatrix4.h"
 #include "TypesQuaternion.h"
 
+/**
+ * class StandardMath
+ *
+ * @author unknown
+ */
   class StandardMath
   {
 
@@ -59,6 +58,8 @@ inline double MetersToFeets(double p_length)
 double angleBetweenTwoVectors(const StandardVector3 & v1, const StandardVector3 & v2);
 
 double SignOf(double p_t);
+
+double Atan(double const p_a, double const p_b);
 
 #endif
 

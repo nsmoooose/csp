@@ -4,17 +4,27 @@
 #include "BaseObject.h"
 #include "AirplanePhysics.h"
 #include "AeroParam.h"
+#include "CockpitDrawable.h"
+#include "Hud.h"
 
 
+/**
+ * class AirplaneObject - Describe me!
+ *
+ * @author unknown
+ */
 class AirplaneObject : public BaseObject
 {
  public:
+
+  
 
   AirplaneObject();
   virtual ~AirplaneObject();
   virtual void dump();
   virtual void OnUpdate(double dt);
   virtual void initialize();
+  void initializeHud();
   virtual int updateScene();
 
   virtual unsigned int OnRender();
@@ -41,17 +51,19 @@ class AirplaneObject : public BaseObject
   double getAngleOfAttack() { return m_AngleOfAttack; }
 
   void setGForce(double p_gForce) {m_gForce = p_gForce;};
-  double getGForce() {return m_gForce;};
+  virtual double getGForce() {return m_gForce;};
 
   void setComplexPhysics(bool flag) { m_bComplex = flag; }
 
   void setAero( AeroParam * pAeroParam );
 
+  Hud * GetpHud() const { return m_phud;};
+
 protected:
 
 
-
-
+ 
+  Hud * m_phud;
   AirplanePhysics * m_pAirplanePhysics;
   bool m_bPhysicsInitialized;
   bool m_bComplex;

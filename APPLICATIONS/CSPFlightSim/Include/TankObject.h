@@ -11,6 +11,11 @@
 // 4 - turning left
 
 
+/**
+ * class TankObject
+ *
+ * @author unknown
+ */
 class TankObject : public BaseObject
 {
  public:

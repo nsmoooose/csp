@@ -1,21 +1,16 @@
-#include "stdinc.h"
-
-#include <math.h>
-
-#include <osg/Geode>
-#include <osg/GeoSet>
-#include <osg/Texture>
-#include <osg/TexEnv>
-#include <osg/Depth>
-#include <osg/StateSet>
-#include <osg/ShadeModel>
-
-#include <osgDB/ReadFile>
-
 #ifdef _MSC_VER
 #pragma warning( disable : 4244 )
 #pragma warning( disable : 4305 )
 #endif
+
+#include <cmath>
+
+#include <osg/Depth>
+#include <osg/Geode>
+#include <osg/Geometry>
+#include <osgDB/ReadFile>
+#include <osg/Texture2D>
+#include <osg/TexEnv>
 
 using namespace osg;
 
@@ -30,26 +25,6 @@ const float FOG_BLUE = 0.5f;
 const float FOG_ALPHA = 1.0f;
 
 
-
-
-#include <math.h>
-
-#include <osg/Geode>
-#include <osg/Geometry>
-#include <osg/Texture>
-#include <osg/TexEnv>
-#include <osg/Depth>
-#include <osg/StateSet>
-
-#include <osgDB/ReadFile>
-
-#ifdef _MSC_VER
-#pragma warning( disable : 4244 )
-#pragma warning( disable : 4305 )
-#endif
-
-using namespace osg;
-
 Node *makeSky( void )
 {
     int i, j;
@@ -61,7 +36,7 @@ Node *makeSky( void )
         { 0.4, 0.4, 0.5 },
         { 0.4, 0.4, 0.5 },
         { 0.4, 0.4, 0.5 },
-//        { 0.2, 0.2, 0.6 },
+//      { 0.2, 0.2, 0.6 },
         { 0.75*FOG_RED + 0.25*SKY_RED, 0.75*FOG_GREEN + 0.25*SKY_GREEN, 0.75*FOG_BLUE + 0.25*SKY_BLUE },
         { 0.5*FOG_RED + 0.5*SKY_RED, 0.5*FOG_GREEN + 0.5*SKY_GREEN, 0.5*FOG_BLUE + 0.5*SKY_BLUE },
         { 0.25*FOG_RED + 0.75*SKY_RED, 0.25*FOG_GREEN + 0.75*SKY_GREEN, 0.25*FOG_BLUE + 0.75*SKY_BLUE },
@@ -72,7 +47,7 @@ Node *makeSky( void )
     float alpha, theta;
     float radius = 25000.0f;
     int nlev = sizeof( lev )/sizeof(float);
-    Geometry *geom = new Geometry;
+    Geometry *geom = osgNew Geometry;
 
     Vec3Array& coords = *(new Vec3Array(19*nlev));
     Vec4Array& colors = *(new Vec4Array(19*nlev));
@@ -116,7 +91,7 @@ Node *makeSky( void )
         for( j = 0; j <= 18; j++ )
         {
 
-            UShortDrawElements* drawElements = new UShortDrawElements(Primitive::TRIANGLE_STRIP);
+            DrawElementsUShort* drawElements = new DrawElementsUShort(PrimitiveSet::TRIANGLE_STRIP);
             drawElements->reserve(38);
 
             for( j = 0; j <= 18; j++ )
@@ -125,34 +100,30 @@ Node *makeSky( void )
                 drawElements->push_back((i+0)*19+j);
             }
             
-            geom->addPrimitive(drawElements);
+            geom->addPrimitiveSet(drawElements);
         }
     }
     
     geom->setVertexArray( &coords );
     geom->setTexCoordArray( 0, &tcoords );
 
-//    geom->setColorArray( &colors );
-//    geom->setColorBinding( Geometry::BIND_PER_VERTEX );
+    geom->setColorArray( &colors );
+    geom->setColorBinding( Geometry::BIND_PER_VERTEX );
 
 
-    Texture *tex = new Texture;
+    Texture2D *tex = new Texture2D;
     tex->setImage(osgDB::readImageFile("Images/white.rgb"));
-//    tex->setImage(osgDB::readImageFile("sky_demo.010.png"));
-    tex->setWrap( Texture::WRAP_S, Texture::CLAMP_TO_EDGE );
-    tex->setWrap( Texture::WRAP_T, Texture::CLAMP_TO_EDGE );
-
 
     StateSet *dstate = new StateSet;
 
-    dstate->setAttributeAndModes( tex, StateAttribute::ON );
-    dstate->setAttribute( new TexEnv );
+    dstate->setTextureAttributeAndModes( 0, tex, StateAttribute::OFF );
+    dstate->setTextureAttributeAndModes( 0, new TexEnv );
     dstate->setMode( GL_LIGHTING, StateAttribute::OFF );
-    dstate->setMode( GL_CULL_FACE, StateAttribute::OFF );
+    dstate->setMode( GL_CULL_FACE, StateAttribute::ON );
     
 
     // clear the depth to the far plane.
-    osg::Depth* depth = new osg::Depth;
+    osg::Depth* depth = osgNew osg::Depth;
     depth->setFunction(osg::Depth::ALWAYS);
     depth->setRange(1.0,1.0);   
     dstate->setAttributeAndModes(depth,StateAttribute::ON );
@@ -161,8 +132,7 @@ Node *makeSky( void )
 
     geom->setStateSet( dstate );
 
-    Geode *geode = new Geode;
-
+    Geode *geode = osgNew Geode;
     geode->addDrawable( geom );
 
     geode->setName( "Sky" );

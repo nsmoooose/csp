@@ -1,18 +1,5 @@
 #include "stdinc.h"
 
-#ifdef WIN32
-#include <windows.h>
-#endif
-
-
-#include <GL/gl.h>			// Header File For The OpenGL32 Library
-#include <GL/glu.h>			// Header File For The GLu32 Library
-
-#ifdef WIN32
-#include <GL/glaux.h>		// Header File For The Glaux Library
-#endif
-
-
 #include "BaseObject.h"
 #include "MissileObject.h"
 #include "BaseController.h"
@@ -43,7 +30,7 @@ MissileObject::MissileObject()
   m_CurrentNormDir = StandardVector3(0.0,0.0,1.0);
   setGlobalPosition( StandardVector3(0.0,0.0,0.0) );
   m_Speed = 500.0;      // meters per sec
-  m_LinearVelocity = m_Speed*m_Direction;
+  m_LinearVelocity = m_Speed * m_Direction;
   m_LinearVelocityDirection = m_LinearVelocity.Normalize();
   m_Thrust = 0.7;
   m_ThrustMin = 0.0;
@@ -178,6 +165,9 @@ void MissileObject::doMovement(double dt)
   {
     m_bDeleteFlag = true;
   }
+  else 
+	  if ( m_FlightTime > 0.5 && m_FlightTime < 2.0 )
+		  m_LinearVelocity += (dt * 150.0  / m_LinearVelocity.Length() ) * m_LinearVelocity;
 
   doSimplePhysics(dt);
 
@@ -188,7 +178,7 @@ void MissileObject::doMovement(double dt)
 void MissileObject::doSimplePhysics(double dt)
 {
   // update the orientation matrix based on control surfaces;
-  StandardMatrix3 matZ = RotationZMatrix3(-(m_Aileron) * sensativity * planesensx * plusplus);
+  /*StandardMatrix3 matZ = RotationZMatrix3(-(m_Aileron) * sensativity * planesensx * plusplus);
   m_Orientation = matZ*m_Orientation;
 
   StandardMatrix3 matX = RotationXMatrix3((m_Elevator) * sensativity * planesensy * plusplus);
@@ -199,9 +189,12 @@ void MissileObject::doSimplePhysics(double dt)
   m_Direction = m_Orientation * m_InitialDirection;
   m_CurrentNormDir = m_Orientation * m_InitialNormDir;
 
-  m_Speed = m_LinearVelocity.Length();
+  m_Speed = m_LinearVelocity.Length();*/
  
-  m_GlobalPosition += dt*m_Speed*m_Direction;
+  m_LocalPosition += dt * m_LinearVelocity;
+  updateLocalPosition();
+  updateGlobalPosition();
+  
 
   CSP_LOG(CSP_APP, CSP_DEBUG, "MissileObject::SimplePhysics: ObjectID: " << m_iObjectID 
       << ", Elevator: " << m_Elevator << ", Aileron: " << m_Aileron);

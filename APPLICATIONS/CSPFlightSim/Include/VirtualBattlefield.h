@@ -1,5 +1,8 @@
 #ifndef __VIRTUALBATTLEFIELD_H__
 #define __VIRTUALBATTLEFIELD_H__
+
+#include <list>
+
 #include "Terrain.h"
 #include "DemeterDrawable.h"
 
@@ -7,17 +10,21 @@
 #include <osg/StateSet>
 #include <osg/GeoSet>
 #include <osg/Material>
-#include <osg/Transparency>
+#include <osg/BlendFunc>
 #include <osg/Transform>
 #include <osg/PolygonMode>
 #include <osg/Depth>
 #include <osg/Notify>
 #include <osg/Geode>
+
 #include <osgDB/Registry>
 #include <osgDB/ReadFile>
 #include <osgDB/FileUtils>
+
+#include <osgUtil/Optimizer>
 #include <osgUtil/SceneView>
-#include <osgUtil/CameraManipulator>
+
+//#include <osgGA/CameraManipulator>
 
 #include "BaseObject.h"
 #include "ObjectRangeInfo.h"
@@ -28,6 +35,11 @@
 const int MAX_NUM_VISIBLE_TRIANGLES = 30000; // Chosen based on the expected number of triangles that will be visible on-screen at any one time (the terrain mesh will typically have far more triangles than are seen at one time, especially with dynamic tessellation)
 
 
+/**
+ * class VirtualBattlefield
+ *
+ * @author unknown
+ */
 class VirtualBattlefield
 {
 
@@ -54,7 +66,7 @@ public:
     void dumpObjectHistory();
     void updateAllObjects(float dt);
     void initializeAllObjects();
-    void getObjectsInRange(BaseObject * fromObject, float range, float view_angle  , int army, list<ObjectRangeInfo*> & rangeList  );
+    void getObjectsInRange(BaseObject * fromObject, float range, float view_angle  , int army, std::list<ObjectRangeInfo*> & rangeList  );
     void addController(BaseController * controller);
     unsigned int getNewObjectID() { return ++latest_object_id; }
     list<BaseObject *> getObjectList() { return objectList; }
@@ -107,9 +119,6 @@ protected:
 	TerrainObject * m_pActiveTerrainObject;
 
 	int ConsoleFont;
-
-	void InitCockpitSymbols();
-
 };
 
 

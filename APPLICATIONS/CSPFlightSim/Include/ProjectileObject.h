@@ -3,6 +3,12 @@
 
 #include "BaseObject.h"
 
+
+/**
+ * class ProjectileObject
+ *
+ * @author unknown
+ */
 class ProjectileObject : public BaseObject
 {
  public:

@@ -6,18 +6,18 @@
 // and Game Programming Gems.
 
 #include <iostream>
+#include <stdio.h>
 
 class StandardMatrix3;
 
+
+//namespace Math
+//{
 
 /** Class StandardVector3
  * This class represents a 3 element vector. It uses overloaded
  * operators to perform basic operations.
  */
-
-//namespace Math
-//{
-
 class StandardVector3
 {
  public:

@@ -4,6 +4,12 @@
 #include "SDL_keysym.h"
 #include "BaseObject.h"
 
+
+/**
+ * class BaseInput - Describe me!
+ *
+ * @author unknown
+ */
 class BaseInput
 {
 
@@ -16,6 +22,7 @@ public:
     virtual void OnJoystickAxisMotion(int joynum, int axis, int val) = 0;
 	virtual void OnJoystickHatMotion(int joynum, int hat, int val) = 0;
     virtual void OnJoystickButtonDown(int joynum, int butnum) = 0;
+    virtual void OnUpdate() const = 0;
 
 	virtual void SetObject(BaseObject * ) = 0;
 

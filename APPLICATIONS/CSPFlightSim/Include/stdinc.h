@@ -4,12 +4,14 @@
 #include <assert.h>
 #include <cmath>
 
+#include <cstdio>
+#include <cstdlib>
 #include <iostream>
-#include <ostream>
-#include <istream>
+//#include <ostream>
+//#include <istream>
 #include <iomanip>
 #include <fstream>
-#include <streambuf>
+//#include <streambuf>
 #include <sstream>
 
 #include <vector>
@@ -23,10 +25,6 @@
 #include <map>
 #include <functional>
 
-#include <typeinfo.h>
-
-
-
 #include <fcntl.h>
 
 
@@ -35,10 +33,7 @@
 #include "LogStream.h"
 #include "Tools.h"
 
-#ifdef _DEBUG
-#include "mmgr.h"
-#endif
-
+//#include "mmgr.h"
 //#define OSG_USE_MEMORY_MANAGER
 //#define    TEST_MEMORY_MANAGER
 //#include <osg/MemoryManager>

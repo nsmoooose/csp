@@ -4,6 +4,13 @@
 
 #include "BaseObject.h"
 
+
+
+/**
+ * class StaticObject
+ *
+ * @author unknown
+ */
 class StaticObject : public BaseObject
 {
  public:

@@ -5,6 +5,12 @@
 #include <osg/Object>
 
 
+
+/**
+ * class CockpitDrawable - Describe me!
+ *
+ * @author unknown
+ */
 class CockpitDrawable : public osg::Drawable
 {
 
@@ -18,14 +24,14 @@ public:
 
   virtual const char*         className() const;
 
-  virtual void                drawImmediateMode(osg::State&);
+  virtual void                drawImplementation(osg::State&) const;
 
   virtual osg::Object*        cloneType() const;
   virtual osg::Object*        clone(const osg::CopyOp& copyop) const;
 
-        protected:
+  protected:
         
-            virtual const bool          computeBound() const;
+  virtual bool          computeBound() const;
 
 };
 

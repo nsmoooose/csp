@@ -6,6 +6,12 @@
 class BaseObject;
 class Message;
 
+
+/**
+ * class AAAController - Describe me!
+ *
+ * @author unknown
+ */
 class AAAController : public BaseController
 {
  public:

@@ -13,10 +13,6 @@
 #define HALF_PI 1.570796f
 #endif
 
-#ifndef PI
-#define PI 3.141592f
-#endif
-
 #ifndef EPSILON
    const double StandardMatrix3::EPSILON = 1e-06;
 #endif
@@ -368,7 +364,7 @@ void StandardMatrix3::ToAxisAngle (StandardVector3& rkAxis, double& rfRadians) c
 
     if ( rfRadians > 0.0 )
     {
-        if ( rfRadians < PI )
+        if ( rfRadians < pi )
         {
             rkAxis.x = rowcol[2][1]-rowcol[1][2];
             rkAxis.y = rowcol[0][2]-rowcol[2][0];

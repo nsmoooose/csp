@@ -23,6 +23,12 @@
 #define OGLTEXT_H
 
 
+/**
+ * class COGLText
+ *
+ * @author zzed
+ * @author Stormbringer
+ */
 class COGLText
 {
 public:

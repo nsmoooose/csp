@@ -6,6 +6,12 @@
 #include "BasePhysics.h"
 
 
+
+/**
+ * class AirplanePhysics - Describe me!
+ *
+ * @author unknown
+ */
 class AirplanePhysics : public BasePhysics
 {
 public:
@@ -31,16 +37,17 @@ public:
     void setPosition(const StandardVector3 & pos) { m_PositionLocal = pos; }
     void setVelocity(const StandardVector3 & velo);
 	
-    void CalculateForceAndMoment(double dt);
-    double CalculateLiftCoefficient();
-    double CalculateDragCoefficient();
+	StandardVector3 CalculateForces( double const p_qBarS ); // update gforce too
+	StandardVector3 CalculateMoments( double const p_qBarS ) const;
+    double CalculateLiftCoefficient() const; 
+    double CalculateDragCoefficient() const;
 	double CalculateSideCoefficient() const;
     double CalculateDynamicPressure(double alt) const;
-    double CalculateGravity(double p_altitude) const;
-    double CalculateAirDensity(double alt) const;
-    double CalculateRollMoment(double qbarS);
-    double CalculatePitchMoment(double qbarS);
-    double CalculateYawMoment(double qbarS);
+    double CalculateGravity(double const p_altitude) const;
+    double CalculateAirDensity(double const alt) const;
+    double CalculateRollMoment(double const qbarS) const;
+    double CalculatePitchMoment(double const qbarS) const;
+    double CalculateYawMoment(double const qbarS) const;
 	
     StandardVector3 LocalToBody(const StandardVector3 & vec );
     StandardVector3 BodyToLocal(const StandardVector3 & vec );
@@ -53,6 +60,7 @@ public:
 	double m_falpha;    // angle of attack
 	double m_falphaDot; // AOA rate
 	double m_fbeta;     // side slip angle
+	double m_fstallAOA; // stall AOA 
 	
 	double m_Thrust;
 	double m_Aileron;
@@ -69,7 +77,7 @@ public:
 	StandardVector3 m_VelocityBody;    // (U,V,W) velocity in body coordinates
 	StandardVector3 m_ForcesBody;      // total force on body
 	StandardVector3 m_ForcesLocal;
-	double m_gForce;                   // current g acceleration
+	double m_fgForce;                   // current g acceleration
 	StandardVector3 m_LinearAccel;     // (Udot, Vdot, Wdot)
 	StandardVector3 m_GravityBody;
 	StandardVector3 m_VelocityAngular; // (P,Q,R) angular velocity in body coordinates
@@ -89,8 +97,12 @@ public:
 	double m_fDaMin;
 	double m_fDrMax;
 	double m_fDrMin;
+
+	double m_fGMin;
+	double m_fGMax;
 	
 	double m_fMass;                    // total mass (constant)
+	double m_fMassInverse;
 	double m_fI_XX;
 	double m_fI_YY;
 	double m_fI_ZZ;
@@ -133,7 +145,19 @@ public:
 	double m_fCn_r;      // CNr is the yaw damping
 	double m_fCn_da;     // CNda is the yaw due to aileron
 	double m_fCn_dr;     // CNdr is the yaw due to rudder
+ protected:
+	 StandardVector3 LiftVector() const; 
+	 StandardVector3 DragVector() const;
+	 StandardVector3 SideVector() const;
 
+	 double ControlSensibility(double p_x) const;       // control joystick sensibility
+	 double ControlInputValue(double p_gForce) const;  // decrease deflection value to lower G
+	 double CIVbasis(double p_t) const;
+	 double SetControl(double const p_setting, double const & p_mMax, double const & p_mMin) const;
+
+	 double m_depsilon;       // Gforce control feedback stall
+	 unsigned short m_usMaxi; // number of FM iteration
+	 double m_dprevdt;        // previous value of dt
 };
 
 #endif

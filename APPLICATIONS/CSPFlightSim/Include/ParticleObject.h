@@ -5,6 +5,12 @@
 
 using namespace std;
 
+
+/**
+ * class ParticleObject
+ *
+ * @author unknown
+ */
 class ParticleObject : public BaseObject
 {
  public:

@@ -1,23 +1,25 @@
 #include "stdinc.h"
 
+#include <iostream>
 
-#include "BaseObject.h"
+#include "BaseInput.h"
 #include "AirplaneObject.h"
+#include "BaseObject.h"
 #include "BaseController.h"
-#include "VirtualBattlefield.h"
 #include "MessageQueue.h"
 #include "SimTime.h"
+#include "VirtualBattlefield.h"
 
 
 extern VirtualBattlefield * g_pBattlefield;
 extern MessageQueue * g_pMessageQueue;
 extern SimTime * g_pSimTime;
-#include "iostream"
+extern BaseInput * g_pPlayerInput;
 
 using namespace std;
 
 double	const	g	= 9.806; // acceleration due to gravity, m/s^2
-//double	const	rho = 0.0023769f * 14.5938 / 0.02831685 ; // density of air at sea level, slugs/ft^3 -> convert to kg/m^3
+//double	const	rho = 0.0023769f * 14.5938 / 0.02831685 ; // air density at sea level, slugs/ft^3 -> convert to kg/m^3
 double   const   rho = 1.225; //kg/m^3
 #define	_DTHRUST	10.0f
 #define	_MAXTHRUST	300000.0f
@@ -48,8 +50,8 @@ AirplaneObject::AirplaneObject()
   m_Thrust = 0.7;
   m_ThrustMin = 0.0;
   m_ThrustMax = 1.0;
-  m_Aileron=0.0;
-  m_Elevator=0.0;
+  m_Aileron = 0.0;
+  m_Elevator = 0.0;
   m_AileronMin = -1.0;
   m_AileronMax = 1.0;
   m_ElevatorMin = -1.0;
@@ -87,14 +89,11 @@ AirplaneObject::AirplaneObject()
   m_Ibody[0][2] = m_Ibody[2][0] = 1300.0;
   m_IbodyInv = m_Ibody.Inverse();
 
-
-
   m_fBoundingSphereRadius = 20;
 //  m_color = new StandardColor(0, 0, 255, 255);
 
   m_bComplex = false;
   m_bPhysicsInitialized = false;
-
   m_pAirplanePhysics = new AirplanePhysics;
 }
 
@@ -105,7 +104,15 @@ AirplaneObject::~AirplaneObject()
 
 void AirplaneObject::initialize()
 {
- 
+  if (m_sObjectName == "PLAYER" )
+    initializeHud();
+}
+
+void AirplaneObject::initializeHud()
+{
+  m_phud = osgNew Hud(m_InitialDirection);
+  m_phud->BuildHud("HudM2k.csp");
+  m_rpSwitch->addChild(m_phud);
 }
 
 void AirplaneObject::dump()
@@ -128,15 +135,21 @@ void AirplaneObject::dump()
 
 void AirplaneObject::OnUpdate(double dt)
 {
-  
-    if (!m_bFreezeFlag)
+   CSP_LOG(CSP_APP, CSP_DEBUG, "AirplaneObject::OnUpdate ...");
     {
         if (m_pController)
           m_pController->OnUpdate(dt);
 
-        doMovement(dt);
-    }
+        if ( m_sObjectName == "PLAYER" )
+         g_pPlayerInput->OnUpdate();
 
+        doMovement(dt);
+
+		if ( m_sObjectName == "PLAYER" )
+		  m_phud->OnUpdate();
+    }
+   CSP_LOG(CSP_APP, CSP_DEBUG, "... AirplaneObject::OnUpdate");
+	
 }
 
 int AirplaneObject::updateScene()
@@ -227,9 +240,9 @@ void AirplaneObject::doComplexPhysics(double dt)
     if (!m_bPhysicsInitialized)
     {
         m_pAirplanePhysics->Initialize();
-		m_pAirplanePhysics->setVelocity(m_LinearVelocity);
+	    m_pAirplanePhysics->setVelocity(m_LinearVelocity);
         m_pAirplanePhysics->setSpeed(m_Speed);
-        m_pAirplanePhysics->setPosition(m_LocalPosition);
+        //m_pAirplanePhysics->setPosition(m_LocalPosition);
         m_pAirplanePhysics->qOrientation.FromRotationMatrix(m_Orientation);
         m_bPhysicsInitialized = true;
     }
@@ -251,7 +264,7 @@ void AirplaneObject::doComplexPhysics(double dt)
     m_LinearVelocity = m_pAirplanePhysics->m_VelocityLocal;
 	m_Speed = m_pAirplanePhysics->m_fSpeedLocal;
 	m_AngleOfAttack = m_pAirplanePhysics->getAngleOfAttack();
-	m_gForce = m_pAirplanePhysics->m_gForce;
+	setGForce(m_pAirplanePhysics->m_fgForce);
 
     //m_Force = m_pAirplanePhysics->m_ForcesBody;
     //m_Torque = m_pAirplanePhysics->m_Moments;

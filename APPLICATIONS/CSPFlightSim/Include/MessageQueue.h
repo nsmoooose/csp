@@ -1,10 +1,17 @@
 #ifndef __MESSAGEQUEUE_H__
 #define __MESSAGEQUEUE_H__
 
+#include <queue>
+
 #include "Message.h"
 
 using namespace std;
 
+/**
+ * class MessageQueue
+ *
+ * @author unknown
+ */
 class MessageQueue
 {
 

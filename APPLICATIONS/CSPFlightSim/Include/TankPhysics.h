@@ -3,6 +3,12 @@
 
 #include "BasePhysics.h"
 
+
+/**
+ * class TankPhysics
+ *
+ * @author unknown
+ */
 class TankPhysics : public BasePhysics
 {
 
@@ -11,11 +17,6 @@ public:
 	
     virtual void Initialize();
     virtual void DoSimStep(double dt);
-
-
-
-
-
 
 };
 

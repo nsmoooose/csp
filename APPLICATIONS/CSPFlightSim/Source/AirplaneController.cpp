@@ -21,7 +21,7 @@ AirplaneController::~AirplaneController()
 
 void AirplaneController::OnUpdate(unsigned int dt)
 {
-
+ 
 }
 
 void AirplaneController::OnMessage(const Message * message)

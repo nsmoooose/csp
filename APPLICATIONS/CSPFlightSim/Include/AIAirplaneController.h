@@ -12,6 +12,12 @@
 
 class Message;
 
+
+/**
+ * class AIAirplaneController - Describe me!
+ *
+ * @author unknown
+ */
 class AIAirplaneController : public BaseController
 {
 

@@ -12,7 +12,6 @@
 #include <osgDB/ReadFile>
 
 #include <osgUtil/Optimizer>
-#include <osgUtil/CullVisitor>
 
 using namespace std;
 
@@ -43,9 +42,9 @@ int VirtualBattlefieldScene::BuildScene()
     int ScreenWidth = 800;
     int ScreenHeight = 600;
 
-    m_pRootNode = new osg::Group;
+    m_pRootNode = osgNew osg::Group;
 
-    m_pView = new osgUtil::SceneView();
+    m_pView = osgNew osgUtil::SceneView();
     m_pView->setDefaults();
     m_pView->setViewport(0,0,ScreenWidth,ScreenHeight);
     osg::Vec4 bkgColor;
@@ -54,7 +53,7 @@ int VirtualBattlefieldScene::BuildScene()
     bkgColor[2] = SKY_BLUE;
     bkgColor[3] = SKY_ALPHA;
     m_pView->setBackgroundColor(bkgColor);
-    m_pView->setComputeNearFarMode(osgUtil::CullVisitor::ComputeNearFarMode::DO_NOT_COMPUTE_NEAR_FAR);
+    m_pView->setComputeNearFarMode(osgUtil::CullVisitor::DO_NOT_COMPUTE_NEAR_FAR);
 
 
  //   m_pRootNode = new osg::Group;
@@ -67,7 +66,7 @@ int VirtualBattlefieldScene::BuildScene()
 
     m_pPlaneNode = osgDB::readNodeFiles(v);
 
-    m_pPlaneTransform = new osg::Transform;
+    m_pPlaneTransform = osgNew osg::MatrixTransform;
     osg::Matrix mat;
     mat.makeTranslate(5000, 0, 1000);
 
@@ -78,7 +77,7 @@ int VirtualBattlefieldScene::BuildScene()
 
 
     osgDB::Registry::instance();
-//    osgDB::setFilePath(".");
+    //osgDB:: setDataFilePathList(".");
 
     osg::Camera * pCamera = m_pView->getCamera();
     pCamera->setNearFar(1.0f,100);

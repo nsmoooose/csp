@@ -4,16 +4,16 @@
 #include <osg/StateSet>
 #include <osg/GeoSet>
 #include <osg/Material>
-#include <osg/Transparency>
+#include <osg/BlendFunc>
 #include <osg/Transform>
 #include <osg/PolygonMode>
 #include <osg/Depth>
 #include <osg/Notify>
 #include <osg/Geode>
 
-#include <osgUtil/TrackballManipulator>
-#include <osgUtil/FlightManipulator>
-#include <osgUtil/DriveManipulator>
+//#include <osgGA/TrackballManipulator>
+//#include <osgGA/FlightManipulator>
+//#include <osgGA/DriveManipulator>
 
 
 //#include <osgText/Text>
@@ -22,18 +22,19 @@
 
 #include "MenuScreen.h"
 
-
-//#define        TEXT_BITMAP        "Bitmap Font - jygq"
-//osgText::Text::AlignmentType    gAlignment=osgText::Text::LEFT_BOTTOM;
-//int    gFontSize=18;
-//#define        TEXT_COL_2D        osg::Vec4(.9,.9,.9,1)
-//#define        TEXT_COL_3D        osg::Vec4(.99,.3,.2,1)
-
+/*
+#define        TEXT_BITMAP        "Bitmap Font - jygq"
+osgText::Text::AlignmentType    gAlignment=osgText::Text::LEFT_BOTTOM;
+int    gFontSize=18;
+#define        TEXT_COL_2D        osg::Vec4(.9,.9,.9,1)
+#define        TEXT_COL_3D        osg::Vec4(.99,.3,.2,1)
+*/
 
 void MenuScreen::OnInit()
 {
+    
     /*
-    std::string    ttfPath("fonts/times.ttf");
+	std::string    ttfPath("fonts/times.ttf");
     osgText::Text*    text;
     osg::Geode*        geode;
     osg::Material*    textMaterial;
@@ -55,7 +56,7 @@ void MenuScreen::OnInit()
     m_text->setPosition(osg::Vec3(0,0,0));
     m_text->setDrawMode( osgText::Text::TEXT |
                        osgText::Text::BOUNDINGBOX |
-                       osgText::Text::ALIGNEMENT );
+                       osgText::Text::ALIGNMENT );
     m_text->setAlignment(gAlignment);
 
     geode = new osg::Geode();

@@ -1,7 +1,6 @@
 #include "stdinc.h"
 
-#include <DemeterDrawable.h>
-#include <Terrain.h>
+
 
 #include <osg/Vec4>
 #include <osg/Fog>
@@ -13,8 +12,7 @@
 #include <osg/StateAttribute>
 #include <osg/Notify>
 #include <osg/Light>
-#include <osg/EarthSky>
-#include <osg/GeoSet>
+#include <osg/ClearNode>
 
 #include <osg/BoundingSphere>
 #include <osgDB/Registry>
@@ -27,10 +25,10 @@
 #include "VirtualBattlefieldScene.h"
 #include "ObjectFactory.h"
 
-#include "SDL.h"
-#include "DT_drawtext.h"
 #include "CSPFlightSim.h"
-
+#include "DemeterDrawable.h"
+#include "DT_drawtext.h"
+#include "SDL.h"
 
 unsigned int VirtualBattlefield::latest_object_id = 0;
 
@@ -43,7 +41,6 @@ extern int g_ScreenHeight;
 extern double g_LatticeXDist;
 extern double g_LatticeYDist;
 
-extern ObjectFactory * g_pObjectFactory;
 
 const float SKY_RED = 0.1f;
 const float SKY_GREEN = 0.1f;
@@ -64,13 +61,17 @@ extern osg::Node *makeBase( void );
 extern osg::Node *makeTreesPatch( float xcen, float ycen, float spacing, float width, 
 					 float height, VirtualBattlefield * pBattlefield);
 
-int halfHeight;
-int halfWidth;
 
+
+/**
+ * struct MoveEarthySkyWithEyePointCallback
+ *
+ * @author unknown
+ */
 struct MoveEarthySkyWithEyePointCallback : public osg::Transform::ComputeTransformCallback
 {
     /** Get the transformation matrix which moves from local coords to world coords.*/
-    virtual const bool computeLocalToWorldMatrix(osg::Matrix& matrix,const osg::Transform*, osg::NodeVisitor* nv) const 
+    virtual bool computeLocalToWorldMatrix(osg::Matrix& matrix,const osg::Transform*, osg::NodeVisitor* nv) const 
     {
         osgUtil::CullVisitor* cv = dynamic_cast<osgUtil::CullVisitor*>(nv);
         if (cv)
@@ -82,7 +83,7 @@ struct MoveEarthySkyWithEyePointCallback : public osg::Transform::ComputeTransfo
     }
 
     /** Get the transformation matrix which moves from world coords to local coords.*/
-    virtual const bool computeWorldToLocalMatrix(osg::Matrix& matrix,const osg::Transform*, osg::NodeVisitor* nv) const
+    virtual bool computeWorldToLocalMatrix(osg::Matrix& matrix,const osg::Transform*, osg::NodeVisitor* nv) const
     {
         osgUtil::CullVisitor* cv = dynamic_cast<osgUtil::CullVisitor*>(nv);
         if (cv)
@@ -137,35 +138,47 @@ void VirtualBattlefield::GetNormal(float x, float y, float & normalX,
 }
 
 
-
 int VirtualBattlefield::buildScene()
 {
     CSP_LOG(CSP_APP, CSP_INFO, "VirtualBattlefield::buildScene() ");
- 	ConsoleFont =DT_LoadFont("Fonts\\ConsoleFont.bmp", TRANS_FONT );
+ 	ConsoleFont = DT_LoadFont("Fonts/ConsoleFont.bmp", TRANS_FONT );
    
     int ScreenWidth = g_ScreenWidth;
     int ScreenHeight = g_ScreenHeight;
 
-	osgDB::setDataFilePathList(".;Images;Models");
+	// must be updated to match your file path configuration
+#ifdef _WIN32
+	std::string sep = ";";
+#else
+	std::string sep = ":";
+#endif
 
+	osgDB::setDataFilePathList("." + sep + "Images" + sep + "Models" + sep + "Fonts");
+
+	// we don't need this on Linux since libs are usually
+	// installed in /usr/local/lib/osgPlugins or /usr/lib/osgPlugins.
+	// OSG can find itself the plugins.
+#ifdef _WIN32
+	osgDB::setLibraryFilePathList("../DemoPackage");
+#endif 
 
     osg::setNotifyLevel(osg::DEBUG_INFO);
 	
-    m_rpRootNode = new osg::Group;
+    m_rpRootNode = osgNew osg::Group;
 	m_rpRootNode->setName( "RootSceneGroup" );
 
-	m_rpObjectRootNode = new osg::Group;
+	m_rpObjectRootNode = osgNew osg::Group;
 	m_rpObjectRootNode->setName("ObjectRootSceneGraph.");
 
-	osg::EarthSky* earthSky = osgNew osg::EarthSky;
+	osg::ClearNode* earthSky = osgNew osg::ClearNode;
     earthSky->setRequiresClear(false); // we've got base and sky to do it.
 	
     // use a transform to make the sky and base around with the eye point.
     osg::Transform* transform = osgNew osg::Transform;
 	
     // transform's value isn't knowm until in the cull traversal so its bounding
-    // volume is can't be determined, therefore culling will be invalid,
-    // so switch it off, this cause all our paresnts to switch culling
+    // volume can't be determined, therefore culling will be invalid,
+    // so switch it off, this cause all our parents to switch culling
     // off as well. But don't worry culling will be back on once underneath
     // this node or any other branch above this transform.
     transform->setCullingActive(false);
@@ -184,9 +197,7 @@ int VirtualBattlefield::buildScene()
     // add to earth sky to the scene.
 	m_rpRootNode->addChild(earthSky);
 
-	m_rpRootNode->addChild(m_rpObjectRootNode.get());
-
-    m_pView = new osgUtil::SceneView();
+    m_pView = osgNew osgUtil::SceneView();
     m_pView->setDefaults();
     m_pView->setViewport(0,0,ScreenWidth,ScreenHeight);
     osg::Vec4 bkgColor;
@@ -194,16 +205,16 @@ int VirtualBattlefield::buildScene()
     bkgColor[1] = SKY_GREEN;
     bkgColor[2] = SKY_BLUE;
     bkgColor[3] = SKY_ALPHA;
-	//   m_pView->setBackgroundColor(bkgColor);
-    m_pView->setComputeNearFarMode(osgUtil::CullVisitor::ComputeNearFarMode::DO_NOT_COMPUTE_NEAR_FAR);
+	m_pView->setBackgroundColor(bkgColor);
+    m_pView->setComputeNearFarMode(osgUtil::CullVisitor::DO_NOT_COMPUTE_NEAR_FAR);
 	
-    osg::StateSet * pFogState = new osg::StateSet;
-    osg::Fog* fog = new osg::Fog;
+    osg::StateSet * pFogState = osgNew osg::StateSet;
+    osg::Fog* fog = osgNew osg::Fog;
     fog->setMode(osg::Fog::LINEAR);
     fog->setDensity(0.35f);
     fog->setStart(100.0f);
     fog->setEnd(10000 - 100.0f);
-    //fog->setColor(bkgColor);
+
 	osg::Vec4 fogColor;
 	fogColor[0] = FOG_RED;
 	fogColor[1] = FOG_GREEN; 
@@ -213,12 +224,16 @@ int VirtualBattlefield::buildScene()
     pFogState->setAttributeAndModes(fog ,osg::StateAttribute::ON);
 	
 	
-	osg::Light * pLight = new osg::Light;
-	pLight->setDirection( osg::Vec3(1,1,1) );
-	pLight->setAmbient( osg::Vec4(0.75, 0.75, 0.75, 1) );
-	pLight->setDiffuse( osg::Vec4(0.6, 0.6, 0.6, 1) );
-	pLight->setSpecular( osg::Vec4(0.3, 0.3, 0.3, 0.25) );
-	osg::StateSet * pLightSet = new osg::StateSet;
+	osg::Light * pLight = osgNew osg::Light;
+	//pLight->setDirection( osg::Vec3(1,1,1) );
+	//pLight->setAmbient( osg::Vec4(0.75, 0.75, 0.75, 1) );
+	//pLight->setDiffuse( osg::Vec4(0.6, 0.6, 0.6, 1) );
+
+	pLight->setDirection( osg::Vec3(0,0,-1) );
+	pLight->setAmbient( osg::Vec4(0.2f,0.2f,0.2f,1.0f) );
+	pLight->setDiffuse( osg::Vec4(0.8f,0.8f,0.8f,1.0f) );
+	pLight->setSpecular( osg::Vec4(0.75f,0.75f,0.75f,1.0f) );
+	osg::StateSet * pLightSet = osgNew osg::StateSet;
 	
 	pFogState->setAttributeAndModes(pLight, osg::StateAttribute::ON);
 	
@@ -230,8 +245,6 @@ int VirtualBattlefield::buildScene()
 	m_rpRootNode->addChild(m_rpObjectRootNode.get());
 	
     m_pView->setSceneData(m_rpRootNode.get() );
-	
-    // add terrain node
 
     osgDB::Registry::instance();
 
@@ -246,166 +259,21 @@ int VirtualBattlefield::buildScene()
 	
     pCamera->setLookAt(posVec, lookVec, upVec);
 
-	
-	InitCockpitSymbols();
-	
     return 1;
 }
 
-GLuint fpm, adi, chevrons;
-
-void VirtualBattlefield::InitCockpitSymbols()
-{
-	halfHeight = g_ScreenHeight >> 1;
-    halfWidth = g_ScreenWidth  >> 1 ;
-
-	GLuint i;
-
-	
-	fpm = glGenLists(1);
-	glNewList(fpm, GL_COMPILE);
-
-	glBegin(GL_LINE_LOOP);
-	GLuint ptsNumber = 30;
-	float radius = 10.0;
-	for ( i = 0; i < ptsNumber; ++i ) 
-	{
-		float angle = 2 * PI * i / ptsNumber;
-		glVertex2f(radius * cos( angle ), radius * sin( angle ));
-	}
-	glEnd();
-	
-	glBegin(GL_LINES);
-	glVertex2f(radius, 0.0);
-	glVertex2f(radius + 20.0, 0.0);
-	glVertex2f(- radius, 0.0);
-	glVertex2f(- radius - 20.0, 0.0);
-    glVertex2f(0.0, radius);
-	glVertex2f(0.0, radius + 10.0);
-	glEnd();
-
-	glEndList();
-
-	
-	int width = halfWidth / 8;
-
-	GLuint barsUp = glGenLists(1);
-	glNewList(barsUp, GL_COMPILE);
-    
-	for ( i = 1; i < 6; ++i )
-	{
-        int offset = i * halfHeight / 3;
-		glBegin(GL_LINE_STRIP);
-		glVertex2f(- radius - width, - halfHeight / 20 + offset);
-		glVertex2f(- radius - width, offset);
-		glVertex2f(- radius, offset);
-		glEnd();
-		
-		glBegin(GL_LINE_STRIP);
-		glVertex2f(radius, offset);
-		glVertex2f(radius + width, offset);
-		glVertex2f(radius + width, - halfHeight / 20  + offset);
-		glEnd();
-	}
-
-	glEndList();
-
-	
-    GLuint barsDown = glGenLists(1);
-	glNewList(barsDown, GL_COMPILE);
-	for ( i = 1; i < 6; ++i )
-	{
-        int offset = i * halfHeight / 3;
-
-		glBegin(GL_LINE_STRIP);
-		glVertex2f(- radius - width, halfHeight / 20 - offset);
-		glVertex2f(- radius - width, - offset);
-		glVertex2f(- radius - 3 * width / 4, - offset);
-        glEnd();
-
-		glBegin(GL_LINES);
-        glVertex2f(- radius - 5 * width / 8 , - offset);
-        glVertex2f(- radius - 3 * width / 8 , - offset);
-
-        glVertex2f(- radius - width / 4 , - offset);
-        glVertex2f(- radius, - offset);
-	    glEnd();
-		
-		glBegin(GL_LINES);
-		glVertex2f(radius, - offset);
-		glVertex2f(radius + width / 4 , - offset);
-
-		glVertex2f(radius + 3 * width / 8 , - offset);
-        glVertex2f(radius + 5 * width / 8 , - offset);
-        
-	    glEnd();
-
-		glBegin(GL_LINE_STRIP);
-		glVertex2f(radius + 3 * width / 4, - offset);
-		glVertex2f(radius + width, - offset);
-		glVertex2f(radius + width, halfHeight / 20  - offset);
-		glEnd();
-	}
-	glEndList();
-
-	
-	chevrons = glGenLists(1);
-	glNewList(chevrons, GL_COMPILE);
-
-	glBegin(GL_LINE_STRIP);
-    glVertex2f(- radius - width, halfHeight / 40);
-    glVertex2f(- width + radius, 0);
-    glVertex2f(- radius - width, - halfHeight / 40);
-	glEnd();
-
-	glBegin(GL_LINE_STRIP);
-    glVertex2f(- radius / 3 - width, halfHeight / 40);
-    glVertex2f(- width + 4 * radius / 3, 0);
-    glVertex2f(- radius / 3 - width, - halfHeight / 40);
-	glEnd();
-
-	glBegin(GL_LINE_STRIP);
-    glVertex2f(radius + width, halfHeight / 40);
-    glVertex2f(width - radius, 0);
-    glVertex2f(radius + width, - halfHeight / 40);
-	glEnd();
-
-	glBegin(GL_LINE_STRIP);
-    glVertex2f(radius / 3 + width, halfHeight / 40);
-    glVertex2f(width - 4 * radius / 3, 0);
-    glVertex2f(radius / 3 + width, - halfHeight / 40);
-	glEnd();
-
-	glEndList();
-
-	
-	adi = glGenLists(1);
-	glNewList(adi, GL_COMPILE);
-
-	glCallList(barsUp);
-	
-	width = halfWidth / 2;
-	glBegin(GL_LINES);
-	glVertex2f(- width,0);
-	glVertex2f(width, 0);
-	glEnd();
-
-	glCallList(barsDown);
-    
-	glEndList();
-}
 
 int VirtualBattlefield::drawScene()
 {
-    
+     
     CSP_LOG(CSP_APP, CSP_DEBUG, "VirtualBattlefield::drawScene()...");
 
-	for_each( objectList.begin(), objectList.end(), mem_fun(&(BaseObject::updateScene)) );
+	for_each( objectList.begin(), objectList.end(), mem_fun(&BaseObject::updateScene) );
 
 	osgUtil::CullVisitor * pCullVisitor = m_pView->getCullVisitor();
-	pCullVisitor->setComputeNearFarMode(osgUtil::CullVisitor::DO_NOT_COMPUTE_NEAR_FAR);
+	pCullVisitor->setComputeNearFarMode(osgUtil::CullVisitor::COMPUTE_NEAR_FAR_USING_BOUNDING_VOLUMES);
+	pCullVisitor->setCullingMode(osgUtil::CullVisitor::ENABLE_ALL_CULLING);
 	m_pView->setCullVisitor(pCullVisitor);
-
     m_pView->cull();
     m_pView->draw();
 
@@ -415,7 +283,6 @@ int VirtualBattlefield::drawScene()
 
     return 1;
 }
-
 
 void VirtualBattlefield::OnUpdate(float dt)
 {
@@ -468,9 +335,9 @@ void VirtualBattlefield::setLookAt(StandardVector3 & eyePos, StandardVector3 & l
   osg::Vec3 _localLook(localLookPosition_x, localLookPosition_y, lookPos.z ) ;
   osg::Vec3 _up (upVec.x, upVec.y, upVec.z );
 
-  //pCamera->ensureOrthogonalUpVector();
-
   pCamera->setLookAt(_localEye, _localLook, _up);
+  pCamera->ensureOrthogonalUpVector();
+
   if (m_pActiveTerrainObject)
 		m_pActiveTerrainObject->setCameraPosition( eyePos.x, eyePos.y, eyePos.z );
 
@@ -516,7 +383,6 @@ void VirtualBattlefield::addNodeToScene( osg::Node * pNode)
 //  osgUtil::Optimizer optimzer;
 //  optimzer.optimize(pNode, osgUtil::Optimizer::OptimizationOptions::ALL_OPTIMIZATIONS);
 
-  //m_rpRootNode->addChild(pNode);
   m_rpObjectRootNode->addChild(pNode);
 }
 
@@ -848,7 +714,7 @@ bool VirtualBattlefield::doSphereTest( BaseObject * pObj1, BaseObject * pObj2)
 
 
     return false;
-
+ 
 }
 
 void VirtualBattlefield::getObjectDistance(BaseObject * fromObject, BaseObject * toObject, float & distance, StandardVector3 & direction)
@@ -861,85 +727,8 @@ void VirtualBattlefield::getObjectDistance(BaseObject * fromObject, BaseObject *
 }
 
 
-
-extern BaseObject * g_pPlayerObject;
-extern  CSPFlightSim * g_pCSPFlightSim;
-
 void VirtualBattlefield::drawCockpit()
 {
-	glViewport(0, 0, g_ScreenWidth, g_ScreenHeight);
-	glMatrixMode( GL_PROJECTION );
-	glPushMatrix();
-	glLoadIdentity();
-	glOrtho( 0 , g_ScreenWidth, 0, g_ScreenHeight, -1, 1 );
-	glMatrixMode( GL_MODELVIEW );
-	glPushMatrix();
-
-    glColor3f(0.5, 0.5, 0.5);
-    
-    glLoadIdentity();
-	glTranslatef(halfWidth, halfHeight, 0);
-	//glRotatef(g_pPlayerPlane->getRoll(), 0, 0, 1);
-	glLineWidth(3.0);
-	//glCallList(adi);
-
-	//glLoadIdentity();
-	//glTranslatef(halfWidth + halfWidth * g_pPlayerPlane->getDirection().x / 2, 
-	//	         halfHeight + halfHeight * g_pPlayerPlane->getDirection().z / 2, 0.0);
-	glCallList(fpm);
-    
-
-    //glLoadIdentity();
-    //glTranslatef(halfWidth, 3 * halfHeight / 2, 0);
-	//glCallList(chevrons);
-	glLineWidth(1.0);
-
-	glLoadIdentity();
-
-	glPolygonMode(GL_FRONT,GL_LINE);
-    
-	StandardVector3 pos = g_pPlayerObject->getGlobalPosition();
-
-	char buffer[30];
-	SDL_Surface * sDLScreen = g_pCSPFlightSim->GetSDLScreen();
-    
-	
-	// speed
-	glRectf(halfWidth - 140, halfHeight - 6, halfWidth - 112, halfHeight + 6);
-	sprintf(buffer, "%.0f", g_pPlayerObject->getSpeed());
-    DT_DrawText(buffer, sDLScreen, ConsoleFont,  halfWidth - 137, halfHeight - 7);
-
-	float speed = g_pPlayerObject->getSpeed();
-	sprintf(buffer, "%.0f", MetersPerSecondToKnots(speed));
-    DT_DrawText(buffer, sDLScreen, ConsoleFont,  2 * halfWidth / 3, 3 * halfHeight / 4);
-	sprintf(buffer, "%.2f", MetersPerSecondToMachs(speed));
-    DT_DrawText(buffer, sDLScreen, ConsoleFont, 2 * halfWidth / 3, 3 * halfHeight / 4 + 15);
-    
-
-	AirplaneObject * pAirplane = dynamic_cast<AirplaneObject*>(g_pPlayerObject);
-
-	// G
-	if (pAirplane)
-	{
-		sprintf(buffer, "G %.1f", pAirplane->getGForce());
-		DT_DrawText(buffer, sDLScreen, ConsoleFont,   7 * halfWidth / 12, 4 * halfHeight / 3 );   
-	// alpha
-
-		char alpha = 65;
-		sprintf(buffer, "%c %.1f", alpha, RadiansToDegrees(pAirplane->getAngleOfAttack()));
-		DT_DrawText(buffer, sDLScreen, ConsoleFont,  7 * halfWidth / 12,  4 * halfHeight / 3 + 15);
-	}
-    
-	// altitude
-    sprintf(buffer, "%.0f", MetersToFeets(pos.z));
-	DT_DrawText(buffer, sDLScreen, ConsoleFont, 17 * halfWidth / 12 - 50, 4 * halfHeight / 3);
-	sprintf(buffer, "ASEL");
-    DT_DrawText(buffer, sDLScreen, ConsoleFont, 17 * halfWidth / 12 - 50, 4 * halfHeight / 3 + 15);
-    
-  	glMatrixMode( GL_PROJECTION );
-	glPopMatrix();
-	glMatrixMode( GL_MODELVIEW );
-	glPopMatrix();
 
 }
 
@@ -956,10 +745,21 @@ void VirtualBattlefield::setActiveTerrain( TerrainObject * pTerrainObject)
 {
 	m_pActiveTerrainObject = pTerrainObject; 
 
-//	osg::Node * pTrees = makeTreesPatch( 500000, 450000, 100, 1000, 
-//					 1000, this);
+	float xPatch = 35000 + 448000;
+	float yPatch = 5000 + 500000;
 
-//	addNodeToScene(pTrees);
+	if (m_pActiveTerrainObject)
+		 m_pActiveTerrainObject->setCameraPosition( xPatch, yPatch, 1000);
+	
+	for (unsigned short i=0; i < 15;++i)
+	{
+		osg::Node * pTrees = makeTreesPatch( xPatch, yPatch + 256 * i, 100, 1000,
+			100, this);
+        pTrees->setName("Trees");
+		addNodeToScene(pTrees);
+
+	}
+	
 
 }
 

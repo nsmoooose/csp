@@ -11,6 +11,12 @@
 #define GENERATE_NEW_ENEMY_PLANES_MESSAGE 101
 
 
+
+/**
+ * class Message
+ *
+ * @author unknown
+ */
 class Message
 {
 
@@ -35,6 +41,12 @@ class Message
   int data;
 };
 
+
+/**
+ * class messageComparison
+ *
+ * @author unknown
+ */
 struct messageComparison {
    bool operator () (Message * left, Message * right) const
       { return left->receiveTime > right->receiveTime; }

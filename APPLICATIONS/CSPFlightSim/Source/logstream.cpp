@@ -24,7 +24,7 @@
 // Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 // Boston, MA  02111-1307, USA.
 //
-// $Id: logstream.cpp,v 1.1 2002/09/24 21:59:59 boddman Exp $
+// $Id: logstream.cpp,v 1.2 2002/12/05 03:23:31 mkrose Exp $
 
 #include "stdinc.h"
 

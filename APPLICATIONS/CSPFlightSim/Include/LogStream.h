@@ -21,7 +21,7 @@
 // Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 // Boston, MA  02111-1307, USA.
 //
-// $Id: LogStream.h,v 1.1 2002/09/24 21:59:39 boddman Exp $
+// $Id: LogStream.h,v 1.2 2002/12/05 03:23:31 mkrose Exp $
 
 #ifndef _LOGSTREAM_H
 #define _LOGSTREAM_H
@@ -33,12 +33,17 @@
 #include <char_traits.h>
 #endif
 
-#ifdef SG_HAVE_STD_INCLUDES
-# include <streambuf>
-# include <iostream>
+#ifdef __GCC_3.0__
+  #ifdef SG_HAVE_STD_INCLUDES
+    # include <streambuf>
+    # include <iostream>
+  #else
+    # include <iostream.h>
+    # include <simgear/sg_traits.hxx>
+  #endif
 #else
-# include <iostream.h>
-# include <simgear/sg_traits.hxx>
+  #include <iostream>
+  #include <strstream>
 #endif
 
 #include <debug_types.h>
@@ -74,8 +79,8 @@ class logbuf : public streambuf
 public:
 
 #ifndef SG_HAVE_STD_INCLUDES
-    typedef char_traits<char>           traits_type;
-    typedef char_traits<char>::int_type int_type;
+    ///typedef char_traits<char>           traits_type;
+    ///typedef char_traits<char>::int_type int_type;
     // typedef char_traits<char>::pos_type pos_type;
     // typedef char_traits<char>::off_type off_type;
 #endif
@@ -146,7 +151,8 @@ protected:
     inline virtual int sync();
 
     /** overflow */
-    int_type overflow( int ch );
+    ///int_type overflow( int ch );
+    int overflow( int ch );
     // int xsputn( const char* s, istreamsize n );
 
 private:
@@ -181,7 +187,8 @@ logbuf::set_log_state( cspDebugClass c, cspDebugPriority p )
     logging_enabled = ((c & logClass) != 0 && p >= logPriority);
 }
 
-inline logbuf::int_type
+///inline logbuf::int_type
+inline int
 logbuf::overflow( int c )
 {
     return logging_enabled ? sbuf->sputc(c) : (EOF == 0 ? 1: 0);

@@ -1,6 +1,12 @@
 #ifndef __AEROPARAM_H__
 #define __AEROPARAM_H__
 
+
+/**
+ * struct AeroParam - Describe me!
+ *
+ * @author unknown
+ */
 struct AeroParam
 {
 
@@ -18,6 +24,9 @@ struct AeroParam
 	float m_fDrMax;
 	float m_fDrMin;
 
+	float m_fGMin;
+	float m_fGMax;
+
 	float m_fMass;
 	float m_fI_XX;
 	float m_fI_YY;
@@ -30,6 +39,7 @@ struct AeroParam
 	float m_fCD_a;
 	float m_fCD_de;
 
+	float m_fstallAOA;
 	float m_fCL0;
 	float m_fCL_a;
 	float m_fCL_adot;

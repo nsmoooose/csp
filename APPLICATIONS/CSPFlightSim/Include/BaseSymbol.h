@@ -1,6 +1,12 @@
 #ifndef __BASESYMBOL_H__
 #define __BASESYMBOL_H__
 
+
+/**
+ * class BaseSymbol - Describe me!
+ *
+ * @author unknown
+ */
 class BaseSymbol
 {
 public:

@@ -4,6 +4,12 @@
 #include "BaseController.h"
 #include "ProjectileObject.h"
 
+
+/**
+ * class ProjectileController - Describe me!
+ *
+ * @author unknown
+ */
 class ProjectileController : public BaseController
 {
  public:

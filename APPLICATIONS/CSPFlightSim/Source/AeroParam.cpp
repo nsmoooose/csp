@@ -14,6 +14,9 @@ AeroParam::AeroParam()
 	m_fDrMax = 0.0f;
 	m_fDrMin = 0.0f;
 
+	m_fGMin = -9.0;
+	m_fGMax = 9.0;
+
 	m_fMass = 0.0f;
 	m_fI_XX = 0.0f;
 	m_fI_YY = 0.0f;
@@ -26,6 +29,7 @@ AeroParam::AeroParam()
 	m_fCD_a = 0.0f;
 	m_fCD_de = 0.0f;
 
+	m_fstallAOA = 90.0;
 	m_fCL0 = 0.0f;
 	m_fCL_a = 0.0f;
 	m_fCL_adot = 0.0f;

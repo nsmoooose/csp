@@ -9,6 +9,12 @@
 
 class Message;
 
+
+/**
+ * class MissileController - Describe me!
+ *
+ * @author unknown
+ */
 class MissileController : public BaseController
 {
 

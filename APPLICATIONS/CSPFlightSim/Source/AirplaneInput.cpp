@@ -1,32 +1,134 @@
-#include "stdinc.h"
-
+ #include "stdinc.h"
 
 #include "AirplaneInput.h"
 #include "AirplaneObject.h"
 
+double const AirplaneInput::offsetControl = 0.05;
 
 AirplaneInput::AirplaneInput()
 {
-
-
+  m_foffsetAileron = 0.0;
+  m_foffsetElevator = 0.0;
+  m_foffsetRudder = 0.0;
+  m_foffsetThrottle = 0.0;
 }
 
 void AirplaneInput::SetObject(BaseObject * pObject)
 {
-
 	m_pAirplaneObject = dynamic_cast<AirplaneObject* >(pObject);
+}
+
+double AirplaneInput::Clamp(double p_setting) const
+{
+  if ( p_setting < - 1.0)
+			p_setting = - 1.0;
+		else 
+			if ( p_setting > 1.0 )
+				p_setting = 1.0;
+  return p_setting;
+}
+
+void AirplaneInput::OnUpdate() const
+{
+	if (m_foffsetAileron != 0.0)
+	{
+		double setting = m_pAirplaneObject->getAileron() + m_foffsetAileron;
+		setting = Clamp(setting);
+		m_pAirplaneObject->setAileron( setting );
+	}
+	else
+	{
+		if (m_foffsetElevator != 0.0)
+		{
+			double setting = m_pAirplaneObject->getElevator() + m_foffsetElevator;
+			setting = Clamp(setting);
+			m_pAirplaneObject->setElevator( setting );
+		}
+		else
+		{
+			if (m_foffsetRudder != 0.0)
+			{
+				double setting = m_pAirplaneObject->getRudder() + m_foffsetRudder;
+				setting = Clamp(setting);
+				m_pAirplaneObject->setRudder( setting );
+			}
+			else
+				if (m_foffsetThrottle != 0.0)
+				{
+					double setting = m_pAirplaneObject->getThrottle() + m_foffsetThrottle;
+					setting = Clamp(setting);
+					m_pAirplaneObject->setThrottle( setting );
+				}
+		}
+	}
 }
 
 bool AirplaneInput::OnKeyDown(SDLKey key)
 {
-
-	return false;
+	CSP_LOG( CSP_APP , CSP_DEBUG, "AirplaneInput::OnKeyDown; key = " << key); 
+	switch ( key )
+	{
+	case SDLK_LEFT:
+		m_foffsetAileron = - offsetControl;
+		break;
+	case SDLK_RIGHT:
+		m_foffsetAileron = offsetControl;
+		break;
+	case SDLK_UP:
+		m_foffsetElevator = - offsetControl;
+		break;
+	case SDLK_DOWN:
+		m_foffsetElevator = offsetControl;
+		break;
+	case SDLK_COMMA:
+		m_foffsetRudder = - offsetControl;
+		break;
+	case SDLK_PERIOD:
+        m_foffsetRudder = offsetControl;
+		break;
+    case SDLK_EQUALS:
+		m_foffsetThrottle = offsetControl;
+		break;
+	case SDLK_MINUS:
+		m_foffsetThrottle = - offsetControl;
+		break;
+	default:
+		return false;
+		break;
+	}
+	OnUpdate();
+	return true;
 }
 
 bool AirplaneInput::OnKeyUp(SDLKey key)
 {
-
-	return false;
+	CSP_LOG( CSP_APP , CSP_DEBUG, "AirplaneInput::OnKeyUp; key = " << key);
+	switch ( key )
+	{
+	case SDLK_LEFT:
+	case SDLK_RIGHT:
+		m_foffsetAileron = 0.0;
+		m_pAirplaneObject->setAileron(0.0);
+		break;
+	case SDLK_UP:
+	case SDLK_DOWN:
+		m_foffsetElevator = 0.0;
+		m_pAirplaneObject->setElevator(0.0);
+		break;
+	case SDLK_COMMA:
+	case SDLK_PERIOD:
+        m_foffsetRudder = 0.0;
+		m_pAirplaneObject->setRudder(0.0);
+		break;
+	case SDLK_EQUALS:
+	case SDLK_MINUS:
+		m_foffsetThrottle = 0.0;
+		break;
+	default:
+		return false;
+		break;
+	}
+	return true;
 }
 
 void AirplaneInput::OnMouseMove(int x, int y)
@@ -41,7 +143,7 @@ void AirplaneInput::OnMouseButtonDown(int num, int x, int y)
 
 void AirplaneInput::OnJoystickAxisMotion(int joynum, int axis, int val)
 {
-    CSP_LOG(CSP_APP, CSP_DEBUG, "OnJoystickAxisMotion, joystick: " << joynum
+    CSP_LOG(CSP_APP, CSP_DEBUG, "AirplaneInput::OnJoystickAxisMotion, joystick: " << joynum
                 << ", axis: " << axis << ", val: " << val );
 
     float setting = val / 32768.0;

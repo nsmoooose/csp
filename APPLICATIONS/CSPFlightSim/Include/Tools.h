@@ -22,6 +22,12 @@
 #if !defined(TOOLS_H)
 #define TOOLS_H
 
+/**
+ * class CTools
+ *
+ * @author zzed
+ * @author stormbringer
+ */
 class CTools  
 {
 private:

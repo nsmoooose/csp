@@ -2,6 +2,7 @@
 
 
 #include "TerrainSymbol.h"
+#include "global.h"
 
 TerrainSymbol::TerrainSymbol()
 {
@@ -17,10 +18,12 @@ TerrainSymbol::~TerrainSymbol()
 std::string TerrainSymbol::SetCommand(std::deque<std::string> & args)
 {
   	std::string propString = args[0];
+        ConvertStringToUpper(propString);
 	// SET terrain ACTIVE TRUE|FALSE
 	if (propString == "ACTIVE")
 	{
 		std::string valueString = args[1];
+        	ConvertStringToUpper(valueString);
 		if (valueString == "TRUE")
 			m_pTerrainObject->SetActive(true);
 		else
@@ -31,6 +34,7 @@ std::string TerrainSymbol::SetCommand(std::deque<std::string> & args)
 	else if (propString == "LATTICE")
 	{
 		std::string valueString = args[1];
+        	ConvertStringToUpper(valueString);
 		bool value = ( (valueString == "TRUE") ? true : false );
 		m_pTerrainObject->m_bLattice = value;
 		return "OK";
@@ -84,6 +88,7 @@ std::string TerrainSymbol::SetCommand(std::deque<std::string> & args)
 	else if (propString == "PRELOADTEXTURES")
 	{
 		std::string valueString = args[1];
+        	ConvertStringToUpper(valueString);
 		bool value = ( (valueString == "TRUE") ? true : false );
 		m_pTerrainObject->m_bPreloadTextures = value;
 		return "OK";
@@ -92,6 +97,7 @@ std::string TerrainSymbol::SetCommand(std::deque<std::string> & args)
 	else if (propString == "TEXTURECOMPRESSION")
 	{
 		std::string valueString = args[1];
+        	ConvertStringToUpper(valueString);
 		bool value = ( (valueString == "TRUE") ? true : false );
 		m_pTerrainObject->m_bTextureCompression = value;
 		return "OK";
@@ -100,6 +106,7 @@ std::string TerrainSymbol::SetCommand(std::deque<std::string> & args)
 	else if (propString == "DYNAMICTEXTURES")
 	{
 		std::string valueString = args[1];
+        	ConvertStringToUpper(valueString);
 		bool value = ( (valueString == "TRUE") ? true : false );
 		m_pTerrainObject->m_bDynamicTextures = value;
 		return "OK";
@@ -143,6 +150,7 @@ std::string TerrainSymbol::SetCommand(std::deque<std::string> & args)
 	else if (propString == "TEXTUREFACTORY")
 	{
 		std::string valueString = args[1];
+        	ConvertStringToUpper(valueString);
 		bool value = ( (valueString == "TRUE") ? true : false );
 		m_pTerrainObject->m_bTextureFactory = value;
 		return "OK";

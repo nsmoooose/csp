@@ -8,11 +8,17 @@ using namespace std;
 
 class InstantActionController;
 
+
+/**
+ * class InstantActionManager - Describe me!
+ *
+ * @author unknown
+ */
 class InstantActionManager : public BaseObject
 {
  public:
 
-  friend InstantActionController;
+  friend class InstantActionController;
 
   InstantActionManager();
   virtual ~InstantActionManager();

@@ -3,11 +3,16 @@
 
 #include "AirplaneObject.h"
 #include "BaseScreen.h"
-#include "sdl_joystick.h"
-#include "TypesVector3.h"
 #include "SDL_keysym.h"
+#include "SDL_joystick.h"
+#include "TypesVector3.h"
 
 
+/**
+ * class GameScreen - Describe me!
+ *
+ * @author unknown
+ */
 class GameScreen : public BaseScreen
 {
 public:
@@ -36,14 +41,13 @@ protected:
     float missile_delay;
 	StandardVector3 m_fixedCamPos;
 
-	bool m_bInteralView;
+	bool m_bInternalView;
+	bool m_bPreviousState;
 
-    
 	void NormalView();
-	void TurnViewAboutX(float fangleMax = pi / 2);
-    void TurnViewAboutZ(float fangleMax = pi);
+	void TurnViewAboutX(double fangleMax = pi / 2);
+    void TurnViewAboutZ(double fangleMax = pi);
 	void ScaleView();
-	void OnUpdateKeyboardControl(BaseObject * p_pPlayerPlane);
 	StandardVector3 GetNewFixedCamPos(BaseObject * const p_pPlayerPlane) const;
     void SetCamera();
 };

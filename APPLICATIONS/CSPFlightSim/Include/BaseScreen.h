@@ -9,6 +9,12 @@
 // class must support a OnRender() function
 // that knows how to draw the screen.
 
+
+/**
+ * class BaseScreen - Describe me!
+ *
+ * @author unknown
+ */
 class BaseScreen
 {
 public:

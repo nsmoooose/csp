@@ -6,7 +6,7 @@ extern int g_ScreenWidth;
 extern int g_ScreenHeight;
 extern BaseObject * g_pPlayerObject;
 
-bool DirVectorCullCallback::cull( osg::NodeVisitor *visitor, osg::Drawable *drawable,class osg::State *) const
+bool DirVectorCullCallback::cull( osg::NodeVisitor *visitor, osg::Drawable *drawable, osg::State *state) const
 {
 	CSP_LOG(CSP_APP, CSP_DEBUG, "DirVectorCullCallback::cull" );
 	return true;
@@ -58,7 +58,7 @@ const char*  DirVectorDrawable::className() const
 }
 
 
-const bool DirVectorDrawable::computeBound() const
+bool DirVectorDrawable::computeBound() const
 {
 	_bbox._min.x() = -25;
 	_bbox._min.y() = -25;
@@ -70,7 +70,7 @@ const bool DirVectorDrawable::computeBound() const
     return true;
 }
 
-void DirVectorDrawable::drawImmediateMode(osg::State& state)
+void DirVectorDrawable::drawImplementation(osg::State& state) const
 {
 
 	return;

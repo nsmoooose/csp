@@ -5,6 +5,12 @@
 class BaseObject;
 class Message;
 
+
+/**
+ * class InstantActionController - Describe me!
+ *
+ * @author unknown
+ */
 class InstantActionController : public BaseController
 {
  public:

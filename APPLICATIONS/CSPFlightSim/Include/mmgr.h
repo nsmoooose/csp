@@ -44,7 +44,10 @@
 // Types
 // ---------------------------------------------------------------------------------------------------------------------------------
 
-typedef	struct csp_tag_au
+/**
+ * struct demeter_tag_au
+ */
+typedef	struct demeter_tag_au
 {
 	size_t		actualSize;
 	size_t		reportedSize;
@@ -57,10 +60,13 @@ typedef	struct csp_tag_au
 	bool		breakOnDealloc;
 	bool		breakOnRealloc;
 	unsigned int	allocationNumber;
-	struct csp_tag_au	*next;
-	struct csp_tag_au	*prev;
-} csp_sAllocUnit;
+	struct demeter_tag_au	*next;
+	struct demeter_tag_au	*prev;
+} demeter_sAllocUnit;
 
+/**
+ * struct demeter_sMStats
+ */
 typedef	struct
 {
 	unsigned int	totalReportedMemory;
@@ -72,21 +78,21 @@ typedef	struct
 	unsigned int	accumulatedAllocUnitCount;
 	unsigned int	totalAllocUnitCount;
 	unsigned int	peakAllocUnitCount;
-} csp_sMStats;
+} demeter_sMStats;
 
 // ---------------------------------------------------------------------------------------------------------------------------------
 // External constants
 // ---------------------------------------------------------------------------------------------------------------------------------
 
-extern	const	unsigned int	csp_m_alloc_unknown;
-extern	const	unsigned int	csp_m_alloc_new;
-extern	const	unsigned int	csp_m_alloc_new_array;
-extern	const	unsigned int	csp_m_alloc_malloc;
-extern	const	unsigned int	csp_m_alloc_calloc;
-extern	const	unsigned int	csp_m_alloc_realloc;
-extern	const	unsigned int	csp_m_alloc_delete;
-extern	const	unsigned int	csp_m_alloc_delete_array;
-extern	const	unsigned int	csp_m_alloc_free;
+extern	const	unsigned int	demeter_m_alloc_unknown;
+extern	const	unsigned int	demeter_m_alloc_new;
+extern	const	unsigned int	demeter_m_alloc_new_array;
+extern	const	unsigned int	demeter_m_alloc_malloc;
+extern	const	unsigned int	demeter_m_alloc_calloc;
+extern	const	unsigned int	demeter_m_alloc_realloc;
+extern	const	unsigned int	demeter_m_alloc_delete;
+extern	const	unsigned int	demeter_m_alloc_delete_array;
+extern	const	unsigned int	demeter_m_alloc_free;
 
 // ---------------------------------------------------------------------------------------------------------------------------------
 // Used by the macros
@@ -98,8 +104,8 @@ void		m_setOwner(const char *file, const unsigned int line, const char *func);
 // Allocation breakpoints
 // ---------------------------------------------------------------------------------------------------------------------------------
 
-bool		&csp_m_breakOnRealloc(void *reportedAddress);
-bool		&csp_m_breakOnDealloc(void *reportedAddress);
+bool		&demeter_m_breakOnRealloc(void *reportedAddress);
+bool		&demeter_m_breakOnDealloc(void *reportedAddress);
 
 // ---------------------------------------------------------------------------------------------------------------------------------
 // The meat of the memory tracking software
@@ -116,24 +122,24 @@ void		m_deallocator(const char *sourceFile, const unsigned int sourceLine, const
 // Utilitarian functions
 // ---------------------------------------------------------------------------------------------------------------------------------
 
-bool		csp_m_validateAddress(const void *reportedAddress);
-bool		csp_m_validateAllocUnit(const csp_sAllocUnit *allocUnit);
-bool		csp_m_validateAllAllocUnits();
+bool		demeter_m_validateAddress(const void *reportedAddress);
+bool		demeter_m_validateAllocUnit(const demeter_sAllocUnit *allocUnit);
+bool		demeter_m_validateAllAllocUnits();
 
 // ---------------------------------------------------------------------------------------------------------------------------------
 // Unused RAM calculations
 // ---------------------------------------------------------------------------------------------------------------------------------
 
-unsigned int	m_calcUnused(const csp_sAllocUnit *allocUnit);
-unsigned int	csp_m_calcAllUnused();
+unsigned int	m_calcUnused(const demeter_sAllocUnit *allocUnit);
+unsigned int	demeter_m_calcAllUnused();
 
 // ---------------------------------------------------------------------------------------------------------------------------------
 // Logging and reporting
 // ---------------------------------------------------------------------------------------------------------------------------------
 
-void		m_dumpAllocUnit(const csp_sAllocUnit *allocUnit, const char *prefix = "");
-void		csp_m_dumpMemoryReport(const char *filename = "memreport.log", const bool overwrite = true);
-csp_sMStats		csp_m_getMemoryStatistics();
+void		m_dumpAllocUnit(const demeter_sAllocUnit *allocUnit, const char *prefix = "");
+void		demeter_m_dumpMemoryReport(const char *filename = "memreport.log", const bool overwrite = true);
+demeter_sMStats		demeter_m_getMemoryStatistics();
 
 // ---------------------------------------------------------------------------------------------------------------------------------
 // Variations of global operators new & delete
@@ -155,10 +161,10 @@ void	operator delete[](void *reportedAddress);
 #include "nommgr.h"
 #define	new		(m_setOwner  (__FILE__,__LINE__,__FUNCTION__),false) ? NULL : new
 #define	delete		(m_setOwner  (__FILE__,__LINE__,__FUNCTION__),false) ? m_setOwner("",0,"") : delete
-#define	malloc(sz)	m_allocator  (__FILE__,__LINE__,__FUNCTION__,csp_m_alloc_malloc,sz)
-#define	calloc(sz)	m_allocator  (__FILE__,__LINE__,__FUNCTION__,csp_m_alloc_calloc,sz)
-#define	realloc(ptr,sz)	m_reallocator(__FILE__,__LINE__,__FUNCTION__,csp_m_alloc_realloc,sz,ptr)
-#define	free(ptr)	m_deallocator(__FILE__,__LINE__,__FUNCTION__,csp_m_alloc_free,ptr)
+#define	malloc(sz)	m_allocator  (__FILE__,__LINE__,__FUNCTION__,demeter_m_alloc_malloc,sz)
+#define	calloc(sz)	m_allocator  (__FILE__,__LINE__,__FUNCTION__,demeter_m_alloc_calloc,sz)
+#define	realloc(ptr,sz)	m_reallocator(__FILE__,__LINE__,__FUNCTION__,demeter_m_alloc_realloc,sz,ptr)
+#define	free(ptr)	m_deallocator(__FILE__,__LINE__,__FUNCTION__,demeter_m_alloc_free,ptr)
 
 // ---------------------------------------------------------------------------------------------------------------------------------
 // mmgr.h - End of file

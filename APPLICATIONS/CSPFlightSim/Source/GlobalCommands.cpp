@@ -1,5 +1,10 @@
 #include "stdinc.h"
 
+#ifdef _WIN32
+#include <typeinfo.h>
+#endif
+#include <typeinfo>
+
 #include "global.h"
 #include "GlobalCommands.h"
 #include "VirtualBattlefield.h"
@@ -34,11 +39,11 @@ string ProcessCommandString(string & str)
     if (str.length() > 0)
     {
 
-        ConvertStringToUpper(str);
         StringTokenizer args(str);
         if (args.size() >= 1)
         {
             string commandString = args[0];
+	    ConvertStringToUpper(commandString);
             args.pop_front();
 
             if (commandString == "ADD")
@@ -87,37 +92,30 @@ string ProcessCommandString(string & str)
 
 }
 
-string RunCommand(deque<string> & args)
+std::string RunCommand(deque<string> & args)
 {
     CSP_LOG(CSP_APP, CSP_DEBUG, "RunCommand " );
 
     char buff[255];
+
     // open file
- 
-	// RUN Scriptfile.
-
-    char scriptsDir[256];
-	char fullScriptsName[256];
-
-	// Get Image Directory from config file.
-	Config.GetString(scriptsDir, "ScriptsDirectory");
-
-	// Add the logo screen to the image directory
-	if (scriptsDir[strlen(scriptsDir)] == '\\')
-		sprintf(fullScriptsName, "%s%s", scriptsDir, args[0].c_str());
-	else
-		sprintf(fullScriptsName, "%s\\%s", scriptsDir, args[0].c_str() );
-
-
-    ifstream file(fullScriptsName);
+    ifstream file(args[0].c_str());
     if (!file)
     {
         return "Unable to find script file " + args[0];
     }
+
+	// RUN Scriptfile.
     while (!file.eof() )
     {
         file.getline(buff, 255);
-        ProcessCommandString(string(buff) );
+		std::string sbuff = std::string(buff);
+	string s = sbuff;
+	if (s[s.size()-1] == '\r') {
+		s.erase(s.size()-1, s.size());
+	}
+        //ProcessCommandString(sbuff);
+        ProcessCommandString(s);
     }
 
     file.close();
@@ -131,6 +129,7 @@ string AddCommand( deque<string> & args)
     CSP_LOG(CSP_APP, CSP_DEBUG, "AddCommand " );
 
     string varString = args[0];
+    ConvertStringToUpper(varString);
     // ADD OBJECT type_identifier identifer 
     if (varString == "OBJECT")
     {
@@ -157,8 +156,11 @@ string AddCommand( deque<string> & args)
 					{
 						g_pPlayerObject = pObject;
 
-						g_pPlayerInput = new AirplaneInput;
-						g_pPlayerInput->SetObject(g_pPlayerObject);
+                        g_pPlayerInput = new AirplaneInput;
+	                    g_pPlayerInput->SetObject(g_pPlayerObject);
+
+						// maybe this has to be moved elsewhere
+						g_pPlayerObject->initialize();
 					}
 
 				}
@@ -246,6 +248,7 @@ string DeleteCommand(deque<string> & args)
 {
     CSP_LOG(CSP_APP, CSP_DEBUG, "DeleteCommand  ");
     string varString = args[0];
+    ConvertStringToUpper(varString);
 	// DELETE OBJECT NAME
     if (varString == "OBJECT")
     {
@@ -307,13 +310,16 @@ string GetCommand(deque<string> & args)
 	}
 
 	// handle system variables
-	else if (identifier == "SIM_TIME" )
-	{
-		char buffer[32];
-		float simTime = g_pSimTime->getSimTime();
-	    sprintf(buffer, "SimTime %.3f]", simTime);
+	else {
+    		ConvertStringToUpper(identifier);
+		if (identifier == "SIM_TIME" )
+		{
+			char buffer[32];
+			float simTime = g_pSimTime->getSimTime();
+		    sprintf(buffer, "SimTime %.3f]", simTime);
 	
-		return buffer;
+			return buffer;
+		}
 	}
 
    	return "Unknown Add command " + identifier;
@@ -337,6 +343,7 @@ string SetCommand(deque<string> & args)
 
 	// Handle system variables below
 
+    ConvertStringToUpper(identifier);
     // set wireframe on|off
     if (identifier == "WIREFRAME")
     {
@@ -346,6 +353,7 @@ string SetCommand(deque<string> & args)
         }
 
         string argString = args[1];
+        ConvertStringToUpper(argString);
         if (argString == "ON")
         {
             g_pBattlefield->setWireframeMode(true);
@@ -365,7 +373,7 @@ string SetCommand(deque<string> & args)
         }
 
         string argString = args[1];
-
+        ConvertStringToUpper(argString);
          if (argString == "ON")
          {
             g_pBattlefield->setFogMode(true);

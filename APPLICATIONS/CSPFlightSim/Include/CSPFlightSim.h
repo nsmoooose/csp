@@ -9,6 +9,12 @@
 
 class ofstream;
 
+
+/**
+ * class CSPFlightSim - Describe me!
+ *
+ * @author unknown
+ */
 class CSPFlightSim
 {
 
@@ -90,6 +96,7 @@ private:
  #include <AL/alu.h>
  #include <AL/altypes.h>
 #endif
+
 
 class SimpleFlightApp : public BaseApp
 {

@@ -3,6 +3,12 @@
 
 #include "BaseSymbol.h"
 
+
+/**
+ * class ObjectTypeSymbol
+ *
+ * @author unknown
+ */
 class ObjectTypeSymbol : public BaseSymbol
 {
 public:

@@ -5,8 +5,13 @@
 #include <TankObject.h>
 #include <AirplaneObject.h>
 #include <osg/ref_ptr>
-#include <osg/node>
+#include <osg/Node>
 
+/**
+ * class ObjectType
+ *
+ * @author unknown
+ */
 struct ObjectType
 {
 	ObjectType() 
@@ -29,6 +34,11 @@ struct ObjectType
 };
 
 
+/**
+ * class ObjectFactory
+ *
+ * @author unknown
+ */
 class ObjectFactory
 {
  public:

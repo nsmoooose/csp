@@ -5,8 +5,8 @@
 #include <osg/StateSet>
 #include <osg/GeoSet>
 #include <osg/Material>
-#include <osg/Transparency>
-#include <osg/Transform>
+#include <osg/BlendFunc>
+#include <osg/MatrixTransform>
 #include <osg/PolygonMode>
 #include <osg/Depth>
 #include <osg/Notify>
@@ -16,6 +16,12 @@
 #include <osgDB/FileUtils>
 #include <osgUtil/SceneView>
 
+
+/**
+ * class VirtualBattlefieldScene
+ *
+ * @author unknown
+ */
 class VirtualBattlefieldScene
 {
 	public:
@@ -33,7 +39,7 @@ class VirtualBattlefieldScene
 	osg::Group * m_pRootNode;
 
 	osg::Node * m_pPlaneNode;
-	osg::Transform * m_pPlaneTransform;
+	osg::MatrixTransform * m_pPlaneTransform;
 };
 
 #endif

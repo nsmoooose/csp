@@ -1,5 +1,10 @@
 #include "stdinc.h"
 
+#ifdef _WIN32
+#include <typeinfo.h>
+#endif
+#include <typeinfo>
+
 #include "BaseSymbol.h"
 
 BaseSymbol::BaseSymbol()

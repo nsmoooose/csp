@@ -372,7 +372,7 @@ StandardQuaternion StandardQuaternion::SlerpExtraSpins (double fT,
         return rkP;
 
     double fSin = sin(fAngle);
-    double fPhase = PI*iExtraSpins*fT;
+    double fPhase = pi*iExtraSpins*fT;
     double fInvSin = 1.0f/fSin;
     double fCoeff0 = sin((1.0f-fT)*fAngle - fPhase)*fInvSin;
     double fCoeff1 = sin(fT*fAngle + fPhase)*fInvSin;
@@ -462,7 +462,7 @@ StandardVector3	StandardQuaternion::MakeEulerAnglesFromQ(StandardQuaternion q)
 		r13 = 2 * (q.x*q.z + q.w*q.y);
 
 		u.x = RadiansToDegrees(0.0f); //roll
-		u.y = RadiansToDegrees((double) (-(PI/2) * r31/tmp)); // pitch
+		u.y = RadiansToDegrees((double) (-(pi/2) * r31/tmp)); // pitch
 		u.z = RadiansToDegrees((double) atan2(-r12, -r31*r13)); // yaw
 		return u;
 	}

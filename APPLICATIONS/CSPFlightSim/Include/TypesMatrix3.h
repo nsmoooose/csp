@@ -27,10 +27,11 @@ class StandardVector3;
 // where t > 0 indicates a counterclockwise rotation in the xy-plane.
 
 
-/** \class StandardMatrix3
+/** 
+ * class StandardMatrix3
+ *
+ * @author Wolverine
  */
-
-
 class StandardMatrix3
 {
 public:

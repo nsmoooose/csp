@@ -3,7 +3,7 @@
 
 #include <osg/Geode>
 #include <osg/Geometry>
-#include <osg/Texture>
+#include <osg/Texture2D>
 #include <osg/TexEnv>
 #include <osg/Depth>
 #include <osg/StateSet>
@@ -38,7 +38,7 @@ Node *makeBase( void )
         c++;
     }
 
-    Geometry *geom = new Geometry;
+    Geometry *geom = osgNew Geometry;
 
     geom->setVertexArray( coords );
 
@@ -47,22 +47,22 @@ Node *makeBase( void )
     geom->setColorArray( colors );
     geom->setColorBinding( Geometry::BIND_OVERALL );
 
-    geom->addPrimitive( new DrawArrays(Primitive::TRIANGLE_FAN,0,19) );
+    geom->addPrimitiveSet( new DrawArrays(PrimitiveSet::TRIANGLE_FAN,0,19) );
 
-    Texture *tex = new Texture;
+    Texture2D *tex = new Texture2D;
 
-    tex->setImage(osgDB::readImageFile("water.rgb"));
+    tex->setImage(osgDB::readImageFile("Images/water.rgb"));
     tex->setWrap( Texture::WRAP_S, Texture::REPEAT );
     tex->setWrap( Texture::WRAP_T, Texture::REPEAT );
 
     StateSet *dstate = new StateSet;
     dstate->setMode( GL_LIGHTING, StateAttribute::OFF );
-    dstate->setAttributeAndModes( tex, StateAttribute::ON );
+    dstate->setTextureAttributeAndModes( 0, tex, StateAttribute::ON );
 
-    dstate->setAttribute( new TexEnv );
+    dstate->setTextureAttributeAndModes( 0, new TexEnv );
 
     // clear the depth to the far plane.
-    osg::Depth* depth = new osg::Depth;
+    osg::Depth* depth = osgNew osg::Depth;
     depth->setFunction(osg::Depth::ALWAYS);
     depth->setRange(1.0,1.0);   
     dstate->setAttributeAndModes(depth,StateAttribute::ON );
@@ -72,7 +72,7 @@ Node *makeBase( void )
 
     geom->setStateSet( dstate );
 
-    Geode *geode = new Geode;
+    Geode *geode = osgNew Geode;
     geode->addDrawable( geom );
 
     geode->setName( "Base" );

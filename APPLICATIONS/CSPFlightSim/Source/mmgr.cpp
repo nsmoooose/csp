@@ -71,6 +71,8 @@
 //
 // ---------------------------------------------------------------------------------------------------------------------------------
 
+#ifdef DEMETER_MEMORYMANAGER
+
 
 //#include "stdafx.h"
 #include <new>
@@ -128,7 +130,7 @@
 // cluttered and hard to read.
 // ---------------------------------------------------------------------------------------------------------------------------------
 
-//#define	TEST_MEMORY_MANAGER
+#define	TEST_MEMORY_MANAGER
 
 // ---------------------------------------------------------------------------------------------------------------------------------
 // -DOC- Enable this sucker if you really want to stress-test your app's memory usage, or to help find hard-to-find bugs
@@ -174,10 +176,9 @@ static	const	unsigned int	paddingSize            = 4;
 
 #ifdef	WIN32
 	#ifdef	_DEBUG
-//	#define	m_assert(x) if ((x) == false) __asm { int 3 }
-#define	csp_m_assert(x) {} 
+	#define	m_assert(x) if ((x) == false) __asm { int 3 }
 	#else
-	#define	csp_m_assert(x) {}
+	#define	m_assert(x) {}
 	#endif
 #elif defined(__BEOS__)
 	#ifdef DEBUG
@@ -206,15 +207,15 @@ static	const	unsigned int	paddingSize            = 4;
 // Defaults for the constants & statics in the MemoryManager class
 // ---------------------------------------------------------------------------------------------------------------------------------
 
-const		unsigned int	csp_m_alloc_unknown        = 0;
-const		unsigned int	csp_m_alloc_new            = 1;
-const		unsigned int	csp_m_alloc_new_array      = 2;
-const		unsigned int	csp_m_alloc_malloc         = 3;
-const		unsigned int	csp_m_alloc_calloc         = 4;
-const		unsigned int	csp_m_alloc_realloc        = 5;
-const		unsigned int	csp_m_alloc_delete         = 6;
-const		unsigned int	csp_m_alloc_delete_array   = 7;
-const		unsigned int	csp_m_alloc_free           = 8;
+const		unsigned int	demeter_m_alloc_unknown        = 0;
+const		unsigned int	demeter_m_alloc_new            = 1;
+const		unsigned int	demeter_m_alloc_new_array      = 2;
+const		unsigned int	demeter_m_alloc_malloc         = 3;
+const		unsigned int	demeter_m_alloc_calloc         = 4;
+const		unsigned int	demeter_m_alloc_realloc        = 5;
+const		unsigned int	demeter_m_alloc_delete         = 6;
+const		unsigned int	demeter_m_alloc_delete_array   = 7;
+const		unsigned int	demeter_m_alloc_free           = 8;
 
 // ---------------------------------------------------------------------------------------------------------------------------------
 // -DOC- Get to know these values. They represent the values that will be used to fill unused and deallocated RAM.
@@ -233,19 +234,19 @@ static	const	unsigned int	hashSize               = 1 << hashBits;
 static	const	char		*allocationTypes[]     = {"Unknown",
 							  "new",     "new[]",  "malloc",   "calloc",
 							  "realloc", "delete", "delete[]", "free"};
-static		csp_sAllocUnit	*hashTable[hashSize];
-static		csp_sAllocUnit	*reservoir;
+static		demeter_sAllocUnit	*hashTable[hashSize];
+static		demeter_sAllocUnit	*reservoir;
 static		unsigned int	currentAllocationCount = 0;
 static		unsigned int	breakOnAllocationCount = 0;
-static		csp_sMStats		stats;
+static		demeter_sMStats		stats;
 static	const	char		*sourceFile            = "??";
 static	const	char		*sourceFunc            = "??";
 static		unsigned int	sourceLine             = 0;
 static		bool		staticDeinitTime       = false;
-static		csp_sAllocUnit	**reservoirBuffer      = NULL;
+static		demeter_sAllocUnit	**reservoirBuffer      = NULL;
 static		unsigned int	reservoirBufferSize    = 0;
-static const	char		*memoryLogFile         = "csp_memory.log";
-static const	char		*memoryLeakLogFile     = "csp_memleaks.log";
+static const	char		*memoryLogFile         = "demeter_memory.log";
+static const	char		*memoryLeakLogFile     = "demeter_memleaks.log";
 static		void		doCleanupLogOnFirstRun();
 
 // ---------------------------------------------------------------------------------------------------------------------------------
@@ -272,7 +273,7 @@ static	void	log(const char *format, ...)
 
 	// If you hit this assert, then the memory logger is unable to log information to a file (can't open the file for some
 	// reason.) You can interrogate the variable 'buffer' to see what was supposed to be logged (but won't be.)
-	csp_m_assert(fp);
+	m_assert(fp);
 
 	if (!fp) return;
 
@@ -386,17 +387,17 @@ static	const char	*memorySizeString(unsigned long size)
 
 // ---------------------------------------------------------------------------------------------------------------------------------
 
-static	csp_sAllocUnit	*findAllocUnit(const void *reportedAddress)
+static	demeter_sAllocUnit	*findAllocUnit(const void *reportedAddress)
 {
 	// Just in case...
-	csp_m_assert(reportedAddress != NULL);
+	m_assert(reportedAddress != NULL);
 
 	// Use the address to locate the hash index. Note that we shift off the lower four bits. This is because most allocated
 	// addresses will be on four-, eight- or even sixteen-byte boundaries. If we didn't do this, the hash index would not have
 	// very good coverage.
 
 	unsigned int	hashIndex = (reinterpret_cast<unsigned int>(const_cast<void *>(reportedAddress)) >> 4) & (hashSize - 1);
-	csp_sAllocUnit	*ptr = hashTable[hashIndex];
+	demeter_sAllocUnit	*ptr = hashTable[hashIndex];
 	while(ptr)
 	{
 		if (ptr->reportedAddress == reportedAddress) return ptr;
@@ -443,7 +444,7 @@ static	void	*calculateReportedAddress(const void *actualAddress)
 
 // ---------------------------------------------------------------------------------------------------------------------------------
 
-static	void	wipeWithPattern(csp_sAllocUnit *allocUnit, unsigned long pattern, const unsigned int originalReportedSize = 0)
+static	void	wipeWithPattern(demeter_sAllocUnit *allocUnit, unsigned long pattern, const unsigned int originalReportedSize = 0)
 {
 	// For a serious test run, we use wipes of random a random value. However, if this causes a crash, we don't want it to
 	// crash in a differnt place each time, so we specifically DO NOT call srand. If, by chance your program calls srand(),
@@ -508,7 +509,7 @@ static	void	dumpAllocations(FILE *fp)
 
 	for (unsigned int i = 0; i < hashSize; i++)
 	{
-		csp_sAllocUnit *ptr = hashTable[i];
+		demeter_sAllocUnit *ptr = hashTable[i];
 		while(ptr)
 		{
 			fprintf(fp, "%06d 0x%08X 0x%08X 0x%08X 0x%08X 0x%08X %-8s    %c       %c    %s\r\n",
@@ -535,7 +536,7 @@ static	void	dumpLeakReport()
 
 	// If you hit this assert, then the memory report generator is unable to log information to a file (can't open the file for
 	// some reason.)
-	csp_m_assert(fp);
+	m_assert(fp);
 	if (!fp) return;
 
 	// Any leaks?
@@ -638,17 +639,17 @@ bool	&m_breakOnRealloc(void *reportedAddress)
 {
 	// Locate the existing allocation unit
 
-	csp_sAllocUnit	*au = findAllocUnit(reportedAddress);
+	demeter_sAllocUnit	*au = findAllocUnit(reportedAddress);
 
 	// If you hit this assert, you tried to set a breakpoint on reallocation for an address that doesn't exist. Interrogate the
 	// stack frame or the variable 'au' to see which allocation this is.
-	csp_m_assert(au != NULL);
+	m_assert(au != NULL);
 
 	// If you hit this assert, you tried to set a breakpoint on reallocation for an address that wasn't allocated in a way that
 	// is compatible with reallocation.
-	csp_m_assert(au->allocationType == csp_m_alloc_malloc ||
-		 au->allocationType == csp_m_alloc_calloc ||
-		 au->allocationType == csp_m_alloc_realloc);
+	m_assert(au->allocationType == demeter_m_alloc_malloc ||
+		 au->allocationType == demeter_m_alloc_calloc ||
+		 au->allocationType == demeter_m_alloc_realloc);
 
 	return au->breakOnRealloc;
 }
@@ -662,11 +663,11 @@ bool	&m_breakOnDealloc(void *reportedAddress)
 {
 	// Locate the existing allocation unit
 
-	csp_sAllocUnit	*au = findAllocUnit(reportedAddress);
+	demeter_sAllocUnit	*au = findAllocUnit(reportedAddress);
 
 	// If you hit this assert, you tried to set a breakpoint on deallocation for an address that doesn't exist. Interrogate the
 	// stack frame or the variable 'au' to see which allocation this is.
-	csp_m_assert(au != NULL);
+	m_assert(au != NULL);
 
 	return au->breakOnDealloc;
 }
@@ -778,7 +779,7 @@ void	*operator new(size_t reportedSize)
 	{
 		// Try the allocation
 
-		void	*ptr = m_allocator(file, line, func, csp_m_alloc_new, reportedSize);
+		void	*ptr = m_allocator(file, line, func, demeter_m_alloc_new, reportedSize);
 		if (ptr)
 		{
 			#ifdef TEST_MEMORY_MANAGER
@@ -836,7 +837,7 @@ void	*operator new[](size_t reportedSize)
 	{
 		// Try the allocation
 
-		void	*ptr = m_allocator(file, line, func, csp_m_alloc_new_array, reportedSize);
+		void	*ptr = m_allocator(file, line, func, demeter_m_alloc_new_array, reportedSize);
 		if (ptr)
 		{
 			#ifdef TEST_MEMORY_MANAGER
@@ -894,7 +895,7 @@ void	*operator new(size_t reportedSize, const char *sourceFile, int sourceLine)
 	{
 		// Try the allocation
 
-		void	*ptr = m_allocator(sourceFile, sourceLine, "??", csp_m_alloc_new, reportedSize);
+		void	*ptr = m_allocator(sourceFile, sourceLine, "??", demeter_m_alloc_new, reportedSize);
 		if (ptr)
 		{
 			#ifdef TEST_MEMORY_MANAGER
@@ -946,7 +947,7 @@ void	*operator new[](size_t reportedSize, const char *sourceFile, int sourceLine
 	{
 		// Try the allocation
 
-		void	*ptr = m_allocator(sourceFile, sourceLine, "??", csp_m_alloc_new_array, reportedSize);
+		void	*ptr = m_allocator(sourceFile, sourceLine, "??", demeter_m_alloc_new_array, reportedSize);
 		if (ptr)
 		{
 			#ifdef TEST_MEMORY_MANAGER
@@ -995,8 +996,8 @@ void	operator delete(void *reportedAddress)
 
 	// ANSI says: delete & delete[] allow NULL pointers (they do nothing)
 
-	if (reportedAddress) m_deallocator(sourceFile, sourceLine, sourceFunc, csp_m_alloc_delete, reportedAddress);
-	else if (alwaysLogAll) log("[-] ----- %8s of NULL                      by %s", allocationTypes[csp_m_alloc_delete], ownerString(sourceFile, sourceLine, sourceFunc));
+	if (reportedAddress) m_deallocator(sourceFile, sourceLine, sourceFunc, demeter_m_alloc_delete, reportedAddress);
+	else if (alwaysLogAll) log("[-] ----- %8s of NULL                      by %s", allocationTypes[demeter_m_alloc_delete], ownerString(sourceFile, sourceLine, sourceFunc));
 
 	// Resetting the globals insures that if at some later time, somebody calls our memory manager from an unknown
 	// source (i.e. they didn't include our H file) then we won't think it was the last allocation.
@@ -1018,9 +1019,9 @@ void	operator delete[](void *reportedAddress)
 
 	// ANSI says: delete & delete[] allow NULL pointers (they do nothing)
 
-	if (reportedAddress) m_deallocator(sourceFile, sourceLine, sourceFunc, csp_m_alloc_delete_array, reportedAddress);
+	if (reportedAddress) m_deallocator(sourceFile, sourceLine, sourceFunc, demeter_m_alloc_delete_array, reportedAddress);
 	else if (alwaysLogAll)
-		log("[-] ----- %8s of NULL                      by %s", allocationTypes[csp_m_alloc_delete_array], ownerString(sourceFile, sourceLine, sourceFunc));
+		log("[-] ----- %8s of NULL                      by %s", allocationTypes[demeter_m_alloc_delete_array], ownerString(sourceFile, sourceLine, sourceFunc));
 
 	// Resetting the globals insures that if at some later time, somebody calls our memory manager from an unknown
 	// source (i.e. they didn't include our H file) then we won't think it was the last allocation.
@@ -1053,7 +1054,7 @@ void	*m_allocator(const char *sourceFile, const unsigned int sourceLine, const c
 		if (alwaysLogAll) log("[+] %05d %8s of size 0x%08X(%08d) by %s", currentAllocationCount, allocationTypes[allocationType], reportedSize, reportedSize, ownerString(sourceFile, sourceLine, sourceFunc));
 
 		// If you hit this assert, you requested a breakpoint on a specific allocation count
-		csp_m_assert(currentAllocationCount != breakOnAllocationCount);
+		m_assert(currentAllocationCount != breakOnAllocationCount);
 
 		// If necessary, grow the reservoir of unused allocation units
 
@@ -1061,11 +1062,11 @@ void	*m_allocator(const char *sourceFile, const unsigned int sourceLine, const c
 		{
 			// Allocate 256 reservoir elements
 
-			reservoir = (csp_sAllocUnit *) malloc(sizeof(csp_sAllocUnit) * 256);
+			reservoir = (demeter_sAllocUnit *) malloc(sizeof(demeter_sAllocUnit) * 256);
 
 			// If you hit this assert, then the memory manager failed to allocate internal memory for tracking the
 			// allocations
-			csp_m_assert(reservoir != NULL);
+			m_assert(reservoir != NULL);
 
 			// Danger Will Robinson!
 
@@ -1073,7 +1074,7 @@ void	*m_allocator(const char *sourceFile, const unsigned int sourceLine, const c
 
 			// Build a linked-list of the elements in our reservoir
 
-			memset(reservoir, 0, sizeof(csp_sAllocUnit) * 256);
+			memset(reservoir, 0, sizeof(demeter_sAllocUnit) * 256);
 			for (unsigned int i = 0; i < 256 - 1; i++)
 			{
 				reservoir[i].next = &reservoir[i+1];
@@ -1081,8 +1082,8 @@ void	*m_allocator(const char *sourceFile, const unsigned int sourceLine, const c
 
 			// Add this address to our reservoirBuffer so we can free it later
 
-			csp_sAllocUnit	**temp = (csp_sAllocUnit **) realloc(reservoirBuffer, (reservoirBufferSize + 1) * sizeof(csp_sAllocUnit *));
-			csp_m_assert(temp);
+			demeter_sAllocUnit	**temp = (demeter_sAllocUnit **) realloc(reservoirBuffer, (reservoirBufferSize + 1) * sizeof(demeter_sAllocUnit *));
+			m_assert(temp);
 			if (temp)
 			{
 				reservoirBuffer = temp;
@@ -1091,16 +1092,16 @@ void	*m_allocator(const char *sourceFile, const unsigned int sourceLine, const c
 		}
 
 		// Logical flow says this should never happen...
-		csp_m_assert(reservoir != NULL);
+		m_assert(reservoir != NULL);
 
 		// Grab a new allocaton unit from the front of the reservoir
 
-		csp_sAllocUnit	*au = reservoir;
+		demeter_sAllocUnit	*au = reservoir;
 		reservoir = au->next;
 
 		// Populate it with some real data
 
-		memset(au, 0, sizeof(csp_sAllocUnit));
+		memset(au, 0, sizeof(demeter_sAllocUnit));
 		au->actualSize        = calculateActualSize(reportedSize);
 		#ifdef RANDOM_FAILURE
 		double	a = rand();
@@ -1132,7 +1133,7 @@ void	*m_allocator(const char *sourceFile, const unsigned int sourceLine, const c
 		#ifndef RANDOM_FAILURE
 		// If you hit this assert, then the requested allocation simply failed (you're out of memory.) Interrogate the
 		// variable 'au' or the stack frame to see what you were trying to do.
-		csp_m_assert(au->actualAddress != NULL);
+		m_assert(au->actualAddress != NULL);
 		#endif
 
 		if (au->actualAddress == NULL)
@@ -1142,7 +1143,7 @@ void	*m_allocator(const char *sourceFile, const unsigned int sourceLine, const c
 
 		// If you hit this assert, then this allocation was made from a source that isn't setup to use this memory tracking
 		// software, use the stack frame to locate the source and include our H file.
-		csp_m_assert(allocationType != csp_m_alloc_unknown);
+		m_assert(allocationType != demeter_m_alloc_unknown);
 
 		// Insert the new allocation into the hash table
 
@@ -1170,14 +1171,14 @@ void	*m_allocator(const char *sourceFile, const unsigned int sourceLine, const c
 
 		// calloc() expects the reported memory address range to be filled with 0's
 
-		if (allocationType == csp_m_alloc_calloc)
+		if (allocationType == demeter_m_alloc_calloc)
 		{
 			memset(au->reportedAddress, 0, au->reportedSize);
 		}
 
 		// Validate every single allocated unit in memory
 
-		if (alwaysValidateAll) csp_m_validateAllAllocUnits();
+		if (alwaysValidateAll) demeter_m_validateAllAllocUnits();
 
 		// Log the result
 
@@ -1235,7 +1236,7 @@ void	*m_reallocator(const char *sourceFile, const unsigned int sourceLine, const
 		currentAllocationCount++;
 
 		// If you hit this assert, you requested a breakpoint on a specific allocation count
-		csp_m_assert(currentAllocationCount != breakOnAllocationCount);
+		m_assert(currentAllocationCount != breakOnAllocationCount);
 
 		// Log the request
 
@@ -1243,30 +1244,30 @@ void	*m_reallocator(const char *sourceFile, const unsigned int sourceLine, const
 
 		// Locate the existing allocation unit
 
-		csp_sAllocUnit	*au = findAllocUnit(reportedAddress);
+		demeter_sAllocUnit	*au = findAllocUnit(reportedAddress);
 
 		// If you hit this assert, you tried to reallocate RAM that wasn't allocated by this memory manager.
-		csp_m_assert(au != NULL);
+		m_assert(au != NULL);
 		if (au == NULL) throw "Request to reallocate RAM that was never allocated";
 
 		// If you hit this assert, then the allocation unit that is about to be reallocated is damaged. But you probably
 		// already know that from a previous assert you should have seen in validateAllocUnit() :)
-		csp_m_assert(csp_m_validateAllocUnit(au));
+		m_assert(demeter_m_validateAllocUnit(au));
 
 		// If you hit this assert, then this reallocation was made from a source that isn't setup to use this memory
 		// tracking software, use the stack frame to locate the source and include our H file.
-		csp_m_assert(reallocationType != csp_m_alloc_unknown);
+		m_assert(reallocationType != demeter_m_alloc_unknown);
 
 		// If you hit this assert, you were trying to reallocate RAM that was not allocated in a way that is compatible with
 		// realloc. In other words, you have a allocation/reallocation mismatch.
-		csp_m_assert(au->allocationType == csp_m_alloc_malloc ||
-			 au->allocationType == csp_m_alloc_calloc ||
-			 au->allocationType == csp_m_alloc_realloc);
+		m_assert(au->allocationType == demeter_m_alloc_malloc ||
+			 au->allocationType == demeter_m_alloc_calloc ||
+			 au->allocationType == demeter_m_alloc_realloc);
 
 		// If you hit this assert, then the "break on realloc" flag for this allocation unit is set (and will continue to be
 		// set until you specifically shut it off. Interrogate the 'au' variable to determine information about this
 		// allocation unit.
-		csp_m_assert(au->breakOnRealloc == false);
+		m_assert(au->breakOnRealloc == false);
 
 		// Keep track of the original size
 
@@ -1300,7 +1301,7 @@ void	*m_reallocator(const char *sourceFile, const unsigned int sourceLine, const
 		// If you hit this assert, then the requested allocation simply failed (you're out of memory) Interrogate the
 		// variable 'au' to see the original allocation. You can also query 'newActualSize' to see the amount of memory
 		// trying to be allocated. Finally, you can query 'reportedSize' to see how much memory was requested by the caller.
-		csp_m_assert(newActualAddress);
+		m_assert(newActualAddress);
 		#endif
 
 		if (!newActualAddress) throw "Request for reallocation failed. Out of memory.";
@@ -1372,11 +1373,11 @@ void	*m_reallocator(const char *sourceFile, const unsigned int sourceLine, const
 
 		// If you hit this assert, then something went wrong, because the allocation unit was properly validated PRIOR to
 		// the reallocation. This should not happen.
-		csp_m_assert(csp_m_validateAllocUnit(au));
+		m_assert(demeter_m_validateAllocUnit(au));
 
 		// Validate every single allocated unit in memory
 
-		if (alwaysValidateAll) csp_m_validateAllAllocUnits();
+		if (alwaysValidateAll) demeter_m_validateAllAllocUnits();
 
 		// Log the result
 
@@ -1428,32 +1429,32 @@ void	m_deallocator(const char *sourceFile, const unsigned int sourceLine, const 
 
 		// Go get the allocation unit
 
-		csp_sAllocUnit	*au = findAllocUnit(reportedAddress);
+		demeter_sAllocUnit	*au = findAllocUnit(reportedAddress);
 
 		// If you hit this assert, you tried to deallocate RAM that wasn't allocated by this memory manager.
-		csp_m_assert(au != NULL);
+		m_assert(au != NULL);
 		if (au == NULL) throw "Request to deallocate RAM that was never allocated";
 
 		// If you hit this assert, then the allocation unit that is about to be deallocated is damaged. But you probably
 		// already know that from a previous assert you should have seen in validateAllocUnit() :)
-		csp_m_assert(csp_m_validateAllocUnit(au));
+		m_assert(demeter_m_validateAllocUnit(au));
 
 		// If you hit this assert, then this deallocation was made from a source that isn't setup to use this memory
 		// tracking software, use the stack frame to locate the source and include our H file.
-		csp_m_assert(deallocationType != csp_m_alloc_unknown);
+		m_assert(deallocationType != demeter_m_alloc_unknown);
 
 		// If you hit this assert, you were trying to deallocate RAM that was not allocated in a way that is compatible with
 		// the deallocation method requested. In other words, you have a allocation/deallocation mismatch.
-		csp_m_assert((deallocationType == csp_m_alloc_delete       && au->allocationType == csp_m_alloc_new      ) ||
-			 (deallocationType == csp_m_alloc_delete_array && au->allocationType == csp_m_alloc_new_array) ||
-			 (deallocationType == csp_m_alloc_free         && au->allocationType == csp_m_alloc_malloc   ) ||
-			 (deallocationType == csp_m_alloc_free         && au->allocationType == csp_m_alloc_calloc   ) ||
-			 (deallocationType == csp_m_alloc_free         && au->allocationType == csp_m_alloc_realloc  ) ||
-			 (deallocationType == csp_m_alloc_unknown                                                ) );
+		m_assert((deallocationType == demeter_m_alloc_delete       && au->allocationType == demeter_m_alloc_new      ) ||
+			 (deallocationType == demeter_m_alloc_delete_array && au->allocationType == demeter_m_alloc_new_array) ||
+			 (deallocationType == demeter_m_alloc_free         && au->allocationType == demeter_m_alloc_malloc   ) ||
+			 (deallocationType == demeter_m_alloc_free         && au->allocationType == demeter_m_alloc_calloc   ) ||
+			 (deallocationType == demeter_m_alloc_free         && au->allocationType == demeter_m_alloc_realloc  ) ||
+			 (deallocationType == demeter_m_alloc_unknown                                                ) );
 
 		// If you hit this assert, then the "break on dealloc" flag for this allocation unit is set. Interrogate the 'au'
 		// variable to determine information about this allocation unit.
-		csp_m_assert(au->breakOnDealloc == false);
+		m_assert(au->breakOnDealloc == false);
 
 		// Wipe the deallocated RAM with a new pattern. This doen't actually do us much good in debug mode under WIN32,
 		// because Microsoft's memory debugging & tracking utilities will wipe it right after we do. Oh well.
@@ -1485,7 +1486,7 @@ void	m_deallocator(const char *sourceFile, const unsigned int sourceLine, const 
 
 		// Add this allocation unit to the front of our reservoir of unused allocation units
 
-		memset(au, 0, sizeof(csp_sAllocUnit));
+		memset(au, 0, sizeof(demeter_sAllocUnit));
 		au->next = reservoir;
 		reservoir = au;
 
@@ -1496,7 +1497,7 @@ void	m_deallocator(const char *sourceFile, const unsigned int sourceLine, const 
 
 		// Validate every single allocated unit in memory
 
-		if (alwaysValidateAll) csp_m_validateAllAllocUnits();
+		if (alwaysValidateAll) demeter_m_validateAllAllocUnits();
 
 		// If we're in the midst of static deinitialization time, track any pending memory leaks
 
@@ -1520,7 +1521,7 @@ void	m_deallocator(const char *sourceFile, const unsigned int sourceLine, const 
 // bugs.
 // ---------------------------------------------------------------------------------------------------------------------------------
 
-bool	csp_m_validateAddress(const void *reportedAddress)
+bool	demeter_m_validateAddress(const void *reportedAddress)
 {
 	// Just see if the address exists in our allocation routines
 
@@ -1529,7 +1530,7 @@ bool	csp_m_validateAddress(const void *reportedAddress)
 
 // ---------------------------------------------------------------------------------------------------------------------------------
 
-bool	csp_m_validateAllocUnit(const csp_sAllocUnit *allocUnit)
+bool	demeter_m_validateAllocUnit(const demeter_sAllocUnit *allocUnit)
 {
 	// Make sure the padding is untouched
 
@@ -1548,7 +1549,7 @@ bool	csp_m_validateAllocUnit(const csp_sAllocUnit *allocUnit)
 		// If you hit this assert, then you should know that this allocation unit has been damaged. Something (possibly the
 		// owner?) has underrun the allocation unit (modified a few bytes prior to the start). You can interrogate the
 		// variable 'allocUnit' to see statistics and information about this damaged allocation unit.
-		csp_m_assert(*pre == static_cast<long>(prefixPattern));
+		m_assert(*pre == static_cast<long>(prefixPattern));
 
 		if (*post != static_cast<long>(postfixPattern))
 		{
@@ -1560,7 +1561,7 @@ bool	csp_m_validateAllocUnit(const csp_sAllocUnit *allocUnit)
 		// If you hit this assert, then you should know that this allocation unit has been damaged. Something (possibly the
 		// owner?) has overrun the allocation unit (modified a few bytes after the end). You can interrogate the variable
 		// 'allocUnit' to see statistics and information about this damaged allocation unit.
-		csp_m_assert(*post == static_cast<long>(postfixPattern));
+		m_assert(*post == static_cast<long>(postfixPattern));
 	}
 
 	// Return the error status (we invert it, because a return of 'false' means error)
@@ -1570,7 +1571,7 @@ bool	csp_m_validateAllocUnit(const csp_sAllocUnit *allocUnit)
 
 // ---------------------------------------------------------------------------------------------------------------------------------
 
-bool	csp_m_validateAllAllocUnits()
+bool	demeter_m_validateAllAllocUnits()
 {
 	// Just go through each allocation unit in the hash table and count the ones that have errors
 
@@ -1578,11 +1579,11 @@ bool	csp_m_validateAllAllocUnits()
 	unsigned int	allocCount = 0;
 	for (unsigned int i = 0; i < hashSize; i++)
 	{
-		csp_sAllocUnit	*ptr = hashTable[i];
+		demeter_sAllocUnit	*ptr = hashTable[i];
 		while(ptr)
 		{
 			allocCount++;
-			if (!csp_m_validateAllocUnit(ptr)) errors++;
+			if (!demeter_m_validateAllocUnit(ptr)) errors++;
 			ptr = ptr->next;
 		}
 	}
@@ -1600,11 +1601,11 @@ bool	csp_m_validateAllAllocUnits()
 	// offending code. After running the application with these settings (and hitting this assert again), interrogate the
 	// memory.log file to find the previous successful operation. The corruption will have occurred between that point and this
 	// assertion.
-	csp_m_assert(allocCount == stats.totalAllocUnitCount);
+	m_assert(allocCount == stats.totalAllocUnitCount);
 
 	// If you hit this assert, then you've probably already been notified that there was a problem with a allocation unit in a
 	// prior call to validateAllocUnit(), but this assert is here just to make sure you know about it. :)
-	csp_m_assert(errors == 0);
+	m_assert(errors == 0);
 
 	// Log any errors
 
@@ -1619,7 +1620,7 @@ bool	csp_m_validateAllAllocUnits()
 // -DOC- Unused RAM calculation routines. Use these to determine how much of your RAM is unused (in bytes)
 // ---------------------------------------------------------------------------------------------------------------------------------
 
-unsigned int	m_calcUnused(const csp_sAllocUnit *allocUnit)
+unsigned int	m_calcUnused(const demeter_sAllocUnit *allocUnit)
 {
 	const unsigned long	*ptr = reinterpret_cast<const unsigned long *>(allocUnit->reportedAddress);
 	unsigned int		count = 0;
@@ -1641,7 +1642,7 @@ unsigned int	m_calcAllUnused()
 	unsigned int	total = 0;
 	for (unsigned int i = 0; i < hashSize; i++)
 	{
-		csp_sAllocUnit	*ptr = hashTable[i];
+		demeter_sAllocUnit	*ptr = hashTable[i];
 		while(ptr)
 		{
 			total += m_calcUnused(ptr);
@@ -1656,7 +1657,7 @@ unsigned int	m_calcAllUnused()
 // -DOC- The following functions are for logging and statistics reporting.
 // ---------------------------------------------------------------------------------------------------------------------------------
 
-void	m_dumpAllocUnit(const csp_sAllocUnit *allocUnit, const char *prefix)
+void	m_dumpAllocUnit(const demeter_sAllocUnit *allocUnit, const char *prefix)
 {
 	log("[I] %sAddress (reported): %010p",       prefix, allocUnit->reportedAddress);
 	log("[I] %sAddress (actual)  : %010p",       prefix, allocUnit->actualAddress);
@@ -1680,7 +1681,7 @@ void	m_dumpMemoryReport(const char *filename, const bool overwrite)
 
 	// If you hit this assert, then the memory report generator is unable to log information to a file (can't open the file for
 	// some reason.)
-	csp_m_assert(fp);
+	m_assert(fp);
 	if (!fp) return;
 
         // Header
@@ -1736,10 +1737,13 @@ void	m_dumpMemoryReport(const char *filename, const bool overwrite)
 
 // ---------------------------------------------------------------------------------------------------------------------------------
 
-csp_sMStats	m_getMemoryStatistics()
+demeter_sMStats	m_getMemoryStatistics()
 {
 	return stats;
 }
+
+#endif
+
 
 // ---------------------------------------------------------------------------------------------------------------------------------
 // mmgr.cpp - End of file

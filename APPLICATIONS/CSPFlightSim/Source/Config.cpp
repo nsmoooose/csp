@@ -37,8 +37,7 @@ CConfig::CConfig()
 
 void CConfig::ReadConfigFile(const char* cFilename)
 {
-	CSP_LOG(CSP_TERRAIN, CSP_TRACE, 
-		"CConfig::ReadConfigFile()" << cFilename );
+	CSP_LOG(CSP_TERRAIN, CSP_TRACE, "CConfig::ReadConfigFile()" << cFilename );
 
 	const int	iMaxFileLen			= 10240;		// cfg-file's size limited to 10kb
 	char		sConfigData[10240+1]; 
@@ -84,20 +83,30 @@ void CConfig::ReadConfigFile(const char* cFilename)
 			if (!strcmp(cParamName, "EOF"))	return;		// End of File reached?
 			// ok, new parameter found, extract value
 			k = 0;
-			i += 2;									// skip the CR + LF bytes
-			while (sConfigData[i]!='\n')			// read the value, terminated by a LF
+
+			i++;  // skip '>'
+			while (strchr(" \t\n\r", sConfigData[i])) {
+				i++;
+			}
+
+			while (!strchr("\r\n", sConfigData[i]))			// read the value, terminated by a LF
 			{
 				cParamValue[k] = sConfigData[i];
 				i++;
 				k++;
 			}
 			cParamValue[k] = 0;						// terminate the string with 0x00
+			while (strchr(" \t\n\r", sConfigData[i])) {
+				i++;
+			}
+
 			// store data in map
 			string sName = cParamName;
 			string sValue = cParamValue;
 			m_oConfigData.insert(ConfigData::value_type(sName, sValue));
+		} else {
+			i++;
 		}
-		i++;
 	};
 }
 

@@ -2,14 +2,8 @@
 #include <windows.h>
 #endif
 
-#include "GL\GL.h"
-
 #include <GL/gl.h>			// Header File For The OpenGL32 Library
 #include <GL/glu.h>			// Header File For The GLu32 Library
-
-#ifdef WIN32
-#include <GL/glaux.h>		// Header File For The Glaux Library
-#endif
 
 #include "stdinc.h"
 
@@ -33,7 +27,6 @@
 
 #include "VirtualBattlefield.h"
 #include "VirtualBattlefieldScene.h"
-#include "CockpitDrawable.h"
 #include "BaseInput.h"
 
 #include <osg/Geode>
@@ -49,7 +42,6 @@
 extern VirtualBattlefield * g_pBattlefield;
 //extern VirtualBattlefieldScene * g_pBattleScene;
 extern SimTime * g_pSimTime;
-
 extern ObjectFactory * g_pObjectFactory;
 
 BaseObject * g_pPlayerObject;
@@ -90,7 +82,6 @@ CSPFlightSim::~CSPFlightSim()
   delete m_gameScreen;
 }
 
-
 void CSPFlightSim::Init()
 {
 
@@ -124,8 +115,7 @@ void CSPFlightSim::Init()
     g_pBattlefield->buildScene();
 
     DoStartupScript();
-
-
+	
     // Create screens
     m_gameScreen = new GameScreen;
     m_gameScreen->OnInit();
@@ -162,98 +152,85 @@ void CSPFlightSim::Exit()
 
 void CSPFlightSim::ChangeScreen(BaseScreen * newScreen)
 {
-    CSP_LOG(CSP_APP, CSP_DEBUG, "CSPFlightSim::ChangeScreen..." );
+    CSP_LOG(CSP_APP, CSP_DEBUG, "CSPFlightSim::ChangeScreen ..." );
     m_PrevScreen = m_CurrentScreen;
     m_CurrentScreen = newScreen;
 }
 
 // Main Game loop
 void CSPFlightSim::Run()
-{
-	static float averagedt = 0.0;
-    static unsigned long stepNumber = 0;
-
+{	
     CSP_LOG(CSP_APP, CSP_DEBUG, "CSPFlightSim::Run..." );
     m_bFreezeSim = false;
-
-    prevSceneTime = curSceneTime = SDL_GetTicks();
+	
+    prevSceneTime = SDL_GetTicks() - 1;
+    
     try
     {
+		while(!m_bFinished)
+		{
+			curSceneTime = SDL_GetTicks();
+			int diffTime = curSceneTime - prevSceneTime;
+			float dt = static_cast<float>(diffTime) / 1000.0;
+			
+			g_pSimTime->updateSimTime(dt);    
+			float simtime = g_pSimTime->getSimTime();
+			
+			// Do Input loop
+			DoInput();
+			
+			// Update Objects if sim is not frozen
+			if (!m_bFreezeSim)
+				UpdateObjects(dt);
+			
+			// Display (render) current Screen
+			if (m_CurrentScreen)
+				m_CurrentScreen->OnRender();
+			
+			// Do Console
+			if(m_bConsoleDisplay) 
+				CON_DrawConsole(m_pConsole);
+			
+			if ( m_bFreezeSim )
+				ShowPaused();
+			
+			// Do fps and other stuff.
+			if (m_bShowStats)
+			{
+				if ( diffTime > 1 && diffTime < 1000 )
+				{
+					float fps = 1000.0 / diffTime;
+					ShowStats(fps);
+				};
+				ShowPlaneInfo();
+			}
 
-    while(!m_bFinished)
-    {
-        prevSceneTime = curSceneTime;
-        curSceneTime = SDL_GetTicks();
-        int diffTime = curSceneTime - prevSceneTime;
-        float dt = (float)diffTime / 1000.0;
+			// Swap OpenGL buffers
+			SDL_GL_SwapBuffers();
+			
+			// remove marked objects, this should be done at the end of the main loop.
+			g_pBattlefield->removeObjectsMarkedForDelete();
 
-        if ( dt > 0.10) 
-			dt = 0.10;
-		else if (dt < 0.001)
-			dt = 0.001;
-
-	    //averagedt += dt;
-        //++stepNumber;
-        //dt = averagedt / stepNumber;
-
-        g_pSimTime->updateSimTime(dt);    
-        float simtime = g_pSimTime->getSimTime();
-
-       // glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-        // Do Input loop
-        DoInput();
-
-        // Update Objects if sim is not frozen
-        if (!m_bFreezeSim)
-            UpdateObjects(dt);
-
-        // Display (render) current Screen
-        if (m_CurrentScreen)
-            m_CurrentScreen->OnRender();
-
-        // Do Console
-
-		if(m_bConsoleDisplay) 
-            CON_DrawConsole(m_pConsole);
-
-        if ( m_bFreezeSim )
-			ShowPaused();
-
-        // Do fps and other stuff.
-        if (m_bShowStats)
-        {
-            float fps = 1000.0 / (curSceneTime - prevSceneTime);
-            ShowStats(fps);
-			ShowPlaneInfo();
-        }
-
-       // Swap OpenGL buffers
-       SDL_GL_SwapBuffers();
-
-       // remove marked objects, this should be done at the end of the main loop.
-       g_pBattlefield->removeObjectsMarkedForDelete();
-
-
-    }
-    g_pBattlefield->dumpObjectHistory();
-
-    }
-    catch(DemeterException* pEx)
-    {
-        CSP_LOG( CSP_APP, CSP_ERROR, "Caught Demeter Exception: " << pEx->GetErrorMessage() );
-        Cleanup();
-        SDL_Quit();
-        exit(0);
-    }
-    catch(...)
-    {
-        CSP_LOG( CSP_APP, CSP_ERROR, "MAIN: Unexpected exception, GLErrorNUM: " << glGetError() );
-        Cleanup();
-        SDL_Quit();
-        exit(0);
-    }
-
+			prevSceneTime = curSceneTime;
+		}
+		
+		g_pBattlefield->dumpObjectHistory();
+	}
+	catch(DemeterException* pEx)
+	{
+		CSP_LOG( CSP_APP, CSP_ERROR, "Caught Demeter Exception: " << pEx->GetErrorMessage() );
+		Cleanup();
+		SDL_Quit();
+		exit(0);
+	}
+	catch(...)
+	{
+		CSP_LOG( CSP_APP, CSP_ERROR, "MAIN: Unexpected exception, GLErrorNUM: " << glGetError() );
+		Cleanup();
+		SDL_Quit();
+		exit(0);
+	}
+	
 }
 
 void CSPFlightSim::DoInput()
@@ -292,10 +269,16 @@ void CSPFlightSim::DoInput()
                         bool handled = false;
                         char * key = SDL_GetKeyName(event.key.keysym.sym);
 
+						if (g_pPlayerInput)
+						{
+							handled = g_pPlayerInput->OnKeyDown(event.key.keysym.sym);
+						}
+                        
                         // see if the current screen handles this key
-                        if (m_CurrentScreen && !m_bConsoleDisplay)
-							 handled = m_CurrentScreen->OnKeyDown(event.key.keysym.sym);
-
+                        if (!handled && m_CurrentScreen && !m_bConsoleDisplay)
+						{
+							handled = m_CurrentScreen->OnKeyDown(event.key.keysym.sym);
+						}
                         // other let the system handle the key.
                         if (!handled)
                         {
@@ -341,7 +324,7 @@ void CSPFlightSim::DoInput()
 									}
 					            default:
                                 {
-    					            /* Send the event to the console */
+    					            // Send the event to the console
 						            if(m_bConsoleDisplay)
 							            CON_Events(&event);
 	    					        break;
@@ -353,9 +336,16 @@ void CSPFlightSim::DoInput()
 
                 case SDL_KEYUP:
                     {
-                        char * key = SDL_GetKeyName(event.key.keysym.sym);
-                        if (m_CurrentScreen)
-                            m_CurrentScreen->OnKeyUp(event.key.keysym.sym);
+						bool handled = false;
+						if (g_pPlayerInput)
+						{
+							handled = g_pPlayerInput->OnKeyUp(event.key.keysym.sym);
+						}
+                      
+                        if (!handled && m_CurrentScreen)
+						{
+                            handled = m_CurrentScreen->OnKeyUp(event.key.keysym.sym);
+						}
                         break;
                     }
                 
@@ -437,9 +427,9 @@ int CSPFlightSim::InitSDL()
 
     CSP_LOG(CSP_APP, CSP_ERROR, "Initializing video at " << bpp << " BitsPerPixel." );
 
-    int flags = SDL_OPENGL;
+    Uint32 flags = SDL_HWSURFACE | SDL_ASYNCBLIT | SDL_OPENGLBLIT ;
+	//Uint32 flags = SDL_OPENGL | SDL_HWSURFACE;
 
-    flags = SDL_HWSURFACE | SDL_ASYNCBLIT | SDL_OPENGLBLIT ;
     if (fullscreen)
         flags |= SDL_FULLSCREEN;
 
@@ -459,7 +449,6 @@ int CSPFlightSim::InitSDL()
     }
 
 	SDL_EnableUNICODE(1);
-	//SDL_EnableKeyRepeat(SDL_DEFAULT_REPEAT_DELAY / 16,SDL_DEFAULT_REPEAT_INTERVAL);
 
     return 0;
 }
@@ -473,19 +462,23 @@ int CSPFlightSim::InitConsole()
 	Con_rect.x = Con_rect.y = 0;
 	Con_rect.w = Con_rect.h = 300;
     
-	ConsoleFont = DT_LoadFont("Fonts\\ConsoleFont.bmp", 0);
+	ConsoleFont = DT_LoadFont("Fonts/ConsoleFont.bmp", 0);
 
-    m_pConsole = CON_Init("Fonts\\ConsoleFont.bmp", m_SDLScreen, 100, Con_rect);
+    m_pConsole = CON_Init("Fonts/ConsoleFont.bmp", m_SDLScreen, 100, Con_rect);
     CON_Alpha( m_pConsole, 50 );
 
-	/* Add some commands to the console */
+	// Add some commands to the console
 	CON_AddCommand(&KillProgram, "quit");
 	CON_AddCommand(&AlphaChange, "alpha");
 	CON_AddCommand(&Move, "move");
 	CON_AddCommand(&Resize, "resize");
 	CON_AddCommand(&ListCommands, "listcommands");
-    CON_AddDefaultCommand(&DefaultCommand);
-
+   
+#ifdef _WIN32 
+	// I don't have this function in SDL_Console 1.3 on Linux
+	CON_AddDefaultCommand(&DefaultCommand);
+#endif
+	
 	CON_ListCommands(m_pConsole);
 
 
@@ -499,7 +492,9 @@ void CSPFlightSim::DoStartupScript()
     Config.GetString(startScriptFile, "StartupScript");
     string startCommand;
     startCommand = string("RUN ") + startScriptFile;
+    printf("%s\n", startCommand.c_str());
     ProcessCommandString(startCommand);
+    printf("done\n");
 }
 
 
@@ -535,30 +530,32 @@ void CSPFlightSim::ShowStats(float fps)
 {
     char framerate[30];
     char buffer[128];
+    static float maxFps = 0.0, minFps = 500.0;
 
-    sprintf(framerate, "%.2f FPS", fps);
+	maxFps = max(maxFps, fps);
+    minFps = min(minFps, fps);
+  
+    sprintf(framerate, "%.2f FPS min: %.2f max: %.2f", fps, minFps, maxFps);
 	DT_DrawText(framerate, m_SDLScreen, ConsoleFont, 1, 0);
 
 	sprintf(buffer, "Terrain Polygons: %d", 
 		g_pBattlefield->getTerrainPolygonsRendered() );
     DT_DrawText(buffer, m_SDLScreen, ConsoleFont, 1, m_SDLScreen->h - 160);
 
-	// do airplane specific output.
-	AirplaneObject * pAirplane = dynamic_cast<AirplaneObject*>(g_pPlayerObject);
-	if (pAirplane)
-	{
-		sprintf(buffer, "Trottle: %.3f", pAirplane->getThrottle());
-		DT_DrawText(buffer, m_SDLScreen, ConsoleFont, 1, m_SDLScreen->h - 140);
 
-		sprintf(buffer, "Elevator: %.3f, Aileron %.3f, Rudder %.3f", pAirplane->getElevator(), pAirplane->getAileron(),
-		    pAirplane->getRudder());
-        DT_DrawText(buffer, m_SDLScreen, ConsoleFont, 1, m_SDLScreen->h - 120);
+//	sprintf(buffer, "Trottle: %.3f", g_pPlayerPlane->getThrottle());
+  //DT_DrawText(buffer, m_SDLScreen, ConsoleFont, 1, m_SDLScreen->h - 140);
 
-	    float speed = pAirplane->getSpeed();
-    	float alpha = pAirplane->getAngleOfAttack();
-		sprintf(buffer, "Alpha: %.3f", RadiansToDegrees(alpha) );
-		DT_DrawText(buffer, m_SDLScreen, ConsoleFont, 1, m_SDLScreen->h - 100);
-	}
+	AirplaneObject * pplayerAirplane = dynamic_cast<AirplaneObject*>(g_pPlayerObject);
+
+	sprintf(buffer, "Elevator: %.3f, Aileron %.3f, Rudder %.3f", pplayerAirplane->getElevator(), 
+		    pplayerAirplane->getAileron(), pplayerAirplane->getRudder());
+    DT_DrawText(buffer, m_SDLScreen, ConsoleFont, 1, m_SDLScreen->h - 120);
+
+	//float speed = g_pPlayerPlane->getSpeed();
+//	float alpha = g_pPlayerObject->getAngleOfAttack();
+//	sprintf(buffer, "Alpha: %.3f", RadiansToDegrees(alpha) );
+//	DT_DrawText(buffer, m_SDLScreen, ConsoleFont, 1, m_SDLScreen->h - 100);
 
     StandardVector3 pos = g_pPlayerObject->getLocalPosition();
     sprintf(buffer, "LocalPosition: [%.3f, %.3f, %.3f]", pos.x,

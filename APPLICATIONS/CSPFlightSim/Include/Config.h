@@ -31,6 +31,12 @@
 typedef std::map<std::string, std::string>	ConfigData;
 
 
+
+/**
+ * class CConfig - Describe me!
+ *
+ * @author unknown
+ */
 class CConfig
 {
 public:

@@ -6,6 +6,11 @@
 
 #include "BaseScreen.h"
 
+/**
+ * class MenuScreen
+ *
+ * @author unknown
+ */
 class MenuScreen : public BaseScreen
 {
 public:

@@ -7,6 +7,11 @@
 // and Game Programming Gems.
 
 
+/**
+ * Class StandardMatrix4
+ *
+ * @author Wolverine
+ */
 class StandardMatrix4
 {
 public:

@@ -65,10 +65,9 @@ void ListCommands(ConsoleInformation *console, char *string)
 void DefaultCommand(ConsoleInformation *console, char *str)
 {
     CSP_LOG(CSP_APP, CSP_DEBUG, "DefaultConsoleCommand - string: " << str);
-    // char buff[256];
 
-    string rtnStr = ProcessCommandString( string(str));
-    CON_Out(console, "%s", rtnStr);
-
+	string sstr = string(str);
+    string rtnStr = ProcessCommandString( sstr );
+    CON_Out(console, "%s", rtnStr.c_str());
 }
 

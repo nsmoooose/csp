@@ -7,11 +7,17 @@ using namespace std;
 #include "AirplaneObject.h"
 #include "AAAController.h"
 
+
+/**
+ * class AAAObject - Describe me!
+ *
+ * @author unknown
+ */
 class AAAObject : public BaseObject
 {
  public:
 
-  friend AAAController;
+  friend class AAAController;
 
   AAAObject();
   virtual ~AAAObject();

@@ -3,13 +3,15 @@
 #include "TerrainObject.h"
 #include "VirtualBattlefield.h"
 
+#include <osg/Depth>
+#include <osg/StateSet>
+
+
 extern int g_ScreenWidth;
 extern int g_ScreenHeight;
 
 extern VirtualBattlefield * g_pBattlefield;
 
-#include <osg/Depth>
-#include <osg/StateSet>
 
 // Terrain Object is a wrapper class for the Demeter terrain engine
 // and DemeterDrawable OSG class.
@@ -181,7 +183,7 @@ int TerrainObject::createTerrain()
 int TerrainObject::createTerrainLattice()
 {
 
-    CSP_LOG(CSP_ALL, CSP_DEBUG, "VirtualBattlefield::createTerrainLattice() " );
+    CSP_LOG(CSP_ALL, CSP_DEBUG, "TerrainObject::createTerrainLattice()..." );
 
     //float detailThreshold = Config.GetFloat("TerraindetailThreshold");
     
@@ -213,18 +215,20 @@ int TerrainObject::createTerrainLattice()
 			m_sLatticeElevExt.c_str(), /*m_sLatticeTexExt.c_str() */ NULL,		
 			m_sDetailTextureFile.c_str(), m_fVertexSpacing, m_fVertexHeight, m_iMaxTriangles,
 			true, m_sLatticeWidth, m_sLatticeHeight);
-
+	
 	m_pTerrainTextureFactory = new Demeter::TerrainTextureFactory();
 	m_pTerrainTextureFactory->SetTerrainLattice(m_pTerrainLattice);
 	m_pTerrainLattice->SetTextureFactory(m_pTerrainTextureFactory, 2, 2);
 
 	m_pTerrainLattice->SetDetailThreshold(m_fDetailThreshold);
-
-
+  
 	m_pTerrainLattice->SetCameraPosition(500000, 500000, 3000);
+
+	CSP_LOG(CSP_ALL, CSP_DEBUG, " ...TerrainObject::createTerrainLattice()");
 
 	return 1;
 
+	
 }
 
 void TerrainObject::setCameraPosition(float x, float y, float z)
@@ -238,7 +242,7 @@ void TerrainObject::setCameraPosition(float x, float y, float z)
 
 osg::Node* TerrainObject::CreateTerrainLatticeNode(Demeter::TerrainLattice* pTerrainLattice)
 {
-    CSP_LOG(CSP_APP, CSP_INFO, "VirtualBattlefield::CreateTerrainLatticeNode" );
+    CSP_LOG(CSP_APP, CSP_INFO, "TerrainObject::CreateTerrainLatticeNode" );
     
 	Demeter::DemeterLatticeDrawable* pLatticeDrawable = NULL;
     osg::Geode* pGeode = NULL;
@@ -256,7 +260,7 @@ osg::Node* TerrainObject::CreateTerrainLatticeNode(Demeter::TerrainLattice* pTer
 
 //		pLatticeDrawable->setStateSet( dstate );
 
-		pGeode = new osg::Geode;
+		pGeode = osgNew osg::Geode;
 		pGeode->addDrawable(pLatticeDrawable);
     }
     catch(...)
@@ -270,7 +274,7 @@ osg::Node* TerrainObject::CreateTerrainLatticeNode(Demeter::TerrainLattice* pTer
 
 osg::Node* TerrainObject::CreateTerrainNode(Demeter::Terrain* pTerrain)
 {
-    CSP_LOG(CSP_APP, CSP_INFO, "VirtualBattlefield::CreateTerrainNode" );
+    CSP_LOG(CSP_APP, CSP_INFO, "TerrainObject::CreateTerrainNode" );
     
     osg::Geode* pGeode = NULL;
 
@@ -278,7 +282,7 @@ osg::Node* TerrainObject::CreateTerrainNode(Demeter::Terrain* pTerrain)
     {
         Demeter::DemeterDrawable* pDrawable = new Demeter::DemeterDrawable;
         pDrawable->SetTerrain(pTerrain);
-        pGeode = new osg::Geode;
+        pGeode = osgNew osg::Geode;
         pGeode->addDrawable(pDrawable);
     }
     catch(...)

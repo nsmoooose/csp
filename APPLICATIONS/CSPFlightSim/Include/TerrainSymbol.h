@@ -6,6 +6,11 @@
 #include "TerrainObject.h"
 
 
+/**
+ * class TerrainSymbol
+ *
+ * @author unknown
+ */
 class TerrainSymbol : public BaseSymbol
 {
 public:

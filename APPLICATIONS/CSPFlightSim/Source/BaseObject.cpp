@@ -10,11 +10,25 @@
 #include "MissileObject.h"
 #include "ProjectileObject.h"
 #include "AAAObject.h"
-#include "instantActionManager.h"
+#include "InstantActionManager.h"
 #include "StaticObject.h"
 #include "DirVectorDrawable.h"
-#include <osg/NodeVisitor>
+
 #include <osg/BoundingSphere>
+#include <osg/NodeVisitor>
+#include<osg/ShadeModel>
+
+#include <osgParticle/ParticleSystem>
+#include <osgParticle/ParticleSystemUpdater>
+#include <osgParticle/Particle>
+#include <osgParticle/ModularEmitter>
+#include <osgParticle/ModularProgram>
+#include <osgParticle/RandomRateCounter>
+#include <osgParticle/PointPlacer>
+#include <osgParticle/RadialShooter>
+#include <osgParticle/AccelOperator>
+
+#include <osgUtil/SmoothingVisitor>
 
 extern VirtualBattlefield * g_pBattlefield;
 extern double g_LatticeXDist;
@@ -29,6 +43,7 @@ BaseObject::BaseObject()
     m_rpNode = NULL;
     m_bFreezeFlag = false;
 	m_bOnGround = false;
+	m_sObjectName = "";
 
 	m_XLatticePos = 0;
 	m_YLatticePos = 0;
@@ -44,7 +59,7 @@ BaseObject::~BaseObject()
 {
   CSP_LOG(CSP_APP, CSP_INFO, "BaseObject::~BaseObject()" );
 
-  m_rpTransform->removeChild( m_rpNode.get() );
+  m_rpTransform->removeChild( m_rpSwitch.get() ); 
 
 
 }
@@ -237,7 +252,7 @@ void BaseObject::setOrientation(double heading, double pitch, double roll)
 }
 
 
-void BaseObject::setVelocity(StandardVector3 & velocity)
+void BaseObject::setVelocity(StandardVector3 const & velocity)
 {
     m_LinearVelocity = velocity;
     m_Speed = m_LinearVelocity.Length();
@@ -257,24 +272,65 @@ void BaseObject::setVelocity(double Vx, double Vy, double Vz)
 
 }
 
+osgParticle::ParticleSystem *setupParticleSystem(osg::Group *base, const osg::Vec4 &color, const osg::Vec3 &center, float lifetime)
+{
+	osgParticle::Particle ptemp;
+	ptemp.setShape(osgParticle::Particle::HEXAGON);
+	ptemp.setLifeTime(lifetime);
+	ptemp.setSizeRange(osgParticle::rangef(0.025f, 0.025f));
+	ptemp.setColorRange(osgParticle::rangev4(color, color));
+
+	osgParticle::ParticleSystem *ps = osgNew osgParticle::ParticleSystem;
+	ps->setDefaultAttributes();
+	ps->setDefaultParticleTemplate(ptemp);
+	ps->setFreezeOnCull(false);
+
+	osgParticle::PointPlacer *pp = osgNew osgParticle::PointPlacer;
+	pp->setCenter(center);
+
+	osgParticle::RandomRateCounter *rrc = osgNew osgParticle::RandomRateCounter;
+	rrc->setRateRange(30, 40);
+
+	osgParticle::RadialShooter *rs = osgNew osgParticle::RadialShooter;
+	rs->setPhiRange(0, osg::PI*2);
+	rs->setThetaRange(osg::PI_2, osg::PI_2);
+	rs->setInitialSpeedRange(0.25f, 0.5f);
+
+	osgParticle::ModularEmitter *me = osgNew osgParticle::ModularEmitter;
+	me->setParticleSystem(ps);
+	me->setPlacer(pp);
+	me->setCounter(rrc);
+	me->setShooter(rs);
+	base->addChild(me);
+
+	osgParticle::AccelOperator *aop = osgNew osgParticle::AccelOperator;
+	aop->setToGravity();
+
+	osgParticle::ModularProgram *mp = osgNew osgParticle::ModularProgram;
+	mp->setParticleSystem(ps);
+	mp->addOperator(aop);
+	base->addChild(mp);
+
+	return ps;
+}
+
 void BaseObject::setNode( osg::Node * pNode )
 { 
     CSP_LOG(CSP_APP, CSP_DEBUG, "BaseObject::setNode() - ID: " << m_iObjectID);
 
-    if (!m_rpTransform)
-    {
-        m_rpTransform = new osg::Transform;
-    }
-
     m_rpNode = pNode;
-    //m_rpOffsetTransform->addChild(m_rpNode.get() );
-//	DirVectorDrawable * pDrawable = new DirVectorDrawable;
-//	osg::Geode * pGeode = new osg::Geode;
-//	pGeode->addDrawable(pDrawable);
+    
+	osg::StateSet * stateSet = osgNew osg::StateSet;
+	stateSet->setGlobalDefaults();
+	m_rpNode->setStateSet(stateSet);
+    
+	osgUtil::SmoothingVisitor sv;
+	m_rpNode->accept(sv);
 
-	m_rpTransform->addChild ( m_rpNode.get() );
-
-
+	// to switch between various representants of same object (depending on views for example)
+    m_rpSwitch = osgNew osg::Switch;
+	m_rpSwitch->setValue(osg::Switch::ALL_CHILDREN_ON);
+	m_rpSwitch->addChild(m_rpNode.get());
 }
 
 osg::Node* BaseObject::getNode()
@@ -287,13 +343,10 @@ void BaseObject::addToScene()
 {
     CSP_LOG(CSP_APP, CSP_DEBUG, "BaseObject::addToScene() - ID: " << m_iObjectID);
 
-
-    if(!m_rpTransform)
-    {
-        m_rpTransform = new osg::Transform;
-		m_rpTransform->addChild( m_rpNode.get() );
-    }
-
+	// master object to which all others ones are linked
+    m_rpTransform = osgNew osg::MatrixTransform;
+		
+    m_rpTransform->addChild( m_rpSwitch.get() );
 
     StandardMatrix4 stdmat = TranslationMatrix4( m_LocalPosition ) * StandardMatrix4( m_Orientation );
 
@@ -310,37 +363,52 @@ void BaseObject::addToScene()
 
     m_rpTransform->setMatrix(worldMat);
 
-	m_rpSwitch = new osg::Switch;
-	m_rpSwitch->setValue(osg::Switch::ALL_CHILDREN_ON);
-	m_rpSwitch->addChild(m_rpTransform.get());
+	setCullingActive(true);
 
-    g_pBattlefield->addNodeToScene(m_rpSwitch.get());
-	m_rpNode->setName( getObjectName() );
+	g_pBattlefield->addNodeToScene(m_rpTransform.get());
 
-	osg::BoundingSphere sphere = m_rpNode->getBound();
+ 	m_rpNode->setName( m_sObjectName );
 
-	CSP_LOG(CSP_APP, CSP_DEBUG, "NodeName: " << m_rpNode->getName() <<
-		", BoundingPos: " << sphere.center() << ", BoundingRadius: " << 
-		sphere.radius() );
+    if (m_sObjectName == "PLAYER" )
+	{
+	osg::BoundingSphere s = m_rpNode.get()->getBound();
+	float r = s.radius();
+	osg::Vec3 c = s.center();
+
+	//osgParticle::ParticleSystem *ps1 = setupParticleSystem(m_rpTransform.get(), 
+	//	                                                   osg::Vec4(1, 0, 1, 1), c - osg::Vec3(0,-r, 0),1);
+	//osgText::Text * ps1 = osgNew osgText::Text;
+	//ps1->setText("Particle system");
+	//ps1->setPosition( c - osg::Vec3(0,-r, 0));
+	//osg::Geode *geode1 = osgNew osg::Geode;
+	//geode1->addDrawable(ps1);
+	//g_pBattlefield->addNodeToScene(geode1);
+	}
+
+	//CSP_LOG(CSP_APP, CSP_DEBUG, "NodeName: " << m_rpNode->getName() <<
+	//	", BoundingPos: " << sphere.center() << ", BoundingRadius: " << 
+	//	sphere.radius() );
 
 }
+
 
 int BaseObject::updateScene()
 {
     CSP_LOG(CSP_APP, CSP_DEBUG, "BaseObject::updateScene() ID:"  << m_iObjectID );
 
-    if (!m_rpTransform)
-    {
-        CSP_LOG(CSP_APP, CSP_WARN, "BaseObject::updateScene() warning object has null OSG transform" );
-        return 0;
-    }
-     
-	// add testing model.osg code here
-    //stdmat *= RotationZMatrix4( PI );
-	//stdmat *= StandardMatrix4(0.5 * StandardMatrix3::IDENTITY);
-	//stdmat *= TranslationMatrix4(0,0,-100);
+	osg::BoundingSphere s = m_rpNode.get()->getBound();
+	//float r = s.radius();
+	osg::Vec3 c = s.center();
+    
+	StandardMatrix4  stdmat = StandardMatrix4(StandardMatrix3::IDENTITY );
 
-	StandardMatrix4 stdmat = TranslationMatrix4( m_LocalPosition ) * StandardMatrix4( m_Orientation );
+	// add testing model code here
+	if (m_sObjectName == "PLAYER" )
+	{
+	//stdmat = TranslationMatrix4(-c.x(),-c.y(),-c.z()); 
+	}
+
+	stdmat =  TranslationMatrix4( m_LocalPosition ) * StandardMatrix4( m_Orientation ) * stdmat;
 
 	stdmat = stdmat.Transpose(); // pass it to opengl
 	
@@ -352,14 +420,10 @@ int BaseObject::updateScene()
 
     m_rpTransform->setMatrix(worldMat);
 
-
-//	osg::BoundingSphere sphere = m_rpNode->getBound();
-//	osg::Vec3 cen = sphere.center();
-//	float radius = sphere.radius();
 	CSP_LOG(CSP_APP, CSP_DEBUG, "BaseObject::updateScene() - Position: " <<
 		m_LocalPosition );
 //	CSP_LOG(CSP_APP, CSP_DEBUG, "BaseObject::updateScene() - Bounding Sphere " 
-//		<< cen.x() << ", " << cen.y() << ", " << cen.z() << ", " << radius );
+//		<< c.x() << ", " << c.y() << ", " << c.z() << ", " << r );
 
 	return 0;
 
@@ -367,8 +431,12 @@ int BaseObject::updateScene()
 
 void BaseObject::setCullingActive(bool flag)
 {
-    if (m_rpTransform.valid())
-        m_rpTransform->setCullingActive(flag);
+    //if (m_rpNode.valid())
+	//	m_rpNode->setCullingActive(flag);
+	if (m_rpTransform.valid())
+	{
+		m_rpTransform->setCullingActive(flag);
+	}
 }
 
 void BaseObject::updateGroundPosition()
@@ -420,5 +488,4 @@ void BaseObject::updateGlobalPosition()
 	m_GlobalPosition.x = m_LocalPosition.x + m_XLatticePos*g_LatticeXDist;
 	m_GlobalPosition.y = m_LocalPosition.y + m_YLatticePos*g_LatticeYDist;
 	m_GlobalPosition.z = m_LocalPosition.z;
-
 }

@@ -1,0 +1,75 @@
+Combat Simulator Project dev-pack 0.4 (December 2004) for use with
+CSPSim 0.4 (in progress)
+
+CSP is hosted at http://csp.sourceforge.net
+Development server is https://www.zerobar.net/csp
+
+This development package is a collection of precompiled libraries
+and header files.  Most of the libraries were compiled with Microsoft
+VisualStudio professional .net 2003 (aka 7.1) on a MS Windows XP pro
+system.  The header files are located in \include, while the library
+files (in general export libs but also some static ones) are in \lib
+and dlls are in \bin.  This pack is distributed in the hope that it
+will be useful, but WITHOUT ANY WARRANTY.  Source code for all
+precompiled libraries is available from their respective hosting
+sites, which are listed below.
+
+Internet packages source:
+
+  > www.openscenegraph.org
+  > gnuwin32.sourceforge.net
+  > www.libsdl.org
+  > www.libsdl.org/projects/SDL_image
+  > libsigc.sourceforge.net
+  > www.gzip.org
+  > osgnv.sourceforge.net (distributes a modified nvparse lib)
+  > www.gdal.org
+  > cplusplus.sourceforge.net
+  > sources.redhat.com/pthreads-win32
+
+
+The dev-pack is contains:
+
+1. OSG_OT_OP-0.9.8-2:
+    a. OpenThreads 1.0
+    b. OpenProducer 0.8.3
+    c. OpenSceneGraph 0.9.8-2
+
+2.  jpeg-6b3
+
+3.  freetype-2.1.8
+
+4.  libungif-4.1.0b1
+
+5.  zlib-1.2.1
+
+6.  libpng-1.2.8
+
+7.  tiff-win-3.6.1-2
+
+8.  libsigc++-1.2.5
+
+9.  nvparse-5, osgNV-0.6.0, osgNVCg-0.6.0, osgNVParse-0.6.0 (post 0.6.0)
+
+10. gdal1.2.4
+
+11. SDL1.2.8 & SDL_image1.2.4
+
+12. Common C++ 2.1.3
+
+13. pthreads-win32 (pthreadsVC dated 11-22-2004)
+
+
+See INSTALL for installation details.
+
+The most up-to-date instructions for building CSP can be found at
+
+    http://csp.sourceforge.net/wiki/BuildingCSP
+
+Any questions, comments, or suggestions should be directed to the
+forums at
+
+    http://csp.sourceforge.net/forum
+
+
+The CSP Team

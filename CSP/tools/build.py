@@ -47,6 +47,8 @@ Dir = default_fs.Dir
 PYTHON_INCLUDE = sysconfig.get_python_inc()
 PYTHON_LIBRARY = sysconfig.get_python_lib()
 
+BUILD_LOG = open(File('#/.buildlog').abspath, 'wt')
+
 
 ############################################################################
 # GENERAL HELPERS
@@ -75,6 +77,24 @@ def IsWindows(env):
 
 ############################################################################
 # SHORT MESSAGES
+
+class ShortMessageWrapper:
+	def __init__(self, message):
+		self.message = message
+		self.old_message = None
+
+	def bind(self, action):
+		if not isinstance(action.strfunction, ShortMessageWrapper):
+			self.old_message = action.strfunction
+			action.strfunction = self
+
+	def __call__(self, target, source, env):
+		if self.old_message and BUILD_LOG:
+			old = self.old_message(target, source, env)
+			print >>BUILD_LOG, old
+			BUILD_LOG.flush()
+		return self.message(target, source, env)
+
 
 def TargetMessage(phrase, suffix=''):
 	def printer(target, source, env, phrase=phrase, suffix=suffix):
@@ -124,9 +144,9 @@ def SetShortMessage(env, builder, message):
 		if isinstance(action, SCons.Action.ListAction):
 			for a in action.get_actions():
 				if a.strfunction is not None:
-					a.strfunction = message
+					ShortMessageWrapper(message).bind(a)
 					return
-		action.strfunction = message
+		ShortMessageWrapper(message).bind(action)
 
 def SetShortMessages(env):
 	SetShortMessage(env, 'StaticObject', SourceMessage('Compiling'))
@@ -148,17 +168,29 @@ def SetShortMessages(env):
 
 def BuildPackages(env, packages, **kw):
 	import build
+	result = []
 	for package in packages:
 		kw['build_dir'] = '%s/.bin' % package
 		kw.setdefault('duplicate', 0)
 		kw.setdefault('exports', 'env build')
-		env.SConscript('%s/SConscript' % package, **kw)
+		targets = env.SConscript('%s/SConscript' % package, **kw)
+		if targets:
+			if type(targets) != type([]): targets = [targets]
+			result.extend(targets)
+	result = env.Flatten(result)
+	return result
 
 def BuildModules(env, modules, **kw):
 	import build
+	result = []
 	for module in modules:
 		kw.setdefault('exports', 'env build')
-		env.SConscript('%s/SConscript' % module, **kw)
+		targets = env.SConscript('%s/SConscript' % module, **kw)
+		if targets:
+			if type(targets) != type([]): targets = [targets]
+			result.extend(targets)
+	result = env.Flatten(result)
+	return result
 
 
 
@@ -497,4 +529,9 @@ def MakeDocumentation(env, target, source, *args):
 		[env.Depends(dox, Glob(g)) for g in args]
 		env.Alias('dox', dox)
 	env.Clean(['dox', 'all'], html)
+
+def Apply(builder, sources, **overrides):
+	def builder_wrap(source):
+		return builder(source, **overrides)
+	return map(builder_wrap, sources)
 

@@ -172,7 +172,6 @@ private:
 extern InterfaceRegistry g_InterfaceRegistry;
 
 
-
 //-------------------------------------------------------
 // macros to create an interface to a specific class.
 // since an instance of the interface class is created,
@@ -219,14 +218,14 @@ public:
 #endif
 
 // interface macro 2
-#define __SIMDATA_XML_INTERFACE_2(classname, fqbaseinterface, baseinterface) \
+#define __SIMDATA_XML_INTERFACE_2(classname, baseinterface, nqbaseinterface) \
 	virtual SIMDATA(hasht) getClassHash() const { return classname::_getClassHash(); } \
 	virtual const char * getClassName() const { return classname::_getClassName(); } \
 	virtual SIMDATA(MemberAccessorBase) * getAccessor(const char *name, const char *cname = 0) const { \
 		if (!cname) cname = #classname; \
 		SIMDATA(MemberAccessorBase) *p = _interface->getAccessor(name); \
 		if (!p) { \
-			return baseinterface::getAccessor(name, cname); \
+			return nqbaseinterface::getAccessor(name, cname); \
 		} \
 		return p; \
 	} \
@@ -267,11 +266,12 @@ public:
 			} \
 	} \
 	InterfaceProxy(const char * cname = #classname, SIMDATA(hasht) (*chash)() = &classname::_getClassHash): \
-		CTOR_INIT(fqbaseinterface,InterfaceProxy)(cname, chash) \
+		CTOR_INIT(baseinterface,InterfaceProxy)(cname, chash) \
 	{ \
 		_interface = new SIMDATA(ObjectInterface)<classname>; \
 		(*_interface)
 
+		//baseinterface::InterfaceProxy(cname, chash)
 //-----------------------------------------
 
 #ifdef SWIG
@@ -298,13 +298,11 @@ public:
 	#define EXTEND_SIMDATA_XML_INTERFACE(classname, basename) \
 		__SIMDATA_XML_INTERFACE_0(classname, basename::InterfaceProxy) \
 		__SIMDATA_XML_INTERFACE_1(classname, basename::InterfaceProxy) \
-		__SIMDATA_XML_INTERFACE_2(classname, basename::InterfaceProxy, InterfaceProxy) 
-		//__SIMDATA_XML_INTERFACE_2(classname, basename::InterfaceProxy, basename::InterfaceProxy) 
+		__SIMDATA_XML_INTERFACE_2(classname, basename::InterfaceProxy, basename::InterfaceProxy) 
 	#define EXTEND_SIMDATA_XML_VIRTUAL_INTERFACE(classname, basename) \
 		__SIMDATA_XML_INTERFACE_0(classname, basename::InterfaceProxy) \
 		__SIMDATA_XML_INTERFACE_V(classname, basename::InterfaceProxy) \
-		__SIMDATA_XML_INTERFACE_2(classname, basename::InterfaceProxy, InterfaceProxy)
-		//__SIMDATA_XML_INTERFACE_2(classname, basename::InterfaceProxy, basename::InterfaceProxy)
+		__SIMDATA_XML_INTERFACE_2(classname, basename::InterfaceProxy, basename::InterfaceProxy)
 #endif
 
 //-----------------------------------------

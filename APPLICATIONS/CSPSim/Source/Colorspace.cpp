@@ -19,8 +19,7 @@
 
 #include "Colorspace.h"
 
-
-#define PI 3.14159265358979323846264338327950288419716939937510
+float const PI = 3.14159265358979323846264338327950288419716939937510f;
 
 float Xn, Yn, Zn;
 float unprime, vnprime, wnprime;
@@ -108,9 +107,9 @@ void setWhiteD65() {
  * Cube root respecting sign.
  */
 static float cubert(float x) {
-	if (x > 0.0) return pow(x, (1.0/3.0));
+	if (x > 0.0) return powf(x, (1.0f/3.0f));
 	if (x == 0.0) return 0.0;
-	return -pow(fabs(x), (1.0/3.0));
+	return -powf(fabsf(x), (1.0f/3.0f));
 }
 
 /**
@@ -199,13 +198,13 @@ void HLS_check(float &H, float &L, float &S) {
 static float hls_value(float n1, float n2, float H) {
 	H = rmodp(H, 360.0);
 	if (H < 60.0) {
-		return n1 + (n2 - n1) * H / 60.0;
+		return n1 + (n2 - n1) * H / 60.0f;
 	}
 	if (H < 180.0) {
 		return n2;
 	}
 	if (H < 240.0) {
-		return n1 + (n2 - n1) * (240.0 - H) / 60.0;
+		return n1 + (n2 - n1) * (240.0f - H) / 60.0f;
 	}
 	return n1;
 }
@@ -235,9 +234,9 @@ void HLS_to_RGB(float H, float L, float S, float &R, float &G, float &B) {
 	if (S == 0.0) {
 		R = G = B = L;
 	} else {
-		R = hls_value(m1, m2, H + 120.0);
+		R = hls_value(m1, m2, H + 120.0f);
 		G = hls_value(m1, m2, H);
-		B = hls_value(m1, m2, H - 120.0);
+		B = hls_value(m1, m2, H - 120.0f);
 	}
 }
 
@@ -260,7 +259,7 @@ void RGB_to_HLS(float R, float G, float B, float &H, float &L, float &S) {
 	float rgbmin = (R < G && R < B) ? R : ((G < B) ? G : B);
 	float d = (rgbmax - rgbmin);
 	float rc, gc, bc;
-	L = (rgbmax + rgbmin) * 0.5;
+	L = (rgbmax + rgbmin) * 0.5f;
 	if (d == 0.0) {
 		S = 0.0;
 		H = 0.0;
@@ -268,9 +267,9 @@ void RGB_to_HLS(float R, float G, float B, float &H, float &L, float &S) {
 		if (L <= 0.5) {
 			S = d / (rgbmax + rgbmin);
 		} else {
-			S = d / (2.0 - rgbmax - rgbmin);
+			S = d / (2.0f - rgbmax - rgbmin);
 		}
-		float s = 1.0 / d;
+		float s = 1.0f / d;
 		rc = (rgbmax - R) * s;
 		gc = (rgbmax - G) * s;
 		bc = (rgbmax - B) * s;
@@ -278,11 +277,11 @@ void RGB_to_HLS(float R, float G, float B, float &H, float &L, float &S) {
 			H = bc - gc;
 		} else 
 		if (G == rgbmax) {
-			H = 2.0 + rc - bc;
+			H = 2.0f + rc - bc;
 		} else {
-			H = 4.0 + gc - rc;
+			H = 4.0f + gc - rc;
 		}
-		H = H * 60.0;
+		H = H * 60.0f;
 	}
 }
 
@@ -316,12 +315,12 @@ void HSV_to_RGB(float H, float S, float V, float &R, float &G, float &B) {
 	if (S == 0.0) {
 		R = G = B = V;
 	} else {
-		float hue = rmodp(H, 360.0) / 60.0;
+		float hue = rmodp(H, 360.0) / 60.0f;
 		int i = (int) hue;
 		float f = hue - (float) i;
-		float p = V * (1.0 - S);
-		float q = V * (1.0 - S * f);
-		float t = V * (1.0 - S + S * f);
+		float p = V * (1.0f - S);
+		float q = V * (1.0f - S * f);
+		float t = V * (1.0f - S + S * f);
 		switch (i) {
 			case 0:
 				R = V;
@@ -390,7 +389,7 @@ void RGB_to_HSV(float R, float G, float B, float &H, float &S, float &V) {
 		H = 0.0;
 	} else {
 		float rc, gc, bc;
-		float s = 1.0 / d;
+		float s = 1.0f / d;
 		rc = (rgbmax - R) * s;
 		gc = (rgbmax - G) * s;
 		bc = (rgbmax - B) * s;
@@ -398,11 +397,11 @@ void RGB_to_HSV(float R, float G, float B, float &H, float &S, float &V) {
 			H = bc - gc;
 		} else 
 		if (G == rgbmax) {
-			H = 2.0 + rc - bc;
+			H = 2.0f + rc - bc;
 		} else {
-			H = 4.0 + gc - rc;
+			H = 4.0f + gc - rc;
 		}
-		H = rmodp(H * 60.0, 360.0);
+		H = rmodp(H * 60.0f, 360.0);
 	}
 }
 
@@ -430,11 +429,11 @@ float RGB_to_hue(float R, float G, float B) {
 		H = B - G;
 	} else 
 	if (G == rgbmax) {
-		H = 2.0 + R - B;
+		H = 2.0f + R - B;
 	} else {
-		H = 4.0 + G - R;
+		H = 4.0f + G - R;
 	}
-	H = H / 6.0;
+	H = H / 6.0f;
 	LIMIT_ZERO_TO_ONE(H);
 	return H;
 }
@@ -463,13 +462,13 @@ float RGB_to_hue(float R, float G, float B) {
  *   Volume = Volume of the cavity, in cubic meters.
  */
 float T_to_spd(float T, float lambda) {
-	static float c = 2.9979246E+08;
-	static float h = 6.626176E-34;
-	static float k = 1.38066E-23;
-	static float nmtom = 1.0E-09;
+	static float c = 2.9979246E+08f;
+	static float h = 6.626176E-34f;
+	static float k = 1.38066E-23f;
+	static float nmtom = 1.0E-09f;
 	float expon = h * c / ( nmtom * lambda * k * T );
-	float denom = pow(nmtom,4.0) * pow(lambda, 5.0) * (exp(expon) - 1.0);
-	float power = 8.0 * PI * h * c / denom;
+	float denom = powf(nmtom,4.0f) * powf(lambda, 5.0f) * (expf(expon) - 1.0f); 
+	float power = 8.0f * PI * h * c / denom;
 	return power;
 }
 
@@ -510,43 +509,43 @@ static float interp(int n, float x, const float *X, const float *Y) {
 void T_to_xyz(float T, float &x, float &y, float &z) {
 	static const int n = 53;
 	static const float Tdat[] = {
-		1000.0,  1200.0,  1400.0,  1500.0,  1600.0,
-		1700.0,  1800.0,  1900.0,  2000.0,  2100.0,
-		2200.0,  2300.0,  2400.0,  2500.0,  2600.0,
-		2700.0,  2800.0,  2900.0,  3000.0,  3100.0,
-		3200.0,  3300.0,  3400.0,  3500.0,  3600.0,
-		3700.0,  3800.0,  3900.0,  4000.0,  4100.0,
-		4200.0,  4300.0,  4400.0,  4500.0,  4600.0,
-		4700.0,  4800.0,  4900.0,  5000.0,  5200.0,
-		5400.0,  5600.0,  5800.0,  6000.0,  6500.0,
-		7000.0,  7500.0,  8000.0,  8500.0,  9000.0,
-		10000.0, 15000.0, 30000.0 
+		1000.0f,  1200.0f,  1400.0f,  1500.0f,  1600.0f,
+		1700.0f,  1800.0f,  1900.0f,  2000.0f,  2100.0f,
+		2200.0f,  2300.0f,  2400.0f,  2500.0f,  2600.0f,
+		2700.0f,  2800.0f,  2900.0f,  3000.0f,  3100.0f,
+		3200.0f,  3300.0f,  3400.0f,  3500.0f,  3600.0f,
+		3700.0f,  3800.0f,  3900.0f,  4000.0f,  4100.0f,
+		4200.0f,  4300.0f,  4400.0f,  4500.0f,  4600.0f,
+		4700.0f,  4800.0f,  4900.0f,  5000.0f,  5200.0f,
+		5400.0f,  5600.0f,  5800.0f,  6000.0f,  6500.0f,
+		7000.0f,  7500.0f,  8000.0f,  8500.0f,  9000.0f,
+		10000.0f, 15000.0f, 30000.0f 
 	};
 	static const float xdat[] = {
-		0.6526, 0.6249, 0.5984, 0.5856, 0.5731,
-		0.5610, 0.5491, 0.5377, 0.5266, 0.5158,
-		0.5055, 0.4956, 0.4860, 0.4769, 0.4681,
-		0.4597, 0.4517, 0.4441, 0.4368, 0.4299,
-		0.4233, 0.4170, 0.4109, 0.4052, 0.3997,
-		0.3945, 0.3896, 0.3848, 0.3804, 0.3760,
-		0.3719, 0.3680, 0.3643, 0.3607, 0.3573,
-		0.3540, 0.3509, 0.3479, 0.3450, 0.3397,
-		0.3347, 0.3301, 0.3259, 0.3220, 0.3135,
-		0.3063, 0.3003, 0.2952, 0.2908, 0.2869,
-		0.2806, 0.2637, 0.2501
+		0.6526f, 0.6249f, 0.5984f, 0.5856f, 0.5731f,
+		0.5610f, 0.5491f, 0.5377f, 0.5266f, 0.5158f,
+		0.5055f, 0.4956f, 0.4860f, 0.4769f, 0.4681f,
+		0.4597f, 0.4517f, 0.4441f, 0.4368f, 0.4299f,
+		0.4233f, 0.4170f, 0.4109f, 0.4052f, 0.3997f,
+		0.3945f, 0.3896f, 0.3848f, 0.3804f, 0.3760f,
+		0.3719f, 0.3680f, 0.3643f, 0.3607f, 0.3573f,
+		0.3540f, 0.3509f, 0.3479f, 0.3450f, 0.3397f,
+		0.3347f, 0.3301f, 0.3259f, 0.3220f, 0.3135f,
+		0.3063f, 0.3003f, 0.2952f, 0.2908f, 0.2869f,
+		0.2806f, 0.2637f, 0.2501f
 	};
 	static const float ydat[] = {
-		0.3446, 0.3676, 0.3859, 0.3932, 0.3993,
-		0.4043, 0.4083, 0.4112, 0.4133, 0.4146,
-		0.4152, 0.4152, 0.4147, 0.4137, 0.4123,
-		0.4106, 0.4086, 0.4064, 0.4041, 0.4015,
-		0.3989, 0.3962, 0.3935, 0.3907, 0.3879,
-		0.3851, 0.3822, 0.3795, 0.3767, 0.3740,
-		0.3713, 0.3687, 0.3660, 0.3635, 0.3610,
-		0.3586, 0.3562, 0.3539, 0.3516, 0.3472,
-		0.3430, 0.3391, 0.3353, 0.3318, 0.3236,
-		0.3165, 0.3103, 0.3048, 0.2999, 0.2956,
-		0.2883, 0.2673, 0.2489
+		0.3446f, 0.3676f, 0.3859f, 0.3932f, 0.3993f,
+		0.4043f, 0.4083f, 0.4112f, 0.4133f, 0.4146f,
+		0.4152f, 0.4152f, 0.4147f, 0.4137f, 0.4123f,
+		0.4106f, 0.4086f, 0.4064f, 0.4041f, 0.4015f,
+		0.3989f, 0.3962f, 0.3935f, 0.3907f, 0.3879f,
+		0.3851f, 0.3822f, 0.3795f, 0.3767f, 0.3740f,
+		0.3713f, 0.3687f, 0.3660f, 0.3635f, 0.3610f,
+		0.3586f, 0.3562f, 0.3539f, 0.3516f, 0.3472f,
+		0.3430f, 0.3391f, 0.3353f, 0.3318f, 0.3236f,
+		0.3165f, 0.3103f, 0.3048f, 0.2999f, 0.2956f,
+		0.2883f, 0.2673f, 0.2489f
 	};
 	if (T < Tdat[0]) {
 		x = xdat[0];
@@ -559,7 +558,7 @@ void T_to_xyz(float T, float &x, float &y, float &z) {
 			x = interp(n, T, Tdat, xdat);
 			y = interp(n, T, Tdat, ydat);
 		}
-	z = 1.0 - x - y;
+	z = 1.0f - x - y;
 }
 
 /**
@@ -570,9 +569,9 @@ void T_to_xyz(float T, float &x, float &y, float &z) {
  * these components must be nonnegative.
  */
 void XYZ_to_RGB709(float X, float Y, float Z, float &R, float &G, float &B) {
-	R =  3.240479*X-1.537150*Y-0.498535*Z;
-	G = -0.969256*X+1.875992*Y+0.041556*Z;
-	B =  0.055648*X-0.204043*Y+1.057311*Z;
+	R =  3.240479f*X-1.537150f*Y-0.498535f*Z;
+	G = -0.969256f*X+1.875992f*Y+0.041556f*Z;
+	B =  0.055648f*X-0.204043f*Y+1.057311f*Z;
 }
 
 /**
@@ -583,16 +582,16 @@ void XYZ_to_RGB709(float X, float Y, float Z, float &R, float &G, float &B) {
  * these components must be nonnegative.
  */
 void RGB709_to_XYZ(float R, float G, float B, float &X, float &Y, float &Z) {
-	X = 0.412453*R+0.357580*G+0.180423*B;
-	Y = 0.212671*R+0.715160*G+0.072169*B;
-	Z = 0.019334*R+0.119193*G+0.950227*B;
+	X = 0.412453f*R+0.357580f*G+0.180423f*B;
+	Y = 0.212671f*R+0.715160f*G+0.072169f*B;
+	Z = 0.019334f*R+0.119193f*G+0.950227f*B;
 }
 
 /**
  * Convert RGB709 to CIEXYZ luminance Y.
  */
 float getY709(float R, float G, float B) {
-	return 0.212671*R + 0.71516*G + 0.072169*B;
+	return 0.212671f*R + 0.71516f*G + 0.072169f*B;
 }
 
 /**
@@ -614,7 +613,7 @@ void xyY_to_XYZ(float x, float y, float Y_, float &X, float &Y, float &Z) {
 		// any check for y == 0.0?
 		X = x * Y / y;
 		if (X < 0.0) X = 0.0;
-		float z = 1.0 - x - y;
+		float z = 1.0f - x - y;
 		Z = z * Y / y;
 		if (Z < 0.0) Z = 0.0;
 	}
@@ -685,17 +684,17 @@ void XYZ_to_Luv(float X, float Y, float Z, float &Lstar, float &ustar, float &vs
 			Lstar = 0.0;
 		} else
 			if (Y <= 0.008856 * Yn) {
-				Lstar = 903.3 * Y / Yn;
+				Lstar = 903.3f * Y / Yn;
 			} else
 				if (Y <= Yn) {
-					Lstar = 116.0 * cubert(Y/Yn) - 16.0;
+					Lstar = 116.0f * cubert(Y/Yn) - 16.0f;
 				} else {
 					Lstar = 100.0;
 				}
 			float uprime, vprime, wprime;
 			XYZ_to_uvwp(X, Y, Z, uprime, vprime, wprime);
-			ustar = 13.0 * Lstar * (uprime - unprime);
-			vstar = 13.0 * Lstar * (vprime - vnprime);
+			ustar = 13.0f * Lstar * (uprime - unprime);
+			vstar = 13.0f * Lstar * (vprime - vnprime);
 	}
 }
 
@@ -716,15 +715,15 @@ void Luv_to_XYZ(float Lstar, float ustar, float vstar, float &X, float &Y, float
 		X = Y = Z = 0.0;
 	} else {
 		if (Lstar <= 903.3 * 0.008856) {
-			Y = Lstar * Yn / 903.3;
+			Y = Lstar * Yn / 903.3f;
 		} else
 			if (Lstar <= 100.0) {
-				Y = Yn * pow((Lstar + 16.0) / 116.0, 3.0);
+				Y = Yn * powf((Lstar + 16.0f) / 116.0f, 3.0f);
 			} else {
 				Y = Yn;
 			}
-		float uprime = unprime + ustar / (13.0 * Lstar);
-		float vprime = vnprime + vstar / (13.0 * Lstar);
+		float uprime = unprime + ustar / (13.0f * Lstar);
+		float vprime = vnprime + vstar / (13.0f * Lstar);
 		uvpY_to_XYZ(uprime, vprime, Y, X, Y, Z);
 	}
 }
@@ -745,13 +744,13 @@ void Luv_check(float &Lstar, float &ustar, float &vstar) {
  * these components must be nonnegative.
  */
 void XYZ_to_uvwp(float X, float Y, float Z, float &uprime, float &vprime, float &wprime) {
-	float denom = X + 15.0 * Y + 3.0 * Z;
+	float denom = X + 15.0f * Y + 3.0f * Z;
 	if (denom == 0.0) {
 		uprime = vprime = wprime = 0.0;
 	} else {
-		uprime = 4.0 * X / denom;
-		vprime = 9.0 * Y / denom;
-		wprime = (-3.0 * X + 6.0 * Y + 3.0 * Z) / denom;
+		uprime = 4.0f * X / denom;
+		vprime = 9.0f * Y / denom;
+		wprime = (-3.0f * X + 6.0f * Y + 3.0f * Z) / denom;
 	}
 }
 
@@ -764,8 +763,8 @@ void XYZ_to_uvwp(float X, float Y, float Z, float &uprime, float &vprime, float 
  */
 void uvpY_to_XYZ(float uprime, float vprime, float Y_, float &X, float &Y, float &Z) {
 	Y = Y_;
-	X = 9.0 * Y * uprime / (4.0 * vprime);
-	Z = - X / 3.0 - 5.0 * Y + 3.0 * Y / vprime;
+	X = 9.0f * Y * uprime / (4.0f * vprime);
+	Z = - X / 3.0f - 5.0f * Y + 3.0f * Y / vprime;
 }
 
 /**
@@ -776,13 +775,13 @@ void uvpY_to_XYZ(float uprime, float vprime, float Y_, float &X, float &Y, float
  * these components must be nonnegative.
  */
 void uvp_to_xyz(float uprime, float vprime, float &x, float &y, float &z) {
-	float denom = 6.0 * uprime - 16.0 * vprime + 12.0;
+	float denom = 6.0f * uprime - 16.0f * vprime + 12.0f;
 	if (denom == 0.0) {
 		x = y = z = 0.0;
 	} else {
-		x = 9.0 * uprime / denom;
-		y = 4.0 * vprime / denom;
-		z = (-3.0 * uprime - 20.0 * vprime + 12.0) / denom;
+		x = 9.0f * uprime / denom;
+		y = 4.0f * vprime / denom;
+		z = (-3.0f * uprime - 20.0f * vprime + 12.0f) / denom;
 	}
 }
 
@@ -794,13 +793,13 @@ void uvp_to_xyz(float uprime, float vprime, float &x, float &y, float &z) {
  * or luminance of the color.
  */
 void xy_to_uvwp(float x, float y, float &uprime, float &vprime, float &wprime) {
-	float denom = -2.0 * x + 12.0 * y + 3.0;
+	float denom = -2.0f * x + 12.0f * y + 3.0f;
 	if (denom == 0.0) {
 		uprime = vprime = wprime = 0.0;
 	} else {
-		uprime = 4.0 * x / denom;
-		vprime = 9.0 * y / denom;
-		wprime = (-6.0 * x + 3.0 * y + 3.0) / denom;
+		uprime = 4.0f * x / denom;
+		vprime = 9.0f * y / denom;
+		wprime = (-6.0f * x + 3.0f * y + 3.0f) / denom;
 	}
 }
 
@@ -1030,9 +1029,9 @@ Color Color::toHLS(bool internal_check) const {
 		case HLS:
 			return *this;
 		case CIELuv:
-			H = atan2(c, b);
+			H = atan2f(c, b);
 			L = a;
-			S = sqrt(b+c);
+			S = sqrtf(b+c);
 			break;
 		case CIExyY:
 			xyY_to_XYZ(a, b, c, X, Y, Z);
@@ -1081,7 +1080,7 @@ void Color::scale(float f) {
 }
 
 void Color::blend(Color const &color, float alpha) {
-	composite(color, 1.0-alpha, alpha);
+	composite(color, 1.0f-alpha, alpha);
 }
 
 void Color::composite(Color const &color, float alpha1, float alpha2) {

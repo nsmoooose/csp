@@ -372,11 +372,12 @@ void AircraftObject::GearToggle() {
 void AircraftObject::setAttitude(double pitch, double roll, double heading)
 {
 	simdata::Quaternion attitude;
-	m_Pitch = DegreesToRadians(pitch);
-	m_Roll = DegreesToRadians(roll);
-	m_Heading = DegreesToRadians(heading);
-	attitude = simdata::Quaternion::MakeQFromEulerAngles(m_Pitch,
-                                                             m_Roll, 
+	m_Pitch = pitch;
+	m_Roll = roll;
+	m_Heading = heading;
+	
+	attitude = simdata::Quaternion::MakeQFromEulerAngles( m_Pitch, 
+														  m_Roll,   
 	                                                     m_Heading);
 	DynamicObject::setAttitude(attitude);
 }
@@ -399,9 +400,10 @@ void AircraftObject::doMovement(double dt)
 	updateTransform();
 
 	simdata::Vector3 angles = simdata::Quaternion::MakeEulerAnglesFromQ(m_Attitude);
-	m_Heading = angles.x;
-	m_Pitch = angles.y;
-	m_Roll = angles.z;
+	
+	m_Pitch = angles.x;
+	m_Roll = angles.y;
+	m_Heading = angles.z;
 	m_Speed = m_LinearVelocity.Length();
 }
 
@@ -491,8 +493,8 @@ void AircraftObject::getStats(std::vector<std::string> &stats) const {
 	stats.push_back(buffer);
 	snprintf(buffer, 255, "Heading: %.3f, Pitch: %.3f, Roll: %.3f",
 	         RadiansToDegrees(m_Heading), 
-		 RadiansToDegrees(m_Pitch), 
-		 RadiansToDegrees(m_Roll));
+			 RadiansToDegrees(m_Pitch), 
+			 RadiansToDegrees(m_Roll));
 	stats.push_back(buffer);
 }
 

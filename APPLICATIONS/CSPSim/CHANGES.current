@@ -1,23 +1,40 @@
 Version 0.3.2 (in progress)
 ===========================
 
+2003-04-21: delta
+	    Removed non necessaray calls to DegreesToRadians and 
+	RadiansToDegrees. Now angles must be specified in radians. If it is 
+	needed to display angle in degree call simdata::RadiansToDegrees at 
+	this stage.
+
+2003-04-19: delta
+            Got ride of more than one hundred of warnings (complaining about 
+        casting from double to float) in ColorSpace.cpp while compiling 
+        with vc++.
+
 2003-04-19: onsight
             Changed AircraftObject:: m_heading, m_pitch, m_roll to m_Heading,
-	    m_Pitch, m_Roll.  These are now in radians, and converted to
-	    degrees only if necessary (for display).  setAttitude(x, y, z)
-	    still takes degrees.
+        m_Pitch, m_Roll.  These are now in radians, and converted to
+        degrees only if necessary (for display).  setAttitude(x, y, z)
+        still takes degrees.
 
 2003-04-18: delta
-	    Added Runge-Kutta Cask-Karp numerical method.doSimStep2() is now 
-	    calling it.
+            Added Runge-Kutta Cask-Karp numerical method.doSimStep2() is now 
+        calling it.
 
-	    Added a note on initialization of 'pause'.
-	    Added a simdata::Pointer<DynamicalObject> parameter in ObjectStats methods.
-	    Added a check to non nullitty of m_GameScreen in CSPSim::setActiveObject.
-	    Fixed a getStats non const method in AircraftObject class.
-	    Checked Onsight changes: a couple of forward class declarations causing
-	    compilation problems in vc++ have been fixed thanks to Onsight. 
-	    Updated .NET project.
+            Added a note on initialization of 'pause'.
+
+            Added a simdata::Pointer<DynamicalObject> parameter in ObjectStats 
+	    methods.
+
+            Added a check to non nullitty of m_GameScreen in CSPSim::setActiveObject.
+
+            Fixed a getStats non const method in AircraftObject class.
+
+            Checked Onsight changes: a couple of forward class declarations causing
+        compilation problems in vc++ have been fixed thanks to Onsight.
+
+            Updated .NET project.
 
 2003-04-18: onsight
             Lots of changes to many parts of CSPSim. First and foremost, the
@@ -28,15 +45,15 @@ Version 0.3.2 (in progress)
             The scene graph is reorganized slightly, in anticipation of
             adding more static and dynamic objects:
 
-	    	        +------------ ROOT -------------+
-			|                               |
+                    +------------ ROOT -------------+
+            |                               |
                    BACKGROUND               +--------OBJECTS-----+
-		        |                   |           |        |
-	          EYE_TRANSFORM          TERRAIN     STATIC    DYNAMIC
-		   |       |
-	          SKY  SKYLIGHTS
-		         /    \
-		    SUNLIGHT MOONLIGHT
+                |                   |           |        |
+              EYE_TRANSFORM          TERRAIN     STATIC    DYNAMIC
+           |       |
+              SKY  SKYLIGHTS
+                 /    \
+            SUNLIGHT MOONLIGHT
 
             Fixed an initialization error in AeroDynamics that could cause
             m_GE to be NAN.
@@ -123,4 +140,3 @@ Version 0.3.2 (in progress)
             simdata's XML format.
 
 *********** VC USERS: please add VirtualScene.cpp to the VC project files
-

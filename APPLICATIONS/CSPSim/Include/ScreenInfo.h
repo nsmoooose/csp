@@ -66,26 +66,24 @@ class GeneralStats: public ScreenInfo
 {
 	osgText::Text* m_Altitude;
 	osgText::Text* m_GlobalPosition;
-	osgText::Text* m_Velocity;
+	osgText::Text* m_Velocity, *m_Magnitude;
 protected:
 	~GeneralStats(){}
 public:
 	GeneralStats(int posx,int posy);
 	virtual void update();
-	
 };
 
 
 class ObjectStats: public ScreenInfo 
 {
 	// input device informations
-	std::vector<osgText::Text*> m_ObjectStats;
+	std::vector<osg::ref_ptr<osgText::Text> > m_ObjectStats;
 protected:
 	~ObjectStats(){}
 public:
 	ObjectStats(int posx,int posy, simdata::Ref<DynamicObject> const& activeObject);
 	virtual void update();
-	
 };
 
 

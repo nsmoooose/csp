@@ -1,6 +1,9 @@
  Version 0.4.0 (in progress)
 ===========================
 
+2005-01-22: delta
+ * Minor cleanup on Animation class.
+
 2005-01-17: delta
  * Minor changes in LandingGear class exposing the drag value. Also,
    gear dynamics now takes into account of the extension.

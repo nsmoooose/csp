@@ -100,6 +100,15 @@ public:
  * by multiple SceneModel instances.
  */
 class Animation: public simdata::Object {
+private:
+
+	simdata::Key m_ModelID;
+	std::string m_ChannelName;
+	int m_LOD;
+	float m_Limit0;
+	float m_Limit1;
+	float m_Gain;
+
 protected:
 	/**
 	* Small template class to reduce & simplify writing.
@@ -146,16 +155,6 @@ protected:
 		virtual ~Callback_A(){}
 	};
 
-private:
-
-	simdata::Key m_ModelID;
-	std::string m_ChannelName;
-	int m_LOD;
-	float m_Limit0;
-	float m_Limit1;
-	float m_Gain;
-
-protected:
 	float m_Default;
 
 	virtual AnimationCallback *newCallback(osg::Node *node, AnimationCallback *callback) const {
@@ -165,6 +164,11 @@ protected:
 		callback->setChannelName(m_ChannelName);
 		return callback;
 	}
+	template <class A, class C>  AnimationCallback *newCallback_(osg::Node *node) const {
+		AnimationCallback *callback = Animation::newCallback(node, new C(dynamic_cast<const A* const>(this)));
+		callback->setDefault(m_Default);
+		return callback;
+	}
 	virtual AnimationCallback *newCallback(osg::NodeCallback* node_callback, AnimationCallback *callback) const {
 		assert(node_callback);
 		assert(callback);
@@ -172,7 +176,11 @@ protected:
 		callback->setChannelName(m_ChannelName);
 		return callback;
 	}
-
+	template <class A, class C>  AnimationCallback *newCallback_(osg::NodeCallback *nodeCallback) const {
+		AnimationCallback *callback = Animation::newCallback(nodeCallback, new C(dynamic_cast<const A* const>(this)));
+		callback->setDefault(m_Default);
+		return callback;
+	}
 public:
 	BEGIN_SIMDATA_XML_VIRTUAL_INTERFACE(Animation)
 		SIMDATA_XML("model_id", Animation::m_ModelID, true)
@@ -187,21 +195,13 @@ public:
 	Animation();
 	virtual ~Animation() {}
 
+	// typically, this method will call newCallback_
 	virtual AnimationCallback *newCallback(osg::Node *node) const = 0;
-	template <class A, class C>  AnimationCallback *newCallback_(osg::Node *node) const {
-		AnimationCallback *callback = Animation::newCallback(node, new C(dynamic_cast<const A* const>(this)));
-		callback->setDefault(m_Default);
-		return callback;
-	}
 	virtual AnimationCallback *newCallback(osg::NodeCallback *nodeCallback) const {
 		 CSP_LOG(OBJECT, WARNING, typeid(*this).name() << ": nested callback not implemented" );
 		 return 0;
 	}
-	template <class A, class C>  AnimationCallback *newCallback_(osg::NodeCallback *nodeCallback) const {
-		AnimationCallback *callback = Animation::newCallback(nodeCallback, new C(dynamic_cast<const A* const>(this)));
-		callback->setDefault(m_Default);
-		return callback;
-	}
+	
 	const std::string &getChannelName() const { return m_ChannelName; }
 	const simdata::Key &getModelID() const { return m_ModelID; }
 	float getLimit0() const { return m_Limit0; }

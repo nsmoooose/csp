@@ -413,6 +413,71 @@ public:
 };
 
 
+class SIMDATA_EXPORT MemoryWriter: public Writer {
+	uint8 * _ptr;
+	int _n;
+	//void write(const void* x, int n) {
+	//	fwrite(x, n, 1, _f);
+	//}
+public:
+	MemoryWriter(uint8 * ptr): Writer(), _n(0) {
+		_ptr = ptr;
+		assert(_ptr != 0);
+	}
+	void resetCount() { _n = 0; }
+	int getCount() { return _n; }
+
+	Writer& operator<<(const char x) {
+		memcpy(_ptr+_n, &x, sizeof(char));
+		_n += sizeof(char);
+		return *this;
+	}
+	Writer& operator<<(const short x) {
+		memcpy(_ptr+_n, &x, sizeof(short));
+		_n += sizeof(short);
+		return *this;
+	}
+	Writer& operator<<(const int x) {
+		memcpy(_ptr+_n, &x, sizeof(x)); 
+		_n += sizeof(int);
+		return *this;
+	}
+	Writer& operator<<(const bool x) {
+		const char c = x ? 1:0;
+		operator<<(c);
+		return *this;
+	}
+	Writer& operator<<(const float x) {
+		memcpy(_ptr+_n, &x, sizeof(x)); 
+		_n += sizeof(x);
+		return *this;
+	}
+	Writer& operator<<(const double x) {
+		memcpy(_ptr+_n, &x, sizeof(x)); 
+		_n += sizeof(x);
+		return *this;
+	}
+	Writer& operator<<(const char* x) {
+		int n = strlen(x);
+		operator<<(n);
+		memcpy(_ptr+_n, x, n);
+		_n += n;
+		return *this;
+	}
+	Writer& operator<<(const BaseType &x) {
+		x.serialize(*this);
+		return *this;
+	}
+	Writer& operator<<(const hasht &x) {
+		memcpy(_ptr+_n, &x, sizeof(x)); 
+		_n += sizeof(x);
+		return *this;
+	}
+	Writer& operator<<(const std::string &x) {
+		operator<<(x.c_str());
+		return *this;
+	}
+};
 NAMESPACE_SIMDATA_END
 
 

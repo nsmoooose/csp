@@ -1,5 +1,8 @@
 Version 0.4.0 (in progress)
 ===========================
+2004-07-21: onsight
+  * Add missing include.
+
 2004-07-20: onsight
   * Add a method to CircularBuffer to undo getReadBuffer (similar to
     abandonWriteBuffer.

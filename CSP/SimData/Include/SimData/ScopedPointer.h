@@ -31,6 +31,7 @@
 #include <SimData/Namespace.h>
 #include <SimData/Properties.h>
 
+#include <cassert>
 
 NAMESPACE_SIMDATA
 

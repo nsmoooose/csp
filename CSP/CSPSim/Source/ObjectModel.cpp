@@ -327,9 +327,9 @@ void ObjectModel::loadModel() {
 		m_Model = adjust;
 		simdata::Matrix3 sd_adjust = simdata::fromOSG(model_orientation); //.getInverse();
 		for (unsigned i = 0; i < m_Contacts.size(); i++) {
-			m_Contacts[i] = sd_adjust * m_Contacts[i] + m_Offset;
+			m_Contacts[i] = sd_adjust * m_Contacts[i]  + m_Offset;
 		}
-		m_ViewPoint = sd_adjust * m_ViewPoint + m_Offset;
+		m_ViewPoint = sd_adjust * m_ViewPoint  + m_Offset;
 	}
 
 	osg::BoundingSphere s = m_Model->getBound();
@@ -504,10 +504,13 @@ void ObjectModel::addGearSprites() {
 	size_t n = m_LandingGear.size();
 	if (n>0) {
 		m_GearSprites = new osg::Group;
+		m_GearSprites->setName("GearSprites");
 		makeFrontGear(m_LandingGear[0]);
 		makeLeftGear(m_LandingGear[1]);
 		makeRightGear(m_LandingGear[2]);
 		m_DebugMarkers->addChild(m_GearSprites.get());
+		simdata::Vector3 move[3] = {simdata::Vector3::ZERO,simdata::Vector3::ZERO,simdata::Vector3::ZERO};
+		updateGearSprites(std::vector<simdata::Vector3>(move,move+3));
 	}
 }
 
@@ -520,7 +523,7 @@ void ObjectModel::updateGearSprites(std::vector<simdata::Vector3> const &move) {
 			osg::Node *node = m_GearSprites->getChild(j);
 			osg::PositionAttitudeTransform *pos = dynamic_cast<osg::PositionAttitudeTransform*>(node); 
 			if (pos && i < move.size()) {
-				osg::Vec3 p = osg::Vec3(m_LandingGear[i].x(),m_LandingGear[i].y(),move[i].z());
+				osg::Vec3 p(m_LandingGear[i].x(),m_LandingGear[i].y(),move[i].z());
 				pos->setPosition(p);
 				++i;
 			}

@@ -134,6 +134,23 @@ public:
 	virtual ~ZoomStop(){}
 };
 
+class ZoomStepIn: public CameraCommand {
+public:
+	virtual void execute() {
+		m_CameraKinematics->zoomStepIn();
+	}
+	virtual ~ZoomStepIn(){}
+};
+
+
+class ZoomStepOut: public CameraCommand {
+public:
+	virtual void execute() {
+		m_CameraKinematics->zoomStepOut();
+	}
+	virtual ~ZoomStepOut(){}
+};
+
 class MouseCommand: public CameraCommand {
 	int m_x,m_y,m_dx,m_dy;
 	void reset() {

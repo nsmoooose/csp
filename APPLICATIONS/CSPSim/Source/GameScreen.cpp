@@ -180,6 +180,8 @@ void GameScreen::createCameraCommand() {
 	m_ZoomIn = new ZoomIn;
 	m_ZoomOut = new ZoomOut;
 	m_ZoomStop = new ZoomStop;
+	m_ZoomStepIn = new ZoomStepIn;
+	m_ZoomStepOut = new ZoomStepOut;
 	m_Mouse = new MouseCommand;
 }
 
@@ -194,6 +196,8 @@ void GameScreen::deleteCameraCommands() {
 	delete m_ZoomOut;
 	delete m_ZoomStop;
 	delete m_Mouse;
+	delete m_ZoomStepIn;
+	delete m_ZoomStepOut;
 	m_CurrentCameraCommand = 0;
 }
 
@@ -253,7 +257,7 @@ void GameScreen::setActiveObject(simdata::Ref<DynamicObject> const &object) {
 		setRecorder(false);
 	}
 	m_ActiveObject = object;
-	m_CameraAgent.notifyObjectToViews(object);
+	m_CameraAgent.setObject(object);
 	if (object.valid() && object->isHuman() && object->isLocal()) {
 		on_View1();
 	} else {
@@ -297,9 +301,7 @@ void GameScreen::on_View2() {
 
 
 void GameScreen::on_View3() {
-	if (m_ActiveObject.valid()) {
-		m_ViewMode = 3;
-	}
+	m_ViewMode = 3;
 }
 
 void GameScreen::on_View4() {
@@ -318,11 +320,8 @@ void GameScreen::on_View7() {
 	m_ViewMode = 7;
 }
 
-void GameScreen::on_View8()
-{
-	if (m_ActiveObject.valid()) {
-		m_ViewMode = 8;
-	}
+void GameScreen::on_View8() {
+	m_ViewMode = 8;
 }
 
 void GameScreen::on_View9() {
@@ -435,11 +434,11 @@ void GameScreen::on_ViewZoomOut() {
 }
 
 void GameScreen::on_ViewZoomStepIn() {
-	m_CurrentCameraCommand = m_ZoomIn;
+	m_CurrentCameraCommand = m_ZoomStepIn;
 }
 
 void GameScreen::on_ViewZoomStepOut() {
-	m_CurrentCameraCommand = m_ZoomOut;
+	m_CurrentCameraCommand = m_ZoomStepOut;
 }
 
 void GameScreen::on_ViewFovStepDec() 

@@ -132,6 +132,18 @@ void CameraKinematics::zoomStop() {
 	m_ZoomRate = 0.0;
 }
 
+void CameraKinematics::zoomStepIn() {
+	m_ZoomRate = -m_BaseRate;
+	scale(100*m_DisplacementCoefficient);
+	m_ZoomRate = 0.0;
+}
+
+void CameraKinematics::zoomStepOut() {
+	m_ZoomRate = m_BaseRate;
+	scale(100*m_DisplacementCoefficient);
+	m_ZoomRate = 0.0;
+}
+
 void CameraKinematics::displacement(int x, int y, int dx, int dy) {
 	m_PanRateX = 0.0;
 	m_PanRateZ = 0.0;

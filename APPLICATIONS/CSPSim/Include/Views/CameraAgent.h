@@ -47,7 +47,7 @@ public:
 	~CameraAgent();
 	void attach(size_t mode,View* vm);
 	void set(size_t vm, CameraCommand* ck = 0);
-	void notifyObjectToViews(const simdata::Ref<DynamicObject> object);
+	void setObject(const simdata::Ref<DynamicObject> object);
 	void updateCamera(double dt);
 	const simdata::Vector3&	getEyePoint() const	{return	m_EyePoint;}
 	const simdata::Vector3&	getLookPoint() const {return m_LookPoint;}

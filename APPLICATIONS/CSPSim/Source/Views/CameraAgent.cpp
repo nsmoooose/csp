@@ -122,7 +122,7 @@ public:
 	}
 };
 
-void CameraAgent::notifyObjectToViews(simdata::Ref<DynamicObject> object) {
+void CameraAgent::setObject(simdata::Ref<DynamicObject> object) {
 	std::for_each(m_ViewList.begin(),m_ViewList.end(),AcceptObject(object));
 	m_CameraKinematics.reset();
 }

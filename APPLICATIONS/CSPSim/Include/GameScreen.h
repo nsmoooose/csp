@@ -119,7 +119,7 @@ protected:
 	CameraAgent m_CameraAgent;
 	CameraCommand *m_PanLeft,*m_PanRight,*m_PanLeftRightStop;
 	CameraCommand *m_PanUp,*m_PanDown,*m_PanUpDownStop;
-	CameraCommand *m_ZoomIn,*m_ZoomOut,*m_ZoomStop;
+	CameraCommand *m_ZoomIn,*m_ZoomOut,*m_ZoomStop,*m_ZoomStepIn,*m_ZoomStepOut;
 	MouseCommand* m_Mouse;
 	CameraCommand* m_CurrentCameraCommand;
 	void createCameraCommand();

@@ -61,6 +61,8 @@ public:
 	void zoomIn();
 	void zoomOut();
 	void zoomStop();
+	void zoomStepIn();
+	void zoomStepOut();
 	void displacement(int x, int y, int dx, int dy);
 	void setAngleX(double angle_x) {m_AngleRotX = angle_x;}
 	double& getAngleX() {return	m_AngleRotX;}

@@ -19,6 +19,15 @@
 #include <SimData/GeoPos.h>
 
 #include <osgDB/FileUtils>
+
+#include <GL/gl.h>		// Header File For The OpenGL32 Library
+#include <GL/glu.h>		// Header File For The GLu32 Library
+
+#include <osg/Timer>
+#include <osgDB/FileUtils>
+
+#include <SDL/SDL.h>
+
 using bus::Kinetics;
 
 #include "ClientNode.h"
@@ -128,7 +137,8 @@ void ClientNode::init()
   int level = g_Config.getInt("Debug", "LoggingLevel", 0, true);
   csplog().setLogCategory(CSP_ALL);
   csplog().setLogPriority(level);
-  csplog().setOutput("ClientNode.log");
+  std::string logfile = g_Config.getString("Debug", "LogFile", "ClientNode.log", true);
+  csplog().setOutput(logfile);
 
   m_battlefield = new VirtualBattlefield();
   m_battlefield->create();
@@ -158,6 +168,30 @@ void ClientNode::init()
 	//::exit(0);
   }
   
+  int  height = 200;
+  int  width = 200;
+	
+  if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK | SDL_INIT_AUDIO) != 0) {
+		std::cerr << "Unable to initialize SDL: " << SDL_GetError() << "\n";
+		CSP_LOG(APP, ERROR, "ERROR! Unable to initialize SDL: " << SDL_GetError());
+		return;
+  }
+  const SDL_VideoInfo *info = SDL_GetVideoInfo();
+  int bpp = info->vfmt->BitsPerPixel;
+
+  Uint32 flags = SDL_OPENGL | SDL_HWSURFACE | SDL_DOUBLEBUF; 
+
+  SDL_Surface * m_SDLScreen = SDL_SetVideoMode(width, height, bpp, flags);
+  SDL_GL_SetAttribute( SDL_GL_DEPTH_SIZE, 32 );
+  SDL_GL_SetAttribute( SDL_GL_DOUBLEBUFFER, 1 );
+
+  if (m_SDLScreen == NULL) {
+		std::cerr << "Unable to set video mode: " << SDL_GetError() << "\n";
+		CSP_LOG(APP, ERROR, "ERROR! Unable to initialize SDL: " << SDL_GetError());
+		return;
+  }
+
+
   initNetworking();
 }
 
@@ -188,22 +222,22 @@ void ClientNode::initNetworking()
   m_remoteHost = g_Config.getString("Networking", "RemoteMessageHost", "127.0.0.1", true);
    
   
-  m_remoteNode = new NetworkNode(1, m_remoteHost.c_str(), m_remotePort );
-  m_localNode =  new NetworkNode(1, m_localHost.c_str(), m_localPort);
+  m_remoteNode = new NetworkNode(m_remoteHost.c_str(), m_remotePort );
+  m_localNode =  new NetworkNode(m_localHost.c_str(), m_localPort);
   
   m_networkMessenger = new NetworkMessenger(m_localNode);
   
   PrintMessageHandler * printMessageHandler = new PrintMessageHandler();
   printMessageHandler->setFrequency(1);
   
-  m_networkMessenger->registerReceiveHandler(printMessageHandler);
+  m_networkMessenger->registerMessageHandler(printMessageHandler);
   
-//  DispatchMessageHandler * dispatchMessageHandler = new DispatchMessageHandler();
-//  dispatchMessageHandler->setLocalAddress( m_localNode->getAddress().getAddress().s_addr );
-//  dispatchMessageHandler->setLocalPort(m_localPort);
-//  dispatchMessageHandler->setVirtualBattlefield(m_battlefield);
-//  dispatchMessageHandler->setDataManager(m_DataManager);
-  
-//  m_networkMessenger->registerReceiveHandler(dispatchMessageHandler);
+  DispatchMessageHandler * dispatchMessageHandler = new DispatchMessageHandler();
+  dispatchMessageHandler->setLocalAddress( m_localNode->getAddress().getAddress().s_addr );
+  dispatchMessageHandler->setLocalPort(m_localPort);
+  dispatchMessageHandler->setVirtualBattlefield(m_battlefield);
+  dispatchMessageHandler->setDataManager(m_DataManager);
+
+  m_networkMessenger->registerMessageHandler(dispatchMessageHandler);
   
 }

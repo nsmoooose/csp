@@ -28,28 +28,28 @@
 
 NetworkNode::NetworkNode()
 {
-  m_node_id = 0;
+//  m_node_id = 0;
   m_addr = "0.0.0.0";
   m_port = 0;
 }
 
-NetworkNode::NetworkNode(int node_id, ost::InetHostAddress addr, Port port)
+NetworkNode::NetworkNode(/* int node_id, */ ost::InetHostAddress addr, Port port)
 {
-  m_node_id = node_id;
+//  m_node_id = node_id;
   m_addr = addr;
   m_port = port;
 }
 
-NetworkNode::NetworkNode(int node_id, const char * hostname, Port port)
+NetworkNode::NetworkNode(/* int node_id, */ const char * hostname, Port port)
 {
-  m_node_id = node_id;
+//  m_node_id = node_id;
   m_addr = ost::InetHostAddress(hostname);
   m_port = port;
 }
 
-NetworkNode::NetworkNode(int node_id, simdata::uint32 addr, Port port)
+NetworkNode::NetworkNode(/* int node_id, */ simdata::uint32 addr, Port port)
 {
-  m_node_id = node_id;
+//  m_node_id = node_id;
   struct in_addr my_in_addr;
   my_in_addr.s_addr = addr;
   m_addr = ost::InetHostAddress(my_in_addr);
@@ -65,10 +65,11 @@ void NetworkNode::setPort(Port port)
   m_port = port;
 }
 
-void NetworkNode::setId(short node_id)
-{
-  m_node_id = node_id;
-}
+
+//void NetworkNode::setId(short node_id)
+//{
+//  m_node_id = node_id;
+//}
 
 ost::InetHostAddress NetworkNode::getAddress()
 {
@@ -80,10 +81,10 @@ Port NetworkNode::getPort()
   return m_port;
 }
 
-short NetworkNode::getId()
-{
-  return m_node_id;
-}
+//short NetworkNode::getId()
+//{
+//  return m_node_id;
+//}
 
 const char * NetworkNode::getHostname()
 {

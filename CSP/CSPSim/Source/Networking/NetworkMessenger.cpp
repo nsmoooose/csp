@@ -146,15 +146,17 @@ void NetworkMessenger::receiveMessages(int max)
     if ( networkMessage ) {
       printf("NetworkMessenger::receiveMessages() - received message\n");
       CSP_LOG(APP, DEBUG, "NetworkMessenger::ReceiveMessages() - Received Message");
-      std::list<NetworkMessageHandler *>::iterator iter = m_ReceiveHandlerList.begin();
-      std::list<NetworkMessageHandler *>::const_iterator end = m_ReceiveHandlerList.end();
-      for (;iter != end ; ++iter) {
-	  NetworkMessageHandler * handler = (NetworkMessageHandler*)(*iter);    
-	  if (handler != NULL) {
-	    CSP_LOG(APP, DEBUG, "NetworkMessenger::ReceiveMessages() - Dispatching Message");	  
-            handler->process(networkMessage);
-	  }
-      }
+      for_each( m_MessageHandlerList.begin(), m_MessageHandlerList.end(), CallHandler(networkMessage));
+      freeMessageBuffer(networkMessage);     
+//      std::list<NetworkMessageHandler *>::iterator iter = m_ReceiveHandlerList.begin();
+//      std::list<NetworkMessageHandler *>::const_iterator end = m_ReceiveHandlerList.end();
+//      for (;iter != end ; ++iter) {
+//	  NetworkMessageHandler * handler = (NetworkMessageHandler*)(*iter);    
+//	  if (handler != NULL) {
+//	    CSP_LOG(APP, DEBUG, "NetworkMessenger::ReceiveMessages() - Dispatching Message");	  
+//            handler->process(networkMessage);
+//	  }
+//      }
     }
     else
       return;	    
@@ -171,9 +173,9 @@ void NetworkMessenger::setOriginatorNode(NetworkNode * originatorNode)
   m_originatorNode = originatorNode;
 }
 
-void NetworkMessenger::registerReceiveHandler(NetworkMessageHandler * handler)
+void NetworkMessenger::registerMessageHandler(NetworkMessageHandler * handler)
 {
-  m_ReceiveHandlerList.push_back(handler);
+  m_MessageHandlerList.push_back(handler);
 }
 
 
@@ -226,7 +228,7 @@ NetworkMessage * NetworkMessenger::allocMessageBuffer()
 // cast the NetworkMessage pointer back to a binary buffer then free the buffer.
 void NetworkMessenger::freeMessageBuffer(NetworkMessage * message)
 {
-  CSP_LOG(APP, DEBUG, "NetworkMessenger::freeMessageBuffer()");
+  CSP_LOG(APP, DEBUG, "NetworkMessenger::freeMessageBuffer() - CurrentPoolSize " << m_messagePool.size());
   
 //  printf("NetworkMessenger::returnMessageToPool() - CurrentPoolSize: %d\n", m_messagePool.size());
   memset(message, 0xFF, NETWORK_PACKET_SIZE);
@@ -312,7 +314,7 @@ int NetworkMessenger::recvfrom(NetworkMessage ** message)
 
 	// TODO validation of header
 	
-	simdata::uint8 * buffer = new simdata::uint8[512];
+	NetworkMessage * buffer = allocMessageBuffer();
 	int maxBufLen = 512;
 	
 	// get the packet
@@ -365,16 +367,27 @@ int NetworkMessenger::recvfrom(std::vector<RoutedMessage> * receiveArray, int * 
 
 	// TODO validation of header
 	
-//	NetworkMessage * message = NetworkMessagePool::getPool()->getMessageFromPool();
-        NetworkMessage * message = (NetworkMessage*)(new simdata::uint8[512]);
+	NetworkMessage * message = allocMessageBuffer();
 	int maxBufLen = 512;
 	
 	// get the packet
 	int numPacketBytes = m_UDPReceiverSocket->receive((void*)message, maxBufLen);
 //	*message = (NetworkMessage*)buffer;
+        // TODO add to receive vector.
 
+	
 	return numPacketBytes;
 	
     }
     return 0;
+}
+
+
+bool operator<( const RemoteObjectKey & lhs, const RemoteObjectKey & rhs)
+{ 
+  if ( lhs.m_ipaddr != rhs.m_ipaddr )
+    return ( lhs.m_ipaddr < rhs.m_ipaddr);
+  if ( lhs.m_port != rhs.m_port )
+    return ( lhs.m_port < rhs.m_port );
+  return ( lhs.m_id < rhs.m_id );
 }

@@ -1,5 +1,5 @@
 #include "Networking.h"
-#include "ServerNode.h"
+#include "RedirectServerNode.h"
 #include <stdio.h>
 #include <stdlib.h>
 #ifndef WIN32
@@ -24,21 +24,20 @@
 
 using bus::Kinetics;
 
-ServerNode::ServerNode()
+RedirectServerNode::RedirectServerNode()
 {
 
 }
 
-int ServerNode::run()
+int RedirectServerNode::run()
 {
   int count = 0;
   
   int level = g_Config.getInt("Debug", "LoggingLevel", 0, true);
-  csplog().setLogCategory(CSP_ALL);
-  csplog().setLogPriority(level);
-  csplog().setOutput("ServerNode.log");
+  csplog().setLogLevels(CSP_ALL, level);
+  csplog().setOutput("RedirectServerNode.log");
   
-  printf("Network test server starting up...\n");
+  printf("Network test redirect server starting up...\n");
   
   Port remotePort = g_Config.getInt("Networking", "LocalMessagePort", 10000, true);
   std::string remoteHost = g_Config.getString("Networking", "LocalMessageHost", "127.0.0.1", true);
@@ -46,17 +45,17 @@ int ServerNode::run()
   Port localPort = (Port)g_Config.getInt("Networking", "RemoteMessagePort", 0, true);
   std::string localHost = g_Config.getString("Networking", "RemoteMessageHost", "127.0.0.1", true);
   
-  NetworkNode * remoteNode = new NetworkNode(1, remoteHost.c_str(), remotePort );
-  NetworkNode * localNode =  new NetworkNode(1, localHost.c_str(), localPort);
+  NetworkNode * remoteNode = new NetworkNode(remoteHost.c_str(), remotePort );
+  NetworkNode * localNode =  new NetworkNode(localHost.c_str(), localPort);
   
   NetworkMessenger * networkMessenger = new NetworkMessenger(localNode);
   PrintMessageHandler * printMessageHandler = new PrintMessageHandler();
   printMessageHandler->setFrequency(1);
-  networkMessenger->registerReceiveHandler(printMessageHandler);
+  networkMessenger->registerMessageHandler(printMessageHandler);
 
   EchoMessageHandler * echoMessageHandler = new EchoMessageHandler();
   echoMessageHandler->setMessenger(networkMessenger);
-  networkMessenger->registerReceiveHandler(echoMessageHandler);
+  networkMessenger->registerMessageHandler(echoMessageHandler);
   
   //MessageSocketDuplex * socketDuplex = new MessageSocketDuplex(localPort);
   NetworkMessage * message=NULL;

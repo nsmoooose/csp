@@ -125,7 +125,8 @@ CSPSim::CSPSim()
 	int level = g_Config.getInt("Debug", "LoggingLevel", 0, true);
 	csplog().setLogCategory(CSP_ALL);
 	csplog().setLogPriority(level);
-	csplog().setOutput("CSPSim.log");
+        std::string logfile = g_Config.getString("Debug", "LogFile", "CSPSim.log", true);
+        csplog().setOutput(logfile);
 
 	CSP_LOG(APP, INFO, "Constructing CSPSim Object...");
 
@@ -428,18 +429,18 @@ void CSPSim::init()
                 std::string remoteAddr = g_Config.getString("Networking", "RemoteMessageHost", "127.0.0.1", true);
 		   
 		Port remotePort = (Port)g_Config.getInt("Networking", "RemoteMessagePort", 0, true);
-		m_RemoteServerNode = new NetworkNode(1, remoteAddr.c_str(), remotePort );
-		m_localNode =  new NetworkNode(1, localAddr.c_str(), localMessagePort);
+		m_RemoteServerNode = new NetworkNode(remoteAddr.c_str(), remotePort );
+		m_localNode =  new NetworkNode(localAddr.c_str(), localMessagePort);
 		m_NetworkMessenger = new NetworkMessenger(m_localNode);
 		PrintMessageHandler * printMessageHandler = new PrintMessageHandler();
 		printMessageHandler->setFrequency(100);
-		m_NetworkMessenger->registerReceiveHandler(printMessageHandler);
+		m_NetworkMessenger->registerMessageHandler(printMessageHandler);
 		DispatchMessageHandler * dispatchMessageHandler = new DispatchMessageHandler();
 		dispatchMessageHandler->setLocalAddress( m_localNode->getAddress().getAddress().s_addr );
 		dispatchMessageHandler->setLocalPort( localMessagePort );
 		dispatchMessageHandler->setDataManager(m_DataManager);
 		dispatchMessageHandler->setVirtualBattlefield(getBattlefield());
-		m_NetworkMessenger->registerReceiveHandler(dispatchMessageHandler);
+		m_NetworkMessenger->registerMessageHandler(dispatchMessageHandler);
 
 #if 0
 		// set the Main Menu then start the main loop

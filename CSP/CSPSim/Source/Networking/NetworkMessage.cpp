@@ -59,7 +59,8 @@ bool NetworkMessage::initialize( simdata::uint16  type, simdata::uint16 payloadL
    m_header.m_messageType = type;
    m_header.m_ipaddr = orginatorNode->getAddress().getAddress().s_addr;
    m_header.m_port = orginatorNode->getPort();
-   m_header.m_id = orginatorNode->getId();
+//   m_header.m_id = orginatorNode->getId();
+   m_header.m_id = 0;
    
 
    // write zeros to the payload section of the buffer.
@@ -147,5 +148,5 @@ Port NetworkMessage::getOriginatorPort()
 
 NetworkNode * NetworkMessage::getOriginatorNode()
 {
-  return new NetworkNode(m_header.m_id, m_header.m_ipaddr, m_header.m_port);
+  return new NetworkNode(/* m_header.m_id, */ m_header.m_ipaddr, m_header.m_port);
 }

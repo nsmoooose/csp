@@ -42,7 +42,8 @@
 %include "Config.i"
 %include "Log.i"
 %include "ClientNode.i"
-%include "ServerNode.i"
+%include "EchoServerNode.i"
+%include "RedirectServerNode.i"
 
 /*
 %include "SimObject.i"

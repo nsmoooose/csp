@@ -31,25 +31,25 @@ void DispatchMessageHandler::process(NetworkMessage * message)
 
   unsigned int objectID = messagePayload->id;
   unsigned int objectType = messagePayload->id;
+  RemoteObjectKey key(addr, port, objectID);
 
-  RemoteObjectWrapper * remoteObjectWrapper = m_RemoteObjectTable.getRemoteObject(
-		  addr, port, objectID );
+  simdata::Ref<DynamicObject> obj = m_RemoteObjectTable.getRemoteObject( key );
 
-  if (remoteObjectWrapper == NULL)
+  if (!obj)
   {
         CSP_LOG(APP, DEBUG, "DispatchMessageHandler::process() - object not found in database so adding it");
 	// TODO create new object and add it to table.
 	//
 	// set remoteObjectWrapper to value of new object.
-        simdata::Ref<DynamicObject> obj = addRemoteObject(message);	
+        obj = addRemoteObject(message);	
         CSP_LOG(APP, DEBUG, "DispatchMessageHandler::process() - wrapping new object");
-	RemoteObjectWrapper * remoteObjectWrapper = new RemoteObjectWrapper(obj);
 	// TODO add new object to wrapper object
         CSP_LOG(APP, DEBUG, "DispatchMessageHandler::process() - putting new object in remote object table");
-	m_RemoteObjectTable.putRemoteObject( addr, port, objectID, remoteObjectWrapper );
+	m_RemoteObjectTable.putRemoteObject( key, obj );
   }
-  simdata::Ref<DynamicObject> object = remoteObjectWrapper->getWrappedObject();
-  object->putUpdateMessage(message);
+  CSP_LOG(APP, DEBUG, "DispatchMessageHandler::process() - updating object with message");
+//  obj->putUpdateMessage(message);
+  CSP_LOG(APP, DEBUG, "DispatchMessageHandler::process() - finished updating object with message");
 	  
 
 }
@@ -70,8 +70,8 @@ simdata::Ref<DynamicObject> DispatchMessageHandler::addRemoteObject( NetworkMess
 		  << vehicle.c_str());
   
   simdata::Ref<DynamicObject> ao = _dataManager.getObject(vehicle.c_str());
+  CSP_LOG(APP, DEBUG, "DispatchMessageHandler::addRemoteObject() - asserting validity of new object");
   assert(ao.valid());
-
 
   CSP_LOG(APP, DEBUG, "DispatchMessageHandler::addRemoteObject() - sending update message to new object");
 //  ao->putUpdateMessage(message);

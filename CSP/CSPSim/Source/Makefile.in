@@ -53,6 +53,7 @@ SOURCES = \
 	DemeterTerrain.cpp \
 	DynamicObject.cpp \
 	DynamicalSystem.cpp \
+	EchoServerNode.cpp \
 	Engine.cpp \
 	EventMapIndex.cpp \
 	EventMapping.cpp \
@@ -77,15 +78,16 @@ SOURCES = \
 	Networking/MessageSocketDuplex.cpp \
 	Networking/NetworkAddress.cpp \
 	Networking/PrintMessageHandler.cpp \
+	Networking/RedirectMessageHandler.cpp \
 	Networking/EchoMessageHandler.cpp \
 	Networking/DispatchMessageHandler.cpp \
 	NumericalMethod.cpp \
 	ObjectModel.cpp \
 	ObjectRangeInfo.cpp \
 	PhysicsModel.cpp \
+	RedirectServerNode.cpp \
 	ScreenInfo.cpp \
 	ScreenInfoManager.cpp \
-	ServerNode.cpp \
 	SimObject.cpp \
 	SimpleConfig.cpp \
 	Sky.cpp \

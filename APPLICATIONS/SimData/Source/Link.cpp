@@ -63,7 +63,10 @@ void LinkBase::unpack(UnPacker& p) {
 		p.unpack(class_id);
 		Object *pobj = archive->_createObject(class_id);
 		pobj->unpack(p);
+		pobj->postCreate();
 		_assign_safe(pobj);
+		// XXX should we also check that 'static' is not set?
+		// (it makes no sense to have a static immediate object)
 	} else {
 		if (p._loadAll()) {
 			_load(archive);

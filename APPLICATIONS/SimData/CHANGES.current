@@ -1,6 +1,14 @@
 Version 0.3.3 (in progress)
 ===========================
 
+2003-06-19: onsight
+            Fixed a bug in Link::unpack(). The Object::postCreate() method
+            was not being called correctly for immediate Objects (those
+            declared directly in the XML stream rather than by reference to
+            an external xml file). This primarily affected Link<T>::vector
+            members, where T was a class derived from Object and the <Object>
+            tag occured inside the <List> tag in a single XML file.
+
 2003-06-11: delta
 	    Removed help methods ... from Math.h.
 	    Added help methods to Conversions.h.

@@ -1,17 +1,17 @@
 // Combat Simulator Project - FlightSim Demo
 // Copyright (C) 2002 The Combat Simulator Project
 // http://csp.sourceforge.net
-// 
+//
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
 // as published by the Free Software Foundation; either version 2
 // of the License, or (at your option) any later version.
-// 
+//
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU General Public License
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
@@ -59,23 +59,23 @@ const short NETWORK_PACKET_SIZE = 512;
 #pragma pack(push, 1)
 //#endif
 
-                     
+
 // Define some structs that will only used for data transfers.
 // These differ from SimData structs in that they have no virtual
 // functions and hence have more predictable binary sizes.
 struct _Vector3Struct
 {
-  double x;
-  double y;
-  double z;
+	double x;
+	double y;
+	double z;
 };
 
 struct _QuatStruct
 {
-  double x;
-  double y;
-  double z;
-  double w;
+	double x;
+	double y;
+	double z;
+	double w;
 };
 
 
@@ -135,7 +135,7 @@ class NetworkMessagePool
 {
 //	private:
 //	    static NetworkMessage * g_messagePool;
-// 
+//
 //	public:
 //	    NetworkMessage * getMessageFromPool(int type, int payloadLen);
 //	    NetworkMessage * getMessageFromPool();
@@ -156,7 +156,7 @@ struct RoutedMessage
 
 class DynamicObject;
 
-//class RemoteObjectWrapper 
+//class RemoteObjectWrapper
 //{
 //  public:
 //   RemoteObjectWrapper(simdata::Ref<DynamicObject> & object) { m_Object = object; }
@@ -165,43 +165,57 @@ class DynamicObject;
 //  private:
 //   simdata::Ref<DynamicObject> m_Object;
 //   NetworkNode   * m_Host;
-//	 
+//
 //
 //};
 
 class RemoteObjectKey
 {
-  protected:
-    int m_ipaddr;
-    short m_port;
-    int m_id;
+protected:
+	int m_ipaddr;
+	short m_port;
+	int m_id;
 
-  public:
-    RemoteObjectKey() { m_ipaddr = 0; m_port = 0; m_id = 0; }
-    
-    RemoteObjectKey(const RemoteObjectKey & key) 
-      { m_ipaddr = key.m_ipaddr; m_port = key.m_port; m_id = key.m_id; }
-    
-    RemoteObjectKey(int ipaddr, short port, int id)
-      { m_ipaddr = ipaddr; m_port = port; m_id = id; }
+public:
+	RemoteObjectKey() {
+		m_ipaddr = 0;
+		m_port = 0;
+		m_id = 0;
+	}
 
-    const RemoteObjectKey & operator=(const RemoteObjectKey & key)
-      { 
-	m_ipaddr = key.m_ipaddr; m_port = key.m_port; m_id = key.m_id;
-	return *this;
-      }
+	RemoteObjectKey(const RemoteObjectKey & key) {
+		m_ipaddr = key.m_ipaddr;
+		m_port = key.m_port;
+		m_id = key.m_id;
+	}
 
+	RemoteObjectKey(int ipaddr, short port, int id) {
+		m_ipaddr = ipaddr;
+		m_port = port;
+		m_id = id;
+	}
 
-    bool operator==(const RemoteObjectKey & key)
-      { return ( (m_ipaddr == key.m_ipaddr) && (m_port == key.m_port) && (m_id == key.m_id) ); }
-	      
-    bool operator!=(const RemoteObjectKey & key)
-      { return ( (m_ipaddr != key.m_ipaddr) || (m_port != key.m_port) || (m_id == key.m_id) ); }
+#ifndef SWIG
+	const RemoteObjectKey & operator=(const RemoteObjectKey & key) {
+		m_ipaddr = key.m_ipaddr; m_port = key.m_port; m_id = key.m_id;
+		return *this;
+	}
+#endif // SWIG
 
-    friend bool operator<( const RemoteObjectKey & lhs, const RemoteObjectKey & rhs);
+	bool operator==(const RemoteObjectKey & key) {
+		return ( (m_ipaddr == key.m_ipaddr) && (m_port == key.m_port) && (m_id == key.m_id) ); 
+	}
+ 
+	bool operator!=(const RemoteObjectKey & key) {
+		return ( (m_ipaddr != key.m_ipaddr) || (m_port != key.m_port) || (m_id == key.m_id) ); 
+	}
 
-    //    bool operator>( RemoteObjectKey & key)
-//      { 
+#ifndef SWIG
+	friend bool operator<( const RemoteObjectKey & lhs, const RemoteObjectKey & rhs);
+#endif // SWIG
+
+//    bool operator>( RemoteObjectKey & key)
+//      {
 //	if ( m_ipaddr != key.m_ipaddr )
 //	  return ( m_ipaddr > key.m_ipaddr);
 //	if ( m_port != key.m_port )
@@ -209,7 +223,7 @@ class RemoteObjectKey
 //	return ( m_id > key.m_id );
 //      }
 //    bool operator<=( RemoteObjectKey & key)
-//      { 
+//      {
 //	if ( m_ipaddr != key.m_ipaddr )
 //	  return ( m_ipaddr <= key.m_ipaddr);
 //	if ( m_port != key.m_port )
@@ -217,7 +231,7 @@ class RemoteObjectKey
 //	return ( m_id <= key.m_id );
 //     }
 //    bool operator>=( RemoteObjectKey & key)
-//      { 
+//      {
 //	if ( m_ipaddr != key.m_ipaddr )
 //	  return ( m_ipaddr >= key.m_ipaddr);
 //	if ( m_port != key.m_port )
@@ -227,26 +241,26 @@ class RemoteObjectKey
 
 };
 
+#ifndef SWIG
 bool operator<( const RemoteObjectKey & lhs, const RemoteObjectKey & rhs);
+#endif // SWIG
 
 class RemoteObjectTable
 {
-  public:
-  simdata::Ref<DynamicObject> getRemoteObject(RemoteObjectKey key)
-  {
-    printf("RemoteObjectTable::getRemoteObject()\n");
-    return m_table[key];
-  }
+public:
+	simdata::Ref<DynamicObject> getRemoteObject(RemoteObjectKey key) {
+		CSP_LOG(NETWORK, TRACE, "RemoteObjectTable::getRemoteObject()");
+		return m_table[key];
+	}
 
-  void putRemoteObject(RemoteObjectKey key, simdata::Ref<DynamicObject> object)
-  {
-    printf("RemoteObjectTable::putRemoteObject() - entering\n");
-    m_table[key] = object;
-    printf("RemoteObjectTable::putRemoteObject() - exiting\n");
-  }
+	void putRemoteObject(RemoteObjectKey key, simdata::Ref<DynamicObject> object) {
+		CSP_LOG(NETWORK, TRACE, "RemoteObjectTable::putRemoteObject() - entering");
+		m_table[key] = object;
+		CSP_LOG(NETWORK, TRACE, "RemoteObjectTable::putRemoteObject() - exiting");
+	}
 
-  private:
-    std::map< RemoteObjectKey, simdata::Ref<DynamicObject> > m_table;
+private:
+	std::map< RemoteObjectKey, simdata::Ref<DynamicObject> > m_table;
 
 };
 
@@ -254,15 +268,13 @@ class NetworkMessageHandler;
 
 class CallHandler 
 {
-  private:
-    NetworkMessage* m_NetworkMessage;
-  public:
-    CallHandler(NetworkMessage* network_message):
-	   m_NetworkMessage(network_message) {  }
-    void operator()(NetworkMessageHandler* network_message_handler) 
-    {
-      network_message_handler->process(m_NetworkMessage);
-    }
+private:
+	NetworkMessage* m_NetworkMessage;
+public:
+	CallHandler(NetworkMessage* network_message): m_NetworkMessage(network_message) {  }
+	void operator()(NetworkMessageHandler* network_message_handler) {
+		network_message_handler->process(m_NetworkMessage);
+	}
 };
 
 

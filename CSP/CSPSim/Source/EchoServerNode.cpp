@@ -1,3 +1,27 @@
+// Combat Simulator Project - FlightSim Demo
+// Copyright (C) 2004 The Combat Simulator Project
+// http://csp.sourceforge.net
+//
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public License
+// as published by the Free Software Foundation; either version 2
+// of the License, or (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+
+
+/**
+ * @file EchoServerNode.cpp
+ *
+ **/
+
 #include <SimNet/Networking.h>
 #include <SimNet/NetworkNode.h>
 #include <SimNet/NetworkMessenger.h>
@@ -39,7 +63,7 @@ int EchoServerNode::run() {
 	std::string logfile = g_Config.getString("Debug", "LogFile", "ServerNode.log", true);
 	csplog().setOutput(logfile);
 
-	printf("Network test echo server starting up...\n");
+	CSP_LOG(NETWORK, INFO, "Network test echo server starting up...");
 
 	//Port remotePort = g_Config.getInt("Networking", "LocalMessagePort", 10000, true);
 	std::string remoteHost = g_Config.getString("Networking", "LocalMessageHost", "127.0.0.1", true);
@@ -65,7 +89,7 @@ int EchoServerNode::run() {
 	while(1) {
 		networkMessenger->receiveMessages();
 		int count = networkMessenger->getSendQueueCount();
-		printf("SendQueueCount: %d\n", count);
+		CSP_LOG(NETWORK, INFO, "SendQueueCount: " << count);
 		networkMessenger->sendQueuedMessages();
 
 		simdata::tstart();

@@ -80,50 +80,47 @@ struct _QuatStruct
 
 
 
-struct ObjectUpdateMessagePayload 
+struct ObjectUpdateMessagePayload
 {
 
-    private:
-      ObjectUpdateMessagePayload();
+private:
+	ObjectUpdateMessagePayload();
 
-    public:
-      unsigned int id;
-      unsigned int objectType;
-      simdata::SimTime timeStamp;
-      _Vector3Struct globalPosition;
-      _Vector3Struct linearVelocity;
-      _Vector3Struct angularVelocity;
-      _QuatStruct attitude;
-    
-  void dumpOffsets()
-  {
-	simdata::uint32 thisAddr = (simdata::uint32)this;
-	simdata::uint32 idAddr = (simdata::uint32)&id;
-	simdata::uint32 typeAddr = (simdata::uint32)&objectType;
-	simdata::uint32 timeStampAddr = (simdata::uint32)&timeStamp;
-	simdata::uint32 globalPositionAddr = (simdata::uint32)&globalPosition;
-	simdata::uint32 linearVelocityAddr = (simdata::uint32)&linearVelocity;
-	simdata::uint32 angularVelocityAddr = (simdata::uint32)&angularVelocity;
-	simdata::uint32 attitudeAddr = (simdata::uint32)&attitude;
+public:
+	unsigned int id;
+	unsigned int objectType;
+	simdata::SimTime timeStamp;
+	_Vector3Struct globalPosition;
+	_Vector3Struct linearVelocity;
+	_Vector3Struct angularVelocity;
+	_QuatStruct attitude;
 
-	printf("ObjectUpdateMessagePayload - IDOffset: %d\n", idAddr - thisAddr );
-	printf("ObjectUpdateMessagePayload - TypeOffset: %d\n", typeAddr - thisAddr);
-	printf("ObjectUpdateMessagePayload - timeStampOffset: %d\n", timeStampAddr - thisAddr );
-	printf("ObjectUpdateMessagePayload - globalPositionOffset: %d\n", globalPositionAddr - thisAddr );
-	printf("ObjectUpdateMessagePayload - linearVelocityOffset: %d\n", linearVelocityAddr - thisAddr );
-	printf("ObjectUpdateMessagePayload - angularVelocityOffset: %d\n", angularVelocityAddr - thisAddr );
-	printf("ObjectUpdateMessagePayload - attitudeOffset: %d\n", attitudeAddr - thisAddr );
-  }
+	void dumpOffsets() {
+		simdata::uint32 thisAddr = (simdata::uint32)this;
+		simdata::uint32 idAddr = (simdata::uint32)&id;
+		simdata::uint32 typeAddr = (simdata::uint32)&objectType;
+		simdata::uint32 timeStampAddr = (simdata::uint32)&timeStamp;
+		simdata::uint32 globalPositionAddr = (simdata::uint32)&globalPosition;
+		simdata::uint32 linearVelocityAddr = (simdata::uint32)&linearVelocity;
+		simdata::uint32 angularVelocityAddr = (simdata::uint32)&angularVelocity;
+		simdata::uint32 attitudeAddr = (simdata::uint32)&attitude;
 
-  void dump()
-  {
-    printf("ObjectUpdateMessagePayload - id: %d\n", id);
-    printf("ObjectUpdateMessagePayload - objectType: %d\n", objectType);
-    printf("ObjectUpdateMessagePayload - timestamp: %f\n", timeStamp);
-    printf("ObjectUpdateMessagePayload - GlobalPosition [x: %f, y: %f, z: %f]\n", globalPosition.x, globalPosition.y, globalPosition.z);
+		CSP_LOG(NETWORK, DEBUG, "ObjectUpdateMessagePayload - IDOffset: " << (idAddr - thisAddr));
+		CSP_LOG(NETWORK, DEBUG, "ObjectUpdateMessagePayload - TypeOffset: " << (typeAddr - thisAddr));
+		CSP_LOG(NETWORK, DEBUG, "ObjectUpdateMessagePayload - timeStampOffset: " << (timeStampAddr - thisAddr));
+		CSP_LOG(NETWORK, DEBUG, "ObjectUpdateMessagePayload - globalPositionOffset: " << (globalPositionAddr - thisAddr));
+		CSP_LOG(NETWORK, DEBUG, "ObjectUpdateMessagePayload - linearVelocityOffset: " << (linearVelocityAddr - thisAddr));
+		CSP_LOG(NETWORK, DEBUG, "ObjectUpdateMessagePayload - angularVelocityOffset: " << (angularVelocityAddr - thisAddr));
+		CSP_LOG(NETWORK, DEBUG, "ObjectUpdateMessagePayload - attitudeOffset: " << (attitudeAddr - thisAddr));
+	}
 
-  }
-    
+	void dump() {
+		CSP_LOG(NETWORK, DEBUG, "ObjectUpdateMessagePayload - id: " << id);
+		CSP_LOG(NETWORK, DEBUG, "ObjectUpdateMessagePayload - objectType: " << objectType);
+		CSP_LOG(NETWORK, DEBUG, "ObjectUpdateMessagePayload - timestamp: " << timeStamp);
+		CSP_LOG(NETWORK, DEBUG, "ObjectUpdateMessagePayload - GlobalPosition: [" << globalPosition.x << ", " << globalPosition.y << ", " << globalPosition.z << "]");
+	}
+
 };
 
 //#ifdef WIN32
@@ -143,7 +140,7 @@ class NetworkMessagePool
 //	    static NetworkMessagePool * getPool();
 
 };
-  
+
 
 
 
@@ -203,11 +200,11 @@ public:
 #endif // SWIG
 
 	bool operator==(const RemoteObjectKey & key) {
-		return ( (m_ipaddr == key.m_ipaddr) && (m_port == key.m_port) && (m_id == key.m_id) ); 
+		return ( (m_ipaddr == key.m_ipaddr) && (m_port == key.m_port) && (m_id == key.m_id) );
 	}
- 
+
 	bool operator!=(const RemoteObjectKey & key) {
-		return ( (m_ipaddr != key.m_ipaddr) || (m_port != key.m_port) || (m_id == key.m_id) ); 
+		return ( (m_ipaddr != key.m_ipaddr) || (m_port != key.m_port) || (m_id == key.m_id) );
 	}
 
 #ifndef SWIG
@@ -266,7 +263,7 @@ private:
 
 class NetworkMessageHandler;
 
-class CallHandler 
+class CallHandler
 {
 private:
 	NetworkMessage* m_NetworkMessage;

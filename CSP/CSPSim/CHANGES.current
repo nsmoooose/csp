@@ -11,6 +11,9 @@
     by tens of cm, even when the camera was close enough that the block
     was being rendered with maximum detail.
 
+  * Cleaned up formatting, copyright notices, and logging in some of the
+    network code.
+
 2004-07-29: onsight
   * Removed a couple obsolete files from the Makefile, and added InputEvent.
 

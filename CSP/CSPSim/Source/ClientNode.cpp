@@ -1,3 +1,27 @@
+// Combat Simulator Project - FlightSim Demo
+// Copyright (C) 2004 The Combat Simulator Project
+// http://csp.sourceforge.net
+//
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public License
+// as published by the Free Software Foundation; either version 2
+// of the License, or (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+
+
+/**
+ * @file ClientNode.cpp
+ *
+ **/
+
 
 #include <SimNet/Networking.h>
 #include <cstdio>
@@ -9,7 +33,7 @@
 #include <SimNet/DispatchMessageHandler.h>
 #include <SimNet/PrintMessageHandler.h>
 
-#include "Config.h"      
+#include "Config.h"
 
 #include "Bus.h"
 
@@ -41,13 +65,13 @@ using bus::Kinetics;
 #include "ClientNode.h"
 
 ClientNode::ClientNode() {
-	printf("ClientNode::ClientNode()\n");
+	CSP_LOG(NETWORK, INFO, "ClientNode::ClientNode()");
 	m_battlefield = NULL;
 	m_networkMessenger = NULL;
 }
 
 int ClientNode::run() {
-	printf("ClientNode::run()\n"); 
+	CSP_LOG(NETWORK, INFO, "ClientNode::run()");
 
 	init();
 
@@ -133,8 +157,8 @@ int ClientNode::run() {
 }
 
 void ClientNode::init() {
-	printf("Network test client starting up...\n");
-	printf("ClientNode::init()\n");
+	CSP_LOG(NETWORK, INFO, "Network test client starting up...");
+	CSP_LOG(NETWORK, INFO, "ClientNode::init()");
 	int level = g_Config.getInt("Debug", "LoggingLevel", 0, true);
 	csplog().setLogCategory(CSP_ALL);
 	csplog().setLogPriority(level);
@@ -180,7 +204,7 @@ void ClientNode::init() {
 	const SDL_VideoInfo *info = SDL_GetVideoInfo();
 	int bpp = info->vfmt->BitsPerPixel;
 
-	Uint32 flags = SDL_OPENGL | SDL_HWSURFACE | SDL_DOUBLEBUF; 
+	Uint32 flags = SDL_OPENGL | SDL_HWSURFACE | SDL_DOUBLEBUF;
 
 	SDL_Surface * m_SDLScreen = SDL_SetVideoMode(width, height, bpp, flags);
 	SDL_GL_SetAttribute( SDL_GL_DEPTH_SIZE, 32 );
@@ -192,44 +216,40 @@ void ClientNode::init() {
 		return;
 	}
 
-
 	initNetworking();
 }
 
 void ClientNode::dumpSizes() {
-	printf("sizeof(int) = %d\n", sizeof(int));
-	printf("sizeof(double) = %d\n", sizeof(double));
-	printf("sizeof(simdata::Vector3) = %d\n", sizeof(simdata::Vector3));
-	printf("sizeof(simdata::Quat) = %d\n", sizeof(simdata::Quat));
-	printf("sizeof(simdata::SimTime) = %d\n", sizeof(simdata::SimTime));
-	printf("sizeof(_Vector3Struct) = %d\n", sizeof(_Vector3Struct));
-	printf("sizeof(_QuatStruct) = %d\n", sizeof(_QuatStruct));
-	printf("sizeof(MessageHeader) = %d\n", sizeof(MessageHeader));
-	 printf("sizeof(NetworkMessage) = %d\n", sizeof(NetworkMessage));
-	printf("sizeof(ObjectUpdateMessagePayload) = %d\n", sizeof(ObjectUpdateMessagePayload)); 
-  
-
-
+	CSP_LOG(NETWORK, INFO, "sizeof(int) = " << sizeof(int));
+	CSP_LOG(NETWORK, INFO, "sizeof(double) = " << sizeof(double));
+	CSP_LOG(NETWORK, INFO, "sizeof(simdata::Vector3) = " << sizeof(simdata::Vector3));
+	CSP_LOG(NETWORK, INFO, "sizeof(simdata::Quat) = " << sizeof(simdata::Quat));
+	CSP_LOG(NETWORK, INFO, "sizeof(simdata::SimTime) = " << sizeof(simdata::SimTime));
+	CSP_LOG(NETWORK, INFO, "sizeof(_Vector3Struct) = " << sizeof(_Vector3Struct));
+	CSP_LOG(NETWORK, INFO, "sizeof(_QuatStruct) = " << sizeof(_QuatStruct));
+	CSP_LOG(NETWORK, INFO, "sizeof(MessageHeader) = " << sizeof(MessageHeader));
+	CSP_LOG(NETWORK, INFO, "sizeof(NetworkMessage) = " << sizeof(NetworkMessage));
+	CSP_LOG(NETWORK, INFO, "sizeof(ObjectUpdateMessagePayload) = " << sizeof(ObjectUpdateMessagePayload));
 }
 
 void ClientNode::initNetworking() {
-	printf("ClientNode::initNetworking()\n");
+	CSP_LOG(NETWORK, INFO, "ClientNode::initNetworking()");
 	m_localPort = g_Config.getInt("Networking", "LocalMessagePort", 10000, true);
 	m_localHost = g_Config.getString("Networking", "LocalMessageHost", "127.0.0.1", true);
-  
+
 	m_remotePort = (Port)g_Config.getInt("Networking", "RemoteMessagePort", 0, true);
-	m_remoteHost = g_Config.getString("Networking", "RemoteMessageHost", "127.0.0.1", true); 
+	m_remoteHost = g_Config.getString("Networking", "RemoteMessageHost", "127.0.0.1", true);
 
 	m_remoteNode = new NetworkNode(m_remoteHost.c_str(), m_remotePort );
 	m_localNode =  new NetworkNode(m_localHost.c_str(), m_localPort);
-  
+
 	m_networkMessenger = new NetworkMessenger(m_localNode);
-  
+
 	PrintMessageHandler * printMessageHandler = new PrintMessageHandler();
 	printMessageHandler->setFrequency(1);
-  
+
 	m_networkMessenger->registerMessageHandler(printMessageHandler);
-  
+
 	DispatchMessageHandler * dispatchMessageHandler = new DispatchMessageHandler();
 	dispatchMessageHandler->setLocalAddress( m_localNode->getAddress().getAddress().s_addr );
 	dispatchMessageHandler->setLocalPort(m_localPort);
@@ -237,5 +257,5 @@ void ClientNode::initNetworking() {
 	dispatchMessageHandler->setDataManager(m_DataManager);
 
 	m_networkMessenger->registerMessageHandler(dispatchMessageHandler);
- 
+
 }

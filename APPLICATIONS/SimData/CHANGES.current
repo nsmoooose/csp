@@ -1,6 +1,15 @@
 Version 0.3.1 (in progress)
 ===========================
 
+2003-03-26: onsight
+            Modified setup.py to byte compile the python scripts during
+	    installation, and to set the file permissions of these to
+	    0644.
+
+	    Added '-v' and '--verbose' flags to make_install* commands
+	    of setup.py.  If set then all the copy operations will be
+	    displayed.
+
             *** ANY MSVC USERS: PLEASE UPDATE THE PROJECT FILE TO INCLUDE ***
 	    *** NOISE.CPP AND REAL.CPP, AND REMOVE SPREAD.CPP             ***
 

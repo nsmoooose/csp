@@ -54,7 +54,7 @@ import os, os.path, string
 # REMEMBER TO 'touch Version.cpp' OR REBUILD ALL
 VERSION = "\"0.3.1\""
 
-def copy_dir(src, dst, files):
+def copy_dir(src, dst, files, verbose=0):
     from distutils.file_util import copy_file
     from distutils.dir_util import mkpath
     from distutils.errors import DistutilsFileError, DistutilsInternalError
@@ -69,7 +69,8 @@ def copy_dir(src, dst, files):
         src_name = os.path.join(src, n)
         dst_name = os.path.join(dst, n)
         if not os.path.isdir(src_name):
-            print "%s => %s" % (src_name, dst_name)
+            if verbose:
+            	print "%s => %s" % (src_name, dst_name)
             copy_file(src_name, dst_name)
 
 def make_install(win, args):
@@ -79,9 +80,12 @@ def make_install(win, args):
 	incpath = os.path.join(inc, "SimData")
 	localinc = os.path.normpath("Include/SimData")
 	libpath = default_libpath
+	verbose = 0
 	for arg in args:
 		if arg.startswith("--prefix="):
 			libpath = arg[9:]
+		elif arg=='-v' or arg=='--verbose':
+			verbose = 1
 	package_files = ['__init__.py', 'Debug.py', 'Parse.py', 'Compile.py']
 	if win:
 		package_files.extend(['cSimData.py', '_cSimData.dll', '_cSimData.lib'])
@@ -93,18 +97,20 @@ def make_install(win, args):
 		package_files.extend(['cSimData.py', '_cSimData.so'])
 	try:
 		print "Installing SimData package to", modpath
-		copy_dir("SimData", modpath, package_files)
+		copy_dir("SimData", modpath, package_files, verbose)
 		print "Installing SimData headers to", incpath
-		copy_dir(localinc, incpath, headers)
-		copy_dir(localinc, incpath, interfaces)
+		copy_dir(localinc, incpath, headers, verbose)
+		copy_dir(localinc, incpath, interfaces, verbose)
 		if not win:
 			print "Installing SimData libraries to", libpath
-			copy_dir("SimData", libpath, ['_cSimData.so', 'libSimData.a'])
+			copy_dir("SimData", libpath, ['_cSimData.so', 'libSimData.a'], verbose)
 		print "Byte compiling the Python modules..."
 		import py_compile
 		for file in package_files:
 			if file.endswith(".py"):
-				py_compile.compile(os.path.join(modpath, file))	
+				script = os.path.join(modpath, file)
+				py_compile.compile(script)	
+				os.chmod(script+"c", 0644)
 	except Exception, e:
 		print e
 		sys.exit(1)

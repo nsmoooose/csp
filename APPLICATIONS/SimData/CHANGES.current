@@ -2,6 +2,14 @@ Version 0.3.3 (in progress)
 ===========================
 
 2003-07-22: onsight
+            Fixed a bug in unpack(string) which could trip an assertion
+	    for corrupt archives rather than throwing an exception.
+
+	    Added GPL headers to Include/SimData/*.i
+
+	    Removed Source/main.cpp (not used)
+
+2003-07-22: onsight
             Applied a patch by Verok Istvan to setup.py which improves the
             installation path handling under Linux. This changes the default
             static library path from /usr/local/lib to 

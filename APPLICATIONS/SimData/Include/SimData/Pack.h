@@ -222,6 +222,8 @@ public:
 	void unpack(char*& y) {
 		int n;
 		unpack(n);
+		// XXX this not really a data underflow
+		if (n < 0) throw DataUnderflow();
 		_n -= n;
 		if (_n < 0) throw DataUnderflow();
 		y = (char*) malloc(sizeof(char)*(n+1));

@@ -48,6 +48,10 @@ std::string ExceptionBase::getType() {
 	return _type; 
 }
 
+std::string ExceptionBase::getError() {
+	return _type + ": " + _msg;
+}
+
 void ExceptionBase::appendMessage(std::string const &msg) { 
 	_msg += "\n" + msg;
 }
@@ -57,7 +61,7 @@ void ExceptionBase::clear() {
 }
 
 void ExceptionBase::details() {
-	std::cerr << _type << ": " << _msg << std::endl;
+	std::cerr << getError() << std::endl;
 }
 
 ExceptionBase::~ExceptionBase() {

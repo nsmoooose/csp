@@ -110,7 +110,7 @@ std::string ospath::dirname(const std::string &path) {
 	if (base == std::string::npos) {
 		return ".";
 	}
-	return path.substr(0, base-1);
+	return path.substr(0, base+1);
 }
 
 std::string ospath::currentdir() {

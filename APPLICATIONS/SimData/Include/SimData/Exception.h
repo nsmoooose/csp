@@ -78,6 +78,11 @@ public:
 	std::string getType();
 
 	/**
+	 * Get the full error message (type + message).
+	 */
+	std::string getError();
+
+	/**
 	 * Add additional information to the error description.
 	 */
 	void appendMessage(std::string const &msg);

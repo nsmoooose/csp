@@ -7,6 +7,7 @@ def addTestSuites(module):
 	suites.extend(mod.suites)
 
 addTestSuites("ArchiveTests")
+addTestSuites("TypeTests")
 
 runner = unittest.TextTestRunner()
 runner.run(unittest.TestSuite(suites))

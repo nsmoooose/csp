@@ -1,5 +1,5 @@
-// Combat Simulator Project - FlightSim Demo
-// Copyright (C) 2002 The Combat Simulator Project
+// Combat Simulator Project - CSPSim
+// Copyright (C) 2002, 2003, 2004 The Combat Simulator Project
 // http://csp.sourceforge.net
 // 
 // This program is free software; you can redistribute it and/or
@@ -27,15 +27,199 @@
 #pragma warning(disable : 4786)
 # endif
 
+#include "LogoScreen.h"
+
+#include <osg/Geode>
+#include <osg/Geometry>
+#include <osg/Texture2D>
+#include <osgDB/ReadFile>
+#include <osgUtil/SceneView>
+
+#include <SimData/FileUtility.h>
+
+#include "Config.h"
+#include "Exception.h"
+
+
+LogoScreen::LogoScreen(int width, int height) {
+	m_width = width;
+	m_height = height;
+}
+
+LogoScreen::~LogoScreen() {
+}
+
+class ImageUpdateCallback: public osg::NodeCallback {
+	typedef std::vector<osg::ref_ptr<osg::Image> > ImageList;
+    osg::ref_ptr<osg::Texture2D> m_Texture;
+	double m_Delay;
+    ImageList m_ImageList;
+    size_t m_CurrPos;
+    double m_PrevTime;
+public:
+    ImageUpdateCallback(osg::Texture2D *texture, double delay):
+	m_Texture(texture),
+	m_Delay(delay),
+	m_PrevTime(0.0) {
+		// serialized?
+		typedef std::vector<std::string> StrVec;
+		StrVec file_name;
+		file_name.push_back("CSPLogo.bmp");
+		file_name.push_back("moonrise1.png");
+		file_name.push_back("crescent.png");
+		file_name.push_back("sunlight2.png");
+		file_name.push_back("sunset4.png");
+		file_name.push_back("console2.png");
+		file_name.push_back("TLabMultitex.jpeg");
+		file_name.push_back("landing-2.png");
+		file_name.push_back("vista.png");
+		file_name.push_back("ground-fog.png");
+		file_name.push_back("fx2.jpeg");
+
+		std::string image_path = getDataPath("ImagePath");
+		StrVec::const_iterator iEnd = file_name.end();
+		for (StrVec::const_iterator i = file_name.begin();i!=iEnd;++i) {
+			std::string path = simdata::ospath::join(image_path, *i);
+			osg::ref_ptr<osg::Image> image = osgDB::readImageFile(path);
+			if (!image.valid()) {
+				std::string err = "Unable to load bitmap " + path;
+				std::cerr << err << std::endl;
+				throw csp::DataError(err);
+			}
+			else
+				m_ImageList.push_back(image);
+		}
+		if (!file_name.empty()) {
+			__time64_t ltime;
+			_time64( &ltime );
+			unsigned int seed = static_cast<unsigned int>(ltime);
+			srand(seed);
+			m_CurrPos = rand() % file_name.size();
+			setValue();
+		}
+	}
+    virtual void operator()(osg::Node*, osg::NodeVisitor *nv) {
+		if (nv->getFrameStamp()) {
+			double currTime = nv->getFrameStamp()->getReferenceTime();
+			//if (currTime-m_PrevTime>m_Delay) {
+			// record time
+			m_PrevTime = currTime;
+			// advance the current positon, wrap round if required.
+			++m_CurrPos %= m_ImageList.size();
+			setValue();
+			//}
+		}
+    }
+	void setValue() {
+		m_Texture->setImage(m_ImageList[m_CurrPos].get());
+	}
+};
+
+void LogoScreen::onInit() {
+	m_LogoView = new osgUtil::SceneView();
+	m_LogoView->setDefaults();
+	m_LogoView->setViewport(0,0,m_width,m_height);
+	float scale = 0.5f; 
+	float w = scale * m_width, h = scale * m_height;
+	m_LogoView->setProjectionMatrixAsOrtho2D(-w,w,-h,h);
+	osg::FrameStamp *fs = new osg::FrameStamp();
+	m_LogoView-> setFrameStamp(fs);
+
+	// create geometry
+    osg::Geometry* geom = new osg::Geometry;
+
+	// disable display list so our modified tex show up
+    geom->setUseDisplayList(false);
+
+	scale = 0.5f * 0.9f;
+	w = scale * m_width;
+	h = scale * m_height;
+    osg::Vec3Array* vertices = new osg::Vec3Array(4);
+	(*vertices)[0] = osg::Vec3(-w,h,0.0f);//top left
+    (*vertices)[1] = osg::Vec3(-w,-h,0.0f);//bottom left
+    (*vertices)[2] = osg::Vec3(w,-h,0.0f);//bottom right
+    (*vertices)[3] = osg::Vec3(w,h,0.0f);//top right
+    geom->setVertexArray(vertices);
+    
+    osg::Vec2Array* texcoords = new osg::Vec2Array(4);
+    (*texcoords)[0].set(0.0f, 1.0f);
+    (*texcoords)[1].set(0.0f, 0.0f);
+    (*texcoords)[2].set(1.0f, 0.0f);
+    (*texcoords)[3].set(1.0f, 1.0f);
+	 
+    geom->setTexCoordArray(0,texcoords);
+
+	osg::Vec4Array* colors = new osg::Vec4Array(1);
+    (*colors)[0].set(1.0f,1.0f,1.0f,1.0f);
+    geom->setColorArray(colors);
+    geom->setColorBinding(osg::Geometry::BIND_OVERALL);
+    geom->addPrimitiveSet(new osg::DrawArrays(GL_QUADS, 0, 4));
+
+	m_Texture = new osg::Texture2D;
+
+	// setup state
+	osg::StateSet *stateset = geom->getOrCreateStateSet();
+	stateset->setTextureAttributeAndModes(0, m_Texture.get(), osg::StateAttribute::ON);
+	geom->setStateSet(stateset);
+
+    osg::Geode *geode = new osg::Geode;
+	geode->addDrawable(geom);
+	geode->setUpdateCallback(new ImageUpdateCallback(m_Texture.get(),0.5));
+
+	m_LogoView->setSceneData(geode);
+}
+
+void LogoScreen::onExit() {	
+}	
+
+void LogoScreen::onRender() {
+	m_LogoView->cull();
+	m_LogoView->draw();
+}
+
+void LogoScreen::onUpdate(double dt) {
+	m_LogoView->update();
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*
 #ifdef WIN32
 #include <windows.h>
 #endif
-
-#include "LogoScreen.h"
-#include "Exception.h"
-#include "Config.h"
-
-#include <SimData/FileUtility.h>
 
 #include <iostream>
 #include <GL/gl.h>			// Header File For The OpenGL32 Library
@@ -99,4 +283,5 @@ void LogoScreen::onRender()
 
 	glDrawPixels(m_image->w, m_image->h, GL_RGB, GL_UNSIGNED_BYTE, m_image->pixels);
 }
+*/
 

@@ -21,7 +21,14 @@
  * @file CSPSim.cpp
  *
  */
-#include <Python.h>
+
+#ifdef _DEBUG
+#undef _DEBUG
+#include <python.h>
+#define _DEBUG
+#else
+#include <python.h>
+#endif
 
 #include "CSPSim.h"
 #include "Config.h"      
@@ -220,9 +227,9 @@ void CSPSim::init()
 		// we don't need this on Linux since libs are usually
 		// installed in /usr/local/lib/osgPlugins or /usr/lib/osgPlugins.
 		// OSG can find itself the plugins.
-#ifdef _WIN32
-		osgDB::setLibraryFilePathList(".");
-#endif
+//#ifdef _WIN32
+//		osgDB::setLibraryFilePathList(".");
+//#endif
 
 		// open the primary data archive
 		std::string cache_path = getCachePath();
@@ -257,9 +264,8 @@ void CSPSim::init()
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		logoScreen.onRender();
-
-		//--m_RenderSurface.swapBuffers();
 		SDL_GL_SwapBuffers();
+		//--m_RenderSurface.swapBuffers();
 
 		m_Clean = false;
 
@@ -269,6 +275,10 @@ void CSPSim::init()
 		m_InterfaceMaps = new EventMapIndex();
 		m_InterfaceMaps->loadAllMaps();
 		m_Interface = new VirtualHID();
+
+		logoScreen.onUpdate(0.0);
+		logoScreen.onRender();
+		SDL_GL_SwapBuffers();
 
 		CSP_LOG(APP, DEBUG, "INIT:: theater");
 
@@ -286,11 +296,19 @@ void CSPSim::init()
 		double lon = m_Terrain->getCenter().longitude();
 		m_Atmosphere.setPosition(lat, lon);
 		
+		logoScreen.onUpdate(0.0);
+		logoScreen.onRender();
+		SDL_GL_SwapBuffers();
+
 		CSP_LOG(APP, DEBUG, "INIT:: scene");
 
 		m_Scene = new VirtualScene();
 		m_Scene->buildScene();
 		m_Scene->setTerrain(m_Terrain);
+
+		logoScreen.onUpdate(0.0);
+		logoScreen.onRender();
+		SDL_GL_SwapBuffers();
 
 		CSP_LOG(APP, DEBUG, "INIT:: battlefield");
 
@@ -298,6 +316,10 @@ void CSPSim::init()
 		m_Battlefield->create();
 		m_Battlefield->setScene(m_Scene);
 		m_Battlefield->setTheater(m_Theater);
+
+		logoScreen.onUpdate(0.0);
+		logoScreen.onRender();
+		SDL_GL_SwapBuffers();
 
 		CSP_LOG(APP, DEBUG, "INIT:: scene configuration");
 
@@ -349,6 +371,10 @@ void CSPSim::init()
 		setActiveObject(ao);
 
 #endif
+		logoScreen.onUpdate(0.0);
+		logoScreen.onRender();
+		SDL_GL_SwapBuffers();
+
 		CSP_LOG(APP, DEBUG, "INIT:: gamescreen");
 
 		// Following variables should be set before calling GameScreen.init()

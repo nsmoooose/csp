@@ -28,8 +28,19 @@
 
 #include "BaseScreen.h"
 
+#include <osg/ref_ptr>
 
-struct SDL_Surface;
+namespace osg {
+	class Texture2D;
+};
+
+namespace osgUtil {
+	class SceneView;
+};
+
+
+
+//struct SDL_Surface;
 
 /**
  * class LogoScreen
@@ -46,11 +57,12 @@ public:
 	virtual void onExit();
 
 	virtual void onRender();
-	virtual void onUpdate(double dt)  {;  }
-
+	virtual void onUpdate(double dt);
 
 private:
-	SDL_Surface * m_image;
+	osg::ref_ptr<osgUtil::SceneView> m_LogoView; 
+	osg::ref_ptr<osg::Texture2D> m_Texture;
+	//SDL_Surface * m_image;
 	int m_width, m_height;
 };
 

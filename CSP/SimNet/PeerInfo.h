@@ -73,7 +73,7 @@ class PeerInfo: public simdata::NonCopyable {
 
 	ConfirmationId m_next_confirmation_id;
 
-	simdata::uint32 m_duplicate_filter[65536/32];
+	simdata::uint32 *m_duplicate_filter;
 	bool m_duplicate_filter_low;
 
 	bool m_statmode_toggle;
@@ -172,6 +172,7 @@ class PeerInfo: public simdata::NonCopyable {
 public:
 
 	PeerInfo();
+	~PeerInfo();
 
 	/** Initialize the peer id.  Can only be called once.
 	 */

@@ -48,6 +48,7 @@ PeerInfo::PeerInfo():
 	m_provisional(false),
 	m_lifetime(0.0),
 	m_next_confirmation_id(1000),
+	m_duplicate_filter(0),
 	m_duplicate_filter_low(true),
 	m_statmode_toggle(false),
 	m_throttle_threshold(0),
@@ -78,7 +79,13 @@ PeerInfo::PeerInfo():
 	m_last_deactivation_time(0.0),
 	m_socket(0)
 {
-	memset(m_duplicate_filter, 0, sizeof(m_duplicate_filter));
+}
+
+PeerInfo::~PeerInfo() {
+	if (m_duplicate_filter) {
+		delete[] m_duplicate_filter;
+		m_duplicate_filter = 0;
+	}
 }
 
 void PeerInfo::update(double dt, double scale_desired_rate_to_self) {
@@ -199,6 +206,10 @@ void PeerInfo::setNode(NetworkNode const &node, double incoming, double outgoing
 	m_socket->connect(node.getAddress(), node.getPort());
 	m_total_peer_incoming_bandwidth = incoming;
 	m_total_peer_outgoing_bandwidth = outgoing;
+	assert(!m_duplicate_filter);
+	m_duplicate_filter = new simdata::uint32[65536/32];
+	assert(m_duplicate_filter);
+	memset(m_duplicate_filter, 0, 4*65536/32);
 	m_active = true;
 }
 
@@ -278,6 +289,8 @@ bool PeerInfo::isDuplicate(const ConfirmationId id) {
 void PeerInfo::disable() {
 	if (m_active) {
 		m_last_deactivation_time = simdata::get_realtime();
+		delete[] m_duplicate_filter;
+		m_duplicate_filter = 0;
 	}
 	m_active = false;
 	if (m_socket.valid()) m_socket->disconnect();
@@ -332,7 +345,7 @@ void ActivePeerList::update(double dt, NetworkInterface *ni) {
 			ni->resend(packet);
 		}
 		bool remove = false;
-		if (peer->getDeadTime() > 30.0) {
+		if (peer->getDeadTime() > 15.0) {
 			SIMNET_LOG(PEER, ALERT, "dead time expired for peer " << peer->getId() << " (" << peer->getDeadTime() << " s)");
 			if (ni->handleDeadPeer(peer)) remove = true;
 		}

@@ -14,5 +14,11 @@
             <Float name="y">-30</Float>
             <Float name="orientation">1.57</Float>
         </Object>
+        <Object class="FeatureLayout">
+            <Path name="model">hangar2</Path>
+            <Float name="x">421</Float>
+            <Float name="y">-300</Float>
+            <Float name="orientation">-1.57</Float>
+        </Object>
     </List>
 </Object>

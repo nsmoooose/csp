@@ -36,6 +36,7 @@
 #include <osg/StateSet>
 #include <osgText/Text>
 
+#include <SimData/Conversions.h>
 #include <SimData/Timing.h>
 
 using std::max;
@@ -176,7 +177,7 @@ void GeneralStats::update() {
 		simdata::Vector3 pos = activeObject->getGlobalPosition();
 		double altitude = activeObject->getAltitude();
 		osstr.str("");
-		osstr << "Altitude: " << setprecision(precision) << fixed << setw(8) << altitude;
+		osstr << "Altitude (agl): " << setprecision(precision) << fixed << setw(8) << simdata::convert::m_ft(altitude) << " fts";
 		m_Altitude->setText(osstr.str());
 
 		osstr.str("");

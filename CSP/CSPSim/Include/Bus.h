@@ -424,8 +424,19 @@ public:
 	 *  @param name The string indetifier of the channel.
 	 *  @param val The initial value of the channel data.
 	 *  @param shared Create a shared (or non-shared) channel.
+	 *  @param signal_ The signaling mechanism of the channel (push/pull/none).
 	 */
 	DataChannel(std::string const &name, T const &val, AccessType access_=ACCESS_LOCAL, SignalType signal_=NO_SIGNAL): DataChannelBase(name, access_, signal_), m_Value(val) {}
+
+	/** Construct and initialize a new channel.  The initial value is
+	 *  determined by the default constructor for the channel data type.
+	 *  This is useful for types that do not have public copy constructors.
+	 *
+	 *  @param name The string indetifier of the channel.
+	 *  @param shared_ Create a shared (or non-shared) channel.
+	 *  @param signal_ The signaling mechanism of the channel (push/pull/none).
+	 */
+	DataChannel(std::string const &name, AccessType access_=ACCESS_LOCAL, SignalType signal_=NO_SIGNAL): DataChannelBase(name, access_, signal_), m_Value() {}
 
 	static DataChannel<T> *newLocal(std::string const &name, T const &val) {
 		return new DataChannel(name, val, ACCESS_LOCAL, NO_SIGNAL);

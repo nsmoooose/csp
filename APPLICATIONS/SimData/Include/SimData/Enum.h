@@ -350,6 +350,18 @@ public:
 	bool operator !=(Enumeration const &e) const { return __core != e.__core; }
 
 	/// Construct a new Enumeration, creating and binding to a new EnumerationCore.
+	///
+	/// The enumeration tokens are must be separated by
+	/// white-space and can have an optional value assignment.
+	/// Tokens without explicit values will be assigned
+	/// sequential values following the last specified
+	/// value.  The initial default value is zero.
+	///
+	/// Examples:
+	/// @code
+	///     "zero one two three"
+	///     "one=1 two three ten=10 eleven"
+	/// @endcode
 	Enumeration(std::string const &s) {
 		__core = new EnumerationCore(s);
 	}

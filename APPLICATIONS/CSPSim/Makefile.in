@@ -1,6 +1,7 @@
 SUBDIRS = Source 
 
 export DEMETER_RELATIVE = ../../THIRDPARTYLIBS/demeter
+export CHUNKLOD_RELATIVE = ../../THIRDPARTYLIBS/CSPChunkLod
 
 export GDEBUGF = -g -Wall
 export GCFLAGS = -fPIC -O2# -DSWIG_GLOBAL #-march=athon-tbird

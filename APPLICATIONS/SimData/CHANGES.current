@@ -1,5 +1,9 @@
 Version 0.4.0 (in progress)
 ===========================
+2003-11-02: onsight
+  * Added #include <algorithm> in InterfaceRegistry.cpp (as 
+    suggested by delta).
+
 2003-11-01: onsight
   * Some tweaking of the Scons scripts.  Added a platform-specific
     configuration (see build_config.py).  Seems to work well under

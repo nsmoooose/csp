@@ -490,10 +490,10 @@ void DataArchive::dump() const {
 		std::string classname = _table[i].classhash.str();
 		if (proxy) classname = proxy->getClassName();
 		std::cout << std::setw(6) << _table[i].length
-		          << std::setw(9) << _table[i].offset
-			  << _table[i].pathhash << " " 
-			  << classname << " "
-			  << getPathString(_table[i].pathhash) << "\n";
+		          << std::setw(9) << _table[i].offset << " "
+		          << _table[i].pathhash << " "
+		          << classname << " "
+		          << getPathString(_table[i].pathhash) << "\n";
 	}
 }
 

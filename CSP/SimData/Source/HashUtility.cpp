@@ -1,18 +1,18 @@
 /* SimDataCSP: Data Infrastructure for Simulations
  * Copyright (C) 2002 Mark Rose <tm2@stm.lbl.gov>
- * 
+ *
  * This file is part of SimDataCSP.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
@@ -23,11 +23,12 @@
  *
  * Hash functions utilities
  *
- * The hash functions coded here are from "Hash Functions for Hash 
+ * The hash functions coded here are from "Hash Functions for Hash
  * Table Lookup" by Robert J. Jenokins Jr., and are Public Domain.
  * See <http://burtleburtle.net/bob/hash/evahash.html>
  */
 #include <sstream>
+#include <iomanip>
 
 #include <SimData/HashUtility.h>
 
@@ -37,7 +38,7 @@ NAMESPACE_SIMDATA
 
 HASH<const char*> hashstring::h;
 
-// The mixing step 
+// The mixing step
 #define mix(a,b,c) \
 { \
   a=a-b;  a=a-c;  a=a^(c>>13); \
@@ -57,12 +58,12 @@ HASH<const char*> hashstring::h;
  *
  *  @param k the string to hash
  *  @param length the length of the string in bytes.
- *  @param  initval the previous hash, or an arbitrary value 
- */ 
+ *  @param  initval the previous hash, or an arbitrary value
+ */
 uint32 newhash(register uint8 const *k, uint32 length, uint32 initval)
 {
    register uint32 a,b,c;  // the internal state
-   uint32 len;             // how many key bytes still need mixing 
+   uint32 len;             // how many key bytes still need mixing
 
    // Set up the internal state
    len = length;
@@ -70,7 +71,7 @@ uint32 newhash(register uint8 const *k, uint32 length, uint32 initval)
    c = initval;         // variable initialization of internal state
 
    // handle most of the key
-  
+
    while (len >= 12)
    {
       a=a+(k[0]+((uint32)k[1]<<8)+((uint32)k[2]<<16) +((uint32)k[3]<<24));
@@ -86,7 +87,7 @@ uint32 newhash(register uint8 const *k, uint32 length, uint32 initval)
 	   case 11: c=c+((uint32)k[10]<<24);
 	   case 10: c=c+((uint32)k[9]<<16);
 	   case 9 : c=c+((uint32)k[8]<<8);
-	      // the first byte of c is reserved for the length 
+	      // the first byte of c is reserved for the length
 	   case 8 : b=b+((uint32)k[7]<<24);
 	   case 7 : b=b+((uint32)k[6]<<16);
 	   case 6 : b=b+((uint32)k[5]<<8);
@@ -95,7 +96,7 @@ uint32 newhash(register uint8 const *k, uint32 length, uint32 initval)
 	   case 3 : a=a+((uint32)k[2]<<16);
 	   case 2 : a=a+((uint32)k[1]<<8);
 	   case 1 : a=a+k[0];
-	     // case 0: nothing left to add 
+	     // case 0: nothing left to add
    }
    mix(a,b,c);
    // report the result
@@ -125,7 +126,9 @@ std::string HashT::str() const {
 }
 
 std::ostream & operator<<(std::ostream &o, const hasht &x) {
-	return o << "(" << x.b << ":" << x.a << ")";
+	return o << "(" << std::hex << std::setw(8) << std::setfill('0') << x.b << ":"
+	                            << std::setw(8) << std::setfill('0') << x.a
+	                << std::dec << std::setw(0) << std::setfill(' ') << ")";
 }
 
 

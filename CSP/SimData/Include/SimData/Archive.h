@@ -85,6 +85,9 @@ public:
 	virtual Reader& operator>>(char &x)=0;
 	virtual Reader& operator>>(short &x)=0;
 	virtual Reader& operator>>(int &x)=0;
+	virtual Reader& operator>>(unsigned char &x)=0;
+	virtual Reader& operator>>(unsigned short &x)=0;
+	virtual Reader& operator>>(unsigned int &x)=0;
 	virtual Reader& operator>>(bool &x)=0;
 	virtual Reader& operator>>(float &x)=0;
 	virtual Reader& operator>>(double &x)=0;
@@ -124,6 +127,21 @@ public:
 	}
 	char _char() {
 		char y;
+		(*self) >> y;
+		return y;
+	}
+	unsigned int _uint() {
+		unsigned int y;
+		(*self) >> y;
+		return y;
+	}
+	unsigned short _ushort() {
+		unsigned short y;
+		(*self) >> y;
+		return y;
+	}
+	unsigned char _uchar() {
+		unsigned char y;
 		(*self) >> y;
 		return y;
 	}
@@ -206,6 +224,9 @@ public:
 	virtual Writer& operator<<(const char)=0;
 	virtual Writer& operator<<(const short)=0;
 	virtual Writer& operator<<(const int)=0;
+	virtual Writer& operator<<(const unsigned char)=0;
+	virtual Writer& operator<<(const unsigned short)=0;
+	virtual Writer& operator<<(const unsigned int)=0;
 	virtual Writer& operator<<(const bool)=0;
 	virtual Writer& operator<<(const float)=0;
 	virtual Writer& operator<<(const double)=0;
@@ -224,6 +245,9 @@ public:
 	void _int(int x) { (*self) << x; }
 	void _short(short x) { (*self) << x; }
 	void _char(char x) { (*self) << x; }
+	void _uint(unsigned int x) { (*self) << x; }
+	void _ushort(unsigned short x) { (*self) << x; }
+	void _uchar(unsigned char x) { (*self) << x; }
 	void _hasht(hasht const &x) { (*self) << x; }
 	void _string(std::string const &x) { (*self) << x; }
 	void _basetype(BaseType const &x) { (*self) << x; }
@@ -274,6 +298,18 @@ public:
 		return *this;
 	}
 	Writer& operator<<(const int x) {
+		write(&x, sizeof(x)); _n += sizeof(x);
+		return *this;
+	}
+	Writer& operator<<(const unsigned char x) {
+		write(&x, sizeof(x)); _n += sizeof(x);
+		return *this;
+	}
+	Writer& operator<<(const unsigned short x) {
+		write(&x, sizeof(x)); _n += sizeof(x);
+		return *this;
+	}
+	Writer& operator<<(const unsigned int x) {
 		write(&x, sizeof(x)); _n += sizeof(x);
 		return *this;
 	}
@@ -357,6 +393,13 @@ public:
 		_d += sizeof(int);
 		return *this;
 	}
+	Reader& operator>>(unsigned int &y) {
+		_n -= sizeof(unsigned int);
+		if (_n < 0) throw DataUnderflow();
+		memcpy(&y, _d, sizeof(unsigned int));
+		_d += sizeof(unsigned int);
+		return *this;
+	}
 	Reader& operator>>(bool &y) {
 		char x;
 		operator>>(x);
@@ -370,11 +413,25 @@ public:
 		_d += sizeof(short);
 		return *this;
 	}
+	Reader& operator>>(unsigned short &y) {
+		_n -= sizeof(unsigned short);
+		if (_n < 0) throw DataUnderflow();
+		memcpy(&y, _d, sizeof(unsigned short));
+		_d += sizeof(unsigned short);
+		return *this;
+	}
 	Reader& operator>>(char &y) {
 		_n -= sizeof(char);
 		if (_n < 0) throw DataUnderflow();
 		memcpy(&y, _d, sizeof(char));
 		_d += sizeof(char);
+		return *this;
+	}
+	Reader& operator>>(unsigned char &y) {
+		_n -= sizeof(unsigned char);
+		if (_n < 0) throw DataUnderflow();
+		memcpy(&y, _d, sizeof(unsigned char));
+		_d += sizeof(unsigned char);
 		return *this;
 	}
 	Reader& operator>>(hasht &y) {
@@ -442,6 +499,21 @@ public:
 		_n += sizeof(int);
 		return *this;
 	}
+	Writer& operator<<(const unsigned char x) {
+		memcpy(_ptr+_n, &x, sizeof(unsigned char));
+		_n += sizeof(unsigned char);
+		return *this;
+	}
+	Writer& operator<<(const unsigned short x) {
+		memcpy(_ptr+_n, &x, sizeof(unsigned short));
+		_n += sizeof(unsigned short);
+		return *this;
+	}
+	Writer& operator<<(const unsigned int x) {
+		memcpy(_ptr+_n, &x, sizeof(x)); 
+		_n += sizeof(int);
+		return *this;
+	}
 	Writer& operator<<(const bool x) {
 		const char c = x ? 1:0;
 		operator<<(c);
@@ -478,6 +550,94 @@ public:
 		return *this;
 	}
 };
+
+
+class SIMDATA_EXPORT MemoryReader: public Reader {
+	uint8 * _ptr;
+	int _n;
+	//void write(const void* x, int n) {
+	//	fwrite(x, n, 1, _f);
+	//}
+public:
+	MemoryReader(uint8 * ptr): Reader(), _n(0) {
+		_ptr = ptr;
+		assert(_ptr != 0);
+	}
+	void resetCount() { _n = 0; }
+	int getCount() { return _n; }
+
+	Reader& operator>>(char &x) {
+		memcpy(&x, _ptr+_n, sizeof(char));
+		_n += sizeof(char);
+		return *this;
+	}
+	Reader& operator>>(short &x) {
+		memcpy(&x, _ptr+_n, sizeof(short));
+		_n += sizeof(short);
+		return *this;
+	}
+	Reader& operator>>(int &x) {
+		memcpy(&x, _ptr+_n, sizeof(x)); 
+		_n += sizeof(int);
+		return *this;
+	}
+	Reader& operator>>(unsigned char &x) {
+		memcpy(&x, _ptr+_n, sizeof(unsigned char));
+		_n += sizeof(unsigned char);
+		return *this;
+	}
+	Reader& operator>>(unsigned short &x) {
+		memcpy(&x, _ptr+_n, sizeof(unsigned short));
+		_n += sizeof(unsigned short);
+		return *this;
+	}
+	Reader& operator>>(unsigned int &x) {
+		memcpy(&x, _ptr+_n, sizeof(x)); 
+		_n += sizeof(int);
+		return *this;
+	}
+	Reader& operator>>(bool &y) {
+		char x;
+		operator>>(x);
+		y = (x != 0);
+		_n += sizeof(char);
+		return *this;
+	}
+	Reader& operator>>(float &x) {
+		memcpy(&x, _ptr+_n, sizeof(x)); 
+		_n += sizeof(x);
+		return *this;
+	}
+	Reader& operator>>(double &x) {
+		memcpy(&x, _ptr+_n, sizeof(x)); 
+		_n += sizeof(x);
+		return *this;
+	}
+	Reader& operator>>(char* &x) {
+		int n = strlen(x);
+		operator>>(n);
+		memcpy(x, _ptr+_n, n);
+		_n += n;
+		return *this;
+	}
+	Reader& operator>>(BaseType &x) {
+		x.serialize(*this);
+		return *this;
+	}
+	Reader& operator>>(hasht &x) {
+		memcpy(&x, _ptr+_n, sizeof(x)); 
+		_n += sizeof(x);
+		return *this;
+	}
+	Reader& operator>>(std::string &y) {
+		char* c;
+		operator>>(c);
+		y.assign(c);
+		free(c);
+		return *this;
+	}
+};
+
 NAMESPACE_SIMDATA_END
 
 

@@ -10,6 +10,7 @@
 #include <SimData/Date.h>
 #include <SimData/DataManager.h>
 
+#include <KineticsChannels.h>
 
 #include <SimData/Types.h>
 #include <SimData/ExceptionBase.h>
@@ -17,6 +18,9 @@
 #include <SimData/DataManager.h>
 #include <SimData/FileUtility.h>
 #include <SimData/GeoPos.h>
+
+using bus::Kinetics;
+
 
 ClientNode::ClientNode()
 {
@@ -69,6 +73,11 @@ int ClientNode::run()
   DataChannel<simdata::Vector3>::Ref b_AngularVelocity;
   DataChannel<simdata::Vector3>::Ref b_LinearVelocity;
   DataChannel<simdata::Quat>::Ref b_Attitude;
+
+  b_GlobalPosition = DataChannel<simdata::Vector3>::newLocal(Kinetics::Position, simdata::Vector3::ZERO);
+  b_AngularVelocity = DataChannel<simdata::Vector3>::newLocal(Kinetics::AngularVelocity, simdata::Vector3::ZERO);
+  b_LinearVelocity = DataChannel<simdata::Vector3>::newLocal(Kinetics::Velocity, simdata::Vector3::ZERO);
+  b_Attitude = DataChannel<simdata::Quat>::newLocal(Kinetics::Attitude, simdata::Quat::IDENTITY);
 
   b_GlobalPosition->value() = simdata::Vector3(1.0, 1.0, 1.0);
   b_AngularVelocity->value() = simdata::Vector3(1.0, 1.0, 1.0);

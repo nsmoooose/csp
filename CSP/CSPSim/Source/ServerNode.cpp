@@ -40,10 +40,10 @@ int ServerNode::run()
 	  printf("Client addr: %s\n", node->getHostname());
 	  printf("Client port: %d\n", node->getPort());
 
-	  printf("MagicNumber: %u\n", header->m_magicNumber);
+	  printf("MagicNumber: 0x%x\n", header->m_magicNumber);
 	  printf("PayloadLen: %u\n", header->m_payloadLen);
 	  printf("MessageType: %u\n", header->m_messageType);
-	  printf("IPAddr: %u\n", header->m_ipaddr);
+	  printf("IPAddr: 0x%x\n", header->m_ipaddr);
 	  printf("Port: %u\n", header->m_port);
 	  printf("ID: %u\n", header->m_id);
 			  

@@ -27,8 +27,8 @@
 
 #include "Networking.h"
 
-unsigned short NetworkMessage::m_magicNumber = 0xFCCF;
-unsigned short NetworkMessage::m_HeaderLen = 14;
+unsigned short NetworkMessage::m_magicNumber = 0xACDC;
+unsigned short NetworkMessage::m_HeaderLen = 16;
 
 /**
  * NetworkMessage()

@@ -22,8 +22,6 @@
  *
  **/
 
-#include "stdinc.h"
-
 
 #include "SimObject.h"
 #include "TankObject.h"

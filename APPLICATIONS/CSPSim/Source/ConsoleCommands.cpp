@@ -23,7 +23,6 @@
  **/
 
 
-#include "stdinc.h"
 #include "ConsoleCommands.h"
 #include "Console.h"
 #include <osg/Group>

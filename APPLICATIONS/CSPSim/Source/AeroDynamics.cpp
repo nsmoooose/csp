@@ -500,7 +500,7 @@ void AeroDynamics::doSimStep(double dt)
 							scale = -2.0 * groundK * height;  // 2 G slide
 							// reduce to zero as speed drops
 							float v = V.Length();
-							scale = scale / (1.0 + v);
+							scale = scale / (0.1 + v);
 							// limit to 4G max
 							if (scale * v > m_Mass * 40.0) {
 								scale = m_Mass * 40.0 / v;

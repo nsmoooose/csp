@@ -22,7 +22,6 @@
  *
  **/
 
-#include "stdinc.h"
 #include <cmath>
 
 #include <osg/Geode>

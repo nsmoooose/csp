@@ -3,11 +3,11 @@
 
 #include "Config.h"
 #include "LogStream.h"
-#include "Platform.h"
 #include "TerrainObject.h"
 #include "VirtualBattlefield.h"
 
 #include <SimData/InterfaceRegistry.h>
+
 
 extern int g_ScreenWidth;
 extern int g_ScreenHeight;

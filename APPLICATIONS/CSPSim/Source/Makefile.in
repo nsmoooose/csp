@@ -45,7 +45,6 @@ SOURCES = \
 	NumericalMethod.cpp \
 	ObjectModel.cpp \
 	ObjectRangeInfo.cpp \
-	Platform.cpp \
 	ScreenInfo.cpp \
 	ScreenInfoManager.cpp \
 	SimObject.cpp \

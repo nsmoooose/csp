@@ -29,10 +29,11 @@
 
 #include "EventMapIndex.h"
 #include "LogStream.h"
-#include "Platform.h"
 
 #include <osgDB/FileUtils>
 #include <osgDB/FileNameUtils>
+
+#include <SimData/FileUtility.h>
 
 #include <assert.h>
 
@@ -78,7 +79,7 @@ void EventMapIndex::loadAllMaps() {
 	CSP_LOG(CSP_APP, CSP_INFO, "Looking for human interface device mappings in '" << path << "'");
 	dc = osgDB::getDirectoryContents(path);
 	for (file = dc.begin(); file != dc.end(); file++) {
-		std::string fn = ospath::join(path, *file);
+		std::string fn = simdata::ospath::join(path, *file);
 		if (osgDB::getFileExtension(fn) != "hid") continue;
 		load(fn);
 	}

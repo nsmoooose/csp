@@ -37,7 +37,6 @@
 #endif
 
 #include "SimpleConfig.h"
-#include "Platform.h"
 
 #include <algorithm>
 #include <string>
@@ -48,6 +47,8 @@
 
 #include "compiler.h"
 #include STL_SSTREAM
+
+#include <SimData/FileUtility.h>
 
 
 // characters surrounding section names ('[' and ']' for typical windows .ini)
@@ -351,9 +352,9 @@ std::string SimpleConfig::getString(const std::string &section, const std::strin
 
 std::string SimpleConfig::getPath(const std::string &section, const std::string &key, std::string default_, bool set) {
 	ConfigValue *v = _find(section, key);
-	std::string native = ospath::filter(default_);
+	std::string native = simdata::ospath::filter(default_);
 	if (v) {
-		return ospath::filter(v->getValue());
+		return simdata::ospath::filter(v->getValue());
 	} else 
 	if (set) {
 		setString(section, key, native);
@@ -396,7 +397,7 @@ void SimpleConfig::setString(const std::string &section, const std::string &key,
 
 void SimpleConfig::setPath(const std::string &section, const std::string &key, const std::string &value) {
 	ConfigValue *v = _find(section, key);
-	std::string native = ospath::filter(value);
+	std::string native = simdata::ospath::filter(value);
 	if (v) {
 		v->setValue(native);
 	} else {

@@ -23,8 +23,6 @@
  **/
 
 
-#include "stdinc.h"
-
 #include <osg/Node>
 #include <osg/StateSet>
 #include <osg/GeoSet>

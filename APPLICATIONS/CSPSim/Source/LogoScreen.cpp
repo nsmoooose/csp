@@ -38,9 +38,9 @@
 
 #include "Config.h"
 #include "LogoScreen.h"
-#include "Platform.h"
 #include "Config.h"
 
+#include <SimData/FileUtility.h>
 
 
 LogoScreen::LogoScreen(int width, int height) 
@@ -56,7 +56,7 @@ LogoScreen::~LogoScreen()
 void LogoScreen::OnInit()
 {
 	std::string image_path = g_Config.getPath("Paths", "ImagePath", ".", true);
-	std::string path = ospath::join(image_path, "CSPLogo.bmp");
+	std::string path = simdata::ospath::join(image_path, "CSPLogo.bmp");
 	m_image = SDL_LoadBMP(path.c_str());
 	if (m_image == NULL)
 	{

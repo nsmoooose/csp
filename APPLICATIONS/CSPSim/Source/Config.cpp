@@ -23,7 +23,7 @@
  **/
 
 #include "Config.h"
-#include "Platform.h"
+#include <SimData/FileUtility.h>
 
 /**
  * Global configuration file
@@ -32,7 +32,7 @@ SimpleConfig g_Config;
 
 
 bool openConfig(std::string ini_path, bool report_error) {
-        ini_path = ospath::filter(ini_path);
+        ini_path = simdata::ospath::filter(ini_path);
         bool found_config = false;
         try {
                 found_config = g_Config.open(ini_path);

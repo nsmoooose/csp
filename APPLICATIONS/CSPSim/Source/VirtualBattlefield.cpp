@@ -32,16 +32,15 @@
 #include <osg/PolygonMode>
 #include <osg/ColorMatrix>
 #include <osg/LightSource>
-
 #include <osgDB/FileUtils>
-
 #include <osgUtil/CullVisitor>
 #include <osgUtil/DisplayListVisitor>
+
+#include <SimData/FileUtility.h>
 
 #include "Config.h"
 #include "CSPSim.h"
 #include "LogStream.h"
-#include "Platform.h"
 
 #ifdef SHADOW
 #include "shadow.h"
@@ -213,9 +212,9 @@ int VirtualBattlefield::buildScene()
 	std::string model_path = g_Config.getPath("Paths", "ModelPath", ".", true);
 	std::string font_path = g_Config.getPath("Paths", "FontPath", ".", true);
 	std::string search_path;
-	ospath::addpath(search_path, image_path);
-	ospath::addpath(search_path, model_path);
-	ospath::addpath(search_path, font_path);
+	simdata::ospath::addpath(search_path, image_path);
+	simdata::ospath::addpath(search_path, model_path);
+	simdata::ospath::addpath(search_path, font_path);
 	osgDB::setDataFilePathList(search_path);
 
 	// we don't need this on Linux since libs are usually

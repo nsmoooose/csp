@@ -24,7 +24,6 @@
 
 
 #include "LogStream.h"
-#include "Platform.h"
 #include "ObjectModel.h"
 #include "Config.h"
 
@@ -36,6 +35,8 @@
 #include <osg/Geometry>
 #include <osg/Texture>
 #include <osg/Geode>
+
+#include <SimData/FileUtility.h>
 
 
 SIMDATA_REGISTER_INTERFACE(ObjectModel)
@@ -185,7 +186,7 @@ void ObjectModel::loadModel() {
 		g_ModelPath = g_Config.getPath("Paths", "ModelPath", ".", true);
 	}
 
-	std::string source = ospath::filter(ospath::join(g_ModelPath, m_ModelPath.getSource()));
+	std::string source = simdata::ospath::filter(simdata::ospath::join(g_ModelPath, m_ModelPath.getSource()));
 
 	CSP_LOG(CSP_APP, CSP_DEBUG, "ObjectModel::loadModel: " << source);
 

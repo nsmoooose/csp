@@ -44,7 +44,6 @@
 #include "MenuScreen.h"
 #include "LogoScreen.h"
 #include "LogStream.h"
-#include "Platform.h"
 #include "SimObject.h"
 #include "StaticObject.h"
 #include "VirtualBattlefield.h"
@@ -54,6 +53,7 @@
 #include <SimData/Exception.h>
 #include <SimData/DataArchive.h>
 #include <SimData/Exception.h>
+#include <SimData/FileUtility.h>
 
 SDLWave  m_audioWave;
 
@@ -188,7 +188,7 @@ void CSPSim::init()
 		CSP_LOG(CSP_APP, CSP_INFO, "Starting CSPSim...");
 
 		std::string data_path = g_Config.getPath("Paths", "DataPath", ".", true);
-		std::string archive_file = ospath::join(data_path, "sim.dar");
+		std::string archive_file = simdata::ospath::join(data_path, "sim.dar");
 		
 		// open the primary data archive
 		try {
@@ -577,7 +577,7 @@ int CSPSim::initSDL()
 
 
 	std::string sound_path = g_Config.getPath("Paths", "SoundPath", ".", true);
-	if ( SDL_LoadWAV(ospath::join(sound_path, "avionturbine5.wav").c_str(),
+	if ( SDL_LoadWAV(simdata::ospath::join(sound_path, "avionturbine5.wav").c_str(),
 		&m_audioWave.spec, &m_audioWave.sound, &m_audioWave.soundlen) == NULL ) {
 		CSP_LOG(CSP_APP, CSP_ERROR,  "Couldn't load " << sound_path << "/avionturbine5.wav: " << SDL_GetError());
 		::exit(1);

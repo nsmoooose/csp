@@ -52,14 +52,14 @@ protected:
 	bool m_bfailed;
 public:
 	NumericalMethod(bool deleteVF = true):
+		m_bdeleteVF(deleteVF),
 		vectorField(0),
-		m_bfailed(false),
-		m_bdeleteVF(deleteVF) {
+		m_bfailed(false) {
 	}
 	NumericalMethod(VectorField* pf, bool deleteVF = true):
+		m_bdeleteVF(deleteVF),
 		vectorField(pf), 
-		m_bfailed(false),
-		m_bdeleteVF(deleteVF) {
+		m_bfailed(false) {
 			if (vectorField)
 				m_dimension = vectorField->getDimension();
 			else

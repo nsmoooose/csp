@@ -47,7 +47,7 @@ class ObjectModel: public simdata::Object
 public:
 	typedef std::vector<simdata::Vector3> ContactList;
 
-	SIMDATA_OBJECT(ObjectModel, 1, 0);
+	SIMDATA_OBJECT(ObjectModel, 2, 0);
 	
 	BEGIN_SIMDATA_XML_INTERFACE(ObjectModel)
 		SIMDATA_XML("model_path", ObjectModel::m_ModelPath, true)
@@ -57,6 +57,7 @@ public:
 		SIMDATA_XML("offset", ObjectModel::m_Offset, false)
 		SIMDATA_XML("scale", ObjectModel::m_Scale, false)
 		SIMDATA_XML("smooth", ObjectModel::m_Smooth, false)
+		SIMDATA_XML("filter", ObjectModel::m_Filter, false)
 		SIMDATA_XML("contacts", ObjectModel::m_Contacts, false)
 	END_SIMDATA_XML_INTERFACE
 
@@ -84,6 +85,7 @@ protected:
 	simdata::Vector3 m_Offset;
 	double m_Scale;
 	bool m_Smooth;
+	bool m_Filter;
 	ContactList m_Contacts;
 	
 	virtual void pack(simdata::Packer& p) const;

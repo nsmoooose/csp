@@ -25,6 +25,10 @@
 
 #include "StaticObject.h"
 
+#include <SimData/InterfaceRegistry.h>
+
+//SIMDATA_REGISTER_INTERFACE(StaticObject)
+
 
 StaticObject::StaticObject(): SimObject()
 {

@@ -32,11 +32,60 @@
 #include <osgDB/Registry>
 #include <osgDB/ReadFile>
 #include <osgUtil/SmoothingVisitor>
+#include <osg/NodeVisitor>
 #include <osg/Geometry>
+#include <osg/Texture>
 #include <osg/Geode>
 
 
 SIMDATA_REGISTER_INTERFACE(ObjectModel)
+
+
+/** 
+ * Visit nodes, applying anisotropic filtering to textures.
+ */
+class TrilinearFilterVisitor: public osg::NodeVisitor
+{
+	float m_MaxAnisotropy;
+public:
+	TrilinearFilterVisitor(float MaxAnisotropy=16.0): 
+		m_MaxAnisotropy(MaxAnisotropy),
+		osg::NodeVisitor(osg::NodeVisitor::TRAVERSE_ALL_CHILDREN) {
+	}
+
+	virtual void apply(osg::Node& node) { 
+	    	osg::StateSet* ss = node.getStateSet();
+		filter(ss);
+		traverse(node);
+	}
+
+	virtual void apply(osg::Geode& geode) {
+	    osg::StateSet* ss = geode.getStateSet();
+	    filter(ss);
+	    for(unsigned int i=0;i<geode.getNumDrawables();++i) {
+		osg::Drawable* drawable = geode.getDrawable(i);
+		if (drawable) {
+		    ss = drawable->getStateSet();
+		    filter(ss);
+		}
+	    }
+	}
+
+	void filter(osg::StateSet *set) {
+		if (!set) return;
+		osg::StateSet::TextureAttributeList& attr = set->getTextureAttributeList();
+		osg::StateSet::TextureAttributeList::iterator i;
+		for (i = attr.begin(); i != attr.end(); i++) {
+			osg::StateSet::AttributeList::iterator tex = i->find(osg::StateAttribute::TEXTURE);
+			if (tex != i->end()) {
+				osg::Texture* texture = dynamic_cast<osg::Texture*>(tex->second.first.get());
+				if (texture) {
+					texture->setMaxAnisotropy(m_MaxAnisotropy);
+				}
+			}
+		}
+	}
+};
 
 
 std::string g_ModelPath = "";
@@ -49,6 +98,7 @@ ObjectModel::ObjectModel(): simdata::Object() {
 	m_Offset = simdata::Vector3::ZERO;
 	m_Scale = 1.0;
 	m_Smooth = true;
+	m_Filter = true;
 }
 
 ObjectModel::~ObjectModel() {
@@ -63,6 +113,7 @@ void ObjectModel::pack(simdata::Packer& p) const {
 	p.pack(m_Offset);
 	p.pack(m_Scale);
 	p.pack(m_Smooth);
+	p.pack(m_Filter);
 	p.pack(m_Contacts);
 }
 
@@ -75,6 +126,7 @@ void ObjectModel::unpack(simdata::UnPacker& p) {
 	p.unpack(m_Offset);
 	p.unpack(m_Scale);
 	p.unpack(m_Smooth);
+	p.unpack(m_Filter);
 	p.unpack(m_Contacts);
 }
 
@@ -126,6 +178,7 @@ osg::Geometry *makeDiamond(simdata::Vector3 const &pos, float s) {
 
     return geom;
 }
+
 
 void ObjectModel::loadModel() {
 	if (g_ModelPath == "") {
@@ -184,6 +237,12 @@ void ObjectModel::loadModel() {
 	if (m_Smooth) {
 		osgUtil::SmoothingVisitor sv;
 		m_Transform->accept(sv);
+	}
+
+	if (m_Filter) {
+		// FIXME: level should come from global graphics settings
+		TrilinearFilterVisitor tfv(16.0);
+		m_Transform->accept(tfv);
 	}
 
 	// TODO: run an optimizer to flatten the model transform (if it differs from identity)

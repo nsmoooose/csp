@@ -46,12 +46,14 @@
 #include "LogStream.h"
 #include "Platform.h"
 #include "SimObject.h"
+#include "StaticObject.h"
 #include "VirtualBattlefield.h"
 #include "ConsoleCommands.h"
 
 #include <SimData/Types.h>
 #include <SimData/Exception.h>
 #include <SimData/DataArchive.h>
+#include <SimData/Exception.h>
 
 SDLWave  m_audioWave;
 
@@ -179,107 +181,119 @@ void CSPSim::togglePause() {
 	m_Paused = !m_Paused;
 } 
 
+
 void CSPSim::init()
 {
-	CSP_LOG(CSP_APP, CSP_INFO, "Starting CSPSim...");
-
-	std::string data_path = g_Config.getPath("Paths", "DataPath", ".", true);
-	std::string archive_file = ospath::join(data_path, "sim.dar");
-	
-	// open the primary data archive
 	try {
-		m_DataArchive = new simdata::DataArchive(archive_file.c_str(), 1);
-		assert(m_DataArchive);
-	} 
-	catch (simdata::Exception e) {
-		CSP_LOG(CSP_APP, CSP_ERROR, "Error opening data archive " << archive_file);
-		CSP_LOG(CSP_APP, CSP_ERROR, e.getType() << ": " << e.getMessage());
-		::exit(0);
-	}
-	
-	// initialize SDL
-	initSDL();
+		CSP_LOG(CSP_APP, CSP_INFO, "Starting CSPSim...");
 
-	SDL_WM_SetCaption("CSPSim", "");
+		std::string data_path = g_Config.getPath("Paths", "DataPath", ".", true);
+		std::string archive_file = ospath::join(data_path, "sim.dar");
+		
+		// open the primary data archive
+		try {
+			m_DataArchive = new simdata::DataArchive(archive_file.c_str(), 1);
+			assert(m_DataArchive);
+		} 
+		catch (simdata::Exception e) {
+			CSP_LOG(CSP_APP, CSP_ERROR, "Error opening data archive " << archive_file);
+			CSP_LOG(CSP_APP, CSP_ERROR, e.getType() << ": " << e.getMessage());
+			::exit(0);
+		}
+		
+		// initialize SDL
+		initSDL();
 
-	// put up Logo screen then do rest of initialization
-	LogoScreen logoScreen(m_ScreenWidth, m_ScreenHeight);
-	logoScreen.OnInit();
+		SDL_WM_SetCaption("CSPSim", "");
 
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		// put up Logo screen then do rest of initialization
+		LogoScreen logoScreen(m_ScreenWidth, m_ScreenHeight);
+		logoScreen.OnInit();
 
-	logoScreen.onRender();
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	SDL_GL_SwapBuffers();
+		logoScreen.onRender();
 
-	// load all interface maps and create a virtual hid for the active object
-	m_InterfaceMaps = new EventMapIndex();
-	m_InterfaceMaps->loadAllMaps();
-	m_Interface = new VirtualHID();
+		SDL_GL_SwapBuffers();
 
-	// FIXME: these functions should be separated!
-	// create the battlefield + scenegraph
-	m_Battlefield = new VirtualBattlefield();
-	m_Battlefield->create();
-	m_Battlefield->buildScene();
+		// load all interface maps and create a virtual hid for the active object
+		m_InterfaceMaps = new EventMapIndex();
+		m_InterfaceMaps->loadAllMaps();
+		m_Interface = new VirtualHID();
 
-	// eventually this will be set in an entirely different way...
-	m_ActiveTerrain = m_DataArchive->getObject("sim:terrain.balkan");
-	m_ActiveTerrain->activate(m_Battlefield);
-	
-	// get view parameters from configuration file.  ultimately there should
-	// be an in-game ui for this and probably a separate config file.
-	bool wireframe = g_Config.getBool("View", "Wireframe", false, true);
-	m_Battlefield->setWireframeMode(wireframe);
-	int view_distance = g_Config.getInt("View", "ViewDistance", 35000, true);
-	m_Battlefield->setViewDistance(view_distance);
-	bool fog = g_Config.getBool("View", "Fog", true, true);
-	m_Battlefield->setFogMode(fog);
-	int fog_start = g_Config.getInt("View", "FogStart", 20000, true);
-	m_Battlefield->setFogStart(fog_start);
-	int fog_end = g_Config.getInt("View", "FogEnd", 35000, true);
-	m_Battlefield->setFogEnd(fog_end);
+		// FIXME: these functions should be separated!
+		// create the battlefield + scenegraph
+		m_Battlefield = new VirtualBattlefield();
+		m_Battlefield->create();
+		m_Battlefield->buildScene();
 
-	// create a couple test objects
-	simdata::Pointer<AircraftObject> ao = m_DataArchive->getObject("sim:vehicles.aircraft.m2k");
-	assert(ao.valid());
-	//ao->setGlobalPosition(483000, 499000, 2000);
-	ao->setGlobalPosition(483000, 499000, 91.2);
-	ao->setOrientation(0, 5.0, 0);
-	ao->setVelocity(0, 120.0, 0);
-	ao->setVelocity(0, 2.0, 0);
-	ao->addToScene(m_Battlefield);
-	m_Battlefield->addObject(ao);
-	
-	/*
-	simdata::Pointer<DynamicObject> to = m_DataArchive->getObject("sim:vehicles.aircraft.m2k");
-	assert(to.valid());
-	to->setGlobalPosition(483000, 501000, 0);
-	to->addToScene(m_Battlefield);
-	m_Battlefield->addObject(to);
-	*/	
+		// eventually this will be set in an entirely different way...
+		m_ActiveTerrain = m_DataArchive->getObject("sim:terrain.balkan");
+		m_ActiveTerrain->activate(m_Battlefield);
 
-	// create screens
-	m_GameScreen = new GameScreen;
+		// get view parameters from configuration file.  ultimately there should
+		// be an in-game ui for this and probably a separate config file.
+		bool wireframe = g_Config.getBool("View", "Wireframe", false, true);
+		m_Battlefield->setWireframeMode(wireframe);
+		int view_distance = g_Config.getInt("View", "ViewDistance", 35000, true);
+		m_Battlefield->setViewDistance(view_distance);
+		bool fog = g_Config.getBool("View", "Fog", true, true);
+		m_Battlefield->setFogMode(fog);
+		int fog_start = g_Config.getInt("View", "FogStart", 20000, true);
+		m_Battlefield->setFogStart(fog_start);
+		int fog_end = g_Config.getInt("View", "FogEnd", 35000, true);
+		m_Battlefield->setFogEnd(fog_end);
 
-	// setup screens
-	m_GameScreen->SetBattlefield(m_Battlefield);
-	m_GameScreen->OnInit();
-
-	// start in the aircraft
-	setActiveObject(ao);
+		// create a couple test objects
+		simdata::Pointer<AircraftObject> ao = m_DataArchive->getObject("sim:vehicles.aircraft.m2k");
+		assert(ao.valid());
+		//ao->setGlobalPosition(483000, 499000, 2000);
+		ao->setGlobalPosition(483000, 499000, 91.2);
+		ao->setOrientation(0, 5.0, 0);
+		ao->setVelocity(0, 120.0, 0);
+		ao->setVelocity(0, 2.0, 0);
+		ao->addToScene(m_Battlefield);
+		m_Battlefield->addObject(ao);
 
 #if 0
-	// set the Main Menu then start the main loop
-	m_MainMenuScreen = new MenuScreen;
-	m_MainMenuScreen->OnInit();
-	changeScreen(m_MainMenuScreen);
+		static simdata::Pointer<StaticObject> so = m_DataArchive->getObject("sim:objects.runway");
+		assert(so.valid());
+		so->setGlobalPosition(483000, 499000, 100.0);
+		so->addToScene(m_Battlefield);
 #endif
 
+		// create screens
+		m_GameScreen = new GameScreen;
 
-	changeScreen(m_GameScreen);
-	
-	logoScreen.OnExit();
+		// setup screens
+		m_GameScreen->SetBattlefield(m_Battlefield);
+		m_GameScreen->OnInit();
+
+		// start in the aircraft
+		setActiveObject(ao);
+
+#if 0
+		// set the Main Menu then start the main loop
+		m_MainMenuScreen = new MenuScreen;
+		m_MainMenuScreen->OnInit();
+		changeScreen(m_MainMenuScreen);
+#endif
+
+		changeScreen(m_GameScreen);
+		logoScreen.OnExit();
+	}
+	catch(DemeterException * pEx) {
+		CSP_LOG(CSP_APP, CSP_ERROR, "CSPSim: caught Demeter exception during initialazation: " << pEx->GetErrorMessage());
+		::exit(1);
+	}
+	catch(simdata::Exception * pEx) {
+		CSP_LOG(CSP_APP, CSP_ERROR, "CSPSim: caught SimData exception during initialization: " << pEx->getMessage());
+		::exit(1);
+	}
+	catch (...) {
+		CSP_LOG(CSP_APP, CSP_ERROR, "CSPSim: caught unknown exception during initialazation.");
+		::exit(1);
+	}
 }
 
 
@@ -407,12 +421,12 @@ void CSPSim::run()
 	catch(DemeterException * pEx) {
 		CSP_LOG(CSP_APP, CSP_ERROR, "Caught Demeter Exception: " << pEx->GetErrorMessage());
 		cleanup();
-		::exit(0);
+		::exit(1);
 	}
 	catch(...) {
 		CSP_LOG(CSP_APP, CSP_ERROR, "MAIN: Unexpected exception, GLErrorNUM: " << glGetError());
 		cleanup();
-		::exit(0);
+		::exit(1);
 	}
 
 }

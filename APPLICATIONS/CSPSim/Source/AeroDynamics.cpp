@@ -468,16 +468,20 @@ void AeroDynamics::doSimStep(double dt)
 							static const float groundK = 1.0e+7;
 							static const float groundBeta = 1.0e+6;
 							double impact = simdata::Dot(V, m_GroundN);
+							// spring plus damping terms
 							double scale = - (height*groundK + impact*fabs(impact)*groundBeta);
+							// semiarbitrary force limit
 							if (fabs(scale)>groundK) {
 								// dissipate some extra energy
+								double body_impact = simdata::Dot(m_VelocityBody, bodyn);
 								if (impact < -10.0) {
 									//m_VelocityBody *= 0.50;
-									m_VelocityBody -= 0.50 * impact * m_GroundN;
+									
+									m_VelocityBody -= 0.25 * body_impact * bodyn;
 									std::cout << "SLAM!!!!\n";
 								} else {
 									//m_VelocityBody *= 0.95;
-									m_VelocityBody -= 0.95 * impact * m_GroundN;
+									m_VelocityBody -= 0.05 * body_impact * bodyn;
 									std::cout << "SLAM!\n";
 								}
 								if (scale > 0.0) {
@@ -488,7 +492,9 @@ void AeroDynamics::doSimStep(double dt)
 							}//if (fabs(scale)>groundK)
 							simdata::Vector3 force = scale * bodyn;
 
+							// sliding velocity 
 							V -= impact * m_GroundN;
+							// in body coordinates
 							V = LocalToBody(V);
 							if (height < -1.0) height = -1.0;
 							scale = -2.0 * groundK * height;  // 2 G slide

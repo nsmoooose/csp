@@ -40,9 +40,20 @@ public:
 	StaticObject();
 	virtual ~StaticObject();
 
+	
+//	EXTEND_SIMDATA_XML_INTERFACE(StaticObject, SimObject)
+//		SIMDATA_XML("direction", StaticObject::m_Direction, false)
+//	END_SIMDATA_XML_INTERFACE
+
+	SIMDATA_OBJECT(StaticObject, 0, 0)
+
 protected:
 	virtual void pack(simdata::Packer& p) const;
 	virtual void unpack(simdata::UnPacker& p);
+	virtual void dump() {}
+	virtual void onUpdate(double) {}
+	virtual void initialize() {}
+	virtual unsigned int onRender() { return 0; }
 };
 
 

@@ -189,14 +189,14 @@ void Curve::_compute_second_derivatives() {
 Curve::value_t Curve::getPrecise(Curve::value_t v) const {
 	int i = find(_breaks, v);
 	double h = _breaks[i+1] - _breaks[i];
-	double f1 = 1.0 - (v - _breaks[i]) / h;// 1.0 - t; ?
-	double f2 = 1.0 - (_breaks[i+1] - v) / h; //  t = (v - _breaks[i]) / h; ?
+	double f2 = (v - _breaks[i]) / h;
+	double f1 = 1.0 - f2;
 	double d1 = _sd[i];
 	double d2 = _sd[i+1];
 	double y1 = _data[i];
 	double y2 = _data[i+1];
 	double s = h * h / 6.0;
-	v = static_cast<value_t>(y1*f1 + y2*f2 + (f1*(f1*f1 - 1.0)*d1 + f2*(f2*f2 - 1.0)*d2)  * s);
+	v = static_cast<value_t>(y1*f1 + y2*f2 + (f1*(f1*f1 - 1.0)*d1 + f2*(f2*f2 - 1.0)*d2) * s);
 	return v;
 }
 

@@ -1,5 +1,11 @@
  Version 0.4.0 (in progress)
 ===========================
+
+2004-12-22: delta
+* Minor change in ScreenInfo: MessageBox has been renamed MessageList.
+
+* Small change in the implementation of ScreenInfo. 
+
 2004-12-19: lologramme
  * Add offices and flag
  * Add Taxi signalisation
@@ -7,7 +13,7 @@
 2004-12-18: onsight
  * Minor patches to make CSPSim work with OSG 0.9.8.  This changes are
    not backwards compatible with OSG 0.9.6.  To continue using the older
-   version, modify the build file to define OSG_096 (e.g. /DOSG_096 with
+   version, modify the build file to define OSG096 (e.g. /DOSG_096 with
    MSVC on the command line, or -DOSG_096 for gcc).  If you upgrade to
    OSG 098, be sure to eliminate all traces of the older version.  Also
    for SCons builds, run 'scons -c all; scons config' before rebuilding.

@@ -25,6 +25,7 @@ SWOPTS = $(GSWOPTS) $(INCLUDE)
 SOURCES = \
 	AircraftObject.cpp \
 	AircraftPhysicsModel.cpp \
+	Animation.cpp \
 	Atmosphere.cpp \
 	base.cpp \
 	BaseDynamics.cpp \
@@ -44,6 +45,8 @@ SOURCES = \
 	EventMapping.cpp \
 	Exception.cpp \
 	F16Model.cpp \
+	FlightDynamics.cpp \
+	FlightModel.cpp \
 	GameScreen.cpp \
 	HID.cpp \
 	InputInterface.cpp \

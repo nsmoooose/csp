@@ -8,6 +8,9 @@
 	    Slight tweaks to acinclude.m4 and configure.in.  The
 	    checks for GNU CC++ are now in place but commented.
 
+	    Added Animation.cpp, FlightModel.cpp, and 
+	    FlightDynamics.cpp to Makefile.in
+
 2003-07-21: onsight
             Moved a couple accessor methods in Theater and 
 	    FeatureLayout out of the class declarations.  This

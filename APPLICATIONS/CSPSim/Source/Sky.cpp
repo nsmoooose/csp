@@ -582,7 +582,7 @@ Moon::Moon(): AstronomicalBody() {
 	dstate->setAttributeAndModes(bf, osg::StateAttribute::ON);
 	osg::Depth *depth = new osg::Depth;
 	depth->setFunction(osg::Depth::ALWAYS);
-	depth->setRange(1.0, 2000000.0);
+	depth->setRange(1.0, 1.0);
 	dstate->setAttributeAndModes(depth, osg::StateAttribute::OFF);
 
 	// set up the geoset.
@@ -1223,7 +1223,7 @@ void Sky::_init()
 	m_SkyDome->setColorArray( &colors );
 	m_SkyDome->setColorBinding( Geometry::BIND_PER_VERTEX );
 	
-	StateSet *dstate = new StateSet;
+	// XXX XXX StateSet *dstate = new StateSet;
 
 	if (1) {
 		Image *image = new Image();
@@ -1247,25 +1247,38 @@ void Sky::_init()
 		tex->setUnRefImageDataAfterApply(false);
 		m_SkyDomeTextureImage = image;
 		m_SkyDomeTexture = tex;
-		dstate->setTextureAttributeAndModes(0, m_SkyDomeTexture.get(), StateAttribute::ON);
-		dstate->setTextureAttributeAndModes(0, new TexEnv);
+		StateSet *dome_state = m_SkyDome->getOrCreateStateSet();
+		dome_state->setTextureAttributeAndModes(0, m_SkyDomeTexture.get(), StateAttribute::ON);
+		dome_state->setTextureAttributeAndModes(0, new TexEnv);
+		dome_state->setMode(GL_LIGHTING, StateAttribute::OFF);
+		dome_state->setMode(GL_CULL_FACE, StateAttribute::OFF);
+		dome_state->setMode(GL_DEPTH_TEST, StateAttribute::OFF);
+		dome_state->setMode(GL_FOG, osg::StateAttribute::OFF);
+		dome_state->setRenderBinDetails(-2,"RenderBin");
+		osg::Depth* depth = new osg::Depth;
+		depth->setFunction(osg::Depth::ALWAYS);
+		depth->setRange(1.0, 1.0);   
+		dome_state->setAttributeAndModes(depth,StateAttribute::OFF);
 	}
 
-	dstate->setMode(GL_LIGHTING, StateAttribute::OFF);
-	dstate->setMode(GL_CULL_FACE, StateAttribute::OFF);
-	dstate->setMode(GL_DEPTH_TEST, StateAttribute::OFF);
-
 	// clear the depth to the far plane.
+	/* XXX XXX
 	osg::Depth* depth = new osg::Depth;
 	depth->setFunction(osg::Depth::ALWAYS);
 	depth->setRange(1.0, 1.0);   
 	dstate->setAttributeAndModes(depth,StateAttribute::OFF);
-	dstate->setMode(GL_FOG, osg::StateAttribute::OFF);
-	dstate->setRenderBinDetails(-2,"RenderBin");
-	m_SkyDome->setStateSet(dstate);
+	*/
 
 	m_StarDome = new StarSystem();
-	m_StarDome->setStateSet(dstate);
+	StateSet *star_state = m_StarDome->getOrCreateStateSet();
+	star_state->setMode(GL_LIGHTING, StateAttribute::OFF);
+	star_state->setMode(GL_CULL_FACE, StateAttribute::OFF);
+	star_state->setMode(GL_DEPTH_TEST, StateAttribute::OFF);
+	star_state->setMode(GL_FOG, osg::StateAttribute::OFF);
+	osg::Depth* depth = new osg::Depth;
+	depth->setFunction(osg::Depth::ALWAYS);
+	depth->setRange(1.0, 1.0);   
+	star_state->setAttributeAndModes(depth,StateAttribute::OFF);
 
 	osg::Geode *geode = new osg::Geode();
 	geode->addDrawable(m_SkyDome.get());

@@ -1,5 +1,18 @@
 Version 0.3.1 (in progress)
 ===========================
+2003-03-27: onsight
+            Created Bin directory and moved all Python scripts and 
+	    libraries there.  
+	    
+	    Renamed CSP.i, CSP.py, _CSP.so/dll to cCSP to avoid confusion 
+	    as to which is the real application to run the sim.  To run
+	    the sim now, change to Bin and run CSPSim.py (or, under
+	    Windows, run 'python CSPSim.py' or double-click on CSPSim.py).
+	    The Linux Makefile is updated but the Windows project file 
+	    still needs to be changed.
+
+	    Removed references to x36.map from gamescreen-core.map.
+	    
 2003-03-26: onsight
             Reorganized the Tools/HID directory.  The "standard" maps are
 	    now under Tools/HID/Maps.  This are the files that have

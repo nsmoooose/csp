@@ -70,8 +70,8 @@ typedef unsigned int uint32;
 # define SIMDATA_PACKED
 typedef __int64 int64;
 typedef unsigned __int64 uint64;
-# define SIMDATA_ULL(x) x
-# define SIMDATA_LL(x) x
+# define SIMDATA_ULL(x) x##ull
+# define SIMDATA_LL(x) x##ll
 #else
 # define SIMDATA_STATIC_CONST_DEF(x) const x
 # define SIMDATA_PACKED __attribute__((packed))

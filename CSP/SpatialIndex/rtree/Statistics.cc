@@ -38,7 +38,7 @@ Statistics::Statistics()
 	reset();
 }
 
-Statistics::Statistics(const Statistics& s)
+Statistics::Statistics(const Statistics& s) : IStatistics(s)
 {
 	m_reads  = s.m_reads;
 	m_writes = s.m_writes;

@@ -41,7 +41,7 @@ Point::Point(const double* pCoords, unsigned long dimension) : m_dimension(dimen
 	memcpy(m_pCoords, pCoords, m_dimension * sizeof(double));
 }
 
-Point::Point(const Point& p) : m_dimension(p.m_dimension), m_pCoords(0)
+Point::Point(const Point& p) : IShape(p), m_dimension(p.m_dimension), m_pCoords(0)
 {
 	m_pCoords = new double[m_dimension];
 	memcpy(m_pCoords, p.m_pCoords, m_dimension * sizeof(double));
@@ -97,7 +97,7 @@ bool Point::intersectsShape(const SpatialIndex::IShape& s) const
 	throw IllegalStateException("intersectsShape: Not implemented yet!");
 }
 
-bool Point::containsShape(const SpatialIndex::IShape& s) const
+bool Point::containsShape(const SpatialIndex::IShape& /*s*/) const
 {
 	return false;
 }
@@ -173,7 +173,7 @@ double Point::getMinimumDistance(const Point& p) const
 
 double Point::getCoordinate(unsigned long index) const throw (IndexOutOfBoundsException)
 {
-	if (index < 0 || index >= m_dimension) throw IndexOutOfBoundsException(index);
+	if (index >= m_dimension) throw IndexOutOfBoundsException(index);
 
 	return m_pCoords[index];
 }

@@ -322,7 +322,7 @@ namespace SpatialIndex
 		extern IStorageManager* createNewDiskStorageManager(std::string& baseName, unsigned long pageSize) throw (std::exception, SpatialIndex::Exception);
 		extern IStorageManager* loadDiskStorageManager(std::string& baseName) throw (std::exception, SpatialIndex::Exception);
 
-		extern IBuffer* returnRandomEvictionsBuffer(IStorageManager& in, PropertySet& in) throw (std::exception, SpatialIndex::Exception);
+		extern IBuffer* returnRandomEvictionsBuffer(IStorageManager& in, PropertySet& in2) throw (std::exception, SpatialIndex::Exception);
 		extern IBuffer* createNewRandomEvictionsBuffer(IStorageManager& in, unsigned int capacity, bool bWriteThrough)
 			throw (std::exception, SpatialIndex::Exception);
 	}
@@ -353,7 +353,7 @@ namespace SpatialIndex
 			RV_RSTAR
 		};
 
-		extern ISpatialIndex* returnPPRTree(IStorageManager& in, PropertySet& in) throw (std::exception, SpatialIndex::Exception);
+		extern ISpatialIndex* returnPPRTree(IStorageManager& in, PropertySet& in2) throw (std::exception, SpatialIndex::Exception);
 		extern ISpatialIndex* createNewPPRTree(
 			IStorageManager& in, double fillFactor, unsigned long indexCapacity,
 			unsigned long leafCapacity, unsigned long dimension, PPRTreeVariant rv, long& out_indexIdentifier)

@@ -60,14 +60,14 @@ unsigned long Node::getChildrenCount() const
 
 long Node::getChildIdentifier(unsigned long index) const throw (IndexOutOfBoundsException)
 {
-	if (index < 0 || index >= m_children) throw IndexOutOfBoundsException(index);
+	if (index >= m_children) throw IndexOutOfBoundsException(index);
 
 	return m_pIdentifier[index];
 }
 
 void Node::getChildShape(unsigned long index, IShape** out) const throw (IndexOutOfBoundsException, std::exception)
 {
-	if (index < 0 || index >= m_children) throw IndexOutOfBoundsException(index);
+	if (index >= m_children) throw IndexOutOfBoundsException(index);
 
 	*out = new Region(*(m_ptrMBR[index]));
 }
@@ -152,7 +152,7 @@ Node::~Node()
 	if (m_pIdentifier != 0) delete[] m_pIdentifier;
 }
 
-Node& Node::operator=(const Node& n)
+Node& Node::operator=(const Node& /*n*/)
 {
 	throw IllegalStateException("operator =: This should never be called.");
 }
@@ -941,7 +941,7 @@ void Node::condenseTree(stack<NodePtr>& toReinsert, stack<long>& pathBuffer, Nod
 	}
 }
 
-void Node::load(unsigned long len, byte* const data)
+void Node::load(unsigned long /*len*/, byte* const data)
 {
 	byte* ptr = data;
 

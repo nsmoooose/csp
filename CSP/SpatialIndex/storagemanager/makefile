@@ -28,7 +28,7 @@
 #    marioh@cs.ucr.edu
 
 CXX = g++
-CXXFLAGS = -O1 -DNDEBUG -fPIC
+CXXFLAGS = -O1 -DNDEBUG -fPIC -W -Wall -pedantic
 
 OBJECTS = StorageManager.o MemoryStorageManager.o DiskStorageManager.o Buffer.o RandomEvictionsBuffer.o
 
@@ -38,7 +38,7 @@ debug:
 	$(MAKE) CXXFLAGS='-g -fPIC'
 
 .cc.o:
-	$(CXX) $(CXXFLAGS) -Wall -I.. -c $<
+	$(CXX) $(CXXFLAGS) -I.. -c $<
 
 clean:
 	rm -rf *~ *.o

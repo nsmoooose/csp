@@ -73,7 +73,7 @@ TimeRegion::TimeRegion(const TimePoint& low, const TimePoint& high)
 }
 
 TimeRegion::TimeRegion(const TimeRegion& r)
-	: m_startTime(r.m_startTime), m_endTime(r.m_endTime)
+	: Region(r), IInterval(r), m_startTime(r.m_startTime), m_endTime(r.m_endTime)
 {
 	m_dimension = r.m_dimension;
 

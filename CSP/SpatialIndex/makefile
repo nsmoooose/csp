@@ -33,7 +33,7 @@ LIBTARGET = libspatialindex.a
 VERSION = 062b
 
 CXX = g++
-CXXFLAGS = -O1 -DNDEBUG -fPIC
+CXXFLAGS = -O1 -DNDEBUG -fPIC -W -Wall
 
 OBJECTS =\
 	spatialindex/Point.o spatialindex/Region.o \

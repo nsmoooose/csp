@@ -87,7 +87,7 @@ Region::Region(const Point& low, const Point& high) : m_dimension(low.m_dimensio
 	memcpy(m_pHigh, high.m_pCoords, m_dimension * sizeof(double));
 }
 
-Region::Region(const Region& r) : m_dimension(r.m_dimension)
+Region::Region(const Region& r) : IShape(r), m_dimension(r.m_dimension)
 {
 	try
 	{
@@ -416,14 +416,14 @@ void Region::getCombinedRegion(Region& out, const Region& in) const
 
 double Region::getLow(unsigned long index) const throw (IndexOutOfBoundsException)
 {
-	if (index < 0 || index >= m_dimension) throw IndexOutOfBoundsException(index);
+	if (index >= m_dimension) throw IndexOutOfBoundsException(index);
 
 	return m_pLow[index];
 }
 
 double Region::getHigh(unsigned long index) const throw (IndexOutOfBoundsException)
 {
-	if (index < 0 || index >= m_dimension) throw IndexOutOfBoundsException(index);
+	if (index >= m_dimension) throw IndexOutOfBoundsException(index);
 
 	return m_pHigh[index];
 }

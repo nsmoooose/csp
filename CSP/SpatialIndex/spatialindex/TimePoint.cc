@@ -56,7 +56,7 @@ TimePoint::TimePoint(const Point& p, double tStart, double tEnd) :
 }
 
 TimePoint::TimePoint(const TimePoint& p) :
-	m_startTime(p.m_startTime), m_endTime(p.m_endTime)
+	Point(p), IInterval(p), m_startTime(p.m_startTime), m_endTime(p.m_endTime)
 {
 	m_dimension = p.m_dimension;
 

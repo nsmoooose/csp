@@ -33,7 +33,7 @@ NetworkSocket::NetworkSocket(NetworkNode * node, short port)
     memset( m_servaddr, 0,  sizeof (struct sockaddr_in));
     m_servaddr->sin_family = AF_INET;
     m_servaddr->sin_port = htons( port );
-    inet_aton( node->getNetworkName(), addrptr);
+    addrptr->s_addr = inet_addr( node->getNetworkName() );
     
 }
 

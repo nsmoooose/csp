@@ -3,6 +3,8 @@
 
 2004-06-12: wolverine
   * Switching the writing of network buffers to use a SimData MemoryWriter.
+    Switched the code that reads network buffers to use a SimData 
+    MemoryReader
 
 2004-06-10: wolverine
   * Merged the networking classes MessageSocketDuplex into

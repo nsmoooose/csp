@@ -194,6 +194,9 @@
 				RelativePath="..\..\Source\EventMapping.cpp">
 			</File>
 			<File
+				RelativePath="..\..\Source\Exception.cpp">
+			</File>
+			<File
 				RelativePath="..\..\Source\F16Model.cpp">
 			</File>
 			<File
@@ -258,6 +261,9 @@
 			</File>
 			<File
 				RelativePath="..\..\Source\VirtualBattlefield.cpp">
+			</File>
+			<File
+				RelativePath="..\..\Source\VirtualScene.cpp">
 			</File>
 			<File
 				RelativePath="..\..\Source\base.cpp">

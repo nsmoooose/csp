@@ -27,7 +27,7 @@
 #include "CSPSim.h"
 #include "GameScreen.h"
 #include "EventMapIndex.h"
-#include "Logstream.h"
+#include "LogStream.h"
 #include "VirtualBattlefield.h"
 
 

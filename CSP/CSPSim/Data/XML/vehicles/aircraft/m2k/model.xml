@@ -5,6 +5,7 @@
 	<Vector	name="axis_0">1	0 0</Vector>
 	<Vector	name="axis_1">0	1 0</Vector>
 	<Vector	name="view_point">0.0 4.1 1.17</Vector>
+	<Vector	name="offset">0.0 -0.3 0</Vector>
 	<Enum name="effect">SpecularHighlights</Enum>
 	<List name="contacts">
 		<Vector>0.0	8.291 0.021</Vector>
@@ -27,24 +28,24 @@
 			<Vector	name="axis">0 -0.34	0.94</Vector>
 		</Object>
 		
-		<Object	class="DrivenRotation">
+		<!--Object	class="DrivenRotation">
 			<String	name="channel_name">ControlSurfaces.ElevatorDeflection</String>
 			<Key name="model_id">Aircraft.LeftOuterAileron</Key>
 			<Int name="lod_limit">1</Int>
 			<Vector	name="axis">-1 0 0</Vector>
-		</Object>
+		</Object-->
 		<Object	class="DrivenRotation">
 			<String	name="channel_name">ControlSurfaces.ElevatorDeflection</String>
 			<Key name="model_id">Aircraft.LeftAileron</Key>
 			<Int name="lod_limit">1</Int>
 			<Vector	name="axis">-1 0 0</Vector>
 		</Object>
-		<Object	class="DrivenRotation">
+		<!--Object	class="DrivenRotation">
 			<String	name="channel_name">ControlSurfaces.ElevatorDeflection</String>
 			<Key name="model_id">Aircraft.RightOuterAileron</Key>
 			<Int name="lod_limit">1</Int>
 			<Vector	name="axis">-1 0 0</Vector>
-		</Object>
+		</Object-->
 		<Object	class="DrivenRotation">
 			<String	name="channel_name">ControlSurfaces.ElevatorDeflection</String>
 			<Key name="model_id">Aircraft.RightAileron</Key>
@@ -58,7 +59,7 @@
 			<Int name="lod_limit">1</Int>
 			<Vector	name="axis">1 0	0</Vector>
 		</Object>
-		<Object	class="DrivenRotation">
+		<!--Object	class="DrivenRotation">
 			<String	name="channel_name">ControlSurfaces.AileronDeflection</String>
 			<Key name="model_id">Aircraft.LeftAileron</Key>
 			<Int name="lod_limit">1</Int>
@@ -69,7 +70,7 @@
 			<Key name="model_id">Aircraft.RightAileron</Key>
 			<Int name="lod_limit">1</Int>
 			<Vector	name="axis">-1 0 0</Vector>
-		</Object>
+		</Object-->
 		<Object	class="DrivenRotation">
 			<String	name="channel_name">ControlSurfaces.AileronDeflection</String>
 			<Key name="model_id">Aircraft.RightOuterAileron</Key>

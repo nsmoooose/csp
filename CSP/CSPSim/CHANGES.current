@@ -17,6 +17,53 @@
   * Fixed camera panning limit calculation that keeps the camera above
     ground in external views.
 
+  * Fixed a bug in the landing gear code that omitted lateral damping
+    of tire oscillations when the wheels were rolling.  Also increased
+    the tire damping coefficient.
+
+  * Changed the tire rolling friction to a simdata::Real so that each
+    wheel spins down at a slightly different rate.  In practice this
+    isn't very noticible, since the wheels generally leave the ground
+    at different times, so they will have different initial speeds.
+
+  * Eliminated the nose-wheel castering routine.  It isn't necessary any
+    more (high speed taxiing is stable), and made the front wheel appear
+    to have a very low friction coefficient for lateral sliding at low
+    speeds.
+
+  * Increased the static friction coefficient of the tires (they were
+    skidding too much / for too long).
+
+  * Improved tire rotation logic: wheels roll backward and forward as
+    appropriate, tire rotation continues when airborne, damped by
+    friction and brakes.
+
+  * Found the cause of mysterious "flips" of the aircraft on the ground.
+    Turns out it isn't the landing gear physics: gusts of wind from behind
+    the aircraft (20-30 m/s) are driving very poorly modelled parts of the
+    "flight" envelope.  No attempt to fix this yet.
+
+  * Update steering wheel angle in flight now.  Aircraft model can disable
+    this "manually" if desired (e.g. NWS disengaged when no WOW) by setting
+    the steering channel to zero.
+
+  * Removed redundant contol of the aileron/elevators that was causing
+    conflicts.  If these inputs and control surfaces need to be coordinated,
+    then a more specialized FCS system should be written.
+
+  * Adjusted the CM of the M2k forward by 30 cm to put more weight on the
+    front wheel (reduce skidding when steering) and increase the takeoff
+    pitchup speed.
+
+  * Adjusted the vertical height of the M2k nosewheel (6.8 cm) to put it on
+    the ground.  (Easier to see now that the camera can be panned down to
+    ground level.)
+
+  * Added an info line to show when ABS is active.
+
+  * Reduced the gear damping coefficients slightly.  The front gear is now
+    slightly underdamped, which agrees with an F-16 cockpit video I've seen.
+
 2004-07-29: onsight
   * Removed a couple obsolete files from the Makefile, and added InputEvent.
 

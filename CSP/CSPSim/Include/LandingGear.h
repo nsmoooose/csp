@@ -70,6 +70,7 @@ public:
 	const std::string& getName() const {return m_Name;}
 	bool getWOW() const { return m_WOW; }
 	double getSkidding() const { return m_Skidding; }
+	bool getABSActive() const { return m_ABSActiveTimer > 0.0; }
 	double getBrakeTemperature() const { return m_BrakeTemperature; }
 	bool getTouchdown() const { return m_Touchdown; }
 	simdata::Vector3 const &getTouchdownPoint() const { return m_TouchdownPoint; }
@@ -119,6 +120,7 @@ protected:
                               simdata::Quat const &q,
                               double const height,
                               simdata::Vector3 const &normalGroundBody);
+	void updateTireRotation(double dt);
 
 
 protected:
@@ -142,7 +144,7 @@ protected:
 	double m_BrakeSteeringLinkage;
 	double m_BrakeSteer;
 	double m_BrakeTemperature;
-	double m_RollingFriction;
+	simdata::Real m_RollingFriction;
 
 	double m_TireK;
 	double m_TireBeta;
@@ -163,6 +165,7 @@ protected:
 	bool m_ABS;
 	bool m_Skidding;
 	bool m_SkidFlag;
+	double m_ABSActiveTimer;
 
 	simdata::Vector3 m_Position;
 	simdata::Vector3 m_NormalForce;
@@ -186,8 +189,8 @@ class GearAnimation: public simdata::Object {
 	DataChannel<double>::Ref b_Absorber02Angle, b_Absorber03Angle;
 
 	// Internal parameters.
-	float m_Absorber02Length, m_Absorber03Length, m_Offset;
 	simdata::Vector3 m_DisplacementAxis;
+	float m_Absorber02Length, m_Absorber03Length, m_Offset;
 
 	// Channel to import.
 	DataChannel<simdata::Vector3>::CRef b_GearDisplacement;
@@ -213,55 +216,57 @@ public:
 		m_Absorber03Length(1.0f),
 		m_Offset(0.0f) {
 	}
-		virtual double onUpdate(double dt) {
-			double vertical_displacement = b_GearDisplacement->value()*m_DisplacementAxis;
-			//XXX special hack for Lologramme ;)
-			b_WheelRotation->value() = (1.0-dt)*b_WheelRotation->value() + dt*b_GearTireRotation->value();
-			b_Absorber02Angle->value() = asin((vertical_displacement-m_Offset)/(2*m_Absorber02Length));
-			b_Absorber03Angle->value() = asin((vertical_displacement-m_Offset)/(2*m_Absorber03Length));
-			return 0.016;
+	virtual double onUpdate(double dt) {
+		double vertical_displacement = b_GearDisplacement->value()*m_DisplacementAxis;
+		b_WheelRotation->value() = b_GearTireRotation->value();
+		b_Absorber02Angle->value() = asin((vertical_displacement-m_Offset)/(2*m_Absorber02Length));
+		b_Absorber03Angle->value() = asin((vertical_displacement-m_Offset)/(2*m_Absorber03Length));
+		return 0.016;
+	}
+	virtual void registerChannels(Bus::Ref bus) {
+		bus->registerChannel(b_WheelRotation.get());
+		bus->registerChannel(b_Absorber02Angle.get());
+		bus->registerChannel(b_Absorber03Angle.get());
+	}
+	virtual void bindChannels(Bus::Ref bus) {
+		b_GearDisplacement = bus->getChannel(m_Displacement);
+		if (!b_GearDisplacement.valid()) {
+			CSP_LOG(OBJECT, WARNING, "GearAnimation: input channel '" << m_Displacement << "' unavailable."); 
 		}
-		virtual void registerChannels(Bus::Ref bus) {
-			bus->registerChannel(b_WheelRotation.get());
-			bus->registerChannel(b_Absorber02Angle.get());
-			bus->registerChannel(b_Absorber03Angle.get());
+		b_GearTireRotation = bus->getChannel(m_GearName + "TireRotation");
+		if (!b_GearTireRotation.valid()) {
+			CSP_LOG(OBJECT, WARNING, "GearAnimation: input channel '" << m_GearName + "TireRotation" << "' unavailable."); 
 		}
-		virtual void bindChannels(Bus::Ref bus) {
-			b_GearDisplacement = bus->getChannel(m_Displacement);
-			if (!b_GearDisplacement.valid()) {
-				CSP_LOG(OBJECT, WARNING, "GearAnimation: input channel '" << m_Displacement << "' unavailable."); 
-			}
-			b_GearTireRotation = bus->getChannel(m_GearName + "TireRotation");
-			if (!b_GearTireRotation.valid()) {
-				CSP_LOG(OBJECT, WARNING, "GearAnimation: input channel '" << m_GearName + "TireRotation" << "' unavailable."); 
-			}
-		}
+	}
 
-		// Helper classes
-		class BindChannels {
-			Bus::Ref m_Bus;
-		public:
-			BindChannels(Bus::Ref bus):m_Bus(bus){ }
-			void operator()(simdata::Link<GearAnimation>& ga) const {
-				ga->bindChannels(m_Bus);
-			}
-		};
-		class RegisterChannels {
-			Bus::Ref m_Bus;
-		public:
-			RegisterChannels(Bus::Ref bus):m_Bus(bus){ }
-			void operator()(simdata::Link<GearAnimation>& ga) const {
-				ga->registerChannels(m_Bus);
-			}
-		};
-		class OnUpdate {
-			double m_dt;
-		public:
-			OnUpdate(double dt):m_dt(dt){ }
-			void operator()(simdata::Link<GearAnimation>& ga) const {
-				ga->onUpdate(m_dt);
-			}
-		};
+	// Helper classes
+	class BindChannels {
+		Bus::Ref m_Bus;
+	public:
+		BindChannels(Bus::Ref bus):m_Bus(bus){ }
+		void operator()(simdata::Link<GearAnimation>& ga) const {
+			ga->bindChannels(m_Bus);
+		}
+	};
+
+	class RegisterChannels {
+		Bus::Ref m_Bus;
+	public:
+		RegisterChannels(Bus::Ref bus):m_Bus(bus){ }
+		void operator()(simdata::Link<GearAnimation>& ga) const {
+			ga->registerChannels(m_Bus);
+		}
+	};
+
+	class OnUpdate {
+		double m_dt;
+	public:
+		OnUpdate(double dt):m_dt(dt){ }
+		void operator()(simdata::Link<GearAnimation>& ga) const {
+			ga->onUpdate(m_dt);
+		}
+	};
+
 protected:
 	virtual void postCreate() {
 		m_DisplacementAxis.normalized();

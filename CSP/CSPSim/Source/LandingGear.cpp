@@ -1,5 +1,5 @@
 // Combat Simulator Project - FlightSim Demo
-// Copyright (C) 2002 The Combat Simulator Project
+// Copyright (C) 2002, 2004 The Combat Simulator Project
 // http://csp.sourceforge.net
 //
 // This program is free software; you can redistribute it and/or
@@ -30,7 +30,11 @@
  *  Extension/retract modelling + 3D hooks
  *  Rough terrain damage
  *  Generic damage modelling, gear collapse,  etc.
- *	wheels' inerty?
+ *  wheel inertia
+ *    - move spindown to common method
+ *    - base spindown on friction coefficient (simdata::Real)
+ *    - figure out why wheels slip without braking
+ *    - real wheel inertia?
  *
  */
 
@@ -81,11 +85,12 @@ LandingGear::LandingGear() {
 	m_BrakeFriction = 1.0;
 	m_BrakeSlip = 0.8;
 	m_BrakeTemperature = 300.0;
-	m_RollingFriction = 1000.0;
+	m_RollingFriction.set(0.02, 0.002);
 	m_TireFriction = 0.8;
 	m_TireSkidFriction = 0.6;
 	m_TireStaticFriction = 1.0;
 	m_ABS = true;
+	m_ABSActiveTimer = 0.0;
 	m_NormalForce = Vector3::ZERO;
 	m_TangentForce = Vector3::ZERO;
 	m_TouchdownPoint = Vector3::ZERO;
@@ -99,46 +104,13 @@ LandingGear::LandingGear() {
 	m_TireRadius = 0.25;
 }
 
-#if 0
-LandingGear::LandingGear(LandingGear const &g) {
-	*this = g;
-}
-
-LandingGear const &LandingGear::operator=(LandingGear const &g) {
-	if (&g != this) {
-		m_MaxPosition = g.m_MaxPosition;
-		m_Position = g.m_Position;
-		m_Motion = g.m_Motion;
-		m_Chained = g.m_Chained;
-		m_K = g.m_K;
-		m_Beta = g.m_Beta;
-		m_BrakeLimit = g.m_BrakeLimit;
-		m_StaticFriction = g.m_StaticFriction;
-		m_DynamicFriction = g.m_DynamicFriction;
-		m_SteeringLimit = g.m_SteeringLimit;
-		m_TireK = g.m_TireK;
-		m_TireBeta = g.m_TireBeta;
-		m_Damage = g.m_Damage;
-		m_Extended = g.m_Extended;
-		m_TireShift = g.m_TireShift;
-		m_WOW = g.m_WOW;
-		m_Compression = g.m_Compression;
-		m_CompressionLimit = g.m_CompressionLimit;
-		m_Touchdown = g.m_Touchdown;
-		m_Skidding = g.m_Skidding;
-		m_Steer = g.m_Steer;
-		m_Brake = g.m_Brake;
-		m_BrakeSetting = g.m_BrakeSetting;
-	}
-	return g;
-}
-#endif
 
 void LandingGear::postCreate() {
 	Object::postCreate();
 	m_Motion.normalize();
 	m_Position = m_MaxPosition;
 }
+
 
 Vector3 LandingGear::simulateSubStep(Vector3 const &origin,
                                               Vector3 const &vBody,
@@ -170,6 +142,7 @@ void LandingGear::setBraking(double setting) {
 	m_BrakeSetting = setting;
 }
 
+
 double LandingGear::setSteering(double setting, double link_brakes) {
 	if (setting > 1.0) setting = 1.0;
 	if (setting < -1.0) setting = -1.0;
@@ -179,6 +152,7 @@ double LandingGear::setSteering(double setting, double link_brakes) {
 	m_SteerTransform.makeRotate(rad, Vector3::ZAXIS);
 	return m_SteerAngle;
 }
+
 
 double LandingGear::getDragFactor() const {
 	// XXX very temporary hack (need xml, partial extension, etc)
@@ -201,7 +175,8 @@ void LandingGear::updateBraking(double dt) {
 	// steering linkage (low pass filtered, XXX ad-hoc time constant)
 	double f = dt*5.0;
 	if (f > 1.0) f = 1.0;
-	m_Brake = m_Brake * (1.0-f) + (m_BrakeSetting + m_BrakeSteer) * f;
+	double newBrake = std::min(1.0, std::max(0.0, m_BrakeSetting + m_BrakeSteer));
+	m_Brake = m_Brake * (1.0-f) + newBrake * f;
 	if (m_Brake < 0.0) m_Brake = 0.0;
 	if (m_Brake > 1.0) m_Brake = 1.0;
 }
@@ -223,6 +198,31 @@ void LandingGear::updateWOW(Vector3 const &origin, simdata::Quat const &q) {
 		m_WOW = false;
 	}
 }
+
+
+void LandingGear::updateTireRotation(double dt) {
+	// spindown due to friction when not in contact
+	if (m_TireRotationRate == 0.0) return;
+	if (m_Compression <= 0.0) {
+		// rolling friction is an effective friction coefficient when in
+		// contact with the ground, which include tire deformation, so it
+		// isn't really appropriate here.  nevertheless, it serves as a
+		// convenient scaling factor.
+		// XXX spindown is currently too long without setting an offset,
+		// and the spindown rate with braking is completely arbitrary.
+		double fudge = 50.0 + 0.03 * m_BrakeSetting * m_BrakeLimit;
+		double torque = fudge * m_RollingFriction /* x m_TireRadius x wheel_mass */;
+		double inertia = 0.5 * m_TireRadius /* x m_TireRadius x wheel_mass */;
+		double dw = dt * torque / inertia;
+		if (m_TireRotationRate > 0.0) {
+			m_TireRotationRate = max(0.0, m_TireRotationRate - dw);
+		} else {
+			m_TireRotationRate = min(0.0, m_TireRotationRate + dw);
+		}
+	}
+	m_TireRotation += m_TireRotationRate * dt;
+}
+
 
 /**
  * Simulate the main shock adsorber to determine the normal force and
@@ -301,10 +301,12 @@ void LandingGear::postSimulationStep(double dt,
 	updateSuspension(origin, vBody, q, height, normalGroundBody);
 	updateWOW(origin, q);
 	updateWheel(dt, origin, vBody, q, normalGroundBody, true);
+	updateTireRotation(dt);
 }
 
 void LandingGear::residualUpdate(double dt, double airspeed) {
 	updateBrakeTemperature(dt, 0.0, airspeed);
+	updateTireRotation(dt);
 }
 
 void LandingGear::updateBrakeTemperature(double dt, double dissipation, double airspeed) {
@@ -351,6 +353,10 @@ void LandingGear::updateWheel(double dt,
 
 	Vector3 tirePositionLocal = origin + q.rotate(m_Position);
 
+	if (updateContact && m_ABSActiveTimer > 0.0) {
+		m_ABSActiveTimer -= dt;
+	}
+
 	// not in contact
 	if (m_Compression <= 0.0) {
 		if (updateContact) {
@@ -384,7 +390,7 @@ void LandingGear::updateWheel(double dt,
 
 	// check if brakes are slipping
 	double alignedForce = sqrt(tireForceWheel.y() * tireForceWheel.y() + tireForceWheel.z() * tireForceWheel.z());
-	bool brakeSlip = alignedForce > brakeLimit;
+	bool brakeSlip = alignedForce >= brakeLimit;
 	if (brakeSlip) {
 		if (updateContact) {
 			// slipping so use the slipping friction until slipping stops
@@ -404,6 +410,9 @@ void LandingGear::updateWheel(double dt,
 		}
 	}
 
+	// maximum traction
+	double skidLimit = m_TireFriction * normalForce;
+
 	// ground velocity in body coordinates
 	Vector3 vGroundBody = vBody - dot(vBody, normalGroundBody) * normalGroundBody;
 	// transform to wheel coordinates
@@ -412,17 +421,16 @@ void LandingGear::updateWheel(double dt,
 	Vector3 rollingDirectionWheel = Vector3(0.0, vGroundWheel.y(), vGroundWheel.z()).normalized();
 	// compute rolling friction
 	Vector3 rollingFrictionWheel = - m_RollingFriction * normalForce * rollingDirectionWheel;
-	// add rolling friction to tire force XXX (trying this below!)
-	// XXX tireForceWheel += rollingFrictionWheel;
 
 	// is this wheel steerable?
 	if (m_SteeringLimit > 0.0) {
 		// partial (approx) castering of steerable wheels to reduce instability
-		tireForceWheel.x() *= (0.1 + 0.9 * fabs(m_SteerAngle/m_SteeringLimit));
+		// 2004-08-02 DISABLED(OS): this no longer seems necessary; the original instability
+		// may have been due to a bug that has since been fixed.  anyhow, it's not good to
+		// caster at low speeds (and castering should be reflected in the gear steering angle).
+		//tireForceWheel.x() *= (0.1 + 0.9 * fabs(m_SteerAngle/m_SteeringLimit));
 	}
 
-	// maximum traction
-	double skidLimit = m_TireFriction * normalForce;
 	// total (virtual) tire force due to braking and sideslip
 	double totalTireForce = tireForceWheel.length();
 
@@ -430,10 +438,12 @@ void LandingGear::updateWheel(double dt,
 	// isn't well suited to modelling wheel spin, and only very crude tracking
 	// of wheel rotation is done.  the code should be redesigned at some point
 	// to model braking and ground contact forces as torques acting on wheel
-	// rotation, and thereby accounting for wheel inertia, etc.
+	// rotation, and thereby accounting for wheel inertia, etc.  otoh, these
+	// affects are generally pretty small and may not be worth modelling
+	// accurately.
 
 	// check if tire is skidding
-	bool skidding = totalTireForce > skidLimit;
+	bool skidding = totalTireForce >= skidLimit;
 	if (skidding) {
 		if (updateContact) {
 			m_SkidFlag = true;
@@ -443,38 +453,46 @@ void LandingGear::updateWheel(double dt,
 			// momentarily release brakes to stop the skid
 			if (m_ABS) {
 				m_Brake = 0.0;
+				// turn on abs indicator flag for 0.5 sec
+				m_ABSActiveTimer = 0.5;
 			}
-			// XXX see note above
-			m_TireRotationRate = 0.0;
 		}
 		// reduce total force (reevaluate skidLimit with skidding friction)
 		tireForceWheel *= m_TireFriction * normalForce / totalTireForce;
 		// convert back to body coordinates
 		tireForceBody = m_SteerTransform.invrotate(tireForceWheel);
 	} else {
-		if (!brakeSlip) {
-			// tire is fixed and brakes are locked, so we need to damp the
-			// tire vibration.  in principle the damping term should be
-			// included in the skid test, but this is probably not a very
-			// important detail.
-			tireForceWheel += - m_TireBeta * vGroundWheel;
-		} else {
+		// damp the oscillation of the tire rubber
+		Vector3 tireDampingWheel = - m_TireBeta * vGroundWheel;
+		if (brakeSlip) {
+			// tire is rolling, so only damp sideways motion and add rolling friction
+			tireDampingWheel.y() = tireDampingWheel.z() = 0.0;
 			tireForceWheel += rollingFrictionWheel;
 		}
+		// in principle, the damping term should be included in the skid test.  for now
+		// we just limit the damping force to prevent overflows if vGroundWheel is large.
+		double tireDampingForce = tireDampingWheel.length();
+		if (tireDampingForce > skidLimit) {
+			tireDampingWheel *= (skidLimit / tireDampingForce);
+		}
+		tireForceWheel += tireDampingWheel;
 		// convert back to body coordinates
 		tireForceBody = m_SteerTransform.invrotate(tireForceWheel);
 		if (updateContact) {
 			m_Skidding = false;
 			// tire isn't skidding, so use static friction from now on
 			m_TireFriction = m_TireStaticFriction;
-			// XXX see note above
-			double rollingSpeed = sqrt(vGroundWheel.y()*vGroundWheel.y() + vGroundWheel.z()*vGroundWheel.z());
-			if (brakeSlip) {
-				m_TireRotationRate = rollingSpeed / m_TireRadius;
-				m_TireRotation += m_TireRotationRate * dt;
-			} else {
-				m_TireRotationRate = 0.0;
-			}
+		}
+	}
+
+	if (updateContact) {
+		double rollingSpeed = sqrt(vGroundWheel.y()*vGroundWheel.y() + vGroundWheel.z()*vGroundWheel.z());
+		if (vGroundWheel.y() < 0.0) rollingSpeed = -rollingSpeed;
+		if (brakeSlip) {
+			m_TireRotationRate = rollingSpeed / m_TireRadius;
+		} else {
+			m_TireRotationRate = 0.0;
+			//std::cout << "WHEEL LOCK\n";
 		}
 	}
 
@@ -487,7 +505,7 @@ void LandingGear::updateWheel(double dt,
 		m_TireContactPoint = tirePositionLocal + tireForce / m_TireK;
 	}
 
-	if (updateContact) {
+	if (0 && updateContact) {
 		static double t = 0.0;
 		static bool reset = false;
 		if (m_BrakeLimit == 0.0) reset = true;
@@ -667,12 +685,12 @@ Vector3 GearDynamics::getGearDisplacement(size_t i) const {
 void GearDynamics::preSimulationStep(double dt) {
 	BaseDynamics::preSimulationStep(dt);
 	b_WOW->value() = false;
+	setSteering(b_SteeringInput->value());
+	setBraking(b_LeftBrakeInput->value(), b_RightBrakeInput->value());
 	if (!isGearExtended()) return;
 	if (!b_NearGround->value()) return;
 	m_WindVelocityBody = m_Attitude->invrotate(b_WindVelocity->value());
 	m_GroundNormalBody = m_Attitude->invrotate(b_GroundN->value());
-	setSteering(b_SteeringInput->value());
-	setBraking(b_LeftBrakeInput->value(), b_RightBrakeInput->value());
 	m_Height = m_PositionLocal->z() - b_GroundZ->value();
 	size_t n =  m_Gear.size();
 	for (size_t i = 0; i < n; ++i) {
@@ -717,6 +735,7 @@ void GearDynamics::getInfo(InfoList &info) const {
 	line << " T_brakes " << std::setw(3) << main->getBrakeTemperature() << "K";
 	if (getWOW()) line << " WOW";
 	if (main->getSkidding()) line << " SKID";
+	if (main->getABSActive()) line << " ABS";
 	info.push_back(line.str());
 }
 

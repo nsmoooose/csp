@@ -47,7 +47,8 @@ public:
 	SIMDATA_OBJECT(StaticObject, 0, 0)
 
 protected:
-	virtual void serialize(simdata::Archive&);
+	//virtual void serialize(simdata::Reader&);
+	//virtual void serialize(simdata::Writer&);
 	virtual void dump() {}
 	virtual double onUpdate(double) { return 0.0; }
 	virtual void initialize() {}

@@ -11,6 +11,11 @@
    CSPSim.py calls cspinput to try to regenerate them from the examples
    in ../Tools/HID/Examples.
 
+ * Check for CSPSim/Data/Terrain, and print clearer diagnostic information
+   if it isn't found.  Previously Demeter just segfaulted, and the last
+   CSPSim.log entry mentioned the terrain.  This is a fairly common case
+   for new installs, since the terrain files must be downloaded separately.
+
 2004-12-17: delta
  * Updated FlightModel and m2k xml related files.
 

@@ -3,6 +3,8 @@
 #include "SimData/LUT.h"
 %}
 
+#ifndef __NO_LUT__
+
 %include "std_vector.i"
 %include "SimData/ns-simdata.h"
 
@@ -119,24 +121,12 @@ public:
 %template(Table1) LUT<1,float>;
 %template(Table2) LUT<2,float>;
 %template(Table3) LUT<3,float>;
-%template(Table4) LUT<4,float>;
 
-
-/*
-%rename(__getitem__) LUT<1,float>::getValue(std::vector<float> const &) const;
-%rename(__getitem__) Table1::getValue(std::vector<float> const &) const;
-%rename(__getitem__) Table2::getValue(std::vector<float> const &) const;
-%rename(__getitem__) Table3::getValue(std::vector<float> const &) const;
-%rename(__getitem__) Table4::getValue(std::vector<float> const &) const;
-%rename(__repr__) LUT<1,float>::asString() const;
-%rename(__repr__) Table1::asString() const;
-%rename(__repr__) Table2::asString() const;
-%rename(__repr__) Table3::asString() const;
-%rename(__repr__) Table4::asString() const;
-*/
 
 %exception;
 
 
 NAMESPACE_END // simdata
+
+#endif // __NO_LUT__
 

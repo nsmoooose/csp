@@ -19,6 +19,13 @@
  */
 
 
+#if defined(_MSC_VER) && (_MSC_VER <= 1300)
+	// old versions of msvc can't do partial template specialization
+	#define __SIMDATA_NO_LUT__
+	#define __SIMDATA_LUT_H__
+#endif
+
+
 #ifndef __SIMDATA_LUT_H__
 #define __SIMDATA_LUT_H__
 

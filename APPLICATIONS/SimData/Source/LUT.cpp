@@ -21,6 +21,8 @@
 
 #include <SimData/LUT.h>
 
+#ifndef __SIMDATA_NO_LUT__
+
 
 NAMESPACE_SIMDATA
 
@@ -741,6 +743,8 @@ std::string LUT<1,X>::asString() const {
 
 NAMESPACE_END // simdata
 
+
+#endif // __SIMDATA_NO_LUT__
 
 
 #if 0

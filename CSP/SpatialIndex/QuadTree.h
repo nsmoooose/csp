@@ -223,13 +223,12 @@ class Child {
 	Point _point;
 public:
 
-	/** Construct a new child, given an id number and <i>signed</i> 32-bit
-	 *  coordinates.  The coordinates are converted to unsigned values used
-	 *  internally.
+	/** Construct a new child, given an id number and <i>unsigned</i> 32-bit
+	 *  coordinates.
 	 */
-	Child(int id, int32 x, int32 y):
+	Child(int id, uint32 x, uint32 y):
 		_id(id),
-		_point(Point::fromSigned(x, y)) {
+		_point(x, y) {
 	}
 
 	/** Copy ctor.
@@ -369,6 +368,8 @@ public:
 };
 
 extern std::ostream & operator << (std::ostream &os, QuadTree const &q);
+extern std::ostream & operator << (std::ostream &os, Point const &p);
+extern std::ostream & operator << (std::ostream &os, Region const &r);
 
 
 } // namespace IQuadTree

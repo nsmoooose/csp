@@ -349,6 +349,13 @@ std::ostream & operator << (std::ostream &os, QuadTree const &q) {
 	return os;
 }
 
+std::ostream & operator << (std::ostream &os, Point const &p) {
+	return os << '(' << p.x() << ',' << p.y() << ')';
+}
+
+std::ostream & operator << (std::ostream &os, Region const &r) {
+	return os << '{' << r.x0() << ',' << r.y0() << ',' << r.x1() << ',' << r.y1() << '}';
+}
 
 } // namespace IQuadTree
 } // namespace SpatialIndex

@@ -164,8 +164,9 @@ class Changeset:
 
   def submit(self):
     files = map(lambda x: x.abspath(), self._files)
+    description = '\n'.join(self._description).replace("'", "'\"'\"'")
     exitcode = os.system('svn ci -m \'%s\' %s' %
-                         ('\n'.join(self._description), ' '.join(files)))
+                         (description, ' '.join(files)))
     if exitcode != 0:
       return Error('error submitting changelist')
     self._pending = 0

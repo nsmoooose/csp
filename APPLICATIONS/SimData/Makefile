@@ -29,3 +29,9 @@ default:
 install:
 	@python setup.py check_version
 	@python setup.py make_install --verbose
+
+tests:
+	@$(MAKE) --no-print-directory -C SimData/Tests all
+
+tests-clean:
+	@$(MAKE) --no-print-directory -C SimData/Tests clean

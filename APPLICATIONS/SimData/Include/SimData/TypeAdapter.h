@@ -37,7 +37,8 @@
 #include <SimData/Enum.h>
 #include <SimData/Path.h>
 
-#include <SimData/Types.h>
+//#include <SimData/Types.h>
+#include <SimData/Link.h>
 #include <SimData/PTS.h>
 
 #include <string>
@@ -75,18 +76,16 @@ typedef LUT<3,float> Table3;
 SIMDATA_EXCEPTION(TypeMismatch)
 
 	
-/**
- * @brief Dynamically typed wrapper for basic types and objects.
+/** Dynamically typed wrapper for basic types and objects.
  * 
- * For internal use only.  This class is used to pass typed data as
- * parameters to virtual member functions (which are not compatible
- * with templates).  It works for a number of basic types, and for
- * objects derived from the Object base class. 
+ *  For internal use only.  This class is used to pass typed data as
+ *  parameters to virtual member functions (which are not compatible
+ *  with templates).  It works for a number of basic types, and for
+ *  objects derived from the Object base class. 
  *
- * @author Mark Rose <mrose@stm.lbl.gov>
- * @internal
+ *  @author Mark Rose <mrose@stm.lbl.gov>
+ *  @internal
  */
- 
 class SIMDATA_EXPORT TypeAdapter 
 {
 public:
@@ -169,53 +168,40 @@ public:
 	void set(T & x) const { setBase(x); }
 	*/
 
-	inline void set(SimDate & x) const { setBase(x); }
+	void set(SimDate & x) const;
 
-	inline void set(GeoPos & x) const { setBase(x); }
+	void set(GeoPos & x) const;
 
-	inline void set(LLA & x) const { setCoordinate(x); }
-	inline void set(UTM & x) const { setCoordinate(x); }
-	inline void set(ECEF & x) const { setCoordinate(x); }
+	void set(LLA & x) const;
+	void set(UTM & x) const;
+	void set(ECEF & x) const;
 
-	inline void set(Vector3 & x) const { setBase(x); }
-	inline void set(Matrix3 & x) const { setBase(x); }
-	inline void set(Real & x) const { setBase(x); }
-	inline void set(Curve & x) const { setBase(x); }
-	inline void set(Table & x) const { setBase(x); }
+	void set(Vector3 & x) const;
+	void set(Matrix3 & x) const;
+	void set(Real & x) const;
+	void set(Curve & x) const;
+	void set(Table & x) const;
 #ifndef __PTS_SIM__
-	inline void set(Table1 & x) const { setBase(x); }
-	inline void set(Table2 & x) const { setBase(x); }
-	inline void set(Table3 & x) const { setBase(x); }
+	void set(Table1 & x) const;
+	void set(Table2 & x) const;
+	void set(Table3 & x) const;
 #endif // __PTS_SIM__
-	inline void set(External & x) const { setBase(x); }
-	inline void set(Key & x) const { setBase(x); }
-	inline void set(Path & x) const { setBase(x); }
-	// list
+	void set(External & x) const;
+	void set(Key & x) const;
+	void set(Path & x) const;
+
+	void set(EnumLink &x) const;
+	void set(LinkBase &x) const;
 
 	void set(short &x) const { IntCheck(); x = static_cast<short>(var.i); }
 	void set(char &x) const { IntCheck(); x = static_cast<char>(var.i); }
-
 	void set(int &x) const { IntCheck(); x = static_cast<int>(var.i); }
 	void set(bool &x) const { IntCheck(); x = (var.i != 0); }
 	void set(float &x) const { DoubleCheck(); x = static_cast<float>(var.d); }
 	void set(double &x) const { DoubleCheck(); x = static_cast<double>(var.d); }
 	void set(unsigned int &x) const { IntCheck(); x = static_cast<unsigned int>(var.i); }
 	void set(std::string &x) const { StringCheck(); x = s; }
-	void set(EnumLink &x) const { if (isType(STRING)) x = s; else setBase(x); }
-	// slightly fancier handling required for path pointers
-	void set(LinkBase &x) const {
-		BaseCheck();
-		// are we assigning to a pointerbase?
-		LinkBase const *p = dynamic_cast<LinkBase const *>(var.o);
-		if (p != 0) {
-			x = *(const_cast<LinkBase *>(p));
-		} else {
-			// last chance, is it a path?
-			Path const *path = dynamic_cast<Path const *>(var.o);
-			TypeCheck(path!=NULL, "dynamic cast of BaseType* to LinkBase failed");
-			x = LinkBase(*(const_cast<Path *>(path)), 0);
-		}
-	}
+
 	template <typename Q>
 	void set(Link<Q> &x) const {
 		// first try to assign as an object reference

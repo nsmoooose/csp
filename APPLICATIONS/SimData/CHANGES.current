@@ -1,5 +1,16 @@
 Version 0.4.0 (in progress)
 ===========================
+2003-10-24: onsight
+  * Moved some inline set() methods out of TypeAdapter.h to avoid
+    including all the data type headers.  Code using SimData that
+    implicitly relies on these data type headers will now need to
+    exclicitly include the required types.
+
+  * Added a C++ testing framework under SimData/Tests.  Any file
+    named test_*.cpp is treated as a test, and can be built and
+    run from a toplevel 'make tests'.  Failed tests should exit
+    with a non-zero status code.
+    
 2003-10-23: onsight
   * Separated Singleton class into Singleton.h (was InterfaceRegistry.h).
 

@@ -33,9 +33,46 @@ NAMESPACE_SIMDATA
 
 const char *TypeAdapter::TypeNames[] = {"NONE", "Integer", "Double", "String", "Base"};
 
+void TypeAdapter::set(SimDate & x) const { setBase(x); }
 
-/**
- * Convenience function for dumping object member variables.
+void TypeAdapter::set(GeoPos & x) const { setBase(x); }
+
+void TypeAdapter::set(LLA & x) const { setCoordinate(x); }
+void TypeAdapter::set(UTM & x) const { setCoordinate(x); }
+void TypeAdapter::set(ECEF & x) const { setCoordinate(x); }
+
+void TypeAdapter::set(Vector3 & x) const { setBase(x); }
+void TypeAdapter::set(Matrix3 & x) const { setBase(x); }
+void TypeAdapter::set(Real & x) const { setBase(x); }
+void TypeAdapter::set(Curve & x) const { setBase(x); }
+void TypeAdapter::set(Table & x) const { setBase(x); }
+#ifndef __PTS_SIM__
+void TypeAdapter::set(Table1 & x) const { setBase(x); }
+void TypeAdapter::set(Table2 & x) const { setBase(x); }
+void TypeAdapter::set(Table3 & x) const { setBase(x); }
+#endif // __PTS_SIM__
+void TypeAdapter::set(External & x) const { setBase(x); }
+void TypeAdapter::set(Key & x) const { setBase(x); }
+void TypeAdapter::set(Path & x) const { setBase(x); }
+
+void TypeAdapter::set(EnumLink &x) const { if (isType(STRING)) x = s; else setBase(x); }
+
+// slightly fancier handling required for path pointers
+void TypeAdapter::set(LinkBase &x) const {
+	BaseCheck();
+	// are we assigning to a pointerbase?
+	LinkBase const *p = dynamic_cast<LinkBase const *>(var.o);
+	if (p != 0) {
+		x = *(const_cast<LinkBase *>(p));
+	} else {
+		// last chance, is it a path?
+		Path const *path = dynamic_cast<Path const *>(var.o);
+		TypeCheck(path!=NULL, "dynamic cast of BaseType* to LinkBase failed");
+		x = LinkBase(*(const_cast<Path *>(path)), 0);
+	}
+}
+
+/** Convenience function for dumping object member variables.
  */
 std::ostream &operator <<(std::ostream &o, TypeAdapter const &t) {
 	if (t.isType(TypeAdapter::INT)) return o << t.getInteger();

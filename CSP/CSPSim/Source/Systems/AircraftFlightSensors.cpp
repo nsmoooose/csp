@@ -22,14 +22,17 @@
  *
  **/
 
+#include <sstream>
+#include <iomanip>
+
+#include <SimData/Conversions.h>
 
 #include <Systems/AircraftFlightSensors.h>
 #include <KineticsChannels.h>
 #include <Atmosphere.h>
 #include <CSPSim.h>
 
-#include <sstream>
-#include <iomanip>
+
 
 using bus::Kinetics;
 
@@ -82,7 +85,7 @@ void AircraftFlightSensors::getInfo(InfoList &info) const {
 	line << "P: " << std::setw(3) << b_Pressure->value()
 	     << ", T: " << std::setw(3) <<  b_Temperature->value()
 	     << ", Mach: " << std::setw(3) <<  b_Mach->value()
-	     << ", CAS: " << std::setw(3) <<  b_CAS->value();
+		 << ", CAS: " << std::setw(3) <<  simdata::convert::mps_kts(b_CAS->value()) << " kts";
 	info.push_back(line.str());
 }
 

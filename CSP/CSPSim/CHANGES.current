@@ -1,6 +1,9 @@
  Version 0.4.0 (in progress)
 ===========================
 
+2005-01-23: delta
+ * Display CAS in knots.
+ 
 2005-01-22: delta
  * Minor cleanup on Animation class.
 

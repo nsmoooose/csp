@@ -62,7 +62,7 @@ bool Save::operator()(SDL_Event& event) {
 Replay::Replay():
 	m_if(g_Config.getString("DemoMode","FileName","Record.csp",true).c_str(),std::ios_base::binary) {
 	if (!m_if)
-		throw exception("Replay::Replay(): error opening record file in read mode");
+		throw std::runtime_error("Replay::Replay(): error opening record file in read mode");
 }
 
 Replay::~Replay() {

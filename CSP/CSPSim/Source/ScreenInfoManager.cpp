@@ -91,9 +91,9 @@ class FindNamedNodeVisitor: public osg::NodeVisitor {
         virtual void apply (osg::Node& node) {
 			if (node.getName() == m_NameToFind) {
 				m_FoundNode = &node;
-				return;
 			}
-            traverse(node);
+			else
+				traverse(node);
         }
         void setNameToFind(const std::string& name) {
 			m_NameToFind = name;

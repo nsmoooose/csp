@@ -1,5 +1,5 @@
 /* SimData: Data Infrastructure for Simulations
- * Copyright (C) 2002 Mark Rose <tm2@stm.lbl.gov>
+ * Copyright 2002, 2003, 2004 Mark Rose <mkrose@users.sourceforge.net>
  *
  * This file is part of SimData.
  *
@@ -50,29 +50,50 @@ SIMDATA_EXCEPTION(ConstViolation);
 SIMDATA_EXCEPTION(SerializeError);
 
 
+/** A trivial FILE * wrapper to provide a uniform file interface for both
+ *  C++ and Python.
+ */
 class SIMDATA_EXPORT PackFile {
 	FILE *_f;
 	bool _open;
 public:
+
 #ifndef SWIG
+	/** Retrieve the underlying FILE pointer.
+	 */
 	operator FILE*() { return _f; }
-	PackFile(FILE* f): _f(f), _open(false) {}
+
+	/** Wrap an existing (open) FILE pointer.
+	 */
+	PackFile(FILE* f): _f(f), _open(false) {
+		_open = (_f != 0);
+	}
 #endif
+
+	/** Open a new file (fopen interface)
+	 */
 	PackFile(const char *fn, const char *mode) {
 		_f = (FILE*) fopen(fn, mode);
 		assert(_f); // XXX add error handling
 		_open = (_f != 0);
 	}
+
+	/** Close the current file, if open.
+	 */
 	void close() {
 		if (_open) {
-			fclose(_f);
+			if (_f) fclose(_f);
+			_f = 0;
 			_open = false;
 		}
 	}
 };
 
 
-
+/**
+ * Abstract base class for serializing standard types and BaseTypes
+ * from a data source.
+ */
 class SIMDATA_EXPORT Reader {
 public:
 	virtual ~Reader() {}
@@ -214,7 +235,8 @@ Reader& operator>>(Reader& reader, std::vector<T> &y) {
 
 
 /**
- *
+ * Abstract base class for serializing standard types and BaseTypes
+ * to a data source.
  */
 class SIMDATA_EXPORT Writer {
 public:
@@ -273,7 +295,7 @@ Writer& operator<<(Writer& writer, const std::vector<T> &x) {
  *  and provides methods to write variables of various types to
  *  the file in a standard format.
  *
- *  @author Mark Rose <tm2@stm.lbl.gov>
+ *  @author Mark Rose <mkrose@users.sourceforge.net>
  */
 class SIMDATA_EXPORT ArchiveWriter: public Writer {
 	FILE *_f;
@@ -355,7 +377,7 @@ public:
  *  needed to reconstruct the object, and provides access methods
  *  for translating the raw bytes into variables of various types.
  *
- *  @author Mark Rose <tm2@stm.lbl.gov>
+ *  @author Mark Rose <mkrose@users.sourceforge.net>
  */
 class SIMDATA_EXPORT ArchiveReader: public Reader {
 	const char* _d;
@@ -467,12 +489,15 @@ public:
 };
 
 
+/** Writer class for serializing data to a memory buffer.
+ *
+ *  This class currently uses a fixed size memory buffer, that
+ *  must be preallocated with sufficient space to store all
+ *  data that is serialized.
+ */
 class SIMDATA_EXPORT MemoryWriter: public Writer {
 	uint8 * _ptr;
 	int _n;
-	//void write(const void* x, int n) {
-	//	fwrite(x, n, 1, _f);
-	//}
 public:
 	MemoryWriter(uint8 * ptr): Writer(), _n(0) {
 		_ptr = ptr;
@@ -549,12 +574,14 @@ public:
 };
 
 
+/** Reader class for serializing data from a memory buffer.
+ *
+ *  The current implementation does not check for serialization
+ *  underflows or overflows.
+ */
 class SIMDATA_EXPORT MemoryReader: public Reader {
 	uint8 * _ptr;
 	int _n;
-	//void write(const void* x, int n) {
-	//	fwrite(x, n, 1, _f);
-	//}
 public:
 	MemoryReader(uint8 * ptr): Reader(), _n(0) {
 		_ptr = ptr;

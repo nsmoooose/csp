@@ -46,6 +46,10 @@
  *
  */
 
+# if defined(_MSC_VER) && (_MSC_VER <= 1200)
+#include <assert.h>
+# endif
+
 #include "SmokeEffects.h"
 
 #include <osg/Transform>

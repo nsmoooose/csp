@@ -178,6 +178,15 @@ struct ObjectUpdateMessagePayload
 	printf("ObjectUpdateMessagePayload - angularVelocityOffset: %d\n", angularVelocityAddr - thisAddr );
 	printf("ObjectUpdateMessagePayload - attitudeOffset: %d\n", attitudeAddr - thisAddr );
   }
+
+  void dump()
+  {
+    printf("ObjectUpdateMessagePayload - id: %d\n", id);
+    printf("ObjectUpdateMessagePayload - objectType: %d\n", objectType);
+    printf("ObjectUpdateMessagePayload - timestamp: %f\n", timeStamp);
+    printf("ObjectUpdateMessagePayload - GlobalPosition [x: %f, y: %f, z: %f]\n", globalPosition.x, globalPosition.y, globalPosition.z);
+
+  }
     
 };
 

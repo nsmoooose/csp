@@ -93,7 +93,11 @@ ScreenInfo::ScreenInfo(float pos_x, float pos_y, std::string const &name, std::s
 osgText::Text *ScreenInfo::makeText(float pos_x, float pos_y, std::string const &string_text) {
 	osgText::Text *text = new osgText::Text;
 	text->setFont(m_TTFPath);
+#ifdef OSG096
 	text->setFontSize(m_FontSize, m_FontSize);
+#else
+	text->setFontResolution(m_FontSize, m_FontSize);
+#endif // OSG096
 	text->setColor(osg::Vec4(1.0f, 1.0f, 1.0f, 1.0f));
 	text->setCharacterSize(m_CharacterSize, 1.0);
 	text->setPosition(osg::Vec3(pos_x, pos_y, 0));

@@ -71,6 +71,7 @@ Console::Console(int x, int y, int w, int h, int border)
 
 Console::Console(const Console &copy, const osg::CopyOp &copyop)
 :	osg::Geode(copy, copyop),
+	std::basic_streambuf<char>(),
 	_text(static_cast<osgText::Text *>(copyop(copy._text.get()))),
 	_cursor(static_cast<osgText::Text *>(copyop(copy._cursor.get()))),
 	_token(static_cast<osgText::Text *>(copyop(copy._token.get()))),
@@ -108,7 +109,11 @@ void Console::setFont(std::string const &font, int size) {
 
 void Console::_setFont(osg::ref_ptr<osgText::Text> &text, std::string const &font, int size) {
 	text->setFont(font);
+#ifdef OSG096
 	text->setFontSize(size, size);
+#else
+	text->setFontResolution(size, size);
+#endif // OSG096
 	text->setCharacterSize(size, 1.0);
 	text->setColor(osg::Vec4(1, 1, 1, 1));
 	text->setAlignment(osgText::Text::LEFT_TOP);

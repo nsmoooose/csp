@@ -50,7 +50,6 @@
 #include <osgUtil/SceneView>
 #include <osgUtil/Optimizer>
 #include <osgUtil/CullVisitor>
-#include <osgUtil/DisplayListVisitor>
 
 #include <osg/Material>
 #include <osg/BlendFunc>

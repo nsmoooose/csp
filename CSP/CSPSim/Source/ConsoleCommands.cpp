@@ -56,7 +56,11 @@ PyConsole::PyConsole(int ScreenWidth, int ScreenHeight) {
 
 	setMatrix(osg::Matrix::ortho2D(0, ScreenWidth, 0, ScreenHeight));
 	m_ModelViewAbs = new osg::MatrixTransform;
+#ifdef OSG096
 	m_ModelViewAbs->setReferenceFrame(osg::Transform::RELATIVE_TO_ABSOLUTE);
+#else
+	m_ModelViewAbs->setReferenceFrame(osg::Transform::ABSOLUTE_RF);
+#endif // OSG096
 	m_ModelViewAbs->setMatrix(osg::Matrix::identity());
 	addChild(m_ModelViewAbs.get());
 
@@ -175,13 +179,11 @@ bool PyConsole::onEnter(SDL_keysym const &key) {
 			if (result.size() > 0) {
 				result = result + "\n";
 			}
-			std::cout << "print\n";
 			m_Console->print(result);
 		}
 		m_Command = "";
 		update();
 		setCursor(0);
-		std::cout << "done\n";
 		return true;
 	}
 	return false;

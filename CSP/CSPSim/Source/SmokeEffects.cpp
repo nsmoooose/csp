@@ -140,7 +140,11 @@ public:
 				P->setVelocity(simdata::toOSG(wind) + push.get_random());
 				place += d_place;
 				wind += d_wind;
+#ifdef OSG096
 				if (getReferenceFrame() == RELATIVE_TO_PARENTS) {
+#else
+				if (getReferenceFrame() == RELATIVE_RF) {
+#endif // OSG096
 					P->transformPositionVelocity(getLocalToWorldMatrix());
 					//P->transformPositionVelocity(getWorldToLocalMatrix());
 				}

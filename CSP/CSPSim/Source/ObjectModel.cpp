@@ -35,7 +35,11 @@
 #include <osgDB/ReadFile>
 #include <osgFX/SpecularHighlights>
 #include <osgUtil/SmoothingVisitor>
+#ifdef OSG096
 #include <osgUtil/DisplayListVisitor>
+#else
+#include <osgUtil/GLObjectsVisitor>
+#endif
 #include <osgUtil/Optimizer>
 #include <osg/CullFace>
 #include <osg/NodeVisitor>
@@ -193,7 +197,12 @@ public:
 		osg::StateSet::TextureAttributeList& attr = set->getTextureAttributeList();
 		osg::StateSet::TextureAttributeList::iterator i;
 		for (i = attr.begin(); i != attr.end(); i++) {
+#ifdef OSG096
 			osg::StateSet::AttributeList::iterator tex = i->find(osg::StateAttribute::TEXTURE);
+#else
+			// TODO don't we need to consider other members within the TEXTURE group?
+			osg::StateSet::AttributeList::iterator tex = i->find(osg::StateAttribute::TypeMemberPair(osg::StateAttribute::TEXTURE, 0));
+#endif // OSG096
 			if (tex != i->end()) {
 				osg::Texture* texture = dynamic_cast<osg::Texture*>(tex->second.first.get());
 				if (texture) {
@@ -414,11 +423,20 @@ void ObjectModel::loadModel() {
 	addContactMarkers();
 
 	osg::ref_ptr<osg::State> state = new osg::State;
+
+#ifdef OSG096
 	osgUtil::DisplayListVisitor dlv(osgUtil::DisplayListVisitor::COMPILE_DISPLAY_LISTS);
 	dlv.setState(state.get());
 	dlv.setNodeMaskOverride(0xffffffff);
 	m_Model->accept(dlv);
 	m_DebugMarkers->accept(dlv);
+#else
+	osgUtil::GLObjectsVisitor ov;
+	ov.setState(state.get());
+	ov.setNodeMaskOverride(0xffffffff);
+	m_Model->accept(ov);
+	m_DebugMarkers->accept(ov);
+#endif // OSG096
 
 	// XXX: there is a really weird bug on vs with the optimizer:
 	// 1) it rarely appears in the release built (never when called from this exact line)
@@ -541,7 +559,11 @@ SceneModel::SceneModel(simdata::Ref<ObjectModel> const & model) {
 
 	m_Label = new osgText::Text();
 	m_Label->setFont("screeninfo.ttf");
+#ifdef OSG096
 	m_Label->setFontSize(16, 16);
+#else
+	m_Label->setFontResolution(16, 16);
+#endif // OSG096
 	m_Label->setColor(osg::Vec4(0.3f, 0.4f, 1.0f, 1.0f));
 	m_Label->setCharacterSize(100.0, 1.0);
 	m_Label->setPosition(osg::Vec3(6, 0, 0));
@@ -554,7 +576,11 @@ SceneModel::SceneModel(simdata::Ref<ObjectModel> const & model) {
 	label->getOrCreateStateSet()->setMode(GL_LIGHTING, osg::StateAttribute::OFF);
 	//setMatrix(osg::Matrix::ortho2D(0,ScreenWidth,0,ScreenHeight));
 	osg::MatrixTransform *m_modelview_abs = new osg::MatrixTransform;
+#ifdef OSG096
 	m_modelview_abs->setReferenceFrame(osg::Transform::RELATIVE_TO_ABSOLUTE);
+#else
+	m_modelview_abs->setReferenceFrame(osg::Transform::ABSOLUTE_RF);
+#endif // OSG096
 	m_modelview_abs->setMatrix(osg::Matrix::identity());
 	m_modelview_abs->addChild(label);
 
@@ -566,6 +592,7 @@ SceneModel::SceneModel(simdata::Ref<ObjectModel> const & model) {
 }
 
 SceneModel::~SceneModel() {
+	// FIXME shouldn't we be removing the copy?
 	osg::Node *model_node = m_Model->getModel().get();
 	assert(model_node);
 	m_Transform->removeChild(model_node);

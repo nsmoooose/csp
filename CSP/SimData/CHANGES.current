@@ -24,6 +24,8 @@ Version 0.4.0 (in progress)
   * Improved the traceback generation under linux.  Tracebacks
     can be decoded with the tools/trace program.
 
+  * Add doxygen comments to ThreadLog.h
+
 2004-06-22: onsight
   * Added a ScopedUnlock (trivial reversal of ScopedLock)
 

@@ -76,10 +76,12 @@ class SIMDATA_EXPORT LogBuffer: public NonCopyable, public std::streambuf
 {
 public:
 
-	/** Constructor */
+	/** Constructor
+	 */
 	LogBuffer();
 
-	/** Destructor */
+	/** Destructor
+	 */
 	~LogBuffer();
 
 	/** Test if logging is enabled.

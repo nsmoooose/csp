@@ -213,7 +213,7 @@ public:
 * adapted from:
 * J. R. Cash, A. H. Karp, A variable order Runge-Kutta method for initial value 
 * problems with rapidly varying right-hand sides, ACM Transactions on Mathematical 
-* Software, Vol. 16, No. 3, Spet 1990, pp. 201-222.
+* Software, Vol. 16, No. 3, Sept 1990, pp. 201-222.
 */
 class RKCK_VS_VO: public NumericalMethod {
 	/**

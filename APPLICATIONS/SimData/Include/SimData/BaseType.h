@@ -29,7 +29,6 @@
 #include <SimData/ns-simdata.h>
 #include <SimData/Exception.h>
 
-
 NAMESPACE_SIMDATA
 
 class Packer;

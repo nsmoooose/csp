@@ -30,6 +30,7 @@
 
 #include <string>
 #include <iostream>
+
 #include <SimData/Export.h>
 #include <SimData/hash_map.h>
 #include <SimData/GlibCsp.h>
@@ -67,7 +68,7 @@ extern HashT newhasht_cstring(const char*);
 //extern u8 newhash8_cstring(const char*);
 
 //typedef  u8       hasht;
-struct HashT {
+struct SIMDATA_EXPORT HashT {
 	guint32 a, b;
 	HashT() {
 		a = b = 0;

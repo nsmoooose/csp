@@ -41,7 +41,7 @@ NAMESPACE_SIMDATA
  *
  * @author Mark Rose <mrose@stm.lbl.gov>
  */
-class Exception { //: public std::runtime_error {
+class SIMDATA_EXPORT Exception { //: public std::runtime_error {
 	std::string _msg;
 	std::string _type;
 	mutable bool dump;

@@ -13,15 +13,15 @@
 %include "std_vector.i"
 
 %include "SimData/ns-simdata.h"
-
+%include "SimData/Export.h"
 %feature("polymorphic") SIMDATA(InterfaceProxy);
 %feature("polymorphic") SIMDATA(Object);
 
 %feature("polymorphic:except") {
-	if ($error != NULL) {
-		printf("got a python exception\n");
-		throw SIMDATA(PythonException)();
-	}
+    if ($error != NULL) {
+        printf("got a python exception\n");
+        throw SIMDATA(PythonException)();
+    }
 }
 
 %include "SimData/Exception.i"
@@ -30,19 +30,20 @@
 
 %exception {
         try {
-		$action
+        $action
         } catch (SIMDATA(PythonException) &e) {
-		printf("SWIG: passing Python exception back\n");
-		return NULL;
+        printf("SWIG: passing Python exception back\n");
+        return NULL;
+        } catch (SIMDATA(Exception) e) {
+        printf("SWIG: caught a SimData Exception\n");
+        e.details();
+        return NULL;
         } catch (...) {
-		printf("SWIG: passing C++ exception back\n");
-		return NULL;
-	}
+        printf("SWIG: passing C++ exception back\n");
+        return NULL;
+    }
 }
 
 %include "SimData/DataArchive.i"
 %include "SimData/InterfaceRegistry.i"
 %exception;
-
-
-

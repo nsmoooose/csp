@@ -34,7 +34,6 @@
 #include <string>
 #include <iostream>
 
-#include <SimData/Export.h>
 #include <SimData/Exception.h>
 #include <SimData/ns-simdata.h>
 
@@ -69,7 +68,7 @@ EXCEPTION(TypeMismatch)
  * @author Mark Rose <mrose@stm.lbl.gov>
  */
  
-class TypeAdapter 
+class SIMDATA_EXPORT TypeAdapter 
 {
 public:
 	typedef enum {NONE, INT, DOUBLE, STRING, BASE} TYPE; 

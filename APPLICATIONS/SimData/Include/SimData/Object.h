@@ -31,7 +31,6 @@
 #include <assert.h>
 #include <string>
 
-#include <SimData/Export.h>
 #include <SimData/HashUtility.h>
 #include <SimData/Pack.h>
 
@@ -106,7 +105,7 @@ NAMESPACE_SIMDATA
  * @author Mark Rose <mrose@stm.lbl.gov>
  */
 
-class Object: public BaseType {
+class SIMDATA_EXPORT Object: public BaseType {
 	friend class DataArchive;
 public:
 	explicit Object();

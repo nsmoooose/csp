@@ -45,7 +45,6 @@
 
 #include <iostream>
 
-#include <SimData/Export.h>
 #include <SimData/Matrix3.h>
 #include <SimData/ns-simdata.h>
 
@@ -58,7 +57,7 @@ NAMESPACE_SIMDATA
  *
  * @author unknown
  */
-class Quaternion
+class SIMDATA_EXPORT Quaternion
 {
 public:
 	double w, x, y, z;
@@ -98,14 +97,14 @@ public:
 		return Quaternion(fScalar*w,fScalar*x,fScalar*y,fScalar*z);
 	}
 
-	friend Quaternion operator* (double fScalar, const Quaternion& rkQ);
+	SIMDATA_EXPORT friend Quaternion operator* (double fScalar, const Quaternion& rkQ);
 
 	Quaternion operator- () const;
 	Quaternion operator~ (void) const { return Quaternion(w, -x, -y, -z);}
 
 	// Multiplication of a Quaternion and with a Vector, yielding a quaternion.
-	friend Quaternion operator*(Quaternion q, Vector3 v);
-	friend Quaternion operator*(Vector3 v, Quaternion q);
+	SIMDATA_EXPORT friend Quaternion operator*(Quaternion q, Vector3 v); // const &?
+	friend Quaternion operator*(Vector3 v, Quaternion q); // const &?
 
 
 	// functions of a Quaternion
@@ -149,12 +148,12 @@ public:
 	static Vector3 MakeEulerAnglesFromQ(Quaternion q);
 	static Quaternion MakeQFromEulerAngles(double x, double y, double z);
 
-	friend std::ostream & operator<< (std::ostream & os, const Quaternion & m);
+	SIMDATA_EXPORT friend std::ostream & operator<< (std::ostream & os, const Quaternion & m);
 
 };
 
 
-Vector3	QVRotate(Quaternion q, Vector3 v);
+SIMDATA_EXPORT Vector3	QVRotate(Quaternion q, Vector3 v);
 Quaternion QRotate(Quaternion q1, Quaternion q2);
 
 

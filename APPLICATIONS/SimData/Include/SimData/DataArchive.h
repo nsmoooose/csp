@@ -81,7 +81,7 @@ struct FP { FILE* f; std::string name; std::string mode; };
  *
  * @author Mark Rose <mrose@stm.lbl.gov>
  */
-class DataArchive {
+class SIMDATA_EXPORT DataArchive {
 
 	friend class PathPointerBase;
 

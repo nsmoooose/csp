@@ -30,7 +30,6 @@
 #include <string>
 #include <vector>
 
-#include <SimData/Export.h>
 #include <SimData/HashUtility.h>
 #include <SimData/TypeAdapter.h>
 #include <SimData/ObjectInterface.h>
@@ -54,7 +53,7 @@ class UnPacker;
  * 
  * @author Mark Rose <mrose@stm.lbl.gov>
  */
-class InterfaceProxy {
+class SIMDATA_EXPORT InterfaceProxy {
 public:
 	InterfaceProxy() {}
 	InterfaceProxy(const char *cname, hasht chash);
@@ -170,11 +169,8 @@ private:
 /**
  * The master interface registry.
  */
-#ifdef _WIN32
 extern InterfaceRegistry g_InterfaceRegistry;
-#else
-extern InterfaceRegistry g_InterfaceRegistry;
-#endif
+
 
 //-------------------------------------------------------
 // macros to create an interface to a specific class.

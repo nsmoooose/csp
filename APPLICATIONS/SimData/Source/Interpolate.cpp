@@ -35,10 +35,9 @@ public:
 	load_check() {
 		printf("loaded @ %p\n", this);
 	}
-//} check_interpolate;
-};
+} check_interpolate;
 
-static load_check check_interpolate;
+//static load_check check_interpolate;
 
 
 

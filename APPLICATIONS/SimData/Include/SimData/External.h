@@ -39,7 +39,7 @@ NAMESPACE_SIMDATA
  *
  * @author Mark Rose <mrose@stm.lbl.gov>
  */
-class External: public BaseType {
+class SIMDATA_EXPORT External: public BaseType {
 	static std::string toNative(const char *path);
 	static std::string fromNative(const char *path);
 protected:

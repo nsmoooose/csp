@@ -645,81 +645,80 @@ SWIG_InstallConstants(PyObject *d, swig_const_info constants[]) {
 
 /* -------- TYPES TABLE (BEGIN) -------- */
 
-#define  SWIGTYPE_p_simdata__Packer swig_types[0] 
-#define  SWIGTYPE_p_simdata__External swig_types[1] 
-#define  SWIGTYPE_p_simdata__InterfaceRegistry swig_types[2] 
-#define  SWIGTYPE_p_std__vectorTsimdata__Enum_t swig_types[3] 
-#define  SWIGTYPE_p_simdata__ListTsimdata__Spread_t swig_types[4] 
-#define  SWIGTYPE_p_std__vectorTsimdata__Spread_t swig_types[5] 
-#define  SWIGTYPE_p_simdata__Enumeration swig_types[6] 
-#define  SWIGTYPE_p_simdata__ListTsimdata__Path_t swig_types[7] 
-#define  SWIGTYPE_p_std__vectorTsimdata__Path_t swig_types[8] 
-#define  SWIGTYPE_p_simdata__ListTsimdata__External_t swig_types[9] 
-#define  SWIGTYPE_p_std__vectorTsimdata__External_t swig_types[10] 
-#define  SWIGTYPE_p_swig_string_bug_workaround swig_types[11] 
-#define  SWIGTYPE_p_simdata__Date swig_types[12] 
-#define  SWIGTYPE_p_simdata__SimDate swig_types[13] 
-#define  SWIGTYPE_p_simdata__InterpolatedData swig_types[14] 
-#define  SWIGTYPE_p_bool swig_types[15] 
-#define  SWIGTYPE_p_simdata__ListTsimdata__Curve_t swig_types[16] 
-#define  SWIGTYPE_p_std__vectorTsimdata__Curve_t swig_types[17] 
-#define  SWIGTYPE_p_simdata__FP swig_types[18] 
-#define  SWIGTYPE_p_simdata__EnumTypeError swig_types[19] 
-#define  SWIGTYPE_p_a_3__simdata__Matrix3__M_t swig_types[20] 
-#define  SWIGTYPE_p_simdata__ListTsimdata__Table_t swig_types[21] 
-#define  SWIGTYPE_p_std__vectorTsimdata__Table_t swig_types[22] 
-#define  SWIGTYPE_p_simdata__ObjectID swig_types[23] 
-#define  SWIGTYPE_p_a_3__double swig_types[24] 
-#define  SWIGTYPE_p_double swig_types[25] 
-#define  SWIGTYPE_p_simdata__BadMagic swig_types[26] 
-#define  SWIGTYPE_p_simdata__Table swig_types[27] 
-#define  SWIGTYPE_p_int swig_types[28] 
+#define  SWIGTYPE_p_simdata__Table swig_types[0] 
+#define  SWIGTYPE_p_simdata__Date swig_types[1] 
+#define  SWIGTYPE_p_swig_string_bug_workaround swig_types[2] 
+#define  SWIGTYPE_p_std__vectorTsimdata__Path_t swig_types[3] 
+#define  SWIGTYPE_p_simdata__ListTsimdata__Path_t swig_types[4] 
+#define  SWIGTYPE_p_p_char swig_types[5] 
+#define  SWIGTYPE_p_simdata__Spread swig_types[6] 
+#define  SWIGTYPE_p_simdata__TableEntry swig_types[7] 
+#define  SWIGTYPE_p_simdata__InterfaceRegistry swig_types[8] 
+#define  SWIGTYPE_p_simdata__External swig_types[9] 
+#define  SWIGTYPE_p_guint32 swig_types[10] 
+#define  SWIGTYPE_p_bool swig_types[11] 
+#define  SWIGTYPE_p_simdata__InvalidDate swig_types[12] 
+#define  SWIGTYPE_p_simdata__BadMagic swig_types[13] 
+#define  SWIGTYPE_p_double swig_types[14] 
+#define  SWIGTYPE_p_a_3__double swig_types[15] 
+#define  SWIGTYPE_p_std__vectorTsimdata__Spread_t swig_types[16] 
+#define  SWIGTYPE_p_simdata__Enumeration swig_types[17] 
+#define  SWIGTYPE_p_simdata__ListTsimdata__Spread_t swig_types[18] 
+#define  SWIGTYPE_p_simdata__FP swig_types[19] 
+#define  SWIGTYPE_p_simdata__hasht swig_types[20] 
+#define  SWIGTYPE_p_simdata__BadByteOrder swig_types[21] 
+#define  SWIGTYPE_p_simdata__Vector3 swig_types[22] 
+#define  SWIGTYPE_p_simdata__DataArchive swig_types[23] 
+#define  SWIGTYPE_p_std__vectorTsimdata__External_t swig_types[24] 
+#define  SWIGTYPE_p_simdata__ListTsimdata__External_t swig_types[25] 
+#define  SWIGTYPE_p_simdata__CorruptArchive swig_types[26] 
+#define  SWIGTYPE_p_simdata__PathPointerBase swig_types[27] 
+#define  SWIGTYPE_p_simdata__PointerBase swig_types[28] 
 #define  SWIGTYPE_p_simdata__UnPacker swig_types[29] 
-#define  SWIGTYPE_p_simdata__TableEntry swig_types[30] 
-#define  SWIGTYPE_p_simdata__Exception swig_types[31] 
-#define  SWIGTYPE_p_simdata__PythonException swig_types[32] 
-#define  SWIGTYPE_p_simdata__ParseException swig_types[33] 
-#define  SWIGTYPE_p_simdata__Object swig_types[34] 
-#define  SWIGTYPE_p_simdata__ListBase swig_types[35] 
-#define  SWIGTYPE_p_tm swig_types[36] 
-#define  SWIGTYPE_p_simdata__HashT swig_types[37] 
-#define  SWIGTYPE_p_std__vectorTsimdata__InterfaceProxy_p_t swig_types[38] 
-#define  SWIGTYPE_p_simdata__Curve swig_types[39] 
-#define  SWIGTYPE_p_simdata__hasht swig_types[40] 
-#define  SWIGTYPE_p_simdata__Path swig_types[41] 
-#define  SWIGTYPE_p_simdata__Matrix3 swig_types[42] 
-#define  SWIGTYPE_p_simdata__Zulu swig_types[43] 
-#define  SWIGTYPE_p_std__vectorTdouble_t swig_types[44] 
-#define  SWIGTYPE_p_std__vectorTstd__string_t swig_types[45] 
-#define  SWIGTYPE_p_simdata__CorruptArchive swig_types[46] 
-#define  SWIGTYPE_p_simdata__DataArchive swig_types[47] 
-#define  SWIGTYPE_p_p_char swig_types[48] 
-#define  SWIGTYPE_p_gint32 swig_types[49] 
-#define  SWIGTYPE_p_std__vectorTfloat_t swig_types[50] 
-#define  SWIGTYPE_p_simdata__InterfaceProxy swig_types[51] 
-#define  SWIGTYPE_p_guint32 swig_types[52] 
-#define  SWIGTYPE_p_simdata__IOError swig_types[53] 
-#define  SWIGTYPE_p_BaseType swig_types[54] 
-#define  SWIGTYPE_p_simdata__ListTint_t swig_types[55] 
-#define  SWIGTYPE_p_std__vectorTint_t swig_types[56] 
-#define  SWIGTYPE_p_std__ostream swig_types[57] 
-#define  SWIGTYPE_p_simdata__EnumError swig_types[58] 
-#define  SWIGTYPE_p_simdata__Vector3 swig_types[59] 
-#define  SWIGTYPE_p_simdata__InvalidDate swig_types[60] 
-#define  SWIGTYPE_p_simdata__ObjectMismatch swig_types[61] 
-#define  SWIGTYPE_p_simdata__ObjectTypeMismatch swig_types[62] 
-#define  SWIGTYPE_p_std__string swig_types[63] 
-#define  SWIGTYPE_p_simdata__DateZulu swig_types[64] 
-#define  SWIGTYPE_p_simdata__PathPointerBase swig_types[65] 
-#define  SWIGTYPE_p_simdata__PointerBase swig_types[66] 
-#define  SWIGTYPE_p_simdata__Spread swig_types[67] 
-#define  SWIGTYPE_p_simdata__IndexError swig_types[68] 
-#define  SWIGTYPE_p_simdata__EnumIndexError swig_types[69] 
-#define  SWIGTYPE_p_simdata__BadByteOrder swig_types[70] 
-#define  SWIGTYPE_p_simdata__Enum swig_types[71] 
-#define  SWIGTYPE_p_FILE swig_types[72] 
-#define  SWIGTYPE_p_SIMDATA_EXPORT swig_types[73] 
-static swig_type_info *swig_types[75];
+#define  SWIGTYPE_p_std__vectorTdouble_t swig_types[30] 
+#define  SWIGTYPE_p_simdata__DateZulu swig_types[31] 
+#define  SWIGTYPE_p_std__string swig_types[32] 
+#define  SWIGTYPE_p_simdata__ListBase swig_types[33] 
+#define  SWIGTYPE_p_simdata__EnumIndexError swig_types[34] 
+#define  SWIGTYPE_p_simdata__IndexError swig_types[35] 
+#define  SWIGTYPE_p_std__vectorTint_t swig_types[36] 
+#define  SWIGTYPE_p_simdata__EnumTypeError swig_types[37] 
+#define  SWIGTYPE_p_simdata__ListTint_t swig_types[38] 
+#define  SWIGTYPE_p_simdata__EnumError swig_types[39] 
+#define  SWIGTYPE_p_simdata__Enum swig_types[40] 
+#define  SWIGTYPE_p_simdata__ObjectTypeMismatch swig_types[41] 
+#define  SWIGTYPE_p_simdata__Path swig_types[42] 
+#define  SWIGTYPE_p_simdata__ObjectMismatch swig_types[43] 
+#define  SWIGTYPE_p_simdata__ParseException swig_types[44] 
+#define  SWIGTYPE_p_simdata__PythonException swig_types[45] 
+#define  SWIGTYPE_p_simdata__Exception swig_types[46] 
+#define  SWIGTYPE_p_gint32 swig_types[47] 
+#define  SWIGTYPE_p_std__ostream swig_types[48] 
+#define  SWIGTYPE_p_simdata__ObjectID swig_types[49] 
+#define  SWIGTYPE_p_a_3__simdata__Matrix3__M_t swig_types[50] 
+#define  SWIGTYPE_p_simdata__Object swig_types[51] 
+#define  SWIGTYPE_p_simdata__Packer swig_types[52] 
+#define  SWIGTYPE_p_simdata__Zulu swig_types[53] 
+#define  SWIGTYPE_p_std__vectorTfloat_t swig_types[54] 
+#define  SWIGTYPE_p_simdata__Curve swig_types[55] 
+#define  SWIGTYPE_p_std__vectorTsimdata__Enum_t swig_types[56] 
+#define  SWIGTYPE_p_FILE swig_types[57] 
+#define  SWIGTYPE_p_tm swig_types[58] 
+#define  SWIGTYPE_p_simdata__HashT swig_types[59] 
+#define  SWIGTYPE_p_int swig_types[60] 
+#define  SWIGTYPE_p_std__vectorTsimdata__Table_t swig_types[61] 
+#define  SWIGTYPE_p_std__vectorTsimdata__Curve_t swig_types[62] 
+#define  SWIGTYPE_p_simdata__BaseType swig_types[63] 
+#define  SWIGTYPE_p_simdata__ListTsimdata__Curve_t swig_types[64] 
+#define  SWIGTYPE_p_simdata__ListTsimdata__Table_t swig_types[65] 
+#define  SWIGTYPE_p_simdata__IOError swig_types[66] 
+#define  SWIGTYPE_p_std__vectorTsimdata__InterfaceProxy_p_t swig_types[67] 
+#define  SWIGTYPE_p_simdata__InterpolatedData swig_types[68] 
+#define  SWIGTYPE_p_simdata__SimDate swig_types[69] 
+#define  SWIGTYPE_p_std__vectorTstd__string_t swig_types[70] 
+#define  SWIGTYPE_p_simdata__Matrix3 swig_types[71] 
+#define  SWIGTYPE_p_simdata__InterfaceProxy swig_types[72] 
+static swig_type_info *swig_types[74];
 
 /* -------- TYPES TABLE (END) -------- */
 
@@ -1510,10 +1509,10 @@ void simdata_InterfaceProxy_set__SWIG_1(simdata::InterfaceProxy *self,simdata::O
 void simdata_InterfaceProxy_set__SWIG_2(simdata::InterfaceProxy *self,simdata::Object *p,char const *name,char const *v){
 		self->set(p, name, TypeAdapter(v));
 	}
-void simdata_InterfaceProxy_set__SWIG_3(simdata::InterfaceProxy *self,simdata::Object *p,char const *name,BaseType *v){
-	self->set(p, name, TypeAdapter(v));
+void simdata_InterfaceProxy_set__SWIG_3(simdata::InterfaceProxy *self,simdata::Object *p,char const *name,simdata::BaseType *v){
+		self->set(p, name, TypeAdapter(v));
 	}
-void simdata_InterfaceProxy_push_back(simdata::InterfaceProxy *self,simdata::Object *p,char const *name,BaseType const &v){
+void simdata_InterfaceProxy_push_back(simdata::InterfaceProxy *self,simdata::Object *p,char const *name,simdata::BaseType const &v){
 		self->push_back(p, name, TypeAdapter(v));
 	}
 extern simdata::InterfaceRegistry simdata::g_InterfaceRegistry;
@@ -2245,31 +2244,157 @@ static PyObject * ParseException_swigregister(PyObject *self, PyObject *args) {
     Py_INCREF(obj);
     return Py_BuildValue((char *)"");
 }
-static int _wrap_BaseType_set(PyObject *_val) {
-    {
-        SIMDATA_EXPORT * temp;
-        if ((SWIG_ConvertPtr(_val, (void **) &temp, SWIGTYPE_p_SIMDATA_EXPORT, SWIG_POINTER_EXCEPTION)) == -1) {
-            PyErr_SetString(PyExc_TypeError, "C variable 'simdata::BaseType (SIMDATA_EXPORT)'");
-            return 1;
-        }
-        simdata::BaseType = *((SIMDATA_EXPORT *) temp);
-    }
-    return 0;
-}
-
-
-static PyObject *_wrap_BaseType_get() {
-    PyObject *pyobj;
+static PyObject *_wrap_BaseType_pack(PyObject *self, PyObject *args) {
+    PyObject *resultobj;
+    simdata::BaseType *arg1 = (simdata::BaseType *) 0 ;
+    simdata::Packer *arg2 = 0 ;
+    PyObject * obj0  = 0 ;
+    PyObject * obj1  = 0 ;
     
-    pyobj = SWIG_NewPointerObj((void *) &simdata::BaseType, SWIGTYPE_p_SIMDATA_EXPORT, 0);
-    return pyobj;
+    if(!PyArg_ParseTuple(args,(char *)"OO:BaseType_pack",&obj0,&obj1)) goto fail;
+    if ((SWIG_ConvertPtr(obj0,(void **) &arg1, SWIGTYPE_p_simdata__BaseType,SWIG_POINTER_EXCEPTION | 0 )) == -1) SWIG_fail;
+    if ((SWIG_ConvertPtr(obj1,(void **) &arg2, SWIGTYPE_p_simdata__Packer,SWIG_POINTER_EXCEPTION | 0 )) == -1) SWIG_fail;
+    if (arg2 == NULL) {
+        PyErr_SetString(PyExc_TypeError,"null reference"); SWIG_fail; 
+    }
+    ((simdata::BaseType const *)arg1)->pack(*arg2);
+    
+    Py_INCREF(Py_None); resultobj = Py_None;
+    return resultobj;
+    fail:
+    return NULL;
 }
 
 
+static PyObject *_wrap_BaseType_unpack(PyObject *self, PyObject *args) {
+    PyObject *resultobj;
+    simdata::BaseType *arg1 = (simdata::BaseType *) 0 ;
+    simdata::UnPacker *arg2 = 0 ;
+    PyObject * obj0  = 0 ;
+    PyObject * obj1  = 0 ;
+    
+    if(!PyArg_ParseTuple(args,(char *)"OO:BaseType_unpack",&obj0,&obj1)) goto fail;
+    if ((SWIG_ConvertPtr(obj0,(void **) &arg1, SWIGTYPE_p_simdata__BaseType,SWIG_POINTER_EXCEPTION | 0 )) == -1) SWIG_fail;
+    if ((SWIG_ConvertPtr(obj1,(void **) &arg2, SWIGTYPE_p_simdata__UnPacker,SWIG_POINTER_EXCEPTION | 0 )) == -1) SWIG_fail;
+    if (arg2 == NULL) {
+        PyErr_SetString(PyExc_TypeError,"null reference"); SWIG_fail; 
+    }
+    (arg1)->unpack(*arg2);
+    
+    Py_INCREF(Py_None); resultobj = Py_None;
+    return resultobj;
+    fail:
+    return NULL;
+}
+
+
+static PyObject *_wrap_BaseType_parseXML(PyObject *self, PyObject *args) {
+    PyObject *resultobj;
+    simdata::BaseType *arg1 = (simdata::BaseType *) 0 ;
+    char *arg2 ;
+    PyObject * obj0  = 0 ;
+    
+    if(!PyArg_ParseTuple(args,(char *)"Os:BaseType_parseXML",&obj0,&arg2)) goto fail;
+    if ((SWIG_ConvertPtr(obj0,(void **) &arg1, SWIGTYPE_p_simdata__BaseType,SWIG_POINTER_EXCEPTION | 0 )) == -1) SWIG_fail;
+    (arg1)->parseXML((char const *)arg2);
+    
+    Py_INCREF(Py_None); resultobj = Py_None;
+    return resultobj;
+    fail:
+    return NULL;
+}
+
+
+static PyObject *_wrap_BaseType_convertXML(PyObject *self, PyObject *args) {
+    PyObject *resultobj;
+    simdata::BaseType *arg1 = (simdata::BaseType *) 0 ;
+    PyObject * obj0  = 0 ;
+    
+    if(!PyArg_ParseTuple(args,(char *)"O:BaseType_convertXML",&obj0)) goto fail;
+    if ((SWIG_ConvertPtr(obj0,(void **) &arg1, SWIGTYPE_p_simdata__BaseType,SWIG_POINTER_EXCEPTION | 0 )) == -1) SWIG_fail;
+    (arg1)->convertXML();
+    
+    Py_INCREF(Py_None); resultobj = Py_None;
+    return resultobj;
+    fail:
+    return NULL;
+}
+
+
+static PyObject *_wrap_BaseType_asString(PyObject *self, PyObject *args) {
+    PyObject *resultobj;
+    simdata::BaseType *arg1 = (simdata::BaseType *) 0 ;
+    std::string result;
+    PyObject * obj0  = 0 ;
+    
+    if(!PyArg_ParseTuple(args,(char *)"O:BaseType_asString",&obj0)) goto fail;
+    if ((SWIG_ConvertPtr(obj0,(void **) &arg1, SWIGTYPE_p_simdata__BaseType,SWIG_POINTER_EXCEPTION | 0 )) == -1) SWIG_fail;
+    result = ((simdata::BaseType const *)arg1)->asString();
+    
+    {
+        resultobj = PyString_FromString((&result)->c_str());
+    }
+    return resultobj;
+    fail:
+    return NULL;
+}
+
+
+static PyObject *_wrap_new_BaseType(PyObject *self, PyObject *args) {
+    PyObject *resultobj;
+    simdata::BaseType *result;
+    
+    if(!PyArg_ParseTuple(args,(char *)":new_BaseType")) goto fail;
+    {
+        try {
+            result = (simdata::BaseType *)new simdata::BaseType();
+            
+        }catch (simdata::ParseException e) {
+            e.details();
+            SWIG_exception(SWIG_RuntimeError, "");
+        }
+    }
+    resultobj = SWIG_NewPointerObj((void *) result, SWIGTYPE_p_simdata__BaseType, 1);
+    return resultobj;
+    fail:
+    return NULL;
+}
+
+
+static PyObject *_wrap_delete_BaseType(PyObject *self, PyObject *args) {
+    PyObject *resultobj;
+    simdata::BaseType *arg1 = (simdata::BaseType *) 0 ;
+    PyObject * obj0  = 0 ;
+    
+    if(!PyArg_ParseTuple(args,(char *)"O:delete_BaseType",&obj0)) goto fail;
+    if ((SWIG_ConvertPtr(obj0,(void **) &arg1, SWIGTYPE_p_simdata__BaseType,SWIG_POINTER_EXCEPTION | 0 )) == -1) SWIG_fail;
+    {
+        try {
+            delete arg1;
+            
+        }catch (simdata::ParseException e) {
+            e.details();
+            SWIG_exception(SWIG_RuntimeError, "");
+        }
+    }
+    Py_INCREF(Py_None); resultobj = Py_None;
+    return resultobj;
+    fail:
+    return NULL;
+}
+
+
+static PyObject * BaseType_swigregister(PyObject *self, PyObject *args) {
+    PyObject *obj;
+    if (!PyArg_ParseTuple(args,(char*)"O", &obj)) return NULL;
+    SWIG_TypeClientData(SWIGTYPE_p_simdata__BaseType, obj);
+    Py_INCREF(obj);
+    return Py_BuildValue((char *)"");
+}
 static PyObject *_wrap___lshift__(PyObject *self, PyObject *args) {
     PyObject *resultobj;
     std::ostream *arg1 = 0 ;
-    BaseType *arg2 = 0 ;
+    simdata::BaseType *arg2 = 0 ;
     std::ostream *result;
     PyObject * obj0  = 0 ;
     PyObject * obj1  = 0 ;
@@ -2279,12 +2404,12 @@ static PyObject *_wrap___lshift__(PyObject *self, PyObject *args) {
     if (arg1 == NULL) {
         PyErr_SetString(PyExc_TypeError,"null reference"); SWIG_fail; 
     }
-    if ((SWIG_ConvertPtr(obj1,(void **) &arg2, SWIGTYPE_p_BaseType,SWIG_POINTER_EXCEPTION | 0 )) == -1) SWIG_fail;
+    if ((SWIG_ConvertPtr(obj1,(void **) &arg2, SWIGTYPE_p_simdata__BaseType,SWIG_POINTER_EXCEPTION | 0 )) == -1) SWIG_fail;
     if (arg2 == NULL) {
         PyErr_SetString(PyExc_TypeError,"null reference"); SWIG_fail; 
     }
     {
-        std::ostream &_result_ref = simdata::operator <<(*arg1,(BaseType const &)*arg2);
+        std::ostream &_result_ref = simdata::operator <<(*arg1,(simdata::BaseType const &)*arg2);
         result = (std::ostream *) &_result_ref;
     }
     
@@ -2960,19 +3085,19 @@ static PyObject *_wrap_Packer_pack__SWIG_2(PyObject *self, PyObject *args) {
 static PyObject *_wrap_Packer_pack__SWIG_3(PyObject *self, PyObject *args) {
     PyObject *resultobj;
     simdata::Packer *arg1 = (simdata::Packer *) 0 ;
-    BaseType *arg2 = 0 ;
+    simdata::BaseType *arg2 = 0 ;
     PyObject * obj0  = 0 ;
     PyObject * obj1  = 0 ;
     
     if(!PyArg_ParseTuple(args,(char *)"OO:Packer_pack",&obj0,&obj1)) goto fail;
     if ((SWIG_ConvertPtr(obj0,(void **) &arg1, SWIGTYPE_p_simdata__Packer,SWIG_POINTER_EXCEPTION | 0 )) == -1) SWIG_fail;
-    if ((SWIG_ConvertPtr(obj1,(void **) &arg2, SWIGTYPE_p_BaseType,SWIG_POINTER_EXCEPTION | 0 )) == -1) SWIG_fail;
+    if ((SWIG_ConvertPtr(obj1,(void **) &arg2, SWIGTYPE_p_simdata__BaseType,SWIG_POINTER_EXCEPTION | 0 )) == -1) SWIG_fail;
     if (arg2 == NULL) {
         PyErr_SetString(PyExc_TypeError,"null reference"); SWIG_fail; 
     }
     {
         try {
-            (arg1)->pack((BaseType const &)*arg2);
+            (arg1)->pack((simdata::BaseType const &)*arg2);
             
         }catch (simdata::PythonException &e) {
             printf("passing it back\n");
@@ -3009,7 +3134,7 @@ static PyObject *_wrap_Packer_pack(PyObject *self, PyObject *args) {
         if (_v) {
             {
                 void *ptr;
-                if (SWIG_ConvertPtr(argv[1], (void **) &ptr, SWIGTYPE_p_BaseType, 0) == -1) {
+                if (SWIG_ConvertPtr(argv[1], (void **) &ptr, SWIGTYPE_p_simdata__BaseType, 0) == -1) {
                     _v = 0;
                     PyErr_Clear();
                 }else {
@@ -3224,13 +3349,13 @@ static PyObject *_wrap_Packer_pack_string(PyObject *self, PyObject *args) {
 static PyObject *_wrap_Packer_pack_basetype(PyObject *self, PyObject *args) {
     PyObject *resultobj;
     simdata::Packer *arg1 = (simdata::Packer *) 0 ;
-    BaseType *arg2 = 0 ;
+    simdata::BaseType *arg2 = 0 ;
     PyObject * obj0  = 0 ;
     PyObject * obj1  = 0 ;
     
     if(!PyArg_ParseTuple(args,(char *)"OO:Packer_pack_basetype",&obj0,&obj1)) goto fail;
     if ((SWIG_ConvertPtr(obj0,(void **) &arg1, SWIGTYPE_p_simdata__Packer,SWIG_POINTER_EXCEPTION | 0 )) == -1) SWIG_fail;
-    if ((SWIG_ConvertPtr(obj1,(void **) &arg2, SWIGTYPE_p_BaseType,SWIG_POINTER_EXCEPTION | 0 )) == -1) SWIG_fail;
+    if ((SWIG_ConvertPtr(obj1,(void **) &arg2, SWIGTYPE_p_simdata__BaseType,SWIG_POINTER_EXCEPTION | 0 )) == -1) SWIG_fail;
     if (arg2 == NULL) {
         PyErr_SetString(PyExc_TypeError,"null reference"); SWIG_fail; 
     }
@@ -3599,13 +3724,13 @@ static PyObject *_wrap_UnPacker_unpack(PyObject *self, PyObject *args) {
 static PyObject *_wrap_UnPacker_unpack_packable(PyObject *self, PyObject *args) {
     PyObject *resultobj;
     simdata::UnPacker *arg1 = (simdata::UnPacker *) 0 ;
-    BaseType *arg2 = 0 ;
+    simdata::BaseType *arg2 = 0 ;
     PyObject * obj0  = 0 ;
     PyObject * obj1  = 0 ;
     
     if(!PyArg_ParseTuple(args,(char *)"OO:UnPacker_unpack_packable",&obj0,&obj1)) goto fail;
     if ((SWIG_ConvertPtr(obj0,(void **) &arg1, SWIGTYPE_p_simdata__UnPacker,SWIG_POINTER_EXCEPTION | 0 )) == -1) SWIG_fail;
-    if ((SWIG_ConvertPtr(obj1,(void **) &arg2, SWIGTYPE_p_BaseType,SWIG_POINTER_EXCEPTION | 0 )) == -1) SWIG_fail;
+    if ((SWIG_ConvertPtr(obj1,(void **) &arg2, SWIGTYPE_p_simdata__BaseType,SWIG_POINTER_EXCEPTION | 0 )) == -1) SWIG_fail;
     if (arg2 == NULL) {
         PyErr_SetString(PyExc_TypeError,"null reference"); SWIG_fail; 
     }
@@ -3754,22 +3879,22 @@ static PyObject *_wrap_UnPacker_unpack_string(PyObject *self, PyObject *args) {
 static PyObject *_wrap_UnPacker_unpack_basetype(PyObject *self, PyObject *args) {
     PyObject *resultobj;
     simdata::UnPacker *arg1 = (simdata::UnPacker *) 0 ;
-    BaseType *arg2 = 0 ;
-    BaseType *result;
+    simdata::BaseType *arg2 = 0 ;
+    simdata::BaseType *result;
     PyObject * obj0  = 0 ;
     PyObject * obj1  = 0 ;
     
     if(!PyArg_ParseTuple(args,(char *)"OO:UnPacker_unpack_basetype",&obj0,&obj1)) goto fail;
     if ((SWIG_ConvertPtr(obj0,(void **) &arg1, SWIGTYPE_p_simdata__UnPacker,SWIG_POINTER_EXCEPTION | 0 )) == -1) SWIG_fail;
-    if ((SWIG_ConvertPtr(obj1,(void **) &arg2, SWIGTYPE_p_BaseType,SWIG_POINTER_EXCEPTION | 0 )) == -1) SWIG_fail;
+    if ((SWIG_ConvertPtr(obj1,(void **) &arg2, SWIGTYPE_p_simdata__BaseType,SWIG_POINTER_EXCEPTION | 0 )) == -1) SWIG_fail;
     if (arg2 == NULL) {
         PyErr_SetString(PyExc_TypeError,"null reference"); SWIG_fail; 
     }
     {
         try {
             {
-                BaseType &_result_ref = (arg1)->unpack_basetype(*arg2);
-                result = (BaseType *) &_result_ref;
+                simdata::BaseType &_result_ref = (arg1)->unpack_basetype(*arg2);
+                result = (simdata::BaseType *) &_result_ref;
             }
             
         }catch (simdata::PythonException &e) {
@@ -3777,7 +3902,7 @@ static PyObject *_wrap_UnPacker_unpack_basetype(PyObject *self, PyObject *args) 
             return NULL;
         }
     }
-    resultobj = SWIG_NewPointerObj((void *) result, SWIGTYPE_p_BaseType, 0);
+    resultobj = SWIG_NewPointerObj((void *) result, SWIGTYPE_p_simdata__BaseType, 0);
     return resultobj;
     fail:
     return NULL;
@@ -19743,6 +19868,10 @@ static PyObject *_wrap_new_BadMagic(PyObject *self, PyObject *args) {
         }catch (simdata::PythonException &e) {
             printf("SWIG: passing Python exception back\n");
             return NULL;
+        }catch (simdata::Exception e) {
+            printf("SWIG: caught a SimData Exception\n");
+            e.details();
+            return NULL;
         }catch (...) {
             printf("SWIG: passing C++ exception back\n");
             return NULL;
@@ -19768,6 +19897,10 @@ static PyObject *_wrap_delete_BadMagic(PyObject *self, PyObject *args) {
             
         }catch (simdata::PythonException &e) {
             printf("SWIG: passing Python exception back\n");
+            return NULL;
+        }catch (simdata::Exception e) {
+            printf("SWIG: caught a SimData Exception\n");
+            e.details();
             return NULL;
         }catch (...) {
             printf("SWIG: passing C++ exception back\n");
@@ -19801,6 +19934,10 @@ static PyObject *_wrap_new_BadByteOrder(PyObject *self, PyObject *args) {
         }catch (simdata::PythonException &e) {
             printf("SWIG: passing Python exception back\n");
             return NULL;
+        }catch (simdata::Exception e) {
+            printf("SWIG: caught a SimData Exception\n");
+            e.details();
+            return NULL;
         }catch (...) {
             printf("SWIG: passing C++ exception back\n");
             return NULL;
@@ -19826,6 +19963,10 @@ static PyObject *_wrap_delete_BadByteOrder(PyObject *self, PyObject *args) {
             
         }catch (simdata::PythonException &e) {
             printf("SWIG: passing Python exception back\n");
+            return NULL;
+        }catch (simdata::Exception e) {
+            printf("SWIG: caught a SimData Exception\n");
+            e.details();
             return NULL;
         }catch (...) {
             printf("SWIG: passing C++ exception back\n");
@@ -19859,6 +20000,10 @@ static PyObject *_wrap_new_CorruptArchive(PyObject *self, PyObject *args) {
         }catch (simdata::PythonException &e) {
             printf("SWIG: passing Python exception back\n");
             return NULL;
+        }catch (simdata::Exception e) {
+            printf("SWIG: caught a SimData Exception\n");
+            e.details();
+            return NULL;
         }catch (...) {
             printf("SWIG: passing C++ exception back\n");
             return NULL;
@@ -19884,6 +20029,10 @@ static PyObject *_wrap_delete_CorruptArchive(PyObject *self, PyObject *args) {
             
         }catch (simdata::PythonException &e) {
             printf("SWIG: passing Python exception back\n");
+            return NULL;
+        }catch (simdata::Exception e) {
+            printf("SWIG: caught a SimData Exception\n");
+            e.details();
             return NULL;
         }catch (...) {
             printf("SWIG: passing C++ exception back\n");
@@ -19917,6 +20066,10 @@ static PyObject *_wrap_new_IndexError(PyObject *self, PyObject *args) {
         }catch (simdata::PythonException &e) {
             printf("SWIG: passing Python exception back\n");
             return NULL;
+        }catch (simdata::Exception e) {
+            printf("SWIG: caught a SimData Exception\n");
+            e.details();
+            return NULL;
         }catch (...) {
             printf("SWIG: passing C++ exception back\n");
             return NULL;
@@ -19942,6 +20095,10 @@ static PyObject *_wrap_delete_IndexError(PyObject *self, PyObject *args) {
             
         }catch (simdata::PythonException &e) {
             printf("SWIG: passing Python exception back\n");
+            return NULL;
+        }catch (simdata::Exception e) {
+            printf("SWIG: caught a SimData Exception\n");
+            e.details();
             return NULL;
         }catch (...) {
             printf("SWIG: passing C++ exception back\n");
@@ -19975,6 +20132,10 @@ static PyObject *_wrap_new_ObjectMismatch(PyObject *self, PyObject *args) {
         }catch (simdata::PythonException &e) {
             printf("SWIG: passing Python exception back\n");
             return NULL;
+        }catch (simdata::Exception e) {
+            printf("SWIG: caught a SimData Exception\n");
+            e.details();
+            return NULL;
         }catch (...) {
             printf("SWIG: passing C++ exception back\n");
             return NULL;
@@ -20000,6 +20161,10 @@ static PyObject *_wrap_delete_ObjectMismatch(PyObject *self, PyObject *args) {
             
         }catch (simdata::PythonException &e) {
             printf("SWIG: passing Python exception back\n");
+            return NULL;
+        }catch (simdata::Exception e) {
+            printf("SWIG: caught a SimData Exception\n");
+            e.details();
             return NULL;
         }catch (...) {
             printf("SWIG: passing C++ exception back\n");
@@ -20042,6 +20207,10 @@ static PyObject *_wrap_new_IOError(PyObject *self, PyObject *args) {
         }catch (simdata::PythonException &e) {
             printf("SWIG: passing Python exception back\n");
             return NULL;
+        }catch (simdata::Exception e) {
+            printf("SWIG: caught a SimData Exception\n");
+            e.details();
+            return NULL;
         }catch (...) {
             printf("SWIG: passing C++ exception back\n");
             return NULL;
@@ -20067,6 +20236,10 @@ static PyObject *_wrap_delete_IOError(PyObject *self, PyObject *args) {
             
         }catch (simdata::PythonException &e) {
             printf("SWIG: passing Python exception back\n");
+            return NULL;
+        }catch (simdata::Exception e) {
+            printf("SWIG: caught a SimData Exception\n");
+            e.details();
             return NULL;
         }catch (...) {
             printf("SWIG: passing C++ exception back\n");
@@ -20255,6 +20428,10 @@ static PyObject *_wrap_new_TableEntry(PyObject *self, PyObject *args) {
         }catch (simdata::PythonException &e) {
             printf("SWIG: passing Python exception back\n");
             return NULL;
+        }catch (simdata::Exception e) {
+            printf("SWIG: caught a SimData Exception\n");
+            e.details();
+            return NULL;
         }catch (...) {
             printf("SWIG: passing C++ exception back\n");
             return NULL;
@@ -20280,6 +20457,10 @@ static PyObject *_wrap_delete_TableEntry(PyObject *self, PyObject *args) {
             
         }catch (simdata::PythonException &e) {
             printf("SWIG: passing Python exception back\n");
+            return NULL;
+        }catch (simdata::Exception e) {
+            printf("SWIG: caught a SimData Exception\n");
+            e.details();
             return NULL;
         }catch (...) {
             printf("SWIG: passing C++ exception back\n");
@@ -20429,6 +20610,10 @@ static PyObject *_wrap_new_FP(PyObject *self, PyObject *args) {
         }catch (simdata::PythonException &e) {
             printf("SWIG: passing Python exception back\n");
             return NULL;
+        }catch (simdata::Exception e) {
+            printf("SWIG: caught a SimData Exception\n");
+            e.details();
+            return NULL;
         }catch (...) {
             printf("SWIG: passing C++ exception back\n");
             return NULL;
@@ -20454,6 +20639,10 @@ static PyObject *_wrap_delete_FP(PyObject *self, PyObject *args) {
             
         }catch (simdata::PythonException &e) {
             printf("SWIG: passing Python exception back\n");
+            return NULL;
+        }catch (simdata::Exception e) {
+            printf("SWIG: caught a SimData Exception\n");
+            e.details();
             return NULL;
         }catch (...) {
             printf("SWIG: passing C++ exception back\n");
@@ -20488,6 +20677,10 @@ static PyObject *_wrap_new_DataArchive(PyObject *self, PyObject *args) {
         }catch (simdata::PythonException &e) {
             printf("SWIG: passing Python exception back\n");
             return NULL;
+        }catch (simdata::Exception e) {
+            printf("SWIG: caught a SimData Exception\n");
+            e.details();
+            return NULL;
         }catch (...) {
             printf("SWIG: passing C++ exception back\n");
             return NULL;
@@ -20513,6 +20706,10 @@ static PyObject *_wrap_delete_DataArchive(PyObject *self, PyObject *args) {
             
         }catch (simdata::PythonException &e) {
             printf("SWIG: passing Python exception back\n");
+            return NULL;
+        }catch (simdata::Exception e) {
+            printf("SWIG: caught a SimData Exception\n");
+            e.details();
             return NULL;
         }catch (...) {
             printf("SWIG: passing C++ exception back\n");
@@ -20548,6 +20745,10 @@ static PyObject *_wrap_DataArchive__addEntry(PyObject *self, PyObject *args) {
         }catch (simdata::PythonException &e) {
             printf("SWIG: passing Python exception back\n");
             return NULL;
+        }catch (simdata::Exception e) {
+            printf("SWIG: caught a SimData Exception\n");
+            e.details();
+            return NULL;
         }catch (...) {
             printf("SWIG: passing C++ exception back\n");
             return NULL;
@@ -20581,6 +20782,10 @@ static PyObject *_wrap_DataArchive_addObject(PyObject *self, PyObject *args) {
         }catch (simdata::PythonException &e) {
             printf("SWIG: passing Python exception back\n");
             return NULL;
+        }catch (simdata::Exception e) {
+            printf("SWIG: caught a SimData Exception\n");
+            e.details();
+            return NULL;
         }catch (...) {
             printf("SWIG: passing C++ exception back\n");
             return NULL;
@@ -20606,6 +20811,10 @@ static PyObject *_wrap_DataArchive_close(PyObject *self, PyObject *args) {
             
         }catch (simdata::PythonException &e) {
             printf("SWIG: passing Python exception back\n");
+            return NULL;
+        }catch (simdata::Exception e) {
+            printf("SWIG: caught a SimData Exception\n");
+            e.details();
             return NULL;
         }catch (...) {
             printf("SWIG: passing C++ exception back\n");
@@ -20634,6 +20843,10 @@ static PyObject *_wrap_DataArchive_isClosed(PyObject *self, PyObject *args) {
         }catch (simdata::PythonException &e) {
             printf("SWIG: passing Python exception back\n");
             return NULL;
+        }catch (simdata::Exception e) {
+            printf("SWIG: caught a SimData Exception\n");
+            e.details();
+            return NULL;
         }catch (...) {
             printf("SWIG: passing C++ exception back\n");
             return NULL;
@@ -20661,6 +20874,10 @@ static PyObject *_wrap_DataArchive_isWrite(PyObject *self, PyObject *args) {
         }catch (simdata::PythonException &e) {
             printf("SWIG: passing Python exception back\n");
             return NULL;
+        }catch (simdata::Exception e) {
+            printf("SWIG: caught a SimData Exception\n");
+            e.details();
+            return NULL;
         }catch (...) {
             printf("SWIG: passing C++ exception back\n");
             return NULL;
@@ -20686,6 +20903,10 @@ static PyObject *_wrap_DataArchive_setDefault(PyObject *self, PyObject *args) {
             
         }catch (simdata::PythonException &e) {
             printf("SWIG: passing Python exception back\n");
+            return NULL;
+        }catch (simdata::Exception e) {
+            printf("SWIG: caught a SimData Exception\n");
+            e.details();
             return NULL;
         }catch (...) {
             printf("SWIG: passing C++ exception back\n");
@@ -20714,6 +20935,10 @@ static PyObject *_wrap_DataArchive_getObject__SWIG_0(PyObject *self, PyObject *a
             
         }catch (simdata::PythonException &e) {
             printf("SWIG: passing Python exception back\n");
+            return NULL;
+        }catch (simdata::Exception e) {
+            printf("SWIG: caught a SimData Exception\n");
+            e.details();
             return NULL;
         }catch (...) {
             printf("SWIG: passing C++ exception back\n");
@@ -20752,6 +20977,10 @@ static PyObject *_wrap_DataArchive_getObject__SWIG_1(PyObject *self, PyObject *a
             
         }catch (simdata::PythonException &e) {
             printf("SWIG: passing Python exception back\n");
+            return NULL;
+        }catch (simdata::Exception e) {
+            printf("SWIG: caught a SimData Exception\n");
+            e.details();
             return NULL;
         }catch (...) {
             printf("SWIG: passing C++ exception back\n");
@@ -20853,6 +21082,10 @@ static PyObject *_wrap_DataArchive__getOffset(PyObject *self, PyObject *args) {
         }catch (simdata::PythonException &e) {
             printf("SWIG: passing Python exception back\n");
             return NULL;
+        }catch (simdata::Exception e) {
+            printf("SWIG: caught a SimData Exception\n");
+            e.details();
+            return NULL;
         }catch (...) {
             printf("SWIG: passing C++ exception back\n");
             return NULL;
@@ -20879,6 +21112,10 @@ static PyObject *_wrap_DataArchive__filePointer(PyObject *self, PyObject *args) 
             
         }catch (simdata::PythonException &e) {
             printf("SWIG: passing Python exception back\n");
+            return NULL;
+        }catch (simdata::Exception e) {
+            printf("SWIG: caught a SimData Exception\n");
+            e.details();
             return NULL;
         }catch (...) {
             printf("SWIG: passing C++ exception back\n");
@@ -20920,6 +21157,10 @@ static PyObject *_wrap_DataArchive__lookupPath(PyObject *self, PyObject *args) {
             
         }catch (simdata::PythonException &e) {
             printf("SWIG: passing Python exception back\n");
+            return NULL;
+        }catch (simdata::Exception e) {
+            printf("SWIG: caught a SimData Exception\n");
+            e.details();
             return NULL;
         }catch (...) {
             printf("SWIG: passing C++ exception back\n");
@@ -21513,7 +21754,7 @@ static PyObject *_wrap_InterfaceProxy_set__SWIG_3(PyObject *self, PyObject *args
     simdata::InterfaceProxy *arg1 = (simdata::InterfaceProxy *) 0 ;
     simdata::Object *arg2 = (simdata::Object *) 0 ;
     char *arg3 ;
-    BaseType *arg4 = (BaseType *) 0 ;
+    simdata::BaseType *arg4 = (simdata::BaseType *) 0 ;
     PyObject * obj0  = 0 ;
     PyObject * obj1  = 0 ;
     PyObject * obj3  = 0 ;
@@ -21521,7 +21762,7 @@ static PyObject *_wrap_InterfaceProxy_set__SWIG_3(PyObject *self, PyObject *args
     if(!PyArg_ParseTuple(args,(char *)"OOsO:InterfaceProxy_set",&obj0,&obj1,&arg3,&obj3)) goto fail;
     if ((SWIG_ConvertPtr(obj0,(void **) &arg1, SWIGTYPE_p_simdata__InterfaceProxy,SWIG_POINTER_EXCEPTION | 0 )) == -1) SWIG_fail;
     if ((SWIG_ConvertPtr(obj1,(void **) &arg2, SWIGTYPE_p_simdata__Object,SWIG_POINTER_EXCEPTION | 0 )) == -1) SWIG_fail;
-    if ((SWIG_ConvertPtr(obj3,(void **) &arg4, SWIGTYPE_p_BaseType,SWIG_POINTER_EXCEPTION | 0 )) == -1) SWIG_fail;
+    if ((SWIG_ConvertPtr(obj3,(void **) &arg4, SWIGTYPE_p_simdata__BaseType,SWIG_POINTER_EXCEPTION | 0 )) == -1) SWIG_fail;
     {
         try {
             simdata_InterfaceProxy_set__SWIG_3(arg1,arg2,(char const *)arg3,arg4);
@@ -21578,7 +21819,7 @@ static PyObject *_wrap_InterfaceProxy_set(PyObject *self, PyObject *args) {
                 if (_v) {
                     {
                         void *ptr;
-                        if (SWIG_ConvertPtr(argv[3], (void **) &ptr, SWIGTYPE_p_BaseType, 0) == -1) {
+                        if (SWIG_ConvertPtr(argv[3], (void **) &ptr, SWIGTYPE_p_simdata__BaseType, 0) == -1) {
                             _v = 0;
                             PyErr_Clear();
                         }else {
@@ -21711,7 +21952,7 @@ static PyObject *_wrap_InterfaceProxy_push_back(PyObject *self, PyObject *args) 
     simdata::InterfaceProxy *arg1 = (simdata::InterfaceProxy *) 0 ;
     simdata::Object *arg2 = (simdata::Object *) 0 ;
     char *arg3 ;
-    BaseType *arg4 = 0 ;
+    simdata::BaseType *arg4 = 0 ;
     PyObject * obj0  = 0 ;
     PyObject * obj1  = 0 ;
     PyObject * obj3  = 0 ;
@@ -21719,13 +21960,13 @@ static PyObject *_wrap_InterfaceProxy_push_back(PyObject *self, PyObject *args) 
     if(!PyArg_ParseTuple(args,(char *)"OOsO:InterfaceProxy_push_back",&obj0,&obj1,&arg3,&obj3)) goto fail;
     if ((SWIG_ConvertPtr(obj0,(void **) &arg1, SWIGTYPE_p_simdata__InterfaceProxy,SWIG_POINTER_EXCEPTION | 0 )) == -1) SWIG_fail;
     if ((SWIG_ConvertPtr(obj1,(void **) &arg2, SWIGTYPE_p_simdata__Object,SWIG_POINTER_EXCEPTION | 0 )) == -1) SWIG_fail;
-    if ((SWIG_ConvertPtr(obj3,(void **) &arg4, SWIGTYPE_p_BaseType,SWIG_POINTER_EXCEPTION | 0 )) == -1) SWIG_fail;
+    if ((SWIG_ConvertPtr(obj3,(void **) &arg4, SWIGTYPE_p_simdata__BaseType,SWIG_POINTER_EXCEPTION | 0 )) == -1) SWIG_fail;
     if (arg4 == NULL) {
         PyErr_SetString(PyExc_TypeError,"null reference"); SWIG_fail; 
     }
     {
         try {
-            simdata_InterfaceProxy_push_back(arg1,arg2,(char const *)arg3,(BaseType const &)*arg4);
+            simdata_InterfaceProxy_push_back(arg1,arg2,(char const *)arg3,(simdata::BaseType const &)*arg4);
             
         }catch (simdata::TypeMismatch &e) {
             e.clear();
@@ -22187,6 +22428,14 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"new_ParseException", _wrap_new_ParseException, METH_VARARGS },
 	 { (char *)"delete_ParseException", _wrap_delete_ParseException, METH_VARARGS },
 	 { (char *)"ParseException_swigregister", ParseException_swigregister, METH_VARARGS },
+	 { (char *)"BaseType_pack", _wrap_BaseType_pack, METH_VARARGS },
+	 { (char *)"BaseType_unpack", _wrap_BaseType_unpack, METH_VARARGS },
+	 { (char *)"BaseType_parseXML", _wrap_BaseType_parseXML, METH_VARARGS },
+	 { (char *)"BaseType_convertXML", _wrap_BaseType_convertXML, METH_VARARGS },
+	 { (char *)"BaseType_asString", _wrap_BaseType_asString, METH_VARARGS },
+	 { (char *)"new_BaseType", _wrap_new_BaseType, METH_VARARGS },
+	 { (char *)"delete_BaseType", _wrap_delete_BaseType, METH_VARARGS },
+	 { (char *)"BaseType_swigregister", BaseType_swigregister, METH_VARARGS },
 	 { (char *)"__lshift__", _wrap___lshift__, METH_VARARGS },
 	 { (char *)"delete_Object", _wrap_delete_Object, METH_VARARGS },
 	 { (char *)"Object__new", _wrap_Object__new, METH_VARARGS },
@@ -22911,62 +23160,62 @@ static void *_p_simdata__ListTsimdata__External_tTo_p_std__vectorTsimdata__Exter
 static void *_p_simdata__ListTsimdata__Curve_tTo_p_std__vectorTsimdata__Curve_t(void *x) {
     return (void *)((std::vector<simdata::Curve > *)  ((simdata::List<simdata::Curve > *) x));
 }
-static void *_p_simdata__ObjectTo_p_BaseType(void *x) {
-    return (void *)((BaseType *)  ((simdata::Object *) x));
+static void *_p_simdata__ObjectTo_p_simdata__BaseType(void *x) {
+    return (void *)((simdata::BaseType *)  ((simdata::Object *) x));
 }
-static void *_p_simdata__SpreadTo_p_BaseType(void *x) {
-    return (void *)((BaseType *)  ((simdata::Spread *) x));
+static void *_p_simdata__SpreadTo_p_simdata__BaseType(void *x) {
+    return (void *)((simdata::BaseType *)  ((simdata::Spread *) x));
 }
-static void *_p_simdata__ListTsimdata__External_tTo_p_BaseType(void *x) {
-    return (void *)((BaseType *) (simdata::ListBase *) ((simdata::List<simdata::External > *) x));
+static void *_p_simdata__ListTsimdata__External_tTo_p_simdata__BaseType(void *x) {
+    return (void *)((simdata::BaseType *) (simdata::ListBase *) ((simdata::List<simdata::External > *) x));
 }
-static void *_p_simdata__Matrix3To_p_BaseType(void *x) {
-    return (void *)((BaseType *)  ((simdata::Matrix3 *) x));
+static void *_p_simdata__Matrix3To_p_simdata__BaseType(void *x) {
+    return (void *)((simdata::BaseType *)  ((simdata::Matrix3 *) x));
 }
-static void *_p_simdata__PathTo_p_BaseType(void *x) {
-    return (void *)((BaseType *)  ((simdata::Path *) x));
+static void *_p_simdata__PathTo_p_simdata__BaseType(void *x) {
+    return (void *)((simdata::BaseType *)  ((simdata::Path *) x));
 }
-static void *_p_simdata__InterpolatedDataTo_p_BaseType(void *x) {
-    return (void *)((BaseType *)  ((simdata::InterpolatedData *) x));
+static void *_p_simdata__InterpolatedDataTo_p_simdata__BaseType(void *x) {
+    return (void *)((simdata::BaseType *)  ((simdata::InterpolatedData *) x));
 }
-static void *_p_simdata__ExternalTo_p_BaseType(void *x) {
-    return (void *)((BaseType *)  ((simdata::External *) x));
+static void *_p_simdata__ExternalTo_p_simdata__BaseType(void *x) {
+    return (void *)((simdata::BaseType *)  ((simdata::External *) x));
 }
-static void *_p_simdata__TableTo_p_BaseType(void *x) {
-    return (void *)((BaseType *) (simdata::InterpolatedData *) ((simdata::Table *) x));
+static void *_p_simdata__TableTo_p_simdata__BaseType(void *x) {
+    return (void *)((simdata::BaseType *) (simdata::InterpolatedData *) ((simdata::Table *) x));
 }
-static void *_p_simdata__ListBaseTo_p_BaseType(void *x) {
-    return (void *)((BaseType *)  ((simdata::ListBase *) x));
+static void *_p_simdata__ListBaseTo_p_simdata__BaseType(void *x) {
+    return (void *)((simdata::BaseType *)  ((simdata::ListBase *) x));
 }
-static void *_p_simdata__Vector3To_p_BaseType(void *x) {
-    return (void *)((BaseType *)  ((simdata::Vector3 *) x));
+static void *_p_simdata__Vector3To_p_simdata__BaseType(void *x) {
+    return (void *)((simdata::BaseType *)  ((simdata::Vector3 *) x));
 }
-static void *_p_simdata__ListTsimdata__Spread_tTo_p_BaseType(void *x) {
-    return (void *)((BaseType *) (simdata::ListBase *) ((simdata::List<simdata::Spread > *) x));
+static void *_p_simdata__ListTsimdata__Spread_tTo_p_simdata__BaseType(void *x) {
+    return (void *)((simdata::BaseType *) (simdata::ListBase *) ((simdata::List<simdata::Spread > *) x));
 }
-static void *_p_simdata__EnumTo_p_BaseType(void *x) {
-    return (void *)((BaseType *)  ((simdata::Enum *) x));
+static void *_p_simdata__EnumTo_p_simdata__BaseType(void *x) {
+    return (void *)((simdata::BaseType *)  ((simdata::Enum *) x));
 }
-static void *_p_simdata__CurveTo_p_BaseType(void *x) {
-    return (void *)((BaseType *) (simdata::InterpolatedData *) ((simdata::Curve *) x));
+static void *_p_simdata__CurveTo_p_simdata__BaseType(void *x) {
+    return (void *)((simdata::BaseType *) (simdata::InterpolatedData *) ((simdata::Curve *) x));
 }
-static void *_p_simdata__SimDateTo_p_BaseType(void *x) {
-    return (void *)((BaseType *)  ((simdata::SimDate *) x));
+static void *_p_simdata__SimDateTo_p_simdata__BaseType(void *x) {
+    return (void *)((simdata::BaseType *)  ((simdata::SimDate *) x));
 }
-static void *_p_simdata__PathPointerBaseTo_p_BaseType(void *x) {
-    return (void *)((BaseType *) (simdata::Path *) ((simdata::PathPointerBase *) x));
+static void *_p_simdata__PathPointerBaseTo_p_simdata__BaseType(void *x) {
+    return (void *)((simdata::BaseType *) (simdata::Path *) ((simdata::PathPointerBase *) x));
 }
-static void *_p_simdata__ListTsimdata__Curve_tTo_p_BaseType(void *x) {
-    return (void *)((BaseType *) (simdata::ListBase *) ((simdata::List<simdata::Curve > *) x));
+static void *_p_simdata__ListTsimdata__Curve_tTo_p_simdata__BaseType(void *x) {
+    return (void *)((simdata::BaseType *) (simdata::ListBase *) ((simdata::List<simdata::Curve > *) x));
 }
-static void *_p_simdata__ListTint_tTo_p_BaseType(void *x) {
-    return (void *)((BaseType *) (simdata::ListBase *) ((simdata::List<int > *) x));
+static void *_p_simdata__ListTint_tTo_p_simdata__BaseType(void *x) {
+    return (void *)((simdata::BaseType *) (simdata::ListBase *) ((simdata::List<int > *) x));
 }
-static void *_p_simdata__ListTsimdata__Path_tTo_p_BaseType(void *x) {
-    return (void *)((BaseType *) (simdata::ListBase *) ((simdata::List<simdata::Path > *) x));
+static void *_p_simdata__ListTsimdata__Path_tTo_p_simdata__BaseType(void *x) {
+    return (void *)((simdata::BaseType *) (simdata::ListBase *) ((simdata::List<simdata::Path > *) x));
 }
-static void *_p_simdata__ListTsimdata__Table_tTo_p_BaseType(void *x) {
-    return (void *)((BaseType *) (simdata::ListBase *) ((simdata::List<simdata::Table > *) x));
+static void *_p_simdata__ListTsimdata__Table_tTo_p_simdata__BaseType(void *x) {
+    return (void *)((simdata::BaseType *) (simdata::ListBase *) ((simdata::List<simdata::Table > *) x));
 }
 static void *_p_simdata__ListTsimdata__Table_tTo_p_std__vectorTsimdata__Table_t(void *x) {
     return (void *)((std::vector<simdata::Table > *)  ((simdata::List<simdata::Table > *) x));
@@ -22995,156 +23244,154 @@ static void *_p_simdata__PathPointerBaseTo_p_simdata__PointerBase(void *x) {
 static void *_p_simdata__ListTsimdata__Path_tTo_p_std__vectorTsimdata__Path_t(void *x) {
     return (void *)((std::vector<simdata::Path > *)  ((simdata::List<simdata::Path > *) x));
 }
-static swig_type_info _swigt__p_simdata__Packer[] = {{"_p_simdata__Packer", 0, "simdata::Packer *", 0},{"_p_simdata__Packer"},{0}};
-static swig_type_info _swigt__p_simdata__External[] = {{"_p_simdata__External", 0, "simdata::External *", 0},{"_p_simdata__External"},{0}};
+static swig_type_info _swigt__p_simdata__Table[] = {{"_p_simdata__Table", 0, "simdata::Table *", 0},{"_p_simdata__Table"},{0}};
+static swig_type_info _swigt__p_simdata__Date[] = {{"_p_simdata__Date", 0, "simdata::Date *", 0},{"_p_simdata__SimDate", _p_simdata__SimDateTo_p_simdata__Date},{"_p_simdata__Date"},{"_p_simdata__DateZulu", _p_simdata__DateZuluTo_p_simdata__Date},{0}};
+static swig_type_info _swigt__p_swig_string_bug_workaround[] = {{"_p_swig_string_bug_workaround", 0, "swig_string_bug_workaround *", 0},{"_p_swig_string_bug_workaround"},{0}};
+static swig_type_info _swigt__p_std__vectorTsimdata__Path_t[] = {{"_p_std__vectorTsimdata__Path_t", 0, "std::vector<simdata::Path > *", 0},{"_p_std__vectorTsimdata__Path_t"},{"_p_simdata__ListTsimdata__Path_t", _p_simdata__ListTsimdata__Path_tTo_p_std__vectorTsimdata__Path_t},{0}};
+static swig_type_info _swigt__p_simdata__ListTsimdata__Path_t[] = {{"_p_simdata__ListTsimdata__Path_t", 0, "simdata::List<simdata::Path > *", 0},{"_p_simdata__ListTsimdata__Path_t"},{0}};
+static swig_type_info _swigt__p_p_char[] = {{"_p_p_char", 0, "char **", 0},{"_p_p_char"},{0}};
+static swig_type_info _swigt__p_simdata__Spread[] = {{"_p_simdata__Spread", 0, "simdata::Spread *", 0},{"_p_simdata__Spread"},{0}};
+static swig_type_info _swigt__p_simdata__TableEntry[] = {{"_p_simdata__TableEntry", 0, "simdata::TableEntry *", 0},{"_p_simdata__TableEntry"},{0}};
 static swig_type_info _swigt__p_simdata__InterfaceRegistry[] = {{"_p_simdata__InterfaceRegistry", 0, "simdata::InterfaceRegistry *", 0},{"_p_simdata__InterfaceRegistry"},{0}};
-static swig_type_info _swigt__p_std__vectorTsimdata__Enum_t[] = {{"_p_std__vectorTsimdata__Enum_t", 0, "std::vector<simdata::Enum > *", 0},{"_p_std__vectorTsimdata__Enum_t"},{0}};
-static swig_type_info _swigt__p_simdata__ListTsimdata__Spread_t[] = {{"_p_simdata__ListTsimdata__Spread_t", 0, "simdata::List<simdata::Spread > *", 0},{"_p_simdata__ListTsimdata__Spread_t"},{0}};
+static swig_type_info _swigt__p_simdata__External[] = {{"_p_simdata__External", 0, "simdata::External *", 0},{"_p_simdata__External"},{0}};
+static swig_type_info _swigt__p_guint32[] = {{"_p_guint32", 0, "guint32 *", 0},{"_p_guint32"},{0}};
+static swig_type_info _swigt__p_bool[] = {{"_p_bool", 0, "bool *", 0},{"_p_bool"},{0}};
+static swig_type_info _swigt__p_simdata__InvalidDate[] = {{"_p_simdata__InvalidDate", 0, "simdata::InvalidDate *", 0},{"_p_simdata__InvalidDate"},{0}};
+static swig_type_info _swigt__p_simdata__BadMagic[] = {{"_p_simdata__BadMagic", 0, "simdata::BadMagic *", 0},{"_p_simdata__BadMagic"},{0}};
+static swig_type_info _swigt__p_double[] = {{"_p_double", 0, "double *", 0},{"_p_double"},{0}};
+static swig_type_info _swigt__p_a_3__double[] = {{"_p_a_3__double", 0, "double (*)[3]", 0},{"_p_a_3__simdata__Matrix3__M_t"},{"_p_a_3__double"},{0}};
 static swig_type_info _swigt__p_std__vectorTsimdata__Spread_t[] = {{"_p_std__vectorTsimdata__Spread_t", 0, "std::vector<simdata::Spread > *", 0},{"_p_std__vectorTsimdata__Spread_t"},{"_p_simdata__ListTsimdata__Spread_t", _p_simdata__ListTsimdata__Spread_tTo_p_std__vectorTsimdata__Spread_t},{0}};
 static swig_type_info _swigt__p_simdata__Enumeration[] = {{"_p_simdata__Enumeration", 0, "simdata::Enumeration *", 0},{"_p_simdata__Enumeration"},{0}};
-static swig_type_info _swigt__p_simdata__ListTsimdata__Path_t[] = {{"_p_simdata__ListTsimdata__Path_t", 0, "simdata::List<simdata::Path > *", 0},{"_p_simdata__ListTsimdata__Path_t"},{0}};
-static swig_type_info _swigt__p_std__vectorTsimdata__Path_t[] = {{"_p_std__vectorTsimdata__Path_t", 0, "std::vector<simdata::Path > *", 0},{"_p_std__vectorTsimdata__Path_t"},{"_p_simdata__ListTsimdata__Path_t", _p_simdata__ListTsimdata__Path_tTo_p_std__vectorTsimdata__Path_t},{0}};
-static swig_type_info _swigt__p_simdata__ListTsimdata__External_t[] = {{"_p_simdata__ListTsimdata__External_t", 0, "simdata::List<simdata::External > *", 0},{"_p_simdata__ListTsimdata__External_t"},{0}};
-static swig_type_info _swigt__p_std__vectorTsimdata__External_t[] = {{"_p_std__vectorTsimdata__External_t", 0, "std::vector<simdata::External > *", 0},{"_p_std__vectorTsimdata__External_t"},{"_p_simdata__ListTsimdata__External_t", _p_simdata__ListTsimdata__External_tTo_p_std__vectorTsimdata__External_t},{0}};
-static swig_type_info _swigt__p_swig_string_bug_workaround[] = {{"_p_swig_string_bug_workaround", 0, "swig_string_bug_workaround *", 0},{"_p_swig_string_bug_workaround"},{0}};
-static swig_type_info _swigt__p_simdata__Date[] = {{"_p_simdata__Date", 0, "simdata::Date *", 0},{"_p_simdata__SimDate", _p_simdata__SimDateTo_p_simdata__Date},{"_p_simdata__Date"},{"_p_simdata__DateZulu", _p_simdata__DateZuluTo_p_simdata__Date},{0}};
-static swig_type_info _swigt__p_simdata__SimDate[] = {{"_p_simdata__SimDate", 0, "simdata::SimDate *", 0},{"_p_simdata__SimDate"},{0}};
-static swig_type_info _swigt__p_simdata__InterpolatedData[] = {{"_p_simdata__InterpolatedData", 0, "simdata::InterpolatedData *", 0},{"_p_simdata__Curve", _p_simdata__CurveTo_p_simdata__InterpolatedData},{"_p_simdata__InterpolatedData"},{"_p_simdata__Table", _p_simdata__TableTo_p_simdata__InterpolatedData},{0}};
-static swig_type_info _swigt__p_bool[] = {{"_p_bool", 0, "bool *", 0},{"_p_bool"},{0}};
-static swig_type_info _swigt__p_simdata__ListTsimdata__Curve_t[] = {{"_p_simdata__ListTsimdata__Curve_t", 0, "simdata::List<simdata::Curve > *", 0},{"_p_simdata__ListTsimdata__Curve_t"},{0}};
-static swig_type_info _swigt__p_std__vectorTsimdata__Curve_t[] = {{"_p_std__vectorTsimdata__Curve_t", 0, "std::vector<simdata::Curve > *", 0},{"_p_std__vectorTsimdata__Curve_t"},{"_p_simdata__ListTsimdata__Curve_t", _p_simdata__ListTsimdata__Curve_tTo_p_std__vectorTsimdata__Curve_t},{0}};
+static swig_type_info _swigt__p_simdata__ListTsimdata__Spread_t[] = {{"_p_simdata__ListTsimdata__Spread_t", 0, "simdata::List<simdata::Spread > *", 0},{"_p_simdata__ListTsimdata__Spread_t"},{0}};
 static swig_type_info _swigt__p_simdata__FP[] = {{"_p_simdata__FP", 0, "simdata::FP *", 0},{"_p_simdata__FP"},{0}};
-static swig_type_info _swigt__p_simdata__EnumTypeError[] = {{"_p_simdata__EnumTypeError", 0, "simdata::EnumTypeError *", 0},{"_p_simdata__EnumTypeError"},{0}};
-static swig_type_info _swigt__p_a_3__simdata__Matrix3__M_t[] = {{"_p_a_3__simdata__Matrix3__M_t", 0, "simdata::Matrix3::M_t [3][3]", 0},{"_p_a_3__simdata__Matrix3__M_t"},{"_p_a_3__double"},{0}};
-static swig_type_info _swigt__p_simdata__ListTsimdata__Table_t[] = {{"_p_simdata__ListTsimdata__Table_t", 0, "simdata::List<simdata::Table > *", 0},{"_p_simdata__ListTsimdata__Table_t"},{0}};
-static swig_type_info _swigt__p_std__vectorTsimdata__Table_t[] = {{"_p_std__vectorTsimdata__Table_t", 0, "std::vector<simdata::Table > *", 0},{"_p_std__vectorTsimdata__Table_t"},{"_p_simdata__ListTsimdata__Table_t", _p_simdata__ListTsimdata__Table_tTo_p_std__vectorTsimdata__Table_t},{0}};
-static swig_type_info _swigt__p_simdata__ObjectID[] = {{"_p_simdata__ObjectID", 0, "simdata::ObjectID const *", 0},{"_p_simdata__HashT"},{"_p_simdata__ObjectID"},{"_p_simdata__hasht"},{0}};
-static swig_type_info _swigt__p_a_3__double[] = {{"_p_a_3__double", 0, "double (*)[3]", 0},{"_p_a_3__simdata__Matrix3__M_t"},{"_p_a_3__double"},{0}};
-static swig_type_info _swigt__p_double[] = {{"_p_double", 0, "double *", 0},{"_p_double"},{0}};
-static swig_type_info _swigt__p_simdata__BadMagic[] = {{"_p_simdata__BadMagic", 0, "simdata::BadMagic *", 0},{"_p_simdata__BadMagic"},{0}};
-static swig_type_info _swigt__p_simdata__Table[] = {{"_p_simdata__Table", 0, "simdata::Table *", 0},{"_p_simdata__Table"},{0}};
-static swig_type_info _swigt__p_int[] = {{"_p_int", 0, "int *", 0},{"_p_int"},{0}};
-static swig_type_info _swigt__p_simdata__UnPacker[] = {{"_p_simdata__UnPacker", 0, "simdata::UnPacker *", 0},{"_p_simdata__UnPacker"},{0}};
-static swig_type_info _swigt__p_simdata__TableEntry[] = {{"_p_simdata__TableEntry", 0, "simdata::TableEntry *", 0},{"_p_simdata__TableEntry"},{0}};
-static swig_type_info _swigt__p_simdata__Exception[] = {{"_p_simdata__Exception", 0, "simdata::Exception *", 0},{"_p_simdata__Exception"},{"_p_simdata__ParseException", _p_simdata__ParseExceptionTo_p_simdata__Exception},{"_p_simdata__ObjectTypeMismatch", _p_simdata__ObjectTypeMismatchTo_p_simdata__Exception},{"_p_simdata__ObjectMismatch", _p_simdata__ObjectMismatchTo_p_simdata__Exception},{"_p_simdata__CorruptArchive", _p_simdata__CorruptArchiveTo_p_simdata__Exception},{"_p_simdata__IOError", _p_simdata__IOErrorTo_p_simdata__Exception},{"_p_simdata__BadMagic", _p_simdata__BadMagicTo_p_simdata__Exception},{"_p_simdata__BadByteOrder", _p_simdata__BadByteOrderTo_p_simdata__Exception},{"_p_simdata__IndexError", _p_simdata__IndexErrorTo_p_simdata__Exception},{0}};
-static swig_type_info _swigt__p_simdata__PythonException[] = {{"_p_simdata__PythonException", 0, "simdata::PythonException *", 0},{"_p_simdata__PythonException"},{0}};
-static swig_type_info _swigt__p_simdata__ParseException[] = {{"_p_simdata__ParseException", 0, "simdata::ParseException *", 0},{"_p_simdata__ParseException"},{0}};
-static swig_type_info _swigt__p_simdata__Object[] = {{"_p_simdata__Object", 0, "simdata::Object *", 0},{"_p_simdata__Object"},{0}};
-static swig_type_info _swigt__p_simdata__ListBase[] = {{"_p_simdata__ListBase", 0, "simdata::ListBase *", 0},{"_p_simdata__ListBase"},{"_p_simdata__ListTsimdata__Path_t", _p_simdata__ListTsimdata__Path_tTo_p_simdata__ListBase},{"_p_simdata__ListTsimdata__Spread_t", _p_simdata__ListTsimdata__Spread_tTo_p_simdata__ListBase},{"_p_simdata__ListTint_t", _p_simdata__ListTint_tTo_p_simdata__ListBase},{"_p_simdata__ListTsimdata__Table_t", _p_simdata__ListTsimdata__Table_tTo_p_simdata__ListBase},{"_p_simdata__ListTsimdata__External_t", _p_simdata__ListTsimdata__External_tTo_p_simdata__ListBase},{"_p_simdata__ListTsimdata__Curve_t", _p_simdata__ListTsimdata__Curve_tTo_p_simdata__ListBase},{0}};
-static swig_type_info _swigt__p_tm[] = {{"_p_tm", 0, "tm *", 0},{"_p_tm"},{0}};
-static swig_type_info _swigt__p_simdata__HashT[] = {{"_p_simdata__HashT", 0, "simdata::HashT *", 0},{"_p_simdata__HashT"},{"_p_simdata__ObjectID"},{"_p_simdata__hasht"},{0}};
-static swig_type_info _swigt__p_std__vectorTsimdata__InterfaceProxy_p_t[] = {{"_p_std__vectorTsimdata__InterfaceProxy_p_t", 0, "std::vector<simdata::InterfaceProxy * > *", 0},{"_p_std__vectorTsimdata__InterfaceProxy_p_t"},{0}};
-static swig_type_info _swigt__p_simdata__Curve[] = {{"_p_simdata__Curve", 0, "simdata::Curve *", 0},{"_p_simdata__Curve"},{0}};
 static swig_type_info _swigt__p_simdata__hasht[] = {{"_p_simdata__hasht", 0, "simdata::hasht *", 0},{"_p_simdata__HashT"},{"_p_simdata__ObjectID"},{"_p_simdata__hasht"},{0}};
-static swig_type_info _swigt__p_simdata__Path[] = {{"_p_simdata__Path", 0, "simdata::Path *", 0},{"_p_simdata__PathPointerBase", _p_simdata__PathPointerBaseTo_p_simdata__Path},{"_p_simdata__Path"},{0}};
-static swig_type_info _swigt__p_simdata__Matrix3[] = {{"_p_simdata__Matrix3", 0, "simdata::Matrix3 *", 0},{"_p_simdata__Matrix3"},{0}};
-static swig_type_info _swigt__p_simdata__Zulu[] = {{"_p_simdata__Zulu", 0, "simdata::Zulu *", 0},{"_p_simdata__SimDate", _p_simdata__SimDateTo_p_simdata__Zulu},{"_p_simdata__DateZulu", _p_simdata__DateZuluTo_p_simdata__Zulu},{"_p_simdata__Zulu"},{0}};
-static swig_type_info _swigt__p_std__vectorTdouble_t[] = {{"_p_std__vectorTdouble_t", 0, "std::vector<double > *", 0},{"_p_std__vectorTdouble_t"},{0}};
-static swig_type_info _swigt__p_std__vectorTstd__string_t[] = {{"_p_std__vectorTstd__string_t", 0, "std::vector<std::string > *", 0},{"_p_std__vectorTstd__string_t"},{0}};
-static swig_type_info _swigt__p_simdata__CorruptArchive[] = {{"_p_simdata__CorruptArchive", 0, "simdata::CorruptArchive *", 0},{"_p_simdata__CorruptArchive"},{0}};
-static swig_type_info _swigt__p_simdata__DataArchive[] = {{"_p_simdata__DataArchive", 0, "simdata::DataArchive *", 0},{"_p_simdata__DataArchive"},{0}};
-static swig_type_info _swigt__p_p_char[] = {{"_p_p_char", 0, "char **", 0},{"_p_p_char"},{0}};
-static swig_type_info _swigt__p_gint32[] = {{"_p_gint32", 0, "gint32 *", 0},{"_p_gint32"},{0}};
-static swig_type_info _swigt__p_std__vectorTfloat_t[] = {{"_p_std__vectorTfloat_t", 0, "std::vector<float > *", 0},{"_p_std__vectorTfloat_t"},{0}};
-static swig_type_info _swigt__p_simdata__InterfaceProxy[] = {{"_p_simdata__InterfaceProxy", 0, "simdata::InterfaceProxy *", 0},{"_p_simdata__InterfaceProxy"},{0}};
-static swig_type_info _swigt__p_guint32[] = {{"_p_guint32", 0, "guint32 *", 0},{"_p_guint32"},{0}};
-static swig_type_info _swigt__p_simdata__IOError[] = {{"_p_simdata__IOError", 0, "simdata::IOError *", 0},{"_p_simdata__IOError"},{0}};
-static swig_type_info _swigt__p_BaseType[] = {{"_p_BaseType", 0, "BaseType *", 0},{"_p_simdata__Spread", _p_simdata__SpreadTo_p_BaseType},{"_p_BaseType"},{"_p_simdata__ListTsimdata__External_t", _p_simdata__ListTsimdata__External_tTo_p_BaseType},{"_p_simdata__Matrix3", _p_simdata__Matrix3To_p_BaseType},{"_p_simdata__Enum", _p_simdata__EnumTo_p_BaseType},{"_p_simdata__ListTint_t", _p_simdata__ListTint_tTo_p_BaseType},{"_p_simdata__InterpolatedData", _p_simdata__InterpolatedDataTo_p_BaseType},{"_p_simdata__External", _p_simdata__ExternalTo_p_BaseType},{"_p_simdata__ListTsimdata__Path_t", _p_simdata__ListTsimdata__Path_tTo_p_BaseType},{"_p_simdata__ListTsimdata__Spread_t", _p_simdata__ListTsimdata__Spread_tTo_p_BaseType},{"_p_simdata__Table", _p_simdata__TableTo_p_BaseType},{"_p_simdata__ListBase", _p_simdata__ListBaseTo_p_BaseType},{"_p_simdata__ListTsimdata__Curve_t", _p_simdata__ListTsimdata__Curve_tTo_p_BaseType},{"_p_simdata__Vector3", _p_simdata__Vector3To_p_BaseType},{"_p_simdata__ListTsimdata__Table_t", _p_simdata__ListTsimdata__Table_tTo_p_BaseType},{"_p_simdata__Curve", _p_simdata__CurveTo_p_BaseType},{"_p_simdata__SimDate", _p_simdata__SimDateTo_p_BaseType},{"_p_simdata__Object", _p_simdata__ObjectTo_p_BaseType},{"_p_simdata__PathPointerBase", _p_simdata__PathPointerBaseTo_p_BaseType},{"_p_simdata__Path", _p_simdata__PathTo_p_BaseType},{0}};
-static swig_type_info _swigt__p_simdata__ListTint_t[] = {{"_p_simdata__ListTint_t", 0, "simdata::List<int > *", 0},{"_p_simdata__ListTint_t"},{0}};
-static swig_type_info _swigt__p_std__vectorTint_t[] = {{"_p_std__vectorTint_t", 0, "std::vector<int > *", 0},{"_p_std__vectorTint_t"},{"_p_simdata__ListTint_t", _p_simdata__ListTint_tTo_p_std__vectorTint_t},{0}};
-static swig_type_info _swigt__p_std__ostream[] = {{"_p_std__ostream", 0, "std::ostream *", 0},{"_p_std__ostream"},{0}};
-static swig_type_info _swigt__p_simdata__EnumError[] = {{"_p_simdata__EnumError", 0, "simdata::EnumError *", 0},{"_p_simdata__EnumTypeError", _p_simdata__EnumTypeErrorTo_p_simdata__EnumError},{"_p_simdata__EnumError"},{"_p_simdata__EnumIndexError", _p_simdata__EnumIndexErrorTo_p_simdata__EnumError},{0}};
+static swig_type_info _swigt__p_simdata__BadByteOrder[] = {{"_p_simdata__BadByteOrder", 0, "simdata::BadByteOrder *", 0},{"_p_simdata__BadByteOrder"},{0}};
 static swig_type_info _swigt__p_simdata__Vector3[] = {{"_p_simdata__Vector3", 0, "simdata::Vector3 *", 0},{"_p_simdata__Vector3"},{0}};
-static swig_type_info _swigt__p_simdata__InvalidDate[] = {{"_p_simdata__InvalidDate", 0, "simdata::InvalidDate *", 0},{"_p_simdata__InvalidDate"},{0}};
-static swig_type_info _swigt__p_simdata__ObjectMismatch[] = {{"_p_simdata__ObjectMismatch", 0, "simdata::ObjectMismatch *", 0},{"_p_simdata__ObjectMismatch"},{0}};
-static swig_type_info _swigt__p_simdata__ObjectTypeMismatch[] = {{"_p_simdata__ObjectTypeMismatch", 0, "simdata::ObjectTypeMismatch *", 0},{"_p_simdata__ObjectTypeMismatch"},{0}};
-static swig_type_info _swigt__p_std__string[] = {{"_p_std__string", 0, "std::string *", 0},{"_p_std__string"},{0}};
-static swig_type_info _swigt__p_simdata__DateZulu[] = {{"_p_simdata__DateZulu", 0, "simdata::DateZulu *", 0},{"_p_simdata__SimDate", _p_simdata__SimDateTo_p_simdata__DateZulu},{"_p_simdata__DateZulu"},{0}};
+static swig_type_info _swigt__p_simdata__DataArchive[] = {{"_p_simdata__DataArchive", 0, "simdata::DataArchive *", 0},{"_p_simdata__DataArchive"},{0}};
+static swig_type_info _swigt__p_std__vectorTsimdata__External_t[] = {{"_p_std__vectorTsimdata__External_t", 0, "std::vector<simdata::External > *", 0},{"_p_std__vectorTsimdata__External_t"},{"_p_simdata__ListTsimdata__External_t", _p_simdata__ListTsimdata__External_tTo_p_std__vectorTsimdata__External_t},{0}};
+static swig_type_info _swigt__p_simdata__ListTsimdata__External_t[] = {{"_p_simdata__ListTsimdata__External_t", 0, "simdata::List<simdata::External > *", 0},{"_p_simdata__ListTsimdata__External_t"},{0}};
+static swig_type_info _swigt__p_simdata__CorruptArchive[] = {{"_p_simdata__CorruptArchive", 0, "simdata::CorruptArchive *", 0},{"_p_simdata__CorruptArchive"},{0}};
 static swig_type_info _swigt__p_simdata__PathPointerBase[] = {{"_p_simdata__PathPointerBase", 0, "simdata::PathPointerBase *", 0},{"_p_simdata__PathPointerBase"},{0}};
 static swig_type_info _swigt__p_simdata__PointerBase[] = {{"_p_simdata__PointerBase", 0, "simdata::PointerBase *", 0},{"_p_simdata__PointerBase"},{"_p_simdata__PathPointerBase", _p_simdata__PathPointerBaseTo_p_simdata__PointerBase},{0}};
-static swig_type_info _swigt__p_simdata__Spread[] = {{"_p_simdata__Spread", 0, "simdata::Spread *", 0},{"_p_simdata__Spread"},{0}};
-static swig_type_info _swigt__p_simdata__IndexError[] = {{"_p_simdata__IndexError", 0, "simdata::IndexError *", 0},{"_p_simdata__IndexError"},{0}};
+static swig_type_info _swigt__p_simdata__UnPacker[] = {{"_p_simdata__UnPacker", 0, "simdata::UnPacker *", 0},{"_p_simdata__UnPacker"},{0}};
+static swig_type_info _swigt__p_std__vectorTdouble_t[] = {{"_p_std__vectorTdouble_t", 0, "std::vector<double > *", 0},{"_p_std__vectorTdouble_t"},{0}};
+static swig_type_info _swigt__p_simdata__DateZulu[] = {{"_p_simdata__DateZulu", 0, "simdata::DateZulu *", 0},{"_p_simdata__SimDate", _p_simdata__SimDateTo_p_simdata__DateZulu},{"_p_simdata__DateZulu"},{0}};
+static swig_type_info _swigt__p_std__string[] = {{"_p_std__string", 0, "std::string *", 0},{"_p_std__string"},{0}};
+static swig_type_info _swigt__p_simdata__ListBase[] = {{"_p_simdata__ListBase", 0, "simdata::ListBase *", 0},{"_p_simdata__ListBase"},{"_p_simdata__ListTsimdata__Path_t", _p_simdata__ListTsimdata__Path_tTo_p_simdata__ListBase},{"_p_simdata__ListTsimdata__Spread_t", _p_simdata__ListTsimdata__Spread_tTo_p_simdata__ListBase},{"_p_simdata__ListTint_t", _p_simdata__ListTint_tTo_p_simdata__ListBase},{"_p_simdata__ListTsimdata__Table_t", _p_simdata__ListTsimdata__Table_tTo_p_simdata__ListBase},{"_p_simdata__ListTsimdata__External_t", _p_simdata__ListTsimdata__External_tTo_p_simdata__ListBase},{"_p_simdata__ListTsimdata__Curve_t", _p_simdata__ListTsimdata__Curve_tTo_p_simdata__ListBase},{0}};
 static swig_type_info _swigt__p_simdata__EnumIndexError[] = {{"_p_simdata__EnumIndexError", 0, "simdata::EnumIndexError *", 0},{"_p_simdata__EnumIndexError"},{0}};
-static swig_type_info _swigt__p_simdata__BadByteOrder[] = {{"_p_simdata__BadByteOrder", 0, "simdata::BadByteOrder *", 0},{"_p_simdata__BadByteOrder"},{0}};
+static swig_type_info _swigt__p_simdata__IndexError[] = {{"_p_simdata__IndexError", 0, "simdata::IndexError *", 0},{"_p_simdata__IndexError"},{0}};
+static swig_type_info _swigt__p_std__vectorTint_t[] = {{"_p_std__vectorTint_t", 0, "std::vector<int > *", 0},{"_p_std__vectorTint_t"},{"_p_simdata__ListTint_t", _p_simdata__ListTint_tTo_p_std__vectorTint_t},{0}};
+static swig_type_info _swigt__p_simdata__EnumTypeError[] = {{"_p_simdata__EnumTypeError", 0, "simdata::EnumTypeError *", 0},{"_p_simdata__EnumTypeError"},{0}};
+static swig_type_info _swigt__p_simdata__ListTint_t[] = {{"_p_simdata__ListTint_t", 0, "simdata::List<int > *", 0},{"_p_simdata__ListTint_t"},{0}};
+static swig_type_info _swigt__p_simdata__EnumError[] = {{"_p_simdata__EnumError", 0, "simdata::EnumError *", 0},{"_p_simdata__EnumTypeError", _p_simdata__EnumTypeErrorTo_p_simdata__EnumError},{"_p_simdata__EnumError"},{"_p_simdata__EnumIndexError", _p_simdata__EnumIndexErrorTo_p_simdata__EnumError},{0}};
 static swig_type_info _swigt__p_simdata__Enum[] = {{"_p_simdata__Enum", 0, "simdata::Enum *", 0},{"_p_simdata__Enum"},{0}};
+static swig_type_info _swigt__p_simdata__ObjectTypeMismatch[] = {{"_p_simdata__ObjectTypeMismatch", 0, "simdata::ObjectTypeMismatch *", 0},{"_p_simdata__ObjectTypeMismatch"},{0}};
+static swig_type_info _swigt__p_simdata__Path[] = {{"_p_simdata__Path", 0, "simdata::Path *", 0},{"_p_simdata__PathPointerBase", _p_simdata__PathPointerBaseTo_p_simdata__Path},{"_p_simdata__Path"},{0}};
+static swig_type_info _swigt__p_simdata__ObjectMismatch[] = {{"_p_simdata__ObjectMismatch", 0, "simdata::ObjectMismatch *", 0},{"_p_simdata__ObjectMismatch"},{0}};
+static swig_type_info _swigt__p_simdata__ParseException[] = {{"_p_simdata__ParseException", 0, "simdata::ParseException *", 0},{"_p_simdata__ParseException"},{0}};
+static swig_type_info _swigt__p_simdata__PythonException[] = {{"_p_simdata__PythonException", 0, "simdata::PythonException *", 0},{"_p_simdata__PythonException"},{0}};
+static swig_type_info _swigt__p_simdata__Exception[] = {{"_p_simdata__Exception", 0, "simdata::Exception *", 0},{"_p_simdata__Exception"},{"_p_simdata__ParseException", _p_simdata__ParseExceptionTo_p_simdata__Exception},{"_p_simdata__ObjectTypeMismatch", _p_simdata__ObjectTypeMismatchTo_p_simdata__Exception},{"_p_simdata__ObjectMismatch", _p_simdata__ObjectMismatchTo_p_simdata__Exception},{"_p_simdata__CorruptArchive", _p_simdata__CorruptArchiveTo_p_simdata__Exception},{"_p_simdata__IOError", _p_simdata__IOErrorTo_p_simdata__Exception},{"_p_simdata__BadMagic", _p_simdata__BadMagicTo_p_simdata__Exception},{"_p_simdata__BadByteOrder", _p_simdata__BadByteOrderTo_p_simdata__Exception},{"_p_simdata__IndexError", _p_simdata__IndexErrorTo_p_simdata__Exception},{0}};
+static swig_type_info _swigt__p_gint32[] = {{"_p_gint32", 0, "gint32 *", 0},{"_p_gint32"},{0}};
+static swig_type_info _swigt__p_std__ostream[] = {{"_p_std__ostream", 0, "std::ostream *", 0},{"_p_std__ostream"},{0}};
+static swig_type_info _swigt__p_simdata__ObjectID[] = {{"_p_simdata__ObjectID", 0, "simdata::ObjectID const *", 0},{"_p_simdata__HashT"},{"_p_simdata__ObjectID"},{"_p_simdata__hasht"},{0}};
+static swig_type_info _swigt__p_a_3__simdata__Matrix3__M_t[] = {{"_p_a_3__simdata__Matrix3__M_t", 0, "simdata::Matrix3::M_t [3][3]", 0},{"_p_a_3__simdata__Matrix3__M_t"},{"_p_a_3__double"},{0}};
+static swig_type_info _swigt__p_simdata__Object[] = {{"_p_simdata__Object", 0, "simdata::Object *", 0},{"_p_simdata__Object"},{0}};
+static swig_type_info _swigt__p_simdata__Packer[] = {{"_p_simdata__Packer", 0, "simdata::Packer *", 0},{"_p_simdata__Packer"},{0}};
+static swig_type_info _swigt__p_simdata__Zulu[] = {{"_p_simdata__Zulu", 0, "simdata::Zulu *", 0},{"_p_simdata__SimDate", _p_simdata__SimDateTo_p_simdata__Zulu},{"_p_simdata__DateZulu", _p_simdata__DateZuluTo_p_simdata__Zulu},{"_p_simdata__Zulu"},{0}};
+static swig_type_info _swigt__p_std__vectorTfloat_t[] = {{"_p_std__vectorTfloat_t", 0, "std::vector<float > *", 0},{"_p_std__vectorTfloat_t"},{0}};
+static swig_type_info _swigt__p_simdata__Curve[] = {{"_p_simdata__Curve", 0, "simdata::Curve *", 0},{"_p_simdata__Curve"},{0}};
+static swig_type_info _swigt__p_std__vectorTsimdata__Enum_t[] = {{"_p_std__vectorTsimdata__Enum_t", 0, "std::vector<simdata::Enum > *", 0},{"_p_std__vectorTsimdata__Enum_t"},{0}};
 static swig_type_info _swigt__p_FILE[] = {{"_p_FILE", 0, "FILE *", 0},{"_p_FILE"},{0}};
-static swig_type_info _swigt__p_SIMDATA_EXPORT[] = {{"_p_SIMDATA_EXPORT", 0, "SIMDATA_EXPORT *", 0},{"_p_SIMDATA_EXPORT"},{0}};
+static swig_type_info _swigt__p_tm[] = {{"_p_tm", 0, "tm *", 0},{"_p_tm"},{0}};
+static swig_type_info _swigt__p_simdata__HashT[] = {{"_p_simdata__HashT", 0, "simdata::HashT *", 0},{"_p_simdata__HashT"},{"_p_simdata__ObjectID"},{"_p_simdata__hasht"},{0}};
+static swig_type_info _swigt__p_int[] = {{"_p_int", 0, "int *", 0},{"_p_int"},{0}};
+static swig_type_info _swigt__p_std__vectorTsimdata__Table_t[] = {{"_p_std__vectorTsimdata__Table_t", 0, "std::vector<simdata::Table > *", 0},{"_p_std__vectorTsimdata__Table_t"},{"_p_simdata__ListTsimdata__Table_t", _p_simdata__ListTsimdata__Table_tTo_p_std__vectorTsimdata__Table_t},{0}};
+static swig_type_info _swigt__p_std__vectorTsimdata__Curve_t[] = {{"_p_std__vectorTsimdata__Curve_t", 0, "std::vector<simdata::Curve > *", 0},{"_p_std__vectorTsimdata__Curve_t"},{"_p_simdata__ListTsimdata__Curve_t", _p_simdata__ListTsimdata__Curve_tTo_p_std__vectorTsimdata__Curve_t},{0}};
+static swig_type_info _swigt__p_simdata__BaseType[] = {{"_p_simdata__BaseType", 0, "simdata::BaseType *", 0},{"_p_simdata__Spread", _p_simdata__SpreadTo_p_simdata__BaseType},{"_p_simdata__BaseType"},{"_p_simdata__ListTsimdata__External_t", _p_simdata__ListTsimdata__External_tTo_p_simdata__BaseType},{"_p_simdata__Matrix3", _p_simdata__Matrix3To_p_simdata__BaseType},{"_p_simdata__Enum", _p_simdata__EnumTo_p_simdata__BaseType},{"_p_simdata__ListTint_t", _p_simdata__ListTint_tTo_p_simdata__BaseType},{"_p_simdata__InterpolatedData", _p_simdata__InterpolatedDataTo_p_simdata__BaseType},{"_p_simdata__External", _p_simdata__ExternalTo_p_simdata__BaseType},{"_p_simdata__ListTsimdata__Path_t", _p_simdata__ListTsimdata__Path_tTo_p_simdata__BaseType},{"_p_simdata__ListTsimdata__Spread_t", _p_simdata__ListTsimdata__Spread_tTo_p_simdata__BaseType},{"_p_simdata__Table", _p_simdata__TableTo_p_simdata__BaseType},{"_p_simdata__ListBase", _p_simdata__ListBaseTo_p_simdata__BaseType},{"_p_simdata__ListTsimdata__Curve_t", _p_simdata__ListTsimdata__Curve_tTo_p_simdata__BaseType},{"_p_simdata__Vector3", _p_simdata__Vector3To_p_simdata__BaseType},{"_p_simdata__ListTsimdata__Table_t", _p_simdata__ListTsimdata__Table_tTo_p_simdata__BaseType},{"_p_simdata__Curve", _p_simdata__CurveTo_p_simdata__BaseType},{"_p_simdata__SimDate", _p_simdata__SimDateTo_p_simdata__BaseType},{"_p_simdata__Object", _p_simdata__ObjectTo_p_simdata__BaseType},{"_p_simdata__PathPointerBase", _p_simdata__PathPointerBaseTo_p_simdata__BaseType},{"_p_simdata__Path", _p_simdata__PathTo_p_simdata__BaseType},{0}};
+static swig_type_info _swigt__p_simdata__ListTsimdata__Curve_t[] = {{"_p_simdata__ListTsimdata__Curve_t", 0, "simdata::List<simdata::Curve > *", 0},{"_p_simdata__ListTsimdata__Curve_t"},{0}};
+static swig_type_info _swigt__p_simdata__ListTsimdata__Table_t[] = {{"_p_simdata__ListTsimdata__Table_t", 0, "simdata::List<simdata::Table > *", 0},{"_p_simdata__ListTsimdata__Table_t"},{0}};
+static swig_type_info _swigt__p_simdata__IOError[] = {{"_p_simdata__IOError", 0, "simdata::IOError *", 0},{"_p_simdata__IOError"},{0}};
+static swig_type_info _swigt__p_std__vectorTsimdata__InterfaceProxy_p_t[] = {{"_p_std__vectorTsimdata__InterfaceProxy_p_t", 0, "std::vector<simdata::InterfaceProxy * > *", 0},{"_p_std__vectorTsimdata__InterfaceProxy_p_t"},{0}};
+static swig_type_info _swigt__p_simdata__InterpolatedData[] = {{"_p_simdata__InterpolatedData", 0, "simdata::InterpolatedData *", 0},{"_p_simdata__Curve", _p_simdata__CurveTo_p_simdata__InterpolatedData},{"_p_simdata__InterpolatedData"},{"_p_simdata__Table", _p_simdata__TableTo_p_simdata__InterpolatedData},{0}};
+static swig_type_info _swigt__p_simdata__SimDate[] = {{"_p_simdata__SimDate", 0, "simdata::SimDate *", 0},{"_p_simdata__SimDate"},{0}};
+static swig_type_info _swigt__p_std__vectorTstd__string_t[] = {{"_p_std__vectorTstd__string_t", 0, "std::vector<std::string > *", 0},{"_p_std__vectorTstd__string_t"},{0}};
+static swig_type_info _swigt__p_simdata__Matrix3[] = {{"_p_simdata__Matrix3", 0, "simdata::Matrix3 *", 0},{"_p_simdata__Matrix3"},{0}};
+static swig_type_info _swigt__p_simdata__InterfaceProxy[] = {{"_p_simdata__InterfaceProxy", 0, "simdata::InterfaceProxy *", 0},{"_p_simdata__InterfaceProxy"},{0}};
 
 static swig_type_info *swig_types_initial[] = {
-_swigt__p_simdata__Packer, 
-_swigt__p_simdata__External, 
+_swigt__p_simdata__Table, 
+_swigt__p_simdata__Date, 
+_swigt__p_swig_string_bug_workaround, 
+_swigt__p_std__vectorTsimdata__Path_t, 
+_swigt__p_simdata__ListTsimdata__Path_t, 
+_swigt__p_p_char, 
+_swigt__p_simdata__Spread, 
+_swigt__p_simdata__TableEntry, 
 _swigt__p_simdata__InterfaceRegistry, 
-_swigt__p_std__vectorTsimdata__Enum_t, 
-_swigt__p_simdata__ListTsimdata__Spread_t, 
+_swigt__p_simdata__External, 
+_swigt__p_guint32, 
+_swigt__p_bool, 
+_swigt__p_simdata__InvalidDate, 
+_swigt__p_simdata__BadMagic, 
+_swigt__p_double, 
+_swigt__p_a_3__double, 
 _swigt__p_std__vectorTsimdata__Spread_t, 
 _swigt__p_simdata__Enumeration, 
-_swigt__p_simdata__ListTsimdata__Path_t, 
-_swigt__p_std__vectorTsimdata__Path_t, 
-_swigt__p_simdata__ListTsimdata__External_t, 
-_swigt__p_std__vectorTsimdata__External_t, 
-_swigt__p_swig_string_bug_workaround, 
-_swigt__p_simdata__Date, 
-_swigt__p_simdata__SimDate, 
-_swigt__p_simdata__InterpolatedData, 
-_swigt__p_bool, 
-_swigt__p_simdata__ListTsimdata__Curve_t, 
-_swigt__p_std__vectorTsimdata__Curve_t, 
+_swigt__p_simdata__ListTsimdata__Spread_t, 
 _swigt__p_simdata__FP, 
-_swigt__p_simdata__EnumTypeError, 
-_swigt__p_a_3__simdata__Matrix3__M_t, 
-_swigt__p_simdata__ListTsimdata__Table_t, 
-_swigt__p_std__vectorTsimdata__Table_t, 
-_swigt__p_simdata__ObjectID, 
-_swigt__p_a_3__double, 
-_swigt__p_double, 
-_swigt__p_simdata__BadMagic, 
-_swigt__p_simdata__Table, 
-_swigt__p_int, 
-_swigt__p_simdata__UnPacker, 
-_swigt__p_simdata__TableEntry, 
-_swigt__p_simdata__Exception, 
-_swigt__p_simdata__PythonException, 
-_swigt__p_simdata__ParseException, 
-_swigt__p_simdata__Object, 
-_swigt__p_simdata__ListBase, 
-_swigt__p_tm, 
-_swigt__p_simdata__HashT, 
-_swigt__p_std__vectorTsimdata__InterfaceProxy_p_t, 
-_swigt__p_simdata__Curve, 
 _swigt__p_simdata__hasht, 
-_swigt__p_simdata__Path, 
-_swigt__p_simdata__Matrix3, 
-_swigt__p_simdata__Zulu, 
-_swigt__p_std__vectorTdouble_t, 
-_swigt__p_std__vectorTstd__string_t, 
-_swigt__p_simdata__CorruptArchive, 
-_swigt__p_simdata__DataArchive, 
-_swigt__p_p_char, 
-_swigt__p_gint32, 
-_swigt__p_std__vectorTfloat_t, 
-_swigt__p_simdata__InterfaceProxy, 
-_swigt__p_guint32, 
-_swigt__p_simdata__IOError, 
-_swigt__p_BaseType, 
-_swigt__p_simdata__ListTint_t, 
-_swigt__p_std__vectorTint_t, 
-_swigt__p_std__ostream, 
-_swigt__p_simdata__EnumError, 
+_swigt__p_simdata__BadByteOrder, 
 _swigt__p_simdata__Vector3, 
-_swigt__p_simdata__InvalidDate, 
-_swigt__p_simdata__ObjectMismatch, 
-_swigt__p_simdata__ObjectTypeMismatch, 
-_swigt__p_std__string, 
-_swigt__p_simdata__DateZulu, 
+_swigt__p_simdata__DataArchive, 
+_swigt__p_std__vectorTsimdata__External_t, 
+_swigt__p_simdata__ListTsimdata__External_t, 
+_swigt__p_simdata__CorruptArchive, 
 _swigt__p_simdata__PathPointerBase, 
 _swigt__p_simdata__PointerBase, 
-_swigt__p_simdata__Spread, 
-_swigt__p_simdata__IndexError, 
+_swigt__p_simdata__UnPacker, 
+_swigt__p_std__vectorTdouble_t, 
+_swigt__p_simdata__DateZulu, 
+_swigt__p_std__string, 
+_swigt__p_simdata__ListBase, 
 _swigt__p_simdata__EnumIndexError, 
-_swigt__p_simdata__BadByteOrder, 
+_swigt__p_simdata__IndexError, 
+_swigt__p_std__vectorTint_t, 
+_swigt__p_simdata__EnumTypeError, 
+_swigt__p_simdata__ListTint_t, 
+_swigt__p_simdata__EnumError, 
 _swigt__p_simdata__Enum, 
+_swigt__p_simdata__ObjectTypeMismatch, 
+_swigt__p_simdata__Path, 
+_swigt__p_simdata__ObjectMismatch, 
+_swigt__p_simdata__ParseException, 
+_swigt__p_simdata__PythonException, 
+_swigt__p_simdata__Exception, 
+_swigt__p_gint32, 
+_swigt__p_std__ostream, 
+_swigt__p_simdata__ObjectID, 
+_swigt__p_a_3__simdata__Matrix3__M_t, 
+_swigt__p_simdata__Object, 
+_swigt__p_simdata__Packer, 
+_swigt__p_simdata__Zulu, 
+_swigt__p_std__vectorTfloat_t, 
+_swigt__p_simdata__Curve, 
+_swigt__p_std__vectorTsimdata__Enum_t, 
 _swigt__p_FILE, 
-_swigt__p_SIMDATA_EXPORT, 
+_swigt__p_tm, 
+_swigt__p_simdata__HashT, 
+_swigt__p_int, 
+_swigt__p_std__vectorTsimdata__Table_t, 
+_swigt__p_std__vectorTsimdata__Curve_t, 
+_swigt__p_simdata__BaseType, 
+_swigt__p_simdata__ListTsimdata__Curve_t, 
+_swigt__p_simdata__ListTsimdata__Table_t, 
+_swigt__p_simdata__IOError, 
+_swigt__p_std__vectorTsimdata__InterfaceProxy_p_t, 
+_swigt__p_simdata__InterpolatedData, 
+_swigt__p_simdata__SimDate, 
+_swigt__p_std__vectorTstd__string_t, 
+_swigt__p_simdata__Matrix3, 
+_swigt__p_simdata__InterfaceProxy, 
 0
 };
 
@@ -23202,7 +23449,6 @@ SWIGEXPORT(void) SWIG_init(void) {
     SWIG_InstallConstants(d,swig_const_table);
     
     PyDict_SetItemString(d,(char*)"cvar", SWIG_globals);
-    SWIG_addvarlink(SWIG_globals,(char*)"BaseType",_wrap_BaseType_get, _wrap_BaseType_set);
     SWIG_addvarlink(SWIG_globals,(char*)"Vector3_ZERO",_wrap_Vector3_ZERO_get, _wrap_Vector3_ZERO_set);
     SWIG_addvarlink(SWIG_globals,(char*)"Vector3_XAXIS",_wrap_Vector3_XAXIS_get, _wrap_Vector3_XAXIS_set);
     SWIG_addvarlink(SWIG_globals,(char*)"Vector3_YAXIS",_wrap_Vector3_YAXIS_get, _wrap_Vector3_YAXIS_set);

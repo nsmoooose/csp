@@ -23,6 +23,7 @@
  * @file InterfaceRegistry.cpp
  */
 
+
 #include <string>
 #include <vector>
 
@@ -51,8 +52,20 @@ NAMESPACE_SIMDATA
 /**
  * The master interface registry.
  */
+/*
+#ifdef _WIN32
+#pragma comment(linker, "/SECTION:.shared,RWS")
+#pragma data_seg(".shared")
+#endif
+*/
+
 InterfaceRegistry g_InterfaceRegistry;
 
+/*
+#ifdef _WIN32
+#pragma data_seg()
+#endif
+*/
 
 InterfaceProxy::InterfaceProxy(const char *cname, hasht (*chash)())
 {

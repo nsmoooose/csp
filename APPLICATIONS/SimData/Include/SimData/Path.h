@@ -64,7 +64,7 @@ EXCEPTION(ObjectTypeMismatch)
  * 
  * @author Mark Rose <mrose@stm.lbl.gov>
  */
-class Path: public BaseType {
+class SIMDATA_EXPORT Path: public BaseType {
 protected:
 	ObjectID _path; 
 public:
@@ -145,7 +145,7 @@ public:
 class Object;
 
 
-class PointerBase {
+class SIMDATA_EXPORT PointerBase {
 public:
 
 	// SWIG python specific comparisons
@@ -261,7 +261,7 @@ protected:
  *
  * @author Mark Rose <mrose@stm.lbl.gov>
  */
-class PathPointerBase: public Path, public PointerBase {
+class SIMDATA_EXPORT PathPointerBase: public Path, public PointerBase {
 public:
 
 	// SWIG python specific comparisons

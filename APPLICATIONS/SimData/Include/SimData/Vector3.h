@@ -50,7 +50,7 @@ class Matrix3;
  * This class represents a 3 element vector. It uses overloaded
  * operators to perform basic operations.
  */
-class Vector3: public BaseType
+class SIMDATA_EXPORT Vector3: public BaseType
 {
 public:
 	double x;
@@ -150,7 +150,7 @@ public:
 	static const Vector3 ZAXIS;
 
 #ifndef SWIG
-	friend std::ostream & operator << (std::ostream & os, const Vector3& v);
+	SIMDATA_EXPORT friend std::ostream & operator << (std::ostream & os, const Vector3& v);
 #endif // SWIG
 
 	virtual std::string asString() const;

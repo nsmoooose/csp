@@ -32,7 +32,6 @@
 #include <vector>
 #include <cstdio>
 
-#include <SimData/Export.h>
 #include <SimData/BaseType.h>
 
 
@@ -62,7 +61,7 @@ class Vector3;
 /** 
  * class Matrix3
  */
-class Matrix3: public BaseType
+class SIMDATA_EXPORT Matrix3: public BaseType
 {
 public:
 	typedef double M_t;
@@ -116,7 +115,7 @@ public:
 
 #ifndef SWIG
 	// matrix * vector [3x3 * 3x1 = 3x1]
-	friend Vector3 operator*(const Matrix3& rkMatrix,
+	SIMDATA_EXPORT friend Vector3 operator*(const Matrix3& rkMatrix,
 	                                 const Vector3& rkVector);
 
 	// vector * matrix [1x3 * 3x3 = 1x3]
@@ -124,7 +123,7 @@ public:
 	//				     const Matrix3& rkMatrix);
 	
 	// scalar * matrix
-	friend Matrix3 operator*(double fScalar, const Matrix3& rkMatrix);
+	SIMDATA_EXPORT friend Matrix3 operator*(double fScalar, const Matrix3& rkMatrix);
 #endif // SWIG
 
 	// utilities

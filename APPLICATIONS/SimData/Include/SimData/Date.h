@@ -134,7 +134,7 @@ class InvalidDate {};
  * @credits Many of these routines borrow heavily from the GDate
  *          implementation in GLib
  */
-class Date {
+class SIMDATA_EXPORT Date {
 public:
 	typedef sint32 julian_t;
 	typedef uint08 day_t;
@@ -431,7 +431,7 @@ private:
  */
 
 
-class Zulu {
+class SIMDATA_EXPORT Zulu {
 
 public:
 	typedef double time_t;
@@ -516,7 +516,7 @@ private:
 };
 
 
-class DateZulu: public Date, public Zulu {
+class SIMDATA_EXPORT DateZulu: public Date, public Zulu {
 
 
 public:
@@ -585,7 +585,7 @@ typedef DateZulu::time_t SimTime;
  *
  * @author Mark Rose <mrose@stm.lbl.gov>
  */
-class SimDate: public DateZulu, public BaseType {
+class SIMDATA_EXPORT SimDate: public DateZulu, public BaseType {
 
 	SimTime reference;
 	SimTime pause_time;

@@ -160,13 +160,14 @@ void DataArchive::setDefault() {
 	g_defaultArchive = this;
 }
 
+
 void DataArchive::addObject(Object& a, const char* path) {
 	if (!is_read && !closed) {
 		int offset = ftell(f);
 		Packer p(f);
 		a.pack(p);
 		int length = p.getCount();
-		std::cerr << "added " << path << " (" << length << " bytes) [" << hash_string(path) << "]" << std::endl;
+		std::cerr << path << " (" << length << " bytes) [" << hash_string(path) << "]" << std::endl;
 		_addEntry(offset, length, a.getClassHash(), path);
 	}
 }

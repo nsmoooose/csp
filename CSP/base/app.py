@@ -99,12 +99,18 @@ def start(disable_interspersed_args=0):
   Start the application.
 
   Parses arguments, sets up logging, and calls main(args).
+
+  Args:
+    disable_interspersed_args: if true, command line flags must preceed
+      positional arguments.  otherwise, command line flags can be mixed
+      with positional arguments.
   """
   if disable_interspersed_args:
     opt.disable_interspersed_args()
   result = 0
   try:
-    frame = inspect.stack()[-1][0]
+    stack = inspect.stack()
+    frame = stack[1][0]
     name = frame.f_globals.get('__name__', '')
     if name == '__main__':
       doc = frame.f_globals.get('__doc__', None)

@@ -45,6 +45,9 @@ Version 0.3.1 (in progress)
             and severity is one of (LOG_TRACE, LOG_DEBUG, LOG_INFO,
             LOG_WARN, LOG_ALERT, LOG_ERROR). The msg field can include the
             usual ostream operators (<<).
+	    
+            *** BUILD CHANGE ***
+	    Added Source/LogStream.cpp to do logging.
 
 	    *** NEW FEATURE ***
             *** POTENTIAL INCOMPATIBILITY ***

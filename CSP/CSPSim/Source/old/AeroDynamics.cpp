@@ -35,7 +35,7 @@
 #include <algorithm>
 
 #define CSP_NDEBUG
-#include "Log.h"
+#include <SimCore/Util/Log.h>
 
 using simdata::toDegrees;
 using simdata::toRadians;

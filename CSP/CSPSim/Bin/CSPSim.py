@@ -1,4 +1,4 @@
-#!/usr/bin/python -O
+#!/usr/bin/python
 
 # Combat Simulator Project - CSPSim
 # Copyright (C) 2002, 2004 The Combat Simulator Project

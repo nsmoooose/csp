@@ -29,9 +29,9 @@
 #include <SimNet/DispatchMessageHandler.h>
 
 #include "DynamicObject.h"
-#include "Battlefield.h"
 #include "Config.h"
 
+#include <SimCore/Battlefield/Battlefield.h>
 #include <SimData/FileUtility.h>
 
 extern SimpleConfig g_Config;

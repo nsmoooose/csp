@@ -27,7 +27,7 @@
 
 
 #include <string>
-#include "SimpleConfig.h"
+#include <SimCore/Util/SimpleConfig.h>
 
 /**
  * Global configuration file

@@ -30,7 +30,7 @@
 #include <cmath>
 
 #include <System.h>
-#include <Log.h>
+#include <SimCore/Util/Log.h>
 
 
 class AircraftSimpleFCS: public System {
@@ -43,14 +43,14 @@ class AircraftSimpleFCS: public System {
 	public:
 		Deflection(): m_Rate(0.5), m_Limit0(-0.3), m_Limit1(-m_Limit0), m_Limit(m_Limit1) {}
 		void setParameters(double rate, double limit) {
-			limit = abs(limit);
+			limit = std::abs(limit);
 			setParameters(rate,-limit,limit);
 		}
 		void setParameters(double rate, double limit0, double limit1) {
 			m_Rate = rate;
 			m_Limit0 = limit0;
 			m_Limit1 = limit1;
-			m_Limit = std::max(abs(m_Limit0),abs(m_Limit1));
+			m_Limit = std::max(std::abs(m_Limit0),std::abs(m_Limit1));
 		}
 		void bindInput(Bus *bus, std::string const &name) {
 			b_Input = bus->getChannel(name, false);
@@ -65,7 +65,7 @@ class AircraftSimpleFCS: public System {
 			double input = 0.0;
 			double output = b_Output->value();
 			if (b_Input.valid()) input = b_Input->value() * m_Limit;
-			double smooth = std::min(1.0, 10.0*abs(output-input));
+			double smooth = std::min(1.0, 10.0*std::abs(output-input));
 			if (output < input) {
 				output = std::min(output + smooth*m_Rate*dt, m_Limit1);
 			} else {

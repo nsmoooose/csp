@@ -30,25 +30,12 @@
 %include std_string.i
 %include std_vector.i
 
-
-//%import "SimData/cSimData.i"
-
-
-//%include "Battlefield.i"
 %include "VirtualScene.i"
 %include "SimNet/Networking.i"
 %include "CSPSim.i"
-//%include "SimpleConfig.i"
 %include "Config.i"
 %include "Log.i"
 %include "ClientNode.i"
 %include "EchoServerNode.i"
 %include "RedirectServerNode.i"
-
-/*
-%include "SimObject.i"
-%include "SimTankObject.i"
-%include "AeroDynamics.i"
-%include "TerrainObject.i"
-*/
 

@@ -29,7 +29,8 @@
 //#include "AircraftPhysicsModel.h"
 #include "FlightModel.h"
 #include "Collision.h"
-#include "Log.h"
+
+#include <SimCore/Util/Log.h>
 
 #include <sstream>
 #include <iomanip>

@@ -26,7 +26,7 @@
 #define __SIMPLESCENEMANAGER_H__
 
 
-#include "SceneManager.h"
+#include <SimCore/Battlefield/SceneManager.h>
 
 class VirtualScene;
 class FeatureGroup;

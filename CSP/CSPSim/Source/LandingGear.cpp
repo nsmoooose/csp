@@ -215,9 +215,9 @@ void LandingGear::updateTireRotation(double dt) {
 		double inertia = 0.5 * m_TireRadius /* x m_TireRadius x wheel_mass */;
 		double dw = dt * torque / inertia;
 		if (m_TireRotationRate > 0.0) {
-			m_TireRotationRate = max(0.0, m_TireRotationRate - dw);
+			m_TireRotationRate = std::max(0.0, m_TireRotationRate - dw);
 		} else {
-			m_TireRotationRate = min(0.0, m_TireRotationRate + dw);
+			m_TireRotationRate = std::min(0.0, m_TireRotationRate + dw);
 		}
 	}
 	m_TireRotation += m_TireRotationRate * dt;

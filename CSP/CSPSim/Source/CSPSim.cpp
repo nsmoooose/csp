@@ -33,7 +33,6 @@
 #endif
 
 #include "CSPSim.h"
-#include "Battlefield.h"
 #include "Config.h"
 #include "ConsoleCommands.h"
 #include "DynamicObject.h"
@@ -43,10 +42,8 @@
 #include "HID.h"
 #include "MenuScreen.h"
 #include "LogoScreen.h"
-#include "Log.h"
 #include "Profile.h"
 #include "Shell.h"
-#include "SimObject.h"
 #include "SimpleSceneManager.h"
 #include "TerrainObject.h"
 #include "Theater.h"
@@ -58,6 +55,10 @@
 #include <SimNet/NetworkMessenger.h>
 #include <SimNet/DispatchMessageHandler.h>
 #include <SimNet/PrintMessageHandler.h>
+
+#include <SimCore/Battlefield/Battlefield.h>
+#include <SimCore/Battlefield/SimObject.h>
+#include <SimCore/Util/Log.h>
 
 #include <SimData/Types.h>
 #include <SimData/ExceptionBase.h>

@@ -81,9 +81,10 @@
 #define __SYSTEM_H__
 
 #include <Bus.h>
-#include <Log.h>
-#include <SynchronousUpdate.h>
 #include <InputInterface.h>
+
+#include <SimCore/Util/Log.h>
+#include <SimCore/Util/SynchronousUpdate.h>
 
 #include <SimData/Object.h>
 #include <SimData/InterfaceRegistry.h>

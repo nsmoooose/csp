@@ -1,6 +1,17 @@
  Version 0.4.0 (in progress)
 ===========================
 
+2004-09-25: onsight
+  * Moved several source and header files to SimCore.  This code
+    will be shared with other CSP applications, such as the index
+    server.  Fixed a few bugs that crawled out when the headers
+    were reordered.  Updated the scons scripts and makefiles
+    accordingly.
+===>WINDOWS USERS: SimCore needs a project file, and the CSPSim
+    project needs tweaking.  If you need help with the changes
+    you can catch me on icq or post on the forum.  Sorry for the
+    disruption.
+
 2004-09-24: onsight
   * Fix a few compiler warnings under gcc.
 

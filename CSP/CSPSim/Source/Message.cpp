@@ -24,7 +24,7 @@
 
 
 #include "Message.h"
-#include "Log.h"
+#include <SimCore/Util/Log.h>
 
 
 Message::Message()

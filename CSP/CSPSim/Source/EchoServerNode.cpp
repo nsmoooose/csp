@@ -35,13 +35,12 @@
 #include <unistd.h>
 #endif
 #include "Config.h"
-#include "Log.h"
+#include <KineticsChannels.h>
 
+#include <SimCore/Util/Log.h>
 #include <SimData/Ref.h>
 #include <SimData/Date.h>
 #include <SimData/DataManager.h>
-
-#include <KineticsChannels.h>
 
 #include <SimData/Types.h>
 #include <SimData/ExceptionBase.h>

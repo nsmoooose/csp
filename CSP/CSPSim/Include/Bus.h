@@ -50,9 +50,8 @@
  *   add warning/debug logging
  */
 
-#include <Tools.h>
-#include <Log.h>
-
+#include <SimCore/Util/Log.h>
+#include <SimCore/Util/StringTools.h>
 #include <SimData/Ref.h>
 
 #include <sigc++/sigc++.h> // 1.2 style
@@ -502,9 +501,11 @@ public:
 		CSP_LOG(OBJECT, DEBUG, "Bus::registerChannel(" << name << ")");
 		assert(m_Channels.find(name) == m_Channels.end());
 		m_Channels[name] = channel;
+		CSP_LOG(OBJECT, DEBUG, "Bus::registerChannel: groups = " << groups);
 		StringTokenizer grouplist(groups, " ");
 		StringTokenizer::iterator group = grouplist.begin();
 		for (; group != grouplist.end(); ++group) {
+			CSP_LOG(OBJECT, DEBUG, "Bus::registerChannel: groupX = " << *group);
 			m_Groups[*group].push_back(channel);
 		}
 		return channel;

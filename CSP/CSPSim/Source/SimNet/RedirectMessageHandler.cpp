@@ -28,7 +28,7 @@
 
 
 #include <SimData/LogStream.h>
-#include "Log.h"
+#include <SimCore/Util/Log.h>
 #include <SimNet/Networking.h>
 #include <SimNet/NetworkMessage.h>
 #include <SimNet/NetworkNode.h>

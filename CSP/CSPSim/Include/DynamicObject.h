@@ -29,9 +29,10 @@
 #include "Controller.h"
 #include "InputInterface.h"
 #include "ObjectModel.h"
-#include "SimObject.h"
 #include "SystemsModel.h"
 #include "TerrainObject.h"
+
+#include <SimCore/Battlefield/SimObject.h>
 
 class NetworkMessage;
 

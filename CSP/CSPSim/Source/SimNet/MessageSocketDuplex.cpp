@@ -23,7 +23,7 @@
  */
 #include <SimNet/Networking.h>
 #include <SimNet/NetworkNode.h>
-#include "Log.h"
+#include <SimCore/Util/Log.h>
 
 MessageSocketDuplex::MessageSocketDuplex() {
 	CSP_LOG(NETWORK, DEBUG, "MessageSocketDuplex.MessageSocketDuplex()");

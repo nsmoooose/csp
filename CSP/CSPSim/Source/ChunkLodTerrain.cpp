@@ -25,8 +25,8 @@
 
 #include "ChunkLodTerrain.h"
 #include "Config.h"
-#include "Log.h"
 
+#include <SimCore/Util/Log.h>
 #include <SimData/FileUtility.h>
 
 #include <osg/Geode>

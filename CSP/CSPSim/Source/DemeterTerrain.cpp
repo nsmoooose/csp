@@ -25,12 +25,12 @@
 
 #include "DemeterTerrain.h"
 #include "Config.h"
-#include "Log.h"
 
 #include <Demeter/Terrain.h>
 #include <Demeter/DemeterDrawable.h>
 #include <Demeter/TerrainTextureFactory.h>
 
+#include <SimCore/Util/Log.h>
 #include <SimData/InterfaceRegistry.h>
 
 #include <osg/Geode>

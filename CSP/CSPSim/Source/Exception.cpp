@@ -24,9 +24,9 @@
 #include <cstdio>
 #include <iostream>
 
-#include <Demeter/DemeterException.h>
 #include "Exception.h"
-#include "Log.h"
+#include <Demeter/DemeterException.h>
+#include <SimCore/Util/Log.h>
 
 namespace csp {
 

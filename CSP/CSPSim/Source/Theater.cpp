@@ -27,8 +27,8 @@
 #include "Theater/FeatureGroup.h"
 #include "Theater/FeatureGroupList.h"
 #include "TerrainObject.h"
-#include "Log.h"
 
+#include <SimCore/Util/Log.h>
 #include <SimData/Ref.h>
 #include <SimData/Path.h>
 

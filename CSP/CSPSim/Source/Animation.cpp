@@ -24,9 +24,9 @@
 
 
 #include "Animation.h"
-#include "Log.h"
 #include "Config.h"
 
+#include <SimCore/Util/Log.h>
 #include <SimData/Math.h>
 
 

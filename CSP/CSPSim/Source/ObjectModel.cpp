@@ -27,7 +27,6 @@
 
 #include "ObjectModel.h"
 #include "Animation.h"
-#include "Log.h"
 #include "Config.h"
 
 #include <osgDB/FileUtils>
@@ -47,6 +46,7 @@
 #include <osg/PolygonOffset>
 
 
+#include <SimCore/Util/Log.h>
 #include <SimData/FileUtility.h>
 #include <SimData/HashUtility.h>
 #include <SimData/osg.h>

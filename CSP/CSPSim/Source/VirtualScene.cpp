@@ -30,9 +30,9 @@
 #include "Theater/FeatureSceneGroup.h"
 #include "CSPSim.h"
 #include "Config.h"
-#include "Log.h"
 #include "Sky.h"
 
+#include <SimCore/Util/Log.h>
 #include <SimData/Types.h>
 #include <SimData/Math.h>
 #include <SimData/FileUtility.h>

@@ -24,9 +24,9 @@
 #include <FlightDynamics.h>
 #include <FlightModel.h>
 #include <CSPSim.h>
-#include <Log.h> 
 #include <KineticsChannels.h>
 
+#include <SimCore/Util/Log.h> 
 #include <SimData/Math.h>
 
 #include <sstream>

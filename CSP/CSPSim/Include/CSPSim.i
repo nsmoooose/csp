@@ -19,10 +19,10 @@
 
 %{
 #include "CSPSim.h"
-#include "Battlefield.h"
 #include "Theater.h"
 #include "Projection.h"
 #include "Shell.h"
+#include <SimCore/Battlefield/Battlefield.h>
 #include <SimData/Math.h>
 
 void _createVehicleHelper(CSPSim *self, const char *path, simdata::Vector3 position,
@@ -62,7 +62,7 @@ public:
 	simdata::SimTime const & getFrameRate() const{ return m_FrameRate; }
 	void setActiveObject(simdata::Ref<DynamicObject> object);
 	simdata::Ref<DynamicObject> const getActiveObject() const;
-	VirtualBattlefield * const getBattlefield() const;
+	Battlefield * const getBattlefield() const;
 	void togglePause();
 	void runConsole(PyConsole *console);
 	void endConsole();

@@ -26,11 +26,11 @@
 #include <DynamicObject.h>
 #include <Controller.h>
 #include <PhysicsModel.h>
-#include <Log.h>
 #include <TerrainObject.h>
 #include <CSPSim.h>
 #include <KineticsChannels.h>
 
+#include <SimCore/Util/Log.h>
 #include <SimData/Quat.h>
 
 #include <SimNet/Networking.h>

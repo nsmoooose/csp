@@ -30,7 +30,7 @@
 #include "Theater/ElevationCorrection.h"
 #include "TerrainObject.h"
 #include "Projection.h"
-#include "Log.h"
+#include <SimCore/Util/Log.h>
 
 #include <osg/Vec3>
 #include <osg/Quat>

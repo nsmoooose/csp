@@ -35,7 +35,7 @@
 #ifndef __PROFILE_H__
 #define __PROFILE_H__
 
-#include "Log.h"
+#include <SimCore/Util/Log.h>
 #include <SimData/Date.h>
 
 #define PROF0(id) \

@@ -50,6 +50,8 @@
 #include <SimData/FileUtility.h>
 #include <SimData/GeoPos.h>
 
+#include <SimCore/Battlefield/Battlefield.h>
+
 #include <osgDB/FileUtils>
 
 #include <GL/gl.h>	// Header File For The OpenGL32 Library
@@ -63,7 +65,7 @@
 using bus::Kinetics;
 
 #include "ClientNode.h"
-#include "Battlefield.h"
+
 
 ClientNode::ClientNode() {
 	CSP_LOG(NETWORK, INFO, "ClientNode::ClientNode()");

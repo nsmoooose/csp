@@ -35,21 +35,18 @@
 #include <unistd.h>
 #endif
 #include "Config.h"
-#include "Log.h"
-
-#include <SimData/Ref.h>
-#include <SimData/Date.h>
-#include <SimData/DataManager.h>
-
 #include <KineticsChannels.h>
 
-#include <SimData/Types.h>
-#include <SimData/ExceptionBase.h>
+#include <SimCore/Util/Log.h>
 #include <SimData/DataArchive.h>
 #include <SimData/DataManager.h>
+#include <SimData/Date.h>
+#include <SimData/ExceptionBase.h>
 #include <SimData/FileUtility.h>
 #include <SimData/GeoPos.h>
+#include <SimData/Ref.h>
 #include <SimData/Timing.h>
+#include <SimData/Types.h>
 
 using bus::Kinetics;
 

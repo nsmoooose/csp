@@ -29,9 +29,9 @@
 */
 
 #include "CSPSim.h"
-#include "Log.h" 
 #include "FlightModel.h"
 
+#include <SimCore/Util/Log.h> 
 #include <SimData/Math.h>
 #include <SimData/Quat.h>
 

@@ -172,7 +172,7 @@ void GeneralStats::update() {
 		m_Altitude->setText(osstr.str());
 
 		osstr.str("");
-		osstr << "Global position:" << setprecision(precision) << fixed << showpos
+		osstr << "Global position:" << setprecision(precision) << fixed << std::showpos
 		      << setw(8)  << setfill(' ')  << pos;
 		m_GlobalPosition->setText(osstr.str());
 	

@@ -33,7 +33,7 @@
 
 #include <SimData/Random.h>
 
-#include "Log.h"
+#include <SimCore/Util/Log.h>
 
 #include "Theater/FeatureSceneModel.h"
 #include "Theater/FeatureSceneGroup.h"

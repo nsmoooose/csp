@@ -45,10 +45,9 @@
 #include <SimData/Quat.h>
 #include <SimData/DataManager.h>
 #include <SimData/Date.h>
-#include <stdio.h>
 
-#include "Log.h"
 #include "DynamicObject.h"
+#include <SimCore/Util/Log.h>
 #include <SimNet/NetworkMessageHandler.h>
 
 typedef int SockFd;

@@ -24,12 +24,12 @@
 
 
 #include "DispatchCenter.h"
-#include "Dispatch.h"
-#include "Log.h"
+#include <SimCore/Util/Log.h>
 #include "Config.h"
 #include <SimNet/Networking.h>
 #include <SimNet/NetworkMessage.h>
 
+#include <SimCore/Util/Dispatch.h>
 #include <SimData/TaggedRecordRegistry.h>
 
 DispatchCenter::DispatchCenter() {

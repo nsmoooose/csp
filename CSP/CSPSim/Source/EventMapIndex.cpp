@@ -28,11 +28,11 @@
 # endif
 
 #include "EventMapIndex.h"
-#include "Log.h"
 
 #include <osgDB/FileUtils>
 #include <osgDB/FileNameUtils>
 
+#include <SimCore/Util/Log.h>
 #include <SimData/FileUtility.h>
 
 #include <cassert>

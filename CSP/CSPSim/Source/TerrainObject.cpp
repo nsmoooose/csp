@@ -25,7 +25,8 @@
 
 #include "TerrainObject.h"
 #include "Config.h"
-#include "Log.h"
+
+#include <SimCore/Util/Log.h>
 
 #include <osg/LineSegment>
 /*//

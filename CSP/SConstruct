@@ -45,13 +45,12 @@ SCons.Warnings.suppressWarningClass(SCons.Warnings.DuplicateEnvironmentWarning)
 
 
 PACKAGES = [
-	#'Battlefield',
 	'Demeter',
 	'CSPChunkLod',
 	'CSPSim',
+	'SimCore',
 	'SimData',
 	'SimNet',
-	#'SimTools',
 	'SpatialIndex',
 ]
 
@@ -79,6 +78,13 @@ env = Environment(CPPPATH=INCLUDE,
 
 Help(HELP + opts.GenerateHelpText(env))
 
+import time
+start_time0 = time.time()
+
 build.GlobalSetup(env, default_message='No targets specified; try scons -h for help.')
 build.BuildPackages(env, PACKAGES)
 
+import atexit
+def showtime():
+	print 'build time: %d sec' % (time.time() - start_time0)
+atexit.register(showtime)

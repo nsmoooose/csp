@@ -25,7 +25,7 @@
 
 #include "Theater/ElevationCorrection.h"
 #include "TerrainObject.h"
-#include "Log.h"
+#include <SimCore/Util/Log.h>
 
 
 ElevationCorrection::ElevationCorrection(TerrainObject *terrain, float x, float y, float angle): LayoutTransform(x, y, angle) {

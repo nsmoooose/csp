@@ -36,11 +36,11 @@
 #include "CSPSim.h"
 #include "DynamicObject.h"
 #include "EventMapIndex.h"
-#include "Log.h"
-#include "Battlefield.h"
 #include "VirtualScene.h"
 #include "Views/CameraCommand.h"
 
+#include <SimCore/Battlefield/Battlefield.h>
+#include <SimCore/Util/Log.h>
 
 
 /*

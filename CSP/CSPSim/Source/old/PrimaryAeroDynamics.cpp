@@ -27,7 +27,7 @@
 #include <algorithm>
 
 #include "CSPSim.h"
-#include "Log.h" 
+#include <SimCore/Util/Log.h> 
 #include "PrimaryAeroDynamics.h"
 
 #include <SimData/Math.h>

@@ -48,9 +48,12 @@ int ServerNode::run()
   NetworkNode * localNode =  new NetworkNode(1, localHost.c_str(), localPort);
   
   NetworkMessenger * networkMessenger = new NetworkMessenger(localNode);
-  PrintMessageHandler * printMessageHandler = new PrintMessageHandler();
-  printMessageHandler->setFrequency(1);
-  networkMessenger->registerReceiveHandler(printMessageHandler);
+//  PrintMessageHandler * printMessageHandler = new PrintMessageHandler();
+//  printMessageHandler->setFrequency(1);
+//  networkMessenger->registerReceiveHandler(printMessageHandler);
+
+  EchoMessageHandler * echoMessageHandler = new EchoMessageHandler();
+  networkMessenger->registerReceiveHandler(echoMessageHandler);
   
   //MessageSocketDuplex * socketDuplex = new MessageSocketDuplex(localPort);
   NetworkMessage * message=NULL;
@@ -60,7 +63,7 @@ int ServerNode::run()
     networkMessenger->receiveMessages();
     networkMessenger->sendQueuedMessages();
 #ifndef WIN32
-    ::sleep(1);
+  //  ::sleep(1);
 #endif
     
   }

@@ -60,6 +60,9 @@ int ClientNode::run()
   NetworkNode * remoteNode = new NetworkNode(1, remoteHost.c_str(), remotePort );
   NetworkNode * localNode =  new NetworkNode(1, localHost.c_str(), localPort);
   NetworkMessenger * networkMessenger = new NetworkMessenger(localNode);
+  PrintMessageHandler * printMessageHandler = new PrintMessageHandler();
+  printMessageHandler->setFrequency(1);
+  networkMessenger->registerReceiveHandler(printMessageHandler);
 
   unsigned short messageType = 2;
   unsigned short payloadLen  = sizeof(int) + sizeof(double) + 3*sizeof(simdata::Vector3) +
@@ -116,8 +119,12 @@ int ClientNode::run()
   ptrPayload->dump();
   
   networkMessenger->queueMessage(remoteNode, message);
-  networkMessenger->sendQueuedMessages();
   
+  while(1)
+  {
+    networkMessenger->sendQueuedMessages();
+    networkMessenger->receiveMessages();
+  }
   return 0;
 }
 

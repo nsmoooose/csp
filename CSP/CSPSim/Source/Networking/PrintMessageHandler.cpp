@@ -30,7 +30,7 @@
 #include "Networking.h"
 #include <stdio.h>
 
-void PrintMessageHandler::process(NetworkMessage * message)
+void PrintMessageHandler::process(NetworkMessage * message, NetworkMessenger * messenger)
 {
   if (m_count % m_frequency == 0)
   {

@@ -29,9 +29,20 @@
 
 #include "Networking.h"
 
-void EchoMessageHandler::process(NetworkMessage * message)
+void EchoMessageHandler::process(NetworkMessage * message, NetworkMessenger * messenger)
 {
 
+    NetworkNode * originatorNode = message->getOriginatorNode();
+
+    // must make a copy of the message since the buffer in the parameter will be returned 
+    // to the pool after this function exists.
+    NetworkMessage * messageCopy = messenger->allocMessageBuffer();
+    memcpy( (void*)messageCopy, (void*)message, 512);
+    
+    MessageHeader * header = (MessageHeader*)messageCopy;
+    ObjectUpdateMessagePayload * ptrPayload = (ObjectUpdateMessagePayload*)messageCopy->getPayloadPtr();
+
+    messenger->queueMessage(originatorNode, messageCopy);
 }
 
 

@@ -139,7 +139,7 @@ void NetworkMessenger::receiveMessages()
     NetworkMessage * networkMessage = receiveMessage();
     if ( networkMessage ) {
       if ( m_ReceiveHandler )
-	  m_ReceiveHandler->process(networkMessage);
+	  m_ReceiveHandler->process(networkMessage, this);
     }
     else
       return;	    

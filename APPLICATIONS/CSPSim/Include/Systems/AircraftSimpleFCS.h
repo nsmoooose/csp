@@ -26,9 +26,11 @@
 #ifndef __AIRCRAFTSIMPLEFCS_H__
 #define __AIRCRAFTSIMPLEFCS_H__
 
+#include <algorithm>
+#include <cmath>
+
 #include <System.h>
 #include <Log.h>
-
 
 
 class AircraftSimpleFCS: public System {

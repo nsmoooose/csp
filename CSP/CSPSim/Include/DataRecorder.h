@@ -29,6 +29,7 @@
 
 #include <cstdio>
 
+#include "SimData/Vector3.h"
 
 #include <Bus.h>
 

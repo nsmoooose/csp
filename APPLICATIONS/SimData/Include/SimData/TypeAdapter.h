@@ -52,6 +52,7 @@ class Curve;
 class Table;
 class LinkBase;
 class External;
+class Key;
 class Enum;
 class SimDate;
 class ListBase;
@@ -83,12 +84,30 @@ public:
 	static const char * TypeNames[];
 
 	TypeAdapter(): type(NONE) {}
-	TypeAdapter(int x): type(INT) { var.i = x; }
-	TypeAdapter(double x): type(DOUBLE) { var.d = x; }
-	TypeAdapter(std::string const &x): type(STRING) { s = x; }
-	TypeAdapter(const char *x): type(STRING) { s = x; }
-	TypeAdapter(BaseType const *x): type(BASE) { var.o = x; }
-	TypeAdapter(BaseType const &x): type(BASE) { var.o = &x; }
+	explicit TypeAdapter(int x): type(INT) { var.i = x; }
+	explicit TypeAdapter(double x): type(DOUBLE) { var.d = x; }
+	explicit TypeAdapter(std::string const &x): type(STRING) { s = x; }
+	explicit TypeAdapter(const char *x): type(STRING) { s = x; }
+	explicit TypeAdapter(BaseType const *x): type(BASE) { var.o = x; }
+	explicit TypeAdapter(BaseType const &x): type(BASE) { var.o = &x; }
+	TypeAdapter(TypeAdapter const &x): type(x.type) { 
+		switch(type) {
+			case INT:
+				var.i = x.var.i;
+				break;
+			case DOUBLE:
+				var.d = x.var.d;
+				break;
+			case STRING:
+				s = x.s;
+				break;
+			case BASE:
+				var.o = x.var.o;
+				break;
+			default:
+				break;
+		}
+	}
 
 	// objects
 
@@ -184,6 +203,7 @@ public:
 	inline void set(Curve & x) const { setBase(x); }
 	inline void set(Table & x) const { setBase(x); }
 	inline void set(External & x) const { setBase(x); }
+	inline void set(Key & x) const { setBase(x); }
 	inline void set(Path & x) const { setBase(x); }
 	// list
 

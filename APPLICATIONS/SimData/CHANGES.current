@@ -1,6 +1,21 @@
 Version 0.3.3 (in progress)
 ===========================
 
+2003-07-16: onsight
+            Tweaked TypeAdapter constructors to disambiguate the copy
+	    constructor.  The build now works with g++-3.3.
+
+	    New lookup table classes in LUT.h.  The code is not yet
+	    complete and should not be used for anything other than
+	    testing at this point.
+
+	    Added new Key data type, which is just a string converted
+	    to and stored as a 32-bit hash value.
+
+==========> VC USERS: add Key.cpp to the project.
+
+            Added date comparison methods.
+
 2003-07-01: delta
 	    Added a SWIG_GLOBAL define on cSimData_wrap.cpp to enable log level.
 

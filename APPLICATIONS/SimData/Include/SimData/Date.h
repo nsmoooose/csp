@@ -1,5 +1,5 @@
 /* SimDataCSP: Data Infrastructure for Simulations
- * Copyright (C) 2002 Mark Rose <tm2@stm.lbl.gov>
+ * Copyright (C) 2002, 2003 Mark Rose <tm2@stm.lbl.gov>
  * 
  * This file is part of SimDataCSP.
  * 
@@ -389,6 +389,14 @@ public:
 	 */
 	static int compare(const Date &a, const Date &b);
 	
+	/** 
+	 * Compare with another Date.  Returs +1 if this > other, -1 if this < other,
+	 * and 0 if the dates are equal.
+	 */
+	virtual int compare(const Date &other) const { 
+		return compare(*this, other); 
+	}
+
 	/**
 	 * Convert the date to a struct tm (time fields are set to zero).
 	 */
@@ -795,6 +803,18 @@ public:
 	 * seconds.
 	 */
 	double update();
+
+	/** 
+	 * Compare with another SimDate.  Returs +1 if this > other, -1 if this < other,
+	 * and 0 if the dates and times are equal.
+	 */
+	virtual int compare(const SimDate &other) const { 
+		int date_comp = Date::compare(*this, other); 
+		if (date_comp != 0) return date_comp;
+		if (getTime() > other.getTime()) return 1;
+		if (getTime() < other.getTime()) return -1;
+		return 0;
+	}
 
 	/**
 	 * Set the time reference to produce the desired target time

@@ -18,27 +18,38 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
-#ifndef __SIMDATA_TYPES_H__
-#define __SIMDATA_TYPES_H__
-
-#include <SimData/Date.h>
-#include <SimData/Enum.h>
-#include <SimData/External.h>
-#include <SimData/GeoPos.h>
-#include <SimData/Interpolate.h>
 #include <SimData/Key.h>
-#include <SimData/List.h>
-#include <SimData/LUT.h>
-#include <SimData/Matrix3.h>
-#include <SimData/Path.h>
-#include <SimData/Link.h>
-#include <SimData/Quaternion.h>
-#include <SimData/Real.h>
-#include <SimData/String.h>
-#include <SimData/Vector3.h>
+#include <SimData/Pack.h>
 
-//#include <SimData/Integer.h>
-//#include <SimData/Float.h>
 
-#endif // __SIMDATA_TYPES_H__
+NAMESPACE_SIMDATA
+
+
+const Key &Key::operator=(std::string const &id) {
+	_key = newhash4_cstring(id.c_str());
+	return *this;
+}
+
+bool Key::operator==(std::string const &id) const {
+	return *this == Key(id);
+}
+
+void Key::pack(Packer& p) const {
+	p.pack(static_cast<int>(_key));
+}
+
+void Key::unpack(UnPacker& p) {
+	int k;
+	p.unpack(k);
+	_key = static_cast<u4>(k);
+}
+
+std::string Key::asString() const {
+	char buff[32];
+	sprintf(buff, "Key<%08X>", _key);
+	return buff;
+}
+
+
+NAMESPACE_END // namespace simdata
 

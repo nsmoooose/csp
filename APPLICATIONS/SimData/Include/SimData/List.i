@@ -6,6 +6,7 @@
 #include "SimData/Path.h"
 #include "SimData/Interpolate.h"
 #include "SimData/External.h"
+#include "SimData/Key.h"
 %}
 
 %include "std_string.i"
@@ -42,5 +43,6 @@ new_list(String, std::string);
 new_list(Curve, SIMDATA(Curve));
 new_list(Table, SIMDATA(Table));
 new_list(External, SIMDATA(External));
+new_list(Key, SIMDATA(Key));
 //#endif // __LIST_TEMPLATES__
 

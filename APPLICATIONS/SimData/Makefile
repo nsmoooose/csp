@@ -6,7 +6,7 @@ export GDEBUGF = -g -Wall
 export GCFLAGS = -fPIC -O2# -march=athlon-tbird
 export GLDOPTS = -shared -lswigpy -ldl
 export GSWOPTS = -c -c++ -python -noexcept
-export CXX = g++
+export CXX = g++-3.2
 export SWIG = swig 
 
 .PHONY: all clean clean-deps

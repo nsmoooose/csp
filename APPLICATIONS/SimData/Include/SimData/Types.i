@@ -19,14 +19,16 @@
 
 %exception;
 
+%include "SimData/List.i"
 %include "SimData/Vector3.i"
 %include "SimData/GeoPos.i"
 %include "SimData/External.i"
+%include "SimData/Key.i"
 %include "SimData/Real.i"
 %include "SimData/String.i"
 %include "SimData/Enum.i"
 %include "SimData/Interpolate.i"
-%include "SimData/List.i"
+%include "SimData/LUT.i"
 %include "SimData/Matrix3.i"
 %include "SimData/Quaternion.i"
 

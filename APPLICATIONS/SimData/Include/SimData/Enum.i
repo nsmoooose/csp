@@ -37,6 +37,9 @@
 	CATCH(SIMDATA(EnumError), SWIG_RuntimeError)
 }
 
+#undef TRY
+#undef CATCH
+
 %rename(__repr__) SIMDATA(Enum)::asString() const;
 %rename(__repr__) SIMDATA(Enumeration)::asString() const;
 

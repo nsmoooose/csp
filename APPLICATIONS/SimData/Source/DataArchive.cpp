@@ -330,7 +330,10 @@ const DataArchive::TableEntry* DataArchive::_lookupPath(Path const& path, const 
 	if (i == table_map.end()) {
 		std::string msg;
 		if (path_str==0 || *path_str==0) {
-			msg = "human-readable path unavailable";
+			msg = getPathString(key);
+			if (msg == "") {
+				msg = "human-readable path unavailable";
+			}
 		} else {
 			msg = path_str;
 		}

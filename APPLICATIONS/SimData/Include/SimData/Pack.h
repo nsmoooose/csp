@@ -300,6 +300,8 @@ public:
 		return self.unpack_basetype(Path())
 	def unpack_External(self):
 		return self.unpack_basetype(External())
+	def unpack_Key(self):
+		return self.unpack_basetype(Key())
 	def unpack_List(self, unpack):
 		return self.unpack_basetype(List())
 	def unpack_Pointer(self):

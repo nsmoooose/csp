@@ -207,7 +207,7 @@ class ListHandler(SimpleHandler):
 		if self._type is not None:
 			return 0
 		return name in ('List', 'Enum', 'Path', 'Int', 'Bool', 'Number', 'Float', 
-		                'String', 'Date', 'Vector', 'Matrix', 'External', 
+		                'String', 'Date', 'Vector', 'Matrix', 'External', 'Key',
 		                'Object', 'Quat', 'LLA', "UTM", "ECEF")
 
 	def end(self):
@@ -238,6 +238,8 @@ class ListHandler(SimpleHandler):
 					return y
 				f = external
 				self._externals.extend(list)
+			elif self._type == "key":
+				f = SimData.Key
 			else:
 				msg = "Unknown LIST type (%s)" % self._type
 				raise XMLSyntax, msg
@@ -477,6 +479,15 @@ class ExternalHandler(SimpleHandler):
 # 		ext = self.getObjectAttribute(obj, name, SimData.External())
 # 		ext.setSource(self._element)
 
+
+class KeyHandler(SimpleHandler):
+
+	def __init__(self, id, base, name, attrs):
+		SimpleHandler.__init__(self, id, base, name, attrs)
+	
+	def end(self):
+		id = self._c.encode('ascii')
+		self._element = SimData.Key(id)
 
 
 class CurveHandler(SimpleHandler):

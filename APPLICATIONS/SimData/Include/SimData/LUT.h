@@ -19,6 +19,10 @@
  */
 
 
+#ifndef __SIMDATA_LUT_H__
+#define __SIMDATA_LUT_H__
+
+
 /**
  * @file LUT.h
  *
@@ -55,6 +59,7 @@ NAMESPACE_SIMDATA
 SIMDATA_EXCEPTION(InterpolationInput);
 SIMDATA_EXCEPTION(InterpolationError);
 SIMDATA_EXCEPTION(InterpolationIndex);
+SIMDATA_EXCEPTION(InterpolationUnpackMismatch);
 
 
 // some simple debugging messages used during initial development
@@ -224,6 +229,13 @@ friend class VEC<2, T>;
 	T m_Vec;
 	VEC(T *d): m_Vec(*d) {}
 public:
+	/**
+	 * Convenience constructor, initialize from std::vector
+	 */
+	VEC(std::vector<T> const &v) {
+		if (v.size() != 1) throw InterpolationIndex("VEC::VEC() dimension mismatch");
+		m_Vec = v[0];
+	}
 	VEC(T d): m_Vec(d) {}
 	inline void set(T d) { m_Vec = d; }
 	inline T operator[](int n) const { 
@@ -294,17 +306,9 @@ public:
 /**
  * Base class for interpolated lookup tables.
  */
-class Interpolation {
+class Interpolation: public BaseType {
 public:
 	typedef enum { LINEAR, SPLINE } Modes;
-
-	Interpolation(): m_Mode(LINEAR), m_Interpolated(false) {}
-
-	/**
-	 * Return the type of interpolation used to generate
-	 * the table from source data.
-	 */
-	inline Modes getMode() const { return m_Mode; }
 
 	/**
 	 * Return true if the interpolated table is ready
@@ -314,31 +318,30 @@ public:
 
 protected:
 	/**
-	 * Set the interpolation mode.
+	 * Bare Interpolation instances should not be created
 	 */
-	void setMode(Modes mode) { m_Mode = mode; }
+	Interpolation(): m_Interpolated(false) {}
 
-	inline void checkInterpolated() {
+	inline void checkInterpolated() const {
 		if (!isInterpolated()) {
 			throw InterpolationError("LUT not interpolated");
 		}
 	}
 
-	inline void checkNotInterpolated() {
+	inline void checkNotInterpolated() const {
 		if (isInterpolated()) {
 			throw InterpolationError("LUT already interpolated");
 		}
 	}
 
-	void throwBreakpointOrder() {
+	void throwBreakpointOrder() const {
 		throw InterpolationInput("Breakpoints must increase monotonically");
 	}
 
-	void throwInterpolationMode() {
+	void throwInterpolationMode() const {
 		throw InterpolationError("Unknown interpolation mode");
 	}
 
-	Modes m_Mode;
 	bool m_Interpolated;
 };
 
@@ -359,7 +362,7 @@ protected:
 	 * Find the index and interpolation parameter for
 	 * a given coordinate.
 	 */
-	inline void find(X x, int &i, X &f) {
+	inline void find(X x, int &i, X &f) const {
 		x = (x - m_X0) * m_XS;
 		i = static_cast<int>(floor(x));	
 		if (i >= m_Limit) {
@@ -420,6 +423,8 @@ friend class LUT<N,X>;
 	inline Y &curve(int n) { return m_Curve[n]; }
 
 public:
+	Curvature() {}
+
 	/**
 	 * Set a specific subelement indexed by a single
 	 * integer.  The indexing mirrors the LUT method 
@@ -463,6 +468,7 @@ friend class LUT<1,X>;
 	inline X const &curve(int n) const { return m_Curve[n]; }
 	inline X &curve(int n) { return m_Curve[n]; }
 public:
+	Curvature() {}
 	inline void setElement(int n, X const v) { curve(n) = v; }
 	void init(VEC<1,int> const &dim) {
 		int n = dim[0];
@@ -726,7 +732,6 @@ public:
 		deref();
 	}
 
-	// TODO spline or cubic interpolation internal interpolation
 	void interpolate(Dim const &dim, Interpolation::Modes mode) {
 		checkNotInterpolated();
 		int n = dim[0];
@@ -747,12 +752,14 @@ public:
 			__LUTLOG("SUB INTERP " << i << " of " << n);
 			(*_table)[i].interpolate(dim.rest(), mode);
 		}
-		setMode(mode);
 		postInterpolation(_table);
 	}
 
+	void interpolate(std::vector<int> const &dim, Interpolation::Modes mode) {
+		interpolate(Dim(dim), mode);
+	}
 
-	X getValue(Vec const &v) {
+	X getValue(Vec const &v) const {
 		checkInterpolated();
 		X x = v[0];
 		int i;
@@ -763,7 +770,11 @@ public:
 		return value;
 	}
 
-	inline WRAP<N,X> operator[](X x) {
+	inline X getValue(std::vector<X> const &x) const {
+		return getValue(Vec(x));
+	}
+
+	inline WRAP<N,X> operator[](X x) const {
 		checkInterpolated();
 		return WRAP<N,X>(this, x);
 	}
@@ -779,7 +790,61 @@ public:
 			data(i).second.load(values, breaks.rest(), index);
 		}
 	}
+
+	void load(std::vector<X> const &values, std::vector< std::vector<X> > const &breaks) {
+		if (breaks.size() != N) {
+			throw InterpolationIndex("Incorrect number of breakpoint arrays");
+		}
+		load(values, Breaks(breaks));
+	}
+
+	/**
+	 * Serialize an object to a data archive.
+	 */
+	virtual void pack(Packer& p) const {
+		checkInterpolated();
+		int n = tableSize();
+		p.pack(int(N));
+		p.pack(m_X0);
+		p.pack(m_X1);
+		p.pack(n);
+		for (int i = 0; i < n; i++) {
+			table(i).pack(p);
+		}
+	}
 	
+	/**
+	 * Deserialize an object from a data archive.
+	 */
+	virtual void unpack(UnPacker& p) {
+		checkNotInterpolated();
+		X x0, x1;
+		int dim, n;
+		p.unpack(dim);
+		if (dim != N) {
+			char msg[128];
+			sprintf(msg, "LUT<%d>::unpack table of dimension %d", N, dim);
+			throw InterpolationUnpackMismatch(msg);
+		}
+		p.unpack(x0);
+		p.unpack(x1);
+		p.unpack(n);
+		TableVector *_table = new TableVector(n);
+		for (int i = 0; i < n; i++) {
+			p.unpack((*_table)[i]);
+		}
+		substitute(_table);
+		InterpolationType<X>::postInterpolation(x0, x1, n-1);
+	}
+
+	/**
+	 * Return strig representation of type.
+	 */
+	virtual std::string asString() const {
+		char buff[128];
+		sprintf(buff, "<%d-Dimensional Lookup Table>", N);
+		return buff;
+	}
 };
 
 template <typename X>
@@ -1012,11 +1077,14 @@ public:
 			default:
 				throwInterpolationMode();
 		}
-		setMode(mode);
 		postInterpolation(_table);
 	}
 
-	X getValue(Vec const &v) {
+	void interpolate(std::vector<int> const &dim, Interpolation::Modes mode) {
+		interpolate(Dim(dim), mode);
+	}
+
+	X getValue(Vec const &v) const {
 		checkInterpolated();
 		X x = v[0];
 		int i;
@@ -1027,7 +1095,11 @@ public:
 		return value;
 	}
 
-	inline X operator[](Vec const &v) {
+	inline X getValue(std::vector<X> const &x) const {
+		return getValue(Vec(x));
+	}
+
+	inline X operator[](Vec const &v) const {
 		return getValue(v);
 	}
 
@@ -1042,6 +1114,59 @@ public:
 			data(i).second = values[*index];
 			++(*index);
 		}
+	}
+
+	void load(std::vector<X> const &values, std::vector< std::vector<X> > const &breaks) {
+		if (breaks.size() != 1) {
+			throw InterpolationIndex("Incorrect number of breakpoint arrays");
+		}
+		load(values, Breaks(breaks));
+	}
+
+	/**
+	 * Serialize an object to a data archive.
+	 */
+	virtual void pack(Packer& p) const {
+		checkInterpolated();
+		int n = tableSize();
+		p.pack(int(1));
+		p.pack(m_X0);
+		p.pack(m_X1);
+		p.pack(n);
+		for (int i = 0; i < n; i++) {
+			p.pack(table(i));
+		}
+	}
+	
+	/**
+	 * Deserialize an object from a data archive.
+	 */
+	virtual void unpack(UnPacker& p) {
+		checkNotInterpolated();
+		X x0, x1;
+		int dim, n;
+		p.unpack(dim);
+		if (dim != 1) {
+			char msg[128];
+			sprintf(msg, "LUT<1>::unpack table of dimension %d", dim);
+			throw InterpolationUnpackMismatch(msg);
+		}
+		p.unpack(x0);
+		p.unpack(x1);
+		p.unpack(n);
+		TableVector *_table = new TableVector(n);
+		for (int i = 0; i < n; i++) {
+			p.unpack((*_table)[i]);
+		}
+		substitute(_table);
+		InterpolationType<X>::postInterpolation(x0, x1, n-1);
+	}
+
+	/**
+	 * Return strig representation of type.
+	 */
+	virtual std::string asString() const {
+		return "<1-Dimensional Lookup Table>";
 	}
 };
 
@@ -1075,12 +1200,12 @@ inline WRAP<N,X> &WRAP<N,X>::operator[](X x) {
 typedef LUT<1,float> Table1;
 typedef LUT<2,float> Table2;
 typedef LUT<3,float> Table3;
-typedef LUT<4,float> Table4;
 
 
 NAMESPACE_END // simdata
 
 
+#if 0
 void load2(simdata::Table2 &t) {
 	float f;
 	int a, b, n;
@@ -1155,4 +1280,8 @@ int main() try {
 	test();
 	return 0; 
 } catch(...) { }
+
+#endif
+
+#endif // __SIMDATA_LUT_H__
 

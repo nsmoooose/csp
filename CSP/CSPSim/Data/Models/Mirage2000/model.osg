@@ -48529,7 +48529,7 @@ MatrixTransform {
       }
       MatrixTransform {
         DataVariance STATIC
-        name "Aircraft.RightMainGearAxis"
+        name "ANIM: Aircraft.RightMainGearAxis"
         nodeMask 0xff
         cullingActive TRUE
         referenceFrame RELATIVE

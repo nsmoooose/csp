@@ -13,6 +13,8 @@ Version 0.4.0 (in progress)
 
   * Small fixes to TaggedRecord.h
 
+  * Added a unit test for reference counting.
+
 2004-06-26: onsight
   * Remove superflous logging in interface registry, and suppress
     swig warnings.

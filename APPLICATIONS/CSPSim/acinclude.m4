@@ -109,7 +109,7 @@ int main() {
     [AC_MSG_RESULT(yes)], 
     [AC_MSG_RESULT(no)
      AC_MSG_ERROR([
-	$3 version >= $1 needs to be installed.  OSG can be
+	$3 version >= $2 needs to be installed.  OSG can be
 	downloaded from http://www.openscenegraph.org/
 	])
     ], 

@@ -22,6 +22,8 @@
 #include <SimData/Random.h>
 #include <SimData/Pack.h>
 
+#include <sstream>
+
 
 NAMESPACE_SIMDATA
 
@@ -87,9 +89,9 @@ float Real::getSigma() const { return _sigma; }
 float Real::getValue() const { return _value; }
 
 std::string Real:: asString() const { 
-	char fmt[128];
-	snprintf(fmt, 127, "%f", _value);
-	return std::string(fmt);
+	std::stringstream ss;
+	ss << _value;
+	return ss.str();
 }
 
 

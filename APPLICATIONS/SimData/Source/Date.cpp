@@ -22,6 +22,14 @@
 #include <SimData/Date.h>
 
 
+#ifdef _WIN32
+	#include <Windows.h>
+	#include <ctime>
+#else
+	#include <sys/time.h>
+	#include <unistd.h>
+#endif
+
 
 NAMESPACE_SIMDATA
 
@@ -30,8 +38,6 @@ NAMESPACE_SIMDATA
 // 'fast' timing routines (1-2 msec accuracy)
 
 #ifdef _WIN32
-	#include <Windows.h>
-	#include <ctime>
 	static LARGE_INTEGER _tstart, _tend;
 	static LARGE_INTEGER freq;
 
@@ -69,9 +75,6 @@ NAMESPACE_SIMDATA
 	}
 
 #else
-
-	#include <sys/time.h>
-	#include <unistd.h>
 
 	static struct timeval _tstart, _tend;
 	static struct timezone tz;

@@ -1,6 +1,11 @@
 Version 0.3.5 (in progress)
 ===========================
 
+2003-10-09: onsight
+            Backported a couple fixes from the b0_4_0 branch:
+	      * #include inside simdata namespace in Date.cpp
+	      * snprintf replaced with stringstream in Real.cpp
+
 2003-09-16: onsight
             Changed Parse.py to handle misinstalled zlib modules
 	    (usually under windows) more gracefully.

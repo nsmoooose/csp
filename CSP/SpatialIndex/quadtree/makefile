@@ -37,7 +37,7 @@ all: $(OBJECTS)
 debug:
 	$(MAKE) CXXFLAGS='-g -fPIC'
 
-.cc.o:
+.cpp.o:
 	$(CXX) $(CXXFLAGS) -I.. -c $<
 
 clean:

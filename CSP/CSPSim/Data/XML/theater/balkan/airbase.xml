@@ -20,11 +20,11 @@
 			<Float name="y">700</Float>
 			<Float name="orientation">1.57</Float>
 		</Object>
-		<!--Object	class="FeatureLayout">
+		<Object	class="FeatureLayout">
 			<Path name="model">forest</Path>
-			<Float name="x">170</Float>
-			<Float name="y">500</Float>
+			<Float name="x">100</Float>
+			<Float name="y">-200</Float>
 			<Float name="orientation">0</Float>
-		</Object-->
+		</Object>
 	</List>
 </Object>

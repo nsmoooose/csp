@@ -1,7 +1,17 @@
  Version 0.4.0 (in progress)
 ===========================
 
-2004-07-26: delta
+2004-07-29: delta
+  * Added an IsoContour class in RandomBillboardModel 
+    describing the "boundary" of the region. Currently 
+    supports circle and rectangle.
+    
+  * Added Images/Trees containing trees splat textures 
+    and Images/Logo containing images for LogoScreen.
+    Patched LogoScreen.cpp, Data/theater/balkan/airbase.xml
+    and Data/theater/balkan/forest.xml to use this stuff.
+
+2004-07-28: delta
   * Added #undef ERROR in Log.h & System.h.
   
   * Moved AeroDynamics.cpp, base.cpp, main.cpp and trees.cpp 

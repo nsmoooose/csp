@@ -87,17 +87,17 @@ public:
 		file_name.push_back("fx2.jpeg");
 		*/
 
-		file_name.push_back("CSPLogo.jpg");
-		file_name.push_back("moonrise1.jpg");
-		file_name.push_back("crescent.jpg");
-		file_name.push_back("sunlight2.jpg");
-		file_name.push_back("sunset4.jpg");
-		file_name.push_back("console2.jpg");
-		file_name.push_back("TLabMultitex.jpg");
-		file_name.push_back("landing-2.jpg");
-		file_name.push_back("vista.jpg");
-		file_name.push_back("ground-fog.jpg");
-		file_name.push_back("fx2.jpg");
+		file_name.push_back("Logo/CSPLogo.jpg");
+		file_name.push_back("Logo/moonrise1.jpg");
+		file_name.push_back("Logo/crescent.jpg");
+		file_name.push_back("Logo/sunlight2.jpg");
+		file_name.push_back("Logo/sunset4.jpg");
+		file_name.push_back("Logo/console2.jpg");
+		file_name.push_back("Logo/TLabMultitex.jpg");
+		file_name.push_back("Logo/landing-2.jpg");
+		file_name.push_back("Logo/vista.jpg");
+		file_name.push_back("Logo/ground-fog.jpg");
+		file_name.push_back("Logo/fx2.jpg");
 
 		std::string image_path = getDataPath("ImagePath");
 		StrVec::const_iterator iEnd = file_name.end();

@@ -73,6 +73,7 @@ void CameraAgent::validate(double dt)	{
 			}
 		double dh =	abs(h - m_LookPoint.z() - min_elev);
 		double angle_x = std::max(simdata::toRadians(1.0),asin(dh/m_CameraKinematics.getDistance()));
+		// XXX: transform to Fresnet frame
 		if (abs(m_CameraKinematics.getPhi()) < simdata::PI_2)
 			m_CameraKinematics.setPhi(angle_x);
 		else

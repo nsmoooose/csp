@@ -35,7 +35,7 @@ class FeatureQuad;
 class FeatureSceneGroup;
 class LayoutTransform;
 class ElevationCorrection;
-
+class IsoContour;
 
 /**
  * class RandomBillboardModel (STATIC)
@@ -49,6 +49,7 @@ class RandomBillboardModel: public FeatureGroupModel {
 	float m_MinimumSpacing;
 	int m_Seed;
 	std::vector<std::vector<simdata::Vector3> > m_Offsets;
+	simdata::Link<IsoContour> m_IsoContour;
 	
 public:
 	SIMDATA_STATIC_OBJECT(RandomBillboardModel, 0, 0)
@@ -58,6 +59,7 @@ public:
 		SIMDATA_XML("density", RandomBillboardModel::m_Density, true)
 		SIMDATA_XML("minimum_spacing", RandomBillboardModel::m_MinimumSpacing, true)
 		SIMDATA_XML("seed", RandomBillboardModel::m_Seed, false)
+		SIMDATA_XML("isocontour", RandomBillboardModel::m_IsoContour, false)
 	END_SIMDATA_XML_INTERFACE
 
 

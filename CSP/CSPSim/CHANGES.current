@@ -1,6 +1,10 @@
  Version 0.4.0 (in progress)
 ===========================
 
+2004-10-04: delta
+  * Fix for the recording of the input stream. It will need more work
+    on the sampling value though.
+    
 2004-10-03: delta
   * Updated vcproj. Building CSPSimDLL now buils others libs (SimCore, 
     SpatialIndex) according to the build mode.

@@ -35,8 +35,7 @@
 
 class Handle {
 protected:
-	//simdata::SimTime m_EventTime;
-	float m_EventTime;
+	simdata::SimTime m_EventTime;
 	static const float m_Sampling;
 public:
 	Handle():

@@ -48,11 +48,11 @@ Save::~Save() {
 
 bool Save::operator()(SDL_Event& event) {
 	bool result = SDL_PollEvent(&event) != 0;
-	float d2 = CSPSim::theSim->getElapsedTime();
+	simdata::SimTime d2 = CSPSim::theSim->getElapsedTime();
 	if (d2 - m_EventTime > m_Sampling) {
 		m_EventTime = d2;
 		m_of.write(reinterpret_cast<char*>(&event),sizeof(SDL_Event));
-		m_of.write(reinterpret_cast<char*>(&m_EventTime),sizeof(float));
+		m_of.write(reinterpret_cast<char*>(&m_EventTime),sizeof(simdata::SimTime));
 	}
 	return result;
 }
@@ -71,10 +71,11 @@ bool Replay::operator()(SDL_Event& event) {
 	SDL_Event e;
 	bool result = SDL_PollEvent(&e) != 0;
 	if (e.type != SDL_QUIT && (e.type != SDL_KEYDOWN || e.key.keysym.sym != SDLK_ESCAPE)) {
-		float d2 = CSPSim::theSim->getElapsedTime();
+		simdata::SimTime d2 = CSPSim::theSim->getElapsedTime();
 		if (d2 - m_EventTime > 2*m_Sampling) {
 			m_if.read(reinterpret_cast<char*>(&event),sizeof(SDL_Event));
-			m_if.read(reinterpret_cast<char*>(&m_EventTime),sizeof(float));
+			m_if.read(reinterpret_cast<char*>(&m_EventTime),sizeof(simdata::SimTime));
+			result = true;
 		}
 	} else {
 		event = e;

@@ -25,7 +25,7 @@
 				InlineFunctionExpansion="2"
 				EnableIntrinsicFunctions="TRUE"
 				FavorSizeOrSpeed="1"
-				OptimizeForProcessor="3"
+				OptimizeForProcessor="0"
 				OptimizeForWindowsApplication="TRUE"
 				AdditionalIncludeDirectories="../Include,$(PYTHONPATH)/include"
 				PreprocessorDefinitions="WIN32;NDEBUG;_USRDLL;SIMDATA_EXPORTS"
@@ -33,7 +33,7 @@
 				RuntimeLibrary="2"
 				BufferSecurityCheck="FALSE"
 				EnableFunctionLevelLinking="TRUE"
-				EnableEnhancedInstructionSet="1"
+				EnableEnhancedInstructionSet="0"
 				RuntimeTypeInfo="TRUE"
 				PrecompiledHeaderFile=".\Release/SimData.pch"
 				ExpandAttributedSource="FALSE"
@@ -389,14 +389,16 @@
 				Name="Release|Win32">
 				<Tool
 					Name="VCCustomBuildTool"
-					CommandLine="C:\progra~1\SWIG-1.3.17\swig -c++ -python -noexcept -DWIN32 -I..\Include -o ..\Source\$(InputName)_wrap.cpp ..\Source\$(InputName).i"
+					CommandLine="C:\progra~1\SWIG-1.3.17\swig -c++ -python -noexcept -DWIN32 -I..\Include -o ..\Source\$(InputName)_wrap.cpp ..\Source\$(InputName).i
+"
 					Outputs="..\Source\$(InputName)_wrap.cpp"/>
 			</FileConfiguration>
 			<FileConfiguration
 				Name="Debug|Win32">
 				<Tool
 					Name="VCCustomBuildTool"
-					CommandLine="C:\progra~1\SWIG-1.3.17\swig -c++ -python -noexcept -DWIN32 -I..\Include -o ..\Source\$(InputName)_wrap.cpp ..\Source\$(InputName).i"
+					CommandLine="C:\progra~1\SWIG-1.3.17\swig -c++ -python -noexcept -DWIN32 -I..\Include -o ..\Source\$(InputName)_wrap.cpp ..\Source\$(InputName).i
+"
 					Outputs="..\Source\$(InputName)_wrap.cpp"/>
 			</FileConfiguration>
 		</File>

@@ -24,6 +24,8 @@
  */
 
 #include <SimData/Timing.h>
+#include <SimData/Log.h>
+#include <SimData/Uniform.h>
 
 // for platform-specific fast timing routines
 #ifdef _WIN32
@@ -90,9 +92,9 @@ NAMESPACE_SIMDATA
 	static double counter_offset = 0.0;
 	static int calibrations = 0;
 	static uint64 next_calibration = 0;
-	static double calibration_iterval = 10.0;
+	static double calibration_interval = 10.0;
 
-	inline uint64 cvt_largeint(LARGE_INT const &x) {
+	inline uint64 cvt_filetime(FILETIME const &x) {
 		return (static_cast<uint64>(x.dwHighDateTime) << 32) | static_cast<uint64>(x.dwLowDateTime);
 	}
 
@@ -125,18 +127,18 @@ NAMESPACE_SIMDATA
 		GetSystemTimeAsFileTime(&start_time);
 		// blocks for up to max_tries * 16 ms on WinXP (assuming 64Hz timer tick)
 		for (int tries = 0; tries < max_tries; ) {
-			LARGE_INTEGER lock_counter = getPerformanceCounter();
+			uint64 lock_counter = getPerformanceCounter();
 			GetSystemTimeAsFileTime(&update_time);
 			if (update_time != start_time) {
 				counter = getPerformanceCounter();
 				// make sure we weren't interrupted between getting the system time and the counter
-				if ((cvt_largeint(counter) - cvt_largeint(lock_counter)) * counter_scale <= 0.0001) break;
+				if ((counter - lock_counter) * counter_scale <= 0.0001) break;
 				// make sure we weren't interrupted for more than one timer tick.  it's still
 				// possible that we could be interrupted for less than 20 ms, causing jitter.
 				// not much to do about that, except to hope that the return of control to
 				// this thread corresponded to a timer tick event so that we are at the start
 				// of the tick window.
-				if ((update_time - start_time) < SIMDATA_ULL(200000) /* 20 ms */) break;
+				if ((cvt_filetime(update_time) - cvt_filetime(start_time)) < SIMDATA_ULL(200000) /* 20 ms */) break;
 				// we were probably interrupted (>100us between GSTAFT and QPC), so try again
 				++tries;
 			}
@@ -145,15 +147,15 @@ NAMESPACE_SIMDATA
 			if (calibrations == 0) {
 				throw TimerError("Unable to calibrate high resolution timer using system time");
 			}
-			SIMDATA_LOG(TIME, ERROR, "High resolution timer calibration failed");
+			SIMDATA_LOG(LOG_TIME, LOG_ERROR, "High resolution timer calibration failed");
 		} else {
 			if (calibrations++ == 0) {
-				first_counter = static_cast<uint64>(counter.QuadPart);
-				first_time = cvt_largeint(update_time);
+				first_counter = counter;
+				first_time = cvt_filetime(update_time);
 				counter_offset = 1e-7 * static_cast<double>(first_time - SIMDATA_ULL(116444736000000000));
 			} else {
-				uint64 elapsed_count = static_cast<uint64>(counter.QuadPart) - first_counter;
-				uint64 elapsed_time = cvt_largeint(update_time);
+				uint64 elapsed_count = counter - first_counter;
+				uint64 elapsed_time = cvt_filetime(update_time);
 				double new_scale = static_cast<double>(elapsed_time) * 1e-7 / elapsed_count;
 				// bump the offset to keep the current calibrated time continuous
 				counter_offset += elapsed_count * (counter_scale - new_scale);
@@ -162,7 +164,7 @@ NAMESPACE_SIMDATA
 			}
 		}
 		// schedule the next calibration
-		next_calibration = counter.QuadPart + static_cast<LONGLONG>(calibration_iterval / counter_scale);
+		next_calibration = counter + static_cast<uint64>(calibration_iterval / counter_scale);
 	}
 
 	double getCalibratedRealTime() {

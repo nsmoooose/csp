@@ -23,7 +23,6 @@
 
 NAMESPACE_SIMDATA
 
-
 Random g_Random;
 
 

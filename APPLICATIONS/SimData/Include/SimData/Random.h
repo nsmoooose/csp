@@ -31,10 +31,7 @@
 
 #include <math.h>
 
-#ifdef _WIN32
 #include <SimData/Export.h>
-#endif
-
 #include <SimData/ns-simdata.h>
 
 

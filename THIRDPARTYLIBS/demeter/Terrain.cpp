@@ -715,7 +715,7 @@ Terrain::Terrain(const char* szElevationsFilename,const char* szTextureFilename,
 	m_LatticePositionX = 0;
 	m_LatticePositionY = 0;
 
-	std::cout << "SetAllElevations " << szElevationsFilename << "\n";
+	//std::cout << "SetAllElevations " << szElevationsFilename << "\n";
 	SetAllElevations(szElevationsFilename,vertexSpacing,elevationScale);
 
     // Load the texture data.
@@ -828,8 +828,8 @@ void Terrain::Init(const Uint8* pTextureImage,int textureWidth,int textureHeight
 
 void Terrain::SetAllElevations(const char* szElevationsFilename,float vertexSpacing,float elevationScale)
 {
-	std::cout << "SetAllElevations()\n";
-	std::cout << "efilename = " << szElevationsFilename << "\n";
+	//std::cout << "SetAllElevations()\n";
+	//std::cout << "efilename = " << szElevationsFilename << "\n";
 	bool useRaw = (strstr(szElevationsFilename, ".raw") || strstr(szElevationsFilename, ".RAW") );
 
 #ifdef _USE_GDAL_

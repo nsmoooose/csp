@@ -205,7 +205,7 @@ Texture* TerrainTextureFactory::GetTexture(int index,float originX,float originY
 			Uint8* pTex6 = m_BaseTextures[5];
 
 			//std::cout << "Generating Texture" << latticeX << ":" << latticeY << endl;
-			std::cout << originX << "," << originY << "  " << width << "," << height << "  " << textureSize << "\n";
+			//std::cout << originX << "," << originY << "  " << width << "," << height << "  " << textureSize << "\n";
 
 			Uint8* pImage = new Uint8[(int)((textureSize + 1.0f) * (textureSize + 1.0f)) * 3];
 			Uint8* Idx = pImage;

@@ -27,6 +27,7 @@
 #ifndef __CSPSIM_H__
 #define __CSPSIM_H__
 
+#define _WINSOCKAPI_
 
 #include <SimData/Ref.h>
 #include <SimData/Date.h>

@@ -61,7 +61,7 @@ inline SIMDATA_EXPORT logstream& log() {
 		char *save = getenv("SIMDATA_LOGFILE");
 		// default to stderr if SIMDATA_LOGFILE isn't set
 		logstrm = new logstream(std::cerr);
-		if (save) {
+		if (save && *save) {
 			logstrm->setOutput(save);
 		}
 	}

@@ -127,7 +127,7 @@ int MessageSocketDuplex::recvfrom(NetworkMessage & message, ost::InetHostAddress
 	// peek at packet to verify this is a valid CSP packet. and if so get the packet type.
 	
 	int headerlen = 6;
-	uint16 headerBuffer[headerlen];
+	uint16 headerBuffer[6];
 	int numHeaderBytes = m_UDPReceiverSocket->peek(headerBuffer, headerlen);
 
 	// TODO validation of header

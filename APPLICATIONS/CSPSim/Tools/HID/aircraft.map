@@ -1,0 +1,31 @@
+include mouse.map
+include keys.map
+include x36.map
+
+device keyboard 0 key US_keyboard 
+device joystick 0 x36 Saitek_X36
+device mouse 0 mouse standard_mouse
+
+bind vehicles.aircraft.m2k
+bind vehicles.aircraft.f16
+
+mode base
+
+map x36:Stick_X 	axis		AILERON
+map x36:Stick_Y		axis		ELEVATOR
+map x36:Rudder		axis		RUDDER
+map x36:Throttle	axis		THROTTLE
+
+map key:DOWN	press			INC_ELEVATOR
+map key:DOWN	release			STOP_INC_ELEVATOR
+map key:UP	press			DEC_ELEVATOR
+map key:UP	release			STOP_DEC_ELEVATOR
+map key:RIGHT	press			INC_AILERON
+map key:RIGHT	release			STOP_INC_AILERON
+map key:LEFT	press			DEC_AILERON
+map key:LEFT	release			STOP_DEC_AILERON
+map key:EQUALS	press			INC_THROTTLE
+map key:EQUALS	release			STOP_INC_THROTTLE
+map key:MINUS	press			DEC_THROTTLE
+map key:MINUS	release			STOP_DEC_THROTTLE
+

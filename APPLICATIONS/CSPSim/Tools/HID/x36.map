@@ -1,0 +1,54 @@
+# hid event identifier definitions for the Saitek X36F/X35T hotas.
+# these values are correct for Linux using the 2.4 kernel USB HID interface.
+# it is conceivable that value mapping is different under Windows.
+
+# primary buttons
+
+define Saitek_X36:FireA		1
+define Saitek_X36:FireB		2
+define Saitek_X36:FireC		7
+define Saitek_X36:FireD		4
+
+# additional buttons
+
+define Saitek_X36:Pinkie	6
+define Saitek_X36:Launch	3
+
+# thumb stick
+
+define Saitek_X36:Mouse		5
+define Saitek_X36:Mouse_Up	22
+define Saitek_X36:Mouse_Right	23
+define Saitek_X36:Mouse_Down	24
+define Saitek_X36:Mouse_Left	25
+
+# mode switch
+
+define Saitek_X36:Mode1		8
+define Saitek_X36:Mode2		9
+define Saitek_X36:Mode3		10
+
+# aux switch
+
+define Saitek_X36:Aux1		11
+define Saitek_X36:Aux2		12
+define Saitek_X36:Aux3		13
+
+# hat 3
+
+define Saitek_X36:H3_Up		18
+define Saitek_X36:H3_Right	19
+define Saitek_X36:H3_Down	20
+define Saitek_X36:H3_Left	21
+
+# axes
+
+define Saitek_X36:Stick_X	0
+define Saitek_X36:Stick_Y	1
+define Saitek_X36:Rudder	3
+define Saitek_X36:Throttle	4
+define Saitek_X36:R1		2
+define Saitek_X36:R2		5
+define Saitek_X36:H1_H		6
+define Saitek_X36:H1_V		7
+

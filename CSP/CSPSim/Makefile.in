@@ -29,6 +29,8 @@ Makefile: Makefile.in configure.in acinclude.m4
 
 InputMaps: aircraft.hid gamescreen.hid
 
+doc docs Doc Docs:
+	@$(MAKE) -C Doc
 
 %.hid:
 	@test -e Data/Input/$@ || \

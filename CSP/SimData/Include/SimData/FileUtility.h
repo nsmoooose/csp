@@ -142,7 +142,7 @@ namespace ospath {
 	/** Removes the last extension from a filepath.  Returns the extension
 	 *  (excluding the '.'), or an empty string if no extensions were found.
 	 */
-	extern SIMDATA_EXPORT std::string ospath::stripFileExtension(std::string &path);
+ 	extern SIMDATA_EXPORT std::string stripFileExtension(std::string &path);
 
 	/** Get the last extension of a filename (excluding the '.'), or an empty
 	 *  string if no extensions were found.

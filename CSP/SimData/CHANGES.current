@@ -1,6 +1,24 @@
 Version 0.4.0 (in progress)
 ===========================
 
+2004-04-03: delta
+ * Updated vcproj.
+ 
+ * Exported EnumerationCore from Enum.h. 
+ 
+ * Used Interlocked* instead of _Interlocked* in AtomicCounter.h.	
+ 
+ * Removed ospath namespace in front of stripFileExtension.
+ 
+ * Added #define NOMINMAX in FileUtility.cpp to avoid usual conflicts 
+   including windows.h.
+ 
+ * Changed "contents" into "entries" in getDirectoryContents (_WIN32) from
+   FileUtility.cpp. Changed FileClosed into FindClose.
+ 
+ * Exported _log_reference_count_error & _log_reference_conversion_error from
+   LogStream.cpp.
+ 
 2004-10-02: onsight
  * Implement AtomicCounter using compiler intrinsics under msvc.
 
@@ -40,7 +58,7 @@ Version 0.4.0 (in progress)
 
 2004-09-28: delta
  * Added a #undef ERROR after inlcuding windows.h, protected behind
-   a #ifdef.
+   a #ifdef in AtomicCounter.h.
 
 2004-09-26: onsight
  * Fix a couple compiler warnings under msvc.

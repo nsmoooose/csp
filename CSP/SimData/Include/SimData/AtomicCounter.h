@@ -38,10 +38,10 @@
 
 #if defined(WIN32)
 #  define WIN_ATOMIC
-//#  define _WINSOCKAPI_
-//#  define NOMINMAX
-//#  include <Windows.h>
-//#  undef ERROR
+#  define _WINSOCKAPI_
+#  define NOMINMAX
+#  include <Windows.h>
+#  undef ERROR
 #else
 #  define LIN_ATOMIC
 extern "C" {
@@ -63,14 +63,14 @@ extern "C" {
 // Atomic counter using windows-specific atomic counter primitives (much
 // faster than mutex locking).
 #elif defined(WIN_ATOMIC)
-#	define SIMDATA_ATOMIC_SET(x, count) _InterlockedExchange(&x, count)
-#	define SIMDATA_ATOMIC_DEC(x) _InterlockedDecrement(&x) ? false : true;
-#	define SIMDATA_ATOMIC_INC(x) _InterlockedIncrement(&x) ? false : true;
+#	define SIMDATA_ATOMIC_SET(x, count) InterlockedExchange(&x, count)
+#	define SIMDATA_ATOMIC_DEC(x) InterlockedDecrement(&x) ? false : true;
+#	define SIMDATA_ATOMIC_INC(x) InterlockedIncrement(&x) ? false : true;
 #	define SIMDATA_ATOMIC_GET(x) x
 #	define SIMDATA_ATOMIC_TYPE volatile LONG
-#	pragma intrinsic (_InterlockedExchange)
-#	pragma intrinsic (_InterlockedDecrement)
-#	pragma intrinsic (_InterlockedIncrement)
+//#	pragma intrinsic (_InterlockedExchange)
+//#	pragma intrinsic (_InterlockedDecrement)
+//#	pragma intrinsic (_InterlockedIncrement)
 // Atomic counter using pthreads locking (slow but safe).
 #else
 	NAMESPACE_SIMDATA

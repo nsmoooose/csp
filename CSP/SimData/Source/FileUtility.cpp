@@ -34,6 +34,7 @@
 
 #ifdef _WIN32
 #  define STRICT  /* Strict typing, please */
+#  define NOMINMAX
 #  include <windows.h>
 #  include <direct.h>
 #  include <ctype.h>
@@ -197,7 +198,7 @@ bool ospath::exists(const std::string &path) {
 #else // POSIX (hopefully)
 	static const int mode = F_OK;
 #endif
-	return access(path.c_str(), mode);
+	return access(path.c_str(), mode) != 0;
 }
 
 ospath::DirectoryContents ospath::getDirectoryContents(std::string const &path) {
@@ -208,9 +209,9 @@ ospath::DirectoryContents ospath::getDirectoryContents(std::string const &path) 
 	HANDLE handle = FindFirstFile(search_path.c_str(), &ffd);
 	if (handle != INVALID_HANDLE_VALUE) {
 		do {
-			contents.push_back(ffd.cFileName);
+			entries.push_back(ffd.cFileName);
 		} while (FindNextFile(handle, &ffd) != 0);
-		FileClose(handle);
+		FindClose(handle);
 	}
 #else // POSIX (hopefully)
 	DIR *dir = opendir(path.c_str());

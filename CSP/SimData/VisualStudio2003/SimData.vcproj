@@ -106,6 +106,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
+				EnableIntrinsicFunctions="TRUE"
 				AdditionalIncludeDirectories="../Include,$(PYTHON_PATH)/include"
 				PreprocessorDefinitions="WIN32;_DEBUG;_USRDLL;SIMDATA_EXPORTS"
 				BasicRuntimeChecks="3"
@@ -119,7 +120,8 @@
 				WarningLevel="4"
 				SuppressStartupBanner="TRUE"
 				DebugInformationFormat="3"
-				CompileAs="0"/>
+				CompileAs="2"
+				DisableSpecificWarnings="4511;4512;4100"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
 			<Tool
@@ -255,10 +257,19 @@
 				RelativePath="..\Source\Real.cpp">
 			</File>
 			<File
+				RelativePath="..\Source\TaggedRecordRegistry.cpp">
+			</File>
+			<File
 				RelativePath="..\Source\ThreadBase.cpp">
 			</File>
 			<File
+				RelativePath="..\Source\ThreadLog.cpp">
+			</File>
+			<File
 				RelativePath="..\Source\Timing.cpp">
+			</File>
+			<File
+				RelativePath="..\Source\Trace.cpp">
 			</File>
 			<File
 				RelativePath="..\Source\TypeAdapter.cpp">
@@ -437,6 +448,9 @@
 			</File>
 			<File
 				RelativePath="..\Include\SimData\Vector3.h">
+			</File>
+			<File
+				RelativePath="..\Include\SimData\Verify.h">
 			</File>
 			<File
 				RelativePath="..\Include\SimData\Version.h">

@@ -119,7 +119,7 @@ SIMDATA_SUBEXCEPTION(EnumTypeError, EnumError);
  * You should never create an instance of this class directly;
  * use Enumeration instead.
  */
-class EnumerationCore: public Referenced {
+class SIMDATA_EXPORT EnumerationCore: public Referenced {
 friend class Enumeration;
 	typedef std::pair<std::string, int> Element;
 	typedef std::vector<Element> Elements;

@@ -127,12 +127,12 @@ LogStream *_makeDefaultLog() {
 }
 
 // not really the right place for this, but convenient.
-void _log_reference_count_error(int count, int pointer) {
+void SIMDATA_EXPORT _log_reference_count_error(int count, int pointer) {
 	SIMDATA_LOG(LOG_ALL, LOG_ERROR, "simdata::ReferencedBase(" << std::hex << pointer << ") deleted with non-zero reference count (" << count << "): memory corruption possible.");
 }
 
 // not really the right place for this, but convenient.
-void _log_reference_conversion_error() {
+void SIMDATA_EXPORT _log_reference_conversion_error() {
 	SIMDATA_LOG(LOG_ALL, LOG_ERROR, "simdata::Ref() assignment: incompatible types (dynamic cast failed).");
 }
 

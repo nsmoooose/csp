@@ -51,7 +51,7 @@ int ServerNode::run()
       ObjectUpdateMessagePayload * ptrPayload = (ObjectUpdateMessagePayload*)message->getPayloadPtr();
       ptrPayload->dumpOffsets();
       printf("ID: %u\n", ptrPayload->id);
-	  printf("TimeStamp: %u\n", ptrPayload->timeStamp);
+	  printf("TimeStamp: %f\n", ptrPayload->timeStamp);
 	  printf("PositionX: %f, PositionY: %f, PositionZ: %f\n", 
 			ptrPayload->globalPosition.x,
 			ptrPayload->globalPosition.y,

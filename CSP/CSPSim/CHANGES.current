@@ -10,6 +10,8 @@
 
   * Add DispatchCenter.cpp to the build.
 
+  * Reformatted some of the network code; fixed several gcc warnings.
+
 2004-07-01: delta
   * CameraKinematics now uses spherical coordinates terminology
     (theta,phi,radius).

@@ -31,55 +31,52 @@ RedirectServerNode::RedirectServerNode()
 
 int RedirectServerNode::run()
 {
-  int count = 0;
-  
-  int level = g_Config.getInt("Debug", "LoggingLevel", 0, true);
-  csplog().setLogCategory(CSP_ALL);
-  csplog().setLogPriority(level);
-  csplog().setOutput("RedirectServerNode.log");
-  
-  printf("Network test redirect server starting up...\n");
-  
-  Port remotePort = g_Config.getInt("Networking", "LocalMessagePort", 10000, true);
-  std::string remoteHost = g_Config.getString("Networking", "LocalMessageHost", "127.0.0.1", true);
+	int level = g_Config.getInt("Debug", "LoggingLevel", 0, true);
+	csplog().setLogCategory(CSP_ALL);
+	csplog().setLogPriority(level);
+	csplog().setOutput("RedirectServerNode.log");
 
-  Port localPort = (Port)g_Config.getInt("Networking", "RemoteMessagePort", 0, true);
-  std::string localHost = g_Config.getString("Networking", "RemoteMessageHost", "127.0.0.1", true);
-  
-  NetworkNode * remoteNode = new NetworkNode(remoteHost.c_str(), remotePort );
-  NetworkNode * localNode =  new NetworkNode(localHost.c_str(), localPort);
-  
-  NetworkMessenger * networkMessenger = new NetworkMessenger(localNode);
-  PrintMessageHandler * printMessageHandler = new PrintMessageHandler();
-  printMessageHandler->setFrequency(1);
-  networkMessenger->registerMessageHandler(printMessageHandler);
+	printf("Network test redirect server starting up...\n");
 
-  EchoMessageHandler * echoMessageHandler = new EchoMessageHandler();
-  echoMessageHandler->setMessenger(networkMessenger);
-  networkMessenger->registerMessageHandler(echoMessageHandler);
-  
-  //MessageSocketDuplex * socketDuplex = new MessageSocketDuplex(localPort);
-  NetworkMessage * message=NULL;
-  
-  while(1)
-  {
-    networkMessenger->receiveMessages();
-    int count = networkMessenger->getSendQueueCount();
-    printf("SendQueueCount: %d\n", count);
-    networkMessenger->sendQueuedMessages();
+	//Port remotePort = g_Config.getInt("Networking", "LocalMessagePort", 10000, true);
+	std::string remoteHost = g_Config.getString("Networking", "LocalMessageHost", "127.0.0.1", true);
 
-    simdata::tstart();
+	Port localPort = (Port)g_Config.getInt("Networking", "RemoteMessagePort", 0, true);
+	std::string localHost = g_Config.getString("Networking", "RemoteMessageHost", "127.0.0.1", true);
 
-    simdata::tend();
-    double etime;
-    etime = simdata::tval();
-    while((etime = simdata::tval()) < 3.0 ) {
-      simdata::tend();
-    }
-    
-  }
- 
-  return 0;
+	//NetworkNode * remoteNode = new NetworkNode(remoteHost.c_str(), remotePort );
+	NetworkNode * localNode =  new NetworkNode(localHost.c_str(), localPort);
+
+	NetworkMessenger * networkMessenger = new NetworkMessenger(localNode);
+	PrintMessageHandler * printMessageHandler = new PrintMessageHandler();
+	printMessageHandler->setFrequency(1);
+	networkMessenger->registerMessageHandler(printMessageHandler);
+
+	EchoMessageHandler * echoMessageHandler = new EchoMessageHandler();
+	echoMessageHandler->setMessenger(networkMessenger);
+	networkMessenger->registerMessageHandler(echoMessageHandler);
+
+	//MessageSocketDuplex * socketDuplex = new MessageSocketDuplex(localPort);
+	//NetworkMessage * message=NULL;
+
+	while (1) {
+		networkMessenger->receiveMessages();
+		int count = networkMessenger->getSendQueueCount();
+		printf("SendQueueCount: %d\n", count);
+		networkMessenger->sendQueuedMessages();
+
+		simdata::tstart();
+
+		simdata::tend();
+		double etime;
+		etime = simdata::tval();
+		while((etime = simdata::tval()) < 3.0 ) {
+			simdata::tend();
+		}
+
+	}
+
+	return 0;
 }
 
 

@@ -24,13 +24,13 @@ void DispatchMessageHandler::process(NetworkMessage * message)
   unsigned short port = node->getPort();
   if (isLocal(addr, port))
 	  return;
-  simdata::uint16 messageType = message->getType();
+  //simdata::uint16 messageType = message->getType();
 
   void * ptr = message->getPayloadPtr();
   ObjectUpdateMessagePayload * messagePayload = (ObjectUpdateMessagePayload*)ptr;
 
   unsigned int objectID = messagePayload->id;
-  unsigned int objectType = messagePayload->id;
+  //unsigned int objectType = messagePayload->id;
   RemoteObjectKey key(addr, port, objectID);
 
   simdata::Ref<DynamicObject> obj = m_RemoteObjectTable.getRemoteObject( key );

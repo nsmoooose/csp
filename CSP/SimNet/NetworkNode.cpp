@@ -74,16 +74,8 @@ ost::InetHostAddress const &NetworkNode::getAddress() const {
 	return m_addr;
 }
 
-ost::tpport_t NetworkNode::getPort() const {
-	return m_port;
-}
-
 const char * NetworkNode::getHostname() const {
 	return m_addr.getHostname();
-}
-
-simdata::uint32 NetworkNode::getIp() const {
-	return m_addr.getAddress().s_addr;
 }
 
 std::string NetworkNode::ipToString(simdata::uint32 addr) {

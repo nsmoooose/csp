@@ -100,7 +100,7 @@ public:
 
 	/** Get the host receive port.
 	 */
-	ost::tpport_t getPort() const;
+	inline ost::tpport_t getPort() const { return m_port; }
 
 	/** Get the host ip address.
 	 */
@@ -109,23 +109,38 @@ public:
 	/** Convert ip address and port to a ConnectionPoint.
 	 */
 	inline ConnectionPoint getConnectionPoint() const {
-		return ConnectionPoint(m_addr.getAddress().s_addr, m_port);
+		return ConnectionPoint(getIp(), getPort());
 	}
 
 	/** Get the ip address as a 32-bit int, in network byte-order.
 	 */
-	simdata::uint32 getIp() const;
+	inline simdata::uint32 getIp() const {
+		return m_addr.getAddress().s_addr;
+	}
 
 	/** Get the host name.
 	 */
 	const char * getHostname() const;
 
-	/** Test if an ip address is unroutable (10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16).
+	/** Get ip address as a dotted-quad string.
+	 */
+	inline std::string getIpString() const {
+		return ipToString(getIp());
+	}
+
+	/** Return true if this ip is routable (ie, not 127.0.0.0/8, 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16).
+	 */
+	inline bool isRoutable() const {
+		return isRoutable(getIp());
+	}
+
+	/** Test if an ip address is routable (ie, not 127.0.0.0/8, 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16).
 	 *  @param addr 32-bit ipv4 address in network byte-order.
 	 */
 	static bool isRoutable(simdata::uint32 addr) {
 		return ((addr & 0xffff) != 43200) &&  // 192.168.  0.  0 - 192.168.255.255
 		       ((addr & 0x00ff) !=    10) &&  //  10.  0.  0.  0 -  10.255.255.255
+		       ((addr & 0x00ff) !=   127) &&  // 127.  0.  0.  0 - 127.255.255.255
 		       ((addr & 0xf0ff) !=  4268);    // 172. 16.  0.  0 - 172. 31.255.255
 	}
 
@@ -135,6 +150,14 @@ public:
 	static std::string ipToString(simdata::uint32 addr);
 };
 
+
+inline std::ostream &operator<<(std::ostream &os, NetworkNode const &node) {
+	return os << node.getIpString() << ':' << node.getPort() << " (" << node.getHostname() << ")";
+}
+
+inline std::ostream &operator<<(std::ostream &os, ConnectionPoint const &point) {
+	return os << NetworkNode(point);
+}
 
 } // namespace simnet
 

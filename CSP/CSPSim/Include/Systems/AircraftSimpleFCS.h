@@ -65,7 +65,7 @@ class AircraftSimpleFCS: public System {
 		}
 		// experiment a poor flatting function
 		virtual double flat(double x) const {
-			double abs_x = abs(x);
+			double abs_x = std::abs(x);
 			double scale = x*x*(3.0 - 2.0*abs_x);
 			return scale * x;
 		}

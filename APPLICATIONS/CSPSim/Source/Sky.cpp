@@ -32,6 +32,7 @@
 #include "CSPSim.h"
 #include "Config.h"
 #include "Colorspace.h"
+#include "Exception.h"
 
 #include <cmath>
 
@@ -541,7 +542,7 @@ Moon::Moon(): AstronomicalBody() {
 	float x, y;
 	x = y = 1.0; 
 	m_Image = osgDB::readImageFile("moon.png");
-	assert(m_Image.valid());
+	if (!m_Image.valid()) throw csp::DataError("unable to open \"moon.png\"");
 
 	// set up the texture.
 	m_Texture = new osg::Texture2D;

@@ -1,6 +1,16 @@
 Version 0.3.1 (in progress)
 ===========================
 
+2003-04-12: onsight
+            Added Exception.h and Exception.cpp to provide exception
+	    classes and error messages.  (Requires latest SimData CVS)
+
+	    Try/catch blocks in CSPSim::Init now display semi-informative
+	    messages (more work to be done).  Only one throw() so far in
+	    Sky.cpp for missing moon.png (fairly common at the moment!)
+
+*********** VC USERS: please add Exception.cpp to the VC project files
+
 2003-04-11: delta
 	    update .net projects.
 

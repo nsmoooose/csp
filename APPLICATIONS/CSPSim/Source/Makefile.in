@@ -32,6 +32,7 @@ SOURCES = \
 	DynamicalSystem.cpp \
 	EventMapIndex.cpp \
 	EventMapping.cpp \
+	Exception.cpp \
 	F16Model.cpp \
 	GameScreen.cpp \
 	HID.cpp \

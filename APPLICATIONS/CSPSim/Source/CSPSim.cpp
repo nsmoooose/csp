@@ -39,6 +39,7 @@
 #include "Config.h"      
 #include "CSPSim.h"
 #include "EventMapIndex.h"
+#include "Exception.h"
 #include "GameScreen.h"
 #include "HID.h"
 #include "MenuScreen.h"
@@ -282,17 +283,17 @@ void CSPSim::init()
 		changeScreen(m_GameScreen);
 		logoScreen.OnExit();
 	}
-	catch(DemeterException * pEx) {
-		CSP_LOG(CSP_APP, CSP_ERROR, "CSPSim: caught Demeter exception during initialazation: " << pEx->GetErrorMessage());
-		::exit(1);
+	catch(csp::Exception & pEx) {
+		csp::FatalException(pEx, "initialization");
 	}
-	catch(simdata::Exception * pEx) {
-		CSP_LOG(CSP_APP, CSP_ERROR, "CSPSim: caught SimData exception during initialization: " << pEx->getMessage());
-		::exit(1);
+	catch(DemeterException & pEx) {
+		csp::DemeterFatalException(pEx, "initialization");
+	}
+	catch(simdata::Exception & pEx) {
+		csp::SimDataFatalException(pEx, "initialization");
 	}
 	catch (...) {
-		CSP_LOG(CSP_APP, CSP_ERROR, "CSPSim: caught unknown exception during initialazation.");
-		::exit(1);
+		csp::OtherFatalException("initialization");
 	}
 }
 

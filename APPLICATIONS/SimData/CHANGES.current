@@ -7,6 +7,10 @@ Version 0.3.1 (in progress)
 	    the identifiers are unique when the headers are used in
 	    another project.
 
+	    Moved Exception to ExceptionBase for use in other projects
+	    and added an Exception subclass to serve as the base class
+	    for all SimData exceptions.
+
 2003-04-11: onsight
             Updated setup.py to install FileUtility.h.
 

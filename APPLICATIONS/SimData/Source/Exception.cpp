@@ -25,41 +25,41 @@
 NAMESPACE_SIMDATA
 
 
-Exception::Exception(std::string type, std::string msg) {
+ExceptionBase::ExceptionBase(std::string const &type, std::string const &msg) {
 	 //: std::runtime_error(type+": "+msg) {
 	_type = type;
 	_msg = msg;
 	dump = true;
 }
 
-Exception::Exception(Exception const &e) {
+ExceptionBase::ExceptionBase(ExceptionBase const &e) {
 	_type = e._type;
 	_msg = e._msg;
 	dump = e.dump;
 	e.dump = false;
 }
 
-std::string Exception::getMessage() { 
+std::string ExceptionBase::getMessage() { 
 	return _msg; 
 }
 
-std::string Exception::getType() { 
+std::string ExceptionBase::getType() { 
 	return _type; 
 }
 
-void Exception::appendMessage(std::string const &msg) { 
+void ExceptionBase::appendMessage(std::string const &msg) { 
 	_msg += "\n" + msg;
 }
 
-void Exception::clear() { 
+void ExceptionBase::clear() { 
 	dump = false; 
 }
 
-void Exception::details() {
+void ExceptionBase::details() {
 	std::cerr << _type << ": " << _msg << std::endl;
 }
 
-Exception::~Exception() {
+ExceptionBase::~ExceptionBase() {
 	if (dump) details();
 }
 

@@ -37,11 +37,11 @@ NAMESPACE_SIMDATA
 
 
 /**
- * Base class for all SimData expections.
+ * General expection base class with error reporting.
  *
  * @author Mark Rose <mrose@stm.lbl.gov>
  */
-class SIMDATA_EXPORT Exception { //: public std::runtime_error {
+class SIMDATA_EXPORT ExceptionBase { //: public std::runtime_error {
 	std::string _msg;
 	std::string _type;
 	mutable bool dump;
@@ -52,12 +52,12 @@ public:
 	 * @param type a string representing the type of error.
 	 * @param msg a string providing additional information about the error.
 	 */
-	Exception(std::string type="Exception", std::string msg="");
+	ExceptionBase(std::string const &type="Exception", std::string const &msg="");
 
 	/**
 	 * Copy constructor.
 	 */
-	Exception(Exception const &e);
+	ExceptionBase(ExceptionBase const &e);
 
 	/**
 	 * Destructor.
@@ -65,7 +65,7 @@ public:
 	 * If the exception has not cleared, it will display its
 	 * details to stderr on destruction.
 	 */
-	virtual ~Exception();
+	virtual ~ExceptionBase();
 
 	/**
 	 * Get the string describing the error.
@@ -92,6 +92,15 @@ public:
 	 * Dump information about the exception to stderr.
 	 */
 	void details();
+};
+
+/**
+ * Base class for all SimData specific exceptions.
+ */
+class Exception: public ExceptionBase {
+public:
+	Exception(std::string const &type="Exception", std::string const &msg=""): 
+		ExceptionBase(type, msg) { }
 };
 
 #define SIMDATA_EXCEPTION(a)	\

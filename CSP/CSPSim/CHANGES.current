@@ -9,6 +9,9 @@
     rather than alongside the source files.  Other small makefile
     cleanups.
 
+  * Moved ObjectRangeInfo to old/ and removed it from the build (both
+    Makefile and vcproj/dsp).
+
 2004-08-06: onsight
   * Fixed a pseudo-bug in demeter, which caused terrain height anomalies
     at the edges of flat and rough terrain blocks.  Essentially, when a

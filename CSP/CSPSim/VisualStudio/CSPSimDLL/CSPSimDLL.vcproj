@@ -305,9 +305,6 @@
 				RelativePath="..\..\Source\ObjectModel.cpp">
 			</File>
 			<File
-				RelativePath="..\..\Source\ObjectRangeInfo.cpp">
-			</File>
-			<File
 				RelativePath="..\..\Source\PhysicsModel.cpp">
 			</File>
 			<File
@@ -775,9 +772,6 @@
 			</File>
 			<File
 				RelativePath="..\..\Include\ObjectModel.h">
-			</File>
-			<File
-				RelativePath="..\..\Include\ObjectRangeInfo.h">
 			</File>
 			<File
 				RelativePath="..\..\Include\PhysicsModel.h">

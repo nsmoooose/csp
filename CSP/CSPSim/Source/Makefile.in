@@ -82,7 +82,6 @@ SOURCES = \
 	SimNet/DispatchMessageHandler.cpp \
 	NumericalMethod.cpp \
 	ObjectModel.cpp \
-	ObjectRangeInfo.cpp \
 	PhysicsModel.cpp \
 	RedirectServerNode.cpp \
 	ScreenInfo.cpp \

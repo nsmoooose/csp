@@ -188,10 +188,6 @@ SOURCE=..\..\Source\ObjectModel.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\Source\ObjectRangeInfo.cpp
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\Source\Platform.cpp
 # End Source File
 # Begin Source File
@@ -337,10 +333,6 @@ SOURCE=..\..\Include\Message.h
 # Begin Source File
 
 SOURCE=..\..\Include\ObjectModel.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\Include\ObjectRangeInfo.h
 # End Source File
 # Begin Source File
 

@@ -6,6 +6,9 @@ Version 0.4.0 (in progress)
 
   * Added ThreadLog.h to setup.py
 
+  * Clean up base class construction of ThreadLog, removing suspect
+    references to 'this' in ctor initializer list.
+
 2004-06-26: onsight
   * Remove superflous logging in interface registry, and suppress
     swig warnings.

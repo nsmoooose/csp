@@ -52,16 +52,15 @@ class SIMDATA_EXPORT StringBuf: public NonCopyable, public std::streambuf
 	int m_priority;
 	const char *m_file;
 	int m_line;
+	LogStream &m_log;
 
 	void init() {
 		m_buffer.reserve(1024);
 	}
 
-protected:
-
-	// accessed directly by ThreadLog
-	LogStream &m_log;
 	typedef ScopedLock<LogStream> ScopedLogLock;
+
+public:
 
 	/** Default constructor, connects to the global simdata log.
 	 */
@@ -74,6 +73,21 @@ protected:
 	StringBuf(LogStream &base): m_category(LOG_ALL), m_priority(LOG_INFO), m_log(base) {
 		init();
 	}
+
+	/** Cache the log entry parameters.
+	 */
+	inline void setPrefix(int priority, int category, const char *file, int line) {
+		m_priority = priority;
+		m_category = category;
+		m_file = file;
+		m_line = line;
+	}
+
+	/** Retrieve the associated LogStream.
+	 */
+	inline LogStream &getLogStream() const { return m_log; }
+
+protected:
 
 	/** Overflow (cache characters internally)
 	 */
@@ -93,15 +107,28 @@ protected:
 		return 1;
 	}
 
-	/** Cache the log entry parameters.
-	 */
-	inline void setPrefix(int priority, int category, const char *file, int line) {
-		m_priority = priority;
-		m_category = category;
-		m_file = file;
-		m_line = line;
-	}
 
+};
+
+/** A helper class for ThreadLog construction.
+ *
+ *  A helper class that ensures a streambuf and ostream are constructed and
+ *  destroyed in the correct order.  The streambuf must be created before the
+ *  ostream but bases are constructed before members.  Thus, making this class
+ *  a private base of ThreadLog, declared to the left of ostream, we ensure the
+ *  correct order of construction and destruction.
+ */
+struct SIMDATA_EXPORT ThreadLogBase: public NonCopyable
+{
+protected:
+	ThreadLogBase(): m_stringbuf() {}
+	ThreadLogBase(LogStream &base): m_stringbuf(base) {}
+
+	virtual ~ThreadLogBase() { }
+
+	inline LogStream &getLogStream() const { return m_stringbuf.getLogStream(); }
+
+	StringBuf m_stringbuf;
 };
 
 
@@ -111,78 +138,80 @@ protected:
  *  ThreadLog instances instead of the global LogStream whenever threading
  *  is enabled.
  */
-class SIMDATA_EXPORT ThreadLog: private StringBuf, protected std::ostream
+class SIMDATA_EXPORT ThreadLog: private ThreadLogBase, protected std::ostream
 {
+	typedef ScopedLock<LogStream> ScopedLogLock;
+
 public:
 	/** Default constructor, connects to the global simdata log.
 	 */
-	ThreadLog(): std::ostream(this) {}
+	ThreadLog(): ThreadLogBase(), std::ostream(&m_stringbuf) {}
 
 	/** Constructor, connects to the specified LogStream
 	 */
-	ThreadLog(LogStream &base): StringBuf(base), std::ostream(this) {}
+	ThreadLog(LogStream &base): ThreadLogBase(base), std::ostream(&m_stringbuf) {}
 
 	/** Close the underlying (shared) LogStream.
 	 */
 	void _close() {
-		ScopedLogLock lock(m_log);
-		m_log._close();
+		ScopedLogLock lock(getLogStream());
+		getLogStream()._close();
 	}
 
 	/** Set the output stream used by the underlying (shared) LogStream.
 	 */
 	void setOutput(std::ostream& out_) {
-		ScopedLogLock lock(m_log);
-		m_log.setOutput(out_);
+		ScopedLogLock lock(getLogStream());
+		getLogStream().setOutput(out_);
 	}
 
 	/** Set the output file used by the underlying (shared) LogStream.
 	 */
 	void setOutput(std::string const &filename) {
-		ScopedLogLock lock(m_log);
-		m_log.setOutput(filename);
+		ScopedLogLock lock(getLogStream());
+		getLogStream().setOutput(filename);
 	}
 
 	/** Set the logging priority threshold of the underlying (shared) LogStream.
 	 */
 	void setLogPriority(int p) {
-		ScopedLogLock lock(m_log);
-		m_log.setLogPriority(p);
+		ScopedLogLock lock(getLogStream());
+		getLogStream().setLogPriority(p);
 	}
 
 	/** Set the logging category mask of the underlying (shared) LogStream.
 	 */
 	void setLogCategory(int c) {
-		ScopedLogLock lock(m_log);
-		m_log.setLogCategory(c);
+		ScopedLogLock lock(getLogStream());
+		getLogStream().setLogCategory(c);
 	}
 
 	/** Enable or disable point logging (source file and line number) by the
 	 *  underlying (shared) LogStream.
 	 */
 	void setPointLogging(bool enabled) {
-		ScopedLogLock lock(m_log);
-		m_log.setPointLogging(enabled);
+		ScopedLogLock lock(getLogStream());
+		getLogStream().setPointLogging(enabled);
 	}
 
 	/** Get the point logging state of the underlying (shared) LogStream.
 	 */
 	bool getPointLogging() const {
-		return m_log.getPointLogging();
+		return getLogStream().getPointLogging();
 	}
 
 	/** Enable or disable time stamping of log entries written to the
 	 *  underlying (shared) LogStream.
 	 */
 	void setTimeLogging(bool enabled) {
-		ScopedLogLock lock(m_log);
-		m_log.setTimeLogging(enabled);
+		ScopedLogLock lock(getLogStream());
+		getLogStream().setTimeLogging(enabled);
 	}
 
 	/** Get the time logging state of the underlying (shared) LogStream.
 	 */
 	bool getTimeLogging() const {
-		return m_log.getTimeLogging();
+		return getLogStream().getTimeLogging();
 	}
 
 	/** Method for logging a message to the underlying (shared) LogStream.
@@ -194,7 +223,7 @@ public:
 	 *  @return an output stream to receive the message contents.
 	 */
 	std::ostream & entry(int priority, int category=LOG_ALL, const char *file=0, int line=0) {
-		setPrefix(priority, category, file, line);
+		m_stringbuf.setPrefix(priority, category, file, line);
 		return *this;
 	}
 

@@ -1,7 +1,7 @@
 // Demeter Terrain Visualization Library by Clay Fowler
 // Copyright (C) 2002 Clay Fowler
 
-// $Id: Terrain.h,v 1.5 2003/04/10 01:32:17 mkrose Exp $
+// $Id: Terrain.h,v 1.6 2003/04/18 11:10:01 mkrose Exp $
 
 /*
 This library is free software; you can redistribute it and/or
@@ -68,6 +68,8 @@ typedef signed int      Sint32;
 #include <math.h>
 #include <stdio.h>
 #include <vector>
+
+#include <osg/Referenced>
 
 //#include "mmgr.h"
 
@@ -273,7 +275,7 @@ namespace Demeter
     };
  
     /// This class represents a single, contiguous chunk of terrain and is the primary public interface to Demeter. Most applications will create a single instance of this class to represent the terrain in the application, but multiple instances can be used to stitch together a very large world comprised of multiple terrains using the TerrainLattice class.
-    class TERRAIN_API Terrain
+    class TERRAIN_API Terrain: public osg::Referenced
     {
     public:
                     /// Constructs a new terrain from image files representing grayscale elevation and texture data. 
@@ -370,14 +372,10 @@ namespace Demeter
         void            SetTextureSet(TextureSet* pTextureSet);
         void            SetTextureCell(int index,TextureCell* pCell);
         enum            DIRECTION {DIR_NORTH = 0,DIR_NORTHEAST = 1,DIR_EAST = 2,DIR_SOUTHEAST = 3,DIR_SOUTH = 4,DIR_SOUTHWEST = 5,DIR_WEST = 6,DIR_NORTHWEST = 7,DIR_CENTER = 8,DIR_INVALID = 9};
-                    /// Increment the reference count by one, indicating that this object has another pointer which is referencing it.
 
 		int             GetTerrainPolygonsRendered();
         
 		
-		inline void     ref() const { ++m_refCount; }
-                    /// Decrement the reference count by one, indicating that a pointer to this object is referencing it. If the reference count goes to zero, it is assumed that this object is no longer referenced and is automatically deleted.
-        inline void     unref() const { --m_refCount; if (m_refCount<=0) delete this; }
     private:
         void            Init(const Uint8* pTextureImage,int textureWidth,int textureHeight,const Uint8* pDetailTextureImage,int detailWidth,int detailHeight,bool bUseBorders,float offsetX = 0.0f,float offsetY = 0.0f,int numTexturesX = 0,int numTexturesY = 0);
         void            UpdateNeighbor(Terrain* pTerrain,DIRECTION direction);
@@ -421,7 +419,6 @@ namespace Demeter
         float*          m_pTextureMain;
         float*          m_pTextureDetail;
 		Vector*			m_pNormals;
-        mutable int     m_refCount;
 #ifdef _WIN32
 		static vector<HGLRC> m_SharedContexts;
 #endif
@@ -635,7 +632,7 @@ namespace Demeter
         virtual void        TerrainUnloading(Terrain* pTerrain) = 0;
     };
 
-    class TERRAIN_API TerrainLattice
+    class TERRAIN_API TerrainLattice: public osg::Referenced
     {
     public:
                                         TerrainLattice(const char* szBaseName,const char* szExtensionElev,const char* szExtensionTex,const char* szDetailTextureName,float vertexSpacing,float elevationScale,int maxNumTriangles,bool bUseBorders,int widthTerrains,int heightTerrains);
@@ -661,11 +658,6 @@ namespace Demeter
 		int                             GetLatticePolygonsRendered();
 
         
-		/// Increment the reference count by one, indicating that this object has another pointer which is referencing it.
-        inline void     ref() const { ++m_refCount; }
-        /// Decrement the reference count by one, indicating that a pointer to this object is referencing it. If the reference count goes to zero, it is assumed that this object is no longer referenced and is automatically deleted.
-        inline void     unref() const { /*assert(m_refCount > 0);*/ if (m_refCount > 0) {--m_refCount; if (m_refCount==0 && this) delete this;} }
-
     private:
         vector<TerrainLoadListener*>    m_TerrainLoadListeners;
         Terrain::DIRECTION              GetOppositeDirection(Terrain::DIRECTION direction);
@@ -692,7 +684,6 @@ namespace Demeter
         int                             m_FactoryTilesWidth;
         int                             m_FactoryTilesHeight;
 		float                           m_fThreshold;
-        mutable int     m_refCount;
 
     };
 }

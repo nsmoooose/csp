@@ -1,6 +1,19 @@
 DemeterCSP release change log.  See CHANGES.current for the latest updates
 to CVS.
 
+Version 0.3.1 (2003-04-18)
+===========================
+
+2003-04-06: delta
+	    Committed .net project
+
+2003-03-14: onsight
+            First log entry: this is the format.
+
+2003-03-15: onsight
+            Changed configure.in to require autoconf 2.57
+
+
 Version 0.3.0 (2003-03-14)
 ===========================
 2003-03-14: onsight

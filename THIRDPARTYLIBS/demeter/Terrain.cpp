@@ -30,6 +30,8 @@ Boston, MA  02111-1307, USA.
 
 #include "assert.h"
 
+#define DETAIL_TEXTURE_SIZE 512 
+
 #ifdef _WIN32 
 #include "io.h"
 #else
@@ -640,7 +642,6 @@ void TerrainBlock::CalculateGeometry(Terrain* pTerrain)
 
 Terrain::Terrain(int widthVertices,int heightVertices,float vertexSpacing,int maxNumTriangles,bool bUseBorders)
 {
-    m_refCount = 0;
     m_pCommonTexture = NULL;
     m_pTriangleStrips = NULL;
     m_pTriangleFans = NULL;
@@ -670,7 +671,6 @@ Terrain::Terrain(int widthVertices,int heightVertices,float vertexSpacing,int ma
 
 Terrain::Terrain(const float* pElevations,int elevWidth,int elevHeight,const Uint8* pTextureImage,int textureWidth,int textureHeight,const Uint8* pDetailTextureImage,int detailWidth,int detailHeight,float vertexSpacing,float elevationScale,int maxNumTriangles,bool bUseBorders,float offsetX,float offsetY,int numTexturesX,int numTexturesY)
 {
-    m_refCount = 0;
     m_pCommonTexture = NULL;
     m_pTriangleStrips = NULL;
     m_pTriangleFans = NULL;
@@ -695,7 +695,6 @@ Terrain::Terrain(const float* pElevations,int elevWidth,int elevHeight,const Uin
 
 Terrain::Terrain(const char* szElevationsFilename,const char* szTextureFilename,const char* szDetailTextureFilename,float vertexSpacing,float elevationScale,int maxNumTriangles,bool bUseBorders,float offsetX,float offsetY,int numTexturesX,int numTexturesY)
 {
-    m_refCount = 0;
     m_pCommonTexture = NULL;
     m_pTriangleStrips = NULL;
     m_pTriangleFans = NULL;
@@ -1021,6 +1020,8 @@ void Terrain::SetAllElevations(const float* pElevations,int elevWidth,int elevHe
 			float vertexX,vertexY;
 			vertexX = indexX * m_VertexSpacing;
 			vertexY = indexY * m_VertexSpacing;
+#define NOSLOWNORMAL
+#ifdef SLOWNORMAL
 			/*
 			// This average over 8 nearby normals is extremely slow compared
 			// to all the other terrain loading code.  First, the offset vector
@@ -1034,6 +1035,7 @@ void Terrain::SetAllElevations(const float* pElevations,int elevWidth,int elevHe
 			// tiles, this should be done in a separate computation that only
 			// operates on vertices near the edges of the terrain tiles.
 			// -MR
+			*/
 			Vector avgNormal;
 			avgNormal.x = avgNormal.y = avgNormal.z = 0.0f;
 			for (float theta = -0.5f * delta; theta < (M_PI * 2.0f); theta+=delta)
@@ -1054,12 +1056,13 @@ void Terrain::SetAllElevations(const float* pElevations,int elevWidth,int elevHe
 			m_pNormals[i].x = avgNormal.x / 8.0f;
 			m_pNormals[i].y = avgNormal.y / 8.0f;
 			m_pNormals[i].z = avgNormal.z / 8.0f;
-			*/
+#else
 			float nx, ny, nz;
 			GetNormal(vertexX+0.2,vertexY+0.8,nx,ny,nz);
 			m_pNormals[i].x = nx;
 			m_pNormals[i].y = ny;
 			m_pNormals[i].z = nz;
+#endif
 		}
 	}
 }
@@ -3127,6 +3130,7 @@ TerrainLattice::TerrainLattice(const char* szBaseName,const char* szExtensionEle
 
 TerrainLattice::~TerrainLattice()
 {
+	cout << "~TerrainLattice()\n";
 	if (Settings::GetInstance()->IsVerbose())
 	{
 		m_Logfile << "Removing TerrainLattice" << std::endl;
@@ -3802,11 +3806,12 @@ DetailTexture::DetailTexture(Texture* pTexture)
     m_pTexture = NULL;
     if (pTexture)
     {
-        Uint8* pBuffer = new Uint8[256*256*4];
-        memset(pBuffer,255,256*256*4);
-        for (int i = 3; i < 256*256*4; i += 4)
+    	int bytes = DETAIL_TEXTURE_SIZE*DETAIL_TEXTURE_SIZE*4;
+        Uint8* pBuffer = new Uint8[bytes];
+        memset(pBuffer,255,bytes);
+        for (int i = 3; i < bytes; i += 4)
             pBuffer[i] = 0;
-        Texture* pMask = new Texture(pBuffer,256,256,256,0,true,false,true);
+        Texture* pMask = new Texture(pBuffer,DETAIL_TEXTURE_SIZE,DETAIL_TEXTURE_SIZE,DETAIL_TEXTURE_SIZE,0,true,false,true);
         delete[] pBuffer;
         DetailTexture* pDetail = new DetailTexture;
         SetMask(pMask);

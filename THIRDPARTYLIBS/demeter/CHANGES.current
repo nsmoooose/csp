@@ -1,12 +1,19 @@
-Version 0.3.1 (in progress)
+Version 0.3.2 (in progress)
 ===========================
 
-2003-04-06: delta
-	    Committed .net project
+2003-04-18: onsight
+            Changed Terrain and TerrainLattice to inherit from 
+	    osg::Referenced instead of just implementing compatible
+	    reference counting methods.
 
-2003-03-14: onsight
-            First log entry: this is the format.
-
-2003-03-15: onsight
-            Changed configure.in to require autoconf 2.57
+	    Added DETAIL_TEXTURE_SIZE #define so that larger detail
+	    textures can be used.  The original value was 256, but
+	    512 works fine and so should larger sizes (although I
+	    haven't tested these).  Ideally the size would be
+	    determined at runtime from the actual texture image, but
+	    this was the simplest approach for now.  Note that
+	    Demeter will crash if the texture size exceeds the value
+	    of DETAIL_TEXTURE_SIZE.  Textures that are smaller than
+	    DETAIL_TEXTURE_SIZE do not seem to cause a problem.  The
+	    default setting is now 512.
 

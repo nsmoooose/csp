@@ -33,13 +33,18 @@
 
 #include <sys/types.h>
 #include <list>
+#include <map>
 
 #include <SimData/Vector3.h>
 #include <SimData/String.h>
 #include <SimData/Uniform.h>
 #include <SimData/Quat.h>
+#include <SimData/DataManager.h>
 #include <SimData/Date.h>
 #include <stdio.h>
+
+#include "DynamicObject.h"
+#include "VirtualBattlefield.h"
 
 typedef int SockFd;
 typedef simdata::uint16 Port;
@@ -267,6 +272,39 @@ class MessageSocketDuplex
 
 };
 
+class DynamicObject;
+
+class RemoteObjectWrapper 
+{
+  public:
+   RemoteObjectWrapper(simdata::Ref<DynamicObject> & object) { m_Object = object; }
+   NetworkNode * getObjectHost() { return m_Host; }
+   simdata::Ref<DynamicObject> getWrappedObject() { return m_Object; }
+  private:
+   simdata::Ref<DynamicObject> m_Object;
+   NetworkNode   * m_Host;
+	 
+
+};
+
+class RemoteObjectTable
+{
+  public:
+  RemoteObjectWrapper * getRemoteObject(int ipaddr, short port, int id)
+  {
+    return m_table[ipaddr][port][id];
+  }
+
+  void putRemoteObject(int ipaddr, short port, int id, RemoteObjectWrapper * object)
+  {
+    m_table[ipaddr][port][id] = object;
+  }
+
+  private:
+    std::map< int , std::map < short, std::map < short, RemoteObjectWrapper * > > > m_table;
+
+};
+
 class NetworkMessageHandler;
 
 class NetworkMessenger
@@ -283,7 +321,7 @@ class NetworkMessenger
     int m_messageReceiveArrayGrow;
     NetworkNode * m_originatorNode;
     std::list<NetworkMessage*> m_messagePool;
-    NetworkMessageHandler * m_ReceiveHandler;
+    std::list<NetworkMessageHandler *> m_ReceiveHandlerList;
       
     ost::UDPSocket * m_UDPReceiverSocket;
     ost::UDPSocket * m_UDPSenderSocket;	
@@ -335,7 +373,9 @@ class EchoMessageHandler : public NetworkMessageHandler
 {
 
 	public: 
+		EchoMessageHandler();
 		virtual void process(NetworkMessage * message, NetworkMessenger * messenger);
+		virtual ~EchoMessageHandler();
 	
 };
 
@@ -345,11 +385,37 @@ class PrintMessageHandler : public NetworkMessageHandler
 		int m_frequency;
 		int m_count;
 	public:
-		PrintMessageHandler() { m_frequency = 1; m_count = 0;}
+		PrintMessageHandler(); 
 		virtual void process(NetworkMessage * message, NetworkMessenger * messenger);
+		virtual ~PrintMessageHandler();
 
 		void setFrequency(int frequency) { m_frequency = frequency; }
 		int getFrequency() { return m_frequency; }
+};
+
+class DispatchMessageHandler : public NetworkMessageHandler
+{
+  public:
+    DispatchMessageHandler();
+    virtual void process(NetworkMessage * message, NetworkMessenger * messenger);
+    virtual ~DispatchMessageHandler();
+    void setLocalAddress(unsigned int addr) { _addr = addr; }
+    void setLocalPort(unsigned short port) { _port = port; }
+    void setVirtualBattlefield(VirtualBattlefield * battlefield) { _virtualBattlefield = battlefield; }
+    void setDataManager(simdata::DataManager & dataManager) { _dataManager = dataManager; }
+    
+  protected:
+    bool isLocal(unsigned int addr, unsigned short port);
+    simdata::Ref<DynamicObject> addRemoteObject( NetworkMessage * message );
+    
+  private:
+	  
+    RemoteObjectTable m_RemoteObjectTable;
+    unsigned int _addr;
+    unsigned short _port; 
+    VirtualBattlefield * _virtualBattlefield;
+    simdata::DataManager _dataManager;
+
 };
 
 // not currently using these below

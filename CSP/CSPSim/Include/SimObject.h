@@ -111,6 +111,11 @@ protected:
 		m_ID = id; 
 	}
 
+	void setType(unsigned int type) {
+		assert(m_Type == 0);
+		m_Type = type;
+	}
+
 	/** Update callback. 
 	 *
 	 *  @param dt time since elapsed last call to onUpdate()
@@ -133,6 +138,7 @@ public:
 	/** Get the unique object id of this instance.
 	 */
 	unsigned int getID() const { return m_ID; }
+	unsigned int getType() const { return m_Type; }
 
 	/** Called before an object is added to the scene graph.
 	 *
@@ -161,7 +167,10 @@ public:
 protected:
 
 	unsigned int m_ID;
+	unsigned int m_Type;
 	unsigned int m_Flags;
+
+	static unsigned int localObjectInstance;
 };
 
 

@@ -3,7 +3,9 @@
 #include "ServerNode.h"
 #include <stdio.h>
 #include <stdlib.h>
+#ifndef WIN32
 #include <unistd.h>
+#endif
 
 ServerNode::ServerNode()
 {
@@ -27,7 +29,7 @@ int ServerNode::run()
     memset((void*)message.getPayloadPtr(), 0, 100);
     if (numreceived == 0)
     {
-	::sleep(5);
+//	::sleep(5);
     }
   }
  

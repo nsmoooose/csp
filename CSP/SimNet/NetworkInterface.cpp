@@ -46,6 +46,7 @@
 #endif
 #include <cc++/network.h>
 
+#include <string.h>
 #include <sys/types.h>
 #include <iostream>
 #include <map>
@@ -386,11 +387,11 @@ int NetworkInterface::receivePackets(double timeout) {
 	assert(m_Initialized);
 
 	simdata::uint8 *ptr;
-	PacketReceiptHeader header;
+	PacketReceiptHeader *header;
 
-	const uint32 allocation_size = MaxPayloadLength + HeaderSize;
-	char null[MaxPayloadLength + HeaderSize];
+	char buffer[MaxPayloadLength + ReceiptHeaderSize];
 	PacketQueue *queue;
+	header = reinterpret_cast<PacketReceiptHeader*>(buffer);
 
 	SIMNET_LOG(TIMING, DEBUG, "receive packets; " << (timeout * 1000.0) << " ms available");
 	int DEBUG_exitcode = 0;
@@ -407,101 +408,97 @@ int NetworkInterface::receivePackets(double timeout) {
 			break;
 		}
 
-		simdata::uint32 peek_bytes = m_Socket->peek(&header, ReceiptHeaderSize);
+		// we only need this for initial connections right now, but it must be
+		// retrieved before the packet data is read.
+		ost::InetHostAddress sender_addr = m_Socket->getSender(0);
+
+		simdata::uint32 packet_length = m_Socket->receive((void*)buffer, sizeof(buffer));
 
 		if (peek_bytes < HeaderSize) {
-			// bad packet, dump it to the bit bucket
-			m_Socket->receive((void*)null, sizeof(null));
 			m_BadPackets++;
 			continue;
 		}
 
-		if (header.destination != m_LocalId) {
-			SIMNET_LOG(PACKET, ALERT, "received bad packet (wrong destination): " << header);
-			m_Socket->receive((void*)null, sizeof(null));
+		if (header->destination != m_LocalId) {
+			SIMNET_LOG(PACKET, ALERT, "received bad packet (wrong destination): " << *header);
 			m_BadPackets++;
 			continue;
 		}
 
 		PeerInfo *peer = 0;
 
-		simdata::uint16 source = header.source;
+		simdata::uint16 source = header->source;
 
 		// for initial connection to the index server, source id will be zero.
 		// we need to create a new id on the fly and translate the source id until
 		// the sender is informed of the correct id to use.
 		// note: whenever source id is zero, routing_data will be set to the receive
 		// port number, and routing type will be zero
-		if (source == 0 && m_AllowUnknownPeers && header.routing_type == 0) {
-			ost::InetHostAddress addr = m_Socket->getSender(0);
-			simdata::uint32 ip = addr.getAddress().s_addr;
-			ConnectionPoint point(ip, header.routing_data);
+		if (source == 0 && m_AllowUnknownPeers && header->routing_type == 0) {
+			simdata::uint32 ip = sender_addr.getAddress().s_addr;
+			ConnectionPoint point(ip, header->routing_data);
 			source = getSourceId(point);
 		}
 
 		if (source > 0 && source < PeerIndexSize) peer = &(m_PeerIndex[source]);
 		if (!peer || !peer->isActive()) {
-			SIMNET_LOG(PACKET, ALERT, "received packet from unknown source: " << header);
-			m_Socket->receive((void*)null, sizeof(null));
+			SIMNET_LOG(PACKET, ALERT, "received packet from unknown source: " << *header);
 			m_BadPackets++;
 			continue;
 		}
-		peer->getConnStat(&header);
+		peer->getConnStat(header);
 
 		DEBUG_count++;
 
 		// handle reliable udp encoding
-		if (header.reliable) {
-			SIMNET_LOG(PACKET, DEBUG, "received a reliable header, pri " << header.priority << ", id0=" << header.id0);
+		if (header->reliable) {
+			SIMNET_LOG(PACKET, DEBUG, "received a reliable header, pri " << header->priority << ", id0=" << header->id0);
 			if (peek_bytes >= ReceiptHeaderSize) {
 				// if this packet is priority 3, it requires confirmation (id stored in id0)
 				// there may also be confirmation receipts in the remaining id slots
-				if (header.priority == 3) {
-					peer->pushConfirmation(header.id0);
+				if (header->priority == 3) {
+					peer->pushConfirmation(header->id0);
 				} else {
-					if (header.id0 != 0) peer->popConfirmation(header.id0);
+					if (header->id0 != 0) peer->popConfirmation(header->id0);
 				}
-				if (header.id1 != 0) peer->popConfirmation(header.id1);
-				if (header.id2 != 0) peer->popConfirmation(header.id2);
-				if (header.id3 != 0) peer->popConfirmation(header.id3);
+				if (header->id1 != 0) peer->popConfirmation(header->id1);
+				if (header->id2 != 0) peer->popConfirmation(header->id2);
+				if (header->id3 != 0) peer->popConfirmation(header->id3);
 			} else {
-				// truncated packet, kill it
-				m_Socket->receive((void*)null, sizeof(null));
+				// truncated packet
 				m_BadPackets++;
 				continue;
 			}
 		}
 
-		if (header.message_id == PingID) {
-			// we've already collected stats from the header (there is no body),
+		if (header->message_id == PingID) {
+			// we've already collected stats from the header (there is no body)
 			// so just drop the packet and we're done.
-			m_Socket->receive((void*)null, sizeof(null));
 			continue;
 		}
 
-		int queue_idx = header.priority;
+		int queue_idx = header->priority;
+		SIMNET_LOG(PACKET, INFO, "receiving packet in queue " << queue_idx);
 		queue = m_RxQueues[queue_idx];
 
-		ptr = queue->getWriteBuffer(allocation_size);
+		ptr = queue->getWriteBuffer(packet_length);
 		if (ptr) {
-			simdata::uint32 packet_length = m_Socket->receive((void*)ptr, allocation_size);
+			SIMNET_LOG(PACKET, INFO, "copying packet data (" << peek_bytes << " bytes) " << *header);
+			memcpy((void*)ptr, (const void*)buffer, peek_bytes);
 			// rewrite the source field, in case we have assigned a new one.
 			reinterpret_cast<PacketHeader*>(ptr)->source = source;
-
-			// sanity check
-			assert(packet_length >= peek_bytes);
 
 			peer->tallyReceivedPacket(packet_length);
 			m_ReceivedPackets++;
 			received_packets++;
 
 			queue->commitWriteBuffer(packet_length);
+			SIMNET_LOG(PACKET, INFO, "committed packet data (" << packet_length << " bytes)");
 
 		} else {
 			// this is a bad state; we have no room left to receive the incoming packet.
 			// for now we just dump it; maybe we can do something smarter eventually.
 			// at least reliable packets will be resent.
-			simdata::uint32 packet_length = m_Socket->receive((void*)null, sizeof(null));
 			peer->tallyReceivedPacket(packet_length);
 			m_DroppedPackets++;
 			// next packet may be destined for a queue with space left, so keep trying
@@ -590,11 +587,15 @@ void NetworkInterface::processIncoming(double timeout) {
 		}
 		--count;
 
+		// XXX remove me!
+		SIMNET_LOG(PACKET, INFO, "reading packet from receive queue");
 		simdata::uint8 *ptr = queue->getReadBuffer(size);
 		PacketHeader *header = reinterpret_cast<PacketHeader*>(ptr);
 		simdata::uint32 header_size = (header->reliable ? ReceiptHeaderSize : HeaderSize);
 		simdata::uint8 *payload = ptr + header_size;
 		simdata::uint32 payload_length = size - header_size;
+		// XXX remove me!
+		SIMNET_LOG(PACKET, INFO, "found payload " << payload_length << " bytes, " << *header);
 
 		// pass the packet to all handlers
 		PacketHandlerCallback callback(header, payload, payload_length);

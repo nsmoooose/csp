@@ -104,14 +104,15 @@ struct PacketReceiptHeader: public PacketHeader {
 inline std::ostream &operator <<(std::ostream &os, PacketHeader const &header) {
 	return os << (header.reliable ? 'R' : 'U') << header.priority << ':' << header.statmode
 	          << "*" << header.connstat << ':' << header.source << '>' << header.destination
-	          << ':' << header.message_id;
+	          << ':' << header.message_id << ":"
+	          << header.routing_type << ":" << header.routing_data;
 }
 
 
 /** Helper class for debugging.  Dumps a packet receipt header to an output stream.
  */
 inline std::ostream &operator <<(std::ostream &os, PacketReceiptHeader const &header) {
-	return os << reinterpret_cast<PacketHeader const &>(header) << "<" << header.id0 << ","
+	return os << reinterpret_cast<PacketHeader const &>(header) << "#" << header.id0 << ","
 	          << header.id1 << "," << header.id2 << "," << header.id3;
 }
 

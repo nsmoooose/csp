@@ -40,7 +40,7 @@ View::~View() { }
 void View::updateBody(simdata::Vector3& ep,simdata::Vector3& lp,simdata::Vector3& up) {
 	simdata::Vector3 object_up = m_ActiveObject->getUpDirection();
 	simdata::Vector3 object_dir = m_ActiveObject->getDirection();
-	simdata::Quat q = simdata::Quat(-m_CameraKinematics->getAngleZ(),object_up,-m_CameraKinematics->getAngleX(),
+	simdata::Quat q = simdata::Quat(-m_CameraKinematics->getTheta(),object_up,-m_CameraKinematics->getPhi(),
 					object_dir^object_up,0.0,object_dir);
 	simdata::Vector3 object_pos = m_ActiveObject->getGlobalPosition();
 	ep = object_pos + m_CameraKinematics->getDistance() * q.rotate(-object_dir);
@@ -49,7 +49,7 @@ void View::updateBody(simdata::Vector3& ep,simdata::Vector3& lp,simdata::Vector3
 }
 
 void View::updateWorld(simdata::Vector3& ep,simdata::Vector3& lp,simdata::Vector3& up) {
-	simdata::Quat q = simdata::Quat(-m_CameraKinematics->getAngleZ(),simdata::Vector3::ZAXIS,-m_CameraKinematics->getAngleX(),
+	simdata::Quat q = simdata::Quat(-m_CameraKinematics->getTheta(),simdata::Vector3::ZAXIS,-m_CameraKinematics->getPhi(),
 					 simdata::Vector3::XAXIS,0.0,simdata::Vector3::YAXIS);
 	simdata::Vector3 object_pos = m_ActiveObject->getGlobalPosition();
 	ep = object_pos + m_CameraKinematics->getDistance() * q.rotate(-simdata::Vector3::YAXIS);
@@ -77,15 +77,15 @@ void View::cull() {
 
 void InternalView::constrain() {
 	float limit = simdata::PI_2;
-	m_CameraKinematics->clampX(m_CameraKinematics->getAngleX(),-limit,limit);
-	m_CameraKinematics->clampZ(m_CameraKinematics->getAngleZ(),-limit,limit);
+	m_CameraKinematics->clampPhi(m_CameraKinematics->getPhi(),-limit,limit);
+	m_CameraKinematics->clampTheta(m_CameraKinematics->getTheta(),-limit,limit);
 }
 
 void InternalView::update(simdata::Vector3& ep,simdata::Vector3& lp,simdata::Vector3& up,double dt) {
 	constrain();
 	simdata::Vector3 object_up = m_ActiveObject->getUpDirection();
 	simdata::Vector3 object_dir = m_ActiveObject->getDirection();
-	simdata::Quat q = simdata::Quat(m_CameraKinematics->getAngleZ(),object_up,m_CameraKinematics->getAngleX(),
+	simdata::Quat q = simdata::Quat(m_CameraKinematics->getTheta(),object_up,m_CameraKinematics->getPhi(),
 					object_dir^object_up,0.0,object_dir);
 	simdata::Vector3 object_pos = m_ActiveObject->getGlobalPosition();
 	ep = object_pos + m_ActiveObject->getViewPoint();
@@ -164,8 +164,8 @@ void FlybyView::recalculate(simdata::Vector3& ep,simdata::Vector3& lp,simdata::V
 }
 
 void SatelliteView::activate() {
-	m_CameraKinematics->setAngleZ(0.0);
-	m_CameraKinematics->setAngleX(simdata::PI_2);
+	m_CameraKinematics->setTheta(0.0);
+	m_CameraKinematics->setPhi(simdata::PI_2);
 	m_CameraKinematics->setDistance(500.0);
 }
 	
@@ -188,8 +188,8 @@ void PadlockView::activate() {
 		m_Padlock = battlefield->getNextUnit(m_Padlock, -1, -1, -1);
 	}
 	if (m_Padlock != m_ActiveObject) {
-		m_NeckTheta = m_CameraKinematics->getAngleX() - 0.5*simdata::PI;
-		m_NeckPhi = m_CameraKinematics->getAngleZ();
+		m_NeckTheta = m_CameraKinematics->getPhi() - 0.5*simdata::PI;
+		m_NeckPhi = m_CameraKinematics->getTheta();
 	}
 }
 

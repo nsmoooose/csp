@@ -48,7 +48,7 @@ void CameraAgent::validate(double dt)	{
 	VirtualScene* scene	= CSPSim::theSim->getScene();
 	const simdata::Ref<TerrainObject> terrain =	scene->getTerrain();
 	TerrainObject::IntersectionHint	camera_hint	= 0;
-	double const SAFETY	= m_LookPoint.z()- terrain->getGroundElevation(m_LookPoint.x(),m_LookPoint.y(),camera_hint);
+	double const SAFETY	= 2.0;
 	float h	= SAFETY + terrain->getGroundElevation(m_EyePoint.x(),m_EyePoint.y(),camera_hint);
 	if (m_EyePoint.z() < h) {
 		double alpha_2 = simdata::toRadians(0.5*scene->getViewAngle());
@@ -73,16 +73,16 @@ void CameraAgent::validate(double dt)	{
 			}
 		double dh =	abs(h - m_LookPoint.z() - min_elev);
 		double angle_x = std::max(simdata::toRadians(1.0),asin(dh/m_CameraKinematics.getDistance()));
-		if (abs(m_CameraKinematics.getAngleX()) < simdata::PI_2) 
-			m_CameraKinematics.setAngleX(angle_x);
+		if (abs(m_CameraKinematics.getPhi()) < simdata::PI_2) 
+			m_CameraKinematics.setPhi(angle_x);
 		else
-			m_CameraKinematics.setAngleX(simdata::PI-angle_x);
+			m_CameraKinematics.setPhi(simdata::PI-angle_x);
 		m_CameraKinematics.panUpDownStop();
 		m_ViewList[m_ViewMode]->recalculate(m_EyePoint,m_LookPoint,m_UpVector,dt);
 	}
 }
 
-void CameraAgent::set(size_t vm,CameraCommand* ck) {
+void CameraAgent::set(size_t vm,CameraCommand* cc) {
 	if (m_ViewMode != vm) {
 		ViewList::iterator view_it = m_ViewList.find(vm);
 		if (view_it != m_ViewList.end()) {
@@ -90,7 +90,7 @@ void CameraAgent::set(size_t vm,CameraCommand* ck) {
 			m_ViewMode = vm;
 		}
 	}
-	m_CameraKinematics.accept(ck);
+	m_CameraKinematics.accept(cc);
 }
 
 void CameraAgent::updateCamera(double dt)	{

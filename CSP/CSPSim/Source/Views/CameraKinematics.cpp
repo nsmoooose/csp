@@ -41,8 +41,8 @@ void CameraKinematics::scale(double dt) {
 }
 	
 void CameraKinematics::update(double dt) {
-	rotateAboutZ(dt);
-	rotateAboutX(dt);
+	rotateTheta(dt);
+	rotatePhi(dt);
 	scale(dt);
 }
 
@@ -60,29 +60,29 @@ CameraKinematics::CameraKinematics():
 m_BaseRate(simdata::toRadians(30.0)),
 	m_DisplacementCoefficient(0.001),
 	m_MinimumDistanceOffset(10.0),
-	m_AbsoluteMaximumDistance(2000.0) {
+	m_AbsoluteMaximumDistance(80000.0) {
 	reset();
 }
 
-void CameraKinematics::clampX(double& value,float min_value,float max_value, bool smooth_on) {
-	if (smooth_on && m_PanRateX != 0.0) {
-		m_PanRateX = simdata::sign(m_PanRateX)*smooth(value,min_value,max_value)*m_BaseRate;
+void CameraKinematics::clampPhi(double& phi,float min_phi,float max_phi,bool smooth_on) {
+	if (smooth_on && m_PanRatePhi != 0.0) {
+		m_PanRatePhi = simdata::sign(m_PanRatePhi)*smooth(phi,min_phi,max_phi)*m_BaseRate;
 	}
-	value = simdata::clampTo<double>(value,min_value,max_value);
+	phi = simdata::clampTo<double>(phi,min_phi,max_phi);
 }
 
-void CameraKinematics::clampZ(double& value,float min_value,float max_value, bool smooth_on) {
-	if (smooth_on && m_PanRateZ != 0.0) {
-		m_PanRateZ = simdata::sign(m_PanRateZ)*smooth(value,min_value,max_value)*m_BaseRate;
+void CameraKinematics::clampTheta(double& theta,float min_theta,float max_theta, bool smooth_on) {
+	if (smooth_on && m_PanRateTheta != 0.0) {
+		m_PanRateTheta = simdata::sign(m_PanRateTheta)*smooth(theta,min_theta,max_theta)*m_BaseRate;
 	}
-	value = simdata::clampTo<double>(value,min_value,max_value);
+	theta = simdata::clampTo<double>(theta,min_theta,max_theta);
 }
 
 void CameraKinematics::reset() {
-	m_AngleRotX	= 0.0;
-	m_AngleRotZ	= 0.0;
-	m_PanRateX = 0.0;
-	m_PanRateZ = 0.0;
+	m_Phi	= 0.0;
+	m_Theta	= 0.0;
+	m_PanRatePhi = 0.0;
+	m_PanRateTheta = 0.0;
 	m_ZoomRate = 0.0;
 	resetDistance();
 }
@@ -97,27 +97,27 @@ void CameraKinematics::resetDistance() {
 }
 	
 void CameraKinematics::panLeft()	{
-	m_PanRateZ = m_BaseRate;
+	m_PanRateTheta = m_BaseRate;
 }
 	
 void CameraKinematics::panRight() {
-	m_PanRateZ = -m_BaseRate;
+	m_PanRateTheta = -m_BaseRate;
 }
 
 void CameraKinematics::panLeftRightStop() {
-	m_PanRateZ = 0.0;
+	m_PanRateTheta = 0.0;
 }
 
 void CameraKinematics::panUp() {
-	m_PanRateX = m_BaseRate;
+	m_PanRatePhi = m_BaseRate;
 }
 
 void CameraKinematics::panDown()	{
-	m_PanRateX = -m_BaseRate;
+	m_PanRatePhi = -m_BaseRate;
 }
 
 void CameraKinematics::panUpDownStop() { 
-	m_PanRateX = 0.0;
+	m_PanRatePhi = 0.0;
 }
 
 void CameraKinematics::zoomIn() {
@@ -145,18 +145,18 @@ void CameraKinematics::zoomStepOut() {
 }
 
 void CameraKinematics::displacement(int x, int y, int dx, int dy) {
-	m_PanRateX = 0.0;
-	m_PanRateZ = 0.0;
-	m_AngleRotZ	-= dx *	m_DisplacementCoefficient;
-	m_AngleRotX	-= dy *	m_DisplacementCoefficient;
+	m_PanRatePhi = 0.0;
+	m_PanRateTheta = 0.0;
+	m_Theta	-= dx *	m_DisplacementCoefficient;
+	m_Phi	-= dy *	m_DisplacementCoefficient;
 }
 
-void CameraKinematics::accept(CameraCommand* cm) {
-	if (cm) {
-		if (std::find(m_CameraCommandList.begin(),m_CameraCommandList.end(),cm) == m_CameraCommandList.end()) {
-			m_CameraCommandList.push_back(cm);
-			cm->setCameraKinematics(this);
+void CameraKinematics::accept(CameraCommand* cc) {
+	if (cc) {
+		if (std::find(m_CameraCommandList.begin(),m_CameraCommandList.end(),cc) == m_CameraCommandList.end()) {
+			m_CameraCommandList.push_back(cc);
+			cc->setCameraKinematics(this);
 		}
-		cm->execute();
+		cc->execute();
 	}
 }

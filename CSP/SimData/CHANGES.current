@@ -1,6 +1,13 @@
 Version 0.4.0 (in progress)
 ===========================
 
+2004-12-23: delta
+ * Latest version of pthreads for win changed the type of pthread_t.
+   A small wrapper for Task:ThreadId is provided to garanty compatibility 
+   with this new version. This change is enabled when defining PTHREADS_WIN 
+   which should leave safe the GNU/Linux version. Also, the pthreads binaries 
+   have been renamed pthreadVC1.*
+
 2004-12-12: delta
  * Fixed a few warnings in Random.h under msvc. Hopefully gcc 
    won't complain.

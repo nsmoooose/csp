@@ -139,7 +139,30 @@ class Task: public ThreadSafeReferenced {
 friend class BaseThread;
 
 public:
+#ifndef PTHREADS_WIN
 	typedef pthread_t ThreadId;
+#else
+	// small wrapper for pthreads win dated 11-22-2004
+	struct ThreadId: public pthread_t {
+		ThreadId(unsigned int i) {x = i;}
+		ThreadId& operator=(const pthread_t& other) {
+			if (this != &other) {
+				x = other.x;
+				p = other.p;
+			}
+			return *this;
+		}
+		bool operator==(unsigned int i) const {
+			return x == i;
+		}
+		bool operator!=(unsigned int i) const {
+			return !(*this == i);
+		}
+		bool operator&&(bool other) const {
+			return (*this == 0) && other;
+		}
+	};
+#endif
 
 protected:
 	/** Entry point for a new thread.
@@ -256,6 +279,11 @@ private:
 	ThreadCondition m_exit;
 };
 
+#ifdef PTHREADS_WIN
+inline bool operator&&(bool lhs,const Task::ThreadId& rhs) {
+	return rhs.operator&&(lhs);
+}
+#endif
 
 /** Base class for wrapping a Posix thread.
  *

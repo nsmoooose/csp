@@ -1,6 +1,10 @@
 Version 0.3.2 (in progress)
 ===========================
 
+2003-07-15: onsight
+            Disabled GDAL support by default.
+	    Moved LoadRawImage into an #ifdef _USE_GDAL_ block.
+
 2003-05-XX: onsight
             Minor optimizations in texture generation.  Still needs
 	    its own thread.

@@ -37,7 +37,7 @@ SHARED_LIB=demeter_csp.so
 
 CXXFLAGS+=-Wall 
 CXXFLAGS+=@sdl_FLAGS@
-CXXFLAGS+=-D_USE_GDAL_
+#CXXFLAGS+=-D_USE_GDAL_
 CXXFLAGS+=-w
 
 %.o: %.cpp

@@ -117,7 +117,9 @@ int TerrainLattice::GetLatticePolygonsRendered() { return m_LatticePolygonsRende
 
 GLuint CreateTexture(const Uint8* pTexels,int width,int height,int rowLength,int border,int internalFormat,bool bClamp,bool bAlpha = false);
 void LoadImage(const char* szFilename,int& pWidth,int& pHeight,Uint8** pBuffer,bool bAlpha = false);
+#ifdef _USE_GDAL_
 void LoadRawImage(const char* szFilename,int& pWidth,int& pHeight,Uint8** pBuffer,bool bAlpha = false);
+#endif // _USE_GDAL_
 int RayPlaneIntersect(const Ray *ray,const Plane *plane,Vector* point,float *distance);
 int RayBoxIntersect(const Ray *ray,const Box *box,Vector *point,float *distance);
 bool IsPowerOf2(double number);
@@ -2550,6 +2552,7 @@ void LoadImage(const char* szShortFilename,int& width,int &height,Uint8** ppBuff
 }
 
 
+#ifdef _USE_GDAL_
 void LoadRawImage(const char* szShortFilename,int& width,int &height,Uint8** ppBuffer,bool bAlpha)
 {
     char szFullFilename[MAX_FILENAME_LENGTH];
@@ -2635,6 +2638,7 @@ void LoadRawImage(const char* szShortFilename,int& width,int &height,Uint8** ppB
 	delete [] buffer;
 
 }
+#endif // _USE_GDAL_
 
 
 GLuint CreateTexture(const Uint8* pTexels,int width,int height,int rowLength,int border,int internalFormat,bool bClamp,bool bAlpha)

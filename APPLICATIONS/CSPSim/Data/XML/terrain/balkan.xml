@@ -15,8 +15,8 @@
 	<String name="lattice_texture_extension">bmp</String>
 	<External name="texture_file"></External>
 	<External name="elevation_file"></External>
-	<Real name="vertex_spacing">250</Real>
-	<Real name="vertex_height">0.38</Real>
-	<Real name="detail_threshold">8</Real>
+	<Float name="vertex_spacing">250</Float>
+	<Float name="vertex_height">0.38</Float>
+	<Float name="detail_threshold">8</Float>
 </Object>
 

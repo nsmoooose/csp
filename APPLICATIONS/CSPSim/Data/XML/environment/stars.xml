@@ -3,7 +3,7 @@
 <Object class="StarCatalog" static="1">
 
 	<String name="source">Yale Bright Star Catalog</String>
-	<Real name="magnitude_cutoff">5.8</Real>
+	<Float name="magnitude_cutoff">5.8</Float>
 	
 	0.0232783288985 -0.0996146670576 0.391358773231 1.0 0.7188 0.44945
 	0.0366010088554 0.507725975679 0.890511233846 0.466266666667 0.575033333333 1.0

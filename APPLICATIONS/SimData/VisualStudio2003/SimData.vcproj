@@ -3,6 +3,7 @@
 	ProjectType="Visual C++"
 	Version="7.10"
 	Name="SimData"
+	RootNamespace="SimData"
 	SccProjectName=""
 	SccLocalPath="">
 	<Platforms>
@@ -388,9 +389,9 @@
 				Name="Release|Win32">
 				<Tool
 					Name="VCCustomBuildTool"
-					CommandLine="$(SWIG_PATH)\swig -runtime -c++ -python -noexcept -I..\Include -o ..\Source\$(InputName)_wrap.cpp ..\..\Source\$(InputName).i
+					CommandLine="$(SWIG_PATH)\swig -runtime -c++ -python -noexcept -I..\Include -o ..\Source\$(InputName)_wrap.cpp ..\Source\$(InputName).i
 "
-					Outputs="..\..\Source\$(InputName)_wrap.cpp"/>
+					Outputs="..\Source\$(InputName)_wrap.cpp"/>
 			</FileConfiguration>
 			<FileConfiguration
 				Name="Debug|Win32">

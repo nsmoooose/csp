@@ -1,8 +1,15 @@
 Version 0.3.3 (in progress)
 ===========================
 
-2003-06-19: delta
+2003-06-20: delta
+	    Moved updateNearGround() outside loop in AircraftPhysicModel::doSimStep.
+	    Reenabled position update in _f.
+	    Changed RungeKuttaCK::MAXSTP = 16.
+	    Changed binding methods for throttle in EngineDynamics/Engine class: added 
+	    a postCreate() method to bind every engine with EngineDynamics::m_Throttle; 
+	    added EngineDynamics::setThrottle.
 
+2003-06-19: delta
 ==========> GCC USERS: add Engine.cpp, BaseDynamics.cpp, Collision.cpp,
 	    PrimaryAeroDynamics.cpp (and remove AeroDynamics.cpp from),
 	    PhysicModel.cpp, AircraftPhysicModel.cpp to the project.
@@ -36,9 +43,9 @@ Version 0.3.3 (in progress)
 	    general stats.
 	    In an attempt to limit fps drop with info on screen, InfoView will 
 	    be updated only every x (at the moment 5) frame and a 
-	    setDisplayList(false) has 
-	    been added to every text on screen. Need feedback from users about 
-	    that. Also, some "static" osgText::Texts take place in Framerate ...
+	    setDisplayList(false) has been added to every text on screen. Need 
+	    feedback from users about that. Also, some "static" osgText::Texts 
+	    take place in Framerate ...
 	    Removed #include "windows.h" in CSPSim.cpp.
 	    Changed position - attitude initialization.
 	    Changed /Zm1000 to 200.

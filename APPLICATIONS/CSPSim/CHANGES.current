@@ -1,6 +1,14 @@
 Version 0.3.1 (in progress)
 ===========================
 
+2003-04-10: onsight
+            NumericalMethods.cpp added.
+
+	    Sim.dar renamed to sim.dar.
+
+	    Data archive paths now use the new 'sim:' prefix.  See
+	    SimData CHANGES.current for details.
+
 	   LINUX USERS: you need to add NumericalMethod.cpp to your Makefile.
 2003-04-09: delta
 	    updated .net project.

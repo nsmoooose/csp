@@ -183,7 +183,7 @@ public:
 		rx = rz = 0.0;
 		simdata::DataArchive *archive = CSPSim::theSim->getDataArchive();	
 		assert(archive);
-		_catalog = archive->getObject("environment.stars");
+		_catalog = archive->getObject("sim:environment.stars");
 		assert(_catalog.valid());
 		int n = _catalog->_stars.size();
 		//std::cout << "Using " << _catalog->m_Source << std::endl;

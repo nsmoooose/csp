@@ -184,7 +184,7 @@ void CSPSim::init()
 	CSP_LOG(CSP_APP, CSP_INFO, "Starting CSPSim...");
 
 	std::string data_path = g_Config.getPath("Paths", "DataPath", ".", true);
-	std::string archive_file = ospath::join(data_path, "Sim.dar");
+	std::string archive_file = ospath::join(data_path, "sim.dar");
 	
 	// open the primary data archive
 	try {
@@ -224,7 +224,7 @@ void CSPSim::init()
 	m_Battlefield->buildScene();
 
 	// eventually this will be set in an entirely different way...
-	m_ActiveTerrain = m_DataArchive->getObject("terrain.balkan");
+	m_ActiveTerrain = m_DataArchive->getObject("sim:terrain.balkan");
 	m_ActiveTerrain->activate(m_Battlefield);
 	
 	// get view parameters from configuration file.  ultimately there should
@@ -241,7 +241,7 @@ void CSPSim::init()
 	m_Battlefield->setFogEnd(fog_end);
 
 	// create a couple test objects
-	simdata::Pointer<AircraftObject> ao = m_DataArchive->getObject("vehicles.aircraft.m2k");
+	simdata::Pointer<AircraftObject> ao = m_DataArchive->getObject("sim:vehicles.aircraft.m2k");
 	assert(ao.valid());
 	//ao->setGlobalPosition(483000, 499000, 2000);
 	ao->setGlobalPosition(483000, 499000, 91.2);
@@ -252,7 +252,7 @@ void CSPSim::init()
 	m_Battlefield->addObject(ao);
 	
 	/*
-	simdata::Pointer<DynamicObject> to = m_DataArchive->getObject("vehicles.aircraft.m2k");
+	simdata::Pointer<DynamicObject> to = m_DataArchive->getObject("sim:vehicles.aircraft.m2k");
 	assert(to.valid());
 	to->setGlobalPosition(483000, 501000, 0);
 	to->addToScene(m_Battlefield);

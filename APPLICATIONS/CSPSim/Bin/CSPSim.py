@@ -27,7 +27,7 @@ def runCSPSim(args):
 		print
 		sys.exit(1)
 	datapath = CSP.getDataPath()
-	dar = os.path.join(datapath, "Sim.dar")
+	dar = os.path.join(datapath, "sim.dar")
 	if not os.path.exists(dar):
 		print
 		print "Static data archive '%s' not found." % dar
@@ -43,7 +43,7 @@ def runCSPSim(args):
 
 def compileData(args):
 	datapath = CSP.getDataPath()
-	dar = os.path.join(datapath, "Sim.dar")
+	dar = os.path.join(datapath, "sim.dar")
 	XML = os.path.join(datapath, "XML")
 	#print "compile %s %s" % (XML, dar)
 	try:

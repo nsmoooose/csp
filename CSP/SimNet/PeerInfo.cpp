@@ -66,12 +66,17 @@ PeerInfo::PeerInfo():
 	m_measured_bandwidth_self_to_peer(0.0),
 	m_total_peer_incoming_bandwidth(0.0),
 	m_total_peer_outgoing_bandwidth(0.0),
+	m_time_skew(0.0),
+	m_roundtrip_latency(0.0),
+	m_last_ping_latency(0),
+	m_timing_history_size(0),
+	m_timing_history_index(0),
+	m_time_filter(0.1),
 	m_quiet_time(0.0),
 	m_dead_time(0.0),
 	m_last_deactivation_time(0.0),
 	m_socket(0) {
 }
-
 
 void PeerInfo::update(double dt, double scale_desired_rate_to_self) {
 
@@ -136,6 +141,8 @@ void PeerInfo::update(double dt, double scale_desired_rate_to_self) {
 			std::cout << "  peer alloc commstat: " << m_allocation_peer_to_self << "\n";
 			std::cout << "  peer desired rate  : " << m_desired_rate_peer_to_self << "\n";
 			std::cout << "  peer rate scale    : " << scale_desired_rate_to_self << "\n";
+			std::cout << "  roundtrip latency  : " << m_roundtrip_latency << " ms\n";
+			std::cout << "  clock skew         : " << m_time_skew << " ms\n";
 		}
 	}
 
@@ -250,6 +257,40 @@ void PeerInfo::disable() {
 	}
 	m_active = false;
 	if (m_socket.valid()) m_socket->disconnect();
+}
+
+#define M9_SORT(a, b, t) if ((a) > (b)) { t = (b); (b) = (a); (a) = t; }
+
+void PeerInfo::updateTiming(int ping_latency, int last_ping_latency) {
+	int correction = (ping_latency - last_ping_latency) / 2;
+	m_timing_history[m_timing_history_index] = correction;
+	m_timing_history_index = (m_timing_history_index + 1) % 9;
+	if (m_timing_history_size < 9) m_timing_history_size++;
+	if (m_timing_history_size == 9) {
+		int m[9];
+		memcpy(m, m_timing_history, sizeof(m_timing_history));
+		int tmp;
+		// find the median of 9 elements
+		M9_SORT(m[1], m[2], tmp); M9_SORT(m[4], m[5], tmp); M9_SORT(m[7], m[8], tmp);
+		M9_SORT(m[0], m[1], tmp); M9_SORT(m[3], m[4], tmp); M9_SORT(m[6], m[7], tmp);
+		M9_SORT(m[1], m[2], tmp); M9_SORT(m[4], m[5], tmp); M9_SORT(m[7], m[8], tmp);
+		M9_SORT(m[0], m[3], tmp); M9_SORT(m[5], m[8], tmp); M9_SORT(m[4], m[7], tmp);
+		M9_SORT(m[3], m[6], tmp); M9_SORT(m[1], m[4], tmp); M9_SORT(m[2], m[5], tmp);
+		M9_SORT(m[4], m[7], tmp); M9_SORT(m[4], m[2], tmp); M9_SORT(m[6], m[4], tmp);
+		M9_SORT(m[4], m[2], tmp);
+		correction = m[4];  // median
+	}
+	int roundtrip_latency = (ping_latency + last_ping_latency);
+	const double latency_filter = 0.9;
+	m_roundtrip_latency = m_roundtrip_latency * latency_filter + roundtrip_latency * (1.0 - latency_filter);
+	m_time_skew = m_time_skew * m_time_filter + correction * (1.0 - m_time_filter);
+	m_last_ping_latency = ping_latency;
+	if (m_time_filter < 0.9999) {
+		m_time_filter += (1.0 - m_time_filter) * 0.1;
+	}
+	if (m_time_filter > 0.9999) {
+		m_time_filter = 0.9999;
+	}
 }
 
 

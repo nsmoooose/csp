@@ -26,7 +26,7 @@ def PackageConfig(env):
 
 env = env.Copy()
 env.AppendUnique(SHLINKFLAGS = '-Wl,-z,lazyload')
-env.Replace(CXXFLAGS=env['CXXFLAGS'].replace('-W ', ''))
+env.Replace(CXXFLAGS=str(env['CXXFLAGS']).replace('-W ', ''))
 
 env.SetConfig(PackageConfig)
 

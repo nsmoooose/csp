@@ -43,10 +43,10 @@
 namespace simnet {
 
 
-ClientServerBase::ClientServerBase(NetworkNode const &bind, bool isServer, int inbound_bw, int outbound_bw):
+// TODO set and use the specified bandwidth.
+ClientServerBase::ClientServerBase(NetworkNode const &bind, bool isServer, int /*inbound_bw*/, int /*outbound_bw*/):
 	m_LocalNode(bind)
 {
-	// TODO set bandwidth
 	m_NetworkInterface = new NetworkInterface();
 	m_NetworkInterface->initialize(bind, isServer);
 	m_MessageQueue = new MessageQueue();
@@ -148,6 +148,7 @@ Client::~Client() {
 
 bool Client::connectToServer(NetworkNode const &server, double timeout) {
 	assert(!m_Connected);
+	// FIXME actual server bandwidth needs to be passed and set in onConnectionResponse
 	m_NetworkInterface->setServer(server, 10000, 10000);
 
 	// prepare and queue request

@@ -117,6 +117,22 @@ class PeerInfo: public simdata::NonCopyable {
 	double m_total_peer_incoming_bandwidth;
 	double m_total_peer_outgoing_bandwidth;
 
+	// time skew of the peer relative to local time (positive if the peer is ahead),
+	// in ms.
+	double m_time_skew;
+
+	// median round-trip latency, in ms.
+	double m_roundtrip_latency;
+
+	// transmission time (in ms) of the last ping received from this peer
+	int m_last_ping_latency;
+
+	// track timing data over successive pings
+	int m_timing_history[9];  // MUST BE 9, see median filter in updateTiming
+	int m_timing_history_size;
+	int m_timing_history_index;
+	double m_time_filter;
+
 	// a measure of the time between packets sent to this peer that is
 	// used to determine when additional pings need to be sent.
 	double m_quiet_time;
@@ -320,6 +336,18 @@ public:
 		m_statmode_toggle = !m_statmode_toggle;
 	}
 
+	/** Update timing stats from ping data.
+	 *
+	 * @param ping_latency The transit time of a ping received from this peer,
+	 *   in ms, using the uncorrected epoch times on the local and remote machines.
+	 * @param time_offset The transit time of the last ping sent to this peer.
+	 */
+	void updateTiming(int ping_latency, int last_ping_latency);
+
+	/** Get the transit time, in ms, of the last ping received from this peer.
+	 */
+	inline int getLastPingLatency() { return m_last_ping_latency; }
+
 	/** Marks this connection as inactive and releases the outbound socket.
 	 */
 	void disable();
@@ -353,7 +381,7 @@ public:
 	 *  to drop, and returns true if a packet should be throttled.  The throttling rate
 	 *  is adjusted by the update() method based on feedback received from the peer.
 	 */
-	inline bool throttlePacket(int priority) {
+	inline bool throttlePacket(int /*priority*/) {
 		return (m_throttle_threshold > 0) ? (NetRandom::random() < m_throttle_threshold) : false;
 	}
 

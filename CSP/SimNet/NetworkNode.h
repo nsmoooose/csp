@@ -28,10 +28,19 @@
 
 #include <SimNet/NetBase.h>
 #include <SimData/Uniform.h>
+
 #ifdef _WIN32
-#define NOMINMAX
+#	define NOMINMAX
+#	pragma warning(push)
+#	pragma warning(disable: 4100)
 #endif
+
 #include <cc++/socket.h>
+
+#ifdef _WIN32
+#	pragma warning(pop)
+#endif
+
 #include <string>
 
 namespace simnet {

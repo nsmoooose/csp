@@ -59,12 +59,6 @@
 //
 //   * cache reliable packets in a free list instead of allocating strings?
 //
-//   * better handling of messages bound for multiple peers --- we don't want
-//     to have to serialize the same update record multiple times!  probably
-//     easiest to have MessageQueue accept multiple destinations.  if N > 1,
-//     cache the serialized payload and reuse it for the other destinations
-//     (only need one cache buffer for this).
-//
 //   * broadcasts/relays: need to extend the packet header to include multiple
 //     destinations (add a bit flag and an extended header with room for up
 //     to N destinations?).
@@ -72,6 +66,13 @@
 
 
 namespace simnet {
+
+
+#pragma pack(push, 1)
+struct PingPayload {
+	simdata::uint32 transmit_time; // ms
+};
+#pragma pack(pop)
 
 
 const simdata::uint32 NetworkInterface::HeaderSize = sizeof(PacketHeader);
@@ -228,8 +229,9 @@ void NetworkInterface::resend(simdata::Ref<ReliablePacket> &packet) {
 bool NetworkInterface::pingPeer(PeerInfo *peer) {
 	const int queue_idx = 2;
 	PacketQueue *queue = m_TxQueues[queue_idx];
-	bool confirm = peer->hasPendingConfirmations();
-	unsigned int packet_size = confirm ? ReceiptHeaderSize : HeaderSize;
+	const bool confirm = peer->hasPendingConfirmations();
+	const unsigned int header_size = (confirm ? ReceiptHeaderSize : HeaderSize);
+	const unsigned int packet_size = header_size + sizeof(PingPayload);
 	simdata::uint8 *ptr = queue->getWriteBuffer(packet_size);
 	if (!ptr) return false;
 	PacketHeader *header = reinterpret_cast<PacketHeader*>(ptr);
@@ -241,8 +243,13 @@ bool NetworkInterface::pingPeer(PeerInfo *peer) {
 	if (confirm) {
 		PacketReceiptHeader *receipt = reinterpret_cast<PacketReceiptHeader*>(ptr);
 		header->setReliable(true);
-		peer->setReceipt(receipt, false /*reliable*/, 0 /*payload_length*/);
+		peer->setReceipt(receipt, false /*reliable*/, sizeof(PingPayload));
 	}
+	PingPayload *payload = reinterpret_cast<PingPayload*>(ptr + header_size);
+	simdata::uint32 transmit_time = static_cast<simdata::uint32>(simdata::getCalibratedRealTime() * 1000.0);
+	payload->transmit_time = SIMDATA_UINT32_TO_LE(transmit_time);
+	// hack: overload RoutingData to save a few bytes
+	header->setRouting(0, peer->getLastPingLatency());
 	std::cout << "PING " << peer->getId() << " .......\n";
 	queue->commitWriteBuffer(packet_size);
 	return true;
@@ -451,7 +458,9 @@ int NetworkInterface::receivePackets(double timeout) {
 		DEBUG_count++;
 
 		// handle reliable udp encoding
+		int header_size = HeaderSize;
 		if (header->reliable()) {
+			header_size = ReceiptHeaderSize;
 			SIMNET_LOG(PACKET, DEBUG, "received a reliable header " << *header);
 			if (packet_length >= ReceiptHeaderSize) {
 				// if this packet is priority 3, it requires confirmation (id stored in id0)
@@ -472,8 +481,25 @@ int NetworkInterface::receivePackets(double timeout) {
 		}
 
 		if (header->messageId() == PingID) {
-			// we've already collected stats from the header (there is no body)
-			// so just drop the packet and we're done.
+			if (packet_length == header_size + sizeof(PingPayload)) {
+				int last_ping_latency = header->routingData();
+				PingPayload *payload = reinterpret_cast<PingPayload*>(buffer + header_size);
+				simdata::uint32 transmit_time = SIMDATA_UINT32_FROM_LE(payload->transmit_time);
+				simdata::uint32 receive_time = static_cast<uint32>(simdata::getCalibratedRealTime() * 1000.0);
+				std::cout << "PING TX=" << transmit_time << " RX=" << receive_time << " OFS=" << last_ping_latency << "\n";
+				simdata::int64 t_latency = static_cast<int64>(receive_time) - static_cast<int64>(transmit_time);
+				if (t_latency >= SIMDATA_LL(0x80000000)) {
+					t_latency -= SIMDATA_LL(0x80000000);
+				} else if (t_latency < SIMDATA_LL(-0x80000000)) {
+					t_latency += SIMDATA_LL(0x80000000);
+				}
+				int latency = static_cast<int>(t_latency);
+				assert(latency == t_latency);
+				peer->updateTiming(latency, last_ping_latency);
+			} else {
+				SIMNET_LOG(PEER, ERROR, "Ping packet does not contain timing payload");
+			}
+			// pings are handled internally without being seen by the upstream handlers.
 			continue;
 		}
 

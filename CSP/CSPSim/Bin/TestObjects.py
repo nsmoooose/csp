@@ -38,8 +38,8 @@ def	createBalkan(app):
 	v =	SimData.Vector3
 	m =	SimData.LLA()
 	vehicle	= app.createVehicle
-	vehicle("sim:vehicles.aircraft.m2k", v(-29413, -12020, 88.5), v(0, 0, 0), v(0.0, 0.0, 179.0))
-	vehicle("sim:vehicles.aircraft.m2k", v(-29413, -12020, 1000), v(0, 100.0, 0), v(5.0, 0.0, 0.0))
+	vehicle("sim:vehicles.aircraft.m2k", v(-29413, -10980, 88.5), v(0, 0, 0), v(0.0, 0.0, 179.0))
+	vehicle("sim:vehicles.aircraft.m2k", v(-29413, -10980, 1000), v(0, 100.0, 0), v(5.0, 0.0, 0.0))
 
 def	createNCA(app):
 	v =	SimData.Vector3

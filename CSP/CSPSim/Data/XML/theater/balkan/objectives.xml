@@ -10,7 +10,7 @@
 			 the theater.  -->
 		<Object	class="Objective">
 			<Path name="model">airbase</Path>
-			<LLA name="position">41.53 15.65 0.0</LLA>
+			<LLA name="position">41.54 15.65 0.0</LLA>
 			<!--LLA	name="position">41.521 15.655 0.0</LLA-->
 			<Float name="orientation">0</Float>
 			<Int name="strategic_value_modifier">0</Int>

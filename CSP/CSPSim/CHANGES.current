@@ -1,10 +1,16 @@
  Version 0.4.0 (in progress)
 ===========================
 
+2004-09-11: onsight
+  * Adjusted airbase position slightly to move it to a flat area.
+    Moved the initial position of the test aircraft to compensate.
+    (You'll need to recompile the dar file, otherwise the aircraft
+    will be in the wrong place initially.)
+
 2004-08-24: delta
-  * Used simdata::clampTo instead of std::min/max to avoid the usual 
-	macro conflict on vs. 
-  
+  * Used simdata::clampTo instead of std::min/max to avoid the usual
+    macro conflict on vs.
+
   * Avoid a minor warning with an implicit cats from double to float.
 
 2004-08-08: onsight

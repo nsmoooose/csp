@@ -85,6 +85,12 @@ addOption('--logfile', default='', type='string', help='log file (default stderr
 def usage():
   """Print usage to stdout."""
   opt.print_help()
+  print
+
+def fatal(msg):
+  """Print an error message to stderr and terminate with exit code 1."""
+  print >>sys.stderr, msg
+  sys.exit(1)
 
 def programPath():
   """Return the absolute path of the application program."""

@@ -51,29 +51,6 @@ inline double SignOf(double x)
 double angleBetweenTwoVectors(const Vector3 & v1, const Vector3 & v2);
 
 
-double const FtInM = 0.3048;
-double const MInFt = 3.2808;
-
-inline double FeetToMeters(double feet) {
-	return FtInM * feet;
-}
-
-inline double MetersToFeet(double meters) {
-	return MInFt * meters;
-}
-
-double const PdsToN = 4.44822;
-
-double const NToPds = 0.22481;
-
-inline double PoundsToNewtons(double pds) {
-	return PdsToN * pds;
-}
-
-inline double NewtonsToPounds(double newtonw) {
-	return NToPds * newtonw;
-}
-
 NAMESPACE_END // namespace simdata
 
 #endif //__SIMDATA_MATH_H__

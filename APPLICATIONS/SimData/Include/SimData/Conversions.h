@@ -122,6 +122,19 @@ template <typename T>
 T mmhg_pa(T x) { return x * 133.0; }
 SIMDATA_CVT(mmhg_pa)
 
+/**
+ * pounds to newtons
+ */
+template <typename T>
+T lb_n(T x) { return x * 4.44822; }
+SIMDATA_CVT(lb_n)
+
+/**
+ * newtons to pounds
+ */
+template <typename T>
+T n_lb(T x) { return x * 0.22481; }
+SIMDATA_CVT(n_lb)
 
 } // namespace convert
 NAMESPACE_END

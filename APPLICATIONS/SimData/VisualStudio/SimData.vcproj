@@ -226,6 +226,9 @@
 				RelativePath="..\Include\SimData\BaseType.h">
 			</File>
 			<File
+				RelativePath="..\Include\SimData\Conversions.h">
+			</File>
+			<File
 				RelativePath="..\Include\SimData\DataArchive.h">
 			</File>
 			<File

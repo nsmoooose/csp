@@ -1,6 +1,11 @@
 Version 0.3.3 (in progress)
 ===========================
 
+2003-06-11: delta
+	    Removed help methods ... from Math.h.
+	    Added help methods to Conversions.h.
+	    Added Conversions.h to .net project ;)
+
 2003-05-24: delta
 	    Added help methods to convert feet to meters and pounds to newtons
 	    in math.h.

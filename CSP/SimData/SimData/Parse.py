@@ -627,7 +627,7 @@ class _LUTHandler(SimpleHandler):
 	def __init__(self, dim, id, base, name, attrs):
 		SimpleHandler.__init__(self, id, base, name, attrs)
 		self._method = attrs.get("method", "linear")
-		self._required_members = _LUTHandler.required_members
+		self._required_members = _LUTHandler.required_members[:]
 		for i in range(dim):
 			self._required_members.append("Breaks%d" % i)
 		self._dim = dim

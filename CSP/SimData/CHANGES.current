@@ -1,6 +1,10 @@
 Version 0.4.0 (in progress)
 ===========================
 
+2004-11-10: onsight
+ * Another bug fix in Parse.py, this time for TableN types.   Prevents
+   spurious complaints about missing required fields.
+
 2004-11-07: onsight
  * In Parse.py, convert more unicode strings to ascii before calling
    extension methods.  Swig 1.3.22 no longer accepts unicode strings

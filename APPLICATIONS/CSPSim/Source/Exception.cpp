@@ -24,7 +24,7 @@
 
 
 #include "Exception.h"
-#include "LogStream.h"
+#include "Log.h"
 
 #include <cstdio>
 #include <iostream>
@@ -37,7 +37,7 @@ namespace csp {
 
 void FatalException(Exception &e, std::string const &location) {
 	DataError *pDataError = dynamic_cast<DataError*> (&e);
-	CSP_LOG(CSP_APP, CSP_ERROR, "CSPSim: caught exception in " << location << ": " << e.getMessage());
+	CSP_LOG(APP, ERROR, "CSPSim: caught exception in " << location << ": " << e.getMessage());
 	std::cerr << "\n";
 	e.details();
 	std::cerr << "\n";
@@ -60,7 +60,7 @@ void FatalException(Exception &e, std::string const &location) {
 }
 
 void DemeterFatalException(DemeterException &e,  std::string const &location) {
-	CSP_LOG(CSP_APP, CSP_ERROR, "CSPSim: caught Demeter exception in " 
+	CSP_LOG(APP, ERROR, "CSPSim: caught Demeter exception in " 
 	                            << location << ": " << e.GetErrorMessage());
 	std::cerr << "\n";
 	std::cerr << "CSPSim: caught an Demeter exception.  Please report this along\n"
@@ -72,7 +72,7 @@ void DemeterFatalException(DemeterException &e,  std::string const &location) {
 }
 
 void SimDataFatalException(simdata::Exception &e,  std::string const &location) {
-	CSP_LOG(CSP_APP, CSP_ERROR, "CSPSim: caught SimData exception in " 
+	CSP_LOG(APP, ERROR, "CSPSim: caught SimData exception in " 
 	                            << location << ": " << e.getMessage());
 	std::cerr << "\n";
 	e.details();
@@ -89,7 +89,7 @@ void SimDataFatalException(simdata::Exception &e,  std::string const &location) 
 }
 
 void OtherFatalException(std::string const &location) {
-	CSP_LOG(CSP_APP, CSP_ERROR, "CSPSim: caught unknown exception in " << location << ".");
+	CSP_LOG(APP, ERROR, "CSPSim: caught unknown exception in " << location << ".");
 	std::cerr << "\n";
 	std::cerr << "CSPSim: caught an (unknown) exception.  Please report this along\n"
 	          << "with as much information as possible about what was happening at \n"

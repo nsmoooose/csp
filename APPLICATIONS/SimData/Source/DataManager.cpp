@@ -102,7 +102,7 @@ const LinkBase DataManager::getObject(Path const& path, const char* path_str, Da
 	hasht_map::iterator idx = _archive_map.find(key);
 	DataArchive *archive = 0;
 	if (idx != _archive_map.end()) {
-		assert(idx->second >= 0 && idx->second < _archives.size());
+		assert(idx->second >= 0 && idx->second < int(_archives.size()));
 		archive = _archives[idx->second];
 	}
 	if (archive == 0 || archive == d) {

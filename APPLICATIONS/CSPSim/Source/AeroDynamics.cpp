@@ -28,7 +28,7 @@
 
 #include "AeroDynamics.h"
 #include "CSPSim.h"
-#include "LogStream.h"
+#include "Log.h"
 
 #include <SimData/InterfaceRegistry.h>
 #include <SimData/Math.h>
@@ -174,7 +174,7 @@ void AeroDynamics::unpack(simdata::UnPacker& p) {
 
 void AeroDynamics::initialize()
 {
-	CSP_LOG(CSP_PHYSICS, CSP_DEBUG, "AeroDynamics: Initialize()...");
+	CSP_LOG(PHYSICS, DEBUG, "AeroDynamics: Initialize()...");
 	
 	m_ElevatorInput = 0.0;
 	m_ElevatorScale = 0.0;
@@ -339,7 +339,7 @@ void AeroDynamics::doSimStep(double dt)
 	run_test(*this, m_Maxi, *m_Position, *m_Velocity, *m_AngularVelocity, *m_Orientation);
 	}
 	*/	
-	CSP_LOG(CSP_PHYSICS, CSP_DEBUG, "AeroDynamics: DoSimStep");
+	CSP_LOG(PHYSICS, DEBUG, "AeroDynamics: DoSimStep");
 
 	assert(m_Bound);
 
@@ -365,9 +365,9 @@ void AeroDynamics::doSimStep(double dt)
 	simdata::Vector3 Wind(0.0, 0.0, 0.0);
 	simdata::Vector3 AirflowBody;
 
-	CSP_LOG(CSP_PHYSICS, CSP_DEBUG, "AeroDynamics:       dt: " << dt );
+	CSP_LOG(PHYSICS, DEBUG, "AeroDynamics:       dt: " << dt );
 	m_VelocityBody = LocalToBody(m_VelocityLocal);
-	CSP_LOG(CSP_PHYSICS, CSP_DEBUG, "AeroDynamics:       V0: " << m_VelocityBody );
+	CSP_LOG(PHYSICS, DEBUG, "AeroDynamics:       V0: " << m_VelocityBody );
 
 	m_dprevdt = dt;
 	dt /= m_Maxi; 
@@ -590,18 +590,18 @@ void AeroDynamics::doSimStep(double dt)
 	*m_AngularVelocity = m_AngularVelocityLocal;
 	*m_Orientation = qOrientation;
 
-	CSP_LOG(CSP_PHYSICS, CSP_DEBUG, "AeroDynamics:   Forces: " << m_ForcesBody );
-	CSP_LOG(CSP_PHYSICS, CSP_DEBUG, "AeroDynamics:  Moments: " << m_MomentsBody );
-	CSP_LOG(CSP_PHYSICS, CSP_DEBUG, "AeroDynamics:ang accel: " << m_AngularAccelBody);
-	CSP_LOG(CSP_PHYSICS, CSP_DEBUG, "AeroDynamics: Ang Velo: " << m_AngularVelocityBody );
-	CSP_LOG(CSP_PHYSICS, CSP_DEBUG, "AeroDynamics:   LinAcc: " << m_LinearAccelBody );
-	CSP_LOG(CSP_PHYSICS, CSP_DEBUG, "AeroDynamics: Velocity: " << m_VelocityLocal);
-	CSP_LOG(CSP_PHYSICS, CSP_DEBUG, "AeroDynamics:    Speed: " << m_AirSpeed);
-	CSP_LOG(CSP_PHYSICS, CSP_DEBUG, "AeroDynamics: AngOfAtt: " << RadiansToDegrees(m_alpha) );
-	//	CSP_LOG(CSP_PHYSICS, CSP_DEBUG, "AeroDynamics:   VelDir: " << VelocityDirection );
-	CSP_LOG(CSP_PHYSICS, CSP_DEBUG, "AeroDynamics: Position: " << m_PositionLocal );
-	CSP_LOG(CSP_PHYSICS, CSP_DEBUG, "AeroDynamics:   Orient: " << qOrientation );
-	//	CSP_LOG(CSP_PHYSICS, CSP_DEBUG, "AeroDynamics:  Euler A: " << m_EulerAngles );
+	CSP_LOG(PHYSICS, DEBUG, "AeroDynamics:   Forces: " << m_ForcesBody );
+	CSP_LOG(PHYSICS, DEBUG, "AeroDynamics:  Moments: " << m_MomentsBody );
+	CSP_LOG(PHYSICS, DEBUG, "AeroDynamics:ang accel: " << m_AngularAccelBody);
+	CSP_LOG(PHYSICS, DEBUG, "AeroDynamics: Ang Velo: " << m_AngularVelocityBody );
+	CSP_LOG(PHYSICS, DEBUG, "AeroDynamics:   LinAcc: " << m_LinearAccelBody );
+	CSP_LOG(PHYSICS, DEBUG, "AeroDynamics: Velocity: " << m_VelocityLocal);
+	CSP_LOG(PHYSICS, DEBUG, "AeroDynamics:    Speed: " << m_AirSpeed);
+	CSP_LOG(PHYSICS, DEBUG, "AeroDynamics: AngOfAtt: " << RadiansToDegrees(m_alpha) );
+	//	CSP_LOG(PHYSICS, DEBUG, "AeroDynamics:   VelDir: " << VelocityDirection );
+	CSP_LOG(PHYSICS, DEBUG, "AeroDynamics: Position: " << m_PositionLocal );
+	CSP_LOG(PHYSICS, DEBUG, "AeroDynamics:   Orient: " << qOrientation );
+	//	CSP_LOG(PHYSICS, DEBUG, "AeroDynamics:  Euler A: " << m_EulerAngles );
 
 }
 
@@ -611,9 +611,9 @@ simdata::Vector3 const& AeroDynamics::CalculateForces( double const p_qBarS )
 {
 	static simdata::Vector3 forceBody;
 #if 0
-	CSP_LOG(CSP_PHYSICS, CSP_DEBUG, "AeroDynamics: BodyVelocity: " << m_VelocityBody);
-	CSP_LOG(CSP_PHYSICS, CSP_DEBUG, "AeroDynamics: local velocity: " << m_VelocityLocal);
-	CSP_LOG(CSP_PHYSICS, CSP_DEBUG, "AeroDynamics: BodySpeed: " << m_AirSpeed);
+	CSP_LOG(PHYSICS, DEBUG, "AeroDynamics: BodyVelocity: " << m_VelocityBody);
+	CSP_LOG(PHYSICS, DEBUG, "AeroDynamics: local velocity: " << m_VelocityLocal);
+	CSP_LOG(PHYSICS, DEBUG, "AeroDynamics: BodySpeed: " << m_AirSpeed);
 #endif
 	
 	// Calculate Aero Forces
@@ -674,7 +674,7 @@ double AeroDynamics::CalculateLiftCoefficient() const
 	        (m_CL_de * m_Elevator)
 	       );
 
-	CSP_LOG(CSP_PHYSICS, CSP_DEBUG, "AeroDynamics::CalculateLiftCoefficient() " << 
+	CSP_LOG(PHYSICS, DEBUG, "AeroDynamics::CalculateLiftCoefficient() " << 
 	                                m_Cl << " at alpha = " << RadiansToDegrees(m_alpha) << 
 	                                ", Elevator: " << m_Elevator );
 
@@ -729,7 +729,7 @@ double AeroDynamics::CalculateDragCoefficient() const
 
 	drag_coe += induced;
 	
-	CSP_LOG(CSP_PHYSICS, CSP_DEBUG, "AeroDynamics::CalculateDragCoefficient() " << 
+	CSP_LOG(PHYSICS, DEBUG, "AeroDynamics::CalculateDragCoefficient() " << 
 	                                drag_coe << " at alpha = " << RadiansToDegrees(m_alpha) << 
 	                                ", Elevator: " << m_Elevator << ", Induced: " << induced << ", GE: " << m_GE << ", m_CL: " << m_CL );
 
@@ -778,7 +778,7 @@ double AeroDynamics::CalculateSideCoefficient() const
 
 	side_coe = m_CY_beta * beta + m_CY_dr * m_Rudder - m_CY_r * m_AngularVelocityBody.z;
 
-	CSP_LOG(CSP_PHYSICS, CSP_DEBUG, "AeroDynamics::CalculateSideCoefficient() " << side_coe );
+	CSP_LOG(PHYSICS, DEBUG, "AeroDynamics::CalculateSideCoefficient() " << side_coe );
 
 	return side_coe;
 }

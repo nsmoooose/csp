@@ -39,7 +39,6 @@ SOURCES = \
 	InputInterface.cpp \
 	LandingGear.cpp \
 	LogoScreen.cpp \
-	LogStream.cpp \
 	MenuScreen.cpp \
  	Message.cpp \
 	mmgr.cpp \

@@ -25,7 +25,7 @@
 
 #include "DynamicObject.h"
 #include "BaseController.h"
-#include "LogStream.h"
+#include "Log.h"
 #include "VirtualBattlefield.h"
 #include "VirtualScene.h"
 #include "TerrainObject.h"
@@ -120,7 +120,7 @@ void DynamicObject::setGlobalPosition(double x, double y, double z)
 	}
 
 /*
-	CSP_LOG(CSP_APP, CSP_DEBUG, "SimObject::setPosition - ID: " << m_ObjectID 
+	CSP_LOG(APP, DEBUG, "SimObject::setPosition - ID: " << m_ObjectID 
 	        << ", Name: " << m_ObjectName << ", Position: " << m_GlobalPosition );
 */
 }
@@ -136,7 +136,7 @@ void DynamicObject::setVelocity(simdata::Vector3 const &velocity)
 	m_Speed = m_LinearVelocity.Length();
 
 /*
-	CSP_LOG(CSP_APP, CSP_DEBUG, "SimObject::setVelocity - ID: " << m_ObjectID 
+	CSP_LOG(APP, DEBUG, "SimObject::setVelocity - ID: " << m_ObjectID 
 	<< ", Name: " << m_ObjectName << ", Velocity: " << m_LinearVelocity );
 */
 }
@@ -147,7 +147,7 @@ void DynamicObject::setVelocity(double Vx, double Vy, double Vz)
 	m_Speed = m_LinearVelocity.Length();
 
 /*
-	CSP_LOG(CSP_APP, CSP_DEBUG, "SimObject::setVelocity - ID: " << m_ObjectID 
+	CSP_LOG(APP, DEBUG, "SimObject::setVelocity - ID: " << m_ObjectID 
 	<<  ", Name: " << m_ObjectName << ", Velocity: " << m_LinearVelocity );
 */
 }

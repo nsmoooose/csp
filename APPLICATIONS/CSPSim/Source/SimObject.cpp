@@ -24,7 +24,7 @@
 
 
 #include "SimObject.h"
-#include "LogStream.h"
+#include "Log.h"
 #include "SmokeEffects.h"
 #include "VirtualBattlefield.h"
 
@@ -40,7 +40,7 @@ SIMDATA_REGISTER_INTERFACE(SimObject)
 
 SimObject::SimObject()
 {
-	CSP_LOG(CSP_APP, CSP_DEBUG, "SimObject::SimObject()" );
+	CSP_LOG(APP, DEBUG, "SimObject::SimObject()" );
 
 	m_SceneModel = NULL;
 
@@ -54,7 +54,7 @@ SimObject::SimObject()
 
 SimObject::~SimObject()
 {
-	CSP_LOG(CSP_APP, CSP_INFO, "SimObject::~SimObject()" );
+	CSP_LOG(APP, INFO, "SimObject::~SimObject()" );
 }
 
 
@@ -128,7 +128,7 @@ void SimObject::setLocalPosition(double x, double y, double z)
 		m_LocalPosition.z = z;
 	}
 
-	CSP_LOG(CSP_APP, CSP_DEBUG, "SimObject::setPosition - ID: " << m_ObjectID 
+	CSP_LOG(APP, DEBUG, "SimObject::setPosition - ID: " << m_ObjectID 
 	        << ", Name: " << m_ObjectName << ", LocalPosition: " << m_LocalPosition );
 
 }
@@ -248,7 +248,7 @@ void SimObject::AddSmoke()
 
 void SimObject::addToScene(VirtualBattlefield *battlefield)
 {
-	CSP_LOG(CSP_APP, CSP_DEBUG, "SimObject::addToScene() - ID: " << m_iObjectID);
+	CSP_LOG(APP, DEBUG, "SimObject::addToScene() - ID: " << m_iObjectID);
 
 	if (!m_ModelInit) {
 		initModel();
@@ -270,7 +270,7 @@ void SimObject::addToScene(VirtualBattlefield *battlefield)
 
 	setCullingActive(true);
 
-	//CSP_LOG(CSP_APP, CSP_DEBUG, "NodeName: " << m_rpNode->getName() <<
+	//CSP_LOG(APP, DEBUG, "NodeName: " << m_rpNode->getName() <<
 	//	", BoundingPos: " << sphere.center() << ", BoundingRadius: " << 
 	//	sphere.radius() );
 
@@ -289,7 +289,7 @@ int SimObject::updateScene() {
 	// second is: make an osg update()/draw() callback
 	
 
-	CSP_LOG(CSP_APP, CSP_DEBUG, "SimObject::updateScene() ID:"  << m_iObjectID );
+	CSP_LOG(APP, DEBUG, "SimObject::updateScene() ID:"  << m_iObjectID );
 
 	osg::Quat q = osg::Quat(m_qOrientation.x, m_qOrientation.y, m_qOrientation.z, m_qOrientation.w);
 	osg::Matrix R = osg::Matrix::rotate(q);
@@ -299,9 +299,9 @@ int SimObject::updateScene() {
 
 	// onRender();
 
-	CSP_LOG(CSP_APP, CSP_DEBUG, "SimObject::updateScene() - Position: " <<
+	CSP_LOG(APP, DEBUG, "SimObject::updateScene() - Position: " <<
 		m_LocalPosition );
-//	CSP_LOG(CSP_APP, CSP_DEBUG, "SimObject::updateScene() - Bounding Sphere " 
+//	CSP_LOG(APP, DEBUG, "SimObject::updateScene() - Bounding Sphere " 
 //		<< c.x() << ", " << c.y() << ", " << c.z() << ", " << r );
 
 	return 0;

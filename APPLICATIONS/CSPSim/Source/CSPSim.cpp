@@ -37,7 +37,7 @@
 #include "HID.h"
 #include "MenuScreen.h"
 #include "LogoScreen.h"
-#include "LogStream.h"
+#include "Log.h"
 #include "Shell.h"
 #include "SimObject.h"
 #include "StaticObject.h"
@@ -139,8 +139,8 @@ CSPSim::CSPSim()
 	m_Shell = new PyShell();
 
 	int level = g_Config.getInt("Debug", "LoggingLevel", 0, true);
-	csplog().setLogLevels(CSP_ALL, (cspDebugPriority)level);
-	csplog().set_output("CSPSim.log");
+	csplog().setLogLevels(CSP_ALL, level);
+	csplog().setOutput("CSPSim.log");
 }
 
 
@@ -155,7 +155,7 @@ CSPSim::~CSPSim()
 void CSPSim::setActiveObject(simdata::Ref<DynamicObject> object) {
 
 /*
-	CSP_LOG(CSP_APP, CSP_INFO, "CSPSim::setActiveObject - objectID: " << object->getObjectID() 
+	CSP_LOG(APP, INFO, "CSPSim::setActiveObject - objectID: " << object->getObjectID() 
 		  << ", ObjectType: " << object->getObjectType() 
 		  << ", Position: " << object->getGlobalPosition());
 */
@@ -212,7 +212,7 @@ void CSPSim::togglePause() {
 void CSPSim::init()
 {
 	try {
-		CSP_LOG(CSP_APP, CSP_INFO, "Starting CSPSim...");
+		CSP_LOG(APP, INFO, "Starting CSPSim...");
 
 		std::string data_path = g_Config.getPath("Paths", "DataPath", ".", true);
 		std::string archive_file = simdata::ospath::join(data_path, "sim.dar");
@@ -224,8 +224,8 @@ void CSPSim::init()
 			m_DataManager.addArchive(sim);
 		} 
 		catch (simdata::Exception &e) {
-			CSP_LOG(CSP_APP, CSP_ERROR, "Error opening data archive " << archive_file);
-			CSP_LOG(CSP_APP, CSP_ERROR, e.getType() << ": " << e.getMessage());
+			CSP_LOG(APP, ERROR, "Error opening data archive " << archive_file);
+			CSP_LOG(APP, ERROR, e.getType() << ": " << e.getMessage());
 			throw;
 			//::exit(0);
 		}
@@ -347,7 +347,7 @@ void CSPSim::init()
 
 void CSPSim::cleanup()
 {
-	CSP_LOG(CSP_APP, CSP_INFO, "CSPSim  cleanup...");
+	CSP_LOG(APP, INFO, "CSPSim  cleanup...");
 
 	assert(m_Battlefield.valid());
 	assert(m_Scene.valid());
@@ -384,14 +384,14 @@ void CSPSim::cleanup()
 
 void CSPSim::quit()
 {
-	CSP_LOG(CSP_APP, CSP_DEBUG, "CSPSim::quit...");
+	CSP_LOG(APP, DEBUG, "CSPSim::quit...");
 	m_Finished = true;
 }
 
 
 void CSPSim::changeScreen(BaseScreen * newScreen)
 {
-	CSP_LOG(CSP_APP, CSP_DEBUG, "CSPSim::changeScreen ...");
+	CSP_LOG(APP, DEBUG, "CSPSim::changeScreen ...");
 	m_PrevScreen = m_CurrentScreen;
 	m_CurrentScreen = newScreen;
 }
@@ -403,7 +403,7 @@ void CSPSim::run()
 	float low_priority = 0.0;
 	int idx = 0;
 
-	CSP_LOG(CSP_APP, CSP_DEBUG, "CSPSim::run...");
+	CSP_LOG(APP, DEBUG, "CSPSim::run...");
 
 	//m_bShowStats = true;
 
@@ -436,7 +436,7 @@ void CSPSim::run()
 	try 
 	{
 		while (!m_Finished) {
-			CSP_LOG(CSP_APP, CSP_DEBUG, "CSPSim::run... Starting loop iteration");
+			CSP_LOG(APP, DEBUG, "CSPSim::run... Starting loop iteration");
 
 			updateTime();
 			float dt = m_FrameTime;
@@ -486,12 +486,12 @@ void CSPSim::run()
 	}
    
 	catch(DemeterException * pEx) {
-		CSP_LOG(CSP_APP, CSP_ERROR, "Caught Demeter Exception: " << pEx->GetErrorMessage());
+		CSP_LOG(APP, ERROR, "Caught Demeter Exception: " << pEx->GetErrorMessage());
 		cleanup();
 		::exit(1);
 	}
 	catch(...) {
-		CSP_LOG(CSP_APP, CSP_ERROR, "MAIN: Unexpected exception, GLErrorNUM: " << glGetError());
+		CSP_LOG(APP, ERROR, "MAIN: Unexpected exception, GLErrorNUM: " << glGetError());
 		cleanup();
 		::exit(1);
 	}
@@ -542,7 +542,7 @@ void CSPSim::updateTime()
 
 void CSPSim::doInput(double dt)
 {
-	CSP_LOG(CSP_APP, CSP_DEBUG, "CSPSim::doInput()...");
+	CSP_LOG(APP, DEBUG, "CSPSim::doInput()...");
 
 	VirtualHID *screen_interface = m_CurrentScreen->getInterface();
 
@@ -581,7 +581,7 @@ void CSPSim::doInput(double dt)
  */
 void CSPSim::updateObjects(double dt)
 {
-	CSP_LOG(CSP_APP, CSP_DEBUG, "CSPSim::updateObjects...");
+	CSP_LOG(APP, DEBUG, "CSPSim::updateObjects...");
 
     	if (m_Battlefield.valid()) {
 		m_Battlefield->onUpdate(dt);
@@ -595,7 +595,7 @@ void CSPSim::updateObjects(double dt)
 
 int CSPSim::initSDL()
 {
-	CSP_LOG(CSP_APP, CSP_DEBUG, "Initializing SDL...");
+	CSP_LOG(APP, DEBUG, "Initializing SDL...");
 
 	int height = g_Config.getInt("Screen", "Height", 768, true);
 	int width = g_Config.getInt("Screen", "Width", 1024, true);
@@ -609,7 +609,7 @@ int CSPSim::initSDL()
 
 	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK | SDL_INIT_AUDIO) != 0) {
 		printf("Unable to initialize SDL: %s\n", SDL_GetError());
-		CSP_LOG(CSP_APP, CSP_ERROR, "ERROR! Unable to initialize SDL: " << SDL_GetError());
+		CSP_LOG(APP, ERROR, "ERROR! Unable to initialize SDL: " << SDL_GetError());
 		return 1;
 	}
 
@@ -619,7 +619,7 @@ int CSPSim::initSDL()
 	const SDL_VideoInfo *info = SDL_GetVideoInfo();
 	int bpp = info->vfmt->BitsPerPixel;
 
-	CSP_LOG(CSP_APP, CSP_ERROR, "Initializing video at " << bpp << " BitsPerPixel.");
+	CSP_LOG(APP, ERROR, "Initializing video at " << bpp << " BitsPerPixel.");
 
 	Uint32 flags = SDL_OPENGL | SDL_HWSURFACE | SDL_DOUBLEBUF; 
 
@@ -633,15 +633,15 @@ int CSPSim::initSDL()
 
 	if (m_SDLScreen == NULL) {
 		printf("Unable to set video mode: %s\n", SDL_GetError());
-		CSP_LOG(CSP_APP, CSP_ERROR, "ERROR! Unable to initialize SDL: " << SDL_GetError());
+		CSP_LOG(APP, ERROR, "ERROR! Unable to initialize SDL: " << SDL_GetError());
 		return 1;
 	}
 
 	SDL_JoystickEventState(SDL_ENABLE);
 	m_SDLJoystick = SDL_JoystickOpen(0);
 	if (m_SDLJoystick == NULL) {
-		CSP_LOG(CSP_APP, CSP_ERROR, "Failed to open joystick");
-		CSP_LOG(CSP_APP, CSP_ERROR, SDL_GetError());
+		CSP_LOG(APP, ERROR, "Failed to open joystick");
+		CSP_LOG(APP, ERROR, SDL_GetError());
 	}
     
 	SDL_EnableUNICODE(1);
@@ -650,7 +650,7 @@ int CSPSim::initSDL()
 	std::string sound_path = g_Config.getPath("Paths", "SoundPath", ".", true);
 	if ( SDL_LoadWAV(simdata::ospath::join(sound_path, "avionturbine5.wav").c_str(),
 		&m_audioWave.spec, &m_audioWave.sound, &m_audioWave.soundlen) == NULL ) {
-		CSP_LOG(CSP_APP, CSP_ERROR,  "Couldn't load " << sound_path << "/avionturbine5.wav: " << SDL_GetError());
+		CSP_LOG(APP, ERROR,  "Couldn't load " << sound_path << "/avionturbine5.wav: " << SDL_GetError());
 		::exit(1);
 	}
 	m_audioWave.spec.callback = fillerup;

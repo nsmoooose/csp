@@ -25,7 +25,7 @@
 
 #include "TerrainObject.h"
 #include "Config.h"
-#include "LogStream.h"
+#include "Log.h"
 
 #include "Terrain.h"
 #include "DemeterDrawable.h"
@@ -238,7 +238,7 @@ void TerrainObject::getNormal(float x, float y, float & normalX,
 
 int TerrainObject::createTerrain()
 {
-	CSP_LOG(CSP_ALL, CSP_DEBUG, "TerrainObject::createTerrain() " );
+	CSP_LOG(TERRAIN, DEBUG, "TerrainObject::createTerrain() " );
 	updateDemeterSettings();
 	if (!m_TextureFactory) {
 		if (m_DetailTextureFile.getSource() == "") {
@@ -281,7 +281,7 @@ int TerrainObject::createTerrain()
 int TerrainObject::createTerrainLattice()
 {
 
-	CSP_LOG(CSP_ALL, CSP_DEBUG, "TerrainObject::createTerrainLattice()..." );
+	CSP_LOG(TERRAIN, DEBUG, "TerrainObject::createTerrainLattice()..." );
 
 	//float detailThreshold = Config.GetFloat("TerraindetailThreshold");
     
@@ -324,7 +324,7 @@ int TerrainObject::createTerrainLattice()
   
 	m_TerrainLattice->SetCameraPosition(500000, 500000, 3000);
 
-	CSP_LOG(CSP_ALL, CSP_DEBUG, " ...TerrainObject::createTerrainLattice()");
+	CSP_LOG(TERRAIN, DEBUG, " ...TerrainObject::createTerrainLattice()");
 
 	return 1;
 }
@@ -339,7 +339,7 @@ void TerrainObject::setCameraPosition(float x, float y, float z)
 
 osg::Node* TerrainObject::createTerrainLatticeNode(Demeter::TerrainLattice* pTerrainLattice)
 {
-	CSP_LOG(CSP_APP, CSP_INFO, "TerrainObject::createTerrainLatticeNode" );
+	CSP_LOG(TERRAIN, INFO, "TerrainObject::createTerrainLatticeNode" );
     
 	Demeter::DemeterLatticeDrawable* pLatticeDrawable = NULL;
 	osg::Geode* pGeode = NULL;
@@ -359,7 +359,7 @@ osg::Node* TerrainObject::createTerrainLatticeNode(Demeter::TerrainLattice* pTer
 		pGeode->addDrawable(pLatticeDrawable);
 	}
 	catch(...) {
-		CSP_LOG(CSP_APP, CSP_ERROR, "Caught Exception in TerrainObject::createTerrainLatticeNode");
+		CSP_LOG(TERRAIN, ERROR, "Caught Exception in TerrainObject::createTerrainLatticeNode");
 	}
     
     return pGeode;
@@ -368,7 +368,7 @@ osg::Node* TerrainObject::createTerrainLatticeNode(Demeter::TerrainLattice* pTer
 
 osg::Node* TerrainObject::createTerrainNode(Demeter::Terrain* pTerrain)
 {
-	CSP_LOG(CSP_APP, CSP_INFO, "TerrainObject::createTerrainNode" );
+	CSP_LOG(TERRAIN, INFO, "TerrainObject::createTerrainNode" );
 
 	osg::Geode* pGeode = NULL;
 
@@ -379,7 +379,7 @@ osg::Node* TerrainObject::createTerrainNode(Demeter::Terrain* pTerrain)
 		pGeode->addDrawable(pDrawable);
 	}
 	catch(...) {
-		CSP_LOG(CSP_APP, CSP_ERROR, "Caught Exception in TerrainObject::createTerrainNode");
+		CSP_LOG(TERRAIN, ERROR, "Caught Exception in TerrainObject::createTerrainNode");
 	}
 
 	return pGeode;

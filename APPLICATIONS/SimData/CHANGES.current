@@ -1,3 +1,11 @@
 Version 0.3.3 (in progress)
 ===========================
 
+2003-05-03: onsight
+            Made static log variables into class members, so that multiple logs
+	    can exist in one application.  Since SimData itself uses the logging
+	    classes, this was necessary for it to be useful as a library class
+	    (and just makes much more sense).
+	   
+            Changed the log method set_output() to setOutput().
+

@@ -43,7 +43,7 @@
 // Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 // Boston, MA  02111-1307, USA.
 //
-// $Id: LogStream.h,v 1.5 2003/04/23 09:14:20 mkrose Exp $
+// $Id: LogStream.h,v 1.6 2003/05/04 07:23:23 mkrose Exp $
 
 #ifndef __SIMDATA_LOGSTREAM_H__
 #define __SIMDATA_LOGSTREAM_H__
@@ -99,35 +99,35 @@ public:
 	* @param c debug class
 	* @param p priority
 	*/
-	static void set_log_level(int c, int p);
+	void set_log_level(int c, int p);
 
 
 	/**
 	* Set the allowed logging classes.
 	* @param c All enabled logging classes anded together.
 	*/
-	static void set_log_classes(int c);
+	void set_log_classes(int c);
 
 
 	/**
 	* Get the logging classes currently enabled.
 	* @return All enabled debug logging anded together.
 	*/
-	static int get_log_classes ();
+	int get_log_classes ();
 
 
 	/**
 	* Set the logging priority.
 	* @param p The priority cutoff for logging messages.
 	*/
-	static void set_log_priority(int p);
+	void set_log_priority(int p);
 
 
 	/**
 	* Get the current logging priority.
 	* @return The priority cutoff for logging messages.
 	*/
-	static int get_log_priority ();
+	int get_log_priority ();
 
 
 	/**
@@ -147,11 +147,11 @@ protected:
 private:
 
 	// The streambuf used for actual output. Defaults to cerr.rdbuf().
-	static std::streambuf* sbuf;
+	std::streambuf* sbuf;
 
-	static bool logging_enabled;
-	static int logClass;
-	static int logPriority;
+	bool logging_enabled;
+	int logClass;
+	int logPriority;
 
 private:
 
@@ -164,7 +164,7 @@ inline int
 logbuf::sync()
 {
 	if (!sbuf) return -1;
-	return 0;
+	return sbuf->pubsync();
 }
 
 inline void
@@ -240,7 +240,7 @@ public:
 	* Set the output stream
 	* @param out output stream
 	*/
-	void set_output( std::ostream& out ) { 
+	void setOutput( std::ostream& out ) { 
 		_close();
 		lbuf.set_sb( out.rdbuf() ); 
 	}
@@ -249,7 +249,7 @@ public:
 	* Set the output stream
 	* @param fn output file path
 	*/
-	void set_output( std::string const &fn ) { 
+	void setOutput( std::string const &fn ) { 
 		_close();
 		m_out = new std::ofstream(fn.c_str());
 		lbuf.set_sb( m_out->rdbuf() ); 

@@ -24,7 +24,7 @@
 
 
 #include "ObjectModel.h"
-#include "LogStream.h"
+#include "Log.h"
 #include "Config.h"
 
 #include <osgDB/FileUtils>
@@ -190,14 +190,14 @@ void ObjectModel::loadModel() {
 
 	std::string source = simdata::ospath::filter(simdata::ospath::join(g_ModelPath, m_ModelPath.getSource()));
 
-	CSP_LOG(CSP_APP, CSP_DEBUG, "ObjectModel::loadModel: " << source);
+	CSP_LOG(APP, DEBUG, "ObjectModel::loadModel: " << source);
 
 	osg::Node *pNode = osgDB::readNodeFile(source);
 
 	if (pNode) {
-		CSP_LOG(CSP_APP, CSP_DEBUG, "ObjectModel::loadModel: readNodeFile() succeeded");
+		CSP_LOG(APP, DEBUG, "ObjectModel::loadModel: readNodeFile() succeeded");
 	} else {
-		CSP_LOG(CSP_APP, CSP_DEBUG, "ObjectModel::loadModel: readNodeFile() failed.");
+		CSP_LOG(APP, DEBUG, "ObjectModel::loadModel: readNodeFile() failed.");
 	}
 
 	assert(pNode);
@@ -289,7 +289,7 @@ void ObjectModel::showContactMarkers(bool on) {
 SceneModel::SceneModel(simdata::Ref<ObjectModel> const & model) {
 	m_Model = model;
 	assert(m_Model.valid());
-	CSP_LOG(CSP_APP, CSP_INFO, "create SceneModel for " << m_Model->getModelPath());
+	CSP_LOG(APP, INFO, "create SceneModel for " << m_Model->getModelPath());
 	osg::Node *model_node = m_Model->getModel().get();
 	assert(model_node);
 	// to switch between various representations of the same object (depending on views for example)
@@ -313,7 +313,7 @@ SceneModel::~SceneModel() {
 /*
 void SimObject::initModel()
 { 
-	CSP_LOG(CSP_APP, CSP_DEBUG, "SimObject::initModel() - ID: " << m_iObjectID);
+	CSP_LOG(APP, DEBUG, "SimObject::initModel() - ID: " << m_iObjectID);
 
 	assert(m_rpNode == NULL && m_rpSwitch == NULL && m_rpTransform == NULL);
 	assert(m_Model.valid());
@@ -365,7 +365,7 @@ void SimObject::ShowRepresentant(unsigned short const p_usflag)
 
 	setCullingActive(true);
 
-	//CSP_LOG(CSP_APP, CSP_DEBUG, "NodeName: " << m_rpNode->getName() <<
+	//CSP_LOG(APP, DEBUG, "NodeName: " << m_rpNode->getName() <<
 	//	", BoundingPos: " << sphere.center() << ", BoundingRadius: " << 
 	//	sphere.radius() );
 

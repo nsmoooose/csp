@@ -23,8 +23,9 @@
  **/
 
 
-#include "LogStream.h"
 #include "Message.h"
+#include "Log.h"
+
 
 Message::Message()
 {
@@ -59,7 +60,7 @@ Message & Message::operator=(const Message & message)
 
 void Message::dump()
 {
-  CSP_LOG(CSP_APP, CSP_INFO, "Message) Type: " << type
+  CSP_LOG(APP, INFO, "Message) Type: " << type
        << ", SenderID: " << senderID
        << ", receiverID: " << receiverID
        << ", sentTime: " << sentTime

@@ -28,7 +28,7 @@
 # endif
 
 #include "EventMapIndex.h"
-#include "LogStream.h"
+#include "Log.h"
 
 #include <osgDB/FileUtils>
 #include <osgDB/FileNameUtils>
@@ -58,7 +58,7 @@ EventMapping *EventMapIndex::getMap(const std::string &id) {
 void EventMapIndex::load(std::string const &path) {
 	EventMapping *m = new EventMapping;
 	assert(m);
-	CSP_LOG(CSP_APP, CSP_INFO, "Loading human interface device mapping '" << path << "'");
+	CSP_LOG(APP, INFO, "Loading human interface device mapping '" << path << "'");
 	if (m->load(path)) {
 		m_Maps.push_back(m);
 		std::vector<simdata::hasht>::const_iterator idx;
@@ -76,7 +76,7 @@ void EventMapIndex::loadAllMaps() {
 	osgDB::DirectoryContents dc;
 	osgDB::DirectoryContents::iterator file;
 	path = g_Config.getPath("Paths", "InputMapPath", ".", true);
-	CSP_LOG(CSP_APP, CSP_INFO, "Looking for human interface device mappings in '" << path << "'");
+	CSP_LOG(APP, INFO, "Looking for human interface device mappings in '" << path << "'");
 	dc = osgDB::getDirectoryContents(path);
 	for (file = dc.begin(); file != dc.end(); file++) {
 		std::string fn = simdata::ospath::join(path, *file);

@@ -23,7 +23,7 @@
  **/
 
 #include "AircraftObject.h"
-#include "LogStream.h"
+#include "Log.h"
 #include <SimData/Math.h>
 
 using simdata::DegreesToRadians;
@@ -38,7 +38,7 @@ AircraftObject::AircraftObject(): DynamicObject()
 	//m_iObjectType = AIRPLANE_OBJECT_TYPE;
 	//m_iObjectID = g_pBattlefield->getNewObjectID();
 
-	CSP_LOG(CSP_APP, CSP_DEBUG, "AircraftObject::AircraftObject() ...");
+	CSP_LOG(APP, DEBUG, "AircraftObject::AircraftObject() ...");
 	m_ObjectName = "AIRCRAFT";
 
 	m_Heading = 0.0;
@@ -107,7 +107,7 @@ AircraftObject::AircraftObject(): DynamicObject()
 	BIND_ACTION("GEAR_DOWN", GearDown);
 	BIND_ACTION("GEAR_TOGGLE", GearToggle);
 
-	CSP_LOG(CSP_APP, CSP_DEBUG, "... AircraftObject::AircraftObject()");
+	CSP_LOG(APP, DEBUG, "... AircraftObject::AircraftObject()");
 }
 
 
@@ -160,13 +160,13 @@ void AircraftObject::initialize()
 
 double AircraftObject::onUpdate(double dt)
 {
-	CSP_LOG(CSP_APP, CSP_DEBUG, "AircraftObject::onUpdate ...");
+	CSP_LOG(APP, DEBUG, "AircraftObject::onUpdate ...");
 	// TODO: update AI controller
 	updateControls(dt);
 	doFCS(dt);
 	DynamicObject::onUpdate(dt);
 	// TODO: update HUD?
-	CSP_LOG(CSP_APP, CSP_DEBUG, "... AircraftObject::onUpdate");
+	CSP_LOG(APP, DEBUG, "... AircraftObject::onUpdate");
 	return 0.0;
 }
 
@@ -181,10 +181,10 @@ unsigned int AircraftObject::onRender()
 
 void AircraftObject::updateControls(double dt)
 {
-	CSP_LOG(CSP_APP, CSP_DEBUG, "AircraftObject::updateControls ...");
-	CSP_LOG(CSP_APP, CSP_DEBUG, "AircraftObject::m_dThrottleInput = " << m_dThrottleInput);
-	CSP_LOG(CSP_APP, CSP_DEBUG, "AircraftObject::m_dAileronInput = " << m_dAileronInput);
-	CSP_LOG(CSP_APP, CSP_DEBUG, "AircraftObject::m_dElevatorInput = " << m_dElevatorInput);
+	CSP_LOG(APP, DEBUG, "AircraftObject::updateControls ...");
+	CSP_LOG(APP, DEBUG, "AircraftObject::m_dThrottleInput = " << m_dThrottleInput);
+	CSP_LOG(APP, DEBUG, "AircraftObject::m_dAileronInput = " << m_dAileronInput);
+	CSP_LOG(APP, DEBUG, "AircraftObject::m_dElevatorInput = " << m_dElevatorInput);
 	m_ThrottleInput += m_dThrottleInput * dt * 0.2;
 	m_AileronInput += m_dAileronInput * dt * 0.4;
 	m_ElevatorInput += m_dElevatorInput * dt * 0.4;
@@ -212,20 +212,20 @@ void AircraftObject::updateControls(double dt)
 	CLIP(m_ThrottleInput, -1.0, 1.0);
 	CLIP(m_AileronInput, -1.0, 1.0);
 	CLIP(m_ElevatorInput, -1.0, 1.0);
-	CSP_LOG(CSP_APP, CSP_DEBUG, "AircraftObject::m_decayElevator = " << m_decayElevator);
-	CSP_LOG(CSP_APP, CSP_DEBUG, "AircraftObject::m_ElevatorInput = " << m_ElevatorInput);
-	CSP_LOG(CSP_APP, CSP_DEBUG, "... AircraftObject::updateControls");
+	CSP_LOG(APP, DEBUG, "AircraftObject::m_decayElevator = " << m_decayElevator);
+	CSP_LOG(APP, DEBUG, "AircraftObject::m_ElevatorInput = " << m_ElevatorInput);
+	CSP_LOG(APP, DEBUG, "... AircraftObject::updateControls");
 }
 
 void AircraftObject::doFCS(double dt)
 {
-	CSP_LOG(CSP_APP, CSP_DEBUG, "AircraftObject::doFCS ...");
+	CSP_LOG(APP, DEBUG, "AircraftObject::doFCS ...");
 	// FIXME: very temporary fcs mappings
 	m_Rudder = m_RudderInput * m_RudderMax * 0.017;
 	m_Aileron = m_AileronInput * m_AileronMax * 0.017;
 	m_Elevator = m_ElevatorInput * m_ElevatorMax * 0.017;
 	m_Throttle = m_ThrottleInput;
-	CSP_LOG(CSP_APP, CSP_DEBUG, " ... AircraftObject::doFCS");
+	CSP_LOG(APP, DEBUG, " ... AircraftObject::doFCS");
 }
 
 void AircraftObject::setThrottle(double x) 
@@ -246,35 +246,35 @@ void AircraftObject::setAileron(double x)
 
 void AircraftObject::setElevator(double x)
 { 
-	CSP_LOG(CSP_APP, CSP_DEBUG, "AircraftObject::setElevator ...");
+	CSP_LOG(APP, DEBUG, "AircraftObject::setElevator ...");
 	m_ElevatorInput = x; 
-	CSP_LOG(CSP_APP, CSP_DEBUG, "m_ElevatorInput = " << m_ElevatorInput << " ...AircraftObject::setElevator");
+	CSP_LOG(APP, DEBUG, "m_ElevatorInput = " << m_ElevatorInput << " ...AircraftObject::setElevator");
 }
 
 void AircraftObject::IncElevator() { 
-	CSP_LOG(CSP_APP, CSP_DEBUG, "AircraftObject::IncElevator ...");
+	CSP_LOG(APP, DEBUG, "AircraftObject::IncElevator ...");
 	m_dElevatorInput = 1.0; 
-	CSP_LOG(CSP_APP, CSP_DEBUG, "... AircraftObject::IncElevator");
+	CSP_LOG(APP, DEBUG, "... AircraftObject::IncElevator");
 }	
 
 void AircraftObject::noIncElevator() { 
-	CSP_LOG(CSP_APP, CSP_DEBUG, "AircraftObject::noIncElevator ...");
+	CSP_LOG(APP, DEBUG, "AircraftObject::noIncElevator ...");
 	if (m_dElevatorInput > 0.0) m_dElevatorInput = 0.0; 
 	m_decayElevator = 30;
-	CSP_LOG(CSP_APP, CSP_DEBUG, "... AircraftObject::noIncElevator");
+	CSP_LOG(APP, DEBUG, "... AircraftObject::noIncElevator");
 }
 
 void AircraftObject::DecElevator() { 
-	CSP_LOG(CSP_APP, CSP_DEBUG, "AircraftObject::DecElevator ...");
+	CSP_LOG(APP, DEBUG, "AircraftObject::DecElevator ...");
 	m_dElevatorInput = -1.0; 
-	CSP_LOG(CSP_APP, CSP_DEBUG, "... AircraftObject::DecElevator");
+	CSP_LOG(APP, DEBUG, "... AircraftObject::DecElevator");
 }
 
 void AircraftObject::noDecElevator() { 
-	CSP_LOG(CSP_APP, CSP_DEBUG, "AircraftObject::noDecElevator ...");
+	CSP_LOG(APP, DEBUG, "AircraftObject::noDecElevator ...");
 	if (m_dElevatorInput < 0.0) m_dElevatorInput = 0.0; 
 	m_decayElevator = 30;
-	CSP_LOG(CSP_APP, CSP_DEBUG, "... AircraftObject::noDecElevator");
+	CSP_LOG(APP, DEBUG, "... AircraftObject::noDecElevator");
 }
 
 void AircraftObject::IncAileron() { 
@@ -565,7 +565,7 @@ void AircraftObject::dump()
 
 void AircraftObject::OnUpdate(double dt)
 {
-   CSP_LOG(CSP_APP, CSP_DEBUG, "AircraftObject::OnUpdate ...");
+   CSP_LOG(APP, DEBUG, "AircraftObject::OnUpdate ...");
     {
         if (m_pController)
           m_pController->OnUpdate(dt);
@@ -578,7 +578,7 @@ void AircraftObject::OnUpdate(double dt)
 		if ( m_sObjectName == "PLAYER" )
 		  m_phud->OnUpdate();
     }
-   CSP_LOG(CSP_APP, CSP_DEBUG, "... AircraftObject::OnUpdate");
+   CSP_LOG(APP, DEBUG, "... AircraftObject::OnUpdate");
 	
 }
 
@@ -652,20 +652,20 @@ void AircraftObject::doSimplePhysics(double dt)
 //  setVelocity(m_LinearVelocity);
   m_LocalPosition += dt * m_LinearVelocity;
 
-  CSP_LOG(CSP_APP, CSP_TRACE, "AircraftObject::SimplePhysics: ObjectID: " << m_iObjectID 
+  CSP_LOG(APP, CSP_TRACE, "AircraftObject::SimplePhysics: ObjectID: " << m_iObjectID 
 
       << ", Elevator: " << m_Elevator <<
                   ", Aileron: " << m_Aileron << ", PitchRate: " << pitchrate <<
                   ", RollRate: " << yawrate );
-  CSP_LOG(CSP_APP, CSP_TRACE, "AircraftObject::SimplePhysics: Position: " << m_LocalPosition <<
+  CSP_LOG(APP, CSP_TRACE, "AircraftObject::SimplePhysics: Position: " << m_LocalPosition <<
                   ", Direction: " << m_Direction << ", Up: " << m_CurrentNormDir <<
                   ", Velocity: " << m_LinearVelocity );
-  CSP_LOG(CSP_APP, CSP_TRACE, "AircraftObject::SimplePhysics: Orientation: " << std::endl << m_Orientation);
+  CSP_LOG(APP, CSP_TRACE, "AircraftObject::SimplePhysics: Orientation: " << std::endl << m_Orientation);
 }
 
 void AircraftObject::doComplexPhysics(double dt)
 {
-    CSP_LOG(CSP_APP, CSP_TRACE, "AircraftObject::doComplexPhysics...");
+    CSP_LOG(APP, CSP_TRACE, "AircraftObject::doComplexPhysics...");
 
     if (!m_bPhysicsInitialized)
     {
@@ -701,8 +701,8 @@ void AircraftObject::doComplexPhysics(double dt)
 
     //m_Force = m_pAircraftPhysics->m_ForcesBody;
     //m_Torque = m_pAircraftPhysics->m_Moments;
-	CSP_LOG(CSP_APP, CSP_DEBUG, "...AircraftObject::doComplexPhysics");
-	CSP_LOG(CSP_APP, CSP_DEBUG, "");
+	CSP_LOG(APP, DEBUG, "...AircraftObject::doComplexPhysics");
+	CSP_LOG(APP, DEBUG, "");
 }
 
 */

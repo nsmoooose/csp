@@ -23,7 +23,6 @@
  **/
 
 #include "Atmosphere.h"
-#include "LogStream.h"
 
 #include <SimData/InterfaceRegistry.h>
 #include <SimData/Random.h>

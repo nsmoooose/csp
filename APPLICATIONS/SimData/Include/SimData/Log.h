@@ -56,8 +56,10 @@ inline void error(std::string const &msg) {
 inline SIMDATA_EXPORT logstream&
 log()
 {
-	static logstream logstrm(std::cerr);
-	return logstrm;
+	//static logstream logstrm(std::cerr);
+	static logstream *logstrm = 0;
+	if (logstrm == 0) logstrm = new logstream(std::cerr);
+	return *logstrm;
 }
 
 /** 

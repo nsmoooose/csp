@@ -24,17 +24,13 @@
 
 
 #include "Tools.h"
-#include "LogStream.h"
-
+#include <ctype.h>
 #include <algorithm>
 
 
 // catches non-existent files to open, displays an error and exits the program
 FILE* fileopen(const char *cFilename, const char *cMode)
 {
-
-	//CSP_LOG(CSP_TERRAIN, CSP_TRACE, "fileopen() - " << cFilename);
-
 	FILE *f = fopen(cFilename, cMode);
 	
 	if (f==0)

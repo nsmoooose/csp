@@ -34,7 +34,6 @@
  */
 
 #include "LandingGear.h"
-#include "LogStream.h"
 #include <SimData/Math.h>
 
 #include <cstdio>

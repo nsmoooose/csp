@@ -36,7 +36,6 @@
 #include "TerrainObject.h"
 #include "DynamicObject.h"
 #include "Theater.h"
-#include "LogStream.h"
 #include "Config.h"
 
 #include <SimData/Types.h>

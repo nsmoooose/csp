@@ -26,7 +26,7 @@
 #include "GameScreen.h"
 #include "CSPSim.h"
 #include "EventMapIndex.h"
-#include "LogStream.h"
+#include "Log.h"
 #include "VirtualBattlefield.h"
 #include "VirtualScene.h"
 #include "CSPSim.h"
@@ -97,10 +97,10 @@ void GameScreen::initInterface()
 		if (map != NULL) {
 			m_Interface->setMapping(map);
 		} else {
-			CSP_LOG( CSP_APP , CSP_ERROR, "HID interface map '__gamescreen__' not found.");
+			CSP_LOG( APP , ERROR, "HID interface map '__gamescreen__' not found.");
 		}
 	} else {
-		CSP_LOG( CSP_APP , CSP_ERROR, "No HID interface maps defined, '__gamescreen__' not found.");
+		CSP_LOG( APP , ERROR, "No HID interface maps defined, '__gamescreen__' not found.");
 	}
 }
 
@@ -108,7 +108,7 @@ void GameScreen::initInterface()
 
 void GameScreen::turnViewAboutZ(double dt, double fangleMax)
 {
-	CSP_LOG( CSP_APP , CSP_DEBUG, "turnViewAboutZ: 	m_fangleViewZ = " << m_fangleRotZ 
+	CSP_LOG( APP , DEBUG, "turnViewAboutZ: 	m_fangleViewZ = " << m_fangleRotZ 
 		<< "; m_PanRateZ = " << m_PanRateZ);
 	
 	m_fangleRotZ += m_PanRateZ * dt;
@@ -126,7 +126,7 @@ void GameScreen::turnViewAboutZ(double dt, double fangleMax)
 
 void GameScreen::turnViewAboutX(double dt, double fangleMax)
 {
-	CSP_LOG( CSP_APP , CSP_DEBUG, "turnViewAboutX: 	m_fangleViewX = " << m_fangleRotX 
+	CSP_LOG( APP , DEBUG, "turnViewAboutX: 	m_fangleViewX = " << m_fangleRotX 
 		     << "; m_PanRateX = " << m_PanRateX);
 
 	m_fangleRotX += m_PanRateX * dt;
@@ -525,7 +525,7 @@ void GameScreen::setCamera(double dt)
 		simdata::Matrix3 R;
 		R = RotX * RotZ;
 		lookPos = RotX * RotZ * simdata::Vector3::YAXIS + eyePos;
-		CSP_LOG( CSP_APP , CSP_DEBUG, "setCamera: " << R.asString() << " : " << (simdata::Vector3::XAXIS).asString());
+		CSP_LOG( APP , DEBUG, "setCamera: " << R.asString() << " : " << (simdata::Vector3::XAXIS).asString());
 	}
 	else switch ( m_iViewMode )
 	{

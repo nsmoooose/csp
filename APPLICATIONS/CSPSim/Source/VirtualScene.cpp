@@ -28,7 +28,7 @@
 #include "TerrainObject.h"
 #include "CSPSim.h"
 #include "Config.h"
-#include "LogStream.h"
+#include "Log.h"
 #include "Sky.h"
 
 #include <SimData/Types.h>
@@ -193,7 +193,7 @@ VirtualScene::~VirtualScene()
 
 int VirtualScene::buildScene()
 {
-	CSP_LOG(CSP_APP, CSP_INFO, "VirtualScene::buildScene() ");
+	CSP_LOG(APP, INFO, "VirtualScene::buildScene() ");
 
 	int ScreenWidth = g_ScreenWidth;
 	int ScreenHeight = g_ScreenHeight;
@@ -361,7 +361,7 @@ void VirtualScene::buildSky()
 
 int VirtualScene::drawScene()
 {
-	CSP_LOG(CSP_APP, CSP_DEBUG, "VirtualScene::drawScene()...");
+	CSP_LOG(APP, DEBUG, "VirtualScene::drawScene()...");
     
 	osgUtil::CullVisitor * CullVisitor = m_View->getCullVisitor();
 	CullVisitor->setComputeNearFarMode(osgUtil::CullVisitor::COMPUTE_NEAR_FAR_USING_BOUNDING_VOLUMES);
@@ -406,12 +406,12 @@ void VirtualScene::onUpdate(float dt)
 		t += dt;
 	}
 
-	CSP_LOG(CSP_APP, CSP_DEBUG, "VirtualScene::onUpdate - entering" );
+	CSP_LOG(APP, DEBUG, "VirtualScene::onUpdate - entering" );
 
 	m_FrameStamp->setReferenceTime(m_FrameStamp->getReferenceTime() + dt);
 	m_FrameStamp->setFrameNumber(m_FrameStamp->getFrameNumber() + 1);
 
-	CSP_LOG(CSP_APP, CSP_DEBUG, "VirtualScene::onUpdate - leaving" );
+	CSP_LOG(APP, DEBUG, "VirtualScene::onUpdate - leaving" );
 }
 
 
@@ -423,7 +423,7 @@ void VirtualScene::setCameraNode( osg::Node * pNode)
 
 void VirtualScene::setLookAt(simdata::Vector3 & eyePos, simdata::Vector3 & lookPos, simdata::Vector3 & upVec)
 {
-	CSP_LOG(CSP_APP, CSP_DEBUG, "VirtualScene::setLookAt - eye: " << eyePos << ", look: " << lookPos << ", up: " << upVec);
+	CSP_LOG(APP, DEBUG, "VirtualScene::setLookAt - eye: " << eyePos << ", look: " << lookPos << ", up: " << upVec);
 
 	assert(m_View.valid());
 	osg::Camera * camera = m_View->getCamera();
@@ -480,7 +480,7 @@ void VirtualScene::setLookAt(simdata::Vector3 & eyePos, simdata::Vector3 & lookP
 	}
 
 
-	CSP_LOG(CSP_APP, CSP_DEBUG, "VirtualScene::setLookAt - eye: " << camera->getEyePoint()  << 
+	CSP_LOG(APP, DEBUG, "VirtualScene::setLookAt - eye: " << camera->getEyePoint()  << 
 	  ", look: " << camera->getCenterPoint()  << ", up: " << camera->getUpVector()  <<
 	  ", near: " << camera->zNear() << ", far: " << camera->zFar() );
 
@@ -489,7 +489,7 @@ void VirtualScene::setLookAt(simdata::Vector3 & eyePos, simdata::Vector3 & lookP
 #if 0
 void VirtualScene::setLookAt(simdata::Vector3 & eyePos, simdata::Vector3 & lookPos, simdata::Vector3 & upVec)
 {
-	CSP_LOG(CSP_APP, CSP_DEBUG, "VirtualScene::setLookAt - eye: " << eyePos << ", look: " << lookPos << ", up: " << upVec);
+	CSP_LOG(APP, DEBUG, "VirtualScene::setLookAt - eye: " << eyePos << ", look: " << lookPos << ", up: " << upVec);
 
 	assert(m_View.valid());
 	osg::Camera * camera = m_View->getCamera();
@@ -570,7 +570,7 @@ void VirtualScene::setLookAt(simdata::Vector3 & eyePos, simdata::Vector3 & lookP
 		m_Terrain->setCameraPosition( eyePos.x, eyePos.y, eyePos.z );
 
 
-	CSP_LOG(CSP_APP, CSP_DEBUG, "VirtualScene::setLookAt - eye: " << camera->getEyePoint()  << 
+	CSP_LOG(APP, DEBUG, "VirtualScene::setLookAt - eye: " << camera->getEyePoint()  << 
 	  ", look: " << camera->getCenterPoint()  << ", up: " << camera->getUpVector()  <<
 	  ", near: " << camera->zNear() << ", far: " << camera->zFar() );
 
@@ -589,7 +589,7 @@ void VirtualScene::getLookAt(simdata::Vector3 & eyePos, simdata::Vector3 & lookP
 	osg::Vec3 _up = camera->getUpVector();
 	upVec = simdata::Vector3(_up.x(), _up.y(),_up.z());
 
-	CSP_LOG(CSP_APP, CSP_DEBUG, "VirtualScene::getLookAt - eye: " << eyePos << ", look: " << lookPos << ", up: " << upVec);
+	CSP_LOG(APP, DEBUG, "VirtualScene::getLookAt - eye: " << eyePos << ", look: " << lookPos << ", up: " << upVec);
 }
 
 

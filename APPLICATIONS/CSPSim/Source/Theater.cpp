@@ -24,8 +24,6 @@
 
 
 #include "Theater.h"
-#include "LogStream.h"
-#include "Config.h"
 
 SIMDATA_REGISTER_INTERFACE(DamageModifier)
 

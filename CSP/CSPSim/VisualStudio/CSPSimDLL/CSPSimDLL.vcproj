@@ -23,7 +23,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				ImproveFloatingPointConsistency="FALSE"
-				AdditionalIncludeDirectories="$(PYTHON_PATH)/include;../../../SimData/Include;../../Include;../../../Demeter;../../../CSPChunkLod/include"
+				AdditionalIncludeDirectories="&quot;$(PYTHON_PATH)/include&quot;;../../../SimData/Include;../../Include;../../../Demeter;../../../CSPChunkLod/include;../../.."
 				PreprocessorDefinitions="WIN32;_USRDLL;CSPSIMDLL_EXPORTS"
 				StringPooling="FALSE"
 				BasicRuntimeChecks="3"
@@ -44,12 +44,12 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="OpenThreadsWin32d.lib osgChunkLodd.lib osgFXd.lib sigc-1.2d.lib producerd.lib opengl32.lib SDL.lib osgDBd.lib DemeterVisualC6d.lib osgTextd.lib osgUtild.lib osgParticled.lib osgd.lib _cSimData.lib ccgnu2.lib ccext2.lib"
+				AdditionalDependencies="OpenThreadsWin32d.lib osgChunkLodd.lib osgFXd.lib sigc-1.2d.lib producerd.lib opengl32.lib SDL.lib osgDBd.lib DemeterVisualC6d.lib osgTextd.lib osgUtild.lib osgParticled.lib osgd.lib _cSimData.lib ccgnu2.lib ccext2.lib SpatialIndexd.lib"
 				OutputFile="../../Bin/_cCSP.dll"
 				LinkIncremental="2"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="../../../SimData/SimData;&quot;$(PYTHON_PATH)/libs&quot;;../../../lib"
-				IgnoreDefaultLibraryNames=""
+				IgnoreDefaultLibraryNames="MSVCRTD"
 				GenerateDebugInformation="TRUE"
 				ProgramDatabaseFile=".\Debug/CSPSimDLL.pdb"
 				ImportLibrary=".\Debug/CSPSimDLL.lib"
@@ -99,7 +99,7 @@
 				EnableIntrinsicFunctions="TRUE"
 				FavorSizeOrSpeed="1"
 				OptimizeForProcessor="0"
-				AdditionalIncludeDirectories="$(PYTHON_PATH)/include;../../../SimData/Include;../../Include;../../../Demeter;../../../CSPChunkLod/include"
+				AdditionalIncludeDirectories="&quot;$(PYTHON_PATH)/include&quot;;../../../SimData/Include;../../Include;../../../Demeter;../../../CSPChunkLod/include;../../.."
 				PreprocessorDefinitions="WIN32;NDEBUG;_USRDLL;CSPSIMDLL_EXPORTS"
 				StringPooling="TRUE"
 				RuntimeLibrary="2"
@@ -121,11 +121,12 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="ws2_32.lib ccgnu2.lib osgFX.lib osgChunkLod.lib producer.lib osgText.lib DemeterVisualC6.lib opengl32.lib SDL.lib _cSimData.lib osgParticle.lib osgUtil.lib osgDB.lib osg.lib sigc-1.2.lib OpenThreadsWin32.lib ccext2.lib"
+				AdditionalDependencies="ws2_32.lib ccgnu2.lib osgFX.lib osgChunkLod.lib producer.lib osgText.lib DemeterVisualC6.lib opengl32.lib SDL.lib _cSimData.lib osgParticle.lib osgUtil.lib osgDB.lib osg.lib sigc-1.2.lib OpenThreadsWin32.lib ccext2.lib SpatialIndex.lib"
 				OutputFile="../../Bin/_cCSP.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="../../../lib;&quot;$(PYTHON_PATH)/libs&quot;;../../../SimData/SimData"
+				IgnoreDefaultLibraryNames="MSVCRTD"
 				GenerateDebugInformation="FALSE"
 				AssemblyDebug="0"
 				GenerateMapFile="FALSE"
@@ -187,6 +188,9 @@
 				RelativePath="..\..\Source\BaseScreen.cpp">
 			</File>
 			<File
+				RelativePath="..\..\Source\Battlefield.cpp">
+			</File>
+			<File
 				RelativePath="..\..\Source\cCSP_wrap.cpp">
 				<FileConfiguration
 					Name="Debug|Win32">
@@ -235,11 +239,6 @@
 				<FileConfiguration
 					Name="Debug|Win32"
 					ExcludedFromBuild="TRUE">
-					<Tool
-						Name="VCCLCompilerTool"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32">
 					<Tool
 						Name="VCCLCompilerTool"/>
 				</FileConfiguration>
@@ -311,6 +310,9 @@
 				RelativePath="..\..\Source\RedirectServerNode.cpp">
 			</File>
 			<File
+				RelativePath="..\..\Source\SceneManager.cpp">
+			</File>
+			<File
 				RelativePath="..\..\Source\ScreenInfo.cpp">
 			</File>
 			<File
@@ -321,6 +323,9 @@
 			</File>
 			<File
 				RelativePath="..\..\Source\SimpleConfig.cpp">
+			</File>
+			<File
+				RelativePath="..\..\Source\SimpleSceneManager.cpp">
 			</File>
 			<File
 				RelativePath="..\..\Source\Sky.cpp">
@@ -348,9 +353,6 @@
 			</File>
 			<File
 				RelativePath="..\..\Source\Tools.cpp">
-			</File>
-			<File
-				RelativePath="..\..\Source\VirtualBattlefield.cpp">
 			</File>
 			<File
 				RelativePath="..\..\Source\VirtualScene.cpp">
@@ -666,6 +668,9 @@
 				RelativePath="..\..\Include\BaseScreen.h">
 			</File>
 			<File
+				RelativePath="..\..\Include\Battlefield.h">
+			</File>
+			<File
 				RelativePath="..\..\Include\Bus.h">
 			</File>
 			<File
@@ -688,6 +693,9 @@
 			</File>
 			<File
 				RelativePath="..\..\Include\ConsoleCommands.h">
+			</File>
+			<File
+				RelativePath="..\..\Include\Controller.h">
 			</File>
 			<File
 				RelativePath="..\..\Include\CSPSim.h">
@@ -786,6 +794,9 @@
 				RelativePath="..\..\Include\RedirectServerNode.h">
 			</File>
 			<File
+				RelativePath="..\..\Include\SceneManager.h">
+			</File>
+			<File
 				RelativePath="..\..\Include\ScreenInfo.h">
 			</File>
 			<File
@@ -802,6 +813,9 @@
 			</File>
 			<File
 				RelativePath="..\..\Include\SimpleConfig.h">
+			</File>
+			<File
+				RelativePath="..\..\Include\SimpleSceneManager.h">
 			</File>
 			<File
 				RelativePath="..\..\Include\Sky.h">
@@ -835,9 +849,6 @@
 			</File>
 			<File
 				RelativePath="..\..\Include\Vector.h">
-			</File>
-			<File
-				RelativePath="..\..\Include\VirtualBattlefield.h">
 			</File>
 			<File
 				RelativePath="..\..\Include\VirtualScene.h">

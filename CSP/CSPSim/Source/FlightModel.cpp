@@ -28,10 +28,6 @@
 
 */
 
-# if defined(_MSC_VER) && (_MSC_VER <= 1300)
-#define NOMINMAX
-#endif
-
 #include "CSPSim.h"
 #include "Log.h" 
 #include "FlightModel.h"

@@ -100,7 +100,7 @@ public:
 		m_AlphaDot = alphaDot;
 		m_Beta = beta;
 		m_qBarS = m_HalfWingArea * qBar * airspeed * airspeed;
-		m_Inv2V = 0.5 / std::max<double>(0.5, airspeed);
+		m_Inv2V = 0.5 / std::max(0.5, airspeed);
 	}
 
 	inline void setControlSurfaces(double aileron, 

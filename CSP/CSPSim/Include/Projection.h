@@ -147,6 +147,7 @@ public:
  * lookups.
  */
 class Projection: public GnomonicMap {
+	typedef simdata::InterpolatedData<float>::value_t value_t;
 private:
 	simdata::Table m_NorthX, m_NorthY;
 	double m_SizeX, m_SizeY;
@@ -158,7 +159,7 @@ private:
 	 */
 	void _secantMap() {
 		double R = 6371010.0;
-		double angle = 0.5 * std::max<double>(m_SizeX, m_SizeY) / R;
+		double angle = 0.5 * std::max(m_SizeX, m_SizeY) / R;
 		double scale = 1.0 / cos(angle) / cos(angle);
 		scale = 0.5 * (1.0 + scale) / scale;
 		setRadius(R * scale);
@@ -196,8 +197,8 @@ private:
 			for (i = -nx; i <= nx; i++) {
 				simdata::Vector3 pos(i*spacing, j*spacing, 0.0);
 				simdata::Vector3 n = GnomonicMap::getNorth(pos);
-				dataX.push_back(n.x());
-				dataY.push_back(n.y());
+				dataX.push_back(static_cast<value_t>(n.x()));
+				dataY.push_back(static_cast<value_t>(n.y()));
 			}
 		}
 		m_NorthX.setData(dataX);
@@ -242,15 +243,13 @@ public:
 	 */
 	void dump() const {
 		assert(m_Valid);
-		int i, j;
-		float x, y;
 		std::cout << "P2 256 256 255\n";
-		for (j = 0; j < 256; j++) {
-			y = (j/256.0 - 0.5)*m_SizeY;
-			for (i = 0; i < 256; i++) {
-				x = (i/256.0 - 0.5)*m_SizeX;
-				double a = atan2(m_NorthX.getValue(x, y), m_NorthY.getValue(x, y));
-				int v = int(a * 127.5 / 3.1416) - 128;
+		for (int j = 0; j < 256; j++) {
+			float y = static_cast<float>((j/256.0 - 0.5)*m_SizeY);
+			for (int i = 0; i < 256; i++) {
+				float x = static_cast<float>((i/256.0 - 0.5)*m_SizeX);
+				double a = atan2(m_NorthX.getValue(x, y),m_NorthY.getValue(x, y));
+				int v = static_cast<int>(a * 127.5 / 3.1416) - 128;
 				if (v < 0) v += 255;
 				std::cout << v << " ";
 				if (i % 8 == 7) {
@@ -266,8 +265,8 @@ public:
 	 */
 	simdata::Vector3 getNorth(simdata::Vector3 const &pos) const {
 		assert(m_Valid);
-		double x = simdata::clampTo(pos.x(),-m_SizeX,m_SizeX);
-		double y = simdata::clampTo(pos.y(),-m_SizeY, m_SizeY);
+		float x = static_cast<value_t>(simdata::clampTo(pos.x(),-m_SizeX,m_SizeX));
+		float y = static_cast<value_t>(simdata::clampTo(pos.y(),-m_SizeY, m_SizeY));
 		return simdata::Vector3(m_NorthX.getValue(x, y), m_NorthY.getValue(x, y), 0.0);
 	}
 

@@ -25,16 +25,16 @@
 #ifndef __DYNAMICOBJECT_H__
 #define __DYNAMICOBJECT_H__
 
-
-#include "SimObject.h"
-#include "InputInterface.h"
-#include "Controller.h"
-#include "ObjectModel.h"
-#include "TerrainObject.h"
 #include "DataRecorder.h"
+#include "Controller.h"
+#include "InputInterface.h"
+#include "ObjectModel.h"
+#include "SimObject.h"
 #include "SystemsModel.h"
+#include "TerrainObject.h"
 
 class NetworkMessage;
+
 
 namespace osgParticle {
 	class Geode;
@@ -162,7 +162,7 @@ public:
 	void enableSmoke();
 
 	virtual void setDataRecorder(DataRecorder *recorder);
-	virtual NetworkMessage * getUpdateMessage();
+	virtual NetworkMessage* getUpdateMessage();
 	virtual void putUpdateMessage(NetworkMessage* message);
 
 protected:

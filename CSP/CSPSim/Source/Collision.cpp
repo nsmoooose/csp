@@ -107,7 +107,7 @@ void GroundCollisionDynamics::computeForceAndMoment(double x) {
 			// normal spring force plus damping
 			double normalForce = depth * m_SpringConstant + m_ImpactDamping * impactSpeed;
 			// sanity check
-			normalForce = std::max<double>(normalForce, 0.0);
+			normalForce = std::max(normalForce, 0.0);
 			forceBody += normalForce * normalGroundBody;
 			// sliding frictional force
 			simdata::Vector3 slidingVelocityBody = contactVelocityBody + impactSpeed * normalGroundBody;
@@ -115,7 +115,7 @@ void GroundCollisionDynamics::computeForceAndMoment(double x) {
 			if (slidingSpeed > 0.0) {
 				// in principle we should have both sliding and static friction coefficients,
 				// but this is probably adequate for now.
-				double frictionLimit = std::max<double>(0.1, m_Friction * normalForce);
+				double frictionLimit = std::max(0.1, m_Friction * normalForce);
 				// i'd like to do damped spring extension relative to a fixed point when not
 				// sliding, but not sure if this will work with rk since dt doesn't accumulate
 				// monotonic time.

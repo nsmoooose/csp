@@ -30,6 +30,7 @@
 #ifndef __BATTLEFIELD_H__
 #define __BATTLEFIELD_H__
 
+#include <limits>
 #include <map>
 #include <vector>
 

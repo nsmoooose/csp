@@ -30,11 +30,12 @@
 #include "Theater/FeatureModel.h"
 #include "DamageModifier.h"
 #include "Feature.h"
+#include "ObjectModel.h"
 
 #include <vector>
 
 
-class ObjectModel;
+
 class FeatureSceneGroup;
 class LayoutTransform;
 class ElevationCorrection;

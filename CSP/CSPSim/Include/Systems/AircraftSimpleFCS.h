@@ -50,7 +50,7 @@ class AircraftSimpleFCS: public System {
 			m_Rate = rate;
 			m_Limit0 = limit0;
 			m_Limit1 = limit1;
-			m_Limit = std::max<double>(abs(m_Limit0),abs(m_Limit1));
+			m_Limit = std::max(abs(m_Limit0),abs(m_Limit1));
 		}
 		void bindInput(Bus *bus, std::string const &name) {
 			b_Input = bus->getChannel(name, false);
@@ -65,11 +65,11 @@ class AircraftSimpleFCS: public System {
 			double input = 0.0;
 			double output = b_Output->value();
 			if (b_Input.valid()) input = b_Input->value() * m_Limit;
-			double smooth = std::min<double>(1.0, 10.0*abs(output-input));
+			double smooth = std::min(1.0, 10.0*abs(output-input));
 			if (output < input) {
-				output = std::min<double>(output + smooth*m_Rate*dt, m_Limit1);
+				output = std::min(output + smooth*m_Rate*dt, m_Limit1);
 			} else {
-				output = std::max<double>(output - smooth*m_Rate*dt, m_Limit0);
+				output = std::max(output - smooth*m_Rate*dt, m_Limit0);
 			}
 			b_Output->value() = output;
 		}

@@ -1099,7 +1099,7 @@ public:
 		float da = 2.0 * simdata::PI / m_Segments;
 		// XXX
 		//float radius = std::min(1000000.0, std::max(1.5*clip, sqrt(2.0 * 6370000.0 * altitude)));
-		float radius = std::min(99500.0f, std::max<float>(1.5f*clip, sqrt(2.0f * 6370000.0 * altitude)));
+		float radius = std::min(99500.0f, std::max(1.5f*clip, sqrt(2.0f * 6370000.0f * altitude)));
 		// variation less than 2 pixels under most conditions:
 		if (fabs(radius - m_Radius) < 0.0005 * m_Radius) return;
 		//std::cerr << "HORIZON -> " << radius << "\n";

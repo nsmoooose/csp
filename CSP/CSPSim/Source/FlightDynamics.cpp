@@ -20,9 +20,6 @@
  * @file FlightDynamics.cpp
  *
  **/
-# if defined(_MSC_VER) && (_MSC_VER <= 1300)
-#define NOMINMAX
-#endif
 
 #include <FlightDynamics.h>
 #include <FlightModel.h>

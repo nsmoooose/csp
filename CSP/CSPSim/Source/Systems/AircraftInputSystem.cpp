@@ -198,12 +198,12 @@ void AircraftInputSystem::CloseAirbrake() {
 }
 
 void AircraftInputSystem::DecAirbrake() {
-	double v = std::max<double>(0.0, m_AirbrakeInput.getValue() - 0.1);
+	double v = std::max(0.0, m_AirbrakeInput.getValue() - 0.1);
 	m_AirbrakeInput.setValue(v);
 }
 
 void AircraftInputSystem::IncAirbrake() {
-	double v = std::min<double>(0.0, m_AirbrakeInput.getValue() + 0.1);
+	double v = std::min(0.0, m_AirbrakeInput.getValue() + 0.1);
 	m_AirbrakeInput.setValue(v);
 }
 

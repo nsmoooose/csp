@@ -47,9 +47,6 @@
 #ifndef __CSPSIM_H__
 #define __CSPSIM_H__
 
-#define _WINSOCKAPI_
-
-
 #include <SimData/Ref.h>
 #include <SimData/ScopedPointer.h>
 #include <SimData/Date.h>
@@ -63,9 +60,6 @@
 #include <SDL/SDL_joystick.h>
 
 #include <Producer/RenderSurface>
-// Producer includes windows.h, which leaks a #define min and max
-#undef min
-#undef max
 
 struct SDL_Surface;
 

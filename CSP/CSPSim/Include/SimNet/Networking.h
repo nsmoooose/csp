@@ -26,7 +26,10 @@
 #define __NETWORKING_H__
 
 // use this to fix compile problems with mulitple includes of windows and winsock headers.
+#ifdef _WIN32
 #define _WINSOCKAPI_
+#define NOMINMAX
+#endif
 
 #include <cc++/network.h>
 

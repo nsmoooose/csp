@@ -18,6 +18,7 @@ all clean clean-deps: Makefile
 	@for dir in $(SUBDIRS); do \
 		$(MAKE) -C $${dir} $@ || exit 1; \
 	done
+	@$(MAKE) InputMaps
 
 #default: 
 #	@for dir in $(SUBDIRS); do \
@@ -28,5 +29,16 @@ Makefile: Makefile.in configure.in acinclude.m4
 	aclocal ; autoconf
 	./configure
 
+InputMaps: aircraft.hid gamescreen.hid
+
+
+%.hid:
+	@test -e Data/Input/$@ || \
+	  ( cd Tools/HID && \
+	    python map2hid Examples/$(@:%.hid=%.map) ../../Data/Input/$@ && \
+	    echo "Default input map created for $@; see Tools/HID/README for details." \
+	  )
+	@test -e Data/Input/$@ || \
+	    echo "Unable to create default input map for $@; see Tools/HID/README for details."
 
 

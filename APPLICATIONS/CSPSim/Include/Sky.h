@@ -232,6 +232,7 @@ private:
 	float m_EarthShine;
 	float m_SunShine;
 	float m_ApparentBrightness;
+	float m_RenderDistance;
 };
 
 

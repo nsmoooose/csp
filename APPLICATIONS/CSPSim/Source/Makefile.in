@@ -1,6 +1,6 @@
 TOPDIR = ..
 
-SUBDIRS = FX
+#SUBDIRS = FX
 
 DEMETER_PREFIX = $(TOPDIR)/$(DEMETER_RELATIVE)
 DEMETER_INCLUDE = -I$(DEMETER_PREFIX)
@@ -94,9 +94,9 @@ endif
 #	done
 	
 build-subdirs:
-	@for dir in $(SUBDIRS); do \
-		$(MAKE) -C $${dir} all; \
-	done
+#	@for dir in $(SUBDIRS); do \
+#		$(MAKE) -C $${dir} all; \
+#	done
 
 $(DEPDIR)/%.d : %
 	@echo "Computing dependencies for $<..."
@@ -121,6 +121,9 @@ CSP_wrap.o: CSP_wrap.cpp
 %.o: %.cpp 
 	$(CXX) -c $(CFLAGS) $(@:.o=.cpp)
 
+AeroDynamics.o: AeroDynamics.cpp 
+	$(CXX) -c $(CFLAGS) -O3 $(@:.o=.cpp)
+	
 Makefile: Makefile.in
 	cd $(TOPDIR) && ./configure
 

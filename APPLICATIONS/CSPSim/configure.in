@@ -51,10 +51,10 @@ CSP_LIB_CONFIG([GDAL], [gdal], [1.1.7], [Geospatial Data Abstraction Library], [
 
 dnl check for OpenSceneGraph
 CSP_OSG_CONFIG(osg, 0.9.3, [OpenSceneGraph])
-CSP_OSG_CONFIG(osgGLUT, 0.9.3, [OpenSceneGraph GLUT library])
-CSP_OSG_CONFIG(osgUtil, 0.9.3, [OpenSceneGraph Util library])
-CSP_OSG_CONFIG(osgText, 0.9.3, [OpenSceneGraph Util library])
-CSP_OSG_CONFIG(osgParticle, 0.9.3, [OpenSceneGraph Particle library])
+#CSP_OSG_CONFIG(osgGLUT, 0.9.3, [OpenSceneGraph GLUT library])
+#CSP_OSG_CONFIG(osgUtil, 0.9.3, [OpenSceneGraph Util library])
+#CSP_OSG_CONFIG(osgText, 0.9.3, [OpenSceneGraph Util library])
+#CSP_OSG_CONFIG(osgParticle, 0.9.3, [OpenSceneGraph Particle library])
 
 CSP_PYTHON(2.2.0)
 

@@ -494,17 +494,19 @@ void AstroBillboard::setAxes(const Vec3& axis, const Vec3 &up, const Vec3 &norma
 
 Moon::Moon(): AstronomicalBody() {
 	_radius = 1738000.0;
+	// approximate distance for setting initial size
+	//_distance = 384400000.0 - 6370000.0;
 	m_Latitude = -100.0;
 	m_DirtyImage = true;
 	m_Phase = 0.0;
-
 	m_ApparentBrightness = 0.0;
 	m_MoonShine = 0.0;
 	m_EarthShine = 0.0;
 	m_SunShine = 0.0;
 	
-	float y = 4100.0;
-	float x = 4100.0;
+	m_RenderDistance = 950000.0;
+	float x, y;
+	x = y = 1.0; //_radius / _distance * m_RenderDistance;
 	m_Image = osgDB::readImageFile("moon.png");
 	assert(m_Image.valid());
 
@@ -633,7 +635,6 @@ void Moon::_updateLighting(double x, double y, double z, double h, float intensi
 }
 
 void Moon::updateScene(double lat, double lmst, Sun const &sun, float intensity) {
-	static double R = 950000.0;
 	double h, A;
 	double x, y, z;
 	if (lat != m_Latitude) {
@@ -653,8 +654,10 @@ void Moon::updateScene(double lat, double lmst, Sun const &sun, float intensity)
 	x = y*sin(A);
 	y *= cos(A);
 	z = sin(h);
-	osg::Matrix T = osg::Matrix::translate(x*R, y*R, z*R);
-	m_Transform->setMatrix(T);
+	double scale = m_RenderDistance * _radius / _distance;
+	osg::Matrix S = osg::Matrix::scale(scale, scale, scale);
+	osg::Matrix T = osg::Matrix::translate(x*m_RenderDistance, y*m_RenderDistance, z*m_RenderDistance);
+	m_Transform->setMatrix(S*T);
 	_updateLighting(x, y, z, h, intensity);
 }
 

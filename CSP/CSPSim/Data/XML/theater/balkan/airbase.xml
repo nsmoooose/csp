@@ -38,5 +38,12 @@
             <Float name="y">1380</Float>
             <Float name="orientation">1.57</Float>
         </Object>
+        <!-- F-G Taxi signalisation -->
+        <Object class="FeatureLayout">
+            <Path name="model">caisson01</Path>
+            <Float name="x">365</Float>
+            <Float name="y">1218</Float>
+            <Float name="orientation">3.64</Float>
+        </Object>
     </List>
 </Object>

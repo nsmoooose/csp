@@ -2,7 +2,8 @@
 ===========================
 2004-12-19: lologramme
  * Add offices and flag
- 
+ * Add Taxi signalisation
+
 2004-12-18: onsight
  * Minor patches to make CSPSim work with OSG 0.9.8.  This changes are
    not backwards compatible with OSG 0.9.6.  To continue using the older

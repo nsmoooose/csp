@@ -137,7 +137,7 @@ void AircraftObject::unpack(simdata::UnPacker& p) {
 void AircraftObject::postCreate() {
 	DynamicObject::postCreate();
 	m_FlightModel->bindObject(m_LocalPosition, m_LinearVelocity, m_AngularVelocity, m_qOrientation);
-	m_FlightModel->bindGearSet(m_Gear);
+	m_FlightModel->bindGearSet(*(m_Gear.get()));
 	m_FlightModel->bindContacts(m_Model->getContacts());
 	m_FlightModel->setBoundingRadius(getBoundingSphereRadius());
 	m_FlightModel->setInertia(m_Mass, m_Inertia);
@@ -196,7 +196,7 @@ void AircraftObject::updateControls(double dt)
 	// FIXME only need to do this if gear is extended and/or WOW
 	float braking = m_BrakeInput + m_BrakePulse;
 	if (braking > 1.0) braking = 1.0;
-	m_Gear.setBraking(braking);
+	m_Gear->setBraking(braking);
 	
 	if (m_decayAileron > 0) {
 		m_decayAileron--;
@@ -233,7 +233,7 @@ void AircraftObject::setThrottle(double x)
 void AircraftObject::setRudder(double x)
 { 
 	m_RudderInput = x; 
-	m_Gear.setSteering(x);
+	m_Gear->setSteering(x);
 }
 
 void AircraftObject::setAileron(double x)

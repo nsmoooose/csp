@@ -156,7 +156,7 @@ protected:
 	double m_RudderMax;
 
 	// landing gear
-	LandingGearSet m_Gear;
+	simdata::Pointer<LandingGearSet> m_Gear;
 	
 	bool m_PhysicsInitialized;
 	bool m_ComplexPhysics;

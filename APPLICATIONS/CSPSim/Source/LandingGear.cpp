@@ -44,6 +44,7 @@ using simdata::DegreesToRadians;
 using simdata::RadiansToDegrees;
 using simdata::QVRotate;
 using simdata::Vector3;
+using simdata::Dot;
 
 
 SIMDATA_REGISTER_INTERFACE(LandingGear)

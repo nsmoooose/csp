@@ -173,7 +173,7 @@ public:
 	 *  @param interval The interval between updates, in seconds.
 	 *  @param detail The level of detail for updates sent to this peer (0-9).
 	 */
-	void setUpdateParameters(PeerId id, double interval, int detail);
+	void setUpdateParameters(PeerId id, double interval, simdata::uint16 detail);
 };
 
 
@@ -755,7 +755,7 @@ double LocalBattlefield::UnitUpdateProxy::onUpdate(double dt) {
 	// finally, send all pending updates
 	for (int i = 0; i < target_count; ++i) {
 		const int detail = targets[i] >> 24;
-		const int id = targets[i] & 0xffffff;
+		const PeerId id = static_cast<PeerId>(targets[i] & 0xffffff);
 		simnet::NetworkMessage::Ref msg = m_DetailCache[detail].msg;
 		if (msg.valid()) {
 			m_Connection->send(msg, static_cast<PeerId>(id));
@@ -768,7 +768,7 @@ double LocalBattlefield::UnitUpdateProxy::onUpdate(double dt) {
 	return (m_PeerUpdates[0].next_update - m_UpdateTime) * 1e-3;
 }
 
-void LocalBattlefield::UnitUpdateProxy::setUpdateParameters(PeerId id, double interval, int detail) {
+void LocalBattlefield::UnitUpdateProxy::setUpdateParameters(PeerId id, double interval, simdata::uint16 detail) {
 	assert(detail >= 0 && detail < DETAIL_LEVELS);
 	simdata::uint16 interval_ms = static_cast<simdata::uint16>(interval * 1000.0);
 	const unsigned n = m_PeerUpdates.size();
@@ -821,7 +821,7 @@ void LocalBattlefield::LocalUnitWrapper::setUpdateDistance(PeerId id, double dis
 	// 2 = 3.2-6.4 km
 	// 1 = 6.4-12.8 km
 	// 0 = >12.8 km
-	int detail = std::max(0, 9 - static_cast<int>(1.4427 * log(std::max(1.0, distance / 25.0))));
+	simdata::uint16 detail = static_cast<simdata::uint16>(std::max(0, 9 - static_cast<int>(1.4427 * log(std::max(1.0, distance / 25.0)))));
 	m_UpdateProxy->setUpdateParameters(id, interval, detail);
 }
 

@@ -63,7 +63,7 @@ class AircraftInputSystem: public System {
 			}
 			m_Channel->value() = simdata::clampTo(v, m_Minimum, m_Maximum);
 		}
-		double getValue() {
+		double getValue() const {
 			return m_Channel->value();
 		}
 		void setValue(double value) {

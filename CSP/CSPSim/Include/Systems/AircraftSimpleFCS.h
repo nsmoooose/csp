@@ -29,9 +29,11 @@
 #include <algorithm>
 #include <cmath>
 
-#include <System.h>
+#include <SimData/Math.h>
+
 #include <SimCore/Util/Log.h>
 
+#include <System.h>
 
 class AircraftSimpleFCS: public System {
 
@@ -61,10 +63,16 @@ class AircraftSimpleFCS: public System {
 		void registerOutput(Bus *bus, std::string const &name) {
 			b_Output = bus->registerLocalDataChannel(name, 0.0);
 		}
-		void update(double dt) {
+		// experiment a poor flatting function
+		virtual double flat(double x) const {
+			double abs_x = abs(x);
+			double scale = x*x*(3.0 - 2.0*abs_x);
+			return scale * x;
+		}
+		virtual void update(double dt) {
 			double input = 0.0;
 			double output = b_Output->value();
-			if (b_Input.valid()) input = b_Input->value() * m_Limit;
+			if (b_Input.valid()) input = flat(b_Input->value()) * m_Limit;
 			double smooth = std::min(1.0, 10.0*std::abs(output-input));
 			if (output < input) {
 				output = std::min(output + smooth*m_Rate*dt, m_Limit1);

@@ -1,17 +1,20 @@
  Version 0.4.0 (in progress)
 ===========================
 
+2004-09-24: onsight
+  * Fix a few compiler warnings under gcc.
+
 2004-09-18: delta
   * Updated VisualStudio/CSPSimDLL/CSPSimDLL.vcproj linking onto
-	CSPSim/lib/SpatialIndex(d).lib.
-  
-  * A few changes in the header files to prevent some microsoft 
-	specific compiler conflicts which finally cleaned the code.
-	
+    CSPSim/lib/SpatialIndex(d).lib.
+
+  * A few changes in the header files to prevent some microsoft
+    specific compiler conflicts which finally cleaned the code.
+
   * Fixed a few cast warnings in Projection.h.
-  
+
   * Replaced the forward declaration of ObjectModel by a #include
-	"ObjectModel.h" in Include/Theater/FeatureObjectModel.h.
+    "ObjectModel.h" in Include/Theater/FeatureObjectModel.h.
 
 2004-09-12: onsight
   * removed VirtualBattlefield.*

@@ -87,7 +87,7 @@ public:
 	void setAltitude(float altitude) { m_Altitude = altitude; }
 
 	simdata::Vector3 getThrust() const;
-	simdata::Vector3 const &Engine::getSmokeEmitterLocation() const;
+	simdata::Vector3 const &getSmokeEmitterLocation() const;
 };
 
 

@@ -223,7 +223,7 @@ private:
 	      MASK_HANDLER = 0x00010000,
 	      MASK_PUSH    = 0x00020000,
 	      MASK_PULL    = 0x00040000,
-	      MASK_DIRTY   = 0x00080000,
+	      MASK_DIRTY   = 0x00080000
 	};
 
 protected:

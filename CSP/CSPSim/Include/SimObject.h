@@ -52,7 +52,7 @@ public:
 		TYPE_AIR_UNIT,
 		TYPE_MUD_UNIT,
 		TYPE_SEA_UNIT,
-		TYPE_STATIC,
+		TYPE_STATIC
 	} TypeId;
 
 private:
@@ -76,7 +76,7 @@ private:
 
 	       // immutable settings
 	       F_STATIC     = 0x00010000,
-	       F_AIR        = 0x00020000,  // air object (airplane or helo)
+	       F_AIR        = 0x00020000   // air object (airplane or helo)
 	     };
 
 	void setSceneFlag(bool flag) { setFlags(F_INSCENE, flag); }

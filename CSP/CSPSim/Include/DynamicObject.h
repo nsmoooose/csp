@@ -94,9 +94,8 @@ private:
 	void setVehicleCore(SystemsModel::Ref);
 
 
-
 protected:
-	Bus::Ref DynamicObject::getBus();
+	Bus::Ref getBus();
 
 public:
 	BEGIN_SIMDATA_XML_VIRTUAL_INTERFACE(DynamicObject)

@@ -111,9 +111,8 @@ std::string RunCommand(deque<string> & args)
         file.getline(buff, 255);
 		std::string sbuff = std::string(buff);
 	string s = sbuff;
-	if (s[s.size()-1] == '\r') {
-		s.erase(s.size()-1, s.size());
-	}
+	int idx = s.find_last_not_of("\r\n") + 1;
+	if (idx < s.length()) s.erase(s.begin() + idx, s.end());
         //ProcessCommandString(sbuff);
         ProcessCommandString(s);
     }

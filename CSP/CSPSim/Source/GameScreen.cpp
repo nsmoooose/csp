@@ -132,7 +132,7 @@ class SnapImageDrawCallback: public Producer::Camera::Callback {
 	}
 public:
 	// XXX: next release of osg should allow saving to jpg instead of bmp
-	SnapImageDrawCallback(const std::string& filename = "CSPScreen",const std::string& ext = ".bmp"):
+	SnapImageDrawCallback(const std::string& filename = "CSP",const std::string& ext = ".bmp"):
         m_Filename(filename),
 		m_Ext(".bmp"),
         m_SnapImageOnNextFrame(false){
@@ -167,7 +167,7 @@ void GameScreen::on_PrintScreen() {
 	SnapImageDrawCallback sn;
 	sn.setSnapImageOnNextFrame(true);
 	osg::ref_ptr<Producer::Camera> camera = new Producer::Camera;
-	sn.operator()(*camera);
+	sn(*camera);
 }
 
 void GameScreen::createCameraCommand() {

@@ -45,6 +45,7 @@ OBJECTS =\
 	storagemanager/RandomEvictionsBuffer.o \
 	rtree/Statistics.o rtree/Node.o rtree/Index.o rtree/Leaf.o \
 	rtree/RTree.o \
+	quadtree/QuadTree.o \
 
 all: libspatialindex.a 
 
@@ -52,6 +53,7 @@ debug:
 	$(MAKE) -C spatialindex debug
 	$(MAKE) -C storagemanager debug
 	$(MAKE) -C rtree debug
+	$(MAKE) -C quadtree debug
 	ar rcv $(LIBTARGET) $(OBJECTS)
 	ranlib $(LIBTARGET)
 
@@ -66,11 +68,13 @@ src:
 	$(MAKE) -C spatialindex
 	$(MAKE) -C storagemanager
 	$(MAKE) -C rtree 
+	$(MAKE) -C quadtree 
 
 clean:
 	$(MAKE) -C spatialindex clean
 	$(MAKE) -C storagemanager clean
 	$(MAKE) -C rtree clean
+	$(MAKE) -C quadtree clean
 	rm -rf $(LIBTARGET)
 
 backup:

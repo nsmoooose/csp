@@ -1,0 +1,76 @@
+REM F4 aerodynamics model 
+REM Reference UIUC Model from FlightGear
+
+REM Units currently in English need to convert
+
+REM Cruise Conditions
+REM altitude 35000 ft
+REM Alpha   2.6 deg
+REM Velocity  518.7 kts    0.9 Mach
+REM Dyanmic_pressure   283.2 lb/ft^2
+
+Add Aero F4_aero
+
+REM Wing geometry
+set F4_aero WingSpan     38.7
+Set F4_aero WingChord    16
+Set F4_aero WingArea     530
+
+REM Control surfaces min/max angles
+Set F4_aero demax        +20
+Set F4_aero demin        -20
+Set F4_aero damax        +20
+Set F4_aero damin        -20
+Set F4_aero drmax        +20
+Set F4_aero drmin        -20
+
+REM Mass/Inertial properties
+Set F4_aero Mass         39000
+Set F4_aero I_XX         25000
+Set F4_aero I_YY         122200
+Set F4_aero I_ZZ         139800
+Set F4_aero I_XZ         2200
+
+REM Engine Thrust
+Set F4_aero ThrustMax    35800
+
+REM Drag Parameters
+Set F4_aero CD0          0.0205
+Set F4_aero CD_a         0.3
+Set F4_aero CD_de        -0.1
+
+REM Lift Parameters
+Set F4_aero CL0          0.1
+Set F4_aero CL_a         3.75
+Set F4_aero CL_adot      0.86
+Set F4_aero CL_q         1.8
+Set F4_aero CL_de        0.4
+
+REM Pitch Moment Parameters
+Set F4_aero CM0          0.025
+Set F4_aero CM_a         -0.4
+Set F4_aero CM_adot      -1.3
+Set F4_aero CM_q         -2.7
+Set F4_aero CM_de        -0.58
+
+REM Side Force Parameters
+Set F4_aero CY_Beta      -0.68
+Set F4_aero CY_p          0
+Set F4_aero CY_r          0
+Set F4_aero CY_da         0.016
+Set F4_aero CY_dr         0.095
+
+REM Roll moment parameters
+Set F4_aero CI_beta       -0.08
+Set F4_aero CI_p          -0.24
+Set F4_aero CI_r           0.07
+Set F4_aero CI_da         -0.042
+Set F4_aero CI_dr          0.006
+
+Rem Yaw Moment Parameters
+Set F4_aero CI_beta       -0.08
+Set F4_aero CI_p          -0.24
+Set F4_aero CI_r           0.07
+Set F4_aero CI_da         -0.042
+Set F4_aero CI_dr          0.006
+

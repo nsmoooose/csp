@@ -1,0 +1,59 @@
+REM Mirage 2000 aerodynamics model
+REM many parameters are estimates.
+
+Add Aero M2k_aero
+
+REM Wing geometry
+set M2k_aero WingSpan 9.13
+set M2k_aero WingChord 4.9
+set M2k_aero WingArea 30
+
+REM Control surfaces min/max angles
+Set M2k_aero demax        +20
+Set M2k_aero demin        -20
+Set M2k_aero damax        +20
+Set M2k_aero damin        -20
+Set M2k_aero drmax        +20
+Set M2k_aero drmin        -20
+
+REM Mass/Inertial properties
+Set F4_aero Mass         10000
+Set F4_aero I_XX         159284
+Set F4_aero I_YY         32086
+Set F4_aero I_ZZ         181292
+Set F4_aero I_XZ         1800
+
+Set F4_aero ThrustMax 100000
+
+REM Drag Parameters
+Set F4_aero CD0          0.23
+Set F4_aero CD_a         0.3
+Set F4_aero CD_de        0.0
+
+REM Lift Parameters
+Set F4_aero CL0          0.4933
+Set F4_aero CL_a         1
+Set F4_aero CL_adot      0.0
+Set F4_aero CL_q         0.0
+Set F4_aero CL_de        0.0
+
+REM Pitch Moment Parameters
+Set F4_aero CM0          0.0
+Set F4_aero CM_a         -0.38
+Set F4_aero CM_adot       0.0
+Set F4_aero CM_q          0.0
+Set F4_aero CM_de        -0.5
+
+REM Side Force Parameters
+Set F4_aero CY_Beta      0
+Set F4_aero CY_p          0
+Set F4_aero CY_r          0
+Set F4_aero CY_da         0.0
+Set F4_aero CY_dr         0.0
+
+REM Roll moment parameters
+Set F4_aero CI_beta       -0.08
+Set F4_aero CI_p          -0.24
+Set F4_aero CI_r           0.07
+Set F4_aero CI_da         -0.042
+Set F4_aero CI_dr          0.006

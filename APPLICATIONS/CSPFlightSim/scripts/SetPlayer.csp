@@ -1,0 +1,7 @@
+add OBJECT M2k player 
+REM add OBJECT T62 player
+REM Set player position 16000 32000 3000
+set player position 500000 450000 3000
+Set Player Velocity 0 220 0
+Set Player Orientation 0 0 0
+set Player Complex_Physics on

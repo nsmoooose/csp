@@ -47,6 +47,11 @@ del sys.modules['CSP']
 # root CSP directory is a bad thing, and we will catch it on either
 # platform.
 
+# note that we use os.sep and normal string splitting/joining instead
+# of os.path.split/join since the latter behaves a bit strangely under
+# windows.  for example, os.path.split('c:\\csp') gives ['c:\\csp']
+# rather than ['c:', 'csp'].  actually, neither one is ideal ;-)
+
 # look for the root of the current workspace (first 'CSP' directory
 # above cwd).
 cwd = os.getcwd()
@@ -64,7 +69,7 @@ while parts[-1].upper() != 'CSP':
 if parts[-1] != 'CSP' and parts[-1].upper() == 'CSP':
 	print
 	print 'Error: the current workspace appears to be under a directory named "csp"'
-	print '       ==> %s' % os.path.join(*parts)
+	print '       ==> %s' % os.sep.join(parts)
 	print
 	print 'The correct top-level directory should be all uppercase ("CSP").  You may'
 	print 'have made a mistake when checking out the repository (which is easy to do'
@@ -72,10 +77,10 @@ if parts[-1] != 'CSP' and parts[-1].upper() == 'CSP':
 	print 'try again.'
 	sys.exit(1)
 
-CSP_PATH = os.path.sep.join(parts[:-1])
-ROOT = os.path.join(CSP_PATH, 'CSP')
+CSP_PATH = os.sep.join(parts[:-1])
+ROOT = os.sep.join([CSP_PATH, 'CSP'])
 
-if not os.path.exists(os.path.join(ROOT, '.svn')):
+if not os.path.exists(os.sep.join([ROOT, '.svn'])):
 	print
 	print 'Warning: %s does not contain .svn and may not be a valid CSP workspace.' % ROOT
 

@@ -88,12 +88,12 @@ struct MessageHeader
 	simdata::uint16  m_id;
 
 	void dump() {
-		printf("MessageHeader - MagicNumber: %u\n", m_magicNumber);
-		printf("MessageHeader - PayloadLen: %u\n", m_payloadLen);
-		printf("MessageHeader - MessageType: %u\n", m_messageType);
-		printf("MessageHeader - ipaddr: %u\n", m_ipaddr);
-		printf("MessageHeader - port: %u\n", m_port);
-		printf("MessageHeader - id: %u\n", m_id);
+		CSP_LOG(NETWORK, DEBUG, "MessageHeader - MagicNumber: " << m_magicNumber);
+		CSP_LOG(NETWORK, DEBUG, "MessageHeader - PayloadLen: " << m_payloadLen);
+		CSP_LOG(NETWORK, DEBUG, "MessageHeader - MessageType: " << m_messageType);
+		CSP_LOG(NETWORK, DEBUG, "MessageHeader - ipaddr: " << m_ipaddr);
+		CSP_LOG(NETWORK, DEBUG, "MessageHeader - port: " << m_port);
+		CSP_LOG(NETWORK, DEBUG, "MessageHeader - id: " << m_id);
 	}
 
 	void dumpOffsets() {
@@ -105,12 +105,12 @@ struct MessageHeader
 		simdata::uint32 portAddr = (simdata::uint32)&m_port;
 		simdata::uint32 idAddr = (simdata::uint32)&m_id;
 
-		printf("MessageHeader - MagicNumberOffset: %d\n", magicNumberAddr - thisAddr );
-		printf("MessageHeader - PayloadLenOffset: %d\n", PayloadLenAddr - thisAddr );
-		printf("MessageHeader - MessageTypeOffset: %d\n", MessageTypeAddr - thisAddr );
-		printf("MessageHeader - ipOffset: %d\n", ipaddrAddr - thisAddr );
-		printf("MessageHeader - portOffset: %d\n", portAddr - thisAddr );
-		printf("MessageHeader - idOffset: %d\n", idAddr - thisAddr );
+		CSP_LOG(NETWORK, DEBUG, "MessageHeader - MagicNumberOffset: " << (int)(magicNumberAddr - thisAddr));
+		CSP_LOG(NETWORK, DEBUG, "MessageHeader - PayloadLenOffset: " << (int)(PayloadLenAddr - thisAddr));
+		CSP_LOG(NETWORK, DEBUG, "MessageHeader - MessageTypeOffset: " << (int)(MessageTypeAddr - thisAddr));
+		CSP_LOG(NETWORK, DEBUG, "MessageHeader - ipOffset: " << (int)(ipaddrAddr - thisAddr));
+		CSP_LOG(NETWORK, DEBUG, "MessageHeader - portOffset: " << (int)(portAddr - thisAddr));
+		CSP_LOG(NETWORK, DEBUG, "MessageHeader - idOffset: " << (int)(idAddr - thisAddr));
 	}
 
 };
@@ -173,20 +173,20 @@ public:
 		simdata::uint32 angularVelocityAddr = (simdata::uint32)&angularVelocity;
 		simdata::uint32 attitudeAddr = (simdata::uint32)&attitude;
 
-		printf("ObjectUpdateMessagePayload - IDOffset: %d\n", idAddr - thisAddr );
-		printf("ObjectUpdateMessagePayload - TypeOffset: %d\n", typeAddr - thisAddr);
-		printf("ObjectUpdateMessagePayload - timeStampOffset: %d\n", timeStampAddr - thisAddr );
-		printf("ObjectUpdateMessagePayload - globalPositionOffset: %d\n", globalPositionAddr - thisAddr );
-		printf("ObjectUpdateMessagePayload - linearVelocityOffset: %d\n", linearVelocityAddr - thisAddr );
-		printf("ObjectUpdateMessagePayload - angularVelocityOffset: %d\n", angularVelocityAddr - thisAddr );
-		printf("ObjectUpdateMessagePayload - attitudeOffset: %d\n", attitudeAddr - thisAddr );
+		CSP_LOG(NETWORK, DEBUG, "ObjectUpdateMessagePayload - IDOffset: " << (idAddr - thisAddr));
+		CSP_LOG(NETWORK, DEBUG, "ObjectUpdateMessagePayload - TypeOffset: " << (typeAddr - thisAddr));
+		CSP_LOG(NETWORK, DEBUG, "ObjectUpdateMessagePayload - timeStampOffset: " << (timeStampAddr - thisAddr));
+		CSP_LOG(NETWORK, DEBUG, "ObjectUpdateMessagePayload - globalPositionOffset: " << (globalPositionAddr - thisAddr));
+		CSP_LOG(NETWORK, DEBUG, "ObjectUpdateMessagePayload - linearVelocityOffset: " << (linearVelocityAddr - thisAddr));
+		CSP_LOG(NETWORK, DEBUG, "ObjectUpdateMessagePayload - angularVelocityOffset: " << (angularVelocityAddr - thisAddr));
+		CSP_LOG(NETWORK, DEBUG, "ObjectUpdateMessagePayload - attitudeOffset: " << (attitudeAddr - thisAddr));
 	}
 
 	void dump() {
-		printf("ObjectUpdateMessagePayload - id: %d\n", id);
-		printf("ObjectUpdateMessagePayload - objectType: %d\n", objectType);
-		printf("ObjectUpdateMessagePayload - timestamp: %f\n", timeStamp);
-		printf("ObjectUpdateMessagePayload - GlobalPosition [x: %f, y: %f, z: %f]\n", globalPosition.x, globalPosition.y, globalPosition.z);
+		CSP_LOG(NETWORK, DEBUG, "ObjectUpdateMessagePayload - id: " << id);
+		CSP_LOG(NETWORK, DEBUG, "ObjectUpdateMessagePayload - objectType: " << objectType);
+		CSP_LOG(NETWORK, DEBUG, "ObjectUpdateMessagePayload - timestamp: " << timeStamp);
+		CSP_LOG(NETWORK, DEBUG, "ObjectUpdateMessagePayload - GlobalPosition: " << globalPosition.x << " " << globalPosition.y << " " << globalPosition.z);
 	}
 
 };
@@ -342,14 +342,14 @@ class RemoteObjectTable
 {
 public:
 	simdata::Ref<DynamicObject> getRemoteObject(RemoteObjectKey key) {
-		printf("RemoteObjectTable::getRemoteObject()\n");
+		CSP_LOG(NETWORK, TRACE, "RemoteObjectTable::getRemoteObject()");
 		return m_table[key];
 	}
 
 	void putRemoteObject(RemoteObjectKey key, simdata::Ref<DynamicObject> object) {
-		printf("RemoteObjectTable::putRemoteObject() - entering\n");
+		CSP_LOG(NETWORK, TRACE, "RemoteObjectTable::putRemoteObject() - entering");
 		m_table[key] = object;
-		printf("RemoteObjectTable::putRemoteObject() - exiting\n");
+		CSP_LOG(NETWORK, TRACE, "RemoteObjectTable::putRemoteObject() - exiting");
 	}
 
 private:

@@ -1,17 +1,17 @@
 // Combat Simulator Project - FlightSim Demo
 // Copyright (C) 2002 The Combat Simulator Project
 // http://csp.sourceforge.net
-// 
+//
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
 // as published by the Free Software Foundation; either version 2
 // of the License, or (at your option) any later version.
-// 
+//
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU General Public License
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
@@ -29,7 +29,7 @@
 #include <SimData/Log.h>
 
 
-/** 
+/**
  * Define the possible classes/categories of logging messages
  */
 enum {
@@ -52,9 +52,9 @@ enum {
 	CSP_GEOMETRY    = 0x00004000,
 	CSP_PHYSICS     = 0x00008000,
 	CSP_UNDEFD      = 0x00010000, // for range checking
-	CSP_SCENE       = 0x00020000, 
-	CSP_BATTLEFIELD = 0x00040000, 
-	CSP_OBJECT	= 0x00080000,
+	CSP_SCENE       = 0x00020000,
+	CSP_BATTLEFIELD = 0x00040000,
+	CSP_OBJECT      = 0x00080000,
 
 	CSP_ALL         = 0xFFFFFFFF
 };
@@ -64,7 +64,7 @@ enum {
 /**
  * @relates LogStream
  * Return the one and only csp LogStream instance.
- * We use a function together with lazy construction so we are assured 
+ * We use a function together with lazy construction so we are assured
  * that cerr has been initialised.
  * @return csp LogStream
  */

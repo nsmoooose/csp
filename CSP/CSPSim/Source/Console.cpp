@@ -206,7 +206,7 @@ void Console::eat()
 	if (_buffer.empty()) return;
 
 	if (!_buffer.back().line.empty()) {
-		char c = *_buffer.back().line.rbegin();
+		//char c = *_buffer.back().line.rbegin();
 		//_buffer.back().width -= getTextWidth(c);
 		_buffer.back().line.resize(_buffer.back().line.size()-1);
 	} else {

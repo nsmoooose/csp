@@ -22,8 +22,8 @@
  *
  **/
 
-#include <SynchronousUpdate.h>
-
+#include "SynchronousUpdate.h"
+#include "Log.h"
 
 
 int UpdateProxy::update(double time) {
@@ -117,7 +117,7 @@ void UpdateTarget::registerUpdate(UpdateMaster *master) {
 	if (master) {
 		if (m_UpdateProxy.valid()) m_UpdateProxy->targetSelfDetach();
 		m_UpdateProxy = master->registerUpdate(this);
-		std::cout << "REGISTERING UPDATE WITH MASTER\n";
+		CSP_LOG(APP, DEBUG, "Registering update with master (master=" << master << ", target=" << this << ")");
 	}
 }
 

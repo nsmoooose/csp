@@ -1,6 +1,18 @@
  Version 0.4.0 (in progress)
 ===========================
 
+2004-07-07: onsight
+  * More network code reformatting and redirecting messages from stdout
+    to the csp log.  Changed logging class to NETWORK.
+
+  * Changed a few other cout's to use the csp log, and set the osg
+    logging level to WARN (no easy way to redirect it).  stdout is
+    fairly quiet now.
+
+  * Fixed a compiler warning in Console.cpp
+
+  * Fixed a few copyright notices
+
 2004-07-06: onsight
   * Moved unreferenced headers and source files to old/ subdirectories.
 

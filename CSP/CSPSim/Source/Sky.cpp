@@ -1486,7 +1486,7 @@ void Sky::_updateShading(double sun_h, double sun_A) {
 	
 
 	simdata::SimTime u = simdata::SimDate::getSystemTime();
-	std::cout << "SKY UPDATE TIME: " << ((u-t)*1000.0) << " ms\n";
+	CSP_LOG(APP, DEBUG, "Sky update time: " << ((u-t)*1000.0) << " ms");
 
 	m_Horizon->updateHorizonColors(*m_HorizonColors);
 	if (n_average != 0) 

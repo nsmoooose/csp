@@ -65,6 +65,7 @@
 #include <GL/glu.h>		// Header File For The GLu32 Library
 
 #include <osg/Timer>
+#include <osg/Notify>
 #include <osgDB/FileUtils>
 
 #include <SDL/SDL.h>
@@ -236,6 +237,8 @@ void CSPSim::init()
 		simdata::Trace::install();
 
 		CSP_LOG(APP, INFO, "Starting CSPSim...");
+
+		osg::setNotifyLevel(osg::WARN);
 
 		// setup osg search path for external data files
 		std::string image_path = getDataPath("ImagePath");

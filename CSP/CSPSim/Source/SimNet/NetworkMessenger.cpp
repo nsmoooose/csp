@@ -1,5 +1,5 @@
 // Combat Simulator Project - FlightSim Demo
-// Copyright (C) 2002 The Combat Simulator Project
+// Copyright (C) 2004 The Combat Simulator Project
 // http://csp.sourceforge.net
 //
 // This program is free software; you can redistribute it and/or
@@ -27,7 +27,7 @@
 #include "Log.h"
 
 NetworkMessenger::NetworkMessenger() {
-	CSP_LOG(APP, DEBUG, "NetworkMessenger.NetworkMessenger()");
+	CSP_LOG(NETWORK, DEBUG, "NetworkMessenger.NetworkMessenger()");
 
 	m_UDPReceiverSocket = new ost::UDPSocket();
 	m_UDPSenderSocket   = new ost::UDPSocket();
@@ -49,7 +49,7 @@ NetworkMessenger::NetworkMessenger() {
 }
 
 NetworkMessenger::NetworkMessenger(NetworkNode * originatorNode) {
-	CSP_LOG(APP, DEBUG, "NetworkMessenger.NetworkMessenger()");
+	CSP_LOG(NETWORK, DEBUG, "NetworkMessenger.NetworkMessenger()");
 	m_receiverAddr = new ost::InetAddress();   // this should be to INADDR_ANY
 	m_receiverPort = originatorNode->getPort();
 	m_UDPReceiverSocket = new ost::UDPSocket(*m_receiverAddr, originatorNode->getPort());
@@ -90,8 +90,7 @@ NetworkMessenger::NetworkMessenger(NetworkNode * originatorNode) {
 //}
 
 void NetworkMessenger::queueMessage(NetworkNode * node, NetworkMessage * message) {
-	CSP_LOG(APP, DEBUG, "NetworkMessenger::queueMessage() - targetHost " << node->getAddress() << ", targetPort " << node->getPort());
-	printf("NetworkMessenger.queueMessage()");
+	CSP_LOG(NETWORK, DEBUG, "NetworkMessenger::queueMessage() - targetHost " << node->getAddress() << ", targetPort " << node->getPort());
 	message->dumpMessageHeader();
 	if (m_messageSendArrayCount >= m_messageSendArrayMax) {
 		m_messageSendArrayMax += m_messageSendArrayGrow;
@@ -103,10 +102,10 @@ void NetworkMessenger::queueMessage(NetworkNode * node, NetworkMessage * message
 }
 
 void NetworkMessenger::sendQueuedMessages() {
-	CSP_LOG(APP, DEBUG, "NetworkMessenger::sendQueuedMessages()");
+	CSP_LOG(NETWORK, DEBUG, "NetworkMessenger::sendQueuedMessages()");
 
 	for(int i=0;i<m_messageSendArrayCount;i++) {
-		CSP_LOG(APP, DEBUG, "NetworkMessenger::sendQueuedMessage() - Sending Message [" << i << "]");
+		CSP_LOG(NETWORK, DEBUG, "NetworkMessenger::sendQueuedMessage() - Sending Message [" << i << "]");
 		//	  m_messageSocketDuplex->sendto(m_messageSendArray[i].m_message,
 		//			                m_messageSendArray[i].m_destinationNode);
 		sendto(m_messageSendArray[i].m_message,
@@ -123,8 +122,7 @@ void NetworkMessenger::receiveMessages()
 }
 
 void NetworkMessenger::receiveMessages(int max) {
-	printf("NetworkMessenger::receiveMessages()\n");
-	CSP_LOG(APP, DEBUG, "NetworkMessenger::receiveMessages()");
+	CSP_LOG(NETWORK, DEBUG, "NetworkMessenger::receiveMessages()");
 	//  NetworkMessage * networkMessageHandle;
 	//  m_messageSocketDuplex->recvfrom(&networkMessageHandle);
 
@@ -133,8 +131,7 @@ void NetworkMessenger::receiveMessages(int max) {
 	for (int i=0;i<max;i++) {
 		NetworkMessage * networkMessage = receiveMessage();
 		if ( networkMessage ) {
-			printf("NetworkMessenger::receiveMessages() - received message\n");
-			CSP_LOG(APP, DEBUG, "NetworkMessenger::ReceiveMessages() - Received Message");
+			CSP_LOG(NETWORK, DEBUG, "NetworkMessenger::ReceiveMessages() - Received Message");
 			for_each( m_MessageHandlerList.begin(), m_MessageHandlerList.end(), CallHandler(networkMessage));
 			freeMessageBuffer(networkMessage);
 			//std::list<NetworkMessageHandler *>::iterator iter = m_ReceiveHandlerList.begin();
@@ -142,7 +139,7 @@ void NetworkMessenger::receiveMessages(int max) {
 			//for (;iter != end ; ++iter) {
 			//	NetworkMessageHandler * handler = (NetworkMessageHandler*)(*iter);
 			//	if (handler != NULL) {
-			//		CSP_LOG(APP, DEBUG, "NetworkMessenger::ReceiveMessages() - Dispatching Message");	
+			//		CSP_LOG(NETWORK, DEBUG, "NetworkMessenger::ReceiveMessages() - Dispatching Message");	
 			//		handler->process(networkMessage);
 			//	}
 			//}
@@ -169,7 +166,7 @@ void NetworkMessenger::registerMessageHandler(NetworkMessageHandler * handler) {
 // buffer then cast it to a NetworkMessage pointer.
 // Returns a initialized message buffer.
 NetworkMessage * NetworkMessenger::allocMessageBuffer(int messageType, int payloadLen) {
-	CSP_LOG(APP, DEBUG, "NetworkMessenger::allocMessageBuffer() - CurrentPoolSize " << m_messagePool.size());
+	CSP_LOG(NETWORK, DEBUG, "NetworkMessenger::allocMessageBuffer() - CurrentPoolSize " << m_messagePool.size());
 
 	if (m_messagePool.empty()) {
 		for(int i=0;i<100;i++) {
@@ -187,7 +184,7 @@ NetworkMessage * NetworkMessenger::allocMessageBuffer(int messageType, int paylo
 
 // return a zeroed message buffer. Noninitialized
 NetworkMessage * NetworkMessenger::allocMessageBuffer() {
-	CSP_LOG(APP, DEBUG, "NetworkMessenger::allocMessageBuffer() - CurrentPoolSize " << m_messagePool.size());
+	CSP_LOG(NETWORK, DEBUG, "NetworkMessenger::allocMessageBuffer() - CurrentPoolSize " << m_messagePool.size());
 
 	if (m_messagePool.empty()) {
 		for(int i=0;i<100;i++) {
@@ -204,35 +201,32 @@ NetworkMessage * NetworkMessenger::allocMessageBuffer() {
 
 // cast the NetworkMessage pointer back to a binary buffer then free the buffer.
 void NetworkMessenger::freeMessageBuffer(NetworkMessage * message) {
-	CSP_LOG(APP, DEBUG, "NetworkMessenger::freeMessageBuffer() - CurrentPoolSize " << m_messagePool.size());
+	CSP_LOG(NETWORK, DEBUG, "NetworkMessenger::freeMessageBuffer() - CurrentPoolSize " << m_messagePool.size());
 
-	//printf("NetworkMessenger::returnMessageToPool() - CurrentPoolSize: %d\n", m_messagePool.size());
 	memset(message, 0xFF, NETWORK_PACKET_SIZE);
 	m_messagePool.push_back(message);
 }
 
 
 int NetworkMessenger::sendto(NetworkMessage * message, ost::InetHostAddress * remoteAddress, Port * remotePort) {
-	CSP_LOG(APP, DEBUG, "NetworkMessenger::sentto(message,addr,port)");
-	printf("NetworkMessenger::sentto(message,addr,port)");
+	CSP_LOG(NETWORK, DEBUG, "NetworkMessenger::sentto(message,addr,port)");
 	message->dumpMessageHeader();
 
-	CSP_LOG(APP, DEBUG, "NetworkMessenger::sentto(message,addr,port) - Setting Remote Peer");
+	CSP_LOG(NETWORK, DEBUG, "NetworkMessenger::sentto(message,addr,port) - Setting Remote Peer");
 	m_UDPSenderSocket->setPeer(*remoteAddress, *remotePort);
 
-	CSP_LOG(APP, DEBUG, "NetworkMessenger::sentto(message,addr,port) - Sending Network Packet");
+	CSP_LOG(NETWORK, DEBUG, "NetworkMessenger::sentto(message,addr,port) - Sending Network Packet");
 #ifdef _MSC_VER
 	return m_UDPSenderSocket->send((const char *)message, NETWORK_PACKET_SIZE);
 #else
 	return m_UDPSenderSocket->send((const void *)message, NETWORK_PACKET_SIZE);
 #endif
 
-	CSP_LOG(APP, DEBUG, "NetworkMessenger::sendto(message,addr,port) - exiting");
-	printf("NetworkMessenger::sendto(message,addr,port) - exiting");
+	CSP_LOG(NETWORK, DEBUG, "NetworkMessenger::sendto(message,addr,port) - exiting");
 }
 
 NetworkMessage * NetworkMessenger::receiveMessage() {
-	CSP_LOG(APP, DEBUG, "NetworkMessenger::receiveMessage() - Receving Network Packet");
+	CSP_LOG(NETWORK, DEBUG, "NetworkMessenger::receiveMessage() - Receving Network Packet");
 
 	if (m_UDPReceiverSocket->isPending(ost::Socket::pendingInput, 0)) {
 		// get addr of next packet
@@ -265,7 +259,7 @@ NetworkMessage * NetworkMessenger::receiveMessage() {
 }
 
 int NetworkMessenger::recvfrom(NetworkMessage ** message) {
-	CSP_LOG(APP, DEBUG, "NetworkMessenger::recvfrom() - Receving Network Packet");
+	CSP_LOG(NETWORK, DEBUG, "NetworkMessenger::recvfrom() - Receving Network Packet");
 
 	if (m_UDPReceiverSocket->isPending(ost::Socket::pendingInput, 0)) {
 		// get addr of next packet
@@ -297,7 +291,7 @@ int NetworkMessenger::recvfrom(NetworkMessage ** message) {
 
 
 int NetworkMessenger::sendto(NetworkMessage * message, NetworkNode * node) {
-	CSP_LOG(APP, DEBUG, "NetworkMessenger::sendto(message,node) - Sending Network Packet");
+	CSP_LOG(NETWORK, DEBUG, "NetworkMessenger::sendto(message,node) - Sending Network Packet");
 	ost::InetHostAddress address = node->getAddress();
 	Port port = node->getPort();
 	return sendto(message, &address, &port);
@@ -306,7 +300,7 @@ int NetworkMessenger::sendto(NetworkMessage * message, NetworkNode * node) {
 
 
 int NetworkMessenger::sendto(std::vector<RoutedMessage> * sendArray, int count) {
-	CSP_LOG(APP, DEBUG, "NetworkMessenger::sendto(RoutedMessageArray,Count) - Sending Network Packet");
+	CSP_LOG(NETWORK, DEBUG, "NetworkMessenger::sendto(RoutedMessageArray,Count) - Sending Network Packet");
 	return 0;
 }
 

@@ -1,7 +1,7 @@
 // Demeter Terrain Visualization Library by Clay Fowler
 // Copyright (C) 2002 Clay Fowler
 
-// $Id: Terrain.h,v 1.4 2003/04/06 10:39:18 deltasf Exp $
+// $Id: Terrain.h,v 1.5 2003/04/10 01:32:17 mkrose Exp $
 
 /*
 This library is free software; you can redistribute it and/or
@@ -50,6 +50,7 @@ Boston, MA  02111-1307, USA.
 #define TERRAIN_API
 #endif
 
+
 typedef unsigned char   Uint8;
 typedef signed char     Sint8;
 typedef unsigned short  Uint16;
@@ -81,6 +82,10 @@ typedef signed int      Sint32;
 #include <gdal_priv.h>
 #endif
 
+// not all gl implementations seem to know about this
+#ifndef GLAPIENTRY
+#define GLAPIENTRY
+#endif 
 
 #define MAX_VERTICES_PER_FAN 10
 #define DEMETER_EPSILON 0.00001f

@@ -30,7 +30,7 @@
 Battlefield::Unit Battlefield::getNextUnit(Unit const &unit, int human, int local, int /*category*/) {
 	UnitMap::iterator iter = m_UnitMap.find(unit->id());
 	if (iter != m_UnitMap.end()) {
-		for (UnitMap::iterator scan = iter; 1; )  {
+		for (UnitMap::iterator scan = iter; ; )  {
 			if (++scan == m_UnitMap.end()) scan = m_UnitMap.begin();
 			if (scan == iter) break;
 			Unit u = scan->second->unit();

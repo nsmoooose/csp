@@ -117,7 +117,7 @@ int main(int argc, char **argv) {
 		simdata::Timer timer;
 		timer.start();
 		bool added = false;
-		while (1) {
+		for (;;) {
 			client->processAndWait(0.01, 0.01, 0.1);
 			bf->update(timer.elapsed());
 			timer.reset();

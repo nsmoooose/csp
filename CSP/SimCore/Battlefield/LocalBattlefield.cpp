@@ -22,7 +22,6 @@
  *
  **/
 
-
 #include <SimCore/Battlefield/LocalBattlefield.h>
 #include <SimCore/Battlefield/Battlefield.h>
 #include <SimCore/Battlefield/SceneManager.h>
@@ -255,7 +254,8 @@ void LocalBattlefield::scanUnit(LocalUnitWrapper *wrapper) {
 void LocalBattlefield::continueUnitScan(double dt) {
 	static const double loop_time = 3.0;  // seconds
 	m_ScanElapsedTime += dt;
-	unsigned target_index = static_cast<unsigned>(round(m_ScanElapsedTime * m_ScanRate));
+	//XXX
+	unsigned target_index = static_cast<unsigned>(floor(m_ScanElapsedTime * m_ScanRate + 0.5));
 	if (m_ScanIndex > target_index) return;
 	if (m_ScanIndex == m_ScanUnits.size()) {
 		if (m_ScanElapsedTime < loop_time) return;
@@ -475,7 +475,7 @@ void LocalBattlefield::onUnitUpdate(simdata::Ref<simnet::NetworkMessage> const &
 			Unit unit;
 			try {
 				unit = m_DataManager->getObject(wrapper->path());
-			} catch (simdata::IndexError const &err) {
+			} catch (simdata::IndexError const &) {
 				// pass (error handled below)
 			}
 			if (!unit) {
@@ -531,7 +531,7 @@ void LocalBattlefield::__test__addLocalHumanUnit(Unit const &unit) {
 		RegisterUnit::Ref msg = new RegisterUnit();
 		msg->set_unit_id(unit->id());
 		msg->set_unit_class(unit->getObjectPath());
-		msg->set_unit_type(unit->type());
+		msg->set_unit_type(static_cast<const simdata::uint8>(unit->type()));
 		msg->set_grid_x(wrapper->point().x());
 		msg->set_grid_y(wrapper->point().y());
 		sendServerCommand(msg);

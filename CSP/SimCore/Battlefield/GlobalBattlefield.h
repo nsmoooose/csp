@@ -401,7 +401,7 @@ private:
 				CommandAddUnit::Ref msg = new CommandAddUnit();
 				msg->set_unit_id(from->id());
 				msg->set_unit_class(simdata::Path(from->unit()->getObjectPath()));
-				msg->set_unit_type(from->unit()->type());
+				msg->set_unit_type(static_cast<const simdata::uint8>(from->unit()->type()));
 				msg->set_owner_id(from->owner());
 				msg->set_grid_x(from->point().x());
 				msg->set_grid_y(from->point().y());

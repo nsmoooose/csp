@@ -1,17 +1,16 @@
-# M2k-5 Hud
-# File description           '#' is also default value for string or char data
+# M2k-5 Hud# File description           '#' is also default value for string or char data
 # Element Name  x     y     z   Static string   Static string position (prefix/sufix/unique)  Font name   Size  Value    Format
-KT             -0.1   0.1   0.0       #                p                                          #        16    431       0
-MACH           -0.1   0.07  0.0       #                p                                          #        16    0.67      2
-G              -0.12 -0.16  0.0       G                p                                          #        16    1.0       1
-AOA            -0.12 -0.19  0.0       a                p                                         greek     16    3.0       1
-HEAD           -0.0   0.12  0.0       #                p                                          #        16    101112    0
-altft           0.1   0.1   0.0       #                p                                          #        16    1110      0
-altr            0.11  0.07  0.0       H                s                                          #        16    800       0
-alts            0.11  0.04  0.0       SH               s                                          #        16    200       0
-nwp             0.1  -0.08  0.0       DEST             p                                          #        16    10        0
-wph             0.06 -0.11  0.0       /                s                                          #        16    160       0
-wpd             0.13 -0.11  0.0       NM               s                                          #        16    9.0       1
-palt1           0.1  -0.16  0.0       #                p                                          #        16    6000      0
-palt2           0.1  -0.19  0.0       ASEL             u                                          #        16    0         0
-RPM             0.1  -0.25  0.0       RPM              p                                          #        16    75        0
+KT             -0.1   0.0   0.1       #                p                                          #        16    431       0
+MACH           -0.1   0.0   0.07      #                p                                          #        16    0.67      2
+G              -0.12  0.0  -0.16      G                p                                          #        16    1.0       1
+AOA            -0.12  0.0  -0.19      a                p                                         greek     16    3.0       1
+HEAD           -0.0   0.0   0.12      #                p                                          #        16    101112    0
+altft           0.1   0.0   0.1       #                p                                          #        16    1110      0
+altr            0.11  0.0   0.07      H                s                                          #        16    800       0
+alts            0.11  0.0   0.04      SH               s                                          #        16    200       0
+nwp             0.1   0.0  -0.08      DEST             p                                          #        16    10        0
+wph             0.06  0.0  -0.11      /                s                                          #        16    160       0
+wpd             0.13  0.0  -0.11      NM               s                                          #        16    9.0       1
+palt1           0.1   0.0  -0.16      #                p                                          #        16    6000      0
+palt2           0.1   0.0  -0.19      ASEL             u                                          #        16    0         0
+RPM             0.1   0.0  -0.25      RPM              p                                          #        16    75        0

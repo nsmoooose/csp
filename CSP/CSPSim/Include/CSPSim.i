@@ -23,8 +23,25 @@
 #include "Projection.h"
 #include "Shell.h"
 #include <SimData/Math.h>
-%}
 
+void _createVehicleHelper(CSPSim *self, const char *path, simdata::Vector3 position,
+                          simdata::Vector3 velocity, simdata::Vector3 attitude) {
+	simdata::Ref<DynamicObject> obj = self->getDataManager().getObject(path);
+	if (!obj) {
+		std::cout << "WARNING: Failed to create object '" << path << "'\n";
+		return;
+	}
+	obj->setGlobalPosition(position);
+	obj->setVelocity(velocity);
+	simdata::Quat q_attitude;
+	attitude *= 3.1416 / 180.0;
+	q_attitude.makeRotate(attitude.x(), attitude.y(), -attitude.z());
+	obj->setAttitude(q_attitude);
+	self->getBattlefield()->addUnit(obj);
+	if (!self->getActiveObject()) self->setActiveObject(obj);
+}
+
+%}
 
 class CSPSim
 {
@@ -68,38 +85,14 @@ public:
 
 %extend CSPSim {
 	void createVehicle(const char *path, simdata::Vector3 position, 
-	                   simdata::Vector3 velocity, simdata::Vector3 attitude) {
-		simdata::Ref<DynamicObject> obj = self->getDataManager().getObject(path);
-		if (!obj) {
-			std::cout << "WARNING: Failed to create object '" << path << "'\n";
-			return;
-		}
-		obj->setGlobalPosition(position);
-		obj->setVelocity(velocity);
-		simdata::Quat q_attitude;
-		attitude *= 3.1416 / 180.0;
-		q_attitude.makeRotate(attitude.x(), attitude.y(), -attitude.z());
-		obj->setAttitude(q_attitude);
-		self->getBattlefield()->addUnit(obj);
-		if (!self->getActiveObject()) self->setActiveObject(obj);
+	                       simdata::Vector3 velocity, simdata::Vector3 attitude) {
+		_createVehicleHelper(self, path, position, velocity, attitude);
 	}
 	void createVehicle(const char *path, simdata::LLA lla, 
 	                   simdata::Vector3 velocity, simdata::Vector3 attitude) {
-		simdata::Ref<DynamicObject> obj = self->getDataManager().getObject(path);
-		if (!obj) {
-			std::cout << "WARNING: Failed to create object '" << path << "'\n";
-			return;
-		}
 		Projection const &map = CSPSim::theSim->getTheater()->getTerrain()->getProjection();
 		simdata::Vector3 position = map.convert(lla);
-		obj->setGlobalPosition(position);
-		obj->setVelocity(velocity);
-		simdata::Quat q_attitude;
-		attitude *= 3.1416 / 180.0;
-		q_attitude.makeRotate(attitude.x(), attitude.y(), -attitude.z());
-		obj->setAttitude(q_attitude);
-		self->getBattlefield()->addUnit(obj);
-		if (!self->getActiveObject()) self->setActiveObject(obj);
+		_createVehicleHelper(self, path, position, velocity, attitude);
 	}
 	void setShell(PyObject *shell) { self->getShell()->bind(shell); }
 	std::string const &getTerrainName() { return self->getTheater()->getTerrain()->getName(); }

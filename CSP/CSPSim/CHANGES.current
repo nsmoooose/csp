@@ -72,6 +72,8 @@
     uniform across all parts (some where set to zero). Also increased the
     overall ambient lighting a bit.
 
+  * Minor cleanup of the swig extensions to CSPSim for creating test objects.
+
 2004-07-29: onsight
   * Removed a couple obsolete files from the Makefile, and added InputEvent.
 

@@ -21,17 +21,12 @@
  * @file Exception.cpp
  *
  **/
-
-
-#include "Exception.h"
-#include "Log.h"
-
 #include <cstdio>
 #include <iostream>
 
 #include "DemeterException.h"
-#include <SimData/ExceptionBase.h>
-
+#include "Exception.h"
+#include "Log.h"
 
 namespace csp {
 

@@ -42,6 +42,15 @@ class BaseScreen;
 class GameScreen;
 class EventMapIndex;
 
+struct SDLWave {
+	SDL_AudioSpec spec;
+	Uint8   *sound;			/* Pointer to wave data */
+	Uint32   soundlen;		/* Length of wave data */
+	int      soundpos;		/* Current play position */
+};
+
+void fillerup(void *unused, Uint8 *stream, int len);
+
 
 /**
  * class CSPSim - The primary simulation engine for CSP.
@@ -88,6 +97,8 @@ protected:
 	void UpdateObjects(double dt);
 	void DoStartupScript();
 
+
+
 private:
 
 	SDL_Surface *m_SDLScreen;
@@ -99,6 +110,8 @@ private:
 	BaseScreen *m_LogoScreen;
 	GameScreen *m_GameScreen;
 	BaseScreen *m_MainMenuScreen;
+
+
 
 	int m_ScreenWidth;
 	int m_ScreenHeight;

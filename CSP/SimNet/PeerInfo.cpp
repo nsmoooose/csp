@@ -225,23 +225,23 @@ void PeerInfo::setReceipt(PacketReceiptHeader *receipt, bool reliable, simdata::
 		assert(hasPendingConfirmations());
 		receipt->id0 = m_confirmation_queue.front();
 		m_confirmation_queue.pop_front();
-		std::cout << "SENDING RECEIPT " << receipt->id0 << "\n";
+		SIMNET_LOG(PACKET, DEBUG, "sending receipt " << receipt->id0);
 	}
 
 	if (!hasPendingConfirmations()) return;
 	receipt->id1 = m_confirmation_queue.front();
 	m_confirmation_queue.pop_front();
-	std::cout << "SENDING RECEIPT " << receipt->id1 << "\n";
+	SIMNET_LOG(PACKET, DEBUG, "sending receipt " << receipt->id1);
 
 	if (!hasPendingConfirmations()) return;
 	receipt->id2 = m_confirmation_queue.front();
 	m_confirmation_queue.pop_front();
-	std::cout << "SENDING RECEIPT " << receipt->id2 << "\n";
+	SIMNET_LOG(PACKET, DEBUG, "sending receipt " << receipt->id2);
 
 	if (!hasPendingConfirmations()) return;
 	receipt->id3 = m_confirmation_queue.front();
 	m_confirmation_queue.pop_front();
-	std::cout << "SENDING RECEIPT " << receipt->id3 << "\n";
+	SIMNET_LOG(PACKET, DEBUG, "sending receipt " << receipt->id3);
 }
 
 

@@ -147,7 +147,7 @@ class NetworkInterface: public simdata::Referenced {
 	int receivePackets(double timeout);
 
 	/** Add a peer to the set of active peers.
-	 *  @param id The peer id (must not active)
+	 *  @param id The peer id (must not be active)
 	 *  @param remote_node The ip address and port of the peer
 	 *  @param provisional Set true to indicate an initial (as yet incomplete) connection.
 	 *  @param incoming_bw Peer incoming bandwidth (bytes per second)
@@ -160,13 +160,39 @@ class NetworkInterface: public simdata::Referenced {
 	 */
 	void removePeer(PeerId id);
 
-	/** Get the peer info for a given peer id.
+	/** Get the (non-const) peer info for a given peer id.
 	 */
 	PeerInfo *getPeer(PeerId id);
 
-	// used by ActivePeerList  TODO document
+	/** Send a ping (heartbeat) packet to the specified peer.  Pings are sent at
+	 *  a very low rate during normal communications, and slightly faster when
+	 *  no other traffic is occuring.  These messages serve two purposes.  First
+	 *  they act as a heartbeat, as the server will drop a peer if it receives
+	 *  no packets for a while.  Second, they can carry receipts for reliable
+	 *  messages sent from A to B, even when no regular messages are being sent
+	 *  from B to A.  Note that pings will be sent more aggressively Whenever
+	 *  there is a backlog of pending receipts.
+	 *
+	 *  This method is called by ActivePeerList.
+	 */
 	bool pingPeer(PeerInfo *peer);
+
+	/** Called by ActivePeerList when no packets have been received from a peer
+	 *  for a period of time (currently 30 sec).  If handleDeadPeer returns
+	 *  true, the peer is dropped.  This is the default implementation.
+	 *
+	 *  Note that if this method returns false without resetting the timeout
+	 *  (e.g. by calling peer->resetDeadTime()), it will be called at each
+	 *  subsequent update until a packet is received.
+	 *
+	 *  @param peer The peer that is "dead".
+	 *  @return true to drop the peer, false to ignore the timeout.
+	 */
 	bool handleDeadPeer(PeerInfo *peer);
+
+	/** Called by ActivePeerList to resend a reliable packet that has not been
+	 *  confirmed by the destination host.
+	 */
 	void resend(simdata::Ref<ReliablePacket> &packet);
 
 public:
@@ -220,6 +246,17 @@ public:
 	 *  @param outgoing_bw The client outgoing bandwidth (bytes per second)
 	 */
 	void establishConnection(PeerId id, double incoming_bw, double outgoing_bw);
+
+	/** Add a peer to the set of active peers.  This method can be used to register
+	 *  peers without a direct handshake, as for example when a central server
+	 *  introduces two peers.
+	 *
+	 *  @param id The peer id (must not be active)
+	 *  @param remote_node The ip address and port of the peer
+	 *  @param incoming_bw Peer incoming bandwidth (bytes per second)
+	 *  @param outgoing_bw Peer outgoing bandwidth (bytes per second)
+	 */
+	void addPeer(PeerId id, NetworkNode const &remote_node, double incoming_bw, double outgoing_bw);
 
 	/** Called by a server to disconnect from a client.  This is a local
 	 *  change only.  The caller is responsible for notifying the client
@@ -279,6 +316,9 @@ public:
 	 */
 	void setPacketSource(simdata::Ref<PacketSource> const &source);
 
+	/** Get the peer info for a given peer id.
+	 */
+	PeerInfo const *getPeer(PeerId id) const;
 };
 
 } // namespace simnet

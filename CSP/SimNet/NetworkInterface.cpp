@@ -177,7 +177,9 @@ void NetworkInterface::sendPackets(double timeout) {
 			first = false;
 		}
 
-		if (header->reliable) std::cout << "->SEND REL TO PEER " << peer->getId() << ", SIZE=" << size << "\n";
+		if (header->reliable) {
+			SIMNET_LOG(PACKET, DEBUG, "send reliable header to " << peer->getId() << ", size=" << size);
+		}
 		int len = socket->transmit((char*)ptr, size);
 		queue->releaseReadBuffer();
 		m_SentPackets++;
@@ -296,7 +298,7 @@ void NetworkInterface::processOutgoing(double timeout) {
 
 		const bool reliable = (queue_idx == 3);
 		if (reliable || peer->hasPendingConfirmations()) {
-			std::cout << "SENDING RELIABLE\n";
+			SIMNET_LOG(PACKET, DEBUG, "send reliable header to " << destination);
 			header->reliable = 1;
 			header_size = ReceiptHeaderSize;
 			receipt = reinterpret_cast<PacketReceiptHeader*>(ptr);
@@ -430,7 +432,7 @@ int NetworkInterface::receivePackets(double timeout) {
 
 		// handle reliable udp encoding
 		if (header.reliable) {
-			std::cout << "RECEIVED A RELIABLE HEADER, PRI " << header.priority << ", ID0=" << header.id0 << "\n";
+			SIMNET_LOG(PACKET, DEBUG, "received a reliable header, pri " << header.priority << ", id0=" << header.id0);
 			if (peek_bytes >= ReceiptHeaderSize) {
 				// if this packet is priority 3, it requires confirmation (id stored in id0)
 				// there may also be confirmation receipts in the remaining id slots
@@ -680,6 +682,9 @@ void NetworkInterface::addPeer(PeerId id, NetworkNode const &remote_node, bool p
 	m_IpPeerMap[remote_node.getConnectionPoint()] = id;
 }
 
+void NetworkInterface::addPeer(PeerId id, NetworkNode const &remote_node, double incoming_bw, double outgoing_bw) {
+	addPeer(id, remote_node, false /*provisional*/, incoming_bw, outgoing_bw);
+}
 
 void NetworkInterface::removePeer(PeerId id) {
 	SIMNET_LOG(PEER, INFO, "remove peer " << id);
@@ -705,6 +710,11 @@ PeerInfo *NetworkInterface::getPeer(PeerId id) {
 	return &(m_PeerIndex[id]);
 }
 
+PeerInfo const *NetworkInterface::getPeer(PeerId id) const {
+	SIMDATA_VERIFY_GT(id, 0);
+	SIMDATA_VERIFY_LT(id, PeerIndexSize);
+	return &(m_PeerIndex[id]);
+}
 
 void NetworkInterface::establishConnection(PeerId id, double incoming, double outgoing) {
 	SIMNET_LOG(PEER, INFO, "connection established with peer " << id);

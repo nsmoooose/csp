@@ -31,6 +31,7 @@
 #include <SimNet/ClientServerMessages.h>
 #include <SimNet/NetworkInterface.h>
 #include <SimNet/PacketDecoder.h>
+#include <SimNet/PeerInfo.h>
 #include <SimNet/MessageQueue.h>
 #include <SimNet/RoutingHandler.h>
 #include <SimNet/DispatchHandler.h>
@@ -63,6 +64,15 @@ ClientServerBase::ClientServerBase(NetworkNode const &bind, bool isServer, int i
 	m_HandshakeDispatch->setDefaultHandler(this, &ClientServerBase::onUnknownMessage);
 }
 
+PeerInfo const *ClientServerBase::getPeer(PeerId id) const {
+	NetworkInterface const *ni = m_NetworkInterface.get();
+	PeerInfo const *info = ni->getPeer(id);
+	return info->isActive() ? info : 0;
+}
+
+void ClientServerBase::addPeer(PeerId id, NetworkNode const &remote_node, double incoming_bw, double outgoing_bw) {
+	m_NetworkInterface->addPeer(id, remote_node, incoming_bw, outgoing_bw);
+}
 
 void ClientServerBase::processIncoming(double timeout) {
 	m_NetworkInterface->processIncoming(timeout);
@@ -105,7 +115,7 @@ Server::Server(NetworkNode const &bind, int inbound_bw, int outbound_bw): Client
 }
 
 void Server::onConnectionRequest(simdata::Ref<ConnectionRequest> const &msg, simdata::Ref<MessageQueue> const &queue) {
-	std::cout << "CONNECTION REQUEST " << *msg << "\n";
+	SIMNET_LOG(HANDSHAKE, DEBUG, "connection request " << *msg);
 	PeerId client_id = msg->getSource();
 	ConnectionResponse::Ref response = new ConnectionResponse();
 	response->setReliable();
@@ -117,13 +127,13 @@ void Server::onConnectionRequest(simdata::Ref<ConnectionRequest> const &msg, sim
 }
 
 void Server::onAcknowledge(simdata::Ref<Acknowledge> const &msg, simdata::Ref<MessageQueue> const &queue) {
-	std::cout << "ACKNOWLEDGED " << *msg << "\n";
+	SIMNET_LOG(HANDSHAKE, DEBUG, "received acknowledgement " << *msg);
 	// hack (need to cache connection requests)
 	m_NetworkInterface->establishConnection(msg->getSource(), 30000, 3000);
 }
 
 void Server::onDisconnect(simdata::Ref<Disconnect> const &msg, simdata::Ref<MessageQueue> const &queue) {
-	std::cout << "DISCONNECT " << *msg << "\n";
+	SIMNET_LOG(HANDSHAKE, DEBUG, "received disconnect notice " << *msg);
 	m_NetworkInterface->disconnectClient(msg->getSource());
 }
 
@@ -159,7 +169,7 @@ bool Client::connectToServer(NetworkNode const &server, double timeout) {
 }
 
 void Client::onConnectionResponse(simdata::Ref<ConnectionResponse> const &msg, simdata::Ref<MessageQueue> const &queue) {
-	std::cout << "CONNECTION RESPONSE " << *msg << "\n";
+	SIMNET_LOG(HANDSHAKE, DEBUG, "received connection response " << *msg);
 	if (m_Connected) return;
 	if (!msg->has_success() || !msg->success() || !msg->has_client_id()) {
 		if (msg->has_response()) {
@@ -200,5 +210,6 @@ void Client::sendToServer(NetworkMessage::Ref const &msg) {
 	msg->setReliable();
 	queueMessage(msg);
 }
+
 
 } // namespace simnet

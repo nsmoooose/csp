@@ -37,7 +37,12 @@ NetworkNode::NetworkNode(ost::InetHostAddress addr, ost::tpport_t port) {
 	m_port = port;
 }
 
-NetworkNode::NetworkNode(const char * hostname, ost::tpport_t port) {
+NetworkNode::NetworkNode(std::string const &hostname, ost::tpport_t port) {
+	m_addr = ost::InetHostAddress(hostname.c_str());
+	m_port = port;
+}
+
+NetworkNode::NetworkNode(const char *hostname, ost::tpport_t port) {
 	m_addr = ost::InetHostAddress(hostname);
 	m_port = port;
 }

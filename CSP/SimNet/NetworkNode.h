@@ -32,6 +32,7 @@
 #define NOMINMAX
 #endif
 #include <cc++/socket.h>
+#include <string>
 
 namespace simnet {
 
@@ -73,7 +74,12 @@ public:
 	 *    host machine (e.g. "csp.sourceforge.net").
 	 *  @param port the port number used by the host for receiving data.
 	 */
-	NetworkNode(const char * hostname, ost::tpport_t port);
+	NetworkNode(std::string const &hostname, ost::tpport_t port);
+
+	/** Same as the (string const&, ost::tpport_t) constructor, but unfortunately
+	 *  necessary to disambiguate const char* hostnames.
+	 */
+	NetworkNode(const char *hostname, ost::tpport_t port);
 
 	/** Set the host ip address.
 	 */

@@ -75,6 +75,7 @@ class PeerInfo: public simdata::NonCopyable {
 	bool m_statmode_toggle;
 	simdata::uint32 m_throttle_threshold;
 
+	// number of bytes for the ip + udp headers
 	static const simdata::uint32 UDP_OVERHEAD = 24;
 
 	// these are the total number of packets and bytes sent or received
@@ -125,52 +126,109 @@ class PeerInfo: public simdata::NonCopyable {
 
 	simdata::ScopedPointer<DatagramTransmitSocket> m_socket;
 
+	/** Update packet throttling parameters based on data received in the last batch
+	 *  of packets from this peer.
+	 *
+	 *  @param dt The elapse time (in seconds) since the last call to update.
+	 *  @param scale_desired_rate_to_self A scaling factor used to set connstat(peer_to_self).
+	 *    TODO: need to write up a more detailed description of connstat and throttling.
+	 */
 	void update(double dt, double scale_desired_rate_to_self);
+
+	/** Register a reliable packet, and assign a confirmation id.  PeerInfo will resend this packet
+	 *  periodically until the corresponding confirmation id is received.
+	 */
+	void registerConfirmation(PacketReceiptHeader *receipt, const simdata::uint32 payload_length);
 
 public:
 
 	PeerInfo();
 
+	/** Initialize the peer id.  Can only be called once.
+	 */
 	void setId(PeerId id) {
 		assert(m_id == 0);
 		m_id = id;
 	};
 
+	/** Get the id assigned to this peer.
+	 */
 	inline PeerId getId() const { return m_id; }
 
+	/** Returns true if no packets have been sent to this peer recently, or there is
+	 *  a backlog of reliable packet confirmations to send (which can piggyback on
+	 *  ping messages).
+	 */
 	inline bool needsPing() const {
 		double limit = (hasPendingConfirmations() ? 0.0 : 0.5);
 		return m_quiet_time > limit;
 	}
 
+	/** Returns an estimate of the average transmission rate (in bytes per second) from
+	 *  this peer to us that would be sent in the absense of bandwidth constraints.
+	 */
 	inline simdata::uint32 getDesiredRatePeerToSelf() const {
 		return m_desired_rate_peer_to_self;
 	}
 
+	/** Record a packet received from this peer.  This method updates statistics used
+	 *  for packet throttling.
+	 */
 	inline void tallyReceivedPacket(simdata::uint32 bytes) {
 		m_packets_peer_to_self++;
 		m_bytes_peer_to_self += bytes + UDP_OVERHEAD;
 	}
 
+	/** Record a packet sent to this peer.  This method updates statistics used
+	 *  for packet throttling.
+	 */
 	inline void tallySentPacket(simdata::uint32 bytes) {
 		m_packets_self_to_peer++;
 		m_bytes_self_to_peer += bytes + UDP_OVERHEAD;
 		m_quiet_time = 0.0;
 	}
 
+	/** Record a packet that would have been sent to this peer, but was dropped due to
+	 *  bandwidth constraints.
+	 */
 	inline void tallyThrottledPacket() {
 		m_packets_throttled++;
 	}
 
+	/** Gets the next reliable packet to be resent, if any.
+	 *
+	 *  @param now The current time, as returned by simdata::get_realtime().
+	 *  @return A reliable packet to resend, or a null reference.
+	 */
 	ReliablePacket::Ref getNextResend(double now);
 
+	/** Set the maximum incoming and outgoing bandwidths (in bytes/second) of this peer.
+	 */
 	void updateBandwidth(double incoming, double outgoing);
 
+	/** Set the network node, and incoming/outgoing bandwidths (bytes/sec) of this peer.
+	 */
 	void setNode(NetworkNode const &node, double incoming, double outgoing);
+
+	/** Get the network node of this peer.
+	 */
 	NetworkNode const &getNode() const { return m_node; }
 
+	/** Get the maximum inbound bandwidth of this peer, in bytes per second.  This is
+	 *  a fixed value specified by the peer (not a measured property of the connection).
+	 */
+	double incomingBandwidth() const { return m_total_peer_incoming_bandwidth; }
+
+	/** Get the maximum outbound bandwidth of this peer, in bytes per second.  This is
+	 *  a fixed value specified by the peer (not a measured property of the connection).
+	 */
+	double outgoingBandwidth() const { return m_total_peer_outgoing_bandwidth; }
+
+	/** Records throttling data included in packets received from this peer.  See setConnStat
+	 *  for details.
+	 */
 	inline void getConnStat(PacketHeader const *header) {
-		m_dead_time = 0.0;
+		resetDeadTime();
 		if (header->statmode == 1) {
 			m_desired_rate_peer_to_self = header->connstat;
 		} else {
@@ -178,26 +236,50 @@ public:
 		}
 	}
 
+	/** Returns true if we have received reliable packets from this peer that have not
+	 *  yet been confirmed.
+	 */
 	inline bool hasPendingConfirmations() const {
 		return !m_confirmation_queue.empty();
 	}
 
+	/** Get the elapsed time (in seconds) since receiving the last packet from this peer.
+	 */
 	inline double getDeadTime() const {
 		return m_dead_time;
 	}
 
-	void registerConfirmation(PacketReceiptHeader *receipt, const simdata::uint32 payload_length);
+	/** Reset the dead-time (watchdog) counter for this connection.  This method is
+	 *  called whenever a packet is received from this peer.
+	 */
+	inline void resetDeadTime() {
+		m_dead_time = 0.0;
+	}
 
+	/** Register a reliable packet being sent to this peer and/or confirm receipt of one or more
+	 *  reliable packets from this peer.  If reliable is true, the packet will be assigned a
+	 *  confirmation id and resent periodically until the corresponding confirmation id is
+	 *  received.  In addition, up to three pending confirmation id receipts will be sent to this
+	 *  peer.  If reliable is false, this method should only be called if hasPendingConfirmations
+	 *  is true (in which case up to four receipts will be sent).  Non-reliable packets should
+	 *  use PacketHeader, rather than the extended PacketReceiptHeader, when there are no pending
+	 *  confirmations to be sent.
+	 */
 	void setReceipt(PacketReceiptHeader *receipt, bool reliable, simdata::uint32 payload_length);
 
-	// peer is asking us to confirm that we received this id.  queue it, to be
-	// sent back in the receipt headers of packets we send to this peer.
+	/** Called for reliable packets received from this peer.  Adds the confirmation id to a queue
+	 *  of ids that are included in extended headers of packets sent to this peer.  Once the
+	 *  peer receives the confirmation id, reliable transmission of the packet is complete.
+	 */
 	inline void pushConfirmation(ConfirmationId id) {
-		std::cout << "PEER REQUESTS CONFIRMATION OF " << id << "\n";
+		SIMNET_LOG(PEER, DEBUG, "Peer requests confirmation of id " << id);
 		m_confirmation_queue.push_back(id);
 	}
 
-	// peer has confirmed receiving this id from us
+	/** Called when we receive confirmation of a reliable packet sent to this peer.  Once
+	 *  confirmation is received, reliable transmission of the packet is considered to be
+	 *  successful and no further resends will occur.
+	 */
 	inline void popConfirmation(ConfirmationId id) {
 		ReliablePacketMap::iterator iter = m_reliable_packet_map.find(id);
 		if (iter != m_reliable_packet_map.end()) {
@@ -208,6 +290,14 @@ public:
 		}
 	}
 
+	/** Send throttling data to this peer.  Each packet contains one of two types of throttling
+	 *  data: the desired rate at which we would send data to this peer in the absense of
+	 *  bandwidth constraints, or the maximum rate at which this peer should send data to us.
+	 *  These values are stored in a single field in the packet header (connstat) with a bit
+	 *  (statmode) to indicate the type, which alternates on successive packets.  The connstat
+	 *  field is 10-bits, and the values are interpreted in terms of the maximum inbound and
+	 *  outbound bandwidths of the two hosts.
+	 */
 	inline void setConnStat(PacketHeader *header) {
 		if (m_statmode_toggle) {
 			header->statmode = 1;
@@ -219,21 +309,45 @@ public:
 		m_statmode_toggle = !m_statmode_toggle;
 	}
 
+	/** Marks this connection as inactive and releases the outbound socket.
+	 */
 	void disable();
 
+	/** Returns true if the connection to this peer is active.
+	 */
 	inline bool isActive() const { return m_active; }
+
+	/** Returns true if a connection with this peer has been initiated but not yet
+	 *  completed.  Packet routing is restricted from provisional connections, which
+	 *  timeout unless setProvisional(false) is called.
+	 */
 	inline bool isProvisional() const { return m_provisional; }
+
+	/** Returns true for provisional connections that have exceeded their lifetime.
+	 *  See setProvisional for details.
+	 */
 	inline bool isProvisionalExpired() const { return m_provisional && m_lifetime <= 0.0; }
 
+	/** Set the connection to this peer to be provisional or established.  If provisional,
+	 *  lifetime is the time limit (in seconds) for the connection to be established.  If
+	 *  provisional is false, the connection is treated as established.
+	 */
 	void setProvisional(bool provisional=true, double lifetime=10.0) {
 		m_provisional = provisional;
 		m_lifetime = lifetime;
 	}
 
+	/** Bandwidth constraints may require that some packets intended for this peer be
+	 *  dropped prior to transmission.  This method rolls the dice to select packets
+	 *  to drop, and returns true if a packet should be throttled.  The throttling rate
+	 *  is adjusted by the update() method based on feedback received from the peer.
+	 */
 	inline bool throttlePacket(int priority) {
 		return (m_throttle_threshold > 0) ? (NetRandom::random() < m_throttle_threshold) : false;
 	}
 
+	/** Get the dedicated udp socket used to send packets to this peer.
+	 */
 	inline DatagramTransmitSocket *getSocket() { return m_active ? m_socket.get() : 0; }
 };
 

@@ -394,10 +394,10 @@ if len(sys.argv)>=2:
         sys.exit(0)
     if command == "ldopts":
         print '-shared', ' '.join(map(lambda x: '-l%s' % x, libraries))
-    sys.exit(0)
+        sys.exit(0)
     if command == "swigopts":
         print ' '.join(swigopts)
-    sys.exit(0)
+        sys.exit(0)
 
 cSimData = Extension("SimData._cSimData", 
                      sources + main_interface_fullpath, 

@@ -60,9 +60,13 @@ def svn_info():
   return info
 
 def svn_st(files=None):
-  if not files: files = []
-  st = os.popen('svn st %s' % ' '.join(files)).readlines()
   root = svn_root()
+  if not files:
+    files = []
+    path = root
+  else:
+    path = ' '.join(files)
+  st = os.popen('svn st %s' % path).readlines()
   files = []
   for line in st:
     path = line[1:].strip()

@@ -35,29 +35,29 @@ this? */
 
 After you modify a map file, you must create a corresponding "hid"
 (human interface device) file for use in the simulation.  To do so, 
-use the map2hid tool in this directory.  The resulting hid files 
+use the cspinput tool in this directory.  The resulting hid files 
 must be placed in the CSPSim Data/Input directory before they can 
 be used.  
 
 Here are some examples for converting from map to hid under Linux:
 
-  $ ./map2hid aircraft.map     
+  $ ./cspinput aircraft.map     
   $ cp aircraft.hid ../../Data/Input
 
 or
 
-  $ ./map2hid aircraft.map - >../../Data/Input
+  $ ./cspinput aircraft.map - >../../Data/Input
 
 and under Windows:
 
-  > python map2hid aircraft.map
+  > python cspinput aircraft.map
   > copy aircraft.hid ..\..\Data\Input
 
 or
 
-  > python map2hid aircraft.map - >..\..\Data\Input
+  > python cspinput aircraft.map - >..\..\Data\Input
 
 Also under Windows you can usually just drag and drop your map
-file onto the map2hid icon, then drag the resulting hid file to
+file onto the cspinput icon, then drag the resulting hid file to
 the Data\Input directory.
 

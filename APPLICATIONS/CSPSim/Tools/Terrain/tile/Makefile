@@ -1,5 +1,5 @@
-all: csptiler
+all: csptile
 
-csptiler: tile.cpp
-	g++ -O2 -g tile.cpp -o tile -I/usr/include/python2.2 -lSimData -lz
+csptile: tile.cpp
+	g++ -O2 -g $^ -o $@ -I/usr/include/python2.2 -lSimData -lz
 

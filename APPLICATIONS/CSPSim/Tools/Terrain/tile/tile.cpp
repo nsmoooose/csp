@@ -1345,13 +1345,13 @@ private:
 	int flip_x, flip_y;
 };
 
-void usage() {
-	std::cerr << "Usage: tile [--help] [--datpath=path] [--quiet] [ini]\n";
+void usage(const char* arg0) {
+	std::cerr << "Usage: " << arg0 << " [--help] [--datpath=path] [--quiet] [ini]\n";
 }
 
-void help() {
+void help(const char *arg0) {
 	std::cerr << "\n";
-	std::cerr << "TerrainTiler (pre-version)\n";
+	std::cerr << "CSP TerrainTiler (pre-version)\n";
 	std::cerr << "Copyright 2003 The Combat Simulator Project <http://csp.sourceforge.net>\n";
 	std::cerr << "\n";
 	std::cerr << "This program generates projected terrain tiles from digital elevation data.\n";
@@ -1360,7 +1360,7 @@ void help() {
 	std::cerr << "BT format.  Only one type of projection is currently supported, namely a\n";
 	std::cerr << "secant gnomonic projection.\n";
 	std::cerr << "\n";
-	usage();
+	usage(arg0);
 	std::cerr << "\n";
 	std::cerr << "Options:\n";
 	std::cerr << "             --help                 Display this message\n";
@@ -1397,7 +1397,7 @@ int main(int argc, char **argv) {
 		char *arg = argv[argc];
 		if (arg[0] == '-') {
 			if (!strcmp(arg, "--help")) {
-				help(); 
+				help(argv[0]); 
 				::exit(0);
 			} else
 			if (!strncmp(arg, "--datpath=", 10)) {
@@ -1408,14 +1408,14 @@ int main(int argc, char **argv) {
 				quiet = true;
 				continue;
 			}
-			usage();
+			usage(argv[0]);
 			::exit(1);
 		} else {
 			ini = arg;
 		}
 	}
 	if (ini == 0) {
-		usage();
+		usage(argv[0]);
 		::exit(0);
 	}
 	Tiler tiler;

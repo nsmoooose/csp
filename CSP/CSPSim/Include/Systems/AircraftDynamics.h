@@ -35,7 +35,7 @@
 #include <KineticsChannels.h>
 
 
-class VehiclePhysics: public System, public PhysicsModel {
+class VehiclePhysics: public PhysicsModel {
 protected:
 	void importChannels(Bus *) {
 		b_Position = bus->getChannel(Kinetics::Position);

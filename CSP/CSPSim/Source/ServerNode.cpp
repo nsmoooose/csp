@@ -6,6 +6,22 @@
 #include <unistd.h>
 #endif
 #include "Config.h"
+#include "Log.h"
+
+#include <SimData/Ref.h>
+#include <SimData/Date.h>
+#include <SimData/DataManager.h>
+
+#include <KineticsChannels.h>
+
+#include <SimData/Types.h>
+#include <SimData/ExceptionBase.h>
+#include <SimData/DataArchive.h>
+#include <SimData/DataManager.h>
+#include <SimData/FileUtility.h>
+#include <SimData/GeoPos.h>
+
+using bus::Kinetics;
 
 ServerNode::ServerNode()
 {
@@ -15,7 +31,13 @@ ServerNode::ServerNode()
 int ServerNode::run()
 {
   int count = 0;
+  
+  int level = g_Config.getInt("Debug", "LoggingLevel", 0, true);
+  csplog().setLogLevels(CSP_ALL, level);
+  csplog().setOutput("ServerNode.log");
+  
   printf("Network test server starting up...\n");
+  
   Port remotePort = g_Config.getInt("Networking", "LocalMessagePort", 10000, true);
   std::string remoteHost = g_Config.getString("Networking", "LocalMessageHost", "127.0.0.1", true);
 
@@ -25,46 +47,22 @@ int ServerNode::run()
   NetworkNode * remoteNode = new NetworkNode(1, remoteHost.c_str(), remotePort );
   NetworkNode * localNode =  new NetworkNode(1, localHost.c_str(), localPort);
   
-  MessageSocketDuplex * socketDuplex = new MessageSocketDuplex(localPort);
+  NetworkMessenger * networkMessenger = new NetworkMessenger(localNode);
+  PrintMessageHandler * printMessageHandler = new PrintMessageHandler();
+  printMessageHandler->setFrequency(1);
+  networkMessenger->registerReceiveHandler(printMessageHandler);
+  
+  //MessageSocketDuplex * socketDuplex = new MessageSocketDuplex(localPort);
   NetworkMessage * message=NULL;
+  
   while(1)
   {
-    int numreceived = socketDuplex->recvfrom(&message);
-    if (numreceived > 0)
-    {
-	if (count % 100 == 0)
-	{
-	  NetworkNode * node = message->getOriginatorNode();
-	  MessageHeader * header = (MessageHeader*)message;
-	  header->dumpOffsets();
-      printf("Received Data From Client:\n");
-	  printf("Client addr: %s\n", node->getHostname());
-	  printf("Client port: %d\n", node->getPort());
-
-	  printf("MagicNumber: 0x%x\n", header->m_magicNumber);
-	  printf("PayloadLen: %u\n", header->m_payloadLen);
-	  printf("MessageType: %u\n", header->m_messageType);
-	  printf("IPAddr: 0x%x\n", header->m_ipaddr);
-	  printf("Port: %u\n", header->m_port);
-	  printf("ID: %u\n", header->m_id);
-			  
-      ObjectUpdateMessagePayload * ptrPayload = (ObjectUpdateMessagePayload*)message->getPayloadPtr();
-      ptrPayload->dumpOffsets();
-      printf("ID: %u\n", ptrPayload->id);
-	  printf("TimeStamp: %f\n", ptrPayload->timeStamp);
-	  printf("PositionX: %f, PositionY: %f, PositionZ: %f\n", 
-			ptrPayload->globalPosition.x,
-			ptrPayload->globalPosition.y,
-			ptrPayload->globalPosition.z);
-	}
-	count++;
-    }
-    else
-    {
+    networkMessenger->receiveMessages();
+    networkMessenger->sendQueuedMessages();
 #ifndef WIN32
-	::sleep(1);
+    ::sleep(1);
 #endif
-    }
+    
   }
  
   return 0;

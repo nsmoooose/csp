@@ -26,6 +26,7 @@
 
 MessageSocketDuplex::MessageSocketDuplex()
 {
+  CSP_LOG(APP, DEBUG, "MessageSocketDuplex.MessageSocketDuplex()");
   m_UDPReceiverSocket = new ost::UDPSocket();
   m_UDPSenderSocket   = new ost::UDPSocket();
   m_receiverAddr = NULL;  
@@ -35,6 +36,8 @@ MessageSocketDuplex::MessageSocketDuplex()
 MessageSocketDuplex::MessageSocketDuplex(Port port)
 {
     // create receiver end point
+  CSP_LOG(APP, DEBUG, "MessageSocketDuplex.MessageSocketDuplex(port) - port: " << port);
+  m_UDPReceiverSocket = new ost::UDPSocket();
     m_receiverAddr = new ost::InetAddress();   // this should be to INADDR_ANY
     m_receiverPort = port;
     m_UDPReceiverSocket = new ost::UDPSocket(*m_receiverAddr, port);
@@ -43,6 +46,9 @@ MessageSocketDuplex::MessageSocketDuplex(Port port)
 
 MessageSocketDuplex::MessageSocketDuplex(ost::InetAddress & addr, Port port)
 {
+  CSP_LOG(APP, DEBUG, "MessageSocketDuplex.MessageSocketDuplex(addr,port) - addr: " << addr 
+		  << ", port: " << port);
+  m_UDPReceiverSocket = new ost::UDPSocket();
     m_receiverAddr = &addr;
     m_receiverPort = port;
     m_UDPReceiverSocket = new ost::UDPSocket(addr, port);
@@ -52,22 +58,27 @@ MessageSocketDuplex::MessageSocketDuplex(ost::InetAddress & addr, Port port)
 
 int MessageSocketDuplex::sendto(NetworkMessage * message, ost::InetHostAddress * remoteAddress, Port * remotePort)
 {
-//    CSP_LOG(NETWORK, DEBUG, "Sending Network Packet");
-
+    CSP_LOG(APP, DEBUG, "MessageSocketDuplex::sentto(message,addr,port)");
+    printf("MessageSocketDuplex::sentto(message,addr,port)");
+    message->dumpMessageHeader();
+    
+    CSP_LOG(APP, DEBUG, "MessageSocketDuplex::sentto(message,addr,port) - Setting Remote Peer");
     m_UDPSenderSocket->setPeer(*remoteAddress, *remotePort);
     
+    CSP_LOG(APP, DEBUG, "MessageSocketDuplex::sentto(message,addr,port) - Sending Network Packet");
 #ifdef _MSC_VER
     return m_UDPSenderSocket->send((const char *)message, NETWORK_PACKET_SIZE);
 #else
     return m_UDPSenderSocket->send((const void *)message, NETWORK_PACKET_SIZE);
 #endif
 
-	
+    CSP_LOG(APP, DEBUG, "MessageSocketDuplex::sendto(message,addr,port) - exiting");
+    printf("MessageSocketDuplex::sendto(message,addr,port) - exiting");
 }
 
 int MessageSocketDuplex::recvfrom(NetworkMessage ** message)
 {
-//    CSP_LOG(NETWORK, DEBUG, "Receving Network Packet");
+    CSP_LOG(APP, DEBUG, "MessageSocketDuplex()::recvfrom() - Receving Network Packet");
 
     if (m_UDPReceiverSocket->isPending(ost::Socket::pendingInput, 0))
     {
@@ -104,7 +115,7 @@ int MessageSocketDuplex::recvfrom(NetworkMessage ** message)
 int MessageSocketDuplex::sendto(NetworkMessage * message, NetworkNode * node)
 {
 
-//  CSP_LOG(NETWORK, DEBUG, "Sending Network Packet");
+  CSP_LOG(APP, DEBUG, "MessageSocketDuplex::sendto(message,node) - Sending Network Packet");
   ost::InetHostAddress address = node->getAddress();
   Port port = node->getPort();
   return sendto(message, &address, &port);
@@ -112,3 +123,43 @@ int MessageSocketDuplex::sendto(NetworkMessage * message, NetworkNode * node)
 }
 
 
+int MessageSocketDuplex::sendto(std::vector<RoutedMessage> * sendArray, int count)
+{
+
+}
+
+int MessageSocketDuplex::recvfrom(std::vector<RoutedMessage> * receiveArray, int * count)
+{
+    CSP_LOG(NETWORK, DEBUG, "Receving Network Packet");
+
+    if (m_UDPReceiverSocket->isPending(ost::Socket::pendingInput, 0))
+    {
+	// get addr of next packet
+	Port port;
+	ost::InetHostAddress addr = m_UDPReceiverSocket->getPeer(&port);
+        //printf("MessageSocketDuplex::recvfrom() - port: %d\n", port);
+//	printf("MessageSocketDuplex::recvfrom() - hostname: %s\n", addr.getHostname());
+	
+	// peek at packet to verify this is a valid CSP packet. and if so get the packet type.
+	
+	int headerlen = 6;
+	uint16 headerBuffer[6];
+	int numHeaderBytes = m_UDPReceiverSocket->peek(headerBuffer, headerlen);
+
+
+	// TODO validation of header
+	
+//	NetworkMessage * message = NetworkMessagePool::getPool()->getMessageFromPool();
+        NetworkMessage * message = (NetworkMessage*)(new simdata::uint8[512]);
+	int maxBufLen = 512;
+	
+	// get the packet
+	int numPacketBytes = m_UDPReceiverSocket->receive((void*)message, maxBufLen);
+//	*message = (NetworkMessage*)buffer;
+
+	return numPacketBytes;
+	
+    }
+    return 0;
+
+}

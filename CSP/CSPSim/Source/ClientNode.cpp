@@ -30,6 +30,10 @@ ClientNode::ClientNode()
 int ClientNode::run()
 {
 
+  int level = g_Config.getInt("Debug", "LoggingLevel", 0, true);
+  csplog().setLogLevels(CSP_ALL, level);
+  csplog().setOutput("ClientNode.log");
+  
   printf("sizeof(int) = %d\n", sizeof(int));
   printf("sizeof(double) = %d\n", sizeof(double));
   printf("sizeof(simdata::Vector3) = %d\n", sizeof(simdata::Vector3));
@@ -60,7 +64,7 @@ int ClientNode::run()
   unsigned short payloadLen  = sizeof(int) + sizeof(double) + 3*sizeof(simdata::Vector3) +
 	                       sizeof(simdata::Quat) /* + sizeof(simdata::Matrix3) + sizeof(double) */;
 
-  NetworkMessage * message = networkMessenger->getMessageFromPool(messageType, payloadLen);
+  NetworkMessage * message = networkMessenger->allocMessageBuffer(messageType, payloadLen);
   ObjectUpdateMessagePayload * ptrPayload = (ObjectUpdateMessagePayload*)message->getPayloadPtr();
   ptrPayload->dumpOffsets();
 	   
@@ -93,7 +97,7 @@ int ClientNode::run()
 
 
   networkMessenger->queueMessage(remoteNode, message);
-  networkMessenger->sendMessages();
+  networkMessenger->sendQueuedMessages();
   
   return 0;
 }

@@ -726,7 +726,7 @@ void CSPSim::updateObjects(double dt)
 
 //		CSP_LOG(APP, DEBUG, "CSPSim::run... queuing test network updates");
 		m_NetworkMessenger->queueMessage(m_RemoteServerNode, message);
-		m_NetworkMessenger->sendMessages();
+		m_NetworkMessenger->sendQueuedMessages();
 		m_NetworkMessenger->receiveMessages();
 
 			

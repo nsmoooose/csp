@@ -399,7 +399,7 @@ NetworkMessage * DynamicObject::getUpdateMessage()
   unsigned short payloadLen  = sizeof(int) + sizeof(double) + 3*sizeof(simdata::Vector3) +
 	                       sizeof(simdata::Quat) /* + sizeof(simdata::Matrix3) + sizeof(double) */;
 
-  NetworkMessage * message = CSPSim::theSim->getNetworkMessenger()->getMessageFromPool(messageType, payloadLen);
+  NetworkMessage * message = CSPSim::theSim->getNetworkMessenger()->allocMessageBuffer(messageType, payloadLen);
 
   ObjectUpdateMessagePayload * ptrPayload = (ObjectUpdateMessagePayload*)message->getPayloadPtr();
   ptrPayload->id = m_ID;

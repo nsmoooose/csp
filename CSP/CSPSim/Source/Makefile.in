@@ -75,6 +75,8 @@ SOURCES = \
 	Networking/NetworkSocket.cpp \
 	Networking/MessageSocketDuplex.cpp \
 	Networking/NetworkAddress.cpp \
+	Networking/PrintMessageHandler.cpp \
+	Networking/EchoMessageHandler.cpp \
 	NumericalMethod.cpp \
 	ObjectModel.cpp \
 	ObjectRangeInfo.cpp \

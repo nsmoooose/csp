@@ -69,6 +69,11 @@ bool NetworkMessage::initialize( simdata::uint16  type, simdata::uint16 payloadL
 
 }
 
+void NetworkMessage::dumpMessageHeader()
+{
+  m_header.dump();
+}
+
 /**
  * getBufferLen()
  *

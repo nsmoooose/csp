@@ -4,6 +4,13 @@
 #include <stdlib.h>
 #include "Config.h"      
 
+#include <SimData/Types.h>
+#include <SimData/ExceptionBase.h>
+#include <SimData/DataArchive.h>
+#include <SimData/DataManager.h>
+#include <SimData/FileUtility.h>
+#include <SimData/GeoPos.h>
+
 ClientNode::ClientNode()
 {
 
@@ -11,6 +18,14 @@ ClientNode::ClientNode()
 
 int ClientNode::run()
 {
+
+  printf("sizeof(int) = %d\n", sizeof(int));
+  printf("sizeof(double) = %d\n", sizeof(double));
+  printf("sizeof(simdata::Vector3) = %d\n", sizeof(simdata::Vector3));
+  printf("sizeof(simdata::Quat) = %d\n", sizeof(simdata::Quat));
+  printf("sizeof(simdata::SimTime) = %d\n", sizeof(simdata::SimTime));
+  
+	
   printf("Network test client starting up...\n");
   Port localPort = g_Config.getInt("Networking", "LocalMessagePort", 10000, true);
   std::string localHost = g_Config.getString("Networking", "LocalMessageHost", "127.0.0.1", true);

@@ -31,6 +31,7 @@ import re
 import time
 
 from CSP.base import app
+from CSP.base import domtree
 
 class File:
   ADD = 'ADD'
@@ -67,7 +68,7 @@ def svn_st(files=None):
     path = root
   else:
     path = ' '.join(files)
-  st = os.popen('svn st %s' % path).readlines()
+  st = os.popen('svn st -q %s' % path).readlines()
   files = []
   for line in st:
     path = line[1:].strip()
@@ -115,6 +116,34 @@ def svn_savediff(file, target, revision=None, context=100):
   exit_code, out = runo('svn diff %s --diff-cmd diff -x "-U %d -b" %s' % (revision, context, path))
   open(target, 'w').write(''.join(out))
   return exit_code
+
+
+def svn_savediffs(target, rev2, rev1=None, context=100):
+  files = []
+  if rev1 is None:
+    rev1 = rev2 - 1
+  root = svn_root()
+  exit_code, out = runo('svn diff -r %d:%d --diff-cmd diff -x "-U %d -b" %s' % (rev1, rev2, context, root))
+  if exit_code: return []
+  diff = None
+  for line in out:
+    line = line[:-1]  # remove newline
+    if line.startswith('Index: '):
+      fn = line[7:]
+      dest = fn.replace(os.sep, '~') + '.diff'
+      dest = os.path.join(target, dest)
+      diff = open(dest, 'wt')
+      files.append((fn, dest))
+    if diff: diff.write(line + '\n')
+  return files
+
+
+def svn_revision_info(rev):
+  root = svn_root()
+  exit_code, out = runo('svn log --xml -v -r %d %s' % (rev, root))
+  if exit_code: return None
+  doc = domtree.ParseString(''.join(out))
+  return doc.log.logentry
 
 
 def runoe(cmd):

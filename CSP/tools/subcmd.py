@@ -358,10 +358,13 @@ class Workspace:
     self.save()
     return Result(0)
 
+  # TODO this Frankenstein method is in desparate need of refactoring
   def diff(self, names, revision):
     dircmd = os.environ.get('SUBSET_DIFF_DIR', '')
     onecmd = os.environ.get('SUBSET_DIFF_ONE', dircmd)
+    rev = 0
     cs = None
+    info = None
     if not names:
       name = 'default changeset'
       files = filter(self._closed, sublib.svn_st())
@@ -385,15 +388,28 @@ class Workspace:
       files = diffs
     else:
       name = names[0]
-      cs = self.getChangeset(name)
-      if not cs:
-        return Error('no changeset "%s"' % name)
-      files = cs.files()
-      cs.describe()
-    if not files: return Result(0)
+      if name[0] == 'r':
+        try:
+          rev = int(name[1:])
+        except ValueError:
+          pass
+      rev = abs(rev)
+      if rev:
+        name = 'revision %d' % rev
+        info = sublib.svn_revision_info(rev)
+        files = []
+      else:
+        cs = self.getChangeset(name)
+        if not cs:
+          return Error('no changeset "%s"' % name)
+        files = cs.files()
+        cs.describe()
+    if not files and not rev: return Result(0)
     tmproot = '/tmp/subset.diff.%010d' % random.randint(1, 1000000000)
     os.mkdir(tmproot)
     cleanup = []
+    if rev:
+      files = sublib.svn_savediffs(tmproot, rev)
     singleton = not cs and (len(files) == 1)
     if singleton and not onecmd:
       print 'SUBSET_DIFF_ONE undefined; cannot view diff.'
@@ -416,24 +432,35 @@ class Workspace:
             index.write('<p/>\n')
         index.write('\n<p/>\n')
       else:
-        index.write('<h3>%s</h3>' % name)
+        index.write('<h3>%s</h3>\n' % name)
+        if info is not None:
+          index.write('<p/><i>Submitted by: %s<br/>\n' % info.author)
+          index.write('Submitted on: %s</i><p/>\n' % info.date)
+          index.write('%s\n' % str(info.msg).replace('\n', '<br/>\n'))
       cleanup.append(diffindex)
       if revision:
         index.write('<b>diff to revision %s</b>' % revision)
       index.write('<ul>\n')
-    for file in files:
-      if os.path.isdir(file.abspath()):
-        index.write('<li>%s/</li>\n' % (file.path))
-        continue
-      outbase = file.path.replace(os.path.sep, '~') + '.diff'
-      outfile = os.path.join(tmproot, outbase)
-      cleanup.append(outfile)
-      exit_code = sublib.svn_savediff(file, outfile, revision)
-      if makeindex:
-        if exit_code:
-          index.write('<li>%s <i>...unable to diff</i></li>\n' % (file.path))
-        else:
-          index.write('<li><a href="%s">%s</a></li>\n' % (outbase, file.path))
+    if rev:
+      for name, path in files:
+        cleanup.append(path)
+        if makeindex:
+          index.write('<li><a href="%s">%s</a></li>\n' % (path, name))
+    else:
+      for file in files:
+        if makeindex:
+          if os.path.isdir(file.abspath()):
+            index.write('<li>%s/</li>\n' % (file.path))
+            continue
+        outbase = file.path.replace(os.path.sep, '~') + '.diff'
+        outfile = os.path.join(tmproot, outbase)
+        cleanup.append(outfile)
+        exit_code = sublib.svn_savediff(file, outfile, revision)
+        if makeindex:
+          if exit_code:
+            index.write('<li>%s <i>...unable to diff</i></li>\n' % (file.path))
+          else:
+            index.write('<li><a href="%s">%s</a></li>\n' % (outbase, file.path))
     if makeindex:
       index.write('</ul>\n</small></body></html>')
       index.close()
@@ -943,10 +970,12 @@ class Diff(Command):
   def _define(self):
     self._long = ('diff: generate diffs for files or changesets.\n'
                   '\n'
-                  'usage: %prog diff [changeset | file [file...]]'
+                  'usage: %prog diff [changeset | rREV | file [file...]]'
                   '\n'
                   'If no arguments are specified, all files in the default changeset\n'
-                  'will be diffed')
+                  'will be diffed.  The "rREV" syntax shows diffs of files submitted\n'
+                  'at the specified revision (e.g. "r101"), relative to the previous\n'
+                  'revision.')
     self._short = 'generate diffs'
     self._addKeys('diff')
     self._addOption('-r', '--revision', default='', metavar='REV', help='diff relative to a specific revision')

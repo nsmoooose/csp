@@ -1,39 +1,15 @@
-#include "stdinc.h"
+#include <sstream>
 
-
-
-#include <osg/Vec4>
 #include <osg/Fog>
-#include <osg/Group>
-#include <osg/Transform>
-#include <osg/Matrix>
-#include <osg/Texture>
-#include <osg/StateSet>
-#include <osg/StateAttribute>
 #include <osg/Notify>
-#include <osg/Light>
-#include <osg/ClearNode>
+#include <osg/PolygonMode>
 
-#include <osg/BoundingSphere>
-#include <osgDB/Registry>
-#include <osgDB/ReadFile>
+#include <osgDB/FileUtils>
 
-#include <osgUtil/Optimizer>
 #include <osgUtil/CullVisitor>
 
+#include "LogStream.h"
 #include "VirtualBattlefield.h"
-#include "VirtualBattlefieldScene.h"
-#include "ObjectFactory.h"
-
-#include "CSPFlightSim.h"
-#include "DemeterDrawable.h"
-#include "DT_drawtext.h"
-#include "SDL.h"
-
-unsigned int VirtualBattlefield::latest_object_id = 0;
-
-VirtualBattlefield * g_pBattlefield = new VirtualBattlefield;
-extern VirtualBattlefieldScene * g_pBattleScene;
 
 extern int g_ScreenWidth;
 extern int g_ScreenHeight;
@@ -41,11 +17,16 @@ extern int g_ScreenHeight;
 extern double g_LatticeXDist;
 extern double g_LatticeYDist;
 
+extern osg::Node *makeSky( void );
+extern osg::Node *makeBase( void );
+extern osg::Node *makeTreesPatch( float xcen, float ycen, float spacing, float width, 
+					 float height, VirtualBattlefield * pBattlefield);
 
 const float SKY_RED = 0.1f;
 const float SKY_GREEN = 0.1f;
 const float SKY_BLUE = 0.6f;
 const float SKY_ALPHA = 1.0f;
+
 const float FOG_RED = 0.4f;
 const float FOG_GREEN = 0.4f;
 const float FOG_BLUE = 0.5f;
@@ -53,14 +34,10 @@ const float FOG_ALPHA = 1.0f;
 
 const float MAX_VIEW_DISTANCE = 10000.0f;
 
-using namespace std;
+VirtualBattlefield * g_pBattlefield = new VirtualBattlefield;
 
 
-extern osg::Node *makeSky( void );
-extern osg::Node *makeBase( void );
-extern osg::Node *makeTreesPatch( float xcen, float ycen, float spacing, float width, 
-					 float height, VirtualBattlefield * pBattlefield);
-
+unsigned int VirtualBattlefield::latest_object_id = 0;
 
 
 /**
@@ -78,6 +55,7 @@ struct MoveEarthySkyWithEyePointCallback : public osg::Transform::ComputeTransfo
         {
             osg::Vec3 eyePointLocal = cv->getEyeLocal();
             matrix.preMult(osg::Matrix::translate(eyePointLocal.x(),eyePointLocal.y(),0.0f));
+			//matrix.preMult(osg::Matrix::translate(eyePointLocal.x(),eyePointLocal.y(),eyePointLocal.z()));
         }
         return true;
     }
@@ -89,7 +67,8 @@ struct MoveEarthySkyWithEyePointCallback : public osg::Transform::ComputeTransfo
         if (cv)
         {
             osg::Vec3 eyePointLocal = cv->getEyeLocal();
-            matrix.postMult(osg::Matrix::translate(-eyePointLocal.x(),-eyePointLocal.y(),0.0f));
+			matrix.postMult(osg::Matrix::translate(-eyePointLocal.x(),-eyePointLocal.y(),0.0));
+            //matrix.postMult(osg::Matrix::translate(-eyePointLocal.x(),-eyePointLocal.y(),-eyePointLocal.z()));
         }
         return true;
     }
@@ -116,7 +95,6 @@ void VirtualBattlefield::Cleanup()
 {
 	if (m_pActiveTerrainObject)
 		delete m_pActiveTerrainObject;
-
 }
 
 
@@ -126,7 +104,6 @@ float VirtualBattlefield::getElevation( float x,float y ) const
 		return m_pActiveTerrainObject->GetElevation(x,y);
 	else
 		return 0.0;
-
 }
 
 void VirtualBattlefield::GetNormal(float x, float y, float & normalX, 
@@ -141,7 +118,6 @@ void VirtualBattlefield::GetNormal(float x, float y, float & normalX,
 int VirtualBattlefield::buildScene()
 {
     CSP_LOG(CSP_APP, CSP_INFO, "VirtualBattlefield::buildScene() ");
- 	ConsoleFont = DT_LoadFont("Fonts/ConsoleFont.bmp", TRANS_FONT );
    
     int ScreenWidth = g_ScreenWidth;
     int ScreenHeight = g_ScreenHeight;
@@ -160,10 +136,16 @@ int VirtualBattlefield::buildScene()
 	// OSG can find itself the plugins.
 #ifdef _WIN32
 	osgDB::setLibraryFilePathList("../DemoPackage");
-#endif 
+#endif
 
-    osg::setNotifyLevel(osg::DEBUG_INFO);
-	
+	/////////////////////////////////////
+    //
+	//(Un)comment to (enable) disable debug info from osg
+	//
+    //osg::setNotifyLevel(osg::DEBUG_INFO);
+	//
+    /////////////////////////////////////
+
     m_rpRootNode = osgNew osg::Group;
 	m_rpRootNode->setName( "RootSceneGroup" );
 
@@ -200,6 +182,7 @@ int VirtualBattlefield::buildScene()
     m_pView = osgNew osgUtil::SceneView();
     m_pView->setDefaults();
     m_pView->setViewport(0,0,ScreenWidth,ScreenHeight);
+
     osg::Vec4 bkgColor;
     bkgColor[0] = SKY_RED;
     bkgColor[1] = SKY_GREEN;
@@ -207,13 +190,13 @@ int VirtualBattlefield::buildScene()
     bkgColor[3] = SKY_ALPHA;
 	m_pView->setBackgroundColor(bkgColor);
     m_pView->setComputeNearFarMode(osgUtil::CullVisitor::DO_NOT_COMPUTE_NEAR_FAR);
-	
+	m_pView->getCullVisitor()->setImpostorsActive(true);
+
+	// Fog properties: start and end distances are read from Start.csp
     osg::StateSet * pFogState = osgNew osg::StateSet;
     osg::Fog* fog = osgNew osg::Fog;
     fog->setMode(osg::Fog::LINEAR);
-    fog->setDensity(0.35f);
-    fog->setStart(100.0f);
-    fog->setEnd(10000 - 100.0f);
+    fog->setDensity(0.3f);
 
 	osg::Vec4 fogColor;
 	fogColor[0] = FOG_RED;
@@ -223,11 +206,8 @@ int VirtualBattlefield::buildScene()
 	fog->setColor(fogColor);
     pFogState->setAttributeAndModes(fog ,osg::StateAttribute::ON);
 	
-	
+	// light properties
 	osg::Light * pLight = osgNew osg::Light;
-	//pLight->setDirection( osg::Vec3(1,1,1) );
-	//pLight->setAmbient( osg::Vec4(0.75, 0.75, 0.75, 1) );
-	//pLight->setDiffuse( osg::Vec4(0.6, 0.6, 0.6, 1) );
 
 	pLight->setDirection( osg::Vec3(0,0,-1) );
 	pLight->setAmbient( osg::Vec4(0.2f,0.2f,0.2f,1.0f) );
@@ -243,38 +223,46 @@ int VirtualBattlefield::buildScene()
 	//m_pView->setLightingMode(osgUtil::SceneView::SKY_LIGHT); // HEADLIGHT is default
 
 	m_rpRootNode->addChild(m_rpObjectRootNode.get());
-	
+
     m_pView->setSceneData(m_rpRootNode.get() );
+
+	m_rpFrameStamp = osgNew osg::FrameStamp;
+
+	m_pView->setFrameStamp(m_rpFrameStamp.get());
 
     osgDB::Registry::instance();
 
     osg::Camera * pCamera = m_pView->getCamera();
-    pCamera->setNearFar(10.0f,20000);
+    pCamera->setNearFar(1.0f,20000);
 	float aspect = (float)g_ScreenWidth/(float)g_ScreenHeight;
-    pCamera->setPerspective(90.0f,aspect,10.0f,20000.0f);
+    pCamera->setPerspective(90.0f,aspect,1.0f,20000.0f);
     
     osg::Vec3  posVec(0, 0, 1000);
     osg::Vec3  lookVec(15, 15, 1000);
     osg::Vec3  upVec(0, 0, 1);
 	
     pCamera->setLookAt(posVec, lookVec, upVec);
-
+	
     return 1;
 }
 
 
 int VirtualBattlefield::drawScene()
 {
-     
     CSP_LOG(CSP_APP, CSP_DEBUG, "VirtualBattlefield::drawScene()...");
-
+    
+	
 	for_each( objectList.begin(), objectList.end(), mem_fun(&BaseObject::updateScene) );
 
 	osgUtil::CullVisitor * pCullVisitor = m_pView->getCullVisitor();
 	pCullVisitor->setComputeNearFarMode(osgUtil::CullVisitor::COMPUTE_NEAR_FAR_USING_BOUNDING_VOLUMES);
 	pCullVisitor->setCullingMode(osgUtil::CullVisitor::ENABLE_ALL_CULLING);
 	m_pView->setCullVisitor(pCullVisitor);
+  
+	m_pView->app();
+
     m_pView->cull();
+
     m_pView->draw();
 
     glFinish();
@@ -305,6 +293,9 @@ void VirtualBattlefield::OnUpdate(float dt)
 	    CSP_LOG( CSP_APP, CSP_WARN, "processOnUpdate - found null pointer in object list" );
       }
     }
+
+  m_rpFrameStamp->setReferenceTime(m_rpFrameStamp->getReferenceTime() + dt);
+  m_rpFrameStamp->setFrameNumber(m_rpFrameStamp->getFrameNumber() + 1);
 
   CSP_LOG(CSP_APP, CSP_DEBUG, "VirtualBattlefield::OnUpdate - leaving" );
 

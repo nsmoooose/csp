@@ -30,6 +30,7 @@
 
 
 #include <string>
+#include <vector>
 
 #include <SimData/Export.h>
 #include <SimData/Namespace.h>
@@ -138,6 +139,27 @@ namespace ospath {
 	 */
 	extern SIMDATA_EXPORT std::string const &addpath(std::string &pathlist, const std::string &path);
 	
+	/** Removes the last extension from a filepath.  Returns the extension
+	 *  (excluding the '.'), or an empty string if no extensions were found.
+	 */
+	extern SIMDATA_EXPORT std::string ospath::stripFileExtension(std::string &path);
+
+	/** Get the last extension of a filename (excluding the '.'), or an empty
+	 *  string if no extensions were found.
+	 */
+	extern SIMDATA_EXPORT std::string getFileExtension(const std::string &path);
+
+	/** Test if a file exists.
+	 */
+	extern SIMDATA_EXPORT bool exists(const std::string &path);
+
+	typedef std::vector<std::string> DirectoryContents;
+
+	/** Retrieve a list of entries (files and subdirectories) from the given
+	 *  path (non-recursive).
+	 */
+	extern SIMDATA_EXPORT DirectoryContents getDirectoryContents(std::string const &path);
+
 } // namespace ospath
 
 //@}

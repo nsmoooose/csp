@@ -30,7 +30,6 @@
 #include <SimData/FileUtility.h>
 
 #include <cstdlib>
-#include <cstdio>
 
 
 #ifdef _WIN32
@@ -43,6 +42,8 @@
 #  endif /* _MSC_VER */
 #else /* _WIN32 */
 #  include <unistd.h>
+#  include <sys/types.h>
+#  include <dirent.h>
 #endif
 
 
@@ -171,6 +172,57 @@ std::string ospath::denormalize(const std::string &path) {
 
 std::string ospath::filter(const std::string &path) {
 	return denormalize(normalize(path));
+}
+
+std::string ospath::stripFileExtension(std::string &path) {
+	std::string ext = getFileExtension(path);
+	if (!ext.empty()) path = path.substr(0, path.size() - ext.size() - 1);
+	return ext;
+}
+
+std::string ospath::getFileExtension(const std::string &path) {
+	std::string::size_type sep_idx0 = path.rfind('/');
+	std::string::size_type sep_idx1 = path.rfind('\\');
+	if (sep_idx0 == std::string::npos) sep_idx0 = 0;
+	if (sep_idx1 == std::string::npos) sep_idx1 = 0;
+	std::string::size_type sep_idx = std::max(sep_idx0, sep_idx1);
+	std::string::size_type idx = path.rfind('.');
+	if (idx == std::string::npos || idx < sep_idx) return "";
+	return path.substr(idx+1);
+}
+
+bool ospath::exists(const std::string &path) {
+#ifdef _WIN32
+	static const int mode = 0; // existence only
+#else // POSIX (hopefully)
+	static const int mode = F_OK;
+#endif
+	return access(path.c_str(), mode);
+}
+
+ospath::DirectoryContents ospath::getDirectoryContents(std::string const &path) {
+	DirectoryContents entries;
+#ifdef _WIN32
+	WIN32_FIND_DATA ffd;
+	std::string search_path = path + "\\*";
+	HANDLE handle = FindFirstFile(search_path.c_str(), &ffd);
+	if (handle != INVALID_HANDLE_VALUE) {
+		do {
+			contents.push_back(ffd.cFileName);
+		} while (FindNextFile(handle, &ffd) != 0);
+		FileClose(handle);
+	}
+#else // POSIX (hopefully)
+	DIR *dir = opendir(path.c_str());
+	if (dir != NULL) {
+		struct dirent *entry;
+		while ((entry=readdir(dir)) != NULL) {
+			entries.push_back(entry->d_name);
+		}
+		closedir(dir);
+	}
+#endif
+	return entries;
 }
 
 NAMESPACE_SIMDATA_END

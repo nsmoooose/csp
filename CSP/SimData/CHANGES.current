@@ -1,6 +1,19 @@
 Version 0.4.0 (in progress)
 ===========================
 
+2004-10-02: onsight
+ * Implement AtomicCounter using compiler intrinsics under msvc.
+
+==>WINDOWS USERS this is untested and may need debugging.  According
+   to MS you'll need to pass the /Oi option to msvc.
+
+ * Add directory reading and file extension splitting utility functions.
+   This was motivated by osgDB::FileUtil, which provides this functionality
+   only at a high cost of including many unnecessary header files.
+
+==>WINDOWS USERS: warning -- directory reading has only been tested under
+   Linux.  If it builds it should work though.
+
 2004-10-01: onsight
  * Fix import SimData statements in Compile.py and Parse.py to
    find the local SimData package.

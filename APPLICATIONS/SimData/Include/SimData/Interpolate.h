@@ -58,6 +58,7 @@ class UnPacker;
  * 
  * @author Mark Rose <mrose@stm.lbl.gov>
  */
+template <typename T>
 class SIMDATA_EXPORT InterpolatedData: public BaseType {
 
 	/*
@@ -112,7 +113,7 @@ protected:
  * 
  * @author Mark Rose <mrose@stm.lbl.gov>
  */
-class Curve: public InterpolatedData<float> {
+class SIMDATA_EXPORT Curve: public InterpolatedData<float> {
 
 	vector_t _breaks, _data, _table, _sd;
 	value_t _range, _spacing, _min;
@@ -212,7 +213,7 @@ protected:
  * 
  * @author Mark Rose <mrose@stm.lbl.gov>
  */
-class SIMDATA_EXPORT Table: public InterpolatedData {
+class SIMDATA_EXPORT Table: public InterpolatedData<float> {
 
 public:
 	std::string _x_label, _y_label;

@@ -2,6 +2,17 @@ Version 0.4.0 (in progress)
 ===========================
 
 2004-06-11: onsight
+  * Fixed up the ArchiveTest to use ArchiveReader and ArchiveWriter,
+    and also changed the import statements in the test suite a bit.
+    Should be slightly cleaner now, but more importantly the tests
+    should run against the local copy of SimData rather than the
+    one installed in site-packages (if any).
+
+  * Move the static initializer for object interface pointers
+    outside of the anonymous namespace that encloses the interface
+    instance declaration.  Should fix compile problems under VC.
+
+2004-06-11: onsight
   * Major refactoring of object and basetype serialization.  Archive,
     Packer, and UnPacker are replaced by Reader and Writer abstract
     classes, and ArchiveReader and ArchiveWriter subclasses.  The

@@ -303,24 +303,6 @@ public:
 	 */
 	virtual bool isStatic() const { return false; }
 
-#if 0
-	/**
-	 * XXX write me!
-	 */
-	void pack(Object *o, Packer &p) {
-		InterfaceList::const_iterator it = _interfaces.begin();
-		for (; it != _interfaces.end(); ++it) (*it)->pack(o, p);
-	}
-
-	/**
-	 * XXX write me!
-	 */
-	void unpack(Object *o, UnPacker &p) {
-		InterfaceList::const_iterator it = _interfaces.begin();
-		for (; it != _interfaces.end(); ++it) (*it)->unpack(o, p);
-	}
-#endif
-
 
 /////////////////////////////////////////////////////// SWIG
 #ifdef SWIG
@@ -748,8 +730,8 @@ public: \
  *  See @ref InterfaceMacros for details.
  */
 #define SIMDATA_REGISTER_INTERFACE(classname) \
-namespace { \
 	SIMDATA(ObjectInterface)<classname> *classname::classname##InterfaceProxy::_interface = 0; \
+namespace { \
 	classname::classname##InterfaceProxy __##classname##_interface; \
 } /* anonymous namespace */
 
@@ -758,8 +740,8 @@ namespace { \
  *  See @ref InterfaceMacros for details.
  */
 #define SIMDATA_REGISTER_INNER_INTERFACE(prefix, classname) \
-namespace { \
 	SIMDATA(ObjectInterface)<classname> *prefix::classname::classname##InterfaceProxy::_interface = 0; \
+namespace { \
 	prefix::classname::classname##InterfaceProxy __##prefix##_##classname##_interface; \
 } /* anonymous namespace */
 

@@ -43,6 +43,8 @@ void ConvertStringToLower(std::string &str);
  */
 class StringTokenizer: public std::deque<std::string> {
 public:
+	typedef std::deque<std::string>::iterator iterator;
+	typedef std::deque<std::string>::const_iterator const_iterator;
 	StringTokenizer(const std::string &str, const std::string &delimiters = " ,\n");
 };
 

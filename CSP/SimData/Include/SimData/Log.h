@@ -122,23 +122,21 @@ inline SIMDATA_EXPORT ThreadLog& threadlog() {
 #endif // threading enabled
 
 
+#ifdef SIMDATA_NDEBUG
+# define SIMDATA_NOTEWORTHY(C, P) false
+#else
+# define SIMDATA_NOTEWORTHY(C, P) SIMDATA_LOG_.isNoteworthy(P, C)
+#endif
+
 /** Convenience macros for logging messages.
  *
  *  @param C category
  *  @param P priority
  *  @param M message
  */
-#ifdef SIMDATA_NDEBUG
-# define SIMDATA_LOG(C,P,M)
-# define SIMDATA_BULK(C,M)
-# define SIMDATA_TRACE(C,M)
-# define SIMDATA_DEBUG(C,M)
-# define SIMDATA_INFO(C,M)
-# define SIMDATA_WARNING(C,M)
-# define SIMDATA_ALERT(C,M)
-# define SIMDATA_ERROR(C,M)
-#else
-# define SIMDATA_LOG(C,P,M) SIMDATA_LOG_.entry(P, C, __FILE__, __LINE__) << M << std::endl
+# define SIMDATA_LOG(C,P,M) if (SIMDATA_NOTEWORTHY(C, P)) \
+                              SIMDATA_LOG_.entry(P, C, __FILE__, __LINE__) << M << std::endl
+
 # define SIMDATA_BULK(C,M) SIMDATA_LOG(C,LOG_BULK,M)
 # define SIMDATA_TRACE(C,M) SIMDATA_LOG(C,LOG_TRACE,M)
 # define SIMDATA_DEBUG(C,M) SIMDATA_LOG(C,LOG_DEBUG,M)
@@ -146,7 +144,6 @@ inline SIMDATA_EXPORT ThreadLog& threadlog() {
 # define SIMDATA_WARNING(C,M) SIMDATA_LOG(C,LOG_WARNING,M)
 # define SIMDATA_ALERT(C,M) SIMDATA_LOG(C,LOG_ALERT,M)
 # define SIMDATA_ERROR(C,M) SIMDATA_LOG(C,LOG_ERROR,M)
-#endif
 
 
 NAMESPACE_SIMDATA_END

@@ -42,45 +42,6 @@
 NAMESPACE_SIMDATA
 
 
-LogBuffer::LogBuffer()
-{
-	m_enabled = true;
-	m_category = 0xffffffff;
-	m_priority = 0;
-	m_buffer = NULL;
-}
-
-LogBuffer::~LogBuffer() {
-}
-
-void LogBuffer::set_sb(std::streambuf* sb) {
-    m_buffer = sb;
-}
-
-void LogBuffer::setLogCategory(int c) {
-    m_category = c;
-}
-
-int LogBuffer::getLogCategory() {
-    return m_category;
-}
-
-void LogBuffer::setLogPriority(int p) {
-    m_priority = p;
-}
-
-int LogBuffer::getLogPriority() {
-    return m_priority;
-}
-
-void LogStream::setLogPriority(int p) {
-    m_log_buffer.setLogPriority(p);
-}
-
-void LogStream::setLogCategory(int c) {
-    m_log_buffer.setLogCategory(c);
-}
-
 void LogStream::initFromEnvironment() {
 	char *env_logfile = getenv("SIMDATA_LOGFILE");
 	if (env_logfile && *env_logfile) {
@@ -94,6 +55,25 @@ void LogStream::initFromEnvironment() {
 		setLogPriority(priority);
 	}
 }
+
+std::ostream & LogStream::entry(int priority, int category, const char *file, int line) {
+	if (!isNoteworthy(priority, category)) return m_null;
+	if (!m_stream) setOutput(std::cerr);
+	std::ostream &out(*m_stream);
+	out << priority << ' ';
+	if (m_log_time) {
+		char time_stamp[32];
+		time_t now;
+		time(&now);
+		strftime(time_stamp, 32, "%Y%m%d %H%M%S", gmtime(&now));
+		out << time_stamp << ' ';
+	}
+	if (file && m_log_point) {
+		out << '(' << file << ':' << line << ") ";
+	}
+	return out;
+}
+
 
 NAMESPACE_SIMDATA_END
 

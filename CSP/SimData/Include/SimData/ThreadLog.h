@@ -179,11 +179,23 @@ public:
 		getLogStream().setLogPriority(p);
 	}
 
+	/** Get the logging priority threshold of the underlying (shared) LogStream.
+	 */
+	int getLogPriority() const {
+		return getLogStream().getLogPriority();
+	}
+
 	/** Set the logging category mask of the underlying (shared) LogStream.
 	 */
 	void setLogCategory(int c) {
 		ScopedLogLock lock(getLogStream());
 		getLogStream().setLogCategory(c);
+	}
+
+	/** Get the logging category mask of the underlying (shared) LogStream.
+	 */
+	int getLogCategory() {
+		return getLogStream().getLogCategory();
 	}
 
 	/** Enable or disable point logging (source file and line number) by the
@@ -212,6 +224,12 @@ public:
 	 */
 	bool getTimeLogging() const {
 		return getLogStream().getTimeLogging();
+	}
+
+	/** Test if a given priority and category are logable.
+	 */
+	inline bool isNoteworthy(int priority, int category=~0) {
+		return getLogStream().isNoteworthy(priority, category);
 	}
 
 	/** Method for logging a message to the underlying (shared) LogStream.

@@ -1,9 +1,23 @@
 Version 0.4.0 (in progress)
 ===========================
+2004-07-08: onsight
+  * Simplify the logging classes considerably, and tweak the logging
+    macros to skip the output stream formating for messages that
+    aren't logged (due to low priority or category filtering).
+    Previously, all messages were formatted and sent either to the
+    real log, or dropped (one character at a time) by the underlying
+    streambuf.  When debugging is disabled, the log statements now
+    reduce to a form that produces no code but should prevent spurious
+    compiler warnings about unused variables (for local variables that
+    are only referenced in the log output).
+
+  * Changed the makefile to always rebuild Version.cpp, so the
+    'build on [date]' message will be accurate.
+
 2004-07-02: delta
   * Added a #define _WINSOCKAPI_ in AtomicCounter.h (protected
     behind WIN32) to avoid conflict in the network code.
-    
+
 2004-07-01: onsight
   * Added a simple but fast memory pool class for allocating fixed
     size buffers.

@@ -76,11 +76,14 @@ inline simdata::LogStream& csplog() {
 
 
 #ifdef CSP_NDEBUG
-# define CSP_LOG(C,P,M)
+# define CSP_NOTEWORTHY(C,P) false
 #else
-# define CSP_LOG(C,P,M) \
-	::csplog().entry(simdata::LOG_##P, CSP_##C, __FILE__, __LINE__) << M << std::endl
+# define CSP_NOTEWORTHY(C,P) ::csplog().isNoteworthy(simdata::LOG_##P, CSP_##C)
 #endif
+
+# define CSP_LOG(C,P,M) \
+	if (CSP_NOTEWORTHY(C, P)) \
+		::csplog().entry(simdata::LOG_##P, CSP_##C, __FILE__, __LINE__) << M << std::endl
 
 
 #endif // __CSP_LOG_H__

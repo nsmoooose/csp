@@ -22,16 +22,6 @@
 /**
  * @file LogStream.h
  * @brief Stream based logging mechanism.
- *
- * Stream based logging mechanism.
- *
- * Based on the LogStream library written by Bernie Bright, 1998
- * Copyright (C) 1998  Bernie Bright - bbright@c031.aone.net.au
- *
- * Source code from Bernie Bright's LogStream library is used
- * here under the turms of the GNU General Public License
- * version 2 or later, as allowed by the GNU Library General
- * Public License Version 2 (clause 3).
  */
 
 
@@ -56,125 +46,17 @@
 NAMESPACE_SIMDATA
 
 
-/** Standard logging interface:
-	void _close()=0;
-	void setOutput(std::ostream &)=0;
-	void setOutput(std::string const &filename)=0;
-	void setLogPriority(int priority)=0;
-	void setLogCategory(int category)=0;
-	std::ostream & entry(int priority, int category=LOG_ALL, const char *file=0, int line=0);
-*/
-
-
-/** An output-only, category-based log stream.
- *
- *  LogBuffer is an output-only streambuf with the ability to disable sets of
- *  messages at runtime.  Messages can be suppressed based on priority and
- *  category.
- */
-class SIMDATA_EXPORT LogBuffer: public NonCopyable, public std::streambuf
-{
-public:
-
-	/** Constructor
-	 */
-	LogBuffer();
-
-	/** Destructor
-	 */
-	~LogBuffer();
-
-	/** Test if logging is enabled.
-	 */
-	bool enabled() { return m_enabled; }
-
-	/** Set the logging level of subsequent messages.
-	 *
-	 *  @param p message priority
-	 *  @param c message category
-	 */
-	void setLogState(int p, int c) {
-		m_enabled = ((c & m_category) != 0 && p >= m_priority);
-	}
-
-	/** Set the allowed logging categories.
-	 *
-	 *  @param c Logging categories to enable (bitwise AND of one or more
-	 *    category constants); zero suppresses all categories.
-	 */
-	void setLogCategory(int c);
-
-	/** Get the logging categories currently enabled.
-	 *
-	 *  @return bitwise AND of logging category constants
-	 */
-	int getLogCategory();
-
-	/** Set the logging priority.  Messages with a lower priority will
-	 *  be suppressed.
-	 *
-	 *  @param p the priority cutoff for logging messages
-	 */
-	void setLogPriority(int p);
-
-	/** Get the current logging priority.
-	 *
-	 *  @return the priority cutoff for logging messages
-	 */
-	int getLogPriority();
-
-	/** Set the underlying stream buffer
-	 *
-	 *  @param sb stream buffer used for output
-	 */
-	void set_sb(std::streambuf* sb);
-
-protected:
-
-	/** sync/flush the underlying streambuf */
-	virtual int sync() {
-		if (!m_buffer) return -1;
-		return m_buffer->pubsync();
-	}
-
-	/** overflow (write characters to the underlying streambuf) */
-	virtual int overflow(int c) {
-		return m_enabled ? m_buffer->sputc(static_cast<char>(c)) : (EOF == 0 ? 1: 0);
-	}
-
-private:
-
-	// The streambuf used for actual output. Defaults to cerr.rdbuf().
-	std::streambuf* m_buffer;
-
-	bool m_enabled;
-	int m_category;
-	int m_priority;
-};
-
-
-/** A helper class for LogStream construction.
- *
- *  A helper class that ensures a streambuf and ostream are constructed and
- *  destroyed in the correct order.  The streambuf must be created before the
- *  ostream but bases are constructed before members.  Thus, making this class
- *  a private base of LogStream, declared to the left of ostream, we ensure the
- *  correct order of construction and destruction.
- */
-struct SIMDATA_EXPORT LogStreamBase
-{
-	LogStreamBase() {}
-	LogBuffer m_log_buffer;
-};
-
-
 /** Class to manage the debug logging stream.
  */
-class SIMDATA_EXPORT LogStream : private LogStreamBase, protected std::ostream
+class SIMDATA_EXPORT LogStream
 {
-	std::ofstream *m_out;
+	std::ostream m_null;
+	std::ostream *m_stream;
+	std::ofstream *m_fstream;
 	bool m_log_point;
 	bool m_log_time;
+	int m_category;
+	int m_priority;
 
 #ifndef SIMDATA_NOTHREADS
 	ThreadMutex m_mutex;
@@ -188,13 +70,14 @@ public:
 	 *
 	 *  @param out_ output stream
 	 */
-	LogStream(std::ostream& out_)
-	        : LogStreamBase(),
-	          std::ostream(&m_log_buffer),
-	          m_out(NULL),
+	LogStream(std::ostream& out_):
+	          m_null(NULL),
+	          m_stream(NULL),
+	          m_fstream(NULL),
 	          m_log_point(true),
-	          m_log_time(false) {
-		m_log_buffer.set_sb(out_.rdbuf());
+	          m_log_time(false),
+	          m_category(~0),
+	          m_priority(0) {
 	}
 
 	/** Destructor; closes the output stream */
@@ -240,12 +123,12 @@ public:
 	 *  Idempotent, and will not close cerr or cout.
 	 */
 	void _close() {
-		m_log_buffer.set_sb(NULL);
-		if (m_out != NULL && m_out != std::cerr && m_out != std::cout) {
-			m_out->close();
-			delete m_out;
-			m_out = NULL;
+		if (m_fstream != NULL) {
+			m_fstream->close();
+			delete m_fstream;
+			m_fstream = NULL;
 		}
+		m_stream = NULL;
 	}
 
 	/** Set the output stream
@@ -254,7 +137,17 @@ public:
 	 */
 	void setOutput(std::ostream& out_) {
 		_close();
-		m_log_buffer.set_sb(out_.rdbuf());
+		m_stream = &out_;
+	}
+
+	/** Set the output stream
+	 *
+	 *  @param out_ output file stream (LogStream will close it)
+	 */
+	void setOutput(std::ofstream& out_) {
+		_close();
+		m_fstream = &out_;
+		m_stream = &out_;
 	}
 
 	/** Set the output stream
@@ -263,9 +156,9 @@ public:
 	 */
 	void setOutput(std::string const &filename) {
 		_close();
-		m_out = new std::ofstream(filename.c_str());
-		assert(m_out != NULL);
-		m_log_buffer.set_sb(m_out->rdbuf());
+		m_fstream = new std::ofstream(filename.c_str());
+		assert(m_fstream != NULL);
+		m_stream = m_fstream;
 	}
 
 	/** Set the global log priority level.
@@ -273,14 +166,32 @@ public:
 	 *
 	 *  @param p priority
 	 */
-	void setLogPriority(int p);
+	void setLogPriority(int p) { m_priority = p; }
+
+	/** Get the current logging priority.
+	 *
+	 *  @return the priority cutoff for logging messages
+	 */
+	int getLogPriority() { return m_priority; }
 
 	/** Set the global log categories.
 	 *  Log entries in categories not included in this set will be suppressed.
 	 *
 	 *  @param c categories (bitwise AND of one or more logging categories).
 	 */
-	void setLogCategory(int c);
+	void setLogCategory(int c) { m_category = c; }
+
+	/** Get the logging categories currently enabled.
+	 *
+	 *  @return bitwise AND of logging category constants
+	 */
+	int getLogCategory() { return m_category; }
+
+	/** Test if a given priority and category are logable.
+	 */
+	inline bool isNoteworthy(int priority, int category=~0) {
+		return ((category & m_category) != 0 && priority >= m_priority);
+	}
 
 	/** Method for logging a message to the stream.
 	 *
@@ -290,21 +201,7 @@ public:
 	 *  @param line line number of the code that generated this message (typically __LINE__).
 	 *  @return an output stream to receive the message contents.
 	 */
-	std::ostream & entry(int priority, int category=~0, const char *file=0, int line=0) {
-		m_log_buffer.setLogState(priority, category);
-		*this << priority << ' ';
-		if (m_log_time) {
-			char time_stamp[32];
-			time_t now;
-			time(&now);
-			strftime(time_stamp, 32, "%Y%m%d %H%M%S", gmtime(&now));
-			*this << time_stamp << ' ';
-		}
-		if (file && m_log_point) {
-			*this << '(' << file << ':' << line << ") ";
-		}
-		return *this;
-	}
+	std::ostream & entry(int priority, int category=~0, const char *file=0, int line=0);
 
 };
 

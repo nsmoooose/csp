@@ -50,7 +50,7 @@ DEPFILES = $(addprefix $(DEPDIR)/,$(addsuffix .d, $(SOURCES))) $(DEPDIR)/cSimDat
 DEPFILTER =
 DEPS_MAGIC := $(shell mkdir $(DEPDIR) > /dev/null 2>&1 || :)
 
-.PHONY: clean-deps clean all default
+.PHONY: clean-deps clean all default update_version
 
 default:
 	@echo "run make from top-level directory only"
@@ -96,6 +96,9 @@ $(DEPDIR)/%.swigdep : %
 	@echo "Computing dependencies for $<..."
 	@$(SWDEP) $(DEPFILTER) -o $(<:.i=_wrap.cpp) $< > $@
 
+update_version:
+	$(CXX) -c $(CFLAGS) Version.cpp
+
 libSimData.a: $(OBJECTS)
 	ar cru $@ $^
 	ranlib $@
@@ -115,5 +118,5 @@ cSimData_wrap.o: cSimData_wrap.cpp
 %.o: %.cpp
 	$(CXX) -c $(CFLAGS) $(@:.o=.cpp)
 
-all: _cSimData.so libSimData.a
+all: update_version _cSimData.so libSimData.a
 #all: build-subdirs _cSimData.so libSimData.a

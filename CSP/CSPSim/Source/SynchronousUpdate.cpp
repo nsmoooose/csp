@@ -22,8 +22,8 @@
  *
  **/
 
-
 #include <SynchronousUpdate.h>
+
 
 
 int UpdateProxy::update(double time) {
@@ -42,7 +42,7 @@ int UpdateProxy::update(double time) {
 UpdateProxy::Ref UpdateMaster::registerUpdate(UpdateTarget *target, double delay) {
 	UpdateProxy::Ref proxy;
 	if (target) {
-		delay = std::max(0.0, delay);
+		delay = std::max<double>(0.0, delay);
 		proxy = new UpdateProxy(target, this, m_Time + delay);
 		if (delay > 0.0) {
 			m_DelayQueue.push_back(proxy);

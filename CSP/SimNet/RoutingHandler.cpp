@@ -31,6 +31,8 @@
 
 namespace simnet {
 
+SIMDATA_STATIC_CONST_DEF(unsigned RoutingHandler::RoutingTableSize);
+
 RoutingHandler::RoutingHandler() {
 }
 

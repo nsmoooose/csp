@@ -39,6 +39,7 @@ inline double lowpass(const double dt, const double x, const double y) {
 	return x * (1.0 - f) + y * f;
 }
 
+SIMDATA_STATIC_CONST_DEF(simdata::uint32 PeerInfo::UDP_OVERHEAD);
 static int DEBUG_connection_display_loop = 0;
 
 PeerInfo::PeerInfo():
@@ -188,7 +189,7 @@ void PeerInfo::setNode(NetworkNode const &node, double incoming, double outgoing
 
 void PeerInfo::registerConfirmation(PacketReceiptHeader *receipt, const simdata::uint32 payload_length) {
 	ConfirmationId id = m_next_confirmation_id;
-	receipt->id0 = id;
+	receipt->setId0(id);
 	if (++m_next_confirmation_id == 0) m_next_confirmation_id = 1;  // 0 reserved for 'no id'
 
 	// there are 65534 sequential ids, so it's very unlikely we would wrap
@@ -209,9 +210,9 @@ void PeerInfo::registerConfirmation(PacketReceiptHeader *receipt, const simdata:
 
 void PeerInfo::setReceipt(PacketReceiptHeader *receipt, bool reliable, simdata::uint32 payload_length) {
 	// clear all the extra ids first (important!)
-	receipt->id1 = 0;
-	receipt->id2 = 0;
-	receipt->id3 = 0;
+	receipt->setId1(0);
+	receipt->setId2(0);
+	receipt->setId3(0);
 
 	// if it is a reliable packet, we save it the packet in m_reliable_packet_map for
 	// retransmission if we don't get a timely confirmation of receipt.   we store
@@ -221,25 +222,25 @@ void PeerInfo::setReceipt(PacketReceiptHeader *receipt, bool reliable, simdata::
 	} else {
 		// we shouldn't be calling setReceipt if there aren't any pending confirmations
 		assert(hasPendingConfirmations());
-		receipt->id0 = m_confirmation_queue.front();
+		receipt->setId0(m_confirmation_queue.front());
 		m_confirmation_queue.pop_front();
-		SIMNET_LOG(PACKET, DEBUG, "sending receipt " << receipt->id0);
+		SIMNET_LOG(PACKET, DEBUG, "sending receipt " << receipt->id0());
 	}
 
 	if (!hasPendingConfirmations()) return;
-	receipt->id1 = m_confirmation_queue.front();
+	receipt->setId1(m_confirmation_queue.front());
 	m_confirmation_queue.pop_front();
-	SIMNET_LOG(PACKET, DEBUG, "sending receipt " << receipt->id1);
+	SIMNET_LOG(PACKET, DEBUG, "sending receipt " << receipt->id1());
 
 	if (!hasPendingConfirmations()) return;
-	receipt->id2 = m_confirmation_queue.front();
+	receipt->setId2(m_confirmation_queue.front());
 	m_confirmation_queue.pop_front();
-	SIMNET_LOG(PACKET, DEBUG, "sending receipt " << receipt->id2);
+	SIMNET_LOG(PACKET, DEBUG, "sending receipt " << receipt->id2());
 
 	if (!hasPendingConfirmations()) return;
-	receipt->id3 = m_confirmation_queue.front();
+	receipt->setId3(m_confirmation_queue.front());
 	m_confirmation_queue.pop_front();
-	SIMNET_LOG(PACKET, DEBUG, "sending receipt " << receipt->id3);
+	SIMNET_LOG(PACKET, DEBUG, "sending receipt " << receipt->id3());
 }
 
 

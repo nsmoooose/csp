@@ -77,6 +77,12 @@ namespace simnet {
 const simdata::uint32 NetworkInterface::HeaderSize = sizeof(PacketHeader);
 const simdata::uint32 NetworkInterface::ReceiptHeaderSize = sizeof(PacketReceiptHeader);
 
+SIMDATA_STATIC_CONST_DEF(simdata::uint16 NetworkInterface::PingID);
+SIMDATA_STATIC_CONST_DEF(simdata::uint32 NetworkInterface::PeerIndexSize);
+SIMDATA_STATIC_CONST_DEF(simdata::uint32 NetworkInterface::MaxPayloadLength);
+SIMDATA_STATIC_CONST_DEF(PeerId NetworkInterface::InitialClientId);
+SIMDATA_STATIC_CONST_DEF(PeerId NetworkInterface::ServerId);
+
 /** Callback for HandlerSet<PacketHandler>::apply, to call the handlePacket
  *  method of each of the handlers in the set.
  */
@@ -139,7 +145,7 @@ void NetworkInterface::sendPackets(double timeout) {
 		ptr = queue->getReadBuffer(size);
 		assert(ptr);
 		PacketHeader *header = reinterpret_cast<PacketHeader*>(ptr);
-		PeerInfo *peer = getPeer(header->destination);
+		PeerInfo *peer = getPeer(header->destination());
 
 		// drop packets destined for inactive peers (it can take some time to flush
 		// queued packets when a peer disconnects).
@@ -155,7 +161,7 @@ void NetworkInterface::sendPackets(double timeout) {
 		assert(socket);
 
 		// provisional peers have id 0
-		if (peer->isProvisional()) header->destination = 0;
+		if (peer->isProvisional()) header->setDestination(0);
 
 		// make sure the socket is ready; otherwise if we have already
 		// sent some packets then try waiting for one millisecond (approx)
@@ -229,9 +235,9 @@ bool NetworkInterface::pingPeer(PeerInfo *peer) {
 	PacketHeader *header = reinterpret_cast<PacketHeader*>(ptr);
 	header->setReliable(false);
 	header->setPriority(queue_idx);
-	header->source = m_LocalId;
-	header->destination = peer->getId();
-	header->message_id = PingID;
+	header->setSource(m_LocalId);
+	header->setDestination(peer->getId());
+	header->setMessageId(PingID);
 	if (confirm) {
 		PacketReceiptHeader *receipt = reinterpret_cast<PacketReceiptHeader*>(ptr);
 		header->setReliable(true);
@@ -321,7 +327,7 @@ void NetworkInterface::processOutgoing(double timeout) {
 			header->setReliable(false);
 		}
 		header->setPriority(queue_idx);
-		header->source = m_LocalId;
+		header->setSource( m_LocalId);
 
 		simdata::uint8 *payload = ptr + header_size;
 		payload_length = allocation_size - header_size;
@@ -413,7 +419,7 @@ int NetworkInterface::receivePackets(double timeout) {
 			continue;
 		}
 
-		if (header->destination != m_LocalId) {
+		if (header->destination() != m_LocalId) {
 			SIMNET_LOG(PACKET, ALERT, "received bad packet (wrong destination): " << *header);
 			m_BadPackets++;
 			continue;
@@ -421,16 +427,16 @@ int NetworkInterface::receivePackets(double timeout) {
 
 		PeerInfo *peer = 0;
 
-		simdata::uint16 source = header->source;
+		simdata::uint16 source = header->source();
 
 		// for initial connection to the index server, source id will be zero.
 		// we need to create a new id on the fly and translate the source id until
 		// the sender is informed of the correct id to use.
 		// note: whenever source id is zero, routing_data will be set to the receive
 		// port number, and routing type will be zero
-		if (source == 0 && m_AllowUnknownPeers && header->routing_type == 0) {
+		if (source == 0 && m_AllowUnknownPeers && header->routingType() == 0) {
 			simdata::uint32 ip = sender_addr.getAddress().s_addr;
-			ConnectionPoint point(ip, header->routing_data);
+			ConnectionPoint point(ip, header->routingData());
 			source = getSourceId(point);
 		}
 
@@ -451,13 +457,13 @@ int NetworkInterface::receivePackets(double timeout) {
 				// if this packet is priority 3, it requires confirmation (id stored in id0)
 				// there may also be confirmation receipts in the remaining id slots
 				if (header->priority() == 3) {
-					peer->pushConfirmation(header->id0);
+					peer->pushConfirmation(header->id0());
 				} else {
-					if (header->id0 != 0) peer->popConfirmation(header->id0);
+					if (header->id0() != 0) peer->popConfirmation(header->id0());
 				}
-				if (header->id1 != 0) peer->popConfirmation(header->id1);
-				if (header->id2 != 0) peer->popConfirmation(header->id2);
-				if (header->id3 != 0) peer->popConfirmation(header->id3);
+				if (header->id1() != 0) peer->popConfirmation(header->id1());
+				if (header->id2() != 0) peer->popConfirmation(header->id2());
+				if (header->id3() != 0) peer->popConfirmation(header->id3());
 			} else {
 				// truncated packet
 				m_BadPackets++;
@@ -465,7 +471,7 @@ int NetworkInterface::receivePackets(double timeout) {
 			}
 		}
 
-		if (header->message_id == PingID) {
+		if (header->messageId() == PingID) {
 			// we've already collected stats from the header (there is no body)
 			// so just drop the packet and we're done.
 			continue;
@@ -480,7 +486,7 @@ int NetworkInterface::receivePackets(double timeout) {
 			SIMNET_LOG(PACKET, INFO, "copying packet data (" << packet_length << " bytes) " << *header);
 			memcpy((void*)ptr, (const void*)buffer, packet_length);
 			// rewrite the source field, in case we have assigned a new one.
-			reinterpret_cast<PacketHeader*>(ptr)->source = source;
+			reinterpret_cast<PacketHeader*>(ptr)->setSource(source);
 
 			peer->tallyReceivedPacket(packet_length);
 			m_ReceivedPackets++;

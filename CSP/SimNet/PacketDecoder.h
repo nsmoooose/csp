@@ -63,11 +63,11 @@ public:
 	 *  @param payload_length the size of the payload, in bytes.
 	 */
 	virtual void handlePacket(PacketHeader const *header, simdata::uint8 *payload, simdata::uint32 payload_length) {
-		NetworkMessage::Ref msg = m_Codec.decode(header->message_id, payload, payload_length);
+		NetworkMessage::Ref msg = m_Codec.decode(header->messageId(), payload, payload_length);
 		if (!msg) return;
-		msg->setSource(header->source);
-		msg->setRoutingType(header->routing_type);
-		msg->setRoutingData(header->routing_data);
+		msg->setSource(header->source());
+		msg->setRoutingType(header->routingType());
+		msg->setRoutingData(header->routingData());
 		Callback callback(msg);
 		m_MessageHandlers.apply(callback);
 	}

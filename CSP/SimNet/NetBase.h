@@ -25,7 +25,9 @@
 #ifndef __SIMNET_NETBASE_H__
 #define __SIMNET_NETBASE_H__
 
+#include <SimData/Endian.h>
 #include <SimData/Uniform.h>
+#include <cassert>
 #include <ostream>
 
 
@@ -71,7 +73,10 @@ typedef std::pair<simdata::uint32, Port> ConnectionPoint;
  *  reliable udp.
  */
 #pragma pack(push, 1)
-struct PacketHeader {
+class PacketHeader {
+
+	// NOTE: all integer fields are stored and transmitted with little-endian byte order.
+	// Yes, that isn't network byte order.  Deal.
 
 	// flags bits:
 	//     0  reliable: if true, header is actually a PacketReceiptHeader
@@ -82,30 +87,65 @@ struct PacketHeader {
 	//                  nominal receiver bandwidth: C * BW / 100
 	//                  if statmode == 1, the fraction of the sender's inbound bandwidth
 	//                  allocated to the receiving peer (0->BW)
-	simdata::uint16 flags;
+	simdata::uint16 _flags;
+	simdata::uint16 _source;        // id of the sender
+	simdata::uint16 _destination;   // id of the intended receiver
+	simdata::uint16 _message_id;    // id of the message
+	simdata::uint32 _routing;       // routing type (e.g. object update, server handshake, etc.)
+	                                // is stored in the low 8 bits; routing data (e.g. ObjectId
+	                                // for object update routing) is stored in the high 24 bits.
 
-	simdata::uint16 source;          // id of the sender
-	simdata::uint16 destination;     // id of the intended receiver
-	simdata::uint16 message_id;      // id of the message
-	simdata::uint32 routing_type:8;  // routing type (e.g. object update, server handshake, etc.)
-	simdata::uint32 routing_data:24; // routing data (e.g. ObjectId for object update routing)
+public:
 
-	inline bool reliable() const { return (flags & 1) != 0; }
-	inline int priority() const { return (flags >> 1) & 3; }
-	inline int statmode() const { return (flags >> 5) & 1; }
-	inline int connstat() const { return (flags >> 6); }
+	inline bool reliable() const { return (SIMDATA_UINT16_FROM_LE(_flags) & 1) != 0; }
+	inline int priority() const { return (SIMDATA_UINT16_FROM_LE(_flags) >> 1) & 3; }
+	inline int statmode() const { return (SIMDATA_UINT16_FROM_LE(_flags) >> 5) & 1; }
+	inline int connstat() const { return (SIMDATA_UINT16_FROM_LE(_flags) >> 6); }
 
 	inline void setReliable(bool reliable) {
-		if (reliable) flags |= 1; else flags &= ~1;
+		simdata::uint16 f = SIMDATA_UINT16_FROM_LE(_flags);
+		if (reliable) f |= 1; else f &= ~1;
+		_flags = SIMDATA_UINT16_TO_LE(f);
 	}
 	inline void setPriority(int priority) {
-		flags = static_cast<simdata::uint16>((flags & ~0x06) | ((priority & 3) << 1));
+		simdata::uint16 f = SIMDATA_UINT16_FROM_LE(_flags);
+		f = (f & ~0x06) | static_cast<simdata::uint16>((priority & 3) << 1);
+		_flags = SIMDATA_UINT16_TO_LE(f);
 	}
 	inline void setStatMode(int statmode) {
-		flags = static_cast<simdata::uint16>((flags & ~0x20) | ((statmode & 1) << 5));
+		simdata::uint16 f = SIMDATA_UINT16_FROM_LE(_flags);
+		f = (f & ~0x20) | static_cast<simdata::uint16>((statmode & 1) << 5);
+		_flags = SIMDATA_UINT16_TO_LE(f);
 	}
 	inline void setConnStat(int connstat) {
-		flags = static_cast<simdata::uint16>((flags & 0x3f) | (connstat << 6));
+		simdata::uint16 f = SIMDATA_UINT16_FROM_LE(_flags);
+		f = (f & 0x3f) | static_cast<simdata::uint16>(connstat << 6);
+		_flags = SIMDATA_UINT16_TO_LE(f);
+	}
+
+	inline simdata::uint16 source() const { return SIMDATA_UINT16_FROM_LE(_source); }
+	inline simdata::uint16 destination() const { return SIMDATA_UINT16_FROM_LE(_destination); }
+	inline simdata::uint16 messageId() const { return SIMDATA_UINT16_FROM_LE(_message_id); }
+	inline simdata::uint32 routingType() const { return SIMDATA_UINT32_FROM_LE(_routing) & 0xff; }
+	inline simdata::uint32 routingData() const { return SIMDATA_UINT32_FROM_LE(_routing) >> 8; }
+
+	inline void setSource(PeerId source) {
+		_source = SIMDATA_UINT16_TO_LE(source);
+	}
+
+	inline void setDestination(PeerId destination) {
+		_destination = SIMDATA_UINT16_TO_LE(destination);
+	}
+
+	inline void setMessageId(simdata::uint16 message_id) {
+		_message_id = SIMDATA_UINT16_TO_LE(message_id);
+	}
+
+	inline void setRouting(simdata::uint32 routing_type, simdata::uint32 routing_data) {
+		assert(routing_type < 0x100);
+		assert(routing_data < 0x1000000);
+		routing_data = (routing_data << 8) | routing_type;
+		_routing = SIMDATA_UINT32_TO_LE(routing_data);
 	}
 
 };
@@ -118,11 +158,20 @@ struct PacketHeader {
  *  have been successfully received from the destination host.
  */
 #pragma pack(push, 1)
-struct PacketReceiptHeader: public PacketHeader {
-	ConfirmationId id0;
-	ConfirmationId id1;
-	ConfirmationId id2;
-	ConfirmationId id3;
+class PacketReceiptHeader: public PacketHeader {
+	simdata::uint16 _id0;
+	simdata::uint16 _id1;
+	simdata::uint16 _id2;
+	simdata::uint16 _id3;
+public:
+	inline ConfirmationId id0() const { return SIMDATA_UINT16_FROM_LE(_id0); }
+	inline ConfirmationId id1() const { return SIMDATA_UINT16_FROM_LE(_id1); }
+	inline ConfirmationId id2() const { return SIMDATA_UINT16_FROM_LE(_id2); }
+	inline ConfirmationId id3() const { return SIMDATA_UINT16_FROM_LE(_id3); }
+	inline void setId0(ConfirmationId id) { _id0 = SIMDATA_UINT16_TO_LE(id); }
+	inline void setId1(ConfirmationId id) { _id1 = SIMDATA_UINT16_TO_LE(id); }
+	inline void setId2(ConfirmationId id) { _id2 = SIMDATA_UINT16_TO_LE(id); }
+	inline void setId3(ConfirmationId id) { _id3 = SIMDATA_UINT16_TO_LE(id); }
 };
 #pragma pack(pop)
 
@@ -131,17 +180,17 @@ struct PacketReceiptHeader: public PacketHeader {
  */
 inline std::ostream &operator <<(std::ostream &os, PacketHeader const &header) {
 	return os << (header.reliable() ? 'R' : 'U') << header.priority() << ':' << header.statmode()
-	          << "*" << header.connstat() << ':' << header.source << '>' << header.destination
-	          << ':' << header.message_id << ":"
-	          << header.routing_type << ":" << header.routing_data;
+	          << "*" << header.connstat() << ':' << header.source() << '>' << header.destination()
+	          << ':' << header.messageId() << ":"
+	          << header.routingType() << ":" << header.routingData();
 }
 
 
 /** Helper class for debugging.  Dumps a packet receipt header to an output stream.
  */
 inline std::ostream &operator <<(std::ostream &os, PacketReceiptHeader const &header) {
-	return os << reinterpret_cast<PacketHeader const &>(header) << "#" << header.id0 << ","
-	          << header.id1 << "," << header.id2 << "," << header.id3;
+	return os << reinterpret_cast<PacketHeader const &>(header) << "#" << header.id0() << ","
+	          << header.id1() << "," << header.id2() << "," << header.id3();
 }
 
 

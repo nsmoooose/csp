@@ -27,6 +27,8 @@
 
 namespace simnet {
 
+SIMDATA_STATIC_CONST_DEF(int RecordCodec::MAX_MESSAGE_IDS);
+
 RecordCodec::RecordCodec(): m_TagWriter(m_Writer), m_TagReader(m_Reader) {
 	simdata::TaggedRecordRegistry const &registry = simdata::TaggedRecordRegistry::getInstance();
 	simdata::TaggedRecordRegistry::FactoryList factories = registry.getFactories();
@@ -65,9 +67,12 @@ TaggedRecord::Ref RecordCodec::decode(int local_id, simdata::uint8 const *buffer
 	}
 	TaggedRecord::Ref record = factory->create();
 	m_Reader.bind(buffer, buffer_length);
-	// TODO need to catch errors
-	record->serialize(m_TagReader);
-	SIMDATA_VERIFY(!m_Reader.underflow());
+	try {
+		record->serialize(m_TagReader);
+	} catch (simdata::DataUnderflow const &err) {
+		SIMNET_LOG(MESSAGE, ERROR, "buffer underflow decoding message");
+		return 0;
+	}
 	return record;
 }
 

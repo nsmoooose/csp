@@ -114,10 +114,9 @@ public:
 		PeerId destination = m_Queue.front().destination;
 		m_Queue.pop_front();
 		SIMNET_LOG(MESSAGE, ALERT, "SENDING MESSAGE " << message->getCustomId() << " " << message->getName());
-		header->destination = destination;
-		header->message_id = static_cast<simdata::uint16>(message->getCustomId());
-		header->routing_type = message->getRoutingType();
-		header->routing_data = message->getRoutingData();
+		header->setDestination(destination);
+		header->setMessageId(static_cast<simdata::uint16>(message->getCustomId()));
+		header->setRouting(message->getRoutingType(), message->getRoutingData());
 
 		// if the cache isn't empty it will already contain the payload for this
 		// message, so copy that directly rather than reserializing the message.

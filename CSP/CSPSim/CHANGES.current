@@ -1,6 +1,10 @@
  Version 0.4.0 (in progress)
 ===========================
 
+2004-06-20: onsight
+  * Changed doxygen control file to recurse into the variou subdirectories
+    (Systems, Theater, etc).
+
 2004-06-14: onsight
   * Added doxygen directory, control file, and make targets.
 

@@ -11,6 +11,10 @@
 	    Added Animation.cpp, FlightModel.cpp, and 
 	    FlightDynamics.cpp to Makefile.in
 
+	    LogoScreen now throws a DataError if the splashscreen
+	    image can not be found.  This provides an early catch
+	    for missing Data/*, and a somewhat useful error message.
+
 2003-07-21: onsight
             Moved a couple accessor methods in Theater and 
 	    FeatureLayout out of the class declarations.  This

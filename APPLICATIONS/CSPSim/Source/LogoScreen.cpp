@@ -32,6 +32,7 @@
 #endif
 
 #include "LogoScreen.h"
+#include "Exception.h"
 #include "Config.h"
 
 #include <SimData/FileUtility.h>
@@ -58,44 +59,44 @@ void LogoScreen::onInit()
 	std::string image_path = getDataPath("ImagePath");
 	std::string path = simdata::ospath::join(image_path, "CSPLogo.bmp");
 	m_image = SDL_LoadBMP(path.c_str());
-	if (m_image == NULL)
-	{
-		std::cout << "Unable to load bitmap " << path << std::endl;
+	if (m_image == NULL) {
+		throw csp::DataError("Unable to load bitmap " + path);
 	}
 }
 
 void LogoScreen::onExit()
 {
-	SDL_FreeSurface(m_image);
+	if (m_image) {
+		SDL_FreeSurface(m_image);
+	}
 }
 
 void LogoScreen::onRender()
 {
-    if (!m_image) 
-        return;
-    
-    SDL_Rect src, dest;
+	if (!m_image) return;
 
-    src.x = 0;
-    src.y = 0;
-    src.w = m_image->w;
-    src.h = m_image->h;
+	SDL_Rect src, dest;
 
-    dest.x = 0;
-    dest.y = 0;
-    dest.w = m_image->w;
-    dest.h = m_image->h;
+	src.x = 0;
+	src.y = 0;
+	src.w = m_image->w;
+	src.h = m_image->h;
 
-    glViewport(0, 0, m_width, m_height);
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-    glOrtho(0.0, m_width, 0.0, m_height, -1.0, 1.0);
+	dest.x = 0;
+	dest.y = 0;
+	dest.w = m_image->w;
+	dest.h = m_image->h;
 
-    // this centers the bitmap in case its a different size then the screen.
-    glRasterPos2i( ((m_width - m_image->w) >> 1),
-                     m_height - ((m_height - m_image->h) >> 1) );
-    glPixelZoom(1.0,-1.0);
+	glViewport(0, 0, m_width, m_height);
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+	glOrtho(0.0, m_width, 0.0, m_height, -1.0, 1.0);
 
-    glDrawPixels(m_image->w, m_image->h, GL_RGB, GL_UNSIGNED_BYTE, m_image->pixels);
+	// this centers the bitmap in case its a different size then the screen.
+	glRasterPos2i( ((m_width - m_image->w) >> 1),
+		     m_height - ((m_height - m_image->h) >> 1) );
+	glPixelZoom(1.0,-1.0);
+
+	glDrawPixels(m_image->w, m_image->h, GL_RGB, GL_UNSIGNED_BYTE, m_image->pixels);
 }
 

@@ -1,0 +1,416 @@
+<?xml version="1.0" standalone="no"?>
+
+<Object class="ObjectModel">
+    <External name="model_path">F16/DJ/F16DJ.osg</External>
+    <Vector name="axis_0">1 0 0</Vector>
+    <Vector name="axis_1">0 1 0</Vector>
+    <!--Vector name="view_point">0.0 4.1 1.17</Vector-->
+    <Vector name="view_point">0.0 8.1 1.1</Vector>
+    <Bool   name="smooth">false</Bool>
+    <Vector name="offset">0.0 -0.3 0</Vector>
+    <Enum name="effect">SpecularHighlights</Enum>
+    <List name="contacts">
+        <Vector>0.0 8.291 0.021</Vector>
+        <Vector>0.0 4.4 1.33</Vector>
+        <Vector>4.605 -3.674 -0.071</Vector>
+        <Vector>-4.605 -3.674 -0.071</Vector>
+        <Vector>0.0 -5.904 1.041</Vector>
+        <Vector>0.0 -5.904 -0.004</Vector>
+        <Vector>0.0 -5.1 3.604</Vector>
+        <Vector>0.0 6.46 -0.335</Vector>
+        <Vector>0.0 -0.49 -0.327</Vector>
+        <!-- view point -->
+        <Vector>0.0 4.1 1.17</Vector>
+    </List>
+    <List name="animations">
+        <Object class="DrivenRotation">
+            <String name="channel_name">ControlSurfaces.RudderDeflection</String>
+            <Key name="model_id">Aircraft.Rudder</Key>
+            <Int name="lod_limit">1</Int>
+            <Vector name="axis">0 -0.559193 0.829038</Vector>
+        </Object>
+
+        <Object  class="DrivenRotation">
+            <String name="channel_name">ControlSurfaces.ElevatorDeflection</String>
+            <Key name="model_id">Aircraft.LeftOuterAileron</Key>
+            <Int name="lod_limit">1</Int>
+            <Vector name="axis">-1 0 0</Vector>
+        </Object>
+        <Object class="DrivenRotation">
+            <String name="channel_name">ControlSurfaces.ElevatorDeflection</String>
+            <Key name="model_id">Aircraft.LeftAileron</Key>
+            <Int name="lod_limit">1</Int>
+            <Vector name="axis">-1 0 0</Vector>
+        </Object>
+        <Object  class="DrivenRotation">
+            <String name="channel_name">ControlSurfaces.ElevatorDeflection</String>
+            <Key name="model_id">Aircraft.RightOuterAileron</Key>
+            <Int name="lod_limit">1</Int>
+            <Vector name="axis">-1 0 0</Vector>
+        </Object>
+        <Object class="DrivenRotation">
+            <String name="channel_name">ControlSurfaces.ElevatorDeflection</String>
+            <Key name="model_id">Aircraft.RightAileron</Key>
+            <Int name="lod_limit">1</Int>
+            <Vector name="axis">0.983554 -0.180616 0</Vector>
+        </Object>
+
+        <Object class="DrivenRotation">
+            <String name="channel_name">ControlSurfaces.AileronDeflection</String>
+            <Key name="model_id">Aircraft.LeftOuterAileron</Key>
+            <Int name="lod_limit">1</Int>
+            <Vector name="axis">1 0 0</Vector>
+        </Object>
+        <Object  class="DrivenRotation">
+            <String name="channel_name">ControlSurfaces.AileronDeflection</String>
+            <Key name="model_id">Aircraft.LeftAileron</Key>
+            <Int name="lod_limit">1</Int>
+            <Vector name="axis">1 0 0</Vector>
+        </Object>
+        <Object class="DrivenRotation">
+            <String name="channel_name">ControlSurfaces.AileronDeflection</String>
+            <Key name="model_id">Aircraft.RightAileron</Key>
+            <Int name="lod_limit">1</Int>
+            <Vector name="axis">-0.983554 -0.180616 0</Vector>
+        </Object>
+        <Object class="DrivenRotation">
+            <String name="channel_name">ControlSurfaces.AileronDeflection</String>
+            <Key name="model_id">Aircraft.RightOuterAileron</Key>
+            <Int name="lod_limit">1</Int>
+            <Vector name="axis">-1 0 0</Vector>
+        </Object>
+
+        <Object class="DrivenRotation">
+            <String name="channel_name">ControlSurfaces.AirbrakeDeflection</String>
+            <Key name="model_id">Aircraft.LowerRightAirbrake</Key>
+            <Int name="lod_limit">1</Int>
+            <Vector name="axis">1 0 0</Vector>
+        </Object>
+        <Object class="DrivenRotation">
+            <String name="channel_name">ControlSurfaces.AirbrakeDeflection</String>
+            <Key name="model_id">Aircraft.LowerLeftAirbrake</Key>
+            <Int name="lod_limit">1</Int>
+            <Vector name="axis">1 0 0</Vector>
+        </Object>
+        <Object class="DrivenRotation">
+            <String name="channel_name">ControlSurfaces.AirbrakeDeflection</String>
+            <Key name="model_id">Aircraft.UpperRightAirbrake</Key>
+            <Int name="lod_limit">1</Int>
+            <Vector name="axis">-1 0 0</Vector>
+        </Object>
+        <Object class="DrivenRotation">
+            <String name="channel_name">ControlSurfaces.AirbrakeDeflection</String>
+            <Key name="model_id">Aircraft.UpperLeftAirbrake</Key>
+            <Int name="lod_limit">1</Int>
+            <Vector name="axis">-1 0 0</Vector>
+        </Object>
+
+
+        <!--                    Landing gears animation                         -->
+
+            <!--                Front landing gear                          -->
+        <Object class="TimedRotation">
+            <String name="channel_name">Aircraft.GearSequence.ReferenceTime</String>
+            <Key name="model_id">Aircraft.FrontGearMainDoor</Key>
+            <Float name="limit_0">1.61</Float>
+            <Float name="limit_1">-0.02</Float>
+            <Vector name="axis">0 1 0</Vector>
+            <Object class="TimedAnimationProxy" name="timed_animation_proxy">
+                <Float name="t0">0.0</Float>
+                <Float name="t1">1.0</Float>
+            </Object>
+        </Object>
+        <Object class="TimedRotation">
+            <String name="channel_name">Aircraft.GearSequence.ReferenceTime</String>
+            <Key name="model_id">Aircraft.FrontGearDoor02</Key>
+            <Float name="limit_0">1.4</Float>
+            <Float name="limit_1">0.0</Float>
+            <Vector name="axis">0 1 0</Vector>
+            <Object class="TimedAnimationProxy" name="timed_animation_proxy">
+                <Float name="t0">0.5</Float>
+                <Float name="t1">1.5</Float>
+            </Object>
+        </Object>
+        <Object class="TimedRotation">
+            <String name="channel_name">Aircraft.GearSequence.ReferenceTime</String>
+            <Key name="model_id">Aircraft.FrontGearDoor01</Key>
+            <Float name="limit_0">-1.4</Float>
+            <Float name="limit_1">0.0</Float>
+            <Vector name="axis">0 1 0</Vector>
+            <Object class="TimedAnimationProxy" name="timed_animation_proxy">
+                <Float name="t0">0.5</Float>
+                <Float name="t1">1.5</Float>
+            </Object>
+        </Object>
+        <Object class="TimedRotation">
+            <String name="channel_name">Aircraft.GearSequence.ReferenceTime</String>
+            <Key name="model_id">Aircraft.FrontGearMainTube</Key>
+            <Float name="limit_0">-1.57</Float>
+            <Float name="limit_1">0.0</Float>
+            <Vector name="axis">1 0 0</Vector>
+            <Object class="TimedAnimationProxy" name="timed_animation_proxy">
+                <Float name="t0">0.9</Float>
+                <Float name="t1">3.0</Float>
+            </Object>
+        </Object>
+        <Object class="TimedRotation">
+            <String name="channel_name">Aircraft.GearSequence.ReferenceTime</String>
+            <Key name="model_id">Aircraft.FrontGearTube03</Key>
+            <Float name="limit_0">0.2</Float>
+            <Float name="limit_1">0.0</Float>
+            <Vector name="axis">1 0 0</Vector>
+            <Object class="TimedAnimationProxy" name="timed_animation_proxy">
+                <Float name="t0">0.9</Float>
+                <Float name="t1">3.0</Float>
+            </Object>
+        </Object>
+        <Object class="TimedRotation">
+            <String name="channel_name">Aircraft.GearSequence.ReferenceTime</String>
+            <Key name="model_id">Aircraft.FrontGearDoor03</Key>
+            <Float name="limit_0">1.18</Float>
+            <Float name="limit_1">0.0</Float>
+            <Vector name="axis">-1 0 0</Vector>
+            <Object class="TimedAnimationProxy" name="timed_animation_proxy">
+                <Float name="t0">0.9</Float>
+                <Float name="t1">3.0</Float>
+            </Object>
+        </Object>
+         <Object class="TimedRotation">
+            <String name="channel_name">Aircraft.GearSequence.ReferenceTime</String>
+            <Key name="model_id">Aircraft.FrontGearMainDoor</Key>
+            <Float name="limit_0">0.0</Float>
+            <Float name="limit_1">1.63</Float>
+            <Vector name="axis">0 1 0</Vector>
+            <Object class="TimedAnimationProxy" name="timed_animation_proxy">
+                <Float name="t0">3.0</Float>
+                <Float name="t1">4.0</Float>
+            </Object>
+        </Object>
+
+        <!--                Right landing gear                          -->
+        <Object class="TimedRotation">
+            <String name="channel_name">Aircraft.GearSequence.ReferenceTime</String>
+            <Key name="model_id">Aircraft.RightMainGearMainDoor</Key>
+            <Float name="limit_0">-1.92</Float>
+            <Float name="limit_1">0.0</Float>
+            <Vector name="axis">-0.0717 0.9974 0.0</Vector>
+            <Object class="TimedAnimationProxy" name="timed_animation_proxy">
+                <Float name="t0">0.0</Float>
+                <Float name="t1">1.0</Float>
+            </Object>
+        </Object>
+        <Object class="TimedRotation">
+            <String name="channel_name">Aircraft.GearSequence.ReferenceTime</String>
+            <Key name="model_id">Aircraft.RightMainGearDoor01</Key>
+            <Float name="limit_0">1.53</Float>
+            <Float name="limit_1">0.0</Float>
+            <Vector name="axis">0 1 0</Vector>
+            <Object class="TimedAnimationProxy" name="timed_animation_proxy">
+                <Float name="t0">0.5</Float>
+                <Float name="t1">3.3</Float>
+            </Object>
+        </Object>
+        <Object class="TimedMagnitudeTranslation">
+            <String name="channel_name">Aircraft.GearSequence.ReferenceTime</String>
+            <Key name="model_id">Aircraft.RightMainGearAxis</Key>
+            <Float name="limit_0">-0.34</Float>
+            <Float name="limit_1">0.0</Float>
+            <Vector name="direction">0.4 0 1.0</Vector>
+            <Vector name="offset">-0.1053 0.0009 -0.8147</Vector>
+            <Object class="TimedAnimationProxy" name="timed_animation_proxy">
+                <Float name="t0">0.0</Float>
+                <Float name="t1">1.5</Float>
+            </Object>
+        </Object>
+        <Object class="TimedRotation">
+            <String name="channel_name">Aircraft.GearSequence.ReferenceTime</String>
+            <Key name="model_id">Aircraft.RightMainGearMainTube</Key>
+            <Float name="limit_0">1.531</Float>
+            <Float name="limit_1">0.0</Float>
+            <Vector name="axis">0.5 0.866 0</Vector>
+            <Object class="TimedAnimationProxy" name="timed_animation_proxy">
+                <Float name="t0">0.6</Float>
+                <Float name="t1">3.5</Float>
+            </Object>
+        </Object>
+        <Object class="TimedRotation">
+            <String name="channel_name">Aircraft.GearSequence.ReferenceTime</String>
+            <Key name="model_id">Aircraft.RightMainGearTube02</Key>
+            <Float name="limit_0">-1.9</Float>
+            <Float name="limit_1">0.0</Float>
+            <Vector name="axis">0 1 0</Vector>
+            <Object class="TimedAnimationProxy" name="timed_animation_proxy">
+                <Float name="t0">0.6</Float>
+                <Float name="t1">3.5</Float>
+            </Object>
+        </Object>
+        <Object class="TimedRotation">
+            <String name="channel_name">Aircraft.GearSequence.ReferenceTime</String>
+            <Key name="model_id">Aircraft.RightMainGearMainDoor</Key>
+            <Float name="limit_0">0.0</Float>
+            <Float name="limit_1">-1.92</Float>
+            <Vector name="axis">-0.072 0.997 0</Vector>
+            <Object class="TimedAnimationProxy" name="timed_animation_proxy">
+                <Float name="t0">3.0</Float>
+                <Float name="t1">4.0</Float>
+            </Object>
+        </Object>
+
+        <!--                Leftt landing gear                          -->
+         <Object class="TimedRotation">
+            <String name="channel_name">Aircraft.GearSequence.ReferenceTime</String>
+            <Key name="model_id">Aircraft.LeftMainGearMainDoor</Key>
+            <Float name="limit_0">1.92</Float>
+            <Float name="limit_1">0.0</Float>
+            <Vector name="axis">0.0717 0.9974 0</Vector>
+            <Object class="TimedAnimationProxy" name="timed_animation_proxy">
+                <Float name="t0">0.0</Float>
+                <Float name="t1">1.0</Float>
+            </Object>
+        </Object>
+        <Object class="TimedRotation">
+            <String name="channel_name">Aircraft.GearSequence.ReferenceTime</String>
+            <Key name="model_id">Aircraft.LeftMainGearDoor01</Key>
+            <Float name="limit_0">0.0</Float>
+            <Float name="limit_1">1.53</Float>
+            <Vector name="axis">0 1 0</Vector>
+            <Object class="TimedAnimationProxy" name="timed_animation_proxy">
+                <Float name="t0">0.5</Float>
+                <Float name="t1">3.3</Float>
+            </Object>
+        </Object>
+        <Object class="TimedMagnitudeTranslation">
+            <String name="channel_name">Aircraft.GearSequence.ReferenceTime</String>
+            <Key name="model_id">Aircraft.LeftMainGearAxis</Key>
+            <Float name="limit_0">-0.35</Float>
+            <Float name="limit_1">0.0</Float>
+            <Vector name="direction">-0.35 0 0.9</Vector>
+            <Vector name="offset">0.1196 0.0009 -0.8105</Vector>
+            <Object class="TimedAnimationProxy" name="timed_animation_proxy">
+                <Float name="t0">0.0</Float>
+                <Float name="t1">1.5</Float>
+            </Object>
+        </Object>
+        <Object class="TimedRotation">
+            <String name="channel_name">Aircraft.GearSequence.ReferenceTime</String>
+            <Key name="model_id">Aircraft.LeftMainGearMainTube</Key>
+            <Float name="limit_0">1.523</Float>
+            <Float name="limit_1">0.0</Float>
+            <Vector name="axis">0.5 -0.866 0</Vector>
+            <Object class="TimedAnimationProxy" name="timed_animation_proxy">
+                <Float name="t0">0.6</Float>
+                <Float name="t1">3.5</Float>
+            </Object>
+        </Object>
+        <Object class="TimedRotation">
+            <String name="channel_name">Aircraft.GearSequence.ReferenceTime</String>
+            <Key name="model_id">Aircraft.LeftMainGearTube02</Key>
+            <Float name="limit_0">-1.9</Float>
+            <Float name="limit_1">0.0</Float>
+            <Vector name="axis">0 -1 0</Vector>
+            <Object class="TimedAnimationProxy" name="timed_animation_proxy">
+                <Float name="t0">0.6</Float>
+                <Float name="t1">3.5</Float>
+            </Object>
+        </Object>
+        <Object class="TimedRotation">
+            <String name="channel_name">Aircraft.GearSequence.ReferenceTime</String>
+            <Key name="model_id">Aircraft.LeftMainGearMainDoor</Key>
+            <Float name="limit_0">0.0</Float>
+            <Float name="limit_1">1.92</Float>
+            <Vector name="axis">0.0717 0.9974 0</Vector>
+            <Object class="TimedAnimationProxy" name="timed_animation_proxy">
+                <Float name="t0">3.0</Float>
+                <Float name="t1">4.0</Float>
+            </Object>
+        </Object>
+
+            <!--                                                        -->
+
+        <!--                            Front gear                         -->
+        <Object class="DrivenVectorialTranslation">
+            <String name="channel_name">LandingGear.FrontGearDisplacement</String>
+            <Key name="model_id">Aircraft.FrontGearTube01</Key>
+            <Vector name="direction">0 0 1</Vector>
+            <!--Vector name="offset">0.0 0 -1.11</Vector-->
+            <Vector name="offset">0 0 -1.13</Vector>
+        </Object>
+        <Object class="DrivenRotation">
+            <String name="channel_name">LandingGear.FrontGearWheelRotation</String>
+            <Key name="model_id">Aircraft.FrontGearLeftTire</Key>
+            <Vector name="axis">-1 0 0</Vector>
+        </Object>
+        <Object class="DrivenRotation">
+            <String name="channel_name">LandingGear.FrontGearWheelRotation</String>
+            <Key name="model_id">Aircraft.FrontGearRightTire</Key>
+            <Vector name="axis">-1 0 0</Vector>
+        </Object>
+        <Object class="DrivenRotation">
+            <String name="channel_name">LandingGear.FrontGearAbsorber02</String>
+            <Key name="model_id">Aircraft.FrontGearAbsorber02</Key>
+            <Vector name="axis">-1 0 0</Vector>
+            <Float name="gain">2.4</Float>
+        </Object>
+        <Object class="DrivenRotation">
+            <String name="channel_name">LandingGear.FrontGearAbsorber03</String>
+            <Key name="model_id">Aircraft.FrontGearAbsorber03</Key>
+            <Vector name="axis">1 0 0</Vector>
+            <Float name="gain">2.4</Float>
+        </Object>
+        <Object class="DrivenRotation">
+            <String name="channel_name">ControlSurfaces.RudderDeflection</String>
+            <Key name="model_id">Aircraft.FrontGearTireAxis</Key>
+            <Vector name="axis">0 0 -1</Vector>
+        </Object>
+
+        <!--                            Left gear                             -->
+        <Object class="DrivenVectorialTranslation">
+            <String name="channel_name">LandingGear.LeftGearDisplacement</String>
+            <Key name="model_id">Aircraft.LeftMainGearTube01</Key>
+            <Vector name="direction">-0.134513 0 0.990912</Vector>
+            <Vector name="offset">0.122 0 -0.39</Vector>
+        </Object>
+        <Object class="DrivenRotation">
+            <String name="channel_name">LandingGear.LeftGearWheelRotation</String>
+            <Key name="model_id">Aircraft.LeftMainGearTire</Key>
+            <Vector name="axis">-1 0 -0.02</Vector>
+        </Object>
+        <Object class="DrivenRotation">
+            <String name="channel_name">LandingGear.LeftGearAbsorber02</String>
+            <Key name="model_id">Aircraft.LeftMainGearAbsorber02</Key>
+            <Vector name="axis">-0.990831 -0.0283094 -0.132111</Vector>
+            <Float name="gain">2.2</Float>
+        </Object>
+        <Object class="DrivenRotation">
+            <String name="channel_name">LandingGear.LeftGearAbsorber03</String>
+            <Key name="model_id">Aircraft.LeftMainGearAbsorber03</Key>
+            <Vector name="axis">0.990831 0.0283094 0.132111</Vector>
+            <Float name="gain">2.2</Float>
+        </Object>
+
+        <!--                            Right gear                             -->
+        <Object class="DrivenVectorialTranslation">
+            <String name="channel_name">LandingGear.RightGearDisplacement</String>
+            <Key name="model_id">Aircraft.RightMainGearTube01</Key>
+            <Vector name="direction">0.127615 -0.00447771 0.991814</Vector>
+            <Vector name="offset">-0.122 0 -0.39</Vector>
+        </Object>
+        <Object class="DrivenRotation">
+            <String name="channel_name">LandingGear.RightGearWheelRotation</String>
+            <Key name="model_id">Aircraft.RightMainGearTire</Key>
+            <Vector name="axis">-1.0 0 0.02</Vector>
+        </Object>
+         <Object class="DrivenRotation">
+            <String name="channel_name">LandingGear.RightGearAbsorber02</String>
+            <Key name="model_id">Aircraft.RightMainGearAbsorber02</Key>
+            <Vector name="axis">-0.990831 0.0283094 0.132111</Vector>
+            <Float name="gain">2.2</Float>
+        </Object>
+        <Object class="DrivenRotation">
+            <String name="channel_name">LandingGear.RightGearAbsorber03</String>
+            <Key name="model_id">Aircraft.RightMainGearAbsorber03</Key>
+            <Vector name="axis">0.990831 -0.0283094 -0.132111</Vector>
+            <Float name="gain">2.2</Float>
+        </Object>
+    </List>
+</Object>

@@ -69,7 +69,7 @@
             <Float name="y">1068</Float>
             <Float name="orientation">-0.64</Float>
         </Object>
-                <Object class="FeatureLayout">
+        <Object class="FeatureLayout">
             <Path name="model">caisson06</Path>
             <Float name="x">160</Float>
             <Float name="y">1138</Float>
@@ -122,6 +122,36 @@
             <Float name="x">30</Float>
             <Float name="y">-820</Float>
             <Float name="orientation">3.64</Float>
+        </Object>
+        <Object class="FeatureLayout">
+            <Path name="model">caisson15</Path>
+            <Float name="x">160</Float>
+            <Float name="y">380</Float>
+            <Float name="orientation">-1.07</Float>
+        </Object>
+        <Object class="FeatureLayout">
+            <Path name="model">caisson16</Path>
+            <Float name="x">160</Float>
+            <Float name="y">-255</Float>
+            <Float name="orientation">-1.07</Float>
+        </Object>
+        <Object class="FeatureLayout">
+            <Path name="model">caisson17</Path>
+            <Float name="x">180</Float>
+            <Float name="y">-204</Float>
+            <Float name="orientation">1.57</Float>
+        </Object>
+        <Object class="FeatureLayout">
+            <Path name="model">caisson17</Path>
+            <Float name="x">180</Float>
+            <Float name="y">-398</Float>
+            <Float name="orientation">1.57</Float>
+        </Object>
+        <Object class="FeatureLayout">
+            <Path name="model">caisson17</Path>
+            <Float name="x">180</Float>
+            <Float name="y">-553</Float>
+            <Float name="orientation">1.57</Float>
         </Object>
         <Object class="FeatureLayout">
             <Path name="model">hangar</Path>

@@ -1,13 +1,15 @@
  Version 0.4.0 (in progress)
 ===========================
+2005-02-17: lologramme
+ * Added F16 D
 
 2005-02-17: delta
  * Added a very basic CHCS.map under Tools/HID/Maps.
- 
+
 2005-02-16: delta
- * Small changes in the Animation class. Fixed a bug (copy/paste typo) in 
+ * Small changes in the Animation class. Fixed a bug (copy/paste typo) in
    DrivenRotation::Callback operator.
- 
+
 2005-02-15: lologramme
  * Addes Taxi signalisation
 

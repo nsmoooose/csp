@@ -32,38 +32,21 @@
 #pragma warning(disable : 4251)
 # endif
 
-#include <iostream>
-#include <string>
 
 #include <SimData/Export.h>
-#include <SimData/GlibCsp.h>
+#include <SimData/Uniform.h>
 #include <SimData/hash_map.h>
 #include <SimData/Namespace.h>
 
-//typedef int int32;
-//typedef char* cstring;
-
-//typedef hash<const char*> hashstr;
-
-
-//#define hashstr4 newhash4_cstring
-//#define hashstr8 newhash8_cstring
-
-// use 64-bit hash values
-
-//#define hasht u8
-#define hash_string newhasht_cstring
-//#define hash_string hashstr8
-//#define hasht_hash hashu8
-//#define hasht_eq equ8
-
-typedef  guint32  u4;   /* unsigned 4-byte type */
-typedef  guint8   u1;   /* unsigned 1-byte type */
-typedef  guint64  u8;   /* unsigned 8-byte type */
-//typedef  u8       hasht;
+#include <iostream>
+#include <string>
 
 
 NAMESPACE_SIMDATA
+
+
+#define hash_string newhasht_cstring
+
 
 /**
  * @defgroup HashUtils Hash Utilities
@@ -73,25 +56,23 @@ NAMESPACE_SIMDATA
 
 struct HashT;
 
-extern SIMDATA_EXPORT u4 newhash4_cstring(std::string const &);
-extern HashT newhasht_cstring(std::string const &);
-//extern u8 newhash8_cstring(std::string const &);
+extern SIMDATA_EXPORT uint32 newhash4_cstring(std::string const &);
+extern SIMDATA_EXPORT HashT newhasht_cstring(std::string const &);
 
-//typedef  u8       hasht;
 
 /**
  * @brief A 64-bit hash value.
  *
  */
 struct SIMDATA_EXPORT HashT {
-	guint32 a, b;
+	uint32 a, b;
 	HashT() {
 		a = b = 0;
 	}
-	HashT(guint32 x) {
+	HashT(uint32 x) {
 		a = x; b = 0;
 	}
-	HashT(guint32 b_, guint32 a_) {
+	HashT(uint32 b_, uint32 a_) {
 		a = a_; b = b_;
 	}
 	HashT(const HashT &x) {
@@ -100,10 +81,10 @@ struct SIMDATA_EXPORT HashT {
 	HashT(std::string const &x) {
 		*this = newhasht_cstring(x);
 	}
-	bool operator ==(guint32 x) const {
+	bool operator ==(uint32 x) const {
 		return (b == 0 && a == x);
 	}
-	bool operator !=(guint32 x) const {
+	bool operator !=(uint32 x) const {
 		return (b != 0 || a != x);
 	}
 	bool operator ==(HashT const &x) const {
@@ -116,7 +97,7 @@ struct SIMDATA_EXPORT HashT {
 		*this = newhasht_cstring(x);
 		return *this;
 	}
-	HashT & operator =(guint32 x) {
+	HashT & operator =(uint32 x) {
 		a = x; b = 0;
 		return *this;
 	}
@@ -130,8 +111,7 @@ struct SIMDATA_EXPORT HashT {
 typedef HashT hasht;
 
 
-/**
- * @brief Integer equality functor for hash_map.
+/** Integer equality functor for hash_map.
  */
 #if defined(_MSC_VER) && (_MSC_VER >= 1300) 
 	struct eqint: public std::hash_compare<int const> {
@@ -150,8 +130,7 @@ typedef HashT hasht;
 	};
 #endif
 
-/**
- * @brief Integer hash functor for hash_map.
+/** Integer hash functor for hash_map.
  */
 struct hashint {
 	int operator()(int i) const {
@@ -160,8 +139,7 @@ struct hashint {
 };
 
 
-/**
- * @brief const char* equality functor for hash_map.
+/** const char* equality functor for hash_map.
  */
 #if defined(_MSC_VER) && (_MSC_VER >= 1300) 
 	struct eqstr: public std::hash_compare<char const*>
@@ -182,17 +160,15 @@ struct hashint {
 	};
 #endif
 
-/**
- * @brief hasht hash functor for hash_map.
+/** hasht hash functor for hash_map.
  */
 struct hasht_hash {
-	guint32 operator()(hasht i1) const {
+	uint32 operator()(hasht i1) const {
 		return i1.a;
 	}
 };
 
-/**
- * @brief hasht equality functor for hash_map.
+/** hasht equality functor for hash_map.
  */
 #if defined(_MSC_VER) && (_MSC_VER >= 1300) 
 	struct hasht_eq: public std::hash_compare<hasht const> {
@@ -212,8 +188,7 @@ struct hasht_hash {
 #endif
 
 
-/**
- * @brief String hash functor for hash_map.
+/** String hash functor for hash_map.
  */
 struct SIMDATA_EXPORT hashstring {
 	static HASH<const char*> h;
@@ -222,8 +197,7 @@ struct SIMDATA_EXPORT hashstring {
 	}
 };
 
-/**
- * @brief String equality functor for hash_map.
+/** String equality functor for hash_map.
  */
 #if defined(_MSC_VER) && (_MSC_VER >= 1300) 
 	struct eqstring: public std::hash_compare<std::string const> {
@@ -245,21 +219,18 @@ struct SIMDATA_EXPORT hashstring {
 class Object;
 class ObjectProxyBase;
 
-/**
- * @brief hash_map specialization type for hasht to T maps.
+/** hash_map specialization type for hasht to T maps.
  */
 template <class T>
 struct HASHT_MAP {
 	typedef typename HASH_MAPS<hasht, T, hasht_hash, hasht_eq>::Type Type;
 };
 
-/**
- * @brief A hasht to int map.
+/** A hasht to int map.
  */
 typedef HASH_MAPS<hasht, int, hasht_hash, hasht_eq>::Type hasht_map;
 
-/**
- * @brief A hasht to ObjectProxyBase* map.
+/** A hasht to ObjectProxyBase* map.
  */
 typedef HASH_MAPS<hasht, ObjectProxyBase*, hasht_hash, hasht_eq>::Type proxy_map;
 

@@ -27,6 +27,7 @@
 #define __SIMDATA_DATAARCHIVE_H__
 
 #include <SimData/Export.h>
+#include <SimData/Uniform.h>
 #include <SimData/Link.h>
 #include <SimData/Exception.h>
 #include <SimData/HashUtility.h>
@@ -80,8 +81,8 @@ private:
 	struct TableEntry {
 		hasht pathhash;
 		hasht classhash;
-		gint32 offset;
-		gint32 length;
+		int32 offset;
+		int32 length;
 	};
 
 	/**

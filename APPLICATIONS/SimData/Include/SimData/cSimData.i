@@ -37,6 +37,7 @@
 %include "SimData/Namespace.h"
 %include "SimData/Export.h"
 %include "SimData/Version.h"
+%include "SimData/Uniform.h"
 
 %include "SimData/Log.i"
 

@@ -4,6 +4,16 @@ Version 0.3.4 (in progress)
 2003-08-14: onsight
             Doxygen comment fixes.
 
+	    Removed GlibCsp, replacing what little we used with
+	    a few typedefs in Uniform.h (now in the simdata
+	    namespace).  Eliminates many macro definitions and
+	    unqualified names.
+
+	    Cleaned up HashUtility.h, eliminating dead code and
+	    superfluous typemaps.
+
+	    Moved timing code inside the simdata namespace.
+
 2003-08-13: onsight
             Complete rewrite of the Enumeration classes, using Enum
 	    templates, simdata::Ref, and an overall better design.  The

@@ -1,7 +1,7 @@
-/* SimDataCSP: Data Infrastructure for Simulations
- * Copyright (C) 2002 Mark Rose <tm2@stm.lbl.gov>
+/* SimData: Data Infrastructure for Simulations
+ * Copyright (C) 2002, 2003 Mark Rose <tm2@stm.lbl.gov>
  * 
- * This file is part of SimDataCSP.
+ * This file is part of SimData.
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -18,38 +18,28 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
-#include <SimData/Key.h>
-#include <SimData/Pack.h>
+/**
+ * @file Uniform.h
+ * @author Mark Rose <mrose@stm.lbl.gov>
+ */
 
+#ifndef __SIMDATA_UNIFORM_H__
+#define __SIMDATA_UNIFORM_H__
+
+#include <SimData/Namespace.h>
 
 NAMESPACE_SIMDATA
 
 
-const Key &Key::operator=(std::string const &id) {
-	_key = newhash4_cstring(id.c_str());
-	return *this;
-}
-
-bool Key::operator==(std::string const &id) const {
-	return *this == Key(id);
-}
-
-void Key::pack(Packer& p) const {
-	p.pack(static_cast<int>(_key));
-}
-
-void Key::unpack(UnPacker& p) {
-	int k;
-	p.unpack(k);
-	_key = static_cast<uint32>(k);
-}
-
-std::string Key::asString() const {
-	char buff[32];
-	sprintf(buff, "Key<%08X>", _key);
-	return buff;
-}
+typedef signed char int8;
+typedef unsigned char uint8;
+typedef signed short int16;
+typedef unsigned short uint16;
+typedef signed int int32;
+typedef unsigned int uint32;
 
 
 NAMESPACE_SIMDATA_END
+
+#endif // __SIMDATA_UNIFORM_H__
 

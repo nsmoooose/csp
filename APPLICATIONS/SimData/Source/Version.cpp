@@ -20,6 +20,7 @@
 
 
 #include <SimData/Version.h>
+#include <cstdio>
 
 #ifndef SIMDATA_VERSION
 	#define SIMDATA_VERSION "[built " __TIME__ " " __DATE__ "]"

@@ -21,95 +21,87 @@
 
 #include <SimData/Date.h>
 
-/////////////////////////////////////////////////////////////
-//
-// 'fast' timing routines (1-2 msec accuracy)
-//
-/////////////////////////////////////////////////////////////
 
+
+NAMESPACE_SIMDATA
+
+
+/////////////////////////////////////////////////////////////
+// 'fast' timing routines (1-2 msec accuracy)
 
 #ifdef _WIN32
-    #include <Windows.h>
-    #include <ctime>
-    static LARGE_INTEGER _tstart, _tend;
-    static LARGE_INTEGER freq;
+	#include <Windows.h>
+	#include <ctime>
+	static LARGE_INTEGER _tstart, _tend;
+	static LARGE_INTEGER freq;
 
-    void tstart(void)
-    {
-        static int first = 1;
-
-        if(first) {
-            QueryPerformanceFrequency(&freq);
-            first = 0;
-        }
-        QueryPerformanceCounter(&_tstart);
-    }
-    void tend(void)
-    {
-        QueryPerformanceCounter(&_tend);
-    }
-
-    double tval()
-    {
-        return ((double)_tend.QuadPart -
-                    (double)_tstart.QuadPart)/((double)freq.QuadPart);
-    }
-
-    timing_t get_realtime() {
-	static double scale;
-	static int first = 1;
-	LARGE_INTEGER x;
-	double now;
-	if (first) {
-		QueryPerformanceFrequency(&x);
-		first = 0;
-		scale = 1.0 / (double)x.QuadPart;
+	void tstart(void) {
+		static int first = 1;
+		if (first) {
+			QueryPerformanceFrequency(&freq);
+			first = 0;
+		}
+		QueryPerformanceCounter(&_tstart);
 	}
-	QueryPerformanceCounter(&x);
-	now = (double)x.QuadPart;
-	return (timing_t) (now * scale);
-    }
+
+	void tend(void) {
+		QueryPerformanceCounter(&_tend);
+	}
+
+	double tval() {
+		return ((double)_tend.QuadPart -
+			(double)_tstart.QuadPart)/((double)freq.QuadPart);
+	}
+
+	timing_t get_realtime() {
+		static double scale;
+		static int first = 1;
+		LARGE_INTEGER x;
+		double now;
+		if (first) {
+			QueryPerformanceFrequency(&x);
+			first = 0;
+			scale = 1.0 / (double)x.QuadPart;
+		}
+		QueryPerformanceCounter(&x);
+		now = (double)x.QuadPart;
+		return (timing_t) (now * scale);
+	}
 
 #else
 
-    #include <sys/time.h>
-    #include <unistd.h>
+	#include <sys/time.h>
+	#include <unistd.h>
 
-    static struct timeval _tstart, _tend;
-    static struct timezone tz;
+	static struct timeval _tstart, _tend;
+	static struct timezone tz;
 
-    void tstart(void)
-    {
-        gettimeofday(&_tstart, &tz);
-    }
-    void tend(void)
-    {
-        gettimeofday(&_tend,&tz);
-    }
+	void tstart(void) {
+		gettimeofday(&_tstart, &tz);
+	}
 
-    double tval()
-    {
-        double t1, t2;
+	void tend(void) {
+		gettimeofday(&_tend,&tz);
+	}
 
-        t1 =  (double)_tstart.tv_sec + (double)_tstart.tv_usec/(1000*1000);
-        t2 =  (double)_tend.tv_sec + (double)_tend.tv_usec/(1000*1000);
-        return t2-t1;
-    }
+	double tval() {
+		double t1, t2;
+		t1 =  (double)_tstart.tv_sec + (double)_tstart.tv_usec/(1000*1000);
+		t2 =  (double)_tend.tv_sec + (double)_tend.tv_usec/(1000*1000);
+		return t2-t1;
+	}
 
-    timing_t get_realtime() {
-	struct timezone tz;
-	struct timeval now;
-	gettimeofday(&now, &tz);
-	return (timing_t) ((double)now.tv_sec + (double)now.tv_usec*1.0e-6);
-    }
+	timing_t get_realtime() {
+		struct timezone tz;
+		struct timeval now;
+		gettimeofday(&now, &tz);
+		return (timing_t) ((double)now.tv_sec + (double)now.tv_usec*1.0e-6);
+	}
 
 #endif
 
 /////////////////////////////////////////////////////////////
 // end of timing routines
-/////////////////////////////////////////////////////////////
-
-NAMESPACE_SIMDATA
 
 
 
@@ -435,7 +427,7 @@ std::string DateZulu::formatString(const char *format, bool local) const {
 
 double DateZulu::getAccurateMST(radian_t longitude) const {  
 	double JD = getJulianDate();
-	double T = (JD - EPOCH) * F1p0_36525p0;
+	double T = (JD - EPOCH) * SIMDATA_F1p0_36525p0;
 	double F = DAYSEC * (JD - (int) JD);
 	double GMST = COEFF0 - DAYSEC/2.0L
 	               + ((COEFF1 + (COEFF2 + COEFF3 * T) * T) * T) + F;
@@ -447,7 +439,7 @@ double DateZulu::getAccurateMST(radian_t longitude) const {
 
 double DateZulu::getMST(radian_t longitude) const {  
 	double JD = getJulianDate();
-	double T = (JD - EPOCH) * F1p0_36525p0;
+	double T = (JD - EPOCH) * SIMDATA_F1p0_36525p0;
 	double F = DAYSEC * (JD - (int) JD);
 	double GMST = COEFF0 - DAYSEC/2.0L
 	               + COEFF1 * T + F;

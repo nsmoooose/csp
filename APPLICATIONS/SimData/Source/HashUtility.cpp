@@ -21,9 +21,9 @@
 /**
  * @file HashUtility.cpp
  *
- * Hash routines coded here are from "Hash Functions for Hash Table Lookup"
- * by Robert J. Jenkins Jr., <http://burtleburtle.net/bob/hash/evahash.html>
- *
+ * The hash functions coded here are from "Hash Functions for Hash 
+ * Table Lookup" by Robert J. Jenokins Jr., and are Public Domain.
+ * See <http://burtleburtle.net/bob/hash/evahash.html>
  */
 #include <sstream>
 
@@ -35,7 +35,7 @@ NAMESPACE_SIMDATA
 
 HASH<const char*> hashstring::h;
 
-/* The mixing step */
+// The mixing step 
 #define mix(a,b,c) \
 { \
   a=a-b;  a=a-c;  a=a^(c>>13); \
@@ -49,75 +49,69 @@ HASH<const char*> hashstring::h;
   c=c-a;  c=c-b;  c=c^(b>>15); \
 }
 
-/* The whole new hash function */
-u4 newhash( register u1 const *k, u4 length, u4 initval)
-//register u1 *k;        /* the key */
-//u4           length;   /* the length of the key in bytes */
-//u4           initval;  /* the previous hash, or an arbitrary value */
+/** A character string to 32-bit hash function.
+ *
+ *  @author Bob Jenkins, December 1996, Public Domain.
+ *
+ *  @param k the string to hash
+ *  @param length the length of the string in bytes.
+ *  @param  initval the previous hash, or an arbitrary value 
+ */ 
+uint32 newhash(register uint8 const *k, uint32 length, uint32 initval)
 {
-   register u4 a,b,c;  /* the internal state */
-   u4          len;    /* how many key bytes still need mixing */
+   register uint32 a,b,c;  // the internal state
+   uint32 len;             // how many key bytes still need mixing 
 
-   /* Set up the internal state */
+   // Set up the internal state
    len = length;
-   a = b = 0x9e3779b9;  /* the golden ratio; an arbitrary value */
-   c = initval;         /* variable initialization of internal state */
+   a = b = 0x9e3779b9;  // the golden ratio; an arbitrary value
+   c = initval;         // variable initialization of internal state
 
-   /*---------------------------------------- handle most of the key */
+   // handle most of the key
    while (len >= 12)
    {
-      a=a+(k[0]+((u4)k[1]<<8)+((u4)k[2]<<16) +((u4)k[3]<<24));
-      b=b+(k[4]+((u4)k[5]<<8)+((u4)k[6]<<16) +((u4)k[7]<<24));
-      c=c+(k[8]+((u4)k[9]<<8)+((u4)k[10]<<16)+((u4)k[11]<<24));
+      a=a+(k[0]+((uint32)k[1]<<8)+((uint32)k[2]<<16) +((uint32)k[3]<<24));
+      b=b+(k[4]+((uint32)k[5]<<8)+((uint32)k[6]<<16) +((uint32)k[7]<<24));
+      c=c+(k[8]+((uint32)k[9]<<8)+((uint32)k[10]<<16)+((uint32)k[11]<<24));
       mix(a,b,c);
       k = k+12; len = len-12;
    }
 
-   /*------------------------------------- handle the last 11 bytes */
+   // handle the last 11 bytes
    c = c+length;
-   switch(len)              /* all the case statements fall through */
-   {
-   case 11: c=c+((u4)k[10]<<24);
-   case 10: c=c+((u4)k[9]<<16);
-   case 9 : c=c+((u4)k[8]<<8);
-      /* the first byte of c is reserved for the length */
-   case 8 : b=b+((u4)k[7]<<24);
-   case 7 : b=b+((u4)k[6]<<16);
-   case 6 : b=b+((u4)k[5]<<8);
-   case 5 : b=b+k[4];
-   case 4 : a=a+((u4)k[3]<<24);
-   case 3 : a=a+((u4)k[2]<<16);
-   case 2 : a=a+((u4)k[1]<<8);
-   case 1 : a=a+k[0];
-     /* case 0: nothing left to add */
+   switch(len)  { // all the case statements fall through
+	   case 11: c=c+((uint32)k[10]<<24);
+	   case 10: c=c+((uint32)k[9]<<16);
+	   case 9 : c=c+((uint32)k[8]<<8);
+	      // the first byte of c is reserved for the length 
+	   case 8 : b=b+((uint32)k[7]<<24);
+	   case 7 : b=b+((uint32)k[6]<<16);
+	   case 6 : b=b+((uint32)k[5]<<8);
+	   case 5 : b=b+k[4];
+	   case 4 : a=a+((uint32)k[3]<<24);
+	   case 3 : a=a+((uint32)k[2]<<16);
+	   case 2 : a=a+((uint32)k[1]<<8);
+	   case 1 : a=a+k[0];
+	     // case 0: nothing left to add 
    }
    mix(a,b,c);
-   /*-------------------------------------------- report the result */
+   // report the result
    return c;
 }
 
 
-/**
- * Generate a 32-bit hash from a string
+/** Generate a 32-bit hash from a string
  */
-u4 newhash4_cstring(std::string const &str) {
-	return newhash((u1 const*)str.c_str(), str.size(), 0);
+uint32 newhash4_cstring(std::string const &str) {
+	return newhash((uint8 const*)str.c_str(), str.size(), 0);
 }
 
-/**
- * Generate a 64-bit hash from a string
+/** Generate a 64-bit hash (HashT) from a string
  */
-u8 newhash8_cstring(std::string const &str) {
-	u8 h0, h1;
-	h0 = newhash((u1 const*)str.c_str(), str.size(), 0);
-	h1 = newhash((u1 const*)str.c_str(), str.size(), 1);
-	return ((h1 << 32) | h0);
-}
-
 HashT newhasht_cstring(std::string const &str) {
-	u4 h0, h1;
-	h0 = newhash((u1 const*)str.c_str(), str.size(), 0);
-	h1 = newhash((u1 const*)str.c_str(), str.size(), 1);
+	uint32 h0, h1;
+	h0 = newhash((uint8 const*)str.c_str(), str.size(), 0);
+	h1 = newhash((uint8 const*)str.c_str(), str.size(), 1);
 	return HashT(h1, h0);
 }
 

@@ -43,7 +43,7 @@ NAMESPACE_SIMDATA
  */
 class SIMDATA_EXPORT Key: public BaseType {
 protected:
-	u4 _key;
+	uint32 _key;
 
 public:
 

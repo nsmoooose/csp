@@ -93,8 +93,8 @@ public:
 	}
 	void createVehicle(const char *path, simdata::LLA lla,
 	                   simdata::Vector3 velocity, simdata::Vector3 attitude) {
-		Projection const &map = CSPSim::theSim->getTheater()->getTerrain()->getProjection();
-		simdata::Vector3 position = map.convert(lla);
+		simdata::Ref<const Projection> map = CSPSim::theSim->getTheater()->getTerrain()->getProjection();
+		simdata::Vector3 position = map->convert(lla);
 		_createVehicleHelper(self, path, position, velocity, attitude);
 	}
 	void setShell(PyObject *shell) { self->getShell()->bind(shell); }

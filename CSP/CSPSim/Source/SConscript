@@ -57,6 +57,7 @@ SOURCES = [
 	'NumericalMethod.cpp',
 	'ObjectModel.cpp',
 	'PhysicsModel.cpp',
+	'Projection.cpp',
 	'ScreenInfo.cpp',
 	'ScreenInfoManager.cpp',
 	'SimpleSceneManager.cpp',

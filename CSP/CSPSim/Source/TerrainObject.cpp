@@ -50,22 +50,19 @@ SIMDATA_REGISTER_INTERFACE(TerrainObject)
 /**
  * Default constructor for the Terrain Object. Sets default values.
  */
-TerrainObject::TerrainObject()
-{
-	m_Width = 0;
-	m_Height = 0;
-	m_Version = 0;
+TerrainObject::TerrainObject() : m_Width(0), m_Height(0), m_Version(0) {
 }
 
-TerrainObject::~TerrainObject()
-{
+TerrainObject::~TerrainObject() {
 }
 
 void TerrainObject::postCreate() {
 	CSP_LOG(TERRAIN, INFO, "Terrain " << m_Name << " (version " << m_Version << ")");
 	CSP_LOG(TERRAIN, INFO, "   center = " << getCenter().asString());
 	CSP_LOG(TERRAIN, INFO, "     size = " << getWidth() << " x " << getHeight() << " m");
-	m_Map.set(getCenter(), getWidth(), getHeight());
+	SecantGnomonicProjection *projection = new SecantGnomonicProjection;
+	projection->set(getCenter(), getWidth(), getHeight());
+	m_Map = projection;
 }
 
 TerrainObject::Intersection::Intersection() {

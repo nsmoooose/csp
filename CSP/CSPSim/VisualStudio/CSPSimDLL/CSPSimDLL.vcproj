@@ -300,6 +300,9 @@
 				RelativePath="..\..\Source\PhysicsModel.cpp">
 			</File>
 			<File
+				RelativePath="..\..\Source\Projection.cpp">
+			</File>
+			<File
 				RelativePath="..\..\Source\ScreenInfo.cpp">
 			</File>
 			<File

@@ -123,7 +123,7 @@ public:
 	inline float getHeight() const { return m_Height; }
 	inline std::string const &getName() const { return m_Name; }
 	inline int getVersion() const { return m_Version; }
-	Projection const & getProjection() const { return m_Map; }
+	simdata::Ref<const Projection> getProjection() const { return m_Map.get(); }
 	virtual simdata::Vector3 getOrigin(simdata::Vector3 const &) const = 0;
 	virtual void endDraw() {}
 
@@ -131,7 +131,7 @@ protected:
 	
 	simdata::LLA m_Center;
 	float m_Width, m_Height;
-	Projection m_Map;
+	Projection::Ref m_Map;
 	std::string m_Name;
 	int m_Version;
 

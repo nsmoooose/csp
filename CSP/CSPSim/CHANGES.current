@@ -15,6 +15,10 @@
 
  * Export qBar and G channels.
 
+ * Move map projection code out of Projection.h, create an abstract
+   Projection base class, use reference counting instead of hard
+   references for accessing the active projection.
+
 2005-03-12: delta
  * Reformated GearAnimation and related classes as Systems. Adjusted 
    xml files consequently. Cleaned up GearDynamics.

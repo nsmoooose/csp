@@ -75,6 +75,8 @@ public:
 	inline MessageQueue::Ref queue() { return m_MessageQueue; }
 	inline DispatchManager::Ref dispatch_manager() { return m_DispatchManager; }
 
+	void processIncoming(double timeout);
+	void processOutgoing(double timeout);
 	void processTraffic(double read_timeout, double write_timeout);
 	void processAndWait(double read_timeout, double write_timeout, double timeout);
 	void routeToHandler(RoutingType routing_type, simdata::Ref<MessageHandler> const &handler);
@@ -112,6 +114,7 @@ public:
 	bool connectToServer(NetworkNode const &server, double timeout);
 	void disconnectFromServer(bool immediate=false);
 	bool isConnected() const { return m_Connected; }
+	void sendToServer(NetworkMessage::Ref const &msg);
 };
 
 

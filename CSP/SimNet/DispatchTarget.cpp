@@ -18,46 +18,25 @@
 
 
 /**
- * @file DispatchManager.cpp
+ * @file DispatchTarget.cpp
  *
  */
 
 
-#include <SimNet/DispatchManager.h>
 #include <SimNet/DispatchTarget.h>
-#include <SimNet/NetLog.h>
 
 
 namespace simnet {
 
 
-DispatchManager::DispatchManager(MessageQueue::Ref queue, unsigned cache_size)
-	: m_Queue(queue), m_Cache(new DispatchCache(cache_size))
-{
+bool DispatchTarget::dispatch(DispatchManager *manager) {
+	return dispatchChildren(manager);
 }
 
-bool DispatchManager::dispatch(DispatchTarget *target, NetworkMessage::Ref const &msg) {
-	BaseCallback::Ref callback;
-	if (m_Cache->findHandler(msg, callback)) {
-		std::cout << "FOUND HANDLER IN CACHE\n";
-		if (!callback) return false;
-		callback->call(msg, m_Queue);
-		return true;
-	} else {
-		std::cout << "DID NOT FIND HANDLER IN CACHE\n";
-		m_Message = msg;
-		bool result = target->dispatch(this);
-		if (!result) {
-			m_Cache->insertNoHandler(m_Message);
-		}
-		m_Message = 0;
-		return result;
-	}
+bool DispatchTarget::dispatchChildren(DispatchManager *) {
+	return false;
 }
 
-void DispatchManager::invalidateCache() {
-	m_Cache->invalidate();
-}
 
 } // namespace simnet
 

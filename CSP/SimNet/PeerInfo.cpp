@@ -105,7 +105,7 @@ void PeerInfo::update(double dt, double scale_desired_rate_to_self) {
 	const double desired_bandwidth = double(attempted_bytes) / dt;
 	m_desired_bandwidth_self_to_peer = lowpass<2000>(dt, m_desired_bandwidth_self_to_peer, desired_bandwidth);
 	const double desired_rate = 100.0 * m_desired_bandwidth_self_to_peer / m_total_peer_incoming_bandwidth;
-	m_desired_rate_self_to_peer = std::min(static_cast<simdata::uint32>(desired_rate), 1023U);
+	m_desired_rate_self_to_peer = std::max(1U, std::min(static_cast<simdata::uint32>(desired_rate), 1023U));
 
 	m_allocation_peer_to_self = static_cast<simdata::uint32>(m_desired_rate_peer_to_self * scale_desired_rate_to_self);
 	m_allocation_peer_to_self = std::min(1023U, std::max(1U, m_allocation_peer_to_self));
@@ -126,6 +126,9 @@ void PeerInfo::update(double dt, double scale_desired_rate_to_self) {
 			std::cout << "  desired bandwidth  : " << m_desired_bandwidth_self_to_peer << "\n";
 			std::cout << "  throttle fraction  : " << throttle_fraction << "\n";
 			std::cout << "  throttle threshold : " << m_throttle_threshold << "\n";
+			std::cout << "  scale drate to self: " << scale_desired_rate_to_self << "\n";
+			std::cout << "  drate peer to self : " << m_desired_rate_peer_to_self << "\n";
+			std::cout << "  alloc peer to self : " << m_allocation_peer_to_self << "\n";
 		}
 		if (m_packets_peer_to_self > 0) {
 			std::cout << "incoming from " << m_id << ":\n";
@@ -273,7 +276,7 @@ void ActivePeerList::update(double dt, NetworkInterface *ni) {
 			ni->resend(packet);
 		}
 		bool remove = false;
-		if (peer->getDeadTime() > 10.0) {
+		if (peer->getDeadTime() > 30.0) {
 			SIMNET_LOG(PEER, ALERT, "dead time expired for peer " << peer->getId() << " (" << peer->getDeadTime() << " s)");
 			if (ni->handleDeadPeer(peer)) remove = true;
 		}

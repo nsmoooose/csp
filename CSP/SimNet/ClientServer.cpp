@@ -64,6 +64,14 @@ ClientServerBase::ClientServerBase(NetworkNode const &bind, bool isServer, int i
 }
 
 
+void ClientServerBase::processIncoming(double timeout) {
+	m_NetworkInterface->processIncoming(timeout);
+}
+
+void ClientServerBase::processOutgoing(double timeout) {
+	m_NetworkInterface->processOutgoing(timeout);
+}
+
 void ClientServerBase::processTraffic(double read_timeout, double write_timeout) {
 	m_NetworkInterface->processIncoming(read_timeout);
 	m_NetworkInterface->processOutgoing(write_timeout);
@@ -184,6 +192,13 @@ void Client::disconnectFromServer(bool immediate) {
 		m_MessageQueue->queueMessage(disconnect);
 		m_Connected = false;
 	}
+}
+
+void Client::sendToServer(NetworkMessage::Ref const &msg) {
+	assert(m_Connected);
+	msg->setDestination(NetworkInterface::ServerId);
+	msg->setReliable();
+	queueMessage(msg);
 }
 
 } // namespace simnet

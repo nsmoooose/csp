@@ -170,6 +170,7 @@ public:
 	NetworkNode const &getNode() const { return m_node; }
 
 	inline void getConnStat(PacketHeader const *header) {
+		m_dead_time = 0.0;
 		if (header->statmode == 1) {
 			m_desired_rate_peer_to_self = header->connstat;
 		} else {

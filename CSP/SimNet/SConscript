@@ -29,14 +29,22 @@ env.AppendUnique(SHLINKFLAGS = '-Wl,-z,lazyload')
 env.Replace(CXXFLAGS=env['CXXFLAGS'].replace('-W ', ''))
 
 env.SetConfig(PackageConfig)
-env.Documentation('#/SimNet/.dox', '#/SimNet/Doxyfile', '#/SimNet/*.{h,cpp}')
+
+env.Documentation(
+	'#/SimNet/.dox',
+	'#/SimNet/Doxyfile',
+	'#/SimNet/*.h',
+	'#/SimNet/*.cpp',
+	'#/SimNet/*.net')
+
 env.ParseConfig('ccgnu2-config --flags --libs')
 
 
 SOURCES = [
 	'ClientServer.cpp',
-	'DispatchManager.cpp',
 	'DispatchHandler.cpp',
+	'DispatchManager.cpp',
+	'DispatchTarget.cpp',
 	'NetRandom.cpp',
 	'NetworkInterface.cpp',
 	'NetworkNode.cpp',

@@ -99,8 +99,8 @@ int ClientNode::run()
  // ptrPayload->timeStamp = 1.0;
 
   simdata::MemoryWriter writer((simdata::uint8 *)ptrPayload);
-  writer << (int)id;
-  writer << (int)type;
+  writer << id;
+  writer << type;
   writer << timestamp;
   
 //  b_GlobalPosition->value().writeBinary((unsigned char *)&(ptrPayload->globalPosition),24);

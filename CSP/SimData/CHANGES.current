@@ -1,6 +1,11 @@
 Version 0.4.0 (in progress)
 ===========================
 
+2004-06-03: onsight
+  * Small cleanups in Ref.h.  More substantive changes still
+    to come.  Adds a new header Properties.h.
+===> WINDOWS users please test.
+
 2004-05-28: wolverine
   * It was determined that Vector3 and Quad have extra bytes
     to handle there virtual function tables. The networking

@@ -70,71 +70,61 @@ public:
 	/// The zero Quat = (0,0,0,0)
 	static const Quat ZERO;
 
-	/**
-	 * Serialize to a data archive.
+	/** Serialize to a data archive.
 	 */
 	virtual void pack(Packer&) const; 
 
-	/**
-	 * Deserialize from a data archive.
+	/** Deserialize from a data archive.
 	 */
 	virtual void unpack(UnPacker&);
 
-	/**
-	 * Internal method used by the XML parser.
+	/** Internal method used by the XML parser.
 	 *
-	 * The format for Quats is "X Y Z W"
+	 *  The format for Quats is "X Y Z W"
 	 */
 	virtual void parseXML(const char* cdata);
 
-	/**
-	 * Standard representation string.
+	/** Standard representation string.
 	 */
 	virtual std::string asString() const;
 
-	/**
-	 * Return a string representation of the type.
+	/** Return a string representation of the type.
 	 */
 	virtual std::string typeString() const { return "type::Quat"; }
 
-	/**
-	 * Construct a new quaternion.
+	/** Construct a new quaternion.
 	 *
-	 * Initialize to (0,0,0,0)
+	 *  Initialize to (0,0,0,0)
 	 */
 	inline Quat(): _x(0.0), _y(0.0), _z(0.0), _w(0.0) {}
 
-	/**
-	 * Construct a new quaternion.
+	/** Construct a new quaternion.
 	 *
-	 * Specifiy the four real-valued components.
+	 *  Specifiy the four real-valued components.
 	 */
 	inline Quat(double x, double y, double z, double w):  _x(x), _y(y), _z(z), _w(w) {}
 
-	/**
-	 * Construct a new quaternion representing a rotation.
+	/** Construct a new quaternion representing a rotation.
 	 *
-	 * @param angle the rotation angle (right-handed) in radians.
-	 * @param axis the rotation axis.
+	 *  @param angle the rotation angle (right-handed) in radians.
+	 *  @param axis the rotation axis.
 	 */
 	inline Quat(double angle, const Vector3& axis) { makeRotate(angle, axis); }
 
-	/**
-	 * Construct a new quaternion representing a rotation.
+	/** Construct a new quaternion representing a rotation.
 	 *
-	 * @param m a matrix specifying the rotation.
+	 *  @param m a matrix specifying the rotation.
 	 */
 	inline Quat(const Matrix3 &m) { set(m); }
 
-	/**
-	 * Construct a new quaternion representing a product of three rotations.
+	/** Construct a new quaternion representing a product of three rotations.
 	 *
-	 * @param angle1 the first rotation angle (right-handed) in radians.
-	 * @param axis1 the first rotation axis.
-	 * @param angle2 the second rotation angle (right-handed) in radians.
-	 * @param axis2 the second rotation axis.
-	 * @param angle3 the third rotation angle (right-handed) in radians.
-	 * @param axis3 the third rotation axis.
+	 *  @param angle1 the first rotation angle (right-handed) in radians.
+	 *  @param axis1 the first rotation axis.
+	 *  @param angle2 the second rotation angle (right-handed) in radians.
+	 *  @param axis2 the second rotation axis.
+	 *  @param angle3 the third rotation angle (right-handed) in radians.
+	 *  @param axis3 the third rotation axis.
 	 */
 	inline Quat(double angle1, const Vector3& axis1, 
 		    double angle2, const Vector3& axis2,
@@ -143,23 +133,20 @@ public:
 		makeRotate(angle1, axis1, angle2, axis2, angle3, axis3);
 	}
 
-	/**
-	 * Return the 3-vector component of the quaternion (x,y,z)
+	/** Return the 3-vector component of the quaternion (x,y,z)
 	 */
 	inline const Vector3 asVector3() const {
 		return Vector3(_x, _y, _z);
 	}
 
-	/**
-	 * Set the components.
+	/** Set the components.
 	 */
 	inline void set(double x, double y, double z, double w) {
 		_x = x; _y = y; _z = z; _w = w;
 	}
 
 #ifndef SWIG
-	/**
-	 * Access a component by index (0,1,2,3 = x,y,z,w)
+	/** Access a component by index (0,1,2,3 = x,y,z,w)
 	 */
 	inline double& operator [] (int i) { 
 		switch (i) {
@@ -172,8 +159,7 @@ public:
 		}
 	}
 
-	/**
-	 * Get a component value by index (0,1,2,3 = x,y,z,w)
+	/** Get a component value by index (0,1,2,3 = x,y,z,w)
 	 */
 	inline double  operator [] (int i) const { 
 		switch (i) {
@@ -205,10 +191,9 @@ public:
 	inline double w() const { return _w; }
 #endif // SWIG
 
-    	/** 
-	 * Test if the quaternion is zero.
+    	/** Test if the quaternion is zero.
 	 *
-	 * Zero rotations can generally be ignored in computations.
+	 *  Zero rotations can generally be ignored in computations.
 	 */
 	bool zeroRotation() const { 
 		return _x==0.0 && _y==0.0 && _z==0.0 && _w==1.0; 
@@ -318,92 +303,113 @@ public:
 		return conj() / length2();
         }
 
-	/**
-	 * Set this Quat to represent a rotation about an axis.
+	/** Set this Quat to represent a rotation about an axis.
 	 *
-	 * @param angle the angle of rotation (right-handed) in radians.
-	 * @param x the x component of the rotation axis.
-	 * @param y the y component of the rotation axis.
-	 * @param z the z component of the rotation axis.
+	 *  @param angle the angle of rotation (right-handed) in radians.
+	 *  @param x the x component of the rotation axis.
+	 *  @param y the y component of the rotation axis.
+	 *  @param z the z component of the rotation axis.
 	 */
         void makeRotate(double angle, 
                         double x, double y, double z);
 
-	/**
-	 * Set this Quat to represent a rotation about an axis.
+	/** Set this Quat to represent a rotation about an axis.
 	 *
-	 * @param angle the angle of rotation (right-handed) in radians.
-	 * @param vec the rotation axis.
+	 *  @param angle the angle of rotation (right-handed) in radians.
+	 *  @param vec the rotation axis.
 	 */
         void makeRotate(double angle, const Vector3& vec);
 
-	/**
-	 * Set this Quat to represent a product of three rotations.
+	/** Set this Quat to represent a product of three rotations.
 	 *
-	 * @param angle1 the first rotation angle (right-handed) in radians.
-	 * @param axis1 the first rotation axis.
-	 * @param angle2 the second rotation angle (right-handed) in radians.
-	 * @param axis2 the second rotation axis.
-	 * @param angle3 the third rotation angle (right-handed) in radians.
-	 * @param axis3 the third rotation axis.
+	 *  @param angle1 the first rotation angle (right-handed) in radians.
+	 *  @param axis1 the first rotation axis.
+	 *  @param angle2 the second rotation angle (right-handed) in radians.
+	 *  @param axis2 the second rotation axis.
+	 *  @param angle3 the third rotation angle (right-handed) in radians.
+	 *  @param axis3 the third rotation axis.
 	 */
         void makeRotate(double angle1, const Vector3& axis1, 
                         double angle2, const Vector3& axis2,
                         double angle3, const Vector3& axis3);
 
-        /** 
-	 * Set this Quat to represent a rotation that transforms vec1 to vec2.
+        /** Set this Quat to represent a rotation that transforms vec1 to vec2.
 	 */
         void makeRotate(const Vector3& vec1, const Vector3& vec2);
 
-        /** 
-	 * Set this Quat to represent a rotation defined by Euler angles.
+        /** Set this Quat to represent a rotation defined by Euler angles.
 	 *
-	 * @param roll The x-axis rotation angle (right-handed) in radians.
-	 * @param pitch The y-axis rotation angle (right-handed) in radians.
-	 * @param yaw The z-axis rotation angle (right-handed) in radians.
+	 *  @param roll The x-axis rotation angle (right-handed) in radians.
+	 *  @param pitch The y-axis rotation angle (right-handed) in radians.
+	 *  @param yaw The z-axis rotation angle (right-handed) in radians.
 	 */
 	void makeRotate(double roll, double pitch, double yaw);
 
 	void getEulerAngles(double &roll, double &pitch, double &yaw) const;
     
-        /** Return the angle and vector components represented by the quaternion.*/
+        /** Return the angle and vector components represented by the quaternion.
+	 */
         void getRotate(double& angle, double& x, double& y, double& z) const;
 
-        /** Return the angle and vector represented by the quaternion.*/
+        /** Return the angle and vector represented by the quaternion.
+	 */
         void getRotate(double& angle, Vector3& vec) const;
 
         /** Spherical Linear Interpolation.
-	    As t goes from 0 to 1, the Quat object goes from "from" to "to". */
+	 *  As t goes from 0 to 1, the Quat object goes from "from" to "to". 
+	 */
         void slerp(double t, const Quat& from, const Quat& to);
         
-        /** Set quaternion to be equivalent to specified matrix.*/
+        /** Set quaternion to be equivalent to specified matrix.
+	 */
         void set(const Matrix3& m);
 
-        /** Get the equivalent matrix for this quaternion.*/
+        /** Get the equivalent matrix for this quaternion.
+	 */
         void get(Matrix3& m) const;
 
-        /** Get the equivalent matrix for this quaternion.*/
+        /** Get the equivalent matrix for this quaternion.
+	 */
         Matrix3 getMatrix3() const {
 		Matrix3 matrix;
 		get(matrix);
 		return matrix;
         }
 	
+	/** Rotate a vector by this quaternion.
+	 */
 	Vector3 rotate(const Vector3 &v) const;
+
+	/** Rotate a vector by the inverse of this quaternion.
+	 */
 	Vector3 invrotate(const Vector3 &v) const;
+
+	/** Rotate another quaternion by this quaternion.
+	 */
 	inline Quat rotate(const Quat &q) const { return (*this)*q*conj(); }
+
+	/** Rotate another quaternion by the inverse of this quaternion.
+	 */
 	inline Quat invrotate(const Quat &q) const { return conj()*q*(*this); }
 
 #ifndef SWIG
+	/** Format to an output stream.
+	 */
         friend inline std::ostream& operator << (std::ostream& output, const Quat& vec);
+	/** Multiply a Quat by a scalar value on the left.
+	 */
         friend inline Quat operator * (double lhs, const Quat& rhs) { return rhs*lhs; }
+	/** Multiply a Quat by a vector on the right.
+	 */
 	friend inline Quat operator *(Quat const& lhs, Vector3 const& rhs) {
 		return Quat( lhs.w()*rhs.x() + lhs.y()*rhs.z() - lhs.z()*rhs.y(),
 		             lhs.w()*rhs.y() + lhs.z()*rhs.x() - lhs.x()*rhs.z(),
 		             lhs.w()*rhs.z() + lhs.x()*rhs.y() - lhs.y()*rhs.x(),
 		            -lhs.x()*rhs.x() - lhs.y()*rhs.y() - lhs.z()*rhs.z());
 	}
+
+	/** Multiply a Quat by a vector on the left.
+	 */
 	friend inline Quat operator *(Vector3 const& lhs, Quat const& rhs) {
 		return Quat( rhs.w()*lhs.x() + rhs.z()*lhs.y() - rhs.y()*lhs.z(),
 		             rhs.w()*lhs.y() + rhs.x()*lhs.z() - rhs.z()*lhs.x(),

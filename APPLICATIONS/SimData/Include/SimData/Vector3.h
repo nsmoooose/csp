@@ -49,41 +49,63 @@ NAMESPACE_SIMDATA
 
 class Matrix3;
 
-/**
- * @brief A three-dimensional vector class using double-precision.
+/** A three-dimensional vector class using double-precision.
  *
- * @ingroup BaseTypes
+ *  @ingroup BaseTypes
  */
 class SIMDATA_EXPORT Vector3: public BaseType
 {
 protected:
-	double _x, _y, _z;
+	/// The x component.
+	double _x;
+	/// The y component.
+	double _y;
+	/// The z component.
+	double _z;
 
 public:
 
+	/// Null vector.
 	static const Vector3 ZERO;
+	/// Unit vector along the x-axis.
 	static const Vector3 XAXIS;
+	/// Unit vector along the y-axis.
 	static const Vector3 YAXIS;
+	/// Unit vector along the z-axis.
 	static const Vector3 ZAXIS;
 
+	/// Construct a new (null) vector.
         Vector3(): _x(0.0), _y(0.0), _z(0.0) {}
+	/// Construct and initialize a new vector.
         Vector3(double x, double y, double z): _x(x), _y(y), _z(z) {}
+	/// Copy constructor.
         Vector3(const Vector3& v): BaseType(v), _x(v._x), _y(v._y), _z(v._z) {}
 
 #ifndef SWIG
+	/// Copy operator.
 	inline const Vector3& operator = (const Vector3& v) { 
 		_x=v._x; _y=v._y; _z=v._z; 
 		return *this;
 	}
 #endif // SWIG
 
+	/// Test for equality with another vectors.
 	inline bool operator == (const Vector3& v) const { return _x==v._x && _y==v._y && _z==v._z; }
         
+	/// Test for inequality with another vectors.
         inline bool operator != (const Vector3& v) const { return _x!=v._x || _y!=v._y || _z!=v._z; }
 
+	/// Set the vector components.
         inline void set(double x, double y, double z) { _x=x; _y=y; _z=z; }
 
 #ifndef SWIG
+	/** Get a reference to vector component by numeric index.
+	 *  
+	 *  The index starts at zero (=x), and an IndexException
+	 *  is thrown for invalid indices.
+	 *
+	 *  @return A reference to the specified component.
+	 */
         inline double& operator [] (int i) { 
 		switch (i) {
 			case 0: return _x;
@@ -93,6 +115,14 @@ public:
 				throw ""; // FIXME
 		}
 	}
+
+	/** Get the value of a vector component by numeric index.
+	 *  
+	 *  The index starts at zero (=x), and an IndexException
+	 *  is thrown for invalid indices.
+	 *
+	 *  @return The value of the specified component.
+	 */
         inline double operator [] (int i) const { 
 		switch (i) {
 			case 0: return _x;
@@ -106,36 +136,45 @@ public:
 
 
 #ifndef SWIG
+	/// Get a reference to the x-component.
         inline double& x() { return _x; }
+	/// Get a reference to the y-component.
         inline double& y() { return _y; }
+	/// Get a reference to the z-component.
         inline double& z() { return _z; }
 #endif // SWIG
 
+	/// Get the value of the x-component.
         inline double x() const { return _x; }
+	/// Get the value of the y-component.
         inline double y() const { return _y; }
+	/// Get the value of the z-component.
         inline double z() const { return _z; }
 
+	/// Test if all components are valid floating point values.
         inline bool valid() const { return !isNaN(); }
+	
+	/// Test if any components are NaN (not-a-number).
         inline bool isNaN() const { return simdata::isNaN(_x) || simdata::isNaN(_y) || simdata::isNaN(_z); }
 	inline bool isZero() const { return *this == ZERO; }
 
-        /// dot product
+        /// Compute the dot product with another vector.
         inline double operator * (const Vector3& rhs) const {
 		return _x*rhs._x+_y*rhs._y+_z*rhs._z;
         }
 
-        /// cross product
+        /// Compute the cross product with another vector.
         inline const Vector3 operator ^ (const Vector3& rhs) const {
 		return Vector3(_y*rhs._z-_z*rhs._y, _z*rhs._x-_x*rhs._z, _x*rhs._y-_y*rhs._x);
         }
 
-        /// multiply by scalar
+        /// Multiply by a scalar.
         inline const Vector3 operator * (double rhs) const {
 		return Vector3(_x*rhs, _y*rhs, _z*rhs);
         }
 
 #ifndef SWIG
-        /// unary multiply by scalar
+        /// Unary multiply by a scalar.
         inline Vector3& operator *= (double rhs) {
 		_x*=rhs;
 		_y*=rhs;
@@ -144,26 +183,25 @@ public:
         }
 #endif // SWIG
 
-        /// divide by scalar
+        /// Divide by a scalar.
         inline const Vector3 operator / (double rhs) const {
 		return (*this)*(1.0/rhs);
         }
 
 #ifndef SWIG
-        /// unary divide by scalar
+        /// Unary divide by a scalar.
         inline Vector3& operator /= (double rhs) {
 		return *this *= (1.0/rhs);
         }
 #endif // SWIG
 
-        /// binary vector add
+        /// Binary vector addition.
         inline const Vector3 operator + (const Vector3& rhs) const {
 		return Vector3(_x+rhs._x, _y+rhs._y, _z+rhs._z);
         }
 
 #ifndef SWIG
-        /** unary vector add.  Slightly more efficient because no temporary
-            intermediate object*/
+        /// Unary vector addition.
         inline Vector3& operator += (const Vector3& rhs) {
 		_x += rhs._x;
 		_y += rhs._y;
@@ -172,13 +210,13 @@ public:
         }
 #endif // SWIG
 
-        /// binary vector subtract
+        /// Binary vector subtraction.
         inline const Vector3 operator - (const Vector3& rhs) const {
 		return Vector3(_x-rhs._x, _y-rhs._y, _z-rhs._z);
         }
 
 #ifndef SWIG
-        /// unary vector subtract
+        /// Unary vector subtraction.
         inline Vector3& operator -= (const Vector3& rhs) {
 		_x-=rhs._x;
 		_y-=rhs._y;
@@ -187,23 +225,25 @@ public:
         }
 #endif // SWIG
 
-        /// negation operator.  Returns the negative of the Vector3
+        /// Negation operator; returns the negative of the vector.
         inline const Vector3 operator - () const {
 		return Vector3(-_x, -_y, -_z);
         }
 
-        /// Length of the vector = sqrt( vec . vec )
+        /// Get the length of the vector = sqrt(v*v)
         inline double length() const {
 		return ::sqrt( _x*_x + _y*_y + _z*_z );
         }
 
-        /// Length squared of the vector = vec . vec
-        inline double length2() const {
+        /// Get the length squared of the vector = v*v
+        inline doublelength2() const {
 		return _x*_x + _y*_y + _z*_z;
         }
 
-        /** normalize the vector so that it has length unity
-            returns the previous length of the vector*/
+        /** Normalize the vector so that it has length unity.
+	 *
+	 *  @returns The original length of the vector.
+	 */
         inline double normalize() {
 		double norm = length();
 		if (norm > 0.0) {
@@ -214,6 +254,7 @@ public:
 		return norm;
         }
 
+	/// Get a unit vector in the direction of this vector.
 	inline const Vector3 normalized() const {
 		double norm = length();
 		if (norm > 0.0) {
@@ -222,11 +263,14 @@ public:
 		return *this;
 	}
 
-	/**
-	 * Compute the star matrix of this vector.
-	 */
+	/// Compute the star matrix of this vector.
 	Matrix3 starMatrix() const;
 
+	/** Update bounding vectors.
+	 *  
+	 *  The components of @c min and @c max are updated to
+	 *  contain the corresponding components of this vector.
+	 */
 	inline void bound(Vector3& min, Vector3& max) {
 		if (_x < min._x) min._x = _x;
 		if (_y < min._y) min._y = _y;
@@ -237,15 +281,20 @@ public:
 	}
 		
 #ifndef SWIG
+	/// Compute the dot product of two vectors.
 	friend double dot(const Vector3& a, const Vector3& b); // inline
 
+	/// Compute the cross product of two vectors.
 	friend const Vector3 cross(const Vector3& a, const Vector3& b); // inline
 
+	/// Format to an output string.
 	friend SIMDATA_EXPORT std::ostream& operator << (std::ostream& output, const Vector3& vec);
 
+	/// Multiply a vector by a scalar on the left.
 	friend Vector3 operator * (double lhs, const Vector3 &rhs); // inline
 #endif // SWIG
 
+	/// Get the components of this vector as a std::vector<double>.
 	std::vector<double> getElements() const {
 		std::vector<double> v(3);
 		v[0] = _x;
@@ -254,6 +303,7 @@ public:
 		return v;
 	}
 
+	/// Set the components of this vector from a std::vector<double>.
 	void setElements(std::vector<double> const &v) {
 		if (v.size() == 3) {
 			_x = v[0];
@@ -264,25 +314,21 @@ public:
 		}
 	}
 
-	/**
-	 * String representation.
-	 */
+	/// String representation.
 	virtual std::string asString() const;
 
+	/// Type representation.
 	virtual std::string typeString() const { return "Vector3"; }
 
-	/**
-	 * Serialize
-	 */
+	/// Serialize to a data archive.
 	virtual void pack(Packer&) const;
 
-	/**
-	 * Deserialize
-	 */
+	/// Deserialize from a data archive.
 	virtual void unpack(UnPacker&);
 
-	/**
-	 * Parse cdata from XML tag <Vector>
+	/** Parse the character data from an XML <Vector> tag.
+	 *
+	 *  The three components must be separated by whitespace.
 	 */
 	virtual void parseXML(const char*);
 

@@ -73,7 +73,7 @@ public:
 	 */
 	virtual void pack(Packer &p) const;
 
-	/** Deseerialize from a data archive.
+	/** Deserialize from a data archive.
 	 */
 	virtual void unpack(UnPacker &p);
 	
@@ -352,7 +352,7 @@ public:
 
 	/** Construct the transpose of a matrix.
 	 *
-	 *  @param The input matrix to transpose.
+	 *  @param other The input matrix to transpose.
 	 */
 	void transpose(const Matrix3& other);
 
@@ -382,37 +382,97 @@ public:
 	 */
 	double determinant() const;
 
+	/** Create a new identity matrix.
+	 */
 	inline static Matrix3 const &identity(void) { return IDENTITY; }
+
+	/** Create a new scaling matrix.
+	 */
         inline static Matrix3 scale(const Vector3& sv);
+
+	/** Create a new scaling matrix.
+	 */
         inline static Matrix3 scale(double sx, double sy, double sz);
+
+	/** Create a new rotation matrix.
+	 */
         inline static Matrix3 rotate(const Vector3& from, const Vector3& to);
+
+	/** Create a new rotation matrix.
+	 */
         inline static Matrix3 rotate(double angle, double x, double y, double z);
+	/** Create a new rotation matrix.
+	 */
         inline static Matrix3 rotate(double angle, const Vector3& axis);
+
+	/** Create a new rotation matrix.
+	 */
         inline static Matrix3 rotate(double angle1, const Vector3& axis1, 
                                      double angle2, const Vector3& axis2,
                                      double angle3, const Vector3& axis3);
+
+	/** Create a new rotation matrix.
+	 */
 	inline static Matrix3 rotate(double roll, double pitch, double yaw);
+
+	/** Create a new rotation matrix.
+	 */
         inline static Matrix3 rotate(const Quat& quat);
+
+	/** Get the inverse of a matrix.
+	 */
         inline static Matrix3 inverse(const Matrix3& matrix, double tolerance=1e-12);
+	/** Get the tensor product of two vectors.
+	 */
 	inline static Matrix3 tensor(const Vector3&a, const Vector3 &b);
 	
+	/** Get the rotation angle and axis of this matrix.
+	 */
 	void getRotate(double angle, Vector3& axis) const;
+
+	/** Get the Euler angles of this matrix.
+	 */
 	void getEulerAngles(double &roll, double &pitch, double &yaw);
         
+	/** Multiply this matrix by a row vector (v*M).
+	 */
         inline Vector3 preMult(const Vector3& v) const;
+
+	/** Multiply this matrix by a column vector (M*v).
+	 */
         inline Vector3 postMult(const Vector3& v) const;
+
+	/** Multiply this matrix by a column vector (M*v).
+	 */
         inline Vector3 operator* (const Vector3& v) const { return postMult(v); }
 #ifndef SWIG
+	/** Multiply a matrix by a row vector (v*M).
+	 */
 	inline friend Vector3 operator* (const Vector3& v, const Matrix3& m) { return m.preMult(v); }
 #endif // SWIG
 
+	/** Get the diagonal elements of this matrix as a vector.
+	 */
         inline Vector3 getScale() const { return Vector3(_mat[0][0],_mat[1][1],_mat[2][2]); }
+
+	/** Get the trace of this matrix.
+	 */
 	inline double getTrace() const { return _mat[0][0] + _mat[1][1] + _mat[2][2]; }
         
+	/** Matrix multipliation (M*M)
+	 */
         void mult(const Matrix3&, const Matrix3&);
+
+	/** Multiply this matrix by another matrix on the left.
+	 */
         void preMult(const Matrix3&);
+
+	/** Multiply this matrix by another matrix on the right.
+	 */
         void postMult(const Matrix3&);
 
+	/** Multiply this matrix by another matrix on the right.
+	 */
         inline void operator *= (const Matrix3& other) {
 		if (this == &other) {
 			Matrix3 temp(other);
@@ -422,12 +482,16 @@ public:
 		}
         }
 
+	/** Get the product of this matrix and another matrix.
+	 */
         inline Matrix3 operator * (const Matrix3& m) const {
 		Matrix3 r;
 		r.mult(*this, m);
 		return r;
 	}
 
+	/** Add another matrix to this matrix.
+	 */
 	inline const Matrix3& operator += (const Matrix3& rhs) {
 		double *m0 = reinterpret_cast<double*>(_mat);
 		double const *m1 = reinterpret_cast<double const*>(rhs._mat);
@@ -437,6 +501,8 @@ public:
 		return *this;
 	}
 
+	/** Subtract another matrix from this matrix.
+	 */
 	inline const Matrix3& operator -= (const Matrix3& rhs) {
 		double *m0 = reinterpret_cast<double*>(_mat);
 		double const *m1 = reinterpret_cast<double const*>(rhs._mat);
@@ -446,6 +512,8 @@ public:
 		return *this;
 	}
 
+	/** Multiply this matrix by a scalar.
+	 */
 	inline const Matrix3& operator *= (const double rhs) {
 		double *m0 = reinterpret_cast<double*>(_mat);
 		for (int i=0; i<9; ++i) {
@@ -454,10 +522,14 @@ public:
 		return *this;
 	}
 
+	/** Divide this matrix by a scalar.
+	 */
 	inline const Matrix3& operator /= (const double rhs) {
 		return *this *= (1.0/rhs);
 	}
 
+	/** Get the sum of this matrix and another matrix.
+	 */
 	inline Matrix3 operator + (const Matrix3& rhs) const {
 		Matrix3 result;
 		double *m0 = reinterpret_cast<double*>(result._mat);
@@ -469,6 +541,8 @@ public:
 		return result;
 	}
 
+	/** Get the difference of this matrix and another matrix.
+	 */
 	inline Matrix3 operator - (const Matrix3& rhs) const {
 		Matrix3 result;
 		double *m0 = reinterpret_cast<double*>(result._mat);
@@ -480,6 +554,8 @@ public:
 		return result;
 	}
 
+	/** Get the product of this matrix and a scalar.
+	 */
 	inline Matrix3 operator * (double rhs) const {
 		Matrix3 result;
 		double *m0 = reinterpret_cast<double*>(result._mat);
@@ -490,23 +566,32 @@ public:
 		return result;
 	}
 
+	/** Get the quotient of this matrix and a scalar.
+	 */
 	inline Matrix3 operator / (double rhs) const {
 		return *this * (1.0/rhs);
 	}
 
+	/** Get this matrix with each element negated.
+	 */
 	inline Matrix3 operator - () const {
 		return *this * (-1.0);
 	}
 
 #ifndef SWIG
+	/** Multiply a matrix by a scalar on the left (s*M).
+	 */
 	inline friend Matrix3 operator * (double lhs, const Matrix3& rhs) {
 		return rhs * lhs;
 	}
 
+	/** Format this matrix for an output stream.
+	 */
 	friend SIMDATA_EXPORT std::ostream& operator<< (std::ostream& os, const Matrix3& m);
 #endif // SWIG
 
 protected:
+	/** The matrix elements */
         double _mat[3][3];
 
 };
@@ -588,7 +673,6 @@ inline Vector3 Matrix3::preMult(const Vector3& v) const {
 	               (_mat[0][1]*v.x() + _mat[1][1]*v.y() + _mat[2][1]*v.z()),
 	               (_mat[0][2]*v.x() + _mat[1][2]*v.y() + _mat[2][2]*v.z()));
 }
-
 
 
 NAMESPACE_SIMDATA_END

@@ -42,6 +42,46 @@ void TaggedRecordRegistry::registerFactory(TaggedRecordFactoryBase *factory) {
 	_id_map[key] = factory;
 }
 
+Ref<TaggedRecord> TaggedRecordRegistry::createRecord(std::string const &name) const {
+	FactoryMap::const_iterator it = _map.find(name);
+	if (it != _map.end()) return it->second->create();
+	return 0;
+}
+
+Ref<TaggedRecord> TaggedRecordRegistry::createRecord(TaggedRecord::Id id) const {
+	HashT key(static_cast<uint32>(id), static_cast<uint32>(id>>32));
+	FactoryIdMap::const_iterator it = _id_map.find(key);
+	if (it != _id_map.end()) return it->second->create();
+	return 0;
+}
+
+bool TaggedRecordRegistry::hasFactory(std::string const &name) const {
+	FactoryMap::const_iterator it = _map.find(name);
+	return it != _map.end();
+}
+
+bool TaggedRecordRegistry::hasFactory(TaggedRecord::Id id) const {
+	HashT key(static_cast<uint32>(id), static_cast<uint32>(id>>32));
+	FactoryIdMap::const_iterator it = _id_map.find(key);
+	return it != _id_map.end();
+}
+
+TaggedRecordFactoryBase const *TaggedRecordRegistry::getFactory(TaggedRecord::Id id) const {
+	HashT key(static_cast<uint32>(id), static_cast<uint32>(id>>32));
+	FactoryIdMap::const_iterator it = _id_map.find(key);
+	if (it != _id_map.end()) return it->second;
+	return 0;
+}
+
+TaggedRecordRegistry::FactoryList TaggedRecordRegistry::getFactories() const {
+	FactoryList list;
+	FactoryIdMap::const_iterator it = _id_map.begin();
+	for (; it != _id_map.end(); ++it) {
+		list.push_back(it->second);
+	}
+	return list;
+}
+
 
 NAMESPACE_SIMDATA_END
 

@@ -73,57 +73,41 @@ template <class RECORD> friend class TaggedRecordFactory;
 public:
 	typedef std::vector<TaggedRecordFactoryBase *> FactoryList;
 
-	/** Get an object interface by object class name.
+	/** Create a new tagged record by name.
 	 *
-	 *  @returns 0 if the interface is not found.
+	 *  @param The name of the tagged record class.
+	 *  @returns 0 if the tagged record is not found.
 	 */
-	Ref<TaggedRecord> createRecord(std::string const &name) const {
-		FactoryMap::const_iterator it = _map.find(name);
-		if (it != _map.end()) return it->second->create();
-		return 0;
-	}
-	
-	/** Get an object interface by object class hash.
+	Ref<TaggedRecord> createRecord(std::string const &name) const;
+
+	/** Create a new tagged record by id.
 	 *
-	 *  @returns 0 if the interface is not found.
+	 *  @returns 0 if the tagged record is not found.
 	 */
-	Ref<TaggedRecord> createRecord(TaggedRecord::Id id) const {
-		HashT key(static_cast<uint32>(id), static_cast<uint32>(id>>32));
-		FactoryIdMap::const_iterator it = _id_map.find(key);
-		if (it != _id_map.end()) return it->second->create();
-		return 0;
-	}
-	
-	/** Test if an object interface is registered.
+	Ref<TaggedRecord> createRecord(TaggedRecord::Id id) const;
+
+	/** Test if a tagged record is registered.
 	 *
-	 *  @param name The object class name.
+	 *  @param name The tagged record class name.
 	 */
-	bool hasFactory(std::string const &name) const {
-		FactoryMap::const_iterator it = _map.find(name);
-		return it != _map.end();
-	}
-	
-	/** Test if an object interface is registered.
+	bool hasFactory(std::string const &name) const;
+
+	/** Test if a tagged record is registered.
 	 *
-	 *  @param id The object class hash.
+	 *  @param id The tagged record id.
 	 */
-	bool hasFactory(TaggedRecord::Id id) const {
-		HashT key(static_cast<uint32>(id), static_cast<uint32>(id>>32));
-		FactoryIdMap::const_iterator it = _id_map.find(key);
-		return it != _id_map.end();
-	}
-	
+	bool hasFactory(TaggedRecord::Id id) const;
+
+	/** Get the factory for a given tagged record id.
+	 *  @param id The tagged record id.
+	 *  @return The corresponding factory, or NULL.
+	 */
+	TaggedRecordFactoryBase const *getFactory(TaggedRecord::Id id) const;
+
 	/** Get a list of all interfaces in the registry.
 	 */
-	FactoryList getFactories() const {
-		FactoryList list;
-		FactoryIdMap::const_iterator it = _id_map.begin();
-		for (; it != _id_map.end(); ++it) {
-			list.push_back(it->second);
-		}
-		return list;
-	}
-	
+	FactoryList getFactories() const;
+
 	/** Get the interface registry singleton.
 	 */
 	static inline TaggedRecordRegistry &getTaggedRecordRegistry() {
@@ -139,7 +123,7 @@ private:
 	void registerFactory(TaggedRecordFactoryBase *factory);
 
 	TaggedRecordRegistry() { }
-	
+
 	typedef HASH_MAPS<std::string, TaggedRecordFactoryBase*, hashstring, eqstring>::Type FactoryMap;
 	typedef HASHT_MAP<TaggedRecordFactoryBase*>::Type FactoryIdMap;
 

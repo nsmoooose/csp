@@ -4,6 +4,9 @@ Version 0.4.0 (in progress)
 2004-10-09: onsight
  * Fix Timer::reset()
 
+ * Move TaggedRecordRegistry methods to .cpp file, add a factory
+   lookup method.
+
 2004-10-04: onsight
  * Add 32-bit and 64-bit pass-through hash functions.
 

@@ -67,11 +67,11 @@ class UpdateCallback : public osg::NodeCallback {
 
 
 ScreenInfo::ScreenInfo(float pos_x, float pos_y, std::string const &name, std::string const &text):
-	//m_TTFPath("screeninfo.ttf"),
-	m_TTFPath("ltype.ttf"),
+	m_TTFPath("screeninfo.ttf"),
+	//m_TTFPath("ltype.ttf"),
 	m_FontSize(20), 
-	//m_CharacterSize(14),
-	m_CharacterSize(11),
+	m_CharacterSize(14),
+	//m_CharacterSize(11),
 	m_Text(0) {
 	m_Text = makeText(pos_x,pos_y - m_CharacterSize, text);
 	addDrawable(m_Text);

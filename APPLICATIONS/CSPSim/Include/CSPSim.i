@@ -54,6 +54,19 @@ public:
 };
 
 
+%exception CSPSim::createVehicle {
+        try {
+                $action
+        } catch (simdata::Exception &e) {
+		std::string msg = e.getType() + ": " + e.getMessage();
+                PyErr_SetString(PyExc_RuntimeError, msg.c_str());
+                SWIG_fail;
+        } catch (...) {
+                PyErr_SetString(PyExc_RuntimeError, "Caught an (unknown) exception in CSPSim::createVehicle");
+                SWIG_fail;
+        }
+}
+
 %extend CSPSim {
 	void createVehicle(const char *path, simdata::Vector3 position, 
 	                   simdata::Vector3 velocity, simdata::Vector3 attitude) {
@@ -81,3 +94,6 @@ public:
 	}
 	void setShell(PyObject *shell) { self->getShell()->bind(shell); }
 }
+
+%exception;
+

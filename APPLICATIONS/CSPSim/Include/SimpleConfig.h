@@ -333,6 +333,22 @@ public:
 	 */
 	void setPath(const std::string &section, const std::string &key, const std::string &value);
 		
+	/**
+	 * Get the current configuration file path.
+	 *
+	 * @returns the full path to the configuration file.
+	 */
+	std::string getConfigurationPath() const;
+
+	/**
+	 * Get the path to the directory containing the current configuration
+	 * file.
+	 *
+	 * @returns the full path to the directory containing the
+	 *          current configuration file.
+	 */
+	std::string getConfigurationDirectory() const;
+
 private:
 
 # if defined(_MSC_VER) && (_MSC_VER >= 1300)

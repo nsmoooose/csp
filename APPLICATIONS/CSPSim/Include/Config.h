@@ -39,6 +39,20 @@ extern SimpleConfig g_Config;
  */
 extern bool openConfig(std::string path, bool report_error=true);
 
+/**
+ * Get the main cache path.
+ */
+extern std::string getCachePath();
+
+/**
+ * Get the main configuration path.
+ */
+extern std::string getConfigPath();
+
+/**
+ * Get the specific configuration path.
+ */
+extern std::string getConfigPath(std::string const &);
 
 /**
  * Get the main data path.

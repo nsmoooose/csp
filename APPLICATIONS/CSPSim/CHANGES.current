@@ -2,6 +2,39 @@
 ===========================
 
 2003-07-22: onsight
+            Modified CSPSim.ini to reduce the default window
+	    size to 640x480.
+	    
+	    Added additional path roots to allow for more flexible
+	    installation.  ConfigPath points to the root directory
+	    containing global configuration data (such as input
+	    device mappings), CachePath points to the directory 
+	    containing compiled runtime data (sim.dar).  DataPath 
+	    points to the root directory for "static" data (terrain, 
+	    images, models, etc).  Based on a patch by Verok Istvan.
+
+	    Changed ScreenInfo back to using screeninfo.ttf.  We 
+	    cannot freely distribute ltype.ttf, so screeninfo.ttf
+	    acts as a generic name for the onscreen text font.  By
+	    default a GPL'd font (freemono currently) will be
+	    distributed using this name.  Users are free to replace
+	    this file locally with any font they choose.
+
+	    CSPSim.py now searches for CSPSim.ini in a slightly
+	    more elaborate, platform-dependent way.  The current
+	    directory always takes precedence.  On Linux systems,
+	    the search order then continues with ~/.cspsim, 
+	    /etc/cspsim, and finally ../Data.  On Windows just
+	    ../Data is checked.  If the ini file does not set
+	    an explicit ConfigPath, the directory in which the 
+	    config file was found will be used.
+
+	    Added exception handling to the SWIG wrapper for 
+	    createVehicles().  Errors due to missing data archive
+	    paths specified in TestObjects.py display diagnostic
+	    error messages and won't crash the program anymore.
+
+2003-07-22: onsight
             Actually checked in a bunch of changes from the last
 	    changelog entry that I had forgotten to commit.
 

@@ -211,7 +211,6 @@ void CSPSim::init()
 		CSP_LOG(APP, INFO, "Starting CSPSim...");
 
 		// setup osg search path for external data files
-		std::string data_path = getDataPath();
 		std::string image_path = getDataPath("ImagePath");
 		std::string model_path = getDataPath("ModelPath");
 		std::string font_path = getDataPath("FontPath");
@@ -229,7 +228,8 @@ void CSPSim::init()
 #endif
 
 		// open the primary data archive
-		std::string archive_file = simdata::ospath::join(data_path, "sim.dar");
+		std::string cache_path = getCachePath();
+		std::string archive_file = simdata::ospath::join(cache_path, "sim.dar");
 		try {
 			simdata::DataArchive *sim = new simdata::DataArchive(archive_file.c_str(), 1);
 			assert(sim);

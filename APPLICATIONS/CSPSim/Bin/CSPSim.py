@@ -66,8 +66,8 @@ def runCSPSim(args):
 		printUsage()
 		print
 		sys.exit(1)
-	datapath = CSP.getDataPath()
-	dar = os.path.join(datapath, "sim.dar")
+	cachepath = CSP.getCachePath()
+	dar = os.path.join(cachepath, "sim.dar")
 	if not os.path.exists(dar):
 		print
 		print "Static data archive '%s' not found." % dar
@@ -92,8 +92,8 @@ def runCSPSim(args):
 
 
 def compileData(args):
-	datapath = CSP.getDataPath()
-	dar = os.path.join(datapath, "sim.dar")
+	cachepath = CSP.getCachePath()
+	dar = os.path.join(cachepath, "sim.dar")
 	XML = os.path.join(datapath, "XML")
 	CSP.csplog().setLogLevels(CSP.CSP_ALL, SimData.LOG_ALERT)
 	#print "compile %s %s" % (XML, dar)
@@ -123,11 +123,20 @@ def compileData(args):
 
 
 action = None
-config = "../Data/CSPSim.ini"
-if os.path.exists("CSPSim.ini") or not os.path.exists(config):
-	config = "CSPSim.ini"
 
+# do our best to find the correct configuration file
+if os.name == "posix":
+	config_paths = [".", "~/.cspsim", "/etc/cspsim", "../Data"]
+else:
+	config_paths = [".", "../Data"]
 
+config = "CSPSim.ini"
+for path in config_paths:
+	path = os.path.join(path, "CSPSim.ini")
+	path = os.path.expanduser(path)
+	if os.path.exists(path):
+		config = path
+		break
 
 # process command line options
 program = sys.argv[0]
@@ -214,6 +223,7 @@ trouble, ask for help on the forums at
 
 SimData.log().setLogLevels(SimData.LOG_ALL, SimData.LOG_ALERT)
 
+print "Loading configuration from '%s'." % config
 if not CSP.openConfig(config):
 	print "Unable to open primary configuration file (%s)" % config
 	sys.exit(0)

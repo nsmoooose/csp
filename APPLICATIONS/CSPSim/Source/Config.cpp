@@ -45,6 +45,23 @@ bool openConfig(std::string ini_path, bool report_error) {
         return found_config;
 }
 
+std::string getCachePath() {
+	return g_Config.getPath("Paths", "CachePath", ".", true);
+}
+
+std::string getConfigPath() {
+	std::string base = g_Config.getConfigurationDirectory();
+	return g_Config.getPath("Paths", "ConfigPath", base, true);
+}
+
+std::string getConfigPath(std::string const &pathname) {
+	std::string path = g_Config.getPath("Paths", pathname, ".", true);
+	if (!simdata::ospath::isabs(path)) {
+		path = simdata::ospath::join(getConfigPath(), path);
+	}
+	return path;
+}
+
 std::string getDataPath() {
 	return g_Config.getPath("Paths", "DataPath", ".", true);
 }

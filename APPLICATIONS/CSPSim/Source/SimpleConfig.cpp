@@ -405,6 +405,14 @@ void SimpleConfig::setPath(const std::string &section, const std::string &key, c
 	if (m_autosave) save();
 }
 
+std::string SimpleConfig::getConfigurationPath() const {
+	return m_file;
+}
+
+std::string SimpleConfig::getConfigurationDirectory() const {
+	return simdata::ospath::dirname(m_file);
+}
+
 bool SimpleConfig::open(const std::string &fn) {
 	if (fn != "") {
 		std::filebuf fb;

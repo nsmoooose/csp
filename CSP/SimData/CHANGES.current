@@ -18,6 +18,10 @@ Version 0.4.0 (in progress)
     as pthreads-win32 (http://sources.redhat.com/pthreads-win32/)
     to use these classes.
 
+  * Modify tagged record compiler to use two 32-bit hash ids to
+    generate the record class id.  The single 64-bit id was being
+    truncated when used to construct the simdata::hasht identifier.
+
 2004-06-16: onsight
   * Doxygen cleanups.
 

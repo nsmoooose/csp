@@ -26,9 +26,14 @@ import sys
 import CodeFormat
 
 import md5
-def md5hash(s):
+def md5hash64(s):
   """return a 64-bit (python long) hash of a string"""
   return long(md5.md5(s).hexdigest()[:16], 16)
+
+def md5hash32(s):
+  """return a pair of 32-bit hashs of a string"""
+  digest = md5.md5(s).hexdigest()
+  return int(digest[:8], 16), int(digest[8:16], 16)
 
 
 class Declaration:
@@ -224,7 +229,7 @@ class CompoundType(Declaration):
     format.write('void dump(std::ostream &os, int level=0) const {')
     format.indent()
     format.write('simdata::Indent indent(level);')
-    format.write('os << indent << "%s <\\n";' % self.id)
+    format.write('os << "%s {\\n";' % self.id)
     format.write('++indent;')
     for element in self.elements:
       format.write('if (m_has_%s) {' % element.id)
@@ -235,7 +240,7 @@ class CompoundType(Declaration):
       format.dedent()
       format.write('}')
     format.write('--indent;')
-    format.write('os << indent << ">";')
+    format.write('os << indent << "}";')
     format.dedent()
     format.write('}')
 
@@ -422,8 +427,8 @@ class Message(CompoundType):
     except ValueError:
       print >>sys.stderr, 'ERROR: VERSION option on %s must be an integer' % name
       sys.exit(1)
-    id = md5hash('%s_%d' % (name, version))
-    d = {'name': name, 'version': version, 'id': id}
+    id0, id1 = md5hash32('%s_%d' % (name, version))
+    d = {'name': name, 'version': version, 'id0': id0, 'id1': id1}
     format.template(Message.TRF_GETID, d)
     format.template(Message.TRF_GETVERSION, d)
     format.template(Message.TRF_GETNAME, d)
@@ -438,7 +443,7 @@ class Message(CompoundType):
 
   TRF_GETID = '''
   virtual Id getId() const { return _getId(); }
-  static inline Id _getId() { return %(id)dll; }
+  static inline Id _getId() { return Id(%(id0)du, %(id1)du); }
   '''
 
   TRF_GETVERSION = '''

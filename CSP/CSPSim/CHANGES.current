@@ -6,6 +6,10 @@
 
   * Updated doxygen control file to exclude */old/*.
 
+  * Fix cc++ includes in Makefile.in; add debug symbols to cCSP_wrap.o.
+
+  * Add DispatchCenter.cpp to the build.
+
 2004-07-01: delta
   * CameraKinematics now uses spherical coordinates terminology
     (theta,phi,radius).

@@ -32,6 +32,7 @@
 #include <osg/Timer>
 
 #include <SDL/SDL.h>
+#include <SDL/SDL_audio.h>
 
 #include "DemeterException.h"
 
@@ -50,6 +51,9 @@
 #include <SimData/Types.h>
 #include <SimData/Exception.h>
 #include <SimData/DataArchive.h>
+
+SDLWave  m_audioWave;
+
 
 ////////////////////////////////////////////////
 // FIXME
@@ -127,6 +131,11 @@ CSPSim::~CSPSim()
 }
 
 void CSPSim::setActiveObject(simdata::Pointer<DynamicObject> object) {
+
+	CSP_LOG(CSP_APP, CSP_INFO, "CSPSim::setActiveObject - objectID: " << object->getObjectID() 
+		  << ", ObjectType: " << object->getObjectType() 
+		  << ", Position: " << object->getGlobalPosition());
+
 	if (m_ActiveObject.valid()) {
 		m_ActiveObject->setHuman(false);
 	}
@@ -141,6 +150,10 @@ void CSPSim::setActiveObject(simdata::Pointer<DynamicObject> object) {
 		m_Interface->setMapping(map);
 		m_Interface->bindObject(m_ActiveObject.ptr());
 		printf("map set, object bound.\n");
+	}
+	else {
+		CSP_LOG(CSP_APP, CSP_ERROR, "CSPSim::setActiveObject - object was not valid");
+
 	}
 }
 
@@ -231,6 +244,7 @@ void CSPSim::Init()
 	m_Battlefield->addObject(ao);
 	//ao->AddSmoke();
 	
+
 	/*
 	simdata::Pointer<DynamicObject> to = m_DataArchive->getObject("vehicles.aircraft.m2k");
 	assert(to.valid());
@@ -264,6 +278,9 @@ void CSPSim::Init()
 
 void CSPSim::Cleanup()
 {
+
+	CSP_LOG(CSP_APP, CSP_INFO, "CSPSim  Cleanup...");
+
 	assert(m_Battlefield);
 	assert(m_ActiveTerrain.isNull() == false);
 	assert(m_GameScreen);
@@ -336,6 +353,9 @@ void CSPSim::Run()
 	try 
 	{
 		while (!m_bFinished) {
+
+			CSP_LOG(CSP_APP, CSP_DEBUG, "CSPSim::Run... Starting loop iteration");
+
 			updateTime();
 			float dt = m_FrameTime;
 
@@ -526,7 +546,7 @@ int CSPSim::InitSDL()
 	g_ScreenHeight = height;
 	g_ScreenWidth = width;
 
-	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK) != 0) {
+	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK | SDL_INIT_AUDIO) != 0) {
 		printf("Unable to initialize SDL: %s\n", SDL_GetError());
 		CSP_LOG(CSP_APP, CSP_ERROR, "ERROR! Unable to initialize SDL: " << SDL_GetError());
 		return 1;
@@ -564,7 +584,46 @@ int CSPSim::InitSDL()
     
 	SDL_EnableUNICODE(1);
 
+	if ( SDL_LoadWAV("../data/sounds/a.wav",
+			&m_audioWave.spec, &m_audioWave.sound, &m_audioWave.soundlen) == NULL ) {
+		CSP_LOG(CSP_APP, CSP_ERROR,  "Couldn't load %s: %s\n",
+						argv[1], SDL_GetError());
+		exit(1);
+	}
+	m_audioWave.spec.callback = fillerup;
+
+	/* Initialize fillerup() variables */
+	if ( SDL_OpenAudio(&m_audioWave.spec, NULL) < 0 ) {
+		fprintf(stderr, "Couldn't open audio: %s\n", SDL_GetError());
+		SDL_FreeWAV(m_audioWave.sound);
+		exit(2);
+	}
+	SDL_PauseAudio(0);
+
 	return 0;
+}
+
+
+void fillerup(void *unused, Uint8 *stream, int len)
+{
+	Uint8 *waveptr;
+	int    waveleft;
+
+	/* Set up the pointers */
+	waveptr = m_audioWave.sound + m_audioWave.soundpos;
+	waveleft = m_audioWave.soundlen - m_audioWave.soundpos;
+
+	/* Go! */
+	while ( waveleft <= len ) {
+		SDL_MixAudio(stream, waveptr, waveleft, SDL_MIX_MAXVOLUME);
+		stream += waveleft;
+		len -= waveleft;
+		waveptr = m_audioWave.sound;
+		waveleft = m_audioWave.soundlen;
+		m_audioWave.soundpos = 0;
+	}
+	SDL_MixAudio(stream, waveptr, len, SDL_MIX_MAXVOLUME);
+	m_audioWave.soundpos += len;
 }
 
 /*

@@ -579,14 +579,14 @@ class TableHandler(SimpleHandler):
 		tags = self._keys
 		xbreaks, attrs = tags["XBreaks"]
 		if not attrs.has_key("spacing"):
-			msg = "CurveHander <XBreaks> tag missing required attribute 'spacing'"
+			msg = "TableHander <XBreaks> tag missing required attribute 'spacing'"
 			raise XMLSyntax, msg
 		xspacing = float(attrs["spacing"])
 		table.setXBreaks(xbreaks)
 		table.setXSpacing(xspacing)
 		ybreaks, attrs = tags["YBreaks"]
 		if not attrs.has_key("spacing"):
-			msg = "CurveHander <YBreaks> tag missing required attribute 'spacing'"
+			msg = "TableHander <YBreaks> tag missing required attribute 'spacing'"
 			raise XMLSyntax, msg
 		yspacing = float(attrs["spacing"])
 		table.setYBreaks(ybreaks)
@@ -597,6 +597,84 @@ class TableHandler(SimpleHandler):
 		table.setData(values)
 		table.interpolate()
 		interface.set(object, name, table)
+
+
+
+##
+# Generic LUT handler, specialized below for Table1, Table2, and Table3
+#
+class _LUTHandler(SimpleHandler):
+
+	handlers = {
+		"Values"       : FloatListHandler,
+#		"Method"       : EnumHandler,
+	}
+
+	members = handlers.keys()
+	required_members = members
+	
+	def __init__(self, dim, id, base, name, attrs):
+		SimpleHandler.__init__(self, id, base, name, attrs)
+		self._required_members = _LUTHandler.required_members
+		for i in range(dim): 
+			self._required_members.append("Breaks%d" % i)
+		self._dim = dim
+		self._keys = {}
+		
+	def handleChild(self, name, attrs):
+		if name.startswith("Breaks"):
+			return FloatListHandler
+		return _LUTHandler.handlers[name]
+
+	def validateChild(self, name, attrs):
+		if name.startswith("Breaks"):
+			n = int(name[6:])
+			return n >= 0 and n < self._dim
+		return name in _LUTHandler.members
+		
+	def endChild(self):
+		child = self._handler.getElement()
+		attrs = self._handler._attrs
+		member = self._handler_tag
+		self._keys[member] = (child, attrs)
+
+	def assign(self, interface, object, name):
+		missing = filter(lambda x, f=self._keys.has_key: not f(x), self._required_members)
+		assert len(missing)==0, "LUTHandler required tag(s) missing:\n  %s" % str(missing)
+		table = getattr(SimData, "Table%d" % self._dim)()
+		tags = self._keys
+		breaks = []
+		spacing = []
+		for i in range(self._dim):
+			breakpoints, attrs = tags["Breaks%d" % i]
+			if not attrs.has_key("spacing"):
+				msg = "LUTHander <Breaks%d> tag missing required attribute 'spacing'" % i
+				raise XMLSyntax, msg
+			breaks.append(breakpoints)
+			dx = float(attrs["spacing"])
+			n = 1 + int((max(breaks[i]) - min(breaks[i])) / dx)
+			spacing.append(n)
+		values, attrs = tags["Values"]
+		table.load(values, breaks)
+#		method, attrs = tags["Method"]
+#		table.method.parseXML(method)
+		table.interpolate(spacing, table.LINEAR)
+		interface.set(object, name, table)
+
+
+class Table1Handler(_LUTHandler):
+	def __init__(self, id, base, name, attrs):
+		_LUTHandler.__init__(self, 1, id, base, name, attrs)
+
+
+class Table2Handler(_LUTHandler):
+	def __init__(self, id, base, name, attrs):
+		_LUTHandler.__init__(self, 2, id, base, name, attrs)
+
+
+class Table3Handler(_LUTHandler):
+	def __init__(self, id, base, name, attrs):
+		_LUTHandler.__init__(self, 3, id, base, name, attrs)
 
 
 class FileHandler(ElementHandler):

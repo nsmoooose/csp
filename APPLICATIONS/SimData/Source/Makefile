@@ -25,6 +25,7 @@ MODULES = \
 	Link \
 	List \
 	LogStream \
+	LUT \
 	Math \
 	Matrix3 \
 	Noise \

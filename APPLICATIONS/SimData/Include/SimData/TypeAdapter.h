@@ -62,6 +62,12 @@ class UTM;
 class ECEF;
 class Object;
 
+template <int N, typename X>
+class LUT;
+
+typedef LUT<1,float> Table1;
+typedef LUT<2,float> Table2;
+typedef LUT<3,float> Table3;
 
 SIMDATA_EXCEPTION(TypeMismatch)
 
@@ -202,6 +208,9 @@ public:
 	inline void set(Real & x) const { setBase(x); }
 	inline void set(Curve & x) const { setBase(x); }
 	inline void set(Table & x) const { setBase(x); }
+	inline void set(Table1 & x) const { setBase(x); }
+	inline void set(Table2 & x) const { setBase(x); }
+	inline void set(Table3 & x) const { setBase(x); }
 	inline void set(External & x) const { setBase(x); }
 	inline void set(Key & x) const { setBase(x); }
 	inline void set(Path & x) const { setBase(x); }

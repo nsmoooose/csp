@@ -1,6 +1,30 @@
 Version 0.3.3 (in progress)
 ===========================
 
+2003-07-17: onsight
+            Moved non-inlined LUT methods and ancillary classes out
+	    of the header and into LUT.cpp.  Since these are template 
+	    classes the code now specifically instantiates three 
+	    versions:
+
+	          LUT<1,float> = Table1
+	          LUT<2,float> = Table2
+	          LUT<3,float> = Table3
+
+	    Added packing and unpacking of LUT's.
+
+	    Added XML support for LUTS classes.  The format is very
+	    similar to <Curve> and <Table>, but the <XBreaks> and 
+	    <YBreaks> tags are now generalized to <BreaksN> where N
+	    is a 0, 1, or 2.   So <Table1> needs a <Breaks0> subfield,
+	    while <Table2> needs both <Breaks0> and <Breaks1>.
+	    Interpolation mode is not yes supported (it always uses 
+	    linear interpolation).
+
+	    Modified Makefile and setup.py to build and install LUT.cpp.
+
+==========> VC USERS: add LUT.cpp to the project.
+
 2003-07-17: brandon
             Changed hash_map.h and HashUtility.h to support
             MSVC 2003 by updating the version numbers >=1300

@@ -296,6 +296,12 @@ public:
 		return self.unpack_basetype(Table())
 	def unpack_Curve(self):
 		return self.unpack_basetype(Curve())
+	def unpack_Table1(self):
+		return self.unpack_basetype(Table1())
+	def unpack_Table2(self):
+		return self.unpack_basetype(Table2())
+	def unpack_Table3(self):
+		return self.unpack_basetype(Table3())
 	def unpack_Path(self):
 		return self.unpack_basetype(Path())
 	def unpack_External(self):

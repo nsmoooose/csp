@@ -128,7 +128,7 @@ def makeZip(zipname, program, modules, path):
   for module in modules:
     name = module.__name__
     file = module.__file__
-    if uniq.has_key(file): continue
+    if uniq_modules.has_key(file): continue
     # determine the full module path relative to sys.path
     basename = ''
     # loop through all the paths in sys.path, finding the first one that

@@ -343,7 +343,7 @@ int NetworkMessenger::sendto(NetworkMessage * message, NetworkNode * node)
 int NetworkMessenger::sendto(std::vector<RoutedMessage> * sendArray, int count)
 {
   CSP_LOG(APP, DEBUG, "NetworkMessenger::sendto(RoutedMessageArray,Count) - Sending Network Packet");
-
+	 return 0;
 }
 
 int NetworkMessenger::recvfrom(std::vector<RoutedMessage> * receiveArray, int * count)

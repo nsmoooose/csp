@@ -125,7 +125,7 @@ int MessageSocketDuplex::sendto(NetworkMessage * message, NetworkNode * node)
 
 int MessageSocketDuplex::sendto(std::vector<RoutedMessage> * sendArray, int count)
 {
-
+	return 0;
 }
 
 int MessageSocketDuplex::recvfrom(std::vector<RoutedMessage> * receiveArray, int * count)

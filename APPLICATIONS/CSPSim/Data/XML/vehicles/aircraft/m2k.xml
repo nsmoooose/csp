@@ -18,8 +18,9 @@
     <Float name="rudder_max">+23.5</Float>
 
     <!-- Mass/Inertial properties -->
+    <!-- empty mass = 7600 kg -->
+    <Float name="mass">10000.0</Float>
     <!-- these values come from a FS2k2 add-on -->
-    <Float name="mass">15000.0</Float>
     <Matrix name="inertia">
 	171554.0	0.0		0.0
 	     0.0        55427.0  	1764.0

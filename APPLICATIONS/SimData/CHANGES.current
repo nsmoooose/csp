@@ -1,6 +1,10 @@
 Version 0.3.3 (in progress)
 ===========================
 
+2003-05-04: delta
+	    Updated .net project. 
+	    Finally added some pragma to get ride of dll interface warnings ...		
+
 2003-05-03: onsight
             Made static log variables into class members, so that multiple logs
 	    can exist in one application.  Since SimData itself uses the logging

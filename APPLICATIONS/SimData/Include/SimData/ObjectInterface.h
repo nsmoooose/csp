@@ -254,7 +254,6 @@ public:
 };
 
 #else
-
 template <class C, typename T> 
 class MemberAccessor< C, std::vector<T> >: public MemberAccessorBase 
 {

@@ -27,8 +27,8 @@
 #ifndef __SIMDATA_ENUM_H__
 #define __SIMDATA_ENUM_H__
 
-# if defined(_MSC_VER) && (_MSC_VER <= 1200)
-#pragma warning (disable : 4786)
+# if defined(_MSC_VER) && (_MSC_VER <= 1300)
+#pragma warning (disable : 4786 4251)
 # endif
 
 #include <string>
@@ -95,7 +95,6 @@ public:
 
 class Enumeration;
 class EnumerationCore;
-
 
 /**
  * A class representing a particular value from an associated enumeration set.
@@ -316,7 +315,6 @@ public:
 	//Enum __copy__() { return SIMDATA(Enum)(*(self->getParent()), self->asInt()); }
 }
 #endif
-
 
 class Enumeration;
 

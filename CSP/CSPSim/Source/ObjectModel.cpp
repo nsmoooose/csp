@@ -414,13 +414,22 @@ void ObjectModel::loadModel() {
 	CSP_LOG(APP, DEBUG, "LoadModel: add contact markers");
 	addContactMarkers();
 
+	/*
+	// FIXME Segfaults when creating objects using the CSP theater layout tool.
+	// Need to figure out why, but for now just disable.
+	
 	osg::ref_ptr<osg::State> state = new osg::State;
 
+	CSP_LOG(APP, DEBUG, "LoadModel: setting state");
 	osgUtil::GLObjectsVisitor ov;
 	ov.setState(state.get());
 	ov.setNodeMaskOverride(0xffffffff);
 	m_Model->accept(ov);
+	CSP_LOG(APP, DEBUG, "LoadModel: setting state for debug markers");
 	m_DebugMarkers->accept(ov);
+	*/
+
+	CSP_LOG(APP, DEBUG, "LoadModel: done");
 
 	// XXX: there is a really weird bug on vs with the optimizer:
 	// 1) it rarely appears in the release built (never when called from this exact line)

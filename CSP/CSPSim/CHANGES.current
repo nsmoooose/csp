@@ -1,6 +1,13 @@
  Version 0.4.0 (in progress)
 ===========================
 
+2005-02-05: onsight
+ * Disable displaylist/stateset compiler visitor when creating
+   ObjectModels, since it segfaults for models loaded using the
+   CSP theater layout tool.  There isn't an obvious impact on
+   performance in the sim, but should still be sorted out at
+   some point.
+
 2005-01-30: onsight
  * Move IsoContour classes out of RandomBillboardModel.cpp and
    use them in RandomForestModel.cpp.

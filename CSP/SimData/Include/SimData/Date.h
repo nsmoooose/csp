@@ -669,6 +669,18 @@ public:
 		return days;
 	}
 
+	/** Get the time relative to a reference date and time in seconds.
+	 *
+	 *  @param reference The reference data and time.
+	 *  @returns The number of seconds relative to the reference time (positive
+	 *    if the current time is greater than the reference time).
+	 */
+	double getRelativeTime(DateZulu const &reference) const {
+		const double dj = getJulian() - reference.getJulian();
+		const double dt = getTime() - reference.getTime();
+		return dj * 86400.0 + dt;
+	}
+
 	/** Get the real-valued Julian date.
 	 *
 	 *  @returns The Julian date and time as a real value,

@@ -4,8 +4,8 @@ include keys.map
 device keyboard 0 key US_keyboard 
 device mouse 0 mouse standard_mouse
 
-bind vehicles.aircraft.m2k
-bind vehicles.aircraft.f16
+bind sim:vehicles.aircraft.m2k
+bind sim:vehicles.aircraft.f16
 
 mode base
 

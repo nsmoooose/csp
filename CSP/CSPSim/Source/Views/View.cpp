@@ -59,17 +59,17 @@ void View::updateWorld(simdata::Vector3& ep,simdata::Vector3& lp,simdata::Vector
 
 View::View(size_t vm):
 	m_ViewMode(vm),
-	m_InternalView(false) {
+	m_Internal(false) {
 }
 
 void View::cull() {
 	VirtualScene* scene = CSPSim::theSim->getScene();
 	if (scene && m_ActiveObject.valid()) {
 		bool isNear = m_ActiveObject->getNearFlag();
-		if (isNear && !m_InternalView) {
+		if (isNear && !m_Internal) {
 			scene->setNearObject(m_ActiveObject, false);
 		} else
-		if (!isNear && m_InternalView) {
+		if (!isNear && m_Internal) {
 			scene->setNearObject(m_ActiveObject, true);		
 		}
 	}
@@ -147,7 +147,7 @@ void FlybyView::activate() {
 void FlybyView::update(simdata::Vector3& ep,simdata::Vector3& lp,simdata::Vector3& up,double dt) {
 	lp = m_ActiveObject->getGlobalPosition();
 	ep = m_FixedCameraPosition;
-	if ((lp - ep).length() > 900.0)
+	if ((lp - ep).length() > 1000.0)
 		 newFixedCamPos(m_ActiveObject.get());
 	up = simdata::Vector3::ZAXIS;
 }
@@ -155,7 +155,7 @@ void FlybyView::update(simdata::Vector3& ep,simdata::Vector3& lp,simdata::Vector
 void FlybyView::recalculate(simdata::Vector3& ep,simdata::Vector3& lp,simdata::Vector3& up,double dt) {
 	VirtualScene* scene	= CSPSim::theSim->getScene();
 	const simdata::Ref<TerrainObject> terrain =	scene->getTerrain();
-	const float SAFETY	= 2.0;
+	const float SAFETY	= 2.0f;
 	TerrainObject::IntersectionHint	camera_hint	= 0;
 	float h	= SAFETY + terrain->getGroundElevation(ep.x(),ep.y(),camera_hint);
 	float d = ep.z() - h;
@@ -165,7 +165,7 @@ void FlybyView::recalculate(simdata::Vector3& ep,simdata::Vector3& lp,simdata::V
 
 void SatelliteView::activate() {
 	m_CameraKinematics->setAngleZ(0.0);
-	m_CameraKinematics->setAngleX(0.5*simdata::PI);
+	m_CameraKinematics->setAngleX(simdata::PI_2);
 	m_CameraKinematics->setDistance(500.0);
 }
 	
@@ -177,7 +177,7 @@ void SatelliteView::update(simdata::Vector3& ep,simdata::Vector3& lp,simdata::Ve
 PadlockView::PadlockView(size_t vm):
 	View(vm), 
 	m_Padlock(m_ActiveObject) {
-	m_InternalView = true;
+	m_Internal = true;
 }
 
 void PadlockView::activate() {

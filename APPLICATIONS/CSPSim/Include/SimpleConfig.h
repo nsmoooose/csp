@@ -221,22 +221,22 @@ public:
 	/**
 	 * Returns true if a particular section-key pair is defined.
 	 */
-	bool hasKey(const char* section, const char* key) const;
+	bool hasKey(std::string const &section, std::string const &key) const;
 	
 	/**
 	 * Remove a key-value pair.
 	 */
-	void delKey(const char* section, const char* key);
+	void delKey(std::string const &section, std::string const &key);
 	
 	/**
 	 * Returns true if a particular section exists.
 	 */
-	bool hasSection(const char* section) const;
+	bool hasSection(std::string const &section) const;
 
 	/**
 	 * Remove a section and all keys it contains.
 	 */
-	void delSection(const char* section);
+	void delSection(std::string const &section);
 
 	/**
 	 * Get an integer value from the configuration file.

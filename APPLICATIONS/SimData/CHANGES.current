@@ -13,6 +13,12 @@ Version 0.3.3 (in progress)
             installation will be needed to achieve this, probably involving
             a new install target such as install_nopython.
 
+	    Fixed ospath::dirname, which was truncating the last couple
+	    characters.
+
+	    Added getError method to ExceptionBase, which returns a
+	    string that combines the error type and message.
+
 2003-07-21: onsight
             COPYING now correctly contains the GPL license, not the
 	    LGPL licence.

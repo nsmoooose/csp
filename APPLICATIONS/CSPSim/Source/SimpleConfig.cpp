@@ -443,13 +443,13 @@ void SimpleConfig::save() {
 	m_modified = false;
 }
 
-bool SimpleConfig::hasKey(const char* section, const char* key) const {
+bool SimpleConfig::hasKey(std::string const &section, std::string const &key) const {
 	std::string index = _hash_index(section, key);
 	ConfigDictionary::const_iterator i = m_dict.find(index);
 	return (i != m_dict.end());
 }
 
-void SimpleConfig::delKey(const char* section, const char* key) {
+void SimpleConfig::delKey(std::string const &section, std::string const &key) {
 	std::string index = _hash_index(section, key);
 	ConfigDictionary::iterator i = m_dict.find(index);
 	if (i != m_dict.end()) {
@@ -462,7 +462,7 @@ void SimpleConfig::delKey(const char* section, const char* key) {
 	}
 }
 
-bool SimpleConfig::hasSection(const char* section) const {
+bool SimpleConfig::hasSection(std::string const &section) const {
 	ConfigDictionary::const_iterator i = m_last.find(section);
 	return (i != m_last.end());
 }
@@ -474,7 +474,7 @@ bool SimpleConfig::hasSection(const char* section) const {
 // This whole function was a bit of an afterthought, since it 
 // isn't very likely to be used in the application this class 
 // was written for.  Sorry to all the purists out there.  :-(
-void SimpleConfig::delSection(const char* section_name) {
+void SimpleConfig::delSection(std::string const &section_name) {
 	ConfigDictionary::iterator i = m_last.find(section_name);
 	if (i != m_last.end()) {
 		ElementList rebuild;

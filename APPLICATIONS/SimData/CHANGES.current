@@ -1,10 +1,16 @@
 Version 0.4.0 (in progress)
 ===========================
+2004-03-18: onsight
+  * After some effort debugging the scons scripts under windows
+    with delta, I've checked in some of the necessary changes.
+    This should be a step in the right direction, but isn't the
+    full answer.
+
 2004-03-13: onsight
   * Some enhancements to the scons script (e.g. building
     debian packages, fix a popen3 issue under windowns).
   * Minor swig interface cleanup of std_vector.i includes.
-	* Added source code file and line numbers to log output.
+  * Added source code file and line numbers to log output.
 
 2004-02-03: delta
   * Added a quick hack in Exception.h to fix a weird 

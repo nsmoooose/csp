@@ -125,10 +125,7 @@ def compileData(args):
 action = None
 
 # do our best to find the correct configuration file
-if os.name == "posix":
-	config_paths = [".", "~/.cspsim", "/etc/cspsim", "../Data"]
-else:
-	config_paths = [".", "../Data"]
+config_paths = [".", "~/.cspsim", "/etc/cspsim", "../Data"]
 
 config = "CSPSim.ini"
 for path in config_paths:

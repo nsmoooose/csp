@@ -340,9 +340,6 @@
 				RelativePath="..\Include\SimData\Namespace.h">
 			</File>
 			<File
-				RelativePath="..\Include\SimData\ns-simdata.h">
-			</File>
-			<File
 				RelativePath="..\Include\SimData\Object.h">
 			</File>
 			<File
@@ -378,6 +375,9 @@
 			<File
 				RelativePath="..\Include\SimData\Vector3.inl">
 			</File>
+			<File
+				RelativePath="..\Include\SimData\Version.h">
+			</File>
 		</Filter>
 		<Filter
 			Name="Resource Files"
@@ -399,7 +399,7 @@
 					Name="VCCustomBuildTool"
 					CommandLine="$(SWIG_PATH)\swig -runtime -c++ -python -noexcept -I..\Include -o ..\Source\$(InputName)_wrap.cpp ..\Source\$(InputName).i
 "
-					Outputs="..\..\Source\$(InputName)_wrap.cpp"/>
+					Outputs="..\Source\$(InputName)_wrap.cpp"/>
 			</FileConfiguration>
 		</File>
 	</Files>

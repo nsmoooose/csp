@@ -139,7 +139,10 @@ AC_DEFUN(CSP_PYTHON, [
     AC_MSG_RESULT(yes)
     python=yes
     PYTHON_PREFIX=`python -c 'import sys; print sys.prefix'`
+    dnl hopefully distutils is installed...
+    PYTHON_INCLUDE=`python -c 'from distutils.sysconfig import get_python_inc; print get_python_inc()'`
     AC_SUBST(PYTHON_PREFIX)
+    AC_SUBST(PYTHON_INCLUDE)
   else
     AC_MSG_RESULT(no)
     AC_MSG_ERROR([

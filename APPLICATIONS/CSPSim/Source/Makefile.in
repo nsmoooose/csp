@@ -10,7 +10,7 @@ DEMETER_LIBRARY = -L$(DEMETER_PREFIX) -ldemeter_csp
 
 LIBS = $(DEMETER_LIBRARY)
 
-INCLUDE = -I$(TOPDIR)/Include $(DEMETER_INCLUDE) -I@PYTHON_PREFIX@/include/python2.2
+INCLUDE = -I$(TOPDIR)/Include $(DEMETER_INCLUDE) -I@PYTHON_INCLUDE@
 
 CFLAGS = $(GDEBUGF) $(GCFLAGS) $(INCLUDE) @SDL_FLAGS@
 SWCXXF = $(GCFLAGS) $(INCLUDE)
@@ -113,8 +113,8 @@ $(DEPDIR)/%.swigdep : %
 _cCSP.so: $(OBJECTS) cCSP_wrap.o
 	$(CXX) $(LDOPTS) -o$(BIN)/$@ $^ $(LIBS)
 	
-CSPapp: $(OBJECTS) main.o
-	$(CXX) -lswigpy -lpython2.2 -o$@ $^ $(LIBS)
+#CSPapp: $(OBJECTS) main.o
+#	$(CXX) -lswigpy -lpython2.2 -o$@ $^ $(LIBS)
 
 cCSP_wrap.cpp: cCSP.i
 	$(SWIG) $(SWOPTS) -o $@ $< 

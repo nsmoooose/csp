@@ -1,6 +1,12 @@
 Version 0.3.1 (in progress)
 ===========================
 
+2003-04-11: onsight
+            Modified autoconf scripts to get the actual python
+	    include path using distutils, rather than just using 
+	    PYTHON_PREFIX/include/python2.2, which is version
+	    dependent.
+
 *********** VC USERS: please remove Platform.cpp from the VC project
             files.
 

@@ -46,9 +46,9 @@
 
 //extern OpenThreads::Barrier bar;
 
-LogoScreen::LogoScreen(int width, int height) {
-	m_width = width;
-	m_height = height;
+LogoScreen::LogoScreen(int width, int height):
+	m_width(width),
+	m_height(height) {
 }
 
 LogoScreen::~LogoScreen() {

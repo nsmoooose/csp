@@ -237,11 +237,20 @@ class MessageSocketDuplex
 };
 
 
+struct MessageRoute
+{
+	NetworkNode * m_destinationNode;
+	NetworkMessage * m_message;
+};
+
 class NetworkMessenger
 {
    private: 
       MessageSocketDuplex * m_messageSocketDuplex;
-      std::list<NetworkMessage*> m_messageList;
+      std::vector<MessageRoute> m_messageArray;
+	  int m_messageArrayMax;
+	  int m_messageArrayCount;
+	  int m_messageArrayGrow;
       NetworkNode * m_orginatorNode;
       std::list<NetworkMessage*> m_messagePool;
       

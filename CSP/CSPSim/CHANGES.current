@@ -1,5 +1,7 @@
  Version 0.4.0 (in progress)
 ===========================
+2005-04-03: onsight
+ * Increase the left/right panning limits for the in-cockpit view.
 
 2005-04-02: onsight
  * Add a DataChannel constructor that can be used for channel data types

@@ -81,9 +81,10 @@ void View::cull() {
 }
 
 void InternalView::constrain() {
-	float limit = simdata::PI_2;
-	m_CameraKinematics->clampPhi(m_CameraKinematics->getPhi(), -limit, limit);
-	m_CameraKinematics->clampTheta(m_CameraKinematics->getTheta(), -limit, limit);
+	const float limit_phi = simdata::PI_2;
+	const float limit_theta = 1.5 * simdata::PI_2;
+	m_CameraKinematics->clampPhi(m_CameraKinematics->getPhi(), -limit_phi, limit_phi);
+	m_CameraKinematics->clampTheta(m_CameraKinematics->getTheta(), -limit_theta, limit_theta);
 }
 
 void InternalView::update(simdata::Vector3& ep, simdata::Vector3& lp, simdata::Vector3& up, double /*dt*/) {
@@ -291,9 +292,10 @@ void PadlockView::constrainPadlocked(simdata::Vector3& ep, simdata::Vector3& /*l
 }
 
 void PadlockView::constrainNotPadlocked(simdata::Vector3& /*ep*/, simdata::Vector3& /*lp*/, simdata::Vector3& /*up*/, double /*dt*/) {
-	float limit = simdata::PI_2;
-	m_CameraKinematics->clampPhi(m_CameraKinematics->getPhi(), -limit, limit);
-	m_CameraKinematics->clampTheta(m_CameraKinematics->getTheta(), -limit, limit);
+	const float limit_phi = simdata::PI_2;
+	const float limit_theta = 1.5 * simdata::PI_2;
+	m_CameraKinematics->clampPhi(m_CameraKinematics->getPhi(), -limit_phi, limit_phi);
+	m_CameraKinematics->clampTheta(m_CameraKinematics->getTheta(), -limit_theta, limit_theta);
 }
 
 void PadlockView::update(simdata::Vector3& ep, simdata::Vector3& lp, simdata::Vector3& up, double dt) {

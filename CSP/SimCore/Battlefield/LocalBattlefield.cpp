@@ -34,6 +34,8 @@
 #include <SimData/DataArchive.h>
 #include <SimData/DataManager.h>
 
+#include <cmath>
+
 
 /** Storage class for information about remote players.
  */
@@ -100,7 +102,7 @@ public:
 	void setUpdateProxy(UpdateMaster &master, UpdateProxyConnection::Ref connection);
 	void addPeerUpdate(PeerId id);
 	void removePeerUpdate(PeerId id);
-	void setUpdateInterval(PeerId id, double interval);
+	void setUpdateDistance(PeerId id, double distance);
 };
 
 
@@ -121,6 +123,14 @@ class LocalBattlefield::UnitUpdateProxy: public UpdateTarget {
 		// order of priority
 		bool operator < (PeerUpdateRecord const &other) const { return next_update > other.next_update; }
 	};
+
+	struct PeerUpdateCache {
+		simnet::NetworkMessage::Ref msg;
+		simdata::uint32 last_refresh;
+	};
+
+	static const int DETAIL_LEVELS = 10;
+	PeerUpdateCache m_DetailCache[DETAIL_LEVELS];
 
 	// the unit (wrapper) sending updates to remote peers
 	LocalUnitWrapper *m_Wrapper;
@@ -145,8 +155,6 @@ public:
 	UnitUpdateProxy(LocalUnitWrapper *wrapper, UpdateProxyConnection::Ref connection);
 
 	/** Add a peer to the update list.
-	 *  TODO allow the rate and detail level to be set and updated.  For now the update
-	 *  rate and detail level are fixed at 300 ms and 0, respectively.
 	 */
 	void addPeerUpdate(PeerId id);
 
@@ -163,8 +171,9 @@ public:
 	 *
 	 *  @param id The id of the peer.
 	 *  @param interval The interval between updates, in seconds.
+	 *  @param detail The level of detail for updates sent to this peer (0-9).
 	 */
-	void setUpdateInterval(PeerId id, double interval);
+	void setUpdateParameters(PeerId id, double interval, int detail);
 };
 
 
@@ -241,8 +250,7 @@ void LocalBattlefield::scanUnit(LocalUnitWrapper *wrapper) {
 					current_id = iter->first;
 					float distance = sqrt(iter->second);
 					CSP_LOG(BATTLEFIELD, INFO, "nearest unit owned by " << current_id << " is " << distance << " meters");
-					double interval = simdata::clampTo(distance / 10000.0, 0.05, 5.0);
-					wrapper->setUpdateInterval(current_id, interval);
+					wrapper->setUpdateDistance(current_id, distance);
 				}
 			}
 		}
@@ -680,11 +688,13 @@ void LocalBattlefield::UnitUpdateProxy::removePeerUpdate(PeerId id) {
 
 double LocalBattlefield::UnitUpdateProxy::onUpdate(double dt) {
 	CSP_LOG(BATTLEFIELD, INFO, "update proxy called");
-	const unsigned n = m_PeerUpdates.size();
-	if (n == 0) {
+
+	const unsigned n_updates = m_PeerUpdates.size();
+	if (n_updates == 0) {
 		CSP_LOG(BATTLEFIELD, WARNING, "no peers to update");
-		return 1.0;
+		return 1.0;  // wait 1 sec before checking again
 	}
+
 	simdata::uint32 dt_ms = static_cast<simdata::uint32>(dt * 1000.0);
 	m_UpdateTime += dt_ms;
 	// FIXME this can get choppy when the frame rate and update rates are comparable
@@ -692,36 +702,69 @@ double LocalBattlefield::UnitUpdateProxy::onUpdate(double dt) {
 		CSP_LOG(BATTLEFIELD, DEBUG, "too soon, " << (m_UpdateTime - m_PeerUpdates[0].next_update) << " ms");
 		return (m_UpdateTime - m_PeerUpdates[0].next_update) * 1e-3;
 	}
-	PeerUpdateRecord targets[128];
+
+	simcore::TimeStamp timestamp = m_Connection->getTimeStamp();
+
+	// targets stores (detail, peer id) in an int to facilite sorting
+	int targets[128];
 	int target_count = 0;
+
+	// find all peers that need updates now, and generate/cache the update messages
+	// for each detail level.  the updates are kept in a heap, with the next update
+	// at the top.
 	while ((m_PeerUpdates[0].next_update <= m_UpdateTime) && (target_count < 128)) {
 		std::pop_heap(m_PeerUpdates.begin(), m_PeerUpdates.end());
-		m_PeerUpdates[n-1].next_update = m_UpdateTime + m_PeerUpdates[n-1].interval;
-		targets[target_count++] = m_PeerUpdates[n-1];
+		const simdata::uint32 interval = m_PeerUpdates[n_updates - 1].interval;
+		m_PeerUpdates[n_updates - 1].next_update = m_UpdateTime + interval;
+
+		const int detail = m_PeerUpdates[n_updates - 1].detail;
+		assert(detail >=0 && detail < DETAIL_LEVELS);
+
+		// ok to use slightly stale messages.  note that if we refresh the cache for any
+		// peer, all other peers at that detail level will get the new message.
+		if (m_UpdateTime - m_DetailCache[detail].last_refresh > interval / 10) {
+			// FIXME the state message will be used for multiple peers that are updated at different
+			// intervals, so the content should not depend on interval.
+			simnet::NetworkMessage::Ref msg = m_Wrapper->unit()->getState(timestamp, 0 /*interval*/, detail);
+			msg->setRoutingType(ROUTE_UNIT_UPDATE);
+			msg->setRoutingData(m_Wrapper->id());
+			msg->setPriority(2);  // XXX msg/detail dependent?
+			m_DetailCache[detail].msg = msg;
+			m_DetailCache[detail].last_refresh = m_UpdateTime;
+		}
+		// hack for sorting by detail level, see below
+		targets[target_count++] = (detail << 24) | m_PeerUpdates[n_updates - 1].id;
+
 		std::push_heap(m_PeerUpdates.begin(), m_PeerUpdates.end());
 	}
-	// TODO need getState arguments, detail sorting and caching
-	simcore::TimeStamp timestamp = m_Connection->getTimeStamp();
-	simnet::NetworkMessage::Ref msg = m_Wrapper->unit()->getState(timestamp, 0 /*interval*/, 0 /*detail*/);
-	if (msg.valid()) {
-		msg->setRoutingType(ROUTE_UNIT_UPDATE);
-		msg->setRoutingData(m_Wrapper->id());
-		msg->setPriority(2);  // XXX msg/detail dependent?
-		for (int i = 0; i < target_count; ++i) {
-			m_Connection->send(msg, targets[i].id);
+
+	// order by detail level to take advantage of outbound message caching
+	std::sort(targets, targets + target_count);
+
+	// finally, send all pending updates
+	for (int i = 0; i < target_count; ++i) {
+		const int detail = targets[i] >> 24;
+		const int id = targets[i] & 0xffffff;
+		simnet::NetworkMessage::Ref msg = m_DetailCache[detail].msg;
+		if (msg.valid()) {
+			m_Connection->send(msg, id);
+		} else {
+			CSP_LOG(BATTLEFIELD, ERROR, "no state message");
 		}
-	} else {
-		CSP_LOG(BATTLEFIELD, ERROR, "no state message");
 	}
+
+	// we don't need to be called again until the next update time is reached
 	return (m_PeerUpdates[0].next_update - m_UpdateTime) * 1e-3;
 }
 
-void LocalBattlefield::UnitUpdateProxy::setUpdateInterval(PeerId id, double interval) {
+void LocalBattlefield::UnitUpdateProxy::setUpdateParameters(PeerId id, double interval, int detail) {
+	assert(detail >= 0 && detail < DETAIL_LEVELS);
 	simdata::uint16 interval_ms = static_cast<simdata::uint16>(interval * 1000.0);
 	const unsigned n = m_PeerUpdates.size();
 	for (unsigned i = 0; i < n; ++i) {
 		if (m_PeerUpdates[i].id == id) {
 			m_PeerUpdates[i].interval = interval_ms;
+			m_PeerUpdates[i].detail = detail;
 			CSP_LOG(BATTLEFIELD, INFO, "set update interval for peer " << id << " to " << interval_ms << " ms");
 			return;
 		}
@@ -753,9 +796,22 @@ void LocalBattlefield::LocalUnitWrapper::removePeerUpdate(PeerId id) {
 	m_UpdateProxy->removePeerUpdate(id);
 }
 
-void LocalBattlefield::LocalUnitWrapper::setUpdateInterval(PeerId id, double interval) {
+void LocalBattlefield::LocalUnitWrapper::setUpdateDistance(PeerId id, double distance) {
 	assert(m_UpdateProxy.valid());
-	m_UpdateProxy->setUpdateInterval(id, interval);
+	double interval = simdata::clampTo(distance / 10000.0, 0.05, 5.0);
+	// detail levels:
+	// 9 = 0-50 m
+	// 8 = 50-100 m
+	// 7 = 100-200 m
+	// 6 = 200-400 m
+	// 5 = 400-800 m
+	// 4 = 800-1600 m
+	// 3 = 1.6-3.2 km
+	// 2 = 3.2-6.4 km
+	// 1 = 6.4-12.8 km
+	// 0 = >12.8 km
+	int detail = std::max(0, 9 - static_cast<int>(1.4427 * log(std::max(1.0, distance / 25.0))));
+	m_UpdateProxy->setUpdateParameters(id, interval, detail);
 }
 
 LocalBattlefield::LocalUnitWrapper* LocalBattlefield::findLocalUnitWrapper(ObjectId id) {

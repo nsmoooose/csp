@@ -1,16 +1,19 @@
  Version 0.4.0 (in progress)
 ===========================
 
+2004-04-17: delta
+  * Minor fixes to get the build going under windows.
+
 2004-04-17: wolverine
-  * Added initial networking functionality, This includes new files
+  * Added initial networking functionality. This includes new files
     in the Source/Networking subdirectory and changes to some current
     file.
 
-  * made some changes in NetworkSocket.cpp to be more compatible with
+  * Made some changes in NetworkSocket.cpp to be more compatible with
     windows.
 
 2004-04-17: delta
-  * Changes COLOR to COLOR0 to enforce arbvp1 compatibility in 
+  * Changed COLOR to COLOR0 to enforce arbvp1 compatibility in 
     nvMorph.cg.
     
   * Added a debug project file for heightfield_shader.

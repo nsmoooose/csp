@@ -1,9 +1,13 @@
 Version 0.4.0 (in progress)
 ===========================
+
+2004-09-29: onsight
+ * Clean up warnings and formatting in Date.h/cpp.
+
 2004-09-28: delta
  * Added a #undef ERROR after inlcuding windows.h, protected behind
    a #ifdef.
-   
+
 2004-09-26: onsight
  * Fix a couple compiler warnings under msvc.
 

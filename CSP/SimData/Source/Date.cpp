@@ -28,14 +28,14 @@ NAMESPACE_SIMDATA
 
 
 const Date::day_t Date::days_in_months[2][13] =
-{  /* error, jan feb mar apr may jun jul aug sep oct nov dec */
-  {  0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 },
-  {  0, 31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 } /* leap year */
+{	/* error, jan feb mar apr may jun jul aug sep oct nov dec */
+	{  0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 },
+	{  0, 31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 } /* leap year */
 };
 const int Date::days_in_year[2][14] =
-{  /* 0, jan feb mar apr may  jun  jul  aug  sep  oct  nov  dec */
-  {  0, 0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334, 365 },
-  {  0, 0, 31, 60, 91, 121, 152, 182, 213, 244, 274, 305, 335, 366 }
+{	/* 0, jan feb mar apr may  jun  jul  aug  sep  oct  nov  dec */
+	{  0, 0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334, 365 },
+	{  0, 0, 31, 60, 91, 121, 152, 182, 213, 244, 274, 305, 335, 366 }
 };
 
 Date::Date(year_t year, month_t month, day_t day) {
@@ -47,20 +47,16 @@ Date::Date(year_t year, month_t month, day_t day) {
 }
 
 const char *Date::getMonthName() const {
-	static const char* name[] = {"January", "February", "March",
-	                             "April", "May", "June", "July",
-				     "August", "September", "October",
-				     "November", "December"};
+	static const char* name[] = {"January", "February", "March", "April", "May", "June", "July",
+	                             "August", "September", "October", "November", "December"};
 	int idx = getMonth() - 1;
 	assert(idx >= 0 && idx < 12);
 	return name[idx];
 }
 
 const char *Date::getMonthShortName() const {
-	static const char* name[] = {"Jan", "Feb", "Mar",
-	                             "Apr", "May", "Jun", "Jul",
-				     "Aug", "Sep", "Oct",
-				     "Nov", "Dec"};
+	static const char* name[] = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul",
+	                             "Aug", "Sep", "Oct", "Nov", "Dec"};
 	int idx = getMonth() - 1;
 	assert(idx >= 0 && idx < 12);
 	return name[idx];
@@ -68,50 +64,41 @@ const char *Date::getMonthShortName() const {
 
 const char *Date::getWeekdayName() const {
 	static const char* name[] = {"Monday", "Tuesday", "Wednesday",
-	                             "Thursday", "Friday", "Saturday",
-				     "Sunday"};
+	                             "Thursday", "Friday", "Saturday", "Sunday"};
 	int idx = getWeekday() - 1;
 	assert(idx >= 0 && idx < 7);
 	return name[idx];
 }
 
 const char *Date::getWeekdayShortName() const {
-	static const char* name[] = {"Mon", "Tue", "Wed",
-	                             "Thu", "Fri", "Sat",
-				     "Sun"};
+	static const char* name[] = {"Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"};
 	int idx = getWeekday() - 1;
 	assert(idx >= 0 && idx < 7);
 	return name[idx];
 }
 
 int Date::getMondayWeekOfYear() const  {
-	weekday_t wd;
-	day_t day;
 	Date first(m_year, 1, 1);
-	wd = first.getWeekday() - 1;
-	day = getDayOfYear() - 1;
+	int wd = first.getWeekday() - 1;
+	int day = getDayOfYear() - 1;
 	return ((day + wd)/7U + (wd == 0 ? 1 : 0));
 }
 
 int Date::getSundayWeekOfYear() const {
-	weekday_t wd;
-	day_t day;
 	Date first(m_year, 1, 1);
-	wd = first.getWeekday();
+	int wd = first.getWeekday();
 	if (wd == 7) wd = 0;
-	day = getDayOfYear() - 1;
+	int day = getDayOfYear() - 1;
 	return ((day + wd)/7U + (wd == 0 ? 1 : 0));
 }
 
 void Date::addMonths(int nmonths) {
-	int years, months;
-	int index;
 	nmonths += m_month - 1;
-	years = nmonths/12;
-	months = nmonths%12;
+	year_t years = static_cast<year_t>(nmonths / 12);
+	month_t months = static_cast<month_t>(nmonths % 12);
 	m_month = months + 1;
 	m_year += years;
-	index = isLeap() ? 1 : 0;
+	int index = isLeap() ? 1 : 0;
 	if (m_day > days_in_months[index][m_month]) {
 		m_day = days_in_months[index][m_month];
 	}
@@ -119,10 +106,8 @@ void Date::addMonths(int nmonths) {
 }
 
 void Date::subtractMonths(int nmonths) {
-	int years, months;
-	int index;
-	years = nmonths/12;
-	months = nmonths%12;
+	year_t years = static_cast<year_t>(nmonths / 12);
+	month_t months = static_cast<month_t>(nmonths % 12);
 	m_year -= years;
 	if (m_month > months) {
 		m_month -= months;
@@ -131,7 +116,7 @@ void Date::subtractMonths(int nmonths) {
 		m_month = 12 - months;
 		m_year -= 1;
 	}
-	index = isLeap() ? 1 : 0;
+	int index = isLeap() ? 1 : 0;
 	if (m_day > days_in_months[index][m_month]) {
 		m_day = days_in_months[index][m_month];
 	}
@@ -139,7 +124,7 @@ void Date::subtractMonths(int nmonths) {
 }
 
 void Date::addYears(int nyears) {
-	m_year += nyears;
+	m_year += static_cast<year_t>(nyears);
 	if (m_month == 2 && m_day == 29) {
 		if (!isLeap()) m_day = 28;
 	}
@@ -147,7 +132,7 @@ void Date::addYears(int nyears) {
 }
 
 void Date::subtractYears(int nyears) {
-	m_year -= nyears;
+	m_year -= static_cast<year_t>(nyears);
 	if (m_month == 2 && m_day == 29) {
 		if (!isLeap()) m_day = 28;
 	}
@@ -162,43 +147,36 @@ void Date::subtractYears(int nyears) {
  */
 void Date::_updateJulian()
 {
-  int y = m_year;
-  int m = m_month;
-  int d = m_day;
-  m_julian = d-32075+1461*(y+4800+(m-14)/12)/4+367*(m-2-(m-14)/12*12)/12-3*((y+4900+(m-14)/12)/100)/4;
+	int y = m_year;
+	int m = m_month;
+	int d = m_day;
+	m_julian = d-32075+1461*(y+4800+(m-14)/12)/4+367*(m-2-(m-14)/12*12)/12-3*((y+4900+(m-14)/12)/100)/4;
 }
 
 
 void Date::_updateYMD()
 {
-  year_t y;
-  month_t m;
-  day_t day;
-  unsigned int A, B, C, D, E, M;
+	/* Formula taken from the Calendar FAQ */
+	unsigned int A = m_julian + 32045;
+	unsigned int B = ( 4 *(A + 36524) )/ 146097 - 1;
+	unsigned int C = A - (146097 * B)/4;
+	unsigned int D = ( 4 * (C + 365) ) / 1461 - 1;
+	unsigned int E = C - ((1461*D) / 4);
+	unsigned int M = (5 * (E - 1) + 2)/153;
 
-  /* Formula taken from the Calendar FAQ */
-
-  A = m_julian + 32045;
-  B = ( 4 *(A + 36524) )/ 146097 - 1;
-  C = A - (146097 * B)/4;
-  D = ( 4 * (C + 365) ) / 1461 - 1;
-  E = C - ((1461*D) / 4);
-  M = (5 * (E - 1) + 2)/153;
-
-  m = M + 3 - (12*(M/10));
-  day = E - (153*M + 2)/5;
-  y = 100 * B + D - 4800 + (M/10);
+	month_t m = static_cast<month_t>(M + 3 - (12*(M/10)));
+	day_t day = static_cast<day_t>(E - (153*M + 2)/5);
+	year_t y = static_cast<year_t>(100 * B + D - 4800 + (M/10));
 
 #ifdef ENABLE_DEBUG
-  if (!validYMD(y, m, day))
-    {
-      throw InvalidDate();
-    }
+	if (!validYMD(y, m, day)) {
+		throw InvalidDate();
+	}
 #endif
 
-  m_year = y;
-  m_month = m;
-  m_day = day;
+	m_year = y;
+	m_month = m;
+	m_day = day;
 }
 
 
@@ -340,8 +318,8 @@ std::string DateZulu::formatString(const char *format, bool local) const {
 #define EPOCH   2451545.0e+0L
 #define DAYSEC  86400.0e+0L
 #define CENDAY  36525.0e+0L
-#define PI	3.141592653e+0L
-#define COEFF0	24110.54841e+0L
+#define PI      3.141592653e+0L
+#define COEFF0  24110.54841e+0L
 #define COEFF1  8640184.812866e+0L
 #define COEFF2  0.093104e+0L
 #define COEFF3  -6.2e-6L
@@ -399,7 +377,7 @@ void SimDate::serialize(Writer &writer) const {
 }
 
 void SimDate::parseXML(const char* cdata) {
-	int dy,dm,dd,th=0,tm=0;
+	int dy=0,dm=0,dd=0,th=0,tm=0;
 	float ts=0.0;
 	int ok = 0;
 	std::string s(cdata);
@@ -413,7 +391,7 @@ void SimDate::parseXML(const char* cdata) {
 		throw ParseException("SYNTAX ERROR: invalid date string");
 	}
 	try {
-		*this = SimDate(dy, dm, dd, th, tm, ts);
+		*this = SimDate(static_cast<year_t>(dy), static_cast<month_t>(dm), static_cast<day_t>(dd), th, tm, ts);
 	}
 	catch (InvalidDate) {
 		throw ParseException("SYNTAX ERROR: invalid date string");

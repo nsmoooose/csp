@@ -25,30 +25,30 @@
  *
  * Classes for date and time manipulation.
  *
- * 	Date:
- * 	      Generic date class storing YMD and julian days
- * 	
- * 	Zulu:
- * 	      Very simple time class storing seconds since midnight as
- * 	      a float.  Rollover functions are provided to integrate with
- * 	      the Date class.  Time is ZULU (UTC), with an optional TZ
- * 	      field that can be used to adjust for the local timezone.
- * 	
- * 	DateZulu:
- * 	      This class simply combines Date and Zulu, implementing
- * 	      date/time rollover.  Some astronical time routines, such
- * 	      as MST (GMST/LMST) are implemented.
+ *  Date:
+ *        Generic date class storing YMD and julian days
  *
- * 	SimTime:
- * 	       This is nothing more than a typedef to the internal time
- * 	       storage type used by Zulu (currently float).
+ *  Zulu:
+ *        Very simple time class storing seconds since midnight as
+ *        a float.  Rollover functions are provided to integrate with
+ *        the Date class.  Time is ZULU (UTC), with an optional TZ
+ *        field that can be used to adjust for the local timezone.
  *
- * 	SimDate:
- * 	       This class combines DateZulu and BaseType so that date
- * 	       and time can be serialized to and from data archives.  A
- * 	       simple parsing function for XML cdata streams is also
- * 	       implemented.
- * 	
+ *  DateZulu:
+ *        This class simply combines Date and Zulu, implementing
+ *        date/time rollover.  Some astronical time routines, such
+ *        as MST (GMST/LMST) are implemented.
+ *
+ *  SimTime:
+ *         This is nothing more than a typedef to the internal time
+ *         storage type used by Zulu (currently float).
+ *
+ *  SimDate:
+ *         This class combines DateZulu and BaseType so that date
+ *         and time can be serialized to and from data archives.  A
+ *         simple parsing function for XML cdata streams is also
+ *         implemented.
+ *
  */
 
 
@@ -109,7 +109,7 @@ public:
 	} WEEKDAY;
 
 	typedef enum {
-		JANUARY	  = 1,
+		JANUARY   = 1,
 		FEBRUARY  = 2,
 		MARCH     = 3,
 		APRIL     = 4,
@@ -163,8 +163,7 @@ public:
 	 */
 	static bool validYMD(year_t year, month_t month, day_t day) {
 		if (month < 1 || month > 12 || day < 1) return false;
-		return (day <= (isLeap(year) ?
-		           days_in_months[1][month] : days_in_months[0][month]));
+		return (day <= (isLeap(year) ?  days_in_months[1][month] : days_in_months[0][month]));
 	}
 
 	/** Returns true if this is a leap year.
@@ -234,9 +233,9 @@ public:
 	/** Get the day of the year (1..).
 	 */
 	int getDayOfYear() const {
-  		int index;
-  		index = isLeap() ? 1 : 0;
-  		return (days_in_year[index][m_month] + m_day);
+		int index;
+		index = isLeap() ? 1 : 0;
+		return (days_in_year[index][m_month] + m_day);
 	}
 
 	/** Get the week of the year for weeks starting on Monday.
@@ -752,7 +751,7 @@ public:
 		last_update = get_realtime();
 		setReferenceTime(getTime());
 	}
-		
+
 	/** Construct a new SimDate.
 	 *
 	 *  @param julian the Julian day.
@@ -767,7 +766,7 @@ public:
 		last_update = get_realtime();
 		setReferenceTime(getTime());
 	}
-		
+
 	/** Copy constructor.
 	 *
 	 *  The new SimDate will be unpaused, regardless of the paused
@@ -778,12 +777,12 @@ public:
 		last_update = get_realtime();
 		setReferenceTime(getTime());
 	}
-	
+
 #ifndef SWIG
 	/** Assignment operator from another SimDate.
 	 */
 	const SimDate &operator=(const SimDate &d);
-#endif // SWIG	
+#endif // SWIG
 
 	/** Return a string representation of the date and time.
 	 *
@@ -922,7 +921,7 @@ public:
 	 *  in which case the time is set to zero.
 	 */
 	virtual void parseXML(const char* cdata);
-	
+
 };
 
 NAMESPACE_SIMDATA_END

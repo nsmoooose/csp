@@ -1,0 +1,52 @@
+<?xml version="1.0" standalone="no"?>
+
+<!-- 
+    Mirage 2000 gear
+-->
+
+
+        
+<Object class="GearDynamics" name="gear_dynamics">
+	<List name="gear_set">
+        <!-- all of these values are complete guesses for testing only! -->
+                <Object class="LandingGear"> <!-- nosewheel -->
+                    <Vector name="max_position">0.0 4.75 -2.0</Vector>
+                    <Vector name="motion">0 0 1.0</Vector>
+                    <Real name="damage_limit">80000.0:10000.0</Real>
+                    <Float name="compression_limit">0.5</Float>
+                    <Float name="K">200000.0</Float>
+                    <Float name="beta">10000.0</Float>
+                    <Float name="brake_limit">3000.0</Float>
+                    <Float name="static_friction">0.7</Float>
+                    <Float name="dynamic_friction">0.5</Float>
+                    <Float name="steering_limit">45.0</Float>
+                    <Float name="tire_K">200000.0</Float>
+                </Object>
+                <Object class="LandingGear"> <!-- left main -->
+                    <Vector name="max_position">-1.75 -0.7 -2.0</Vector>
+                    <Vector name="motion">0 0 1.0</Vector>
+                    <Real name="damage_limit">80000.0</Real>
+                    <Float name="compression_limit">0.5</Float>
+                    <Float name="K">300000.0</Float>
+                    <Float name="beta">10000.0</Float>
+                    <Float name="brake_limit">3000.0</Float>
+                    <Float name="static_friction">0.7</Float>
+                    <Float name="dynamic_friction">0.5</Float>
+                    <Float name="tire_K">200000.0</Float>
+                </Object>
+                <Object class="LandingGear"> <!-- right main -->
+                    <Vector name="max_position">1.75 -0.7 -2.0</Vector>
+                    <Vector name="motion">0 0 1.0</Vector>
+                    <Real name="damage_limit">80000.0:10000.0</Real>
+                    <Float name="compression_limit">0.5</Float>
+                    <Float name="K">300000.0</Float>
+                    <Float name="beta">10000.0</Float>
+                    <Float name="brake_limit">3000.0</Float>
+                    <Float name="static_friction">0.7</Float>
+                    <Float name="dynamic_friction">0.5</Float>
+                    <Float name="tire_K">200000.0</Float>
+                </Object>
+	</List>
+</Object>
+    
+    

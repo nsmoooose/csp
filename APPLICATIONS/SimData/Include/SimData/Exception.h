@@ -21,8 +21,7 @@
 
 /**
  * @file Exception.h
- *
- * Exception base classes and macros for creating new exceptions.
+ * @brief Exception base classes and macros for creating new exceptions.
  */
 
 

@@ -26,6 +26,10 @@
 %include "std_string.i"
 
 %rename(__repr__) SIMDATA(External)::asString() const;
+%rename(__eq__) SIMDATA(External)::operator==(SIMDATA(External) const &) const;
+%rename(__eq__) SIMDATA(External)::operator==(std::string const &) const;
+%rename(__ne__) SIMDATA(External)::operator!=(SIMDATA(External) const &) const;
+%rename(__ne__) SIMDATA(External)::operator!=(std::string const &) const;
 
 %include "SimData/External.h"
 

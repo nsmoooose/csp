@@ -49,66 +49,62 @@ protected:
 
 public:
 
-	/**
-	 * Default constructor.
+	/** Default constructor.
 	 */
 	Key(): _key(0) {}
 
-	/**
-	 * Construct a new key from a string.
+	/** Construct a new key from a string.
 	 */
 	Key(std::string const &k) { *this = k; }
 
-	/** 
-	 * Copy constructor.
+	/** Copy constructor.
 	 */
 	Key(Key const &k): BaseType(k), _key(k._key) {}
 
-	/**
-	 * Destructor.
+	/** Destructor.
 	 */
 	virtual ~Key() {}
 
 #ifndef SWIG
-	/**
-	 * Assign from a string, computing the corresponding key.
+	/** Assign from a string, computing the corresponding key.
 	 */
 	const Key &operator=(std::string const &);
 
-	/**
-	 * Copy method.
+	/** Copy method.
 	 */
 	inline const Key &operator=(Key const &k) { _key = k._key; return *this; }
 
 #endif // SWIG
 
-	/**
-	 * Comparison
+	/** Compare equal
 	 */
 	inline bool operator==(Key const &k) const { return _key == k._key; }
 
-	/**
-	 * String comparison.
+	/** Compare unequal
+	 */
+	inline bool operator!=(Key const &k) const { return _key != k._key; }
+
+	/** String compare equal.
 	 */
 	bool operator==(std::string const &) const;
 
-	/**
-	 * Serialize.
+	/** String compare unequal
 	 */
-	virtual void pack(Packer& p) const;
+	bool operator!=(std::string const &k) const { return !(*this==k); }
 	
-	/**
-	 * Deserialize.
+	/** Order comparison, for use with standard stl comparisons
 	 */
-	virtual void unpack(UnPacker& p);
+	bool operator<(Key const &k) const { return _key < k._key; }
+
+	/** Serialize to or from a data archive.
+	 */
+	virtual void serialize(Archive&);
 	
-	/**
-	 * Standard string representation.
+	/** Standard string representation.
 	 */
 	virtual std::string asString() const;
 
-	/**
-	 * Return a string representation of the type.
+	/** Return a string representation of the type.
 	 */
 	virtual std::string typeString() const { return "type::Key"; }
 };

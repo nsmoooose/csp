@@ -21,6 +21,7 @@
 
 /**
  * @file Date.h
+ * @brief Classes for date and time manipulation.
  *
  * Classes for date and time manipulation.
  *
@@ -54,7 +55,7 @@
 #ifndef __SIMDATA_DATE_H__
 #define __SIMDATA_DATE_H__
 
-#include <SimData/Pack.h>
+#include <SimData/Archive.h>
 #include <SimData/Exception.h>
 #include <SimData/BaseType.h>
 
@@ -941,13 +942,9 @@ public:
 		return days;
 	}
 
-	/** Serialize the date and time to a data archive.
+	/** Serialize the date and time to or from a data archive.
 	 */
-	virtual void pack(Packer &p) const;
-
-	/** Deserialize the date and time from a data archive.
-	 */
-	virtual void unpack(UnPacker &p);
+	virtual void serialize(Archive&);
 
 	/** Parse date/time string from XML cdata.
 	 *

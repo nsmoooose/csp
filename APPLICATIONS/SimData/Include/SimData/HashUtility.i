@@ -29,6 +29,8 @@
 
 NAMESPACE_SIMDATA
 
+%rename(__repr__) HashT::str;
+
 struct HashT {
 	HashT();
 	HashT(uint32 x);
@@ -38,6 +40,7 @@ struct HashT {
 	bool operator !=(uint32 x) const;
 	bool operator ==(HashT const &x) const;
 	bool operator !=(HashT const &x) const;
+	std::string str() const;
 };
 
 typedef HashT hasht;

@@ -77,7 +77,7 @@ public:
 	/// Construct a new (null) vector.
         Vector3(): _x(0.0), _y(0.0), _z(0.0) {}
 	/// Construct and initialize a new vector.
-        Vector3(double x, double y, double z): _x(x), _y(y), _z(z) {}
+        Vector3(double x_, double y_, double z_): _x(x_), _y(y_), _z(z_) {}
 	/// Copy constructor.
         Vector3(const Vector3& v): BaseType(v), _x(v._x), _y(v._y), _z(v._z) {}
 
@@ -96,7 +96,7 @@ public:
         inline bool operator != (const Vector3& v) const { return _x!=v._x || _y!=v._y || _z!=v._z; }
 
 	/// Set the vector components.
-        inline void set(double x, double y, double z) { _x=x; _y=y; _z=z; }
+        inline void set(double x_, double y_, double z_) { _x=x_; _y=y_; _z=z_; }
 
 #ifndef SWIG
 	/** Get a reference to vector component by numeric index.
@@ -320,11 +320,8 @@ public:
 	/// Type representation.
 	virtual std::string typeString() const { return "Vector3"; }
 
-	/// Serialize to a data archive.
-	virtual void pack(Packer&) const;
-
-	/// Deserialize from a data archive.
-	virtual void unpack(UnPacker&);
+	/// Serialize to or from a data archive.
+	virtual void serialize(Archive&);
 
 	/** Parse the character data from an XML <Vector> tag.
 	 *

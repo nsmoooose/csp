@@ -20,6 +20,7 @@
 
 /**
  * @file DataArchive.h
+ * @brief Classes for data archive manipulation.
  * @author Mark Rose <mrose@stm.lbl.gov>
  */
 
@@ -360,6 +361,10 @@ public:
 	 */
 	InterfaceProxy *getObjectInterface(std::string const &path) const;
 
+
+	/** Dump arhcive information to stdout (for debugging).
+	 */
+	void dump() const;
 
 	// protected methods made public for Python access, don't use!
 	/*

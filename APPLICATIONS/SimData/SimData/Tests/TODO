@@ -1,0 +1,9 @@
+Future test suites:
+
+  * Functionality and Python interface for base types.
+  * Archive test with objects and links
+  * Logging facility
+  * Conversions
+  * Object declarations and macros (C++)
+  * Object interfaces and interface registry
+

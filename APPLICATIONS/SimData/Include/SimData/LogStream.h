@@ -21,6 +21,7 @@
 
 /**
  * @file LogStream.h
+ * @brief Stream based logging mechanism.
  *
  * Stream based logging mechanism.
  * 
@@ -56,12 +57,11 @@ using std::ostream;
 // 3. Read environment for default debugClass and debugPriority.
 //
 
-/**
- * @brief An output-only, category-based log stream.
+/** An output-only, category-based log stream.
  *
- * logbuf is an output-only streambuf with the ability to disable sets of
- * messages at runtime. Only messages with priority >= logbuf::logPriority
- * and debugClass == logbuf::logClass are output.
+ *  logbuf is an output-only streambuf with the ability to disable sets of
+ *  messages at runtime. Only messages with priority >= logbuf::logPriority
+ *  and debugClass == logbuf::logClass are output.
  */
 class SIMDATA_EXPORT logbuf : public std::streambuf
 {
@@ -73,58 +73,58 @@ public:
 	/** Destructor */
 	~logbuf();
 
-	/**
-	* Is logging enabled?
-	* @return true or false*/
+	/** Is logging enabled?
+	 *
+	 * @return true or false
+	 */
 	bool enabled() { return logging_enabled; }
 
-	/**
-	* Set the logging level of subsequent messages.
-	* @param c debug class
-	* @param p priority
-	*/
+	/** Set the logging level of subsequent messages.
+	 *
+	 *  @param c debug class
+	 *  @param p priority
+	 */
 	void set_log_state(int c, int p);
 
-	/**
-	* Set the global logging level.
-	* @param c debug class
-	* @param p priority
-	*/
+	/** Set the global logging level.
+	 *
+	 *  @param c debug class
+	 *  @param p priority
+	 */
 	void set_log_level(int c, int p);
 
 
-	/**
-	* Set the allowed logging classes.
-	* @param c All enabled logging classes anded together.
-	*/
+	/** Set the allowed logging classes.
+	 *
+	 *  @param c All enabled logging classes anded together.
+	 */
 	void set_log_classes(int c);
 
 
-	/**
-	* Get the logging classes currently enabled.
-	* @return All enabled debug logging anded together.
-	*/
+	/** Get the logging classes currently enabled.
+	 *  @return All enabled debug logging anded together.
+	 */
 	int get_log_classes ();
 
 
-	/**
-	* Set the logging priority.
-	* @param p The priority cutoff for logging messages.
-	*/
+	/** Set the logging priority.
+	 *
+	 *  @param p The priority cutoff for logging messages.
+	 */
 	void set_log_priority(int p);
 
 
-	/**
-	* Get the current logging priority.
-	* @return The priority cutoff for logging messages.
-	*/
+	/** Get the current logging priority.
+	 * 
+	 *  @return The priority cutoff for logging messages.
+	 */
 	int get_log_priority ();
 
 
-	/**
-	* Set the stream buffer
-	* @param sb stream buffer
-	*/
+	/** Set the stream buffer
+	 *
+	 *  @param sb stream buffer
+	 */
 	void set_sb( std::streambuf* sb );
 
 protected:
@@ -164,15 +164,14 @@ logbuf::set_log_state(int c, int p)
 	logging_enabled = ((c & logClass) != 0 && p >= logPriority);
 }
 
-///inline logbuf::int_type
+//inline logbuf::int_type
 inline int
 logbuf::overflow( int c )
 {
 	return logging_enabled ? sbuf->sputc(c) : (EOF == 0 ? 1: 0);
 }
 
-/**
- * @brief LogStream manipulator for setting the log level of a message.
+/** LogStream manipulator for setting the log level of a message.
  */
 struct loglevel
 {
@@ -183,14 +182,13 @@ struct loglevel
 	int logPriority;
 };
 
-/**
- * @brief A helper class for logstream construction.
+/** A helper class for logstream construction.
  *
- * A helper class that ensures a streambuf and ostream are constructed and
- * destroyed in the correct order.  The streambuf must be created before the
- * ostream but bases are constructed before members.  Thus, making this class
- * a private base of logstream, declared to the left of ostream, we ensure the
- * correct order of construction and destruction.
+ *  A helper class that ensures a streambuf and ostream are constructed and
+ *  destroyed in the correct order.  The streambuf must be created before the
+ *  ostream but bases are constructed before members.  Thus, making this class
+ *  a private base of logstream, declared to the left of ostream, we ensure the
+ *  correct order of construction and destruction.
  */
 struct SIMDATA_EXPORT logstream_base
 {
@@ -198,23 +196,22 @@ struct SIMDATA_EXPORT logstream_base
 	logbuf lbuf;
 };
  
-/**
- * @brief Class to manage the debug logging stream.
+/** Class to manage the debug logging stream.
  */
 class SIMDATA_EXPORT logstream : private logstream_base, public std::ostream
 {
 	std::ofstream *m_out;
 public:
-	/**
-	* The default is to send messages to cerr.
-	* @param out output stream
-	*/
-	logstream( std::ostream& out )
+	/** The default is to send messages to cerr.
+	 * 
+	 *  @param out_ output stream
+	 */
+	logstream(std::ostream& out_)
 		: logstream_base(),
 		ostream(&lbuf), // msvc6 accepts ostream(&lbuf) _using std::ostream_, but not std::ostream(&lbuf) ...
 		  m_out(NULL)
 	{ 
-		lbuf.set_sb(out.rdbuf());
+		lbuf.set_sb(out_.rdbuf());
 	}
 
 	~logstream() {
@@ -229,42 +226,41 @@ public:
 		}
 	}
 
-	/**
-	* Set the output stream
-	* @param out output stream
-	*/
-	void setOutput( std::ostream& out ) { 
+	/** Set the output stream
+	 *
+	 *  @param out_ output stream
+	 */
+	void setOutput(std::ostream& out_) { 
 		_close();
-		lbuf.set_sb( out.rdbuf() ); 
+		lbuf.set_sb(out_.rdbuf() ); 
 	}
 
-	/**
-	* Set the output stream
-	* @param fn output file path
-	*/
-	void setOutput( std::string const &fn ) { 
+	/** Set the output stream
+	 *
+	 *  @param fn output file path
+	 */
+	void setOutput(std::string const &fn) { 
 		_close();
 		m_out = new std::ofstream(fn.c_str());
 		lbuf.set_sb( m_out->rdbuf() ); 
 	}
 
-	/**
-	* Set the global log class and priority level.
-	* @param c debug class
-	* @param p priority
-	*/
+	/** Set the global log class and priority level.
+	 *
+	 *  @param c debug class
+	 *  @param p priority
+	 */
 	void setLogLevels(int c, int p);
 
-	/**
-	* Set the global log class.
-	* @param c debug class
-	*/
+	/** Set the global log class.
+	 *
+	 *  @param c debug class
+	 */
 	void setLogClasses(int c);
 
-	/**
-	* Output operator to capture the debug level and priority of a message.
-	* @param l log level
-	*/
+	/** Output operator to capture the debug level and priority of a message.
+	 *  @param l log level
+	 */
 	inline std::ostream& operator<< ( const loglevel& l );
 };
 

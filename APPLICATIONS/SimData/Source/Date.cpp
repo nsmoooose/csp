@@ -21,6 +21,15 @@
 
 #include <SimData/Date.h>
 
+#include <ctime>
+
+// for fast timing routines
+#ifdef _WIN32
+	#include <Windows.h>
+#else
+	#include <sys/time.h>
+	#include <unistd.h>
+#endif
 
 #ifdef _WIN32
 	#include <Windows.h>
@@ -95,9 +104,9 @@ NAMESPACE_SIMDATA
 	}
 
 	timing_t get_realtime() {
-		struct timezone tz;
+		struct timezone tz_;
 		struct timeval now;
-		gettimeofday(&now, &tz);
+		gettimeofday(&now, &tz_);
 		return (timing_t) ((double)now.tv_sec + (double)now.tv_usec*1.0e-6);
 	}
 
@@ -464,18 +473,20 @@ double SimDate::update() {
 	return dt;
 }
 
-void SimDate::pack(Packer &p) const {
-	p.pack(((float)getTime()));
-	p.pack((int)getJulian());
-}
-
-void SimDate::unpack(UnPacker &p) {
+void SimDate::serialize(Archive &archive) {
 	float time_;
 	int julian_;
-	p.unpack(time_);
-	p.unpack(julian_);
-	setTime(time_);
-	setJulian(julian_);
+	if (archive.isLoading()) {
+		archive(time_);
+		archive(julian_);
+		setTime(time_);
+		setJulian(julian_);
+	} else {
+		time_ = static_cast<float>(getTime());
+		julian_ = getJulian();
+		archive(time_);
+		archive(julian_);
+	}
 }
 
 void SimDate::parseXML(const char* cdata) {

@@ -30,7 +30,6 @@ MODULES = \
 	Matrix3 \
 	Noise \
 	Object \
-	Pack \
 	Path \
 	Quat \
 	Random \

@@ -20,7 +20,7 @@
 
 
 #include <SimData/Enum.h>
-#include <SimData/Pack.h>
+#include <SimData/Archive.h>
 
 
 NAMESPACE_SIMDATA
@@ -28,14 +28,15 @@ NAMESPACE_SIMDATA
 
 // class Enum
 
-void EnumLink::pack(Packer& p) const {
-	p.pack(getToken());
-}
-
-void EnumLink::unpack(UnPacker& p) {
+void EnumLink::serialize(Archive& archive) {
 	std::string token;
-	p.unpack(token);
-	set(token);
+	if (archive.isLoading()) {
+		archive(token);
+		set(token);
+	} else {
+		token = getToken();
+		archive(token);
+	}
 }
 
 void EnumLink::parseXML(const char* cdata) {

@@ -367,13 +367,9 @@ public:
 	 */
 	void parseXML(const char *);
 
-	/** Serialize to a data archive
+	/** Serialize to or from a data archive.
 	 */
-	virtual void pack(Packer&) const; 
-	
-	/** Deserialize from a data archive
-	 */
-	virtual void unpack(UnPacker&);
+	virtual void serialize(Archive&);
 
 protected:
 
@@ -594,13 +590,9 @@ public:
 	 */
 	void parseXML(const char *);
 
-	/** Serialize to a data archive
+	/** Serialize to or from a data archive.
 	 */
-	virtual void pack(Packer&) const; 
-	
-	/** Deserialize from a data archive
-	 */
-	virtual void unpack(UnPacker&);
+	virtual void serialize(Archive&);
 };
 
 
@@ -628,8 +620,8 @@ public:
 
 	/** Construct a UTM.
 	 */
-	UTM(double easting, double northing, char zone, char designator, double alt=0.0) {
-		set(easting, northing, zone, designator, alt);
+	UTM(double easting_, double northing_, char zone_, char designator_, double alt=0.0) {
+		set(easting_, northing_, zone_, designator_, alt);
 	}
 
 	/** Convert from LLA to UTM
@@ -652,29 +644,30 @@ public:
 
 	/** Set the current position from UTM coordinates.
 	 *
-	 *  @param easting UTM easting
-	 *  @param northing UTM northing
-	 *  @param zone UTM zone
-	 *  @param designator UTM zone letter
+	 *  @param easting_ UTM easting
+	 *  @param northing_ UTM northing
+	 *  @param zone_ UTM zone
+	 *  @param designator_ UTM zone letter
 	 *  @param alt altitude above the reference ellipse (in meters)
 	 */
-	void set(double easting, double northing, char zone, char designator, double alt=0.0) {
-		_E = easting;
-		_N = northing;
-		_zone = zone;
-		_designator = designator;
+	void set(double easting_, double northing_, 
+	         char zone_, char designator_, double alt=0.0) {
+		_E = easting_;
+		_N = northing_;
+		_zone = zone_;
+		_designator = designator_;
 		_alt = alt;
 		// XXX check values
 	}
 	
 	/** Set the current position from UTM coordinates.
 	 *
-	 *  @param easting UTM easting
-	 *  @param northing UTM northing
-	 *  @param zone UTM zone (e.g. "10T")
+	 *  @param easting_ UTM easting
+	 *  @param northing_ UTM northing
+	 *  @param zone_ UTM zone (e.g. "10T")
 	 *  @param alt altitude above the reference ellipse (in meters)
 	 */
-	void set(double easting, double northing, const char *zone, double alt = 0.0);
+	void set(double easting_, double northing_, const char *zone_, double alt = 0.0);
 
 	/** Get the easting coordinate.
 	 */
@@ -717,13 +710,9 @@ public:
 	 */
 	bool valid() const;
 
-	/** Serialize to a data archive
+	/** Serialize to or from a data archive.
 	 */
-	virtual void pack(Packer&) const; 
-	
-	/** Deserialize from a data archive
-	 */
-	virtual void unpack(UnPacker&);
+	virtual void serialize(Archive&);
 };
 
 /** Earth-centered, earth-fixed coordinates.
@@ -743,7 +732,7 @@ public:
 
 	/** Construct a new ECEF
 	 */
-	ECEF(double x, double y, double z): Vector3(x, y, z) {}
+	ECEF(double x_, double y_, double z_): Vector3(x_, y_, z_) {}
 
 	/** Copy constructor to convert from UTM
 	 */

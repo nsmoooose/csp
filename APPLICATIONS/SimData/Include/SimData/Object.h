@@ -65,20 +65,46 @@ class LinkBase;
 	} \
 	virtual SIMDATA(hasht) getClassHash() const { return _getClassHash(); }
 
+#define __SIMDATA_ISSTATIC(static_) \
+	static bool _isClassStatic() { return static_; } \
+	static bool isClassStatic() { return _isClassStatic(); }
+
 #define __SIMDATA_CLASSDEF(a, major, minor) \
 	__SIMDATA_GETCLASSNAME(a) \
 	__SIMDATA_GETCLASSHASH(a, major) \
-	__SIMDATA_GETCLASSVERSION(major, minor)
+	__SIMDATA_GETCLASSVERSION(major, minor) \
 
 #define __SIMDATA_NEW(a) virtual SIMDATA(Object)* _new() const { return new a(); }
 
-// Macro to add standard boilerplate code to object classes.  The
-// first parameter is the object class, while the second and third
-// are major and minor version numbers.  The class name and version
-// numbers are used to test binary compatibility during object 
-// deserialization.
+/** Declare a SimData Object subclass
+ *
+ *  This macro adds standard boilerplate code to object classes.  The
+ *  first parameter is the object class, while the second and third
+ *  are major and minor version numbers.  The class name and version
+ *  numbers are used to test binary compatibility during object 
+ *  deserialization.  This version of the macro declares a non-static
+ *  object, meaning that new instances will be created each time a
+ *  particular object of this class is loaded from an archive.  To 
+ *  share one instance, see SIMDATA_STATIC_OBJECT.
+ */
 #define SIMDATA_OBJECT(a, major, minor)	\
 	__SIMDATA_CLASSDEF(a, major, minor) \
+	__SIMDATA_ISSTATIC(false) \
+	__SIMDATA_NEW(a)
+
+/** Declare a SimData Object static subclass.
+ *
+ *  This macro is similar to SIMDATA_OBJECT, but declares this object
+ *  class to be "static".  Static object classes are cached by the
+ *  archive loader, so that at most one instance of the object exists.
+ *  Multiple attempts to load a static object from an archive will
+ *  result in references pointing to a shared object instance.  This
+ *  is particularly useful for object classes that do not contain
+ *  dynamic data.
+ */
+#define SIMDATA_STATIC_OBJECT(a, major, minor)	\
+	__SIMDATA_CLASSDEF(a, major, minor) \
+	__SIMDATA_ISSTATIC(true) \
 	__SIMDATA_NEW(a)
 	
 // Macro to automatically register an object class with the 
@@ -114,25 +140,24 @@ NAMESPACE_SIMDATA
  *  @author Mark Rose <mrose@stm.lbl.gov>
  *  @ingroup BaseTypes
  */
-class SIMDATA_EXPORT Object: public Referenced, public BaseType {
+class SIMDATA_EXPORT Object: public virtual Referenced, public BaseType {
 	friend class DataArchive;
 	friend class LinkBase;
 
 private:
 	// Objects should never be copied
-	Object(Object const &o); //: Referenced(o), BaseType(o) { assert(0); }
-	Object const &operator=(Object const &); // { assert(0); return *this; }
+	Object(Object const &o);
+	Object const &operator=(Object const &);
 
 	void _setPath(hasht);
 	
-	bool _static;
 	hasht _path;
 
 protected:
 	/** Initialize an object after deserialization.
 	 *
 	 *  Called after the newly created object has been
-	 *  deserialized by unpack().
+	 *  deserialized.
 	 *
 	 *  Extend this method to do any initial processing 
 	 *  of the external data.
@@ -155,29 +180,15 @@ public:
 
 	__SIMDATA_CLASSDEF(Object, 0, 0)
 		
-	/** Serialize to a data archive.
+	/** Serialize an object to or from a data archive 
 	 *
-	 *  Extend this method to serialize member variables specified
-	 *  by external data.  Be sure to call the base class method
-	 *  first.  
-	 *
-	 *  <em>Note that the pack() method must be the exact inverse 
-	 *  of the unpack() method.</em>
+	 *  Extend this method to serialize member variables to and
+	 *  from data archives.  Call the base class method first, then 
+	 *  apply the archive functor to each archived variable.
+	 *  Any additional processing of the data following retrieval
+	 *  should be done in the postCreate() method.
 	 */
-	virtual void pack(Packer& p) const;
-
-	/** Deserialize from a data archive.
-	 *
-	 *  Extend this method to deserialize member variables stored
-	 *  by pack().  Call the base class method first, then unpack
-	 *  each variable in the exact same order as in the pack()
-	 *  method.  Any additional processing of the data should be
-	 *  done in postCreate() method.
-	 *
-	 *  <em>Note that the unpack() method must be the exact inverse 
-	 *  of the pack() method.</em>
-	 */
-	virtual void unpack(UnPacker& p);
+	virtual void serialize(Archive& archive);
 
 	/** Get a string representation of the object.
 	 *
@@ -207,22 +218,6 @@ public:
 	 */
 	static hasht _getHash(const char* c);
 
-	/** Set this instance as static or non-static. 
-	 *
-	 *  Static objects are cached by the DataArchive class so that
-	 *  only one instance is created.  
-	 *
-	 *  You should never call this method directly; it is public 
-	 *  only so that SWIG can wrap it.  To make an Object instance
-	 *  static, set the @c static attribute of the @c <Object> tag to 
-	 *  @c "1" in the source data xml file 
-	 *  (e.g. <tt><Object class="MyClass" static="1"> ...</tt>).
-	 */
-	void setStatic(bool);
-
-	/** Test whether this object is static.
-	 */
-	bool isStatic() const;
 };
 
 

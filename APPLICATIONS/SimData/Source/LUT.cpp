@@ -226,7 +226,7 @@ void LUT<N,X>::interpolateLinear(int n, TableVector *_table) {
 	X dx = (x1 - x0) / (n-1);
 	typename DataVector::iterator c1 = m_Data->begin();
 	typename DataVector::iterator c0 = c1++;
-	X s = 1.0 / (c1->first - c0->first);
+	X s = static_cast<X>(1.0) / (c1->first - c0->first);
 	for (i = 0; i < n; ++i) {
 		X x = x0 + i * dx;
 		while (x > c1->first && c1+1 != m_Data->end()) {
@@ -234,7 +234,7 @@ void LUT<N,X>::interpolateLinear(int n, TableVector *_table) {
 			if (c1->first <= c0->first) {
 				throwBreakpointOrder();
 			}
-			s = 1.0 / (c1->first - c0->first);
+			s = static_cast<X>(1.0) / (c1->first - c0->first);
 		}
 		X f = (x - c0->first) * s;
 		c0->second.__interpolate(f, c1->second, (*_table)[i]);
@@ -407,7 +407,7 @@ X LUT<N,X>::getValue(Vec const &v) const {
 	int i;
 	X f;
 	find(x, i, f);
-	X value = table(i).getValue(v.rest()) * (1.0-f) + table(i+1).getValue(v.rest()) * f;
+	X value = table(i).getValue(v.rest()) * (static_cast<X>(1.0)-f) + table(i+1).getValue(v.rest()) * f;
 	__LUTLOG("getValue[N]: " << x << " " << i << " " << f << " = " << value);
 	return value;
 }
@@ -434,45 +434,43 @@ void LUT<N,X>::load(std::vector<X> const &values, std::vector< std::vector<X> > 
 }
 
 /**
- * Serialize an object to a data archive.
+ * Serialize an object to or from a data archive.
  */
 template <int N, class X>
-void LUT<N,X>::pack(Packer& p) const {
-	checkInterpolated();
-	int n = tableSize();
-	p.pack(int(N));
-	p.pack(m_X0);
-	p.pack(m_X1);
-	p.pack(n);
-	for (int i = 0; i < n; i++) {
-		table(i).pack(p);
+void LUT<N,X>::serialize(Archive &archive)  {
+	if (archive.isLoading()) {
+		checkNotInterpolated();
+		X x0, x1;
+		int dim, n;
+		archive(dim);
+		if (dim != N) {
+			std::stringstream msg;
+			msg << "LUT<" << N << ">::serialize table of dimension " << dim;
+			throw InterpolationUnpackMismatch(msg.str());
+		}
+		archive(x0);
+		archive(x1);
+		archive(n);
+		TableVector *_table = new TableVector(n);
+		for (int i = 0; i < n; i++) {
+			archive((*_table)[i]);
+		}
+		substitute(_table);
+		InterpolationType<X>::postInterpolation(x0, x1, n-1);
+	} else {
+		checkInterpolated();
+		int n = tableSize();
+		int dim = N;
+		archive(dim);
+		archive(m_X0);
+		archive(m_X1);
+		archive(n);
+		for (int i = 0; i < n; ++i) {
+			table(i).serialize(archive);
+		}
 	}
 }
 
-/**
- * Deserialize an object from a data archive.
- */
-template <int N, class X>
-void LUT<N,X>::unpack(UnPacker& p) {
-	checkNotInterpolated();
-	X x0, x1;
-	int dim, n;
-	p.unpack(dim);
-	if (dim != N) {
-		char msg[128];
-		sprintf(msg, "LUT<%d>::unpack table of dimension %d", N, dim);
-		throw InterpolationUnpackMismatch(msg);
-	}
-	p.unpack(x0);
-	p.unpack(x1);
-	p.unpack(n);
-	TableVector *_table = new TableVector(n);
-	for (int i = 0; i < n; i++) {
-		p.unpack((*_table)[i]);
-	}
-	substitute(_table);
-	InterpolationType<X>::postInterpolation(x0, x1, n-1);
-}
 
 template <int N, class X>
 std::string LUT<N,X>::asString() const {
@@ -516,7 +514,7 @@ void LUT<1,X>::interpolateLinear(int n, TableVector *_table) {
 	X dx = (x1 - x0) / (n-1);
 	typename DataVector::iterator c1 = m_Data->begin();
 	typename DataVector::iterator c0 = c1++;
-	X s = 1.0 / (c1->first - c0->first);
+	X s = static_cast<X>(1.0) / (c1->first - c0->first);
 	for (int i = 0; i < n; ++i) {
 		X x = x0 + i * dx;
 		while (x > c1->first && c1+1 != m_Data->end()) {
@@ -524,10 +522,10 @@ void LUT<1,X>::interpolateLinear(int n, TableVector *_table) {
 			if (c1->first <= c0->first) {
 				throwBreakpointOrder();
 			}
-			s = 1.0 / (c1->first - c0->first);
+			s = static_cast<X>(1.0) / (c1->first - c0->first);
 		}
 		X f = (x - c0->first) * s;
-		(*_table)[i] = (1.0 - f) * c0->second + f * c1->second;
+		(*_table)[i] = (static_cast<X>(1.0) - f) * c0->second + f * c1->second;
 	}
 }
 
@@ -549,8 +547,8 @@ void LUT<1,X>::interpolateSpline(int n, TableVector *_table) {
 	X xb = data(1).first;
 	X yb = data(1).second;
 	X h = xb - xa;
-	X s = 1.0 / h;
-	X d2s = h * h * 0.166666667;
+	X s = static_cast<X>(1.0) / h;
+	X d2s = h * h * static_cast<X>(0.166666667);
 	for (int i = 0; i < n; ++i) {
 		X x = x0 + i * dx;
 		while (x > xb && index < n0-1) {
@@ -560,15 +558,15 @@ void LUT<1,X>::interpolateSpline(int n, TableVector *_table) {
 			ya = yb;
 			yb = data(index).second;
 			h = xb - xa;
-			s = 1.0 / h;
-			d2s = h * h * 0.166666667;
+			s = static_cast<X>(1.0) / h;
+			d2s = h * h * static_cast<X>(0.166666667);
 		}
 		X f = (x - xa) * s;
-		X g = 1.0 - f;
+		X g = static_cast<X>(1.0) - f;
 		(*_table)[i] = g * ya +
 			       f * yb +
-			       ((g*g-1.0)*g*uv[index-1] +
-				(f*f-1.0)*f*uv[index]) * d2s;
+			       ((g*g-static_cast<X>(1.0))*g*uv[index-1] +
+				(f*f-static_cast<X>(1.0))*f*uv[index]) * d2s;
 	}
 }
 
@@ -605,8 +603,8 @@ void LUT<1,X>::__splineInterpolate(
 		out.data(i).first = y0.data(i).first;
 		out.data(i).second = y * y0.data(i).second + 
 				     x * y1.data(i).second +
-				     ((y * y - 1.0) * y * c0.curve(i) +
-				      (x * x - 1.0) * x * c1.curve(i)) * d2s;
+				     ((y * y - static_cast<X>(1.0)) * y * c0.curve(i) +
+				      (x * x - static_cast<X>(1.0)) * x * c1.curve(i)) * d2s;
 	}
 }
 
@@ -669,7 +667,7 @@ X LUT<1,X>::getValue(Vec const &v) const {
 	int i;
 	X f;
 	find(x, i, f);
-	X value = table(i) * (1.0-f) + table(i+1) * f;
+	X value = table(i) * (static_cast<X>(1.0)-f) + table(i+1) * f;
 	__LUTLOG("getValue[1]: " << x << " " << i << " " << f << " = " << value);
 	return value;
 }
@@ -697,44 +695,40 @@ void LUT<1,X>::load(std::vector<X> const &values, std::vector< std::vector<X> > 
 }
 
 /**
- * Serialize an object to a data archive.
+ * Serialize an object to or from a data archive.
  */
 template <typename X>
-void LUT<1,X>::pack(Packer& p) const {
-	checkInterpolated();
-	int n = tableSize();
-	p.pack(int(1));
-	p.pack(m_X0);
-	p.pack(m_X1);
-	p.pack(n);
-	for (int i = 0; i < n; i++) {
-		p.pack(table(i));
+void LUT<1,X>::serialize(Archive &archive) {
+	int dim = 1;
+	archive(dim);
+	if (archive.isLoading()) {
+		checkNotInterpolated();
+		X x0, x1;
+		int n;
+		if (dim != 1) {
+			std::stringstream msg;
+			msg << "LUT<1>::serialize table of dimension " << dim;
+			throw InterpolationUnpackMismatch(msg.str());
+		}
+		archive(x0);
+		archive(x1);
+		archive(n);
+		TableVector *_table = new TableVector(n);
+		for (int i = 0; i < n; i++) {
+			archive((*_table)[i]);
+		}
+		substitute(_table);
+		InterpolationType<X>::postInterpolation(x0, x1, n-1);
+	} else {
+		checkInterpolated();
+		int n = tableSize();
+		archive(m_X0);
+		archive(m_X1);
+		archive(n);
+		for (int i = 0; i < n; i++) {
+			archive(table(i));
+		}
 	}
-}
-
-/**
- * Deserialize an object from a data archive.
- */
-template <typename X>
-void LUT<1,X>::unpack(UnPacker& p) {
-	checkNotInterpolated();
-	X x0, x1;
-	int dim, n;
-	p.unpack(dim);
-	if (dim != 1) {
-		char msg[128];
-		sprintf(msg, "LUT<1>::unpack table of dimension %d", dim);
-		throw InterpolationUnpackMismatch(msg);
-	}
-	p.unpack(x0);
-	p.unpack(x1);
-	p.unpack(n);
-	TableVector *_table = new TableVector(n);
-	for (int i = 0; i < n; i++) {
-		p.unpack((*_table)[i]);
-	}
-	substitute(_table);
-	InterpolationType<X>::postInterpolation(x0, x1, n-1);
 }
 
 /**

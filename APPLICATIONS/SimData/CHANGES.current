@@ -1,3 +1,143 @@
-Version 0.3.6; branch b0_3 (in progress)
-========================================
+Version 0.4.0 (in progress)
+===========================
+2003-10-19: onsight
+  * Merged b0_4_0 into the trunk.  The old head was tagged as r0_3_5,
+    then branched to b0_3.
+
+2003-10-19: onsight
+  * Fixed error message in data compiler for the deprecated <Table> tag.
+
+2003-10-13: onsight
+  * Changed the 'static' property of Objects from an object property to a
+    class property.  The use of the 'static' attribute in Object xml tags 
+    is now deprecated.  To specify a static Object class, use the
+    SIMDATA_STATIC_OBJECT macro instead of SIMDATA_OBJECT.
+
+  * Added '--force' option to Compile.py, allowing warnings to be ignored.
+
+  * Added a deprecation warning to 'static' attribute of the Object tag.
+
+  * Added a more informative message in Compile.py if there are warnings
+    that exceed the current warning level, explaining how to use the
+    '--warn=X' option.
+
+  * Changed the format of the CHANGES.current file.  Main points are now
+    prefixed by a '*', and subpoints by a '+'.  Indent is now 2 spaces,
+    and the max line width is 78.  A syntax highlighting file for vim to
+    support this format can be downloaded from:
+           http://csp.sourceforge.net/downloads/CHANGES.vim
+
+  * Added deprecation warnings for <Curve> and <Table> xml tags.
+
+  * Improved and added some doxygen comments.
+
+  * Made InterfaceRegistry::addInterface private.
+   
+  * Made Referenced copy and assignment operators private (and 
+    unimplemented).
+
+==> NOTE all data archives must be fully rebuilt to use these changes.
+
+2003-10-09: onsight
+  * Added simdata:: prefix to Ref<N> in class FindVisitor and FindAllVisitor
+    (Composite.h) to fix msvc namespace resolution problems.
+
+  * Renamed 'interface' variables in InterfaceRegistry to 'objectinterface'
+    to avoid a msvc reserved keyword.
+
+2003-09-27: onsight
+  * Added the VisualStudio2003 directory from the main trunk, along with
+    Stormbringer's patches to the project file.
+
+2003-09-17: onsight
+  * Changed Real::asString() to use std::stringstream instead of snprintf.
+
+  * Changed DataArchive to use std::stringstream for an error message.
+
+  * Fixed including std headers into simdata namespace in Date.cpp.
+
+  * Fixed numerous double->float conversions (mostly in LUT.cpp).
+
+  * Fixed numerous shadowed variables/methods in Quat, Matrix, Vector, UTM, 
+    GeoPos, and others.
+
+  * Added additional warning flags for g++.
+
+==> NOTE changes to the ObjectInterface templates trigger a regression in 
+    swig 1.3.19. Use either 1.3.16 or the most recent cvs (pre-1.3.20).
+
+==> NOTE that Quaternion.h/cpp are now Quat.h/cpp
+
+2003-09-07: onsight
+  * Fixed signed/unsigned comparisons in Composite.h
+
+2003-09-05: onsight
+  * Added Composite.h, which contains template classes for implementing 
+    the Composite/Visitor design pattern.
+
+  * Improved doxygen comments, small bug fixes, added isContainer and 
+    canBeAdded properties, adding logging of warning messages.
+
+2003-09-04: onsight
+  * Changed Referenced from a nonvirtual to a virtual base class of Object.
+
+2003-08-25: onsight
+  * Refactored InterfaceProxy, moving most of the functionality into the 
+    InterfaceProxyBase class.  The base class now maintains a list of 
+    ObjectInterface instances that is used to access externalized member 
+    variables.  MemberAccessor classes are now fully encapsulated within 
+    the templated ObjectInterface classes, so that the ObjectInterfaceBase
+    class can be extended in Python without any of the template meta-
+    programming trickery that C++ demands.  
+
+  * ObjectInterfaceBase now also keeps track of the object interface 
+    hierarchy (both by class name and hash).
+
+  * Access to the ObjectInterface corresponding to a particular member 
+    variable name is now via a std::map lookup, which should be faster than 
+    the previous implementation involving a linear search via base class 
+    method calls.
+
+2003-08-21: onsight
+  * Convertied from pack/unpack to serialize for BaseType serialization:
+    + Removed Pack.i, Pack.h, Pack.cpp
+    + Added Archive.h, Archive.i
+    + Appropriate changes to  setup.py and Source/Makefile
+
+  * Object classes should now only implement serialize(Archive&) to save 
+    and load themselves from data archives.  The Archive parameter is a 
+    functor, which handles both saving and loading transparently.  So 
+    instead of one list of Packer.pack(...) methods, and another identical 
+    list of UnPacker.unpack(..) methods, you now just make one list of
+    archive(..) calls:
+   
+     void MyClass::serialize(Archive& archive) {
+        MyBaseClass::serialize(archive);
+		 archive(member_var1);
+		 archive(member_var2);
+		 ...
+     }
+
+    See the basic data type implementations for additional examples.
+    Note however that the basic data types generally have more complicated 
+    serialization routines than most object classes will require.  Many 
+    basic data types test whether the archive is loading or saving and 
+    respond differently depending on the situation.  For object classes 
+    this should almost always be unnecessary.
+   
+  * Added equality and inequality operators to several base types.
+
+  * Modified the Python serialization interface (still subject to further 
+    changes).
+
+  * Added a unit testing framework based on Python's unittest module:
+    + runtests.py runs all the tests (not many so far)
+    + SimData/Tests contains the unit test modules
+    + SimData/Tests/ArchiveTests tests storage and retrieval
+      of many basic data types (not complete yet)
+
+2003-08-20: onsight
+  * Tagged r0_3_4, version 0_3_5 started.
+  * Version 0.4.0 branch started.
+>>>>>>> 1.75.2.12
 

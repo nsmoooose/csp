@@ -20,6 +20,7 @@
 
 /**
  * @file Enum.h
+ * @brief Enumeration classes for C++ and Python.
  * @author Mark Rose <mrose@stm.lbl.gov>
  *
  * Enumeration classes for C++ and Python.
@@ -521,11 +522,8 @@ public:
 		_idx = __E.getIndexByToken(token); 
 	}
 
-	/// Serialize to a data archive.
-	virtual void pack(Packer&) const;
-	
-	/// Deserialize from a data archive.
-	virtual void unpack(UnPacker&);
+	/// Serialize to or from a data archive.
+	virtual void serialize(Archive&);
 
 	/// For internal use by the XML parser.
 	virtual void parseXML(const char* cdata);

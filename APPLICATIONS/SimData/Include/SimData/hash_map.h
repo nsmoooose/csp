@@ -27,8 +27,8 @@
 #ifndef __SIMDATA_HASH_MAP_H__
 #define __SIMDATA_HASH_MAP_H__
 
-#ifdef __GNUC__
-  #if __GNUC__ == 3
+#if defined(__GNUC__) || defined(__INTEL_COMPILER)
+  #if __GNUC__ >= 3
     #include <ext/hash_map>
     #if __GNUC_MINOR__ > 0
 	#define HASH_MAP __gnu_cxx::hash_map

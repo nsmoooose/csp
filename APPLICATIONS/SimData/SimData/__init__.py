@@ -19,10 +19,14 @@
 
 
 ## @file SimData.py
-## @auther Mark Rose <mrose@stm.lbl.gov>
+## @author Mark Rose <mrose@stm.lbl.gov>
 ##
 ## @module SimData
 ## 
+## @note The procedure for declaring and registering XML interfaces
+## is under revision, and the documentation here is likely to be
+## completely out of date.
+##
 ## Provides minimal glue code for interfacing between C++ and Python.   
 ## Most of the hard work is done by SWIG.  Python Objects must derive 
 ## from SimData.Object and be registered with the ObjectRegistry by 
@@ -47,23 +51,7 @@ import exceptions, types
 version = cSimData.getVersion()
 
 
-# FIXME is there a more robust means of getting the class name as a 
-# string?  str(class) changed from python2.1 to 2.2 for new-style 
-# classes...
-def getClassName(_class):
-	rep = str(_class)
-	if rep.startswith('<class '):
-		# new-style:
-		fullname = rep.split()[1][:-2] # extract name from <class 'name'>
-	else:
-		# old-style:
-		fullname = rep
-	parts = fullname.split('.')
-	return parts[-1]
-
-
 ## The C++ InterfaceRegistry.
-#g_InterfaceRegistry = cSimData.cvar.g_InterfaceRegistry
 g_InterfaceRegistry = cSimData.InterfaceRegistry.getInterfaceRegistry()
 
 hash_string = cSimData.hash_string
@@ -75,7 +63,7 @@ hash_string = cSimData.hash_string
 ## there is no need for templates in python since we can just 
 ## store the class directly.
 
-class PyInterfaceProxy(cSimData.InterfaceProxy):
+class _____PyInterfaceProxy(cSimData.InterfaceProxy):
 	def __init__(self, classname, _class, _baseinterface, interface):
 		cSimData.InterfaceProxy.__init__(self, classname, _class._hash)
 		self._classname = classname
@@ -195,21 +183,21 @@ class PyInterfaceProxy(cSimData.InterfaceProxy):
 ## with previously archived versions of the class, forcing recompilation 
 ## of the archive.
 
-class XML:
+class _____XML:
 	def __init__(self, name, variable, required):
 		self.name = name
 		self.variable = variable
 		self.required = required
 
 
-def XML_INTERFACE(_class, major, minor, *args):
+def _____XML_INTERFACE(_class, major, minor, *args):
 
 	_baseclass = None
 	_baseinterface = None
 	if len(args):
 		if isinstance(args[0], types.ClassType):
 			_baseclass, args = args[0], args[1:]
-			_baseclass = getClassName(_baseclass)
+			_baseclass = _baseclass.__name__
 		elif isinstance(args[0], types.StringType):
 			_baseclass, args = args[0], args[1:]
 		if _baseclass is not None:
@@ -223,6 +211,179 @@ def XML_INTERFACE(_class, major, minor, *args):
 	_class.getClassName = lambda x: x.__class__._name
 	_class.getClassHash = lambda x: x.__class__._hash
 	proxy = PyInterfaceProxy(classname, _class, _baseinterface, args).__disown__()
+
+
+#############################################################################
+# NEW STYLE INTERFACE
+#############################################################################
+
+# class SIMDATA_XML:
+# 	typeString = {
+# 		int: "type::int32",
+# 		float: "type::float",
+# 		str: "type::string"
+# 	}
+# 	def __init__(self, name, type, var, req):
+# 		self.name = name
+# 		self.type = type
+# 		self.var = var
+# 		self.req = req
+# 		if issubclass(type, BaseType):
+# 			self.typeString = type().typeString()
+# 		else:
+# 			self.typeString = SIMDATA_XML.typeString[type]
+# 
+# class ObjectInterface(cSimData.ObjectInterfaceBase):
+# 	"""@brief Interface for simdata::Object derived classes implemented in 
+# 	Python.
+# 
+# 	This is an internal class that provides an interfacing for accessing
+# 	and introspecting object member variables that can be initialized
+# 	from external (XML) data sources.  The interface is equivalent to
+# 	the C++ ObjectInterface class, but the implementation is entirely
+# 	Python specific.
+# 	"""
+# 
+# 	def __init__(self):
+# 		"""Default constructor."""
+# 		self.__accessors = {}
+# 
+# 	def _def(self, d):
+# 		"""Define a new member variable accessor.
+# 
+# 		This is an internal method used by the SIMDATA_XML function.  Do
+# 		not call it directly.
+# 		"""
+# 		self.__accessors[d.name] = d
+# 
+# 	def variableExists(self, name):
+# 		"""Test if the interface defines a particular  member variable.
+# 
+# 		@param name The external name of the member variable to test.
+# 		"""
+# 		return self.__accessors.has_key(name)
+# 
+# 	def variableRequired(self, name):
+# 		"""Test if a particular member variable must be defined in external
+# 		data sources.
+# 
+# 		Raises IndexError if the variable does not exist.
+# 
+# 		@param name The external name of the member variable to test.
+# 		"""
+# 		return self.__accessors[name].req
+# 
+# 	def set(self, obj, name, value):
+# 		"""Set a member variable of a given object.
+# 
+# 		Assigns a new value to a particular member varible of the given
+# 		object.  The variable need not be previously defined, although
+# 		it is strongly recommended that all externally accessible member
+# 		variables be initialized during object construction.  Future
+# 		implementations may test for such initialization and raise
+# 		exceptions when assigning to uninitialized members.  Assigned
+# 		values are tested for type compatibility.  Type mismatches
+# 		currently result in an assertion exception, although a more
+# 		specific exception will be used eventually.
+# 
+# 		@param obj The object to modify.
+# 		@param name The external name of the member variable to set.
+# 		@param value The value to assign.
+# 		"""
+# 		a = self.__accessors[name]
+# 		assert(isinstance(value, a.type))
+# 		setattr(obj, a.var, value)
+# 
+# 	def get(self, obj, name):
+# 		"""Get the value of a member variable of a given object.
+# 
+# 		Returns the value of a particular member variable of the
+# 		given object.  Calling this method with unknown or uninitialized 
+# 		members will raise index and attribute exceptions, respectively.
+# 
+# 		@param obj The object to access.
+# 		@param name The external name of the member variable to get.
+# 		@returns The value of the member variable.
+# 		"""
+# 		a = self.__accessors[name]
+# 		return getattr(obj, a.var)
+# 
+# 	def push_back(self, obj, name, value):
+# 		"""Append a value to a member variable list of a given object.
+# 		"""
+# 		a = self.__accessors[name]
+# 		getattr(obj, a.var).append(value)
+# 
+# 	def clear(self, obj, name):
+# 		"""Clear a member variable list of a given object.
+# 		"""
+# 		a = self.__accessors[name]
+# 		assert(isinstance([], a.type))
+# 		setattr(obj, a.var, [])
+# 
+# 	def getVariables(self):
+# 		"""Get a list of external names of all accessible member variables."""
+# 		return self.__accessors.keys()
+# 
+# 	def variableType(self, name):
+# 		"""Get the type string of a particular member variable.
+# 
+# 		@param name The external name of the member variable.
+# 		"""
+# 		a = self.__accessors[name]
+# 		return a.typeString
+# 
+# 
+# def __IF_init(self, IF):
+# 	IF.__super.__init__(self, IF.__super)
+# 	IF.__obi = ObjectInterface()
+# 	map(IF.__obi._def, IF.__defs)
+# 	self.addInterface(IF.__obi)
+# 	print "Interface", IF.__classname, "registered."
+# 
+# def __IF_getClassName(self):
+# 	return self.__classname
+# 
+# def __IF_getClassHash(self):
+# 	return self.__classhash
+# 
+# def __IF_createObject(self):
+# 	return self.__class()
+# 
+# __IF_methods = {
+# 	'__init__': __IF_init,
+# 	'getClassName': __IF_getClassName,
+# 	'getClassHash': __IF_getClassHash,
+# 	'createObject': __IF_createObject,
+# }
+# 
+# 
+# def SIMDATA_INTERFACE(cl, v, su, defs, cln = None, abstract=0):
+# 	if su is None:
+# 		baselist = (InterfaceProxy,)
+# 		suif = InterfaceProxy
+# 	else:
+# 		baselist = (su.IF,)
+# 		suif = su.IF
+# 	if cln is None: cln = cl.__name__
+# 	iname = "%s__INTERFACE" % cln
+# 	methods = __IF_methods.copy()
+# 	i = type(iname, baselist, methods)
+# 	i.__version = v
+# 	i.__super = suif
+# 	i.__class = cl
+# 	i.__classname = cln
+# 	i.__classhash = "%s:%d" % (cln, int(v))
+# 	i.__defs = defs
+# 	i.__abstract = abstract
+# 	if not abstract:
+# 		i.__singleton = i(i)
+# 	else:
+# 		i.__singleton = None
+# 	cl.IF = i
+# 
+
+
 
 
 # Export all cSimData classes

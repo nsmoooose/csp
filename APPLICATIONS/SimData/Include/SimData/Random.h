@@ -125,15 +125,14 @@ class SIMDATA_EXPORT MT19937 {
 		return (((y)&0x1) ? 0x9908b0dfUL : 0);
 	}
 
-	/**
-	 * Internal call to update the generator.
+	/** Internal call to update the generator.
 	 */
 	void update();
 	
-	/**
-	 * Internal generator, returning a random integer in the
-	 * range 0 to 2**32-1.  After every N (624) calls the 
-	 * generator must be updated.
+	/** Internal generator.
+	 *
+	 *  This method returns a random integer in the range [0,2**32).  
+	 *  After every N (624) calls the generator must be updated.
 	 */
 	inline unsigned long generate() {
 		if (_mti >= N) update(); // generate N words at one time
@@ -147,74 +146,67 @@ class SIMDATA_EXPORT MT19937 {
 	}
 
 public:
-	/**
-	 * @brief Structure for saving and restoring the internal state of the generator.
+	/** Structure for saving and restoring the internal state of the generator.
 	 */
 	struct State {
 		unsigned long _mt[N];
 		int _mti;
 	};
 
-	/**
-	 * Get the name of this generator
+	/** Get the name of this generator.
 	 */
 	inline std::string getName() const { return "Mersenne Twister (MT19937)"; }
 
-	/**
-	 * Construct a new generator with seed 0
+	/** Construct a new generator with seed 0.
 	 */
 	MT19937() { setSeed(0); }
 
-	/**
-	 * Return a random integer in the range lower to upper-1 (inclusive)
-	 * @param lower lower bound (inclusive)
-	 * @param upper upper bound (exclusive)
-	 * @returns a random integer int the range lower to upper-1 (inclusive)
+	/** Return a random integer in the range lower to upper-1 (inclusive).
+	 *
+	 *  @param lower lower bound (inclusive)
+	 *  @param upper upper bound (exclusive)
+	 *  @returns a random integer int the range lower to upper-1 (inclusive)
 	 */
 	template <typename T>
 	inline T uniformInt(T lower, T upper) {
 		return lower + static_cast<T>(unit() * (upper-lower));
 	}
 
-	/**
-	 * Equivalent to uniformInt(0, upper)
+	/** Equivalent to uniformInt(0, upper)
 	 */
 	template <typename T>
 	inline T uniformInt(T upper) {
 		return uniformInt(static_cast<T>(0), upper);
 	}
 
-	/**
-	 * Return a random floating point value in the range [0, 1)
+	/** Return a random floating point value in the range [0, 1)
 	 */ 
 	inline double unit() {
   		return generate() / 4294967296.0 ;
 	};
 
-	/**
-	 * Return a random floating point value in the range [lower, upper)
+	/** Return a random floating point value in the range [lower, upper)
 	 */
 	inline double uniform(double lower, double upper) {
 		return lower + unit() * (upper-lower);
 	}
 
-	/**
-	 * Reseed the random number generator.
+	/** Reseed the random number generator.
 	 *
-	 * @param s the new seed.
+	 *  @param s the new seed.
 	 */
 	void setSeed(unsigned long int s);
 
-	/**
-	 * Save the current state of the generator.  The state can be
-	 * restored at any time with setState().
+	/** Save the current state of the generator.  
+	 *
+	 *  The state can be restored at any time with setState().
 	 */
 	void getState(State &state) const;
 
-	/**
-	 * Restore the generator to a specific state saved with getState().
-	 * The subsequent random numbers will be identical to the sequence
-	 * following the corresponding getState() call.
+	/** Restore the generator to a specific state saved with getState().
+	 *
+	 *  The subsequent random numbers will be identical to the sequence
+	 *  following the corresponding getState() call.
 	 */
 	void setState(State const &state);
 };
@@ -308,9 +300,8 @@ class SIMDATA_EXPORT Taus2 {
 		return (((s &c) <<d) &MASK) ^ ((((s <<a) &MASK)^s) >>b);
 	}
 
-	/**
-	 * Internal generator, returning a random integer in the
-	 * range 0 to 2**32-1. 
+	/** Internal generator, returning a random integer in the
+	 *  range [0,2**32). 
 	 */
 	inline unsigned long generate() {
 		_s1 = TAUSWORTHE(_s1, 13, 19, 4294967294UL, 12);
@@ -319,73 +310,66 @@ class SIMDATA_EXPORT Taus2 {
 		return (_s1 ^ _s2 ^ _s3);
 	}
 public:
-	/**
-	 * @brief Structure for saving and restoring the internal state of the generator.
+	/** Structure for saving and restoring the internal state of the generator.
 	 */
 	struct State {
 		unsigned long int _s1, _s2, _s3;
 	};
 
-	/**
-	 * Get the name of this generator
+	/** Get the name of this generator.
 	 */
 	inline std::string getName() const { return "Tausworthe (Taus2)"; }
 
-	/**
-	 * Construct a new generator with seed 0
+	/** Construct a new generator with seed 0.
 	 */
 	Taus2() { setSeed(0); }
 
-	/**
-	 * Return a random integer in the range lower to upper-1 (inclusive)
-	 * @param lower lower bound (inclusive)
-	 * @param upper upper bound (exclusive)
-	 * @returns a random integer int the range lower to upper-1 (inclusive)
+	/** Return a random integer in the range lower to upper-1 (inclusive).
+	 *
+	 *  @param lower lower bound (inclusive)
+	 *  @param upper upper bound (exclusive)
+	 *  @returns a random integer int the range lower to upper-1 (inclusive)
 	 */
 	template <typename T>
 	inline T uniformInt(T lower, T upper) {
 		return lower + static_cast<T>(unit() * (upper-lower));
 	}
 
-	/**
-	 * Equivalent to uniformInt(0, upper)
+	/** Equivalent to uniformInt(0, upper).
 	 */
 	template <typename T>
 	inline T uniformInt(T upper) {
 		return uniformInt(static_cast<T>(0), upper);
 	}
 
-	/**
-	 * Return a random floating point value in the range [0, 1)
+	/** Return a random floating point value in the range [0, 1).
 	 */ 
 	inline double unit() {
   		return generate() / 4294967296.0 ;
 	};
 
-	/**
-	 * Return a random floating point value in the range [lower, upper)
+	/** Return a random floating point value in the range [lower, upper).
 	 */
 	inline double uniform(double lower, double upper) {
 		return lower + unit() * (upper-lower);
 	}
 
-	/**
-	 * Reseed the random number generator.
+	/** Reseed the random number generator.
 	 *
-	 * @param s the new seed.
+	 *  @param s the new seed.
 	 */
 	void setSeed(unsigned long int s);
 
-	/**
-	 * Save the current state of the generator.  The state can be
-	 * restored at any time with setState().
+	/** Save the current state of the generator.  
+	 *  
+	 *  The state can be restored at any time with setState().
 	 */
 	void getState(State &state) const;
 
-	/**
-	 * Restore the generator to a specific state saved with getState().
-	 * The subsequent random numbers will be identical to the sequence
-	 * following the corresponding getState() call.
+	/** Restore the generator to a specific state saved with getState().
+	 *
+	 *  The subsequent random numbers will be identical to the sequence
+	 *  following the corresponding getState() call.
 	 */
 	void setState(State const &state);
 };
@@ -398,123 +382,143 @@ public:
 ///////////////////////////////////////////////////////////////////////////////////
 // Random Number Generator Wrappers
 
-/**
- * @brief Abstract interface for random number generators and random distributions.
+/** Abstract interface for random number generators and random distributions.
  */
 class SIMDATA_EXPORT RandomInterface {
 protected:
-	/**
-	 * @brief Base class for storing the state of a random number generator.
+	/** Base class for storing the state of a random number generator.
 	 */
 	struct _State: Referenced { };
 public:
 	typedef Ref<_State> State;
 	typedef unsigned long int SeedType;
+
 	virtual ~RandomInterface();
+
+	/** Set the generator seed.
+	 */
 	virtual void setSeed(SeedType seed)=0;
+	
+	/** Get the generator state.
+	 */
 	virtual State getState() const=0;
+
+	/** Set the generator state.
+	 */
 	virtual void setState(State const &state)=0;
+
+	/** Get the name of the generator.
+	 */
 	virtual std::string getName() const=0;
 };
 
 
-/**
- * @brief Abstract interface for random number generators.
+/** Abstract interface for random number generators.
  */
 class SIMDATA_EXPORT RandomNumberGeneratorInterface: public RandomInterface {
 public:
+	/** Get a random number in the range [0,1).
+	 */
 	virtual double unit()=0;
+
+	/** Get a random number in the range [lower,upper).
+	 */
 	virtual double uniform(double lower, double upper)=0;
+	
+	/** Get a random integer in the range [lower,upper).
+	 */
 	virtual long uniformInt(long lower, long upper)=0;
+
+	/** Equivalent to uniformInt(0, upper)
+	 */
 	virtual long uniformInt(long upper)=0;
+
+	/** Get a random (unsigned) integer in the range [lower,upper).
+	 */
 	virtual unsigned long uniformUInt(unsigned long lower, unsigned long upper)=0;
+
+	/** Equivalent to uniformUInt(0, upper)
+	 */
 	virtual unsigned long uniformUInt(unsigned long upper)=0;
 };
 
-/**
- * @brief Random number generator wrapper.
+/** Random number generator wrapper.
  *
- * Random number generator wrapper, implementing the random number
- * generator interface.  These generics provide a uniform interface
- * to the underlying generators and generator state data.  The
- * performance penalty relative to using the raw generators is
- * typically about 20%.
+ *  Random number generator wrapper, implementing the random number
+ *  generator interface.  These generics provide a uniform interface
+ *  to the underlying generators and generator state data.  The
+ *  performance penalty relative to using the raw generators is
+ *  typically about 20%.
  */
 template <class RNG>
 class RandomNumberGenerator: public RandomNumberGeneratorInterface {
 
-	/**
-	 * @brief Random number generator state.
+	/** Random number generator state.
 	 */
 	struct RNGState: _State {
 		typename RNG::State _state;
 	};
 	RNG _gen;
 public:
-	/**
-	 * Reseed the random number generator.
+	/** Reseed the random number generator.
 	 *
-	 * @param seed the new seed.
+	 *  @param seed the new seed.
 	 */
 	virtual void setSeed(SeedType seed);
 
-	/**
-	 * Save the current state of the generator.  The state can be
-	 * restored at any time with setState().
+	/** Save the current state of the generator. 
+	 *  
+	 *  The state can be restored at any time with setState().
 	 */
 	virtual State getState() const;
 
-	/**
-	 * Restore the generator to a specific state saved with getState().
-	 * The subsequent random numbers will be identical to the sequence
-	 * following the corresponding getState() call.
+	/** Restore the generator to a specific state saved with getState().
+	 *
+	 *  The subsequent random numbers will be identical to the sequence
+	 *  following the corresponding getState() call.
 	 */
 	virtual void setState(State const &);
 
-	/**
-	 * Return a random floating point value in the range [0, 1)
+	/** Return a random floating point value in the range [0,1).
 	 */ 
 	virtual double unit();
 
-	/**
-	 * Return a random floating point value in the range [lower, upper)
+	/** Return a random floating point value in the range [lower,upper).
 	 */
 	virtual double uniform(double, double);
 
-	/**
-	 * Return a random integer in the range lower to upper-1 (inclusive)
-	 * @param lower lower bound (inclusive)
-	 * @param upper upper bound (exclusive)
-	 * @returns a random integer int the range lower to upper-1 (inclusive)
+	/** Return a random integer in the range lower to upper-1 (inclusive)
+	 *
+	 *  @param lower lower bound (inclusive)
+	 *  @param upper upper bound (exclusive)
+	 *  @returns a random integer int the range lower to upper-1 (inclusive)
 	 */
 	virtual long uniformInt(long lower, long upper);
 
-	/**
-	 * Equivalent to uniformInt(0, upper)
+	/** Equivalent to uniformInt(0, upper)
 	 */
 	virtual long uniformInt(long upper);
 
-	/**
-	 * Return a random integer in the range lower to upper-1 (inclusive)
-	 * @param lower lower bound (inclusive)
-	 * @param upper upper bound (exclusive)
-	 * @returns a random integer int the range lower to upper-1 (inclusive)
+	/** Return a random integer in the range lower to upper-1 (inclusive)
+	 *
+	 *  @param lower lower bound (inclusive)
+	 *  @param upper upper bound (exclusive)
+	 *  @returns a random integer int the range lower to upper-1 (inclusive)
 	 */
 	virtual unsigned long uniformUInt(unsigned long lower, unsigned long upper);
 
-	/**
-	 * Equivalent to uniformUInt(0, upper)
+	/** Equivalent to uniformUInt(0, upper)
 	 */
 	virtual unsigned long uniformUInt(unsigned long upper);
 
-	/**
-	 * Get the name of this generator
+	/** Get the name of this generator
 	 */
 	virtual std::string getName() const;
 
-	/**
-	 * Direct access to the underlying generator, providing
-	 * faster access and generator-specific methods.
+	/** Direct access to the underlying generator.
+	 *
+	 *  Using the generator directly provides slightly faster access and 
+	 *  generator-specific methods.
 	 */
 	inline RNG *operator->() { return &_gen; }
 };
@@ -579,8 +583,7 @@ std::string RandomNumberGenerator<RNG>::getName() const {
 
 namespace rd { // random distributions
 
-/**
- * @brief Gaussian random number distribution.
+/** Gaussian random number distribution.
  */
 class SIMDATA_EXPORT Gauss {
 	rng::Taus2 _gen;
@@ -589,8 +592,7 @@ class SIMDATA_EXPORT Gauss {
 	bool _odd;
 public:
 
-	/**
-	 * @brief Random number generator state.
+	/** Random number generator state.
 	 */
 	struct State {
 		rng::Taus2::State _state;
@@ -598,63 +600,58 @@ public:
 		bool _odd;
 	};
 
-	/**
-	 * Get the name of this distribution
+	/** Get the name of this distribution.
 	 */
 	std::string getName() const { return "Gaussian (Gauss)"; }
 
-	/**
-	 * Construct a new distribution.
+	/** Construct a new distribution.
 	 * 
-	 * @param mean the mean value of the distribution (default=0)
-	 * @param sigma the standard deviation of the distribution (default=0)
+	 *  @param mean the mean value of the distribution (default=0)
+	 *  @param sigma the standard deviation of the distribution (default=0)
 	 */
 	Gauss(double mean=0.0, double sigma=0.0): _mean(mean), _sigma(sigma), _odd(true) {}
 
-	/**
-	 * Set the mean value and standard deviation of the distribution
-
-	 * @param mean the mean value of the distribution
-	 * @param sigma the standard deviation of the distribution
+	/** Set the mean value and standard deviation of the distribution.
+	 *
+	 *  @param mean the mean value of the distribution
+	 *  @param sigma the standard deviation of the distribution
 	 */
 	inline void setDistribution(double mean, double sigma) {
 		_mean = mean;
 		_sigma = sigma;
 	}
 
-	/**
-	 * Get the mean value of the distribution
+	/** Get the mean value of the distribution.
 	 */
 	inline double getMean() const { return _mean; }
 
-	/**
-	 * Get the standard deviation of the distribution
+	/** Get the standard deviation of the distribution.
 	 */
 	inline double getSigma() const { return _sigma; }
 
-	/**
-	 * Sample the distribution
+	/** Sample the distribution.
 	 */
 	double sample();
 
-	/**
-	 * Reseed the underlying random number generator.
+	/** Reseed the underlying random number generator.
 	 *
-	 * @param seed the new seed.
+	 *  @param seed the new seed.
 	 */
 	inline void setSeed(unsigned long int seed) { _gen.setSeed(seed); _odd = true; }
 
-	/**
-	 * Save the current state of the distribution.  The state can be restored
-	 * at any time with setState().  Both the state of the underlying random
-	 * number generator and the distribution parameters (mean, sigma) are saved.
+	/** Save the current state of the distribution.  
+	 *  
+	 *  The state can be restored at any time with setState().  Both the 
+	 *  state of the underlying random number generator and the 
+	 *  distribution parameters (mean, sigma) are saved.
 	 */
 	void getState(State &) const;
 
-	/**
-	 * Restore the underlying generator to a specific state saved with 
-	 * getState().  The subsequent samples of the distribution will be identical 
-	 * to the sequence following the corresponding getState() call.
+	/** Restore the underlying generator to a specific state saved with 
+	 *  getState().  
+	 *
+	 *  The subsequent samples of the distribution will be identical to 
+	 *  the sequence following the corresponding getState() call.
 	 */
 	void setState(State const &);
 };
@@ -670,66 +667,63 @@ extern SIMDATA_EXPORT double BoxMueller(RandomNumberGeneratorInterface &_gen, do
 // Random Distribution Wrappers
 
 
-/**
- * @brief Abstract interface for random distributions.
+/** Abstract interface for random distributions.
  */
 class SIMDATA_EXPORT RandomDistributionInterface: public RandomInterface {
 public:
+	/** Sample the distribution.
+	 */
 	virtual double sample()=0;
 };
 
 
 
-/**
- * @brief Random distribution wrapper.
+/** Random distribution wrapper.
  *
- * Random distribution wrapper, implementing the random distribution
- * interface.  These generics provide a uniform interface to the 
- * underlying distributions and distribution (generator) state data.  
+ *  Random distribution wrapper, implementing the random distribution
+ *  interface.  These generics provide a uniform interface to the 
+ *  underlying distributions and distribution (generator) state data.  
  */
 template <class RD>
 class RandomDistribution: public RandomDistributionInterface {
-	/**
-	 * @brief Random number generator state.
+	/** Random number generator state.
 	 */
 	struct RDState: _State {
 		typename RD::State _state;
 	};
 	RD _dist;
 public:
-	/**
-	 * Sample the distribution
+	/** Sample the distribution
 	 */
 	double sample();
 
-	/**
-	 * Reseed the random number generator.
+	/** Reseed the random number generator.
 	 *
-	 * @param seed the new seed.
+	 *  @param seed the new seed.
 	 */
 	virtual void setSeed(SeedType seed);
 
-	/**
-	 * Save the current state of the generator.  The state can be
-	 * restored at any time with setState().
+	/** Save the current state of the generator.  
+	 *
+	 *  The state can be restored at any time with setState().
 	 */
 	virtual State getState() const;
 
-	/**
-	 * Restore the generator to a specific state saved with getState().
-	 * The subsequent random numbers will be identical to the sequence
-	 * following the corresponding getState() call.
+	/** Restore the generator to a specific state saved with getState().
+	 * 
+	 *  The subsequent random numbers will be identical to the sequence
+	 *  following the corresponding getState() call.
 	 */
 	virtual void setState(State const &);
 
-	/**
-	 * Get the name of this generator
+	/** Get the name of this generator.
 	 */
 	virtual std::string getName() const;
 
-	/**
-	 * Direct access to the underlying distribution, providing
-	 * faster access and distribution-specific methods.
+	/** Direct access to the underlying distribution.
+	 *
+	 *  Using the distribution directly provides slightly faster access
+	 *  and distribution-specific methods.
 	 */
 	inline RD *operator->() { return &_dist; }
 };
@@ -774,8 +768,7 @@ namespace random { // generators and distributions
 }
 
 
-/**
- * Global random number generator.
+/** Global random number generator.
  */
 extern SIMDATA_EXPORT random::Taus2 g_Random;
 

@@ -510,6 +510,7 @@ class CurveHandler(SimpleHandler):
 	
 	def __init__(self, id, base, name, attrs):
 		SimpleHandler.__init__(self, id, base, name, attrs)
+		WARN(1, "<Curve> is deprecated, use Table1 instead.")
 		for member in CurveHandler.members:
 			setattr(self, "_"+member, None)
 
@@ -559,6 +560,7 @@ class TableHandler(SimpleHandler):
 	
 	def __init__(self, id, base, name, attrs):
 		SimpleHandler.__init__(self, id, base, name, attrs)
+		WARN(1, "<Table> is deprecated, use Table2 instead.")
 		self._keys = {}
 		
 		#for member in TableHandler.members:
@@ -739,8 +741,8 @@ class ObjectHandler(ElementHandler):
 		self._all_variables = self._interface.getVariableNames()
 		self._req_variables = self._interface.getRequiredNames()
 
-		static = attrs.get("static", "0").upper() in ("1", "TRUE")
-		self._object.setStatic(static)
+		if attrs.has_key("static"):
+			WARN(1, "'static' attribute of <Object> is deprecated.")
 		
 	def endChild(self):
 		name = self._attrs["name"].encode('ascii')

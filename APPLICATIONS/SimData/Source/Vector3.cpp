@@ -34,7 +34,7 @@
 
 #include <SimData/Vector3.h>
 #include <SimData/Matrix3.h>
-#include <SimData/Pack.h>
+#include <SimData/Archive.h>
 
 #include <iomanip>
 #include <sstream>
@@ -72,16 +72,10 @@ std::ostream & operator << (std::ostream & os, const Vector3& v) {
 	return os;
 }
 
-void Vector3::pack(Packer& p) const {
-	p.pack(_x);
-	p.pack(_y);
-	p.pack(_z);
-}
-
-void Vector3::unpack(UnPacker& p) {
-	p.unpack(_x);
-	p.unpack(_y);
-	p.unpack(_z);
+void Vector3::serialize(Archive &archive) {
+	archive(_x);
+	archive(_y);
+	archive(_z);
 }
 
 void Vector3::parseXML(const char* cdata) {

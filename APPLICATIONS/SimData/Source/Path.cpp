@@ -21,7 +21,7 @@
 
 #include <SimData/Path.h>
 #include <SimData/Log.h>
-#include <SimData/Pack.h>
+#include <SimData/Archive.h>
 #include <SimData/DataArchive.h>
 #include <SimData/Namespace.h>
 
@@ -45,12 +45,8 @@ void Path::setPath(const char* path) {
 	}
 }
 
-void Path::pack(Packer& p) const {
-	p.pack(_path);
-}
-
-void Path::unpack(UnPacker& p) {
-	p.unpack(_path);
+void Path::serialize(Archive &archive) {
+	archive(_path);
 }
 
 std::string Path::asString() const {

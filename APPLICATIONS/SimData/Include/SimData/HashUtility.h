@@ -21,8 +21,7 @@
 
 /**
  * @file HashUtility.h
- *
- * Hash function utilities.
+ * @brief Hash function utilities.
  */
 
 #ifndef __SIMDATA_HASHUTILITY_H__
@@ -62,45 +61,100 @@ extern SIMDATA_EXPORT HashT newhasht_cstring(std::string const &);
  */
 struct SIMDATA_EXPORT HashT {
 	uint32 a, b;
+
+	/** Construct a default hash value (0).
+	 */
 	HashT() {
 		a = b = 0;
 	}
+
+	/** Construct a specific hash value.
+	 * 
+	 *  The high 32-bits will be zero.
+	 *
+	 *  @param x The low 32-bits of the hash value.
+	 */
 	HashT(uint32 x) {
 		a = x; b = 0;
 	}
+
+	/** Construct a specific hash value.
+	 *
+	 *  @param b_ The high 32-bits of the hash value.
+	 *  @param a_ The low 32-bits of the hash value.
+	 */
 	HashT(uint32 b_, uint32 a_) {
 		a = a_; b = b_;
 	}
+
+	/** Copy constructor
+	 */
 	HashT(const HashT &x) {
 		a = x.a; b = x.b;
 	}
+
+	/** Hash a string.
+	 */
 	HashT(std::string const &x) {
 		*this = newhasht_cstring(x);
 	}
+
+	/** Compare this hash value for equality.
+	 *
+	 *  @param x The low 32-bits of the hash value to compare to.  The 
+	 *           high 32-bits are zero.
+	 */
 	bool operator ==(uint32 x) const {
 		return (b == 0 && a == x);
 	}
+
+	/** Compare this hash value for inequality.
+	 *
+	 *  @param x The low 32-bits of the hash value to compare to.  The 
+	 *           high 32-bits are zero.
+	 */
 	bool operator !=(uint32 x) const {
 		return (b != 0 || a != x);
 	}
+
+	/** Compare two hash values for equality.
+	 */
 	bool operator ==(HashT const &x) const {
 		return (b == x.b && a == x.a);
 	}
+
+	/** Compare two hash values for inequality.
+	 */
 	bool operator !=(HashT const &x) const {
 		return (b != x.b || a != x.a);
 	}
+
+	/** Hash a string by assignment.
+	 */
 	HashT & operator =(std::string &x) {
 		*this = newhasht_cstring(x);
 		return *this;
 	}
+
+	/** Assign a specific hash value.
+	 *
+	 *  @param x The low 32-bits to assign.  The high 32-bits are
+	 *           zeroed.
+	 */
 	HashT & operator =(uint32 x) {
 		a = x; b = 0;
 		return *this;
 	}
+
+	/** Assign a specific hash value.
+	 */
 	HashT & operator =(HashT const &x) {
 		a = x.a; b = x.b;
 		return *this;
 	}
+
+	/** Get a string representation of this hash.
+	 */
 	std::string str() const;
 };
 

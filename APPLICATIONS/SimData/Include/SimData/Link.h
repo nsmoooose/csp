@@ -61,55 +61,48 @@ public:
 	bool __eq__(const ReferencePointer& other);
 	bool __ne__(const ReferencePointer& other); 
 	
-	/**
-	 * Construct a ReferencePointer with no object reference (null 
-	 * pointer)
+	/** Construct a ReferencePointer with no object reference (null 
+	 *  pointer)
 	 */
 	explicit ReferencePointer(): _reference(0) { }
 
-	/**
-	 * Assign to a specific object.
+	/** Assign to a specific object.
 	 */
 	explicit ReferencePointer(Object* ptr): _reference(0) {
 		_assign_safe(ptr);
 	}
 
-	/**
-	 * Light-weight copy with reference counting.
+	/** Light-weight copy with reference counting.
 	 */
 	explicit ReferencePointer(const ReferencePointer& r): _reference(0) {
 		_assign_safe(r._reference);
 	}
 
-	/**
-	 * Decrements the object's reference count and destroys the
-	 * object if the count reaches zero.
+	/** Decrement the object's reference count and destroy the
+	 *  object if the count reaches zero.
 	 */
 	virtual ~ReferencePointer() {
 		_release();
 	}
 
-	/**
-	 * Returns true if this is the only reference to an object.
+	/** Returns true if this is the only reference to an object.
 	 */
 	inline bool unique() const {
 		return (_reference ? _reference->_count()==1 : true);
 	}
 
-	/**
-	 * Light-weight copy with reference counting.
-	 */
 #ifndef SWIG
+	/** Light-weight copy with reference counting.
+	 */
 	inline ReferencePointer& operator=(const ReferencePointer& r) {
 		_assign_safe(r._reference);
 		return *this;
 	}
 #endif
 
-	/**
-	 * Raw pointer assignment for NULL only
-	 */
 #ifndef SWIG
+	/** Raw pointer assignment for NULL only
+	 */
 	inline void *operator=(void *p) {
 		assert(p==0);
 		_reference = 0;
@@ -117,23 +110,20 @@ public:
 	}
 #endif
 
-	/**
-	 * Clear pointer. 
+	/** Clear pointer. 
 	 */
 	inline void setNull() {
 		_assign_fast(0);
 	}
 
 
-	/**
-	 * Test for null pointer.
+	/** Test for null pointer.
 	 */
 	inline bool isNull() const { 
 		return _reference == 0; 
 	}
 
-	/**
-	 * Test for null pointer.
+	/** Test for null pointer.
 	 */
 #ifndef SWIG
 	inline bool operator!() const {
@@ -141,15 +131,13 @@ public:
 	}
 #endif
 
-	/**
-	 * Test for non-null pointer.
+	/** Test for non-null pointer.
 	 */
 	inline bool valid() const {
 		return _reference != 0;
 	}
 	
-	/**
-	 * Comparison with other simdata pointers.
+	/** Comparison with other simdata pointers.
 	 */
 	inline bool operator==(ReferencePointer const &p) const {
 		return _reference == p._reference;
@@ -158,12 +146,11 @@ public:
 	virtual Object *__get__() { return _reference; }
 
 protected:
-	/**
-	 * Rebind to a new object, testing for type compatibility.
+	/** Rebind to a new object, testing for type compatibility.
 	 *
-	 * This method calls _update(), which is overridden in the
-	 * Pointer<> class to attempt a dynamic cast to the template
-	 * type and throws an exception if the cast fails.
+	 *  This method calls _update(), which is overridden in the
+	 *  Pointer<> class to attempt a dynamic cast to the template
+	 *  type and throws an exception if the cast fails.
 	 */
 	inline void _assign_safe(Object* ptr) {
 		_release();
@@ -171,8 +158,7 @@ protected:
 		if (!isNull()) _reference->_ref();
 	}
 
-	/**
-	 * Rebind to a new object, without testing for type compatibility.
+	/** Rebind to a new object, without testing for type compatibility.
 	 *
 	 * Use this method only when you know that the pointer you are
 	 * assignng from has the correct type.
@@ -183,8 +169,7 @@ protected:
 		if (!isNull()) _reference->_ref();
 	}
 
-	/**
-	 * Rebind to null.
+	/** Rebind to null.
 	 */
 	inline void _release() {
 		if (!isNull()) {
@@ -193,23 +178,20 @@ protected:
 		}
 	}
 
-	/**
-	 * Change object pointer without reference counting. 
+	/** Change object pointer without reference counting. 
 	 *
 	 * This method is extended in the Link<> class to test for 
 	 * type compatibility.
 	 */
 	virtual void _update(Object* p) { _reference = p; }
 
-	/**
-	 * Get the current object pointer.
+	/** Get the current object pointer.
 	 */
 	inline Object* _get() const { 
 		return _reference; 
 	}
 
-	/**
-	 * The actual object pointer.
+	/** The actual object pointer.
 	 */
 	Object* _reference;
 };
@@ -232,45 +214,37 @@ public:
 	bool __eq__(const LinkBase& other);
 	bool __ne__(const LinkBase& other); 
 	
-	/**
-	 * Construct a LinkBase with no path or object reference (null 
-	 * pointer)
+	/** Construct a LinkBase with no path or object reference (null 
+	 *  pointer)
 	 */
 	explicit LinkBase(): Path((const char*)0), ReferencePointer() { }
 
-	/**
-	 * Assign an object path with no referenced object (null pointer)
+	/** Assign an object path with no referenced object (null pointer)
 	 */
 	LinkBase(const char* path): Path(path), ReferencePointer() { }
 
-	/**
-	 * Assign an object path and bind to a specific object.
+	/** Assign an object path and bind to a specific object.
 	 */
 	explicit LinkBase(const Path& path, Object* ptr): 
 		Path(path), ReferencePointer(ptr) { }
 	
-	/**
-	 * Assign an object reference, but no path.
+	/** Assign an object reference, but no path.
 	 */
 	explicit LinkBase(Object* ptr): Path(), ReferencePointer(ptr) {}
 
-	/**
-	 * Decrements the object's reference count and destroys the
+	/** Decrements the object's reference count and destroys the
 	 * object if the count reaches zero.
 	 */
 	virtual ~LinkBase() { }
 
-	/**
-	 * Light-weight copy with reference counting.
+	/** Light-weight copy with reference counting.
 	 */
 	LinkBase(const LinkBase& r): Path(r.getPath()), ReferencePointer(r) {
-	//	*this = r;
 	}
 
-	/**
-	 * Light-weight copy with reference counting.
-	 */
 #ifndef SWIG
+	/** Light-weight copy with reference counting.
+	 */
 	LinkBase& operator=(const LinkBase& r) {
 		ReferencePointer::operator=(r);
 		_path = r.getPath();
@@ -279,46 +253,36 @@ public:
 #endif
 
 
-	/**
-	 * Pack to a data archive.
+	/** Serialize to or from a data archive.
 	 *
-	 * Saves the path, and also saves the referenced object
-	 * if the path is 'None'.  Packing a None and Null 
-	 * LinkBase is an error.
-	 */
-	virtual void pack(Packer& p) const;
-
-	/**
-	 * Unpack from a data archive.
+	 *  Saves the path, and also saves the referenced object
+	 *  if the path is 'None'.  Packing a None and Null 
+	 *  LinkBase is an error.
 	 *
-	 * Reads the saved path and binds to the correct object.
-	 * If the path is None, the object is unpacked from the
-	 * subsequent data.  Otherwise the object is created by
-	 * asking the current DataArchive to instantiate an
-	 * instance of the path.
+	 *  Reads the saved path and binds to the correct object.
+	 *  If the path is None, the object is unpacked from the
+	 *  subsequent data.  Otherwise the object is created by
+	 *  asking the current DataArchive to instantiate an
+	 *  instance of the path.
 	 */
-	virtual void unpack(UnPacker& p);
+	virtual void serialize(Archive&);
 
-	/**
-	 * String representation.
+	/** String representation.
 	 */
 	virtual std::string asString() const;
 
-	/**
-	 * Return a string representation of the type.
+	/** Return a string representation of the type.
 	 */
 	virtual std::string typeString() const { return std::string("type::LinkBase"); }
 	
-	/**
-	 * Comparison with other simdata pointers.
+	/** Comparison with other simdata pointers.
 	 */
 	bool operator==(LinkBase const &p) const {
 		return ReferencePointer::operator==(p);
 	}
 
 protected:
-	/**
-	 * Create a new object instance from source data.
+	/** Create a new object instance from source data.
 	 *
 	 * @param archive The data archive from which to load the new object's data.
 	 * @param path The object path to load.
@@ -346,37 +310,37 @@ protected:
 template<class T> class Link: public LinkBase {
 public:
 
+	/** Convenience typedef.
+	 */
 	typedef std::vector< Link<T> > vector;
 
-	/**
-	 * Create a null Link 
+	/** Create a null Link 
 	 */
 	explicit Link(): LinkBase() {}
 	
-	/**
-	 * Create a Link with both a path and an object
+	/** Create a Link with both a path and an object
 	 */
 	explicit Link(const Path& path, T* ptr): LinkBase(path, ptr) {}
 	
-	/**
-	 * Create a Link with a path but no object (null)
+	/** Create a Link with a path but no object (null)
 	 */
 	explicit Link(const char* path): LinkBase(path) {}
 
-	/**
-	 * Create a Link with an object reference, but no path
+	/** Create a Link with an object reference, but no path
 	 */
 	explicit Link(T* t): LinkBase() {
 		*this = t;
 	}
 
-	// fast copy
+	/** Fast copy constructor.
+	 */
 	Link(const Link<T>& p) { 
 		_path = p.getPath();
 		_assign_fast(p._reference);
 	}
 	
-	// safe copy
+	/** Safe copy constructor.
+	 */
 	Link(const LinkBase& p) { 
 		LinkBase::operator=(p);
 	}
@@ -387,14 +351,12 @@ public:
 	}
 	*/
 
-	/**
-	 * Return a string representation of the type.
+	/** Return a string representation of the type.
 	 */
 	virtual std::string typeString() const { return std::string("type::Link::") + T::_getClassName(); }
 
 #ifndef SWIG
-	/**
-	 * Assign a pointer
+	/** Assign a pointer.
 	 */
 	T *operator =(T *t) {
 		_path = 0;
@@ -403,52 +365,47 @@ public:
 	}
 #endif // SWIG
 
-	/**
-	 * Dereference.
+	/** Dereference.
 	 */
 	T* operator->() { 
 		return (T*) _reference;
 	}
 	
-	/**
-	 * Const dereference.
+	/** Const dereference.
 	 */
 	const T* operator->() const { 
 		return (T*) _reference;
 	}
 	
-	/**
-	 * Dereference.
+	/** Dereference.
 	 */
 	T& operator*() {
 		return *((T*) _reference);
 	}
 	
-	/**
-	 * Const dereference.
+	/** Const dereference.
 	 */
 	const T& operator*() const {
 		return *((T*) _reference);
 	}
-	
-	/**
-	 * Const dereference.
+
+	/** Const dereference.
 	 */
 	const T* get() const {
 		return (T*) _reference;
 	}
 	
-	/**
-	 * Dereference.
+	/** Dereference.
 	 */
 	T* get() {
 		return (T*) _reference;
 	}
 	
 protected:
-	/**
-	 * Change object pointer without reference counting, checking that the
-	 * new object type matches the template type.
+	/** Internal pointer update.
+	 *
+	 *  Changes the object pointer without reference counting, checking 
+	 *  that the new object type matches the template type.
 	 */
 	virtual void _update(Object* ptr) throw(ObjectTypeMismatch) {
 		LinkBase::_update(ptr);

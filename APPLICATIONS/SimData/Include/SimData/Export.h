@@ -21,8 +21,7 @@
 
 /**
  * @file Export.h
- *
- * Macros needed to export/import symbols from shared libraries.
+ * @brief Macros needed to export/import symbols from shared libraries.
  */
 
 #ifndef __SIMDATA_EXPORT_H__

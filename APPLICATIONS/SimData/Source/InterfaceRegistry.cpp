@@ -67,48 +67,38 @@ Object *InterfaceProxy::createObject() const {
 	return 0;
 }
 
-MemberAccessorBase * InterfaceProxy::getAccessor(const char *name, const char *cname) const { 
-	if (!cname) cname = "?";
-	throw InterfaceError("variable \"" + std::string(name) + "\" not defined in interface to class " + cname); 
-}
-
-const TypeAdapter InterfaceProxy::get(Object *o, const char *name) const {
-	return getAccessor(name)->get(o); 
-} 
-
-void InterfaceProxy::set(Object *o, const char *name, const TypeAdapter &v) { 
-	getAccessor(name)->set(o, v);
-}
-
-void InterfaceProxy::push_back(Object *o, const char *name, const TypeAdapter &v) {
-	try {
-		getAccessor(name)->push_back(o, v);
-	} catch (TypeMismatch &e) {
-		e.appendMessage(std::string("Error encountered adding to list variable \"") + name + "\" in class \"" + getClassName() + "\".");
-		throw;
+void InterfaceProxy::addInterface(ObjectInterfaceBase* objectinterface, 
+                                  std::string const &classname,
+				  hasht const &classhash) { 
+	std::vector<std::string> names = objectinterface->getVariableNames();
+	std::vector<std::string>::iterator name = names.begin();
+	for (; name != names.end(); ++name) {
+		if (_interfaces.find(*name) != _interfaces.end()) {
+			// variable multiply defined
+			std::stringstream ss;
+			ss << "variable \"" << *name << "\""
+			   << " multiply defined in interface to class " 
+			   << classname << " or parent interface.";
+			std::cout << ss.str() << std::endl;
+			throw InterfaceError(ss.str());
+		}
+		_interfaces[*name] = objectinterface;
+		_variableNames.push_back(*name);
+		if (objectinterface->variableRequired(*name)) {
+			_requiredNames.push_back(*name);
+		}
 	}
+	_classNames.push_back(classname);
+	_classHashes.push_back(classhash);
 }
 
-void InterfaceProxy::set_enum(Object *o, const char *name, const char *v) { 
-	getAccessor(name)->set(o, TypeAdapter(v));
-}
-
-void InterfaceProxy::clear(Object *o, const char *name) {
-	getAccessor(name)->clear(o);
-}
-
-bool InterfaceProxy::variableExists(const char *) const {
-	return false;
-}
-
-bool InterfaceProxy::variableRequired(const char *name) const {
-	throw InterfaceError("Variable '"+std::string(name)+"' not found in interface to class '" + getClassName() + "'");
-	return false;
-}
-
-std::string InterfaceProxy::variableType(const char *name) const {
-	throw InterfaceError("Variable '"+std::string(name)+"' not found in interface to class '" + getClassName() + "'");
-	return "";
+ObjectInterfaceBase *InterfaceProxy::findInterface(std::string const &varname, bool required) const {
+	InterfaceMap::const_iterator iter = _interfaces.find(varname);
+	if (iter == _interfaces.end()) {
+		if (!required) return 0;
+		throw InterfaceError("Variable \"" + varname + "\" not defined in interface to class \"" + getClassName() + "\"");
+	}
+	return iter->second;
 }
 
 hasht InterfaceProxy::getClassHash() const { 
@@ -121,26 +111,12 @@ const char * InterfaceProxy::getClassName() const {
 	return 0;
 }
 
-bool InterfaceProxy::isSubclass(std::string const &) const {
-	return false;
+bool InterfaceProxy::isSubclass(std::string const &classname) const {
+	return std::find(_classNames.begin(), _classNames.end(), classname) != _classNames.end();
 }
 
-bool InterfaceProxy::isSubclass(hasht const &) const {
-	return false;
-}
-
-void InterfaceProxy::pack(Object *, Packer &) const {
-}
-
-void InterfaceProxy::unpack(Object *, UnPacker &) const {
-}
-
-std::vector<std::string> InterfaceProxy::getVariableNames() const {
-	return std::vector<std::string>();
-}
-
-std::vector<std::string> InterfaceProxy::getRequiredNames() const {
-	return std::vector<std::string>();
+bool InterfaceProxy::isSubclass(hasht const &classhash) const {
+	return std::find(_classHashes.begin(), _classHashes.end(), classhash) != _classHashes.end();
 }
 
 

@@ -20,7 +20,7 @@
 
 #include <SimData/Link.h>
 #include <SimData/Log.h>
-#include <SimData/Pack.h>
+#include <SimData/Archive.h>
 #include <SimData/DataArchive.h>
 #include <SimData/Namespace.h>
 
@@ -45,34 +45,35 @@ bool LinkBase::__ne__(const LinkBase& other) {
 	return !this->operator==(other); 
 }
 
-void LinkBase::pack(Packer &p) const {
-	Path::pack(p);
-	if (isNone()) {
-		assert(!isNull());
-		p.pack(_get()->getClassHash());
-		_get()->pack(p);
-	}
-}
-
-void LinkBase::unpack(UnPacker& p) {
-	Path::unpack(p);
-	DataArchive *archive = p._getArchive();
-	assert(archive);
-	if (isNone()) {
-		ObjectID class_id;
-		p.unpack(class_id);
-		Object *pobj = archive->_createObject(class_id);
-		pobj->unpack(p);
-		// start reference counting before postCreate!
-		_assign_safe(pobj);
-		if (p._loadAll()) {
-			pobj->postCreate();
+void LinkBase::serialize(Archive &archive) {
+	Path::serialize(archive);
+	if (archive.isLoading()) {
+		DataArchive *data_archive = archive._getArchive();
+		assert(data_archive);
+		if (isNone()) {
+			ObjectID class_id;
+			archive(class_id);
+			Object *pobj = data_archive->_createObject(class_id);
+			pobj->serialize(archive);
+			// start reference counting before postCreate!
+			_assign_safe(pobj);
+			if (archive._loadAll()) {
+				pobj->postCreate();
+			}
+			// XXX should we also check that 'static' is not set?
+			// (it makes no sense to have a static immediate object)
+		} else {
+			if (archive._loadAll()) {
+				_load(data_archive);
+			}
 		}
-		// XXX should we also check that 'static' is not set?
-		// (it makes no sense to have a static immediate object)
 	} else {
-		if (p._loadAll()) {
-			_load(archive);
+		if (isNone()) {
+			// XXX should throw an exception
+			assert(!isNull());
+			hasht class_hash = _get()->getClassHash();
+			archive(class_hash);
+			_get()->serialize(archive);
 		}
 	}
 }
@@ -114,8 +115,7 @@ void LinkBase::_load(DataArchive* archive, ObjectID path) {
 		*this = _ppb;
 		Object* p = _reference;
 		assert(p);
-		//printf("got %p (static=%d)\n", p, p->isStatic());
-		SIMDATA_LOG(LOG_ARCHIVE, LOG_DEBUG, "got 0x" << std::hex << int(p) << " (static=" << p->isStatic() << ")");
+		SIMDATA_LOG(LOG_ARCHIVE, LOG_DEBUG, "got 0x" << std::hex << int(p) << ")");
 	}
 }
 

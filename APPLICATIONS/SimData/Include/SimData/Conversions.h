@@ -21,9 +21,7 @@
 
 /**
  * @file Conversions.h
- * 
- * Common unit conversion templates.
- * 
+ * @brief Common unit conversion templates.
  */
 
 #ifndef __SIMDATA_CONVERSIONS_H__

@@ -118,15 +118,9 @@ public:
 		return _path;
 	}
 
-	/**
-	 * Serialize.
+	/** Serialize to or from a data archive.
 	 */
-	virtual void pack(Packer& p) const;
-	
-	/**
-	 * Deserialize.
-	 */
-	virtual void unpack(UnPacker& p);
+	virtual void serialize(Archive&);
 
 	/**
 	 * Test for 'no-path' (Object ID == 0).
@@ -135,11 +129,16 @@ public:
 		return (_path == (ObjectID) 0);
 	}
 
-	/**
-	 * Test for equality of two paths.
+	/** Test for equality of two paths.
 	 */
 	inline bool operator==(Path const &p) const {
 		return _path == p._path;
+	}
+
+	/** Test for equality of two paths.
+	 */
+	inline bool operator!=(Path const &p) const {
+		return _path != p._path;
 	}
 
 	/**
@@ -385,26 +384,19 @@ public:
 		return *this;
 	}
 n
-
-	/**
-	 * Pack to a data archive.
+	/** Serialize to or from a data archive.
 	 *
-	 * Saves the path, and also saves the referenced object
-	 * if the path is 'None'.  Packing a None and Null 
-	 * PointerBase is an error.
-	 */
-	virtual void pack(Packer& p) const;
-
-	/**
-	 * Unpack from a data archive.
+	 *  Saves the path, and also saves the referenced object
+	 *  if the path is 'None'.  Packing a None and Null 
+	 *  PointerBase is an error.
 	 *
-	 * Reads the saved path and binds to the correct object.
-	 * If the path is None, the object is unpacked from the
-	 * subsequent data.  Otherwise the object is created by
-	 * asking the current DataArchive to instantiate an
-	 * instance of the path.
+	 *  Reads the saved path and binds to the correct object.
+	 *  If the path is None, the object is unpacked from the
+	 *  subsequent data.  Otherwise the object is created by
+	 *  asking the current DataArchive to instantiate an
+	 *  instance of the path.
 	 */
-	virtual void unpack(UnPacker& p);
+	virtual void serialize(Archive&);
 
 	/**
 	 * String representation.

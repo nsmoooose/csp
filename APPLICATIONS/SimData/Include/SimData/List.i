@@ -29,8 +29,7 @@
 #include "SimData/Key.h"
 %}
 
-%include "std_string.i"
-%include "std_vector.i"
+%include "SimData/vector.i"
 
 %include "SimData/Namespace.h"
 
@@ -43,7 +42,6 @@
 //%import "SimData/Vector3.h"
 
 #define new_list(a, b)	\
-	%template(v##a) std::vector< b >; \
 	%template(l##a) SIMDATA(List)< b >;
 
 

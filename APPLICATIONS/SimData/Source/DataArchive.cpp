@@ -24,6 +24,9 @@
 #include <SimData/Object.h>
 #include <SimData/Log.h>
 
+#include <iomanip>
+#include <sstream>
+
 
 NAMESPACE_SIMDATA
 
@@ -79,9 +82,9 @@ void DataArchive::readMagic() {
 	bool data_little = (magic[7] == 'L');
 	bool machine_little = isLittleEndian();
 	if (data_little != machine_little) {
-		char msg[128];
-		sprintf(msg, "le(machine, data) = (%d, %d)", machine_little, data_little);
-		throw BadByteOrder(msg);
+		std::stringstream msg;
+		msg << "le(machine, data) = (" << machine_little << ", " << data_little << ")";
+		throw BadByteOrder(msg.str());
 	}
 }
 
@@ -127,14 +130,14 @@ void DataArchive::_readPaths() {
 	ObjectID *hptr = reinterpret_cast<ObjectID *>(iptr);
 	while (n_directories-- > 0) {
 		ObjectID node = *hptr++;
-		uint32 n = hptr->a;
+		uint32 n_children = hptr->a;
 		++hptr;
-		if (n > n_paths) {
+		if (n_children > n_paths) {
 			throw CorruptArchive("Path table of contents.");
 		}
 		std::vector<ObjectID> &childlist = _children[node];
-		childlist.reserve(n);
-		while (n-- > 0) {
+		childlist.reserve(n_children);
+		while (n_children-- > 0) {
 			childlist.push_back(*hptr++);
 		}
 	}
@@ -177,9 +180,9 @@ void DataArchive::_writePaths() const {
 	size = _children.size();
 	fwrite(&size, sizeof(size), 1, _f);
 	for (iter = _children.begin(); iter != _children.end(); iter++) {
-		ObjectID size = iter->second.size();
+		ObjectID n_children = iter->second.size();
 		fwrite(&(iter->first), sizeof(ObjectID), 1, _f);
-		fwrite(&size, sizeof(size), 1, _f);
+		fwrite(&n_children, sizeof(n_children), 1, _f);
 		std::vector<ObjectID>::const_iterator child = iter->second.begin();
 		std::vector<ObjectID>::const_iterator last_child = iter->second.end();
 		while (child != last_child) {
@@ -252,7 +255,7 @@ void DataArchive::addObject(Object& a, std::string const &path) {
 	if (!_is_read && !_finalized) {
 		int offset = ftell(_f);
 		Packer p(_f);
-		a.pack(p);
+		a.serialize(p);
 		int length = p.getCount();
 		SIMDATA_LOG(LOG_ARCHIVE, LOG_DEBUG, "DataArchive: adding " << path << " (" << length << " bytes) [" << hash_string(path) << "]");
 		_addEntry(offset, length, a.getClassHash(), path);
@@ -343,21 +346,19 @@ const LinkBase DataArchive::getObject(const Path& path, std::string const &path_
 	}
 	SIMDATA_LOG(LOG_ARCHIVE, LOG_DEBUG, "getObject using interface registry @ 0x" << std::hex << int(&(InterfaceRegistry::getInterfaceRegistry())));
 	InterfaceProxy *proxy = InterfaceRegistry::getInterfaceRegistry().getInterface(t->classhash);
+	std::string from = path_str;
+	if (from == "") from = getPathString(path.getPath());
 	if (!proxy) {
 		std::string msg = "Missing interface for";
-		if (path_str != "") {
-			SIMDATA_LOG(LOG_ARCHIVE, LOG_ERROR, "getObject(" << path_str << "):");
-			msg = msg + " '" + path_str + "'";
-		} else {
-			PathMap::iterator i = _pathmap.find(id);
-			if (i != _pathmap.end()) {
-				msg = msg + " '" + i->second + "'";
-			}
+		if (from != "") {
+			SIMDATA_LOG(LOG_ARCHIVE, LOG_ERROR, "getObject(" << from << "):");
+			msg = msg + " '" + from + "'";
 		}
-		SIMDATA_LOG(LOG_ARCHIVE, LOG_ERROR, "Interface proxy [" << t->classhash << "] not found.");
+		SIMDATA_LOG(LOG_ARCHIVE, LOG_ERROR, "Interface proxy [" << t->classhash << "] not found while loading " << path << " (" << from << ")");
 		msg = msg + " " + t->classhash.str();
 		throw MissingInterface(msg);
 	}
+	SIMDATA_LOG(LOG_ARCHIVE, LOG_DEBUG, "Creating object using interface proxy [" << proxy->getClassName() << "]");
 	Object *dup = proxy->createObject();
 	uint32 offset = t->offset;
 	uint32 length = t->length;
@@ -378,11 +379,11 @@ const LinkBase DataArchive::getObject(const Path& path, std::string const &path_
 	SIMDATA_LOG(LOG_ARCHIVE, LOG_DEBUG, "got object " << dup->getClassName());
 	dup->_setPath(id);
 	try {
-		dup->unpack(p);
+		dup->serialize(p);
 	} catch (DataUnderflow &e) {
 		if (temp_buffer.size() == 0) --_buffer;
 		e.clear();	
-		SIMDATA_LOG(LOG_ARCHIVE, LOG_ERROR, "INTERNAL ERROR: Object extraction incomplete for class '" << dup->getClassName() << "'.");
+		SIMDATA_LOG(LOG_ARCHIVE, LOG_ERROR, "INTERNAL ERROR: Object extraction incomplete for class '" << dup->getClassName() << "': " << from << " (data underflow).");
 		throw CorruptArchive("Object extraction incomplete for class '" + std::string(dup->getClassName()) + "'");
 	}
 	if (_chain) {
@@ -390,12 +391,11 @@ const LinkBase DataArchive::getObject(const Path& path, std::string const &path_
 	}
 	if (temp_buffer.size() == 0) --_buffer;
 	if (!p.isComplete()) {
-		SIMDATA_LOG(LOG_ARCHIVE, LOG_ERROR, "INTERNAL ERROR: Object extraction incomplete for class '" << dup->getClassName() << "'.");
+		SIMDATA_LOG(LOG_ARCHIVE, LOG_ERROR, "INTERNAL ERROR: Object extraction incomplete for class '" << dup->getClassName() << "': " << from << " (data overflow).");
 		throw CorruptArchive("Object extraction incomplete for class '" + std::string(dup->getClassName()) + "'");
 	}
-	if (dup->isStatic()) {
+	if (proxy->isStatic()) {
 		_addStatic(dup, "", id);
-		// XXX dup->ref(); // we own a copy
 	}
 	return LinkBase(path, dup);
 }
@@ -482,6 +482,20 @@ void DataArchive::setManager(DataManager *m) {
 	_manager = m; 
 }
 
+void DataArchive::dump() const {
+	std::cout << "OBJECT: (size, offset, id, class, path)\n";
+	std::size_t n_objects = _table.size();
+	for (unsigned int i = 0; i < n_objects; i++) {
+		InterfaceProxy *proxy = InterfaceRegistry::getInterfaceRegistry().getInterface(_table[i].classhash);
+		std::string classname = _table[i].classhash.str();
+		if (proxy) classname = proxy->getClassName();
+		std::cout << std::setw(6) << _table[i].length
+		          << std::setw(9) << _table[i].offset
+			  << _table[i].pathhash << " " 
+			  << classname << " "
+			  << getPathString(_table[i].pathhash) << "\n";
+	}
+}
 
 NAMESPACE_SIMDATA_END
 

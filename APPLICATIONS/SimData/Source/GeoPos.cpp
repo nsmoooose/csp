@@ -18,7 +18,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
- 
+
 /**
  * @file GeoPos.cpp
  * 
@@ -29,7 +29,7 @@
 #include <SimData/Math.h>
 #include <SimData/GeoPos.h>
 #include <SimData/Math.h>
-#include <SimData/Pack.h>
+#include <SimData/Archive.h>
 
 #include <cmath>
 #include <sstream>
@@ -67,8 +67,8 @@ void _iterateECEF(double &_lat, double &_alt, double p, double z_, double x_, do
 	} else {
 		y_ = _ref.A_B * (y_ + dz);
 		x_ = x_ + dp;
-		double h = 1.0 / sqrt(y_*y_ + x_*x_);
-		_iterateECEF(_lat, _alt, p, z_, x_*h, y_*h, z, _ref, iter+1);
+		double hp = 1.0 / sqrt(y_*y_ + x_*x_);
+		_iterateECEF(_lat, _alt, p, z_, x_*hp, y_*hp, z, _ref, iter+1);
 	}
 }
 
@@ -540,14 +540,13 @@ void GeoPos::parseXML(const char* cdata) {
 	} else throw ParseException("SYNTAX ERROR: empty vector");
 }
 
-void GeoPos::pack(Packer &p) const {
-	Vector3::pack(p);
-}
 
-void GeoPos::unpack(UnPacker &p) {
-	Vector3::unpack(p);
-	_stale_lla = true;
-	_stale_utm = true;
+void GeoPos::serialize(Archive &archive) {
+	Vector3::serialize(archive);
+	if (archive.isLoading()) {
+		_stale_lla = true;
+		_stale_utm = true;
+	}
 }
 
 
@@ -566,23 +565,23 @@ void GeoPos::setUTM(double northing, double easting, char zone, char designator,
 
 	double nu, T, T2, S, C, CP, SP, R, D, D2, M;
 	double mu, phi;
-	double x, y;
+	double x_, y_;
 
 	_easting = easting;
 	_northing = northing;
 	_zone = zone;
 	_designator = designator;
 	
-	x = easting - 500000.0; //remove 500,000 meter offset for longitude
-	y = northing;
+	x_ = easting - 500000.0; //remove 500,000 meter offset for longitude
+	y_ = northing;
 
 	if ((designator - 'N') < 0) {
-		y -= 10000000.0;  //remove 10,000,000 meter offset used for southern hemisphere
+		y_ -= 10000000.0;  //remove 10,000,000 meter offset used for southern hemisphere
 	}
 
 	double lon0 = toRadians((getZoneNumber() - 1) * 6.0 - 180.0 + 3.0);  //+3 puts origin in middle of zone
 
-	M = y / k0;
+	M = y_ / k0;
 
 	mu = M * _ref->m_f;
 
@@ -596,7 +595,7 @@ void GeoPos::setUTM(double northing, double easting, char zone, char designator,
 	CP = C * C * _ref->ep2;
 	SP = 1.0 - S * S * _ref->e2;
 	R = _ref->A * _ref->B2_A2 / (SP*sqrt(SP));
-	D = x/(nu*k0);
+	D = x_/(nu*k0);
 	D2 = D*D;
 
 	double lat, lon;
@@ -797,8 +796,8 @@ void GeoPos::iterateECEF(double p, double z_, double x_, double y_, int iter) co
 	} else {
 		y_ = _ref->A_B * (y_ + dz);
 		x_ = x_ + dp;
-		double h = 1.0 / sqrt(y_*y_ + x_*x_);
-		iterateECEF(p, z_, x_*h, y_*h, iter+1);
+		double hp = 1.0 / sqrt(y_*y_ + x_*x_);
+		iterateECEF(p, z_, x_*hp, y_*hp, iter+1);
 	}
 }
 /*
@@ -835,8 +834,8 @@ void GeoPos::iterateECEF(double p, double z, double lat, int iter=0) {
 ////////////////////////////////////////////////////////////////////////////////////
 // UTM
 
-UTM::UTM(LLA const &lla, ReferenceEllipsoid const &ref, char zone) {
-	*this = LLAtoUTM(lla, ref, zone);
+UTM::UTM(LLA const &lla, ReferenceEllipsoid const &ref, char zone_) {
+	*this = LLAtoUTM(lla, ref, zone_);
 }
 
 UTM::UTM(ECEF const &ecef, ReferenceEllipsoid const &ref) {
@@ -867,17 +866,17 @@ char UTM::getDesignator(double latitude)
 	return designator[(int)(latitude + 80.0)>>3];
 }
 
-void UTM::set(double easting, double northing, const char *code, double alt)
+void UTM::set(double easting_, double northing_, const char *zone_, double alt)
 {
 	_zone=0;
 	_designator='Z';
-	_E = easting;
-	_N = northing;
+	_E = easting_;
+	_N = northing_;
 	_alt = alt;
-	if (code) {
-		char c0 = code[0];
-		char c1 = code[1];
-		char c2 = code[2];
+	if (zone_) {
+		char c0 = zone_[0];
+		char c1 = zone_[1];
+		char c2 = zone_[2];
 		_zone = c0 - '0';
 		if (c2) {
 			_zone *= 10;
@@ -915,40 +914,25 @@ void UTM::parseXML(const char *cdata)
 	if (cdata) {
 		const char *c = cdata;
 		while (*c != 0 && (*c == ' ' || *c == '\t' || *c == '\r' || *c == '\n')) c++;
-		int zone;
-		char designator;
-		int n = sscanf(c, "%lf %lf %d%c %lf", &_E, &_N, &zone, &designator, &_alt);
+		int zone_;
+		char designator_;
+		int n = sscanf(c, "%lf %lf %d%c %lf", &_E, &_N, &zone_, &designator_, &_alt);
 		if (n != 5) throw ParseException("SYNTAX ERROR: expecting 'easting northing zone altitude'");
-		_zone = zone;
-		_designator = toupper(designator);
+		_zone = zone_;
+		_designator = toupper(designator_);
 		if (!valid()) {
 			throw ParseException("SYNTAX ERROR: invalid UTM code");
 		}
 	} else throw ParseException("SYNTAX ERROR: empty vector");
 }
 
-/**
- * Serialize to a data archive
- */
-void UTM::pack(Packer &p) const
+void UTM::serialize(Archive &archive) 
 {
-	p.pack(_E);
-	p.pack(_N);
-	p.pack(_zone);
-	p.pack(_designator);
-	p.pack(_alt);
-}
-
-/**
- * Deserialize from a data archive
- */
-void UTM::unpack(UnPacker &p) 
-{
-	p.unpack(_E);
-	p.unpack(_N);
-	p.unpack(_zone);
-	p.unpack(_designator);
-	p.unpack(_alt);
+	archive(_E);
+	archive(_N);
+	archive(_zone);
+	archive(_designator);
+	archive(_alt);
 }
 
 
@@ -1014,16 +998,10 @@ void LLA::parseXML(const char* cdata) {
 	throw ParseException("SYNTAX ERROR: expecting 'latitude longitude altitude'");
 }
 
-void LLA::pack(Packer &p) const {
-	p.pack(_lat);
-	p.pack(_lon);
-	p.pack(_alt);
-}
-
-void LLA::unpack(UnPacker &p) {
-	p.unpack(_lat);
-	p.unpack(_lon);
-	p.unpack(_alt);
+void LLA::serialize(Archive &archive) {
+	archive(_lat);
+	archive(_lon);
+	archive(_alt);
 }
 
 void LLA::setDegrees(double lat, double lon, double alt) {

@@ -142,9 +142,12 @@ class Compiler:
 		if warnings > 0:
 			print "%d warnings (severity=%d)." % (warnings, level)
 			if level > 0: 
-				print "Please fix these warnings and recompile."
-				print "Compiled data archive NOT written!"
-				sys.exit(1)
+				if level > getWarningLevel():
+					print "Run with '--warn=%d' to see all warnings." % level
+				if not self.force:
+					print "Please fix these warnings and recompile."
+					print "Compiled data archive NOT written!"
+					sys.exit(1)
 		paths = master.getPaths()
 		DEBUG(1,"Compiling all objects")
 		compiled = DataArchive(self.outfile, 0)
@@ -186,6 +189,7 @@ class Compiler:
 			print >>out, "              --warn=level     show warning message (< level)"
 			print >>out, "              --debug=level    show debug messages (< level)"
 			print >>out, "              --rebuild        rebuild entire archive"
+			print >>out, "              --force          ignore warnings"
 			print >>out, "              --help           help message"
 
 	def usage(self, msg=None):
@@ -222,6 +226,8 @@ class Compiler:
 						SimData.log().setLogLevels(SimData.LOG_ALL, SimData.LOG_DEBUG)
 				elif arg == '--rebuild':
 					self.rebuild = 1
+				elif arg == '--force':
+					self.force = 1
 				elif arg in ("--help", "-h", "-help"):
 					self.usage()
 				else:
@@ -239,6 +245,7 @@ class Compiler:
 	def __init__(self, standalone=0):
 		setWarningLevel(1)
 		self.rebuild = 0
+		self.force = 0
 		self.infile = None
 		self.outfile = None
 		self._name = ""

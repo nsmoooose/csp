@@ -49,7 +49,7 @@
 #include <cmath>
 
 
-#include <SimData/Pack.h>
+#include <SimData/Archive.h>
 #include <SimData/Exception.h>
 #include <SimData/BaseType.h>
 
@@ -578,13 +578,9 @@ public:
 	void load(std::vector<X> const &values, Breaks const &breaks, int *index = 0);
 	void load(std::vector<X> const &values, std::vector< std::vector<X> > const &breaks);
 
-	/** Serialize an object to a data archive.
+	/** Serialize to or from a data archive.
 	 */
-	virtual void pack(Packer& p) const;
-	
-	/** Deserialize an object from a data archive.
-	 */
-	virtual void unpack(UnPacker& p);
+	virtual void serialize(Archive&);
 
 	/** Return a string representation of LUT.
 	 */
@@ -724,13 +720,9 @@ public:
 	void load(std::vector<X> const &values, Breaks const &breaks, int *index = 0);
 	void load(std::vector<X> const &values, std::vector< std::vector<X> > const &breaks);
 
-	/** Serialize an object to a data archive.
+	/** Serialize to or from a data archive.
 	 */
-	virtual void pack(Packer& p) const;
-	
-	/** Deserialize an object from a data archive.
-	 */
-	virtual void unpack(UnPacker& p);
+	virtual void serialize(Archive&);
 
 	/** Return a string representation of LUT.
 	 */

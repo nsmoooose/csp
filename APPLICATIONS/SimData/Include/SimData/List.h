@@ -29,7 +29,7 @@
 #include <string>
 #include <vector>
 #include <SimData/BaseType.h>
-#include <SimData/Pack.h>
+#include <SimData/Archive.h>
 
 
 NAMESPACE_SIMDATA
@@ -56,21 +56,15 @@ template <class T> class List: public ListBase, public std::vector<T> {
 
 public:
 
-	// can be used by python code to extend a list of unknown type, 
-	// assigning or operating on the added element as necessary.
-	/*
-	T& extend();
-	virtual void pack(Packer& p) const;
-	virtual void unpack(UnPacker& p);
-	std::string __repr__();
-	*/
 	~List() {}
 
+	// can be used by python code to extend a list of unknown type, 
+	// assigning or operating on the added element as necessary.
 	T& extend();
 
-	virtual void pack(Packer& p) const;
-
-	virtual void unpack(UnPacker& p);
+	/** Serialize to or from a data archive.
+	 */
+	virtual void serialize(Archive&);
 
 	std::string asString() const;
 
@@ -85,31 +79,33 @@ T& List<T>::extend() {
 }
 
 template<typename T>
-void List<T>::pack(Packer& p) const {
-	typename std::vector<T>::const_iterator a;
-	p.pack((int)(this->size()));
-	for (a=this->begin(); a!=this->end(); a++)
-		p.pack(*a);
-}
-
-template<typename T>
-void List<T>::unpack(UnPacker& p) {
-	T a;
-	int size;
-	p.unpack(size);
-	this->clear();
-	this->reserve(size);
-	for (int i = 0; i < size; i++) {
-		p.unpack(a);
-		this->push_back(a);
+void List<T>::serialize(Archive &archive) {
+	if (archive.isLoading()) {
+		T a;
+		int size;
+		archive(size);
+		assert(size >= 0);
+		this->clear();
+		this->reserve(size);
+		for (int i = 0; i < size; ++i) {
+			archive(a);
+			this->push_back(a);
+		}
+	} else {
+		typename std::vector<T>::iterator a;
+		int s = static_cast<int>(size());
+		archive(s);
+		for (a=begin(); a!=end(); ++a) {
+			archive(*a);
+		}
 	}
 }
 
 template<typename T>
 std::string List<T>::asString() const {
-	char repr[128];
-	snprintf(repr, 128, "<simdata::List[%d]>", this->size());
-	return std::string(repr);
+	std::stringstream ss;
+	ss << "<simdata::List[" << size() << ">";
+	return ss.str();
 }
 
 

@@ -29,6 +29,8 @@
 %include "SimData/Namespace.h"
 
 %rename(__repr__) SIMDATA(Quat)::asString() const;
+//%rename(__eq__) SIMDATA(Quat)::operator==(SIMDATA(Quat) const &) const;
+//%rename(__ne__) SIMDATA(Quat)::operator!=(SIMDATA(Quat) const &) const;
 
 %include "SimData/Quat.h"
 

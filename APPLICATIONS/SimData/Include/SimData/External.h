@@ -20,6 +20,7 @@
 
 /**
  * @file External.h
+ * @brief Classes for referencing external data sources.
  */
 
 #ifndef __SIMDATA_EXTERNAL_H__
@@ -63,6 +64,22 @@ public:
 	const External &operator=(External const &);
 #endif // SWIG
 
+	/** Test equality.
+	 */
+	bool operator==(External const &);
+
+	/** Test inequality.
+	 */
+	bool operator!=(External const &path) { return !(*this==path); }
+
+	/** Test string equality.
+	 */
+	bool operator==(std::string const &);
+
+	/** Test string inequality.
+	 */
+	bool operator!=(std::string const &path) { return !(*this==path); }
+
 	/** Assign from a path string, converting to the internal farmat.
 	 */
 	void setSource(const char* path);
@@ -71,13 +88,9 @@ public:
 	 */
 	const std::string& getSource() const;
 
-	/** Serialize.
+	/** Serialize to or from a data archive.
 	 */
-	virtual void pack(Packer& p) const;
-	
-	/** Deserialize.
-	 */
-	virtual void unpack(UnPacker& p);
+	virtual void serialize(Archive&);
 	
 	/** Standard string representation.
 	 */

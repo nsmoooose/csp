@@ -38,8 +38,7 @@
 
 NAMESPACE_SIMDATA
 
-/**
- * Display a fatal error message to stderr and exit.
+/** Display a fatal error message to stderr and exit.
  */
 inline void error(std::string const &msg) {
 	std::cerr << "SIMDATA fatal error:" << std:: endl;
@@ -47,11 +46,12 @@ inline void error(std::string const &msg) {
 	::exit(1);
 }
 
-/**
- * Return the one and only logstream instance.
- * We use a function instead of a global object so we are assured that cerr
- * has been initialised.
- * @return current logstream
+/** Return the one and only logstream instance.
+ *
+ *  We use a function instead of a global object so we are assured that cerr
+ *  has been initialised.
+ *
+ *  @return current logstream
  */
 inline SIMDATA_EXPORT logstream&
 log()
@@ -62,11 +62,11 @@ log()
 	return *logstrm;
 }
 
-/** 
- * Log a message.
- * @param C debug class
- * @param P priority
- * @param M message
+/** Log a message.
+ *
+ *  @param C debug class
+ *  @param P priority
+ *  @param M message
  */
 #ifdef SIMDATA_NDEBUG
 # define SIMDATA_LOG(C,P,M)
@@ -74,7 +74,14 @@ log()
 # define SIMDATA_LOG(C,P,M) simdata::log() << simdata::loglevel(C,P) << M << std::endl
 #endif
 
+/// Log message priority levels.
 enum { LOG_BULK, LOG_TRACE, LOG_DEBUG, LOG_INFO, LOG_WARNING, LOG_ALERT, LOG_ERROR };
+
+/** Log message categories used internally by SimData
+ *  
+ *  An application using the SimData logging facilities should define
+ *  its own specialized set of categories.
+ */
 enum { 
 	LOG_NONE      = 0x00000000, 
 	LOG_TYPE      = 0x00000001, 

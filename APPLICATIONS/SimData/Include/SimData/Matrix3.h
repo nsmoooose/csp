@@ -69,13 +69,9 @@ public:
 	 */
 	virtual std::string typeString() const { return "Matrix3"; }
 
-	/** Serialize to a data archive.
+	/** Serialize to or from a data archive.
 	 */
-	virtual void pack(Packer &p) const;
-
-	/** Deserialize from a data archive.
-	 */
-	virtual void unpack(UnPacker &p);
+	virtual void serialize(Archive&);
 	
 	/** Extract the matrix values from XML character data.
 	 *
@@ -145,20 +141,20 @@ public:
 #ifndef SWIG
 	/** Get the value (reference) of a matrix element.
 	 */
-        inline double& operator()(int row, int col) { return _mat[row][col]; }
+        inline double& operator()(int row_, int col_) { return _mat[row_][col_]; }
 
 	/** Get the (const) value of a matrix element.
 	 */
-        inline double operator()(int row, int col) const { return _mat[row][col]; }
+        inline double operator()(int row_, int col_) const { return _mat[row_][col_]; }
 #endif // SWIG
 
 	/** Get the value of a matrix element.
 	 */
-	inline double getElement(int row, int col) { return _mat[row][col]; }
+	inline double getElement(int row_, int col_) { return _mat[row_][col_]; }
 
 	/** Set the value of a matrix element.
 	 */
-	inline void setElement(int row, int col, double value) { _mat[row][col]=value; }
+	inline void setElement(int row_, int col_, double value) { _mat[row_][col_]=value; }
 
 	/** Return true if all elements are valid floating point numbers.
 	 */
@@ -186,8 +182,8 @@ public:
         
 	/** Set this matrix from a double[9] array.
 	 */
-        inline void set(double const * const ptr) {
-		std::copy(ptr, ptr+9, (double*)(_mat));
+        inline void set(double const * const ptr_) {
+		std::copy(ptr_, ptr_+9, (double*)(_mat));
         }
         
 	/** Set this matrix from a list of element values.

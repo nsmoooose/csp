@@ -18,17 +18,24 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
+#ifndef __SIMDATA_VECTOR_TEMPLATES__
+#define __SIMDATA_VECTOR_TEMPLATES__
+
+%include "std_string.i"
 %include "std_vector.i"
 
 #define new_vector(a, b)	\
-	%template(v##a) std::vector< b >;
+	%template(simdata_vector_##a) std::vector< b >;
 
-#ifndef __VECTOR_TEMPLATES__
-#define __VECTOR_TEMPLATES__
-namespace std {
-	%template(vector_d) vector<double>;
-//	%template(vector_s) vector<Spread>;
-//	%template(vector_f) vector<float>;
-//	%template(vector_i) vector<int>;
-}
-#endif // __VECTOR_TEMPLATES__
+new_vector(double, double);
+new_vector(string, std::string);
+new_vector(int, int);
+new_vector(Real, SIMDATA(Real));
+new_vector(Path, SIMDATA(Path));
+new_vector(Curve, SIMDATA(Curve));
+new_vector(Table, SIMDATA(Table));
+new_vector(External, SIMDATA(External));
+new_vector(Key, SIMDATA(Key));
+
+#endif // __SIMDATA_VECTOR_TEMPLATES__
+

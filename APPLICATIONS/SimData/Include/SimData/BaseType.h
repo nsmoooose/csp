@@ -21,6 +21,7 @@
 
 /**
  * @file BaseType.h
+ * @brief Base class for objects that support serialization to data archives.
  */
 
 /**
@@ -41,6 +42,7 @@
 
 NAMESPACE_SIMDATA
 
+class Archive;
 class Packer;
 class UnPacker;
 
@@ -60,13 +62,9 @@ public:
 	 */
 	virtual ~BaseType();
 
-	/** Serialize an object to a data archive.
+	/** Serialize an object to or from a data archive 
 	 */
-	virtual void pack(Packer&) const; 
-	
-	/** Deserialize an object from a data archive.
-	 */
-	virtual void unpack(UnPacker&);
+	virtual void serialize(Archive&) {}
 
 	/** Parse cdata from within the XML tags for this object.
 	 */

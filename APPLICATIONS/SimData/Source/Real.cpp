@@ -20,7 +20,9 @@
 
 #include <SimData/Real.h>
 #include <SimData/Random.h>
-#include <SimData/Pack.h>
+#include <SimData/Archive.h>
+
+#include <sstream>
 
 #include <sstream>
 
@@ -35,15 +37,12 @@ random::Taus2 Real::_rng;
 
 // class Real
 
-void Real::pack(Packer &p) const {
-	p.pack(_mean);
-	p.pack(_sigma);
-}
-
-void Real::unpack(UnPacker &p) {
-	p.unpack(_mean);
-	p.unpack(_sigma);
-	regen();
+void Real::serialize(Archive &archive) {
+	archive(_mean);
+	archive(_sigma);
+	if (archive.isLoading()) {
+		regen();
+	}
 }
 
 void Real::parseXML(const char* cdata) {

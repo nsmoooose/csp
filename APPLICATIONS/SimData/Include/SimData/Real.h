@@ -121,19 +121,12 @@ public:
 	inline operator float() const { return _value; }
 #endif
 	
-	/**
-	 * Serialize to a data archive.
-	 *
-	 * Only the distribution parameters (mean and sigma) are saved.
+	/** Serialize to or from a data archive.
+	 *  
+	 *  Only the distribution parameters (mean and sigma) are saved.
+	 *  A new value will be generated from the saved distribution.
 	 */
-	virtual void pack(Packer &p) const;
-
-	/**
-	 * Deserialize from a data archive.
-	 *
-	 * A new value will be generated from the saved distribution.
-	 */
-	virtual void unpack(UnPacker &p);
+	virtual void serialize(Archive&);
 
 	/**
 	 * Internal method used by the XML parser.

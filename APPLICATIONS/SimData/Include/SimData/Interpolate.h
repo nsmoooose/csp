@@ -50,8 +50,7 @@
 
 NAMESPACE_SIMDATA
 
-class Packer;
-class UnPacker;
+class Archive;
 
 /** Base class for interpolated data.
  * 
@@ -83,8 +82,11 @@ public:
 
 	InterpolatedData();
 	virtual ~InterpolatedData();
-	virtual void pack(Packer& p) const;
-	virtual void unpack(UnPacker& p);
+
+	/** Serialize to or from a data archive.
+	 */
+	virtual void serialize(Archive&);
+	
 	virtual value_t getValue(value_t, value_t) const;
 	virtual value_t getPrecise(value_t, value_t) const;
 	int find(vector_t b, value_t v) const;
@@ -141,13 +143,9 @@ public:
 	const Curve &operator=(const Curve &);
 #endif // SWIG
 
-	/** Serialize to a data archive.
+	/** Serialize to or from a data archive.
 	 */
-	virtual void pack(Packer& p) const;
-	
-	/** Deserialize from a data archive.
-	 */
-	virtual void unpack(UnPacker& p);
+	virtual void serialize(Archive&);
 
 	/** Get a list of the x values of the source data set.
 	 */
@@ -222,8 +220,11 @@ public:
 #endif // SWIG
 	void invalidate();
 	int isValid() const;
-	virtual void pack(Packer &p) const;
-	virtual void unpack(UnPacker &p);
+
+	/** Serialize to or from a data archive.
+	 */
+	virtual void serialize(Archive&);
+
 	vector_t getXBreaks() const;
 	vector_t getYBreaks() const;
 	void setXBreaks(const vector_t& breaks);

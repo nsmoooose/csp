@@ -211,9 +211,9 @@ public:
 			x = *(const_cast<LinkBase *>(p));
 		} else {
 			// last chance, is it a path?
-			Path const *p = dynamic_cast<Path const *>(var.o);
-			TypeCheck(p!=NULL, "dynamic cast of BaseType* to LinkBase failed");
-			x = LinkBase(*(const_cast<Path *>(p)), 0);
+			Path const *path = dynamic_cast<Path const *>(var.o);
+			TypeCheck(path!=NULL, "dynamic cast of BaseType* to LinkBase failed");
+			x = LinkBase(*(const_cast<Path *>(path)), 0);
 		}
 	}
 	template <typename Q>

@@ -26,6 +26,7 @@ using SIMDATA(TypeAdapter);
 %}
 
 %include "SimData/Namespace.h"
+%include "SimData/vector.i"
 %include "exception.i"
 
 NAMESPACE_SIMDATA
@@ -43,6 +44,8 @@ NAMESPACE_SIMDATA_END
 		SWIG_exception(SWIG_SyntaxError, e.getMessage().c_str());
         }
 }
+
+new_vector(pInterfaceProxy, SIMDATA(InterfaceProxy)*)
 
 %include "SimData/InterfaceRegistry.h"
 

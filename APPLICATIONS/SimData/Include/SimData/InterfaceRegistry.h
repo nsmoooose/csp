@@ -21,6 +21,7 @@
 
 /**
  * @file InterfaceRegistry.h
+ * @brief Classes for storing and accessing object interfaces.
  */
 
 
@@ -29,6 +30,7 @@
 
 #include <string>
 #include <vector>
+#include <map>
 
 #include <SimData/Export.h>
 #include <SimData/HashUtility.h>
@@ -42,8 +44,6 @@ NAMESPACE_SIMDATA
 
 
 class Object;
-class Packer;
-class UnPacker;
 
 /** @page InterfaceDetails Object Interfaces and Interface Proxies
  *
@@ -56,7 +56,7 @@ class UnPacker;
  *  data originally specified in XML.
  *
  *  The ObjectInterface class is the primary, internal interface to
- *  an Object-derived class.  ObjectInterface instances, in turn,
+ *  an Object subclass.  ObjectInterface instances, in turn,
  *  rely on the MemberAccessorBase class and its derivatives to
  *  access individual member variables.  None of these classes are
  *  created directly by the user.  Instead, a series of macros are
@@ -107,12 +107,53 @@ class UnPacker;
 class SIMDATA_EXPORT InterfaceProxy {
 
 private:
+
+	typedef std::map<std::string, ObjectInterfaceBase*> InterfaceMap;
+	std::vector<std::string> _classNames;
+	std::vector<hasht> _classHashes;
+	std::vector<std::string> _variableNames;
+	std::vector<std::string> _requiredNames;
+	InterfaceMap _interfaces;
+
 	/** Default constructor.
 	 *
 	 *  This private constructor should not be called and is undefined.
 	 */
 	InterfaceProxy();
+
+protected:
+
+	/** Add an ObjectInterface.
+	 *
+	 *  Used internally to register ObjectInterface instances.  Each
+	 *  InterfaceProxy constructor creates a ObjectInterface instance
+	 *  for the variables accessible in the corresponding Object subclass.
+	 *  These interfaces are stored in the InterfaceProxy base class and
+	 *  used to access all variables in the Object hierarchy.
+	 *
+	 *  @note Do not call this method directly.
+	 *
+	 *  @param objectinterface The ObjectInterface to add.
+	 *  @param classname The name of the Object subclass corresponding
+	 *                   to the interface being added.
+	 *  @param classhash The hash of the Object subclass.
+	 */
+	void addInterface(ObjectInterfaceBase* objectinterface, 
+	                  std::string const &classname,
+	                  hasht const &classhash);
+
+	/** Find the ObjectInterface corresponding to a given variable name.
+	 *
+	 *  @param varname The name of the variable to be accessed.
+	 *  @param required If true, an exception will be thrown if no interface is
+	 *                  found for the specified variable name.
+	 *  @returns The interface correcsponding to the specified variable name, or
+	 *           0 if no interface is found and required is false.
+	 */
+	ObjectInterfaceBase *findInterface(std::string const &varname, bool required) const;
+
 public:
+
 	/** Constructor.
 	 *
 	 *  Construct a new interface proxy, and register it with the global
@@ -128,73 +169,165 @@ public:
 
 	virtual ~InterfaceProxy() { }
 
+	/** Create a new instance of the corresponding object.
+	 */
 	virtual Object *createObject() const;
 
+	/** Get the class hash of the corresponding object.
+	 */
+	virtual hasht getClassHash() const;
+	
+	/** Get the class name of the corresponding object.
+	 */
+	virtual const char *getClassName() const;
+	
 #ifndef SWIG
-	virtual MemberAccessorBase * getAccessor(const char *name, const char *cname = 0) const;
 
-	virtual const TypeAdapter get(Object *o, const char *name) const;
-	
-	virtual void set(Object *o, const char *name, const TypeAdapter &v);
-	
-	virtual void push_back(Object *o, const char *name, const TypeAdapter &v);
+	/** Get the value of an interface variable.
+	 */
+	const TypeAdapter get(Object *o, std::string const &varname) const {
+		ObjectInterfaceBase *oi = findInterface(varname, true);
+		return oi->get(o, varname);
+	}
+
+	/** Set the value of an interface variable.
+	 */
+	void set(Object *o, std::string const &varname, const TypeAdapter &v) {
+		ObjectInterfaceBase *oi = findInterface(varname, true);
+		oi->set(o, varname, v);
+	}
+
+	/** Append a value to an interface variable list.
+	 */
+	void push_back(Object *o, std::string const &varname, const TypeAdapter &v) {
+		ObjectInterfaceBase *oi = findInterface(varname, true);
+		oi->push_back(o, varname, v);
+	}
+
 	
 #endif // SWIG
 	
-	virtual void set_enum(Object *o, const char *name, const char *v);
+	/** Assign an Enum value to an object member variable.
+	 * 
+	 *  @param o The object
+	 *  @param varname The name of the member variable.
+	 *  @param v The (string) value of the Enum.
+	 */
+	void set_enum(Object *o, std::string const &varname, std::string const &v) {
+		set(o, varname, TypeAdapter(v));
+	}
 
-	virtual void clear(Object *o, const char *name);
+	/** Remove all members of an object member variable container.
+	 *
+	 *  @param o The object
+	 *  @param varname The name of the member variable container.
+	 */
+	void clear(Object *o, std::string const &varname) {
+		ObjectInterfaceBase *oi = findInterface(varname, true);
+		oi->clear(o, varname);
+	}
 
-	virtual bool variableExists(const char *name) const;
+	/** Test if a member variable is defined in the object interface.
+	 */
+	bool variableExists(std::string const &varname) const {
+		return findInterface(varname, false) != 0;
+	}
+
+	/** Test if a member variable in the object interface must be
+	 *  assigned a value in XML Object definitions of the object.
+	 */
+	bool variableRequired(std::string const &varname) const {
+		ObjectInterfaceBase *oi = findInterface(varname, true);
+		return oi->variableRequired(varname);
+	}
+
+	/** Get a string representation of the type of an interface
+	 *  variable.
+	 */
+	std::string variableType(std::string const &varname) const {
+		ObjectInterfaceBase *oi = findInterface(varname, true);
+		return oi->variableType(varname);
+	}
+
+	/** Get the names of all variables in the interface.
+	 */
+	std::vector<std::string> getVariableNames() const {
+		// XXX this should return a const &, but swig currently doesn't
+		// convert such references to Python lists, so for now we copy 
+		// the full list.
+		return _variableNames;
+	}
 	
-	virtual bool variableRequired(const char *name) const;
+	/** Get the names of all required variables in the interface.
+	 */
+	std::vector<std::string> getRequiredNames() const {
+		// XXX this should return a const &, but swig currently doesn't
+		// convert such references to Python lists, so for now we copy 
+		// the full list.
+		return _requiredNames;
+	}
 
-	virtual std::string variableType(const char *variable) const;
+	/** Test if this object interface is a subclass of the specified
+	 *  class.
+	 *
+	 *  This method only checks the interface hierarchy of the object
+	 *  classes in question, not the full class hierarchy of the object.
+	 *  Non-object base classes will not test true, nor will object
+	 *  classes that do not extend the interface.
+	 *
+	 *  @param cname The name of an object class.
+	 *  @returns True if the object class is a superclass.
+	 */
+	bool isSubclass(std::string const &cname) const;
 
-	virtual void pack(Object *o, Packer &p) const;
+	/** Test if this object interface is a subclass of the specified
+	 *  class.
+	 *
+	 *  This method is the same as 
+	 *      <tt>isSubclass(std::string const &)</tt>,
+	 *  but takes an object class hash instead of the class name.
+	 *
+	 *  @param chash The class hash of an object class.
+	 *  @returns True if the object class is a superclass.
+	 */
+	bool isSubclass(hasht const &chash) const;
 
-	virtual void unpack(Object *o, UnPacker &p) const;
-	
-	virtual hasht getClassHash() const;
-	
-	virtual const char *getClassName() const;
-	
-	virtual std::vector<std::string> getVariableNames() const;
-	
-	virtual std::vector<std::string> getRequiredNames() const;
-
-	virtual bool isSubclass(std::string const &cname) const;
-
-	virtual bool isSubclass(hasht const &chash) const;
+	/** Test if the object class of this interface is static.
+	 *
+	 *  Instances of static object classes are cached when loaded
+	 *  from a data archive and shared by all users of the object.
+	 *  See Object.h for details.
+	 */
+	virtual bool isStatic() const { return false; }
 
 
 /////////////////////////////////////////////////////// SWIG
 #ifdef SWIG
 public:
 %extend {
-	virtual void set(Object *p, const char *name, int v) {
-		self->set(p, name, TypeAdapter(v));
+	virtual void set(Object *p, std::string const &varname, int v) {
+		self->set(p, varname, TypeAdapter(v));
 	}
-	virtual void set(Object *p, const char *name, double v) {
-		self->set(p, name, TypeAdapter(v));
+	virtual void set(Object *p, std::string const &varname, double v) {
+		self->set(p, varname, TypeAdapter(v));
 	}
-	virtual void set(Object *p, const char *name, const char *v) {
-		self->set(p, name, TypeAdapter(v));
+	virtual void set(Object *p, std::string const &varname, std::string const &v) {
+		self->set(p, varname, TypeAdapter(v));
 	}
-	virtual void set(Object *p, const char *name, BaseType *v) {
-		self->set(p, name, TypeAdapter(v));
+	virtual void set(Object *p, std::string const &varname, BaseType *v) {
+		self->set(p, varname, TypeAdapter(v));
 	}
-	virtual void push_back(Object *p, const char *name, const char *v) {
-		self->push_back(p, name, TypeAdapter(v));
+	virtual void push_back(Object *p, std::string const &varname, std::string const &v) {
+		self->push_back(p, varname, TypeAdapter(v));
 	}
-	virtual void push_back(Object *p, const char *name, int v) {
-		self->push_back(p, name, TypeAdapter(v));
+	virtual void push_back(Object *p, std::string const &varname, int v) {
+		self->push_back(p, varname, TypeAdapter(v));
 	}
-	virtual void push_back(Object *p, const char *name, double v) {
-		self->push_back(p, name, TypeAdapter(v));
+	virtual void push_back(Object *p, std::string const &varname, double v) {
+		self->push_back(p, varname, TypeAdapter(v));
 	}
-	virtual void push_back(Object *p, const char *name, const BaseType &v) {
-		self->push_back(p, name, TypeAdapter(v));
+	virtual void push_back(Object *p, std::string const &varname, const BaseType &v) {
+		self->push_back(p, varname, TypeAdapter(v));
 	}
 }
 #endif // SWIG
@@ -207,6 +340,8 @@ public:
 template <class C>
 class Singleton {
 public:
+	/** Get the one instance of the template class.
+	 */
 	static C& getInstance() {
 		static C __instance;
 		return __instance;
@@ -231,20 +366,40 @@ friend class InterfaceProxy;
 public:
 	typedef std::vector<InterfaceProxy *> interface_list;
 
+	/** Get an object interface by object class name.
+	 *
+	 *  @returns 0 if the interface is not found.
+	 */
 	InterfaceProxy *getInterface(const char *name);
 	
+	/** Get an object interface by object class hash.
+	 *
+	 *  @returns 0 if the interface is not found.
+	 */
 	InterfaceProxy *getInterface(hasht key);
 	
+	/** Test if an object interface is registered.
+	 *
+	 *  @param name The object class name.
+	 */
 	bool hasInterface(const char *name);
 	
+	/** Test if an object interface is registered.
+	 *
+	 *  @param key The object class hash.
+	 */
 	bool hasInterface(hasht key);
 	
+	/** Get a list of all object class names in the registry.
+	 */
 	std::vector<std::string> getInterfaceNames() const;
 
+	/** Get a list of all interfaces in the registry.
+	 */
 	std::vector<InterfaceProxy *> getInterfaces() const;
 	
-	void addInterface(const char *name, hasht id, InterfaceProxy *proxy) throw(InterfaceError);
-
+	/** Get the interface registry singleton.
+	 */
 	static InterfaceRegistry &getInterfaceRegistry() {
 		return Singleton<InterfaceRegistry>::getInstance();
 	}
@@ -258,6 +413,13 @@ private:
 #if !defined(_MSC_VER ) || (_MSC_VER > 1200)
 	virtual ~InterfaceRegistry();
 #endif
+
+	/** Add an interface to the registry.
+	 *
+	 *  Interfaces are registered automatically by the 
+	 *  SIMDATA_*_INTERFACE macros.
+	 */
+	void addInterface(const char *name, hasht id, InterfaceProxy *proxy) throw(InterfaceError);
 
 	friend class Singleton<InterfaceRegistry>;
 	InterfaceRegistry();
@@ -390,6 +552,17 @@ private:
  *  @endcode
  */
 
+#if 0
+	virtual bool isSubclass(std::string const &cname) const { \
+		return (cname == #classname) || \
+		       nqbaseinterface::isSubclass(cname);\
+	} \
+	virtual bool isSubclass(SIMDATA(hasht) const &chash) const { \
+		return (chash == classname::_getClassHash()) || \
+		       nqbaseinterface::isSubclass(chash);\
+	} \
+
+#endif
 
 /** interface macro 0
  *
@@ -413,7 +586,8 @@ public:
 		assert(o); \
 		return o; \
 	} \
-	virtual bool isVirtual() const { return false; }
+	virtual bool isVirtual() const { return false; } \
+	virtual bool isStatic() const { return classname::_isClassStatic(); }
 		
 /** interface macro 1 for abstract classes: no createObject
  *
@@ -431,64 +605,11 @@ public:
 #define __SIMDATA_XML_INTERFACE_2(classname, baseinterface, nqbaseinterface) \
 	virtual SIMDATA(hasht) getClassHash() const { return classname::_getClassHash(); } \
 	virtual const char * getClassName() const { return classname::_getClassName(); } \
-	virtual SIMDATA(MemberAccessorBase) * getAccessor(const char *name, const char *cname = 0) const { \
-		if (!cname) cname = #classname; \
-		SIMDATA(MemberAccessorBase) *p = _interface->getAccessor(name); \
-		if (p) return p; \
-		return nqbaseinterface::getAccessor(name, cname); \
-	} \
-	virtual void pack(SIMDATA(Object) *o, SIMDATA(Packer) &p) const { \
-		nqbaseinterface::pack(o, p); \
-		_interface->pack(o, p); \
-	} \
-	virtual void unpack(SIMDATA(Object) *o, SIMDATA(UnPacker) &p) const { \
-		nqbaseinterface::unpack(o, p); \
-		_interface->unpack(o, p); \
-	} \
-	virtual bool variableExists(const char *name) const { \
-		return _interface->variableExists(name) || nqbaseinterface::variableExists(name); \
-	} \
-	virtual bool variableRequired(const char *name) const { \
-		return _interface->variableRequired(name) || nqbaseinterface::variableRequired(name); \
-	} \
-	virtual std::string variableType(const char *name) const { \
-		if (_interface->variableExists(name)) return _interface->variableType(name); \
-		return nqbaseinterface::variableType(name); \
-	} \
-	virtual std::vector<std::string> getVariableNames() const { \
-		std::vector<std::string> s = nqbaseinterface::getVariableNames(); \
-		std::vector<std::string> t = _interface->getVariableNames(); \
-		s.insert(s.end(), t.begin(), t.end()); \
-		return s; \
-	} \
-	virtual std::vector<std::string> getRequiredNames() const { \
-		std::vector<std::string> s = nqbaseinterface::getRequiredNames(); \
-		std::vector<std::string> t = _interface->getRequiredNames(); \
-		s.insert(s.end(), t.begin(), t.end()); \
-		return s; \
-	} \
-	virtual bool isSubclass(std::string const &cname) const { \
-		return (cname == #classname) || \
-		       nqbaseinterface::isSubclass(cname);\
-	} \
-	virtual bool isSubclass(SIMDATA(hasht) const &chash) const { \
-		return (chash == classname::_getClassHash()) || \
-		       nqbaseinterface::isSubclass(chash);\
-	} \
-	void checkDuplicates() const throw(SIMDATA(InterfaceError)) { \
-		std::vector<std::string>::const_iterator name; \
-		std::vector<std::string> s = _interface->getVariableNames(); \
-		std::vector<std::string> t = _interface->getRequiredNames(); \
-		s.insert(s.end(), t.begin(), t.end()); \
-		for (name = s.begin(); name != s.end(); name++) \
-			if (nqbaseinterface::variableExists(name->c_str())) {\
-				std::cout << "variable \"" << *name << "\" multiply defined in interface to class " #classname " or parent interface." << std::endl; \
-				throw SIMDATA(InterfaceError)("variable \"" + *name + "\" multiply defined in interface to class " #classname " or parent interface."); \
-			} \
-	} \
 	classname##InterfaceProxy(const char * cname = #classname, SIMDATA(hasht) (*chash)() = &classname::_getClassHash): \
 		baseinterface(cname, chash) \
 	{ \
+		std::string _classname = #classname; \
+		SIMDATA(hasht) _classhash = classname::_getClassHash(); \
 		_interface = new SIMDATA(ObjectInterface)<classname>; \
 		(*_interface)
 
@@ -578,7 +699,7 @@ public:
 #else
 	#define END_SIMDATA_XML_INTERFACE \
 			.pass(); \
-			checkDuplicates(); \
+			addInterface(_interface, _classname, _classhash); \
 		} \
 	};
 #endif

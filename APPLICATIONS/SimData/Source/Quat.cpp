@@ -35,7 +35,7 @@
 
 #include <SimData/Quat.h>
 #include <SimData/Vector3.h>
-#include <SimData/Pack.h>
+#include <SimData/Archive.h>
 
 #include <cstdio>
 #include <cmath>
@@ -53,19 +53,11 @@ NAMESPACE_SIMDATA
 const Quat Quat::IDENTITY(0.0, 0.0, 0.0, 1.0);
 const Quat Quat::ZERO(0.0, 0.0, 0.0, 0.0);
 
-
-void Quat::pack(Packer &p) const {
-	p.pack(_w);
-	p.pack(_x);
-	p.pack(_y);
-	p.pack(_z);
-}
-
-void Quat::unpack(UnPacker &p) {
-	p.unpack(_w);
-	p.unpack(_x);
-	p.unpack(_y);
-	p.unpack(_z);
+void Quat::serialize(Archive &archive) {
+	archive(_w);
+	archive(_x);
+	archive(_y);
+	archive(_z);
 }
 
 void Quat::parseXML(const char* cdata) {
@@ -98,15 +90,15 @@ std::string Quat::asString() const {
 
 /// Set the elements of the Quat to represent a rotation of angle
 /// (radians) around the axis (x,y,z)
-void Quat::makeRotate(double angle, double x, double y, double z)
+void Quat::makeRotate(double angle, double x_, double y_, double z_)
 {
-	double inversenorm  = 1.0/sqrt(x*x + y*y + z*z);
+	double inversenorm  = 1.0/sqrt(x_*x_ + y_*y_ + z_*z_);
 	double coshalfangle = cos(0.5*angle);
 	double sinhalfangle = sin(0.5*angle);
 
-	_x = x * sinhalfangle * inversenorm;
-	_y = y * sinhalfangle * inversenorm;
-	_z = z * sinhalfangle * inversenorm;
+	_x = x_ * sinhalfangle * inversenorm;
+	_y = y_ * sinhalfangle * inversenorm;
+	_z = z_ * sinhalfangle * inversenorm;
 	_w = coshalfangle;
 }
 
@@ -135,11 +127,8 @@ void Quat::makeRotate(const Vector3& from, const Vector3& to)
 {
 	const double epsilon = 0.00001f;
 
-	double length1  = from.length();
-	double length2  = to.length();
-
 	// dot product vec1*vec2
-	double cosangle = (from*to)/(length1*length2);
+	double cosangle = (from*to)/(from.length()*to.length());
 
 	if (fabs(cosangle - 1) < epsilon) {
 		// cosangle is close to 1, so the vectors are close to being coincident
@@ -210,17 +199,17 @@ void Quat::getRotate(double& angle, Vector3& vec) const {
 // Get the angle of rotation and axis of this Quat object.
 // Won't give very meaningful results if the Quat is not associated
 // with a rotation!
-void Quat::getRotate(double& angle, double& x, double& y, double& z) const {
+void Quat::getRotate(double& angle, double& x_, double& y_, double& z_) const {
 	double sinhalfangle = sqrt(_x*_x + _y*_y + _z*_z);
 	angle = 2 * atan2(sinhalfangle, _w);
 	if(sinhalfangle) {
-		x = _x / sinhalfangle;
-		y = _y / sinhalfangle;
-		z = _z / sinhalfangle;
+		x_ = _x / sinhalfangle;
+		y_ = _y / sinhalfangle;
+		z_ = _z / sinhalfangle;
 	} else {
-		x = 0.0;
-		y = 0.0;
-		z = 1.0;
+		x_ = 0.0;
+		y_ = 0.0;
+		z_ = 1.0;
 	}
 }
 

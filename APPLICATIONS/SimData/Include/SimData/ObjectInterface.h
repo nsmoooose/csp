@@ -34,7 +34,7 @@
 #include <SimData/hash_map.h>
 #include <SimData/TypeAdapter.h>
 #include <SimData/Namespace.h>
-#include <SimData/Pack.h>
+#include <SimData/Archive.h>
 
 /*
  * Simulated Partial Template Specialization
@@ -58,6 +58,7 @@ SIMDATA_EXCEPTION(InterfaceError)
 
 /** Base class for storing and accessing member variable references.
  * 
+ *  @internal
  *  @author Mark Rose <mrose@stm.lbl.gov>
  */
 class MemberAccessorBase 
@@ -65,7 +66,7 @@ class MemberAccessorBase
 public:
 	virtual ~MemberAccessorBase() {}
 
-	typedef HASH_MAPS<const char *, MemberAccessorBase *, HASH<const char*>, eqstr>::Type map;
+	typedef HASH_MAPS<std::string, MemberAccessorBase *, hashstring, eqstring>::Type map;
 
 	
 	virtual void set(Object *, TypeAdapter const &) throw(TypeMismatch) { 
@@ -82,10 +83,10 @@ public:
 	}
 	bool isRequired() const { return required; };
 	std::string getName() const { return name; }
-	virtual void pack(Object *, Packer &p) const {
+	virtual void pack(Object *, Packer &) const {
 		assert(0);
 	}
-	virtual void unpack(Object *, UnPacker &p) {
+	virtual void unpack(Object *, UnPacker &) {
 		assert(0);
 	}
 	std::string getType() const { return type; }
@@ -112,6 +113,7 @@ protected:
 
 /** Class for storing and accessing bitmasked member variable references.
  * 
+ *  @internal
  *  @author Mark Rose <mrose@stm.lbl.gov>
  */
 template <class C, typename T> 
@@ -161,11 +163,11 @@ public:
 	}
 	virtual void pack(Object *o, Packer &p) const {
 		C * object = dynamic_cast<C *>(o);
-		p.pack(object->*member);
+		p(object->*member);
 	}
 	virtual void unpack(Object *o, UnPacker &p) {
 		C * object = dynamic_cast<C *>(o);
-		p.unpack(object->*member);
+		p(object->*member);
 	}
 	virtual unsigned int getMask() const { return static_cast<unsigned int>(mask); }
 };
@@ -173,6 +175,7 @@ public:
 
 /** Class for storing and accessing member variable references.
  *
+ *  @internal
  *  @author Mark Rose <mrose@stm.lbl.gov>
  */
 template <class C, typename T> 
@@ -210,17 +213,18 @@ public:
 	}
 	virtual void pack(Object *o, Packer &p) const {
 		C * object = dynamic_cast<C *>(o);
-		p.pack(object->*member);
+		p(object->*member);
 	}
 	virtual void unpack(Object *o, UnPacker &p) {
 		C * object = dynamic_cast<C *>(o);
-		p.unpack(object->*member);
+		p(object->*member);
 	}
 };
 
 
 /** Partially specialized MemberAccessor for std::vector<> variables.
  *
+ *  @internal
  *  @author Mark Rose <mrose@stm.lbl.gov>
  */
 #ifdef __SIMDATA_PTS_SIM
@@ -263,10 +267,11 @@ public:
 	virtual void pack(Object *o, Packer &p) const {
 		C * object = dynamic_cast<C *>(o);
 		T &m = object->*member;
-		p.pack(static_cast<int>(m.size()));
+		int n = static_cast<int>(m.size());
+		p(n);
 		typename T::iterator idx;
 		for (idx = m.begin(); idx != m.end(); idx++) {
-			p.pack(*idx);
+			p(*idx);
 		}
 	}
 	virtual void unpack(Object *o, UnPacker &p) {
@@ -274,9 +279,9 @@ public:
 		T &m = object->*member;
 		typename T::value_type temp;
 		int n;
-		p.unpack(n);
-		while (n-- > 0) {
-			p.unpack(temp);
+		p(n);
+		while (--n >= 0) {
+			p(temp);
 			m.push_back(temp);
 		}
 	}
@@ -322,10 +327,11 @@ public:
 	virtual void pack(Object *o, Packer &p) const {
 		C * object = dynamic_cast<C *>(o);
 		std::vector<T> &m = object->*member;
-		p.pack((int)m.size());
+		int n = static_cast<int>(m.size());
+		p(n);
 		typename std::vector<T>::iterator idx;
-		for (idx = m.begin(); idx != m.end(); idx++) {
-			p.pack(*idx);
+		for (idx = m.begin(); idx != m.end(); ++idx) {
+			p(*idx);
 		}
 	}
 	virtual void unpack(Object *o, UnPacker &p) {
@@ -333,10 +339,10 @@ public:
 		std::vector<T> &m = object->*member;
 		T temp;
 		int n;
-		p.unpack(n);
+		p(n);
 		m.reserve(n);
-		while (n-- > 0) {
-			p.unpack(temp);
+		while (--n >= 0) {
+			p(temp);
 			m.push_back(temp);
 		}
 	}
@@ -344,6 +350,7 @@ public:
 
 /** Specialized MemberMaskAccessor for int bitmasked variables.
  *
+ *  @internal
  *  @author Mark Rose <mrose@stm.lbl.gov>
  */
 template <class C> 
@@ -357,6 +364,7 @@ public:
 
 /** Specialized MemberMaskAccessor for short int bitmasked variables.
  *
+ *  @internal
  *  @author Mark Rose <mrose@stm.lbl.gov>
  */
 template <class C> 
@@ -370,6 +378,7 @@ public:
 
 /** Specialized MemberMaskAccessor for char bitmasked variables.
  *
+ *  @internal
  *  @author Mark Rose <mrose@stm.lbl.gov>
  */
 template <class C> 
@@ -433,36 +442,32 @@ namespace PTS {
 
 /** Pure virtual base class for object interfaces.
  *
+ *  @internal
  *  @author Mark Rose <mrose@stm.lbl.gov>
  */
 class ObjectInterfaceBase {
 public:
 	virtual ~ObjectInterfaceBase() {}
+
 	/** Test if a given variable name exists in the interface.
 	 *
 	 *  @return Returns true if the variable name exists in the
 	 *  interface.
 	 */
-	virtual bool variableExists(const char *name) const = 0;
+	virtual bool variableExists(std::string const &name) const = 0;
 
 	/** Test if a given variable is tagged as 'required'.  
 	 *
 	 *  @return Returns false if the variable is not marked as
 	 *  'required' or does not exist in the interface.
 	 */
-	virtual bool variableRequired(const char *name) const = 0;
+	virtual bool variableRequired(std::string const &name) const = 0;
 
-	/** Get a string identifier string for a variable.
+	/** Get a type identifier string for a variable.
 	 *
 	 *  @return Returns the type identifier string.
 	 */
-	virtual std::string variableType(const char *name) const = 0;
-
-	/** Get the accessor associated with the specified memeber variable.
-	 *
-	 *  This method is for internal use by the interface classes only.
-	 */
-	virtual MemberAccessorBase *getAccessor(const char *name) = 0;
+	virtual std::string variableType(std::string const &name) const = 0;
 
 	/** Get the names of all variables defined in the interface.
 	 */
@@ -472,11 +477,27 @@ public:
 	 */
 	virtual std::vector<std::string> getRequiredNames() const = 0;
 
+	/** Get the value of an interface variable.
+	 */
+	virtual const TypeAdapter get(Object *o, std::string const &name) const = 0;
+	
+	/** Set the value of an interface variable.
+	 */
+	virtual void set(Object *o, std::string const &name, const TypeAdapter &v) const = 0;
+	
+	/** Append a value to an interface variable list.
+	 */
+	virtual void push_back(Object *o, std::string const &name, const TypeAdapter &v) const = 0;
+	
+	/** Clear an interface variable list.
+	 */
+	virtual void clear(Object *o, std::string const &name) const = 0;
 };
 
 
 /** Class-specialized object interface.
  *
+ *  @internal
  *  @author Mark Rose <mrose@stm.lbl.gov>
  */
 template <class C>
@@ -485,9 +506,14 @@ class ObjectInterface: public ObjectInterfaceBase {
 	typedef ObjectInterface<C> Self;
 	MemberAccessorBase::map table;
 
-protected:
 	void __not_found(std::string const &name) const throw (InterfaceError) {
 		throw InterfaceError("Variable '"+name+"' not found in interface to class '" + C::_getClassName()+"'");
+	}
+
+	MemberAccessorBase *getAccessor(std::string const &name) const {
+		MemberAccessorBase::map::const_iterator idx = table.find(name);
+		if (idx == table.end()) return 0;
+		return idx->second;
 	}
 
 public:
@@ -501,7 +527,7 @@ public:
 	 *        macro instead.
 	 */
 	template<typename T>
-	Self& def(const char *name, T C::*pm, bool required) throw(InterfaceError) {
+	Self& def(std::string const &name, T C::*pm, bool required) throw(InterfaceError) {
 		if (variableExists(name)) throw InterfaceError("interface variable \"" + std::string(name) + "\" multiply defined in class '" + C::_getClassName() + "'.");
 #ifdef __SIMDATA_PTS_SIM
 		table[name] = new typename PTS::SELECT_ACCESSOR<C, T>::ACCESSOR(pm, name, required);
@@ -511,7 +537,7 @@ public:
 		return *this;
 	}
 	template<typename T>
-	Self& def(const char *name, T C::*pm, int mask, bool required) throw(InterfaceError) {
+	Self& def(std::string const &name, T C::*pm, int mask, bool required) throw(InterfaceError) {
 		if (variableExists(name)) throw InterfaceError("interface variable \"" + std::string(name) + "\" multiply defined in class '" + C::_getClassName() + "'.");
 #ifdef __SIMDATA_PTS_SIM
 		table[name] = new typename PTS::SELECT_ACCESSOR<C, T>::ACCESSOR(pm, name, required);
@@ -523,28 +549,38 @@ public:
 
 	inline Self& pass() { return *this; }
 
-	virtual bool variableExists(const char *name) const {
+	/** Test if a given variable name exists in the interface.
+	 *
+	 *  @return Returns true if the variable name exists in the
+	 *  interface.
+	 */
+	virtual bool variableExists(std::string const &name) const {
 		return table.find(name) != table.end();
 	}
 
-	virtual bool variableRequired(const char *name) const {
+	/** Test if a given variable is tagged as 'required'.  
+	 *
+	 *  @return Returns false if the variable is not marked as
+	 *  'required' or does not exist in the interface.
+	 */
+	virtual bool variableRequired(std::string const &name) const {
 		MemberAccessorBase::map::const_iterator idx = table.find(name);
 		if (idx == table.end()) return false;
 		return idx->second->isRequired();
 	}
 
-	virtual std::string variableType(const char *name) const {
+	/** Get a type identifier string for a variable.
+	 *
+	 *  @return Returns the type identifier string.
+	 */
+	virtual std::string variableType(std::string const &name) const {
 		MemberAccessorBase::map::const_iterator idx = table.find(name);
 		if (idx == table.end()) __not_found(name);
 		return idx->second->getType();
 	}
 
-	virtual MemberAccessorBase *getAccessor(const char *name) {
-		MemberAccessorBase::map::const_iterator idx = table.find(name);
-		if (idx == table.end()) return 0;
-		return idx->second;
-	}
-
+	/** Get the names of all variables defined in the interface.
+	 */
 	virtual std::vector<std::string> getVariableNames() const {
 		std::vector<std::string> names;
 		MemberAccessorBase::map::const_iterator idx;
@@ -554,6 +590,8 @@ public:
 		return names;
 	}
 
+	/** Get the names of required variables defined in the interface.
+	 */
 	virtual std::vector<std::string> getRequiredNames() const {
 		std::vector<std::string> names;
 		MemberAccessorBase::map::const_iterator idx;
@@ -565,16 +603,44 @@ public:
 		return names;
 	}
 
+	/** Get the value of an interface variable.
+	 */
+	virtual const TypeAdapter get(Object *o, std::string const &name) const {
+		return getAccessor(name)->get(o);
+	}
+	
+	/** Set the value of an interface variable.
+	 */
+	virtual void set(Object *o, std::string const &name, const TypeAdapter &v) const {
+		getAccessor(name)->set(o, v);
+	}
+	
+	/** Append a value to an interface variable list.
+	 */
+	virtual void push_back(Object *o, std::string const &name, const TypeAdapter &v) const {
+		getAccessor(name)->push_back(o, v);
+	}
+	
+	/** Clear an interface variable list.
+	 */
+	virtual void clear(Object *o, std::string const &name) const {
+		getAccessor(name)->clear(o);
+	}
+
+private:
+	// These methods are currently in limbo.  Minimally they should be
+	// updated to use serialize(Archive&), but the usefulness of this
+	// feature is still in doubt.
 	virtual	void pack(Object *o, Packer &p) const {
 		MemberAccessorBase::map::const_iterator idx;
-		for (idx = table.begin(); idx != table.end(); idx++) {
+		for (idx = table.begin(); idx != table.end(); ++idx) {
 			idx->second->pack(o, p);
 		}
 	}
 
 	virtual void unpack(Object *o, UnPacker &p) const {
 		MemberAccessorBase::map::const_iterator idx;
-		for (idx = table.begin(); idx != table.end(); idx++) {
+		for (idx = table.begin(); idx != table.end(); ++idx) {
 			idx->second->unpack(o, p);
 		}
 	}

@@ -2,12 +2,12 @@ SUBDIRS = Source
 
 export PYTHON_INCLUDE := $(shell python setup.py python_include_path)
 
-export GDEBUGF = -g -W -Wall -Werror -pedantic #-DSIMDATA_NOLOADCHECK
+export GDEBUGF = -g -W -Wall -pedantic -Wmissing-prototypes -Wconversion -Wshadow #-DSIMDATA_NOLOADCHECK
 export GCFLAGS = -fPIC -O2 # -march=athlon-tbird
 export GLDOPTS = -shared -lswigpy -ldl
 export GSWOPTS = -c -c++ -python -noexcept
-export CXX = g++ #-3.3
-export SWIG = swig 
+export CXX = g++
+export SWIG = swig
 
 .PHONY: all clean clean-deps
 

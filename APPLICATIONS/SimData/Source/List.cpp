@@ -24,39 +24,6 @@
 NAMESPACE_SIMDATA
 
 
-/*
-template<class T> T& List<T>::extend() {
-	T x;
-	this->push_back(x);
-	return this->operator[](this->size()-1);
-}
-
-template<class T> void List<T>::pack(Packer& p) const {
-	vector<T>::const_iterator a;
-	p.pack((int)(this->size()));
-	for (a=this->begin(); a!=this->end(); a++)
-		p.pack(*a);
-}
-
-template<class T> void List<T>::unpack(UnPacker& p) {
-	T a;
-	int size;
-	p.unpack(size);
-	this->clear();
-	this->reserve(size);
-	for (int i = 0; i < size; i++) {
-		p.unpack(a);
-		this->push_back(a);
-	}
-}
-
-template<class T> std::string List<T>::__repr__() {
-	char repr[128];
-	snprintf(repr, 128, "List[%d]", this->size());
-	return std::string(repr);
-}
-*/
-
 
 NAMESPACE_SIMDATA_END
 

@@ -36,7 +36,7 @@
 #include <SimData/Matrix3.h>
 #include <SimData/Vector3.h>
 #include <SimData/Quat.h>
-#include <SimData/Pack.h>
+#include <SimData/Archive.h>
 
 #include <iomanip>
 #include <sstream>
@@ -109,25 +109,25 @@ void Matrix3::mult(const Matrix3& lhs, const Matrix3& rhs) {
 
 void Matrix3::preMult(const Matrix3& other) {
 	double t[3];
-	for (int col=0; col<3; col++) {
-		t[0] = INNER_PRODUCT(other, *this, 0, col);
-		t[1] = INNER_PRODUCT(other, *this, 1, col);
-		t[2] = INNER_PRODUCT(other, *this, 2, col);
-		_mat[0][col] = t[0];
-		_mat[1][col] = t[1];
-		_mat[2][col] = t[2];
+	for (int col_=0; col_<3; col_++) {
+		t[0] = INNER_PRODUCT(other, *this, 0, col_);
+		t[1] = INNER_PRODUCT(other, *this, 1, col_);
+		t[2] = INNER_PRODUCT(other, *this, 2, col_);
+		_mat[0][col_] = t[0];
+		_mat[1][col_] = t[1];
+		_mat[2][col_] = t[2];
 	}
 }
 
 void Matrix3::postMult(const Matrix3& other) {
 	double t[3];
-	for (int row=0; row<3; row++) {
-		t[0] = INNER_PRODUCT(*this, other, row, 0);
-		t[1] = INNER_PRODUCT(*this, other, row, 1);
-		t[2] = INNER_PRODUCT(*this, other, row, 2);
-		_mat[row][0] = t[0];
-		_mat[row][1] = t[1];
-		_mat[row][2] = t[2];
+	for (int row_=0; row_<3; row_++) {
+		t[0] = INNER_PRODUCT(*this, other, row_, 0);
+		t[1] = INNER_PRODUCT(*this, other, row_, 1);
+		t[2] = INNER_PRODUCT(*this, other, row_, 2);
+		_mat[row_][0] = t[0];
+		_mat[row_][1] = t[1];
+		_mat[row_][2] = t[2];
 	}
 }
 
@@ -314,28 +314,16 @@ std::string Matrix3::asString() const {
 	return repr.str();
 }
 
-void Matrix3::pack(Packer &p) const {
-	p.pack(_mat[0][0]);
-	p.pack(_mat[0][1]);
-	p.pack(_mat[0][2]);
-	p.pack(_mat[1][0]);
-	p.pack(_mat[1][1]);
-	p.pack(_mat[1][2]);
-	p.pack(_mat[2][0]);
-	p.pack(_mat[2][1]);
-	p.pack(_mat[2][2]);
-}
-
-void Matrix3::unpack(UnPacker &p) {
-	p.unpack(_mat[0][0]);
-	p.unpack(_mat[0][1]);
-	p.unpack(_mat[0][2]);
-	p.unpack(_mat[1][0]);
-	p.unpack(_mat[1][1]);
-	p.unpack(_mat[1][2]);
-	p.unpack(_mat[2][0]);
-	p.unpack(_mat[2][1]);
-	p.unpack(_mat[2][2]);
+void Matrix3::serialize(Archive &archive) {
+	archive(_mat[0][0]);
+	archive(_mat[0][1]);
+	archive(_mat[0][2]);
+	archive(_mat[1][0]);
+	archive(_mat[1][1]);
+	archive(_mat[1][2]);
+	archive(_mat[2][0]);
+	archive(_mat[2][1]);
+	archive(_mat[2][2]);
 }
 
 void Matrix3::parseXML(const char* cdata) {

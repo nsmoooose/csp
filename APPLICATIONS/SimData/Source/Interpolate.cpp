@@ -20,7 +20,7 @@
 
 
 #include <SimData/Interpolate.h>
-#include <SimData/Pack.h>
+#include <SimData/Archive.h>
 #include <SimData/Version.h>
 
 
@@ -47,13 +47,8 @@ InterpolatedData<T>::~InterpolatedData() {
 }
 
 template <typename T>
-void InterpolatedData<T>::pack(Packer& p) const {
-	p.pack(method);
-}
-
-template <typename T>
-void InterpolatedData<T>::unpack(UnPacker& p) {
-	p.unpack(method);
+void InterpolatedData<T>::serialize(Archive &archive) {
+	archive(method);
 }
 
 template <typename T>
@@ -125,24 +120,23 @@ const Curve & Curve::operator=(const Curve &c) {
 	return *this;
 }
 
-void Curve::pack(Packer& p) const {
-	InterpolatedData<value_t>::pack(p);
-	p.pack(_breaks);
-	p.pack(_data);
-	p.pack(_spacing);
-}
-
-void Curve::unpack(UnPacker& p) {
-	InterpolatedData<value_t>::unpack(p);
-	vector_t breaks;
-	p.unpack(breaks);
-	setBreaks(breaks);
-	vector_t data;
-	p.unpack(data);
-	setData(data);
-	value_t spacing;
-	p.unpack(spacing);
-	interpolate(spacing);
+void Curve::serialize(Archive &archive) {
+	InterpolatedData<value_t>::serialize(archive);
+	if (archive.isLoading()) {
+		vector_t breaks;
+		archive(breaks);
+		setBreaks(breaks);
+		vector_t data;
+		archive(data);
+		setData(data);
+		value_t spacing;
+		archive(spacing);
+		interpolate(spacing);
+	} else {
+		archive(_breaks);
+		archive(_data);
+		archive(_spacing);
+	}
 }
 
 Curve::vector_t Curve::getBreaks() {
@@ -164,7 +158,7 @@ void Curve::interpolate(value_t spacing) {
 	int n = _breaks.size();
 	_min = _breaks[0];
 	double max = _breaks[n-1];
-	value_t _range = static_cast<value_t>(max - _min);
+	_range = static_cast<value_t>(max - _min);
 	_i_n = int(_range / spacing) + 1;
 	_table.resize(_i_n);
 	vector_it element = _table.begin();
@@ -269,30 +263,29 @@ int Table::isValid() const {
 	return _valid; 
 }
 
-void Table::pack(Packer &p) const {
-	InterpolatedData<value_t>::pack(p);
-	p.pack(_x_breaks);
-	p.pack(_y_breaks);
-	p.pack(_data);
-	p.pack(_x_spacing);
-	p.pack(_y_spacing);
-}
-
-void Table::unpack(UnPacker &p) {
-	InterpolatedData<value_t>::unpack(p);
-	vector_t breaks, data;
-	p.unpack(breaks);
-	setXBreaks(breaks);
-	p.unpack(breaks);
-	setYBreaks(breaks);
-	p.unpack(data);
-	setData(data);
-	value_t spacing;
-	p.unpack(spacing);
-	setXSpacing(spacing);
-	p.unpack(spacing);
-	setYSpacing(spacing);
-	interpolate();
+void Table::serialize(Archive &archive) {
+	InterpolatedData<value_t>::serialize(archive);
+	if (archive.isLoading()) {
+		vector_t breaks, data;
+		archive(breaks);
+		setXBreaks(breaks);
+		archive(breaks);
+		setYBreaks(breaks);
+		archive(data);
+		setData(data);
+		value_t spacing;
+		archive(spacing);
+		setXSpacing(spacing);
+		archive(spacing);
+		setYSpacing(spacing);
+		interpolate();
+	} else {
+		archive(_x_breaks);
+		archive(_y_breaks);
+		archive(_data);
+		archive(_x_spacing);
+		archive(_y_spacing);
+	}
 }
 
 Table::vector_t Table::getXBreaks() const {

@@ -20,6 +20,7 @@
 
 /**
  * @file DataManager.h
+ * @brief Classes for managing multiple data archives.
  * @author Mark Rose <mrose@stm.lbl.gov>
  */
 

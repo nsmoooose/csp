@@ -21,8 +21,7 @@
 
 /**
  * @file FileUtility.h
- *
- * Platform independent file utilities.
+ * @brief Platform independent file utilities.
  */
 
 

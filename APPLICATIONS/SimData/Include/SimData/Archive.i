@@ -1,5 +1,5 @@
 /* SimDataCSP: Data Infrastructure for Simulations
- * Copyright (C) 2002 Mark Rose <tm2@stm.lbl.gov>
+ * Copyright (C) 2002, 2003 Mark Rose <tm2@stm.lbl.gov>
  * 
  * This file is part of SimDataCSP.
  * 
@@ -18,31 +18,22 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
+%module Archive
+%{
+#include "SimData/Archive.h"
+%}
 
-#include <SimData/Pack.h>
+%include "std_string.i"
+%include "SimData/filemap.i"
 
+%ignore SIMDATA(Archive)::operator();
 
-NAMESPACE_SIMDATA
-
-
-#if 0
-void Packable::pack(Packer&) const {
+%typemap(python, in) (const char* data, int n) {
+	$1 = PyString_AsString($input);
+	$2 = PyString_Size($input);
 }
 
-void Packable::unpack(UnPacker&) {
-}
+%include "SimData/Archive.h"
 
-void Packable::parseXML(const char* cdata) {
-	std::string s(cdata); 
-	if (s.find_first_not_of("\t \r\n") == std::string::npos) return;
-	throw ParseException("WARNING: #cdata ignored");
-}
-
-
-void Packable::convertXML() {
-}
-#endif
-
-
-NAMESPACE_SIMDATA_END
+%exception;
 

@@ -244,7 +244,6 @@ sources = [
     "Matrix3",
     "Object",
     "Noise",
-    "Pack",
     "Path",
     "Quat",
     "Random",
@@ -255,7 +254,9 @@ sources = [
 ]
 
 headers = [
+    "Archive.h",
     "BaseType.h",
+	"Composite.h",
     "Conversions.h",
     "DataArchive.h",
     "DataManager.h",
@@ -284,7 +285,6 @@ headers = [
     "Object.h",
     "ObjectInterface.h",
 	"osg.h",
-    "Pack.h",
     "Path.h",
 	"PTS.h",
     "Quat.h",
@@ -301,6 +301,7 @@ headers = [
 
 interfaces = [
 	"cSimData.i",
+	"Archive.i",
 	"BaseType.i",
 	"Conversions.i",
 	"DataArchive.i",
@@ -322,7 +323,6 @@ interfaces = [
 	"Matrix3.i",
 	"Noise.i",
 	"Object.i",
-	"Pack.i",
 	"Path.i",
 	"Quat.i",
 	"Random.i",

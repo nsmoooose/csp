@@ -22,6 +22,7 @@
 
 #include <SimData/BaseType.h>
 #include <SimData/Version.h>
+#include <SimData/Archive.h>
 
 
 NAMESPACE_SIMDATA
@@ -59,12 +60,6 @@ public:
 
 
 BaseType::~BaseType() {
-}
-
-void BaseType::pack(Packer&) const {
-}
-
-void BaseType::unpack(UnPacker&) {
 }
 
 void BaseType::parseXML(const char* cdata) {

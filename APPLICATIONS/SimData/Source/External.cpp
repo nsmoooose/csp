@@ -19,7 +19,7 @@
  */
 
 #include <SimData/External.h>
-#include <SimData/Pack.h>
+#include <SimData/Archive.h>
 #include <SimData/FileUtility.h>
 
 
@@ -27,6 +27,14 @@ NAMESPACE_SIMDATA
 
 
 External::~External() {
+}
+
+bool External::operator==(External const &path) {
+	return _path == path._path;
+}
+
+bool External::operator==(std::string const &path) {
+	return _path == ospath::normalize(path);
 }
 
 const External &External::operator=(std::string const &path) {
@@ -49,13 +57,11 @@ const std::string& External::getSource() const {
 	return _native_path;
 }
 
-void External::pack(Packer& p) const {
-	p.pack(_path);
-}
-
-void External::unpack(UnPacker& p) {
-	p.unpack(_path);
-	_native_path = ospath::filter(_path.c_str());
+void External::serialize(Archive& archive) {
+	archive(_path);
+	if (archive.isLoading()) {
+		_native_path = ospath::filter(_path.c_str());
+	}
 }
 
 std::string External::asString() const {

@@ -70,13 +70,9 @@ public:
 	/// The zero Quat = (0,0,0,0)
 	static const Quat ZERO;
 
-	/** Serialize to a data archive.
+	/** Serialize to or from a data archive.
 	 */
-	virtual void pack(Packer&) const; 
-
-	/** Deserialize from a data archive.
-	 */
-	virtual void unpack(UnPacker&);
+	virtual void serialize(Archive&);
 
 	/** Internal method used by the XML parser.
 	 *
@@ -102,7 +98,10 @@ public:
 	 *
 	 *  Specifiy the four real-valued components.
 	 */
-	inline Quat(double x, double y, double z, double w):  _x(x), _y(y), _z(z), _w(w) {}
+	inline Quat(double x_, double y_, double z_, double w_):  
+		_x(x_), _y(y_), _z(z_), _w(w_) 
+	{
+	}
 
 	/** Construct a new quaternion representing a rotation.
 	 *
@@ -141,8 +140,8 @@ public:
 
 	/** Set the components.
 	 */
-	inline void set(double x, double y, double z, double w) {
-		_x = x; _y = y; _z = z; _w = w;
+	inline void set(double x_, double y_, double z_, double w_) {
+		_x = x_; _y = y_; _z = z_; _w = w_;
 	}
 
 #ifndef SWIG
@@ -191,6 +190,16 @@ public:
 	inline double w() const { return _w; }
 #endif // SWIG
 
+	/// Test equality.
+	bool operator==(Quat const &rhs) const {
+		return _x==rhs._x && _y==rhs._y && _z==rhs._z && _w==rhs._w;
+	}
+
+	/// Test inequality.
+	bool operator!=(Quat const &rhs) const {
+		return !(*this == rhs);
+	}
+
     	/** Test if the quaternion is zero.
 	 *
 	 *  Zero rotations can generally be ignored in computations.
@@ -221,13 +230,13 @@ public:
 
 	/// Unary multiply  --- adjusted relative to osg for active transformations!
 	inline Quat& operator*=(const Quat& rhs) {
-		double x = rhs._w*_x + rhs._x*_w - rhs._y*_z + rhs._z*_y;
-		double y = rhs._w*_y + rhs._x*_z + rhs._y*_w - rhs._z*_x;
-		double z = rhs._w*_z - rhs._x*_y + rhs._y*_x + rhs._z*_w;
+		double x_ = rhs._w*_x + rhs._x*_w - rhs._y*_z + rhs._z*_y;
+		double y_ = rhs._w*_y + rhs._x*_z + rhs._y*_w - rhs._z*_x;
+		double z_ = rhs._w*_z - rhs._x*_y + rhs._y*_x + rhs._z*_w;
 		_w = rhs._w*_w - rhs._x*_x - rhs._y*_y - rhs._z*_z;
-		_z = z;
-		_y = y;
-		_x = x;
+		_z = z_;
+		_y = y_;
+		_x = x_;
 		return *this;	
 	}
 

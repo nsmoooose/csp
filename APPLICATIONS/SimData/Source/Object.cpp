@@ -20,7 +20,7 @@
 
 
 #include <SimData/Object.h>
-#include <SimData/Pack.h>
+#include <SimData/Archive.h>
 
 #include <sstream>
 
@@ -28,29 +28,14 @@
 NAMESPACE_SIMDATA
 
 
-// archive serializaiton
-void Object::pack(Packer& p) const {
-	p.pack(_static);
+void Object::serialize(Archive&) {
 }
 
-void Object::unpack(UnPacker& p) {
-	p.unpack(_static);
-} 
-
-// static management (don't touch!)
-void Object::setStatic(bool s) { 
-	_static = s;
-}
-
-bool Object::isStatic() const { 
-	return _static; 
-}
-
-Object::Object(): Referenced(), BaseType(), _static(false), _path(0) {
+Object::Object(): Referenced(), BaseType(), _path(0) {
 }
 
 Object::~Object() { 
-	//printf("~Object %p\n", this); 
+	//std::cerr << "~Object 0x" << std::hex << static_cast<unsigned int>(this) << "\n"; 
 }
 
 std::string Object::asString() const {

@@ -50,16 +50,15 @@ class LinkBase;
 SIMDATA_EXCEPTION(ConversionError);
 
 
-/**
- * @brief Reference counting smart-pointer.
+/** Reference counting smart-pointer.
  *
- * Reference counting smart-pointer for use with simdata::Referenced
- * objects.
+ *  Reference counting smart-pointer for use with simdata::Referenced
+ *  objects.
  *
- * Classes derived from Reference should be handled with Ref<T> smart
- * pointers, or Link<T> dynamic references.
+ *  Classes derived from Reference should be handled with Ref<T> smart
+ *  pointers, or Link<T> dynamic references.
  *
- * @author Mark Rose <mrose@stm.lbl.gov>
+ *  @author Mark Rose <mrose@stm.lbl.gov>
  */
 template<class T>
 class Ref {
@@ -74,58 +73,57 @@ public:
 	*/
 	
 
-	/**
-	 * Create a null reference.
+	/** Create a null reference.
 	 */
 	Ref(): _reference(0) {
 	}
 
 
-	/**
-	 * Create a new reference.
+	/** Create a new reference.
 	 */
 	Ref(T* ptr): _reference(ptr) {
 		if (ptr) ptr->_ref();
 	}
 
+	/** Light-weight copy with reference counting.
+	 */
 	Ref(LinkBase const & r): _reference(0) {
 		_rebind(r._get());
 	}
 
-	/**
-	 * Light-weight copy with reference counting.
+	/** Light-weight copy with reference counting.
 	 */
 	template <typename Q>
 	Ref(Ref<Q> const & r): _reference(0) {
 		Q *rp = r.get();
 		if (rp != 0) {
-			rp->_ref();
-			_reference = static_cast<T*>(rp);
+			//rp->_ref();
+			//_reference = static_cast<T*>(rp);
+			_rebind(rp);
 		}
 	}
 
+	/** Light-weight copy with reference counting.
+	 */
 	Ref(Ref const & r): _reference(r._reference) {
 		if (_reference != 0) _reference->_ref();
 	}
 
-	/**
-	 * Decrements the reference count, potentially destroying
-	 * the referenced object.
+	/** Decrement the reference count, and potentially destroy
+	 *  the referenced object.
 	 */
 	~Ref() {
 		if (_reference) _reference->_deref();
 	}
 
-	/**
-	 * Returns true if this is the only reference.
+	/** Returns true if this is the only reference.
 	 */
 	inline bool unique() const {
 		if (_reference == 0) return true;
 		return (_reference->_count() == 1);
 	}
 
-	/**
-	 * Get the number of outstanding references.
+	/** Get the number of outstanding references.
 	 */
 	inline int count() const {
 		if (_reference == 0) return 1;
@@ -133,8 +131,7 @@ public:
 	}
 
 #ifndef SWIG
-	/**
-	 * Light-weight copy with reference counting.
+	/** Light-weight copy with reference counting.
 	 */
 	template <class Q>
 	Ref const & operator=(Ref<Q> const & r) {
@@ -142,18 +139,21 @@ public:
 		return *this;
 	}
 
+	/** Light-weight copy with reference counting.
+	 */
 	Ref const & operator=(Ref const & r) {
 		_rebind(r.get());
 		return *this;
 	}
 
+	/** Light-weight copy with reference counting.
+	 */
 	LinkBase const & operator=(LinkBase const & r) {
 		_rebind(r._get());
 		return r;
 	}
 
-	/**
-	 * Raw pointer assignment
+	/** Raw pointer assignment.
 	 */
 	template <class Q>
 	inline Q *operator=(Q *ptr) {
@@ -161,6 +161,10 @@ public:
 		return ptr;
 	}
 
+	/** Raw pointer assignment for assigning NULL.
+	 *
+	 *  Assigning any pointer other than '0' will assert.
+	 */
 	inline void *operator=(void *ptr) {
 		assert(ptr==0);
 		if (_reference != 0) _reference->_deref();
@@ -170,68 +174,59 @@ public:
 #endif // SWIG
 
 
-	/**
-	 * dereference.
+	/** Dereference.
 	 */
 	inline T* get() const {
 		return _reference;
 	}
 
-	/**
-	 * dereference.
+	/** Dereference.
 	 */
 	inline T* operator->() const {
 		return _reference;
 	}
 
-	/**
-	 * dereference.
+	/** Dereference.
 	 */
 	inline T & operator*() const {
 		return *_reference;
 	}
 
 #ifndef SWIG
-	/**
-	 * Test for null pointer.
+	/** Test for null pointer.
 	 */
 	inline bool operator!() const {
 		return _reference == 0;
 	}
 #endif // SWIG
 
-	/**
-	 * Test for non-null pointer.
+	/** Test for non-null pointer.
 	 */
 	inline bool valid() const {
 		return _reference != 0;
 	}
 	
-	/**
-	 * Comparison with other simdata pointers.
+	/** Comparison with other simdata pointers.
 	 */
 	template <class Q>
 	inline bool operator==(Ref<Q> const & p) const {
 		return _reference == p.get();
 	}
 
-	/**
-	 * Comparison with other simdata pointers.
+	/** Comparison with other simdata pointers.
 	 */
 	inline bool operator==(Referenced const * p) const {
 		return _reference == p;
 	}
 
-	/**
-	 * Comparison with other simdata pointers.
+	/** Comparison with other simdata pointers.
 	 */
 	template <class Q>
 	inline bool operator!=(Ref<Q> const & p) const {
 		return _reference != p.get();
 	}
 
-	/**
-	 * Comparison with other simdata pointers.
+	/** Comparison with other simdata pointers.
 	 */
 	inline bool operator!=(Referenced const * p) const {
 		return _reference != p;
@@ -239,8 +234,7 @@ public:
 
 
 protected:
-	/**
-	 * Rebind to a new object.
+	/** Rebind to a new object.
 	 */
 	template <class Q>
 	void _rebind(Q* ptr) {
@@ -253,19 +247,17 @@ protected:
 		}
 	}
 
-	/**
-	 * The actual pointer.
+	/** The actual pointer.
 	 */
 	T* _reference;
 };
 
 
-/**
- * @brief Base class for reference counted objects.
+/** Base class for reference counted objects.
  *
- * Inspired by OpenSceneGraph's osg::Referenced class.
+ *  Inspired by OpenSceneGraph's osg::Referenced class.
  *
- * @author Mark Rose <mrose@stm.lbl.gov>
+ *  @author Mark Rose <mrose@stm.lbl.gov>
  */
 class SIMDATA_EXPORT Referenced {
 
@@ -274,12 +266,16 @@ friend class ReferencePointer;
 
 public:
 	Referenced(): __count(0) {}
-	Referenced(Referenced const &): __count(0) {}
-#ifndef SWIG
-	inline Referenced& operator=(Referenced const &) { return *this; }
-#endif // SWIG
 
 protected:
+	/** @todo This dtor should be eliminated eventually, or at
+	 *  least made non-virtual if we can be sure that Referenced
+	 *  derived objects will never be deleted via a Referenced*. 
+	 *  Since Referenced::_deref() currently handles deletion,
+	 *  this would require moving the deletion responsibility to
+	 *  Ref<>, and declaring a Ref<Referenced> specialization for
+	 *  preventation. --MR
+	 */
 	virtual ~Referenced() {
 		if (__count != 0) {
 			SIMDATA_LOG(LOG_ALL, LOG_ERROR, "simdata::Referenced(" << std::hex << int(this) << ") deleted with non-zero reference count (" << __count << "): memory corruption possible.");
@@ -297,6 +293,13 @@ private:
 	inline unsigned _count() const { return __count; }
 
 	mutable unsigned __count;
+
+	Referenced(Referenced const &); //: __count(0) {}
+
+#ifndef SWIG
+	inline Referenced& operator=(Referenced const &);// { return *this; }
+#endif // SWIG
+
 };
 
 

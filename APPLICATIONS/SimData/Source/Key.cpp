@@ -19,7 +19,7 @@
  */
 
 #include <SimData/Key.h>
-#include <SimData/Pack.h>
+#include <SimData/Archive.h>
 
 #include <sstream>
 #include <iomanip>
@@ -37,14 +37,15 @@ bool Key::operator==(std::string const &id) const {
 	return *this == Key(id);
 }
 
-void Key::pack(Packer& p) const {
-	p.pack(static_cast<int>(_key));
-}
-
-void Key::unpack(UnPacker& p) {
-	int k;
-	p.unpack(k);
-	_key = static_cast<uint32>(k);
+void Key::serialize(Archive &archive) {
+	int key;
+	if (archive.isLoading()) {
+		archive(key);
+		_key = static_cast<uint32>(key);
+	} else {
+		key = static_cast<int>(_key);
+		archive(key);
+	}
 }
 
 std::string Key::asString() const {

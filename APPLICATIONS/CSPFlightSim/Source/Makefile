@@ -7,7 +7,7 @@ CC=g++ #-3.0
 
 OSG_PREFIX=/usr/local
 GDAL_PREFIX=/usr/local
-DEMETER_DIR=../../../ThirdPartyLibs/demeter
+DEMETER_DIR=../../../THIRDPARTYLIBS/demeter
 
 # nothing should be edited below this line
 CSP_BINARY=CSPFlightSim

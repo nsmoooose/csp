@@ -42,8 +42,6 @@
 NAMESPACE_SIMDATA
 
 
-class Packer;
-class UnPacker;
 class DataArchive;
 
 
@@ -83,11 +81,11 @@ public:
 	virtual bool _loadAll() const { return false; }
 
 	virtual Reader& operator>>(char &x)=0;
-	virtual Reader& operator>>(short &x)=0;
-	virtual Reader& operator>>(int &x)=0;
-	virtual Reader& operator>>(unsigned char &x)=0;
-	virtual Reader& operator>>(unsigned short &x)=0;
-	virtual Reader& operator>>(unsigned int &x)=0;
+	virtual Reader& operator>>(int16 &x)=0;
+	virtual Reader& operator>>(int32 &x)=0;
+	virtual Reader& operator>>(uint8 &x)=0;
+	virtual Reader& operator>>(uint16 &x)=0;
+	virtual Reader& operator>>(uint32 &x)=0;
 	virtual Reader& operator>>(bool &x)=0;
 	virtual Reader& operator>>(float &x)=0;
 	virtual Reader& operator>>(double &x)=0;
@@ -95,6 +93,7 @@ public:
 	virtual Reader& operator>>(BaseType &x)=0;
 	virtual Reader& operator>>(hasht &x)=0;
 	virtual Reader& operator>>(std::string &x)=0;
+	virtual int32 readLength() { int32 n; operator>>(n); return n; }
 
 	// explicit methods for use from Python
 
@@ -115,13 +114,13 @@ public:
 		(*self) >> y;
 		return y;
 	}
-	int _int() {
-		int y;
+	int32 _int32() {
+		SIMDATA(int32) y;
 		(*self) >> y;
 		return y;
 	}
-	short _short() {
-		short y;
+	int16 _int16() {
+		SIMDATA(int16) y;
 		(*self) >> y;
 		return y;
 	}
@@ -130,18 +129,18 @@ public:
 		(*self) >> y;
 		return y;
 	}
-	unsigned int _uint() {
-		unsigned int y;
+	uint8 _uint8() {
+		SIMDATA(uint8) y;
 		(*self) >> y;
 		return y;
 	}
-	unsigned short _ushort() {
-		unsigned short y;
+	uint16 _uint16() {
+		SIMDATA(uint16) y;
 		(*self) >> y;
 		return y;
 	}
-	unsigned char _uchar() {
-		unsigned char y;
+	uint32 _uint32() {
+		SIMDATA(uint32) y;
 		(*self) >> y;
 		return y;
 	}
@@ -205,7 +204,7 @@ public:
 
 template<typename T>
 Reader& operator>>(Reader& reader, std::vector<T> &y) {
-	int n;
+	int32 n;
 	reader >> n;
 	y.resize(n);
 	typename std::vector<T>::iterator i = y.begin();
@@ -222,11 +221,11 @@ public:
 	virtual ~Writer() {}
 
 	virtual Writer& operator<<(const char)=0;
-	virtual Writer& operator<<(const short)=0;
-	virtual Writer& operator<<(const int)=0;
-	virtual Writer& operator<<(const unsigned char)=0;
-	virtual Writer& operator<<(const unsigned short)=0;
-	virtual Writer& operator<<(const unsigned int)=0;
+	virtual Writer& operator<<(const int16)=0;
+	virtual Writer& operator<<(const int32)=0;
+	virtual Writer& operator<<(const uint8)=0;
+	virtual Writer& operator<<(const uint16)=0;
+	virtual Writer& operator<<(const uint32)=0;
 	virtual Writer& operator<<(const bool)=0;
 	virtual Writer& operator<<(const float)=0;
 	virtual Writer& operator<<(const double)=0;
@@ -234,6 +233,7 @@ public:
 	virtual Writer& operator<<(const BaseType &x)=0;
 	virtual Writer& operator<<(const hasht &x)=0;
 	virtual Writer& operator<<(const std::string &x)=0;
+	virtual void writeLength(int32 n) { operator<<(n); }
 
 	// explicit packing (use from python)
 
@@ -242,12 +242,12 @@ public:
 	void _double(double x) { (*self) << x; }
 	void _float(float x) { (*self) << x; }
 	void _bool(bool x) { (*self) << x; }
-	void _int(int x) { (*self) << x; }
-	void _short(short x) { (*self) << x; }
+	void _int32(int32 x) { (*self) << x; }
+	void _int16(int16 x) { (*self) << x; }
 	void _char(char x) { (*self) << x; }
-	void _uint(unsigned int x) { (*self) << x; }
-	void _ushort(unsigned short x) { (*self) << x; }
-	void _uchar(unsigned char x) { (*self) << x; }
+	void _uint8(uint8 x) { (*self) << x; }
+	void _uint16(uint16 x) { (*self) << x; }
+	void _uint32(uint32 x) { (*self) << x; }
 	void _hasht(hasht const &x) { (*self) << x; }
 	void _string(std::string const &x) { (*self) << x; }
 	void _basetype(BaseType const &x) { (*self) << x; }
@@ -277,8 +277,8 @@ Writer& operator<<(Writer& writer, const std::vector<T> &x) {
  */
 class SIMDATA_EXPORT ArchiveWriter: public Writer {
 	FILE *_f;
-	int _n;
-	void write(const void* x, int n) {
+	int32 _n;
+	void write(const void* x, int32 n) {
 		fwrite(x, n, 1, _f);
 	}
 public:
@@ -287,29 +287,29 @@ public:
 		assert(_f != 0);
 	}
 	void resetCount() { _n = 0; }
-	int getCount() { return _n; }
+	int32 getCount() { return _n; }
 
 	Writer& operator<<(const char x) {
 		write(&x, sizeof(x)); _n += sizeof(x);
 		return *this;
 	}
-	Writer& operator<<(const short x) {
+	Writer& operator<<(const int16 x) {
 		write(&x, sizeof(x)); _n += sizeof(x);
 		return *this;
 	}
-	Writer& operator<<(const int x) {
+	Writer& operator<<(const int32 x) {
 		write(&x, sizeof(x)); _n += sizeof(x);
 		return *this;
 	}
-	Writer& operator<<(const unsigned char x) {
+	Writer& operator<<(const uint8 x) {
 		write(&x, sizeof(x)); _n += sizeof(x);
 		return *this;
 	}
-	Writer& operator<<(const unsigned short x) {
+	Writer& operator<<(const uint16 x) {
 		write(&x, sizeof(x)); _n += sizeof(x);
 		return *this;
 	}
-	Writer& operator<<(const unsigned int x) {
+	Writer& operator<<(const uint32 x) {
 		write(&x, sizeof(x)); _n += sizeof(x);
 		return *this;
 	}
@@ -327,8 +327,8 @@ public:
 		return *this;
 	}
 	Writer& operator<<(const char* x) {
-		int n = strlen(x);
-		operator<<(n);
+		int32 n = strlen(x);
+		writeLength(n);
 		write(x, n);
 		_n += n;
 		return *this;
@@ -359,7 +359,7 @@ public:
  */
 class SIMDATA_EXPORT ArchiveReader: public Reader {
 	const char* _d;
-	int _n;
+	int32 _n;
 	DataArchive* _archive;
 	bool _loadall;
 	
@@ -367,7 +367,7 @@ public:
 	DataArchive* _getArchive() { return _archive; }
 	bool _loadAll() const { return _loadall; }
 
-	ArchiveReader(const char* data, int n, DataArchive* archive=0, bool loadall = true):
+	ArchiveReader(const char* data, int32 n, DataArchive* archive=0, bool loadall = true):
 		Reader(), _d(data), _n(n), _archive(archive), _loadall(loadall) { }
 
 	bool isComplete() const { return _n == 0; }
@@ -386,14 +386,14 @@ public:
 		_d += sizeof(float);
 		return *this;
 	}
-	Reader& operator>>(int &y) {
+	Reader& operator>>(int32 &y) {
 		_n -= sizeof(int);
 		if (_n < 0) throw DataUnderflow();
 		memcpy(&y, _d, sizeof(int));
 		_d += sizeof(int);
 		return *this;
 	}
-	Reader& operator>>(unsigned int &y) {
+	Reader& operator>>(uint32 &y) {
 		_n -= sizeof(unsigned int);
 		if (_n < 0) throw DataUnderflow();
 		memcpy(&y, _d, sizeof(unsigned int));
@@ -406,32 +406,30 @@ public:
 		y = (x != 0);
 		return *this;
 	}
-	Reader& operator>>(short &y) {
-		_n -= sizeof(short);
+	Reader& operator>>(int16 &y) {
+		_n -= sizeof(int16);
 		if (_n < 0) throw DataUnderflow();
-		memcpy(&y, _d, sizeof(short));
-		_d += sizeof(short);
+		memcpy(&y, _d, sizeof(int16));
+		_d += sizeof(int16);
 		return *this;
 	}
-	Reader& operator>>(unsigned short &y) {
-		_n -= sizeof(unsigned short);
+	Reader& operator>>(uint16 &y) {
+		_n -= sizeof(uint16);
 		if (_n < 0) throw DataUnderflow();
-		memcpy(&y, _d, sizeof(unsigned short));
-		_d += sizeof(unsigned short);
+		memcpy(&y, _d, sizeof(uint16));
+		_d += sizeof(uint16);
 		return *this;
 	}
 	Reader& operator>>(char &y) {
 		_n -= sizeof(char);
 		if (_n < 0) throw DataUnderflow();
-		memcpy(&y, _d, sizeof(char));
-		_d += sizeof(char);
+		y = static_cast<char>(*_d++);
 		return *this;
 	}
-	Reader& operator>>(unsigned char &y) {
-		_n -= sizeof(unsigned char);
+	Reader& operator>>(uint8 &y) {
+		_n -= sizeof(uint8);
 		if (_n < 0) throw DataUnderflow();
-		memcpy(&y, _d, sizeof(unsigned char));
-		_d += sizeof(unsigned char);
+		y = static_cast<uint8>(*_d++);
 		return *this;
 	}
 	Reader& operator>>(hasht &y) {
@@ -442,8 +440,7 @@ public:
 		return *this;
 	}
 	Reader& operator>>(char* &y) {
-		int n;
-		operator>>(n);
+		int32 n = readLength();
 		// XXX this not really a data underflow
 		if (n < 0) throw DataUnderflow();
 		_n -= n;
@@ -489,29 +486,29 @@ public:
 		_n += sizeof(char);
 		return *this;
 	}
-	Writer& operator<<(const short x) {
-		memcpy(_ptr+_n, &x, sizeof(short));
-		_n += sizeof(short);
+	Writer& operator<<(const int16 x) {
+		memcpy(_ptr+_n, &x, sizeof(x));
+		_n += sizeof(x);
 		return *this;
 	}
-	Writer& operator<<(const int x) {
-		memcpy(_ptr+_n, &x, sizeof(x)); 
-		_n += sizeof(int);
+	Writer& operator<<(const int32 x) {
+		memcpy(_ptr+_n, &x, sizeof(x));
+		_n += sizeof(x);
 		return *this;
 	}
-	Writer& operator<<(const unsigned char x) {
-		memcpy(_ptr+_n, &x, sizeof(unsigned char));
-		_n += sizeof(unsigned char);
+	Writer& operator<<(const uint8 x) {
+		memcpy(_ptr+_n, &x, sizeof(x));
+		_n += sizeof(x);
 		return *this;
 	}
-	Writer& operator<<(const unsigned short x) {
-		memcpy(_ptr+_n, &x, sizeof(unsigned short));
-		_n += sizeof(unsigned short);
+	Writer& operator<<(const uint16 x) {
+		memcpy(_ptr+_n, &x, sizeof(x));
+		_n += sizeof(x);
 		return *this;
 	}
-	Writer& operator<<(const unsigned int x) {
-		memcpy(_ptr+_n, &x, sizeof(x)); 
-		_n += sizeof(int);
+	Writer& operator<<(const uint32 x) {
+		memcpy(_ptr+_n, &x, sizeof(x));
+		_n += sizeof(x);
 		return *this;
 	}
 	Writer& operator<<(const bool x) {
@@ -530,7 +527,7 @@ public:
 		return *this;
 	}
 	Writer& operator<<(const char* x) {
-		int n = strlen(x);
+		int32 n = strlen(x);
 		operator<<(n);
 		memcpy(_ptr+_n, x, n);
 		_n += n;
@@ -571,14 +568,14 @@ public:
 		_n += sizeof(char);
 		return *this;
 	}
-	Reader& operator>>(short &x) {
-		memcpy(&x, _ptr+_n, sizeof(short));
-		_n += sizeof(short);
+	Reader& operator>>(int16 &x) {
+		memcpy(&x, _ptr+_n, sizeof(int16));
+		_n += sizeof(int16);
 		return *this;
 	}
-	Reader& operator>>(int &x) {
-		memcpy(&x, _ptr+_n, sizeof(x)); 
-		_n += sizeof(int);
+	Reader& operator>>(int32 &x) {
+		memcpy(&x, _ptr+_n, sizeof(int32)); 
+		_n += sizeof(int32);
 		return *this;
 	}
 	Reader& operator>>(unsigned char &x) {
@@ -586,14 +583,14 @@ public:
 		_n += sizeof(unsigned char);
 		return *this;
 	}
-	Reader& operator>>(unsigned short &x) {
-		memcpy(&x, _ptr+_n, sizeof(unsigned short));
-		_n += sizeof(unsigned short);
+	Reader& operator>>(uint16 &x) {
+		memcpy(&x, _ptr+_n, sizeof(uint16));
+		_n += sizeof(uint16);
 		return *this;
 	}
-	Reader& operator>>(unsigned int &x) {
-		memcpy(&x, _ptr+_n, sizeof(x)); 
-		_n += sizeof(int);
+	Reader& operator>>(uint32 &x) {
+		memcpy(&x, _ptr+_n, sizeof(uint32));
+		_n += sizeof(uint32);
 		return *this;
 	}
 	Reader& operator>>(bool &y) {
@@ -614,7 +611,7 @@ public:
 		return *this;
 	}
 	Reader& operator>>(char* &x) {
-		int n = strlen(x);
+		int32 n = strlen(x);
 		operator>>(n);
 		memcpy(x, _ptr+_n, n);
 		_n += n;

@@ -100,6 +100,7 @@ NetworkMessage * NetworkMessenger::getMessageFromPool(int messageType, int paylo
   }
   NetworkMessage * message = m_messagePool.front();
   m_messagePool.pop_front();
+  memset(message, 0x00, 512);
   message->initialize( messageType, payloadLen, m_orginatorNode);
   return message;
 }

@@ -33,10 +33,12 @@ void set2dScene(osg::Group *rootNode, int ScreenWidth, int ScreenHeight)
 	const unsigned short offsetpos = 11;
 	osg::ref_ptr<Framerate> framerate = new Framerate(offsetpos,ScreenHeight - offsetpos);
 	osg::ref_ptr<ScreenInfo> pause = new ScreenInfo(ScreenWidth-5*offsetpos,ScreenHeight-offsetpos,"PAUSE", "PAUSE");
+	osg::ref_ptr<ScreenInfo> record = new ScreenInfo(ScreenWidth-15*offsetpos,ScreenHeight-offsetpos,"RECORD", "RECORD");
 	osg::ref_ptr<GeneralStats> generalStats = new GeneralStats(offsetpos, ScreenHeight / 3);
 
 	rootNode->addChild(framerate.get());
 	rootNode->addChild(pause.get());
+	rootNode->addChild(record.get());
 	rootNode->addChild(generalStats.get());
 
 	osg::StateSet *rootState = rootNode->getOrCreateStateSet();

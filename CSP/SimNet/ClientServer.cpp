@@ -114,8 +114,8 @@ Server::Server(NetworkNode const &bind, int inbound_bw, int outbound_bw):
 }
 
 void Server::onConnectionRequest(simdata::Ref<ConnectionRequest> const &msg, simdata::Ref<MessageQueue> const &queue) {
-	SIMNET_LOG(HANDSHAKE, DEBUG, "connection request " << *msg);
-	PeerId client_id = msg->getSource();
+	SIMNET_LOG(HANDSHAKE, INFO, "connection request " << *msg);
+	const PeerId client_id = msg->getSource();
 	ConnectionData &connection_data = m_PendingConnections[client_id];
 	if (msg->incoming_bw() < 1000 || msg->outgoing_bw() < 1000) {
 		SIMNET_LOG(HANDSHAKE, ERROR, "client reports very low bandwidth " << *msg);
@@ -149,6 +149,10 @@ void Server::onDisconnect(simdata::Ref<Disconnect> const &msg, simdata::Ref<Mess
 	m_NetworkInterface->disconnectPeer(msg->getSource());
 }
 
+void Server::setExternalNode(NetworkNode const &external_node) {
+	m_NetworkInterface->setExternalNode(external_node);
+}
+
 Client::Client(NetworkNode const &bind, int inbound_bw, int outbound_bw):
 	ClientServerBase(bind, false /*isServer*/, inbound_bw, outbound_bw),
 	m_Connected(false)
@@ -156,6 +160,7 @@ Client::Client(NetworkNode const &bind, int inbound_bw, int outbound_bw):
 }
 
 Client::~Client() {
+	disconnectFromServer(true);
 }
 
 bool Client::connectToServer(NetworkNode const &server, double timeout) {
@@ -189,8 +194,16 @@ void Client::onConnectionResponse(simdata::Ref<ConnectionResponse> const &msg, s
 	if (!msg->has_success() || !msg->success() || !msg->has_client_id()) {
 		if (msg->has_response()) {
 			SIMNET_LOG(HANDSHAKE, ERROR, "connection failed: " << msg->response());
+		} else {
+			SIMNET_LOG(HANDSHAKE, ERROR, "connection failed: " << *msg);
 		}
 		// TODO set m_Connected to indicate failure
+		return;
+	}
+	if (msg->client_id() < 2) {
+		SIMNET_LOG(HANDSHAKE, ERROR, "connection failed: bad id assignment from server");
+		// TODO set m_Connected to indicate failure
+		return;
 	}
 	m_NetworkInterface->setClientId(msg->client_id());
 	Acknowledge::Ref ack = new Acknowledge();

@@ -216,6 +216,10 @@ public:
 	 *  @param outbound_bw The maximum outbound bandwidth for this server (bytes/sec).
 	 */
 	Server(NetworkNode const &bind, int inbound_bw, int outbound_bw);
+
+	/** See NetworkInterface::setExternalNode().
+	 */
+	void setExternalNode(NetworkNode const &external_node);
 };
 
 
@@ -237,9 +241,12 @@ public:
 	Client(NetworkNode const &bind, int inbound_bw, int outbound_bw);
 
 	/** See NetworkInterface::setExternalNode().
+	 *  @deprecated External node is now only used by Server.
 	 */
 	void setExternalNode(NetworkNode const &external_node);
 
+	/** Destroy the client.  If connected to a server, queue disconnect messages.
+	 */
 	virtual ~Client();
 
 	/** Connect to a server.
@@ -255,7 +262,7 @@ public:
 
 	/** Send a disconnect message to the server, and set the client state to disconnected.
 	 *
-	 *  @param immediate If fales, the disconnect message is queued as a reliable
+	 *  @param immediate If false, the disconnect message is queued as a reliable
 	 *    packet.  If true, two disconnect message are sent immediately via using
 	 *    normal (unreliable) transport.  The latter should only be used if it is
 	 *    truly necessary to shut down the connection in a hurry, as there is no

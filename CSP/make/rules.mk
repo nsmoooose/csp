@@ -4,5 +4,5 @@
 	../SimData/Tools/TaggedRecordCompiler/trc.py $<
 
 %_wrap.cpp %.py: %.i
-	$(SWIG) $(SWOPTS) -o $@ $<
+	$(SWIG) $(SWOPTS) -c++ -noruntime -python -I$(PYTHONINC) -o $@ $<
 

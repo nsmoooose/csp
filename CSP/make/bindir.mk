@@ -16,6 +16,16 @@ clean-objects:
 OBJECTS = $(SOURCES:%=$(BINDIR)/%.o)
 MSGOBJS = $(MESSAGES:%=$(BINDIR)/%.o)
 
+.PRECIOUS: $(BINDIR)/%_wrap.os
+.PRECIOUS: %_wrap.cpp
+
 $(BINDIR)/%.o: %.cpp
 	$(CXX) -o $@ -c $(CXXFLAGS) $<
+
+$(BINDIR)/%_wrap.os: %_wrap.cpp
+	$(CXX) -o $@ -c $(subst -W ,,$(subst -pedantic,,$(subst -Wall,,$(CXXFLAGS)))) $<
+
+_%.so: $(BINDIR)/%_wrap.os $(OBJECTS)
+	$(CXX) -shared -Wl,-z,lazyload $(LDOPTS) -L$(PYTHONLIB) -o$@ $^
+
 

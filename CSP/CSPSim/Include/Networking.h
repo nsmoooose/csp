@@ -47,10 +47,9 @@ class NetworkNode;
 
 const short NETWORK_PACKET_SIZE = 512;
 
-#ifdef WIN32
-#pragma pack(push)
-#pragma pack(1)
-#endif
+//#ifdef WIN32
+#pragma pack(push, 1)
+//#endif
 
                      
 // Define some structs that will only used for data transfers.
@@ -178,9 +177,9 @@ struct ObjectUpdateMessagePayload
     
 };
 
-#ifdef WIN32
+//#ifdef WIN32
 #pragma pack(pop)
-#endif
+//#endif
 
 class NetworkMessagePool
 {

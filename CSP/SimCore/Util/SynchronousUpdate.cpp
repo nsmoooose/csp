@@ -22,8 +22,8 @@
  *
  **/
 
-#include "SynchronousUpdate.h"
-#include "Log.h"
+#include <SimCore/Util/SynchronousUpdate.h>
+#include <SimCore/Util/Log.h>
 
 
 int UpdateProxy::update(double time) {

@@ -62,8 +62,8 @@
  **/
 
 
-#ifndef __DISPATCH_H__
-#define __DISPATCH_H__
+#ifndef __SIMCORE_UTIL_DISPATCH_H__
+#define __SIMCORE_UTIL_DISPATCH_H__
 
 
 #include <SimData/TaggedRecord.h>
@@ -98,7 +98,7 @@ public:
 	}
 
 protected:
-	virtual bool childDispatch(simdata::Ref<simdata::TaggedRecord> const &record) {
+	virtual bool childDispatch(simdata::Ref<simdata::TaggedRecord> const &/*record*/) {
 		return false;
 	}
 
@@ -107,5 +107,5 @@ public:
 };
 
 
-#endif // __DISPATCH_H__
+#endif // __SIMCORE_UTIL_DISPATCH_H__
 

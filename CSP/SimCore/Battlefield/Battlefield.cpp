@@ -22,8 +22,8 @@
  *
  */
 
-#include "Battlefield.h"
-#include "SceneManager.h"
+#include <SimCore/Battlefield/Battlefield.h>
+#include <SimCore/Battlefield/SceneManager.h>
 
 
 class Battlefield::ObjectWrapper: public Battlefield::QuadTreeChild {
@@ -307,7 +307,7 @@ void Battlefield::addStatic(Static const &feature) {
 	m_StaticIndex->insert(*wrapper);
 }
 
-Battlefield::Unit Battlefield::getNextUnit(Unit const &unit, bool human, bool local, int category) {
+Battlefield::Unit Battlefield::getNextUnit(Unit const &unit, bool human, bool local, int /*category*/) {
 	UnitMap::iterator iter = m_UnitMap.find(unit->id());
 	if (iter == m_UnitMap.end()) return 0;
 	UnitMap::iterator scan = iter;
@@ -515,7 +515,7 @@ void Battlefield::updateAggregationHuman(UnitWrapper *wrapper, GridPoint const &
 	}
 }
 
-void Battlefield::updateAggregationAgent(UnitWrapper *wrapper, GridPoint const &old_position, GridPoint const &new_position) {
+void Battlefield::updateAggregationAgent(UnitWrapper *wrapper, GridPoint const &/*old_position*/, GridPoint const &new_position) {
 	// only the owner of an object can update its aggregation state
 	if (wrapper->unit()->isRemote()) return;
 

@@ -23,8 +23,8 @@
  **/
 
 
-#ifndef __CSP_LOG_H__
-#define __CSP_LOG_H__
+#ifndef __SIMCORE_UTIL_LOG_H__
+#define __SIMCORE_UTIL_LOG_H__
 
 #include <SimData/Log.h>
 
@@ -87,6 +87,6 @@ inline simdata::LogStream& csplog() {
 		::csplog().entry(simdata::LOG_##P, CSP_##C, __FILE__, __LINE__) << M << std::endl
 
 
-#endif // __CSP_LOG_H__
+#endif // __SIMCORE_UTIL_LOG_H__
 
 

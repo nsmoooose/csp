@@ -23,8 +23,8 @@
  **/
 
 
-#include "SimObject.h"
-#include "Log.h"
+#include <SimCore/Battlefield/SimObject.h>
+#include <SimCore/Util/Log.h>
 
 #include <sstream>
 

@@ -23,8 +23,8 @@
  **/
 
 
-#ifndef __SYNCHRONOUSUPDATE_H__
-#define __SYNCHRONOUSUPDATE_H__
+#ifndef __SIMCORE_UTIL_SYNCHRONOUSUPDATE_H__
+#define __SIMCORE_UTIL_SYNCHRONOUSUPDATE_H__
 
 
 #include <SimData/Ref.h>
@@ -234,5 +234,5 @@ public:
 };
 
 
-#endif // __SYNCHRONOUSUPDATE_H__
+#endif // __SIMCORE_UTIL_SYNCHRONOUSUPDATE_H__
 

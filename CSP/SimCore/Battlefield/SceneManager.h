@@ -22,8 +22,8 @@
  *
  **/
 
-#ifndef __SCENEMANAGER_H__
-#define __SCENEMANAGER_H__
+#ifndef __SIMCORE_BATTLEFIELD_SCENEMANAGER_H__
+#define __SIMCORE_BATTLEFIELD_SCENEMANAGER_H__
 
 
 #include <SimData/Ref.h>
@@ -117,5 +117,5 @@ private:
 };
 
 
-#endif // __SCENEMANAGER_H__
+#endif // __SIMCORE_BATTLEFIELD_SCENEMANAGER_H__
 

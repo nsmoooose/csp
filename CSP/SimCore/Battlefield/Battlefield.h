@@ -27,10 +27,9 @@
  *  - implement a threaded scene manager
  **/
 
-#ifndef __BATTLEFIELD_H__
-#define __BATTLEFIELD_H__
+#ifndef __SIMCORE_BATTLEFIELD_BATTLEFIELD_H__
+#define __SIMCORE_BATTLEFIELD_BATTLEFIELD_H__
 
-#include <limits>
 #include <map>
 #include <vector>
 
@@ -38,8 +37,8 @@
 #include <SimData/ScopedPointer.h>
 #include <SpatialIndex/QuadTree.h>
 
-#include "SynchronousUpdate.h"
-#include "SimObject.h"
+#include <SimCore/Util/SynchronousUpdate.h>
+#include <SimCore/Battlefield/SimObject.h>
 
 
 class SceneManager;
@@ -483,6 +482,6 @@ private:
 	GridPoint m_CameraGridPosition;
 };
 
-#endif // __BATTLEFIELD_H__
+#endif // __SIMCORE_BATTLEFIELD_BATTLEFIELD_H__
 
 

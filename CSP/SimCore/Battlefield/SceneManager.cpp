@@ -23,8 +23,8 @@
  **/
 
 
-#include "SceneManager.h"
-#include "SimObject.h"
+#include <SimCore/Battlefield/SceneManager.h>
+#include <SimCore/Battlefield/SimObject.h>
 
 
 void SceneManager::setVisible(ObjectRef const& object, bool visible) {

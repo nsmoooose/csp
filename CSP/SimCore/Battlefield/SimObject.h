@@ -22,13 +22,13 @@
  *
  **/
 
-#ifndef __SIMOBJECT_H__
-#define __SIMOBJECT_H__
+#ifndef __SIMCORE_BATTLEFIELD_SIMOBJECT_H__
+#define __SIMCORE_BATTLEFIELD_SIMOBJECT_H__
 
 
-#include "SynchronousUpdate.h"
-#include "Dispatch.h"
-#include "Log.h"
+#include <SimCore/Util/SynchronousUpdate.h>
+#include <SimCore/Util/Dispatch.h>
+#include <SimCore/Util/Log.h>
 
 #include <SimData/Object.h>
 #include <SimData/Vector3.h>
@@ -224,7 +224,7 @@ private:
 	 *  @returns sleep time between updates (return 0.0 for
 	 *           fastest possible updating).
 	 */
-	virtual double onUpdate(double dt) { return 10.0; }
+	virtual double onUpdate(double dt) { dt=dt; return 10.0; }
 
 public:
 
@@ -302,5 +302,5 @@ inline std::ostream &operator << (std::ostream &os, SimObject &object) {
 	return os << object._debugId();
 }
 
-#endif // __SIMOBJECT_H__
+#endif // __SIMCORE_BATTLEFIELD_SIMOBJECT_H__
 

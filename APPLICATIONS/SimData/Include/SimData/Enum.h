@@ -332,7 +332,7 @@ public:
 	inline const std::vector<int> eachValue() const;
 	
 	/// Get a list of Enums in the range between two Enums (inclusive).
-	inline const std::vector<EnumLink> range(const EnumLink& a, const EnumLink& b) const;
+	inline const std::vector<EnumLink> range(EnumLink const &a, EnumLink const &b) const;
 
 	/// Get a list of Enums in the range between two strings (inclusive).
 	inline const std::vector<EnumLink> range(std::string const &a, std::string const &b) const;
@@ -341,7 +341,7 @@ public:
 	inline const std::vector<EnumLink> range(int a, int b) const;
 
 	/// Test for inclusion in the Enumeration set.
-	inline bool contains(const EnumLink& x) const;
+	inline bool contains(EnumLink const &x) const;
 
 	/// Test for inclusion in the Enumeration set.
 	bool contains(int value) const { 
@@ -350,7 +350,7 @@ public:
 	}
 	
 	/// Test for inclusion in the Enumeration set.
-	bool contains(const std::string& token) const {
+	bool contains(std::string const &token) const {
 		assert(__core.valid());
 		return __core->containsToken(token);
 	}
@@ -594,7 +594,7 @@ public:
 #ifndef SWIG
 	EnumLink const & operator=(EnumLink const &e) { return EnumLink::operator=(e); }
 	EnumLink const &operator =(int value) { return EnumLink::operator=(value); }
-	EnumLink const &operator =(std::string &token) { return EnumLink::operator=(token); }
+	EnumLink const &operator =(std::string const &token) { return EnumLink::operator=(token); }
 #endif
 	/// Return a string representation (for SWIG/Python).
 	std::string __repr__() const { return EnumLink::__repr__(); }
@@ -621,12 +621,12 @@ inline const std::vector<EnumLink> Enumeration::__range(int idx1, int idx2) cons
 	return v;
 }
 
-inline const std::vector<EnumLink> Enumeration::range(const EnumLink& a, const EnumLink& b) const {
+inline const std::vector<EnumLink> Enumeration::range(EnumLink const &a, EnumLink const &b) const {
 	if (a.__E != *this || b.__E != *this) throw EnumTypeError();
 	return __range(a.getIndex(), b.getIndex());
 }
 
-inline const std::vector<EnumLink> Enumeration::range(const std::string& a, const std::string& b) const {
+inline const std::vector<EnumLink> Enumeration::range(std::string const &a, std::string const &b) const {
 	return __range(getIndexByToken(a), getIndexByToken(b));
 }
 
@@ -663,7 +663,7 @@ inline const std::vector<int> Enumeration::eachValue() const {
 	return v;
 }
 
-inline bool Enumeration::contains(const EnumLink& x) const { return x.__E == *this; }
+inline bool Enumeration::contains(EnumLink const &x) const { return x.__E == *this; }
 
 inline EnumLink Enumeration::last() const {
 	assert(__core.valid());

@@ -317,7 +317,7 @@ public:
 	/**
 	 * Set this Quat to represent a rotation about an axis.
 	 *
-	 * @param the angle of rotation (right-handed) in radians.
+	 * @param angle the angle of rotation (right-handed) in radians.
 	 * @param x the x component of the rotation axis.
 	 * @param y the y component of the rotation axis.
 	 * @param z the z component of the rotation axis.
@@ -328,7 +328,7 @@ public:
 	/**
 	 * Set this Quat to represent a rotation about an axis.
 	 *
-	 * @param the angle of rotation (right-handed) in radians.
+	 * @param angle the angle of rotation (right-handed) in radians.
 	 * @param vec the rotation axis.
 	 */
         void makeRotate(double angle, const Vector3& vec);

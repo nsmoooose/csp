@@ -92,12 +92,12 @@ public:
 	void addArchive(DataArchive *);
 
 	/**
-	 * Get all children of a given path.
+	 * Get all children of a given object id.
 	 *
-	 * For path "A:X.Y", returns all object id's "A:X.Y.*".  The id's
+	 * For id "A:X.Y", returns all object id's "A:X.Y.*".  The id's
 	 * can be converted to human-readable form by getPathString().
 	 *
-	 * @param path the path to search for children
+	 * @param id the object id to search for children
 	 * @returns a list of object id's immediately below the given path.
 	 */
 	std::vector<ObjectID> getChildren(ObjectID const &id) const;

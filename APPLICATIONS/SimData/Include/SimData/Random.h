@@ -184,7 +184,7 @@ public:
 	/**
 	 * Reseed the random number generator.
 	 *
-	 * @param seed the new seed.
+	 * @param s the new seed.
 	 */
 	void setSeed(unsigned long int s);
 
@@ -355,7 +355,7 @@ public:
 	/**
 	 * Reseed the random number generator.
 	 *
-	 * @param seed the new seed.
+	 * @param s the new seed.
 	 */
 	void setSeed(unsigned long int s);
 

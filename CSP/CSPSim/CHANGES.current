@@ -1,20 +1,31 @@
  Version 0.4.0 (in progress)
 ===========================
 
+2005-02-21: onsight
+ * Fix rudder yaw coefficients; new values work for rudder angle in radians.
+
+ * Increase rudder yaw moment (cn_dr).  The new coefficient is the nominal
+   F-16 value, which matches the lateral force coefficient.  If this value
+   needs to be decrease then cy_r should be decreased as well.
+
+ * Similar fixes need to be applied to the f-16 fm (which is just a copy of
+   the m2k fm right now).  I'm working on more substantial changes to that
+   fm so I'll leave it as is for now.
+
 2005-02-21: delta
  * Minor change to the m2k model to correctly retract the right gear.
- 
+
  * Minor patch to CSPSim.py to execute cspinput in case an hid file is 
    missing. cspinput is not an executable on windows and must be called
    as an argument of python(.exe). Should be checked on GNU/Linux to be 
    sure it doesn't break the stuff there.
-   
+
 2005-02-21: lologramme
  * Add Light pylons in the hangars area.
- 
+
 2005-02-20: onsight
  * Fix path for hid generation under windows.
- 
+
  * Add the correct F16DJ binding for the core aircraft.map.
 
 2005-02-18: delta

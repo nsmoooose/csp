@@ -401,6 +401,17 @@ public:
 		m_read = m_next_read;
 	}
 
+	/** Place the last block returned by getReadBuffer back into the buffer,
+	 *  as though getReadBuffer had never been called.
+	 *
+	 *  This method is idempotent, and can be safely called even if
+	 *  getReadBuffer fails.
+	 */
+	inline void replaceReadBuffer() {
+		assert(m_next_read <= m_limit);
+		m_next_read = m_read;
+	}
+
 };
 
 

@@ -47,16 +47,30 @@ $(DEPDIR)/%.d : %
 	@echo -n "Building $@..."
 	@for foo in a; do \
 		$(CXX) -o $@ $(CFLAGS) $(@:=.cpp) -L$(TOPDIR)/SimData -lSimData -lpthread 2>.buildlog 1>/dev/null; \
-		if [ $$? = "0" ]; then echo "ok"; else echo "failed!"; exit 1; fi; \
+		if [ $$? = "0" ]; then echo "ok"; else echo "failed! (see .buildlog for details)"; exit 1; fi; \
 	done
 	$
 
 run:
-	@for test in $(TESTS); do \
-	   echo -n "Running  $$test..."; \
-	   ./$$test 2>$$test.log 1>/dev/null; \
-	   if [ $$? = "0" ]; then echo "ok"; rm $$test.log; else echo "failed!"; fi; \
-	done
+	@export FAILED_TESTS=0; \
+	for test in $(TESTS); do \
+	  echo -n "Running  $$test..."; \
+	  ./$$test 2>$$test.log 1>/dev/null; \
+	  if [ $$? = "0" ]; then \
+	    echo "ok"; \
+	     rm $$test.log; \
+	  else \
+	     echo "failed!"; \
+	     FAILED_TESTS=`expr $$FAILED_TESTS + 1`; \
+	  fi; \
+	done; \
+	if [ $$FAILED_TESTS -gt 0 ]; then \
+	  echo "********************************************"; \
+	  echo "$$FAILED_TESTS TEST(S) FAILED!"; \
+	  echo "********************************************"; \
+	  exit 1; \
+	fi
+	$
 
 all: $(TESTS) run
 

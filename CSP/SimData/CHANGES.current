@@ -32,6 +32,12 @@ Version 0.4.0 (in progress)
   * Expand the python interface to LogStream to include setting the
     enabling point and time logging.
 
+  * Added circular buffer unittest and tweaked the makefiles slighly to
+    give better test failure reporting.  Also fixed a small bug in
+    CircularBuffer, renamed the method for testing the maximum block size
+    that can be allocated, and added a new method to get the total allocated
+    space.
+
 2004-07-09: onsight
   * Changed the formating of HashT values to use fixed-width hex
     instead of decimal numbers, and cleaned up the data archive

@@ -70,7 +70,7 @@ public:
 		m_buffer = new TYPE[count];
 	}
 
-	uint32 count() const { return m_count; }
+	uint32 getCount() const { return m_count; }
 
 	~RingQueue() {
 		delete[] m_buffer;
@@ -207,7 +207,7 @@ public:
 		m_size = size + RESERVE;
 		m_read = 0;
 		m_write = 0;
-		m_limit = size;
+		m_limit = m_size;
 		m_next_read = 0;
 		m_next_write = 0;
 		m_allocated = 0;
@@ -246,7 +246,7 @@ public:
 	inline uint8 *getWriteBuffer(const uint32 size) {
 		// check that there aren't any allocated but uncommitted blocks
 		assert(m_write == m_next_write);
-		if (size == 0 || getFreeSpace() < size) return 0;
+		if (size == 0 || getMaximumAllocation() < size) return 0;
 		uint32 offset = m_write;
 		// if no room at the end of the buffer; allocate from the start
 		if (m_size - m_write < size + RESERVE) {
@@ -271,7 +271,7 @@ public:
 	 *  an upper bound (additional space may be consumed by the writer
 	 *  thread at any time).
 	 */
-	inline uint32 getFreeSpace() const {
+	inline uint32 getMaximumAllocation() const {
 		uint32 read = m_read;
 		if (read > m_write) {
 			if (read - m_write <= RESERVE) return 0;
@@ -279,6 +279,24 @@ public:
 		}
 		uint32 space = std::max(read, m_size - m_write);
 		if (space > RESERVE) return space - RESERVE - 1;
+		return 0;
+	}
+
+	/** Returns a measure of the number of bytes in the buffer that are
+	 *  allocated.  Note that getAllocatedBytes() + getMaximumAllocation()
+	 *  will generally be less than capacity due to wasted space at the
+	 *  end of the buffer.
+	 */
+	inline uint32 getAllocatedSpace() const {
+		uint32 read = m_read;
+		uint32 write = m_write;
+		uint32 space;
+		if (read > write) {
+			space = (m_size + write) - read;
+		} else {
+			space = write - read;
+		}
+		if (space > RESERVE) return space - RESERVE;
 		return 0;
 	}
 

@@ -31,8 +31,7 @@ install:
 	@python setup.py make_install --verbose
 
 tests:
-	@$(MAKE) --no-print-directory -C SimData/Tests all
-	@SIMDATA_LOGFILE=SimData/Tests/.testlog python SimData/Tests/RunTests.py
+	@$(MAKE) --no-print-directory -C SimData/Tests all && SIMDATA_LOGFILE=SimData/Tests/.testlog python SimData/Tests/RunTests.py
 
 tests-clean:
 	@$(MAKE) --no-print-directory -C SimData/Tests clean

@@ -1,6 +1,19 @@
  Version 0.4.0 (in progress)
 ===========================
 
+2004-04-17: delta
+  * Changes COLOR to COLOR0 to enforce arbvp1 compatibility in 
+    nvMorph.cg.
+    
+  * Added a debug project file for heightfield_shader.
+  
+  * Removed osgProducer dependency on CSPSimDLL (not needed yet).
+  
+  * Commented out thread managing in LogoScreen.cpp.
+  
+  * Increased the number of local steps in 
+    void AircraftPhysicsModel::doSimStep(double dt).
+
 2004-04-07: delta
   * Corrected a bug in the handling of mouse's scroll up/down.
     Added CameraCommands and extended CameraKinematics to achieve
@@ -77,12 +90,12 @@
     
   * Other minor changes.
     
-2004-01-23: delta
+2004-01-23: delta (suggested by Wolverine69)
   * Changed <python.h> to <Python.h> in 
-  APPLICATIONS/CSPSim/Source/CSPSim.cpp (suggested by Wolverine69).
+    APPLICATIONS/CSPSim/Source/CSPSim.cpp.
   
 2003-12-30: delta
-  * Added methods in VirtualScene to access perspective matrix.
+  * Added methods in VirtualScene to access projection/mv matrix.
   
 2003-12-29: delta
   * More investigations on MARKERS_TOGGLE lead to 
@@ -95,8 +108,8 @@
     built (export symbols are enabled).
   
 2003-12-22: delta
-  * Reimplemented LogoScreen ala osg. A sequence of screens is
-    loaded.
+  * Reimplemented LogoScreen a la osg. A sequence of screens is
+    now loaded.
 ==========> All users, update APPLICATIONS/CSPSim/Data/Images.
   
   * MARKERS_TOGGLE string behaves weirdly with vc++. For now,

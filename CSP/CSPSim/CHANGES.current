@@ -1,6 +1,21 @@
  Version 0.4.0 (in progress)
 ===========================
 
+2004-12-15: onsight
+ * Fix m2k animations bound to different channels.  An driven rotation
+   animation can only use a single input channel.  More complex animations,
+   such as coordinated motion of elevators and ailerons requires either
+   special handling in the FCS system (with dedicated channels for each
+   control surface), or a custom animation callback.
+
+ * Fix the deflection limits for the m2k ailerons and elevators.  The new
+   values may not be correct, but at least the aileron limits are
+   symmetric.
+
+ * Rename the runway model file to all lowercase (wasn't found under linux).
+
+==> Run ComplileData.py after updating to pick up the changes.
+
 2004-12-14: onsight
  * Minor fix for the engine cutoff function under linux.
 

@@ -5,8 +5,8 @@
 		<Object class="AircraftInputSystem" />
 		<Object class="AircraftSimpleFCS">
 			<Float name="elevator_limit0">-25.0</Float>
-			<Float name="elevator_limit1">16.0</Float>
-			<Float name="aileron_limit0">-25</Float>
+			<Float name="elevator_limit1">25.0</Float>
+			<Float name="aileron_limit0">-16</Float>
 			<Float name="aileron_limit1">16</Float>
 			<Float name="rudder_limit">30.0</Float>
 			<Float name="airbrake_limit">60.0</Float>

@@ -32,7 +32,7 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="opengl32.lib osgNVd.lib libjpeg.lib osgDBd.lib osgd.lib"
+				AdditionalDependencies="cgGL.lib Cg.lib osgNVCgd.lib opengl32.lib osgNVd.lib libjpeg.lib osgDBd.lib osgd.lib"
 				OutputFile="..\..\..\APPLICATIONS\CSPSim\Bin\osgChunkLodd.dll"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="..\..\lib"
@@ -72,7 +72,7 @@
 				Optimization="2"
 				InlineFunctionExpansion="1"
 				AdditionalIncludeDirectories="..\..\include;..\include"
-				PreprocessorDefinitions="WIN32;_WINDOWS;NDEBUG;OSGCHUNKLOD_LIBRARY"
+				PreprocessorDefinitions="WIN32;NDEBUG;OSGCHUNKLOD_LIBRARY"
 				MinimalRebuild="FALSE"
 				RuntimeLibrary="2"
 				BufferSecurityCheck="FALSE"
@@ -82,7 +82,7 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="osg.lib osgDB.lib osgNV.lib opengl32.lib libjpeg.lib"
+				AdditionalDependencies="cgGL.lib Cg.lib osgNVCg.lib osg.lib osgDB.lib osgNV.lib opengl32.lib libjpeg.lib"
 				OutputFile="..\..\..\APPLICATIONS\CSPSim\Bin\osgChunkLod.dll"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="..\..\lib"

@@ -164,8 +164,10 @@ ChunkLodTree::ChunkLodTree (const char *chunksrc,
 
 #ifdef USE_CG
 	_cgContext = new osgNVCg::Context;
-
-	if (_cgContext->getHandle() != 0) {
+	
+	// XXX
+	osg::ref_ptr<osg::State> s = new osg::State;
+	if (_cgContext->getHandle(*s) != 0) {
 		_canUseVertexProgram = true;
 		_useVertexProgram = true;
 
@@ -303,7 +305,7 @@ ChunkLodTree::render (osg::State& s, MultiTextureDetails &details)
 
 	if (_useVertexProgram) {
 #ifdef USE_CG
-		cgGLEnableProfile (cgGetProgramProfile (_cgProgram->getHandle()));
+		cgGLEnableProfile (cgGetProgramProfile (_cgProgram->getHandle(s)));
 #endif
 	}
 
@@ -316,7 +318,7 @@ ChunkLodTree::render (osg::State& s, MultiTextureDetails &details)
 
 	if (_useVertexProgram) {
 #ifdef USE_CG
-		cgGLDisableProfile (cgGetProgramProfile (_cgProgram->getHandle()));
+		cgGLDisableProfile (cgGetProgramProfile (_cgProgram->getHandle(s)));
 #endif
 	}
 

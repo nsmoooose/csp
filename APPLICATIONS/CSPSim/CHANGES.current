@@ -5,6 +5,13 @@
 	    sim won't abort if it can't find the sound file or open
 	    an audio device, but a warning is written to the log.
 
+	    Added a modified version of Lologramme's Mirage 2000
+	    model and textures to CVS.  This version includes special
+	    hooks for CSP animations.  The model and textures are
+	    under Data/Models/Mirage2000, and the including COPYING
+	    file lists copyright information.  The m2k/model.xml file
+	    now points to this 3D model.
+
 2003-10-19: onsight
             Updated configure script to check for osg 0.9.6.  Version
 	    0.9.4 can still be used, if necessary.  To do so, change 

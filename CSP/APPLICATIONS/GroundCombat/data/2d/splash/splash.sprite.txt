@@ -1,9 +1,0 @@
-*SPRITE
-{
-    *TEXTURE  splash.texture
-    *WIDTH    0.25
-    *HEIGHT   0.0625
-    *DEPTH    1.0
-    *UV       0.0 0.0 1.0 1.0
-}
-

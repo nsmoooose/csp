@@ -1,7 +1,0 @@
-<?xml version="1.0" standalone="no"?>
-
-<Object class="Theater">
-	<Path name="terrain">.terrain.balkan</Path>
-	<Path name="feature_group_list">objectives</Path>
-</Object>
-

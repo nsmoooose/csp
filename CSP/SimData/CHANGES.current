@@ -1,6 +1,9 @@
 Version 0.4.0 (in progress)
 ===========================
 
+2004-09-26: onsight
+ * Fix a couple compiler warnings under msvc.
+
 2004-09-25: onsight
  * Add scons build target 'test' which runs the simdata unittests
    (so far).

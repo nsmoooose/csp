@@ -75,8 +75,8 @@ public:
 	bool setAggregationBubbleCount(unsigned count) {
 		CSP_LOG(BATTLEFIELD, DEBUG, "setting aggregation count to " << count << " for " << *unit());
 		bool state_change = ((count == 0 && m_aggregation_count > 0) ||
-							 (count > 0 && m_aggregation_count == 0));
-		m_aggregation_count = count;
+                             (count > 0 && m_aggregation_count == 0));
+		m_aggregation_count = static_cast<simdata::uint16>(count);
 		return state_change;
 	}
 

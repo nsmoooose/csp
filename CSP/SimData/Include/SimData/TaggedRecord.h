@@ -224,7 +224,7 @@ public:
 		_buffer.append(reinterpret_cast<const char*>(&x), sizeof(x));
 		return *this;
 	}
-	virtual Writer & operator<<(char const *x) {
+	virtual Writer & operator<<(char const *) {
 		assert(0);
 		return *this;
 	}
@@ -328,7 +328,7 @@ public:
 		_bytes -= sizeof(x);
 		return *this;
 	}
-	virtual Reader & operator>>(char * &x) {
+	virtual Reader & operator>>(char * &) {
 		assert(0);  // avoid allocation issues for now -- no char*'s
 		return *this;
 	}

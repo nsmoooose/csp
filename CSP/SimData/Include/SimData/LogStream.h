@@ -66,13 +66,26 @@ public:
 #endif // SIMDATA_NOTHREADS
 
 public:
-	/** The default is to send messages to cerr.
+
+	/** Create a new log stream that defaults to stderr.
+	 */
+	LogStream():
+	          m_null(NULL),
+	          m_stream(NULL),
+	          m_fstream(NULL),
+	          m_log_point(true),
+	          m_log_time(false),
+	          m_category(~0),
+	          m_priority(0) {
+	}
+
+	/** Create a new log stream.
 	 *
-	 *  @param out_ output stream
+	 *  @param out_ The initial output stream.
 	 */
 	LogStream(std::ostream& out_):
 	          m_null(NULL),
-	          m_stream(NULL),
+	          m_stream(&out_),
 	          m_fstream(NULL),
 	          m_log_point(true),
 	          m_log_time(false),

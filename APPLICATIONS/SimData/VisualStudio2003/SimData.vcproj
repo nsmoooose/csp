@@ -227,6 +227,9 @@
 				RelativePath="..\Source\Object.cpp">
 			</File>
 			<File
+				RelativePath="..\Source\Pack.cpp">
+			</File>
+			<File
 				RelativePath="..\Source\Path.cpp">
 			</File>
 			<File
@@ -333,6 +336,9 @@
 				RelativePath="..\Include\SimData\ObjectInterface.h">
 			</File>
 			<File
+				RelativePath="..\Include\SimData\Pack.h">
+			</File>
+			<File
 				RelativePath="..\Include\SimData\Path.h">
 			</File>
 			<File
@@ -373,7 +379,7 @@
 				Name="Release|Win32">
 				<Tool
 					Name="VCCustomBuildTool"
-					CommandLine="C:\progra~1\SWIG-1.3.16\swig -c++ -python -noexcept -D__NO_LUT__ -DWIN32 -I..\Include -o ..\Source\$(InputName)_wrap.cpp ..\Source\$(InputName).i
+					CommandLine="C:\progra~1\SWIG-1.3.19\swig -c++ -python -noexcept -D__NO_LUT__ -DWIN32 -I..\Include -o ..\Source\$(InputName)_wrap.cpp ..\Source\$(InputName).i
 "
 					Outputs="..\Source\$(InputName)_wrap.cpp"/>
 			</FileConfiguration>
@@ -381,7 +387,7 @@
 				Name="Debug|Win32">
 				<Tool
 					Name="VCCustomBuildTool"
-					CommandLine="C:\progra~1\SWIG-1.3.16\swig -c++ -python -noexcept -D__NO_LUT__ -DWIN32 -I..\Include -o ..\Source\$(InputName)_wrap.cpp ..\Source\$(InputName).i
+					CommandLine="C:\progra~1\SWIG-1.3.19\swig -c++ -python -noexcept -D__NO_LUT__ -DWIN32 -I..\Include -o ..\Source\$(InputName)_wrap.cpp ..\Source\$(InputName).i
 "
 					Outputs="..\Source\$(InputName)_wrap.cpp"/>
 			</FileConfiguration>

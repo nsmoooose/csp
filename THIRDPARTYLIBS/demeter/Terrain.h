@@ -1,7 +1,7 @@
 // Demeter Terrain Visualization Library by Clay Fowler
 // Copyright (C) 2002 Clay Fowler
 
-// $Id: Terrain.h,v 1.3 2003/02/08 15:57:28 deltasf Exp $
+// $Id: Terrain.h,v 1.4 2003/04/06 10:39:18 deltasf Exp $
 
 /*
 This library is free software; you can redistribute it and/or
@@ -23,7 +23,7 @@ Boston, MA  02111-1307, USA.
 #ifndef _TERRAIN_DEMETER_H_
 #define _TERRAIN_DEMETER_H_
 
-#define _USE_GDAL_
+//#define _USE_GDAL_
 //_USE_GDAL_ tells Demeter to support the GDAL data loading library. This allows Demeter to directly
 //read DEM and SDTS files. Turn this option on only if you have installed the GDAL library on
 //your system.
@@ -33,7 +33,7 @@ Boston, MA  02111-1307, USA.
 //memory usage considerably. Demeter's ray tracing is very fast and can be used for mouse picking,
 //line-of-sight tests, etc. If you enable this option, then be aware that MUCH more memory will be needed.
 
-//#define _PROTECT_ACCESS_
+#define _PROTECT_ACCESS_
 // _PROTECT_ACCESS_ turns on extra checks to validate parameters passed to various terrain methods to make sure
 // the parameters are within range. Turn this option on when you want the Terrain to clamp
 // all values to legal ranges for you - this will slow performance but lets external callers
@@ -659,7 +659,7 @@ namespace Demeter
 		/// Increment the reference count by one, indicating that this object has another pointer which is referencing it.
         inline void     ref() const { ++m_refCount; }
         /// Decrement the reference count by one, indicating that a pointer to this object is referencing it. If the reference count goes to zero, it is assumed that this object is no longer referenced and is automatically deleted.
-        inline void     unref() const { --m_refCount; if (m_refCount<=0) delete this; }
+        inline void     unref() const { /*assert(m_refCount > 0);*/ if (m_refCount > 0) {--m_refCount; if (m_refCount==0 && this) delete this;} }
 
     private:
         vector<TerrainLoadListener*>    m_TerrainLoadListeners;

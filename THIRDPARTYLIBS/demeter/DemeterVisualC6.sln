@@ -1,0 +1,21 @@
+Microsoft Visual Studio Solution File, Format Version 7.00
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DemeterVisualC6", "DemeterVisualC6.vcproj", "{3DB95589-1C58-48C4-A62B-10443581A35F}"
+EndProject
+Global
+	GlobalSection(SolutionConfiguration) = preSolution
+		ConfigName.0 = Debug
+		ConfigName.1 = Release
+	EndGlobalSection
+	GlobalSection(ProjectDependencies) = postSolution
+	EndGlobalSection
+	GlobalSection(ProjectConfiguration) = postSolution
+		{3DB95589-1C58-48C4-A62B-10443581A35F}.Debug.ActiveCfg = Release|Win32
+		{3DB95589-1C58-48C4-A62B-10443581A35F}.Debug.Build.0 = Release|Win32
+		{3DB95589-1C58-48C4-A62B-10443581A35F}.Release.ActiveCfg = Release|Win32
+		{3DB95589-1C58-48C4-A62B-10443581A35F}.Release.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+	EndGlobalSection
+	GlobalSection(ExtensibilityAddIns) = postSolution
+	EndGlobalSection
+EndGlobal

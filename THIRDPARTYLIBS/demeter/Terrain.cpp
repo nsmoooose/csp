@@ -39,7 +39,7 @@ Boston, MA  02111-1307, USA.
 #include "fcntl.h"
 #include "sys/stat.h"
 
-#include "SDL_image.h"
+#include "SDL/SDL_image.h"
 
 #ifndef _WIN32
  #define GL_GLEXT_PROTOTYPES
@@ -717,7 +717,7 @@ Terrain::Terrain(const char* szElevationsFilename,const char* szTextureFilename,
 	SetAllElevations(szElevationsFilename,vertexSpacing,elevationScale);
 
     // Load the texture data.
-    int texWidth,texHeight;
+    int texWidth = 0,texHeight = 0;
     Uint8* pTextureImage = NULL;
     if (szTextureFilename != NULL)
     {
@@ -755,7 +755,7 @@ Terrain::Terrain(const char* szElevationsFilename,const char* szTextureFilename,
 
 Terrain::~Terrain()
 {
-	for (unsigned int i = 0; i < m_TextureCells.size(); i++)
+	for (unsigned int i = 0; i < m_TextureCells.size();  i++)
 	{
 		delete m_TextureCells[i];
 		m_TextureCells[i] = NULL;

@@ -24,7 +24,6 @@
 %}
 
 %include "std_string.i"
-//%import "SimData/Pack.i"
 
 NAMESPACE_SIMDATA
 %rename(__repr__) Date::asString() const;

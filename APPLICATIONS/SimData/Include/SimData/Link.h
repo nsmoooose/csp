@@ -34,16 +34,13 @@
 #endif
 
 
-#if defined(_MSC_VER) && (_MSC_VER <= 1300)
-#include <cassert>
-#endif
-
-#include <string>
-
-
-
+#include <SimData/Export.h>
 #include <SimData/Path.h>
 #include <SimData/Object.h>
+
+#include <string>
+#include <cassert>
+
 
 
 NAMESPACE_SIMDATA

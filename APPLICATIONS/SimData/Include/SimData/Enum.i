@@ -36,7 +36,6 @@
 #define VSTRING
 #endif
 
-//%import "SimData/Pack.i"
 //%ignore eqstring;
 //%ignore hashstring;
 //%ignore string_map;

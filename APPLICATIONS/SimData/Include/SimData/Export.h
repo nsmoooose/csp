@@ -38,5 +38,10 @@
 	#  define SIMDATA_EXPORT
 #endif
 
+# if defined(_MSC_VER) && (_MSC_VER <= 1310)
+#pragma warning (disable : 4786 4251)
+# endif
+
+
 #endif // __SIMDATA_EXPORT_H__
 

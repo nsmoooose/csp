@@ -66,10 +66,12 @@
 		return NULL;
         } catch (SIMDATA(Exception) e) {
 		printf("SWIG: caught a SimData Exception\n");
-		e.details();
+		//e.details();
+		PyErr_SetString(PyExc_RuntimeError, e.getError().c_str());
 		return NULL;
         } catch (...) {
         	printf("SWIG: passing C++ exception back\n");
+		PyErr_SetString(PyExc_RuntimeError, "Unknownn C++ exception");
         	return NULL;
     	}
 }

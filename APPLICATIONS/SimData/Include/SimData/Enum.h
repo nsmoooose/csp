@@ -27,9 +27,8 @@
 #ifndef __SIMDATA_ENUM_H__
 #define __SIMDATA_ENUM_H__
 
-# if defined(_MSC_VER) && (_MSC_VER <= 1300)
-#pragma warning (disable : 4786 4251)
-# endif
+#include <SimData/Export.h>
+#include <SimData/BaseType.h>
 
 #include <string>
 #include <vector>
@@ -37,7 +36,6 @@
 #include <iostream>
 #include <map>
 
-#include <SimData/BaseType.h>
 
 
 NAMESPACE_SIMDATA

@@ -24,7 +24,6 @@
 %}
 
 %include "std_string.i"
-//%import "SimData/Pack.i"
 
 %include "SimData/Namespace.h"
 

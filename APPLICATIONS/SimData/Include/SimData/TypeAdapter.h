@@ -28,12 +28,10 @@
 #define __SIMDATA_TYPEADAPTER_H__
 
 #if defined(_MSC_VER) && (_MSC_VER <= 1300)
-#pragma warning (disable : 4290 4786)
+#pragma warning (disable : 4290)
 #endif
 
-#include <string>
-#include <iostream>
-
+#include <SimData/Export.h>
 #include <SimData/Exception.h>
 #include <SimData/Namespace.h>
 #include <SimData/Enum.h>
@@ -41,6 +39,9 @@
 
 #include <SimData/Types.h>
 #include <SimData/PTS.h>
+
+#include <string>
+#include <iostream>
 
 
 NAMESPACE_SIMDATA

@@ -26,18 +26,16 @@
 #ifndef __SIMDATA_DATAMANAGER_H__
 #define __SIMDATA_DATAMANAGER_H__
 
-# if defined(_MSC_VER) && (_MSC_VER <= 1200)
-#pragma warning(disable : 4786)
-# endif
+#include <SimData/Export.h>
+#include <SimData/Path.h>
+#include <SimData/HashUtility.h>
+#include <SimData/Namespace.h>
 
 #include <string>
 #include <cstdio>
 #include <cstdlib>
 #include <vector>
 
-#include <SimData/Path.h>
-#include <SimData/HashUtility.h>
-#include <SimData/Namespace.h>
 
 
 NAMESPACE_SIMDATA

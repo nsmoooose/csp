@@ -1,0 +1,733 @@
+/*
+ * -*- Mode: c++; c-basic-offset: 4; tab-width: 4; indent-tabs-mode: nil; -*- 
+ */
+
+/*
+ * ChunkLod
+ *
+ * Author(s): Vladimir Vukicevic <vladimir@pobox.com>
+ * 
+ * The code follows closely after Thatcher Ulrich's sample ChunkLOD implementation.
+ * See http://tulrich.com/geekstuff/chunklod.html for more information.
+ * Original algorithm by Thatcher Ulrich, released into the public domain.
+ *
+ * The osgChunkLod library is open source and may be redistributed and/or modified
+ * under the terms of the OpenSceneGraph Public License (OSGPL) version 0.0 or 
+ * (at your option) any later version.  The full license is in LICENSE file
+ * included with this distribution, and on the openscenegraph.org website.
+ * 
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the 
+ * OpenSceneGraph Public License for more details.
+ *
+ * 
+ * Modifications by Mark Rose <mkrose@users.sourceforge.net>, May 2003:
+ *     - pthreads support
+ *     - line-of-sight testing
+ *     - quick elevation and local normal tests using chunk tristrips
+ *     - chu file format changes to speed initial terrain loading
+ *     - internal double-precision coordinate system to eliminate jitter
+ *     - greater use of osg::StateSet for cleaner GL state handling
+ *     - detail multitexturing
+ * 
+ */
+
+#ifndef _OSGCHUNKLOD_H_
+#define _OSGCHUNKLOD_H_
+
+#include <osgChunkLod/Export>
+
+#include <string>
+#include <vector>
+
+#include <osg/State>
+#include <osg/Vec3>
+#include <osg/LineSegment>
+#include <osg/Texture2D>
+
+#include <assert.h>
+#include <math.h>
+
+#include <osgChunkLod/MmapFile>
+#include <osgChunkLod/TextureQuadTree>
+#include <osgChunkLod/MultiTextureDetails>
+
+//#define USE_CG
+#define USE_NV
+
+#ifdef USE_CG
+#include <osgNVCg/Context>
+#include <osgNVCg/Program>
+#include <osgNVCg/Parameter>
+#include <osgNVCg/VectorParameter>
+#endif
+
+#ifdef USE_NV
+#include <osgNV/VertexProgram>
+#include <osgNV/VectorParameter>
+#include <osgNV/StateMatrixParameter>
+#include <osgNV/RegisterCombiners>
+#include <osgNV/FinalCombinerInput>
+#endif
+
+namespace osgChunkLod {
+
+	struct ChunkLod;
+	class ChunkLodLoader;
+
+	// unnested this from ChunkLodVertexInfo.  probably not ideal, but useful.
+	struct ChunkLodVertex {
+		short v[3];
+		short y_delta;
+
+		short operator[] (int idx) {
+			return v[idx];
+		}
+	};
+
+	/** Class for doing line segment intersection tests against
+	  the chunks. */
+	class OSGCHUNKLOD_EXPORT ChunkLodIntersect {
+		friend struct ChunkLod;
+	public:
+		ChunkLodIntersect() {
+			_hit = false;
+			_exhaustive = true;
+			_index = 0;
+			_ratio = 0.0;
+			_normal = osg::Vec3(0.0, 1.0, 0.0);
+		}
+		inline float getRatio() const { return _ratio; }
+		inline float getDistance() const { 
+			return _segment.valid() ? (_segment->end()-_segment->start()).length() * _ratio : 0.0f;
+		}
+		void setElevationTest(float x, float z) {
+			if (!_segment) _segment = new osg::LineSegment();
+			_segment->set(osg::Vec3(x, 1e+4, z), osg::Vec3(x, -1e+4, z));
+		}
+		inline float getElevation() const {
+			if (!_hit) return 0.0;
+			return 1e+4 - 2e+4 * _ratio;
+		}
+		inline int getIndex() const { return _index; }
+		inline void setIndex(int index) { _index = index; }
+		inline bool getHit() const { return _hit; }
+		inline bool getExhaustive() const { return _exhaustive; }
+		void setExhaustive(bool exhaustive) { _exhaustive = exhaustive; }
+		osg::LineSegment const *getLineSegment() const { return _segment.get(); }
+		void setLineSegment(osg::LineSegment *segment) { _segment = segment; }
+		inline osg::Vec3 const &getPoint() const { return _point; }
+		inline osg::Vec3 const &getNormal() const { return _normal; }
+		inline void reset() { _hit = false; }
+	protected:
+		void setHit(float ratio, int index, osg::Vec3 const &normal) { 
+			if (_hit && ratio > _ratio) return;
+			_hit = true;
+			_index = index;
+			_ratio = ratio;
+			_point = _segment->start() + (_segment->end() - _segment->start()) * ratio;
+			_normal = normal;
+		}
+		bool				_hit;
+		bool				_exhaustive;
+		float                           _ratio;
+		osg::ref_ptr<osg::LineSegment>  _segment;
+		int                             _index;
+		osg::Vec3                       _point;
+		osg::Vec3                       _normal;
+	};
+
+	class OSGCHUNKLOD_EXPORT ChunkLodElevationTest {
+		friend struct ChunkLod;
+	public:
+		ChunkLodElevationTest() {
+			_hit = false;
+			_index = 0;
+			_bbox_top = 0.0;
+			_normal = osg::Vec3(0.0, 1.0, 0.0);
+		}
+		void setPosition(float x, float z) {
+			_hit = false;
+			_point.x() = x;
+			_point.z() = z;
+		}
+		inline float getElevation() const {
+			if (!_hit) return 0.0;
+			return _point.y();
+		}
+		inline bool cull(osg::BoundingBox const &bb) {
+			return (bb.xMin() > _point.x() || 
+					bb.xMax() < _point.x() ||
+					bb.zMin() > _point.z() || 
+					bb.zMax() < _point.z());
+		}
+		inline int getIndex() const { return _index; }
+		inline void setIndex(int index) { _index = index; }
+		inline bool getHit() const { return _hit; }
+		inline osg::Vec3 const &getPoint() const { return _point; }
+		inline osg::Vec3 const &getNormal() const { return _normal; }
+		inline void reset() { _hit = false; }
+		inline float getBBoxTop() const { return _bbox_top; }
+		inline int getChunk() const { return _chunk_label; }
+		inline void getVertices(osg::Vec3 &A, osg::Vec3 &B, osg::Vec3 &C) const {
+			A = _A;
+			B = _B;
+			C = _C;
+		}
+		inline void getSourceVertices(ChunkLodVertex &A, ChunkLodVertex &B, ChunkLodVertex &C) const {
+			A = _source_A;
+			B = _source_B;
+			C = _source_C;
+		}
+		inline void getParameters(osg::Vec3 &offset, osg::Vec3 &scale) const {
+			offset = _offset;
+			scale = _scale;
+		}
+		void _setHit(float y, int index, osg::Vec3 const &normal) { 
+			_hit = true;
+			_index = index;
+			_point.y() = y;
+			_normal = normal;
+			assert(normal.y() > 0.0);
+		}
+		inline void _setMaxHeight(float bbox_top) {
+			_bbox_top = bbox_top;
+		}
+		inline void _setVertices(osg::Vec3 const &A,
+		                         osg::Vec3 const &B,
+		                         osg::Vec3 const &C) {
+			_A = A;
+			_B = B;
+			_C = C;
+		}
+		inline void _setParameters(osg::Vec3 const &offset, osg::Vec3 const &scale) {
+			_offset = offset;
+			_scale = scale;
+		}
+		inline void _setSourceVertices(ChunkLodVertex const &A,
+		                               ChunkLodVertex const &B,
+		                               ChunkLodVertex const &C) {
+			_source_A = A;
+			_source_B = B;
+			_source_C = C;
+		}
+		inline void _setChunk(int label) { _chunk_label = label; }
+
+	protected:
+		bool _hit;
+		int _index;
+		int _chunk_label;
+		osg::Vec3 _point;
+		osg::Vec3 _normal;
+		float _bbox_top;
+		osg::Vec3 _offset;
+		osg::Vec3 _scale;
+		osg::Vec3 _A, _B, _C;
+		ChunkLodVertex _source_A, _source_B, _source_C;
+	};
+
+
+	/** Base class containing all chunklod-related code and data.
+	  Must be put in a TerrainDrawable to draw. */
+	class OSGCHUNKLOD_EXPORT ChunkLodTree {
+	public:
+		/** Create a ChunkLodTree from the given .chu file and optional tqt file */
+		ChunkLodTree(const char *chunksrc,
+				const TextureQuadTree * texture_quadtree =
+				NULL, const osg::Image * heightmap_image =
+				NULL, const int heightmap_scale = 1);
+
+		/** Destroys this tree, and frees associated data.  The tree may not be shared
+		  amongst multiple Drawables */
+		~ChunkLodTree();
+
+		/**
+		 * Sets the error parameters for selecting LOD when rendering each chunk.
+		 *
+		 *  @param max_pixel_error is the maximum visible onscreen pixel error 
+		 *                         (controls mesh chunk selection)
+		 *  @param max_texel_size is the maximum size (in pixels) of one source texel 
+		 *                        (controls texture chunk selection)
+		 */
+		void setQuality(float max_pixel_error, float max_texel_size);
+
+		/**
+		 * Sets the camera parameters used to determine LOD 
+		 *
+		 *  @param screen_width is the width of the display, in pixels
+		 *  @param horizontal_FOV_degrees is the horizontal field of view, in degrees 
+		 */
+		void setCameraParameters(int screen_width, float horizontal_FOV_degrees);
+
+		/** Set the local origin relative to the camera to reduce jitter. */
+		void setCameraPosition(double x, double z);
+
+		/** Get the local origin */
+		void getLocalOrigin(double &x, double &y, double &z) const;
+
+		/**
+		 * Get the internal origin which includes an additional offset
+		 * to center the entire terrain at (0,0).
+		 */
+		void _getInternalOrigin(double &x, double &y, double &z) const;
+
+		/** Set the internal offset which centers the entire terrain at (0,0) */
+		void _setInternalOffset(double x, double y, double z);
+
+		/** Set local origin granularity */
+		void setLatticeDimensions(double width, double height);
+
+		/** Update the chunk selections based on the given viewpoint */
+		void update(const osg::Vec3 & viewpoint, osg::State & s);
+
+		/** Render the terrain state based on the previous call to update */
+		int render(osg::State & s, MultiTextureDetails &details);
+
+		/** returns the bounding box for the entire terrain (which is the bounding
+		  box for the 0-level chunk) */
+		void getBoundingBox(osg::Vec3 * box_center,
+				osg::Vec3 * box_extent) const;
+
+		void loaderUseThread(bool use);
+		void useVertexProgram(bool use);
+
+		void apply(osg::StateSet *);
+
+		inline int getBoundIndex() const { return _boundIndex; }
+
+		bool intersect(ChunkLodIntersect &) const;
+		bool findElevation(ChunkLodElevationTest &) const;
+		float simpleHeightAt(const float x, const float z) const;
+
+		/** function used internally to compute the required LOD level based on
+		  bounding box and viewpoint */
+		unsigned short _computeLod(const osg::Vec3 & center,
+				const osg::Vec3 & extent,
+				const osg::
+				Vec3 & viewpoint) const;
+		/** function used internally to compute the required texture LOD level based on
+		  bounding box and viewpoint */
+		int _computeTextureLod(const osg::Vec3 & center,
+				const osg::Vec3 & extent,
+				const osg::Vec3 & viewpoint) const;
+
+		inline TextureQuadTree const *getTextureQuadtree() const { return textureQuadtree; }
+		inline ChunkLodLoader *getLoader() const { return loader; }
+		inline ChunkLod *getChunk(int label) const { return chunkTable[label]; }
+
+		void _addChunk(int label, ChunkLod *chunklod);
+		ChunkLod* _newChunk();
+
+		inline int getChunkCount() const { return chunkCount; }
+		inline int getDepth() const { return treeDepth; }
+		inline float getBaseChunkDimension() const { return baseChunkDimension; }
+		inline float getVerticalScale() const { return verticalScale; }
+		inline float *getVertexBuffer() const { return vertexBuffer; }
+		inline unsigned long getVertexBufferSize() const { return vertexBufferSize; }
+		inline bool useVertexProgram() const { return _useVertexProgram; }
+
+#ifdef USE_CG
+		inline osgNVCg::Context * getCgContext() const { return _cgContext; }
+		inline osgNVCg::Program * getCgProgram() const { return _cgProgram; }
+		inline osgNVCg::VectorParameter * getCgScaleValueParameter() const { return _cgScaleValParam; }
+		inline osgNVCg::VectorParameter * getCgOffsetValueParameter() const { return _cgOffsetValParam; }
+#endif
+		
+	private:
+
+		void _updateParameters();
+
+		ChunkLod *chunks;
+		int chunksAllocated;
+
+		int treeDepth;
+		float errorLODmax;
+		float distanceLODmax;
+		float textureDistanceLODmax;
+		float verticalScale;
+		float baseChunkDimension;
+
+		double _origin_x;
+		double _origin_z;
+		double _offset_x;
+		double _offset_z;
+		int _lattice_x;
+		int _lattice_z;
+		double _latticeWidth;
+		double _latticeHeight;
+		double _width;
+		double _height;
+		int _boundIndex;
+
+		float _maxPixelError;
+		float _maxTexelSize;
+		int _screenWidth;
+		float _fov;
+
+		int chunkCount;
+		ChunkLod **chunkTable;
+
+		const TextureQuadTree *textureQuadtree;
+		ChunkLodLoader *loader;
+
+		MmapFile *chu_file;
+		 osg::ref_ptr < const osg::Image > _heightimage;
+		int _heightscale;
+
+		float *vertexBuffer;
+		unsigned long vertexBufferSize;
+
+		bool _useVertexProgram;
+		bool _canUseVertexProgram;
+
+#ifdef USE_CG
+		 osgNVCg::Context * _cgContext;
+		 osgNVCg::Program * _cgProgram;
+		 osgNVCg::VectorParameter * _cgScaleValParam;
+		 osgNVCg::VectorParameter * _cgOffsetValParam;
+#else
+#ifdef USE_NV
+		 /// XXX
+		 public:
+mutable		 osg::ref_ptr<osgNV::VertexProgram>  _vp;
+mutable		 osg::ref_ptr<osgNV::VectorParameter> _vp_texgen0;
+mutable		 osg::ref_ptr<osgNV::VectorParameter> _vp_texgen1;
+mutable		 osg::ref_ptr<osgNV::VectorParameter> _vp_texgen2;
+mutable		 osg::ref_ptr<osgNV::VectorParameter> _vp_texgen3;
+mutable		 osg::ref_ptr<osgNV::VectorParameter> _vp_scale;
+mutable		 osg::ref_ptr<osgNV::VectorParameter> _vp_offset;
+		 private:
+		 /// XXX
+#endif 
+#endif
+		// performance stats
+		int sChunksInUse;
+		int sChunksWithData;
+		int sChunksWithTexture;
+		int sBytesInUse;
+		int sTexturesBound;
+
+
+public:
+		// extensions
+		class Extensions:public osg::Referenced {
+		      public:
+			Extensions();
+			Extensions(const Extensions & rhs);
+			void lowestCommonDenominator(const Extensions &
+						     rhs);
+			void setupGLExtensions();
+
+			// ATI_vertex_array_object
+			bool isVertexArrayObjectSupported() const {
+				    return _vertexArrayObjectSupported;
+			}
+
+			GLuint glNewObjectBufferATI(GLsizei size,
+							const void
+							*pointer,
+							GLenum usage) const;
+
+			void glUpdateObjectBufferATI(GLuint buffer,
+						     GLuint offset,
+						     GLsizei size,
+						     const void *pointer,
+						     GLenum preserve) const;
+
+			void glFreeObjectBufferATI(GLuint buffer) const;
+
+			void glArrayObjectATI(GLenum array, GLint size,
+					      GLenum type, GLsizei stride,
+					      GLuint buffer,
+					      GLuint offset) const;
+
+			void glVariantObjectArrayATI(GLuint id,
+						     GLenum type,
+						     GLsizei stride,
+						     GLuint buffer,
+						     GLuint offset) const;
+
+		      protected:
+			~Extensions() {
+			}
+			
+			bool _vertexArrayObjectSupported;
+
+			// ATI_vertex_array_object functions
+			void *_glNewObjectBufferATI;
+			void *_glUpdateObjectBufferATI;
+			void *_glFreeObjectBufferATI;
+			void *_glArrayObjectATI;
+			void *_glVariantObjectArrayATI;
+		};
+
+		static const Extensions *getExtensions(unsigned int
+						       contextID,
+						       bool
+						       createIfNotInitialized);
+		static void setExtensions(unsigned int contextID,
+					  Extensions * extensions);
+	};
+
+	/** Struct to hold vertex and index information for a chunk */
+	struct ChunkLodVertexInfo {
+		
+		ChunkLodVertexInfo(): vertices(NULL), indices(NULL), _vertexArray(0) { }
+		
+		~ChunkLodVertexInfo();
+
+		int vertexCount;
+		ChunkLodVertex *vertices;
+
+		float *floatVertices;
+
+		int indexCount;
+		unsigned short *indices;
+
+		int triangleCount;
+
+		GLuint _vertexArray;
+
+		/** Read the data from the given MmapFile */
+		void read(MmapFile *);
+
+		void convertToObjectArray();
+
+		int getDataSize() const {
+			    return sizeof(*this) +
+			    vertexCount * sizeof(float) +
+			    vertexCount * sizeof(vertices[0]) +
+			    indexCount * sizeof(indices[0]);
+		}
+	};
+
+	/** Struct to hold vertex data ssociated with a particular chunk; added level of
+	    indirection to facilitate loading data in a separate thread */
+	struct ChunkLodData {
+		ChunkLodVertexInfo vertexInfo;
+
+		ChunkLodData(MmapFile *);
+
+		int render(const ChunkLodTree & c,
+			   const ChunkLod & chunk,
+			   osg::State & s,
+			   MultiTextureDetails & details,
+			   const osg::Vec3 & box_center,
+			   const osg::Vec3 & box_extent);
+
+		int getDataSize() const {
+			    return sizeof(*this) +
+			    vertexInfo.getDataSize();
+		}
+	};
+
+	/** Struct to hold chunk information */
+	struct ChunkLod {
+		ChunkLod() {
+			culled = false;
+			parent = NULL;
+			children[0] = children[1] = children[2] = children[3] = NULL;
+			data = NULL;
+			texture = NULL;
+
+			center_x = center_y = center_z = 0.0;
+			extent_x = extent_y = extent_z = 0.0;
+		} 
+		
+		ChunkLod *parent;
+		ChunkLod *children[4];
+
+		union {
+			int label;
+			ChunkLod *chunk;
+		} neighbor[4];
+
+		unsigned short x, z;
+		unsigned char level;
+		int label;
+
+		// hires bounding box
+		double center_x;
+		double center_y;
+		double center_z;
+
+		double extent_x;
+		double extent_y;
+		double extent_z;
+
+		// lores bounding box
+		osg::Vec3 lores_center;
+		osg::Vec3 lores_extent;
+
+		bool culled;	// true if this node and its children have
+		// been culled
+		bool split;	// true if this node should be rendered by
+		// descendents
+		unsigned short lod;	// high byte never changes, low byte is morph 
+		// param
+
+		short miny, maxy;
+
+		unsigned long dataFilePosition;
+
+		ChunkLodData *data;
+		osg::ref_ptr < osg::Texture2D > texture;
+
+		~ChunkLod() {
+			if (data) {
+				delete data;
+			}
+			releaseTexture();
+		}
+
+		/** Release this chunk's texture */
+		void releaseTexture() {
+			texture = NULL;		// it's refcounted
+		}
+
+		/** clear this chunk's split and other calculations */
+		void clear();
+
+		/** update this chunk's split and other calculations; will determine whether
+		    to subdivide this chunk or not, if possible */
+		void update(ChunkLodTree * tree, const osg::Vec3 & viewpoint);
+
+		/** update this chunk's texture */
+		void updateTexture(ChunkLodTree * tree,
+				   const osg::Vec3 & viewpoint);
+
+		/** decide whether to cull this chunk based on the viewing frustum */
+		void cull(const ChunkLodTree & c, osg::State & s);
+
+		/** render this chunk to screen */
+		int render(const ChunkLodTree & c, osg::State & s,
+			   MultiTextureDetails &details,
+			   bool texture_bound);
+
+		/** perform a split of this chunk */
+		void doSplit(ChunkLodTree * tree,
+			     const osg::Vec3 & viewpoint);
+
+		/** can this chunk split? (i.e. is there a level below it, and does that level
+		    have data? */
+		bool canSplit(ChunkLodTree * tree);
+
+		/** unload data for this chunk and children */
+		void unloadData();
+
+		/** request that the data be loaded */
+		void warmUpData(ChunkLodTree * tree, float priority);
+
+		void requestUnloadSubtree(ChunkLodTree * tree);
+		void requestUnloadTextures(ChunkLodTree * tree);
+
+		void bindTexture(osg::State & s, MultiTextureDetails &details);
+
+		void read(MmapFile * mf, int recursion_count,
+			  ChunkLodTree * tree,
+			  unsigned long &max_vertices,
+			  int format_version);
+
+		void lookupNeighbors(ChunkLodTree * tree);
+
+		bool hasResidentData() const {
+			return data != NULL;
+		} 
+		
+		bool hasChildren() const {
+			return children[0] != NULL;
+		} 
+		
+		int getLevel() const {
+			return level;
+		} 
+		
+		osg::BoundingBox getBoundingBox() const;
+
+		void intersect(ChunkLodIntersect &, float vscale) const;
+		void findElevation(ChunkLodElevationTest &, float vscale) const;
+
+		void updateOrigin(ChunkLodTree const &);
+
+		void _internalComputeBoundingBox(const ChunkLodTree & tree);
+
+		void getHiresBoundingBox(double &c_x, double &c_y, double &c_z,
+		                         double &e_x, double &e_y, double &e_z) {
+			c_x = center_x;
+			c_y = center_y;
+			c_z = center_z;
+			e_x = extent_x;
+			e_y = extent_y;
+			e_z = extent_z;
+		}
+
+		void computeBoundingBox(osg::Vec3 * center,
+					osg::Vec3 * extent) const { 
+			*center = lores_center;
+			*extent = lores_extent;
+		}
+	};
+
+	// utility stuffs
+
+	inline int iabs(int i) {
+		if (i < 0)
+			return -i;
+		return i;
+	} 
+	
+	inline int imax(int a, int b) {
+		if (a < b)
+			return b;
+		return a;
+	} 
+	
+	inline float fmax(float a, float b) {
+		if (a < b)
+			return b;
+		return a;
+	} 
+	
+	inline int imin(int a, int b) {
+		if (a < b)
+			return a;
+		return b;
+	} 
+	
+	inline float fmin(float a, float b) {
+		if (a < b)
+			return a;
+		return b;
+	} 
+	
+	inline int iclamp(int i, int min, int max) {
+#ifdef _DEBUG
+		assert(min <= max);
+#endif
+		return imax(min, imin(i, max));
+	} 
+	
+	inline float fclamp(float f, float min, float max) {
+#ifdef _DEBUG
+		assert(min <= max);
+#endif
+		return fmax(min, fmin(f, max));
+	} 
+	
+	const float LN_2 = 0.693147180559945f;
+#ifndef log2f
+	inline float log2f(float f) {
+		return logf(f) / LN_2;
+	}
+#endif
+	inline float fchop(float f) {
+		return (int) f;
+	} 
+	
+	inline float frnd(float f) {
+		return fchop(f + 0.5f);
+	}
+}
+#endif
+

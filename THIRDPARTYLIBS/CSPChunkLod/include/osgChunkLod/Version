@@ -1,0 +1,12 @@
+
+#ifndef OSGCHUNKLOD_VERSION_
+#define OSGCHUNKLOD_VERSION_
+
+#include <osgChunkLod/Export>
+
+extern "C" {
+	extern OSGCHUNKLOD_EXPORT const char* osgChunkLodGetVersion();
+	extern OSGCHUNKLOD_EXPORT const char* osgChunkLodGetLibraryName();
+}
+
+#endif

@@ -1,0 +1,61 @@
+/* -*- Mode: c++; c-basic-offset: 4; tab-width: 4; indent-tabs-mode: nil; -*- */
+
+/*
+ * TextureQuadTree
+ *
+ * Author(s): Vladimir Vukicevic <vladimir@pobox.com>
+ * 
+ * The code follows closely after Thatcher Ulrich's sample ChunkLOD implementation.
+ * See http://tulrich.com/geekstuff/chunklod.html for more information.
+ * Original algorithm by Thatcher Ulrich, released into the public domain.
+ *
+ * The osgChunkLod library is open source and may be redistributed and/or modified
+ * under the terms of the OpenSceneGraph Public License (OSGPL) version 0.0 or 
+ * (at your option) any later version.  The full license is in LICENSE file
+ * included with this distribution, and on the openscenegraph.org website.
+ * 
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the 
+ * OpenSceneGraph Public License for more details.
+ * 
+ */
+
+
+#ifndef _TEXTUREQUADTREE_H_
+#define _TEXTUREQUADTREE_H_
+
+#include <osgChunkLod/Export>
+
+#include <vector>
+#include <string>
+
+#include <osg/Image>
+#include <osgChunkLod/MmapFile>
+
+namespace osgChunkLod {
+
+class OSGCHUNKLOD_EXPORT TextureQuadTree {
+  public:
+	TextureQuadTree (const char* filename);
+    ~TextureQuadTree ();
+
+    bool valid() const { return _source != NULL; }
+    int depth() const { return _depth; }
+    int tileSize() const { return _tileSize; }
+
+    osg::Image* loadImage (int level, int col, int row) const;
+
+    static int nodeCount (int depth);
+    static int nodeIndex (int level, int col, int row);
+
+  private:
+    std::vector<unsigned int> _toc;
+    int _depth;
+    int _tileSize;
+    MmapFile* _source;
+};
+
+}
+
+#endif

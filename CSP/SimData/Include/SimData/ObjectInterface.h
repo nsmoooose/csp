@@ -1,18 +1,18 @@
 /* SimData: Data Infrastructure for Simulations
- * Copyright (C) 2002 Mark Rose <tm2@stm.lbl.gov>
- * 
+ * Copyright 2002, 2003, 2004 Mark Rose <mkrose@users.sourceforge.net>
+ *
  * This file is part of SimData.
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
@@ -21,6 +21,8 @@
 
 /**
  * @file ObjectInterface.h
+ * @brief Internal classes for accessing the public xml interface of
+ *   an Object class.
  */
 
 
@@ -58,12 +60,12 @@ SIMDATA_EXCEPTION(InterfaceError)
 
 
 /** Base class for storing and accessing member variable references.
- * 
+ *
  *  @internal
  *  @author Mark Rose <mrose@stm.lbl.gov>
  */
 template <class OBJECT>
-class MemberAccessorBase 
+class MemberAccessorBase
 {
 public:
 	virtual ~MemberAccessorBase() {}
@@ -71,13 +73,13 @@ public:
 	typedef typename HASH_MAPS<std::string, MemberAccessorBase *, hashstring, eqstring>::Type map;
 
 	
-	virtual void set(OBJECT *, TypeAdapter const &) throw(TypeMismatch) { 
-		throw TypeMismatch("Cannot set vector<> '" + name + "' directly, use push_back() instead."); 
+	virtual void set(OBJECT *, TypeAdapter const &) throw(TypeMismatch) {
+		throw TypeMismatch("Cannot set vector<> '" + name + "' directly, use push_back() instead.");
 	}
-	virtual void push_back(OBJECT *, TypeAdapter const &) throw(TypeMismatch) { 
+	virtual void push_back(OBJECT *, TypeAdapter const &) throw(TypeMismatch) {
 		throw TypeMismatch("Cannot call push_back() on non-vector<> variable '" + name + "'.");
 	}
-	virtual void clear(OBJECT *) throw(TypeMismatch) { 
+	virtual void clear(OBJECT *) throw(TypeMismatch) {
 		throw TypeMismatch("Cannot call clear() on non-vector<> variable '" + name + "'.");
 	}
 	virtual TypeAdapter const get(OBJECT *) const throw(TypeMismatch) {
@@ -122,11 +124,11 @@ protected:
 
 
 /** Class for storing and accessing bitmasked member variable references.
- * 
+ *
  *  @internal
  *  @author Mark Rose <mrose@stm.lbl.gov>
  */
-template <class OBJECT, typename T> 
+template <class OBJECT, typename T>
 class MemberMaskAccessor: public MemberAccessorBase<OBJECT>
 {
 	// primaries is a bit of a kludge to prevent shared member mask fields
@@ -191,7 +193,7 @@ std::vector<T OBJECT::*> MemberMaskAccessor<OBJECT, T>::primaries;
  *  @internal
  *  @author Mark Rose <mrose@stm.lbl.gov>
  */
-template <class OBJECT, typename T> 
+template <class OBJECT, typename T>
 class MemberAccessor: public MemberAccessorBase<OBJECT>
 {
 	T OBJECT::* member;
@@ -231,7 +233,7 @@ public:
  *  @author Mark Rose <mrose@stm.lbl.gov>
  */
 #ifdef __SIMDATA_PTS_SIM
-template <class OBJECT, typename T> 
+template <class OBJECT, typename T>
 class VectorMemberAccessor: public MemberAccessorBase<OBJECT>
 {
 	T OBJECT::* member;
@@ -270,7 +272,7 @@ public:
 };
 
 #else // #if !defined(__SIMDATA_PTS_SIM)
-template <class OBJECT, typename T> 
+template <class OBJECT, typename T>
 class MemberAccessor< OBJECT, std::vector<T> >: public MemberAccessorBase<OBJECT>
 {
 	std::vector<T> OBJECT::* member;
@@ -313,7 +315,7 @@ public:
  *  @internal
  *  @author Mark Rose <mrose@stm.lbl.gov>
  */
-template <class OBJECT> 
+template <class OBJECT>
 class MemberAccessor< OBJECT, int >: public MemberMaskAccessor<OBJECT, int> {
 public:
 	MemberAccessor(int OBJECT::*pm, std::string name_, bool required_):
@@ -327,7 +329,7 @@ public:
  *  @internal
  *  @author Mark Rose <mrose@stm.lbl.gov>
  */
-template <class OBJECT> 
+template <class OBJECT>
 class MemberAccessor< OBJECT, short >: public MemberMaskAccessor<OBJECT, short> {
 public:
 	MemberAccessor(short OBJECT::*pm, std::string name_, bool required_):
@@ -341,7 +343,7 @@ public:
  *  @internal
  *  @author Mark Rose <mrose@stm.lbl.gov>
  */
-template <class OBJECT> 
+template <class OBJECT>
 class MemberAccessor< OBJECT, char >: public MemberMaskAccessor<OBJECT, char> {
 public:
 	MemberAccessor(char OBJECT::*pm, std::string name_, bool required_):
@@ -392,7 +394,7 @@ namespace PTS {
 	
 	template <class C, typename T>
 	struct SELECT_ACCESSOR {
-		typedef typename meta::IF<ISVECTOR<T>::RET, 
+		typedef typename meta::IF<ISVECTOR<T>::RET,
 			simdata::VectorMemberAccessor<C, T>, simdata::MemberAccessor<C, T> >::RET ACCESSOR;
 	};
 }
@@ -417,7 +419,7 @@ public:
 	 */
 	virtual bool variableExists(std::string const &name) const = 0;
 
-	/** Test if a given variable is tagged as 'required'.  
+	/** Test if a given variable is tagged as 'required'.
 	 *
 	 *  @return Returns false if the variable is not marked as
 	 *  'required' or does not exist in the interface.
@@ -490,7 +492,7 @@ public:
 	/** Method to bind a string identifier to a member variable and
 	 *  store the association.
 	 *
-	 *  @note Do not call this method directly: use the SIMDATA_XML() 
+	 *  @note Do not call this method directly: use the SIMDATA_XML()
 	 *        macro instead.
 	 */
 	template<typename T>
@@ -525,7 +527,7 @@ public:
 		return table.find(name) != table.end();
 	}
 
-	/** Test if a given variable is tagged as 'required'.  
+	/** Test if a given variable is tagged as 'required'.
 	 *
 	 *  @return Returns false if the variable is not marked as
 	 *  'required' or does not exist in the interface.

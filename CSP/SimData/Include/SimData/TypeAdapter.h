@@ -1,18 +1,18 @@
 /* SimData: Data Infrastructure for Simulations
- * Copyright (C) 2002 Mark Rose <tm2@stm.lbl.gov>
- * 
+ * Copyright (C) 2002, 2003, 2004 Mark Rose <mkrose@users.sourceforge.net>
+ *
  * This file is part of SimData.
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
@@ -21,6 +21,8 @@
 
 /**
  * @file TypeAdapter.h
+ * @brief Adapter class providing uniform access to built-in types
+ *   and BaseType subclasses.
  */
 
 
@@ -77,19 +79,19 @@ SIMDATA_EXCEPTION(TypeMismatch)
 
 	
 /** Dynamically typed wrapper for basic types and objects.
- * 
+ *
  *  For internal use only.  This class is used to pass typed data as
  *  parameters to virtual member functions (which are not compatible
  *  with templates).  It works for a number of basic types, and for
- *  objects derived from the Object base class. 
+ *  objects derived from the Object base class.
  *
  *  @author Mark Rose <mrose@stm.lbl.gov>
  *  @internal
  */
-class SIMDATA_EXPORT TypeAdapter 
+class SIMDATA_EXPORT TypeAdapter
 {
 public:
-	typedef enum {NONE, INT, DOUBLE, STRING, BASE} TYPE; 
+	typedef enum {NONE, INT, DOUBLE, STRING, BASE} TYPE;
 	static const char * TypeNames[];
 
 	TypeAdapter(): type(NONE) {}
@@ -99,7 +101,7 @@ public:
 	explicit TypeAdapter(const char *x): type(STRING) { s = x; }
 	explicit TypeAdapter(BaseType const *x): type(BASE) { var.o = x; }
 	explicit TypeAdapter(BaseType const &x): type(BASE) { var.o = &x; }
-	TypeAdapter(TypeAdapter const &x): type(x.type) { 
+	TypeAdapter(TypeAdapter const &x): type(x.type) {
 		switch(type) {
 			case INT:
 				var.i = x.var.i;
@@ -135,11 +137,11 @@ public:
 		t = const_cast<T *>(cp);
 	}
 
-	template <typename T> 
+	template <typename T>
 	void setBase(T & x) const {
 		BaseCheck();
 		T const *p = dynamic_cast<T const *>(var.o);
-		TypeCheck(p!=NULL, "dynamic cast of BaseType* to " + x.typeString() + 
+		TypeCheck(p!=NULL, "dynamic cast of BaseType* to " + x.typeString() +
 				   " failed in TypeAdapter::setBase");
 		T *nc = const_cast<T *>(p);
 		x = *nc;
@@ -164,7 +166,7 @@ public:
 	}
 
 	/*
-	template <typename T> 
+	template <typename T>
 	void set(T & x) const { setBase(x); }
 	*/
 
@@ -216,7 +218,7 @@ public:
 			
 	bool isType(TYPE t) const { return type==t; }
 
-	const std::string __repr__() const { 
+	const std::string __repr__() const {
 		std::string repr;
 		if (type==BASE) {
 			if (var.o == 0) {

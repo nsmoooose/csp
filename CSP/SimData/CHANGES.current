@@ -30,6 +30,8 @@ Version 0.4.0 (in progress)
     ThreadSafePriorityQueue to support all the template parameters
     of std::priority_queue.
 
+  * Misc doxygen cleanup.
+
 2004-06-22: onsight
   * Added a ScopedUnlock (trivial reversal of ScopedLock)
 

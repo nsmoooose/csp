@@ -18,6 +18,10 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
+/**
+ * @file Timing.cpp
+ * @brief Uniform interface to platform specific "fast" timing functions.
+ */
 
 #include <SimData/Timing.h>
 

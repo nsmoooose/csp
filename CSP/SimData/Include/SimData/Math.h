@@ -1,18 +1,18 @@
 /* SimData: Data Infrastructure for Simulations
- * Copyright (C) 2002 Mark Rose <tm2@stm.lbl.gov>
- * 
+ * Copyright (C) 2002 Mark Rose <mkrose@users.sourceforge.net>
+ *
  * This file is part of SimData.
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
@@ -21,14 +21,14 @@
 /*
  * @file Math.h
  *
- * Math related utility functions and constants.
+ * @brief Math related utility functions and constants.
  *
- * Numerous utility functions implemented here are based on 
- * the Math header included in the OpenSceneGraph library, 
- * Copyright 1998-2003 Robert Osfield.  Source code from 
- * OpenSceneGraph is used here under the GNU General Public 
- * License Version 2 or later, as permitted under the 
- * OpenSceneGraph Public License Version 0.0 (exception 3) 
+ * Numerous utility functions implemented here are based on
+ * the Math header included in the OpenSceneGraph library,
+ * Copyright 1998-2003 Robert Osfield.  Source code from
+ * OpenSceneGraph is used here under the GNU General Public
+ * License Version 2 or later, as permitted under the
+ * OpenSceneGraph Public License Version 0.0 (exception 3)
  * and the GNU Lesser Public License Version 2 (clause 3).
  **/
 

@@ -20,7 +20,7 @@
 
 
 /**
- * @file Exception.h
+ * @file BaseException.h
  * @brief Exception base classes and macros for creating new exceptions.
  */
 
@@ -34,6 +34,8 @@
 #include <SimData/Export.h>
 #include <SimData/Namespace.h>
 
+// XXX this is a temporary hack to make
+// swig1.3.21 correctly parses this file
 #ifndef NAMESPACE_SIMDATA
 namespace simdata {
 #else

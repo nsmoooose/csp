@@ -18,9 +18,9 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
-%module Exception
+%module ExceptionBase
 %{
-#include "SimData/Exception.h"
+#include "SimData/ExceptionBase.h"
 %}
 
 // suppress warning about undefined base class std::runtime_exception
@@ -29,6 +29,4 @@
 // break if swig knows about the class.
 %warnfilter(401) Exception;
 
-%include "SimData/Exception.h"
-
-
+%include "SimData/ExceptionBase.h"

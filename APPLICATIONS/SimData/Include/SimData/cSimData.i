@@ -54,7 +54,7 @@
     }
 }
 
-%include "SimData/Exception.i"
+%include "SimData/ExceptionBase.i"
 %include "SimData/HashUtility.i"
 %include "SimData/Conversions.i"
 %include "SimData/Random.i"
@@ -65,19 +65,19 @@
         try {
         $action
         } catch (SIMDATA(PythonException) &e) {
-		printf("SWIG: passing Python exception back\n");
-		e.details();
-		return NULL;
+        printf("SWIG: passing Python exception back\n");
+        e.details();
+        return NULL;
         } catch (SIMDATA(Exception) e) {
-		printf("SWIG: caught a SimData Exception\n");
-		//e.details();
-		PyErr_SetString(PyExc_RuntimeError, e.getError().c_str());
-		return NULL;
+        printf("SWIG: caught a SimData Exception\n");
+        //e.details();
+        PyErr_SetString(PyExc_RuntimeError, e.getError().c_str());
+        return NULL;
         } catch (...) {
-        	printf("SWIG: passing C++ exception back\n");
-		PyErr_SetString(PyExc_RuntimeError, "Unknownn C++ exception");
-        	return NULL;
-    	}
+            printf("SWIG: passing C++ exception back\n");
+        PyErr_SetString(PyExc_RuntimeError, "Unknownn C++ exception");
+            return NULL;
+        }
 }
 
 %include "SimData/DataArchive.i"

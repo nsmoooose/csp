@@ -19,7 +19,7 @@
  */
 
 
-#include <SimData/Exception.h>
+#include <SimData/ExceptionBase.h>
 #include <iostream>
 
 
@@ -27,51 +27,50 @@ NAMESPACE_SIMDATA
 
 
 ExceptionBase::ExceptionBase(std::string const &type, std::string const &msg) {
-	 //: std::runtime_error(type+": "+msg) {
-	_type = type;
-	_msg = msg;
-	dump = true;
+     //: std::runtime_error(type+": "+msg) {
+    _type = type;
+    _msg = msg;
+    dump = true;
 }
 
 ExceptionBase::ExceptionBase(ExceptionBase const &e) {
-	_type = e._type;
-	_msg = e._msg;
-	dump = e.dump;
-	e.dump = false;
+    _type = e._type;
+    _msg = e._msg;
+    dump = e.dump;
+    e.dump = false;
 }
 
 std::string ExceptionBase::getMessage() { 
-	return _msg; 
+    return _msg; 
 }
 
 std::string ExceptionBase::getType() { 
-	return _type; 
+    return _type; 
 }
 
 std::string ExceptionBase::getError() {
-	return _type + ": " + _msg;
+    return _type + ": " + _msg;
 }
 
 void ExceptionBase::appendMessage(std::string const &msg) { 
-	_msg += "\n" + msg;
+    _msg += "\n" + msg;
 }
 
 void ExceptionBase::addMessage(std::string const &msg) { 
-	_msg = msg + "\n" + _msg;
+    _msg = msg + "\n" + _msg;
 }
 
 void ExceptionBase::clear() { 
-	dump = false; 
+    dump = false; 
 }
 
 void ExceptionBase::details() {
-	std::cerr << getError() << std::endl;
+    std::cerr << getError() << std::endl;
 }
 
 ExceptionBase::~ExceptionBase() {
-	if (dump) details();
+    if (dump) details();
 }
 
 
 NAMESPACE_SIMDATA_END
-

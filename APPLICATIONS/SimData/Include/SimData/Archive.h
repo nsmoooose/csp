@@ -35,7 +35,7 @@
 #include <cassert>
 #include <SimData/BaseType.h>
 #include <SimData/HashUtility.h>
-#include <SimData/Exception.h>
+#include <SimData/ExceptionBase.h>
 #include <SimData/Namespace.h>
 
 

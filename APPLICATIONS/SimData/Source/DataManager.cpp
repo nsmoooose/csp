@@ -22,7 +22,7 @@
 #include <SimData/DataManager.h>
 #include <SimData/DataArchive.h>
 #include <SimData/Log.h>
-#include <SimData/Exception.h>
+#include <SimData/ExceptionBase.h>
 
 
 NAMESPACE_SIMDATA

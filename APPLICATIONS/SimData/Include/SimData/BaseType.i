@@ -23,15 +23,15 @@
 #include "SimData/BaseType.h"
 %}
 
-%import "SimData/Exception.i"
+%import "SimData/ExceptionBase.i"
 
 %exception BaseType {
-	try {
-		$action
-	} catch (SIMDATA(ParseException) e) {
-		e.details();
-		SWIG_exception(SWIG_RuntimeError, "");
-	}
+    try {
+        $action
+    } catch (SIMDATA(ParseException) e) {
+        e.details();
+        SWIG_exception(SWIG_RuntimeError, "");
+    }
 }
 
 %include "SimData/BaseType.h"

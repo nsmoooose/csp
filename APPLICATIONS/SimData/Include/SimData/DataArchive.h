@@ -30,7 +30,7 @@
 #include <SimData/Export.h>
 #include <SimData/Uniform.h>
 #include <SimData/Link.h>
-#include <SimData/Exception.h>
+#include <SimData/ExceptionBase.h>
 #include <SimData/HashUtility.h>
 #include <SimData/Namespace.h>
 

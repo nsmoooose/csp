@@ -442,7 +442,7 @@ class Workspace:
       if not result.ok: return result
       cs = result.value
     else:
-      result = self.edit(name)
+      result = self.change(name)
       if not result.ok: return result
     result = cs.submit()
     if result.ok:

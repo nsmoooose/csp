@@ -111,12 +111,12 @@ protected:
 	double const m_Damping;
 
 	/**
-	 * Extract kinematic variables from the vector field.
+	 * Extract kinematic variables from the vector field variable.
 	 */
 	void YToBody(std::vector<double> const &y);
 
 	/**
-	 * Assemble the vector field from individual kinematic variables.
+	 * Assemble the vector field variable from individual kinematic variables.
 	 */
 	std::vector<double> const &bodyToY(simdata::Vector3 const &p,
 	                                   simdata::Vector3 const &v,

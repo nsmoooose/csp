@@ -38,10 +38,7 @@ using simdata::RadiansToDegrees;
 
 SIMDATA_REGISTER_INTERFACE(AircraftObject)
 
-AircraftObject::AircraftObject(): DynamicObject()
-{
-	//m_iObjectType = AIRPLANE_OBJECT_TYPE;
-	//m_iObjectID = g_pBattlefield->getNewObjectID();
+AircraftObject::AircraftObject(): DynamicObject() {
 
 	CSP_LOG(OBJECT, DEBUG, "AircraftObject::AircraftObject() ...");
 	m_ObjectName = "AIRCRAFT";
@@ -107,6 +104,10 @@ AircraftObject::AircraftObject(): DynamicObject()
 	BIND_ACTION("STOP_INC_ELEVATOR", noIncElevator);
 	BIND_ACTION("DEC_ELEVATOR", DecElevator);
 	BIND_ACTION("STOP_DEC_ELEVATOR", noDecElevator);
+	BIND_ACTION("INC_RUDDER", IncRudder);
+	BIND_ACTION("STOP_INC_RUDDER", noIncRudder);
+	BIND_ACTION("DEC_RUDDER", DecRudder);
+	BIND_ACTION("STOP_DEC_RUDDER", noDecRudder);
 	BIND_ACTION("INC_AIRBRAKE", IncAirbrake);
 	BIND_ACTION("DEC_AIRBRAKE", DecAirbrake);
 	BIND_ACTION("OPEN_AIRBRAKE", OpenAirbrake);
@@ -212,6 +213,7 @@ double AircraftObject::onUpdate(double dt)
 	// TODO: update AI controller
 	updateControls(dt);
 	doFCS(dt);
+	m_GearDynamics->setSteering(m_RudderInput);
 	DynamicObject::onUpdate(dt);
 	// TODO: update HUD?
 	CSP_LOG(OBJECT, DEBUG, "... AircraftObject::onUpdate");
@@ -240,6 +242,7 @@ void AircraftObject::updateControls(double dt)
 	m_ThrottleInput += m_dThrottleInput * dt * 0.2;
 	m_AileronInput += m_dAileronInput * dt * 0.4;
 	m_ElevatorInput += m_dElevatorInput * dt * 0.4;
+	m_RudderInput += m_dRudderInput * dt * 0.4;
 
 	if (m_BrakePulse > 0.0) {
 		m_BrakePulse -= dt;
@@ -263,9 +266,14 @@ void AircraftObject::updateControls(double dt)
 		m_decayElevator--;
 		if (m_dElevatorInput == 0.0) m_ElevatorInput *= 0.90;
 	}
+	if (m_decayRudder > 0) {
+		m_decayRudder--;
+		if (m_dRudderInput == 0.0) m_RudderInput *= 0.90;
+	}
 	CLIP(m_ThrottleInput, -1.0, 1.0);
 	CLIP(m_AileronInput, -1.0, 1.0);
 	CLIP(m_ElevatorInput, -1.0, 1.0);
+	CLIP(m_RudderInput, -1.0, 1.0);
 	CSP_LOG(OBJECT, DEBUG, "AircraftObject::m_decayElevator = " << m_decayElevator);
 	CSP_LOG(OBJECT, DEBUG, "AircraftObject::m_ElevatorInput = " << m_ElevatorInput);
 	CSP_LOG(OBJECT, DEBUG, "... AircraftObject::updateControls");
@@ -335,7 +343,24 @@ void AircraftObject::setThrottle(double x) {
 void AircraftObject::setRudder(double x)
 { 
 	m_RudderInput = x; 
-	m_GearDynamics->setSteering(x);
+}
+
+void AircraftObject::IncRudder() { 
+	m_dRudderInput = 1.0; 
+}
+
+void AircraftObject::noIncRudder() { 
+	if (m_dRudderInput > 0.0) m_dRudderInput = 0.0; 
+	m_decayRudder = 30;
+}
+
+void AircraftObject::DecRudder() { 
+	m_dRudderInput = -1.0; 
+}
+
+void AircraftObject::noDecRudder() { 
+	if (m_dRudderInput < 0.0) m_dRudderInput = 0.0; 
+	m_decayRudder = 30;
 }
 
 void AircraftObject::setAileron(double x)

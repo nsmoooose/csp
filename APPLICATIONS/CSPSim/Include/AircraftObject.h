@@ -32,9 +32,10 @@
 #include "LandingGear.h"
 //#include "PrimaryAeroDynamics.h"
 #include "FlightDynamics.h"
+#include "FlightModel.h"
 
 
-class FlightModel;
+//class FlightModel;
 class AnimationValueChannel;
 
 
@@ -107,6 +108,10 @@ public:
 	ACTION_INTERFACE(AircraftObject, noIncAileron);
 	ACTION_INTERFACE(AircraftObject, DecAileron);
 	ACTION_INTERFACE(AircraftObject, noDecAileron);
+	ACTION_INTERFACE(AircraftObject, IncRudder);
+	ACTION_INTERFACE(AircraftObject, noIncRudder);
+	ACTION_INTERFACE(AircraftObject, DecRudder);
+	ACTION_INTERFACE(AircraftObject, noDecRudder);
 	ACTION_INTERFACE(AircraftObject, IncThrottle);
 	ACTION_INTERFACE(AircraftObject, noIncThrottle);
 	ACTION_INTERFACE(AircraftObject, DecThrottle);

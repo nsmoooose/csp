@@ -67,19 +67,24 @@ class UpdateCallback : public osg::NodeCallback {
 
 
 ScreenInfo::ScreenInfo(float pos_x, float pos_y, std::string const &name, std::string const &text):
-	m_TTFPath("screeninfo.ttf"),
+	//m_TTFPath("screeninfo.ttf"),
+	m_TTFPath("ltype.ttf"),
 	m_FontSize(20), 
-	m_CharacterSize(14),
+	//m_CharacterSize(14),
+	m_CharacterSize(11),
 	m_Text(0) {
 	m_Text = makeText(pos_x,pos_y - m_CharacterSize, text);
 	addDrawable(m_Text);
 	setName(name);
+	// FIXME: these lines seems to badly interact with others parts of the code, 
+	// on windows at least; for example, TEXDOME code from Sky doesn t work correctly
+	// when they are uncommented.
 	// HACK to prevent text from disappearing when chunklod multitexture details
 	// are turned on:
-	osg::StateSet *ss = getOrCreateStateSet();
-	ss->setTextureAttributeAndModes(1, new osg::Texture2D, osg::StateAttribute::OFF);
-	ss->setTextureAttributeAndModes(2, new osg::Texture2D, osg::StateAttribute::OFF);
-	ss->setTextureAttributeAndModes(3, new osg::Texture2D, osg::StateAttribute::OFF);
+	//osg::StateSet *ss = getOrCreateStateSet();
+	//ss->setTextureAttributeAndModes(1, new osg::Texture2D, osg::StateAttribute::OFF);
+	//ss->setTextureAttributeAndModes(2, new osg::Texture2D, osg::StateAttribute::OFF);
+	//ss->setTextureAttributeAndModes(3, new osg::Texture2D, osg::StateAttribute::OFF);
 }
 
 osgText::Text *ScreenInfo::makeText(float pos_x, float pos_y, std::string const &string_text) {
@@ -105,30 +110,46 @@ Framerate::Framerate(int posx, int posy): ScreenInfo(posx, posy, "FRAMERATE"), m
 	// spaced fonts and get the character width of a string prior to
 	// and update/draw passes.
 	float width = m_CharacterSize * 0.7;
+	float spacing = 6 * width;
 
-	osgText::Text *s1_0 = makeText(posx + 6 * width, posy - m_CharacterSize, "fps min:");
+	float l = spacing;
+
+
+	osgText::Text *s1_0 = makeText(posx + l, posy - m_CharacterSize, "fps min:");
 	addDrawable(s1_0);
-	osgText::Text *s1_1 = makeText(posx + 21 * width, posy - m_CharacterSize, "max:");
-	addDrawable(s1_1);
-	osgText::Text *s1_2 = makeText(posx + 33 * width, posy - m_CharacterSize, "avg:");
-	addDrawable(s1_2);
 	
-	m_MinFps = makeText(posx + (6 + 9) * width, posy - m_CharacterSize);
+	l = s1_0->getBound().xMax() + width;
+
+	m_MinFps = makeText(l, posy - m_CharacterSize);
 	m_MinFps->setUseDisplayList(false);
 	addDrawable(m_MinFps);
 
-	m_MaxFps = makeText(posx + (21 + 5) * width, posy - m_CharacterSize);
+	l += spacing; 
+
+	osgText::Text *s1_1 = makeText(l, posy - m_CharacterSize, "max:");
+	addDrawable(s1_1);
+
+	l = s1_1->getBound().xMax() + width;
+
+	m_MaxFps = makeText(l, posy - m_CharacterSize);
 	m_MaxFps->setUseDisplayList(false);
 	addDrawable(m_MaxFps);
 
-	m_Av = makeText(posx + (33 + 5) * width, posy - m_CharacterSize);
+	l += spacing;
+
+	osgText::Text *s1_2 = makeText(l, posy - m_CharacterSize, "avg:");
+	addDrawable(s1_2);
+
+	l = s1_2->getBound().xMax() + width;
+
+	m_Av = makeText(l, posy - m_CharacterSize);
 	m_Av->setUseDisplayList(false);
 	addDrawable(m_Av);
 
 	osgText::Text *s2 = makeText(posx, posy - 2 * m_CharacterSize, "Date:"); 
 	addDrawable(s2);
 
-	m_Date = makeText(posx + 6 * width, posy - 2 * m_CharacterSize);
+	m_Date = makeText(s2->getBound().xMax() + width, posy - 2 * m_CharacterSize);
 	m_Date->setUseDisplayList(false);
 	addDrawable(m_Date);
 
@@ -140,8 +161,8 @@ void Framerate::update() {
 	float fps = CSPSim::theSim->getFrameRate();
 		
 	if ((++count)%1000 == 0) { // reset occasionally
-		//m_minFps = 100.0;
-		//m_maxFps = 0.0;
+		m_minFps = 100.0;
+		m_maxFps = 0.0;
 	}
 	
 	m_minFps = min(m_minFps,fps);
@@ -170,8 +191,7 @@ void Framerate::update() {
 }
 
 
-GeneralStats::GeneralStats(int posx,int posy):ScreenInfo(posx,posy,"GENERAL STATS")
-{
+GeneralStats::GeneralStats(int posx,int posy):ScreenInfo(posx,posy,"GENERAL STATS") {
 	osgText::Text *s1 = makeText(m_CharacterSize, posy,"Terrain Polygons:"); 
 	addDrawable(s1);
 

@@ -91,11 +91,11 @@ public:
 		void setHit(float ratio, simdata::Vector3 const &normal);
 	protected:
 		bool				_hit;
-		float                           _ratio;
-		simdata::Vector3		_start;
-		simdata::Vector3		_end;
-		simdata::Vector3                _point;
-		simdata::Vector3                _normal;
+		float				_ratio;
+		simdata::Vector3	_start;
+		simdata::Vector3	_end;
+		simdata::Vector3    _point;
+		simdata::Vector3    _normal;
 	};
 
 	BEGIN_SIMDATA_XML_VIRTUAL_INTERFACE(TerrainObject)

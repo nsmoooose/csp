@@ -30,12 +30,10 @@
 
 #include "NumericalMethod.h"
 
-
 class DynamicalSystem: public VectorField {
 	NumericalMethod* _numericalMethod;
 public:
 	DynamicalSystem(unsigned short dimension = 0);
-	DynamicalSystem(VectorField* pf);
 	virtual ~DynamicalSystem();
 	void setNumericalMethod(NumericalMethod* pnumericalMethod);
 	std::vector<double> const& flow(std::vector<double>& y0, double t0, double dt) const;

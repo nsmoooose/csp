@@ -181,7 +181,10 @@ simdata::Vector3 FlightModel::calculateLiftVector() {
 }
 
 /*
-okay... you'll want to have tables for e and you'll also want to make CD0 into CDmin and have induced drag as (CL - CLmin,drag)^2/pi*e*AR.  So you'll have e for each CL you define and a two constant values (for constant Mach number) for CDmin and CLmin,drag.  You'd probably want to make AR variable too in case you decide to model swing wing aircraft.  You could even model the effects of wintip missiles. :-) */
+okay... you'll want to have tables for e and you'll also want to make CD0 into CDmin and have induced drag as 
+(CL - CLmin,drag)^2/pi*e*AR.  So you'll have e for each CL you define and a two constant values (for constant Mach number) 
+for CDmin and CLmin,drag.  You'd probably want to make AR variable too in case you decide to model swing wing aircraft.  
+You could even model the effects of wintip missiles. :-) */
 
 simdata::Vector3 FlightModel::calculateDragVector() {
 

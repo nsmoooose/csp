@@ -144,6 +144,9 @@
 				RelativePath="..\..\Source\AircraftPhysicsModel.cpp">
 			</File>
 			<File
+				RelativePath="..\..\Source\Animation.cpp">
+			</File>
+			<File
 				RelativePath="..\..\Source\Atmosphere.cpp">
 			</File>
 			<File
@@ -205,6 +208,12 @@
 			</File>
 			<File
 				RelativePath="..\..\Source\Exception.cpp">
+			</File>
+			<File
+				RelativePath="..\..\Source\FlightDynamics.cpp">
+			</File>
+			<File
+				RelativePath="..\..\Source\FlightModel.cpp">
 			</File>
 			<File
 				RelativePath="..\..\Source\GameScreen.cpp">
@@ -359,6 +368,9 @@
 				RelativePath="..\..\Include\AircraftPhysicsModel.h">
 			</File>
 			<File
+				RelativePath="..\..\Include\Animation.h">
+			</File>
+			<File
 				RelativePath="..\..\Include\Atmosphere.h">
 			</File>
 			<File
@@ -392,6 +404,9 @@
 				RelativePath="..\..\Include\Console.h">
 			</File>
 			<File
+				RelativePath="..\..\Include\DataRecorder.h">
+			</File>
+			<File
 				RelativePath="..\..\Include\DemeterTerrain.h">
 			</File>
 			<File
@@ -411,6 +426,12 @@
 			</File>
 			<File
 				RelativePath="..\..\Include\FLCS.h">
+			</File>
+			<File
+				RelativePath="..\..\Include\FlightDynamics.h">
+			</File>
+			<File
+				RelativePath="..\..\Include\FlightModel.h">
 			</File>
 			<File
 				RelativePath="..\..\Include\GameScreen.h">
@@ -568,7 +589,7 @@
 				Name="Debug|Win32">
 				<Tool
 					Name="VCCustomBuildTool"
-					CommandLine="C:\progra~1\SWIG-1.3.19\swig -c++ -python -noexcept -DSWIG_NOINCLUDE -DWIN32 -I..\..\Include -IC:\Python22\include -o ..\..\Source\$(InputName)_wrap.cpp ..\..\Source\$(InputName).i
+					CommandLine="C:\progra~1\SWIG-1.3.19\swig -c++ -python -noexcept -DWIN32 -I..\..\Include -IC:\Python22\include -o ..\..\Source\$(InputName)_wrap.cpp ..\..\Source\$(InputName).i
 "
 					Outputs="..\..\Source\$(InputName)_wrap.cpp"/>
 			</FileConfiguration>

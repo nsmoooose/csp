@@ -236,17 +236,12 @@ void CSPSim::init()
 			m_DataManager.addArchive(sim);
 		} 
 
-#ifndef CSP_NDEBUG
 		catch (simdata::Exception &e) {
 			CSP_LOG(APP, ERROR, "Error opening data archive " << archive_file);
 			CSP_LOG(APP, ERROR, e.getType() << ": " << e.getMessage());
-			throw;
+			throw e;
 			//::exit(0);
 		}
-#else 
-		catch (...) {
-		}
-#endif
 		// initialize SDL
 		initSDL();
 
@@ -317,15 +312,16 @@ void CSPSim::init()
 		ao->setGlobalPosition(0.0, 0.0, 150.0);
 
 		//ao->setGlobalPosition(483000-512000, 499000-512000, 91.2);
-		ao->setAttitude(0.03, 0.0, 0);
-		ao->setVelocity(0, 90.0, 0);
+		ao->setAttitude(0.0, 0.0, 3.14);
+		ao->setVelocity(0, -90.0, 0);
 
 // original placement for balkan terrain testing
-/*
-		ao->setGlobalPosition(483025, 499000, 88.5);
+		/*
+		ao->setGlobalPosition(483025, 499000, 188.5);
 		ao->setAttitude(0.0, 0.0, 1.92);
 		ao->setVelocity(0, 1.0, 0);
-*/
+		*/
+
 
 		m_Battlefield->addUnit(ao);
 
@@ -520,13 +516,12 @@ void CSPSim::run()
 		}
 		//m_Battlefield->dumpObjectHistory();
 	}
-#ifndef CSP_NDEBUG
 	catch(DemeterException * pEx) {
-		CSP_LOG(APP, ERROR, "Caught Demeter Exception: " << pEx->GetErrorMessage());
+		std::string msg = pEx->GetErrorMessage();
+		CSP_LOG(APP, ERROR, "Caught Demeter Exception: " << msg );
 		cleanup();
 		::exit(1);
 	}
-#endif
 	catch(...) {
 		CSP_LOG(APP, ERROR, "MAIN: Unexpected exception, GLErrorNUM: " << glGetError());
 		cleanup();

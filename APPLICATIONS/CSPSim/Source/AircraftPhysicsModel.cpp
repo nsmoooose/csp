@@ -31,7 +31,7 @@
 
 AircraftPhysicsModel::AircraftPhysicsModel():
 	PhysicsModel(13) {
-	setNumericalMethod(new RungeKuttaCK(this, false));
+	setNumericalMethod(new RungeKuttaCK(this));
 }
 
 std::vector<double> const &AircraftPhysicsModel::_f(double x, std::vector<double> &y) {   

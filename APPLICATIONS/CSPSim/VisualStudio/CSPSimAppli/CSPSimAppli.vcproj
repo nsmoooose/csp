@@ -393,6 +393,9 @@
 				RelativePath="..\..\Include\ConsoleCommands.h">
 			</File>
 			<File
+				RelativePath="..\..\Include\DemeterTerrain.h">
+			</File>
+			<File
 				RelativePath="..\..\Include\DirVectorDrawable.h">
 			</File>
 			<File

@@ -40,9 +40,11 @@
 #include <SimData/External.h>
 #include <SimData/InterfaceRegistry.h>
 
+//FIXME: or not FIXME? see below, forward declaration
+#include "Animation.h"
 #include "SmokeEffects.h"
 
-class Animation;
+//class Animation;
 class AnimationCallback;
 class AnimationChannel;
 

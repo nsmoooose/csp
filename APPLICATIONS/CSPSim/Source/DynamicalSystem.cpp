@@ -45,20 +45,6 @@ DynamicalSystem::~DynamicalSystem()
 	} 
 }
 
-// XXX this ctor makes no sense as initially written
-// the initial implementation is commented.
-DynamicalSystem::DynamicalSystem(VectorField* pf): VectorField(*pf)
-{
-	_numericalMethod = 0;
-	assert(0); // XXX how can we initialize to a VectorField if
-	           // we don't have a numerical method
-	/*
-	if (!_numericalMethod) {
-		_numericalMethod->setVectorField(pf);
-	}
-	*/
-}
-
 void DynamicalSystem::setNumericalMethod(NumericalMethod* pnumericalMethod)
 {
 	_numericalMethod = pnumericalMethod;

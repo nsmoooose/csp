@@ -82,7 +82,7 @@ public:
 		vectorField(0),
 		m_failed(false) {
 	}
-	NumericalMethod(VectorField* pf, bool deleteVF = true):
+	NumericalMethod(VectorField* pf, bool deleteVF = false):
 		m_bdeleteVF(deleteVF),
 		vectorField(pf), 
 		m_failed(false) {

@@ -102,9 +102,9 @@ public:
 		if (name.substr(0,6) == "ANIM: ") {
 			simdata::Key id = name.substr(6);
 			simdata::Link<Animation>::vector::const_iterator i = m_Animations->begin();
-			std::cout << "SEARCHING FOR " << name.substr(6) << " (" << id << ")\n";
+			std::cout << "SEARCHING FOR " << name.substr(6) << " (" << id.asString() << ")\n";
 			for (; i != m_Animations->end(); ++i) {
-				std::cout << "COMPARING TO " << (*i)->getModelID() << "\n";
+				std::cout << "COMPARING TO " << (*i)->getModelID().asString() << "\n";
 				if ((*i)->getModelID() == id) {
 					node.setUserData(new AnimationBinding(i->get()));
 					std::cout << "FOUND\n";

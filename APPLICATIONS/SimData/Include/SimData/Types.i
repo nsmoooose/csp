@@ -6,6 +6,7 @@
         try {
 		$action
         } catch (SIMDATA(PythonException) &e) {
+		e.details();
 		printf("passing it back\n");
 		return NULL;
         }

@@ -61,16 +61,17 @@
         try {
         $action
         } catch (SIMDATA(PythonException) &e) {
-        printf("SWIG: passing Python exception back\n");
-        return NULL;
+		printf("SWIG: passing Python exception back\n");
+		e.datails();
+		return NULL;
         } catch (SIMDATA(Exception) e) {
-        printf("SWIG: caught a SimData Exception\n");
-        e.details();
-        return NULL;
+		printf("SWIG: caught a SimData Exception\n");
+		e.details();
+		return NULL;
         } catch (...) {
-        printf("SWIG: passing C++ exception back\n");
-        return NULL;
-    }
+        	printf("SWIG: passing C++ exception back\n");
+        	return NULL;
+    	}
 }
 
 %include "SimData/DataArchive.i"

@@ -37,6 +37,7 @@ class File:
   ADD = 'ADD'
   DEL = 'DEL'
   MOD = 'MOD'
+  CONFLICT = 'CON'
 
   def __init__(self, path, root, mode):
     self.mode = mode
@@ -71,7 +72,7 @@ def svn_st(files=None):
   st = os.popen('svn st -q %s' % path).readlines()
   files = []
   for line in st:
-    path = line[1:].strip()
+    path = line[7:].strip()
     abspath = os.path.abspath(path)
     assert(abspath.startswith(root))
     relpath = abspath[len(root):]
@@ -82,6 +83,7 @@ def svn_st(files=None):
     if line.startswith('M'): mode = File.MOD
     elif line.startswith('A'): mode = File.ADD
     elif line.startswith('D'): mode = File.DEL
+    elif line.startswith('C'): mode = File.CONFLICT
     else: continue
     files.append(File(relpath, root, mode))
   return files

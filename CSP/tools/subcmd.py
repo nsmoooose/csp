@@ -118,6 +118,13 @@ def Error(msg):
 
 class Changeset:
 
+  MODE_NAME = {
+    sublib.File.ADD: 'add',
+    sublib.File.DEL: 'delete',
+    sublib.File.MOD: 'modified',
+    sublib.File.CONFLICT: 'XXX conflict',
+  }
+
   def __init__(self, name, files, pending=0):
     self._name = name
     self._description = []
@@ -180,7 +187,8 @@ class Changeset:
     for file in self._files:
       mode = file.mode
       path = file.path
-      addtext('  //%s  # %s' % (path, mode.lower()))
+      comment = Changeset.MODE_NAME.get(mode, mode.lower())
+      addtext('  //%s  # %s' % (path, comment))
       fileref[path] = file
     text = '\n'.join(text)
     result = edit(text, cursor)
@@ -492,7 +500,13 @@ class Workspace:
           name = set._name
         else:
           name = '?'
-      print '%s (%s)' % (file, name)
+      if file.mode is sublib.File.CONFLICT:
+        # TODO make these escapes optional
+        sys.stdout.write('\033[1;31m')
+        print '>%s (%s)' % (file, name)
+        sys.stdout.write('\033[0m')
+      else:
+        print ' %s (%s)' % (file, name)
     return Result(0)
 
   def change(self, name, allow_default=0):
@@ -561,6 +575,13 @@ class Workspace:
         return Error('Unknown changeset "%s"' % name)
       result = self.change(name)
       if not result.ok: return result
+    conflicts = filter(lambda x: x.mode is sublib.File.CONFLICT, sublib.svn_st())
+    if conflicts:
+      print 'The following files have conflicts:'
+      for file in conflicts: print '  %s' % file.path
+      print 'Submit anyway [yN]? ',
+      input = sys.stdin.readline()
+      if input.rstrip() != 'y': return Error('Changeset not submitted.')
     result = cs.submit()
     if result.ok:
       del self._sets[name]

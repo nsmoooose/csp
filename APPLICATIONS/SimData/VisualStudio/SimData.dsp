@@ -1,24 +1,24 @@
-# Microsoft Developer Studio Project File - Name="SimDataMSVC" - Package Owner=<4>
+# Microsoft Developer Studio Project File - Name="SimData" - Package Owner=<4>
 # Microsoft Developer Studio Generated Build File, Format Version 6.00
 # ** DO NOT EDIT **
 
 # TARGTYPE "Win32 (x86) Dynamic-Link Library" 0x0102
 
-CFG=SimDataMSVC - Win32 Debug
+CFG=SimData - Win32 Debug
 !MESSAGE This is not a valid makefile. To build this project using NMAKE,
 !MESSAGE use the Export Makefile command and run
 !MESSAGE 
-!MESSAGE NMAKE /f "SimDataMSVC.mak".
+!MESSAGE NMAKE /f "SimData.mak".
 !MESSAGE 
 !MESSAGE You can specify a configuration when running NMAKE
 !MESSAGE by defining the macro CFG on the command line. For example:
 !MESSAGE 
-!MESSAGE NMAKE /f "SimDataMSVC.mak" CFG="SimDataMSVC - Win32 Debug"
+!MESSAGE NMAKE /f "SimData.mak" CFG="SimData - Win32 Debug"
 !MESSAGE 
 !MESSAGE Possible choices for configuration are:
 !MESSAGE 
-!MESSAGE "SimDataMSVC - Win32 Release" (based on "Win32 (x86) Dynamic-Link Library")
-!MESSAGE "SimDataMSVC - Win32 Debug" (based on "Win32 (x86) Dynamic-Link Library")
+!MESSAGE "SimData - Win32 Release" (based on "Win32 (x86) Dynamic-Link Library")
+!MESSAGE "SimData - Win32 Debug" (based on "Win32 (x86) Dynamic-Link Library")
 !MESSAGE 
 
 # Begin Project
@@ -29,7 +29,7 @@ CPP=cl.exe
 MTL=midl.exe
 RSC=rc.exe
 
-!IF  "$(CFG)" == "SimDataMSVC - Win32 Release"
+!IF  "$(CFG)" == "SimData - Win32 Release"
 
 # PROP BASE Use_MFC 0
 # PROP BASE Use_Debug_Libraries 0
@@ -42,9 +42,9 @@ RSC=rc.exe
 # PROP Intermediate_Dir "Release"
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
-# ADD BASE CPP /nologo /MT /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "SIMDATAMSVC_EXPORTS" /YX /FD /c
-# ADD CPP /nologo /MD /W3 /GR /GX /O2 /I "../Include" /I "C:/Python22/include" /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "SIMDATAMSVC_EXPORTS" /D "__WIN32__" /FD /c
-# SUBTRACT CPP /X /YX
+# ADD BASE CPP /nologo /MT /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "SIMDATA_EXPORTS" /YX /FD /c
+# ADD CPP /nologo /MD /W3 /GR /GX /O2 /I "../Include" /I "C:/Python22/include" /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "SIMDATA_EXPORTS" /FD /c
+# SUBTRACT CPP /YX
 # ADD BASE MTL /nologo /D "NDEBUG" /mktyplib203 /win32
 # ADD MTL /nologo /D "NDEBUG" /mktyplib203 /win32
 # ADD BASE RSC /l 0x40c /d "NDEBUG"
@@ -55,9 +55,8 @@ BSC32=bscmake.exe
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /dll /machine:I386
 # ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /dll /machine:I386 /out:"Release/_cSimData.dll" /libpath:"C:/Python22/libs"
-# SUBTRACT LINK32 /nodefaultlib
 
-!ELSEIF  "$(CFG)" == "SimDataMSVC - Win32 Debug"
+!ELSEIF  "$(CFG)" == "SimData - Win32 Debug"
 
 # PROP BASE Use_MFC 0
 # PROP BASE Use_Debug_Libraries 1
@@ -70,8 +69,8 @@ LINK32=link.exe
 # PROP Intermediate_Dir "Debug"
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
-# ADD BASE CPP /nologo /MTd /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "SIMDATAMSVC_EXPORTS" /YX /FD /GZ /c
-# ADD CPP /nologo /MDd /W3 /Gm /GR /GX /ZI /Od /I "../Include" /I "C:/python22/include" /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "SIMDATAMSVC_EXPORTS" /FD /GZ /c
+# ADD BASE CPP /nologo /MTd /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "SIMDATA_EXPORTS" /YX /FD /GZ /c
+# ADD CPP /nologo /MDd /W3 /Gm /GR /GX /ZI /Od /I "../Include" /I "C:/Python22/include" /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "SIMDATA_EXPORTS" /FD /GZ /c
 # SUBTRACT CPP /YX
 # ADD BASE MTL /nologo /D "_DEBUG" /mktyplib203 /win32
 # ADD MTL /nologo /D "_DEBUG" /mktyplib203 /win32
@@ -79,17 +78,17 @@ LINK32=link.exe
 # ADD RSC /l 0x40c /d "_DEBUG"
 BSC32=bscmake.exe
 # ADD BASE BSC32 /nologo
-# ADD BSC32 /nologo
+# ADD BSC32 /nologo /o"Debug/SimDatad.bsc"
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /dll /debug /machine:I386 /pdbtype:sept
-# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /dll /debug /machine:I386 /pdbtype:sept /libpath:"C:/python22/libs"
+# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /dll /debug /machine:I386 /out:"Debug/_cSimDatad.dll" /pdbtype:sept /libpath:"C:/Python22/libs"
 
 !ENDIF 
 
 # Begin Target
 
-# Name "SimDataMSVC - Win32 Release"
-# Name "SimDataMSVC - Win32 Debug"
+# Name "SimData - Win32 Release"
+# Name "SimData - Win32 Debug"
 # Begin Group "Source Files"
 
 # PROP Default_Filter "cpp;c;cxx;rc;def;r;odl;idl;hpj;bat"
@@ -171,6 +170,10 @@ SOURCE=..\Source\Random.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\Source\SimDataEntryPoint.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\Source\Spread.cpp
 # End Source File
 # Begin Source File
@@ -204,6 +207,10 @@ SOURCE=..\Include\SimData\Enum.h
 # Begin Source File
 
 SOURCE=..\Include\SimData\Exception.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\Include\SimData\Export.h
 # End Source File
 # Begin Source File
 
@@ -314,18 +321,27 @@ SOURCE=..\Include\SimData\Vector3.inl
 
 SOURCE=..\Source\cSimData.i
 
-!IF  "$(CFG)" == "SimDataMSVC - Win32 Release"
+!IF  "$(CFG)" == "SimData - Win32 Release"
 
-# Begin Custom Build - swig
+# Begin Custom Build
 InputPath=..\Source\cSimData.i
 InputName=cSimData
 
 "..\Source\$(InputName)_wrap.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	C:\progra~1\SWIG-1.3.17\swig -c++ -c -python -noexcept -DWIN32 -I..\Include -o ..\Source\$(InputName)_wrap.cpp $(InputPath)
+	C:\progra~1\SWIG-1.3.17\swig -c++ -python -noexcept -DWIN32 -I..\Include -o ..\Source\$(InputName)_wrap.cpp $(InputPath)
 
 # End Custom Build
 
-!ELSEIF  "$(CFG)" == "SimDataMSVC - Win32 Debug"
+!ELSEIF  "$(CFG)" == "SimData - Win32 Debug"
+
+# Begin Custom Build
+InputPath=..\Source\cSimData.i
+InputName=cSimData
+
+"..\Source\$(InputName)_wrap.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	C:\progra~1\SWIG-1.3.17\swig -c++ -python -noexcept -DWIN32 -I..\Include -o ..\Source\$(InputName)_wrap.cpp $(InputPath)
+
+# End Custom Build
 
 !ENDIF 
 

@@ -1,0 +1,195 @@
+#!/usr/bin/python
+#
+# Copyright 2004 Mark Rose <mkrose@users.sourceforge.net>
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+"""
+%(prog)s: Construct bundled python applications.
+
+Takes python script as input and generates a single python program that
+contains all necessary extension modules outside of the standard library.
+
+Caveats:
+  * A full python installation is still required to run the resulting program.
+  * Impure python extension modules (shared libraries) are not yet supported.
+  * The startup stub is currently linux-specific.
+
+Usage: %(prog)s [options] script
+"""
+
+import sys
+import os
+import re
+import os.path
+import zipfile
+from modulefinder import ModuleFinder
+
+import bootstrap
+from CSP.base import app
+
+DEFAULT_STUB = 'pyrun.stub'
+
+
+def main(args):
+  if len(args) != 1:
+    app.usage()
+    return 1
+
+  program = os.path.abspath(args[0])
+  target = app.options.output
+  if not target:
+    target =os.path.basename(program) + '.run'
+
+  assemble(program, target)
+
+
+def findCustomModules(modules):
+  re_stdlib = re.compile(r'[/\\][pP]ython[\.0-9]*[/\\]')
+  custom = []
+  for mod in modules:
+    file = mod.__file__
+    if file is None: continue
+    match = re_stdlib.search(file)
+    if match is not None:
+      if not file[match.end():].startswith('site-packages'): continue
+    if file.lower().endswith('.so') or file.lower().endswith('.dll'):
+      print 'WARNING: skipping impure python module (%s)' % file
+      continue
+    custom.append(mod)
+  return custom
+
+
+def findDependencies(program, path):
+  mf = ModuleFinder(path)
+  mf.run_script(program)
+  custom = findCustomModules(mf.modules.values())
+  names = [x.__name__ for x in custom]
+  missing = {}
+  ignore = app.options.ignore
+  for name, calldict in mf.badmodules.items():
+    for caller in calldict.keys():
+      if caller in names:
+        if not name in ignore:
+          missing.setdefault(name, []).append(caller)
+  for name, callers in missing.items():
+    print 'WARNING: module %s not found (called by %s)' % (name, ', '.join(callers))
+  if missing:
+    print 'ERROR: some modules were not found.'
+    print 'You may need to use the --addpath or --ignore flags.'
+    sys.exit(1)
+  return custom
+
+
+def makeZip(zipname, program, modules, path):
+  out = zipfile.PyZipFile(zipname, 'w', compression=zipfile.ZIP_DEFLATED)
+  for module in modules:
+    name = module.__name__
+    file = module.__file__
+    basename = ''
+    for p in path:
+      if file.startswith(p):
+        basename = os.path.dirname(file)[len(p):]
+        break
+    if os.path.isabs(basename):
+      basename = basename[1:]
+    if file == program:
+      f = open('pyx_program.py', 'w')
+      # big ol' hack.  insert some magic to make the main script look like it
+      # was run directly instead of imported.  better solutions welcome...
+      inject = 1
+      for line in open(program):
+        if (inject and (line.startswith('import') or line.startswith('app.start(') or
+           line.startswith('if __name__ =='))):
+          inject = 0
+          print >>f, "import sys; sys.modules['__main__'] = sys.modules[__name__]; __name__ = '__main__';"
+        print >>f, line,
+      f.close()
+      out.writepy('pyx_program.py')
+      for ext in ('.py', '.pyc', '.pyo'):
+        pyx_name = 'pyx_program' + ext
+        if os.path.exists(pyx_name): os.unlink(pyx_name)
+    elif file.endswith('.py'):
+      out.writepy(file, basename)
+      if os.path.dirname(file) == os.path.dirname(program):
+        out.writepy(file)
+    else:
+      out.write(file, os.path.basename(file))
+    if not app.options.quiet:
+      print '.. Added %s (%s)' % (name, file)
+  out.close()
+
+
+def addStub(stub, tmpname, target):
+  zip = open(tmpname, 'r')
+  stub = open(stub, 'r')
+  out = open(target, 'w')
+  out.write(stub.read())
+  out.write(zip.read())
+  stub.close()
+  zip.close()
+  out.close()
+
+
+def getPath(program):
+  path = sys.path[:]
+  path[0] = os.path.dirname(program)
+  addpaths = app.options.addpath[:]
+  addpaths.reverse()
+  for addpath in addpaths:
+    path.insert(0, os.path.abspath(addpath))
+  return path
+
+
+def assemble(program, target):
+  path = getPath(program)
+
+  stub = app.options.stub
+  if not os.path.exists(stub):
+    print 'Stub file %s not found, aborting' % stub
+    sys.exit(1)
+
+  if os.path.exists(target) and not app.options.force:
+    print '%s already exists, aborting' % target
+    sys.exit(1)
+
+  if not app.options.quiet:
+    print 'Finding dependencies'
+
+  modules = findDependencies(program, path)
+
+  if not app.options.quiet:
+    print 'Creating executable %s' % target
+
+  tmpname = target + "~"
+  makeZip(tmpname, program, modules, path)
+  addStub(stub, tmpname, target)
+
+  os.unlink(tmpname)
+  os.chmod(target, 0755)
+
+  if not app.options.quiet:
+    print 'Done.'
+
+
+app.addOption('--addpath', metavar='PATH', action='append', default=[], help='add path to sys.path')
+app.addOption('-q', '--quiet', action='store_true', default=False, help='quiet mode (less verbose)')
+app.addOption('--output', metavar='FILE', default=None, help='specify output file')
+app.addOption('-f', '--force', action='store_true', default=False, help='overwrite existing output file')
+app.addOption('--stub', metavar='STUBFILE', default=DEFAULT_STUB, help='stub file to use')
+app.addOption('--ignore', metavar='MODULE', action='append', default=['os.path'], help='ignore unresolved module dependency')
+
+app.start()
+

@@ -9,7 +9,6 @@
 #include <SimData/Archive.h>
 #include <SimData/Ref.h>
 #include <SimData/Date.h>
-#include <SimData/DataManager.h>
 
 #include <KineticsChannels.h>
 
@@ -20,6 +19,7 @@
 #include <SimData/FileUtility.h>
 #include <SimData/GeoPos.h>
 
+#include <osgDB/FileUtils>
 using bus::Kinetics;
 
 
@@ -35,6 +35,35 @@ int ClientNode::run()
   csplog().setLogLevels(CSP_ALL, level);
   csplog().setOutput("ClientNode.log");
   
+  VirtualBattlefield * battlefield = new VirtualBattlefield();
+  battlefield->create();
+  simdata::DataManager dataManager;
+  
+  // setup osg search path for external data files
+  std::string image_path = getDataPath("ImagePath");
+  std::string model_path = getDataPath("ModelPath");
+  std::string font_path = getDataPath("FontPath");
+  std::string search_path;
+  simdata::ospath::addpath(search_path, image_path);
+  simdata::ospath::addpath(search_path, model_path);
+  simdata::ospath::addpath(search_path, font_path);
+  osgDB::setDataFilePathList(search_path);
+
+  // open the primary data archive
+  std::string cache_path = getCachePath();
+  std::string archive_file = simdata::ospath::join(cache_path, "sim.dar");
+  try {
+	simdata::DataArchive *sim = new simdata::DataArchive(archive_file.c_str(), 1);
+	assert(sim);
+	dataManager.addArchive(sim);
+  } 
+  catch (simdata::Exception &e) {
+	CSP_LOG(APP, ERROR, "Error opening data archive " << archive_file);
+	CSP_LOG(APP, ERROR, e.getType() << ": " << e.getMessage());
+	throw e;
+	//::exit(0);
+  }
+
   printf("sizeof(int) = %d\n", sizeof(int));
   printf("sizeof(double) = %d\n", sizeof(double));
   printf("sizeof(simdata::Vector3) = %d\n", sizeof(simdata::Vector3));
@@ -46,9 +75,6 @@ int ClientNode::run()
   printf("sizeof(NetworkMessage) = %d\n", sizeof(NetworkMessage));
   printf("sizeof(ObjectUpdateMessagePayload) = %d\n", sizeof(ObjectUpdateMessagePayload)); 
   
-  VirtualBattlefield * battlefield = new VirtualBattlefield();
-  battlefield->create();
-  simdata::DataManager dataManager;
   
   MessageHeader header;
   header.dumpOffsets();

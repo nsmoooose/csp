@@ -270,7 +270,10 @@ PeerId NetworkInterface::nextDisconnectedPeerId() {
 }
 
 void NetworkInterface::disconnectPeer(PeerId id) {
-	removePeer(id);
+	PeerInfo *peer = getPeer(id);
+	if (peer && peer->isActive()) {
+		removePeer(id);
+	}
 }
 
 void NetworkInterface::processOutgoing(double timeout) {

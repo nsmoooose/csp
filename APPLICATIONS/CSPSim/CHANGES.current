@@ -1,6 +1,18 @@
 Version 0.3.3 (in progress)
 ===========================
 
+2003-06-25: onsight
+
+==========> GCC: Large parts of ChunkLodTerrain are checked in
+            now, but actually running it requires that the shared
+            library and vertex program be available in the Bin
+	    directory.  I have this setup with symlinks in my
+	    working copy, but it isn't a good long term solution.
+	    Also, several XML files needed for ChunkLodTerrain
+	    to run are not in cvs.  Stick with Demeter for now
+	    and I'll work on getting the the interface to
+	    ChunkLod cleaned up soon.
+
 2003-06-24: onsight
             Added Profile.h which has simple but handy profiling 
 	    macros.  There's a new PROFILE log target in Log.h as

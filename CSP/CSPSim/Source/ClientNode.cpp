@@ -6,6 +6,7 @@
 
 #include "Bus.h"
 
+#include <SimData/Archive.h>
 #include <SimData/Ref.h>
 #include <SimData/Date.h>
 #include <SimData/DataManager.h>
@@ -73,6 +74,9 @@ int ClientNode::run()
 //  strcpy(payloadPtr, "Hello From CSP Network Test Client!");
 //  Port port = message->getOriginatorPort();
 
+  simdata::uint32 id;
+  simdata::uint32 type;
+  float timestamp;
   DataChannel<simdata::Vector3>::Ref b_GlobalPosition;
   DataChannel<simdata::Vector3>::Ref b_AngularVelocity;
   DataChannel<simdata::Vector3>::Ref b_LinearVelocity;
@@ -83,19 +87,34 @@ int ClientNode::run()
   b_LinearVelocity = DataChannel<simdata::Vector3>::newLocal(Kinetics::Velocity, simdata::Vector3::ZERO);
   b_Attitude = DataChannel<simdata::Quat>::newLocal(Kinetics::Attitude, simdata::Quat::IDENTITY);
 
+  id = 1;
+  type = 1;
+  timestamp = 0.0;
   b_GlobalPosition->value() = simdata::Vector3(1.0, 1.0, 1.0);
   b_AngularVelocity->value() = simdata::Vector3(1.0, 1.0, 1.0);
   b_LinearVelocity->value() = simdata::Vector3(1.0, 1.0, 1.0);
   b_Attitude->value() = simdata::Quat(1.0, 1.0, 1.0, 0.0);
 
-  ptrPayload->id = 1;
-  ptrPayload->timeStamp = 1.0;
-  b_GlobalPosition->value().writeBinary((unsigned char *)&(ptrPayload->globalPosition),24);
-  b_LinearVelocity->value().writeBinary((unsigned char *)&(ptrPayload->linearVelocity),24);
-  b_AngularVelocity->value().writeBinary((unsigned char *)&(ptrPayload->angularVelocity),24);
-  b_Attitude->value().writeBinary((unsigned char *)&(ptrPayload->attitude),32);
+ // ptrPayload->id = 1;
+ // ptrPayload->timeStamp = 1.0;
 
+  simdata::MemoryWriter writer((simdata::uint8 *)ptrPayload);
+  writer << (int)id;
+  writer << (int)type;
+  writer << timestamp;
+  
+//  b_GlobalPosition->value().writeBinary((unsigned char *)&(ptrPayload->globalPosition),24);
+//  b_LinearVelocity->value().writeBinary((unsigned char *)&(ptrPayload->linearVelocity),24);
+//  b_AngularVelocity->value().writeBinary((unsigned char *)&(ptrPayload->angularVelocity),24);
+//  b_Attitude->value().writeBinary((unsigned char *)&(ptrPayload->attitude),32);
 
+  b_GlobalPosition->value().serialize(writer);
+  b_LinearVelocity->value().serialize(writer);
+  b_AngularVelocity->value().serialize(writer);
+  b_Attitude->value().serialize(writer);
+  
+  ptrPayload->dump();
+  
   networkMessenger->queueMessage(remoteNode, message);
   networkMessenger->sendQueuedMessages();
   

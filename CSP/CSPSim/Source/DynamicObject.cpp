@@ -397,12 +397,22 @@ NetworkMessage * DynamicObject::getUpdateMessage()
   NetworkMessage * message = CSPSim::theSim->getNetworkMessenger()->allocMessageBuffer(messageType, payloadLen);
 
   ObjectUpdateMessagePayload * ptrPayload = (ObjectUpdateMessagePayload*)message->getPayloadPtr();
-  ptrPayload->id = m_ID;
-  ptrPayload->timeStamp = CSPSim::theSim->getElapsedTime();
-  b_GlobalPosition->value().writeBinary((unsigned char *)&(ptrPayload->globalPosition),24);
-  b_LinearVelocity->value().writeBinary((unsigned char *)&(ptrPayload->linearVelocity),24);
-  b_AngularVelocity->value().writeBinary((unsigned char *)&(ptrPayload->angularVelocity),24);
-  b_Attitude->value().writeBinary((unsigned char *)&(ptrPayload->attitude),32);
+//  ptrPayload->id = m_ID;
+//  ptrPayload->timeStamp = CSPSim::theSim->getElapsedTime();
+//  b_GlobalPosition->value().writeBinary((unsigned char *)&(ptrPayload->globalPosition),24);
+//  b_LinearVelocity->value().writeBinary((unsigned char *)&(ptrPayload->linearVelocity),24);
+//  b_AngularVelocity->value().writeBinary((unsigned char *)&(ptrPayload->angularVelocity),24);
+//  b_Attitude->value().writeBinary((unsigned char *)&(ptrPayload->attitude),32);
+ 
+  simdata::MemoryWriter writer((simdata::uint8*)ptrPayload);
+  writer << (int)m_ID;
+  simdata::uint32 objType = 1;
+  writer << (int)objType;
+  writer << CSPSim::theSim->getElapsedTime();
+  b_GlobalPosition->value().serialize(writer);
+  b_LinearVelocity->value().serialize(writer);
+  b_AngularVelocity->value().serialize(writer);
+  b_Attitude->value().serialize(writer);
   
   CSP_LOG(APP, DEBUG, "DynamicObject::getUpdateMessage() - returning message");
 

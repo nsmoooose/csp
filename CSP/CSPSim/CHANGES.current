@@ -1,6 +1,9 @@
  Version 0.4.0 (in progress)
 ===========================
 
+2004-06-12: wolverine
+  * Switching the writing of network buffers to use a SimData MemoryWriter.
+
 2004-06-10: wolverine
   * Merged the networking classes MessageSocketDuplex into
     NetworkMessenger. Also added a callback mechanism to handle

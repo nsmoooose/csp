@@ -624,7 +624,7 @@ public:
  * @ingroup BaseTypes
  */
 template <Enumeration const &E>
-class SIMDATA_EXPORT Enum: public EnumLink {
+class Enum: public EnumLink {
 public:
 	Enum(std::string const &token): EnumLink(E, token) {}
 	Enum(): EnumLink(E) {}

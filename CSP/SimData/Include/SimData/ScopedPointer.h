@@ -44,7 +44,7 @@ NAMESPACE_SIMDATA
  *  was borrowed from Boost C++.
  */
 template <class T>
-class SIMDATA_EXPORT ScopedPointer: public NonCopyable {
+class ScopedPointer: public NonCopyable {
 	T *_ptr;
 public:
 	typedef T Type;

@@ -1,6 +1,11 @@
 Version 0.4.0 (in progress)
 ===========================
 
+2005-02-16: delta
+ * For some reasons, vs 2005 needs some template(!) classes to be
+   exported whereas vs 2003 doesn't allow it... Back to a version
+   which compiles with 2003.
+
 2005-02-14:delta
  * Exported more symbols to help compilation with vs 2005.
 

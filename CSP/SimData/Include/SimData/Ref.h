@@ -116,7 +116,7 @@ typedef ReferencedBase<AtomicCounter> ThreadSafeReferenced;
  *  @author Mark Rose <mrose@stm.lbl.gov>
  */
 template<class CLASS>
-class SIMDATA_EXPORT Ref {
+class Ref {
 public:
 	typedef std::vector< Ref<CLASS> > vector;
 	typedef std::list< Ref<CLASS> > list;
@@ -306,7 +306,6 @@ public:
 	}
 
 protected:
-
 	/** Unbind from the instance, deleting it if we are holding the only reference.
 	 */
 	inline void _unbind() {
@@ -315,7 +314,6 @@ protected:
 			_reference = 0;
 		}
 	}
-
 	/** Rebind to a new object.  Allows rebinding to base class pointers
 	 *  using dynamic_cast.  For assignments from the same class or child
 	 *  classes this reduces to a simple (fast) static_cast.

@@ -123,7 +123,7 @@
 				SuppressStartupBanner="TRUE"
 				DebugInformationFormat="3"
 				CompileAs="2"
-				DisableSpecificWarnings="4511;4512;4100"/>
+				DisableSpecificWarnings="4511;4512"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
 			<Tool
@@ -184,13 +184,13 @@
 					Name="Release|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
-						WarningLevel="3"/>
+						WarningLevel="2"/>
 				</FileConfiguration>
 				<FileConfiguration
 					Name="Debug|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
-						WarningLevel="3"
+						WarningLevel="2"
 						UndefinePreprocessorDefinitions="_DEBUG"/>
 				</FileConfiguration>
 			</File>

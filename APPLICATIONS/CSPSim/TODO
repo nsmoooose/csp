@@ -9,7 +9,7 @@ missing, where it belongs, and where to download it.
 
 Catch exceptions / assertion from the mainloop and 
 print more useful error messages.  Some CSP exception 
-classes probably need to be written.
+classes probably need to be written. [PARTIALLY DONE]
 
 
 ////////////////////////////////////////////////////////

@@ -1,6 +1,296 @@
 CSPSim release change log.  See CHANGES.current for the latest updates
 to CVS.
 
+Version 0.3.1 (2003-04-18)
+===========================
+
+2003-04-12: onsight
+            Added Exception.h and Exception.cpp to provide exception
+	    classes and error messages.  (Requires latest SimData CVS)
+
+	    Try/catch blocks in CSPSim::Init now display semi-informative
+	    messages (more work to be done).  Only one throw() so far in
+	    Sky.cpp for missing moon.png (fairly common at the moment!)
+
+*********** VC USERS: please add Exception.cpp to the VC project files
+
+2003-04-11: delta
+	    update .net projects.
+
+	    Cleaned code.
+
+2003-04-11: onsight
+            Modified autoconf scripts to get the actual python
+	    include path using distutils, rather than just using 
+	    PYTHON_PREFIX/include/python2.2, which is version
+	    dependent.
+
+*********** VC USERS: please remove Platform.cpp from the VC project
+            files.
+
+2003-04-11: onsight
+            Fixed two coordinate system bugs in the impact code during
+	    hard crashes that could cause numerical overflows and lead
+	    to segfaults.  There's still somewhat odd behaviour at
+	    times, so this should be revisited at some point.
+
+            Reordered member initializers in NumericalMethod ctors to
+	    silence gcc warnigns.
+
+	    Made DynamicalSystem dtor virtual.
+
+	    Added global try/catch block around CSPSim::Init.
+
+	    Added trilinear filtering option to ObjectModel.
+
+	    Added #! shell escape to the python scripts in Bin
+	    so they can be run directly from the commandd line
+	    under linux (assuming your python path is the same
+	    as mine ;-).
+
+	    Removed Platform.cpp from the build.  None of the files
+	    should include Platform.h;  from now on you should use
+	    SimData/FileUtility.h to provide the ospath functions.
+	    These are in the simdata namespace, so they look like:
+
+	        simdata::ospath::join(...)
+
+            Stripped all the includes out of stdinc.h which were
+	    not needed by any of the source files that included
+	    it.  I also removed the #include "stdinc.h" from these.
+	    stdinc.h now just contains the lines to enable mmgr
+	    which are commented out.
+
+*********** ALL USERS: you will need to remake your aircraft.hid file.
+	    Go to Tools/HID, and run map2hid aicraft.map, then copy the
+	    resulting aicraft.hid file to your Data/Input directory.
+
+2003-04-10: onsight
+            NumericalMethods.cpp added.
+
+	    Sim.dar renamed to sim.dar.
+
+	    Data archive paths now use the new 'sim:' prefix.  See
+	    SimData CHANGES.current for details.
+
+	    Updates to aircraft-core to use the new 'sim:' prefix
+	    when binding to the m2k and other aircraft.
+
+*********** LINUX USERS: you need to add NumericalMethod.cpp to your 
+            Makefile.
+
+2003-04-09: delta
+	    updated .net project.
+
+2003-04-03: delta
+	    updated .net project; debug and release are maintained. 
+
+            Rewritten DynamicalSystem interface; you need now, to define a
+            vector field as a method of DynamicalSystem (which inherites
+            from VectorField). You need to furnish the NumericalMethod used
+            to approximate the exact solution of your ODE (use
+            setNumericalMethod). AeroDynamics is now a DynamicalSystem.
+
+            Merging Onsight code on airflow, collision and landing gear;
+            this code is not yet enabled.
+
+            Cleaning code in CSPSim.cpp, AeroDynamics.cpp and .h; added
+            NumericalMethod.cpp and NumericalMethod.h.
+
+2003-03-28: delta
+            .net project updated: CSPSimDLL (release mode is maintained) You
+            can run python scripts from commandline without invoking python
+            interpreter. For example, to rebuild data: "RebuildData.py <CR>"
+            or to run CSP, "CSPSim.py <CR>".
+
+            Removed CSPWin.py, CompileData.py and RebuildData.py from
+            /VisualStudio.
+
+2003-03-27: onsight
+            Created Bin directory and moved all Python scripts and 
+	    libraries there.  
+	    
+	    Renamed CSP.i, CSP.py, _CSP.so/dll to cCSP to avoid confusion 
+	    as to which is the real application to run the sim.  To run
+	    the sim now, change to Bin and run CSPSim.py (or, under
+	    Windows, run 'python CSPSim.py' or double-click on CSPSim.py).
+	    The Linux Makefile is updated but the Windows project file 
+	    still needs to be changed.
+
+	    Removed references to x36.map from gamescreen-core.map.
+	    
+2003-03-26: onsight
+            Reorganized the Tools/HID directory.  The "standard" maps are
+	    now under Tools/HID/Maps.  This are the files that have
+	    generic binding that are updated as new features are added.
+	    There are templates for creating custom maps in the
+	    Tools/HID/Examples directory.  These are my own custom maps,
+	    but should be changed to make them as general as possible.
+	    Probably the windows joystick axis bindings (assuming these are 
+	    the same for all sticks) used.
+
+	    The README.map file now has info on the map scripting language
+	    and the README file has instructions for setting up your own
+	    maps.  See README for some of the rational behind these changes.
+
+	    GameScreen.* -> gamescreen.*
+
+            Improved the map2hid utility to allow an output file to be
+	    specified on the command line.  If the output file is '-',
+	    stdout will be used.  If no output file is specified and the
+	    input file ends with '.map', then the corresponding filename
+	    ending with '.hid' will be used.
+
+	    Added a slightly more useful usage output and '--help' option
+	    to map2hid.
+
+	    Fixed map2hid to use relative paths for included map files.
+	    
+2003-03-25: onsight
+            Pushed the "look-at" point out to 50 m in front of the aircraft
+	    for view #1, which eliminates jitter at low fov.
+
+	    Added a couple extra contact points to the bottom of the M2K.
+	    Turning off the landing gear while on the ground looks quite
+	    cool now, as there are several different stable configurations
+	    the plane can end up in.
+
+2003-03-23: onsight
+            Changed turbulence from air density fluctuations to 3D wind
+	    gusts.  The fluctuations are still indexed by distance travelled.
+	    Also, scaled the altitude variation of turbulence to peak in
+	    the 3000-10000 m range.  Also, the perlin noise function is now
+	    shaped as X*ABS(X).
+
+	    Right justified the fps display in a 5 digit field so that 100.0
+	    doesn't make the display jitter.
+
+2003-03-23: delta
+	    added a key to toggle diamond contact marks
+
+	    added initialization of pause text
+
+2003-03-22: onsight
+            Added mute option to CSPSim.ini.
+
+	    Enabled winds, gusts, and turbulence.
+
+2003-03-21: onsight
+            CSPSim.PYTHON now compiles the data automatically if Sim.dar is
+            not found. You still need to run with the --compile-data option
+            whenever the XML files change, or when the CPSim object storage
+            format changes. In the latter case, also specify the --rebuild
+            option to recompile all the source data.
+
+	    Added configure.win.py.  This simple script does some minimal
+	    checking and setup to prepare the build under Windows/MSVC.
+
+            Added CSPWin.py, CompileData.py, and RebuildData.py to
+            VisualStudio. It should be possible to double-click on these
+            from Windows to launch CSPSim, compile changes to the data, or
+            rebuild the data from scratch. This assumes of course that
+            Python has hooked the .py extension properly.
+
+2003-03-21: delta
+            CSPSim is back on windows (thx a lot Onsight).
+           
+2003-03-21: onsight
+            Merged delta's changes.
+
+2003-03-19: onsight
+            *** Project Change ***
+            Added LandingGear.cpp and Console.cpp
+
+            Cleanup up Linux build a bit:
+       
+            - Removed SDL_console check.
+            - Added test for correct Python path.
+            - Removed files related to Automake.
+            - Adapted to new SimData installation path.  There should
+              be no more relative paths to SimData in the configure
+              script and Makefiles.
+
+2003-03-14: onsight
+            *** SimData library and data incompatibility ***
+
+            Added ContactList to ObjectModel for bounding hardpoints that
+            interact with the ground. There is a new osg::Switch called
+            m_DebugMarkers that will contain various visual cues for
+            debugging. Currently you can enable visual markers for the
+            contact points, and eventually other geometries like
+            hierarchical bounding boxes can be added.
+
+            Added ground interaction code for model contact points to
+            AeroDynamics. This should probably be abstracted to a base class
+            for use with other vehicles. Right now the ground acts as a
+            hard, highly damped spring on the points. There is also a large
+            (ad-hoc) tangential friction component. Forces beyond a
+            threshold need to be passed to a damage model for further
+            processing (not yet implemented).
+
+            Added landing gear to AircraftObject. This is implemented in two
+            new classes: LandingGearSet and LandingGear. The first is just a
+            container that provides several methods to act on all the gear
+            at once. Each landing gear has a complex physics model (need to
+            add a simplified model as well) including shock absorption,
+            braking, and steering. Gear damage, aerodynamic drag, and
+            continuous retraction/extension are not yet modelled. Hooks in
+            Aerodynamics activate the gear simulation (in the inner loop)
+            when the a/c is near the ground.
+
+            Added a simple ground effect model to AeroDynamics.
+
+            Added a wind vector to the AeroDynamics calculations. The
+            magnitude and direction are hard coded right now for testing.
+
+            Changes to all the object pack and unpack methods to ensure that
+            they are inverse operations. Added postCreate() methods as
+            needed (see recent SimData changes for details).
+
+            New input hooks for wheel brakes.
+
+            Added new (experimental) Python runtime console.
+
+            Added landing gear parameters to XML/vehicles/aircraft/m2k.xml
+       
+
+2003-03-12: delta
+            Cleaning code for ScreenInfo and ScreenInfoManager. It still
+            needs some improvements but it should be better now. Note that
+            osgText has been entirely reimplemented. Although, we didn t use
+            it yet, we ll need to switch to it soon: more flexible interface,
+            robuster and faster code.
+
+            Added a Runge-Kutta method RK_24, with a predictive step and a
+            corrective one; it is implemented as an abstract class in
+            DynamicalSystem (.cpp & .h). A dynamical system is roughly
+            speaking a system of differential equations (ODE); a pure
+            virtual method is the vector field which looks like vector
+            f(time,vector); here, vector is a std::vector<double> of any
+            dimension; you need to pass its size when you instantiate a
+            DynamicalSystem. This class is generic and could be use as soon
+            as a vector field may be defined.
+
+            Aerodynamics inherites now from DynamicalSystem. Done some
+            minor cleaning in code and implement some helper functions to
+            use with dynamical system. Call to this numerical method occurs
+            in doSimStep2; it will be keep until others will have tested it
+            enough (so, old code is still available and functional - just 1
+            line to be changed to switch back).
+
+            Added a line in CSPSim.ini to read sound files (still
+            hardcoded). At the moment, SDL API is used but it should be
+            replaced by OpenAL soon (Wolverine is working on it). Looks like
+            that here:
+
+            SoundPath = ../Data/Sounds
+
+            Changed the radius of skydome to 64000 (hardcoded!, plz Onsight,
+            check it)
+
+            Others changes are minor.
+
+
 Version 0.3.0 (2003-03-14)
 ===========================
 2003-03-14: onsight

@@ -1,6 +1,17 @@
 Version 0.3.3 (in progress)
 ===========================
 
+2003-07-24: onsight
+            Removed (commented) type conversion operators in TypeAdapter.
+	    These were dodgey at best, if not outright dangerous.  They
+	    are not needed in any existing code, and yet were being
+	    called implicitly at times.  The rules for implicit calls
+	    apparently changed somewhat between gcc 3.2 and 3.3, resulting
+	    in an exception during string assignment to object interfaces.
+	   
+==========> WINDOWS USERS: check that this change doesn't adversely affect
+            existing projects.
+	    
 2003-07-22: onsight
             Fixed a bug in unpack(string) which could trip an assertion
 	    for corrupt archives rather than throwing an exception.

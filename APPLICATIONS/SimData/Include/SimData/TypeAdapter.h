@@ -120,6 +120,13 @@ public:
 
 	// objects
 
+	/*
+	 * XXX 
+	 * These implicit casts are not currently used.  The templated
+	 * versions, in particular, are rather dangerous (and break under
+	 * GCC-3.3).  After a short testing period this cast code can be
+	 * be completely removed.  --MR 7/03
+	 
 	template <typename T>
 	operator T const &() const { 
 		BaseCheck();
@@ -138,7 +145,6 @@ public:
 	}
 	
 	// basic types
-
 	operator int const() const { IntCheck(); return var.i; }
 
 	// can add range checking if desired
@@ -152,6 +158,7 @@ public:
 	operator float const() const { DoubleCheck(); return static_cast<float>(var.d); }
 
 	operator std::string const() const { StringCheck(); return s; }
+	*/
 
 	int getInteger() const { IntCheck(); return var.i; }
 	double getFloatingPoint() const { DoubleCheck(); return var.d; }

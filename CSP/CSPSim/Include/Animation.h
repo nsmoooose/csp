@@ -553,7 +553,10 @@ class TimedSequence: public simdata::Object {
 		b_ReferenceTime->value() =
 			m_TimeAnimationProxy->clamp(m_TimeAnimationProxy->gett_0()+b_NormalizedTime->value()*m_TimeAnimationProxy->getTimeLength());
 	}
-
+	
+	bool isDisabled() const {
+		return std::abs(m_Direction) > 0.0001f;
+	}
 protected:
 	bool isEnd() const {
 		return 1.0 - b_NormalizedTime->value() < 0.0001;
@@ -607,10 +610,12 @@ public:
 	}
 
 	double onUpdate(double dt) {
-		double t = b_ReferenceTime->value();
-		t += m_Direction*dt;
-		t = m_TimeAnimationProxy->clamp(t);
-		setTimeValues(t);
+		if (isDisabled()) {
+			double t = b_ReferenceTime->value();
+			t += m_Direction*dt;
+			t = m_TimeAnimationProxy->clamp(t);
+			setTimeValues(t);
+		}
 		return 0.016;
 	}
 

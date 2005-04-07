@@ -634,8 +634,8 @@ void GearDynamics::registerChannels(Bus *bus) {
 	assert(bus!=0);
 	b_WOW = bus->registerLocalDataChannel<bool>(bus::LandingGear::WOW, false);
 	b_FullyRetracted = bus->registerLocalDataChannel<bool>(bus::LandingGear::FullyRetracted, false);
-	b_FullyExtended = bus->registerLocalDataChannel<bool>(bus::LandingGear::FullyExtended, false);
-	b_GearExtendSelected = bus->registerLocalDataChannel<bool>(bus::LandingGear::GearExtendSelected, false);
+	b_FullyExtended = bus->registerLocalDataChannel<bool>(bus::LandingGear::FullyExtended, true);
+	b_GearExtendSelected = bus->registerLocalDataChannel<bool>(bus::LandingGear::GearExtendSelected, true);
 	for (unsigned i = 0; i < m_Gear.size(); ++i) {
 		m_Gear[i]->registerChannels(bus);
 	}

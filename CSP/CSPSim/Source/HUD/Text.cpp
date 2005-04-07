@@ -22,13 +22,27 @@
  *
  **/
 
+#ifndef __GNUC__
+#define snprintf _snprintf
+#endif
 
 #include <HUD/Text.h>
 #include <osgText/Text>
 #include <cstdio>
+//#include <iomanip>
+//#include <sstream>
 
+using namespace std;
 
 void StandardFormatter::format(char *buffer, int len, float value) {
+	
+	// make buffer a std::string&
+	//stringstream line(buffer);
+	//line.precision(0);
+	//line.setf(ios::fixed);
+	//line << setw(len) << value;
+	//buffer = line.str(); 
+
 	snprintf(buffer, len, m_Format.c_str(), value);
 }
 

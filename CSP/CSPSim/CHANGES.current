@@ -1,5 +1,14 @@
  Version 0.4.0 (in progress)
 ===========================
+
+2005-04-06: delta
+ * Minor fix to the vc build (snprintf isn't supported).
+ 
+ * Minor initialization fix to set the gear being extended. At 
+   some point, initialization values should be set in xml.
+ 
+ * Added a bool isDisabled() method in TimedSequece.
+ 
 2005-04-03: onsight
  * Increase the left/right panning limits for the in-cockpit view.
 

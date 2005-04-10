@@ -272,22 +272,6 @@
 			<File
 				RelativePath="..\..\Source\HID.cpp">
 			</File>
-			<Filter
-				Name="HUD"
-				Filter="">
-				<File
-					RelativePath="..\..\Source\HUD\HUD.cpp">
-				</File>
-				<File
-					RelativePath="..\..\Source\HUD\PitchLadder.cpp">
-				</File>
-				<File
-					RelativePath="..\..\Source\HUD\Tape.cpp">
-				</File>
-				<File
-					RelativePath="..\..\Source\HUD\Text.cpp">
-				</File>
-			</Filter>
 			<File
 				RelativePath="..\..\Source\InputEvent.cpp">
 			</File>
@@ -351,6 +335,22 @@
 			<File
 				RelativePath="..\..\Source\VirtualScene.cpp">
 			</File>
+			<Filter
+				Name="HUD"
+				Filter="">
+				<File
+					RelativePath="..\..\Source\HUD\HUD.cpp">
+				</File>
+				<File
+					RelativePath="..\..\Source\HUD\PitchLadder.cpp">
+				</File>
+				<File
+					RelativePath="..\..\Source\HUD\Tape.cpp">
+				</File>
+				<File
+					RelativePath="..\..\Source\HUD\Text.cpp">
+				</File>
+			</Filter>
 			<Filter
 				Name="Theater"
 				Filter="">
@@ -431,6 +431,55 @@
 							GeneratePreprocessedFile="0"
 							ExpandAttributedSource="TRUE"/>
 					</FileConfiguration>
+				</File>
+			</Filter>
+			<Filter
+				Name="F16"
+				Filter="">
+				<File
+					RelativePath="..\..\Source\F16\AlphaNumericDisplay.cpp">
+				</File>
+				<File
+					RelativePath="..\..\Source\F16\DataEntryPage.cpp">
+				</File>
+				<File
+					RelativePath="..\..\Source\F16\F16Channels.cpp">
+				</File>
+				<File
+					RelativePath="..\..\Source\F16\F16GearDynamics.cpp">
+				</File>
+				<File
+					RelativePath="..\..\Source\F16\F16HUD.cpp">
+				</File>
+				<File
+					RelativePath="..\..\Source\F16\F16INS.cpp">
+				</File>
+				<File
+					RelativePath="..\..\Source\F16\F16System.cpp">
+				</File>
+				<File
+					RelativePath="..\..\Source\F16\FLCS.cpp">
+				</File>
+				<File
+					RelativePath="..\..\Source\F16\GroundAvoidanceAdvisory.cpp">
+				</File>
+				<File
+					RelativePath="..\..\Source\F16\NavigationSystem.cpp">
+				</File>
+				<File
+					RelativePath="..\..\Source\F16\PageCNI.cpp">
+				</File>
+				<File
+					RelativePath="..\..\Source\F16\PageLIST.cpp">
+				</File>
+				<File
+					RelativePath="..\..\Source\F16\PanelHUD.cpp">
+				</File>
+				<File
+					RelativePath="..\..\Source\F16\Radio.cpp">
+				</File>
+				<File
+					RelativePath="..\..\Source\F16\UpFrontControls.cpp">
 				</File>
 			</Filter>
 		</Filter>
@@ -533,22 +582,6 @@
 			<File
 				RelativePath="..\..\Include\HID.h">
 			</File>
-			<Filter
-				Name="HUD"
-				Filter="">
-				<File
-					RelativePath="..\..\Source\HUD\HUD.h">
-				</File>
-				<File
-					RelativePath="..\..\Source\HUD\PitchLadder.h">
-				</File>
-				<File
-					RelativePath="..\..\Source\HUD\Tape.h">
-				</File>
-				<File
-					RelativePath="..\..\Source\HUD\Text.h">
-				</File>
-			</Filter>
 			<File
 				RelativePath="..\..\Include\InputEvent.h">
 			</File>
@@ -633,6 +666,22 @@
 			<File
 				RelativePath="..\..\Include\VirtualScene.h">
 			</File>
+			<Filter
+				Name="HUD"
+				Filter="">
+				<File
+					RelativePath="..\..\Source\HUD\HUD.h">
+				</File>
+				<File
+					RelativePath="..\..\Source\HUD\PitchLadder.h">
+				</File>
+				<File
+					RelativePath="..\..\Source\HUD\Tape.h">
+				</File>
+				<File
+					RelativePath="..\..\Source\HUD\Text.h">
+				</File>
+			</Filter>
 			<Filter
 				Name="Theater"
 				Filter="">

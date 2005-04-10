@@ -761,10 +761,10 @@ void F16HUD::addRollTape() {
 	for (int i=-4; i <= 4; ++i) {
 		float angle = i * simdata::toRadians(10.0);
 		float r1 = r0 - 0.0015;
-		if (i == 4 or i == -4) {
+		if ((i == 4) || (i == -4)) {
 			angle *= 4.5/4.0;
 		}
-		if (i == 0 or std::abs(i) > 2) {
+		if ((i == 0) || (std::abs(i) > 2)) {
 			r1 = r0 - 0.003;
 		}
 		rolltape.drawLine(r1 * sin(angle), y0 - r1 * cos(angle), r0 * sin(angle), y0 - r0 * cos(angle));

@@ -1,6 +1,13 @@
  Version 0.4.0 (in progress)
 ===========================
 
+2005-04-10: delta
+ * Updated vcproj.
+ 
+ * Minor fixes to the vs build. 
+ 
+Great job OS!
+
 2005-04-09: onsight
  * Finally checking in a large chunk of changes I've been working on
    for many weeks that begin the implementation of the f16 detailed

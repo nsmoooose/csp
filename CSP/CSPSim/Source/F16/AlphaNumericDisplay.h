@@ -31,6 +31,10 @@
 #include <vector>
 #include <SimData/Ref.h>
 
+#if !defined(__GNUC__) && !defined(snprintf)
+#define snprintf _snprintf
+#endif
+
 class AlphaNumericDisplay: public simdata::Referenced {
 public:
 	typedef enum { NORMAL, INVERSE } Video;

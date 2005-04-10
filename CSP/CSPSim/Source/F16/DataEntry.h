@@ -37,6 +37,9 @@
 #include <SimData/Vector3.h>
 #include <cmath>
 
+#if !defined(__GNUC__) && !defined(snprintf)
+#define snprintf _snprintf
+#endif
 
 //////
 // todo

@@ -26,7 +26,7 @@
 #ifndef __F16INPUTSYSTEM_H__
 #define __F16INPUTSYSTEM_H__
 
-#include <System/AircraftInputSystem.h>
+#include <Systems/AircraftInputSystem.h>
 
 class F16InputSystem: public AircraftInputSystem {
 

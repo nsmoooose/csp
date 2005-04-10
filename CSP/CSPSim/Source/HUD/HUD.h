@@ -30,6 +30,10 @@
 #include <osg/PositionAttitudeTransform>
 #include <osgText/Text>
 
+#if !defined(__GNUC__) && !defined(snprintf)
+#define snprintf _snprintf
+#endif
+
 namespace osg { class ClipNode; }
 namespace osg { class Geode; }
 namespace osg { class Geometry; }

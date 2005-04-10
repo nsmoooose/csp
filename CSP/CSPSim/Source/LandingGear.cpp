@@ -719,7 +719,7 @@ void GearDynamics::postSimulationStep(double dt) {
 		Vector3 R = m_Gear[i]->getPosition();
 		Vector3 vBody = *m_VelocityBody + (*m_AngularVelocityBody ^ R);
 		m_Gear[i]->postSimulationStep(dt, *m_PositionLocal, vBody, *m_Attitude, m_Height, m_GroundNormalBody);
-		// f-16 uses WOW on both MLG as a signal, but this is probably close enough
+		// generic WOW signal (any gear in contact with the ground triggers it)
 		if (m_Gear[i]->getWOW()) b_WOW->value() = true;
 	}
 }

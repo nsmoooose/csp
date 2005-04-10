@@ -73,6 +73,8 @@ namespace fx {
 class CSPSIM_EXPORT ObjectModel: public simdata::Object {
 	static const simdata::Enumeration EffectItems;
 
+private:
+
 	osg::ref_ptr<osg::MatrixTransform> m_Transform;
 	osg::ref_ptr<osg::Node> m_Model;
 	osg::ref_ptr<osg::Switch> m_DebugMarkers;
@@ -87,6 +89,9 @@ public:
 		SIMDATA_XML("axis_0", ObjectModel::m_Axis0, false)
 		SIMDATA_XML("axis_1", ObjectModel::m_Axis1, false)
 		SIMDATA_XML("view_point", ObjectModel::m_ViewPoint, false)
+		SIMDATA_XML("hud_placement", ObjectModel::m_HudPlacement, false)
+		SIMDATA_XML("hud_width", ObjectModel::m_HudWidth, false)
+		SIMDATA_XML("hud_height", ObjectModel::m_HudHeight, false)
 		SIMDATA_XML("offset", ObjectModel::m_Offset, false)
 		SIMDATA_XML("scale", ObjectModel::m_Scale, false)
 		SIMDATA_XML("smooth", ObjectModel::m_Smooth, false)
@@ -111,6 +116,9 @@ public:
 	const simdata::Vector3 &getAxis0() const { return m_Axis0; }
 	const simdata::Vector3 &getAxis1() const { return m_Axis1; }
 	const simdata::Vector3 &getViewPoint() const { return m_ViewPoint; }
+	const simdata::Vector3 &getHudPlacement() const { return m_HudPlacement; }
+	double getHudWidth() const { return m_HudWidth; }
+	double getHudHeight() const { return m_HudHeight; }
 
 	double getBoundingSphereRadius() const { return m_BoundingSphereRadius; }
 	ContactList const &getContacts() const { return m_Contacts; }
@@ -129,6 +137,9 @@ protected:
 	simdata::Vector3 m_Axis0, m_Axis1;
 	simdata::Vector3 m_Offset;
 	simdata::Vector3 m_ViewPoint;
+	simdata::Vector3 m_HudPlacement;
+	double m_HudWidth;
+	double m_HudHeight;
 	double m_Scale;
 
 	bool m_Smooth;

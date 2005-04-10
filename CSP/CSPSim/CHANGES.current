@@ -1,14 +1,21 @@
  Version 0.4.0 (in progress)
 ===========================
 
+2005-04-09: onsight
+ * Finally checking in a large chunk of changes I've been working on
+   for many weeks that begin the implementation of the f16 detailed
+   model.  This includes a flight control system, parts of the nav hud,
+   a few ded pages, flight model and landing gear tweaks, and many other
+   details.
+
 2005-04-06: delta
  * Minor fix to the vc build (snprintf isn't supported).
- 
- * Minor initialization fix to set the gear being extended. At 
+
+ * Minor initialization fix to set the gear being extended. At
    some point, initialization values should be set in xml.
- 
+
  * Added a bool isDisabled() method in TimedSequece.
- 
+
 2005-04-03: onsight
  * Increase the left/right panning limits for the in-cockpit view.
 

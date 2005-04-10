@@ -9,13 +9,13 @@
     <Path name="model">F16.DJ.model</Path>
 
     <!-- Mass/Inertial properties -->
-    <!-- empty mass = 8273 kg -->
-    <Float name="mass">8273.0</Float>
-    <!-- these values come from a FS2k2 add-on -->
+    <!-- empty mass = 8273 kg?  f16A from nasa 1979 paper has mass = 9304 kg -->
+    <Float name="mass">9304.0</Float>
+    <!-- f16A values from nasa 1979 paper -->
     <Matrix name="inertia">
-    171554.0      0.0       0.0
-         0.0  55427.0    1764.0
-         0.0   1764.0  252326.0
+    75674.0      0.0       0.0
+         0.0  12875.0    1331.0
+         0.0   1331.0   85552.0
     </Matrix>
 
     <Path name="human_systems">F16.DJ.systems</Path>

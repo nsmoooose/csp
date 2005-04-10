@@ -18,14 +18,14 @@ map key:6       press       CAMERA_VIEW_6
 map key:7       press       CAMERA_VIEW_7
 map key:8       press       CAMERA_VIEW_8
 map key:9       press       CAMERA_VIEW_9
-map key:KP4     press       CAMERA_PAN_LEFT
-map key:KP4     release     CAMERA_PAN_LEFT_STOP
-map key:KP6     press       CAMERA_PAN_RIGHT
-map key:KP6     release     CAMERA_PAN_RIGHT_STOP
-map key:KP8     press       CAMERA_PAN_UP
-map key:KP8     release     CAMERA_PAN_UP_STOP
-map key:KP2     press       CAMERA_PAN_DOWN
-map key:KP2     release     CAMERA_PAN_DOWN_STOP
+map key:CTRL-KP4     press       CAMERA_PAN_LEFT
+map key:CTRL-KP4     release     CAMERA_PAN_LEFT_STOP
+map key:CTRL-KP6     press       CAMERA_PAN_RIGHT
+map key:CTRL-KP6     release     CAMERA_PAN_RIGHT_STOP
+map key:CTRL-KP8     press       CAMERA_PAN_UP
+map key:CTRL-KP8     release     CAMERA_PAN_UP_STOP
+map key:CTRL-KP2     press       CAMERA_PAN_DOWN
+map key:CTRL-KP2     release     CAMERA_PAN_DOWN_STOP
 
 map key:KP_PLUS     press       CAMERA_ZOOM_IN
 map key:KP_PLUS     release     CAMERA_ZOOM_STOP

@@ -5,23 +5,36 @@
     <Vector name="axis_0">1 0 0</Vector>
     <Vector name="axis_1">0 1 0</Vector>
     <!--Vector name="view_point">0.0 4.1 1.17</Vector-->
-    <Vector name="view_point">0.0 4.1 1.1</Vector>
-    <Bool   name="smooth">false</Bool>
+    <!--Vector name="view_point">0.0 4.45 1.19</Vector-->
+    <!--Vector name="view_point">0.0 4.55 1.20</Vector-->
+    <Vector name="view_point">0.0 4.60 1.20</Vector>
+    <Vector name="hud_placement">0.0 5.0 1.15</Vector>
+    <Float name="hud_width">0.124</Float>
+    <Float name="hud_height">0.160</Float>
+    <Bool name="smooth">false</Bool>
     <Vector name="offset">0.0 -0.3 0</Vector>
     <Enum name="effect">SpecularHighlights</Enum>
     <List name="contacts">
-        <Vector>0.0 8.291 0.021</Vector>
-        <Vector>0.0 4.4 1.33</Vector>
-        <Vector>4.605 -3.674 -0.071</Vector>
-        <Vector>-4.605 -3.674 -0.071</Vector>
-        <Vector>0.0 -5.904 1.041</Vector>
-        <Vector>0.0 -5.904 -0.004</Vector>
-        <Vector>0.0 -5.1 3.604</Vector>
-        <Vector>0.0 6.46 -0.335</Vector>
-        <Vector>0.0 -0.49 -0.327</Vector>
+        <Vector>0.0 8.00 0.120</Vector>
+        <Vector>0.0 4.4 1.46</Vector>
+        <Vector>4.61 -2.3 0.22</Vector>
+        <Vector>-4.61 -2.3 0.22</Vector>
+        <Vector>4.61 -1.3 0.22</Vector>
+        <Vector>-4.61 -1.3 0.22</Vector>
+        <Vector>0.0 -6.33 3.504</Vector>
+        <Vector>0.0 -5.91 -0.100</Vector>
+        <Vector>0.0 -5.2 3.504</Vector>
+        <Vector>0.0 3.8 -0.60</Vector>
+        <Vector>0.0 -0.5 -0.65</Vector>
         <!-- view point -->
-        <Vector>0.0 4.1 1.17</Vector>
+        <Vector>0.0 4.45 1.19</Vector>
+		<!--
+		<Vector>0.0 3.500 -1.600</Vector>
+		<Vector>1.215 -0.796 -1.621</Vector>
+		<Vector>-1.215 -0.796 -1.621</Vector>
+		-->
     </List>
+
     <List name="animations">
         <Object class="DrivenRotation">
             <String name="channel_name">ControlSurfaces.RudderDeflection</String>
@@ -29,46 +42,30 @@
             <Int name="lod_limit">1</Int>
             <Vector name="axis">0 -0.55 0.819</Vector>
         </Object>
-
-
         <Object class="DrivenRotation">
-            <String name="channel_name">ControlSurfaces.ElevatorDeflection</String>
+            <String name="channel_name">ControlSurfaces.LeftElevatorDeflection</String>
             <Key name="model_id">Aircraft.LeftElevator</Key>
             <Int name="lod_limit">1</Int>
             <Vector name="axis">-1 0 0</Vector>
         </Object>
         <Object class="DrivenRotation">
-            <String name="channel_name">ControlSurfaces.ElevatorDeflection</String>
+            <String name="channel_name">ControlSurfaces.RightElevatorDeflection</String>
             <Key name="model_id">Aircraft.RightElevator</Key>
             <Int name="lod_limit">1</Int>
             <Vector name="axis">-1 0 0</Vector>
-        </Object>
-
-        <Object class="DrivenRotation">
-            <String name="channel_name">ControlSurfaces.AileronDeflection</String>
-            <Key name="model_id">Aircraft.LeftElevator</Key>
-            <Int name="lod_limit">1</Int>
-            <Vector name="axis">-1 0 0</Vector>
-        </Object>
-        <Object class="DrivenRotation">
-            <String name="channel_name">ControlSurfaces.AileronDeflection</String>
-            <Key name="model_id">Aircraft.RightElevator</Key>
-            <Int name="lod_limit">1</Int>
-            <Vector name="axis">1 0 0</Vector>
         </Object>
         <Object  class="DrivenRotation">
-            <String name="channel_name">ControlSurfaces.AileronDeflection</String>
+            <String name="channel_name">ControlSurfaces.LeftAileronDeflection</String>
             <Key name="model_id">Aircraft.LeftAileron</Key>
             <Int name="lod_limit">1</Int>
-            <Vector name="axis">-1 -0.17 0</Vector>
+            <Vector name="axis">1 0.17 0</Vector>
         </Object>
         <Object class="DrivenRotation">
-            <String name="channel_name">ControlSurfaces.AileronDeflection</String>
+            <String name="channel_name">ControlSurfaces.RightAileronDeflection</String>
             <Key name="model_id">Aircraft.RightAileron</Key>
             <Int name="lod_limit">1</Int>
             <Vector name="axis">1 -0.17 0</Vector>
         </Object>
-
         <Object class="DrivenRotation">
             <String name="channel_name">ControlSurfaces.AirbrakeDeflection</String>
             <Key name="model_id">Aircraft.LowerRightAirbrake</Key>
@@ -93,11 +90,20 @@
             <Int name="lod_limit">1</Int>
             <Vector name="axis">-1 0 0</Vector>
         </Object>
-
-
-        <!--                    Landing gears animation                         -->
-
-            <!--                Front landing gear                          -->
+        <Object  class="DrivenRotation">
+            <String name="channel_name">ControlSurfaces.LeadingEdgeDeflection</String>
+            <Key name="model_id">Aircraft.LeftBec</Key>
+            <Int name="lod_limit">1</Int>
+            <Vector name="axis">-1 -0.70 0</Vector>
+        </Object>
+        <Object class="DrivenRotation">
+            <String name="channel_name">ControlSurfaces.LeadingEdgeDeflection</String>
+            <Key name="model_id">Aircraft.RightBec</Key>
+            <Int name="lod_limit">1</Int>
+            <Vector name="axis">-1 0.7 0</Vector>
+        </Object>
+        <!--            Landing gears animation                         -->
+        <!--                Front landing gear                          -->
         <Object class="TimedRotation">
             <String name="channel_name">Aircraft.GearSequence.ReferenceTime</String>
             <Key name="model_id">Aircraft.FrontGearMainDoor</Key>
@@ -313,9 +319,6 @@
                 <Float name="t1">4.0</Float>
             </Object>
         </Object>
-
-            <!--                                                        -->
-
         <!--                            Front gear                         -->
         <Object class="DrivenVectorialTranslation">
             <String name="channel_name">LandingGear.FrontGearDisplacement</String>
@@ -351,7 +354,6 @@
             <Key name="model_id">Aircraft.FrontGearTireAxis</Key>
             <Vector name="axis">0 0 -1</Vector>
         </Object>
-
         <!--                            Left gear                             -->
         <Object class="DrivenVectorialTranslation">
             <String name="channel_name">LandingGear.LeftGearDisplacement</String>
@@ -376,7 +378,6 @@
             <Vector name="axis">0.990831 0.0283094 0.132111</Vector>
             <Float name="gain">2.2</Float>
         </Object>
-
         <!--                            Right gear                             -->
         <Object class="DrivenVectorialTranslation">
             <String name="channel_name">LandingGear.RightGearDisplacement</String>

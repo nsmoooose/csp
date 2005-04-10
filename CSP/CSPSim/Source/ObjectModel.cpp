@@ -27,8 +27,9 @@
 
 #include "ObjectModel.h"
 #include "Animation.h"
-#include "SmokeEffects.h"
 #include "Config.h"
+#include "HUD/HUD.h"
+#include "SmokeEffects.h"
 
 #include <osgDB/FileUtils>
 #include <osgDB/Registry>
@@ -219,6 +220,9 @@ ObjectModel::ObjectModel(): simdata::Object() {
 	m_Axis1 = simdata::Vector3::ZAXIS;
 	m_Offset = simdata::Vector3::ZERO;
 	m_ViewPoint = simdata::Vector3::ZERO;
+	m_HudPlacement = simdata::Vector3::ZERO;
+	m_HudWidth = 0.1;
+	m_HudHeight = 0.1;
 	m_Scale = 1.0;
 	m_Smooth = true;
 	m_Filter = true;
@@ -397,6 +401,7 @@ void ObjectModel::loadModel() {
 			m_Contacts[i] = sd_adjust * m_Contacts[i]  + m_Offset;
 		}
 		m_ViewPoint = sd_adjust * m_ViewPoint  + m_Offset;
+		m_HudPlacement = sd_adjust * m_HudPlacement  + m_Offset;
 	}
 
 	osg::BoundingSphere s = m_Model->getBound();
@@ -692,6 +697,20 @@ void SceneModel::bindAnimationChannels(Bus::Ref bus) {
 			}
 		}
 	}
+	// XXX Hack for testing
+	CSP_LOG(OBJECT, DEBUG, "Trying to bind HUD");
+	DataChannel<HUD*>::CRef hud_channel = bus->getChannel("HUD", false);
+	if (hud_channel.valid()) {
+		HUD * hud = hud_channel->value();
+		CSP_LOG(OBJECT, DEBUG, "Found HUD");
+		hud->hud()->setPosition(simdata::toOSG(m_Model->getHudPlacement()));
+		m_Transform->addChild(hud->hud());
+		hud->setOrigin(simdata::toOSG(m_Model->getHudPlacement()));
+		hud->setViewPoint(simdata::toOSG(m_Model->getViewPoint()));
+		hud->setDimensions(m_Model->getHudWidth(), m_Model->getHudHeight());
+		CSP_LOG(OBJECT, DEBUG, "HUD added to model");
+	}
+	CSP_LOG(OBJECT, DEBUG, "bindAnimationChannels complete");
 }
 
 void SceneModel::setPositionAttitude(simdata::Vector3 const &position, simdata::Quat const &attitude) {

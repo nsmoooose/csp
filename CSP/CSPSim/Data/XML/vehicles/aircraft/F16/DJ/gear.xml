@@ -1,23 +1,23 @@
-<?xml version="1.0"	standalone="no"?>
+<?xml version="1.0" standalone="no"?>
 
 <!--
-	F16 gear
+	F16 landing gear
 -->
 
-<Object class="GearDynamics" name="gear_dynamics">
+<Object class="F16GearDynamics" name="gear_dynamics">
 	<List name="gear_set">
-		<!-- all of these values are complete guesses for testing only!	-->
+		<!-- all of these values are complete guesses for testing only! -->
 		<Object class="LandingGear"> <!-- nosewheel -->
 			<String name="gear_name">FrontGear</String>
-			<Vector name="max_position">0.0 4.123 -1.600</Vector>
+			<Vector name="max_position">0.0 3.500 -1.600</Vector>
 			<Vector name="motion">0 0 1.0</Vector>
 			<Real name="damage_limit">80000.0:10000.0</Real>
 			<Float name="compression_limit">0.5</Float>
-			<Float name="K">200000.0</Float>
-			<Float name="beta">25000.0</Float>
+			<Float name="K">160000.0</Float>
+			<Float name="beta">20000.0</Float>
 
 			<Float name="brake_limit">0.0</Float>
-			<Float name="steering_limit">45.0</Float>
+			<Float name="steering_limit">32.0</Float>
 			
 			<Float name="tire_radius">0.2</Float>
 			<Float name="tire_static_friction">0.8</Float>
@@ -26,16 +26,23 @@
 			<Float name="tire_beta">1000000.0</Float>
 			<Real name="rolling_friction">0.02:0.001</Real>
 			<Float name="drag_factor">0.8</Float>
+			<Object class="GearSequenceAnimation" name="gear_sequence_animation">
+				<Object class="TimedAnimationProxy" name="timed_animation_proxy">
+					<Float name="t0">0.0</Float>
+					<Float name="t1">4.0</Float>
+				</Object>
+				<Float name="initial_time">4.0</Float>
+			</Object>
 		</Object>
 		<Object class="LandingGear"> <!-- left main -->
 			<String name="gear_name">LeftGear</String>
-			<Vector name="max_position">-1.815 -0.796 -1.721</Vector>
+			<Vector name="max_position">-1.215 -0.796 -1.621</Vector>
 			<Vector name="motion">0 0 1.0</Vector>
 			<Real name="damage_limit">80000.0</Real>
 			<Float name="compression_limit">0.5</Float>
-			<Float name="K">300000.0</Float>
-			<Float name="beta">40000.0</Float>
-			<Float name="brake_limit">40000.0</Float>
+			<Float name="K">240000.0</Float>
+			<Float name="beta">32000.0</Float>
+			<Float name="brake_limit">50000.0</Float>
 			<Float name="brake_slip">0.8</Float>
 			<Float name="brake_steering_linkage">-1.0</Float>
 			<Float name="tire_radius">0.4</Float>
@@ -46,16 +53,23 @@
 			<Real name="rolling_friction">0.02:0.001</Real>
 			<Bool name="abs">true</Bool>
 			<Float name="drag_factor">0.8</Float>
+			<Object class="GearSequenceAnimation" name="gear_sequence_animation">
+				<Object class="TimedAnimationProxy" name="timed_animation_proxy">
+					<Float name="t0">0.0</Float>
+					<Float name="t1">4.0</Float>
+				</Object>
+				<Float name="initial_time">4.0</Float>
+			</Object>
 		</Object>
 		<Object class="LandingGear"> <!-- right main -->
 			<String name="gear_name">RightGear</String>
-			<Vector name="max_position">1.815 -0.796 -1.721</Vector>
+			<Vector name="max_position">1.215 -0.796 -1.621</Vector>
 			<Vector name="motion">0 0 1.0</Vector>
 			<Real name="damage_limit">80000.0:10000.0</Real>
 			<Float name="compression_limit">0.5</Float>
-			<Float name="K">300000.0</Float>
-			<Float name="beta">40000.0</Float>
-			<Float name="brake_limit">40000.0</Float>
+			<Float name="K">240000.0</Float>
+			<Float name="beta">32000.0</Float>
+			<Float name="brake_limit">50000.0</Float>
 			<Float name="brake_slip">0.8</Float>
 			<Float name="brake_steering_linkage">1.0</Float>
 			<Float name="tire_radius">0.4</Float>
@@ -66,6 +80,13 @@
 			<Real name="rolling_friction">0.02:0.001</Real>
 			<Bool name="abs">true</Bool>
 			<Float name="drag_factor">0.8</Float>
+			<Object class="GearSequenceAnimation" name="gear_sequence_animation">
+				<Object class="TimedAnimationProxy" name="timed_animation_proxy">
+					<Float name="t0">0.0</Float>
+					<Float name="t1">4.0</Float>
+				</Object>
+				<Float name="initial_time">4.0</Float>
+			</Object>
 		</Object>
 	</List>
 	<!--List name="gear_set_animation">

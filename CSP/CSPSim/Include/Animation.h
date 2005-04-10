@@ -40,18 +40,14 @@
 /**
  * Base class for animation callbacks.
  *
- * This class serves as an update callback for
- * a transformation node that animates part of
- * a model scene graph.  Update requests will
- * modify the transform if only if necessary.
- * The callback maintains a dirty counter which
- * is used to determine if a particular node
- * transform is stale.  To test this, a separate
- * counter is stored in the user data slot of
- * the transform and updated accordingly.  For
- * continuous animation loops, the dirty counter
- * is not used and the transform is updated after
- * every callback.
+ * This class serves as an update callback for a transformation node that
+ * animates part of a model scene graph.  Update requests will modify the
+ * transform only if necessary.  The callback maintains a dirty counter
+ * which is used to determine if a particular node transform is stale.  To
+ * test this, a separate counter is stored in the user data slot of the
+ * transform and updated accordingly.  For continuous animation loops, the
+ * dirty counter is not used and the transform is updated after every
+ * callback.
  */
 class AnimationCallback: public osg::AnimationPathCallback {
 protected:
@@ -72,50 +68,37 @@ public:
 	}
 	virtual ~AnimationCallback() {}
 	inline void dirty() { ++m_DirtyCount; }
-	inline bool needsUpdate(osg::Node& node) {
-		UpdateCount *count = dynamic_cast<UpdateCount*>(node.getUserData());
-		assert(count);
-		if (count->getCount() < m_DirtyCount) {
-			count->updateCount(m_DirtyCount);
-			return true;
-		}
-		return false;
-	}
+	bool needsUpdate(osg::Node& node);
 	bool needsUpdate(osg::NodeCallback& node_callback);
 	inline std::string const &getChannelName() const { return m_ChannelName; }
 	inline void setChannelName(std::string const &name) { m_ChannelName = name; }
-	inline void bind(osg::Node &node) {
-		node.setUpdateCallback(this);
-		node.setUserData(new UpdateCount);
-		dirty();
-	}
+	void bind(osg::Node &node);
 	void bind(osg::NodeCallback &node_callback);
 	virtual void bindChannel(simdata::Ref<const DataChannelBase>)=0;
-	virtual void setDefault(float) {}
+	virtual void setValue(float) {}
 };
 
 
 /**
- * class Animation - base class for animated 3d model
- * components.
+ * Base class for animated 3d model components.
  *
- * Animation instances are bound to ObjectModels to
- * provide data about particular model animations.
- * Animation instances, like ObjectModels, are shared
- * by multiple SceneModel instances.
+ * Animation instances are bound to ObjectModels to provide data about
+ * particular model animations.  Animation instances, like ObjectModels,
+ * are shared by multiple SceneModel instances.
  */
 class Animation: public simdata::Object {
 private:
 
 	simdata::Key m_ModelID;
 	std::string m_ChannelName;
+	float m_DefaultValue;
 	int m_LOD;
-	float m_Default;
 	float m_Limit0;
 	float m_Limit1;
 	float m_Gain;
 
 protected:
+
 	/**
 	* Small template class to reduce & simplify writing.
 	* It's the heart of the animation in overriding
@@ -131,8 +114,8 @@ protected:
 	public:
 		Callback_A_C(const A *const param):
 			m_Parameters(param),
-			m_Value(0.0f) { 
-				assert(param); 
+			m_Value(0.0f) {
+				assert(param);
 		}
 		Callback_A_C(const A *const param, const osg::AnimationPathCallback& oapc):
 			AnimationCallback(oapc),
@@ -143,7 +126,7 @@ protected:
 		virtual void bindChannel(simdata::Ref<const DataChannelBase> channel) {
 			m_Channel = channel;
 		}
-		virtual void setDefault(float x) {
+		virtual void setValue(float x) {
 			m_Value = x;
 			dirty();
 		}
@@ -176,6 +159,7 @@ protected:
 		callback->bind(*node);
 		return callback;
 	}
+
 	template <class A, class C>  AnimationCallback *newCallback_(osg::NodeCallback *node_callback) const {
 		AnimationCallback *callback = new C(dynamic_cast<const A* const>(this));
 		init(callback);
@@ -183,10 +167,11 @@ protected:
 		callback->bind(*node_callback);
 		return callback;
 	}
+
 	void init(AnimationCallback *callback) const {
 		assert(callback);
 		callback->setChannelName(m_ChannelName);
-		callback->setDefault(m_Default);
+		callback->setValue(m_DefaultValue);
 	}
 
 public:
@@ -194,14 +179,14 @@ public:
 		SIMDATA_XML("model_id", Animation::m_ModelID, true)
 		SIMDATA_XML("channel_name", Animation::m_ChannelName, true)
 		SIMDATA_XML("lod_limit", Animation::m_LOD, false)
-		SIMDATA_XML("default", Animation::m_Default, false)
+		SIMDATA_XML("default", Animation::m_DefaultValue, false)
 		SIMDATA_XML("limit_0", Animation::m_Limit0, false)
 		SIMDATA_XML("limit_1", Animation::m_Limit1, false)
 		SIMDATA_XML("gain", Animation::m_Gain, false)
 	END_SIMDATA_XML_INTERFACE
 
-	Animation(float default_value=0.0);
-	virtual ~Animation() {}
+	Animation(float defaultValue=0.0f);
+	virtual ~Animation() { }
 
 	// typically, this method will call newCallback_
 	virtual AnimationCallback *newCallback(osg::Node *node) const = 0;
@@ -219,13 +204,13 @@ public:
 
 
 /**
-* Abstract class regrouping usual infos (in its SimData interface) 
-* to make an Animation behaves like a rotation 
-*/ 
+ * Abstract animation class for rotations.
+ */
 class Rotation: public Animation {
 	simdata::Vector3 m_Axis;
 	float m_Phase;
 	osg::Vec3 m_OSGAxis;
+
 public:
 	EXTEND_SIMDATA_XML_VIRTUAL_INTERFACE(Rotation, Animation)
 		SIMDATA_XML("phase", Rotation::m_Phase, false)
@@ -233,7 +218,6 @@ public:
 	END_SIMDATA_XML_INTERFACE
 
 	Rotation();
-	virtual ~Rotation() {}
 
 	const osg::Vec3 &getAxis() const { return m_OSGAxis; }
 	float getPhase() const { return m_Phase; }
@@ -246,8 +230,8 @@ protected:
 
 
 /**
- * A simple, driven rotation animation in which the rotation
- * angle does not vary between updates.
+ * A simple, driven rotation animation in which the rotation angle does not
+ * vary between updates.
  */
 class DrivenRotation: public Rotation {
 	class Callback: public Callback_A<DrivenRotation> {
@@ -263,11 +247,10 @@ public:
 	EXTEND_SIMDATA_XML_INTERFACE(DrivenRotation, Rotation)
 	END_SIMDATA_XML_INTERFACE
 
-	virtual ~DrivenRotation(){}
-
 	virtual AnimationCallback *newCallback(osg::Node *node) const {
 		return newCallback_<DrivenRotation,Callback>(node);
 	}
+
 	virtual AnimationCallback *newCallback(osg::NodeCallback *nodeCallback) const {
 		return newCallback_<DrivenRotation,Callback>(nodeCallback);
 	}
@@ -275,10 +258,14 @@ public:
 
 
 /**
-* Tiny class encapsulating time values.
-*/
+ * Tiny class encapsulating time values.
+ */
 class TimedAnimationProxy: public simdata::Object {
-	float m_t0, m_t1, m_TimeLength, m_Rate;
+	float m_t0;
+	float m_t1;
+	float m_TimeLength;
+	float m_Rate;
+
 public:
 	SIMDATA_OBJECT(TimedAnimationProxy, 0, 0)
 	
@@ -294,32 +281,19 @@ public:
 		m_Rate(0.0f) {
 	}
 	~TimedAnimationProxy(){}
-	float getDelta_t0(float t) const {
-		return clamp(t) - m_t0;
-	}
-	float clamp(float t) const {
-		return simdata::clampTo(t, m_t0, m_t1);
-	}
-	float getRate() const {
-		return m_Rate;
-	}
+	float getDelta_t0(float t) const { return clamp(t) - m_t0; }
+	float clamp(float t) const { return simdata::clampTo(t, m_t0, m_t1); }
+	float getRate() const { return m_Rate; }
 	void setRate(float limit0, float limit1) {
 		float delta_limit = limit1 - limit0;
 		m_Rate = delta_limit / m_TimeLength;
 	}
-	float getTimeLength() const {
-		return m_TimeLength;
-	}
-	float gett_0() const {
-		return m_t0;
-	}
-	float gett_1() const {
-		return m_t1;
-	}
+	float getTimeLength() const { return m_TimeLength; }
+	float gett_0() const { return m_t0; }
+	float gett_1() const { return m_t1; }
+
 protected:
-	virtual void postCreate() {
-		 m_TimeLength = m_t1 - m_t0;
-	}
+	virtual void postCreate() { m_TimeLength = m_t1 - m_t0; }
 };
 
 
@@ -361,12 +335,13 @@ protected:
 
 
 /**
-* Analog of the Rotation class. This abstract class provides general
-* infos about a translation transformation seen as an Animation.
-*/
+ * Abstract animation class for translations.
+ */
 class Translation: public Animation {
-	simdata::Vector3 m_Direction, m_Offset;
-	osg::Vec3 m_OSGOffset, m_OSGDirection;
+	simdata::Vector3 m_Direction;
+	simdata::Vector3 m_Offset;
+	osg::Vec3 m_OSGOffset;
+	osg::Vec3 m_OSGDirection;
 
 public:
 	EXTEND_SIMDATA_XML_VIRTUAL_INTERFACE(Translation, Animation)
@@ -375,10 +350,9 @@ public:
 	END_SIMDATA_XML_INTERFACE
 
 	Translation();
-	virtual ~Translation() {}
 
-	const osg::Vec3 &getDirection() const { return m_OSGDirection;}
-	const osg::Vec3 &getOffset() const { return m_OSGOffset;}
+	const osg::Vec3 &getDirection() const { return m_OSGDirection; }
+	const osg::Vec3 &getOffset() const { return m_OSGOffset; }
 
 protected:
 	virtual void postCreate() {
@@ -450,7 +424,7 @@ public:
 
 /**
  * A simple, timed translation animation in which the translation
- * magnitude does not vary between updates.
+ * magnitude is controlled by a TimedAnimationProxy.
  */
 class TimedMagnitudeTranslation: public Translation {
 	class Callback: public Callback_A<TimedMagnitudeTranslation> {
@@ -469,8 +443,6 @@ public:
 		SIMDATA_XML("timed_animation_proxy", TimedMagnitudeTranslation::m_TimedAnimationProxy, true)
 	END_SIMDATA_XML_INTERFACE
 
-	virtual ~TimedMagnitudeTranslation(){}
-
 	virtual AnimationCallback *newCallback(osg::Node *node) const {
 		return newCallback_<TimedMagnitudeTranslation,Callback>(node);
 	}
@@ -485,8 +457,10 @@ protected:
 
 
 /**
- * A simple, driven switch animation in which the culling
- * value does not vary between updates.
+ * An animation class that controls the visibility of the animated part.
+ * Although driven by a continuous variable, the switch has only two states.
+ * For non-zero values the part is visible, otherwise it is hidden using
+ * the OSG node mask.
  */
 class DrivenSwitch: public Animation {
 	class Callback: public Callback_A<DrivenSwitch> {
@@ -502,13 +476,14 @@ public:
 	EXTEND_SIMDATA_XML_INTERFACE(DrivenSwitch, Animation)
 	END_SIMDATA_XML_INTERFACE
 
-	DrivenSwitch(): Animation(1.0) { }
+	DrivenSwitch(): Animation(/*defaultValue=*/1.0f) { }
 	virtual ~DrivenSwitch(){}
 
 	virtual AnimationCallback *newCallback(osg::Node *node) const {
 		return newCallback_<DrivenSwitch,Callback>(node);
 	}
 };
+
 
 /**
 * TimedSequence controls timed animations providing a basic time counter.
@@ -682,17 +657,12 @@ public:
 		if (!bus->hasChannel(name)) {
 			 b_ReferenceTime = bus->registerSharedDataChannel(name, m_InitialTime);
 		}
-		bus->registerChannel(b_NormalizedTime.get());
-	}
-	
-protected:
-	virtual void postCreate() {
-		CSP_LOG(OBJECT, DEBUG, "TimedSequence: m_Name = " << m_Name);
 		m_InitialTime = m_TimeAnimationProxy->clamp(m_InitialTime);
 		double initial_normalized_time = simdata::clampTo(m_TimeAnimationProxy->getDelta_t0(m_InitialTime)/m_TimeAnimationProxy->getTimeLength(),0.0f,1.0f);
 		b_NormalizedTime = DataChannel<double>::newSharedPush(m_Name + ".NormalizedTime", initial_normalized_time);
 		m_UpdateReferenceTime = new UpdateReferenceTime(*this);
 		m_Connection = b_NormalizedTime->connect(m_UpdateReferenceTime);
+		bus->registerChannel(b_NormalizedTime.get());
 	}
 };
 

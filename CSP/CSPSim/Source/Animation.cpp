@@ -43,10 +43,26 @@ SIMDATA_REGISTER_INTERFACE(TimedSequence)
 SIMDATA_REGISTER_INTERFACE(TimedAnimationPath)
 
 
+void AnimationCallback::bind(osg::Node &node) {
+	node.setUpdateCallback(this);
+	node.setUserData(new UpdateCount);
+	dirty();
+}
+
 void AnimationCallback::bind(osg::NodeCallback &node_callback) {
 	node_callback.setNestedCallback(this);
 	node_callback.setUserData(new UpdateCount);
 	dirty();
+}
+
+bool AnimationCallback::needsUpdate(osg::Node& node) {
+	UpdateCount *count = dynamic_cast<UpdateCount*>(node.getUserData());
+	assert(count);
+	if (count->getCount() < m_DirtyCount) {
+		count->updateCount(m_DirtyCount);
+		return true;
+	}
+	return false;
 }
 
 bool AnimationCallback::needsUpdate(osg::NodeCallback& node_callback) {
@@ -61,8 +77,8 @@ bool AnimationCallback::needsUpdate(osg::NodeCallback& node_callback) {
 }
 
 Animation::Animation(float default_value):
+	m_DefaultValue(default_value),
 	m_LOD(0),
-	m_Default(default_value),
 	m_Limit0(0.0f),
 	m_Limit1(1.0f),
 	m_Gain(1.0f) {
@@ -79,8 +95,7 @@ void DrivenRotation::Callback::operator()(osg::Node* node, osg::NodeVisitor* nv)
 		osg::MatrixTransform* t = dynamic_cast<osg::MatrixTransform*>(node);
 		assert(t);
 		if (t) {
-			osg::Matrix m = osg::Matrix::rotate(m_Parameters->getGain() * m_Value + m_Parameters->getPhase(), 
-												m_Parameters->getAxis());
+			osg::Matrix m = osg::Matrix::rotate(m_Parameters->getGain() * m_Value + m_Parameters->getPhase(), m_Parameters->getAxis());
 			m.setTrans(t->getMatrix().getTrans());
 			t->setMatrix(m);
 		}
@@ -132,8 +147,7 @@ void DrivenMagnitudeTranslation::Callback::operator()(osg::Node* node, osg::Node
 		osg::MatrixTransform *t = dynamic_cast<osg::MatrixTransform*>(node);
 		assert(t);
 		if (t) {
-			osg::Vec3 translation = m_Parameters->getDirection() * m_Parameters->getGain() * m_Value 
-								  + m_Parameters->getOffset();
+			osg::Vec3 translation = m_Parameters->getDirection() * m_Parameters->getGain() * m_Value + m_Parameters->getOffset();
 			osg::Matrix m = t->getMatrix();
 			m.setTrans(translation);
 			t->setMatrix(m);
@@ -152,9 +166,8 @@ void TimedMagnitudeTranslation::Callback::operator()(osg::Node* node, osg::NodeV
 	if (needsUpdate(*node)) {
 		osg::MatrixTransform *t = dynamic_cast<osg::MatrixTransform*>(node);
 		assert(t);
-		if (t) { 
-			osg::Vec3 translation = m_Parameters->getTimedTranslation(m_Value) * m_Parameters->getGain() 
-								  + m_Parameters->getOffset();
+		if (t) {
+			osg::Vec3 translation = m_Parameters->getTimedTranslation(m_Value) * m_Parameters->getGain() + m_Parameters->getOffset();
 			osg::Matrix m = t->getMatrix();
 			m.setTrans(translation);
 			t->setMatrix(m);
@@ -169,8 +182,7 @@ void DrivenVectorialTranslation::Callback::operator()(osg::Node* node, osg::Node
 		osg::MatrixTransform *t = dynamic_cast<osg::MatrixTransform*>(node);
 		assert(t);
 		if (t) {
-			osg::Vec3 translation = m_Parameters->getDirection() * m_Parameters->getGain() * m_Value 
-								  + m_Parameters->getOffset();
+			osg::Vec3 translation = m_Parameters->getDirection() * m_Parameters->getGain() * m_Value + m_Parameters->getOffset();
 			osg::Matrix m = t->getMatrix();
 			m.setTrans(translation);
 			t->setMatrix(m);

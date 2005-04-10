@@ -25,6 +25,7 @@ map key:EQUALS  press           INC_THROTTLE
 map key:EQUALS  release         STOP_INC_THROTTLE
 map key:MINUS   press           DEC_THROTTLE
 map key:MINUS   release         STOP_DEC_THROTTLE
+map key:f       press           FLAPS_TOGGLE
 map key:s       press           SMOKE_TOGGLE
 map key:w       press           WHEEL_BRAKE_ON
 map key:w       release         WHEEL_BRAKE_OFF
@@ -33,5 +34,35 @@ map key:g       press           GEAR_TOGGLE
 map key:b       press           OPEN_AIRBRAKE/B|CLOSE_AIRBRAKE/B
 map key:SHIFT-b press           INC_AIRBRAKE
 map key:CTRL-b  press           DEC_AIRBRAKE
-map key:CTRL-r	press			FUEL_DOOR_TOGGLE
-map key:SHIFT-c	press			CANOPY_TOGGLE
+map key:SHIFT-x press           NEXT_STEERPOINT
+map key:SHIFT-z press           PREV_STEERPOINT
+map key:CTRL-r  press           FUEL_DOOR_TOGGLE
+map key:SHIFT-c press           CANOPY_TOGGLE
+
+map key:KP0     press           ICP_0
+map key:KP1     press           ICP_1
+map key:KP2     press           ICP_2
+map key:KP3     press           ICP_3
+map key:KP4     press           ICP_4
+map key:KP5     press           ICP_5
+map key:KP6     press           ICP_6
+map key:KP7     press           ICP_7
+map key:KP8     press           ICP_8
+map key:KP9     press           ICP_9
+
+map key:SHIFT-KP_MINUS        press          ICP_DEC
+map key:SHIFT-KP_PLUS         press          ICP_INC
+map key:KP_ENTER        press          ICP_ENTR
+map key:KP_MULTIPLY     press          ICP_RCL
+
+map key:SHIFT-KP2    press          ICP_DN
+map key:SHIFT-KP8    press          ICP_UP
+map key:SHIFT-KP6    press          ICP_SEQ
+map key:SHIFT-KP4    press          ICP_RTN
+
+map key:SHIFT-1      press     ICP_COM1
+map key:SHIFT-2      press     ICP_COM2
+map key:SHIFT-3      press     ICP_IFF
+map key:SHIFT-4      press     ICP_LIST
+map key:SHIFT-5      press     ICP_AA
+map key:SHIFT-6      press     ICP_AG

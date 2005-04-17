@@ -28,10 +28,25 @@
 			<Float name="drag_factor">0.8</Float>
 			<Object class="GearSequenceAnimation" name="gear_sequence_animation">
 				<Object class="TimedAnimationProxy" name="timed_animation_proxy">
-					<Float name="t0">0.0</Float>
-					<Float name="t1">4.0</Float>
+					<Float name="t0">0.01</Float>
+					<Float name="t1">3.99</Float>
 				</Object>
-				<Float name="initial_time">4.0</Float>
+				<Float name="initial_time">3.99</Float>
+				<String name="name">Aircraft.FrontGear</String>
+			</Object>
+			<Object class="DefinedGearStructureAnimation" name="gear_structure_animation">
+				<Object class="TimedSequence" name="displacement_sequence">
+					<Object class="TimedAnimationProxy" name="timed_animation_proxy">
+						<Float name="t0">4.01</Float>
+						<Float name="t1">7.99</Float>
+					</Object>
+					<Float name="initial_time">4.01</Float>
+					<String name="name">Aircraft.FrontGear</String>
+				</Object>
+				<!-- The 3d model has 0.089 m of displacement for a complete compression.
+					 The following value is quite arbitrary.
+				-->
+				<Float name="displacement_length">0.2</Float>
 			</Object>
 		</Object>
 		<Object class="LandingGear"> <!-- left main -->
@@ -55,10 +70,23 @@
 			<Float name="drag_factor">0.8</Float>
 			<Object class="GearSequenceAnimation" name="gear_sequence_animation">
 				<Object class="TimedAnimationProxy" name="timed_animation_proxy">
-					<Float name="t0">0.0</Float>
-					<Float name="t1">4.0</Float>
+					<Float name="t0">0.01</Float>
+					<Float name="t1">3.99</Float>
 				</Object>
-				<Float name="initial_time">4.0</Float>
+				<Float name="initial_time">3.99</Float>
+				<String name="name">Aircraft.LeftGear</String>
+			</Object>
+			<Object class="DefinedGearStructureAnimation" name="gear_structure_animation">
+				<Object class="TimedSequence" name="displacement_sequence">
+					<Object class="TimedAnimationProxy" name="timed_animation_proxy">
+						<Float name="t0">4.01</Float>
+						<Float name="t1">7.99</Float>
+					</Object>
+					<Float name="initial_time">4.01</Float>
+					<String name="name">Aircraft.LeftGear</String>
+				</Object>
+				<!-- 0.191 -->
+				<Float name="displacement_length">0.2</Float>
 			</Object>
 		</Object>
 		<Object class="LandingGear"> <!-- right main -->
@@ -82,87 +110,25 @@
 			<Float name="drag_factor">0.8</Float>
 			<Object class="GearSequenceAnimation" name="gear_sequence_animation">
 				<Object class="TimedAnimationProxy" name="timed_animation_proxy">
-					<Float name="t0">0.0</Float>
-					<Float name="t1">4.0</Float>
+					<Float name="t0">0.01</Float>
+					<Float name="t1">3.99</Float>
 				</Object>
-				<Float name="initial_time">4.0</Float>
+				<Float name="initial_time">3.99</Float>
+				<String name="name">Aircraft.RightGear</String>
+			</Object>
+			<Object class="DefinedGearStructureAnimation" name="gear_structure_animation">
+				<Object class="TimedSequence" name="displacement_sequence">
+					<Object class="TimedAnimationProxy" name="timed_animation_proxy">
+						<Float name="t0">4.01</Float>
+						<Float name="t1">7.99</Float>
+					</Object>
+					<Float name="initial_time">4.01</Float>
+					<String name="name">Aircraft.RightGear</String>
+				</Object>
+				<Float name="displacement_length">0.2</Float>
 			</Object>
 		</Object>
 	</List>
-	<!--List name="gear_set_animation">
-		<Object class="GearAnimation">
-			<Object class="GearStructureAnimation" name="gear_structure_animation">
-				<String name="displacement_channel">LandingGear.FrontGearDisplacement</String>
-				<Vector name="displacement_axis">0 0 1</Vector>
-				<String name="absorber02_channel">LandingGear.FrontGearAbsorber02</String>
-				<String name="absorber03_channel">LandingGear.FrontGearAbsorber03</String>
-				<Float name="absorber02_length">0.298</Float>
-				<Float name="absorber03_length">0.298</Float>
-				<Float name="offset">0.03</Float>
-			</Object>
-			<Object class="TimedSequence" name="gear_sequence_animation">
-				<Object class="TimedAnimationProxy" name="timed_animation_proxy">
-					<Float name="t0">0.0</Float>
-					<Float name="t1">4.0</Float>
-				</Object>
-				<Float name="initial_time">4.0</Float>
-				<String name="name">Aircraft.GearSequence</String>
-			</Object>
-		</Object>
-		<Object class="GearAnimation">
-			<Object class="GearStructureAnimation" name="gear_structure_animation">
-				<String name="displacement_channel">LandingGear.LeftGearDisplacement</String>
-				<Vector name="displacement_axis">-0.134513 0 0.990912</Vector>
-				<String name="absorber02_channel">LandingGear.LeftGearAbsorber02</String>
-				<String name="absorber03_channel">LandingGear.LeftGearAbsorber03</String>
-				<Float name="absorber02_length">0.315</Float>
-				<Float name="absorber03_length">0.315</Float>
-				<Float name="offset">0.09</Float>
-			</Object>
-		</Object>
-		<Object class="GearAnimation">
-			<Object class="GearStructureAnimation" name="gear_structure_animation">
-				<String name="displacement_channel">LandingGear.RightGearDisplacement</String>
-				<Vector name="displacement_axis">0.127615 -0.00447771 0.991814</Vector>
-				<String name="absorber02_channel">LandingGear.RightGearAbsorber02</String>
-				<String name="absorber03_channel">LandingGear.RightGearAbsorber03</String>
-				<Float name="absorber02_length">0.315</Float>
-				<Float name="absorber03_length">0.315</Float>
-				<Float name="offset">0.09</Float>
-			</Object>
-		</Object>
-	</List-->
-	<!--
-	<List name="subsystems">
-		<Object class="GearAnimation">
-			<Object class="TimedSequence" name="gear_sequence_animation">
-				<Object class="TimedAnimationProxy" name="timed_animation_proxy">
-					<Float name="t0">0.0</Float>
-					<Float name="t1">4.0</Float>
-				</Object>
-				<Float name="initial_time">4.0</Float>
-				<String name="name">Aircraft.GearSequence</String>
-			</Object>
-			<List name="subsystems">
-				<Object class="M2kGearStructureAnimation">
-					<String name="displacement_channel">LandingGear.FrontGearDisplacement</String>
-					<Vector name="displacement_axis">0 0 1</Vector>
-					<String name="absorber02_channel">LandingGear.FrontGearAbsorber02</String>
-					<String name="absorber03_channel">LandingGear.FrontGearAbsorber03</String>
-					<Float name="absorber02_length">0.298</Float>
-					<Float name="absorber03_length">0.298</Float>
-					<Float name="offset">0.03</Float>
-				</Object>
-			</List>
-		</Object>
-		<!- - Object class="GearAnimation">
-			...
-		</Object>
-		<Object class="GearAnimation">
-			...
-		</Object - ->
-	</List>
-	-->
 </Object>
 	
 	

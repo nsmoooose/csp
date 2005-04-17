@@ -229,6 +229,8 @@ void GameScreen::onInit() {
 
 	m_InfoView->setSceneData(m_InfoGroup.get());
 
+	//CSPSim::theSim->getScene()->getContextIDFactory()->getOrCreateContextID(m_InfoView.get());
+
 	simdata::Ref<DynamicObject> ao = CSPSim::theSim->getActiveObject();
 	if (ao.valid()) {
 		setActiveObject(ao);

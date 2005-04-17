@@ -164,11 +164,17 @@ public:
 	// least several times per second if not every frame) regardless of gear state.
 	void updateAnimations(double dt);
 
+	// enable or disable animation based on getWoW for now.
+	virtual void updateAnimationFlags();
+
 	// A low cost update that is called periodically when the gear is fully retracted.
 	void residualUpdate(double dt, double airspeed);
 
 	// Export data channels to the bus.
 	void registerChannels(Bus* bus);
+
+	// Import data channels from the bus.
+	void bindChannels(Bus* bus);
 
 	// Returns true if the gear is fully retracted.
 	bool isFullyExtended() const { return b_FullyExtended->value(); }
@@ -312,11 +318,19 @@ public:
 	// Extend in subclasses to register output channels for driving animations.
 	virtual void registerChannels(Bus*) { }
 
+	// 
+	virtual void bindChannels(Bus*) { }
+
 	// Called by LandingGear to set the gear name used for exproted channels.
 	virtual void setGearName(const std::string &name) { m_GearName = name; }
 
 	// Get the name of the associated LandingGear.
 	virtual std::string const &getGearName() const { return m_GearName; }
+
+	// pass on to a potential TimedSequence member
+	virtual void enable() {}
+
+	virtual void disable() {}
 
 protected:
 	virtual void postCreate() {
@@ -385,7 +399,8 @@ public:
 
 
 /**
- */
+*
+*/
 class DefinedGearStructureAnimation: public GearStructureAnimation {
 	double m_DisplacementLength;
 	simdata::Link<TimedSequence> m_DisplacementSequence;
@@ -419,7 +434,7 @@ public:
 
 	// Register the various channels that drive the animated parts.
 	virtual void registerChannels(Bus* bus) {
-		const std::string prefix = "LandingGear." + getGearName();
+		const std::string prefix = "Aircraft." + getGearName();
 		if (m_DisplacementSequence.valid()) {
 			m_DisplacementSequence->setNameIfEmpty(prefix);
 			m_DisplacementSequence->registerChannels(bus);
@@ -428,8 +443,24 @@ public:
 			m_TireRotationSequence->setNameIfEmpty(prefix);
 			m_TireRotationSequence->registerChannels(bus);
 		} else {
-			b_TireRotation = bus->registerLocalDataChannel<double>(prefix + "TireRotation", 0.0);
+			b_TireRotation = bus->registerLocalDataChannel<double>(prefix + ".TireRotation", 0.0);
 		}
+	}
+
+	virtual void bindChannels(Bus* bus) {
+		if (m_DisplacementSequence.valid()) {
+			m_DisplacementSequence->bindChannels(bus);
+		}
+	}
+
+	virtual void disable() {
+		if (m_DisplacementSequence.valid()) 
+			m_DisplacementSequence->disable();
+	}
+
+	virtual void enable() {
+		if (m_DisplacementSequence.valid()) 
+			m_DisplacementSequence->enable();
 	}
 };
 

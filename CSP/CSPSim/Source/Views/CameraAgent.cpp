@@ -35,8 +35,11 @@
 
 
 
-CameraAgent::CameraAgent(const ViewFactory& vf):
-	m_ViewMode(0) {
+CameraAgent::CameraAgent(const ViewFactory& vf, ViewMode default_view):
+	m_EyePoint(simdata::Vector3::ZERO), 
+	m_LookPoint(simdata::Vector3::XAXIS),
+	m_UpVector(simdata::Vector3::ZAXIS),
+	m_ViewMode(default_view) {
 	vf.attachAllView(this);
 	notifyCameraKinematicsToViews();
 }
@@ -113,7 +116,7 @@ void CameraAgent::validate(double dt) {
 	}
 }
 
-void CameraAgent::setViewMode(size_t vm) {
+void CameraAgent::setViewMode(ViewMode vm) {
 	ViewList::iterator view_it = m_ViewList.find(vm);
 	if (view_it != m_ViewList.end()) {
 		if (m_ViewMode == vm) {

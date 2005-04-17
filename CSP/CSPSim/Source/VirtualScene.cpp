@@ -120,7 +120,19 @@ osg::Matrix getCM(float intensity) {
 //
 ///////////////////////////////////////////////////////////////////////
 
+ContextIDFactory::ContextIDFactory():
+	m_NextContextID(1) {
+}
 
+unsigned int ContextIDFactory::getOrCreateContextID(osgUtil::SceneView *scene_view) {
+	ContextIDSet::const_iterator i = m_ContextIDSet.find(scene_view);
+	if (i == m_ContextIDSet.end()) {
+		osg::State *state = scene_view->getState();
+		state->setContextID(m_NextContextID);
+		m_ContextIDSet[scene_view] = m_NextContextID++;
+	}
+	return m_ContextIDSet[scene_view];
+}
 
 /**
  * struct MoveEarthySkyWithEyePointCallback
@@ -290,6 +302,9 @@ int VirtualScene::buildScene()
 	// override default HEADLIGHT mode, we provide our own lights.
 	m_FarView->setLightingMode(osgUtil::SceneView::NO_SCENEVIEW_LIGHT);
 
+	m_ContextIDFactory = new ContextIDFactory;
+	//m_ContextIDFactory->getOrCreateContextID(m_FarView.get());
+
 	m_NearView = new osgUtil::SceneView();
 	ds = m_NearView->getDisplaySettings();
 	if (!ds) {
@@ -303,6 +318,8 @@ int VirtualScene::buildScene()
 	m_NearView->getCullVisitor()->setImpostorsActive(false);
 	// override default HEADLIGHT mode, we provide our own lights.
 	m_NearView->setLightingMode(osgUtil::SceneView::NO_SCENEVIEW_LIGHT);
+
+	//m_ContextIDFactory->getOrCreateContextID(m_NearView.get());
 
 	m_FreeObjectGroup = new osg::Group;
 	m_FreeObjectGroup->setName("SG_FreeObjects");
@@ -536,6 +553,17 @@ void VirtualScene::setCameraNode(osg::Node *)
 {
 }
 
+std::string VirtualScene::logLookAt() {
+	osg::Vec3 _camEyePos;
+	osg::Vec3 _camLookPos;
+	osg::Vec3 _camUpVec;
+	m_FarView->getViewMatrixAsLookAt(_camEyePos, _camLookPos, _camUpVec);
+			
+	std::ostringstream os("VirtualScene::_setLookAt - eye: ");
+	os << _camEyePos << ", look: " << _camLookPos << ", up: " << _camUpVec;
+	return os.str();
+}
+
 void VirtualScene::_setLookAt(const simdata::Vector3& eyePos, const simdata::Vector3& lookPos, const simdata::Vector3& upVec)
 {
 	CSP_LOG(APP, DEBUG, "VirtualScene::setLookAt - eye: " << eyePos << ", look: " << lookPos << ", up: " << upVec);
@@ -560,16 +588,7 @@ void VirtualScene::_setLookAt(const simdata::Vector3& eyePos, const simdata::Vec
 		m_TerrainGroup->setPosition(simdata::toOSG(tpos));
 	}
 
-	// FIXME this shouldn't run in debug builds
-	osg::Vec3 _camEyePos;
-	osg::Vec3 _camLookPos;
-	osg::Vec3 _camUpVec;
-	m_FarView->getViewMatrixAsLookAt(_camEyePos, _camLookPos, _camUpVec);
-	CSP_LOG(APP, DEBUG,
-			"VirtualScene::setLookAt - eye: " << _camEyePos
-			<< ", look: " << _camLookPos
-			<< ", up: " << _camUpVec
-		   );
+	CSP_LOG(APP, DEBUG, logLookAt());
 }
 
 // TODO externalize a couple fixed parameters

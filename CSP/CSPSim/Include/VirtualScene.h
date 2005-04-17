@@ -54,6 +54,27 @@ class FeatureTile;
 class FeatureGroup;
 class DynamicObject;
 
+/**
+* The purpose of this simple class is to provide a new opengl context id
+* to each sceneview. sceneview's context ids are tracked.
+*/
+class ContextIDFactory: public simdata::Referenced {
+	unsigned int m_NextContextID;
+	typedef std::map<const osgUtil::SceneView *, unsigned int> ContextIDSet;
+	ContextIDSet m_ContextIDSet;
+public:
+	/**
+	* initialize m_NextContextID to 0
+	*/
+	ContextIDFactory();
+
+	/**
+	* assigns m_NextContextID to scene_view's context id and stores it or returns 
+	its assigned
+	* context id
+	*/
+	unsigned int getOrCreateContextID(osgUtil::SceneView *scene_view);
+};
 
 /**
  * class VirtualScene
@@ -119,6 +140,7 @@ public:
 	float getAspect() const {return m_Aspect;}
 	void setAspect(float value);
 	void getViewport(int& x,int& y,int& width,int& height);
+	ContextIDFactory* const getContextIDFactory() const {return m_ContextIDFactory.get();}
 
 	void spinTheWorld(bool spin);
 	void resetSpin();
@@ -138,6 +160,7 @@ private:
 
 	int _getFeatureTileIndex(simdata::Ref<FeatureGroup> feature) const;
 	void _updateOrigin(simdata::Vector3 const &origin);
+	std::string logLookAt();
 
 protected:
 
@@ -148,6 +171,7 @@ protected:
 	osg::ref_ptr<osgUtil::SceneView> m_NearView;
 	osg::ref_ptr<osgUtil::SceneView> m_FarView;
 	osg::ref_ptr<osg::FrameStamp> m_FrameStamp;
+	simdata::Ref<ContextIDFactory> m_ContextIDFactory;
 
 	float m_ViewDistance;
 	float m_ViewAngle;

@@ -1,6 +1,20 @@
  Version 0.4.0 (in progress)
 ===========================
 
+2005-04-17: delta
+ * TimedSequence has been slightly modified to allow "multiple" 
+   independant AnimationCallbacks on the same node. It's used in 
+   LandingGear to switch between animations. GearStructureAnimation  
+   passes on implementation to control its animation members. F16's 
+   gear.xml and model.xml have been modified consequently.
+ 
+ * Cosmetic mods to CameraAgent.
+ 
+ * Added a context id factory (as recommended by osg when using multiple 
+   sceneviews) in VirtualScene. Disabled for now. 
+   
+ * Other minor changes.
+ 
 2005-04-10: delta
  * Updated vcproj.
  

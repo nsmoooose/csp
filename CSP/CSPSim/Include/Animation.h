@@ -517,6 +517,7 @@ class TimedSequence: public simdata::Object {
 	double m_Direction, m_PreviousDirection;
 	UpdateReferenceTime* m_UpdateReferenceTime;
 	SigC::Connection m_Connection;
+	bool m_Enabled;
 	
 	void setTimeValues(double t) {
 		b_NormalizedTime->value() =
@@ -529,8 +530,8 @@ class TimedSequence: public simdata::Object {
 			m_TimeAnimationProxy->clamp(m_TimeAnimationProxy->gett_0()+b_NormalizedTime->value()*m_TimeAnimationProxy->getTimeLength());
 	}
 	
-	bool isDisabled() const {
-		return std::abs(m_Direction) > 0.0001f;
+	bool isEnabled() const {
+		return m_Enabled;
 	}
 protected:
 	bool isEnd() const {
@@ -544,7 +545,8 @@ protected:
 		m_Direction = direction;
 	}
 	void stop() {
-		setDirection(0.0f);
+		if (isEnabled())
+			setDirection(0.0f);
 	}
 	void forward() {
 		setDirection(m_PreviousDirection);
@@ -574,7 +576,8 @@ public:
 		m_InitialTime(0.0),
 		m_Direction(0.0f),
 		m_PreviousDirection(0.0f),
-		m_UpdateReferenceTime(0) {
+		m_UpdateReferenceTime(0),
+		m_Enabled(true) {
 	}
 
 	virtual ~TimedSequence(){
@@ -585,7 +588,7 @@ public:
 	}
 
 	double onUpdate(double dt) {
-		if (isDisabled()) {
+		if (isEnabled()) {
 			double t = b_ReferenceTime->value();
 			t += m_Direction*dt;
 			t = m_TimeAnimationProxy->clamp(t);
@@ -618,9 +621,11 @@ public:
 	}
 
 	void setNormalizedTime(double t) {
-		t = simdata::clampTo(t, 0.0, 1.0);
-		b_NormalizedTime->value() = t;
-		setReferenceTime();
+		if (isEnabled()) {
+			t = simdata::clampTo(t, 0.0, 1.0);
+			b_NormalizedTime->value() = t;
+			setReferenceTime();
+		}
 	}
 
 	double getReferenceTime() const {
@@ -635,6 +640,18 @@ public:
 		return m_Direction;
 	}
 
+	void disable() {
+		m_Enabled = false;
+		stop();
+	}
+
+	void enable() {
+		if (!isEnabled()) {
+			m_Enabled = true;
+			setTimeValues(b_ReferenceTime->value());
+		}
+	}
+
 	void setNameIfEmpty(std::string const &name) {
 		if (m_Name.empty()) m_Name = name;
 	}
@@ -645,8 +662,9 @@ public:
 
 	void bindChannels(Bus::Ref bus) {
 		assert(!m_Name.empty());
-		if (!b_ReferenceTime.valid()) {
+		if (!b_ReferenceTime.valid()) { 
 			std::string name = m_Name + ".ReferenceTime";
+			CSP_LOG(APP, DEBUG, "TimedSequence::bindChannels: " << name);
 			b_ReferenceTime = bus->getSharedChannel(name);
 		}
 	}
@@ -655,7 +673,8 @@ public:
 		assert(!m_Name.empty());
 		std::string name = m_Name + ".ReferenceTime";
 		if (!bus->hasChannel(name)) {
-			 b_ReferenceTime = bus->registerSharedDataChannel(name, m_InitialTime);
+			CSP_LOG(APP, DEBUG, "TimedSequence::registerChannels: " << name);
+			b_ReferenceTime = bus->registerSharedDataChannel(name, m_InitialTime);
 		}
 		m_InitialTime = m_TimeAnimationProxy->clamp(m_InitialTime);
 		double initial_normalized_time = simdata::clampTo(m_TimeAnimationProxy->getDelta_t0(m_InitialTime)/m_TimeAnimationProxy->getTimeLength(),0.0f,1.0f);

@@ -63,6 +63,7 @@ SIMDATA_REGISTER_INTERFACE(GearDynamics)
 SIMDATA_REGISTER_INTERFACE(GearSequenceAnimation)
 SIMDATA_REGISTER_INTERFACE(GearStructureAnimation)
 SIMDATA_REGISTER_INTERFACE(M2kGearStructureAnimation)
+SIMDATA_REGISTER_INTERFACE(DefinedGearStructureAnimation)
 
 
 LandingGear::LandingGear() {
@@ -320,7 +321,22 @@ void LandingGear::residualUpdate(double dt, double airspeed) {
 	updateTireRotation(dt);
 }
 
+void LandingGear::updateAnimationFlags() {
+	if (getWOW()) {
+		if (m_GearStructureAnimation.valid())
+			m_GearStructureAnimation->enable();
+		if (m_GearSequenceAnimation.valid())
+			m_GearSequenceAnimation->disable();
+	} else {
+		if (m_GearStructureAnimation.valid())
+			m_GearStructureAnimation->disable();
+		if (m_GearSequenceAnimation.valid())
+			m_GearSequenceAnimation->enable();
+	}
+}
+
 void LandingGear::updateAnimations(double dt) {
+	updateAnimationFlags();
 	if (m_GearStructureAnimation.valid()) {
 		m_GearStructureAnimation->update(getDisplacement(), getTireRotation(), dt);
 	}
@@ -596,6 +612,11 @@ void LandingGear::registerChannels(Bus* bus) {
 	}
 }
 
+void LandingGear::bindChannels(Bus* bus) {
+	if (m_GearStructureAnimation.valid()) {
+		m_GearStructureAnimation->bindChannels(bus);
+	} 
+}
 
 DEFINE_INPUT_INTERFACE(GearDynamics);
 
@@ -651,6 +672,9 @@ void GearDynamics::importChannels(Bus *bus) {
 	b_NearGround = bus->getChannel(bus::Kinetics::NearGround);
 	b_GroundN = bus->getChannel(bus::Kinetics::GroundN);
 	b_GroundZ = bus->getChannel(bus::Kinetics::GroundZ);
+	for (unsigned i = 0; i < m_Gear.size(); ++i) {
+		m_Gear[i]->bindChannels(bus);
+	}
 }
 
 void GearDynamics::computeForceAndMoment(double x) {

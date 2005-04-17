@@ -35,9 +35,10 @@ class CameraCommand;
 class DynamicObject;
 
 class CameraAgent {
+	typedef size_t ViewMode;
 	simdata::Vector3 m_EyePoint, m_LookPoint, m_UpVector;
 	CameraKinematics m_CameraKinematics;
-	size_t m_ViewMode;
+	ViewMode m_ViewMode;
 	ViewList m_ViewList;
 	void validate(double dt);
 	void deleteViews();
@@ -58,10 +59,10 @@ class CameraAgent {
 		}
 	};
 public:
-	CameraAgent(const ViewFactory& vf);
+	CameraAgent(const ViewFactory& vf, ViewMode default_view = 0);
 	~CameraAgent();
 	void attach(size_t mode, View* vm);
-	void setViewMode(size_t vm);
+	void setViewMode(ViewMode vm);
 	void setCameraCommand(CameraCommand* cc);
 	void setObject(const simdata::Ref<DynamicObject> object);
 	void updateCamera(double dt);

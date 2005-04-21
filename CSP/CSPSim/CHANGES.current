@@ -1,9 +1,26 @@
  Version 0.4.0 (in progress)
 ===========================
 
+2005-04-21: delta
+ * Added a facultative (sim)data std::string member (m_NormalizedTimeChannel) 
+   in TimedSequence to warranty different (normalized time) channel names.
+   At some point, a static unsigned int could be used and incremented 
+   automatically if a channel name is not provided to assure a 1-1 naming.
+   
+ * Wheel steering support has been added; it's controled by 
+   "ControlInputs.RudderInput". F16DJ.osg has been manually modified (adding 
+   a dummy transform node) to allow this binding to work. If this mod could be 
+   done in modeler program, it could save a bit of time on both side, developper 
+   and modeler (the node needs to be named). ModelProcessor::apply has been 
+   slightly rewritten.
+   
+ * DrivenRotation::Callback::operator() has changed again. OS? :)
+  
+===> ALL USERS: RebuildData.py  
+
 2005-04-17: delta
  * TimedSequence has been slightly modified to allow "multiple" 
-   independant AnimationCallbacks on the same node. It's used in 
+   independant sequences in the same AnimationCallback. It's used in 
    LandingGear to switch between animations. GearStructureAnimation  
    passes on implementation to control its animation members. F16's 
    gear.xml and model.xml have been modified consequently.

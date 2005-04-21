@@ -91,6 +91,7 @@ Rotation::Rotation():
 
 void DrivenRotation::Callback::operator()(osg::Node* node, osg::NodeVisitor* nv) {
 	updateValue();
+#if 0
 	if (getNestedCallback() || (!node->getUpdateCallback()->getNestedCallback() && needsUpdate(*node))) {
 		osg::MatrixTransform* t = dynamic_cast<osg::MatrixTransform*>(node);
 		assert(t);
@@ -109,6 +110,36 @@ void DrivenRotation::Callback::operator()(osg::Node* node, osg::NodeVisitor* nv)
 				t->setMatrix(m);
 			}
 	}
+#endif
+#if 1
+	Callback *nested_callback = dynamic_cast<Callback*>(getNestedCallback());
+	bool update_nested = false;
+	if (nested_callback) {
+		nested_callback->updateValue();
+		update_nested = nested_callback->needsUpdate(*this);
+	}
+	bool update_callback  = this == node->getUpdateCallback() && (needsUpdate(*node) || update_nested);
+	if (update_callback) {
+		osg::MatrixTransform* t = dynamic_cast<osg::MatrixTransform*>(node);
+		assert(t);
+		if (t) {
+			osg::Matrix m = osg::Matrix::rotate(m_Parameters->getGain() * m_Value + m_Parameters->getPhase(), 
+												m_Parameters->getAxis());
+			m.setTrans(t->getMatrix().getTrans());
+			t->setMatrix(m);
+			if (nested_callback) nested_callback->dirty();
+		}
+	} else if (needsUpdate(*node->getUpdateCallback())) {
+			osg::MatrixTransform* t = dynamic_cast<osg::MatrixTransform*>(node);
+			if (t) {
+				osg::Matrix m = osg::Matrix::rotate(m_Parameters->getGain() * m_Value + m_Parameters->getPhase(), m_Parameters->getAxis());
+				osg::Vec3 translation = t->getMatrix().getTrans();
+				m.preMult(t->getMatrix());
+				m.setTrans(translation);
+				t->setMatrix(m);
+			}
+	}
+#endif
 	traverse(node, nv);
 }
 

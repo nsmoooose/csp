@@ -113,12 +113,33 @@ class ModelProcessor: public osg::NodeVisitor {
 	typedef std::multimap<simdata::Key,simdata::Link<Animation> > AnimationsMap;
 	//typedef HASH_MULTIMAP<simdata::Key,simdata::Link<Animation> > AnimationsMap_;
 	AnimationsMap m_AnimationsMap;
+
 	void fillMap(simdata::Link<Animation>::vector const *animations) {
 		simdata::Link<Animation>::vector::const_iterator i = animations->begin();
 		simdata::Link<Animation>::vector::const_iterator i_end = animations->end();
 		for (; i != i_end; ++i)
 			m_AnimationsMap.insert(std::make_pair((*i)->getModelID(),*i));
 	}
+
+	AnimationBinding* installAnimation(osg::Node& node, const simdata::Ref<Animation>& anim) const {
+		// Flag node as dynamic to enable the callback.
+		node.setDataVariance(osg::Object::DYNAMIC);
+		AnimationBinding* animation_binding = new AnimationBinding(anim.get());
+		node.setUserData(animation_binding);
+		return animation_binding;
+	}
+
+	void breakNameInComponents(const std::string& name, std::string &animation_name, 
+							   std::string& node_name, const char token =':') const {
+		node_name = name;
+		animation_name = "";
+		std::string::size_type pos = name.find(token);
+		if (pos != std::string::npos) {
+			animation_name = name.substr(0,pos);
+			node_name = name.substr(pos+2,name.length() - (pos + 2));
+		} 
+	}
+
 	struct KeyToCompare: std::unary_function<simdata::Key,bool> {
 		const simdata::Key m_KeyToCompare;
 	public:
@@ -138,32 +159,61 @@ public:
 		std::string name = node.getName();
 		CSP_LOG(APP, DEBUG, "MODEL TRANSFORM: " << name);
 		if (name.substr(0,6) == "ANIM: ") {
-			std::string relevant_name = name.substr(6);
-			std::string::size_type pos = relevant_name.find(':'); 
-			if (pos != std::string::npos) {
-				relevant_name = relevant_name.substr(0,pos);
-			}
-			simdata::Key id = relevant_name;
-			CSP_LOG(APP, DEBUG, "SEARCHING FOR " << relevant_name << " (" << id.asString() << ")");
-			AnimationsMap::iterator i = m_AnimationsMap.find(id);
+			// In case of a TimedAnimationPath, the node name is not the relevant
+			// string to look for.
+			name = name.substr(6);
+			AnimationBinding* animation_binding = 0;
+			
+			// Extract the animation name (if any) and set the node name if different
+			// from 'name'.
+			std::string animation_name;
+			std::string node_name;
+			breakNameInComponents(name,animation_name,node_name);
+
+			// Define the key associated to this (possible) node name.
+			simdata::Key node_id = node_name;
+			CSP_LOG(APP, DEBUG, "SEARCHING FOR " << name << " (" << node_id.asString() << ")");
+
+			// Find the first (if any) bound animation mapped by node_id.
+			AnimationsMap::iterator i = m_AnimationsMap.find(node_id);
 			AnimationsMap::const_iterator i_end = m_AnimationsMap.end();
-			if (i != i_end) {
+
+			bool found_first_animation = i != i_end;
+			if (found_first_animation) {
+				// Bind the animation; this will install an osg::UpdateCallback.
 				CSP_LOG(APP, DEBUG, "FOUND ANIMATION");
-				node.setDataVariance(osg::Object::DYNAMIC);
-				AnimationBinding* animation_binding = new AnimationBinding(i->second.get());
-				node.setUserData(animation_binding);
-				i = std::find_if(++i, m_AnimationsMap.end(), KeyToCompare(id));
-				if (i != i_end) {
-					CSP_LOG(APP, DEBUG, "FOUND 2nd ANIMATION");
-					animation_binding->setNestedAnimation(i->second.get());
+				animation_binding = installAnimation(node, i->second);
+			}
+
+			// second pass
+			bool found_second_animation = false;
+			if (animation_name.empty()) {
+				// regular node name
+				if (found_first_animation) {
+					i = std::find_if(++i, m_AnimationsMap.end(), KeyToCompare(node_id));
+					found_second_animation = i != i_end;
 				}
+			} else { // animation name to find by animation_id
+				if (found_first_animation) std::cout << "Looking for: " << animation_name << "\n";
+				simdata::Key animation_id = animation_name;
+				i = m_AnimationsMap.find(animation_id);
+				if (i != i_end) {
+					if (!found_first_animation) {
+						installAnimation(node,i->second);
+					} else {
+						found_second_animation = true;
+					}
+				}
+			}
+			if (found_second_animation) {
+				// Install as a nested callback.
+				CSP_LOG(APP, DEBUG, "FOUND 2nd ANIMATION");
+				if (animation_binding) animation_binding->setNestedAnimation(i->second.get());
 			}
 		}
 		traverse(node);
 	}
 };
-
-
 
 /**
  * Visit nodes, applying anisotropic filtering to textures.

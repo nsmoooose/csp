@@ -42,8 +42,10 @@
 					</Object>
 					<Float name="initial_time">4.01</Float>
 					<String name="name">Aircraft.FrontGear</String>
+					<String name="normalized_time_channel">Aircraft.FrontGear.Displacement</String>
 				</Object>
-				<!-- The 3d model has 0.089 m of displacement for a complete compression.
+				<!-- 
+					 The 3d model has 0.089 m of displacement for a complete compression.
 					 The following value is quite arbitrary.
 				-->
 				<Float name="displacement_length">0.2</Float>
@@ -84,6 +86,7 @@
 					</Object>
 					<Float name="initial_time">4.01</Float>
 					<String name="name">Aircraft.LeftGear</String>
+					<String name="normalized_time_channel">Aircraft.LeftGear.Displacement</String>
 				</Object>
 				<!-- 0.191 -->
 				<Float name="displacement_length">0.2</Float>
@@ -124,6 +127,7 @@
 					</Object>
 					<Float name="initial_time">4.01</Float>
 					<String name="name">Aircraft.RightGear</String>
+					<String name="normalized_time_channel">Aircraft.RightGear.Displacement</String>
 				</Object>
 				<Float name="displacement_length">0.2</Float>
 			</Object>

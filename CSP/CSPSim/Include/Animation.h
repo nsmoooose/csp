@@ -508,6 +508,7 @@ class TimedSequence: public simdata::Object {
 	simdata::Link<TimedAnimationProxy> m_TimeAnimationProxy;
 	double m_InitialTime;
 	std::string m_Name;
+	std::string m_NormalizedTimeChannel;
 
 	// Shared channels
 	DataChannel<double>::Ref b_ReferenceTime;
@@ -570,6 +571,7 @@ public:
 		SIMDATA_XML("timed_animation_proxy", TimedSequence::m_TimeAnimationProxy, true)
 		SIMDATA_XML("initial_time", TimedSequence::m_InitialTime, false)
 		SIMDATA_XML("name", TimedSequence::m_Name, false)
+		SIMDATA_XML("normalized_time_channel", TimedSequence::m_NormalizedTimeChannel, false)
 	END_SIMDATA_XML_INTERFACE
 
 	TimedSequence():
@@ -577,7 +579,8 @@ public:
 		m_Direction(0.0f),
 		m_PreviousDirection(0.0f),
 		m_UpdateReferenceTime(0),
-		m_Enabled(true) {
+		m_Enabled(true),
+		m_NormalizedTimeChannel("") {
 	}
 
 	virtual ~TimedSequence(){
@@ -678,7 +681,9 @@ public:
 		}
 		m_InitialTime = m_TimeAnimationProxy->clamp(m_InitialTime);
 		double initial_normalized_time = simdata::clampTo(m_TimeAnimationProxy->getDelta_t0(m_InitialTime)/m_TimeAnimationProxy->getTimeLength(),0.0f,1.0f);
-		b_NormalizedTime = DataChannel<double>::newSharedPush(m_Name + ".NormalizedTime", initial_normalized_time);
+		if (m_NormalizedTimeChannel.empty())
+			m_NormalizedTimeChannel = m_Name + ".NormalizedTime";
+		b_NormalizedTime = DataChannel<double>::newSharedPush(m_NormalizedTimeChannel, initial_normalized_time);
 		m_UpdateReferenceTime = new UpdateReferenceTime(*this);
 		m_Connection = b_NormalizedTime->connect(m_UpdateReferenceTime);
 		bus->registerChannel(b_NormalizedTime.get());

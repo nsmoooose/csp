@@ -12,7 +12,7 @@
     <Float name="hud_width">0.124</Float>
     <Float name="hud_height">0.160</Float>
     <Bool name="smooth">false</Bool>
-    <Vector name="offset">0.0 -0.3 0.21</Vector>
+    <Vector name="offset">0.0 -0.3 0.07</Vector>
     <Enum name="effect">SpecularHighlights</Enum>
     <List name="contacts">
         <Vector>0.0 8.00 0.120</Vector>
@@ -113,7 +113,19 @@
 			<Key name="model_id">Aircraft.Canopy</Key>
 			<Float name="time_multiplier">.3333</Float>
         </Object>
-        
+       
+        <Object class="DrivenRotation">
+            <String name="channel_name">ControlInputs.RudderInput</String>
+            <Key name="model_id">Aircraft.FrontGear.Struct02Support</Key>
+            <Int name="lod_limit">1</Int>
+            <Vector name="axis">0 0 1</Vector>
+        </Object>
+        <Object class="DrivenRotation">
+            <String name="channel_name">ControlInputs.RudderInput</String>
+            <Key name="model_id">Aircraft.FrontGear.MainTube</Key>
+            <Int name="lod_limit">1</Int>
+            <Vector name="axis">0 0.29189 -0.956452</Vector>
+        </Object>
         <Object class="TimedAnimationPath">
 			<String name="channel_name">Aircraft.FrontGear.ReferenceTime</String>
 			<Key name="model_id">Aircraft.FrontGear</Key>

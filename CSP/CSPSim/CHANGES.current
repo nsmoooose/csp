@@ -1,6 +1,13 @@
  Version 0.4.0 (in progress)
 ===========================
 
+2005-04-24: delta
+ * Slight modifications to the python scripts to prepare a new demo. Changes
+   are checked under Demo/Win. py2exe_cspsim_setup.py as well as modified python 
+   scripts are intended to be run from inside CSPSim/Bin (of course, once the 
+   module py2exe is installed). A lot of stuff could be added to this script to 
+   make it more robust and facilitate the release of a demo.
+   
 2005-04-21: delta
  * Added a facultative (sim)data std::string member (m_NormalizedTimeChannel) 
    in TimedSequence to warranty different (normalized time) channel names.

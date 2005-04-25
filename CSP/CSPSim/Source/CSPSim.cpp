@@ -35,6 +35,7 @@
 #include "CSPSim.h"
 
 #include "Animation.h"
+#include "AnimationSequence.h"
 #include "Atmosphere.h"
 #include "Config.h"
 //#include "ConsoleCommands.h"

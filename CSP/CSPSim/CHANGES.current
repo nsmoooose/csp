@@ -1,13 +1,21 @@
  Version 0.4.0 (in progress)
 ===========================
 
+2005-04-25: delta
+ * Need to include a few headers to avoid a syntax error (g++ and vc++ don't 
+   manage forward class declaration equivalently).
+   
+ * Avoid a few warnings.
+ 
+ * Other minor changes.
+
 2005-04-24: onsight
  * More gear animation refactoring.  Merged the gear sequence and structure
    animations into a single class.  Split part of TimedSequence into a
    SharedSequence base class and created a DrivenSequence subclass.
 
  * Added rate limiting for steering.  This is just a temporary measure until
-   steering control is intergrated into the fcs.
+   steering control is integrated into the fcs.
 
  * Adjusted gear stiffness, damping, and position for the F16.
 

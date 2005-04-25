@@ -25,6 +25,7 @@
 
 #include "F16Channels.h"
 #include "F16GearDynamics.h"
+#include "GearAnimation.h"
 
 #include <SimData/Math.h>
 #include <SimData/Conversions.h>

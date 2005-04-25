@@ -1,3 +1,5 @@
+us keyboard
+
 '0': CAMERA_VIEW_0
 '1': CAMERA_VIEW_1
 '2': CAMERA_VIEW_2

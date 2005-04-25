@@ -185,7 +185,7 @@ void PitchLimiterControl::evaluate(Timer const &timer) {
 		alpha_break1 = 10.0;
 		// what is alpha_break2, and are any of the slopes different?
 	}
-	double reduced_pitch_rate = m_PitchRateSchedule[b_QBar->value()] * 0.7 * m_PitchRateDeltaFilter.value();
+	double reduced_pitch_rate = m_PitchRateSchedule[static_cast<float>(b_QBar->value())] * 0.7 * m_PitchRateDeltaFilter.value();
 	double alpha_break1_compensation = reduced_pitch_rate + alpha_f - alpha_break1;
 	double g_limit = std::max(0.0, 0.322 * alpha_break1_compensation) + 0.334 * m_PitchRateDeltaFilter.value() + g_minus_1;
 	m_GLimitFilter.update(g_limit, timer.dt());
@@ -245,7 +245,7 @@ void RollLimiterControl::evaluate(Timer const &timer) {
 	limit = simdata::clampTo(limit, 0.0, 228.0);
 	limit = 308.0 - limit;
 
-	double roll_command = m_RollCommandSchedule[b_RollInput->value() * 80.0];
+	double roll_command = m_RollCommandSchedule[static_cast<float>(b_RollInput->value() * 80.0)];
 	if (b_TakeoffLandingGains->value()) {
 		roll_command = 0.50 * roll_command;
 	} else {

@@ -35,6 +35,7 @@ struct ControlInputs {
 	static const char *RudderInput;
 	static const char *LeftBrakeInput;
 	static const char *RightBrakeInput;
+	static const char *SteeringInput;
 	static const char *ThrottleInput;
 	static const char *AirbrakeInput;
 };

@@ -25,6 +25,7 @@
 #include <SimData/Math.h>
 
 #include "AircraftObject.h"
+#include "Animation.h"
 #include "AnimationSequence.h"
 #include "KineticsChannels.h"
 #include "Collision.h"

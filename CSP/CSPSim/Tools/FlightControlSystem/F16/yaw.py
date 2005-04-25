@@ -35,3 +35,4 @@ class dr_f(LagFilter):
 class lateral_acceleration_compensation(Scale):
 	input = "lateral_acceleration"
 	gain = 19.32 / 9.8  # in g's
+

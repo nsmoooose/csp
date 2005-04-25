@@ -31,17 +31,22 @@
 
 SIMDATA_REGISTER_INTERFACE(F16GearDynamics)
 
-void F16GearDynamics::GearUp() {
+bool F16GearDynamics::allowGearUp() const {
 	// TODO: DN LOCK REL button can override
-	if (!m_LeftMainLandingGear->getWOW()) {
+	return !m_LeftMainLandingGear->getWOW();
+}
+
+void F16GearDynamics::GearUp() {
+	if (allowGearUp()) {
 		GearDynamics::GearUp();
 		b_GearHandleUp->push(true);
 	}
 }
 
-void F16GearDynamics::GearDown() { GearDynamics::GearDown(); b_GearHandleUp->push(false); }
-void F16GearDynamics::GearToggle() { GearDynamics::GearToggle(); }
-
+void F16GearDynamics::GearDown() {
+	GearDynamics::GearDown();
+	b_GearHandleUp->push(false);
+}
 
 void F16GearDynamics::registerChannels(Bus *bus) {
 	GearDynamics::registerChannels(bus);

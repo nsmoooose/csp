@@ -80,7 +80,7 @@ private:
 	osg::ref_ptr<osg::Switch> m_DebugMarkers;
 	osg::ref_ptr<osg::Switch> m_ContactMarkers;
 public:
-	typedef std::vector<simdata::Vector3> ContactList;
+	typedef std::vector<simdata::Vector3> PointList;
 
 	SIMDATA_STATIC_OBJECT(ObjectModel, 6, 0);
 	
@@ -99,6 +99,7 @@ public:
 		SIMDATA_XML("filter_value", ObjectModel::m_FilterValue, false)
 		SIMDATA_XML("effect", ObjectModel::m_Effect, false)
 		SIMDATA_XML("contacts", ObjectModel::m_Contacts, false)
+		SIMDATA_XML("debug_points", ObjectModel::m_DebugPoints, false)
 		SIMDATA_XML("elevation_correction", ObjectModel::m_ElevationCorrection, false)
 		SIMDATA_XML("polygon_offset", ObjectModel::m_PolygonOffset, false)
 		SIMDATA_XML("cull_face", ObjectModel::m_CullFace, false)
@@ -121,13 +122,13 @@ public:
 	double getHudHeight() const { return m_HudHeight; }
 
 	double getBoundingSphereRadius() const { return m_BoundingSphereRadius; }
-	ContactList const &getContacts() const { return m_Contacts; }
+	PointList const &getContacts() const { return m_Contacts; }
 
 	bool getElevationCorrection() const { return m_ElevationCorrection; }
 
-	void showContactMarkers(bool on);
+	void showDebugMarkers(bool on);
 
-	bool getMarkersVisible() const;
+	bool getDebugMarkersVisible() const;
 
 	static void setDataFilePathList(std::string search_path);
 
@@ -152,17 +153,18 @@ protected:
 	int m_CullFace;
 	bool m_Lighting;
 
-	ContactList m_Contacts;
+	PointList m_Contacts;
+	PointList m_DebugPoints;
 
 	simdata::Link<Animation>::vector m_Animations;
 
 	virtual void postCreate();
 	virtual void loadModel();
-	void addContactMarkers();
+	void addDebugMarkers();
 
 	double m_BoundingSphereRadius;
 
-	enum { CONTACT_MARKERS };
+	enum { DEBUG_MARKERS };
 };
 
 
@@ -177,6 +179,7 @@ protected:
 class SceneModel: public simdata::Referenced {
 private:
 	osg::ref_ptr<osg::PositionAttitudeTransform> m_Transform;
+	osg::ref_ptr<osg::PositionAttitudeTransform> m_CenterOfMassOffset;
 	osg::ref_ptr<osgText::Text> m_Label;
 	simdata::Ref<ObjectModel> m_Model;
 	bool m_Smoke;
@@ -191,7 +194,7 @@ public:
 	simdata::Ref<ObjectModel> getModel() { return m_Model; }
 	osg::Group* getRoot();
 
-	void setPositionAttitude(simdata::Vector3 const &position, simdata::Quat const &attitude);
+	void setPositionAttitude(simdata::Vector3 const &position, simdata::Quat const &attitude, simdata::Vector3 const &cm_offset);
 
 	void bindAnimationChannels(simdata::Ref<Bus>);
 

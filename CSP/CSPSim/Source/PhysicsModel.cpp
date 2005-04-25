@@ -133,6 +133,7 @@ void PhysicsModel::importChannels(Bus *bus) {
 	b_Mass = bus->getChannel(Kinetics::Mass);
 	b_Inertia = bus->getChannel(Kinetics::Inertia);
 	b_InertiaInverse = bus->getChannel(Kinetics::InertiaInverse);
+	b_CenterOfMassOffset = bus->getChannel(Kinetics::CenterOfMassOffset);
 }
 
 

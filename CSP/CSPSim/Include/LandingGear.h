@@ -37,10 +37,8 @@
 #include <SimData/Vector3.h>
 
 #include "BaseDynamics.h"
-#include "Animation.h"
 
-class GearSequenceAnimation;
-class GearStructureAnimation;
+class GearAnimation;
 
 
 /** LandingGear encapsulates a single landing gear.  Provides physical
@@ -76,11 +74,11 @@ public:
 		SIMDATA_XML("rolling_friction", LandingGear::m_RollingFriction, false)
 		SIMDATA_XML("brake_steering_linkage", LandingGear::m_BrakeSteeringLinkage, false)
 		SIMDATA_XML("drag_factor", LandingGear::m_DragFactor, false)
-		SIMDATA_XML("gear_sequence_animation", LandingGear::m_GearSequenceAnimation, false)
-		SIMDATA_XML("gear_structure_animation", LandingGear::m_GearStructureAnimation, false)
+		SIMDATA_XML("gear_animation", LandingGear::m_GearAnimation, false)
 	END_SIMDATA_XML_INTERFACE
 
 	LandingGear();
+	~LandingGear();
 	virtual void postCreate();
 
 	// Each gear has a name defined in XML that is used to identify data channels
@@ -117,10 +115,10 @@ public:
 	// Get damage associated with this gear (not yet implemented)
 	double getDamage() const { return m_Damage; }
 
-	// Get the position of the wheel in body coordinates.
+	// Get the position of the wheel in model coordinates.
 	simdata::Vector3 const &getPosition() const { return m_Position; }
 
-	// Get the position of the wheel when completely unweighted.
+	// Get the position of the wheel when completely unweighted in model coordinates.
 	simdata::Vector3 const &getMaxPosition() const { return m_MaxPosition; }
 
 	// Get the displacement of the wheel (absorber compression) relative to
@@ -155,17 +153,20 @@ public:
 	// Get the tire rotation angle in radians.
 	double getTireRotation() const { return m_TireRotation; }
 
-	// dynamics interface
+	// Prepare for the next dynamics calculation step.
 	virtual void preSimulationStep(double dt);
+
+	// Run additional updates and cleanup after dynamics calculation.
+	// Note that origin is the model origin in local coordinates (*not* the cm origin).
 	virtual void postSimulationStep(double dt, simdata::Vector3 const &origin, simdata::Vector3 const &vBody, simdata::Quat const &q, double const height, simdata::Vector3 const &normalGroundBody);
+
+	// Compute the total force in body coordinates from this landing gear.
+	// Note that origin is the model origin in local coordinates (*not* the cm origin).
 	simdata::Vector3 simulateSubStep(simdata::Vector3 const &origin, simdata::Vector3 const &vBody, simdata::Quat const &q, double height, simdata::Vector3 const &normalGroundBody);
 
 	// Drive the animation channels.  This method should be called frequently (at
 	// least several times per second if not every frame) regardless of gear state.
-	void updateAnimations(double dt);
-
-	// enable or disable animation based on getWoW for now.
-	virtual void updateAnimationFlags();
+	void updateAnimation(double dt);
 
 	// A low cost update that is called periodically when the gear is fully retracted.
 	void residualUpdate(double dt, double airspeed);
@@ -201,6 +202,7 @@ protected:
 	                      double const height,
 	                      simdata::Vector3 const &normalGroundBody);
 	void updateTireRotation(double dt);
+	void updateSteeringAngle(double dt);
 
 
 protected:
@@ -214,6 +216,7 @@ protected:
 	double m_Beta;
 	double m_Compression;
 	double m_CompressionLimit;
+	double m_CompressionAnimation;
 	double m_Damage;
 
 	double m_Brake;
@@ -238,6 +241,7 @@ protected:
 
 	double m_SteerAngle;
 	double m_SteeringLimit;
+	double m_TargetSteerAngle;
 	simdata::Quat m_SteerTransform;
 
 	// Export sensor data
@@ -246,6 +250,7 @@ protected:
 	DataChannel<bool>::Ref b_WOW;
 	DataChannel<bool>::Ref b_AntilockBrakingActive;
 
+	bool m_Initialize;
 	bool m_Extend;
 	bool m_ABS;
 	bool m_Skidding;
@@ -262,207 +267,9 @@ protected:
 	simdata::Vector3 m_TouchdownPoint;
 	std::string m_Name;
 
-	simdata::Link<GearSequenceAnimation> m_GearSequenceAnimation;
-	simdata::Link<GearStructureAnimation> m_GearStructureAnimation;
+	simdata::Link<GearAnimation> m_GearAnimation;
 };
 
-
-/** A TimedSequence adapter for driving the animation that extends and retracts
- *  the landing gear.  Each LandingGear uses an instance of this class.
- *
- *  Exported channels:
- *    LandingGear.<gearname>.NormalizedTime
- *    LandingGear.<gearname>.ReferenceTime
- */
-class GearSequenceAnimation: public TimedSequence {
-public:
-	SIMDATA_OBJECT(GearSequenceAnimation, 0, 0)
-	EXTEND_SIMDATA_XML_INTERFACE(GearSequenceAnimation, TimedSequence)
-	END_SIMDATA_XML_INTERFACE
-	virtual void setGearName(const std::string &name) {
-		m_GearName = name;
-		setNameIfEmpty(name);
-	}
-	virtual void update(double dt) { onUpdate(dt); }
-	virtual double getExtension() const { return getNormalizedTime(); }
-	virtual void extend() { setDirection(1.0); }
-	virtual void retract() { setDirection(-1.0); }
-protected:
-	std::string m_GearName;
-};
-
-
-/**
- * Abstract base class for the animation of a gear's internal structure.  Mainly
- * reflects suspension and tire rotation.
- * The 'm2k' subclass shows how to do the work "manually" by connecting to individual
- * animation channels to drive the various moving parts, while the 'path' subclass
- * shows how to use a TimedSequence to drive an animation path defined in the model
- * that coordinates the motion of the various parts.
- */
-class GearStructureAnimation: public simdata::Object {
-public:
-	BEGIN_SIMDATA_XML_VIRTUAL_INTERFACE(GearStructureAnimation)
-		// TODO shouldn't this be taken from the 'motion' field in LandingGear?
-		SIMDATA_XML("displacement_axis", GearStructureAnimation::m_DisplacementAxis, false)
-	END_SIMDATA_XML_INTERFACE
-
-	GearStructureAnimation(): m_DisplacementAxis(simdata::Vector3::ZAXIS) { }
-	virtual ~GearStructureAnimation() { }
-
-	// Called by LandingGear to update the animation.  Displacement is the motion of the wheel
-	// relative to its unweighted position in body coordinates.  Tire rotation is the rotation
-	// angle in radians.  dt is the elapsed time since the last update in seconds.
-	virtual void update(const simdata::Vector3 &displacement, double tire_rotation, double dt)=0;
-
-	// Extend in subclasses to register output channels for driving animations.
-	virtual void registerChannels(Bus*) { }
-
-	// 
-	virtual void bindChannels(Bus*) { }
-
-	// Called by LandingGear to set the gear name used for exproted channels.
-	virtual void setGearName(const std::string &name) { m_GearName = name; }
-
-	// Get the name of the associated LandingGear.
-	virtual std::string const &getGearName() const { return m_GearName; }
-
-	// pass on to a potential TimedSequence member
-	virtual void enable() {}
-
-	virtual void disable() {}
-
-protected:
-	virtual void postCreate() {
-		m_DisplacementAxis.normalized();
-	}
-
-	// Internal parameters.
-	simdata::Vector3 m_DisplacementAxis;
-	std::string m_GearName;
-};
-
-
-/** An implementation of the GearStructureAnimation interface that manually drives the
- *  animations of the various moving parts involved in shock absorber compression and
- *  tire rotation.  The parts are fairly specific to the M2k.  This approach is
- *  deprecated for new models, which should define animation paths to synchonize the
- *  motion of the various parts.  See DefinedGearStructureAnimation for details.
- *
- *  Exported channels:
- *    LandingGear.<gearname>Absorber02
- *    LandingGear.<gearname>Absorber03
- *    LandingGear.<gearname>Displacement
- *    LandingGear.<gearname>TireRotation
- */
-class M2kGearStructureAnimation: public GearStructureAnimation {
-	// Internal parameters
-	float m_Absorber02Length, m_Absorber03Length, m_Offset;
-
-	// Channels to be exposed to drive animations.
-	DataChannel<double>::Ref b_Absorber02Angle;
-	DataChannel<double>::Ref b_Absorber03Angle;
-	DataChannel<double>::Ref b_TireRotation;
-	DataChannel<simdata::Vector3>::Ref b_Displacement;
-
-public:
-	SIMDATA_OBJECT(M2kGearStructureAnimation, 0, 0)
-
-	EXTEND_SIMDATA_XML_INTERFACE(M2kGearStructureAnimation, GearStructureAnimation)
-		SIMDATA_XML("absorber02_length", M2kGearStructureAnimation::m_Absorber02Length, false)
-		SIMDATA_XML("absorber03_length", M2kGearStructureAnimation::m_Absorber03Length, false)
-		SIMDATA_XML("offset", M2kGearStructureAnimation::m_Offset, false)
-	END_SIMDATA_XML_INTERFACE
-
-	M2kGearStructureAnimation(): m_Absorber02Length(1.0f), m_Absorber03Length(1.0f), m_Offset(0.0f) { }
-
-	virtual ~M2kGearStructureAnimation(){ }
-
-	// Update the channels that drive the animated parts.
-	virtual void update(const simdata::Vector3 &displacement, double tire_rotation, double /*dt*/) {
-		double vertical_displacement = displacement * m_DisplacementAxis;
-		b_Absorber02Angle->value() = asin((vertical_displacement-m_Offset)/(2*m_Absorber02Length));
-		b_Absorber03Angle->value() = asin((vertical_displacement-m_Offset)/(2*m_Absorber03Length));
-		b_TireRotation->value() = tire_rotation;
-		b_Displacement->value() = displacement;
-	}
-
-	// Register the various channels that drive the animated parts.
-	virtual void registerChannels(Bus* bus) {
-		const std::string prefix = "LandingGear." + getGearName();
-		b_Absorber02Angle = bus->registerLocalDataChannel<double>(prefix + "Absorber02", 0.0);
-		b_Absorber03Angle = bus->registerLocalDataChannel<double>(prefix + "Absorber03", 0.0);
-		b_Displacement = bus->registerLocalDataChannel<simdata::Vector3>(prefix + "Displacement", simdata::Vector3::ZERO);
-		b_TireRotation = bus->registerLocalDataChannel<double>(prefix + "TireRotation", 0.0);
-	}
-};
-
-
-/**
-*
-*/
-class DefinedGearStructureAnimation: public GearStructureAnimation {
-	double m_DisplacementLength;
-	simdata::Link<TimedSequence> m_DisplacementSequence;
-	simdata::Link<TimedSequence> m_TireRotationSequence;
-	DataChannel<double>::Ref b_TireRotation;
-public:
-	SIMDATA_OBJECT(DefinedGearStructureAnimation, 0, 0)
-
-	EXTEND_SIMDATA_XML_INTERFACE(DefinedGearStructureAnimation, GearStructureAnimation)
-		SIMDATA_XML("displacement_length", DefinedGearStructureAnimation::m_DisplacementLength, true)
-		SIMDATA_XML("displacement_sequence", DefinedGearStructureAnimation::m_DisplacementSequence, true)
-		SIMDATA_XML("tire_rotation_sequence", DefinedGearStructureAnimation::m_TireRotationSequence, false)
-	END_SIMDATA_XML_INTERFACE
-
-	DefinedGearStructureAnimation(): m_DisplacementLength(0.1) { }
-	virtual ~DefinedGearStructureAnimation(){ }
-
-	// Update the channels that drive the animated parts.
-	virtual void update(const simdata::Vector3 &displacement, double tire_rotation, double dt) {
-		if (m_DisplacementSequence.valid()) {
-			double normalized_time = displacement.length() / m_DisplacementLength;
-			m_DisplacementSequence->setNormalizedTime(normalized_time);
-		}
-		if (m_TireRotationSequence.valid()) {
-			m_TireRotationSequence->setNormalizedTime(tire_rotation * (0.5 / simdata::PI));
-		} else {
-			assert(b_TireRotation.valid());
-			b_TireRotation->value() = tire_rotation;
-		}
-	}
-
-	// Register the various channels that drive the animated parts.
-	virtual void registerChannels(Bus* bus) {
-		const std::string prefix = "Aircraft." + getGearName();
-		if (m_DisplacementSequence.valid()) {
-			m_DisplacementSequence->setNameIfEmpty(prefix);
-			m_DisplacementSequence->registerChannels(bus);
-		}
-		if (m_TireRotationSequence.valid()) {
-			m_TireRotationSequence->setNameIfEmpty(prefix);
-			m_TireRotationSequence->registerChannels(bus);
-		} else {
-			b_TireRotation = bus->registerLocalDataChannel<double>(prefix + ".TireRotation", 0.0);
-		}
-	}
-
-	virtual void bindChannels(Bus* bus) {
-		if (m_DisplacementSequence.valid()) {
-			m_DisplacementSequence->bindChannels(bus);
-		}
-	}
-
-	virtual void disable() {
-		if (m_DisplacementSequence.valid()) 
-			m_DisplacementSequence->disable();
-	}
-
-	virtual void enable() {
-		if (m_DisplacementSequence.valid()) 
-			m_DisplacementSequence->enable();
-	}
-};
 
 /** A dynamic simulation of an aircraft's landing gear.  Delegates most of the
  *  detailed simulation to child LandingGear instances.  Also acts as an receiver
@@ -489,6 +296,8 @@ public:
 	END_INPUT_INTERFACE
 
 	GearDynamics();
+
+	virtual bool allowGearUp() const;
 
 	// Input event handlers.
 	virtual void GearUp();
@@ -534,7 +343,9 @@ protected:
 	DataChannel<double>::CRef b_GroundZ;
 	DataChannel<simdata::Vector3>::CRef b_GroundN;
 	DataChannel<simdata::Vector3>::CRef b_WindVelocity;
+	DataChannel<simdata::Vector3>::CRef b_CenterOfMassOffset;
 
+	simdata::Vector3 m_CenterOfMassOffsetLocal;
 	simdata::Vector3 m_GroundNormalBody;
 	simdata::Vector3 m_WindVelocityBody;
 	double m_Height;

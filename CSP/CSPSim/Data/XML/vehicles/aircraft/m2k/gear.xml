@@ -26,16 +26,11 @@
 			<Float name="tire_beta">1000000.0</Float>
 			<Real name="rolling_friction">0.02:0.001</Real>
 			<Float name="drag_factor">0.8</Float>
-			<Object class="GearSequenceAnimation" name="gear_sequence_animation">
-				<Object class="TimedAnimationProxy" name="timed_animation_proxy">
-					<Float name="t0">0.0</Float>
-					<Float name="t1">4.0</Float>
+			<Object class="M2kGearAnimation" name="gear_animation">
+				<Object class="TimedSequence" name="retract_sequence">
+					<Float name="initial_key">0.0</Float>
+					<Float name="final_key">4.01</Float>
 				</Object>
-				<Float name="initial_time">4.0</Float>
-				<String name="name">Aircraft.GearSequence.FrontGear</String>
-			</Object>
-			<Object class="M2kGearStructureAnimation" name="gear_structure_animation">
-				<Vector name="displacement_axis">0 0 1</Vector>
 				<Float name="absorber02_length">0.298</Float>
 				<Float name="absorber03_length">0.298</Float>
 				<Float name="offset">0.03</Float>
@@ -44,7 +39,7 @@
 		<Object class="LandingGear"> <!-- left main -->
 			<String name="gear_name">LeftGear</String>
 			<Vector name="max_position">-1.815 -0.796 -1.721</Vector>
-			<Vector name="motion">0 0 1.0</Vector>
+			<Vector name="motion">-0.122 0 0.993</Vector>
 			<Real name="damage_limit">80000.0</Real>
 			<Float name="compression_limit">0.5</Float>
 			<Float name="K">300000.0</Float>
@@ -60,16 +55,11 @@
 			<Real name="rolling_friction">0.02:0.001</Real>
 			<Bool name="abs">true</Bool>
 			<Float name="drag_factor">0.8</Float>
-			<Object class="GearSequenceAnimation" name="gear_sequence_animation">
-				<Object class="TimedAnimationProxy" name="timed_animation_proxy">
-					<Float name="t0">0.0</Float>
-					<Float name="t1">4.0</Float>
+			<Object class="M2kGearAnimation" name="gear_animation">
+				<Object class="TimedSequence" name="retract_sequence">
+					<Float name="initial_key">0.0</Float>
+					<Float name="final_key">4.01</Float>
 				</Object>
-				<Float name="initial_time">4.0</Float>
-				<String name="name">Aircraft.GearSequence.LeftGear</String>
-			</Object>
-			<Object class="M2kGearStructureAnimation" name="gear_structure_animation">
-				<Vector name="displacement_axis">-0.134513 0 0.990912</Vector>
 				<Float name="absorber02_length">0.315</Float>
 				<Float name="absorber03_length">0.315</Float>
 				<Float name="offset">0.09</Float>
@@ -78,7 +68,7 @@
 		<Object class="LandingGear"> <!-- right main -->
 			<String name="gear_name">RightGear</String>
 			<Vector name="max_position">1.815 -0.796 -1.721</Vector>
-			<Vector name="motion">0 0 1.0</Vector>
+			<Vector name="motion">0.122 0 0.993</Vector>
 			<Real name="damage_limit">80000.0:10000.0</Real>
 			<Float name="compression_limit">0.5</Float>
 			<Float name="K">300000.0</Float>
@@ -94,16 +84,11 @@
 			<Real name="rolling_friction">0.02:0.001</Real>
 			<Bool name="abs">true</Bool>
 			<Float name="drag_factor">0.8</Float>
-			<Object class="GearSequenceAnimation" name="gear_sequence_animation">
-				<Object class="TimedAnimationProxy" name="timed_animation_proxy">
-					<Float name="t0">0.0</Float>
-					<Float name="t1">4.0</Float>
+			<Object class="M2kGearAnimation" name="gear_animation">
+				<Object class="TimedSequence" name="retract_sequence">
+					<Float name="initial_key">0.0</Float>
+					<Float name="final_key">4.01</Float>
 				</Object>
-				<Float name="initial_time">4.0</Float>
-				<String name="name">Aircraft.GearSequence.RightGear</String>
-			</Object>
-			<Object class="M2kGearStructureAnimation" name="gear_structure_animation">
-				<Vector name="displacement_axis">0.127615 -0.00447771 0.991814</Vector>
 				<Float name="absorber02_length">0.315</Float>
 				<Float name="absorber03_length">0.315</Float>
 				<Float name="offset">0.09</Float>

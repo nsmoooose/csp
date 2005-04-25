@@ -181,6 +181,9 @@
 				RelativePath="..\..\Source\Animation.cpp">
 			</File>
 			<File
+				RelativePath="..\..\Source\AnimationSequence.cpp">
+			</File>
+			<File
 				RelativePath="..\..\Source\Atmosphere.cpp">
 			</File>
 			<File
@@ -265,6 +268,9 @@
 			</File>
 			<File
 				RelativePath="..\..\Source\GameScreen.cpp">
+			</File>
+			<File
+				RelativePath="..\..\Source\GearAnimation.cpp">
 			</File>
 			<File
 				RelativePath="..\..\Source\glDiagnostics.cpp">
@@ -496,6 +502,9 @@
 				RelativePath="..\..\Include\Animation.h">
 			</File>
 			<File
+				RelativePath="..\..\Include\AnimationSequence.h">
+			</File>
+			<File
 				RelativePath="..\..\Include\Atmosphere.h">
 			</File>
 			<File
@@ -575,6 +584,9 @@
 			</File>
 			<File
 				RelativePath="..\..\Include\GameScreen.h">
+			</File>
+			<File
+				RelativePath="..\..\Include\GearAnimation.h">
 			</File>
 			<File
 				RelativePath="..\..\Include\glDiagnostics.h">

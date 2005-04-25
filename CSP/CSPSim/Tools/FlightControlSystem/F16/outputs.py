@@ -82,3 +82,13 @@ class leading_edge_deflection(OutputChannel):
 	gain = DegreesToRadians
 	rate_limit_dec = radians(-25)
 	rate_limit_inc = radians(25)
+
+class nose_wheel_steering(OutputChannel):
+	channel = "LandingGear.FrontGear.SteeringInput"
+	clamp_lo = radians(-32)
+	clamp_hi = radians(32)
+	input = "yaw_control"
+	gain = radians(32)
+	rate_limit_dec = radians(-120)
+	rate_limit_inc = radians(120)
+

@@ -136,6 +136,7 @@ protected:
 	DataChannel<double>::CRef b_Mass;
 	DataChannel<simdata::Matrix3>::CRef b_Inertia;
 	DataChannel<simdata::Matrix3>::CRef b_InertiaInverse;
+	DataChannel<simdata::Vector3>::CRef b_CenterOfMassOffset;
 
 	virtual void registerChannels(Bus*);
 	virtual void importChannels(Bus*);

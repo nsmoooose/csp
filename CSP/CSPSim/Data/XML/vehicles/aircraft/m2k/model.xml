@@ -7,7 +7,6 @@
     <!--Vector name="view_point">0.0 4.1 1.17</Vector-->
     <Vector name="view_point">0.0 4.1 1.1</Vector>
     <Bool   name="smooth">false</Bool>
-    <Vector name="offset">0.0 -0.3 0</Vector>
     <Enum name="effect">SpecularHighlights</Enum>
     <List name="contacts">
         <Vector>0.0 8.291 0.021</Vector>
@@ -110,7 +109,7 @@
 
             <!--                Front landing gear                          -->
         <Object class="TimedRotation">
-            <String name="channel_name">Aircraft.GearSequence.FrontGear.ReferenceTime</String>
+            <String name="channel_name">LandingGear.FrontGear.RetractCompress</String>
             <Key name="model_id">Aircraft.FrontGearMainDoor</Key>
             <Float name="limit_0">1.61</Float>
             <Float name="limit_1">-0.02</Float>
@@ -121,7 +120,7 @@
             </Object>
         </Object>
         <Object class="TimedRotation">
-            <String name="channel_name">Aircraft.GearSequence.FrontGear.ReferenceTime</String>
+            <String name="channel_name">LandingGear.FrontGear.RetractCompress</String>
             <Key name="model_id">Aircraft.FrontGearDoor02</Key>
             <Float name="limit_0">1.4</Float>
             <Float name="limit_1">0.0</Float>
@@ -132,7 +131,7 @@
             </Object>
         </Object>
         <Object class="TimedRotation">
-            <String name="channel_name">Aircraft.GearSequence.FrontGear.ReferenceTime</String>
+            <String name="channel_name">LandingGear.FrontGear.RetractCompress</String>
             <Key name="model_id">Aircraft.FrontGearDoor01</Key>
             <Float name="limit_0">-1.4</Float>
             <Float name="limit_1">0.0</Float>
@@ -143,7 +142,7 @@
             </Object>
         </Object>
         <Object class="TimedRotation">
-            <String name="channel_name">Aircraft.GearSequence.FrontGear.ReferenceTime</String>
+            <String name="channel_name">LandingGear.FrontGear.RetractCompress</String>
             <Key name="model_id">Aircraft.FrontGearMainTube</Key>
             <Float name="limit_0">-1.57</Float>
             <Float name="limit_1">0.0</Float>
@@ -154,7 +153,7 @@
             </Object>
         </Object>
         <Object class="TimedRotation">
-            <String name="channel_name">Aircraft.GearSequence.FrontGear.ReferenceTime</String>
+            <String name="channel_name">LandingGear.FrontGear.RetractCompress</String>
             <Key name="model_id">Aircraft.FrontGearTube03</Key>
             <Float name="limit_0">0.2</Float>
             <Float name="limit_1">0.0</Float>
@@ -165,7 +164,7 @@
             </Object>
         </Object>
         <Object class="TimedRotation">
-            <String name="channel_name">Aircraft.GearSequence.FrontGear.ReferenceTime</String>
+            <String name="channel_name">LandingGear.FrontGear.RetractCompress</String>
             <Key name="model_id">Aircraft.FrontGearDoor03</Key>
             <Float name="limit_0">1.18</Float>
             <Float name="limit_1">0.0</Float>
@@ -176,7 +175,7 @@
             </Object>
         </Object>
          <Object class="TimedRotation">
-            <String name="channel_name">Aircraft.GearSequence.FrontGear.ReferenceTime</String>
+            <String name="channel_name">LandingGear.FrontGear.RetractCompress</String>
             <Key name="model_id">Aircraft.FrontGearMainDoor</Key>
             <Float name="limit_0">0.0</Float>
             <Float name="limit_1">1.63</Float>
@@ -189,7 +188,7 @@
 
         <!--                Right landing gear                          -->
         <Object class="TimedRotation">
-            <String name="channel_name">Aircraft.GearSequence.RightGear.ReferenceTime</String>
+            <String name="channel_name">LandingGear.RightGear.RetractCompress</String>
             <Key name="model_id">Aircraft.RightMainGearMainDoor</Key>
             <Float name="limit_0">-1.92</Float>
             <Float name="limit_1">0.0</Float>
@@ -200,7 +199,7 @@
             </Object>
         </Object>
         <Object class="TimedRotation">
-            <String name="channel_name">Aircraft.GearSequence.RightGear.ReferenceTime</String>
+            <String name="channel_name">LandingGear.RightGear.RetractCompress</String>
             <Key name="model_id">Aircraft.RightMainGearDoor01</Key>
             <Float name="limit_0">1.53</Float>
             <Float name="limit_1">0.0</Float>
@@ -211,7 +210,7 @@
             </Object>
         </Object>
         <Object class="TimedMagnitudeTranslation">
-            <String name="channel_name">Aircraft.GearSequence.RightGear.ReferenceTime</String>
+            <String name="channel_name">LandingGear.RightGear.RetractCompress</String>
             <Key name="model_id">Aircraft.RightMainGearAxis</Key>
             <Float name="limit_0">-0.34</Float>
             <Float name="limit_1">0.0</Float>
@@ -223,7 +222,7 @@
             </Object>
         </Object>
         <Object class="TimedRotation">
-            <String name="channel_name">Aircraft.GearSequence.RightGear.ReferenceTime</String>
+            <String name="channel_name">LandingGear.RightGear.RetractCompress</String>
             <Key name="model_id">Aircraft.RightMainGearMainTube</Key>
             <Float name="limit_0">1.531</Float>
             <Float name="limit_1">0.0</Float>
@@ -234,7 +233,7 @@
             </Object>
         </Object>
         <Object class="TimedRotation">
-            <String name="channel_name">Aircraft.GearSequence.RightGear.ReferenceTime</String>
+            <String name="channel_name">LandingGear.RightGear.RetractCompress</String>
             <Key name="model_id">Aircraft.RightMainGearTube02</Key>
             <Float name="limit_0">-1.9</Float>
             <Float name="limit_1">0.0</Float>
@@ -245,7 +244,7 @@
             </Object>
         </Object>
         <Object class="TimedRotation">
-            <String name="channel_name">Aircraft.GearSequence.RightGear.ReferenceTime</String>
+            <String name="channel_name">LandingGear.RightGear.RetractCompress</String>
             <Key name="model_id">Aircraft.RightMainGearMainDoor</Key>
             <Float name="limit_0">0.0</Float>
             <Float name="limit_1">-1.92</Float>
@@ -258,7 +257,7 @@
 
         <!--                Left landing gear                          -->
          <Object class="TimedRotation">
-            <String name="channel_name">Aircraft.GearSequence.LeftGear.ReferenceTime</String>
+            <String name="channel_name">LandingGear.LeftGear.RetractCompress</String>
             <Key name="model_id">Aircraft.LeftMainGearMainDoor</Key>
             <Float name="limit_0">1.92</Float>
             <Float name="limit_1">0.0</Float>
@@ -269,7 +268,7 @@
             </Object>
         </Object>
         <Object class="TimedRotation">
-            <String name="channel_name">Aircraft.GearSequence.LeftGear.ReferenceTime</String>
+            <String name="channel_name">LandingGear.LeftGear.RetractCompress</String>
             <Key name="model_id">Aircraft.LeftMainGearDoor01</Key>
             <Float name="limit_0">0.0</Float>
             <Float name="limit_1">1.53</Float>
@@ -280,7 +279,7 @@
             </Object>
         </Object>
         <Object class="TimedMagnitudeTranslation">
-            <String name="channel_name">Aircraft.GearSequence.LeftGear.ReferenceTime</String>
+            <String name="channel_name">LandingGear.LeftGear.RetractCompress</String>
             <Key name="model_id">Aircraft.LeftMainGearAxis</Key>
             <Float name="limit_0">-0.35</Float>
             <Float name="limit_1">0.0</Float>
@@ -292,7 +291,7 @@
             </Object>
         </Object>
         <Object class="TimedRotation">
-            <String name="channel_name">Aircraft.GearSequence.LeftGear.ReferenceTime</String>
+            <String name="channel_name">LandingGear.LeftGear.RetractCompress</String>
             <Key name="model_id">Aircraft.LeftMainGearMainTube</Key>
             <Float name="limit_0">1.523</Float>
             <Float name="limit_1">0.0</Float>
@@ -303,7 +302,7 @@
             </Object>
         </Object>
         <Object class="TimedRotation">
-            <String name="channel_name">Aircraft.GearSequence.LeftGear.ReferenceTime</String>
+            <String name="channel_name">LandingGear.LeftGear.RetractCompress</String>
             <Key name="model_id">Aircraft.LeftMainGearTube02</Key>
             <Float name="limit_0">-1.9</Float>
             <Float name="limit_1">0.0</Float>
@@ -314,7 +313,7 @@
             </Object>
         </Object>
         <Object class="TimedRotation">
-            <String name="channel_name">Aircraft.GearSequence.LeftGear.ReferenceTime</String>
+            <String name="channel_name">LandingGear.LeftGear.RetractCompress</String>
             <Key name="model_id">Aircraft.LeftMainGearMainDoor</Key>
             <Float name="limit_0">0.0</Float>
             <Float name="limit_1">1.92</Float>
@@ -329,60 +328,60 @@
 
         <!--                            Front gear                         -->
         <Object class="DrivenVectorialTranslation">
-            <String name="channel_name">LandingGear.FrontGearDisplacement</String>
+            <String name="channel_name">LandingGear.FrontGear.Compression</String>
             <Key name="model_id">Aircraft.FrontGearTube01</Key>
             <Vector name="direction">0 0 1</Vector>
             <!--Vector name="offset">0.0 0 -1.11</Vector-->
             <Vector name="offset">0 0 -1.13</Vector>
         </Object>
         <Object class="DrivenRotation">
-            <String name="channel_name">LandingGear.FrontGearTireRotation</String>
+            <String name="channel_name">LandingGear.FrontGear.TireRotation</String>
             <Key name="model_id">Aircraft.FrontGearLeftTire</Key>
             <Vector name="axis">-1 0 0</Vector>
         </Object>
         <Object class="DrivenRotation">
-            <String name="channel_name">LandingGear.FrontGearTireRotation</String>
+            <String name="channel_name">LandingGear.FrontGear.TireRotation</String>
             <Key name="model_id">Aircraft.FrontGearRightTire</Key>
             <Vector name="axis">-1 0 0</Vector>
         </Object>
         <Object class="DrivenRotation">
-            <String name="channel_name">LandingGear.FrontGearAbsorber02</String>
+            <String name="channel_name">LandingGear.FrontGear.Absorber02</String>
             <Key name="model_id">Aircraft.FrontGearAbsorber02</Key>
             <Vector name="axis">-1 0 0</Vector>
             <Float name="gain">2.4</Float>
         </Object>
         <Object class="DrivenRotation">
-            <String name="channel_name">LandingGear.FrontGearAbsorber03</String>
+            <String name="channel_name">LandingGear.FrontGear.Absorber03</String>
             <Key name="model_id">Aircraft.FrontGearAbsorber03</Key>
             <Vector name="axis">1 0 0</Vector>
             <Float name="gain">2.4</Float>
         </Object>
         <Object class="DrivenRotation">
-            <String name="channel_name">ControlSurfaces.RudderDeflection</String>
+            <String name="channel_name">LandingGear.FrontGear.SteeringAngle</String>
             <Key name="model_id">Aircraft.FrontGearTireAxis</Key>
             <Vector name="axis">0 0 -1</Vector>
         </Object>
 
         <!--                            Left gear                             -->
         <Object class="DrivenVectorialTranslation">
-            <String name="channel_name">LandingGear.LeftGearDisplacement</String>
+            <String name="channel_name">LandingGear.LeftGear.Compression</String>
             <Key name="model_id">Aircraft.LeftMainGearTube01</Key>
             <Vector name="direction">-0.134513 0 0.990912</Vector>
             <Vector name="offset">0.122 0 -0.39</Vector>
         </Object>
         <Object class="DrivenRotation">
-            <String name="channel_name">LandingGear.LeftGearTireRotation</String>
+            <String name="channel_name">LandingGear.LeftGear.TireRotation</String>
             <Key name="model_id">Aircraft.LeftMainGearTire</Key>
             <Vector name="axis">-1 0 -0.02</Vector>
         </Object>
         <Object class="DrivenRotation">
-            <String name="channel_name">LandingGear.LeftGearAbsorber02</String>
+            <String name="channel_name">LandingGear.LeftGear.Absorber02</String>
             <Key name="model_id">Aircraft.LeftMainGearAbsorber02</Key>
             <Vector name="axis">-0.990831 -0.0283094 -0.132111</Vector>
             <Float name="gain">2.2</Float>
         </Object>
         <Object class="DrivenRotation">
-            <String name="channel_name">LandingGear.LeftGearAbsorber03</String>
+            <String name="channel_name">LandingGear.LeftGear.Absorber03</String>
             <Key name="model_id">Aircraft.LeftMainGearAbsorber03</Key>
             <Vector name="axis">0.990831 0.0283094 0.132111</Vector>
             <Float name="gain">2.2</Float>
@@ -390,24 +389,24 @@
 
         <!--                            Right gear                             -->
         <Object class="DrivenVectorialTranslation">
-            <String name="channel_name">LandingGear.RightGearDisplacement</String>
+            <String name="channel_name">LandingGear.RightGear.Compression</String>
             <Key name="model_id">Aircraft.RightMainGearTube01</Key>
             <Vector name="direction">0.127615 -0.00447771 0.991814</Vector>
             <Vector name="offset">-0.122 0 -0.39</Vector>
         </Object>
         <Object class="DrivenRotation">
-            <String name="channel_name">LandingGear.RightGearTireRotation</String>
+            <String name="channel_name">LandingGear.RightGear.TireRotation</String>
             <Key name="model_id">Aircraft.RightMainGearTire</Key>
             <Vector name="axis">-1.0 0 0.02</Vector>
         </Object>
          <Object class="DrivenRotation">
-            <String name="channel_name">LandingGear.RightGearAbsorber02</String>
+            <String name="channel_name">LandingGear.RightGear.Absorber02</String>
             <Key name="model_id">Aircraft.RightMainGearAbsorber02</Key>
             <Vector name="axis">-0.990831 0.0283094 0.132111</Vector>
             <Float name="gain">2.2</Float>
         </Object>
         <Object class="DrivenRotation">
-            <String name="channel_name">LandingGear.RightGearAbsorber03</String>
+            <String name="channel_name">LandingGear.RightGear.Absorber03</String>
             <Key name="model_id">Aircraft.RightMainGearAbsorber03</Key>
             <Vector name="axis">0.990831 -0.0283094 -0.132111</Vector>
             <Float name="gain">2.2</Float>

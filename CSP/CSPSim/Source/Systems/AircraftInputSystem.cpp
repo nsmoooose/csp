@@ -72,8 +72,7 @@ void AircraftInputSystem::setThrottle(double x) {
 	m_ThrottleInput.setValue(0.5 *(1.0 - x));
 }
 
-void AircraftInputSystem::setRudder(double x)
-{
+void AircraftInputSystem::setRudder(double x) {
 	m_RudderInput.setValue(x);
 }
 

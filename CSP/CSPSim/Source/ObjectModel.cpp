@@ -292,48 +292,39 @@ void ObjectModel::postCreate() {
 	loadModel();
 }
 
-osg::Geometry *makeDiamond(simdata::Vector3 const &pos, float s) {
-    float vv[][3] =
-    {
-        { 0.0, 0.0,   s },
-        {   s, 0.0, 0.0 },
-        { 0.0,   s, 0.0 },
-        {  -s, 0.0, 0.0 },
-        { 0.0,  -s, 0.0 },
-        {   s, 0.0, 0.0 },
-        { 0.0, 0.0,  -s },
-        {   s, 0.0, 0.0 },
-        { 0.0,  -s, 0.0 },
-        {  -s, 0.0, 0.0 },
-        { 0.0,   s, 0.0 },
-        {   s, 0.0, 0.0 },
-    };
+osg::Geometry *makeDiamond(simdata::Vector3 const &pos, float s, osg::Vec4 const &color) {
+	float vv[][3] = {
+		{ 0.0, 0.0,   s },
+		{   s, 0.0, 0.0 },
+		{ 0.0,   s, 0.0 },
+		{  -s, 0.0, 0.0 },
+		{ 0.0,  -s, 0.0 },
+		{   s, 0.0, 0.0 },
+		{ 0.0, 0.0,  -s },
+		{   s, 0.0, 0.0 },
+		{ 0.0,  -s, 0.0 },
+		{  -s, 0.0, 0.0 },
+		{ 0.0,   s, 0.0 },
+		{   s, 0.0, 0.0 },
+	};
 
-    osg::Vec3Array& v = *(new osg::Vec3Array(12));
-    osg::Vec4Array& l = *(new osg::Vec4Array(1));
+	osg::Vec3Array& v = *(new osg::Vec3Array(12));
+	osg::Vec4Array& c = *(new osg::Vec4Array(1));
+	c[0] = color;
 
-    int   i;
+	for(int i = 0; i < 12; i++ ) {
+		v[i][0] = vv[i][0] + pos.x();
+		v[i][1] = vv[i][1] + pos.y();
+		v[i][2] = vv[i][2] + pos.z();
+	}
 
-    l[0][0] = 1;
-    l[0][1] = 0;
-    l[0][2] = 0;
-    l[0][3] = 1;
-
-    for( i = 0; i < 12; i++ )
-    {
-        v[i][0] = vv[i][0] + pos.x();
-        v[i][1] = vv[i][1] + pos.y();
-        v[i][2] = vv[i][2] + pos.z();
-    }
-
-    osg::Geometry *geom = new osg::Geometry;
-    geom->setVertexArray(&v);
-    geom->setColorArray(&l);
-    geom->setColorBinding(osg::Geometry::BIND_OVERALL);
-    geom->addPrimitiveSet( new osg::DrawArrays(osg::PrimitiveSet::TRIANGLE_FAN,0,6) );
-    geom->addPrimitiveSet( new osg::DrawArrays(osg::PrimitiveSet::TRIANGLE_FAN,6,6) );
-
-    return geom;
+	osg::Geometry *geom = new osg::Geometry;
+	geom->setVertexArray(&v);
+	geom->setColorArray(&c);
+	geom->setColorBinding(osg::Geometry::BIND_OVERALL);
+	geom->addPrimitiveSet(new osg::DrawArrays(osg::PrimitiveSet::TRIANGLE_FAN,0,6));
+	geom->addPrimitiveSet(new osg::DrawArrays(osg::PrimitiveSet::TRIANGLE_FAN,6,6));
+	return geom;
 }
 
 //#include <osgFX/BumpMapping>
@@ -420,10 +411,8 @@ void ObjectModel::loadModel() {
 
 	// insert an adjustment matrix at the head of the model only
 	// if necessary.
-	if (m_Axis0 != simdata::Vector3::XAXIS ||
-	    m_Axis1 != simdata::Vector3::YAXIS ||
-	    m_Scale != 1.0 ||
-	    m_Offset != simdata::Vector3::ZERO) {
+	if (m_Axis0 != simdata::Vector3::XAXIS || m_Axis1 != simdata::Vector3::YAXIS || m_Scale != 1.0 || m_Offset != simdata::Vector3::ZERO) {
+		CSP_LOG(APP, WARNING, "Adding model adjustment matrix");
 		// find third axis and make the transform matrix
 		simdata::Vector3 axis2 = m_Axis0 ^ m_Axis1;
 		simdata::Matrix3 o(m_Axis0.x(), m_Axis0.y(), m_Axis0.z(),
@@ -450,6 +439,9 @@ void ObjectModel::loadModel() {
 		for (unsigned i = 0; i < m_Contacts.size(); i++) {
 			m_Contacts[i] = sd_adjust * m_Contacts[i]  + m_Offset;
 		}
+		for (unsigned i = 0; i < m_DebugPoints.size(); i++) {
+			m_DebugPoints[i] = sd_adjust * m_DebugPoints[i]  + m_Offset;
+		}
 		m_ViewPoint = sd_adjust * m_ViewPoint  + m_Offset;
 		m_HudPlacement = sd_adjust * m_HudPlacement  + m_Offset;
 	}
@@ -471,9 +463,9 @@ void ObjectModel::loadModel() {
 	m_DebugMarkers->getOrCreateStateSet()->setMode(GL_LIGHTING, osg::StateAttribute::OFF);
 	m_DebugMarkers->getOrCreateStateSet()->setAttributeAndModes(new osg::CullFace, osg::StateAttribute::ON);
 
-	// create visible markers for each contact point
-	CSP_LOG(APP, DEBUG, "LoadModel: add contact markers");
-	addContactMarkers();
+	// create visible markers for each contact and debug point
+	CSP_LOG(APP, DEBUG, "LoadModel: add debug markers");
+	addDebugMarkers();
 
 	/*
 	// FIXME Segfaults when creating objects using the CSP theater layout tool.
@@ -510,30 +502,36 @@ void ObjectModel::loadModel() {
 	//CSP_LOG(APP, DEBUG, "LoadModel: Optimizer done");
 }
 
-void ObjectModel::addContactMarkers() {
+void ObjectModel::addDebugMarkers() {
 	m_ContactMarkers = new osg::Switch;
 	osg::CullFace *cf = new osg::CullFace;
 	cf->setMode(osg::CullFace::BACK);
 	m_ContactMarkers->getOrCreateStateSet()->setAttributeAndModes(cf, osg::StateAttribute::ON);
 	for (unsigned i = 0; i < m_Contacts.size(); i++) {
 		osg::Geode *diamond = new osg::Geode;
-		diamond->addDrawable(makeDiamond(m_Contacts[i], 0.2));
+		diamond->addDrawable(makeDiamond(m_Contacts[i], 0.20, osg::Vec4(1, 0, 0, 1)));
 		m_ContactMarkers->addChild(diamond);
 	}
-	// set markers not visible by default
-	showContactMarkers(false);
+	for (unsigned i = 0; i < m_DebugPoints.size(); i++) {
+		osg::Geode *diamond = new osg::Geode;
+		diamond->addDrawable(makeDiamond(m_DebugPoints[i], 0.05, osg::Vec4(1, 1, 0, 0.5)));
+		m_DebugMarkers->addChild(diamond);
+	}
+	// set debug markers not visible by default
+	showDebugMarkers(false);
 	m_DebugMarkers->addChild(m_ContactMarkers.get());
 }
 
-void ObjectModel::showContactMarkers(bool on) {
-	if (on)
-		m_ContactMarkers->setAllChildrenOn();
-	else
-		m_ContactMarkers->setAllChildrenOff();
+void ObjectModel::showDebugMarkers(bool on) {
+	if (on) {
+		m_DebugMarkers->setAllChildrenOn();
+	} else {
+		m_DebugMarkers->setAllChildrenOff();
+	}
 }
 
-bool ObjectModel::getMarkersVisible() const {
-	return (m_ContactMarkers->getValue(0) != 0);
+bool ObjectModel::getDebugMarkersVisible() const {
+	return (m_DebugMarkers->getNumChildren() > 0 && m_DebugMarkers->getValue(0) != 0);
 }
 
 osg::ref_ptr<osg::Node> ObjectModel::getModel() {
@@ -635,9 +633,11 @@ SceneModel::SceneModel(simdata::Ref<ObjectModel> const & model) {
 	m_modelview_abs->addChild(label);
 
 	m_Transform = new osg::PositionAttitudeTransform;
-	m_Transform->addChild(model_node);
-	m_Transform->addChild(m_Model->getDebugMarkers().get());
-	m_Transform->addChild(m_modelview_abs);
+	m_CenterOfMassOffset = new osg::PositionAttitudeTransform;
+	m_Transform->addChild(m_CenterOfMassOffset.get());
+	m_CenterOfMassOffset->addChild(model_node);
+	m_CenterOfMassOffset->addChild(m_Model->getDebugMarkers().get());
+	m_CenterOfMassOffset->addChild(m_modelview_abs);
 	m_Smoke = false;
 }
 
@@ -645,7 +645,8 @@ SceneModel::~SceneModel() {
 	// FIXME shouldn't we be removing the copy?
 	osg::Node *model_node = m_Model->getModel().get();
 	assert(model_node);
-	m_Transform->removeChild(model_node);
+	// FIXME why?
+	m_CenterOfMassOffset->removeChild(model_node);
 }
 
 void SceneModel::setLabel(std::string const &label) {
@@ -754,7 +755,7 @@ void SceneModel::bindAnimationChannels(Bus::Ref bus) {
 		HUD * hud = hud_channel->value();
 		CSP_LOG(OBJECT, DEBUG, "Found HUD");
 		hud->hud()->setPosition(simdata::toOSG(m_Model->getHudPlacement()));
-		m_Transform->addChild(hud->hud());
+		m_CenterOfMassOffset->addChild(hud->hud());
 		hud->setOrigin(simdata::toOSG(m_Model->getHudPlacement()));
 		hud->setViewPoint(simdata::toOSG(m_Model->getViewPoint()));
 		hud->setDimensions(m_Model->getHudWidth(), m_Model->getHudHeight());
@@ -763,9 +764,10 @@ void SceneModel::bindAnimationChannels(Bus::Ref bus) {
 	CSP_LOG(OBJECT, DEBUG, "bindAnimationChannels complete");
 }
 
-void SceneModel::setPositionAttitude(simdata::Vector3 const &position, simdata::Quat const &attitude) {
+void SceneModel::setPositionAttitude(simdata::Vector3 const &position, simdata::Quat const &attitude, simdata::Vector3 const &cm_offset) {
 	m_Transform->setAttitude(simdata::toOSG(attitude));
 	m_Transform->setPosition(simdata::toOSG(position));
+	m_CenterOfMassOffset->setPosition(simdata::toOSG(-cm_offset));
 }
 
 osg::Group* SceneModel::getRoot() {

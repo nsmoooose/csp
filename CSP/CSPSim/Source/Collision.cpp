@@ -76,7 +76,7 @@ void GroundCollisionDynamics::importChannels(Bus *bus) {
 	m_Forces.resize(m_Contacts.size());
 	m_Extension.resize(m_Contacts.size());
 }
-	
+
 
 void GroundCollisionDynamics::computeForceAndMoment(double) {
 	m_HasContact = false;

@@ -109,6 +109,7 @@ public:
 		SIMDATA_XML("human_systems", DynamicObject::m_HumanModel, false)
 		SIMDATA_XML("agent_systems", DynamicObject::m_AgentModel, false)
 		SIMDATA_XML("remote_systems", DynamicObject::m_RemoteModel, false)
+		SIMDATA_XML("reference_center_of_mass_offset", DynamicObject::m_ReferenceCenterOfMassOffset, false)
 	END_SIMDATA_XML_INTERFACE
 
 	DynamicObject(TypeId type);
@@ -130,12 +131,17 @@ public:
 	simdata::Vector3 const & getAccelerationBody() const { return b_AccelerationBody->value(); }
 	simdata::Vector3 const & getVelocity() const { return b_LinearVelocity->value(); }
 	double getSpeed() const { return b_LinearVelocity->value().length(); }
-	virtual double getAltitude() const { return (b_GlobalPosition->value().z() - b_GroundZ->value()); }
+	virtual double getAltitude() const { return (b_ModelPosition->value().z() - b_GroundZ->value()); }
+
+	// Get the current offset from the model origin to the center of mass (body origin).
+	simdata::Vector3 const & getCenterOfMassOffset() const { return b_CenterOfMassOffset->value(); }
+
+	// Get the nominal offset from the model origin to the center of mass (body origin).  This
+	// is the nominal value for the base configuration of the vehicle.  The actual center of
+	// mass offset may vary with conditions (e.g., fuel and loadout).  See getCenterOfMassOffset().
+	simdata::Vector3 const & getReferenceCenterOfMassOffset() const { return m_ReferenceCenterOfMassOffset; }
 
 	virtual simdata::Vector3 getViewPoint() const;
-
-	void updateGlobalPosition();
-	void updateOrientation();
 
 	virtual void onAggregate() { CSP_LOG(APP, INFO, "aggregate @ " << int(this)); }
 	virtual void onDeaggregate() { CSP_LOG(APP, INFO, "deaggregate @ " << int(this)); }
@@ -152,7 +158,8 @@ public:
 	simdata::Quat & getAttitude() { return b_Attitude->value(); }
 	void setAttitude(simdata::Quat const & attitude);
 
-	virtual simdata::Vector3 getGlobalPosition() const { return b_GlobalPosition->value(); }
+	virtual simdata::Vector3 getCenterOfMassPosition() const { return b_Position->value(); }
+	virtual simdata::Vector3 getGlobalPosition() const { return b_ModelPosition->value(); }
 	virtual void setGlobalPosition(simdata::Vector3 const & position);
 	virtual void setGlobalPosition(double x, double y, double z);
 
@@ -184,10 +191,12 @@ protected:
 	TerrainObject::IntersectionHint m_GroundHint;
 
 	// dynamic properties
-	
+
+	// previous cm position in global coordinates
 	simdata::Vector3 m_PrevPosition;
 
-	DataChannel<simdata::Vector3>::Ref b_GlobalPosition;
+	DataChannel<simdata::Vector3>::Ref b_ModelPosition;
+	DataChannel<simdata::Vector3>::Ref b_Position;  // cm position
 	DataChannel<double>::Ref b_Mass;
 	DataChannel<double>::Ref b_GroundZ;
 	DataChannel<simdata::Vector3>::Ref b_GroundN;
@@ -198,6 +207,7 @@ protected:
 	DataChannel<simdata::Vector3>::Ref b_AngularVelocityBody;
 	DataChannel<simdata::Vector3>::Ref b_LinearVelocity;
 	DataChannel<simdata::Vector3>::Ref b_AccelerationBody;
+	DataChannel<simdata::Vector3>::Ref b_CenterOfMassOffset;
 	DataChannel<simdata::Quat>::Ref b_Attitude;
 
 	std::string m_ObjectName;
@@ -216,6 +226,7 @@ protected:
 
 private:
 	double m_ReferenceMass;
+	simdata::Vector3 m_ReferenceCenterOfMassOffset;
 	simdata::Matrix3 m_ReferenceInertia;
 	simdata::Path m_HumanModel;
 	simdata::Path m_AgentModel;

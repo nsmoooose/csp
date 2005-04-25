@@ -49,7 +49,8 @@ using bus::Kinetics;
 DynamicObject::DynamicObject(TypeId type): SimObject(type) {
 	assert(!isStatic());
 
-	b_GlobalPosition = DataChannel<simdata::Vector3>::newLocal(Kinetics::Position, simdata::Vector3::ZERO);
+	b_ModelPosition = DataChannel<simdata::Vector3>::newLocal(Kinetics::ModelPosition, simdata::Vector3::ZERO);
+	b_Position = DataChannel<simdata::Vector3>::newLocal(Kinetics::Position, simdata::Vector3::ZERO);
 	b_Mass = DataChannel<double>::newLocal(Kinetics::Mass, 1.0);
 	b_GroundZ = DataChannel<double>::newLocal(Kinetics::GroundZ, 0.0);
 	b_GroundN = DataChannel<simdata::Vector3>::newLocal(Kinetics::GroundN, simdata::Vector3::ZAXIS);
@@ -61,10 +62,12 @@ DynamicObject::DynamicObject(TypeId type): SimObject(type) {
 	b_LinearVelocity = DataChannel<simdata::Vector3>::newLocal(Kinetics::Velocity, simdata::Vector3::ZERO);
 	b_AccelerationBody = DataChannel<simdata::Vector3>::newLocal(Kinetics::AccelerationBody, simdata::Vector3::ZERO);
 	b_Attitude = DataChannel<simdata::Quat>::newLocal(Kinetics::Attitude, simdata::Quat::IDENTITY);
+	b_CenterOfMassOffset = DataChannel<simdata::Vector3>::newLocal(Kinetics::CenterOfMassOffset, simdata::Vector3::ZERO);
 
 	m_GroundHint = 0;
 	m_ReferenceMass = 1.0;
 	m_ReferenceInertia = simdata::Matrix3::IDENTITY;
+	m_ReferenceCenterOfMassOffset = simdata::Vector3::ZERO;
 
 	setGlobalPosition(simdata::Vector3::ZERO);
 	m_PrevPosition = simdata::Vector3::ZERO;
@@ -80,6 +83,7 @@ void DynamicObject::postCreate() {
 	b_Mass->value() = m_ReferenceMass;
 	b_Inertia->value() = m_ReferenceInertia;
 	b_InertiaInv->value() = m_ReferenceInertia.getInverse();
+	b_CenterOfMassOffset->value() = m_ReferenceCenterOfMassOffset;
 }
 
 void DynamicObject::createSceneModel() {
@@ -105,11 +109,12 @@ osg::Node* DynamicObject::getModelNode() {
 }
 
 void DynamicObject::setGlobalPosition(simdata::Vector3 const & position) {
-	setGlobalPosition(position.x(), position.y(), position.z());
+	b_ModelPosition->value() = position;
+	b_Position->value() = position + b_Attitude->value().rotate(b_CenterOfMassOffset->value());
 }
 
 void DynamicObject::setGlobalPosition(double x, double y, double z) {
-	b_GlobalPosition->value() = simdata::Vector3(x, y, z);
+	setGlobalPosition(simdata::Vector3(x, y, z));
 }
 
 void DynamicObject::setVelocity(simdata::Vector3 const &velocity) {
@@ -146,8 +151,8 @@ void DynamicObject::setState(simdata::Ref<simnet::NetworkMessage> const &msg, si
 
 // update
 double DynamicObject::onUpdate(double dt) {
-	// Save the objects old position
-	m_PrevPosition = b_GlobalPosition->value();
+	// Save the objects old cm position
+	m_PrevPosition = b_Position->value();
 	// XXX don't move non-human aircraft for now (no ai yet)
 	if (isHuman()) {
 		doControl(dt);
@@ -171,20 +176,22 @@ void DynamicObject::doPhysics(double dt) {
 
 // update variables that depend on position
 void DynamicObject::postUpdate(double dt) {
+	const simdata::Vector3 model_position = b_Position->value() - b_Attitude->value().rotate(b_CenterOfMassOffset->value());
+	b_ModelPosition->value() = model_position;
 	if (m_SceneModel.valid() && isSmoke()) {
-		m_SceneModel->updateSmoke(dt, b_GlobalPosition->value(), b_Attitude->value());
+		m_SceneModel->updateSmoke(dt, b_ModelPosition->value(), b_Attitude->value());
 	}
 	CSPSim *sim = CSPSim::theSim;
 	assert(sim);
 	TerrainObject *terrain = sim->getTerrain();
 	assert(terrain);
 	b_GroundZ->value() = terrain->getGroundElevation(
-		b_GlobalPosition->value().x(),
-		b_GlobalPosition->value().y(),
+		model_position.x(),
+		model_position.y(),
 		b_GroundN->value(),
 		m_GroundHint
 	);
-	double height = (b_GlobalPosition->value().z() - b_GroundZ->value()) * b_GroundN->value().z();
+	double height = (model_position.z() - b_GroundZ->value()) * b_GroundN->value().z();
 	b_NearGround->value() = (height < m_Model->getBoundingSphereRadius());
 }
 
@@ -198,7 +205,11 @@ simdata::Vector3 DynamicObject::getUpDirection() const {
 
 void DynamicObject::setAttitude(simdata::Quat const &attitude) {
 	b_Attitude->value() = attitude;
+	b_Position->value() = b_ModelPosition->value() + attitude.rotate(b_CenterOfMassOffset->value());
 }
+
+// TODO return point of view in global coordinates instead of local coordinates relative to the
+// model origin.
 
 simdata::Vector3 DynamicObject::getViewPoint() const {
 	return b_Attitude->value().rotate(m_Model->getViewPoint());
@@ -225,7 +236,7 @@ void DynamicObject::setDataRecorder(DataRecorder *recorder) {
 	if (m_SystemsModel.valid()) {
 		m_SystemsModel->setDataRecorder(recorder);
 	}
-	recorder->addSource(b_GlobalPosition);
+	recorder->addSource(b_ModelPosition);
 	recorder->addSource(b_LinearVelocity);
 	recorder->addSource(b_AngularVelocity);
 	recorder->addSource(b_AngularVelocityBody);
@@ -263,7 +274,8 @@ SystemsModel::Ref DynamicObject::getCachedSystemsModel() {
 
 void DynamicObject::registerChannels(Bus::Ref bus) {
 	if (!bus) return;
-	bus->registerChannel(b_GlobalPosition.get());
+	bus->registerChannel(b_Position.get());
+	bus->registerChannel(b_ModelPosition.get());
 	bus->registerChannel(b_LinearVelocity.get());
 	bus->registerChannel(b_AccelerationBody.get());
 	bus->registerChannel(b_AngularVelocity.get());
@@ -272,6 +284,7 @@ void DynamicObject::registerChannels(Bus::Ref bus) {
 	bus->registerChannel(b_Mass.get());
 	bus->registerChannel(b_Inertia.get());
 	bus->registerChannel(b_InertiaInv.get());
+	bus->registerChannel(b_CenterOfMassOffset.get());
 	bus->registerChannel(b_GroundN.get());
 	bus->registerChannel(b_GroundZ.get());
 	bus->registerChannel(b_NearGround.get());
@@ -315,6 +328,7 @@ void DynamicObject::selectVehicleCore() {
 			simdata::DataManager &manager = sim->getDataManager();
 			systems = manager.getObject(path);
 			if (systems.valid()) {
+				CSP_LOG(OBJECT, INFO, "registering channels and binding systems for " << *this << " " << this);
 				registerChannels(systems->getBus());
 				systems->bindSystems();
 			}
@@ -362,7 +376,7 @@ void DynamicObject::getInfo(std::vector<std::string> &info) const {
 
 void DynamicObject::updateScene(simdata::Vector3 const &origin) {
 	if (m_SceneModel.valid()) {
-		m_SceneModel->setPositionAttitude(b_GlobalPosition->value() - origin, b_Attitude->value());
+		m_SceneModel->setPositionAttitude(b_Position->value() - origin, b_Attitude->value(), b_CenterOfMassOffset->value());
 		onRender();
 	}
 }

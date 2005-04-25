@@ -36,10 +36,11 @@ public:
 	EXTEND_SIMDATA_XML_INTERFACE(F16GearDynamics, GearDynamics)
 	END_SIMDATA_XML_INTERFACE
 
+	virtual bool allowGearUp() const;
+
 	// input event handlers
 	virtual void GearUp();
 	virtual void GearDown();
-	virtual void GearToggle();
 
 	virtual void registerChannels(Bus*);
 	virtual void importChannels(Bus*);

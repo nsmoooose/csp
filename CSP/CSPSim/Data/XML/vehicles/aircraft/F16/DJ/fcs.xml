@@ -2,7 +2,7 @@
 <!-- 
      *** WARNING: THIS IS A GENERATED FILE ***
      Think twice before editing this file directly!
-     Generated from /b/mrose/projects/csp/CSP.clean/CSP/CSPSim/Tools/FlightControlSystem/F16 at Sat Apr  9 19:29:37 2005
+     Generated from /b/mrose/projects/csp/CSP.cockpit/CSP/CSPSim/Tools/FlightControlSystem/F16 at Sun Apr 24 23:54:44 2005
 -->
 <Object class="FlightControlSystem">
 	<List name="nodes">
@@ -398,6 +398,17 @@
 			<Float name="clamp_lo">-4.0</Float>
 			<Float name="gain">-0.000444</Float>
 			<Key name="input">qbar</Key>
+		</Object>
+
+		<Object class="OutputChannel">
+			<Key name="id">nose_wheel_steering</Key>
+			<String name="channel">LandingGear.FrontGear.SteeringInput</String>
+			<Float name="clamp_hi">0.558505360638</Float>
+			<Float name="clamp_lo">-0.558505360638</Float>
+			<Float name="gain">0.558505360638</Float>
+			<Key name="input">yaw_control</Key>
+			<Float name="rate_limit_dec">-2.09439510239</Float>
+			<Float name="rate_limit_inc">2.09439510239</Float>
 		</Object>
 
 		<Object class="InputScalarChannel">

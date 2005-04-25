@@ -31,7 +31,8 @@ namespace bus {
 
 struct Kinetics {
 	static const char *NearGround;
-	static const char *Position;
+	static const char *ModelPosition;
+	static const char *Position;  // center of mass position
 	static const char *Velocity;
 	static const char *AngularVelocity;
 	static const char *AngularVelocityBody;
@@ -45,6 +46,7 @@ struct Kinetics {
 	static const char *Heading;
 	static const char *Roll;
 	static const char *Pitch;
+	static const char *CenterOfMassOffset;  // body coordinates
 };
 
 }

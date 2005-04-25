@@ -41,6 +41,7 @@
 #include <LandingGear.h>
 #include <ConditionsChannels.h>
 #include <ControlInputsChannels.h>
+#include <GearAnimation.h>
 #include <KineticsChannels.h>
 #include <LandingGearChannels.h>
 
@@ -60,10 +61,6 @@ using simdata::Vector3;
 
 SIMDATA_REGISTER_INTERFACE(LandingGear)
 SIMDATA_REGISTER_INTERFACE(GearDynamics)
-SIMDATA_REGISTER_INTERFACE(GearSequenceAnimation)
-SIMDATA_REGISTER_INTERFACE(GearStructureAnimation)
-SIMDATA_REGISTER_INTERFACE(M2kGearStructureAnimation)
-SIMDATA_REGISTER_INTERFACE(DefinedGearStructureAnimation)
 
 
 LandingGear::LandingGear() {
@@ -75,6 +72,7 @@ LandingGear::LandingGear() {
 	m_BrakeSteer = 0.0;
 	m_SteerAngle = 0.0;
 	m_SteeringLimit = 0.0;
+	m_TargetSteerAngle = 0.0;
 	m_TireK = 200000.0;
 	m_TireBeta = 500.0;
 	m_Damage = 0.0;
@@ -107,7 +105,13 @@ LandingGear::LandingGear() {
 	m_TireRotationRate = 0.0;
 	m_TireRadius = 0.25;
 	m_DragFactor = 0.8;
+	m_Initialize = true;
 }
+
+
+LandingGear::~LandingGear() {
+}
+
 
 void LandingGear::postCreate() {
 	Object::postCreate();
@@ -139,20 +143,20 @@ Vector3 LandingGear::simulateSubStep(Vector3 const &origin,
 }
 
 void LandingGear::extend() {
-	if (!m_Extend && m_GearSequenceAnimation.valid()) {
+	if (!m_Extend && m_GearAnimation.valid()) {
 		m_Extend = true;
 		b_FullyExtended->value() = false;
 		b_FullyRetracted->value() = false;
-		m_GearSequenceAnimation->extend();
+		m_GearAnimation->extend();
 	}
 }
 
 void LandingGear::retract() {
-	if (m_Extend && m_GearSequenceAnimation.valid()) {
+	if (m_Extend && m_GearAnimation.valid()) {
 		m_Extend = false;
 		b_FullyExtended->value() = false;
 		b_FullyRetracted->value() = false;
-		m_GearSequenceAnimation->retract();
+		m_GearAnimation->retract();
 	}
 }
 
@@ -162,12 +166,10 @@ void LandingGear::setBraking(double setting) {
 }
 
 double LandingGear::setSteering(double setting, double link_brakes) {
-	setting = simdata::clampTo(setting,-1.0,1.0);
+	setting = simdata::clampTo(setting, -1.0, 1.0);
 	m_BrakeSteer = setting * link_brakes * m_BrakeSteeringLinkage;
-	m_SteerAngle = setting * m_SteeringLimit;
-	double rad = toRadians(m_SteerAngle);
-	m_SteerTransform.makeRotate(rad, Vector3::ZAXIS);
-	return m_SteerAngle;
+	m_TargetSteerAngle = setting * m_SteeringLimit;
+	return m_TargetSteerAngle;
 }
 
 double LandingGear::getDragFactor() const {
@@ -179,7 +181,6 @@ double LandingGear::getDragFactor() const {
 
 void LandingGear::preSimulationStep(double /*dt*/) {
 	if (b_FullyRetracted->value()) return;
-	// XXX anything to do here?
 }
 
 /**
@@ -240,7 +241,7 @@ void LandingGear::updateTireRotation(double dt) {
  * Simulate the main shock adsorber to determine the normal force and
  * gear compression.
  *
- * @param origin body coordinate origin in local coordinates
+ * @param origin model origin in local coordinates
  * @param vBody strut velocity in body coordinates
  * @param q body orientation
  * @param height height of body origin above ground
@@ -254,28 +255,32 @@ void LandingGear::updateSuspension(Vector3 const &/*origin*/,
 {
 	double compression = 0.0;
 	double motionNormal = dot(m_Motion, normalGroundBody);
+	simdata::Vector3 max_position = getMaxPosition();
 	if (motionNormal > 0.0) {
-		compression = - (dot(m_MaxPosition, normalGroundBody) + height) / motionNormal;
+		compression = - (dot(max_position, normalGroundBody) + height) / motionNormal;
 	}
 
 	// at (or past) max extension?
 	if (compression <= 0.0) {
 		// limit travel and clear weight-on-wheels (WOW)
 		m_Compression = 0.0;
-		m_Position = m_MaxPosition;
+		m_Position = max_position;
 		b_WOW->value() = false;
 		// no ground reaction force
 	} else {
 		// are we overcompressed?
 		if (compression >= m_CompressionLimit) {
 			m_Compression = m_CompressionLimit;
-			// TODO: break the gear!
+			// stiffen the response
+			compression += (compression - m_Compression) * 10.0;
+			// TODO: break the gear if overcompression is too high (should
+			// actually be keyed by normalForce below).
 		} else {
 			m_Compression = compression;
 		}
 
 		// update wheel position
-		m_Position = m_MaxPosition + m_Motion * m_Compression;
+		m_Position = max_position + m_Motion * m_Compression;
 
 		// determine reaction force
 		//
@@ -289,7 +294,7 @@ void LandingGear::updateSuspension(Vector3 const &/*origin*/,
 		// probably break in a moment anyway)
 		vCompression = simdata::clampTo(vCompression, -10.0, 10.0);
 		// ground support (in response to strut compression + damping)
-		double normalForce = (m_K * m_Compression + m_Beta * vCompression) * motionNormal;
+		double normalForce = (m_K * compression + m_Beta * vCompression) * motionNormal;
 		if (normalForce < 0.0) normalForce = 0.0; // wheel hop
 		m_NormalForce += normalForce * normalGroundBody;
 	}
@@ -298,6 +303,16 @@ void LandingGear::updateSuspension(Vector3 const &/*origin*/,
 void LandingGear::resetForces() {
 	m_NormalForce = Vector3::ZERO;
 	m_TangentForce = Vector3::ZERO;
+}
+
+void LandingGear::updateSteeringAngle(double dt) {
+	if (m_SteeringLimit > 0) {
+		double limit = 120.0 * dt;
+		double delta = simdata::clampTo(m_TargetSteerAngle - m_SteerAngle, -limit, limit);
+		m_SteerAngle += delta;
+		double rad = toRadians(m_SteerAngle);
+		m_SteerTransform.makeRotate(rad, Vector3::ZAXIS);
+	}
 }
 
 void LandingGear::postSimulationStep(double dt,
@@ -314,44 +329,51 @@ void LandingGear::postSimulationStep(double dt,
 	updateWOW(origin, q);
 	updateWheel(dt, origin, vBody, q, normalGroundBody, true);
 	updateTireRotation(dt);
+	updateSteeringAngle(dt);
 }
 
 void LandingGear::residualUpdate(double dt, double airspeed) {
 	updateBrakeTemperature(dt, 0.0, airspeed);
 	updateTireRotation(dt);
+	updateSteeringAngle(dt);
 }
 
-void LandingGear::updateAnimationFlags() {
-	if (getWOW()) {
-		if (m_GearStructureAnimation.valid())
-			m_GearStructureAnimation->enable();
-		if (m_GearSequenceAnimation.valid())
-			m_GearSequenceAnimation->disable();
-	} else {
-		if (m_GearStructureAnimation.valid())
-			m_GearStructureAnimation->disable();
-		if (m_GearSequenceAnimation.valid())
-			m_GearSequenceAnimation->enable();
-	}
-}
 
-void LandingGear::updateAnimations(double dt) {
-	updateAnimationFlags();
-	if (m_GearStructureAnimation.valid()) {
-		m_GearStructureAnimation->update(getDisplacement(), getTireRotation(), dt);
-	}
-	if (m_GearSequenceAnimation.valid()) {
-		m_GearSequenceAnimation->update(dt);
+void LandingGear::updateAnimation(double dt) {
+	if (m_GearAnimation.valid()) {
+		m_GearAnimation->update(dt);
+
+		// m_Compression responds instantaneously to the ground position.  The
+		// animation should do the same for compression, but needs to be rate
+		// limited for extension (poor simulation of shock absorber dampening
+		// under no load).
+		if (m_Compression >= m_CompressionAnimation) {
+			m_CompressionAnimation = m_Compression;
+		} else {
+			double delta = m_Compression - m_CompressionAnimation;
+			double limit = dt * 0.5; // 0.5 m/s
+			m_CompressionAnimation += simdata::clampTo(delta, -limit, limit);
+		}
+
+		m_GearAnimation->setCompression(m_CompressionAnimation / m_CompressionLimit);
+		m_GearAnimation->setTireRotation(m_TireRotation);
+		if (m_SteeringLimit > 0.0) {
+			m_GearAnimation->setSteeringAngle(toRadians(m_SteerAngle));
+		}
 		if (m_Extend && !b_FullyExtended->value()) {
-			b_FullyExtended->value() = (getExtension() > 0.99);
+			b_FullyExtended->value() = m_GearAnimation->isFullyExtended();
 		} else if (!m_Extend && !b_FullyRetracted->value()) {
-			b_FullyRetracted->value() = (getExtension() < 0.01);
+			b_FullyRetracted->value() = m_GearAnimation->isFullyRetracted();
+		}
+		if (m_Initialize) {
+			m_Initialize = false;
+			m_GearAnimation->forceExtend();
 		}
 	}
 }
 
 double LandingGear::getExtension() const {
-	return !m_GearSequenceAnimation ? 1.0 : m_GearSequenceAnimation->getExtension();
+	return !m_GearAnimation ? 1.0 : m_GearAnimation->getExtension();
 }
 
 void LandingGear::updateBrakeTemperature(double dt, double dissipation, double airspeed) {
@@ -598,24 +620,19 @@ void LandingGear::registerChannels(Bus* bus) {
 	b_FullyRetracted = bus->registerLocalDataChannel<bool>(bus::LandingGear::selectFullyRetracted(getName()), false);
 	b_FullyExtended = bus->registerLocalDataChannel<bool>(bus::LandingGear::selectFullyExtended(getName()), false);
 	b_AntilockBrakingActive = bus->registerLocalDataChannel<bool>(bus::LandingGear::selectAntilockBrakingActive(getName()), false);
-	if (m_GearSequenceAnimation.valid()) {
-		m_GearSequenceAnimation->setGearName(getName());
-		m_GearSequenceAnimation->registerChannels(bus);
+	if (m_GearAnimation.valid()) {
+		m_GearAnimation->setGearName(getName());
+		m_GearAnimation->setCompressionMotion(m_Motion, m_CompressionLimit);
+		m_GearAnimation->registerChannels(bus);
 	} else {
-		CSP_LOG(OBJECT, DEBUG, "GearSequenceAnimation for " << getName() << " not valid");
-	}
-	if (m_GearStructureAnimation.valid()) {
-		m_GearStructureAnimation->setGearName(getName());
-		m_GearStructureAnimation->registerChannels(bus);
-	} else {
-		CSP_LOG(OBJECT, DEBUG, "GearStructureAnimation for " << getName() << " not valid");
+		CSP_LOG(OBJECT, DEBUG, "GearAnimation for " << getName() << " not valid");
 	}
 }
 
 void LandingGear::bindChannels(Bus* bus) {
-	if (m_GearStructureAnimation.valid()) {
-		m_GearStructureAnimation->bindChannels(bus);
-	} 
+	if (m_GearAnimation.valid()) {
+		m_GearAnimation->bindChannels(bus);
+	}
 }
 
 DEFINE_INPUT_INTERFACE(GearDynamics);
@@ -628,6 +645,7 @@ void GearDynamics::doComplexPhysics(double) {
 	Vector3 dynamic_pressure = 0.5 * (b_Density->value()) * airflow_body * airspeed;
 	b_FullyRetracted->value() = true;
 	const size_t n = m_Gear.size();
+	simdata::Vector3 model_origin_local = *m_PositionLocal - m_CenterOfMassOffsetLocal;
 	for (size_t i = 0; i < n; ++i) {
 		LandingGear &gear = *(m_Gear[i]);
 		if (gear.isFullyRetracted()) continue;
@@ -636,11 +654,11 @@ void GearDynamics::doComplexPhysics(double) {
 		// Approx: gear move to center with retraction.  currently LandingGear does not take
 		// extension into account when computing forces, so really only effects wind drag.
 		// at least it _shouldn't_ be common to retract gear while touching the ground...
-		Vector3 R = extension * gear.getPosition();
+		Vector3 R = extension * (gear.getPosition() - b_CenterOfMassOffset->value());  // body (cm) coordinates
 		Vector3 F = Vector3::ZERO;
 		if (b_NearGround->value()) {
 			Vector3 vBody = *m_VelocityBody + (*m_AngularVelocityBody ^ R);
-			F += gear.simulateSubStep(*m_PositionLocal, vBody, *m_Attitude, m_Height, m_GroundNormalBody);
+			F += gear.simulateSubStep(model_origin_local, vBody, *m_Attitude, m_Height, m_GroundNormalBody);
 		}
 		F += extension * gear.getDragFactor() * dynamic_pressure;
 		m_Force += F;
@@ -666,12 +684,16 @@ void GearDynamics::importChannels(Bus *bus) {
 	assert(bus!=0);
 	b_LeftBrakeInput = bus->getChannel(bus::ControlInputs::LeftBrakeInput);
 	b_RightBrakeInput = bus->getChannel(bus::ControlInputs::RightBrakeInput);
-	b_SteeringInput = bus->getChannel(bus::ControlInputs::RudderInput);
+	b_SteeringInput = bus->getChannel(bus::ControlInputs::SteeringInput, false);
+	if (!b_SteeringInput) {
+		b_SteeringInput = bus->getChannel(bus::ControlInputs::RudderInput);
+	}
 	b_Density = bus->getChannel(bus::Conditions::Density);
 	b_WindVelocity = bus->getChannel(bus::Conditions::WindVelocity);
 	b_NearGround = bus->getChannel(bus::Kinetics::NearGround);
 	b_GroundN = bus->getChannel(bus::Kinetics::GroundN);
 	b_GroundZ = bus->getChannel(bus::Kinetics::GroundZ);
+	b_CenterOfMassOffset = bus->getChannel(bus::Kinetics::CenterOfMassOffset);
 	for (unsigned i = 0; i < m_Gear.size(); ++i) {
 		m_Gear[i]->bindChannels(bus);
 	}
@@ -718,9 +740,18 @@ void GearDynamics::preSimulationStep(double dt) {
 	}
 	setBraking(b_LeftBrakeInput->value(), b_RightBrakeInput->value());
 	if (!b_NearGround->value()) return;
+
+	// All internal landing gear calculations are with respect to the model
+	// coordinate frame (which defines the geometric relationship between the
+	// landing gear and the ground).  The center of mass offset, which is the
+	// offset between the model and body frames, doesn't change appreciably
+	// during the update so we compute it once up front.
+	m_CenterOfMassOffsetLocal = m_Attitude->rotate(b_CenterOfMassOffset->value());
+
 	m_WindVelocityBody = m_Attitude->invrotate(b_WindVelocity->value());
 	m_GroundNormalBody = m_Attitude->invrotate(b_GroundN->value());
-	m_Height = m_PositionLocal->z() - b_GroundZ->value();
+	simdata::Vector3 model_origin_local = *m_PositionLocal - m_CenterOfMassOffsetLocal;
+	m_Height = model_origin_local.z() - b_GroundZ->value();
 	size_t n =  m_Gear.size();
 	for (size_t i = 0; i < n; ++i) {
 		m_Gear[i]->preSimulationStep(dt);
@@ -738,11 +769,12 @@ void GearDynamics::postSimulationStep(double dt) {
 		}
 		return;
 	}
-	m_Height = m_PositionLocal->z() - b_GroundZ->value();
+	simdata::Vector3 model_origin_local = *m_PositionLocal - m_CenterOfMassOffsetLocal;
+	m_Height = model_origin_local.z() - b_GroundZ->value();
 	for (size_t i = 0; i < n; ++i) {
-		Vector3 R = m_Gear[i]->getPosition();
+		Vector3 R = m_Gear[i]->getPosition() - b_CenterOfMassOffset->value();  // body (cm) coordinates
 		Vector3 vBody = *m_VelocityBody + (*m_AngularVelocityBody ^ R);
-		m_Gear[i]->postSimulationStep(dt, *m_PositionLocal, vBody, *m_Attitude, m_Height, m_GroundNormalBody);
+		m_Gear[i]->postSimulationStep(dt, model_origin_local, vBody, *m_Attitude, m_Height, m_GroundNormalBody);
 		// generic WOW signal (any gear in contact with the ground triggers it)
 		if (m_Gear[i]->getWOW()) b_WOW->value() = true;
 	}
@@ -753,7 +785,7 @@ double GearDynamics::onUpdate(double dt) {
 	b_FullyExtended->value() = true;
 	b_FullyRetracted->value() = true;
 	for (size_t i = 0; i < n; ++i) {
-		m_Gear[i]->updateAnimations(dt);
+		m_Gear[i]->updateAnimation(dt);
 		const bool fully_extended = m_Gear[i]->isFullyExtended();
 		const bool fully_retracted = m_Gear[i]->isFullyRetracted();
 		if (!fully_extended) b_FullyExtended->value() = false;
@@ -776,9 +808,16 @@ void GearDynamics::getInfo(InfoList &info) const {
 	info.push_back(line.str());
 }
 
+
+bool GearDynamics::allowGearUp() const {
+	return !getWOW();
+}
+
 void GearDynamics::GearUp() {
-	for (unsigned i = 0; i < m_Gear.size(); ++i) m_Gear[i]->retract();
-	b_GearExtendSelected->value() = false;
+	if (allowGearUp()) {
+		for (unsigned i = 0; i < m_Gear.size(); ++i) m_Gear[i]->retract();
+		b_GearExtendSelected->value() = false;
+	}
 }
 
 void GearDynamics::GearDown() {

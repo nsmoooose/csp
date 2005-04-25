@@ -1,49 +1,74 @@
  Version 0.4.0 (in progress)
 ===========================
 
+2005-04-24: onsight
+ * More gear animation refactoring.  Merged the gear sequence and structure
+   animations into a single class.  Split part of TimedSequence into a
+   SharedSequence base class and created a DrivenSequence subclass.
+
+ * Added rate limiting for steering.  This is just a temporary measure until
+   steering control is intergrated into the fcs.
+
+ * Adjusted gear stiffness, damping, and position for the F16.
+
+ * Set the 3D model offset to zero for both the M2k and F16 and added a
+   center of mass offset to DynamicObject.  GlobalPosition now represents
+   the model position and is exported as the Kinetics::ModelPosition channel.
+   The center of mass position replaces the Kinetics::Position channel and is
+   used for physics calculations.  An extra transform node at the top of the
+   scene model provides the necessary offset to rotate around the center of
+   mass.
+
+ * Added a new type of debug marker ("debug_points") to ObjectModel.  These
+   are similar in appearance to contact points (actually, small yellow diamonds
+   instead of large red diamonds) but have no physical interaction.  Should be
+   useful for testing landing gear position and view point.
+
+===> ALL USERS: RebuildData.py
+
 2005-04-24: delta
  * Slight modifications to the python scripts to prepare a new demo. Changes
-   are checked under Demo/Win. py2exe_cspsim_setup.py as well as modified python 
-   scripts are intended to be run from inside CSPSim/Bin (of course, once the 
-   module py2exe is installed). A lot of stuff could be added to this script to 
+   are checked under Demo/Win. py2exe_cspsim_setup.py as well as modified python
+   scripts are intended to be run from inside CSPSim/Bin (of course, once the
+   module py2exe is installed). A lot of stuff could be added to this script to
    make it more robust and facilitate the release of a demo.
-   
+
 2005-04-21: delta
- * Added a facultative (sim)data std::string member (m_NormalizedTimeChannel) 
+ * Added a facultative (sim)data std::string member (m_NormalizedTimeChannel)
    in TimedSequence to warranty different (normalized time) channel names.
-   At some point, a static unsigned int could be used and incremented 
+   At some point, a static unsigned int could be used and incremented
    automatically if a channel name is not provided to assure a 1-1 naming.
-   
- * Wheel steering support has been added; it's controled by 
-   "ControlInputs.RudderInput". F16DJ.osg has been manually modified (adding 
-   a dummy transform node) to allow this binding to work. If this mod could be 
-   done in modeler program, it could save a bit of time on both side, developper 
-   and modeler (the node needs to be named). ModelProcessor::apply has been 
+
+ * Wheel steering support has been added; it's controled by
+   "ControlInputs.RudderInput". F16DJ.osg has been manually modified (adding
+   a dummy transform node) to allow this binding to work. If this mod could be
+   done in modeler program, it could save a bit of time on both side, developper
+   and modeler (the node needs to be named). ModelProcessor::apply has been
    slightly rewritten.
-   
+
  * DrivenRotation::Callback::operator() has changed again. OS? :)
-  
-===> ALL USERS: RebuildData.py  
+
+===> ALL USERS: RebuildData.py
 
 2005-04-17: delta
- * TimedSequence has been slightly modified to allow "multiple" 
-   independant sequences in the same AnimationCallback. It's used in 
-   LandingGear to switch between animations. GearStructureAnimation  
-   passes on implementation to control its animation members. F16's 
+ * TimedSequence has been slightly modified to allow "multiple"
+   independant sequences in the same AnimationCallback. It's used in
+   LandingGear to switch between animations. GearStructureAnimation
+   passes on implementation to control its animation members. F16's
    gear.xml and model.xml have been modified consequently.
- 
+
  * Cosmetic mods to CameraAgent.
- 
- * Added a context id factory (as recommended by osg when using multiple 
-   sceneviews) in VirtualScene. Disabled for now. 
-   
+
+ * Added a context id factory (as recommended by osg when using multiple
+   sceneviews) in VirtualScene. Disabled for now.
+
  * Other minor changes.
- 
+
 2005-04-10: delta
  * Updated vcproj.
- 
- * Minor fixes to the vs build. 
- 
+
+ * Minor fixes to the vs build.
+
 Great job OS!
 
 2005-04-09: onsight
@@ -110,7 +135,7 @@ Great job OS!
    TimedSequence interface.
 
 2005-03-12: delta
- * Reformated GearAnimation and related classes as Systems. Adjusted 
+ * Reformated GearAnimation and related classes as Systems. Adjusted
    xml files consequently. Cleaned up GearDynamics.
 
  * Updated .vcproj for the next check in of OS relative to fcs.
@@ -170,9 +195,9 @@ Great job OS!
 2005-02-21: delta
  * Minor change to the m2k model to correctly retract the right gear.
 
- * Minor patch to CSPSim.py to execute cspinput in case an hid file is 
+ * Minor patch to CSPSim.py to execute cspinput in case an hid file is
    missing. cspinput is not an executable on windows and must be called
-   as an argument of python(.exe). Should be checked on GNU/Linux to be 
+   as an argument of python(.exe). Should be checked on GNU/Linux to be
    sure it doesn't break the stuff there.
 
 2005-02-21: lologramme

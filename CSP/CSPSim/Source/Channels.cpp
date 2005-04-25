@@ -44,6 +44,7 @@ namespace bus {
 	const char *Kinetics::AccelerationBody = "Kinetics.AccelerationBody";
 	const char *Kinetics::Velocity = "Kinetics.Velocity";
 	const char *Kinetics::Position = "Kinetics.Position";
+	const char *Kinetics::ModelPosition = "Kinetics.ModelPosition";
 	const char *Kinetics::NearGround = "Kinetics.NearGround";
 	const char *Kinetics::Mass = "Kinetics.Mass";
 	const char *Kinetics::Inertia= "Kinetics.Inertia";
@@ -53,6 +54,7 @@ namespace bus {
 	const char *Kinetics::Heading = "Kinetics.Heading";
 	const char *Kinetics::Roll = "Kinetics.Roll";
 	const char *Kinetics::Pitch = "Kinetics.Pitch";
+	const char *Kinetics::CenterOfMassOffset = "Kinetics.CenterOfMassOffset";
 
 	const char *FlightDynamics::Alpha = "FlightDynamics.Alpha";
 	const char *FlightDynamics::Beta = "FlightDynamics.Beta";
@@ -75,6 +77,7 @@ namespace bus {
 	const char *ControlInputs::PitchInput = "ControlInputs.PitchInput";
 	const char *ControlInputs::RollInput = "ControlInputs.RollInput";
 	const char *ControlInputs::RudderInput = "ControlInputs.RudderInput";
+	const char *ControlInputs::SteeringInput = "ControlInputs.SteeringInput";
 	const char *ControlInputs::LeftBrakeInput = "ControlInputs.LeftBrakeInput";
 	const char *ControlInputs::RightBrakeInput = "ControlInputs.RightBrakeInput";
 	const char *ControlInputs::ThrottleInput = "ControlInputs.ThrottleInput";

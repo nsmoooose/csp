@@ -37,6 +37,8 @@
  * Tweaked the m2k flight model slightly to allow the aircraft to reach
    higher AOA.  The new values are entirely ad-hoc.
 
+ * Fix a small bug in the F16 yaw control circuit.  Stops rudder jitter.
+
 2005-04-25: delta
  * Need to include a few headers to avoid a syntax error (g++ and vc++ don't
    manage forward class declaration equivalently).

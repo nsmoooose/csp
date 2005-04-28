@@ -21,18 +21,42 @@ class yaw_rate_f(Scale):
 	input = "yaw_rate"
 	gain = RadiansToDegrees
 
-class dr(Adder3):
+class dr(Adder):
 	input_a = "limited_yaw_command"
 	input_b = "yaw_rate_f"
-	input_c = "lateral_acceleration_compensation"
 	gain_b = 0.75
-	gain_c = -0.5
 
 class dr_f(LagFilter):
 	input = "dr"
 	a = 20.2
 
-class lateral_acceleration_compensation(Scale):
-	input = "lateral_acceleration"
-	gain = 19.32 / 9.8  # in g's
+# TODO aoa >= 29 deg
+"""
+class roll_to_yaw_factor(Multiply):
+	input_a = roll_rate  # rad/s
+	input_b = alpha_f    # deg
 
+class yaw_roll_target(Adder):
+	input_a = "yaw_rate"
+	input_b = "roll_to_yaw_factor"
+	gain_a = RadiansToDegrees
+	gain_b = -1.0
+
+class yaw_roll_target_f(LeadLagFilter):
+	input = "yaw_roll_target"
+	a = 15.0
+	b = 5.0
+	c = 3.0
+
+class yaw_roll_target_f2(LeadFilter):
+	input = "yaw_roll_target_f"
+	gain = 1.5
+	a = 1.0
+
+class yaw_target(Adder3):
+	input_a = "yaw_roll_target_f2"
+	input_b = "lateral_acceleration"
+	input_c = "zero" # TODO
+	gain_a = 0.5
+	gain_b = 0.5 * 19.32 / 9.8  # in g's
+"""

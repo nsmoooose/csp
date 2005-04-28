@@ -2,7 +2,7 @@
 <!-- 
      *** WARNING: THIS IS A GENERATED FILE ***
      Think twice before editing this file directly!
-     Generated from /b/mrose/projects/csp/CSP.cockpit/CSP/CSPSim/Tools/FlightControlSystem/F16 at Mon Apr 25 23:45:46 2005
+     Generated from /b/mrose/projects/csp/CSP.cockpit/CSP/CSPSim/Tools/FlightControlSystem/F16 at Wed Apr 27 23:08:32 2005
 -->
 <Object class="FlightControlSystem">
 	<List name="nodes">
@@ -179,13 +179,11 @@
 			<Float name="dlef_qbar_ps">-9.05</Float>
 		</Object>
 
-		<Object class="Adder3">
+		<Object class="Adder">
 			<Key name="id">dr</Key>
 			<Float name="gain_b">0.75</Float>
-			<Float name="gain_c">-0.5</Float>
 			<Key name="input_a">limited_yaw_command</Key>
 			<Key name="input_b">yaw_rate_f</Key>
-			<Key name="input_c">lateral_acceleration_compensation</Key>
 		</Object>
 
 		<Object class="LagFilter">
@@ -322,12 +320,6 @@
 		<Object class="InputVectorXChannel">
 			<Key name="id">lateral_acceleration</Key>
 			<String name="channel">Kinetics.AccelerationBody</String>
-		</Object>
-
-		<Object class="Scale">
-			<Key name="id">lateral_acceleration_compensation</Key>
-			<Float name="gain">1.97142857143</Float>
-			<Key name="input">lateral_acceleration</Key>
 		</Object>
 
 		<Object class="OutputChannel">
@@ -540,6 +532,12 @@
 			<Key name="input">de_right_f</Key>
 			<Float name="rate_limit_dec">-1.0471975512</Float>
 			<Float name="rate_limit_inc">1.0471975512</Float>
+		</Object>
+
+		<!-- Roll rate in radians/sec. -->
+		<Object class="InputVectorYChannel">
+			<Key name="id">roll_rate</Key>
+			<String name="channel">Kinetics.AngularVelocityBody</String>
 		</Object>
 
 		<Object class="OutputChannel">

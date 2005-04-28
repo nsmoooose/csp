@@ -33,9 +33,9 @@ class pitch_rate(InputVectorXChannel):
 	"""Pitch rate in radians/sec."""
 	channel = "Kinetics.AngularVelocityBody"
 
-#class roll_rate(InputVectorYChannel):
-#	"""Roll rate in radians/sec."""
-#	channel = "Kinetics.AngularVelocityBody"
+class roll_rate(InputVectorYChannel):
+	"""Roll rate in radians/sec."""
+	channel = "Kinetics.AngularVelocityBody"
 
 class yaw_rate(InputVectorZChannel):
 	"""Yaw rate in radians/sec."""

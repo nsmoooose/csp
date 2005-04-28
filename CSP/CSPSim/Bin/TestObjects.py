@@ -38,7 +38,8 @@ def createBalkan(app):
 	v = SimData.Vector3
 	m = SimData.LLA()
 	vehicle = app.createVehicle
-	vehicle("sim:vehicles.aircraft.m2k", v(-29495, -10530, 88.5), v(0, 0, 0), v(0.0, 0.0, 180.0))
+	vehicle("sim:vehicles.aircraft.F16DJ", v(-29495, -10530, 87.8), v(0, 0, 0), v(0.0, 0.0, 180.0))
+	vehicle("sim:vehicles.aircraft.m2k", v(-29510, -10530, 87.8), v(0, 0, 0), v(0.0, 0.0, 180.0))
 	#vehicle("sim:vehicles.aircraft.m2k", v(-29413, -10980, 98.75), v(0, 100.0, 0), v(5.0, 0.0, 180.0))
 	#vehicle("sim:vehicles.aircraft.m2k", v(-29413, -10980, 108.75), v(0, 100.0, 0), v(5.0, 0.0, 180.0))
 	#vehicle("sim:vehicles.aircraft.m2k", v(-29413, -10980, 118.75), v(0, 100.0, 0), v(5.0, 0.0, 180.0))

@@ -41,6 +41,10 @@
 
  * Fix potential problem with the .ini path test at startup.
 
+ * Add both an F16 and an M2k at startup.  Minor adjustments to the initial
+   elevation so they don't fall and bounce.  Use <spacebar> to toggle between
+   them.
+
 2005-04-25: delta
  * Need to include a few headers to avoid a syntax error (g++ and vc++ don't
    manage forward class declaration equivalently).

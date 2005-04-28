@@ -196,26 +196,27 @@ private:
 };
 
 
-// XXX fixme this is still just a lag filter... need to implement leadlag
+/** Lead-lag filter:  H(s) = c * (s + a) / (s + b)
+ *  NB: no frequency prewarping is applied in generating the IIR digital filter.
+ */
 class LeadLagFilter: public Junction1 {
-	double m_A, m_B;
+	double m_A, m_B, m_C;
 	double m_Input0;
 public:
 	SIMDATA_OBJECT(LeadLagFilter, 0, 0)
 	EXTEND_SIMDATA_XML_INTERFACE(LeadLagFilter, Junction1)
 		SIMDATA_XML("a", LeadLagFilter::m_A, true)
 		SIMDATA_XML("b", LeadLagFilter::m_B, true)
+		SIMDATA_XML("c", LeadLagFilter::m_C, true)
 	END_SIMDATA_XML_INTERFACE
-	LeadLagFilter(): m_A(0.0), m_B(0.0), m_Input0(0.0) { }
-protected:
-	void postCreate() {
-		m_A *= 0.1592;
-	}
+	LeadLagFilter(): m_A(0.0), m_B(0.0), m_C(0.0), m_Input0(0.0) { }
 private:
 	void evaluate(Timer const &timer) {
-		double input = getInput(timer);
-		double output = getOutput();
-		setOutput(output + timer.dt() * m_A * (0.5 * (input + m_Input0) - output), timer);
+		const double input = getInput(timer) * m_C;
+		const double output = getOutput();
+		const double a = m_A * timer.dt();
+		const double b = m_B * timer.dt();
+		setOutput(((2.0 - b) * output + (a + 2.0) * input + (a - 2.0) * m_Input0) / (2.0 + b) , timer);
 		m_Input0 = input;
 	}
 };
@@ -400,6 +401,33 @@ private:
 };
 
 
+/** A three channel junction that passes either input channel A or
+ *  input channel B depending whether input channel C is true or
+ *  false.
+ *
+ *  XML interface:
+ *    input_c: The name of a boolean channel that is used to select
+ *      input channel A (true) or input channel B (false).
+ */
+class BooleanSwitch: public Junction2 {
+	DataChannel<bool>::CRef m_InputC;
+	std::string m_SwitchChannel;
+public:
+	SIMDATA_OBJECT(BooleanSwitch, 0, 0)
+	EXTEND_SIMDATA_XML_INTERFACE(BooleanSwitch, Junction2)
+		SIMDATA_XML("channel", BooleanSwitch::m_SwitchChannel, true)
+	END_SIMDATA_XML_INTERFACE
+	virtual void importChannels(Bus *bus) {
+		Junction2::importChannels(bus);
+		m_InputC = bus->getChannel(m_SwitchChannel);
+	}
+private:
+	virtual void evaluate(Timer const &timer) {
+		setOutput(m_InputC->value() ? getInputA(timer) : getInputB(timer), timer);
+	}
+};
+
+
 /** A simple control node that provides a constant output value.  The
  *  output value is specified by the XML interface.
  */
@@ -434,7 +462,6 @@ public:
 		SIMDATA_XML("channel", InputChannel::m_Name, true)
 	END_SIMDATA_XML_INTERFACE
 	InputChannel() { }
-	//void connect(Bus *bus) {
 	virtual void importChannels(Bus *bus) {
 		DataChannelBase::CRef channel;
 		channel = bus->getChannel(m_Name);
@@ -529,6 +556,7 @@ public:
 	}
 	void bindRecorder(DataRecorder *recorder) const {
 		if (recorder) {
+			CSP_LOG(APP, INFO, "Binding channel to recorder " << m_Channel->getName());
 			recorder->addSource(m_Channel);
 		}
 	}
@@ -707,6 +735,7 @@ SIMDATA_REGISTER_INTERFACE(InputScalarChannel)
 SIMDATA_REGISTER_INTERFACE(Schedule1)
 SIMDATA_REGISTER_INTERFACE(Schedule2)
 SIMDATA_REGISTER_INTERFACE(Switch)
+SIMDATA_REGISTER_INTERFACE(BooleanSwitch)
 SIMDATA_REGISTER_INTERFACE(Scale)
 SIMDATA_REGISTER_INTERFACE(Constant)
 SIMDATA_REGISTER_INTERFACE(Multiply)

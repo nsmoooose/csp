@@ -36,12 +36,7 @@ using bus::Kinetics;
 SIMDATA_REGISTER_INTERFACE(GroundCollisionDynamics)
 
 
-//GroundCollisionDynamics::GroundCollisionDynamics(double mass,
-//                                                 std::vector<simdata::Vector3> const &contacts):
 GroundCollisionDynamics::GroundCollisionDynamics():
-	//m_Forces(contacts.size()),
-	//m_Extension(contacts.size()),
-	//m_Contacts(contacts),
 	m_ContactSpring(1e+5),
 	m_SpringConstant(5e+6),
 	m_Friction(1.2),
@@ -86,7 +81,8 @@ void GroundCollisionDynamics::computeForceAndMoment(double) {
 
 	if (!b_NearGround->value()) return;
 
-	double height = m_PositionLocal->z() - b_GroundZ->value();
+	const simdata::Vector3 model_position = getModelPositionLocal();
+	const double height = model_position.z() - b_GroundZ->value();
 	simdata::Quat const &q = *m_Attitude;
 	simdata::Vector3 const &velocityBody = *m_VelocityBody;
 	simdata::Vector3 const &angularVelocityBody = *m_AngularVelocityBody;

@@ -113,6 +113,8 @@ class Schedule2(Node): pass
 class Scale(Node): pass
 class Lesser(Node): pass
 class Greater(Node): pass
+class Switch(Node): pass
+class BooleanSwitch(Node): pass
 class Constant(Node): pass
 class Integrator(Node): pass
 class Divide(Node): pass

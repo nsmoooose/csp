@@ -1,12 +1,48 @@
  Version 0.4.0 (in progress)
 ===========================
 
+2005-04-27: onsight
+ * Remove dead code from PhysicsModel and BaseDynamics.
+
+ * Add a dynamics variable to PhysicsModel and BaseDynamics to access the
+   center of mass offset in local coordinates during the numerical
+   integration.  This is useful for dynamics classes that need to compute
+   force based on the physical location of the aircraft (e.g. ground
+   collisions and landing gear).  This position is also available via the
+   Kinetics::ModelPosition channel, but the channel is only updated after
+   each time step.
+
+ * Added dedicated channels for wheel brake and steering command, one each
+   per landing gear.  The fcs is now used to connect the actual input
+   channels (e.g., rudder input) to the corresponding landing gear channels.
+   This makes it relatively easy to insert aircraft-specific logic, such as
+   disabling nose wheel steering when no WOW signal from the front landing
+   gear.  Added corresponding fcs logic for the f16 and m2k.
+
+ * Fixed a bug that prevented FCS output channels from binding to the data
+   recorder.
+
+ * Improved gear response modelling when the shock absorber is extending
+   rapidly.
+
+ * Implemented a LeadLagFilter control node for the fcs and added a
+   BooleanSwitch class to select between two input channels using a
+   boolean channel.
+
+ * Added a FlightControlSystem based fcs for the m2k.  Implements simple
+   g-limiting using parts of the f16 fcs circuit.  Also handle combining
+   elevator and aileron signals to deflect the trailing edge control
+   surfaces.  Simplifies the m2k animation definitions somewhat.
+
+ * Tweaked the m2k flight model slightly to allow the aircraft to reach
+   higher AOA.  The new values are entirely ad-hoc.
+
 2005-04-25: delta
- * Need to include a few headers to avoid a syntax error (g++ and vc++ don't 
+ * Need to include a few headers to avoid a syntax error (g++ and vc++ don't
    manage forward class declaration equivalently).
-   
+
  * Avoid a few warnings.
- 
+
  * Other minor changes.
 
 2005-04-24: onsight

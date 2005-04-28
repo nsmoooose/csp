@@ -72,7 +72,6 @@ public:
 		SIMDATA_XML("tire_beta", LandingGear::m_TireBeta, false)
 		SIMDATA_XML("abs", LandingGear::m_ABS, false)
 		SIMDATA_XML("rolling_friction", LandingGear::m_RollingFriction, false)
-		SIMDATA_XML("brake_steering_linkage", LandingGear::m_BrakeSteeringLinkage, false)
 		SIMDATA_XML("drag_factor", LandingGear::m_DragFactor, false)
 		SIMDATA_XML("gear_animation", LandingGear::m_GearAnimation, false)
 	END_SIMDATA_XML_INTERFACE
@@ -131,20 +130,11 @@ public:
 	// Retract the gear and trigger the gear extension animation.
 	void retract();
 
-	// Set the steering angle (in radians).  The link_brakes parameter is used to
-	// drive the brakes on non-steering wheels.  Braking is set to link_brakes times
-	// the value of brake_steering_linkage (see the XML interface), where 1.0 is full
-	// braking and values less than zero release the brake.
-	double setSteering(double setting, double link_brakes);
-
-	// Set the braking value, where 1.0 is full braking and 0.0 is fully released.
-	void setBraking(double setting);
-
 	// Enable or disable anti-lock braking.
 	void setABS(bool antiskid) { m_ABS = antiskid; }
 
-	// Get the current steering angle (as set by setSteering).
-	double getSteeringAngle() const { return m_SteerAngle; }
+	// Get the current steering angle in degrees.
+	double getSteeringAngle() const { return m_SteeringAngle; }
 
 	// Returns a drag coefficient between 0.0 when fully retracted and drag_factor
 	// (see the XML interface) when fully extended.
@@ -196,7 +186,8 @@ protected:
 	                 simdata::Quat const &q,
 	                 simdata::Vector3 const &normalGroundBody,
 	                 bool updateContact);
-	void updateSuspension(simdata::Vector3 const &origin,
+	void updateSuspension(const double dt,
+	                      simdata::Vector3 const &origin,
 	                      simdata::Vector3 const &vBody,
 	                      simdata::Quat const &q,
 	                      double const height,
@@ -216,16 +207,12 @@ protected:
 	double m_Beta;
 	double m_Compression;
 	double m_CompressionLimit;
-	double m_CompressionAnimation;
 	double m_Damage;
 
 	double m_Brake;
 	double m_BrakeLimit;
-	double m_BrakeSetting;
 	double m_BrakeFriction;
 	double m_BrakeSlip;
-	double m_BrakeSteeringLinkage;
-	double m_BrakeSteer;
 	double m_BrakeTemperature;
 	simdata::Real m_RollingFriction;
 
@@ -239,7 +226,7 @@ protected:
 	double m_TireRadius;
 	simdata::Vector3 m_TireContactPoint;
 
-	double m_SteerAngle;
+	double m_SteeringAngle;
 	double m_SteeringLimit;
 	double m_TargetSteerAngle;
 	simdata::Quat m_SteerTransform;
@@ -249,6 +236,10 @@ protected:
 	DataChannel<bool>::Ref b_FullyRetracted;
 	DataChannel<bool>::Ref b_WOW;
 	DataChannel<bool>::Ref b_AntilockBrakingActive;
+
+	// Import controls
+	DataChannel<double>::CRef b_BrakeCommand;
+	DataChannel<double>::CRef b_SteeringCommand;
 
 	bool m_Initialize;
 	bool m_Extend;
@@ -315,15 +306,6 @@ public:
 	// Returns true if any wheel is in contact with the ground.
 	bool getWOW() const;
 
-	// Sets the braking of the left and right wheels, where 1.0 is full braking and
-	// 0.0 is full release.
-	void setBraking(double left, double right);
-
-	// Set the steering angle in radians.  If link_brakes is 1.0 any landing gear
-	// marked for linked braking will apply or release brake pressure to assist in
-	// steering.
-	void setSteering(double x, double link_brakes=1.0);
-
 	virtual void preSimulationStep(double dt);
 	virtual void postSimulationStep(double dt);
 	void computeForceAndMoment(double x);
@@ -336,9 +318,6 @@ protected:
 	DataChannel<bool>::Ref b_FullyExtended;
 	DataChannel<bool>::Ref b_WOW;
 	DataChannel<bool>::CRef b_NearGround;
-	DataChannel<double>::CRef b_LeftBrakeInput;
-	DataChannel<double>::CRef b_RightBrakeInput;
-	DataChannel<double>::CRef b_SteeringInput;
 	DataChannel<double>::CRef b_Density;
 	DataChannel<double>::CRef b_GroundZ;
 	DataChannel<simdata::Vector3>::CRef b_GroundN;

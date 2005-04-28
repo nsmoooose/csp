@@ -3,6 +3,7 @@
 <Object class="SystemsModel">
 	<List name="subsystems">
 		<Object class="AircraftInputSystem" />
+		<!--
 		<Object class="AircraftSimpleFCS">
 			<Float name="elevator_limit0">-16.0</Float>
 			<Float name="elevator_limit1">25.0</Float>
@@ -17,7 +18,9 @@
 			<Float name="max_g">7.0</Float>
 			<Float name="min_g">-2.0</Float>
 		</Object>
+		-->
 		<Object class="AircraftFlightSensors" />
+		<Path class="FlightControlSystem">fcs</Path>
 	</List>
 
 	<Object class="RemoteController" name="remote_controller" />

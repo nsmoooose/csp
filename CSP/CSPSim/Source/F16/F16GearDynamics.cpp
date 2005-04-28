@@ -78,9 +78,3 @@ void F16GearDynamics::postCreate() {
 	assert(m_RightMainLandingGear->getName() == "RightGear");
 }
 
-void F16GearDynamics::setSteering(double x, double link_brakes) {
-	if (m_NoseLandingGear->getWOW()) {
-		m_NoseLandingGear->setSteering(x, link_brakes);
-	}
-}
-

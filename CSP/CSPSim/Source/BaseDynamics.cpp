@@ -42,31 +42,16 @@ BaseDynamics::~BaseDynamics() {
 void BaseDynamics::bindKinematics(simdata::Vector3 const &position_local,
                                   simdata::Vector3 const &velocity_body,
                                   simdata::Vector3 const &angular_velocity_body,
-                                  simdata::Quat const &attitude)
+                                  simdata::Quat const &attitude,
+                                  simdata::Vector3 const &center_of_mass_offset_local)
 {
 	m_PositionLocal = &position_local;
 	m_VelocityBody = &velocity_body;
 	m_AngularVelocityBody = &angular_velocity_body;
 	m_Attitude = &attitude;
+	m_CenterOfMassOffsetLocal = &center_of_mass_offset_local;
 }
 
-#if 0
-void BaseDynamics::bindGroundParameters(bool const &near_ground,
-                                        double const &height,
-                                        simdata::Vector3 const &normal_ground)
-{
-	m_NearGround = &near_ground;
-	m_Height = &height;
-	m_NormalGround = &normal_ground;
-}
-
-void BaseDynamics::bindAeroParameters(double const &qbar,
-                                      simdata::Vector3 const &wind_body)
-{
-	m_qBar = &qbar;
-	m_WindBody = &wind_body;
-}
-#endif
 
 void BaseDynamics::initializeSimulationStep(double /*dt*/)
 {

@@ -2,7 +2,7 @@
 <!-- 
      *** WARNING: THIS IS A GENERATED FILE ***
      Think twice before editing this file directly!
-     Generated from /b/mrose/projects/csp/CSP.cockpit/CSP/CSPSim/Tools/FlightControlSystem/F16 at Mon Apr 25 23:45:46 2005
+     Generated from /b/mrose/projects/csp/CSP.cockpit/CSP/CSPSim/Tools/FlightControlSystem/m2k at Wed Apr 27 19:23:29 2005
 -->
 <Object class="FlightControlSystem">
 	<List name="nodes">
@@ -16,32 +16,10 @@
 		<Object class="OutputChannel">
 			<Key name="id">aileron_deflection</Key>
 			<String name="channel">ControlSurfaces.AileronDeflection</String>
-			<Float name="clamp_hi">0.375245789179</Float>
-			<Float name="clamp_lo">-0.375245789179</Float>
+			<Float name="clamp_hi">0.436332312999</Float>
+			<Float name="clamp_lo">-0.279252680319</Float>
 			<Float name="gain">0.0174532925199</Float>
 			<Key name="input">da_f</Key>
-			<Float name="rate_limit_dec">-1.3962634016</Float>
-			<Float name="rate_limit_inc">1.3962634016</Float>
-		</Object>
-
-		<Object class="OutputChannel">
-			<Key name="id">aileron_deflection_left</Key>
-			<String name="channel">ControlSurfaces.LeftAileronDeflection</String>
-			<Float name="clamp_hi">0.375245789179</Float>
-			<Float name="clamp_lo">-0.375245789179</Float>
-			<Float name="gain">0.0174532925199</Float>
-			<Key name="input">da_left</Key>
-			<Float name="rate_limit_dec">-1.3962634016</Float>
-			<Float name="rate_limit_inc">1.3962634016</Float>
-		</Object>
-
-		<Object class="OutputChannel">
-			<Key name="id">aileron_deflection_right</Key>
-			<String name="channel">ControlSurfaces.RightAileronDeflection</String>
-			<Float name="clamp_hi">0.375245789179</Float>
-			<Float name="clamp_lo">-0.375245789179</Float>
-			<Float name="gain">0.0174532925199</Float>
-			<Key name="input">da_right</Key>
 			<Float name="rate_limit_dec">-1.3962634016</Float>
 			<Float name="rate_limit_inc">1.3962634016</Float>
 		</Object>
@@ -79,72 +57,33 @@
 		</Object>
 
 		<Object class="Adder">
-			<Key name="id">compensated_elevator_deviation</Key>
-			<Float name="gain_b">-5.0</Float>
-			<Key name="input_a">reduced_elevator_deviation</Key>
-			<Key name="input_b">elevator_compensation</Key>
-		</Object>
-
-		<Object class="OutputChannel">
-			<Key name="id">compensated_elevator_deviation_output</Key>
-			<String name="channel">FCS.CompensatedElevatorDeviation</String>
-			<Key name="input">compensated_elevator_deviation</Key>
-		</Object>
-
-		<Object class="Adder">
-			<Key name="id">da</Key>
-			<Float name="gain_a">0.5</Float>
-			<Float name="gain_b">-0.5</Float>
-			<Key name="input_a">da_left</Key>
-			<Key name="input_b">da_right</Key>
-		</Object>
-
-		<Object class="LagFilter">
 			<Key name="id">da_f</Key>
-			<Float name="a">20.2</Float>
-			<Key name="input">da</Key>
-		</Object>
-
-		<Object class="Adder">
-			<Key name="id">da_left</Key>
-			<Float name="clamp_hi">21.5</Float>
-			<Float name="clamp_lo">-21.5</Float>
-			<Key name="input_a">da_program</Key>
-			<Key name="input_b">dtef</Key>
-		</Object>
-
-		<Object class="RollLimiterControl">
-			<Key name="id">da_program</Key>
-			<Table1 name="roll_command_schedule" method="linear">
-				<Breaks0 spacing="10.0">-80.0 -45.0 -25.0 -5.0 5.0 25.0 45.0 80.0</Breaks0>
-				<Values>-308.0 -90.0 -20.0 0.0 0.0 20.0 90.0 308.0</Values>
-			</Table1>
-		</Object>
-
-		<Object class="Adder">
-			<Key name="id">da_right</Key>
-			<Float name="clamp_hi">21.5</Float>
-			<Float name="clamp_lo">-21.5</Float>
-			<Float name="gain_a">-1.0</Float>
-			<Key name="input_a">da_program</Key>
-			<Key name="input_b">dtef</Key>
+			<Float name="gain_a">-0.5</Float>
+			<Float name="gain_b">0.5</Float>
+			<Key name="input_a">de_left_f</Key>
+			<Key name="input_b">de_right_f</Key>
 		</Object>
 
 		<Object class="Scale">
-			<Key name="id">de</Key>
-			<Key name="input">elevator_pitch_deflection_command</Key>
+			<Key name="id">da_program</Key>
+			<Float name="gain">25.0</Float>
+			<Key name="input">roll_control</Key>
 		</Object>
 
-		<Object class="LagFilter">
+		<Object class="Adder">
 			<Key name="id">de_f</Key>
-			<Float name="a">20.2</Float>
-			<Float name="gain">-0.0174532925199</Float>
-			<Key name="input">de</Key>
+			<Float name="gain_a">0.5</Float>
+			<Float name="gain_b">0.5</Float>
+			<Key name="input_a">de_left_f</Key>
+			<Key name="input_b">de_right_f</Key>
 		</Object>
 
 		<Object class="Adder">
 			<Key name="id">de_left</Key>
-			<Float name="gain_b">0.25</Float>
+			<Float name="clamp_hi">25</Float>
+			<Float name="clamp_lo">-16</Float>
+			<Float name="gain_a">-1.0</Float>
+			<Float name="gain_b">-1.0</Float>
 			<Key name="input_a">elevator_pitch_deflection_command</Key>
 			<Key name="input_b">da_program</Key>
 		</Object>
@@ -152,13 +91,15 @@
 		<Object class="LagFilter">
 			<Key name="id">de_left_f</Key>
 			<Float name="a">20.2</Float>
-			<Float name="gain">-0.0174532925199</Float>
 			<Key name="input">de_left</Key>
 		</Object>
 
 		<Object class="Adder">
 			<Key name="id">de_right</Key>
-			<Float name="gain_b">-0.25</Float>
+			<Float name="clamp_hi">25</Float>
+			<Float name="clamp_lo">-16</Float>
+			<Float name="gain_a">-1.0</Float>
+			<Float name="gain_b">1.0</Float>
 			<Key name="input_a">elevator_pitch_deflection_command</Key>
 			<Key name="input_b">da_program</Key>
 		</Object>
@@ -166,64 +107,24 @@
 		<Object class="LagFilter">
 			<Key name="id">de_right_f</Key>
 			<Float name="a">20.2</Float>
-			<Float name="gain">-0.0174532925199</Float>
 			<Key name="input">de_right</Key>
-		</Object>
-
-		<!-- Leading edge flap deflection in degrees (positive = extended). -->
-		<Object class="LeadingEdgeFlapControl">
-			<Key name="id">dlef</Key>
-			<Float name="dlef_alpha">79.068</Float>
-			<Float name="dlef_ground_deflection">-2.0</Float>
-			<Float name="dlef_offset">1.45</Float>
-			<Float name="dlef_qbar_ps">-9.05</Float>
-		</Object>
-
-		<Object class="Adder3">
-			<Key name="id">dr</Key>
-			<Float name="gain_b">0.75</Float>
-			<Float name="gain_c">-0.5</Float>
-			<Key name="input_a">limited_yaw_command</Key>
-			<Key name="input_b">yaw_rate_f</Key>
-			<Key name="input_c">lateral_acceleration_compensation</Key>
-		</Object>
-
-		<Object class="LagFilter">
-			<Key name="id">dr_f</Key>
-			<Float name="a">20.2</Float>
-			<Key name="input">dr</Key>
 		</Object>
 
 		<!-- Speed brake deflection angle in degrees. -->
 		<Object class="Lesser">
 			<Key name="id">dsb</Key>
 			<Float name="gain_a">60.0</Float>
+			<Float name="gain_b">60.0</Float>
 			<Key name="input_a">speedbrake_control</Key>
-			<Key name="input_b">speedbrake_limit</Key>
-		</Object>
-
-		<!-- Trailing edge flap deflection in degrees (positive = extended). -->
-		<Object class="TrailingEdgeFlapControl">
-			<Key name="id">dtef</Key>
-			<Float name="airspeed_break1">240.0</Float>
-			<Float name="airspeed_break2">370.0</Float>
-			<Float name="deflection_limit">20.0</Float>
-		</Object>
-
-		<Object class="Schedule1">
-			<Key name="id">elevator_compensation</Key>
-			<Key name="input">elevator_pitch_deflection_command</Key>
-			<Table1 name="schedule" method="linear">
-				<Breaks0 spacing="25.0">-125.0 -25.0 25.0 125.0</Breaks0>
-				<Values>-100.0 0.0 0.0 100.0</Values>
-			</Table1>
+			<Key name="input_b">one</Key>
 		</Object>
 
 		<Object class="OutputChannel">
 			<Key name="id">elevator_deflection</Key>
 			<String name="channel">ControlSurfaces.ElevatorDeflection</String>
 			<Float name="clamp_hi">0.436332312999</Float>
-			<Float name="clamp_lo">-0.436332312999</Float>
+			<Float name="clamp_lo">-0.279252680319</Float>
+			<Float name="gain">0.0174532925199</Float>
 			<Key name="input">de_f</Key>
 			<Float name="rate_limit_dec">-1.0471975512</Float>
 			<Float name="rate_limit_inc">1.0471975512</Float>
@@ -233,7 +134,7 @@
 			<Key name="id">elevator_deviation</Key>
 			<Float name="gain_a">-1.0</Float>
 			<Key name="input_a">limited_g_command_f</Key>
-			<Key name="input_b">pitch_limiter</Key>
+			<Key name="input_b">target_f</Key>
 		</Object>
 
 		<Object class="Integrator">
@@ -241,7 +142,7 @@
 			<Float name="clamp_hi">25.0</Float>
 			<Float name="clamp_lo">-25.0</Float>
 			<Float name="gain">5.0</Float>
-			<Key name="input">compensated_elevator_deviation</Key>
+			<Key name="input">reduced_elevator_deviation</Key>
 		</Object>
 
 		<Object class="OutputChannel">
@@ -256,12 +157,13 @@
 			<Key name="input">elevator_deviation</Key>
 		</Object>
 
-		<Object class="Adder3">
+		<Object class="Adder">
 			<Key name="id">elevator_pitch_deflection_command</Key>
-			<Float name="gain_c">28.6478897565</Float>
+			<Float name="clamp_hi">16</Float>
+			<Float name="clamp_lo">-25</Float>
+			<Float name="gain_a">8.0</Float>
 			<Key name="input_a">reduced_elevator_deviation</Key>
 			<Key name="input_b">elevator_deviation_integrator</Key>
-			<Key name="input_c">alpha_f</Key>
 		</Object>
 
 		<Object class="OutputChannel">
@@ -270,20 +172,35 @@
 			<Key name="input">elevator_pitch_deflection_command</Key>
 		</Object>
 
-		<Object class="LeadFilter">
-			<Key name="id">filtered_pitch_rate</Key>
-			<Float name="a">1.0</Float>
-			<Float name="gain">57.2957795131</Float>
-			<Key name="input">pitch_rate</Key>
+		<Object class="OutputChannel">
+			<Key name="id">elevron_deflection_left</Key>
+			<String name="channel">ControlSurfaces.LeftElevronDeflection</String>
+			<Float name="clamp_hi">0.436332312999</Float>
+			<Float name="clamp_lo">-0.279252680319</Float>
+			<Float name="gain">0.0174532925199</Float>
+			<Key name="input">de_left_f</Key>
+			<Float name="rate_limit_dec">-1.3962634016</Float>
+			<Float name="rate_limit_inc">1.3962634016</Float>
+		</Object>
+
+		<Object class="OutputChannel">
+			<Key name="id">elevron_deflection_right</Key>
+			<String name="channel">ControlSurfaces.RightElevronDeflection</String>
+			<Float name="clamp_hi">0.436332312999</Float>
+			<Float name="clamp_lo">-0.279252680319</Float>
+			<Float name="gain">0.0174532925199</Float>
+			<Key name="input">de_right_f</Key>
+			<Float name="rate_limit_dec">-1.3962634016</Float>
+			<Float name="rate_limit_inc">1.3962634016</Float>
 		</Object>
 
 		<Object class="OutputChannel">
 			<Key name="id">filtered_pitch_rate_output</Key>
 			<String name="channel">FCS.FilteredPitchRate</String>
-			<Key name="input">filtered_pitch_rate</Key>
+			<Key name="input">pitch_rate_f</Key>
 		</Object>
 
-		<!-- NASA-79-tp1538 page 212 -->
+		<!-- NASA-79-tp1538 page 212 (F-16A) -->
 		<Object class="Schedule1">
 			<Key name="id">g_command</Key>
 			<Float name="gain">180.0</Float>
@@ -324,23 +241,6 @@
 			<String name="channel">Kinetics.AccelerationBody</String>
 		</Object>
 
-		<Object class="Scale">
-			<Key name="id">lateral_acceleration_compensation</Key>
-			<Float name="gain">1.97142857143</Float>
-			<Key name="input">lateral_acceleration</Key>
-		</Object>
-
-		<Object class="OutputChannel">
-			<Key name="id">leading_edge_deflection</Key>
-			<String name="channel">ControlSurfaces.LeadingEdgeDeflection</String>
-			<Float name="clamp_hi">0.436332312999</Float>
-			<Float name="clamp_lo">-0.0349065850399</Float>
-			<Float name="gain">0.0174532925199</Float>
-			<Key name="input">dlef</Key>
-			<Float name="rate_limit_dec">-0.436332312999</Float>
-			<Float name="rate_limit_inc">0.436332312999</Float>
-		</Object>
-
 		<Object class="Adder">
 			<Key name="id">left_brake_channel</Key>
 			<Float name="clamp_hi">1.0</Float>
@@ -365,16 +265,6 @@
 			<String name="channel">ControlInputs.LeftBrakeInput</String>
 		</Object>
 
-		<Object class="OutputChannel">
-			<Key name="id">left_elevator_deflection</Key>
-			<String name="channel">ControlSurfaces.LeftElevatorDeflection</String>
-			<Float name="clamp_hi">0.436332312999</Float>
-			<Float name="clamp_lo">-0.436332312999</Float>
-			<Key name="input">de_left_f</Key>
-			<Float name="rate_limit_dec">-1.0471975512</Float>
-			<Float name="rate_limit_inc">1.0471975512</Float>
-		</Object>
-
 		<Object class="Adder">
 			<Key name="id">limited_g_command</Key>
 			<Key name="input_a">negative_g_limit</Key>
@@ -393,35 +283,17 @@
 			<Key name="input">limited_g_command_f</Key>
 		</Object>
 
-		<Object class="Schedule2">
-			<Key name="id">limited_yaw_command</Key>
-			<Key name="input_a">yaw_command_schedule</Key>
-			<Key name="input_b">alpha_f</Key>
-			<Table1 name="schedule" method="linear">
-				<Breaks0 spacing="10.0">-180.0 20.0 30.0 180.0</Breaks0>
-				<Values>1.0 1.0 0.0 0.0</Values>
-			</Table1>
-		</Object>
-
-		<Object class="Greater">
+		<Object class="Scale">
 			<Key name="id">negative_g_limit</Key>
 			<Float name="clamp_hi">0.0</Float>
-			<Key name="input_a">trimmed_g_command</Key>
-			<Key name="input_b">negative_g_schedule</Key>
+			<Float name="clamp_lo">-3.0</Float>
+			<Key name="input">trimmed_g_command</Key>
 		</Object>
 
 		<Object class="OutputChannel">
 			<Key name="id">negative_g_limit_output</Key>
 			<String name="channel">FCS.NegativeGLimit</String>
 			<Key name="input">negative_g_limit</Key>
-		</Object>
-
-		<Object class="Scale">
-			<Key name="id">negative_g_schedule</Key>
-			<Float name="clamp_hi">-1.0</Float>
-			<Float name="clamp_lo">-4.0</Float>
-			<Float name="gain">-0.000444</Float>
-			<Key name="input">qbar</Key>
 		</Object>
 
 		<Object class="BooleanSwitch">
@@ -447,22 +319,22 @@
 			<Key name="input">pitch_control</Key>
 		</Object>
 
-		<!-- F16 G/AoA limiter circuit. -->
-		<Object class="PitchLimiterControl">
-			<Key name="id">pitch_limiter</Key>
-			<Float name="alpha_break1">15.0</Float>
-			<Float name="alpha_break2">20.4</Float>
-			<Key name="filtered_alpha">alpha_f</Key>
-			<Table1 name="pitch_rate_schedule" method="linear">
-				<Breaks0 spacing="5000.0">0.0 5000.0 15000.0 200000.0</Breaks0>
-				<Values>1.0 1.0 0.35 0.35</Values>
-			</Table1>
+		<Object class="OutputChannel">
+			<Key name="id">pitch_input</Key>
+			<String name="channel">FCS.dE</String>
+			<Key name="input">de_f</Key>
 		</Object>
 
 		<!-- Pitch rate in radians/sec. -->
 		<Object class="InputVectorXChannel">
 			<Key name="id">pitch_rate</Key>
 			<String name="channel">Kinetics.AngularVelocityBody</String>
+		</Object>
+
+		<Object class="LeadFilter">
+			<Key name="id">pitch_rate_f</Key>
+			<Float name="a">1.0</Float>
+			<Key name="input">pitch_rate</Key>
 		</Object>
 
 		<Object class="Scale">
@@ -497,8 +369,8 @@
 			<Key name="input_a">elevator_deviation</Key>
 			<Key name="input_b">qbar</Key>
 			<Table1 name="schedule" method="linear">
-				<Breaks0 spacing="4.0">0.0 12.0 44.0 200.0</Breaks0>
-				<Values>1.0 1.0 0.4 0.4</Values>
+				<Breaks0 spacing="4.0">0.0 10.0 44.0 200.0</Breaks0>
+				<Values>1.0 1.0 0.4 0.2</Values>
 			</Table1>
 		</Object>
 
@@ -532,14 +404,9 @@
 			<String name="channel">ControlInputs.RightBrakeInput</String>
 		</Object>
 
-		<Object class="OutputChannel">
-			<Key name="id">right_elevator_deflection</Key>
-			<String name="channel">ControlSurfaces.RightElevatorDeflection</String>
-			<Float name="clamp_hi">0.436332312999</Float>
-			<Float name="clamp_lo">-0.436332312999</Float>
-			<Key name="input">de_right_f</Key>
-			<Float name="rate_limit_dec">-1.0471975512</Float>
-			<Float name="rate_limit_inc">1.0471975512</Float>
+		<Object class="InputScalarChannel">
+			<Key name="id">roll_control</Key>
+			<String name="channel">ControlInputs.RollInput</String>
 		</Object>
 
 		<Object class="OutputChannel">
@@ -547,8 +414,8 @@
 			<String name="channel">ControlSurfaces.RudderDeflection</String>
 			<Float name="clamp_hi">0.523598775598</Float>
 			<Float name="clamp_lo">-0.523598775598</Float>
-			<Float name="gain">0.0174532925199</Float>
-			<Key name="input">dr_f</Key>
+			<Float name="gain">0.523598775598</Float>
+			<Key name="input">yaw_control</Key>
 			<Float name="rate_limit_dec">-2.09439510239</Float>
 			<Float name="rate_limit_inc">2.09439510239</Float>
 		</Object>
@@ -556,11 +423,6 @@
 		<Object class="InputScalarChannel">
 			<Key name="id">speedbrake_control</Key>
 			<String name="channel">ControlInputs.AirbrakeInput</String>
-		</Object>
-
-		<Object class="InputScalarChannel">
-			<Key name="id">speedbrake_limit</Key>
-			<String name="channel">F16.AirbrakeLimit</String>
 		</Object>
 
 		<Object class="OutputChannel">
@@ -574,20 +436,24 @@
 		</Object>
 
 		<Object class="Adder">
+			<Key name="id">target</Key>
+			<Float name="gain_b">0.334</Float>
+			<Key name="input_a">g_minus_1</Key>
+			<Key name="input_b">pitch_rate_f</Key>
+		</Object>
+
+		<Object class="LeadLagFilter">
+			<Key name="id">target_f</Key>
+			<Float name="a">4.0</Float>
+			<Float name="b">12.0</Float>
+			<Float name="c">3.0</Float>
+			<Key name="input">target</Key>
+		</Object>
+
+		<Object class="Adder">
 			<Key name="id">trimmed_g_command</Key>
 			<Key name="input_a">g_command</Key>
 			<Key name="input_b">g_trim</Key>
-		</Object>
-
-		<!-- Yaw command (deg/sec) as a function of pedal input force (N) -->
-		<Object class="Schedule1">
-			<Key name="id">yaw_command_schedule</Key>
-			<Float name="gain">500.0</Float>
-			<Key name="input">yaw_control</Key>
-			<Table1 name="schedule" method="linear">
-				<Breaks0 spacing="40.0">-500.0 -80.0 80.0 500.0</Breaks0>
-				<Values>-32.0 0.0 0.0 32.0</Values>
-			</Table1>
 		</Object>
 
 		<Object class="InputScalarChannel">
@@ -599,12 +465,6 @@
 		<Object class="InputVectorZChannel">
 			<Key name="id">yaw_rate</Key>
 			<String name="channel">Kinetics.AngularVelocityBody</String>
-		</Object>
-
-		<Object class="Scale">
-			<Key name="id">yaw_rate_f</Key>
-			<Float name="gain">57.2957795131</Float>
-			<Key name="input">yaw_rate</Key>
 		</Object>
 
 		<Object class="Constant">

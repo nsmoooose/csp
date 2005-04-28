@@ -46,7 +46,6 @@ public:
 	virtual void importChannels(Bus*);
 	virtual void preSimulationStep(double dt);
 	virtual void postCreate();
-	virtual void setSteering(double x, double link_brakes=1.0);
 
 
 protected:

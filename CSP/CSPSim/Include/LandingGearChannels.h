@@ -39,6 +39,8 @@ struct LandingGear {
 	static std::string selectFullyExtended(std::string const &gearname);
 	static std::string selectFullyRetracted(std::string const &gearname);
 	static std::string selectAntilockBrakingActive(std::string const &gearname);
+	static std::string selectBrakeCommand(std::string const &gearname);
+	static std::string selectSteeringCommand(std::string const &gearname);
 };
 
 }

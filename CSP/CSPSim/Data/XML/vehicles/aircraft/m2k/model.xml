@@ -30,51 +30,26 @@
         </Object>
 
         <Object  class="DrivenRotation">
-            <String name="channel_name">ControlSurfaces.ElevatorDeflection</String>
+            <String name="channel_name">ControlSurfaces.LeftElevronDeflection</String>
             <Key name="model_id">Aircraft.LeftOuterAileron</Key>
             <Int name="lod_limit">1</Int>
             <Vector name="axis">-1 0 0</Vector>
         </Object>
         <Object class="DrivenRotation">
-            <String name="channel_name">ControlSurfaces.ElevatorDeflection</String>
+            <String name="channel_name">ControlSurfaces.LeftElevronDeflection</String>
             <Key name="model_id">Aircraft.LeftAileron</Key>
             <Int name="lod_limit">1</Int>
             <Vector name="axis">-1 0 0</Vector>
         </Object>
         <Object  class="DrivenRotation">
-            <String name="channel_name">ControlSurfaces.ElevatorDeflection</String>
+            <String name="channel_name">ControlSurfaces.RightElevronDeflection</String>
             <Key name="model_id">Aircraft.RightOuterAileron</Key>
             <Int name="lod_limit">1</Int>
             <Vector name="axis">-1 0 0</Vector>
         </Object>
         <Object class="DrivenRotation">
-            <String name="channel_name">ControlSurfaces.ElevatorDeflection</String>
+            <String name="channel_name">ControlSurfaces.RightElevronDeflection</String>
             <Key name="model_id">Aircraft.RightAileron</Key>
-            <Int name="lod_limit">1</Int>
-            <Vector name="axis">-1 0 0</Vector>
-        </Object>
-
-        <Object class="DrivenRotation">
-            <String name="channel_name">ControlSurfaces.AileronDeflection</String>
-            <Key name="model_id">Aircraft.LeftOuterAileron</Key>
-            <Int name="lod_limit">1</Int>
-            <Vector name="axis">1 0 0</Vector>
-        </Object>
-        <Object  class="DrivenRotation">
-            <String name="channel_name">ControlSurfaces.AileronDeflection</String>
-            <Key name="model_id">Aircraft.LeftAileron</Key>
-            <Int name="lod_limit">1</Int>
-            <Vector name="axis">1 0 0</Vector>
-        </Object>
-        <Object class="DrivenRotation">
-            <String name="channel_name">ControlSurfaces.AileronDeflection</String>
-            <Key name="model_id">Aircraft.RightAileron</Key>
-            <Int name="lod_limit">1</Int>
-            <Vector name="axis">-1 0 0</Vector>
-        </Object>
-        <Object class="DrivenRotation">
-            <String name="channel_name">ControlSurfaces.AileronDeflection</String>
-            <Key name="model_id">Aircraft.RightOuterAileron</Key>
             <Int name="lod_limit">1</Int>
             <Vector name="axis">-1 0 0</Vector>
         </Object>

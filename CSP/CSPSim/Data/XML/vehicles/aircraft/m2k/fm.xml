@@ -85,17 +85,19 @@
 
     <!-- Pitch Moment Parameters -->
     <Float name="cm0">0.2</Float>
-    <Float name="cm_a">-3.5</Float>
+    <Float name="cm_a">-1.0</Float>
+    <!--Float name="cm_a">-3.5</Float-->
     <Float name="cm_adot">-3.61</Float>
-    <Float name="cm_q">-53</Float><!-- <0 -->
+    <Float name="cm_q">-53</Float><!-- <0  -->
     <Float name="cm_de">0.5371</Float>
     <Table1 name="delta_cm_de">
         <Breaks0 spacing="0.1">
             0.0 0.2      0.4      0.6      0.8      1.0      1.2      1.4      1.6      1.8      2.5
         </Breaks0>
         <Values>
-             0.0 0.0 0.99694 0.998748 0.997512 0.995147 0.998428 0.992443 0.100479 0.001586 0.003112
+             0.0 0.0 0.099694 0.0998748 0.0997512 0.0995147 0.0998428 0.0992443 0.0100479 0.001586 0.003112
         </Values>
+             <!--0.0 0.0 0.99694 0.998748 0.997512 0.995147 0.998428 0.992443 0.100479 0.001586 0.003112-->
     </Table1>
 
     <!-- Side Force Parameters -->

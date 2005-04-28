@@ -50,13 +50,7 @@ protected:
 	simdata::Vector3 const *m_VelocityBody;
 	simdata::Vector3 const *m_AngularVelocityBody;
 	simdata::Quat const *m_Attitude;
-#if 0
-	double const *m_Height;
-	bool const *m_NearGround;
-	simdata::Vector3 const *m_NormalGround;
-	double const *m_qBar;
-	simdata::Vector3 const *m_WindBody;
-#endif
+	simdata::Vector3 const *m_CenterOfMassOffsetLocal;
 
 public:
 
@@ -130,39 +124,31 @@ public:
 	virtual bool needsImpulse() const { return false; }
 
 	/**
+	 * Get the model position in local coordinates.  This is the physical
+	 * location of the aircraft, as opposed to m_PositionLocal which tracks
+	 * the center of mass.
+	 */
+	inline simdata::Vector3 getModelPositionLocal() const {
+		return *m_PositionLocal - *m_CenterOfMassOffsetLocal;
+	}
+
+	/**
 	 * Bind object kinematic state variables.  These values can be
 	 * used freely by any of the simulation step methods.
 	 *
-	 * @param position_local the position of the object in global coordinates
+	 * @param position_local the position of the object's center of mass
+	 *   in global coordinates
 	 * @param velocity_body the velocity of the object in body coordinates
-	 * @param angular_velocity_body the angular velocity of the object in 
-	 *        body cooordinates
+	 * @param angular_velocity_body the angular velocity of the object in
+	 *   body cooordinates
 	 * @param attitude the orientation of the object
+	 * @param center_of_mass_local the offset from the model position to the
+	 *   center of mass in local coordinates.
 	 */
-	void bindKinematics(simdata::Vector3 const &position_local, simdata::Vector3 const &velocity_body, 
-	                    simdata::Vector3 const &angular_velocity_body, simdata::Quat const &attitude);
+	void bindKinematics(simdata::Vector3 const &position_local, simdata::Vector3 const &velocity_body,
+	                    simdata::Vector3 const &angular_velocity_body, simdata::Quat const &attitude,
+	                    simdata::Vector3 const &center_of_mass_offset_local);
 
-#if 0
-	/**
-	 * Bind parameters related to the ground directly beneath the object.
-	 *
-	 * @param near_ground true if the object bounding sphere overlaps the
-	 *                    ground.
-	 * @param height the (z) height above the ground of the center of the 
-	 *               object
-	 * @param normal_ground the normal (unit) vector of the ground beneath
-	 *                      the object.
-	 */
-	void bindGroundParameters(bool const &near_ground, double const &height, simdata::Vector3 const &normal_ground);
-
-	/**
-	 *  Bind parameters related to aerodynamics.
-	 *
-	 *  @param qbar the atmospheric density.
-	 *  @param wind_body the wind speed in body coordinates.
-	 */
-	void bindAeroParameters(double const &qbar, simdata::Vector3 const &wind_body);
-#endif
 };
 
 

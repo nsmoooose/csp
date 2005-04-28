@@ -77,7 +77,6 @@ namespace bus {
 	const char *ControlInputs::PitchInput = "ControlInputs.PitchInput";
 	const char *ControlInputs::RollInput = "ControlInputs.RollInput";
 	const char *ControlInputs::RudderInput = "ControlInputs.RudderInput";
-	const char *ControlInputs::SteeringInput = "ControlInputs.SteeringInput";
 	const char *ControlInputs::LeftBrakeInput = "ControlInputs.LeftBrakeInput";
 	const char *ControlInputs::RightBrakeInput = "ControlInputs.RightBrakeInput";
 	const char *ControlInputs::ThrottleInput = "ControlInputs.ThrottleInput";
@@ -93,6 +92,8 @@ namespace bus {
 	std::string LandingGear::selectFullyExtended(std::string const &gearname) { return "LandingGear." + gearname + ".FullyExtended"; }
 	std::string LandingGear::selectFullyRetracted(std::string const &gearname) { return "LandingGear." + gearname + ".FullyRetracted"; }
 	std::string LandingGear::selectAntilockBrakingActive(std::string const &gearname) { return "LandingGear." + gearname + ".AntilockBrakingActive"; }
+	std::string LandingGear::selectBrakeCommand(std::string const &gearname) { return "LandingGear." + gearname + ".BrakeCommand"; }
+	std::string LandingGear::selectSteeringCommand(std::string const &gearname) { return "LandingGear." + gearname + ".SteeringCommand"; }
 }
 
 

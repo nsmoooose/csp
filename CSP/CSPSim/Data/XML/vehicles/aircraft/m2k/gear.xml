@@ -46,7 +46,6 @@
 			<Float name="beta">40000.0</Float>
 			<Float name="brake_limit">40000.0</Float>
 			<Float name="brake_slip">0.8</Float>
-			<Float name="brake_steering_linkage">-1.0</Float>
 			<Float name="tire_radius">0.4</Float>
 			<Float name="tire_static_friction">0.8</Float>
 			<Float name="tire_skid_friction">0.6</Float>
@@ -75,7 +74,6 @@
 			<Float name="beta">40000.0</Float>
 			<Float name="brake_limit">40000.0</Float>
 			<Float name="brake_slip">0.8</Float>
-			<Float name="brake_steering_linkage">1.0</Float>
 			<Float name="tire_radius">0.4</Float>
 			<Float name="tire_static_friction">0.8</Float>
 			<Float name="tire_skid_friction">0.6</Float>

@@ -83,12 +83,26 @@ class leading_edge_deflection(OutputChannel):
 	rate_limit_dec = radians(-25)
 	rate_limit_inc = radians(25)
 
-class nose_wheel_steering(OutputChannel):
-	channel = "LandingGear.FrontGear.SteeringInput"
-	clamp_lo = radians(-32)
-	clamp_hi = radians(32)
-	input = "yaw_control"
-	gain = radians(32)
-	rate_limit_dec = radians(-120)
-	rate_limit_inc = radians(120)
+class steering_command(OutputChannel):
+	channel = "LandingGear.FrontGear.SteeringCommand"
+	clamp_lo = -1.0
+	clamp_hi = 1.0
+	input = "nose_wheel_steering"
+	rate_limit_dec = -4.0
+	rate_limit_inc = 4.0
 
+class left_brake_command(OutputChannel):
+	channel = "LandingGear.LeftGear.BrakeCommand"
+	clamp_lo = 0.0
+	clamp_hi = 1.0
+	input = "left_brake_channel"
+	rate_limit_dec = -4.0
+	rate_limit_inc = 4.0
+
+class right_brake_command(OutputChannel):
+	channel = "LandingGear.RightGear.BrakeCommand"
+	clamp_lo = 0.0
+	clamp_hi = 1.0
+	input = "right_brake_channel"
+	rate_limit_dec = -4.0
+	rate_limit_inc = 4.0

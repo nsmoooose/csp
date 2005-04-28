@@ -126,7 +126,7 @@ public:
 	// Standard bus/system methods that can be implemented by subclasses.
 	virtual void registerChannels(Bus*) { }
 	virtual void importChannels(Bus*) { }
-	virtual void bindRecorder(DataRecorder*) { }
+	virtual void bindRecorder(DataRecorder*) const { }
 
 protected:
 	/** A helper method allowing subclasses to set an initial output value.

@@ -2,8 +2,7 @@
 # All rights reserved.
 
 """
-Implementation of the F-16A flight control system based on the Nasa
-tp1538 paper (1979).
+Generic flight control system to use as a default for new aircraft.
 """
 
 from NodeConstructor import *
@@ -13,13 +12,11 @@ import constants
 import inputs
 import sensors
 import outputs
+import nws
 import pitch
 import roll
-import yaw
+#import yaw
 import speedbrake
-import leadingedge
-import trailingedge
-import nws
 import monitoring
 
 

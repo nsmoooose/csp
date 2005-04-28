@@ -68,9 +68,7 @@ LandingGear::LandingGear() {
 	m_Chained = false;
 	m_K = 0.0;
 	m_Beta = 0.0;
-	m_BrakeSteeringLinkage = 0.0;
-	m_BrakeSteer = 0.0;
-	m_SteerAngle = 0.0;
+	m_SteeringAngle = 0.0;
 	m_SteeringLimit = 0.0;
 	m_TargetSteerAngle = 0.0;
 	m_TireK = 200000.0;
@@ -82,7 +80,6 @@ LandingGear::LandingGear() {
 	m_Touchdown = false;
 	m_Skidding = 0.0;
 	m_Brake = 0.0;
-	m_BrakeSetting = 0.0;
 	m_BrakeLimit = 50000.0;
 	m_BrakeFriction = 1.0;
 	m_BrakeSlip = 0.8;
@@ -130,7 +127,7 @@ Vector3 LandingGear::simulateSubStep(Vector3 const &origin,
 	resetForces();
 
 	// do suspension physics to get normal force
-	updateSuspension(origin, vBody, q, height, normalGroundBody);
+	updateSuspension(0.0, origin, vBody, q, height, normalGroundBody);
 	
 	// if not in contact with the ground, return early
 	if (m_Compression <= 0.0) return Vector3::ZERO;
@@ -160,17 +157,6 @@ void LandingGear::retract() {
 	}
 }
 
-void LandingGear::setBraking(double setting) {
-	setting = simdata::clampTo(setting,-1.0,1.0);
-	m_BrakeSetting = setting;
-}
-
-double LandingGear::setSteering(double setting, double link_brakes) {
-	setting = simdata::clampTo(setting, -1.0, 1.0);
-	m_BrakeSteer = setting * link_brakes * m_BrakeSteeringLinkage;
-	m_TargetSteerAngle = setting * m_SteeringLimit;
-	return m_TargetSteerAngle;
-}
 
 double LandingGear::getDragFactor() const {
 	if (b_FullyRetracted->value()) return 0.0;
@@ -187,21 +173,23 @@ void LandingGear::preSimulationStep(double /*dt*/) {
  * Update the brake caliper in response to brake input.
  */
 void LandingGear::updateBraking(double dt) {
-	// update actual brake power from the input brake setting and
-	// steering linkage (low pass filtered, XXX ad-hoc time constant)
-	double f = dt*5.0;
-	if (f > 1.0) f = 1.0;
-	double newBrake = simdata::clampTo(m_BrakeSetting + m_BrakeSteer,0.0,1.0);
-	m_Brake = m_Brake * (1.0-f) + newBrake * f;
-	if (m_Brake < 0.0) m_Brake = 0.0;
-	if (m_Brake > 1.0) m_Brake = 1.0;
+	// Update the actual brake power from the input brake command.  The low pass filter
+	// is part of the antilock braking implementation.  In the simulation step, if brake
+	// lock is detected m_Brake will be set to zero (brakes released); the brake force
+	// then builds up gradually over the next couple hundred milliseconds, repeating ad
+	// nauseum if the wheel continues to skid.
+	if (b_BrakeCommand.valid()) {
+		double f = std::min(dt * 5.0, 1.0);  // ad-hoc time constant
+		double brake_command = simdata::clampTo(b_BrakeCommand->value(), 0.0, 1.0);
+		m_Brake = m_Brake * (1.0 - f) + brake_command * f;
+	}
 }
 
 /**
  * Update Weight-On-Wheels flag and record touchdown point
  */
 void LandingGear::updateWOW(Vector3 const &origin, simdata::Quat const &q) {
-	if (m_Compression > 0.0) {
+	if (m_Compression > 0.02) {
 		// first contact?
 		if (!b_WOW->value()) {
 			// yes, flag the touchdown
@@ -222,9 +210,10 @@ void LandingGear::updateTireRotation(double dt) {
 		// contact with the ground, which include tire deformation, so it
 		// isn't really appropriate here.  nevertheless, it serves as a
 		// convenient scaling factor.
+
 		// XXX spindown is currently too long without setting an offset,
 		// and the spindown rate with braking is completely arbitrary.
-		double fudge = 50.0 + 0.03 * m_BrakeSetting * m_BrakeLimit;
+		double fudge = 50.0 + 0.03 * m_Brake * m_BrakeLimit;
 		double torque = fudge * m_RollingFriction /* x m_TireRadius x wheel_mass */;
 		double inertia = 0.5 * m_TireRadius /* x m_TireRadius x wheel_mass */;
 		double dw = dt * torque / inertia;
@@ -247,7 +236,8 @@ void LandingGear::updateTireRotation(double dt) {
  * @param height height of body origin above ground
  * @param normalGroundBody ground normal vector in body coordinates
  */
-void LandingGear::updateSuspension(Vector3 const &/*origin*/,
+void LandingGear::updateSuspension(const double dt,
+                                   Vector3 const &/*origin*/,
                                    Vector3 const &vBody,
                                    simdata::Quat const &/*q*/,
                                    double const height,
@@ -263,11 +253,13 @@ void LandingGear::updateSuspension(Vector3 const &/*origin*/,
 	// at (or past) max extension?
 	if (compression <= 0.0) {
 		// limit travel and clear weight-on-wheels (WOW)
-		m_Compression = 0.0;
+		double v_extend = (m_K * m_Compression) / m_Beta;
+		m_Compression = std::max(0.0, m_Compression - v_extend * dt);
 		m_Position = max_position;
 		b_WOW->value() = false;
 		// no ground reaction force
 	} else {
+		const double old_compression = m_Compression;
 		// are we overcompressed?
 		if (compression >= m_CompressionLimit) {
 			m_Compression = m_CompressionLimit;
@@ -295,7 +287,12 @@ void LandingGear::updateSuspension(Vector3 const &/*origin*/,
 		vCompression = simdata::clampTo(vCompression, -10.0, 10.0);
 		// ground support (in response to strut compression + damping)
 		double normalForce = (m_K * compression + m_Beta * vCompression) * motionNormal;
-		if (normalForce < 0.0) normalForce = 0.0; // wheel hop
+
+		if (normalForce < 0.0) {
+			normalForce = 0.0; // wheel hop
+			double v_extend = (m_K * old_compression) / m_Beta;
+			m_Compression = std::max(old_compression - v_extend * dt, 0.0);
+		}
 		m_NormalForce += normalForce * normalGroundBody;
 	}
 }
@@ -305,13 +302,11 @@ void LandingGear::resetForces() {
 	m_TangentForce = Vector3::ZERO;
 }
 
-void LandingGear::updateSteeringAngle(double dt) {
-	if (m_SteeringLimit > 0) {
-		double limit = 120.0 * dt;
-		double delta = simdata::clampTo(m_TargetSteerAngle - m_SteerAngle, -limit, limit);
-		m_SteerAngle += delta;
-		double rad = toRadians(m_SteerAngle);
-		m_SteerTransform.makeRotate(rad, Vector3::ZAXIS);
+void LandingGear::updateSteeringAngle(double /*dt*/) {
+	if (m_SteeringLimit > 0 && b_SteeringCommand.valid()) {
+		double setting = simdata::clampTo(b_SteeringCommand->value(), -1.0, 1.0);
+		m_SteeringAngle = setting * m_SteeringLimit;
+		m_SteerTransform.makeRotate(toRadians(m_SteeringAngle), Vector3::ZAXIS);
 	}
 }
 
@@ -325,7 +320,7 @@ void LandingGear::postSimulationStep(double dt,
 	resetForces();
 	// update order matters
 	updateBraking(dt);
-	updateSuspension(origin, vBody, q, height, normalGroundBody);
+	updateSuspension(dt, origin, vBody, q, height, normalGroundBody);
 	updateWOW(origin, q);
 	updateWheel(dt, origin, vBody, q, normalGroundBody, true);
 	updateTireRotation(dt);
@@ -333,6 +328,13 @@ void LandingGear::postSimulationStep(double dt,
 }
 
 void LandingGear::residualUpdate(double dt, double airspeed) {
+	// ensure that WOW is cleared; heavy shock damping and a fast takeoff
+	// could conceivably switch to residual updates before the compression
+	// was fully relaxed.
+	if (m_Compression > 0.0) {
+		m_Compression = 0.0;
+		b_WOW->value() = false;
+	}
 	updateBrakeTemperature(dt, 0.0, airspeed);
 	updateTireRotation(dt);
 	updateSteeringAngle(dt);
@@ -342,23 +344,10 @@ void LandingGear::residualUpdate(double dt, double airspeed) {
 void LandingGear::updateAnimation(double dt) {
 	if (m_GearAnimation.valid()) {
 		m_GearAnimation->update(dt);
-
-		// m_Compression responds instantaneously to the ground position.  The
-		// animation should do the same for compression, but needs to be rate
-		// limited for extension (poor simulation of shock absorber dampening
-		// under no load).
-		if (m_Compression >= m_CompressionAnimation) {
-			m_CompressionAnimation = m_Compression;
-		} else {
-			double delta = m_Compression - m_CompressionAnimation;
-			double limit = dt * 0.5; // 0.5 m/s
-			m_CompressionAnimation += simdata::clampTo(delta, -limit, limit);
-		}
-
-		m_GearAnimation->setCompression(m_CompressionAnimation / m_CompressionLimit);
+		m_GearAnimation->setCompression(m_Compression / m_CompressionLimit);
 		m_GearAnimation->setTireRotation(m_TireRotation);
 		if (m_SteeringLimit > 0.0) {
-			m_GearAnimation->setSteeringAngle(toRadians(m_SteerAngle));
+			m_GearAnimation->setSteeringAngle(toRadians(m_SteeringAngle));
 		}
 		if (m_Extend && !b_FullyExtended->value()) {
 			b_FullyExtended->value() = m_GearAnimation->isFullyExtended();
@@ -389,20 +378,6 @@ void LandingGear::updateBrakeTemperature(double dt, double dissipation, double a
 	// near that of steel)
 	double heatCapacity = R2 * m_TireRadius * 2e+6;
 	m_BrakeTemperature += (dissipation - radiation - aircooling) / heatCapacity * dt;
-	/*
-	static int yyy = 0; yyy++;
-	if (yyy % 240 == 1) {
-		if (m_Skidding) {
-			std::cout << "SKID\n";
-		} else
-		if (brakeSlip) {
-			std::cout << "SLIP\n";
-		} else {
-			std::cout << "NOSLIP: brakelimit " << brakeLimit << " > " << alignedForce << "?\n";
-		}
-		std::cout << "BRAKE T=" << m_BrakeTemperature << "\n";
-	}
-	*/
 }
 
 /**
@@ -497,7 +472,7 @@ void LandingGear::updateWheel(double dt,
 		// 2004-08-02 DISABLED(OS): this no longer seems necessary; the original instability
 		// may have been due to a bug that has since been fixed.  anyhow, it's not good to
 		// caster at low speeds (and castering should be reflected in the gear steering angle).
-		//tireForceWheel.x() *= (0.1 + 0.9 * fabs(m_SteerAngle/m_SteeringLimit));
+		//tireForceWheel.x() *= (0.1 + 0.9 * fabs(m_SteeringAngle/m_SteeringLimit));
 	}
 
 	// total (virtual) tire force due to braking and sideslip
@@ -599,19 +574,7 @@ void LandingGear::updateWheel(double dt,
 		updateBrakeTemperature(dt, dissipation, airspeed);
 	}
 
-	/*
-	if (0 && XXX_t > 90.0 && (tireForceBody-XXX_tfb).length() > 0.001) {
-		std::cout << "DIFFERENCE: " << (tireForceBody-XXX_tfb).asString() << " " << skidding << " " << brakeSlip << ", " << tireForceBody << " " << brakeLimit << " " << m_Brake << " " << m_BrakeFriction << m_BrakeLimit << "\n";
-	}
-	if (tireForceBody.length() > 50000.0) {
-		std::cout << "TFB ---> " << tireForceBody.asString() << "\n";
-		std::cout << "DEF ---> " << tireDeformation.asString() << "\n";
-		std::cout << "TFB ---> " << XXX_tfb.asString() << "\n";
-		std::cout << "VGW ---> " << vGroundWheel.asString() << "\n";
-	}
-	*/
 	m_TangentForce += tireForceBody;
-	//m_TangentForce += XXX_tfb;
 }
 
 void LandingGear::registerChannels(Bus* bus) {
@@ -633,6 +596,8 @@ void LandingGear::bindChannels(Bus* bus) {
 	if (m_GearAnimation.valid()) {
 		m_GearAnimation->bindChannels(bus);
 	}
+	b_BrakeCommand = bus->getChannel(bus::LandingGear::selectBrakeCommand(getName()), false);
+	b_SteeringCommand = bus->getChannel(bus::LandingGear::selectSteeringCommand(getName()), false);
 }
 
 DEFINE_INPUT_INTERFACE(GearDynamics);
@@ -645,7 +610,7 @@ void GearDynamics::doComplexPhysics(double) {
 	Vector3 dynamic_pressure = 0.5 * (b_Density->value()) * airflow_body * airspeed;
 	b_FullyRetracted->value() = true;
 	const size_t n = m_Gear.size();
-	simdata::Vector3 model_origin_local = *m_PositionLocal - m_CenterOfMassOffsetLocal;
+	const simdata::Vector3 model_origin_local = getModelPositionLocal();
 	for (size_t i = 0; i < n; ++i) {
 		LandingGear &gear = *(m_Gear[i]);
 		if (gear.isFullyRetracted()) continue;
@@ -682,12 +647,6 @@ void GearDynamics::registerChannels(Bus *bus) {
 
 void GearDynamics::importChannels(Bus *bus) {
 	assert(bus!=0);
-	b_LeftBrakeInput = bus->getChannel(bus::ControlInputs::LeftBrakeInput);
-	b_RightBrakeInput = bus->getChannel(bus::ControlInputs::RightBrakeInput);
-	b_SteeringInput = bus->getChannel(bus::ControlInputs::SteeringInput, false);
-	if (!b_SteeringInput) {
-		b_SteeringInput = bus->getChannel(bus::ControlInputs::RudderInput);
-	}
 	b_Density = bus->getChannel(bus::Conditions::Density);
 	b_WindVelocity = bus->getChannel(bus::Conditions::WindVelocity);
 	b_NearGround = bus->getChannel(bus::Kinetics::NearGround);
@@ -711,46 +670,17 @@ bool GearDynamics::getWOW() const {
 	return b_WOW->value();
 }
 
-void GearDynamics::setBraking(double left, double right) {
-	size_t n = m_Gear.size();
-	double x = (left + right) * 0.5; // FIXME
-	for (size_t i = 0; i < n; ++i) {
-		m_Gear[i]->setBraking(x);
-	}
-}
-
-void GearDynamics::setSteering(double x, double link_brakes) {
-	size_t n = m_Gear.size();
-	for (size_t i = 0; i < n; ++i) {
-		m_Gear[i]->setSteering(x, link_brakes);
-	}
-}
-
 void GearDynamics::preSimulationStep(double dt) {
 	BaseDynamics::preSimulationStep(dt);
 
 	b_WOW->value() = false;
 
-	// FIXME add an accessor to make it easy for subclasses to disengage nosewheel
-	setSteering(b_SteeringInput->value());
-	if (b_FullyRetracted->value()) {
-		// hack for now (f16 applies MLG wheel brakes as gear retracts)
-		setBraking(1.0, 1.0);
-		return;
-	}
-	setBraking(b_LeftBrakeInput->value(), b_RightBrakeInput->value());
+	if (b_FullyRetracted->value()) return;
 	if (!b_NearGround->value()) return;
-
-	// All internal landing gear calculations are with respect to the model
-	// coordinate frame (which defines the geometric relationship between the
-	// landing gear and the ground).  The center of mass offset, which is the
-	// offset between the model and body frames, doesn't change appreciably
-	// during the update so we compute it once up front.
-	m_CenterOfMassOffsetLocal = m_Attitude->rotate(b_CenterOfMassOffset->value());
 
 	m_WindVelocityBody = m_Attitude->invrotate(b_WindVelocity->value());
 	m_GroundNormalBody = m_Attitude->invrotate(b_GroundN->value());
-	simdata::Vector3 model_origin_local = *m_PositionLocal - m_CenterOfMassOffsetLocal;
+	const simdata::Vector3 model_origin_local = getModelPositionLocal();
 	m_Height = model_origin_local.z() - b_GroundZ->value();
 	size_t n =  m_Gear.size();
 	for (size_t i = 0; i < n; ++i) {
@@ -769,7 +699,7 @@ void GearDynamics::postSimulationStep(double dt) {
 		}
 		return;
 	}
-	simdata::Vector3 model_origin_local = *m_PositionLocal - m_CenterOfMassOffsetLocal;
+	const simdata::Vector3 model_origin_local = getModelPositionLocal();
 	m_Height = model_origin_local.z() - b_GroundZ->value();
 	for (size_t i = 0; i < n; ++i) {
 		Vector3 R = m_Gear[i]->getPosition() - b_CenterOfMassOffset->value();  // body (cm) coordinates

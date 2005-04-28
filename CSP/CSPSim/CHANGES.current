@@ -39,6 +39,8 @@
 
  * Fix a small bug in the F16 yaw control circuit.  Stops rudder jitter.
 
+ * Fix potential problem with the .ini path test at startup.
+
 2005-04-25: delta
  * Need to include a few headers to avoid a syntax error (g++ and vc++ don't
    manage forward class declaration equivalently).

@@ -273,7 +273,11 @@ def loadCSP():
 
 def findConfig():
 	# do our best to find the correct configuration file
-	config_paths = [".", "~/.cspsim", "/etc/cspsim", os.path.join(os.path.dirname(__file__), "../Data")]
+	config_paths = [".", "~/.cspsim", "/etc/cspsim"]
+	try:
+		config_paths.append(os.path.join(os.path.dirname(__file__), "../Data"))
+	except NameError:
+		pass
 
 	config = "CSPSim.ini"
 	for path in config_paths:

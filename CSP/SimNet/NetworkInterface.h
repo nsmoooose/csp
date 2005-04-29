@@ -135,6 +135,11 @@ class NetworkInterface: public simdata::Referenced {
 	// Indicates whether initialize() has been called.
 	bool m_Initialized;
 
+	// Counter indicating whether timing data should be discarded because
+	// processIncoming has not been called recently.  Timing data should
+	// only be considered valid if m_DiscardTiming is zero.
+	int m_DiscardTiming;
+
 	// Nominal bandwidths in bytes/sec.
 	int m_IncomingBandwidth;
 	int m_OutgoingBandwidth;

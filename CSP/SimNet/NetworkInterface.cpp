@@ -507,7 +507,9 @@ int NetworkInterface::receivePackets(double timeout) {
 				}
 				int latency = static_cast<int>(t_latency);
 				assert(latency == t_latency);
-				peer->updateTiming(latency, last_ping_latency);
+				if (m_DiscardTiming == 0) {
+					peer->updateTiming(latency, last_ping_latency);
+				}
 			} else {
 				SIMNET_LOG(PEER, ERROR, "Ping packet does not contain timing payload");
 			}
@@ -585,6 +587,23 @@ void NetworkInterface::processIncoming(double timeout) {
 
 	double start_time = simdata::get_realtime();
 
+	// if we haven't processed incoming packets for a while then we
+	// shouldn't trust any timing data they may contain.
+	if (start_time - m_LastUpdate > 0.2) {
+		// discard timing data until all stale packets are processed or
+		// this many successive calls to processIncoming have been made
+		// without long delays.  hopefully by then all the original
+		// stale packets from this iteration will have either been
+		// processed or dropped.
+		m_DiscardTiming = 100;
+	} else {
+		// if there was a long pause recently keep dropping timing
+		// data.  once the count reaches zero we will start using
+		// the timing data again.
+		if (m_DiscardTiming > 0) --m_DiscardTiming;
+	}
+	assert(m_DiscardTiming >= 0);  // paranoia
+
 	// spend up to 60% of our time slice receiving messages from the
 	// socket.   if the socket runs dry early (which it should in most
 	// cases), we will have extra time to process those messages.
@@ -619,7 +638,10 @@ void NetworkInterface::processIncoming(double timeout) {
 				queue_idx = (queue_idx - 1) & 3;
 				queue = m_RxQueues[queue_idx];
 			} while (++n <= 4 && queue->isEmpty());
-			if (n > 4) break;  // all empty
+			if (n > 4) {  // all empty
+				m_DiscardTiming = 0;  // all stale packets gone!
+				break;
+			}
 			// if only one queue isn't empty then forget about counts
 			count = (n==4) ? 100000 : process_count[queue_idx];
 		}
@@ -681,6 +703,7 @@ NetworkInterface::NetworkInterface():
 	m_ActivePeers(new ActivePeerList),
 	m_AllowUnknownPeers(false),
 	m_Initialized(false),
+	m_DiscardTiming(0),
 	m_IncomingBandwidth(0),
 	m_OutgoingBandwidth(0),
 	m_PacketHandlers(new PacketHandlerSet)

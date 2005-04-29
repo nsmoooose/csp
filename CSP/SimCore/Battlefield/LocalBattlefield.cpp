@@ -295,7 +295,10 @@ void LocalBattlefield::update(double dt) {
 	// large jumps right after the connection is established), so we filter the offset
 	// to spread the jumps out over a few seconds.
 	m_ServerTimeOffset = m_ServerTimeOffset * (1.0 - filter) + filter * offset;
-	{ static int XXX = 0; if ((++XXX % 100) == 0) std::cout << "server time offset = " << m_ServerTimeOffset << "\n"; } // XXX
+	if (m_NetworkClient.valid()) {
+		static int XXX = 0;
+		if ((++XXX % 1000) == 0) std::cout << "LocalBattlefield.cpp: server time offset = " << m_ServerTimeOffset << "s\n";
+	}
 	m_CurrentTime = simdata::getCalibratedRealTime() + m_ServerTimeOffset;
 	m_CurrentTimeStamp = simcore::getTimeStamp(m_CurrentTime);
 	if (m_NetworkClient.valid()) {

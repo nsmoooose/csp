@@ -9,6 +9,8 @@
  * Move the m2k center of mass forward to put more weight on the nose
    gear, which was slipping/skidding far too easily.
 
+ * Remove debugging cruft from stdout.
+
 2005-04-27: onsight
  * Remove dead code from PhysicsModel and BaseDynamics.
 

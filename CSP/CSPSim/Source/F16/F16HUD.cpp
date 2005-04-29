@@ -304,7 +304,7 @@ public:
 	DEDReadout(simdata::Ref<const AlphaNumericDisplay> display, osg::ref_ptr<HUDFont> font): m_Display(display) {
 		assert(font.valid());
 		unsigned lines = m_Display->height();
-		std::cout << "DEDReadout: " << lines << " lines\n";
+		CSP_LOG(APP, DEBUG, "DEDReadout: " << lines << " lines");
 		m_Lines = new osgText::Text*[lines];
 		for (unsigned i = 0; i < lines; ++i) {
 			m_Lines[i] = addText();

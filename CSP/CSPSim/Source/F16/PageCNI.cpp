@@ -85,7 +85,6 @@ void PageCNI::render(AlphaNumericDisplay &ded) {
 	ded.write(8, 4, "7500");
 	ded.write(16, 4, "MAN");
 	ded.write(21, 4, "T123X");
-	std::cout << "UPDATE\n";
 }
 
 double PageCNI::update() {

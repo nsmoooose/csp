@@ -771,7 +771,7 @@ private:
 			std::string::size_type colon = token.find(':');
 			if (colon != std::string::npos && colon < token.size()) {
 				m_LabelMap[token.substr(0, colon)] = token.substr(colon + 1);
-				std::cout << token.substr(0, colon) << " -> " << token.substr(colon + 1) << "\n";
+				//std::cout << token.substr(0, colon) << " -> " << token.substr(colon + 1) << "\n";
 			}
 		}
 	}

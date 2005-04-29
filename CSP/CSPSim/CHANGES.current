@@ -22,6 +22,9 @@
    add gear debug points and fix the view point and gear positions for the
    m2k.
 
+ * Fix canopy and fuel door animations for the F16 (broke the channel names
+   in a previous update).
+
 2005-04-27: onsight
  * Remove dead code from PhysicsModel and BaseDynamics.
 

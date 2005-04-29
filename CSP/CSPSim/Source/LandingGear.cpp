@@ -259,12 +259,27 @@ void LandingGear::updateSuspension(const double dt,
 		b_WOW->value() = false;
 		// no ground reaction force
 	} else {
+		// FIXME in computing vCompression, only the normal force is taken into
+		// account, but other components can matter if m_Motion isn't vertical.
+		// (e.g. when brakes are applied)
+	
+		// calculate strut compression speed
+		double vCompression = - dot(vBody, normalGroundBody) * motionNormal;
+		// restrict compression speed to reasonable limits (faster than this means
+		// the gear will probably break in a moment anyway)
+		vCompression = simdata::clampTo(vCompression, -10.0, 10.0);
+
 		const double old_compression = m_Compression;
+
 		// are we overcompressed?
 		if (compression >= m_CompressionLimit) {
 			m_Compression = m_CompressionLimit;
-			// stiffen the response
-			compression += (compression - m_Compression) * 10.0;
+			// stiffen the response, but only if we are not already decompressing
+			// too quickly (prevents launching the aircraft up when the gear gets
+			// overcompressed --- although eventually the gear should just break
+			// in this case).
+			double extra = simdata::clampTo(20.0 * (vCompression + 0.5), 0.0, 10.0);
+			compression += (compression - m_Compression) * extra;
 			// TODO: break the gear if overcompression is too high (should
 			// actually be keyed by normalForce below).
 		} else {
@@ -275,16 +290,7 @@ void LandingGear::updateSuspension(const double dt,
 		m_Position = max_position + m_Motion * m_Compression;
 
 		// determine reaction force
-		//
-		// FIXME in computing vCompression, only the normal force is taken into
-		// account, but other components can matter if m_Motion isn't vertical.
-		// (e.g. when brakes are applied)
-	
-		// calculate strut compression speed
-		double vCompression = - dot(vBody, normalGroundBody) * motionNormal;
-		// restrict to reasonable limits (faster than this means the gear will
-		// probably break in a moment anyway)
-		vCompression = simdata::clampTo(vCompression, -10.0, 10.0);
+
 		// ground support (in response to strut compression + damping)
 		double normalForce = (m_K * compression + m_Beta * vCompression) * motionNormal;
 

@@ -1,6 +1,11 @@
  Version 0.4.0 (in progress)
 ===========================
 
+2005-04-28: onsight
+ * Tweak gear stiffening at compression limit to prevent the aircraft
+   from "jumping" after a hard landing.  (Ultimately this regime should
+   break the gear.)
+
 2005-04-27: onsight
  * Remove dead code from PhysicsModel and BaseDynamics.
 

@@ -18,6 +18,10 @@
    establishing a connection to the index server and starting the main sim
    loop was creating a large artificial clock skew.  Needs testing though.
 
+ * Remove the view point contact markers and make them debug points.  Also
+   add gear debug points and fix the view point and gear positions for the
+   m2k.
+
 2005-04-27: onsight
  * Remove dead code from PhysicsModel and BaseDynamics.
 

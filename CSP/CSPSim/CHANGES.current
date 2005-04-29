@@ -6,6 +6,9 @@
    from "jumping" after a hard landing.  (Ultimately this regime should
    break the gear.)
 
+ * Move the m2k center of mass forward to put more weight on the nose
+   gear, which was slipping/skidding far too easily.
+
 2005-04-27: onsight
  * Remove dead code from PhysicsModel and BaseDynamics.
 

@@ -17,7 +17,7 @@
          0.0  55427.0    1764.0
          0.0   1764.0  252326.0
     </Matrix>
-    <Vector name="reference_center_of_mass_offset">0.0 -0.3 0</Vector>
+    <Vector name="reference_center_of_mass_offset">0.0 1.0 0</Vector>
 
     <Path name="human_systems">m2k.systems</Path>
     <Path name="remote_systems">m2k.remote</Path>

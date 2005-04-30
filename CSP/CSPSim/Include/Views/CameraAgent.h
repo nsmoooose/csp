@@ -61,7 +61,7 @@ class CameraAgent {
 public:
 	CameraAgent(const ViewFactory& vf, ViewMode default_view = 0);
 	~CameraAgent();
-	void attach(size_t mode, View* vm);
+	void attach(ViewMode mode, View* vm);
 	void setViewMode(ViewMode vm);
 	void setCameraCommand(CameraCommand* cc);
 	void setObject(const simdata::Ref<DynamicObject> object);

@@ -150,45 +150,11 @@ void GameScreen::on_PrintScreen() {
 	sn(*camera);
 }
 
-/*
-void GameScreen::createCameraCommand() {
-	m_PanLeft = new PanLeft;
-	m_PanRight = new PanRight;
-	m_PanLeftRightStop = new PanLeftRightStop;
-	m_PanUp = new PanUp;
-	m_PanDown = new PanDown;
-	m_PanUpDownStop = new PanUpDownStop;
-	m_ZoomIn = new ZoomIn;
-	m_ZoomOut = new ZoomOut;
-	m_ZoomStop = new ZoomStop;
-	m_ZoomStepIn = new ZoomStepIn;
-	m_ZoomStepOut = new ZoomStepOut;
-	m_Mouse = new MouseCommand;
-}
-
-void GameScreen::deleteCameraCommands() {
-	delete m_PanLeft;
-	delete m_PanRight;
-	delete m_PanLeftRightStop;
-	delete m_PanUp;
-	delete m_PanDown;
-	delete m_PanUpDownStop;
-	delete m_ZoomIn;
-	delete m_ZoomOut;
-	delete m_ZoomStop;
-	delete m_Mouse;
-	delete m_ZoomStepIn;
-	delete m_ZoomStepOut;
-	m_CurrentCameraCommand = 0;
-}
-*/
-
 GameScreen::GameScreen():
 	BaseScreen(),
 	m_ActiveObject(0),
 	m_CameraAgent(new CameraAgent(ViewFactory())),
 	m_CameraCommands(new CameraCommands),
-	m_CurrentCameraCommand(0),
 	m_OnPlayerJoin(this, &GameScreen::onPlayerJoin),
 	m_OnPlayerQuit(this, &GameScreen::onPlayerQuit)
 {
@@ -200,7 +166,6 @@ GameScreen::GameScreen():
 }
 
 GameScreen::~GameScreen() {
-	m_CurrentCameraCommand = 0;
 }
 
 void GameScreen::onInit() {
@@ -418,67 +383,54 @@ void GameScreen::on_ChangeVehicle()
 }
 
 void GameScreen::on_ViewPanLeft() {
-//	m_CurrentCameraCommand = &m_CameraCommands->PanLeft;
 	m_CameraAgent->setCameraCommand(&m_CameraCommands->PanLeft);
 }
 
 void GameScreen::on_ViewPanRight() {
-//	m_CurrentCameraCommand = &m_CameraCommands->PanRight;
 	m_CameraAgent->setCameraCommand(&m_CameraCommands->PanRight);
 }
 
 void GameScreen::on_ViewPanLeftStop() {
-//	m_CurrentCameraCommand = &m_CameraCommands->PanLeftRightStop;
 	m_CameraAgent->setCameraCommand(&m_CameraCommands->PanLeftRightStop);
 }
 
 void GameScreen::on_ViewPanRightStop() {
-//	m_CurrentCameraCommand = &m_CameraCommands->PanLeftRightStop;
 	m_CameraAgent->setCameraCommand(&m_CameraCommands->PanLeftRightStop);
 }
 
 void GameScreen::on_ViewPanUpStop() {
-//	m_CurrentCameraCommand = &m_CameraCommands->PanUpDownStop;
 	m_CameraAgent->setCameraCommand(&m_CameraCommands->PanUpDownStop);
 }
 
 void GameScreen::on_ViewPanDownStop() {
-//	m_CurrentCameraCommand = &m_CameraCommands->PanUpDownStop;
 	m_CameraAgent->setCameraCommand(&m_CameraCommands->PanUpDownStop);
 }
 
 void GameScreen::on_ViewZoomStop() {
-//	m_CurrentCameraCommand = &m_CameraCommands->ZoomStop;
 	m_CameraAgent->setCameraCommand(&m_CameraCommands->ZoomStop);
 }
 
 void GameScreen::on_ViewPanUp() {
-//	m_CurrentCameraCommand = &m_CameraCommands->PanUp;
 	m_CameraAgent->setCameraCommand(&m_CameraCommands->PanUp);
 }
 
 void GameScreen::on_ViewPanDown() {
-//	m_CurrentCameraCommand = &m_CameraCommands->PanDown;
 	m_CameraAgent->setCameraCommand(&m_CameraCommands->PanDown);
 }
 
 void GameScreen::on_ViewZoomIn() {
-//	m_CurrentCameraCommand = &m_CameraCommands->ZoomIn;
 	m_CameraAgent->setCameraCommand(&m_CameraCommands->ZoomIn);
 }
 
 void GameScreen::on_ViewZoomOut() {
-//	m_CurrentCameraCommand = &m_CameraCommands->ZoomOut;
 	m_CameraAgent->setCameraCommand(&m_CameraCommands->ZoomOut);
 }
 
 void GameScreen::on_ViewZoomStepIn() {
-//	m_CurrentCameraCommand = &m_CameraCommands->ZoomStepIn;
 	m_CameraAgent->setCameraCommand(&m_CameraCommands->ZoomStepIn);
 }
 
 void GameScreen::on_ViewZoomStepOut() {
-//	m_CurrentCameraCommand = &m_CameraCommands->ZoomStepOut;
 	m_CameraAgent->setCameraCommand(&m_CameraCommands->ZoomStepOut);
 }
 
@@ -528,14 +480,11 @@ void GameScreen::on_ResetSpin() {
 
 void GameScreen::on_MouseView(int x, int y, int dx, int dy) {
 	m_CameraCommands->Mouse.set(x,y,dx,dy);
-//	m_CurrentCameraCommand = &m_CameraCommands->Mouse;
 	m_CameraAgent->setCameraCommand(&m_CameraCommands->Mouse);
 }
 
 void GameScreen::setCamera(double dt) {
-	//m_CameraAgent->set(m_ViewMode, m_CurrentCameraCommand);
 	m_CameraAgent->updateCamera(dt);
-	m_CurrentCameraCommand = 0;
 
 	LocalBattlefield* battlefield = CSPSim::theSim->getBattlefield();
 	if (battlefield) {

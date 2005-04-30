@@ -47,7 +47,7 @@ protected:
 	virtual void constrain() { }
 public:
 	View(size_t vm);
-	virtual void activate() { }
+	virtual void activate();
 	virtual void reactivate() { activate(); }
 	virtual void update(simdata::Vector3& ep, simdata::Vector3& lp, simdata::Vector3& up, double dt) = 0;
 	void accept(const simdata::Ref<DynamicObject> object);

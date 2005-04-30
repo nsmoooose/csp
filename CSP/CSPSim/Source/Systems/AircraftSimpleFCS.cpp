@@ -91,9 +91,7 @@ void AircraftSimpleFCS::importChannels(Bus *bus) {
 }
 
 
-double AircraftSimpleFCS::onUpdate(double dt)
-{
-	// TODO add G control
+double AircraftSimpleFCS::onUpdate(double dt) {
 	m_Elevator.update(dt);
 	m_Aileron.update(dt);
 	m_Rudder.update(dt);
@@ -113,27 +111,3 @@ void AircraftSimpleFCS::getInfo(InfoList &info) const {
 }
 
 
-#if 0
-double FlightDynamics::controlIVbasis(double p_t) const {
-	double cIV = p_t * p_t  * ( 3.0 - 2.0 * p_t);
-	return cIV;
-}
-
-double FlightDynamics::controlInputValue(double p_gForce) const { 
-	// to reduce G, decrease deflection control surface
-	/* FIXME move to FCS class
-	if (p_gForce > m_GMax && m_ElevatorInput > 0.0) return 0.0;
-	if (p_gForce < m_GMin && m_ElevatorInput < 0.0) return 0.0;
-	if (m_Alpha > m_stallAOA && m_ElevatorInput > 0.0) return 0.0;
-	if (p_gForce > m_GMax - m_depsilon && m_ElevatorInput > 0.0) {
-		return controlIVbasis((m_GMax - p_gForce) / m_depsilon);
-	} 
-	if ( p_gForce < m_GMin + m_depsilon && m_ElevatorInput < 0.0) {
-		return controlIVbasis((p_gForce - m_GMin) / m_depsilon);
-	}*/
-	return 1.0;
-}
-	double u = 0.05 + dt;
-	m_ElevatorScale	= (1.0 - u) * m_ElevatorScale + u * controlInputValue(m_GForce);
-	m_Elevator = m_ElevatorInput * m_ElevatorScale;
-#endif

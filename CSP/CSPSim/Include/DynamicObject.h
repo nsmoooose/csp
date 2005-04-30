@@ -168,6 +168,7 @@ public:
 	bool isSmoke();
 	void disableSmoke();
 	void enableSmoke();
+	void internalView(bool internal);
 
 	virtual void setDataRecorder(DataRecorder *recorder);
 

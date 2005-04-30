@@ -580,6 +580,9 @@
 				RelativePath="..\..\Include\FlightDynamics.h">
 			</File>
 			<File
+				RelativePath="..\..\Include\FlightDynamicsChannels.h">
+			</File>
+			<File
 				RelativePath="..\..\Include\FlightModel.h">
 			</File>
 			<File

@@ -59,7 +59,13 @@ class AircraftInputSystem: public System {
 			v += m_Increment * dt * m_Rate;
 			if (m_DecayCount > 0) {
 				m_DecayCount--;
-				if (m_Increment == 0.0) v *= m_Decay;
+				if (m_Increment == 0.0) { 
+					if (m_DecayCount == 0) {
+						v = 0.0;
+					} else {
+						v *= m_Decay;
+					}
+				}
 			}
 			m_Channel->value() = simdata::clampTo(v, m_Minimum, m_Maximum);
 		}

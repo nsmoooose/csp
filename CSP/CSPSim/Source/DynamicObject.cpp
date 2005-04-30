@@ -231,6 +231,12 @@ void DynamicObject::enableSmoke() {
 	}
 }
 
+void DynamicObject::internalView(bool internal) { 
+	if (m_SceneModel.valid()) {
+		m_SceneModel->onViewMode(internal); 
+	}
+}
+
 void DynamicObject::setDataRecorder(DataRecorder *recorder) {
 	if (!recorder) return;
 	if (m_SystemsModel.valid()) {

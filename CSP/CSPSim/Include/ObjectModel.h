@@ -186,6 +186,7 @@ private:
 	osg::ref_ptr<fx::SmokeTrailSystem> m_SmokeTrails;
 	std::vector<simdata::Vector3> m_SmokeEmitterLocation;
 	std::vector< osg::ref_ptr<AnimationCallback> > m_AnimationCallbacks;
+	osg::ref_ptr<osg::PositionAttitudeTransform> m_3dHud;
 protected:
 	virtual ~SceneModel();
 public:
@@ -203,6 +204,7 @@ public:
 	bool isSmoke();
 	void disableSmoke();
 	void enableSmoke();
+	virtual void onViewMode(bool internal);
 	void updateSmoke(double dt, simdata::Vector3 const & global_position, simdata::Quat const &attitude);
 	void setLabel(std::string const &);
 };

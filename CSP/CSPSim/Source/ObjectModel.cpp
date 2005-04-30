@@ -752,9 +752,10 @@ void SceneModel::bindAnimationChannels(Bus::Ref bus) {
 	CSP_LOG(OBJECT, DEBUG, "Trying to bind HUD");
 	DataChannel<HUD*>::CRef hud_channel = bus->getChannel("HUD", false);
 	if (hud_channel.valid()) {
-		HUD * hud = hud_channel->value();
+		HUD *hud = hud_channel->value();
 		CSP_LOG(OBJECT, DEBUG, "Found HUD");
-		hud->hud()->setPosition(simdata::toOSG(m_Model->getHudPlacement()));
+		m_3dHud = hud->hud();
+		m_3dHud->setPosition(simdata::toOSG(m_Model->getHudPlacement()));
 		m_CenterOfMassOffset->addChild(hud->hud());
 		hud->setOrigin(simdata::toOSG(m_Model->getHudPlacement()));
 		hud->setViewPoint(simdata::toOSG(m_Model->getViewPoint()));
@@ -762,6 +763,19 @@ void SceneModel::bindAnimationChannels(Bus::Ref bus) {
 		CSP_LOG(OBJECT, DEBUG, "HUD added to model");
 	}
 	CSP_LOG(OBJECT, DEBUG, "bindAnimationChannels complete");
+}
+
+void SceneModel::onViewMode(bool internal) {
+
+	// show/hide hud (if any) when the view is internal/external
+	if (m_3dHud.valid()) {
+		if (internal) {
+			m_3dHud->setNodeMask(0xff);
+		} else	{
+			m_3dHud->setNodeMask(0x0);
+		}
+	}
+
 }
 
 void SceneModel::setPositionAttitude(simdata::Vector3 const &position, simdata::Quat const &attitude, simdata::Vector3 const &cm_offset) {

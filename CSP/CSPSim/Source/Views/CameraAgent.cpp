@@ -34,7 +34,6 @@
 #include "VirtualScene.h"
 
 
-
 CameraAgent::CameraAgent(const ViewFactory& vf, ViewMode default_view):
 	m_EyePoint(simdata::Vector3::ZERO), 
 	m_LookPoint(simdata::Vector3::XAXIS),
@@ -44,7 +43,7 @@ CameraAgent::CameraAgent(const ViewFactory& vf, ViewMode default_view):
 	notifyCameraKinematicsToViews();
 }
 
-void CameraAgent::attach(size_t mode, View* vm){
+void CameraAgent::attach(ViewMode mode, View* vm){
 	m_ViewList[mode] = vm;
 }
 

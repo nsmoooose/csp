@@ -37,6 +37,9 @@
 #include <SimCore/Battlefield/LocalBattlefield.h>
 
 void View::accept(const simdata::Ref<DynamicObject> object) {
+	if (m_ActiveObject.valid()) {
+		m_ActiveObject->internalView(false);
+	}
 	m_ActiveObject = object;
 }
 
@@ -71,12 +74,18 @@ void View::cull() {
 	VirtualScene* scene = CSPSim::theSim->getScene();
 	if (scene && m_ActiveObject.valid()) {
 		bool isNear = m_ActiveObject->isNearField();
-		if (isNear && !m_Internal) {
+		if (isNear && !isInternal()) {
 			scene->setNearObject(m_ActiveObject, false);
 		} else
-		if (!isNear && m_Internal) {
+		if (!isNear && isInternal()) {
 			scene->setNearObject(m_ActiveObject, true);
 		}
+	}
+}
+
+void View::activate() {
+	if (m_ActiveObject.valid()) {
+		m_ActiveObject->internalView(isInternal());
 	}
 }
 
@@ -100,6 +109,7 @@ void InternalView::update(simdata::Vector3& ep, simdata::Vector3& lp, simdata::V
 }
 
 void InternalView::activate() {
+	View::activate();
 	m_CameraKinematics->reset();
 }
 
@@ -115,6 +125,7 @@ void InternalViewHist::update(simdata::Vector3& ep, simdata::Vector3& lp, simdat
 }
 
 void ExternalViewBody::activate() {
+	View::activate();
 	m_CameraKinematics->resetDistance();
 }
 
@@ -123,6 +134,7 @@ void ExternalViewBody::update(simdata::Vector3& ep, simdata::Vector3& lp, simdat
 }
 
 void ExternalViewWorld::activate() {
+	View::activate();
 	m_CameraKinematics->resetDistance();
 }
 
@@ -184,6 +196,7 @@ void FlybyView::newFixedCamPos(SimObject* target) {
 }
 
 void FlybyView::activate() {
+	View::activate();
 	newFixedCamPos(m_ActiveObject.get());
 }
 
@@ -209,6 +222,7 @@ void FlybyView::recalculate(simdata::Vector3& ep, simdata::Vector3& /*lp*/, simd
 }
 
 void SatelliteView::activate() {
+	View::activate();
 	m_CameraKinematics->setTheta(0.0);
 	m_CameraKinematics->setPhi(simdata::PI_2);
 	m_CameraKinematics->setDistance(500.0);
@@ -227,6 +241,7 @@ PadlockView::PadlockView(size_t vm):
 
 void PadlockView::activate() {
 	CSP_LOG(APP, ERROR, "padlock view activated");
+	View::activate();
 	//m_CameraKinematics->reset();
 	LocalBattlefield* battlefield = CSPSim::theSim->getBattlefield();
 	if (battlefield) {

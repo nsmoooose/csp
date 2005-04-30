@@ -170,7 +170,6 @@ private:
 	// camera management by a command
 	simdata::ScopedPointer<CameraAgent> m_CameraAgent;
 	simdata::ScopedPointer<CameraCommands> m_CameraCommands;
-	CameraCommand* m_CurrentCameraCommand;
 
 	void onPlayerJoin(int, const std::string&);
 	void onPlayerQuit(int, const std::string&);

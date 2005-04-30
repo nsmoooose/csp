@@ -1,6 +1,20 @@
  Version 0.4.0 (in progress)
 ===========================
 
+2005-04-30: delta
+ * Fix a small bug when switching from f16 to m2k, the specific 
+   screeninfos were not updated correctly.
+
+ * Mask the hud in external view.
+ 
+ * Fix a small bug when controlling control surfaces with keyboard.
+ 
+ * Minor other changes and clean up.
+ 
+ * Minor update to vcproj.
+ 
+ * Tweak py2exe files.
+
 2005-04-29: onsight
  * Reduce hurricane force winds by increasing the timescale for average
    pressure variations and reducing the gust scaling factor.  Clean and

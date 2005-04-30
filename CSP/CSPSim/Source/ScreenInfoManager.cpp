@@ -65,11 +65,11 @@ ScreenInfoManager::ScreenInfoManager(int ScreenWidth, int ScreenHeight)
 
 void ScreenInfoManager::changeObjectStats(int /*ScreenWidth*/, int ScreenHeight,simdata::Ref<DynamicObject> const& vehicle)
 {
-	ScreenInfo* os = getScreenInfo("OBJECT STATS");
 	bool visible = getScreenInfo("GENERAL STATS")->getStatus();
+	ScreenInfo* os = getScreenInfo("OBJECT STATS");
 	if (os) {
-		m_modelview_abs->removeChild(os);
 		visible = os->getStatus();
+		m_modelview_abs->removeChild(os);
 	}
 	osg::ref_ptr<ObjectStats> objectStats = new ObjectStats(12, 2 * ScreenHeight / 3,vehicle);
 	objectStats->setStatus(visible);

@@ -1,6 +1,12 @@
  Version 0.4.0 (in progress)
 ===========================
 
+2005-04-29: onsight
+ * Reduce hurricane force winds by increasing the timescale for average
+   pressure variations and reducing the gust scaling factor.  Clean and
+   add documentation to the Atmosphere class.  Also dump the noise
+   functions to disk on start up.
+
 2005-04-28: onsight
  * Tweak gear stiffening at compression limit to prevent the aircraft
    from "jumping" after a hard landing.  (Ultimately this regime should

@@ -465,22 +465,27 @@ private:
 		ContactWrapper *cfrom = static_cast<ContactWrapper*>(from);
 		CSP_LOG(BATTLEFIELD, DEBUG, "INCREMENT: " << *(from->unit()) << " -> " << *(to->unit()));
 		if (cfrom->incrementCount(to->owner())) {
-			CSP_LOG(BATTLEFIELD, INFO, "sending add unit " << from->unit()->id() << " to client " << to->owner());
-			{  // tell OWNER[to] to expect updates from OWNER[from]
-				CommandAddUnit::Ref msg = new CommandAddUnit();
-				msg->set_unit_id(from->id());
-				msg->set_unit_class(simdata::Path(from->unit()->getObjectPath()));
-				msg->set_unit_type(static_cast<const simdata::uint8>(from->unit()->type()));
-				msg->set_owner_id(from->owner());
-				msg->set_grid_x(from->point().x());
-				msg->set_grid_y(from->point().y());
-				sendClientCommand(msg, to->owner());
-			}
-			{ // tell OWNER[from] to update OWNER[to]
-				CommandUpdatePeer::Ref msg = new CommandUpdatePeer();
-				msg->set_unit_id(from->id());
-				msg->set_peer_id(to->owner());
-				sendClientCommand(msg, from->owner());
+			// if the units are owned by the same client we still reference count
+			// but we don't send an update.  both units will already be present in
+			// the client's local battlefield.
+			if (from->owner() != to->owner()) {
+				CSP_LOG(BATTLEFIELD, INFO, "sending add unit " << from->unit()->id() << " to client " << to->owner());
+				{  // tell OWNER[to] to expect updates from OWNER[from]
+					CommandAddUnit::Ref msg = new CommandAddUnit();
+					msg->set_unit_id(from->id());
+					msg->set_unit_class(simdata::Path(from->unit()->getObjectPath()));
+					msg->set_unit_type(static_cast<const simdata::uint8>(from->unit()->type()));
+					msg->set_owner_id(from->owner());
+					msg->set_grid_x(from->point().x());
+					msg->set_grid_y(from->point().y());
+					sendClientCommand(msg, to->owner());
+				}
+				{ // tell OWNER[from] to update OWNER[to]
+					CommandUpdatePeer::Ref msg = new CommandUpdatePeer();
+					msg->set_unit_id(from->id());
+					msg->set_peer_id(to->owner());
+					sendClientCommand(msg, from->owner());
+				}
 			}
 		}
 	}
@@ -489,18 +494,23 @@ private:
 		ContactWrapper *cfrom = static_cast<ContactWrapper*>(from);
 		CSP_LOG(BATTLEFIELD, DEBUG, "DECREMENT: " << *(from->unit()) << " -> " << *(to->unit()));
 		if (cfrom->decrementCount(to->owner())) {
-			CSP_LOG(BATTLEFIELD, INFO, "sending remove unit " << from->unit()->id() << " to client " << to->owner());
-			{
-				CommandRemoveUnit::Ref msg = new CommandRemoveUnit();
-				msg->set_unit_id(from->id());
-				sendClientCommand(msg, to->owner());
-			}
-			{
-				CommandUpdatePeer::Ref msg = new CommandUpdatePeer();
-				msg->set_unit_id(from->id());
-				msg->set_peer_id(to->owner());
-				msg->set_stop(true);
-				sendClientCommand(msg, from->owner());
+			// if the units are owned by the same client we still reference count
+			// but we don't send an update.  removal and notification of local units
+			// has already been done in the client's battlefield.
+			if (from->owner() != to->owner()) {
+				CSP_LOG(BATTLEFIELD, INFO, "sending remove unit " << from->unit()->id() << " to client " << to->owner());
+				{
+					CommandRemoveUnit::Ref msg = new CommandRemoveUnit();
+					msg->set_unit_id(from->id());
+					sendClientCommand(msg, to->owner());
+				}
+				{
+					CommandUpdatePeer::Ref msg = new CommandUpdatePeer();
+					msg->set_unit_id(from->id());
+					msg->set_peer_id(to->owner());
+					msg->set_stop(true);
+					sendClientCommand(msg, from->owner());
+				}
 			}
 		}
 	}

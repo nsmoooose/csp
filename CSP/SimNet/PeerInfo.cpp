@@ -350,7 +350,7 @@ void ActivePeerList::update(double dt, NetworkInterface *ni) {
 			ni->resend(packet);
 		}
 		bool remove = false;
-		if (peer->getDeadTime() > 15.0) {
+		if (peer->getDeadTime() > 30.0) {
 			SIMNET_LOG(PEER, ALERT, "dead time expired for peer " << peer->getId() << " (" << peer->getDeadTime() << " s)");
 			if (ni->handleDeadPeer(peer)) remove = true;
 		}

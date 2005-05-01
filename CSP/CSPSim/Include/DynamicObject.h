@@ -143,8 +143,8 @@ public:
 
 	virtual simdata::Vector3 getViewPoint() const;
 
-	virtual void onAggregate() { CSP_LOG(APP, INFO, "aggregate @ " << int(this)); }
-	virtual void onDeaggregate() { CSP_LOG(APP, INFO, "deaggregate @ " << int(this)); }
+	virtual void onAggregate() { CSP_LOG(APP, INFO, "aggregate @ " << *this); }
+	virtual void onDeaggregate() { CSP_LOG(APP, INFO, "deaggregate @ " << *this); }
 
 	bool isNearGround();
 

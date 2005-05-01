@@ -96,10 +96,12 @@ simdata::Vector3 FlightModel::calculateDragVector() {
 
 	double CL = m_CL - 0.04; //m_CL_md;
 
-	//m_CD =  m_CD0 + \
-	//        m_CD_de * fabs(m_Elevator) + \
-	//        m_CD_db * fabs(m_Airbrake) + \
-	//	m_CD_i * CL * CL;
+	/*
+	m_CD =  m_CD0 + \
+	        m_CD_de * fabs(m_Elevator) + \
+	        m_CD_db * fabs(m_Airbrake) + \
+	        m_CD_i * CL * CL;
+	*/
 
 	m_CD =  m_CD_m_a[m_AirSpeedM][m_Alpha_float]
 	     +  m_CD_de * fabs(m_Elevator) + \

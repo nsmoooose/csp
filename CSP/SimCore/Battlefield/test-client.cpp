@@ -69,7 +69,7 @@ public:
 };
 
 TestUnitState::Ref Unit::mirror_msg;
-SIMDATA_REGISTER_INTERFACE(Unit);
+SIMDATA_REGISTER_INTERFACE(Unit)
 
 void makeDataArchive() {
 	simdata::Ref<Unit> unit = new Unit;

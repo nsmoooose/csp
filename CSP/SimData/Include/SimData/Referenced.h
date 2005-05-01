@@ -49,7 +49,7 @@ NAMESPACE_SIMDATA
 template <class T> class Ref;
 class ReferencePointer;
 
-void SIMDATA_EXPORT _log_reference_count_error(int count, int pointer);
+void SIMDATA_EXPORT _log_reference_count_error(int count, void* pointer);
 
 
 /** Base class for reference counted objects.
@@ -69,7 +69,7 @@ protected:
 	}
 
 	virtual ~ReferencedBase() {
-		if (__count != 0) _log_reference_count_error(__count, reinterpret_cast<int>(this));
+		if (__count != 0) _log_reference_count_error(__count, reinterpret_cast<void*>(this));
 	}
 
 private:

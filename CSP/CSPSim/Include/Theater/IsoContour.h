@@ -65,7 +65,7 @@ public:
 		return simdata::Vector3(m_Radius * x, m_Radius * y, 0.0f);
 	}
 	virtual float getArea() const {
-		return simdata::PI * m_Radius * m_Radius;
+		return static_cast<float>(simdata::PI * m_Radius * m_Radius);
 	}
 	virtual ~Circle() {}
 };

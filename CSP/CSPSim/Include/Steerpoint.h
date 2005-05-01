@@ -61,7 +61,7 @@ public:
 	virtual simdata::DateZulu const &time() const { return m_Time; }
 	virtual simdata::Vector3 const &position() const { return m_Position; }
 	virtual simdata::LLA const &lla() const { return m_LLA; }
-	virtual float altitude() const { return m_LLA.altitude(); }
+	virtual float altitude() const { return static_cast<float>(m_LLA.altitude()); }
 
 	virtual void setAltitude(float altitude) { m_LLA.set(m_LLA.latitude(), m_LLA.longitude(), altitude); updatePosition(); }
 	virtual void setPosition(simdata::Vector3 const &position) { m_Position = position; updateLLA(); }

@@ -204,7 +204,7 @@ void Atmosphere::generateWinds() {
 	noise.randomize();
 	m_WindAltY = noise.generate(100, false, 8.0, 1.0, 0.0);
 	for (i = 0; i < 100; ++i) {
-		const double alt_scale = 1.0 + i * i * 0.0025;
+		const float alt_scale = 1.0f + i * i * 0.0025f;
 		m_WindAltX[i] *= alt_scale;
 		m_WindAltY[i] *= alt_scale;
 	}
@@ -304,7 +304,7 @@ bool Atmosphere::fastUpdate(double &dt) {
 	m_GustIndex += dt * 3.0;
 	const int index = static_cast<int>(m_GustIndex);
 	const float f = static_cast<float>(m_GustIndex - index);
-	const float gust = m_GustTime[index%1000] * (1.0 - f) + m_GustTime[(index+1)%1000] * f;
+	const float gust = m_GustTime[index%1000] * (1.0f - f) + m_GustTime[(index+1)%1000] * f;
 	m_GustModulation = std::max(1.0, 1.0 + gust);
 	//std::cout << getWind(simdata::Vector3::ZERO) << " " << m_GustModulation << std::endl;
 	if (m_FastUpdate < 3.0) return false;

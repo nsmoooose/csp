@@ -658,6 +658,9 @@
 				RelativePath="..\..\Include\SmokeEffects.h">
 			</File>
 			<File
+				RelativePath="..\..\Include\Steerpoint.h">
+			</File>
+			<File
 				RelativePath="..\..\Include\System.h">
 			</File>
 			<File
@@ -779,6 +782,64 @@
 				</File>
 				<File
 					RelativePath="..\..\Include\Views\View.h">
+				</File>
+			</Filter>
+			<Filter
+				Name="F16"
+				Filter="">
+				<File
+					RelativePath="..\..\Source\F16\AlphaNumericDisplay.h">
+				</File>
+				<File
+					RelativePath="..\..\Source\F16\DataEntry.h">
+				</File>
+				<File
+					RelativePath="..\..\Source\F16\DataEntryPage.h">
+				</File>
+				<File
+					RelativePath="..\..\Source\F16\F16Channels.h">
+				</File>
+				<File
+					RelativePath="..\..\Source\F16\F16GearDynamics.h">
+				</File>
+				<File
+					RelativePath="..\..\Source\F16\F16HUD.h">
+				</File>
+				<File
+					RelativePath="..\..\Source\F16\F16InputSystem.h">
+				</File>
+				<File
+					RelativePath="..\..\Source\F16\F16System.h">
+				</File>
+				<File
+					RelativePath="..\..\Source\F16\GroundAvoidanceAdvisory.h">
+				</File>
+				<File
+					RelativePath="..\..\Source\F16\NavigationSystem.h">
+				</File>
+				<File
+					RelativePath="..\..\Source\F16\PageALOW.h">
+				</File>
+				<File
+					RelativePath="..\..\Source\F16\PageCNI.h">
+				</File>
+				<File
+					RelativePath="..\..\Source\F16\PageLIST.h">
+				</File>
+				<File
+					RelativePath="..\..\Source\F16\PageSTPT.h">
+				</File>
+				<File
+					RelativePath="..\..\Source\F16\PanelHUD.h">
+				</File>
+				<File
+					RelativePath="..\..\Source\F16\Radio.h">
+				</File>
+				<File
+					RelativePath="..\..\Source\F16\SpecialFonts.h">
+				</File>
+				<File
+					RelativePath="..\..\Source\F16\UpFrontControls.h">
 				</File>
 			</Filter>
 		</Filter>

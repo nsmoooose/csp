@@ -348,7 +348,7 @@ public:
 	Schedule1() {}
 private:
 	virtual void evaluate(Timer const &timer) {
-		setOutput(m_Schedule[getInput(timer)], timer);
+		setOutput(m_Schedule[static_cast<float>(getInput(timer))], timer);
 	}
 };
 
@@ -369,7 +369,7 @@ public:
 	Schedule2() {}
 private:
 	virtual void evaluate(Timer const &timer) {
-		setOutput(getInputA(timer) * m_Schedule[getInputB(timer)], timer);
+		setOutput(getInputA(timer) * m_Schedule[static_cast<float>(getInputB(timer))], timer);
 	}
 };
 

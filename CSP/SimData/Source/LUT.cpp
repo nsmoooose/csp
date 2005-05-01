@@ -231,7 +231,7 @@ void LUT<N,X>::interpolateLinear(int n, TableVector *_table) {
 		while (x > c1->first && c1+1 != m_Data->end()) {
 			c0 = c1++;
 			if (c1->first <= c0->first) {
-				throwBreakpointOrder();
+				this->throwBreakpointOrder();
 			}
 			s = static_cast<X>(1.0) / (c1->first - c0->first);
 		}
@@ -282,7 +282,7 @@ void LUT<N,X>::interpolateSpline(int n, TableVector *_table) {
 	X xb = data(1).first;
 	X h = xb - xa;
 	if (xb <= xa) {
-		throwBreakpointOrder();
+		this->throwBreakpointOrder();
 	}
 	X s = static_cast<X>(1.0) / h;
 	for (int i = 0; i < n; ++i) {
@@ -293,7 +293,7 @@ void LUT<N,X>::interpolateSpline(int n, TableVector *_table) {
 			xb = data(index).first;
 			h = xb - xa;
 			if (xb <= xa) {
-				throwBreakpointOrder();
+				this->throwBreakpointOrder();
 			}
 			s = static_cast<X>(1.0) / h;
 		}
@@ -372,19 +372,19 @@ LUT<N,X>::~LUT() {
 
 template <int N, class X>
 void LUT<N,X>::interpolate(Dim const &dim, Interpolation::Modes mode) {
-	checkNotInterpolated();
+	this->checkNotInterpolated();
 	int n = dim[0];
 	assert(n >= 2 && m_Data && dataSize() >= 2);
 	TableVector *_table = new TableVector(n);
 	switch (mode) {
-		case LINEAR:
+		case Interpolation::LINEAR:
 			interpolateLinear(n, _table);
 			break;
-		case SPLINE:
+		case Interpolation::SPLINE:
 			interpolateSpline(n, _table);
 			break;
 		default:
-			throwInterpolationMode();
+			this->throwInterpolationMode();
 	}
 	for (int i = 0; i < n; ++i) {
 		(*_table)[i].interpolate(dim.rest(), mode);
@@ -399,7 +399,7 @@ void LUT<N,X>::interpolate(std::vector<int> const &dim, Interpolation::Modes mod
 
 template <int N, class X>
 X LUT<N,X>::getValue(Vec const &v) const {
-	checkInterpolated();
+	this->checkInterpolated();
 	X x = v[0];
 	int i;
 	X f;
@@ -410,7 +410,7 @@ X LUT<N,X>::getValue(Vec const &v) const {
 
 template <int N, class X>
 void LUT<N,X>::load(std::vector<X> const &values, Breaks const &breaks, int *index) {
-	checkNotInterpolated();
+	this->checkNotInterpolated();
 	std::vector<X> &br = breaks[0];
 	int n = br.size(), index0 = 0;
 	if (!index) index = &index0;
@@ -431,7 +431,7 @@ void LUT<N,X>::load(std::vector<X> const &values, std::vector< std::vector<X> > 
 
 template <int N, class X>
 void LUT<N,X>::serialize(Reader &reader) {
-	checkNotInterpolated();
+	this->checkNotInterpolated();
 	X x0, x1;
 	int dim, n;
 	reader >> dim;
@@ -453,12 +453,12 @@ void LUT<N,X>::serialize(Reader &reader) {
 
 template <int N, class X>
 void LUT<N,X>::serialize(Writer &writer) const {
-	checkInterpolated();
+	this->checkInterpolated();
 	int n = tableSize();
 	int dim = N;
 	writer << dim;
-	writer << m_X0;
-	writer << m_X1;
+	writer << this->m_X0;
+	writer << this->m_X1;
 	writer << n;
 	for (int i = 0; i < n; ++i) {
 		table(i).serialize(writer);
@@ -511,7 +511,7 @@ void LUT<1,X>::interpolateLinear(int n, TableVector *_table) {
 		while (x > c1->first && c1+1 != m_Data->end()) {
 			c0 = c1++;
 			if (c1->first <= c0->first) {
-				throwBreakpointOrder();
+				this->throwBreakpointOrder();
 			}
 			s = static_cast<X>(1.0) / (c1->first - c0->first);
 		}
@@ -625,20 +625,20 @@ LUT<1, X> const &LUT<1,X>::operator=(LUT<1, X> const &copy) {
 
 template <typename X>
 void LUT<1,X>::interpolate(Dim const &dim, Interpolation::Modes mode) {
-	checkNotInterpolated();
+	this->checkNotInterpolated();
 	int n = dim[0];
 	assert(n >= 2 && dataSize() >= 2);
 	TableVector *_table = new TableVector(n);
 	assert(_table != 0);
 	switch (mode) {
-		case LINEAR:
+		case Interpolation::LINEAR:
 			interpolateLinear(n, _table);
 			break;
-		case SPLINE:
+		case Interpolation::SPLINE:
 			interpolateSpline(n, _table);
 			break;
 		default:
-			throwInterpolationMode();
+			this->throwInterpolationMode();
 	}
 	postInterpolation(_table);
 }
@@ -650,7 +650,7 @@ void LUT<1,X>::interpolate(std::vector<int> const &dim, Interpolation::Modes mod
 
 template <typename X>
 X LUT<1,X>::getValue(Vec const &v) const {
-	checkInterpolated();
+	this->checkInterpolated();
 	X x = v[0];
 	int i;
 	X f;
@@ -661,7 +661,7 @@ X LUT<1,X>::getValue(Vec const &v) const {
 
 template <typename X>
 void LUT<1,X>::load(std::vector<X> const &values, Breaks const &breaks, int *index) {
-	checkNotInterpolated();
+	this->checkNotInterpolated();
 	std::vector<X> const &br = breaks[0];
 	int n = br.size(), index0 = 0;
 	if (!index) index = &index0;
@@ -685,7 +685,7 @@ template <typename X>
 void LUT<1,X>::serialize(Reader &reader) {
 	int dim = 1;
 	reader >> dim;
-	checkNotInterpolated();
+	this->checkNotInterpolated();
 	X x0, x1;
 	int n;
 	if (dim != 1) {
@@ -708,10 +708,10 @@ template <typename X>
 void LUT<1,X>::serialize(Writer &writer) const {
 	int dim = 1;
 	writer << dim;
-	checkInterpolated();
+	this->checkInterpolated();
 	int n = tableSize();
-	writer << m_X0;
-	writer << m_X1;
+	writer << this->m_X0;
+	writer << this->m_X1;
 	writer << n;
 	for (int i = 0; i < n; i++) {
 		writer << table(i);

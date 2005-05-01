@@ -32,7 +32,7 @@
 #include <iostream>
 
 SIMDATA_REGISTER_INTERFACE(UpFrontControls)
-DEFINE_INPUT_INTERFACE(UpFrontControls);
+DEFINE_INPUT_INTERFACE(UpFrontControls)
 
 
 UpFrontControls::UpFrontControls(): m_AA(false), m_AG(false), m_ElapsedTime(0) {

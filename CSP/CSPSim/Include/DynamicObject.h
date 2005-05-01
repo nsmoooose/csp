@@ -45,7 +45,7 @@ namespace osgParticle {
 	class Geode;
 	class ParticleSystemUpdater;
 	class ModularEmitter;
-};
+}
 
 
 /**

@@ -136,11 +136,11 @@ protected:
 	template <class A> class Callback_A: public Callback_A_C<A> {
 	protected:
 		virtual void updateValue() {
-			if (m_Channel.valid()) {
-				float value = m_Channel->value();
-				if (std::abs(value - m_Value) > 0.00001) {
-					m_Value = value;
-					dirty();
+			if (this->m_Channel.valid()) {
+				float value = this->m_Channel->value();
+				if (std::abs(value - this->m_Value) > 0.00001) {
+					this->m_Value = value;
+					this->dirty();
 				}
 			}
 		}
@@ -395,8 +395,8 @@ class DrivenVectorialTranslation: public Translation {
 		virtual void updateValue() {
 			if (m_Channel.valid()) {
 				float value = m_Parameters->getDirection() * simdata::toOSG(m_Channel->value());
-				if (value != m_Value) {
-					m_Value = value;
+				if (value != this->m_Value) {
+					this->m_Value = value;
 					dirty();
 				}
 			}

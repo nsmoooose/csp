@@ -93,7 +93,7 @@ void List<T>::serialize(Writer &writer) const {
 
 template<typename T>
 std::string List<T>::asString() const {
-	return _asString(size());
+	return _asString(this->size());
 }
 
 

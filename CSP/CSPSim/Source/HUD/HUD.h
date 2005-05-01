@@ -81,7 +81,7 @@ protected:
 	// the elements in the frame were positioned at infinity).
 	class ForwardFrame: public Frame {
 		osg::ref_ptr<osg::PositionAttitudeTransform> m_Transform;
-		inline virtual void _addElement(Element *element);
+		virtual void _addElement(Element *element);
 	public:
 		osg::PositionAttitudeTransform *transform() { return m_Transform.get(); }
 		osg::PositionAttitudeTransform const *transform() const { return m_Transform.get(); }

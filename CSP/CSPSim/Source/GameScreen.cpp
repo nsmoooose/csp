@@ -71,7 +71,7 @@
  */
 
 
-DEFINE_INPUT_INTERFACE(GameScreen);
+DEFINE_INPUT_INTERFACE(GameScreen)
 
 void GameScreen::initInterface()
 {

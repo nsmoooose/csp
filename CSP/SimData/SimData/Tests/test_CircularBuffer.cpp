@@ -107,9 +107,5 @@ int main() {
 	Trace::install();
 	test();
 	return 0;
-};
-
-
-
-
+}
 

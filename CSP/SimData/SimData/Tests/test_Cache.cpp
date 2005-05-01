@@ -32,7 +32,7 @@
 #include <iostream>
 #include <cstdlib>
 
-USING_SIMDATA;
+USING_SIMDATA
 
 void test() {
 	MostRecentlyUsedCache<int, std::string> cache(5);
@@ -70,5 +70,5 @@ void test() {
 int main() {
 	test();
 	return 0;
-};
+}
 

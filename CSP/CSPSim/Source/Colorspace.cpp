@@ -1,5 +1,5 @@
 // Combat Simulator Project - CSPSim
-// Copyright (C) 2002 The Combat Simulator Project
+// Copyright (C) 2002-2005 The Combat Simulator Project
 // http://csp.sourceforge.net
 //
 // This program is free software; you can redistribute it and/or
@@ -904,7 +904,7 @@ Color Color::toRGB(bool internal_check) const {
 	}
 	RGB_check(R, G, B);
 	return Color(R, G, B, RGB);
-};
+}
 
 Color Color::toCIEXYZ(bool internal_check) const {
 	float X, Y, Z;
@@ -942,7 +942,7 @@ Color Color::toCIEXYZ(bool internal_check) const {
 	XYZ_check(X, Y, Z);
 	return Color(X, Y, Z, CIEXYZ);
 }
-			
+
 
 Color Color::toCIExyY(bool internal_check) const {
 	float x, y;

@@ -24,6 +24,7 @@
 
 
 #include <HUD/PitchLadder.h>
+#include <cmath>
 
 
 PitchLadder::PitchLadder(): m_Dirty(false), m_Hidden(false), m_LastPitchAngle(100.0f) { }

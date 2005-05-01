@@ -77,7 +77,7 @@ typedef double degree_t;
 
 /** Exception thrown by the Date class when invalid dates are detected.
  */
-SIMDATA_EXCEPTION(InvalidDate);
+SIMDATA_EXCEPTION(InvalidDate)
 
 /** Date class for YMD and julian dates.
  *

@@ -45,9 +45,9 @@ NAMESPACE_SIMDATA
 class DataArchive;
 
 
-SIMDATA_EXCEPTION(DataUnderflow);
-SIMDATA_EXCEPTION(ConstViolation);
-SIMDATA_EXCEPTION(SerializeError);
+SIMDATA_EXCEPTION(DataUnderflow)
+SIMDATA_EXCEPTION(ConstViolation)
+SIMDATA_EXCEPTION(SerializeError)
 
 
 /** A trivial FILE * wrapper to provide a uniform file interface for both C++

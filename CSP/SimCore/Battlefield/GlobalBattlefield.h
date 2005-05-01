@@ -505,7 +505,7 @@ private:
 		}
 	}
 
-	bool isUpdatingPeer(UnitWrapper *from, UnitWrapper *to) const {
+	bool isUpdatingPeer(UnitWrapper* /*from*/, UnitWrapper* /*to*/) const {
 		return false;
 	}
 

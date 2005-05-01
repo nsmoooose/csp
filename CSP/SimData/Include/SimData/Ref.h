@@ -22,7 +22,7 @@
 /**
  * @file Ref.h
  *
- * Reference counting and smart-pointer classes.
+ * Reference counting smart-pointer classes.
  */
 
 
@@ -36,8 +36,7 @@
 #include <SimData/Namespace.h>
 #include <SimData/Export.h>
 #include <SimData/ExceptionBase.h>
-#include <SimData/Properties.h>
-#include <SimData/AtomicCounter.h>
+#include <SimData/Referenced.h>
 
 #ifdef SWIG
 // silence SWIG warning about NonCopyable
@@ -47,63 +46,12 @@
 NAMESPACE_SIMDATA
 
 
-class ReferencePointer;
 class LinkBase;
 
+SIMDATA_EXCEPTION(ConversionError)
 
-SIMDATA_EXCEPTION(ConversionError);
-
-void SIMDATA_EXPORT _log_reference_count_error(int count, int pointer);
 void SIMDATA_EXPORT _log_reference_conversion_error();
 
-
-/** Base class for reference counted objects.
- *
- *  Inspired by OpenSceneGraph's osg::Referenced class.
- *
- *  @author Mark Rose <mrose@stm.lbl.gov>
- */
-template <typename COUNTER>
-class SIMDATA_EXPORT ReferencedBase: public NonCopyable {
-
-template <class T> friend class Ref;
-friend class ReferencePointer;
-
-protected:
-	ReferencedBase(): __count(0) {
-	}
-
-	virtual ~ReferencedBase() {
-		if (__count != 0) _log_reference_count_error(__count, reinterpret_cast<int>(this));
-	}
-
-private:
-
-	inline void _incref() const {
-		++__count;
-	}
-	inline void _decref() const {
-		assert(__count > 0);
-		if (!--__count) delete this;
-	}
-	inline int _count() const { return static_cast<int>(__count); }
-	mutable COUNTER __count;
-};
-
-
-/** Base class for referenced counted objects that are used within a single
- *  thread.  <b>Not thread-safe</b>, use ThreadSafeReferenced for references
- *  that are shared between threads.
- */
-typedef ReferencedBase<int> Referenced;
-
-#ifndef SIMDATA_NOTHREADS
-/** Base class for referenced counted objects that are shared between
- *  multiple threads.  Thread-safe, supporting atomic updates of the
- *  internal reference counter.
- */
-typedef ReferencedBase<AtomicCounter> ThreadSafeReferenced;
-#endif // SIMDATA_NOTHREADS
 
 /** Reference counting smart-pointer.
  *
@@ -139,9 +87,7 @@ public:
 
 	/** Light-weight copy with reference counting.
 	 */
-	Ref(LinkBase const & r): _reference(0) {
-		_rebind(r._get());
-	}
+	inline Ref(LinkBase const & r);
 
 	/** Light-weight copy with reference counting.
 	 */
@@ -204,10 +150,7 @@ public:
 
 	/** Light-weight copy with reference counting.
 	 */
-	LinkBase const & operator=(LinkBase const & r) {
-		_rebind(r._get());
-		return r;
-	}
+	inline LinkBase const & operator=(LinkBase const & r);
 
 	/** Raw pointer assignment.
 	 */
@@ -313,10 +256,7 @@ public:
 	 *  reference will be set to null if the assignment fails (or the other
 	 *  reference is null).
 	 */
-	bool tryAssign(LinkBase const & p) {
-		_rebind(p._get(), false);
-		return (valid() || p.isNull());
-	}
+	inline bool tryAssign(LinkBase const & p);
 
 	/** Try to assignment from a potentially incompatible pointer.  Returns
 	 *  true on success, or false if the pointers are incompatible.  This
@@ -371,6 +311,29 @@ protected:
 
 NAMESPACE_SIMDATA_END
 
+#include <SimData/Link.h>
 
-#endif //__SIMDATA_OBJECT_H__
+NAMESPACE_SIMDATA
+
+template <class CLASS>
+Ref<CLASS>::Ref(LinkBase const & r): _reference(0) {
+	_rebind(r._get());
+}
+
+template <class CLASS>
+LinkBase const & Ref<CLASS>::operator=(LinkBase const & r) {
+	_rebind(r._get());
+	return r;
+}
+
+template <class CLASS>
+bool Ref<CLASS>::tryAssign(LinkBase const & p) {
+	_rebind(p._get(), false);
+	return (valid() || p.isNull());
+}
+
+NAMESPACE_SIMDATA_END
+
+
+#endif //__SIMDATA_REF_H__
 

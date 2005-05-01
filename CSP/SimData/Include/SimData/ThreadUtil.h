@@ -31,7 +31,7 @@
 #include <SimData/Namespace.h>
 #include <SimData/Properties.h>
 #include <SimData/ExceptionBase.h>
-
+#include <SimData/LogConstants.h>
 
 NAMESPACE_SIMDATA
 

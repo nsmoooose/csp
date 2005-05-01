@@ -1312,7 +1312,7 @@ void Sky::_init()
 	addChild(horizon);
 
 	setName("Sky");
-};
+}
 
 
 void Sky::_initLights() {

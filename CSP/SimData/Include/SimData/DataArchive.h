@@ -61,7 +61,7 @@ SIMDATA_EXCEPTION(ObjectMismatch)
 SIMDATA_EXCEPTION(IOError)
 
 /// Exception: The InterfaceRegistry does not have an interface for the requested object.
-SIMDATA_EXCEPTION(MissingInterface);
+SIMDATA_EXCEPTION(MissingInterface)
 
 
 class DataManager;

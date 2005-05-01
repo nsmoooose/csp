@@ -43,5 +43,6 @@ public:
 
 NAMESPACE_SIMDATA_END // namespace simdata
 
+%include "SimData/LogConstants.h"
 %include "SimData/Log.h"
 

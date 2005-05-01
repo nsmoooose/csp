@@ -146,6 +146,6 @@ protected:
 };
 
 
-};
+}
 
 #endif

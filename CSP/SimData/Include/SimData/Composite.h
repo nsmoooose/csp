@@ -65,7 +65,16 @@ class CompositeBase;
 
 /** Common base class for all Visitors.
  */
-class VisitorBase: public virtual Referenced { };
+class VisitorBase: public virtual Referenced {
+public:
+	/// Composite traversal modes.
+	typedef enum {
+		TRAVERSE_NONE,     //< Act on only the current node.
+		TRAVERSE_CHILDREN, //< Act on the current node and all children
+		TRAVERSE_PARENTS   //< Act on the current node and all parents
+	} TraversalMode;
+
+};
 
 
 /** Core visitor functionality.
@@ -75,13 +84,6 @@ class VisitorBase: public virtual Referenced { };
 template <class N>
 class VisitorCore: public VisitorBase {
 public:
-	/// Composite traversal modes.
-	typedef enum {
-		TRAVERSE_NONE,     //< Act on only the current node.
-		TRAVERSE_CHILDREN, //< Act on the current node and all children
-		TRAVERSE_PARENTS   //< Act on the current node and all parents
-	} TraversalMode;
-
 	/** Get the mode for traversing the composite graph.
 	 */
 	TraversalMode getTraversalMode() const { return _traversal_mode; }
@@ -104,7 +106,7 @@ public:
 	 *  @param mode The initial traversal mode.  The default is
 	 *              TRAVERSE_CHILDREN.
 	 */
-	VisitorCore(TraversalMode mode = TRAVERSE_CHILDREN):
+	VisitorCore(TraversalMode mode = VisitorBase::TRAVERSE_CHILDREN):
 		_traversal_mode(mode) {}
 
 protected:
@@ -116,10 +118,10 @@ protected:
 	 *  parents until the root of the graph is reached.
 	 */
 	void traverse(Node &node) {
-		if (_traversal_mode == TRAVERSE_CHILDREN) {
+		if (_traversal_mode == VisitorBase::TRAVERSE_CHILDREN) {
 			descend(node);
 		} else
-		if (_traversal_mode == TRAVERSE_PARENTS) {
+		if (_traversal_mode == VisitorBase::TRAVERSE_PARENTS) {
 			ascend(node);
 		}
 	}
@@ -429,13 +431,13 @@ private:
 template <class N>
 void VisitorCore<N>::descend(Node &node) {
 	node.descend(this);
-};
+}
 
 
 template <class N>
 void VisitorCore<N>::ascend(Node &node) {
 	node.ascend(this);
-};
+}
 
 
 /** Base class for nodes that accept visitors.
@@ -510,7 +512,7 @@ public:
 		if (_node.valid()) return;
 		if (match(node)) {
 			_node = &node;
-			setTraversalMode(TRAVERSE_NONE);
+			this->setTraversalMode(VisitorBase::TRAVERSE_NONE);
 		} else {
 			traverse(node);
 		}

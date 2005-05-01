@@ -51,8 +51,8 @@ public: \
 
 
 // Some common CSP exception classes
-CSP_EXCEPTION(DataError);
-CSP_EXCEPTION(DataArchiveError);
+CSP_EXCEPTION(DataError)
+CSP_EXCEPTION(DataArchiveError)
 
 // Fatal error messages
 void FatalException(Exception &e, std::string const &location);

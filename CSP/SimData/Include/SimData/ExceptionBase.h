@@ -147,7 +147,7 @@ public: \
  *
  *  @author Mark Rose <mrose@stm.lbl.gov>
  */
-SIMDATA_EXCEPTION(PythonException);
+SIMDATA_EXCEPTION(PythonException)
 
 NAMESPACE_SIMDATA_END
 

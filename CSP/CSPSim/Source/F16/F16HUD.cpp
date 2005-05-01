@@ -49,7 +49,7 @@
 // 10,000 other things!
 // more efficient calculations, push channel callbacks
 
-SIMDATA_REGISTER_INTERFACE(F16HUD);
+SIMDATA_REGISTER_INTERFACE(F16HUD)
 
 
 class F16HUDFont: public HUDFont {

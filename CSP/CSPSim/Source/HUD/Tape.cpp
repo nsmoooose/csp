@@ -29,6 +29,7 @@
 #include <osgText/Text>
 
 #include <cassert>
+#include <cmath>
 
 
 HUDTape::HUDTape(Orientation orientation, int tick_count, float tick_spacing, float tick_width, float offset_x, float offset_y):
@@ -187,10 +188,10 @@ void HUDTape::update(double value) {
 	value = valueToTicks(value);
 
 	float delta = value - static_cast<int>(value);
-	bool show_extra = std::abs(delta) > 0.25 && std::abs(delta) < 0.75;
+	bool show_extra = std::abs(delta) > 0.25f && std::abs(delta) < 0.75f;
 
-	if (delta > 0.75) delta -= 1.0;
-	if (delta < -0.25) delta += 1.0;
+	if (delta > 0.75f) delta -= 1.0f;
+	if (delta < -0.25f) delta += 1.0f;
 
 	float dx, dy;
 	getMotion(m_TickSpacing * delta, dx, dy);

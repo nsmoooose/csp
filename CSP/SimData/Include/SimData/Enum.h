@@ -94,17 +94,17 @@ class Enumeration;
 /**
  * Base class for Enum exceptions.
  */
-SIMDATA_EXCEPTION(EnumError);
+SIMDATA_EXCEPTION(EnumError)
 
 /**
  * Enum exception for values not defined in the associated enumeration set.
  */
-SIMDATA_SUBEXCEPTION(EnumIndexError, EnumError);
+SIMDATA_SUBEXCEPTION(EnumIndexError, EnumError)
 
 /**
  * Enum exception for errors related to mixing multiple enumeration sets.
  */
-SIMDATA_SUBEXCEPTION(EnumTypeError, EnumError);
+SIMDATA_SUBEXCEPTION(EnumTypeError, EnumError)
 
 
 

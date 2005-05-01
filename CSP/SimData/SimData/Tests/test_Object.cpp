@@ -76,8 +76,8 @@ private:
 	simdata::Link<TestObject> _link2;
 };
 
-SIMDATA_REGISTER_INTERFACE(TestObject);
-SIMDATA_REGISTER_INTERFACE(SubObject);
+SIMDATA_REGISTER_INTERFACE(TestObject)
+SIMDATA_REGISTER_INTERFACE(SubObject)
 
 void testTestObjectInterface(simdata::InterfaceProxy *i) {
 	assert(i != 0);
@@ -131,5 +131,5 @@ void test() {
 int main() {
 	test();
 	return 0;
-};
+}
 

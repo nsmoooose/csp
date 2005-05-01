@@ -583,21 +583,21 @@ public:
 	}
 
 	template <typename R, typename P1, typename P2, class O, class O2>
-	ChannelBase* registerMethodChannel(std::string const &name, R (O2::*method)(P1,P2)) {
+	ChannelBase* registerMethodChannel(std::string const &name, O *obj, R (O2::*method)(P1,P2)) {
 		return registerChannel(
 			new MethodChannel< SigC::Signal2<R,P1,P2> >(name, SigC::slot(obj, method))
 		);
 	}
 
 	template <typename R, typename P1, typename P2, typename P3, class O, class O2>
-	ChannelBase* registerMethodChannel(std::string const &name, R (O2::*method)(P1,P2,P3)) {
+	ChannelBase* registerMethodChannel(std::string const &name, O *obj, R (O2::*method)(P1,P2,P3)) {
 		return registerChannel(
 			new MethodChannel< SigC::Signal3<R,P1,P2,P3> >(name, SigC::slot(obj, method))
 		);
 	}
 
 	template <typename R, typename P1, typename P2, typename P3, typename P4, class O, class O2>
-	ChannelBase* registerMethodChannel(std::string const &name, R (O2::*method)(P1,P2,P3,P4)) {
+	ChannelBase* registerMethodChannel(std::string const &name, O *obj, R (O2::*method)(P1,P2,P3,P4)) {
 		return registerChannel(
 			new MethodChannel< SigC::Signal4<R,P1,P2,P3,P4> >(name, SigC::slot(obj, method))
 		);

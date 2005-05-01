@@ -36,11 +36,7 @@
 #include <SimData/HashUtility.h>
 #include <SimData/BaseType.h>
 #include <SimData/Export.h>
-#include <SimData/Ref.h>
-
-
-class DataArchive;
-class LinkBase;
+#include <SimData/Referenced.h>
 
 
 // Various object macros for internal use only.
@@ -116,6 +112,11 @@ class LinkBase;
 
 NAMESPACE_SIMDATA
 
+
+class DataArchive;
+class LinkBase;
+
+
 /** Base class for all classes representing packable data objects.
  *
  *  Derived classes must include the SIMDATA_OBJECT(classname, major, minor)
@@ -126,7 +127,7 @@ NAMESPACE_SIMDATA
  *  @li @c pack        serialize object to archive (call superclass method
  *                     first)
  *  @li @c unpack      unserialize object from archive (call superclass method
- *  	               first)
+ *                     first)
  *  @li @c parseXML    parse loose XML cdata if present
  *  @li @c convertXML  post-process XML data
  *  @li @c postCreate  additional processing after deserialization

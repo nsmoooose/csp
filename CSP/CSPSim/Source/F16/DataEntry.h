@@ -107,7 +107,7 @@ public:
 	virtual bool readonly() const { return true; }
 	virtual void set(T const &) { assert(0); }
 	virtual T get() const { return !m_Channel ? T() : m_Channel->value(); }
-	virtual void importChannels(Bus*) {
+	virtual void importChannels(Bus* bus) {
 		if (!m_Channel && !m_ChannelName.empty()) {
 			m_Channel = bus->getChannel(m_ChannelName, false);
 		}

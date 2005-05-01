@@ -53,10 +53,10 @@
 
 NAMESPACE_SIMDATA
 
-SIMDATA_EXCEPTION(InterpolationInput);
-SIMDATA_EXCEPTION(InterpolationError);
-SIMDATA_EXCEPTION(InterpolationIndex);
-SIMDATA_EXCEPTION(InterpolationUnpackMismatch);
+SIMDATA_EXCEPTION(InterpolationInput)
+SIMDATA_EXCEPTION(InterpolationError)
+SIMDATA_EXCEPTION(InterpolationIndex)
+SIMDATA_EXCEPTION(InterpolationUnpackMismatch)
 
 
 // forward declaration for lookup table templates
@@ -407,7 +407,7 @@ class SIMDATA_EXPORT LUT: public InterpolationType<X> {
 
 	inline void ref() {
 		bool inc = false;
-		if (isInterpolated()) {
+		if (this->isInterpolated()) {
 			inc = m_Table != NULL;
 		} else {
 			inc = m_Data != NULL;
@@ -423,7 +423,7 @@ class SIMDATA_EXPORT LUT: public InterpolationType<X> {
 		*m_Ref -= 1;
 		assert(*m_Ref >= 0);
 		if (*m_Ref == 0) {
-			if (m_Interpolated) {
+			if (this->isInterpolated()) {
 				assert(m_Table);
 				delete m_Table;
 				m_Table = 0;
@@ -438,7 +438,7 @@ class SIMDATA_EXPORT LUT: public InterpolationType<X> {
 	}
 
 	inline void substitute(TableVector *_table) {
-		assert(!isInterpolated() && _table);
+		assert(!this->isInterpolated() && _table);
 		deref();
 		m_Ref = new int(0);
 		m_Table = _table;
@@ -545,7 +545,7 @@ public:
 	 *  @param x The first coordinate to sample.
 	 */
 	inline WRAP<N,X> operator[](X x) const {
-		checkInterpolated();
+		this->checkInterpolated();
 		return WRAP<N,X>(this, x);
 	}
 
@@ -625,7 +625,7 @@ class SIMDATA_EXPORT LUT<1, X>: public InterpolationType<X> {
 		*m_Ref -= 1;
 		assert(*m_Ref >= 0);
 		if (*m_Ref == 0) {
-			if (m_Interpolated) {
+			if (this->isInterpolated()) {
 				assert(m_Table);
 				delete m_Table;
 				m_Table = 0;
@@ -640,7 +640,7 @@ class SIMDATA_EXPORT LUT<1, X>: public InterpolationType<X> {
 	}
 
 	inline void substitute(TableVector *_table) {
-		assert(!isInterpolated() && _table);
+		assert(!this->isInterpolated() && _table);
 		deref();
 		m_Ref = new int(0);
 		m_Table = _table;

@@ -70,6 +70,6 @@ namespace osgChunkLod
 	mutable int _lastBoundIndex;
 	MultiTextureDetails *_details;
     };
-};
+}
 
 #endif

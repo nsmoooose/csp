@@ -606,7 +606,7 @@ void LandingGear::bindChannels(Bus* bus) {
 	b_SteeringCommand = bus->getChannel(bus::LandingGear::selectSteeringCommand(getName()), false);
 }
 
-DEFINE_INPUT_INTERFACE(GearDynamics);
+DEFINE_INPUT_INTERFACE(GearDynamics)
 
 void GearDynamics::doComplexPhysics(double) {
 	if (b_FullyRetracted->value() && !isGearExtendSelected()) return;

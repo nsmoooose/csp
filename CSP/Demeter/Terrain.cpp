@@ -30,23 +30,24 @@ Boston, MA  02111-1307, USA.
 
 #include <cassert>
 
-#define DETAIL_TEXTURE_SIZE 512 
+#define DETAIL_TEXTURE_SIZE 512
 
-#ifdef _WIN32 
-#include "io.h"
+#ifdef _WIN32
+#include <io.h>
 #else
-#include "sys/io.h"
+#include <sys/io.h>
+#include <errno.h>
 #endif
 
-#include "fcntl.h"
-#include "sys/stat.h"
+#include <fcntl.h>
+#include <sys/stat.h>
 
-#include "SDL/SDL_image.h"
+#include <SDL/SDL_image.h>
 
 #ifndef _WIN32
  #define GL_GLEXT_PROTOTYPES
- #include "SDL/SDL_opengl.h"
- 
+ #include <SDL/SDL_opengl.h>
+
  #define _O_BINARY 0
  #define _open(a,b) open((a),(b))
  #define _close(a) close((a))

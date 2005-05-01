@@ -49,7 +49,7 @@ extern "C" {
 #  ifdef LOCK
 #    undef LOCK
 #  endif
-};
+}
 #endif
 
 // Atomic counter using linux-specific atomic counter primitives (much

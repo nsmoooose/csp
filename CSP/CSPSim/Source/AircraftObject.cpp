@@ -44,7 +44,7 @@ using simdata::toDegrees;
 
 
 SIMDATA_REGISTER_INTERFACE(AircraftObject)
-DEFINE_INPUT_INTERFACE(AircraftObject);
+DEFINE_INPUT_INTERFACE(AircraftObject)
 
 AircraftObject::AircraftObject(): DynamicObject(TYPE_AIR_UNIT) {
 

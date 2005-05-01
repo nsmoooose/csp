@@ -187,9 +187,9 @@ public:
 		primary = std::find(primaries.begin(), primaries.end(), pm) == primaries.end();
 		if (primary) primaries.push_back(pm);
 		member = pm;
-		name = name_;
-		mask = mask_;
-		required = required_;
+		this->name = name_;
+		this->mask = mask_;
+		this->required = required_;
 		{
 			T prototype;
 			setType(prototype);
@@ -212,7 +212,7 @@ public:
 				v.set(object->*member);
 			}
 		} catch (Exception &e) {
-			e.addMessage("MemberMaskAccessor::set(" + name + "):");
+			e.addMessage("MemberMaskAccessor::set(" + this->name + "):");
 			throw;
 		}
 	}
@@ -241,8 +241,8 @@ class MemberAccessor: public MemberAccessorBase<OBJECT>
 public:
 	MemberAccessor(T OBJECT::*pm, std::string name_, bool required_) {
 		member = pm;
-		name = name_;
-		required = required_;
+		this->name = name_;
+		this->required = required_;
 		{
 			T prototype;
 			setType(prototype);
@@ -255,17 +255,17 @@ public:
 		try {
 			v.set(object->*member);
 		} catch (Exception &e) {
-			e.addMessage("MemberAccessor::set(" + name + "):");
+			e.addMessage("MemberAccessor::set(" + this->name + "):");
 			throw;
 		}
 	}
 	virtual void serialize(OBJECT const *object, Writer &writer) const {
-		MemberValidator<T>::validate(object->*member, required, true /*write*/);
+		MemberValidator<T>::validate(object->*member, this->required, true /*write*/);
 		writer << (object->*member);
 	}
 	virtual void serialize(OBJECT *object, Reader &reader) const {
 		reader >> (object->*member);
-		MemberValidator<T>::validate(object->*member, required, false /*write*/);
+		MemberValidator<T>::validate(object->*member, this->required, false /*write*/);
 	}
 };
 
@@ -325,12 +325,12 @@ class MemberAccessor< OBJECT, std::vector<T> >: public MemberAccessorBase<OBJECT
 public:
 	MemberAccessor(std::vector<T> OBJECT::*pm, std::string name_, bool required_) {
 		member = pm;
-		name = name_;
-		required = required_;
+		this->name = name_;
+		this->required = required_;
 		{
 			T prototype;
 			setType(prototype);
-			type = "vector::" + type;
+			this->type = "vector::" + this->type;
 		}
 	}
 	virtual void push_back(OBJECT *object, TypeAdapter const &v) {
@@ -338,7 +338,7 @@ public:
 		try {
 			v.set(value);
 		} catch (Exception &e) {
-			e.addMessage("MemberAccessor::push_back(" + name + "):");
+			e.addMessage("MemberAccessor::push_back(" + this->name + "):");
 			throw;
 		}
 		(object->*member).push_back(value);
@@ -348,13 +348,13 @@ public:
 	}
 	virtual void serialize(OBJECT const *object, Writer &writer) const {
 		VT const &m = object->*member;
-		MemberValidator<VT>::validate(m, required, true /*write*/);
+		MemberValidator<VT>::validate(m, this->required, true /*write*/);
 		writer << m;
 	}
 	virtual void serialize(OBJECT *object, Reader &reader) const {
 		VT &m = object->*member;
 		reader >> m;
-		MemberValidator<VT>::validate(m, required, false /*write*/);
+		MemberValidator<VT>::validate(m, this->required, false /*write*/);
 	}
 };
 

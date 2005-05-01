@@ -36,7 +36,7 @@
 
 SIMDATA_REGISTER_INTERFACE(F16System)
 
-DEFINE_INPUT_INTERFACE(F16System);
+DEFINE_INPUT_INTERFACE(F16System)
 
 const simdata::Enumeration F16System::MasterModes("NAV AA AG");
 

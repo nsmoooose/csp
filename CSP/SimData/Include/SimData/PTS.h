@@ -47,13 +47,13 @@ NAMESPACE_SIMDATA
  */
 namespace meta {
 
-struct SelectThen
-{       template<class Then, class Else>
+struct SelectThen {
+	template<class Then, class Else>
 	struct Result { typedef Then RET; };
 };
 
-struct SelectElse
-{       template<class Then, class Else>
+struct SelectElse {
+	template<class Then, class Else>
 	struct Result { typedef Else RET; };
 };
 
@@ -64,9 +64,9 @@ template<>
 struct Selector<false> { typedef SelectElse RET; };
 
 template<bool Condition, class Then, class Else>
-struct IF
-{	typedef typename Selector<Condition>::RET select;
-	typedef typename select::Result<Then,Else>::RET RET;
+struct IF {
+	typedef typename Selector<Condition>::RET select;
+	typedef typename select::template Result<Then,Else>::RET RET;
 };
 
 } // meta

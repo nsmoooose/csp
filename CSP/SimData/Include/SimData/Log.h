@@ -34,34 +34,10 @@
 #include <SimData/LogStream.h>
 #include <SimData/Namespace.h>
 #include <SimData/Export.h>
+#include <SimData/LogConstants.h>
 
 
 NAMESPACE_SIMDATA
-
-
-/** Log message priorities
- *
- *  Arranged in order of increasing importance.  Each log entry has
- *  a priority.  Low priority messages can be suppressed by setting
- *  the threshold priority of the log instance (see LogStream for
- *  details).
- */
-enum { LOG_BULK, LOG_TRACE, LOG_DEBUG, LOG_INFO, LOG_WARNING, LOG_ALERT, LOG_ERROR };
-
-/** Log message categories used internally by SimData
- *
- *  An application using the SimData logging facilities should define
- *  its own specialized set of categories.
- */
-enum {
-	LOG_NONE      = 0x00000000,
-	LOG_TYPE      = 0x00000001,
-	LOG_ARCHIVE   = 0x00000002,
-	LOG_REGISTRY  = 0x00000004,
-	LOG_THREAD    = 0x00000008,
-	LOG_TIME      = 0x00000010,
-	LOG_ALL       = 0xffffffff
-};
 
 
 /** Display a fatal error message to stderr and exit.

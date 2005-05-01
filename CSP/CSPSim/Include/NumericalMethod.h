@@ -61,11 +61,10 @@ protected:
 			m_Message << "Success\n";
 		}
 	public:
-		State(): 
-		m_Message("Success\n"), 
-		m_Failed(false) {
+		State(): m_Message("Success\n"), m_Failed(false) {
 		}
 		~State(){}
+		State(State const &other): m_Message(other.m_Message.str()), m_Failed(other.m_Failed) { }
 		void setFailed(bool failed) {
 			if (failed) 
 				m_Message.str("Fail\n");

@@ -370,6 +370,9 @@
 				RelativePath="..\Include\SimData\Log.h">
 			</File>
 			<File
+				RelativePath="..\Include\SimData\LogConstants.h">
+			</File>
+			<File
 				RelativePath="..\Include\SimData\LogStream.h">
 			</File>
 			<File
@@ -413,6 +416,9 @@
 			</File>
 			<File
 				RelativePath="..\Include\SimData\Ref.h">
+			</File>
+			<File
+				RelativePath="..\Include\SimData\Referenced.h">
 			</File>
 			<File
 				RelativePath="..\Include\SimData\ScopedPointer.h">

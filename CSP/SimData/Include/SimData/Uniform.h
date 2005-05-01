@@ -32,7 +32,7 @@
 
 #include <SimData/Namespace.h>
 
-NAMESPACE_SIMDATA;
+NAMESPACE_SIMDATA
 
 
 //@{

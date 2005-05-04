@@ -1,6 +1,12 @@
  Version 0.4.0 (in progress)
 ===========================
 
+2005-05-04: delta
+ * Replace 'remainder' by 'fmod'.
+ 
+ * Protect hud binding when no bus is defined (in 
+   SceneModel::bindAnimationChannels).
+
 2005-05-03: onsight
  * Replace the object update message with a new format that provides
    much better support for animations.  Animations that need to be

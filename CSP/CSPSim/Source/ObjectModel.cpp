@@ -747,22 +747,23 @@ void SceneModel::bindAnimationChannels(Bus::Ref bus) {
 				CSP_LOG(OBJECT, ERROR, "bindAnimationChannels: animation channel '" << name << "' type not supported; skipping");
 			}
 		}
+	
+		// XXX Hack for testing
+		CSP_LOG(OBJECT, DEBUG, "Trying to bind HUD");
+		DataChannel<HUD*>::CRef hud_channel = bus->getChannel("HUD", false);
+		if (hud_channel.valid()) {
+			HUD *hud = hud_channel->value();
+			CSP_LOG(OBJECT, DEBUG, "Found HUD");
+			m_3dHud = hud->hud();
+			m_3dHud->setPosition(simdata::toOSG(m_Model->getHudPlacement()));
+			m_CenterOfMassOffset->addChild(hud->hud());
+			hud->setOrigin(simdata::toOSG(m_Model->getHudPlacement()));
+			hud->setViewPoint(simdata::toOSG(m_Model->getViewPoint()));
+			hud->setDimensions(m_Model->getHudWidth(), m_Model->getHudHeight());
+			CSP_LOG(OBJECT, DEBUG, "HUD added to model");
+		}
+		CSP_LOG(OBJECT, DEBUG, "bindAnimationChannels complete");
 	}
-	// XXX Hack for testing
-	CSP_LOG(OBJECT, DEBUG, "Trying to bind HUD");
-	DataChannel<HUD*>::CRef hud_channel = bus->getChannel("HUD", false);
-	if (hud_channel.valid()) {
-		HUD *hud = hud_channel->value();
-		CSP_LOG(OBJECT, DEBUG, "Found HUD");
-		m_3dHud = hud->hud();
-		m_3dHud->setPosition(simdata::toOSG(m_Model->getHudPlacement()));
-		m_CenterOfMassOffset->addChild(hud->hud());
-		hud->setOrigin(simdata::toOSG(m_Model->getHudPlacement()));
-		hud->setViewPoint(simdata::toOSG(m_Model->getViewPoint()));
-		hud->setDimensions(m_Model->getHudWidth(), m_Model->getHudHeight());
-		CSP_LOG(OBJECT, DEBUG, "HUD added to model");
-	}
-	CSP_LOG(OBJECT, DEBUG, "bindAnimationChannels complete");
 }
 
 void SceneModel::onViewMode(bool internal) {

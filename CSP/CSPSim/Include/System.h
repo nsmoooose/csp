@@ -271,9 +271,7 @@ public:
 	 */
 	virtual std::string getName() const { return "?"; }
 
-	/** Add another system node as a child of this node.  Propagates the
-	 *  SystemModel reference to the new child and its subtree.
-	 *
+	/** Add another system node as a child of this node.
 	 *  @returns true if the node was added successfully.
 	 */
 	virtual bool addChild(SystemNode *node) {
@@ -281,7 +279,6 @@ public:
 			CSP_LOG(OBJECT, ERROR, "SystemNode::addChild() failed.");
 			return false;
 		}
-		node->accept(new SetModelVisitor(getModel()));
 		return true;
 	}
 

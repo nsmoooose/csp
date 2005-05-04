@@ -25,16 +25,4 @@
 	<Path name="remote_systems">F16.DJ.remote</Path>
 	<Path name="agent_systems">F16.DJ.systems</Path>
 
-	<Object class="TimedSequence" name="fuel_door_sequence">
-		<Float name="initial_key">0.0</Float>
-		<Float name="final_key">3.0</Float>
-		<String name="sequence_channel">Aircraft.FuelDoorSequence.ReferenceTime</String>
-		<String name="normalized_channel">Aircraft.FuelDoorSequence.NormalizedTime</String>
-	</Object>
-	<Object class="TimedSequence" name="canopy_sequence">
-		<Float name="initial_key">0.0</Float>
-		<Float name="final_key">6.0</Float>
-		<String name="sequence_channel">Aircraft.CanopySequence.ReferenceTime</String>
-	</Object>
-
 </Object>

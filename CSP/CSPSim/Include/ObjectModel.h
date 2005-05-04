@@ -121,13 +121,18 @@ public:
 	double getHudWidth() const { return m_HudWidth; }
 	double getHudHeight() const { return m_HudHeight; }
 
+	unsigned numAnimations() const { return m_Animations.size(); }
+	const Animation &animation(unsigned i) const {
+		assert(i < numAnimations());
+		return *(m_Animations[i]);
+	}
+
 	double getBoundingSphereRadius() const { return m_BoundingSphereRadius; }
 	PointList const &getContacts() const { return m_Contacts; }
 
 	bool getElevationCorrection() const { return m_ElevationCorrection; }
 
 	void showDebugMarkers(bool on);
-
 	bool getDebugMarkersVisible() const;
 
 	static void setDataFilePathList(std::string search_path);

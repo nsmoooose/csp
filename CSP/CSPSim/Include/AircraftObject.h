@@ -1,17 +1,17 @@
 // Combat Simulator Project - CSPSim
-// Copyright (C) 2002 The Combat Simulator Project
+// Copyright (C) 2002-2005 The Combat Simulator Project
 // http://csp.sourceforge.net
-// 
+//
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
 // as published by the Free Software Foundation; either version 2
 // of the License, or (at your option) any later version.
-// 
+//
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU General Public License
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
@@ -30,11 +30,6 @@
 #include "HID.h"
 
 
-/*
-class AircraftPhysicsModel;
-class GroundCollisionDynamics;
-*/
-
 class TimedSequence;
 
 class AircraftObject: public DynamicObject
@@ -43,18 +38,13 @@ public:
 	SIMDATA_OBJECT(AircraftObject, 0, 0)
 
 	EXTEND_SIMDATA_XML_INTERFACE(AircraftObject, DynamicObject)
-		SIMDATA_XML("fuel_door_sequence", AircraftObject::m_FuelDoorSequence, false)
-		SIMDATA_XML("canopy_sequence", AircraftObject::m_CanopySequence, false)
 	END_SIMDATA_XML_INTERFACE
-		//SIMDATA_XML("aircraft_dynamics", AircraftObject::m_AircraftDynamics, true)
 
 	DECLARE_INPUT_INTERFACE(AircraftObject, DynamicObject)
 		BIND_ACTION("SMOKE_ON", SmokeOn);
 		BIND_ACTION("SMOKE_OFF", SmokeOff);
 		BIND_ACTION("SMOKE_TOGGLE", SmokeToggle);
 		BIND_ACTION("MARKS_TOGGLE", MarkersToggle);
-		BIND_ACTION("FUEL_DOOR_TOGGLE",FuelDoorToggle);
-		BIND_ACTION("CANOPY_TOGGLE",CanopyToggle);
 	END_INPUT_INTERFACE
 
 public:
@@ -64,8 +54,6 @@ public:
 	void SmokeOff();
 	void SmokeToggle();
 	void MarkersToggle();
-	void FuelDoorToggle();
-	void CanopyToggle();
 
 	AircraftObject();
 	virtual ~AircraftObject();
@@ -76,21 +64,6 @@ public:
 	virtual void initialize();
 	
 	void setAttitude(double pitch, double roll, double heading);
-
-	/**
-	inline double getAngleOfAttack() const {  
-		return m_FlightDynamics->getAngleOfAttack();
-	}
-	inline double getSideSlip() const {  
-		return m_FlightDynamics->getSideSlip();
-	}
-	inline double getGForce() const { 
-		return m_FlightDynamics->getGForce();
-	}
-	inline double getSpeed() const { 
-		return m_FlightDynamics->getSpeed();
-	}
-	*/
 
 	void getInfo(std::vector<std::string> &info) const;
 
@@ -112,11 +85,8 @@ protected:
 	DataChannel<double>::Ref b_Roll;
 	DataChannel<double>::Ref b_Pitch;
 	DataChannel<double>::Ref b_Heading;
-
-	simdata::Link<TimedSequence> m_FuelDoorSequence;
-	simdata::Link<TimedSequence> m_CanopySequence;
 };
 
-	
+
 #endif // __AIRCRAFTOBJECT_H__
 

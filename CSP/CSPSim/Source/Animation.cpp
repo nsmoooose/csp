@@ -80,7 +80,10 @@ Animation::Animation(float default_value):
 	m_LOD(0),
 	m_Limit0(0.0f),
 	m_Limit1(1.0f),
-	m_Gain(1.0f) {
+	m_Gain(1.0f),
+	m_ExportLimit0(-1.0f),
+	m_ExportLimit1(1.0f),
+	m_ExportRate(1.0f) {
 }
 
 Rotation::Rotation():

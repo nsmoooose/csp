@@ -35,24 +35,44 @@
 namespace simnet { class NetworkMessage; }
 
 
-class RemoteAnimationUpdate {
+class RemoteAnimationUpdate: public simdata::Referenced {
 	DataChannel<double>::CRef m_Channel;
 	simdata::uint8 m_LastValue;
+	int m_LevelOfDetail;
+	double m_Limit0;
+	double m_Limit1;
+	double m_Scale;
+	bool m_Increasing;
 
 public:
-	RemoteAnimationUpdate(): m_LastValue(0) { }
+	typedef simdata::Ref<RemoteAnimationUpdate> Ref;
+	RemoteAnimationUpdate(): m_LastValue(0), m_LevelOfDetail(100), m_Limit0(-1.0), m_Limit1(1.0), m_Scale(255.0/2.0), m_Increasing(true) { }
 	void bind(DataChannel<double>::CRef const &channel) { m_Channel = channel; }
-	bool update();
+	bool update(int lod);
+	void setLevelOfDetail(unsigned lod) { m_LevelOfDetail = lod; }
+	void setLimits(double lo, double hi) { m_Limit0 = lo; m_Limit1 = hi; m_Scale = 255.0 / (m_Limit1 - m_Limit0); }
+	void expandLimits(double lo, double hi) { setLimits(std::min(lo, m_Limit0), std::max(hi, m_Limit1)); }
+	inline int lod() const { return m_LevelOfDetail; }
 	inline simdata::uint8 value() const { return m_LastValue; }
 	inline static double convert(simdata::uint8 value);
 };
 
-class LocalAnimationUpdate {
+
+class LocalAnimationUpdate: public simdata::Referenced {
 	DataChannel<double>::Ref m_Channel;
 	double m_Target;
+	double m_Limit0;
+	double m_Limit1;
+	double m_Scale;
+	double m_RateLimit;
 
 public:
-	LocalAnimationUpdate(): m_Target(0) { }
+	typedef simdata::Ref<LocalAnimationUpdate> Ref;
+	LocalAnimationUpdate(): m_Target(0), m_Limit0(-1.0), m_Limit1(1.0), m_Scale(2.0/255.0), m_RateLimit(1.0) { }
+	void setLimits(double lo, double hi) { m_Limit0 = lo; m_Limit1 = hi; m_Scale = (hi - lo) / 255.0; }
+	void setRateLimit(double limit) { m_RateLimit = limit; }
+	void lowerRateLimit(double limit) { m_RateLimit = std::min(limit, m_RateLimit); }
+	void expandLimits(double lo, double hi) { setLimits(std::min(lo, m_Limit0), std::max(hi, m_Limit1)); }
 	void bind(DataChannel<double>::Ref const &channel) { m_Channel = channel; }
 	void setTarget(simdata::uint8 value);
 	void update(double dt);
@@ -68,12 +88,10 @@ class RemoteController: public System {
 	DataChannel<simdata::Vector3>::CRef b_AngularVelocityBody;
 	DataChannel<simdata::Vector3>::CRef b_AccelerationBody;
 	DataChannel<simdata::Quat>::CRef b_Attitude;
-	RemoteAnimationUpdate m_GearExtension;
-	RemoteAnimationUpdate m_AileronDeflection;
-	RemoteAnimationUpdate m_ElevatorDeflection;
-	RemoteAnimationUpdate m_RudderDeflection;
-	RemoteAnimationUpdate m_AirbrakeDeflection;
+	std::vector<RemoteAnimationUpdate::Ref> m_AnimationUpdates;
 	int m_UpdateDelay;
+
+	void importAnimations(Bus *);
 
 protected:
 	inline simdata::Vector3 const &position() const { return b_Position->value(); }
@@ -100,16 +118,7 @@ public:
  */
 class LocalController: public System {
 	// animation state
-	DataChannel<double>::Ref b_GearExtension;
-	DataChannel<double>::Ref b_AileronDeflection;
-	DataChannel<double>::Ref b_ElevatorDeflection;
-	DataChannel<double>::Ref b_RudderDeflection;
-	DataChannel<double>::Ref b_AirbrakeDeflection;
-	LocalAnimationUpdate m_GearExtension;
-	LocalAnimationUpdate m_AileronDeflection;
-	LocalAnimationUpdate m_ElevatorDeflection;
-	LocalAnimationUpdate m_RudderDeflection;
-	LocalAnimationUpdate m_AirbrakeDeflection;
+	std::vector<LocalAnimationUpdate::Ref> m_AnimationUpdates;
 
 	// dynamic properties
 	DataChannel<simdata::Vector3>::Ref b_Position;

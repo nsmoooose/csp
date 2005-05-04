@@ -22,27 +22,16 @@
  *
  **/
 
-// XXX GEARFIX
-// remote landing gear extension/retraction is completely broken at the moment.
-// the message is currently set up for sending a binary gear state flag and an
-// optional gear extension value (0->1).  in principle this state should be
-// sent for each individual gear, but that is not the most immediate problem.
-// landing gear animation is driven by a TimedSequence that is created by
-// children of GearDynamics.  Since remote objects currently don't have a
-// GearDynamics system we will have to drive the timed sequence channels
-// ourselves.  This should be relatively easy.  To make the gear look good on
-// the ground however, we also need the to drive the tire rotation, steering,
-// and displacement animations.  alternatively we could drive these with a
-// local (highly simplified) physics engine, but since these will only matter
-// at close range on the ground it is probably worth using a little bandwidth
-// to save cpu and reduce code complexity.
-
 #include <Controller.h>
+#include <Animation.h>
 #include <KineticsChannels.h>
-#include <ControlSurfacesChannels.h>
-#include <SimCore/Battlefield/BattlefieldMessages.h>
+#include <ObjectModel.h>
 #include <ObjectUpdate.h>
+#include <SimCore/Battlefield/BattlefieldMessages.h>
 #include <SimCore/Util/TimeStamp.h>
+
+#include <map>
+#include <set>
 
 SIMDATA_REGISTER_INTERFACE(LocalController)
 SIMDATA_REGISTER_INTERFACE(RemoteController)
@@ -65,35 +54,96 @@ void RemoteController::importChannels(Bus *bus) {
 	b_AngularVelocityBody = bus->getChannel(bus::Kinetics::AngularVelocityBody);
 	b_Attitude = bus->getChannel(bus::Kinetics::Attitude);
 	b_AccelerationBody = bus->getChannel(bus::Kinetics::AccelerationBody);
-	// TODO send extension of each gear
-	//m_GearExtension.bind(bus->getChannel(bus::State::GearExtension));
-	m_AileronDeflection.bind(bus->getChannel(bus::ControlSurfaces::AileronDeflection));
-	m_ElevatorDeflection.bind(bus->getChannel(bus::ControlSurfaces::ElevatorDeflection));
-	m_RudderDeflection.bind(bus->getChannel(bus::ControlSurfaces::RudderDeflection));
-	m_AirbrakeDeflection.bind(bus->getChannel(bus::ControlSurfaces::AirbrakeDeflection));
+	importAnimations(bus);
 }
 
-bool RemoteAnimationUpdate::update() {
-	if (m_Channel.valid()) {
-		simdata::uint8 x = static_cast<simdata::uint8>(100.0 * m_Channel->value() + 128);
+void RemoteController::importAnimations(Bus *bus) {
+	CSP_LOG(APP, INFO, "RemoteController::importAnimations");
+	DataChannel<simdata::Ref<ObjectModel> >::CRef model_channel = bus->getChannel("Internal.ObjectModel");
+	if (model_channel.valid()) {
+		typedef std::pair<unsigned, unsigned> LodIndex;
+		typedef std::map<std::string, LodIndex> ChannelMap;
+		ChannelMap channels;
+		simdata::Ref<const ObjectModel> model = model_channel->value();
+		const unsigned num_animations = model->numAnimations();
+		CSP_LOG(APP, INFO, "Scanning " << num_animations << " animations");
+		for (unsigned i = 0; i < num_animations; ++i) {
+			const Animation &animation = model->animation(i);
+			if (animation.getLOD() < 10) {
+				const unsigned lod = animation.getLOD();
+				const std::string name = animation.getChannelName();
+				const double limit0 = animation.getExportLimit0();
+				const double limit1 = animation.getExportLimit1();
+				ChannelMap::iterator iter = channels.find(name);
+				if (iter == channels.end()) {
+					CSP_LOG(APP, INFO, "Adding animation channel " << name << " at lod " << lod);
+					DataChannel<double>::CRef channel;
+					try {
+						channel = bus->getChannel(name);
+					} catch (simdata::ConversionError &e) {
+						e.clear();
+						CSP_LOG(APP, ERROR, "Animation channel " << name << " is not of type double; skipping!");
+						continue;
+					}
+					assert(channel.valid());
+					channels[name] = LodIndex(lod, m_AnimationUpdates.size());
+					RemoteAnimationUpdate *update = new RemoteAnimationUpdate();
+					update->setLevelOfDetail(lod);
+					update->setLimits(limit0, limit1);
+					update->bind(channel);
+					m_AnimationUpdates.push_back(update);
+				} else if (lod < iter->second.first) {
+					const unsigned idx = iter->second.second;
+					CSP_LOG(APP, INFO, "Updating animation channel " << name << " lod to " << lod);
+					m_AnimationUpdates[idx]->setLevelOfDetail(lod);
+					m_AnimationUpdates[idx]->expandLimits(limit0, limit1);
+					iter->second.first = lod;
+				}
+			}
+		}
+		CSP_LOG(APP, INFO, "Added " << m_AnimationUpdates.size() << " animation channels");
+	} else {
+		CSP_LOG(APP, WARNING, "3D model not found");
+	}
+}
+
+bool RemoteAnimationUpdate::update(int lod) {
+	if (m_Channel.valid() && lod >= m_LevelOfDetail) {
+		double test = (m_Channel->value() - m_Limit0) * m_Scale;
+		if (test < -5.0 || test > 260) {
+			static int XXX = 0;
+			if ((++XXX % 1000) == 1) {
+				std::cout << m_Channel->getName() << " " << m_Channel->value() << " " << m_Limit0 << " " << m_Scale << "\n";
+			}
+		}
+		double value = simdata::clampTo((m_Channel->value() - m_Limit0) * m_Scale, 0.0, 255.0);
+		simdata::uint8 x = static_cast<simdata::uint8>(value);
 		if (x != m_LastValue) {
-			m_LastValue = x;
-			return true;
+			// one unit of hysteresis to prevent jittering of the remote animation
+			if ((x > m_LastValue) && (m_Increasing || (x > m_LastValue + 1))) {
+				m_LastValue = x;
+				m_Increasing = true;
+				return true;
+			} else if ((x < m_LastValue) && (!m_Increasing || (x + 1 < m_LastValue))) {
+				m_LastValue = x;
+				m_Increasing = false;
+				return true;
+			}
 		}
 	}
 	return false;
 }
 
 void LocalAnimationUpdate::setTarget(simdata::uint8 value) {
-	m_Target = 0.01 * (static_cast<double>(value) - 128.0);
+	m_Target = m_Limit0 + (static_cast<double>(value) * m_Scale);
 }
 
 void LocalAnimationUpdate::update(double dt) {
 	double value = m_Channel->value();
 	if (value < m_Target - 0.001) {
-		m_Channel->value() = std::min(value + 1.0 * dt, m_Target);  // ~60 deg/sec
+		m_Channel->value() = std::min(value + m_RateLimit * dt, m_Target);  // ~60 deg/sec
 	} else if (value > m_Target + 0.001) {
-		m_Channel->value() = std::max(value - 1.0 * dt, m_Target);  // ~60 deg/sec
+		m_Channel->value() = std::max(value - m_RateLimit * dt, m_Target);  // ~60 deg/sec
 	}
 }
 
@@ -127,7 +177,7 @@ simdata::Ref<simnet::NetworkMessage> RemoteController::getUpdate(simcore::TimeSt
 
 	// occasionally force updates even when nothing has changed, in case packets were
 	// dropped and we are in an inconsistent state.
-	const bool force = ((++m_UpdateDelay & 15) == 1);
+	const bool force = ((++m_UpdateDelay & 31) == 1);
 
 	// XXX test to reduce the update rate at low acceleration / rotation rates.  the values and
 	// formulas here are ad-hoc and require tuning.  the lower bound of the clamp forces the
@@ -153,59 +203,37 @@ simdata::Ref<simnet::NetworkMessage> RemoteController::getUpdate(simcore::TimeSt
 	//	CSP_LOG(APP, ERROR, "skip: " << acceleration_error << " " << rotation_error << " " << skip_count);
 	//}
 
-	bool update_elevator = false;
-	bool update_aileron = false;
-	bool update_rudder = false;
-	bool update_airbrake = false;
+	ObjectUpdate::Ref update = new ObjectUpdate();
 
-	if (detail > 6) {
-		update_elevator = (m_ElevatorDeflection.update() || force);
-		update_aileron = (m_AileronDeflection.update() || force);
-		update_rudder = (m_RudderDeflection.update() || force);
-		update_airbrake = (m_AirbrakeDeflection.update() || force);
+	std::vector<simdata::uint8> &flags = update->set_animation_flags();
+	std::vector<simdata::uint8> &values = update->set_animation_values();
+	bool has_animation_updates = false;
+	for (unsigned i = 0; i < m_AnimationUpdates.size(); ++i) {
+		const bool add = force || m_AnimationUpdates[i]->update(detail);
+		if (add) {
+			has_animation_updates = true;
+			unsigned byte = i >> 3;
+			unsigned bit = i & 7;
+			flags.resize(byte + 1, 0);
+			flags[byte] |= (1 << bit);
+			values.push_back(m_AnimationUpdates[i]->value());
+		}
 	}
 
-	bool has_updates = update_elevator || update_aileron || update_rudder || update_airbrake;
-
 	// skip packets only if the error is low _and_ the animated control surfaces are stationary.
-	if ((m_UpdateDelay % skip_count > 0) && !has_updates) {
+	if ((m_UpdateDelay % skip_count > 0) && !has_animation_updates) {
 		return 0;
 	}
 
-	ObjectUpdate::Ref update = new ObjectUpdate();
+	if (!has_animation_updates) {
+		update->clear_animation_flags();
+		update->clear_animation_values();
+	}
 	update->set_timestamp(current_timestamp);
 	update->set_position(simcore::GlobalPosition(position()));
 	update->set_velocity(simcore::Vector3f(velocity()));
 	if (detail > 1) {
 		update->set_attitude(simcore::Vector4f(attitude()));
-	}
-	if (detail > 4) {
-		// only a single bit for now.  if we don't set the bit every time it will
-		// assume its default value (gear up).
-		// XXX broken (see GEARFIX)
-		/*
-		m_GearExtension.update();
-		const bool gear_up = m_GearExtension.value() == 128;  // 0.0 -> 128
-		if (!gear_up || force) {
-			// by only setting the non-default state, we save a couple bytes when
-			// the gear is up.  there are probably better ways to optimize this.
-			update->set_gear_up(gear_up);
-		}
-		*/
-	}
-	if (detail > 6) {
-		if (update_elevator) {
-			update->set_elevator_deflection(m_ElevatorDeflection.value());
-		}
-		if (update_aileron) {
-			update->set_aileron_deflection(m_AileronDeflection.value());
-		}
-		if (update_rudder) {
-			update->set_rudder_deflection(m_RudderDeflection.value());
-		}
-		if (update_airbrake) {
-			update->set_airbrake_deflection(m_AirbrakeDeflection.value());
-		}
 	}
 	return update;
 }
@@ -229,12 +257,46 @@ LocalController::~LocalController() {
 }
 
 void LocalController::registerChannels(Bus *bus) {
-	// XXX broken (see GEARFIX)
-	// b_GearExtension = bus->registerLocalDataChannel<double>("Aircraft.GearSequence.NormalizedTime", 0.0);
-	b_AileronDeflection = bus->registerLocalDataChannel<double>("ControlSurfaces.AileronDeflection", 0.0);
-	b_ElevatorDeflection = bus->registerLocalDataChannel<double>("ControlSurfaces.ElevatorDeflection", 0.0);
-	b_RudderDeflection = bus->registerLocalDataChannel<double>("ControlSurfaces.RudderDeflection", 0.0);
-	b_AirbrakeDeflection = bus->registerLocalDataChannel<double>("ControlSurfaces.AirbrakeDeflection", 0.0);
+	CSP_LOG(APP, INFO, "LocalController::registerChannels");
+	// Relies on the fact that DynamicObject registers its channels before the subsystems.
+	DataChannel<simdata::Ref<ObjectModel> >::CRef model_channel = bus->getChannel("Internal.ObjectModel", false);
+	if (model_channel.valid()) {
+		typedef std::map<std::string, unsigned> ChannelMap;
+		ChannelMap channels;
+		simdata::Ref<const ObjectModel> model = model_channel->value();
+		const unsigned num_animations = model->numAnimations();
+		CSP_LOG(APP, INFO, "Scanning " << num_animations << " animations");
+		for (unsigned i = 0; i < num_animations; ++i) {
+			const Animation &animation = model->animation(i);
+			if (animation.getLOD() < 10) {
+				const std::string name = animation.getChannelName();
+				const double limit0 = animation.getExportLimit0();
+				const double limit1 = animation.getExportLimit1();
+				const double rate_limit = animation.getExportRate();
+				ChannelMap::const_iterator iter = channels.find(name);
+				if (iter == channels.end()) {
+					CSP_LOG(APP, INFO, "Adding animation channel " << name);
+					LocalAnimationUpdate *update = new LocalAnimationUpdate();
+					assert(!bus->hasChannel(name));
+					DataChannel<double>::Ref channel;
+					channel = bus->registerLocalDataChannel<double>(name, 0.0);
+					assert(channel.valid());
+					update->bind(channel);
+					update->setLimits(limit0, limit1);
+					update->setRateLimit(rate_limit);
+					channels[name] = m_AnimationUpdates.size();
+					m_AnimationUpdates.push_back(update);
+				} else {
+					m_AnimationUpdates[iter->second]->expandLimits(limit0, limit1);
+					m_AnimationUpdates[iter->second]->lowerRateLimit(rate_limit);
+				}
+			}
+		}
+		CSP_LOG(APP, INFO, "Added " << m_AnimationUpdates.size() << " animation channels");
+	} else {
+		CSP_LOG(APP, WARNING, "3D model not found");
+	}
+
 }
 
 void LocalController::importChannels(Bus *bus) {
@@ -243,12 +305,6 @@ void LocalController::importChannels(Bus *bus) {
 	b_Velocity = bus->getSharedChannel(bus::Kinetics::Velocity, true, true);
 	b_AngularVelocity = bus->getSharedChannel(bus::Kinetics::AngularVelocity, true, true);
 	b_Attitude = bus->getSharedChannel(bus::Kinetics::Attitude, true, true);
-	// XXX broken (see GEARFIX)
-	//m_GearExtension.bind(b_GearExtension);
-	m_AileronDeflection.bind(b_AileronDeflection);
-	m_ElevatorDeflection.bind(b_ElevatorDeflection);
-	m_RudderDeflection.bind(b_RudderDeflection);
-	m_AirbrakeDeflection.bind(b_AirbrakeDeflection);
 }
 
 bool LocalController::sequentialUpdate(simcore::TimeStamp stamp, simcore::TimeStamp now, simdata::SimTime &dt) {
@@ -317,19 +373,20 @@ void LocalController::onUpdate(simdata::Ref<simnet::NetworkMessage> const &msg, 
 			setTargetAttitude(update->attitude().Quat());
 		}
 		setTargetPosition(update->position().Vector3() + m_TargetVelocity * dt);
-		// XXX broken (see GEARFIX)
-		// b_GearExtension->value() = (update->gear_up() ? 0.0 : 1.0);
-		if (update->has_elevator_deflection()) {
-			m_ElevatorDeflection.setTarget(update->elevator_deflection());
-		}
-		if (update->has_airbrake_deflection()) {
-			m_AirbrakeDeflection.setTarget(update->airbrake_deflection());
-		}
-		if (update->has_aileron_deflection()) {
-			m_AileronDeflection.setTarget(update->aileron_deflection());
-		}
-		if (update->has_rudder_deflection()) {
-			m_RudderDeflection.setTarget(update->rudder_deflection());
+
+		if (update->has_animation_flags()) {
+			std::vector<simdata::uint8> const &flags = update->animation_flags();
+			std::vector<simdata::uint8> const &values = update->animation_values();
+			const unsigned n = std::min(flags.size() * 8, m_AnimationUpdates.size());
+			unsigned idx = 0;
+			for (unsigned i = 0; i < n; ++i) {
+				const simdata::uint8 flag = flags[i>>3];
+				if ((flag & (1<<(i&7))) != 0) {
+					assert(idx < values.size());
+					m_AnimationUpdates[i]->setTarget(values[idx++]);
+				}
+			}
+			assert(idx == values.size());
 		}
 	} else {
 		CSP_LOG(OBJECT, INFO, "non sequential update: msg=" << update->timestamp() << " local=" << now);
@@ -362,10 +419,16 @@ double LocalController::onUpdate(double dt) {
 		b_Attitude->value().slerp(f, b_Attitude->value(), m_TargetAttitude);
 	}
 	{
+		// TODO can skip if LOD is too low for any animations
+		for (unsigned i = 0; i < m_AnimationUpdates.size(); ++i) {
+			m_AnimationUpdates[i]->update(dt);
+		}
+		/*
 		m_ElevatorDeflection.update(dt);
 		m_AirbrakeDeflection.update(dt);
 		m_AileronDeflection.update(dt);
 		m_RudderDeflection.update(dt);
+		*/
 	}
 	return 0.0;
 }

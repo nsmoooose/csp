@@ -1,18 +1,45 @@
  Version 0.4.0 (in progress)
 ===========================
 
+2005-05-03: onsight
+ * Replace the object update message with a new format that provides
+   much better support for animations.  Animations that need to be
+   transmitted to remote hosts are now extracted automatically from
+   the object model and send as needed based on state changes and
+   lod.  Model files now specify lod limits and control channel ranges
+   for each animation.  The latter are used to scale the channel data
+   down to 8 bits for transmission.  Note that only scalar data channels
+   are supported for animations (no vector channels).  Animations at
+   lod level >= 10 will not be sent (and should be used for small details
+   such as cockpit switches).
+
+ * Convert the m2k gear compression animation to use a scalar channel.
+
+ * Move the canopy and fuel door animation drivers and event handlers
+   from AircraftObject to F16System.
+
+ * Systems now register channels in a single pass, after the parent
+   object (DynamicObject subclass) registers its channels.  This is
+   faster and allows the Controller system to access the ObjectModel
+   when registering animation channels.
+
+===> ALL USERS: RebuildData.py
+===> NOTE that these changes are incompatible previous versions for
+     mulitplayer network communications.  Do not mix and match binaries
+     with and without this change for multiplayer testing.
+
 2005-04-30: delta
- * Fix a small bug when switching from f16 to m2k, the specific 
+ * Fix a small bug when switching from f16 to m2k, the specific
    screeninfos were not updated correctly.
 
  * Mask the hud in external view.
- 
+
  * Fix a small bug when controlling control surfaces with keyboard.
- 
+
  * Minor other changes and clean up.
- 
+
  * Minor update to vcproj.
- 
+
  * Tweak py2exe files.
 
 2005-04-29: onsight

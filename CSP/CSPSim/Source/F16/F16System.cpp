@@ -24,6 +24,7 @@
 
 #include "F16System.h"
 #include "F16Channels.h"
+#include <AnimationSequence.h>
 #include <CSPSim.h>
 #include <FlightDynamicsChannels.h>
 #include <NavigationChannels.h>
@@ -56,6 +57,12 @@ void F16System::registerChannels(Bus* bus) {
 	bus->registerSharedDataChannel<double>("F16.CaraAlow", 0.0);
 	bus->registerSharedDataChannel<double>("F16.MslFloor", 0.0);
 	bus->registerSharedDataChannel<double>("F16.TfAdv", 0.0);
+	if (m_FuelDoorSequence.valid()) {
+		m_FuelDoorSequence->registerChannels(bus);
+	}
+	if (m_CanopySequence.valid()) {
+		m_CanopySequence->registerChannels(bus);
+	}
 }
 
 void F16System::importChannels(Bus* bus) {
@@ -69,7 +76,7 @@ void F16System::importChannels(Bus* bus) {
 	b_FuelDoorSequence = bus->getChannel("Aircraft.FuelDoorSequence.NormalizedTime", false);
 }
 
-double F16System::onUpdate(double) {
+double F16System::onUpdate(double dt) {
 	const bool gear_lever_down = b_GearExtendSelected->value();
 	const bool gear_fully_retracted  = b_GearFullyRetracted->value();
 	if (!gear_fully_retracted || b_AltFlaps->value()) {
@@ -83,7 +90,15 @@ double F16System::onUpdate(double) {
 		m_CatIII = !m_CatIII;
 		// TODO change gains
 	}
-	return 0.2;
+	// TODO the non-animation updates only require infrequent (0.2s) calls, so it might
+	// be better to move the sequence updates elsewhere.
+	if (m_FuelDoorSequence.valid()) {
+		m_FuelDoorSequence->update(dt);
+	}
+	if (m_CanopySequence.valid()) {
+		m_CanopySequence->update(dt);
+	}
+	return 0.0;
 }
 
 void F16System::setCatI() {
@@ -114,4 +129,16 @@ void F16System::flapsUp() {
 
 void F16System::flapsToggle() {
 	b_AltFlaps->value() = !b_AltFlaps->value();
+}
+
+void F16System::fuelDoorToggle() {
+	if (m_FuelDoorSequence.valid()) {
+		m_FuelDoorSequence->play();
+	}
+}
+
+void F16System::canopyToggle() {
+	if (m_CanopySequence.valid()) {
+		m_CanopySequence->play();
+	}
 }

@@ -1,5 +1,5 @@
-// Combat Simulator Project - FlightSim Demo
-// Copyright (C) 2002, 2004 The Combat Simulator Project
+// Combat Simulator Project - CSPSim
+// Copyright (C) 2002-2005 The Combat Simulator Project
 // http://csp.sourceforge.net
 //
 // This program is free software; you can redistribute it and/or
@@ -76,25 +76,11 @@ void AircraftObject::registerChannels(Bus::Ref bus) {
 		bus->registerChannel(b_Heading.get());
 		bus->registerChannel(b_Pitch.get());
 		bus->registerChannel(b_Roll.get());
-		if (m_FuelDoorSequence.valid()) {
-			m_FuelDoorSequence->registerChannels(bus.get());
-		}
-		if (m_CanopySequence.valid()) {
-			m_CanopySequence->registerChannels(bus.get());
-		}
 	}
 }
 
 void AircraftObject::bindChannels(Bus::Ref bus) {
 	DynamicObject::bindChannels(bus);
-	/* TODO REMOVE ME!
-	if (m_FuelDoorSequence.valid()) {
-		m_FuelDoorSequence->bindChannels(bus);
-	}
-	if (m_CanopySequence.valid()) {
-		m_CanopySequence->bindChannels(bus);
-	}
-	*/
 }
 
 void AircraftObject::dump() {
@@ -103,14 +89,7 @@ void AircraftObject::dump() {
 void AircraftObject::initialize() {
 }
 
-double AircraftObject::onUpdate(double dt)
-{
-	if (m_FuelDoorSequence.valid()) {
-		m_FuelDoorSequence->update(dt);
-	}
-	if (m_CanopySequence.valid()) {
-		m_CanopySequence->update(dt);
-	}
+double AircraftObject::onUpdate(double dt) {
 	return DynamicObject::onUpdate(dt);
 }
 
@@ -146,18 +125,6 @@ void AircraftObject::SmokeToggle() {
 
 void AircraftObject::MarkersToggle() {
 	m_Model->showDebugMarkers(!m_Model->getDebugMarkersVisible());
-}
-
-void AircraftObject::FuelDoorToggle() {
-	if (m_FuelDoorSequence.valid()) {
-		m_FuelDoorSequence->play();
-	}
-}
-
-void AircraftObject::CanopyToggle() {
-	if (m_CanopySequence.valid()) {
-		m_CanopySequence->play();
-	}
 }
 
 void AircraftObject::setAttitude(double pitch, double roll, double heading)

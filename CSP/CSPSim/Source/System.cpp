@@ -31,12 +31,11 @@
 SIMDATA_REGISTER_INTERFACE(System)
 
 void System::setModel(SystemsModel *model) {
-	assert(m_Model == 0 || model == 0);
+	assert(m_Model == 0);
+	assert(model != 0);
 	m_Model = model;
-	if (model != 0) {
-		Bus::Ref bus = model->getBus();
-		registerChannels(bus.get());
-	}
+	Bus::Ref bus = model->getBus();
+	registerChannels(bus.get());
 }
 
 

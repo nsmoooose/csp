@@ -18,18 +18,12 @@ type simcore::GlobalPosition;
 type simcore::Vector3f;
 type simcore::Vector4f;
 
-message ObjectUpdate : simnet::NetworkMessage { @id=1024;
+message ObjectUpdate : simnet::NetworkMessage { @id=1025;
 
 	REQUIRED int32 timestamp;
 	REQUIRED simcore::GlobalPosition position;
 	REQUIRED simcore::Vector3f velocity;
 	simcore::Vector4f attitude;
-	bitset {
-		bool gear_up = 1;
-	}
-
-	uint8 aileron_deflection;
-	uint8 elevator_deflection;
-	uint8 rudder_deflection;
-	uint8 airbrake_deflection;
+	uint8[] animation_flags;
+	uint8[] animation_values;
 }

@@ -161,7 +161,7 @@ class M2kGearAnimation: public GearSequenceAnimation {
 	// Channels to be exposed to drive animations.
 	DataChannel<double>::Ref b_Absorber02Angle;
 	DataChannel<double>::Ref b_Absorber03Angle;
-	DataChannel<simdata::Vector3>::Ref b_Compression;
+	DataChannel<double>::Ref b_Compression;
 
 public:
 	SIMDATA_OBJECT(M2kGearAnimation, 0, 0)

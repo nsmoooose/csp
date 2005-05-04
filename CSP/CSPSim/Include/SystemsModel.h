@@ -144,6 +144,7 @@ public:
 
 	void bindSystems() {
 		assert(!m_Bound);
+		accept(new SetModelVisitor(getModel()));
 		BindVisitor::Ref binder = new BindVisitor(m_Bus.get());
 		accept(binder);
 		m_Bound = true;

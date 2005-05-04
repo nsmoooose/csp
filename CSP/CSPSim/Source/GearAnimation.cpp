@@ -53,13 +53,13 @@ void M2kGearAnimation::setCompression(double compression) {
 	const double compression_distance = compression * getCompressionScale();
 	b_Absorber02Angle->value() = asin((compression_distance-m_Offset)/(2*m_Absorber02Length));
 	b_Absorber03Angle->value() = asin((compression_distance-m_Offset)/(2*m_Absorber03Length));
-	b_Compression->value() = compression_distance * getCompressionAxis();
+	b_Compression->value() = compression_distance;
 }
 
 void M2kGearAnimation::registerChannels(Bus* bus) {
 	GearSequenceAnimation::registerChannels(bus);
 	b_Absorber02Angle = bus->registerLocalDataChannel<double>(prefix() + ".Absorber02", 0.0);
 	b_Absorber03Angle = bus->registerLocalDataChannel<double>(prefix() + ".Absorber03", 0.0);
-	b_Compression = bus->registerLocalDataChannel<simdata::Vector3>(prefix() + ".Compression", simdata::Vector3::ZERO);
+	b_Compression = bus->registerLocalDataChannel<double>(prefix() + ".Compression", 0.0);
 }
 

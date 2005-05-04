@@ -27,13 +27,11 @@
  *
  *  Aerodynamic drag
  *  Wind damage
- *  Extension/retract modelling + 3D hooks
  *  Rough terrain damage
  *  Generic damage modelling, gear collapse,  etc.
  *  wheel inertia
  *    - move spindown to common method
  *    - base spindown on friction coefficient (simdata::Real)
- *    - figure out why wheels slip without braking
  *    - real wheel inertia?
  *
  */
@@ -351,7 +349,7 @@ void LandingGear::updateAnimation(double dt) {
 	if (m_GearAnimation.valid()) {
 		m_GearAnimation->update(dt);
 		m_GearAnimation->setCompression(m_Compression / m_CompressionLimit);
-		m_GearAnimation->setTireRotation(m_TireRotation);
+		m_GearAnimation->setTireRotation(remainder(m_TireRotation, 2.0*simdata::PI));
 		if (m_SteeringLimit > 0.0) {
 			m_GearAnimation->setSteeringAngle(toRadians(m_SteeringAngle));
 		}

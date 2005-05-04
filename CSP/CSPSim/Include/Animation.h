@@ -96,6 +96,9 @@ private:
 	float m_Limit0;
 	float m_Limit1;
 	float m_Gain;
+	float m_ExportLimit0;
+	float m_ExportLimit1;
+	float m_ExportRate;
 
 protected:
 
@@ -183,6 +186,9 @@ public:
 		SIMDATA_XML("limit_0", Animation::m_Limit0, false)
 		SIMDATA_XML("limit_1", Animation::m_Limit1, false)
 		SIMDATA_XML("gain", Animation::m_Gain, false)
+		SIMDATA_XML("export_limit_0", Animation::m_ExportLimit0, false)
+		SIMDATA_XML("export_limit_1", Animation::m_ExportLimit1, false)
+		SIMDATA_XML("export_rate", Animation::m_ExportRate, false)
 	END_SIMDATA_XML_INTERFACE
 
 	Animation(float defaultValue=0.0f);
@@ -200,6 +206,10 @@ public:
 	float getLimit0() const { return m_Limit0; }
 	float getLimit1() const { return m_Limit1; }
 	float getGain() const { return m_Gain; }
+	int getLOD() const { return m_LOD; }
+	float getExportLimit0() const { return m_ExportLimit0; }
+	float getExportLimit1() const { return m_ExportLimit1; }
+	float getExportRate() const { return m_ExportRate; }
 };
 
 

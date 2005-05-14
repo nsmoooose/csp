@@ -73,6 +73,9 @@ private:
 	int m_AirBubble;
 	int m_GroundBubble;
 
+	std::vector<ObjectId> m_ContactList;
+	simdata::uint32 m_ContactSignature;
+
 	inline void setFlags(int flag, bool on) {
 		if (on) m_Flags |= flag; else m_Flags &= ~flag;
 	}
@@ -309,6 +312,19 @@ public:
 
 	// get the object state to be sent to remote mirrors of the object
 	virtual simdata::Ref<simnet::NetworkMessage> getState(simcore::TimeStamp /*current_time*/, simdata::SimTime /*interval*/, int /*detail*/) const { return 0; }
+
+	// retrieve a list of ids of nearby objects.  this list is periodically
+	// updated by the battlefield.  the battlefield updates are synchronous,
+	// so iterators are safe to use for the duration of an object update
+	// method, but should not be may not remain valid across multiple updates.
+	// see also contactSignature().
+	std::vector<ObjectId> const &getContacts() const { return m_ContactList; }
+
+	// return a signature of the ids in the list returned by getContacts.  this
+	// signature changes whenever objects are added or removed from the contact
+	// list.  contact lists with the same ids have identical signatures, although
+	// the order of the ids may differ.
+	int contactSignature() const { return m_ContactSignature; }
 
 protected:
 

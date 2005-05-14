@@ -1,10 +1,18 @@
  Version 0.4.0 (in progress)
 ===========================
 
+2005-05-14: onsight
+ * Add a list of contacts to SimObject of nearby vehicles that is
+   maintained by the Battlefield.  The battlefield was already
+   compiling this list, it just wasn't easily accessible from
+   within a SimObject class.  Currently the list is updated every
+   few seconds, and there is a hash of the ids in the list to make
+   it easy to detect when the list has changed.
+
 2005-05-04: delta
  * Replace 'remainder' by 'fmod'.
- 
- * Protect hud binding when no bus is defined (in 
+
+ * Protect hud binding when no bus is defined (in
    SceneModel::bindAnimationChannels).
 
 2005-05-03: onsight

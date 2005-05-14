@@ -35,7 +35,8 @@ SimObject::SimObject(TypeId type):
 	m_Flags(0),  // remote agent
 	m_Name("?"),
 	m_AirBubble(0),
-	m_GroundBubble(0)
+	m_GroundBubble(0),
+	m_ContactSignature(0)
 {
 	CSP_LOG(BATTLEFIELD, DEBUG, "SimObject::SimObject(): " << _debugId());
 	// XXX battlefield should set this!

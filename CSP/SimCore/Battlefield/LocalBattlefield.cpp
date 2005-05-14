@@ -237,15 +237,20 @@ void LocalBattlefield::scanUnit(LocalUnitWrapper *wrapper) {
 		dynamicIndex()->query(region, contacts);
 		const unsigned n_contacts = contacts.size();
 		std::vector<PeerContact> peer_contacts;
+		unit->m_ContactList.resize(0);
 		peer_contacts.reserve(n_contacts);
 		simdata::Vector3 unit_position = unit->getGlobalPosition();
+		simdata::uint32 signature = 0;
 		for (unsigned i=0; i < n_contacts; ++i) {
 			LocalUnitWrapper *contact = static_cast<LocalUnitWrapper*>(contacts[i]);
 			if (contact->id() == wrapper->id()) continue;
 			if (!contact->unit()) continue;
 			float distance = static_cast<float>((contact->unit()->getGlobalPosition() - unit_position).length2());
 			peer_contacts.push_back(PeerContact(contact->owner(), distance));
+			unit->m_ContactList.push_back(contact->id());
+			signature = simdata::make_unordered_fingerprint(signature, simdata::hash_uint32(static_cast<uint32>(contact->id())));
 		}
+		unit->m_ContactSignature = signature;
 		CSP_LOG(BATTLEFIELD, INFO, "found " << peer_contacts.size() << " nearby units");
 		if (!peer_contacts.empty()) {
 			std::sort(peer_contacts.begin(), peer_contacts.end(), PeerContactSorter());

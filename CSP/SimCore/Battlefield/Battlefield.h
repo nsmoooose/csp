@@ -119,6 +119,9 @@ public:
 	 */
 	Unit getNextUnit(Unit const &unit, int human, int local, int category);
 
+	/** Lookup a unit by its id.
+	 */
+	Unit getUnitById(ObjectId id);
 
 protected:
 

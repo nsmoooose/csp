@@ -291,6 +291,11 @@ void Battlefield::initializeLocalUnit(Unit unit, bool local) {
 	}
 }
 
+Battlefield::Unit Battlefield::getUnitById(ObjectId id) {
+	UnitWrapper *wrapper = findUnitWrapper(id);
+	return wrapper ? wrapper->unit() : 0;
+}
+
 Battlefield::UnitWrapper *Battlefield::findUnitWrapper(ObjectId id) {
 	UnitMap::iterator iter = m_UnitMap.find(id);
 	if (iter == m_UnitMap.end()) return 0;

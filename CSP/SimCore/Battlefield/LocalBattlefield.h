@@ -185,7 +185,13 @@ private:
 	int m_ScanSignature;
 	std::vector<Unit> m_ScanUnits;
 
+	// Perform a spatial query for objects near the specified unit.  Updates
+	// the unit's contact list and the rate at which position messages are
+	// sent to peers.  Called by continueUnitScan.
 	void scanUnit(LocalUnitWrapper *wrapper);
+
+	// Continue a slow iteration through all units in the battlefield, calling
+	// scanUnit on each.  This method should be called once per time step.
 	void continueUnitScan(double dt);
 
 	simdata::ScopedPointer<simcore::Signal2<int, const std::string&> > m_PlayerJoinSignal;

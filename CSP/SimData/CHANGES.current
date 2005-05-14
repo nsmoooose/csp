@@ -1,6 +1,12 @@
 Version 0.4.0 (in progress)
 ===========================
 
+2005-05-14: onsight
+ * Add helper functions for producing 32-bit hashes for integer and string
+   types.  These all use the original newhash function to do the work.
+   Add functions for combining 32-bit hashes to produce ordered and un-
+   ordered fingerprints.
+
 2005-04-02: onsight
  * Add a few convenience methods to LLA.
 

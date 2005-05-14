@@ -1,5 +1,5 @@
 /* SimData: Data Infrastructure for Simulations
- * Copyright (C) 2002 Mark Rose <tm2@stm.lbl.gov>
+ * Copyright (C) 2002, 2005 Mark Rose <tm2@stm.lbl.gov>
  *
  * This file is part of SimData.
  *
@@ -55,6 +55,13 @@ struct HashT;
 
 extern SIMDATA_EXPORT uint32 newhash4_cstring(std::string const &);
 extern SIMDATA_EXPORT HashT newhasht_cstring(std::string const &);
+
+/** SimData standard 32-bit hash functions.
+ */
+extern SIMDATA_EXPORT uint32 hash_uint32(uint32);
+extern SIMDATA_EXPORT uint32 hash_uint32(uint64);
+extern SIMDATA_EXPORT uint32 hash_uint32(std::string const &);
+extern SIMDATA_EXPORT uint32 hash_uint32(const char *buffer, const int len);
 
 
 /** A 64-bit hash value.
@@ -304,6 +311,19 @@ struct HASHT_MAP {
 
 extern std::ostream & operator<<(std::ostream &o, const hasht &x);
 
+
+// Combine 32 bit hashes to produce a fingerprint that depends on the
+// order of the values.
+inline uint32 make_ordered_fingerprint(uint32 x, uint32 y) {
+	return (x << 11) ^ (x >> 21) ^ y;
+}
+
+
+// Combine 32 bit hashes to produce a fingerprint that is independent
+// of the order of the values.
+inline uint32 make_unordered_fingerprint(uint32 x, uint32 y) {
+	return x + y;
+}
 
 //@}
 

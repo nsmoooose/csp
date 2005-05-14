@@ -38,20 +38,20 @@ CameraAgent::CameraAgent(const ViewFactory& vf, ViewMode default_view):
 	m_EyePoint(simdata::Vector3::ZERO), 
 	m_LookPoint(simdata::Vector3::XAXIS),
 	m_UpVector(simdata::Vector3::ZAXIS),
-	m_ViewMode(default_view) {
+	m_ViewMode(10000) {
 	vf.attachAllView(this);
-	notifyCameraKinematicsToViews();
+	setViewMode(default_view);
 }
 
-void CameraAgent::attach(ViewMode mode, View* vm){
-	m_ViewList[mode] = vm;
+void CameraAgent::attach(ViewMode mode, View* view){
+	assert(view);
+	m_ViewList[mode] = view;
 }
 
-CameraAgent::~CameraAgent() {
-	deleteViews();
-}
+CameraAgent::~CameraAgent() { }
 
 void CameraAgent::validate(double dt) {
+	if (!m_ActiveView) return;
 	VirtualScene* scene = CSPSim::theSim->getScene();
 	const simdata::Ref<TerrainObject> terrain = scene->getTerrain();
 	TerrainObject::IntersectionHint camera_hint = 0;
@@ -101,59 +101,68 @@ void CameraAgent::validate(double dt) {
 			// the terrain height (+10cm).
 			double alpha = std::max(0.0, acos(rotvec.z() - dh/R) - simdata::PI_2 - phi);
 			if (alpha > 0.0) {
-				phi = m_CameraKinematics.getPhi();
+				CameraKinematics *kinematics = m_ActiveView->kinematics();
+				phi = kinematics->getPhi();
 				// first bring phi into the range -pi..pi
 				if (dot(rotvec ^ simdata::Vector3::ZAXIS, right_unit) > 0) {
-					m_CameraKinematics.setPhi(phi + alpha);
+					kinematics->setPhi(phi + alpha);
 				} else {
-					m_CameraKinematics.setPhi(phi - alpha);
+					kinematics->setPhi(phi - alpha);
 				}
-				m_CameraKinematics.panUpDownStop();
-				m_ViewList[m_ViewMode]->recalculate(m_EyePoint, m_LookPoint, m_UpVector, dt);
+				kinematics->panUpDownStop();
+				m_ActiveView->recalculate(m_EyePoint, m_LookPoint, m_UpVector, dt);
 			}
 		}
 	}
 }
 
 void CameraAgent::setViewMode(ViewMode vm) {
-	ViewList::iterator view_it = m_ViewList.find(vm);
-	if (view_it != m_ViewList.end()) {
-		if (m_ViewMode == vm) {
-			CSP_LOG(APP, INFO, "reactivate view");
-			view_it->second->reactivate();
-		} else {
-			CSP_LOG(APP, INFO, "selected new view");
-			view_it->second->activate();
+	if (vm == m_ViewMode) {
+		CSP_LOG(APP, INFO, "reactivate view");
+		assert(m_ActiveView.valid());
+		m_ActiveView->reactivate();
+	} else {
+		ViewList::iterator iter = m_ViewList.find(vm);
+		if (iter != m_ViewList.end()) {
+			assert(iter->second.valid());
 			m_ViewMode = vm;
+			m_ActiveView = iter->second;
+			m_ActiveView->setActiveObject(m_ActiveObject);
+			m_ActiveView->activate();
 		}
 	}
+}
+
+void CameraAgent::select() {
+	if (m_ActiveView.valid()) m_ActiveView->select();
+}
+
+void CameraAgent::reselect() {
+	if (m_ActiveView.valid()) m_ActiveView->reselect();
+}
+
+void CameraAgent::deselect() {
+	if (m_ActiveView.valid()) m_ActiveView->deselect();
 }
 
 void CameraAgent::setCameraCommand(CameraCommand *cc) {
-	m_CameraKinematics.accept(cc);
-}
-
-void CameraAgent::updateCamera(double dt) {
-	ViewList::iterator view = m_ViewList.find(m_ViewMode);
-	if (view != m_ViewList.end()) {
-		m_CameraKinematics.update(dt);
-		view->second->update(m_EyePoint, m_LookPoint, m_UpVector, dt);
-		if (!view->second->isInternal()) {
-			validate(dt);
-		}
-		view->second->cull();
+	if (m_ActiveView.valid()) {
+		m_ActiveView->kinematics()->accept(cc);
 	}
 }
 
-void CameraAgent::deleteViews() {
-	std::for_each(m_ViewList.begin(), m_ViewList.end(), DestroyView());
+void CameraAgent::updateCamera(double dt) {
+	if (m_ActiveView.valid()) {
+		m_ActiveView->update(m_EyePoint, m_LookPoint, m_UpVector, dt);
+		if (!m_ActiveView->isInternal()) {
+			validate(dt);
+		}
+		m_ActiveView->cull();
+	}
 }
 
 void CameraAgent::setObject(simdata::Ref<DynamicObject> object) {
-	std::for_each(m_ViewList.begin(), m_ViewList.end(), Accept<simdata::Ref<DynamicObject> >(object));
-	m_CameraKinematics.reset();
+	m_ActiveObject = object;
+	if (m_ActiveView.valid()) m_ActiveView->setActiveObject(object);
 }
 
-void CameraAgent::notifyCameraKinematicsToViews() {
-	std::for_each(m_ViewList.begin(), m_ViewList.end(), Accept<CameraKinematics*>(&m_CameraKinematics));
-}

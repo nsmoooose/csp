@@ -1,5 +1,5 @@
 // Combat Simulator Project - FlightSim Demo
-// Copyright (C) 2004 The Combat Simulator Project
+// Copyright (C) 2004-2005 The Combat Simulator Project
 // http://csp.sourceforge.net
 //
 // This program is free software; you can redistribute it and/or
@@ -22,28 +22,81 @@
  *
  **/
 
-#include <cmath>
 
 #include "Views/View.h"
 #include "Views/CameraAgent.h"
+#include "Views/CameraKinematics.h"
+#include "Views/InternalView.h"
+#include "Views/ExternalViews.h"
 
-#include "Animation.h"
 #include "CSPSim.h"
 #include "DynamicObject.h"
-#include "ObjectModel.h"
 #include "VirtualScene.h"
 
-#include <SimData/Noise.h>
 #include <SimCore/Battlefield/LocalBattlefield.h>
+#include <SimData/Quat.h>
 
-void View::accept(const simdata::Ref<DynamicObject> object) {
+#include <cmath>
+#include <queue>
+
+namespace {
+struct ContactSorter {
+	typedef simdata::Ref<SimObject> Unit;
+	Unit unit;
+	double priority;
+	double distance;
+	inline bool operator<(ContactSorter const &other) const { return priority < other.priority; }
+	ContactSorter(Unit const &unit_, double priority_, double distance_): unit(unit_), priority(priority_), distance(distance_) {}
+};
+}
+
+void View::findContacts(simdata::Vector3 const &dir, double cutoff_angle, std::vector<Contact> &contacts) const {
+	contacts.clear();
+	LocalBattlefield* battlefield = CSPSim::theSim->getBattlefield();
+	if (battlefield) {
+		std::vector<SimObject::ObjectId> const &bf_contacts = m_ActiveObject->getContacts();
+		if (!bf_contacts.empty()) {
+			const simdata::Vector3 dir_unit = dir.normalized();
+			const simdata::Vector3 pos = m_ActiveObject->getGlobalPosition();
+			const double cos_cutoff = cos(cutoff_angle);
+			std::priority_queue<ContactSorter> contact_queue;
+			for (unsigned i = 0; i < bf_contacts.size(); ++i) {
+				Battlefield::Unit unit = battlefield->getUnitById(bf_contacts[i]);
+				if (!unit) continue;
+				simdata::Vector3 relpos = unit->getGlobalPosition() - pos;
+				double distance = relpos.normalize();
+				double priority = relpos * dir_unit;
+				if (priority > cos_cutoff) {
+					contact_queue.push(ContactSorter(unit, priority, distance));
+				}
+			}
+			contacts.reserve(contact_queue.size());
+			while (!contact_queue.empty()) {
+				contacts.push_back(contact_queue.top().unit);
+				contact_queue.pop();
+			}
+		}
+	}
+}
+
+
+void View::setActiveObject(const simdata::Ref<DynamicObject> object) {
 	if (m_ActiveObject.valid()) {
 		m_ActiveObject->internalView(false);
 	}
 	m_ActiveObject = object;
+	if (m_ActiveObject.valid()) {
+		m_ActiveObject->internalView(isInternal());
+	}
 }
 
 View::~View() { }
+
+void View::update(simdata::Vector3& ep, simdata::Vector3& lp, simdata::Vector3& up, double dt) {
+	assert(m_CameraKinematics.valid());
+	m_CameraKinematics->update(dt);
+	updateView(ep, lp, up, dt);
+}
 
 void View::updateBody(simdata::Vector3& ep, simdata::Vector3& lp, simdata::Vector3& up) {
 	simdata::Vector3 object_up = m_ActiveObject->getUpDirection();
@@ -65,9 +118,10 @@ void View::updateWorld(simdata::Vector3& ep, simdata::Vector3& lp, simdata::Vect
 	up = q.rotate(simdata::Vector3::ZAXIS);
 }
 
-View::View(size_t vm):
+View::View(size_t vm, bool internal):
+	m_Internal(internal),
 	m_ViewMode(vm),
-	m_Internal(false) {
+	m_CameraKinematics(new CameraKinematics) {
 }
 
 void View::cull() {
@@ -89,253 +143,6 @@ void View::activate() {
 	}
 }
 
-void InternalView::constrain() {
-	const float limit_phi = simdata::PI_2;
-	const float limit_theta = 1.5 * simdata::PI_2;
-	m_CameraKinematics->clampPhi(m_CameraKinematics->getPhi(), -limit_phi, limit_phi);
-	m_CameraKinematics->clampTheta(m_CameraKinematics->getTheta(), -limit_theta, limit_theta);
-}
-
-void InternalView::update(simdata::Vector3& ep, simdata::Vector3& lp, simdata::Vector3& up, double /*dt*/) {
-	constrain();
-	simdata::Vector3 object_up = m_ActiveObject->getUpDirection();
-	simdata::Vector3 object_dir = m_ActiveObject->getDirection();
-	simdata::Quat q = simdata::Quat(m_CameraKinematics->getTheta(), object_up, m_CameraKinematics->getPhi(),
-                                    object_dir^object_up, 0.0, object_dir);
-	simdata::Vector3 object_pos = m_ActiveObject->getGlobalPosition();
-	ep = object_pos + m_ActiveObject->getViewPoint();
-	lp = ep + m_CameraKinematics->getDistance() * q.rotate(object_dir);
-	up = q.rotate(object_up);
-}
-
-void InternalView::activate() {
-	View::activate();
-	m_CameraKinematics->reset();
-}
-
-void InternalViewHist::update(simdata::Vector3& ep, simdata::Vector3& lp, simdata::Vector3& up, double dt) {
-	const float c = 0.001;
-	simdata::Vector3 displ = c * dt * m_ActiveObject->getVelocity();
-	static simdata::Vector3 prev_displ = displ;
-
-	InternalView::update(ep, lp, up, dt);
-
-	ep += 0.5*(prev_displ + displ);
-	prev_displ = displ;
-}
-
-void ExternalViewBody::activate() {
-	View::activate();
-	m_CameraKinematics->resetDistance();
-}
-
-void ExternalViewBody::update(simdata::Vector3& ep, simdata::Vector3& lp, simdata::Vector3& up, double /*dt*/) {
-	updateBody(ep, lp, up);
-}
-
-void ExternalViewWorld::activate() {
-	View::activate();
-	m_CameraKinematics->resetDistance();
-}
-
-void ExternalViewWorld::update(simdata::Vector3& ep, simdata::Vector3& lp, simdata::Vector3& up, double /*dt*/) {
-	/*  Very simplistic camera jitter (disabled).  Ideally should take wind speed/direction
-	 *  and turbulence into account.
-	static std::vector<float> turbulenceX;
-	static std::vector<float> turbulenceY;
-	static std::vector<float> turbulenceZ;
-	static int i = 0, j = 512;
-	if (turbulenceX.empty()) {
-		simdata::Perlin1D noise(0.8, 8, simdata::Perlin1D::LINEAR);
-		turbulenceX = noise.generate(1024, true, 4.0, 2.0);
-		turbulenceY = noise.generate(1024, true, 4.0, 2.0);
-		turbulenceZ = noise.generate(1024, true, 4.0, 1.0);
-		for (int k = 0; k < 1000; k++) std::cout << turbulenceX[k] << " ";
-	}
-	if (++i >= 1024) i = 0;
-	if (++j >= 1024) j = 0;
-	*/
-	updateWorld(ep, lp, up);
-	/*
-	ep += simdata::Vector3(turbulenceX[i], turbulenceY[i], turbulenceZ[i]) * 0.03;
-	lp += simdata::Vector3(turbulenceX[j], turbulenceY[j], turbulenceZ[j]) * 0.015 * m_CameraKinematics->getDistance() ;
-	*/
-}
-
-void FixedFlybyView::newFixedCamPos(SimObject* target) {
-	if (m_Initialized) return;
-	m_Initialized = true;
-	simdata::Vector3 object_pos = target->getGlobalPosition();
-	DynamicObject* dynamic = dynamic_cast<DynamicObject*>(target);
-	if (dynamic) {
-		simdata::Vector3 up = dynamic->getUpDirection();
-		simdata::Vector3 object_dir = dynamic->getDirection();
-		//double speed_level = dynamic->getSpeed()/50.0;
-		m_FixedCameraPosition =  object_pos - 20.0 * object_dir;
-	} else {
-		m_FixedCameraPosition = object_pos + 100.0 * simdata::Vector3::ZAXIS + 100.0 * simdata::Vector3::XAXIS;
-	}
-}
-
-void FixedFlybyView::activate() {
-	m_Initialized = false;
-	FlybyView::activate();
-}
-
-void FlybyView::newFixedCamPos(SimObject* target) {
-	simdata::Vector3 object_pos = target->getGlobalPosition();
-	DynamicObject* dynamic = dynamic_cast<DynamicObject*>(target);
-	if (dynamic) {
-		simdata::Vector3 up = dynamic->getUpDirection();
-		simdata::Vector3 object_dir = dynamic->getDirection();
-		//double speed_level = dynamic->getSpeed()/50.0;
-		m_FixedCameraPosition =  object_pos + 900.0* object_dir + ( 12.0 - (rand() % 5) ) * (object_dir^up) + ( 6.0 + (rand () % 3) ) * up;
-	} else {
-		m_FixedCameraPosition = object_pos + 100.0 * simdata::Vector3::ZAXIS + 100.0 * simdata::Vector3::XAXIS;
-	}
-}
-
-void FlybyView::activate() {
-	View::activate();
-	newFixedCamPos(m_ActiveObject.get());
-}
-
-
-void FlybyView::update(simdata::Vector3& ep, simdata::Vector3& lp, simdata::Vector3& up, double /*dt*/) {
-	lp = m_ActiveObject->getGlobalPosition();
-	ep = m_FixedCameraPosition;
-	if ((lp - ep).length() > 1000.0) {
-		newFixedCamPos(m_ActiveObject.get());
-	}
-	up = simdata::Vector3::ZAXIS;
-}
-
-void FlybyView::recalculate(simdata::Vector3& ep, simdata::Vector3& /*lp*/, simdata::Vector3& /*up*/, double /*dt*/) {
-	TerrainObject* terrain = CSPSim::theSim->getTerrain();
-	if (terrain) {
-		const float SAFETY = 2.0f;
-		TerrainObject::IntersectionHint camera_hint = 0;
-		float h = SAFETY + terrain->getGroundElevation(ep.x(), ep.y(), camera_hint);
-		float d = ep.z() - h;
-		if (d<0) ep.z() -= d;
-	}
-}
-
-void SatelliteView::activate() {
-	View::activate();
-	m_CameraKinematics->setTheta(0.0);
-	m_CameraKinematics->setPhi(simdata::PI_2);
-	m_CameraKinematics->setDistance(500.0);
-}
-
-void SatelliteView::update(simdata::Vector3& ep, simdata::Vector3& lp, simdata::Vector3& up, double /*dt*/) {
-	updateWorld(ep, lp, up);
-}
-
-PadlockView::PadlockView(size_t vm):
-	View(vm),
-	m_Padlocked(false)
-{
-	m_Internal = true;
-}
-
-void PadlockView::activate() {
-	CSP_LOG(APP, ERROR, "padlock view activated");
-	View::activate();
-	//m_CameraKinematics->reset();
-	LocalBattlefield* battlefield = CSPSim::theSim->getBattlefield();
-	if (battlefield) {
-		// TODO need to prioritize and lock on to objects within the current field of view
-		if (!m_Padlock) m_Padlock = m_ActiveObject;
-		m_Padlock = battlefield->getNextUnit(m_Padlock, -1, -1, -1);
-		if (m_Padlock == m_ActiveObject) {
-			m_Padlock = battlefield->getNextUnit(m_Padlock, -1, -1, -1);
-		}
-		setPadlocked();
-		m_NeckTheta = simdata::PI_2 - m_CameraKinematics->getPhi();
-		m_NeckPhi = m_CameraKinematics->getTheta();
-		if (m_Padlock == m_ActiveObject) {
-			m_Padlock = 0;
-		}
-		m_Padlocked = m_Padlock.valid();
-		CSP_LOG(APP, ERROR, "padlocked = " << m_Padlocked);
-	}
-}
-
-void PadlockView::setPadlocked() {
-	m_Padlocked = true;
-	m_OldPhi = m_CameraKinematics->getPhi();
-	m_OldTheta = m_CameraKinematics->getTheta();
-}
-
-bool PadlockView::checkPadlocked() {
-	if (!m_Padlocked) return false;
-	m_Padlocked = (m_OldPhi == m_CameraKinematics->getPhi() && m_OldTheta == m_CameraKinematics->getTheta());
-	if (!m_Padlocked) {
-		CSP_LOG(APP, ERROR, "moved out of padlock");
-		// FIXME this is broken
-		m_CameraKinematics->getPhi() = simdata::PI_2 - m_NeckTheta;
-		m_CameraKinematics->getTheta() = m_NeckPhi;
-	}
-	return m_Padlocked;
-}
-
-void PadlockView::constrainPadlocked(simdata::Vector3& ep, simdata::Vector3& /*lp*/, simdata::Vector3& /*up*/, double dt) {
-	assert(m_Padlocked);
-	assert(m_Padlock.valid());
-	simdata::Vector3 dir = (m_Padlock->getGlobalPosition() - ep).normalized();
-	m_Attitude = m_ActiveObject->getAttitude();
-	dir = m_Attitude.invrotate(dir);
-	float phi = atan2(-dir.x(), dir.y());
-	float theta = acos(dir.z());
-	float phi_max = 2.6 - std::max(0.0, 1.57 - 2.0*theta);
-	if (phi > phi_max) {
-		phi = phi_max;
-		m_NeckLimit = true;
-	} else if (phi < -phi_max) {
-		phi = -phi_max;
-		m_NeckLimit = true;
-	} else {
-		m_NeckLimit = false;
-	}
-	float motion = std::min(3.0*dt, 0.3);
-	phi = m_NeckPhi * (1.0-motion) + phi * motion;
-	theta = m_NeckTheta * (1.0-motion) + theta * motion;
-	m_psi = phi * std::max(0.0, std::min(1.0, 2.0*theta));
-	m_NeckTheta = theta;
-	m_NeckPhi = phi;
-}
-
-void PadlockView::constrainNotPadlocked(simdata::Vector3& /*ep*/, simdata::Vector3& /*lp*/, simdata::Vector3& /*up*/, double /*dt*/) {
-	const float limit_phi = simdata::PI_2;
-	const float limit_theta = 1.5 * simdata::PI_2;
-	m_CameraKinematics->clampPhi(m_CameraKinematics->getPhi(), -limit_phi, limit_phi);
-	m_CameraKinematics->clampTheta(m_CameraKinematics->getTheta(), -limit_theta, limit_theta);
-}
-
-void PadlockView::update(simdata::Vector3& ep, simdata::Vector3& lp, simdata::Vector3& up, double dt) {
-	ep = m_ActiveObject->getGlobalPosition() + m_ActiveObject->getViewPoint();
-	if (checkPadlocked()) {
-		constrainPadlocked(ep, lp, up, dt);
-		simdata::Vector3 dir(-sin(m_NeckTheta)*sin(m_NeckPhi), sin(m_NeckTheta)*cos(m_NeckPhi), cos(m_NeckTheta));
-		simdata::Vector3 d(sin(m_psi), -cos(m_psi), 0.0);
-		up.set(d.x()*cos(m_NeckTheta), d.y()*cos(m_NeckTheta), sin(m_NeckTheta));
-		up = m_Attitude.rotate(up);
-		double offset = std::max(0.0, std::min(0.4, 0.3*(std::abs(m_psi) - 1.57)));
-		if (m_psi > 0.0) offset = -offset;
-		ep += m_Attitude.rotate(offset * simdata::Vector3::XAXIS);
-		dir = m_Attitude.rotate(dir);
-		lp = ep + 100.0 * dir;
-	} else {
-		constrainNotPadlocked(ep, lp, up, dt);
-		simdata::Vector3 object_up = m_ActiveObject->getUpDirection();
-		simdata::Vector3 object_dir = m_ActiveObject->getDirection();
-		simdata::Quat q = simdata::Quat(m_CameraKinematics->getTheta(), object_up, m_CameraKinematics->getPhi(), object_dir^object_up, 0.0, object_dir);
-		lp = ep + m_CameraKinematics->getDistance() * q.rotate(object_dir);
-		up = q.rotate(object_up);
-	}
-}
-
 
 View* ViewFactory::createView_1() const {
 	return new InternalView(1);
@@ -350,7 +157,7 @@ View* ViewFactory::createView_3() const {
 }
 
 View* ViewFactory::createView_4() const {
-	return new InternalViewHist(4);
+	return new FixedFlybyView(4);
 }
 
 View* ViewFactory::createView_5() const {
@@ -366,7 +173,7 @@ View* ViewFactory::createView_8() const {
 }
 
 View* ViewFactory::createView_9() const {
-	return new PadlockView(9);
+	return new FlybyView(9);
 }
 
 void ViewFactory::attachAllView(CameraAgent* ca) const {

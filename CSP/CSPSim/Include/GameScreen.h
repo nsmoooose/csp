@@ -85,6 +85,13 @@ public:
 		BIND_ACTION("CAMERA_VIEW_7", on_View7);
 		BIND_ACTION("CAMERA_VIEW_8", on_View8);
 		BIND_ACTION("CAMERA_VIEW_9", on_View9);
+		BIND_ACTION("CAMERA_SELECT", on_Select);
+		BIND_ACTION("CAMERA_RESELECT", on_Reselect);
+		BIND_ACTION("CAMERA_DESELECT", on_Deselect);
+		BIND_ACTION("CAMERA_FORWARD", on_LookForward);
+		BIND_ACTION("CAMERA_BACKWARD", on_LookBackward);
+		BIND_ACTION("CAMERA_RIGHT", on_LookRight);
+		BIND_ACTION("CAMERA_LEFT", on_LookLeft);
 		BIND_ACTION("CAMERA_PAN_LEFT", on_ViewPanLeft);
 		BIND_ACTION("CAMERA_PAN_RIGHT", on_ViewPanRight);
 		BIND_ACTION("CAMERA_PAN_LEFT_STOP", on_ViewPanLeftStop);
@@ -117,6 +124,10 @@ public:
 	void on_Stats();
 	void on_Console();
 	void on_ChangeVehicle();
+	void on_LookForward();
+	void on_LookBackward();
+	void on_LookRight();
+	void on_LookLeft();
 	void on_View0();
 	void on_View1();
 	void on_View2();
@@ -127,6 +138,9 @@ public:
 	void on_View7();
 	void on_View8();
 	void on_View9();
+	void on_Select();
+	void on_Reselect();
+	void on_Deselect();
 	void on_ViewPanLeft();
 	void on_ViewPanRight();
 	void on_ViewPanLeftStop();

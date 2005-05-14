@@ -429,6 +429,12 @@
 					RelativePath="..\..\Source\Views\CameraKinematics.cpp">
 				</File>
 				<File
+					RelativePath="..\..\Source\Views\InternalView.cpp">
+				</File>
+				<File
+					RelativePath="..\..\Source\Views\ExternalViews.cpp">
+				</File>
+				<File
 					RelativePath="..\..\Source\Views\View.cpp">
 					<FileConfiguration
 						Name="Debug|Win32">
@@ -782,6 +788,12 @@
 				</File>
 				<File
 					RelativePath="..\..\Include\Views\View.h">
+				</File>
+				<File
+					RelativePath="..\..\Include\Views\InternalView.h">
+				</File>
+				<File
+					RelativePath="..\..\Include\Views\ExternalViews.h">
 				</File>
 			</Filter>
 			<Filter

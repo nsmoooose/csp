@@ -106,6 +106,8 @@ SOURCES = [
 	'Theater/RandomForestModel.cpp',
 	'Views/CameraAgent.cpp',
 	'Views/CameraKinematics.cpp',
+	'Views/ExternalViews.cpp',
+	'Views/InternalView.cpp',
 	'Views/View.cpp',
 	'VirtualScene.cpp',
 # --------------------------------------

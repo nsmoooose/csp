@@ -382,6 +382,34 @@ void GameScreen::on_ChangeVehicle()
 	}
 }
 
+void GameScreen::on_Select() {
+	m_CameraAgent->select();
+}
+
+void GameScreen::on_Reselect() {
+	m_CameraAgent->reselect();
+}
+
+void GameScreen::on_Deselect() {
+	m_CameraAgent->deselect();
+}
+
+void GameScreen::on_LookForward() {
+	m_CameraAgent->setCameraCommand(&m_CameraCommands->LookForward);
+}
+
+void GameScreen::on_LookBackward() {
+	m_CameraAgent->setCameraCommand(&m_CameraCommands->LookBackward);
+}
+
+void GameScreen::on_LookRight() {
+	m_CameraAgent->setCameraCommand(&m_CameraCommands->LookRight);
+}
+
+void GameScreen::on_LookLeft() {
+	m_CameraAgent->setCameraCommand(&m_CameraCommands->LookLeft);
+}
+
 void GameScreen::on_ViewPanLeft() {
 	m_CameraAgent->setCameraCommand(&m_CameraCommands->PanLeft);
 }

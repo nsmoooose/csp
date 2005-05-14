@@ -42,11 +42,15 @@ void CameraKinematics::scale(double dt) {
 	}
 	m_DistanceToObject = simdata::clampTo<double>(m_DistanceToObject, m_MinimumDistance, m_AbsoluteMaximumDistance);
 }
-	
+
 void CameraKinematics::update(double dt) {
+	if (m_PanRateTheta != 0.0 || m_PanRatePhi != 0.0) {
+		m_Accel = std::min(3.0, m_Accel + 1.0 * dt);
+	}
 	rotateTheta(dt);
 	rotatePhi(dt);
 	scale(dt);
+	m_Accel = 1.0 + (m_Accel - 1.0) *  std::max(0.0, 1.0 - dt);
 }
 
 float CameraKinematics::smooth(double value, float min_value, float max_value) const {
@@ -60,26 +64,27 @@ float CameraKinematics::smooth(double value, float min_value, float max_value) c
 }
 
 CameraKinematics::CameraKinematics():
-// XXX: serialize those parameters
-m_BaseRate(simdata::toRadians(30.0)),
+// XXX: serialize these parameters
+	m_BaseRate(simdata::toRadians(30.0)),
 	m_DisplacementCoefficient(0.001),
 	m_MinimumDistanceOffset(10.0),
-	m_AbsoluteMaximumDistance(80000.0) {
+	m_AbsoluteMaximumDistance(80000.0),
+	m_Accel(1.0) {
 	reset();
 }
 
-void CameraKinematics::clampPhi(double& phi, float min_phi, float max_phi, bool smooth_on) {
+void CameraKinematics::clampPhi(float min_phi, float max_phi, bool smooth_on) {
 	if (smooth_on && m_PanRatePhi != 0.0) {
-		m_PanRatePhi = simdata::sign(m_PanRatePhi)*smooth(phi, min_phi, max_phi)*m_BaseRate;
+		m_PanRatePhi = simdata::sign(m_PanRatePhi) * smooth(m_Phi, min_phi, max_phi) * m_BaseRate;
 	}
-	phi = simdata::clampTo<double>(phi, min_phi, max_phi);
+	m_Phi = simdata::clampTo<double>(m_Phi, min_phi, max_phi);
 }
 
-void CameraKinematics::clampTheta(double& theta, float min_theta, float max_theta, bool smooth_on) {
+void CameraKinematics::clampTheta(float min_theta, float max_theta, bool smooth_on) {
 	if (smooth_on && m_PanRateTheta != 0.0) {
-		m_PanRateTheta = simdata::sign(m_PanRateTheta)*smooth(theta, min_theta, max_theta)*m_BaseRate;
+		m_PanRateTheta = simdata::sign(m_PanRateTheta)*smooth(m_Theta, min_theta, max_theta)*m_BaseRate;
 	}
-	theta = simdata::clampTo<double>(theta, min_theta, max_theta);
+	m_Theta = simdata::clampTo<double>(m_Theta, min_theta, max_theta);
 }
 
 void CameraKinematics::reset() {
@@ -88,9 +93,10 @@ void CameraKinematics::reset() {
 	m_PanRatePhi = 0.0;
 	m_PanRateTheta = 0.0;
 	m_ZoomRate = 0.0;
+	m_Accel = 1.0;
 	resetDistance();
 }
-	
+
 void CameraKinematics::resetDistance() {
 	const simdata::Ref<DynamicObject> active_object = CSPSim::theSim->getActiveObject();
 	if (active_object.valid()) {
@@ -103,10 +109,12 @@ void CameraKinematics::resetDistance() {
 
 void CameraKinematics::panLeft() {
 	m_PanRateTheta = m_BaseRate;
+	m_ExternalPan = true;
 }
 
 void CameraKinematics::panRight() {
 	m_PanRateTheta = -m_BaseRate;
+	m_ExternalPan = true;
 }
 
 void CameraKinematics::panLeftRightStop() {
@@ -115,10 +123,12 @@ void CameraKinematics::panLeftRightStop() {
 
 void CameraKinematics::panUp() {
 	m_PanRatePhi = m_BaseRate;
+	m_ExternalPan = true;
 }
 
 void CameraKinematics::panDown() {
 	m_PanRatePhi = -m_BaseRate;
+	m_ExternalPan = true;
 }
 
 void CameraKinematics::panUpDownStop() {
@@ -152,13 +162,13 @@ void CameraKinematics::zoomStepOut() {
 void CameraKinematics::displacement(int /*x*/, int /*y*/, int dx, int dy) {
 	m_PanRatePhi = 0.0;
 	m_PanRateTheta = 0.0;
-	m_Theta -= dx * m_DisplacementCoefficient;
-	m_Phi -= dy * m_DisplacementCoefficient;
+	m_Accel = std::min(3.0, m_Accel + 0.1 * (dx * dx + dy * dy));
+	m_Theta -= dx * m_Accel * m_DisplacementCoefficient;
+	m_Phi -= dy * m_Accel * m_DisplacementCoefficient;
+	m_ExternalPan = true;
 }
 
 void CameraKinematics::accept(CameraCommand* cc) {
-	if (cc) {
-		cc->execute(this);
-	}
+	if (cc) cc->execute(this);
 }
 

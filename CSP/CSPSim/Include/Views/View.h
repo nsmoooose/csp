@@ -25,10 +25,8 @@
 #ifndef __VIEW_H__
 #define __VIEW_H__
 
-#include <map>
-
-#include <SimData/Quat.h>
 #include <SimData/Ref.h>
+#include <SimData/ScopedPointer.h>
 #include <SimData/Vector3.h>
 
 class CameraAgent;
@@ -36,114 +34,48 @@ class CameraKinematics;
 class DynamicObject;
 class SimObject;
 
-class View {
-	size_t m_ViewMode;
+
+/** Base class for different viewing modes. */
+class View: public simdata::Referenced {
+private:
+	const bool m_Internal;
+	const size_t m_ViewMode;
+
 protected:
-	bool m_Internal;
+	simdata::Ref<CameraKinematics> m_CameraKinematics;
 	simdata::Ref<DynamicObject> m_ActiveObject;
-	CameraKinematics* m_CameraKinematics;
 	void updateBody(simdata::Vector3& ep, simdata::Vector3& lp, simdata::Vector3& up);
 	void updateWorld(simdata::Vector3& ep, simdata::Vector3& lp, simdata::Vector3& up);
-	virtual void constrain() { }
+	virtual void updateView(simdata::Vector3& ep, simdata::Vector3& lp, simdata::Vector3& up, double dt)=0;
+
+	typedef simdata::Ref<SimObject> Contact;
+	void findContacts(simdata::Vector3 const &dir, double cutoff_angle, std::vector<Contact> &result) const;
+
 public:
-	View(size_t vm);
+	typedef simdata::Ref<View> Ref;
+
+	View(size_t vm, bool internal);
 	virtual void activate();
 	virtual void reactivate() { activate(); }
-	virtual void update(simdata::Vector3& ep, simdata::Vector3& lp, simdata::Vector3& up, double dt) = 0;
-	void accept(const simdata::Ref<DynamicObject> object);
-	void accept(CameraKinematics* ck) { m_CameraKinematics = ck; }
+	void update(simdata::Vector3& ep, simdata::Vector3& lp, simdata::Vector3& up, double dt);
+	void setActiveObject(const simdata::Ref<DynamicObject> object);
+
 	virtual void recalculate(simdata::Vector3& ep, simdata::Vector3& lp, simdata::Vector3& up, double dt) {
 		update(ep, lp, up, dt);
 	}
+
+	virtual void select() {}
+	virtual void reselect() { select(); }
+	virtual void deselect() {}
+
+	virtual CameraKinematics *kinematics() { return m_CameraKinematics.get(); }
+
 	void cull();
 	virtual ~View();
-	bool isInternal() const { return m_Internal; }
+
+	inline bool isInternal() const { return m_Internal; }
 };
 
-class InternalView: public View {
-public:
-	InternalView(size_t vm): View(vm) { m_Internal = true; }
-	virtual void constrain();
-	virtual void update(simdata::Vector3& ep, simdata::Vector3& lp, simdata::Vector3& up, double dt);
-	virtual void activate();
-	virtual ~InternalView() { }
-};
-
-class InternalViewHist: public InternalView {
-public:
-	InternalViewHist(size_t vm): InternalView(vm) { }
-	virtual void update(simdata::Vector3& ep, simdata::Vector3& lp, simdata::Vector3& up, double dt);
-	virtual ~InternalViewHist() { }
-};
-
-class ExternalViewBody: public View {
-public:
-	ExternalViewBody(size_t vm): View(vm) { }
-	virtual void activate();
-	virtual void update(simdata::Vector3& ep, simdata::Vector3& lp, simdata::Vector3& up, double dt);
-	virtual ~ExternalViewBody() { }
-};
-
-class ExternalViewWorld: public View {
-public:
-	ExternalViewWorld(size_t vm): View(vm) { }
-	virtual void activate();
-	virtual void update(simdata::Vector3& ep, simdata::Vector3& lp, simdata::Vector3& up, double dt);
-	virtual ~ExternalViewWorld() { }
-};
-
-class FlybyView: public View {
-protected:
-	simdata::Vector3 m_FixedCameraPosition;
-	virtual void newFixedCamPos(SimObject* target);
-public:
-	FlybyView(size_t vm): View(vm) { }
-	virtual void activate();
-	virtual void update(simdata::Vector3& ep, simdata::Vector3& lp, simdata::Vector3& up, double dt);
-	virtual void recalculate(simdata::Vector3& ep, simdata::Vector3& lp, simdata::Vector3& up, double dt);
-	virtual ~FlybyView() { }
-};
-
-class FixedFlybyView: public FlybyView {
-	bool m_Initialized;
-	virtual void newFixedCamPos(SimObject* target);
-public:
-	FixedFlybyView(size_t vm): FlybyView(vm), m_Initialized(false) {}
-	virtual void activate();
-	virtual ~FixedFlybyView() { }
-};
-
-class SatelliteView: public View {
-public:
-	SatelliteView(size_t vm): View(vm) { }
-	virtual void activate();
-	virtual void update(simdata::Vector3& ep, simdata::Vector3& lp, simdata::Vector3& up, double dt);
-	virtual ~SatelliteView() { }
-};
-
-class PadlockView: public View {
-	// padlock testing
-	simdata::Ref<DynamicObject> m_Padlock;
-	float m_OldPhi, m_OldTheta;
-	float m_NeckPhi, m_NeckTheta, m_psi;
-	bool m_NeckLimit;
-	simdata::Quat m_Attitude;
-	void constrainPadlocked(simdata::Vector3& ep, simdata::Vector3& lp, simdata::Vector3& up, double dt);
-	void constrainNotPadlocked(simdata::Vector3& ep, simdata::Vector3& lp, simdata::Vector3& up, double dt);
-
-	bool m_Padlocked;
-	void setPadlocked();
-	bool checkPadlocked();
-
-public:
-	PadlockView(size_t vm);
-	virtual void activate();
-	virtual void update(simdata::Vector3& ep, simdata::Vector3& lp, simdata::Vector3& up, double dt);
-	virtual ~PadlockView() { }
-};
-
-
-typedef std::map<size_t, View*> ViewList;
 
 class ViewFactory {
 	View* createView_1() const;

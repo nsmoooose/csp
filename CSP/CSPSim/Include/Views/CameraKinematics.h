@@ -25,11 +25,11 @@
 #ifndef __CAMERAKINEMATICS_H__
 #define __CAMERAKINEMATICS_H__
 
-#include <deque>
+#include <SimData/Ref.h>
 
 class CameraCommand;
 
-class CameraKinematics {
+class CameraKinematics: public simdata::Referenced {
 	// XXX: serialize
 	const float m_BaseRate, m_DisplacementCoefficient;
 	const float m_MinimumDistanceOffset, m_AbsoluteMaximumDistance;
@@ -37,15 +37,17 @@ class CameraKinematics {
 	double m_Phi, m_Theta;
 	float m_PanRatePhi, m_PanRateTheta, m_ZoomRate;
 	double m_DistanceToObject, m_MinimumDistance;
-	void rotateTheta(double dt) { m_Theta += m_PanRateTheta * dt; }
-	void rotatePhi(double dt) { m_Phi += m_PanRatePhi * dt; }
+	double m_Accel;
+	bool m_ExternalPan;
+	void rotateTheta(double dt) { m_Theta += m_Accel * m_PanRateTheta * dt; }
+	void rotatePhi(double dt) { m_Phi += m_Accel * m_PanRatePhi * dt; }
 	void scale(double dt);
 	float smooth(double value, float min_value,float max_value) const;
 public:
 	CameraKinematics();
 	virtual ~CameraKinematics() {}
-	void clampPhi(double& phi,float min_phi,float max_phi, bool smooth_on = true);
-	void clampTheta(double& theta,float min_theta,float max_theta, bool smooth_on = true);
+	void clampPhi(float min_phi,float max_phi, bool smooth_on = true);
+	void clampTheta(float min_theta,float max_theta, bool smooth_on = true);
 	void reset();
 	void resetDistance();
 	void update(double dt);
@@ -60,14 +62,20 @@ public:
 	void zoomStop();
 	void zoomStepIn();
 	void zoomStepOut();
+	void lookForward() { m_Theta = 0.0; m_Phi = 0.0; m_ExternalPan = true; }
+	void lookBackward() { m_Theta = simdata::PI; m_Phi = 0.0; m_ExternalPan = true; }
+	void lookRight() { m_Theta = -simdata::PI_2; m_Phi = 0.0; m_ExternalPan = true; }
+	void lookLeft() { m_Theta = simdata::PI_2; m_Phi = 0.0; m_ExternalPan = true; }
 	void displacement(int x, int y, int dx, int dy);
-	void setPhi(double phi) { m_Phi = phi; }
-	double& getPhi() { return m_Phi; }
-	void setTheta(double theta) { m_Theta = theta; }
-	double& getTheta() { return m_Theta; }
-	void setDistance(float d) { m_DistanceToObject = d; }
-	double getDistance() const { return m_DistanceToObject; }
+	inline void setPhi(double phi) { m_Phi = phi; }
+	inline double getPhi() const { return m_Phi; }
+	inline void setTheta(double theta) { m_Theta = theta; }
+	inline double getTheta() const { return m_Theta; }
+	inline void setDistance(float d) { m_DistanceToObject = d; }
+	inline double getDistance() const { return m_DistanceToObject; }
 	void accept(CameraCommand* cc);
+	bool externalPan() const { return m_ExternalPan; }
+	void resetExternalPan() { m_ExternalPan = false; }
 };
 
 #endif //__CAMERAKINEMATICS_H__

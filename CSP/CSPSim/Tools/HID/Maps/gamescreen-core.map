@@ -30,22 +30,30 @@ map key:CTRL-KP2     release     CAMERA_PAN_DOWN_STOP
 map key:KP_PLUS     press       CAMERA_ZOOM_IN
 map key:KP_PLUS     release     CAMERA_ZOOM_STOP
 map key:ESCAPE      press       QUIT
-map key:p       press       PAUSE
-map key:r           press           TOGGLE_RECORDER
-map key:ALT-w           press           TOGGLE_WIREFRAME
-map key:F12     press       STATS
+map key:p           press       PAUSE
+map key:r           press       TOGGLE_RECORDER
+map key:ALT-w       press       TOGGLE_WIREFRAME
+map key:F12         press       STATS
 map key:HOME        press       CONSOLE
 map key:SPACE       press       CHANGE_VEHICLE
 map key:KP_MINUS    press       CAMERA_ZOOM_OUT
 map key:KP_MINUS    release     CAMERA_ZOOM_STOP
 
 map key:F1          press       SPIN_THE_WORLD/B|SPIN_THE_WORLD_STOP/B
-map key:F2          press           RESET_SPIN
-map key:o           press           PRINT_SCREEN
+map key:F2          press       RESET_SPIN
+map key:o           press       PRINT_SCREEN
 
-map mouse:WHEELUP       press       CAMERA_ZOOM_STEP_IN
-map mouse:WHEELDOWN     press       CAMERA_ZOOM_STEP_OUT
+map mouse:WHEELUP           press       CAMERA_ZOOM_STEP_IN
+map mouse:WHEELDOWN         press       CAMERA_ZOOM_STEP_OUT
 map mouse:SHIFT-WHEELUP     press       CAMERA_FOV_STEP_DEC
 map mouse:SHIFT-WHEELDOWN   press       CAMERA_FOV_STEP_INC
 
 map mouse:LEFT      move        CAMERA_PAN
+
+map key:CTRL-UP      press           CAMERA_FORWARD|CAMERA_DESELECT
+map key:CTRL-RIGHT   press           CAMERA_RIGHT|CAMERA_DESELECT
+map key:CTRL-LEFT    press           CAMERA_LEFT|CAMERA_DESELECT
+map key:CTRL-DOWN    press           CAMERA_BACKWARD|CAMERA_DESELECT
+map key:SHIFT-UP     press           CAMERA_FORWARD
+map key:SHIFT-UP     release         CAMERA_RESELECT
+map key:SHIFT-DOWN   press           CAMERA_SELECT

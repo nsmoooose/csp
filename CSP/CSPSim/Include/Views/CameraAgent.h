@@ -25,6 +25,8 @@
 #ifndef __CAMERAAGENT_H__
 #define __CAMERAAGENT_H__
 
+#include <map>
+
 #include <SimData/Ref.h>
 #include <SimData/Vector3.h>
 
@@ -36,19 +38,15 @@ class DynamicObject;
 
 class CameraAgent {
 	typedef size_t ViewMode;
+	typedef std::map<ViewMode, View::Ref> ViewList;
 	simdata::Vector3 m_EyePoint, m_LookPoint, m_UpVector;
-	CameraKinematics m_CameraKinematics;
+	View::Ref m_ActiveView;
 	ViewMode m_ViewMode;
 	ViewList m_ViewList;
-	void validate(double dt);
-	void deleteViews();
-	void notifyCameraKinematicsToViews();
+	simdata::Ref<DynamicObject> m_ActiveObject;
 
-	struct DestroyView {
-		void operator()(std::pair<const size_t, View*>& vm) const {
-			delete vm.second;
-		}
-	};
+	void validate(double dt);
+	void notifyCameraKinematicsToViews();
 
 	template <class T> class Accept {
 		T m_t;
@@ -65,6 +63,9 @@ public:
 	void setViewMode(ViewMode vm);
 	void setCameraCommand(CameraCommand* cc);
 	void setObject(const simdata::Ref<DynamicObject> object);
+	void select();
+	void reselect();
+	void deselect();
 	void updateCamera(double dt);
 	const simdata::Vector3& getEyePoint() const { return m_EyePoint; }
 	const simdata::Vector3& getLookPoint() const { return m_LookPoint; }

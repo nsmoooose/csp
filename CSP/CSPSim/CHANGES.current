@@ -18,6 +18,26 @@
    the terrain while not interfering with objects positioned just
    above the runway.
 
+ * Refactor the view classes slightly and combine the internal view
+   with the padlock view.  Add a separate camera manipulator for each
+   view.  Implement somewhat more realistic motion of the pilot's view
+   point.  Add new view manipulation and padlock events.  Some of the
+   new features include:
+
+     - Model eye, head, and torso movements separately.  Each has
+       its own limits of motion, slew rate, and affect on the view
+       point.
+     - Torso and neck movements are slowed/restricted at high G.
+     - Move the view point in response to aircraft acceleration.
+     - Padlock limited to nearby vehicles within 30 deg of the
+       view direction.  The max padlock range depends on the size of
+       the target and its aspect.  Other features (such as los, light
+       level, atmospheric conditions will be implemented later).
+     - Re-padlocking cycles between objects within 5 degrees of the
+       view direction.
+
+==> ALL USERS: RebuildData.py and regenerate Inputs/gamescreen.hid.
+
 2005-05-04: delta
  * Replace 'remainder' by 'fmod'.
 

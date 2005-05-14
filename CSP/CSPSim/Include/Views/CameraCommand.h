@@ -103,6 +103,26 @@ public:
 	virtual void execute(CameraKinematics* ck) { ck->zoomStepOut(); }
 };
 
+class LookForwardCommand: public CameraCommand {
+public:
+	virtual void execute(CameraKinematics* ck) { ck->lookForward(); }
+};
+
+class LookBackwardCommand: public CameraCommand {
+public:
+	virtual void execute(CameraKinematics* ck) { ck->lookBackward(); }
+};
+
+class LookLeftCommand: public CameraCommand {
+public:
+	virtual void execute(CameraKinematics* ck) { ck->lookLeft(); }
+};
+
+class LookRightCommand: public CameraCommand {
+public:
+	virtual void execute(CameraKinematics* ck) { ck->lookRight(); }
+};
+
 class MouseCommand: public CameraCommand {
 	int m_x, m_y, m_dx, m_dy;
 	void reset() {
@@ -141,6 +161,10 @@ struct CameraCommands {
 	ZoomStepInCommand ZoomStepIn;
 	ZoomStepOutCommand ZoomStepOut;
 	CameraResetCommand CameraReset;
+	LookForwardCommand LookForward;
+	LookBackwardCommand LookBackward;
+	LookRightCommand LookRight;
+	LookLeftCommand LookLeft;
 };
 
 #endif //__CAMERACOMMAND_H__

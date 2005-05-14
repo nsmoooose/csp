@@ -26,7 +26,7 @@
 			<Float name="tire_static_friction">0.8</Float>
 			<Float name="tire_skid_friction">0.6</Float>
 			<Float name="tire_K">1200000.0</Float>
-			<Float name="tire_beta">1000000.0</Float>
+			<Float name="tire_beta">200000.0</Float>
 			<Real name="rolling_friction">0.02:0.001</Real>
 			<Float name="drag_factor">0.8</Float>
 			<Object class="GearSequenceAnimation" name="gear_animation">
@@ -57,7 +57,7 @@
 			<Float name="tire_static_friction">0.8</Float>
 			<Float name="tire_skid_friction">0.6</Float>
 			<Float name="tire_K">1200000.0</Float>
-			<Float name="tire_beta">1000000.0</Float>
+			<Float name="tire_beta">200000.0</Float>
 			<Real name="rolling_friction">0.02:0.001</Real>
 			<Bool name="abs">true</Bool>
 			<Float name="drag_factor">0.8</Float>
@@ -88,7 +88,7 @@
 			<Float name="tire_static_friction">0.8</Float>
 			<Float name="tire_skid_friction">0.6</Float>
 			<Float name="tire_K">1200000.0</Float>
-			<Float name="tire_beta">1000000.0</Float>
+			<Float name="tire_beta">200000.0</Float>
 			<Real name="rolling_friction">0.02:0.001</Real>
 			<Bool name="abs">true</Bool>
 			<Float name="drag_factor">0.8</Float>

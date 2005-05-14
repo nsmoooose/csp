@@ -43,6 +43,7 @@ class Animation;
 class AnimationCallback;
 class AnimationChannel;
 class Bus;
+class HUD;
 
 namespace osg {
 	class Node;
@@ -191,9 +192,11 @@ private:
 	osg::ref_ptr<fx::SmokeTrailSystem> m_SmokeTrails;
 	std::vector<simdata::Vector3> m_SmokeEmitterLocation;
 	std::vector< osg::ref_ptr<AnimationCallback> > m_AnimationCallbacks;
-	osg::ref_ptr<osg::PositionAttitudeTransform> m_3dHud;
+	osg::ref_ptr<osg::PositionAttitudeTransform> m_HudModel;
+
 protected:
 	virtual ~SceneModel();
+
 public:
 	SceneModel(simdata::Ref<ObjectModel> const & model);
 	
@@ -203,6 +206,7 @@ public:
 	void setPositionAttitude(simdata::Vector3 const &position, simdata::Quat const &attitude, simdata::Vector3 const &cm_offset);
 
 	void bindAnimationChannels(simdata::Ref<Bus>);
+	void bindHud(HUD* hud);
 
 	void setSmokeEmitterLocation(std::vector<simdata::Vector3> const &sel);
 	bool addSmoke();

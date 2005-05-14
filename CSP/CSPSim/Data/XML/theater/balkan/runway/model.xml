@@ -5,7 +5,7 @@
     <Vector name="axis_0">1 0 0</Vector>
     <Vector name="axis_1">0 1.0 0.0</Vector>
     <Vector name="offset">0 0 0</Vector>
-    <Float name="polygon_offset">-1</Float>
+    <Float name="polygon_offset">-20</Float>
     <Int name="cull_face">0</Int>
     <Float name="scale">1.0</Float>
     <Bool name="smooth">true</Bool>

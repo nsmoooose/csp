@@ -27,6 +27,7 @@
 #include <Animation.h>
 #include <Controller.h>
 #include <CSPSim.h>
+#include <HUD/HUD.h>
 #include <KineticsChannels.h>
 #include <ObjectModel.h>
 #include <PhysicsModel.h>
@@ -208,11 +209,14 @@ void DynamicObject::setAttitude(simdata::Quat const &attitude) {
 	b_Position->value() = b_ModelPosition->value() + attitude.rotate(b_CenterOfMassOffset->value());
 }
 
-// TODO return point of view in global coordinates instead of local coordinates relative to the
-// model origin.
+simdata::Vector3 DynamicObject::getNominalViewPointBody() const {
+	return m_Model->getViewPoint();
+}
 
-simdata::Vector3 DynamicObject::getViewPoint() const {
-	return b_Attitude->value().rotate(m_Model->getViewPoint());
+void DynamicObject::setViewPointBody(simdata::Vector3 const &point) {
+	if (m_SceneModel.valid() && b_Hud.valid()) {
+		b_Hud->value()->setViewPoint(simdata::toOSG(point));
+	}
 }
 
 bool DynamicObject::isSmoke() {
@@ -231,7 +235,7 @@ void DynamicObject::enableSmoke() {
 	}
 }
 
-void DynamicObject::internalView(bool internal) { 
+void DynamicObject::internalView(bool internal) {
 	if (m_SceneModel.valid()) {
 		m_SceneModel->onViewMode(internal); 
 	}
@@ -304,11 +308,15 @@ Bus::Ref DynamicObject::getBus() {
 void DynamicObject::bindAnimations(Bus::Ref bus) {
 	if (m_SceneModel.valid()) {
 		m_SceneModel->bindAnimationChannels(bus);
+		if (b_Hud.valid()) {
+			m_SceneModel->bindHud(b_Hud->value());
+		}
 	}
 }
 
 // called whenever the bus (ie systemsmodel) changes
 void DynamicObject::bindChannels(Bus::Ref bus) {
+	b_Hud = bus->getChannel("HUD", false);
 	bindAnimations(bus);
 }
 

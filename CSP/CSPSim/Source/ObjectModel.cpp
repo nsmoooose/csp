@@ -364,9 +364,14 @@ void ObjectModel::loadModel() {
 	if (m_PolygonOffset != 0.0) {
 		osg::StateSet *ss = m_Model->getOrCreateStateSet();
 		osg::PolygonOffset *po = new osg::PolygonOffset;
-		po->setFactor(-1);
+		po->setFactor(-5);
 		po->setUnits(m_PolygonOffset);
 		ss->setAttributeAndModes(po, osg::StateAttribute::ON);
+		// polygon offset is used for co-planar overlays, like the runway.  there should
+		// be no need to write to the depth buffer since it will already be set by the
+		// base layer and setting a nearer value (due to polygon offset) can mask 3d objects
+		// on top of this object when the distance to the camera is large.
+		ss->setAttributeAndModes(new osg::Depth(osg::Depth::LEQUAL, 0.0, 1.0, false), osg::StateAttribute::ON);
 	}
 
 	if (!m_Lighting) {
@@ -724,59 +729,51 @@ void SceneModel::enableSmoke()
 }
 
 void SceneModel::bindAnimationChannels(Bus::Ref bus) {
-	// XXX: not sure how to handle this situation.
-	if (bus.valid()) {
-		int index, n = m_AnimationCallbacks.size();
-		for (index = 0; index < n; ++index) {
-			if (!m_AnimationCallbacks[index].valid()) {
-				CSP_LOG(OBJECT, WARNING, "bindAnimationChannels: AnimationCallbacks '" << index << "' not valid; skipping");
-				continue;
-			}
-			std::string name = m_AnimationCallbacks[index]->getChannelName();
-			simdata::Ref<const DataChannelBase> channel = bus->getChannel(name, false);
-			if (!channel.valid()) {
-				CSP_LOG(OBJECT, ERROR, "bindAnimationChannels: animation channel '" << name << "' not found; skipping");
-				continue;
-			}
-			bool compatible = (DataChannel<double>::CRef::compatible(channel) || \
-			                   DataChannel<bool>::CRef::compatible(channel) || \
-			                   DataChannel<simdata::Vector3>::CRef::compatible(channel));
-			if (compatible) {
-				m_AnimationCallbacks[index]->bindChannel(channel);
-			} else {
-				CSP_LOG(OBJECT, ERROR, "bindAnimationChannels: animation channel '" << name << "' type not supported; skipping");
-			}
+	assert(bus.valid());
+	int index, n = m_AnimationCallbacks.size();
+	for (index = 0; index < n; ++index) {
+		if (!m_AnimationCallbacks[index].valid()) {
+			CSP_LOG(OBJECT, WARNING, "bindAnimationChannels: AnimationCallbacks '" << index << "' not valid; skipping");
+			continue;
 		}
-	
-		// XXX Hack for testing
-		CSP_LOG(OBJECT, DEBUG, "Trying to bind HUD");
-		DataChannel<HUD*>::CRef hud_channel = bus->getChannel("HUD", false);
-		if (hud_channel.valid()) {
-			HUD *hud = hud_channel->value();
-			CSP_LOG(OBJECT, DEBUG, "Found HUD");
-			m_3dHud = hud->hud();
-			m_3dHud->setPosition(simdata::toOSG(m_Model->getHudPlacement()));
-			m_CenterOfMassOffset->addChild(hud->hud());
-			hud->setOrigin(simdata::toOSG(m_Model->getHudPlacement()));
-			hud->setViewPoint(simdata::toOSG(m_Model->getViewPoint()));
-			hud->setDimensions(m_Model->getHudWidth(), m_Model->getHudHeight());
-			CSP_LOG(OBJECT, DEBUG, "HUD added to model");
+		std::string name = m_AnimationCallbacks[index]->getChannelName();
+		simdata::Ref<const DataChannelBase> channel = bus->getChannel(name, false);
+		if (!channel.valid()) {
+			CSP_LOG(OBJECT, ERROR, "bindAnimationChannels: animation channel '" << name << "' not found; skipping");
+			continue;
+		}
+		bool compatible = (DataChannel<double>::CRef::compatible(channel) || \
+		                   DataChannel<bool>::CRef::compatible(channel) || \
+		                   DataChannel<simdata::Vector3>::CRef::compatible(channel));
+		if (compatible) {
+			m_AnimationCallbacks[index]->bindChannel(channel);
+		} else {
+			CSP_LOG(OBJECT, ERROR, "bindAnimationChannels: animation channel '" << name << "' type not supported; skipping");
 		}
 		CSP_LOG(OBJECT, DEBUG, "bindAnimationChannels complete");
 	}
 }
 
-void SceneModel::onViewMode(bool internal) {
+void SceneModel::bindHud(HUD *hud) {
+	CSP_LOG(OBJECT, DEBUG, "adding HUD to model");
+	assert(hud);
+	m_HudModel = hud->hud();
+	m_HudModel->setPosition(simdata::toOSG(m_Model->getHudPlacement()));
+	m_CenterOfMassOffset->addChild(m_HudModel.get());
+	hud->setOrigin(simdata::toOSG(m_Model->getHudPlacement()));
+	hud->setViewPoint(simdata::toOSG(m_Model->getViewPoint()));
+	hud->setDimensions(m_Model->getHudWidth(), m_Model->getHudHeight());
+}
 
+void SceneModel::onViewMode(bool internal) {
 	// show/hide hud (if any) when the view is internal/external
-	if (m_3dHud.valid()) {
+	if (m_HudModel.valid()) {
 		if (internal) {
-			m_3dHud->setNodeMask(0xff);
-		} else	{
-			m_3dHud->setNodeMask(0x0);
+			m_HudModel->setNodeMask(0xff);
+		} else {
+			m_HudModel->setNodeMask(0x0);
 		}
 	}
-
 }
 
 void SceneModel::setPositionAttitude(simdata::Vector3 const &position, simdata::Quat const &attitude, simdata::Vector3 const &cm_offset) {

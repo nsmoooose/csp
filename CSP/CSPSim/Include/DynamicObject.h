@@ -39,6 +39,7 @@ class ObjectModel;
 class SceneModel;
 class RemoteController;
 class LocalController;
+class HUD;
 
 
 namespace osgParticle {
@@ -141,7 +142,8 @@ public:
 	// mass offset may vary with conditions (e.g., fuel and loadout).  See getCenterOfMassOffset().
 	simdata::Vector3 const & getReferenceCenterOfMassOffset() const { return m_ReferenceCenterOfMassOffset; }
 
-	virtual simdata::Vector3 getViewPoint() const;
+	virtual simdata::Vector3 getNominalViewPointBody() const;
+	virtual void setViewPointBody(simdata::Vector3 const &point);
 
 	virtual void onAggregate() { CSP_LOG(APP, INFO, "aggregate @ " << *this); }
 	virtual void onDeaggregate() { CSP_LOG(APP, INFO, "deaggregate @ " << *this); }
@@ -210,6 +212,7 @@ protected:
 	DataChannel<simdata::Vector3>::Ref b_AccelerationBody;
 	DataChannel<simdata::Vector3>::Ref b_CenterOfMassOffset;
 	DataChannel<simdata::Quat>::Ref b_Attitude;
+	DataChannel<HUD*>::CRef b_Hud;
 
 	std::string m_ObjectName;
 

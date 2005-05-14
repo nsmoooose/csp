@@ -9,6 +9,15 @@
    few seconds, and there is a hash of the ids in the list to make
    it easy to detect when the list has changed.
 
+ * Clean up HUD binding to scene model to make it easier the set the
+   hud perspective from the view point.
+
+ * Disable depth buffer writes for models that use polygon offset
+   and increase the offset factor.  Change the polygon offset value
+   for the runway as well.  This should eliminate z-fighting with
+   the terrain while not interfering with objects positioned just
+   above the runway.
+
 2005-05-04: delta
  * Replace 'remainder' by 'fmod'.
 

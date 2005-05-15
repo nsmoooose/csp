@@ -29,8 +29,12 @@
 #include "Views/InternalView.h"
 #include "Views/ExternalViews.h"
 
+// FIXME: why Animation class definition is needed here (vc++ error)
+#include "Animation.h"
 #include "CSPSim.h"
 #include "DynamicObject.h"
+// FIXME: why ObjetModel class definition is needed here (vc++ error)
+#include "ObjectModel.h"
 #include "VirtualScene.h"
 
 #include <SimCore/Battlefield/LocalBattlefield.h>

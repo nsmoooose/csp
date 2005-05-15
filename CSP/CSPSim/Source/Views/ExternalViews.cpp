@@ -27,8 +27,12 @@
 #include "Views/CameraAgent.h"
 #include "Views/CameraKinematics.h"
 
+// FIXME: why Animation class definition is needed here (vc++ error)
+#include "Animation.h"
 #include "CSPSim.h"
 #include "DynamicObject.h"
+// FIXME: why ObjetModel class definition is needed here (vc++ error)
+#include "ObjectModel.h"
 
 #include <SimData/Noise.h>
 
@@ -127,7 +131,7 @@ void FlybyView::recalculate(simdata::Vector3& ep, simdata::Vector3& /*lp*/, simd
 		const float SAFETY = 2.0f;
 		TerrainObject::IntersectionHint camera_hint = 0;
 		float h = SAFETY + terrain->getGroundElevation(ep.x(), ep.y(), camera_hint);
-		float d = ep.z() - h;
+		float d = static_cast<float>(ep.z() - h);
 		if (d<0) ep.z() -= d;
 	}
 }

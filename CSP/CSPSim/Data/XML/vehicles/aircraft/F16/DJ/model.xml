@@ -2,11 +2,9 @@
 
 <Object class="ObjectModel">
 	<External name="model_path">F16/DJ/F16DJ.osg</External>
+	<!--External name="model_path">F16/DJ/dp2.osg</External-->
 	<Vector name="axis_0">1 0 0</Vector>
 	<Vector name="axis_1">0 1 0</Vector>
-	<!--Vector name="view_point">0.0 4.1 1.17</Vector-->
-	<!--Vector name="view_point">0.0 4.45 1.19</Vector-->
-	<!--Vector name="view_point">0.0 4.55 1.20</Vector-->
 	<Vector name="view_point">0.0 4.60 1.20</Vector>
 	<Vector name="hud_placement">0.0 5.0 1.15</Vector>
 	<Float name="hud_width">0.124</Float>
@@ -36,6 +34,65 @@
 	</List>
 
 	<List name="animations">
+		<Object class="AttitudeAnimation">
+			<Key name="model_id">ADI</Key>
+			<Int name="lod_limit">10</Int>
+		</Object>
+		<Object class="StateSwitch">
+			<String name="channel_name">HUD.AOAIndexer</String>
+			<Key name="model_id">Cockpit.AOAIndexer</Key>
+			<Int name="lod_limit">10</Int>
+		</Object>
+		<Object class="AnimatedSwitch">
+			<String name="channel_name">HUD.FlightPathMarkerSwitch</String>
+			<Key name="model_id">MasterArmSwitch</Key>
+			<List name="times"><Float>0</Float><Float>0.15</Float><Float>0.30</Float></List>
+			<Int name="lod_limit">10</Int>
+		</Object>
+
+		<Object class="DrivenRotation">
+			<String name="channel_name">FlightDynamics.Alpha</String>
+			<Key name="model_id">Cockpit.AngleOfAttackTape</Key>
+			<Vector name="axis">1 0 0</Vector>
+			<Int name="lod_limit">10</Int>
+			<Bool name="post_multiply">true</Bool>
+			<Float name="gain">4.8</Float>
+		</Object>
+
+		<Object class="DrivenRotation">
+			<String name="channel_name">ControlInputs.ThrottleInput</String>
+			<Key name="model_id">Cockpit.RPMPointer</Key>
+			<Vector name="axis">0 0 1</Vector>
+			<Int name="lod_limit">10</Int>
+			<Bool name="pre_multiply">true</Bool>
+			<Float name="gain">4.7124</Float>
+			<Float name="limit_0">0.0</Float>
+			<Float name="limit_1">6.28</Float>
+		</Object>
+
+		<Object class="CounterWheel">
+			<String name="channel_name">ControlInputs.ThrottleInput</String>
+			<Key name="model_id">Cockpit.FuelFlow</Key>
+			<Vector name="axis">1 0 0</Vector>
+			<Int name="lod_limit">10</Int>
+			<Float name="gain">100.0</Float>
+		</Object>
+
+		<!--Object class="CounterWheel">
+			<String name="channel_name"></String>
+			<Key name="model_id">Cockpit.Altimeter</Key>
+			<Vector name="axis">1 0 0</Vector>
+			<Int name="lod_limit">10</Int>
+			<Float name="gain">0.03280839895</Float>
+		</Object-->
+
+		<Object class="DrivenAnimationPath">
+			<String name="channel_name">ControlSurfaces.AirbrakeDeflection</String>
+			<Key name="model_id">Cockpit.SpeedBrakeIndicator</Key>
+			<Float name="gain">1.909</Float>
+			<Int name="lod_limit">10</Int>
+		</Object>
+
 		<Object class="DrivenRotation">
 			<String name="channel_name">ControlSurfaces.RudderDeflection</String>
 			<Key name="model_id">Aircraft.Rudder</Key>
@@ -71,28 +128,24 @@
 			<Key name="model_id">Aircraft.LowerRightAirbrake</Key>
 			<Vector name="axis">1 0 0</Vector>
 			<Int name="lod_limit">6</Int>
-			<Float name="export_limit_0">0.0</Float>
 		</Object>
 		<Object class="DrivenRotation">
 			<String name="channel_name">ControlSurfaces.AirbrakeDeflection</String>
 			<Key name="model_id">Aircraft.LowerLeftAirbrake</Key>
 			<Vector name="axis">1 0 0</Vector>
 			<Int name="lod_limit">6</Int>
-			<Float name="export_limit_0">0.0</Float>
 		</Object>
 		<Object class="DrivenRotation">
 			<String name="channel_name">ControlSurfaces.AirbrakeDeflection</String>
 			<Key name="model_id">Aircraft.UpperRightAirbrake</Key>
 			<Vector name="axis">-1 0 0</Vector>
 			<Int name="lod_limit">6</Int>
-			<Float name="export_limit_0">0.0</Float>
 		</Object>
 		<Object class="DrivenRotation">
 			<String name="channel_name">ControlSurfaces.AirbrakeDeflection</String>
 			<Key name="model_id">Aircraft.UpperLeftAirbrake</Key>
 			<Vector name="axis">-1 0 0</Vector>
 			<Int name="lod_limit">6</Int>
-			<Float name="export_limit_0">0.0</Float>
 		</Object>
 		<Object  class="DrivenRotation">
 			<String name="channel_name">ControlSurfaces.LeadingEdgeDeflection</String>
@@ -107,21 +160,17 @@
 			<Int name="lod_limit">8</Int>
 		</Object>
 		
-		<Object class="TimedAnimationPath">
+		<Object class="DrivenAnimationPath">
 			<String name="channel_name">Aircraft.FuelDoorSequence.ReferenceTime</String>
 			<Key name="model_id">Aircraft.FuelDoor</Key>
-			<Float name="time_multiplier">0.6666</Float>
+			<Float name="gain">0.6666</Float>
 			<Int name="lod_limit">8</Int>
-			<Float name="export_limit_0">0.0</Float>
-			<Float name="export_limit_1">3.0</Float>
 		</Object>
-		<Object class="TimedAnimationPath">
+		<Object class="DrivenAnimationPath">
 			<String name="channel_name">Aircraft.CanopySequence.ReferenceTime</String>
 			<Key name="model_id">Aircraft.Canopy</Key>
-			<Float name="time_multiplier">.3333</Float>
+			<Float name="gain">0.3333</Float>
 			<Int name="lod_limit">5</Int>
-			<Float name="export_limit_0">0.0</Float>
-			<Float name="export_limit_1">6.0</Float>
 		</Object>
 		
 		<Object class="DrivenRotation">
@@ -129,70 +178,50 @@
 			<Key name="model_id">Aircraft.FrontGear.Struct02Support</Key>
 			<Vector name="axis">0 0 1</Vector>
 			<Int name="lod_limit">8</Int>
-			<Float name="export_rate">2.0</Float>
 		</Object>
 		<Object class="DrivenRotation">
 			<String name="channel_name">LandingGear.FrontGear.SteeringAngle</String>
 			<Key name="model_id">Aircraft.FrontGear.MainTube</Key>
 			<Vector name="axis">0 0.29189 -0.956452</Vector>
 			<Int name="lod_limit">8</Int>
-			<Float name="export_rate">2.0</Float>
 		</Object>
-		<Object class="TimedAnimationPath">
+		<Object class="DrivenAnimationPath">
 			<String name="channel_name">LandingGear.FrontGear.RetractCompress</String>
 			<Key name="model_id">Aircraft.FrontGear</Key>
-			<Float name="time_multiplier">0.5</Float>
+			<Float name="gain">0.5</Float>
 			<Int name="lod_limit">5</Int>
-			<Float name="export_limit_0">0.0</Float>
-			<Float name="export_limit_1">8.0</Float>
-			<Float name="export_rate">8.0</Float>
 		</Object>
 		<Object  class="DrivenRotation">
 			<String name="channel_name">LandingGear.FrontGear.TireRotation</String>
 			<Key name="model_id">Aircraft.FrontGearTire</Key>
 			<Vector name="axis">0 0 -1</Vector>
 			<Int name="lod_limit">8</Int>
-			<Float name="export_limit_0">-3.15</Float>
-			<Float name="export_limit_1">3.15</Float>
-			<Float name="export_rate">100.0</Float>
 		</Object>
 		
-		<Object class="TimedAnimationPath">
+		<Object class="DrivenAnimationPath">
 			<String name="channel_name">LandingGear.RightGear.RetractCompress</String>
 			<Key name="model_id">Aircraft.RightGear</Key>
-			<Float name="time_multiplier">0.5</Float>
+			<Float name="gain">0.5</Float>
 			<Int name="lod_limit">5</Int>
-			<Float name="export_limit_0">0.0</Float>
-			<Float name="export_limit_1">8.0</Float>
-			<Float name="export_rate">8.0</Float>
 		</Object>
 		<Object  class="DrivenRotation">
 			<String name="channel_name">LandingGear.RightGear.TireRotation</String>
 			<Key name="model_id">Aircraft.RightGearTire</Key>
 			<Vector name="axis">0 -1 0</Vector>
 			<Int name="lod_limit">8</Int>
-			<Float name="export_limit_0">-3.15</Float>
-			<Float name="export_limit_1">3.15</Float>
-			<Float name="export_rate">100.0</Float>
 		</Object>
 		
-		<Object class="TimedAnimationPath">
+		<Object class="DrivenAnimationPath">
 			<String name="channel_name">LandingGear.LeftGear.RetractCompress</String>
 			<Key name="model_id">Aircraft.LeftGear</Key>
-			<Float name="time_multiplier">0.5</Float>
+			<Float name="gain">0.5</Float>
 			<Int name="lod_limit">5</Int>
-			<Float name="export_limit_0">0.0</Float>
-			<Float name="export_limit_1">8.0</Float>
-			<Float name="export_rate">8.0</Float>
 		</Object>
 		<Object  class="DrivenRotation">
 			<String name="channel_name">LandingGear.LeftGear.TireRotation</String>
 			<Key name="model_id">Aircraft.LeftGearTire</Key>
 			<Vector name="axis">-0.999822 -0.0181659 0.00506705</Vector>
 			<Int name="lod_limit">8</Int>
-			<Float name="export_limit_0">-3.15</Float>
-			<Float name="export_limit_1">3.15</Float>
-			<Float name="export_rate">100.0</Float>
 		</Object>
 	</List>
 </Object>

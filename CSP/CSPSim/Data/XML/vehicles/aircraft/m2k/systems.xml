@@ -23,7 +23,9 @@
 		<Path class="FlightControlSystem">fcs</Path>
 	</List>
 
-	<Object class="RemoteController" name="remote_controller" />
+	<Object class="RemoteController" name="remote_controller">
+		<Path name="channel_mirror_set">channel_mirrors</Path>
+	</Object>
 
 	<Object class="AircraftPhysicsModel" name="physics_model">
 		<List name="subsystems">

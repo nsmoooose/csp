@@ -39,6 +39,7 @@ SOURCES = [
 	'Controller.cpp',
 	'CSPSim.cpp',
 	'DemeterTerrain.cpp',
+	'DoubleChannelMirror.cpp',
 	'DynamicObject.cpp',
 	'DynamicalSystem.cpp',
 	'Engine.cpp',

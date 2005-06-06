@@ -20,6 +20,19 @@
    corresponding handlers, and automatically adjusts when new
    states are added.
 
+ * Big refactoring of the animation code.  Moves most of the
+   code out of Animation.h, and hopefully simplifies the classes
+   and increases their flexibility at the expense of a bit more
+   verbosity.  Adds support for mouse picking.  Also adds several
+   new animation classes to support new cockpit animiations.
+
+   The system for mirroring animations on remote machines during
+   network play has been rewritten as well.  The new approach
+   requires explicit exporting of channels, but is considerably
+   more flexible.
+
+==> ALL USERS: RebuildData.py and regenerate Inputs/gamescreen.hid.
+
 2005-05-14: onsight
  * Add a list of contacts to SimObject of nearby vehicles that is
    maintained by the Battlefield.  The battlefield was already

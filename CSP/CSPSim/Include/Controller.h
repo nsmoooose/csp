@@ -26,13 +26,26 @@
 #ifndef __CONTROLLER_H__
 #define __CONTROLLER_H__
 
+#include <ChannelMirror.h>
 #include <System.h>
+
 #include <SimData/Vector3.h>
 #include <SimData/Quat.h>
 #include <SimData/Date.h>
 #include <SimCore/Util/TimeStamp.h>
 
 namespace simnet { class NetworkMessage; }
+
+
+class ChannelMirrorSet: public simdata::Object {
+	simdata::Link<ChannelMirror>::vector m_Mirrors;
+public:
+	SIMDATA_OBJECT(ChannelMirrorSet, 0, 0)
+	BEGIN_SIMDATA_XML_INTERFACE(ChannelMirrorSet)
+		SIMDATA_XML("mirrors", ChannelMirrorSet::m_Mirrors, true)
+	END_SIMDATA_XML_INTERFACE
+	simdata::Link<ChannelMirror>::vector const &mirrors() const { return m_Mirrors; }
+};
 
 
 class RemoteAnimationUpdate: public simdata::Referenced {
@@ -82,26 +95,30 @@ public:
 /** Interface for controlling remote copies of an object.
  */
 class RemoteController: public System {
+	typedef std::vector< simdata::Ref<ChannelMaster> > ChannelMasters;
+
+	ChannelMasters m_ChannelMasters;
+	simdata::Link<ChannelMirrorSet> m_ChannelMirrorSet;
+
 	DataChannel<simdata::Vector3>::CRef b_Position;
 	DataChannel<simdata::Vector3>::CRef b_Velocity;
 	DataChannel<simdata::Vector3>::CRef b_AngularVelocity;
 	DataChannel<simdata::Vector3>::CRef b_AngularVelocityBody;
 	DataChannel<simdata::Vector3>::CRef b_AccelerationBody;
 	DataChannel<simdata::Quat>::CRef b_Attitude;
-	std::vector<RemoteAnimationUpdate::Ref> m_AnimationUpdates;
 	int m_UpdateDelay;
-
-	void importAnimations(Bus *);
 
 protected:
 	inline simdata::Vector3 const &position() const { return b_Position->value(); }
 	inline simdata::Vector3 const &velocity() const { return b_Velocity->value(); }
 	inline simdata::Vector3 const &angularVelocity() const { return b_AngularVelocity->value(); }
 	inline simdata::Quat const &attitude() const { return b_Attitude->value(); }
+	virtual void postCreate();
 
 public:
 	SIMDATA_OBJECT(RemoteController, 0, 0)
 	BEGIN_SIMDATA_XML_INTERFACE(RemoteController)
+		SIMDATA_XML("channel_mirror_set", RemoteController::m_ChannelMirrorSet, false)
 	END_SIMDATA_XML_INTERFACE
 
 	RemoteController();
@@ -117,8 +134,10 @@ public:
  *  a remote controller.
  */
 class LocalController: public System {
-	// animation state
-	std::vector<LocalAnimationUpdate::Ref> m_AnimationUpdates;
+	simdata::Link<ChannelMirrorSet> m_ChannelMirrorSet;
+
+	typedef std::vector< simdata::Ref<ChannelSlave> > ChannelSlaves;
+	ChannelSlaves m_ChannelSlaves;
 
 	// dynamic properties
 	DataChannel<simdata::Vector3>::Ref b_Position;
@@ -136,10 +155,12 @@ protected:
 	void setTargetVelocity(simdata::Vector3 const &velocity);
 	void setTargetAttitude(simdata::Quat const &attitude);
 	bool sequentialUpdate(simcore::TimeStamp stamp, simcore::TimeStamp now, simdata::SimTime &dt);
+	virtual void postCreate();
 
 public:
 	SIMDATA_OBJECT(LocalController, 0, 0)
 	BEGIN_SIMDATA_XML_INTERFACE(LocalController)
+		SIMDATA_XML("channel_mirror_set", LocalController::m_ChannelMirrorSet, false)
 	END_SIMDATA_XML_INTERFACE
 
 	LocalController();

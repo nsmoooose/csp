@@ -506,6 +506,13 @@ void GameScreen::on_ResetSpin() {
 	}
 }
 
+void GameScreen::on_LeftClick(int x, int y) {
+	VirtualScene *scene = CSPSim::theSim->getScene();
+	if (scene) {
+		scene->pick(x, y);
+	}
+}
+
 void GameScreen::on_MouseView(int x, int y, int dx, int dy) {
 	m_CameraCommands->Mouse.set(x,y,dx,dy);
 	m_CameraAgent->setCameraCommand(&m_CameraCommands->Mouse);

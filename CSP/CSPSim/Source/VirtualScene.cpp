@@ -1,5 +1,5 @@
-// Combat Simulator Project - FlightSim Demo
-// Copyright (C) 2002 The Combat Simulator Project
+// Combat Simulator Project
+// Copyright (C) 2002-2005 The Combat Simulator Project
 // http://csp.sourceforge.net
 //
 // This program is free software; you can redistribute it and/or
@@ -50,6 +50,7 @@
 #include <osgUtil/SceneView>
 #include <osgUtil/Optimizer>
 #include <osgUtil/CullVisitor>
+#include <osgUtil/IntersectVisitor>
 
 #include <osg/Material>
 #include <osg/BlendFunc>
@@ -836,7 +837,6 @@ int VirtualScene::getTerrainPolygonsRendered()
 	}
 }
 
-
 void VirtualScene::setTerrain(simdata::Ref<TerrainObject> terrain)
 {
 	if (!terrain) {
@@ -866,3 +866,36 @@ void VirtualScene::setTerrain(simdata::Ref<TerrainObject> terrain)
 	}
 }
 
+bool VirtualScene::pick(int x, int y) {
+	if (m_NearObjectGroup->getNumChildren() > 0) {
+		assert(m_NearObjectGroup->getNumChildren() == 1);
+		std::cout << "PICK\n";
+		osg::Vec3 near;
+		osg::Vec3 far;
+		const int height = m_NearView->getViewport()->height();
+		if (m_NearView->projectWindowXYIntoObject(x, height - y, near, far)) {
+			std::cout << x << "," << y << " -> " << near << " " << far << "\n";
+			osgUtil::IntersectVisitor iv;
+			osg::ref_ptr<osg::LineSegment> line_segment = new osg::LineSegment(near, far);
+			iv.addLineSegment(line_segment.get());
+			m_NearView->getSceneData()->accept(iv);
+			osgUtil::IntersectVisitor::HitList &hits = iv.getHitList(line_segment.get());
+			if (!hits.empty()) {
+				std::cout << hits.size() << " hits\n";
+				osg::NodePath const &nearest = hits[0]._nodePath;
+				// TODO should we iterate in reverse?
+				for (osg::NodePath::const_iterator iter = nearest.begin(); iter != nearest.end(); ++iter) {
+					osg::Node *node = *iter;
+					osg::NodeCallback *callback = node->getUpdateCallback();
+					if (callback) {
+						AnimationCallback *anim = dynamic_cast<AnimationCallback*>(callback);
+						// TODO set flags for click type, possibly add position if we can determine a useful
+						// coordinate system.
+						if (anim && anim->pick(0)) break;
+					}
+				}
+			}
+		}
+	}
+	return false;
+}

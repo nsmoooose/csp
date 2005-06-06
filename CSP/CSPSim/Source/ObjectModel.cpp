@@ -95,7 +95,10 @@ public:
 		return m_NestedAnimation.valid();
 	}
 	AnimationCallback *bindNested(osg::Node* node) const {
-		return m_NestedAnimation->newCallback(node->getUpdateCallback());
+		return m_NestedAnimation->newCallback(node);
+	}
+	bool needsSwitch() const {
+		return m_Animation->needsSwitch();
 	}
 };
 
@@ -111,14 +114,14 @@ public:
 class ModelProcessor: public osg::NodeVisitor {
 	osg::ref_ptr<osg::Node> m_Root;
 	typedef std::multimap<simdata::Key,simdata::Link<Animation> > AnimationsMap;
-	//typedef HASH_MULTIMAP<simdata::Key,simdata::Link<Animation> > AnimationsMap_;
 	AnimationsMap m_AnimationsMap;
 
 	void fillMap(simdata::Link<Animation>::vector const *animations) {
 		simdata::Link<Animation>::vector::const_iterator i = animations->begin();
 		simdata::Link<Animation>::vector::const_iterator i_end = animations->end();
-		for (; i != i_end; ++i)
-			m_AnimationsMap.insert(std::make_pair((*i)->getModelID(),*i));
+		for (; i != i_end; ++i) {
+			m_AnimationsMap.insert(std::make_pair(simdata::Key((*i)->getNodeLabel()),*i));
+		}
 	}
 
 	AnimationBinding* installAnimation(osg::Node& node, const simdata::Ref<Animation>& anim) const {
@@ -129,8 +132,7 @@ class ModelProcessor: public osg::NodeVisitor {
 		return animation_binding;
 	}
 
-	void breakNameInComponents(const std::string& name, std::string &animation_name, 
-							   std::string& node_name, const char token =':') const {
+	void breakNameInComponents(const std::string& name, std::string &animation_name, std::string& node_name, const char token =':') const {
 		node_name = name;
 		animation_name = "";
 		std::string::size_type pos = name.find(token);
@@ -154,7 +156,7 @@ public:
 	void setAnimations(simdata::Link<Animation>::vector const *animations) {
 		fillMap(animations);
 	}
-	virtual void apply(osg::Transform &node) {
+	virtual void apply(osg::Group &node) {
 		if (m_AnimationsMap.empty()) return;
 		std::string name = node.getName();
 		CSP_LOG(APP, DEBUG, "MODEL TRANSFORM: " << name);
@@ -563,6 +565,7 @@ public:
 	inline AnimationCallbackVector const &getAnimationCallbacks() const {
 		return m_AnimationCallbacks;
 	}
+
 	virtual osg::Node* operator() (const osg::Node* node) const {
 		osg::Referenced const *data = node->getUserData();
 		// user data bound to nodes is used to modify the copy operations
@@ -570,27 +573,83 @@ public:
 			AnimationBinding const *binding = dynamic_cast<AnimationBinding const *>(data);
 			// nodes with animation bindings need a callback
 			if (binding) {
-				osg::Node *new_node = dynamic_cast<osg::Node*>(node->clone(*this));
-				m_AnimationCallbacks.push_back(binding->bind(new_node));
-				CSP_LOG(APP, INFO, "ADDED CALLBACK (" << m_AnimationCallbacks.size() << ") ON " << node->getName().substr(6));
+				assert(node->asGroup());  // can't attach ANIM label to leaf nodes!
+				osg::Node *new_node = 0;
+				// The switch insert logic (see cloneSwitch) requires a somewhat ugly hack to
+				// bind the animation callback to the right node.  Note that needsSwitch()
+				// only refers to the primary callback; nested switch callbacks aren't currently
+				// supported.
+				osg::Node *bind_node = 0;
+				if (binding->needsSwitch()) {
+					new_node = cloneSwitch(node, bind_node);
+				} else if (node->asTransform()) {
+					new_node = static_cast<osg::Node*>(node->clone(*this));
+				} else {
+					CSP_LOG(OBJECT, ERROR, "Unknown node type for animation binding");
+				}
+				assert(new_node);
+				if (!bind_node) bind_node = new_node;
+				AnimationCallback *cb = binding->bind(bind_node);
+				if (cb) {
+					m_AnimationCallbacks.push_back(cb);
+					CSP_LOG(OBJECT, INFO, "ADDED CALLBACK (" << m_AnimationCallbacks.size() << ") ON " << node->getName().substr(6));
+				} else {
+					CSP_LOG(OBJECT, WARNING, "Failed to add animation callback to " << node->getName().substr(6));
+				}
 				if (binding->hasNestedAnimation()) {
-					m_AnimationCallbacks.push_back(binding->bindNested(new_node));
-					CSP_LOG(APP, INFO, "ADDED NESTED CALLBACK (" << m_AnimationCallbacks.size() << ") ON " 
-										<< node->getName().substr(6));
+					AnimationCallback *cb = binding->bindNested(new_node);
+					if (cb) {
+						m_AnimationCallbacks.push_back(cb);
+						CSP_LOG(OBJECT, INFO, "ADDED NESTED CALLBACK (" << m_AnimationCallbacks.size() << ") ON " << node->getName().substr(6));
+					} else {
+						CSP_LOG(OBJECT, WARNING, "Failed to add nested animation callback to " << node->getName().substr(6));
+					}
 				}
 				return new_node;
 			}
 		}
-		if (dynamic_cast<osg::Group const *>(node)) {
+		if (node->asGroup()) {
 			// clone groups
 			return dynamic_cast<osg::Node*>(node->clone(*this));
-		}	else
+		} else {
 			// copy other leaf nodes by reference
 			return const_cast<osg::Node*>(node);
+		}
 	}
+
+	ModelCopy(): CopyOp(osg::CopyOp::SHALLOW_COPY), m_ShallowCopy(osg::CopyOp::SHALLOW_COPY) { }
+
 private:
 	mutable AnimationCallbackVector m_AnimationCallbacks;
+	osg::CopyOp m_ShallowCopy;
+
+	// Dance for cloning switch nodes that may be masquerading as transforms.
+	// Most modelling software does not export osg::Switch; the standard grouping
+	// node is a MatrixTransform.  To create a switch in that case we need to
+	// move the groups children to a new Switch node and add the Switch to the
+	// transform.
+	osg::Node *cloneSwitch(const osg::Node *node, osg::Node* &select_node) const {
+		osg::Group *clone = 0;
+		const osg::Group *group = node->asGroup();
+		assert(group);
+		const unsigned num_children = group->getNumChildren();
+		osg::Switch *select = new osg::Switch;
+		for (unsigned i = 0; i < num_children; ++i) {
+			select->addChild(static_cast<osg::Node*>(group->getChild(i)->clone(*this)));
+		}
+		if (node->asTransform()) {
+			clone = static_cast<osg::Group*>(node->clone(m_ShallowCopy));
+			assert(clone);
+			clone->removeChild(0U, num_children);
+			clone->addChild(select);
+		} else {
+			clone = select;
+		}
+		select_node = select;
+		return clone;
+	}
 };
+
 
 SceneModel::SceneModel(simdata::Ref<ObjectModel> const & model) {
 	m_Model = model;
@@ -709,16 +768,14 @@ bool SceneModel::isSmoke() {
 	return m_Smoke;
 }
 
-void SceneModel::disableSmoke()
-{
+void SceneModel::disableSmoke() {
 	if (m_Smoke) {
 		m_SmokeTrails->setEnabled(false);
 		m_Smoke = false;
 	}
 }
 
-void SceneModel::enableSmoke()
-{
+void SceneModel::enableSmoke() {
 	CSP_LOG(OBJECT, DEBUG, "SceneModel::enableSmoke()...");
 	if (!m_Smoke) {
 		if (!addSmoke()) return;
@@ -736,21 +793,9 @@ void SceneModel::bindAnimationChannels(Bus::Ref bus) {
 			CSP_LOG(OBJECT, WARNING, "bindAnimationChannels: AnimationCallbacks '" << index << "' not valid; skipping");
 			continue;
 		}
-		std::string name = m_AnimationCallbacks[index]->getChannelName();
-		simdata::Ref<const DataChannelBase> channel = bus->getChannel(name, false);
-		if (!channel.valid()) {
-			CSP_LOG(OBJECT, ERROR, "bindAnimationChannels: animation channel '" << name << "' not found; skipping");
-			continue;
+		if (!m_AnimationCallbacks[index]->bindChannels(bus.get())) {
+			CSP_LOG(OBJECT, WARNING, "failed to bind animation " << index);
 		}
-		bool compatible = (DataChannel<double>::CRef::compatible(channel) || \
-		                   DataChannel<bool>::CRef::compatible(channel) || \
-		                   DataChannel<simdata::Vector3>::CRef::compatible(channel));
-		if (compatible) {
-			m_AnimationCallbacks[index]->bindChannel(channel);
-		} else {
-			CSP_LOG(OBJECT, ERROR, "bindAnimationChannels: animation channel '" << name << "' type not supported; skipping");
-		}
-		CSP_LOG(OBJECT, DEBUG, "bindAnimationChannels complete");
 	}
 }
 

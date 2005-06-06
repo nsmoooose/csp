@@ -33,6 +33,7 @@
 #include <map>
 #include <set>
 
+SIMDATA_REGISTER_INTERFACE(ChannelMirrorSet)
 SIMDATA_REGISTER_INTERFACE(LocalController)
 SIMDATA_REGISTER_INTERFACE(RemoteController)
 
@@ -54,56 +55,20 @@ void RemoteController::importChannels(Bus *bus) {
 	b_AngularVelocityBody = bus->getChannel(bus::Kinetics::AngularVelocityBody);
 	b_Attitude = bus->getChannel(bus::Kinetics::Attitude);
 	b_AccelerationBody = bus->getChannel(bus::Kinetics::AccelerationBody);
-	importAnimations(bus);
+	for (ChannelMasters::iterator iter = m_ChannelMasters.begin(); iter != m_ChannelMasters.end(); ++iter) (*iter)->bind(bus);
 }
 
-void RemoteController::importAnimations(Bus *bus) {
-	CSP_LOG(APP, INFO, "RemoteController::importAnimations");
-	DataChannel<simdata::Ref<ObjectModel> >::CRef model_channel = bus->getChannel("Internal.ObjectModel");
-	if (model_channel.valid()) {
-		typedef std::pair<unsigned, unsigned> LodIndex;
-		typedef std::map<std::string, LodIndex> ChannelMap;
-		ChannelMap channels;
-		simdata::Ref<const ObjectModel> model = model_channel->value();
-		const unsigned num_animations = model->numAnimations();
-		CSP_LOG(APP, INFO, "Scanning " << num_animations << " animations");
-		for (unsigned i = 0; i < num_animations; ++i) {
-			const Animation &animation = model->animation(i);
-			if (animation.getLOD() < 10) {
-				const unsigned lod = animation.getLOD();
-				const std::string name = animation.getChannelName();
-				const double limit0 = animation.getExportLimit0();
-				const double limit1 = animation.getExportLimit1();
-				ChannelMap::iterator iter = channels.find(name);
-				if (iter == channels.end()) {
-					CSP_LOG(APP, INFO, "Adding animation channel " << name << " at lod " << lod);
-					DataChannel<double>::CRef channel;
-					try {
-						channel = bus->getChannel(name);
-					} catch (simdata::ConversionError &e) {
-						e.clear();
-						CSP_LOG(APP, ERROR, "Animation channel " << name << " is not of type double; skipping!");
-						continue;
-					}
-					assert(channel.valid());
-					channels[name] = LodIndex(lod, m_AnimationUpdates.size());
-					RemoteAnimationUpdate *update = new RemoteAnimationUpdate();
-					update->setLevelOfDetail(lod);
-					update->setLimits(limit0, limit1);
-					update->bind(channel);
-					m_AnimationUpdates.push_back(update);
-				} else if (lod < iter->second.first) {
-					const unsigned idx = iter->second.second;
-					CSP_LOG(APP, INFO, "Updating animation channel " << name << " lod to " << lod);
-					m_AnimationUpdates[idx]->setLevelOfDetail(lod);
-					m_AnimationUpdates[idx]->expandLimits(limit0, limit1);
-					iter->second.first = lod;
-				}
-			}
+void RemoteController::postCreate() {
+	System::postCreate();
+	if (m_ChannelMirrorSet.valid()) {
+		simdata::Link<ChannelMirror>::vector const &mirrors = m_ChannelMirrorSet->mirrors();
+		simdata::Link<ChannelMirror>::vector::const_iterator iter = mirrors.begin();
+		m_ChannelMasters.reserve(mirrors.size());
+		for (; iter != mirrors.end(); ++iter) {
+			ChannelMaster *master = (*iter)->createMaster();
+			assert(master);
+			if (master) m_ChannelMasters.push_back(master);
 		}
-		CSP_LOG(APP, INFO, "Added " << m_AnimationUpdates.size() << " animation channels");
-	} else {
-		CSP_LOG(APP, WARNING, "3D model not found");
 	}
 }
 
@@ -208,15 +173,13 @@ simdata::Ref<simnet::NetworkMessage> RemoteController::getUpdate(simcore::TimeSt
 	std::vector<simdata::uint8> &flags = update->set_animation_flags();
 	std::vector<simdata::uint8> &values = update->set_animation_values();
 	bool has_animation_updates = false;
-	for (unsigned i = 0; i < m_AnimationUpdates.size(); ++i) {
-		const bool add = force || m_AnimationUpdates[i]->update(detail);
-		if (add) {
+	for (unsigned i = 0; i < m_ChannelMasters.size(); ++i) {
+		if (m_ChannelMasters[i]->send(detail, values, force)) {
 			has_animation_updates = true;
 			unsigned byte = i >> 3;
 			unsigned bit = i & 7;
 			flags.resize(byte + 1, 0);
 			flags[byte] |= (1 << bit);
-			values.push_back(m_AnimationUpdates[i]->value());
 		}
 	}
 
@@ -256,47 +219,23 @@ LocalController::LocalController(): m_LastStamp(0) {
 LocalController::~LocalController() {
 }
 
+void LocalController::postCreate() {
+	System::postCreate();
+	if (m_ChannelMirrorSet.valid()) {
+		simdata::Link<ChannelMirror>::vector const &mirrors = m_ChannelMirrorSet->mirrors();
+		simdata::Link<ChannelMirror>::vector::const_iterator iter = mirrors.begin();
+		m_ChannelSlaves.reserve(mirrors.size());
+		for (; iter != mirrors.end(); ++iter) {
+			ChannelSlave *slave = (*iter)->createSlave();
+			assert(slave);
+			if (slave) m_ChannelSlaves.push_back(slave);
+		}
+	}
+}
+
 void LocalController::registerChannels(Bus *bus) {
 	CSP_LOG(APP, INFO, "LocalController::registerChannels");
-	// Relies on the fact that DynamicObject registers its channels before the subsystems.
-	DataChannel<simdata::Ref<ObjectModel> >::CRef model_channel = bus->getChannel("Internal.ObjectModel", false);
-	if (model_channel.valid()) {
-		typedef std::map<std::string, unsigned> ChannelMap;
-		ChannelMap channels;
-		simdata::Ref<const ObjectModel> model = model_channel->value();
-		const unsigned num_animations = model->numAnimations();
-		CSP_LOG(APP, INFO, "Scanning " << num_animations << " animations");
-		for (unsigned i = 0; i < num_animations; ++i) {
-			const Animation &animation = model->animation(i);
-			if (animation.getLOD() < 10) {
-				const std::string name = animation.getChannelName();
-				const double limit0 = animation.getExportLimit0();
-				const double limit1 = animation.getExportLimit1();
-				const double rate_limit = animation.getExportRate();
-				ChannelMap::const_iterator iter = channels.find(name);
-				if (iter == channels.end()) {
-					CSP_LOG(APP, INFO, "Adding animation channel " << name);
-					LocalAnimationUpdate *update = new LocalAnimationUpdate();
-					assert(!bus->hasChannel(name));
-					DataChannel<double>::Ref channel;
-					channel = bus->registerLocalDataChannel<double>(name, 0.0);
-					assert(channel.valid());
-					update->bind(channel);
-					update->setLimits(limit0, limit1);
-					update->setRateLimit(rate_limit);
-					channels[name] = m_AnimationUpdates.size();
-					m_AnimationUpdates.push_back(update);
-				} else {
-					m_AnimationUpdates[iter->second]->expandLimits(limit0, limit1);
-					m_AnimationUpdates[iter->second]->lowerRateLimit(rate_limit);
-				}
-			}
-		}
-		CSP_LOG(APP, INFO, "Added " << m_AnimationUpdates.size() << " animation channels");
-	} else {
-		CSP_LOG(APP, WARNING, "3D model not found");
-	}
-
+	for (ChannelSlaves::iterator iter = m_ChannelSlaves.begin(); iter != m_ChannelSlaves.end(); ++iter) (*iter)->bind(bus);
 }
 
 void LocalController::importChannels(Bus *bus) {
@@ -377,13 +316,12 @@ void LocalController::onUpdate(simdata::Ref<simnet::NetworkMessage> const &msg, 
 		if (update->has_animation_flags()) {
 			std::vector<simdata::uint8> const &flags = update->animation_flags();
 			std::vector<simdata::uint8> const &values = update->animation_values();
-			const unsigned n = std::min(flags.size() * 8, m_AnimationUpdates.size());
+			const unsigned n = std::min(flags.size() * 8, m_ChannelSlaves.size());
 			unsigned idx = 0;
 			for (unsigned i = 0; i < n; ++i) {
 				const simdata::uint8 flag = flags[i>>3];
 				if ((flag & (1<<(i&7))) != 0) {
-					assert(idx < values.size());
-					m_AnimationUpdates[i]->setTarget(values[idx++]);
+					m_ChannelSlaves[i]->receive(values, idx);
 				}
 			}
 			assert(idx == values.size());
@@ -420,15 +358,9 @@ double LocalController::onUpdate(double dt) {
 	}
 	{
 		// TODO can skip if LOD is too low for any animations
-		for (unsigned i = 0; i < m_AnimationUpdates.size(); ++i) {
-			m_AnimationUpdates[i]->update(dt);
+		for (unsigned i = 0; i < m_ChannelSlaves.size(); ++i) {
+			m_ChannelSlaves[i]->update(dt);
 		}
-		/*
-		m_ElevatorDeflection.update(dt);
-		m_AirbrakeDeflection.update(dt);
-		m_AileronDeflection.update(dt);
-		m_RudderDeflection.update(dt);
-		*/
 	}
 	return 0.0;
 }

@@ -49,6 +49,7 @@ map mouse:SHIFT-WHEELUP     press       CAMERA_FOV_STEP_DEC
 map mouse:SHIFT-WHEELDOWN   press       CAMERA_FOV_STEP_INC
 
 map mouse:LEFT      move        CAMERA_PAN
+map mouse:LEFT      release     LEFT_CLICK
 
 map key:CTRL-UP      press           CAMERA_FORWARD|CAMERA_DESELECT
 map key:CTRL-RIGHT   press           CAMERA_RIGHT|CAMERA_DESELECT

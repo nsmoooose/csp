@@ -146,6 +146,8 @@ public:
 	void resetSpin();
 	double getSpin();
 
+	bool pick(int x, int y);
+
 	void drawPlayerInterface();
 
 private:

@@ -3,20 +3,6 @@
 <Object class="SystemsModel">
 	<List name="subsystems">
 		<Object class="AircraftInputSystem" />
-		<!--Object class="AircraftSimpleFCS">
-			<Float name="elevator_limit0">-16.0</Float>
-			<Float name="elevator_limit1">25.0</Float>
-			<Float name="aileron_limit0">-16</Float>
-			<Float name="aileron_limit1">25</Float>
-			<Float name="rudder_limit">30.0</Float>
-			<Float name="airbrake_limit">60.0</Float>
-			<Float name="elevator_rate">60.0</Float>
-			<Float name="aileron_rate">80.0</Float>
-			<Float name="rudder_rate">120.0</Float>
-			<Float name="airbrake_rate">15.0</Float>
-			<Float name="max_g">7.0</Float>
-			<Float name="min_g">-2.0</Float>
-		</Object-->
 		<Path class="FlightControlSystem">fcs</Path>
 		<Object class="AircraftFlightSensors" />
 		<Object class="F16System">
@@ -42,7 +28,9 @@
 		<Object class="F16Radio" />
 	</List>
 
-	<Object class="RemoteController" name="remote_controller" />
+	<Object class="RemoteController" name="remote_controller">
+		<Path name="channel_mirror_set">channel_mirrors</Path>
+	</Object>
 
 	<Object class="AircraftPhysicsModel" name="physics_model">
 		<List name="subsystems">

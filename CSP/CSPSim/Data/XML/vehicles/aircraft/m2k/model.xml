@@ -32,7 +32,6 @@
             <Key name="model_id">Aircraft.Rudder</Key>
             <Vector name="axis">0 -0.34 0.94</Vector>
             <Int name="lod_limit">8</Int>
-            <Float name="export_rate">1.5</Float>
         </Object>
 
         <Object  class="DrivenRotation">
@@ -100,9 +99,6 @@
                 <Float name="t0">0.0</Float>
                 <Float name="t1">1.0</Float>
             </Object>
-            <Float name="export_limit_0">0.0</Float>
-            <Float name="export_limit_1">1.0</Float>
-            <Float name="export_rate">8.0</Float>
         </Object>
         <Object class="TimedRotation">
             <String name="channel_name">LandingGear.FrontGear.RetractCompress</String>
@@ -115,9 +111,6 @@
                 <Float name="t0">0.5</Float>
                 <Float name="t1">1.5</Float>
             </Object>
-            <Float name="export_limit_0">0.5</Float>
-            <Float name="export_limit_1">1.5</Float>
-            <Float name="export_rate">8.0</Float>
         </Object>
         <Object class="TimedRotation">
             <String name="channel_name">LandingGear.FrontGear.RetractCompress</String>
@@ -130,9 +123,6 @@
                 <Float name="t0">0.5</Float>
                 <Float name="t1">1.5</Float>
             </Object>
-            <Float name="export_limit_0">0.5</Float>
-            <Float name="export_limit_1">1.5</Float>
-            <Float name="export_rate">8.0</Float>
         </Object>
         <Object class="TimedRotation">
             <String name="channel_name">LandingGear.FrontGear.RetractCompress</String>
@@ -145,9 +135,6 @@
                 <Float name="t0">0.9</Float>
                 <Float name="t1">3.0</Float>
             </Object>
-            <Float name="export_limit_0">0.9</Float>
-            <Float name="export_limit_1">3.0</Float>
-            <Float name="export_rate">8.0</Float>
         </Object>
         <Object class="TimedRotation">
             <String name="channel_name">LandingGear.FrontGear.RetractCompress</String>
@@ -160,9 +147,6 @@
                 <Float name="t0">0.9</Float>
                 <Float name="t1">3.0</Float>
             </Object>
-            <Float name="export_limit_0">0.9</Float>
-            <Float name="export_limit_1">3.0</Float>
-            <Float name="export_rate">8.0</Float>
         </Object>
         <Object class="TimedRotation">
             <String name="channel_name">LandingGear.FrontGear.RetractCompress</String>
@@ -175,9 +159,6 @@
                 <Float name="t0">0.9</Float>
                 <Float name="t1">3.0</Float>
             </Object>
-            <Float name="export_limit_0">0.9</Float>
-            <Float name="export_limit_1">3.0</Float>
-            <Float name="export_rate">8.0</Float>
         </Object>
          <Object class="TimedRotation">
             <String name="channel_name">LandingGear.FrontGear.RetractCompress</String>
@@ -190,9 +171,6 @@
                 <Float name="t0">3.0</Float>
                 <Float name="t1">4.0</Float>
             </Object>
-            <Float name="export_limit_0">3.0</Float>
-            <Float name="export_limit_1">4.0</Float>
-            <Float name="export_rate">8.0</Float>
         </Object>
 
         <!--                Right landing gear                          -->
@@ -207,9 +185,6 @@
                 <Float name="t0">0.0</Float>
                 <Float name="t1">1.0</Float>
             </Object>
-            <Float name="export_limit_0">0.0</Float>
-            <Float name="export_limit_1">1.0</Float>
-            <Float name="export_rate">8.0</Float>
         </Object>
         <Object class="TimedRotation">
             <String name="channel_name">LandingGear.RightGear.RetractCompress</String>
@@ -222,9 +197,6 @@
                 <Float name="t0">0.5</Float>
                 <Float name="t1">3.3</Float>
             </Object>
-            <Float name="export_limit_0">0.5</Float>
-            <Float name="export_limit_1">3.3</Float>
-            <Float name="export_rate">8.0</Float>
         </Object>
         <Object class="TimedMagnitudeTranslation">
             <String name="channel_name">LandingGear.RightGear.RetractCompress</String>
@@ -238,9 +210,6 @@
                 <Float name="t0">0.0</Float>
                 <Float name="t1">1.5</Float>
             </Object>
-            <Float name="export_limit_0">0.0</Float>
-            <Float name="export_limit_1">1.5</Float>
-            <Float name="export_rate">8.0</Float>
         </Object>
         <Object class="TimedRotation">
             <String name="channel_name">LandingGear.RightGear.RetractCompress</String>
@@ -253,9 +222,6 @@
                 <Float name="t0">0.6</Float>
                 <Float name="t1">3.5</Float>
             </Object>
-            <Float name="export_limit_0">0.6</Float>
-            <Float name="export_limit_1">3.5</Float>
-            <Float name="export_rate">8.0</Float>
         </Object>
         <Object class="TimedRotation">
             <String name="channel_name">LandingGear.RightGear.RetractCompress</String>
@@ -268,9 +234,6 @@
                 <Float name="t0">0.6</Float>
                 <Float name="t1">3.5</Float>
             </Object>
-            <Float name="export_limit_0">0.6</Float>
-            <Float name="export_limit_1">3.5</Float>
-            <Float name="export_rate">8.0</Float>
         </Object>
         <Object class="TimedRotation">
             <String name="channel_name">LandingGear.RightGear.RetractCompress</String>
@@ -283,9 +246,6 @@
                 <Float name="t0">3.0</Float>
                 <Float name="t1">4.0</Float>
             </Object>
-            <Float name="export_limit_0">3.0</Float>
-            <Float name="export_limit_1">4.0</Float>
-            <Float name="export_rate">8.0</Float>
         </Object>
 
         <!--                Left landing gear                          -->
@@ -300,9 +260,6 @@
                 <Float name="t0">0.0</Float>
                 <Float name="t1">1.0</Float>
             </Object>
-            <Float name="export_limit_0">0.0</Float>
-            <Float name="export_limit_1">1.0</Float>
-            <Float name="export_rate">8.0</Float>
         </Object>
         <Object class="TimedRotation">
             <String name="channel_name">LandingGear.LeftGear.RetractCompress</String>
@@ -315,9 +272,6 @@
                 <Float name="t0">0.5</Float>
                 <Float name="t1">3.3</Float>
             </Object>
-            <Float name="export_limit_0">0.4</Float>
-            <Float name="export_limit_1">3.3</Float>
-            <Float name="export_rate">8.0</Float>
         </Object>
         <Object class="TimedMagnitudeTranslation">
             <String name="channel_name">LandingGear.LeftGear.RetractCompress</String>
@@ -331,9 +285,6 @@
                 <Float name="t0">0.0</Float>
                 <Float name="t1">1.5</Float>
             </Object>
-            <Float name="export_limit_0">0.0</Float>
-            <Float name="export_limit_1">1.5</Float>
-            <Float name="export_rate">8.0</Float>
         </Object>
         <Object class="TimedRotation">
             <String name="channel_name">LandingGear.LeftGear.RetractCompress</String>
@@ -346,9 +297,6 @@
                 <Float name="t0">0.6</Float>
                 <Float name="t1">3.5</Float>
             </Object>
-            <Float name="export_limit_0">0.6</Float>
-            <Float name="export_limit_1">3.5</Float>
-            <Float name="export_rate">8.0</Float>
         </Object>
         <Object class="TimedRotation">
             <String name="channel_name">LandingGear.LeftGear.RetractCompress</String>
@@ -361,9 +309,6 @@
                 <Float name="t0">0.6</Float>
                 <Float name="t1">3.5</Float>
             </Object>
-            <Float name="export_limit_0">0.6</Float>
-            <Float name="export_limit_1">3.5</Float>
-            <Float name="export_rate">8.0</Float>
         </Object>
         <Object class="TimedRotation">
             <String name="channel_name">LandingGear.LeftGear.RetractCompress</String>
@@ -376,9 +321,6 @@
                 <Float name="t0">3.0</Float>
                 <Float name="t1">4.0</Float>
             </Object>
-            <Float name="export_limit_0">3.0</Float>
-            <Float name="export_limit_1">4.0</Float>
-            <Float name="export_rate">8.0</Float>
         </Object>
 
             <!--                                                        -->
@@ -391,21 +333,18 @@
             <Vector name="direction">0 0 1</Vector>
             <!--Vector name="offset">0.0 0 -1.11</Vector-->
             <Vector name="offset">0 0 -1.13</Vector>
-            <Float name="export_rate">8.0</Float>
         </Object>
         <Object class="DrivenRotation">
             <String name="channel_name">LandingGear.FrontGear.TireRotation</String>
             <Int name="lod_limit">8</Int>
             <Key name="model_id">Aircraft.FrontGearLeftTire</Key>
             <Vector name="axis">-1 0 0</Vector>
-            <Float name="export_rate">100.0</Float>
         </Object>
         <Object class="DrivenRotation">
             <String name="channel_name">LandingGear.FrontGear.TireRotation</String>
             <Int name="lod_limit">8</Int>
             <Key name="model_id">Aircraft.FrontGearRightTire</Key>
             <Vector name="axis">-1 0 0</Vector>
-            <Float name="export_rate">100.0</Float>
         </Object>
         <Object class="DrivenRotation">
             <String name="channel_name">LandingGear.FrontGear.Absorber02</String>
@@ -413,7 +352,6 @@
             <Int name="lod_limit">8</Int>
             <Vector name="axis">-1 0 0</Vector>
             <Float name="gain">2.4</Float>
-            <Float name="export_rate">8.0</Float>
         </Object>
         <Object class="DrivenRotation">
             <String name="channel_name">LandingGear.FrontGear.Absorber03</String>
@@ -421,14 +359,12 @@
             <Int name="lod_limit">8</Int>
             <Vector name="axis">1 0 0</Vector>
             <Float name="gain">2.4</Float>
-            <Float name="export_rate">8.0</Float>
         </Object>
         <Object class="DrivenRotation">
             <String name="channel_name">LandingGear.FrontGear.SteeringAngle</String>
             <Int name="lod_limit">8</Int>
             <Key name="model_id">Aircraft.FrontGearTireAxis</Key>
             <Vector name="axis">0 0 -1</Vector>
-            <Float name="export_rate">2.0</Float>
         </Object>
 
         <!--                            Left gear                             -->
@@ -438,14 +374,12 @@
             <Int name="lod_limit">8</Int>
             <Vector name="direction">-0.134513 0 0.990912</Vector>
             <Vector name="offset">0.122 0 -0.39</Vector>
-            <Float name="export_rate">8.0</Float>
         </Object>
         <Object class="DrivenRotation">
             <String name="channel_name">LandingGear.LeftGear.TireRotation</String>
             <Key name="model_id">Aircraft.LeftMainGearTire</Key>
             <Int name="lod_limit">8</Int>
             <Vector name="axis">-1 0 -0.02</Vector>
-            <Float name="export_rate">100.0</Float>
         </Object>
         <Object class="DrivenRotation">
             <String name="channel_name">LandingGear.LeftGear.Absorber02</String>
@@ -453,7 +387,6 @@
             <Int name="lod_limit">8</Int>
             <Vector name="axis">-0.990831 -0.0283094 -0.132111</Vector>
             <Float name="gain">2.2</Float>
-            <Float name="export_rate">8.0</Float>
         </Object>
         <Object class="DrivenRotation">
             <String name="channel_name">LandingGear.LeftGear.Absorber03</String>
@@ -461,7 +394,6 @@
             <Int name="lod_limit">8</Int>
             <Vector name="axis">0.990831 0.0283094 0.132111</Vector>
             <Float name="gain">2.2</Float>
-            <Float name="export_rate">8.0</Float>
         </Object>
 
         <!--                            Right gear                             -->
@@ -471,14 +403,12 @@
             <Int name="lod_limit">8</Int>
             <Vector name="direction">0.127615 -0.00447771 0.991814</Vector>
             <Vector name="offset">-0.122 0 -0.39</Vector>
-            <Float name="export_rate">8.0</Float>
         </Object>
         <Object class="DrivenRotation">
             <String name="channel_name">LandingGear.RightGear.TireRotation</String>
             <Key name="model_id">Aircraft.RightMainGearTire</Key>
             <Int name="lod_limit">8</Int>
             <Vector name="axis">-1.0 0 0.02</Vector>
-            <Float name="export_rate">100.0</Float>
         </Object>
          <Object class="DrivenRotation">
             <String name="channel_name">LandingGear.RightGear.Absorber02</String>
@@ -486,7 +416,6 @@
             <Int name="lod_limit">8</Int>
             <Vector name="axis">-0.990831 0.0283094 0.132111</Vector>
             <Float name="gain">2.2</Float>
-            <Float name="export_rate">8.0</Float>
         </Object>
         <Object class="DrivenRotation">
             <String name="channel_name">LandingGear.RightGear.Absorber03</String>
@@ -494,7 +423,6 @@
             <Int name="lod_limit">8</Int>
             <Vector name="axis">0.990831 -0.0283094 -0.132111</Vector>
             <Float name="gain">2.2</Float>
-            <Float name="export_rate">8.0</Float>
         </Object>
     </List>
 </Object>

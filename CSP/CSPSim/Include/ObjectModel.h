@@ -216,6 +216,7 @@ public:
 	virtual void onViewMode(bool internal);
 	void updateSmoke(double dt, simdata::Vector3 const & global_position, simdata::Quat const &attitude);
 	void setLabel(std::string const &);
+	void pick(int x, int y);
 };
 
 

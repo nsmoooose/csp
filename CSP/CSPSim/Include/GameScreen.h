@@ -111,6 +111,7 @@ public:
 		BIND_ACTION("SPIN_THE_WORLD_STOP", on_SpinTheWorldStop);
 		BIND_ACTION("PRINT_SCREEN", on_PrintScreen);
 		BIND_ACTION("RESET_SPIN", on_ResetSpin);
+		BIND_CLICK("LEFT_CLICK", on_LeftClick);
 		BIND_MOTION("CAMERA_PAN", on_MouseView);
 	END_INPUT_INTERFACE
 
@@ -160,6 +161,7 @@ public:
 	void on_SpinTheWorldStop();
 	void on_ResetSpin();
 	void on_PrintScreen();
+	void on_LeftClick(int x, int y);
 	void on_MouseView(int x, int y, int dx, int dy);
 
 	virtual void initInterface();

@@ -240,6 +240,9 @@
 				RelativePath="..\..\Source\DemeterTerrain.cpp">
 			</File>
 			<File
+				RelativePath="..\..\Source\DoubleChannelMirror.cpp">
+			</File>
+			<File
 				RelativePath="..\..\Source\DynamicalSystem.cpp">
 			</File>
 			<File
@@ -521,6 +524,9 @@
 			</File>
 			<File
 				RelativePath="..\..\Include\Bus.h">
+			</File>
+			<File
+				RelativePath="..\..\Include\ChannelMirror.h">
 			</File>
 			<File
 				RelativePath="..\..\Include\ChunkLodTerrain.h">

@@ -37,8 +37,10 @@
 #ifndef __INPUTINTERFACE_H__
 #define __INPUTINTERFACE_H__
 
+#include <map>
 #include <string>
 #include <cassert>
+#include <sigc++/sigc++.h>
 
 #include <SDL/SDL_events.h>
 #include <SimData/HashUtility.h>
@@ -48,6 +50,14 @@
 
 // forward declaration
 class InputInterface;
+
+
+typedef SigC::Slot2<void, int, int> ActionEventSlot;
+typedef SigC::Signal2<void, int, int> ActionEventSignal;
+typedef SigC::Slot4<void, int, int, int, int> MotionEventSlot;
+typedef SigC::Signal4<void, int, int, int, int> MotionEventSignal;
+typedef SigC::Slot1<void, double> AxisEventSlot;
+typedef SigC::Signal1<void, double> AxisEventSignal;
 
 
 /** Abstract adapter for action event handlers (internal)
@@ -139,8 +149,33 @@ public:
 };
 
 
+/** A dispatch mapping that is instance specific and constructed at runtime (as
+ *  opposed to InputInterfaceDispatch which is a static class property).  This
+ *  dispatcher uses arbitrary sigc callbacks, so the handlers do not have to be
+ *  InputInterface subclass methods.
+ */
+class RuntimeDispatch {
+public:
+	bool onMapEvent(MapEvent const &);
+	void bindAction(std::string const &id, ActionEventSlot const &callback);
+	void bindMotion(std::string const &id, MotionEventSlot const &callback);
+	void bindAxis(std::string const &id, AxisEventSlot const &callback);
+private:
+	typedef std::map<std::string, ActionEventSignal> ActionCallbacks;
+	typedef std::map<std::string, MotionEventSignal> MotionCallbacks;
+	typedef std::map<std::string, AxisEventSignal> AxisCallbacks;
+	ActionCallbacks m_ActionCallbacks;
+	MotionCallbacks m_MotionCallbacks;
+	AxisCallbacks m_AxisCallbacks;
+};
+
+
 /** Mappings for dispatching input events to handlers defined in InputInterface
- *  subclasses.  (internal)
+ *  subclasses.  (internal)   This mapping is class static, such that it is
+ *  defined at compile time for a class using the DECLARE_INPUT_INTERFACE
+ *  macros below.  Static dispatch maps conserve space since they are shared
+ *  by all instances of an InputInterface subclass.  InputInterface instances
+ *  may also have dynamic dispatch maps if needed.
  */
 class InputInterfaceDispatch {
 private:
@@ -251,6 +286,14 @@ public:
 
 /** Interface for classes that can handle input events.
  *
+ *  InputInterface subclasses can define class-specific handlers using the
+ *  various BIND macros.  These bindings map events to methods within the
+ *  InputInterface subclass, and do not incur any per-instance runtime
+ *  storage costs.  InputInterface also supports dynamic event handlers
+ *  that are created at runtime.  There is a per-instance storage cost for
+ *  dynamic handlers.  Dynamic handlers override static handlers for the
+ *  same event id.
+ *
  *  The following is a minimal example of a class that defines handlers
  *  for a few events.  More elaborate behavior can be achieved by overriding
  *  some of the virtual methods in this interface.  The definition of the
@@ -307,7 +350,8 @@ public:
  */
 class InputInterface {
 public:
-	virtual ~InputInterface() {}
+	InputInterface();
+	virtual ~InputInterface();
 
 	/** These methods are called by VirtualHID to allow the InputInterface to access
 	 *  the raw input events.  The default implementation returns false, which causes
@@ -329,6 +373,29 @@ public:
 	 */
 	virtual bool onMapEvent(MapEvent const &);
 
+	/** Bind a handler to an action event at runtime.  Using runtime
+	 *  handlers (as opposed to the class handlers set by the BIND
+	 *  macros) incurs storage costs per instance.
+	 */
+	void bindActionEvent(std::string const &id, ActionEventSlot const &slot) {
+		runtimeDispatch()->bindAction(id, slot);
+	}
+
+	/** Bind a handler to an axis event at runtime.  Using runtime
+	 *  handlers (as opposed to the class handlers set by the BIND
+	 *  macros) incurs storage costs per instance.
+	 */
+	void bindAxisEvent(std::string const &id, AxisEventSlot const &slot) {
+		runtimeDispatch()->bindAxis(id, slot);
+	}
+
+	/** Bind a handler to a motion event at runtime.  Using runtime
+	 *  handlers (as opposed to the class handlers set by the BIND
+	 *  macros) incurs storage costs per instance.
+	 */
+	void bindMotionEvent(std::string const &id, MotionEventSlot const &slot) {
+		runtimeDispatch()->bindMotion(id, slot);
+	}
 protected:
 
 	/** Internal */
@@ -341,6 +408,12 @@ private:
 	bool onCommand(std::string const &id, int x, int y);
 	bool onAxis(std::string const &id, double value);
 	bool onMotion(std::string const &id, int x, int y, int dx, int dy);
+
+	RuntimeDispatch *runtimeDispatch() {
+		if (!m_RuntimeDispatch) m_RuntimeDispatch = new RuntimeDispatch;
+		return m_RuntimeDispatch;
+	}
+	RuntimeDispatch *m_RuntimeDispatch;
 };
 
 

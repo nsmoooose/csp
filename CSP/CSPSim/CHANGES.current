@@ -7,6 +7,19 @@
    rendering, which is helpful when running multiple instances
    on the same machine to test networking.
 
+ * Add support for instance-specific event dispatch handlers.
+   Previously all handlers were static class properties.  The
+   new handlers are implemented using sigc callbacks.  The initial
+   use case is for cockpit elements that auto-declare multiple
+   event handlers.  For example, a 3-state switch can declare events
+   to set each state directly, as well as cycle forward and cycle
+   backward.  If the event prefix was named MASTER_ARM, the
+   generated events might be MASTER_ARM_OFF, MASTER_ARM_SIM,
+   MASTER_ARM_ON, MASTER_ARM_CYCLE_NEXT, MASTER_ARM_CYCLE_PREV.
+   This avoids having to manually declare five events and the
+   corresponding handlers, and automatically adjusts when new
+   states are added.
+
 2005-05-14: onsight
  * Add a list of contacts to SimObject of nearby vehicles that is
    maintained by the Battlefield.  The battlefield was already

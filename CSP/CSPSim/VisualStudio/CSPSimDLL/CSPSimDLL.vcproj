@@ -216,6 +216,9 @@
 				RelativePath="..\..\Source\ChunkLodTerrain.cpp">
 			</File>
 			<File
+				RelativePath="..\..\Source\CockpitInterface.cpp">
+			</File>
+			<File
 				RelativePath="..\..\Source\Collision.cpp">
 			</File>
 			<File
@@ -530,6 +533,9 @@
 			</File>
 			<File
 				RelativePath="..\..\Include\ChunkLodTerrain.h">
+			</File>
+			<File
+				RelativePath="..\..\Include\CockpitInterface.h">
 			</File>
 			<File
 				RelativePath="..\..\Include\Collision.h">

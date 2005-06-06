@@ -66,3 +66,12 @@ map key:SHIFT-3      press     ICP_IFF
 map key:SHIFT-4      press     ICP_LIST
 map key:SHIFT-5      press     ICP_AA
 map key:SHIFT-6      press     ICP_AG
+
+map key:d press HUD_DATASWITCH_TOGGLE
+map key:SHIFT-d press HUD_DATASWITCH_OFF
+map key:CTRL-d press HUD_DATASWITCH_DATA
+map key:h press HUD_FPM_SWITCH_CYCLE_NEXT
+map key:ALT-h press HUD_FPM_SWITCH_CYCLE_PREV
+map key:SHIFT-h press HUD_FPM_SWITCH_OFF
+map key:CTRL-h press HUD_FPM_SWITCH_FPM
+map key:SHIFT-CTRL-h press HUD_FPM_SWITCH_ATT_FPM

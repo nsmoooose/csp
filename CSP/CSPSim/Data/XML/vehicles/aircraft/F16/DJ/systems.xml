@@ -19,7 +19,6 @@
 			</Object>
 		</Object>
 		<Object class="F16HUD" />
-		<Object class="PanelHUD" />
 		<Object class="F16INS">
 			<Float name="ins_attitude_response_time">0.04</Float>
 		</Object>

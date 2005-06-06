@@ -33,6 +33,12 @@
 
 ==> ALL USERS: RebuildData.py and regenerate Inputs/gamescreen.hid.
 
+ * Deprecate PanelHUD and use the new CockpitInterface classes
+   to define the hud panel switches.  Add input hooks for testing
+   a couple of the switches.
+
+==> ALL USERS: CompileData.py and regenerate Inputs/aircraft.hid.
+
 2005-05-14: onsight
  * Add a list of contacts to SimObject of nearby vehicles that is
    maintained by the Battlefield.  The battlefield was already

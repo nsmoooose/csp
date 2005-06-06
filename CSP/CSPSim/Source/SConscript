@@ -31,6 +31,7 @@ SOURCES = [
 	'BaseScreen.cpp',
 	'Channels.cpp',
 	'ChunkLodTerrain.cpp',
+	'CockpitInterface.cpp',
 	'Collision.cpp',
 	'Colorspace.cpp',
 	'Config.cpp',

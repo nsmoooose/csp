@@ -26,11 +26,12 @@
 #ifndef __F16_F16HUD_H__
 #define __F16_F16HUD_H__
 
-#include <HUD/HUD.h>
-#include <Filters.h>
-#include <System.h>
+#include <CockpitInterface.h>
 #include <F16/NavigationSystem.h>
 #include <F16/AlphaNumericDisplay.h>
+#include <Filters.h>
+#include <HUD/HUD.h>
+#include <System.h>
 #include <SimData/Quat.h>
 #include <SimData/Vector3.h>
 
@@ -83,6 +84,8 @@ protected:
 	DataChannel<simdata::EnumLink>::CRef b_ScalesSwitch;
 	DataChannel<simdata::EnumLink>::CRef b_VelocitySwitch;
 	DataChannel<simdata::EnumLink>::CRef b_AltitudeSwitch;
+	CockpitInterface m_HudPanel;
+	DataChannel<simdata::EnumLink>::Ref b_AOAIndexer;
 
 	virtual double onUpdate(double dt);
 	virtual void updateReadouts();

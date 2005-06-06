@@ -325,13 +325,23 @@ public:
 };
 
 
-F16HUD::F16HUD(): m_AlphaFilter(1.0), m_G(-1), m_MaxG(-100), m_Heading(-1), m_Mach(-1), m_ElapsedTime(0.0), m_UpdateTime(0.0) { }
+F16HUD::F16HUD(): m_AlphaFilter(1.0), m_G(-1), m_MaxG(-100), m_Heading(-1), m_Mach(-1), m_ElapsedTime(0.0), m_UpdateTime(0.0) {
+	m_HudPanel.addElement(new CockpitSwitch("OFF DATA", "HUD.DataSwitch", "HUD_DATASWITCH", "DATA"));
+	m_HudPanel.addElement(new CockpitSwitch("OFF FPM ATT_FPM", "HUD.FlightPathMarkerSwitch", "HUD_FPM_SWITCH", "ATT_FPM"));
+	m_HudPanel.addElement(new CockpitSwitch("OFF VAH VV_VAH", "HUD.ScalesSwitch", "HUD_SCALES_SWITCH", "VAH"));
+	m_HudPanel.addElement(new CockpitSwitch("GND TAS CAS", "HUD.VelocitySwitch", "HUD_VELOCITY_SWITCH", "CAS"));
+	m_HudPanel.addElement(new CockpitSwitch("AUTO BARO RADAR", "HUD.AltitudeSwitch", "HUD_ALTITUDE_SWITCH", "AUTO"));
+	m_HudPanel.addElement(new CockpitSwitch("LOW MID HIGH", "HUD.AOAIndexer", "", "MID"));
+	m_HudPanel.bindEvents(this);
+}
+
 F16HUD::~F16HUD() { }
 
 void F16HUD::registerChannels(Bus *bus) {
 	// XXX slightly dangerous... need to be sure to set the channel to NULL in
 	// our dtor, and users need to check for a null hud pointer.
 	bus->registerLocalDataChannel<HUD*>("HUD", &m_HUD);
+	m_HudPanel.registerChannels(bus);
 }
 
 void F16HUD::importChannels(Bus* bus) {
@@ -360,11 +370,12 @@ void F16HUD::importChannels(Bus* bus) {
 	b_PullupAnticipation = bus->getChannel("F16.GroundAvoidance.PullupAnticipation", false);
 	b_DescentWarningAfterTakeoff = bus->getChannel("F16.GroundAvoidance.DescentWarningAfterTakeoff", false);
 
-	b_DataSwitch = bus->getChannel("HUD.DataSwitch", false);
-	b_FlightPathMarkerSwitch = bus->getChannel("HUD.FlightPathMarkerSwitch", false);
-	b_ScalesSwitch = bus->getChannel("HUD.ScalesSwitch", false);
-	b_VelocitySwitch = bus->getChannel("HUD.VelocitySwitch", false);
-	b_AltitudeSwitch = bus->getChannel("HUD.AltitudeSwitch", false);
+	b_DataSwitch = bus->getChannel("HUD.DataSwitch");
+	b_FlightPathMarkerSwitch = bus->getChannel("HUD.FlightPathMarkerSwitch");
+	b_ScalesSwitch = bus->getChannel("HUD.ScalesSwitch");
+	b_VelocitySwitch = bus->getChannel("HUD.VelocitySwitch");
+	b_AltitudeSwitch = bus->getChannel("HUD.AltitudeSwitch");
+	b_AOAIndexer = bus->getSharedChannel("HUD.AOAIndexer");
 	buildHUD();
 }
 
@@ -416,9 +427,18 @@ double F16HUD::onUpdate(double dt) {
 	m_PitchLadder->show(m_ShowAttitude || gear_down);
 	m_PitchLadder->update(horizon_body, horizon_right_body, b_Pitch->value());
 
+	const float aoa_degrees = simdata::toDegrees(b_Alpha->value());
+	if (aoa_degrees >= 15.0) {
+		b_AOAIndexer->value() = "HIGH";
+	} else if (aoa_degrees <= 11.0) {
+		b_AOAIndexer->value() = "LOW";
+	} else {
+		b_AOAIndexer->value() = "MID";
+	}
+
 	if (gear_down) {
 		// on the ground at low aoa the aoa bracket is pegged to the fpm
-		if (b_LeftMainLandingGearWOW->value() && (b_Alpha->value() < simdata::toRadians(10.0))) {
+		if (b_LeftMainLandingGearWOW->value() && (aoa_degrees < 10.0)) {
 			m_AlphaFilter.update(0.0, dt);
 		} else {
 			// FIXME getCenterAngle should be an instance method, and m_LandingAngleOfAttackRange should
@@ -427,7 +447,7 @@ double F16HUD::onUpdate(double dt) {
 			da = simdata::clampTo(da, simdata::toRadians(-9.0), simdata::toRadians(9.0));
 			m_AlphaFilter.update(da, dt);
 		}
-		float landing_aoa_angle = static_cast<float>(m_AlphaFilter.value());
+		const float landing_aoa_angle = static_cast<float>(m_AlphaFilter.value());
 		osg::Vec3 landing_aoa_dir = velocity_body * osg::Matrixf::rotate(landing_aoa_angle, osg::Vec3(1.0, 0.0, 0.0));
 		m_LandingAngleOfAttackRange->setDirection(landing_aoa_dir);
 		m_LandingAngleOfAttackRange->show(true);
@@ -583,10 +603,10 @@ double F16HUD::onUpdate(double dt) {
 
 void F16HUD::updateSwitches() {
 	bool gear_down = !b_GearHandleUp->value();  // CAS forced when gear is down
-	m_ShowVerticalVelocity = !b_ScalesSwitch || (b_ScalesSwitch->value() == "VV/VAH");
+	m_ShowVerticalVelocity = !b_ScalesSwitch || (b_ScalesSwitch->value() == "VV_VAH");
 	m_ShowScales = !b_ScalesSwitch || (b_ScalesSwitch->value() != "OFF") || gear_down;
 	m_ShowData = !b_DataSwitch || (b_DataSwitch->value() == "DATA");
-	m_ShowAttitude = !b_FlightPathMarkerSwitch || (b_FlightPathMarkerSwitch->value() == "ATT/FPM");
+	m_ShowAttitude = !b_FlightPathMarkerSwitch || (b_FlightPathMarkerSwitch->value() == "ATT_FPM");
 	m_ShowFPM = !b_FlightPathMarkerSwitch || (b_FlightPathMarkerSwitch->value() != "OFF") || gear_down;
 	if (b_VelocitySwitch.valid() && !gear_down) {
 		if (b_VelocitySwitch->value() == "CAS") {

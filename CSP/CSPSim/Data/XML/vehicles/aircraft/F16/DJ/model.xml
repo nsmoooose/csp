@@ -35,24 +35,24 @@
 
 	<List name="animations">
 		<Object class="AttitudeAnimation">
-			<Key name="model_id">ADI</Key>
+			<String name="model_id">ADI</String>
 			<Int name="lod_limit">10</Int>
 		</Object>
 		<Object class="StateSwitch">
 			<String name="channel_name">HUD.AOAIndexer</String>
-			<Key name="model_id">Cockpit.AOAIndexer</Key>
+			<String name="model_id">Cockpit.AOAIndexer</String>
 			<Int name="lod_limit">10</Int>
 		</Object>
 		<Object class="AnimatedSwitch">
 			<String name="channel_name">HUD.FlightPathMarkerSwitch</String>
-			<Key name="model_id">MasterArmSwitch</Key>
+			<String name="model_id">MasterArmSwitch</String>
 			<List name="times"><Float>0</Float><Float>0.15</Float><Float>0.30</Float></List>
 			<Int name="lod_limit">10</Int>
 		</Object>
 
 		<Object class="DrivenRotation">
 			<String name="channel_name">FlightDynamics.Alpha</String>
-			<Key name="model_id">Cockpit.AngleOfAttackTape</Key>
+			<String name="model_id">Cockpit.AngleOfAttackTape</String>
 			<Vector name="axis">1 0 0</Vector>
 			<Int name="lod_limit">10</Int>
 			<Bool name="post_multiply">true</Bool>
@@ -61,7 +61,7 @@
 
 		<Object class="DrivenRotation">
 			<String name="channel_name">ControlInputs.ThrottleInput</String>
-			<Key name="model_id">Cockpit.RPMPointer</Key>
+			<String name="model_id">Cockpit.RPMPointer</String>
 			<Vector name="axis">0 0 1</Vector>
 			<Int name="lod_limit">10</Int>
 			<Bool name="pre_multiply">true</Bool>
@@ -72,7 +72,7 @@
 
 		<Object class="CounterWheel">
 			<String name="channel_name">ControlInputs.ThrottleInput</String>
-			<Key name="model_id">Cockpit.FuelFlow</Key>
+			<String name="model_id">Cockpit.FuelFlow</String>
 			<Vector name="axis">1 0 0</Vector>
 			<Int name="lod_limit">10</Int>
 			<Float name="gain">100.0</Float>
@@ -80,7 +80,7 @@
 
 		<!--Object class="CounterWheel">
 			<String name="channel_name"></String>
-			<Key name="model_id">Cockpit.Altimeter</Key>
+			<String name="model_id">Cockpit.Altimeter</String>
 			<Vector name="axis">1 0 0</Vector>
 			<Int name="lod_limit">10</Int>
 			<Float name="gain">0.03280839895</Float>
@@ -88,138 +88,138 @@
 
 		<Object class="DrivenAnimationPath">
 			<String name="channel_name">ControlSurfaces.AirbrakeDeflection</String>
-			<Key name="model_id">Cockpit.SpeedBrakeIndicator</Key>
+			<String name="model_id">Cockpit.SpeedBrakeIndicator</String>
 			<Float name="gain">1.909</Float>
 			<Int name="lod_limit">10</Int>
 		</Object>
 
 		<Object class="DrivenRotation">
 			<String name="channel_name">ControlSurfaces.RudderDeflection</String>
-			<Key name="model_id">Aircraft.Rudder</Key>
+			<String name="model_id">Aircraft.Rudder</String>
 			<Vector name="axis">0 -0.55 0.819</Vector>
 			<Int name="lod_limit">7</Int>
 		</Object>
 		<Object class="DrivenRotation">
 			<String name="channel_name">ControlSurfaces.LeftElevatorDeflection</String>
-			<Key name="model_id">Aircraft.LeftElevator</Key>
+			<String name="model_id">Aircraft.LeftElevator</String>
 			<Vector name="axis">-1 0 0</Vector>
 			<Int name="lod_limit">6</Int>
 		</Object>
 		<Object class="DrivenRotation">
 			<String name="channel_name">ControlSurfaces.RightElevatorDeflection</String>
-			<Key name="model_id">Aircraft.RightElevator</Key>
+			<String name="model_id">Aircraft.RightElevator</String>
 			<Vector name="axis">-1 0 0</Vector>
 			<Int name="lod_limit">6</Int>
 		</Object>
 		<Object  class="DrivenRotation">
 			<String name="channel_name">ControlSurfaces.LeftAileronDeflection</String>
-			<Key name="model_id">Aircraft.LeftAileron</Key>
+			<String name="model_id">Aircraft.LeftAileron</String>
 			<Vector name="axis">1 0.17 0</Vector>
 			<Int name="lod_limit">7</Int>
 		</Object>
 		<Object class="DrivenRotation">
 			<String name="channel_name">ControlSurfaces.RightAileronDeflection</String>
-			<Key name="model_id">Aircraft.RightAileron</Key>
+			<String name="model_id">Aircraft.RightAileron</String>
 			<Vector name="axis">1 -0.17 0</Vector>
 			<Int name="lod_limit">7</Int>
 		</Object>
 		<Object class="DrivenRotation">
 			<String name="channel_name">ControlSurfaces.AirbrakeDeflection</String>
-			<Key name="model_id">Aircraft.LowerRightAirbrake</Key>
+			<String name="model_id">Aircraft.LowerRightAirbrake</String>
 			<Vector name="axis">1 0 0</Vector>
 			<Int name="lod_limit">6</Int>
 		</Object>
 		<Object class="DrivenRotation">
 			<String name="channel_name">ControlSurfaces.AirbrakeDeflection</String>
-			<Key name="model_id">Aircraft.LowerLeftAirbrake</Key>
+			<String name="model_id">Aircraft.LowerLeftAirbrake</String>
 			<Vector name="axis">1 0 0</Vector>
 			<Int name="lod_limit">6</Int>
 		</Object>
 		<Object class="DrivenRotation">
 			<String name="channel_name">ControlSurfaces.AirbrakeDeflection</String>
-			<Key name="model_id">Aircraft.UpperRightAirbrake</Key>
+			<String name="model_id">Aircraft.UpperRightAirbrake</String>
 			<Vector name="axis">-1 0 0</Vector>
 			<Int name="lod_limit">6</Int>
 		</Object>
 		<Object class="DrivenRotation">
 			<String name="channel_name">ControlSurfaces.AirbrakeDeflection</String>
-			<Key name="model_id">Aircraft.UpperLeftAirbrake</Key>
+			<String name="model_id">Aircraft.UpperLeftAirbrake</String>
 			<Vector name="axis">-1 0 0</Vector>
 			<Int name="lod_limit">6</Int>
 		</Object>
 		<Object  class="DrivenRotation">
 			<String name="channel_name">ControlSurfaces.LeadingEdgeDeflection</String>
-			<Key name="model_id">Aircraft.LeftLef</Key>
+			<String name="model_id">Aircraft.LeftLef</String>
 			<Vector name="axis">-1 -0.70 0</Vector>
 			<Int name="lod_limit">8</Int>
 		</Object>
 		<Object class="DrivenRotation">
 			<String name="channel_name">ControlSurfaces.LeadingEdgeDeflection</String>
-			<Key name="model_id">Aircraft.RightLef</Key>
+			<String name="model_id">Aircraft.RightLef</String>
 			<Vector name="axis">-1 0.7 0</Vector>
 			<Int name="lod_limit">8</Int>
 		</Object>
 		
 		<Object class="DrivenAnimationPath">
 			<String name="channel_name">Aircraft.FuelDoorSequence.ReferenceTime</String>
-			<Key name="model_id">Aircraft.FuelDoor</Key>
+			<String name="model_id">Aircraft.FuelDoor</String>
 			<Float name="gain">0.6666</Float>
 			<Int name="lod_limit">8</Int>
 		</Object>
 		<Object class="DrivenAnimationPath">
 			<String name="channel_name">Aircraft.CanopySequence.ReferenceTime</String>
-			<Key name="model_id">Aircraft.Canopy</Key>
+			<String name="model_id">Aircraft.Canopy</String>
 			<Float name="gain">0.3333</Float>
 			<Int name="lod_limit">5</Int>
 		</Object>
 		
 		<Object class="DrivenRotation">
 			<String name="channel_name">LandingGear.FrontGear.SteeringAngle</String>
-			<Key name="model_id">Aircraft.FrontGear.Struct02Support</Key>
+			<String name="model_id">Aircraft.FrontGear.Struct02Support</String>
 			<Vector name="axis">0 0 1</Vector>
 			<Int name="lod_limit">8</Int>
 		</Object>
 		<Object class="DrivenRotation">
 			<String name="channel_name">LandingGear.FrontGear.SteeringAngle</String>
-			<Key name="model_id">Aircraft.FrontGear.MainTube</Key>
+			<String name="model_id">Aircraft.FrontGear.MainTube</String>
 			<Vector name="axis">0 0.29189 -0.956452</Vector>
 			<Int name="lod_limit">8</Int>
 		</Object>
 		<Object class="DrivenAnimationPath">
 			<String name="channel_name">LandingGear.FrontGear.RetractCompress</String>
-			<Key name="model_id">Aircraft.FrontGear</Key>
+			<String name="model_id">Aircraft.FrontGear</String>
 			<Float name="gain">0.5</Float>
 			<Int name="lod_limit">5</Int>
 		</Object>
 		<Object  class="DrivenRotation">
 			<String name="channel_name">LandingGear.FrontGear.TireRotation</String>
-			<Key name="model_id">Aircraft.FrontGearTire</Key>
+			<String name="model_id">Aircraft.FrontGearTire</String>
 			<Vector name="axis">0 0 -1</Vector>
 			<Int name="lod_limit">8</Int>
 		</Object>
 		
 		<Object class="DrivenAnimationPath">
 			<String name="channel_name">LandingGear.RightGear.RetractCompress</String>
-			<Key name="model_id">Aircraft.RightGear</Key>
+			<String name="model_id">Aircraft.RightGear</String>
 			<Float name="gain">0.5</Float>
 			<Int name="lod_limit">5</Int>
 		</Object>
 		<Object  class="DrivenRotation">
 			<String name="channel_name">LandingGear.RightGear.TireRotation</String>
-			<Key name="model_id">Aircraft.RightGearTire</Key>
+			<String name="model_id">Aircraft.RightGearTire</String>
 			<Vector name="axis">0 -1 0</Vector>
 			<Int name="lod_limit">8</Int>
 		</Object>
 		
 		<Object class="DrivenAnimationPath">
 			<String name="channel_name">LandingGear.LeftGear.RetractCompress</String>
-			<Key name="model_id">Aircraft.LeftGear</Key>
+			<String name="model_id">Aircraft.LeftGear</String>
 			<Float name="gain">0.5</Float>
 			<Int name="lod_limit">5</Int>
 		</Object>
 		<Object  class="DrivenRotation">
 			<String name="channel_name">LandingGear.LeftGear.TireRotation</String>
-			<Key name="model_id">Aircraft.LeftGearTire</Key>
+			<String name="model_id">Aircraft.LeftGearTire</String>
 			<Vector name="axis">-0.999822 -0.0181659 0.00506705</Vector>
 			<Int name="lod_limit">8</Int>
 		</Object>

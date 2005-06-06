@@ -348,8 +348,8 @@ void LandingGear::residualUpdate(double dt, double airspeed) {
 void LandingGear::updateAnimation(double dt) {
 	if (m_GearAnimation.valid()) {
 		m_GearAnimation->update(dt);
-		m_GearAnimation->setCompression(m_Compression / m_CompressionLimit); 
-		m_GearAnimation->setTireRotation(fmod(m_TireRotation, 2.0*simdata::PI));
+		m_GearAnimation->setCompression(m_Compression / m_CompressionLimit);
+		m_GearAnimation->setTireRotation(fmod(m_TireRotation, 2.0*simdata::PI) - simdata::PI);
 		if (m_SteeringLimit > 0.0) {
 			m_GearAnimation->setSteeringAngle(toRadians(m_SteeringAngle));
 		}

@@ -190,3 +190,4 @@ void ViewFactory::attachAllView(CameraAgent* ca) const {
 	ca->attach(8, createView_8());
 	ca->attach(9, createView_9());
 }
+

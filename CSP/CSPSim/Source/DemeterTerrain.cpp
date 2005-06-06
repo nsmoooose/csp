@@ -39,10 +39,6 @@
 #include <osg/StateSet>
 
 
-extern int g_ScreenWidth;
-extern int g_ScreenHeight;
-
-
 SIMDATA_REGISTER_INTERFACE(DemeterTerrain)
 
 
@@ -85,6 +81,10 @@ DemeterTerrain::DemeterTerrain()
 	m_LatticeTexExt = "";
 	m_LatticeWidth = 0;
 	m_LatticeHeight = 0;
+
+	// arbitrary default
+	m_ScreenWidth = 1280;
+	m_ScreenHeight = 1024;
 }
 
 DemeterTerrain::~DemeterTerrain()
@@ -376,14 +376,22 @@ int DemeterTerrain::getTerrainPolygonsRendered() const {
 	}
 }
 
+void DemeterTerrain::setScreenSizeHint(int width, int height) {
+	m_ScreenWidth = width;
+	m_ScreenHeight = height;
+	if (m_Loaded) {
+		Demeter::Settings::GetInstance()->SetScreenWidth(width);
+		Demeter::Settings::GetInstance()->SetScreenHeight(height);
+	}
+}
 
 void DemeterTerrain::updateDemeterSettings() {
 	std::string terrain_path = getDataPath("TerrainPath");
 	bool verbose = g_Config.getBool("Debug", "Demeter", false, true);
 	Demeter::Settings::GetInstance()->SetMediaPath(terrain_path.c_str());
 	Demeter::Settings::GetInstance()->SetVerbose(verbose);
-	Demeter::Settings::GetInstance()->SetScreenWidth(g_ScreenWidth);
-	Demeter::Settings::GetInstance()->SetScreenHeight(g_ScreenHeight);
+	Demeter::Settings::GetInstance()->SetScreenWidth(m_ScreenWidth);
+	Demeter::Settings::GetInstance()->SetScreenHeight(m_ScreenHeight);
 	Demeter::Settings::GetInstance()->SetPreloadTextures(m_PreloadTextures);
 	Demeter::Settings::GetInstance()->SetTextureCompression(m_TextureCompression);
 	Demeter::Settings::GetInstance()->SetUseDynamicTextures(m_DynamicTextures);

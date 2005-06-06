@@ -100,8 +100,10 @@ public:
 	simdata::Vector3 getOrigin(simdata::Vector3 const &) const;
 	virtual void endDraw();
 
+	virtual void setScreenSizeHint(int width, int height);
+
 protected:
-	
+
 	bool m_DynamicTextures;
 	bool m_TextureCompression;
 	bool m_PreloadTextures;
@@ -121,8 +123,10 @@ protected:
 	int m_LatticeHeight;
 	simdata::Vector3 m_Offset;
 	float m_CellWidth, m_CellHeight;
+	int m_ScreenWidth;
+	int m_ScreenHeight;
 
-	
+
 protected:
 
 	virtual void postCreate();

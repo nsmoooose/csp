@@ -26,20 +26,9 @@
 #include "TerrainObject.h"
 #include "Config.h"
 
-#include <SimCore/Util/Log.h>
-
 #include <osg/LineSegment>
-/*//
-#include "Terrain.h"
-#include "DemeterDrawable.h"
-#include "TerrainTextureFactory.h"
-#include <osg/Geode>
-#include <osg/StateSet>
-extern int g_ScreenWidth;
-extern int g_ScreenHeight;
 
-*/
-
+#include <SimCore/Util/Log.h>
 #include <SimData/InterfaceRegistry.h>
 #include <SimData/osg.h>
 

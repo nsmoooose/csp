@@ -43,9 +43,6 @@
  *  signal handler for screen size and fov changes
  */
 
-extern int g_ScreenWidth;
-extern int g_ScreenHeight;
-
 
 SIMDATA_REGISTER_INTERFACE(ChunkLodTerrain)
 
@@ -85,6 +82,10 @@ ChunkLodTerrain::ChunkLodTerrain()
 	//m_ElevationScale;
 	m_LatticeWidth = 8000.0;
 	m_LatticeHeight = 8000.0;
+
+	// arbitrary default
+	m_ScreenWidth = 1280;
+	m_ScreenHeight = 1024;
 }
 
 ChunkLodTerrain::~ChunkLodTerrain()
@@ -118,6 +119,14 @@ void ChunkLodTerrain::unload() {
 	}
 }
 
+void ChunkLodTerrain::setScreenSizeHint(int width, int height) {
+	m_ScreenWidth = width;
+	m_ScreenHeight = height;
+	if (m_Loaded) {
+		m_Terrain->setCameraParameters(width, 60.0); // XXX
+	}
+}
+
 void ChunkLodTerrain::load() {
 	if (m_Loaded) return;
 	std::string terrain_path = getDataPath("TerrainPath");
@@ -129,7 +138,7 @@ void ChunkLodTerrain::load() {
 	m_Terrain = new osgChunkLod::ChunkLodTree(chu_file.c_str(), m_Texture, m_ElevationMap.get(), scale);
 	m_Terrain->loaderUseThread(m_UseLoaderThread);
 	m_Terrain->setQuality(m_BaseScreenError, m_BaseTexelSize);
-	m_Terrain->setCameraParameters(g_ScreenWidth, 60.0); // XXX
+	m_Terrain->setCameraParameters(m_ScreenWidth, 60.0); // XXX
 	m_Terrain->setLatticeDimensions(m_LatticeWidth, m_LatticeHeight);
 
 	std::cout << "TERRAIN CREATED\n";

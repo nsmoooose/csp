@@ -110,6 +110,7 @@ public:
 	virtual void activate() = 0;
 	virtual void deactivate() = 0;
 	virtual bool isActive() = 0;
+	virtual void setScreenSizeHint(int, int) {}
 	virtual void setCameraPosition(double, double, double) = 0;
 	virtual void testLineOfSight(Intersection &, IntersectionHint &) = 0;
 	virtual float getGroundElevation(double x, double y, simdata::Vector3 &normal, IntersectionHint &) = 0;

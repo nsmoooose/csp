@@ -85,6 +85,7 @@ public:
 	virtual float getGroundElevation(double x, double y, IntersectionHint &);
 
 	void setCameraPosition(double, double, double);
+	virtual void setScreenSizeHint(int width, int height);
 
 	int getTerrainPolygonsRendered() const;
 	osg::Node *getNode();
@@ -106,7 +107,9 @@ protected:
 	float m_LatticeWidth;
 	float m_LatticeHeight;
 	simdata::Vector3 m_Origin;
-	
+	int m_ScreenWidth;
+	int m_ScreenHeight;
+
 protected:
 
 	virtual void postCreate();

@@ -103,8 +103,9 @@
 #endif
 
 
-int g_ScreenWidth = 0;
-int g_ScreenHeight = 0;
+// For network testing on a single box it's convenient to disable rendering on
+// one of the sims.  Using a global here just because we're lazy.
+bool g_DisableRender = false;
 
 
 struct SDLWave {
@@ -141,6 +142,8 @@ CSPSim::CSPSim():
 	csplog().setLogPriority(level);
 	std::string logfile = g_Config.getString("Debug", "LogFile", "CSPSim.log", true);
 	csplog().setOutput(logfile);
+
+	g_DisableRender = g_Config.getBool("Debug", "DisableRender", false, false);
 
 	CSP_LOG(APP, INFO, "Constructing CSPSim Object...");
 
@@ -310,6 +313,7 @@ void CSPSim::init()
 		assert(m_Theater.valid());
 		m_Terrain = m_Theater->getTerrain();
 		assert(m_Terrain.valid());
+		m_Terrain->setScreenSizeHint(m_ScreenWidth, m_ScreenHeight);
 		m_Terrain->activate();
 
 		// configure the atmosphere for the theater location
@@ -578,7 +582,9 @@ void CSPSim::run()
 				m_CurrentScreen->onUpdate(dt);
 				PROF1(_screen_update, 60);
 				PROF0(_screen_render);
-				m_CurrentScreen->onRender();
+				if (!g_DisableRender) {
+					m_CurrentScreen->onRender();
+				}
 				PROF1(_screen_render, 60);
 			}
 
@@ -670,7 +676,7 @@ void CSPSim::doInput(double dt)
 	SDL_Event event;
 	short doPoll = 10;
 	while (doPoll-- && (*m_InputEvent)(event)) {
-	//while (doPoll-- && SDL_PollEvent(&event)) {	
+	//while (doPoll-- && SDL_PollEvent(&event)) {
 		bool handled = false;
 		HID::translate(event);
 		if (event.type == SDL_QUIT) {
@@ -693,7 +699,7 @@ void CSPSim::doInput(double dt)
 			}
 		}
 		if (!handled && m_Interface.valid()) {
-		  CSP_LOG(APP, DEBUG, "CSPSim::doInput()-Calling m_Interface->onEvent()");	
+			CSP_LOG(APP, DEBUG, "CSPSim::doInput()-Calling m_Interface->onEvent()");	
 			handled = m_Interface->onEvent(event);
 		}
 	}
@@ -733,9 +739,6 @@ int CSPSim::initSDL()
 
 	m_ScreenHeight = height;
 	m_ScreenWidth = width;
-	
-	g_ScreenHeight = height;
-	g_ScreenWidth = width;
 
 	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK | SDL_INIT_AUDIO) != 0) {
 		std::cerr << "Unable to initialize SDL: " << SDL_GetError() << "\n";

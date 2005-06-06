@@ -1,6 +1,12 @@
  Version 0.4.0 (in progress)
 ===========================
 
+2005-06-05: onsight
+ * Finally remove screen size globals.  Add screen size hints
+   to terrain classes.  Also add an debug config flag to disable
+   rendering, which is helpful when running multiple instances
+   on the same machine to test networking.
+
 2005-05-14: onsight
  * Add a list of contacts to SimObject of nearby vehicles that is
    maintained by the Battlefield.  The battlefield was already

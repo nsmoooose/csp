@@ -2,7 +2,7 @@
 <!-- 
      *** WARNING: THIS IS A GENERATED FILE ***
      Think twice before editing this file directly!
-     Generated from /b/mrose/projects/csp/CSP.cockpit/CSP/CSPSim/Tools/FlightControlSystem/m2k at Wed Apr 27 19:23:29 2005
+     Generated from /b/mrose/projects/csp/CSP.cockpit/CSP/CSPSim/Tools/FlightControlSystem/m2k at Mon Jun  6 20:53:46 2005
 -->
 <Object class="FlightControlSystem">
 	<List name="nodes">
@@ -16,8 +16,8 @@
 		<Object class="OutputChannel">
 			<Key name="id">aileron_deflection</Key>
 			<String name="channel">ControlSurfaces.AileronDeflection</String>
-			<Float name="clamp_hi">0.436332312999</Float>
-			<Float name="clamp_lo">-0.279252680319</Float>
+			<Float name="clamp_hi">0.279252680319</Float>
+			<Float name="clamp_lo">-0.436332312999</Float>
 			<Float name="gain">0.0174532925199</Float>
 			<Key name="input">da_f</Key>
 			<Float name="rate_limit_dec">-1.3962634016</Float>
@@ -80,8 +80,8 @@
 
 		<Object class="Adder">
 			<Key name="id">de_left</Key>
-			<Float name="clamp_hi">25</Float>
-			<Float name="clamp_lo">-16</Float>
+			<Float name="clamp_hi">16</Float>
+			<Float name="clamp_lo">-25</Float>
 			<Float name="gain_a">-1.0</Float>
 			<Float name="gain_b">-1.0</Float>
 			<Key name="input_a">elevator_pitch_deflection_command</Key>
@@ -96,8 +96,8 @@
 
 		<Object class="Adder">
 			<Key name="id">de_right</Key>
-			<Float name="clamp_hi">25</Float>
-			<Float name="clamp_lo">-16</Float>
+			<Float name="clamp_hi">16</Float>
+			<Float name="clamp_lo">-25</Float>
 			<Float name="gain_a">-1.0</Float>
 			<Float name="gain_b">1.0</Float>
 			<Key name="input_a">elevator_pitch_deflection_command</Key>
@@ -122,8 +122,8 @@
 		<Object class="OutputChannel">
 			<Key name="id">elevator_deflection</Key>
 			<String name="channel">ControlSurfaces.ElevatorDeflection</String>
-			<Float name="clamp_hi">0.436332312999</Float>
-			<Float name="clamp_lo">-0.279252680319</Float>
+			<Float name="clamp_hi">0.279252680319</Float>
+			<Float name="clamp_lo">-0.436332312999</Float>
 			<Float name="gain">0.0174532925199</Float>
 			<Key name="input">de_f</Key>
 			<Float name="rate_limit_dec">-1.0471975512</Float>
@@ -140,7 +140,7 @@
 		<Object class="Integrator">
 			<Key name="id">elevator_deviation_integrator</Key>
 			<Float name="clamp_hi">25.0</Float>
-			<Float name="clamp_lo">-25.0</Float>
+			<Float name="clamp_lo">-16.0</Float>
 			<Float name="gain">5.0</Float>
 			<Key name="input">reduced_elevator_deviation</Key>
 		</Object>
@@ -159,8 +159,8 @@
 
 		<Object class="Adder">
 			<Key name="id">elevator_pitch_deflection_command</Key>
-			<Float name="clamp_hi">16</Float>
-			<Float name="clamp_lo">-25</Float>
+			<Float name="clamp_hi">25</Float>
+			<Float name="clamp_lo">-16</Float>
 			<Float name="gain_a">8.0</Float>
 			<Key name="input_a">reduced_elevator_deviation</Key>
 			<Key name="input_b">elevator_deviation_integrator</Key>
@@ -175,8 +175,8 @@
 		<Object class="OutputChannel">
 			<Key name="id">elevron_deflection_left</Key>
 			<String name="channel">ControlSurfaces.LeftElevronDeflection</String>
-			<Float name="clamp_hi">0.436332312999</Float>
-			<Float name="clamp_lo">-0.279252680319</Float>
+			<Float name="clamp_hi">0.279252680319</Float>
+			<Float name="clamp_lo">-0.436332312999</Float>
 			<Float name="gain">0.0174532925199</Float>
 			<Key name="input">de_left_f</Key>
 			<Float name="rate_limit_dec">-1.3962634016</Float>
@@ -186,8 +186,8 @@
 		<Object class="OutputChannel">
 			<Key name="id">elevron_deflection_right</Key>
 			<String name="channel">ControlSurfaces.RightElevronDeflection</String>
-			<Float name="clamp_hi">0.436332312999</Float>
-			<Float name="clamp_lo">-0.279252680319</Float>
+			<Float name="clamp_hi">0.279252680319</Float>
+			<Float name="clamp_lo">-0.436332312999</Float>
 			<Float name="gain">0.0174532925199</Float>
 			<Key name="input">de_right_f</Key>
 			<Float name="rate_limit_dec">-1.3962634016</Float>

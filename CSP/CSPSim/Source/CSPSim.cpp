@@ -1,5 +1,5 @@
-// Combat Simulator Project - FlightSim Demo
-// Copyright (C) 2002-2004 The Combat Simulator Project
+// Combat Simulator Project
+// Copyright (C) 2002-2005 The Combat Simulator Project
 // http://csp.sourceforge.net
 //
 // This program is free software; you can redistribute it and/or
@@ -70,8 +70,8 @@
 
 #include <SimNet/ClientServer.h>
 
-#include <GL/gl.h>		// Header File For The OpenGL32 Library
-#include <GL/glu.h>		// Header File For The GLu32 Library
+#include <GL/gl.h>   // Header File For The OpenGL32 Library
+#include <GL/glu.h>  // Header File For The GLu32 Library
 
 #include <osg/Timer>
 #include <osg/Notify>
@@ -329,7 +329,7 @@ void CSPSim::init()
 
 		CSP_LOG(APP, DEBUG, "INIT:: scene");
 
-		m_Scene = new VirtualScene();
+		m_Scene = new VirtualScene(m_ScreenWidth, m_ScreenHeight);
 		m_Scene->buildScene();
 		m_Scene->setTerrain(m_Terrain);
 
@@ -535,6 +535,10 @@ void CSPSim::run()
 	m_Atmosphere->setDate(date);
 	m_Atmosphere->reset();
 
+	simdata::Timer time_object_update;
+	simdata::Timer time_render;
+	bool lopri = false;
+
 	try
 	{
 		while (!m_Finished) {
@@ -556,9 +560,11 @@ void CSPSim::run()
 
 			// Miscellaneous Updates
 			low_priority += dt;
+			lopri = false;
 			if (low_priority > 0.33) {
 				switch (idx++) {
 					case 0:
+						lopri = true;
 						m_Atmosphere->update(low_priority);
 						break;
 					default:
@@ -571,7 +577,9 @@ void CSPSim::run()
 			PROF0(_objects);
 			if (!m_Paused && !m_ConsoleOpen) {
 				//CSP_LOG(APP, ERROR, "update objects");
+				time_object_update.start();
 				updateObjects(dt);
+				time_object_update.stop();
 				//CSP_LOG(APP, ERROR, "update objects done");
 			}
 			PROF1(_objects, 60);
@@ -582,9 +590,11 @@ void CSPSim::run()
 				m_CurrentScreen->onUpdate(dt);
 				PROF1(_screen_update, 60);
 				PROF0(_screen_render);
+				time_render.start();
 				if (!g_DisableRender) {
 					m_CurrentScreen->onRender();
 				}
+				time_render.stop();
 				PROF1(_screen_render, 60);
 			}
 
@@ -603,6 +613,10 @@ void CSPSim::run()
 			SDL_GL_SwapBuffers();
 #endif
 			PROF1(_simloop, 30);
+
+			if (time_render.elapsed() + time_object_update.elapsed() > 0.05) {
+				//std::cout << "long frame: update=" << time_object_update.elapsed() << " render=" << time_render.elapsed() << " lo=" << lopri << "\n";
+			}
 		}
 		//m_Battlefield->dumpObjectHistory();
 	}

@@ -173,8 +173,6 @@ private:
 
 	// text information
 	osg::ref_ptr<ScreenInfoManager> m_ScreenInfoManager;
-	osg::ref_ptr<osgUtil::SceneView> m_InfoView;
-	osg::ref_ptr<osg::Group> m_InfoGroup;
 	osg::ref_ptr<PyConsole> m_Console;
 
 	simdata::Ref<DynamicObject> m_ActiveObject;

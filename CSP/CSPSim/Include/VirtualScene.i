@@ -24,6 +24,11 @@
 
 class VirtualScene
 {
+private:
+	// this is a public ctor but we declare it as private here to prevent
+	// VirtualScene instances from being created from python.
+	VirtualScene(int x, int y);
+
 public:
 	void addObject(simdata::Ref<DynamicObject> object);
 	void removeObject(simdata::Ref<DynamicObject> object);

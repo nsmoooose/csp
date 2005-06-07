@@ -169,32 +169,24 @@ GameScreen::~GameScreen() {
 }
 
 void GameScreen::onInit() {
-	// add a layer for texts on screen
-	m_InfoView = new osgUtil::SceneView();
-	m_InfoView->setDefaults();
+	// add a layer for overlay text on screen
+	const int ScreenWidth = CSPSim::theSim->getSDLScreen()->w;
+	const int ScreenHeight = CSPSim::theSim->getSDLScreen()->h;
 
-	int ScreenWidth = CSPSim::theSim->getSDLScreen()->w;
-	int ScreenHeight = CSPSim::theSim->getSDLScreen()->h;
-
-	m_InfoView->setViewport(0,0,ScreenWidth,ScreenHeight);
-
-	m_InfoView->getRenderStage()->setClearMask(GL_DEPTH_BUFFER_BIT);
-
-	m_ScreenInfoManager = new ScreenInfoManager(ScreenWidth,ScreenHeight);
+	m_ScreenInfoManager = new ScreenInfoManager(ScreenWidth, ScreenHeight);
 	m_ScreenInfoManager->setName("ScreenInfoManager");
 	m_ScreenInfoManager->setStatus("PAUSE", CSPSim::theSim->isPaused());
 	m_ScreenInfoManager->setStatus("RECORD", false);
 
+	/*
 	m_Console = new PyConsole(ScreenWidth, ScreenHeight);
 	m_Console->setName("PyConsole");
+	*/
 
-	m_InfoGroup = new osg::Group;
-	m_InfoGroup->addChild(m_ScreenInfoManager.get());
-	m_InfoGroup->addChild(m_Console.get());
-
-	m_InfoView->setSceneData(m_InfoGroup.get());
-
-	//CSPSim::theSim->getScene()->getContextIDFactory()->getOrCreateContextID(m_InfoView.get());
+	osg::Group *info = CSPSim::theSim->getScene()->getInfoGroup();
+	info->removeChild(0, info->getNumChildren());
+	info->addChild(m_ScreenInfoManager.get());
+	//info->addChild(m_Console.get());
 
 	simdata::Ref<DynamicObject> ao = CSPSim::theSim->getActiveObject();
 	if (ao.valid()) {
@@ -248,27 +240,10 @@ void GameScreen::onRender() {
 	if (scene) {
 		scene->drawScene();
 	}
-	m_InfoView->cull();
-
-	// FIXME pushing and popping state around the SceneView.draw call should
-	// _not_ be necessary, yet all three of the SceneViews currently used by
-	// CSP leak state.  It's not clear where the state leaks occur, and the
-	// whole problem may go away when we upgrade to the next version of OSG.
-	glPushAttrib(GL_ALL_ATTRIB_BITS); // FIXME
-	glPushClientAttrib(GL_ALL_CLIENT_ATTRIB_BITS); // FIXME
-	//GlStateSnapshot snapshot; // <-- uncomment this to log the state leak
-	m_InfoView->draw();
-	//snapshot.logDiff("info view"); // <-- uncomment this to log the state leak
-	glPopClientAttrib(); // FIXME
-	glPopAttrib(); // FIXME
 }
 
 void GameScreen::onUpdate(double dt) {
-	static short i = 0;
 	setCamera(dt);
-	if ((++i)%3 == 0) {
-		m_InfoView->update();
-	}
 	if (m_DataRecorder.valid()) {
 		m_DataRecorder->timeStamp(dt);
 	}

@@ -1,17 +1,17 @@
-// Combat Simulator Project - FlightSim Demo
-// Copyright (C) 2002 The Combat Simulator Project
+// Combat Simulator Project
+// Copyright (C) 2002-2005 The Combat Simulator Project
 // http://csp.sourceforge.net
-// 
+//
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
 // as published by the Free Software Foundation; either version 2
 // of the License, or (at your option) any later version.
-// 
+//
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU General Public License
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
@@ -39,6 +39,9 @@ namespace osg {
 	class Transform;
 	class FrameStamp;
 	class PositionAttitudeTransform;
+	class State;
+	class StateSet;
+	class DisplaySettings;
 }
 
 namespace osgUtil {
@@ -76,19 +79,18 @@ public:
 	unsigned int getOrCreateContextID(osgUtil::SceneView *scene_view);
 };
 
-/**
- * class VirtualScene
- *
- * @author unknown
- */
 
+/**
+ * A class that manages the 3D scene.  Currently created by CSPSim and used as a
+ * singleton.  See CSPSim::getScene().
+ */
 class VirtualScene: public simdata::Referenced
 {
 public:
-	VirtualScene();
+	VirtualScene(int width, int height);
 	virtual ~VirtualScene();
 
-	int buildScene();
+	void buildScene();
 	void buildSky();
 
 	int drawScene();
@@ -150,6 +152,8 @@ public:
 
 	void drawPlayerInterface();
 
+	osg::Group *getInfoGroup();
+
 private:
 
 	typedef osg::ref_ptr<FeatureTile> FeatureTileRef;
@@ -164,14 +168,37 @@ private:
 	void _updateOrigin(simdata::Vector3 const &origin);
 	std::string logLookAt();
 
+	osgUtil::SceneView *makeSceneView();
+
+	void init();
+	void createSceneViews();
+
+	void createVeryFarView();
+	void createFarView();
+	void createNearView();
+	void createInfoView();
+
+	void drawVeryFarView();
+	void drawFarView();
+	void drawNearView();
+	void drawInfoView();
+
+
 protected:
 
 	void _updateFog(simdata::Vector3 const &lookPos, simdata::Vector3 const &eyePos);
 
 	simdata::Ref<TerrainObject> m_Terrain;
 
+	osg::ref_ptr<osgUtil::SceneView> m_InfoView;
 	osg::ref_ptr<osgUtil::SceneView> m_NearView;
 	osg::ref_ptr<osgUtil::SceneView> m_FarView;
+	osg::ref_ptr<osgUtil::SceneView> m_VeryFarView;
+
+	osg::ref_ptr<osg::State> m_GlobalState;
+	osg::ref_ptr<osg::StateSet> m_GlobalStateSet;
+	osg::ref_ptr<osg::DisplaySettings> m_DisplaySettings;
+
 	osg::ref_ptr<osg::FrameStamp> m_FrameStamp;
 	simdata::Ref<ContextIDFactory> m_ContextIDFactory;
 
@@ -193,17 +220,22 @@ protected:
 	double m_FeatureTileSize;
 	double m_FeatureTileScale;
 
+	const int m_ScreenWidth;
+	const int m_ScreenHeight;
+
 	simdata::Vector3 m_Origin;
 	simdata::Vector3 m_SkyPoint;
 	simdata::Vector3 m_TerrainOrigin;
 
-	osg::ref_ptr<osg::Group> m_RootNode;
-
-	osg::ref_ptr<osg::Transform> m_EyeTransform;
 	osg::ref_ptr<Sky> m_Sky;
 	osg::ref_ptr<osg::Group> m_SkyLights;
 
+	// the root nodes for each sceneview
+	osg::ref_ptr<osg::Group> m_VeryFarGroup;
+	osg::ref_ptr<osg::Group> m_FarGroup;
 	osg::ref_ptr<osg::Group> m_NearGroup;
+	osg::ref_ptr<osg::Group> m_InfoGroup;
+
 	osg::ref_ptr<osg::Group> m_NearObjectGroup;
 	osg::ref_ptr<osg::Group> m_FogGroup;
 	osg::ref_ptr<osg::Group> m_ObjectGroup;

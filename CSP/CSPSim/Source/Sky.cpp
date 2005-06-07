@@ -1,5 +1,5 @@
-// Combat Simulator Project - FlightSim Demo
-// Copyright (C) 2002 The Combat Simulator Project
+// Combat Simulator Project
+// Copyright (C) 2002-2005 The Combat Simulator Project
 // http://csp.sourceforge.net
 //
 // This program is free software; you can redistribute it and/or
@@ -348,7 +348,7 @@ void AstronomicalBody::initLight(int n) {
 	m_Light->setDiffuse(osg::Vec4(0.0f,0.0f,0.0f,1.0f));
 	m_Light->setSpecular(osg::Vec4(0.0f,0.0f,0.0f,1.0f));
 }
-	
+
 
 Sun::Sun(): AstronomicalBody() {
 	_radius = 695508000.0;
@@ -412,8 +412,7 @@ void Sun::_updateLighting(float x, float y, float z, float /*h*/, Color const &c
 		// (give or take the sun's diameter)
 		diffuse_scale = 0.5;
 		// fade out specular faster as sun drops below the horizon
-		specular_scale = 0.5 + 9.0*z;
-		if (specular_scale < 0.0) specular_scale = 0.0;
+		specular_scale = std::max(0.0, 0.5 + 9.0*z);
 		// get the "sun shine" from the horizion, not below.
 		z = 0.0;
 	}
@@ -431,8 +430,8 @@ void Sun::_updateLighting(float x, float y, float z, float /*h*/, Color const &c
 	                              1.0f));
 	m_Light->setDiffuse(osg::Vec4(diffuse_scale*light_r,
 	                              diffuse_scale*light_g,
-				      diffuse_scale*light_b,
-				      1.0f));
+	                              diffuse_scale*light_b,
+	                              1.0f));
 	m_Light->setSpecular(osg::Vec4(specular_scale*light_r,
 	                               specular_scale*light_g,
 	                               specular_scale*light_b,
@@ -1098,8 +1097,8 @@ public:
 		float a = 0.0;
 		float da = 2.0 * simdata::PI / m_Segments;
 		// XXX
-		//float radius = std::min(1000000.0, std::max(1.5*clip, sqrtf(2.0 * 6370000.0 * altitude)));
-		float radius = std::min(99500.0f, std::max(1.5f*clip, sqrtf(2.0f * 6370000.0f * altitude)));
+		float radius = std::min(950000.0f, std::max(1.5f*clip, sqrtf(2.0 * 6370000.0 * altitude)));
+		//float radius = std::min(99500.0f, std::max(1.5f*clip, sqrtf(2.0f * 6370000.0f * altitude)));
 		// variation less than 2 pixels under most conditions:
 		if (fabs(radius - m_Radius) < 0.0005 * m_Radius) return;
 		//std::cerr << "HORIZON -> " << radius << "\n";
@@ -1163,8 +1162,8 @@ void Sky::_init()
 	float x, y, z;
 	float alpha, theta;
 	// XXX
-	//float radius = 1100000.0f;
-	float radius = 99500.0f;
+	float radius = 950000.0f;
+	//float radius = 99500.0f;
 	m_Horizon = new FalseHorizon;
 #ifdef TEXDOME
 	m_Horizon->init(192);

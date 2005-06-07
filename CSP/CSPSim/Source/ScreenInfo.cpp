@@ -84,12 +84,6 @@ ScreenInfo::ScreenInfo(float pos_x, float pos_y, std::string const &name, std::s
 	m_Text(makeText(pos_x,pos_y - m_CharacterSize, text)) {
 		m_InfoGeode->addDrawable(m_Text.get());
 		setName(name);
-		// HACK to prevent text from disappearing when chunklod multitexture details
-		// are turned on:
-		osg::StateSet *ss = getOrCreateStateSet();
-		ss->setTextureMode(1,GL_TEXTURE_2D,osg::StateAttribute::OFF);
-		//ss->setTextureMode(2,GL_TEXTURE_2D,osg::StateAttribute::OFF);
-		//ss->setTextureMode(3,GL_TEXTURE_2D,osg::StateAttribute::OFF);
 		addChild(m_InfoGeode.get());
 }
 

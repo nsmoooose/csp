@@ -73,20 +73,6 @@ public:
 		// serialized?
 		typedef std::vector<std::string> StrVec;
 		StrVec file_name;
-		/*
-		file_name.push_back("CSPLogo.bmp");
-		file_name.push_back("moonrise1.png");
-		file_name.push_back("crescent.png");
-		file_name.push_back("sunlight2.png");
-		file_name.push_back("sunset4.png");
-		file_name.push_back("console2.png");
-		file_name.push_back("TLabMultitex.jpeg");
-		file_name.push_back("landing-2.png");
-		file_name.push_back("vista.png");
-		file_name.push_back("ground-fog.png");
-		file_name.push_back("fx2.jpeg");
-		*/
-
 		file_name.push_back("Logo/CSPLogo.jpg");
 		file_name.push_back("Logo/moonrise1.jpg");
 		file_name.push_back("Logo/crescent.jpg");
@@ -142,7 +128,7 @@ void LogoScreen::onInit() {
 	float w = scale * m_width, h = scale * m_height;
 	m_LogoView->setProjectionMatrixAsOrtho2D(-w,w,-h,h);
 	osg::FrameStamp *fs = new osg::FrameStamp();
-	m_LogoView-> setFrameStamp(fs);
+	m_LogoView->setFrameStamp(fs);
 
 	// create geometry
 	osg::Geometry* geom = new osg::Geometry;

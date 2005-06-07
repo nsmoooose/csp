@@ -396,6 +396,7 @@ public:
 	void bindMotionEvent(std::string const &id, MotionEventSlot const &slot) {
 		runtimeDispatch()->bindMotion(id, slot);
 	}
+
 protected:
 
 	/** Internal */

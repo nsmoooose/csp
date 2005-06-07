@@ -177,7 +177,7 @@ void LandingGear::updateBraking(double dt) {
 	// then builds up gradually over the next couple hundred milliseconds, repeating ad
 	// nauseum if the wheel continues to skid.
 	if (b_BrakeCommand.valid()) {
-		double f = std::min(dt * 5.0, 1.0);  // ad-hoc time constant
+		double f = std::min(dt * 10.0, 1.0);  // ad-hoc time constant
 		double brake_command = simdata::clampTo(b_BrakeCommand->value(), 0.0, 1.0);
 		m_Brake = m_Brake * (1.0 - f) + brake_command * f;
 	}

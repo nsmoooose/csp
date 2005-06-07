@@ -9,6 +9,8 @@
    Another approach would be to add an option to enable polygon
    offset without disabling depth writes.
 
+ * Increase the ABS cycle rate to improve braking performance.
+
 2005-06-05: onsight
  * Finally remove screen size globals.  Add screen size hints
    to terrain classes.  Also add an debug config flag to disable

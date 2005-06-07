@@ -1,6 +1,14 @@
  Version 0.4.0 (in progress)
 ===========================
 
+2005-06-06: onsight
+ * Partially fix depth buffer problem with airbase structures.
+   The floor of the open hangars will still z-fight with the
+   terrain.  Probably the best solution would be to create a
+   separate 3D model for the floor that uses polygon offset.
+   Another approach would be to add an option to enable polygon
+   offset without disabling depth writes.
+
 2005-06-05: onsight
  * Finally remove screen size globals.  Add screen size hints
    to terrain classes.  Also add an debug config flag to disable

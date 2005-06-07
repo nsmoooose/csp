@@ -40,8 +40,8 @@ class rudder_deflection(OutputChannel):
 
 class elevron_deflection_left(OutputChannel):
 	channel = "ControlSurfaces.LeftElevronDeflection"
-	clamp_lo = radians(-16)
-	clamp_hi = radians(25)
+	clamp_lo = radians(-25)
+	clamp_hi = radians(16)
 	input = "de_left_f"
 	gain = DegreesToRadians
 	rate_limit_dec = radians(-80)
@@ -49,8 +49,8 @@ class elevron_deflection_left(OutputChannel):
 
 class elevron_deflection_right(OutputChannel):
 	channel = "ControlSurfaces.RightElevronDeflection"
-	clamp_lo = radians(-16)
-	clamp_hi = radians(25)
+	clamp_lo = radians(-25)
+	clamp_hi = radians(16)
 	input = "de_right_f"
 	gain = DegreesToRadians
 	rate_limit_dec = radians(-80)
@@ -58,8 +58,8 @@ class elevron_deflection_right(OutputChannel):
 
 class aileron_deflection(OutputChannel):
 	channel = "ControlSurfaces.AileronDeflection"
-	clamp_lo = radians(-16)
-	clamp_hi = radians(25)
+	clamp_lo = radians(-25)
+	clamp_hi = radians(16)
 	input = "da_f"
 	gain = DegreesToRadians
 	rate_limit_dec = radians(-80)
@@ -67,8 +67,8 @@ class aileron_deflection(OutputChannel):
 
 class elevator_deflection(OutputChannel):
 	channel = "ControlSurfaces.ElevatorDeflection"
-	clamp_lo = radians(-16)
-	clamp_hi = radians(25)
+	clamp_lo = radians(-25)
+	clamp_hi = radians(16)
 	input = "de_f"
 	gain = DegreesToRadians
 	rate_limit_dec = radians(-60)

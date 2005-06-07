@@ -12,16 +12,16 @@ class de_right(Adder):
 	input_b = "da_program"
 	gain_a = -1.0
 	gain_b = 1.0
-	clamp_lo = -16
-	clamp_hi = 25
+	clamp_lo = -25
+	clamp_hi = 16
 
 class de_left(Adder):
 	input_a = "elevator_pitch_deflection_command"
 	input_b = "da_program"
 	gain_a = -1.0
 	gain_b = -1.0
-	clamp_lo = -16
-	clamp_hi = 25
+	clamp_lo = -25
+	clamp_hi = 16
 
 class de_f(Adder):
 	input_a = "de_left_f"
@@ -101,12 +101,12 @@ class elevator_pitch_deflection_command(Adder):
 	input_a = "reduced_elevator_deviation"
 	input_b = "elevator_deviation_integrator"
 	gain_a = 8.0
-	clamp_lo = -25
-	clamp_hi = 16
+	clamp_lo = -16
+	clamp_hi = 25
 
 class elevator_deviation_integrator(Integrator):
 	input = "reduced_elevator_deviation"
 	gain = 5.0
-	clamp_lo = -25.0
+	clamp_lo = -16.0
 	clamp_hi = 25.0
 

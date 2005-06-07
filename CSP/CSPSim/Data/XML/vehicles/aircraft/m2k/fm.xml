@@ -17,7 +17,7 @@
 
     <!-- Drag Parameters -->
     <Float name="cd0">0.06</Float>
-    <Float name="cd_a">0.07</Float>
+    <Float name="cd_a">0.18</Float>
     <Float name="cd_de">0.0703</Float>
     <Float name="cd_db">0.0876</Float>
     <Table2 name="cd_m_a">
@@ -84,8 +84,8 @@
     <!--Float name="cl_dh">0.62</Float-->
 
     <!-- Pitch Moment Parameters -->
-    <Float name="cm0">0.2</Float>
-    <Float name="cm_a">-1.0</Float>
+    <Float name="cm0">0.06</Float>
+    <Float name="cm_a">-0.6</Float>
     <!--Float name="cm_a">-3.5</Float-->
     <Float name="cm_adot">-3.61</Float>
     <Float name="cm_q">-53</Float><!-- <0  -->

@@ -11,6 +11,10 @@
 
  * Increase the ABS cycle rate to improve braking performance.
 
+ * Fix reversed limits on m2k elevator deflection.  Tweak cm_0,
+   cm_a, and cd_a to give somewhat less unrealistic behavior.
+   Still totally ad-hoc.
+
 2005-06-05: onsight
  * Finally remove screen size globals.  Add screen size hints
    to terrain classes.  Also add an debug config flag to disable

@@ -815,12 +815,12 @@ void VirtualScene::setTerrain(simdata::Ref<TerrainObject> terrain) {
 bool VirtualScene::pick(int x, int y) {
 	if (m_NearObjectGroup->getNumChildren() > 0) {
 		assert(m_NearObjectGroup->getNumChildren() == 1);
-		osg::Vec3 near;
-		osg::Vec3 far;
+		osg::Vec3 var_near;
+		osg::Vec3 var_far;
 		const int height = m_NearView->getViewport()->height();
-		if (m_NearView->projectWindowXYIntoObject(x, height - y, near, far)) {
+		if (m_NearView->projectWindowXYIntoObject(x, height - y, var_near, var_far)) {
 			osgUtil::IntersectVisitor iv;
-			osg::ref_ptr<osg::LineSegment> line_segment = new osg::LineSegment(near, far);
+			osg::ref_ptr<osg::LineSegment> line_segment = new osg::LineSegment(var_near, var_far);
 			iv.addLineSegment(line_segment.get());
 			m_NearView->getSceneData()->accept(iv);
 			osgUtil::IntersectVisitor::HitList &hits = iv.getHitList(line_segment.get());

@@ -89,7 +89,7 @@ class CockpitInterface: public simdata::Referenced {
 
 public:
 	virtual void registerChannels(Bus *bus);
-	virtual void bindEvents(InputInterface *interface);
+	virtual void bindEvents(InputInterface *pInterface);
 	virtual void addElement(CockpitElement *element);
 
 private:

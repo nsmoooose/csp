@@ -34,9 +34,10 @@
 #include <CSPSim.h>
 
 
-
 SIMDATA_REGISTER_INTERFACE(AircraftFlightSensors)
 
+
+AircraftFlightSensors::AircraftFlightSensors(): m_Distance(0) { }
 
 double AircraftFlightSensors::onUpdate(double dt) {
 	simdata::Vector3 pos = b_Position->value();

@@ -171,7 +171,7 @@ void Atmosphere::generateWinds() {
 	m_TurbulenceZ = noise.generate(1000, true, 10.0, 1.0, 0.0);
 	for (i = 0; i < 1000; i++) {
 		float a;
-		a= m_TurbulenceX[i];
+		a = m_TurbulenceX[i];
 		m_TurbulenceX[i] *= 10.0f * a * fabsf(a);
 		a = m_TurbulenceY[i];
 		m_TurbulenceY[i] *= 10.0f * a * fabsf(a);
@@ -234,18 +234,27 @@ simdata::Vector3 Atmosphere::getWind(simdata::Vector3 const &p) const {
 	const double f = h - idx;
 	wind.x() += m_WindAltX[idx]*(1.0-f) + m_WindAltX[idx+1]*f;
 	wind.y() += m_WindAltY[idx]*(1.0-f) + m_WindAltY[idx+1]*f;
-	return wind * m_WindScale * m_GustModulation;
+	wind *= m_WindScale * m_GustModulation;
+	if (wind.length() > 100.0) {  // XXX remove me
+		std::cout << "strong wind! " << m_WindScale << " " << m_GustModulation << " " << wind << "\n";
+	}
+	return wind;
 }
 
 simdata::Vector3 Atmosphere::getTurbulence(simdata::Vector3 const &p, double dist) const {
+	assert(dist >= 0.0 && dist < 2e+9);
 	int idx = simdata::clampTo(static_cast<int>(p.z() * (1000.0 / 15000.0)), 0, 999);
 	double a = std::max(m_TurbulenceAltA[idx], 0.0f);
 	float b = std::max(m_TurbulenceAltB[idx], 0.0f);
+	assert(m_TurbulenceBlend >= 0.0 && m_TurbulenceBlend <= 1.0);
 	a = a * (1.0 - m_TurbulenceBlend) + b * m_TurbulenceBlend;
 	if (a <= 0.0) return simdata::Vector3::ZERO;
-	if (dist < 0.0) dist = - dist;
-	idx = static_cast<int>(dist * 0.1) % 1000;
-	return simdata::Vector3(a * m_TurbulenceX[idx], a * m_TurbulenceY[idx], a * m_TurbulenceZ[idx]);
+	idx = std::max(0, static_cast<int>(dist * 0.1)) % 1000;
+	const simdata::Vector3 turbulence(a * m_TurbulenceX[idx], a * m_TurbulenceY[idx], a * m_TurbulenceZ[idx]);
+	if (turbulence.length() > 100.0) {  // XXX remove me
+		std::cout << "strong turbulence! " << a << " " << turbulence << " " << m_TurbulenceX[idx] << " " << idx << " " << dist << " " << m_TurbulenceBlend << "\n";
+	}
+	return turbulence;
 }
 
 void Atmosphere::setPosition(double lat, double lon) {
@@ -306,11 +315,9 @@ bool Atmosphere::fastUpdate(double &dt) {
 	const float f = static_cast<float>(m_GustIndex - index);
 	const float gust = m_GustTime[index%1000] * (1.0f - f) + m_GustTime[(index+1)%1000] * f;
 	m_GustModulation = std::max(1.0, 1.0 + gust);
-	//std::cout << getWind(simdata::Vector3::ZERO) << " " << m_GustModulation << std::endl;
 	if (m_FastUpdate < 3.0) return false;
 	dt = m_FastUpdate;
 	m_FastUpdate = 0.0;
-	std::cout << "wind scale = " << m_WindScale << ", gust = " << m_GustModulation << "\n";
 	return true;
 }
 
@@ -351,7 +358,7 @@ void Atmosphere::update(double dt) {
 			}
 		}
 	} else {
-		m_TurbulenceBlend += dt * 0.0003;
+		m_TurbulenceBlend -= dt * 0.0003;
 		if (m_TurbulenceBlend < 0.0) {
 			Perlin1D noise;
 			noise.set(0.9, 6);

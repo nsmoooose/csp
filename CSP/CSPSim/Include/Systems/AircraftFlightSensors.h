@@ -35,6 +35,8 @@ public:
 	EXTEND_SIMDATA_XML_INTERFACE(AircraftFlightSensors, System)
 	END_SIMDATA_XML_INTERFACE
 
+	AircraftFlightSensors();
+
 protected:
 	virtual double onUpdate(double dt);
 	virtual void importChannels(Bus *bus);

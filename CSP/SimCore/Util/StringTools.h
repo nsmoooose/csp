@@ -48,6 +48,15 @@ public:
 	StringTokenizer(const std::string &str, const std::string &delimiters = " ,\n");
 };
 
+/** Remove leading and trailing whitespace, or other characters if specified. */
+std::string TrimString(std::string const &str, std::string const &chars = " \n\r\t");
+
+/** Remove leading whitespace, or other characters if specified. */
+std::string LeftTrimString(std::string const &str, std::string const &chars = " \n\r\t");
+
+/** Remove trailing whitespace, or other characters if specified. */
+std::string RightTrimString(std::string const &str, std::string const &chars = " \n\n\t");
+
 
 #endif // __SIMCORE_UTIL_STRINGTOOLS_H__
 

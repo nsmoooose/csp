@@ -46,3 +46,18 @@ StringTokenizer::StringTokenizer(const std::string &str, const std::string &deli
 	}
 }
 
+std::string TrimString(std::string const &str, std::string const &chars) {
+	const std::string::size_type begin = str.find_first_not_of(chars);
+	const std::string::size_type end = str.find_last_not_of(chars);
+	return begin == std::string::npos ? "" : str.substr(begin, (1 + end) - begin);
+}
+
+std::string LeftTrimString(std::string const &str, std::string const &chars) {
+	const std::string::size_type begin = str.find_first_not_of(chars);
+	return begin == std::string::npos ? "" : str.substr(begin);
+}
+
+std::string RightTrimString(std::string const &str, std::string const &chars) {
+	const std::string::size_type end = str.find_last_not_of(chars);
+	return end == std::string::npos ? "" : str.substr(0, end + 1);
+}

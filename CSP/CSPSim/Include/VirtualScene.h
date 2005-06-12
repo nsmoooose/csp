@@ -144,6 +144,9 @@ public:
 	void getViewport(int& x,int& y,int& width,int& height);
 	ContextIDFactory* const getContextIDFactory() const {return m_ContextIDFactory.get();}
 
+	void setLabels(bool show);
+	bool getLabels() const;
+
 	void spinTheWorld(bool spin);
 	void resetSpin();
 	double getSpin();
@@ -183,7 +186,6 @@ private:
 	void drawNearView();
 	void drawInfoView();
 
-
 protected:
 
 	void _updateFog(simdata::Vector3 const &lookPos, simdata::Vector3 const &eyePos);
@@ -222,6 +224,8 @@ protected:
 
 	const int m_ScreenWidth;
 	const int m_ScreenHeight;
+
+	unsigned m_NodeMask;
 
 	simdata::Vector3 m_Origin;
 	simdata::Vector3 m_SkyPoint;

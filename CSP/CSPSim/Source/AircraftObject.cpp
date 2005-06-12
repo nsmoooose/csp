@@ -32,6 +32,7 @@
 #include "Engine.h"
 #include "FlightModel.h"
 #include "ObjectModel.h"
+#include "Station.h"
 #include "SystemsModel.h"
 
 #include <SimCore/Util/Log.h>
@@ -70,16 +71,16 @@ void AircraftObject::postCreate() {
 }
 
 
-void AircraftObject::registerChannels(Bus::Ref bus) {
+void AircraftObject::registerChannels(Bus* bus) {
 	DynamicObject::registerChannels(bus);
-	if (bus.valid()) {
+	if (bus) {
 		bus->registerChannel(b_Heading.get());
 		bus->registerChannel(b_Pitch.get());
 		bus->registerChannel(b_Roll.get());
 	}
 }
 
-void AircraftObject::bindChannels(Bus::Ref bus) {
+void AircraftObject::bindChannels(Bus* bus) {
 	DynamicObject::bindChannels(bus);
 }
 

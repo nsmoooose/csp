@@ -42,6 +42,7 @@ map key:KP_MINUS    release     CAMERA_ZOOM_STOP
 map key:F1          press       SPIN_THE_WORLD/B|SPIN_THE_WORLD_STOP/B
 map key:F2          press       RESET_SPIN
 map key:o           press       PRINT_SCREEN
+map key:l           press       LABELS_TOGGLE
 
 map mouse:WHEELUP           press       CAMERA_ZOOM_STEP_IN
 map mouse:WHEELDOWN         press       CAMERA_ZOOM_STEP_OUT

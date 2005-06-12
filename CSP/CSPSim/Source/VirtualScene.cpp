@@ -33,6 +33,7 @@
 #include "Animation.h"
 #include "ObjectModel.h"
 #include "glDiagnostics.h"
+#include "SceneConstants.h"
 
 #include <SimCore/Util/Log.h>
 #include <SimData/Types.h>
@@ -41,20 +42,20 @@
 #include <SimData/osg.h>
 
 #include <osg/Fog>
+#include <osg/BlendColor>
+#include <osg/BlendFunc>
+#include <osg/ColorMatrix>
+#include <osg/LightSource>
+#include <osg/Material>
 #include <osg/Node>
 #include <osg/Notify>
 #include <osg/PolygonMode>
-#include <osg/ColorMatrix>
-#include <osg/LightSource>
 #include <osg/PositionAttitudeTransform>
-#include <osgUtil/SceneView>
-#include <osgUtil/Optimizer>
+#include <osg/StateSet>
 #include <osgUtil/CullVisitor>
 #include <osgUtil/IntersectVisitor>
-
-#include <osg/Material>
-#include <osg/BlendFunc>
-#include <osg/StateSet>
+#include <osgUtil/Optimizer>
+#include <osgUtil/SceneView>
 
 #include <cmath>
 #include <cassert>
@@ -135,12 +136,29 @@ unsigned int ContextIDFactory::getOrCreateContextID(osgUtil::SceneView *scene_vi
 
 class FeatureTile: public osg::PositionAttitudeTransform {
 	simdata::Vector3 m_GlobalPosition;
-	public:
-	FeatureTile(simdata::Vector3 const &origin): m_GlobalPosition(origin) { }
+	/* experiment
+	osg::ref_ptr<osg::BlendColor> m_BlendColor;
+	*/
+public:
+	FeatureTile(simdata::Vector3 const &origin): m_GlobalPosition(origin) {
+		/* experiment
+		m_BlendColor = new osg::BlendColor;
+		getOrCreateStateSet()->setAttributeAndModes(new osg::BlendFunc(GL_ONE_MINUS_CONSTANT_ALPHA, GL_CONSTANT_ALPHA), osg::StateAttribute::ON|osg::StateAttribute::OVERRIDE);
+		getOrCreateStateSet()->setAttributeAndModes(m_BlendColor.get(), osg::StateAttribute::ON|osg::StateAttribute::OVERRIDE);
+		*/
+	}
 	typedef osg::ref_ptr<FeatureTile> Ref;
 	inline void updateOrigin(simdata::Vector3 const &origin) {
 		simdata::Vector3 offset = m_GlobalPosition - origin;
 		setPosition(osg::Vec3(offset.x(), offset.y(), offset.z()));
+		/** experiment with feature fading.  fading full tiles is efficient but too coarse.  might work for
+		 *  smaller tiles (say 10x10km) but that adds overhead.  could drop into tiles that are in the fade
+		 *  zone and blend individual features.  can probably get away with updating the blendcolor every
+		 *  few frames.
+		double distance = origin.length();
+		float alpha = std::min(static_cast<float>(distance - 30000.0) / 10000.0f, 1.0f);
+		m_BlendColor->setConstantColor(osg::Vec4(alpha, alpha, alpha, alpha));
+		*/
 	}
 };
 
@@ -230,7 +248,8 @@ VirtualScene::VirtualScene(int width, int height):
 	m_FeatureTileSize(40000.0), // 40 km
 	m_FeatureTileScale(1.0 / m_FeatureTileSize),
 	m_ScreenWidth(width),
-	m_ScreenHeight(height) {
+	m_ScreenHeight(height),
+	m_NodeMask(0) {
 }
 
 VirtualScene::~VirtualScene() { }
@@ -283,9 +302,9 @@ osgUtil::SceneView *VirtualScene::makeSceneView() {
 	sv->getCullVisitor()->setImpostorsActive(true);
 	sv->getCullVisitor()->setComputeNearFarMode(osgUtil::CullVisitor::COMPUTE_NEAR_FAR_USING_BOUNDING_VOLUMES);
 	sv->getCullVisitor()->setCullingMode(osgUtil::CullVisitor::ENABLE_ALL_CULLING);
-	sv->setCullMask(0x2);
+	sv->setCullMask(SceneMasks::CULL_ONLY | SceneMasks::NORMAL);
 	// default update settings
-	sv->getUpdateVisitor()->setTraversalMask(0x1);
+	sv->getUpdateVisitor()->setTraversalMask(SceneMasks::UPDATE_ONLY | SceneMasks::NORMAL);
 	return sv;
 }
 
@@ -355,8 +374,9 @@ void VirtualScene::buildScene() {
 
 	osg::ClearNode* background = new osg::ClearNode;
 	// the horizon fan and sky now completely enclose the camera so there
-	// is no longer any need to clear the background.
-	background->setRequiresClear(false);
+	// is no longer any need to clear the background for normal rendering.
+	// blanking is only needed for wireframe mode.
+	background->setRequiresClear(true);
 	background->setClearColor(osg::Vec4(0.6, 0.3, 0.4, 1.0));
 	background->addChild(m_Sky.get());
 
@@ -810,6 +830,15 @@ void VirtualScene::setTerrain(simdata::Ref<TerrainObject> terrain) {
 
 		}
 	}
+}
+
+void VirtualScene::setLabels(bool show) {
+	m_NodeMask = (m_NodeMask & ~SceneMasks::LABELS) | show ? SceneMasks::LABELS : 0;
+	m_FarView->setCullMask(SceneMasks::CULL_ONLY | SceneMasks::NORMAL | m_NodeMask);
+}
+
+bool VirtualScene::getLabels() const {
+	return (m_NodeMask & SceneMasks::LABELS) != 0;
 }
 
 bool VirtualScene::pick(int x, int y) {

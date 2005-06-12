@@ -1,5 +1,5 @@
-// Combat Simulator Project - FlightSim Demo
-// Copyright (C) 2002 The Combat Simulator Project
+// Combat Simulator Project
+// Copyright (C) 2005 The Combat Simulator Project
 // http://csp.sourceforge.net
 //
 // This program is free software; you can redistribute it and/or
@@ -18,41 +18,24 @@
 
 
 /**
- * @file TankObject.cpp
+ * @file SceneConstants.h
  *
  **/
 
-
-#include "TankObject.h"
-#include "Animation.h"
-#include "ObjectModel.h"
-#include "Station.h"
-#include "SystemsModel.h"
+#ifndef __SCENE_CONSTANTS_H__
+#define __SCENE_CONSTANTS_H__
 
 
-using namespace std;
+class SceneMasks {
+public:
+	typedef enum {
+		UPDATE_ONLY = 0x0001,
+		CULL_ONLY = 0x0002,
+		NORMAL = 0x0003,
+		LABELS = 0x0100
+	} NodeMask;
+};
 
-SIMDATA_REGISTER_INTERFACE(TankObject)
 
-
-TankObject::TankObject(): DynamicObject(TYPE_MUD_UNIT)
-{
-//	m_ObjectType = TANK_OBJECT_TYPE;
-	m_ObjectName = "TANK";
-
-	movement_state = 1;
-	gun_angle = 45.0f;
-	max_viewing_range = 2000.0;
-	max_viewing_angle = 60.0;
-	max_firing_range = 1000.0;
-	forward_speed = 5.0;
-	backward_speed = 2.0;
-	turn_speed = 0.15;
-	bits = 0;
-}
-
-TankObject::~TankObject()
-{
-
-}
+#endif // __SCENE_CONSTANTS_H__
 

@@ -6,6 +6,17 @@
 
  * Allow animations to be disconnected from a bus.
 
+ * Add support for multiple player positions ("stations") within a
+   vehicle.  Each station can have a high-detail model that is
+   swapped in on demand.
+
+   Fix object labels so that they are rendered correctly.  Labels
+   can be toggled by pressing 'l' in the simulation.
+
+   Change some internal interfaces to use Bus* instead of Bus::Ref.
+
+==> ALL USERS: RebuildData.py and regenerate Inputs/gamescreen.hid.
+
 2005-06-06: onsight
  * Partially fix depth buffer problem with airbase structures.
    The floor of the open hangars will still z-fight with the

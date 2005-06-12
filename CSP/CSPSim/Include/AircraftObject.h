@@ -75,8 +75,8 @@ protected:
 	void postUpdate(double dt);
 	//void doPhysics(double dt);
 
-	virtual void registerChannels(Bus::Ref bus);
-	virtual void bindChannels(Bus::Ref bus);
+	virtual void registerChannels(Bus* bus);
+	virtual void bindChannels(Bus* bus);
 
 	virtual void postCreate();
 	virtual void convertXML();

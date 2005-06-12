@@ -87,6 +87,7 @@ SOURCES = [
 	'SimpleSceneManager.cpp',
 	'Sky.cpp',
 	'SmokeEffects.cpp',
+	'Station.cpp',
 	'System.cpp',
 	'SystemsModel.cpp',
 	'TankObject.cpp',

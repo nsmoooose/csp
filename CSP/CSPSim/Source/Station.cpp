@@ -1,5 +1,5 @@
-// Combat Simulator Project - FlightSim Demo
-// Copyright (C) 2002 The Combat Simulator Project
+// Combat Simulator Project
+// Copyright (C) 2005 The Combat Simulator Project
 // http://csp.sourceforge.net
 //
 // This program is free software; you can redistribute it and/or
@@ -18,41 +18,21 @@
 
 
 /**
- * @file TankObject.cpp
+ * @file Station.cpp
  *
  **/
 
-
-#include "TankObject.h"
-#include "Animation.h"
-#include "ObjectModel.h"
-#include "Station.h"
-#include "SystemsModel.h"
+#include <Station.h>
+#include <ObjectModel.h>
 
 
-using namespace std;
 
-SIMDATA_REGISTER_INTERFACE(TankObject)
+SIMDATA_REGISTER_INTERFACE(Station)
 
 
-TankObject::TankObject(): DynamicObject(TYPE_MUD_UNIT)
-{
-//	m_ObjectType = TANK_OBJECT_TYPE;
-	m_ObjectName = "TANK";
+Station::Station(): m_Mask(0) {}
+Station::~Station() {}
 
-	movement_state = 1;
-	gun_angle = 45.0f;
-	max_viewing_range = 2000.0;
-	max_viewing_angle = 60.0;
-	max_firing_range = 1000.0;
-	forward_speed = 5.0;
-	backward_speed = 2.0;
-	turn_speed = 0.15;
-	bits = 0;
-}
-
-TankObject::~TankObject()
-{
-
-}
-
+SceneModelChild *Station::createDetailModel() const {
+	return !m_DetailModel ? 0 : new SceneModelChild(m_DetailModel);
+};

@@ -1,5 +1,5 @@
-// Combat Simulator Project - FlightSim Demo
-// Copyright (C) 2002 The Combat Simulator Project
+// Combat Simulator Project
+// Copyright (C) 2002-2005 The Combat Simulator Project
 // http://csp.sourceforge.net
 //
 // This program is free software; you can redistribute it and/or
@@ -33,19 +33,21 @@
 #include <SimData/Quat.h>
 
 
-class PhysicsModel;
-class SystemsModel;
-class ObjectModel;
-class SceneModel;
-class RemoteController;
-class LocalController;
 class HUD;
+class PhysicsModel;
+class LocalController;
+class ObjectModel;
+class RemoteController;
+class SceneModel;
+class SceneModelChild;
+class Station;
+class SystemsModel;
 
 
 namespace osgParticle {
 	class Geode;
-	class ParticleSystemUpdater;
 	class ModularEmitter;
+	class ParticleSystemUpdater;
 }
 
 
@@ -69,29 +71,10 @@ class DynamicObject: public SimObject, public InputInterface
 
 private:
 
-	virtual void onHuman() {
-		if (isLocal()) {
-			selectVehicleCore();
-		}
-	}
-
-	virtual void onAgent() {
-		if (isLocal()) {
-			cacheSystemsModel();
-			selectVehicleCore();
-		}
-	}
-
-	virtual void onLocal() {
-		selectVehicleCore();
-	}
-
-	virtual void onRemote() {
-		if (isHuman()) {
-			cacheSystemsModel();
-		}
-		selectVehicleCore();
-	}
+	virtual void onHuman();
+	virtual void onAgent();
+	virtual void onLocal();
+	virtual void onRemote();
 
 	void cacheSystemsModel();
 	simdata::Ref<SystemsModel> getCachedSystemsModel();
@@ -100,7 +83,7 @@ private:
 
 
 protected:
-	Bus::Ref getBus();
+	Bus* getBus();
 
 public:
 	BEGIN_SIMDATA_XML_VIRTUAL_INTERFACE(DynamicObject)
@@ -184,9 +167,9 @@ protected:
 	virtual void postUpdate(double dt);
 	virtual void onRender() {}
 
-	virtual void registerChannels(Bus::Ref bus);
-	virtual void bindChannels(Bus::Ref bus);
-	virtual void bindAnimations(Bus::Ref bus);
+	virtual void registerChannels(Bus* bus);
+	virtual void bindChannels(Bus* bus);
+	virtual void bindAnimations(Bus* bus);
 
 	virtual simdata::Ref<simnet::NetworkMessage> getState(simcore::TimeStamp current_timestamp, simdata::SimTime interval, int detail) const;
 	virtual void setState(simdata::Ref<simnet::NetworkMessage> const &msg, simcore::TimeStamp now);
@@ -218,10 +201,18 @@ protected:
 
 	simdata::Link<ObjectModel> m_Model;
 	simdata::Ref<SceneModel> m_SceneModel;
+	simdata::Ref<SceneModelChild> m_StationSceneModel;
 	simdata::Ref<SystemsModel> m_SystemsModel;
 	simdata::Ref<PhysicsModel> m_PhysicsModel;
 	simdata::Ref<LocalController> m_LocalController;
 	simdata::Ref<RemoteController> m_RemoteController;
+
+	void createStationSceneModel();
+	void activateStation(int index);
+	void deactivateStation();
+	Station const *activeStation();
+	int m_ActiveStation;
+	int m_PreviousStation;
 
 	virtual void doPhysics(double dt);
 	virtual void doControl(double dt);

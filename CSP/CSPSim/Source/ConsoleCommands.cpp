@@ -76,7 +76,7 @@ PyConsole::~PyConsole() {
 }
 
 void PyConsole::enable() {
-	setNodeMask(1);
+	setNodeMask(~0);
 	SDL_EnableKeyRepeat(300, 30);
 	update();
 	setCursor(0);

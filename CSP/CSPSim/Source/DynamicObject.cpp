@@ -1,5 +1,5 @@
-// Combat Simulator Project - FlightSim Demo
-// Copyright (C) 2002 The Combat Simulator Project
+// Combat Simulator Project
+// Copyright (C) 2002-2005 The Combat Simulator Project
 // http://csp.sourceforge.net
 //
 // This program is free software; you can redistribute it and/or
@@ -31,6 +31,7 @@
 #include <KineticsChannels.h>
 #include <ObjectModel.h>
 #include <PhysicsModel.h>
+#include <Station.h>
 #include <SystemsModel.h>
 #include <TerrainObject.h>
 
@@ -73,6 +74,9 @@ DynamicObject::DynamicObject(TypeId type): SimObject(type) {
 	setGlobalPosition(simdata::Vector3::ZERO);
 	m_PrevPosition = simdata::Vector3::ZERO;
 
+	m_ActiveStation = -1;
+	m_PreviousStation = 0;
+
 	// XXX XXX hack for now.  these values should probably be externalized in the xml interface.
 	setAggregationBubbles(60000, 40000);
 }
@@ -91,7 +95,8 @@ void DynamicObject::createSceneModel() {
 	if (!m_SceneModel) {
 		m_SceneModel = new SceneModel(m_Model);
 		assert(m_SceneModel.valid());
-		bindAnimations(getBus());
+		if (activeStation()) createStationSceneModel();
+		if (getBus()) bindAnimations(getBus());
 	}
 }
 
@@ -148,6 +153,30 @@ void DynamicObject::setState(simdata::Ref<simnet::NetworkMessage> const &msg, si
 		CSP_LOG(OBJECT, INFO, "set object state (local controller)");
 		m_LocalController->onUpdate(msg, now);
 	}
+}
+
+void DynamicObject::onHuman() {
+	if (isLocal()) {
+		selectVehicleCore();
+	}
+}
+
+void DynamicObject::onAgent() {
+	if (isLocal()) {
+		cacheSystemsModel();
+		selectVehicleCore();
+	}
+}
+
+void DynamicObject::onLocal() {
+	selectVehicleCore();
+}
+
+void DynamicObject::onRemote() {
+	if (isHuman()) {
+		cacheSystemsModel();
+	}
+	selectVehicleCore();
 }
 
 // update
@@ -236,8 +265,14 @@ void DynamicObject::enableSmoke() {
 }
 
 void DynamicObject::internalView(bool internal) {
-	if (m_SceneModel.valid()) {
-		m_SceneModel->onViewMode(internal); 
+	if (!m_SceneModel.valid()) return;
+	m_SceneModel->onViewMode(internal);
+	// the following is mostly for testing; we may want to keep the detailed pit
+	// in the external view as well.  Calling [de]activateStation() also works;
+	// it is less efficient but doesn't create a notible delay.
+	if (m_StationSceneModel.valid()) {
+		m_SceneModel->setPitMask(internal ? activeStation()->getMask() : 0);
+		m_StationSceneModel->getRoot()->setNodeMask(internal ? ~0 : 0);
 	}
 }
 
@@ -282,7 +317,7 @@ SystemsModel::Ref DynamicObject::getCachedSystemsModel() {
 	return model;
 }
 
-void DynamicObject::registerChannels(Bus::Ref bus) {
+void DynamicObject::registerChannels(Bus* bus) {
 	if (!bus) return;
 	bus->registerChannel(b_Position.get());
 	bus->registerChannel(b_ModelPosition.get());
@@ -301,21 +336,65 @@ void DynamicObject::registerChannels(Bus::Ref bus) {
 	bus->registerLocalDataChannel< simdata::Ref<ObjectModel> >("Internal.ObjectModel", m_Model);
 }
 
-Bus::Ref DynamicObject::getBus() {
-	return (m_SystemsModel.valid() ? m_SystemsModel->getBus(): 0);
+Bus* DynamicObject::getBus() {
+	return (m_SystemsModel.valid() ? m_SystemsModel->getBus().get(): 0);
 }
 
-void DynamicObject::bindAnimations(Bus::Ref bus) {
+void DynamicObject::createStationSceneModel() {
+	assert(activeStation() && m_SceneModel.valid() && !m_StationSceneModel);
+	m_StationSceneModel = activeStation()->createDetailModel();
+	if (m_StationSceneModel.valid()) {
+		m_SceneModel->addChild(m_StationSceneModel);
+		m_SceneModel->setPitMask(activeStation()->getMask());
+	}
+}
+
+void DynamicObject::activateStation(int index) {
+	if (m_ActiveStation != index) {
+		if (m_SceneModel.valid() && m_StationSceneModel.valid()) {
+			m_StationSceneModel->bindAnimationChannels(0);
+			m_SceneModel->removeChild(m_StationSceneModel);
+			m_SceneModel->setPitMask(0);
+			m_StationSceneModel = 0;
+		}
+		if (index < static_cast<int>(m_Model->numStations())) {
+			m_ActiveStation = index;
+		} else {
+			m_ActiveStation = -1;
+			CSP_LOG(OBJECT, ERROR, "Selecting invalid station " << index);
+		}
+		if (m_SceneModel.valid() && activeStation()) {
+			createStationSceneModel();
+			m_StationSceneModel->bindAnimationChannels(getBus());
+		}
+	}
+}
+
+void DynamicObject::deactivateStation() {
+	if (m_ActiveStation >= 0) {
+		m_PreviousStation = m_ActiveStation;
+		activateStation(-1);
+	}
+}
+
+Station const *DynamicObject::activeStation() {
+	return m_ActiveStation >= 0 ? m_Model->station(m_ActiveStation) : 0;
+}
+
+void DynamicObject::bindAnimations(Bus* bus) {
 	if (m_SceneModel.valid()) {
 		m_SceneModel->bindAnimationChannels(bus);
 		if (b_Hud.valid()) {
 			m_SceneModel->bindHud(b_Hud->value());
 		}
+		if (m_StationSceneModel.valid()) {
+			m_StationSceneModel->bindAnimationChannels(bus);
+		}
 	}
 }
 
 // called whenever the bus (ie systemsmodel) changes
-void DynamicObject::bindChannels(Bus::Ref bus) {
+void DynamicObject::bindChannels(Bus* bus) {
 	b_Hud = bus->getChannel("HUD", false);
 	bindAnimations(bus);
 }
@@ -328,13 +407,16 @@ void DynamicObject::selectVehicleCore() {
 			systems = getCachedSystemsModel();
 			path = m_HumanModel;
 			CSP_LOG(OBJECT, INFO, "selecting local human systems model for " << *this);
+			activateStation(m_PreviousStation);
 		} else {
 			path = m_AgentModel;
 			CSP_LOG(OBJECT, INFO, "selecting local agent systems model for " << *this);
+			deactivateStation();
 		}
 	} else {
 		path = m_RemoteModel;
 		CSP_LOG(OBJECT, INFO, "selecting remote systems model for " << *this);
+		deactivateStation();
 	}
 	if (!systems && !path.isNone()) {
 		CSPSim *sim = CSPSim::theSim;
@@ -343,7 +425,7 @@ void DynamicObject::selectVehicleCore() {
 			systems = manager.getObject(path);
 			if (systems.valid()) {
 				CSP_LOG(OBJECT, INFO, "registering channels and binding systems for " << *this << " " << this);
-				registerChannels(systems->getBus());
+				registerChannels(systems->getBus().get());
 				systems->bindSystems();
 			}
 		}
@@ -366,8 +448,8 @@ void DynamicObject::setVehicleCore(SystemsModel::Ref systems) {
 		m_SystemsModel->registerUpdate(0);
 	}
 	m_SystemsModel = systems;
-	bindChannels(getBus());
 	if (m_SystemsModel.valid()) {
+		bindChannels(getBus());
 		m_SystemsModel->copyRegistration(this);
 	}
 }

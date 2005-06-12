@@ -29,7 +29,9 @@
 #include "Animation.h"
 #include "Config.h"
 #include "HUD/HUD.h"
+#include "SceneConstants.h"
 #include "SmokeEffects.h"
+#include "Station.h"
 
 #include <osgDB/FileUtils>
 #include <osgDB/Registry>
@@ -56,6 +58,7 @@
 #include <SimData/FileUtility.h>
 #include <SimData/HashUtility.h>
 #include <SimData/osg.h>
+#include <SimData/Timing.h>
 
 /*
 	TODO
@@ -103,18 +106,35 @@ public:
 };
 
 
-/**
- * A visitor for model prototypes to attach animation
- * bindings to the appropriate nodes.  Each prototype
- * only needs to be processed once, immediately after
- * loading the model.  The bindings are used when the
- * model is later cloned by SceneModel to attach
- * animation callbacks.
+/** A helper class for connecting cloned animations to the bus.
+ */
+class AnimationBinder {
+	Bus *m_Bus;
+	std::string m_Label;
+public:
+	AnimationBinder(Bus *bus, std::string const &label): m_Bus(bus), m_Label(label) { }
+	void operator()(osg::ref_ptr<AnimationCallback> &cb) {
+		if (cb.valid()) {
+			if (!cb->bindChannels(m_Bus)) {
+				CSP_LOG(OBJECT, WARNING, "AnimationBinder: failed to bind animation in " << m_Label);
+			}
+		} else {
+			CSP_LOG(OBJECT, WARNING, "AnimationBinder: AnimationCallback not valid in " << m_Label << "; skipping");
+		}
+	}
+};
+
+
+/** A visitor for model prototypes to attach animation bindings to the
+ *  appropriate nodes.  Each prototype only needs to be processed once,
+ *  immediately after loading the model.  The bindings are used when the
+ *  model is later cloned by SceneModel to attach animation callbacks.
  */
 class ModelProcessor: public osg::NodeVisitor {
 	osg::ref_ptr<osg::Node> m_Root;
-	typedef std::multimap<simdata::Key,simdata::Link<Animation> > AnimationsMap;
+	typedef std::multimap<simdata::Key, simdata::Link<Animation> > AnimationsMap;
 	AnimationsMap m_AnimationsMap;
+	std::map<std::string, unsigned> m_InteriorMap;
 
 	void fillMap(simdata::Link<Animation>::vector const *animations) {
 		simdata::Link<Animation>::vector::const_iterator i = animations->begin();
@@ -133,13 +153,13 @@ class ModelProcessor: public osg::NodeVisitor {
 	}
 
 	void breakNameInComponents(const std::string& name, std::string &animation_name, std::string& node_name, const char token =':') const {
-		node_name = name;
+		node_name = TrimString(name);
 		animation_name = "";
 		std::string::size_type pos = name.find(token);
 		if (pos != std::string::npos) {
-			animation_name = name.substr(0,pos);
-			node_name = name.substr(pos+2,name.length() - (pos + 2));
-		} 
+			animation_name = TrimString(name.substr(0, pos));
+			node_name = TrimString(name.substr(pos+1));
+		}
 	}
 
 	struct KeyToCompare: std::unary_function<simdata::Key,bool> {
@@ -152,65 +172,85 @@ class ModelProcessor: public osg::NodeVisitor {
 	};
 
 public:
+
 	ModelProcessor(): NodeVisitor(TRAVERSE_ALL_CHILDREN) { }
+
 	void setAnimations(simdata::Link<Animation>::vector const *animations) {
 		fillMap(animations);
 	}
+
+	std::map<std::string, unsigned> const &getInteriorMap() const { return m_InteriorMap; }
+
 	virtual void apply(osg::Group &node) {
-		if (m_AnimationsMap.empty()) return;
-		std::string name = node.getName();
-		CSP_LOG(APP, DEBUG, "MODEL TRANSFORM: " << name);
-		if (name.substr(0,6) == "ANIM: ") {
-			// In case of a TimedAnimationPath, the node name is not the relevant
-			// string to look for.
-			name = name.substr(6);
+		const std::string label = node.getName();
+		if (label.substr(0, 5) == "ANIM:") {
+			const std::string name = TrimString(label.substr(5));
 			AnimationBinding* animation_binding = 0;
-			
-			// Extract the animation name (if any) and set the node name if different
-			// from 'name'.
+
+			// Extract the animation and node names from the node label, which is of
+			// one of the following two forms:
+			//   ANIM: animation_name : node_name
+			//   ANIM: node_name
 			std::string animation_name;
 			std::string node_name;
-			breakNameInComponents(name,animation_name,node_name);
+			breakNameInComponents(name, animation_name, node_name);
 
-			// Define the key associated to this (possible) node name.
-			simdata::Key node_id = node_name;
-			CSP_LOG(APP, DEBUG, "SEARCHING FOR " << name << " (" << node_id.asString() << ")");
-
-			// Find the first (if any) bound animation mapped by node_id.
+			// Find the first animation binding, if any, based on the node_name.
+			const simdata::Key node_id = node_name;
 			AnimationsMap::iterator i = m_AnimationsMap.find(node_id);
 			AnimationsMap::const_iterator i_end = m_AnimationsMap.end();
 
-			bool found_first_animation = i != i_end;
+			bool found_first_animation = (i != i_end);
 			if (found_first_animation) {
 				// Bind the animation; this will install an osg::UpdateCallback.
-				CSP_LOG(APP, DEBUG, "FOUND ANIMATION");
 				animation_binding = installAnimation(node, i->second);
 			}
 
-			// second pass
+			// Second pass: if this node has an animation_name, check to see if it has a binding.
+			// Otherwise, check to see if there may be two different bindings for node_name.  Note
+			// that we do not allow two node_name bindings if animation_name is set.
 			bool found_second_animation = false;
-			if (animation_name.empty()) {
-				// regular node name
-				if (found_first_animation) {
-					i = std::find_if(++i, m_AnimationsMap.end(), KeyToCompare(node_id));
-					found_second_animation = i != i_end;
-				}
-			} else { // animation name to find by animation_id
-				if (found_first_animation) std::cout << "Looking for: " << animation_name << "\n";
-				simdata::Key animation_id = animation_name;
+			if (!animation_name.empty()) {
+				// animation_name is set; check for an explicit binding.
+				const simdata::Key animation_id = animation_name;
 				i = m_AnimationsMap.find(animation_id);
 				if (i != i_end) {
 					if (!found_first_animation) {
-						installAnimation(node,i->second);
+						installAnimation(node, i->second);
+						found_first_animation = true;
 					} else {
 						found_second_animation = true;
 					}
 				}
+			} else {
+				// only node_name is set, check if it has a second binding.
+				if (found_first_animation) {
+					i = std::find_if(++i, m_AnimationsMap.end(), KeyToCompare(node_id));
+					found_second_animation = (i != i_end);
+				}
+			}
+			if (found_first_animation) {
+				CSP_LOG(OBJECT, DEBUG, "Found primary animation for " << name);
 			}
 			if (found_second_animation) {
 				// Install as a nested callback.
-				CSP_LOG(APP, DEBUG, "FOUND 2nd ANIMATION");
+				CSP_LOG(OBJECT, DEBUG, "Found secondary animation for " << name);
 				if (animation_binding) animation_binding->setNestedAnimation(i->second.get());
+			}
+			if (!found_first_animation && !found_second_animation) {
+				CSP_LOG(OBJECT, WARNING, "Found no animations for node " << name);
+			}
+		} else if (label.substr(0, 8) == "__PITS__") {
+			CSP_LOG(OBJECT, INFO, "Found __PITS__, " << node.getNumChildren() << " children");
+			assert(m_InteriorMap.empty());
+			for (unsigned i = 0; i < node.getNumChildren(); ++i) {
+				std::string pitname = node.getChild(i)->getName();
+				if (m_InteriorMap.find(pitname) == m_InteriorMap.end()) {
+					CSP_LOG(OBJECT, INFO, "Found pit " << pitname);
+					m_InteriorMap[pitname] = i;
+				} else {
+					CSP_LOG(OBJECT, ERROR, "Duplicate interior label " << pitname);
+				}
 			}
 		}
 		traverse(node);
@@ -268,6 +308,7 @@ public:
 std::string g_ModelPath = "";
 
 ObjectModel::ObjectModel(): simdata::Object() {
+	m_Label = "OBJECT";
 	m_Axis0 = simdata::Vector3::XAXIS;
 	m_Axis1 = simdata::Vector3::ZAXIS;
 	m_Offset = simdata::Vector3::ZERO;
@@ -333,6 +374,7 @@ osg::Geometry *makeDiamond(simdata::Vector3 const &pos, float s, osg::Vec4 const
 osg::Node* addSpecularHighlights(osg::Node* model_node) {
 	// add an osgFX effect
 	osgFX::SpecularHighlights *effect = new osgFX::SpecularHighlights;	
+	effect->setName("specular_highlights");
 	effect->setTextureUnit(1);
 	effect->addChild(model_node);
 
@@ -343,25 +385,45 @@ osg::Node* addSpecularHighlights(osg::Node* model_node) {
 	effect->prepareChildren();*/
 	
 	return effect;
-}	
+}
+
+void ObjectModel::generateStationMasks(std::map<std::string, unsigned> const &interior_map) const {
+	for (unsigned i = 0; i < m_Stations.size(); ++i) {
+		unsigned mask = 0;
+		std::vector<std::string> const &names = m_Stations[i]->getMaskNames();
+		for (unsigned j = 0; j < names.size(); ++j) {
+			std::map<std::string, unsigned>::const_iterator iter = interior_map.find(names[j]);
+			if (iter != interior_map.end()) {
+				mask |= (1 << iter->second);
+			} else {
+				CSP_LOG(OBJECT, WARNING, "Pit " << names[j] << " not found while processing station " << m_Stations[i]->getName());
+			}
+		}
+		assert(m_Stations[i]->getMask() == 0U);
+		m_Stations[i]->setMask(mask);
+	}
+}
 
 void ObjectModel::loadModel() {
-	std::string source = m_ModelPath.getSource();
+	simdata::Timer timer;
+	const std::string source = m_ModelPath.getSource();
 
-	CSP_LOG(APP, DEBUG, "ObjectModel::loadModel: " << source);
+	CSP_LOG(OBJECT, INFO, "ObjectModel::loadModel: " << source);
 
+	timer.start();
 	osg::Node *pNode = osgDB::readNodeFile(source);
+	timer.stop();
 
 	if (pNode) {
-		CSP_LOG(APP, DEBUG, "ObjectModel::loadModel: readNodeFile() succeeded");
+		CSP_LOG(OBJECT, INFO, "ObjectModel::loadModel: readNodeFile(" << source << ") succeeded in " << (timer.elapsed() * 1e3) << " ms");
 	} else {
-		CSP_LOG(APP, DEBUG, "ObjectModel::loadModel: readNodeFile() failed.");
+		CSP_LOG(OBJECT, ERROR, "ObjectModel::loadModel: readNodeFile(" << source << ") failed.");
 	}
 
 	assert(pNode);
 
 	m_Model = pNode;
-	m_Model->setName(m_ModelPath.getSource());
+	m_Model->setName(source);
 
 	if (m_PolygonOffset != 0.0) {
 		osg::StateSet *ss = m_Model->getOrCreateStateSet();
@@ -399,27 +461,32 @@ void ObjectModel::loadModel() {
 		m_Model->accept(tfv);
 	}
 
+	CSP_LOG(OBJECT, INFO, "Animations available: " << m_Animations.size());
+	CSP_LOG(OBJECT, INFO, "Processing model");
+	timer.start();
+
 	// add animation hooks to user data field of animation
 	// transform nodes
-	ModelProcessor processor;
-	CSP_LOG(APP, INFO, "ANIMATIONS AVAILABLE: " << m_Animations.size());
-	processor.setAnimations(&m_Animations);
-	CSP_LOG(APP, INFO, "PROCESSING MODEL");
-	m_Model->accept(processor);
-	CSP_LOG(APP, INFO, "PROCESSING MODEL DONE");
+	{
+		ModelProcessor processor;
+		processor.setAnimations(&m_Animations);
+		m_Model->accept(processor);
+		generateStationMasks(processor.getInteriorMap());
+	}
 
-	CSP_LOG(APP, INFO, "LoadModel: XML adjustements");
+	timer.stop();
+	CSP_LOG(OBJECT, INFO, "Processing model finished in " << (timer.elapsed() * 1e+6) << " us");
+
+	// normalize and orthogonalize the model axes.
 	assert(m_Axis0.length() > 0.0);
 	m_Axis0.normalize();
-	// orthogonalize
 	m_Axis1 = m_Axis1 - m_Axis0 * simdata::dot(m_Axis0, m_Axis1);
 	assert(m_Axis1.length() > 0.0);
 	m_Axis1.normalize();
 
-	// insert an adjustment matrix at the head of the model only
-	// if necessary.
+	// insert an adjustment matrix at the head of the model only if necessary.
 	if (m_Axis0 != simdata::Vector3::XAXIS || m_Axis1 != simdata::Vector3::YAXIS || m_Scale != 1.0 || m_Offset != simdata::Vector3::ZERO) {
-		CSP_LOG(APP, WARNING, "Adding model adjustment matrix");
+		CSP_LOG(OBJECT, WARNING, "Adding model adjustment matrix");
 		// find third axis and make the transform matrix
 		simdata::Vector3 axis2 = m_Axis0 ^ m_Axis1;
 		simdata::Matrix3 o(m_Axis0.x(), m_Axis0.y(), m_Axis0.z(),
@@ -437,8 +504,9 @@ void ObjectModel::loadModel() {
 		if (m_Scale != 1.0) {
 			adjust->getOrCreateStateSet()->setMode(GL_NORMALIZE, osg::StateAttribute::ON);
 		}
-		adjust->setName("XML_ADJUSTMENT");
-		adjust->setDataVariance(osg::Object::STATIC);
+		adjust->setName("xmladjustment");
+		//adjust->setDataVariance(osg::Object::STATIC);
+		adjust->setDataVariance(osg::Object::DYNAMIC);
 		adjust->setMatrix(model_orientation);
 		adjust->addChild(m_Model.get());
 		m_Model = adjust;
@@ -456,22 +524,19 @@ void ObjectModel::loadModel() {
 	osg::BoundingSphere s = m_Model->getBound();
 	m_BoundingSphereRadius = s.radius();
 
-	//osg::StateSet * stateSet = m_rpNode->getStateSet();
-	//stateSet->setGlobalDefaults();
-	//m_rpNode->setStateSet(stateSet);
-
 	// add an osgFX::effect
 	if (m_Effect == "SpecularHighlights") {
 		m_Model = addSpecularHighlights(m_Model.get());
 	};
 
 	m_DebugMarkers = new osg::Switch;
+	m_DebugMarkers->setName("debug");
 	// XXX should reuse a single static stateset?
 	m_DebugMarkers->getOrCreateStateSet()->setMode(GL_LIGHTING, osg::StateAttribute::OFF);
 	m_DebugMarkers->getOrCreateStateSet()->setAttributeAndModes(new osg::CullFace, osg::StateAttribute::ON);
 
 	// create visible markers for each contact and debug point
-	CSP_LOG(APP, DEBUG, "LoadModel: add debug markers");
+	CSP_LOG(OBJECT, DEBUG, "Adding debug markers");
 	addDebugMarkers();
 
 	/*
@@ -480,16 +545,14 @@ void ObjectModel::loadModel() {
 	
 	osg::ref_ptr<osg::State> state = new osg::State;
 
-	CSP_LOG(APP, DEBUG, "LoadModel: setting state");
+	CSP_LOG(OBJECT, DEBUG, "Compiling display lists");
 	osgUtil::GLObjectsVisitor ov;
 	ov.setState(state.get());
 	ov.setNodeMaskOverride(0xffffffff);
 	m_Model->accept(ov);
-	CSP_LOG(APP, DEBUG, "LoadModel: setting state for debug markers");
+	CSP_LOG(OBJECT, DEBUG, "Compiling display lists for debug markers");
 	m_DebugMarkers->accept(ov);
 	*/
-
-	CSP_LOG(APP, DEBUG, "LoadModel: done");
 
 	// XXX: there is a really weird bug on vs with the optimizer:
 	// 1) it rarely appears in the release built (never when called from this exact line)
@@ -503,10 +566,13 @@ void ObjectModel::loadModel() {
 	//    it never occurs when running csp in debug mode from the ide.
 	// 5) I'm unable to trace it :)
 
-	//CSP_LOG(APP, DEBUG, "LoadModel: Optimizer run");
-	osgUtil::Optimizer opt;
+	//CSP_LOG(OBJECT, DEBUG, "LoadModel: Optimizer run");
+	//osgUtil::Optimizer opt;
 	//opt.optimize(m_Model.get());
-	//CSP_LOG(APP, DEBUG, "LoadModel: Optimizer done");
+	//CSP_LOG(OBJECT, DEBUG, "LoadModel: Optimizer done");
+
+	CSP_LOG(OBJECT, DEBUG, "Done loading model " << source);
+
 }
 
 void ObjectModel::addDebugMarkers() {
@@ -567,6 +633,7 @@ public:
 	}
 
 	virtual osg::Node* operator() (const osg::Node* node) const {
+		assert(node);
 		osg::Referenced const *data = node->getUserData();
 		// user data bound to nodes is used to modify the copy operations
 		if (data) {
@@ -581,7 +648,9 @@ public:
 				// supported.
 				osg::Node *bind_node = 0;
 				if (binding->needsSwitch()) {
-					new_node = cloneSwitch(node, bind_node);
+					osg::Switch *select_node = 0;;
+					new_node = cloneSwitch(node, select_node);
+					bind_node = select_node;
 				} else if (node->asTransform()) {
 					new_node = static_cast<osg::Node*>(node->clone(*this));
 				} else {
@@ -609,8 +678,18 @@ public:
 			}
 		}
 		if (node->asGroup()) {
-			// clone groups
-			return dynamic_cast<osg::Node*>(node->clone(*this));
+			if (node->getName() == "__PITS__") {
+				CSP_LOG(OBJECT, INFO, "Copying __PITS__ node");
+				assert(!m_PitSwitch.valid());
+				// clone the __PITS__ node as a switch and save a reference.
+				osg::Switch *select_node = 0;
+				osg::Node *new_node = cloneSwitch(node, select_node);
+				m_PitSwitch = select_node;
+				return new_node;
+			} else {
+				// clone groups
+				return dynamic_cast<osg::Node*>(node->clone(*this));
+			}
 		} else {
 			// copy other leaf nodes by reference
 			return const_cast<osg::Node*>(node);
@@ -619,8 +698,11 @@ public:
 
 	ModelCopy(): CopyOp(osg::CopyOp::SHALLOW_COPY), m_ShallowCopy(osg::CopyOp::SHALLOW_COPY) { }
 
+	osg::Switch *getPitSwitch() { return m_PitSwitch.get(); }
+
 private:
 	mutable AnimationCallbackVector m_AnimationCallbacks;
+	mutable osg::ref_ptr<osg::Switch> m_PitSwitch;
 	osg::CopyOp m_ShallowCopy;
 
 	// Dance for cloning switch nodes that may be masquerading as transforms.
@@ -628,7 +710,7 @@ private:
 	// node is a MatrixTransform.  To create a switch in that case we need to
 	// move the groups children to a new Switch node and add the Switch to the
 	// transform.
-	osg::Node *cloneSwitch(const osg::Node *node, osg::Node* &select_node) const {
+	osg::Node *cloneSwitch(const osg::Node *node, osg::Switch* &select_node) const {
 		osg::Group *clone = 0;
 		const osg::Group *group = node->asGroup();
 		assert(group);
@@ -662,46 +744,43 @@ SceneModel::SceneModel(simdata::Ref<ObjectModel> const & model) {
 
 	// create a working copy
 	ModelCopy model_copy;
-	model_node = model_copy(model_node);
+	m_ModelCopy = model_copy(model_node);
+	m_PitSwitch = model_copy.getPitSwitch();
 
-	CSP_LOG(APP, DEBUG, "MODEL COPIED");
-
-	CSP_LOG(APP, INFO, "COPIED MODEL animation count = " << model_copy.getAnimationCallbacks().size());
+	CSP_LOG(APP, INFO, "Copied model, animation count = " << model_copy.getAnimationCallbacks().size());
 
 	m_AnimationCallbacks.resize(model_copy.getAnimationCallbacks().size());
 
 	// store all the animation update callbacks
-	std::copy(model_copy.getAnimationCallbacks().begin(),
-	          model_copy.getAnimationCallbacks().end(),
-	          m_AnimationCallbacks.begin());
-
-	CSP_LOG(APP, INFO, "MODEL animation count = " << m_AnimationCallbacks.size());
+	std::copy(model_copy.getAnimationCallbacks().begin(), model_copy.getAnimationCallbacks().end(), m_AnimationCallbacks.begin());
 
 	m_Label = new osgText::Text();
-	m_Label->setFont("screeninfo.ttf");
-	m_Label->setFontResolution(16, 16);
-	m_Label->setColor(osg::Vec4(0.3f, 0.4f, 1.0f, 1.0f));
-	m_Label->setCharacterSize(100.0, 1.0);
-	m_Label->setPosition(osg::Vec3(6, 0, 0));
-	m_Label->setText("AIRCRAFT");
+	m_Label->setFont("hud.ttf");
+	m_Label->setFontResolution(30, 30);
+	m_Label->setColor(osg::Vec4(1.0f, 0.4f, 0.2f, 1.0f));
+	m_Label->setCharacterSize(20.0);
+	m_Label->setPosition(osg::Vec3(0, 0, 0));
+	m_Label->setAxisAlignment(osgText::Text::SCREEN);
+	m_Label->setAlignment(osgText::Text::CENTER_BOTTOM);
+	m_Label->setCharacterSizeMode(osgText::Text::SCREEN_COORDS);
+	m_Label->setText(m_Model->getLabel());
 	osg::Geode *label = new osg::Geode;
 	osg::Depth *depth = new osg::Depth;
 	depth->setFunction(osg::Depth::ALWAYS);
 	depth->setRange(1.0, 1.0);
 	label->getOrCreateStateSet()->setAttributeAndModes(depth, osg::StateAttribute::OFF);
 	label->getOrCreateStateSet()->setMode(GL_LIGHTING, osg::StateAttribute::OFF);
-	//setMatrix(osg::Matrix::ortho2D(0,ScreenWidth,0,ScreenHeight));
-	osg::MatrixTransform *m_modelview_abs = new osg::MatrixTransform;
-	m_modelview_abs->setReferenceFrame(osg::Transform::ABSOLUTE_RF);
-	m_modelview_abs->setMatrix(osg::Matrix::identity());
-	m_modelview_abs->addChild(label);
+	label->addDrawable(m_Label.get());
+	label->setNodeMask(SceneMasks::LABELS);
 
 	m_Transform = new osg::PositionAttitudeTransform;
+	m_Transform->setName("position");
 	m_CenterOfMassOffset = new osg::PositionAttitudeTransform;
+	m_CenterOfMassOffset->setName("cm_offset");
 	m_Transform->addChild(m_CenterOfMassOffset.get());
-	m_CenterOfMassOffset->addChild(model_node);
+	m_CenterOfMassOffset->addChild(m_ModelCopy.get());
 	m_CenterOfMassOffset->addChild(m_Model->getDebugMarkers().get());
-	m_CenterOfMassOffset->addChild(m_modelview_abs);
+	m_CenterOfMassOffset->addChild(label);
 	m_Smoke = false;
 }
 
@@ -711,6 +790,18 @@ SceneModel::~SceneModel() {
 	assert(model_node);
 	// FIXME why?
 	m_CenterOfMassOffset->removeChild(model_node);
+}
+
+void SceneModel::setPitMask(unsigned mask) {
+	CSP_LOG(OBJECT, INFO, "Setting pit mask to " <<mask);
+	if (m_PitSwitch.valid()) {
+		const unsigned n = m_PitSwitch->getNumChildren();
+		for (unsigned i = 0; i < n; ++i) {
+			m_PitSwitch->setValue(i, (mask & (1 << i)) == 0);
+		}
+	} else {
+		CSP_LOG(OBJECT, WARNING, "Setting pit mask but model has no pit switch");
+	}
 }
 
 void SceneModel::setLabel(std::string const &label) {
@@ -785,18 +876,9 @@ void SceneModel::enableSmoke() {
 	}
 }
 
-void SceneModel::bindAnimationChannels(Bus::Ref bus) {
-	assert(bus.valid());
-	int index, n = m_AnimationCallbacks.size();
-	for (index = 0; index < n; ++index) {
-		if (!m_AnimationCallbacks[index].valid()) {
-			CSP_LOG(OBJECT, WARNING, "bindAnimationChannels: AnimationCallbacks '" << index << "' not valid; skipping");
-			continue;
-		}
-		if (!m_AnimationCallbacks[index]->bindChannels(bus.get())) {
-			CSP_LOG(OBJECT, WARNING, "failed to bind animation " << index);
-		}
-	}
+void SceneModel::bindAnimationChannels(Bus* bus) {
+	AnimationBinder binder(bus, m_Model->getModelPath());
+	std::for_each(m_AnimationCallbacks.begin(), m_AnimationCallbacks.end(), binder);
 }
 
 void SceneModel::bindHud(HUD *hud) {
@@ -829,5 +911,56 @@ void SceneModel::setPositionAttitude(simdata::Vector3 const &position, simdata::
 
 osg::Group* SceneModel::getRoot() {
 	return m_Transform.get();
+}
+
+void SceneModel::addChild(simdata::Ref<SceneModelChild> const &child) {
+	assert(child->getRoot());
+	if (!m_Children) {
+		m_Children = new osg::Group;
+		m_CenterOfMassOffset->addChild(m_Children.get());
+	}
+	m_Children->addChild(child->getRoot());
+}
+
+void SceneModel::removeChild(simdata::Ref<SceneModelChild> const &child) {
+	assert(child->getRoot());
+	if (m_Children.valid()) {
+		m_Children->removeChild(child->getRoot());
+	}
+}
+
+void SceneModel::removeAllChildren() {
+	if (m_Children.valid()) {
+		m_Children->removeChild(0, m_Children->getNumChildren());
+		m_CenterOfMassOffset->removeChild(m_Children.get());
+		m_Children = 0;
+	}
+}
+
+
+SceneModelChild::~SceneModelChild() {}
+
+SceneModelChild::SceneModelChild(simdata::Ref<ObjectModel> const &model) {
+	m_Model = model;
+	assert(m_Model.valid());
+	CSP_LOG(APP, INFO, "Create SceneModelChild for " << m_Model->getModelPath());
+
+	// create a working copy of the prototype model
+	ModelCopy model_copy;
+	m_ModelCopy = model_copy(m_Model->getModel().get());
+	CSP_LOG(APP, INFO, "Copied model, animation count = " << model_copy.getAnimationCallbacks().size());
+
+	// store all the animation update callbacks
+	m_AnimationCallbacks.resize(model_copy.getAnimationCallbacks().size());
+	std::copy(model_copy.getAnimationCallbacks().begin(), model_copy.getAnimationCallbacks().end(), m_AnimationCallbacks.begin());
+}
+
+osg::Node *SceneModelChild::getRoot() {
+	return m_ModelCopy.get();
+}
+
+void SceneModelChild::bindAnimationChannels(Bus* bus) {
+	AnimationBinder binder(bus, m_Model->getModelPath());
+	std::for_each(m_AnimationCallbacks.begin(), m_AnimationCallbacks.end(), binder);
 }
 

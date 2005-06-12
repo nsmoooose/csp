@@ -189,6 +189,10 @@ void CSPSim::setActiveObject(simdata::Ref<DynamicObject> object) {
 
 	if (object == m_ActiveObject) return;
 	if (m_ActiveObject.valid()) {
+		// The new battlefield code no longer supports this interface.  It could be
+		// reimplemented for local objects, although we probably need a better long
+		// term solution for vehicle allocation.  It's also a bit tricky since the
+		// aggregation bubbles are determined by human-controlled vehicles.
 		// XXX XXX m_Battlefield->setHuman(m_ActiveObject->id(), false);
 	}
 	m_ActiveObject = object;
@@ -196,6 +200,10 @@ void CSPSim::setActiveObject(simdata::Ref<DynamicObject> object) {
 		m_GameScreen->setActiveObject(m_ActiveObject);
 	}
 	if (m_ActiveObject.valid()) {
+		// The new battlefield code no longer supports this interface.  It could be
+		// reimplemented for local objects, although we probably need a better long
+		// term solution for vehicle allocation.  It's also a bit tricky since the
+		// aggregation bubbles are determined by human-controlled vehicles.
 		// XXX XXX m_Battlefield->setHuman(m_ActiveObject->id(), true);
 		simdata::hasht classhash = m_ActiveObject->getPath();
 		CSP_LOG(APP, INFO, "getting map for " << classhash.str());

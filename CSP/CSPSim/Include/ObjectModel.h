@@ -44,6 +44,7 @@ class AnimationCallback;
 class AnimationChannel;
 class Bus;
 class HUD;
+class Station;
 
 namespace osg {
 	class Node;
@@ -86,6 +87,7 @@ public:
 	SIMDATA_STATIC_OBJECT(ObjectModel, 6, 0);
 	
 	BEGIN_SIMDATA_XML_INTERFACE(ObjectModel)
+		SIMDATA_XML("label", ObjectModel::m_Label, false)
 		SIMDATA_XML("model_path", ObjectModel::m_ModelPath, true)
 		SIMDATA_XML("axis_0", ObjectModel::m_Axis0, false)
 		SIMDATA_XML("axis_1", ObjectModel::m_Axis1, false)
@@ -106,6 +108,7 @@ public:
 		SIMDATA_XML("cull_face", ObjectModel::m_CullFace, false)
 		SIMDATA_XML("lighting", ObjectModel::m_Lighting, false)
 		SIMDATA_XML("animations", ObjectModel::m_Animations, false)
+		SIMDATA_XML("stations", ObjectModel::m_Stations, false)
 	END_SIMDATA_XML_INTERFACE
 
 	ObjectModel();
@@ -130,6 +133,7 @@ public:
 
 	double getBoundingSphereRadius() const { return m_BoundingSphereRadius; }
 	PointList const &getContacts() const { return m_Contacts; }
+	std::string const &getLabel() const { return m_Label; }
 
 	bool getElevationCorrection() const { return m_ElevationCorrection; }
 
@@ -138,8 +142,15 @@ public:
 
 	static void setDataFilePathList(std::string search_path);
 
+	unsigned numStations() const { return m_Stations.size(); }
+	const Station *station(unsigned i) const {
+		assert(i < numStations());
+		return m_Stations[i].get();
+	}
+
 protected:
 
+	std::string m_Label;
 	simdata::External m_ModelPath;
 	simdata::Vector3 m_Axis0, m_Axis1;
 	simdata::Vector3 m_Offset;
@@ -163,16 +174,33 @@ protected:
 	PointList m_DebugPoints;
 
 	simdata::Link<Animation>::vector m_Animations;
+	simdata::Link<Station>::vector m_Stations;
 
 	virtual void postCreate();
 	virtual void loadModel();
 	void addDebugMarkers();
+	void generateStationMasks(std::map<std::string, unsigned> const &interior_map) const;
 
 	double m_BoundingSphereRadius;
 
 	enum { DEBUG_MARKERS };
 };
 
+
+/** A representation of an ObjectModel that can be added to the scene
+ *  as a child of a SceneModel.
+ */
+class SceneModelChild: public simdata::Referenced {
+	osg::ref_ptr<osg::Node> m_ModelCopy;
+	simdata::Ref<ObjectModel> m_Model;
+	std::vector< osg::ref_ptr<AnimationCallback> > m_AnimationCallbacks;
+protected:
+	virtual ~SceneModelChild();
+public:
+	SceneModelChild(simdata::Ref<ObjectModel> const &model);
+	void bindAnimationChannels(Bus*);
+	osg::Node *getRoot();
+};
 
 
 /**
@@ -186,6 +214,8 @@ class SceneModel: public simdata::Referenced {
 private:
 	osg::ref_ptr<osg::PositionAttitudeTransform> m_Transform;
 	osg::ref_ptr<osg::PositionAttitudeTransform> m_CenterOfMassOffset;
+	osg::ref_ptr<osg::Group> m_Children;
+	osg::ref_ptr<osg::Node> m_ModelCopy;
 	osg::ref_ptr<osgText::Text> m_Label;
 	simdata::Ref<ObjectModel> m_Model;
 	bool m_Smoke;
@@ -193,19 +223,26 @@ private:
 	std::vector<simdata::Vector3> m_SmokeEmitterLocation;
 	std::vector< osg::ref_ptr<AnimationCallback> > m_AnimationCallbacks;
 	osg::ref_ptr<osg::PositionAttitudeTransform> m_HudModel;
+	osg::ref_ptr<osg::Switch> m_PitSwitch;
+
+	osg::Node *getModelCopy() { return m_ModelCopy.get(); }
 
 protected:
 	virtual ~SceneModel();
 
 public:
 	SceneModel(simdata::Ref<ObjectModel> const & model);
-	
+
 	simdata::Ref<ObjectModel> getModel() { return m_Model; }
 	osg::Group* getRoot();
 
 	void setPositionAttitude(simdata::Vector3 const &position, simdata::Quat const &attitude, simdata::Vector3 const &cm_offset);
 
-	void bindAnimationChannels(simdata::Ref<Bus>);
+	void addChild(simdata::Ref<SceneModelChild> const &child);
+	void removeChild(simdata::Ref<SceneModelChild> const &child);
+	void removeAllChildren();
+
+	void bindAnimationChannels(Bus*);
 	void bindHud(HUD* hud);
 
 	void setSmokeEmitterLocation(std::vector<simdata::Vector3> const &sel);
@@ -216,6 +253,7 @@ public:
 	virtual void onViewMode(bool internal);
 	void updateSmoke(double dt, simdata::Vector3 const & global_position, simdata::Quat const &attitude);
 	void setLabel(std::string const &);
+	void setPitMask(unsigned mask);
 	void pick(int x, int y);
 };
 

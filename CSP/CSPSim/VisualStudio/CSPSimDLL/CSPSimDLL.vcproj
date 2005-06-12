@@ -330,6 +330,9 @@
 				RelativePath="..\..\Source\SmokeEffects.cpp">
 			</File>
 			<File
+				RelativePath="..\..\Source\Station.cpp">
+			</File>
+			<File
 				RelativePath="..\..\Source\System.cpp">
 			</File>
 			<File
@@ -674,6 +677,9 @@
 			</File>
 			<File
 				RelativePath="..\..\Include\SmokeEffects.h">
+			</File>
+			<File
+				RelativePath="..\..\Include\Station.h">
 			</File>
 			<File
 				RelativePath="..\..\Include\Steerpoint.h">

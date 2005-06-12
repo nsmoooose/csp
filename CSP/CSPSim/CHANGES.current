@@ -4,6 +4,8 @@
 2005-06-11: onsight
  * Fix a bug that caused absurdly large turbulence.
 
+ * Allow animations to be disconnected from a bus.
+
 2005-06-06: onsight
  * Partially fix depth buffer problem with airbase structures.
    The floor of the open hangars will still z-fight with the

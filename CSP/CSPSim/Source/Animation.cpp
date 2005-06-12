@@ -92,18 +92,21 @@ public:
 	}
 
 	/** Bind to a named data channel.  Returns true on success, and logs errors
-	 *  on failure.
+	 *  on failure.  If bus is null the channel is detached and the method returns
+	 *  false.
 	 */
 	bool bind(Bus *bus, std::string const &name) {
-		assert(bus);
-		try {
-			m_Channel = bus->getChannel(name, false);
-		} catch (simdata::ConversionError &) {
-			CSP_LOG(OBJECT, WARNING, "Incompatible channel " << name << " for animation; expected double");
-			return false;
-		}
-		if (!m_Channel) {
-			CSP_LOG(OBJECT, WARNING, "Unable to bind channel " << name << " for animation");
+		m_Channel = 0;
+		if (bus) {
+			try {
+				m_Channel = bus->getChannel(name, false);
+			} catch (simdata::ConversionError &) {
+				CSP_LOG(OBJECT, WARNING, "Incompatible channel " << name << " for animation; expected double");
+				return false;
+			}
+			if (!m_Channel) {
+				CSP_LOG(OBJECT, WARNING, "Unable to bind channel " << name << " for animation");
+			}
 		}
 		return m_Channel.valid();
 	}
@@ -139,18 +142,21 @@ public:
 	}
 
 	/** Bind to the named data channel.  Returns true on success, and logs errors
-	 *  on failure.
+	 *  on failure.  If bus is null the channel is detached and the method returns
+	 *  false;
 	 */
 	bool bind(Bus *bus, std::string const &name) {
-		assert(bus);
-		try {
-			m_Channel = bus->getChannel(name, false);
-		} catch (simdata::ConversionError &) {
-			CSP_LOG(OBJECT, WARNING, "Incompatible channel " << name << " for animation; expected enumlink");
-			return false;
-		}
-		if (!m_Channel) {
-			CSP_LOG(OBJECT, WARNING, "Unable to bind channel " << name << " for animation");
+		m_Channel = 0;
+		if (bus) {
+			try {
+				m_Channel = bus->getChannel(name, false);
+			} catch (simdata::ConversionError &) {
+				CSP_LOG(OBJECT, WARNING, "Incompatible channel " << name << " for animation; expected enumlink");
+				return false;
+			}
+			if (!m_Channel) {
+				CSP_LOG(OBJECT, WARNING, "Unable to bind channel " << name << " for animation");
+			}
 		}
 		return m_Channel.valid();
 	}
@@ -993,12 +999,13 @@ public:
 		traverse(node, nv);
 	}
 	virtual bool bindChannels(Bus *bus) {
-		assert(bus);
 		m_Channel = 0;
-		try {
-			m_Channel = bus->getChannel(m_Animation->getChannelName(), false);
-		} catch (simdata::ConversionError &) {
-			CSP_LOG(OBJECT, WARNING, "Incompatible channel (" << m_Animation->getChannelName() << ") type for DrivenVectorialTranslation");
+		if (bus) {
+			try {
+				m_Channel = bus->getChannel(m_Animation->getChannelName(), false);
+			} catch (simdata::ConversionError &) {
+				CSP_LOG(OBJECT, WARNING, "Incompatible channel (" << m_Animation->getChannelName() << ") type for DrivenVectorialTranslation");
+			}
 		}
 		return m_Channel.valid();
 	}

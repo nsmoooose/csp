@@ -16,7 +16,7 @@
 				 The 3d model has 0.089 m of displacement for a complete compression.
 			-->
 			<Float name="compression_limit">0.0895</Float>
-			<Float name="K">350000.0</Float>
+			<Float name="K">450000.0</Float>
 			<Float name="beta">20000.0</Float>
 
 			<Float name="brake_limit">0.0</Float>

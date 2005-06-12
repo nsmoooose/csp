@@ -17,6 +17,10 @@
 
 ==> ALL USERS: RebuildData.py and regenerate Inputs/gamescreen.hid.
 
+ * Increase the spring constant of the F16 front landing gear.
+
+==> ALL USERS: CompileData.py
+
 2005-06-06: onsight
  * Partially fix depth buffer problem with airbase structures.
    The floor of the open hangars will still z-fight with the

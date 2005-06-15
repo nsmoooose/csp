@@ -54,7 +54,7 @@
 #include <SimCore/Util/StringTools.h>
 #include <SimData/Ref.h>
 
-#include <sigc++/sigc++.h> // 1.2 style
+#include <sigc++/sigc++.h>
 #include <map>
 
 
@@ -179,7 +179,7 @@ protected:
 template <class SIGNAL>
 class MethodChannel: public ChannelBase {
 	mutable SIGNAL m_Signal;
-	SigC::Connection m_Connection;
+	sigc::connection m_Connection;
 	typedef typename SIGNAL::InSlotType InSlotType;
 public:
 	typedef simdata::Ref<MethodChannel> Ref;
@@ -190,7 +190,7 @@ public:
 		m_Connection = m_Signal.connect(slot);
 	}
 	SIGNAL &call() const { return m_Signal; }
-	SigC::Connection &connection() { return m_Connection; }
+	sigc::connection &connection() { return m_Connection; }
 };
 
 
@@ -216,7 +216,7 @@ public:
 class DataChannelBase: public ChannelBase {
 private:
 	/// Callback signal for push/pull channels.
-	mutable SigC::Signal0<void> m_Signal;
+	mutable sigc::signal<void> m_Signal;
 
 	enum {
 	      MASK_HANDLER = 0x00010000,
@@ -307,7 +307,7 @@ public:
 
 	/** A convenience class for defining Python signal handlers using SWIG.
 	 */
-	class Handler: public SigC::Object {
+	class Handler: public sigc::trackable {
 	public:
 		virtual ~Handler() {}
 		void handle() { operator()(); }
@@ -326,10 +326,10 @@ public:
 	 *  @param push Connect a push (or pull) handler.
 	 */
 	template <class T>
-	SigC::Connection connect(T *object, void (T::*callback)()) const {
+	sigc::connection connect(T *object, void (T::*callback)()) const {
 		assert(isPush() || (isPull() && !hasHandler()));
 		setMask(MASK_HANDLER);
-		return m_Signal.connect(SigC::slot(*object, callback));
+		return m_Signal.connect(sigc::mem_fun(*object, callback));
 	}
 
 	/** Connect a signal handler to this channel.
@@ -339,7 +339,7 @@ public:
 	 *  @param handler The callback handler.
 	 *  @param push Connect a push (or pull) handler.
 	 */
-	SigC::Connection connect(Handler *handler) const {
+	sigc::connection connect(Handler *handler) const {
 		return connect(handler, &Handler::handle);
 	}
 	
@@ -571,35 +571,35 @@ public:
 	template <typename R, class O, class O2>
 	ChannelBase* registerMethodChannel(std::string const &name, O *obj, R (O2::*method)()) {
 		return registerChannel(
-			new MethodChannel< SigC::Signal0<R> >(name, SigC::slot(obj, method))
+			new MethodChannel< sigc::signal<R> >(name, sigc::slot(obj, method))
 		);
 	}
 
 	template <typename R, typename P1, class O, class O2>
 	ChannelBase* registerMethodChannel(std::string const &name, O *obj, R (O2::*method)(P1)) {
 		return registerChannel(
-			new MethodChannel< SigC::Signal1<R,P1> >(name, SigC::slot(obj, method))
+			new MethodChannel< sigc::signal<R,P1> >(name, sigc::slot(obj, method))
 		);
 	}
 
 	template <typename R, typename P1, typename P2, class O, class O2>
 	ChannelBase* registerMethodChannel(std::string const &name, O *obj, R (O2::*method)(P1,P2)) {
 		return registerChannel(
-			new MethodChannel< SigC::Signal2<R,P1,P2> >(name, SigC::slot(obj, method))
+			new MethodChannel< sigc::signal<R,P1,P2> >(name, sigc::slot(obj, method))
 		);
 	}
 
 	template <typename R, typename P1, typename P2, typename P3, class O, class O2>
 	ChannelBase* registerMethodChannel(std::string const &name, O *obj, R (O2::*method)(P1,P2,P3)) {
 		return registerChannel(
-			new MethodChannel< SigC::Signal3<R,P1,P2,P3> >(name, SigC::slot(obj, method))
+			new MethodChannel< sigc::signal<R,P1,P2,P3> >(name, sigc::slot(obj, method))
 		);
 	}
 
 	template <typename R, typename P1, typename P2, typename P3, typename P4, class O, class O2>
 	ChannelBase* registerMethodChannel(std::string const &name, O *obj, R (O2::*method)(P1,P2,P3,P4)) {
 		return registerChannel(
-			new MethodChannel< SigC::Signal4<R,P1,P2,P3,P4> >(name, SigC::slot(obj, method))
+			new MethodChannel< sigc::signal<R,P1,P2,P3,P4> >(name, sigc::slot(obj, method))
 		);
 	}
 	//@}

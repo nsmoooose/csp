@@ -47,15 +47,15 @@ void CockpitSwitch::registerHandlers(InputInterface *input) {
 	if (m_Command.empty()) return;
 	const simdata::Enumeration &enumeration = m_State->value().getEnumeration();
 	if (enumeration.size() == 2) {
-		input->bindActionEvent(m_Command + "_TOGGLE", SigC::slot(*this, &CockpitSwitch::onToggle));
+		input->bindActionEvent(m_Command + "_TOGGLE", sigc::mem_fun(*this, &CockpitSwitch::onToggle));
 	} else {
-		input->bindActionEvent(m_Command + "_CYCLE_NEXT", SigC::slot(*this, &CockpitSwitch::onCycleNext));
-		input->bindActionEvent(m_Command + "_CYCLE_PREV", SigC::slot(*this, &CockpitSwitch::onCyclePrev));
+		input->bindActionEvent(m_Command + "_CYCLE_NEXT", sigc::mem_fun(*this, &CockpitSwitch::onCycleNext));
+		input->bindActionEvent(m_Command + "_CYCLE_PREV", sigc::mem_fun(*this, &CockpitSwitch::onCyclePrev));
 	}
 	for (int i = 0; i < enumeration.size(); ++i) {
 		std::string command = m_Command + "_" + enumeration[i].getToken();
 		ConvertStringToUpper(command);
-		input->bindActionEvent(command, SigC::bind(SigC::slot(*this, &CockpitSwitch::onSelect), i));
+		input->bindActionEvent(command, sigc::bind(sigc::mem_fun(*this, &CockpitSwitch::onSelect), i));
 	}
 }
 

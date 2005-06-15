@@ -1,6 +1,13 @@
  Version 0.4.0 (in progress)
 ===========================
 
+2005-06-14: onsight
+ * Upgrade to use sigc 2.0.  All users will need to install libsigc++
+   2.0.6 or newer.  Version 1.2 is no longer needed.
+
+==> WINDOWS USERS: The project file needs to be updated to point to the
+sigc 2.0 library and headers.  (The scons build has already been updated.)
+
 2005-06-11: onsight
  * Fix a bug that caused absurdly large turbulence.
 

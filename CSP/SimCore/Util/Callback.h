@@ -19,10 +19,10 @@
 
 /**
  * @file Callback.h
- * @brief Provides adaptors for sigc++-1.2 member function slots.
+ * @brief Provides adaptors for sigc 2.0 member function slots.
  *
- * The adaptors do not require the target class to subclass SigC::Object,
- * but are equally safe (unlike SigC::slot_class).  Automatic disconnect
+ * The adaptors do not require the target class to subclass sigc::trackable,
+ * but are equally safe (unlike sigc::slot_class).  Automatic disconnect
  * is handled by making the callbacks instance variables, so they are
  * destroyed (and thereby disconnected) at the same time the target object
  * is destroyed.
@@ -69,25 +69,30 @@ namespace simcore {
 
 // Signals ----------------------------------------------------------------------------
 
-class Signal0: public SigC::Signal0<void> { };
+class Signal0: public sigc::signal<void> { };
 
 template <typename M>
-class Signal1: public SigC::Signal1<void, M> { };
+class Signal1: public sigc::signal<void, M> { };
 
 template <typename M, typename N>
-class Signal2: public SigC::Signal2<void, M, N> { };
+class Signal2: public sigc::signal<void, M, N> { };
 
 template <typename R>
-class Signal0R: public SigC::Signal0<R> { };
+class Signal0R: public sigc::signal<R> { };
 
 template <typename R, typename M>
-class Signal1R: public SigC::Signal1<R, M> { };
+class Signal1R: public sigc::signal<R, M> { };
 
 
 // Callbacks --------------------------------------------------------------------------
 
+class _CallbackAdaptor: public sigc::trackable {
+public:
+	virtual ~_CallbackAdaptor() {}
+};
+
 template <class C>
-class _CallbackAdaptor0: public SigC::Object {
+class _CallbackAdaptor0: public _CallbackAdaptor {
 	typedef void (C::*Method)();
 	C *_instance;
 	Method _method;
@@ -96,17 +101,17 @@ public:
 	_CallbackAdaptor0(C *instance, Method method) : _instance(instance), _method(method) { }
 };
 
-class Callback0: private simdata::ScopedPointer<SigC::Object>, public SigC::Slot0<void> {
+class Callback0: private simdata::ScopedPointer<_CallbackAdaptor>, public sigc::slot<void> {
 public:
 	typedef Signal0 Signal;
 	template <class C>
 	Callback0(C *instance, void (C::*method)()) :
-		simdata::ScopedPointer<SigC::Object>(new _CallbackAdaptor0<C>(instance, method)),
-		SigC::Slot0<void>(SigC::slot(*dynamic_cast<_CallbackAdaptor0<C>*>(get()), &_CallbackAdaptor0<C>::bounce)) { }
+		simdata::ScopedPointer<_CallbackAdaptor>(new _CallbackAdaptor0<C>(instance, method)),
+		sigc::slot<void>(sigc::mem_fun(*dynamic_cast<_CallbackAdaptor0<C>*>(get()), &_CallbackAdaptor0<C>::bounce)) { }
 };
 
 template <class C, typename M>
-class _CallbackAdaptor1: public SigC::Object {
+class _CallbackAdaptor1: public _CallbackAdaptor {
 	typedef void (C::*Method)(M);
 	C *_instance;
 	Method _method;
@@ -116,17 +121,17 @@ public:
 };
 
 template <typename M>
-class Callback1: private simdata::ScopedPointer<SigC::Object>, public SigC::Slot1<void, M> {
+class Callback1: private simdata::ScopedPointer<_CallbackAdaptor>, public sigc::slot<void, M> {
 public:
 	typedef Signal1<M> Signal;
 	template <class C>
 	Callback1(C *instance, void (C::*method)(M)) :
-		simdata::ScopedPointer<SigC::Object>(new _CallbackAdaptor1<C, M>(instance, method)),
-		SigC::Slot1<void, M>(SigC::slot(*dynamic_cast<_CallbackAdaptor1<C, M>*>(get()), &_CallbackAdaptor1<C, M>::bounce)) { }
+		simdata::ScopedPointer<_CallbackAdaptor>(new _CallbackAdaptor1<C, M>(instance, method)),
+		sigc::slot<void, M>(sigc::mem_fun(*dynamic_cast<_CallbackAdaptor1<C, M>*>(get()), &_CallbackAdaptor1<C, M>::bounce)) { }
 };
 
 template <class C, typename M, typename N>
-class _CallbackAdaptor2: public SigC::Object {
+class _CallbackAdaptor2: public _CallbackAdaptor {
 	typedef void (C::*Method)(M, N);
 	C *_instance;
 	Method _method;
@@ -136,17 +141,17 @@ public:
 };
 
 template <typename M, typename N>
-class Callback2: private simdata::ScopedPointer<SigC::Object>, public SigC::Slot2<void, M, N> {
+class Callback2: private simdata::ScopedPointer<_CallbackAdaptor>, public sigc::slot<void, M, N> {
 public:
 	typedef Signal2<M, N> Signal;
 	template <class C>
 	Callback2(C *instance, void (C::*method)(M, N)) :
-		simdata::ScopedPointer<SigC::Object>(new _CallbackAdaptor2<C, M, N>(instance, method)),
-		SigC::Slot2<void, M, N>(SigC::slot(*dynamic_cast<_CallbackAdaptor2<C, M, N>*>(get()), &_CallbackAdaptor2<C, M, N>::bounce)) { }
+		simdata::ScopedPointer<_CallbackAdaptor>(new _CallbackAdaptor2<C, M, N>(instance, method)),
+		sigc::slot<void, M, N>(sigc::mem_fun(*dynamic_cast<_CallbackAdaptor2<C, M, N>*>(get()), &_CallbackAdaptor2<C, M, N>::bounce)) { }
 };
 
 template <class C, typename R>
-class _CallbackAdaptor0R: public SigC::Object {
+class _CallbackAdaptor0R: public _CallbackAdaptor {
 	typedef R (C::*Method)();
 	C *_instance;
 	Method _method;
@@ -156,13 +161,13 @@ public:
 };
 
 template <typename R>
-class Callback0R: private simdata::ScopedPointer<SigC::Object>, public SigC::Slot0<R> {
+class Callback0R: private simdata::ScopedPointer<_CallbackAdaptor>, public sigc::slot<R> {
 public:
 	typedef Signal0R<R> Signal;
 	template <class C>
 	Callback0R(C *instance, R (C::*method)()) :
-		simdata::ScopedPointer<SigC::Object>(new _CallbackAdaptor0R<C, R>(instance, method)),
-		SigC::Slot0<R>(SigC::slot(*dynamic_cast<_CallbackAdaptor0R<C, R>*>(get()), &_CallbackAdaptor0R<C, R>::bounce)) { }
+		simdata::ScopedPointer<_CallbackAdaptor>(new _CallbackAdaptor0R<C, R>(instance, method)),
+		sigc::slot<R>(sigc::mem_fun(*dynamic_cast<_CallbackAdaptor0R<C, R>*>(get()), &_CallbackAdaptor0R<C, R>::bounce)) { }
 };
 
 

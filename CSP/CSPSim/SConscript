@@ -19,13 +19,7 @@
 Import('env build')
 
 
-CPPPATH = ['#/CSPSim/Include'] + env['CPPPATH'] + [
-	'/usr/local/include/SDL',
-	'/usr/lib/sigc++-1.2/include',
-	'/usr/include/sigc++-1.2',
-	'/usr/include/cc++2'
-]
-
+CPPPATH = ['#/CSPSim/Include'] + env['CPPPATH']
 CXXFLAGS = env['CXXFLAGS']
 
 MODULES = [
@@ -45,11 +39,11 @@ def PackageConfig(env):
 	conf.CheckLib('osgFX')  # doesn't have a GetVersion function
 	conf.CheckCommandVersion('sdl', 'sdl-config --version', '1.2.5')
 	conf.CheckCommandVersion('ccgnu2', 'ccgnu2-config --version', '1.0.13')
-	conf.CheckPkgConfig('sigc++-1.2', version='1.2.5', lib_name='sigc')
+	conf.CheckPkgConfig('sigc++-2.0', version='2.0.6', lib_name='sigc')
 	env = conf.Finish()
 	env.ParseConfig('sdl-config --cflags --libs')
 	env.ParseConfig('ccgnu2-config --flags --libs')
-	env.ParseConfig('pkg-config --cflags --libs sigc++-1.2')
+	env.ParseConfig('pkg-config --cflags --libs sigc++-2.0')
 
 env = env.Copy(CPPPATH=CPPPATH, CXXFLAGS=CXXFLAGS)
 

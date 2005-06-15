@@ -52,12 +52,12 @@
 class InputInterface;
 
 
-typedef SigC::Slot2<void, int, int> ActionEventSlot;
-typedef SigC::Signal2<void, int, int> ActionEventSignal;
-typedef SigC::Slot4<void, int, int, int, int> MotionEventSlot;
-typedef SigC::Signal4<void, int, int, int, int> MotionEventSignal;
-typedef SigC::Slot1<void, double> AxisEventSlot;
-typedef SigC::Signal1<void, double> AxisEventSignal;
+typedef sigc::slot<void, int, int> ActionEventSlot;
+typedef sigc::signal<void, int, int> ActionEventSignal;
+typedef sigc::slot<void, int, int, int, int> MotionEventSlot;
+typedef sigc::signal<void, int, int, int, int> MotionEventSignal;
+typedef sigc::slot<void, double> AxisEventSlot;
+typedef sigc::signal<void, double> AxisEventSignal;
 
 
 /** Abstract adapter for action event handlers (internal)

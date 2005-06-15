@@ -37,7 +37,7 @@
 /** Base class for elements of the cockpit that can receive input events
  *  and control data channels.
  */
-class CockpitElement: public simdata::Referenced, public SigC::Object {
+class CockpitElement: public simdata::Referenced, public sigc::trackable {
 friend class CockpitInterface;
 public:
 	typedef simdata::Ref<CockpitElement> Ref;

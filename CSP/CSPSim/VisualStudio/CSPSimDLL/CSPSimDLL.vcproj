@@ -622,6 +622,9 @@
 				RelativePath="..\..\Include\InputEvent.h">
 			</File>
 			<File
+				RelativePath="..\..\Include\InputEventChannel.h">
+			</File>
+			<File
 				RelativePath="..\..\Include\InputInterface.h">
 			</File>
 			<File

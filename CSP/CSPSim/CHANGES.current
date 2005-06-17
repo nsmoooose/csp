@@ -9,6 +9,8 @@
    channel to request that the value be changed.  The owner of the channel
    can register a callback for such requests.
 
+ * Add a new channel type for connecting input events to the bus.
+
 2005-06-14: onsight
  * Upgrade to use sigc 2.0.  All users will need to install libsigc++
    2.0.6 or newer.  Version 1.2 is no longer needed.

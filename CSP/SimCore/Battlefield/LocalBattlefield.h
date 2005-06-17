@@ -30,7 +30,8 @@
 
 #include <SimCore/Battlefield/Battlefield.h>
 #include <SimCore/Battlefield/BattlefieldMessages.h>
-#include <SimCore/Util/CallbackDecl.h>
+#include <SimCore/Util/Callback.h>
+#include <sigc++/signal.h>
 
 class SceneManager;
 class UpdateMaster;
@@ -86,8 +87,8 @@ public:
 		return m_ConnectionState == CONNECTION_ACTIVE;
 	}
 
-	void registerPlayerJoinCallback(simcore::Callback2<int, const std::string&> &callback);
-	void registerPlayerQuitCallback(simcore::Callback2<int, const std::string&> &callback);
+	void registerPlayerJoinCallback(simcore::callback<void, int, const std::string&> &callback);
+	void registerPlayerQuitCallback(simcore::callback<void, int, const std::string&> &callback);
 
 private:
 
@@ -194,8 +195,8 @@ private:
 	// scanUnit on each.  This method should be called once per time step.
 	void continueUnitScan(double dt);
 
-	simdata::ScopedPointer<simcore::Signal2<int, const std::string&> > m_PlayerJoinSignal;
-	simdata::ScopedPointer<simcore::Signal2<int, const std::string&> > m_PlayerQuitSignal;
+	simdata::ScopedPointer<sigc::signal<void, int, const std::string&> > m_PlayerJoinSignal;
+	simdata::ScopedPointer<sigc::signal<void, int, const std::string&> > m_PlayerQuitSignal;
 };
 
 

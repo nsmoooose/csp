@@ -28,7 +28,7 @@
 #include <osg/ref_ptr>
 #include <SimData/Ref.h>
 #include <SimData/ScopedPointer.h>
-#include <SimCore/Util/CallbackDecl.h>
+#include <SimCore/Util/Callback.h>
 #include "BaseScreen.h"
 
 class PyConsole;
@@ -40,13 +40,8 @@ class CameraAgent;
 class CameraCommand;
 struct CameraCommands;
 
-namespace osgUtil {
-	class SceneView;
-}
-
-namespace osg {
-	class Group;
-}
+namespace osg { class Group; }
+namespace osgUtil { class SceneView; }
 
 /**
  * class GameScreen - Describe me!
@@ -193,8 +188,8 @@ private:
 
 	void onPlayerJoin(int, const std::string&);
 	void onPlayerQuit(int, const std::string&);
-	simcore::ScopedCallback2<int, const std::string&> m_OnPlayerJoin;
-	simcore::ScopedCallback2<int, const std::string&> m_OnPlayerQuit;
+	simcore::callback<void, int, const std::string&> m_OnPlayerJoin;
+	simcore::callback<void, int, const std::string&> m_OnPlayerQuit;
 };
 
 #endif // __GAMESCREEN_H__

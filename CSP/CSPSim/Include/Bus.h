@@ -52,6 +52,7 @@
 
 #include <SimCore/Util/Log.h>
 #include <SimCore/Util/StringTools.h>
+#include <SimCore/Util/Callback.h>
 #include <SimData/Ref.h>
 
 #include <sigc++/sigc++.h>
@@ -219,10 +220,10 @@ private:
 	mutable sigc::signal<void> m_Signal;
 
 	enum {
-	      MASK_HANDLER = 0x00010000,
-	      MASK_PUSH    = 0x00020000,
-	      MASK_PULL    = 0x00040000,
-	      MASK_DIRTY   = 0x00080000
+		MASK_HANDLER = 0x00010000,
+		MASK_PUSH    = 0x00020000,
+		MASK_PULL    = 0x00040000,
+		MASK_DIRTY   = 0x00080000
 	};
 
 protected:
@@ -242,11 +243,7 @@ protected:
 	 *     value.
 	 *  @param signal_ Signal type to be used when the value changes.
 	 */
-	DataChannelBase(std::string const &name,
-	                AccessType access_=ACCESS_LOCAL,
-	                SignalType signal_=NO_SIGNAL):
-		ChannelBase(name, access_)
-	{
+	DataChannelBase(std::string const &name, AccessType access_=ACCESS_LOCAL, SignalType signal_=NO_SIGNAL): ChannelBase(name, access_) {
 		if (signal_ == PUSH_SIGNAL) {
 			setMask(MASK_PUSH);
 		} else
@@ -317,13 +314,11 @@ public:
 	/** Connect a signal handler to this channel.
 	 *
 	 *  If push is true, this method may be called any number of times to
-	 *  connect multiple handlers.  If push is false, no additional calls
-	 *  to connect() may be made.  The first call to connect()
-	 *  permanently establishes whether the channel is push or pull.
+	 *  connect multiple handlers.  If push is false, only one callback can
+	 *  be connected (additional calls to connect() will raise an assertion).
 	 *
 	 *  @param object The instance providing the handler.
 	 *  @param callback The class method used to handle the signal.
-	 *  @param push Connect a push (or pull) handler.
 	 */
 	template <class T>
 	sigc::connection connect(T *object, void (T::*callback)()) const {
@@ -356,6 +351,8 @@ public:
  */
 template <typename T>
 class DataChannel: public DataChannelBase {
+	mutable sigc::signal<bool, T const&> m_RequestSetSignal;
+	bool m_HasRequestSetHandler;
 
 	/// The data value provided by the channel.
 	T m_Value;
@@ -394,6 +391,27 @@ public:
 		push();
 	}
 
+	/** Set a handler for a non-shared data channel that will be called when
+	 *  a holder of a const reference to the channel requests that a new value
+	 *  be set.  The handler can honor this request by setting the channel
+	 *  (calling push if necessary) and returning true.  If the request is
+	 *  not honored the handler should return false.
+	 */
+	void connectRequestSetHandler(simcore::callback<bool, T const &> &callback) {
+		assert(!isShared() && !m_HasRequestSetHandler);
+		callback.bind(m_RequestSetSignal);
+		m_HasRequestSetHandler = true;
+	}
+
+	/** Request that the value be changed.  This method can only be called for
+	 *  non-shared channels.  The handler, if registered, can decide whether to
+	 *  honor the request.  If so, this method returns true.
+	 */
+	bool requestSet(const T& value) const {
+		assert(!isShared());
+		return m_HasRequestSetHandler ? m_RequestSetSignal.emit(value) : false;
+	}
+
 	/**
 	 * Get the current value of this channel as a non-const reference.
 	 *
@@ -426,7 +444,7 @@ public:
 	 *  @param shared Create a shared (or non-shared) channel.
 	 *  @param signal_ The signaling mechanism of the channel (push/pull/none).
 	 */
-	DataChannel(std::string const &name, T const &val, AccessType access_=ACCESS_LOCAL, SignalType signal_=NO_SIGNAL): DataChannelBase(name, access_, signal_), m_Value(val) {}
+	DataChannel(std::string const &name, T const &val, AccessType access_=ACCESS_LOCAL, SignalType signal_=NO_SIGNAL): DataChannelBase(name, access_, signal_), m_HasRequestSetHandler(false), m_Value(val) {}
 
 	/** Construct and initialize a new channel.  The initial value is
 	 *  determined by the default constructor for the channel data type.
@@ -436,7 +454,7 @@ public:
 	 *  @param shared_ Create a shared (or non-shared) channel.
 	 *  @param signal_ The signaling mechanism of the channel (push/pull/none).
 	 */
-	DataChannel(std::string const &name, AccessType access_=ACCESS_LOCAL, SignalType signal_=NO_SIGNAL): DataChannelBase(name, access_, signal_), m_Value() {}
+	DataChannel(std::string const &name, AccessType access_=ACCESS_LOCAL, SignalType signal_=NO_SIGNAL): DataChannelBase(name, access_, signal_), m_HasRequestSetHandler(false), m_Value() {}
 
 	static DataChannel<T> *newLocal(std::string const &name, T const &val) {
 		return new DataChannel(name, val, ACCESS_LOCAL, NO_SIGNAL);

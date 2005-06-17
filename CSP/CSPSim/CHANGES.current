@@ -1,6 +1,14 @@
  Version 0.4.0 (in progress)
 ===========================
 
+2005-06-16: onsight
+ * Refactor SimCore/Util/Callback.h.  The new code achieves the same
+   effect with a cleaner interface and much simpler logic.  Corresponding
+   changes to the files that use these classes.  Also added a new feature
+   for local channels that allows holders of a const reference to the
+   channel to request that the value be changed.  The owner of the channel
+   can register a callback for such requests.
+
 2005-06-14: onsight
  * Upgrade to use sigc 2.0.  All users will need to install libsigc++
    2.0.6 or newer.  Version 1.2 is no longer needed.

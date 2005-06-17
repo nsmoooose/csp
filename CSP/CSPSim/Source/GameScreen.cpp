@@ -51,7 +51,6 @@
 #include "VirtualScene.h"
 
 #include <SimCore/Battlefield/LocalBattlefield.h>
-#include <SimCore/Util/Callback.h>
 #include <SimCore/Util/Log.h>
 
 /*
@@ -158,10 +157,6 @@ GameScreen::GameScreen():
 	m_OnPlayerJoin(this, &GameScreen::onPlayerJoin),
 	m_OnPlayerQuit(this, &GameScreen::onPlayerQuit)
 {
-	//typedef void (GameScreen::*OPJ)(int, const std::string&);
-	//OPJ opj;
-	//m_OnPlayerJoin = simcore::ScopedCallback2<int, const std::string&>(this, opj);
-	//m_OnPlayerQuit = simcore::ScopedCallback2(this, &GameScreen::onPlayerQuit);
 	initInterface();
 }
 
@@ -195,8 +190,8 @@ void GameScreen::onInit() {
 
 	LocalBattlefield *bf = CSPSim::theSim->getBattlefield();
 	if (bf) {
-		bf->registerPlayerJoinCallback(*m_OnPlayerJoin);
-		bf->registerPlayerQuitCallback(*m_OnPlayerQuit);
+		bf->registerPlayerJoinCallback(m_OnPlayerJoin);
+		bf->registerPlayerQuitCallback(m_OnPlayerQuit);
 	}
 }
 

@@ -19,16 +19,16 @@
 
 /**
  * @file Callback.h
- * @brief Provides adaptors for sigc 2.0 member function slots.
+ * @brief Provides member function callback adaptors that work with sigc 2.0
+ *   signals and disconnect automatically when deleted.
  *
- * The adaptors do not require the target class to subclass sigc::trackable,
- * but are equally safe (unlike sigc::slot_class).  Automatic disconnect
- * is handled by making the callbacks instance variables, so they are
- * destroyed (and thereby disconnected) at the same time the target object
- * is destroyed.
- *
- * At present the signal and callback classes only support slots with a
- * limited number of argument and return value combinations.
+ * The callback adaptors do not require the target class to subclass
+ * sigc::trackable, but are equally safe when used properly.  To be safe,
+ * it is vital that the callback lifetime be shorter than the target lifetime.
+ * This ensures that the signal is disconnected before the target instance
+ * is destroyed.  This lifetime requirement is easily satisfied by making
+ * callbacks member variables of the target instance, as in the example
+ * below.
  *
  * Sample use:
  *
@@ -36,22 +36,30 @@
  *
  * class Target {
  *   void bar(double);
- *   Callback1<double> _barHandler;
+ *   simcore::callback<void, double> _bar_callback;
  * public:
- *   Target(): barHandler(this, &Bar::bar) { }
- *   Callback1<double>& barHandler() { return _barHandler; }
+ *   Target(): _bar_callback(this, &Bar::bar) { }
+ *   simcore::callback<void, double> &callback() { return _bar_callback; }
  * };
  *
  * void Source {
- *   Signal1<double> _barSignal;
- *   void signalBar(double x) { _barSignal.emit(x); }
+ *   sigc::signal<void, double> _bar_signal;
+ *   void bar(double x) { _bar_signal.emit(x); }
  * public:
- *   Signal1<double>& barSignal() { return _barSignal; }
+ *   sigc::signal<void, double>& signal() { return _bar_signal; }
  * };
  *
  * Source source;
- * Target target;
- * source.barSignal().connect(target.barHandler());
+ *
+ * {
+ *   Target target;
+ *   // the syntax for connecting signals to callbacks is reversed relative to
+ *   // sigc slots: callback.bind(signal) instead of signal.connect(slot).
+ *   target.callback().bind(source.signal());
+ *   source.bar(3.0);  // calls target.bar()
+ * }  // target out of scope, signal safely disconnected
+ *
+ * source.bar(4.0);  // does nothing
  *
  * @endcode
  *
@@ -61,137 +69,110 @@
 #ifndef __SIMCORE_UTIL_CALLBACK_H__
 #define __SIMCORE_UTIL_CALLBACK_H__
 
-#include <SimCore/Util/CallbackDecl.h>
 #include <sigc++/sigc++.h>
 
 namespace simcore {
 
 
-// Signals ----------------------------------------------------------------------------
-
-class Signal0: public sigc::signal<void> { };
-
-template <typename M>
-class Signal1: public sigc::signal<void, M> { };
-
-template <typename M, typename N>
-class Signal2: public sigc::signal<void, M, N> { };
-
-template <typename R>
-class Signal0R: public sigc::signal<R> { };
-
-template <typename R, typename M>
-class Signal1R: public sigc::signal<R, M> { };
+// callbacks --------------------------------------------------------------------------
 
 
-// Callbacks --------------------------------------------------------------------------
-
-class _CallbackAdaptor: public sigc::trackable {
-public:
-	virtual ~_CallbackAdaptor() {}
+/** Base class for all callbacks.  Not for public use.
+ */
+class callbackbase: public sigc::trackable {
+protected:
+	sigc::connection _connection;
+	sigc::connection capture(sigc::connection const &connection) { _connection = connection; return connection; }
+	~callbackbase() { _connection.disconnect(); }
 };
 
-template <class C>
-class _CallbackAdaptor0: public _CallbackAdaptor {
-	typedef void (C::*Method)();
-	C *_instance;
-	Method _method;
-public:
-	inline void bounce() { (_instance->*_method)(); }
-	_CallbackAdaptor0(C *instance, Method method) : _instance(instance), _method(method) { }
+/** Raw callback class for handling signals with no arguments.  Use callback<> instead.
+ */
+template <class ret>
+struct callback0: public callbackbase, private sigc::slot<ret> {
+	template <class F> callback0(F const &functor): sigc::slot<ret>(functor) { }
+	sigc::connection bind(sigc::signal0<ret> &signal) { return capture(signal.connect(*this)); }
 };
 
-class Callback0: private simdata::ScopedPointer<_CallbackAdaptor>, public sigc::slot<void> {
-public:
-	typedef Signal0 Signal;
-	template <class C>
-	Callback0(C *instance, void (C::*method)()) :
-		simdata::ScopedPointer<_CallbackAdaptor>(new _CallbackAdaptor0<C>(instance, method)),
-		sigc::slot<void>(sigc::mem_fun(*dynamic_cast<_CallbackAdaptor0<C>*>(get()), &_CallbackAdaptor0<C>::bounce)) { }
+/** Raw callback class for handling signals with one argument.  Use callback<> instead.
+ */
+template <class ret, class arg1>
+struct callback1: public callbackbase, private sigc::slot<ret, arg1> {
+	template <class F> callback1(F const &functor): sigc::slot<ret, arg1>(functor) { }
+	sigc::connection bind(sigc::signal1<ret, arg1> &signal) { return capture(signal.connect(*this)); }
 };
 
-template <class C, typename M>
-class _CallbackAdaptor1: public _CallbackAdaptor {
-	typedef void (C::*Method)(M);
-	C *_instance;
-	Method _method;
-public:
-	inline void bounce(M m) { (_instance->*_method)(m); }
-	_CallbackAdaptor1(C *instance, Method method) : _instance(instance), _method(method) { }
+/** Raw callback class for handling signals with two arguments.  Use callback<> instead.
+ */
+template <class ret, class arg1, class arg2>
+struct callback2: public callbackbase, private sigc::slot<ret, arg1, arg2> {
+	template <class F> callback2(F const &functor): sigc::slot<ret, arg1, arg2>(functor) { }
+	sigc::connection bind(sigc::signal2<ret, arg1, arg2> &signal) { return capture(signal.connect(*this)); }
 };
 
-template <typename M>
-class Callback1: private simdata::ScopedPointer<_CallbackAdaptor>, public sigc::slot<void, M> {
-public:
-	typedef Signal1<M> Signal;
-	template <class C>
-	Callback1(C *instance, void (C::*method)(M)) :
-		simdata::ScopedPointer<_CallbackAdaptor>(new _CallbackAdaptor1<C, M>(instance, method)),
-		sigc::slot<void, M>(sigc::mem_fun(*dynamic_cast<_CallbackAdaptor1<C, M>*>(get()), &_CallbackAdaptor1<C, M>::bounce)) { }
+/** Raw callback class for handling signals with three arguments.  Use callback<> instead.
+ */
+template <class ret, class arg1, class arg2, class arg3>
+struct callback3: public callbackbase, private sigc::slot<ret, arg1, arg2, arg3> {
+	template <class F> callback3(F const &functor): sigc::slot<ret, arg1, arg2, arg3>(functor) { }
+	sigc::connection bind(sigc::signal3<ret, arg1, arg2, arg3> &signal) { return capture(signal.connect(*this)); }
 };
 
-template <class C, typename M, typename N>
-class _CallbackAdaptor2: public _CallbackAdaptor {
-	typedef void (C::*Method)(M, N);
-	C *_instance;
-	Method _method;
-public:
-	inline void bounce(M m, N n) { (_instance->*_method)(m, n); }
-	_CallbackAdaptor2(C *instance, Method method) : _instance(instance), _method(method) { }
-};
-
-template <typename M, typename N>
-class Callback2: private simdata::ScopedPointer<_CallbackAdaptor>, public sigc::slot<void, M, N> {
-public:
-	typedef Signal2<M, N> Signal;
-	template <class C>
-	Callback2(C *instance, void (C::*method)(M, N)) :
-		simdata::ScopedPointer<_CallbackAdaptor>(new _CallbackAdaptor2<C, M, N>(instance, method)),
-		sigc::slot<void, M, N>(sigc::mem_fun(*dynamic_cast<_CallbackAdaptor2<C, M, N>*>(get()), &_CallbackAdaptor2<C, M, N>::bounce)) { }
-};
-
-template <class C, typename R>
-class _CallbackAdaptor0R: public _CallbackAdaptor {
-	typedef R (C::*Method)();
-	C *_instance;
-	Method _method;
-public:
-	inline R bounce() { return (_instance->*_method)(); }
-	_CallbackAdaptor0R(C *instance, Method method) : _instance(instance), _method(method) { }
-};
-
-template <typename R>
-class Callback0R: private simdata::ScopedPointer<_CallbackAdaptor>, public sigc::slot<R> {
-public:
-	typedef Signal0R<R> Signal;
-	template <class C>
-	Callback0R(C *instance, R (C::*method)()) :
-		simdata::ScopedPointer<_CallbackAdaptor>(new _CallbackAdaptor0R<C, R>(instance, method)),
-		sigc::slot<R>(sigc::mem_fun(*dynamic_cast<_CallbackAdaptor0R<C, R>*>(get()), &_CallbackAdaptor0R<C, R>::bounce)) { }
+/** Raw callback class for handling signals with four arguments.  Use callback<> instead.
+ */
+template <class ret, class arg1, class arg2, class arg3, class arg4>
+struct callback4: public callbackbase, private sigc::slot<ret, arg1, arg2, arg3, arg4> {
+	template <class F> callback4(F const &functor): sigc::slot<ret, arg1, arg2, arg3, arg4>(functor) { }
+	sigc::connection bind(sigc::signal3<ret, arg1, arg2, arg3, arg4> &signal) { return capture(signal.connect(*this)); }
 };
 
 
-// ScopedPointer Callbacks  -----------------------------------------------------------
+/** Convenience class for declaring a callback with arbitrary return value and argument types.
+ *  Up to four arguments are supported.
+ *  TODO Extend to as many arguments as sigc supports.
+ */
+template <class ret, class arg1=sigc::nil, class arg2=sigc::nil, class arg3=sigc::nil, class arg4=sigc::nil>
+struct callback { };
 
-template <class C>
-ScopedCallback0::ScopedCallback0(C *instance, void (C::*method)())
-	: simdata::ScopedPointer<Callback0>(new Callback0(instance, method)) { }
+/** Template specialization for no arguments.
+ */
+template <class ret>
+struct callback<ret>: public callback0<ret> {
+	template <class F> callback(F const &functor): callback0<ret>(functor) { }
+	template <class obj> callback(obj *o, ret (obj::*m)()): callback0<ret>(sigc::mem_fun(*o, m)) { }
+};
 
-template <typename M>
-template <class C>
-ScopedCallback1<M>::ScopedCallback1(C *instance, void (C::*method)(M))
-	: simdata::ScopedPointer<Callback1<M> >(new Callback1<M>(instance, method)) { }
+/** Template specialization for one argument.
+ */
+template <class ret, class arg1>
+struct callback<ret, arg1>: public callback1<ret, arg1> {
+	template <class F> callback(F const &functor): callback1<ret, arg1>(functor) { }
+	template <class obj> callback(obj *o, ret (obj::*m)(arg1)): callback1<ret, arg1>(sigc::mem_fun(*o, m)) { }
+};
 
-template <typename M, typename N>
-template <class C>
-ScopedCallback2<M, N>::ScopedCallback2(C *instance, void (C::*method)(M, N))
-	: simdata::ScopedPointer<Callback2<M, N> >(new Callback2<M, N>(instance, method)) { }
+/** Template specialization for two arguments.
+ */
+template <class ret, class arg1, class arg2>
+struct callback<ret, arg1, arg2>: public callback2<ret, arg1, arg2> {
+	template <class F> callback(F const &functor): callback2<ret, arg1, arg2>(functor) { }
+	template <class obj> callback(obj *o, ret (obj::*m)(arg1, arg2)): callback2<ret, arg1, arg2>(sigc::mem_fun(*o, m)) { }
+};
 
-template <typename R>
-template <class C>
-ScopedCallback0R<R>::ScopedCallback0R(C *instance, R (C::*method)())
-	: simdata::ScopedPointer<Callback0R<R> >(new Callback0R<R>(instance, method)) { }
+/** Template specialization for three arguments.
+ */
+template <class ret, class arg1, class arg2, class arg3>
+struct callback<ret, arg1, arg2, arg3>: public callback3<ret, arg1, arg2, arg3> {
+	template <class F> callback(F const &functor): callback3<ret, arg1, arg2, arg3>(functor) { }
+	template <class obj> callback(obj *o, ret (obj::*m)(arg1, arg2, arg3)): callback3<ret, arg1, arg2, arg3>(sigc::mem_fun(*o, m)) { }
+};
 
+/** Template specialization for four arguments.
+ */
+template <class ret, class arg1, class arg2, class arg3, class arg4>
+struct callback<ret, arg1, arg2, arg3, arg4>: public callback4<ret, arg1, arg2, arg3, arg4> {
+	template <class F> callback(F const &functor): callback4<ret, arg1, arg2, arg3, arg4>(functor) { }
+	template <class obj> callback(obj *o, ret (obj::*m)(arg1, arg2, arg3, arg4)): callback4<ret, arg1, arg2, arg3, arg4>(sigc::mem_fun(*o, m)) { }
+};
 
 } // namespace simcore
 

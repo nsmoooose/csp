@@ -198,8 +198,8 @@ LocalBattlefield::LocalBattlefield(simdata::Ref<simdata::DataManager> const &dat
 	m_ScanElapsedTime(0),
 	m_ScanRate(0),
 	m_ScanIndex(0),
-	m_PlayerJoinSignal(new simcore::Signal2<int, const std::string&>()),
-	m_PlayerQuitSignal(new simcore::Signal2<int, const std::string&>())
+	m_PlayerJoinSignal(new sigc::signal<void, int, const std::string&>()),
+	m_PlayerQuitSignal(new sigc::signal<void, int, const std::string&>())
 {
 	// if no network connection, ids will be assigned sequentially
 	// starting at 1024.  otherwise, the id pool is initialized when
@@ -399,12 +399,12 @@ void LocalBattlefield::onPlayerQuit(simdata::Ref<PlayerQuit> const &msg, simdata
 	}
 }
 
-void LocalBattlefield::registerPlayerJoinCallback(simcore::Callback2<int, const std::string&> &callback) {
-	m_PlayerJoinSignal->connect(callback);
+void LocalBattlefield::registerPlayerJoinCallback(simcore::callback<void, int, const std::string&> &callback) {
+	callback.bind(*m_PlayerJoinSignal);
 }
 
-void LocalBattlefield::registerPlayerQuitCallback(simcore::Callback2<int, const std::string&> &callback) {
-	m_PlayerQuitSignal->connect(callback);
+void LocalBattlefield::registerPlayerQuitCallback(simcore::callback<void, int, const std::string&> &callback) {
+	callback.bind(*m_PlayerQuitSignal);
 }
 
 void LocalBattlefield::onPlayerJoin(simdata::Ref<PlayerJoin> const &msg, simdata::Ref<simnet::MessageQueue> const &) {

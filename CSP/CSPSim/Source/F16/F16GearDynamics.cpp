@@ -53,6 +53,7 @@ void F16GearDynamics::registerChannels(Bus *bus) {
 	GearDynamics::registerChannels(bus);
 	b_WheelSpin = bus->registerLocalDataChannel<bool>(bus::F16::WheelSpin, false);
 	b_GearHandleUp = bus->registerLocalPushChannel<bool>(bus::F16::GearHandleUp, false);
+	b_GearHandleUp->connectRequestSetHandler(m_GearHandleRequest);
 	GearDynamics::GearDown();  // sync with channel default
 }
 
@@ -78,3 +79,13 @@ void F16GearDynamics::postCreate() {
 	assert(m_RightMainLandingGear->getName() == "RightGear");
 }
 
+bool F16GearDynamics::gearHandleRequestHandler(bool const &up) {
+	if (up) {
+		GearUp();
+	} else {
+		GearDown();
+	}
+	return b_GearHandleUp->value() == up;
+}
+
+F16GearDynamics::F16GearDynamics(): m_GearHandleRequest(this, &F16GearDynamics::gearHandleRequestHandler) { }

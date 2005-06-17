@@ -27,6 +27,7 @@
 #define __F16_GEARDYNAMICS_H__
 
 #include <LandingGear.h>
+#include <SimCore/Util/Callback.h>
 
 
 class F16GearDynamics: public GearDynamics {
@@ -36,6 +37,7 @@ public:
 	EXTEND_SIMDATA_XML_INTERFACE(F16GearDynamics, GearDynamics)
 	END_SIMDATA_XML_INTERFACE
 
+	F16GearDynamics();
 	virtual bool allowGearUp() const;
 
 	// input event handlers
@@ -47,13 +49,16 @@ public:
 	virtual void preSimulationStep(double dt);
 	virtual void postCreate();
 
-
 protected:
 	DataChannel<bool>::Ref b_WheelSpin;
 	DataChannel<bool>::Ref b_GearHandleUp;
 	simdata::Ref<LandingGear> m_NoseLandingGear;
 	simdata::Ref<LandingGear> m_LeftMainLandingGear;
 	simdata::Ref<LandingGear> m_RightMainLandingGear;
+
+private:
+	bool gearHandleRequestHandler(bool const &);
+	simcore::callback<bool, bool const &> m_GearHandleRequest;
 };
 
 

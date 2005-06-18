@@ -131,7 +131,7 @@ struct callback4: public callbackbase, private sigc::slot<ret, arg1, arg2, arg3,
  *  Up to four arguments are supported.
  *  TODO Extend to as many arguments as sigc supports.
  */
-template <class ret, class arg1=sigc::nil, class arg2=sigc::nil, class arg3=sigc::nil, class arg4=sigc::nil>
+template <class ret, class arg1=sigc::nil, class arg2=sigc::nil, class arg3=sigc::nil, class arg4=sigc::nil, class end=sigc::nil>
 struct callback { };
 
 /** Template specialization for no arguments.

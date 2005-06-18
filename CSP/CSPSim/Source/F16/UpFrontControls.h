@@ -42,7 +42,7 @@
 // partially work depending on the system implementations.
 
 
-class UpFrontControls: public System {
+class UpFrontControls: public System, public sigc::trackable {
 public:
 	SIMDATA_OBJECT(UpFrontControls, 0, 0)
 
@@ -50,37 +50,16 @@ public:
 	END_SIMDATA_XML_INTERFACE
 
 	DECLARE_INPUT_INTERFACE(UpFrontControls, System)
-		BIND_ACTION("ICP_0", ICP_0);
-		BIND_ACTION("ICP_1", ICP_1);
-		BIND_ACTION("ICP_2", ICP_2);
-		BIND_ACTION("ICP_3", ICP_3);
-		BIND_ACTION("ICP_4", ICP_4);
-		BIND_ACTION("ICP_5", ICP_5);
-		BIND_ACTION("ICP_6", ICP_6);
-		BIND_ACTION("ICP_7", ICP_7);
-		BIND_ACTION("ICP_8", ICP_8);
-		BIND_ACTION("ICP_9", ICP_9);
-		BIND_ACTION("ICP_COM1", ICP_COM1);
-		BIND_ACTION("ICP_COM2", ICP_COM2);
-		BIND_ACTION("ICP_IFF", ICP_IFF);
-		BIND_ACTION("ICP_LIST", ICP_LIST);
-		BIND_ACTION("ICP_AA", ICP_AA);
-		BIND_ACTION("ICP_AG", ICP_AG);
-		BIND_ACTION("ICP_RCL", ICP_RCL);
-		BIND_ACTION("ICP_ENTR", ICP_ENTR);
-		BIND_ACTION("ICP_RTN", ICP_RTN);
-		BIND_ACTION("ICP_SEQ", ICP_SEQ);
-		BIND_ACTION("ICP_UP", ICP_UP);
-		BIND_ACTION("ICP_DN", ICP_DN);
-		BIND_ACTION("ICP_INC", ICP_INC);
-		BIND_ACTION("ICP_DEC", ICP_DEC);
+		// the various icp button events are declared dynamically in registerChannels
 	END_INPUT_INTERFACE
 
 	UpFrontControls();
+	~UpFrontControls();
 
 	virtual void registerChannels(Bus*);
 	virtual void importChannels(Bus*);
 
+protected:
 	// event handlers
 	virtual void ICP_0();
 	virtual void ICP_1();

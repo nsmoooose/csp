@@ -24,12 +24,12 @@
 
 
 #include "UpFrontControls.h"
-#include "PageCNI.h"
+#include "InputEventChannel.h"
 #include "PageALOW.h"
+#include "PageCNI.h"
 #include "PageLIST.h"
 #include "PageSTPT.h"
 
-#include <iostream>
 
 SIMDATA_REGISTER_INTERFACE(UpFrontControls)
 DEFINE_INPUT_INTERFACE(UpFrontControls)
@@ -42,9 +42,42 @@ UpFrontControls::UpFrontControls(): m_AA(false), m_AG(false), m_ElapsedTime(0) {
 	m_PageMap["STPT"] = new PageSTPT;
 }
 
+UpFrontControls::~UpFrontControls() { }
+
+// helper for defining button handlers
+#define UFC_REGISTER(CONTROL) \
+	bus->registerChannel(new InputEventChannel(#CONTROL, this, &UpFrontControls::CONTROL));
+
 void UpFrontControls::registerChannels(Bus *bus) {
-	m_Display =  bus->registerLocalDataChannel<AlphaNumericDisplay::Ref>("DED", new AlphaNumericDisplay(26, 5));
+	m_Display = bus->registerLocalDataChannel<AlphaNumericDisplay::Ref>("DED", new AlphaNumericDisplay(26, 5));
+	UFC_REGISTER(ICP_0);
+	UFC_REGISTER(ICP_1);
+	UFC_REGISTER(ICP_2);
+	UFC_REGISTER(ICP_3);
+	UFC_REGISTER(ICP_4);
+	UFC_REGISTER(ICP_5);
+	UFC_REGISTER(ICP_6);
+	UFC_REGISTER(ICP_7);
+	UFC_REGISTER(ICP_8);
+	UFC_REGISTER(ICP_9);
+	UFC_REGISTER(ICP_COM1);
+	UFC_REGISTER(ICP_COM2);
+	UFC_REGISTER(ICP_LIST);
+	UFC_REGISTER(ICP_IFF);
+	UFC_REGISTER(ICP_AA);
+	UFC_REGISTER(ICP_AG);
+	UFC_REGISTER(ICP_RCL);
+	UFC_REGISTER(ICP_SEQ);
+	UFC_REGISTER(ICP_RTN);
+	UFC_REGISTER(ICP_ENTR);
+	UFC_REGISTER(ICP_UP);
+	UFC_REGISTER(ICP_DN);
+	UFC_REGISTER(ICP_INC);
+	UFC_REGISTER(ICP_DEC);
 }
+
+#undef UFC_REGISTER
+
 
 void UpFrontControls::importChannels(Bus* bus) {
 	for (PageMap::iterator i = m_PageMap.begin(); i != m_PageMap.end(); ++i) {
@@ -71,7 +104,6 @@ void UpFrontControls::ICP_UP() { transition(getActivePage()->ICP_UP()); }
 void UpFrontControls::ICP_DN() { transition(getActivePage()->ICP_DN()); }
 void UpFrontControls::ICP_INC() { transition(getActivePage()->ICP_INC()); }
 void UpFrontControls::ICP_DEC() { transition(getActivePage()->ICP_DEC()); }
-
 
 void UpFrontControls::ICP_RTN() {
 	m_Override = 0;

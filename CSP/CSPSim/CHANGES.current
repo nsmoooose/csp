@@ -1,6 +1,13 @@
  Version 0.4.0 (in progress)
 ===========================
 
+2005-06-18: onsight
+ * Convert F16 UFC to use InputEventChannels instead of static event
+   handlers.  ICP button events can then be captured by the UFC system
+   and by the corresponding animation handlers.  The animation handlers
+   can also use the channels to transmit events back to the UFC system
+   when clicked on in the 3D cockpit.
+
 2005-06-16: onsight
  * Refactor SimCore/Util/Callback.h.  The new code achieves the same
    effect with a cleaner interface and much simpler logic.  Corresponding

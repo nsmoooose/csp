@@ -29,6 +29,7 @@
 
 #include <Systems/AircraftFlightSensors.h>
 #include <ConditionsChannels.h>
+#include <FlightDynamicsChannels.h>
 #include <KineticsChannels.h>
 #include <Atmosphere.h>
 #include <CSPSim.h>
@@ -58,6 +59,8 @@ double AircraftFlightSensors::onUpdate(double dt) {
 		b_Density->value() = 1.25; // nominal sea-level air density
 		b_WindVelocity->value() = simdata::Vector3::ZERO;
 	}
+	b_VerticalVelocity->value() = b_Velocity->value().z();
+	b_PressureAltitude->value() = pos.z(); // FIXME roll in atmospheric pressure variations
 	return 0.0; //return 0.101;
 }
 
@@ -75,6 +78,8 @@ void AircraftFlightSensors::registerChannels(Bus *bus) {
 	b_Temperature = bus->registerLocalDataChannel<double>(bus::Conditions::Temperature, 300);
 	b_Mach = bus->registerLocalDataChannel<double>(bus::Conditions::Mach, 0.0);
 	b_CAS = bus->registerLocalDataChannel<double>(bus::Conditions::CAS, 0.0);
+	b_PressureAltitude = bus->registerLocalDataChannel<double>(bus::FlightDynamics::PressureAltitude, 0.0);
+	b_VerticalVelocity = bus->registerLocalDataChannel<double>(bus::FlightDynamics::VerticalVelocity, 0.0);
 }
 
 void AircraftFlightSensors::getInfo(InfoList &info) const {

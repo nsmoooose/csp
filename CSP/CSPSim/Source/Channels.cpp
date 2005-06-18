@@ -61,6 +61,8 @@ namespace bus {
 	const char *FlightDynamics::Airspeed = "FlightDynamics.Airspeed";
 	const char *FlightDynamics::QBar = "FlightDynamics.QBar";
 	const char *FlightDynamics::GForce = "FlightDynamics.G";
+	const char *FlightDynamics::PressureAltitude = "FlightDynamics.PressureAltitude";
+	const char *FlightDynamics::VerticalVelocity = "FlightDynamics.VerticalVelocity";
 
 	const char *Conditions::WindVelocity = "Conditions.WindVelocity";
 	const char *Conditions::Pressure = "Conditions.Pressure";

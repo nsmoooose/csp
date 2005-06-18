@@ -35,6 +35,8 @@ struct FlightDynamics {
 	static const char *Airspeed;
 	static const char *QBar;
 	static const char *GForce;
+	static const char *PressureAltitude;
+	static const char *VerticalVelocity;
 };
 
 }

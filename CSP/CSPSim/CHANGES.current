@@ -8,6 +8,10 @@
    can also use the channels to transmit events back to the UFC system
    when clicked on in the 3D cockpit.
 
+ * Add PressureAltitude and VerticalVelocity channels.  These are updated
+   by AircraftFlightSensors and currently record exact values (no sensor
+   modeling yet).
+
 2005-06-16: onsight
  * Refactor SimCore/Util/Callback.h.  The new code achieves the same
    effect with a cleaner interface and much simpler logic.  Corresponding

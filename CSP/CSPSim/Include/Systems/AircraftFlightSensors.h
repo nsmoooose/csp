@@ -51,6 +51,8 @@ protected:
 	DataChannel<double>::Ref b_Density;
 	DataChannel<double>::Ref b_Mach;
 	DataChannel<double>::Ref b_CAS;
+	DataChannel<double>::Ref b_PressureAltitude;
+	DataChannel<double>::Ref b_VerticalVelocity;
 
 private:
 	double m_Distance;

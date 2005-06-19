@@ -47,6 +47,7 @@ void CameraKinematics::update(double dt) {
 	if (m_PanRateTheta != 0.0 || m_PanRatePhi != 0.0) {
 		m_Accel = std::min(3.0, m_Accel + 1.0 * dt);
 	}
+	m_FOVScale = std::min(CSPSim::theSim->getScene()->getViewAngle() / 40.0, 1.0);
 	rotateTheta(dt);
 	rotatePhi(dt);
 	scale(dt);
@@ -69,10 +70,11 @@ CameraKinematics::CameraKinematics():
 	m_DisplacementCoefficient(0.001),
 	m_MinimumDistanceOffset(10.0),
 	m_AbsoluteMaximumDistance(80000.0),
-	m_Accel(1.0) {
+	m_FOVScale(1.0),
+	m_Accel(1.0),
+	m_ExternalPan(false) {
 	reset();
 }
-
 void CameraKinematics::clampPhi(float min_phi, float max_phi, bool smooth_on) {
 	if (smooth_on && m_PanRatePhi != 0.0) {
 		m_PanRatePhi = simdata::sign(m_PanRatePhi) * smooth(m_Phi, min_phi, max_phi) * m_BaseRate;
@@ -163,8 +165,8 @@ void CameraKinematics::displacement(int /*x*/, int /*y*/, int dx, int dy) {
 	m_PanRatePhi = 0.0;
 	m_PanRateTheta = 0.0;
 	m_Accel = std::min(3.0, m_Accel + 0.1 * (dx * dx + dy * dy));
-	m_Theta -= dx * m_Accel * m_DisplacementCoefficient;
-	m_Phi -= dy * m_Accel * m_DisplacementCoefficient;
+	m_Theta -= dx * m_Accel * m_DisplacementCoefficient * m_FOVScale;
+	m_Phi -= dy * m_Accel * m_DisplacementCoefficient * m_FOVScale;
 	m_ExternalPan = true;
 }
 

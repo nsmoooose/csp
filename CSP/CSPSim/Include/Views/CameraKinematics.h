@@ -35,12 +35,13 @@ class CameraKinematics: public simdata::Referenced {
 	const float m_MinimumDistanceOffset, m_AbsoluteMaximumDistance;
 
 	double m_Phi, m_Theta;
+	float m_FOVScale;
 	float m_PanRatePhi, m_PanRateTheta, m_ZoomRate;
 	double m_DistanceToObject, m_MinimumDistance;
 	double m_Accel;
 	bool m_ExternalPan;
-	void rotateTheta(double dt) { m_Theta += m_Accel * m_PanRateTheta * dt; }
-	void rotatePhi(double dt) { m_Phi += m_Accel * m_PanRatePhi * dt; }
+	void rotateTheta(double dt) { m_Theta += m_Accel * m_PanRateTheta * dt * m_FOVScale; }
+	void rotatePhi(double dt) { m_Phi += m_Accel * m_PanRatePhi * dt * m_FOVScale; }
 	void scale(double dt);
 	float smooth(double value, float min_value,float max_value) const;
 public:

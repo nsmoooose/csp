@@ -1,6 +1,10 @@
  Version 0.4.0 (in progress)
 ===========================
 
+2005-06-19: onsight
+ * Add an extra side leaning movement of the torso when looking down in
+   the cockpit to help see around obstacles.
+
 2005-06-18: onsight
  * Convert F16 UFC to use InputEventChannels instead of static event
    handlers.  ICP button events can then be captured by the UFC system

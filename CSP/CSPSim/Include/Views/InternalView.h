@@ -59,6 +59,7 @@ private:
 	double m_NeckPhi;
 	double m_NeckTheta;
 	double m_TorsoTheta;
+	double m_TorsoSideLean;
 	double m_FlipTime;
 	const double m_EyeRate;
 	const double m_NeckRate;
@@ -81,25 +82,6 @@ private:
 	void moveViewpoint(simdata::Vector3& ep, simdata::Vector3& lp, simdata::Vector3& up, double dt);
 	bool inVisualRange(Contact contact) const;
 };
-/*
-	float m_OldPhi, m_OldTheta;
-	float m_NeckPhi, m_NeckTheta, m_psi;
-	bool m_NeckLimit;
-	void constrainPadlocked(simdata::Vector3& ep, simdata::Vector3& lp, simdata::Vector3& up, double dt);
-	void constrainNotPadlocked(simdata::Vector3& ep, simdata::Vector3& lp, simdata::Vector3& up, double dt);
-
-	bool m_Padlocked;
-	void setPadlocked();
-	bool checkPadlocked();
-
-public:
-	PadlockView(size_t vm);
-	virtual void activate();
-	virtual void updateView(simdata::Vector3& ep, simdata::Vector3& lp, simdata::Vector3& up, double dt);
-};
-
-*/
-
 
 
 #endif // __INTERNALVIEW_H__

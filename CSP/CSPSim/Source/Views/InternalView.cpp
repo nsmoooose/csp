@@ -48,6 +48,7 @@ InternalView::InternalView(size_t vm):
 	m_NeckPhi(0),
 	m_NeckTheta(0),
 	m_TorsoTheta(0),
+	m_TorsoSideLean(0),
 	m_FlipTime(0),
 	m_EyeRate(simdata::toRadians(90.0)),
 	m_NeckRate(simdata::toRadians(90.0)),
@@ -219,7 +220,7 @@ void InternalView::moveViewpoint(simdata::Vector3 &ep, simdata::Vector3 &lp, sim
 	// + don't padlock into cockpit -- and lean to the side if the target is below!
 	// lose lock if out of view for too long -- could extrapolate linear velocity, reacquire if nearby
 	// + don't padlock outside of fov
-	// padlock nearest to fov center, cycle outward
+	// + padlock nearest to fov center, cycle outward
 	// model neck motion by system, export for remote animation!
 	
 	double theta = m_CameraKinematics->getTheta();
@@ -240,14 +241,24 @@ void InternalView::moveViewpoint(simdata::Vector3 &ep, simdata::Vector3 &lp, sim
 
 	// Turn torso only if necessary
 	{
-		double lean_below = std::max(0.0, -0.4 - phi);
-		double excess = std::max(0.0, std::abs(theta) - m_EyeTurnLimit - m_NeckTurnLimit + lean_below);
+		double excess = std::max(0.0, std::abs(theta) - m_EyeTurnLimit - m_NeckTurnLimit);
 		double limit = m_TorsoRate * dt;
 		double delta = simdata::clampTo(excess * sign_theta - m_TorsoTheta, -limit, limit);
 		double turn_limit = m_TorsoTurnLimit * simdata::clampTo(3.0 - G, 0.0, 1.0);
 		m_TorsoTheta = simdata::clampTo(m_TorsoTheta + delta, -turn_limit, turn_limit);
 	}
 	theta -= m_TorsoTheta;
+
+	// Lean slightly when looking down and to the side in order to see around obstacles.
+	{
+		const double max_side_lean = 0.12; // meters
+		double side_lean = simdata::clampTo((-0.24 - phi) * 10.0, 0.0, 1.0) * std::max(0.0, sin(std::abs(2.0 * theta)));
+		side_lean = - sign_theta * std::max(0.0, side_lean - 2.0 * std::abs(m_TorsoTheta)) * max_side_lean;
+		double limit = m_TorsoRate * dt;
+		double delta = simdata::clampTo(side_lean - m_TorsoSideLean, -limit, limit);
+		m_TorsoSideLean = simdata::clampTo(m_TorsoSideLean + delta, -max_side_lean, max_side_lean);
+	}
+
 
 	// Degrade neck turn rate above 3 G.
 	const double g_rate_factor = simdata::clampTo(2.0 - 0.33 * G, 0.0, 1.0);
@@ -297,7 +308,7 @@ void InternalView::moveViewpoint(simdata::Vector3 &ep, simdata::Vector3 &lp, sim
 	eyes = neck_rotation * eyes;
 	const double lean_angle = (3.14 * 60.0 / 180.0);
 	const double lean_distance = std::abs(0.2 * m_TorsoTheta);
-	simdata::Vector3 lean_offset(lean_distance * cos(lean_angle) * simdata::sign(-m_TorsoTheta), lean_distance * sin(lean_angle), 0.0);
+	simdata::Vector3 lean_offset(lean_distance * cos(lean_angle) * simdata::sign(-m_TorsoTheta) + m_TorsoSideLean, lean_distance * sin(lean_angle), 0.0);
 	const double total_phi = m_EyePhi + m_NeckPhi;
 	const double total_theta = m_EyeTheta + m_NeckTheta + m_TorsoTheta;
 	simdata::Vector3 dir(-cos(total_phi)*sin(total_theta), cos(total_phi)*cos(total_theta), sin(total_phi));

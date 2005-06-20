@@ -51,31 +51,51 @@
 // forward declaration
 class InputInterface;
 
+typedef sigc::slot<void> ActionEventSlot;
+typedef sigc::signal<void> ActionEventSignal;
+typedef sigc::slot<void, MapEvent::ClickEvent const &> ClickEventSlot;
+typedef sigc::signal<void, MapEvent::CommandEvent const &> CommandEventSignal;
+typedef sigc::slot<void, MapEvent::MotionEvent const &> MotionEventSlot;
+typedef sigc::signal<void, MapEvent::MotionEvent const &> MotionEventSignal;
+typedef sigc::slot<void, MapEvent::AxisEvent const &> AxisEventSlot;
+typedef sigc::signal<void, MapEvent::AxisEvent const &> AxisEventSignal;
 
-typedef sigc::slot<void, int, int> ActionEventSlot;
-typedef sigc::signal<void, int, int> ActionEventSignal;
-typedef sigc::slot<void, int, int, int, int> MotionEventSlot;
-typedef sigc::signal<void, int, int, int, int> MotionEventSignal;
-typedef sigc::slot<void, double> AxisEventSlot;
-typedef sigc::signal<void, double> AxisEventSignal;
 
-
-/** Abstract adapter for action event handlers (internal)
+/** Abstract adapter for input event handlers (internal)
  */
-struct ActionAdapter {
-	virtual void call(InputInterface *, int, int)=0;
+class EventAdapter {
+public:
+	virtual void call(InputInterface *, MapEvent const &event) = 0;
+};
+
+/** Abstract adapter for command event handlers (internal)
+ */
+class CommandAdapter: public EventAdapter {
+	virtual void call(InputInterface *, MapEvent::CommandEvent const &)=0;
+public:
+	virtual void call(InputInterface *obj, MapEvent const &event) {
+		if (event.type == MapEvent::ID_COMMAND_EVENT) call(obj, event.id_command);
+	}
 };
 
 /** Abstract adapter for motion event handlers (internal)
  */
-struct MotionAdapter {
-	virtual void call(InputInterface *, int, int, int, int)=0;
+class MotionAdapter: public EventAdapter {
+	virtual void call(InputInterface *, MapEvent::MotionEvent const &)=0;
+public:
+	virtual void call(InputInterface *obj, MapEvent const &event) {
+		if (event.type == MapEvent::ID_MOTION_EVENT) call(obj, event.id_motion);
+	}
 };
 
 /** Abstract adapter for axis event handlers (internal)
  */
-struct AxisAdapter {
-	virtual void call(InputInterface *, double)=0;
+class AxisAdapter: public EventAdapter {
+	virtual void call(InputInterface *, MapEvent::AxisEvent const &)=0;
+public:
+	virtual void call(InputInterface *obj, MapEvent const &event) {
+		if (event.type == MapEvent::ID_AXIS_EVENT) call(obj, event.id_axis);
+	}
 };
 
 /** Adapter for calling a class method action event handler. (internal)
@@ -84,11 +104,11 @@ struct AxisAdapter {
  *  to an object.  The method takes no arguments and returns void.
  */
 template <class TARGET_CLASS>
-class ActionAdapterT: public ActionAdapter {
+class ActionAdapterT: public CommandAdapter {
 	void (TARGET_CLASS::*m_Handler)();
 public:
 	ActionAdapterT(void (TARGET_CLASS::*method)()): m_Handler(method) { }
-	virtual void call(InputInterface *obj, int, int) {
+	virtual void call(InputInterface *obj, MapEvent::CommandEvent const &) {
 		TARGET_CLASS *target = dynamic_cast<TARGET_CLASS*>(obj);
 		if (target) (target->*m_Handler)();
 	}
@@ -98,17 +118,17 @@ public:
  *
  *  Binds a method to be called when a click event is dispatched
  *  to an object.  The method takes two integer arguments that are
- *  the x and y mouse coordinates when the click occured, and returns
- *  void.
+ *  the x and y mouse coordinates when the click occured and a bool
+ *  that indicates if the mouse is being dragged.
  */
 template <class TARGET_CLASS>
-class ClickAdapterT: public ActionAdapter {
-	void (TARGET_CLASS::*m_Handler)(int, int);
+class ClickAdapterT: public CommandAdapter {
+	void (TARGET_CLASS::*m_Handler)(MapEvent::ClickEvent const &);
 public:
-	ClickAdapterT(void (TARGET_CLASS::*method)(int, int)): m_Handler(method) { }
-	virtual void call(InputInterface *obj, int x, int y) {
+	ClickAdapterT(void (TARGET_CLASS::*method)(MapEvent::ClickEvent const &)): m_Handler(method) { }
+	virtual void call(InputInterface *obj, MapEvent::CommandEvent const &event) {
 		TARGET_CLASS *target = dynamic_cast<TARGET_CLASS*>(obj);
-		if (target) (target->*m_Handler)(x, y);
+		if (target) (target->*m_Handler)(event);
 	}
 };
 
@@ -121,12 +141,12 @@ public:
  */
 template <class TARGET_CLASS>
 class MotionAdapterT: public MotionAdapter {
-	void (TARGET_CLASS::*m_Handler)(int, int, int, int);
+	void (TARGET_CLASS::*m_Handler)(MapEvent::MotionEvent const &);
 public:
-	MotionAdapterT(void (TARGET_CLASS::*method)(int, int, int, int)): m_Handler(method) { }
-	virtual void call(InputInterface *obj, int x, int y, int dx, int dy) {
+	MotionAdapterT(void (TARGET_CLASS::*method)(MapEvent::MotionEvent const &)): m_Handler(method) { }
+	virtual void call(InputInterface *obj, MapEvent::MotionEvent const &event) {
 		TARGET_CLASS *target = dynamic_cast<TARGET_CLASS*>(obj);
-		if (target) (target->*m_Handler)(x, y, dx, dy);
+		if (target) (target->*m_Handler)(event);
 	}
 };
 
@@ -139,12 +159,12 @@ public:
  */
 template <class TARGET_CLASS>
 class AxisAdapterT: public AxisAdapter {
-	void (TARGET_CLASS::*m_Handler)(double);
+	void (TARGET_CLASS::*m_Handler)(MapEvent::AxisEvent const &);
 public:
-	AxisAdapterT(void (TARGET_CLASS::*method)(double)): m_Handler(method) { }
-	virtual void call(InputInterface *obj, double x) {
+	AxisAdapterT(void (TARGET_CLASS::*method)(MapEvent::AxisEvent const &)): m_Handler(method) { }
+	virtual void call(InputInterface *obj, MapEvent::AxisEvent const &event) {
 		TARGET_CLASS *target = dynamic_cast<TARGET_CLASS*>(obj);
-		if (target) (target->*m_Handler)(x);
+		if (target) (target->*m_Handler)(event);
 	}
 };
 
@@ -157,14 +177,15 @@ public:
 class RuntimeDispatch {
 public:
 	bool onMapEvent(MapEvent const &);
+	void bindClick(std::string const &id, ClickEventSlot const &callback);
 	void bindAction(std::string const &id, ActionEventSlot const &callback);
 	void bindMotion(std::string const &id, MotionEventSlot const &callback);
 	void bindAxis(std::string const &id, AxisEventSlot const &callback);
 private:
-	typedef std::map<std::string, ActionEventSignal> ActionCallbacks;
+	typedef std::map<std::string, CommandEventSignal> CommandCallbacks;
 	typedef std::map<std::string, MotionEventSignal> MotionCallbacks;
 	typedef std::map<std::string, AxisEventSignal> AxisCallbacks;
-	ActionCallbacks m_ActionCallbacks;
+	CommandCallbacks m_CommandCallbacks;
 	MotionCallbacks m_MotionCallbacks;
 	AxisCallbacks m_AxisCallbacks;
 };
@@ -179,16 +200,11 @@ private:
  */
 class InputInterfaceDispatch {
 private:
-	typedef HASH_MAPS<const char *, ActionAdapter*, HASH<const char *>, simdata::eqstr>::Type ActionMap;
-	typedef HASH_MAPS<const char *, MotionAdapter*, HASH<const char *>, simdata::eqstr>::Type MotionMap;
-	typedef HASH_MAPS<const char *, AxisAdapter*, HASH<const char *>, simdata::eqstr>::Type AxisMap;
+	typedef HASH_MAPS<const char *, EventAdapter*, HASH<const char *>, simdata::eqstr>::Type EventHandlerMap;
 
-	// we support three different types of events, each with a different handler signature.
-	// the maps are from string event identifiers to the corresponding handler adapters.  the
+	// a map from string event identifiers to the corresponding handler adapters.  the
 	// adapters are allocated during construction, and freed when this instance is destroyed.
-	ActionMap m_Actions;
-	MotionMap m_Motions;
-	AxisMap m_Axes;
+	EventHandlerMap m_EventHandlers;
 
 public:
 
@@ -206,79 +222,27 @@ public:
 		bind(*this);
 	}
 
-	/** Bind an action event handler to an event identifier.
+	/** Bind an event handler to an event identifier.
 	 *
-	 *  This method is called automatically by the BIND_ACTION macro; you should
+	 *  This method is called automatically by the BIND_* macros; you should
 	 *  never need to call it directly.
 	 */
-	void bindAction(const char *id, ActionAdapter *adapter) {
-		assert(adapter != 0);
-		m_Actions[id] = adapter;
+	void bindEventHandler(const char *id, EventAdapter *adapter) {
+		assert(adapter != 0 && m_EventHandlers.find(id) == m_EventHandlers.end());
+		m_EventHandlers[id] = adapter;
 	}
 
-	/** Bind a mouse motion handler to an event identifier.
-	 *
-	 *  This method is called automatically by the BIND_MOTION macro; you should
-	 *  never need to call it directly.
-	 */
-	void bindMotion(const char *id, MotionAdapter *adapter) {
-		assert(adapter != 0);
-		m_Motions[id] = adapter;
-	}
-
-	/** Bind a axis event handler to an event identifier.
-	 *
-	 *  This method is called automatically by the BIND_AXIS macro; you should
-	 *  never need to call it directly.
-	 */
-	void bindAxis(const char *id, AxisAdapter *adapter) {
-		assert(adapter != 0);
-		m_Axes[id] = adapter;
-	}
-
-	/** Execute an action event handler for the specified object.
+	/** Execute an event handler for the specified object.
 	 *
 	 *  @param id the event identifier string.
 	 *  @param obj the object that received the event.
-	 *  @param x the x coordinate of the mouse at the time of the event.
-	 *  @param y the y coordinate of the mouse at the time of the event.
+	 *  @param event the input event.
 	 *  @return true if the event was dispatched to a handler; false otherwise.
 	 */
-	bool callAction(std::string const &id, InputInterface *obj, int x, int y) const {
-		ActionMap::const_iterator iter = m_Actions.find(id.c_str());
-		if (iter == m_Actions.end()) return false;
-		iter->second->call(obj, x, y);
-		return true;
-	}
-
-	/** Execute a mouse motion event handler for the specified object.
-	 *
-	 *  @param id the event identifier string.
-	 *  @param obj the object that received the event.
-	 *  @param x the new x coordinate of the mouse.
-	 *  @param y the new y coordinate of the mouse.
-	 *  @param dx the relative motion of the mouse on the x-axis.
-	 *  @param dy the relative motion of the mouse on the y-axis.
-	 *  @return true if the event was dispatched to a handler; false otherwise.
-	 */
-	bool callMotion(std::string const &id, InputInterface *obj, int x, int y, int dx, int dy) const {
-		MotionMap::const_iterator iter = m_Motions.find(id.c_str());
-		if (iter == m_Motions.end()) return false;
-		iter->second->call(obj, x, y, dx, dy);
-		return true;
-	}
-
-	/** Execute an axis event handler for the specified object.
-	 *
-	 *  @param id the event identifier string.
-	 *  @param obj the object that received the event.
-	 *  @param x the new position of the axis [0.0, 1.0]
-	 *  @return true if the event was dispatched to a handler; false otherwise.
-	 */
-	bool callAxis(std::string const &id, InputInterface *obj, double x) const {
-		AxisMap::const_iterator iter = m_Axes.find(id.c_str());
-		if (iter == m_Axes.end()) return 0;
-		iter->second->call(obj, x);
+	bool callHandler(InputInterface *obj, MapEvent const &event) const {
+		EventHandlerMap::const_iterator iter = m_EventHandlers.find(event.id.c_str());
+		if (iter == m_EventHandlers.end()) return false;
+		iter->second->call(obj, event);
 		return true;
 	}
 
@@ -331,8 +295,8 @@ public:
  *   public:
  *
  *    // event handlers
- *    void pointTo(int x, int y);
- *    void adjustLength(double x);
+ *    void pointTo(MapEvent::ClickEvent const &event);
+ *    void adjustLength(MapEvent::AxisEvent const &event);
  *    void toggleHead();
  *  };
  *
@@ -406,9 +370,9 @@ protected:
 	static void _bindInputInterfaceDispatch(InputInterfaceDispatch &) {}
 
 private:
-	bool onCommand(std::string const &id, int x, int y);
-	bool onAxis(std::string const &id, double value);
-	bool onMotion(std::string const &id, int x, int y, int dx, int dy);
+	bool onCommand(std::string const &id, MapEvent::CommandEvent const &);
+	bool onAxis(std::string const &id, MapEvent::AxisEvent const &);
+	bool onMotion(std::string const &id, MapEvent::MotionEvent const &);
 
 	RuntimeDispatch *runtimeDispatch() {
 		if (!m_RuntimeDispatch) m_RuntimeDispatch = new RuntimeDispatch;
@@ -463,7 +427,7 @@ protected: \
  *    and returning void.
  */
 #define BIND_ACTION(id, method) \
-		_map.bindAction(id, new ActionAdapterT<TARGET>(&TARGET::method));
+		_map.bindEventHandler(id, new ActionAdapterT<TARGET>(&TARGET::method));
 
 /** Bind a click handler to an input event identifier string.
  *
@@ -472,7 +436,7 @@ protected: \
  *    (the x-y coordinates of the mouse) and returning void.
  */
 #define BIND_CLICK(id, method) \
-		_map.bindAction(id, new ClickAdapterT<TARGET>(&TARGET::method));
+		_map.bindEventHandler(id, new ClickAdapterT<TARGET>(&TARGET::method));
 
 /** Bind an axis handler to an input event identifier string.
  *
@@ -481,7 +445,7 @@ protected: \
  *    ([0.0, 1.0] for the position of the axis) and returning void.
  */
 #define BIND_AXIS(id, method) \
-		_map.bindAxis(id, new AxisAdapterT<TARGET>(&TARGET::method));
+		_map.bindEventHandler(id, new AxisAdapterT<TARGET>(&TARGET::method));
 
 /** Bind a mouse motion handler to an input event identifier string.
  *
@@ -490,7 +454,7 @@ protected: \
  *    parameters (x, y, delta_x, delta_y) and returning void.
  */
 #define BIND_MOTION(id, method) \
-	_map.bindMotion(id, new MotionAdapterT<TARGET>(&TARGET::method));
+	_map.bindEventHandler(id, new MotionAdapterT<TARGET>(&TARGET::method));
 
 
 #endif // __INPUTINTERFACE_H__

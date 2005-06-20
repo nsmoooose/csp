@@ -162,8 +162,8 @@ public:
 	void on_LabelsOn();
 	void on_LabelsOff();
 	void on_LabelsToggle();
-	void on_LeftClick(int x, int y);
-	void on_MouseView(int x, int y, int dx, int dy);
+	void on_LeftClick(MapEvent::ClickEvent const &event);
+	void on_MouseView(MapEvent::MotionEvent const &event);
 
 	virtual void initInterface();
 

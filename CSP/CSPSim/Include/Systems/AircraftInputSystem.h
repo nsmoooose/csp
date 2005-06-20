@@ -131,12 +131,12 @@ public:
 	END_INPUT_INTERFACE
 
 public:
-	virtual void setThrottle(double);
-	virtual void setRudder(double);
-	virtual void setRoll(double);
-	virtual void setPitch(double);
-	virtual void setWheelBrake(double);
-	virtual void setAirbrake(double);
+	virtual void setThrottle(MapEvent::AxisEvent const &event);
+	virtual void setRudder(MapEvent::AxisEvent const &event);
+	virtual void setRoll(MapEvent::AxisEvent const &event);
+	virtual void setPitch(MapEvent::AxisEvent const &event);
+	virtual void setWheelBrake(MapEvent::AxisEvent const &event);
+	virtual void setAirbrake(MapEvent::AxisEvent const &event);
 	virtual void IncPitch();
 	virtual void noIncPitch();
 	virtual void DecPitch();

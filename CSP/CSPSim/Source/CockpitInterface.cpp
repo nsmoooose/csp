@@ -63,22 +63,22 @@ void CockpitSwitch::registerChannels(Bus *bus) {
 	bus->registerChannel(m_State.get());
 }
 
-void CockpitSwitch::onToggle(int, int) {
+void CockpitSwitch::onToggle() {
 	std::cout << m_Command << " toggle\n";
 	m_State->value().cycle();
 }
 
-void CockpitSwitch::onCycleNext(int, int) {
+void CockpitSwitch::onCycleNext() {
 	std::cout << m_Command << " next\n";
 	m_State->value().cycle();
 }
 
-void CockpitSwitch::onCyclePrev(int, int) {
+void CockpitSwitch::onCyclePrev() {
 	std::cout << m_Command << " prev\n";
 	m_State->value().cycleBack();
 }
 
-void CockpitSwitch::onSelect(int, int, int state) {
+void CockpitSwitch::onSelect(int state) {
 	m_State->value().set(state);
 	std::cout << m_Command << " select " << m_State->value().getToken() << "\n";
 }

@@ -164,9 +164,11 @@ public:
 
 protected:
 	virtual ~VirtualHID();
-	virtual void setScript(EventMapping::Script const *s, int x = -1, int y = -1);
+	virtual void setScript(EventMapping::Script const *s, int x = -1, int y = -1, bool drag = false);
 	virtual void setVirtualMode(int mode);
 	virtual void setJoystickModifier(int jmod);
+	void updateMouseDrag(SDL_MouseMotionEvent const &event);
+	bool updateMousePreDrag(SDL_MouseButtonEvent const &event);
 
 	int m_VirtualMode;
 	bool m_JoystickModifier;
@@ -179,6 +181,12 @@ protected:
 
 	int m_MouseEventX;
 	int m_MouseEventY;
+	bool m_MouseEventDrag;
+
+	int m_MouseDragStartX;
+	int m_MouseDragStartY;
+	bool m_MouseDrag;
+	bool m_MousePreDrag;
 };
 
 

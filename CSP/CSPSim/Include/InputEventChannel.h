@@ -52,6 +52,9 @@
  */
 class InputEventChannel: public ChannelBase, public sigc::trackable {
 public:
+	typedef simdata::Ref<InputEventChannel> Ref;
+	typedef simdata::Ref<const InputEventChannel> CRef;
+
 	/** Construct a new InputEventChannel bound to a specific input event.  The
 	 *  channel name must be the same as the event name.  The input interface
 	 *  will typically be the System subclass that registers the channnel.
@@ -79,6 +82,14 @@ public:
 		return m_Signal.connect(sigc::mem_fun(*object, callback));
 	}
 
+	/** Connect a new signal handler to the channel.  The handler will be called
+	 *  whenever the corresponding input event is received, and when the signal()
+	 *  method is called.
+	 */
+	sigc::connection connect(sigc::slot<void> const &functor) const {
+		return m_Signal.connect(functor);
+	}
+
 	/** Signal all connected handlers.
 	 */
 	void signal() const { m_Signal.emit(); }
@@ -87,7 +98,7 @@ protected:
 	virtual ~InputEventChannel() { }
 
 private:
-	void onInputEvent(int, int) { signal(); }
+	void onInputEvent() { signal(); }
 	mutable sigc::signal<void> m_Signal;
 };
 

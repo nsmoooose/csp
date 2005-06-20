@@ -76,10 +76,10 @@ private:
 	std::string m_Command;
 	DataChannel<simdata::EnumLink>::Ref m_State;
 
-	void onToggle(int, int);
-	void onCycleNext(int, int);
-	void onCyclePrev(int, int);
-	void onSelect(int, int, int state);
+	void onToggle();
+	void onCycleNext();
+	void onCyclePrev();
+	void onSelect(int state);
 };
 
 

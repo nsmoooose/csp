@@ -64,16 +64,16 @@ double AircraftInputSystem::onUpdate(double dt)
 
 // input event callbacks
 
-void AircraftInputSystem::setAirbrake(double x) {
-	m_AirbrakeInput.setValue(x);
+void AircraftInputSystem::setAirbrake(MapEvent::AxisEvent const &event) {
+	m_AirbrakeInput.setValue(event.value);
 }
 
-void AircraftInputSystem::setThrottle(double x) {
-	m_ThrottleInput.setValue(0.5 *(1.0 - x));
+void AircraftInputSystem::setThrottle(MapEvent::AxisEvent const &event) {
+	m_ThrottleInput.setValue(0.5 *(1.0 - event.value));
 }
 
-void AircraftInputSystem::setRudder(double x) {
-	m_RudderInput.setValue(x);
+void AircraftInputSystem::setRudder(MapEvent::AxisEvent const &event) {
+	m_RudderInput.setValue(event.value);
 }
 
 void AircraftInputSystem::IncRudder() {
@@ -94,14 +94,12 @@ void AircraftInputSystem::noDecRudder() {
 	m_RudderInput.setDecay(30);
 }
 
-void AircraftInputSystem::setRoll(double x)
-{
-	m_RollInput.setValue(x);
+void AircraftInputSystem::setRoll(MapEvent::AxisEvent const &event) {
+	m_RollInput.setValue(event.value);
 }
 
-void AircraftInputSystem::setPitch(double x)
-{
-	m_PitchInput.setValue(x);
+void AircraftInputSystem::setPitch(MapEvent::AxisEvent const &event) {
+	m_PitchInput.setValue(event.value);
 }
 
 void AircraftInputSystem::IncPitch() {
@@ -183,9 +181,9 @@ void AircraftInputSystem::WheelBrakeToggle() {
 	}
 }
 
-void AircraftInputSystem::setWheelBrake(double x) {
-	m_LeftBrakeInput.setValue(x);
-	m_RightBrakeInput.setValue(x);
+void AircraftInputSystem::setWheelBrake(MapEvent::AxisEvent const &event) {
+	m_LeftBrakeInput.setValue(event.value);
+	m_RightBrakeInput.setValue(event.value);
 }
 
 void AircraftInputSystem::OpenAirbrake() {

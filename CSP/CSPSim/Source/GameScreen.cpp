@@ -491,15 +491,15 @@ void GameScreen::on_LabelsOff() {
 	if (scene) scene->setLabels(false);
 };
 
-void GameScreen::on_LeftClick(int x, int y) {
+void GameScreen::on_LeftClick(MapEvent::ClickEvent const &event) {
 	VirtualScene *scene = CSPSim::theSim->getScene();
-	if (scene) {
-		scene->pick(x, y);
+	if (scene && !event.drag) {
+		scene->pick(event.x, event.y);
 	}
 }
 
-void GameScreen::on_MouseView(int x, int y, int dx, int dy) {
-	m_CameraCommands->Mouse.set(x,y,dx,dy);
+void GameScreen::on_MouseView(MapEvent::MotionEvent const &event) {
+	m_CameraCommands->Mouse.set(event.x, event.y, event.dx, event.dy);
 	m_CameraAgent->setCameraCommand(&m_CameraCommands->Mouse);
 }
 

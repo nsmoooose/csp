@@ -8,6 +8,13 @@
  * Reduce the sensitivity of the camera panning (mouse and keyboard) when
    the field of view is narrow.
 
+ * Refactor input event dispatch to pass an event struct to the handler
+   rather than individual arguments.  Minor simplifications and cleanup
+   of the input interface and hid code.  Added a "drag" flag to click
+   events to indicate if the mouse has been moving with a button pressed.
+   This is used to prevent accidental cockpit switch picking when panning
+   the view with the mouse.
+
 2005-06-18: onsight
  * Convert F16 UFC to use InputEventChannels instead of static event
    handlers.  ICP button events can then be captured by the UFC system

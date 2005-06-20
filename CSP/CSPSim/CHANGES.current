@@ -20,6 +20,18 @@
    in animations previously took only enum channels.  Small bug fix in
    the counter wheel animation and other minor cleanup.
 
+ * Check in a recent version of Lologramme's high detail F16DJ cockpit
+   and associated textures.  Also add a COPYING notice for the F16DJ.
+   Crop the f16-lak image to 512x512 to prevent rescaling by OSG.
+   The aircraft model is generated from a newer version of the source
+   model that moves the simple cockpit into a separate group to allow
+   it to be easily hidden when showing the detailed pit.  Exterior
+   canopy reflection have been added by hand just to demonstrate the
+   effect.  These use a cubemap with canned images in the aircraft
+   reference frame, so they don't move correctly when the aircraft
+   rotates and don't reflect the actual surroundings.  Nevertheless
+   they look fairly nice.
+
 2005-06-18: onsight
  * Convert F16 UFC to use InputEventChannels instead of static event
    handlers.  ICP button events can then be captured by the UFC system

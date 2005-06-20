@@ -1,0 +1,132 @@
+<?xml version="1.0" standalone="no"?>
+
+<Object class="ObjectModel">
+	<External name="model_path">F16/DJ/Cockpit.osg</External>
+	<Vector name="axis_0">1 0 0</Vector>
+	<Vector name="axis_1">0 1 0</Vector>
+	<Vector name="view_point">0.0 4.60 1.20</Vector>
+	<Vector name="hud_placement">0.0 5.0 1.15</Vector>
+	<Float name="hud_width">0.124</Float>
+	<Float name="hud_height">0.160</Float>
+	<Bool name="smooth">false</Bool>
+	<Enum name="effect">None</Enum>
+	<List name="debug_points">
+		<!-- view point -->
+		<Vector>0.0 4.45 1.19</Vector>
+	</List>
+	<List name="animations">
+		<Object class="AnimatedMomentarySwitch">
+			<String name="model_id">RTN-SEQ Switch</String>
+			<List name="event_channel_names">
+				<String>ICP_SEQ</String>
+				<String>ICP_UP</String>
+				<String>ICP_RTN</String>
+				<String>ICP_DN</String>
+			</List>
+			<Float name="cycle_time">0.5</Float>
+		</Object>
+		<Object class="AnimatedMomentarySwitch">
+			<String name="model_id">ICP 1</String>
+			<List name="event_channel_names">
+				<String>ICP_1</String>
+			</List>
+			<Float name="cycle_time">0.3</Float>
+		</Object>
+		<Object class="StateSwitch">
+			<String name="channel_name">HUD.AOAIndexer</String>
+			<String name="model_id">Cockpit.AOAIndexer</String>
+			<Int name="lod_limit">10</Int>
+		</Object>
+		<Object class="AttitudeAnimation">
+			<String name="model_id">ADISphere</String>
+			<Int name="lod_limit">10</Int>
+		</Object>
+		<Object class="AnimatedSwitch">
+			<String name="channel_name">HUD.FlightPathMarkerSwitch</String>
+			<String name="model_id">ATT-FPM Switch</String>
+			<List name="times"><Float>0</Float><Float>0.10</Float><Float>0.199</Float></List>
+			<Float name="rate">0.40</Float>
+			<Int name="lod_limit">10</Int>
+		</Object>
+		<Object class="AnimatedSwitch">
+			<String name="channel_name">HUD.ScalesSwitch</String>
+			<String name="model_id">W-VAH Switch</String>
+			<List name="times"><Float>0</Float><Float>0.10</Float><Float>0.199</Float></List>
+			<Float name="rate">0.40</Float>
+			<Int name="lod_limit">10</Int>
+		</Object>
+		<Object class="AnimatedSwitch">
+			<String name="channel_name">HUD.VelocitySwitch</String>
+			<String name="model_id">CAS Switch</String>
+			<List name="times"><Float>0</Float><Float>0.10</Float><Float>0.199</Float></List>
+			<Float name="rate">0.40</Float>
+			<Int name="lod_limit">10</Int>
+		</Object>
+		<Object class="AnimatedSwitch">
+			<String name="channel_name">HUD.AltitudeSwitch</String>
+			<String name="model_id">ALT Radar Switch</String>
+			<List name="times"><Float>0</Float><Float>0.10</Float><Float>0.199</Float></List>
+			<Float name="rate">0.40</Float>
+			<Int name="lod_limit">10</Int>
+		</Object>
+		<Object class="AnimatedSwitch">
+			<String name="channel_name">HUD.DataSwitch</String>
+			<String name="model_id">DED Data Switch</String>
+			<List name="times"><Float>0</Float><Float>0.10</Float><Float>0.199</Float></List>
+			<Float name="rate">0.40</Float>
+			<Int name="lod_limit">10</Int>
+		</Object>
+		<Object class="DrivenAnimationPath">
+			<String name="channel_name">ControlSurfaces.AirbrakeDeflection</String>
+			<String name="model_id">AirBrakeIndicator</String>
+			<Float name="gain">0.19098</Float>
+		</Object>
+		<Object class="DrivenRotation">
+			<String name="channel_name">ControlInputs.ThrottleInput</String>
+			<String name="model_id">RPMPointer</String>
+			<Vector name="axis">0 0 1</Vector>
+			<Bool name="pre_multiply">true</Bool>
+			<Float name="gain">4.7124</Float>
+			<Float name="limit_0">0</Float>
+			<Float name="limit_1">6.28</Float>
+		</Object>
+		<Object class="AnimatedSwitch">
+			<String name="channel_name">F16.GearHandleUp</String>
+			<String name="model_id">GearHandleMain</String>
+			<List name="times"><Float>0.4</Float><Float>0.0</Float></List>
+			<Int name="lod_limit">10</Int>
+		</Object>
+		<Object class="DrivenRotation">
+			<String name="channel_name">FlightDynamics.Alpha</String>
+			<String name="model_id">AOATape</String>
+			<Vector name="axis">0 0 1</Vector>
+			<Bool name="pre_multiply">true</Bool>
+			<Float name="gain">4.7</Float>
+			<Float name="limit_0">-3.1</Float>
+			<Float name="limit_1">3.1</Float>
+		</Object>
+		<Object class="DrivenRotation">
+			<String name="channel_name">FlightDynamics.VerticalVelocity</String>
+			<String name="model_id">VVITape</String>
+			<Vector name="axis">0 0 1</Vector>
+			<Bool name="pre_multiply">true</Bool>
+			<Float name="gain">0.07771</Float>
+			<Float name="limit_0">-2.5</Float>
+			<Float name="limit_1">2.5</Float>
+		</Object>
+		<Object class="CounterWheel">
+			<String name="channel_name">FlightDynamics.PressureAltitude</String>
+			<String name="model_id">Altimeter</String>
+			<Vector name="axis">-1 0 0</Vector>
+			<Int name="lod_limit">10</Int>
+			<Float name="gain">0.0328084</Float>
+		</Object>
+		<!--Object class="RotarySwitch">
+			<String name="channel_name">HUD.FlightPathMarkerSwitch</String>
+			<String name="model_id">Cockpit.MasterArm</String>
+			<Vector name="axis">1 0 0</Vector>
+			<Int name="lod_limit">10</Int>
+			<List name="angles"><Float>12</Float><Float>0</Float><Float>-12</Float></List>
+		</Object-->
+	</List>
+</Object>

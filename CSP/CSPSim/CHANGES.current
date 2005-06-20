@@ -32,6 +32,10 @@
    rotates and don't reflect the actual surroundings.  Nevertheless
    they look fairly nice.
 
+ * Add the detailed cockpit xml definition.
+
+==> ALL USERS: RebuildData.py
+
 2005-06-18: onsight
  * Convert F16 UFC to use InputEventChannels instead of static event
    handlers.  ICP button events can then be captured by the UFC system

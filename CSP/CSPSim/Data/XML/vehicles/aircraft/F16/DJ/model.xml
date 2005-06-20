@@ -1,8 +1,8 @@
 <?xml version="1.0" standalone="no"?>
 
 <Object class="ObjectModel">
+	<String name="label">F16</String>
 	<External name="model_path">F16/DJ/F16DJ.osg</External>
-	<!--External name="model_path">F16/DJ/dp2.osg</External-->
 	<Vector name="axis_0">1 0 0</Vector>
 	<Vector name="axis_1">0 1 0</Vector>
 	<Vector name="view_point">0.0 4.60 1.20</Vector>
@@ -33,23 +33,15 @@
 		<Vector>-1.100 -0.740 -1.660</Vector>
 	</List>
 
-	<List name="animations">
-		<Object class="AttitudeAnimation">
-			<String name="model_id">ADI</String>
-			<Int name="lod_limit">10</Int>
+	<List name="stations">
+		<Object class="Station">
+			<String name="name">FrontSeat</String>
+			<Path name="detail_model">cockpit</Path>
+			<List name="mask_names"><String>Cockpit</String></List>
 		</Object>
-		<Object class="StateSwitch">
-			<String name="channel_name">HUD.AOAIndexer</String>
-			<String name="model_id">Cockpit.AOAIndexer</String>
-			<Int name="lod_limit">10</Int>
-		</Object>
-		<Object class="AnimatedSwitch">
-			<String name="channel_name">HUD.FlightPathMarkerSwitch</String>
-			<String name="model_id">MasterArmSwitch</String>
-			<List name="times"><Float>0</Float><Float>0.15</Float><Float>0.30</Float></List>
-			<Int name="lod_limit">10</Int>
-		</Object>
+	</List>
 
+	<List name="animations">
 		<Object class="DrivenRotation">
 			<String name="channel_name">FlightDynamics.Alpha</String>
 			<String name="model_id">Cockpit.AngleOfAttackTape</String>

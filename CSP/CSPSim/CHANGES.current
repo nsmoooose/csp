@@ -15,6 +15,11 @@
    This is used to prevent accidental cockpit switch picking when panning
    the view with the mouse.
 
+ * Add a new animation class for momentary switches (e.g., icp push
+   buttons and data control switch).  Also add support for bool channels
+   in animations previously took only enum channels.  Small bug fix in
+   the counter wheel animation and other minor cleanup.
+
 2005-06-18: onsight
  * Convert F16 UFC to use InputEventChannels instead of static event
    handlers.  ICP button events can then be captured by the UFC system

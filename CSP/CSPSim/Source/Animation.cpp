@@ -24,6 +24,7 @@
 
 
 #include "Animation.h"
+#include "InputEventChannel.h"
 
 #include <osg/AnimationPath>
 #include <osg/MatrixTransform>
@@ -77,7 +78,7 @@ class DoubleChannel {
 	float m_Value;
 
 public:
-	DoubleChannel(): m_Value(0.0f) {}
+	DoubleChannel(): m_Value(0.000000113443f) {}  // hack to force an initial update
 
 	/** Read and store the latest data from the channel.  Returns true if the value has
 	 *  changed since the last call to update.
@@ -118,10 +119,13 @@ public:
 
 
 /** A wrapper class for enumlink data channels.  Encapsulates functionality that is
- *  common to several animation subclasses.
+ *  common to several animation subclasses.  As a minor hack, EnumLinkChannel also
+ *  supports bool channels, treating them as two-state enumerations with tokens
+ *  "false" and "true" and corresponding values 0 and 1, respectively.
  */
 class EnumLinkChannel {
 	DataChannel<simdata::EnumLink>::CRef m_Channel;
+	DataChannel<bool>::CRef m_BoolChannel;
 	int m_Value;
 	std::string m_Token;
 
@@ -132,12 +136,21 @@ public:
 	 *  has changed since the last call to update.
 	 */
 	bool update() {
-		assert(m_Channel.valid());
-		if (!m_Channel) return false;
-		const int value = m_Channel->value().getValue();
-		if (value == m_Value) return false;
+		int value = -2;
+		std::string token;
+		if (m_Channel.valid()) {
+			value = m_Channel->value().getValue();
+			if (value == m_Value) return false;
+			token = m_Channel->value().getToken();
+		} else {
+			assert(m_BoolChannel.valid());
+			if (!m_BoolChannel) return false;
+			value = m_BoolChannel->value() ? 1 : 0;
+			if (value == m_Value) return false;
+			token = m_BoolChannel->value() ? "true" : "false";
+		}
 		m_Value = value;
-		m_Token = m_Channel->value().getToken();
+		m_Token = token;
 		return true;
 	}
 
@@ -150,26 +163,41 @@ public:
 		if (bus) {
 			try {
 				m_Channel = bus->getChannel(name, false);
-			} catch (simdata::ConversionError &) {
-				CSP_LOG(OBJECT, WARNING, "Incompatible channel " << name << " for animation; expected enumlink");
-				return false;
+			} catch (simdata::ConversionError &e) {
+				e.clear();
+				try {
+					m_BoolChannel = bus->getChannel(name, false);
+				} catch (simdata::ConversionError &e) {
+					e.clear();
+					CSP_LOG(OBJECT, WARNING, "Incompatible channel " << name << " for animation; expected enumlink");
+					return false;
+				}
 			}
 			if (!m_Channel) {
 				CSP_LOG(OBJECT, WARNING, "Unable to bind channel " << name << " for animation");
 			}
 		}
-		return m_Channel.valid();
+		return m_Channel.valid() || m_BoolChannel.valid();
 	}
 
 	/** Cycle the data channel to the next value.  Only possible for shared data channels.
 	 */
 	void cycle() {
-		assert(m_Channel.valid());
 		if (m_Channel.valid()) {
 			assert(m_Channel->isShared());
 			if (m_Channel->isShared()) {
 				simdata::EnumLink &e = const_cast<simdata::EnumLink&>(m_Channel->value());
 				e.cycle(); // TODO push
+			}
+		} else {
+			assert(m_BoolChannel.valid());
+			if (m_BoolChannel.valid()) {
+				if (m_BoolChannel->isShared()) {
+					bool &b = const_cast<bool&>(m_BoolChannel->value());
+					b = !b;
+				} else {
+					m_BoolChannel->requestSet(!(m_BoolChannel->value()));
+				}
 			}
 		}
 	}
@@ -495,6 +523,7 @@ class AnimatedSwitch::Callback: public AnimationCallback {
 	simdata::Ref<const AnimatedSwitch> m_Animation;
 	osg::ref_ptr<const osg::AnimationPathCallback> m_AnimationPathCallback;
 	EnumLinkChannel m_Channel;
+	double m_TimeLimit;
 	double m_Target;
 	double m_LastTime;
 	double m_AnimationTime;
@@ -522,8 +551,6 @@ protected:
 	bool update() {
 		if (m_Channel.update()) {
 			m_Target = targetTime(m_Channel.value());
-			// Fix corner case where the endpoint wraps to zero (for LOOP animations)
-			if (m_Target >= m_AnimationPathCallback->getAnimationPath()->getPeriod()) { m_Target = m_AnimationPathCallback->getAnimationPath()->getPeriod() - 0.000001; }
 			m_Direction = (m_Target > m_AnimationTime) ? 1.0 : -1.0;
 			m_Pause = false;
 		}
@@ -532,7 +559,8 @@ protected:
 
 	void updateAnimation(osg::Node *node) {
 		osg::AnimationPath::ControlPoint cp;
-		if (m_AnimationPathCallback->getAnimationPath()->getInterpolatedControlPoint(m_AnimationTime * m_Animation->getRate(), cp)) {
+		const double animation_time = std::min(m_AnimationTime * m_Animation->getRate(), m_TimeLimit);
+		if (m_AnimationPathCallback->getAnimationPath()->getInterpolatedControlPoint(animation_time, cp)) {
 			AnimationPathCallbackVisitor apcv(cp, m_AnimationPathCallback->getPivotPoint(), m_AnimationPathCallback->getUseInverseMatrix());
 			node->accept(apcv);
 		}
@@ -580,6 +608,7 @@ public:
 			osg::AnimationPath *ap = const_cast<osg::AnimationPath*>(m_AnimationPathCallback->getAnimationPath());
 			ap->setLoopMode(osg::AnimationPath::LOOP);
 		}
+		m_TimeLimit = m_AnimationPathCallback->getAnimationPath()->getPeriod() - 0.001;  // prevent wraparound
 	}
 
 	virtual bool bindChannels(Bus *bus) { return m_Channel.bind(bus, m_Animation->getChannelName()); }
@@ -1238,7 +1267,12 @@ public:
 			}
 			if (m_Transform) {
 				const float value = m_Animation->getGain() * m_Channel.value() + m_Animation->getOffset();
-				const float angle = static_cast<float>((floor(value / m_Scale) + std::max(0.0, fmod(value * 10.0, 10.0 * m_Scale) - (10.0 * m_Scale - 1.0))) * (0.2 * simdata::PI));
+				float angle = 0.0;
+				if (m_Scale > 1.0f) {
+					angle = static_cast<float>((floor(value / m_Scale) + 0.1 * std::max(0.0, fmod(value * 10.0, 10.0 * m_Scale) - (10.0 * m_Scale - 10.0))) * (0.2 * simdata::PI));
+				} else {
+					angle = static_cast<float>(fmod(value, 10.0) * (0.2 * simdata::PI));
+				}
 				const osg::Vec3 t = m_Transform->getMatrix().getTrans();
 				osg::Matrix m = osg::Matrix::rotate(angle, m_Animation->getAxis());
 				m.preMult(m_Original);
@@ -1266,6 +1300,158 @@ AnimationCallback *CounterWheel::newCallback(osg::Node *node) const {
 }
 
 
+////////////////////////////////////////////////////////////////////////////////////
+//
+////////////////////////////////////////////////////////////////////////////////////
+
+/** An animated switch with one or more active states that can be momentarily
+ *  entered before returning to the default state.  For example, the ICP numeric
+ *  buttons (one state) and the data control switch (4 states) in the F16 cockpit.
+ */
+class AnimatedMomentarySwitch: public Animation {
+	class Callback;
+public:
+	SIMDATA_OBJECT(AnimatedMomentarySwitch, 0, 0)
+
+	EXTEND_SIMDATA_XML_INTERFACE(AnimatedMomentarySwitch, Animation)
+		SIMDATA_XML("event_channel_names", AnimatedMomentarySwitch::m_EventChannelNames, true)
+		SIMDATA_XML("cycle_time", AnimatedMomentarySwitch::m_CycleTime, false)
+	END_SIMDATA_XML_INTERFACE
+
+	virtual AnimationCallback *newCallback(osg::Node *node) const;
+	inline const std::vector<std::string> &getEventChannelNames() const { return m_EventChannelNames; }
+	inline double getCycleTime() const { return m_CycleTime; }
+
+	AnimatedMomentarySwitch(): m_CycleTime(0.1) { }
+
+private:
+	std::vector<std::string> m_EventChannelNames;
+	double m_CycleTime;
+};
+
+
+class AnimatedMomentarySwitch::Callback: public AnimationCallback, public sigc::trackable {
+	simdata::Ref<const AnimatedMomentarySwitch> m_Animation;
+	osg::ref_ptr<const osg::AnimationPathCallback> m_AnimationPathCallback;
+	osg::AnimationPath::ControlPoint m_DefaultPoint;
+	std::vector<osg::AnimationPath::ControlPoint> m_ControlPoints;
+	std::vector<InputEventChannel::Ref> m_EventChannels;
+	unsigned m_Index;
+	double m_Cycle;
+	double m_Scale;
+	double m_LastTime;
+	bool m_Pause;
+
+	void initControlPoints() {
+		assert(m_ControlPoints.empty());
+		const unsigned points = m_Animation->getEventChannelNames().size();
+		osg::AnimationPath::TimeControlPointMap const &pointmap = m_AnimationPathCallback->getAnimationPath()->getTimeControlPointMap();
+		assert(pointmap.size() >= points + 1);
+		osg::AnimationPath::TimeControlPointMap::const_iterator iter = pointmap.begin();
+		m_DefaultPoint = iter->second;
+		m_ControlPoints.reserve(pointmap.size() - 1);
+		for (++iter; iter != pointmap.end() && m_ControlPoints.size() < points; ++iter) {
+			m_ControlPoints.push_back(iter->second);
+		}
+	}
+
+protected:
+	void updateAnimation(osg::Node *node) {
+		osg::AnimationPath::ControlPoint cp;
+		cp.interpolate(m_Cycle, m_DefaultPoint, m_ControlPoints[m_Index]);
+		AnimationPathCallbackVisitor apcv(cp, m_AnimationPathCallback->getPivotPoint(), m_AnimationPathCallback->getUseInverseMatrix());
+		node->accept(apcv);
+	}
+
+	void onEvent(unsigned index) {
+		assert(index < m_ControlPoints.size());
+		if (m_Pause) {
+			m_Pause = false;
+			m_Index = index;
+			m_Cycle = 0.0;
+			m_Scale = 2.0 / m_Animation->getCycleTime();
+			assert(m_Scale >= 0.0);
+		}
+	}
+
+public:
+	void operator()(osg::Node* node, osg::NodeVisitor* nv) {
+		if (nv->getVisitorType() == osg::NodeVisitor::UPDATE_VISITOR && nv->getFrameStamp() && !m_Pause) {
+			const double now = nv->getFrameStamp()->getReferenceTime();
+			if (m_LastTime >= 0.0) {
+				m_Cycle += m_Scale * (now - m_LastTime);
+				if (m_Cycle > 1.0) {
+					m_Cycle = 1.0;
+					m_Scale = -std::abs(m_Scale);
+				} else if (m_Cycle < 0.0) {
+					m_Cycle = 0.0;
+					m_Pause = true;
+				}
+				updateAnimation(node);
+			}
+			m_LastTime = now;
+		}
+		traverse(node, nv);
+	}
+
+	// TODO implement pick geodes
+	virtual bool pick(int /*flags*/) {
+		if (m_EventChannels.size() == 1 && m_EventChannels[0].valid()) {
+			m_EventChannels[0]->signal();
+			return true;
+		}
+		return false;
+	}
+
+	Callback(AnimatedMomentarySwitch const *animation, osg::AnimationPathCallback const *path):
+		m_Animation(animation),
+		m_AnimationPathCallback(path),
+		m_Index(0),
+		m_Cycle(0.0),
+		m_Scale(0.0),
+		m_LastTime(-1.0),
+		m_Pause(false)  // force initial reset
+	{
+		assert(animation);
+		assert(path);
+		initControlPoints();
+	}
+
+	virtual bool bindChannels(Bus *bus) {
+		notify_callbacks();  // remove all callbacks (sigc::trackable)
+		m_EventChannels.clear();
+		if (bus) {
+			const std::vector<std::string> &channel_names = m_Animation->getEventChannelNames();
+			m_EventChannels.reserve(channel_names.size());
+			for (unsigned i = 0; i < channel_names.size(); ++i) {
+				InputEventChannel::Ref channel = bus->getSharedChannel(channel_names[i], false);
+				if (channel.valid()) {
+					channel->connect(sigc::bind(sigc::mem_fun(this, &Callback::onEvent), i));
+				} else {
+					CSP_LOG(OBJECT, WARNING, "InputEventChannel " << channel_names[i] << " not found; ignoring.");
+				}
+				m_EventChannels.push_back(channel);
+			}
+		}
+		return true;
+	}
+};
+
+AnimationCallback *AnimatedMomentarySwitch::newCallback(osg::Node *node) const {
+	assert(node);
+	osg::AnimationPathCallback *oapc = dynamic_cast<osg::AnimationPathCallback*>(node->getUpdateCallback());
+	if (!oapc) {
+		CSP_LOG(OBJECT, WARNING, "AnimatedMomentarySwitch node has no animation path (" << node->getName() << ")");
+		return 0;
+	}
+	AnimationCallback *callback = new Callback(this, oapc);
+	callback->bind(*node);
+	return callback;
+}
+
+
+
+
 // register all animation classes
 SIMDATA_REGISTER_INTERFACE(Animation)
 SIMDATA_REGISTER_INTERFACE(Rotation)
@@ -1278,6 +1464,7 @@ SIMDATA_REGISTER_INTERFACE(DrivenVectorialTranslation)
 SIMDATA_REGISTER_INTERFACE(TimedMagnitudeTranslation)
 SIMDATA_REGISTER_INTERFACE(RotarySwitch)
 SIMDATA_REGISTER_INTERFACE(AnimatedSwitch)
+SIMDATA_REGISTER_INTERFACE(AnimatedMomentarySwitch)
 SIMDATA_REGISTER_INTERFACE(StateSwitch)
 SIMDATA_REGISTER_INTERFACE(DrivenAnimationPath)
 SIMDATA_REGISTER_INTERFACE(AttitudeAnimation)

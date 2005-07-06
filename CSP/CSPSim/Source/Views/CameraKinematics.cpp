@@ -27,7 +27,6 @@
 #include "Views/CameraKinematics.h"
 #include "Views/CameraCommand.h"
 
-#include "Animation.h"
 #include "CSPSim.h"
 #include "DynamicObject.h"
 #include "ObjectModel.h"

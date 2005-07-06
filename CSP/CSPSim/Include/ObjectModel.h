@@ -38,6 +38,9 @@
 #include <osg/ref_ptr>
 
 #include <Export.h>
+#include <Animation.h>
+#include <Bus.h>
+#include <Station.h>
 
 class Animation;
 class AnimationCallback;

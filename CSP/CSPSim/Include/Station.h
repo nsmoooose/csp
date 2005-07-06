@@ -33,6 +33,8 @@
 
 class Bus;
 class SceneModel;
+class ObjectModel;
+class SceneModelChild;
 
 
 /** A static object representing a player position in a vehicle.  For example,

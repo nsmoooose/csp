@@ -67,9 +67,13 @@ public:
 	double getMaxFiringRange() { return max_firing_range; }
 
 	void setMovementState(unsigned int state) { movement_state = state; }
+	virtual void onRender();
 
 
 protected:
+	virtual double onUpdate(double);
+	virtual void registerChannels(Bus * bus);
+	virtual void bindChannels(Bus * bus);
 
 	double gun_angle;
 
@@ -85,6 +89,7 @@ protected:
 
 	char bits;
 
+	DataChannel<double>::Ref b_Heading;
 };
 
 

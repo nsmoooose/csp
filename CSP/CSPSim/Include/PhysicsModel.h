@@ -78,12 +78,12 @@ protected:
 	/**
 	 * Extract kinematic variables from the vector field variable.
 	 */
-	void YToBody(Vector::Vectord const &y);
+	virtual void YToBody(Vector::Vectord const &y);
 
 	/**
 	 * Assemble the vector field variable from individual kinematic variables.
 	 */
-	Vector::Vectord const &bodyToY(simdata::Vector3 const &p,
+	virtual Vector::Vectord const &bodyToY(simdata::Vector3 const &p,
 	                                   simdata::Vector3 const &v,
 	                                   simdata::Vector3 const &w,
 	                                   simdata::Quat const &q);

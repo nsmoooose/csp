@@ -21,12 +21,11 @@
  * @file Feature.cpp
  *
  **/
+#include "ObjectModel.h"
 
 #include "Theater/Feature.h"
 #include "Theater/FeatureObjectModel.h"
 
-#include "Animation.h"
-#include "ObjectModel.h"
 
 Feature::Feature(FeatureObjectModel const *model, char value_) : 
 	m_Damage(0), 

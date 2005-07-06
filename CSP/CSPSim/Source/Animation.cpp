@@ -1271,7 +1271,7 @@ public:
 				if (m_Scale > 1.0f) {
 					angle = static_cast<float>((floor(value / m_Scale) + 0.1 * std::max(0.0, fmod(value * 10.0, 10.0 * m_Scale) - (10.0 * m_Scale - 10.0))) * (0.2 * simdata::PI));
 				} else {
-					angle = static_cast<float>(fmod(value, 10.0) * (0.2 * simdata::PI));
+					angle = static_cast<float>(fmodf(value, 10.0f) * (0.2 * simdata::PI));
 				}
 				const osg::Vec3 t = m_Transform->getMatrix().getTrans();
 				osg::Matrix m = osg::Matrix::rotate(angle, m_Animation->getAxis());

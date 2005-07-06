@@ -25,14 +25,12 @@
 #include <SimData/Math.h>
 
 #include "AircraftObject.h"
-#include "Animation.h"
 #include "AnimationSequence.h"
 #include "KineticsChannels.h"
 #include "Collision.h"
 #include "Engine.h"
 #include "FlightModel.h"
 #include "ObjectModel.h"
-#include "Station.h"
 #include "SystemsModel.h"
 
 #include <SimCore/Util/Log.h>

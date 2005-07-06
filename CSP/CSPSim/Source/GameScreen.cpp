@@ -37,7 +37,6 @@
 
 #include <SimData/FileUtility.h>
 
-#include "Animation.h"
 #include "ConsoleCommands.h"
 #include "CSPSim.h"
 #include "DataRecorder.h"

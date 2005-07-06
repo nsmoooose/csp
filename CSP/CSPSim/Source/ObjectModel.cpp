@@ -31,7 +31,6 @@
 #include "HUD/HUD.h"
 #include "SceneConstants.h"
 #include "SmokeEffects.h"
-#include "Station.h"
 
 #include <osgDB/FileUtils>
 #include <osgDB/Registry>

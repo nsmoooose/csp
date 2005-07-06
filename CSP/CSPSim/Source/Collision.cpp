@@ -29,6 +29,8 @@
 #include <Animation.h>
 #include <KineticsChannels.h>
 #include <ObjectModel.h>
+#include <SimCore/Util/Log.h>
+
 
 using bus::Kinetics;
 

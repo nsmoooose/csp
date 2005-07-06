@@ -34,7 +34,6 @@
 
 #include "CSPSim.h"
 
-#include "Animation.h"
 #include "AnimationSequence.h"
 #include "Atmosphere.h"
 #include "Config.h"
@@ -762,14 +761,12 @@ int CSPSim::initSDL()
 	m_ScreenHeight = height;
 	m_ScreenWidth = width;
 
-	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK | SDL_INIT_AUDIO) != 0) {
+	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK | SDL_INIT_AUDIO /*  | SDL_INIT_NOPARACHUTE) != 0 */ ) {
 		std::cerr << "Unable to initialize SDL: " << SDL_GetError() << "\n";
 		CSP_LOG(APP, ERROR, "ERROR! Unable to initialize SDL: " << SDL_GetError());
 		return 1;
 	}
 
-	/* Make sure SDL_Quit gets called when the program exits. */
-	atexit(SDL_Quit);
 
 	const SDL_VideoInfo *info = SDL_GetVideoInfo();
 	int bpp = info->vfmt->BitsPerPixel;
@@ -818,6 +815,9 @@ int CSPSim::initSDL()
 	}
 	bool mute = g_Config.getBool("Testing", "Mute", false, true);
 	SDL_PauseAudio(mute);
+
+	/* Make sure SDL_Quit gets called when the program exits. */
+	atexit(SDL_Quit);
 
 	return 0;
 }

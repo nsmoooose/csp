@@ -24,14 +24,12 @@
 
 
 #include <DynamicObject.h>
-#include <Animation.h>
 #include <Controller.h>
 #include <CSPSim.h>
 #include <HUD/HUD.h>
 #include <KineticsChannels.h>
 #include <ObjectModel.h>
 #include <PhysicsModel.h>
-#include <Station.h>
 #include <SystemsModel.h>
 #include <TerrainObject.h>
 
@@ -395,8 +393,12 @@ void DynamicObject::bindAnimations(Bus* bus) {
 
 // called whenever the bus (ie systemsmodel) changes
 void DynamicObject::bindChannels(Bus* bus) {
-	b_Hud = bus->getChannel("HUD", false);
-	bindAnimations(bus);
+	if (bus != NULL) {
+		b_Hud = bus->getChannel("HUD", false);
+		bindAnimations(bus);
+	} else {
+		CSP_LOG(OBJECT, DEBUG, "DynamicObject::bindChannels() - bus is invalid");
+	}
 }
 
 void DynamicObject::selectVehicleCore() {

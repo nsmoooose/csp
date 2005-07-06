@@ -30,7 +30,6 @@
 #include "CSPSim.h"
 #include "Config.h"
 #include "Sky.h"
-#include "Animation.h"
 #include "ObjectModel.h"
 #include "glDiagnostics.h"
 #include "SceneConstants.h"

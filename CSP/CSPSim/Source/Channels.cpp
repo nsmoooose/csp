@@ -83,6 +83,9 @@ namespace bus {
 	const char *ControlInputs::RightBrakeInput = "ControlInputs.RightBrakeInput";
 	const char *ControlInputs::ThrottleInput = "ControlInputs.ThrottleInput";
 	const char *ControlInputs::AirbrakeInput = "ControlInputs.AirbrakeInput";
+	
+	const char *ControlInputs::BrakeInput = "ControlInputs.BrakeInput";
+	const char *ControlInputs::SteeringInput = "ControlInputs.SteeringInput";
 
 	const char *Navigation::ActiveSteerpoint = "Navigation.ActiveSteerpoint";
 

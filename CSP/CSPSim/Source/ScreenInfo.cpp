@@ -23,7 +23,6 @@
  **/
 
 #include "ScreenInfo.h"
-#include "Animation.h"
 #include "CSPSim.h"
 #include "DynamicObject.h"
 #include "ObjectModel.h"

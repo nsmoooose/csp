@@ -22,6 +22,7 @@
  *
  **/
 
+#include <Animation.h>
 #include <Station.h>
 #include <ObjectModel.h>
 

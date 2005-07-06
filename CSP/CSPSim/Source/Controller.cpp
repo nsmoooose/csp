@@ -23,7 +23,6 @@
  **/
 
 #include <Controller.h>
-#include <Animation.h>
 #include <KineticsChannels.h>
 #include <ObjectModel.h>
 #include <ObjectUpdate.h>

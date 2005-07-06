@@ -31,7 +31,6 @@
 #include "TerrainObject.h"
 #include "Projection.h"
 #include <SimCore/Util/Log.h>
-#include "Animation.h"
 
 #include <osg/Vec3>
 #include <osg/Quat>

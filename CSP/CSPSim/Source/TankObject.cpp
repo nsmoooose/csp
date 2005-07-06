@@ -22,12 +22,11 @@
  *
  **/
 
-
+#include "KineticsChannels.h"
 #include "TankObject.h"
-#include "Animation.h"
 #include "ObjectModel.h"
-#include "Station.h"
 #include "SystemsModel.h"
+#include <SimCore/Util/Log.h>
 
 
 using namespace std;
@@ -37,6 +36,9 @@ SIMDATA_REGISTER_INTERFACE(TankObject)
 
 TankObject::TankObject(): DynamicObject(TYPE_MUD_UNIT)
 {
+	CSP_LOG(OBJECT, DEBUG, "TankObject::TankObject() ...");
+	b_Heading = DataChannel<double>::newLocal(bus::Kinetics::Heading, 0.0);
+
 //	m_ObjectType = TANK_OBJECT_TYPE;
 	m_ObjectName = "TANK";
 
@@ -54,5 +56,28 @@ TankObject::TankObject(): DynamicObject(TYPE_MUD_UNIT)
 TankObject::~TankObject()
 {
 
+}
+void TankObject::registerChannels(Bus * bus) {
+	CSP_LOG(OBJECT, DEBUG, "TankObject::registerChannels() ...");
+
+	DynamicObject::registerChannels(bus);
+//	if (bus->valid()) {
+//		bus->registerChannel(b_Heading.get());
+//	}
+}
+
+void TankObject::bindChannels(Bus * bus) {
+	CSP_LOG(OBJECT, DEBUG, "TankObject::bindChannels() ...");
+//	DynamicObject::bindChannels(bus);
+}
+
+double TankObject::onUpdate(double dt)
+{
+	return DynamicObject::onUpdate(dt);
+}
+
+
+void TankObject::onRender() {
+	DynamicObject::onRender();
 }
 

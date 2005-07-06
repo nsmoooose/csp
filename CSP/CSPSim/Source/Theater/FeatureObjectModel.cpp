@@ -30,7 +30,6 @@
 #include "Theater/LayoutTransform.h"
 #include "Theater/ElevationCorrection.h"
 
-#include "Animation.h"
 #include "ObjectModel.h"
 
 

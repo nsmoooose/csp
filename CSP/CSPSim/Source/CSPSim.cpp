@@ -761,7 +761,7 @@ int CSPSim::initSDL()
 	m_ScreenHeight = height;
 	m_ScreenWidth = width;
 
-	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK | SDL_INIT_AUDIO /*  | SDL_INIT_NOPARACHUTE) != 0 */ ) {
+	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK | SDL_INIT_AUDIO /*  | SDL_INIT_NOPARACHUTE */ )  != 0  ) {
 		std::cerr << "Unable to initialize SDL: " << SDL_GetError() << "\n";
 		CSP_LOG(APP, ERROR, "ERROR! Unable to initialize SDL: " << SDL_GetError());
 		return 1;

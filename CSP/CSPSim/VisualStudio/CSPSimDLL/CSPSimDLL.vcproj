@@ -96,11 +96,11 @@
 				Name="VCCLCompilerTool"
 				Optimization="3"
 				GlobalOptimizations="TRUE"
-				InlineFunctionExpansion="2"
+				InlineFunctionExpansion="1"
 				EnableIntrinsicFunctions="TRUE"
 				FavorSizeOrSpeed="1"
 				OptimizeForProcessor="0"
-				AdditionalIncludeDirectories="&quot;$(PYTHON_PATH)/include&quot;;../../../SimData/Include;../../Include;../../Source;../../../Demeter;../../../CSPChunkLod/include;../../.."
+				AdditionalIncludeDirectories="&quot;$(PYTHON_PATH)\Include&quot;;../../../SimData/Include;../../Include;../../Source;../../../Demeter;../../../CSPChunkLod/include;../../.."
 				PreprocessorDefinitions="WIN32;NDEBUG;_USRDLL;CSPSIMDLL_EXPORTS"
 				StringPooling="TRUE"
 				RuntimeLibrary="2"
@@ -122,8 +122,8 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="pthreadVC1.lib SimNet.lib ws2_32.lib ccgnu2.lib osgFX.lib osgChunkLod.lib producer.lib osgText.lib DemeterVisualC6.lib opengl32.lib SDL.lib _cSimData.lib osgParticle.lib osgUtil.lib osgDB.lib osg.lib sigc-1.2.lib OpenThreadsWin32.lib ccext2.lib SpatialIndex.lib SimCore.lib"
+				AdditionalOptions="/MACHINE:I386 /FORCE:MULTIPLE "
+				AdditionalDependencies="pthreadVC1.lib SimNet.lib ws2_32.lib ccgnu2.lib osgFX.lib osgChunkLod.lib producer.lib osgText.lib DemeterVisualC6.lib opengl32.lib SDL.lib _cSimData.lib osgParticle.lib osgUtil.lib osgDB.lib osg.lib sigc-2.0.lib OpenThreadsWin32.lib ccext2.lib SpatialIndex.lib SimCore.lib"
 				OutputFile="../../Bin/_cCSP.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
@@ -438,10 +438,10 @@
 					RelativePath="..\..\Source\Views\CameraKinematics.cpp">
 				</File>
 				<File
-					RelativePath="..\..\Source\Views\InternalView.cpp">
+					RelativePath="..\..\Source\Views\ExternalViews.cpp">
 				</File>
 				<File
-					RelativePath="..\..\Source\Views\ExternalViews.cpp">
+					RelativePath="..\..\Source\Views\InternalView.cpp">
 				</File>
 				<File
 					RelativePath="..\..\Source\Views\View.cpp">
@@ -664,6 +664,9 @@
 				RelativePath="..\..\Include\RedirectServerNode.h">
 			</File>
 			<File
+				RelativePath="..\..\Include\SceneConstants.h">
+			</File>
+			<File
 				RelativePath="..\..\Include\ScreenInfo.h">
 			</File>
 			<File
@@ -808,13 +811,13 @@
 					RelativePath="..\..\Include\Views\CameraKinematics.h">
 				</File>
 				<File
-					RelativePath="..\..\Include\Views\View.h">
+					RelativePath="..\..\Include\Views\ExternalViews.h">
 				</File>
 				<File
 					RelativePath="..\..\Include\Views\InternalView.h">
 				</File>
 				<File
-					RelativePath="..\..\Include\Views\ExternalViews.h">
+					RelativePath="..\..\Include\Views\View.h">
 				</File>
 			</Filter>
 			<Filter

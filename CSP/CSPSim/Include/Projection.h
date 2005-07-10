@@ -31,7 +31,7 @@
 #include <SimData/Vector3.h>
 #include <SimData/Math.h>
 #include <SimData/GeoPos.h>
-#include <SimData/Interpolate.h>
+#include <SimData/LUT.h>
 #include <SimData/Ref.h>
 
 #include <cstdio>
@@ -49,7 +49,6 @@ public:
 	virtual ~Projection() { }
 
 	virtual simdata::LLA getCenter() const = 0;
-	virtual simdata::Vector3 convert(simdata::GeoPos const &pos) = 0;
 	virtual simdata::Vector3 convert(simdata::LLA const &pos) const = 0;
 	virtual simdata::LLA convert(simdata::Vector3 const &pos) const = 0;
 	virtual simdata::Vector3 getNorth(simdata::LLA const &pos) const = 0;
@@ -79,7 +78,6 @@ public:
 	GnomonicProjection();
 	GnomonicProjection(double lat, double lon, double radius=1.0);
 
-	virtual simdata::Vector3 convert(simdata::GeoPos const &pos);
 	virtual simdata::Vector3 convert(simdata::LLA const &pos) const;
 	virtual simdata::LLA convert(simdata::Vector3 const &pos) const;
 	virtual simdata::Vector3 getNorth(simdata::LLA const &pos) const;
@@ -92,9 +90,9 @@ public:
  * lookups.
  */
 class SecantGnomonicProjection: public GnomonicProjection {
-	typedef simdata::InterpolatedData<float>::value_t value_t;
+	typedef float value_t;
 private:
-	simdata::Table m_NorthX, m_NorthY;
+	simdata::Table2 m_NorthX, m_NorthY;
 	double m_SizeX, m_SizeY;
 	bool m_Valid;
 

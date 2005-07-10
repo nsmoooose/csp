@@ -1,6 +1,11 @@
  Version 0.4.0 (in progress)
 ===========================
 
+2005-07-10: onsight
+ * Upgrade Projection and Atmosphere to use simdata::Table2 instead of
+   Table, which is deprecated.  Remove uses of simdata::GeoPos, which is
+   also deprecated.
+
 2005-06-19: onsight
  * Add an extra side leaning movement of the torso when looking down in
    the cockpit to help see around obstacles.

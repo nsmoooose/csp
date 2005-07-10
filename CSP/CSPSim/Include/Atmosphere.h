@@ -26,8 +26,8 @@
 #define __ATMOSPHERE_H__
 
 #include <SimData/Date.h>
-#include <SimData/Interpolate.h>
 #include <SimData/Object.h>
+#include <SimData/LUT.h>
 #include <SimData/Vector3.h>
 
 /**
@@ -164,7 +164,7 @@ protected:
 	std::vector<float> m_TurbulenceZ;
 	std::vector<float> m_TurbulenceAltA;
 	std::vector<float> m_TurbulenceAltB;
-	simdata::Table m_CAS;
+	simdata::Table2 m_CAS;
 	double m_TurbulenceBlend;
 	bool m_TurbulenceBlendUp;
 	double m_GustModulation;
@@ -176,7 +176,7 @@ inline double Atmosphere::getMach(double speed, double alt) const {
 }
 
 inline float Atmosphere::getCAS(double mach, double altitude) const {
-	return m_CAS.getValue(float(mach), float(altitude));
+	return m_CAS[static_cast<float>(mach)][static_cast<float>(altitude)];
 }
 
 

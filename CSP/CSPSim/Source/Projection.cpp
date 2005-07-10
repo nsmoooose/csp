@@ -59,12 +59,6 @@ GnomonicProjection::GnomonicProjection(double lat, double lon, double radius) {
 	m_C = cos(lat);
 }
 
-simdata::Vector3 GnomonicProjection::convert(simdata::GeoPos const &pos) {
-	double lat, lon, alt;
-	pos.getLLA(lat, lon, alt);
-	return convert(simdata::LLA(lat, lon, alt));
-}
-
 simdata::Vector3 GnomonicProjection::convert(simdata::LLA const &pos) const {
 	double y = pos.longitude() - m_Lon0;
 	double cplat = cos(pos.latitude());
@@ -130,40 +124,33 @@ void SecantGnomonicProjection::_secantMap() {
 void SecantGnomonicProjection::_constructTables() {
 	int i, j;
 	// fixed spacing of 50 km
-	float spacing = 50000.0;
-	int nx = int(0.5 * m_SizeX / spacing);
-	int ny = int(0.5 * m_SizeY / spacing);
-	simdata::Table::vector_t breaks;
-	breaks.resize(2*nx+1);
+	const float spacing = 50000.0;
+	const int nx = int(0.5 * m_SizeX / spacing);
+	const int ny = int(0.5 * m_SizeY / spacing);
+	std::vector< std::vector<float> > breaks(2);
+	std::vector<float> dataX, dataY;
+	breaks[0].resize(2*nx+1);
+	breaks[1].resize(2*ny+1);
 	for (i = -nx; i <= nx; i++) {
-		breaks[i+nx] = i*spacing;
+		breaks[0][i+nx] = i*spacing;
 	}
-	m_NorthX.setXBreaks(breaks);
-	m_NorthY.setXBreaks(breaks);
-	breaks.resize(2*ny+1);
 	for (i = -ny; i <= ny; i++) {
-		breaks[i+ny] = i*spacing;
+		breaks[1][i+ny] = i*spacing;
 	}
-	m_NorthX.setYBreaks(breaks);
-	m_NorthY.setYBreaks(breaks);
-	m_NorthX.setSpacing(spacing, spacing);
-	m_NorthY.setSpacing(spacing, spacing);
-	simdata::Table::vector_t dataX;
-	simdata::Table::vector_t dataY;
 	dataX.reserve((2*nx+1)*(2*ny+1));
 	dataY.reserve((2*nx+1)*(2*ny+1));
-	for (j = -ny; j <= ny; j++) {
-		for (i = -nx; i <= nx; i++) {
+	for (i = -nx; i <= nx; i++) {
+		for (j = -ny; j <= ny; j++) {
 			simdata::Vector3 pos(i*spacing, j*spacing, 0.0);
 			simdata::Vector3 n = GnomonicProjection::getNorth(pos);
-			dataX.push_back(static_cast<value_t>(n.x()));
-			dataY.push_back(static_cast<value_t>(n.y()));
+			dataX.push_back(static_cast<float>(n.x()));
+			dataY.push_back(static_cast<float>(n.y()));
 		}
 	}
-	m_NorthX.setData(dataX);
-	m_NorthY.setData(dataY);
-	m_NorthX.interpolate();
-	m_NorthY.interpolate();
+	m_NorthX.load(dataX, breaks);
+	m_NorthY.load(dataY, breaks);
+	m_NorthX.interpolate(simdata::Table2::Dim(nx)(ny), simdata::Interpolation::LINEAR);
+	m_NorthY.interpolate(simdata::Table2::Dim(nx)(ny), simdata::Interpolation::LINEAR);
 	m_Valid = true;
 }
 
@@ -196,7 +183,7 @@ void SecantGnomonicProjection::dump() const {
 		float y = static_cast<float>((j/256.0 - 0.5)*m_SizeY);
 		for (int i = 0; i < 256; i++) {
 			float x = static_cast<float>((i/256.0 - 0.5)*m_SizeX);
-			double a = atan2(m_NorthX.getValue(x, y),m_NorthY.getValue(x, y));
+			double a = atan2(m_NorthX[x][y], m_NorthY[x][y]);
 			int v = static_cast<int>(a * 127.5 / 3.1416) - 128;
 			if (v < 0) v += 255;
 			std::cout << v << " ";
@@ -211,7 +198,7 @@ simdata::Vector3 SecantGnomonicProjection::getNorth(simdata::Vector3 const &pos)
 	assert(m_Valid);
 	float x = static_cast<value_t>(simdata::clampTo(pos.x(),-m_SizeX,m_SizeX));
 	float y = static_cast<value_t>(simdata::clampTo(pos.y(),-m_SizeY, m_SizeY));
-	return simdata::Vector3(m_NorthX.getValue(x, y), m_NorthY.getValue(x, y), 0.0);
+	return simdata::Vector3(m_NorthX[x][y], m_NorthY[x][y], 0.0);
 }
 
 simdata::Vector3 SecantGnomonicProjection::getUp(simdata::Vector3 const &) const {

@@ -438,28 +438,25 @@ float Atmosphere::getPreciseCAS(double mach, double altitude) const {
 
 
 void Atmosphere::tabulateCAS() {
-	simdata::Table::vector_t breaks, cas;
-	simdata::Table::vector_it cas_i;
+	std::vector<float> cas;
+	std::vector<float>::iterator cas_i;
+	std::vector< std::vector<float> > breaks(2);
 	int i, j;
-	breaks.resize(300);
-	for (i = 0; i < 300; i++) breaks[i] = 0.02f * i;
-	m_CAS.setXBreaks(breaks);
-	m_CAS.setXSpacing(0.02f);
-	breaks.resize(300);
-	for (i = 0; i < 300; i++) breaks[i] = 100.0f * i;
-	m_CAS.setYBreaks(breaks);
-	m_CAS.setYSpacing(100.0f);
+	breaks[0].resize(300);
+	breaks[1].resize(300);
+	for (i = 0; i < 300; i++) breaks[0][i] = 0.02f * i;
+	for (i = 0; i < 300; i++) breaks[1][i] = 100.0f * i;
 	cas.resize(300*300);
 	cas_i = cas.begin();
 	for (i = 0; i < 300; i++) {
-		float altitude = 100.0f * i;
+		float mach = 0.02f * i;
 		for (j = 0; j < 300; j++) {
-			float mach = 0.02f * j;
+			float altitude = 100.0f * j;
 			*cas_i++ = getPreciseCAS(mach, altitude);
 		}
 	}
-	m_CAS.setData(cas);
-	m_CAS.interpolate();
+	m_CAS.load(cas, breaks);
+	m_CAS.interpolate(simdata::Table2::Dim(300)(300), simdata::Interpolation::LINEAR);
 }
 
 

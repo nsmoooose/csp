@@ -10,7 +10,7 @@ TESTS_SOURCE = $(wildcard test_*.cpp)
 TESTS = $(TESTS_SOURCE:%.cpp=%)
 
 SOURCES = $(MODULES:%=%.cpp)
-OBJECTS = $(MODULES:%=%.o) 
+OBJECTS = $(MODULES:%=%.o)
 
 DEPDIR = .deps
 MKDEP = $(CXX) -M $(CFLAGS)
@@ -43,7 +43,7 @@ $(DEPDIR)/%.d : %
 	
 #@echo "Computing dependencies for $<..."
 
-%: %.cpp 
+%: %.cpp
 	@echo -n "Building $@..."
 	@for foo in a; do \
 		$(CXX) -o $@ $(CFLAGS) $(@:=.cpp) -L$(TOPDIR)/SimData -lSimData -lpthread 2>.buildlog 1>/dev/null; \

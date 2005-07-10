@@ -1,5 +1,5 @@
 /* SimData: Data Infrastructure for Simulations
- * Copyright (C) 2002, 2003, 2004 Mark Rose <tm2@stm.lbl.gov>
+ * Copyright (C) 2002, 2003, 2004 Mark Rose <mkrose@users.sf.net>
  *
  * This file is part of SimData.
  *
@@ -46,7 +46,7 @@
 NAMESPACE_SIMDATA
 
 
-class LinkBase;
+class LinkCore;
 
 SIMDATA_EXCEPTION(ConversionError)
 
@@ -61,7 +61,7 @@ void SIMDATA_EXPORT _log_reference_conversion_error();
  *  Classes derived from Reference should be handled with Ref<T> smart
  *  pointers, or Link<T> dynamic references.
  *
- *  @author Mark Rose <mrose@stm.lbl.gov>
+ *  @author Mark Rose <mkrose@users.sf.net>
  */
 template<class CLASS>
 class Ref {
@@ -87,7 +87,7 @@ public:
 
 	/** Light-weight copy with reference counting.
 	 */
-	inline Ref(LinkBase const & r);
+	inline Ref(LinkCore const & r);
 
 	/** Light-weight copy with reference counting.
 	 */
@@ -150,7 +150,7 @@ public:
 
 	/** Light-weight copy with reference counting.
 	 */
-	inline LinkBase const & operator=(LinkBase const & r);
+	inline Ref const & operator=(LinkCore const & r);
 
 	/** Raw pointer assignment.
 	 */
@@ -251,12 +251,12 @@ public:
 		return (valid() || p.isNull());
 	}
 
-	/** Try to assignment from a potentially incompatible LinkBase.  Returns
+	/** Try to assignment from a potentially incompatible LinkCore.  Returns
 	 *  true on success, or false if the pointers are incompatible.  This
 	 *  reference will be set to null if the assignment fails (or the other
 	 *  reference is null).
 	 */
-	inline bool tryAssign(LinkBase const & p);
+	inline bool tryAssign(LinkCore const & p);
 
 	/** Try to assignment from a potentially incompatible pointer.  Returns
 	 *  true on success, or false if the pointers are incompatible.  This
@@ -316,19 +316,19 @@ NAMESPACE_SIMDATA_END
 NAMESPACE_SIMDATA
 
 template <class CLASS>
-Ref<CLASS>::Ref(LinkBase const & r): _reference(0) {
-	_rebind(r._get());
+Ref<CLASS>::Ref(LinkCore const & r): _reference(0) {
+	_rebind(r.__get__());
 }
 
 template <class CLASS>
-LinkBase const & Ref<CLASS>::operator=(LinkBase const & r) {
-	_rebind(r._get());
-	return r;
+Ref<CLASS> const & Ref<CLASS>::operator=(LinkCore const & r) {
+	_rebind(r.__get__());
+	return *this;
 }
 
 template <class CLASS>
-bool Ref<CLASS>::tryAssign(LinkBase const & p) {
-	_rebind(p._get(), false);
+bool Ref<CLASS>::tryAssign(LinkCore const & p) {
+	_rebind(p.__get__(), false);
 	return (valid() || p.isNull());
 }
 

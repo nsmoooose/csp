@@ -1,5 +1,5 @@
 /* SimData: Data Infrastructure for Simulations
- * Copyright 2002, 2003, 2004 Mark Rose <mkrose@users.sourceforge.net>
+ * Copyright 2002-2005 Mark Rose <mkrose@users.sourceforge.net>
  *
  * This file is part of SimData.
  *
@@ -81,7 +81,7 @@ SIMDATA_EXCEPTION(InvalidDate)
 
 /** Date class for YMD and julian dates.
  *
- *  @author Mark Rose <mrose@stm.lbl.gov>
+ *  @author Mark Rose <mkrose@users.sf.net>
  *
  *  @note Many of these routines borrow heavily from the GDate
  *        implementation in GLib (Copyright 1995-1997 Peter
@@ -320,7 +320,7 @@ public:
 	 *  @returns +1 if this > other, -1 if this < other,
 	 *           and 0 if the dates are equal.
 	 */
-	virtual int compare(const Date &other) const {
+	int compare(const Date &other) const {
 		return compare(*this, other);
 	}
 
@@ -336,13 +336,13 @@ public:
 	 *
 	 *  @returns a string of the form "YYYY/MM/DD"
 	 */
-	virtual std::string asString() const {
+	std::string asString() const {
 		return formatString("%Y/%m/%d");
 	}
 
 	/** Return a string representation of the type.
 	 */
-	virtual std::string typeString() const { return "type::Date"; }
+	std::string typeString() const { return "type::Date"; }
 	
 private:
 	static const day_t days_in_months[2][13];
@@ -379,7 +379,7 @@ private:
  *  conjunction with dates, since the date may differ depending on
  *  whether local or zulu time is used.
  *
- *  @author Mark Rose <mrose@stm.lbl.gov>
+ *  @author Mark Rose <mkrose@users.sf.net>
  */
 
 class SIMDATA_EXPORT Zulu {
@@ -543,13 +543,13 @@ public:
 	
 	/** Return the time as a string in the form "HH:MM::SSz"
 	 */
-	virtual std::string asString() const {
+	std::string asString() const {
 		return formatString("%H:%M:%Sz");
 	}
 
 	/** Return a string representation of the type.
 	 */
-	virtual std::string typeString() const { return "type::Zulu"; }
+	std::string typeString() const { return "type::Zulu"; }
 
 private:
 	time_t m_time;
@@ -560,7 +560,7 @@ private:
 
 /** Class combining time and date operations.
  *
- *  @author Mark Rose <mrose@stm.lbl.gov>
+ *  @author Mark Rose <mkrose@users.sf.net>
  */
 class SIMDATA_EXPORT DateZulu: public Date, public Zulu {
 
@@ -639,13 +639,13 @@ public:
 	 *  @returns The date and time as a string in the format
 	 *           "YYYY/MM/DD HH:MM::SSz".
 	 */
-	virtual std::string asString() const {
+	std::string asString() const {
 		return formatString("%Y/%m/%d %H:%M:%Sz");
 	}
 
 	/** Return a string representation of the type.
 	 */
-	virtual std::string typeString() const { return "type::DateZulu"; }
+	std::string typeString() const { return "type::DateZulu"; }
 	
 	/** Increment the current time, with date rollover.
 	 *
@@ -725,15 +725,51 @@ typedef DateZulu::time_t SimTime;
 
 /** Class for representing dates and times within the simulation.
  *
- *  @author Mark Rose <mrose@stm.lbl.gov>
+ *  @author Mark Rose <mkrose@users.sf.net>
  *  @ingroup BaseTypes
  */
-class SIMDATA_EXPORT SimDate: public DateZulu, public BaseType {
+class SIMDATA_EXPORT SimDate: public DateZulu {
 
 	SimTime reference;
 	SimTime pause_time;
 	SimTime last_update;
 	bool paused;
+
+public: // BaseType
+
+	/** Return a string representation of the date and time.
+	 *
+	 *  @returns a string of the form "YYYY/MM/DD HH:MM::SSz"
+	 */
+	std::string asString() const {
+		return formatString("%Y/%m/%d %H:%M:%Sz");
+	}
+
+	/// Type representation.
+	std::string typeString() const { return "type::SimDate"; }
+
+	/// Serialize from a Reader.
+	void serialize(Reader&);
+
+	/// Serialize to a Writer.
+	void serialize(Writer&) const;
+
+	/** Parse the character data from an XML \<Date\> tag.
+	 *
+	 *  The format is either:
+	 *  @code
+	 *    <Date name='...'>yyyy-mm-dd hh-mm-ss.ms</Date>
+	 *  @endcode
+	 *  where '.ms' is optional, or:
+	 *  @code
+	 *    <Date name='...'>yyyy-mm-dd</Date>
+	 *  @endcode
+	 *  in which case the time is set to zero.
+	 */
+	void parseXML(const char* cdata);
+
+	/// XML post processing.
+	void convertXML() {}
 
 public:
 	
@@ -741,7 +777,7 @@ public:
 	 *
 	 *  @see DateZulu()
 	 */
-	SimDate(): DateZulu(), BaseType() {
+	SimDate(): DateZulu() {
 		paused = false;
 		last_update = getCalibratedRealTime();
 		setReferenceTime(getTime());
@@ -757,8 +793,8 @@ public:
 	 *  @param second the second (0.0-60.0)
 	 */
 	SimDate(year_t year, month_t month, day_t day, int hour, int minute, time_t second):
-		DateZulu(year, month, day, hour, minute, second),
-		BaseType() {
+		DateZulu(year, month, day, hour, minute, second)
+	{
 		paused = false;
 		last_update = getCalibratedRealTime();
 		setReferenceTime(getTime());
@@ -772,8 +808,8 @@ public:
 	 *  @param second the second (0.0-60.0)
 	 */
 	SimDate(julian_t julian, int hour, int minute, time_t second):
-		DateZulu(julian, hour, minute, second),
-		BaseType() {
+		DateZulu(julian, hour, minute, second)
+	{
 		paused = false;
 		last_update = getCalibratedRealTime();
 		setReferenceTime(getTime());
@@ -784,7 +820,7 @@ public:
 	 *  The new SimDate will be unpaused, regardless of the paused state of
 	 *  the source SimDate.
 	 */
-	SimDate(const SimDate &d): DateZulu(d), BaseType(d) {
+	SimDate(const SimDate &d): DateZulu(d) {
 		paused = false;
 		last_update = getCalibratedRealTime();
 		setReferenceTime(getTime());
@@ -795,18 +831,6 @@ public:
 	 */
 	const SimDate &operator=(const SimDate &d);
 #endif // SWIG
-
-	/** Return a string representation of the date and time.
-	 *
-	 *  @returns a string of the form "YYYY/MM/DD HH:MM::SSz"
-	 */
-	virtual std::string asString() const {
-		return formatString("%Y/%m/%d %H:%M:%Sz");
-	}
-
-	/** Return a string representation of the type.
-	 */
-	virtual std::string typeString() const { return "type::SimDate"; }
 	
 	/** The difference between two times.
 	 *
@@ -848,7 +872,7 @@ public:
 	 *  @returns +1 if this > other, -1 if this < other,
 	 *           and 0 if the dates and times are equal.
 	 */
-	virtual int compare(const SimDate &other) const {
+	int compare(const SimDate &other) const {
 		int date_comp = Date::compare(*this, other);
 		if (date_comp != 0) return date_comp;
 		if (getTime() > other.getTime()) return 1;
@@ -915,26 +939,14 @@ public:
 		return days;
 	}
 
-	/** Serialize the date and time to or from a data archive.
-	 */
-	virtual void serialize(Reader&);
-	virtual void serialize(Writer&) const;
-
-	/** Parse date/time string from XML cdata.
-	 *
-	 *  The format is either:
-	 *  @code
-	 *    <Date name='...'>yyyy-mm-dd hh-mm-ss.ms</Date>
-	 *  @endcode
-	 *  where '.ms' is optional, or:
-	 *  @code
-	 *    <Date name='...'>yyyy-mm-dd</Date>
-	 *  @endcode
-	 *  in which case the time is set to zero.
-	 */
-	virtual void parseXML(const char* cdata);
-
 };
+
+
+SIMDATA_EXPORT std::ostream &operator <<(std::ostream &o, Date const &d);
+SIMDATA_EXPORT std::ostream &operator <<(std::ostream &o, Zulu const &d);
+SIMDATA_EXPORT std::ostream &operator <<(std::ostream &o, DateZulu const &d);
+SIMDATA_EXPORT std::ostream &operator <<(std::ostream &o, SimDate const &d);
+
 
 NAMESPACE_SIMDATA_END
 

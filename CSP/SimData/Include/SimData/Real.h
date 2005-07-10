@@ -1,5 +1,5 @@
 /* SimData: Data Infrastructure for Simulations
- * Copyright 2002, 2003, 2004 Mark Rose <mkrose@users.sourceforge.net>
+ * Copyright 2002-2005 Mark Rose <mkrose@users.sourceforge.net>
  *
  * This file is part of SimData.
  *
@@ -45,13 +45,36 @@ NAMESPACE_SIMDATA
  * and a standard deviation.  When constructed the actual value is
  * generated from this distribution.
  *
- * @author Mark Rose <mrose@stm.lbl.gov>
+ * @author Mark Rose <mkrose@users.sf.net>
  * @ingroup BaseTypes
  */
-class SIMDATA_EXPORT Real: public BaseType {
+class SIMDATA_EXPORT Real {
 	static random::Taus2 _rng;
 	float _mean, _sigma;
 	float _value;
+
+public: // BaseType
+
+	/// String representation.
+	std::string asString() const;
+
+	/// Type representation.
+	std::string typeString() const { return "type::Real"; }
+
+	/// Serialize from a Reader.
+	void serialize(Reader&);
+
+	/// Serialize to a Writer.
+	void serialize(Writer&) const;
+
+	/** Parse the character data from an XML \<Real\> tag.
+	 *  The format is "mean:sigma"
+	 */
+	void parseXML(const char*);
+
+	/// XML post processing.
+	void convertXML() {}
+
 public:
 	/**
 	 * Create a new real with the specified distribution.
@@ -89,16 +112,6 @@ public:
 	 */
 	float getValue() const;
 
-	/**
-	 * Standard representation string.
-	 */
-	virtual std::string asString() const;
-
-	/**
-	 * Return a string representation of the type.
-	 */
-	virtual std::string typeString() const { return "type::Real"; }
-
 	/*
     	float __neg__();
 	float __pos__();
@@ -125,21 +138,6 @@ public:
 	 */
 	inline operator float() const { return _value; }
 #endif
-	
-	/** Serialize to or from a data archive.
-	 *
-	 *  Only the distribution parameters (mean and sigma) are saved.
-	 *  A new value will be generated from the saved distribution.
-	 */
-	virtual void serialize(Reader&);
-	virtual void serialize(Writer&) const;
-
-	/**
-	 * Internal method used by the XML parser.
-	 *
-	 * The format for Reals is "mean:sigma"
-	 */
-	virtual void parseXML(const char* cdata);
 
 // insert Python shadow class code to emulate "operator float()"
 #ifdef SWIG______NONO
@@ -174,6 +172,9 @@ public:
 	int __nonzero__() { return (*self) != 0.0; }
 }
 #endif // SWIG
+
+
+SIMDATA_EXPORT std::ostream &operator <<(std::ostream &o, Real const &r);
 
 
 NAMESPACE_SIMDATA_END

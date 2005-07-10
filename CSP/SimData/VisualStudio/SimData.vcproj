@@ -135,9 +135,6 @@
 			Name="Source Files"
 			Filter="cpp;c;cxx;rc;def;r;odl;idl;hpj;bat">
 			<File
-				RelativePath="..\Source\BaseType.cpp">
-			</File>
-			<File
 				RelativePath="..\Source\DataArchive.cpp">
 			</File>
 			<File
@@ -168,9 +165,6 @@
 				RelativePath="..\Source\InterfaceRegistry.cpp">
 			</File>
 			<File
-				RelativePath="..\Source\Interpolate.cpp">
-			</File>
-			<File
 				RelativePath="..\Source\Key.cpp">
 			</File>
 			<File
@@ -188,9 +182,6 @@
 			</File>
 			<File
 				RelativePath="..\Source\Link.cpp">
-			</File>
-			<File
-				RelativePath="..\Source\List.cpp">
 			</File>
 			<File
 				RelativePath="..\Source\LogStream.cpp">
@@ -284,16 +275,10 @@
 				RelativePath="..\Include\SimData\HashUtility.h">
 			</File>
 			<File
-				RelativePath="..\Include\SimData\Integer.h">
-			</File>
-			<File
 				RelativePath="..\Include\SimData\InterfaceRegistry.h">
 			</File>
 			<File
 				RelativePath="..\Include\SimData\InterfaceRegistry_wrap.h">
-			</File>
-			<File
-				RelativePath="..\Include\SimData\Interpolate.h">
 			</File>
 			<File
 				RelativePath="..\Include\SimData\Key.h">
@@ -303,9 +288,6 @@
 			</File>
 			<File
 				RelativePath="..\Include\SimData\Link.h">
-			</File>
-			<File
-				RelativePath="..\Include\SimData\List.h">
 			</File>
 			<File
 				RelativePath="..\Include\SimData\Log.h">
@@ -348,9 +330,6 @@
 			</File>
 			<File
 				RelativePath="..\Include\SimData\Referenced.h">
-			</File>
-			<File
-				RelativePath="..\Include\SimData\String.h">
 			</File>
 			<File
 				RelativePath="..\Include\SimData\TypeAdapter.h">

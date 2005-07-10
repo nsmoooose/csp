@@ -1,18 +1,18 @@
 /* SimData: Data Infrastructure for Simulations
- * Copyright (C) 2002, 2003 Mark Rose <tm2@stm.lbl.gov>
- * 
+ * Copyright (C) 2002, 2003 Mark Rose <mkrose@users.sf.net>
+ *
  * This file is part of SimData.
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
@@ -71,12 +71,12 @@ namespace rng { // random number generators
  *
  *  This class was adapted from the c-implementation of Matsumoto's
  *  algorithm that is part of the GNU Scientific Library.  That
- *  implementation is copyright (C) 1998 Brian Gough. 
+ *  implementation is copyright (C) 1998 Brian Gough.
  *
  *  Brian Gough's notes follow:
- * 
- *  I reorganized the code to use the module framework of GSL.  The 
- *  license on this implementation was changed from LGPL to GPL, 
+ *
+ *  I reorganized the code to use the module framework of GSL.  The
+ *  license on this implementation was changed from LGPL to GPL,
  *  following paragraph 3 of the LGPL, version 2.
  *
  *  Update:
@@ -94,7 +94,7 @@ namespace rng { // random number generators
  *  your work".
  *
  *  Makoto Matsumoto has a web page with more information about the
- *  generator, http://www.math.keio.ac.jp/~matumoto/emt.html. 
+ *  generator, http://www.math.keio.ac.jp/~matumoto/emt.html.
  *
  *  The paper below has details of the algorithm.
  *
@@ -114,7 +114,7 @@ class SIMDATA_EXPORT MT19937 {
 	// most significant w-r bits
 	static const unsigned long UPPER_MASK = 0x80000000UL;	
 
-	// least significant r bits 
+	// least significant r bits
 	static const unsigned long LOWER_MASK = 0x7fffffffUL;	
 
 	// state
@@ -131,7 +131,7 @@ class SIMDATA_EXPORT MT19937 {
 	
 	/** Internal generator.
 	 *
-	 *  This method returns a random integer in the range [0,2**32).  
+	 *  This method returns a random integer in the range [0,2**32).
 	 *  After every N (624) calls the generator must be updated.
 	 */
 	inline unsigned long generate() {
@@ -180,7 +180,7 @@ public:
 	}
 
 	/** Return a random floating point value in the range [0, 1)
-	 */ 
+	 */
 	inline double unit() {
   		return generate() / 4294967296.0 ;
 	};
@@ -197,7 +197,7 @@ public:
 	 */
 	void setSeed(unsigned long int s);
 
-	/** Save the current state of the generator.  
+	/** Save the current state of the generator.
 	 *
 	 *  The state can be restored at any time with setState().
 	 */
@@ -216,18 +216,18 @@ public:
 
 /**
  * @brief Maximally Equidistributed Combined Tausworthe generator.
- * 
+ *
  * This class was adapted from the c-implementation of the taus2
  * random number generator included in the GNU Scientific Library
- * (rng/taus.c).  That implementation is copyright (C) 1996, 1997, 1998, 
+ * (rng/taus.c).  That implementation is copyright (C) 1996, 1997, 1998,
  * 1999, 2000 James Theiler, Brian Gough.
  *
  * Comments from the GSL implementation follow:
  *
- * This is a maximally equidistributed combined Tausworthe generator. 
+ * This is a maximally equidistributed combined Tausworthe generator.
  * The sequence is,
  *
- * x_n = (s1_n ^ s2_n ^ s3_n) 
+ * x_n = (s1_n ^ s2_n ^ s3_n)
  *
  * s1_{n+1} = (((s1_n & 4294967294) <<12) ^ (((s1_n <<13) ^ s1_n) >>19))
  * s2_{n+1} = (((s2_n & 4294967288) << 4) ^ (((s2_n << 2) ^ s2_n) >>25))
@@ -255,7 +255,7 @@ public:
  * This is available on the net from L'Ecuyer's home page,
  *
  * http://www.iro.umontreal.ca/~lecuyer/myftp/papers/tausme.ps
- * ftp://ftp.iro.umontreal.ca/pub/simulation/lecuyer/papers/tausme.ps 
+ * ftp://ftp.iro.umontreal.ca/pub/simulation/lecuyer/papers/tausme.ps
  *
  * Update: April 2002
  *
@@ -265,10 +265,10 @@ public:
  * http://www.iro.umontreal.ca/~lecuyer/myftp/papers/tausme2.ps
  *
  *	... the k_j most significant bits of z_j must be non-
- *	zero, for each j. (Note: this restriction also applies to the 
+ *	zero, for each j. (Note: this restriction also applies to the
  *	computer code given in [4], but was mistakenly not mentioned in
  *	that paper.)
- *  
+ *
  * This affects the seeding procedure by imposing the requirement
  * s1 > 1, s2 > 7, s3 > 15.
  *
@@ -301,7 +301,7 @@ class SIMDATA_EXPORT Taus2 {
 	}
 
 	/** Internal generator, returning a random integer in the
-	 *  range [0,2**32). 
+	 *  range [0,2**32).
 	 */
 	inline unsigned long generate() {
 		_s1 = TAUSWORTHE(_s1, 13, 19, 4294967294UL, 12);
@@ -343,7 +343,7 @@ public:
 	}
 
 	/** Return a random floating point value in the range [0, 1).
-	 */ 
+	 */
 	inline double unit() {
   		return generate() / 4294967296.0 ;
 	};
@@ -360,8 +360,8 @@ public:
 	 */
 	void setSeed(unsigned long int s);
 
-	/** Save the current state of the generator.  
-	 *  
+	/** Save the current state of the generator.
+	 *
 	 *  The state can be restored at any time with setState().
 	 */
 	void getState(State &state) const;
@@ -468,8 +468,8 @@ public:
 		_gen.setSeed(seed);
 	}
 
-	/** Save the current state of the generator. 
-	 *  
+	/** Save the current state of the generator.
+	 *
 	 *  The state can be restored at any time with setState().
 	 */
 	virtual State getState() const {
@@ -489,7 +489,7 @@ public:
 	}
 
 	/** Return a random floating point value in the range [0,1).
-	 */ 
+	 */
 	virtual double unit() {
 		return _gen.unit();
 	}
@@ -535,12 +535,12 @@ public:
 	/** Get the name of this generator
 	 */
 	virtual std::string getName() const {
-		return _gen.getName(); 
+		return _gen.getName();
 	}
 
 	/** Direct access to the underlying generator.
 	 *
-	 *  Using the generator directly provides slightly faster access and 
+	 *  Using the generator directly provides slightly faster access and
 	 *  generator-specific methods.
 	 */
 	inline RNG *operator->() { return &_gen; }
@@ -573,7 +573,7 @@ public:
 	std::string getName() const { return "Gaussian (Gauss)"; }
 
 	/** Construct a new distribution.
-	 * 
+	 *
 	 *  @param mean the mean value of the distribution (default=0)
 	 *  @param sigma the standard deviation of the distribution (default=0)
 	 */
@@ -607,18 +607,18 @@ public:
 	 */
 	inline void setSeed(unsigned long int seed) { _gen.setSeed(seed); _odd = true; }
 
-	/** Save the current state of the distribution.  
-	 *  
-	 *  The state can be restored at any time with setState().  Both the 
-	 *  state of the underlying random number generator and the 
+	/** Save the current state of the distribution.
+	 *
+	 *  The state can be restored at any time with setState().  Both the
+	 *  state of the underlying random number generator and the
 	 *  distribution parameters (mean, sigma) are saved.
 	 */
 	void getState(State &) const;
 
-	/** Restore the underlying generator to a specific state saved with 
-	 *  getState().  
+	/** Restore the underlying generator to a specific state saved with
+	 *  getState().
 	 *
-	 *  The subsequent samples of the distribution will be identical to 
+	 *  The subsequent samples of the distribution will be identical to
 	 *  the sequence following the corresponding getState() call.
 	 */
 	void setState(State const &);
@@ -649,8 +649,8 @@ public:
 /** Random distribution wrapper.
  *
  *  Random distribution wrapper, implementing the random distribution
- *  interface.  These generics provide a uniform interface to the 
- *  underlying distributions and distribution (generator) state data.  
+ *  interface.  These generics provide a uniform interface to the
+ *  underlying distributions and distribution (generator) state data.
  */
 template <class RD>
 class RandomDistribution: public RandomDistributionInterface {
@@ -671,14 +671,14 @@ public:
 	 */
 	virtual void setSeed(SeedType seed);
 
-	/** Save the current state of the generator.  
+	/** Save the current state of the generator.
 	 *
 	 *  The state can be restored at any time with setState().
 	 */
 	virtual State getState() const;
 
 	/** Restore the generator to a specific state saved with getState().
-	 * 
+	 *
 	 *  The subsequent random numbers will be identical to the sequence
 	 *  following the corresponding getState() call.
 	 */
@@ -703,14 +703,14 @@ double RandomDistribution<RD>::sample() {
 }
 
 template <class RD>
-RandomInterface::State RandomDistribution<RD>::getState() const { 
+RandomInterface::State RandomDistribution<RD>::getState() const {
 	RDState *rd_state = new RDState;
 	_dist.getState(rd_state->_state);
 	return rd_state;
 }
 
 template <class RD>
-void RandomDistribution<RD>::setState(RandomInterface::State const &state) { 
+void RandomDistribution<RD>::setState(RandomInterface::State const &state) {
 	Ref<RDState> rd_state = state;
 	_dist.setState(rd_state->_state);
 }
@@ -721,8 +721,8 @@ void RandomDistribution<RD>::setSeed(RandomInterface::SeedType s) {
 }
 
 template <class RD>
-std::string RandomDistribution<RD>::getName() const { 
-	return _dist.getName(); 
+std::string RandomDistribution<RD>::getName() const {
+	return _dist.getName();
 }
 
 

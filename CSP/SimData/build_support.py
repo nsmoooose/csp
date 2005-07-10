@@ -1,31 +1,31 @@
 # -*-python-*-
 
 # SimData: Data Infrastructure for Simulations
-# Copyright (C) 2002, 2003 Mark Rose <tm2@stm.lbl.gov>
-# 
+# Copyright (C) 2002, 2003 Mark Rose <mkrose@users.sf.net>
+#
 # This file is part of SimData.
-# 
+#
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
 # as published by the Free Software Foundation; either version 2
 # of the License, or (at your option) any later version.
-# 
+#
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 ##
 
-# Utilities for building and installing with SCons 
+# Utilities for building and installing with SCons
 
 
 import SCons.Action
 import SCons.Builder
-import SCons.Scanner 
+import SCons.Scanner
 import SCons.Util
 import SCons.Errors
 
@@ -68,7 +68,7 @@ def byteCompile(target, source, env):
     if target.endswith(".py") and os.path.exists(target):
         import py_compile
         try:
-            py_compile.compile(target)  
+            py_compile.compile(target)
             os.chmod(target+"c", 0644)
             return 0
         except:
@@ -121,7 +121,7 @@ def compareVersions(a, b):
     if len(a) > len(b): return 1
     return 0
 
-def addConfigTests(conf):   
+def addConfigTests(conf): 
     conf.AddTests(configure_tests)
 
 def CustomConfigure(env):
@@ -211,7 +211,7 @@ def checkSwig(context, min_version, not_versions=[]):
 
 configure_tests['checkSwig'] = checkSwig
 
-    
+  
 def emitSwig(target, source, env):
 	target = []
 	assert(len(source)==1)
@@ -219,7 +219,7 @@ def emitSwig(target, source, env):
 	for s in source:
 		wrapper = os.path.splitext(str(s))[0]+'_wrap'+ext
 		target.append(wrapper)
-		# XXX 
+		# XXX
 		# Module name really should be based on the %module
 		# directive in the interface file.
 		module = os.path.splitext(str(s))[0]+'.py'
@@ -254,7 +254,7 @@ def addSwigSupport(env):
 ############################################################
 
 class OptionSet:
-    class Empty: 
+    class Empty:
         pass
     def __init__(self):
         self.set = OptionSet.Empty()
@@ -280,7 +280,7 @@ class Globals:
         for key, value in self.set.__dict__.iteritems():
             eval("%s=%s" % (key, value), globals(), globals())
 
-    
+
 
 class Package:
 
@@ -314,8 +314,8 @@ class Package:
 				z = zipfile.ZipFile(dist, "w", compression=zipfile.ZIP_DEFLATED)
 				os.path.walk(base, visit, z)
 				z.close()
-				return 0 
-			else: 
+				return 0
+			else:
 				error = "Unknown archive format extension '%s'" % os.path.splitext(dist)[1]
 				raise SCons.Errors.UserError(error)
 				return 0
@@ -326,7 +326,7 @@ class Package:
 		try:
 			bld = env['BUILDERS']['DistArchive']
 		except KeyError:
-			bld = Builder(action=Action(DistAction, DistReport), 
+			bld = Builder(action=Action(DistAction, DistReport),
 			              source_factory=SCons.Node.FS.default_fs.Entry)
 			env['BUILDERS']['DistArchive'] = bld
 
@@ -350,7 +350,7 @@ class Package:
 		for entry in f.readlines():
 			cmd = entry.strip().split()
 			if len(cmd) == 0: continue
-			if len(cmd) == 1: 
+			if len(cmd) == 1:
 				action, args = 'include', cmd
 			else:
 				action, args = cmd[0], cmd[1:]
@@ -496,14 +496,14 @@ def Prefix(dir, names):
     return map(lambda x: os.path.normpath(os.path.join(dir, x)), names)
 
 
-def SelectBuildDir(env, build_dir, platform=None): 
-    if not platform: 
+def SelectBuildDir(env, build_dir, platform=None):
+    if not platform:
         platform = env['PLATFORM']
     target_dir = os.path.join(build_dir, platform)
     if not os.path.exists(target_dir):
         os.makedirs(target_dir, 0755)
-    print "Building in '%s'" % target_dir 
-    return target_dir 
+    print "Building in '%s'" % target_dir
+    return target_dir
 
 
 def ConfigPlatform(env):

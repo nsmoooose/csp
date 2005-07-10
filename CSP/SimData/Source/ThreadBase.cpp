@@ -54,7 +54,7 @@ void ThreadException::checkLog(const int result) {
 }
 
 void ThreadException::translateError() {
-	std::stringstream msg;
+	std::ostringstream msg;
 	switch (m_error) {
 		case EDEADLK: msg << "deadlock (EDEADLK)"; break;
 		case EAGAIN: msg << "unable to allocate resource (EAGAIN)"; break;

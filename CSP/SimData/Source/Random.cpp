@@ -1,18 +1,18 @@
 /* SimData: Data Infrastructure for Simulations
- * Copyright (C) 2002, 2003 Mark Rose <tm2@stm.lbl.gov>
- * 
+ * Copyright (C) 2002, 2003 Mark Rose <mkrose@users.sf.net>
+ *
  * This file is part of SimData.
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
@@ -60,7 +60,7 @@ void MT19937::setSeed(unsigned long int s) {
 	_mt[0]= s & 0xffffffffUL;
 	for (int i = 1; i < N; i++) {
 		// See Knuth's "Art of Computer Programming" Vol. 2, 3rd
-		// Ed. p.106 for multiplier. 
+		// Ed. p.106 for multiplier.
 		_mt[i] = (1812433253UL * (_mt[i-1] ^ (_mt[i-1] >> 30)) + i);
 		_mt[i] &= 0xffffffffUL;
 	}
@@ -95,7 +95,7 @@ void Taus2::setSeed(unsigned long int s) {
 	_s3 = LCG(_s2);
 	if (_s3 < 16) _s3 += 16UL;
 
-	// "warm it up" 
+	// "warm it up"
 	for (int i=0; i < 6; i++) {
 		generate();
 	}

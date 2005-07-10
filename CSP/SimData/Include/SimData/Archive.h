@@ -32,7 +32,6 @@
 #include <cstdlib>
 #include <cstdio>
 #include <cassert>
-#include <SimData/BaseType.h>
 #include <SimData/Endian.h>
 #include <SimData/ExceptionBase.h>
 #include <SimData/HashUtility.h>
@@ -207,11 +206,6 @@ public:
 		return *this;
 	}
 
-	Reader& operator>>(BaseType &x) {
-		x.serialize(*this);
-		return *this;
-	}
-
 	Reader& operator>>(hasht &x) {
 		uint64 val;
 		operator>>(val);
@@ -272,15 +266,12 @@ public:
 	__SIMDATA_ARCHIVE(SIMDATA(Vector3), _Vector3);
 	__SIMDATA_ARCHIVE(SIMDATA(Quat), _Quat);
 	__SIMDATA_ARCHIVE(SIMDATA(Real), _Real);
-	__SIMDATA_ARCHIVE(SIMDATA(Curve), _Curve);
-	__SIMDATA_ARCHIVE(SIMDATA(Table), _Table);
 	__SIMDATA_ARCHIVE(SIMDATA(Table1), _Table1);
 	__SIMDATA_ARCHIVE(SIMDATA(Table2), _Table2);
 	__SIMDATA_ARCHIVE(SIMDATA(Table3), _Table3);
 	__SIMDATA_ARCHIVE(SIMDATA(LLA), _LLA);
 	__SIMDATA_ARCHIVE(SIMDATA(UTM), _UTM);
 	__SIMDATA_ARCHIVE(SIMDATA(ECEF), _ECEF);
-	__SIMDATA_ARCHIVE(SIMDATA(GeoPos), _GeoPos);
 	__SIMDATA_ARCHIVE(SIMDATA(Path), _Path);
 	__SIMDATA_ARCHIVE(SIMDATA(External), _External);
 	__SIMDATA_ARCHIVE(SIMDATA(Key), _Key);
@@ -288,11 +279,6 @@ public:
 	// TODO List;
 	// TODO Enum
 	// TODO Pointer
-
-	BaseType &_basetype(BaseType &y) {
-		(*self) >> y;
-		return y;
-	}
 
 #undef __SIMDATA_ARCHIVE
 }
@@ -310,9 +296,15 @@ public:
 
 };
 
+template <class BASETYPE>
+inline Reader& operator>>(Reader &reader, BASETYPE &x) {
+	x.serialize(reader);
+	return reader;
+}
+
 
 template<typename T>
-Reader& operator>>(Reader& reader, std::vector<T> &y) {
+inline Reader& operator>>(Reader& reader, std::vector<T> &y) {
 	int32 n = reader.readLength();
 	y.resize(n);
 	typename std::vector<T>::iterator i = y.begin();
@@ -387,10 +379,7 @@ public:
 		write(&y, sizeof(y));
 		return *this;
 	}
-	Writer& operator<<(const BaseType &y) {
-		y.serialize(*this);
-		return *this;
-	}
+
 	Writer& operator<<(const hasht &y) {
 		uint64 val = y.b;
 		val = (val << 32) | y.a;
@@ -402,9 +391,6 @@ public:
 		write(y.data(), n);
 		return *this;
 	}
-
-	// old, fixed-width length implementation (DISABLED)
-	// void _writeLength(int32 n) { operator<<(n); }
 
 	void writeLength(int32 length) {
 		assert(length >= 0 && length <= 1073741823);
@@ -440,15 +426,35 @@ public:
 	inline void _uint64(uint64 x) { (*self) << x; }
 	inline void _hasht(hasht const &x) { (*self) << x; }
 	inline void _string(std::string const &x) { (*self) << x; }
-	inline void _basetype(BaseType const &x) { (*self) << x; }
+	inline void _Object(Object const &x) { (*self) << x; }
+	inline void _ECEF(ECEF const &x) { (*self) << x; }
+	inline void _External(External const &x) { (*self) << x; }
+	inline void _LLA(LLA const &x) { (*self) << x; }
+	inline void _Key(Key const &x) { (*self) << x; }
+	inline void _UTM(UTM const &x) { (*self) << x; }
+	inline void _Matrix3(Matrix3 const &x) { (*self) << x; }
+	inline void _Path(Path const &x) { (*self) << x; }
+	inline void _Quat(Quat const &x) { (*self) << x; }
+	inline void _Real(Real const &x) { (*self) << x; }
+	inline void _SimDate(SimDate const &x) { (*self) << x; }
+	inline void _Table1(Table1 const &x) { (*self) << x; }
+	inline void _Table2(Table2 const &x) { (*self) << x; }
+	inline void _Table3(Table3 const &x) { (*self) << x; }
+	inline void _Vector3(Vector3 const &x) { (*self) << x; }
 }
 #endif // SWIG
 
 };
 
 
+template <class BASETYPE>
+inline Writer& operator<<(Writer &writer, BASETYPE const &x) {
+	x.serialize(writer);
+	return writer;
+}
+
 template<typename T>
-Writer& operator<<(Writer& writer, const std::vector<T> &x) {
+inline Writer& operator<<(Writer &writer, std::vector<T> const &x) {
 	writer.writeLength(x.size());
 	typename std::vector<T>::const_iterator i = x.begin();
 	for (; i != x.end(); ++i) writer << (*i);

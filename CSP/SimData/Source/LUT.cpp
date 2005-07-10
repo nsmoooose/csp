@@ -1,7 +1,7 @@
-/* SimDataCSP: Data Infrastructure for Simulations
- * Copyright (C) 2002 Mark Rose <tm2@stm.lbl.gov>
+/* SimData: Data Infrastructure for Simulations
+ * Copyright (C) 2002 Mark Rose <mkrose@users.sf.net>
  *
- * This file is part of SimDataCSP.
+ * This file is part of SimData.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -305,10 +305,7 @@ void LUT<N,X>::interpolateSpline(int n, TableVector *_table) {
 
 // spline interpolation
 template <int N, class X>
-void LUT<N,X>::__splineInterpolate(X x, X h, LUT<N,X> const &y0, LUT<N,X> const &y1,
-	      Curvature<N,X> const &c0,
-	      Curvature<N,X> const &c1,
-	      LUT<N,X> &out) {
+void LUT<N,X>::__splineInterpolate(X x, X h, LUT<N,X> const &y0, LUT<N,X> const &y1, Curvature<N,X> const &c0, Curvature<N,X> const &c1, LUT<N,X> &out) {
 	int n = y0.dataSize();
 	assert(y1.dataSize() == n);
 	out.createData(n);
@@ -436,7 +433,7 @@ void LUT<N,X>::serialize(Reader &reader) {
 	int dim, n;
 	reader >> dim;
 	if (dim != N) {
-		std::stringstream msg;
+		std::ostringstream msg;
 		msg << "LUT<" << N << ">::serialize table of dimension " << dim;
 		throw InterpolationUnpackMismatch(msg.str());
 	}
@@ -467,15 +464,15 @@ void LUT<N,X>::serialize(Writer &writer) const {
 
 template <int N, class X>
 std::string LUT<N,X>::asString() const {
-	std::stringstream ss;
+	std::ostringstream ss;
 	ss << "<simdata::" << N << "D Lookup Table>";
 	return ss.str();
 }
 
 template <int N, class X>
 std::string LUT<N,X>::typeString() const {
-	std::stringstream ss;
-	ss << "type::LUT<" << N << ">";
+	std::ostringstream ss;
+	ss << "type::LUT" << N << ">";
 	return ss.str();
 }
 
@@ -554,10 +551,7 @@ void LUT<1,X>::interpolateSpline(int n, TableVector *_table) {
 		}
 		X f = (x - xa) * s;
 		X g = static_cast<X>(1.0) - f;
-		(*_table)[i] = g * ya +
-			       f * yb +
-			       ((g*g-static_cast<X>(1.0))*g*uv[index-1] +
-				(f*f-static_cast<X>(1.0))*f*uv[index]) * d2s;
+		(*_table)[i] = g * ya + f * yb + ((g*g-static_cast<X>(1.0))*g*uv[index-1] + (f*f-static_cast<X>(1.0))*f*uv[index]) * d2s;
 	}
 }
 
@@ -592,10 +586,10 @@ void LUT<1,X>::__splineInterpolate(
 	X d2s = h * h * static_cast<X>(0.1666666666667);
 	for (int i = 0; i < n; i++) {
 		out.data(i).first = y0.data(i).first;
-		out.data(i).second = y * y0.data(i).second +
-				     x * y1.data(i).second +
-				     ((y * y - static_cast<X>(1.0)) * y * c0.curve(i) +
-				      (x * x - static_cast<X>(1.0)) * x * c1.curve(i)) * d2s;
+		out.data(i).second =
+			y * y0.data(i).second + x * y1.data(i).second +
+			((y * y - static_cast<X>(1.0)) * y * c0.curve(i) +
+			(x * x - static_cast<X>(1.0)) * x * c1.curve(i)) * d2s;
 	}
 }
 
@@ -689,7 +683,7 @@ void LUT<1,X>::serialize(Reader &reader) {
 	X x0, x1;
 	int n;
 	if (dim != 1) {
-		std::stringstream msg;
+		std::ostringstream msg;
 		msg << "LUT<1>::serialize table of dimension " << dim;
 		throw InterpolationUnpackMismatch(msg.str());
 	}
@@ -718,9 +712,6 @@ void LUT<1,X>::serialize(Writer &writer) const {
 	}
 }
 
-/**
- * Return strig representation of type.
- */
 template <typename X>
 std::string LUT<1,X>::asString() const {
 	return "<simdata::1D Lookup Table>";
@@ -732,89 +723,13 @@ std::string LUT<1,X>::typeString() const {
 }
 
 
+std::ostream &operator <<(std::ostream &o, Table1 const &t) { return o << t.asString(); }
+std::ostream &operator <<(std::ostream &o, Table2 const &t) { return o << t.asString(); }
+std::ostream &operator <<(std::ostream &o, Table3 const &t) { return o << t.asString(); }
+
 
 NAMESPACE_SIMDATA_END // simdata
 
 
 #endif // __SIMDATA_NO_LUT__
-
-
-#if 0
-void load2(simdata::Table2 &t) {
-	float f;
-	int a, b, n;
-	std::cin >> a;
-	std::cin >> b;
-	n = a*b;
-	std::vector<float> x(a), y(b);
-	std::vector<float> values(n);
-	for (int i = 0; i < a; i++) std::cin >> x[i];
-	for (int i = 0; i < b; i++) std::cin >> y[i];
-	for (int i = 0; i < n; i++) std::cin >> values[i];
-	// data in 'thrust' input file is transposed relative to
-	// the standard indexing [M][ALT].   either switich to
-	// [ALT][M], change the input file, or transpose on the
-	// fly as we do here:
-	std::vector<float> transpose(n);
-	for (int i = 0; i < b; i++) {
-		for (int j = 0; j < a; j++) {
-			transpose[j*b+i] = values[i*a+j];
-		}
-	}
-	t.load(transpose, simdata::Table2::Breaks(x)(y));
-}
-
-
-void test() {
-	simdata::Table2 t;
-	load2(t);
-	simdata::SimTime t0 = simdata::SimDate::getSystemTime();
-	t.interpolate(simdata::Table2::Dim(100)(40), simdata::Interpolation::SPLINE);
-	//t.interpolate(simdata::Table2::Dim(40)(20), simdata::Interpolation::LINEAR);
-	simdata::SimTime t1 = simdata::SimDate::getSystemTime();
-	std::cout << (t1-t0)*1000000.0 <<  " us\n";
-	std::cout << t[0][0] << " = 0,0\n";
-	std::cout << t[0.2][0] << " = 0.2,0\n";
-	std::cout << t[0.4][0] << " = 0.4,0\n";
-	std::cout << t[2.2][0] << " = 2.2,0\n";
-	std::cout << t[0.5][100] << " = 0.5,100\n";
-	std::cout << t[0.0][3048] << " = 0.0,3k\n";
-	std::cout << t[0.0][6096] << " = 0.0,6k\n";
-	std::cout << t[0.0][30480] << " = 0.0,30k\n";
-	std::cout << t[1.0][12192] << " = 1.0,12k\n";
-	std::cout << t[2.2][30480] << " = 2.2,30k\n";
-
-	std::cerr << "P2 100 100 255\n";
-	for (int i = 0; i < 100; i++) {
-	for (int j = 0; j < 100; j++) {
-		//std::cerr << int(t[i*0.01*2.2][j*0.01*30480]*0.002+128) << " ";
-		std::cerr << int(t[i*0.01*2.2][j*0.01*30480]*100+128) << " ";
-	}
-	}
-
-	t0 = simdata::SimDate::getSystemTime();
-	float x = 0.0;
-	for (int i = 100000; i > 0; --i) {
-		x += t[2.1][30400];
-	}
-	t1 = simdata::SimDate::getSystemTime();
-	std::cout << (t1-t0)*10.0 << " us; " << x <<  "\n";
-
-	/*
-	simdata::Table3 t3;
-	t0 = simdata::SimDate::getSystemTime();
-	// XXX must set data before interpolating
-	t3.interpolate(simdata::Table3::Dim(100)(40)(20), simdata::Interpolation::SPLINE);
-	t1 = simdata::SimDate::getSystemTime();
-	std::cout << (t1-t0) << " s\n";
-	*/
-}
-
-int main() try {
-	test();
-	return 0;
-} catch(...) { }
-
-#endif
-
 

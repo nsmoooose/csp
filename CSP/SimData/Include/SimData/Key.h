@@ -1,5 +1,5 @@
 /* SimData: Data Infrastructure for Simulations
- * Copyright 2002, 2003, 2004 Mark Rose <mkrose@users.sourceforge.net>
+ * Copyright 2002-2005 Mark Rose <mkrose@users.sourceforge.net>
  *
  * This file is part of SimData.
  *
@@ -40,12 +40,32 @@ NAMESPACE_SIMDATA
  * Can be used in place of strings and enums to bind internal
  * and external identifiers efficiently.
  *
- * @author Mark Rose <mrose@stm.lbl.gov>
+ * @author Mark Rose <mkrose@users.sf.net>
  * @ingroup BaseTypes
  */
-class SIMDATA_EXPORT Key: public BaseType {
-protected:
+class SIMDATA_EXPORT Key {
 	uint32 _key;
+
+public: // BaseType
+
+	/// String representation.
+	std::string asString() const;
+
+	/// Type representation.
+	std::string typeString() const { return "type::Key"; }
+
+	/// Serialize from a Reader.
+	void serialize(Reader&);
+
+	/// Serialize to a Writer.
+	void serialize(Writer&) const;
+
+	/** Parse the character data from an XML \<Key\> tag.
+	 */
+	void parseXML(const char* cdata) { checkEmptyTag(cdata); }
+
+	/// XML post processing.
+	void convertXML() {}
 
 public:
 
@@ -59,11 +79,7 @@ public:
 
 	/** Copy constructor.
 	 */
-	Key(Key const &k): BaseType(k), _key(k._key) {}
-
-	/** Destructor.
-	 */
-	virtual ~Key() {}
+	Key(Key const &k): _key(k._key) {}
 
 #ifndef SWIG
 	/** Assign from a string, computing the corresponding key.
@@ -74,6 +90,9 @@ public:
 	 */
 	inline const Key &operator=(Key const &k) { _key = k._key; return *this; }
 
+	/** Test if uninitialized.
+	 */
+	inline bool operator!() const { return _key == 0; }
 #endif // SWIG
 
 	/** Compare equal
@@ -95,20 +114,11 @@ public:
 	/** Order comparison, for use with standard stl comparisons
 	 */
 	bool operator<(Key const &k) const { return _key < k._key; }
-
-	/** Serialize to or from a data archive.
-	 */
-	virtual void serialize(Reader&);
-	virtual void serialize(Writer&) const;
-
-	/** Standard string representation.
-	 */
-	virtual std::string asString() const;
-
-	/** Return a string representation of the type.
-	 */
-	virtual std::string typeString() const { return "type::Key"; }
 };
+
+
+SIMDATA_EXPORT std::ostream &operator <<(std::ostream &o, Key const &k);
+
 
 NAMESPACE_SIMDATA_END
 

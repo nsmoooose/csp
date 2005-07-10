@@ -1,7 +1,7 @@
-/* SimDataCSP: Data Infrastructure for Simulations
+/* SimData: Data Infrastructure for Simulations
  * Copyright 2002, 2003, 2004 Mark Rose <mkrose@users.sourceforge.net>
  *
- * This file is part of SimDataCSP.
+ * This file is part of SimData.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -42,7 +42,7 @@ void Object::serialize(Writer &writer) const {
 	_serialize(writer);
 }
 
-Object::Object(): Referenced(), BaseType(), _path(0) {
+Object::Object(): Referenced(), _path(0) {
 }
 
 Object::~Object() {
@@ -67,6 +67,7 @@ hasht Object::getPath() const {
 	return _path;
 }
 
+std::ostream &operator <<(std::ostream &o, Object const &obj) { return o << obj.asString(); }
 
 NAMESPACE_SIMDATA_END
 

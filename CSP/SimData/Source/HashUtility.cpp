@@ -1,5 +1,5 @@
 /* SimData: Data Infrastructure for Simulations
- * Copyright (C) 2002, 2005 Mark Rose <tm2@stm.lbl.gov>
+ * Copyright (C) 2002, 2005 Mark Rose <mkrose@users.sf.net>
  *
  * This file is part of SimData.
  *
@@ -138,7 +138,7 @@ uint32 hash_uint32(const char *buffer, const int len) {
 
 
 std::string HashT::str() const {
-	std::stringstream repr;
+	std::ostringstream repr;
 	repr << *this;
 	return repr.str();
 }

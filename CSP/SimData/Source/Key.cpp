@@ -35,6 +35,7 @@ NAMESPACE_SIMDATA
 
 const Key &Key::operator=(std::string const &id) {
 	_key = newhash4_cstring(id.c_str());
+	if (_key == 0) _key = 1;  // 0 reserved for uninitialized
 	return *this;
 }
 
@@ -43,21 +44,20 @@ bool Key::operator==(std::string const &id) const {
 }
 
 void Key::serialize(Reader &reader) {
-	int key;
-	reader >> key;
-	_key = static_cast<uint32>(key);
+	reader >> _key;
 }
 
 void Key::serialize(Writer &writer) const {
-	writer << static_cast<int>(_key);
+	writer << _key;
 }
 
 std::string Key::asString() const {
-	std::stringstream ss;
+	std::ostringstream ss;
 	ss << "Key<0x" << std::hex << std::uppercase << std::setw(8) << std::setfill('0') << _key << ">";
 	return ss.str();
 }
 
+std::ostream &operator <<(std::ostream &o, Key const &k) { return o << k.asString(); }
 
 NAMESPACE_SIMDATA_END
 

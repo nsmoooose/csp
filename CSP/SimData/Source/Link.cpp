@@ -38,53 +38,59 @@ NAMESPACE_SIMDATA
 
 
 //////////////////////////////////////////////////////////////////////////
-// LinkBase
+// LinkCore
 
 
 // SWIG python specific comparisons
-bool LinkBase::__eq__(const LinkBase& other) {
+bool LinkCore::__eq__(const LinkCore& other) {
 	return this->operator==(other);
 }
 
-bool LinkBase::__ne__(const LinkBase& other) {
+bool LinkCore::__ne__(const LinkCore& other) {
 	return !this->operator==(other);
 }
 
-void LinkBase::serialize(Reader &reader) {
-	Path::serialize(reader);
+LinkCore LinkCore::_serialize(Reader &reader, DataArchive* &data_archive) {
+	data_archive = 0;
+	Path path;
+	reader >> path;
 	ArchiveReader *arc = dynamic_cast<ArchiveReader*>(&reader);
 	// XXX temporary assert for debugging; not exactly sure yet how to
 	// handle Links outside of DataArchives.  the current idea (without
 	// the assert) is to only read and write the path.
 	assert(arc);
 	if (arc) {
-		DataArchive *data_archive = arc->_getArchive();
+		data_archive = arc->_getArchive();
 		assert(data_archive);
-		if (isNone()) {
+		if (path.isNone()) {
 			ObjectID class_id;
 			reader >> class_id;
 			if (class_id == 0) {
 				SIMDATA_LOG(LOG_ARCHIVE, LOG_ERROR, "loading Link with no path and no object");
 			} else {
 				Object *pobj = data_archive->_createObject(class_id);
+				assert(pobj);
+				SIMDATA_LOG(LOG_ARCHIVE, LOG_DEBUG, "loading inline object " << pobj->getClassName());
 				pobj->serialize(reader);
 				// start reference counting before postCreate!
-				_assign_safe(pobj);
+				LinkCore link(path, pobj);
 				if (arc->_loadAll()) {
 					pobj->postCreate();
 				}
 				// XXX should we also check that 'static' is not set?
 				// (it makes no sense to have a static immediate object)
+				data_archive = 0;  // nothing more to load
+				return link;
 			}
 		} else {
-			if (arc->_loadAll()) {
-				_load(data_archive);
-			}
+			SIMDATA_LOG(LOG_ARCHIVE, LOG_DEBUG, "loading linked object" << (arc->_loadAll() ? "loadall" : "!loadall"));
+			if (!arc->_loadAll()) data_archive = 0;
 		}
 	}
+	return LinkCore(path, 0);
 }
 
-void LinkBase::serialize(Writer &writer) const {
+void LinkCore::_serialize(Writer &writer) const {
 	Path::serialize(writer);
 	if (isNone()) {
 		ArchiveWriter *arc = dynamic_cast<ArchiveWriter*>(&writer);
@@ -102,65 +108,42 @@ void LinkBase::serialize(Writer &writer) const {
 			hasht class_hash = 0;
 			writer << class_hash;
 		} else {
-			hasht class_hash = _get()->getClassHash();
+			hasht class_hash = _reference->getClassHash();
 			writer << class_hash;
-			_get()->serialize(writer);
+			_reference->serialize(writer);
 		}
 	}
 }
 
-std::string LinkBase::asString() const {
-	std::stringstream repr;
-	repr << "<Path " << _path << ">";
-	return repr.str();
-}
-
-void LinkBase::_load(DataArchive* archive, ObjectID path) {
+LinkCore LinkCore::_internal_load(DataArchive* archive, ObjectID path) {
 	assert(archive != 0);
 	if (path == 0) path = _path;
-	if (path == 0) {
-		_path = 0;
-		_assign_safe(0);
-	} else {
-		SIMDATA_LOG(LOG_ARCHIVE, LOG_DEBUG, "loading pointerbase from " << path << " " << _path);
-		Path _p(path);
-		LinkBase _ppb;
-		/*
-		 * XXX this is a bit tricky.  if we don't surpress the exception,
-		 * we probably leave partially constructed objects in an incomplete
-		 * state.  if we eat the exception, the object ends up with a null
-		 * pointer, but there's no way to globally catch the error...
-		 * XXX for now, pass on the exception.
-		 */
-		//try {
+	if (path == 0) return LinkCore();
+	SIMDATA_LOG(LOG_ARCHIVE, LOG_DEBUG, "loading LinkCore from " << path << " " << _path);
+	Path _p(path);
+	LinkCore _ppb;
+	/*
+	 * XXX this is a bit tricky.  if we don't surpress the exception,
+	 * we probably leave partially constructed objects in an incomplete
+	 * state.  if we eat the exception, the object ends up with a null
+	 * pointer, but there's no way to globally catch the error...
+	 * XXX for now, pass on the exception.
+	 */
+	//try {
 
-			_ppb = archive->getObject(_p);
-		//}
-		/*
-		catch (Exception e) {
-			e.details();
-			e.clear();
-			return;
-		}
-		*/
-		*this = _ppb;
-		Object* p = _reference;
-		assert(p);
-		SIMDATA_LOG(LOG_ARCHIVE, LOG_DEBUG, "loaded " << p->getClassName() << " @ 0x" << std::hex << int(p));
+		_ppb = archive->getObject(_p);
+	//}
+	/*
+	catch (Exception e) {
+		e.details();
+		e.clear();
+		return;
 	}
-}
-
-
-//////////////////////////////////////////////////////////////////////////
-// ReferencePointer
-
-// SWIG python specific comparisons
-bool ReferencePointer::__eq__(const ReferencePointer& other) {
-	return this->operator==(other);
-}
-
-bool ReferencePointer::__ne__(const ReferencePointer& other) {
-	return !this->operator==(other);
+	*/
+	assert(_ppb.valid());
+	Object *obj = _ppb._reference;
+	SIMDATA_LOG(LOG_ARCHIVE, LOG_DEBUG, "loaded " << obj->getClassName() << " @ 0x" << std::hex << reinterpret_cast<int>(obj));
+	return _ppb;
 }
 
 

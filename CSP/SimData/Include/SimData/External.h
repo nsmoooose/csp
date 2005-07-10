@@ -1,18 +1,18 @@
 /* SimData: Data Infrastructure for Simulations
- * Copyright (C) 2002 Mark Rose <tm2@stm.lbl.gov>
- * 
+ * Copyright (C) 2002, 2005 Mark Rose <mkrose@users.sf.net>
+ *
  * This file is part of SimData.
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
@@ -41,18 +41,36 @@ NAMESPACE_SIMDATA
  *  I recommend using std::string and using functions in simdata::ospath
  *  to convert to native format at runtime. (-MR)
  *
- *  @author Mark Rose <mrose@stm.lbl.gov>
+ *  @author Mark Rose <mkrose@users.sf.net>
  *  @ingroup BaseTypes
  */
-class SIMDATA_EXPORT External: public BaseType {
+class SIMDATA_EXPORT External {
 protected:
 	std::string _path;
 	std::string _native_path;
 
-public:
-	/** Destructor.
+public: // BaseType
+
+	/// String representation.
+	std::string asString() const;
+
+	/// Type representation.
+	std::string typeString() const { return "type::External"; }
+
+	/// Serialize from a Reader.
+	void serialize(Reader&);
+
+	/// Serialize to a Writer.
+	void serialize(Writer&) const;
+
+	/** Parse the character data from an XML \<External\> tag.
 	 */
-	virtual ~External();
+	void parseXML(const char* cdata) { checkEmptyTag(cdata); }
+
+	/// XML post processing.
+	void convertXML() {}
+
+public:
 
 #ifndef SWIG
 	/** Assign from a path string, converting to the internal farmat.
@@ -87,20 +105,11 @@ public:
 	/** Get the source path in the platform specific format.
 	 */
 	const std::string& getSource() const;
-
-	/** Serialize to or from a data archive.
-	 */
-	virtual void serialize(Reader&);
-	virtual void serialize(Writer&) const;
-	
-	/** Standard string representation.
-	 */
-	virtual std::string asString() const;
-
-	/** Return a string representation of the type.
-	 */
-	virtual std::string typeString() const { return "type::External"; }
 };
+
+
+SIMDATA_EXPORT std::ostream &operator <<(std::ostream &o, External const &e);
+
 
 NAMESPACE_SIMDATA_END
 

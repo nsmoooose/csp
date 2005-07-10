@@ -1,5 +1,5 @@
 /* SimData: Data Infrastructure for Simulations
- * Copyright (C) 2002, 2003 Mark Rose <tm2@stm.lbl.gov>
+ * Copyright (C) 2002, 2003 Mark Rose <mkrose@users.sf.net>
  *
  * This file is part of SimData.
  *
@@ -57,19 +57,11 @@ Matrix3 Vector3::starMatrix() const {
 }
 
 std::string Vector3::asString() const {
-	std::stringstream repr;
-	repr << *this;
-	return repr.str();
-}
-
-/**
- * Print string representation to a stream.
- */
-std::ostream & operator << (std::ostream & os, const Vector3& v) {
-	os << "[" << std::setw(8) << v.x()
-	   << " " << std::setw(8) << v.y()
- 	   << " " << std::setw(8) << v.z() << "]";
-	return os;
+	std::ostringstream os;
+	os << "[" << std::setw(8) << x() << " "
+	          << std::setw(8) << y() << " "
+	          << std::setw(8) << z() << "]";
+	return os.str();
 }
 
 void Vector3::serialize(Reader &reader) {
@@ -85,41 +77,7 @@ void Vector3::parseXML(const char* cdata) {
 	if (n!=3) throw ParseException("SYNTAX ERROR: expecting 3 floats");
 }
 
-/**
- * Copy a vector into a binary buffer
- */
-int Vector3::readBinary(const unsigned char * data, int size) {
-	
-	if (size != 3*sizeof(double)) {
-		fprintf(stderr, "Illegal mem copy operation attempted\n");
-		return 0;
-	}
-
-	memcpy((void*)&_x, (void*)data, sizeof(double)); data += sizeof(double);	
-	memcpy((void*)&_y, (void*)data, sizeof(double)); data += sizeof(double);
-	memcpy((void*)&_z, (void*)data, sizeof(double));
-
-	return 3*sizeof(double);
-}
-
-/**
- * Copy a binary buffer into a vector.
- */
-int Vector3::writeBinary(unsigned char * data, int size) {
-
-	if (size != 3*sizeof(double)) {
-		fprintf(stderr, "Illegal mem copy operation attempted\n");
-		return 0;
-	}
-	
-	memcpy( (void*)data, (void*)&_x, sizeof(double)); data += sizeof(double);	
-	memcpy( (void*)data, (void*)&_y, sizeof(double)); data += sizeof(double);
-	memcpy( (void*)data, (void*)&_z, sizeof(double));
-
-	return 3*sizeof(double);
-
-}
-
+std::ostream &operator <<(std::ostream &o, Vector3 const &v) { return o << v.asString(); }
 
 NAMESPACE_SIMDATA_END
 

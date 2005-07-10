@@ -1,7 +1,7 @@
-/* SimDataCSP: Data Infrastructure for Simulations
+/* SimData: Data Infrastructure for Simulations
  * Copyright 2002, 2003, 2004 Mark Rose <mkrose@users.sourceforge.net>
  *
- * This file is part of SimDataCSP.
+ * This file is part of SimData.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License

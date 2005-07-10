@@ -1,18 +1,18 @@
-# SimDataCSP: Data Infrastructure for Simulations
-# Copyright (C) 2002 Mark Rose <tm2@stm.lbl.gov>
-# 
-# This file is part of SimDataCSP.
-# 
+# SimData: Data Infrastructure for Simulations
+# Copyright (C) 2002 Mark Rose <mkrose@users.sf.net>
+#
+# This file is part of SimData.
+#
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
 # as published by the Free Software Foundation; either version 2
 # of the License, or (at your option) any later version.
-# 
+#
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
@@ -22,22 +22,22 @@
 ## @auther Mark Rose <mrose@stm.lbl.gov>
 ##
 ## @module SimData
-## 
-## Provides minimal glue code for interfacing between C++ and Python.   
-## Most of the hard work is done by SWIG.  Python Objects must derive 
-## from SimData.Object and be registered with the ObjectRegistry by 
+##
+## Provides minimal glue code for interfacing between C++ and Python.
+## Most of the hard work is done by SWIG.  Python Objects must derive
+## from SimData.Object and be registered with the ObjectRegistry by
 ## calling RegisterObject(class, version_major, version_minor) right
 ## after the class definition.  For example:
-## 
+##
 ## class MyObjectClass(SimData.Object):
 ##    _REQUIRED_ = "var1 var2 var3"
 ##    _OPTIONAL_ = "var4 var5"
-## 	  ... rest of the class definition ...
+##    ... rest of the class definition ...
 ##
 ## RegisterObject(MyObjectClass, 0, 0)
 ##
 ## Define _REQUIRED_ and _OPTIONAL_ as strings listing the reqired
-## and optional member variables for serialization from XML.  
+## and optional member variables for serialization from XML.
 ## Variable names must be separated by whitespace.
 
 
@@ -47,8 +47,8 @@ import exceptions, types
 version = cSimData.getVersion()
 
 
-# FIXME is there a more robust means of getting the class name as a 
-# string?  str(class) changed from python2.1 to 2.2 for new-style 
+# FIXME is there a more robust means of getting the class name as a
+# string?  str(class) changed from python2.1 to 2.2 for new-style
 # classes...
 def getClassName(_class):
 	rep = str(_class)
@@ -72,7 +72,7 @@ hash_string = cSimData.hash_string
 ## Python object class wrapper for use by the ObjectRegistry.
 ##
 ## This class mirrors the C++ ObjectProxy<> template class;
-## there is no need for templates in python since we can just 
+## there is no need for templates in python since we can just
 ## store the class directly.
 
 class PyInterfaceProxy(cSimData.InterfaceProxy):
@@ -98,11 +98,11 @@ class PyInterfaceProxy(cSimData.InterfaceProxy):
 		# retain ownership.  The only caller of createObject(), however,
 		# should be the DataArchive class, which wraps the resulting
 		# object in a Pointer<>.  The Pointer maintains its own
-		# reference count and deletes the C++ object (and its associated 
+		# reference count and deletes the C++ object (and its associated
 		# Python object) when the referencecount goes to zero.
 		#
 		# Keep in mind that if you use this method elsewhere and don't
-		# wrap the object in a Pointer<>, you will be responsible 
+		# wrap the object in a Pointer<>, you will be responsible
 		# for deleting the object (which can only be done from C++).
 #		o = self._class()
 #		if disown:
@@ -178,7 +178,7 @@ class PyInterfaceProxy(cSimData.InterfaceProxy):
 			return self._baseinterface.variableExists(name)
 		return 0
 	def variableRequired(self, name):
-		if self.interface_by_name.has_key(name): 
+		if self.interface_by_name.has_key(name):
 			return self.interface_by_name[name].required
 		if self._baseinterface is not None:
 			return self._baseinterface.variableRequired(name)
@@ -187,12 +187,12 @@ class PyInterfaceProxy(cSimData.InterfaceProxy):
 
 ## Register an object interface class with the global InterfaceRegistry.
 ##
-## Call this function for each Python Object class you define to create 
-## an interface and register it with the InterfaceRegistry so that the 
+## Call this function for each Python Object class you define to create
+## an interface and register it with the InterfaceRegistry so that the
 ## correct classes can be created when loading objects from an archive.
-## _class is the class name, major and minor are version numbers.  Note 
-## that any change of the major version number makes the class incompatible 
-## with previously archived versions of the class, forcing recompilation 
+## _class is the class name, major and minor are version numbers.  Note
+## that any change of the major version number makes the class incompatible
+## with previously archived versions of the class, forcing recompilation
 ## of the archive.
 
 class XML:
@@ -218,7 +218,7 @@ def XML_INTERFACE(_class, major, minor, *args):
 	fullname = "%s:%d.%d" % (classname, major, minor)
 	hashname = "%s:%d" % (classname, major)
 	
-	_class._name = fullname 
+	_class._name = fullname
 	_class._hash = hash_string(hashname)
 	_class.getClassName = lambda x: x.__class__._name
 	_class.getClassHash = lambda x: x.__class__._hash
@@ -229,7 +229,7 @@ def XML_INTERFACE(_class, major, minor, *args):
 from cSimData import *
 
 ## Specialized Pointer class for Python.  This class behaves like
-## Object, but automatically combines C++ and Python reference 
+## Object, but automatically combines C++ and Python reference
 ## counting to handle object lifetime in a sane way.  Both C++
 ## and Python createObject methods return Pointer class objects
 ## under Python, so it should never be necessary to handle a
@@ -271,9 +271,9 @@ class List(cSimData.ListBase, list):
 				o = type()
 				o.unpack(p)
 				return o
-			self.unpack_item = unpack_item 
+			self.unpack_item = unpack_item
 		else:
-			err = "Unrecognized type for SimData.List: %s" % type 
+			err = "Unrecognized type for SimData.List: %s" % type
 			raise err
 		list.__init__(self)
 		cSimData.ListBase.__init__(self)

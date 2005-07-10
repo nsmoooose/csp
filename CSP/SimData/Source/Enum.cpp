@@ -56,12 +56,8 @@ std::string EnumLink::asString() const {
 	return __repr__();
 }
 
-std::string EnumLink::typeString() const {
-	return "type::Enum";
-}
-
 std::string EnumLink::__repr__() const {
-	std::stringstream repr;
+	std::ostringstream repr;
 	repr << "<Enum:" << getToken() << "=" << getValue() << ">";
 	return repr.str();
 }
@@ -106,7 +102,7 @@ int EnumerationCore::getIndexByValue(int value) const {
 
 std::string Enumeration::__repr__() const {
 	assert(__core.valid());
-	std::stringstream ss;
+	std::ostringstream ss;
 	ss << "<Enumeration:";
 	for (int i = 0; i < size(); i++) {
 		ss << " " << __core->getTokenByIndex(i)
@@ -115,6 +111,9 @@ std::string Enumeration::__repr__() const {
 	ss << ">";
 	return ss.str();
 }
+
+
+std::ostream &operator <<(std::ostream &o, EnumLink &e) { return o << e.asString(); }
 
 
 NAMESPACE_SIMDATA_END

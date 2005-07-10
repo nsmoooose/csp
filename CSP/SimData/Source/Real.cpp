@@ -1,7 +1,7 @@
-/* SimDataCSP: Data Infrastructure for Simulations
+/* SimData: Data Infrastructure for Simulations
  * Copyright 2002, 2003, 2004 Mark Rose <mkrose@users.sourceforge.net>
  *
- * This file is part of SimDataCSP.
+ * This file is part of SimData.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -94,12 +94,13 @@ float Real::getSigma() const { return _sigma; }
 
 float Real::getValue() const { return _value; }
 
-std::string Real:: asString() const {
-	std::stringstream ss;
+std::string Real::asString() const {
+	std::ostringstream ss;
 	ss << _value;
 	return ss.str();
 }
 
+std::ostream &operator <<(std::ostream &o, Real const &r) { return o << r.asString(); }
 
 NAMESPACE_SIMDATA_END
 

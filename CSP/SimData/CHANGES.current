@@ -1,6 +1,123 @@
 Version 0.4.0 (in progress)
 ===========================
 
+2005-07-10: onsight
+ * Major internal refactoring:
+
+   - Removed BaseType; most data types are now non-virtual and
+     simply implement a standard interface by convention.
+
+   - Reorginazed Link<T> and LinkBase.  The old LinkBase is now
+     LinkCore, and the new LinkBase is a subclass of Link<Object>.
+     This allows all the Link<T> methods that require full declaration
+     of T to be non-virtual while still ensuring type safe conversions.
+
+   - Removed deprecated Curve and Table classes; use Table1 and Table2
+     instead.
+
+   - Removed deprecated GeoPos class; use ECEF, LLA, or UTM instead.
+
+   - Simplified the object and xml interface macros, and moved the
+     interface definition out of the class declaration.  Minor changes
+     to ObjectInterface and InterfaceProxy as well to support the new
+     macros.  The old macros still work correctly but will log warnings
+     when used.  Here's a comparison of the old and new macros:
+
+       /* old-style.h ****************************************/
+       class Foo: public simdata::Object {
+         int foo_count;
+       public:
+         SIMDATA_OBJECT(Foo, 0, 0)
+         SIMDATA_BEGIN_XML_INTERFACE(Foo)
+           SIMDATA_XML("foo_count", Foo::foo_count, false)
+         END_SIMDATA_XML_INTERFACE
+       };
+
+       class Bar: public Foo {
+         int bar_count;
+       public:
+         SIMDATA_OBJECT(Bar, 0, 0)
+         SIMDATA_EXTEND_XML_INTERFACE(Bar, Foo)
+           SIMDATA_XML("bar_count", Bar::bar_count, false)
+         END_SIMDATA_XML_INTERFACE
+       };
+
+       /* old-style.cpp **************************************/
+       SIMDATA_REGISTER_INTERFACE(Foo)
+       SIMDATA_REGISTER_INTERFACE(Bar)
+
+       /* new-style.h ****************************************/
+       class Foo: public simdata::Object {
+         int foo_count;
+       public:
+         SIMDATA_DECLARE_OBJECT(Foo)
+       };
+
+       class Bar: public Foo {
+         int bar_count;
+       public:
+         SIMDATA_DECLARE_OBJECT(Bar)
+       };
+
+       /* new-style.cc ***************************************/
+
+       SIMDATA_XML_BEGIN(Foo)
+         SIMDATA_DEF("foo_count", foo_count, false)
+       SIMDATA_XML_END
+
+       SIMDATA_XML_BEGIN(Bar)
+         SIMDATA_DEF("bar_count", bar_count, false)
+       SIMDATA_XML_END
+
+     Note that the class declarations are much simpler now.  There is
+     a single "declare" macro for each Object subclass that has an
+     XML interface.  The old-style object version numbers ("0, 0" above)
+     are gone; versioning is now done automatically by fingerprinting
+     the xml declarations.  There are actually three different declare
+     macros:
+
+       SIMDATA_DECLARE_OBJECT(classname)
+       SIMDATA_DECLARE_STATIC_OBJECT(classname)
+       SIMDATA_DECLARE_ABSTACT_OBJECT(classname)
+
+     The second form is the same as the first except that the data
+     archive will automatically cache "static" objects and reuse them.
+     This is essentially the same as the old SIMDATA_STATIC_OBJECT macro.
+     The last form is for abstract classes that cannot be instantiated.
+     (Note that the old-style differentiated abstract objects by using
+     the *_SIMDATA_XML_VIRTUAL_INTERFACE macros).
+
+     The XML interface definitions are now located in the source file,
+     and replace the old SIMDATA_REGISTER_INTERFACE macro.  There is
+     a single macro, SIMDATA_XML_BEGIN, for all object types: normal,
+     static, and abstract.  There is also no need to specify the base
+     class name; it is now deterimined automatically.  Similarly, the
+     explicit class qualifications in the SIMDATA_XML macros are no
+     lorger needed in the new-style SIMDATA_DEF macros.
+
+     Overall this change simplifies the declarations, speeds compilation
+     (since less template processing is done in the headers), and makes
+     versioning much less error-prone.  The old-style macros are now
+     deprecated.  Please upgrade to the new-style asap since support
+     for the old-style will be removed in the future.  Look for the word
+     DEPRECATED in the SimData log for a list of all classes that are
+     still using the old interface.
+
+ * Updated email addresses and copyright notices.
+
+ * Improved swig exception handling so that simdata::Exception instances
+   are returned as SimData.libexc instances.  These are python Exception
+   subclasses that provide many of the same methods as simdata::Exception.
+
+ * XML interfaces changes are now cleanly detected when compiling data
+   archives so that invalid cached objects will be silently discarded
+   (for debug levels < 2) and replaced.  A partial recompile should now
+   be sufficient in most cases that previously required a full rebuild
+   of the data archive.
+
+ * Removed partial-template-specialization (PTS) workarounds for old
+   compilers.
+
 2005-05-14: onsight
  * Add helper functions for producing 32-bit hashes for integer and string
    types.  These all use the original newhash function to do the work.

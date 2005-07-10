@@ -1,5 +1,5 @@
 /* SimData: Data Infrastructure for Simulations
- * Copyright (C) 2002, 2003 Mark Rose <tm2@stm.lbl.gov>
+ * Copyright (C) 2002, 2003, 2005 Mark Rose <mkrose@users.sf.net>
  *
  * This file is part of SimData.
  *
@@ -41,7 +41,6 @@
 
 #include <cmath>
 #include <vector>
-#include <iosfwd>
 
 
 NAMESPACE_SIMDATA
@@ -53,15 +52,31 @@ class Matrix3;
  *
  *  @ingroup BaseTypes
  */
-class SIMDATA_EXPORT Vector3: public BaseType
+class SIMDATA_EXPORT Vector3
 {
-protected:
-	/// The x component.
-	double _x;
-	/// The y component.
-	double _y;
-	/// The z component.
-	double _z;
+	double _x, _y, _z;
+
+public: // BaseType
+
+	/// String representation.
+	std::string asString() const;
+
+	/// Type representation.
+	std::string typeString() const { return "type::Vector3"; }
+
+	/// Serialize from a Reader.
+	void serialize(Reader&);
+
+	/// Serialize to a Writer.
+	void serialize(Writer&) const;
+
+	/** Parse the character data from an XML \<Vector\> tag.
+	 *  The three components must be separated by whitespace.
+	 */
+	void parseXML(const char*);
+
+	/// XML post processing.
+	void convertXML() {}
 
 public:
 
@@ -79,7 +94,7 @@ public:
 	/// Construct and initialize a new vector.
 	Vector3(double x_, double y_, double z_): _x(x_), _y(y_), _z(z_) {}
 	/// Copy constructor.
-	Vector3(const Vector3& v): BaseType(v), _x(v._x), _y(v._y), _z(v._z) {}
+	Vector3(const Vector3& v): _x(v._x), _y(v._y), _z(v._z) {}
 
 #ifndef SWIG
 	/// Copy operator.
@@ -287,9 +302,6 @@ public:
 	/// Compute the cross product of two vectors.
 	friend const Vector3 cross(const Vector3& a, const Vector3& b); // inline
 
-	/// Format to an output string.
-	friend SIMDATA_EXPORT std::ostream& operator << (std::ostream& output, const Vector3& vec);
-
 	/// Multiply a vector by a scalar on the left.
 	friend Vector3 operator * (double lhs, const Vector3 &rhs); // inline
 #endif // SWIG
@@ -314,24 +326,6 @@ public:
 		}
 	}
 
-	/// String representation.
-	virtual std::string asString() const;
-
-	/// Type representation.
-	virtual std::string typeString() const { return "type::Vector3"; }
-
-	/// Serialize to or from a data archive.
-	virtual void serialize(Reader&);
-	virtual void serialize(Writer&) const;
-
-	/** Parse the character data from an XML \<Vector\> tag.
-	 *
-	 *  The three components must be separated by whitespace.
-	 */
-	virtual void parseXML(const char*);
-
-	virtual int readBinary(const unsigned char *, int size);
-	virtual int writeBinary(unsigned char *, int size);
 
 #ifdef SWIG
 	// setup accessors for x, y, and z (ugly hack)
@@ -357,7 +351,7 @@ public:
 %}
 #endif // SWIG
 
-};	// end of class Vector3
+}; // end of class Vector3
 
 inline double dot(const Vector3& a, const Vector3& b) { return a*b; }
 
@@ -365,6 +359,7 @@ inline const Vector3 cross(const Vector3& a, const Vector3& b) { return a^b; }
 
 inline Vector3 operator * (double lhs, const Vector3 &rhs) { return rhs*lhs; }
 
+SIMDATA_EXPORT std::ostream &operator <<(std::ostream &o, Vector3 const &v);
 
 NAMESPACE_SIMDATA_END // simdata
 

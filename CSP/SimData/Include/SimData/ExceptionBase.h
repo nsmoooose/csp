@@ -39,7 +39,7 @@ NAMESPACE_SIMDATA
 
 /** General exception base class with error reporting.
  *
- *  @author Mark Rose <mrose@stm.lbl.gov>
+ *  @author Mark Rose <mkrose@users.sf.net>
  */
 class SIMDATA_EXPORT ExceptionBase { //: public std::runtime_error {
 	std::string _msg;
@@ -106,7 +106,7 @@ public:
 
 	/** Dump information about the exception to stderr.
 	 */
-	void details() const;
+	void details(bool no_trace=false) const;
 
 	/** Log the exception and reset so that it will not print to stderr
 	 *  on destruction.
@@ -117,6 +117,11 @@ public:
 	/** Dump details of an exception to an output stream
 	 */
 	friend SIMDATA_EXPORT std::ostream& operator<< (std::ostream&, const ExceptionBase&);
+#else
+	%insert(shadow) %{
+		def __str__(self): return self.getError()
+		def __repr__(self): return self.getError()
+	%}
 #endif // SWIG
 
 };
@@ -145,7 +150,7 @@ public: \
 
 /** Exception for marshalling python exceptions through SWIG wrapers.
  *
- *  @author Mark Rose <mrose@stm.lbl.gov>
+ *  @author Mark Rose <mkrose@users.sf.net>
  */
 SIMDATA_EXCEPTION(PythonException)
 

@@ -1,7 +1,7 @@
-# SimDataCSP: Data Infrastructure for Simulations
-# Copyright (C) 2002 Mark Rose <tm2@stm.lbl.gov>
+# SimData: Data Infrastructure for Simulations
+# Copyright (C) 2002 Mark Rose <mkrose@users.sf.net>
 #
-# This file is part of SimDataCSP.
+# This file is part of SimData.
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -17,15 +17,19 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
+import sys
+print """
+This script is no longer used for CSP development and has fallen into
+disrepair.  It is still potentially useful for standalone use of SimData,
+but you should not need to run it for CSP.
+"""
+sys.exit(1)
 
 ###
 # This script has many warts, but should be functional.  It will
 # be cleaned up in due course....
 #
 # -MR
-
-
-import sys
 
 min_python_version = "2.2.0"
 

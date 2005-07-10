@@ -1,5 +1,5 @@
 /* SimData: Data Infrastructure for Simulations
- * Copyright (C) 2002, 2003 Mark Rose <tm2@stm.lbl.gov>
+ * Copyright (C) 2002, 2003, 2005 Mark Rose <mkrose@users.sf.net>
  *
  * This file is part of SimData.
  *
@@ -42,7 +42,6 @@
 
 #include <string>
 #include <vector>
-#include <iosfwd>
 #include <algorithm>
 #include <cmath>
 
@@ -60,34 +59,38 @@ NAMESPACE_SIMDATA
  *
  * @ingroup BaseTypes
  */
-class SIMDATA_EXPORT Quat: public BaseType
+class SIMDATA_EXPORT Quat
 {
 	double _x, _y, _z, _w;
+
+public:  // BaseType
+
+	/// String representation.
+	std::string asString() const;
+
+	/// Type representation.
+	std::string typeString() const { return "type::Quat"; }
+
+	/// Serialize from a Reader.
+	void serialize(Reader&);
+
+	/// Serialize to a Writer.
+	void serialize(Writer&) const;
+
+	/** Internal method used by the XML parser.
+	 *  The format for Quats is "X Y Z W"
+	 */
+	void parseXML(const char* cdata);
+
+	/// XML post processing.
+	void convertXML() {}
+
 public:
 
 	/// The identity Quat = (0,0,0,1)
 	static const Quat IDENTITY;
 	/// The zero Quat = (0,0,0,0)
 	static const Quat ZERO;
-
-	/** Serialize to or from a data archive.
-	 */
-	virtual void serialize(Reader&);
-	virtual void serialize(Writer&) const;
-
-	/** Internal method used by the XML parser.
-	 *
-	 *  The format for Quats is "X Y Z W"
-	 */
-	virtual void parseXML(const char* cdata);
-
-	/** Standard representation string.
-	 */
-	virtual std::string asString() const;
-
-	/** Return a string representation of the type.
-	 */
-	virtual std::string typeString() const { return "type::Quat"; }
 
 	/** Construct a new quaternion.
 	 *
@@ -456,11 +459,11 @@ public:
 %}
 #endif // SWIG
 
-	virtual int readBinary(const unsigned char *, int size);
-	virtual int writeBinary(unsigned char *, int size);
+};
 
 
-};	// end of class prototype
+SIMDATA_EXPORT std::ostream &operator <<(std::ostream &o, Quat const &q);
+
 
 NAMESPACE_SIMDATA_END
 

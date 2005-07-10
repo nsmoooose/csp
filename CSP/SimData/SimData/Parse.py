@@ -1,9 +1,9 @@
 #!/usr/bin/python
 
-# SimDataCSP: Data Infrastructure for Simulations
+# SimData: Data Infrastructure for Simulations
 # Copyright (C) 2002 Mark Rose <tm2@stm.lbl.gov>
 #
-# This file is part of SimDataCSP.
+# This file is part of SimData.
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -497,118 +497,6 @@ class KeyHandler(SimpleHandler):
 	def end(self):
 		id = self._c.encode('ascii')
 		self._element = SimData.Key(id)
-
-
-class CurveHandler(SimpleHandler):
-
-	handlers = {
-		"Breaks"       : FloatListHandler,
-		"Values"       : FloatListHandler,
-#		"Method"       : EnumHandler,
-	}
-	
-	members = handlers.keys()
-	required_members = members
-	
-	def __init__(self, id, base, name, attrs):
-		SimpleHandler.__init__(self, id, base, name, attrs)
-		WARN(1, "<Curve> is deprecated, use Table1 instead.")
-		for member in CurveHandler.members:
-			setattr(self, "_"+member, None)
-
-	def handleChild(self, name, attrs):
-		return CurveHandler.handlers[name]
-
-	def validateChild(self, name, attrs):
-		return name in CurveHandler.members
-		
-	def endChild(self):
-		child = self._handler.getElement()
-		attrs = self._handler._attrs
-		member = "_" + self._handler_tag
-		setattr(self, member, (child, attrs))
-
-	def getElement(self):
-		for member in CurveHandler.required_members:
-			if getattr(self, "_"+member) is None:
-				msg = "CurveHander required tag '%s' missing" % member
-				raise XMLSyntax, msg
-		curve = SimData.Curve()
-		breaks, attrs = self._Breaks
-		curve.setBreaks(breaks)
-		if not attrs.has_key("spacing"):
-			msg = "CurveHander <Breaks> tag missing required attribute 'spacing'"
-			raise XMLSyntax, msg
-		spacing = float(attrs['spacing'])
-		#method, attrs = self._Method
-		#curve.method.parseXML(method)
-		values, attrs = self._Values
-		curve.setData(values)
-		curve.interpolate(spacing)
-		return curve
-		
-		
-class TableHandler(SimpleHandler):
-
-	handlers = {
-		"XBreaks"       : FloatListHandler,
-		"YBreaks"       : FloatListHandler,
-		"Values"       : FloatListHandler,
-#		"Method"       : EnumHandler,
-	}
-
-	members = handlers.keys()
-	required_members = members
-	
-	def __init__(self, id, base, name, attrs):
-		SimpleHandler.__init__(self, id, base, name, attrs)
-		WARN(1, "<Table> is deprecated, use Table2 instead.")
-		self._keys = {}
-		
-		#for member in TableHandler.members:
-		#	setattr(self, "_"+member, None)
-
-	def handleChild(self, name, attrs):
-		return TableHandler.handlers[name]
-
-	def validateChild(self, name, attrs):
-		return name in TableHandler.members
-		
-	def endChild(self):
-		child = self._handler.getElement()
-		attrs = self._handler._attrs
-		#member = "_" + self._handler_tag
-		member = self._handler_tag
-		self._keys[member] = (child, attrs)
-		#setattr(self, member, (child, attrs))
-
-	def assign(self, interface, object, name):
-		missing = filter(lambda x, f=self._keys.has_key: not f(x), TableHandler.required_members)
-		assert len(missing)== 0, "TableHandler required tag(s) missing:\n  %s" % str(missing)
-		table = SimData.Table()
-		#table = self.getObjectAttribute(object, name, None) #SimData.Table)
-		tags = self._keys
-		xbreaks, attrs = tags["XBreaks"]
-		if not attrs.has_key("spacing"):
-			msg = "TableHander <XBreaks> tag missing required attribute 'spacing'"
-			raise XMLSyntax, msg
-		xspacing = float(attrs["spacing"])
-		table.setXBreaks(xbreaks)
-		table.setXSpacing(xspacing)
-		ybreaks, attrs = tags["YBreaks"]
-		if not attrs.has_key("spacing"):
-			msg = "TableHander <YBreaks> tag missing required attribute 'spacing'"
-			raise XMLSyntax, msg
-		yspacing = float(attrs["spacing"])
-		table.setYBreaks(ybreaks)
-		table.setYSpacing(yspacing)
-#		method, attrs = tags["Method"]
-#		table.method.parseXML(method)
-		values, attrs = tags["Values"]
-		table.setData(values)
-		table.interpolate()
-		interface.set(object, name, table)
-
 
 
 ##

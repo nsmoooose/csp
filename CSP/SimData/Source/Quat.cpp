@@ -1,5 +1,5 @@
 /* SimData: Data Infrastructure for Simulations
- * Copyright (C) 2002, 2003 Mark Rose <tm2@stm.lbl.gov>
+ * Copyright (C) 2002, 2003 Mark Rose <mkrose@users.sf.net>
  *
  * This file is part of SimData.
  *
@@ -83,11 +83,10 @@ void Quat::parseXML(const char* cdata) {
 }
 
 std::string Quat::asString() const {
-	std::stringstream repr;
-	repr << *this;
-	return repr.str();
+	std::ostringstream os("[");
+	os << _x << " " << _y << " " << _z << " " << _w << "]";
+	return os.str();
 }
-
 
 /// Set the elements of the Quat to represent a rotation of angle
 /// (radians) around the axis (x,y,z)
@@ -353,40 +352,7 @@ void Quat::get(Matrix3& m) const {
 	m(2,2) = 1.0 - (xx + yy);
 }
 
-int Quat::readBinary(const unsigned char * ptrBuf, int size)
-{
-	if (size != 4*sizeof(double)) {
-		printf("Trying to read a binary Quat with the wrong size\n");
-		return 0;
-	}
-	memcpy((void*)&_x, (void*)ptrBuf, sizeof(double)); ptrBuf += sizeof(double);
-	memcpy((void*)&_y, (void*)ptrBuf, sizeof(double)); ptrBuf += sizeof(double);
-	memcpy((void*)&_z, (void*)ptrBuf, sizeof(double)); ptrBuf += sizeof(double);
-	memcpy((void*)&_w, (void*)ptrBuf, sizeof(double)); ptrBuf += sizeof(double);
-	return 4*sizeof(double);
-}
-
-int Quat::writeBinary(unsigned char * ptrBuf, int size)
-{
-	if (size != 4*sizeof(double)) {
-		printf("Trying to write a binary Quat with the wrong size\n");
-		return 0;
-	}
-	memcpy((void*)ptrBuf, (void*)&_x, sizeof(double)); ptrBuf += sizeof(double);
-	memcpy((void*)ptrBuf, (void*)&_y, sizeof(double)); ptrBuf += sizeof(double);
-	memcpy((void*)ptrBuf, (void*)&_z, sizeof(double)); ptrBuf += sizeof(double);
-	memcpy((void*)ptrBuf, (void*)&_w, sizeof(double)); ptrBuf += sizeof(double);
-	return 4*sizeof(double);
-}
-
-std::ostream& operator << (std::ostream& output, const Quat& quat)
-{
-	output << "[" << quat._x
-	       << " " << quat._y
-	       << " " << quat._z
-	       << " " << quat._w << "]";
-	return output;
-}
+std::ostream &operator <<(std::ostream &o, Quat const &q) { return o << q.asString(); }
 
 NAMESPACE_SIMDATA_END
 

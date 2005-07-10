@@ -1,18 +1,18 @@
-/* SimDataCSP: Data Infrastructure for Simulations
- * Copyright (C) 2002, 2003 Mark Rose <tm2@stm.lbl.gov>
- * 
- * This file is part of SimDataCSP.
- * 
+/* SimData: Data Infrastructure for Simulations
+ * Copyright (C) 2002, 2003 Mark Rose <mkrose@users.sf.net>
+ *
+ * This file is part of SimData.
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
@@ -81,7 +81,7 @@ namespace std {
 NAMESPACE_SIMDATA
 
 
-class Interpolation: public BaseType {
+class Interpolation {
 	Interpolation();
 public:
 	typedef enum { LINEAR, SPLINE } Modes;
@@ -93,7 +93,7 @@ template <typename X>
 class InterpolationType: public Interpolation {
 };
 
-#define TRY	try { $action }
+#define TRY try { $action }
 #define CATCH(a, b) \
 	catch (a& e) {\
 		std::cout << "EXCEPT\n"; \
@@ -124,11 +124,11 @@ public:
 	X getValue(std::vector<float> const &) const;
 	void load(std::vector<X> const &values, std::vector< std::vector<X> > const &breaks);
 	void interpolate(std::vector<int> const &dim, Interpolation::Modes mode);
-	virtual void serialize(Reader&);
-	virtual void serialize(Writer&) const;
+	void serialize(Reader&);
+	void serialize(Writer&) const;
 	%rename(__repr__) asString() const;
-	virtual std::string asString() const;
-	virtual std::string typeString() const;
+	std::string asString() const;
+	std::string typeString() const;
 };
 
 

@@ -1,5 +1,5 @@
 /* SimData: Data Infrastructure for Simulations
- * Copyright (C) 2002, 2003 Mark Rose <tm2@stm.lbl.gov>
+ * Copyright (C) 2002, 2003 Mark Rose <mkrose@users.sf.net>
  *
  * This file is part of SimData.
  *
@@ -26,18 +26,53 @@
 
 /**
  * @defgroup BaseTypes Data classes
+ *
+ * BaseType is an interface specification implemented by all SimData types.
+ * SimData types do not inherit from BaseType.
+ *
+ * Interface BaseType {
+ *
+ *   // Read and write from a data archive.
+ *   void serialize(Reader&)=0;
+ *   void serialize(Writer&) const=0;
+ *
+ *   // Parse cdata from within the XML tags for this object.
+ *   void parseXML(const char* cdata);
+ *
+ *   // Convert XML data to internal format prior to serialization.
+ *   //
+ *   // This method is currently only called by the XML parser for
+ *   // Object classes.  If another BaseType class requires this
+ *   // method, a call must be added to the appropriate XML handler
+ *   // in the parser.
+ *   void convertXML();
+ *
+ *   // Return a string representation of the instance.
+ *   //
+ *   // This method is used to provide a string representation of
+ *   // the object for output to ostreams (using <<), and also
+ *   // serves as __repr__ in Python.
+ *   std::string asString() const=0;
+ *
+ *   // Return a string representation of the type.
+ *   std::string typeString() const=0;
+ * }
+ *
+ * // Convenience function for printing BaseTypes to ostreams.
+ * std::ostream &operator <<(std::ostream &o, BaseType const &t);
+ *
  */
 
 
 #ifndef __SIMDATA_BASETYPE_H__
 #define __SIMDATA_BASETYPE_H__
 
-#include <string>
-#include <iosfwd>
-
 #include <SimData/Export.h>
 #include <SimData/Namespace.h>
 #include <SimData/ExceptionBase.h>
+
+#include <string>
+#include <iosfwd>
 
 
 NAMESPACE_SIMDATA
@@ -50,50 +85,33 @@ class Writer;
  */
 SIMDATA_EXCEPTION(ParseException)
 
-
-/** Base class for objects that support serialization.
- *
- *  @author Mark Rose <mrose@stm.lbl.gov>
+/** Convenience method for implementing parseXML methods that expect no cdata.
  */
-class SIMDATA_EXPORT BaseType {
-public:
-	/** Ensure virtual destructor
-	 */
-	virtual ~BaseType();
+inline void checkEmptyTag(const char* cdata) {
+	std::string s(cdata);
+	if (s.find_first_not_of("\t \r\n") == std::string::npos) return;
+	throw ParseException("WARNING: #cdata ignored");
+}
 
-	virtual void serialize(Reader&)=0;
-	virtual void serialize(Writer&) const=0;
-
-	/** Parse cdata from within the XML tags for this object.
-	 */
-	virtual void parseXML(const char* cdata);
-
-	/** Convert XML data to internal format prior to serialization.
-	 *
-	 *  This method is currently only called by the XML parser for
-	 *  Object classes.  If another BaseType class requires this
-	 *  method, a call must be added to the appropriate XML handler
-	 *  in the parser.
-	 */
-	virtual void convertXML();
-	
-	/** Return a string representation of the instance.
-	 *
-	 *  This method is used to provide a string representation of
-	 *  the object for output to ostreams (using <<), and also
-	 *  serves as __repr__ in Python.
-	 */
-	virtual std::string asString() const=0;
-
-	/** Return a string representation of the type.
-	 */
-	virtual std::string typeString() const=0;
-};
-
-
-/** Convenience function for printing BaseTypes to ostreams.
- */
-SIMDATA_EXPORT std::ostream &operator <<(std::ostream &o, BaseType const &t);
+// Forward declare all BaseTypes.
+class ECEF;
+class External;
+class Key;
+class LinkBase;
+class ListBase;
+class LLA;
+template <int N, typename X> class LUT;
+typedef LUT<1,float> Table1;
+typedef LUT<2,float> Table2;
+typedef LUT<3,float> Table3;
+class Matrix3;
+class Object;
+class Path;
+class Quat;
+class Real;
+class SimDate;
+class UTM;
+class Vector3;
 
 
 NAMESPACE_SIMDATA_END

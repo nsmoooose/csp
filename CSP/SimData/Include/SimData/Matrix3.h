@@ -1,5 +1,5 @@
 /* SimData: Data Infrastructure for Simulations
- * Copyright (C) 2002, 2003 Mark Rose <tm2@stm.lbl.gov>
+ * Copyright (C) 2002, 2003, 2005 Mark Rose <mkrose@users.sf.net>
  *
  * This file is part of SimData.
  *
@@ -39,9 +39,7 @@
 #include <SimData/BaseType.h>
 #include <SimData/Vector3.h>
 
-#include <string>
 #include <vector>
-#include <iosfwd>
 #include <algorithm>
 #include <cassert>
 #include <cmath>
@@ -58,28 +56,33 @@ class Quat;
  *
  * @ingroup BaseTypes
  */
-class SIMDATA_EXPORT Matrix3: public BaseType
+class SIMDATA_EXPORT Matrix3
 {
-public:
-	/** String representation.
-	 */
-	virtual std::string asString() const;
+public: // BaseType
 
-	/** Type representation.
-	 */
-	virtual std::string typeString() const { return "Matrix3"; }
+	/// String representation.
+	std::string asString() const;
 
-	/** Serialize to or from a data archive.
-	 */
-	virtual void serialize(Reader&);
-	virtual void serialize(Writer&) const;
+	/// Type representation.
+	std::string typeString() const { return "Matrix3"; }
+
+	/// Serialize from a Reader.
+	void serialize(Reader&);
+
+	/// Serialize to a Writer.
+	void serialize(Writer&) const;
 	
 	/** Extract the matrix values from XML character data.
 	 *
 	 *  The nine values should be separated by white-space
 	 *  and arranged in order (0,0), (0,1), (0,2), (1,0), etc.
 	 */
-	virtual void parseXML(const char* cdata);
+	void parseXML(const char* cdata);
+
+	/// XML post processing.
+	void convertXML() {}
+
+public:
 
 	/** Null matrix.
 	 */
@@ -100,7 +103,7 @@ public:
 
 	/** Copy constructor.
 	 */
-	Matrix3(const Matrix3& other): BaseType(other) { set(other); }
+	Matrix3(const Matrix3& other) { set(other); }
 
 	/** Construct and initialize a matrix from a double[9] array.
 	 */
@@ -581,14 +584,7 @@ public:
 	inline friend Matrix3 operator * (double lhs, const Matrix3& rhs) {
 		return rhs * lhs;
 	}
-
-	/** Format this matrix for an output stream.
-	 */
-	friend SIMDATA_EXPORT std::ostream& operator<< (std::ostream& os, const Matrix3& m);
 #endif // SWIG
-
-	virtual int readBinary(const unsigned char *, int size);
-	virtual int writeBinary(unsigned char *, int size);
 
 
 protected:
@@ -674,6 +670,8 @@ inline Vector3 Matrix3::preMult(const Vector3& v) const {
 	               (_mat[0][1]*v.x() + _mat[1][1]*v.y() + _mat[2][1]*v.z()),
 	               (_mat[0][2]*v.x() + _mat[1][2]*v.y() + _mat[2][2]*v.z()));
 }
+
+SIMDATA_EXPORT std::ostream &operator <<(std::ostream &o, Matrix3 const &m);
 
 
 NAMESPACE_SIMDATA_END

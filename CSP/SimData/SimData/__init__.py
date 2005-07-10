@@ -1,18 +1,18 @@
-# SimDataCSP: Data Infrastructure for Simulations
+# SimData: Data Infrastructure for Simulations
 # Copyright (C) 2002 Mark Rose <tm2@stm.lbl.gov>
-# 
-# This file is part of SimDataCSP.
-# 
+#
+# This file is part of SimData.
+#
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
 # as published by the Free Software Foundation; either version 2
 # of the License, or (at your option) any later version.
-# 
+#
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
@@ -22,26 +22,26 @@
 ## @author Mark Rose <mrose@stm.lbl.gov>
 ##
 ## @module SimData
-## 
+##
 ## @note The procedure for declaring and registering XML interfaces
 ## is under revision, and the documentation here is likely to be
 ## completely out of date.
 ##
-## Provides minimal glue code for interfacing between C++ and Python.   
-## Most of the hard work is done by SWIG.  Python Objects must derive 
-## from SimData.Object and be registered with the ObjectRegistry by 
+## Provides minimal glue code for interfacing between C++ and Python.
+## Most of the hard work is done by SWIG.  Python Objects must derive
+## from SimData.Object and be registered with the ObjectRegistry by
 ## calling RegisterObject(class, version_major, version_minor) right
 ## after the class definition.  For example:
-## 
+##
 ## class MyObjectClass(SimData.Object):
 ##    _REQUIRED_ = "var1 var2 var3"
 ##    _OPTIONAL_ = "var4 var5"
-## 	  ... rest of the class definition ...
+##    ... rest of the class definition ...
 ##
 ## RegisterObject(MyObjectClass, 0, 0)
 ##
 ## Define _REQUIRED_ and _OPTIONAL_ as strings listing the reqired
-## and optional member variables for serialization from XML.  
+## and optional member variables for serialization from XML.
 ## Variable names must be separated by whitespace.
 
 
@@ -60,7 +60,7 @@ hash_string = cSimData.hash_string
 ## Python object class wrapper for use by the ObjectRegistry.
 ##
 ## This class mirrors the C++ ObjectProxy<> template class;
-## there is no need for templates in python since we can just 
+## there is no need for templates in python since we can just
 ## store the class directly.
 
 class _____PyInterfaceProxy(cSimData.InterfaceProxy):
@@ -86,11 +86,11 @@ class _____PyInterfaceProxy(cSimData.InterfaceProxy):
 		# retain ownership.  The only caller of createObject(), however,
 		# should be the DataArchive class, which wraps the resulting
 		# object in a Link<>.  The Link maintains its own
-		# reference count and deletes the C++ object (and its associated 
+		# reference count and deletes the C++ object (and its associated
 		# Python object) when the referencecount goes to zero.
 		#
 		# Keep in mind that if you use this method elsewhere and don't
-		# wrap the object in a Link<>, you will be responsible 
+		# wrap the object in a Link<>, you will be responsible
 		# for deleting the object (which can only be done from C++).
 #		o = self._class()
 #		if disown:
@@ -123,32 +123,26 @@ class _____PyInterfaceProxy(cSimData.InterfaceProxy):
 	def push_back(self, object, name, value):
 		variable = self.verifyExists(object, name)
 		member = self.get(object, name)
-		if isinstance(member, types.ListType) and not isinstance(member, List):
-			err = "Use SimData.List rather than built-in list for %s::%s" % (object.__class__, variable)
-			raise err
-		if isinstance(member, List):
+		if isinstance(member, list):
 			try:
+				# FIXME using python lists precludes type checking
 				member.append(value)
 			except:
 				print "Appending to %s::%s." % (object.__class__, variable)
 				raise
 		else:
-			cSimData.InterfaceProxy.push_back(self, object, name, value)	
+			cSimData.InterfaceProxy.push_back(self, object, name, value)
 	def clear(self, object, name):
 		member = self.get(object, name)
-		if isinstance(member, types.ListType) and not isinstance(member, List):
-			variable = self.verifyExists(object, name)
-			err = "Use SimData.List rather than built-in list for %s::%s" % (object.__class__, variable)
-			raise err
-		if isinstance(member, List):
-			member.clear()
-			#self.set(object, name, List()) #del member[:]
-			#self.set(object, name, List()) #[])
+		if isinstance(member, list):
+			# FIXME using python lists precludes type checking
+			del member[:]
+			#member.clear()
 		else:
-			cSimData.InterfaceProxy.clear(self, object, name)	
+			cSimData.InterfaceProxy.clear(self, object, name)
 	def hasAttribute(self, object, name):
 		variable = self.interface_by_name[name].variable
-		return hasattr(object, variable)	
+		return hasattr(object, variable)
 	def getVariableNames(self):
 		names = self.interface_by_name.keys()
 		if self._baseinterface is not None:
@@ -166,7 +160,7 @@ class _____PyInterfaceProxy(cSimData.InterfaceProxy):
 			return self._baseinterface.variableExists(name)
 		return 0
 	def variableRequired(self, name):
-		if self.interface_by_name.has_key(name): 
+		if self.interface_by_name.has_key(name):
 			return self.interface_by_name[name].required
 		if self._baseinterface is not None:
 			return self._baseinterface.variableRequired(name)
@@ -175,12 +169,12 @@ class _____PyInterfaceProxy(cSimData.InterfaceProxy):
 
 ## Register an object interface class with the global InterfaceRegistry.
 ##
-## Call this function for each Python Object class you define to create 
-## an interface and register it with the InterfaceRegistry so that the 
+## Call this function for each Python Object class you define to create
+## an interface and register it with the InterfaceRegistry so that the
 ## correct classes can be created when loading objects from an archive.
-## _class is the class name, major and minor are version numbers.  Note 
-## that any change of the major version number makes the class incompatible 
-## with previously archived versions of the class, forcing recompilation 
+## _class is the class name, major and minor are version numbers.  Note
+## that any change of the major version number makes the class incompatible
+## with previously archived versions of the class, forcing recompilation
 ## of the archive.
 
 class _____XML:
@@ -205,8 +199,8 @@ def _____XML_INTERFACE(_class, major, minor, *args):
 	classname = getClassName(_class)
 	fullname = "%s:%d.%d" % (classname, major, minor)
 	hashname = "%s:%d" % (classname, major)
-	
-	_class._name = fullname 
+
+	_class._name = fullname
 	_class._hash = hash_string(hashname)
 	_class.getClassName = lambda x: x.__class__._name
 	_class.getClassHash = lambda x: x.__class__._hash
@@ -232,50 +226,50 @@ def _____XML_INTERFACE(_class, major, minor, *args):
 # 			self.typeString = type().typeString()
 # 		else:
 # 			self.typeString = SIMDATA_XML.typeString[type]
-# 
+#
 # class ObjectInterface(cSimData.ObjectInterfaceBase):
-# 	"""@brief Interface for simdata::Object derived classes implemented in 
+# 	"""@brief Interface for simdata::Object derived classes implemented in
 # 	Python.
-# 
+#
 # 	This is an internal class that provides an interfacing for accessing
 # 	and introspecting object member variables that can be initialized
 # 	from external (XML) data sources.  The interface is equivalent to
 # 	the C++ ObjectInterface class, but the implementation is entirely
 # 	Python specific.
 # 	"""
-# 
+#
 # 	def __init__(self):
 # 		"""Default constructor."""
 # 		self.__accessors = {}
-# 
+#
 # 	def _def(self, d):
 # 		"""Define a new member variable accessor.
-# 
+#
 # 		This is an internal method used by the SIMDATA_XML function.  Do
 # 		not call it directly.
 # 		"""
 # 		self.__accessors[d.name] = d
-# 
+#
 # 	def variableExists(self, name):
 # 		"""Test if the interface defines a particular  member variable.
-# 
+#
 # 		@param name The external name of the member variable to test.
 # 		"""
 # 		return self.__accessors.has_key(name)
-# 
+#
 # 	def variableRequired(self, name):
 # 		"""Test if a particular member variable must be defined in external
 # 		data sources.
-# 
+#
 # 		Raises IndexError if the variable does not exist.
-# 
+#
 # 		@param name The external name of the member variable to test.
 # 		"""
 # 		return self.__accessors[name].req
-# 
+#
 # 	def set(self, obj, name, value):
 # 		"""Set a member variable of a given object.
-# 
+#
 # 		Assigns a new value to a particular member varible of the given
 # 		object.  The variable need not be previously defined, although
 # 		it is strongly recommended that all externally accessible member
@@ -285,7 +279,7 @@ def _____XML_INTERFACE(_class, major, minor, *args):
 # 		values are tested for type compatibility.  Type mismatches
 # 		currently result in an assertion exception, although a more
 # 		specific exception will be used eventually.
-# 
+#
 # 		@param obj The object to modify.
 # 		@param name The external name of the member variable to set.
 # 		@param value The value to assign.
@@ -293,71 +287,71 @@ def _____XML_INTERFACE(_class, major, minor, *args):
 # 		a = self.__accessors[name]
 # 		assert(isinstance(value, a.type))
 # 		setattr(obj, a.var, value)
-# 
+#
 # 	def get(self, obj, name):
 # 		"""Get the value of a member variable of a given object.
-# 
+#
 # 		Returns the value of a particular member variable of the
-# 		given object.  Calling this method with unknown or uninitialized 
+# 		given object.  Calling this method with unknown or uninitialized
 # 		members will raise index and attribute exceptions, respectively.
-# 
+#
 # 		@param obj The object to access.
 # 		@param name The external name of the member variable to get.
 # 		@returns The value of the member variable.
 # 		"""
 # 		a = self.__accessors[name]
 # 		return getattr(obj, a.var)
-# 
+#
 # 	def push_back(self, obj, name, value):
 # 		"""Append a value to a member variable list of a given object.
 # 		"""
 # 		a = self.__accessors[name]
 # 		getattr(obj, a.var).append(value)
-# 
+#
 # 	def clear(self, obj, name):
 # 		"""Clear a member variable list of a given object.
 # 		"""
 # 		a = self.__accessors[name]
 # 		assert(isinstance([], a.type))
 # 		setattr(obj, a.var, [])
-# 
+#
 # 	def getVariables(self):
 # 		"""Get a list of external names of all accessible member variables."""
 # 		return self.__accessors.keys()
-# 
+#
 # 	def variableType(self, name):
 # 		"""Get the type string of a particular member variable.
-# 
+#
 # 		@param name The external name of the member variable.
 # 		"""
 # 		a = self.__accessors[name]
 # 		return a.typeString
-# 
-# 
+#
+#
 # def __IF_init(self, IF):
 # 	IF.__super.__init__(self, IF.__super)
 # 	IF.__obi = ObjectInterface()
 # 	map(IF.__obi._def, IF.__defs)
 # 	self.addInterface(IF.__obi)
 # 	print "Interface", IF.__classname, "registered."
-# 
+#
 # def __IF_getClassName(self):
 # 	return self.__classname
-# 
+#
 # def __IF_getClassHash(self):
 # 	return self.__classhash
-# 
+#
 # def __IF_createObject(self):
 # 	return self.__class()
-# 
+#
 # __IF_methods = {
 # 	'__init__': __IF_init,
 # 	'getClassName': __IF_getClassName,
 # 	'getClassHash': __IF_getClassHash,
 # 	'createObject': __IF_createObject,
 # }
-# 
-# 
+#
+#
 # def SIMDATA_INTERFACE(cl, v, su, defs, cln = None, abstract=0):
 # 	if su is None:
 # 		baselist = (InterfaceProxy,)
@@ -381,7 +375,7 @@ def _____XML_INTERFACE(_class, major, minor, *args):
 # 	else:
 # 		i.__singleton = None
 # 	cl.IF = i
-# 
+#
 
 
 
@@ -389,8 +383,24 @@ def _____XML_INTERFACE(_class, major, minor, *args):
 # Export all cSimData classes
 from cSimData import *
 
+# Bring wrapped exception type into scope and give it some sugar.
+libexc = cSimData._cSimData.libexc
+def __libexc_clear(self): self.args[0].clear()
+def __libexc_type(self): return self.args[0].getType()
+def __libexc_message(self): return self.args[0].getMessage()
+def __libexc_trace(self): return self.args[0].getTrace()
+def __libexc_has_trace(self): return self.args[0].hasTrace()
+def __libexc_details(self,no_trace=0): return self.args[0].details(no_trace)
+libexc.clear = __libexc_clear
+libexc.type = __libexc_type
+libexc.message = __libexc_message
+libexc.trace = __libexc_trace
+libexc.has_trace = __libexc_has_trace
+libexc.details = __libexc_details
+
+
 ## Specialized Link class for Python.  This class behaves like
-## Object, but automatically combines C++ and Python reference 
+## Object, but automatically combines C++ and Python reference
 ## counting to handle object lifetime in a sane way.  Both C++
 ## and Python createObject methods return Link class objects
 ## under Python, so it should never be necessary to handle a
@@ -411,48 +421,48 @@ class Link(cSimData.Object):
 			obj.__disown__()
 		except:
 			obj.thisown = 0
-		
+
 
 ## Override createObject to return a Link(Object)
 cSimData.InterfaceProxy.createObject = \
 	lambda self, method=cSimData.InterfaceProxy.createObject: Link(method(self))
 
 
-class List(cSimData.ListBase, list):
-	def __init__(self, type):
-		self.type = type
-		if type is int:
-			self.unpack_item = lambda p: p.unpack_int()
-		elif type is float:
-			self.unpack_item = lambda p: p.unpack_double()
-		elif type is str:
-			self.unpack_item = lambda p: p.unpack_string()
-		elif issubclass(type, cSimData.BaseType):
-			def unpack_item(p, type=type):
-				o = type()
-				o.unpack(p)
-				return o
-			self.unpack_item = unpack_item 
-		else:
-			err = "Unrecognized type for SimData.List: %s" % type 
-			raise err
-		list.__init__(self)
-		cSimData.ListBase.__init__(self)
-	def append(self, x):
-		if not isinstance(x, self.type):
-			err = "Appending %s to SimData.List of type %s." % (type(x), self.type)
-			raise exceptions.TypeError, err
-		list.append(self, x)
-	push_back = append
-	def clear(self):
-		del self[:]
-	def pack(self, p):
-		p.pack(len(self))
-		map(p.pack, self)
-	def unpack(self, p):
-		del self[:]
-		n = p.unpack_int()
-		for i in range(n):
-			self.append(self.unpack_item(p))
-	def __repr__(self):
-		return list.__repr__(self)
+#class List(cSimData.ListBase, list):
+#	def __init__(self, type):
+#		self.type = type
+#		if type is int:
+#			self.unpack_item = lambda p: p.unpack_int()
+#		elif type is float:
+#			self.unpack_item = lambda p: p.unpack_double()
+#		elif type is str:
+#			self.unpack_item = lambda p: p.unpack_string()
+#		elif issubclass(type, cSimData.BaseType):
+#			def unpack_item(p, type=type):
+#				o = type()
+#				o.unpack(p)
+#				return o
+#			self.unpack_item = unpack_item
+#		else:
+#			err = "Unrecognized type for SimData.List: %s" % type
+#			raise err
+#		list.__init__(self)
+#		cSimData.ListBase.__init__(self)
+#	def append(self, x):
+#		if not isinstance(x, self.type):
+#			err = "Appending %s to SimData.List of type %s." % (type(x), self.type)
+#			raise exceptions.TypeError, err
+#		list.append(self, x)
+#	push_back = append
+#	def clear(self):
+#		del self[:]
+#	def pack(self, p):
+#		p.pack(len(self))
+#		map(p.pack, self)
+#	def unpack(self, p):
+#		del self[:]
+#		n = p.unpack_int()
+#		for i in range(n):
+#			self.append(self.unpack_item(p))
+#	def __repr__(self):
+#		return list.__repr__(self)

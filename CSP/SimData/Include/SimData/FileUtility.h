@@ -1,18 +1,18 @@
 /* SimData: Data Infrastructure for Simulations
- * Copyright (C) 2002 Mark Rose <tm2@stm.lbl.gov>
- * 
+ * Copyright (C) 2002 Mark Rose <mkrose@users.sf.net>
+ *
  * This file is part of SimData.
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
@@ -49,7 +49,7 @@ NAMESPACE_SIMDATA
 namespace ospath {
 
 	/** The local, platform-specific directory separator.
-	 *  
+	 *
 	 *  @note The value listed in the documentation will depend
 	 *        on the platform under which the documentation was
 	 *        built.
@@ -57,7 +57,7 @@ namespace ospath {
 	extern SIMDATA_EXPORT const char DIR_SEPARATOR;
 
 	/** The local, platform-specific search-path separator.
-	 *  
+	 *
 	 *  @note The value listed in the documentation will depend
 	 *        on the platform under which the documentation was
 	 *        built.
@@ -67,7 +67,7 @@ namespace ospath {
 	/** Return the basename of pathname path.
 	 *
 	 *  Example:
-	 *    @li <tt>basename("/usr/local/csp") == "csp"</tt> 
+	 *    @li <tt>basename("/usr/local/csp") == "csp"</tt>
 	 */
 	extern SIMDATA_EXPORT std::string basename(const std::string &path);
 	
@@ -96,14 +96,14 @@ namespace ospath {
 	
 	/** Returns the (last) extension of pathname path.
 	 *
-	 *  Example: 
+	 *  Example:
 	 *    @li <tt>ext("/usr/local/script.csp") == ".csp"</tt>
 	 */
 	extern SIMDATA_EXPORT std::string ext(const std::string &path);
 	
 	/** Intelligently joins two path components into a pathname.
 	 *
-	 *  Examples: 
+	 *  Examples:
 	 *    @li <tt>join("/usr/local", "lib") == "/usr/local/lib"</tt>
 	 *    @li <tt>join("c:\\windows\\", "system")
 	 *               == "c:\\windows\\system"</tt>
@@ -112,7 +112,7 @@ namespace ospath {
 	
 	/** Substitute characters in a string.
 	 *
-	 *  @todo This routine is slightly out of place.  Can we find a 
+	 *  @todo This routine is slightly out of place.  Can we find a
 	 *  substitute or better home for it?
 	 *
 	 *  @param path The path to modify.

@@ -1,5 +1,5 @@
 /* SimData: Data Infrastructure for Simulations
- * Copyright (C) 2002-2005 Mark Rose <tm2@stm.lbl.gov>
+ * Copyright (C) 2002-2005 Mark Rose <mkrose@users.sf.net>
  *
  * This file is part of SimData.
  *
@@ -45,9 +45,7 @@
 
 NAMESPACE_SIMDATA
 
-
 template <class T> class Ref;
-class ReferencePointer;
 
 void SIMDATA_EXPORT _log_reference_count_error(int count, void* pointer);
 
@@ -56,13 +54,13 @@ void SIMDATA_EXPORT _log_reference_count_error(int count, void* pointer);
  *
  *  Inspired by OpenSceneGraph's osg::Referenced class.
  *
- *  @author Mark Rose <mrose@stm.lbl.gov>
+ *  @author Mark Rose <mkrose@users.sf.net>
  */
 template <typename COUNTER>
 class SIMDATA_EXPORT ReferencedBase: public NonCopyable {
 
 template <class T> friend class Ref;
-friend class ReferencePointer;
+friend class LinkCore;
 
 protected:
 	ReferencedBase(): __count(0) {

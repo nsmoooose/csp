@@ -1,7 +1,7 @@
-/* SimDataCSP: Data Infrastructure for Simulations
- * Copyright (C) 2002 Mark Rose <tm2@stm.lbl.gov>
+/* SimData: Data Infrastructure for Simulations
+ * Copyright (C) 2002 Mark Rose <mkrose@users.sf.net>
  *
- * This file is part of SimDataCSP.
+ * This file is part of SimData.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -62,20 +62,23 @@ InterfaceProxy::InterfaceProxy(const char *cname, hasht chash)
 	InterfaceRegistry::getInterfaceRegistry().addInterface(cname, chash, this);
 }
 
+void InterfaceProxy::globalRegister(const char *cname, const hasht chash) {
+	assert(chash != 0);
+	InterfaceRegistry::getInterfaceRegistry().addInterface(cname, chash, this);
+}
+
 Object *InterfaceProxy::createObject() const {
 	fatal("INTERNAL ERROR: InterfaceProxy::createObject()");
 	return 0;
 }
 
-void InterfaceProxy::addInterface(ObjectInterfaceBase* objectinterface,
-                                  std::string const &classname,
-				  hasht const &classhash) {
+void InterfaceProxy::addInterface(ObjectInterfaceBase* objectinterface, std::string const &classname, hasht const &classhash) {
 	std::vector<std::string> names = objectinterface->getVariableNames();
 	std::vector<std::string>::iterator name = names.begin();
 	for (; name != names.end(); ++name) {
 		if (_interfacesByVariableName.find(*name) != _interfacesByVariableName.end()) {
 			// variable multiply defined
-			std::stringstream ss;
+			std::ostringstream ss;
 			ss << "variable \"" << *name << "\""
 			   << " multiply defined in interface to class "
 			   << classname << " or parent interface.";
@@ -176,6 +179,9 @@ void InterfaceRegistry::addInterface(const char *name, hasht id, InterfaceProxy 
 	SIMDATA_LOG(LOG_REGISTRY, LOG_DEBUG, "Registering interface<" << name << "> [" << id << "]");
 }
 
+DeprecationWarning::DeprecationWarning(const char *message) {
+	SIMDATA_LOG(LOG_REGISTRY, LOG_WARNING, message);
+}
 
 NAMESPACE_SIMDATA_END
 

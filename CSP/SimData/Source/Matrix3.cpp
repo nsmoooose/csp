@@ -1,5 +1,5 @@
 /* SimData: Data Infrastructure for Simulations
- * Copyright (C) 2002, 2003 Mark Rose <tm2@stm.lbl.gov>
+ * Copyright (C) 2002, 2003 Mark Rose <mkrose@users.sf.net>
  *
  * This file is part of SimData.
  *
@@ -309,9 +309,17 @@ void Matrix3::transpose(const Matrix3& other) {
 }
 
 std::string Matrix3::asString() const {
-	std::stringstream repr;
-	repr << *this;
-	return repr.str();
+	std::ostringstream os;
+	os << "[\n";
+	for (int irow=0; irow<3; ++irow) {
+		os << "\t";
+		for (int icol=0; icol<3; ++icol) {
+			os << std::setw(8) << _mat[irow][icol] << " ";
+		}
+		os << "\n";
+	}
+	os << ']';
+	return os.str();
 }
 
 void Matrix3::serialize(Reader &reader) {
@@ -346,7 +354,7 @@ void Matrix3::parseXML(const char* cdata) {
 			if (!(ss >> token)) {
 				throw ParseException("Expect exactly nine (9) elements in matrix");
 			}
-	    		_mat[irow][icol] = atof(token.c_str());
+			_mat[irow][icol] = atof(token.c_str());
 		}
 	}
 	if (ss >> token) {
@@ -354,58 +362,7 @@ void Matrix3::parseXML(const char* cdata) {
 	}
 }
 
-int Matrix3::readBinary(const unsigned char * ptrBuf, int size)
-{
-	if (size != 9*sizeof(double)) {
-		printf("Matrix3::readBinary - buffer is incorrect size\n");
-		return 0;
-	}
-	memcpy((void*)&_mat[0][0], (void*)ptrBuf, sizeof(double)); ptrBuf += sizeof(double);
-	memcpy((void*)&_mat[0][1], (void*)ptrBuf, sizeof(double)); ptrBuf += sizeof(double);
-	memcpy((void*)&_mat[0][2], (void*)ptrBuf, sizeof(double)); ptrBuf += sizeof(double);
-	memcpy((void*)&_mat[1][0], (void*)ptrBuf, sizeof(double)); ptrBuf += sizeof(double);
-	memcpy((void*)&_mat[1][1], (void*)ptrBuf, sizeof(double)); ptrBuf += sizeof(double);
-	memcpy((void*)&_mat[1][2], (void*)ptrBuf, sizeof(double)); ptrBuf += sizeof(double);
-	memcpy((void*)&_mat[2][0], (void*)ptrBuf, sizeof(double)); ptrBuf += sizeof(double);
-	memcpy((void*)&_mat[2][1], (void*)ptrBuf, sizeof(double)); ptrBuf += sizeof(double);
-	memcpy((void*)&_mat[2][2], (void*)ptrBuf, sizeof(double)); ptrBuf += sizeof(double);
-	return 9*sizeof(double);
-}
-
-int Matrix3::writeBinary(unsigned char * ptrBuf, int size)
-{
-	if (size != 9*sizeof(double)) {
-		printf("Matrix3::writeBinary - buffer is incorrect size\n");
-		return 0;
-	}
-
-	memcpy((void*)ptrBuf, (void*)&_mat[0][0], sizeof(double)); ptrBuf += sizeof(double);
-	memcpy((void*)ptrBuf, (void*)&_mat[0][1], sizeof(double)); ptrBuf += sizeof(double);
-	memcpy((void*)ptrBuf, (void*)&_mat[0][2], sizeof(double)); ptrBuf += sizeof(double);
-	memcpy((void*)ptrBuf, (void*)&_mat[1][0], sizeof(double)); ptrBuf += sizeof(double);
-	memcpy((void*)ptrBuf, (void*)&_mat[1][1], sizeof(double)); ptrBuf += sizeof(double);
-	memcpy((void*)ptrBuf, (void*)&_mat[1][2], sizeof(double)); ptrBuf += sizeof(double);
-	memcpy((void*)ptrBuf, (void*)&_mat[2][0], sizeof(double)); ptrBuf += sizeof(double);
-	memcpy((void*)ptrBuf, (void*)&_mat[2][1], sizeof(double)); ptrBuf += sizeof(double);
-	memcpy((void*)ptrBuf, (void*)&_mat[2][2], sizeof(double)); ptrBuf += sizeof(double);
-	return 9*sizeof(double);
-}
-
-
-std::ostream& operator<< (std::ostream& os, const Matrix3& m)
-{
-	os << "[\n";
-	for (int irow=0; irow<3; ++irow) {
-		os << "\t";
-		for (int icol=0; icol<3; ++icol) {
-			os << std::setw(8) << m(irow, icol) << " ";
-		}
-		os << "\n";
-	}
-	os << ']';
-	return os;
-}
-
+std::ostream &operator <<(std::ostream &o, Matrix3 const &m) { return o << m.asString(); }
 
 NAMESPACE_SIMDATA_END
 

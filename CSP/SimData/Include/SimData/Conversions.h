@@ -1,18 +1,18 @@
 /* SimData: Data Infrastructure for Simulations
- * Copyright (C) 2002, 2003 Mark Rose <tm2@stm.lbl.gov>
- * 
+ * Copyright (C) 2002, 2003 Mark Rose <mkrose@users.sf.net>
+ *
  * This file is part of SimData.
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
@@ -32,7 +32,7 @@
 #ifdef SWIG
 	#define SIMDATA_CVT(a) %template(convert_##a) a<double>;
 #else
-	#define SIMDATA_CVT(a) 
+	#define SIMDATA_CVT(a)
 #endif
 
 
@@ -52,10 +52,10 @@ NAMESPACE_SIMDATA
 namespace convert {
 
 // This is currently just a small set of unit conversions.  Feel free to add
-// additional routines.  Try not to include simple "prefix" conversions such 
-// as meters to centimeters.  Use the dominant (i.e. most common) base unit 
+// additional routines.  Try not to include simple "prefix" conversions such
+// as meters to centimeters.  Use the dominant (i.e. most common) base unit
 // in each system of units if possible.
-// 
+//
 // NOTE: be sure to add corresponding template instantiations for SWIG
 	
 	

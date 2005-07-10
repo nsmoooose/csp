@@ -21,7 +21,6 @@ Import('env build')
 
 
 SOURCES = [
-	'BaseType.cpp',
 	'DataArchive.cpp',
 	'DataManager.cpp',
 	'Date.cpp',
@@ -32,10 +31,8 @@ SOURCES = [
 	'GeoPos.cpp',
 	'HashUtility.cpp',
 	'InterfaceRegistry.cpp',
-	'Interpolate.cpp',
 	'Key.cpp',
 	'Link.cpp',
-	'List.cpp',
 	'LogStream.cpp',
 	'LUT.cpp',
 	'Math.cpp',
@@ -72,6 +69,6 @@ env.Alias(['shared', 'all', 'simdata_shlib'], shlib)
 if not build.IsWindows(env):
 	stlib = env.StaticLibrary('#/SimData/SimData/SimData', SOURCES)
 	build.MarkVersionSource(env, stlib)
-	env.Alias('static', stlib)
+	env.Alias(['static', 'simdata_static'], stlib)
 	env.Clean('all', stlib)
 

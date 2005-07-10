@@ -1,5 +1,5 @@
 /* SimData: Data Infrastructure for Simulations
- * Copyright (C) 2002, 2005 Mark Rose <tm2@stm.lbl.gov>
+ * Copyright (C) 2002, 2005 Mark Rose <mkrose@users.sf.net>
  *
  * This file is part of SimData.
  *
@@ -312,16 +312,23 @@ struct HASHT_MAP {
 extern std::ostream & operator<<(std::ostream &o, const hasht &x);
 
 
+// 32-bit fingerprint functions.
+typedef uint32 fprint32;
+inline fprint32 fingerprint(uint32 x) { return hash_uint32(x); }
+inline fprint32 fingerprint(uint64 x) { return hash_uint32(x); }
+inline fprint32 fingerprint(std::string const &x) { return hash_uint32(x); }
+inline fprint32 fingerprint(const char *buffer, const int len) { return hash_uint32(buffer, len); }
+
 // Combine 32 bit hashes to produce a fingerprint that depends on the
 // order of the values.
-inline uint32 make_ordered_fingerprint(uint32 x, uint32 y) {
+inline fprint32 make_ordered_fingerprint(fprint32 x, fprint32 y) {
 	return (x << 11) ^ (x >> 21) ^ y;
 }
 
 
 // Combine 32 bit hashes to produce a fingerprint that is independent
 // of the order of the values.
-inline uint32 make_unordered_fingerprint(uint32 x, uint32 y) {
+inline fprint32 make_unordered_fingerprint(fprint32 x, fprint32 y) {
 	return x + y;
 }
 

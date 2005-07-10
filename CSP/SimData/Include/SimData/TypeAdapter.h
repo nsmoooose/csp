@@ -22,7 +22,7 @@
 /**
  * @file TypeAdapter.h
  * @brief Adapter class providing uniform access to built-in types
- *   and BaseType subclasses.
+ *   and BaseType classes.
  */
 
 
@@ -38,10 +38,8 @@
 #include <SimData/Namespace.h>
 #include <SimData/Enum.h>
 #include <SimData/Path.h>
-
-//#include <SimData/Types.h>
 #include <SimData/Link.h>
-#include <SimData/PTS.h>
+#include <SimData/BaseType.h>
 
 #include <string>
 #include <iosfwd>
@@ -49,73 +47,90 @@
 
 NAMESPACE_SIMDATA
 
-class BaseType;
-class Real;
-class Vector3;
-class Matrix3;
-class Curve;
-class Table;
-class LinkBase;
-class External;
-class Key;
-class SimDate;
-class ListBase;
-class GeoPos;
-class LLA;
-class UTM;
-class ECEF;
-class Object;
-
-#ifndef __PTS_SIM__
-template <int N, typename X>
-class LUT;
-
-typedef LUT<1,float> Table1;
-typedef LUT<2,float> Table2;
-typedef LUT<3,float> Table3;
-#endif // __PTS_SIM__
 
 SIMDATA_EXCEPTION(TypeMismatch)
 
-	
+
 /** Dynamically typed wrapper for basic types and objects.
  *
- *  For internal use only.  This class is used to pass typed data as
- *  parameters to virtual member functions (which are not compatible
- *  with templates).  It works for a number of basic types, and for
- *  objects derived from the Object base class.
+ *  For internal use only.  This class is used to pass typed data to
+ *  and from virtual methods in MemberAccessorBase.  The base class
+ *  methods cannot be type-specific, so TypeAdapter provides a generic
+ *  conduit for values and type information that can be dynamically
+ *  tested by MemeberAccessorBase subclasses.  This wrapper supports
+ *  ints, doubles, strings, and BaseType classes (including Object and
+ *  all Object subclasses).
  *
- *  @author Mark Rose <mrose@stm.lbl.gov>
+ *  NOTE: this class must be extended whenever new BaseType classes are
+ *  added to SimData.
+ *
+ *  @author Mark Rose <mkrose@users.sf.net>
  *  @internal
  */
 class SIMDATA_EXPORT TypeAdapter
 {
-public:
-	typedef enum {NONE, INT, DOUBLE, STRING, BASE} TYPE;
+	// WARNING: This list must be kept in sync with the TypeNames definition
+	// in TypeAdapter.cpp!
+	typedef enum {TYPE_NONE, TYPE_INT, TYPE_DOUBLE, TYPE_STRING,
+	              TYPE_Object,  // first BaseType
+	              TYPE_ECEF, TYPE_EnumLink, TYPE_External, TYPE_Key, TYPE_LinkBase, TYPE_LinkCore,
+	              TYPE_LLA, TYPE_Matrix3, TYPE_Path, TYPE_Quat, TYPE_Real, TYPE_SimDate,
+	              TYPE_Table1, TYPE_Table2, TYPE_Table3, TYPE_UTM, TYPE_Vector3} TYPE;
 	static const char * TypeNames[];
+public:
 
-	TypeAdapter(): type(NONE) {}
-	explicit TypeAdapter(int x): type(INT) { var.i = x; }
-	explicit TypeAdapter(double x): type(DOUBLE) { var.d = x; }
-	explicit TypeAdapter(std::string const &x): type(STRING) { s = x; }
-	explicit TypeAdapter(const char *x): type(STRING) { s = x; }
-	explicit TypeAdapter(BaseType const *x): type(BASE) { var.o = x; }
-	explicit TypeAdapter(BaseType const &x): type(BASE) { var.o = &x; }
+	TypeAdapter(): type(TYPE_NONE) {}
+	explicit TypeAdapter(int x): type(TYPE_INT) { var.i = x; }
+	explicit TypeAdapter(double x): type(TYPE_DOUBLE) { var.d = x; }
+	explicit TypeAdapter(std::string const &x): type(TYPE_STRING) { s = x; }
+#ifndef SWIG
+	explicit TypeAdapter(const char *x): type(TYPE_STRING) { s = x; }
+#endif // SWIG
+
+#ifdef SWIG
+#  define BASETYPE_ADAPTER(BASETYPE) \
+	explicit TypeAdapter(SIMDATA(BASETYPE) const &x): type(TYPE_##BASETYPE) { var.o = reinterpret_cast<void const*>(&x); }
+#else
+#  define BASETYPE_ADAPTER(BASETYPE) \
+	explicit TypeAdapter(BASETYPE const *x): type(TYPE_##BASETYPE) { var.o = reinterpret_cast<void const*>(x); } \
+	explicit TypeAdapter(BASETYPE const &x): type(TYPE_##BASETYPE) { var.o = reinterpret_cast<void const*>(&x); }
+#endif // SWIG
+
+	BASETYPE_ADAPTER(ECEF);
+	BASETYPE_ADAPTER(EnumLink);
+	BASETYPE_ADAPTER(External);
+	BASETYPE_ADAPTER(Key);
+	BASETYPE_ADAPTER(LinkCore);
+	BASETYPE_ADAPTER(LinkBase);
+	BASETYPE_ADAPTER(LLA);
+	BASETYPE_ADAPTER(Matrix3);
+	BASETYPE_ADAPTER(Object);
+	BASETYPE_ADAPTER(Path);
+	BASETYPE_ADAPTER(Quat);
+	BASETYPE_ADAPTER(Real);
+	BASETYPE_ADAPTER(SimDate);
+	BASETYPE_ADAPTER(Table1);
+	BASETYPE_ADAPTER(Table2);
+	BASETYPE_ADAPTER(Table3);
+	BASETYPE_ADAPTER(UTM);
+	BASETYPE_ADAPTER(Vector3);
+
+#undef BASETYPE_ADAPTER
+
+#ifndef SWIG
 	TypeAdapter(TypeAdapter const &x): type(x.type) {
 		switch(type) {
-			case INT:
+			case TYPE_INT:
 				var.i = x.var.i;
 				break;
-			case DOUBLE:
+			case TYPE_DOUBLE:
 				var.d = x.var.d;
 				break;
-			case STRING:
+			case TYPE_STRING:
 				s = x.s;
 				break;
-			case BASE:
-				var.o = x.var.o;
-				break;
 			default:
+				var.o = x.var.o;
 				break;
 		}
 	}
@@ -125,8 +140,8 @@ public:
 	int getInteger() const { IntCheck(); return var.i; }
 	double getFloatingPoint() const { DoubleCheck(); return var.d; }
 	std::string getString() const { StringCheck(); return s; }
-	BaseType const &getBaseType() const { BaseCheck(); return *(var.o); }
 	
+	/*
 	template<typename T>
 	void getBaseTypeAs(T * &t) const {
 		T proto;
@@ -146,33 +161,23 @@ public:
 		T *nc = const_cast<T *>(p);
 		x = *nc;
 	}
+	*/
 
 	template <typename T>
 	void setCoordinate(T & x) const {
-		BaseCheck();
-		LLA const *lla = dynamic_cast<LLA const *>(var.o);
-		if (lla != 0) {
-			x = *lla;
-			return;
+		assert(var.o);
+		if (type == TYPE_LLA) {
+			x = *reinterpret_cast<LLA const *>(var.o);
+		} else if (type == TYPE_UTM) {
+			x = *reinterpret_cast<UTM const *>(var.o);
+		} else if (type == TYPE_ECEF) {
+			x = *reinterpret_cast<ECEF const *>(var.o);
+		} else {
+			TypeCheck(false, "Setting non-geopos type {LLA,UTM,ECEF} in TypeAdapter::setCoordinate");
 		}
-		UTM const *utm = dynamic_cast<UTM const *>(var.o);
-		if (utm != 0) {
-			x = *utm;
-			return;
-		}
-		ECEF const *ecef = dynamic_cast<ECEF const *>(var.o);
-		TypeCheck(ecef!=NULL, "dynamic casts of BaseType* to {LLA,UTM,ECEF} failed in TypeAdapter::setCoordinate");
-		x = *ecef;
 	}
 
-	/*
-	template <typename T>
-	void set(T & x) const { setBase(x); }
-	*/
-
 	void set(SimDate & x) const;
-
-	void set(GeoPos & x) const;
 
 	void set(LLA & x) const;
 	void set(UTM & x) const;
@@ -180,14 +185,11 @@ public:
 
 	void set(Vector3 & x) const;
 	void set(Matrix3 & x) const;
+	void set(Quat & x) const;
 	void set(Real & x) const;
-	void set(Curve & x) const;
-	void set(Table & x) const;
-#ifndef __PTS_SIM__
 	void set(Table1 & x) const;
 	void set(Table2 & x) const;
 	void set(Table3 & x) const;
-#endif // __PTS_SIM__
 	void set(External & x) const;
 	void set(Key & x) const;
 	void set(Path & x) const;
@@ -206,31 +208,28 @@ public:
 
 	template <typename Q>
 	void set(Link<Q> &x) const {
-		// first try to assign as an object reference
-		Q const *q = dynamic_cast<Q const*>(var.o);
-		if (q != 0) {
-			x = const_cast<Q*>(q);
+		if (type == TYPE_LinkCore) {
+			assert(var.o);
+			x = *const_cast<LinkCore*>(reinterpret_cast<LinkCore const *>(var.o));
+		} else if (type == TYPE_LinkBase) {
+			assert(var.o);
+			x = *const_cast<LinkBase*>(reinterpret_cast<LinkBase const *>(var.o));
+		} else if (type == TYPE_Object) {
+			x = LinkBase(const_cast<Object*>(reinterpret_cast<Object const *>(var.o)));
+		} else if (type == TYPE_Path) {
+			assert(var.o);
+			x = LinkBase(*const_cast<Path*>(reinterpret_cast<Path const *>(var.o)), static_cast<Object*>(0));
 		} else {
-			// if not, try as a pointerbase or path
-			set((LinkBase &)x);
+			TypeCheck(false, "Incompatible type to set Link<T>");
 		}
 	}
-			
-	bool isType(TYPE t) const { return type==t; }
+#endif // SWIG
 
 	const std::string __repr__() const {
-		std::string repr;
-		if (type==BASE) {
-			if (var.o == 0) {
-				repr += "BaseType, NULL";
-			} else {
-				repr += "BaseType, " + var.o->typeString();
-			}
-		} else {
-			repr += TypeNames[type];
-		}
-		return "TypeAdapter<" + repr + ">";
+		return std::string("TypeAdapter<") + TypeNames[type] + ">";
 	}
+
+	const std::string __str__() const;
 
 private:
 	TYPE type;
@@ -241,8 +240,12 @@ private:
 	union {
 		int i;
 		double d;
-		BaseType const *o;
+		void const *o;  // for BaseTypes
 	} var;
+
+	bool isType(TYPE t) const { return type==t; }
+
+	void failConvert(const char *typestr) const;
 
 	void TypeCheck(bool test, std::string msg) const {
 		if (!(test)) {
@@ -251,18 +254,16 @@ private:
 		}
 	}
 	void IntCheck() const {
-		TypeCheck(type==INT, "integer type expected");
+		TypeCheck(type==TYPE_INT, "integer type expected");
 	}
 	void StringCheck() const {
-		TypeCheck(type==STRING, "string type expected");
+		TypeCheck(type==TYPE_STRING, "string type expected");
 	}
 	void DoubleCheck() const {
-		TypeCheck(type==DOUBLE, "floating point type expected");
-	}
-	void BaseCheck() const {
-		TypeCheck(type==BASE, "base type expected");
+		TypeCheck(type==TYPE_DOUBLE, "floating point type expected");
 	}
 
+	template <typename T> void setBase(T&, TYPE) const;
 };
 
 std::ostream &operator <<(std::ostream &o, TypeAdapter const &t);

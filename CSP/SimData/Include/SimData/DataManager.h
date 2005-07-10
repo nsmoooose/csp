@@ -1,18 +1,18 @@
 /* SimData: Data Infrastructure for Simulations
- * Copyright (C) 2002, 2003 Mark Rose <tm2@stm.lbl.gov>
- * 
+ * Copyright (C) 2002, 2003 Mark Rose <mkrose@users.sf.net>
+ *
  * This file is part of SimData.
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
@@ -21,7 +21,7 @@
 /**
  * @file DataManager.h
  * @brief Classes for managing multiple data archives.
- * @author Mark Rose <mrose@stm.lbl.gov>
+ * @author Mark Rose <mkrose@users.sf.net>
  */
 
 #ifndef __SIMDATA_DATAMANAGER_H__
@@ -50,7 +50,7 @@ class InterfaceProxy;
 
 /** Class for managing read access to multiple data archives.
  *
- *  @author Mark Rose <mrose@stm.lbl.gov>
+ *  @author Mark Rose <mkrose@users.sf.net>
  */
 class SIMDATA_EXPORT DataManager: public Referenced {
 	friend class DataArchive;
@@ -80,7 +80,7 @@ public:
 	const LinkBase getObject(Path const& path, std::string const &path_str="");
 
 	/** Add a new data archive to the manager.
-	 * 
+	 *
 	 *  All objects in the archive will subsequently be available from the
 	 *  manager.  The manager "owns" the pointer and will delete it when the
 	 *  manager is destroyed.
@@ -126,7 +126,7 @@ public:
 	 *
 	 *  @returns the path string if found, otherwise an empty string.
 	 */
-	std::string getPathString(ObjectID const &id) const; 
+	std::string getPathString(ObjectID const &id) const;
 
 	/** Remove unused static objects from the cache.
 	 *

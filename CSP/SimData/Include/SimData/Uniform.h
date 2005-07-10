@@ -1,5 +1,5 @@
 /* SimData: Data Infrastructure for Simulations
- * Copyright (C) 2002, 2003 Mark Rose <tm2@stm.lbl.gov>
+ * Copyright (C) 2002, 2003 Mark Rose <mkrose@users.sf.net>
  *
  * This file is part of SimData.
  *
@@ -21,7 +21,7 @@
 /**
  * @file Uniform.h
  * @brief Provides fixed size integer typedefs and endian tests.
- * @author Mark Rose <mrose@stm.lbl.gov>
+ * @author Mark Rose <mkrose@users.sf.net>
  */
 
 #ifndef __SIMDATA_UNIFORM_H__

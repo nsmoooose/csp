@@ -22,6 +22,7 @@
 #include <SimData/Date.h>
 
 #include <ctime>
+#include <ostream>
 
 
 NAMESPACE_SIMDATA
@@ -397,6 +398,13 @@ void SimDate::parseXML(const char* cdata) {
 		throw ParseException("SYNTAX ERROR: invalid date string");
 	}
 }
+
+
+std::ostream &operator <<(std::ostream &o, Date const &d) { return o << d.asString(); }
+std::ostream &operator <<(std::ostream &o, Zulu const &d) { return o << d.asString(); }
+std::ostream &operator <<(std::ostream &o, DateZulu const &d) { return o << d.asString(); }
+std::ostream &operator <<(std::ostream &o, SimDate const &d) { return o << d.asString(); }
+
 
 NAMESPACE_SIMDATA_END
 

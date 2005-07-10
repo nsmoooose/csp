@@ -113,8 +113,9 @@
 NAMESPACE_SIMDATA
 
 
+class InterfaceProxy;
 class DataArchive;
-class LinkBase;
+class LinkCore;
 
 
 /** Base class for all classes representing packable data objects.
@@ -137,12 +138,12 @@ class LinkBase;
  *  to load them from data archives.  Objects set as 'static' are singletons
  *  managed by the DataArchive.
  *
- *  @author Mark Rose <mrose@stm.lbl.gov>
+ *  @author Mark Rose <mkrose@users.sf.net>
  *  @ingroup BaseTypes
  */
-class SIMDATA_EXPORT Object: public virtual Referenced, public BaseType {
+class SIMDATA_EXPORT Object: public virtual Referenced {
 	friend class DataArchive;
-	friend class LinkBase;
+	friend class LinkCore;
 
 private:
 	// Objects should never be copied
@@ -170,8 +171,14 @@ protected:
 	virtual void _serialize(Writer&) const { };
 	virtual void _serialize(Reader&) { };
 
+	/** Used by SIMDATA*_OBJECT macros
+	 */
+	typedef InterfaceProxy __simdata_interface_proxy;
+	typedef Object __simdata_object_class;
+
 public:
-	explicit Object();
+
+	Object();
 	virtual ~Object();
 
 	/** Create a new instance of the class.
@@ -186,6 +193,16 @@ public:
 
 	__SIMDATA_CLASSDEF(Object, 0, 0)
 
+
+	/** XML post processing prior to serialization.
+	 */
+	virtual void convertXML() {}
+
+	/** Parse the character data from an \<Object\> tag.  The default
+	 *  implementation throws an exception if any non-whitespace cdata
+	 *  is present.
+	 */
+	virtual void parseXML(const char *cdata) { checkEmptyTag(cdata); }
 
 	/** Serialize additional state to a data target.
 	 *
@@ -251,6 +268,9 @@ public:
 	 */
 	void _postCreate() { postCreate(); }
 };
+
+
+SIMDATA_EXPORT std::ostream &operator <<(std::ostream &o, Object const &obj);
 
 
 NAMESPACE_SIMDATA_END

@@ -1,9 +1,9 @@
 #!/usr/bin/python
 
-# SimDataCSP: Data Infrastructure for Simulations
+# SimData: Data Infrastructure for Simulations
 # Copyright (C) 2002 Mark Rose <tm2@stm.lbl.gov>
 #
-# This file is part of SimDataCSP.
+# This file is part of SimData.
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -83,7 +83,7 @@ class Cache:
 		self.source = None
 		if os.path.exists(fn):
 			try:
-			    # open archive for reading, but disable chaining
+				# open archive for reading, but disable chaining
 				self.source = SimData.DataArchive(fn, 1, 0)
 				self.timestamp = os.path.getmtime(fn)
 			except:
@@ -97,8 +97,9 @@ class Cache:
 		if self.source is not None:
 			try:
 				return self.source.getObject(id)
-			except:
-				pass
+			except SimData.libexc, e:
+				e.clear()
+				DEBUG(2, "Exception reading cache for object %s:\n%s" % (id, e))
 		return None
 
 	def isNewer(self, fn):

@@ -46,7 +46,7 @@ NAMESPACE_SIMDATA
  *
  *   http://freespace.virgin.net/hugo.elias/models/m_perlin.htm
  *
- * @author Mark Rose <mrose@stm.lbl.gov>
+ * @author Mark Rose <mkrose@users.sf.net>
  */
 class SIMDATA_EXPORT Perlin1D {
 	

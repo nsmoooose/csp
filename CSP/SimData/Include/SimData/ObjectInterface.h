@@ -33,21 +33,14 @@
 #include <string>
 #include <vector>
 #include <algorithm>
+#include <sstream>
 
 #include <SimData/hash_map.h>
 #include <SimData/TypeAdapter.h>
 #include <SimData/Namespace.h>
 #include <SimData/Archive.h>
 #include <SimData/Link.h>
-
-/*
- * Simulated Partial Template Specialization
- *
- * Adapted from: metactrl.h
- * by Krzysztof Czarnecki & Ulrich Eisenecker
- */
-#include <SimData/PTS.h>
-
+#include <SimData/HashUtility.h>
 
 
 NAMESPACE_SIMDATA
@@ -73,9 +66,9 @@ struct MemberValidator< Link<T> >
 		if (required) {
 			if (link.isNone() && link.isNull()) {
 				if (write) {
-					throw SerializeError("Attempt to save Link with no path and no object");
+					throw SerializeError("Attempt to save " + link.typeString() + " with no path and no object");
 				} else {
-					throw SerializeError("Attempt to load Link with no path and no object");
+					throw SerializeError("Attempt to load " + link.typeString() + " with no path and no object");
 				}
 			}
 		}
@@ -87,12 +80,14 @@ struct MemberValidator< std::vector< Link<T> > >
 {
 	static void validate(std::vector< Link<T> > const &link, bool /*required*/, bool write) {
 		typename std::vector< Link<T> >::const_iterator iter = link.begin();
-		for (; iter != link.end(); ++iter) {
+		for (unsigned idx = 1; iter != link.end(); ++iter, ++idx) {
 			if (iter->isNone() && iter->isNull()) {
+				std::ostringstream os;
+				os << "(" << idx << " of " << link.size() << ")";
 				if (write) {
-					throw SerializeError("Attempt to save Link with no path and no object");
+					throw SerializeError("Attempt to save " + iter->typeString() + "::vector with no path and no object " + os.str());
 				} else {
-					throw SerializeError("Attempt to load Link with no path and no object");
+					throw SerializeError("Attempt to load " + iter->typeString() + "::vector with no path and no object " + os.str());
 				}
 			}
 		}
@@ -103,7 +98,7 @@ struct MemberValidator< std::vector< Link<T> > >
 /** Base class for storing and accessing member variable references.
  *
  *  @internal
- *  @author Mark Rose <mrose@stm.lbl.gov>
+ *  @author Mark Rose <mkrose@users.sf.net>
  */
 template <class OBJECT>
 class MemberAccessorBase
@@ -128,24 +123,13 @@ public:
 	}
 	bool isRequired() const { return required; };
 	std::string getName() const { return name; }
-	/*
-	virtual void pack(OBJECT *, Packer &) const {
-		assert(0);
-	}
-	virtual void unpack(OBJECT *, UnPacker &) {
-		assert(0);
-	}
-	*/
-	virtual void serialize(OBJECT const *, Writer &) const {
-		assert(0);
-	}
-	virtual void serialize(OBJECT *, Reader &) const {
-		assert(0);
-	}
+	virtual void serialize(OBJECT const *, Writer &) const { assert(0); }
+	virtual void serialize(OBJECT *, Reader &) const { assert(0); }
 	std::string getType() const { return type; }
 	virtual unsigned int getMask() const { return 0; }
 protected:
-	void setType(BaseType &x) { type = x.typeString(); }
+	template <class BASETYPE>
+	void setType(BASETYPE const &x) { type = x.typeString(); }
 	void setType(double &) { type = "builtin::double"; }
 	void setType(float &) { type = "builtin::float"; }
 	void setType(unsigned int &) { type = "builtin::uint"; }
@@ -167,7 +151,7 @@ protected:
 /** Class for storing and accessing bitmasked member variable references.
  *
  *  @internal
- *  @author Mark Rose <mrose@stm.lbl.gov>
+ *  @author Mark Rose <mkrose@users.sf.net>
  */
 template <class OBJECT, typename T>
 class MemberMaskAccessor: public MemberAccessorBase<OBJECT>
@@ -232,7 +216,7 @@ std::vector<T OBJECT::*> MemberMaskAccessor<OBJECT, T>::primaries;
 /** Class for storing and accessing member variable references.
  *
  *  @internal
- *  @author Mark Rose <mrose@stm.lbl.gov>
+ *  @author Mark Rose <mkrose@users.sf.net>
  */
 template <class OBJECT, typename T>
 class MemberAccessor: public MemberAccessorBase<OBJECT>
@@ -273,50 +257,8 @@ public:
 /** Partially specialized MemberAccessor for std::vector<> variables.
  *
  *  @internal
- *  @author Mark Rose <mrose@stm.lbl.gov>
+ *  @author Mark Rose <mkrose@users.sf.net>
  */
-#ifdef __SIMDATA_PTS_SIM
-template <class OBJECT, typename T>
-class VectorMemberAccessor: public MemberAccessorBase<OBJECT>
-{
-	T OBJECT::* member;
-public:
-	VectorMemberAccessor(T OBJECT::*pm, std::string name_, bool required_) {
-		member = pm;
-		name = name_;
-		required = required_;
-		{
-			T prototype;
-			setType(prototype);
-			type = "vector::" + type;
-		}
-	}
-	virtual void push_back(OBJECT *object, TypeAdapter const &v) throw(TypeMismatch) {
-		typename T::value_type value;
-		try {
-			v.set(value);
-		} catch (Exception &e) {
-			e.addMessage("VectorMemberAccessor::push_back(" + name + "):");
-			throw;
-		}
-		(object->*member).push_back(value);
-	}
-	virtual void clear(OBJECT *object) throw(TypeMismatch) {
-		(object->*member).clear();
-	}
-	virtual void serialize(OBJECT const *object, Writer &writer) const {
-		T &m = object->*member;
-		MemberValidator<T>::validate(m, required, true /*write*/);
-		writer << m;
-	}
-	virtual void serialize(OBJECT *object, Reader &reader) const {
-		T &m = object->*member;
-		reader >> m;
-		MemberValidator<T>::validate(m, required, false /*write*/);
-	}
-};
-
-#else // #if !defined(__SIMDATA_PTS_SIM)
 template <class OBJECT, typename T>
 class MemberAccessor< OBJECT, std::vector<T> >: public MemberAccessorBase<OBJECT>
 {
@@ -361,7 +303,7 @@ public:
 /** Specialized MemberMaskAccessor for int bitmasked variables.
  *
  *  @internal
- *  @author Mark Rose <mrose@stm.lbl.gov>
+ *  @author Mark Rose <mkrose@users.sf.net>
  */
 template <class OBJECT>
 class MemberAccessor< OBJECT, int >: public MemberMaskAccessor<OBJECT, int> {
@@ -375,7 +317,7 @@ public:
 /** Specialized MemberMaskAccessor for short int bitmasked variables.
  *
  *  @internal
- *  @author Mark Rose <mrose@stm.lbl.gov>
+ *  @author Mark Rose <mkrose@users.sf.net>
  */
 template <class OBJECT>
 class MemberAccessor< OBJECT, short >: public MemberMaskAccessor<OBJECT, short> {
@@ -389,7 +331,7 @@ public:
 /** Specialized MemberMaskAccessor for char bitmasked variables.
  *
  *  @internal
- *  @author Mark Rose <mrose@stm.lbl.gov>
+ *  @author Mark Rose <mkrose@users.sf.net>
  */
 template <class OBJECT>
 class MemberAccessor< OBJECT, char >: public MemberMaskAccessor<OBJECT, char> {
@@ -400,60 +342,11 @@ public:
 		MemberMaskAccessor<OBJECT, char>(pm, name_, mask_, required_) { }
 };
 
-#endif // !defined(__SIMDATA_PTS_SIM)
-
-
-#ifdef __SIMDATA_PTS_SIM
-
-/** Simulated Partial Template Specialization
- *
- * Adapted from: metactrl.h
- * by Krzysztof Czarnecki & Ulrich Eisenecker
- *
- * The following functions come from chapter 10 of the indispensable book
- * Generative Programming by Krzysztof Czarnecki & Ulrich Eisenecker
- * (C) Copyright Krzysztof Czarnecki & Ulrich Eisenecker 1998-2000.
- * Permission to copy, use, modify, sell and distribute this software is
- * granted provided this copyright notice appears in all copies. In case of
- * modification, the modified files should carry a notice stating that
- * you changed the files.
- * This software is provided "as is" without express or implied
- * warranty, and with no claim as to its suitability for any purpose.
- */
-namespace PTS {
-
-	template <typename T>
-	char IsVector(std::vector<T> const *);	// no implementation is required
-
-	int IsVector(BaseType const *);	// no implementation is required
-	int IsVector(float const *);	// no implementation is required
-	int IsVector(double const *);	// no implementation is required
-	int IsVector(int const *);	// no implementation is required
-	int IsVector(bool const*);	// no implementation is required
-	int IsVector(char const*);	// no implementation is required
-	int IsVector(short const*);	// no implementation is required
-	int IsVector(std::string const*);// no implementation is required
-	int IsVector(TypeAdapter const *);// no implementation is required
-
-	template <typename T>
-	struct ISVECTOR {
-		enum { RET = (sizeof(IsVector((T*)0)) == 1) };
-	};
-	
-	template <class C, typename T>
-	struct SELECT_ACCESSOR {
-		typedef typename meta::IF<ISVECTOR<T>::RET,
-			simdata::VectorMemberAccessor<C, T>, simdata::MemberAccessor<C, T> >::RET ACCESSOR;
-	};
-}
-
-#endif // __SIMDATA_PTS_SIM
-
 
 /** Pure virtual base class for object interfaces.
  *
  *  @internal
- *  @author Mark Rose <mrose@stm.lbl.gov>
+ *  @author Mark Rose <mkrose@users.sf.net>
  */
 class ObjectInterfaceBase {
 
@@ -504,17 +397,27 @@ public:
 	 */
 	virtual void clear(Object *o, std::string const &name) const = 0;
 
+	/** Compute a fingerprint that includes the class name and the names and
+	 *  types of all variables in the interface.
+	 */
+	virtual fprint32 signature() const = 0;
+
+	/** Get the name of the class for this interface.
+	 */
+	virtual const char *getClassName() const = 0;
+
+	/** Get the hash of the class for this interface.
+	 */
+	virtual hasht getClassHash() const = 0;
+
 friend class InterfaceProxy;
-protected:
-	//virtual	void pack(Object *o, Packer &p) const = 0;
-	//virtual void unpack(Object *o, UnPacker &p) const = 0;
 };
 
 
 /** Class-specialized object interface.
  *
  *  @internal
- *  @author Mark Rose <mrose@stm.lbl.gov>
+ *  @author Mark Rose <mkrose@users.sf.net>
  */
 template <class C>
 class ObjectInterface: public ObjectInterfaceBase {
@@ -524,7 +427,7 @@ class ObjectInterface: public ObjectInterfaceBase {
 	typedef ObjectInterface<C> Self;
 
 	void __not_found(std::string const &name) const {
-		throw InterfaceError("Variable '"+name+"' not found in interface to class '" + C::_getClassName()+"'");
+		throw InterfaceError("Variable '" + name + "' not found in interface to class '" + C::_getClassName() + "'");
 	}
 
 	MemberAccessorBase<C> *getAccessor(std::string const &name) const {
@@ -545,22 +448,14 @@ public:
 	 */
 	template<typename T>
 	Self& def(std::string const &name, T C::*pm, bool required) {
-		if (variableExists(name)) throw InterfaceError("interface variable \"" + std::string(name) + "\" multiply defined in class '" + C::_getClassName() + "'.");
-#ifdef __SIMDATA_PTS_SIM
-		table[name] = new typename PTS::SELECT_ACCESSOR<C, T>::ACCESSOR(pm, name, required);
-#else
+		if (variableExists(name)) throw InterfaceError("interface variable \"" + name + "\" multiply defined in class '" + C::_getClassName() + "'.");
 		table[name] = new MemberAccessor<C, T>(pm, name, required);
-#endif
 		return *this;
 	}
 	template<typename T>
 	Self& def(std::string const &name, T C::*pm, int mask, bool required) {
-		if (variableExists(name)) throw InterfaceError("interface variable \"" + std::string(name) + "\" multiply defined in class '" + C::_getClassName() + "'.");
-#ifdef __SIMDATA_PTS_SIM
-		table[name] = new typename PTS::SELECT_ACCESSOR<C, T>::ACCESSOR(pm, name, required);
-#else
+		if (variableExists(name)) throw InterfaceError("interface variable \"" + name + "\" multiply defined in class '" + C::_getClassName() + "'.");
 		table[name] = new MemberAccessor<C, T>(pm, name, mask, required);
-#endif
 		return *this;
 	}
 
@@ -660,6 +555,8 @@ public:
 		getAccessor(name)->clear(object);
 	}
 
+	/** Serialize an object to a writer stream.
+	 */
 	void serialize(C const *object, Writer &writer) const {
 		typename MemberAccessorBase<C>::map::const_iterator idx;
 		try {
@@ -672,6 +569,8 @@ public:
 		}
 	}
 
+	/** Serialize an object from a writer stream.
+	 */
 	void serialize(C *object, Reader &reader) const {
 		typename MemberAccessorBase<C>::map::const_iterator idx;
 		try {
@@ -683,11 +582,33 @@ public:
 			throw;
 		}
 	}
+
+	/** Compute a fingerprint that includes the class name and the names and
+	 *  types of all variables in the interface.
+	 */
+	virtual fprint32 signature() const {
+		static fprint32 fp = 0;
+		if (fp == 0) {
+			fp = fingerprint(C::_getClassName());
+			typename MemberAccessorBase<C>::map::const_iterator idx;
+			for (idx = table.begin(); idx != table.end(); ++idx) {
+				fp = make_ordered_fingerprint(fp, fingerprint(idx->first + "!" + idx->second->getType()));
+			}
+		}
+		return fp;
+	}
+
+	/** Get the name of the class for this interface.
+	 */
+	virtual const char *getClassName() const { return C::_getClassName(); }
+
+	/** Get the hash of the class for this interface.
+	 */
+	virtual hasht getClassHash() const { return C::_getClassHash(); }
 };
 
 
 NAMESPACE_SIMDATA_END
-
 
 #endif // __SIMDATA_OBJECTINTERFACE_H__
 

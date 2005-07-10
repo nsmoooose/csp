@@ -21,7 +21,7 @@
 /**
  * @file Enum.h
  * @brief Enumeration classes for C++ and Python.
- * @author Mark Rose <mrose@stm.lbl.gov>
+ * @author Mark Rose <mkrose@users.sf.net>
  *
  * Enumeration classes for C++ and Python.
  *
@@ -433,10 +433,33 @@ public:
  *
  * @ingroup BaseTypes
  */
-class SIMDATA_EXPORT EnumLink: public BaseType {
+class SIMDATA_EXPORT EnumLink
+{
 friend class Enumeration;
 	/// the associated enumeration
 	Enumeration __E;
+
+public: // BaseType
+
+	/// String representation.
+	std::string asString() const;
+
+	/// Type representation.
+	std::string typeString() const { return "type::Enum"; }
+
+	/// Serialize from a Reader.
+	void serialize(Reader&);
+
+	/// Serialize to a Writer.
+	void serialize(Writer&) const;
+
+	/** Parse the character data from an XML \<Enum\> tag.
+	 */
+	void parseXML(const char*);
+
+	/// XML post processing.
+	void convertXML() {}
+
 protected:
 	/// the index of the enum
 	int _idx;
@@ -474,21 +497,8 @@ public:
 		_idx = __E.getIndexByToken(token);
 	}
 
-	/// Serialize to or from a data archive.
-	virtual void serialize(Reader&);
-	virtual void serialize(Writer&) const;
-
-	/// For internal use by the XML parser.
-	virtual void parseXML(const char* cdata);
-	
-	/// Return a type label.
-	virtual std::string typeString() const;
-
-	/// Return a string representation.
-	virtual std::string asString() const;
-
 	/// copy constructor
-	EnumLink(EnumLink const &e): BaseType() {
+	EnumLink(EnumLink const &e) {
 		__E = e.__E;
 		_idx = e._idx;
 	}
@@ -714,6 +724,7 @@ inline EnumLink Enumeration::first() const {
 	return makeEnum(0);
 }
 
+SIMDATA_EXPORT std::ostream &operator <<(std::ostream &o, EnumLink &e);
 
 NAMESPACE_SIMDATA_END
 

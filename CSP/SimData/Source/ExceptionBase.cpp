@@ -1,7 +1,7 @@
-/* SimDataCSP: Data Infrastructure for Simulations
- * Copyright (C) 2002 Mark Rose <tm2@stm.lbl.gov>
+/* SimData: Data Infrastructure for Simulations
+ * Copyright (C) 2002 Mark Rose <mkrose@users.sf.net>
  *
- * This file is part of SimDataCSP.
+ * This file is part of SimData.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -93,8 +93,12 @@ void ExceptionBase::clear() {
 	_dump = false;
 }
 
-void ExceptionBase::details() const {
-	std::cerr << *this << std::flush;
+void ExceptionBase::details(bool no_trace) const {
+	if (no_trace || !hasTrace()) {
+		std::cerr << getError() << std::flush;
+	} else {
+		std::cerr << getError() << "\n" << getTrace() << std::flush;
+	}
 }
 
 void ExceptionBase::logAndClear(int category) const {

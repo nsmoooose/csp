@@ -21,7 +21,7 @@
 /**
  * @file DataArchive.h
  * @brief Classes for data archive manipulation.
- * @author Mark Rose <mrose@stm.lbl.gov>
+ * @author Mark Rose <mkrose@users.sf.net>
  */
 
 #ifndef __SIMDATA_DATAARCHIVE_H__
@@ -82,11 +82,11 @@ class InterfaceProxy;
  *  transparently.  Static objects are cached internally.  All created
  *  objects are returned via smart-pointers.
  *
- *  @author Mark Rose <mrose@stm.lbl.gov>
+ *  @author Mark Rose <mkrose@users.sf.net>
  */
 class SIMDATA_EXPORT DataArchive {
 
-	friend class LinkBase;
+	friend class LinkCore;
 	friend class DataManager;
 
 private:

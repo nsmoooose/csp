@@ -62,7 +62,7 @@ public:
  *  TaggedRecord classes automatically register themselves with the global instance
  *  of this class at startup.
  *
- *  @author Mark Rose <mrose@stm.lbl.gov>
+ *  @author Mark Rose <mkrose@users.sf.net>
  */
 class SIMDATA_EXPORT TaggedRecordRegistry: public Singleton<TaggedRecordRegistry> {
 

@@ -29,9 +29,10 @@
 NAMESPACE_SIMDATA
 
 
-template class LUT<1, float>;
-template class LUT<2, float>;
-template class LUT<3, float>;
+// Force template instantiation for the three supported types.
+template class SIMDATA_EXPORT LUT<1, float>;
+template class SIMDATA_EXPORT LUT<2, float>;
+template class SIMDATA_EXPORT LUT<3, float>;
 
 
 /**

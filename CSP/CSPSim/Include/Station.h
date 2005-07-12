@@ -25,8 +25,6 @@
 #ifndef __STATION_H__
 #define __STATION_H__
 
-#include <ObjectModel.h>
-
 #include <SimData/Link.h>
 #include <SimData/InterfaceRegistry.h>
 #include <SimData/Object.h>

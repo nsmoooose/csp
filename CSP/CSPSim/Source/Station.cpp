@@ -27,7 +27,6 @@
 #include <ObjectModel.h>
 
 
-
 SIMDATA_XML_BEGIN(Station)
 	SIMDATA_DEF("name", m_Name, true)
 	SIMDATA_DEF("detail_model", m_DetailModel, false)

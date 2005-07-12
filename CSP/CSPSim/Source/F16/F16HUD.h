@@ -45,10 +45,7 @@ class RadarAltitudeScale;
 
 class F16HUD: public System {
 public:
-	SIMDATA_OBJECT(F16HUD, 0, 0)
-
-	EXTEND_SIMDATA_XML_INTERFACE(F16HUD, System)
-	END_SIMDATA_XML_INTERFACE
+	SIMDATA_DECLARE_OBJECT(F16HUD)
 
 	F16HUD();
 	virtual ~F16HUD();

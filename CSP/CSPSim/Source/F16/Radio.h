@@ -33,11 +33,7 @@
 
 class F16Radio: public System {
 public:
-	SIMDATA_OBJECT(F16Radio, 0, 0)
-
-	EXTEND_SIMDATA_XML_INTERFACE(F16Radio, System)
-		// TODO presets
-	END_SIMDATA_XML_INTERFACE
+	SIMDATA_DECLARE_OBJECT(F16Radio)
 
 	static simdata::Enumeration STATUS;
 	static simdata::Enumeration MODE;

@@ -1,17 +1,17 @@
-// Combat Simulator Project - FlightSim Demo
+// Combat Simulator Project
 // Copyright (C) 2002, 2003 The Combat Simulator Project
 // http://csp.sourceforge.net
-// 
+//
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
 // as published by the Free Software Foundation; either version 2
 // of the License, or (at your option) any later version.
-// 
+//
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU General Public License
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
@@ -87,22 +87,7 @@ class AircraftSimpleFCS: public System {
 
 
 public:
-	SIMDATA_OBJECT(AircraftSimpleFCS, 0, 0)
-
-	EXTEND_SIMDATA_XML_INTERFACE(AircraftSimpleFCS, System)
-		SIMDATA_XML("elevator_limit0", AircraftSimpleFCS::m_ElevatorLimit0, false)
-		SIMDATA_XML("elevator_limit1", AircraftSimpleFCS::m_ElevatorLimit1, false)
-		SIMDATA_XML("aileron_limit0", AircraftSimpleFCS::m_AileronLimit0, false)
-		SIMDATA_XML("aileron_limit1", AircraftSimpleFCS::m_AileronLimit1, false)
-		SIMDATA_XML("rudder_limit", AircraftSimpleFCS::m_RudderLimit, false)
-		SIMDATA_XML("airbrake_limit", AircraftSimpleFCS::m_AirbrakeLimit, false)
-		SIMDATA_XML("elevator_rate", AircraftSimpleFCS::m_ElevatorRate, false)
-		SIMDATA_XML("aileron_rate", AircraftSimpleFCS::m_AileronRate, false)
-		SIMDATA_XML("rudder_rate", AircraftSimpleFCS::m_RudderRate, false)
-		SIMDATA_XML("airbrake_rate", AircraftSimpleFCS::m_AirbrakeRate, false)
-		SIMDATA_XML("max_g", AircraftSimpleFCS::m_MaxG, false)
-		SIMDATA_XML("min_g", AircraftSimpleFCS::m_MinG, false)
-	END_SIMDATA_XML_INTERFACE
+	SIMDATA_DECLARE_OBJECT(AircraftSimpleFCS)
 
 	AircraftSimpleFCS();
 

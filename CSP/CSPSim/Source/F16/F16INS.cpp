@@ -33,11 +33,7 @@
 
 class F16INS: public System {
 public:
-	SIMDATA_OBJECT(F16INS, 0, 0)
-
-	EXTEND_SIMDATA_XML_INTERFACE(F16INS, System)
-		SIMDATA_XML("ins_attitude_response_time", F16INS::m_ResponseTime, false)
-	END_SIMDATA_XML_INTERFACE
+	SIMDATA_DECLARE_OBJECT(F16INS)
 
 	F16INS(): m_ResponseTime(0.0) { }
 	virtual ~F16INS() { }
@@ -74,5 +70,7 @@ protected:
 };
 
 
-SIMDATA_REGISTER_INTERFACE(F16INS)
+SIMDATA_XML_BEGIN(F16INS)
+	SIMDATA_DEF("ins_attitude_response_time", m_ResponseTime, false)
+SIMDATA_XML_END
 

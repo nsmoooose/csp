@@ -33,7 +33,13 @@
 #include <SimData/osg.h>
 
 
-SIMDATA_REGISTER_INTERFACE(TerrainObject)
+SIMDATA_XML_BEGIN(TerrainObject)
+	SIMDATA_DEF("name", m_Name, true)
+	SIMDATA_DEF("version", m_Version, true)
+	SIMDATA_DEF("center", m_Center, true)
+	SIMDATA_DEF("width", m_Width, true)
+	SIMDATA_DEF("height", m_Height, true)
+SIMDATA_XML_END
 
 
 /**

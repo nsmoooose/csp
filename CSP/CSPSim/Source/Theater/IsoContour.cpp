@@ -1,4 +1,4 @@
-// Combat Simulator Project - FlightSim Demo
+// Combat Simulator Project
 // Copyright (C) 2004-2005 The Combat Simulator Project
 // http://csp.sourceforge.net
 //
@@ -24,6 +24,12 @@
 
 #include "Theater/IsoContour.h"
 
-SIMDATA_REGISTER_INTERFACE(Circle)
-SIMDATA_REGISTER_INTERFACE(RectangularCurve)
+SIMDATA_XML_BEGIN(RectangularCurve)
+	SIMDATA_DEF("width", m_Width, true)
+	SIMDATA_DEF("height", m_Height, true)
+SIMDATA_XML_END
+
+SIMDATA_XML_BEGIN(Circle)
+	SIMDATA_DEF("radius", m_Radius, true)
+SIMDATA_XML_END
 

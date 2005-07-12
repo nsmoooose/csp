@@ -35,7 +35,8 @@
 #include <CSPSim.h>
 
 
-SIMDATA_REGISTER_INTERFACE(AircraftFlightSensors)
+SIMDATA_XML_BEGIN(AircraftFlightSensors)
+SIMDATA_XML_END
 
 
 AircraftFlightSensors::AircraftFlightSensors(): m_Distance(0) { }

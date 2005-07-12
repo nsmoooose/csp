@@ -29,7 +29,12 @@
 #include <DataRecorder.h>
 
 
-SIMDATA_REGISTER_INTERFACE(SystemsModel)
+SIMDATA_XML_BEGIN(SystemsModel)
+	SIMDATA_DEF("physics_model", m_PhysicsModel, false)
+	SIMDATA_DEF("local_controller", m_LocalController, false)
+	SIMDATA_DEF("remote_controller", m_RemoteController, false)
+SIMDATA_XML_END
+
 
 class BindRecorderVisitor: public SystemVisitor {
 	DataRecorder *m_Recorder;

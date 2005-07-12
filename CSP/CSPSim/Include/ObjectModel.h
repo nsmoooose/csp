@@ -87,32 +87,7 @@ private:
 public:
 	typedef std::vector<simdata::Vector3> PointList;
 
-	SIMDATA_STATIC_OBJECT(ObjectModel, 6, 0);
-	
-	BEGIN_SIMDATA_XML_INTERFACE(ObjectModel)
-		SIMDATA_XML("label", ObjectModel::m_Label, false)
-		SIMDATA_XML("model_path", ObjectModel::m_ModelPath, true)
-		SIMDATA_XML("axis_0", ObjectModel::m_Axis0, false)
-		SIMDATA_XML("axis_1", ObjectModel::m_Axis1, false)
-		SIMDATA_XML("view_point", ObjectModel::m_ViewPoint, false)
-		SIMDATA_XML("hud_placement", ObjectModel::m_HudPlacement, false)
-		SIMDATA_XML("hud_width", ObjectModel::m_HudWidth, false)
-		SIMDATA_XML("hud_height", ObjectModel::m_HudHeight, false)
-		SIMDATA_XML("offset", ObjectModel::m_Offset, false)
-		SIMDATA_XML("scale", ObjectModel::m_Scale, false)
-		SIMDATA_XML("smooth", ObjectModel::m_Smooth, false)
-		SIMDATA_XML("filter", ObjectModel::m_Filter, false)
-		SIMDATA_XML("filter_value", ObjectModel::m_FilterValue, false)
-		SIMDATA_XML("effect", ObjectModel::m_Effect, false)
-		SIMDATA_XML("contacts", ObjectModel::m_Contacts, false)
-		SIMDATA_XML("debug_points", ObjectModel::m_DebugPoints, false)
-		SIMDATA_XML("elevation_correction", ObjectModel::m_ElevationCorrection, false)
-		SIMDATA_XML("polygon_offset", ObjectModel::m_PolygonOffset, false)
-		SIMDATA_XML("cull_face", ObjectModel::m_CullFace, false)
-		SIMDATA_XML("lighting", ObjectModel::m_Lighting, false)
-		SIMDATA_XML("animations", ObjectModel::m_Animations, false)
-		SIMDATA_XML("stations", ObjectModel::m_Stations, false)
-	END_SIMDATA_XML_INTERFACE
+	SIMDATA_DECLARE_STATIC_OBJECT(ObjectModel)
 
 	ObjectModel();
 	virtual ~ObjectModel();

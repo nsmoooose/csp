@@ -54,28 +54,8 @@ namespace Demeter {
 class DemeterTerrain: public TerrainObject
 {
 public:
-	SIMDATA_OBJECT(DemeterTerrain, 0, 0)
-		
-	EXTEND_SIMDATA_XML_INTERFACE(DemeterTerrain, TerrainObject)
-		SIMDATA_XML("detail_texture_file", DemeterTerrain::m_DetailTextureFile, true)
-		SIMDATA_XML("texture_file", DemeterTerrain::m_TextureFile, true)
-		SIMDATA_XML("elevation_file", DemeterTerrain::m_ElevationFile, true)
-		SIMDATA_XML("lattice_basename", DemeterTerrain::m_LatticeBaseName, true)
-		SIMDATA_XML("lattice_elevation_extension", DemeterTerrain::m_LatticeElevExt, true)
-		SIMDATA_XML("lattice_texture_extension", DemeterTerrain::m_LatticeTexExt, true)
-		SIMDATA_XML("use_texture_factory", DemeterTerrain::m_TextureFactory, false)
-		SIMDATA_XML("lattice_width", DemeterTerrain::m_LatticeWidth, true)
-		SIMDATA_XML("lattice_height", DemeterTerrain::m_LatticeHeight, true)
-		SIMDATA_XML("max_triangles", DemeterTerrain::m_MaxTriangles, true)
-		SIMDATA_XML("detail_threshold", DemeterTerrain::m_DetailThreshold, true)
-		SIMDATA_XML("vertex_height", DemeterTerrain::m_VertexHeight, true)
-		SIMDATA_XML("vertex_spacing", DemeterTerrain::m_VertexSpacing, true)
-		SIMDATA_XML("use_dynamic_textures", DemeterTerrain::m_DynamicTextures, false)
-		SIMDATA_XML("use_texture_compression", DemeterTerrain::m_TextureCompression, false)
-		SIMDATA_XML("preload_textures", DemeterTerrain::m_PreloadTextures, false)
-		SIMDATA_XML("lattice", DemeterTerrain::m_Lattice, true)
-	END_SIMDATA_XML_INTERFACE
-	
+	SIMDATA_DECLARE_OBJECT(DemeterTerrain)
+
 	DemeterTerrain();
 	virtual ~DemeterTerrain();
 

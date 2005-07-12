@@ -31,7 +31,9 @@
 #include "PageSTPT.h"
 
 
-SIMDATA_REGISTER_INTERFACE(UpFrontControls)
+SIMDATA_XML_BEGIN(UpFrontControls)
+SIMDATA_XML_END
+
 DEFINE_INPUT_INTERFACE(UpFrontControls)
 
 

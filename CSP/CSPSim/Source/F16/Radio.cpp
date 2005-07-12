@@ -1,6 +1,9 @@
 #include <F16/Radio.h>
 
-SIMDATA_REGISTER_INTERFACE(F16Radio)
+
+SIMDATA_XML_BEGIN(F16Radio)
+	// TODO presets
+SIMDATA_XML_END
 
 simdata::Enumeration F16Radio::STATUS("OFF GUARD BACKUP ON");
 simdata::Enumeration F16Radio::MODE("OFF MAIN BOTH");

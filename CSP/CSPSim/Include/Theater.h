@@ -57,12 +57,7 @@ class Theater: public simdata::Object
 	simdata::Link<TerrainObject> m_Terrain;
 public:
 
-	SIMDATA_OBJECT(Theater, 0, 0)
-
-	BEGIN_SIMDATA_XML_INTERFACE(Theater)
-		SIMDATA_XML("feature_group_list", Theater::m_FeatureGroupList, true)
-		SIMDATA_XML("terrain", Theater::m_Terrain, true)
-	END_SIMDATA_XML_INTERFACE
+	SIMDATA_DECLARE_OBJECT(Theater)
 
 	/**
 	 * Return a list of all FeatureGroups in the theater.  Currently only

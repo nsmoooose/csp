@@ -49,6 +49,16 @@
 
 //namespace fcsnode {
 
+
+SIMDATA_XML_BEGIN(ControlNode)
+	SIMDATA_DEF("id", m_ID, true)
+	SIMDATA_DEF("clamp_lo", m_ClampLo, false)
+	SIMDATA_DEF("clamp_hi", m_ClampHi, false)
+	SIMDATA_DEF("rate_limit_dec", m_RateLimitDec, false)
+	SIMDATA_DEF("rate_limit_inc", m_RateLimitInc, false)
+SIMDATA_XML_END
+
+
 /** An abstract node that defines a single input channel.
  */
 class Junction1: public ControlNode {
@@ -56,11 +66,7 @@ class Junction1: public ControlNode {
 	TypeID m_InputID;
 	double m_Gain, m_Offset;
 public:
-	EXTEND_SIMDATA_XML_VIRTUAL_INTERFACE(Junction1, ControlNode)
-		SIMDATA_XML("input", Junction1::m_InputID, true)
-		SIMDATA_XML("gain", Junction1::m_Gain, false)
-		SIMDATA_XML("offset", Junction1::m_Offset, false)
-	END_SIMDATA_XML_INTERFACE
+	SIMDATA_DECLARE_ABSTRACT_OBJECT(Junction1)
 	Junction1(): m_Gain(1.0), m_Offset(0.0) {}
 protected:
 	void link(MapID &map) {
@@ -73,6 +79,12 @@ protected:
 	double getInput(Timer const &dt) { return m_Input->step(dt) * m_Gain + m_Offset; }
 };
 
+SIMDATA_XML_BEGIN(Junction1)
+	SIMDATA_DEF("input", m_InputID, true)
+	SIMDATA_DEF("gain", m_Gain, false)
+	SIMDATA_DEF("offset", m_Offset, false)
+SIMDATA_XML_END
+
 
 /** An abstract node that defines two input channels.
  */
@@ -83,14 +95,7 @@ class Junction2: public ControlNode {
 	TypeID m_InputIDB;
 	double m_GainA, m_GainB, m_OffsetA, m_OffsetB;
 public:
-	EXTEND_SIMDATA_XML_VIRTUAL_INTERFACE(Junction2, ControlNode)
-		SIMDATA_XML("input_a", Junction2::m_InputIDA, true)
-		SIMDATA_XML("gain_a", Junction2::m_GainA, false)
-		SIMDATA_XML("offset_a", Junction2::m_OffsetA, false)
-		SIMDATA_XML("input_b", Junction2::m_InputIDB, true)
-		SIMDATA_XML("gain_b", Junction2::m_GainB, false)
-		SIMDATA_XML("offset_b", Junction2::m_OffsetB, false)
-	END_SIMDATA_XML_INTERFACE
+	SIMDATA_DECLARE_ABSTRACT_OBJECT(Junction2)
 	Junction2(): m_GainA(1.0), m_GainB(1.0), m_OffsetA(0.0), m_OffsetB(0.0) {}
 protected:
 	void link(MapID &map) {
@@ -109,6 +114,15 @@ protected:
 	double getInputB(Timer const &dt) { return m_InputB->step(dt) * m_GainB + m_OffsetB; }
 };
 
+SIMDATA_XML_BEGIN(Junction2)
+	SIMDATA_DEF("input_a", m_InputIDA, true)
+	SIMDATA_DEF("gain_a", m_GainA, false)
+	SIMDATA_DEF("offset_a", m_OffsetA, false)
+	SIMDATA_DEF("input_b", m_InputIDB, true)
+	SIMDATA_DEF("gain_b", m_GainB, false)
+	SIMDATA_DEF("offset_b", m_OffsetB, false)
+SIMDATA_XML_END
+
 
 /** An abstract node that defines three input channels.
  */
@@ -121,17 +135,7 @@ class Junction3: public ControlNode {
 	TypeID m_InputIDC;
 	double m_GainA, m_GainB, m_GainC, m_OffsetA, m_OffsetB, m_OffsetC;
 public:
-	EXTEND_SIMDATA_XML_VIRTUAL_INTERFACE(Junction3, ControlNode)
-		SIMDATA_XML("input_a", Junction3::m_InputIDA, true)
-		SIMDATA_XML("gain_a", Junction3::m_GainA, false)
-		SIMDATA_XML("offset_a", Junction3::m_OffsetA, false)
-		SIMDATA_XML("input_b", Junction3::m_InputIDB, true)
-		SIMDATA_XML("gain_b", Junction3::m_GainB, false)
-		SIMDATA_XML("offset_b", Junction3::m_OffsetB, false)
-		SIMDATA_XML("input_c", Junction3::m_InputIDC, true)
-		SIMDATA_XML("gain_c", Junction3::m_GainC, false)
-		SIMDATA_XML("offset_c", Junction3::m_OffsetC, false)
-	END_SIMDATA_XML_INTERFACE
+	SIMDATA_DECLARE_ABSTRACT_OBJECT(Junction3)
 	Junction3(): m_GainA(1.0), m_GainB(1.0), m_GainC(1.0), m_OffsetA(0.0), m_OffsetB(0.0), m_OffsetC(0.0) { }
 protected:
 	void link(MapID &map) {
@@ -156,6 +160,19 @@ protected:
 	double getInputC(Timer const &dt) { return m_InputC->step(dt) * m_GainC + m_OffsetC; }
 };
 
+SIMDATA_XML_BEGIN(Junction3)
+	SIMDATA_DEF("input_a", m_InputIDA, true)
+	SIMDATA_DEF("gain_a", m_GainA, false)
+	SIMDATA_DEF("offset_a", m_OffsetA, false)
+	SIMDATA_DEF("input_b", m_InputIDB, true)
+	SIMDATA_DEF("gain_b", m_GainB, false)
+	SIMDATA_DEF("offset_b", m_OffsetB, false)
+	SIMDATA_DEF("input_c", m_InputIDC, true)
+	SIMDATA_DEF("gain_c", m_GainC, false)
+	SIMDATA_DEF("offset_c", m_OffsetC, false)
+SIMDATA_XML_END
+
+
 /** A simple low pass filter with laplace transform H(s) = a / (s+a).
  *
  * The IIR digital filter is generated using a bilinear transform *without*
@@ -175,10 +192,7 @@ class LagFilter: public Junction1 {
 	double m_Chi;
 	double m_Input0;
 public:
-	SIMDATA_OBJECT(LagFilter, 0, 0)
-	EXTEND_SIMDATA_XML_INTERFACE(LagFilter, Junction1)
-		SIMDATA_XML("a", LagFilter::m_Chi, true)
-	END_SIMDATA_XML_INTERFACE
+	SIMDATA_DECLARE_OBJECT(LagFilter)
 	LagFilter(): m_Chi(0.0), m_Input0(0.0) { }
 protected:
 	void postCreate() {
@@ -195,6 +209,10 @@ private:
 	}
 };
 
+SIMDATA_XML_BEGIN(LagFilter)
+	SIMDATA_DEF("a", m_Chi, true)
+SIMDATA_XML_END
+
 
 /** Lead-lag filter:  H(s) = c * (s + a) / (s + b)
  *  NB: no frequency prewarping is applied in generating the IIR digital filter.
@@ -203,12 +221,7 @@ class LeadLagFilter: public Junction1 {
 	double m_A, m_B, m_C;
 	double m_Input0;
 public:
-	SIMDATA_OBJECT(LeadLagFilter, 0, 0)
-	EXTEND_SIMDATA_XML_INTERFACE(LeadLagFilter, Junction1)
-		SIMDATA_XML("a", LeadLagFilter::m_A, true)
-		SIMDATA_XML("b", LeadLagFilter::m_B, true)
-		SIMDATA_XML("c", LeadLagFilter::m_C, true)
-	END_SIMDATA_XML_INTERFACE
+	SIMDATA_DECLARE_OBJECT(LeadLagFilter)
 	LeadLagFilter(): m_A(0.0), m_B(0.0), m_C(0.0), m_Input0(0.0) { }
 private:
 	void evaluate(Timer const &timer) {
@@ -221,6 +234,12 @@ private:
 	}
 };
 
+SIMDATA_XML_BEGIN(LeadLagFilter)
+	SIMDATA_DEF("a", m_A, true)
+	SIMDATA_DEF("b", m_B, true)
+	SIMDATA_DEF("c", m_C, true)
+SIMDATA_XML_END
+
 
 /** A simple high-pass filter: H(s) = s / (s + a)
  */
@@ -228,10 +247,7 @@ class LeadFilter: public Junction1 {
 	double m_A;
 	double m_Input0;
 public:
-	SIMDATA_OBJECT(LeadFilter, 0, 0)
-	EXTEND_SIMDATA_XML_INTERFACE(LeadFilter, Junction1)
-		SIMDATA_XML("a", LeadFilter::m_A, true)
-	END_SIMDATA_XML_INTERFACE
+	SIMDATA_DECLARE_OBJECT(LeadFilter)
 	LeadFilter(): m_A(1.0), m_Input0(0.0) { }
 private:
 	void evaluate(Timer const &timer) {
@@ -244,15 +260,17 @@ private:
 	}
 };
 
+SIMDATA_XML_BEGIN(LeadFilter)
+	SIMDATA_DEF("a", m_A, true)
+SIMDATA_XML_END
+
 
 /* A node for integrating an input channel with respect to time.  Equivalent
  * to a laplace transform H(s) = 1 / s.
  */
 class Integrator: public Junction1 {
 public:
-	SIMDATA_OBJECT(Integrator, 0, 0)
-	EXTEND_SIMDATA_XML_INTERFACE(Integrator, Junction1)
-	END_SIMDATA_XML_INTERFACE
+	SIMDATA_DECLARE_OBJECT(Integrator)
 	Integrator() { }
 private:
 	void evaluate(Timer const &timer) {
@@ -260,19 +278,23 @@ private:
 	}
 };
 
+SIMDATA_XML_BEGIN(Integrator)
+SIMDATA_XML_END
+
 
 /** A node for multiplying (mixing) to inputs.
  */
 class Multiply: public Junction2 {
 public:
-	SIMDATA_OBJECT(Multiply, 0, 0)
-	EXTEND_SIMDATA_XML_INTERFACE(Multiply, Junction2)
-	END_SIMDATA_XML_INTERFACE
+	SIMDATA_DECLARE_OBJECT(Multiply)
 private:
 	virtual void evaluate(Timer const &timer) {
 		setOutput(getInputA(timer) * getInputB(timer), timer);
 	}
 };
+
+SIMDATA_XML_BEGIN(Multiply)
+SIMDATA_XML_END
 
 
 /** A node for dividing two inputs.  Caution: can result in infinities or
@@ -280,56 +302,60 @@ private:
  */
 class Divide: public Junction2 {
 public:
-	SIMDATA_OBJECT(Divide, 0, 0)
-	EXTEND_SIMDATA_XML_INTERFACE(Divide, Junction2)
-	END_SIMDATA_XML_INTERFACE
+	SIMDATA_DECLARE_OBJECT(Divide)
 private:
 	virtual void evaluate(Timer const &timer) {
 		setOutput(getInputA(timer) / getInputB(timer), timer);
 	}
 };
 
+SIMDATA_XML_BEGIN(Divide)
+SIMDATA_XML_END
+
 
 /** A node for adding two inputs with independent gains.
  */
 class Adder: public Junction2 {
 public:
-	SIMDATA_OBJECT(Adder, 0, 0)
-	EXTEND_SIMDATA_XML_INTERFACE(Adder, Junction2)
-	END_SIMDATA_XML_INTERFACE
+	SIMDATA_DECLARE_OBJECT(Adder)
 private:
 	virtual void evaluate(Timer const &timer) {
 		setOutput(getInputA(timer) + getInputB(timer), timer);
 	}
 };
 
+SIMDATA_XML_BEGIN(Adder)
+SIMDATA_XML_END
+
 
 /** A node for adding three inputs with independent gains.
  */
 class Adder3: public Junction3 {
 public:
-	SIMDATA_OBJECT(Adder3, 0, 0)
-	EXTEND_SIMDATA_XML_INTERFACE(Adder3, Junction3)
-	END_SIMDATA_XML_INTERFACE
+	SIMDATA_DECLARE_OBJECT(Adder3)
 private:
 	virtual void evaluate(Timer const &timer) {
 		setOutput(getInputA(timer) + getInputB(timer) + getInputC(timer), timer);
 	}
 };
 
+SIMDATA_XML_BEGIN(Adder3)
+SIMDATA_XML_END
+
 
 /** A single input node for appling an offset and a gain.
  */
 class Scale: public Junction1 {
 public:
-	SIMDATA_OBJECT(Scale, 0, 0)
-	EXTEND_SIMDATA_XML_INTERFACE(Scale, Junction1)
-	END_SIMDATA_XML_INTERFACE
+	SIMDATA_DECLARE_OBJECT(Scale)
 private:
 	virtual void evaluate(Timer const &timer) {
 		setOutput(getInput(timer), timer);
 	}
 };
+
+SIMDATA_XML_BEGIN(Scale)
+SIMDATA_XML_END
 
 
 /** A programmable schedule.  The output is the scheduled value of
@@ -341,16 +367,17 @@ private:
 class Schedule1: public Junction1 {
 	simdata::Table1 m_Schedule;
 public:
-	SIMDATA_OBJECT(Schedule1, 0, 0)
-	EXTEND_SIMDATA_XML_INTERFACE(Schedule1, Junction1)
-		SIMDATA_XML("schedule", Schedule1::m_Schedule, true)
-	END_SIMDATA_XML_INTERFACE
+	SIMDATA_DECLARE_OBJECT(Schedule1)
 	Schedule1() {}
 private:
 	virtual void evaluate(Timer const &timer) {
 		setOutput(m_Schedule[static_cast<float>(getInput(timer))], timer);
 	}
 };
+
+SIMDATA_XML_BEGIN(Schedule1)
+	SIMDATA_DEF("schedule", m_Schedule, true)
+SIMDATA_XML_END
 
 
 /** A two channel programmable schedule.  The output is the product of
@@ -362,16 +389,17 @@ private:
 class Schedule2: public Junction2 {
 	simdata::Table1 m_Schedule;
 public:
-	SIMDATA_OBJECT(Schedule2, 0, 0)
-	EXTEND_SIMDATA_XML_INTERFACE(Schedule2, Junction2)
-		SIMDATA_XML("schedule", Schedule2::m_Schedule, true)
-	END_SIMDATA_XML_INTERFACE
+	SIMDATA_DECLARE_OBJECT(Schedule2)
 	Schedule2() {}
 private:
 	virtual void evaluate(Timer const &timer) {
 		setOutput(getInputA(timer) * m_Schedule[static_cast<float>(getInputB(timer))], timer);
 	}
 };
+
+SIMDATA_XML_BEGIN(Schedule2)
+	SIMDATA_DEF("schedule", m_Schedule, true)
+SIMDATA_XML_END
 
 
 /** A three channel junction that passes either input channel A or
@@ -386,10 +414,7 @@ private:
 class Switch: public Junction3 {
 	double m_Compare;
 public:
-	SIMDATA_OBJECT(Switch, 0, 0)
-	EXTEND_SIMDATA_XML_INTERFACE(Switch, Junction3)
-		SIMDATA_XML("compare", Switch::m_Compare, true)
-	END_SIMDATA_XML_INTERFACE
+	SIMDATA_DECLARE_OBJECT(Switch)
 private:
 	virtual void evaluate(Timer const &timer) {
 		if (getInputC(timer) < m_Compare) {
@@ -399,6 +424,10 @@ private:
 		}
 	}
 };
+
+SIMDATA_XML_BEGIN(Switch)
+	SIMDATA_DEF("compare", m_Compare, true)
+SIMDATA_XML_END
 
 
 /** A three channel junction that passes either input channel A or
@@ -413,10 +442,7 @@ class BooleanSwitch: public Junction2 {
 	DataChannel<bool>::CRef m_InputC;
 	std::string m_SwitchChannel;
 public:
-	SIMDATA_OBJECT(BooleanSwitch, 0, 0)
-	EXTEND_SIMDATA_XML_INTERFACE(BooleanSwitch, Junction2)
-		SIMDATA_XML("channel", BooleanSwitch::m_SwitchChannel, true)
-	END_SIMDATA_XML_INTERFACE
+	SIMDATA_DECLARE_OBJECT(BooleanSwitch)
 	virtual void importChannels(Bus *bus) {
 		Junction2::importChannels(bus);
 		m_InputC = bus->getChannel(m_SwitchChannel);
@@ -427,6 +453,10 @@ private:
 	}
 };
 
+SIMDATA_XML_BEGIN(BooleanSwitch)
+	SIMDATA_DEF("channel", m_SwitchChannel, true)
+SIMDATA_XML_END
+
 
 /** A simple control node that provides a constant output value.  The
  *  output value is specified by the XML interface.
@@ -434,10 +464,7 @@ private:
 class Constant: public ControlNode {
 	double m_Value;
 public:
-	SIMDATA_OBJECT(Constant, 0, 0)
-	EXTEND_SIMDATA_XML_INTERFACE(Constant, ControlNode)
-		SIMDATA_XML("value", Constant::m_Value, true)
-	END_SIMDATA_XML_INTERFACE
+	SIMDATA_DECLARE_OBJECT(Constant)
 	Constant(): m_Value(0.0) {}
 protected:
 	void postCreate() {
@@ -447,6 +474,10 @@ protected:
 private:
 	virtual void evaluate(Timer const &) { }
 };
+
+SIMDATA_XML_BEGIN(Constant)
+	SIMDATA_DEF("value", m_Value, true)
+SIMDATA_XML_END
 
 
 /** An abstract control node that provides access to values on the system
@@ -458,9 +489,7 @@ private:
 class InputChannel: public ControlNode {
 	std::string m_Name;
 public:
-	EXTEND_SIMDATA_XML_VIRTUAL_INTERFACE(InputChannel, ControlNode)
-		SIMDATA_XML("channel", InputChannel::m_Name, true)
-	END_SIMDATA_XML_INTERFACE
+	SIMDATA_DECLARE_ABSTRACT_OBJECT(InputChannel)
 	InputChannel() { }
 	virtual void importChannels(Bus *bus) {
 		DataChannelBase::CRef channel;
@@ -476,6 +505,10 @@ private:
 	}
 };
 
+SIMDATA_XML_BEGIN(InputChannel)
+	SIMDATA_DEF("channel", m_Name, true)
+SIMDATA_XML_END
+
 
 /** An input channel that provides access to the "X" component of a data
  *  channel vector.
@@ -483,13 +516,14 @@ private:
 class InputVectorXChannel: public InputChannel {
 	DataChannel<simdata::Vector3>::CRef m_Channel;
 public:
-	SIMDATA_OBJECT(InputVectorXChannel, 0, 0)
-	EXTEND_SIMDATA_XML_INTERFACE(InputVectorXChannel, InputChannel)
-	END_SIMDATA_XML_INTERFACE
+	SIMDATA_DECLARE_OBJECT(InputVectorXChannel)
 protected:
 	virtual double getChannelValue() const { return m_Channel->value().x(); }
 	virtual void setChannel(DataChannelBase::CRef &channel) { m_Channel = channel; }
 };
+
+SIMDATA_XML_BEGIN(InputVectorXChannel)
+SIMDATA_XML_END
 
 
 /** An input channel that provides access to the "Y" component of a data
@@ -498,13 +532,14 @@ protected:
 class InputVectorYChannel: public InputChannel {
 	DataChannel<simdata::Vector3>::CRef m_Channel;
 public:
-	SIMDATA_OBJECT(InputVectorYChannel, 0, 0)
-	EXTEND_SIMDATA_XML_INTERFACE(InputVectorYChannel, InputChannel)
-	END_SIMDATA_XML_INTERFACE
+	SIMDATA_DECLARE_OBJECT(InputVectorYChannel)
 protected:
 	virtual double getChannelValue() const { return m_Channel->value().y(); }
 	virtual void setChannel(DataChannelBase::CRef &channel) { m_Channel = channel; }
 };
+
+SIMDATA_XML_BEGIN(InputVectorYChannel)
+SIMDATA_XML_END
 
 
 /** An input channel that provides access to the "Z" component of a data
@@ -513,13 +548,14 @@ protected:
 class InputVectorZChannel: public InputChannel {
 	DataChannel<simdata::Vector3>::CRef m_Channel;
 public:
-	SIMDATA_OBJECT(InputVectorZChannel, 0, 0)
-	EXTEND_SIMDATA_XML_INTERFACE(InputVectorZChannel, InputChannel)
-	END_SIMDATA_XML_INTERFACE
+	SIMDATA_DECLARE_OBJECT(InputVectorZChannel)
 protected:
 	virtual double getChannelValue() const { return m_Channel->value().z(); }
 	virtual void setChannel(DataChannelBase::CRef &channel) { m_Channel = channel; }
 };
+
+SIMDATA_XML_BEGIN(InputVectorZChannel)
+SIMDATA_XML_END
 
 
 /** An input channel that provides access to a scalar data channel.
@@ -527,13 +563,14 @@ protected:
 class InputScalarChannel: public InputChannel {
 	DataChannel<double>::CRef m_Channel;
 public:
-	SIMDATA_OBJECT(InputScalarChannel, 0, 0)
-	EXTEND_SIMDATA_XML_INTERFACE(InputScalarChannel, InputChannel)
-	END_SIMDATA_XML_INTERFACE
+	SIMDATA_DECLARE_OBJECT(InputScalarChannel)
 protected:
 	virtual double getChannelValue() const { return m_Channel->value(); }
 	virtual void setChannel(DataChannelBase::CRef &channel) { m_Channel = channel; }
 };
+
+SIMDATA_XML_BEGIN(InputScalarChannel)
+SIMDATA_XML_END
 
 
 /** A channel for writing (scalar) values to the system bus.
@@ -545,10 +582,7 @@ class OutputChannel: public Junction1 {
 	std::string m_Name;
 	DataChannel<double>::Ref m_Channel;
 public:
-	SIMDATA_OBJECT(OutputChannel, 0, 0)
-	EXTEND_SIMDATA_XML_INTERFACE(OutputChannel, Junction1)
-		SIMDATA_XML("channel", OutputChannel::m_Name, true)
-	END_SIMDATA_XML_INTERFACE
+	SIMDATA_DECLARE_OBJECT(OutputChannel)
 	OutputChannel() {}
 	typedef simdata::Ref<OutputChannel> Ref;
 	void connect(Bus *bus) {
@@ -567,20 +601,25 @@ private:
 	}
 };
 
+SIMDATA_XML_BEGIN(OutputChannel)
+	SIMDATA_DEF("channel", m_Name, true)
+SIMDATA_XML_END
+
 
 /** A simple comparator junction that outputs the greater of the two
  *  input values.
  */
 class Greater: public Junction2 {
 public:
-	SIMDATA_OBJECT(Greater, 0, 0)
-	EXTEND_SIMDATA_XML_INTERFACE(Greater, Junction2)
-	END_SIMDATA_XML_INTERFACE
+	SIMDATA_DECLARE_OBJECT(Greater)
 private:
 	virtual void evaluate(Timer const &timer) {
 		setOutput(std::max(getInputA(timer),getInputB(timer)), timer);
 	}
 };
+
+SIMDATA_XML_BEGIN(Greater)
+SIMDATA_XML_END
 
 
 /** A simple comparator junction that outputs the lesser of the two
@@ -588,14 +627,15 @@ private:
  */
 class Lesser: public Junction2 {
 public:
-	SIMDATA_OBJECT(Lesser, 0, 0)
-	EXTEND_SIMDATA_XML_INTERFACE(Lesser, Junction2)
-	END_SIMDATA_XML_INTERFACE
+	SIMDATA_DECLARE_OBJECT(Lesser)
 private:
 	virtual void evaluate(Timer const &timer) {
 		setOutput(std::min(getInputA(timer),getInputB(timer)), timer);
 	}
 };
+
+SIMDATA_XML_BEGIN(Lesser)
+SIMDATA_XML_END
 
 
 /**
@@ -613,10 +653,7 @@ class FlightControlSystem: public System {
 	ControlNode::Timer m_Timer;
 
 public:
-	SIMDATA_OBJECT(FlightControlSystem, 0, 0)
-	BEGIN_SIMDATA_XML_INTERFACE(FlightControlSystem)
-		SIMDATA_XML("nodes", FlightControlSystem::m_ControlNodes, true)
-	END_SIMDATA_XML_INTERFACE
+	SIMDATA_DECLARE_OBJECT(FlightControlSystem)
 
 	FlightControlSystem(): System() {}
 
@@ -712,34 +749,10 @@ public:
 
 };
 
-//
-SIMDATA_REGISTER_INTERFACE(FlightControlSystem)
-//
-SIMDATA_REGISTER_INTERFACE(ControlNode)
-SIMDATA_REGISTER_INTERFACE(Junction1)
-SIMDATA_REGISTER_INTERFACE(Junction2)
-SIMDATA_REGISTER_INTERFACE(Junction3)
-SIMDATA_REGISTER_INTERFACE(LeadFilter)
-SIMDATA_REGISTER_INTERFACE(LagFilter)
-SIMDATA_REGISTER_INTERFACE(LeadLagFilter)
-SIMDATA_REGISTER_INTERFACE(Integrator)
-SIMDATA_REGISTER_INTERFACE(Greater)
-SIMDATA_REGISTER_INTERFACE(Lesser)
-SIMDATA_REGISTER_INTERFACE(Adder)
-SIMDATA_REGISTER_INTERFACE(Adder3)
-SIMDATA_REGISTER_INTERFACE(InputChannel)
-SIMDATA_REGISTER_INTERFACE(InputVectorXChannel)
-SIMDATA_REGISTER_INTERFACE(InputVectorYChannel)
-SIMDATA_REGISTER_INTERFACE(InputVectorZChannel)
-SIMDATA_REGISTER_INTERFACE(InputScalarChannel)
-SIMDATA_REGISTER_INTERFACE(Schedule1)
-SIMDATA_REGISTER_INTERFACE(Schedule2)
-SIMDATA_REGISTER_INTERFACE(Switch)
-SIMDATA_REGISTER_INTERFACE(BooleanSwitch)
-SIMDATA_REGISTER_INTERFACE(Scale)
-SIMDATA_REGISTER_INTERFACE(Constant)
-SIMDATA_REGISTER_INTERFACE(Multiply)
-SIMDATA_REGISTER_INTERFACE(Divide)
-SIMDATA_REGISTER_INTERFACE(OutputChannel)
+SIMDATA_XML_BEGIN(FlightControlSystem)
+	SIMDATA_DEF("nodes", m_ControlNodes, true)
+SIMDATA_XML_END
+
 
 //} // namespace fcsnode
+

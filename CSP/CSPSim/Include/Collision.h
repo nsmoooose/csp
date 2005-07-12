@@ -65,10 +65,7 @@ protected:
 	virtual void registerChannels(Bus *bus);
 
 public:
-
-	SIMDATA_OBJECT(GroundCollisionDynamics, 0, 0)
-	EXTEND_SIMDATA_XML_INTERFACE(GroundCollisionDynamics, BaseDynamics)
-	END_SIMDATA_XML_INTERFACE
+	SIMDATA_DECLARE_OBJECT(GroundCollisionDynamics)
 
 	/**
 	 * Construct a new ground collision dynamics instance.

@@ -82,13 +82,7 @@ public:
 	typedef simdata::Key TypeID;
 	typedef std::map<TypeID, Ref> MapID;
 
-	BEGIN_SIMDATA_XML_VIRTUAL_INTERFACE(ControlNode)
-		SIMDATA_XML("id", ControlNode::m_ID, true)
-		SIMDATA_XML("clamp_lo", ControlNode::m_ClampLo, false)
-		SIMDATA_XML("clamp_hi", ControlNode::m_ClampHi, false)
-		SIMDATA_XML("rate_limit_dec", ControlNode::m_RateLimitDec, false)
-		SIMDATA_XML("rate_limit_inc", ControlNode::m_RateLimitInc, false)
-	END_SIMDATA_XML_INTERFACE
+	SIMDATA_DECLARE_ABSTRACT_OBJECT(ControlNode)
 
 	ControlNode():
 		m_Output0(0.0),

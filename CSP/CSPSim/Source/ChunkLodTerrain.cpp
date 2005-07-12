@@ -44,7 +44,15 @@
  */
 
 
-SIMDATA_REGISTER_INTERFACE(ChunkLodTerrain)
+SIMDATA_XML_BEGIN(ChunkLodTerrain)
+	SIMDATA_DEF("chunk_file", m_ChunkFile, true)
+	SIMDATA_DEF("texture_file", m_TextureFile, true)
+	SIMDATA_DEF("lattice_width", m_LatticeWidth, true)
+	SIMDATA_DEF("lattice_height", m_LatticeHeight, true)
+	SIMDATA_DEF("base_screen_error", m_BaseScreenError, true)
+	SIMDATA_DEF("base_texel_size", m_BaseTexelSize, true)
+	SIMDATA_DEF("use_loader_thread", m_UseLoaderThread, true)
+SIMDATA_XML_END
 
 
 // The class contains all the parameters used by the Terrain Engine.

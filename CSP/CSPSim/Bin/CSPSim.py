@@ -181,12 +181,11 @@ def compileData(args):
 	#print "compile %s %s" % (XML, dar)
 	try:
 		from CSP.SimData.Compile import Compiler, CompilerUsageError
-	except:
+	except Exception, e:
 		print
 		print "ERROR: unable to load the SimData data compiler module."
 		print
-		print "Please verify the SimData has been installed correctly in your Python"
-		print "site-local directory.  See the SimData README file for instructions."
+		print str(e)
 		print
 		sys.exit(1)
 	compiler = Compiler()

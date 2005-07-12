@@ -35,19 +35,18 @@ class TimedSequence;
 class AircraftObject: public DynamicObject
 {
 public:
-	SIMDATA_OBJECT(AircraftObject, 0, 0)
-
-	EXTEND_SIMDATA_XML_INTERFACE(AircraftObject, DynamicObject)
-	END_SIMDATA_XML_INTERFACE
+	SIMDATA_DECLARE_OBJECT(AircraftObject)
 
 	DECLARE_INPUT_INTERFACE(AircraftObject, DynamicObject)
 		BIND_ACTION("SMOKE_ON", SmokeOn);
 		BIND_ACTION("SMOKE_OFF", SmokeOff);
 		BIND_ACTION("SMOKE_TOGGLE", SmokeToggle);
 		BIND_ACTION("MARKS_TOGGLE", MarkersToggle);
-	END_INPUT_INTERFACE
+	END_INPUT_INTERFACE  // protected:
 
 public:
+	AircraftObject();
+	virtual ~AircraftObject();
 
 	// input event handlers
 	void SmokeOn();
@@ -55,8 +54,6 @@ public:
 	void SmokeToggle();
 	void MarkersToggle();
 
-	AircraftObject();
-	virtual ~AircraftObject();
 	virtual void dump();
 	
 	virtual void onRender();
@@ -81,7 +78,7 @@ protected:
 	virtual void postCreate();
 	virtual void convertXML();
 
-	// dynamic properties	
+	// dynamic properties
 	DataChannel<double>::Ref b_Roll;
 	DataChannel<double>::Ref b_Pitch;
 	DataChannel<double>::Ref b_Heading;

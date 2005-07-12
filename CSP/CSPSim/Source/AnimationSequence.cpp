@@ -25,9 +25,23 @@
 
 #include "AnimationSequence.h"
 
-SIMDATA_REGISTER_INTERFACE(SharedSequence)
-SIMDATA_REGISTER_INTERFACE(TimedSequence)
-SIMDATA_REGISTER_INTERFACE(DrivenSequence)
+
+SIMDATA_XML_BEGIN(SharedSequence)
+	SIMDATA_DEF("sequence_channel", m_SequenceChannel, false)
+	SIMDATA_DEF("normalized_channel", m_NormalizedChannel, false)
+	SIMDATA_DEF("initial_key", m_InitialKey, true)
+	SIMDATA_DEF("final_key", m_FinalKey, true)
+SIMDATA_XML_END
+
+SIMDATA_XML_BEGIN(TimedSequence)
+	SIMDATA_DEF("duration", m_Duration, false)
+SIMDATA_XML_END
+
+SIMDATA_XML_BEGIN(DrivenSequence)
+	SIMDATA_DEF("scale", m_Scale, false)
+	SIMDATA_DEF("offset", m_Offset, false)
+SIMDATA_XML_END
+
 
 void SharedSequence::registerChannels(Bus *bus) {
 	// SharedSequence is used by dynamic object subclasses, so it needs to be able

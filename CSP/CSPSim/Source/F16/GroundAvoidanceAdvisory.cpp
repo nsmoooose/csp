@@ -33,7 +33,8 @@
 #include <SimData/Math.h>
 
 
-SIMDATA_REGISTER_INTERFACE(GroundAvoidanceAdvisory)
+SIMDATA_XML_BEGIN(GroundAvoidanceAdvisory)
+SIMDATA_XML_END
 
 
 GroundAvoidanceAdvisory::GroundAvoidanceAdvisory():

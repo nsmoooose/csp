@@ -42,7 +42,9 @@ using simdata::toDegrees;
 using simdata::toRadians;
 
 
-SIMDATA_REGISTER_INTERFACE(FlightDynamics)
+SIMDATA_XML_BEGIN(FlightDynamics)
+	SIMDATA_DEF("flight_model", m_FlightModel, true)
+SIMDATA_XML_END
 
 
 FlightDynamics::FlightDynamics():

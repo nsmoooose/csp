@@ -72,7 +72,30 @@
 
 const simdata::Enumeration ObjectModel::EffectItems("None SpecularHighlights");
 
-SIMDATA_REGISTER_INTERFACE(ObjectModel)
+SIMDATA_XML_BEGIN(ObjectModel)
+	SIMDATA_DEF("label", m_Label, false)
+	SIMDATA_DEF("model_path", m_ModelPath, true)
+	SIMDATA_DEF("axis_0", m_Axis0, false)
+	SIMDATA_DEF("axis_1", m_Axis1, false)
+	SIMDATA_DEF("view_point", m_ViewPoint, false)
+	SIMDATA_DEF("hud_placement", m_HudPlacement, false)
+	SIMDATA_DEF("hud_width", m_HudWidth, false)
+	SIMDATA_DEF("hud_height", m_HudHeight, false)
+	SIMDATA_DEF("offset", m_Offset, false)
+	SIMDATA_DEF("scale", m_Scale, false)
+	SIMDATA_DEF("smooth", m_Smooth, false)
+	SIMDATA_DEF("filter", m_Filter, false)
+	SIMDATA_DEF("filter_value", m_FilterValue, false)
+	SIMDATA_DEF("effect", m_Effect, false)
+	SIMDATA_DEF("contacts", m_Contacts, false)
+	SIMDATA_DEF("debug_points", m_DebugPoints, false)
+	SIMDATA_DEF("elevation_correction", m_ElevationCorrection, false)
+	SIMDATA_DEF("polygon_offset", m_PolygonOffset, false)
+	SIMDATA_DEF("cull_face", m_CullFace, false)
+	SIMDATA_DEF("lighting", m_Lighting, false)
+	SIMDATA_DEF("animations", m_Animations, false)
+	SIMDATA_DEF("stations", m_Stations, false)
+SIMDATA_XML_END
 
 
 /**

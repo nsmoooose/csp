@@ -1,17 +1,17 @@
 // Combat Simulator Project
 // Copyright (C) 2002 The Combat Simulator Project
 // http://csp.sourceforge.net
-// 
+//
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
 // as published by the Free Software Foundation; either version 2
 // of the License, or (at your option) any later version.
-// 
+//
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU General Public License
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
@@ -44,7 +44,7 @@ class ElevationCorrection;
 /**
  * class FeatureModel (STATIC)
  *
- * Static data representing a single Feature that is shared by all 
+ * Static data representing a single Feature that is shared by all
  * instances of that feature.
  */
 class FeatureObjectModel: public FeatureModel {
@@ -54,6 +54,11 @@ protected:
 	simdata::Link<ObjectModel> m_ObjectModel;
 	
 public:
+	SIMDATA_DECLARE_STATIC_OBJECT(FeatureObjectModel)
+
+	FeatureObjectModel();
+
+	virtual ~FeatureObjectModel();
 
 	/**
 	 * Get the damage modifiers for this feature type.
@@ -83,19 +88,6 @@ public:
 	 * Construct a new Feature instance for this feature.
 	 */
 	virtual void makeFeatures(std::vector<Feature> &features, int value) const;
-
-	SIMDATA_STATIC_OBJECT(FeatureObjectModel, 0, 0)
-
-	BEGIN_SIMDATA_XML_INTERFACE(FeatureObjectModel)
-		SIMDATA_XML("model", FeatureObjectModel::m_ObjectModel, false)
-		SIMDATA_XML("hit_points", FeatureObjectModel::m_HitPoints, false)
-		SIMDATA_XML("value_modifier", FeatureObjectModel::m_Value, false)
-	END_SIMDATA_XML_INTERFACE
-
-	FeatureObjectModel();
-
-	virtual ~FeatureObjectModel();
-
 };
 
 

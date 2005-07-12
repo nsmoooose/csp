@@ -80,10 +80,7 @@
 
 class GroundAvoidanceAdvisory: public System {
 public:
-	SIMDATA_OBJECT(GroundAvoidanceAdvisory, 0, 0)
-
-	EXTEND_SIMDATA_XML_INTERFACE(GroundAvoidanceAdvisory, System)
-	END_SIMDATA_XML_INTERFACE
+	SIMDATA_DECLARE_OBJECT(GroundAvoidanceAdvisory)
 
 	GroundAvoidanceAdvisory();
 

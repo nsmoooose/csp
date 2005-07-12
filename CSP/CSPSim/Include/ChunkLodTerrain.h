@@ -61,18 +61,8 @@ namespace osg {
 class ChunkLodTerrain: public TerrainObject
 {
 public:
-	SIMDATA_OBJECT(ChunkLodTerrain, 0, 0)
-		
-	EXTEND_SIMDATA_XML_INTERFACE(ChunkLodTerrain, TerrainObject)
-		SIMDATA_XML("chunk_file", ChunkLodTerrain::m_ChunkFile, true)
-		SIMDATA_XML("texture_file", ChunkLodTerrain::m_TextureFile, true)
-		SIMDATA_XML("lattice_width", ChunkLodTerrain::m_LatticeWidth, true)
-		SIMDATA_XML("lattice_height", ChunkLodTerrain::m_LatticeHeight, true)
-		SIMDATA_XML("base_screen_error", ChunkLodTerrain::m_BaseScreenError, true)
-		SIMDATA_XML("base_texel_size", ChunkLodTerrain::m_BaseTexelSize, true)
-		SIMDATA_XML("use_loader_thread", ChunkLodTerrain::m_UseLoaderThread, true)
-	END_SIMDATA_XML_INTERFACE
-	
+	SIMDATA_DECLARE_OBJECT(ChunkLodTerrain)
+
 	ChunkLodTerrain();
 	virtual ~ChunkLodTerrain();
 

@@ -43,11 +43,7 @@ class FlightDynamics: public BaseDynamics {
 public:
 	FlightDynamics();
 
-	SIMDATA_OBJECT(FlightDynamics, 0, 0)
-
-	EXTEND_SIMDATA_XML_INTERFACE(FlightDynamics, BaseDynamics)
-		SIMDATA_XML("flight_model", FlightDynamics::m_FlightModel, true)
-	END_SIMDATA_XML_INTERFACE
+	SIMDATA_DECLARE_OBJECT(FlightDynamics)
 
 	void computeForceAndMoment(double x);
 	void initializeSimulationStep(double dt);

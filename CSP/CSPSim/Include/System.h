@@ -249,10 +249,7 @@ protected:
 	}
 
 public:
-
-	BEGIN_SIMDATA_XML_VIRTUAL_INTERFACE(System)
-		SIMDATA_XML("subsystems", System::m_Subsystems, false)
-	END_SIMDATA_XML_INTERFACE
+	SIMDATA_DECLARE_ABSTRACT_OBJECT(System)
 
 	/** True if a system can be added as the child of another system.
 	 *

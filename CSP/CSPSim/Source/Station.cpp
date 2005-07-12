@@ -28,7 +28,12 @@
 
 
 
-SIMDATA_REGISTER_INTERFACE(Station)
+SIMDATA_XML_BEGIN(Station)
+	SIMDATA_DEF("name", m_Name, true)
+	SIMDATA_DEF("detail_model", m_DetailModel, false)
+	SIMDATA_DEF("mask_names", m_MaskNames, false)
+	//SIMDATA_DEF("view_model", m_ViewModel, false)  // TODO
+SIMDATA_XML_END
 
 
 Station::Station(): m_Mask(0) {}

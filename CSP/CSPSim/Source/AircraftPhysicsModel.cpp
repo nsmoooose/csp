@@ -33,7 +33,8 @@
 
 using Vector::Vectord;
 
-SIMDATA_REGISTER_INTERFACE(AircraftPhysicsModel)
+SIMDATA_XML_BEGIN(AircraftPhysicsModel)
+SIMDATA_XML_END
 
 
 AircraftPhysicsModel::AircraftPhysicsModel():

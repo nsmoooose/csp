@@ -25,8 +25,16 @@
 
 #include "GearAnimation.h"
 
-SIMDATA_REGISTER_INTERFACE(GearSequenceAnimation)
-SIMDATA_REGISTER_INTERFACE(M2kGearAnimation)
+SIMDATA_XML_BEGIN(M2kGearAnimation)
+	SIMDATA_DEF("absorber02_length", m_Absorber02Length, false)
+	SIMDATA_DEF("absorber03_length", m_Absorber03Length, false)
+	SIMDATA_DEF("offset", m_Offset, false)
+SIMDATA_XML_END
+
+SIMDATA_XML_BEGIN(GearSequenceAnimation)
+	SIMDATA_DEF("retract_sequence", m_RetractSequence, false)
+	SIMDATA_DEF("compression_sequence", m_CompressionSequence, false)
+SIMDATA_XML_END
 
 
 void GearSequenceAnimation::setGearName(std::string const &name) {

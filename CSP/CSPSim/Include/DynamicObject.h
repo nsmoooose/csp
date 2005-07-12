@@ -86,15 +86,7 @@ protected:
 	Bus* getBus();
 
 public:
-	BEGIN_SIMDATA_XML_VIRTUAL_INTERFACE(DynamicObject)
-		SIMDATA_XML("model", DynamicObject::m_Model, true)
-		SIMDATA_XML("mass", DynamicObject::m_ReferenceMass, true)
-		SIMDATA_XML("inertia", DynamicObject::m_ReferenceInertia, false)
-		SIMDATA_XML("human_systems", DynamicObject::m_HumanModel, false)
-		SIMDATA_XML("agent_systems", DynamicObject::m_AgentModel, false)
-		SIMDATA_XML("remote_systems", DynamicObject::m_RemoteModel, false)
-		SIMDATA_XML("reference_center_of_mass_offset", DynamicObject::m_ReferenceCenterOfMassOffset, false)
-	END_SIMDATA_XML_INTERFACE
+	SIMDATA_DECLARE_ABSTRACT_OBJECT(DynamicObject)
 
 	DynamicObject(TypeId type);
 	virtual ~DynamicObject();

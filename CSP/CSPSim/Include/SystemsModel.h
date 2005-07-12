@@ -90,13 +90,7 @@ public:
 
 	typedef simdata::Ref<SystemsModel> Ref;
 
-	SIMDATA_OBJECT(SystemsModel, 0, 0)
-
-	EXTEND_SIMDATA_XML_INTERFACE(SystemsModel, System)
-		SIMDATA_XML("physics_model", SystemsModel::m_PhysicsModel, false)
-		SIMDATA_XML("local_controller", SystemsModel::m_LocalController, false)
-		SIMDATA_XML("remote_controller", SystemsModel::m_RemoteController, false)
-	END_SIMDATA_XML_INTERFACE
+	SIMDATA_DECLARE_OBJECT(SystemsModel)
 
 	/** Initialize from an existing model.
 	 *

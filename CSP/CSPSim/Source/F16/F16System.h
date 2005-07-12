@@ -39,12 +39,7 @@ class F16System: public System {
 	static const simdata::Enumeration MasterModes;
 
 public:
-	SIMDATA_OBJECT(F16System, 0, 0)
-
-	EXTEND_SIMDATA_XML_INTERFACE(F16System, System)
-		SIMDATA_XML("fuel_door_sequence", F16System::m_FuelDoorSequence, false)
-		SIMDATA_XML("canopy_sequence", F16System::m_CanopySequence, false)
-	END_SIMDATA_XML_INTERFACE
+	SIMDATA_DECLARE_OBJECT(F16System)
 
 	DECLARE_INPUT_INTERFACE(F16System, System)
 		BIND_ACTION("CATI", setCatI);
@@ -56,7 +51,9 @@ public:
 		BIND_ACTION("FLAPS_TOGGLE", flapsToggle);
 		BIND_ACTION("CANOPY_TOGGLE", canopyToggle);
 		BIND_ACTION("FUEL_DOOR_TOGGLE",fuelDoorToggle);
-	END_INPUT_INTERFACE
+	END_INPUT_INTERFACE  // protected:
+
+public:
 	F16System();
 
 	virtual void flapsDown();
@@ -111,6 +108,7 @@ protected:
 
 	//int m_SteerpointIndex;
 	//std::vector<Steerpoint::Ref> m_Steerpoints;
+
 };
 
 

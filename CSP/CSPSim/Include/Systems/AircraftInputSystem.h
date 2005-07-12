@@ -90,12 +90,7 @@ class AircraftInputSystem: public System {
 	};
 
 public:
-	SIMDATA_OBJECT(AircraftInputSystem, 0, 0)
-
-	EXTEND_SIMDATA_XML_INTERFACE(AircraftInputSystem, System)
-	END_SIMDATA_XML_INTERFACE
-
-	AircraftInputSystem();
+	SIMDATA_DECLARE_OBJECT(AircraftInputSystem)
 
 	DECLARE_INPUT_INTERFACE(AircraftInputSystem, System)
 		BIND_AXIS("THROTTLE", setThrottle);
@@ -128,9 +123,11 @@ public:
 		BIND_ACTION("WHEEL_BRAKE_ON", WheelBrakeOn);
 		BIND_ACTION("WHEEL_BRAKE_OFF", WheelBrakeOff);
 		BIND_ACTION("WHEEL_BRAKE_TOGGLE", WheelBrakeToggle);
-	END_INPUT_INTERFACE
+	END_INPUT_INTERFACE  // protected:
 
 public:
+	AircraftInputSystem();
+
 	virtual void setThrottle(MapEvent::AxisEvent const &event);
 	virtual void setRudder(MapEvent::AxisEvent const &event);
 	virtual void setRoll(MapEvent::AxisEvent const &event);

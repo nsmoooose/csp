@@ -32,9 +32,24 @@
 #include <sstream>
 
 
-SIMDATA_REGISTER_INTERFACE(ThrustData)
-SIMDATA_REGISTER_INTERFACE(Engine)
-SIMDATA_REGISTER_INTERFACE(EngineDynamics)
+SIMDATA_XML_BEGIN(ThrustData)
+	SIMDATA_DEF("idle_thrust", m_idle_thrust, true)
+	SIMDATA_DEF("mil_thrust", m_mil_thrust, true)
+	SIMDATA_DEF("ab_thrust", m_ab_thrust, true)
+SIMDATA_XML_END
+
+SIMDATA_XML_BEGIN(Engine)
+	SIMDATA_DEF("thrust_data", m_ThrustData, true)
+	SIMDATA_DEF("engine_idle_rpm", m_EngineIdleRpm, true)
+	SIMDATA_DEF("engine_ab_thrust", m_EngineAbRpm, true)
+	SIMDATA_DEF("thrust_direction", m_ThrustDirection, true)
+	SIMDATA_DEF("engine_offset", m_EngineOffset, true)
+	SIMDATA_DEF("smoke_emitter_location", m_SmokeEmitterLocation, true)
+SIMDATA_XML_END
+
+SIMDATA_XML_BEGIN(EngineDynamics)
+	SIMDATA_DEF("engine_set", m_Engine, true)
+SIMDATA_XML_END
 
 
 ThrustData::ThrustData() {

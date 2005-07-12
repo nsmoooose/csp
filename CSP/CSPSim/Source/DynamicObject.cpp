@@ -40,7 +40,15 @@
 #include <osg/Group>
 
 
-SIMDATA_REGISTER_INTERFACE(DynamicObject)
+SIMDATA_XML_BEGIN(DynamicObject)
+	SIMDATA_DEF("model", m_Model, true)
+	SIMDATA_DEF("mass", m_ReferenceMass, true)
+	SIMDATA_DEF("inertia", m_ReferenceInertia, false)
+	SIMDATA_DEF("human_systems", m_HumanModel, false)
+	SIMDATA_DEF("agent_systems", m_AgentModel, false)
+	SIMDATA_DEF("remote_systems", m_RemoteModel, false)
+	SIMDATA_DEF("reference_center_of_mass_offset", m_ReferenceCenterOfMassOffset, false)
+SIMDATA_XML_END
 
 
 using bus::Kinetics;

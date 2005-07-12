@@ -28,7 +28,11 @@
 #include "System.h"
 #include "SystemsModel.h"
 
-SIMDATA_REGISTER_INTERFACE(System)
+
+SIMDATA_XML_BEGIN(System)
+	SIMDATA_DEF("subsystems", m_Subsystems, false)
+SIMDATA_XML_END
+
 
 void System::setModel(SystemsModel *model) {
 	assert(m_Model == 0);

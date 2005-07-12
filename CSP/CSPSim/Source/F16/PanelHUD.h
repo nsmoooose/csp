@@ -32,10 +32,7 @@
 
 class PanelHUD: public System {
 public:
-	SIMDATA_OBJECT(PanelHUD, 0, 0)
-
-	EXTEND_SIMDATA_XML_INTERFACE(PanelHUD, System)
-	END_SIMDATA_XML_INTERFACE
+	SIMDATA_DECLARE_OBJECT(PanelHUD)
 
 	DECLARE_INPUT_INTERFACE(PanelHUD, System)
 		BIND_ACTION("CYCLE_HUD_DATA_SWITCH", onCycleDataSwitch);
@@ -43,8 +40,9 @@ public:
 		BIND_ACTION("CYCLE_HUD_SCALES_SWITCH", onCycleScalesSwitch);
 		BIND_ACTION("CYCLE_HUD_VELOCITY_SWITCH", onCycleVelocitySwitch);
 		BIND_ACTION("CYCLE_HUD_ALTITUDE_SWITCH", onCycleAltitudeSwitch);
-	END_INPUT_INTERFACE
+	END_INPUT_INTERFACE  // protected:
 
+public:
 	PanelHUD();
 	virtual ~PanelHUD();
 

@@ -31,7 +31,12 @@
 
 using namespace std;
 
-SIMDATA_REGISTER_INTERFACE(TankObject)
+SIMDATA_XML_BEGIN(TankObject)
+	SIMDATA_DEF("forward_speed", forward_speed, false)
+	SIMDATA_DEF_BIT("test0", bits, 1, false)
+	SIMDATA_DEF_BIT("test1", bits, 2, false)
+	SIMDATA_DEF_BIT("test2", bits, 4, false)
+SIMDATA_XML_END
 
 
 TankObject::TankObject(): DynamicObject(TYPE_MUD_UNIT)
@@ -66,7 +71,7 @@ void TankObject::registerChannels(Bus * bus) {
 //	}
 }
 
-void TankObject::bindChannels(Bus * bus) {
+void TankObject::bindChannels(Bus*) {
 	CSP_LOG(OBJECT, DEBUG, "TankObject::bindChannels() ...");
 //	DynamicObject::bindChannels(bus);
 }

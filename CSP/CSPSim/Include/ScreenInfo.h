@@ -37,7 +37,7 @@ namespace osgText {
 
 class DynamicObject;
 
-class ScreenInfo: public osg::Switch 
+class ScreenInfo: public osg::Switch
 //class ScreenInfo: public osg::Geode
 {
 protected:

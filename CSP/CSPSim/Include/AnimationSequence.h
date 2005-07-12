@@ -80,12 +80,7 @@ class SharedSequence: public simdata::Object {
 	friend class UpdateSequenceKey;
 
 public:
-	BEGIN_SIMDATA_XML_VIRTUAL_INTERFACE(SharedSequence)
-		SIMDATA_XML("sequence_channel", SharedSequence::m_SequenceChannel, false)
-		SIMDATA_XML("normalized_channel", SharedSequence::m_NormalizedChannel, false)
-		SIMDATA_XML("initial_key", SharedSequence::m_InitialKey, true)
-		SIMDATA_XML("final_key", SharedSequence::m_FinalKey, true)
-	END_SIMDATA_XML_INTERFACE
+	SIMDATA_DECLARE_ABSTRACT_OBJECT(SharedSequence)
 
 	SharedSequence(): m_SequenceKey(0), m_NormalizedKey(0), m_Updater(0) { }
 	virtual ~SharedSequence() { delete m_Updater; }
@@ -133,10 +128,7 @@ private:
 
 class TimedSequence: public SharedSequence {
 public:
-	SIMDATA_OBJECT(TimedSequence, 0, 0)
-	EXTEND_SIMDATA_XML_INTERFACE(TimedSequence, SharedSequence)
-		SIMDATA_XML("duration", TimedSequence::m_Duration, false)
-	END_SIMDATA_XML_INTERFACE
+	SIMDATA_DECLARE_OBJECT(TimedSequence)
 
 	TimedSequence(): m_Duration(0), m_Timescale(1.0), m_Playscale(0), m_Play(false) { }
 
@@ -191,11 +183,7 @@ private:
 
 class DrivenSequence: public SharedSequence {
 public:
-	SIMDATA_OBJECT(DrivenSequence, 0, 0)
-	EXTEND_SIMDATA_XML_INTERFACE(DrivenSequence, SharedSequence)
-		SIMDATA_XML("scale", DrivenSequence::m_Scale, false)
-		SIMDATA_XML("offset", DrivenSequence::m_Offset, false)
-	END_SIMDATA_XML_INTERFACE
+	SIMDATA_DECLARE_OBJECT(DrivenSequence)
 
 	DrivenSequence(): m_Scale(1.0), m_Offset(0.0) { }
 	void setValue(double value) { setNormalizedKey(value * m_Scale + m_Offset); }

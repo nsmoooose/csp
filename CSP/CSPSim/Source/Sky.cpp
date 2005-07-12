@@ -134,11 +134,7 @@ public:
 		}
 	};
 
-	SIMDATA_STATIC_OBJECT(StarCatalog, 0, 0)
-	BEGIN_SIMDATA_XML_INTERFACE(StarCatalog)
-		SIMDATA_XML("source", StarCatalog::m_Source, false)
-		SIMDATA_XML("magnitude_cutoff", StarCatalog::m_MagnitudeCutoff, false)
-	END_SIMDATA_XML_INTERFACE
+	SIMDATA_DECLARE_STATIC_OBJECT(StarCatalog)
 
 	void serialize(simdata::Writer &writer) const {
 		Object::serialize(writer);
@@ -174,7 +170,10 @@ public:
 	std::vector<Star> _stars;
 };
 
-SIMDATA_REGISTER_INTERFACE(StarCatalog)
+SIMDATA_XML_BEGIN(StarCatalog)
+	SIMDATA_DEF("source", m_Source, false)
+	SIMDATA_DEF("magnitude_cutoff", m_MagnitudeCutoff, false)
+SIMDATA_XML_END
 
 
 // TODO reimplement this as an osg::Geometry using a vertex list PrimitiveSet

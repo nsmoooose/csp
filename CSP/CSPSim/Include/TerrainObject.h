@@ -54,6 +54,8 @@ namespace osg {
 class TerrainObject: public simdata::Object
 {
 public:
+	SIMDATA_DECLARE_ABSTRACT_OBJECT(TerrainObject)
+
 	/* currently the only two terrain engines are demeter and
 	 * chunk lod.  the former doesn't have hints, the latter
 	 * needs only a short integer.  to be really OO here we
@@ -96,14 +98,6 @@ public:
 		simdata::Vector3 _normal;
 	};
 
-	BEGIN_SIMDATA_XML_VIRTUAL_INTERFACE(TerrainObject)
-		SIMDATA_XML("name", TerrainObject::m_Name, true)
-		SIMDATA_XML("version", TerrainObject::m_Version, true)
-		SIMDATA_XML("center", TerrainObject::m_Center, true)
-		SIMDATA_XML("width", TerrainObject::m_Width, true)
-		SIMDATA_XML("height", TerrainObject::m_Height, true)
-	END_SIMDATA_XML_INTERFACE
-	
 	TerrainObject();
 	virtual ~TerrainObject();
 

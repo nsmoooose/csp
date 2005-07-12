@@ -1,17 +1,17 @@
 // Combat Simulator Project
 // Copyright (C) 2002 The Combat Simulator Project
 // http://csp.sourceforge.net
-// 
+//
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
 // as published by the Free Software Foundation; either version 2
 // of the License, or (at your option) any later version.
-// 
+//
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU General Public License
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
@@ -67,16 +67,7 @@ class RandomForestModel: public FeatureGroupModel {
 	osg::Geometry *construct(simdata::Ref<FeatureQuad> quad, std::vector<osg::Vec3> const &position) const;
 
 public:
-	SIMDATA_OBJECT(RandomForestModel, 0, 0)
-
-	BEGIN_SIMDATA_XML_INTERFACE(RandomForestModel)
-		SIMDATA_XML("models", RandomForestModel::m_Models, true)
-		SIMDATA_XML("density", RandomForestModel::m_Density, true)
-		SIMDATA_XML("minimum_spacing", RandomForestModel::m_MinimumSpacing, true)
-		SIMDATA_XML("seed", RandomForestModel::m_Seed, false)
-		SIMDATA_XML("isocontour", RandomForestModel::m_IsoContour, false)
-	END_SIMDATA_XML_INTERFACE
-
+	SIMDATA_DECLARE_OBJECT(RandomForestModel)
 
 	/**
 	 * Return the total number of features below this group.

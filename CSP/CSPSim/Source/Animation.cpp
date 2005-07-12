@@ -36,6 +36,12 @@
 #include <SimData/Math.h>
 
 
+SIMDATA_XML_BEGIN(Animation)
+	SIMDATA_DEF("model_id", m_NodeLabel, true)
+	SIMDATA_DEF("lod_limit", m_LOD, false)
+SIMDATA_XML_END
+
+
 // Stupidly, this class is not exposed by osg so we have to reproduce it here.
 class AnimationPathCallbackVisitor: public osg::NodeVisitor {
 	osg::AnimationPath::ControlPoint _cp;
@@ -277,16 +283,7 @@ class Rotation: public Animation {
 	osg::Vec3 m_OSGAxis;
 
 public:
-	EXTEND_SIMDATA_XML_VIRTUAL_INTERFACE(Rotation, Animation)
-		SIMDATA_XML("channel_name", Rotation::m_ChannelName, false)
-		SIMDATA_XML("axis", Rotation::m_Axis, false)
-		SIMDATA_XML("gain", Rotation::m_Gain, false)
-		SIMDATA_XML("phase", Rotation::m_Phase, false)
-		SIMDATA_XML("limit_0", Rotation::m_Limit0, false)
-		SIMDATA_XML("limit_1", Rotation::m_Limit1, false)
-		SIMDATA_XML("pre_multiply", Rotation::m_PreMultiply, false)
-		SIMDATA_XML("post_multiply", Rotation::m_PostMultiply, false)
-	END_SIMDATA_XML_INTERFACE
+	SIMDATA_DECLARE_ABSTRACT_OBJECT(Rotation)
 
 	Rotation():
 		m_Axis(simdata::Vector3::ZERO),
@@ -315,6 +312,17 @@ protected:
 	}
 };
 
+SIMDATA_XML_BEGIN(Rotation)
+	SIMDATA_DEF("channel_name", m_ChannelName, false)
+	SIMDATA_DEF("axis", m_Axis, false)
+	SIMDATA_DEF("gain", m_Gain, false)
+	SIMDATA_DEF("phase", m_Phase, false)
+	SIMDATA_DEF("limit_0", m_Limit0, false)
+	SIMDATA_DEF("limit_1", m_Limit1, false)
+	SIMDATA_DEF("pre_multiply", m_PreMultiply, false)
+	SIMDATA_DEF("post_multiply", m_PostMultiply, false)
+SIMDATA_XML_END
+
 
 ////////////////////////////////////////////////////////////////////////////////////
 //
@@ -332,13 +340,7 @@ class RotarySwitch: public Animation {
 	osg::Vec3 m_OSGAxis;
 
 public:
-	SIMDATA_OBJECT(RotarySwitch, 0, 0)
-
-	EXTEND_SIMDATA_XML_INTERFACE(RotarySwitch, Animation)
-		SIMDATA_XML("channel_name", RotarySwitch::m_ChannelName, false)
-		SIMDATA_XML("axis", RotarySwitch::m_Axis, false)
-		SIMDATA_XML("angles", RotarySwitch::m_Angles, true)
-	END_SIMDATA_XML_INTERFACE
+	SIMDATA_DECLARE_OBJECT(RotarySwitch)
 
 	virtual AnimationCallback *newCallback(osg::Node *node) const;
 
@@ -352,6 +354,12 @@ protected:
 		m_OSGAxis = simdata::toOSG(m_Axis);
 	}
 };
+
+SIMDATA_XML_BEGIN(RotarySwitch)
+	SIMDATA_DEF("channel_name", m_ChannelName, false)
+	SIMDATA_DEF("axis", m_Axis, false)
+	SIMDATA_DEF("angles", m_Angles, true)
+SIMDATA_XML_END
 
 
 class RotarySwitch::Callback: public AnimationCallback {
@@ -411,16 +419,16 @@ class StateSwitch: public Animation {
 	std::string m_ChannelName;
 
 public:
-	SIMDATA_OBJECT(StateSwitch, 0, 0)
-	
-	EXTEND_SIMDATA_XML_INTERFACE(StateSwitch, Animation)
-		SIMDATA_XML("channel_name", StateSwitch::m_ChannelName, true)
-	END_SIMDATA_XML_INTERFACE
+	SIMDATA_DECLARE_OBJECT(StateSwitch)
 
 	virtual AnimationCallback *newCallback(osg::Node *node) const;
 	const std::string &getChannelName() const { return m_ChannelName; }
 	virtual bool needsSwitch() const { return true; }
 };
+
+SIMDATA_XML_BEGIN(StateSwitch)
+	SIMDATA_DEF("channel_name", m_ChannelName, true)
+SIMDATA_XML_END
 
 
 class StateSwitch::Callback: public AnimationCallback {
@@ -497,13 +505,7 @@ AnimationCallback *StateSwitch::newCallback(osg::Node *node) const {
 class AnimatedSwitch: public Animation {
 	class Callback;
 public:
-	SIMDATA_OBJECT(AnimatedSwitch, 0, 0)
-
-	EXTEND_SIMDATA_XML_INTERFACE(AnimatedSwitch, Animation)
-		SIMDATA_XML("channel_name", AnimatedSwitch::m_ChannelName, true)
-		SIMDATA_XML("times", AnimatedSwitch::m_Times, false)
-		SIMDATA_XML("rate", AnimatedSwitch::m_Rate, false)
-	END_SIMDATA_XML_INTERFACE
+	SIMDATA_DECLARE_OBJECT(AnimatedSwitch)
 
 	virtual AnimationCallback *newCallback(osg::Node *node) const;
 	inline const std::string &getChannelName() const { return m_ChannelName; }
@@ -517,6 +519,12 @@ private:
 	double m_Rate;
 	std::vector<double> m_Times;
 };
+
+SIMDATA_XML_BEGIN(AnimatedSwitch)
+	SIMDATA_DEF("channel_name", m_ChannelName, true)
+	SIMDATA_DEF("times", m_Times, false)
+	SIMDATA_DEF("rate", m_Rate, false)
+SIMDATA_XML_END
 
 
 class AnimatedSwitch::Callback: public AnimationCallback {
@@ -640,13 +648,14 @@ AnimationCallback *AnimatedSwitch::newCallback(osg::Node *node) const {
 class AttitudeAnimation: public Animation {
 	class Callback;
 public:
-	SIMDATA_OBJECT(AttitudeAnimation, 0, 0)
-	
-	EXTEND_SIMDATA_XML_INTERFACE(AttitudeAnimation, Animation)
-	END_SIMDATA_XML_INTERFACE
+	SIMDATA_DECLARE_OBJECT(AttitudeAnimation)
 
 	virtual AnimationCallback *newCallback(osg::Node *node) const;
 };
+
+SIMDATA_XML_BEGIN(AttitudeAnimation)
+SIMDATA_XML_END
+
 
 class AttitudeAnimation::Callback: public AnimationCallback {
 	simdata::Ref<const AttitudeAnimation> m_Animation;
@@ -707,13 +716,13 @@ AnimationCallback *AttitudeAnimation::newCallback(osg::Node *node) const {
 class DrivenRotation: public Rotation {
 	class Callback;
 public:
-	SIMDATA_OBJECT(DrivenRotation, 0, 0)
-	
-	EXTEND_SIMDATA_XML_INTERFACE(DrivenRotation, Rotation)
-	END_SIMDATA_XML_INTERFACE
-
+	SIMDATA_DECLARE_OBJECT(DrivenRotation)
 	virtual AnimationCallback *newCallback(osg::Node *node) const;
 };
+
+SIMDATA_XML_BEGIN(DrivenRotation)
+SIMDATA_XML_END
+
 
 class DrivenRotation::Callback: public AnimationCallback {
 	simdata::Ref<const DrivenRotation> m_Animation;
@@ -776,13 +785,8 @@ class TimedAnimationProxy: public simdata::Object {
 	float m_Rate;
 
 public:
-	SIMDATA_OBJECT(TimedAnimationProxy, 0, 0)
+	SIMDATA_DECLARE_OBJECT(TimedAnimationProxy)
 	
-	BEGIN_SIMDATA_XML_INTERFACE(TimedAnimationProxy)
-		SIMDATA_XML("t0", TimedAnimationProxy::m_t0, true)
-		SIMDATA_XML("t1", TimedAnimationProxy::m_t1, true)
-	END_SIMDATA_XML_INTERFACE
-
 	TimedAnimationProxy():
 		m_t0(0.0f),
 		m_t1(0.0f),
@@ -808,6 +812,11 @@ protected:
 	}
 };
 
+SIMDATA_XML_BEGIN(TimedAnimationProxy)
+	SIMDATA_DEF("t0", m_t0, true)
+	SIMDATA_DEF("t1", m_t1, true)
+SIMDATA_XML_END
+
 
 ////////////////////////////////////////////////////////////////////////////////////
 //
@@ -823,11 +832,7 @@ class TimedRotation: public Rotation {
 	simdata::Link<TimedAnimationProxy> m_TimedAnimationProxy;
 
 public:
-	SIMDATA_OBJECT(TimedRotation, 0, 0);
-	
-	EXTEND_SIMDATA_XML_INTERFACE(TimedRotation, Rotation)
-		SIMDATA_XML("timed_animation_proxy", TimedRotation::m_TimedAnimationProxy, true)
-	END_SIMDATA_XML_INTERFACE
+	SIMDATA_DECLARE_OBJECT(TimedRotation)
 
 	double getTimedAngle(double t) const {
 		return getLimit0() + m_TimedAnimationProxy->getRate() * m_TimedAnimationProxy->getDelta_t0(t);
@@ -841,6 +846,11 @@ protected:
 		m_TimedAnimationProxy->setRate(getLimit0(), getLimit1());
 	}
 };
+
+SIMDATA_XML_BEGIN(TimedRotation)
+	SIMDATA_DEF("timed_animation_proxy", m_TimedAnimationProxy, true)
+SIMDATA_XML_END
+
 
 class TimedRotation::Callback: public AnimationCallback {
 	simdata::Ref<const TimedRotation> m_Animation;
@@ -893,14 +903,7 @@ class Translation: public Animation {
 	osg::Vec3 m_OSGDirection;
 
 public:
-	EXTEND_SIMDATA_XML_VIRTUAL_INTERFACE(Translation, Animation)
-		SIMDATA_XML("channel_name", Translation::m_ChannelName, true)
-		SIMDATA_XML("gain", Translation::m_Gain, false)
-		SIMDATA_XML("direction", Translation::m_Direction, false)
-		SIMDATA_XML("offset", Translation::m_Offset, false)
-		SIMDATA_XML("limit_0", Translation::m_Limit0, false)
-		SIMDATA_XML("limit_1", Translation::m_Limit1, false)
-	END_SIMDATA_XML_INTERFACE
+	SIMDATA_DECLARE_ABSTRACT_OBJECT(Translation)
 
 	Translation(): m_Gain(1.0f), m_Limit0(-1.0f), m_Limit1(1.0f) {}
 
@@ -919,6 +922,15 @@ protected:
 	}
 };
 
+SIMDATA_XML_BEGIN(Translation)
+	SIMDATA_DEF("channel_name", m_ChannelName, true)
+	SIMDATA_DEF("gain", m_Gain, false)
+	SIMDATA_DEF("direction", m_Direction, false)
+	SIMDATA_DEF("offset", m_Offset, false)
+	SIMDATA_DEF("limit_0", m_Limit0, false)
+	SIMDATA_DEF("limit_1", m_Limit1, false)
+SIMDATA_XML_END
+
 
 ////////////////////////////////////////////////////////////////////////////////////
 //
@@ -930,13 +942,12 @@ protected:
 class DrivenMagnitudeTranslation: public Translation {
 	class Callback;
 public:
-	SIMDATA_OBJECT(DrivenMagnitudeTranslation, 0, 0)
-	
-	EXTEND_SIMDATA_XML_INTERFACE(DrivenMagnitudeTranslation, Translation)
-	END_SIMDATA_XML_INTERFACE
-
+	SIMDATA_DECLARE_OBJECT(DrivenMagnitudeTranslation)
 	virtual AnimationCallback *newCallback(osg::Node *node) const;
 };
+
+SIMDATA_XML_BEGIN(DrivenMagnitudeTranslation)
+SIMDATA_XML_END
 
 
 class DrivenMagnitudeTranslation::Callback: public AnimationCallback {
@@ -984,13 +995,13 @@ AnimationCallback *DrivenMagnitudeTranslation::newCallback(osg::Node *node) cons
 class DrivenVectorialTranslation: public Translation {
 	class Callback;
 public:
-	SIMDATA_OBJECT(DrivenVectorialTranslation, 0, 0)
-	
-	EXTEND_SIMDATA_XML_INTERFACE(DrivenVectorialTranslation, Translation)
-	END_SIMDATA_XML_INTERFACE
-
+	SIMDATA_DECLARE_OBJECT(DrivenVectorialTranslation)
 	virtual AnimationCallback *newCallback(osg::Node *node) const;
 };
+
+SIMDATA_XML_BEGIN(DrivenVectorialTranslation)
+SIMDATA_XML_END
+
 
 class DrivenVectorialTranslation::Callback: public AnimationCallback {
 	simdata::Ref<const DrivenVectorialTranslation> m_Animation;
@@ -1062,11 +1073,7 @@ class TimedMagnitudeTranslation: public Translation {
 	simdata::Link<TimedAnimationProxy> m_TimedAnimationProxy;
 	
 public:
-	SIMDATA_OBJECT(TimedMagnitudeTranslation, 0, 0)
-	
-	EXTEND_SIMDATA_XML_INTERFACE(TimedMagnitudeTranslation, Translation)
-		SIMDATA_XML("timed_animation_proxy", TimedMagnitudeTranslation::m_TimedAnimationProxy, true)
-	END_SIMDATA_XML_INTERFACE
+	SIMDATA_DECLARE_OBJECT(TimedMagnitudeTranslation)
 
 	virtual AnimationCallback *newCallback(osg::Node *node) const;
 
@@ -1080,6 +1087,10 @@ protected:
 		m_TimedAnimationProxy->setRate(getLimit0(),getLimit1());
 	}
 };
+
+SIMDATA_XML_BEGIN(TimedMagnitudeTranslation)
+	SIMDATA_DEF("timed_animation_proxy", m_TimedAnimationProxy, true)
+SIMDATA_XML_END
 
 
 class TimedMagnitudeTranslation::Callback: public AnimationCallback {
@@ -1134,15 +1145,7 @@ class DrivenAnimationPath: public Animation {
 	float m_Limit1;
 
 public:
-	SIMDATA_OBJECT(DrivenAnimationPath, 0, 0)
-	
-	EXTEND_SIMDATA_XML_INTERFACE(DrivenAnimationPath, Animation)
-		SIMDATA_XML("channel_name", DrivenAnimationPath::m_ChannelName, true)
-		SIMDATA_XML("gain", DrivenAnimationPath::m_Gain, false)
-		SIMDATA_XML("offset", DrivenAnimationPath::m_Offset, false)
-		SIMDATA_XML("limit_0", DrivenAnimationPath::m_Limit0, false)
-		SIMDATA_XML("limit_1", DrivenAnimationPath::m_Limit1, false)
-	END_SIMDATA_XML_INTERFACE
+	SIMDATA_DECLARE_OBJECT(DrivenAnimationPath)
 
 	DrivenAnimationPath(): m_Gain(1.0), m_Offset(0.0), m_Limit0(-1e+10), m_Limit1(1e+10) { }
 
@@ -1154,6 +1157,14 @@ public:
 
 	virtual AnimationCallback *newCallback(osg::Node *node) const;
 };
+
+SIMDATA_XML_BEGIN(DrivenAnimationPath)
+	SIMDATA_DEF("channel_name", m_ChannelName, true)
+	SIMDATA_DEF("gain", m_Gain, false)
+	SIMDATA_DEF("offset", m_Offset, false)
+	SIMDATA_DEF("limit_0", m_Limit0, false)
+	SIMDATA_DEF("limit_1", m_Limit1, false)
+SIMDATA_XML_END
 
 
 class DrivenAnimationPath::Callback: public AnimationCallback {
@@ -1211,14 +1222,7 @@ class CounterWheel: public Animation {
 	class Callback;
 
 public:
-	SIMDATA_OBJECT(CounterWheel, 0, 0)
-
-	EXTEND_SIMDATA_XML_INTERFACE(CounterWheel, Animation)
-		SIMDATA_XML("channel_name", CounterWheel::m_ChannelName, false)
-		SIMDATA_XML("gain", CounterWheel::m_Gain, false)
-		SIMDATA_XML("offset", CounterWheel::m_Offset, false)
-		SIMDATA_XML("axis", CounterWheel::m_Axis, false)
-	END_SIMDATA_XML_INTERFACE
+	SIMDATA_DECLARE_OBJECT(CounterWheel)
 
 	CounterWheel():
 		m_Axis(simdata::Vector3::ZERO),
@@ -1247,6 +1251,14 @@ private:
 	osg::Vec3 m_OSGAxis;
 
 };
+
+SIMDATA_XML_BEGIN(CounterWheel)
+	SIMDATA_DEF("channel_name", m_ChannelName, false)
+	SIMDATA_DEF("gain", m_Gain, false)
+	SIMDATA_DEF("offset", m_Offset, false)
+	SIMDATA_DEF("axis", m_Axis, false)
+SIMDATA_XML_END
+
 
 class CounterWheel::Callback: public AnimationCallback {
 	simdata::Ref<const CounterWheel> m_Animation;
@@ -1311,12 +1323,7 @@ AnimationCallback *CounterWheel::newCallback(osg::Node *node) const {
 class AnimatedMomentarySwitch: public Animation {
 	class Callback;
 public:
-	SIMDATA_OBJECT(AnimatedMomentarySwitch, 0, 0)
-
-	EXTEND_SIMDATA_XML_INTERFACE(AnimatedMomentarySwitch, Animation)
-		SIMDATA_XML("event_channel_names", AnimatedMomentarySwitch::m_EventChannelNames, true)
-		SIMDATA_XML("cycle_time", AnimatedMomentarySwitch::m_CycleTime, false)
-	END_SIMDATA_XML_INTERFACE
+	SIMDATA_DECLARE_OBJECT(AnimatedMomentarySwitch)
 
 	virtual AnimationCallback *newCallback(osg::Node *node) const;
 	inline const std::vector<std::string> &getEventChannelNames() const { return m_EventChannelNames; }
@@ -1328,6 +1335,11 @@ private:
 	std::vector<std::string> m_EventChannelNames;
 	double m_CycleTime;
 };
+
+SIMDATA_XML_BEGIN(AnimatedMomentarySwitch)
+	SIMDATA_DEF("event_channel_names", m_EventChannelNames, true)
+	SIMDATA_DEF("cycle_time", m_CycleTime, false)
+SIMDATA_XML_END
 
 
 class AnimatedMomentarySwitch::Callback: public AnimationCallback, public sigc::trackable {
@@ -1448,25 +1460,4 @@ AnimationCallback *AnimatedMomentarySwitch::newCallback(osg::Node *node) const {
 	callback->bind(*node);
 	return callback;
 }
-
-
-
-
-// register all animation classes
-SIMDATA_REGISTER_INTERFACE(Animation)
-SIMDATA_REGISTER_INTERFACE(Rotation)
-SIMDATA_REGISTER_INTERFACE(DrivenRotation)
-SIMDATA_REGISTER_INTERFACE(TimedAnimationProxy)
-SIMDATA_REGISTER_INTERFACE(TimedRotation)
-SIMDATA_REGISTER_INTERFACE(Translation)
-SIMDATA_REGISTER_INTERFACE(DrivenMagnitudeTranslation)
-SIMDATA_REGISTER_INTERFACE(DrivenVectorialTranslation)
-SIMDATA_REGISTER_INTERFACE(TimedMagnitudeTranslation)
-SIMDATA_REGISTER_INTERFACE(RotarySwitch)
-SIMDATA_REGISTER_INTERFACE(AnimatedSwitch)
-SIMDATA_REGISTER_INTERFACE(AnimatedMomentarySwitch)
-SIMDATA_REGISTER_INTERFACE(StateSwitch)
-SIMDATA_REGISTER_INTERFACE(DrivenAnimationPath)
-SIMDATA_REGISTER_INTERFACE(AttitudeAnimation)
-SIMDATA_REGISTER_INTERFACE(CounterWheel)
 

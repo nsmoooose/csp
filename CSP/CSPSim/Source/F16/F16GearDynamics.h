@@ -32,10 +32,7 @@
 
 class F16GearDynamics: public GearDynamics {
 public:
-	SIMDATA_OBJECT(F16GearDynamics, 0, 0)
-
-	EXTEND_SIMDATA_XML_INTERFACE(F16GearDynamics, GearDynamics)
-	END_SIMDATA_XML_INTERFACE
+	SIMDATA_DECLARE_OBJECT(F16GearDynamics)
 
 	F16GearDynamics();
 	virtual bool allowGearUp() const;

@@ -1,4 +1,4 @@
-// Combat Simulator Project - FlightSim Demo
+// Combat Simulator Project
 // Copyright (C) 2002 The Combat Simulator Project
 // http://csp.sourceforge.net
 //
@@ -38,7 +38,13 @@
 #include <osg/StateSet>
 
 
-SIMDATA_REGISTER_INTERFACE(RandomForestModel)
+SIMDATA_XML_BEGIN(RandomForestModel)
+	SIMDATA_DEF("models", m_Models, true)
+	SIMDATA_DEF("density", m_Density, true)
+	SIMDATA_DEF("minimum_spacing", m_MinimumSpacing, true)
+	SIMDATA_DEF("seed", m_Seed, false)
+	SIMDATA_DEF("isocontour", m_IsoContour, false)
+SIMDATA_XML_END
 
 
 osg::Geometry *RandomForestModel::construct(simdata::Ref<FeatureQuad> quad, std::vector<osg::Vec3> const &position) const {

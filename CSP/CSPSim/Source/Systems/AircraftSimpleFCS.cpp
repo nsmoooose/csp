@@ -36,7 +36,20 @@ using simdata::toRadians;
 using simdata::toDegrees;
 
 
-SIMDATA_REGISTER_INTERFACE(AircraftSimpleFCS)
+SIMDATA_XML_BEGIN(AircraftSimpleFCS)
+	SIMDATA_DEF("elevator_limit0", m_ElevatorLimit0, false)
+	SIMDATA_DEF("elevator_limit1", m_ElevatorLimit1, false)
+	SIMDATA_DEF("aileron_limit0", m_AileronLimit0, false)
+	SIMDATA_DEF("aileron_limit1", m_AileronLimit1, false)
+	SIMDATA_DEF("rudder_limit", m_RudderLimit, false)
+	SIMDATA_DEF("airbrake_limit", m_AirbrakeLimit, false)
+	SIMDATA_DEF("elevator_rate", m_ElevatorRate, false)
+	SIMDATA_DEF("aileron_rate", m_AileronRate, false)
+	SIMDATA_DEF("rudder_rate", m_RudderRate, false)
+	SIMDATA_DEF("airbrake_rate", m_AirbrakeRate, false)
+	SIMDATA_DEF("max_g", m_MaxG, false)
+	SIMDATA_DEF("min_g", m_MinG, false)
+SIMDATA_XML_END
 
 
 AircraftSimpleFCS::AircraftSimpleFCS()

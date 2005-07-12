@@ -1,4 +1,4 @@
-// Combat Simulator Project - FlightSim Demo
+// Combat Simulator Project
 // Copyright (C) 2004-2005 The Combat Simulator Project
 // http://csp.sourceforge.net
 //
@@ -52,11 +52,7 @@ protected:
 		return x*x+y*y;
 	}
 public:
-	SIMDATA_OBJECT(Circle, 0, 0)
-
-	BEGIN_SIMDATA_XML_INTERFACE(Circle)
-		SIMDATA_XML("radius", Circle::m_Radius, true)
-	END_SIMDATA_XML_INTERFACE
+	SIMDATA_DECLARE_OBJECT(Circle)
 
 	Circle(float radius = 20.0f):
 	  m_Radius(radius) {
@@ -70,6 +66,7 @@ public:
 	virtual ~Circle() {}
 };
 
+
 class RectangularCurve: public IsoContour {
 	float m_Width, m_Height;
 protected:
@@ -77,19 +74,14 @@ protected:
 		return 0.0f;
 	}
 public:
-	SIMDATA_OBJECT(RectangularCurve, 0, 0)
+	SIMDATA_DECLARE_OBJECT(RectangularCurve)
 
-	BEGIN_SIMDATA_XML_INTERFACE(RectangularCurve)
-		SIMDATA_XML("width", RectangularCurve::m_Width, true)
-		SIMDATA_XML("height", RectangularCurve::m_Height, true)
-	END_SIMDATA_XML_INTERFACE
-
-	RectangularCurve(float width = 20.0f, float height = 50.0f):
-		m_Width(width != 0.0f ? fabs(width) : 20.0f),
-		m_Height(height != 0.0f ? fabs(height) : 50.0f) {
-			if (width * height == 0.0f) {
-				CSP_LOG(APP, WARNING, "Rectangle: [" << width << "," << height << "corrected to 20x50]");
-			}
+	RectangularCurve(float width = 20.0f, float height = 50.0f) {
+		m_Width = (width != 0.0f) ? fabs(width) : 20.0f;
+		m_Height = (height != 0.0f) ? fabs(height) : 50.0f;
+		if (width * height == 0.0f) {
+			CSP_LOG(APP, WARNING, "Rectangle: [" << width << "," << height << "corrected to 20x50]");
+		}
 	}
 	virtual simdata::Vector3 getPoint(float x, float y) const {
 		return simdata::Vector3(m_Width * x, m_Height * y, 0.0f);
@@ -99,6 +91,7 @@ public:
 	}
 	virtual ~RectangularCurve(){}
 };
+
 
 #endif // __THEATER_ISOCONTOUR_H__
 

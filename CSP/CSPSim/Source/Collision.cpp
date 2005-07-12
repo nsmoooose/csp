@@ -35,7 +35,8 @@
 using bus::Kinetics;
 
 
-SIMDATA_REGISTER_INTERFACE(GroundCollisionDynamics)
+SIMDATA_XML_BEGIN(GroundCollisionDynamics)
+SIMDATA_XML_END
 
 
 GroundCollisionDynamics::GroundCollisionDynamics():

@@ -52,14 +52,7 @@ class Station: public simdata::Object {
 	mutable unsigned m_Mask;
 
 public:
-	SIMDATA_STATIC_OBJECT(Station, 0, 0);
-	
-	BEGIN_SIMDATA_XML_INTERFACE(Station)
-		SIMDATA_XML("name", Station::m_Name, true)
-		SIMDATA_XML("detail_model", Station::m_DetailModel, false)
-		SIMDATA_XML("mask_names", Station::m_MaskNames, false)
-		//SIMDATA_XML("view_model", Station::m_ViewModel, false)  // TODO
-	END_SIMDATA_XML_INTERFACE
+	SIMDATA_DECLARE_STATIC_OBJECT(Station)
 
 	Station();
 	virtual ~Station();

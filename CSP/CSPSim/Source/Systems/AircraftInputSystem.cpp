@@ -27,7 +27,8 @@
 #include "ControlInputsChannels.h"
 
 
-SIMDATA_REGISTER_INTERFACE(AircraftInputSystem)
+SIMDATA_XML_BEGIN(AircraftInputSystem)
+SIMDATA_XML_END
 
 DEFINE_INPUT_INTERFACE(AircraftInputSystem)
 

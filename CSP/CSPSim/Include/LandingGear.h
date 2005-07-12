@@ -51,30 +51,7 @@ class GearAnimation;
  */
 class LandingGear: public simdata::Object {
 public:
-	SIMDATA_OBJECT(LandingGear, 2, 0)
-
-	BEGIN_SIMDATA_XML_INTERFACE(LandingGear)
-		SIMDATA_XML("gear_name", LandingGear::m_Name, true)
-		SIMDATA_XML("max_position", LandingGear::m_MaxPosition, true)
-		SIMDATA_XML("motion", LandingGear::m_Motion, true)
-		SIMDATA_XML("damage_limit", LandingGear::m_DamageLimit, true)
-		SIMDATA_XML("K", LandingGear::m_K, true)
-		SIMDATA_XML("beta", LandingGear::m_Beta, true)
-		SIMDATA_XML("chain", LandingGear::m_Chained, false)
-		SIMDATA_XML("brake_limit", LandingGear::m_BrakeLimit, false)
-		SIMDATA_XML("brake_slip", LandingGear::m_BrakeSlip, false)
-		SIMDATA_XML("tire_static_friction", LandingGear::m_TireStaticFriction, false)
-		SIMDATA_XML("tire_skid_friction", LandingGear::m_TireSkidFriction, false)
-		SIMDATA_XML("tire_radius", LandingGear::m_TireRadius, false)
-		SIMDATA_XML("compression_limit", LandingGear::m_CompressionLimit, true)
-		SIMDATA_XML("steering_limit", LandingGear::m_SteeringLimit, false)
-		SIMDATA_XML("tire_K", LandingGear::m_TireK, false)
-		SIMDATA_XML("tire_beta", LandingGear::m_TireBeta, false)
-		SIMDATA_XML("abs", LandingGear::m_ABS, false)
-		SIMDATA_XML("rolling_friction", LandingGear::m_RollingFriction, false)
-		SIMDATA_XML("drag_factor", LandingGear::m_DragFactor, false)
-		SIMDATA_XML("gear_animation", LandingGear::m_GearAnimation, false)
-	END_SIMDATA_XML_INTERFACE
+	SIMDATA_DECLARE_OBJECT(LandingGear)
 
 	LandingGear();
 	~LandingGear();
@@ -267,25 +244,18 @@ protected:
  *  for input events related to the landing gear.
  */
 class GearDynamics: public BaseDynamics {
-
 	typedef simdata::Link<LandingGear>::vector GearSet;
-	
-	void doComplexPhysics(double x);
-	void doSimplePhysics(double x);
 
 public:
-	SIMDATA_OBJECT(GearDynamics, 0, 0)
-
-	EXTEND_SIMDATA_XML_INTERFACE(GearDynamics, BaseDynamics)
-		SIMDATA_XML("gear_set", GearDynamics::m_Gear, true)
-	END_SIMDATA_XML_INTERFACE
+	SIMDATA_DECLARE_OBJECT(GearDynamics)
 
 	DECLARE_INPUT_INTERFACE(GearDynamics, BaseDynamics)
 		BIND_ACTION("GEAR_UP", GearUp);
 		BIND_ACTION("GEAR_DOWN", GearDown);
 		BIND_ACTION("GEAR_TOGGLE", GearToggle);
-	END_INPUT_INTERFACE
+	END_INPUT_INTERFACE  // protected:
 
+public:
 	GearDynamics();
 
 	virtual bool allowGearUp() const;
@@ -330,6 +300,10 @@ protected:
 	double m_Height;
 
 	virtual double onUpdate(double dt);
+
+private:
+	void doComplexPhysics(double x);
+	void doSimplePhysics(double x);
 };
 
 #endif // __LANDINGGEAR_H__

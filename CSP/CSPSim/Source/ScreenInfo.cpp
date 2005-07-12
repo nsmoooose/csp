@@ -57,7 +57,7 @@ using std::setfill;
 */
 
 // 6/18/03:
-// 1) update is done every x frame - see void GameScreen::onUpdate(double)
+// 1) update is done every 3 frames - see VirtualSceneGameScreen::drawInfoView.
 // 2) Framerate & GeneralStats classes implement these static texts
 // 7/25/04
 // this has changed again :)
@@ -160,11 +160,10 @@ GeneralStats::GeneralStats(int pos_x,int pos_y):
 void GeneralStats::update() {
 	unsigned short const precision = 2;
 
-  	std::ostringstream osstr;
+	std::ostringstream osstr;
 	osstr << "Terrain Polygons: " << setw(7) << CSPSim::theSim->getScene()->getTerrainPolygonsRendered();
 	m_Text->setText(osstr.str());
 
-	
 	simdata::Ref<DynamicObject const> const activeObject = CSPSim::theSim->getActiveObject();
 	if (activeObject.valid()) {
 		simdata::Vector3 pos = activeObject->getGlobalPosition();
@@ -174,14 +173,15 @@ void GeneralStats::update() {
 		m_Altitude->setText(osstr.str());
 
 		osstr.str("");
-		osstr << "Global position:" << setprecision(precision) << fixed << std::showpos
-		      << setw(8)  << setfill(' ')  << pos;
+		osstr << "Global position: [" << setprecision(2) << fixed << std::showpos << setfill(' ')
+		      << setw(11) << pos.x() << setw(11) << pos.y() << setw(11) << pos.z() << "]";
 		m_GlobalPosition->setText(osstr.str());
-	
+
 		simdata::Vector3 vel = activeObject->getVelocity();
 		osstr.str("");
-		osstr << "Velocity: " << setw(6) << setprecision(2) << setfill(' ') << fixed
-			  << vel << " magnitude: " << std::noshowpos << vel.length();
+		osstr << "Velocity: [" << setprecision(2) << setfill(' ') << fixed
+		      << setw(8) << vel.x() << setw(8) << vel.y() << setw(8) << vel.z()
+		      << "] magnitude: " << std::noshowpos << vel.length();
 		m_Velocity->setText(osstr.str());
 	}
 }
@@ -192,7 +192,7 @@ ObjectStats::ObjectStats(int posx,int posy, simdata::Ref<DynamicObject> const& /
 {
 	m_Skip = static_cast<int>(m_CharacterSize);
 	if (m_Text.valid()) {
-		m_InfoGeode->removeDrawable(m_Text.get());	
+		m_InfoGeode->removeDrawable(m_Text.get());
 	}
 	if (!getUpdateCallback()) {
 		setUpdateCallback(new UpdateCallback);

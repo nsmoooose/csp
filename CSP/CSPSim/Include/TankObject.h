@@ -46,17 +46,7 @@
 class TankObject : public DynamicObject
 {
 public:
-	SIMDATA_OBJECT(TankObject, 0, 0);
-
-	EXTEND_SIMDATA_XML_INTERFACE(TankObject, DynamicObject)
-		SIMDATA_XML("forward_speed", TankObject::forward_speed, false)
-		SIMDATA_BIT("test0", TankObject::bits, 1, false)
-		SIMDATA_BIT("test1", TankObject::bits, 2, false)
-		SIMDATA_BIT("test2", TankObject::bits, 4, false)
-	END_SIMDATA_XML_INTERFACE
-
-	
-public:
+	SIMDATA_DECLARE_OBJECT(TankObject)
 
 	TankObject();
 	virtual ~TankObject();

@@ -107,11 +107,7 @@ private:
  */
 class GearSequenceAnimation: public GearAnimation {
 public:
-	SIMDATA_OBJECT(GearSequenceAnimation, 0, 0)
-	BEGIN_SIMDATA_XML_INTERFACE(GearSequenceAnimation)
-		SIMDATA_XML("retract_sequence", GearSequenceAnimation::m_RetractSequence, false)
-		SIMDATA_XML("compression_sequence", GearSequenceAnimation::m_CompressionSequence, false)
-	END_SIMDATA_XML_INTERFACE
+	SIMDATA_DECLARE_OBJECT(GearSequenceAnimation)
 
 	virtual void setGearName(std::string const &name);
 
@@ -164,13 +160,7 @@ class M2kGearAnimation: public GearSequenceAnimation {
 	DataChannel<double>::Ref b_Compression;
 
 public:
-	SIMDATA_OBJECT(M2kGearAnimation, 0, 0)
-
-	EXTEND_SIMDATA_XML_INTERFACE(M2kGearAnimation, GearSequenceAnimation)
-		SIMDATA_XML("absorber02_length", M2kGearAnimation::m_Absorber02Length, false)
-		SIMDATA_XML("absorber03_length", M2kGearAnimation::m_Absorber03Length, false)
-		SIMDATA_XML("offset", M2kGearAnimation::m_Offset, false)
-	END_SIMDATA_XML_INTERFACE
+	SIMDATA_DECLARE_OBJECT(M2kGearAnimation)
 
 	M2kGearAnimation(): m_Absorber02Length(1.0f), m_Absorber03Length(1.0f), m_Offset(0.0f) { }
 

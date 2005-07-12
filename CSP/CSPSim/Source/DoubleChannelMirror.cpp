@@ -139,19 +139,17 @@ class DoubleChannelMirror: public ChannelMirror {
 	double m_Limit1;
 	double m_RateLimit;
 public:
-	SIMDATA_STATIC_OBJECT(DoubleChannelMirror, 0, 0)
-	BEGIN_SIMDATA_XML_INTERFACE(DoubleChannelMirror)
-		SIMDATA_XML("channel_name", DoubleChannelMirror::m_ChannelName, true)
-		SIMDATA_XML("lod", DoubleChannelMirror::m_Lod, true)
-		SIMDATA_XML("limit_0", DoubleChannelMirror::m_Limit0, true)
-		SIMDATA_XML("limit_1", DoubleChannelMirror::m_Limit1, true)
-		SIMDATA_XML("rate_limit", DoubleChannelMirror::m_RateLimit, true)
-	END_SIMDATA_XML_INTERFACE
+	SIMDATA_DECLARE_STATIC_OBJECT(DoubleChannelMirror)
 
 	virtual ChannelMaster *createMaster() const { return new DoubleChannelMaster(m_ChannelName, m_Lod, m_Limit0, m_Limit1, m_RateLimit); }
 	virtual ChannelSlave *createSlave() const { return new DoubleChannelSlave(m_ChannelName, m_Lod, m_Limit0, m_Limit1, m_RateLimit); }
 };
 
-SIMDATA_REGISTER_INTERFACE(DoubleChannelMirror)
-
+SIMDATA_XML_BEGIN(DoubleChannelMirror)
+	SIMDATA_DEF("channel_name", m_ChannelName, true)
+	SIMDATA_DEF("lod", m_Lod, true)
+	SIMDATA_DEF("limit_0", m_Limit0, true)
+	SIMDATA_DEF("limit_1", m_Limit1, true)
+	SIMDATA_DEF("rate_limit", m_RateLimit, true)
+SIMDATA_XML_END
 

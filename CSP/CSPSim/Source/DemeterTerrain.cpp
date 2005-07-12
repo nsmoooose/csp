@@ -39,7 +39,27 @@
 #include <osg/StateSet>
 
 
-SIMDATA_REGISTER_INTERFACE(DemeterTerrain)
+SIMDATA_XML_BEGIN(DemeterTerrain)
+	SIMDATA_DEF("detail_texture_file", m_DetailTextureFile, true)
+	SIMDATA_DEF("texture_file", m_TextureFile, true)
+	SIMDATA_DEF("elevation_file", m_ElevationFile, true)
+	SIMDATA_DEF("lattice_basename", m_LatticeBaseName, true)
+	SIMDATA_DEF("lattice_elevation_extension", m_LatticeElevExt, true)
+	SIMDATA_DEF("lattice_texture_extension", m_LatticeTexExt, true)
+	SIMDATA_DEF("use_texture_factory", m_TextureFactory, false)
+	SIMDATA_DEF("lattice_width", m_LatticeWidth, true)
+	SIMDATA_DEF("lattice_height", m_LatticeHeight, true)
+	SIMDATA_DEF("max_triangles", m_MaxTriangles, true)
+	SIMDATA_DEF("detail_threshold", m_DetailThreshold, true)
+	SIMDATA_DEF("vertex_height", m_VertexHeight, true)
+	SIMDATA_DEF("vertex_spacing", m_VertexSpacing, true)
+	SIMDATA_DEF("use_dynamic_textures", m_DynamicTextures, false)
+	SIMDATA_DEF("use_texture_compression", m_TextureCompression, false)
+	SIMDATA_DEF("preload_textures", m_PreloadTextures, false)
+	SIMDATA_DEF("lattice", m_Lattice, true)
+	SIMDATA_DEF("test", m_ScreenHeight, false)
+SIMDATA_XML_END
+
 
 
 // Terrain Object is a wrapper class for the Demeter terrain engine

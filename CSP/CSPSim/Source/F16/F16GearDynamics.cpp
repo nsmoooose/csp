@@ -30,7 +30,10 @@
 #include <SimData/Math.h>
 #include <SimData/Conversions.h>
 
-SIMDATA_REGISTER_INTERFACE(F16GearDynamics)
+
+SIMDATA_XML_BEGIN(F16GearDynamics)
+SIMDATA_XML_END
+
 
 bool F16GearDynamics::allowGearUp() const {
 	// TODO: DN LOCK REL button can override

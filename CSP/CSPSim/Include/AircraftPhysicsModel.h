@@ -30,9 +30,7 @@
 class AircraftPhysicsModel: public PhysicsModel {
 	bool m_NeedsImpulse;
 public:
-	SIMDATA_OBJECT(AircraftPhysicsModel,0,0)
-	EXTEND_SIMDATA_XML_INTERFACE(AircraftPhysicsModel, System)
-	END_SIMDATA_XML_INTERFACE
+	SIMDATA_DECLARE_OBJECT(AircraftPhysicsModel)
 
 	AircraftPhysicsModel();
 	void doSimStep(double dt);

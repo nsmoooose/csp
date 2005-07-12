@@ -83,10 +83,7 @@ public:
  */
 class Animation: public simdata::Object {
 public:
-	BEGIN_SIMDATA_XML_VIRTUAL_INTERFACE(Animation)
-		SIMDATA_XML("model_id", Animation::m_NodeLabel, true)
-		SIMDATA_XML("lod_limit", Animation::m_LOD, false)
-	END_SIMDATA_XML_INTERFACE
+	SIMDATA_DECLARE_ABSTRACT_OBJECT(Animation)
 
 	Animation(): m_LOD(0) { }
 

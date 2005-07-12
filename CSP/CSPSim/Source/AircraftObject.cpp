@@ -42,18 +42,20 @@ using simdata::toRadians;
 using simdata::toDegrees;
 
 
-SIMDATA_REGISTER_INTERFACE(AircraftObject)
+SIMDATA_XML_BEGIN(AircraftObject)
+SIMDATA_XML_END
+
 DEFINE_INPUT_INTERFACE(AircraftObject)
 
-AircraftObject::AircraftObject(): DynamicObject(TYPE_AIR_UNIT) {
 
+AircraftObject::AircraftObject(): DynamicObject(TYPE_AIR_UNIT) {
 	CSP_LOG(OBJECT, DEBUG, "AircraftObject::AircraftObject() ...");
 	m_ObjectName = "AIRCRAFT";
 
 	b_Heading = DataChannel<double>::newLocal(bus::Kinetics::Heading, 0.0);
 	b_Roll = DataChannel<double>::newLocal(bus::Kinetics::Roll, 0.0);
 	b_Pitch = DataChannel<double>::newLocal(bus::Kinetics::Pitch, 0.0);
-	
+
 	CSP_LOG(OBJECT, DEBUG, "... AircraftObject::AircraftObject()");
 }
 

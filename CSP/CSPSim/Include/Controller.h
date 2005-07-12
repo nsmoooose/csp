@@ -40,10 +40,7 @@ namespace simnet { class NetworkMessage; }
 class ChannelMirrorSet: public simdata::Object {
 	simdata::Link<ChannelMirror>::vector m_Mirrors;
 public:
-	SIMDATA_OBJECT(ChannelMirrorSet, 0, 0)
-	BEGIN_SIMDATA_XML_INTERFACE(ChannelMirrorSet)
-		SIMDATA_XML("mirrors", ChannelMirrorSet::m_Mirrors, true)
-	END_SIMDATA_XML_INTERFACE
+	SIMDATA_DECLARE_OBJECT(ChannelMirrorSet)
 	simdata::Link<ChannelMirror>::vector const &mirrors() const { return m_Mirrors; }
 };
 
@@ -116,10 +113,7 @@ protected:
 	virtual void postCreate();
 
 public:
-	SIMDATA_OBJECT(RemoteController, 0, 0)
-	BEGIN_SIMDATA_XML_INTERFACE(RemoteController)
-		SIMDATA_XML("channel_mirror_set", RemoteController::m_ChannelMirrorSet, false)
-	END_SIMDATA_XML_INTERFACE
+	SIMDATA_DECLARE_OBJECT(RemoteController)
 
 	RemoteController();
 	virtual ~RemoteController();
@@ -158,10 +152,7 @@ protected:
 	virtual void postCreate();
 
 public:
-	SIMDATA_OBJECT(LocalController, 0, 0)
-	BEGIN_SIMDATA_XML_INTERFACE(LocalController)
-		SIMDATA_XML("channel_mirror_set", LocalController::m_ChannelMirrorSet, false)
-	END_SIMDATA_XML_INTERFACE
+	SIMDATA_DECLARE_OBJECT(LocalController)
 
 	LocalController();
 	virtual ~LocalController();

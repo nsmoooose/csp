@@ -35,7 +35,10 @@
 #include <SimData/Conversions.h>
 
 
-SIMDATA_REGISTER_INTERFACE(F16System)
+SIMDATA_XML_BEGIN(F16System)
+	SIMDATA_DEF("fuel_door_sequence", m_FuelDoorSequence, false)
+	SIMDATA_DEF("canopy_sequence", m_CanopySequence, false)
+SIMDATA_XML_END
 
 DEFINE_INPUT_INTERFACE(F16System)
 

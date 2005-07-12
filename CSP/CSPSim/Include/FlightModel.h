@@ -1,4 +1,4 @@
-// Combat Simulator Project - FlightSim Demo
+// Combat Simulator Project
 // Copyright (C) 2002 The Combat Simulator Project
 // http://csp.sourceforge.net
 //
@@ -38,68 +38,20 @@
 /**
  * class FlightModel
  *
- * An aircraft flight model based on stability derivatives.
- * FlightModel instances are shared by all aircraft of a
- * given type.  Each aircraft has its own FlightDynamics
- * instance that stores state information and drives the
- * FlightModel.  To pass parameters more efficiently, the
- * FlightDynamics instance sets a number of temporary state
- * variables within the FlightModel, then performs a number
- * of computations using these variables.  Hence, the
- * FlightModel methods are not suitable for multithreaded
- * environments in which more than one aircraft is simulated
- * at a time.
+ * An aircraft flight model based on stability derivatives.  FlightModel
+ * instances are shared by all aircraft of a given type.  Each aircraft has its
+ * own FlightDynamics instance that stores state information and drives the
+ * FlightModel.  To pass parameters more efficiently, the FlightDynamics
+ * instance sets a number of temporary state variables within the FlightModel,
+ * then performs a number of computations using these variables.  Hence, the
+ * FlightModel methods are not suitable for multithreaded environments in which
+ * more than one aircraft is simulated at a time.
  *
  */
 class FlightModel: public simdata::Object {
 public:
-	SIMDATA_OBJECT(FlightModel, 0, 0)
+	SIMDATA_DECLARE_OBJECT(FlightModel)
 
-	BEGIN_SIMDATA_XML_INTERFACE(FlightModel)
-		SIMDATA_XML("wing_span", FlightModel::m_WingSpan, true)
-		SIMDATA_XML("wing_chord", FlightModel::m_WingChord, true)
-		SIMDATA_XML("wing_area", FlightModel::m_WingArea, true)
-		SIMDATA_XML("stall_aoa", FlightModel::m_stallAOA, true)
-
-		SIMDATA_XML("cd0", FlightModel::m_CD0, true)
-		SIMDATA_XML("cd_a", FlightModel::m_CD_a, true)
-		SIMDATA_XML("cd_de", FlightModel::m_CD_de, true)
-		SIMDATA_XML("cd_db", FlightModel::m_CD_db, true)
-		SIMDATA_XML("cd_m_a", FlightModel::m_CD_m_a, false)
-
-		SIMDATA_XML("cl0", FlightModel::m_CL0, true)
-		SIMDATA_XML("cl_a", FlightModel::m_CL_a, true)
-		SIMDATA_XML("cl_adot", FlightModel::m_CL_adot, true)
-		SIMDATA_XML("cl_q", FlightModel::m_CL_q, true)
-		SIMDATA_XML("cl_de", FlightModel::m_CL_de, true)
-		SIMDATA_XML("cl_m_a", FlightModel::m_CL_m_a, false)
-
-		SIMDATA_XML("cm0", FlightModel::m_CM0, true)
-		SIMDATA_XML("cm_a", FlightModel::m_CM_a, true)
-		SIMDATA_XML("cm_adot", FlightModel::m_CM_adot, true)
-		SIMDATA_XML("cm_q", FlightModel::m_CM_q, true)
-		SIMDATA_XML("cm_de", FlightModel::m_CM_de, true)
-		SIMDATA_XML("delta_cm_de", FlightModel::m_Delta_CM_de,false)
-
-		SIMDATA_XML("cy_beta", FlightModel::m_CY_beta, true)
-		SIMDATA_XML("cy_p", FlightModel::m_CY_p, true)
-		SIMDATA_XML("cy_r", FlightModel::m_CY_r, true)
-		SIMDATA_XML("cy_da", FlightModel::m_CY_da, true)
-		SIMDATA_XML("cy_dr", FlightModel::m_CY_dr, true)
-		SIMDATA_XML("cy_m_a", FlightModel::m_CY_m_a, false)
-
-		SIMDATA_XML("ci_beta", FlightModel::m_CI_beta, true)
-		SIMDATA_XML("ci_p", FlightModel::m_CI_p, true)
-		SIMDATA_XML("ci_r", FlightModel::m_CI_r, true)
-		SIMDATA_XML("ci_da", FlightModel::m_CI_da, true)
-		SIMDATA_XML("ci_dr", FlightModel::m_CI_dr, true)
-		SIMDATA_XML("cn_beta", FlightModel::m_Cn_beta, true)
-		SIMDATA_XML("cn_p", FlightModel::m_Cn_p, true)
-		SIMDATA_XML("cn_r", FlightModel::m_Cn_r, true)
-		SIMDATA_XML("cn_da", FlightModel::m_Cn_da, true)
-		SIMDATA_XML("cn_dr", FlightModel::m_Cn_dr, true)
-	END_SIMDATA_XML_INTERFACE
-		
 	FlightModel();
 	virtual ~FlightModel();
 

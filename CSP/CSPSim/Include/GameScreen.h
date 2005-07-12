@@ -111,7 +111,7 @@ public:
 		BIND_ACTION("LABELS_TOGGLE", on_LabelsToggle);
 		BIND_CLICK("LEFT_CLICK", on_LeftClick);
 		BIND_MOTION("CAMERA_PAN", on_MouseView);
-	END_INPUT_INTERFACE
+	END_INPUT_INTERFACE  // protected:
 
 public:
 

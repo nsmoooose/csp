@@ -17,13 +17,7 @@
 
 class LeadingEdgeFlapControl: public ControlNode {
 public:
-	SIMDATA_OBJECT(LeadingEdgeFlapControl, 0, 0)
-	EXTEND_SIMDATA_XML_INTERFACE(LeadingEdgeFlapControl, ControlNode)
-		SIMDATA_XML("dlef_alpha", LeadingEdgeFlapControl::m_AlphaGain, true)
-		SIMDATA_XML("dlef_qbar_ps", LeadingEdgeFlapControl::m_QBarGain, true)
-		SIMDATA_XML("dlef_offset", LeadingEdgeFlapControl::m_Offset, true)
-		SIMDATA_XML("dlef_ground_deflection", LeadingEdgeFlapControl::m_GroundDeflection, true)
-	END_SIMDATA_XML_INTERFACE
+	SIMDATA_DECLARE_OBJECT(LeadingEdgeFlapControl)
 	LeadingEdgeFlapControl(): m_AlphaFilter(3.75, 7.25, 2.0) { }
 	void importChannels(Bus* bus);
 private:
@@ -41,6 +35,14 @@ private:
 	double m_GroundDeflection;
 	LeadLagFilter m_AlphaFilter;
 };
+
+SIMDATA_XML_BEGIN(LeadingEdgeFlapControl)
+	SIMDATA_DEF("dlef_alpha", m_AlphaGain, true)
+	SIMDATA_DEF("dlef_qbar_ps", m_QBarGain, true)
+	SIMDATA_DEF("dlef_offset", m_Offset, true)
+	SIMDATA_DEF("dlef_ground_deflection", m_GroundDeflection, true)
+SIMDATA_XML_END
+
 
 void LeadingEdgeFlapControl::evaluate(Timer const &timer) {
 	double dlef = 0.0;
@@ -69,18 +71,10 @@ void LeadingEdgeFlapControl::importChannels(Bus* bus) {
 	b_ThrottleInput = bus->getChannel(bus::ControlInputs::ThrottleInput);
 }
 
-SIMDATA_REGISTER_INTERFACE(LeadingEdgeFlapControl)
-
-
 
 class TrailingEdgeFlapControl: public ControlNode {
 public:
-	SIMDATA_OBJECT(TrailingEdgeFlapControl, 0, 0)
-	EXTEND_SIMDATA_XML_INTERFACE(TrailingEdgeFlapControl, ControlNode)
-		SIMDATA_XML("deflection_limit", TrailingEdgeFlapControl::m_DeflectionLimit, true)
-		SIMDATA_XML("airspeed_break1", TrailingEdgeFlapControl::m_Airspeed1, true)
-		SIMDATA_XML("airspeed_break2", TrailingEdgeFlapControl::m_Airspeed2, true)
-	END_SIMDATA_XML_INTERFACE
+	SIMDATA_DECLARE_OBJECT(TrailingEdgeFlapControl)
 	TrailingEdgeFlapControl(): m_AirspeedFilter(2.0) { }
 	void importChannels(Bus* bus);
 private:
@@ -95,6 +89,13 @@ private:
 	double m_Airspeed2;
 	double m_AirspeedDelta;
 };
+
+SIMDATA_XML_BEGIN(TrailingEdgeFlapControl)
+	SIMDATA_DEF("deflection_limit", m_DeflectionLimit, true)
+	SIMDATA_DEF("airspeed_break1", m_Airspeed1, true)
+	SIMDATA_DEF("airspeed_break2", m_Airspeed2, true)
+SIMDATA_XML_END
+
 
 void TrailingEdgeFlapControl::postCreate() {
 	m_AirspeedDelta = m_Airspeed2 - m_Airspeed1;
@@ -118,9 +119,6 @@ void TrailingEdgeFlapControl::importChannels(Bus* bus) {
 	b_GearHandleUp = bus->getChannel(bus::F16::GearHandleUp);
 }
 
-SIMDATA_REGISTER_INTERFACE(TrailingEdgeFlapControl)
-
-
 
 // Blackbox pitch limiter.  Has three inputs: alpha_f, pitch_rate, and g_force.
 // The output is the "effective g force" which the pitch control circuit attempts
@@ -136,13 +134,7 @@ SIMDATA_REGISTER_INTERFACE(TrailingEdgeFlapControl)
 
 class PitchLimiterControl: public ControlNode {
 public:
-	SIMDATA_OBJECT(PitchLimiterControl, 0, 0)
-	EXTEND_SIMDATA_XML_INTERFACE(PitchLimiterControl, ControlNode)
-		SIMDATA_XML("filtered_alpha", PitchLimiterControl::m_FilteredAlphaID, true)
-		SIMDATA_XML("alpha_break1", PitchLimiterControl::m_AlphaBreak1, true)
-		SIMDATA_XML("alpha_break2", PitchLimiterControl::m_AlphaBreak2, true)
-		SIMDATA_XML("pitch_rate_schedule", PitchLimiterControl::m_PitchRateSchedule, true)
-	END_SIMDATA_XML_INTERFACE
+	SIMDATA_DECLARE_OBJECT(PitchLimiterControl)
 	PitchLimiterControl(): m_PitchRateDeltaFilter(0.0, 1.0, 1.0), m_GLimitFilter(4.0, 12.0, 3.0), m_RollRateFilter(0.67) { }
 	virtual void importChannels(Bus* bus);
 	virtual void link(MapID &map);
@@ -163,6 +155,14 @@ private:
 	LeadLagFilter m_GLimitFilter;
 	LagFilter m_RollRateFilter;
 };
+
+SIMDATA_XML_BEGIN(PitchLimiterControl)
+	SIMDATA_DEF("filtered_alpha", m_FilteredAlphaID, true)
+	SIMDATA_DEF("alpha_break1", m_AlphaBreak1, true)
+	SIMDATA_DEF("alpha_break2", m_AlphaBreak2, true)
+	SIMDATA_DEF("pitch_rate_schedule", m_PitchRateSchedule, true)
+SIMDATA_XML_END
+
 
 void PitchLimiterControl::evaluate(Timer const &timer) {
 	CSP_LOG(APP, DEBUG, "PitchLimiterControl.evaluate ");
@@ -209,16 +209,10 @@ void PitchLimiterControl::link(MapID &map) {
 	assert(m_FilteredAlpha.valid());
 }
 
-SIMDATA_REGISTER_INTERFACE(PitchLimiterControl)
-
-
 
 class RollLimiterControl: public ControlNode {
 public:
-	SIMDATA_OBJECT(RollLimiterControl, 0, 0)
-	EXTEND_SIMDATA_XML_INTERFACE(RollLimiterControl, ControlNode)
-		SIMDATA_XML("roll_command_schedule", RollLimiterControl::m_RollCommandSchedule, true)
-	END_SIMDATA_XML_INTERFACE
+	SIMDATA_DECLARE_OBJECT(RollLimiterControl)
 	RollLimiterControl(): m_RollCommandFilter(10.0) { }
 	virtual void importChannels(Bus* bus);
 private:
@@ -233,6 +227,11 @@ private:
 	simdata::Table1 m_RollCommandSchedule;
 	LagFilter m_RollCommandFilter;
 };
+
+SIMDATA_XML_BEGIN(RollLimiterControl)
+	SIMDATA_DEF("roll_command_schedule", m_RollCommandSchedule, true)
+SIMDATA_XML_END
+
 
 void RollLimiterControl::evaluate(Timer const &timer) {
 	// roll axis modification for nasa control system b (see fig. 35, page 146)
@@ -272,4 +271,3 @@ void RollLimiterControl::importChannels(Bus* bus) {
 	b_CatIII = bus->getChannel(bus::F16::CatIII);
 }
 
-SIMDATA_REGISTER_INTERFACE(RollLimiterControl)

@@ -44,15 +44,13 @@
 
 class UpFrontControls: public System, public sigc::trackable {
 public:
-	SIMDATA_OBJECT(UpFrontControls, 0, 0)
-
-	EXTEND_SIMDATA_XML_INTERFACE(UpFrontControls, System)
-	END_SIMDATA_XML_INTERFACE
+	SIMDATA_DECLARE_OBJECT(UpFrontControls)
 
 	DECLARE_INPUT_INTERFACE(UpFrontControls, System)
 		// the various icp button events are declared dynamically in registerChannels
-	END_INPUT_INTERFACE
+	END_INPUT_INTERFACE  // protected:
 
+public:
 	UpFrontControls();
 	~UpFrontControls();
 
@@ -85,8 +83,6 @@ protected:
 	virtual void ICP_DN();
 	virtual void ICP_INC();
 	virtual void ICP_DEC();
-
-protected:
 
 	virtual void getInfo(InfoList &info) const;
 	virtual double onUpdate(double dt);

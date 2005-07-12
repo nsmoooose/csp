@@ -2,6 +2,12 @@
 ===========================
 
 2005-07-11: onsight
+ * Upgrade to the new macros for declaring simdata objects and xml
+   interfaces.
+
+ * Fix precision of position and velocity display.
+
+2005-07-11: onsight
  * Fix caisson definitions so that the runway signs are properly depth
    buffered.
 

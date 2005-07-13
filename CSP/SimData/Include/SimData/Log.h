@@ -42,7 +42,7 @@ NAMESPACE_SIMDATA
 
 /** Display a fatal error message to stderr and exit.
  */
-extern void fatal(std::string const &msg);
+extern SIMDATA_EXPORT void fatal(std::string const &msg);
 
 
 /** Return the one and only LogStream instance.

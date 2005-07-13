@@ -450,7 +450,7 @@ private:
  */
 
 // Defined in LogStream.cpp
-extern void fatal(std::string const &msg);
+extern void SIMDATA_EXPORT fatal(std::string const &msg);
 
 
 /** Helper template for creating new Object instances.  Partially specialized on the

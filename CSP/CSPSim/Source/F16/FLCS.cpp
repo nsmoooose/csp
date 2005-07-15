@@ -8,11 +8,14 @@
 #include <KineticsChannels.h>
 #include <LandingGearChannels.h>
 #include <SimData/Conversions.h>
-#include <SimData/Math.h>
-#include <SimData/Vector3.h>
 #include <SimData/LUT.h>
+#include <SimData/Math.h>
+#include <SimData/ObjectInterface.h>
+#include <SimData/Vector3.h>
 
 #include "F16Channels.h"
+
+#include <SimData/ObjectInterface.h>
 
 
 class LeadingEdgeFlapControl: public ControlNode {

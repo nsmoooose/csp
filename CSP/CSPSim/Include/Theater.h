@@ -36,7 +36,6 @@
 #include <SimData/Ref.h>
 #include <SimData/Path.h>
 #include <SimData/Object.h>
-#include <SimData/InterfaceRegistry.h>
 
 
 class TerrainObject;

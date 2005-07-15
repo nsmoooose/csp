@@ -1,5 +1,7 @@
 #include <F16/Radio.h>
 
+#include <SimData/ObjectInterface.h>
+
 
 SIMDATA_XML_BEGIN(F16Radio)
 	// TODO presets

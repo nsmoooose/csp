@@ -44,6 +44,7 @@
 #include <LandingGearChannels.h>
 
 #include <SimData/Math.h>
+#include <SimData/ObjectInterface.h>
 
 #include <cstdio>
 #include <iostream>

@@ -1,6 +1,17 @@
 Version 0.4.0 (in progress)
 ===========================
 
+2005-07-12: onsight
+ * Removed deprecated object and xml interface macros.  Revised comments
+   for the new macros.
+
+ * Reorganized headers to reduce dependencies.  Split InterfaceRegistry.*
+   into InterfaceRegistry and InterfaceProxy files.  Headers declaring
+   subclasses of simdata::Object should now include <SimData/Object.h>
+   and not <SimData/InterfaceRegistry.h> (which is no longer needed by
+   most external code).  The corresponding source files that define the
+   object's xml interface should include <SimData/ObjectInterface.h>.
+
 2005-07-10: onsight
  * Major internal refactoring:
 

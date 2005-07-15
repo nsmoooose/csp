@@ -26,15 +26,19 @@
 #include <DynamicObject.h>
 #include <Controller.h>
 #include <CSPSim.h>
+#include <DataRecorder.h>
 #include <HUD/HUD.h>
 #include <KineticsChannels.h>
 #include <ObjectModel.h>
 #include <PhysicsModel.h>
+#include <Station.h>
 #include <SystemsModel.h>
 #include <TerrainObject.h>
 
 #include <SimCore/Util/Log.h>
 #include <SimData/DataManager.h>
+#include <SimData/ObjectInterface.h>
+#include <SimData/osg.h>
 #include <SimData/Quat.h>
 
 #include <osg/Group>

@@ -25,7 +25,6 @@
 #ifndef __ENGINE_H__
 #define __ENGINE_H__
 
-#include <SimData/InterfaceRegistry.h>
 #include <SimData/LUT.h>
 #include <SimData/Object.h>
 #include <SimData/Vector3.h>

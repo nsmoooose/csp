@@ -23,16 +23,18 @@
  **/
 
 #include "VirtualScene.h"
-#include "TerrainObject.h"
+#include "Animation.h"
+#include "Config.h"
+#include "CSPSim.h"
 #include "DynamicObject.h"
+#include "glDiagnostics.h"
+#include "ObjectModel.h"
+#include "Projection.h"
+#include "Sky.h"
+#include "SceneConstants.h"
+#include "TerrainObject.h"
 #include "Theater/FeatureGroup.h"
 #include "Theater/FeatureSceneGroup.h"
-#include "CSPSim.h"
-#include "Config.h"
-#include "Sky.h"
-#include "ObjectModel.h"
-#include "glDiagnostics.h"
-#include "SceneConstants.h"
 
 #include <SimCore/Util/Log.h>
 #include <SimData/Types.h>

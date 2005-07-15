@@ -55,10 +55,6 @@ std::string Object::asString() const {
 	return tag.str();
 }
 
-hasht Object::_getHash(const char* c) {
-	return hash_string(c);
-}
-
 void Object::_setPath(hasht path) {
 	_path = path;
 }

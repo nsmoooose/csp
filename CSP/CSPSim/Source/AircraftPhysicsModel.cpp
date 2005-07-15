@@ -29,6 +29,8 @@
 #include "NumericalMethod.h"
 #include "Profile.h"
 
+#include <SimData/ObjectInterface.h>
+
 #include <algorithm>
 
 using Vector::Vectord;

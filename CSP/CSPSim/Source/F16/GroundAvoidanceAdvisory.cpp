@@ -31,6 +31,7 @@
 #include <SimCore/Util/Log.h>
 #include <SimData/Conversions.h>
 #include <SimData/Math.h>
+#include <SimData/ObjectInterface.h>
 
 
 SIMDATA_XML_BEGIN(GroundAvoidanceAdvisory)

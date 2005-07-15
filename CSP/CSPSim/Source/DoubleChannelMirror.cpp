@@ -25,6 +25,7 @@
 #include <ChannelMirror.h>
 #include <Bus.h>
 #include <SimData/Math.h>
+#include <SimData/ObjectInterface.h>
 
 
 class DoubleChannelSlave: public ChannelSlave {

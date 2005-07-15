@@ -32,6 +32,7 @@
 #include <osg/Geometry>
 #include <osgUtil/Optimizer>
 
+#include <SimData/ObjectInterface.h>
 #include <SimData/Random.h>
 
 #include <SimCore/Util/Log.h>

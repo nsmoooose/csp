@@ -19,8 +19,10 @@
  */
 
 #include <SimData/DataArchive.h>
+#include <SimData/Archive.h>
 #include <SimData/DataManager.h>
 #include <SimData/InterfaceRegistry.h>
+#include <SimData/InterfaceProxy.h>
 #include <SimData/Log.h>
 #include <SimData/Object.h>
 #include <SimData/Verify.h>

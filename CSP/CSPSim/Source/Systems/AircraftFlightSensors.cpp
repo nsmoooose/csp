@@ -25,14 +25,15 @@
 #include <sstream>
 #include <iomanip>
 
-#include <SimData/Conversions.h>
-
 #include <Systems/AircraftFlightSensors.h>
 #include <ConditionsChannels.h>
 #include <FlightDynamicsChannels.h>
 #include <KineticsChannels.h>
 #include <Atmosphere.h>
 #include <CSPSim.h>
+
+#include <SimData/Conversions.h>
+#include <SimData/ObjectInterface.h>
 
 
 SIMDATA_XML_BEGIN(AircraftFlightSensors)

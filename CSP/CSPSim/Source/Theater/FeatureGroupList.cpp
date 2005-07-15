@@ -26,6 +26,8 @@
 #include "Theater/FeatureGroupList.h"
 #include "Projection.h"
 
+#include <SimData/ObjectInterface.h>
+
 
 SIMDATA_XML_BEGIN(FeatureGroupList)
 	SIMDATA_DEF("feature_groups", m_FeatureGroups, true)

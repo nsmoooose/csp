@@ -25,11 +25,12 @@
 
 #include "TerrainObject.h"
 #include "Config.h"
+#include "Projection.h"
 
 #include <osg/LineSegment>
 
 #include <SimCore/Util/Log.h>
-#include <SimData/InterfaceRegistry.h>
+#include <SimData/ObjectInterface.h>
 #include <SimData/osg.h>
 
 

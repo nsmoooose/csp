@@ -25,6 +25,8 @@
 
 #include "AnimationSequence.h"
 
+#include <SimData/ObjectInterface.h>
+
 
 SIMDATA_XML_BEGIN(SharedSequence)
 	SIMDATA_DEF("sequence_channel", m_SequenceChannel, false)

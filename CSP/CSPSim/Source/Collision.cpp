@@ -22,15 +22,15 @@
  **/
 #include <algorithm>
 
-#include <SimData/Quat.h>
-#include <SimData/Ref.h>
-
 #include <Collision.h>
 #include <Animation.h>
 #include <KineticsChannels.h>
 #include <ObjectModel.h>
 #include <SimCore/Util/Log.h>
 
+#include <SimData/ObjectInterface.h>
+#include <SimData/Quat.h>
+#include <SimData/Ref.h>
 
 using bus::Kinetics;
 

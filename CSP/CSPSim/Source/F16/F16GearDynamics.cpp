@@ -27,8 +27,9 @@
 #include "F16GearDynamics.h"
 #include "GearAnimation.h"
 
-#include <SimData/Math.h>
 #include <SimData/Conversions.h>
+#include <SimData/Math.h>
+#include <SimData/ObjectInterface.h>
 
 
 SIMDATA_XML_BEGIN(F16GearDynamics)

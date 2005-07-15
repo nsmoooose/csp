@@ -27,6 +27,7 @@
 #include "Config.h"
 
 #include <SimData/FileUtility.h>
+#include <SimData/ObjectInterface.h>
 
 #include <osg/Geometry>
 #include <osg/Texture2D>

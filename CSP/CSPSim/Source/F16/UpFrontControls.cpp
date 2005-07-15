@@ -30,6 +30,8 @@
 #include "PageLIST.h"
 #include "PageSTPT.h"
 
+#include <SimData/ObjectInterface.h>
+
 
 SIMDATA_XML_BEGIN(UpFrontControls)
 SIMDATA_XML_END

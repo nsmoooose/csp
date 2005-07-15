@@ -24,7 +24,6 @@
 #ifndef __BASEDYNAMICS_H__
 #define __BASEDYNAMICS_H__
 
-#include <SimData/Quat.h>
 #include <SimData/Vector3.h>
 
 #include <System.h>
@@ -36,9 +35,9 @@ namespace simdata {
 /**
  * Abstract base class for all object dynamics (physics) modelling.
  *
- * Derived classes must implement computeForceAndMoment(x) to compute 
- * the force and moment acting on the object at a point within the 
- * simulation step.  See documentation associated with this method for 
+ * Derived classes must implement computeForceAndMoment(x) to compute
+ * the force and moment acting on the object at a point within the
+ * simulation step.  See documentation associated with this method for
  * important details.
  */
 class BaseDynamics: public System {
@@ -59,11 +58,11 @@ public:
 	virtual ~BaseDynamics();
 
 	/**
-	 * Called once before one or more integration steps.  Internal 
-	 * state changes and slowly varying parameters can be evaluated 
+	 * Called once before one or more integration steps.  Internal
+	 * state changes and slowly varying parameters can be evaluated
 	 * here.
 	 *
-	 * @param dt the time interval of each of the following 
+	 * @param dt the time interval of each of the following
 	 *           integration steps.
 	 */
 	virtual void initializeSimulationStep(double dt);
@@ -90,32 +89,32 @@ public:
 	 * Evaluate the force and moment acting on the object at a point
 	 * within the simulation step.
 	 *
-	 * This method will be called repeatedly during the Runge-Kutta 
+	 * This method will be called repeatedly during the Runge-Kutta
 	 * integration.  The parameter x is the time from the start of
 	 * the integration, not the absolute time or a monotonic time
-	 * interval.  In general you should not need to use this 
-	 * parameter, and if you do be sure you really understand what 
+	 * interval.  In general you should not need to use this
+	 * parameter, and if you do be sure you really understand what
 	 * it means.  Also, do not modify internal state variables of
-	 * the Dynamics class during the computeForceAndMoment() call.  
-	 * State changes should only occur instead in the preSimulationStep() 
+	 * the Dynamics class during the computeForceAndMoment() call.
+	 * State changes should only occur instead in the preSimulationStep()
 	 * and postSimulationStep() methods.  In particular, do not do
 	 * anything that results in discontinuous force or moment
 	 * variations that can prevent the RK solver from converging.
 	 *
 	 * @param x the time relative to the start of the integration
-	 *          step. 
+	 *          step.
 	 */
 	virtual void computeForceAndMoment(double x) = 0;
 
 	/**
 	 * Get the total force computed in the last update() call.
 	 */
-	inline simdata::Vector3 getForce() const { return m_Force; }
+	inline simdata::Vector3 const &getForce() const { return m_Force; }
 
 	/**
 	 * Get the total moment computed in the last update() call.
 	 */
-	inline simdata::Vector3 getMoment() const { return m_Moment; }
+	inline simdata::Vector3 const &getMoment() const { return m_Moment; }
 
 	virtual bool needsImpulse() const { return false; }
 

@@ -27,20 +27,16 @@
 
 #include <vector>
 
+#include <SimData/Enum.h>
+#include <SimData/External.h>
+#include <SimData/Link.h>
 #include <SimData/Object.h>
 #include <SimData/Vector3.h>
-#include <SimData/Matrix3.h>
-#include <SimData/Enum.h>
-#include <SimData/Quat.h>
-#include <SimData/External.h>
-#include <SimData/InterfaceRegistry.h>
 
 #include <osg/ref_ptr>
 
 #include <Export.h>
-#include <Animation.h>
 #include <Bus.h>
-#include <Station.h>
 
 class Animation;
 class AnimationCallback;
@@ -48,6 +44,10 @@ class AnimationChannel;
 class Bus;
 class HUD;
 class Station;
+
+namespace simdata {
+	class Quat;
+}
 
 namespace osg {
 	class Node;

@@ -33,6 +33,7 @@
 
 #include <SimCore/Util/Log.h>
 #include <SimData/Math.h>
+#include <SimData/ObjectInterface.h>
 #include <SimData/Quat.h>
 
 

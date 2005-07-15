@@ -20,13 +20,15 @@
  * @file Engine.cpp
  *
  **/
-#include <SimData/Conversions.h>
-#include <SimData/Quat.h>
 
 #include "CSPSim.h"
 #include "Engine.h"
 #include "ConditionsChannels.h"
 #include "FlightDynamicsChannels.h"
+
+#include <SimData/Conversions.h>
+#include <SimData/Quat.h>
+#include <SimData/ObjectInterface.h>
 
 #include <iomanip>
 #include <sstream>

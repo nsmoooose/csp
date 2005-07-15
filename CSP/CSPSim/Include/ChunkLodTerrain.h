@@ -29,7 +29,6 @@
 #include <SimData/Object.h>
 #include <SimData/External.h>
 #include <SimData/Vector3.h>
-#include <SimData/InterfaceRegistry.h>
 
 #include "TerrainObject.h"
 

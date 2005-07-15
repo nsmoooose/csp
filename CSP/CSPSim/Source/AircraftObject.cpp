@@ -26,6 +26,7 @@
 
 #include "AircraftObject.h"
 #include "AnimationSequence.h"
+#include "DataRecorder.h"
 #include "KineticsChannels.h"
 #include "Collision.h"
 #include "Engine.h"
@@ -34,6 +35,7 @@
 #include "SystemsModel.h"
 
 #include <SimCore/Util/Log.h>
+#include <SimData/ObjectInterface.h>
 
 #include <sstream>
 #include <iomanip>

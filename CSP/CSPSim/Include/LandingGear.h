@@ -28,7 +28,6 @@
 
 #include <vector>
 
-#include <SimData/InterfaceRegistry.h>
 #include <SimData/Link.h>
 #include <SimData/Math.h>
 #include <SimData/Object.h>

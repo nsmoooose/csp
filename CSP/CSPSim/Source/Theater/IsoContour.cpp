@@ -24,6 +24,9 @@
 
 #include "Theater/IsoContour.h"
 
+#include <SimData/ObjectInterface.h>
+
+
 SIMDATA_XML_BEGIN(RectangularCurve)
 	SIMDATA_DEF("width", m_Width, true)
 	SIMDATA_DEF("height", m_Height, true)

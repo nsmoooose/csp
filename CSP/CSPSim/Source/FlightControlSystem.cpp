@@ -34,6 +34,7 @@
 #include <DataRecorder.h>
 
 #include <SimData/LUT.h>
+#include <SimData/ObjectInterface.h>
 
 #include <cstdlib>
 #include <vector>

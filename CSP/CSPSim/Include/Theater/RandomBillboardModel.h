@@ -29,6 +29,8 @@
 
 #include "Theater/FeatureGroupModel.h"
 
+#include <SimData/Link.h>
+
 #include <vector>
 
 class FeatureQuad;

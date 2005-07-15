@@ -25,6 +25,9 @@
 
 #include "GearAnimation.h"
 
+#include <SimData/ObjectInterface.h>
+
+
 SIMDATA_XML_BEGIN(M2kGearAnimation)
 	SIMDATA_DEF("absorber02_length", m_Absorber02Length, false)
 	SIMDATA_DEF("absorber03_length", m_Absorber03Length, false)

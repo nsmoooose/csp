@@ -37,10 +37,11 @@
 #include <KineticsChannels.h>
 #include <LandingGearChannels.h>
 #include <SimData/Conversions.h>
-#include <SimData/osg.h>
 #include <SimData/Math.h>
-#include <SimData/Vector3.h>
+#include <SimData/ObjectInterface.h>
+#include <SimData/osg.h>
 #include <SimData/Timing.h>
+#include <SimData/Vector3.h>
 
 
 // TODO

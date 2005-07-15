@@ -28,6 +28,7 @@
 #include <Systems/AircraftSimpleFCS.h>
 
 #include <SimData/Math.h>
+#include <SimData/ObjectInterface.h>
 
 #include <sstream>
 #include <iomanip>

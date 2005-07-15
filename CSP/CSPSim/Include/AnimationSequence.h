@@ -26,7 +26,6 @@
 #define __ANIMATION_SEQUENCE_H__
 
 #include "Bus.h"
-#include <SimData/InterfaceRegistry.h>
 #include <SimData/Math.h>
 #include <SimData/Object.h>
 #include <string>

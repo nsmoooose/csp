@@ -25,9 +25,9 @@
 #ifndef __CONTROL_NODE_H__
 #define __CONTROL_NODE_H__
 
-#include <SimData/InterfaceRegistry.h>
 #include <SimData/Key.h>
 #include <SimData/Math.h>
+#include <SimData/Object.h>
 #include <map>
 
 class Bus;

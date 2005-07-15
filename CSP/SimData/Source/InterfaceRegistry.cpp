@@ -25,107 +25,15 @@
 
 
 #include <SimData/InterfaceRegistry.h>
+#include <SimData/InterfaceProxy.h>
 #include <SimData/Log.h>
-#include <SimData/Object.h>
-#include <SimData/HashUtility.h>
-#include <SimData/TypeAdapter.h>
 #include <SimData/ObjectInterface.h>
-#include <SimData/Namespace.h>
-#include <SimData/ExceptionBase.h>
-#include <SimData/Enum.h>
-#include <SimData/Path.h>
-#include <SimData/Version.h>
 
-#include <algorithm>
 #include <string>
 #include <vector>
-#include <sstream>
 
 
 NAMESPACE_SIMDATA
-
-
-
-///////////////////////////////////////////////////////////////////////////
-// InterfaceProxy
-
-
-InterfaceProxy::InterfaceProxy(const char *cname, hasht (*chash)())
-{
-	assert(chash);
-	InterfaceRegistry::getInterfaceRegistry().addInterface(cname, (*chash)(), this);
-}
-
-InterfaceProxy::InterfaceProxy(const char *cname, hasht chash)
-{
-	assert(chash != 0);
-	InterfaceRegistry::getInterfaceRegistry().addInterface(cname, chash, this);
-}
-
-void InterfaceProxy::globalRegister(const char *cname, const hasht chash) {
-	assert(chash != 0);
-	InterfaceRegistry::getInterfaceRegistry().addInterface(cname, chash, this);
-}
-
-Object *InterfaceProxy::createObject() const {
-	fatal("INTERNAL ERROR: InterfaceProxy::createObject()");
-	return 0;
-}
-
-void InterfaceProxy::addInterface(ObjectInterfaceBase* objectinterface, std::string const &classname, hasht const &classhash) {
-	std::vector<std::string> names = objectinterface->getVariableNames();
-	std::vector<std::string>::iterator name = names.begin();
-	for (; name != names.end(); ++name) {
-		if (_interfacesByVariableName.find(*name) != _interfacesByVariableName.end()) {
-			// variable multiply defined
-			std::ostringstream ss;
-			ss << "variable \"" << *name << "\""
-			   << " multiply defined in interface to class "
-			   << classname << " or parent interface.";
-			throw InterfaceError(ss.str());
-		}
-		_interfacesByVariableName[*name] = objectinterface;
-		_variableNames.push_back(*name);
-		if (objectinterface->variableRequired(*name)) {
-			_requiredNames.push_back(*name);
-		}
-	}
-	_interfaces.push_back(objectinterface);
-	_classNames.push_back(classname);
-	_classHashes.push_back(classhash);
-}
-
-ObjectInterfaceBase *InterfaceProxy::findInterface(std::string const &varname, bool required) const {
-	InterfaceMap::const_iterator iter = _interfacesByVariableName.find(varname);
-	if (iter == _interfacesByVariableName.end()) {
-		if (!required) return 0;
-		throw InterfaceError("Variable \"" + varname + "\" not defined in interface to class \"" + getClassName() + "\"");
-	}
-	return iter->second;
-}
-
-hasht InterfaceProxy::getClassHash() const {
-	fatal("INTERNAL ERROR: InterfaceProxy::getClassHash()");
-	return 0;
-}
-
-const char * InterfaceProxy::getClassName() const {
-	fatal("INTERNAL ERROR: InterfaceProxy::getClassName()");
-	return 0;
-}
-
-bool InterfaceProxy::isSubclass(std::string const &classname) const {
-	return std::find(_classNames.begin(), _classNames.end(), classname) != _classNames.end();
-}
-
-bool InterfaceProxy::isSubclass(hasht const &classhash) const {
-	return std::find(_classHashes.begin(), _classHashes.end(), classhash) != _classHashes.end();
-}
-
-
-
-///////////////////////////////////////////////////////////////////////////
-// InterfaceRegistry
 
 
 InterfaceRegistry::InterfaceRegistry() {
@@ -177,10 +85,6 @@ void InterfaceRegistry::addInterface(const char *name, hasht id, InterfaceProxy 
 	__id_map[id] = proxy;
 	__list.push_back(proxy);
 	SIMDATA_LOG(LOG_REGISTRY, LOG_DEBUG, "Registering interface<" << name << "> [" << id << "]");
-}
-
-DeprecationWarning::DeprecationWarning(const char *message) {
-	SIMDATA_LOG(LOG_REGISTRY, LOG_WARNING, message);
 }
 
 NAMESPACE_SIMDATA_END

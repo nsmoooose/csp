@@ -47,6 +47,8 @@
 
 
 /* TODO
+ *   move most non-template methods to Bus.cpp, and most template methods
+ *   (and Log.h) to BusInline.h.
  *   add warning/debug logging
  */
 
@@ -768,7 +770,7 @@ public:
 	}
 
 };
-	
+
 
 #endif // __BUS_H__
 

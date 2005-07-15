@@ -27,6 +27,7 @@
 #include <KineticsChannels.h>
 #include <F16/F16Channels.h>
 
+#include <SimData/ObjectInterface.h>
 #include <SimData/Quat.h>
 #include <SimData/Vector3.h>
 

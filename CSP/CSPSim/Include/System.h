@@ -80,19 +80,19 @@
 #ifndef __SYSTEM_H__
 #define __SYSTEM_H__
 
-#include <Bus.h>
+#include <Bus.h>  // could be forward declared, but most Bus users will need it in the header anyway.
 #include <InputInterface.h>
 
-#include <SimCore/Util/Log.h>
 #include <SimCore/Util/SynchronousUpdate.h>
 
 #include <SimData/Object.h>
-#include <SimData/InterfaceRegistry.h>
 #include <SimData/Composite.h>
+#include <SimData/Link.h>
 
+class DataRecorder;
 class System;
 class SystemsModel;
-class DataRecorder;
+
 
 /** A visitor interface for traversing System trees.
  */
@@ -233,23 +233,13 @@ protected:
 	 *  Called automatically as part of the SimData deserialization
 	 *  infrastructure.
 	 */
-	void postCreate() {
-		// This method is called automatically after the system is instantiated
-		// and deserialized from static data.  All the subsystems defined in XML
-		// have been instantiated in the m_Subsystems vector, so now we add them
-		// as child nodes and clear m_Subsystems to eliminate the extra set
-		// of references.
-		CSP_LOG(OBJECT, DEBUG, "System::postCreate() " << getClassName() << ", adding " << m_Subsystems.size() << " subsystems.");
-		simdata::Link<System>::vector::iterator iter = m_Subsystems.begin();
-		for (; iter != m_Subsystems.end(); ++iter) {
-			CSP_LOG(OBJECT, DEBUG, "System::addChild() " << (*iter)->getClassName());
-			addChild(iter->get());
-		}
-		m_Subsystems.clear();
-	}
+	virtual void postCreate();
 
 public:
 	SIMDATA_DECLARE_ABSTRACT_OBJECT(System)
+
+	System();
+	virtual ~System();
 
 	/** True if a system can be added as the child of another system.
 	 *
@@ -259,11 +249,6 @@ public:
 	 */
 	bool canBeAdded() const { return getNumParents() == 0; }
 
-	/** Constructor.
-	 */
-	System(): m_Model(0) {
-	}
-
 	/** Get the system identifier string (name).
 	 */
 	virtual std::string getName() const { return "?"; }
@@ -271,13 +256,7 @@ public:
 	/** Add another system node as a child of this node.
 	 *  @returns true if the node was added successfully.
 	 */
-	virtual bool addChild(SystemNode *node) {
-		if (!SystemNode::addChild(node)) {
-			CSP_LOG(OBJECT, ERROR, "SystemNode::addChild() failed.");
-			return false;
-		}
-		return true;
-	}
+	virtual bool addChild(SystemNode *node);
 
 	/** Add another system node as a child of this node.  If required
 	 *  is true this method will abort (assert false) on failure.

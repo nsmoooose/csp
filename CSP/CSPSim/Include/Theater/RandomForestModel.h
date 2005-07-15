@@ -37,6 +37,7 @@ namespace osg {
 	class Geometry;
 }
 
+#include <SimData/Link.h>
 #include <SimData/Ref.h>
 #include <SimData/Vector3.h>
 

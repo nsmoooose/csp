@@ -25,6 +25,8 @@
 
 #include <F16/PanelHUD.h>
 
+#include <SimData/ObjectInterface.h>
+
 
 SIMDATA_XML_BEGIN(PanelHUD)
 SIMDATA_XML_END

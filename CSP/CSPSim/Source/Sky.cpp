@@ -37,7 +37,7 @@
 #include <SimData/Date.h>
 #include <SimData/Path.h>
 #include <SimData/Object.h>
-#include <SimData/InterfaceRegistry.h>
+#include <SimData/ObjectInterface.h>
 #include <SimData/DataManager.h>
 #include <SimData/Math.h>
 

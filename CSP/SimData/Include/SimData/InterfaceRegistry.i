@@ -20,9 +20,10 @@
 
 %module InterfaceRegistry
 %{
+#include <SimData/ObjectInterface.h>
+#include <SimData/InterfaceProxy.h>
 #include <SimData/InterfaceRegistry.h>
 #include <SimData/Namespace.h>
-//using SIMDATA(TypeAdapter);
 %}
 
 %include "SimData/Namespace.h"
@@ -32,7 +33,7 @@ NAMESPACE_SIMDATA
 
 %newobject InterfaceProxy::createObject;
 
-// silence swig warningns about unknown base class Singleton<InterfaceRegistry>
+// silence swig warnings about unknown base class Singleton<InterfaceRegistry>
 class InterfaceRegistry;
 template <class T> class Singleton;
 %template(SingletonInterfaceRegistry) Singleton<InterfaceRegistry>;
@@ -55,6 +56,7 @@ NAMESPACE_SIMDATA_END
 
 new_vector(pInterfaceProxy, SIMDATA(InterfaceProxy)*)
 
+%include "SimData/InterfaceProxy.h"
 %include "SimData/InterfaceRegistry.h"
 
 %exception;

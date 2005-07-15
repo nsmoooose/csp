@@ -30,6 +30,7 @@ SOURCES = [
 	'FileUtility.cpp',
 	'GeoPos.cpp',
 	'HashUtility.cpp',
+	'InterfaceProxy.cpp',
 	'InterfaceRegistry.cpp',
 	'Key.cpp',
 	'Link.cpp',

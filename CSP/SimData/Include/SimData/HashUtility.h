@@ -44,6 +44,10 @@
 NAMESPACE_SIMDATA
 
 
+// Log a fatal error and abort the program.  Also declared in Log.h, but
+// redeclared here for convenience.  Defined in LogStream.cpp
+extern void SIMDATA_EXPORT fatal(std::string const &msg);
+
 
 /**
  * @defgroup HashUtils Hash Utilities

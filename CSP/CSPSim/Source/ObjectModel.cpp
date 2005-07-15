@@ -31,6 +31,7 @@
 #include "HUD/HUD.h"
 #include "SceneConstants.h"
 #include "SmokeEffects.h"
+#include "Station.h"
 
 #include <osgDB/FileUtils>
 #include <osgDB/Registry>
@@ -56,8 +57,11 @@
 #include <SimCore/Util/Log.h>
 #include <SimData/FileUtility.h>
 #include <SimData/HashUtility.h>
+#include <SimData/Key.h>
+#include <SimData/ObjectInterface.h>
 #include <SimData/osg.h>
 #include <SimData/Timing.h>
+#include <SimData/Quat.h>
 
 /*
 	TODO

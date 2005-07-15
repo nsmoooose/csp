@@ -28,6 +28,7 @@
 
 #include <SimCore/Util/Log.h>
 #include <SimData/FileUtility.h>
+#include <SimData/ObjectInterface.h>
 #include <SimData/osg.h>
 
 #include <osg/Geode>

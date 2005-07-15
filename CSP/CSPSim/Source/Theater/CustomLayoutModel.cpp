@@ -26,6 +26,8 @@
 #include "Theater/CustomLayoutModel.h"
 #include "Theater/FeatureLayout.h"
 
+#include <SimData/ObjectInterface.h>
+
 #include <vector>
 
 

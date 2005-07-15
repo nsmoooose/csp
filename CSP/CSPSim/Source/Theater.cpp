@@ -29,8 +29,9 @@
 #include "TerrainObject.h"
 
 #include <SimCore/Util/Log.h>
-#include <SimData/Ref.h>
+#include <SimData/ObjectInterface.h>
 #include <SimData/Path.h>
+#include <SimData/Ref.h>
 
 
 SIMDATA_XML_BEGIN(Theater)

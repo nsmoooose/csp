@@ -28,7 +28,6 @@
 
 #include <SimData/Vector3.h>
 #include <SimData/Object.h>
-#include <SimData/InterfaceRegistry.h>
 #include <SimCore/Util/Log.h>
 
 

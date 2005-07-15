@@ -28,9 +28,9 @@
 
 #include "Theater/Feature.h"
 
-#include <SimData/Path.h>
+#include <SimData/Link.h>
 #include <SimData/Object.h>
-#include <SimData/InterfaceRegistry.h>
+#include <SimData/Path.h>
 #include <SimData/Vector3.h>
 
 #include <vector>

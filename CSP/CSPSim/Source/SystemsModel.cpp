@@ -28,6 +28,8 @@
 #include <SystemsModel.h>
 #include <DataRecorder.h>
 
+#include <SimData/ObjectInterface.h>
+
 
 SIMDATA_XML_BEGIN(SystemsModel)
 	SIMDATA_DEF("physics_model", m_PhysicsModel, false)

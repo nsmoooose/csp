@@ -25,14 +25,23 @@
  **/
 
 
-#include "System.h"
-#include "SystemsModel.h"
+#include <System.h>
+#include <Bus.h>
+#include <SystemsModel.h>
+#include <SimCore/Util/Log.h>
+#include <SimData/ObjectInterface.h>
 
 
 SIMDATA_XML_BEGIN(System)
 	SIMDATA_DEF("subsystems", m_Subsystems, false)
 SIMDATA_XML_END
 
+
+System::System(): m_Model(0) {
+}
+
+System::~System() {
+}
 
 void System::setModel(SystemsModel *model) {
 	assert(m_Model == 0);
@@ -42,4 +51,25 @@ void System::setModel(SystemsModel *model) {
 	registerChannels(bus.get());
 }
 
+void System::postCreate() {
+	// This method is called automatically after the system is instantiated
+	// and deserialized from static data.  All the subsystems defined in XML
+	// have been instantiated in the m_Subsystems vector, so now we add them
+	// as child nodes and clear m_Subsystems to eliminate the extra set
+	// of references.
+	CSP_LOG(OBJECT, DEBUG, "System::postCreate() " << getClassName() << ", adding " << m_Subsystems.size() << " subsystems.");
+	simdata::Link<System>::vector::iterator iter = m_Subsystems.begin();
+	for (; iter != m_Subsystems.end(); ++iter) {
+		CSP_LOG(OBJECT, DEBUG, "System::addChild() " << (*iter)->getClassName());
+		addChild(iter->get());
+	}
+	m_Subsystems.clear();
+}
 
+bool System::addChild(SystemNode *node) {
+	if (!SystemNode::addChild(node)) {
+		CSP_LOG(OBJECT, ERROR, "SystemNode::addChild() failed.");
+		return false;
+	}
+	return true;
+}

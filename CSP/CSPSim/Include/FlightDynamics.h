@@ -26,8 +26,6 @@
 #ifndef __FLIGHTDYNAMICS_H__
 #define __FLIGHTDYNAMICS_H__
 
-#include <SimData/InterfaceRegistry.h>
-
 #include "BaseDynamics.h"
 
 class FlightModel;

@@ -25,12 +25,9 @@
 #include "Atmosphere.h"
 #include "Profile.h"
 
-#include <SimData/InterfaceRegistry.h>
 #include <SimData/Random.h>
 
 #include <cstdio>
-
-//SIMDATA_REGISTER_INTERFACE(Atmosphere)
 
 
 class Perlin1D {

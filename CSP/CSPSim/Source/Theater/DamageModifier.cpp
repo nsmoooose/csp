@@ -24,6 +24,8 @@
 
 #include "DamageModifier.h"
 
+#include <SimData/ObjectInterface.h>
+
 
 SIMDATA_XML_BEGIN(DamageModifier)
 	SIMDATA_DEF("incediary", m_Incendiary, false)

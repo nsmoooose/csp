@@ -25,6 +25,8 @@
 
 #include "Theater/Objective.h"
 
+#include <SimData/ObjectInterface.h>
+
 
 SIMDATA_XML_BEGIN(Objective)
 	SIMDATA_DEF("strategic_value_modifier", m_StrategicValueModifier, true)

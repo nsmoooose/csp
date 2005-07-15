@@ -30,6 +30,7 @@
 #include "Theater/ElevationCorrection.h"
 #include "Theater/IsoContour.h"
 
+#include <SimData/ObjectInterface.h>
 #include <SimData/Random.h>
 
 #include <osg/Geometry>

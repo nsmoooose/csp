@@ -27,7 +27,10 @@
 #define __THEATER_CUSTOMLAYOUTMODEL_H__
 
 
-#include "Theater/FeatureGroupModel.h"
+#include <Theater/FeatureGroupModel.h>
+
+#include <SimData/Link.h>
+
 
 class FeatureLayout;
 

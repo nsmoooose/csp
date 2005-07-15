@@ -25,24 +25,28 @@
 #ifndef __DYNAMICOBJECT_H__
 #define __DYNAMICOBJECT_H__
 
-#include "DataRecorder.h"
+#include "Bus.h"
 #include "InputInterface.h"
 #include "TerrainObject.h"
 
 #include <SimCore/Battlefield/SimObject.h>
+#include <SimData/Link.h>
+#include <SimData/Matrix3.h>
 #include <SimData/Quat.h>
 
 
+class DataRecorder;
 class HUD;
-class PhysicsModel;
 class LocalController;
 class ObjectModel;
+class PhysicsModel;
 class RemoteController;
 class SceneModel;
 class SceneModelChild;
 class Station;
 class SystemsModel;
 
+namespace simdata { class Quat; }
 
 namespace osgParticle {
 	class Geode;

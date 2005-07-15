@@ -27,9 +27,9 @@
 #define __FLIGHTMODEL_H__
 
 
-#include <SimData/InterfaceRegistry.h>
 #include <SimData/LUT.h>
 #include <SimData/Math.h>
+#include <SimData/Object.h>
 #include <SimData/Vector3.h>
 
 #include "Atmosphere.h"

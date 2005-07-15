@@ -30,6 +30,8 @@
 #include "Theater/LayoutTransform.h"
 #include "Theater/ElevationCorrection.h"
 
+#include <SimData/ObjectInterface.h>
+
 
 SIMDATA_XML_BEGIN(FeatureLayout)
 	SIMDATA_DEF("model", m_FeatureModel, true)

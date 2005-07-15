@@ -95,10 +95,12 @@ inline void checkEmptyTag(const char* cdata) {
 
 // Forward declare all BaseTypes.
 class ECEF;
+class EnumLink;
 class External;
 class Key;
+template <class T> class Link;
+class LinkCore;
 class LinkBase;
-class ListBase;
 class LLA;
 template <int N, typename X> class LUT;
 typedef LUT<1,float> Table1;

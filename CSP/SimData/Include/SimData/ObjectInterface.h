@@ -36,11 +36,11 @@
 #include <sstream>
 
 #include <SimData/hash_map.h>
-#include <SimData/TypeAdapter.h>
 #include <SimData/Namespace.h>
 #include <SimData/Archive.h>
 #include <SimData/Link.h>
 #include <SimData/HashUtility.h>
+#include <SimData/TypeAdapter.h>
 
 
 NAMESPACE_SIMDATA

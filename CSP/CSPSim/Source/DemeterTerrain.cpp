@@ -32,8 +32,8 @@
 #include <Demeter/TerrainTextureFactory.h>
 
 #include <SimCore/Util/Log.h>
-#include <SimData/InterfaceRegistry.h>
 #include <SimData/FileUtility.h>
+#include <SimData/ObjectInterface.h>
 
 #include <osg/Geode>
 #include <osg/StateSet>

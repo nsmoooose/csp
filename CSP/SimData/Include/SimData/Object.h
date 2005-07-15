@@ -29,106 +29,30 @@
 #define __SIMDATA_OBJECT_H__
 
 
-#include <cstdio>
-#include <cassert>
 #include <string>
 
-#include <SimData/HashUtility.h>
 #include <SimData/BaseType.h>
 #include <SimData/Export.h>
+#include <SimData/HashUtility.h>
+#include <SimData/InterfaceProxy.h>
 #include <SimData/Referenced.h>
-
-
-// Various object macros for internal use only.
-#define __SIMDATA_LEAKCHECK(a) \
-	a() { printf(#a " %p\n", this); } \
-	~a() { printf("~" #a " %p\n", this); }
-
-#define __SIMDATA_GETCLASSNAME(a) \
-	static const char* _getClassName() { return #a; } \
-	virtual const char* getClassName() const { return _getClassName(); }
-
-#define __SIMDATA_GETCLASSVERSION(major, minor) \
-	static const char* _getClassVersion() { return #major "." #minor; } \
-	virtual const char* getClassVersion() const { return _getClassVersion(); }
-	
-#define __SIMDATA_GETCLASSHASH(a, major) \
-	static SIMDATA(hasht) _getClassHash() { \
-		static SIMDATA(hasht) hash = 0; \
-		if (hash == 0) hash = _getHash(#a ":" #major); \
-		return hash; \
-	} \
-	virtual SIMDATA(hasht) getClassHash() const { return _getClassHash(); }
-
-#define __SIMDATA_ISSTATIC(static_) \
-	static bool _isClassStatic() { return static_; } \
-	static bool isClassStatic() { return _isClassStatic(); }
-
-#define __SIMDATA_CLASSDEF(a, major, minor) \
-	__SIMDATA_GETCLASSNAME(a) \
-	__SIMDATA_GETCLASSHASH(a, major) \
-	__SIMDATA_GETCLASSVERSION(major, minor) \
-
-#define __SIMDATA_NEW(a) virtual SIMDATA(Object)* _new() const { return new a(); }
-
-/** Declare a SimData Object subclass
- *
- *  This macro adds standard boilerplate code to object classes.  The
- *  first parameter is the object class, while the second and third
- *  are major and minor version numbers.  The class name and version
- *  numbers are used to test binary compatibility during object
- *  deserialization.  This version of the macro declares a non-static
- *  object, meaning that new instances will be created each time a
- *  particular object of this class is loaded from an archive.  To
- *  share one instance, see SIMDATA_STATIC_OBJECT.
- */
-#define SIMDATA_OBJECT(a, major, minor)	\
-	__SIMDATA_CLASSDEF(a, major, minor) \
-	__SIMDATA_ISSTATIC(false) \
-	__SIMDATA_NEW(a)
-
-/** Declare a SimData Object static subclass.
- *
- *  This macro is similar to SIMDATA_OBJECT, but declares this object
- *  class to be "static".  Static object classes are cached by the
- *  archive loader, so that at most one instance of the object exists.
- *  Multiple attempts to load a static object from an archive will
- *  result in references pointing to a shared object instance.  This
- *  is particularly useful for object classes that do not contain
- *  dynamic data.
- */
-#define SIMDATA_STATIC_OBJECT(a, major, minor)	\
-	__SIMDATA_CLASSDEF(a, major, minor) \
-	__SIMDATA_ISSTATIC(true) \
-	__SIMDATA_NEW(a)
-	
-// Macro to automatically register an object class with the
-// object registry.  This macro should be called for each
-// object class, preferably at the start of the cpp file
-// defining the class.
-#define SIMDATA_REGISTER(a) SIMDATA(ObjectProxy)<a> proxy##a;
-
 
 
 NAMESPACE_SIMDATA
 
 
-class InterfaceProxy;
 class DataArchive;
 class LinkCore;
 
 
 /** Base class for all classes representing packable data objects.
  *
- *  Derived classes must include the SIMDATA_OBJECT(classname, major, minor)
- *  macro in their class definition and the SIMDATA_REGISTER(classname) macro
- *  in their implementation.
+ *  Derived classes that provide an XML data interface must include one of
+ *  the SIMDATA_DECLARE_*OBJECT macros in the class declaration and define
+ *  the XML interface using the SIMDATA_XML_* macros in the correspending
+ *  source file (outside of the class declaration).
  *
- *  The following methods must be extended in derived classes:
- *  @li @c pack        serialize object to archive (call superclass method
- *                     first)
- *  @li @c unpack      unserialize object from archive (call superclass method
- *                     first)
+ *  The following methods may be extended in derived classes:
  *  @li @c parseXML    parse loose XML cdata if present
  *  @li @c convertXML  post-process XML data
  *  @li @c postCreate  additional processing after deserialization
@@ -157,21 +81,24 @@ private:
 protected:
 	/** Initialize an object after deserialization.
 	 *
-	 *  Called after the newly created object has been
-	 *  deserialized.
-	 *
-	 *  Extend this method to do any initial processing
-	 *  of the external data.
+	 *  Called after the newly created object has been deserialized.  Extend (not
+	 *  override) this method to do any initial processing of the external data.
 	 */
 	virtual void postCreate() {}
 
-	/** Internal methods for saving the objects xml interface.
-	 *  Do not extend or call these methods.
+	/** Internal methos for saving the objects via the xml interface.
+	 *  Automatically extended in subclasses by the SIMDATA_DECLARE_*OBJECT
+	 *  macros.  Do not explicitly extend or call these methods.
 	 */
 	virtual void _serialize(Writer&) const { };
+
+	/** Internal methos for loading the objects via the xml interface.
+	 *  Automatically extended in subclasses by the SIMDATA_DECLARE_*OBJECT
+	 *  macros.  Do not explicitly extend or call these methods.
+	 */
 	virtual void _serialize(Reader&) { };
 
-	/** Used by SIMDATA*_OBJECT macros
+	/** Used by SIMDATA_DECLARE_*OBJECT macros
 	 */
 	typedef InterfaceProxy __simdata_interface_proxy;
 	typedef Object __simdata_object_class;
@@ -187,12 +114,35 @@ public:
 	 *  macro, so you should never need to extend it manually.
 	 */
 	virtual Object* _new() const {
-		assert(0);
+		fatal(std::string("Attempt to construct simdata::Object (") + getClassName());
 		return 0;
 	}
 
-	__SIMDATA_CLASSDEF(Object, 0, 0)
+	/** Get the class name as a string.
+	 */
+	static const char *_getClassName() { return "Object"; }
 
+	/** Get the class name as a string.
+	 */
+	virtual const char *getClassName() const { return "Object"; }
+
+	/** Get a fingerprint of the class and xml interface.
+	 */
+	static hasht _getClassHash() { return hasht(1); }
+
+	/** Get a fingerprint of the class and xml interface.
+	 */
+	virtual hasht getClassHash() const { return hasht(1); }
+
+	/** Test if the object is marked as static (so that one instance will be
+	 *  cached and reused when loaded multiple times from a data archive).
+	 */
+	static bool _isClassStatic() { return false; }
+
+	/** Test if the object is marked as static (so that one instance will be
+	 *  cached and reused when loaded multiple times from a data archive).
+	 */
+	virtual bool isClassStatic() const { return false; }
 
 	/** XML post processing prior to serialization.
 	 */
@@ -259,7 +209,7 @@ public:
 
 	/** Hash function for converting data archive paths to path hashes.
 	 */
-	static hasht _getHash(const char* c);
+	//static hasht _getHash(const char* c);
 
 	/** Expose the postCreate method.   Experimental --- use with great caution.
 	 *  Ordinarily postCreate is called only by DataArchive after deserializing

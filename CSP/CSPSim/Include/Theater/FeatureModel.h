@@ -31,7 +31,6 @@ class Feature;
 
 #include <SimData/Path.h>
 #include <SimData/Object.h>
-#include <SimData/InterfaceRegistry.h>
 
 class LayoutTransform;
 class ElevationCorrection;

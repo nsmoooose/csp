@@ -30,12 +30,12 @@
 #include "Feature.h"
 #include "FeatureModel.h"
 
-#include <SimData/Ref.h>
-#include <SimData/Path.h>
-#include <SimData/Object.h>
-#include <SimData/Vector3.h>
 #include <SimData/GeoPos.h>
-#include <SimData/InterfaceRegistry.h>
+#include <SimData/Link.h>
+#include <SimData/Object.h>
+#include <SimData/Path.h>
+#include <SimData/Ref.h>
+#include <SimData/Vector3.h>
 
 #include <osg/Vec3>
 #include <osg/ref_ptr>

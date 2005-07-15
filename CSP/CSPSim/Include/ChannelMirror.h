@@ -51,7 +51,6 @@
 #ifndef __CHANNEL_MIRROR_H__
 #define __CHANNEL_MIRROR_H__
 
-#include <SimData/InterfaceRegistry.h>
 #include <SimData/Object.h>
 #include <string>
 

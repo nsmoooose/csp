@@ -74,10 +74,10 @@
 #ifndef __SIMDATA_ENUM_H__
 #define __SIMDATA_ENUM_H__
 
-#include <SimData/Namespace.h>
 #include <SimData/BaseType.h>
-#include <SimData/Ref.h>
 #include <SimData/ExceptionBase.h>
+#include <SimData/Namespace.h>
+#include <SimData/Ref.h>
 
 #include <string>
 #include <vector>

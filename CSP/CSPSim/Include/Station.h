@@ -26,7 +26,6 @@
 #define __STATION_H__
 
 #include <SimData/Link.h>
-#include <SimData/InterfaceRegistry.h>
 #include <SimData/Object.h>
 
 class Bus;

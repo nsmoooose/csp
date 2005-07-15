@@ -26,7 +26,9 @@
 #include "TankObject.h"
 #include "ObjectModel.h"
 #include "SystemsModel.h"
+
 #include <SimCore/Util/Log.h>
+#include <SimData/ObjectInterface.h>
 
 
 using namespace std;

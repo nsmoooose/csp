@@ -30,7 +30,6 @@
 #include <SimData/External.h>
 #include <SimData/GeoPos.h>
 #include <SimData/Vector3.h>
-#include <SimData/InterfaceRegistry.h>
 
 #include "TerrainObject.h"
 

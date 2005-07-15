@@ -162,6 +162,9 @@
 				RelativePath="..\Source\HashUtility.cpp">
 			</File>
 			<File
+				RelativePath="..\Source\InterfaceProxy.cpp">
+			</File>
+			<File
 				RelativePath="..\Source\InterfaceRegistry.cpp">
 			</File>
 			<File
@@ -275,10 +278,10 @@
 				RelativePath="..\Include\SimData\HashUtility.h">
 			</File>
 			<File
-				RelativePath="..\Include\SimData\InterfaceRegistry.h">
+				RelativePath="..\Include\SimData\InterfaceProxy.h">
 			</File>
 			<File
-				RelativePath="..\Include\SimData\InterfaceRegistry_wrap.h">
+				RelativePath="..\Include\SimData\InterfaceRegistry.h">
 			</File>
 			<File
 				RelativePath="..\Include\SimData\Key.h">

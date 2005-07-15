@@ -32,6 +32,8 @@
 
 #include "ObjectModel.h"
 
+#include <SimData/ObjectInterface.h>
+
 
 SIMDATA_XML_BEGIN(FeatureObjectModel)
 	SIMDATA_DEF("model", m_ObjectModel, false)

@@ -28,6 +28,7 @@
 #include <ObjectUpdate.h>
 #include <SimCore/Battlefield/BattlefieldMessages.h>
 #include <SimCore/Util/TimeStamp.h>
+#include <SimData/ObjectInterface.h>
 
 #include <map>
 #include <set>

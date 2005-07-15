@@ -37,7 +37,8 @@
 #include <SimData/Export.h>
 #include <SimData/Path.h>
 #include <SimData/Object.h>
-#include <SimData/Log.h>
+#include <SimData/Ref.h>
+#include <SimData/TypeAdapter.h>
 
 #include <string>
 #include <cassert>
@@ -349,6 +350,48 @@ public:
 	explicit LinkBase(Object* ptr): Link<Object>(ptr) { }
 	LinkBase(const LinkBase& r): Link<Object>(r) { }
 };
+
+
+// Implement Ref<> = Link<> methods here so that Ref.h does not depend on Link.h
+// (and all its associated baggage).
+
+template <class CLASS>
+Ref<CLASS>::Ref(LinkCore const & r): _reference(0) {
+	_rebind(r.__get__());
+}
+
+template <class CLASS>
+Ref<CLASS> const & Ref<CLASS>::operator=(LinkCore const & r) {
+	_rebind(r.__get__());
+	return *this;
+}
+
+template <class CLASS>
+bool Ref<CLASS>::tryAssign(LinkCore const & p) {
+	_rebind(p.__get__(), false);
+	return (valid() || p.isNull());
+}
+
+// Implement TypeAdapter::set(Link<T>) here to that TypeAdapter does not depend
+// on Link.h.
+
+template <typename Q>
+void TypeAdapter::set(Link<Q> &x) const {
+	if (type == TYPE_LinkCore) {
+		assert(var.o);
+		x = *const_cast<LinkCore*>(reinterpret_cast<LinkCore const *>(var.o));
+	} else if (type == TYPE_LinkBase) {
+		assert(var.o);
+		x = *const_cast<LinkBase*>(reinterpret_cast<LinkBase const *>(var.o));
+	} else if (type == TYPE_Object) {
+		x = LinkBase(const_cast<Object*>(reinterpret_cast<Object const *>(var.o)));
+	} else if (type == TYPE_Path) {
+		assert(var.o);
+		x = LinkBase(*const_cast<Path*>(reinterpret_cast<Path const *>(var.o)), static_cast<Object*>(0));
+	} else {
+		TypeCheck(false, "Incompatible type to set Link<T>");
+	}
+}
 
 NAMESPACE_SIMDATA_END
 

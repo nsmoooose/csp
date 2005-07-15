@@ -73,10 +73,6 @@ class GameScreen;
 class EventMapIndex;
 class PyConsole;
 
-/*WNET
-class NetworkMessenger;
-class NetworkNode;
-*/
 
 void fillerup(void *unused, unsigned char *stream, int len);
 
@@ -198,14 +194,6 @@ private:
 	//PyObject* m_Console;
 	//osg::ref_ptr<PyConsole> m_Console;
 	simdata::Ref<PyShell> m_Shell;
-	
-/*WNET
-	/// The network layer
-	NetworkMessenger * m_NetworkMessenger;
-	NetworkNode * m_RemoteServerNode;
-	NetworkNode * m_localNode;
-	bool b_networkingFlag;
-*/
 	
 	//--osg::ref_ptr<Producer::RenderSurface> m_RenderSurface;
 

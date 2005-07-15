@@ -31,7 +31,6 @@
 #include <SimData/Matrix3.h>
 #include <SimData/Vector3.h>
 #include <SimData/Quat.h>
-#include <SimData/InterfaceRegistry.h>
 
 #include "Collision.h"
 #include "DynamicalSystem.h"

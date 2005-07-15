@@ -33,7 +33,11 @@
 #include <osg/Switch>
 
 #include <SimCore/Util/Log.h>
+#include <SimData/Enum.h>
 #include <SimData/Math.h>
+#include <SimData/osg.h>
+#include <SimData/Vector3.h>
+#include <SimData/ObjectInterface.h>
 
 
 SIMDATA_XML_BEGIN(Animation)

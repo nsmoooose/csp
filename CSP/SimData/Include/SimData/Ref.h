@@ -311,29 +311,6 @@ protected:
 
 NAMESPACE_SIMDATA_END
 
-#include <SimData/Link.h>
-
-NAMESPACE_SIMDATA
-
-template <class CLASS>
-Ref<CLASS>::Ref(LinkCore const & r): _reference(0) {
-	_rebind(r.__get__());
-}
-
-template <class CLASS>
-Ref<CLASS> const & Ref<CLASS>::operator=(LinkCore const & r) {
-	_rebind(r.__get__());
-	return *this;
-}
-
-template <class CLASS>
-bool Ref<CLASS>::tryAssign(LinkCore const & p) {
-	_rebind(p.__get__(), false);
-	return (valid() || p.isNull());
-}
-
-NAMESPACE_SIMDATA_END
-
 
 #endif //__SIMDATA_REF_H__
 

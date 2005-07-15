@@ -28,18 +28,15 @@
 
 #include <typeinfo>
 
-#include <osg/Node>
 #include <osg/NodeCallback>
 
-#include <SimData/Key.h>
-#include <SimData/InterfaceRegistry.h>
-#include <SimData/osg.h>
-#include <SimData/Vector3.h>
+#include <SimData/Object.h>
 
-#include <Bus.h>
+class Bus;
 
 namespace osg { class AnimationPath; }
 namespace osg { class AnimationPathCallback; }
+namespace osg { class Node; }
 
 
 /** Base class for animation callbacks.

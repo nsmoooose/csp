@@ -32,6 +32,8 @@
 #include <SimCore/Util/Log.h>
 #include <SimData/Math.h>
 #include <SimData/Key.h>
+#include <SimData/ObjectInterface.h>
+#include <SimData/Quat.h>
 
 #include <sstream>
 #include <iomanip>

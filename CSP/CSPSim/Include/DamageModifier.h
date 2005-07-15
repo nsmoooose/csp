@@ -28,7 +28,6 @@
 
 
 #include <SimData/Object.h>
-#include <SimData/InterfaceRegistry.h>
 
 
 /**

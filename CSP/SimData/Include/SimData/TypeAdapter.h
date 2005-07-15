@@ -36,9 +36,6 @@
 #include <SimData/Export.h>
 #include <SimData/ExceptionBase.h>
 #include <SimData/Namespace.h>
-#include <SimData/Enum.h>
-#include <SimData/Path.h>
-#include <SimData/Link.h>
 #include <SimData/BaseType.h>
 
 #include <string>
@@ -141,28 +138,6 @@ public:
 	double getFloatingPoint() const { DoubleCheck(); return var.d; }
 	std::string getString() const { StringCheck(); return s; }
 	
-	/*
-	template<typename T>
-	void getBaseTypeAs(T * &t) const {
-		T proto;
-		BaseCheck();
-		T const *cp = dynamic_cast<T const *>(var.o);
-		TypeCheck(cp!=NULL, "dynamic cast of BaseType* to " + proto.typeString() +
-				    "failed in TypeAdapter::getBaseTypeAs");
-		t = const_cast<T *>(cp);
-	}
-
-	template <typename T>
-	void setBase(T & x) const {
-		BaseCheck();
-		T const *p = dynamic_cast<T const *>(var.o);
-		TypeCheck(p!=NULL, "dynamic cast of BaseType* to " + x.typeString() +
-				   " failed in TypeAdapter::setBase");
-		T *nc = const_cast<T *>(p);
-		x = *nc;
-	}
-	*/
-
 	template <typename T>
 	void setCoordinate(T & x) const {
 		assert(var.o);
@@ -206,23 +181,10 @@ public:
 	void set(unsigned int &x) const { IntCheck(); x = static_cast<unsigned int>(var.i); }
 	void set(std::string &x) const { StringCheck(); x = s; }
 
+	// Implemented in Link.h
 	template <typename Q>
-	void set(Link<Q> &x) const {
-		if (type == TYPE_LinkCore) {
-			assert(var.o);
-			x = *const_cast<LinkCore*>(reinterpret_cast<LinkCore const *>(var.o));
-		} else if (type == TYPE_LinkBase) {
-			assert(var.o);
-			x = *const_cast<LinkBase*>(reinterpret_cast<LinkBase const *>(var.o));
-		} else if (type == TYPE_Object) {
-			x = LinkBase(const_cast<Object*>(reinterpret_cast<Object const *>(var.o)));
-		} else if (type == TYPE_Path) {
-			assert(var.o);
-			x = LinkBase(*const_cast<Path*>(reinterpret_cast<Path const *>(var.o)), static_cast<Object*>(0));
-		} else {
-			TypeCheck(false, "Incompatible type to set Link<T>");
-		}
-	}
+	inline void set(Link<Q> &x) const;
+
 #endif // SWIG
 
 	const std::string __repr__() const {

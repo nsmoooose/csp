@@ -1,6 +1,9 @@
 Version 0.4.0 (in progress)
 ===========================
 
+2005-07-15: onsight
+ * Fix Object unittest.
+
 2005-07-12: onsight
  * Removed deprecated object and xml interface macros.  Revised comments
    for the new macros.

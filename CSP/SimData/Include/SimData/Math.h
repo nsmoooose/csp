@@ -18,7 +18,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
-/*
+/**
  * @file Math.h
  *
  * @brief Math related utility functions and constants.
@@ -30,7 +30,7 @@
  * License Version 2 or later, as permitted under the
  * OpenSceneGraph Public License Version 0.0 (exception 3)
  * and the GNU Lesser Public License Version 2 (clause 3).
- **/
+ */
 
 #ifndef __SIMDATA_MATH_H__
 #define __SIMDATA_MATH_H__

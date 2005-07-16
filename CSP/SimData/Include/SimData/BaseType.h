@@ -30,6 +30,7 @@
  * BaseType is an interface specification implemented by all SimData types.
  * SimData types do not inherit from BaseType.
  *
+ * @code
  * Interface BaseType {
  *
  *   // Read and write from a data archive.
@@ -60,6 +61,7 @@
  *
  * // Convenience function for printing BaseTypes to ostreams.
  * std::ostream &operator <<(std::ostream &o, BaseType const &t);
+ * @endcode
  *
  */
 

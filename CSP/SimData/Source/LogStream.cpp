@@ -18,6 +18,11 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
+/**
+ * @file LogStream.cpp
+ * @brief Stream based logging mechanism
+ */
+
 // The logging code originally used in SimData was based on code
 // from SimGear (modified by Wolverine), which in turn was based
 // on a stream library by Bernie Bright.  The vast majority of the

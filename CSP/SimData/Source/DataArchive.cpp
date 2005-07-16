@@ -18,6 +18,11 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
+/**
+ * @file DataArchive.cpp
+ * @brief Classes for data archive manipulation
+ */
+
 #include <SimData/DataArchive.h>
 #include <SimData/Archive.h>
 #include <SimData/DataManager.h>

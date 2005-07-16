@@ -19,7 +19,7 @@
  */
 
 /**
- * @file Path.h
+ * @file Path.cpp
  * @brief Classes for referring to data sources.
  */
 

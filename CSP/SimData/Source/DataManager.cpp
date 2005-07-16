@@ -18,6 +18,10 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
+/**
+ * @file DataManager.cpp
+ * @brief Classes for managing multiple data archives
+ */
 
 #include <SimData/DataManager.h>
 #include <SimData/DataArchive.h>

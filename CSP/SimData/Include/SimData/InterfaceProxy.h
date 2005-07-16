@@ -322,9 +322,9 @@ public:
  *  Each object subclass that defines external variables must include one of the
  *  following three macros in the public section of the class declaration:
  *
- *  @c SIMDATA_DECLARE_OBJECT(classname)
- *  @c SIMDATA_DECLARE_STATIC_OBJECT(classname)
- *  @c SIMDATA_DECLARE_ABSTRACT_OBJECT(classname)
+ *  @li @c SIMDATA_DECLARE_OBJECT(classname)
+ *  @li @c SIMDATA_DECLARE_STATIC_OBJECT(classname)
+ *  @li @c SIMDATA_DECLARE_ABSTRACT_OBJECT(classname)
  *
  *  The first version is used for objects that may be instantiated and dynamically
  *  updated at runtime.  The second version is similar, but is intended for objects
@@ -335,15 +335,17 @@ public:
  *  objects provide only const access to internal data and keep no dynamic state.
  *  The last macro is used for abstract base classes that cannot be instantiated.
  *
- *  If any of the SIMDATA_DECLARE_ macros is included in an object class, the
+ *  If any of the @c SIMDATA_DECLARE_ macros is included in an object class, the
  *  object must define an XML interface in the corresponding source file (outside
  *  of the class declaration and not in a header file).  The format of the XML
  *  interface is as follows:
  *
- *  @c SIMDATA_XML_BEGIN(classname)
- *  @c   SIMDATA_DEF(name, var, is_required)
- *  @c   ...
- *  @c SIMDATA_XML_END
+ *  @code
+ *  SIMDATA_XML_BEGIN(classname)
+ *     SIMDATA_DEF(name, var, is_required)
+ *     ...
+ *  SIMDATA_XML_END
+ *  @endcode
  *
  *  The declaration block begins with the @c SIMDATA_XML_BEGIN macro and end with
  *  the @c SIMDATA_XML_END macro.  Any number of @c SIMDATA_DEF macros may be included
@@ -359,24 +361,33 @@ public:
  *
  *  @code
  *  // myclass.h
+ *
  *  #include <SimData/Object.h>
+ *
  *  class MyClass: public simdata::Object {
  *  public:
  *   SIMDATA_DECLARE_OBJECT(MyClass)
+ *
  *  private:
  *   int m_Foo;
  *   simdata::Key m_Bar;
  *  };
+ *  @endcode
  *
+ *  @code
  *  // myclass.cpp
+ *
  *  #include "myclass.h"
  *  #include <SimData/ObjectInterface.h>
+ *
  *  SIMDATA_XML_BEGIN(MyClass)
  *    SIMDATA_DEF("foo", m_Foo, true)
  *    SIMDATA_DEF("bar", m_Bar, false)
  *  SIMDATA_XML_END
+ *  @endcode
  *
- *  // myobject.xml
+ *  @code
+ *  <!-- myobject.xml -->
  *  <Object class="MyClass">
  *    <Int name="foo">42</Int>
  *    <Key name="bar">Life, the Universe and Everything</Key>
@@ -398,6 +409,9 @@ struct __simdata_object_factory {
 	}
 };
 
+/** Partial specialization of __simdata_object_factory for abstract classes.  Creating
+ *  an object using this factory is a fatal error.
+ */
 template <class OBJECT>
 struct __simdata_object_factory<OBJECT, true> {
 	static inline Object *create() { fatal(std::string("Attempt to construct ABSTRACT Object of type ") + OBJECT::_getClassName()); return 0; }

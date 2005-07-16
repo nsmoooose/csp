@@ -18,6 +18,10 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
+/**
+ * @file LUT.cpp
+ * @brief Interpolated lookup tables of arbitrary dimension
+ */
 
 #include <SimData/LUT.h>
 

@@ -18,6 +18,11 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
+/**
+ * @file External.cpp
+ * @brief Classes for referencing external data sources
+ */
+
 #include <SimData/External.h>
 #include <SimData/Archive.h>
 #include <SimData/FileUtility.h>

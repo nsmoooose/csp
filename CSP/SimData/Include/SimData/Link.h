@@ -50,20 +50,21 @@ NAMESPACE_SIMDATA
 class DataArchive;
 
 
-/**
- * @brief Base class for auto-loading, smart-pointers to Objects.
+/** Base class for auto-loading, smart-pointers to Objects.
  *
- * This class combines the Path type with reference-counting for Object
- * types.  It should seldom be used directly.  See Link<> and Ref<> for
- * details on how to refer to Objects (and other Referenced types).
+ *  This class combines the Path type with reference-counting for Object
+ *  types.  It should seldom be used directly.  See Link<> and Ref<> for
+ *  details on how to refer to Objects (and other Referenced types).
  *
- * @author Mark Rose <mkrose@users.sf.net>
+ *  @author Mark Rose <mkrose@users.sf.net>
  */
 class SIMDATA_EXPORT LinkCore: public Path {
 private:
 	Object *_reference;
 
 protected:
+	/** Reassign to null, with reference counting.
+	 */
 	inline void _release() {
 		if (_reference) {
 			_reference->_decref();
@@ -71,21 +72,32 @@ protected:
 		}
 	}
 
+	/** Reassign to a new object pointer with reference counting.
+	 */
 	inline void _reassign(Object *ptr) {
 		if (ptr) ptr->_incref();
 		_release();
 		_reference = ptr;
 	}
 
+	/** Return the raw pointer without modifying the reference count.
+	 */
 	inline Object *_get() const { return _reference; }
 
-	// LinkCore cannot be (publically) copied by assignment since there is no way to
-	// test that the types are compatible.  Consider:
-	//   Link<T> foo;
-	//   Link<U> bar;
-	//   LinkCore *core = &foo;
-	//   *core = bar;
-	// This method is used by base classes to assign after checking type compatibility.
+	/** Protected copy operator.
+	 *
+	 * LinkCore cannot be (publicly) copied by assignment since there is no way to
+	 * test that the types are compatible.  Consider:
+	 *
+	 * @code
+	 *   Link<T> foo;
+	 *   Link<U> bar;
+	 *   LinkCore *core = &foo;
+	 *   *core = bar;
+	 * @endcode
+	 *
+	 * This method is used by subclasses to assign after checking type compatibility.
+	 */
 	LinkCore& operator=(const LinkCore& r) {
 		Path::operator=(r);
 		_reassign(r._reference);
@@ -182,20 +194,19 @@ protected:
 };
 
 
-/**
- * @brief Class-specialized, auto-loading smart-pointer to Objects.
+/** Class-specialized, auto-loading smart-pointer to Objects.
  *
- * Use this class for linking to other Objects in a data archive.
- * The associated Objects will automatically be created by the
- * archive loader as directed by the external XML data.
+ *  Use this class for linking to other Objects in a data archive.
+ *  The associated Objects will automatically be created by the
+ *  archive loader as directed by the external XML data.
  *
- * Once loaded, Link<> handles behaves very much like ordinary
- * Ref<> handles.  For storing and passing objects references,
- * and for manually instantiating Objects from a data archive,
- * you should use a Ref<> handle instead of Link<>.
+ *  Once loaded, Link<> handles behaves very much like ordinary
+ *  Ref<> handles.  For storing and passing objects references,
+ *  and for manually instantiating Objects from a data archive,
+ *  you should use a Ref<> handle instead of Link<>.
  *
- * @author Mark Rose <mkrose@users.sf.net>
- * @ingroup BaseTypes
+ *  @author Mark Rose <mkrose@users.sf.net>
+ *  @ingroup BaseTypes
  */
 template<class T> class Link: public LinkCore {
 friend class TypeAdapter;
@@ -207,10 +218,11 @@ template <class U> friend class Ref;
 public:  // BaseType
 
 	/** Return a string representation of the type.
-	 *  Overrides LinkCore::typeString.
 	 */
 	std::string typeString() const { return std::string("type::Link::") + T::_getClassName(); }
 
+	/** Return a string representation of the object.
+	 */
 	std::string asString() const { return std::string("Link<") + T::_getClassName() + ">"; }
 
 	/** Serialize to a data archive.
@@ -272,8 +284,13 @@ public:
 public:
 
 #ifndef SWIG
+	/** Assignment from another Link type with runtime type checking.
+	 *  Throws ObjectTypeMismatch on failure.
+	 */
 	Link<T>& operator=(const LinkCore& p) { _checkType(p.__get__()); LinkCore::operator=(p); return *this; }
 
+	/** Fast assignment from an equivalent type.
+	 */
 	Link<T>& operator=(const Link<T>& p) { LinkCore::operator=(p); return *this; }
 
 	/** Assign a pointer.
@@ -290,15 +307,15 @@ public:
 	/** Dereference.
 	 */
 	T* operator->() { return (T*) _get(); }
-	
+
 	/** Const dereference.
 	 */
 	const T* operator->() const { return (T*) _get(); }
-	
+
 	/** Dereference.
 	 */
 	T& operator*() { return *((T*) _get()); }
-	
+
 	/** Const dereference.
 	 */
 	const T& operator*() const { return *((T*) _get()); }
@@ -306,11 +323,11 @@ public:
 	/** Const dereference.
 	 */
 	const T* get() const { return (T*) _get(); }
-	
+
 	/** Dereference.
 	 */
 	T* get() { return (T*) _get(); }
-	
+
 #endif // SWIG
 
 private:
@@ -342,6 +359,10 @@ private:
 %template(LinkObj) Link<Object>;
 #endif
 
+/** A Link<Object> subclass that can be used to refer to any Object subclass.
+ *  Unlike LinkCore, LinkBase supports assignment from Link<T> types, which
+ *  makes it more useful as a generic Link type.
+ */
 class LinkBase: public Link<Object> {
 public:
 	LinkBase(): Link<Object>() { }
@@ -355,17 +376,26 @@ public:
 // Implement Ref<> = Link<> methods here so that Ref.h does not depend on Link.h
 // (and all its associated baggage).
 
+/** Copy constructor from LinkCore and Link types.  Throws ConversionError if
+ *  the types are incompatible.
+ */
 template <class CLASS>
 Ref<CLASS>::Ref(LinkCore const & r): _reference(0) {
 	_rebind(r.__get__());
 }
 
+/** Copy operator from LinkCore and Link types.  Throws ConversionError if the
+ *  types are incompatible.
+ */
 template <class CLASS>
 Ref<CLASS> const & Ref<CLASS>::operator=(LinkCore const & r) {
 	_rebind(r.__get__());
 	return *this;
 }
 
+/** Reassign from a LinkCore or Link type, returning false if the assignment
+ *  fails.  Does not throw ConversionError.
+ */
 template <class CLASS>
 bool Ref<CLASS>::tryAssign(LinkCore const & p) {
 	_rebind(p.__get__(), false);
@@ -375,6 +405,10 @@ bool Ref<CLASS>::tryAssign(LinkCore const & p) {
 // Implement TypeAdapter::set(Link<T>) here to that TypeAdapter does not depend
 // on Link.h.
 
+/** Set a specific Link type from the value wrapped in a TypeAdapter, which
+ *  can be either a LinkCore, a LinkBase, an Object*, or a Path.  Throws
+ *  TypeMismatch on failure.
+ */
 template <typename Q>
 void TypeAdapter::set(Link<Q> &x) const {
 	if (type == TYPE_LinkCore) {

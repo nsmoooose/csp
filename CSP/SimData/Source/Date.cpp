@@ -18,6 +18,10 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
+/**
+ * @file Date.cpp
+ * @brief Classes for date and time manipulation
+ */
 
 #include <SimData/Date.h>
 

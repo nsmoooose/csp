@@ -52,16 +52,26 @@ class Object;
 SIMDATA_EXCEPTION(InterfaceError)
 
 
+/** Helper template for validating Object member variables during serialization.
+ */
 template <typename T>
-struct MemberValidator
-{
+struct MemberValidator {
+	/** Validate a variable.  The required flag is set for variables marked as
+	 *  required by the @c SIMDATA_DEF macros, and the write flag indicates the
+	 *  sense of serialization.  Throws SerializeError on failure.
+	 */
 	static inline void validate(T const &, bool /*required*/, bool /*write*/) { }
 };
 
 
+/** Specialized MemberValidator for Link types.
+ */
 template <typename T>
 struct MemberValidator< Link<T> >
 {
+	/** Ensure that required Link variables have either a path or an object.
+	 *  Throws SerializeError on failure.
+	 */
 	static void validate(Link<T> const &link, bool required, bool write) {
 		if (required) {
 			if (link.isNone() && link.isNull()) {
@@ -75,9 +85,14 @@ struct MemberValidator< Link<T> >
 	}
 };
 
+/** Specialized MemberValidator for vectors of Links.
+ */
 template <typename T>
 struct MemberValidator< std::vector< Link<T> > >
 {
+	/** Ensure that all Links in a required vector of Links have either a path or an object.
+	 *  Throws SerializeError on failure.
+	 */
 	static void validate(std::vector< Link<T> > const &link, bool /*required*/, bool write) {
 		typename std::vector< Link<T> >::const_iterator iter = link.begin();
 		for (unsigned idx = 1; iter != link.end(); ++iter, ++idx) {

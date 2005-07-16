@@ -21,6 +21,7 @@
 
 /**
  * @file InterfaceRegistry.cpp
+ * @brief Classes for storing and accessing object interfaces
  */
 
 

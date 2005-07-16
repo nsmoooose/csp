@@ -21,6 +21,7 @@
 
 /**
  * @file TypeAdapter.cpp
+ * @brief Adapter class providing uniform access to built-in types and BaseType classes
  */
 
 #include <SimData/TypeAdapter.h>

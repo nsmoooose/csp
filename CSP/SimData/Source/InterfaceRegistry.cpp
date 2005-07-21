@@ -79,7 +79,7 @@ std::vector<InterfaceProxy *> InterfaceRegistry::getInterfaces() const {
 }
 
 void InterfaceRegistry::addInterface(const char *name, hasht id, InterfaceProxy *proxy) {
-	if (hasInterface(name)) {
+	if (hasInterface(name) || hasInterface(id)) {
 		throw InterfaceError("interface \"" + std::string(name) + "\" multiply defined");
 	}
 	__map[name] = proxy;

@@ -156,19 +156,6 @@ protected:
 
 public:
 
-	/** Constructor.
-	 *
-	 *  Construct a new interface proxy, and register it with the global
-	 *  interface registry.
-	 *
-	 *  @param cname the class name
-	 *  @param chash the class hash
-	 */
-	InterfaceProxy(const char *cname, hasht chash);
-#ifndef SWIG
-	InterfaceProxy(const char *cname, hasht (*chash)());
-#endif // SWIG
-
 	virtual ~InterfaceProxy() { }
 
 	/** Create a new instance of the corresponding object.

@@ -41,18 +41,6 @@
 NAMESPACE_SIMDATA
 
 
-InterfaceProxy::InterfaceProxy(const char *cname, hasht (*chash)())
-{
-	assert(chash);
-	InterfaceRegistry::getInterfaceRegistry().addInterface(cname, (*chash)(), this);
-}
-
-InterfaceProxy::InterfaceProxy(const char *cname, hasht chash)
-{
-	assert(chash != 0);
-	InterfaceRegistry::getInterfaceRegistry().addInterface(cname, chash, this);
-}
-
 void InterfaceProxy::globalRegister(const char *cname, const hasht chash) {
 	assert(chash != 0);
 	InterfaceRegistry::getInterfaceRegistry().addInterface(cname, chash, this);
@@ -64,7 +52,7 @@ Object *InterfaceProxy::createObject() const {
 }
 
 void InterfaceProxy::addInterface(ObjectInterfaceBase* objectinterface, bool global_register) {
-	std::string const &classname = objectinterface->getClassName();
+	const char *classname = objectinterface->getClassName();
 	hasht const &classhash = objectinterface->getClassHash();
 	std::vector<std::string> names = objectinterface->getVariableNames();
 	std::vector<std::string>::iterator name = names.begin();
@@ -86,7 +74,7 @@ void InterfaceProxy::addInterface(ObjectInterfaceBase* objectinterface, bool glo
 	_interfaces.push_back(objectinterface);
 	_classNames.push_back(classname);
 	_classHashes.push_back(classhash);
-	if (global_register) globalRegister(classname.c_str(), classhash);
+	if (global_register) globalRegister(classname, classhash);
 }
 
 ObjectInterfaceBase *InterfaceProxy::findInterface(std::string const &varname, bool required) const {

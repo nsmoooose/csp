@@ -43,12 +43,17 @@ public:
 	/** Get the one instance of the template class.
 	 */
 	static C& getInstance() {
-		static C __instance;
-		return __instance;
+		static C *__instance = 0;
+		if (!__instance) __instance = new C();
+		return *__instance;
 	}
+
+	/** Get the one instance of the template class as a const reference.
+	 */
 	static C const & getConstInstance() {
 		return getInstance();
 	}
+
 protected:
 	Singleton() {}
 	~Singleton() {}

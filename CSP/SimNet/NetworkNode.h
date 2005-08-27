@@ -32,7 +32,7 @@
 #ifdef _WIN32
 #	define NOMINMAX
 #	pragma warning(push)
-#	pragma warning(disable: 4100)
+#	pragma warning(disable: 4100 4996)
 #endif
 
 #include <cc++/socket.h>

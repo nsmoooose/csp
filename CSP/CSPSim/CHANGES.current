@@ -4,6 +4,8 @@
 2005-08-26: onsight
  * Adjust the HUD color and make it more configurable.
 
+ * Minor formatting and comment cleanup.
+
 2005-07-14: onsight
  * Shuffled include statements for simdata headers.  Headers defining
    simdata::Object subclasses need Object.h but not InterfaceRegistry.h.

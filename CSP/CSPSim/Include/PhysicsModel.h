@@ -37,7 +37,6 @@
 class BaseDynamics;
 
 
-
 /**
  * class PhysicsModel - Base class for implementing classical mechanics
  * models.
@@ -49,57 +48,45 @@ class BaseDynamics;
  *
  */
 class PhysicsModel: public System, protected DynamicalSystem {
-public:	
+public:
 	PhysicsModel(size_type dimension);
 	virtual ~PhysicsModel();
 
-	/**
-	 * Integrate the equations of motion over the specified time
-	 * interval.
+	/** Integrate the equations of motion over the specified time
+	 *  interval.
 	 */
 	virtual void doSimStep(double dt) = 0;
 
-	/**
-	 * Add a dynamics simulation component.  Each BaseDynamics class computes
-	 * a part of the total force and moment that acts on the object.
+	/** Add a dynamics simulation component.  Each BaseDynamics class computes
+	 *  a part of the total force and moment that acts on the object.
 	 */
 	void addDynamics(simdata::Ref<BaseDynamics>);
 
 protected:
 	// should it be a priority queue instead?
 	std::vector< simdata::Ref<BaseDynamics> > m_Dynamics;
-	/*
-	simdata::Ref<GroundCollisionDynamics> m_GroundCollisionDynamics;
-	*/
+
 	double const m_Damping;
 
 	virtual void postCreate();
 
-	/**
-	 * Extract kinematic variables from the vector field variable.
+	/** Extract kinematic variables from the vector field variable.
 	 */
 	virtual void YToBody(Vector::Vectord const &y);
 
-	/**
-	 * Assemble the vector field variable from individual kinematic variables.
+	/** Assemble the vector field variable from individual kinematic variables.
 	 */
-	virtual Vector::Vectord const &bodyToY(simdata::Vector3 const &p,
-	                                   simdata::Vector3 const &v,
-	                                   simdata::Vector3 const &w,
-	                                   simdata::Quat const &q);
+	virtual Vector::Vectord const &bodyToY(simdata::Vector3 const &p, simdata::Vector3 const &v, simdata::Vector3 const &w, simdata::Quat const &q);
 
-	/**
-	 * Convert from local (global) to body coordinates.
+	/** Convert from local (global) to body coordinates.
 	 */
 	simdata::Vector3 localToBody(const simdata::Vector3 & vec);
 
-	/**
-	 * Convert from body to local (global) coordinates.
+	/** Convert from body to local (global) coordinates.
 	 */
 	simdata::Vector3 bodyToLocal(const simdata::Vector3 & vec);
 
-	/**
-	 * Convert kinematic variables from body to local (global) coordinates.
+	/** Convert kinematic variables from body to local (global) coordinates.
 	 */
 	void physicsBodyToLocal();
 

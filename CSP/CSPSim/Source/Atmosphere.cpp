@@ -283,7 +283,7 @@ double Atmosphere::getPressure(double h) const {
 		scale = pow(1.0 - h * 0.0000225586, 5.255876);
 	} else
 	if (h < 20000.0) {
-       		scale = 0.223361 * exp((10999.0-h)*0.000157694);
+		scale = 0.223361 * exp((10999.0-h)*0.000157694);
 	} else {
 		if (h > 32000.0) h = 32000.0;
 		scale = pow(0.988626 + h * 0.00000502758, -34.16319);

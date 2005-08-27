@@ -109,8 +109,8 @@ void UpdateMaster::update(double dt) {
 	}
 }
 
-void UpdateTarget::detachUpdateProxy() { 
-	m_UpdateProxy = 0; 
+void UpdateTarget::detachUpdateProxy() {
+	m_UpdateProxy = 0;
 }
 
 void UpdateTarget::disconnectFromUpdateMaster() {
@@ -133,7 +133,7 @@ UpdateTarget::~UpdateTarget() {
 }
 
 
-UpdateMaster *UpdateTarget::getMaster() const { 
+UpdateMaster *UpdateTarget::getMaster() const {
 	if (!m_UpdateProxy) return 0;
 	return m_UpdateProxy->getMaster();
 }

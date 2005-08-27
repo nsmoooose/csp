@@ -150,7 +150,7 @@ simdata::Vector3 FlightModel::calculateDragVector() {
 	m_CD =  m_CD_m_a[m_AirSpeedM][m_Alpha_float]
 	     +  m_CD_de * fabs(m_Elevator) + \
 	        m_CD_db * fabs(m_Airbrake) + \
-		m_CD_i * CL * CL;
+	        m_CD_i * CL * CL;
 
 	return simdata::Vector3(0.0, -m_CD * cos(m_Alpha), m_CD * sin(m_Alpha));
 }

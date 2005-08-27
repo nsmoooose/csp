@@ -39,9 +39,8 @@ SIMDATA_XML_BEGIN(AircraftPhysicsModel)
 SIMDATA_XML_END
 
 
-AircraftPhysicsModel::AircraftPhysicsModel():
-	PhysicsModel(13) {
-		setNumericalMethod(new RKCK_VS_VO(this));
+AircraftPhysicsModel::AircraftPhysicsModel(): PhysicsModel(13) {
+	setNumericalMethod(new RKCK_VS_VO(this));
 }
 
 Vectord const &AircraftPhysicsModel::f(double x, Vectord &y) {

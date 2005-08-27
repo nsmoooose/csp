@@ -18,8 +18,8 @@ Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 Boston, MA  02111-1307, USA.
 */
 
-# if defined(_MSC_VER) && (_MSC_VER <= 1300)
-#pragma warning( disable : 4786 )
+# if defined(_MSC_VER) && (_MSC_VER <= 1400)
+#pragma warning( disable : 4786 4996 )
 #endif
 
 #include <fstream>
@@ -345,7 +345,7 @@ void TerrainBlock::Tessellate(const double* pMatModelView,const double* pMatProj
                 }
                 else 
                 {
-                    double deltaX, deltaY, boxHeight;
+                    double deltaX, deltaY, boxHeight = 0;
                     double screenDistHorizontal, screenDistVertical, screenDistNew;
                     if (tm == Settings::TM_OLD_UPRIGHTONLY) 
                     {
@@ -466,7 +466,7 @@ void TerrainBlock::RepairCracks(Terrain* pTerrain,TriangleFan* pTriangleFans,int
             int halfStride = m_Stride / 2;
             int bottomLeft = m_HomeIndex + m_Stride * pTerrain->GetWidthVertices();
             int bottomRight = bottomLeft + m_Stride;
-            int i,previousVertex;
+            int i,previousVertex = 0;
             int v0;
             int numVertices = 0;
 
@@ -965,14 +965,22 @@ void Terrain::SetAllElevations(const char* szElevationsFilename,float vertexSpac
 
 void Terrain::SetAllElevations(const float* pElevations,int elevWidth,int elevHeight,float vertexSpacing,float elevationScale)
 {
-    if (m_pVertices)
-        delete[] m_pVertices;
-    if (m_pVertexStatus)
-        delete m_pVertexStatus;
-    if (m_pRootBlock)
-        delete m_pRootBlock;
-	if (m_pNormals)
+	if (m_pVertices) {
+		delete[] m_pVertices;
+		m_pVertices = NULL;
+	}
+	if (m_pVertexStatus) {
+		delete m_pVertexStatus;
+		m_pVertexStatus = NULL;
+	}
+	if (m_pRootBlock) {
+		delete m_pRootBlock;
+		m_pRootBlock = NULL;
+	}
+	if (m_pNormals) {
 		delete[] m_pNormals;
+		m_pNormals = NULL;
+	}
 
 	m_VertexSpacing = vertexSpacing;
 
@@ -980,9 +988,8 @@ void Terrain::SetAllElevations(const float* pElevations,int elevWidth,int elevHe
     {
         string msg("The elevation data is NOT a power of 2 in both width and height. Elevation data must be a power of 2 in both width and height.");
         throw new DemeterException(msg);
-        m_pTriangleStrips = NULL;
-        m_pTriangleFans = NULL;
-        m_pVertices = NULL;
+        //m_pTriangleStrips = NULL;
+        //m_pTriangleFans = NULL;
     }
 
     m_WidthVertices = elevWidth + 1; // Add 1 dummy pixel line to edge for block strides
@@ -3224,7 +3231,7 @@ Terrain* TerrainLattice::GetTerrain(int positionX,int positionY)
 
 Terrain* TerrainLattice::GetTerrainRelative(Terrain* pTerrain,Terrain::DIRECTION direction)
 {
-    int offsetX,offsetY;
+    int offsetX=0,offsetY=0;
     switch (direction)
     {
         case Terrain::DIR_NORTH:
@@ -3259,6 +3266,8 @@ Terrain* TerrainLattice::GetTerrainRelative(Terrain* pTerrain,Terrain::DIRECTION
             offsetX = -1;
             offsetY = 1;
             break;
+        default:
+            throw new DemeterException("Demeter: Terrain::GetTerrainRelative: Invalid direction");
     }
     return GetTerrainRelative(pTerrain,offsetX,offsetY);
 }
@@ -3443,6 +3452,8 @@ Terrain::DIRECTION TerrainLattice::GetOppositeDirection(Terrain::DIRECTION direc
         case Terrain::DIR_CENTER:
             oppositeDirection = Terrain::DIR_CENTER;
             break;
+        default:
+            throw new DemeterException("Demeter: Terrain::GetOppositeDirection: Invalid direction");
     }
     return oppositeDirection;
 }
@@ -3739,7 +3750,7 @@ void Texture::Write(FILE* file,Terrain* pTerrain)
     fwrite(&m_SharedIndex,sizeof(int),1,file);
     if (m_SharedIndex < 0)
     {
-        int len,bytesPerPixel;
+        int len,bytesPerPixel = 0;
         if (m_szFilename == NULL)
             len = 0;
         else
@@ -4140,8 +4151,8 @@ void LoadGLExtensions()
 #endif
     if(!glClientActiveTextureARB_ptr || !glActiveTextureARB_ptr || !glMultiTexCoord2fARB_ptr)
     {
-        throw new DemeterException("TERRAIN: ERROR: Multitexture extensions not supported by this OpenGL vendor!");
         bMultiTextureSupported = false;
+        throw new DemeterException("TERRAIN: ERROR: Multitexture extensions not supported by this OpenGL vendor!");
     }
 }
 

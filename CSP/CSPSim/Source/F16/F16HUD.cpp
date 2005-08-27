@@ -51,21 +51,29 @@
 // more efficient calculations, push channel callbacks
 
 SIMDATA_XML_BEGIN(F16HUD)
+	SIMDATA_DEF("color", m_Color, false)
 SIMDATA_XML_END
+
+namespace {
+static const simdata::Vector3 DefaultHUDColor(0.45, 0.94, 0.68);
+}
 
 
 class F16HUDFont: public HUDFont {
 	float m_Height;
+	osg::Vec4 m_Color;
 	osgText::Font *m_Font;
 public:
-	F16HUDFont(float height): m_Height(height) {
+	F16HUDFont(float height, osg::Vec4 const &color): m_Height(height), m_Color(color), m_Font(NULL) {
 		//m_Font = new ReverseAltFont(osgText::readFontFile("hud.ttf")); // FIXME LEAKS!
 		m_Font = new ScaledAltFont(osgText::readFontFile("hud.ttf"), 1.2); // FIXME LEAKS!
 	}
 	virtual void apply(osgText::Text *text) {
 		text->setFont(m_Font);
 		text->setFontResolution(30, 30);
-		text->setColor(osg::Vec4(0.0f, 1.0f, 0.0f, 1.0f));
+		// TODO unfortunately it seems that the text color cannot be overridden by the hud stateset, so
+		// to dim the hud we will have to modify all the text elements individually.
+		text->setColor(m_Color);
 		text->setCharacterSize(m_Height);
 		text->setKerningType(osgText::KERNING_NONE);
 		text->setAxisAlignment(osgText::Text::XZ_PLANE);
@@ -327,7 +335,7 @@ public:
 };
 
 
-F16HUD::F16HUD(): m_AlphaFilter(1.0), m_G(-1), m_MaxG(-100), m_Heading(-1), m_Mach(-1), m_ElapsedTime(0.0), m_UpdateTime(0.0) {
+F16HUD::F16HUD(): m_Color(DefaultHUDColor), m_AlphaFilter(1.0), m_G(-1), m_MaxG(-100), m_Heading(-1), m_Mach(-1), m_ElapsedTime(0.0), m_UpdateTime(0.0) {
 	m_HudPanel.addElement(new CockpitSwitch("OFF DATA", "HUD.DataSwitch", "HUD_DATASWITCH", "DATA"));
 	m_HudPanel.addElement(new CockpitSwitch("OFF FPM ATT_FPM", "HUD.FlightPathMarkerSwitch", "HUD_FPM_SWITCH", "ATT_FPM"));
 	m_HudPanel.addElement(new CockpitSwitch("OFF VAH VV_VAH", "HUD.ScalesSwitch", "HUD_SCALES_SWITCH", "VAH"));
@@ -340,6 +348,7 @@ F16HUD::F16HUD(): m_AlphaFilter(1.0), m_G(-1), m_MaxG(-100), m_Heading(-1), m_Ma
 F16HUD::~F16HUD() { }
 
 void F16HUD::registerChannels(Bus *bus) {
+	m_HUD.setColor(osg::Vec4(m_Color.x(), m_Color.y(), m_Color.z(), 1.0));
 	// XXX slightly dangerous... need to be sure to set the channel to NULL in
 	// our dtor, and users need to check for a null hud pointer.
 	bus->registerLocalDataChannel<HUD*>("HUD", &m_HUD);
@@ -711,7 +720,8 @@ void F16HUD::updateReadouts() {
 }
 
 void F16HUD::buildHUD() {
-	m_StandardFont = new F16HUDFont(0.003);
+	const osg::Vec4 color(m_Color.x(), m_Color.y(), m_Color.z(), 1.0);
+	m_StandardFont = new F16HUDFont(0.003, color);
 	m_CaretSymbol.beginDrawLines();
 	m_CaretSymbol.drawLine(0.001, 0.0, 0.00372,  0.00127);
 	m_CaretSymbol.drawLine(0.001, 0.0, 0.00372, -0.00127);

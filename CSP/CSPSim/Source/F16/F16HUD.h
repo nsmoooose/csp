@@ -104,6 +104,8 @@ protected:
 	virtual double getSpeedCaret(double ground_speed) const;
 	virtual double getSpeed() const;
 
+	simdata::Vector3 m_Color;
+
 	osg::ref_ptr<HUD::DirectionElement> m_Tadpole;
 	osg::ref_ptr<HUD::DirectionElement> m_Steerpoint;
 	osg::ref_ptr<HUD::DirectionElement> m_FlightPathMarker;

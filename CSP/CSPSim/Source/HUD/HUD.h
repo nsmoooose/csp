@@ -37,6 +37,7 @@
 namespace osg { class ClipNode; }
 namespace osg { class Geode; }
 namespace osg { class Geometry; }
+namespace osg { class Material; }
 
 
 /** A container class representing a Heads Up Display.  The display is composed
@@ -107,6 +108,10 @@ public:
 	 */
 	void setOrigin(osg::Vec3 const &origin);
 
+	/** Set the HUD display color.
+	 */
+	void setColor(osg::Vec4 const &color);
+
 	/** Get the scene graph node of the HUD.
 	 */
 	osg::PositionAttitudeTransform *hud();
@@ -148,6 +153,7 @@ private:
 	void updateView();
 
 	osg::ref_ptr<osg::ClipNode> m_ClipNode;
+	osg::ref_ptr<osg::Material> m_Material;
 	osg::ref_ptr<osg::PositionAttitudeTransform> m_Placement;
 	std::vector<osg::ref_ptr<Element> > m_FloatingElements;
 	osg::Vec3 m_ViewPoint;

@@ -43,12 +43,12 @@ HUD::HUD(): m_ViewPoint(0, -1, 0) {
 	stateset->setMode(GL_LIGHTING, osg::StateAttribute::OFF);
 	// TODO depth test needs to be enabled in external views, or hud should be disabled
 	// or replaced with an imposter texture.
-	stateset->setMode(GL_DEPTH_TEST,osg::StateAttribute::OFF);
+	stateset->setMode(GL_DEPTH_TEST, osg::StateAttribute::OFF);
+	// TODO line width should vary with fov
 	//stateset->setAttributeAndModes(new osg::LineWidth(1.5), osg::StateAttribute::ON);
-	osg::Material *material = new osg::Material;
-	material->setDiffuse(osg::Material::FRONT_AND_BACK, osg::Vec4(0.0, 1.0, 0.0, 1.0));
-	material->setEmission(osg::Material::FRONT_AND_BACK, osg::Vec4(0.0, 1.0, 0.0, 1.0));
-	stateset->setAttributeAndModes(material, osg::StateAttribute::ON);
+	m_Material = new osg::Material;
+	m_Material->setDiffuse(osg::Material::FRONT_AND_BACK, osg::Vec4(0.85, 0.34, 0.68, 1.0));
+	stateset->setAttributeAndModes(m_Material.get(), osg::StateAttribute::ON);
 	stateset->setRenderBinDetails(11, "RenderBin");
 	osg::ClipNode* clipnode = new osg::ClipNode();
 	m_ClipNode = clipnode;
@@ -76,6 +76,10 @@ void HUD::setViewPoint(osg::Vec3 const &view_point) {
 void HUD::setOrigin(osg::Vec3 const &origin) {
 	m_Origin = origin;
 	updateView();
+}
+
+void HUD::setColor(osg::Vec4 const &color) {
+	m_Material->setDiffuse(osg::Material::FRONT_AND_BACK, color);
 }
 
 osg::PositionAttitudeTransform *HUD::hud() { return m_Placement.get(); }

@@ -130,13 +130,13 @@
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
 				AdditionalDependencies="pthreadVC1.lib"
-				OutputFile="../SimData/_cSimDatad.dll"
+				OutputFile="../SimData/_cSimData.dll"
 				LinkIncremental="2"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="$(PYTHON_PATH)/Libs"
 				GenerateDebugInformation="TRUE"
-				ProgramDatabaseFile=".\Debug/_cSimDatad.pdb"
-				ImportLibrary="../SimData/_cSimDatad.lib"/>
+				ProgramDatabaseFile=".\Debug/_cSimData.pdb"
+				ImportLibrary="../SimData/_cSimData.lib"/>
 			<Tool
 				Name="VCMIDLTool"
 				PreprocessorDefinitions="_DEBUG"

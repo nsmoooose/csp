@@ -5,6 +5,10 @@ Version 0.4.0 (in progress)
  * Extend warning pragma to MSVC Express 8, and disable 'deprecated'
    function warning.
 
+ * Change debug build target to _cSimData.dll instead of _cSimDatad.dll.
+   The latter cannot be imported into python since the module name is
+   declared as "_cSimData".
+
 2005-08-26: onsight
  * Minor comment cleanups and api tweaks.  Fix Quat parsing from XML.
    Fix data archive globbing.

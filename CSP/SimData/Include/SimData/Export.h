@@ -41,8 +41,12 @@
 	#  define SIMDATA_EXPORT
 #endif
 
-# if defined(_MSC_VER) && (_MSC_VER <= 1310)
-#pragma warning (disable : 4786 4251 4290)
+# if defined(_MSC_VER) && (_MSC_VER <= 1400)
+// 4251, level 1: 'identifier' : class 'type' needs to have dll-interface to be used by clients of class 'type2'
+// 4290, level 3: C++ exception specification ignored except to indicate a function is not __declspec(nothrow)
+// 4786, level 3: 'identifier' : identifier was truncated to 'number' characters in the debug information
+// 4996, level 1: 'function': was declared deprecated
+#pragma warning (disable : 4786 4251 4290 4996)
 # endif
 
 

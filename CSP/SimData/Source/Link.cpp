@@ -77,8 +77,10 @@ LinkCore LinkCore::_serialize(Reader &reader, DataArchive* &data_archive) {
 				if (arc->_loadAll()) {
 					pobj->postCreate();
 				}
-				// XXX should we also check that 'static' is not set?
-				// (it makes no sense to have a static immediate object)
+				// XXX should we also check that 'static' is not set? (it makes no
+				// sense to have a static immediate object.)  it is fairly convenient
+				// sometimes to declare static objects inline (e.g., when testing),
+				// but it can also lead to errors and should probably be disallowed.
 				data_archive = 0;  // nothing more to load
 				return link;
 			}
@@ -130,7 +132,6 @@ LinkCore LinkCore::_internal_load(DataArchive* archive, ObjectID path) {
 	 * XXX for now, pass on the exception.
 	 */
 	//try {
-
 		_ppb = archive->getObject(_p);
 	//}
 	/*

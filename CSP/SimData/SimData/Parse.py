@@ -374,7 +374,7 @@ class QuatHandler(SimpleHandler):
 		SimpleHandler.__init__(self, id, base, name, attrs)
 	
 	def end(self):
-		self._element = SimData.Quaternion()
+		self._element = SimData.Quat()
 		self._element.parseXML(self._c.encode('ascii'))
 
 class DateHandler(SimpleHandler):

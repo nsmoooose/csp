@@ -1,6 +1,10 @@
 Version 0.4.0 (in progress)
 ===========================
 
+2005-08-26: onsight
+ * Minor comment cleanups and api tweaks.  Fix Quat parsing from XML.
+   Fix data archive globbing.
+
 2005-07-15: onsight
  * Fix Object unittest.
 

@@ -118,6 +118,7 @@ public:
 		m_Vec[m_N++] = d;
 		return *this;
 	}
+
 	/** Return an indexed element of the vector.
 	 *
 	 * Generally only called with n = 0.  Use rest() to access other members in recursive
@@ -521,6 +522,13 @@ public:
 		return WRAP<N,X>(this, x);
 	}
 
+	/** Test if the table contains no data.
+	 */
+	inline bool empty() const {
+		this->checkInterpolated();
+		return m_Table->empty();
+	}
+
 	/** Load the initial data value and breakpoints.
 	 *
 	 *  The order of table values is last index first.  So for a 3x3 table, the
@@ -677,6 +685,11 @@ public:
 
 	inline X operator[](Vec const &v) const {
 		return getValue(v);
+	}
+
+	inline bool empty() const {
+		this->checkInterpolated();
+		return m_Table->empty();
 	}
 
 	void load(std::vector<X> const &values, Breaks const &breaks, int *index = 0);

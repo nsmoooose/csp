@@ -282,15 +282,13 @@ public:
 	 */
 	std::vector<ObjectID> getChildren(std::string const & path) const;
 
-	/** Check for the existance of an object in the archive.
-	 *
-	 *  @returns true if the object id exists.
+	/** Check for the existence of an object in this archive.
+	 *  @returns true if the object exists.
 	 */
 	bool hasObject(ObjectID const &id) const;
 
-	/** Check for the existance of an object in the archive.
-	 *
-	 *  @returns true if the object id exists.
+	/** Check for the existence of an object in this archive.
+	 *  @returns true if the object exists.
 	 */
 	bool hasObject(std::string const & path) const;
 

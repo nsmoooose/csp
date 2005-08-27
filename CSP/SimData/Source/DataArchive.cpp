@@ -51,25 +51,34 @@ FP DataArchive::_filePointer() {
 }
 */
 
-std::string base_path(std::string const &path) {
-	int x = path.find_last_of('.');
-	if (x <= 0) return "";
-	return std::string(path, 0, x);
+static std::string base_path(std::string const &path) {
+	std::string::size_type x = path.find_last_of('.');
+	return (x == std::string::npos) ? "" : std::string(path, 0, x);
 }
 
-
 void DataArchive::_addEntry(int offset, int length, ObjectID hash, std::string const &path) {
+	ObjectID child_id(path);
 	TableEntry t;
 	t.offset = offset;
 	t.length = length;
 	t.classhash = hash;
-	t.pathhash = hash_string(path);
-	_table_map[t.pathhash] = _table.size();
+	t.pathhash = child_id;
+	_table_map[child_id] = _table.size();
 	_table.push_back(t);
-	ObjectID parent = hash_string(base_path(path));
-	_children[parent].push_back(t.pathhash);
 	_paths.push_back(path);
-	_pathmap[t.pathhash] = path;
+	_pathmap[child_id] = path;
+	std::string parent_path = base_path(path);
+	ObjectID parent_id(parent_path);
+	for (bool make_path = true; make_path; ) {
+		make_path = (_children.find(parent_id) == _children.end());
+		_children[parent_id].push_back(child_id);
+		if (make_path) {
+			child_id = parent_id;
+			parent_path = base_path(parent_path);
+			if (parent_path.empty()) break;
+			parent_id = ObjectID(parent_path);
+		}
+	}
 }
 
 void DataArchive::writeMagic() {
@@ -148,7 +157,7 @@ void DataArchive::_readPaths() {
 		std::string path = cptr;
 		cptr += path.size() + 1;
 		_paths.push_back(path);
-		_pathmap[hash_string(path)] = path;
+		_pathmap[ObjectID(path)] = path;
 		if (cptr >= toc_end && n_paths != 0) {
 			throw CorruptArchive("Path table of contents truncated.");
 		}
@@ -245,7 +254,7 @@ void DataArchive::addObject(Object& a, std::string const &path) {
 	if (!_is_read && !_finalized) {
 		int offset = ftell(_f);
 		ArchiveWriter writer(_f);
-		SIMDATA_LOG(LOG_ARCHIVE, LOG_DEBUG, "DataArchive: adding " << path << " [" << hash_string(path) << "]");
+		SIMDATA_LOG(LOG_ARCHIVE, LOG_DEBUG, "DataArchive: adding " << path << " [" << ObjectID(path) << "]");
 		a.serialize(writer);
 		int length = writer.getCount();
 		SIMDATA_LOG(LOG_ARCHIVE, LOG_DEBUG, "DataArchive: stored " << length << " bytes (" << path << ")");
@@ -263,17 +272,16 @@ std::vector<ObjectID> DataArchive::getChildren(ObjectID const &id) const {
 	return idx->second;
 }
 
-std::vector<ObjectID> DataArchive::getChildren(std::string const & path) const {
-	return getChildren(hash_string(path));
+std::vector<ObjectID> DataArchive::getChildren(std::string const &path) const {
+	return getChildren(ObjectID(path));
 }
 
 bool DataArchive::hasObject(ObjectID const &id) const {
-	ChildMap::const_iterator idx = _children.find(id);
-	return (idx != _children.end());
+	return _table_map.find(id) != _table_map.end();
 }
 
 bool DataArchive::hasObject(std::string const & path) const {
-	return hasObject(hash_string(path));
+	return hasObject(ObjectID(path));
 }
 
 std::string DataArchive::getPathString(ObjectID const &id) const {
@@ -394,7 +402,7 @@ const LinkBase DataArchive::getObject(const Path& path, std::string const &path_
 
 
 void DataArchive::_addStatic(Object* ptr, std::string const &path, ObjectID id) {
-	if (id == 0) id = hash_string(path);
+	if (id == 0) id = ObjectID(path);
 	_static_map[id] = LinkBase(Path(path), ptr);
 }
 
@@ -465,7 +473,7 @@ InterfaceProxy *DataArchive::getObjectInterface(ObjectID const &id, std::string 
 }
 
 InterfaceProxy *DataArchive::getObjectInterface(std::string const &path) const {
-	return getObjectInterface(hash_string(path), path);
+	return getObjectInterface(ObjectID(path), path);
 }
 
 void DataArchive::setManager(DataManager *m) {

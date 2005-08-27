@@ -111,6 +111,7 @@ void TypeAdapter::set(UTM & x) const { setCoordinate(x); }
 void TypeAdapter::set(ECEF & x) const { setCoordinate(x); }
 void TypeAdapter::set(Vector3 & x) const { setBase(x); }
 void TypeAdapter::set(Matrix3 & x) const { setBase(x); }
+void TypeAdapter::set(Quat & x) const { setBase(x); }
 void TypeAdapter::set(Real & x) const { setBase(x); }
 #ifndef __PTS_SIM__
 void TypeAdapter::set(Table1 & x) const { setBase(x); }

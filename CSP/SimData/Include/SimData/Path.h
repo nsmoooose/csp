@@ -95,49 +95,41 @@ public: // BaseType
 	void convertXML() {}
 
 public:
-
-	/**
-	 * Create a new Path using a path string.
+	/** Create a new Path using a path string.
 	 */
 	explicit Path(const char* path=0) {
 		setPath(path);
 	}
 
-	/**
-	 * Create a new Path from an Object ID.
+	/** Create a new Path from an Object ID.
 	 */
 	explicit Path(ObjectID path): _path(path) {
 	}
 
-	/**
-	 * Assign to a specific Object ID.
+	/** Assign to a specific Object ID.
 	 */
 	inline void setPath(ObjectID path) {
 		_path = path;
 	}
 
-	/**
-	 * Assign to an object path string (after converting to an
-	 * Object ID).
+	/** Assign to an object path string (after converting to an
+	 *  Object ID).
 	 */
 	void setPath(const char* path);
 	
-	/**
-	 * Assign to Object ID 0 (no-path).
+	/** Assign to Object ID 0 (no-path).
 	 */
 	inline void setNone() {
 		setPath((ObjectID) 0);
 	}
 
-	/**
-	 * Get the path's Object ID.
+	/** Get the path's Object ID.
 	 */
 	inline const ObjectID getPath() const {
 		return _path;
 	}
 
-	/**
-	 * Test for 'no-path' (Object ID == 0).
+	/** Test for 'no-path' (Object ID == 0).
 	 */
 	inline bool isNone() const {
 		return (_path == (ObjectID) 0);
@@ -158,7 +150,6 @@ public:
 
 
 SIMDATA_EXPORT std::ostream &operator <<(std::ostream &o, Path const &p);
-
 
 NAMESPACE_SIMDATA_END
 

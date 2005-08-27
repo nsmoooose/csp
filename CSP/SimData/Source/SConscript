@@ -65,7 +65,7 @@ INTERFACES = [env.SwigWrapper(cSimData_wrap)]
 
 shlib = env.SharedLibrary('#/SimData/SimData/cSimData', INTERFACES + SOURCES)
 build.MarkVersionSource(env, shlib)
-env.Alias(['shared', 'all', 'simdata_shlib'], shlib)
+env.Alias(['shared', 'all', 'simdata_shlib', 'SimData'], shlib)
 
 if not build.IsWindows(env):
 	stlib = env.StaticLibrary('#/SimData/SimData/SimData', SOURCES)

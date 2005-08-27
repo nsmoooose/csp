@@ -76,47 +76,48 @@ public: // BaseType
 	void convertXML() {}
 
 public:
-	/**
-	 * Create a new real with the specified distribution.
+	/** Create a new real with the specified distribution.
 	 *
 	 * @param mean the mean value of the normal distribution.
 	 * @param sigma the standard deviation of the distribution.
 	 */
 	Real(float mean=0.0, float sigma=0.0);
 
-	/**
-	 * Set the distribution paramaters.
+	/** Set the distribution paramaters.
 	 *
 	 * @param mean the mean value of the normal distribution.
 	 * @param sigma the standard deviation of the distribution.
 	 */
 	void set(float mean, float sigma);
 
-	/**
-	 * Choose a new value from the distribution.
+	/** Choose and return a new value from the distribution.
 	 */
-	void regen();
+	float regen() {
+		_value = sample();
+		return _value;
+	}
 
-	/**
-	 * Get the mean value of the distribution.
+	/** Get the mean value of the distribution.
 	 */
-	float getMean() const;
+	inline float mean() const { return _mean; }
+
+	/** Get the standard deviation of the distribution.
+	 */
+	inline float sigma() const { return _sigma; }
 	
-	/**
-	 * Get the standard deviation of the distribution.
+	/** Get the actual value.
 	 */
-	float getSigma() const;
-	
-	/**
-	 * Get the actual value.
+	inline float value() const { return _value; }
+
+	/** Return a new value from the distribution.  Does not change the current value.
 	 */
-	float getValue() const;
+	float sample() const;
 
 	/*
-    	float __neg__();
+	float __neg__();
 	float __pos__();
 	float __abs__();
-    	int __nonzero__();
+	int __nonzero__();
 	float __float__();
 	int __int__();
 	long __long__();
@@ -133,8 +134,7 @@ public:
 	*/
 
 #ifndef SWIG
-	/**
-	 * Allow implicit coersion to a floating point value.
+	/** Allow implicit coersion to a floating point value.
 	 */
 	inline operator float() const { return _value; }
 #endif

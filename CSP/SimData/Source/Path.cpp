@@ -40,7 +40,7 @@ NAMESPACE_SIMDATA
 
 void Path::setPath(const char* path) {
 	if (path != 0 && *path != 0) {
-		setPath(hash_string(path));
+		setPath(ObjectID(path));
 	} else {
 		setNone();
 	}

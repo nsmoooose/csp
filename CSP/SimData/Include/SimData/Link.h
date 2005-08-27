@@ -210,8 +210,8 @@ protected:
  */
 template<class T> class Link: public LinkCore {
 friend class TypeAdapter;
-
 template <class U> friend class Ref;
+
 	// For assigning from Link<> to a Ref<>.
 	Object *_get() const { return LinkCore::_get(); }
 

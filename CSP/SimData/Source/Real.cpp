@@ -79,20 +79,10 @@ void Real::set(float mean, float sigma) {
 	regen();
 }
 
-void Real::regen() {
-	if (_sigma <= 0.0) {
-		_value = _mean;
-	} else {
-		_value = static_cast<float>(rd::BoxMueller(Real::_rng, _mean, _sigma));
-		//box_muller(_mean, _sigma);
-	}
+float Real::sample() const {
+	if (_sigma <= 0.0) return _mean;
+	return static_cast<float>(rd::BoxMueller(Real::_rng, _mean, _sigma));
 }
-
-float Real::getMean() const { return _mean; }
-
-float Real::getSigma() const { return _sigma; }
-
-float Real::getValue() const { return _value; }
 
 std::string Real::asString() const {
 	std::ostringstream ss;

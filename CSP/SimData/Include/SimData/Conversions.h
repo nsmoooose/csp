@@ -120,6 +120,16 @@ template <typename T>
 T n_lb(T x) { return x * 0.224809; }
 SIMDATA_CVT(n_lb)
 
+/// US gallons to liters
+template <typename T>
+T gal_l(T x) { return x * 3.7854118; }
+SIMDATA_CVT(gal_l)
+
+/// liters to US gallons
+template <typename T>
+T l_gal(T x) { return x *  0.264172051; }
+SIMDATA_CVT(l_gal)
+
 } // namespace convert
 
 //@}

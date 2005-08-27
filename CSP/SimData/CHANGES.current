@@ -5,6 +5,10 @@ Version 0.4.0 (in progress)
  * Minor comment cleanups and api tweaks.  Fix Quat parsing from XML.
    Fix data archive globbing.
 
+ * Change object interface declaration macros to make interfaces static
+   members of their Object class rather than standalone instances in an
+   anonymous namespace.
+
 2005-07-15: onsight
  * Fix Object unittest.
 

@@ -425,8 +425,8 @@ inline hasht classhash_helper(std::string const &class_name, const fprint32 sign
 	typedef __simdata_object_class __simdata_object_baseclass; \
 	typedef _M_classname __simdata_object_class; \
 	virtual SIMDATA(Object) *_new() const { return SIMDATA(__simdata_object_factory)<_M_classname, _M_abstract>::create(); } \
-	friend class __simdata_interface_proxy_##_M_classname; \
-	class __simdata_interface_proxy_##_M_classname: public __simdata_object_baseclass::__simdata_interface_proxy { \
+	friend class __simdata_interface_proxy__M_classname; \
+	class __simdata_interface_proxy__M_classname: public __simdata_object_baseclass::__simdata_interface_proxy { \
 		static SIMDATA(ObjectInterface)<_M_classname> *_interface; \
 	public: \
 		static SIMDATA(fprint32) signature(); \
@@ -437,11 +437,12 @@ inline hasht classhash_helper(std::string const &class_name, const fprint32 sign
 		virtual bool isStatic() const { return _M_static; } \
 		virtual SIMDATA(hasht) getClassHash() const { return _M_classname::_getClassHash(); } \
 		virtual const char * getClassName() const { return _M_classname::_getClassName(); } \
-		__simdata_interface_proxy_##_M_classname(bool=true); \
+		__simdata_interface_proxy__M_classname(bool=true); \
 	}; \
-	typedef __simdata_interface_proxy_##_M_classname __simdata_interface_proxy; \
+	typedef __simdata_interface_proxy__M_classname __simdata_interface_proxy; \
 	virtual void _serialize(SIMDATA(Writer) &writer) const; \
-	virtual void _serialize(SIMDATA(Reader) &reader);
+	virtual void _serialize(SIMDATA(Reader) &reader); \
+	static __simdata_interface_proxy__M_classname __simdata_interface_proxy__M_classname_instance;
 
 #define SIMDATA_DECLARE_OBJECT(_M_classname) \
 	__SIMDATA_CLASS_DEFINE(_M_classname, false, false)
@@ -464,15 +465,15 @@ inline hasht classhash_helper(std::string const &class_name, const fprint32 sign
 	} \
 	SIMDATA(hasht) _M_classname::_getClassHash() { \
 		static SIMDATA(hasht) hash = 0; /*defer evaluation*/\
-		if (hash == 0) hash = SIMDATA(classhash_helper)(#_M_classname, __simdata_interface_proxy::signature()); \
+		if (hash == 0) hash = SIMDATA(classhash_helper)(_getClassName(), __simdata_interface_proxy::signature()); \
 		return hash; \
 	} \
-	SIMDATA(ObjectInterface)<_M_classname> *_M_classname::__simdata_interface_proxy_##_M_classname::_interface = 0; \
-	namespace { _M_classname::__simdata_interface_proxy_##_M_classname __##_M_classname##_interface_proxy; } \
-	SIMDATA(fprint32) _M_classname::__simdata_interface_proxy_##_M_classname::signature() { return _interface->signature(); } \
-	void _M_classname::__simdata_interface_proxy_##_M_classname::serialize(_M_classname *object, SIMDATA(Reader) &reader) { _interface->serialize(object, reader); } \
-	void _M_classname::__simdata_interface_proxy_##_M_classname::serialize(_M_classname const *object, SIMDATA(Writer) &writer) { _interface->serialize(object, writer); } \
-	_M_classname::__simdata_interface_proxy_##_M_classname::__simdata_interface_proxy_##_M_classname(const bool reg) \
+	SIMDATA(ObjectInterface)<_M_classname> *_M_classname::__simdata_interface_proxy__M_classname::_interface = 0; \
+	_M_classname::__simdata_interface_proxy__M_classname _M_classname::__simdata_interface_proxy__M_classname_instance; \
+	SIMDATA(fprint32) _M_classname::__simdata_interface_proxy__M_classname::signature() { return _interface->signature(); } \
+	void _M_classname::__simdata_interface_proxy__M_classname::serialize(_M_classname *object, SIMDATA(Reader) &reader) { _interface->serialize(object, reader); } \
+	void _M_classname::__simdata_interface_proxy__M_classname::serialize(_M_classname const *object, SIMDATA(Writer) &writer) { _interface->serialize(object, writer); } \
+	_M_classname::__simdata_interface_proxy__M_classname::__simdata_interface_proxy__M_classname(const bool reg) \
 		: _M_classname::__simdata_object_baseclass::__simdata_interface_proxy(false) { \
 		typedef _M_classname _class; \
 		if (!_interface) { \

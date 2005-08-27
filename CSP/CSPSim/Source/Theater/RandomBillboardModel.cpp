@@ -113,8 +113,8 @@ void RandomBillboardModel::addSceneModel(FeatureSceneGroup *group, LayoutTransfo
 			// pos has the x, y coordinates of the drawable relative to the root
 			// FeatureSceneGroup.
 			osg::Vec3 pos = correction(transform(*ofs));
-			//bb->addDrawable(new osg::Geometry(*model), pos);
-			bb->addDrawable(model, pos);
+			bb->addDrawable(new osg::Geometry(*model), pos);
+			//bb->addDrawable(model, pos);
 		}
 		scene_model->addChild(bb);
 	}

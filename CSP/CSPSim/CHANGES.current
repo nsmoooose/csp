@@ -6,6 +6,8 @@
 
  * Minor formatting and comment cleanup.
 
+ * Minor fix for tree layout.
+
 2005-07-14: onsight
  * Shuffled include statements for simdata headers.  Headers defining
    simdata::Object subclasses need Object.h but not InterfaceRegistry.h.

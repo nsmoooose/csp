@@ -31,24 +31,24 @@ class CameraCommand;
 
 class CameraKinematics: public simdata::Referenced {
 	// XXX: serialize
-	const float m_BaseRate, m_DisplacementCoefficient;
-	const float m_MinimumDistanceOffset, m_AbsoluteMaximumDistance;
+	const double m_BaseRate, m_DisplacementCoefficient;
+	const double m_MinimumDistanceOffset, m_AbsoluteMaximumDistance;
 
 	double m_Phi, m_Theta;
-	float m_FOVScale;
-	float m_PanRatePhi, m_PanRateTheta, m_ZoomRate;
+	double m_FOVScale;
+	double m_PanRatePhi, m_PanRateTheta, m_ZoomRate;
 	double m_DistanceToObject, m_MinimumDistance;
 	double m_Accel;
 	bool m_ExternalPan;
 	void rotateTheta(double dt) { m_Theta += m_Accel * m_PanRateTheta * dt * m_FOVScale; }
 	void rotatePhi(double dt) { m_Phi += m_Accel * m_PanRatePhi * dt * m_FOVScale; }
 	void scale(double dt);
-	float smooth(double value, float min_value,float max_value) const;
+	double smooth(double value, double min_value,double max_value) const;
 public:
 	CameraKinematics();
 	virtual ~CameraKinematics() {}
-	void clampPhi(float min_phi,float max_phi, bool smooth_on = true);
-	void clampTheta(float min_theta,float max_theta, bool smooth_on = true);
+	void clampPhi(double min_phi,double max_phi, bool smooth_on = true);
+	void clampTheta(double min_theta,double max_theta, bool smooth_on = true);
 	void reset();
 	void resetDistance();
 	void update(double dt);
@@ -72,7 +72,7 @@ public:
 	inline double getPhi() const { return m_Phi; }
 	inline void setTheta(double theta) { m_Theta = theta; }
 	inline double getTheta() const { return m_Theta; }
-	inline void setDistance(float d) { m_DistanceToObject = d; }
+	inline void setDistance(double d) { m_DistanceToObject = d; }
 	inline double getDistance() const { return m_DistanceToObject; }
 	void accept(CameraCommand* cc);
 	bool externalPan() const { return m_ExternalPan; }

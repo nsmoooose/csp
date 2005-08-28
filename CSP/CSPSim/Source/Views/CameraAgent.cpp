@@ -55,7 +55,7 @@ void CameraAgent::validate(double dt) {
 	const simdata::Ref<TerrainObject> terrain = scene->getTerrain();
 	TerrainObject::IntersectionHint camera_hint = 0;
 	double const SAFETY = 3.0;
-	float h = SAFETY + terrain->getGroundElevation(m_EyePoint.x(), m_EyePoint.y(), camera_hint);
+	double h = SAFETY + terrain->getGroundElevation(m_EyePoint.x(), m_EyePoint.y(), camera_hint);
 	// if the eyepoint is near the ground, check more carefully that the terrain isn't
 	// clipped by the near-clipping plane.
 	if (m_EyePoint.z() < h) {

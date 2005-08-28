@@ -126,10 +126,10 @@ void FlybyView::updateView(simdata::Vector3& ep, simdata::Vector3& lp, simdata::
 void FlybyView::recalculate(simdata::Vector3& ep, simdata::Vector3& /*lp*/, simdata::Vector3& /*up*/, double /*dt*/) {
 	TerrainObject* terrain = CSPSim::theSim->getTerrain();
 	if (terrain) {
-		const float SAFETY = 2.0f;
+		const double SAFETY = 2.0f;
 		TerrainObject::IntersectionHint camera_hint = 0;
-		float h = SAFETY + terrain->getGroundElevation(ep.x(), ep.y(), camera_hint);
-		float d = static_cast<float>(ep.z() - h);
+		double h = SAFETY + terrain->getGroundElevation(ep.x(), ep.y(), camera_hint);
+		double d = ep.z() - h;
 		if (d<0) ep.z() -= d;
 	}
 }

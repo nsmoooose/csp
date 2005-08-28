@@ -34,7 +34,7 @@
 
 
 void CameraKinematics::scale(double dt) {
-	float scale_factor = 1.0 + m_ZoomRate * dt;
+	double scale_factor = 1.0 + m_ZoomRate * dt;
 	if ((m_DistanceToObject > m_MinimumDistance && scale_factor < 1.0) ||
 		(m_DistanceToObject < m_AbsoluteMaximumDistance && scale_factor > 1.0) ) {
 		m_DistanceToObject *= scale_factor;
@@ -53,9 +53,9 @@ void CameraKinematics::update(double dt) {
 	m_Accel = 1.0 + (m_Accel - 1.0) *  std::max(0.0, 1.0 - dt);
 }
 
-float CameraKinematics::smooth(double value, float min_value, float max_value) const {
-	float epsilon = 0.1f * fabs(max_value - min_value);
-	float damping = std::min(value - min_value, max_value - value)/epsilon;
+double CameraKinematics::smooth(double value, double min_value, double max_value) const {
+	double epsilon = 0.1f * fabs(max_value - min_value);
+	double damping = std::min(value - min_value, max_value - value)/epsilon;
 	if (damping > 0.0 && damping < 1.0) {
 		return damping;
 	} else {
@@ -74,14 +74,14 @@ CameraKinematics::CameraKinematics():
 	m_ExternalPan(false) {
 	reset();
 }
-void CameraKinematics::clampPhi(float min_phi, float max_phi, bool smooth_on) {
+void CameraKinematics::clampPhi(double min_phi, double max_phi, bool smooth_on) {
 	if (smooth_on && m_PanRatePhi != 0.0) {
 		m_PanRatePhi = simdata::sign(m_PanRatePhi) * smooth(m_Phi, min_phi, max_phi) * m_BaseRate;
 	}
 	m_Phi = simdata::clampTo<double>(m_Phi, min_phi, max_phi);
 }
 
-void CameraKinematics::clampTheta(float min_theta, float max_theta, bool smooth_on) {
+void CameraKinematics::clampTheta(double min_theta, double max_theta, bool smooth_on) {
 	if (smooth_on && m_PanRateTheta != 0.0) {
 		m_PanRateTheta = simdata::sign(m_PanRateTheta)*smooth(m_Theta, min_theta, max_theta)*m_BaseRate;
 	}

@@ -10,7 +10,7 @@ import time
 USAGE = """\
 CSPSim demo generation script.
 
-Usage: %s version
+Usage: %s version [options]
 """
 
 FURTHER_INSTRUCTIONS = """\
@@ -42,7 +42,7 @@ except ImportError:
 
 
 from distutils.core import setup
-#import py2exe
+import py2exe
 
 
 def error(msg):
@@ -98,11 +98,12 @@ def usage():
 
 def main():
 	args = sys.argv[1:]
-	if len(args) != 1:
+	if len(args) < 1:
 		usage()
 		sys.exit(1)
 
 	version = args[0]
+	sys.argv[1:] = ['py2exe'] + args[1:]
 
 	if not re.match(r'\d+\.\d+', version):
 		error('Invalid version "%s"; should be of the form X.Y (e.g., "0.5")' % version)

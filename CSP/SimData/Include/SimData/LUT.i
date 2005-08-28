@@ -44,38 +44,43 @@ namespace std {
 */
 
 %typemap(in) std::vector<std::vector<float> > const & (std::vector<std::vector<float> > temp) {
-        if (PyTuple_Check($input) || PyList_Check($input)) {
-            unsigned int size = (PyTuple_Check($input) ?  PyTuple_Size($input) : PyList_Size($input));
-            temp.resize(size);
-            $1 = &temp;
-            for (unsigned int i=0; i<size; i++) {
-                PyObject* o = PySequence_GetItem($input,i);
-        	if (PyTuple_Check(o) || PyList_Check(o)) {
-            		unsigned int size = (PyTuple_Check(o) ?  PyTuple_Size(o) : PyList_Size(o));
-			temp[i].resize(size);
-			for (unsigned int j=0; j<size; j++) {
-                		PyObject* v = PySequence_GetItem(o,j);
-                		if (SwigNumber_Check(v)) {
-				    temp[i][j] = (float)(SwigNumber_AsDouble(v));
-				    Py_DECREF(v);
-				}else {
-				    Py_DECREF(v);
-				    PyErr_SetString(PyExc_TypeError, "vector<vector<float>> expected");
-				    SWIG_fail;
+	if (PyTuple_Check($input) || PyList_Check($input)) {
+		unsigned int size = (PyTuple_Check($input) ?  PyTuple_Size($input) : PyList_Size($input));
+		temp.resize(size);
+		$1 = &temp;
+		for (unsigned int i=0; i<size; i++) {
+			PyObject* o = PySequence_GetItem($input,i);
+			if (PyTuple_Check(o) || PyList_Check(o)) {
+				unsigned int size = (PyTuple_Check(o) ?  PyTuple_Size(o) : PyList_Size(o));
+				temp[i].resize(size);
+				for (unsigned int j=0; j<size; j++) {
+					PyObject* v = PySequence_GetItem(o,j);
+					if (PyFloat_Check(v)) {
+						temp[i][j] = static_cast<float>(PyFloat_AsDouble(v));
+						Py_DECREF(v);
+					} else if (PyInt_Check(v)) {
+						temp[i][j] = static_cast<float>(PyInt_AsLong(v));
+						Py_DECREF(v);
+					} else if (PyLong_Check(v)) {
+						temp[i][j] = static_cast<float>(PyLong_AsLong(v));
+						Py_DECREF(v);
+					} else {
+						Py_DECREF(v);
+						PyErr_SetString(PyExc_TypeError, "vector<vector<float>> expected");
+						SWIG_fail;
+					}
 				}
+				Py_DECREF(o);
+			} else {
+				Py_DECREF(o);
+				PyErr_SetString(PyExc_TypeError, "vector<vector<float>> expected");
+				SWIG_fail;
 			}
-			Py_DECREF(o);
-		} else {
-			Py_DECREF(o);
-			PyErr_SetString(PyExc_TypeError, "vector<vector<float>> expected");
-			SWIG_fail;
 		}
-		
-            }
-        } else {
-            PyErr_SetString(PyExc_TypeError,"vector<vector<float>> expected");
-            SWIG_fail;
-        }
+	} else {
+		PyErr_SetString(PyExc_TypeError,"vector<vector<float>> expected");
+		SWIG_fail;
+	}
 }
 
 NAMESPACE_SIMDATA

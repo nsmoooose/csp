@@ -220,7 +220,7 @@ def CheckSwig(context, min_version, not_versions=[]):
 	_checking(context, 'swig')
 	swig_in, swig_out, swig_err = os.popen3('%s -version' % context.env.get('SWIG', 'swig'), 't')
 	if swig_err is not None:
-		output = swig_err.readlines()
+		output = swig_err.readlines() + swig_out.readlines()
 		output = " ".join(map(lambda x: x.strip(), output))
 		match = re.search(r'SWIG Version (\d+\.\d+.\d+)', output)
 		if match is not None:

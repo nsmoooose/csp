@@ -37,7 +37,7 @@ extern SimpleConfig g_Config;
 /**
  * Open the global configuration file.
  */
-extern bool openConfig(std::string path, bool report_error=true);
+extern bool openConfig(std::string path, bool report_error); //=true);
 
 /**
  * Get the main cache path.

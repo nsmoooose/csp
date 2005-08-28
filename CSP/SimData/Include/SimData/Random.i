@@ -29,10 +29,11 @@
 
 NAMESPACE_SIMDATA
 
+
 class RandomInterface {
 protected:
 public:
-	typedef Ref<_State> State;
+	typedef simdata::Ref<simdata::RandomStateWrapper> State;
 	typedef unsigned long int SeedType;
 	virtual ~RandomInterface();
 	virtual void setSeed(SeedType seed)=0;
@@ -55,20 +56,6 @@ public:
 	virtual unsigned long uniformUInt(unsigned long upper)=0;
 };
 
-/**
- * Random number generator wrapper, implementing the random number
- * generator interface.  These generics provide a uniform interface
- * to the underlying generators and generator state data.  The
- * performance penalty relative to using the raw generators is
- * typically about 20%.
- */
-%ignore _State;
-%ignore RNGState;
-struct _State {}; //: Referenced { };
-template <class RNG>
-struct RNGState: _State {
-	typename RNG::State _state;
-};
 template <class RNG>
 class RandomNumberGenerator: public RandomNumberGeneratorInterface {
 	RNG _gen;

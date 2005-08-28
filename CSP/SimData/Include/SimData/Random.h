@@ -382,15 +382,21 @@ public:
 ///////////////////////////////////////////////////////////////////////////////////
 // Random Number Generator Wrappers
 
+
+/** Base class for storing the state of a random number generator.
+ */
+class RandomStateWrapper: public Referenced {
+protected:
+	RandomStateWrapper() {}
+	virtual ~RandomStateWrapper() {}
+};
+
+
 /** Abstract interface for random number generators and random distributions.
  */
 class SIMDATA_EXPORT RandomInterface {
-protected:
-	/** Base class for storing the state of a random number generator.
-	 */
-	struct _State: Referenced { virtual ~_State() {} };
 public:
-	typedef Ref<_State> State;
+	typedef Ref<RandomStateWrapper> State;
 	typedef unsigned long int SeedType;
 
 	virtual ~RandomInterface();
@@ -455,10 +461,13 @@ class SIMDATA_EXPORT RandomNumberGenerator: public RandomNumberGeneratorInterfac
 
 	/** Random number generator state.
 	 */
-	struct RNGState: _State {
+	class RNGState: public RandomStateWrapper {
+	public:
 		typename RNG::State _state;
 	};
+
 	RNG _gen;
+
 public:
 	/** Reseed the random number generator.
 	 *
@@ -656,7 +665,8 @@ template <class RD>
 class RandomDistribution: public RandomDistributionInterface {
 	/** Random number generator state.
 	 */
-	struct RDState: _State {
+	class RDState: public RandomStateWrapper {
+	public:
 		typename RD::State _state;
 	};
 	RD _dist;

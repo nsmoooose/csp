@@ -352,7 +352,7 @@ def main(argv):
 	loadCSP()
 
 	print "Loading configuration from '%s'." % config
-	if not cCSP.openConfig(config):
+	if not cCSP.openConfig(config, 1):
 		print "Unable to open primary configuration file (%s)" % config
 		sys.exit(0)
 

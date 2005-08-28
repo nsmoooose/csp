@@ -40,7 +40,6 @@
 #include <SimData/Vector3.h>
 
 #include <vector>
-#include <algorithm>
 #include <cassert>
 #include <cmath>
 
@@ -173,7 +172,7 @@ public:
 	 */
 	inline Matrix3& operator = (const Matrix3& other) {
 		if (&other == this) return *this;
-		std::copy((double*)other._mat, (double*)other._mat+9, (double*)(_mat));
+		set(reinterpret_cast<double const *>(other._mat));
 		return *this;
 	}
 #endif // SWIG
@@ -181,13 +180,14 @@ public:
 	/** Set this matrix from another matrix.
 	 */
 	inline void set(const Matrix3& other) {
-		std::copy((double*)other._mat, (double*)other._mat+9, (double*)(_mat));
+		set(reinterpret_cast<double const *>(other._mat));
 	}
 
 	/** Set this matrix from a double[9] array.
 	 */
-	inline void set(double const * const ptr_) {
-		std::copy(ptr_, ptr_+9, (double*)(_mat));
+	inline void set(double const * src) {
+		double *dst = reinterpret_cast<double*>(_mat);
+		for (const double *end = src + 9; src != end; ) *dst++ = *src++;
 	}
 
 	/** Set this matrix from a list of element values.

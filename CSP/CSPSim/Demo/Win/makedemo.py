@@ -21,7 +21,6 @@ licensing terms.  Finally, create a zip archive of the entire demo directory
 named %(DEMO)s.zip.
 """
 
-
 import CSP
 import CSP.SimData
 import CSP.CSPSim
@@ -32,13 +31,15 @@ CSPSIM_BIN = os.path.join(BASE, 'CSPSim', 'Bin')
 CSPSIM_BIN_SOURCE = os.path.join(BASE, 'CSPSim', '.bin', 'Source')
 SIMDATA = os.path.join(BASE, 'SimData')
 
+sys.path.append(CSPSIM_BIN)
+
 try:
 	import modulefinder
-	modulefinder.AddPackagePath("CSP.CSPSim", CSPSIM_BIN)
-	modulefinder.AddPackagePath("CSP.CSPSim", CSPSIM_BIN_SOURCE)
-	modulefinder.AddPackagePath("CSP.SimData", SIMDATA)
+	modulefinder.AddPackagePath('CSP.CSPSim', CSPSIM_BIN)
+	modulefinder.AddPackagePath('CSP.CSPSim', CSPSIM_BIN_SOURCE)
+	modulefinder.AddPackagePath('CSP', SIMDATA)
 except ImportError:
-	print "WARNING: unable to import modulefinder"
+	print 'WARNING: unable to import modulefinder'
 
 
 from distutils.core import setup
@@ -67,9 +68,9 @@ def make_demo(version):
 	print 'Running py2exe to create %s' % DIST_DIR
 
 	opts = {
-		"py2exe": {
-			"excludes": ['SimData', 'dl'],
-			"dist_dir": DIST_DIR
+		'py2exe': {
+			'excludes': ['SimData', 'dl'],
+			'dist_dir': DIST_DIR
 		}
 	}
 

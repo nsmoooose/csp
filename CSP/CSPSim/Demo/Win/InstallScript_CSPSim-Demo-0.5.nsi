@@ -75,7 +75,7 @@ BrandingText "CSP - The Combat Simulator Project"
 ;LogSet on
 
 ;License page
-LicenseData "csp_license.txt"
+LicenseData "./CSPSim-Demo-0.5/COPYING"
 LicenseForceSelection radiobuttons 
 
 ;Show install details.

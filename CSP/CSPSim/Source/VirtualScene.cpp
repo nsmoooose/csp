@@ -834,7 +834,7 @@ void VirtualScene::setTerrain(simdata::Ref<TerrainObject> terrain) {
 }
 
 void VirtualScene::setLabels(bool show) {
-	m_NodeMask = (m_NodeMask & ~SceneMasks::LABELS) | show ? SceneMasks::LABELS : 0;
+	m_NodeMask = (m_NodeMask & ~SceneMasks::LABELS) | (show ? SceneMasks::LABELS : 0);
 	m_FarView->setCullMask(SceneMasks::CULL_ONLY | SceneMasks::NORMAL | m_NodeMask);
 }
 

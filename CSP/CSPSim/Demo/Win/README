@@ -1,0 +1,20 @@
+CREATING A DEMO RELEASE OF CSPSIM FOR WINDOWS
+=============================================
+
+In this directory, run:
+
+> python makedemo.py VERSION
+
+where VERSION is of the form major.minor (e.g., "0.5").  This will create
+a subdirectory named CSPSim-Demo-VERSION that contains all of the necessary
+modules, dlls, and data.   Note that if any system libraries are reported as
+"missing" you may have to copy them by hand to this directory and repeat the
+makedemo command.
+
+After makedemo has completed successfully, update the README and LICENSE files
+in the CSPSim-Demo-VERSION subdirectory.  Zip the entire directory to create
+the demo release: CSPSim-Demo-VERSION.zip.  Unzip this file in C:\tmp and test
+that the sim runs correctly.  Ideally repeat this test on another computer
+that isn't used for CSP development.  When everything looks good, upload the
+zip file to the CSP project page at SourceForge and announce the new demo on
+the forums.

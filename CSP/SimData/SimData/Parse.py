@@ -780,36 +780,3 @@ class ObjectXMLArchive:
 				self.loadAll(filepath)
 		return self._objects
 
-
-
-def demo():
-	master = ObjectXMLArchive("../XML");
-	master.loadAll()
-	pw229 = master.getObject("engines.f100_pw_229")
-	return
-	print "ab_rpm = ", pw229.ab_rpm
-	print "idle table = "
-	for i in range(6):
-		for j in range(6):
-			print "%.5f" % pw229.idle.getPrecise(i*0.2, j*0.2),
-		print
-	print
-	demo_show_members(pw229)
-
-def demo_show_members(obj):
-	members = obj.__class__.__dict__["__swig_setmethods__"].keys()
-	for member in members:
-		c = getattr(obj, member).__class__
-		print "%30s: %s(%s)" % (member, c, str(getattr(obj, member)))
-	for i in obj.thrusts:
-		print i.x, i.y
-
-if __name__ == "__main__":
-	import Objects
-	setObjectClasses(Objects)
-	start = time.time()
-	demo()
-	runtime = time.time() - start
-	print
-	print "Runtime =", runtime
-

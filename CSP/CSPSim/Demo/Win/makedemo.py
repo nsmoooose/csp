@@ -51,6 +51,30 @@ def error(msg):
 	sys.exit(1)
 
 
+def copy_tree(src, dst, symlinks=0, exclude=None):
+	"""Just like shutil.copytree, but allows files to be excluded based on a regexp."""
+	if isinstance(exclude, str): exclude = re.compile(exclude)
+	names = os.listdir(src)
+	os.mkdir(dst)
+	errors = []
+	for name in names:
+		if exclude and exclude.search(name): continue
+		srcname = os.path.join(src, name)
+		dstname = os.path.join(dst, name)
+		try:
+			if symlinks and os.path.islink(srcname):
+				linkto = os.readlink(srcname)
+				os.symlink(linkto, dstname)
+			elif os.path.isdir(srcname):
+				copy_tree(srcname, dstname, symlinks, exclude)
+			else:
+				shutil.copy2(srcname, dstname)
+		except (IOError, os.error), why:
+			errors.append((srcname, dstname, why))
+	if errors:
+		raise Error, errors
+
+
 def make_demo(version):
 	TEMPLATE = 'CSPSim-Demo'
 	DEMO = 'CSPSim-Demo-%s' % version
@@ -62,7 +86,7 @@ def make_demo(version):
 		error('%s already exists!  Aborting.' % DEMO)
 
 	print 'Copying data from %s to %s' % (TEMPLATE, DEMO)
-	shutil.copytree(TEMPLATE, DEMO)
+	copy_tree(TEMPLATE, DEMO, exclude=r'^\.svn$')
 
 	DIST_DIR = os.path.join(DEMO, 'Bin')
 	print 'Running py2exe to create %s' % DIST_DIR
@@ -82,7 +106,7 @@ def make_demo(version):
 	DATA_TARGET = os.path.join(DEMO, 'Data')
 	if not os.path.exists(DATA_TARGET):
 		print 'Copying data from %s to %s' % (CSPSIM_DATA, DATA_TARGET)
-		shutil.copytree(CSPSIM_DATA, DATA_TARGET)
+		copy_tree(CSPSIM_DATA, DATA_TARGET, exclude=r'^\.svn$')
 
 	print 'Writing README header'
 	README = os.path.join(DEMO, 'README')

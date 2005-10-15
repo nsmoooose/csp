@@ -115,6 +115,7 @@ private:
 
 	// HUMAN/AGENT -------------------------------------------------------
 
+private:
 	void setHuman() {
 		_debug("set human");
 		assert(isAgent());
@@ -131,12 +132,14 @@ private:
 		onAgent();
 	}
 
+protected:
 	virtual void onHuman() { }
 	virtual void onAgent() { }
 
 
 	// LOCAL/REMOTE -----------------------------------------------------
 
+private:
 	void setLocal() {
 		_debug("set local");
 		if (!getFlags(F_INIT)) {
@@ -161,12 +164,14 @@ private:
 		onRemote();
 	}
 
+protected:
 	virtual void onLocal() { }
 	virtual void onRemote() { }
 
 
 	// AGGREGATE/DEAGGREGATE --------------------------------------------
 
+private:
 	void aggregate() {
 		_debug("aggregate");
 		assert(!isAggregated());
@@ -183,6 +188,7 @@ private:
 		onDeaggregate();
 	}
 
+protected:
 	/** Called when an object that was deaggregated leaves all
 	 *  deaggregation bubbles.
 	 *
@@ -200,6 +206,7 @@ private:
 
 	// SCENE MANAGEMENT -------------------------------------------------
 
+private:
 	void enterScene() {
 		_debug("enter scene");
 		assert(!isInScene());
@@ -216,6 +223,7 @@ private:
 		onLeaveScene();
 	}
 
+protected:
 	/** Called before an object is added to the scene graph.
 	 *
 	 *  This method is called even if no scene graph exists (e.g. on an
@@ -233,6 +241,7 @@ private:
 
 	// ------------------------------------------------------------------
 
+private:
 	/** Set the object's unique identifier number.
 	 *
 	 *  Can only be called once.

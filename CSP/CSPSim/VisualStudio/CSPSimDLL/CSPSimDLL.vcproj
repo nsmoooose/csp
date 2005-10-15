@@ -348,6 +348,9 @@
 				RelativePath="..\..\Source\Theater.cpp">
 			</File>
 			<File
+				RelativePath="..\..\Source\ThrustData.cpp">
+			</File>
+			<File
 				RelativePath="..\..\Source\VirtualScene.cpp">
 			</File>
 			<Filter
@@ -704,6 +707,9 @@
 			</File>
 			<File
 				RelativePath="..\..\Include\Theater.h">
+			</File>
+			<File
+				RelativePath="..\..\Include\ThrustData.h">
 			</File>
 			<File
 				RelativePath="..\..\Include\Vector.h">

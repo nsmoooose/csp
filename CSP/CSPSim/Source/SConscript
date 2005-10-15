@@ -107,6 +107,7 @@ SOURCES = [
 	'Theater/Objective.cpp',
 	'Theater/RandomBillboardModel.cpp',
 	'Theater/RandomForestModel.cpp',
+	'ThrustData.cpp',
 	'Views/CameraAgent.cpp',
 	'Views/CameraKinematics.cpp',
 	'Views/ExternalViews.cpp',

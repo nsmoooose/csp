@@ -14,6 +14,9 @@
  * Make the CockpitSwitch data channel a push channel and fix the
    constructor signature.
 
+ * Move ThrustData to its own header and source files.  Remove unused
+   parameters from the Engine XML interface.
+
 2005-08-27: onsight
  * Link against sigc-2.0, not sigc-1.2 for debug builds under MSVC.
 

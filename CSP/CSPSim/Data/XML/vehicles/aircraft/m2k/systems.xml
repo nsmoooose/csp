@@ -36,8 +36,6 @@
 				<List name="engine_set">
 					<Object class="Engine">
 						<Path name="thrust_data">thrust</Path>
-						<Float name="engine_idle_rpm">0.68</Float>
-						<Float name="engine_ab_thrust">0.95</Float>
 						<Vector name="thrust_direction">0.0 1.0 0.0</Vector>
 						<Vector name="engine_offset">0.0 0.0 0.0</Vector>
 						<Vector name="smoke_emitter_location">0.0 -5.5 0.522</Vector>

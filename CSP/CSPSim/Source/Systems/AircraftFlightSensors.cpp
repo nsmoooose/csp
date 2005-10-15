@@ -90,8 +90,8 @@ void AircraftFlightSensors::getInfo(InfoList &info) const {
 	line.precision(0);
 	line << "P: " << std::setw(3) << b_Pressure->value()
 	     << ", T: " << std::setw(3) <<  b_Temperature->value()
-	     << ", Mach: " << std::setw(3) <<  b_Mach->value()
-	     << ", CAS: " << std::setw(3) <<  simdata::convert::mps_kts(b_CAS->value()) << " kts";
+	     << ", Mach: " << std::setw(5) << std::setprecision(2) <<  b_Mach->value()
+	     << ", CAS: " << std::setw(3) << std::setprecision(0) <<  simdata::convert::mps_kts(b_CAS->value()) << " kts";
 	info.push_back(line.str());
 }
 

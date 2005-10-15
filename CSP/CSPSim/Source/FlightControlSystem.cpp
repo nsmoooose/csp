@@ -489,9 +489,10 @@ SIMDATA_XML_END
  */
 class InputChannel: public ControlNode {
 	std::string m_Name;
+	double m_Scale;
 public:
 	SIMDATA_DECLARE_ABSTRACT_OBJECT(InputChannel)
-	InputChannel() { }
+	InputChannel(): m_Scale(1.0) { }
 	virtual void importChannels(Bus *bus) {
 		DataChannelBase::CRef channel;
 		channel = bus->getChannel(m_Name);
@@ -502,12 +503,13 @@ protected:
 	virtual void setChannel(DataChannelBase::CRef &channel)=0;
 private:
 	virtual void evaluate(Timer const &timer) {
-		setOutput(getChannelValue(), timer);
+		setOutput(getChannelValue() * m_Scale, timer);
 	}
 };
 
 SIMDATA_XML_BEGIN(InputChannel)
 	SIMDATA_DEF("channel", m_Name, true)
+	SIMDATA_DEF("scale", m_Scale, false)
 SIMDATA_XML_END
 
 

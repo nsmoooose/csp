@@ -34,6 +34,8 @@ struct ControlSurfaces {
 	static const char *ElevatorDeflection;
 	static const char *RudderDeflection;
 	static const char *AirbrakeDeflection;
+	static const char *LeadingEdgeFlapDeflection;
+	static const char *TrailingEdgeFlapDeflection;
 };
 
 }

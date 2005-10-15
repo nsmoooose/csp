@@ -28,6 +28,10 @@
 
  * Add basic fuel management system infrastructure.
 
+ * Add fuel tank, pylon, and aim-9 models.
+
+ * Add new standard channels, deprecate GForce channel in favor of G.
+
 2005-08-27: onsight
  * Link against sigc-2.0, not sigc-1.2 for debug builds under MSVC.
 

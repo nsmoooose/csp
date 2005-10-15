@@ -34,7 +34,9 @@ struct FlightDynamics {
 	static const char *Beta;
 	static const char *Airspeed;
 	static const char *QBar;
-	static const char *GForce;
+	static const char *GForce;  // DEPRECATED; use "G" instead.
+	static const char *G;  // normal G, includes gravity and rotation
+	static const char *LateralG;  // includes gravity and rotation
 	static const char *PressureAltitude;
 	static const char *VerticalVelocity;
 };

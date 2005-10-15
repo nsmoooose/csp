@@ -273,6 +273,9 @@
 				RelativePath="..\..\Source\FlightModel.cpp">
 			</File>
 			<File
+				RelativePath="..\..\Source\FuelManagementSystem.cpp">
+			</File>
+			<File
 				RelativePath="..\..\Source\GameScreen.cpp">
 			</File>
 			<File
@@ -630,6 +633,9 @@
 			</File>
 			<File
 				RelativePath="..\..\Include\FlightModel.h">
+			</File>
+			<File
+				RelativePath="..\..\Source\FuelManagementSystem.h">
 			</File>
 			<File
 				RelativePath="..\..\Include\GameScreen.h">

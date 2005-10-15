@@ -65,6 +65,7 @@ SOURCES = [
 	'FlightControlSystem.cpp',
 	'FlightDynamics.cpp',
 	'FlightModel.cpp',
+	'FuelManagementSystem.cpp',
 	'GameScreen.cpp',
 	'GearAnimation.cpp',
 	'glDiagnostics.cpp',

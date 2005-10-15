@@ -24,6 +24,8 @@
 
  * Add a scale parameter to fcs input channels.
 
+ * Add infrastructure for external stores.
+
 2005-08-27: onsight
  * Link against sigc-2.0, not sigc-1.2 for debug builds under MSVC.
 

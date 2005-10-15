@@ -33,6 +33,8 @@
 
 
 class DataRecorder;
+class StoresManagementSystem;
+
 
 /** Base class for detailed vehicle models.
  *
@@ -79,9 +81,14 @@ class SystemsModel: public System {
 		void apply(SystemsModel &model) { traverse(model); }
 	};
 
+	// A few subsystems bind tightly to the parent DynamicObject instance, so it
+	// is convenient to declare the separately.  If defined these systems will be
+	// added to the System tree when the SystemsModel is first created, but are
+	// also directly available via accessor methods.
 	simdata::Link<PhysicsModel> m_PhysicsModel;
 	simdata::Link<LocalController> m_LocalController;
 	simdata::Link<RemoteController> m_RemoteController;
+	simdata::Link<StoresManagementSystem> m_StoresManagementSystem;
 
 protected:
 	virtual ~SystemsModel() { }
@@ -103,11 +110,13 @@ public:
 
 	bool canBeAdded() const { return false; }
 
+	/*  why?  remove if not needed.  2005-06-05
 	template<typename T>
 	void publish(std::string const &name, T const &value) {
 		assert(!m_Bound);
 		m_Bus->registerLocalDataChannel(name, value);
 	}
+	*/
 
 	Bus::Ref getBus() const {
 		assert(m_Bus.valid());
@@ -117,9 +126,9 @@ public:
 	virtual void postCreate();
 
 	simdata::Ref<PhysicsModel> getPhysicsModel() const;
-
 	simdata::Ref<LocalController> getLocalController() const;
 	simdata::Ref<RemoteController> getRemoteController() const;
+	simdata::Ref<StoresManagementSystem> getStoresManagementSystem() const;
 
 	void setDataRecorder(DataRecorder*);
 

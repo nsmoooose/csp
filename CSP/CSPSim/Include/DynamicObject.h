@@ -27,6 +27,7 @@
 
 #include "Bus.h"
 #include "InputInterface.h"
+#include "Stores/StoresDynamics.h"
 #include "TerrainObject.h"
 
 #include <SimCore/Battlefield/SimObject.h>
@@ -36,6 +37,7 @@
 
 
 class DataRecorder;
+class DynamicModel;
 class HUD;
 class LocalController;
 class ObjectModel;
@@ -44,6 +46,7 @@ class RemoteController;
 class SceneModel;
 class SceneModelChild;
 class Station;
+class StoresManagementSystem;
 class SystemsModel;
 
 namespace simdata { class Quat; }
@@ -92,6 +95,11 @@ protected:
 public:
 	SIMDATA_DECLARE_ABSTRACT_OBJECT(DynamicObject)
 
+	DECLARE_INPUT_INTERFACE(DynamicObject, InputInterface)
+		BIND_ACTION("MARKS_TOGGLE", toggleMarkers);
+	END_INPUT_INTERFACE  // protected:
+
+public:
 	DynamicObject(TypeId type);
 	virtual ~DynamicObject();
 
@@ -108,6 +116,8 @@ public:
 
 	void setVelocity(simdata::Vector3 const & velocity);
 	void setVelocity(double Vx, double Vy, double Vz);
+	void setAngularVelocity(simdata::Vector3 const & angular_velocity);
+	simdata::Vector3 const & getAngularVelocity() const { return b_AngularVelocity->value(); }
 	simdata::Vector3 const & getAccelerationBody() const { return b_AccelerationBody->value(); }
 	simdata::Vector3 const & getVelocity() const { return b_LinearVelocity->value(); }
 	double getSpeed() const { return b_LinearVelocity->value().length(); }
@@ -136,7 +146,7 @@ public:
 
 	simdata::Vector3 getDirection() const;
 	simdata::Vector3 getUpDirection() const;
-	simdata::Quat & getAttitude() { return b_Attitude->value(); }
+	simdata::Quat const & getAttitude() const { return b_Attitude->value(); }
 	void setAttitude(simdata::Quat const & attitude);
 
 	virtual simdata::Vector3 getCenterOfMassPosition() const { return b_Position->value(); }
@@ -153,6 +163,13 @@ public:
 
 	virtual void setDataRecorder(DataRecorder *recorder);
 
+	// Allow the reference mass and inertia to be overridden.  This is used by StoresManagementSystem when
+	// creating a objects for detached stores (for example, a half empty fuel tank).
+	void setReferenceMass(double mass);
+	void setReferenceInertia(simdata::Matrix3 const &inertia);
+	void setReferenceCgOffset(simdata::Vector3 const &offset);
+
+	void toggleMarkers();
 
 protected:
 
@@ -172,6 +189,8 @@ protected:
 
 	TerrainObject::IntersectionHint m_GroundHint;
 
+	void updateDynamics(StoresManagementSystem *sms);
+
 	// dynamic properties
 
 	// previous cm position in global coordinates
@@ -190,12 +209,15 @@ protected:
 	DataChannel<simdata::Vector3>::Ref b_LinearVelocity;
 	DataChannel<simdata::Vector3>::Ref b_AccelerationBody;
 	DataChannel<simdata::Vector3>::Ref b_CenterOfMassOffset;
+	DataChannel<StoresDynamics>::Ref b_StoresDynamics;
 	DataChannel<simdata::Quat>::Ref b_Attitude;
+	DataChannel<DynamicModel*>::Ref b_DynamicModel;
 	DataChannel<HUD*>::CRef b_Hud;
 
 	std::string m_ObjectName;
 
 	simdata::Link<ObjectModel> m_Model;
+	simdata::Ref<DynamicModel> m_DynamicModel;
 	simdata::Ref<SceneModel> m_SceneModel;
 	simdata::Ref<SceneModelChild> m_StationSceneModel;
 	simdata::Ref<SystemsModel> m_SystemsModel;

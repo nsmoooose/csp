@@ -47,6 +47,7 @@ struct Kinetics {
 	static const char *Roll;
 	static const char *Pitch;
 	static const char *CenterOfMassOffset;  // body coordinates
+	static const char *StoresDynamics;
 };
 
 }

@@ -24,6 +24,8 @@
 
 
 #include <DynamicObject.h>
+#include <Animation.h>
+#include <DynamicModel.h>
 #include <Controller.h>
 #include <CSPSim.h>
 #include <DataRecorder.h>
@@ -32,9 +34,11 @@
 #include <ObjectModel.h>
 #include <PhysicsModel.h>
 #include <Station.h>
+#include <Stores/StoresManagementSystem.h>
 #include <SystemsModel.h>
 #include <TerrainObject.h>
 
+//#include <SimCore/Battlefield/LocalBattlefield.h>
 #include <SimCore/Util/Log.h>
 #include <SimData/DataManager.h>
 #include <SimData/ObjectInterface.h>
@@ -45,7 +49,7 @@
 
 
 SIMDATA_XML_BEGIN(DynamicObject)
-	SIMDATA_DEF("model", m_Model, true)
+	SIMDATA_DEF("model", m_Model, false)
 	SIMDATA_DEF("mass", m_ReferenceMass, true)
 	SIMDATA_DEF("inertia", m_ReferenceInertia, false)
 	SIMDATA_DEF("human_systems", m_HumanModel, false)
@@ -54,6 +58,7 @@ SIMDATA_XML_BEGIN(DynamicObject)
 	SIMDATA_DEF("reference_center_of_mass_offset", m_ReferenceCenterOfMassOffset, false)
 SIMDATA_XML_END
 
+DEFINE_INPUT_INTERFACE(DynamicObject)
 
 using bus::Kinetics;
 
@@ -75,6 +80,10 @@ DynamicObject::DynamicObject(TypeId type): SimObject(type) {
 	b_AccelerationBody = DataChannel<simdata::Vector3>::newLocal(Kinetics::AccelerationBody, simdata::Vector3::ZERO);
 	b_Attitude = DataChannel<simdata::Quat>::newLocal(Kinetics::Attitude, simdata::Quat::IDENTITY);
 	b_CenterOfMassOffset = DataChannel<simdata::Vector3>::newLocal(Kinetics::CenterOfMassOffset, simdata::Vector3::ZERO);
+	b_StoresDynamics = DataChannel<StoresDynamics>::newLocal(Kinetics::StoresDynamics, StoresDynamics());
+
+	m_DynamicModel = new DynamicModel;
+	b_DynamicModel = DataChannel<DynamicModel*>::newLocal("DynamicModel", m_DynamicModel.get());
 
 	m_GroundHint = 0;
 	m_ReferenceMass = 1.0;
@@ -89,6 +98,7 @@ DynamicObject::DynamicObject(TypeId type): SimObject(type) {
 
 	// XXX XXX hack for now.  these values should probably be externalized in the xml interface.
 	setAggregationBubbles(60000, 40000);
+
 }
 
 DynamicObject::~DynamicObject() {
@@ -101,16 +111,34 @@ void DynamicObject::postCreate() {
 	b_CenterOfMassOffset->value() = m_ReferenceCenterOfMassOffset;
 }
 
+void DynamicObject::setReferenceMass(double mass) {
+	m_ReferenceMass = mass;
+	b_Mass->value() = m_ReferenceMass;
+}
+
+void DynamicObject::setReferenceInertia(simdata::Matrix3 const &inertia) {
+	m_ReferenceInertia = inertia;
+	b_Inertia->value() = m_ReferenceInertia;
+	b_InertiaInv->value() = m_ReferenceInertia.getInverse();
+}
+
+void DynamicObject::setReferenceCgOffset(simdata::Vector3 const &offset) {
+	m_ReferenceCenterOfMassOffset = offset;
+	b_CenterOfMassOffset->value() = m_ReferenceCenterOfMassOffset;
+}
+
 void DynamicObject::createSceneModel() {
 	if (!m_SceneModel) {
 		m_SceneModel = new SceneModel(m_Model);
 		assert(m_SceneModel.valid());
 		if (activeStation()) createStationSceneModel();
 		if (getBus()) bindAnimations(getBus());
+		if (m_DynamicModel.valid()) m_DynamicModel->signalCreateSceneModel(m_SceneModel.get());
 	}
 }
 
 void DynamicObject::destroySceneModel() {
+	if (m_DynamicModel.valid()) m_DynamicModel->signalDeleteSceneModel();
 	m_SceneModel = NULL;
 }
 
@@ -139,6 +167,10 @@ void DynamicObject::setVelocity(simdata::Vector3 const &velocity) {
 
 void DynamicObject::setVelocity(double Vx, double Vy, double Vz) {
 	setVelocity(simdata::Vector3(Vx, Vy, Vz));
+}
+
+void DynamicObject::setAngularVelocity(simdata::Vector3 const & angular_velocity) {
+	b_AngularVelocity->value() = angular_velocity;
 }
 
 void DynamicObject::registerUpdate(UpdateMaster *master) {
@@ -196,10 +228,37 @@ double DynamicObject::onUpdate(double dt) {
 	// XXX don't move non-human aircraft for now (no ai yet)
 	if (isHuman()) {
 		doControl(dt);
-		doPhysics(dt);
+		//doPhysics(dt);
+	}
+	doPhysics(dt);  // XXX temporary hack to play with released stores (moved from the isHuman block above)
+	if (m_SystemsModel.valid()) {
+		StoresManagementSystem *sms = m_SystemsModel->getStoresManagementSystem().get();
+		if (sms) {
+			if (sms->hasDirtyDynamics()) updateDynamics(sms);
+			if (sms->hasStoresToRelease()) sms->releaseMarkedStores(this);
+		}
 	}
 	postUpdate(dt);
 	return 0.0;
+}
+
+void DynamicObject::updateDynamics(StoresManagementSystem *sms) {
+	StoresDynamics &dynamics = b_StoresDynamics->value();
+	sms->getDynamics(dynamics);
+	b_Mass->value() = m_ReferenceMass + dynamics.getMass();
+	b_Inertia->value() = m_ReferenceInertia + dynamics.getInertia();
+	b_InertiaInv->value() = b_Inertia->value().getInverse();
+	b_CenterOfMassOffset->value() = (m_ReferenceCenterOfMassOffset * m_ReferenceMass + dynamics.getCenterOfMass() * dynamics.getMass()) / b_Mass->value();
+	std::cout <<
+		"updateDynamics: \n"
+		"  mass_ref=" << m_ReferenceMass << ", mass_sms=" << dynamics.getMass() << "\n"
+		"  cmas_ref=" << m_ReferenceCenterOfMassOffset << ", cmas_sms=" << dynamics.getCenterOfMass() << "\n"
+		"  cmas_ofs=" << b_CenterOfMassOffset->value() << "\n"
+		"  drag coe=" << dynamics.getDrag() << "\n"
+		"  drag pos=" << dynamics.getCenterOfDrag() << "\n"
+		"  I_ref   =\n" << m_ReferenceInertia << "\n"
+		"  I_sms   =\n" << dynamics.getInertia() << "\n";
+	sms->clearDirtyDynamics();
 }
 
 void DynamicObject::doControl(double dt) {
@@ -284,6 +343,8 @@ void DynamicObject::internalView(bool internal) {
 		m_SceneModel->setPitMask(internal ? activeStation()->getMask() : 0);
 		m_StationSceneModel->getRoot()->setNodeMask(internal ? ~0 : 0);
 	}
+	// notify interested subsystems that the view has changed.
+	if (m_DynamicModel.valid()) m_DynamicModel->signalInternalView(internal);
 }
 
 void DynamicObject::setDataRecorder(DataRecorder *recorder) {
@@ -343,6 +404,8 @@ void DynamicObject::registerChannels(Bus* bus) {
 	bus->registerChannel(b_GroundN.get());
 	bus->registerChannel(b_GroundZ.get());
 	bus->registerChannel(b_NearGround.get());
+	bus->registerChannel(b_DynamicModel.get());
+	bus->registerChannel(b_StoresDynamics.get());
 	bus->registerLocalDataChannel< simdata::Ref<ObjectModel> >("Internal.ObjectModel", m_Model);
 }
 
@@ -413,6 +476,9 @@ void DynamicObject::bindChannels(Bus* bus) {
 	}
 }
 
+// TODO need to notify new systems model of current state (e.g. allow it to connect to
+// the scene model and register DynamicModel event handlers).  moveover we need to transfer
+// state, such as the loadout.  ideally the loadout scene group can be shared.
 void DynamicObject::selectVehicleCore() {
 	simdata::Path path;
 	simdata::Ref<SystemsModel> systems;
@@ -467,7 +533,7 @@ void DynamicObject::setVehicleCore(SystemsModel::Ref systems) {
 		m_SystemsModel->copyRegistration(this);
 	}
 }
-	
+
 bool DynamicObject::onMapEvent(MapEvent const &event) {
 	if (InputInterface::onMapEvent(event)) {
 		return true;
@@ -512,4 +578,8 @@ DynamicObject::SystemsModelStore::SystemsModelStore(ObjectId id_, simdata::Ref<S
 DynamicObject::SystemsModelStore::~SystemsModelStore() {
 }
 
+void DynamicObject::toggleMarkers() {
+	std::cout << "MARKERS +++++++++++++++++\n";
+	m_Model->showDebugMarkers(!m_Model->getDebugMarkersVisible());
+}
 

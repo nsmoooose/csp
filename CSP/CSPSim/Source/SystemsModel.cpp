@@ -27,6 +27,7 @@
 
 #include <SystemsModel.h>
 #include <DataRecorder.h>
+#include <Stores/StoresManagementSystem.h>
 
 #include <SimData/ObjectInterface.h>
 
@@ -35,6 +36,7 @@ SIMDATA_XML_BEGIN(SystemsModel)
 	SIMDATA_DEF("physics_model", m_PhysicsModel, false)
 	SIMDATA_DEF("local_controller", m_LocalController, false)
 	SIMDATA_DEF("remote_controller", m_RemoteController, false)
+	SIMDATA_DEF("stores_management_system", m_StoresManagementSystem, false)
 SIMDATA_XML_END
 
 
@@ -66,6 +68,10 @@ simdata::Ref<LocalController> SystemsModel::getLocalController() const {
 	return m_LocalController;
 }
 
+simdata::Ref<StoresManagementSystem> SystemsModel::getStoresManagementSystem() const {
+	return m_StoresManagementSystem;
+}
+
 void SystemsModel::postCreate() {
 	System::postCreate();
 	if (m_PhysicsModel.valid()) {
@@ -80,6 +86,10 @@ void SystemsModel::postCreate() {
 	if (m_LocalController.valid()) {
 		CSP_LOG(OBJECT, DEBUG, "Adding LocalController (" << m_LocalController->getClassName() << ")");
 		addChild(m_LocalController.get());
+	}
+	if (m_StoresManagementSystem.valid()) {
+		CSP_LOG(OBJECT, DEBUG, "Adding StoresManagementSystem (" << m_StoresManagementSystem->getClassName() << ")");
+		addChild(m_StoresManagementSystem.get());
 	}
 }
 

@@ -41,7 +41,7 @@ public:
 		BIND_ACTION("SMOKE_ON", SmokeOn);
 		BIND_ACTION("SMOKE_OFF", SmokeOff);
 		BIND_ACTION("SMOKE_TOGGLE", SmokeToggle);
-		BIND_ACTION("MARKS_TOGGLE", MarkersToggle);
+		BIND_ACTION("MARKS_TOGGLE_DEPRECATED", MarkersToggle);
 	END_INPUT_INTERFACE  // protected:
 
 public:

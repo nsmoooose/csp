@@ -55,12 +55,15 @@ namespace bus {
 	const char *Kinetics::Roll = "Kinetics.Roll";
 	const char *Kinetics::Pitch = "Kinetics.Pitch";
 	const char *Kinetics::CenterOfMassOffset = "Kinetics.CenterOfMassOffset";
+	const char *Kinetics::StoresDynamics = "Kinetics.StoresDynamics";
 
 	const char *FlightDynamics::Alpha = "FlightDynamics.Alpha";
 	const char *FlightDynamics::Beta = "FlightDynamics.Beta";
 	const char *FlightDynamics::Airspeed = "FlightDynamics.Airspeed";
 	const char *FlightDynamics::QBar = "FlightDynamics.QBar";
 	const char *FlightDynamics::GForce = "FlightDynamics.G";
+	//const char *FlightDynamics::G = "FlightDynamics.G";
+	//const char *FlightDynamics::LateralG = "FlightDynamics.LateralG";
 	const char *FlightDynamics::PressureAltitude = "FlightDynamics.PressureAltitude";
 	const char *FlightDynamics::VerticalVelocity = "FlightDynamics.VerticalVelocity";
 
@@ -75,6 +78,8 @@ namespace bus {
 	const char *ControlSurfaces::ElevatorDeflection = "ControlSurfaces.ElevatorDeflection";
 	const char *ControlSurfaces::RudderDeflection = "ControlSurfaces.RudderDeflection";
 	const char *ControlSurfaces::AirbrakeDeflection = "ControlSurfaces.AirbrakeDeflection";
+	//const char *ControlSurfaces::TrailingEdgeFlapDeflection = "ControlSurfaces.TrailingEdgeFlapDeflection";
+	//const char *ControlSurfaces::LeadingEdgeFlapDeflection = "ControlSurfaces.LeadingEdgeFlapDeflection";
 
 	const char *ControlInputs::PitchInput = "ControlInputs.PitchInput";
 	const char *ControlInputs::RollInput = "ControlInputs.RollInput";

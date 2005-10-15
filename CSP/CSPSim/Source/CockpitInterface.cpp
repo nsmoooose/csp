@@ -26,17 +26,17 @@
 #include <CockpitInterface.h>
 
 
-CockpitSwitch::CockpitSwitch(simdata::Enumeration *states, std::string const &channel, std::string const &command, std::string const &initial): m_Command(command) {
+CockpitSwitch::CockpitSwitch(simdata::Enumeration const *states, std::string const &channel, std::string const &command, std::string const &initial): m_Command(command) {
 	assert(states);
 	simdata::EnumLink initial_value(*states, initial);
-	m_State = DataChannel<simdata::EnumLink>::newShared(channel, initial_value);
+	m_State = DataChannel<simdata::EnumLink>::newSharedPush(channel, initial_value);
 }
 
 CockpitSwitch::CockpitSwitch(std::string const &states, std::string const &channel, std::string const &command, std::string const &initial): m_Command(command) {
 	assert(!states.empty());
 	simdata::Enumeration enumeration(states);
 	simdata::EnumLink initial_value(enumeration, initial);
-	m_State = DataChannel<simdata::EnumLink>::newShared(channel, initial_value);
+	m_State = DataChannel<simdata::EnumLink>::newSharedPush(channel, initial_value);
 }
 
 CockpitSwitch::CockpitSwitch(DataChannel<simdata::EnumLink> *channel, std::string const &command): m_Command(command), m_State(channel) {
@@ -66,21 +66,25 @@ void CockpitSwitch::registerChannels(Bus *bus) {
 void CockpitSwitch::onToggle() {
 	std::cout << m_Command << " toggle\n";
 	m_State->value().cycle();
+	m_State->push();
 }
 
 void CockpitSwitch::onCycleNext() {
 	std::cout << m_Command << " next\n";
 	m_State->value().cycle();
+	m_State->push();
 }
 
 void CockpitSwitch::onCyclePrev() {
 	std::cout << m_Command << " prev\n";
 	m_State->value().cycleBack();
+	m_State->push();
 }
 
 void CockpitSwitch::onSelect(int state) {
 	m_State->value().set(state);
 	std::cout << m_Command << " select " << m_State->value().getToken() << "\n";
+	m_State->push();
 }
 
 void CockpitInterface::bindEvents(InputInterface *input) {
@@ -90,8 +94,9 @@ void CockpitInterface::bindEvents(InputInterface *input) {
 	}
 }
 
-void CockpitInterface::addElement(CockpitElement *element) {
+CockpitElement* CockpitInterface::addElement(CockpitElement *element) {
 	m_Elements.push_back(element);
+	return element;
 }
 
 void CockpitInterface::registerChannels(Bus *bus) {

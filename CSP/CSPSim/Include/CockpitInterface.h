@@ -62,8 +62,9 @@ protected:
  */
 class CockpitSwitch: public CockpitElement {
 public:
+	typedef simdata::Ref<CockpitSwitch> Ref;
 	// if command == "", no input handlers will be registered.
-	CockpitSwitch(simdata::Enumeration *enumeration, std::string const &channel, std::string const &command, std::string const &initial);
+	CockpitSwitch(simdata::Enumeration const *enumeration, std::string const &channel, std::string const &command, std::string const &initial);
 	CockpitSwitch(std::string const &enumeration, std::string const &channel, std::string const &command, std::string const &initial);
 	CockpitSwitch(DataChannel<simdata::EnumLink> *channel, std::string const &command);
 	simdata::EnumLink &state() { return m_State->value(); }
@@ -90,7 +91,7 @@ class CockpitInterface: public simdata::Referenced {
 public:
 	virtual void registerChannels(Bus *bus);
 	virtual void bindEvents(InputInterface *pInterface);
-	virtual void addElement(CockpitElement *element);
+	virtual CockpitElement* addElement(CockpitElement *element);
 
 private:
 	std::vector<CockpitElement::Ref> m_Elements;

@@ -192,6 +192,7 @@ class SceneModel: public simdata::Referenced {
 private:
 	osg::ref_ptr<osg::PositionAttitudeTransform> m_Transform;
 	osg::ref_ptr<osg::PositionAttitudeTransform> m_CenterOfMassOffset;
+	osg::ref_ptr<osg::Group> m_DynamicGroup;
 	osg::ref_ptr<osg::Group> m_Children;
 	osg::ref_ptr<osg::Node> m_ModelCopy;
 	osg::ref_ptr<osgText::Text> m_Label;
@@ -213,6 +214,7 @@ public:
 
 	simdata::Ref<ObjectModel> getModel() { return m_Model; }
 	osg::Group* getRoot();
+	osg::Group* getDynamicGroup();
 
 	void setPositionAttitude(simdata::Vector3 const &position, simdata::Quat const &attitude, simdata::Vector3 const &cm_offset);
 

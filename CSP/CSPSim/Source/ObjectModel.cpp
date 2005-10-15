@@ -770,10 +770,17 @@ SceneModel::SceneModel(simdata::Ref<ObjectModel> const & model) {
 
 	// create a working copy
 	ModelCopy model_copy;
+
+	simdata::Timer timer;
+	timer.start();
 	m_ModelCopy = model_copy(model_node);
 	m_PitSwitch = model_copy.getPitSwitch();
+	timer.stop();
 
 	CSP_LOG(APP, INFO, "Copied model, animation count = " << model_copy.getAnimationCallbacks().size());
+	if (timer.elapsed() > 0.01) {
+		CSP_LOG(APP, WARNING, "Model copy took " << (timer.elapsed() * 1e+3) << " ms");
+	}
 
 	m_AnimationCallbacks.resize(model_copy.getAnimationCallbacks().size());
 
@@ -937,6 +944,14 @@ void SceneModel::setPositionAttitude(simdata::Vector3 const &position, simdata::
 
 osg::Group* SceneModel::getRoot() {
 	return m_Transform.get();
+}
+
+osg::Group *SceneModel::getDynamicGroup() {
+	if (!m_DynamicGroup) {
+		m_DynamicGroup = new osg::Group;
+		m_CenterOfMassOffset->addChild(m_DynamicGroup.get());
+	}
+	return m_DynamicGroup.get();
 }
 
 void SceneModel::addChild(simdata::Ref<SceneModelChild> const &child) {

@@ -8,6 +8,9 @@
    animitions like gauge needles where the physics isn't worth modeling).
    Fix minor initialization glitch in AnimatedMomentarySwitch.
 
+ * Add an osg::Group to SceneModel ("DynamicGroup") that can be used for
+   attached objects such as external stores.
+
 2005-08-27: onsight
  * Link against sigc-2.0, not sigc-1.2 for debug builds under MSVC.
 

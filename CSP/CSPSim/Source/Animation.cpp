@@ -36,6 +36,7 @@
 #include <SimData/Enum.h>
 #include <SimData/Math.h>
 #include <SimData/osg.h>
+#include <SimData/LUT.h>
 #include <SimData/Vector3.h>
 #include <SimData/ObjectInterface.h>
 
@@ -250,6 +251,13 @@ void AnimationCallback::bind(osg::Node &node) {
 	node.setUpdateCallback(this);
 }
 
+double AnimationCallback::elapsedTime(const osg::NodeVisitor *nv) {
+	const double now = nv->getFrameStamp()->getReferenceTime();
+	const double dt = now - m_LastUpdateTime;
+	m_LastUpdateTime = now;
+	return dt;
+}
+
 
 ////////////////////////////////////////////////////////////////////////////////////
 //
@@ -278,13 +286,14 @@ void AnimationCallback::bind(osg::Node &node) {
 class Rotation: public Animation {
 	std::string m_ChannelName;
 	simdata::Vector3 m_Axis;
-	float m_Gain;
-	float m_Phase;
-	float m_Limit0;
-	float m_Limit1;
+	double m_Gain;
+	double m_Phase;
+	double m_Limit0;
+	double m_Limit1;
 	bool m_PreMultiply;
 	bool m_PostMultiply;
 	osg::Vec3 m_OSGAxis;
+	simdata::Table1 m_NonLinearScale;
 
 public:
 	SIMDATA_DECLARE_ABSTRACT_OBJECT(Rotation)
@@ -293,20 +302,27 @@ public:
 		m_Axis(simdata::Vector3::ZERO),
 		m_Gain(1.0f),
 		m_Phase(0.0f),
-		m_Limit0(static_cast<float>(-simdata::PI)),
-		m_Limit1(static_cast<float>(simdata::PI)),
+		m_Limit0(-180),
+		m_Limit1(180),
 		m_PreMultiply(false),
 		m_PostMultiply(false)
 	{ }
 
 	inline const std::string &getChannelName() const { return m_ChannelName; }
-	inline float getGain() const { return m_Gain; }
-	inline float getPhase() const { return m_Phase; }
+	inline double getGain() const { return m_Gain; }
+	inline double getPhase() const { return m_Phase; }
 	inline const osg::Vec3 &getAxis() const { return m_OSGAxis; }
-	inline float getLimit0() const { return m_Limit0; }
-	inline float getLimit1() const { return m_Limit1; }
+	inline double getLimit0() const { return m_Limit0; }
+	inline double getLimit1() const { return m_Limit1; }
 	inline bool getPreMultiply() const { return m_PreMultiply; }
 	inline bool getPostMultiply() const { return m_PostMultiply; }
+
+	double toRadians(double value) const {
+		double angle = m_NonLinearScale.isInterpolated() ? m_NonLinearScale[static_cast<float>(value)] : value * m_Gain;
+		double lower = std::min(getLimit0(), getLimit1());
+		double upper = std::max(getLimit0(), getLimit1());
+		return simdata::toRadians(simdata::clampTo(angle + m_Phase, lower, upper));
+	}
 
 protected:
 	virtual void postCreate() {
@@ -325,6 +341,7 @@ SIMDATA_XML_BEGIN(Rotation)
 	SIMDATA_DEF("limit_1", m_Limit1, false)
 	SIMDATA_DEF("pre_multiply", m_PreMultiply, false)
 	SIMDATA_DEF("post_multiply", m_PostMultiply, false)
+	SIMDATA_DEF("non_linear_scale", m_NonLinearScale, false)
 SIMDATA_XML_END
 
 
@@ -382,7 +399,7 @@ public:
 			}
 			if (m_Transform && m_Channel.value() >= 0) {
 				assert(static_cast<int>(m_Animation->getAngles().size()) > m_Channel.value());
-				const float angle = simdata::toRadians(m_Animation->getAngles()[m_Channel.value()]);
+				const double angle = simdata::toRadians(m_Animation->getAngles()[m_Channel.value()]);
 				osg::Matrix m = osg::Matrix::rotate(angle, m_Animation->getAxis());
 				m.setTrans(m_Transform->getMatrix().getTrans());
 				m_Transform->setMatrix(m);
@@ -719,12 +736,16 @@ AnimationCallback *AttitudeAnimation::newCallback(osg::Node *node) const {
  */
 class DrivenRotation: public Rotation {
 	class Callback;
+	double m_RateLimit;
 public:
 	SIMDATA_DECLARE_OBJECT(DrivenRotation)
+	DrivenRotation(): m_RateLimit(0) { }
 	virtual AnimationCallback *newCallback(osg::Node *node) const;
+	double rateLimit() const { return m_RateLimit; }
 };
 
 SIMDATA_XML_BEGIN(DrivenRotation)
+	SIMDATA_DEF("rate_limit", m_RateLimit, false)
 SIMDATA_XML_END
 
 
@@ -733,34 +754,55 @@ class DrivenRotation::Callback: public AnimationCallback {
 	DoubleChannel m_Channel;
 	osg::MatrixTransform *m_Transform;
 	osg::Matrix m_Original;
+	double m_Angle;
+	double m_AngleTarget;
+	double m_LastTime;
+	double m_RateLimit;
 
 public:
-	Callback(DrivenRotation const *driven_rotation): m_Animation(driven_rotation), m_Transform(0) { assert(driven_rotation); }
+	Callback(DrivenRotation const *driven_rotation): m_Animation(driven_rotation), m_Transform(0) {
+		assert(driven_rotation);
+		m_RateLimit = simdata::toRadians(driven_rotation->rateLimit());
+	}
+
+	void updateValue(double dt) {
+		m_AngleTarget = m_Animation->toRadians(m_Channel.value());
+		if (m_RateLimit > 0) {
+			const double delta = m_AngleTarget - m_Angle;
+			if (delta < 0) {
+				m_Angle -= std::min(-delta, dt * m_RateLimit);
+			} else {
+				m_Angle += std::min(delta, dt * m_RateLimit);
+			}
+		} else {
+			m_Angle = m_AngleTarget;
+		}
+	}
 
 	virtual void operator()(osg::Node* node, osg::NodeVisitor* nv) {
-		if (nv->getVisitorType() == osg::NodeVisitor::UPDATE_VISITOR && m_Channel.update()) {
-			if (!m_Transform) {
-				m_Transform = dynamic_cast<osg::MatrixTransform*>(node);
-				assert(m_Transform);
-				m_Original = m_Transform->getMatrix();
-			}
-			if (m_Transform) {
-				float angle = m_Animation->getGain() * m_Channel.value() + m_Animation->getPhase();
-				float lower = std::min(m_Animation->getLimit0(), m_Animation->getLimit1());
-				float upper = std::max(m_Animation->getLimit0(), m_Animation->getLimit1());
-				angle = simdata::clampTo(angle, lower, upper);
-				const osg::Vec3 t = m_Transform->getMatrix().getTrans();
-				osg::Matrix m = osg::Matrix::rotate(angle, m_Animation->getAxis());
-				if (node->getUpdateCallback() != this) {
-					m.preMult(m_Transform->getMatrix());
+		if (nv->getVisitorType() == osg::NodeVisitor::UPDATE_VISITOR) {
+			const double dt = elapsedTime(nv);
+			if (m_Channel.update() || m_Angle != m_AngleTarget) {
+				if (!m_Transform) {
+					m_Transform = dynamic_cast<osg::MatrixTransform*>(node);
+					assert(m_Transform);
+					m_Original = m_Transform->getMatrix();
 				}
-				if (m_Animation->getPostMultiply()) {
-					m.preMult(m_Original);
-				} else if (m_Animation->getPreMultiply()) {
-					m.postMult(m_Original);
+				if (m_Transform) {
+					updateValue(dt);
+					const osg::Vec3 t = m_Transform->getMatrix().getTrans();
+					osg::Matrix m = osg::Matrix::rotate(m_Angle, m_Animation->getAxis());
+					if (node->getUpdateCallback() != this) {
+						m.preMult(m_Transform->getMatrix());
+					}
+					if (m_Animation->getPostMultiply()) {
+						m.preMult(m_Original);
+					} else if (m_Animation->getPreMultiply()) {
+						m.postMult(m_Original);
+					}
+					m.setTrans(t);
+					m_Transform->setMatrix(m);
 				}
-				m.setTrans(t);
-				m_Transform->setMatrix(m);
 			}
 		}
 		traverse(node, nv);
@@ -1424,7 +1466,7 @@ public:
 		m_AnimationPathCallback(path),
 		m_Index(0),
 		m_Cycle(0.0),
-		m_Scale(0.0),
+		m_Scale(-0.1),
 		m_LastTime(-1.0),
 		m_Pause(false)  // force initial reset
 	{

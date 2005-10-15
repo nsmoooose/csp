@@ -67,6 +67,13 @@ public:
 	 *  (e.g., by toggling a switch) and return true to prevent further processing.
 	 */
 	virtual bool pick(int /*flags*/) { return false; }
+
+	/** Get the elapsed time in seconds since the last call to elapsedTime.
+	 */
+	double elapsedTime(const osg::NodeVisitor *nv);
+
+private:
+	double m_LastUpdateTime;
 };
 
 

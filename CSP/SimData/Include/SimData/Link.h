@@ -297,7 +297,7 @@ public:
 	 */
 	T *operator =(T *t) {
 		_path = 0;
-		_assign_fast(t);
+		_reassign(t);
 		return t;
 	}
 #endif // SWIG

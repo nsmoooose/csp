@@ -438,6 +438,7 @@ void LUT<N,X>::serialize(Reader &reader) {
 	int dim, n;
 	reader >> dim;
 	if (dim != N) {
+		if (dim == -N) return;  // not interpolated
 		std::ostringstream msg;
 		msg << "LUT<" << N << ">::serialize table of dimension " << dim;
 		throw InterpolationUnpackMismatch(msg.str());
@@ -455,9 +456,13 @@ void LUT<N,X>::serialize(Reader &reader) {
 
 template <int N, class X>
 void LUT<N,X>::serialize(Writer &writer) const {
+	int dim = N;
+	if (!this->isInterpolated()) {
+		writer << -dim;
+		return;
+	}
 	this->checkInterpolated();
 	int n = tableSize();
-	int dim = N;
 	writer << dim;
 	writer << this->m_X0;
 	writer << this->m_X1;
@@ -688,6 +693,7 @@ void LUT<1,X>::serialize(Reader &reader) {
 	X x0, x1;
 	int n;
 	if (dim != 1) {
+		if (dim == -1) return;
 		std::ostringstream msg;
 		msg << "LUT<1>::serialize table of dimension " << dim;
 		throw InterpolationUnpackMismatch(msg.str());
@@ -706,6 +712,10 @@ void LUT<1,X>::serialize(Reader &reader) {
 template <typename X>
 void LUT<1,X>::serialize(Writer &writer) const {
 	int dim = 1;
+	if (!this->isInterpolated()) {
+		writer << -dim;
+		return;
+	}
 	writer << dim;
 	this->checkInterpolated();
 	int n = tableSize();

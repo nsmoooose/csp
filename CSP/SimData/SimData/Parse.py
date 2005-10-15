@@ -441,7 +441,7 @@ class PathHandler(SimpleHandler):
 		p = SimData.LinkBase()
 		p.setPath(self._element.encode('ascii'))
 		return p
-		
+
 	def end(self):
 		if self._attrs.has_key("source"):
 			source = self._attrs["source"]
@@ -545,16 +545,28 @@ class _LUTHandler(SimpleHandler):
 		tags = self._keys
 		breaks = []
 		spacing = []
+		total = 1
 		for i in range(self._dim):
 			breakpoints, attrs = tags["Breaks%d" % i]
 			if not attrs.has_key("spacing"):
 				msg = "LUTHander <Breaks%d> tag missing required attribute 'spacing'" % i
 				raise XMLSyntax, msg
-			breaks.append(breakpoints)
 			dx = float(attrs["spacing"])
+			if attrs.has_key("scale"):
+				scale = float(attrs["scale"])
+				breakpoints = [x * scale for x in breakpoints]
+				dx *= scale
+			breaks.append(breakpoints)
 			n = 1 + int((max(breaks[i]) - min(breaks[i])) / dx)
 			spacing.append(n)
+			total *= len(breakpoints)
 		values, attrs = tags["Values"]
+		if attrs.has_key("scale"):
+			scale = float(attrs["scale"])
+			values = [x * scale for x in values]
+		if len(values) != total:
+			msg = "LUTHander value count does not match breakpoint count (%d vs %d)" % (len(values), total)
+			raise XMLSyntax, msg
 		table.load(values, breaks)
 		try:
 			method = getattr(table, self._method.upper())

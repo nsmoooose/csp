@@ -443,7 +443,7 @@ void StoresManagementSystem::getReleasedObjects(std::vector<simdata::Ref<Dynamic
 	m_ReleasedObjects.clear();
 }
 
-double StoresManagementSystem::onUpdate(double dt) {
+double StoresManagementSystem::onUpdate(double /*dt*/) {
 	return -1;
 }
 

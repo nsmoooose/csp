@@ -39,6 +39,9 @@
 
  * Update thrust data for the f-16 based on PW229 curves from HFFM.
 
+ * Integrate Lologramme's f-16 cockpit upgrade (2005-08-22), and bind
+   a few new cockpit animations.
+
 2005-10-15: onsight
  * Refactor rotation animation classes, moving some common operations
    to the base class.  Add an optional non-linear gain to the rotation

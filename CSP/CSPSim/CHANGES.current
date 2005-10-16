@@ -1,6 +1,35 @@
  Version 0.4.0 (in progress)
 ===========================
 
+2005-10-16: onsight
+ * Refactor existing flight model code and add a new flight model
+   implementation for the f-16 based on NASA low speed wind tunnel
+   data and Raptor/Mav-JP's high speed flight model data.  The
+   FlightModel class is now abstract, with StabilityFlightModel
+   implementing a concrete subclass that is similar to the old
+   FlightModel class (mostly linear stability derivatives).  The
+   F16FlightModel subclass implements more specialized routines
+   based on the NASA 1979 paper, using tabular data for most
+   coefficients over a broad range of AOA (-20 to +90 deg).  This
+   includes deep stall modeling.
+
+   Changed the control surface deflection sense to match the
+   literature.  Updated the fcs definition and model animations
+   accordingly.
+
+   Improved modeling for the f-16 fcs yaw limiter.  Also improved
+   the pitch limiter in TO/landing gains.
+
+   Updated animation gains to compensate for an earlier change to the
+   deflection, limit, and rate scaling.  Rotations are now assumed
+   to be in degrees, so the control surface deflections need to be
+   prescaled by 180/PI.
+
+   Added the MPO switch and made minor realism tweaks to the f-16 flcs.
+
+   This change breaks the air refueling door.  That logic is moving to
+   the new fuel system code which will be submitted in a later change.
+
 2005-10-15: onsight
  * Refactor rotation animation classes, moving some common operations
    to the base class.  Add an optional non-linear gain to the rotation

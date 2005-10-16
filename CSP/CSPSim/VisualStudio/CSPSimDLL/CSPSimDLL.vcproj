@@ -495,6 +495,9 @@
 					RelativePath="..\..\Source\F16\F16Channels.cpp">
 				</File>
 				<File
+					RelativePath="..\..\Source\F16\F16FlightModel.cpp">
+				</File>
+				<File
 					RelativePath="..\..\Source\F16\F16GearDynamics.cpp">
 				</File>
 				<File
@@ -890,6 +893,9 @@
 				</File>
 				<File
 					RelativePath="..\..\Source\F16\F16Channels.h">
+				</File>
+				<File
+					RelativePath="..\..\Source\F16\F16FlightModel.h">
 				</File>
 				<File
 					RelativePath="..\..\Source\F16\F16GearDynamics.h">

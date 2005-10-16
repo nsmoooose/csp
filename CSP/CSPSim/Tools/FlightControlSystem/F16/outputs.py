@@ -75,7 +75,7 @@ class airbrake_deflection(OutputChannel):
 	rate_limit_inc = radians(20)
 
 class leading_edge_deflection(OutputChannel):
-	channel = "ControlSurfaces.LeadingEdgeDeflection"
+	channel = "ControlSurfaces.LeadingEdgeFlapDeflection"
 	clamp_lo = radians(-2)
 	clamp_hi = radians(25)
 	input = "dlef"
@@ -106,3 +106,13 @@ class right_brake_command(OutputChannel):
 	input = "right_brake_channel"
 	rate_limit_dec = -4.0
 	rate_limit_inc = 4.0
+
+class trailing_edge_deflection(OutputChannel):
+	channel = "ControlSurfaces.TrailingEdgeFlapDeflection"
+	clamp_lo = radians(0.0)
+	clamp_hi = radians(20.0)
+	input = "dtef"
+	gain = DegreesToRadians
+	rate_limit_dec = radians(-80)
+	rate_limit_inc = radians(80)
+

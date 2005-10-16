@@ -31,8 +31,9 @@
 		<Object class="DrivenRotation">
 			<String name="channel_name">ControlSurfaces.RudderDeflection</String>
 			<String name="model_id">Aircraft.Rudder</String>
-			<Vector name="axis">0 -0.34 0.94</Vector>
 			<Int name="lod_limit">8</Int>
+			<Vector name="axis">0 -0.34 0.94</Vector>
+			<Float name="gain">-57.2956</Float>
 		</Object>
 
 		<Object  class="DrivenRotation">
@@ -40,24 +41,28 @@
 			<String name="model_id">Aircraft.LeftOuterAileron</String>
 			<Int name="lod_limit">8</Int>
 			<Vector name="axis">-1 0 0</Vector>
+			<Float name="gain">57.2956</Float>
 		</Object>
 		<Object class="DrivenRotation">
 			<String name="channel_name">ControlSurfaces.LeftElevronDeflection</String>
 			<String name="model_id">Aircraft.LeftAileron</String>
 			<Int name="lod_limit">8</Int>
 			<Vector name="axis">-1 0 0</Vector>
+			<Float name="gain">57.2956</Float>
 		</Object>
 		<Object  class="DrivenRotation">
 			<String name="channel_name">ControlSurfaces.RightElevronDeflection</String>
 			<String name="model_id">Aircraft.RightOuterAileron</String>
 			<Int name="lod_limit">8</Int>
 			<Vector name="axis">-1 0 0</Vector>
+			<Float name="gain">57.2956</Float>
 		</Object>
 		<Object class="DrivenRotation">
 			<String name="channel_name">ControlSurfaces.RightElevronDeflection</String>
 			<String name="model_id">Aircraft.RightAileron</String>
 			<Int name="lod_limit">8</Int>
 			<Vector name="axis">-1 0 0</Vector>
+			<Float name="gain">57.2956</Float>
 		</Object>
 
 		<Object class="DrivenRotation">
@@ -65,24 +70,28 @@
 			<String name="model_id">Aircraft.LowerRightAirbrake</String>
 			<Int name="lod_limit">7</Int>
 			<Vector name="axis">1 0 0</Vector>
+			<Float name="gain">57.2956</Float>
 		</Object>
 		<Object class="DrivenRotation">
 			<String name="channel_name">ControlSurfaces.AirbrakeDeflection</String>
 			<String name="model_id">Aircraft.LowerLeftAirbrake</String>
 			<Int name="lod_limit">7</Int>
 			<Vector name="axis">1 0 0</Vector>
+			<Float name="gain">57.2956</Float>
 		</Object>
 		<Object class="DrivenRotation">
 			<String name="channel_name">ControlSurfaces.AirbrakeDeflection</String>
 			<String name="model_id">Aircraft.UpperRightAirbrake</String>
 			<Int name="lod_limit">7</Int>
 			<Vector name="axis">-1 0 0</Vector>
+			<Float name="gain">57.2956</Float>
 		</Object>
 		<Object class="DrivenRotation">
 			<String name="channel_name">ControlSurfaces.AirbrakeDeflection</String>
 			<String name="model_id">Aircraft.UpperLeftAirbrake</String>
 			<Int name="lod_limit">7</Int>
 			<Vector name="axis">-1 0 0</Vector>
+			<Float name="gain">57.2956</Float>
 		</Object>
 
 
@@ -340,32 +349,35 @@
 			<Int name="lod_limit">8</Int>
 			<String name="model_id">Aircraft.FrontGearLeftTire</String>
 			<Vector name="axis">-1 0 0</Vector>
+			<Float name="gain">57.2956</Float>
 		</Object>
 		<Object class="DrivenRotation">
 			<String name="channel_name">LandingGear.FrontGear.TireRotation</String>
 			<Int name="lod_limit">8</Int>
 			<String name="model_id">Aircraft.FrontGearRightTire</String>
 			<Vector name="axis">-1 0 0</Vector>
+			<Float name="gain">57.2956</Float>
 		</Object>
 		<Object class="DrivenRotation">
 			<String name="channel_name">LandingGear.FrontGear.Absorber02</String>
 			<String name="model_id">Aircraft.FrontGearAbsorber02</String>
 			<Int name="lod_limit">8</Int>
 			<Vector name="axis">-1 0 0</Vector>
-			<Float name="gain">2.4</Float>
+			<Float name="gain">137.51</Float>
 		</Object>
 		<Object class="DrivenRotation">
 			<String name="channel_name">LandingGear.FrontGear.Absorber03</String>
 			<String name="model_id">Aircraft.FrontGearAbsorber03</String>
 			<Int name="lod_limit">8</Int>
 			<Vector name="axis">1 0 0</Vector>
-			<Float name="gain">2.4</Float>
+			<Float name="gain">137.51</Float>
 		</Object>
 		<Object class="DrivenRotation">
 			<String name="channel_name">LandingGear.FrontGear.SteeringAngle</String>
 			<Int name="lod_limit">8</Int>
 			<String name="model_id">Aircraft.FrontGearTireAxis</String>
 			<Vector name="axis">0 0 -1</Vector>
+			<Float name="gain">57.2956</Float>
 		</Object>
 
 		<!--                            Left gear                             -->
@@ -381,20 +393,21 @@
 			<String name="model_id">Aircraft.LeftMainGearTire</String>
 			<Int name="lod_limit">8</Int>
 			<Vector name="axis">-1 0 -0.02</Vector>
+			<Float name="gain">57.2956</Float>
 		</Object>
 		<Object class="DrivenRotation">
 			<String name="channel_name">LandingGear.LeftGear.Absorber02</String>
 			<String name="model_id">Aircraft.LeftMainGearAbsorber02</String>
 			<Int name="lod_limit">8</Int>
 			<Vector name="axis">-0.990831 -0.0283094 -0.132111</Vector>
-			<Float name="gain">2.2</Float>
+			<Float name="gain">126.05</Float>
 		</Object>
 		<Object class="DrivenRotation">
 			<String name="channel_name">LandingGear.LeftGear.Absorber03</String>
 			<String name="model_id">Aircraft.LeftMainGearAbsorber03</String>
 			<Int name="lod_limit">8</Int>
 			<Vector name="axis">0.990831 0.0283094 0.132111</Vector>
-			<Float name="gain">2.2</Float>
+			<Float name="gain">126.05</Float>
 		</Object>
 
 		<!--                            Right gear                             -->
@@ -410,20 +423,21 @@
 			<String name="model_id">Aircraft.RightMainGearTire</String>
 			<Int name="lod_limit">8</Int>
 			<Vector name="axis">-1.0 0 0.02</Vector>
+			<Float name="gain">57.2956</Float>
 		</Object>
 		 <Object class="DrivenRotation">
 			<String name="channel_name">LandingGear.RightGear.Absorber02</String>
 			<String name="model_id">Aircraft.RightMainGearAbsorber02</String>
 			<Int name="lod_limit">8</Int>
 			<Vector name="axis">-0.990831 0.0283094 0.132111</Vector>
-			<Float name="gain">2.2</Float>
+			<Float name="gain">126.05</Float>
 		</Object>
 		<Object class="DrivenRotation">
 			<String name="channel_name">LandingGear.RightGear.Absorber03</String>
 			<String name="model_id">Aircraft.RightMainGearAbsorber03</String>
 			<Int name="lod_limit">8</Int>
 			<Vector name="axis">0.990831 -0.0283094 -0.132111</Vector>
-			<Float name="gain">2.2</Float>
+			<Float name="gain">126.05</Float>
 		</Object>
 	</List>
 </Object>

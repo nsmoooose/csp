@@ -32,7 +32,7 @@ class right_brake_command(OutputChannel):
 class rudder_deflection(OutputChannel):
 	channel = "ControlSurfaces.RudderDeflection"
 	input = "yaw_control"
-	gain = radians(30)
+	gain = radians(-30)
 	clamp_lo = radians(-30.0)
 	clamp_hi = radians(30.0)
 	rate_limit_dec = radians(-120)
@@ -40,37 +40,37 @@ class rudder_deflection(OutputChannel):
 
 class elevron_deflection_left(OutputChannel):
 	channel = "ControlSurfaces.LeftElevronDeflection"
-	clamp_lo = radians(-25)
-	clamp_hi = radians(16)
+	clamp_lo = radians(-16)
+	clamp_hi = radians(25)
 	input = "de_left_f"
-	gain = DegreesToRadians
+	gain = -DegreesToRadians
 	rate_limit_dec = radians(-80)
 	rate_limit_inc = radians(80)
 
 class elevron_deflection_right(OutputChannel):
 	channel = "ControlSurfaces.RightElevronDeflection"
-	clamp_lo = radians(-25)
-	clamp_hi = radians(16)
+	clamp_lo = radians(-16)
+	clamp_hi = radians(25)
 	input = "de_right_f"
-	gain = DegreesToRadians
+	gain = -DegreesToRadians
 	rate_limit_dec = radians(-80)
 	rate_limit_inc = radians(80)
 
 class aileron_deflection(OutputChannel):
 	channel = "ControlSurfaces.AileronDeflection"
-	clamp_lo = radians(-25)
-	clamp_hi = radians(16)
+	clamp_lo = radians(-16)
+	clamp_hi = radians(25)
 	input = "da_f"
-	gain = DegreesToRadians
+	gain = -DegreesToRadians
 	rate_limit_dec = radians(-80)
 	rate_limit_inc = radians(80)
 
 class elevator_deflection(OutputChannel):
 	channel = "ControlSurfaces.ElevatorDeflection"
-	clamp_lo = radians(-25)
-	clamp_hi = radians(16)
+	clamp_lo = radians(-16)
+	clamp_hi = radians(25)
 	input = "de_f"
-	gain = DegreesToRadians
+	gain = -DegreesToRadians
 	rate_limit_dec = radians(-60)
 	rate_limit_inc = radians(60)
 

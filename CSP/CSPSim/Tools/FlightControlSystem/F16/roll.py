@@ -13,8 +13,8 @@ class da_program(RollLimiterControl):
 class da(Adder):
 	input_a = "da_left"
 	input_b = "da_right"
-	gain_a = 0.5
-	gain_b = -0.5
+	gain_a = -0.5
+	gain_b = 0.5
 
 class da_f(LagFilter):
 	input = "da"
@@ -23,12 +23,12 @@ class da_f(LagFilter):
 class da_left(Adder):
 	input_a = "da_program"
 	input_b = "dtef"
+	gain_a = -1.0
 	clamp_hi = 21.5
 	clamp_lo = -21.5
 
 class da_right(Adder):
 	input_a = "da_program"
 	input_b = "dtef"
-	gain_a = -1.0
 	clamp_hi = 21.5
 	clamp_lo = -21.5

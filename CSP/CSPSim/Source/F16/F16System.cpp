@@ -30,6 +30,12 @@
 #include <NavigationChannels.h>
 #include <LandingGearChannels.h>
 
+// for testing stores release (connected to refueling door event for now!)
+#include <Stores/StoresManagementSystem.h>
+#include <Stores/Stores.h>
+
+#include <SystemsModel.h>
+
 #include <SimData/Conversions.h>
 #include <SimData/Date.h>
 #include <SimData/Math.h>
@@ -54,6 +60,8 @@ void F16System::registerChannels(Bus* bus) {
 	b_AirbrakeLimit = bus->registerLocalDataChannel<double>(bus::F16::AirbrakeLimit, 60.0);
 	b_AltFlaps = bus->registerSharedDataChannel<bool>(bus::F16::AltFlaps, false);
 	b_CatIII = bus->registerSharedDataChannel<bool>(bus::F16::CatIII, false);
+	b_ManualPitchOverride = bus->registerSharedDataChannel<bool>(bus::F16::ManualPitchOverride, false);
+	b_ManualPitchOverrideActive = bus->registerSharedDataChannel<bool>(bus::F16::ManualPitchOverrideActive, false);
 	b_StandbyGains = bus->registerLocalDataChannel<bool>(bus::F16::StandbyGains, false);
 	b_TakeoffLandingGains = bus->registerLocalDataChannel<bool>(bus::F16::TakeoffLandingGains, false);
 	b_NavigationSystem = bus->registerSharedDataChannel<NavigationSystem::Ref>("Navigation", new NavigationSystem);
@@ -78,6 +86,10 @@ void F16System::importChannels(Bus* bus) {
 	b_GearExtendSelected = bus->getChannel(bus::LandingGear::GearExtendSelected);
 	b_Airspeed = bus->getChannel(bus::FlightDynamics::Airspeed);
 	b_FuelDoorSequence = bus->getChannel("Aircraft.FuelDoorSequence.NormalizedTime", false);
+	b_AirRefuelSwitch = bus->getChannel("F16.AirRefuelSwitch", false);
+	if (b_AirRefuelSwitch.valid()) {
+		b_AirRefuelSwitch->connect(this, &F16System::onAirRefuelSwitch);
+	}
 }
 
 double F16System::onUpdate(double dt) {
@@ -135,9 +147,13 @@ void F16System::flapsToggle() {
 	b_AltFlaps->value() = !b_AltFlaps->value();
 }
 
-void F16System::fuelDoorToggle() {
+void F16System::onAirRefuelSwitch() {
 	if (m_FuelDoorSequence.valid()) {
-		m_FuelDoorSequence->play();
+		if (b_AirRefuelSwitch.valid() && b_AirRefuelSwitch->value() == "OPEN") {
+			m_FuelDoorSequence->playForward();
+		} else {
+			m_FuelDoorSequence->playBackward();
+		}
 	}
 }
 
@@ -146,3 +162,12 @@ void F16System::canopyToggle() {
 		m_CanopySequence->play();
 	}
 }
+
+void F16System::engageMPO() {
+	b_ManualPitchOverride->value() = true;
+}
+
+void F16System::disengageMPO() {
+	b_ManualPitchOverride->value() = false;
+}
+

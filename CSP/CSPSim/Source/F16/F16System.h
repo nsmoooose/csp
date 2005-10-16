@@ -44,13 +44,14 @@ public:
 	DECLARE_INPUT_INTERFACE(F16System, System)
 		BIND_ACTION("CATI", setCatI);
 		BIND_ACTION("CATIII", setCatIII);
+		BIND_ACTION("MPO_ON", engageMPO);
+		BIND_ACTION("MPO_OFF", disengageMPO);
 		BIND_ACTION("NEXT_STEERPOINT", nextSteerpoint);
 		BIND_ACTION("PREV_STEERPOINT", prevSteerpoint);
 		BIND_ACTION("FLAPS_DOWN", flapsDown);
 		BIND_ACTION("FLAPS_UP", flapsUp);
 		BIND_ACTION("FLAPS_TOGGLE", flapsToggle);
 		BIND_ACTION("CANOPY_TOGGLE", canopyToggle);
-		BIND_ACTION("FUEL_DOOR_TOGGLE",fuelDoorToggle);
 	END_INPUT_INTERFACE  // protected:
 
 public:
@@ -61,7 +62,6 @@ public:
 	virtual void flapsToggle();
 
 	void canopyToggle();
-	void fuelDoorToggle();
 
 	virtual void setCatI();
 	virtual void setCatIII();
@@ -78,6 +78,7 @@ protected:
 
 	//void addTestSteerpoints();
 
+	DataChannel<simdata::EnumLink>::CRef b_AirRefuelSwitch;
 	DataChannel<bool>::CRef b_GearExtendSelected;
 	DataChannel<bool>::CRef b_GearFullyRetracted;
 	DataChannel<double>::CRef b_Airspeed;
@@ -90,6 +91,8 @@ protected:
 	DataChannel<double>::Ref b_AirbrakeLimit;
 	DataChannel<bool>::Ref b_AltFlaps;
 	DataChannel<bool>::Ref b_CatIII;
+	DataChannel<bool>::Ref b_ManualPitchOverride;
+	DataChannel<bool>::Ref b_ManualPitchOverrideActive;
 	DataChannel<bool>::Ref b_StandbyGains;
 	DataChannel<bool>::Ref b_TakeoffLandingGains;
 	DataChannel<NavigationSystem::Ref>::Ref b_NavigationSystem;
@@ -108,7 +111,10 @@ protected:
 
 	//int m_SteerpointIndex;
 	//std::vector<Steerpoint::Ref> m_Steerpoints;
+	void onAirRefuelSwitch();
 
+	void engageMPO();
+	void disengageMPO();
 };
 
 

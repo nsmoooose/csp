@@ -12,31 +12,31 @@ class filtered_pitch_rate(LeadFilter):
 	gain = RadiansToDegrees
 
 class de_right(Adder):
-	input_a = "elevator_pitch_deflection_command"
-	input_b = "da_program"
-	gain_b = -0.25
-
-class de_left(Adder):
-	input_a = "elevator_pitch_deflection_command"
+	input_a = "elevator_pitch_deflection_command_mpo"
 	input_b = "da_program"
 	gain_b = 0.25
 
+class de_left(Adder):
+	input_a = "elevator_pitch_deflection_command_mpo"
+	input_b = "da_program"
+	gain_b = -0.25
+
 class de(Scale):
-	input = "elevator_pitch_deflection_command"
+	input = "elevator_pitch_deflection_command_mpo"
 
 class de_left_f(LagFilter):
 	input = "de_left"
-	gain = -DegreesToRadians
+	gain = DegreesToRadians
 	a = 20.2
 
 class de_right_f(LagFilter):
 	input = "de_right"
-	gain = -DegreesToRadians
+	gain = DegreesToRadians
 	a = 20.2
 
 class de_f(LagFilter):
 	input = "de"
-	gain = -DegreesToRadians
+	gain = DegreesToRadians
 	a = 20.2
 
 class g_command(Schedule1):
@@ -92,7 +92,17 @@ class elevator_pitch_deflection_command(Adder3):
 	input_a = "reduced_elevator_deviation"
 	input_b = "elevator_deviation_integrator"
 	input_c = "alpha_f"
-	gain_c = RadiansToDegrees * 0.5
+	gain_c = 0.5
+
+class elevator_pitch_deflection_command_mpo(BooleanSwitch):
+	"""
+	When the MPO is activated, the input command drives the elevators directly,
+	bypassing both the g/aoa limiter and integrator.
+	"""
+	channel = "F16.ManualPitchOverrideActive"
+	input_a = "pitch_control"
+	input_b = "elevator_pitch_deflection_command"
+	gain_a = -25.0
 
 class compensated_elevator_deviation(Adder):
 	input_a = "reduced_elevator_deviation"
@@ -117,6 +127,7 @@ class PitchLimiterControl(Node): pass
 class pitch_limiter(PitchLimiterControl):
 	"""F16 G/AoA limiter circuit."""
 	filtered_alpha = "alpha_f"
+	filtered_g_command = "limited_g_command_f"
 	alpha_break1 = 15.0
 	alpha_break2 = 20.4
 	pitch_rate_schedule = table('0.0 5000.0 15000.0 200000.0', '1.0 1.0 0.35 0.35', spacing=5000.0)

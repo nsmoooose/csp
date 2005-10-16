@@ -13,4 +13,6 @@ class dtef(TrailingEdgeFlapControl):
 	deflection_limit = 20.0  # degrees
 	airspeed_break1 = 240.0  # kts
 	airspeed_break2 = 370.0  # kts
+	rate_limit_dec = -5  # degrees
+	rate_limit_inc = +5  # degrees
 

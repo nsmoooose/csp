@@ -8,8 +8,9 @@ RegisterNetwork(globals())
 class alpha(InputScalarChannel):
 	"""Angle of attack in degrees."""
 	channel = "FlightDynamics.Alpha"
-	clamp_lo = radians(-5.0)
-	clamp_hi = radians(30.0)
+	scale = RadiansToDegrees
+	clamp_lo = -5.0
+	clamp_hi = 30.0
 
 class qbar(InputScalarChannel):
 	"""Dynamic pressure in si units."""

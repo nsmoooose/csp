@@ -30,7 +30,7 @@
 SIMDATA_XML_BEGIN(Projectile)
 SIMDATA_XML_END
 
-void Projectile::prepareRelease(simdata::Ref<DynamicObject> const &parent, simdata::Ref<Store> const &store) {
+void Projectile::prepareRelease(simdata::Ref<DynamicObject> const &/*parent*/, simdata::Ref<Store> const &store) {
 	assert(store.valid() && !m_Store);
 	m_Store = store;
 	setReferenceMass(store->mass());

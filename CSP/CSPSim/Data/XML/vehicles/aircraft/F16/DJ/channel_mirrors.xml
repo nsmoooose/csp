@@ -56,7 +56,7 @@
 			<Float name="rate_limit">2.0</Float>
 		</Object>
 		<Object class="DoubleChannelMirror">
-			<String name="channel_name">ControlSurfaces.LeadingEdgeDeflection</String>
+			<String name="channel_name">ControlSurfaces.LeadingEdgeFlapDeflection</String>
 			<Int name="lod">8</Int>
 			<Float name="limit_0">-1.0</Float>
 			<Float name="limit_1">1.0</Float>

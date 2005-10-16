@@ -143,14 +143,18 @@ public:
 	virtual void link(MapID &map);
 private:
 	virtual void evaluate(Timer const &timer);
-	DataChannel<double>::CRef b_GForce;
+	DataChannel<double>::CRef b_G;
 	DataChannel<simdata::Vector3>::CRef b_AngularVelocityBody;
 	DataChannel<simdata::Vector3>::CRef b_AccelerationBody;
 	DataChannel<double>::CRef b_QBar;
 	DataChannel<bool>::CRef b_TakeoffLandingGains;
 	DataChannel<bool>::CRef b_CatIII;
+	DataChannel<bool>::CRef b_ManualPitchOverride;
+	DataChannel<bool>::Ref b_ManualPitchOverrideActive;
+	TypeID m_FilteredGCommandID;
 	TypeID m_FilteredAlphaID;
 	ControlNode::Ref m_FilteredAlpha;
+	ControlNode::Ref m_FilteredGCommand;
 	double m_AlphaBreak1;
 	double m_AlphaBreak2;
 	simdata::Table1 m_PitchRateSchedule;
@@ -160,6 +164,7 @@ private:
 };
 
 SIMDATA_XML_BEGIN(PitchLimiterControl)
+	SIMDATA_DEF("filtered_g_command", m_FilteredGCommandID, true)
 	SIMDATA_DEF("filtered_alpha", m_FilteredAlphaID, true)
 	SIMDATA_DEF("alpha_break1", m_AlphaBreak1, true)
 	SIMDATA_DEF("alpha_break2", m_AlphaBreak2, true)
@@ -169,31 +174,64 @@ SIMDATA_XML_END
 
 void PitchLimiterControl::evaluate(Timer const &timer) {
 	CSP_LOG(APP, DEBUG, "PitchLimiterControl.evaluate ");
+
+	double alpha_f = m_FilteredAlpha->step(timer);
+
+	// mpo bypasses the g-limiter.  according to code-one, the mpo only gives
+	// direct control for negative pitch commands, or positive commands when
+	// alpha > 29 deg.  (Jan 1986, "F-16 Flight Controls" by Joe Bill Dryden).
+	// note that the article also claims direct control of the control when
+	// WOW, but that is contradicted by other articles that mention horizontal
+	// stabilizer deflections when taxiing as the flcs tries to "smooth out"
+	// the runway.
+	const bool mpo = b_ManualPitchOverride->value() && (alpha_f >= 29.0 || m_FilteredGCommand->step(timer) < 0);
+	b_ManualPitchOverrideActive->value() = mpo;
+	if (mpo) {
+		setOutput(0.0, timer);
+		return;
+	}
+
 	// pitch axis modification for nasa control system b (see fig. 28, page 131)
 	double roll_rate = simdata::toDegrees(b_AngularVelocityBody->value().y());
 	m_RollRateFilter.update(0.15 * std::abs(roll_rate), timer.dt());
 	double delta_alpha = simdata::clampTo(m_RollRateFilter.value() - 3.0, 0.0, 5.4);
-	double alpha_f = m_FilteredAlpha->step(timer) + delta_alpha;
+	double comp_alpha = alpha_f + delta_alpha;
 
 	double pitch_rate = simdata::toDegrees(b_AngularVelocityBody->value().x());
 	m_PitchRateDeltaFilter.update(pitch_rate, timer.dt());
 
 	double alpha_break1 = m_AlphaBreak1;
 	double alpha_break2 = m_AlphaBreak2;
-	double g_minus_1 = b_GForce->value() - 1.0;  // omits 50/(s+50) lag filter
+	double g_minus_1 = b_G->value() - 1.0;  // omits 50/(s+50) lag filter
 	double pitch_rate_control = 0.0;
+	double gain = 1.0;
+	double alpha1_gain = 0.322;
 	if (b_TakeoffLandingGains->value()) {  // pitch rate command system for TO/L gains
-		pitch_rate_control = 1.8 * pitch_rate; // ad-hoc multiplier
+		pitch_rate_control = 2.0 * pitch_rate; // ad-hoc multiplier, no solid data
 		g_minus_1 = 0.0;
 		alpha_break1 = 10.0;
+		alpha1_gain = 1.0; // 8 G command negated at 21 deg AOA.
+
 		// what is alpha_break2, and are any of the slopes different?
+		alpha_break2 = 90.0; // disable
+
+		// reducing the loop gain keeps the feedback stable at high speed, and helps
+		// to reduce pitch oscillations during transients moments such as gear extension.
+		gain = 0.4;
+
+		// at very high speed, pitch rate control allows 9G to be exceeded.  presumably
+		// TLG should be restricted at high speed.  (it can be engaged without lowering
+		// the gear by toggling either the alt flaps or air refuel switches.)
 	}
+	// todo: supersonic limiter.  based on raptor/mav-jp's hffm data, the limiter kicks
+	// in at mach 1, restricting aoa to 20 deg.  aoa drops by 2 deg per 0.1 M until 16
+	// degrees and holds roughly constant.
 	double reduced_pitch_rate = m_PitchRateSchedule[static_cast<float>(b_QBar->value())] * 0.7 * m_PitchRateDeltaFilter.value();
-	double alpha_break1_compensation = reduced_pitch_rate + alpha_f - alpha_break1;
-	double g_limit = std::max(0.0, 0.322 * alpha_break1_compensation) + 0.334 * m_PitchRateDeltaFilter.value() + g_minus_1;
+	double alpha_break1_compensation = reduced_pitch_rate + comp_alpha - alpha_break1;
+	double g_limit = std::max(0.0, alpha1_gain * alpha_break1_compensation) + 0.334 * m_PitchRateDeltaFilter.value() + g_minus_1;
 	m_GLimitFilter.update(g_limit, timer.dt());
-	double alpha_break2_compensation = std::max(0.0, alpha_f + reduced_pitch_rate - alpha_break2);
-	setOutput(alpha_break2_compensation + m_GLimitFilter.value() + pitch_rate_control, timer);
+	double alpha_break2_compensation = std::max(0.0, comp_alpha + reduced_pitch_rate - alpha_break2);
+	setOutput(gain * (alpha_break2_compensation + m_GLimitFilter.value() + pitch_rate_control), timer);
 }
 
 void PitchLimiterControl::importChannels(Bus* bus) {
@@ -201,22 +239,26 @@ void PitchLimiterControl::importChannels(Bus* bus) {
 	b_AngularVelocityBody = bus->getChannel(bus::Kinetics::AngularVelocityBody);
 	b_AccelerationBody = bus->getChannel(bus::Kinetics::AccelerationBody);
 	b_QBar = bus->getChannel(bus::FlightDynamics::QBar);
-	b_GForce = bus->getChannel(bus::FlightDynamics::GForce);
+	b_G = bus->getChannel(bus::FlightDynamics::G);
 	b_TakeoffLandingGains = bus->getChannel(bus::F16::TakeoffLandingGains);
 	b_CatIII = bus->getChannel(bus::F16::CatIII);
+	b_ManualPitchOverride = bus->getChannel(bus::F16::ManualPitchOverride);
+	b_ManualPitchOverrideActive = bus->getSharedChannel(bus::F16::ManualPitchOverrideActive);
 }
 
 void PitchLimiterControl::link(MapID &map) {
 	// Lag(clampTo(alpha, -5deg, 30deg), 10.0) implemented externally
 	m_FilteredAlpha = map[m_FilteredAlphaID];
+	m_FilteredGCommand = map[m_FilteredGCommandID];
 	assert(m_FilteredAlpha.valid());
+	assert(m_FilteredGCommand.valid());
 }
 
 
 class RollLimiterControl: public ControlNode {
 public:
 	SIMDATA_DECLARE_OBJECT(RollLimiterControl)
-	RollLimiterControl(): m_RollCommandFilter(10.0) { }
+	RollLimiterControl(): m_RollCommandFilter(10.0), m_YawRateFilter(50.0) { }
 	virtual void importChannels(Bus* bus);
 private:
 	virtual void evaluate(Timer const &timer);
@@ -229,6 +271,7 @@ private:
 	DataChannel<bool>::CRef b_CatIII;
 	simdata::Table1 m_RollCommandSchedule;
 	LagFilter m_RollCommandFilter;
+	LagFilter m_YawRateFilter;
 };
 
 SIMDATA_XML_BEGIN(RollLimiterControl)
@@ -237,30 +280,38 @@ SIMDATA_XML_END
 
 
 void RollLimiterControl::evaluate(Timer const &timer) {
-	// roll axis modification for nasa control system b (see fig. 35, page 146)
-	double qbar_limit = -0.0115 * std::min(0.0, b_QBar->value() - 10500.0);
-	double alpha_limit = 4.0 * std::max(0.0, simdata::toDegrees(b_Alpha->value()) - 15.0);
-	double htail_limit = 4.0 * std::max(0.0, simdata::toDegrees(b_ElevatorDeflection->value()) - 5.0);
-	double limit = qbar_limit + alpha_limit + htail_limit;
-	double roll_rate = simdata::toDegrees(b_AngularVelocityBody->value().y());
-	limit = limit * simdata::clampTo((std::abs(roll_rate) - 30.0) / 50.0, 0.0, 1.0);
-	limit = simdata::clampTo(limit, 0.0, 228.0);
-	limit = 308.0 - limit;
-
-	double roll_command = m_RollCommandSchedule[static_cast<float>(b_RollInput->value() * 80.0)];
-	if (b_TakeoffLandingGains->value()) {
-		roll_command = 0.50 * roll_command;
+	double alpha = simdata::toDegrees(b_Alpha->value());
+	// negative since yaw axis (and hence yaw rate) is opposite nasa 1979.
+	m_YawRateFilter.update(simdata::toDegrees(-b_AngularVelocityBody->value().z()), timer.dt());
+	double roll_signal = 1.0;
+	if (alpha >= 29.0) {
+		double r_f = m_YawRateFilter.value();
+		roll_signal = 8.34 * r_f;
 	} else {
-		roll_command = simdata::clampTo(roll_command, -limit, limit);
-		if (b_CatIII->value()) roll_command *= 0.40;  // not sure about this!
+		// roll axis modification for nasa control system b (see fig. 35, page 146)
+		double qbar_limit = -0.0115 * std::min(0.0, b_QBar->value() - 10500.0);
+		double alpha_limit = 4.0 * std::max(0.0, alpha - 15.0);
+		double htail_limit = 4.0 * std::max(0.0, simdata::toDegrees(b_ElevatorDeflection->value()) - 5.0);
+		double limit = qbar_limit + alpha_limit + htail_limit;
+		double roll_rate = simdata::toDegrees(b_AngularVelocityBody->value().y());
+		limit = limit * simdata::clampTo((std::abs(roll_rate) - 30.0) / 20.0, 0.0, 1.0);
+		limit = simdata::clampTo(limit, 0.0, 228.0);
+		limit = 308.0 - limit;
+
+		double roll_command = m_RollCommandSchedule[static_cast<float>(b_RollInput->value() * 80.0)];
+		if (b_TakeoffLandingGains->value()) {
+			roll_command = 0.50 * roll_command;
+		} else {
+			roll_command = simdata::clampTo(roll_command, -limit, limit);
+			if (b_CatIII->value()) roll_command *= 0.40;  // not sure about this!
+		}
+		// XXX omits positive and negative rate feedback loops
+		m_RollCommandFilter.update(roll_command, timer.dt());
+		// XXX omits roll rate filter
+		roll_signal = roll_rate - m_RollCommandFilter.value();
 	}
-	// XXX omits positive and negative rate feedback loops
-	m_RollCommandFilter.update(roll_command, timer.dt());
-	double roll_signal = m_RollCommandFilter.value() - roll_rate;
-	// XXX omits high alpha spin correction
-	// roll_signal = 8.34 * raw_rate_f;  // at alpha >= 29
-	double deflection = simdata::clampTo(0.12 * roll_signal, -21.5, 21.5);
-	setOutput(deflection, timer);
+	double da = simdata::clampTo(0.12 * roll_signal, -21.5, 21.5);
+	setOutput(da, timer);
 }
 
 void RollLimiterControl::importChannels(Bus* bus) {
@@ -272,5 +323,60 @@ void RollLimiterControl::importChannels(Bus* bus) {
 	b_RollInput = bus->getChannel(bus::ControlInputs::RollInput);
 	b_TakeoffLandingGains = bus->getChannel(bus::F16::TakeoffLandingGains);
 	b_CatIII = bus->getChannel(bus::F16::CatIII);
+}
+
+
+class YawLimiterControl: public ControlNode {
+public:
+	SIMDATA_DECLARE_OBJECT(YawLimiterControl)
+	YawLimiterControl(): m_YawRateFilter(50.0), m_CoupledFilter0(5.0, 15.0, 3.0), m_CoupledFilter1(0.0, 1.5, 1.0) { }
+	virtual void importChannels(Bus* bus);
+private:
+	virtual void evaluate(Timer const &timer);
+	DataChannel<simdata::Vector3>::CRef b_AngularVelocityBody;
+	DataChannel<double>::CRef b_LateralG;
+	DataChannel<double>::CRef b_Alpha;
+	DataChannel<double>::CRef b_QBar;
+	DataChannel<bool>::CRef b_ManualPitchOverrideActive;
+	LagFilter m_YawRateFilter;
+	LeadLagFilter m_CoupledFilter0;
+	LeadLagFilter m_CoupledFilter1;
+};
+
+SIMDATA_XML_BEGIN(YawLimiterControl)
+SIMDATA_XML_END
+
+void YawLimiterControl::evaluate(Timer const &timer) {
+	// negative since yaw axis (and hence yaw rate) is opposite nasa 1979.
+	m_YawRateFilter.update(simdata::toDegrees(-b_AngularVelocityBody->value().z()), timer.dt());
+	double r_f = m_YawRateFilter.value();
+	double alpha = simdata::toDegrees(b_Alpha->value());
+
+	// Not sure if this is the correct anti-spin departure control and mpo behavior.  The
+	// spin control is based on the nasa fcs yaw limiter circuit, while the mpo behavior
+	// is based on an ambiguous paragraph in the dash-one.
+	if (alpha >= 29.0 && !b_ManualPitchOverrideActive->value()) {
+		setOutput(0.75 * r_f, timer);
+		return;
+	}
+
+	double p = simdata::toDegrees(b_AngularVelocityBody->value().y());
+	double r_stab = r_f - p * (1.0 / 57.3) * alpha;
+	m_CoupledFilter0.update(r_stab, timer.dt());
+	m_CoupledFilter1.update(m_CoupledFilter0.value(), timer.dt());
+	double output = 0.5 * (m_CoupledFilter1.value() + b_LateralG->value() * 19.32);
+
+	// XXX omits aileron response
+
+	setOutput(output, timer);
+}
+
+void YawLimiterControl::importChannels(Bus* bus) {
+	assert(b_AngularVelocityBody.isNull());
+	b_AngularVelocityBody = bus->getChannel(bus::Kinetics::AngularVelocityBody);
+	b_LateralG = bus->getChannel(bus::FlightDynamics::LateralG);
+	b_Alpha = bus->getChannel(bus::FlightDynamics::Alpha);
+	b_QBar = bus->getChannel(bus::FlightDynamics::QBar);
+	b_ManualPitchOverrideActive = bus->getChannel(bus::F16::ManualPitchOverrideActive);
 }
 

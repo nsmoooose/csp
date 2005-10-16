@@ -36,7 +36,7 @@ map key:SHIFT-b press           INC_AIRBRAKE
 map key:CTRL-b  press           DEC_AIRBRAKE
 map key:SHIFT-x press           NEXT_STEERPOINT
 map key:SHIFT-z press           PREV_STEERPOINT
-map key:CTRL-r  press           FUEL_DOOR_TOGGLE
+map key:CTRL-r  press           AIR_REFUEL_TOGGLE
 map key:SHIFT-c press           CANOPY_TOGGLE
 
 map key:KP0     press           ICP_0
@@ -49,6 +49,9 @@ map key:KP6     press           ICP_6
 map key:KP7     press           ICP_7
 map key:KP8     press           ICP_8
 map key:KP9     press           ICP_9
+
+map key:SHIFT-m press           MPO_ON
+map key:SHIFT-m release         MPO_OFF
 
 map key:SHIFT-KP_MINUS        press          ICP_DEC
 map key:SHIFT-KP_PLUS         press          ICP_INC
@@ -75,3 +78,8 @@ map key:ALT-h press HUD_FPM_SWITCH_CYCLE_PREV
 map key:SHIFT-h press HUD_FPM_SWITCH_OFF
 map key:CTRL-h press HUD_FPM_SWITCH_FPM
 map key:SHIFT-CTRL-h press HUD_FPM_SWITCH_ATT_FPM
+
+map key:SHIFT-CTRL-m press MASTER_FUEL_TOGGLE
+map key:SHIFT-CTRL-e press FUEL_QTY_SEL_CYCLE_NEXT
+map key:SHIFT-CTRL-o press EXT_FUEL_TRANS_TOGGLE
+map key:CTRL-e press ENGINE_FEED_CYCLE_NEXT

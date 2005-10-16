@@ -149,11 +149,11 @@ public:
 		int value = -2;
 		std::string token;
 		if (m_Channel.valid()) {
+			if (!m_Channel) return false;
 			value = m_Channel->value().getValue();
 			if (value == m_Value) return false;
 			token = m_Channel->value().getToken();
 		} else {
-			assert(m_BoolChannel.valid());
 			if (!m_BoolChannel) return false;
 			value = m_BoolChannel->value() ? 1 : 0;
 			if (value == m_Value) return false;
@@ -200,7 +200,6 @@ public:
 				e.cycle(); // TODO push
 			}
 		} else {
-			assert(m_BoolChannel.valid());
 			if (m_BoolChannel.valid()) {
 				if (m_BoolChannel->isShared()) {
 					bool &b = const_cast<bool&>(m_BoolChannel->value());

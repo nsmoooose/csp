@@ -380,7 +380,7 @@ const LinkBase DataArchive::getObject(const Path& path, std::string const &path_
 		dup->serialize(reader);
 	} catch (DataUnderflow &e) {
 		if (temp_buffer.size() == 0) --_buffer;
-		e.clear();	
+		e.clear();
 		SIMDATA_LOG(LOG_ARCHIVE, LOG_ERROR, "INTERNAL ERROR: Object extraction incomplete for class '" << dup->getClassName() << "': " << from << " (data underflow).");
 		throw CorruptArchive("Object extraction incomplete for class '" + std::string(dup->getClassName()) + "'");
 	}

@@ -95,7 +95,6 @@ public:
 	 *  changed since the last call to update.
 	 */
 	bool update() {
-		assert(m_Channel.valid());
 		if (!m_Channel) return false;
 		const float value = static_cast<float>(m_Channel->value());
 		const bool changed = (value != m_Value);

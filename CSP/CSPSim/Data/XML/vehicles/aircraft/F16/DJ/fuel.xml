@@ -1,0 +1,50 @@
+<Object class="f16::FuelSystem">
+	<List name="fuel_nodes">
+		<Object class="FuelTankNode">
+			<Key name="key">AftReservoir</Key>
+			<List name="children" type="key">AftFuselage</List>
+			<String name="tank_id">FUEL:AFT_RESV</String>
+		</Object>
+		<Object class="FuelTankNode">
+			<Key name="key">FwdReservoir</Key>
+			<List name="children" type="key">FwdFuselage</List>
+			<String name="tank_id">FUEL:FWD_RESV</String>
+		</Object>
+		<Object class="FuelTankNode">
+			<Key name="key">AftFuselage</Key>
+			<List name="children" type="key">LeftWing</List>
+			<String name="tank_id">FUEL:A1</String>
+		</Object>
+		<Object class="FuelTankNode">
+			<!-- combines F1 and F2 for simplicity -->
+			<Key name="key">FwdFuselage</Key>
+			<List name="children" type="key">RightWing</List>
+			<String name="tank_id">FUEL:F</String>
+		</Object>
+		<Object class="FuelTankNode">
+			<Key name="key">LeftWing</Key>
+			<List name="children" type="key">LeftExternal CenterExternal</List>
+			<String name="tank_id">FUEL:LEFT_WING</String>
+		</Object>
+		<Object class="FuelTankNode">
+			<Key name="key">RightWing</Key>
+			<List name="children" type="key">RightExternal CenterExternal</List>
+			<String name="tank_id">FUEL:RIGHT_WING</String>
+		</Object>
+		<Object class="FuelTankNode">
+			<Key name="key">LeftExternal</Key>
+			<String name="tank_id">HP4</String>
+			<Bool name="needs_pressure">true</Bool>
+		</Object>
+		<Object class="FuelTankNode">
+			<Key name="key">CenterExternal</Key>
+			<String name="tank_id">HP5</String>
+			<Bool name="needs_pressure">true</Bool>
+		</Object>
+		<Object class="FuelTankNode">
+			<Key name="key">RightExternal</Key>
+			<String name="tank_id">HP6</String>
+			<Bool name="needs_pressure">true</Bool>
+		</Object>
+	</List>
+</Object>

@@ -1,0 +1,173 @@
+<Object class="StoresManagementSystem" name="stores_management_system">
+	<Object class="StoresDefinition" name="stores_definition">
+		<List name="hardpoints">
+			<!--
+			very approximate cg offsets and unit inertial for internal fuel
+			tanks based on rough measurements from a diagram in the dash-1
+			manual (f16c).  note that the fuel distribution is treated as
+			uniform throughout each tank.
+			
+			* F-1 fuselage: 0, +2.8m, 0.4 {0.22 0.09 0.22}
+			* F-2 fuselage: 0, +0.8m, 0.2 {0.08 0.38 0.44}
+			* FWD reservoir: 0.6, 0.0m, 0.4 {0.08 0.20 0.15}
+			* AFT reservoir: -0.6, 0.0m, 0.4 {0.08 0.20 0.15}
+			* A-1 fuselage: 0, -1.6m, 0.4 {0.57 0.38 0.93}
+			* Wings: +/-2.3m, -0.4, 0.0 {0.18 1.3 1.5}
+			-->
+			<Object class="HardpointData">
+				<String name="name">FUEL:AFT_RESV</String>
+				<Bool name="external">false</Bool>
+				<Object class="FuelTankData" name="fixed_store">
+					<String name="name"></String>
+					<Float name="mass">0.0</Float>
+					<Matrix name="unit_inertia">0.08 0 0 0 0.20 0 0 0 0.15</Matrix>
+					<Vector name="cg_offset">-0.6 0.0 0.4</Vector>
+					<Float name="drag_factor">0.0</Float>
+					<Float name="capacity">272</Float>
+				</Object>
+			</Object>
+			<Object class="HardpointData">
+				<String name="name">FUEL:FWD_RESV</String>
+				<Bool name="external">false</Bool>
+				<Object class="FuelTankData" name="fixed_store">
+					<String name="name"></String>
+					<Float name="mass">0.0</Float>
+					<Matrix name="unit_inertia">0.08 0 0 0 0.20 0 0 0 0.15</Matrix>
+					<Vector name="cg_offset">0.6 0.0 0.4</Vector>
+					<Float name="drag_factor">0.0</Float>
+					<Float name="capacity">272</Float>
+				</Object>
+			</Object>
+			<Object class="HardpointData">
+				<String name="name">FUEL:A1</String>
+				<Bool name="external">false</Bool>
+				<Object class="FuelTankData" name="fixed_store">
+					<String name="name"></String>
+					<Float name="mass">0.0</Float>
+					<Matrix name="unit_inertia">0.57 0 0 0 0.38 0 0 0 0.93</Matrix>
+					<Vector name="cg_offset">0.0 -1.6 0.4</Vector>
+					<Float name="drag_factor">0.0</Float>
+					<Float name="capacity">1395</Float>
+				</Object>
+			</Object>
+			<Object class="HardpointData">
+				<String name="name">FUEL:F</String>
+				<Bool name="external">false</Bool>
+				<Object class="FuelTankData" name="fixed_store">
+					<String name="name"></String>
+					<Float name="mass">0.0</Float>
+					<Matrix name="unit_inertia">0.18 0 0 0 0.20 0 0 0 0.30</Matrix>
+					<Vector name="cg_offset">0.0 1.8 0.33</Vector>
+					<Float name="drag_factor">0.0</Float>
+					<Float name="capacity">800</Float>
+				</Object>
+			</Object>
+			<Object class="HardpointData">
+				<String name="name">FUEL:LEFT_WING</String>
+				<Bool name="external">false</Bool>
+				<Object class="FuelTankData" name="fixed_store">
+					<String name="name"></String>
+					<Float name="mass">0.0</Float>
+					<Matrix name="unit_inertia">0.18 0 0 0 1.3 0 0 0 1.5</Matrix>
+					<Vector name="cg_offset">-2.3 -0.4 0.0</Vector>
+					<Float name="drag_factor">0.0</Float>
+					<Float name="capacity">312</Float>
+				</Object>
+			</Object>
+			<Object class="HardpointData">
+				<String name="name">FUEL:RIGHT_WING</String>
+				<Bool name="external">false</Bool>
+				<Object class="FuelTankData" name="fixed_store">
+					<String name="name"></String>
+					<Float name="mass">0.0</Float>
+					<Matrix name="unit_inertia">0.18 0 0 0 1.3 0 0 0 1.5</Matrix>
+					<Vector name="cg_offset">2.3 -0.4 0.0</Vector>
+					<Float name="drag_factor">0.0</Float>
+					<Float name="capacity">312</Float>
+				</Object>
+			</Object>
+
+			<Object class="HardpointData">
+				<String name="name">HP1</String>
+				<Bool name="external">true</Bool>
+				<Object name="compatibility" class="StoreCompatibilityTable">
+					<List name="stores" type="key">
+						missiles.aim9
+					</List>
+				</Object>
+				<Object name="mount_compatibility" class="StoreCompatibilityTable">
+					<List name="stores" type="key">
+						missiles.aim9
+					</List>
+				</Object>
+				<Vector name="offset">-4.806 -1.387 0.261</Vector>
+				<Quat name="attitude">0 0.70711 0 0.70711</Quat>
+			</Object>
+			<Object class="HardpointData">
+				<String name="name">HP4</String>
+				<Bool name="external">true</Bool>
+				<Object name="compatibility" class="StoreCompatibilityTable">
+					<List name="stores" type="key">
+						tanks.f16.wing_370gal
+						racks.f16.wingfuel
+					</List>
+				</Object>
+				<Object name="mount_compatibility" class="StoreCompatibilityTable">
+					<List name="stores" type="key">
+						racks.f16.wingfuel
+					</List>
+				</Object>
+				<Vector name="offset">-1.775 -0.648 0.147</Vector>
+			</Object>
+			<Object class="HardpointData">
+				<String name="name">HP5</String>
+				<Bool name="external">true</Bool>
+				<Object name="compatibility" class="StoreCompatibilityTable">
+					<List name="stores" type="key">
+						tanks.f16.centerline_300gal
+						racks.f16.centerline
+					</List>
+				</Object>
+				<Object name="mount_compatibility" class="StoreCompatibilityTable">
+					<List name="stores" type="key">
+						racks.f16.centerline
+					</List>
+				</Object>
+				<Vector name="offset">0.0 -0.19 -0.59</Vector>
+			</Object>
+			<Object class="HardpointData">
+				<String name="name">HP6</String>
+				<Bool name="external">true</Bool>
+				<Object name="compatibility" class="StoreCompatibilityTable">
+					<List name="stores" type="key">
+						tanks.f16.wing_370gal
+						racks.f16.wingfuel
+					</List>
+				</Object>
+				<Object name="mount_compatibility" class="StoreCompatibilityTable">
+					<List name="stores" type="key">
+						racks.f16.wingfuel
+					</List>
+				</Object>
+				<Vector name="offset">1.775 -0.648 0.147</Vector>
+			</Object>
+			<Object class="HardpointData">
+				<String name="name">HP9</String>
+				<Bool name="external">true</Bool>
+				<Object name="compatibility" class="StoreCompatibilityTable">
+					<List name="stores" type="key">
+						missiles.aim9
+					</List>
+				</Object>
+				<Object name="mount_compatibility" class="StoreCompatibilityTable">
+					<List name="stores" type="key">
+						missiles.aim9
+					</List>
+				</Object>
+				<!--Vector name="offset">4.61 -1.8 0.22</Vector-->
+				<Vector name="offset">4.806 -1.387 0.261</Vector>
+				<Quat name="attitude">0 -0.70711 0 0.70711</Quat>
+			</Object>
+		</List>
+	</Object>
+</Object>

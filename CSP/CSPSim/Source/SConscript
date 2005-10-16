@@ -55,6 +55,7 @@ SOURCES = [
 	'F16/PageLIST.cpp',
 	'F16/FLCS.cpp',
 	'F16/F16Channels.cpp',
+	'F16/F16Engine.cpp',
 	'F16/F16FlightModel.cpp',
 	'F16/F16GearDynamics.cpp',
 	'F16/F16HUD.cpp',

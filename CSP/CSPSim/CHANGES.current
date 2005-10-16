@@ -42,6 +42,13 @@
  * Integrate Lologramme's f-16 cockpit upgrade (2005-08-22), and bind
    a few new cockpit animations.
 
+ * Add f-16 engine simulation.  This is a partial port of a python
+   program that implements a quasi-ad-hoc model of the engine dynamics
+   for startup, stalls/stagnations, air restarts, etc.  It also
+   incorporates the spooling model from NASA 79 paper.  Many parts of
+   the model remain to be implemented, and many existing parts need
+   tweaking.
+
 2005-10-15: onsight
  * Refactor rotation animation classes, moving some common operations
    to the base class.  Add an optional non-linear gain to the rotation

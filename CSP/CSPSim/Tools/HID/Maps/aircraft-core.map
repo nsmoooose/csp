@@ -84,6 +84,6 @@ map key:SHIFT-CTRL-e press FUEL_QTY_SEL_CYCLE_NEXT
 map key:SHIFT-CTRL-o press EXT_FUEL_TRANS_TOGGLE
 map key:CTRL-e press ENGINE_FEED_CYCLE_NEXT
 
-map x36:SHIFT-q   press         EJECT_WING_TANKS
-map x36:CTRL-q   press         EJECT_CENTER_TANK
+map key:SHIFT-q   press         EJECT_WING_TANKS
+map key:CTRL-q   press         EJECT_CENTER_TANK
 

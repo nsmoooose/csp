@@ -60,6 +60,7 @@ SOURCES = [
 	'F16/F16HUD.cpp',
 	'F16/F16INS.cpp',
 	'F16/F16System.cpp',
+	'F16/FuelSystem.cpp',
 	'F16/PanelHUD.cpp',
 	'F16/Radio.cpp',
 	'F16/NavigationSystem.cpp',

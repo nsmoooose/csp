@@ -32,6 +32,8 @@
 
  * Add initial stores data.
 
+ * Add f-16 fuel system code.
+
 2005-10-15: onsight
  * Refactor rotation animation classes, moving some common operations
    to the base class.  Add an optional non-linear gain to the rotation

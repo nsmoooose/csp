@@ -307,6 +307,57 @@ public:
 	}
 };
 
+
+class GhostHorizon: public HUD::DirectionElement {
+	osg::Vec3 m_Center;
+	osg::Vec3 m_CenterDir;
+	float m_R;
+	double m_Delay;
+	double m_Threshold;
+public:
+	GhostHorizon(float center_y, float offset_degrees, float buffer_degrees): m_Center(0.0, 1.0, center_y), m_R(1.0), m_Delay(0.0) {
+		HUD::SymbolMaker horizon;
+		horizon.beginDrawLines();
+		for (int i = -5; i < 5; ++i) {
+			horizon.drawLine(i * 0.03 + 0.0075, 0.0, i * 0.03 + 0.0225, 0.0);
+		}
+		horizon.endDrawLines();
+		addSymbol(horizon);
+		m_CenterDir = m_Center;
+		m_CenterDir.normalize();
+		m_R = atan(simdata::toRadians(offset_degrees));
+		m_Threshold = tan(simdata::toRadians(offset_degrees + buffer_degrees));
+	}
+
+	void update(osg::Vec3 horizon_body, osg::Vec3 horizon_right_body, double dt) {
+		m_Delay += dt;
+		// No need to do frequent updates when the horizon is in view.  Once the
+		// ghost horizon is enabled we update every frame.
+		if ((m_Delay > 0.25) || !isHidden()) {
+			horizon_body.normalize();
+			horizon_right_body.normalize();
+			float dot_hb = (horizon_body * m_CenterDir);
+			float dot_hrb = (horizon_right_body * m_CenterDir);
+			osg::Vec3 offset = (horizon_body*dot_hb + horizon_right_body*dot_hrb - m_Center);
+			if (offset.length() < m_Threshold) {
+				// If the real horizon is visible hide the ghost.
+				show(false);
+			} else {
+				// Otherwise show and animate the ghost horizon.
+				show(true);
+				// Align with the horizon (same formula that the pitch ladder uses).
+				float angle = -atan2(horizon_right_body.z(), horizon_right_body.x());
+				// Alignment isn't enought; need to know if the horizon is above or below the hud.
+				if (dot_hb * (m_CenterDir * (horizon_body ^ horizon_right_body)) < 0) angle += simdata::PI;
+				setOrientation(angle);
+				setDirection(m_Center + osg::Vec3(m_R * sin(angle), 0.0f, m_R * cos(angle)));
+			}
+			m_Delay = 0.0;
+		}
+	}
+};
+
+
 class DEDReadout: public HUD::MoveableElement {
 	simdata::Ref<const AlphaNumericDisplay> m_Display;
 	osgText::Text** m_Lines;
@@ -369,7 +420,7 @@ void F16HUD::importChannels(Bus* bus) {
 	b_Alpha = bus->getChannel(bus::FlightDynamics::Alpha);
 	b_CAS = bus->getChannel(bus::Conditions::CAS);
 	b_Mach = bus->getChannel(bus::Conditions::Mach);
-	b_G = bus->getChannel(bus::FlightDynamics::GForce);
+	b_G = bus->getChannel(bus::FlightDynamics::G);
 	b_GroundZ = bus->getChannel(bus::Kinetics::GroundZ);
 	b_CaraAlow = bus->getChannel("F16.CaraAlow", false);
 	b_LeftMainLandingGearWOW = bus->getChannel(bus::LandingGear::selectWOW("LeftGear"));
@@ -438,6 +489,8 @@ double F16HUD::onUpdate(double dt) {
 	m_PitchLadder->show(m_ShowAttitude || gear_down);
 	m_PitchLadder->update(horizon_body, horizon_right_body, b_Pitch->value());
 
+	m_GhostHorizon->update(horizon_body, horizon_right_body, dt);
+
 	const float aoa_degrees = simdata::toDegrees(b_Alpha->value());
 	if (aoa_degrees >= 15.0) {
 		b_AOAIndexer->value() = "HIGH";
@@ -468,41 +521,8 @@ double F16HUD::onUpdate(double dt) {
 		m_GlideSlopeBar->show(false);
 	}
 
-	const float vertical_frame_fpm_offset = 0.051;  // offset from fpm when locked together
-	const float vertical_frame_top_position = 0.0;  // highest possible vertical frame position
-	const float vertical_frame_bottom_position = -0.04;  // lowest possible vertical frame position
-	const float heading_tape_top_position = 0.05;  // when at the top of the hud
-	const float heading_tape_vertical_offset = 0.030;  // when moving together
-
-	if (gear_down) {
-		// when the landing gear is down the heading tape, vertical tapes, and other symbology
-		// move vertically with the fpm.  the heading tape moves independently from the top of the
-		// hud down to the midpoint of the vertical tapes.  from there it moves with the vertical
-		// tapes and other symbology down to the base of the hud.  further downward motion of the
-		// fpm does not affect the symbology (i.e. the heading tape and altitude/airspeed readouts
-		// will not move off the bottom of the hud).  when the heading top is moving it is fixed
-		// just above the fpm.
-		float gun_cross_y = m_HUD.getForwardFrameOrigin().z();
-
-		// get fpm y coordinate in the gun cross frame.  the origin of the gun cross frame is near
-		// the top of the hud, while free elements like the fpm move with respect to the center of
-		// the hud.
-		float fpm_y = m_FlightPathMarker->position().z() - gun_cross_y;
-
-		// lock the position of the vertical tapes and other symbology to the fpm through part of
-		// it's range.
-		float vertical_frame_y = std::max(vertical_frame_bottom_position, std::min(vertical_frame_top_position, fpm_y + vertical_frame_fpm_offset));
-		m_VerticalFrame->setPosition(0.0, vertical_frame_y);
-
-		// the fpm begins to pull the heading tape down when it is below the heading tape by the
-		// same distance as when the heading tape and vertical scale bars are moving together.
-		float heading_tape_frame_y = std::max(vertical_frame_y + heading_tape_vertical_offset, std::min(heading_tape_top_position, fpm_y + heading_tape_vertical_offset + vertical_frame_fpm_offset));
-		m_HeadingTapeFrame->setPosition(0.0, heading_tape_frame_y);
-	} else {
-		// TODO readjust the vertical frame elements to eliminate the -1 cm displacement
-		m_VerticalFrame->setPosition(0.0, vertical_frame_top_position - 0.01);
-		m_HeadingTapeFrame->setPosition(0.0, 0.0);
-	}
+	// move the hud symbology vertically in response to motion of the fpm
+	placeVerticalFrames();
 
 	m_AirspeedTape->show(m_ShowScales);
 	m_AirspeedTape->update(speed >= 50.0 ? speed : 0.0);
@@ -610,6 +630,49 @@ double F16HUD::onUpdate(double dt) {
 	//double debug_dt = timer.stop();
 	//CSP_LOG(APP, DEBUG, "HUD UPDATE took " << static_cast<int>(1e+6*debug_dt) << " microseconds");
 	return 0.0;
+}
+
+void F16HUD::placeVerticalFrames() {
+	const float vertical_frame_fpm_offset = 0.051;  // offset from fpm when locked together
+	const float vertical_frame_top_position = 0.0;  // highest possible vertical frame position
+	const float vertical_frame_bottom_position = -0.04;  // lowest possible vertical frame position
+	const float heading_tape_top_position = 0.05;  // when at the top of the hud
+	const float heading_tape_vertical_offset = 0.030;  // when moving together
+	const float heading_tape_fpm_offset = 0.052f; // when moving below the fpm
+
+	// get fpm y coordinate in the gun cross frame.  the origin of the gun cross frame is near
+	// the top of the hud, while free elements like the fpm move with respect to the center of
+	// the hud.
+	const float gun_cross_y = m_HUD.getForwardFrameOrigin().z();
+	const float fpm_y = m_FlightPathMarker->position().z() - gun_cross_y;
+	const bool gear_down = !b_GearHandleUp->value();
+
+	if (gear_down) {
+		// when the landing gear is down the heading tape, vertical tapes, and other symbology
+		// move vertically with the fpm.  the heading tape moves independently from the top of the
+		// hud down to the midpoint of the vertical tapes.  from there it moves with the vertical
+		// tapes and other symbology down to the base of the hud.  further downward motion of the
+		// fpm does not affect the symbology (i.e. the heading tape and altitude/airspeed readouts
+		// will not move off the bottom of the hud).  when the heading top is moving it is fixed
+		// just above the fpm.
+
+		// lock the position of the vertical tapes and other symbology to the fpm through part of
+		// it's range.
+		float vertical_frame_y = std::max(vertical_frame_bottom_position, std::min(vertical_frame_top_position, fpm_y + vertical_frame_fpm_offset));
+		m_VerticalFrame->setPosition(0.0, vertical_frame_y);
+
+		// the fpm begins to pull the heading tape down when it is below the heading tape by the
+		// same distance as when the heading tape and vertical scale bars are moving together.
+		float heading_tape_frame_y = std::max(vertical_frame_y + heading_tape_vertical_offset, std::min(heading_tape_top_position, fpm_y + heading_tape_vertical_offset + vertical_frame_fpm_offset));
+		m_HeadingTapeFrame->setPosition(0.0, heading_tape_frame_y);
+	} else {
+		// when the landing gear is up the vertical tapes and text are fixed, but the heading
+		// tape can move downward at high aoa to stay just below the fpm.
+		// TODO readjust the vertical frame elements to eliminate the -1 cm displacement
+		m_VerticalFrame->setPosition(0.0, vertical_frame_top_position - 0.01);
+		float heading_tape_frame_y = std::min(0.0f, fpm_y + heading_tape_fpm_offset);
+		m_HeadingTapeFrame->setPosition(0.0, heading_tape_frame_y);
+	}
 }
 
 void F16HUD::updateSwitches() {
@@ -751,6 +814,8 @@ void F16HUD::addExtraSymbols() {
 	m_HUD.addFloatingElement(m_PullupAnticipationCue);
 	m_LandingAngleOfAttackRange = new LandingAngleOfAttackRange;
 	m_HUD.addFloatingElement(m_LandingAngleOfAttackRange);
+	m_GhostHorizon = new GhostHorizon(-0.088, 8.0, 2.0);
+	m_HUD.addFloatingElement(m_GhostHorizon);
 }
 
 void F16HUD::addFlightPathMarker() {

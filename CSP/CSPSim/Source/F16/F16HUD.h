@@ -42,6 +42,7 @@ class PitchLadder;
 class DEDReadout;
 class PullupAnticipationCue;
 class RadarAltitudeScale;
+class GhostHorizon;
 
 class F16HUD: public System {
 public:
@@ -87,6 +88,7 @@ protected:
 	virtual double onUpdate(double dt);
 	virtual void updateReadouts();
 	virtual void updateSwitches();
+	virtual void placeVerticalFrames();
 	virtual void buildHUD();
 	virtual void addFlightPathMarker();
 	virtual void addGunCross();
@@ -110,6 +112,7 @@ protected:
 	osg::ref_ptr<HUD::DirectionElement> m_Steerpoint;
 	osg::ref_ptr<HUD::DirectionElement> m_FlightPathMarker;
 	osg::ref_ptr<HUD::DirectionElement> m_BankAngleIndicator;
+	osg::ref_ptr<GhostHorizon> m_GhostHorizon;
 	osg::ref_ptr<PullupAnticipationCue> m_PullupAnticipationCue;
 	osg::ref_ptr<RadarAltitudeScale> m_RadarAltitudeScale;
 	osg::ref_ptr<HUD::Element> m_GunCross;

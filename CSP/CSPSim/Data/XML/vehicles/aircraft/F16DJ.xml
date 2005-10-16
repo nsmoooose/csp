@@ -19,7 +19,8 @@
 	</Matrix>
 
 	<!-- initial cm offset relative to the 3d model origin -->
-	<Vector name="reference_center_of_mass_offset">0.0 0.3 -0.07</Vector>
+	<!--Vector name="reference_center_of_mass_offset">0.0 -0.1 -0.07</Vector-->
+	<Vector name="reference_center_of_mass_offset">0.0 -0.1 -0.17</Vector>
 
 	<Path name="human_systems">F16.DJ.systems</Path>
 	<Path name="remote_systems">F16.DJ.remote</Path>

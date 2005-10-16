@@ -49,6 +49,13 @@
    the model remain to be implemented, and many existing parts need
    tweaking.
 
+ * Move the nominal center of mass toward the back of the aircraft.
+   The new position corresponds to the nominal center of lift at
+   subsonic speeds, which can be thought of as the reference cg
+   offset.  CM(alpha) incorporates the negative static margin features
+   at this cg position, and additional shifts (due to loadout and fuel)
+   will increase or decrease the static margin.
+
 2005-10-15: onsight
  * Refactor rotation animation classes, moving some common operations
    to the base class.  Add an optional non-linear gain to the rotation

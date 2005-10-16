@@ -52,6 +52,8 @@ public:
 		BIND_ACTION("FLAPS_UP", flapsUp);
 		BIND_ACTION("FLAPS_TOGGLE", flapsToggle);
 		BIND_ACTION("CANOPY_TOGGLE", canopyToggle);
+		BIND_ACTION("EJECT_WING_TANKS", onEjectWingTanks);
+		BIND_ACTION("EJECT_CENTER_TANK", onEjectCenterTank);
 	END_INPUT_INTERFACE  // protected:
 
 public:
@@ -112,6 +114,10 @@ protected:
 	//int m_SteerpointIndex;
 	//std::vector<Steerpoint::Ref> m_Steerpoints;
 	void onAirRefuelSwitch();
+
+	// for testing only
+	void onEjectWingTanks();
+	void onEjectCenterTank();
 
 	void engageMPO();
 	void disengageMPO();

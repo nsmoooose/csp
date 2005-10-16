@@ -157,6 +157,25 @@ void F16System::onAirRefuelSwitch() {
 	}
 }
 
+void F16System::onEjectCenterTank() {
+	// test jettison
+	StoresManagementSystem *sms = getModel()->getStoresManagementSystem().get(); // TODO should return a raw ptr
+	if (sms) {
+		sms->releaseStore(sms->getHardpointByName("HP5").child(0));
+		// testing asymmetric loadouts
+		sms->releaseStore(sms->getHardpointByName("HP4").child(0));
+	}
+}
+
+void F16System::onEjectWingTanks() {
+	// test jettison
+	StoresManagementSystem *sms = getModel()->getStoresManagementSystem().get(); // TODO should return a raw ptr
+	if (sms) {
+		//sms->releaseStore(sms->getHardpointByName("HP4").child(0));
+		sms->releaseStore(sms->getHardpointByName("HP6").child(0));
+	}
+}
+
 void F16System::canopyToggle() {
 	if (m_CanopySequence.valid()) {
 		m_CanopySequence->play();

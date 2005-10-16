@@ -667,8 +667,12 @@ public:
 	ChannelBase::CRef getChannel(std::string const &name, bool required = true) {
 		ChannelMap::iterator iter = m_Channels.find(name);
 		if (iter == m_Channels.end()) {
-			CSP_LOG(OBJECT, DEBUG, "Bus::getChannel(" << name << ") failed.");
-			assert(!required);
+			if (required) {
+				CSP_LOG(OBJECT, ERROR, "Bus::getChannel(" << name << ") failed.");
+				assert(0);
+			} else {
+				CSP_LOG(OBJECT, DEBUG, "Bus::getChannel(" << name << ") failed.");
+			}
 			return 0;
 		}
 		return iter->second;

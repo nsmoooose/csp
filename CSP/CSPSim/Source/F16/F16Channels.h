@@ -33,6 +33,8 @@ struct F16 {
 	static const char *AirbrakeLimit;
 	static const char *AltFlaps;
 	static const char *CatIII;
+	static const char *ManualPitchOverride;
+	static const char *ManualPitchOverrideActive;
 	static const char *GearHandleUp;
 	static const char *INSAttitude;
 	static const char *StandbyGains;

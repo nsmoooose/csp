@@ -645,6 +645,7 @@ void GearDynamics::doComplexPhysics(double) {
 		if (gear.isFullyRetracted()) continue;
 		b_FullyRetracted->value() = false;
 		const double extension = gear.getExtension();
+		assert(extension >= -0.001 && extension <= 1.001);
 		// Approx: gear move to center with retraction.  currently LandingGear does not take
 		// extension into account when computing forces, so really only effects wind drag.
 		// at least it _shouldn't_ be common to retract gear while touching the ground...

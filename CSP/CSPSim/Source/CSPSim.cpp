@@ -50,6 +50,7 @@
 #include "Profile.h"
 #include "Shell.h"
 #include "SimpleSceneManager.h"
+#include "Stores/StoresDatabase.h"
 #include "TerrainObject.h"
 #include "Theater.h"
 #include "VirtualScene.h"
@@ -168,8 +169,7 @@ CSPSim::CSPSim():
 }
 
 
-CSPSim::~CSPSim()
-{
+CSPSim::~CSPSim() {
 	assert(m_Clean);
 	if (theSim == this) {
 		theSim = 0;
@@ -243,8 +243,7 @@ void CSPSim::togglePause() {
 
 //OpenThreads::Barrier bar;
 
-void CSPSim::init()
-{
+void CSPSim::init() {
 	try {
 		CSP_LOG(APP, INFO, "Installing stack trace handler...");
 		simdata::Trace::install();
@@ -330,6 +329,9 @@ void CSPSim::init()
 		double lon = m_Terrain->getCenter().longitude();
 		m_Atmosphere->setPosition(lat, lon);
 		
+		// TODO may need a reset method when we swap theaters
+		StoresDatabase::getInstance().load(*m_DataManager, "sim:stores");
+
 		logoScreen.onUpdate(0.0);
 		logoScreen.onRender();
 		SDL_GL_SwapBuffers();
@@ -463,8 +465,7 @@ void CSPSim::init()
 }
 
 
-void CSPSim::cleanup()
-{
+void CSPSim::cleanup() {
 	CSP_LOG(APP, INFO, "CSPSim  cleanup...");
 
 	assert(m_Battlefield.valid());
@@ -495,15 +496,13 @@ void CSPSim::cleanup()
 }
 
 
-void CSPSim::quit()
-{
+void CSPSim::quit() {
 	CSP_LOG(APP, DEBUG, "CSPSim::quit...");
 	m_Finished = true;
 }
 
 
-void CSPSim::changeScreen(BaseScreen * newScreen)
-{
+void CSPSim::changeScreen(BaseScreen * newScreen) {
 	CSP_LOG(APP, DEBUG, "CSPSim::changeScreen ...");
 	m_PrevScreen = m_CurrentScreen;
 	m_CurrentScreen = newScreen;
@@ -511,8 +510,7 @@ void CSPSim::changeScreen(BaseScreen * newScreen)
 
 
 // Main Game loop
-void CSPSim::run()
-{
+void CSPSim::run() {
 	float low_priority = 0.0;
 	int idx = 0;
 
@@ -546,8 +544,7 @@ void CSPSim::run()
 	simdata::Timer time_render;
 	bool lopri = false;
 
-	try
-	{
+	try {
 		while (!m_Finished) {
 			CSP_LOG(APP, DEBUG, "CSPSim::run... Starting loop iteration");
 
@@ -648,8 +645,7 @@ void CSPSim::run()
 }
 
 
-void CSPSim::initTime(simdata::SimDate const &date)
-{
+void CSPSim::initTime(simdata::SimDate const &date) {
 	m_CurrentTime = date;
 	m_CurrentTime.update();
 	m_ElapsedTime = 0.0;
@@ -663,8 +659,7 @@ void CSPSim::initTime(simdata::SimDate const &date)
 // delays will accumulate in _timeLag to be made up in subsequent
 // frames.  this prevents long delays from destabilizing the update
 // computations.
-void CSPSim::updateTime()
-{
+void CSPSim::updateTime() {
 	m_FrameTime = m_CurrentTime.update();
 	m_ElapsedTime += m_FrameTime;
 	m_FrameTime += m_TimeLag;
@@ -688,8 +683,7 @@ void CSPSim::updateTime()
 	}
 }
 
-void CSPSim::doInput(double dt)
-{
+void CSPSim::doInput(double dt) {
 	CSP_LOG(APP, DEBUG, "CSPSim::doInput()...");
 
 	simdata::Ref<VirtualHID> screen_interface = m_CurrentScreen->getInterface();
@@ -720,7 +714,7 @@ void CSPSim::doInput(double dt)
 			}
 		}
 		if (!handled && m_Interface.valid()) {
-			CSP_LOG(APP, DEBUG, "CSPSim::doInput()-Calling m_Interface->onEvent()");	
+			CSP_LOG(APP, DEBUG, "CSPSim::doInput()-Calling m_Interface->onEvent()");
 			handled = m_Interface->onEvent(event);
 		}
 	}
@@ -737,8 +731,7 @@ void CSPSim::doInput(double dt)
 /**
  * Update all objects, calling physics and AI routines.
  */
-void CSPSim::updateObjects(double dt)
-{
+void CSPSim::updateObjects(double dt) {
 	CSP_LOG(APP, DEBUG, "CSPSim::updateObjects...");
 
 	if (m_Battlefield.valid()) {
@@ -750,8 +743,7 @@ void CSPSim::updateObjects(double dt)
 }
 
 
-int CSPSim::initSDL()
-{
+int CSPSim::initSDL() {
 	CSP_LOG(APP, DEBUG, "Initializing SDL...");
 
 	int height = g_Config.getInt("Screen", "Height", 768, true);
@@ -761,12 +753,11 @@ int CSPSim::initSDL()
 	m_ScreenHeight = height;
 	m_ScreenWidth = width;
 
-	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK | SDL_INIT_AUDIO /*  | SDL_INIT_NOPARACHUTE */ )  != 0  ) {
+	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK | SDL_INIT_AUDIO /*  | SDL_INIT_NOPARACHUTE */ ) != 0) {
 		std::cerr << "Unable to initialize SDL: " << SDL_GetError() << "\n";
 		CSP_LOG(APP, ERROR, "ERROR! Unable to initialize SDL: " << SDL_GetError());
 		return 1;
 	}
-
 
 	const SDL_VideoInfo *info = SDL_GetVideoInfo();
 	int bpp = info->vfmt->BitsPerPixel;
@@ -823,8 +814,7 @@ int CSPSim::initSDL()
 }
 
 
-void fillerup(void * /*unused*/, Uint8 *stream, int len)
-{
+void fillerup(void * /*unused*/, Uint8 *stream, int len) {
 	Uint8 *waveptr;
 	int    waveleft;
 

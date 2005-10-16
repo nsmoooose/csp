@@ -1,0 +1,62 @@
+<?xml version="1.0" standalone="no"?>
+
+<Object class="StabilityFlightModel">
+    <Float name="wing_span">0.5</Float>
+    <Float name="wing_area">0.25</Float>
+    <Float name="wing_chord">0.5</Float>
+    <Float name="stall_aoa">10.0</Float>
+
+    <Float name="cd_de">0.0</Float>
+    <Float name="cd_db">0.0</Float>
+    <Float name="cl_q">0.0</Float>
+    <Float name="cl_de">0.0</Float>
+    <Float name="cy_da">0.0</Float>
+    <Float name="cy_dr">0.0</Float>
+    <Float name="cy_p">0.0</Float>
+    <Float name="cy_r">0.0</Float>
+    <Float name="cm_0">0.0</Float>
+    <Float name="ci_b">0.0</Float>
+    <Float name="ci_dr">0.0</Float>
+    <Float name="ci_da">0.0</Float>
+    <Float name="ci_r">0.0</Float>
+    <Float name="cn_p">0.0</Float>
+    <Float name="cn_da">0.0</Float>
+
+    <Float name="cm_de">0.0</Float>
+    <Float name="cn_dr">0.0</Float>
+
+    <Float name="cy_b">-0.1</Float>
+    <Float name="cm_a">-1.0</Float>
+    <Float name="cm_q">-50.0</Float>
+    <Float name="ci_p">-50.0</Float>
+    <Float name="cn_b">1.0</Float>
+    <Float name="cn_r">-50.0</Float>
+
+    <!-- Drag Parameters -->
+    <Table2 name="cd_m_a">
+        <Breaks0 spacing="0.1">0.0 0.5 0.7 0.8 0.9 1.0 1.2 1.4 2.0 2.5</Breaks0>
+        <Breaks1 spacing="0.01">-0.5 0.0 0.5</Breaks1>
+        <Values>
+          0.025  0.0130  0.025
+          0.025  0.0130  0.025
+          0.026  0.0135  0.026
+          0.031  0.0200  0.031
+          0.035  0.0250  0.035
+          0.048  0.0320  0.048
+          0.050  0.0330  0.050
+          0.050  0.0330  0.050
+          0.050  0.0330  0.050
+          0.050  0.0330  0.050
+        </Values>
+    </Table2>
+
+    <!-- Side Force Parameters -->
+    <Table2 name="cl_m_a">
+        <Breaks0 spacing="1.0">0.0 1.0</Breaks0>
+        <Breaks1 spacing="0.01">-0.50 0.0 0.50</Breaks1>
+        <Values>
+          -0.05  0.0  0.05
+          -0.05  0.0  0.05
+        </Values>
+    </Table2>
+</Object>

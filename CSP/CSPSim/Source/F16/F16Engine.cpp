@@ -295,7 +295,7 @@ void F16Engine::updatePrestart(double dt) {
 	const double drive = m_Drive * rpm_factor * getAltitudeFactor();
 	driveEngine(drive, dt);
 	// TODO jfs
-	if (m_StartElapsedTime > m_HangTime and m_NormalStart) {
+	if (m_StartElapsedTime > m_HangTime && m_NormalStart) {
 		m_NormalStart = false;
 		m_Drive /= (1.0 + 0.40 * std::max(0.1, rpm));  // ad-hoc drive reduction to prevent rpm increase
 		if (randomUnit() < m_HotStartBranch) {

@@ -89,10 +89,10 @@ public:
 		std::cout << "ADDING DETAIL " << file << "\n";
 	}
 
-	virtual void enable(osg::State &state) const {}
-	virtual void disable(osg::State &state) const {}
+	virtual void enable(osg::State &/*state*/) const {}
+	virtual void disable(osg::State &/*state*/) const {}
 
-	virtual void map(osg::State &state, float sx, float sz, float x0, float z0) const {
+	virtual void map(osg::State &state, float /*sx*/, float /*sz*/, float x0, float z0) const {
 		int n = static_cast<int>(_detailScale.size());
 		for (int i = 0; i < n; i++) {
 			float s = _detailTextures[i]->getImage()->s();
@@ -114,7 +114,7 @@ public:
 		}
 	}
 
-	virtual void setMode(osg::State &state, bool enabled) const {}
+	virtual void setMode(osg::State &/*state*/, bool /*enabled*/) const {}
 
 protected:
 	int _textureUnitCount;

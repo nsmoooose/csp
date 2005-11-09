@@ -69,6 +69,7 @@ class ChannelLink: public simdata::Referenced {
 public:
 	typedef std::vector<simdata::uint8> ValueSet;
 	ChannelLink(std::string const &channel_name, int lod, bool master): m_ChannelName(channel_name), m_Lod(lod), m_Master(master) { }
+	virtual ~ChannelLink() {}
 	virtual void bind(Bus*) = 0;
 	std::string const &getChannelName() const { return m_ChannelName; }
 	int getLod() const { return m_Lod; }
@@ -93,7 +94,7 @@ class ChannelSlave: public ChannelLink {
 public:
 	ChannelSlave(std::string const &channel_name, int lod): ChannelLink(channel_name, lod, false) { }
 	virtual bool receive(ValueSet const &values, unsigned &index) = 0;
-	virtual void update(double dt) { };
+	virtual void update(double /*dt*/) { };
 };
 
 

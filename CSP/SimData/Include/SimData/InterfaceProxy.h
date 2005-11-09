@@ -487,7 +487,7 @@ inline hasht classhash_helper(std::string const &class_name, const fprint32 sign
 			.pass(); \
 		} \
 		addInterface(_interface, reg); \
-	};
+	}
 
 
 NAMESPACE_SIMDATA_END

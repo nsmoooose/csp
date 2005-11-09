@@ -42,4 +42,5 @@ Station::~Station() {}
 
 SceneModelChild *Station::createDetailModel() const {
 	return !m_DetailModel ? 0 : new SceneModelChild(m_DetailModel);
-};
+}
+

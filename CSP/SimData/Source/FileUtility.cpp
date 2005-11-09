@@ -128,7 +128,7 @@ std::string ospath::currentdir() {
 
 std::string ospath::ext(const std::string &path) {
 	std::string::size_type ext;
-	ext = path.find_last_of("."+DIR_SEPARATOR);
+	ext = path.find_last_of(".");
 	if (ext != std::string::npos && path[ext]=='.') {
 		return path.substr(ext);
 	}

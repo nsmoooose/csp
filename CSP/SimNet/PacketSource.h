@@ -30,6 +30,7 @@
 
 namespace simnet {
 
+class NetworkInterface;
 
 /** Abstract interface for classes that generate packets to be sent
  *  over the network.

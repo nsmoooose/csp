@@ -74,7 +74,7 @@ bool RuntimeDispatch::onMapEvent(MapEvent const &event) {
 			break;
 	}
 	return false;
-};
+}
 
 void RuntimeDispatch::bindAction(std::string const &id, ActionEventSlot const &callback) {
 	m_CommandCallbacks[id].connect(sigc::hide(callback));  // actions do not receive the event argument

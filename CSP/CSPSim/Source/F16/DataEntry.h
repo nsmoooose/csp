@@ -675,7 +675,7 @@ protected:
 		}
 
 		char dirkey = entry[0];
-		double sign;
+		double sign = 1.0;
 		if (!directionSign(dirkey, sign)) return false;
 
 		// parse subfields (not sure if this is the correct entry format)

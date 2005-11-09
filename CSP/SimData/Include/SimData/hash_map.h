@@ -30,7 +30,7 @@
 #if defined(__GNUC__) //|| defined(__INTEL_COMPILER)
   #if __GNUC__ >= 3
     #include <ext/hash_map>
-    #if __GNUC_MINOR__ > 0
+    #if __GNUC_MINOR__ > 0 || __GNUC__ > 3
 	#define HASH_MAP __gnu_cxx::hash_map
         #define HASH __gnu_cxx::hash
     #else

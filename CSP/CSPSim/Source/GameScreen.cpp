@@ -478,17 +478,17 @@ void GameScreen::on_ResetSpin() {
 void GameScreen::on_LabelsToggle() {
 	VirtualScene *scene = CSPSim::theSim->getScene();
 	if (scene) scene->setLabels(!scene->getLabels());
-};
+}
 
 void GameScreen::on_LabelsOn() {
 	VirtualScene *scene = CSPSim::theSim->getScene();
 	if (scene) scene->setLabels(true);
-};
+}
 
 void GameScreen::on_LabelsOff() {
 	VirtualScene *scene = CSPSim::theSim->getScene();
 	if (scene) scene->setLabels(false);
-};
+}
 
 void GameScreen::on_LeftClick(MapEvent::ClickEvent const &event) {
 	VirtualScene *scene = CSPSim::theSim->getScene();

@@ -60,6 +60,7 @@ private:
 
 protected:
 	TraceBase(): _precallback(0), _postcallback(0), _log(0), _traced(false) { }
+	virtual ~TraceBase() {}
 
 	void setCallbacks_impl(Callback precallback, Callback postcallback) {
 		_precallback = precallback;

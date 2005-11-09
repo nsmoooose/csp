@@ -117,7 +117,7 @@ Store *MissileData::createStore() const {
 
 Hardpoint *HardpointData::createHardpoint(unsigned index) const {
 	return new Hardpoint(this, index);
-};
+}
 
 
 Store *RackData::createStore() const {

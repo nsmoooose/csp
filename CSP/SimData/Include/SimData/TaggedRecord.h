@@ -214,6 +214,8 @@ class TagReader: public TagBase {
 };
 
 
+class DumpLine;
+
 /** Helper class for formatting indented text to an output stream.
  */
 class DumpWriter {

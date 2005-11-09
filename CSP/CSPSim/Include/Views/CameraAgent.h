@@ -52,7 +52,7 @@ class CameraAgent {
 		T m_t;
 	public:
 		Accept(const T t): m_t(t) {}
-		void operator()(std::pair<const size_t, View*>& vm) const {
+		void operator()(std::pair<const size_t, CameraKinematics*>& vm) const {
 			vm.second->accept(m_t);
 		}
 	};

@@ -65,6 +65,7 @@ typedef sigc::signal<void, MapEvent::AxisEvent const &> AxisEventSignal;
  */
 class EventAdapter {
 public:
+	virtual ~EventAdapter() {}
 	virtual void call(InputInterface *, MapEvent const &event) = 0;
 };
 

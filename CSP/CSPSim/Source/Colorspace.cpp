@@ -64,7 +64,7 @@ float unprime, vnprime, wnprime;
  *
  * 'E', the CIE illuminant E, normalized reference source.
  */
-enum { CIE_A, CIE_B, CIE_C, CIE_D50, CIE_D55, CIE_D65, CIE_E } CIE_illuminants;
+typedef enum { CIE_A, CIE_B, CIE_C, CIE_D50, CIE_D55, CIE_D65, CIE_E } CIE_illuminants;
 
 /**
  * CIE xyz coordinates of various CIE defined standard illuminants.

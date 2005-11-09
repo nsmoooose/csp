@@ -110,10 +110,10 @@ public:
 		float r;
 		float g;
 		float b;
-		virtual void serialize(simdata::Writer &writer) const {
+		void serialize(simdata::Writer &writer) const {
 			writer << Ra << De << I << r << g << b;
 		}
-		virtual void serialize(simdata::Reader &reader) {
+		void serialize(simdata::Reader &reader) {
 			reader >> Ra >> De >> I >> r >> g >> b;
 		}
 		bool parse(StringTokenizer &t) {

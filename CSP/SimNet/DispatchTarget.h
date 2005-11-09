@@ -64,6 +64,7 @@
 
 namespace simnet {
 
+class DispatchManager;
 
 /** An interface for objects receiving messages from a DispatchManager.
  *  In each subclass, use a SIMNET_DECLARE_DISPATCH block to bind handler
@@ -93,6 +94,9 @@ protected:
 	 *  @return true if the message was handled, false otherwise.
 	 */
 	virtual bool dispatchChildren(DispatchManager *manager);
+
+public:
+	virtual ~DispatchTarget() { }
 };
 
 

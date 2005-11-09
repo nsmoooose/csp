@@ -112,6 +112,7 @@ namespace Demeter
     class TERRAIN_API TextureFactory
     {
     public:
+        virtual ~TextureFactory() { }
         /// Called by the owning Terrain object when a texture has become visible and needs to rendered. The index is a unique ID for the texture, and the other parameters are in world units.
         virtual Texture*        GetTexture(int index,float originX,float originY,float width,float height) = 0;
         /// Called by the owning TerrainLattice object when a texture has become visible and needs to rendered. The parameters are in world units. This method is only called when a factory is being used by TerrainLattice.
@@ -631,6 +632,7 @@ namespace Demeter
     public:
         virtual void        TerrainLoaded(Terrain* pTerrain) = 0;
         virtual void        TerrainUnloading(Terrain* pTerrain) = 0;
+        virtual ~TerrainLoadListener() { }
     };
 
     class TERRAIN_API TerrainLattice: public osg::Referenced

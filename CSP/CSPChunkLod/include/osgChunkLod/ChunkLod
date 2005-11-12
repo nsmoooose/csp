@@ -408,11 +408,11 @@ public:
 		// extensions
 		class Extensions:public osg::Referenced {
 		      public:
-			Extensions();
+			Extensions(unsigned int contextID);
 			Extensions(const Extensions & rhs);
 			void lowestCommonDenominator(const Extensions &
 						     rhs);
-			void setupGLExtensions();
+			void setupGLExtensions(unsigned int contextID);
 
 			// ATI_vertex_array_object
 			bool isVertexArrayObjectSupported() const {

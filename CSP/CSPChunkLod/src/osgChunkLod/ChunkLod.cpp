@@ -49,6 +49,7 @@ int s_child_count = 0;
 #include <osg/State>
 #include <osg/AlphaFunc>
 #include <osg/GLExtensions>
+#include <osg/Version>
 
 #include <osgChunkLod/ChunkLod>
 #include <osgChunkLod/ChunkLodLoader>
@@ -67,6 +68,12 @@ int s_child_count = 0;
 #include <osgNV/StateMatrixParameterValue>
 #endif
 
+// OSG_VERSION_MAJOR first defined in OSG 0.9.9
+#ifdef OSG_VERSION_MAJOR
+// The stream operators for Vec and Matrix were moved to a new header in OSG 0.9.9.
+#  include <osg/io_utils>
+#  define OSG_GL_EXTENSION_REQUIRES_CONTEXT
+#endif
 
 
 #include <osg/buffered_value>
@@ -1377,7 +1384,7 @@ static BufferedExtensions s_extensions;
 const ChunkLodTree::Extensions*
 ChunkLodTree::getExtensions (unsigned int contextID, bool createIfNotInitialized)
 {
-	if (!s_extensions[contextID] && createIfNotInitialized) s_extensions[contextID] = new Extensions;
+	if (!s_extensions[contextID] && createIfNotInitialized) s_extensions[contextID] = new Extensions(contextID);
 	return s_extensions[contextID].get();
 }
 
@@ -1387,9 +1394,9 @@ ChunkLodTree::setExtensions (unsigned int contextID, ChunkLodTree::Extensions* e
 	s_extensions[contextID] = extensions;
 }
 
-ChunkLodTree::Extensions::Extensions ()
+ChunkLodTree::Extensions::Extensions (unsigned int contextID)
 {
-	setupGLExtensions();
+	setupGLExtensions(contextID);
 }
 
 ChunkLodTree::Extensions::Extensions (const ChunkLodTree::Extensions& rhs) :
@@ -1411,12 +1418,18 @@ ChunkLodTree::Extensions::lowestCommonDenominator (const ChunkLodTree::Extension
 }
 
 void
-ChunkLodTree::Extensions::setupGLExtensions ()
+ChunkLodTree::Extensions::setupGLExtensions (unsigned int contextID)
 {
-	_vertexArrayObjectSupported = osg::isGLExtensionSupported ("GL_ATI_vertex_array_object");
+#ifdef OSG_GL_EXTENSION_REQUIRES_CONTEXT
+#	define IS_GL_EXTENSION_SUPPORTED(f)  osg::isGLExtensionSupported(contextID, f)
+#else
+#	define IS_GL_EXTENSION_SUPPORTED(f)  osg::isGLExtensionSupported(f)
+#endif
+	_vertexArrayObjectSupported = IS_GL_EXTENSION_SUPPORTED("GL_ATI_vertex_array_object");
 
-	std::cout << "NV VAR = " <<  osg::isGLExtensionSupported ("GL_NV_vertex_array_range") << "\n";;
-	std::cout << "NV VAR2 = " <<  osg::isGLExtensionSupported ("GL_NV_vertex_array_range2") << "\n";;
+	std::cout << "NV VAR = " <<  IS_GL_EXTENSION_SUPPORTED("GL_NV_vertex_array_range") << "\n";;
+	std::cout << "NV VAR2 = " <<  IS_GL_EXTENSION_SUPPORTED("GL_NV_vertex_array_range2") << "\n";;
+#undef IS_GL_EXTENSION_SUPPORTED
 
 #define GET_FUNC(f)  _##f = osg::getGLExtensionFuncPtr (#f)
 	GET_FUNC (glNewObjectBufferATI);

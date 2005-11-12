@@ -28,6 +28,12 @@
 #include <osgChunkLod/Export>
 #include <osgChunkLod/ChunkLod>
 
+// OSG_VERSION_MAJOR first defined in OSG 0.9.9
+#ifndef OSG_VERSION_MAJOR
+// The interface to Drawable::computeBound changed in 0.9.9.
+#  define OSG_OLD_COMPUTE_BOUND
+#endif
+
 namespace osgChunkLod
 {
 
@@ -61,7 +67,11 @@ namespace osgChunkLod
         virtual void drawImplementation (osg::State &) const;
 
       protected:
+#ifdef OSG_OLD_COMPUTE_BOUND
         virtual bool computeBound() const;
+#else
+        virtual osg::BoundingBox computeBound() const;
+#endif
         ChunkLodTree* _tree;
 	mutable osg::Timer_t _last_tick;
 	mutable int _triangles_rendered;

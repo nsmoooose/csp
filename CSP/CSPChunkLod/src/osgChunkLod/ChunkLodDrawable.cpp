@@ -181,6 +181,7 @@ ChunkLodDrawable::drawImplementation (osg::State& state) const
 	}
 }
 
+#ifdef OSG_OLD_COMPUTE_BOUND
 bool
 ChunkLodDrawable::computeBound() const
 {
@@ -197,7 +198,19 @@ ChunkLodDrawable::computeBound() const
 
 	return true;
 }
-
+#else
+osg::BoundingBox ChunkLodDrawable::computeBound() const {
+	osg::BoundingBox bbox;
+	if (_tree != NULL) {
+		osg::Vec3 center, extent;
+		ChunkLodTree *t = const_cast<ChunkLodTree*>(_tree);
+		t->getBoundingBox(&center, &extent);
+		bbox._min = center - extent;
+		bbox._max = center + extent;
+	}
+	return bbox;
+}
+#endif
 
 }
 

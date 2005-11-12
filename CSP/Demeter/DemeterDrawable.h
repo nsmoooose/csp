@@ -24,6 +24,13 @@ Boston, MA  02111-1307, USA.
 
 
 #include <osg/Drawable>
+#include <osg/Version>
+
+// OSG_VERSION_MAJOR was first defined in 0.9.9.
+#ifndef OSG_VERSION_MAJOR
+// The interface to Drawable::computeBound changed in 0.9.9.
+#  define OSG_OLD_COMPUTE_BOUND
+#endif
 
 #include "Terrain.h"
 
@@ -54,7 +61,11 @@ namespace Demeter
             
         protected:
         
-            virtual bool          computeBound() const;
+#ifdef OSG_OLD_COMPUTE_BOUND
+				virtual bool computeBound() const;
+#else
+				virtual osg::BoundingBox computeBound() const;
+#endif
 				mutable osg::ref_ptr<Terrain>       m_RefTerrain;
      };
 
@@ -97,7 +108,11 @@ namespace Demeter
             
         protected:
         
-            virtual bool          computeBound() const;
+#ifdef OSG_OLD_COMPUTE_BOUND
+			virtual bool computeBound() const;
+#else
+			virtual osg::BoundingBox computeBound() const;
+#endif
 			mutable osg::ref_ptr<TerrainLattice>    m_RefTerrainLattice;
 			DemeterLatticeDrawableLoadListener * m_pLatticeLoadListener;
 

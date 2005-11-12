@@ -98,11 +98,9 @@ void DemeterDrawable::drawImplementation(State& state) const
 	}
 }
 
-bool DemeterDrawable::computeBound() const
-{
-	if (m_RefTerrain.valid())
-	{
-
+#ifdef OSG_OLD_COMPUTE_BOUND
+bool DemeterDrawable::computeBound() const {
+	if (m_RefTerrain.valid()) {
 		float width = m_RefTerrain->GetWidth();
 		float height = m_RefTerrain->GetHeight();
 		int latticeX, latticeY;
@@ -117,6 +115,24 @@ bool DemeterDrawable::computeBound() const
 	}
 	return true;
 }
+#else
+osg::BoundingBox DemeterDrawable::computeBound() const {
+	osg::BoundingBox bbox;
+	if (m_RefTerrain.valid()) {
+		float width = m_RefTerrain->GetWidth();
+		float height = m_RefTerrain->GetHeight();
+		int latticeX, latticeY;
+		m_RefTerrain->GetLatticePosition(latticeX, latticeY);
+		bbox._min.x() = width*latticeX;
+		bbox._min.y() = height*latticeY;
+		bbox._min.z() = 0.0f;
+		bbox._max.x() = width*(latticeX+1);
+		bbox._max.y() = height*(latticeY+1);
+		bbox._max.z() = m_RefTerrain->GetMaxElevation();
+	}
+	return bbox;
+}
+#endif
 
 
 // DemeterLatticeDrawable
@@ -226,6 +242,7 @@ void DemeterLatticeDrawable::SetCameraPosition(float x, float y, float z)
 }
 
 
+#ifdef OSG_OLD_COMPUTE_BOUND
 bool DemeterLatticeDrawable::computeBound() const
 {
 	if (m_RefTerrainLattice.valid())
@@ -244,5 +261,17 @@ bool DemeterLatticeDrawable::computeBound() const
 	}
 	return true;
 }
+#else
+osg::BoundingBox DemeterLatticeDrawable::computeBound() const {
+	osg::BoundingBox bbox(0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
+	if (m_RefTerrainLattice.valid()) {
+		bbox._min.x() = bbox._min.y() = bbox._min.z() = 0.0f;
+		bbox._max.x() = 1000000;
+		bbox._max.y() = 1000000;
+		bbox._max.z() = 10000;
+	}
+	return bbox;
+}
+#endif
 
 };

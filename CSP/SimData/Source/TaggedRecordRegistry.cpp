@@ -35,7 +35,7 @@ NAMESPACE_SIMDATA
 void TaggedRecordRegistry::registerFactory(TaggedRecordFactoryBase *factory) {
 	assert(factory != 0);
 	assert(!hasFactory(factory->getName()));
-	SIMDATA_LOG(LOG_ALL, LOG_INFO, "Registering TaggedRecordFactory<" << factory->getName() << "> [" << factory->getId() << "]");
+	SIMDATA_LOG(INFO, ALL) << "Registering TaggedRecordFactory<" << factory->getName() << "> [" << factory->getId() << "]";
 	TaggedRecord::Id id = factory->getId();
 	HashT key(static_cast<uint32>(id), static_cast<uint32>(id>>32));
 	_map[factory->getName()] = factory;

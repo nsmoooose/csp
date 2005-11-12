@@ -208,7 +208,7 @@ LocalBattlefield::LocalBattlefield(simdata::Ref<simdata::DataManager> const &dat
 	m_LocalIdPool->limit = 1000000000;
 	//assert(data_manager.valid());
 	if (!m_DataManager) {
-		CSP_LOG(BATTLEFIELD, ERROR, "No data manager, cannot create objects.");
+		CSPLOG(ERROR, BATTLEFIELD) << "No data manager, cannot create objects.";
 	}
 }
 
@@ -225,13 +225,13 @@ struct PeerContactSorter {
 
 void LocalBattlefield::scanUnit(LocalUnitWrapper *wrapper) {
 	if (wrapper == NULL) {
-		CSP_LOG(BATTLEFIELD, DEBUG, "scan update, skipping removed unit");
+		CSPLOG(DEBUG, BATTLEFIELD) << "scan update, skipping removed unit";
 		return;
 	}
 	GridPoint point = wrapper->point();
 	if (!isNullPoint(point)) {
 		Unit unit = wrapper->unit();
-		CSP_LOG(BATTLEFIELD, INFO, "scan update for " << *unit);
+		CSPLOG(INFO, BATTLEFIELD) << "scan update for " << *unit;
 		GridRegion region = makeGridRegionEnclosingCircle(point, 60000);
 		std::vector<QuadTreeChild*> contacts;
 		dynamicIndex()->query(region, contacts);
@@ -251,7 +251,7 @@ void LocalBattlefield::scanUnit(LocalUnitWrapper *wrapper) {
 			signature = simdata::make_unordered_fingerprint(signature, simdata::hash_uint32(static_cast<uint32>(contact->id())));
 		}
 		unit->m_ContactSignature = signature;
-		CSP_LOG(BATTLEFIELD, INFO, "found " << peer_contacts.size() << " nearby units");
+		CSPLOG(INFO, BATTLEFIELD) << "found " << peer_contacts.size() << " nearby units";
 		if (!peer_contacts.empty()) {
 			std::sort(peer_contacts.begin(), peer_contacts.end(), PeerContactSorter());
 			PeerId current_id = 0;
@@ -259,13 +259,13 @@ void LocalBattlefield::scanUnit(LocalUnitWrapper *wrapper) {
 				if (iter->first != current_id) {
 					current_id = iter->first;
 					float distance = sqrt(iter->second);
-					CSP_LOG(BATTLEFIELD, INFO, "nearest unit owned by " << current_id << " is " << distance << " meters");
+					CSPLOG(INFO, BATTLEFIELD) << "nearest unit owned by " << current_id << " is " << distance << " meters";
 					wrapper->setUpdateDistance(current_id, distance);
 				}
 			}
 		}
 	} else {
-		CSP_LOG(BATTLEFIELD, DEBUG, "scan update, skipping unit outside battlefield");
+		CSPLOG(DEBUG, BATTLEFIELD) << "scan update, skipping unit outside battlefield";
 	}
 }
 
@@ -380,22 +380,22 @@ void LocalBattlefield::bindCommandDispatch(simnet::DispatchHandler::Ref const &d
 }
 
 void LocalBattlefield::onPlayerQuit(simdata::Ref<PlayerQuit> const &msg, simdata::Ref<simnet::MessageQueue> const &) {
-	SIMNET_LOG(MESSAGE, INFO, *msg);
+	SIMNET_LOG(INFO, MESSAGE) << *msg;
 	const PeerId id = msg->peer_id();
 	PlayerInfoMap::iterator iter = m_PlayerInfoMap.find(id);
 	if (iter != m_PlayerInfoMap.end()) {
-		CSP_LOG(BATTLEFIELD, INFO, iter->second->GetName() << " just quit the game! (id " << id << ")");
+		CSPLOG(INFO, BATTLEFIELD) << iter->second->GetName() << " just quit the game! (id " << id << ")";
 		m_PlayerQuitSignal->emit(id, iter->second->GetName());
 		m_PlayerInfoMap.erase(iter);
 	} else {
-		CSP_LOG(BATTLEFIELD, WARNING, "received quit message for unmapped peer " << id);
+		CSPLOG(WARNING, BATTLEFIELD) << "received quit message for unmapped peer " << id;
 	}
 	if (m_NetworkClient->getPeer(id)) {
 		m_NetworkClient->disconnectPeer(id);
 		// the global battlefield should send separate messages to remove
 		// all objects owned by this peer
 	} else {
-		CSP_LOG(BATTLEFIELD, WARNING, "received quit message for unknown peer " << id);
+		CSPLOG(WARNING, BATTLEFIELD) << "received quit message for unknown peer " << id;
 	}
 }
 
@@ -408,11 +408,11 @@ void LocalBattlefield::registerPlayerQuitCallback(simcore::callback<void, int, c
 }
 
 void LocalBattlefield::onPlayerJoin(simdata::Ref<PlayerJoin> const &msg, simdata::Ref<simnet::MessageQueue> const &) {
-	SIMNET_LOG(MESSAGE, INFO, *msg);
+	SIMNET_LOG(INFO, MESSAGE) << *msg;
 	const PeerId id = msg->peer_id();
 	if (!m_NetworkClient->getPeer(id)) {
 		const simnet::NetworkNode remote_node(msg->ip_addr(), msg->port());
-		CSP_LOG(BATTLEFIELD, INFO, msg->user_name() << " just joined the game! (id " << id << ", ip " << remote_node << ")");
+		CSPLOG(INFO, BATTLEFIELD) << msg->user_name() << " just joined the game! (id " << id << ", ip " << remote_node << ")";
 		const int incoming_bw = msg->incoming_bw();
 		const int outgoing_bw = msg->outgoing_bw();
 		m_PlayerInfoMap[id] = new PlayerInfo(id, msg->user_name());
@@ -422,7 +422,7 @@ void LocalBattlefield::onPlayerJoin(simdata::Ref<PlayerJoin> const &msg, simdata
 }
 
 void LocalBattlefield::onCommandUpdatePeer(simdata::Ref<CommandUpdatePeer> const &msg, simdata::Ref<simnet::MessageQueue> const &) {
-	SIMNET_LOG(MESSAGE, INFO, *msg);
+	SIMNET_LOG(INFO, MESSAGE) << *msg;
 	LocalUnitWrapper *wrapper = findLocalUnitWrapper(msg->unit_id());
 	if (wrapper) {
 		assert(wrapper->unit().valid() && wrapper->unit()->isLocal());
@@ -430,23 +430,23 @@ void LocalBattlefield::onCommandUpdatePeer(simdata::Ref<CommandUpdatePeer> const
 			wrapper->removePeerUpdate(msg->peer_id());
 		} else {
 			if (!wrapper->hasUpdateProxy()) {
-				CSP_LOG(BATTLEFIELD, ERROR, "creating update proxy for unit " << msg->unit_id());
+				CSPLOG(ERROR, BATTLEFIELD) << "creating update proxy for unit " << msg->unit_id();
 				wrapper->setUpdateProxy(*m_UnitRemoteUpdateMaster, m_UpdateProxyConnection);
 			}
 			wrapper->addPeerUpdate(msg->peer_id());
 		}
 	} else {
-		CSP_LOG(BATTLEFIELD, ERROR, "received update peer request for unknown unit " << msg->unit_id());
+		CSPLOG(ERROR, BATTLEFIELD) << "received update peer request for unknown unit " << msg->unit_id();
 	}
 }
 
 void LocalBattlefield::onCommandAddUnit(simdata::Ref<CommandAddUnit> const &msg, simdata::Ref<simnet::MessageQueue> const &) {
-	SIMNET_LOG(MESSAGE, INFO, *msg);
+	SIMNET_LOG(INFO, MESSAGE) << *msg;
 	LocalUnitWrapper *wrapper = findLocalUnitWrapper(msg->unit_id());
 	if (wrapper) {
 		// already added.  for testing, double check that the message is consistent (FIXME)
 		SIMDATA_VERIFY_EQ(msg->owner_id(), wrapper->owner());
-		CSP_LOG(BATTLEFIELD, INFO, "unit already exists, disregarding duplicate message");
+		CSPLOG(INFO, BATTLEFIELD) << "unit already exists, disregarding duplicate message";
 		return;
 	}
 	wrapper = new LocalUnitWrapper(msg->unit_id(), msg->unit_class(), msg->owner_id());
@@ -455,7 +455,7 @@ void LocalBattlefield::onCommandAddUnit(simdata::Ref<CommandAddUnit> const &msg,
 }
 
 void LocalBattlefield::onCommandRemoveUnit(simdata::Ref<CommandRemoveUnit> const &msg, simdata::Ref<simnet::MessageQueue> const &) {
-	SIMNET_LOG(MESSAGE, INFO, *msg);
+	SIMNET_LOG(INFO, MESSAGE) << *msg;
 	removeUnit(msg->unit_id());
 }
 
@@ -465,16 +465,16 @@ void LocalBattlefield::sendServerCommand(simdata::Ref<simnet::NetworkMessage> co
 }
 
 void LocalBattlefield::onJoinResponse(simdata::Ref<JoinResponse> const &msg, simdata::Ref<simnet::MessageQueue> const &) {
-	SIMNET_LOG(MESSAGE, INFO, *msg);
+	SIMNET_LOG(INFO, MESSAGE) << *msg;
 	if (m_ConnectionState != CONNECTION_JOIN) {
-		CSP_LOG(BATTLEFIELD, ERROR, "received unrequested join response");
+		CSPLOG(ERROR, BATTLEFIELD) << "received unrequested join response";
 		return;
 	}
 	if (!msg->success()) {
-		CSP_LOG(BATTLEFIELD, ERROR, "battlefield failed to connect to server: " << msg->details());
+		CSPLOG(ERROR, BATTLEFIELD) << "battlefield failed to connect to server: " << msg->details();
 		assert(0);
 	}
-	CSP_LOG(BATTLEFIELD, INFO, "battlefield connected to server: " << msg->details());
+	CSPLOG(INFO, BATTLEFIELD) << "battlefield connected to server: " << msg->details();
 	assert(msg->first_id() > 0);
 	assert(msg->id_count() > 63);
 	m_LocalIdPool->next = msg->first_id();
@@ -485,7 +485,7 @@ void LocalBattlefield::onJoinResponse(simdata::Ref<JoinResponse> const &msg, sim
 }
 
 void LocalBattlefield::onIdAllocationResponse(simdata::Ref<IdAllocationResponse> const &msg, simdata::Ref<simnet::MessageQueue> const &) {
-	SIMNET_LOG(MESSAGE, INFO, *msg);
+	SIMNET_LOG(INFO, MESSAGE) << *msg;
 	if (static_cast<ObjectId>(msg->first_id()) == m_LocalIdPool->reserve) return;  // duplicate
 	assert(m_LocalIdPool->reserve_limit == 0);
 	m_LocalIdPool->reserve = msg->first_id();
@@ -500,10 +500,10 @@ void LocalBattlefield::onUnitMessage(simdata::Ref<simnet::NetworkMessage> const 
 	if (wrapper) {
 		bool handled = m_NetworkClient->dispatch(wrapper->unit().get(), msg);
 		if (!handled) {
-			CSP_LOG(BATTLEFIELD, ERROR, "unhandled message for unit " << unit_id);
+			CSPLOG(ERROR, BATTLEFIELD) << "unhandled message for unit " << unit_id;
 		}
 	} else {
-		CSP_LOG(BATTLEFIELD, ERROR, "received message for unknown unit id " << unit_id);
+		CSPLOG(ERROR, BATTLEFIELD) << "received message for unknown unit id " << unit_id;
 	}
 }
 
@@ -511,11 +511,11 @@ void LocalBattlefield::onUnitUpdate(simdata::Ref<simnet::NetworkMessage> const &
 	int unit_id = msg->getRoutingData();
 	LocalUnitWrapper *wrapper = findLocalUnitWrapper(unit_id);
 	if (wrapper) {
-		CSP_LOG(BATTLEFIELD, INFO, "received update for unit id " << unit_id);
+		CSPLOG(INFO, BATTLEFIELD) << "received update for unit id " << unit_id;
 		if (!wrapper->unit()) {
-			CSP_LOG(BATTLEFIELD, WARNING, "creating object for unit " << unit_id << " (" << wrapper->path() << ")");
+			CSPLOG(WARNING, BATTLEFIELD) << "creating object for unit " << unit_id << " (" << wrapper->path() << ")";
 			if (!m_DataManager.valid()) {
-				CSP_LOG(BATTLEFIELD, ERROR, "data manager not set, unable to create object " << wrapper->path());
+				CSPLOG(ERROR, BATTLEFIELD) << "data manager not set, unable to create object " << wrapper->path();
 				return;
 			}
 			Unit unit;
@@ -525,7 +525,7 @@ void LocalBattlefield::onUnitUpdate(simdata::Ref<simnet::NetworkMessage> const &
 				// pass (error handled below)
 			}
 			if (!unit) {
-				CSP_LOG(BATTLEFIELD, ERROR, "unable to create object " << wrapper->path());
+				CSPLOG(ERROR, BATTLEFIELD) << "unable to create object " << wrapper->path();
 				return;
 			}
 			// TODO other setup?
@@ -541,7 +541,7 @@ void LocalBattlefield::onUnitUpdate(simdata::Ref<simnet::NetworkMessage> const &
 		}
 		wrapper->unit()->setState(msg, m_CurrentTimeStamp);
 	} else {
-		CSP_LOG(BATTLEFIELD, ERROR, "received update for unknown unit id " << unit_id);
+		CSPLOG(ERROR, BATTLEFIELD) << "received update for unknown unit id " << unit_id;
 	}
 }
 
@@ -556,7 +556,7 @@ void LocalBattlefield::assignNewId(Object const &object) {
 			sendServerCommand(new IdAllocationRequest());
 		}
 	}
-	CSP_LOG(BATTLEFIELD, INFO, "allocating unit id " << id);
+	CSPLOG(INFO, BATTLEFIELD) << "allocating unit id " << id;
 	_assignObjectId(object, id);
 }
 
@@ -632,7 +632,7 @@ void LocalBattlefield::updateVisibility(GridPoint old_camera_position, GridPoint
 	if (old_region.overlaps(new_region)) {
 		// usual case, overlapping old and new visibility regions.  do one query
 		// and filter out the objects that enter and leave the visibility bubble.
-		CSP_LOG(BATTLEFIELD, DEBUG, "updateVisibility(): small camera move");
+		CSPLOG(DEBUG, BATTLEFIELD) << "updateVisibility(): small camera move";
 
 		// construct a query region that includes both the old and new bubbles
 		// and find all objects in that region.
@@ -655,7 +655,7 @@ void LocalBattlefield::updateVisibility(GridPoint old_camera_position, GridPoint
 		// less common case, the camera has jumped so far that the old and new
 		// visibility regions don't overlap.  this is easier, since no sorting
 		// is required.
-		CSP_LOG(BATTLEFIELD, DEBUG, "updateVisibility(): large camera move");
+		CSPLOG(DEBUG, BATTLEFIELD) << "updateVisibility(): large camera move";
 		if (!old_position_is_null) {
 			dynamicIndex()->query(old_region, hide);
 			staticIndex()->query(old_region, hide);
@@ -666,7 +666,7 @@ void LocalBattlefield::updateVisibility(GridPoint old_camera_position, GridPoint
 		}
 	}
 
-	CSP_LOG(BATTLEFIELD, DEBUG, "updateVisibility(): hiding " << hide.size() << " objects");
+	CSPLOG(DEBUG, BATTLEFIELD) << "updateVisibility(): hiding " << hide.size() << " objects";
 	for (unsigned i = 0; i < hide.size(); ++i) {
 		Object object = static_cast<ObjectWrapper*>(hide[i])->object();
 		// object will be null if we have not received any peer updates yet.  in this case
@@ -679,7 +679,7 @@ void LocalBattlefield::updateVisibility(GridPoint old_camera_position, GridPoint
 		}
 	}
 
-	CSP_LOG(BATTLEFIELD, DEBUG, "updateVisibility(): showing " << show.size() << " objects");
+	CSPLOG(DEBUG, BATTLEFIELD) << "updateVisibility(): showing " << show.size() << " objects";
 	for (unsigned i = 0; i < show.size(); ++i) {
 		Object object = static_cast<ObjectWrapper*>(show[i])->object();
 		// object will be null if we have not received any peer updates yet.  in this case
@@ -706,14 +706,14 @@ void LocalBattlefield::setCamera(simdata::Vector3 const &eye_point, const simdat
 	// TODO ElevationCorrection needs to be able to query the terrain object
 	// to deterimine if elevation data is available, and block (in the feature
 	// construction thread) if it isn't.
-	CSP_LOG(BATTLEFIELD, DEBUG, "setCamera(): update scene camera");
+	CSPLOG(DEBUG, BATTLEFIELD) << "setCamera(): update scene camera";
 	m_SceneManager->setCamera(eye_point, look_pos, up_vec);
 
 	// if the camera has move sufficiently far, add and remove features and dynamic
 	// objects from the scene based on the current camera position.
 	GridPoint new_grid_position = globalToGrid(eye_point);
 	if (hasMoved(m_CameraGridPosition, new_grid_position)) {
-		CSP_LOG(BATTLEFIELD, DEBUG, "setCamera(): updating visibility " << new_grid_position.x() << ", " << new_grid_position.y());
+		CSPLOG(DEBUG, BATTLEFIELD) << "setCamera(): updating visibility " << new_grid_position.x() << ", " << new_grid_position.y();
 		updateVisibility(m_CameraGridPosition, new_grid_position);
 		m_CameraGridPosition = new_grid_position;
 	}
@@ -741,11 +741,11 @@ void LocalBattlefield::UnitUpdateProxy::removePeerUpdate(PeerId id) {
 }
 
 double LocalBattlefield::UnitUpdateProxy::onUpdate(double dt) {
-	CSP_LOG(BATTLEFIELD, INFO, "update proxy called");
+	CSPLOG(INFO, BATTLEFIELD) << "update proxy called";
 
 	const unsigned n_updates = m_PeerUpdates.size();
 	if (n_updates == 0) {
-		CSP_LOG(BATTLEFIELD, WARNING, "no peers to update");
+		CSPLOG(WARNING, BATTLEFIELD) << "no peers to update";
 		return 1.0;  // wait 1 sec before checking again
 	}
 
@@ -753,7 +753,7 @@ double LocalBattlefield::UnitUpdateProxy::onUpdate(double dt) {
 	m_UpdateTime += dt_ms;
 	// FIXME this can get choppy when the frame rate and update rates are comparable
 	if (m_UpdateTime < m_PeerUpdates[0].next_update) {
-		CSP_LOG(BATTLEFIELD, DEBUG, "too soon, " << (m_UpdateTime - m_PeerUpdates[0].next_update) << " ms");
+		CSPLOG(DEBUG, BATTLEFIELD) << "too soon, " << (m_UpdateTime - m_PeerUpdates[0].next_update) << " ms";
 		return (m_UpdateTime - m_PeerUpdates[0].next_update) * 1e-3;
 	}
 
@@ -813,7 +813,7 @@ double LocalBattlefield::UnitUpdateProxy::onUpdate(double dt) {
 		if (msg.valid()) {
 			m_Connection->send(msg, static_cast<PeerId>(id));
 		} else {
-			CSP_LOG(BATTLEFIELD, ERROR, "no state message");
+			CSPLOG(ERROR, BATTLEFIELD) << "no state message";
 		}
 	}
 
@@ -829,11 +829,11 @@ void LocalBattlefield::UnitUpdateProxy::setUpdateParameters(PeerId id, double in
 		if (m_PeerUpdates[i].id == id) {
 			m_PeerUpdates[i].interval = interval_ms;
 			m_PeerUpdates[i].detail = static_cast<simdata::uint16>(detail);
-			CSP_LOG(BATTLEFIELD, INFO, "set update interval for peer " << id << " to " << interval_ms << " ms");
+			CSPLOG(INFO, BATTLEFIELD) << "set update interval for peer " << id << " to " << interval_ms << " ms";
 			return;
 		}
 	}
-	CSP_LOG(BATTLEFIELD, WARNING, "set update interval, peer " << id << " not found");
+	CSPLOG(WARNING, BATTLEFIELD) << "set update interval, peer " << id << " not found";
 }
 
 void LocalBattlefield::LocalUnitWrapper::setUnit(Unit const &object) {

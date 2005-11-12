@@ -69,9 +69,7 @@ const char *buildDate() {
 class load_check {
 public:
 	load_check() {
-		log().entry(LOG_INFO, LOG_ALL)
-		      << "SimData " << getVersion() << " loaded @ " << this
-		      << std::endl;
+		SIMDATA_LOG(INFO, ALL) << "SimData " << getVersion() << " loaded @ " << this;
 	}
 } check_basetype;
 

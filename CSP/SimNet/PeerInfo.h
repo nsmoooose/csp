@@ -314,7 +314,7 @@ public:
 	 *  peer receives the confirmation id, reliable transmission of the packet is complete.
 	 */
 	inline void pushConfirmation(ConfirmationId id) {
-		SIMNET_LOG(PEER, DEBUG, "Peer requests confirmation of id " << id);
+		SIMNET_LOG(DEBUG, PEER) << "Peer requests confirmation of id " << id;
 		m_confirmation_queue.push_back(id);
 	}
 
@@ -334,7 +334,7 @@ public:
 			iter->second->confirm();
 			m_reliable_packet_map.erase(iter);
 		} else {
-			SIMNET_LOG(PEER, WARNING, "Received confirmation that we did not request " << id);
+			SIMNET_LOG(WARNING, PEER) << "Received confirmation that we did not request " << id;
 		}
 	}
 

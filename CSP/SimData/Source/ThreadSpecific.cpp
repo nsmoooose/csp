@@ -20,54 +20,16 @@
 
 
 /**
- * @file ThreadBase.cpp
- * @brief PosixThreads wrapper and utility classes.
+ * @file ThreadSpecific.cpp
+ * @brief PosixThreads thread-specific storage.
  **/
 
 #ifndef SIMDATA_NOTHREADS
 
-#include <SimData/ThreadBase.h>
-#include <SimData/Log.h>
-#include <SimData/Timing.h>
-
-#include <string>
-#include <sstream>
+#include <SimData/ThreadSpecific.h>
+#include <SimData/ScopedLock.h>
 
 NAMESPACE_SIMDATA
-
-ThreadException::ThreadException(const int error): Exception("ThreadException"), m_error(error) {
-	translateError();
-}
-
-void ThreadException::checkThrow(const int result) {
-	if (result != 0) {
-		throw ThreadException(result);
-	}
-}
-
-void ThreadException::checkLog(const int result) {
-	if (result != 0) {
-		ThreadException e(result);
-		SIMDATA_ERROR(LOG_THREAD, e);
-		e.clear();
-	}
-}
-
-void ThreadException::translateError() {
-	std::ostringstream msg;
-	switch (m_error) {
-		case EDEADLK: msg << "deadlock (EDEADLK)"; break;
-		case EAGAIN: msg << "unable to allocate resource (EAGAIN)"; break;
-		case EBUSY: msg << "busy: resource already in use (EBUSY)"; break;
-		case EINVAL: msg << "invalid parameters (EINVAL)"; break;
-		case ENOMEM: msg << "out of memory (ENOMEM)"; break;
-		case ETIMEDOUT: msg << "timed out (ETIMEDOUT)"; break;
-		case EPERM: msg << "permission denied (EPERM)"; break;
-		case ESRCH: msg << "not found (ESRCH)"; break;
-		default: msg << "ISO C99 error code: " << m_error;
-	}
-	addMessage(msg.str());
-}
 
 
 template <class TYPE>
@@ -109,34 +71,6 @@ TYPE *ThreadSpecific<TYPE>::operator->() {
 
 	// return the instance specific to the current thread.
 	return tss_data;
-}
-
-ThreadCondition::~ThreadCondition() {
-	int result = pthread_cond_destroy(&m_cond);
-	// not safe to throw from a dtor, so just log the error
-	ThreadException::checkLog(result);
-	if (&m_local_mutex == &m_mutex) {
-		result = pthread_mutex_destroy(&m_local_mutex);
-		// not safe to throw from a dtor, so just log the error
-		ThreadException::checkLog(result);
-	}
-}
-
-bool ThreadCondition::wait(double timeout) {
-	if (timeout < 0) {
-		const int result = pthread_cond_wait(&m_cond, &m_mutex);
-		ThreadException::checkThrow(result);
-	} else {
-		double abstime_sec = get_realtime() + timeout;
-		timespec abstime;
-		double sec = floor(abstime_sec);
-		abstime.tv_sec = static_cast<int>(sec);
-		abstime.tv_nsec = static_cast<int>(1e+9 * (abstime_sec - sec));
-		const int result = pthread_cond_timedwait(&m_cond, &m_mutex, &abstime);
-		if (result == ETIMEDOUT) return false;
-		ThreadException::checkThrow(result);
-	}
-	return true;
 }
 
 NAMESPACE_SIMDATA_END

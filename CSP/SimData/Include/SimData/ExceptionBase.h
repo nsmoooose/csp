@@ -36,6 +36,7 @@
 
 NAMESPACE_SIMDATA
 
+class StackTrace;
 
 /** General exception base class with error reporting.
  *
@@ -44,8 +45,8 @@ NAMESPACE_SIMDATA
 class SIMDATA_EXPORT ExceptionBase { //: public std::runtime_error {
 	std::string _msg;
 	std::string _type;
-	std::string _trace;
 	mutable bool _dump;
+	StackTrace *_trace;
 public:
 	/** Create a new exception.
 	 *
@@ -124,6 +125,8 @@ public:
 	%}
 #endif // SWIG
 
+private:
+	ExceptionBase const &operator=(ExceptionBase const &e);
 };
 
 

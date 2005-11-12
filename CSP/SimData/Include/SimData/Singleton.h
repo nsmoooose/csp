@@ -56,7 +56,7 @@ public:
 
 protected:
 	Singleton() {}
-	~Singleton() {}
+	virtual ~Singleton() {}
 };
 
 NAMESPACE_SIMDATA_END

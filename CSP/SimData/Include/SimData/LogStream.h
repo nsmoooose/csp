@@ -1,5 +1,5 @@
 /* SimData: Data Infrastructure for Simulations
- * Copyright 2002, 2003, 2004 Mark Rose <mkrose@users.sf.net>
+ * Copyright 2002-2005 Mark Rose <mkrose@users.sf.net>
  *
  * This file is part of SimData.
  *
@@ -30,169 +30,89 @@
 
 #include <iosfwd>
 #include <string>
+#include <ostream>
+#include <fstream>
 #include <cassert>
-#include <ctime>
 
 #include <SimData/Namespace.h>
 #include <SimData/Export.h>
-#include <SimData/ThreadBase.h>
+#include <SimData/Synchronization.h>
+#include <SimData/Uniform.h>
+
 
 NAMESPACE_SIMDATA
+
+class StackTrace;
 
 
 /** Class to manage the debug logging stream.
  */
-class SIMDATA_EXPORT LogStream
-{
-	std::ostream *m_stream;
-	std::ofstream *m_fstream;
-	bool m_log_point;
-	bool m_log_time;
-	int m_category;
-	int m_priority;
-
-#ifndef SIMDATA_NOTHREADS
-	ThreadMutex m_mutex;
+class SIMDATA_EXPORT LogStream {
 public:
-	void lock() { m_mutex.lock(); }
-	void unlock() { m_mutex.unlock(); }
-#endif // SIMDATA_NOTHREADS
-
-public:
+	/// Flags controlling log metadata.
+	enum { TERSE=0, PRIORITY=1, DATESTAMP=2, TIMESTAMP=4, LINESTAMP=8, FULLPATH=16, THREAD=32, VERBOSE=~0 };
+	enum { DEBUG=0, INFO=1, WARNING=2, ERROR=3, FATAL=4 };
 
 	/** Create a new log stream that defaults to stderr.
 	 */
-	LogStream():
-	          m_stream(NULL),
-	          m_fstream(NULL),
-	          m_log_point(true),
-	          m_log_time(false),
-	          m_category(~0),
-	          m_priority(0) {
-	}
+	LogStream();
 
-	/** Create a new log stream.
-	 *
-	 *  @param out_ The initial output stream.
+	/** Create a new log stream attached to the specified output stream.
 	 */
-	LogStream(std::ostream& out_):
-	          m_stream(&out_),
-	          m_fstream(NULL),
-	          m_log_point(true),
-	          m_log_time(false),
-	          m_category(~0),
-	          m_priority(0) {
-	}
+	LogStream(std::ostream& stream);
 
-	/** Destructor; closes the output stream */
-	virtual ~LogStream() { _close(); }
-
-	/** Enable or disable point logging.
-	 *
-	 *  When point logging is enabled, log messages generated with macros that
-	 *  pass __FILE__ and __LINE__ to LogStream::log will include the source
-	 *  file and line number of the code that generated the log entry.  When
-	 *  disabled, this information will be suppressed.
+	/** Destructor; closes the output stream (if not cout or cerr).
 	 */
-	void setPointLogging(bool enabled) { m_log_point = enabled; }
+	~LogStream();
 
-	/** Get the current point logging state.
-	 *
-	 *  @returns true if point logging is enabled; false otherwise.
-	 */
-	bool getPointLogging() const { return m_log_point; }
-
-	/** Enable or disable time logging.
-	 *
-	 *  When time logging is enabled, each log entry will be time stamped.
-	 */
-	void setTimeLogging(bool enabled) { m_log_time = enabled; }
-
-	/** Get the current time logging state.
-	 *
-	 *  @returns true if time logging is enabled; false otherwise.
-	 */
-	bool getTimeLogging() const { return m_log_time; }
-
-	/** Configure logging parameters and destination base on
-	 *  environment variables.  This method is not called by
-	 *  the constructor; call it explicitly if needed.
+	/** Configure logging parameters and destination base on environment variables.
+	 *  This method is not called by the constructor; call it explicitly if needed.
 	 *
 	 *  @param log_file the environment variable specifying the log
 	 *    output path (e.g. "SIMDATA_LOGFILE").
 	 *  @param log_priority the environment variable specifying the log
 	 *    priority threshold (e.g. "SIMDATA_LOGPRIORITY").
+	 *  @param log_flags the environment variable specifying the log
+	 *    flags (e.g. "SIMDATA_LOGFLAGS").
 	 */
-	void initFromEnvironment(const char *log_file, const char *log_priority);
+	void initFromEnvironment(const char *log_file, const char *log_priority, const char *log_flags);
 
-	/** Close the underlying output stream.
-	 *
-	 *  Idempotent, and will not close cerr or cout.
+	void setFlags(int flags) { m_flags = flags; }
+	int getFlags() const { return m_flags; }
+
+	void setPriority(int priority) { m_priority = priority; }
+	int getPriority() const { return m_priority; }
+
+	void setCategories(int categories) { m_categories = categories; }
+	int getCategories() const { return m_categories; }
+
+	void setStream(std::ostream &stream);
+	std::ostream &getStream() { assert(m_stream); return *m_stream; }
+
+	/** Write log messages to the specified file.
 	 */
-	void _close();
+	void logToFile(std::string const &filename);
 
-	/** Set the output stream
-	 *
-	 *  @param out_ output stream
-	 */
-	void setOutput(std::ostream& out_) {
-		_close();
-		m_stream = &out_;
-	}
+	void endl() { if (m_stream) *m_stream << std::endl; }
+	void flush() { if (m_stream) m_stream->flush(); }
+	void trace(StackTrace const *stacktrace=0);
 
-	/** Set the output stream
-	 *
-	 *  @param out_ output file stream (LogStream will close it)
-	 */
-	void setOutput(std::ofstream& out_);
+#ifdef SIMDATA_NOTHREADS
+	void setLocking(bool) { }
+	void lock() { }
+	void unlock() { }
+#else
+	void setLocking(bool thread_safe=true) { m_threadsafe = thread_safe; }
+	void lock() { if (m_threadsafe) m_mutex.lock(); }
+	void unlock() { if (m_threadsafe) m_mutex.unlock(); }
+	uint32 initialThreadId() const { return m_initial_thread_id; }
+#endif // SIMDATA_NOTHREADS
 
-	/** Set the output stream
-	 *
-	 *  @param filename output file path
-	 */
-	void setOutput(std::string const &filename);
-
-	/** Set the global log priority level.
-	 *  Log entries with priority lower than this value will be suppressed.
-	 *
-	 *  @param p priority
-	 */
-	void setLogPriority(int p) { m_priority = p; }
-
-	/** Get the current logging priority.
-	 *
-	 *  @return the priority cutoff for logging messages
-	 */
-	int getLogPriority() { return m_priority; }
-
-	/** Set the global log categories.
-	 *  Log entries in categories not included in this set will be suppressed.
-	 *
-	 *  @param c categories (bitwise AND of one or more logging categories).
-	 */
-	void setLogCategory(int c) { m_category = c; }
-
-	/** Get the logging categories currently enabled.
-	 *
-	 *  @return bitwise AND of logging category constants
-	 */
-	int getLogCategory() { return m_category; }
-
-	/** Test if a given priority and category are logable.
+	/** Test if a given priority and category should be logged.
 	 */
 	inline bool isNoteworthy(int priority, int category=~0) {
-		return ((category & m_category) != 0 && priority >= m_priority);
+		return m_stream && (priority >= m_priority) && (category & m_categories);
 	}
-
-	/** Method for logging a message to the stream.
-	 *
-	 *  @param priority priority of this message.
-	 *  @param category category of this message (default ALL).
-	 *  @param file source file that generated this message; typically __FILE__.
-	 *  @param line line number of the code that generated this message (typically __LINE__).
-	 *  @return an output stream to receive the message contents.
-	 */
-	std::ostream & entry(int priority, int category=~0, const char *file=0, int line=0);
 
 	/** Get or create a new log stream assocated with a string identifier.
 	 *
@@ -205,8 +125,133 @@ public:
 	 */
 	static LogStream *getOrCreateNamedLog(const std::string &name);
 
+
+	/** Helper class used to write a single entry to the log stream.  The
+	 *  class constructs the log entry as a string internally, then writes
+	 *  it to the LogStream when it goes out of scope.
+	 */
+	class LogEntry;
+
+private:
+	void init();
+	void close();
+
+	int m_flags;
+	int m_priority;
+	int m_categories;
+	std::ostream *m_stream;
+	std::ofstream *m_fstream;
+
+#ifndef SIMDATA_NOTHREADS
+	ThreadMutex m_mutex;
+	bool m_threadsafe;
+	uint32 m_initial_thread_id;
+#endif
 };
 
+
+/** A trivial string stream that writes to a fixed size internal buffer.
+ */
+template <int SIZE>
+class FixedStringBuffer: public std::basic_streambuf<char, std::char_traits<char> > {
+public:
+	FixedStringBuffer() { setp(m_buffer, m_buffer + SIZE); }
+	char *get() {
+		// ensure null termination
+		sputc(0); m_buffer[SIZE-1] = 0;
+		return m_buffer;
+	}
+private:
+	char m_buffer[SIZE];
+};
+
+
+/** A helper class for writing a single entry to a log stream.  Assembles
+ *  the log line in an internal buffer, which is written to the log when
+ *  the LogEntry instance goes out of scope.  LogEntry is intended to be
+ *  created anonymously on the stack, like this:
+ *
+ *  LogEntry(mylog) << "log entry message number " << count;
+ *
+ *  Often macros are used to create LogEntries, which allows the current
+ *  file name and line number to be automatically recorded in the log.
+ *  See the various SIMDATA_LOG macros for more information.
+ */
+class LogStream::LogEntry {
+public:
+	/** Create a new log entry in the specified log stream.
+	 *
+	 *  @param stream the logstream to write to.
+	 *  @param priority priority of this message.
+	 *    If non-negative and the logstream's flags include PRIORITY, this
+	 *    priority will be recorded in the message.  Note that this is only
+	 *    an advisory value; it is up to the creator of the LogEntry to
+	 *    filter messages based on priority.
+	 */
+	LogEntry(LogStream &stream, int priority): m_stream(stream), m_priority(priority) {
+		prefix(NULL, 0);
+	}
+
+	/** Create a new log entry in the specified log stream.
+	 *
+	 *  @param stream the logstream to write to.
+	 *  @param priority priority of this message.
+	 *    If non-negative and the logstream's flags includes PRIORITY, this
+	 *    priority will be recorded in the message.  Note that this is only
+	 *    an advisory value; it is up to the creator of the LogEntry to
+	 *    filter messages based on priority.
+	 *  @param filename source file that generated this message (typically __FILE__).
+	 *  @param linenum line number of the code that generated this message (typically __LINE__).
+	 */
+	LogEntry(LogStream &stream, int priority, const char *filename, int linenum): m_stream(stream), m_priority(priority) {
+		prefix(filename, linenum);
+	}
+
+	/** Write the buffered log entry to the logstream.  Locks the stream during the
+	 *  write operation if running in a multithreaded environment.  If the priority
+	 *  is FATAL, records a stack trace and aborts the program.
+	 */
+	~LogEntry() {
+		m_stream.lock();
+		m_stream.getStream() << m_buffer.get() << "\n";
+		if (m_priority >= LogStream::WARNING) m_stream.flush();
+		m_stream.unlock();
+		if (m_priority == LogStream::FATAL) die();
+	}
+
+	/** Stream operator for recording messages in the log entry.
+	 */
+	template <typename T> LogEntry & operator<<(T const& x) {
+		m_buffer << x;
+		return *this;
+	}
+
+	/** Handle various ios formating objects (e.g., std::hex).
+	 */
+	template <typename T> LogEntry & operator<<(T& (*formatter)(T&)) {
+		m_buffer << formatter;
+		return *this;
+	}
+
+private:
+	void prefix(const char *file, int linenum);
+	void die();
+
+	/** A fixed size string stream used to buffer the log entry text internally
+	 *  before writing the completed string to the log stream.
+	 */
+	class BufferStream: public std::basic_ostream<char> {
+	public:
+		BufferStream(): std::basic_ostream<char>(&m_buffer) { }
+		char *get() { return m_buffer.get(); }
+	private:
+		FixedStringBuffer<512> m_buffer;
+	};
+
+	LogStream &m_stream;
+	int m_priority;
+	BufferStream m_buffer;
+};
 
 
 NAMESPACE_SIMDATA_END

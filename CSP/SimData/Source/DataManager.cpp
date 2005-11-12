@@ -69,7 +69,7 @@ void DataManager::addArchive(DataArchive *d) {
 		std::vector<ObjectID>::iterator id;
 		for (id = ids.begin(); id != ids.end(); id++) {
 			if (_archive_map.find(*id) != _archive_map.end()) {
-				SIMDATA_LOG(LOG_ARCHIVE, LOG_ERROR, "Duplicate object ID [" << (*id) << "] adding data archive '" << d->getFileName() << "' to data manager.");
+				SIMDATA_LOG(ERROR, ARCHIVE) << "Duplicate object ID [" << (*id) << "] adding data archive '" << d->getFileName() << "' to data manager.";
 			}
 			_archive_map[*id] = idx;
 		}
@@ -156,7 +156,7 @@ DataArchive *DataManager::findArchive(ObjectID const &id, std::string const &pat
 			msg = "human-readable path unavailable";
 		}
 		msg = "path not found (" + msg + ")" + id.str() + "\n";
-		SIMDATA_LOG(LOG_ARCHIVE, LOG_ERROR, "DataManager::findArchive() : " << msg);
+		SIMDATA_LOG(ERROR, ARCHIVE) << "DataManager::findArchive() : " << msg;
 		throw IndexError(msg.c_str());
 	}
 	return archive;

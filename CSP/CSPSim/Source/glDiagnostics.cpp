@@ -389,11 +389,11 @@ void GlStateSnapshot::_logDiff(std::string const &label, GlStateSnapshot const &
 	for (unsigned i = 0; i < m_StateLog.size(); ++i) {
 		if (m_StateLog[i] != other.m_StateLog[i]) {
 			if (first) {
-				CSP_LOG(SCENE, ALERT, "GL_STATE_DIFF -- " << label);
+				CSPLOG(WARNING, SCENE) << "GL_STATE_DIFF -- " << label;
 				first = false;
 			}
-			CSP_LOG(SCENE, ALERT, "GL_STATE_DIFF < " << m_StateLog[i]);
-			CSP_LOG(SCENE, ALERT, "GL_STATE_DIFF > " << other.m_StateLog[i]);
+			CSPLOG(WARNING, SCENE) << "GL_STATE_DIFF < " << m_StateLog[i];
+			CSPLOG(WARNING, SCENE) << "GL_STATE_DIFF > " << other.m_StateLog[i];
 		}
 	}
 }

@@ -261,13 +261,16 @@
 				RelativePath="..\Source\Real.cpp">
 			</File>
 			<File
+				RelativePath="..\Source\Synchronization.cpp">
+			</File>
+			<File
 				RelativePath="..\Source\TaggedRecordRegistry.cpp">
 			</File>
 			<File
-				RelativePath="..\Source\ThreadBase.cpp">
+				RelativePath="..\Source\ThreadUtil.cpp">
 			</File>
 			<File
-				RelativePath="..\Source\ThreadLog.cpp">
+				RelativePath="..\Source\ThreadSpecific.cpp">
 			</File>
 			<File
 				RelativePath="..\Source\Timing.cpp">
@@ -406,10 +409,16 @@
 				RelativePath="..\Include\SimData\Referenced.h">
 			</File>
 			<File
+				RelativePath="..\Include\SimData\ScopedLock.h">
+			</File>
+			<File
 				RelativePath="..\Include\SimData\ScopedPointer.h">
 			</File>
 			<File
 				RelativePath="..\Include\SimData\Singleton.h">
+			</File>
+			<File
+				RelativePath="..\Include\SimData\Synchronization.h">
 			</File>
 			<File
 				RelativePath="..\Include\SimData\TaggedRecord.h">
@@ -421,7 +430,7 @@
 				RelativePath="..\Include\SimData\Thread.h">
 			</File>
 			<File
-				RelativePath="..\Include\SimData\ThreadBase.h">
+				RelativePath="..\Include\SimData\ThreadSpecific.h">
 			</File>
 			<File
 				RelativePath="..\Include\SimData\ThreadLog.h">

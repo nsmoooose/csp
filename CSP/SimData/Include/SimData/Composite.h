@@ -239,19 +239,19 @@ public:
 	 */
 	virtual bool addChild(Node *node) {
 		if (!isContainer()) {
-			SIMDATA_LOG(LOG_ALL, LOG_WARNING, "simdata::Composite<>::addChild() to non-container.");
+			SIMDATA_LOG(WARNING, ALL) << "simdata::Composite<>::addChild() to non-container.";
 			return false;
 		}
 		if (!node) {
-			SIMDATA_LOG(LOG_ALL, LOG_WARNING, "simdata::Composite<>::addChild() null node.");
+			SIMDATA_LOG(WARNING, ALL) << "simdata::Composite<>::addChild() null node.";
 			return false;
 		}
 		if (!node->canBeAdded()) {
-			SIMDATA_LOG(LOG_ALL, LOG_WARNING, "simdata::Composite<>::addChild() cannot be added.");
+			SIMDATA_LOG(WARNING, ALL) <<"simdata::Composite<>::addChild() cannot be added.";
 			return false;
 		}
 		if (containsNode(node)) {
-			SIMDATA_LOG(LOG_ALL, LOG_WARNING, "simdata::Composite<>::addChild() duplicate node.");
+			SIMDATA_LOG(WARNING, ALL) << "simdata::Composite<>::addChild() duplicate node.";
 			return false;
 		}
 		_children.push_back(node);
@@ -278,7 +278,7 @@ public:
 		if (pos >= _children.size() || count == 0) return false;
 		unsigned int end = pos + count;
 		if (end > _children.size()) {
-			SIMDATA_LOG(LOG_ALL, LOG_WARNING, "simdata::Composite<>::removeChild() index range truncated.");
+			SIMDATA_LOG(WARNING, ALL) << "simdata::Composite<>::removeChild() index range truncated.";
 			end = _children.size();
 		}
 		for (unsigned int i = pos; i < end; ++i) {

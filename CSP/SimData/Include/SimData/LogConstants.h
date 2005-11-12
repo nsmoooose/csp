@@ -39,7 +39,7 @@ NAMESPACE_SIMDATA
  *  the threshold priority of the log instance (see LogStream for
  *  details).
  */
-enum { LOG_BULK, LOG_TRACE, LOG_DEBUG, LOG_INFO, LOG_WARNING, LOG_ALERT, LOG_ERROR };
+enum { LOG_DEBUG, LOG_INFO, LOG_WARNING, LOG_ERROR, LOG_FATAL };
 
 /** Log message categories used internally by SimData
  *

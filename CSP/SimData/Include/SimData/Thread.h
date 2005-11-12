@@ -20,7 +20,7 @@
 
 
 /**
- * @file ThreadBase.h
+ * @file Thread.h
  * @brief PosixThreads wrapper and utility classes.
  */
 
@@ -32,8 +32,10 @@
 
 #include <SimData/Namespace.h>
 #include <SimData/Properties.h>
-#include <SimData/ThreadBase.h>
 #include <SimData/Ref.h>
+#include <SimData/Log.h>
+#include <SimData/ScopedLock.h>
+#include <SimData/Synchronization.h>
 #include <pthread.h>
 
 
@@ -59,6 +61,10 @@ namespace thread {
 	/** Return a Thread instance for the currently executing thread.
 	 */
 	//static Thread self() { return Thread(pthread_self()); }
+
+	/** Return the id of the current thread.
+	 */
+	static inline unsigned long id() { return pthread_self(); }
 
 	/** Terminate the currently executing thread.
 	 */
@@ -139,6 +145,8 @@ class Task: public ThreadSafeReferenced {
 friend class BaseThread;
 
 public:
+	typedef simdata::Ref<Task> Ref;
+
 #ifndef PTHREADS_WIN
 	typedef pthread_t ThreadId;
 #else
@@ -164,21 +172,6 @@ public:
 	};
 #endif
 
-protected:
-	/** Entry point for a new thread.
-	 *
-	 *  Implement this method in subclasses to carry out the actions of the
-	 *  thread.
-	 */
-	virtual void run()=0;
-
-	/** Signal a task to abort.
-	 *
-	 *  This is advisory only.  Tasks can test for this signal by calling
-	 *  isAborted(), then ignore or honor the aborted condition in any manner.
-	 */
-	virtual void abort() { m_abort = true; }
-
 	/** Test if a request to abort the task has been made.
 	 *
 	 *  @return true if abort() has been called, false otherwise.
@@ -199,6 +192,21 @@ protected:
 	/** Returns true if the run() method has complete.
 	 */
 	bool isComplete() const { return m_complete; }
+
+protected:
+	/** Entry point for a new thread.
+	 *
+	 *  Implement this method in subclasses to carry out the actions of the
+	 *  thread.
+	 */
+	virtual void run()=0;
+
+	/** Signal a task to abort.
+	 *
+	 *  This is advisory only.  Tasks can test for this signal by calling
+	 *  isAborted(), then ignore or honor the aborted condition in any manner.
+	 */
+	virtual void abort() { m_abort = true; }
 
 	/** Get the name (string identifier) of this task.
 	 */
@@ -221,9 +229,9 @@ private:
 	 *    ownership of the pointer.
 	 */
 	static void *_start(void *param) {
-		Ref<Task> *task_ptr = static_cast<Ref<Task>*>(param);
+		simdata::Ref<Task> *task_ptr = static_cast<simdata::Ref<Task>*>(param);
 		assert(task_ptr != 0);
-		Ref<Task> task = *task_ptr;
+		simdata::Ref<Task> task = *task_ptr;
 		// delete param (we own it and it has served its purpose)
 		delete task_ptr;
 		assert(task.valid());
@@ -243,7 +251,7 @@ private:
 		try {
 			run();
 		} catch (Exception &e) {
-			SIMDATA_ERROR(LOG_THREAD, "Uncaught exception in thread " << m_name << std::endl << e);
+			SIMDATA_LOG(ERROR, THREAD) << "Uncaught exception in thread " << m_name << "\n" << e;
 			e.clear();
 		}
 		m_complete = true;

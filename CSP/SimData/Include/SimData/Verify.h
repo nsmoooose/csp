@@ -67,12 +67,10 @@ void __diagnose_op_failure(A const &lhs, B const &rhs, const char *lhs_s, const 
 
 template <typename A, typename B>
 void __diagnose_op_failure(A const &lhs, B const &rhs, const char *lhs_s, const char *rhs_s,
-                           const char *file, int line, const char *type, const char *op)
-{
-	SIMDATA_LOG_.entry(simdata::LOG_ERROR, simdata::LOG_ALL, file, line)
-		<< type << '(' << lhs_s << ", " << rhs_s << ") FAILED  ["
-		<< lhs << op << rhs << ']' << std::endl;
-	std::abort();
+                           const char *file, int line, const char *type, const char *op) {
+	LogStream::LogEntry(SIMDATA_LOG_, LOG_FATAL, file, line)
+		<< type << '(' << lhs_s << ", " << rhs_s << ") FAILED  [" << lhs << op << rhs << ']';
+	::abort();  // should never get here (log fatal above), but need to ensure __noreturn__.
 }
 
 // __diagnose_failure is declared as a template to avoid having
@@ -84,11 +82,9 @@ template <typename A>
 void __diagnose_failure(const char *expr_s, const char *file, A line, const char *type) SIMDATA_NORETURN;
 
 template <typename A>
-void __diagnose_failure(const char *expr_s, const char *file, A line, const char *type)
-{
-	SIMDATA_LOG_.entry(simdata::LOG_ERROR, simdata::LOG_ALL, file, line)
-		<< type << '(' << expr_s << ") FAILED" << std::endl;
-	std::abort();
+void __diagnose_failure(const char *expr_s, const char *file, A line, const char *type) {
+	LogStream::LogEntry(SIMDATA_LOG_, LOG_FATAL, file, line) << type << '(' << expr_s << ") FAILED";
+	::abort();  // should never get here (log fatal above), but need to ensure __noreturn__.
 }
 
 template <typename A>

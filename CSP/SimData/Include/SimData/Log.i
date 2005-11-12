@@ -33,12 +33,24 @@ class LogStream
 public:
 	LogStream(std::ostream& out);
 	~LogStream();
-	void _close();
-	void setOutput(std::string const &fn);
-	void setLogPriority(int);
-	void setLogCategory(int);
-	void setTimeLogging(bool);
-	void setPointLogging(bool);
+	void logToFile(std::string const &fn);
+	void setFlags(int);
+	void setPriority(int);
+	void setCategories(int);
+
+%extend {
+#define SIMDATA_LOG_PYTHON(P) \
+	if (self->isNoteworthy(SIMDATA(LOG_##P), SIMDATA(LOG_ALL))) \
+		SIMDATA(LogStream::LogEntry)(*self, SIMDATA(LOG_##P))
+
+	void debug(const char *msg) { SIMDATA_LOG_PYTHON(DEBUG) << msg; }
+	void info(const char *msg) { SIMDATA_LOG_PYTHON(INFO) << msg; }
+	void warning(const char *msg) { SIMDATA_LOG_PYTHON(WARNING) << msg; }
+	void error(const char *msg) { SIMDATA_LOG_PYTHON(ERROR) << msg; }
+	void fatal(const char *msg) { SIMDATA_LOG_PYTHON(FATAL) << msg; }
+#undef SIMDATA_LOG_PYTHON
+}
+
 };
 
 NAMESPACE_SIMDATA_END // namespace simdata

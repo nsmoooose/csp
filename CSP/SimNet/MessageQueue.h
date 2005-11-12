@@ -82,7 +82,7 @@ public:
 		if (msg->getCustomId() > 0) {
 			m_Queue.push_back(MessageWrapper(msg));
 		} else {
-			SIMNET_LOG(PACKET, ERROR, "attempt to send message id=0");
+			SIMNET_LOG(ERROR, PACKET) << "attempt to send message id=0";
 		}
 	}
 
@@ -93,7 +93,7 @@ public:
 		if (msg->getCustomId() > 0) {
 			m_Queue.push_back(MessageWrapper(msg, destination));
 		} else {
-			SIMNET_LOG(PACKET, ERROR, "attempt to send message id=0");
+			SIMNET_LOG(ERROR, PACKET) << "attempt to send message id=0";
 		}
 	}
 
@@ -113,7 +113,7 @@ public:
 		NetworkMessage::Ref message = m_Queue.front().message;
 		PeerId destination = m_Queue.front().destination;
 		m_Queue.pop_front();
-		SIMNET_LOG(MESSAGE, ALERT, "SENDING MESSAGE " << message->getCustomId() << " " << message->getName());
+		SIMNET_LOG(DEBUG, MESSAGE) << "SENDING MESSAGE " << message->getCustomId() << " " << message->getName();
 		header->setDestination(destination);
 		header->setMessageId(static_cast<simdata::uint16>(message->getCustomId()));
 		header->setRouting(message->getRoutingType(), message->getRoutingData());
@@ -124,9 +124,9 @@ public:
 			if (m_PayloadCacheLength <= payload_length) {
 				memcpy(payload, m_PayloadCache, m_PayloadCacheLength);
 				payload_length = m_PayloadCacheLength;
-				SIMNET_LOG(MESSAGE, ALERT, "SENDING CACHED PAYLOAD, length = " << payload_length);
+				SIMNET_LOG(DEBUG, MESSAGE) << "SENDING CACHED PAYLOAD, length = " << payload_length;
 			} else {
-				SIMNET_LOG(MESSAGE, WARNING, "buffer overflow sending " << message->getName());
+				SIMNET_LOG(WARNING, MESSAGE) << "buffer overflow sending " << message->getName();
 			}
 		} else {
 			// serialize directly into the target buffer
@@ -172,7 +172,7 @@ public:
 	virtual void skipPacket() {
 		if (m_Queue.size() > 0) {
 			NetworkMessage::Ref message = m_Queue.front().message;
-			SIMNET_LOG(PACKET, INFO, "dropping outbound packet " << *message);
+			SIMNET_LOG(INFO, PACKET) << "dropping outbound packet " << *message;
 			m_Queue.pop_front();
 			// if we had a cached payload for the message that was skipped, and the
 			// next message is different we need to invalidate the cache.

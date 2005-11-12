@@ -39,12 +39,12 @@ DispatchManager::DispatchManager(MessageQueue::Ref queue, unsigned cache_size)
 bool DispatchManager::dispatch(DispatchTarget *target, NetworkMessage::Ref const &msg) {
 	BaseCallback::Ref callback;
 	if (m_Cache->findHandler(msg, callback)) {
-		std::cout << "FOUND HANDLER IN CACHE\n";
+		SIMNET_LOG(DEBUG, MESSAGE) << "Found handler in cache";
 		if (!callback) return false;
 		callback->call(msg, m_Queue);
 		return true;
 	} else {
-		std::cout << "DID NOT FIND HANDLER IN CACHE\n";
+		SIMNET_LOG(DEBUG, MESSAGE) << "Did not find handler in cache";
 		m_Message = msg;
 		bool result = target->dispatch(this);
 		if (!result) {

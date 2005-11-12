@@ -114,11 +114,11 @@ Server::Server(NetworkNode const &bind, int inbound_bw, int outbound_bw):
 }
 
 void Server::onConnectionRequest(simdata::Ref<ConnectionRequest> const &msg, simdata::Ref<MessageQueue> const &queue) {
-	SIMNET_LOG(HANDSHAKE, INFO, "connection request " << *msg);
+	SIMNET_LOG(INFO, HANDSHAKE) << "connection request " << *msg;
 	const PeerId client_id = msg->getSource();
 	ConnectionData &connection_data = m_PendingConnections[client_id];
 	if (msg->incoming_bw() < 1000 || msg->outgoing_bw() < 1000) {
-		SIMNET_LOG(HANDSHAKE, ERROR, "client reports very low bandwidth " << *msg);
+		SIMNET_LOG(ERROR, HANDSHAKE) << "client reports very low bandwidth " << *msg;
 	}
 	connection_data.incoming_bw = msg->incoming_bw();
 	connection_data.outgoing_bw = msg->outgoing_bw();
@@ -132,20 +132,20 @@ void Server::onConnectionRequest(simdata::Ref<ConnectionRequest> const &msg, sim
 }
 
 void Server::onAcknowledge(simdata::Ref<Acknowledge> const &msg, simdata::Ref<MessageQueue> const &queue) {
-	SIMNET_LOG(HANDSHAKE, DEBUG, "received acknowledgement " << *msg);
+	SIMNET_LOG(DEBUG, HANDSHAKE) << "received acknowledgement " << *msg;
 	PendingConnectionMap::iterator iter = m_PendingConnections.find(msg->getSource());
 	if (iter == m_PendingConnections.end()) {
-		SIMNET_LOG(HANDSHAKE, WARNING, "received unsolicited connection acknowledgement from client id " << msg->getSource());
+		SIMNET_LOG(WARNING, HANDSHAKE) << "received unsolicited connection acknowledgement from client id " << msg->getSource();
 		return;
 	}
-	SIMNET_LOG(HANDSHAKE, INFO, "adding client " << msg->getSource()
-		<< " (bw " << (iter->second.incoming_bw) << "/" << (iter->second.outgoing_bw) << ")");
+	SIMNET_LOG(INFO, HANDSHAKE) << "adding client " << msg->getSource()
+		<< " (bw " << (iter->second.incoming_bw) << "/" << (iter->second.outgoing_bw) << ")";
 	m_NetworkInterface->establishConnection(msg->getSource(), iter->second.incoming_bw, iter->second.outgoing_bw);
 	m_PendingConnections.erase(iter);
 }
 
 void Server::onDisconnect(simdata::Ref<Disconnect> const &msg, simdata::Ref<MessageQueue> const &queue) {
-	SIMNET_LOG(HANDSHAKE, DEBUG, "received disconnect notice " << *msg);
+	SIMNET_LOG(DEBUG, HANDSHAKE) << "received disconnect notice " << *msg;
 	m_NetworkInterface->disconnectPeer(msg->getSource());
 }
 
@@ -189,19 +189,19 @@ bool Client::connectToServer(NetworkNode const &server, double timeout) {
 }
 
 void Client::onConnectionResponse(simdata::Ref<ConnectionResponse> const &msg, simdata::Ref<MessageQueue> const &queue) {
-	SIMNET_LOG(HANDSHAKE, DEBUG, "received connection response " << *msg);
+	SIMNET_LOG(DEBUG, HANDSHAKE) << "received connection response " << *msg;
 	if (m_Connected) return;
 	if (!msg->has_success() || !msg->success() || !msg->has_client_id()) {
 		if (msg->has_response()) {
-			SIMNET_LOG(HANDSHAKE, ERROR, "connection failed: " << msg->response());
+			SIMNET_LOG(ERROR, HANDSHAKE) << "connection failed: " << msg->response();
 		} else {
-			SIMNET_LOG(HANDSHAKE, ERROR, "connection failed: " << *msg);
+			SIMNET_LOG(ERROR, HANDSHAKE) << "connection failed: " << *msg;
 		}
 		// TODO set m_Connected to indicate failure
 		return;
 	}
 	if (msg->client_id() < 2) {
-		SIMNET_LOG(HANDSHAKE, ERROR, "connection failed: bad id assignment from server");
+		SIMNET_LOG(ERROR, HANDSHAKE) << "connection failed: bad id assignment from server";
 		// TODO set m_Connected to indicate failure
 		return;
 	}

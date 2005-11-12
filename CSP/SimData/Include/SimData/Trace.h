@@ -24,8 +24,6 @@
  * @brief Automatic callstack traces reporting on error.
  *
  * TODO does not show the offending address (need siginfo_t).
- * TODO difficult to decode addresses for libraries with lazy loading.
- * TODO what's the point of TraceBase?
  * TODO need a windows implementation
  */
 
@@ -33,122 +31,72 @@
 #ifndef __SIMDATA_TRACE_H__
 #define __SIMDATA_TRACE_H__
 
+#include <SimData/Export.h>
 #include <SimData/Namespace.h>
-#include <SimData/Log.h>
-#include <SimData/Singleton.h>
-
-#if defined(__GNUC__) && !defined(__MINGW32__)
-# include <csignal>
-# include <execinfo.h>
-# include <exception>
-# include <cstdlib>
-# include <dlfcn.h>
-#endif // __GNUC__
+#include <iosfwd>
 
 
 NAMESPACE_SIMDATA
 
 
-/** Base class for implementing signal handlers and stack trace dumps.
+class LogStream;
+
+
+/** A class that can acquire, store, and display a stack trace.
  */
-class TraceBase {
+SIMDATA_EXPORT class StackTrace {
+public:
+	StackTrace();
+	~StackTrace();
+
+	/** Acquire a stack track, omitting the first skip stack frames.
+	 */
+	bool acquire(int skip=0);
+
+	/** Write the stack to a stream.  The output is platform dependent.
+	 */
+	void writeToStream(std::ostream &) const;
+
+	/** Return true if acquire has been called successfully.
+	 */
+	bool valid() const;
+
+	// warning: copying a stack trace is not guaranteed to be cheap.
+	// a copy interface is provided to facilitate use with exceptions.
+	StackTrace(StackTrace const&);
+	StackTrace const &operator=(StackTrace const &);
+
 private:
-	typedef void (*Callback)();
-	Callback _precallback, _postcallback;
-	LogStream *_log;
-	bool _traced;
-
-protected:
-	TraceBase(): _precallback(0), _postcallback(0), _log(0), _traced(false) { }
-	virtual ~TraceBase() {}
-
-	void setCallbacks_impl(Callback precallback, Callback postcallback) {
-		_precallback = precallback;
-		_postcallback = postcallback;
-	}
-
-	void setLog_impl(LogStream &log_) {
-		_log = &log_;
-	}
-
-	std::ostream &log();
-
-	void _preCallback() {
-		if (_precallback != 0) _precallback();
-	}
-
-	void _postCallback() {
-		if (_postcallback != 0) _postcallback();
-	}
-
-	void error(int skip, bool segv=false);
-
-	virtual void _backtrace(std::ostream&, int /*skip*/) {}
+	struct TraceData;
+	TraceData *_data;
 };
 
 
-/** Singleton callstack trace error handler.
- */
-class Trace: public TraceBase {
+inline std::ostream &operator<<(std::ostream &os, StackTrace const &trace) {
+	trace.writeToStream(os);
+	return os;
+}
 
+
+SIMDATA_EXPORT class AutoTrace {
 public:
-
-	static void StackDump(std::ostream &out, int skip=0);
-
-#if defined(__GNUC__) && !defined(__MINGW32__)
+	// install sigv and abort handlers.
+	static bool install();
+	static void setLog(LogStream &log);
+	static void inhibitAbortHandler() { _abort = false; }
 
 private:
-	static void __sigsegv(int /*sig_n*/) {
-		getTrace().error(3, true);
-		abort();
-	}
+	// signal handlers.
+	static void __sigterm(int /*sig_n*/);
+	static void __sigsegv(int /*sig_n*/);
+	static void __sigabort(int /*sig_n*/);
 
-	static void __sigabort(int /*sig_n*/) {
-		getTrace().error(3);
-	}
+	static LogStream *log();
 
-#endif // __GNUC__
-
-	virtual void _backtrace(std::ostream& out, int skip) {
-		StackDump(out, skip);
-	}
-
-	friend class Singleton<Trace>;
-	static Trace &getTrace() {
-		return Singleton<Trace>::getInstance();
-	}
-
-	Trace(): TraceBase() {}
-	virtual ~Trace() {}
-
-public:
-
-	/** Install a new backtrace error handler.
-	 *
-	 *  @returns true if succesful.
-	 */
-	static bool install() {
-#if defined(__GNUC__) && !defined(__MINGW32__)
-		signal(SIGABRT, __sigabort);
-		signal(SIGSEGV, __sigsegv);
-		return true;
-#else // __GNUC__
-		return false;
-#endif
-	}
-
-	/** Set custom callbacks before and after the stacktrace.
-	 */
-	static void setCallbacks(void (*precallback)(), void (postcallback)()) {
-		getTrace().setCallbacks_impl(precallback, postcallback);
-	}
-
-	/** Set the active log (defaults to the simdata log).
-	 */
-	static void setLog(LogStream &log) {
-		getTrace().setLog_impl(log);
-	}
-
+	static StackTrace _trace;
+	static LogStream *_log;
+	static char *_reserve;
+	static bool _abort;
 };
 
 

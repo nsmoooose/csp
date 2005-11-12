@@ -56,7 +56,7 @@ public:
 	/** Destructor (releases packet buffer).
 	 */
 	virtual ~ReliablePacket() {
-		SIMNET_LOG(PACKET, DEBUG, "reliable packet " << m_Id << ": destroyed");
+		SIMNET_LOG(DEBUG, PACKET) << "reliable packet " << m_Id << ": destroyed";
 	}
 
 	/** Iniitalize this instance.
@@ -69,7 +69,7 @@ public:
 	 *  @param packet_size the full packet size in bytes (header + payload).
 	 */
 	void assign(ConfirmationId id, PacketReceiptHeader* receipt, simdata::uint32 packet_size) {
-		SIMNET_LOG(PACKET, DEBUG, "creating reliable packet " << id);
+		SIMNET_LOG(DEBUG, PACKET) << "creating reliable packet " << id;
 		m_Id = id;
 		m_Confirmed = false;
 		m_Attempts = 0;
@@ -86,7 +86,7 @@ public:
 	void updateAttempt(double now) {
 		double delay = std::min(8.0, ++m_Attempts * 1.0);
 		m_NextTime = now + delay;
-		SIMNET_LOG(PACKET, DEBUG, "reliable packet " << m_Id << " retry #" << m_Attempts << "; next retry in " << delay << " s");
+		SIMNET_LOG(DEBUG, PACKET) << "reliable packet " << m_Id << " retry #" << m_Attempts << "; next retry in " << delay << " s";
 	}
 
 	/** Copy the stored packet data (header + payload) to a buffer.
@@ -119,7 +119,7 @@ public:
 	/** Mark this packet as confirmed.
 	 */
 	inline void confirm() {
-		SIMNET_LOG(PACKET, DEBUG, "reliable packet " << m_Id << " confirmed");
+		SIMNET_LOG(DEBUG, PACKET) << "reliable packet " << m_Id << " confirmed";
 		m_Confirmed = true;
 	}
 

@@ -70,6 +70,8 @@ protected:
 		if (__count != 0) _log_reference_count_error(__count, reinterpret_cast<void*>(this));
 	}
 
+	inline int _count() const { return static_cast<int>(__count); }
+
 private:
 
 	inline void _incref() const {
@@ -79,7 +81,6 @@ private:
 		assert(__count > 0);
 		if (!--__count) delete this;
 	}
-	inline int _count() const { return static_cast<int>(__count); }
 	mutable COUNTER __count;
 };
 

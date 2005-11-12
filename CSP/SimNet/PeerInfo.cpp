@@ -223,7 +223,7 @@ void PeerInfo::registerConfirmation(PacketReceiptHeader *receipt, const simdata:
 	// around and hit an old id.  if so, just log an error and move on.
 	if (m_reliable_packet_map.find(id) != m_reliable_packet_map.end()) {
 		m_reliable_packet_map[id]->confirm();
-		SIMNET_LOG(PEER, WARNING, "reassigning to active confirmation id");
+		SIMNET_LOG(WARNING, PEER) << "reassigning to active confirmation id";
 	}
 
 	// save the packet data in case we need to resend it
@@ -251,23 +251,23 @@ void PeerInfo::setReceipt(PacketReceiptHeader *receipt, bool reliable, simdata::
 		assert(hasPendingConfirmations());
 		receipt->setId0(m_confirmation_queue.front());
 		m_confirmation_queue.pop_front();
-		SIMNET_LOG(PACKET, DEBUG, "sending receipt " << receipt->id0());
+		SIMNET_LOG(DEBUG, PACKET) << "sending receipt " << receipt->id0();
 	}
 
 	if (!hasPendingConfirmations()) return;
 	receipt->setId1(m_confirmation_queue.front());
 	m_confirmation_queue.pop_front();
-	SIMNET_LOG(PACKET, DEBUG, "sending receipt " << receipt->id1());
+	SIMNET_LOG(DEBUG, PACKET) << "sending receipt " << receipt->id1();
 
 	if (!hasPendingConfirmations()) return;
 	receipt->setId2(m_confirmation_queue.front());
 	m_confirmation_queue.pop_front();
-	SIMNET_LOG(PACKET, DEBUG, "sending receipt " << receipt->id2());
+	SIMNET_LOG(DEBUG, PACKET) << "sending receipt " << receipt->id2();
 
 	if (!hasPendingConfirmations()) return;
 	receipt->setId3(m_confirmation_queue.front());
 	m_confirmation_queue.pop_front();
-	SIMNET_LOG(PACKET, DEBUG, "sending receipt " << receipt->id3());
+	SIMNET_LOG(DEBUG, PACKET) << "sending receipt " << receipt->id3();
 }
 
 bool PeerInfo::isDuplicate(const ConfirmationId id) {
@@ -351,11 +351,11 @@ void ActivePeerList::update(double dt, NetworkInterface *ni) {
 		}
 		bool remove = false;
 		if (peer->getDeadTime() > 30.0) {
-			SIMNET_LOG(PEER, ALERT, "dead time expired for peer " << peer->getId() << " (" << peer->getDeadTime() << " s)");
+			SIMNET_LOG(WARNING, PEER) << "dead time expired for peer " << peer->getId() << " (" << peer->getDeadTime() << " s)";
 			if (ni->handleDeadPeer(peer)) remove = true;
 		}
 		if (peer->isProvisionalExpired()) {
-			SIMNET_LOG(PEER, ALERT, "provisional time expired for peer " << peer->getId());
+			SIMNET_LOG(WARNING, PEER) << "provisional time expired for peer " << peer->getId();
 			remove = true;
 		}
 		if (remove) remove_peers.push_back(peer);

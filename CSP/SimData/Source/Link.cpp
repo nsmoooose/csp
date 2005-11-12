@@ -66,11 +66,11 @@ LinkCore LinkCore::_serialize(Reader &reader, DataArchive* &data_archive) {
 			ObjectID class_id;
 			reader >> class_id;
 			if (class_id == 0) {
-				SIMDATA_LOG(LOG_ARCHIVE, LOG_ERROR, "loading Link with no path and no object");
+				SIMDATA_LOG(ERROR, ARCHIVE) << "loading Link with no path and no object";
 			} else {
 				Object *pobj = data_archive->_createObject(class_id);
 				assert(pobj);
-				SIMDATA_LOG(LOG_ARCHIVE, LOG_DEBUG, "loading inline object " << pobj->getClassName());
+				SIMDATA_LOG(ERROR, ARCHIVE) << "loading inline object " << pobj->getClassName();
 				pobj->serialize(reader);
 				// start reference counting before postCreate!
 				LinkCore link(path, pobj);
@@ -85,7 +85,7 @@ LinkCore LinkCore::_serialize(Reader &reader, DataArchive* &data_archive) {
 				return link;
 			}
 		} else {
-			SIMDATA_LOG(LOG_ARCHIVE, LOG_DEBUG, "loading linked object" << (arc->_loadAll() ? "loadall" : "!loadall"));
+			SIMDATA_LOG(DEBUG, ARCHIVE) << "loading linked object" << (arc->_loadAll() ? "loadall" : "!loadall");
 			if (!arc->_loadAll()) data_archive = 0;
 		}
 	}
@@ -106,7 +106,7 @@ void LinkCore::_serialize(Writer &writer) const {
 			// however, required links cannot be null+none.  this restriction is enforced
 			// by specialized validation classes in ObjectInterface.h.  here we just log
 			// a debug message (although this is probably not very useful).
-			SIMDATA_LOG(LOG_ARCHIVE, LOG_DEBUG, "attempt to save Link with no path and no object");
+			SIMDATA_LOG(DEBUG, ARCHIVE) << "attempt to save Link with no path and no object";
 			hasht class_hash = 0;
 			writer << class_hash;
 		} else {
@@ -121,7 +121,7 @@ LinkCore LinkCore::_internal_load(DataArchive* archive, ObjectID path) {
 	assert(archive != 0);
 	if (path == 0) path = _path;
 	if (path == 0) return LinkCore();
-	SIMDATA_LOG(LOG_ARCHIVE, LOG_DEBUG, "loading LinkCore from " << path << " " << _path);
+	SIMDATA_LOG(DEBUG, ARCHIVE) << "loading LinkCore from " << path << " " << _path;
 	Path _p(path);
 	LinkCore _ppb;
 	/*
@@ -143,7 +143,7 @@ LinkCore LinkCore::_internal_load(DataArchive* archive, ObjectID path) {
 	*/
 	assert(_ppb.valid());
 	Object *obj = _ppb._reference;
-	SIMDATA_LOG(LOG_ARCHIVE, LOG_DEBUG, "loaded " << obj->getClassName() << " @ 0x" << std::hex << reinterpret_cast<int>(obj));
+	SIMDATA_LOG(DEBUG, ARCHIVE) << "loaded " << obj->getClassName() << " @ 0x" << std::hex << reinterpret_cast<int>(obj);
 	return _ppb;
 }
 

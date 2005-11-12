@@ -90,6 +90,10 @@ public:
 	 */
 	inline bool isNull() const { return 0 == _ptr; }
 
+	/** Return true if the pointer is null.
+	 */
+	inline bool operator!() const { return 0 == _ptr; }
+
 	/** Return true if the pointer is not null.
 	 */
 	inline bool valid() const { return 0 != _ptr; }

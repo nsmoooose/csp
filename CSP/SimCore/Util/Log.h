@@ -27,6 +27,7 @@
 #define __SIMCORE_UTIL_LOG_H__
 
 #include <SimData/Log.h>
+#include <iostream>  // temporary
 
 /**
  * Define the possible classes/categories of logging messages
@@ -50,7 +51,7 @@ enum {
 	CSP_APP         = 0x00002000,
 	CSP_GEOMETRY    = 0x00004000,
 	CSP_PHYSICS     = 0x00008000,
-	CSP_UNDEFD      = 0x00010000, // for range checking
+	CSP_RESOURCE    = 0x00010000,
 	CSP_SCENE       = 0x00020000,
 	CSP_BATTLEFIELD = 0x00040000,
 	CSP_OBJECT      = 0x00080000,
@@ -74,16 +75,23 @@ inline simdata::LogStream& csplog() {
 }
 
 
+// TODO reorder C,P to P,C when CSPLOG is standard.
 #ifdef CSP_NDEBUG
 # define CSP_NOTEWORTHY(C,P) false
 #else
 # define CSP_NOTEWORTHY(C,P) ::csplog().isNoteworthy(simdata::LOG_##P, CSP_##C)
 #endif
 
+// TODO reverse the order of C, P everywhere!!!
+// TODO convert from CSP_LOG(a,b,m) to CSP_LOG(a,b) << m
 # define CSP_LOG(C,P,M) \
-	if (CSP_NOTEWORTHY(C, P)) \
-		::csplog().entry(simdata::LOG_##P, CSP_##C, __FILE__, __LINE__) << M << std::endl
+	if (!CSP_NOTEWORTHY(C, P)); \
+	else simdata::LogStream::LogEntry(static_cast<simdata::LogStream&>(::csplog()), simdata::LOG_##P, __FILE__, __LINE__) << M
 
+// TODO TRANSITION all logging to CSPLOG, remove all references to CSP_LOG, then rename CSPLOG to CSP_LOG
+# define CSPLOG(P,C) \
+	if (!CSP_NOTEWORTHY(C,P)); \
+	else simdata::LogStream::LogEntry(static_cast<simdata::LogStream&>(::csplog()), simdata::LOG_##P, __FILE__, __LINE__)
 
 #endif // __SIMCORE_UTIL_LOG_H__
 

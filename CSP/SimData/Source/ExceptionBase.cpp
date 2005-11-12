@@ -33,26 +33,22 @@
 NAMESPACE_SIMDATA
 
 
-ExceptionBase::ExceptionBase(std::string const &type, std::string const &msg, bool trace) {
+ExceptionBase::ExceptionBase(std::string const &type, std::string const &msg, bool trace): _trace(0) {
 	//: std::runtime_error(type+": "+msg) {
 	_type = type;
 	_msg = msg;
 	_dump = true;
 	if (trace) {
-		std::stringstream trace_;
-		// skip three stack frames:
-		//   ExceptionBase()
-		//   Exception()
-		//   ActualExceptionClass().
-		Trace::StackDump(trace_, 3);
-		_trace = trace_.str();
+		_trace = new StackTrace;
+		// skip three stack frames: ExceptionBase(), Exception(), ActualExceptionClass().
+		_trace->acquire(/*skip=*/3);
 	}
 }
 
-ExceptionBase::ExceptionBase(ExceptionBase const &e) {
+ExceptionBase::ExceptionBase(ExceptionBase const &e): _trace(0) {
 	_type = e._type;
 	_msg = e._msg;
-	_trace = e._trace;
+	if (e._trace) _trace = new StackTrace(*e._trace);
 	_dump = e._dump;
 	e._dump = false;
 }
@@ -66,7 +62,10 @@ std::string ExceptionBase::getType() const {
 }
 
 std::string ExceptionBase::getTrace() const {
-	return _trace;
+	if (!_trace) return "(TRACE NOT AVAILABLE)";
+	std::stringstream os;
+	os << *_trace;
+	return os.str();
 }
 
 std::string ExceptionBase::getError() const {
@@ -102,11 +101,13 @@ void ExceptionBase::details(bool no_trace) const {
 }
 
 void ExceptionBase::logAndClear(int category) const {
-	SIMDATA_ERROR(category, *this);
+	if (SIMDATA_NOTEWORTHY(LOG_ERROR, category)) {
+		LogStream::LogEntry(SIMDATA_LOG_, LogStream::ERROR) << *this;
+	}
 }
 
 bool ExceptionBase::hasTrace() const {
-	return _trace.size() > 0;
+	return _trace && _trace->valid();
 }
 
 ExceptionBase::~ExceptionBase() {

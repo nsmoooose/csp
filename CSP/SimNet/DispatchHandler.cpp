@@ -36,9 +36,9 @@ DispatchHandler::~DispatchHandler() {
 }
 
 void DispatchHandler::handleMessage(NetworkMessage::Ref const &msg) {
-	SIMNET_LOG(MESSAGE, INFO, "handling message of type " << msg->getName());
+	SIMNET_LOG(INFO, MESSAGE) << "handling message of type " << msg->getName();
 	if (!dispatch(msg) && m_DefaultHandler.valid()) {
-		SIMNET_LOG(MESSAGE, INFO, "unknown message type, calling default handler");
+		SIMNET_LOG(INFO, MESSAGE) << "unknown message type, calling default handler";
 		m_DefaultHandler->call(msg, m_Queue);
 	}
 }
@@ -51,7 +51,7 @@ bool DispatchHandler::dispatch(NetworkMessage::Ref const &msg) const {
 }
 
 void DispatchHandler::_registerHandler(std::string const &name, const MessageId id, BaseCallback::Ref const &handler) {
-	SIMNET_LOG(MESSAGE, INFO, "registering handler for " << name);
+	SIMNET_LOG(INFO, MESSAGE) << "registering handler for " << name;
 	assert(!getCallback(id));
 	m_DispatchMap[id] = handler;
 }

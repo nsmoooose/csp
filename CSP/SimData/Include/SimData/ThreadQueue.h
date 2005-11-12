@@ -33,7 +33,7 @@
 
 #include <SimData/Namespace.h>
 #include <SimData/Properties.h>
-#include <SimData/ThreadBase.h>
+#include <SimData/Synchronization.h>
 #include <pthread.h>
 #include <queue>
 

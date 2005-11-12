@@ -54,20 +54,20 @@ enum {
  */
 inline simdata::LogStream& netlog() {
 	static simdata::LogStream *log_stream = 0;
-	if (log_stream == 0) log_stream = new simdata::LogStream(std::cerr);
+	if (log_stream == 0) log_stream = new simdata::LogStream();
 	return *log_stream;
 }
 
 
 #if defined(NDEBUG) || defined(SIMNET_NDEBUG)
-# define SIMNET_NOTEWORTHY(C,P) false
+# define SIMNET_NOTEWORTHY(P, C) false
 #else
-# define SIMNET_NOTEWORTHY(C,P) ::simnet::netlog().isNoteworthy(simdata::LOG_##P, simnet::LOGCAT_##C)
+# define SIMNET_NOTEWORTHY(P, C) ::simnet::netlog().isNoteworthy(simdata::LOG_##P, simnet::LOGCAT_##C)
 #endif
 
-# define SIMNET_LOG(C,P,M) \
-	if (SIMNET_NOTEWORTHY(C, P)) \
-		simnet::netlog().entry(simdata::LOG_##P, simnet::LOGCAT_##C, __FILE__, __LINE__) << M << std::endl
+# define SIMNET_LOG(P, C) \
+	if (!SIMNET_NOTEWORTHY(P, C)); \
+	else simdata::LogStream::LogEntry(static_cast<simdata::LogStream&>(simnet::netlog()), simdata::LOG_##P, __FILE__, __LINE__)
 
 
 } // namespace simnet

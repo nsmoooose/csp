@@ -104,17 +104,17 @@ void IndexServer::run() {
 
 
 int main() {
-	simdata::Trace::install();
+	simdata::AutoTrace::install();
 
 	if (!openConfig("IndexServer.ini")) {
 		std::cerr << "Unable to open config file 'IndexServer.ini'\n";
 		return 1;
 	}
 
-	csplog().setOutput("IndexServer.log");
-	csplog().setLogCategory(simdata::LOG_ALL);
-	csplog().setLogPriority(g_Config.getInt("Debug", "CspLoggingThreshold", simdata::LOG_INFO, true));
-	simnet::netlog().setLogPriority(g_Config.getInt("Debug", "NetLoggingThreshold", simdata::LOG_INFO, true));
+	csplog().logToFile("IndexServer.log");
+	csplog().setCategories(simdata::LOG_ALL);
+	csplog().setPriority(g_Config.getInt("Debug", "CspLoggingThreshold", simdata::LOG_INFO, true));
+	simnet::netlog().setPriority(g_Config.getInt("Debug", "NetLoggingThreshold", simdata::LOG_INFO, true));
 
 	IndexServer server;
 	server.run();

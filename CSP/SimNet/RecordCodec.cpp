@@ -38,7 +38,7 @@ RecordCodec::RecordCodec(): m_TagWriter(m_Writer), m_TagReader(m_Reader) {
 	for (int i = 0; i < static_cast<int>(factories.size()); ++i) {
 		int id = factories[i]->getCustomId();
 		if (id != 0) {
-			SIMNET_LOG(MESSAGE, DEBUG, "registering static message id " << id);
+			SIMNET_LOG(DEBUG, MESSAGE) << "registering static message id " << id;
 			m_Factories[id] = factories[i];
 		}
 	}
@@ -55,14 +55,14 @@ size_t RecordCodec::encode(TaggedRecord::Ref record, simdata::uint8 *buffer, siz
 
 TaggedRecord::Ref RecordCodec::decode(int local_id, simdata::uint8 const *buffer, const size_t buffer_length) {
 	if (buffer == 0 || buffer_length == 0) {
-		SIMNET_LOG(MESSAGE, ERROR, "no buffer");
+		SIMNET_LOG(ERROR, MESSAGE) << "no buffer";
 		return 0;
 	}
 	SIMDATA_VERIFY_GE(local_id, 0);
 	SIMDATA_VERIFY_LT(local_id, MAX_MESSAGE_IDS);
 	simdata::TaggedRecordFactoryBase const *factory = m_Factories[local_id];
 	if (!factory) {
-		SIMNET_LOG(MESSAGE, ERROR, "unknown message id: " << local_id);
+		SIMNET_LOG(ERROR, MESSAGE) << "unknown message id: " << local_id;
 		return 0;
 	}
 	TaggedRecord::Ref record = factory->create();
@@ -70,7 +70,7 @@ TaggedRecord::Ref RecordCodec::decode(int local_id, simdata::uint8 const *buffer
 	try {
 		record->serialize(m_TagReader);
 	} catch (simdata::DataUnderflow const &/*err*/) {
-		SIMNET_LOG(MESSAGE, ERROR, "buffer underflow decoding message");
+		SIMNET_LOG(ERROR, MESSAGE) << "buffer underflow decoding message";
 		// TODO need to modify tagged record serialization so that compound blocks
 		// are prefixed with their length (instead of start/end tags).  this will
 		// allow the deserializer to skip unknown tags at the end of each compound

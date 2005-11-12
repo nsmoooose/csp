@@ -1,6 +1,44 @@
 Version 0.4.0 (in progress)
 ===========================
 
+2005-11-12: onsight
+  * Yet another update to the logging system.
+    - Simplified the code by eliminating ThreadLog.
+    - Eliminated TRACE and ALERT priority levels, added FATAL.
+    - Added priorities to LogStream as enums (in addition to macros).
+    - Added LogStream enums for log format options.
+    - Added thread id and short filename formatting options.
+    - Added a LogStream method to log a stack trace.
+    - Reordered priority and category in the SIMDATA_LOG macro.
+    - Created a LogEntry helper class that buffers each log line
+      and atomically writes the full line to the stream.  This
+      class automatically adds a newline.
+    - Changed the SIMDATA_LOG macro so that the message is streamed
+      after the macro rather than as the third argument.
+    - Removed SIMDATA_{PRIORITY} macros; use SIMDATA_LOG instead.
+    - Added debug, info, warning, error, and fatal helpers to the
+      swig interface to LogStream.  This take a string argument and
+      log to all categories.
+ * Reorganized the thread-related headers, eliminating ThreadBase.h
+   and creating ScopedLock.h, Synchronization.h, and ThreadSpecific.h.
+ * Added a thread::id() helper function.
+ * Made isAborted, isDetached, isRunning, and isComplete public
+   methods of Task to improve flexibility.
+ * Removed iostream include from Log.h.
+ * Improved the stack trace handling in Exception, reducing the time
+   and space overhead.
+ * Simplified and improved stack trace handling under Linux.
+   - Replaced TraceBase with the StackTrace class.
+   - Replaced Trace with AutoTrace.
+   - Removed pre/post-trace callbacks.
+   - Added writeToStream and operator<< helper methods.
+   - Moved specialized code to Trace.cpp.
+   - Added a sigterm handler to AutoTrace.
+ * Added a boolean operator! method to ScopedPointer to test for NULL.
+ * Changed DataArchive to immediately take a reference to newly created
+   Objects.  This prevents reference counting problems that can occur in
+   non-trivial postCreate callbacks.
+
 2005-10-15: onsight
  * Add support for serializing uninitialized TableN instances, which allows
    TableN members to be marked as optional in an XML interface.

@@ -303,9 +303,12 @@ struct hashstring {
 
 /** hash_map specialization type for hasht to T maps.
  */
-template <class T>
-struct HASHT_MAP {
+template <class T> struct HASHT_MAP {
 	typedef typename HASH_MAPS<hasht, T, hasht_hash, hasht_eq>::Type Type;
+};
+
+template <class T> struct hasht_map {
+	typedef typename HASH_MAPS<hasht, T, hasht_hash, hasht_eq>::Type type;
 };
 
 extern std::ostream & operator<<(std::ostream &o, const hasht &x);

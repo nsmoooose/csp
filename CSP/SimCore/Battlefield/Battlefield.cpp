@@ -66,7 +66,7 @@ bool Battlefield::removeFromHumanUnits(UnitWrapper *wrapper) {
 
 void Battlefield::_removeUnit(UnitWrapper *wrapper) {
 	const ObjectId id = wrapper->id();
-	CSP_LOG(BATTLEFIELD, DEBUG, "removing unit " << id);
+	CSPLOG(DEBUG, BATTLEFIELD) << "removing unit " << id;
 
 	// TODO send messages?
 
@@ -90,7 +90,7 @@ void Battlefield::_removeUnit(UnitWrapper *wrapper) {
 		wrapper->unit()->disconnectFromUpdateMaster();
 		if (wrapper->unit()->isHuman()) {  // XXX placeholders can be human, no?
 			if (!removeFromHumanUnits(wrapper)) {
-				CSP_LOG(BATTLEFIELD, ERROR, "removing unregistered human-controlled unit");
+				CSPLOG(ERROR, BATTLEFIELD) << "removing unregistered human-controlled unit";
 				assert(false);
 			}
 		}
@@ -103,7 +103,7 @@ void Battlefield::_removeUnit(UnitWrapper *wrapper) {
 }
 
 void Battlefield::_clear() {
-	CSP_LOG(BATTLEFIELD, DEBUG, "clearing battlefield");
+	CSPLOG(DEBUG, BATTLEFIELD) << "clearing battlefield";
 
 	m_UnitsToRemove.clear();
 	for (UnitMap::iterator iter = m_UnitMap.begin(); iter != m_UnitMap.end(); ++iter) {
@@ -207,13 +207,13 @@ void Battlefield::addStatic(Static const &feature) {
 	simdata::Vector3 pos = feature->getGlobalPosition();
 	GridCoordinate x = globalToGrid(pos.x());
 	GridCoordinate y = globalToGrid(pos.y());
-	CSP_LOG(BATTLEFIELD, ERROR, "adding static feature " << *feature << " @ " << x << ", " << y);
+	CSPLOG(ERROR, BATTLEFIELD) << "adding static feature " << *feature << " @ " << x << ", " << y;
 	StaticWrapper *wrapper = new StaticWrapper(feature, x, y);
 	m_StaticMap[feature->id()] = wrapper;
 	{ // debugging
 		GridCoordinate old_x = wrapper->x();
 		GridCoordinate old_y = wrapper->y();
-		CSP_LOG(BATTLEFIELD, ERROR, "static feature actually " << *feature << " @ " << old_x << ", " << old_y);
+		CSPLOG(ERROR, BATTLEFIELD) << "static feature actually " << *feature << " @ " << old_x << ", " << old_y;
 	}
 	m_StaticIndex->insert(*wrapper);
 }
@@ -221,7 +221,7 @@ void Battlefield::addStatic(Static const &feature) {
 bool Battlefield::updatePosition(UnitWrapper *wrapper, const GridPoint new_position) {
 	if (hasMoved(wrapper->point(), new_position)) {
 		if (wrapper->unit().valid() && !wrapper->unit()->isContact()) {
-			CSP_LOG(BATTLEFIELD, DEBUG, "update position " << *(wrapper->unit()) << ": " << wrapper->unit()->getGlobalPosition());
+			CSPLOG(DEBUG, BATTLEFIELD) << "update position " << *(wrapper->unit()) << ": " << wrapper->unit()->getGlobalPosition();
 		}
 		const GridPoint old_position = wrapper->point();
 		moveUnit(wrapper, old_position, new_position);
@@ -234,12 +234,12 @@ bool Battlefield::updatePosition(UnitWrapper *wrapper) {
 	Unit unit = wrapper->unit();
 	if (!unit || unit->isContact()) return false;
 	simdata::Vector3 pos = unit->getGlobalPosition();
-	CSP_LOG(BATTLEFIELD, TRACE, "update position " << *unit << ": " << pos);
+	CSPLOG(DEBUG, BATTLEFIELD) << "update position " << *unit << ": " << pos;
 	return updatePosition(wrapper, globalToGrid(pos));
 }
 
 void Battlefield::moveUnit(UnitWrapper *wrapper, GridPoint const &old_position, GridPoint const &new_position) {
-	CSP_LOG(BATTLEFIELD, DEBUG, "moving object " << wrapper->id() << " from " << old_position << " to " << new_position);
+	CSPLOG(DEBUG, BATTLEFIELD) << "moving object " << wrapper->id() << " from " << old_position << " to " << new_position;
 	if (!isNullPoint(old_position)) {
 		m_MotionIndex->remove(*wrapper);
 		m_DynamicIndex->remove(*wrapper);
@@ -270,12 +270,12 @@ void Battlefield::setHumanUnit(UnitWrapper *wrapper, bool human) {
 		m_HumanUnits.push_back(wrapper);
 		wrapper->unit()->setHuman();
 		// update the aggregation by pretending a human unit was added from the battlefield.
-		CSP_LOG(BATTLEFIELD, DEBUG, "setting " << *(wrapper->unit()) << " to human");
+		CSPLOG(DEBUG, BATTLEFIELD) << "setting " << *(wrapper->unit()) << " to human";
 		// XXX XXX updateAggregationHuman(wrapper, GridPoint(0,0), wrapper->point());
 	} else {
 		removeFromHumanUnits(wrapper);
 		// update the aggregation by pretending a human unit was removed from the battlefield.
-		CSP_LOG(BATTLEFIELD, DEBUG, "setting " << *(wrapper->unit()) << " to agent");
+		CSPLOG(DEBUG, BATTLEFIELD) << "setting " << *(wrapper->unit()) << " to agent";
 		// XXX XXX updateAggregationHuman(wrapper, wrapper->point(), GridPoint(0,0));
 		wrapper->unit()->setAgent();
 	}

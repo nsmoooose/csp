@@ -254,10 +254,10 @@ void DataArchive::addObject(Object& a, std::string const &path) {
 	if (!_is_read && !_finalized) {
 		int offset = ftell(_f);
 		ArchiveWriter writer(_f);
-		SIMDATA_LOG(LOG_ARCHIVE, LOG_DEBUG, "DataArchive: adding " << path << " [" << ObjectID(path) << "]");
+		SIMDATA_LOG(DEBUG, ARCHIVE) << "DataArchive: adding " << path << " [" << ObjectID(path) << "]";
 		a.serialize(writer);
 		int length = writer.getCount();
-		SIMDATA_LOG(LOG_ARCHIVE, LOG_DEBUG, "DataArchive: stored " << length << " bytes (" << path << ")");
+		SIMDATA_LOG(DEBUG, ARCHIVE) << "DataArchive: stored " << length << " bytes (" << path << ")";
 		_addEntry(offset, length, a.getClassHash(), path);
 	}
 }
@@ -305,7 +305,7 @@ const DataArchive::TableEntry* DataArchive::_lookupPath(ObjectID const &id, std:
 				msg = "human-readable path unavailable";
 			}
 		}
-		SIMDATA_LOG(LOG_ARCHIVE, LOG_ERROR, "DataArchive: path not found in '" << _fn << "' (" << msg << ") " + id.str());
+		SIMDATA_LOG(ERROR, ARCHIVE) << "DataArchive: path not found in '" << _fn << "' (" << msg << ") " + id.str();
 		throw IndexError(msg.c_str());
 	}
 	int idx = (*i).second;
@@ -315,7 +315,7 @@ const DataArchive::TableEntry* DataArchive::_lookupPath(ObjectID const &id, std:
 Object *DataArchive::_createObject(ObjectID classhash) {
 	InterfaceProxy *proxy = InterfaceRegistry::getInterfaceRegistry().getInterface(classhash);
 	if (!proxy) {
-		SIMDATA_LOG(LOG_ARCHIVE, LOG_ERROR, "Interface proxy [" << classhash << "] not found.");
+		SIMDATA_LOG(ERROR, ARCHIVE) << "Interface proxy [" << classhash << "] not found.";
 		throw MissingInterface("Missing interface for " + classhash.str());
 	}
 	Object *dup = proxy->createObject();
@@ -342,22 +342,22 @@ const LinkBase DataArchive::getObject(const Path& path, std::string const &path_
 		if (_manager == 0) throw;
 		return _manager->getObject(path, path_str, this);
 	}
-	SIMDATA_LOG(LOG_ARCHIVE, LOG_DEBUG, "getObject using interface registry @ 0x" << std::hex << int(&(InterfaceRegistry::getInterfaceRegistry())));
+	SIMDATA_LOG(DEBUG, ARCHIVE) << "getObject using interface registry @ 0x" << std::hex << int(&(InterfaceRegistry::getInterfaceRegistry()));
 	InterfaceProxy *proxy = InterfaceRegistry::getInterfaceRegistry().getInterface(t->classhash);
 	std::string from = path_str;
 	if (from == "") from = getPathString(path.getPath());
 	if (!proxy) {
 		std::string msg = "Missing interface for";
 		if (from != "") {
-			SIMDATA_LOG(LOG_ARCHIVE, LOG_ERROR, "getObject(" << from << "):");
+			SIMDATA_LOG(ERROR, ARCHIVE) << "getObject(" << from << "):";
 			msg = msg + " '" + from + "'";
 		}
-		SIMDATA_LOG(LOG_ARCHIVE, LOG_ERROR, "Interface proxy [" << t->classhash << "] not found while loading " << path << " (" << from << ")");
+		SIMDATA_LOG(ERROR, ARCHIVE) << "Interface proxy [" << t->classhash << "] not found while loading " << path << " (" << from << ")";
 		msg = msg + " " + t->classhash.str();
 		throw MissingInterface(msg);
 	}
-	SIMDATA_LOG(LOG_ARCHIVE, LOG_DEBUG, "Creating object using interface proxy [" << proxy->getClassName() << "]");
-	Object *dup = proxy->createObject();
+	SIMDATA_LOG(DEBUG, ARCHIVE) << "Creating object using interface proxy [" << proxy->getClassName() << "]";
+	Ref<Object> dup = proxy->createObject();
 	uint32 offset = t->offset;
 	uint32 length = t->length;
 	char* buffer = 0;
@@ -366,7 +366,7 @@ const LinkBase DataArchive::getObject(const Path& path, std::string const &path_
 		buffer = &(_buffers[_buffer][0]);
 		++_buffer;
 	} else {
-		SIMDATA_LOG(LOG_ARCHIVE, LOG_INFO, "BUFFERSIZE exceeded, allocating larger buffer");
+		SIMDATA_LOG(INFO, ARCHIVE) << "BUFFERSIZE exceeded, allocating larger buffer";
 		temp_buffer.resize(length);
 		buffer = &(temp_buffer[0]);
 	}
@@ -374,14 +374,14 @@ const LinkBase DataArchive::getObject(const Path& path, std::string const &path_
 	fseek(_f, offset, SEEK_SET);
 	fread(buffer, length, 1, _f);
 	ArchiveReader reader(buffer, length, this, _chain);
-	SIMDATA_LOG(LOG_ARCHIVE, LOG_DEBUG, "loading new object " << dup->getClassName() << " from " << from);
+	SIMDATA_LOG(DEBUG, ARCHIVE) << "loading new object " << dup->getClassName() << " from " << from;
 	dup->_setPath(id);
 	try {
 		dup->serialize(reader);
 	} catch (DataUnderflow &e) {
 		if (temp_buffer.size() == 0) --_buffer;
 		e.clear();
-		SIMDATA_LOG(LOG_ARCHIVE, LOG_ERROR, "INTERNAL ERROR: Object extraction incomplete for class '" << dup->getClassName() << "': " << from << " (data underflow).");
+		SIMDATA_LOG(ERROR, ARCHIVE) << "INTERNAL ERROR: Object extraction incomplete for class '" << dup->getClassName() << "': " << from << " (data underflow).";
 		throw CorruptArchive("Object extraction incomplete for class '" + std::string(dup->getClassName()) + "'");
 	}
 	if (_chain) {
@@ -389,14 +389,14 @@ const LinkBase DataArchive::getObject(const Path& path, std::string const &path_
 	}
 	if (temp_buffer.size() == 0) --_buffer;
 	if (!reader.isComplete()) {
-		SIMDATA_LOG(LOG_ARCHIVE, LOG_ERROR, "INTERNAL ERROR: Object extraction incomplete for class '" << dup->getClassName() << "': " << from << " (data overflow).");
+		SIMDATA_LOG(ERROR, ARCHIVE) << "INTERNAL ERROR: Object extraction incomplete for class '" << dup->getClassName() << "': " << from << " (data overflow).";
 		throw CorruptArchive("Object extraction incomplete for class '" + std::string(dup->getClassName()) + "'");
 	}
 	if (proxy->isStatic()) {
-		_addStatic(dup, "", id);
+		_addStatic(dup.get(), "", id);
 	}
-	SIMDATA_LOG(LOG_ARCHIVE, LOG_DEBUG, "finished loading " << dup->getClassName() << " from " << from);
-	return LinkBase(path, dup);
+	SIMDATA_LOG(DEBUG, ARCHIVE) << "finished loading " << dup->getClassName() << " from " << from;
+	return LinkBase(path, dup.get());
 }
 
 

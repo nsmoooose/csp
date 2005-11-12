@@ -1,5 +1,5 @@
 /* SimData: Data Infrastructure for Simulations
- * Copyright 2002, 2003, 2004 Mark Rose <mkrose@users.sf.net>
+ * Copyright 2002-2005 Mark Rose <mkrose@users.sf.net>
  *
  * This file is part of SimData.
  *
@@ -23,31 +23,38 @@
  * @brief Stream based logging mechanism
  */
 
-// The logging code originally used in SimData was based on code
-// from SimGear (modified by Wolverine), which in turn was based
-// on a stream library by Bernie Bright.  The vast majority of the
-// current logging code has been reimplemented from scratch and
-// bears little resemblance to the earlier approach.  This notice
-// will be removed eventually.
-
 
 #include <SimData/LogStream.h>
 #include <SimData/Log.h>
+#include <SimData/FileUtility.h>
+#include <SimData/Trace.h>
+#include <SimData/Thread.h>
 
 #include <iostream>
+#include <iomanip>
 #include <fstream>
 #include <cstdlib>
+#include <ctime>
 #include <map>
 
 
 NAMESPACE_SIMDATA
 
+// A trivial registry for LogStreams.  Note that the registry does not take ownership of
+// the pointers it contains, the log streams will persist unless explicitly deleted.  Be
+// careful when deleting log streams, since logs may be written even during static
+// destruction.
+namespace {
+	typedef std::map<std::string, LogStream *> LogStreamRegistry;
+	LogStreamRegistry NamedLogStreamRegistry;
+}
 
-void LogStream::initFromEnvironment(const char *log_file, const char *log_priority) {
+
+void LogStream::initFromEnvironment(const char *log_file, const char *log_priority, const char *log_flags) {
 	if (log_file) {
 		char *env_logfile = getenv(log_file);
 		if (env_logfile && *env_logfile) {
-			setOutput(env_logfile);
+			logToFile(env_logfile);
 		}
 	}
 	if (log_priority) {
@@ -55,37 +62,72 @@ void LogStream::initFromEnvironment(const char *log_file, const char *log_priori
 		if (env_priority && *env_priority) {
 			int priority = atoi(env_priority);
 			if (priority < 0) priority = 0;
-			if (priority > LOG_ERROR) priority = LOG_ERROR;
-			setLogPriority(priority);
+			if (priority > FATAL) priority = FATAL;
+			setPriority(priority);
+		}
+	}
+	if (log_flags) {
+		char *env_flags = getenv(log_flags);
+		if (env_flags && *env_flags) {
+			int flags = atoi(env_flags);
+			if (flags >= 0) setFlags(flags);
 		}
 	}
 }
 
-std::ostream & LogStream::entry(int priority, int category, const char *file, int line) {
-	static std::ostream m_null(NULL);
-	if (!isNoteworthy(priority, category)) return m_null;
-	if (!m_stream) setOutput(std::cerr);
-	std::ostream &out(*m_stream);
-	out << priority << ' ';
-	if (m_log_time) {
+void LogStream::LogEntry::prefix(const char *filename, int linenum) {
+	const int flags = m_stream.getFlags();
+	if (flags & LogStream::PRIORITY) {
+		m_buffer << ((m_priority >= 0 && m_priority <= 4) ? "DIWEF"[m_priority] : '?') << " ";
+	}
+	if (flags & (LogStream::TIMESTAMP|LogStream::DATESTAMP)) {
+		const time_t now = time(0);
+		struct tm gmt;
+		gmtime_r(&now, &gmt);
 		char time_stamp[32];
-		time_t now;
-		time(&now);
-		strftime(time_stamp, 32, "%Y%m%d %H%M%S", gmtime(&now));
-		out << time_stamp << ' ';
+		switch (flags & (LogStream::TIMESTAMP|LogStream::DATESTAMP)) {
+			case LogStream::TIMESTAMP:
+				strftime(time_stamp, 32, "%H%M%S", &gmt); break;
+			case LogStream::DATESTAMP:
+				strftime(time_stamp, 32, "%Y%m%d", &gmt); break;
+			default:
+				strftime(time_stamp, 32, "%Y%m%d %H%M%S", &gmt);
+		}
+		m_buffer << time_stamp << ' ';
 	}
-	if (file && m_log_point) {
-		out << '(' << file << ':' << line << ") ";
+#ifndef SIMDATA_NOTHREADS
+	if (flags & LogStream::THREAD) {
+		// compress the 32-bit thread id into 6 characters.  note that this is *not* the standard
+		// base64 encoding.  the numbers are in front to make it more likely that the final output
+		// resembles a numeric value.
+		const char *encode64 = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz-_";
+		uint32 id = static_cast<uint32>(thread::id());
+		if (id != m_stream.initialThreadId()) {
+			char id_buffer[8];
+			id_buffer[6] = ' ';
+			id_buffer[7] = 0;
+			for (int i = 5; i >= 0; --i) { id_buffer[i] = encode64[id & 63]; id >>= 6; }
+			m_buffer << id_buffer;
+		}
 	}
-	return out;
+#endif
+	if (filename && (flags & LogStream::LINESTAMP)) {
+		const char *basename = filename;
+		if ((flags & LogStream::FULLPATH) == 0) {
+			for (const char *scanner = filename; *scanner; ++scanner) {
+				if (*scanner == ospath::DIR_SEPARATOR) basename = scanner + 1;
+			}
+		}
+		m_buffer << '(' << basename << ':' << linenum << ") ";
+	}
 }
 
-
-// nothing very fancy.  the logstreams persist unless explicitly
-// deleted by a caller, since they may be needed even during static
-// destruction.
-typedef std::map<std::string, LogStream *> LogStreamRegistry;
-LogStreamRegistry NamedLogStreamRegistry;
+void LogStream::LogEntry::die() {
+	m_stream.flush();
+	m_stream.trace();
+	AutoTrace::inhibitAbortHandler();
+	::abort();
+}
 
 LogStream *LogStream::getOrCreateNamedLog(const std::string &name) {
 	LogStreamRegistry::iterator iter = NamedLogStreamRegistry.find(name);
@@ -97,26 +139,69 @@ LogStream *LogStream::getOrCreateNamedLog(const std::string &name) {
 	return iter->second;
 }
 
-void LogStream::_close() {
-	if (m_fstream != NULL) {
+void LogStream::init() {
+#ifndef SIMDATA_NOTHREADS
+	m_threadsafe = true;
+	m_initial_thread_id = static_cast<uint32>(thread::id());
+#endif
+}
+
+LogStream::LogStream():
+		m_flags(PRIORITY|TIMESTAMP|LINESTAMP|THREAD),
+		m_priority(INFO),
+		m_categories(~0),
+		m_stream(&std::cerr),
+		m_fstream(0) {
+	init();
+}
+
+LogStream::LogStream(std::ostream& stream):
+		m_flags(PRIORITY|TIMESTAMP|LINESTAMP|THREAD),
+		m_priority(INFO),
+		m_categories(~0),
+		m_stream(&stream),
+		m_fstream(0) {
+	init();
+}
+
+void LogStream::setStream(std::ostream &stream) {
+	if (&stream != m_stream) {
+		close();
+		m_stream = &stream;
+	}
+}
+
+void LogStream::close() {
+	if (m_fstream) {
 		m_fstream->close();
 		delete m_fstream;
-		m_fstream = NULL;
+		m_fstream = 0;
 	}
-	m_stream = NULL;
+	m_stream = &std::cerr;
 }
 
-void LogStream::setOutput(std::ofstream& out_) {
-	_close();
-	m_fstream = &out_;
-	m_stream = &out_;
+void LogStream::logToFile(std::string const &filename) {
+	std::ofstream *target = new std::ofstream(filename.c_str());
+	if (!target) SIMDATA_LOG(ERROR, ALL) << "Unable to open log stream to file " << filename;
+	close();
+	target->rdbuf()->pubsetbuf(0, 0);
+	m_fstream = target;
+	m_stream = m_fstream ? m_fstream : &std::cerr;
 }
 
-void LogStream::setOutput(std::string const &filename) {
-	_close();
-	m_fstream = new std::ofstream(filename.c_str());
-	assert(m_fstream != NULL);
-	m_stream = m_fstream;
+void LogStream::trace(StackTrace const *stacktrace) {
+	if (!m_stream) return;
+	if (!stacktrace) {
+		StackTrace trace;
+		trace.acquire(1);
+		lock();
+		*m_stream << trace;
+	} else {
+		lock();
+		*m_stream << *stacktrace;
+	}
+	m_stream->flush();
+	unlock();
 }
 
 void fatal(std::string const &msg) {
@@ -127,18 +212,14 @@ void fatal(std::string const &msg) {
 	::abort();
 }
 
-LogStream *_makeDefaultLog() {
-	return new LogStream(std::cerr);
-}
-
 // not really the right place for this, but convenient.
 void SIMDATA_EXPORT _log_reference_count_error(int count, void *pointer) {
-	SIMDATA_LOG(LOG_ALL, LOG_ERROR, "simdata::ReferencedBase(" << pointer << ") deleted with non-zero reference count (" << count << "): memory corruption possible.");
+	SIMDATA_LOG(FATAL, ALL) << "simdata::ReferencedBase(" << pointer << ") deleted with non-zero reference count (" << count << "): memory corruption possible.";
 }
 
 // not really the right place for this, but convenient.
 void SIMDATA_EXPORT _log_reference_conversion_error() {
-	SIMDATA_LOG(LOG_ALL, LOG_ERROR, "simdata::Ref() assignment: incompatible types (dynamic cast failed).");
+	SIMDATA_LOG(ERROR, ALL) << "simdata::Ref() assignment: incompatible types (dynamic cast failed).";
 }
 
 NAMESPACE_SIMDATA_END

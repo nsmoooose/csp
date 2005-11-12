@@ -38,11 +38,11 @@ NAMESPACE_SIMDATA
 
 
 InterfaceRegistry::InterfaceRegistry() {
-	SIMDATA_LOG(LOG_REGISTRY, LOG_DEBUG, "Initializing interface registry.");
+	SIMDATA_LOG(DEBUG, REGISTRY) << "Initializing interface registry.";
 }
 
 InterfaceRegistry::~InterfaceRegistry() {
-	SIMDATA_LOG(LOG_REGISTRY, LOG_DEBUG, "Destroying the interface registry.");
+	SIMDATA_LOG(DEBUG, REGISTRY) << "Destroying the interface registry.";
 }
 
 InterfaceProxy *InterfaceRegistry::getInterface(const char *name) {
@@ -85,7 +85,7 @@ void InterfaceRegistry::addInterface(const char *name, hasht id, InterfaceProxy 
 	__map[name] = proxy;
 	__id_map[id] = proxy;
 	__list.push_back(proxy);
-	SIMDATA_LOG(LOG_REGISTRY, LOG_DEBUG, "Registering interface<" << name << "> [" << id << "]");
+	SIMDATA_LOG(DEBUG, REGISTRY) << "Registering interface<" << name << "> [" << id << "]";
 }
 
 NAMESPACE_SIMDATA_END

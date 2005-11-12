@@ -138,14 +138,14 @@ CSPSim::CSPSim():
 	}
 
 	int level = g_Config.getInt("Debug", "LoggingLevel", 0, true);
-	csplog().setLogCategory(CSP_ALL);
-	csplog().setLogPriority(level);
+	csplog().setCategories(CSP_ALL);
+	csplog().setPriority(level);
 	std::string logfile = g_Config.getString("Debug", "LogFile", "CSPSim.log", true);
-	csplog().setOutput(logfile);
+	csplog().logToFile(logfile);
 
 	g_DisableRender = g_Config.getBool("Debug", "DisableRender", false, false);
 
-	CSP_LOG(APP, INFO, "Constructing CSPSim Object...");
+	CSPLOG(INFO, APP) << "Constructing CSPSim Object...";
 
 	m_Clean = true;
 
@@ -245,11 +245,10 @@ void CSPSim::togglePause() {
 
 void CSPSim::init() {
 	try {
-		CSP_LOG(APP, INFO, "Installing stack trace handler...");
-		simdata::Trace::install();
+		CSPLOG(INFO, APP) << "Installing stack trace handler...";
+		simdata::AutoTrace::install();
 
-		CSP_LOG(APP, INFO, "Starting CSPSim...");
-
+		CSPLOG(INFO, APP) << "Starting CSPSim...";
 		osg::setNotifyLevel(osg::WARN);
 
 		// setup osg search path for external data files
@@ -367,12 +366,13 @@ void CSPSim::init() {
 		int fog_end = g_Config.getInt("View", "FogEnd", 35000, true);
 		m_Scene->setFogEnd(fog_end);
 
+		CSPLOG(DEBUG, APP) << "Initializing battlefield";
 		int visual_radius = g_Config.getInt("Testing", "VisualRadius",  40000, true);
 		m_Battlefield = new LocalBattlefield(m_DataManager);
 		m_Battlefield->setSceneManager(new SimpleSceneManager(m_Scene, visual_radius));
 		if (m_Theater.valid()) {
 			FeatureGroup::Ref::list groups = m_Theater->getAllFeatureGroups();
-			CSP_LOG(BATTLEFIELD, DEBUG, "Adding " << groups.size() << " features to the battlefield");
+			CSPLOG(DEBUG, BATTLEFIELD) << "Adding " << groups.size() << " features to the battlefield";
 			for (FeatureGroup::Ref::list::iterator iter = groups.begin(); iter != groups.end(); ++iter) {
 				m_Battlefield->addStatic(*iter);
 			}
@@ -380,14 +380,15 @@ void CSPSim::init() {
 
 		// create the networking layer
 		if (g_Config.getBool("Networking", "UseNetworking", false, true)) {
+			CSPLOG(DEBUG, APP) << "Initializing network layer";
 			std::string netlogfile = g_Config.getString("Debug", "NetLogFile", "SimNet.log", true);
-			simnet::netlog().setOutput(netlogfile);
-			simnet::netlog().setLogPriority(simdata::LOG_INFO);
+			simnet::netlog().logToFile(netlogfile);
+			simnet::netlog().setPriority(simdata::LOG_INFO);
 			std::string default_ip = simnet::NetworkNode().getIpString();
 			std::string local_address = g_Config.getString("Networking", "LocalIp", default_ip, true);
 			int local_port = g_Config.getInt("Networking", "LocalPort", 3161, true);
 			simnet::NetworkNode local_node(local_address, local_port);
-			CSP_LOG(NETWORK, INFO, "Initializing network interface " << local_address << ":" << local_port);
+			CSPLOG(INFO, NETWORK) << "Initializing network interface " << local_address << ":" << local_port;
 
 			int incoming_bw = g_Config.getInt("Networking", "IncomingBandwidth", 36000, true);
 			int outgoing_bw = g_Config.getInt("Networking", "OutgoingBandwidth", 36000, true);
@@ -416,22 +417,19 @@ void CSPSim::init() {
 					m_Battlefield->setNetworkClient(0);
 				}
 			}
-			simnet::netlog().setLogPriority(simdata::LOG_INFO);
-			//simnet::netlog().setLogPriority(6);
+			simnet::netlog().setPriority(simdata::LOG_INFO);
 		}
 
 		logoScreen.onUpdate(0.0);
 		logoScreen.onRender();
 		SDL_GL_SwapBuffers();
 
-		CSP_LOG(APP, DEBUG, "INIT:: gamescreen");
+		CSPLOG(DEBUG, APP) << "Initializing gamescreen";
 
 		// Following variables should be set before calling GameScreen.init()
 		// because they are used in GameScreen initialization process
 
-		// enable/disable pause at startup
-		m_Paused = false;
-		//m_Paused = true;
+		m_Paused = false;  // enable/disable pause at startup
 
 		// create and initialize screens
 		m_GameScreen = new GameScreen;

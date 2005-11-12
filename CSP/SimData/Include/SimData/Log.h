@@ -1,5 +1,5 @@
 /* SimData: Data Infrastructure for Simulations
- * Copyright 2002, 2003, 2004 Mark Rose <mkrose@users.sourceforge.net>
+ * Copyright 2002-2005 Mark Rose <mkrose@users.sourceforge.net>
  *
  * This file is part of SimData.
  *
@@ -29,7 +29,6 @@
 
 
 #include <string>
-#include <iostream>
 
 #include <SimData/LogStream.h>
 #include <SimData/Namespace.h>
@@ -40,7 +39,7 @@
 NAMESPACE_SIMDATA
 
 
-/** Display a fatal error message to stderr and exit.
+/** Display a fatal error message to stderr and abort.
  */
 extern SIMDATA_EXPORT void fatal(std::string const &msg);
 
@@ -61,42 +60,18 @@ inline SIMDATA_EXPORT LogStream& log() {
 		// settings.  note that this LogStream instance is never freed, so
 		// it is safe to log messages from static destructors.
 		log_stream = new LogStream();
-		log_stream->initFromEnvironment("SIMDATA_LOGFILE", "SIMDATA_LOGPRIORITY");
+		log_stream->initFromEnvironment("SIMDATA_LOGFILE", "SIMDATA_LOGPRIORITY", "SIMDATA_LOGFLAGS");
 	}
 	return *log_stream;
 }
 
 
-// when threads are disabled, use the main simdata LogStream instance
-// directly.  when threads are enabled, access the main LogStream via
-// thread-specific ThreadLog instances.  ThreadLog provides the same
-// public interface as LogStream, but serializes access to the log().
-
-#ifdef SIMDATA_NOTHREADS
-#  define SIMDATA_LOG_ SIMDATA(log())
-
-#else  // threading enabled
-#  define SIMDATA_LOG_ SIMDATA(threadlog())
-
-NAMESPACE_SIMDATA_END
-#  include <SimData/ThreadLog.h>
-NAMESPACE_SIMDATA
-
-// swig doesn't like this for some reason
-#  ifndef SWIG
-inline SIMDATA_EXPORT ThreadLog& threadlog() {
-	static ThreadSpecific<ThreadLog> specific_thread_log;
-	return *specific_thread_log;
-}
-#  endif // SWIG
-
-#endif // threading enabled
-
+#define SIMDATA_LOG_ static_cast<SIMDATA(LogStream)&>(SIMDATA(log()))
 
 #ifdef SIMDATA_NDEBUG
-# define SIMDATA_NOTEWORTHY(C, P) false
+# define SIMDATA_NOTEWORTHY(P, C) false
 #else
-# define SIMDATA_NOTEWORTHY(C, P) SIMDATA_LOG_.isNoteworthy(P, C)
+# define SIMDATA_NOTEWORTHY(P, C) SIMDATA_LOG_.isNoteworthy(P, C)
 #endif
 
 /** Convenience macros for logging messages.
@@ -105,16 +80,9 @@ inline SIMDATA_EXPORT ThreadLog& threadlog() {
  *  @param P priority
  *  @param M message
  */
-# define SIMDATA_LOG(C,P,M) if (SIMDATA_NOTEWORTHY(C, P)) \
-                              SIMDATA_LOG_.entry(P, C, __FILE__, __LINE__) << M << std::endl
-
-# define SIMDATA_BULK(C,M) SIMDATA_LOG(C,SIMDATA(LOG_BULK),M)
-# define SIMDATA_TRACE(C,M) SIMDATA_LOG(C,SIMDATA(LOG_TRACE),M)
-# define SIMDATA_DEBUG(C,M) SIMDATA_LOG(C,SIMDATA(LOG_DEBUG),M)
-# define SIMDATA_INFO(C,M) SIMDATA_LOG(C,SIMDATA(LOG_INFO),M)
-# define SIMDATA_WARNING(C,M) SIMDATA_LOG(C,SIMDATA(LOG_WARNING),M)
-# define SIMDATA_ALERT(C,M) SIMDATA_LOG(C,SIMDATA(LOG_ALERT),M)
-# define SIMDATA_ERROR(C,M) SIMDATA_LOG(C,SIMDATA(LOG_ERROR),M)
+# define SIMDATA_LOG(P, C) \
+	if (!SIMDATA_NOTEWORTHY(SIMDATA(LOG_##P), SIMDATA(LOG_##C))); \
+	else SIMDATA(LogStream::LogEntry)(SIMDATA_LOG_, SIMDATA(LOG_##P), __FILE__, __LINE__)
 
 
 NAMESPACE_SIMDATA_END

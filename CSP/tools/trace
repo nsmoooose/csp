@@ -28,9 +28,9 @@ to type <ctrl-d> to close stdin).
 
 Caveats:
 
-This program relies on GNU-specific tools, both to decode binary
-addresses into source files and line numbers, and to demangle C++
-symbol names.  When SimData supports stack trace generation under
+This program relies on the addr2line utility to convert symbol
+offsets into source file and line numbers, as well as to demangle
+C++ symbol names.  When SimData supports stack trace generation under
 Windows, a comparable mechanism for decoding them will be devised.
 
 Since the stack trace includes relative paths to shared libraries,
@@ -51,27 +51,35 @@ import os.path
 from CSP.base import app
 
 
-re_trace1 = re.compile(r'\s+([^(]+)[(]([A-Z_0-9a-z]+)\+0x([0-9a-f]+)[)]\s+\[0x([0-9a-f]+)\]')
-re_trace2 = re.compile(r'\s*(\S+)\s+\[0x([0-9a-f]+)\]')
+re_trace = re.compile(r'([0-9A-Fa-f]{8})\s+([0-9A-Fa-f]{8})\s+([0-9A-Fa-f]{8})\s+(\S+)\s*(\S*)')
 
 
-def filt(mangled):
-	"""Demangle a C++ symbol"""
-	return os.popen('c++filt %s' % mangled).readline().strip()
-
-def addr2line(bin, offset):
+def addr2line(bin, offsets):
 	"""
-	Translate a object file offset into a source file name and line number.
+	Translate object file offsets into a source file name and line number.
 
 	The object file must have been compiled with debugging symbols (and not
-	subsequently stripped).
+	subsequently stripped).  The offsets parameter is a list of 2-tuples, each tuple
+	holding a primary and an alternate offset into the object file.
 	"""
-	return os.popen('addr2line -e %s %x' % (bin, offset)).readline().strip()
+	# expand primary and alternate offsets into a single argument list
+	args = ' '.join(['%x %x' % (x, y) for x, y in offsets])
+	result = []
+	row = []
+	for line in os.popen('addr2line -C -f -e %s %s' % (bin, args)):
+		row.append(line.strip())
+		# each offset returns two lines (symbol name and file position), so there
+		# are four lines per input tuple:
+		#   row = [primary_sname, primary_file_pos, alt_sname, alt_file_pos]
+		if len(row) == 4:
+			result.append(row)
+			row = []
+	return result
+
 
 def fixpath(dir, path):
 	"""
-	Translate a path relative to the specified directory.  Absolute paths are
-	unchanged.
+	Translate a path relative to the specified directory.  Absolute paths are unchanged.
 	"""
 	if not os.path.isabs(path):
 		path = os.path.join(dir, path)
@@ -79,159 +87,66 @@ def fixpath(dir, path):
 	return path
 
 
-class Symbols:
-	"""
-	Object file symbol table reader and cache.
-	"""
+class DecodeStackTrace:
 
-	class SymbolSet:
-		"""
-		An index for the symbol table of a single object file.
-		"""
+	def __init__(self, input, dir='.'):
+		# print something early to indicate that we are working (the decode can take a while)
+		print '============='
+		trace = self._parse(input);
+		info, libs = self._analyze(trace)
+		self._process(info, libs, dir)
+		self._output(info)
 
-		def __init__(self):
-			self._table = {}
-			self._index = []
-
-		def add(self, method, addr):
-			"""Add a new symbol to the index."""
-			self._table[method] = addr
-			self._index.append((addr, method))
-
-		def search(self, addr):
-			"""Search for the symbol at, or immediately preceding, address."""
-			index = self._index
-			if not index: return ''
-			A = 0
-			B = len(index)
-			n = B / 2
-			while B - A > 1:
-				at = index[n][0]
-				if at > addr:
-					B = n
-				else:
-					A = n
-				n = (A + B) / 2
-			if n == len(index): return ''
-			return index[n][1]
-
-		def get(self, symbol, default=0):
-			"""Return the address of a symbol, or default."""
-			return self._table.get(symbol, default)
-
-	def __init__(self):
-		self._syms = {}
-
-	def getsym(self, lib):
-		"""
-		Get the SymbolSet for the specified object file.  SymbolSets are cached,
-		so subsequent calls for a given object file are cheap.
-		"""
-		syms = self._syms
-		sym = syms.get(lib, None)
-		if sym: return sym
-		symset = Symbols.SymbolSet()
-		cin, cout, cerr = os.popen3('nm -n %s' % lib)
-		for line in cout.readlines():
-			parts = line.strip().split()
-			if len(parts) == 3:
-				addr, type, method = line.strip().split()
-				addr = int(addr, 16)
-				symset.add(method, addr)
-		syms[lib] = symset
-		return symset
-
-
-class StackTrace:
-
-	def __init__(self):
-		self._symbols = Symbols()
-		self._offsets = {}
-
-	def _decode1(self, dir, line, parts):
-		"""
-		Decode stack trace lines that match re_trace1.
-		"""
-		lib = fixpath(dir, parts[0])
-		if not os.path.exists(lib):
-			print >>sys.stderr, 'unable to find object file (%s); may need to specify --dir' % lib
-			sys.exit(1)
-		method = parts[1]
-		offset = int(parts[2], 16)
-		image = int(parts[3], 16)
-		real_name = filt(method)
-		symset = self._symbols.getsym(lib)
-		method_address = symset.get(method, default=0)
-		if method_address:
-			address = method_address + offset
-			self._offsets[lib] = address - image
-			point = addr2line(lib, address)
-			return '%s (%s)' % (real_name, point)
-		else:
-			symbol = symset.search(image)
-			if symbol: real_name = filt(symbol)
-			point = addr2line(lib, image)
-			if point.find('?') < 0:
-				return '%s (%s)' % (real_name, point)
-		return '%s (%s+0x%x) [0x%x]' % (os.path.basename(lib), real_name, offset, image)
-
-	def _decode2(self, dir, line, parts):
-		"""
-		Decode stack trace lines that match re_trace2.
-		"""
-		lib, addr = parts
-		lib = fixpath(dir, lib)
-		if not os.path.exists(lib):
-			print >>sys.stderr, 'unable to find object file (%s); may need to specify --dir' % lib
-			sys.exit(1)
-		addr = int(addr, 16)
-		offset = self._offsets.get(lib, 0)
-		symset = self._symbols.getsym(lib)
-		symbol = symset.search(addr + offset)
-		if symbol:
-			point = addr2line(lib, addr)
-			if point.find('?') < 0:
-				return '%s (%s)' % (filt(symbol), point)
-			else:
-				return '%s (%s)' % (filt(symbol), os.path.basename(lib))
-		return '%s [0x%x]' % (os.path.basename(lib), addr)
-
-	def process(self, input, dir):
-		"""
-		Process input lines and print the decoded stack trace to stdout.
-		"""
-		start = 0
+	def _parse(self, input):
+		"""Extract trace fields from the raw input."""
 		trace = []
-		output = []
 		for line in input:
 			line = line.rstrip()
 			if not line: continue
+			m = re_trace.match(line)
+			if m: trace.append(m.groups())
+		return trace
 
-			if line.find('CALL STACK BACKTRACE') >= 0:
-				start = 1
-				continue
+	def _analyze(self, trace):
+		"""Determine symbol offsets for each library."""
+		info = []
+		libs = {}
+		for addr, bofs, sofs, file, sym in trace:
+			addr = int(addr, 16)
+			bofs = int(bofs, 16)
+			sofs = int(sofs, 16)
+			ofs, alt = addr, sofs
+			if file.endswith('.so') or file.find('.so.') > 0:
+				ofs, alt = bofs, bofs - sofs
+				if alt < 0: alt = sofs
+			libs.setdefault(file, []).append((len(info), ofs, alt))
+			info.append([addr, sym, file])
+		return info, libs
 
-			m = re_trace1.match(line)
-			if m:
-				start = 1
-				output.append(self._decode1(dir, line, m.groups()))
-				continue
+	def _process(self, info, libs, dir):
+		"""Use addr2line to translate library offsets into symbol names and file positions."""
+		for file, addrlist in libs.items():
+			file = fixpath(dir, file)
+			offsets = [(ofs, alt) for (idx, ofs, alt) in addrlist]
+			decode = addr2line(file, offsets)
+			for data, ofs in zip(decode, addrlist):
+				idx = ofs[0]
+				info[idx].extend(data)
 
-			m = re_trace2.match(line)
-			if m:
-				start = 1
-				output.append(self._decode2(dir, line, m.groups()))
-				continue
-
-			if start and line.startswith('  '):
-				parts = line.split()
-				if len(parts):
-					parts[0] = os.path.basename(parts[0])
-				output.append(' '.join(parts))
-
-		print '============='
-		for idx, line in enumerate(output):
-			print '%2d. %s' % (idx+1, line)
+	def _output(self, info):
+		"""Print the decoded stack trace."""
+		for idx in range(len(info)):
+			addr, sym, file, sname, fileline, alt_sname, alt_fileline = (info[idx] + ['??', '??:0', '??', '??:0'])[:7]
+			if sname == '??':
+				sname = sym
+				fileline = file
+			elif fileline == '??:0':
+				fileline = file
+			if alt_sname == sname or alt_sname == '??':
+				print '%2d: %08x %s (%s)' % (idx, addr, sname, fileline)
+			else:
+				print '%2d: %08x %s (%s)' % (idx, addr, sname, fileline)
+				print '             from %s (%s)' % (alt_sname, alt_fileline)
 
 
 def main(args):
@@ -244,9 +159,7 @@ def main(args):
 	except KeyboardInterrupt:
 		return 0
 
-	dir = app.options.dir
-	stack_trace = StackTrace()
-	stack_trace.process(input, dir)
+	DecodeStackTrace(input, app.options.dir)
 	return 0
 
 

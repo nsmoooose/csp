@@ -24,6 +24,7 @@
 
 #include <osg/Drawable>
 #include <osg/Timer>
+#include <osg/Version>
 
 #include <osgChunkLod/Export>
 #include <osgChunkLod/ChunkLod>

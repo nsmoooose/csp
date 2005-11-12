@@ -31,6 +31,7 @@
 #include <osg/PositionAttitudeTransform>
 #include <osg/ref_ptr>
 #include <osg/Switch>
+#include <osg/Version>
 
 #include <SimCore/Util/Log.h>
 #include <SimData/Enum.h>
@@ -40,6 +41,9 @@
 #include <SimData/Vector3.h>
 #include <SimData/ObjectInterface.h>
 
+#ifndef OSG_VERSION_MAJOR
+#define OSG_OLD_CONTROL_POINT_INTERFACE
+#endif
 
 SIMDATA_XML_BEGIN(Animation)
 	SIMDATA_DEF("model_id", m_NodeLabel, true)
@@ -68,13 +72,24 @@ public:
 			osg::Matrix matrix;
 			_cp.getInverse(matrix);
 			pat.setPosition(matrix.getTrans());
+#ifdef OSG_OLD_CONTROL_POINT_INTERFACE
 			pat.setAttitude(_cp._rotation.inverse());
 			pat.setScale(osg::Vec3(1.0f/_cp._scale.x(),1.0f/_cp._scale.y(),1.0f/_cp._scale.z()));
+#else
+			pat.setAttitude(_cp.getRotation().inverse());
+			pat.setScale(osg::Vec3(1.0f/_cp.getScale().x(),1.0f/_cp.getScale().y(),1.0f/_cp.getScale().z()));
+#endif
 			pat.setPivotPoint(_pivotPoint);
 		} else {
+#ifdef OSG_OLD_CONTROL_POINT_INTERFACE
 			pat.setPosition(_cp._position);
 			pat.setAttitude(_cp._rotation);
 			pat.setScale(_cp._scale);
+#else
+			pat.setPosition(_cp.getPosition());
+			pat.setAttitude(_cp.getRotation());
+			pat.setScale(_cp.getScale());
+#endif
 			pat.setPivotPoint(_pivotPoint);
 		}
 	}

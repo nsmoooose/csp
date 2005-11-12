@@ -56,7 +56,11 @@
 #include <osg/AlphaFunc>
 #include <osg/Billboard>
 #include <osg/MatrixTransform>
+#include <osg/Version>
 
+#ifndef OSG_VERSION_MAJOR
+#  define OSG_OLD_COMPUTE_BOUND
+#endif
 
 using namespace osg;
 using simdata::toRadians;
@@ -241,11 +245,20 @@ public:
 	StarSystem(const StarSystem &copy, const osg::CopyOp &copyop = osg::CopyOp::SHALLOW_COPY): osg::Drawable(copy, copyop) {
 	}
 
+#ifdef OSG_OLD_COMPUTE_BOUND
 	bool computeBound() const {
 		_bbox._min = Vec3(-1000100.0, -1000100.0, 0.0);
 		_bbox._max = Vec3( 1000100.0,  1000100.0, 1000100.0);
 		return true;
 	}
+#else
+	BoundingBox computeBound() const {
+		BoundingBox bbox;
+		bbox._min = Vec3(-1000100.0, -1000100.0, 0.0);
+		bbox._max = Vec3( 1000100.0,  1000100.0, 1000100.0);
+		return bbox;
+	}
+#endif
 
 	//const bool computeBound() const { return true; }
 	virtual void drawImplementation(osg::State &/*state*/) const {

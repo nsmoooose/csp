@@ -169,7 +169,6 @@ private:
 
 	int _getFeatureTileIndex(simdata::Ref<FeatureGroup> feature) const;
 	void _updateOrigin(simdata::Vector3 const &origin);
-	std::string logLookAt();
 
 	osgUtil::SceneView *makeSceneView();
 

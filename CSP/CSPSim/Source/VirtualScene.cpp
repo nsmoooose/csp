@@ -42,10 +42,11 @@
 #include <SimData/FileUtility.h>
 #include <SimData/osg.h>
 
-#include <osg/Fog>
+#include <osg/AlphaFunc>
 #include <osg/BlendColor>
 #include <osg/BlendFunc>
 #include <osg/ColorMatrix>
+#include <osg/Fog>
 #include <osg/LightSource>
 #include <osg/Material>
 #include <osg/Node>
@@ -53,6 +54,7 @@
 #include <osg/PolygonMode>
 #include <osg/PositionAttitudeTransform>
 #include <osg/StateSet>
+#include <osg/TexEnv>
 #include <osgUtil/CullVisitor>
 #include <osgUtil/IntersectVisitor>
 #include <osgUtil/Optimizer>
@@ -537,17 +539,6 @@ void VirtualScene::onUpdate(float dt) {
 void VirtualScene::setCameraNode(osg::Node *) {
 }
 
-std::string VirtualScene::logLookAt() {
-	osg::Vec3 _camEyePos;
-	osg::Vec3 _camLookPos;
-	osg::Vec3 _camUpVec;
-	m_FarView->getViewMatrixAsLookAt(_camEyePos, _camLookPos, _camUpVec);
-
-	std::ostringstream os("VirtualScene::_setLookAt - eye: ");
-	os << _camEyePos << ", look: " << _camLookPos << ", up: " << _camUpVec;
-	return os.str();
-}
-
 void VirtualScene::_setLookAt(const simdata::Vector3& eyePos, const simdata::Vector3& lookPos, const simdata::Vector3& upVec) {
 	CSP_LOG(APP, DEBUG, "VirtualScene::setLookAt - eye: " << eyePos << ", look: " << lookPos << ", up: " << upVec);
 
@@ -568,8 +559,6 @@ void VirtualScene::_setLookAt(const simdata::Vector3& eyePos, const simdata::Vec
 		simdata::Vector3 tpos = m_Terrain->getOrigin(eyePos) - eyePos;
 		m_TerrainGroup->setPosition(simdata::toOSG(tpos));
 	}
-
-	CSP_LOG(APP, DEBUG, logLookAt());
 }
 
 // TODO externalize a couple fixed parameters

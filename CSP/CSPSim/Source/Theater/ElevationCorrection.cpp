@@ -26,6 +26,12 @@
 #include "Theater/ElevationCorrection.h"
 #include "TerrainObject.h"
 #include <SimCore/Util/Log.h>
+#include <osg/Version>
+
+// stream ops for vec3/matrix were moved to io_utils in osg 0.9.9
+#ifdef OSG_VERSION_MAJOR
+#include <osg/io_utils>
+#endif
 
 
 ElevationCorrection::ElevationCorrection(TerrainObject *terrain, float x, float y, float angle): LayoutTransform(x, y, angle) {

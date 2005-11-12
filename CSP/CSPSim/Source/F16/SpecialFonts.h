@@ -31,10 +31,15 @@
 #ifndef __SPECIAL_FONTS__
 #define __SPECIAL_FONTS__
 
+#include <osg/Version>
 #include <osgText/Font>
 #include <string>
 #include <algorithm>
 
+// first defined in osg 0.9.9
+#ifndef OSG_VERSION_MAJOR
+#define OSG_OLD_FONT_INTERFACE
+#endif
 
 /** A specialized font for rendering normal and reverse video text.  Character
  *  codes 128-255 are reverse video representations of the glyphs for glyphs
@@ -151,7 +156,11 @@ public:
 				reverse->setVerticalAdvance(reference->getVerticalAdvance());
 
 				// finally add the new glyph so we don't repeat all this work!
+#ifdef OSG_OLD_FONT_INTERFACE
 				addGlyph(getWidth(), getHeight(), charcode, reverse);
+#else
+				addGlyph(getFontWidth(), getFontHeight(), charcode, reverse);
+#endif
 				return reverse;
 			} else {
 				return _implementation->getGlyph(charcode);
@@ -200,14 +209,22 @@ public:
 				unsigned int original_height = _height;
 				unsigned int new_width = static_cast<unsigned int>(_width * m_Scale);
 				unsigned int new_height = static_cast<unsigned int>(_height * m_Scale);
+#ifdef OSG_OLD_FONT_INTERFACE
 				setSize(new_width, new_height);
+#else
+				setFontResolution(new_width, new_height);
+#endif
 				Glyph *scaled_glyph = _implementation->getGlyph(normal_code);
 				if (m_VCenter) {
 					osg::Vec2 hbearing = scaled_glyph->getHorizontalBearing();
 					hbearing.y() += 0.5f * (normal_glyph->t() - scaled_glyph->t());
 					scaled_glyph->setHorizontalBearing(hbearing);
 				}
+#ifdef OSG_OLD_FONT_INTERFACE
 				setSize(original_width, original_height);
+#else
+				setFontResolution(original_width, original_height);
+#endif
 				_sizeGlyphMap[SizePair(_width, _height)][charcode] = scaled_glyph;
 				return scaled_glyph;
 			} else {

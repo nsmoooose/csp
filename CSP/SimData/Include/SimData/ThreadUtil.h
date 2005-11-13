@@ -24,6 +24,7 @@
  * @brief Thread utility classes.
  */
 
+#ifndef SIMDATA_NOTHREADS
 
 #ifndef __SIMDATA_THREADUTIL_H__
 #define __SIMDATA_THREADUTIL_H__
@@ -31,6 +32,7 @@
 #include <SimData/Namespace.h>
 #include <SimData/Properties.h>
 #include <SimData/ExceptionBase.h>
+#include <pthread.h>
 
 NAMESPACE_SIMDATA
 
@@ -62,8 +64,15 @@ struct NoMutex {
 	inline void unlock() { }
 };
 
+/** Convert an (opaque) pthread_t to an unsigned long.  The value
+ *  is intended for diagnostic logging only.  Use pthread_equal to
+ *  compare thread ids.
+ */
+unsigned long pthread_t_to_ulong(pthread_t const &id);
+
 
 NAMESPACE_SIMDATA_END
 
 #endif // __SIMDATA_THREADUTIL_H__
 
+#endif // SIMDATA_NOTHREADS

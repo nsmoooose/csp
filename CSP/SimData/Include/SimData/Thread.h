@@ -64,7 +64,7 @@ namespace thread {
 
 	/** Return the id of the current thread.
 	 */
-	static inline unsigned long id() { return pthread_self(); }
+	static inline pthread_t id() { return pthread_self(); }
 
 	/** Terminate the currently executing thread.
 	 */
@@ -147,31 +147,6 @@ friend class BaseThread;
 public:
 	typedef simdata::Ref<Task> Ref;
 
-#ifndef PTHREADS_WIN
-	typedef pthread_t ThreadId;
-#else
-	// small wrapper for pthreads win dated 11-22-2004
-	struct ThreadId: public pthread_t {
-		ThreadId(unsigned int i) {x = i;}
-		ThreadId& operator=(const pthread_t& other) {
-			if (this != &other) {
-				x = other.x;
-				p = other.p;
-			}
-			return *this;
-		}
-		bool operator==(unsigned int i) const {
-			return x == i;
-		}
-		bool operator!=(unsigned int i) const {
-			return !(*this == i);
-		}
-		bool operator&&(bool other) const {
-			return (*this != 0) && other;
-		}
-	};
-#endif
-
 	/** Test if a request to abort the task has been made.
 	 *
 	 *  @return true if abort() has been called, false otherwise.
@@ -214,7 +189,7 @@ protected:
 
 	/** Initialize the task state.
 	 */
-	Task(): m_running(false), m_detached(false), m_complete(false), m_abort(false), m_thread_id(0) {
+	Task(): m_running(false), m_detached(false), m_complete(false), m_abort(false) {
 	}
 
 	virtual ~Task() { }
@@ -247,7 +222,6 @@ private:
 	 */
 	void _execute() {
 		m_running = true;
-		m_thread_id = pthread_self();
 		try {
 			run();
 		} catch (Exception &e) {
@@ -283,15 +257,9 @@ private:
 	bool m_detached;
 	bool m_complete;
 	bool m_abort;
-	ThreadId m_thread_id;
 	ThreadCondition m_exit;
 };
 
-#ifdef PTHREADS_WIN
-inline bool operator&&(bool lhs,const Task::ThreadId& rhs) {
-	return rhs.operator&&(lhs);
-}
-#endif
 
 /** Base class for wrapping a Posix thread.
  *
@@ -310,7 +278,7 @@ protected:
 	 *  @param task a non-null Task pointer to bind to this thread.
 	 *  @param name a unique string identifier for this thread.
 	 */
-	BaseThread(Task *task, std::string const &name): m_task(task), m_thread_id(0), m_cancelled(false) {
+	BaseThread(Task *task, std::string const &name): m_task(task), m_started(false), m_cancelled(false) {
 		assert(task);
 		if (name.size()) {
 			task->setName(name);
@@ -409,6 +377,7 @@ public:
 		// is called.  _start takes care of deleting the reference.
 		int result = pthread_create(&m_thread_id, 0, &Task::_start, new Ref<Task>(m_task));
 		ThreadException::checkThrow(result);
+		m_started = true;
 	}
 
 	/** Start the thread running and detach it.
@@ -421,13 +390,13 @@ public:
 	/** Returns true if this thread has been started successfully via start().
 	 */
 	bool isStarted() const {
-		return m_thread_id != 0;
+		return m_started;
 	}
 
 	/** Test if this thread has been started but has not yet finished.
 	 */
 	bool isActive() const {
-		return m_task.valid() && m_thread_id && !m_task->isComplete();
+		return m_task.valid() && isStarted() && !m_task->isComplete();
 	}
 
 	/** Test if this thread has been detached.
@@ -443,7 +412,8 @@ public:
 
 private:
 	Ref<Task> m_task;
-	Task::ThreadId m_thread_id;
+	pthread_t m_thread_id;
+	bool m_started;
 	bool m_cancelled;
 };
 

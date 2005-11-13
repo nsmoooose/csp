@@ -105,7 +105,7 @@ public:
 	void setLocking(bool thread_safe=true) { m_threadsafe = thread_safe; }
 	void lock() { if (m_threadsafe) m_mutex.lock(); }
 	void unlock() { if (m_threadsafe) m_mutex.unlock(); }
-	uint32 initialThreadId() const { return m_initial_thread_id; }
+	pthread_t initialThread() const { return m_initial_thread; }
 #endif // SIMDATA_NOTHREADS
 
 	/** Test if a given priority and category should be logged.
@@ -145,7 +145,7 @@ private:
 #ifndef SIMDATA_NOTHREADS
 	ThreadMutex m_mutex;
 	bool m_threadsafe;
-	uint32 m_initial_thread_id;
+	pthread_t m_initial_thread;
 #endif
 };
 

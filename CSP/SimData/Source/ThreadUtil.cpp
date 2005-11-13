@@ -27,8 +27,10 @@
 #ifndef SIMDATA_NOTHREADS
 
 #include <SimData/ThreadUtil.h>
+#include <SimData/HashUtility.h>
 #include <SimData/Log.h>
 
+#include <pthread.h>
 #include <string>
 #include <sstream>
 
@@ -68,6 +70,21 @@ void ThreadException::translateError() {
 	addMessage(msg.str());
 }
 
+unsigned long pthread_t_to_ulong(pthread_t const &id) {
+#ifdef PTW32_VERSION  // pthreads-win32
+	return static_cast<unsigned long>(id.p);  // pointer to the thread object
+#else
+	// if pthread_t is small, assume it is a simple numeric id.
+	if (sizeof(pthread_t) == sizeof(unsigned long)) return *reinterpret_cast<const unsigned long*>(&id);
+	if (sizeof(pthread_t) == sizeof(unsigned)) return *reinterpret_cast<const unsigned*>(&id);
+	// for other implementations that define pthread_t as a struct, return a 32-bit hash of
+	// the pthread_t structure.  this is dangerous, since the structure may contain mutable
+	// data that is unrelated to the thread identity (e.g., a reference count).  the posix
+	// standard doesn't provide any good options in this case.  feel free to special case
+	// specific pthread libraries using more #ifdef branches above if necessary.
+	return hash_uint32(reinterpret_cast<const char*>(&id), sizeof(pthread_t));
+#endif
+}
 
 NAMESPACE_SIMDATA_END
 

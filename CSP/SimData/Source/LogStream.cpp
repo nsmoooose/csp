@@ -29,6 +29,7 @@
 #include <SimData/FileUtility.h>
 #include <SimData/Trace.h>
 #include <SimData/Thread.h>
+#include <SimData/ThreadUtil.h>
 
 #include <iostream>
 #include <iomanip>
@@ -97,12 +98,13 @@ void LogStream::LogEntry::prefix(const char *filename, int linenum) {
 	}
 #ifndef SIMDATA_NOTHREADS
 	if (flags & LogStream::THREAD) {
-		// compress the 32-bit thread id into 6 characters.  note that this is *not* the standard
-		// base64 encoding.  the numbers are in front to make it more likely that the final output
-		// resembles a numeric value.
-		const char *encode64 = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz-_";
-		uint32 id = static_cast<uint32>(thread::id());
-		if (id != m_stream.initialThreadId()) {
+		pthread_t thread_id = thread::id();
+		if (!pthread_equal(thread_id, m_stream.initialThread())) {
+			// compress the low 32 or 36 bits of thread id into 6 characters.  note that this is *not*
+			// the standard base64 encoding.  the numbers are in front to make it more likely that the
+			// final output resembles a numeric value.
+			const char *encode64 = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz-_";
+			unsigned long id = pthread_t_to_ulong(thread_id);
 			char id_buffer[8];
 			id_buffer[6] = ' ';
 			id_buffer[7] = 0;
@@ -142,7 +144,7 @@ LogStream *LogStream::getOrCreateNamedLog(const std::string &name) {
 void LogStream::init() {
 #ifndef SIMDATA_NOTHREADS
 	m_threadsafe = true;
-	m_initial_thread_id = static_cast<uint32>(thread::id());
+	m_initial_thread = thread::id();
 #endif
 }
 

@@ -166,6 +166,10 @@ LogStream::LogStream(std::ostream& stream):
 	init();
 }
 
+LogStream::~LogStream() {
+	close();
+}
+
 void LogStream::setStream(std::ostream &stream) {
 	if (&stream != m_stream) {
 		close();

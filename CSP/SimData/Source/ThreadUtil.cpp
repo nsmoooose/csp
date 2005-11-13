@@ -72,18 +72,19 @@ void ThreadException::translateError() {
 
 unsigned long pthread_t_to_ulong(pthread_t const &id) {
 #ifdef PTW32_VERSION  // pthreads-win32
-	return static_cast<unsigned long>(id.p);  // pointer to the thread object
+	// treat the pointer to the thread object as an integer id
+	if (sizeof(unsigned long) == sizeof(void*)) return *reinterpret_cast<const unsigned long*>(id.p);
 #else
 	// if pthread_t is small, assume it is a simple numeric id.
 	if (sizeof(pthread_t) == sizeof(unsigned long)) return *reinterpret_cast<const unsigned long*>(&id);
 	if (sizeof(pthread_t) == sizeof(unsigned)) return *reinterpret_cast<const unsigned*>(&id);
+#endif
 	// for other implementations that define pthread_t as a struct, return a 32-bit hash of
 	// the pthread_t structure.  this is dangerous, since the structure may contain mutable
 	// data that is unrelated to the thread identity (e.g., a reference count).  the posix
 	// standard doesn't provide any good options in this case.  feel free to special case
 	// specific pthread libraries using more #ifdef branches above if necessary.
 	return hash_uint32(reinterpret_cast<const char*>(&id), sizeof(pthread_t));
-#endif
 }
 
 NAMESPACE_SIMDATA_END

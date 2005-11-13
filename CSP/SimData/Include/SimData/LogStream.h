@@ -50,8 +50,8 @@ class StackTrace;
 class SIMDATA_EXPORT LogStream {
 public:
 	/// Flags controlling log metadata.
-	enum { TERSE=0, PRIORITY=1, DATESTAMP=2, TIMESTAMP=4, LINESTAMP=8, FULLPATH=16, THREAD=32, VERBOSE=~0 };
-	enum { DEBUG=0, INFO=1, WARNING=2, ERROR=3, FATAL=4 };
+	enum { cTerse=0, cPriority=1, cDatestamp=2, cTimestamp=4, cLinestamp=8, cFullPath=16, cThread=32, cVerbose=~0 };
+	enum { cDebug=0, cInfo=1, cWarning=2, cError=3, cFatal=4 };
 
 	/** Create a new log stream that defaults to stderr.
 	 */
@@ -183,7 +183,7 @@ public:
 	 *
 	 *  @param stream the logstream to write to.
 	 *  @param priority priority of this message.
-	 *    If non-negative and the logstream's flags include PRIORITY, this
+	 *    If non-negative and the logstream's flags include cPriority, this
 	 *    priority will be recorded in the message.  Note that this is only
 	 *    an advisory value; it is up to the creator of the LogEntry to
 	 *    filter messages based on priority.
@@ -196,7 +196,7 @@ public:
 	 *
 	 *  @param stream the logstream to write to.
 	 *  @param priority priority of this message.
-	 *    If non-negative and the logstream's flags includes PRIORITY, this
+	 *    If non-negative and the logstream's flags includes cPriority, this
 	 *    priority will be recorded in the message.  Note that this is only
 	 *    an advisory value; it is up to the creator of the LogEntry to
 	 *    filter messages based on priority.
@@ -209,14 +209,14 @@ public:
 
 	/** Write the buffered log entry to the logstream.  Locks the stream during the
 	 *  write operation if running in a multithreaded environment.  If the priority
-	 *  is FATAL, records a stack trace and aborts the program.
+	 *  is cFatal, records a stack trace and aborts the program.
 	 */
 	~LogEntry() {
 		m_stream.lock();
 		m_stream.getStream() << m_buffer.get() << "\n";
-		if (m_priority >= LogStream::WARNING) m_stream.flush();
+		if (m_priority >= LogStream::cWarning) m_stream.flush();
 		m_stream.unlock();
-		if (m_priority == LogStream::FATAL) die();
+		if (m_priority == LogStream::cFatal) die();
 	}
 
 	/** Stream operator for recording messages in the log entry.

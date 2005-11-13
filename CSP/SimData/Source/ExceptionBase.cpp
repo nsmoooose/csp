@@ -102,7 +102,7 @@ void ExceptionBase::details(bool no_trace) const {
 
 void ExceptionBase::logAndClear(int category) const {
 	if (SIMDATA_NOTEWORTHY(LOG_ERROR, category)) {
-		LogStream::LogEntry(SIMDATA_LOG_, LogStream::ERROR) << *this;
+		LogStream::LogEntry(SIMDATA_LOG_, LogStream::cError) << *this;
 	}
 }
 

@@ -63,7 +63,7 @@ void LogStream::initFromEnvironment(const char *log_file, const char *log_priori
 		if (env_priority && *env_priority) {
 			int priority = atoi(env_priority);
 			if (priority < 0) priority = 0;
-			if (priority > FATAL) priority = FATAL;
+			if (priority > cFatal) priority = cFatal;
 			setPriority(priority);
 		}
 	}
@@ -78,18 +78,18 @@ void LogStream::initFromEnvironment(const char *log_file, const char *log_priori
 
 void LogStream::LogEntry::prefix(const char *filename, int linenum) {
 	const int flags = m_stream.getFlags();
-	if (flags & LogStream::PRIORITY) {
+	if (flags & LogStream::cPriority) {
 		m_buffer << ((m_priority >= 0 && m_priority <= 4) ? "DIWEF"[m_priority] : '?') << " ";
 	}
-	if (flags & (LogStream::TIMESTAMP|LogStream::DATESTAMP)) {
+	if (flags & (LogStream::cTimestamp|LogStream::cDatestamp)) {
 		const time_t now = time(0);
 		struct tm gmt;
 		gmtime_r(&now, &gmt);
 		char time_stamp[32];
-		switch (flags & (LogStream::TIMESTAMP|LogStream::DATESTAMP)) {
-			case LogStream::TIMESTAMP:
+		switch (flags & (LogStream::cTimestamp|LogStream::cDatestamp)) {
+			case LogStream::cTimestamp:
 				strftime(time_stamp, 32, "%H%M%S", &gmt); break;
-			case LogStream::DATESTAMP:
+			case LogStream::cDatestamp:
 				strftime(time_stamp, 32, "%Y%m%d", &gmt); break;
 			default:
 				strftime(time_stamp, 32, "%Y%m%d %H%M%S", &gmt);
@@ -97,7 +97,7 @@ void LogStream::LogEntry::prefix(const char *filename, int linenum) {
 		m_buffer << time_stamp << ' ';
 	}
 #ifndef SIMDATA_NOTHREADS
-	if (flags & LogStream::THREAD) {
+	if (flags & LogStream::cThread) {
 		pthread_t thread_id = thread::id();
 		if (!pthread_equal(thread_id, m_stream.initialThread())) {
 			// compress the low 32 or 36 bits of thread id into 6 characters.  note that this is *not*
@@ -113,9 +113,9 @@ void LogStream::LogEntry::prefix(const char *filename, int linenum) {
 		}
 	}
 #endif
-	if (filename && (flags & LogStream::LINESTAMP)) {
+	if (filename && (flags & LogStream::cLinestamp)) {
 		const char *basename = filename;
-		if ((flags & LogStream::FULLPATH) == 0) {
+		if ((flags & LogStream::cFullPath) == 0) {
 			for (const char *scanner = filename; *scanner; ++scanner) {
 				if (*scanner == ospath::DIR_SEPARATOR) basename = scanner + 1;
 			}
@@ -149,8 +149,8 @@ void LogStream::init() {
 }
 
 LogStream::LogStream():
-		m_flags(PRIORITY|TIMESTAMP|LINESTAMP|THREAD),
-		m_priority(INFO),
+		m_flags(cPriority|cTimestamp|cLinestamp|cThread),
+		m_priority(cInfo),
 		m_categories(~0),
 		m_stream(&std::cerr),
 		m_fstream(0) {
@@ -158,8 +158,8 @@ LogStream::LogStream():
 }
 
 LogStream::LogStream(std::ostream& stream):
-		m_flags(PRIORITY|TIMESTAMP|LINESTAMP|THREAD),
-		m_priority(INFO),
+		m_flags(cPriority|cTimestamp|cLinestamp|cThread),
+		m_priority(cInfo),
 		m_categories(~0),
 		m_stream(&stream),
 		m_fstream(0) {

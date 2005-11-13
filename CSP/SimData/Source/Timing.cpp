@@ -148,7 +148,7 @@ NAMESPACE_SIMDATA
 			if (calibrations == 0) {
 				throw TimerError("Unable to calibrate high resolution timer using system time");
 			}
-			SIMDATA_LOG(LOG_TIME, LOG_ERROR, "High resolution timer calibration failed");
+			SIMDATA_LOG(ERROR, TIME) << "High resolution timer calibration failed";
 		} else {
 			if (calibrations++ == 0) {
 				first_counter = counter;

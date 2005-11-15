@@ -217,6 +217,9 @@
 				RelativePath="..\Source\Real.cpp">
 			</File>
 			<File
+				RelativePath="..\Source\Trace.cpp">
+			</File>
+			<File
 				RelativePath="..\Source\TypeAdapter.cpp">
 			</File>
 			<File
@@ -333,6 +336,9 @@
 			</File>
 			<File
 				RelativePath="..\Include\SimData\Referenced.h">
+			</File>
+			<File
+				RelativePath="..\Include\SimData\Trace.h">
 			</File>
 			<File
 				RelativePath="..\Include\SimData\TypeAdapter.h">

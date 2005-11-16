@@ -177,7 +177,7 @@ private:
  *  file name and line number to be automatically recorded in the log.
  *  See the various SIMDATA_LOG macros for more information.
  */
-class LogStream::LogEntry {
+class SIMDATA_EXPORT LogStream::LogEntry {
 public:
 	/** Create a new log entry in the specified log stream.
 	 *

@@ -81,22 +81,22 @@ inline std::ostream &operator<<(std::ostream &os, StackTrace const &trace) {
 SIMDATA_EXPORT class AutoTrace {
 public:
 	// install sigv and abort handlers.
-	static bool install();
-	static void setLog(LogStream &log);
-	static void inhibitAbortHandler() { _abort = false; }
+	static SIMDATA_EXPORT bool install();
+	static SIMDATA_EXPORT void setLog(LogStream &log);
+	static SIMDATA_EXPORT void inhibitAbortHandler() { _abort = false; }
 
 private:
 	// signal handlers.
-	static void __sigterm(int /*sig_n*/);
-	static void __sigsegv(int /*sig_n*/);
-	static void __sigabort(int /*sig_n*/);
+	static SIMDATA_EXPORT void __sigterm(int /*sig_n*/);
+	static SIMDATA_EXPORT void __sigsegv(int /*sig_n*/);
+	static SIMDATA_EXPORT void __sigabort(int /*sig_n*/);
 
-	static LogStream *log();
+	static SIMDATA_EXPORT LogStream *log();
 
-	static StackTrace _trace;
-	static LogStream *_log;
-	static char *_reserve;
-	static bool _abort;
+	static SIMDATA_EXPORT StackTrace _trace;
+	static SIMDATA_EXPORT LogStream *_log;
+	static SIMDATA_EXPORT char *_reserve;
+	static SIMDATA_EXPORT bool _abort;
 };
 
 

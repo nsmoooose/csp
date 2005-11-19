@@ -102,14 +102,13 @@ def setLogCategory():
 				flags = flags | class_flag
 		except:
 			print "Unrecognized log class:", class_name
-	cCSP.csplog().setLogCategory(flags)
+	cCSP.csplog().setCategories(flags)
 
 
 def setLogPriority():
-	cCSP.csplog().setTimeLogging(1)
 	if log_priority is None: return
-	cCSP.csplog().setLogPriority(log_priority)
-	SimData.log().setLogPriority(log_priority)
+	cCSP.csplog().setPriority(log_priority)
+	SimData.log().setPriority(log_priority)
 
 
 def parseLogPriority(priority):
@@ -176,8 +175,8 @@ def compileData(args):
 	cachepath = cCSP.getCachePath()
 	dar = os.path.join(cachepath, "sim.dar")
 	XML = os.path.join(datapath, "XML")
-	cCSP.csplog().setLogCategory(cCSP.CSP_ALL)
-	cCSP.csplog().setLogPriority(SimData.LOG_ALERT)
+	cCSP.csplog().setCategories(cCSP.CSP_ALL)
+	cCSP.csplog().setPriority(SimData.LOG_ERROR)
 	#print "compile %s %s" % (XML, dar)
 	try:
 		from CSP.SimData.Compile import Compiler, CompilerUsageError
@@ -346,8 +345,8 @@ def main(argv):
 			print "Invalid logging priority, using .ini setting."
 
     # capture Object class registration and other errors when CSP loads
-	SimData.log().setLogCategory(SimData.LOG_ALL)
-	SimData.log().setLogPriority(SimData.LOG_DEBUG)
+	SimData.log().setCategories(SimData.LOG_ALL)
+	SimData.log().setPriority(SimData.LOG_DEBUG)
 
 	loadCSP()
 

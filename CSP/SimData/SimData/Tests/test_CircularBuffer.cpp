@@ -104,7 +104,7 @@ void test() {
 
 
 int main() {
-	Trace::install();
+	AutoTrace::install();
 	test();
 	return 0;
 }

@@ -18,7 +18,7 @@
 
 Import('env build')
 
-testenv = env.Copy(LIBS=["SimData", "pthread"], LIBPATH=["#/SimData/SimData"])
+testenv = env.Copy(LIBS=["SimData", "pthread", "dl"], LIBPATH=["#/SimData/SimData"])
 
 import glob
 import os.path

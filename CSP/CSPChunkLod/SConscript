@@ -28,11 +28,12 @@ def PackageConfig(env):
 	conf.CheckLib('osgNVParse')
 	env = conf.Finish()
 
+env = env.Copy()
+
 # cspchunklod generates lots of warnings; feel free to clean it up and then
 # remove this line
-CXXFLAGS = env['CXXFLAGS'].replace('-pedantic', '').replace('-W ', '')
+env.RemoveFlags(CXXFLAGS=['-pedantic', '-W', '-Wall'])
 
-env = env.Copy(CXXFLAGS=CXXFLAGS)
 build.UpdateEnvironment(env, config=PackageConfig)
 
 SOURCES = [

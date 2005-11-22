@@ -23,10 +23,11 @@ def PackageConfig(env):
 	conf = build.CustomConfigure(env)
 	conf.CheckCommandVersion('ccgnu2', 'ccgnu2-config --version', '1.0.13')
 	env = conf.Finish()
+	env.ParseConfig('ccgnu2-config --flags --libs')
 
 env = env.Copy()
-env.AppendUnique(SHLINKFLAGS = '-Wl,-z,lazyload')
-env.Replace(CXXFLAGS=str(env['CXXFLAGS']).replace('-W ', ''))
+env.AppendUnique(SHLINKFLAGS=['-Wl,-z,lazyload'])
+env.RemoveFlags(CXXFLAGS=['-W'])
 
 env.SetConfig(PackageConfig)
 
@@ -37,7 +38,6 @@ env.Documentation(
 	'#/SimNet/*.cpp',
 	'#/SimNet/*.net')
 
-env.ParseConfig('ccgnu2-config --flags --libs')
 
 
 SOURCES = [

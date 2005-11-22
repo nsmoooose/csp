@@ -44,6 +44,14 @@ import SCons.Warnings
 SCons.Warnings.suppressWarningClass(SCons.Warnings.DuplicateEnvironmentWarning)
 
 
+def GlobalConfig(env):
+	print '<< Config >>'
+	conf = build.CustomConfigure(env)
+	conf.CheckCHeader('dlfcn.h')
+	conf.CheckCHeader('asm/atomic.h')
+	env = conf.Finish()
+
+
 PACKAGES = [
 	'Demeter',
 	'CSPChunkLod',
@@ -64,9 +72,9 @@ INCLUDE = [
 ]
 
 
-CXXFLAGS = '-O2 -g -W -Wall -pedantic -Wno-long-long'
-SWIGCXXFLAGS = '-O2 -g'
-SWIGFLAGS = '-noruntime -python -c++'
+CXXFLAGS = ['-O2', '-g', '-W', '-Wall', '-pedantic', '-Wno-long-long']
+SWIGCXXFLAGS = ['-O2', '-g']
+SWIGFLAGS = ['-noruntime', '-python', '-c++']
 ARFLAGS = ['cr']
 
 
@@ -86,6 +94,9 @@ import time
 start_time0 = time.time()
 
 build.GlobalSetup(env, default_message='No targets specified; try scons -h for help.')
+
+env.SetConfig(GlobalConfig)
+
 build.BuildPackages(env, PACKAGES)
 
 import atexit

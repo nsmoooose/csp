@@ -42,7 +42,7 @@
 #  define NOMINMAX
 #  include <Windows.h>
 #  undef ERROR
-#else
+#elif defined(HAVE_ASM_ATOMIC_H)
 #  define LIN_ATOMIC
 extern "C" {
 #  include <asm/atomic.h>
@@ -72,8 +72,10 @@ extern "C" {
 //#	pragma intrinsic (_InterlockedExchange)
 //#	pragma intrinsic (_InterlockedDecrement)
 //#	pragma intrinsic (_InterlockedIncrement)
-// Atomic counter using pthreads locking (slow but safe).
 #else
+// Atomic counter using explicit locking (slow but safe).
+#	include <SimData/Synchronization.h>
+#	include <SimData/ScopedLock.h>
 	NAMESPACE_SIMDATA
 	class _AtomicCounter {
 	private:

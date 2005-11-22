@@ -18,7 +18,7 @@
 
 Import('env build')
 
-SWIGFLAGS = '-runtime -noexcept -python -c++ -DSWIG_STD_BACKWARD_COMP'
+SWIGFLAGS = ['-runtime', '-noexcept', '-python', '-c++', '-DSWIG_STD_BACKWARD_COMP']
 SHLIBS = ['dl', 'pthread']
 
 MODULES = ['Source', 'SimData/Tests']

@@ -34,6 +34,7 @@ from distutils import sysconfig
 
 import SCons
 import SCons.Builder
+import SCons.SConf
 from SCons.Builder import Builder
 from SCons.Script import SConscript
 from SCons.Script.SConscript import SConsEnvironment
@@ -343,6 +344,10 @@ def CheckPythonVersion(minimum):
 		       'version %s or newer.' % (version, minimum))
 		sys.exit(1)
 
+def CheckCHeader(context, header, include_quotes='""'):
+	ok = SCons.SConf.CheckHeader(context, header, include_quotes, language = "C")
+	if ok: context.env.AppendUnique(HAVE=['HAVE_' + header.upper().replace('.', '_').replace('/', '_')])
+	return ok
 
 def CheckSwig(context, min_version, not_versions=[]):
 	ok = 0
@@ -443,6 +448,7 @@ def CheckCommandVersion(context, lib, command, min_version=None, lib_name=None):
 def CustomConfigure(env):
 	conf = env.Configure()
 	conf.AddTests({'CheckSwig': CheckSwig})
+	conf.AddTests({'CheckCHeader': CheckCHeader})
 	conf.AddTests({'CheckLibVersion': CheckLibVersion})
 	conf.AddTests({'CheckOSGVersion': CheckOSGVersion})
 	conf.AddTests({'CheckCommandVersion': CheckCommandVersion})
@@ -453,7 +459,12 @@ def CustomConfigure(env):
 def WriteConfig(env):
 	config_file = env.GetBuildPath('.config')
 	config = open(config_file, 'wt')
-	pickle.dump((env.get('LIBS', ''), env.get('CPPPATH', [])), config)
+	libs = env.get('LIBS', '')
+	cpppath = env.get('CPPPATH', [])
+	have = env.get('HAVE', [])
+	pickle.dump((libs, cpppath, have), config)
+	env.AppendUnique(CXXFLAGS=['-D%s' % x for x in have])
+	env.AppendUnique(SWIGCXXFLAGS=['-D%s' % x for x in have])
 	return None
 
 
@@ -463,9 +474,11 @@ def ReadConfig(env):
 		config = open(config_file, 'rt')
 	except IOError:
 		return 1
-	libs, cpppath = pickle.load(config)
+	libs, cpppath, have = pickle.load(config)
 	env['LIBS'] = libs
 	env['CPPPATH'] = cpppath
+	env.AppendUnique(CXXFLAGS=['-D%s' % x for x in have])
+	env.AppendUnique(SWIGCXXFLAGS=['-D%s' % x for x in have])
 	return 0
 
 
@@ -476,6 +489,20 @@ def SetConfig(env, config):
 				config(env)
 				WriteConfig(env)
 
+def RemoveFlags(env, **kw):
+	"""Remove flags from environment variables.  The specified environment
+	variables must be lists for this function to work."""
+	for key, val in kw.items():
+		if isinstance(val, str):
+			val = [val]
+		if env.has_key(key):
+			flags = env[key]
+			if isinstance(flags, list):
+				for flag in val:
+					try:
+						flags.remove(flag)
+					except ValueError:
+						pass
 
 
 ############################################################################
@@ -532,6 +559,7 @@ def GlobalSetup(env, distributed=1, short_messages=None, default_message=None, w
 	AddPhonyTarget(env, 'config')
 	SConsEnvironment.SetConfig = SetConfig
 	SConsEnvironment.Documentation = MakeDocumentation
+	SConsEnvironment.RemoveFlags = RemoveFlags
 
 
 class GlobalSettings:

@@ -33,6 +33,7 @@
 
 #include <SimData/Export.h>
 #include <SimData/Namespace.h>
+#include <SimData/Properties.h>
 #include <iosfwd>
 
 
@@ -78,7 +79,7 @@ inline std::ostream &operator<<(std::ostream &os, StackTrace const &trace) {
 }
 
 
-SIMDATA_EXPORT class AutoTrace {
+class AutoTrace: public NonConstructable {
 public:
 	// install sigv and abort handlers.
 	static SIMDATA_EXPORT bool install();

@@ -47,7 +47,7 @@ NAMESPACE_SIMDATA
 // destruction.
 namespace {
 	typedef std::map<std::string, LogStream *> LogStreamRegistry;
-	LogStreamRegistry NamedLogStreamRegistry;
+	LogStreamRegistry *NamedLogStreamRegistry = 0;
 }
 
 
@@ -132,10 +132,11 @@ void LogStream::LogEntry::die() {
 }
 
 LogStream *LogStream::getOrCreateNamedLog(const std::string &name) {
-	LogStreamRegistry::iterator iter = NamedLogStreamRegistry.find(name);
-	if (iter == NamedLogStreamRegistry.end()) {
+	if (!NamedLogStreamRegistry) NamedLogStreamRegistry = new LogStreamRegistry;
+	LogStreamRegistry::iterator iter = NamedLogStreamRegistry->find(name);
+	if (iter == NamedLogStreamRegistry->end()) {
 		LogStream *logstream = new LogStream(std::cerr);
-		NamedLogStreamRegistry[name] = logstream;
+		NamedLogStreamRegistry->insert(std::make_pair(name, logstream));
 		return logstream;
 	}
 	return iter->second;

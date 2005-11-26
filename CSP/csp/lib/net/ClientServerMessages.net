@@ -1,0 +1,39 @@
+// -*- cplusplus -*-
+
+#header <csp/lib/net/ClientServerMessages.h>
+
+#include <csp/lib/net/NetworkMessage.h>
+
+typedef csp::NetworkMessage NetworkMessage;
+
+// message id numbers 0 - 63 are reserved for internal use.
+
+message Reserved0 : NetworkMessage {  @id=0;
+}
+
+message Reserved1 : NetworkMessage {  @id=1;
+}
+
+message Acknowledge : NetworkMessage {  @id=2;
+}
+
+message Disconnect : NetworkMessage {  @id=3;
+}
+
+message Reset : NetworkMessage {  @id=4;
+}
+
+message ConnectionRequest : NetworkMessage {  @id=5;
+	std::string password;
+	int32 incoming_bw;
+	int32 outgoing_bw;
+}
+
+message ConnectionResponse : NetworkMessage {  @id=6;
+	std::string server_id;
+	std::string response;
+	bool success;
+	int16 client_id;
+	int32 incoming_bw;
+	int32 outgoing_bw;
+}

@@ -1,0 +1,45 @@
+# -*- python -*-
+#
+# Copyright 2004 Mark Rose <mkrose@users.sourceforge.net>
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+Import('env build')
+
+MODULES = [
+	'data',
+	'net',
+	'spatial',
+	'thread',
+	'util',
+]
+
+env = env.Copy()
+
+csplib_wrap, csplib_module = env.Swig('csplib.i')
+
+INTERFACES = [env.SwigWrapper(csplib_wrap)]
+OBJECTS = build.BuildModules(env, MODULES)
+
+TESTS = [obj for obj in OBJECTS if obj.name.startswith('test_')]
+OBJECTS = [obj for obj in OBJECTS if not obj.name.startswith('test_')]
+
+libcsplib = env.SharedLibrary('csplib', OBJECTS + INTERFACES, SHLIBPREFIX='_')
+
+csplib_tests = env.SharedLibrary('csplib_tests', TESTS)
+
+Alias(['all', 'test'], [libcsplib, csplib_tests])
+Alias(['csplib'], [libcsplib])
+

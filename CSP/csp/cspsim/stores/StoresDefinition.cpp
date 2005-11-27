@@ -22,15 +22,15 @@
  *
  **/
 
-
-#include <Stores/StoresDefinition.h>
-#include <Stores/Stores.h>
-
+#include <csp/cspsim/stores/StoresDefinition.h>
+#include <csp/cspsim/stores/Stores.h>
 #include <csp/csplib/data/ObjectInterface.h>
 
-SIMDATA_XML_BEGIN(StoresDefinition)
-	SIMDATA_DEF("hardpoints", m_Hardpoints, true)
-SIMDATA_XML_END
+CSP_NAMESPACE
+
+CSP_XML_BEGIN(StoresDefinition)
+	CSP_DEF("hardpoints", m_Hardpoints, true)
+CSP_XML_END
 
 bool StoresDefinition::getHardpointIndex(std::string const &name, unsigned &index) const {
 	HardpointMap::const_iterator iter = m_HardpointMap.find(name);
@@ -40,10 +40,12 @@ bool StoresDefinition::getHardpointIndex(std::string const &name, unsigned &inde
 }
 
 void StoresDefinition::postCreate() {
-	simdata::Object::postCreate();
+	Object::postCreate();
 	for (unsigned i = 0; i < m_Hardpoints.size(); ++i) {
 		const bool duplicate = !m_HardpointMap.insert(HardpointMap::value_type(m_Hardpoints[i]->name(), i)).second;
 		assert(!duplicate);
 	}
 }
+
+CSP_NAMESPACE_END
 

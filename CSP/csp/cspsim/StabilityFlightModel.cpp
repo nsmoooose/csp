@@ -21,54 +21,51 @@
  *
  **/
 
-#include "StabilityFlightModel.h"
+#include <csp/cspsim/StabilityFlightModel.h>
 
 #include <csp/csplib/util/Log.h>
 #include <csp/csplib/util/Math.h>
 #include <csp/csplib/data/ObjectInterface.h>
 #include <csp/csplib/data/Quat.h>
 
+CSP_NAMESPACE
 
-using simdata::toDegrees;
-using simdata::toRadians;
+CSP_XML_BEGIN(StabilityFlightModel)
+	CSP_DEF("stall_aoa", m_stallAOA, true)
 
+	CSP_DEF("cd_m_a", m_CD_m_a, true)
+	CSP_DEF("cd_de", m_CD_de, true)
+	CSP_DEF("cd_db", m_CD_db, false)
 
-SIMDATA_XML_BEGIN(StabilityFlightModel)
-	SIMDATA_DEF("stall_aoa", m_stallAOA, true)
+	CSP_DEF("cl_m_a", m_CL_m_a, true)
+	CSP_DEF("cl_adot", m_CL_adot, false)
+	CSP_DEF("cl_q", m_CL_q, true)
+	CSP_DEF("cl_de", m_CL_de, true)
 
-	SIMDATA_DEF("cd_m_a", m_CD_m_a, true)
-	SIMDATA_DEF("cd_de", m_CD_de, true)
-	SIMDATA_DEF("cd_db", m_CD_db, false)
+	CSP_DEF("cy_b", m_CY_b, true)
+	CSP_DEF("cy_p", m_CY_p, true)
+	CSP_DEF("cy_r", m_CY_r, true)
+	CSP_DEF("cy_da", m_CY_da, true)
+	CSP_DEF("cy_dr", m_CY_dr, true)
 
-	SIMDATA_DEF("cl_m_a", m_CL_m_a, true)
-	SIMDATA_DEF("cl_adot", m_CL_adot, false)
-	SIMDATA_DEF("cl_q", m_CL_q, true)
-	SIMDATA_DEF("cl_de", m_CL_de, true)
+	CSP_DEF("cm_0", m_Cm_0, true)
+	CSP_DEF("cm_a", m_Cm_a, true)
+	CSP_DEF("cm_adot", m_Cm_adot, false)
+	CSP_DEF("cm_q", m_Cm_q, true)
+	CSP_DEF("cm_de", m_Cm_de, true)
 
-	SIMDATA_DEF("cy_b", m_CY_b, true)
-	SIMDATA_DEF("cy_p", m_CY_p, true)
-	SIMDATA_DEF("cy_r", m_CY_r, true)
-	SIMDATA_DEF("cy_da", m_CY_da, true)
-	SIMDATA_DEF("cy_dr", m_CY_dr, true)
+	CSP_DEF("ci_b", m_Ci_beta, true)
+	CSP_DEF("ci_p", m_Ci_p, true)
+	CSP_DEF("ci_r", m_Ci_r, true)
+	CSP_DEF("ci_da", m_Ci_da, true)
+	CSP_DEF("ci_dr", m_Ci_dr, true)
 
-	SIMDATA_DEF("cm_0", m_Cm_0, true)
-	SIMDATA_DEF("cm_a", m_Cm_a, true)
-	SIMDATA_DEF("cm_adot", m_Cm_adot, false)
-	SIMDATA_DEF("cm_q", m_Cm_q, true)
-	SIMDATA_DEF("cm_de", m_Cm_de, true)
-
-	SIMDATA_DEF("ci_b", m_Ci_beta, true)
-	SIMDATA_DEF("ci_p", m_Ci_p, true)
-	SIMDATA_DEF("ci_r", m_Ci_r, true)
-	SIMDATA_DEF("ci_da", m_Ci_da, true)
-	SIMDATA_DEF("ci_dr", m_Ci_dr, true)
-
-	SIMDATA_DEF("cn_b", m_Cn_beta, true)
-	SIMDATA_DEF("cn_p", m_Cn_p, true)
-	SIMDATA_DEF("cn_r", m_Cn_r, true)
-	SIMDATA_DEF("cn_da", m_Cn_da, true)
-	SIMDATA_DEF("cn_dr", m_Cn_dr, true)
-SIMDATA_XML_END
+	CSP_DEF("cn_b", m_Cn_beta, true)
+	CSP_DEF("cn_p", m_Cn_p, true)
+	CSP_DEF("cn_r", m_Cn_r, true)
+	CSP_DEF("cn_da", m_Cn_da, true)
+	CSP_DEF("cn_dr", m_Cn_dr, true)
+CSP_XML_END
 
 
 StabilityFlightModel::StabilityFlightModel(): m_stallAOA(0.0), m_CD_db(0.0), m_CD_i(0.0), m_CL_adot(0.0), m_Cm_adot(0.0) {
@@ -79,7 +76,7 @@ void StabilityFlightModel::convertXML() {
 	m_stallAOA = toRadians(m_stallAOA); // stall angle is specified in degrees
 }
 
-simdata::Vector3 StabilityFlightModel::calculateLiftVector() {
+Vector3 StabilityFlightModel::calculateLiftVector() {
 	double q = m_AngularVelocityBody.x();
 
 	m_CL =
@@ -98,7 +95,7 @@ simdata::Vector3 StabilityFlightModel::calculateLiftVector() {
 	}
 
 	double CL = m_CL * m_GE;
-	return simdata::Vector3(0.0, CL * sin(m_Alpha), CL * cos(m_Alpha));
+	return Vector3(0.0, CL * sin(m_Alpha), CL * cos(m_Alpha));
 }
 
 /*
@@ -107,7 +104,7 @@ okay... you'll want to have tables for e and you'll also want to make CD0 into C
 for CDmin and CLmin,drag.  You'd probably want to make AR variable too in case you decide to model swing wing aircraft.
 You could even model the effects of wintip missiles. :-) */
 
-simdata::Vector3 StabilityFlightModel::calculateDragVector() {
+Vector3 StabilityFlightModel::calculateDragVector() {
 	double CL = m_CL - 0.04; //m_CL_md;
 
 	m_CD =
@@ -116,16 +113,16 @@ simdata::Vector3 StabilityFlightModel::calculateDragVector() {
 		(m_CD_db * fabs(m_Airbrake)) +
 		(m_CD_i * CL * CL);
 
-	return simdata::Vector3(0.0, -m_CD * cos(m_Alpha), m_CD * sin(m_Alpha));
+	return Vector3(0.0, -m_CD * cos(m_Alpha), m_CD * sin(m_Alpha));
 }
 
-simdata::Vector3 StabilityFlightModel::calculateSideVector() {
+Vector3 StabilityFlightModel::calculateSideVector() {
 	double r = -m_AngularVelocityBody.z();
 	m_CY =
 		(m_CY_b * m_Beta) +
 		(m_CY_dr * m_Rudder) +
 		(m_CY_r * r);
-	return simdata::Vector3(m_CY * cos(m_Beta), - m_CY * sin(m_Beta), 0.0);
+	return Vector3(m_CY * cos(m_Beta), - m_CY * sin(m_Beta), 0.0);
 }
 
 double StabilityFlightModel::calculateRollMoment() const {
@@ -159,8 +156,10 @@ double StabilityFlightModel::calculateYawMoment() const {
 	) * m_qBarS *  m_WingSpan;
 }
 
-void StabilityFlightModel::calculateForceAndMoment(simdata::Vector3 &force, simdata::Vector3 &moment) {
+void StabilityFlightModel::calculateForceAndMoment(Vector3 &force, Vector3 &moment) {
 	force = (calculateLiftVector() + calculateDragVector() + calculateSideVector()) * m_qBarS;
 	moment.set(calculatePitchMoment(), calculateRollMoment(), calculateYawMoment());
 }
+
+CSP_NAMESPACE_END
 

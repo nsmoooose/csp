@@ -23,8 +23,8 @@
  **/
 
 
-#include "Theater/FeatureQuad.h"
-#include "Config.h"
+#include <csp/cspsim/theater/FeatureQuad.h>
+#include <csp/cspsim/Config.h>
 
 #include <csp/csplib/util/FileUtility.h>
 #include <csp/csplib/data/ObjectInterface.h>
@@ -38,15 +38,16 @@
 #include <osg/CullFace>
 #include <osg/Material>
 
+CSP_NAMESPACE
 
-SIMDATA_XML_BEGIN(FeatureQuad)
-	SIMDATA_DEF("texture", m_Texture, true)
-	SIMDATA_DEF("width", m_Width, true)
-	SIMDATA_DEF("height", m_Height, true)
-	SIMDATA_DEF("x_offset", m_OffsetX, false)
-	SIMDATA_DEF("y_offset", m_OffsetY, false)
-	SIMDATA_DEF("lighting", m_Lighting, false)
-SIMDATA_XML_END
+CSP_XML_BEGIN(FeatureQuad)
+	CSP_DEF("texture", m_Texture, true)
+	CSP_DEF("width", m_Width, true)
+	CSP_DEF("height", m_Height, true)
+	CSP_DEF("x_offset", m_OffsetX, false)
+	CSP_DEF("y_offset", m_OffsetY, false)
+	CSP_DEF("lighting", m_Lighting, false)
+CSP_XML_END
 
 
 osg::Geometry *FeatureQuad::makeGeometry() const {
@@ -91,7 +92,7 @@ osg::Geometry *FeatureQuad::makeGeometry() const {
 osg::StateSet* FeatureQuad::makeStateSet() const {
 	osg::Texture2D* tex = new osg::Texture2D;
 	std::string image_path = getDataPath("ImagePath");
-	std::string path = simdata::ospath::join(image_path, m_Texture.getSource());
+	std::string path = ospath::join(image_path, ospath::denormalize(m_Texture));
 	osg::Image* image = osgDB::readImageFile(path);
 	tex->setImage(image);
 	osg::StateSet *state = new osg::StateSet;
@@ -142,6 +143,5 @@ osg::StateSet * FeatureQuad::getStateSet() const {
 	return m_StateSet.get();
 }
 
-
-
+CSP_NAMESPACE_END
 

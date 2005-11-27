@@ -26,7 +26,7 @@
 #ifndef __CSPSIM_STORESMANAGEMENTSYSTEM_H__
 #define __CSPSIM_STORESMANAGEMENTSYSTEM_H__
 
-#include <System.h>
+#include <csp/cspsim/System.h>
 #include <csp/csplib/data/Link.h>
 #include <sigc++/trackable.h>
 #include <set>
@@ -34,6 +34,8 @@
 #include <osg/ref_ptr>
 
 namespace osg { class Group; }
+
+CSP_NAMESPACE
 
 class Hardpoint;
 class StoresDefinition;
@@ -48,7 +50,7 @@ class StoreIndex;
 
 class StoresManagementSystem: public System, public sigc::trackable {
 public:
-	SIMDATA_DECLARE_OBJECT(StoresManagementSystem)
+	CSP_DECLARE_OBJECT(StoresManagementSystem)
 
 	StoresManagementSystem();
 	virtual ~StoresManagementSystem();
@@ -57,7 +59,7 @@ public:
 
 	StoreIndex getHardpointByName(std::string const &name) const;
 	Store *getStore(StoreIndex const &index) const;
-	void getAllStores(StoreIndex const &index, std::vector<simdata::Ref<Store> > &stores) const;
+	void getAllStores(StoreIndex const &index, std::vector<Ref<Store> > &stores) const;
 	bool mountStore(StoreIndex const &index, Store *store);
 	void releaseStore(StoreIndex const &index);
 
@@ -67,7 +69,7 @@ public:
 
 	/** Attempt to load stores onto a hardpoint, adding suitable racks and pylons as needed.
 	 */
-	bool loadStores(StoreIndex const &idx, simdata::Key const &store, unsigned count);
+	bool loadStores(StoreIndex const &idx, Key const &store, unsigned count);
 
 	void clearDirtyDynamics() { m_DirtyDynamics = false; }
 	void setDirtyDynamics() { m_DirtyDynamics = true; }
@@ -77,7 +79,7 @@ public:
 	void addConfigurationHandler(sigc::slot<void> const &slot) const { m_ConfigurationSignal.connect(slot); }
 
 	bool hasReleasedObjects() const { return !m_ReleasedObjects.empty(); }
-	void getReleasedObjects(std::vector<simdata::Ref<DynamicObject> > &objects);
+	void getReleasedObjects(std::vector<Ref<DynamicObject> > &objects);
 
 	double onUpdate(double dt);
 
@@ -95,19 +97,20 @@ protected:
 private:
 	void addTestLoadout();
 
-	simdata::Link<StoresDefinition> m_StoresDefinition;
+	Link<StoresDefinition> m_StoresDefinition;
 	osg::ref_ptr<osg::Group> m_SceneGroup;
 	std::set<StoreIndex> m_MarkedForRelease;
 
-	typedef std::vector<simdata::Ref<Hardpoint> > Hardpoints;
+	typedef std::vector<Ref<Hardpoint> > Hardpoints;
 	Hardpoints m_Hardpoints;
 	bool m_DirtyDynamics;
 
 	mutable sigc::signal<void> m_ConfigurationSignal;
 
-	std::vector<simdata::Ref<DynamicObject> > m_ReleasedObjects;
+	std::vector<Ref<DynamicObject> > m_ReleasedObjects;
 };
 
+CSP_NAMESPACE_END
 
 #endif // __CSPSIM_STORESMANAGEMENTSYSTEM_H__
 

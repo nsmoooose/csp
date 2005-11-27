@@ -25,7 +25,9 @@
 #ifndef __CSPSIM_STORES_PROJECTILE_H__
 #define __CSPSIM_STORES_PROJECTILE_H__
 
-#include <DynamicObject.h>
+#include <csp/cspsim/DynamicObject.h>
+
+CSP_NAMESPACE
 
 class Store;
 
@@ -36,7 +38,7 @@ class Store;
  */
 class Projectile: public DynamicObject {
 public:
-	SIMDATA_DECLARE_OBJECT(Projectile)
+	CSP_DECLARE_OBJECT(Projectile)
 
 	// TODO SimObject probably needs a specialized type for Projectiles.
 	Projectile(): DynamicObject(TYPE_AIR_UNIT), m_DetachedModel(false) { }
@@ -48,16 +50,18 @@ public:
 	 *  projectile instance should only retain a reference to the parent if it is
 	 *  absolutely necessary; if so, be careful to avoid circular references.
 	 */
-	virtual void prepareRelease(simdata::Ref<DynamicObject> const &parent, simdata::Ref<Store> const &store);
+	virtual void prepareRelease(Ref<DynamicObject> const &parent, Ref<Store> const &store);
 
 protected:
 	virtual void onEnterScene();
 	virtual void createSceneModel();
 
 private:
-	simdata::Ref<Store> m_Store;
+	Ref<Store> m_Store;
 	bool m_DetachedModel;
 };
+
+CSP_NAMESPACE_END
 
 #endif // __CSPSIM_STORES_PROJECTILE_H__
 

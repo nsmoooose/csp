@@ -1,4 +1,4 @@
-// Combat Simulator Project - CSPSim
+// Combat Simulator Project
 // Copyright (C) 2002-2005 The Combat Simulator Project
 // http://csp.sourceforge.net
 //
@@ -25,11 +25,12 @@
 #ifndef __CSPSIM_ANIMATION_SEQUENCE_H__
 #define __CSPSIM_ANIMATION_SEQUENCE_H__
 
-#include "Bus.h"
+#include <csp/cspsim/Bus.h>
 #include <csp/csplib/util/Math.h>
 #include <csp/csplib/data/Object.h>
 #include <string>
 
+CSP_NAMESPACE
 
 /** A virtual base class for driving a shared animation path.  A
  *  shared animation path is a series of quasi-independent animations
@@ -67,7 +68,7 @@
  *  and if so would it be better to just export the entire shared
  *  sequence on the bus (giving access to the enable method)?
  */
-class SharedSequence: public simdata::Object {
+class SharedSequence: public Object {
 
 	class UpdateSequenceKey: public DataChannelBase::Handler {
 		SharedSequence &m_SharedSequence;
@@ -79,7 +80,7 @@ class SharedSequence: public simdata::Object {
 	friend class UpdateSequenceKey;
 
 public:
-	SIMDATA_DECLARE_ABSTRACT_OBJECT(SharedSequence)
+	CSP_DECLARE_ABSTRACT_OBJECT(SharedSequence)
 
 	SharedSequence(): m_SequenceKey(0), m_NormalizedKey(0), m_Updater(0) { }
 	virtual ~SharedSequence() { delete m_Updater; }
@@ -99,7 +100,7 @@ public:
 	virtual void enable() { update(true); }
 
 protected:
-	typedef DataChannel<double>::Ref KeyChannel;
+	typedef DataChannel<double>::RefT KeyChannel;
 	KeyChannel const &sequenceKeyChannel() const { return b_SequenceKey; }
 	KeyChannel const &normalizedKeyChannel() const { return b_NormalizedKey; }
 
@@ -127,7 +128,7 @@ private:
 
 class TimedSequence: public SharedSequence {
 public:
-	SIMDATA_DECLARE_OBJECT(TimedSequence)
+	CSP_DECLARE_OBJECT(TimedSequence)
 
 	TimedSequence(): m_Duration(0), m_Timescale(1.0), m_Playscale(0), m_Play(false) { }
 
@@ -182,7 +183,7 @@ private:
 
 class DrivenSequence: public SharedSequence {
 public:
-	SIMDATA_DECLARE_OBJECT(DrivenSequence)
+	CSP_DECLARE_OBJECT(DrivenSequence)
 
 	DrivenSequence(): m_Scale(1.0), m_Offset(0.0) { }
 	void setValue(double value) { setNormalizedKey(value * m_Scale + m_Offset); }
@@ -192,6 +193,7 @@ private:
 	double m_Offset;
 };
 
+CSP_NAMESPACE_END
 
 #endif // __CSPSIM_ANIMATION_SEQUENCE_H__
 

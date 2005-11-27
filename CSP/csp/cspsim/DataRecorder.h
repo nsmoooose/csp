@@ -1,4 +1,4 @@
-// Combat Simulator Project - CSPSim
+// Combat Simulator Project
 // Copyright (C) 2002 The Combat Simulator Project
 // http://csp.sourceforge.net
 //
@@ -35,11 +35,12 @@
 
 CSP_NAMESPACE
 
+// TODO create DataRecorder.cpp and move most methods definitions there.
 
 /**
- * A very preliminary flight data recorder class aimed
- * primarily at flight model testing and validation rather
- * than anything approaching a full acmi recorder.
+ * A very preliminary flight data recorder class aimed primarily at flight
+ * model testing and validation rather than anything approaching a full acmi
+ * recorder.
  */
 class DataRecorder: public Referenced {
 	struct DataEntry {
@@ -72,13 +73,11 @@ class DataRecorder: public Referenced {
 	};
 	
 	class SingleSource: public DataSource {
-		DataChannel<double>::CRef m_Channel;
+		DataChannel<double>::CRefT m_Channel;
 	public:
-		SingleSource(DataChannel<double>::CRef const &source): 
-			m_Channel(source) 
-		{
+		SingleSource(DataChannel<double>::CRefT const &source): m_Channel(source) {
 			m_Name = m_Channel->getName();
-		};
+		}
 		void refresh() {
 			float val = static_cast<float>(m_Channel->value());
 			update(val);
@@ -86,10 +85,10 @@ class DataRecorder: public Referenced {
 	};
 
 	class VectorSource: public DataSource {
-		DataChannel<Vector3>::CRef m_Channel;
+		DataChannel<Vector3>::CRefT m_Channel;
 		int m_Index;
 	public:
-		VectorSource(DataChannel<Vector3>::CRef const &source, int idx): 
+		VectorSource(DataChannel<Vector3>::CRefT const &source, int idx): 
 			m_Channel(source), 
 			m_Index(idx) 
 		{
@@ -153,12 +152,12 @@ public:
 
 	bool addSource(Ref<const DataChannelBase> channel) {
 		if (!channel) return false;
-		DataChannel<double>::CRef dchannel;
+		DataChannel<double>::CRefT dchannel;
 		if (dchannel.tryAssign(channel)) {
 			m_Sources.push_back(new SingleSource(dchannel));
 			return true;
 		} else {
-			DataChannel<Vector3>::CRef vchannel;
+			DataChannel<Vector3>::CRefT vchannel;
 			if (vchannel.tryAssign(channel)) {
 				m_Sources.push_back(new VectorSource(vchannel, 0));
 				m_Sources.push_back(new VectorSource(vchannel, 1));

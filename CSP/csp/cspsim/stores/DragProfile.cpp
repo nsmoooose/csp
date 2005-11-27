@@ -23,11 +23,13 @@
  **/
 
 
-#include <Stores/DragProfile.h>
+#include <csp/cspsim/stores/DragProfile.h>
 #include <csp/csplib/data/ObjectInterface.h>
 
+CSP_NAMESPACE
 
-SIMDATA_XML_BEGIN(DragProfile)
-	SIMDATA_DEF("drag", m_Drag, true)
-SIMDATA_XML_END
+CSP_XML_BEGIN(DragProfile)
+	CSP_DEF("drag", m_Drag, true)
+CSP_XML_END
 
+CSP_NAMESPACE_END

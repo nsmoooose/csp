@@ -22,12 +22,13 @@
  *
  **/
 
-#ifndef __CONFIG_H__
-#define __CONFIG_H__
+#ifndef __CSPSIM_CONFIG_H__
+#define __CSPSIM_CONFIG_H__
 
-
-#include <string>
 #include <csp/csplib/util/SimpleConfig.h>
+#include <string>
+
+CSP_NAMESPACE
 
 /**
  * Global configuration file
@@ -64,5 +65,7 @@ extern std::string getDataPath();
  */
 extern std::string getDataPath(std::string const &);
 
-#endif // __CONFIG_H__
+CSP_NAMESPACE_END
+
+#endif // __CSPSIM_CONFIG_H__
 

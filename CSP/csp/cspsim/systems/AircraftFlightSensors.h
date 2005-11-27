@@ -1,4 +1,4 @@
-// Combat Simulator Project - CSPSim
+// Combat Simulator Project
 // Copyright (C) 2002, 2003 The Combat Simulator Project
 // http://csp.sourceforge.net
 //
@@ -31,7 +31,7 @@
 
 class AircraftFlightSensors: public System {
 public:
-	SIMDATA_DECLARE_OBJECT(AircraftFlightSensors)
+	CSP_DECLARE_OBJECT(AircraftFlightSensors)
 
 	AircraftFlightSensors();
 

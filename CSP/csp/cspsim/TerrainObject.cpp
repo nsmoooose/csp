@@ -1,4 +1,4 @@
-// Combat Simulator Project - FlightSim Demo
+// Combat Simulator Project
 // Copyright (C) 2002 The Combat Simulator Project
 // http://csp.sourceforge.net
 //
@@ -23,24 +23,25 @@
  **/
 
 
-#include "TerrainObject.h"
-#include "Config.h"
-#include "Projection.h"
-
-#include <osg/LineSegment>
+#include <csp/cspsim/TerrainObject.h>
+#include <csp/cspsim/Config.h>
+#include <csp/cspsim/Projection.h>
 
 #include <csp/csplib/util/Log.h>
 #include <csp/csplib/data/ObjectInterface.h>
 #include <csp/csplib/util/osg.h>
 
+#include <osg/LineSegment>
 
-SIMDATA_XML_BEGIN(TerrainObject)
-	SIMDATA_DEF("name", m_Name, true)
-	SIMDATA_DEF("version", m_Version, true)
-	SIMDATA_DEF("center", m_Center, true)
-	SIMDATA_DEF("width", m_Width, true)
-	SIMDATA_DEF("height", m_Height, true)
-SIMDATA_XML_END
+CSP_NAMESPACE
+
+CSP_XML_BEGIN(TerrainObject)
+	CSP_DEF("name", m_Name, true)
+	CSP_DEF("version", m_Version, true)
+	CSP_DEF("center", m_Center, true)
+	CSP_DEF("width", m_Width, true)
+	CSP_DEF("height", m_Height, true)
+CSP_XML_END
 
 
 /**
@@ -53,9 +54,9 @@ TerrainObject::~TerrainObject() {
 }
 
 void TerrainObject::postCreate() {
-	CSP_LOG(TERRAIN, INFO, "Terrain " << m_Name << " (version " << m_Version << ")");
-	CSP_LOG(TERRAIN, INFO, "   center = " << getCenter().asString());
-	CSP_LOG(TERRAIN, INFO, "     size = " << getWidth() << " x " << getHeight() << " m");
+	CSPLOG(INFO, TERRAIN) << "Terrain " << m_Name << " (version " << m_Version << ")";
+	CSPLOG(INFO, TERRAIN) << "   center = " << getCenter().asString();
+	CSPLOG(INFO, TERRAIN) << "     size = " << getWidth() << " x " << getHeight() << " m";
 	SecantGnomonicProjection *projection = new SecantGnomonicProjection;
 	projection->set(getCenter(), getWidth(), getHeight());
 	m_Map = projection;
@@ -66,7 +67,7 @@ TerrainObject::Intersection::Intersection() {
 	_ratio = 0.0;
 }
 
-TerrainObject::Intersection::Intersection(simdata::Vector3 const &start, simdata::Vector3 const &end) {
+TerrainObject::Intersection::Intersection(Vector3 const &start, Vector3 const &end) {
 	_start = start;
 	_end = end;
 	_hit = false;
@@ -77,7 +78,7 @@ float TerrainObject::Intersection::getDistance() const {
 	return _hit ? (_end - _start).length() * _ratio : -1.0f;
 }
 
-void TerrainObject::Intersection::setHit(float ratio, simdata::Vector3 const &normal) {
+void TerrainObject::Intersection::setHit(float ratio, Vector3 const &normal) {
 	if (_hit && ratio > _ratio) return;
 	_hit = true;
 	_ratio = ratio;
@@ -85,4 +86,5 @@ void TerrainObject::Intersection::setHit(float ratio, simdata::Vector3 const &no
 	_normal = normal;
 }
 
+CSP_NAMESPACE_END
 

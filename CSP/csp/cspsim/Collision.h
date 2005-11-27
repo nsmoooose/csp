@@ -1,4 +1,4 @@
-// Combat Simulator Project - FlightSim Demo
+// Combat Simulator Project
 // Copyright (C) 2002 The Combat Simulator Project
 // http://csp.sourceforge.net
 //
@@ -65,7 +65,7 @@ protected:
 	virtual void registerChannels(Bus *bus);
 
 public:
-	SIMDATA_DECLARE_OBJECT(GroundCollisionDynamics)
+	CSP_DECLARE_OBJECT(GroundCollisionDynamics)
 
 	/**
 	 * Construct a new ground collision dynamics instance.

@@ -3,9 +3,9 @@
 #include <csp/csplib/data/ObjectInterface.h>
 
 
-SIMDATA_XML_BEGIN(F16Radio)
+CSP_XML_BEGIN(F16Radio)
 	// TODO presets
-SIMDATA_XML_END
+CSP_XML_END
 
 simdata::Enumeration F16Radio::STATUS("OFF GUARD BACKUP ON");
 simdata::Enumeration F16Radio::MODE("OFF MAIN BOTH");

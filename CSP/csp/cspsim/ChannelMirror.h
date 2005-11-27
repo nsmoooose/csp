@@ -1,4 +1,4 @@
-// Combat Simulator Project - CSPSim
+// Combat Simulator Project
 // Copyright (C) 2005 The Combat Simulator Project
 // http://csp.sourceforge.net
 //
@@ -48,11 +48,13 @@
  *  handshake on first connection.
  */
 
-#ifndef __CHANNEL_MIRROR_H__
-#define __CHANNEL_MIRROR_H__
+#ifndef __CSPSIM_CHANNEL_MIRROR_H__
+#define __CSPSIM_CHANNEL_MIRROR_H__
 
 #include <csp/csplib/data/Object.h>
 #include <string>
+
+CSP_NAMESPACE
 
 class Bus;
 
@@ -62,12 +64,12 @@ class Bus;
  *  ChannelLink subclasses are used by the Controller classes to mirror the motion
  *  and animation of an object from a local simulation to one or more remote peers.
  */
-class ChannelLink: public simdata::Referenced {
+class ChannelLink: public Referenced {
 	std::string m_ChannelName;
 	int m_Lod;
 	bool m_Master;
 public:
-	typedef std::vector<simdata::uint8> ValueSet;
+	typedef std::vector<uint8> ValueSet;
 	ChannelLink(std::string const &channel_name, int lod, bool master): m_ChannelName(channel_name), m_Lod(lod), m_Master(master) { }
 	virtual ~ChannelLink() {}
 	virtual void bind(Bus*) = 0;
@@ -103,12 +105,13 @@ public:
  *  lod, limits, etc) via external XML definitions, and are specialized for
  *  different channel types (double, enumlink, bool, etc).
  */
-class ChannelMirror: public simdata::Object {
+class ChannelMirror: public Object {
 public:
 	virtual ChannelMaster *createMaster() const = 0;
 	virtual ChannelSlave *createSlave() const = 0;
 };
 
+CSP_NAMESPACE_END
 
-#endif // __CHANNEL_MIRROR_H__
+#endif // __CSPSIM_CHANNEL_MIRROR_H__
 

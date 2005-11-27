@@ -1,4 +1,4 @@
-// Combat Simulator Project - CSPSim
+// Combat Simulator Project
 // Copyright (C) 2002-2005 The Combat Simulator Project
 // http://csp.sourceforge.net
 //
@@ -23,8 +23,16 @@
  **/
 
 
-#include "Animation.h"
-#include "InputEventChannel.h"
+#include <csp/cspsim/Animation.h>
+#include <csp/cspsim/InputEventChannel.h>
+
+#include <csp/csplib/util/Log.h>
+#include <csp/csplib/util/Math.h>
+#include <csp/csplib/util/osg.h>
+#include <csp/csplib/data/Enum.h>
+#include <csp/csplib/data/LUT.h>
+#include <csp/csplib/data/Vector3.h>
+#include <csp/csplib/data/ObjectInterface.h>
 
 #include <osg/AnimationPath>
 #include <osg/MatrixTransform>
@@ -33,22 +41,16 @@
 #include <osg/Switch>
 #include <osg/Version>
 
-#include <csp/csplib/util/Log.h>
-#include <csp/csplib/data/Enum.h>
-#include <csp/csplib/util/Math.h>
-#include <csp/csplib/util/osg.h>
-#include <csp/csplib/data/LUT.h>
-#include <csp/csplib/data/Vector3.h>
-#include <csp/csplib/data/ObjectInterface.h>
-
 #ifndef OSG_VERSION_MAJOR
 #define OSG_OLD_CONTROL_POINT_INTERFACE
 #endif
 
-SIMDATA_XML_BEGIN(Animation)
-	SIMDATA_DEF("model_id", m_NodeLabel, true)
-	SIMDATA_DEF("lod_limit", m_LOD, false)
-SIMDATA_XML_END
+CSP_NAMESPACE
+
+CSP_XML_BEGIN(Animation)
+	CSP_DEF("model_id", m_NodeLabel, true)
+	CSP_DEF("lod_limit", m_LOD, false)
+CSP_XML_END
 
 
 // Stupidly, this class is not exposed by osg so we have to reproduce it here.
@@ -100,7 +102,7 @@ public:
  *  functionality that is common to several animation subclasses.
  */
 class DoubleChannel {
-	DataChannel<double>::CRef m_Channel;
+	DataChannel<double>::CRefT m_Channel;
 	float m_Value;
 
 public:
@@ -126,12 +128,12 @@ public:
 		if (bus) {
 			try {
 				m_Channel = bus->getChannel(name, false);
-			} catch (simdata::ConversionError &) {
-				CSP_LOG(OBJECT, WARNING, "Incompatible channel " << name << " for animation; expected double");
+			} catch (ConversionError &) {
+				CSPLOG(WARNING, OBJECT) << "Incompatible channel " << name << " for animation; expected double";
 				return false;
 			}
 			if (!m_Channel) {
-				CSP_LOG(OBJECT, WARNING, "Unable to bind channel " << name << " for animation");
+				CSPLOG(WARNING, OBJECT) << "Unable to bind channel " << name << " for animation";
 			}
 		}
 		return m_Channel.valid();
@@ -149,8 +151,8 @@ public:
  *  "false" and "true" and corresponding values 0 and 1, respectively.
  */
 class EnumLinkChannel {
-	DataChannel<simdata::EnumLink>::CRef m_Channel;
-	DataChannel<bool>::CRef m_BoolChannel;
+	DataChannel<EnumLink>::CRefT m_Channel;
+	DataChannel<bool>::CRefT m_BoolChannel;
 	int m_Value;
 	std::string m_Token;
 
@@ -188,18 +190,18 @@ public:
 		if (bus) {
 			try {
 				m_Channel = bus->getChannel(name, false);
-			} catch (simdata::ConversionError &e) {
+			} catch (ConversionError &e) {
 				e.clear();
 				try {
 					m_BoolChannel = bus->getChannel(name, false);
-				} catch (simdata::ConversionError &e) {
+				} catch (ConversionError &e) {
 					e.clear();
-					CSP_LOG(OBJECT, WARNING, "Incompatible channel " << name << " for animation; expected enumlink");
+					CSPLOG(WARNING, OBJECT) << "Incompatible channel " << name << " for animation; expected enumlink";
 					return false;
 				}
 			}
 			if (!m_Channel) {
-				CSP_LOG(OBJECT, WARNING, "Unable to bind channel " << name << " for animation");
+				CSPLOG(WARNING, OBJECT) << "Unable to bind channel " << name << " for animation";
 			}
 		}
 		return m_Channel.valid() || m_BoolChannel.valid();
@@ -211,7 +213,7 @@ public:
 		if (m_Channel.valid()) {
 			assert(m_Channel->isShared());
 			if (m_Channel->isShared()) {
-				simdata::EnumLink &e = const_cast<simdata::EnumLink&>(m_Channel->value());
+				EnumLink &e = const_cast<EnumLink&>(m_Channel->value());
 				e.cycle(); // TODO push
 			}
 		} else {
@@ -229,7 +231,7 @@ public:
 	/** Get the enumeration associated with the data channel.  Should only be called
 	 *  if bind() succeeded (asserts otherwise).
 	 */
-	simdata::Enumeration const &getEnumeration() const {
+	Enumeration const &getEnumeration() const {
 		assert(m_Channel.valid());
 		return m_Channel->value().getEnumeration();
 	}
@@ -255,11 +257,11 @@ void AnimationCallback::bind(osg::Node &node) {
 	osg::NodeCallback *old = node.getUpdateCallback();
 	if (old) {
 		if (dynamic_cast<AnimationCallback*>(old)) {
-			CSP_LOG(OBJECT, INFO, "Adding nested animation callback (node " << node.getName() << ")");
+			CSPLOG(INFO, OBJECT) << "Adding nested animation callback (node " << node.getName() << ")";
 			old->addNestedCallback(this);
 			return;
 		}
-		CSP_LOG(OBJECT, WARNING, "Overwriting update callback with animation callback (node " << node.getName() << ")");
+		CSPLOG(WARNING, OBJECT) << "Overwriting update callback with animation callback (node " << node.getName() << ")";
 	}
 	node.setUpdateCallback(this);
 }
@@ -298,7 +300,7 @@ double AnimationCallback::elapsedTime(const osg::NodeVisitor *nv) {
  */
 class Rotation: public Animation {
 	std::string m_ChannelName;
-	simdata::Vector3 m_Axis;
+	Vector3 m_Axis;
 	double m_Gain;
 	double m_Phase;
 	double m_Limit0;
@@ -306,13 +308,13 @@ class Rotation: public Animation {
 	bool m_PreMultiply;
 	bool m_PostMultiply;
 	osg::Vec3 m_OSGAxis;
-	simdata::Table1 m_NonLinearScale;
+	Table1 m_NonLinearScale;
 
 public:
-	SIMDATA_DECLARE_ABSTRACT_OBJECT(Rotation)
+	CSP_DECLARE_ABSTRACT_OBJECT(Rotation)
 
 	Rotation():
-		m_Axis(simdata::Vector3::ZERO),
+		m_Axis(Vector3::ZERO),
 		m_Gain(1.0f),
 		m_Phase(0.0f),
 		m_Limit0(-180),
@@ -330,32 +332,32 @@ public:
 	inline bool getPreMultiply() const { return m_PreMultiply; }
 	inline bool getPostMultiply() const { return m_PostMultiply; }
 
-	double toRadians(double value) const {
+	double rescaleAngle(double value) const {
 		double angle = m_NonLinearScale.isInterpolated() ? m_NonLinearScale[static_cast<float>(value)] : value * m_Gain;
 		double lower = std::min(getLimit0(), getLimit1());
 		double upper = std::max(getLimit0(), getLimit1());
-		return simdata::toRadians(simdata::clampTo(angle + m_Phase, lower, upper));
+		return toRadians(clampTo(angle + m_Phase, lower, upper));
 	}
 
 protected:
 	virtual void postCreate() {
 		Animation::postCreate();
-		m_OSGAxis = simdata::toOSG(m_Axis);
+		m_OSGAxis = toOSG(m_Axis);
 		assert(!(m_PreMultiply && m_PostMultiply));
 	}
 };
 
-SIMDATA_XML_BEGIN(Rotation)
-	SIMDATA_DEF("channel_name", m_ChannelName, false)
-	SIMDATA_DEF("axis", m_Axis, false)
-	SIMDATA_DEF("gain", m_Gain, false)
-	SIMDATA_DEF("phase", m_Phase, false)
-	SIMDATA_DEF("limit_0", m_Limit0, false)
-	SIMDATA_DEF("limit_1", m_Limit1, false)
-	SIMDATA_DEF("pre_multiply", m_PreMultiply, false)
-	SIMDATA_DEF("post_multiply", m_PostMultiply, false)
-	SIMDATA_DEF("non_linear_scale", m_NonLinearScale, false)
-SIMDATA_XML_END
+CSP_XML_BEGIN(Rotation)
+	CSP_DEF("channel_name", m_ChannelName, false)
+	CSP_DEF("axis", m_Axis, false)
+	CSP_DEF("gain", m_Gain, false)
+	CSP_DEF("phase", m_Phase, false)
+	CSP_DEF("limit_0", m_Limit0, false)
+	CSP_DEF("limit_1", m_Limit1, false)
+	CSP_DEF("pre_multiply", m_PreMultiply, false)
+	CSP_DEF("post_multiply", m_PostMultiply, false)
+	CSP_DEF("non_linear_scale", m_NonLinearScale, false)
+CSP_XML_END
 
 
 ////////////////////////////////////////////////////////////////////////////////////
@@ -369,12 +371,12 @@ SIMDATA_XML_END
 class RotarySwitch: public Animation {
 	class Callback;
 	std::string m_ChannelName;
-	simdata::Vector3 m_Axis;
+	Vector3 m_Axis;
 	std::vector<float> m_Angles;
 	osg::Vec3 m_OSGAxis;
 
 public:
-	SIMDATA_DECLARE_OBJECT(RotarySwitch)
+	CSP_DECLARE_OBJECT(RotarySwitch)
 
 	virtual AnimationCallback *newCallback(osg::Node *node) const;
 
@@ -385,19 +387,19 @@ public:
 protected:
 	virtual void postCreate() {
 		Animation::postCreate();
-		m_OSGAxis = simdata::toOSG(m_Axis);
+		m_OSGAxis = toOSG(m_Axis);
 	}
 };
 
-SIMDATA_XML_BEGIN(RotarySwitch)
-	SIMDATA_DEF("channel_name", m_ChannelName, false)
-	SIMDATA_DEF("axis", m_Axis, false)
-	SIMDATA_DEF("angles", m_Angles, true)
-SIMDATA_XML_END
+CSP_XML_BEGIN(RotarySwitch)
+	CSP_DEF("channel_name", m_ChannelName, false)
+	CSP_DEF("axis", m_Axis, false)
+	CSP_DEF("angles", m_Angles, true)
+CSP_XML_END
 
 
 class RotarySwitch::Callback: public AnimationCallback {
-	simdata::Ref<const RotarySwitch> m_Animation;
+	Ref<const RotarySwitch> m_Animation;
 	EnumLinkChannel m_Channel;
 	osg::MatrixTransform *m_Transform;
 
@@ -412,7 +414,7 @@ public:
 			}
 			if (m_Transform && m_Channel.value() >= 0) {
 				assert(static_cast<int>(m_Animation->getAngles().size()) > m_Channel.value());
-				const double angle = simdata::toRadians(m_Animation->getAngles()[m_Channel.value()]);
+				const double angle = toRadians(m_Animation->getAngles()[m_Channel.value()]);
 				osg::Matrix m = osg::Matrix::rotate(angle, m_Animation->getAxis());
 				m.setTrans(m_Transform->getMatrix().getTrans());
 				m_Transform->setMatrix(m);
@@ -453,20 +455,20 @@ class StateSwitch: public Animation {
 	std::string m_ChannelName;
 
 public:
-	SIMDATA_DECLARE_OBJECT(StateSwitch)
+	CSP_DECLARE_OBJECT(StateSwitch)
 
 	virtual AnimationCallback *newCallback(osg::Node *node) const;
 	const std::string &getChannelName() const { return m_ChannelName; }
 	virtual bool needsSwitch() const { return true; }
 };
 
-SIMDATA_XML_BEGIN(StateSwitch)
-	SIMDATA_DEF("channel_name", m_ChannelName, true)
-SIMDATA_XML_END
+CSP_XML_BEGIN(StateSwitch)
+	CSP_DEF("channel_name", m_ChannelName, true)
+CSP_XML_END
 
 
 class StateSwitch::Callback: public AnimationCallback {
-	simdata::Ref<const StateSwitch> m_Animation;
+	Ref<const StateSwitch> m_Animation;
 	EnumLinkChannel m_Channel;
 	std::vector<int> m_Translation;
 	osg::Switch *m_Switch;
@@ -480,7 +482,7 @@ public:
 	void operator()(osg::Node* node, osg::NodeVisitor* nv) {
 		if (nv->getVisitorType() == osg::NodeVisitor::UPDATE_VISITOR && m_Channel.update()) {
 			if (!m_Switch) {
-				CSP_LOG(OBJECT, INFO, "StateSwitch found node");
+				CSPLOG(INFO, OBJECT) << "StateSwitch found node";
 				m_Switch = dynamic_cast<osg::Switch*>(node);
 				assert(m_Switch);
 			}
@@ -495,7 +497,7 @@ public:
 						}
 					}
 					if (child == UNASSIGNED) {
-						CSP_LOG(SCENE, WARNING, "Unknown child " << m_Channel.token() << " in StateSwitch " << m_Animation->getChannelName());
+						CSPLOG(WARNING, SCENE) << "Unknown child " << m_Channel.token() << " in StateSwitch " << m_Animation->getChannelName();
 						m_Translation[m_Channel.value()] = MISSING;
 					}
 				}
@@ -509,7 +511,7 @@ public:
 
 	virtual bool bindChannels(Bus *bus) {
 		if (m_Channel.bind(bus, m_Animation->getChannelName())) {
-			simdata::Enumeration const &e = m_Channel.getEnumeration();
+			Enumeration const &e = m_Channel.getEnumeration();
 			m_Translation.resize(e.size(), UNASSIGNED);
 			return true;
 		}
@@ -519,7 +521,7 @@ public:
 
 AnimationCallback *StateSwitch::newCallback(osg::Node *node) const {
 	assert(node);
-	CSP_LOG(OBJECT, INFO, "Creating StateSwitch callback\n");
+	CSPLOG(INFO, OBJECT) << "Creating StateSwitch callback\n";
 	AnimationCallback *callback = new Callback(this);
 	callback->bind(*node);
 	return callback;
@@ -539,7 +541,7 @@ AnimationCallback *StateSwitch::newCallback(osg::Node *node) const {
 class AnimatedSwitch: public Animation {
 	class Callback;
 public:
-	SIMDATA_DECLARE_OBJECT(AnimatedSwitch)
+	CSP_DECLARE_OBJECT(AnimatedSwitch)
 
 	virtual AnimationCallback *newCallback(osg::Node *node) const;
 	inline const std::string &getChannelName() const { return m_ChannelName; }
@@ -554,15 +556,15 @@ private:
 	std::vector<double> m_Times;
 };
 
-SIMDATA_XML_BEGIN(AnimatedSwitch)
-	SIMDATA_DEF("channel_name", m_ChannelName, true)
-	SIMDATA_DEF("times", m_Times, false)
-	SIMDATA_DEF("rate", m_Rate, false)
-SIMDATA_XML_END
+CSP_XML_BEGIN(AnimatedSwitch)
+	CSP_DEF("channel_name", m_ChannelName, true)
+	CSP_DEF("times", m_Times, false)
+	CSP_DEF("rate", m_Rate, false)
+CSP_XML_END
 
 
 class AnimatedSwitch::Callback: public AnimationCallback {
-	simdata::Ref<const AnimatedSwitch> m_Animation;
+	Ref<const AnimatedSwitch> m_Animation;
 	osg::ref_ptr<const osg::AnimationPathCallback> m_AnimationPathCallback;
 	EnumLinkChannel m_Channel;
 	double m_TimeLimit;
@@ -579,11 +581,11 @@ protected:
 		std::vector<double> const &times = m_Animation->getTimes();
 		if (times.empty()) return value;
 		if (value < 0) {
-			CSP_LOG(SCENE, WARNING, "AnimatedSwitch value < 0" << m_Animation->getChannelName());
+			CSPLOG(WARNING, SCENE) << "AnimatedSwitch value < 0" << m_Animation->getChannelName();
 			return times[0];
 		}
 		if (value >= static_cast<int>(times.size())) {
-			CSP_LOG(SCENE, WARNING, "AnimatedSwitch value exceeds specified times" << m_Animation->getChannelName());
+			CSPLOG(WARNING, SCENE) << "AnimatedSwitch value exceeds specified times" << m_Animation->getChannelName();
 			return times[times.size() - 1];
 		}
 		return times[value];
@@ -646,7 +648,7 @@ public:
 		assert(path);
 		assert(m_Animation->getRate() > 0.0);
 		if (m_AnimationPathCallback->getAnimationPath()->getLoopMode() != osg::AnimationPath::LOOP) {
-			CSP_LOG(OBJECT, WARNING, "Overriding loop mode of animation path " << m_Animation->getChannelName());
+			CSPLOG(WARNING, OBJECT) << "Overriding loop mode of animation path " << m_Animation->getChannelName();
 			osg::AnimationPath *ap = const_cast<osg::AnimationPath*>(m_AnimationPathCallback->getAnimationPath());
 			ap->setLoopMode(osg::AnimationPath::LOOP);
 		}
@@ -660,7 +662,7 @@ AnimationCallback *AnimatedSwitch::newCallback(osg::Node *node) const {
 	assert(node);
 	osg::AnimationPathCallback *oapc = dynamic_cast<osg::AnimationPathCallback*>(node->getUpdateCallback());
 	if (!oapc) {
-		CSP_LOG(OBJECT, WARNING, "AnimatedSwitch node has no animation path (channel " << getChannelName() << ")");
+		CSPLOG(WARNING, OBJECT) << "AnimatedSwitch node has no animation path (channel " << getChannelName() << ")";
 		return 0;
 	}
 	AnimationCallback *callback = new Callback(this, oapc);
@@ -682,17 +684,17 @@ AnimationCallback *AnimatedSwitch::newCallback(osg::Node *node) const {
 class AttitudeAnimation: public Animation {
 	class Callback;
 public:
-	SIMDATA_DECLARE_OBJECT(AttitudeAnimation)
+	CSP_DECLARE_OBJECT(AttitudeAnimation)
 
 	virtual AnimationCallback *newCallback(osg::Node *node) const;
 };
 
-SIMDATA_XML_BEGIN(AttitudeAnimation)
-SIMDATA_XML_END
+CSP_XML_BEGIN(AttitudeAnimation)
+CSP_XML_END
 
 
 class AttitudeAnimation::Callback: public AnimationCallback {
-	simdata::Ref<const AttitudeAnimation> m_Animation;
+	Ref<const AttitudeAnimation> m_Animation;
 	DoubleChannel m_Pitch;
 	DoubleChannel m_Roll;
 	osg::Matrix m_Base;
@@ -751,19 +753,19 @@ class DrivenRotation: public Rotation {
 	class Callback;
 	double m_RateLimit;
 public:
-	SIMDATA_DECLARE_OBJECT(DrivenRotation)
+	CSP_DECLARE_OBJECT(DrivenRotation)
 	DrivenRotation(): m_RateLimit(0) { }
 	virtual AnimationCallback *newCallback(osg::Node *node) const;
 	double rateLimit() const { return m_RateLimit; }
 };
 
-SIMDATA_XML_BEGIN(DrivenRotation)
-	SIMDATA_DEF("rate_limit", m_RateLimit, false)
-SIMDATA_XML_END
+CSP_XML_BEGIN(DrivenRotation)
+	CSP_DEF("rate_limit", m_RateLimit, false)
+CSP_XML_END
 
 
 class DrivenRotation::Callback: public AnimationCallback {
-	simdata::Ref<const DrivenRotation> m_Animation;
+	Ref<const DrivenRotation> m_Animation;
 	DoubleChannel m_Channel;
 	osg::MatrixTransform *m_Transform;
 	osg::Matrix m_Original;
@@ -775,11 +777,11 @@ class DrivenRotation::Callback: public AnimationCallback {
 public:
 	Callback(DrivenRotation const *driven_rotation): m_Animation(driven_rotation), m_Transform(0) {
 		assert(driven_rotation);
-		m_RateLimit = simdata::toRadians(driven_rotation->rateLimit());
+		m_RateLimit = (driven_rotation->rateLimit());
 	}
 
 	void updateValue(double dt) {
-		m_AngleTarget = m_Animation->toRadians(m_Channel.value());
+		m_AngleTarget = m_Animation->rescaleAngle(m_Channel.value());
 		if (m_RateLimit > 0) {
 			const double delta = m_AngleTarget - m_Angle;
 			if (delta < 0) {
@@ -837,14 +839,14 @@ AnimationCallback *DrivenRotation::newCallback(osg::Node *node) const {
 
 /** Helper class for specifying and manipulating a time range.
  */
-class TimedAnimationProxy: public simdata::Object {
+class TimedAnimationProxy: public Object {
 	float m_t0;
 	float m_t1;
 	float m_TimeLength;
 	float m_Rate;
 
 public:
-	SIMDATA_DECLARE_OBJECT(TimedAnimationProxy)
+	CSP_DECLARE_OBJECT(TimedAnimationProxy)
 	
 	TimedAnimationProxy():
 		m_t0(0.0f),
@@ -854,7 +856,7 @@ public:
 	}
 	~TimedAnimationProxy(){}
 	float getDelta_t0(float t) const { return clamp(t) - m_t0; }
-	float clamp(float t) const { return simdata::clampTo(t, m_t0, m_t1); }
+	float clamp(float t) const { return clampTo(t, m_t0, m_t1); }
 	float getRate() const { return m_Rate; }
 	void setRate(float limit0, float limit1) {
 		float delta_limit = limit1 - limit0;
@@ -866,15 +868,15 @@ public:
 
 protected:
 	virtual void postCreate() {
-		simdata::Object::postCreate();
+		Object::postCreate();
 		m_TimeLength = m_t1 - m_t0;
 	}
 };
 
-SIMDATA_XML_BEGIN(TimedAnimationProxy)
-	SIMDATA_DEF("t0", m_t0, true)
-	SIMDATA_DEF("t1", m_t1, true)
-SIMDATA_XML_END
+CSP_XML_BEGIN(TimedAnimationProxy)
+	CSP_DEF("t0", m_t0, true)
+	CSP_DEF("t1", m_t1, true)
+CSP_XML_END
 
 
 ////////////////////////////////////////////////////////////////////////////////////
@@ -888,10 +890,10 @@ SIMDATA_XML_END
  */
 class TimedRotation: public Rotation {
 	class Callback;
-	simdata::Link<TimedAnimationProxy> m_TimedAnimationProxy;
+	Link<TimedAnimationProxy> m_TimedAnimationProxy;
 
 public:
-	SIMDATA_DECLARE_OBJECT(TimedRotation)
+	CSP_DECLARE_OBJECT(TimedRotation)
 
 	double getTimedAngle(double t) const {
 		return getLimit0() + m_TimedAnimationProxy->getRate() * m_TimedAnimationProxy->getDelta_t0(t);
@@ -906,13 +908,13 @@ protected:
 	}
 };
 
-SIMDATA_XML_BEGIN(TimedRotation)
-	SIMDATA_DEF("timed_animation_proxy", m_TimedAnimationProxy, true)
-SIMDATA_XML_END
+CSP_XML_BEGIN(TimedRotation)
+	CSP_DEF("timed_animation_proxy", m_TimedAnimationProxy, true)
+CSP_XML_END
 
 
 class TimedRotation::Callback: public AnimationCallback {
-	simdata::Ref<const TimedRotation> m_Animation;
+	Ref<const TimedRotation> m_Animation;
 	DoubleChannel m_Channel;
 	osg::MatrixTransform *m_Transform;
 
@@ -954,15 +956,15 @@ AnimationCallback *TimedRotation::newCallback(osg::Node *node) const {
 class Translation: public Animation {
 	std::string m_ChannelName;
 	float m_Gain;
-	simdata::Vector3 m_Direction;
-	simdata::Vector3 m_Offset;
+	Vector3 m_Direction;
+	Vector3 m_Offset;
 	float m_Limit0;
 	float m_Limit1;
 	osg::Vec3 m_OSGOffset;
 	osg::Vec3 m_OSGDirection;
 
 public:
-	SIMDATA_DECLARE_ABSTRACT_OBJECT(Translation)
+	CSP_DECLARE_ABSTRACT_OBJECT(Translation)
 
 	Translation(): m_Gain(1.0f), m_Limit0(-1.0f), m_Limit1(1.0f) {}
 
@@ -976,19 +978,19 @@ public:
 protected:
 	virtual void postCreate() {
 		Animation::postCreate();
-		m_OSGDirection = simdata::toOSG(m_Direction.normalized());
-		m_OSGOffset = simdata::toOSG(m_Offset);
+		m_OSGDirection = toOSG(m_Direction.normalized());
+		m_OSGOffset = toOSG(m_Offset);
 	}
 };
 
-SIMDATA_XML_BEGIN(Translation)
-	SIMDATA_DEF("channel_name", m_ChannelName, true)
-	SIMDATA_DEF("gain", m_Gain, false)
-	SIMDATA_DEF("direction", m_Direction, false)
-	SIMDATA_DEF("offset", m_Offset, false)
-	SIMDATA_DEF("limit_0", m_Limit0, false)
-	SIMDATA_DEF("limit_1", m_Limit1, false)
-SIMDATA_XML_END
+CSP_XML_BEGIN(Translation)
+	CSP_DEF("channel_name", m_ChannelName, true)
+	CSP_DEF("gain", m_Gain, false)
+	CSP_DEF("direction", m_Direction, false)
+	CSP_DEF("offset", m_Offset, false)
+	CSP_DEF("limit_0", m_Limit0, false)
+	CSP_DEF("limit_1", m_Limit1, false)
+CSP_XML_END
 
 
 ////////////////////////////////////////////////////////////////////////////////////
@@ -1001,16 +1003,16 @@ SIMDATA_XML_END
 class DrivenMagnitudeTranslation: public Translation {
 	class Callback;
 public:
-	SIMDATA_DECLARE_OBJECT(DrivenMagnitudeTranslation)
+	CSP_DECLARE_OBJECT(DrivenMagnitudeTranslation)
 	virtual AnimationCallback *newCallback(osg::Node *node) const;
 };
 
-SIMDATA_XML_BEGIN(DrivenMagnitudeTranslation)
-SIMDATA_XML_END
+CSP_XML_BEGIN(DrivenMagnitudeTranslation)
+CSP_XML_END
 
 
 class DrivenMagnitudeTranslation::Callback: public AnimationCallback {
-	simdata::Ref<const DrivenMagnitudeTranslation> m_Animation;
+	Ref<const DrivenMagnitudeTranslation> m_Animation;
 	DoubleChannel m_Channel;
 	osg::MatrixTransform *m_Transform;
 
@@ -1054,24 +1056,24 @@ AnimationCallback *DrivenMagnitudeTranslation::newCallback(osg::Node *node) cons
 class DrivenVectorialTranslation: public Translation {
 	class Callback;
 public:
-	SIMDATA_DECLARE_OBJECT(DrivenVectorialTranslation)
+	CSP_DECLARE_OBJECT(DrivenVectorialTranslation)
 	virtual AnimationCallback *newCallback(osg::Node *node) const;
 };
 
-SIMDATA_XML_BEGIN(DrivenVectorialTranslation)
-SIMDATA_XML_END
+CSP_XML_BEGIN(DrivenVectorialTranslation)
+CSP_XML_END
 
 
 class DrivenVectorialTranslation::Callback: public AnimationCallback {
-	simdata::Ref<const DrivenVectorialTranslation> m_Animation;
-	DataChannel<simdata::Vector3>::CRef m_Channel;
+	Ref<const DrivenVectorialTranslation> m_Animation;
+	DataChannel<Vector3>::CRefT m_Channel;
 	float m_Value;
 	osg::MatrixTransform *m_Transform;
 
 protected:
 	virtual bool update() {
 		if (m_Channel.valid()) {
-			float value = m_Animation->getDirection() * simdata::toOSG(m_Channel->value());
+			float value = m_Animation->getDirection() * toOSG(m_Channel->value());
 			if (value != m_Value) {
 				m_Value = value;
 				return true;
@@ -1102,8 +1104,8 @@ public:
 		if (bus) {
 			try {
 				m_Channel = bus->getChannel(m_Animation->getChannelName(), false);
-			} catch (simdata::ConversionError &) {
-				CSP_LOG(OBJECT, WARNING, "Incompatible channel (" << m_Animation->getChannelName() << ") type for DrivenVectorialTranslation");
+			} catch (ConversionError &) {
+				CSPLOG(WARNING, OBJECT) << "Incompatible channel (" << m_Animation->getChannelName() << ") type for DrivenVectorialTranslation";
 			}
 		}
 		return m_Channel.valid();
@@ -1129,10 +1131,10 @@ AnimationCallback *DrivenVectorialTranslation::newCallback(osg::Node *node) cons
  */
 class TimedMagnitudeTranslation: public Translation {
 	class Callback;
-	simdata::Link<TimedAnimationProxy> m_TimedAnimationProxy;
+	Link<TimedAnimationProxy> m_TimedAnimationProxy;
 	
 public:
-	SIMDATA_DECLARE_OBJECT(TimedMagnitudeTranslation)
+	CSP_DECLARE_OBJECT(TimedMagnitudeTranslation)
 
 	virtual AnimationCallback *newCallback(osg::Node *node) const;
 
@@ -1147,13 +1149,13 @@ protected:
 	}
 };
 
-SIMDATA_XML_BEGIN(TimedMagnitudeTranslation)
-	SIMDATA_DEF("timed_animation_proxy", m_TimedAnimationProxy, true)
-SIMDATA_XML_END
+CSP_XML_BEGIN(TimedMagnitudeTranslation)
+	CSP_DEF("timed_animation_proxy", m_TimedAnimationProxy, true)
+CSP_XML_END
 
 
 class TimedMagnitudeTranslation::Callback: public AnimationCallback {
-	simdata::Ref<const TimedMagnitudeTranslation> m_Animation;
+	Ref<const TimedMagnitudeTranslation> m_Animation;
 	DoubleChannel m_Channel;
 	osg::MatrixTransform *m_Transform;
 
@@ -1204,7 +1206,7 @@ class DrivenAnimationPath: public Animation {
 	float m_Limit1;
 
 public:
-	SIMDATA_DECLARE_OBJECT(DrivenAnimationPath)
+	CSP_DECLARE_OBJECT(DrivenAnimationPath)
 
 	DrivenAnimationPath(): m_Gain(1.0), m_Offset(0.0), m_Limit0(-1e+10), m_Limit1(1e+10) { }
 
@@ -1217,17 +1219,17 @@ public:
 	virtual AnimationCallback *newCallback(osg::Node *node) const;
 };
 
-SIMDATA_XML_BEGIN(DrivenAnimationPath)
-	SIMDATA_DEF("channel_name", m_ChannelName, true)
-	SIMDATA_DEF("gain", m_Gain, false)
-	SIMDATA_DEF("offset", m_Offset, false)
-	SIMDATA_DEF("limit_0", m_Limit0, false)
-	SIMDATA_DEF("limit_1", m_Limit1, false)
-SIMDATA_XML_END
+CSP_XML_BEGIN(DrivenAnimationPath)
+	CSP_DEF("channel_name", m_ChannelName, true)
+	CSP_DEF("gain", m_Gain, false)
+	CSP_DEF("offset", m_Offset, false)
+	CSP_DEF("limit_0", m_Limit0, false)
+	CSP_DEF("limit_1", m_Limit1, false)
+CSP_XML_END
 
 
 class DrivenAnimationPath::Callback: public AnimationCallback {
-	simdata::Ref<const DrivenAnimationPath> m_Animation;
+	Ref<const DrivenAnimationPath> m_Animation;
 	osg::ref_ptr<const osg::AnimationPathCallback> m_AnimationPathCallback;
 	DoubleChannel m_Channel;
 
@@ -1236,7 +1238,7 @@ public:
 
 	virtual void operator()(osg::Node* node, osg::NodeVisitor* nv) {
 		if (nv->getVisitorType() == osg::NodeVisitor::UPDATE_VISITOR && nv->getFrameStamp() && m_Channel.update()) {
-			const double value = simdata::clampTo(m_Channel.value() * m_Animation->getGain() + m_Animation->getOffset(), m_Animation->getLimit0(), m_Animation->getLimit1());
+			const double value = clampTo(m_Channel.value() * m_Animation->getGain() + m_Animation->getOffset(), m_Animation->getLimit0(), m_Animation->getLimit1());
 			updateAnimation(node, value);
 		}
 		traverse(node, nv);
@@ -1256,7 +1258,7 @@ private:
 AnimationCallback *DrivenAnimationPath::newCallback(osg::Node *node) const {
 	osg::AnimationPathCallback *oapc = dynamic_cast<osg::AnimationPathCallback*>(node->getUpdateCallback());
 	if (!oapc) {
-		CSP_LOG(OBJECT, WARNING, "DrivenAnimationPath node has no animation path (channel " << getChannelName() << ")");
+		CSPLOG(WARNING, OBJECT) << "DrivenAnimationPath node has no animation path (channel " << getChannelName() << ")";
 		return 0;
 	}
 	Callback *callback = new Callback(this, *oapc);
@@ -1281,10 +1283,10 @@ class CounterWheel: public Animation {
 	class Callback;
 
 public:
-	SIMDATA_DECLARE_OBJECT(CounterWheel)
+	CSP_DECLARE_OBJECT(CounterWheel)
 
 	CounterWheel():
-		m_Axis(simdata::Vector3::ZERO),
+		m_Axis(Vector3::ZERO),
 		m_Gain(1.0f),
 		m_Offset(0.0f)
 	{ }
@@ -1299,11 +1301,11 @@ public:
 protected:
 	virtual void postCreate() {
 		Animation::postCreate();
-		m_OSGAxis = simdata::toOSG(m_Axis);
+		m_OSGAxis = toOSG(m_Axis);
 	}
 
 private:
-	simdata::Vector3 m_Axis;
+	Vector3 m_Axis;
 	float m_Gain;
 	float m_Offset;
 	std::string m_ChannelName;
@@ -1311,16 +1313,16 @@ private:
 
 };
 
-SIMDATA_XML_BEGIN(CounterWheel)
-	SIMDATA_DEF("channel_name", m_ChannelName, false)
-	SIMDATA_DEF("gain", m_Gain, false)
-	SIMDATA_DEF("offset", m_Offset, false)
-	SIMDATA_DEF("axis", m_Axis, false)
-SIMDATA_XML_END
+CSP_XML_BEGIN(CounterWheel)
+	CSP_DEF("channel_name", m_ChannelName, false)
+	CSP_DEF("gain", m_Gain, false)
+	CSP_DEF("offset", m_Offset, false)
+	CSP_DEF("axis", m_Axis, false)
+CSP_XML_END
 
 
 class CounterWheel::Callback: public AnimationCallback {
-	simdata::Ref<const CounterWheel> m_Animation;
+	Ref<const CounterWheel> m_Animation;
 	DoubleChannel m_Channel;
 	float m_Scale;  // power of 10
 	osg::MatrixTransform *m_Transform;
@@ -1340,9 +1342,9 @@ public:
 				const float value = m_Animation->getGain() * m_Channel.value() + m_Animation->getOffset();
 				float angle = 0.0;
 				if (m_Scale > 1.0f) {
-					angle = static_cast<float>((floor(value / m_Scale) + 0.1 * std::max(0.0, fmod(value * 10.0, 10.0 * m_Scale) - (10.0 * m_Scale - 10.0))) * (0.2 * simdata::PI));
+					angle = static_cast<float>((floor(value / m_Scale) + 0.1 * std::max(0.0, fmod(value * 10.0, 10.0 * m_Scale) - (10.0 * m_Scale - 10.0))) * (0.2 * PI));
 				} else {
-					angle = static_cast<float>(fmodf(value, 10.0f) * (0.2 * simdata::PI));
+					angle = static_cast<float>(fmodf(value, 10.0f) * (0.2 * PI));
 				}
 				const osg::Vec3 t = m_Transform->getMatrix().getTrans();
 				osg::Matrix m = osg::Matrix::rotate(angle, m_Animation->getAxis());
@@ -1382,7 +1384,7 @@ AnimationCallback *CounterWheel::newCallback(osg::Node *node) const {
 class AnimatedMomentarySwitch: public Animation {
 	class Callback;
 public:
-	SIMDATA_DECLARE_OBJECT(AnimatedMomentarySwitch)
+	CSP_DECLARE_OBJECT(AnimatedMomentarySwitch)
 
 	virtual AnimationCallback *newCallback(osg::Node *node) const;
 	inline const std::vector<std::string> &getEventChannelNames() const { return m_EventChannelNames; }
@@ -1395,18 +1397,18 @@ private:
 	double m_CycleTime;
 };
 
-SIMDATA_XML_BEGIN(AnimatedMomentarySwitch)
-	SIMDATA_DEF("event_channel_names", m_EventChannelNames, true)
-	SIMDATA_DEF("cycle_time", m_CycleTime, false)
-SIMDATA_XML_END
+CSP_XML_BEGIN(AnimatedMomentarySwitch)
+	CSP_DEF("event_channel_names", m_EventChannelNames, true)
+	CSP_DEF("cycle_time", m_CycleTime, false)
+CSP_XML_END
 
 
 class AnimatedMomentarySwitch::Callback: public AnimationCallback, public sigc::trackable {
-	simdata::Ref<const AnimatedMomentarySwitch> m_Animation;
+	Ref<const AnimatedMomentarySwitch> m_Animation;
 	osg::ref_ptr<const osg::AnimationPathCallback> m_AnimationPathCallback;
 	osg::AnimationPath::ControlPoint m_DefaultPoint;
 	std::vector<osg::AnimationPath::ControlPoint> m_ControlPoints;
-	std::vector<InputEventChannel::Ref> m_EventChannels;
+	std::vector<InputEventChannel::RefT> m_EventChannels;
 	unsigned m_Index;
 	double m_Cycle;
 	double m_Scale;
@@ -1495,11 +1497,11 @@ public:
 			const std::vector<std::string> &channel_names = m_Animation->getEventChannelNames();
 			m_EventChannels.reserve(channel_names.size());
 			for (unsigned i = 0; i < channel_names.size(); ++i) {
-				InputEventChannel::Ref channel = bus->getSharedChannel(channel_names[i], false);
+				InputEventChannel::RefT channel = bus->getSharedChannel(channel_names[i], false);
 				if (channel.valid()) {
 					channel->connect(sigc::bind(sigc::mem_fun(this, &Callback::onEvent), i));
 				} else {
-					CSP_LOG(OBJECT, WARNING, "InputEventChannel " << channel_names[i] << " not found; ignoring.");
+					CSPLOG(WARNING, OBJECT) << "InputEventChannel " << channel_names[i] << " not found; ignoring.";
 				}
 				m_EventChannels.push_back(channel);
 			}
@@ -1512,11 +1514,13 @@ AnimationCallback *AnimatedMomentarySwitch::newCallback(osg::Node *node) const {
 	assert(node);
 	osg::AnimationPathCallback *oapc = dynamic_cast<osg::AnimationPathCallback*>(node->getUpdateCallback());
 	if (!oapc) {
-		CSP_LOG(OBJECT, WARNING, "AnimatedMomentarySwitch node has no animation path (" << node->getName() << ")");
+		CSPLOG(WARNING, OBJECT) << "AnimatedMomentarySwitch node has no animation path (" << node->getName() << ")";
 		return 0;
 	}
 	AnimationCallback *callback = new Callback(this, oapc);
 	callback->bind(*node);
 	return callback;
 }
+
+CSP_NAMESPACE_END
 

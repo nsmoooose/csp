@@ -23,24 +23,24 @@
  **/
 
 
-#include "Theater/FeatureLayout.h"
-#include "Theater/Feature.h"
-#include "Theater/FeatureModel.h"
-#include "Theater/FeatureSceneGroup.h"
-#include "Theater/LayoutTransform.h"
-#include "Theater/ElevationCorrection.h"
+#include <csp/cspsim/theater/FeatureLayout.h>
+#include <csp/cspsim/theater/Feature.h>
+#include <csp/cspsim/theater/FeatureModel.h>
+#include <csp/cspsim/theater/FeatureSceneGroup.h>
+#include <csp/cspsim/theater/LayoutTransform.h>
+#include <csp/cspsim/theater/ElevationCorrection.h>
 
 #include <csp/csplib/data/ObjectInterface.h>
 
+CSP_NAMESPACE
 
-SIMDATA_XML_BEGIN(FeatureLayout)
-	SIMDATA_DEF("model", m_FeatureModel, true)
-	SIMDATA_DEF("x", m_X, true)
-	SIMDATA_DEF("y", m_Y, true)
-	SIMDATA_DEF("orientation", m_Orientation, true)
-	SIMDATA_DEF("value", m_ValueModifier, false)
-SIMDATA_XML_END
-
+CSP_XML_BEGIN(FeatureLayout)
+	CSP_DEF("model", m_FeatureModel, true)
+	CSP_DEF("x", m_X, true)
+	CSP_DEF("y", m_Y, true)
+	CSP_DEF("orientation", m_Orientation, true)
+	CSP_DEF("value", m_ValueModifier, false)
+CSP_XML_END
 
 
 FeatureLayout::FeatureLayout() {
@@ -63,8 +63,9 @@ void FeatureLayout::makeFeatures(std::vector<Feature> &features, int value) cons
 	m_FeatureModel->makeFeatures(features, value + int(m_ValueModifier));
 }
 
-
-simdata::Ref<FeatureModel const> FeatureLayout::getFeatureModel() const {
+Ref<FeatureModel const> FeatureLayout::getFeatureModel() const {
 	return m_FeatureModel;
 }
+
+CSP_NAMESPACE_END
 

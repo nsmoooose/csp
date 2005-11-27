@@ -50,9 +50,9 @@
 // 10,000 other things!
 // more efficient calculations, push channel callbacks
 
-SIMDATA_XML_BEGIN(F16HUD)
-	SIMDATA_DEF("color", m_Color, false)
-SIMDATA_XML_END
+CSP_XML_BEGIN(F16HUD)
+	CSP_DEF("color", m_Color, false)
+CSP_XML_END
 
 namespace {
 static const simdata::Vector3 DefaultHUDColor(0.45, 0.94, 0.68);

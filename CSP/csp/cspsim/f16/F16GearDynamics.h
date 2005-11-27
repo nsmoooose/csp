@@ -32,7 +32,7 @@
 
 class F16GearDynamics: public GearDynamics {
 public:
-	SIMDATA_DECLARE_OBJECT(F16GearDynamics)
+	CSP_DECLARE_OBJECT(F16GearDynamics)
 
 	F16GearDynamics();
 	virtual bool allowGearUp() const;

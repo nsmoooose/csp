@@ -1,4 +1,4 @@
-// Combat Simulator Project - FlightSim Demo
+// Combat Simulator Project
 // Copyright (C) 2002 The Combat Simulator Project
 // http://csp.sourceforge.net
 //
@@ -22,8 +22,8 @@
  *
  **/
 
-#ifndef __CSP_EXCEPTION_H__
-#define __CSP_EXCEPTION_H__
+#ifndef __CSPSIM_EXCEPTION_H__
+#define __CSPSIM_EXCEPTION_H__
 
 #include <csp/csplib/util/Exception.h>
 

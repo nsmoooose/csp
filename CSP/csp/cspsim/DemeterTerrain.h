@@ -52,7 +52,7 @@ namespace Demeter {
 class DemeterTerrain: public TerrainObject
 {
 public:
-	SIMDATA_DECLARE_OBJECT(DemeterTerrain)
+	CSP_DECLARE_OBJECT(DemeterTerrain)
 
 	DemeterTerrain();
 	virtual ~DemeterTerrain();

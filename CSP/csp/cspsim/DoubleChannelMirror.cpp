@@ -1,4 +1,4 @@
-// Combat Simulator Project - CSPSim
+// Combat Simulator Project
 // Copyright (C) 2005 The Combat Simulator Project
 // http://csp.sourceforge.net
 //
@@ -22,14 +22,15 @@
  */
 
 
-#include <ChannelMirror.h>
-#include <Bus.h>
+#include <csp/cspsim/ChannelMirror.h>
+#include <csp/cspsim/Bus.h>
 #include <csp/csplib/util/Math.h>
 #include <csp/csplib/data/ObjectInterface.h>
 
+CSP_NAMESPACE
 
 class DoubleChannelSlave: public ChannelSlave {
-	DataChannel<double>::Ref m_Channel;
+	DataChannel<double>::RefT m_Channel;
 	double m_Limit0;
 	double m_RateLimit;
 	double m_Scale;
@@ -53,17 +54,17 @@ public:
 			m_Channel = bus->registerSharedDataChannel<double>(getChannelName(), 0.0);
 		} else {
 			if (!m_Channel->isShared()) {
-				CSP_LOG(OBJECT, ERROR, "Cannot drive nonshared data channel " << getChannelName());
+				CSPLOG(ERROR, OBJECT) << "Cannot drive nonshared data channel " << getChannelName();
 				m_Channel = 0;  // be nice
 			}
 		}
-		if (!m_Channel) CSP_LOG(OBJECT, WARNING, "Unable to bind or create shared data channel " << getChannelName());
+		if (!m_Channel) CSPLOG(WARNING, OBJECT) << "Unable to bind or create shared data channel " << getChannelName();
 	}
 
 	virtual bool receive(ValueSet const &values, unsigned &idx) {
 		assert(idx < values.size());
 		if (idx >= values.size()) return false;
-		const simdata::uint8 value = values[idx++];
+		const uint8 value = values[idx++];
 		m_Target = m_Limit0 + static_cast<double>(value) * m_Scale;
 		return true;
 	}
@@ -81,11 +82,11 @@ public:
 };
 
 class DoubleChannelMaster: public ChannelMaster {
-	DataChannel<double>::CRef m_Channel;
+	DataChannel<double>::CRefT m_Channel;
 	double m_Limit0;
 	double m_RateLimit;
 	double m_Scale;
-	simdata::uint8 m_LastValue;
+	uint8 m_LastValue;
 	bool m_Increasing;
 
 public:
@@ -107,7 +108,7 @@ public:
 
 	virtual bool send(int lod, ValueSet &values, bool force) {
 		if (m_Channel.valid() && lod >= getLod()) {
-			const simdata::uint8 value = static_cast<simdata::uint8>(simdata::clampTo((m_Channel->value() - m_Limit0) * m_Scale, 0.0, 255.0));
+			const uint8 value = static_cast<uint8>(clampTo((m_Channel->value() - m_Limit0) * m_Scale, 0.0, 255.0));
 			bool add = force;
 			if (value != m_LastValue) {
 				// one unit of hysteresis to prevent jittering of the remote animation
@@ -140,17 +141,18 @@ class DoubleChannelMirror: public ChannelMirror {
 	double m_Limit1;
 	double m_RateLimit;
 public:
-	SIMDATA_DECLARE_STATIC_OBJECT(DoubleChannelMirror)
+	CSP_DECLARE_STATIC_OBJECT(DoubleChannelMirror)
 
 	virtual ChannelMaster *createMaster() const { return new DoubleChannelMaster(m_ChannelName, m_Lod, m_Limit0, m_Limit1, m_RateLimit); }
 	virtual ChannelSlave *createSlave() const { return new DoubleChannelSlave(m_ChannelName, m_Lod, m_Limit0, m_Limit1, m_RateLimit); }
 };
 
-SIMDATA_XML_BEGIN(DoubleChannelMirror)
-	SIMDATA_DEF("channel_name", m_ChannelName, true)
-	SIMDATA_DEF("lod", m_Lod, true)
-	SIMDATA_DEF("limit_0", m_Limit0, true)
-	SIMDATA_DEF("limit_1", m_Limit1, true)
-	SIMDATA_DEF("rate_limit", m_RateLimit, true)
-SIMDATA_XML_END
+CSP_XML_BEGIN(DoubleChannelMirror)
+	CSP_DEF("channel_name", m_ChannelName, true)
+	CSP_DEF("lod", m_Lod, true)
+	CSP_DEF("limit_0", m_Limit0, true)
+	CSP_DEF("limit_1", m_Limit1, true)
+	CSP_DEF("rate_limit", m_RateLimit, true)
+CSP_XML_END
 
+CSP_NAMESPACE_END

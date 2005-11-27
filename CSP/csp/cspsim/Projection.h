@@ -1,4 +1,4 @@
-// Combat Simulator Project - FlightSim Demo
+// Combat Simulator Project
 // Copyright (C) 2002-2005 The Combat Simulator Project
 // http://csp.sourceforge.net
 //
@@ -34,26 +34,24 @@
 #include <csp/csplib/data/LUT.h>
 #include <csp/csplib/util/Ref.h>
 
-#include <cstdio>
-#include <iostream>
-
+CSP_NAMESPACE
 
 /** An interface for converting between geospatial coordinates and 2D world
  *  coordinates.
  */
-class Projection: public simdata::Referenced {
+class Projection: public Referenced {
 public:
-	typedef simdata::Ref<Projection> Ref;
-	typedef simdata::Ref<const Projection> CRef;
+	typedef Ref<Projection> RefT;
+	typedef Ref<const Projection> CRefT;
 
 	virtual ~Projection() { }
 
-	virtual simdata::LLA getCenter() const = 0;
-	virtual simdata::Vector3 convert(simdata::LLA const &pos) const = 0;
-	virtual simdata::LLA convert(simdata::Vector3 const &pos) const = 0;
-	virtual simdata::Vector3 getNorth(simdata::LLA const &pos) const = 0;
-	virtual simdata::Vector3 getNorth(simdata::Vector3 const &pos) const = 0;
-	virtual simdata::Vector3 getUp(simdata::Vector3 const &pos) const = 0;
+	virtual LLA getCenter() const = 0;
+	virtual Vector3 convert(LLA const &pos) const = 0;
+	virtual LLA convert(Vector3 const &pos) const = 0;
+	virtual Vector3 getNorth(LLA const &pos) const = 0;
+	virtual Vector3 getNorth(Vector3 const &pos) const = 0;
+	virtual Vector3 getUp(Vector3 const &pos) const = 0;
 };
 
 
@@ -72,16 +70,16 @@ public:
 	double getRadius() const { return m_R; }
 	void setRadius(double radius) { m_R = radius; }
 
-	virtual simdata::LLA getCenter() const;
-	void setCenter(simdata::LLA const &center);
+	virtual LLA getCenter() const;
+	void setCenter(LLA const &center);
 
 	GnomonicProjection();
 	GnomonicProjection(double lat, double lon, double radius=1.0);
 
-	virtual simdata::Vector3 convert(simdata::LLA const &pos) const;
-	virtual simdata::LLA convert(simdata::Vector3 const &pos) const;
-	virtual simdata::Vector3 getNorth(simdata::LLA const &pos) const;
-	virtual simdata::Vector3 getNorth(simdata::Vector3 const &pos) const;
+	virtual Vector3 convert(LLA const &pos) const;
+	virtual LLA convert(Vector3 const &pos) const;
+	virtual Vector3 getNorth(LLA const &pos) const;
+	virtual Vector3 getNorth(Vector3 const &pos) const;
 };
 
 
@@ -92,7 +90,7 @@ public:
 class SecantGnomonicProjection: public GnomonicProjection {
 	typedef float value_t;
 private:
-	simdata::Table2 m_NorthX, m_NorthY;
+	Table2 m_NorthX, m_NorthY;
 	double m_SizeX, m_SizeY;
 	bool m_Valid;
 
@@ -112,7 +110,7 @@ public:
 	SecantGnomonicProjection(double lat, double lon, double size_x, double size_y);
 	SecantGnomonicProjection();
 
-	void set(simdata::LLA const &center, double size_x, double size_y);
+	void set(LLA const &center, double size_x, double size_y);
 
 	/**
 	 * Write a PGM image of the angular deviation of true north from
@@ -124,10 +122,11 @@ public:
 	 * Get the local North vector.  The input position is clamped
 	 * to within the theater bounds.
 	 */
-	virtual simdata::Vector3 getNorth(simdata::Vector3 const &pos) const;
-	virtual simdata::Vector3 getUp(simdata::Vector3 const &pos) const;
+	virtual Vector3 getNorth(Vector3 const &pos) const;
+	virtual Vector3 getUp(Vector3 const &pos) const;
 };
 
+CSP_NAMESPACE_END
 
 #endif // __CSPSIM_PROJECTION_H__
 

@@ -23,27 +23,29 @@
  **/
 
 
-#include <Stores/StoresDatabase.h>
-#include <Stores/Stores.h>
+#include <csp/cspsim/stores/StoresDatabase.h>
+#include <csp/cspsim/stores/Stores.h>
 #include <csp/csplib/data/DataManager.h>
+
+CSP_NAMESPACE
 
 /*  currently we search for all stores at runtime, but it might be better
     to list stores explicitly.  alternatively, we could cache the store
     list to disk and compare the timestamp to the dar file to invalidate
     the cache.
 
-class StoresDirectory: public simdata::Object {
+class StoresDirectory: public Object {
 public:
-	SIMDATA_DECLARE_OBJECT(StoresDirectory)
-	std::vector<simdata::Path> const &paths() const { return m_Paths; }
+	CSP_DECLARE_OBJECT(StoresDirectory)
+	std::vector<Path> const &paths() const { return m_Paths; }
 private:
-	std::vector<simdata::Path> m_Paths;
+	std::vector<Path> m_Paths;
 };
 
 
-SIMDATA_XML_BEGIN(StoresDirectory)
-	SIMDATA_DEF("paths", m_Paths, true)
-SIMDATA_XML_END
+CSP_XML_BEGIN(StoresDirectory)
+	CSP_DEF("paths", m_Paths, true)
+CSP_XML_END
 
 */
 
@@ -56,40 +58,40 @@ StoresDatabase::~StoresDatabase() {
 	for (RackMatrix::iterator iter = m_ChildMatrix.begin(); iter != m_ChildMatrix.end(); ++iter) delete iter->second;
 }
 
-void StoresDatabase::load(simdata::DataManager &data_manager, std::string const &root) {
-	_load(data_manager, simdata::ObjectID(root), root);
+void StoresDatabase::load(DataManager &data_manager, std::string const &root) {
+	_load(data_manager, ObjectID(root), root);
 }
 
-simdata::Ref<Store> StoresDatabase::getStore(std::string const &id) {
-	return getStore(simdata::Key(id));
+Ref<Store> StoresDatabase::getStore(std::string const &id) {
+	return getStore(Key(id));
 }
 
-simdata::Ref<Store> StoresDatabase::getStore(simdata::Key const &key) {
+Ref<Store> StoresDatabase::getStore(Key const &key) {
 	StoreData const *data = getStoreData(key);
 	return data ? data->createStore() : 0;
 }
 
 StoreData const *StoresDatabase::getStoreData(std::string const &id) {
-	return getStoreData(simdata::Key(id));
+	return getStoreData(Key(id));
 }
 
-StoreData const *StoresDatabase::getStoreData(simdata::Key const &key) {
+StoreData const *StoresDatabase::getStoreData(Key const &key) {
 	StoresByKey::const_iterator iter = m_StoresByKey.find(key);
 	return (iter == m_StoresByKey.end()) ? 0 : iter->second.get();
 }
 
-void StoresDatabase::getStoreDataSet(std::set<simdata::Key> const &keyset, std::vector<StoreData const *> &data) {
+void StoresDatabase::getStoreDataSet(std::set<Key> const &keyset, std::vector<StoreData const *> &data) {
 	data.reserve(data.size() + keyset.size());
-	for (std::set<simdata::Key>::const_iterator iter = keyset.begin(); iter != keyset.end(); ++iter) {
+	for (std::set<Key>::const_iterator iter = keyset.begin(); iter != keyset.end(); ++iter) {
 		StoreData const *store_data = getStoreData(*iter);
 		if (store_data) data.push_back(store_data);
 	}
 }
 
-simdata::Key StoresDatabase::getBestRack(HardpointData const *hp, Store const *store) {
-	if (!store) return simdata::Key();
+Key StoresDatabase::getBestRack(HardpointData const *hp, Store const *store) {
+	if (!store) return Key();
 	RackMatrix::const_iterator rack_iter = m_ParentMatrix.find(store->key());
-	if (rack_iter == m_ParentMatrix.end()) return simdata::Key();
+	if (rack_iter == m_ParentMatrix.end()) return Key();
 	StoreSet const *racks = rack_iter->second;
 	StoreList const &preferred = hp->preferredRacks();
 	for (StoreList::const_iterator iter = preferred.begin(); iter != preferred.end(); ++iter) {
@@ -99,12 +101,12 @@ simdata::Key StoresDatabase::getBestRack(HardpointData const *hp, Store const *s
 	return *(racks->begin());
 }
 
-StoreSet const *StoresDatabase::getCompatibleRacks(simdata::Key const &key) const {
+StoreSet const *StoresDatabase::getCompatibleRacks(Key const &key) const {
 	RackMatrix::const_iterator iter = m_ParentMatrix.find(key);
 	return (iter == m_ParentMatrix.end()) ? 0 : iter->second;
 }
 
-StoreSet const *StoresDatabase::getCompatibleStores(simdata::Key const &key) const {
+StoreSet const *StoresDatabase::getCompatibleStores(Key const &key) const {
 	RackMatrix::const_iterator iter = m_ChildMatrix.find(key);
 	return (iter == m_ChildMatrix.end()) ? 0 : iter->second;
 }
@@ -117,16 +119,16 @@ void StoresDatabase::getCompatibleRacks(StoreSet const &stores, StoreSet &output
 	}
 }
 
-bool StoresDatabase::_load(simdata::DataManager &data_manager, simdata::ObjectID root, std::string const &prefix) {
-	std::vector<simdata::ObjectID> objects = data_manager.getChildren(root);
+bool StoresDatabase::_load(DataManager &data_manager, ObjectID root, std::string const &prefix) {
+	std::vector<ObjectID> objects = data_manager.getChildren(root);
 	for (unsigned i = 0; i < objects.size(); ++i) {
 		// objects[i] may refer to a directory, an Object, or both
 		_load(data_manager, objects[i], prefix);
 		if (data_manager.hasObject(objects[i])) {
 			// note that this will effectively preload all object models in the stores directory!
-			simdata::LinkBase obj = data_manager.getObject(simdata::Path(objects[i]));
+			LinkBase obj = data_manager.getObject(Path(objects[i]));
 			assert(obj.valid());
-			simdata::Ref<StoreData> data;
+			Ref<StoreData> data;
 			if (!data.tryAssign(obj)) continue;
 			std::string path = data_manager.getPathString(objects[i]).substr(prefix.size() + 1);
 			assert(data.valid());
@@ -153,4 +155,6 @@ void StoresDatabase::populateRackMatrix(RackData const *rack) {
 		}
 	}
 }
+
+CSP_NAMESPACE_END
 

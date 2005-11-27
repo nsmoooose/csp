@@ -1,4 +1,4 @@
-// Combat Simulator Project - CSPSim
+// Combat Simulator Project
 // Copyright (C) 2002-2005 The Combat Simulator Project
 // http://csp.sourceforge.net
 //
@@ -44,8 +44,8 @@ using simdata::toRadians;
 using simdata::toDegrees;
 
 
-SIMDATA_XML_BEGIN(AircraftObject)
-SIMDATA_XML_END
+CSP_XML_BEGIN(AircraftObject)
+CSP_XML_END
 
 DEFINE_INPUT_INTERFACE(AircraftObject)
 

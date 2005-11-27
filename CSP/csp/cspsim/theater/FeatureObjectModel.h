@@ -26,15 +26,14 @@
 #ifndef __CSPSIM_THEATER_FEATUREOBJECTMODEL_H__
 #define __CSPSIM_THEATER_FEATUREOBJECTMODEL_H__
 
-
-#include "Theater/FeatureModel.h"
-#include "DamageModifier.h"
-#include "Feature.h"
-#include "ObjectModel.h"
+#include <csp/cspsim/theater/FeatureModel.h>
+#include <csp/cspsim/DamageModifier.h>
+#include <csp/cspsim/Feature.h>
+#include <csp/cspsim/ObjectModel.h>
 
 #include <vector>
 
-
+CSP_NAMESPACE
 
 class FeatureSceneGroup;
 class LayoutTransform;
@@ -51,10 +50,10 @@ class FeatureObjectModel: public FeatureModel {
 protected:
 	char m_HitPoints;
 	char m_Value;
-	simdata::Link<ObjectModel> m_ObjectModel;
+	Link<ObjectModel> m_ObjectModel;
 	
 public:
-	SIMDATA_DECLARE_STATIC_OBJECT(FeatureObjectModel)
+	CSP_DECLARE_STATIC_OBJECT(FeatureObjectModel)
 
 	FeatureObjectModel();
 
@@ -63,7 +62,7 @@ public:
 	/**
 	 * Get the damage modifiers for this feature type.
 	 */
-	virtual simdata::Ref<DamageModifier const> getDamageModifier() const { return simdata::Ref<DamageModifier const>(); }
+	virtual Ref<DamageModifier const> getDamageModifier() const { return Ref<DamageModifier const>(); }
 
 	/**
 	 * Get the damage resitance of this feature type.
@@ -90,7 +89,7 @@ public:
 	virtual void makeFeatures(std::vector<Feature> &features, int value) const;
 };
 
-
+CSP_NAMESPACE_END
 
 #endif // __CSPSIM_THEATER_FEATUREOBJECTMODEL_H__
 

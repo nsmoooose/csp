@@ -1,4 +1,4 @@
-// Combat Simulator Project - FlightSim Demo
+// Combat Simulator Project
 // Copyright (C) 2002-2005 The Combat Simulator Project
 // http://csp.sourceforge.net
 //
@@ -37,20 +37,20 @@ using simdata::toRadians;
 using simdata::toDegrees;
 
 
-SIMDATA_XML_BEGIN(AircraftSimpleFCS)
-	SIMDATA_DEF("elevator_limit0", m_ElevatorLimit0, false)
-	SIMDATA_DEF("elevator_limit1", m_ElevatorLimit1, false)
-	SIMDATA_DEF("aileron_limit0", m_AileronLimit0, false)
-	SIMDATA_DEF("aileron_limit1", m_AileronLimit1, false)
-	SIMDATA_DEF("rudder_limit", m_RudderLimit, false)
-	SIMDATA_DEF("airbrake_limit", m_AirbrakeLimit, false)
-	SIMDATA_DEF("elevator_rate", m_ElevatorRate, false)
-	SIMDATA_DEF("aileron_rate", m_AileronRate, false)
-	SIMDATA_DEF("rudder_rate", m_RudderRate, false)
-	SIMDATA_DEF("airbrake_rate", m_AirbrakeRate, false)
-	SIMDATA_DEF("max_g", m_MaxG, false)
-	SIMDATA_DEF("min_g", m_MinG, false)
-SIMDATA_XML_END
+CSP_XML_BEGIN(AircraftSimpleFCS)
+	CSP_DEF("elevator_limit0", m_ElevatorLimit0, false)
+	CSP_DEF("elevator_limit1", m_ElevatorLimit1, false)
+	CSP_DEF("aileron_limit0", m_AileronLimit0, false)
+	CSP_DEF("aileron_limit1", m_AileronLimit1, false)
+	CSP_DEF("rudder_limit", m_RudderLimit, false)
+	CSP_DEF("airbrake_limit", m_AirbrakeLimit, false)
+	CSP_DEF("elevator_rate", m_ElevatorRate, false)
+	CSP_DEF("aileron_rate", m_AileronRate, false)
+	CSP_DEF("rudder_rate", m_RudderRate, false)
+	CSP_DEF("airbrake_rate", m_AirbrakeRate, false)
+	CSP_DEF("max_g", m_MaxG, false)
+	CSP_DEF("min_g", m_MinG, false)
+CSP_XML_END
 
 
 AircraftSimpleFCS::AircraftSimpleFCS()

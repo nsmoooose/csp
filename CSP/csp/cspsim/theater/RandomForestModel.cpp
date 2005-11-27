@@ -23,12 +23,12 @@
  **/
 
 
-#include "Theater/RandomForestModel.h"
-#include "Theater/FeatureSceneModel.h"
-#include "Theater/FeatureSceneGroup.h"
-#include "Theater/LayoutTransform.h"
-#include "Theater/ElevationCorrection.h"
-#include "Theater/IsoContour.h"
+#include <csp/cspsim/theater/RandomForestModel.h>
+#include <csp/cspsim/theater/FeatureSceneModel.h>
+#include <csp/cspsim/theater/FeatureSceneGroup.h>
+#include <csp/cspsim/theater/LayoutTransform.h>
+#include <csp/cspsim/theater/ElevationCorrection.h>
+#include <csp/cspsim/theater/IsoContour.h>
 
 #include <csp/csplib/data/ObjectInterface.h>
 #include <csp/csplib/util/Random.h>
@@ -38,17 +38,18 @@
 #include <osg/Geode>
 #include <osg/StateSet>
 
+CSP_NAMESPACE
 
-SIMDATA_XML_BEGIN(RandomForestModel)
-	SIMDATA_DEF("models", m_Models, true)
-	SIMDATA_DEF("density", m_Density, true)
-	SIMDATA_DEF("minimum_spacing", m_MinimumSpacing, true)
-	SIMDATA_DEF("seed", m_Seed, false)
-	SIMDATA_DEF("isocontour", m_IsoContour, false)
-SIMDATA_XML_END
+CSP_XML_BEGIN(RandomForestModel)
+	CSP_DEF("models", m_Models, true)
+	CSP_DEF("density", m_Density, true)
+	CSP_DEF("minimum_spacing", m_MinimumSpacing, true)
+	CSP_DEF("seed", m_Seed, false)
+	CSP_DEF("isocontour", m_IsoContour, false)
+CSP_XML_END
 
 
-osg::Geometry *RandomForestModel::construct(simdata::Ref<FeatureQuad> quad, std::vector<osg::Vec3> const &position) const {
+osg::Geometry *RandomForestModel::construct(Ref<FeatureQuad> quad, std::vector<osg::Vec3> const &position) const {
 	int i, j, k, n = position.size();
 
 	osg::Vec3Array &vex = *(new osg::Vec3Array(n*16));
@@ -146,7 +147,7 @@ void RandomForestModel::postCreate() {
 	assert(m_Density.size() == m_Models.size());
 	float area = m_IsoContour->getArea();
 	int i, n = m_Models.size();
-	simdata::random::Taus2 rand;
+	random::Taus2 rand;
 	rand.setSeed(m_Seed);
 	m_Offsets.resize(n);
 	for (i = 0; i < n; i++) {
@@ -165,7 +166,7 @@ void RandomForestModel::postCreate() {
 
 void RandomForestModel::addSceneModel(FeatureSceneGroup *group, LayoutTransform const &transform, ElevationCorrection const &correction) {
 	int i, n = m_Models.size();
-	std::vector<simdata::Vector3>::iterator ofs, end;
+	std::vector<Vector3>::iterator ofs, end;
 	FeatureSceneModel *scene_model = new FeatureSceneModel(transform);
 	for (i = 0; i < n; i++) {
 		ofs = m_Offsets[i].begin();
@@ -185,14 +186,5 @@ void RandomForestModel::addSceneModel(FeatureSceneGroup *group, LayoutTransform 
 	group->addChild(scene_model);
 }
 
-
-
-
-
-
-
-
-
-
-
+CSP_NAMESPACE_END
 

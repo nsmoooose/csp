@@ -21,11 +21,12 @@
  * @file Feature.cpp
  *
  **/
-#include "ObjectModel.h"
 
-#include "Theater/Feature.h"
-#include "Theater/FeatureObjectModel.h"
+#include <csp/cspsim/theater/Feature.h>
+#include <csp/cspsim/theater/FeatureObjectModel.h>
+#include <csp/cspsim/ObjectModel.h>
 
+CSP_NAMESPACE
 
 Feature::Feature(FeatureObjectModel const *model, char value_) :
 	m_Damage(0),
@@ -33,4 +34,6 @@ Feature::Feature(FeatureObjectModel const *model, char value_) :
 	m_Model(model)
 {
 }
+
+CSP_NAMESPACE_END
 

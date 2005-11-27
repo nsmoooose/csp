@@ -1,4 +1,4 @@
-// Combat Simulator Project - FlightSim Demo
+// Combat Simulator Project
 // Copyright (C) 2002 The Combat Simulator Project
 // http://csp.sourceforge.net
 //
@@ -50,7 +50,7 @@ class GearAnimation;
  */
 class LandingGear: public simdata::Object {
 public:
-	SIMDATA_DECLARE_OBJECT(LandingGear)
+	CSP_DECLARE_OBJECT(LandingGear)
 
 	LandingGear();
 	~LandingGear();
@@ -246,7 +246,7 @@ class GearDynamics: public BaseDynamics {
 	typedef simdata::Link<LandingGear>::vector GearSet;
 
 public:
-	SIMDATA_DECLARE_OBJECT(GearDynamics)
+	CSP_DECLARE_OBJECT(GearDynamics)
 
 	DECLARE_INPUT_INTERFACE(GearDynamics, BaseDynamics)
 		BIND_ACTION("GEAR_UP", GearUp);

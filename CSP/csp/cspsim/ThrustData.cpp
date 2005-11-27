@@ -21,15 +21,16 @@
  *
  **/
 
-#include "ThrustData.h"
+#include <csp/cspsim/ThrustData.h>
 #include <csp/csplib/data/ObjectInterface.h>
 
+CSP_NAMESPACE
 
-SIMDATA_XML_BEGIN(ThrustData)
-	SIMDATA_DEF("idle_thrust", m_IdleThrust, true)
-	SIMDATA_DEF("mil_thrust", m_MilitaryThrust, true)
-	SIMDATA_DEF("ab_thrust", m_AfterburnerThrust, true)
-SIMDATA_XML_END
+CSP_XML_BEGIN(ThrustData)
+	CSP_DEF("idle_thrust", m_IdleThrust, true)
+	CSP_DEF("mil_thrust", m_MilitaryThrust, true)
+	CSP_DEF("ab_thrust", m_AfterburnerThrust, true)
+CSP_XML_END
 
 
 ThrustData::ThrustData(): m_HasAfterburner(false) {
@@ -51,7 +52,9 @@ double ThrustData::getAb(double altitude, double mach) const {
 }
 
 void ThrustData::postCreate() {
-	simdata::Object::postCreate();
+	Object::postCreate();
 	m_HasAfterburner = !m_AfterburnerThrust.empty();
 }
+
+CSP_NAMESPACE_END
 

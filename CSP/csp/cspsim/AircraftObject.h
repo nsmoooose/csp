@@ -1,4 +1,4 @@
-// Combat Simulator Project - CSPSim
+// Combat Simulator Project
 // Copyright (C) 2002-2005 The Combat Simulator Project
 // http://csp.sourceforge.net
 //
@@ -35,7 +35,7 @@ class TimedSequence;
 class AircraftObject: public DynamicObject
 {
 public:
-	SIMDATA_DECLARE_OBJECT(AircraftObject)
+	CSP_DECLARE_OBJECT(AircraftObject)
 
 	DECLARE_INPUT_INTERFACE(AircraftObject, DynamicObject)
 		BIND_ACTION("SMOKE_ON", SmokeOn);

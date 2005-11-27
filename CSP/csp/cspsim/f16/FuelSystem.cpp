@@ -41,7 +41,7 @@ namespace f16 {
  */
 class FuelSystem: public FuelManagementSystem {
 public:
-	SIMDATA_DECLARE_OBJECT(f16::FuelSystem)
+	CSP_DECLARE_OBJECT(f16::FuelSystem)
 
 	FuelSystem():
 		m_Pressurize(true),
@@ -326,10 +326,10 @@ private:
 
 };
 
-SIMDATA_XML_BEGIN(f16::FuelSystem)
-	SIMDATA_DEF("aft_fuel_low_level", m_AftFuelLowLevel, false)
-	SIMDATA_DEF("fwd_fuel_low_level", m_FwdFuelLowLevel, false)
-SIMDATA_XML_END
+CSP_XML_BEGIN(f16::FuelSystem)
+	CSP_DEF("aft_fuel_low_level", m_AftFuelLowLevel, false)
+	CSP_DEF("fwd_fuel_low_level", m_FwdFuelLowLevel, false)
+CSP_XML_END
 
 const simdata::Enumeration FuelSystem::MASTER_FUEL("OFF MASTER");
 const simdata::Enumeration FuelSystem::TANK_INERTING("OFF INERTING");

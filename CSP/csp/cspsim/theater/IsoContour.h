@@ -25,20 +25,20 @@
 #ifndef __CSPSIM_THEATER_ISOCONTOUR_H__
 #define __CSPSIM_THEATER_ISOCONTOUR_H__
 
-
 #include <csp/csplib/data/Vector3.h>
 #include <csp/csplib/data/Object.h>
-#include <SimCore/Util/Log.h>
+#include <csp/csplib/util/Log.h>
 
+CSP_NAMESPACE
 
-class IsoContour: public simdata::Object {
+class IsoContour: public Object {
 protected:
 	virtual float f(float x, float y) const = 0;
 public:
 	virtual bool in(float x, float y) const {
 		return f(x,y) < 1.0f;
 	}
-	virtual simdata::Vector3 getPoint(float x,float y) const = 0;
+	virtual Vector3 getPoint(float x,float y) const = 0;
 	virtual float getArea() const = 0;
 	virtual ~IsoContour() {}
 };
@@ -51,16 +51,16 @@ protected:
 		return x*x+y*y;
 	}
 public:
-	SIMDATA_DECLARE_OBJECT(Circle)
+	CSP_DECLARE_OBJECT(Circle)
 
 	Circle(float radius = 20.0f):
 	  m_Radius(radius) {
 	}
-	virtual simdata::Vector3 getPoint(float x, float y) const {
-		return simdata::Vector3(m_Radius * x, m_Radius * y, 0.0f);
+	virtual Vector3 getPoint(float x, float y) const {
+		return Vector3(m_Radius * x, m_Radius * y, 0.0f);
 	}
 	virtual float getArea() const {
-		return static_cast<float>(simdata::PI * m_Radius * m_Radius);
+		return static_cast<float>(PI * m_Radius * m_Radius);
 	}
 	virtual ~Circle() {}
 };
@@ -73,17 +73,17 @@ protected:
 		return 0.0f;
 	}
 public:
-	SIMDATA_DECLARE_OBJECT(RectangularCurve)
+	CSP_DECLARE_OBJECT(RectangularCurve)
 
 	RectangularCurve(float width = 20.0f, float height = 50.0f) {
 		m_Width = (width != 0.0f) ? fabs(width) : 20.0f;
 		m_Height = (height != 0.0f) ? fabs(height) : 50.0f;
 		if (width * height == 0.0f) {
-			CSP_LOG(APP, WARNING, "Rectangle: [" << width << "," << height << "corrected to 20x50]");
+			CSPLOG(WARNING, APP) << "Rectangle: [" << width << "," << height << "corrected to 20x50]";
 		}
 	}
-	virtual simdata::Vector3 getPoint(float x, float y) const {
-		return simdata::Vector3(m_Width * x, m_Height * y, 0.0f);
+	virtual Vector3 getPoint(float x, float y) const {
+		return Vector3(m_Width * x, m_Height * y, 0.0f);
 	}
 	virtual float getArea() const {
 		return m_Width * m_Height;
@@ -91,6 +91,7 @@ public:
 	virtual ~RectangularCurve(){}
 };
 
+CSP_NAMESPACE_END
 
 #endif // __CSPSIM_THEATER_ISOCONTOUR_H__
 

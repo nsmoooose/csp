@@ -1,4 +1,4 @@
-// Combat Simulator Project - FlightSim Demo
+// Combat Simulator Project
 // Copyright (C) 2002-2005 The Combat Simulator Project
 // http://csp.sourceforge.net
 //
@@ -26,17 +26,18 @@
  **/
 
 
-#include <Projection.h>
+#include <csp/cspsim/Projection.h>
 
 #include <cstdio>
 #include <iostream>
 
+CSP_NAMESPACE
 
-simdata::LLA GnomonicProjection::getCenter() const {
-	return simdata::LLA(m_Lat0, m_Lon0);
+LLA GnomonicProjection::getCenter() const {
+	return LLA(m_Lat0, m_Lon0);
 }
 
-void GnomonicProjection::setCenter(simdata::LLA const &center) {
+void GnomonicProjection::setCenter(LLA const &center) {
 	m_Lat0 = center.latitude();
 	m_Lon0 = center.longitude();
 	m_S = sin(m_Lat0);
@@ -59,25 +60,25 @@ GnomonicProjection::GnomonicProjection(double lat, double lon, double radius) {
 	m_C = cos(lat);
 }
 
-simdata::Vector3 GnomonicProjection::convert(simdata::LLA const &pos) const {
+Vector3 GnomonicProjection::convert(LLA const &pos) const {
 	double y = pos.longitude() - m_Lon0;
 	double cplat = cos(pos.latitude());
 	double splat = sin(pos.latitude());
 	double x = cplat * sin(y);
 	y = -m_S * cplat * cos(y) + m_C * splat;
-	return simdata::Vector3(tan(x)*m_R, tan(y)*m_R, pos.altitude());
+	return Vector3(tan(x)*m_R, tan(y)*m_R, pos.altitude());
 }
 
-simdata::LLA GnomonicProjection::convert(simdata::Vector3 const &pos) const {
+LLA GnomonicProjection::convert(Vector3 const &pos) const {
 	double x0 = atan(pos.x() / m_R);
 	double y = atan(pos.y() / m_R);
 	double x = sqrt(1.0 - x0*x0 - y*y);
 	double z = m_S * x + m_C * y;
 	x = m_C * x - m_S * y;
-	return simdata::LLA(asin(z), atan2(x0, x) + m_Lon0, pos.z());
+	return LLA(asin(z), atan2(x0, x) + m_Lon0, pos.z());
 }
 
-simdata::Vector3 GnomonicProjection::getNorth(simdata::LLA const &pos) const {
+Vector3 GnomonicProjection::getNorth(LLA const &pos) const {
 	double y = pos.longitude() - m_Lon0;
 	double splat = sin(pos.latitude());
 	double cplat = cos(pos.latitude());
@@ -89,10 +90,10 @@ simdata::Vector3 GnomonicProjection::getNorth(simdata::LLA const &pos) const {
 	y = m_S * cy * splat / (y*y);
 	x = cos(x);
 	x = -sy * splat / (x*x);
-	return simdata::Vector3(x, y, 0.0).normalized();
+	return Vector3(x, y, 0.0).normalized();
 }
 
-simdata::Vector3 GnomonicProjection::getNorth(simdata::Vector3 const &pos) const {
+Vector3 GnomonicProjection::getNorth(Vector3 const &pos) const {
 	double x0 = atan(pos.x() / m_R);
 	double y = atan(pos.y() / m_R);
 	double x = sqrt(1.0 - x0*x0 - y*y);
@@ -109,7 +110,7 @@ simdata::Vector3 GnomonicProjection::getNorth(simdata::Vector3 const &pos) const
 	y = m_S * cy * splat / (y*y);
 	x = cos(x);
 	x = -sy * splat / (x*x);
-	return simdata::Vector3(x, y, 0.0).normalized();
+	return Vector3(x, y, 0.0).normalized();
 }
 
 
@@ -141,16 +142,16 @@ void SecantGnomonicProjection::_constructTables() {
 	dataY.reserve((2*nx+1)*(2*ny+1));
 	for (i = -nx; i <= nx; i++) {
 		for (j = -ny; j <= ny; j++) {
-			simdata::Vector3 pos(i*spacing, j*spacing, 0.0);
-			simdata::Vector3 n = GnomonicProjection::getNorth(pos);
+			Vector3 pos(i*spacing, j*spacing, 0.0);
+			Vector3 n = GnomonicProjection::getNorth(pos);
 			dataX.push_back(static_cast<float>(n.x()));
 			dataY.push_back(static_cast<float>(n.y()));
 		}
 	}
 	m_NorthX.load(dataX, breaks);
 	m_NorthY.load(dataY, breaks);
-	m_NorthX.interpolate(simdata::Table2::Dim(nx)(ny), simdata::Interpolation::LINEAR);
-	m_NorthY.interpolate(simdata::Table2::Dim(nx)(ny), simdata::Interpolation::LINEAR);
+	m_NorthX.interpolate(Table2::Dim(nx)(ny), Interpolation::LINEAR);
+	m_NorthY.interpolate(Table2::Dim(nx)(ny), Interpolation::LINEAR);
 	m_Valid = true;
 }
 
@@ -168,7 +169,7 @@ SecantGnomonicProjection::SecantGnomonicProjection() {
 	m_SizeY = 1.0;
 }
 
-void SecantGnomonicProjection::set(simdata::LLA const &center, double size_x, double size_y) {
+void SecantGnomonicProjection::set(LLA const &center, double size_x, double size_y) {
 	setCenter(center);
 	m_SizeX = size_x;
 	m_SizeY = size_y;
@@ -194,14 +195,16 @@ void SecantGnomonicProjection::dump() const {
 	}
 }
 
-simdata::Vector3 SecantGnomonicProjection::getNorth(simdata::Vector3 const &pos) const {
+Vector3 SecantGnomonicProjection::getNorth(Vector3 const &pos) const {
 	assert(m_Valid);
-	float x = static_cast<value_t>(simdata::clampTo(pos.x(),-m_SizeX,m_SizeX));
-	float y = static_cast<value_t>(simdata::clampTo(pos.y(),-m_SizeY, m_SizeY));
-	return simdata::Vector3(m_NorthX[x][y], m_NorthY[x][y], 0.0);
+	float x = static_cast<value_t>(clampTo(pos.x(),-m_SizeX,m_SizeX));
+	float y = static_cast<value_t>(clampTo(pos.y(),-m_SizeY, m_SizeY));
+	return Vector3(m_NorthX[x][y], m_NorthY[x][y], 0.0);
 }
 
-simdata::Vector3 SecantGnomonicProjection::getUp(simdata::Vector3 const &) const {
-	return simdata::Vector3::ZAXIS;
+Vector3 SecantGnomonicProjection::getUp(Vector3 const &) const {
+	return Vector3::ZAXIS;
 }
+
+CSP_NAMESPACE_END
 

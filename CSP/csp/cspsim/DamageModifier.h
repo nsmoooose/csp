@@ -26,9 +26,9 @@
 #ifndef __CSPSIM_DAMAGEMODIFIER_H__
 #define __CSPSIM_DAMAGEMODIFIER_H__
 
-
 #include <csp/csplib/data/Object.h>
 
+CSP_NAMESPACE
 
 /**
  * clss DamageModifier (STATIC)
@@ -37,7 +37,7 @@
  * various types of weapons.
  *
  */
-class DamageModifier: public simdata::Object {
+class DamageModifier: public Object {
 public:
 	char m_Incendiary;
 	char m_HighExplosive;
@@ -46,7 +46,7 @@ public:
 	char m_SmallArms;
 	// etc
 	
-	SIMDATA_DECLARE_STATIC_OBJECT(DamageModifier)
+	CSP_DECLARE_STATIC_OBJECT(DamageModifier)
 
 	DamageModifier() {}
 	virtual ~DamageModifier() {}
@@ -54,6 +54,7 @@ public:
 	virtual void postCreate() {}
 };
 
+CSP_NAMESPACE_END
 
 #endif  // __DAMAGEMODIFIER_H__
 

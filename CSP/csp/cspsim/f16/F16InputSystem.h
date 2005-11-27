@@ -33,8 +33,8 @@ class F16InputSystem: public AircraftInputSystem {
 public:
 	SIMDATA_OBJECT(F16InputSystem, 0, 0)
 
-	EXTEND_SIMDATA_XML_INTERFACE(F16InputSystem, AircraftInputSystem)
-	END_SIMDATA_XML_INTERFACE
+	EXTEND_CSP_XML_INTERFACE(F16InputSystem, AircraftInputSystem)
+	END_CSP_XML_INTERFACE
 
 	F16InputSystem();
 

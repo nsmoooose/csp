@@ -22,17 +22,19 @@
  *
  **/
 
-#include "Theater/IsoContour.h"
-
+#include <csp/cspsim/theater/IsoContour.h>
 #include <csp/csplib/data/ObjectInterface.h>
 
+CSP_NAMESPACE
 
-SIMDATA_XML_BEGIN(RectangularCurve)
-	SIMDATA_DEF("width", m_Width, true)
-	SIMDATA_DEF("height", m_Height, true)
-SIMDATA_XML_END
+CSP_XML_BEGIN(RectangularCurve)
+	CSP_DEF("width", m_Width, true)
+	CSP_DEF("height", m_Height, true)
+CSP_XML_END
 
-SIMDATA_XML_BEGIN(Circle)
-	SIMDATA_DEF("radius", m_Radius, true)
-SIMDATA_XML_END
+CSP_XML_BEGIN(Circle)
+	CSP_DEF("radius", m_Radius, true)
+CSP_XML_END
+
+CSP_NAMESPACE_END
 

@@ -21,12 +21,14 @@
  *
  **/
 
-#include <FlightDynamics.h>
-#include <FlightModel.h>
-#include <ConditionsChannels.h>
-#include <ControlSurfacesChannels.h>
-#include <FlightDynamicsChannels.h>
-#include <KineticsChannels.h>
+#include <csp/cspsim/FlightDynamics.h>
+#include <csp/cspsim/FlightModel.h>
+#include <csp/cspsim/ConditionsChannels.h>
+#include <csp/cspsim/ControlSurfacesChannels.h>
+#include <csp/cspsim/FlightDynamicsChannels.h>
+#include <csp/cspsim/KineticsChannels.h>
+#include <csp/cspsim/stores/DragProfile.h>
+#include <csp/cspsim/stores/StoresDynamics.h>
 
 #include <csp/csplib/util/Log.h>
 #include <csp/csplib/util/Math.h>
@@ -38,14 +40,12 @@
 #include <iomanip> // for getInfo
 #include <algorithm>
 
-using simdata::toDegrees;
-using simdata::toRadians;
+CSP_NAMESPACE
 
-
-SIMDATA_XML_BEGIN(FlightDynamics)
-	SIMDATA_DEF("flight_model", m_FlightModel, true)
-	SIMDATA_DEF("store_drag", m_DragProfile, false)
-SIMDATA_XML_END
+CSP_XML_BEGIN(FlightDynamics)
+	CSP_DEF("flight_model", m_FlightModel, true)
+	CSP_DEF("store_drag", m_DragProfile, false)
+CSP_XML_END
 
 
 FlightDynamics::FlightDynamics():
@@ -118,8 +118,8 @@ void FlightDynamics::postSimulationStep(double dt) {
 	b_Beta->value() = m_Beta;
 	b_Airspeed->value() = m_Airspeed;
 	b_QBar->value() = m_QBar;
-	simdata::Vector3 gravity_g_body = m_Attitude->invrotate(simdata::Vector3(0, 0, 9.806));
-	simdata::Vector3 total_g_body = (gravity_g_body + b_AccelerationBody->value()) * (1.0 / 9.806);
+	Vector3 gravity_g_body = m_Attitude->invrotate(Vector3(0, 0, 9.806));
+	Vector3 total_g_body = (gravity_g_body + b_AccelerationBody->value()) * (1.0 / 9.806);
 	m_FilterG.update(total_g_body.z(), dt);
 	m_FilterLateralG.update(total_g_body.x(), dt);
 	b_G->value() = m_FilterG.value(); //total_g_body.z();
@@ -129,7 +129,7 @@ void FlightDynamics::postSimulationStep(double dt) {
 }
 
 void FlightDynamics::updateAirflow(double h) {
-	simdata::Vector3 airflowBody = *m_VelocityBody - m_WindVelocityBody;
+	Vector3 airflowBody = *m_VelocityBody - m_WindVelocityBody;
 	m_Airspeed = airflowBody.length();
 	m_Alpha = -atan2(airflowBody.z(), airflowBody.y());
 
@@ -138,7 +138,7 @@ void FlightDynamics::updateAirflow(double h) {
 	} // else keep previous value
 
 	// restrict m_alphaDot in vertical stalls
-	m_AlphaDot = simdata::clampTo(m_AlphaDot, -1.0, 1.0);
+	m_AlphaDot = clampTo(m_AlphaDot, -1.0, 1.0);
 	
 	// Calculate side angle
 	m_Beta = asin(airflowBody.x() / std::max(1.0, m_Airspeed));
@@ -151,7 +151,7 @@ void FlightDynamics::updateAirflow(double h) {
 void FlightDynamics::addExternalDrag() {
 	if (b_StoresDynamics.valid()) {
 		double Cd = !m_DragProfile ? 1.0 : m_DragProfile->drag(b_Mach->value(), m_Alpha);
-		simdata::Vector3 force, moment;
+		Vector3 force, moment;
 		b_StoresDynamics->value().computeDragForceAndMoment(m_QBar, Cd, m_Alpha, force, moment);
 		m_Force += force;
 		m_Moment += moment;
@@ -168,17 +168,19 @@ void FlightDynamics::getInfo(InfoList &info) const {
 	info.push_back(line.str());
 	/* various other diagnostic info
 	line.str("");
-	line << "dE: " << std::setprecision(1) << simdata::toDegrees(b_Elevator->value())
-	     << ", dA: " << std::setprecision(1) << simdata::toDegrees(b_Aileron->value())
-	     << ", dR: " << std::setprecision(1) << simdata::toDegrees(b_Rudder->value())
-	     << ", dLEF: " << std::setprecision(1) << simdata::toDegrees(b_LeadingEdgeFlap->value())
-	     << ", dTEF: " << std::setprecision(1) << simdata::toDegrees(b_TrailingEdgeFlap->value());
+	line << "dE: " << std::setprecision(1) << toDegrees(b_Elevator->value())
+	     << ", dA: " << std::setprecision(1) << toDegrees(b_Aileron->value())
+	     << ", dR: " << std::setprecision(1) << toDegrees(b_Rudder->value())
+	     << ", dLEF: " << std::setprecision(1) << toDegrees(b_LeadingEdgeFlap->value())
+	     << ", dTEF: " << std::setprecision(1) << toDegrees(b_TrailingEdgeFlap->value());
 	info.push_back(line.str());
 	line.str("");
 	double turn_rate = m_Attitude->rotate(*m_AngularVelocityBody).z();
 	double turn_radius = m_VelocityBody->length() / turn_rate;
-	line << "Turn rate: " << simdata::toDegrees(turn_rate) << " deg/s, sink rate: " << m_Attitude->rotate(*m_VelocityBody).z() * (100.0 / 2.54 / 12.0) << " ft/s, turn radius: " << (turn_radius * (100.0 / 2.54 / 12.0)) << " ft";
+	line << "Turn rate: " << toDegrees(turn_rate) << " deg/s, sink rate: " << m_Attitude->rotate(*m_VelocityBody).z() * (100.0 / 2.54 / 12.0) << " ft/s, turn radius: " << (turn_radius * (100.0 / 2.54 / 12.0)) << " ft";
 	info.push_back(line.str());
 	*/
 }
+
+CSP_NAMESPACE_END
 

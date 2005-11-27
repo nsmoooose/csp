@@ -22,17 +22,16 @@
  *
  **/
 
-
 #ifndef __CSPSIM_THEATER_ELEVATIONCORRECTION_H__
 #define __CSPSIM_THEATER_ELEVATIONCORRECTION_H__
 
-
-#include "Theater/LayoutTransform.h"
-
+#include <csp/cspsim/theater/LayoutTransform.h>
+#include <csp/csplib/util/Export.h>
 #include <osg/Vec3>
 
-class TerrainObject;
+CSP_NAMESPACE
 
+class TerrainObject;
 
 /**
  * class ElevationCorrection
@@ -40,7 +39,7 @@ class TerrainObject;
  * A helper class for correcting the elevation of static objects to match
  * the local terrain.
  */
-class CSPSIM_EXPORT ElevationCorrection: public LayoutTransform {
+class CSP_EXPORT ElevationCorrection: public LayoutTransform {
 	TerrainObject *m_Terrain;
 	ElevationCorrection() {}
 public:
@@ -48,7 +47,7 @@ public:
 	osg::Vec3 operator()(osg::Vec3 const &offset) const;
 };
 
-
+CSP_NAMESPACE_END
 
 #endif // __CSPSIM_THEATER_ELEVATIONCORRECTION_H__
 

@@ -1,17 +1,17 @@
-// Combat Simulator Project - FlightSim Demo
+// Combat Simulator Project
 // Copyright (C) 2002 The Combat Simulator Project
 // http://csp.sourceforge.net
-// 
+//
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
 // as published by the Free Software Foundation; either version 2
 // of the License, or (at your option) any later version.
-// 
+//
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU General Public License
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
@@ -23,11 +23,7 @@
  **/
 
 
-# if defined(_MSC_VER) && (_MSC_VER <= 1200)
-#pragma warning(disable : 4786)
-# endif
-
-#include "EventMapIndex.h"
+#include <csp/cspsim/EventMapIndex.h>
 
 //#include <osgDB/FileUtils>
 //#include <osgDB/FileNameUtils>
@@ -37,26 +33,26 @@
 
 #include <cassert>
 
+CSP_NAMESPACE
 
-
-EventMapping::Ref EventMapIndex::getMap(const simdata::hasht &key) {
+EventMapping::RefT EventMapIndex::getMap(const hasht &key) {
 	MapHash::iterator i = m_Index.find(key);
 	if (i == m_Index.end()) return NULL;
 	return i->second;
 }
 
-EventMapping::Ref EventMapIndex::getMap(const std::string &id) {
-	return getMap(simdata::hasht(id));
+EventMapping::RefT EventMapIndex::getMap(const std::string &id) {
+	return getMap(hasht(id));
 }
 
 void EventMapIndex::load(std::string const &path) {
-	EventMapping::Ref m = new EventMapping;
+	EventMapping::RefT m = new EventMapping;
 	assert(m.valid());
-	CSP_LOG(APP, INFO, "Loading human interface device mapping '" << path << "'");
+	CSPLOG(INFO, APP) << "Loading human interface device mapping '" << path << "'";
 	if (m->load(path)) {
 		m_Maps.push_back(m);
-		std::vector<simdata::hasht>::const_iterator idx;
-		std::vector<simdata::hasht> const &bindings = m->getBindings();
+		std::vector<hasht>::const_iterator idx;
+		std::vector<hasht> const &bindings = m->getBindings();
 		for (idx = bindings.begin(); idx != bindings.end(); idx++) {
 			m_Index[*idx] = m;
 		}
@@ -65,14 +61,15 @@ void EventMapIndex::load(std::string const &path) {
 
 void EventMapIndex::loadAllMaps() {
 	std::string path = getConfigPath("InputMapPath");
-	CSP_LOG(APP, INFO, "Looking for human interface device mappings in '" << path << "'");
-	simdata::ospath::DirectoryContents dc = simdata::ospath::getDirectoryContents(path);
-	CSP_LOG(APP, INFO, "Found " << dc.size() << " files");
-	for (simdata::ospath::DirectoryContents::const_iterator file = dc.begin(); file != dc.end(); ++file) {
-		std::string fn = simdata::ospath::join(path, *file);
-		CSP_LOG(APP, INFO, "File: " << *file << ", " << fn << ", " << simdata::ospath::getFileExtension(fn));
-		if (simdata::ospath::getFileExtension(fn) == "hid") load(fn);
+	CSPLOG(INFO, APP) << "Looking for human interface device mappings in '" << path << "'";
+	ospath::DirectoryContents dc = ospath::getDirectoryContents(path);
+	CSPLOG(INFO, APP) << "Found " << dc.size() << " files";
+	for (ospath::DirectoryContents::const_iterator file = dc.begin(); file != dc.end(); ++file) {
+		std::string fn = ospath::join(path, *file);
+		CSPLOG(INFO, APP) << "File: " << *file << ", " << fn << ", " << ospath::getFileExtension(fn);
+		if (ospath::getFileExtension(fn) == "hid") load(fn);
 	}
 }
 
+CSP_NAMESPACE_END
 

@@ -20,7 +20,7 @@
 
 class LeadingEdgeFlapControl: public ControlNode {
 public:
-	SIMDATA_DECLARE_OBJECT(LeadingEdgeFlapControl)
+	CSP_DECLARE_OBJECT(LeadingEdgeFlapControl)
 	LeadingEdgeFlapControl(): m_AlphaFilter(3.75, 7.25, 2.0) { }
 	void importChannels(Bus* bus);
 private:
@@ -39,12 +39,12 @@ private:
 	LeadLagFilter m_AlphaFilter;
 };
 
-SIMDATA_XML_BEGIN(LeadingEdgeFlapControl)
-	SIMDATA_DEF("dlef_alpha", m_AlphaGain, true)
-	SIMDATA_DEF("dlef_qbar_ps", m_QBarGain, true)
-	SIMDATA_DEF("dlef_offset", m_Offset, true)
-	SIMDATA_DEF("dlef_ground_deflection", m_GroundDeflection, true)
-SIMDATA_XML_END
+CSP_XML_BEGIN(LeadingEdgeFlapControl)
+	CSP_DEF("dlef_alpha", m_AlphaGain, true)
+	CSP_DEF("dlef_qbar_ps", m_QBarGain, true)
+	CSP_DEF("dlef_offset", m_Offset, true)
+	CSP_DEF("dlef_ground_deflection", m_GroundDeflection, true)
+CSP_XML_END
 
 
 void LeadingEdgeFlapControl::evaluate(Timer const &timer) {
@@ -77,7 +77,7 @@ void LeadingEdgeFlapControl::importChannels(Bus* bus) {
 
 class TrailingEdgeFlapControl: public ControlNode {
 public:
-	SIMDATA_DECLARE_OBJECT(TrailingEdgeFlapControl)
+	CSP_DECLARE_OBJECT(TrailingEdgeFlapControl)
 	TrailingEdgeFlapControl(): m_AirspeedFilter(2.0) { }
 	void importChannels(Bus* bus);
 private:
@@ -93,11 +93,11 @@ private:
 	double m_AirspeedDelta;
 };
 
-SIMDATA_XML_BEGIN(TrailingEdgeFlapControl)
-	SIMDATA_DEF("deflection_limit", m_DeflectionLimit, true)
-	SIMDATA_DEF("airspeed_break1", m_Airspeed1, true)
-	SIMDATA_DEF("airspeed_break2", m_Airspeed2, true)
-SIMDATA_XML_END
+CSP_XML_BEGIN(TrailingEdgeFlapControl)
+	CSP_DEF("deflection_limit", m_DeflectionLimit, true)
+	CSP_DEF("airspeed_break1", m_Airspeed1, true)
+	CSP_DEF("airspeed_break2", m_Airspeed2, true)
+CSP_XML_END
 
 
 void TrailingEdgeFlapControl::postCreate() {
@@ -137,7 +137,7 @@ void TrailingEdgeFlapControl::importChannels(Bus* bus) {
 
 class PitchLimiterControl: public ControlNode {
 public:
-	SIMDATA_DECLARE_OBJECT(PitchLimiterControl)
+	CSP_DECLARE_OBJECT(PitchLimiterControl)
 	PitchLimiterControl(): m_PitchRateDeltaFilter(0.0, 1.0, 1.0), m_GLimitFilter(4.0, 12.0, 3.0), m_RollRateFilter(0.67) { }
 	virtual void importChannels(Bus* bus);
 	virtual void link(MapID &map);
@@ -163,13 +163,13 @@ private:
 	LagFilter m_RollRateFilter;
 };
 
-SIMDATA_XML_BEGIN(PitchLimiterControl)
-	SIMDATA_DEF("filtered_g_command", m_FilteredGCommandID, true)
-	SIMDATA_DEF("filtered_alpha", m_FilteredAlphaID, true)
-	SIMDATA_DEF("alpha_break1", m_AlphaBreak1, true)
-	SIMDATA_DEF("alpha_break2", m_AlphaBreak2, true)
-	SIMDATA_DEF("pitch_rate_schedule", m_PitchRateSchedule, true)
-SIMDATA_XML_END
+CSP_XML_BEGIN(PitchLimiterControl)
+	CSP_DEF("filtered_g_command", m_FilteredGCommandID, true)
+	CSP_DEF("filtered_alpha", m_FilteredAlphaID, true)
+	CSP_DEF("alpha_break1", m_AlphaBreak1, true)
+	CSP_DEF("alpha_break2", m_AlphaBreak2, true)
+	CSP_DEF("pitch_rate_schedule", m_PitchRateSchedule, true)
+CSP_XML_END
 
 
 void PitchLimiterControl::evaluate(Timer const &timer) {
@@ -257,7 +257,7 @@ void PitchLimiterControl::link(MapID &map) {
 
 class RollLimiterControl: public ControlNode {
 public:
-	SIMDATA_DECLARE_OBJECT(RollLimiterControl)
+	CSP_DECLARE_OBJECT(RollLimiterControl)
 	RollLimiterControl(): m_RollCommandFilter(10.0), m_YawRateFilter(50.0) { }
 	virtual void importChannels(Bus* bus);
 private:
@@ -274,9 +274,9 @@ private:
 	LagFilter m_YawRateFilter;
 };
 
-SIMDATA_XML_BEGIN(RollLimiterControl)
-	SIMDATA_DEF("roll_command_schedule", m_RollCommandSchedule, true)
-SIMDATA_XML_END
+CSP_XML_BEGIN(RollLimiterControl)
+	CSP_DEF("roll_command_schedule", m_RollCommandSchedule, true)
+CSP_XML_END
 
 
 void RollLimiterControl::evaluate(Timer const &timer) {
@@ -328,7 +328,7 @@ void RollLimiterControl::importChannels(Bus* bus) {
 
 class YawLimiterControl: public ControlNode {
 public:
-	SIMDATA_DECLARE_OBJECT(YawLimiterControl)
+	CSP_DECLARE_OBJECT(YawLimiterControl)
 	YawLimiterControl(): m_YawRateFilter(50.0), m_CoupledFilter0(5.0, 15.0, 3.0), m_CoupledFilter1(0.0, 1.5, 1.0) { }
 	virtual void importChannels(Bus* bus);
 private:
@@ -343,8 +343,8 @@ private:
 	LeadLagFilter m_CoupledFilter1;
 };
 
-SIMDATA_XML_BEGIN(YawLimiterControl)
-SIMDATA_XML_END
+CSP_XML_BEGIN(YawLimiterControl)
+CSP_XML_END
 
 void YawLimiterControl::evaluate(Timer const &timer) {
 	// negative since yaw axis (and hence yaw rate) is opposite nasa 1979.

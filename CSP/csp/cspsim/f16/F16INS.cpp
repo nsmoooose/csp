@@ -34,7 +34,7 @@
 
 class F16INS: public System {
 public:
-	SIMDATA_DECLARE_OBJECT(F16INS)
+	CSP_DECLARE_OBJECT(F16INS)
 
 	F16INS(): m_ResponseTime(0.0) { }
 	virtual ~F16INS() { }
@@ -71,7 +71,7 @@ protected:
 };
 
 
-SIMDATA_XML_BEGIN(F16INS)
-	SIMDATA_DEF("ins_attitude_response_time", m_ResponseTime, false)
-SIMDATA_XML_END
+CSP_XML_BEGIN(F16INS)
+	CSP_DEF("ins_attitude_response_time", m_ResponseTime, false)
+CSP_XML_END
 

@@ -27,12 +27,14 @@
 #define __CSPSIM_STORESDEFINITION_H__
 
 
-#include <SimData/InterfaceRegistry.h>
+//#include <csp/csplib/data/InterfaceRegistry.h>
 #include <csp/csplib/data/Object.h>
 #include <csp/csplib/data/Link.h>
 
 #include <map>
 #include <string>
+
+CSP_NAMESPACE
 
 class HardpointData;
 
@@ -41,9 +43,9 @@ class HardpointData;
  *  are indexed by number (in order of definition) and canonical name (e.g., "HP5").
  *  Defines both internal and external hardpoints.
  */
-class StoresDefinition: public simdata::Object {
+class StoresDefinition: public Object {
 public:
-	SIMDATA_DECLARE_STATIC_OBJECT(StoresDefinition)
+	CSP_DECLARE_STATIC_OBJECT(StoresDefinition)
 
 	/** Get the total number of hardpoints (internal and external).
 	 */
@@ -65,11 +67,12 @@ protected:
 	void postCreate();
 
 private:
-	simdata::Link<HardpointData>::vector m_Hardpoints;
+	Link<HardpointData>::vector m_Hardpoints;
 	typedef std::map<std::string, unsigned> HardpointMap;
 	HardpointMap m_HardpointMap;
 };
 
+CSP_NAMESPACE_END
 
 #endif // __CSPSIM_STORESDEFINITION_H__
 

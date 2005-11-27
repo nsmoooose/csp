@@ -23,12 +23,13 @@
  **/
 
 
-#include "Theater/FeatureSceneModel.h"
-#include "Theater/LayoutTransform.h"
-#include "Theater/ElevationCorrection.h"
+#include <csp/cspsim/theater/FeatureSceneModel.h>
+#include <csp/cspsim/theater/LayoutTransform.h>
+#include <csp/cspsim/theater/ElevationCorrection.h>
 
 #include <osg/Quat>
 
+CSP_NAMESPACE
 
 FeatureSceneModel::FeatureSceneModel(LayoutTransform const &transform) {
 	setPosition(transform());
@@ -43,4 +44,6 @@ FeatureSceneModel::FeatureSceneModel(LayoutTransform const &transform, Elevation
 	q.makeRotate(transform.getAngle(), 0.0, 0.0, 1.0);
 	setAttitude(q);
 }
+
+CSP_NAMESPACE_END
 

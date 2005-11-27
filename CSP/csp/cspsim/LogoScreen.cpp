@@ -1,4 +1,4 @@
-// Combat Simulator Project - CSPSim
+// Combat Simulator Project
 // Copyright (C) 2002-2004 The Combat Simulator Project
 // http://csp.sourceforge.net
 //
@@ -23,13 +23,12 @@
  **/
 
 
-# if defined(_MSC_VER) && (_MSC_VER <= 1200)
-#pragma warning(disable : 4786)
-# endif
+#include <csp/cspsim/LogoScreen.h>
+#include <csp/cspsim/Config.h>
+#include <csp/cspsim/Exception.h>
 
-#include "LogoScreen.h"
-
-#include <ctime>
+#include <csp/csplib/util/Exception.h>
+#include <csp/csplib/util/FileUtility.h>
 
 #include <osg/Geode>
 #include <osg/Geometry>
@@ -39,10 +38,9 @@
 #include <osgDB/ReadFile>
 #include <osgUtil/SceneView>
 
-#include <csp/csplib/util/FileUtility.h>
+#include <ctime>
 
-#include "Config.h"
-#include "Exception.h"
+CSP_NAMESPACE
 
 //extern OpenThreads::Barrier bar;
 
@@ -88,12 +86,12 @@ public:
 		std::string image_path = getDataPath("ImagePath");
 		StrVec::const_iterator iEnd = file_name.end();
 		for (StrVec::const_iterator i = file_name.begin();i!=iEnd;++i) {
-			std::string path = simdata::ospath::join(image_path, *i);
+			std::string path = ospath::join(image_path, *i);
 			osg::ref_ptr<osg::Image> image = osgDB::readImageFile(path);
 			if (!image.valid()) {
 				std::string err = "Unable to load bitmap " + path;
 				std::cerr << err << std::endl;
-				throw csp::DataError(err);
+				throw DataError(err);
 			}
 			else
 				m_ImageList.push_back(image);
@@ -220,7 +218,7 @@ void LogoScreen::onInit() {
 }
 
 void LogoScreen::onExit() {
-}	
+}
 
 void LogoScreen::onRender() {
 	m_LogoView->cull();
@@ -253,37 +251,6 @@ void LogoScreen::run() {
 void LogoScreen::stop() {
 	//setDone(true);
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 /*
@@ -354,4 +321,6 @@ void LogoScreen::onRender()
 	glDrawPixels(m_image->w, m_image->h, GL_RGB, GL_UNSIGNED_BYTE, m_image->pixels);
 }
 */
+
+CSP_NAMESPACE_END
 

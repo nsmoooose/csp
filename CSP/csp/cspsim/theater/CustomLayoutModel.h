@@ -22,15 +22,13 @@
  *
  **/
 
-
 #ifndef __CSPSIM_THEATER_CUSTOMLAYOUTMODEL_H__
 #define __CSPSIM_THEATER_CUSTOMLAYOUTMODEL_H__
 
-
-#include <Theater/FeatureGroupModel.h>
-
+#include <csp/cspsim/theater/FeatureGroupModel.h>
 #include <csp/csplib/data/Link.h>
 
+CSP_NAMESPACE
 
 class FeatureLayout;
 
@@ -44,11 +42,11 @@ class FeatureLayout;
  */
 class CustomLayoutModel: public FeatureGroupModel {
 protected:
-	simdata::Link<FeatureLayout>::vector m_FeatureLayout;
+	Link<FeatureLayout>::vector m_FeatureLayout;
 	mutable int m_FeatureCount;
 
 public:
-	SIMDATA_DECLARE_STATIC_OBJECT(CustomLayoutModel)
+	CSP_DECLARE_STATIC_OBJECT(CustomLayoutModel)
 
 	/**
 	 * Return the total number of features below this group.
@@ -71,6 +69,7 @@ public:
 
 };
 
+CSP_NAMESPACE_END
 
 #endif // __CSPSIM_THEATER_CUSTOMLAYOUTMODEL_H__
 

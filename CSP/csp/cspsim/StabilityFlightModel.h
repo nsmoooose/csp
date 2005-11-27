@@ -27,8 +27,10 @@
 #define __CSPSIM_STABILITYFLIGHTMODEL_H__
 
 
-#include <FlightModel.h>
+#include <csp/cspsim/FlightModel.h>
 #include <csp/csplib/data/LUT.h>
+
+CSP_NAMESPACE
 
 /**
  * StabilityFlightModel implements an  aircraft flight model based on stability
@@ -36,18 +38,18 @@
  */
 class StabilityFlightModel: public FlightModel {
 public:
-	SIMDATA_DECLARE_OBJECT(StabilityFlightModel)
+	CSP_DECLARE_OBJECT(StabilityFlightModel)
 
 	StabilityFlightModel();
 
-	virtual void calculateForceAndMoment(simdata::Vector3 &force, simdata::Vector3 &moment);
+	virtual void calculateForceAndMoment(Vector3 &force, Vector3 &moment);
 
 protected:
 	virtual void convertXML();
 
-	simdata::Vector3 calculateLiftVector();
-	simdata::Vector3 calculateDragVector();
-	simdata::Vector3 calculateSideVector();
+	Vector3 calculateLiftVector();
+	Vector3 calculateDragVector();
+	Vector3 calculateSideVector();
 
 	double calculateRollMoment() const;
 	double calculatePitchMoment() const;
@@ -57,13 +59,13 @@ protected:
 
 	double m_stallAOA;  // stall angle of attack
 
-	simdata::Table2 m_CD_m_a;  // CD_m_a is the drag coefficient as a function of mach and alpha
+	Table2 m_CD_m_a;  // CD_m_a is the drag coefficient as a function of mach and alpha
 	double m_CD_de;   // CD_de is the drag due to elevator
 	double m_CD_db;   // CD_db is the drag due to the airbrake(s)
 	double m_CD_i;    // induced drag coefficient 1 / (e * PI * lambda)
 	                  // where e = Osswald coeff and lambda = span^2 / area
 
-	simdata::Table2 m_CL_m_a;  // CL_m_a is the lift coefficient as a function of mach and alpha
+	Table2 m_CL_m_a;  // CL_m_a is the lift coefficient as a function of mach and alpha
 	double m_CL_adot;
 	double m_CL_q;
 	double m_CL_de;   // CL_de is the lift due to elevator
@@ -98,6 +100,7 @@ protected:
 	double m_CY;
 };
 
+CSP_NAMESPACE_END
 
 #endif  // __STABILITYFLIGHTMODEL_H__
 

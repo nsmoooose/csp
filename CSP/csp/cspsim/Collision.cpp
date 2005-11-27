@@ -1,4 +1,4 @@
-// Combat Simulator Project - FlightSim Demo
+// Combat Simulator Project
 // Copyright (C) 2002 The Combat Simulator Project
 // http://csp.sourceforge.net
 //
@@ -35,8 +35,8 @@
 using bus::Kinetics;
 
 
-SIMDATA_XML_BEGIN(GroundCollisionDynamics)
-SIMDATA_XML_END
+CSP_XML_BEGIN(GroundCollisionDynamics)
+CSP_XML_END
 
 
 GroundCollisionDynamics::GroundCollisionDynamics():

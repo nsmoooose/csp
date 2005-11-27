@@ -26,12 +26,10 @@
 #ifndef __CSPSIM_THEATER_FEATUREQUAD_H__
 #define __CSPSIM_THEATER_FEATUREQUAD_H__
 
-
 #include <csp/csplib/util/Ref.h>
 #include <csp/csplib/data/Path.h>
 #include <csp/csplib/data/Object.h>
 #include <csp/csplib/data/Vector3.h>
-#include <SimData/External.h>
 
 #include <osg/ref_ptr>
 
@@ -40,14 +38,15 @@ namespace osg {
 	class StateSet;
 }
 
+CSP_NAMESPACE
 
 /**
  * class FeatureQuad (STATIC)
  *
  * A texture painted on a single quad.
  */
-class FeatureQuad: public simdata::Object {
-	simdata::External m_Texture;
+class FeatureQuad: public Object {
+	std::string m_Texture;
 	float m_Width, m_Height;
 	float m_OffsetX, m_OffsetY;
 	bool m_Lighting;
@@ -58,7 +57,7 @@ class FeatureQuad: public simdata::Object {
 	osg::StateSet* makeStateSet() const;
 
 public:
-	SIMDATA_DECLARE_STATIC_OBJECT(FeatureQuad)
+	CSP_DECLARE_STATIC_OBJECT(FeatureQuad)
 
 	FeatureQuad();
 	virtual ~FeatureQuad();
@@ -74,7 +73,7 @@ public:
 
 };
 
-
+CSP_NAMESPACE_END
 
 #endif // __CSPSIM_THEATER_FEATUREQUAD_H__
 

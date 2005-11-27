@@ -29,11 +29,11 @@
 #define __CSPSIM_STORES_H__
 
 
-#include <ObjectModel.h>
-#include <Stores/StoresDynamics.h>
+#include <csp/cspsim/stores/StoresDynamics.h>
 
-#include <SimData/InterfaceRegistry.h>
+//#include <csp/csplib/data/InterfaceRegistry.h>
 #include <csp/csplib/data/Key.h>
+#include <csp/csplib/data/Link.h>
 #include <csp/csplib/data/Matrix3.h>
 #include <csp/csplib/data/Object.h>
 #include <csp/csplib/util/osg.h>
@@ -49,10 +49,12 @@
 #include <vector>
 #include <iostream>
 
+CSP_NAMESPACE
 
 class StoreData;
 class StoresManagementSystem;
 class DynamicObject;
+class ObjectModel;
 
 class FuelTankData;
 class RackData;
@@ -68,16 +70,16 @@ class Hardpoint;
 
 #ifndef __CSP_STORESET__
 #define __CSP_STORESET__
-typedef std::set<simdata::Key> StoreSet;
+typedef std::set<Key> StoreSet;
 #endif // __CSP_STORESET__
 
 inline StoreSet operator&(StoreSet const &a, StoreSet const &b) {
-	std::vector<simdata::Key> output(std::min(a.size(), b.size()));
+	std::vector<Key> output(std::min(a.size(), b.size()));
 	return StoreSet(output.begin(), std::set_intersection(a.begin(), a.end(), b.begin(), b.end(), output.begin()));
 }
 
 inline StoreSet operator|(StoreSet const &a, StoreSet const &b) {
-	std::vector<simdata::Key> output(a.size() + b.size());
+	std::vector<Key> output(a.size() + b.size());
 	return StoreSet(output.begin(), std::set_union(a.begin(), a.end(), b.begin(), b.end(), output.begin()));
 }
 
@@ -190,10 +192,10 @@ inline std::ostream &operator<<(std::ostream &os, StoreIndex const &index) {
  * Store subclasses have associated StoreData subclasses that act as factories
  * for store instances and provide static data via an XML interface.
  */
-class Store: public simdata::Referenced {
+class Store: public Referenced {
 friend class Hardpoint;
 public:
-	typedef simdata::Ref<Store> Ref;
+	typedef Ref<Store> RefT;
 
 	/** Cast to a rack class, returning NULL on failure.
 	 */
@@ -227,7 +229,7 @@ public:
 
 	/** Return the unique id associated with this store type (i.e., data()->key()).
 	 */
-	inline simdata::Key key() const;
+	inline Key key() const;
 
 	/** Get the canonical name for this store.
 	 */
@@ -237,7 +239,7 @@ public:
 	 *  The offset and attitude parameters specify the geometry of the store in body coordinates.
 	 *  If no_drag is true, drag characteristics will not be added to dynamics.
 	 */
-	virtual void sumDynamics(StoresDynamics &dynamics, simdata::Vector3 const &offset, simdata::Quat const &attitude, bool no_drag) const;
+	virtual void sumDynamics(StoresDynamics &dynamics, Vector3 const &offset, Quat const &attitude, bool no_drag) const;
 
 	StoreIndex const &index() const { return m_Index; }
 
@@ -249,8 +251,8 @@ public:
 	osg::Group *getParentGroup() { return m_ParentGroup.get(); }
 
 	virtual double mass() const;
-	virtual simdata::Matrix3 const &unitInertia() const;
-	virtual simdata::Vector3 const &cgOffset() const;
+	virtual Matrix3 const &unitInertia() const;
+	virtual Vector3 const &cgOffset() const;
 
 protected:
 	// For use by Rack only.
@@ -269,13 +271,13 @@ private:
 /** A class for defining compatible combinations of hardpoints, pylons, racks,
  *  and stores through an XML interface.
  */
-class StoreCompatibilityTable: public simdata::Object {
+class StoreCompatibilityTable: public Object {
 public:
-	SIMDATA_DECLARE_STATIC_OBJECT(StoreCompatibilityTable)
+	CSP_DECLARE_STATIC_OBJECT(StoreCompatibilityTable)
 
 	/** Test if a particular store type is compatible (see Store::key()).
 	 */
-	bool isCompatible(simdata::Key const &key) const { return m_Stores.count(key) > 0; }
+	bool isCompatible(Key const &key) const { return m_Stores.count(key) > 0; }
 
 	/** Get the full set of compatible store types.
 	 */
@@ -287,13 +289,13 @@ public:
 
 protected:
 	virtual void postCreate() {
-		simdata::Object::postCreate();
+		Object::postCreate();
 		m_Stores.insert(m_StoreVector.begin(), m_StoreVector.end());
 		m_StoreVector.clear();
 	}
 
 private:
-	std::vector<simdata::Key> m_StoreVector;
+	std::vector<Key> m_StoreVector;
 	StoreSet m_Stores;
 };
 
@@ -303,9 +305,9 @@ private:
  * Subclassed for various major stores categories.  Each subclass defines a specialized
  * xml interface and acts as a factory for the corresponding Store subclass.
  */
-class StoreData: public simdata::Object {
+class StoreData: public Object {
 public:
-	SIMDATA_DECLARE_ABSTRACT_OBJECT(StoreData)
+	CSP_DECLARE_ABSTRACT_OBJECT(StoreData)
 
 	// Type currently isn't used and it remains to be seen if this is a useful
 	// concept and/or implementation.
@@ -315,7 +317,8 @@ public:
 		MISSILE
 	} Type;
 
-	StoreData(Type type): m_Type(type) { }
+	StoreData(Type type);
+	virtual ~StoreData();
 
 	Type type() const { return m_Type; }
 
@@ -332,7 +335,7 @@ public:
 	 *  the total mass (empty mass plus expendible mass) gives the full inertia
 	 *  tensor.
 	 */
-	simdata::Matrix3 const &unitInertia() const { return m_UnitInertia; }
+	Matrix3 const &unitInertia() const { return m_UnitInertia; }
 
 	/** Get the drag factor which is used to scale the drag profile defined in
 	 *  StoresDynamics.
@@ -349,15 +352,15 @@ public:
 	 */
 	std::string const &id() const  { return m_Id; }
 
-	/** Get a precomputed simdata::Key representation of id().
+	/** Get a precomputed Key representation of id().
 	 */
-	simdata::Key const &key() const  { return m_Key; }
+	Key const &key() const  { return m_Key; }
 
 	/** Get the nominal center of mass offset of this store, relative to the mount point.
 	 *  Note that the mount point is also the origin of the 3D model.  The center of mass
 	 *  position is currently independent of expendible contents.
 	 */
-	simdata::Vector3 const &cgOffset() const { return m_CgOffset; }
+	Vector3 const &cgOffset() const { return m_CgOffset; }
 
 	/** Attempt to convert this StoreData instance to a specialized subclass.
 	 *  Returns NULL on failure.
@@ -376,38 +379,30 @@ public:
 	/** Realize the 3D model for this store.  Returns a shared model node, or NULL
 	 *  if no model is defined.
 	 */
-	osg::Node *makeModel() const {
-		std::cout << "storedata::makemodel\n";
-		// FIXME should/can ObjectModel provide const access to the base model?
-		ObjectModel *model = const_cast<ObjectModel*>(m_Model.get());
-		std::cout << "model=" << model << "\n";
-		return !model ? 0 : model->getModel().get();
-	}
+	osg::Node *makeModel() const;
 
-	simdata::Ref<ObjectModel> getModel() const {
-		return m_Model;
-	}
+	Ref<ObjectModel> getModel() const;
 
 	/** Add the dynamical properties of this store type to a StoresDynamics instance.  The offset
 	 *  and attitude parameters give the position of the store in body coordinates, while extra_mass
 	 *  specified the expendible mass (in excess of mass()).  If no_drag is true, drag forces will
 	 *  not be counted.
 	 */
-	void sumDynamics(StoresDynamics &dynamics, simdata::Vector3 const &offset, simdata::Quat const &attitude, double extra_mass=0, bool no_drag=false) const {
+	void sumDynamics(StoresDynamics &dynamics, Vector3 const &offset, Quat const &attitude, double extra_mass=0, bool no_drag=false) const {
 		const double mass = m_Mass + extra_mass;
-		const simdata::Vector3 cg = attitude.rotate(m_CgOffset) + offset;  // center of gravity in body coordinates
-		const simdata::Matrix3 i = attitude.getMatrix3() * m_UnitInertia;
+		const Vector3 cg = attitude.rotate(m_CgOffset) + offset;  // center of gravity in body coordinates
+		const Matrix3 i = attitude.getMatrix3() * m_UnitInertia;
 		dynamics.addMassAndInertia(mass, i, cg);
 		if (!no_drag) {
 			dynamics.addDrag(m_DragFactor, cg);  // should be front of store, but cg is probably close enough
 		}
 	}
 
-	virtual simdata::Ref<DynamicObject> createObject() const;
+	virtual Ref<DynamicObject> createObject() const;
 
 protected:
 	virtual void postCreate() {
-		simdata::Object::postCreate();
+		Object::postCreate();
 		m_Key = m_Id;
 	}
 
@@ -415,16 +410,16 @@ private:
 	const Type m_Type;
 	std::string m_Name;
 	std::string m_Id;
-	simdata::Key m_Key;
+	Key m_Key;
 	double m_Mass;
-	simdata::Matrix3 m_UnitInertia;
-	simdata::Vector3 m_CgOffset;
+	Matrix3 m_UnitInertia;
+	Vector3 m_CgOffset;
 	double m_DragFactor;
-	simdata::Link<ObjectModel> m_Model;
-	simdata::Path m_Object;
+	Link<ObjectModel> m_Model;
+	Path m_Object;
 };
 
-inline simdata::Key Store::key() const { return data()->key(); }
+inline Key Store::key() const { return data()->key(); }
 inline std::string const &Store::name() const { return data()->name(); }
 
 
@@ -433,21 +428,21 @@ inline std::string const &Store::name() const { return data()->name(); }
  *  and orientation relative to the rack.  RackMount also defines a set
  *  of compatible stores.
  */
-class RackMount: public simdata::Object {
+class RackMount: public Object {
 public:
-	SIMDATA_DECLARE_STATIC_OBJECT(RackMount)
+	CSP_DECLARE_STATIC_OBJECT(RackMount)
 
-	RackMount(): m_Attitude(simdata::Quat::IDENTITY), m_Fixed(false) { }
+	RackMount(): m_Attitude(Quat::IDENTITY), m_Fixed(false) { }
 
 	// XXX simdata should not zero m_Attitude when the xml tag is not set.
 	// temporary (hacked) fix for testing purposes.  UPDATE: actually,
 	// simdata doesn't zero m_Altitude.  it saved the old default value
 	// in the .dar file, and doesn't realize that the default has changed.
-	virtual void postCreate() { if (m_Attitude == simdata::Quat::ZERO) m_Attitude = simdata::Quat::IDENTITY; }
+	virtual void postCreate() { if (m_Attitude == Quat::ZERO) m_Attitude = Quat::IDENTITY; }
 
 	/** Test if a given store is compatible with this mount point.
 	 */
-	bool isCompatible(simdata::Key const &store_key) const { return !m_Compatibility ? false : m_Compatibility->isCompatible(store_key); }
+	bool isCompatible(Key const &store_key) const { return !m_Compatibility ? false : m_Compatibility->isCompatible(store_key); }
 
 	/** Add the specified stores to the list of compatible stores.
 	 */
@@ -455,13 +450,13 @@ public:
 
 	/** Get the offset of this mount point relative to the parent rack.
 	 */
-	simdata::Vector3 const &offset() const { return m_Offset; }
+	Vector3 const &offset() const { return m_Offset; }
 
 	/** Get the orientation of this mount point relative to the parent rack.
 	 */
-	simdata::Quat const &attitude() const { return m_Attitude; }
+	Quat const &attitude() const { return m_Attitude; }
 
-	void applyGeometry(simdata::Vector3 &offset, simdata::Quat &attitude) const {
+	void applyGeometry(Vector3 &offset, Quat &attitude) const {
 		std::cout << "@^ " << attitude << " " << m_Attitude << "\n";
 		offset = offset + attitude.rotate(m_Offset);
 		attitude = attitude * m_Attitude;
@@ -473,18 +468,18 @@ public:
 
 	/** Initial velocity to impart to store when released.
 	 */
-	simdata::Vector3 const &ejectVelocity() const { return m_EjectVelocity; }
+	Vector3 const &ejectVelocity() const { return m_EjectVelocity; }
 
 	/** Initial angular velocity to impart to store when released.
 	 */
-	simdata::Vector3 const &ejectAngularVelocity() const { return m_EjectAngularVelocity; }
+	Vector3 const &ejectAngularVelocity() const { return m_EjectAngularVelocity; }
 
 private:
-	simdata::Vector3 m_Offset;
-	simdata::Quat m_Attitude;
-	simdata::Link<StoreCompatibilityTable> m_Compatibility;
-	simdata::Vector3 m_EjectVelocity;
-	simdata::Vector3 m_EjectAngularVelocity;
+	Vector3 m_Offset;
+	Quat m_Attitude;
+	Link<StoreCompatibilityTable> m_Compatibility;
+	Vector3 m_EjectVelocity;
+	Vector3 m_EjectAngularVelocity;
 	bool m_Fixed;
 };
 
@@ -494,7 +489,7 @@ private:
  */
 class RackData: public StoreData {
 public:
-	SIMDATA_DECLARE_STATIC_OBJECT(RackData)
+	CSP_DECLARE_STATIC_OBJECT(RackData)
 
 	RackData(): StoreData(RACK) { }
 
@@ -509,7 +504,7 @@ public:
 	/** Get the number of mount points for this rack type that are compatible with
 	 *  the specified store.
 	 */
-	unsigned capacity(simdata::Key const &store_key) const {
+	unsigned capacity(Key const &store_key) const {
 		if (m_DefaultCompatibility.valid() && m_DefaultCompatibility->isCompatible(store_key)) return capacity();
 		unsigned count = 0;
 		for (unsigned idx = 0; idx < m_Mounts.size(); ++idx) {
@@ -518,7 +513,7 @@ public:
 		return count;
 	}
 
-	bool isDefaultCompatible(simdata::Key const &store_key) const {
+	bool isDefaultCompatible(Key const &store_key) const {
 		return m_DefaultCompatibility.valid() && m_DefaultCompatibility->isCompatible(store_key);
 	}
 
@@ -528,9 +523,9 @@ public:
 
 	/** Test if a particular store can be mounted on this rack.
 	 */
-	bool isCompatible(simdata::Key const &store_key) const { return capacity(store_key) > 0; }
+	bool isCompatible(Key const &store_key) const { return capacity(store_key) > 0; }
 
-	bool isCompatible(unsigned idx, simdata::Key const &key) const {
+	bool isCompatible(unsigned idx, Key const &key) const {
 		assert(idx < m_Mounts.size());
 		return isDefaultCompatible(key) || m_Mounts[idx]->isCompatible(key);
 	}
@@ -548,8 +543,8 @@ public:
 	virtual RackData const *asRackData() const { return this; }
 
 private:
-	simdata::Link<RackMount>::vector m_Mounts;
-	simdata::Link<StoreCompatibilityTable> m_DefaultCompatibility;
+	Link<RackMount>::vector m_Mounts;
+	Link<StoreCompatibilityTable> m_DefaultCompatibility;
 };
 
 
@@ -559,7 +554,7 @@ friend class Hardpoint;
 friend class StoresManagementSystem;
 
 public:
-	typedef simdata::Ref<Rack> Ref;
+	typedef Ref<Rack> RefT;
 
 	virtual ~Rack() { delete[] m_Children; }
 
@@ -582,7 +577,7 @@ public:
 
 	RackMount const *mount(unsigned i) { return m_Data->mount(i); }
 
-	unsigned availableSpace(simdata::Key const &store_key) const {
+	unsigned availableSpace(Key const &store_key) const {
 		const bool default_compatible = m_Data->isDefaultCompatible(store_key);
 		unsigned count = 0;
 		for (unsigned idx = 0; idx < getNumChildren(); ++idx) {
@@ -596,7 +591,7 @@ public:
 		return m_Children[idx].get();
 	}
 
-	bool getChildren(std::vector<Store::Ref> &children, bool recurse=false) const {
+	bool getChildren(std::vector<Store::RefT> &children, bool recurse=false) const {
 		bool any = false;
 		for (unsigned i = 0; i < getNumChildren(); ++i) {
 			if (m_Children[i].valid()) {
@@ -608,19 +603,19 @@ public:
 		return any;
 	}
 
-	bool isAvailable(unsigned idx, simdata::Key const &key) const {
+	bool isAvailable(unsigned idx, Key const &key) const {
 		assert(idx < getNumChildren());
 		return (!m_Children[idx] && m_Data->isCompatible(idx, key));
 	}
 
-	virtual void sumDynamics(StoresDynamics &dynamics, simdata::Vector3 const &offset, simdata::Quat const &attitude, bool no_drag) const;
+	virtual void sumDynamics(StoresDynamics &dynamics, Vector3 const &offset, Quat const &attitude, bool no_drag) const;
 
 	virtual void addModel(osg::Group *group) const;
 
 private:
 	Rack(RackData const *data): m_Data(data), m_Children(0) {
 		assert(data);
-		m_Children = new Store::Ref[data->capacity()];
+		m_Children = new Store::RefT[data->capacity()];
 	}
 
 	bool setChild(StoreIndex const &idx, Store *store) {
@@ -653,8 +648,8 @@ private:
 		m_Children[idx] = store;
 	}
 
-	simdata::Ref<const RackData> m_Data;
-	Store::Ref *m_Children;
+	Ref<const RackData> m_Data;
+	Store::RefT *m_Children;
 };
 
 
@@ -665,7 +660,7 @@ class FuelTankData: public StoreData {
 	//  JP-5:  827 kg/m^3 = 0.827 kg/l at STP.
 	//  JP-8:  800 kg/m^3 = 0.800 kg/l at STP.
 public:
-	SIMDATA_DECLARE_STATIC_OBJECT(FuelTankData)
+	CSP_DECLARE_STATIC_OBJECT(FuelTankData)
 
 	FuelTankData(): StoreData(FUELTANK), m_Capacity(0.0) { }
 
@@ -714,7 +709,7 @@ public:
 	 *  clamped at the rated capacity of the tank.
 	 */
 	void setQuantity(double quantity) {
-		m_Quantity = simdata::clampTo(quantity, 0.0, capacity());
+		m_Quantity = clampTo(quantity, 0.0, capacity());
 	}
 
 	/** Get the static data for this fuel tank.
@@ -723,7 +718,7 @@ public:
 
 	/** Add dynamic properties of the fuel tank (mass, inertia, drag) to a StoresDynamics instance.
 	 */
-	virtual void sumDynamics(StoresDynamics &dynamics, simdata::Vector3 const &offset, simdata::Quat const &attitude, bool no_drag) const {
+	virtual void sumDynamics(StoresDynamics &dynamics, Vector3 const &offset, Quat const &attitude, bool no_drag) const {
 		m_Data->sumDynamics(dynamics, offset, attitude, quantity() * m_Data->fuelDensity(), no_drag);
 	}
 
@@ -731,7 +726,7 @@ private:
 	explicit FuelTank(FuelTankData const *data): m_Quantity(data->capacity()), m_Data(data) { assert(data); }
 	virtual ~FuelTank() { }
 	double m_Quantity;  // l
-	simdata::Ref<const FuelTankData> m_Data;
+	Ref<const FuelTankData> m_Data;
 };
 
 
@@ -739,7 +734,7 @@ private:
  */
 class MissileData: public StoreData {
 public:
-	SIMDATA_DECLARE_STATIC_OBJECT(MissileData)
+	CSP_DECLARE_STATIC_OBJECT(MissileData)
 
 	MissileData(): StoreData(MISSILE) { }
 
@@ -763,59 +758,59 @@ public:
 
 private:
 	explicit Missile(MissileData const *data): m_Data(data) { assert(data); }
-	simdata::Ref<const MissileData> m_Data;
+	Ref<const MissileData> m_Data;
 };
 
 
 /** Data for a vehicle hardpoint.
  */
-class HardpointData: public simdata::Object {
+class HardpointData: public Object {
 public:
-	SIMDATA_DECLARE_STATIC_OBJECT(HardpointData)
+	CSP_DECLARE_STATIC_OBJECT(HardpointData)
 
-	HardpointData(): m_External(true), m_Attitude(simdata::Quat::IDENTITY) { }
+	HardpointData(): m_External(true), m_Attitude(Quat::IDENTITY) { }
 
 	// XXX simdata should not zero m_Attitude when the xml tag is not set.  temporary (hacked) fix for testing purposes.
-	virtual void postCreate() { if (m_Attitude == simdata::Quat::ZERO) m_Attitude = simdata::Quat::IDENTITY; }
+	virtual void postCreate() { if (m_Attitude == Quat::ZERO) m_Attitude = Quat::IDENTITY; }
 
 	virtual Hardpoint *createHardpoint(unsigned index) const;
 	std::string const &name() const { return m_Name; }
-	simdata::Vector3 const &offset() const { return m_Offset; }
-	simdata::Quat const &attitude() const { return m_Attitude; }
+	Vector3 const &offset() const { return m_Offset; }
+	Quat const &attitude() const { return m_Attitude; }
 	bool isExternal() const { return m_External; }
 	bool hasFixedStore() const { return m_FixedStore.valid(); }
 	Store *createFixedStore() const { return !m_FixedStore ? 0 : m_FixedStore->createStore(); }
 
-	bool isCompatible(simdata::Key const &key) const { return !m_FixedStore && (!m_Compatibility || m_Compatibility->isCompatible(key)); }
+	bool isCompatible(Key const &key) const { return !m_FixedStore && (!m_Compatibility || m_Compatibility->isCompatible(key)); }
 	void getCompatibleStores(StoreSet &stores) const {
 		stores.clear();
 		m_Compatibility->mergeStoreSet(stores);
 	}
 
-	bool isMountCompatible(simdata::Key const &key) const { return !m_FixedStore && (!m_MountCompatibility || m_MountCompatibility->isCompatible(key)); }
+	bool isMountCompatible(Key const &key) const { return !m_FixedStore && (!m_MountCompatibility || m_MountCompatibility->isCompatible(key)); }
 	void getMountCompatibleStores(StoreSet &stores) const {
 		stores.clear();
 		m_MountCompatibility->mergeStoreSet(stores);
 	}
 
-	std::vector<simdata::Key> const &preferredRacks() const { return m_RackPreference; }
+	std::vector<Key> const &preferredRacks() const { return m_RackPreference; }
 
 private:
 	std::string m_Name;
 	bool m_External;
-	simdata::Link<StoreCompatibilityTable> m_Compatibility;
-	simdata::Link<StoreCompatibilityTable> m_MountCompatibility;
-	std::vector<simdata::Key> m_RackPreference;
-	simdata::Vector3 m_Offset;
-	simdata::Quat m_Attitude;
-	simdata::Link<StoreData> m_FixedStore;
+	Link<StoreCompatibilityTable> m_Compatibility;
+	Link<StoreCompatibilityTable> m_MountCompatibility;
+	std::vector<Key> m_RackPreference;
+	Vector3 m_Offset;
+	Quat m_Attitude;
+	Link<StoreData> m_FixedStore;
 };
 
 
-class Hardpoint: public simdata::Referenced {
+class Hardpoint: public Referenced {
 friend class StoresManagementSystem;
 public:
-	typedef simdata::Ref<Hardpoint> Ref;
+	typedef Ref<Hardpoint> RefT;
 
 	Hardpoint(HardpointData const *data, unsigned index): m_Data(data), m_Fixed(false), m_Index(index) {
 		assert(data);
@@ -832,21 +827,20 @@ public:
 	std::string const &name() const { return m_Data->name(); }
 	void getCompatibleStores(StoreSet &stores) const { m_Data->getCompatibleStores(stores); }
 
-
 	bool mountStore(Store *store) {
-		CSP_LOG(OBJECT, INFO, "mounting store");
+		CSPLOG(INFO, OBJECT) << "mounting store";
 		assert(store);
-		CSP_LOG(OBJECT, INFO, "mounting store " << store->name());
+		CSPLOG(INFO, OBJECT) << "mounting store " << store->name();
 		assert(m_Data.valid());
 		if (!m_Data->isMountCompatible(store->key())) {
-			CSP_LOG(OBJECT, INFO, "could not mount incompatible store " << store->name() << " on hardpoint " << name());
+			CSPLOG(INFO, OBJECT) << "could not mount incompatible store " << store->name() << " on hardpoint " << name();
 			return false;
 		}
 		if (m_Store.valid()) {
-			CSP_LOG(OBJECT, INFO, "could not mount store " << store->name() << "; hardpoint " << name() << " already has a mounted store");
+			CSPLOG(INFO, OBJECT) << "could not mount store " << store->name() << "; hardpoint " << name() << " already has a mounted store";
 			return false;
 		}
-		CSP_LOG(OBJECT, INFO, "mounting " << store->name() << " on hardpoint " << name());
+		CSPLOG(INFO, OBJECT) << "mounting " << store->name() << " on hardpoint " << name();
 		store->m_Index = StoreIndex::Hardpoint(m_Index);  // FIXME kludge
 		m_Store = store;
 		return true;
@@ -855,7 +849,7 @@ public:
 	Store *getStore() { return m_Store.get(); }
 	Store *getStore(StoreIndex const &index) { return !m_Store ? 0 : m_Store->findStore(index); }
 
-	bool removeStore(StoreIndex const &idx, Store::Ref &store, simdata::Vector3 &offset, simdata::Quat &attitude, simdata::Vector3 &velocity, simdata::Vector3 &angular_velocity) {
+	bool removeStore(StoreIndex const &idx, Store::RefT &store, Vector3 &offset, Quat &attitude, Vector3 &velocity, Vector3 &angular_velocity) {
 		if (!m_Store) return false;
 		StoreIndex hpindex = StoreIndex::Hardpoint(m_Index);
 		offset = m_Data->offset();
@@ -888,8 +882,8 @@ public:
 		assert(group);
 		if (!m_Store) return;
 		osg::PositionAttitudeTransform *hp = new osg::PositionAttitudeTransform;
-		hp->setPosition(simdata::toOSG(m_Data->offset()));
-		hp->setAttitude(simdata::toOSG(m_Data->attitude()));
+		hp->setPosition(toOSG(m_Data->offset()));
+		hp->setAttitude(toOSG(m_Data->attitude()));
 		m_Store->addModel(hp);
 		group->addChild(hp);
 	}
@@ -901,13 +895,14 @@ public:
 	}
 
 private:
-	simdata::Ref<const HardpointData> m_Data;
-	simdata::Ref<Store> m_Store;
+	Ref<const HardpointData> m_Data;
+	Ref<Store> m_Store;
 
 	bool m_Fixed;
 	unsigned m_Index;
 };
 
+CSP_NAMESPACE_END
 
 #endif // __CSPSIM_STORES_H__
 

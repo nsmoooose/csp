@@ -23,29 +23,32 @@
  **/
 
 
-#include <Stores/Projectile.h>
-#include <Stores/StoresManagementSystem.h>
-#include <Stores/Stores.h>
-#include <Stores/StoresDatabase.h>
-#include <Stores/StoresDefinition.h>
-#include <Stores/StoresDynamics.h>
-#include <CSPSim.h>  // XXX
-#include <SystemsModel.h>  // XXX
-#include <SimCore/Battlefield/LocalBattlefield.h>
-#include <DynamicModel.h>
-#include <DynamicObject.h>
+#include <csp/cspsim/stores/StoresManagementSystem.h>
+#include <csp/cspsim/stores/Projectile.h>
+#include <csp/cspsim/stores/Stores.h>
+#include <csp/cspsim/stores/StoresDatabase.h>
+#include <csp/cspsim/stores/StoresDefinition.h>
+#include <csp/cspsim/stores/StoresDynamics.h>
+#include <csp/cspsim/CSPSim.h>  // XXX
+#include <csp/cspsim/SystemsModel.h>  // XXX
+#include <csp/cspsim/battlefield/LocalBattlefield.h>
+#include <csp/cspsim/DynamicModel.h>
+#include <csp/cspsim/DynamicObject.h>
+
 #include <csp/csplib/data/DataArchive.h>
 #include <csp/csplib/data/DataManager.h>
 #include <csp/csplib/data/ObjectInterface.h>
 #include <csp/csplib/util/Timing.h>
+
 #include <sigc++/functors/mem_fun.h>
 #include <osg/Group>
 #include <cassert>
 
+CSP_NAMESPACE
 
-SIMDATA_XML_BEGIN(StoresManagementSystem)
-	SIMDATA_DEF("stores_definition", m_StoresDefinition, true)
-SIMDATA_XML_END
+CSP_XML_BEGIN(StoresManagementSystem)
+	CSP_DEF("stores_definition", m_StoresDefinition, true)
+CSP_XML_END
 
 
 StoresManagementSystem::StoresManagementSystem(): m_DirtyDynamics(true) { }
@@ -55,7 +58,7 @@ StoresManagementSystem::~StoresManagementSystem() { }
 void StoresManagementSystem::registerChannels(Bus*) {}
 
 void StoresManagementSystem::importChannels(Bus* bus) {
-	DataChannel<DynamicModel*>::CRef channel = bus->getChannel("DynamicModel");
+	DataChannel<DynamicModel*>::CRefT channel = bus->getChannel("DynamicModel");
 	if (channel.valid() && channel->value()) {
 		channel->value()->addCreateSceneModelHandler(sigc::mem_fun(this, &StoresManagementSystem::onCreateSceneModel));
 		channel->value()->addDeleteSceneModelHandler(sigc::mem_fun(this, &StoresManagementSystem::onDeleteSceneModel));
@@ -77,7 +80,7 @@ void StoresManagementSystem::onDeleteSceneModel() {
 }
 
 void StoresManagementSystem::postCreate() {
-	simdata::Object::postCreate();
+	Object::postCreate();
 	if (m_StoresDefinition.valid()) {
 		const unsigned n = m_StoresDefinition->getNumHardpoints();
 		m_Hardpoints.reserve(n);
@@ -89,7 +92,7 @@ void StoresManagementSystem::postCreate() {
 	addTestLoadout();
 }
 
-void StoresManagementSystem::getAllStores(StoreIndex const &index, std::vector<Store::Ref> &stores) const {
+void StoresManagementSystem::getAllStores(StoreIndex const &index, std::vector<Store::RefT> &stores) const {
 	assert(index.isHardpoint());
 	Store *store = index.valid() ? m_Hardpoints.at(index.hardpoint())->getStore() : 0;
 	if (store) {
@@ -150,11 +153,11 @@ void StoresManagementSystem::releaseMarkedStores(DynamicObject *parent) {
 		Hardpoint *hp = m_Hardpoints.at(index.hardpoint()).get();
 		assert(hp);
 
-		Store::Ref store;
-		simdata::Vector3 store_position;
-		simdata::Quat store_attitude;
-		simdata::Vector3 ejection_velocity;
-		simdata::Vector3 ejection_angular_velocity;
+		Store::RefT store;
+		Vector3 store_position;
+		Quat store_attitude;
+		Vector3 ejection_velocity;
+		Vector3 ejection_angular_velocity;
 
 		if (!hp->removeStore(index, store, store_position, store_attitude, ejection_velocity, ejection_angular_velocity)) {
 			continue;
@@ -168,7 +171,7 @@ void StoresManagementSystem::releaseMarkedStores(DynamicObject *parent) {
 		// open questions / problems:
 		//  - for racks, need to include child models and dynamics
 		//    (for now assume that we have a single store, as opposed to a rack of stores)
-		simdata::Ref<Projectile> object = store->data()->createObject();
+		Ref<Projectile> object = store->data()->createObject();
 		if (object.valid()) {
 			store_attitude = parent->getAttitude() * store_attitude;
 			ejection_velocity = store_attitude.rotate(ejection_velocity);
@@ -202,8 +205,8 @@ bool StoresManagementSystem::DEPRECATED_releaseStore(StoreIndex const &index) {
 	assert(hp);
 
 	Store::Ref store;
-	simdata::Vector3 position;
-	simdata::Quat attitude;
+	Vector3 position;
+	Quat attitude;
 	CSP_LOG(OBJECT, INFO, "Removing store @ " << index);
 	if (!hp->removeStore(index, store, position, attitude)) return false;
 	assert(store.valid());
@@ -223,7 +226,7 @@ bool StoresManagementSystem::DEPRECATED_releaseStore(StoreIndex const &index) {
 	//  - StoreData subclasses should take care of initializing the internal state of the object
 	//  - need global position, although that could be set by the parent object
 	//  - the object model is specified in two locations (store and object), so it could be out of sync.
-	simdata::Ref<DynamicObject> object = store->data()->createObject();
+	Ref<DynamicObject> object = store->data()->createObject();
 	if (object.valid()) {
 		object->setGlobalPosition(position);
 		object->setAttitude(attitude);
@@ -273,7 +276,7 @@ void StoresManagementSystem::jettisonSelected() {
 // this probably won't be possible until a campaign system is implemented).
 // the caller must call setDirtyDynamics() and signalConfiguration() afterward (multiple
 // updates should be batched before calling the latter).
-bool StoresManagementSystem::loadStores(StoreIndex const &idx, simdata::Key const &store, unsigned count) {
+bool StoresManagementSystem::loadStores(StoreIndex const &idx, Key const &store, unsigned count) {
 	if (!idx.isHardpoint() || count < 1) return false;
 	Hardpoint *hp = m_Hardpoints.at(idx.hardpoint()).get(); assert(hp);
 	HardpointData const *data = hp->data();
@@ -296,7 +299,7 @@ bool StoresManagementSystem::loadStores(StoreIndex const &idx, simdata::Key cons
 	if (!store_data) return false;
 
 	bool add_pylon = false;
-	Rack::Ref pylon;
+	Rack::RefT pylon;
 	Store *existing_store = hp->getStore();
 	if (existing_store) {
 		pylon = existing_store->asRack();
@@ -307,7 +310,7 @@ bool StoresManagementSystem::loadStores(StoreIndex const &idx, simdata::Key cons
 	if (!pylon) {
 		// simplest case: a single store can be mounted directly on the hardpoint.
 		if (data->isMountCompatible(store) && count == 1) {
-			Store::Ref instance = db.getStore(store);
+			Store::RefT instance = db.getStore(store);
 			return instance.valid() && mountStore(idx, instance.get());
 		}
 
@@ -323,10 +326,10 @@ bool StoresManagementSystem::loadStores(StoreIndex const &idx, simdata::Key cons
 		racks.insert(tmp->begin(), tmp->end());
 
 		// find the best rack/stack to use as a pylon
-		std::vector<simdata::Key> const &pylons = data->preferredRacks();
+		std::vector<Key> const &pylons = data->preferredRacks();
 		for (unsigned i = 0; i < pylons.size(); ++i) {
 			if (racks.count(pylons[i]) > 0) {
-				Store::Ref s = db.getStore(pylons[i]);
+				Store::RefT s = db.getStore(pylons[i]);
 				pylon = !s ? 0 : s->asRack();
 				break;
 			}
@@ -336,7 +339,7 @@ bool StoresManagementSystem::loadStores(StoreIndex const &idx, simdata::Key cons
 		if (!pylon) {
 			for (StoreSet::const_iterator iter = racks.begin(); iter != racks.end(); ++iter) {
 				if (data->isMountCompatible(*iter)) {
-					Store::Ref s = db.getStore(*iter);
+					Store::RefT s = db.getStore(*iter);
 					pylon = !s ? 0 : s->asRack();
 					break;
 				}
@@ -347,7 +350,7 @@ bool StoresManagementSystem::loadStores(StoreIndex const &idx, simdata::Key cons
 		add_pylon = true;
 	}
 
-	Rack::Ref rack = pylon;
+	Rack::RefT rack = pylon;
 
 	// now we have a mounted pylon that we know will work!  if possible, mount the
 	// store(s) directly on the pylon.  otherwise we need to use existing racks or
@@ -438,7 +441,7 @@ void StoresManagementSystem::getDynamics(StoresDynamics &dynamics) {
 	dynamics.compute();
 }
 
-void StoresManagementSystem::getReleasedObjects(std::vector<simdata::Ref<DynamicObject> > &objects) {
+void StoresManagementSystem::getReleasedObjects(std::vector<Ref<DynamicObject> > &objects) {
 	objects.swap(m_ReleasedObjects);
 	m_ReleasedObjects.clear();
 }
@@ -446,4 +449,6 @@ void StoresManagementSystem::getReleasedObjects(std::vector<simdata::Ref<Dynamic
 double StoresManagementSystem::onUpdate(double /*dt*/) {
 	return -1;
 }
+
+CSP_NAMESPACE_END
 

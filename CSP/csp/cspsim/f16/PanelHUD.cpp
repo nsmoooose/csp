@@ -28,8 +28,8 @@
 #include <csp/csplib/data/ObjectInterface.h>
 
 
-SIMDATA_XML_BEGIN(PanelHUD)
-SIMDATA_XML_END
+CSP_XML_BEGIN(PanelHUD)
+CSP_XML_END
 
 DEFINE_INPUT_INTERFACE(PanelHUD)
 

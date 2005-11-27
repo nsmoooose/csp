@@ -1,4 +1,4 @@
-// Combat Simulator Project - FlightSim Demo
+// Combat Simulator Project
 // Copyright (C) 2005 The Combat Simulator Project
 // http://csp.sourceforge.net
 //
@@ -106,7 +106,7 @@ private:
  */
 class GearSequenceAnimation: public GearAnimation {
 public:
-	SIMDATA_DECLARE_OBJECT(GearSequenceAnimation)
+	CSP_DECLARE_OBJECT(GearSequenceAnimation)
 
 	virtual void setGearName(std::string const &name);
 
@@ -159,7 +159,7 @@ class M2kGearAnimation: public GearSequenceAnimation {
 	DataChannel<double>::Ref b_Compression;
 
 public:
-	SIMDATA_DECLARE_OBJECT(M2kGearAnimation)
+	CSP_DECLARE_OBJECT(M2kGearAnimation)
 
 	M2kGearAnimation(): m_Absorber02Length(1.0f), m_Absorber03Length(1.0f), m_Offset(0.0f) { }
 

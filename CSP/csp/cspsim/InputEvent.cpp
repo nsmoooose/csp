@@ -1,4 +1,4 @@
-// Combat Simulator Project - CSPSim
+// Combat Simulator Project
 // Copyright (C) 2004 The Combat Simulator Project
 // http://csp.sourceforge.net
 //
@@ -22,12 +22,13 @@
  *
  */
 
+#include <csp/cspsim/CSPSim.h>
+#include <csp/cspsim/InputEvent.h>
+#include <csp/cspsim/Config.h>
+
 #include <stdexcept>
 
-#include "CSPSim.h"
-#include "InputEvent.h"
-#include "Config.h"
-
+CSP_NAMESPACE
 
 const float Handle::m_Sampling = 1.0f/210;
 
@@ -39,7 +40,7 @@ bool Play::operator()(SDL_Event& event) {
 }
 
 Save::Save():
-	m_of(g_Config.getString("DemoMode","FileName","Record.csp",false).c_str(),std::ios_base::binary) {
+	m_of(g_Config.getString("DemoMode", "FileName", "Record.csp", false).c_str(), std::ios_base::binary) {
 }
 
 Save::~Save() {
@@ -48,17 +49,17 @@ Save::~Save() {
 
 bool Save::operator()(SDL_Event& event) {
 	bool result = SDL_PollEvent(&event) != 0;
-	simdata::SimTime d2 = CSPSim::theSim->getElapsedTime();
+	SimTime d2 = CSPSim::theSim->getElapsedTime();
 	if (d2 - m_EventTime > m_Sampling) {
 		m_EventTime = d2;
-		m_of.write(reinterpret_cast<char*>(&event),sizeof(SDL_Event));
-		m_of.write(reinterpret_cast<char*>(&m_EventTime),sizeof(simdata::SimTime));
+		m_of.write(reinterpret_cast<char*>(&event), sizeof(SDL_Event));
+		m_of.write(reinterpret_cast<char*>(&m_EventTime), sizeof(SimTime));
 	}
 	return result;
 }
 
 Replay::Replay():
-	m_if(g_Config.getString("DemoMode","FileName","Record.csp",false).c_str(),std::ios_base::binary) {
+	m_if(g_Config.getString("DemoMode", "FileName", "Record.csp", false).c_str(), std::ios_base::binary) {
 	if (!m_if)
 		throw std::runtime_error("Replay::Replay(): error opening record file in read mode");
 }
@@ -71,10 +72,10 @@ bool Replay::operator()(SDL_Event& event) {
 	SDL_Event e;
 	bool result = SDL_PollEvent(&e) != 0;
 	if (e.type != SDL_QUIT && (e.type != SDL_KEYDOWN || e.key.keysym.sym != SDLK_ESCAPE)) {
-		simdata::SimTime d2 = CSPSim::theSim->getElapsedTime();
+		SimTime d2 = CSPSim::theSim->getElapsedTime();
 		if (d2 - m_EventTime > 2*m_Sampling) {
-			m_if.read(reinterpret_cast<char*>(&event),sizeof(SDL_Event));
-			m_if.read(reinterpret_cast<char*>(&m_EventTime),sizeof(simdata::SimTime));
+			m_if.read(reinterpret_cast<char*>(&event), sizeof(SDL_Event));
+			m_if.read(reinterpret_cast<char*>(&m_EventTime), sizeof(SimTime));
 			result = true;
 		}
 	} else {
@@ -84,7 +85,7 @@ bool Replay::operator()(SDL_Event& event) {
 }
 
 InputEvent::InputEvent() {
-	Mode mode = static_cast<Mode>(g_Config.getInt("DemoMode","Mode"));
+	Mode mode = static_cast<Mode>(g_Config.getInt("DemoMode", "Mode"));
 	try {
 		switch (mode) {
 		case PLAY:
@@ -105,4 +106,5 @@ InputEvent::InputEvent() {
 	}
 }
 
+CSP_NAMESPACE_END
 

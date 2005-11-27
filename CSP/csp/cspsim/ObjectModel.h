@@ -76,8 +76,8 @@ namespace fx {
  * TODO: add LOD support here.
  *
  */
-class CSPSIM_EXPORT ObjectModel: public simdata::Object {
-	static const simdata::Enumeration EffectItems;
+class CSPSIM_EXPORT ObjectModel: public Object {
+	static const Enumeration EffectItems;
 
 private:
 
@@ -86,9 +86,9 @@ private:
 	osg::ref_ptr<osg::Switch> m_DebugMarkers;
 	osg::ref_ptr<osg::Switch> m_ContactMarkers;
 public:
-	typedef std::vector<simdata::Vector3> PointList;
+	typedef std::vector<Vector3> PointList;
 
-	SIMDATA_DECLARE_STATIC_OBJECT(ObjectModel)
+	CSP_DECLARE_STATIC_OBJECT(ObjectModel)
 
 	ObjectModel();
 	virtual ~ObjectModel();
@@ -97,10 +97,10 @@ public:
 	osg::ref_ptr<osg::Node> getDebugMarkers();
 	std::string getModelPath() const { return m_ModelPath.getSource(); }
 
-	const simdata::Vector3 &getAxis0() const { return m_Axis0; }
-	const simdata::Vector3 &getAxis1() const { return m_Axis1; }
-	const simdata::Vector3 &getViewPoint() const { return m_ViewPoint; }
-	const simdata::Vector3 &getHudPlacement() const { return m_HudPlacement; }
+	const Vector3 &getAxis0() const { return m_Axis0; }
+	const Vector3 &getAxis1() const { return m_Axis1; }
+	const Vector3 &getViewPoint() const { return m_ViewPoint; }
+	const Vector3 &getHudPlacement() const { return m_HudPlacement; }
 	double getHudWidth() const { return m_HudWidth; }
 	double getHudHeight() const { return m_HudHeight; }
 
@@ -131,10 +131,10 @@ protected:
 
 	std::string m_Label;
 	std::string m_ModelPath;
-	simdata::Vector3 m_Axis0, m_Axis1;
-	simdata::Vector3 m_Offset;
-	simdata::Vector3 m_ViewPoint;
-	simdata::Vector3 m_HudPlacement;
+	Vector3 m_Axis0, m_Axis1;
+	Vector3 m_Offset;
+	Vector3 m_ViewPoint;
+	Vector3 m_HudPlacement;
 	double m_HudWidth;
 	double m_HudHeight;
 	double m_Scale;
@@ -142,7 +142,7 @@ protected:
 	bool m_Smooth;
 	bool m_Filter;
 	float m_FilterValue;
-	simdata::Enum<EffectItems> m_Effect;
+	Enum<EffectItems> m_Effect;
 
 	bool m_ElevationCorrection;
 	float m_PolygonOffset;
@@ -152,8 +152,8 @@ protected:
 	PointList m_Contacts;
 	PointList m_DebugPoints;
 
-	simdata::Link<Animation>::vector m_Animations;
-	simdata::Link<Station>::vector m_Stations;
+	Link<Animation>::vector m_Animations;
+	Link<Station>::vector m_Stations;
 
 	virtual void postCreate();
 	virtual void loadModel();
@@ -169,14 +169,14 @@ protected:
 /** A representation of an ObjectModel that can be added to the scene
  *  as a child of a SceneModel.
  */
-class SceneModelChild: public simdata::Referenced {
+class SceneModelChild: public Referenced {
 	osg::ref_ptr<osg::Node> m_ModelCopy;
-	simdata::Ref<ObjectModel> m_Model;
+	Ref<ObjectModel> m_Model;
 	std::vector< osg::ref_ptr<AnimationCallback> > m_AnimationCallbacks;
 protected:
 	virtual ~SceneModelChild();
 public:
-	SceneModelChild(simdata::Ref<ObjectModel> const &model);
+	SceneModelChild(Ref<ObjectModel> const &model);
 	void bindAnimationChannels(Bus*);
 	osg::Node *getRoot();
 };
@@ -189,7 +189,7 @@ public:
  * contains a pointer to a SceneModel that can be instantiated to create
  * a visual representation of the object.
  */
-class SceneModel: public simdata::Referenced {
+class SceneModel: public Referenced {
 private:
 	osg::ref_ptr<osg::PositionAttitudeTransform> m_Transform;
 	osg::ref_ptr<osg::PositionAttitudeTransform> m_CenterOfMassOffset;
@@ -197,10 +197,10 @@ private:
 	osg::ref_ptr<osg::Group> m_Children;
 	osg::ref_ptr<osg::Node> m_ModelCopy;
 	osg::ref_ptr<osgText::Text> m_Label;
-	simdata::Ref<ObjectModel> m_Model;
+	Ref<ObjectModel> m_Model;
 	bool m_Smoke;
 	osg::ref_ptr<fx::SmokeTrailSystem> m_SmokeTrails;
-	std::vector<simdata::Vector3> m_SmokeEmitterLocation;
+	std::vector<Vector3> m_SmokeEmitterLocation;
 	std::vector< osg::ref_ptr<AnimationCallback> > m_AnimationCallbacks;
 	osg::ref_ptr<osg::PositionAttitudeTransform> m_HudModel;
 	osg::ref_ptr<osg::Switch> m_PitSwitch;
@@ -211,28 +211,28 @@ protected:
 	virtual ~SceneModel();
 
 public:
-	SceneModel(simdata::Ref<ObjectModel> const & model);
+	SceneModel(Ref<ObjectModel> const & model);
 
-	simdata::Ref<ObjectModel> getModel() { return m_Model; }
+	Ref<ObjectModel> getModel() { return m_Model; }
 	osg::Group* getRoot();
 	osg::Group* getDynamicGroup();
 
-	void setPositionAttitude(simdata::Vector3 const &position, simdata::Quat const &attitude, simdata::Vector3 const &cm_offset);
+	void setPositionAttitude(Vector3 const &position, Quat const &attitude, Vector3 const &cm_offset);
 
-	void addChild(simdata::Ref<SceneModelChild> const &child);
-	void removeChild(simdata::Ref<SceneModelChild> const &child);
+	void addChild(Ref<SceneModelChild> const &child);
+	void removeChild(Ref<SceneModelChild> const &child);
 	void removeAllChildren();
 
 	void bindAnimationChannels(Bus*);
 	void bindHud(HUD* hud);
 
-	void setSmokeEmitterLocation(std::vector<simdata::Vector3> const &sel);
+	void setSmokeEmitterLocation(std::vector<Vector3> const &sel);
 	bool addSmoke();
 	bool isSmoke();
 	void disableSmoke();
 	void enableSmoke();
 	virtual void onViewMode(bool internal);
-	void updateSmoke(double dt, simdata::Vector3 const & global_position, simdata::Quat const &attitude);
+	void updateSmoke(double dt, Vector3 const & global_position, Quat const &attitude);
 	void setLabel(std::string const &);
 	void setPitMask(unsigned mask);
 	void pick(int x, int y);

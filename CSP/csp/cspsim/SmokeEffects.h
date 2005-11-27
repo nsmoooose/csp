@@ -1,17 +1,17 @@
-// Combat Simulator Project - FlightSim Demo
+// Combat Simulator Project
 // Copyright (C) 2002 The Combat Simulator Project
 // http://csp.sourceforge.net
-// 
+//
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
 // as published by the Free Software Foundation; either version 2
 // of the License, or (at your option) any later version.
-// 
+//
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU General Public License
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
@@ -26,19 +26,17 @@
 #ifndef __CSPSIM_SMOKEEFFECTS_H__
 #define __CSPSIM_SMOKEEFFECTS_H__
 
+#include <csp/csplib/util/Namespace.h>
+#include <csp/csplib/data/Quat.h>
+#include <csp/csplib/data/Vector3.h>
+
 #include <osg/ref_ptr>
 #include <osgParticle/ParticleSystem>
 #include <osgParticle/ParticleSystemUpdater>
 #include <osgParticle/Operator>
 
-#include <csp/csplib/data/Quat.h>
-#include <csp/csplib/data/Vector3.h>
-
 #include <vector>
 #include <string>
-
-using std::string;
-
 
 namespace osg {
 	class Geode;
@@ -58,8 +56,9 @@ namespace osgParticle {
 	class Emitter;
 }
 
-namespace fx {
+CSP_NAMESPACE
 
+namespace fx {
 
 class WindShooter;
 class WindEmitter;
@@ -68,16 +67,16 @@ class WindEmitter;
 class SmokeSegments {
 	typedef std::vector<osg::ref_ptr<osgParticle::SegmentPlacer> > PlacerArray;
 	PlacerArray m_Placers;
-	std::vector<simdata::Vector3> m_Sources;
-	std::vector<simdata::Vector3> m_LastPlace;
+	std::vector<Vector3> m_Sources;
+	std::vector<Vector3> m_LastPlace;
 public:
 	SmokeSegments() {
 	}
 	~SmokeSegments() {
 	}
-	int addSource(simdata::Vector3 const &v);
+	int addSource(Vector3 const &v);
 	osgParticle::SegmentPlacer *getSegment(int i);
-	void update(simdata::Vector3 const &motion, simdata::Quat const &attitude);
+	void update(Vector3 const &motion, Quat const &attitude);
 };
 */
 
@@ -152,8 +151,8 @@ public:
 	virtual ~SmokeTrail();
 
 	void setExpansion(float speed);
-	void setOffset(simdata::Vector3 const &offset);
-	void update(double dt, simdata::Vector3 const &motion, simdata::Quat const &attitude);
+	void setOffset(Vector3 const &offset);
+	void update(double dt, Vector3 const &motion, Quat const &attitude);
 
 protected:
 
@@ -168,9 +167,9 @@ protected:
 	osg::ref_ptr<WindShooter> m_Shooter;
 	*/
 
-	simdata::Vector3 m_Offset;
-	//simdata::Vector3 m_LastPlace;
-	//simdata::Vector3 m_LastWind;
+	Vector3 m_Offset;
+	//Vector3 m_LastPlace;
+	//Vector3 m_LastWind;
 	//float m_Speed;
 };
 
@@ -196,7 +195,7 @@ class SmokeTrailSystem: public osg::Referenced {
 public:
 	SmokeTrailSystem();
 	virtual void addSmokeTrail(SmokeTrail *);
-	virtual void update(double dt, simdata::Vector3 const &motion, simdata::Quat const &attitude);
+	virtual void update(double dt, Vector3 const &motion, Quat const &attitude);
 	virtual void setEnabled(bool);
 protected:
 	virtual ~SmokeTrailSystem();
@@ -206,8 +205,9 @@ protected:
 };
 
 
-} // fx 
+} // fx
 
+CSP_NAMESPACE_END
 
 #endif // __CSPSIM_SMOKEEFFECTS_H__
 

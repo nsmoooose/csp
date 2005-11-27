@@ -1,4 +1,4 @@
-// Combat Simulator Project - FlightSim Demo
+// Combat Simulator Project
 // Copyright (C) 2002 The Combat Simulator Project
 // http://csp.sourceforge.net
 //
@@ -30,19 +30,21 @@
 #define __CSPSIM_TERRAINOBJECT_H__
 
 
+#include <csp/csplib/util/Ref.h>
 #include <csp/csplib/data/Object.h>
 #include <csp/csplib/data/GeoPos.h>
-#include <csp/csplib/util/Ref.h>
 #include <csp/csplib/data/Vector3.h>
 
 #include <osg/ref_ptr>
-
-class Projection;
 
 namespace osg {
 	class Node;
 	class LineSegment;
 }
+
+CSP_NAMESPACE
+
+class Projection;
 
 
 /**
@@ -51,10 +53,10 @@ namespace osg {
  * @author unknown
  */
 
-class TerrainObject: public simdata::Object
+class TerrainObject: public Object
 {
 public:
-	SIMDATA_DECLARE_ABSTRACT_OBJECT(TerrainObject)
+	CSP_DECLARE_ABSTRACT_OBJECT(TerrainObject)
 
 	/* currently the only two terrain engines are demeter and
 	 * chunk lod.  the former doesn't have hints, the latter
@@ -75,27 +77,27 @@ public:
 	class Intersection {
 	public:
 		Intersection();
-		Intersection(simdata::Vector3 const &start, simdata::Vector3 const &end);
+		Intersection(Vector3 const &start, Vector3 const &end);
 		inline float getRatio() const { return _ratio; }
 		inline float getDistance() const;
 		inline bool getHit() const { return _hit; }
-		inline simdata::Vector3 const &getStart() const { return _start; }
-		inline simdata::Vector3 const &getEnd() const { return _end; }
-		inline void setEndPoints(simdata::Vector3 const &start, simdata::Vector3 const &end) {
+		inline Vector3 const &getStart() const { return _start; }
+		inline Vector3 const &getEnd() const { return _end; }
+		inline void setEndPoints(Vector3 const &start, Vector3 const &end) {
 			_start = start;
 			_end = end;
 		}
-		inline simdata::Vector3 const &getPoint() const { return _point; }
-		inline simdata::Vector3 const &getNormal() const { return _normal; }
+		inline Vector3 const &getPoint() const { return _point; }
+		inline Vector3 const &getNormal() const { return _normal; }
 		inline void reset() { _hit = false; }
-		void setHit(float ratio, simdata::Vector3 const &normal);
+		void setHit(float ratio, Vector3 const &normal);
 	protected:
 		bool _hit;
 		float _ratio;
-		simdata::Vector3 _start;
-		simdata::Vector3 _end;
-		simdata::Vector3 _point;
-		simdata::Vector3 _normal;
+		Vector3 _start;
+		Vector3 _end;
+		Vector3 _point;
+		Vector3 _normal;
 	};
 
 	TerrainObject();
@@ -107,26 +109,26 @@ public:
 	virtual void setScreenSizeHint(int, int) {}
 	virtual void setCameraPosition(double, double, double) = 0;
 	virtual void testLineOfSight(Intersection &, IntersectionHint &) = 0;
-	virtual float getGroundElevation(double x, double y, simdata::Vector3 &normal, IntersectionHint &) = 0;
+	virtual float getGroundElevation(double x, double y, Vector3 &normal, IntersectionHint &) = 0;
 	virtual float getGroundElevation(double x, double y, IntersectionHint &) = 0;
 
 	virtual int getTerrainPolygonsRendered() const = 0;
 	virtual osg::Node *getNode() = 0;
 
-	simdata::LLA const & getCenter() const { return m_Center; }
+	LLA const & getCenter() const { return m_Center; }
 	inline float getWidth() const { return m_Width; }
 	inline float getHeight() const { return m_Height; }
 	inline std::string const &getName() const { return m_Name; }
 	inline int getVersion() const { return m_Version; }
 	const Projection* getProjection() const { return m_Map.get(); }
-	virtual simdata::Vector3 getOrigin(simdata::Vector3 const &) const = 0;
+	virtual Vector3 getOrigin(Vector3 const &) const = 0;
 	virtual void endDraw() {}
 
 protected:
 	
-	simdata::LLA m_Center;
+	LLA m_Center;
 	float m_Width, m_Height;
-	simdata::Ref<Projection> m_Map;
+	Ref<Projection> m_Map;
 	std::string m_Name;
 	int m_Version;
 
@@ -134,6 +136,7 @@ protected:
 
 };
 
+CSP_NAMESPACE_END
 
 #endif // __CSPSIM_TERRAINOBJECT_H__
 

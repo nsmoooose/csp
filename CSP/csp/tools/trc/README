@@ -1,0 +1,5 @@
+This directory includes Python modules from PLY (Python Lex-Yacc) version 1.5,
+copyright 2001-2004 David M. Beazley, and distributed under the terms of the
+GNU Lesser General Public License.  See the source files lex.py and yacc.py
+for details.  The original license and readme from the PLY distribution can be
+found in COPYING-ply and README-ply, respectively.

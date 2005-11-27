@@ -27,11 +27,13 @@
 #define __CSPSIM_FLIGHTMODEL_H__
 
 
-#include <csp/csplib/data/LUT.h>
+#include <csp/csplib/util/Namespace.h>
 #include <csp/csplib/util/Math.h>
+#include <csp/csplib/data/LUT.h>
 #include <csp/csplib/data/Object.h>
 #include <csp/csplib/data/Vector3.h>
 
+CSP_NAMESPACE
 
 /**
  * class FlightModel
@@ -46,9 +48,9 @@
  * more than one aircraft is simulated at a time.
  *
  */
-class FlightModel: public simdata::Object {
+class FlightModel: public Object {
 public:
-	SIMDATA_DECLARE_ABSTRACT_OBJECT(FlightModel)
+	CSP_DECLARE_ABSTRACT_OBJECT(FlightModel)
 
 	FlightModel();
 	virtual ~FlightModel();
@@ -81,7 +83,7 @@ public:
 	/** Initialize the flight model with kinetic parameters of the aircraft.  Called before
 	 *  forces and moments are calculated.
 	 */
-	inline void setKinetics(simdata::Vector3 const &cg_body, simdata::Vector3 const &angular_velocity_body, double height) {
+	inline void setKinetics(Vector3 const &cg_body, Vector3 const &angular_velocity_body, double height) {
 		m_CenterOfMassBody = cg_body;
 		m_AngularVelocityBody = angular_velocity_body;
 		m_GE = (height + m_GroundEffectOffset < m_WingSpan) ? groundEffect(height) : 1.0;
@@ -91,7 +93,7 @@ public:
 	 *  flight conditions.  This method is called after the flight conditions have been
 	 *  initialized.
 	 */
-	virtual void calculateForceAndMoment(simdata::Vector3 &force, simdata::Vector3 &moment) = 0;
+	virtual void calculateForceAndMoment(Vector3 &force, Vector3 &moment) = 0;
 
 protected:
 
@@ -133,10 +135,11 @@ protected:
 	double m_TrailingEdgeFlap;
 
 	// kinetics
-	simdata::Vector3 m_AngularVelocityBody;
-	simdata::Vector3 m_CenterOfMassBody;
+	Vector3 m_AngularVelocityBody;
+	Vector3 m_CenterOfMassBody;
 };
 
+CSP_NAMESPACE_END
 
-#endif  // __FLIGHTMODEL_H__
+#endif // __CSPSIM_FLIGHTMODEL_H__
 

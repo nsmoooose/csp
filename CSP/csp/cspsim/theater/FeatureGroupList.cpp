@@ -23,15 +23,17 @@
  **/
 
 
-#include "Theater/FeatureGroupList.h"
-#include "Projection.h"
+#include <csp/cspsim/theater/FeatureGroupList.h>
+#include <csp/cspsim/Projection.h>
 
 #include <csp/csplib/data/ObjectInterface.h>
 
 
-SIMDATA_XML_BEGIN(FeatureGroupList)
-	SIMDATA_DEF("feature_groups", m_FeatureGroups, true)
-SIMDATA_XML_END
+CSP_NAMESPACE
+
+CSP_XML_BEGIN(FeatureGroupList)
+	CSP_DEF("feature_groups", m_FeatureGroups, true)
+CSP_XML_END
 
 
 FeatureGroupList::FeatureGroupList() {
@@ -40,12 +42,12 @@ FeatureGroupList::FeatureGroupList() {
 FeatureGroupList::~FeatureGroupList() {
 }
 
-
 void FeatureGroupList::projectFeatureGroups(Projection const &map) {
-	simdata::Link<FeatureGroup>::vector::iterator i = m_FeatureGroups.begin();
+	Link<FeatureGroup>::vector::iterator i = m_FeatureGroups.begin();
 	for (; i != m_FeatureGroups.end(); i++) {
 		(*i)->project(map);
 	}
 }
 
+CSP_NAMESPACE_END
 

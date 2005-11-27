@@ -23,8 +23,16 @@
  **/
 
 
-#include "Theater/RandomBillboardModel.h"
-#include "Theater/IsoContour.h"
+#include <csp/cspsim/theater/RandomBillboardModel.h>
+#include <csp/cspsim/theater/IsoContour.h>
+#include <csp/cspsim/theater/FeatureSceneModel.h>
+#include <csp/cspsim/theater/FeatureSceneGroup.h>
+#include <csp/cspsim/theater/FeatureQuad.h>
+#include <csp/cspsim/theater/LayoutTransform.h>
+#include <csp/cspsim/theater/ElevationCorrection.h>
+
+#include <csp/csplib/data/ObjectInterface.h>
+#include <csp/csplib/util/Random.h>
 
 #include <vector>
 
@@ -32,25 +40,15 @@
 #include <osg/Geometry>
 #include <osgUtil/Optimizer>
 
-#include <csp/csplib/data/ObjectInterface.h>
-#include <csp/csplib/util/Random.h>
+CSP_NAMESPACE
 
-#include <SimCore/Util/Log.h>
-
-#include "Theater/FeatureSceneModel.h"
-#include "Theater/FeatureSceneGroup.h"
-#include "Theater/FeatureQuad.h"
-#include "Theater/LayoutTransform.h"
-#include "Theater/ElevationCorrection.h"
-
-
-SIMDATA_XML_BEGIN(RandomBillboardModel)
-	SIMDATA_DEF("models", m_Models, true)
-	SIMDATA_DEF("density", m_Density, true)
-	SIMDATA_DEF("minimum_spacing", m_MinimumSpacing, true)
-	SIMDATA_DEF("seed", m_Seed, false)
-	SIMDATA_DEF("isocontour", m_IsoContour, false)
-SIMDATA_XML_END
+CSP_XML_BEGIN(RandomBillboardModel)
+	CSP_DEF("models", m_Models, true)
+	CSP_DEF("density", m_Density, true)
+	CSP_DEF("minimum_spacing", m_MinimumSpacing, true)
+	CSP_DEF("seed", m_Seed, false)
+	CSP_DEF("isocontour", m_IsoContour, false)
+CSP_XML_END
 
 
 int RandomBillboardModel::getFeatureCount() const {
@@ -72,7 +70,7 @@ void RandomBillboardModel::postCreate() {
 	assert(m_Density.size() == m_Models.size());
 	float area = m_IsoContour->getArea();
 	int i, n = m_Models.size();
-	simdata::random::Taus2 rand;
+	random::Taus2 rand;
 	rand.setSeed(m_Seed);
 	m_Offsets.resize(n);
 	for (i = 0; i < n; i++) {
@@ -91,7 +89,7 @@ void RandomBillboardModel::postCreate() {
 
 void RandomBillboardModel::addSceneModel(FeatureSceneGroup *group, LayoutTransform const &transform, ElevationCorrection const &correction) {
 	int i, n = m_Models.size();
-	std::vector<simdata::Vector3>::iterator ofs, end;
+	std::vector<Vector3>::iterator ofs, end;
 	
 	// the drawables in the billboard are already offset to the correct positions
 	// relative to the root scene group (ie. including all parent transformations),
@@ -124,5 +122,5 @@ void RandomBillboardModel::addSceneModel(FeatureSceneGroup *group, LayoutTransfo
 	//optimizer.optimize(group);
 }
 
-
+CSP_NAMESPACE_END
 

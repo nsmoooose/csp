@@ -1,4 +1,4 @@
-// Combat Simulator Project - FlightSim Demo
+// Combat Simulator Project
 // Copyright (C) 2002 The Combat Simulator Project
 // http://csp.sourceforge.net
 //
@@ -21,10 +21,10 @@
  *
  **/
 
-#include "Engine.h"
-#include "ConditionsChannels.h"
-#include "FlightDynamicsChannels.h"
-#include "ThrustData.h"
+#include <csp/cspsim/Engine.h>
+#include <csp/cspsim/ConditionsChannels.h>
+#include <csp/cspsim/FlightDynamicsChannels.h>
+#include <csp/cspsim/ThrustData.h>
 
 #include <csp/csplib/util/Conversions.h>
 #include <csp/csplib/util/Math.h>
@@ -34,20 +34,21 @@
 #include <iomanip>
 #include <sstream>
 
+CSP_NAMESPACE
 
-SIMDATA_XML_BEGIN(Engine)
-	SIMDATA_DEF("thrust_data", m_ThrustData, true)
-	SIMDATA_DEF("thrust_direction", m_ThrustDirection, true)
-	SIMDATA_DEF("engine_offset", m_EngineOffset, true)
-	SIMDATA_DEF("smoke_emitter_location", m_SmokeEmitterLocation, true)
-SIMDATA_XML_END
+CSP_XML_BEGIN(Engine)
+	CSP_DEF("thrust_data", m_ThrustData, true)
+	CSP_DEF("thrust_direction", m_ThrustDirection, true)
+	CSP_DEF("engine_offset", m_EngineOffset, true)
+	CSP_DEF("smoke_emitter_location", m_SmokeEmitterLocation, true)
+CSP_XML_END
 
-SIMDATA_XML_BEGIN(EngineDynamics)
-	SIMDATA_DEF("engine_set", m_Engine, true)
-SIMDATA_XML_END
+CSP_XML_BEGIN(EngineDynamics)
+	CSP_DEF("engine_set", m_Engine, true)
+CSP_XML_END
 
 
-Engine::Engine(simdata::Vector3 const &/*thrustDirection*/):
+Engine::Engine(Vector3 const &/*thrustDirection*/):
 	m_LastIdleThrust(0.01),
 	m_LastMilitaryThrust(0.01),
 	m_LastAfterburnerThrust(0.01),
@@ -59,24 +60,24 @@ Engine::Engine(simdata::Vector3 const &/*thrustDirection*/):
 	m_Density(0.01)
 {
 	// XMLize: A, B & C should be functions of mach
-	m_A = simdata::toRadians(10.0);
-	m_B = simdata::toRadians(15.0);
-	m_C = simdata::toRadians(40.0);
+	m_A = toRadians(10.0);
+	m_B = toRadians(15.0);
+	m_C = toRadians(40.0);
 }
 
 Engine::~Engine() {
 }
 
-void Engine::setThrustDirection(simdata::Vector3 const& thrustDirection) {
+void Engine::setThrustDirection(Vector3 const& thrustDirection) {
 	m_ThrustDirection = thrustDirection;
 }
 
-simdata::Vector3 const &Engine::getSmokeEmitterLocation() const {
+Vector3 const &Engine::getSmokeEmitterLocation() const {
 	return m_SmokeEmitterLocation;
 }
 
 void Engine::updateThrust() {
-	double blend = simdata::clampTo(getBlend(), 0.0, 3.0);
+	double blend = clampTo(getBlend(), 0.0, 3.0);
 	m_LastIdleThrust = m_ThrustData->getIdle(m_Altitude, m_Mach);
 	m_LastMilitaryThrust = m_ThrustData->getMil(m_Altitude, m_Mach);
 	m_LastAfterburnerThrust = m_ThrustData->hasAfterburner() ? m_ThrustData->getAb(m_Altitude, m_Mach) : m_LastMilitaryThrust;
@@ -105,15 +106,15 @@ double Engine::getThrustScale() const {
 	const double alpha = m_Alpha;
 	// f is a totally ad-hoc means of preventing a slight tailwind from killing
 	// the engine when we aren't moving.
-	const double f = simdata::clampTo(4.0 * (m_Mach - 0.25), 0.0, 1.0);
-	if ((std::abs(alpha) > simdata::PI_2) || (alpha < -m_A)) {
+	const double f = clampTo(4.0 * (m_Mach - 0.25), 0.0, 1.0);
+	if ((std::abs(alpha) > PI_2) || (alpha < -m_A)) {
 		return (1.0 - f);
 	}
 	if (alpha < m_B) {
 		return (1.0 - f) + f * cos(flatten(alpha));
  	}
 	if (alpha < m_C) {
-		return (1.0 - f) + f * cos(m_B + (simdata::PI_2 - m_B)*(alpha - m_B)/(m_C-m_B));
+		return (1.0 - f) + f * cos(m_B + (PI_2 - m_B)*(alpha - m_B)/(m_C-m_B));
 	}
 	return (1.0 - f);
 }
@@ -123,7 +124,7 @@ double Engine::flatten(double x) const {
 	//        / -pi/2 if x = -a
 	// f(x) = | 0     if x in [-a/2,b/2] (0 < a, b)
 	//        \ b     if x = b
-	double ret = std::abs(x-m_B/2) + x-m_B/2 + simdata::PI_2*(m_A/2+x - std::abs(m_A/2+x))/m_A;
+	double ret = std::abs(x-m_B/2) + x-m_B/2 + PI_2*(m_A/2+x - std::abs(m_A/2+x))/m_A;
 	return ret;
 }
 
@@ -149,11 +150,11 @@ void EngineDynamics::importChannels(Bus *bus) {
 EngineDynamics::EngineDynamics() {
 }
 
-std::vector<simdata::Vector3> EngineDynamics::getSmokeEmitterLocation() const {
-	std::vector<simdata::Vector3> smoke_emitter_location;
+std::vector<Vector3> EngineDynamics::getSmokeEmitterLocation() const {
+	std::vector<Vector3> smoke_emitter_location;
 	if (!m_Engine.empty()) {
-		simdata::Link<Engine>::vector::const_iterator i = m_Engine.begin();
-		simdata::Link<Engine>::vector::const_iterator iEnd = m_Engine.end();
+		Link<Engine>::vector::const_iterator i = m_Engine.begin();
+		Link<Engine>::vector::const_iterator iEnd = m_Engine.end();
 			for (; i !=iEnd; ++i)
 				smoke_emitter_location.push_back((*i)->getSmokeEmitterLocation());
 	}
@@ -162,7 +163,7 @@ std::vector<simdata::Vector3> EngineDynamics::getSmokeEmitterLocation() const {
 
 void EngineDynamics::preSimulationStep(double dt) {
 	BaseDynamics::preSimulationStep(dt);
-	m_Force = m_Moment = simdata::Vector3::ZERO;
+	m_Force = m_Moment = Vector3::ZERO;
 	if (!m_Engine.empty()) {
 		const double alpha = b_Alpha->value();
 		const double altitude = m_PositionLocal->z();
@@ -176,7 +177,7 @@ void EngineDynamics::preSimulationStep(double dt) {
 			(*i)->setConditions(cas, mach, altitude, density, alpha);
 			(*i)->setThrottle(throttle);
 			(*i)->update(dt);
-			simdata::Vector3 force = (*i)->getThrustVector();
+			Vector3 force = (*i)->getThrustVector();
 			m_Force += force;
 			m_Moment += (*i)->m_EngineOffset ^ force;
 		}
@@ -194,4 +195,6 @@ void EngineDynamics::getInfo(InfoList &info) const {
 	     << ", Thrust: " << std::setprecision(0) << std::setw(8) << m_Force.length();
 	info.push_back(line.str());
 }
+
+CSP_NAMESPACE_END
 

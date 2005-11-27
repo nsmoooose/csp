@@ -1,4 +1,4 @@
-// Combat Simulator Project - FlightSim Demo
+// Combat Simulator Project
 // Copyright (C) 2002, 2004 The Combat Simulator Project
 // http://csp.sourceforge.net
 //
@@ -58,32 +58,32 @@ using simdata::dot;
 using simdata::Vector3;
 
 
-SIMDATA_XML_BEGIN(LandingGear)
-	SIMDATA_DEF("gear_name", m_Name, true)
-	SIMDATA_DEF("max_position", m_MaxPosition, true)
-	SIMDATA_DEF("motion", m_Motion, true)
-	SIMDATA_DEF("damage_limit", m_DamageLimit, true)
-	SIMDATA_DEF("K", m_K, true)
-	SIMDATA_DEF("beta", m_Beta, true)
-	SIMDATA_DEF("chain", m_Chained, false)
-	SIMDATA_DEF("brake_limit", m_BrakeLimit, false)
-	SIMDATA_DEF("brake_slip", m_BrakeSlip, false)
-	SIMDATA_DEF("tire_static_friction", m_TireStaticFriction, false)
-	SIMDATA_DEF("tire_skid_friction", m_TireSkidFriction, false)
-	SIMDATA_DEF("tire_radius", m_TireRadius, false)
-	SIMDATA_DEF("compression_limit", m_CompressionLimit, true)
-	SIMDATA_DEF("steering_limit", m_SteeringLimit, false)
-	SIMDATA_DEF("tire_K", m_TireK, false)
-	SIMDATA_DEF("tire_beta", m_TireBeta, false)
-	SIMDATA_DEF("abs", m_ABS, false)
-	SIMDATA_DEF("rolling_friction", m_RollingFriction, false)
-	SIMDATA_DEF("drag_factor", m_DragFactor, false)
-	SIMDATA_DEF("gear_animation", m_GearAnimation, false)
-SIMDATA_XML_END
+CSP_XML_BEGIN(LandingGear)
+	CSP_DEF("gear_name", m_Name, true)
+	CSP_DEF("max_position", m_MaxPosition, true)
+	CSP_DEF("motion", m_Motion, true)
+	CSP_DEF("damage_limit", m_DamageLimit, true)
+	CSP_DEF("K", m_K, true)
+	CSP_DEF("beta", m_Beta, true)
+	CSP_DEF("chain", m_Chained, false)
+	CSP_DEF("brake_limit", m_BrakeLimit, false)
+	CSP_DEF("brake_slip", m_BrakeSlip, false)
+	CSP_DEF("tire_static_friction", m_TireStaticFriction, false)
+	CSP_DEF("tire_skid_friction", m_TireSkidFriction, false)
+	CSP_DEF("tire_radius", m_TireRadius, false)
+	CSP_DEF("compression_limit", m_CompressionLimit, true)
+	CSP_DEF("steering_limit", m_SteeringLimit, false)
+	CSP_DEF("tire_K", m_TireK, false)
+	CSP_DEF("tire_beta", m_TireBeta, false)
+	CSP_DEF("abs", m_ABS, false)
+	CSP_DEF("rolling_friction", m_RollingFriction, false)
+	CSP_DEF("drag_factor", m_DragFactor, false)
+	CSP_DEF("gear_animation", m_GearAnimation, false)
+CSP_XML_END
 
-SIMDATA_XML_BEGIN(GearDynamics)
-	SIMDATA_DEF("gear_set", m_Gear, true)
-SIMDATA_XML_END
+CSP_XML_BEGIN(GearDynamics)
+	CSP_DEF("gear_set", m_Gear, true)
+CSP_XML_END
 
 
 LandingGear::LandingGear() {

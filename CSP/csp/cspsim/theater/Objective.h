@@ -26,9 +26,9 @@
 #ifndef __CSPSIM_THEATER_OBJECTIVE_H__
 #define __CSPSIM_THEATER_OBJECTIVE_H__
 
+#include <csp/cspsim/theater/FeatureGroup.h>
 
-#include "Theater/FeatureGroup.h"
-
+CSP_NAMESPACE
 
 /**
  * class Objective.
@@ -40,7 +40,7 @@ class Objective: public FeatureGroup {
 public:
 	char m_StrategicValueModifier;
 
-	SIMDATA_DECLARE_OBJECT(Objective)
+	CSP_DECLARE_OBJECT(Objective)
 
 	Objective();
 
@@ -48,7 +48,7 @@ public:
 
 };
 
-
+CSP_NAMESPACE_END
 
 #endif // __CSPSIM_THEATER_OBJECTIVE_H__
 

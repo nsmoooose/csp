@@ -29,7 +29,9 @@
 #include <csp/csplib/data/Object.h>
 #include <csp/csplib/data/Vector3.h>
 
-#include <BaseDynamics.h>
+#include <csp/cspsim/BaseDynamics.h>
+
+CSP_NAMESPACE
 
 class EngineDynamics;
 class ThrustData;
@@ -37,9 +39,9 @@ class ThrustData;
 
 /** A generic engine class.
  */
-class Engine: public simdata::Object {
-	simdata::Link<ThrustData> m_ThrustData;
-	simdata::Vector3 m_ThrustDirection, m_EngineOffset;
+class Engine: public Object {
+	Link<ThrustData> m_ThrustData;
+	Vector3 m_ThrustDirection, m_EngineOffset;
 	double m_LastIdleThrust;
 	double m_LastMilitaryThrust;
 	double m_LastAfterburnerThrust;
@@ -50,7 +52,7 @@ class Engine: public simdata::Object {
 	double m_Altitude;
 	double m_Alpha;
 	double m_Density;
-	simdata::Vector3 m_SmokeEmitterLocation;
+	Vector3 m_SmokeEmitterLocation;
 	friend class EngineDynamics;
 
 	// Depending on the AOA (and mach) the engine misses air flow lowering the thrust.  The
@@ -59,16 +61,16 @@ class Engine: public simdata::Object {
 	double flatten(double x) const;
 
 public:
-	SIMDATA_DECLARE_OBJECT(Engine)
+	CSP_DECLARE_OBJECT(Engine)
 
-	Engine(simdata::Vector3 const &thrustDirection = simdata::Vector3::YAXIS);
+	Engine(Vector3 const &thrustDirection = Vector3::YAXIS);
 
 	virtual ~Engine();
 
 	virtual void registerChannels(Bus*) { }
 	virtual void importChannels(Bus*) { }
 
-	void setThrustDirection(simdata::Vector3 const& thrustDirection);
+	void setThrustDirection(Vector3 const& thrustDirection);
 
 	void setThrottle(double throttle) { m_Throttle = throttle; }
 
@@ -91,9 +93,9 @@ public:
 	double getAfterburnerThrust() const { return m_LastAfterburnerThrust; }
 
 	virtual double getThrust() const { return m_LastThrust; };
-	virtual simdata::Vector3 getThrustVector() const { return m_LastThrust * m_ThrustDirection; }
+	virtual Vector3 getThrustVector() const { return m_LastThrust * m_ThrustDirection; }
 
-	simdata::Vector3 const &getSmokeEmitterLocation() const;
+	Vector3 const &getSmokeEmitterLocation() const;
 
 	virtual void update(double) { updateThrust(); }
 
@@ -112,20 +114,20 @@ protected:
 /** A dynamics class that computes the force and moment of one or more engines.
  */
 class EngineDynamics: public BaseDynamics {
-	typedef simdata::Link<Engine>::vector EngineSet;
+	typedef Link<Engine>::vector EngineSet;
 	EngineSet m_Engine;
-	DataChannel<double>::CRef b_ThrottleInput;
-	DataChannel<double>::CRef b_Mach;
-	DataChannel<double>::CRef b_Alpha;
-	DataChannel<double>::CRef b_CAS;
-	DataChannel<double>::CRef b_Density;
+	DataChannel<double>::CRefT b_ThrottleInput;
+	DataChannel<double>::CRefT b_Mach;
+	DataChannel<double>::CRefT b_Alpha;
+	DataChannel<double>::CRefT b_CAS;
+	DataChannel<double>::CRefT b_Density;
 
 protected:
 	virtual void registerChannels(Bus*);
 	virtual void importChannels(Bus*);
 
 public:
-	SIMDATA_DECLARE_OBJECT(EngineDynamics)
+	CSP_DECLARE_OBJECT(EngineDynamics)
 
 	virtual void getInfo(InfoList &info) const;
 
@@ -134,8 +136,10 @@ public:
 	virtual void preSimulationStep(double dt);
 	virtual void computeForceAndMoment(double x);
 
-	std::vector<simdata::Vector3> getSmokeEmitterLocation() const;
+	std::vector<Vector3> getSmokeEmitterLocation() const;
 };
+
+CSP_NAMESPACE_END
 
 #endif // __CSPSIM_ENGINE_H__
 

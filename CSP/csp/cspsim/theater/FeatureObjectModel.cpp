@@ -24,22 +24,23 @@
 
 #include <vector>
 
-#include "Theater/FeatureObjectModel.h"
-#include "Theater/FeatureSceneGroup.h"
-#include "Theater/FeatureSceneModel.h"
-#include "Theater/LayoutTransform.h"
-#include "Theater/ElevationCorrection.h"
+#include <csp/cspsim/theater/FeatureObjectModel.h>
+#include <csp/cspsim/theater/FeatureSceneGroup.h>
+#include <csp/cspsim/theater/FeatureSceneModel.h>
+#include <csp/cspsim/theater/LayoutTransform.h>
+#include <csp/cspsim/theater/ElevationCorrection.h>
 
-#include "ObjectModel.h"
+#include <csp/cspsim/ObjectModel.h>
 
 #include <csp/csplib/data/ObjectInterface.h>
 
+CSP_NAMESPACE
 
-SIMDATA_XML_BEGIN(FeatureObjectModel)
-	SIMDATA_DEF("model", m_ObjectModel, false)
-	SIMDATA_DEF("hit_points", m_HitPoints, false)
-	SIMDATA_DEF("value_modifier", m_Value, false)
-SIMDATA_XML_END
+CSP_XML_BEGIN(FeatureObjectModel)
+	CSP_DEF("model", m_ObjectModel, false)
+	CSP_DEF("hit_points", m_HitPoints, false)
+	CSP_DEF("value_modifier", m_Value, false)
+CSP_XML_END
 
 
 void FeatureObjectModel::addSceneModel(FeatureSceneGroup *group, LayoutTransform const &transform, ElevationCorrection const &correction) {
@@ -64,5 +65,5 @@ FeatureObjectModel::FeatureObjectModel(): m_HitPoints(10), m_Value(0) {
 FeatureObjectModel::~FeatureObjectModel() {
 }
 
-
+CSP_NAMESPACE_END
 

@@ -1,4 +1,4 @@
-// Combat Simulator Project - CSPSim
+// Combat Simulator Project
 // Copyright (C) 2002-2005 The Combat Simulator Project
 // http://csp.sourceforge.net
 //
@@ -26,17 +26,17 @@
 #ifndef __CSPSIM_ANIMATION_H__
 #define __CSPSIM_ANIMATION_H__
 
-#include <typeinfo>
-
-#include <osg/NodeCallback>
-
 #include <csp/csplib/data/Object.h>
-
-class Bus;
+#include <osg/NodeCallback>
+#include <typeinfo>
 
 namespace osg { class AnimationPath; }
 namespace osg { class AnimationPathCallback; }
 namespace osg { class Node; }
+
+CSP_NAMESPACE
+
+class Bus;
 
 
 /** Base class for animation callbacks.
@@ -85,9 +85,9 @@ private:
  *  the 3d model is performed by customized AnimationCallbacks that are
  *  created by the Animation instances and bound directly to model nodes.
  */
-class Animation: public simdata::Object {
+class Animation: public Object {
 public:
-	SIMDATA_DECLARE_ABSTRACT_OBJECT(Animation)
+	CSP_DECLARE_ABSTRACT_OBJECT(Animation)
 
 	Animation(): m_LOD(0) { }
 
@@ -121,6 +121,7 @@ private:
 	int m_LOD;
 };
 
+CSP_NAMESPACE_END
 
 #endif // __CSPSIM_ANIMATION_H__
 

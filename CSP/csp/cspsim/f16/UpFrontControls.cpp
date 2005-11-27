@@ -33,8 +33,8 @@
 #include <csp/csplib/data/ObjectInterface.h>
 
 
-SIMDATA_XML_BEGIN(UpFrontControls)
-SIMDATA_XML_END
+CSP_XML_BEGIN(UpFrontControls)
+CSP_XML_END
 
 DEFINE_INPUT_INTERFACE(UpFrontControls)
 

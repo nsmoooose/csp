@@ -26,22 +26,23 @@
 #ifndef __CSPSIM_THEATER_RANDOMFORESTMODEL_H__
 #define __CSPSIM_THEATER_RANDOMFORESTMODEL_H__
 
-
-#include "Theater/Feature.h"
-#include "Theater/FeatureQuad.h"
-#include "Theater/FeatureGroupModel.h"
-
-#include <osg/Vec3>
-
-namespace osg {
-	class Geometry;
-}
+#include <csp/cspsim/theater/Feature.h>
+#include <csp/cspsim/theater/FeatureQuad.h>
+#include <csp/cspsim/theater/FeatureGroupModel.h>
 
 #include <csp/csplib/data/Link.h>
 #include <csp/csplib/util/Ref.h>
 #include <csp/csplib/data/Vector3.h>
 
+#include <osg/Vec3>
+
 #include <vector>
+
+namespace osg {
+	class Geometry;
+}
+
+CSP_NAMESPACE
 
 class FeatureSceneGroup;
 class LayoutTransform;
@@ -57,18 +58,18 @@ class IsoContour;
  * a circle).   Intended for constructing forests.
  */
 class RandomForestModel: public FeatureGroupModel {
-	simdata::Link<FeatureQuad>::vector m_Models;
+	Link<FeatureQuad>::vector m_Models;
 	std::vector<float> m_Density;
 	float m_MinimumSpacing;
 	int m_Seed;
-	simdata::Link<IsoContour> m_IsoContour;
+	Link<IsoContour> m_IsoContour;
 
-	std::vector<std::vector<simdata::Vector3> > m_Offsets;
+	std::vector<std::vector<Vector3> > m_Offsets;
 	
-	osg::Geometry *construct(simdata::Ref<FeatureQuad> quad, std::vector<osg::Vec3> const &position) const;
+	osg::Geometry *construct(Ref<FeatureQuad> quad, std::vector<osg::Vec3> const &position) const;
 
 public:
-	SIMDATA_DECLARE_OBJECT(RandomForestModel)
+	CSP_DECLARE_OBJECT(RandomForestModel)
 
 	/**
 	 * Return the total number of features below this group.
@@ -93,8 +94,7 @@ public:
 
 };
 
-
-
+CSP_NAMESPACE_END
 
 #endif // __CSPSIM_THEATER_RANDOMFORESTMODEL_H__
 

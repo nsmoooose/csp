@@ -27,23 +27,23 @@
 #include <Stores/StoresManagementSystem.h>
 
 
-SIMDATA_XML_BEGIN(FuelNode)
-	SIMDATA_DEF("key", m_Key, true)
-	SIMDATA_DEF("children", m_ChildKeys, false)
-SIMDATA_XML_END
+CSP_XML_BEGIN(FuelNode)
+	CSP_DEF("key", m_Key, true)
+	CSP_DEF("children", m_ChildKeys, false)
+CSP_XML_END
 
-SIMDATA_XML_BEGIN(FuelTankNode)
-	SIMDATA_DEF("tank_id", m_TankId, false)
-	SIMDATA_DEF("pressurization_rate", m_PressurizationRate, false)
-	SIMDATA_DEF("depressurization_rate", m_DepressurizationRate, false)
-	SIMDATA_DEF("inflow_rate", m_InflowRate, false)
-	SIMDATA_DEF("outflow_rate", m_OutflowRate, false)
-	SIMDATA_DEF("needs_pressure", m_NeedsPressure, false)
-SIMDATA_XML_END
+CSP_XML_BEGIN(FuelTankNode)
+	CSP_DEF("tank_id", m_TankId, false)
+	CSP_DEF("pressurization_rate", m_PressurizationRate, false)
+	CSP_DEF("depressurization_rate", m_DepressurizationRate, false)
+	CSP_DEF("inflow_rate", m_InflowRate, false)
+	CSP_DEF("outflow_rate", m_OutflowRate, false)
+	CSP_DEF("needs_pressure", m_NeedsPressure, false)
+CSP_XML_END
 
-SIMDATA_XML_BEGIN(FuelManagementSystem)
-	SIMDATA_DEF("fuel_nodes", m_FuelNodes, true)
-SIMDATA_XML_END
+CSP_XML_BEGIN(FuelManagementSystem)
+	CSP_DEF("fuel_nodes", m_FuelNodes, true)
+CSP_XML_END
 
 
 void FuelNode::bindChildren(NodeMap const &node_map) {

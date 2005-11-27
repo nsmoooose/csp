@@ -33,7 +33,7 @@
 
 class F16Engine: public Engine {
 public:
-	SIMDATA_DECLARE_OBJECT(F16Engine)
+	CSP_DECLARE_OBJECT(F16Engine)
 
 	F16Engine();
 	virtual ~F16Engine();

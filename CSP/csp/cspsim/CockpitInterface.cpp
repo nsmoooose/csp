@@ -23,29 +23,30 @@
  **/
 
 
-#include <CockpitInterface.h>
+#include <csp/cspsim/CockpitInterface.h>
 
+CSP_NAMESPACE
 
-CockpitSwitch::CockpitSwitch(simdata::Enumeration const *states, std::string const &channel, std::string const &command, std::string const &initial): m_Command(command) {
+CockpitSwitch::CockpitSwitch(Enumeration const *states, std::string const &channel, std::string const &command, std::string const &initial): m_Command(command) {
 	assert(states);
-	simdata::EnumLink initial_value(*states, initial);
-	m_State = DataChannel<simdata::EnumLink>::newSharedPush(channel, initial_value);
+	EnumLink initial_value(*states, initial);
+	m_State = DataChannel<EnumLink>::newSharedPush(channel, initial_value);
 }
 
 CockpitSwitch::CockpitSwitch(std::string const &states, std::string const &channel, std::string const &command, std::string const &initial): m_Command(command) {
 	assert(!states.empty());
-	simdata::Enumeration enumeration(states);
-	simdata::EnumLink initial_value(enumeration, initial);
-	m_State = DataChannel<simdata::EnumLink>::newSharedPush(channel, initial_value);
+	Enumeration enumeration(states);
+	EnumLink initial_value(enumeration, initial);
+	m_State = DataChannel<EnumLink>::newSharedPush(channel, initial_value);
 }
 
-CockpitSwitch::CockpitSwitch(DataChannel<simdata::EnumLink> *channel, std::string const &command): m_Command(command), m_State(channel) {
+CockpitSwitch::CockpitSwitch(DataChannel<EnumLink> *channel, std::string const &command): m_Command(command), m_State(channel) {
 }
 
 void CockpitSwitch::registerHandlers(InputInterface *input) {
 	assert(input);
 	if (m_Command.empty()) return;
-	const simdata::Enumeration &enumeration = m_State->value().getEnumeration();
+	const Enumeration &enumeration = m_State->value().getEnumeration();
 	if (enumeration.size() == 2) {
 		input->bindActionEvent(m_Command + "_TOGGLE", sigc::mem_fun(*this, &CockpitSwitch::onToggle));
 	} else {
@@ -64,26 +65,22 @@ void CockpitSwitch::registerChannels(Bus *bus) {
 }
 
 void CockpitSwitch::onToggle() {
-	std::cout << m_Command << " toggle\n";
 	m_State->value().cycle();
 	m_State->push();
 }
 
 void CockpitSwitch::onCycleNext() {
-	std::cout << m_Command << " next\n";
 	m_State->value().cycle();
 	m_State->push();
 }
 
 void CockpitSwitch::onCyclePrev() {
-	std::cout << m_Command << " prev\n";
 	m_State->value().cycleBack();
 	m_State->push();
 }
 
 void CockpitSwitch::onSelect(int state) {
 	m_State->value().set(state);
-	std::cout << m_Command << " select " << m_State->value().getToken() << "\n";
 	m_State->push();
 }
 
@@ -105,4 +102,6 @@ void CockpitInterface::registerChannels(Bus *bus) {
 	}
 }
 
+
+CSP_NAMESPACE_END
 

@@ -42,10 +42,10 @@
 #include <csp/csplib/data/ObjectInterface.h>
 
 
-SIMDATA_XML_BEGIN(F16System)
-	SIMDATA_DEF("fuel_door_sequence", m_FuelDoorSequence, false)
-	SIMDATA_DEF("canopy_sequence", m_CanopySequence, false)
-SIMDATA_XML_END
+CSP_XML_BEGIN(F16System)
+	CSP_DEF("fuel_door_sequence", m_FuelDoorSequence, false)
+	CSP_DEF("canopy_sequence", m_CanopySequence, false)
+CSP_XML_END
 
 DEFINE_INPUT_INTERFACE(F16System)
 

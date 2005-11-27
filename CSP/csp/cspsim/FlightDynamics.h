@@ -26,21 +26,24 @@
 #ifndef __CSPSIM_FLIGHTDYNAMICS_H__
 #define __CSPSIM_FLIGHTDYNAMICS_H__
 
-#include "BaseDynamics.h"
-#include "Filters.h"
-#include "Stores/DragProfile.h"
-#include "Stores/StoresDynamics.h"
+#include <csp/csplib/util/Namespace.h>
+#include <csp/cspsim/BaseDynamics.h>
+#include <csp/cspsim/Filters.h>
 
+CSP_NAMESPACE
+
+class DragProfile;
 class FlightModel;
 class ThrustData;
+class StoresDynamics;
 
 
 /**
  * The primary dynamics class for modeling aircraft flight.  Each aircraft
  * has a FlightDynamics instance.  Each FlightDynamics instance drives a
  * FlightModel instance, which simulates the aerodynamic response of the
- * aircraft.  Note that FlightModels are static simdata objects, which are
- * shared by one or more FlightDynamics instances.
+ * aircraft.  Note that FlightModels are static objects, which are shared
+ * by one or more FlightDynamics instances.
  */
 class FlightDynamics: public BaseDynamics {
 	friend class FlightModel;
@@ -48,7 +51,7 @@ class FlightDynamics: public BaseDynamics {
 public:
 	FlightDynamics();
 
-	SIMDATA_DECLARE_OBJECT(FlightDynamics)
+	CSP_DECLARE_OBJECT(FlightDynamics)
 
 	void computeForceAndMoment(double x);
 	void initializeSimulationStep(double dt);
@@ -60,8 +63,8 @@ public:
 
 protected:
 
-	simdata::Link<FlightModel> m_FlightModel;
-	simdata::Link<DragProfile> m_DragProfile;
+	Link<FlightModel> m_FlightModel;
+	Link<DragProfile> m_DragProfile;
 
 	virtual void registerChannels(Bus*);
 	virtual void importChannels(Bus*);
@@ -80,9 +83,9 @@ protected:
 	DataChannel<double>::CRef b_Density;
 	DataChannel<double>::CRef b_GroundZ;
 	DataChannel<double>::CRef b_Mach;
-	DataChannel<simdata::Vector3>::CRef b_AccelerationBody;
-	DataChannel<simdata::Vector3>::CRef b_WindVelocity;
-	DataChannel<simdata::Vector3>::CRef b_CenterOfMassOffset;
+	DataChannel<Vector3>::CRef b_AccelerationBody;
+	DataChannel<Vector3>::CRef b_WindVelocity;
+	DataChannel<Vector3>::CRef b_CenterOfMassOffset;
 	DataChannel<StoresDynamics>::CRef b_StoresDynamics;
 
 	// export channels
@@ -100,12 +103,13 @@ protected:
 	double m_Airspeed;
 	double m_QBar;
 
-	simdata::Vector3 m_WindVelocityBody;
+	Vector3 m_WindVelocityBody;
 
 	LagFilter m_FilterG;
 	LagFilter m_FilterLateralG;
 };
 
+CSP_NAMESPACE_END
 
 #endif  // __FLIGHTDYNAMICS_H__
 

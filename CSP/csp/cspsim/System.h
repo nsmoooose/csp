@@ -1,4 +1,4 @@
-// Combat Simulator Project - FlightSim Demo
+// Combat Simulator Project
 // Copyright 2003, 2004 The Combat Simulator Project
 // http://csp.sourceforge.net
 //

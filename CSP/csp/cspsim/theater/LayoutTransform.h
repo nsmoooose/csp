@@ -26,21 +26,20 @@
 #ifndef __CSPSIM_THEATER_LAYOUTTRANSFORM_H__
 #define __CSPSIM_THEATER_LAYOUTTRANSFORM_H__
 
+#include <csp/csplib/util/Export.h>
+#include <csp/csplib/util/Namespace.h>
 #include <osg/Vec3>
 
-#include <Export.h>
+CSP_NAMESPACE
 
-namespace simdata {
-	class Vector3;
-}
-
+class Vector3;
 
 /**
  * class LayoutTransform
  *
  * A helper class for accumulationg and applying 2D displacements and rotations.
  */
-class CSPSIM_EXPORT LayoutTransform {
+class CSP_EXPORT LayoutTransform {
 	float m_X, m_Y, m_Angle;
 	float c, s;
 public:
@@ -48,12 +47,12 @@ public:
 	LayoutTransform(float x, float y, float angle);
 	LayoutTransform operator *(LayoutTransform const &t) const;
 	osg::Vec3 operator()() const;
-	osg::Vec3 operator()(simdata::Vector3 const &offset) const;
+	osg::Vec3 operator()(Vector3 const &offset) const;
 	osg::Vec3 operator()(osg::Vec3 const &offset) const;
 	float getAngle() const { return m_Angle; }
 };
 
-
+CSP_NAMESPACE_END
 
 #endif // __CSPSIM_THEATER_LAYOUTTRANSFORM_H__
 

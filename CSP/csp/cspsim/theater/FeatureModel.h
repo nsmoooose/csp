@@ -26,12 +26,12 @@
 #ifndef __CSPSIM_THEATER_FEATUREMODEL_H__
 #define __CSPSIM_THEATER_FEATUREMODEL_H__
 
-
-class Feature;
-
 #include <csp/csplib/data/Path.h>
 #include <csp/csplib/data/Object.h>
 
+CSP_NAMESPACE
+
+class Feature;
 class LayoutTransform;
 class ElevationCorrection;
 class FeatureSceneGroup;
@@ -46,7 +46,7 @@ class FeatureSceneGroup;
  * of FeatureGroups out both primitive and complex components.
  *
  */
-class FeatureModel: public simdata::Object {
+class FeatureModel: public Object {
 public:
 	/**
 	 * Add all children to the scene graph of the FeatureGroup.
@@ -78,6 +78,8 @@ public:
 // compiler and doxygen.
 inline void FeatureModel::addSceneModel(FeatureSceneGroup *, LayoutTransform const &, ElevationCorrection const &) {}
 inline void FeatureModel::makeFeatures(std::vector<Feature> &, int) const {}
+
+CSP_NAMESPACE_END
 
 #endif // __CSPSIM_THEATER_FEATUREMODEL_H__
 

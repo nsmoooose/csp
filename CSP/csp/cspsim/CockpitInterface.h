@@ -26,21 +26,22 @@
 #ifndef __COCKPIT_INTERFACE_H__
 #define __COCKPIT_INTERFACE_H__
 
-#include <Bus.h>
-#include <InputInterface.h>
+#include <csp/cspsim/Bus.h>
+#include <csp/cspsim/InputInterface.h>
 #include <csp/csplib/util/Ref.h>
 #include <csp/csplib/data/Enum.h>
 #include <sigc++/sigc++.h>
 #include <string>
 
+CSP_NAMESPACE
 
 /** Base class for elements of the cockpit that can receive input events
  *  and control data channels.
  */
-class CockpitElement: public simdata::Referenced, public sigc::trackable {
+class CockpitElement: public Referenced, public sigc::trackable {
 friend class CockpitInterface;
 public:
-	typedef simdata::Ref<CockpitElement> Ref;
+	typedef Ref<CockpitElement> RefT;
 
 protected:
 	virtual void registerHandlers(InputInterface*) { }
@@ -62,12 +63,12 @@ protected:
  */
 class CockpitSwitch: public CockpitElement {
 public:
-	typedef simdata::Ref<CockpitSwitch> Ref;
+	typedef Ref<CockpitSwitch> RefT;
 	// if command == "", no input handlers will be registered.
-	CockpitSwitch(simdata::Enumeration const *enumeration, std::string const &channel, std::string const &command, std::string const &initial);
+	CockpitSwitch(Enumeration const *enumeration, std::string const &channel, std::string const &command, std::string const &initial);
 	CockpitSwitch(std::string const &enumeration, std::string const &channel, std::string const &command, std::string const &initial);
-	CockpitSwitch(DataChannel<simdata::EnumLink> *channel, std::string const &command);
-	simdata::EnumLink &state() { return m_State->value(); }
+	CockpitSwitch(DataChannel<EnumLink> *channel, std::string const &command);
+	EnumLink &state() { return m_State->value(); }
 
 protected:
 	virtual void registerHandlers(InputInterface*);
@@ -75,7 +76,7 @@ protected:
 
 private:
 	std::string m_Command;
-	DataChannel<simdata::EnumLink>::Ref m_State;
+	DataChannel<EnumLink>::RefT m_State;
 
 	void onToggle();
 	void onCycleNext();
@@ -86,7 +87,7 @@ private:
 
 /** A container class that manages multiple cockpit elements.
  */
-class CockpitInterface: public simdata::Referenced {
+class CockpitInterface: public Referenced {
 
 public:
 	virtual void registerChannels(Bus *bus);
@@ -94,9 +95,10 @@ public:
 	virtual CockpitElement* addElement(CockpitElement *element);
 
 private:
-	std::vector<CockpitElement::Ref> m_Elements;
+	std::vector<CockpitElement::RefT> m_Elements;
 };
 
+CSP_NAMESPACE_END
 
 #endif // __COCKPIT_INTERFACE_H__
 

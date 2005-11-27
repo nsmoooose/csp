@@ -26,7 +26,7 @@
 #ifndef __CSPSIM_THEATER_FEATURELAYOUT_H__
 #define __CSPSIM_THEATER_FEATURELAYOUT_H__
 
-#include "Theater/Feature.h"
+#include <csp/cspsim/theater/Feature.h>
 
 #include <csp/csplib/data/Link.h>
 #include <csp/csplib/data/Object.h>
@@ -34,6 +34,8 @@
 #include <csp/csplib/data/Vector3.h>
 
 #include <vector>
+
+CSP_NAMESPACE
 
 class FeatureModel;
 class FeatureSceneGroup;
@@ -46,17 +48,17 @@ class ElevationCorrection;
  *
  * Positions and orients a FeatureModel.
  */
-class FeatureLayout: public simdata::Object {
+class FeatureLayout: public Object {
 
 protected:
 
-	simdata::Link<FeatureModel> m_FeatureModel;
+	Link<FeatureModel> m_FeatureModel;
 	float m_X, m_Y;
 	float m_Orientation;
 	char m_ValueModifier;
 public:
 
-	SIMDATA_DECLARE_OBJECT(FeatureLayout)
+	CSP_DECLARE_OBJECT(FeatureLayout)
 
 	FeatureLayout();
 
@@ -65,12 +67,12 @@ public:
 	/**
 	 * Get the FeatureModel.
 	 */
-	simdata::Ref<FeatureModel const> getFeatureModel() const;
+	Ref<FeatureModel const> getFeatureModel() const;
 
 	/**
 	 * Get the relative position of the FeatureModel.
 	 */
-	simdata::Vector3 getPosition() const { return simdata::Vector3(m_X, m_Y, 0.0); }
+	Vector3 getPosition() const { return Vector3(m_X, m_Y, 0.0); }
 
 	/**
 	 * Get the relative orientation of the FeatureModel.
@@ -102,7 +104,7 @@ public:
 
 };
 
-
+CSP_NAMESPACE_END
 
 #endif // __CSPSIM_THEATER_FEATURELAYOUT_H__
 

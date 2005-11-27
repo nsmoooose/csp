@@ -49,7 +49,7 @@ class Station: public simdata::Object {
 	mutable unsigned m_Mask;
 
 public:
-	SIMDATA_DECLARE_STATIC_OBJECT(Station)
+	CSP_DECLARE_STATIC_OBJECT(Station)
 
 	Station();
 	virtual ~Station();

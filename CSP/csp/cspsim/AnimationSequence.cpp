@@ -1,4 +1,4 @@
-// Combat Simulator Project - FlightSim Demo
+// Combat Simulator Project
 // Copyright (C) 2005 The Combat Simulator Project
 // http://csp.sourceforge.net
 //
@@ -23,26 +23,26 @@
  **/
 
 
-#include "AnimationSequence.h"
-
+#include <csp/cspsim/AnimationSequence.h>
 #include <csp/csplib/data/ObjectInterface.h>
 
+CSP_NAMESPACE
 
-SIMDATA_XML_BEGIN(SharedSequence)
-	SIMDATA_DEF("sequence_channel", m_SequenceChannel, false)
-	SIMDATA_DEF("normalized_channel", m_NormalizedChannel, false)
-	SIMDATA_DEF("initial_key", m_InitialKey, true)
-	SIMDATA_DEF("final_key", m_FinalKey, true)
-SIMDATA_XML_END
+CSP_XML_BEGIN(SharedSequence)
+	CSP_DEF("sequence_channel", m_SequenceChannel, false)
+	CSP_DEF("normalized_channel", m_NormalizedChannel, false)
+	CSP_DEF("initial_key", m_InitialKey, true)
+	CSP_DEF("final_key", m_FinalKey, true)
+CSP_XML_END
 
-SIMDATA_XML_BEGIN(TimedSequence)
-	SIMDATA_DEF("duration", m_Duration, false)
-SIMDATA_XML_END
+CSP_XML_BEGIN(TimedSequence)
+	CSP_DEF("duration", m_Duration, false)
+CSP_XML_END
 
-SIMDATA_XML_BEGIN(DrivenSequence)
-	SIMDATA_DEF("scale", m_Scale, false)
-	SIMDATA_DEF("offset", m_Offset, false)
-SIMDATA_XML_END
+CSP_XML_BEGIN(DrivenSequence)
+	CSP_DEF("scale", m_Scale, false)
+	CSP_DEF("offset", m_Offset, false)
+CSP_XML_END
 
 
 void SharedSequence::registerChannels(Bus *bus) {
@@ -74,7 +74,7 @@ void SharedSequence::registerChannels(Bus *bus) {
 }
 
 void SharedSequence::setNormalizedKey(double key) {
-	key = simdata::clampTo(key, 0.0, 1.0);
+	key = clampTo(key, 0.0, 1.0);
 	m_NormalizedKey = key;
 	m_SequenceKey = m_InitialKey + key * (m_FinalKey - m_InitialKey);
 	update();
@@ -85,7 +85,7 @@ void SharedSequence::updateSequenceKeyFromNormalizedChannel() {
 }
 
 void SharedSequence::setSequenceKey(double key) {
-	key = simdata::clampTo(key, m_InitialKey, m_FinalKey);
+	key = clampTo(key, m_InitialKey, m_FinalKey);
 	m_SequenceKey = key;
 	m_NormalizedKey = (key - m_InitialKey) / (m_FinalKey - m_InitialKey);
 	update();
@@ -98,3 +98,6 @@ void SharedSequence::update(bool force) {
 		b_SequenceKey->value() = m_SequenceKey;
 	}
 }
+
+CSP_NAMESPACE_END
+

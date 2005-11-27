@@ -21,79 +21,64 @@
  * @file Exception.cpp
  *
  **/
+#include <csp/cspsim/Exception.h>
+#include <csp/csplib/util/Log.h>
+#include <csp/modules/demeter/DemeterException.h>
+
 #include <cstdio>
 #include <iostream>
 
-#include "Exception.h"
-#include <Demeter/DemeterException.h>
-#include <csp/csplib/util/Log.h>
-
-namespace csp {
+CSP_NAMESPACE
 
 void FatalException(Exception &e, std::string const &location) {
 	DataError *pDataError = dynamic_cast<DataError*> (&e);
-	CSP_LOG(APP, ERROR, "CSPSim: caught exception in " << location << ": " << e.getMessage());
+	CSPLOG(ERROR, APP) << "CSPSim: caught exception in " << location << ": " << e.getMessage();
 	std::cerr << "\n";
 	e.details();
 	std::cerr << "\n";
 	if (pDataError) {
-		std::cerr << "Please check that the data paths in CSPSim.ini are set to reasonable\n"
-		          << "values (CSPSim.ini is usually found in CSPSim/Data).  If you appear\n"
-			  << "to be missing a necessary data file, please check the CSP download\n"
-			  << "page for the latest data releases or ask for assistance on the CSP\n"
-			  << "forums:\n"
-			  << "                http://csp.sourceforge.net/forum\n";
+		std::cerr
+			<< "Please check that the data paths in CSPSim.ini are set to reasonable\n"
+			<< "values (CSPSim.ini is usually found in CSPSim/Data).  If you appear\n"
+			<< "to be missing a necessary data file, please check the CSP download\n"
+			<< "page for the latest data releases or ask for assistance on the CSP\n"
+			<< "forums:\n"
+			<< "                http://csp.sourceforge.net/forum\n";
 	}
 	else {
-		std::cerr << "CSPSim: caught an exception.  Please report this along with\n"
-		          << "as much information as possible about what was happening at \n"
-			  << "the time of the error to the CSP forum at\n"
-			  << "              http://csp.sourceforge.net/forum\n";
+		std::cerr
+			<< "CSPSim: caught an exception.  Please report this along with\n"
+			<< "as much information as possible about what was happening at \n"
+			<< "the time of the error to the CSP forum at\n"
+			<< "              http://csp.sourceforge.net/forum\n";
 	}
-	std::cerr << "\n";
+	std::cerr << std::endl;
 	::exit(1);
 }
 
 void DemeterFatalException(DemeterException &e,  std::string const &location) {
-	CSP_LOG(APP, ERROR, "CSPSim: caught Demeter exception in " 
-	                            << location << ": " << e.GetErrorMessage());
-	std::cerr << "\n";
-	std::cerr << "CSPSim: caught an Demeter exception.  Please report this along\n"
-		  << "with as much information as possible about what was happening at \n"
-		  << "the time of the error to the CSP forum at\n"
-		  << "                http://csp.sourceforge.net/forum\n";
-	std::cerr << "\n";
-	::exit(1);
-}
-
-void SimDataFatalException(simdata::Exception &e,  std::string const &location) {
-	CSP_LOG(APP, ERROR, "CSPSim: caught SimData exception in "
-	                            << location << ": " << e.getType() << "\n  "
-	                            << e.getMessage() << "\n\n"
-	                            << e.getTrace());
-	std::cerr << "\n";
-	e.details();
-	std::cerr << "\n";
-	std::cerr \
-		  << "CSPSim: caught a SimData exception.  Please report this along\n"
-		  << "with the last 100 or so lines of CSPSim.log and as much\n"
-		  << "information as possible about what was happening at the time\n"
-		  << "of the error to the CSP forum at\n"
-		  << "                http://csp.sourceforge.net/forum\n";
+	CSPLOG(ERROR, APP) << "CSPSim: caught Demeter exception in " << location << ": " << e.GetErrorMessage();
+	std::cerr << "\n"
+		<< "CSPSim: caught an Demeter exception.  Please report this along\n"
+		<< "with as much information as possible about what was happening at \n"
+		<< "the time of the error to the CSP forum at\n"
+		<< "                http://csp.sourceforge.net/forum\n";
 	std::cerr << std::endl;
 	::exit(1);
 }
 
 void OtherFatalException(std::string const &location) {
-	CSP_LOG(APP, ERROR, "CSPSim: caught unknown exception in " << location << ".");
-	std::cerr << "\n";
-	std::cerr << "CSPSim: caught an (unknown) exception.  Please report this along\n"
-	          << "with as much information as possible about what was happening at \n"
-		  << "the time of the error to the CSP forum at\n"
-		  << "                http://csp.sourceforge.net/forum\n";
-	std::cerr << "\n";
+	CSPLOG(ERROR, APP) << "CSPSim: caught unknown exception in " << location << ".";
+	std::cerr
+		<< "\n"
+		<< "CSPSim: caught an (unknown) exception.  Please report this along\n"
+		<< "with as much information as possible about what was happening at \n"
+		<< "the time of the error to the CSP forum at\n"
+		<< "                http://csp.sourceforge.net/forum\n";
+	std::cerr << std::endl;
 	::exit(1);
 }
 
-} // namespace csp
+CSP_NAMESPACE_END
+
 

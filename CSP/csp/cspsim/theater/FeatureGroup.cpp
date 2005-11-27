@@ -23,32 +23,33 @@
  **/
 
 
-#include "Theater/FeatureGroup.h"
-#include "Theater/FeatureObjectModel.h"
-#include "Theater/FeatureSceneGroup.h"
-#include "Theater/LayoutTransform.h"
-#include "Theater/ElevationCorrection.h"
-#include "TerrainObject.h"
-#include "Projection.h"
+#include <csp/cspsim/theater/FeatureGroup.h>
+#include <csp/cspsim/theater/FeatureObjectModel.h>
+#include <csp/cspsim/theater/FeatureSceneGroup.h>
+#include <csp/cspsim/theater/LayoutTransform.h>
+#include <csp/cspsim/theater/ElevationCorrection.h>
+#include <csp/cspsim/TerrainObject.h>
+#include <csp/cspsim/Projection.h>
 
-#include <SimCore/Util/Log.h>
+#include <csp/csplib/util/Log.h>
 #include <csp/csplib/data/ObjectInterface.h>
 
 #include <osg/Vec3>
 #include <osg/Quat>
 
+CSP_NAMESPACE
 
-SIMDATA_XML_BEGIN(FeatureGroup)
-	SIMDATA_DEF("model", m_Model, true)
-	SIMDATA_DEF("position", m_Position, true)
-	SIMDATA_DEF("orientation", m_Orientation, true)
-	/*SIMDATA_DEF("x", m_X, true)*/
-	/*SIMDATA_DEF("y", m_Y, true)*/
-SIMDATA_XML_END
+CSP_XML_BEGIN(FeatureGroup)
+	CSP_DEF("model", m_Model, true)
+	CSP_DEF("position", m_Position, true)
+	CSP_DEF("orientation", m_Orientation, true)
+	/*CSP_DEF("x", m_X, true)*/
+	/*CSP_DEF("y", m_Y, true)*/
+CSP_XML_END
 
 
-simdata::Vector3 FeatureGroup::getGlobalPosition() const {
-	return simdata::Vector3(m_X, m_Y, 0.0);
+Vector3 FeatureGroup::getGlobalPosition() const {
+	return Vector3(m_X, m_Y, 0.0);
 }
 
 FeatureSceneGroup* FeatureGroup::getSceneGroup() {
@@ -65,7 +66,7 @@ void FeatureGroup::onLeaveScene() {
 	m_SceneGroup = NULL;
 }
 
-FeatureSceneGroup* FeatureGroup::makeSceneGroup(simdata::Vector3 const &origin, TerrainObject *terrain) {
+FeatureSceneGroup* FeatureGroup::makeSceneGroup(Vector3 const &origin, TerrainObject *terrain) {
 	assert(!m_SceneGroup);
 	m_SceneGroup = new FeatureSceneGroup();
 	m_Model->addSceneModel(m_SceneGroup.get(), LayoutTransform(), ElevationCorrection(terrain, m_X, m_Y, m_Orientation));
@@ -98,11 +99,12 @@ void FeatureGroup::postCreate() {
 
 void FeatureGroup::project(Projection const &map) {
 	//std::cout << "feature group @ " << m_Position << std::endl;
-	simdata::Vector3 place = map.convert(m_Position);
+	Vector3 place = map.convert(m_Position);
 	//std::cout << "             -> " << place << std::endl;
 	//std::cout << "             -> " << map.getCenter() << std::endl;
 	m_X = place.x();
 	m_Y = place.y();
 }
 
+CSP_NAMESPACE_END
 

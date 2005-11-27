@@ -30,16 +30,19 @@
 #include <csp/csplib/data/LUT.h>
 #include <csp/csplib/data/Object.h>
 
+CSP_NAMESPACE
 
 /** Aerodynamic drag profile for a vehicle store or projectile.  Currently individual
  *  stores do not use DragProfile directly.  When attached to an aircraft, all stores
  *  share a common DragProfile defined by the FlightDynamics instance.  Different
  *  store types define different reference areas that scale the common drag profile
  *  accordingly.
+ *
+ *  TODO replace with standard drag-index model.
  */
-class DragProfile: public simdata::Object {
+class DragProfile: public Object {
 public:
-	SIMDATA_DECLARE_STATIC_OBJECT(DragProfile)
+	CSP_DECLARE_STATIC_OBJECT(DragProfile)
 
 	/** Get the drag coefficient at the specified mach and angle of attack.
 	 */
@@ -48,9 +51,10 @@ public:
 	}
 
 private:
-	simdata::Table2 m_Drag;
+	Table2 m_Drag;
 };
 
+CSP_NAMESPACE_END
 
 #endif // __CSPSIM_DRAGPROFILE_H__
 

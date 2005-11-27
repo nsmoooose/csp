@@ -30,7 +30,9 @@
 #include <csp/csplib/data/Path.h>
 #include <csp/csplib/data/Object.h>
 
-#include "Theater/FeatureGroup.h"
+#include <csp/cspsim/theater/FeatureGroup.h>
+
+CSP_NAMESPACE
 
 class Projection;
 
@@ -40,11 +42,11 @@ class Projection;
  *
  * A collection of all Objectives in a Theater.
  */
-class FeatureGroupList: public simdata::Object {
-	simdata::Link<FeatureGroup>::vector m_FeatureGroups;
+class FeatureGroupList: public Object {
+	Link<FeatureGroup>::vector m_FeatureGroups;
 
 public:
-	SIMDATA_DECLARE_STATIC_OBJECT(FeatureGroupList)
+	CSP_DECLARE_STATIC_OBJECT(FeatureGroupList)
 
 	FeatureGroupList();
 
@@ -53,12 +55,12 @@ public:
 	/**
 	 * Get the list of FeatureGroups.
 	 */
-	inline simdata::Link<FeatureGroup>::vector & getFeatureGroups() { return m_FeatureGroups; }
+	inline Link<FeatureGroup>::vector & getFeatureGroups() { return m_FeatureGroups; }
 
 	void projectFeatureGroups(Projection const &map);
 };
 
-
+CSP_NAMESPACE_END
 
 #endif // __CSPSIM_THEATER_FEATUREGROUPLIST_H__
 

@@ -22,16 +22,18 @@
  *
  **/
 
-#include "DamageModifier.h"
-
+#include <csp/cspsim/theater/DamageModifier.h>
 #include <csp/csplib/data/ObjectInterface.h>
 
+CSP_NAMESPACE
 
-SIMDATA_XML_BEGIN(DamageModifier)
-	SIMDATA_DEF("incediary", m_Incendiary, false)
-	SIMDATA_DEF("high_explosive", m_HighExplosive, false)
-	SIMDATA_DEF("penetrating", m_Penetrating, false)
-	SIMDATA_DEF("armor_piercing", m_ArmorPiercing, false)
-	SIMDATA_DEF("small_arms", m_SmallArms, false)
-SIMDATA_XML_END
+CSP_XML_BEGIN(DamageModifier)
+	CSP_DEF("incediary", m_Incendiary, false)
+	CSP_DEF("high_explosive", m_HighExplosive, false)
+	CSP_DEF("penetrating", m_Penetrating, false)
+	CSP_DEF("armor_piercing", m_ArmorPiercing, false)
+	CSP_DEF("small_arms", m_SmallArms, false)
+CSP_XML_END
+
+CSP_NAMESPACE_END
 

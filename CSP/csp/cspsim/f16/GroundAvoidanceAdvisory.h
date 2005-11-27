@@ -80,7 +80,7 @@
 
 class GroundAvoidanceAdvisory: public System {
 public:
-	SIMDATA_DECLARE_OBJECT(GroundAvoidanceAdvisory)
+	CSP_DECLARE_OBJECT(GroundAvoidanceAdvisory)
 
 	GroundAvoidanceAdvisory();
 

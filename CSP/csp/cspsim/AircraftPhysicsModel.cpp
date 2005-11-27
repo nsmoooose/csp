@@ -35,8 +35,8 @@
 
 using Vector::Vectord;
 
-SIMDATA_XML_BEGIN(AircraftPhysicsModel)
-SIMDATA_XML_END
+CSP_XML_BEGIN(AircraftPhysicsModel)
+CSP_XML_END
 
 
 AircraftPhysicsModel::AircraftPhysicsModel(): PhysicsModel(13) {

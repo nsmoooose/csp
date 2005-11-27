@@ -17,12 +17,10 @@
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 
-
 /**
  * @file Sky.cpp
  *
  **/
-
 
 #include "Sky.h"
 #include "CSPSim.h"
@@ -138,7 +136,7 @@ public:
 		}
 	};
 
-	SIMDATA_DECLARE_STATIC_OBJECT(StarCatalog)
+	CSP_DECLARE_STATIC_OBJECT(StarCatalog)
 
 	void serialize(simdata::Writer &writer) const {
 		Object::serialize(writer);
@@ -174,10 +172,10 @@ public:
 	std::vector<Star> _stars;
 };
 
-SIMDATA_XML_BEGIN(StarCatalog)
-	SIMDATA_DEF("source", m_Source, false)
-	SIMDATA_DEF("magnitude_cutoff", m_MagnitudeCutoff, false)
-SIMDATA_XML_END
+CSP_XML_BEGIN(StarCatalog)
+	CSP_DEF("source", m_Source, false)
+	CSP_DEF("magnitude_cutoff", m_MagnitudeCutoff, false)
+CSP_XML_END
 
 
 // TODO reimplement this as an osg::Geometry using a vertex list PrimitiveSet

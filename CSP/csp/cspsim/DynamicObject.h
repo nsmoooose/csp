@@ -93,7 +93,7 @@ protected:
 	Bus* getBus();
 
 public:
-	SIMDATA_DECLARE_ABSTRACT_OBJECT(DynamicObject)
+	CSP_DECLARE_ABSTRACT_OBJECT(DynamicObject)
 
 	DECLARE_INPUT_INTERFACE(DynamicObject, InputInterface)
 		BIND_ACTION("MARKS_TOGGLE", toggleMarkers);

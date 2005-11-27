@@ -1,4 +1,4 @@
-// Combat Simulator Project - CSPSim
+// Combat Simulator Project
 // Copyright (C) 2002-2005 The Combat Simulator Project
 // http://csp.sourceforge.net
 //
@@ -22,13 +22,16 @@
  *
  **/
 
-#ifndef __CONTROL_NODE_H__
-#define __CONTROL_NODE_H__
+#ifndef __CSPSIM_CONTROL_NODE_H__
+#define __CSPSIM_CONTROL_NODE_H__
 
-#include <csp/csplib/data/Key.h>
 #include <csp/csplib/util/Math.h>
+#include <csp/csplib/util/Namespace.h>
+#include <csp/csplib/data/Key.h>
 #include <csp/csplib/data/Object.h>
 #include <map>
+
+CSP_NAMESPACE
 
 class Bus;
 class DataRecorder;
@@ -44,7 +47,7 @@ class DataRecorder;
  *
  *  Each node is identified by a unique key, and the connections
  *  between nodes and control parameters for each node are
- *  specified through the simdata XML interface.
+ *  specified through the XML interface.
  *
  *  ControlNode XML interface:
  *    id: A unique key used to link nodes.
@@ -53,7 +56,7 @@ class DataRecorder;
  *    rate_limit_dec: The maximum rate of decrease, per second.
  *    rate_limit_inc: The maximum rate of increase, per second.
  */
-class ControlNode: public simdata::Object {
+class ControlNode: public Object {
 
 public:
 	/** Helper class for synchronizing updates across a flight control
@@ -78,11 +81,11 @@ public:
 	};
 
 public:
-	typedef simdata::Ref<ControlNode> Ref;
-	typedef simdata::Key TypeID;
-	typedef std::map<TypeID, Ref> MapID;
+	typedef Ref<ControlNode> RefT;
+	typedef Key TypeID;
+	typedef std::map<TypeID, RefT> MapID;
 
-	SIMDATA_DECLARE_ABSTRACT_OBJECT(ControlNode)
+	CSP_DECLARE_ABSTRACT_OBJECT(ControlNode)
 
 	ControlNode():
 		m_Output0(0.0),
@@ -148,7 +151,7 @@ protected:
 	 *  of this control node.
 	 */
 	double clamp(double value) {
-		return simdata::clampTo(value, m_ClampLo, m_ClampHi);
+		return clampTo(value, m_ClampLo, m_ClampHi);
 	}
 
 private:
@@ -175,9 +178,11 @@ private:
 	double m_RateLimitDec;
 	double m_RateLimitInc;
 	int m_Count;
-	simdata::Key m_ID;
+	Key m_ID;
 
 };
 
-#endif // __CONTROL_NODE_H__
+CSP_NAMESPACE_END
+
+#endif // __CSPSIM_CONTROL_NODE_H__
 

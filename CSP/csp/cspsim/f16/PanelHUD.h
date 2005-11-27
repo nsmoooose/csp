@@ -32,7 +32,7 @@
 
 class PanelHUD: public System {
 public:
-	SIMDATA_DECLARE_OBJECT(PanelHUD)
+	CSP_DECLARE_OBJECT(PanelHUD)
 
 	DECLARE_INPUT_INTERFACE(PanelHUD, System)
 		BIND_ACTION("CYCLE_HUD_DATA_SWITCH", onCycleDataSwitch);

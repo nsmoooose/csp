@@ -23,14 +23,14 @@
  **/
 
 
-#include "Theater/Objective.h"
-
+#include <csp/cspsim/theater/Objective.h>
 #include <csp/csplib/data/ObjectInterface.h>
 
+CSP_NAMESPACE
 
-SIMDATA_XML_BEGIN(Objective)
-	SIMDATA_DEF("strategic_value_modifier", m_StrategicValueModifier, true)
-SIMDATA_XML_END
+CSP_XML_BEGIN(Objective)
+	CSP_DEF("strategic_value_modifier", m_StrategicValueModifier, true)
+CSP_XML_END
 
 
 Objective::Objective() {
@@ -39,6 +39,5 @@ Objective::Objective() {
 Objective::~Objective() {
 }
 
-
-
+CSP_NAMESPACE_END
 

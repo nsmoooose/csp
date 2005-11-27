@@ -44,7 +44,7 @@
 
 class UpFrontControls: public System, public sigc::trackable {
 public:
-	SIMDATA_DECLARE_OBJECT(UpFrontControls)
+	CSP_DECLARE_OBJECT(UpFrontControls)
 
 	DECLARE_INPUT_INTERFACE(UpFrontControls, System)
 		// the various icp button events are declared dynamically in registerChannels

@@ -44,7 +44,6 @@
 #include "GameScreen.h"
 #include "HID.h"
 #include "InputEvent.h"
-#include "MenuScreen.h"
 #include "LogoScreen.h"
 #include "ObjectModel.h"
 #include "Profile.h"
@@ -160,7 +159,6 @@ CSPSim::CSPSim():
 	m_PrevScreen = NULL;
 
 	m_GameScreen = NULL;
-	m_MainMenuScreen = NULL;
 
 	m_FrameTime = 0.05;
 	m_FrameRate = 20.0;
@@ -436,13 +434,6 @@ void CSPSim::init() {
 		m_GameScreen = new GameScreen;
 		m_GameScreen->onInit();
 		
-#if 0
-		// set the Main Menu then start the main loop
-		m_MainMenuScreen = new MenuScreen;
-		m_MainMenuScreen->onInit();
-		changeScreen(m_MainMenuScreen);
-#endif
-
 		changeScreen(m_GameScreen);
 		
 	}

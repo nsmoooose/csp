@@ -47,7 +47,7 @@ public:
 	typedef std::map<simdata::Key, FuelNode*> NodeMap;
 
 public:
-	SIMDATA_DECLARE_ABSTRACT_OBJECT(FuelNode)
+	CSP_DECLARE_ABSTRACT_OBJECT(FuelNode)
 
 	FuelNode(): m_Blocked(false) { }
 
@@ -99,7 +99,7 @@ private:
 
 class FuelTankNode: public FuelNode {
 public:
-	SIMDATA_DECLARE_OBJECT(FuelTankNode)
+	CSP_DECLARE_OBJECT(FuelTankNode)
 
 	FuelTankNode();
 	virtual ~FuelTankNode();
@@ -186,7 +186,7 @@ private:
  */
 class FuelManagementSystem: public System, public sigc::trackable {
 public:
-	SIMDATA_DECLARE_ABSTRACT_OBJECT(FuelManagementSystem)
+	CSP_DECLARE_ABSTRACT_OBJECT(FuelManagementSystem)
 
 	static const char *Channel;
 	typedef simdata::Ref<FuelManagementSystem> Ref;

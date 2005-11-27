@@ -1,4 +1,4 @@
-// Combat Simulator Project - CSPSim
+// Combat Simulator Project
 // Copyright (C) 2002-2005 The Combat Simulator Project
 // http://csp.sourceforge.net
 //
@@ -36,8 +36,8 @@
 #include <csp/csplib/data/ObjectInterface.h>
 
 
-SIMDATA_XML_BEGIN(AircraftFlightSensors)
-SIMDATA_XML_END
+CSP_XML_BEGIN(AircraftFlightSensors)
+CSP_XML_END
 
 
 AircraftFlightSensors::AircraftFlightSensors(): m_Distance(0) { }

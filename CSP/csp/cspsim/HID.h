@@ -43,17 +43,19 @@
 #ifndef __CSPSIM_HID_H__
 #define __CSPSIM_HID_H__
 
+#include <csp/cspsim/EventMapping.h>
+
+#include <csp/csplib/util/Namespace.h>
+#include <csp/csplib/util/Ref.h>
+
 #include <SDL/SDL_events.h>
 #include <SDL/SDL_keysym.h>
 #include <SDL/SDL_keyboard.h>
 
-#include <csp/csplib/util/Ref.h>
-
 #include <string>
 #include <vector>
 
-#include "EventMapping.h"
-
+CSP_NAMESPACE
 
 class InputInterface;
 
@@ -64,7 +66,7 @@ class InputInterface;
  * This class provides an interface for handling various SDL input events,
  * and implements an event dispatch routine.
  */
-class HID: public simdata::Referenced
+class HID: public Referenced
 {
 public:
 
@@ -149,7 +151,7 @@ class VirtualHID: public HID
 public:
 	VirtualHID();
 
-	virtual void setMapping(simdata::Ref<const EventMapping> map);
+	virtual void setMapping(Ref<const EventMapping> map);
 	virtual void bindObject(InputInterface *object);
 	
 	virtual bool onKey(SDL_KeyboardEvent const &event);
@@ -170,7 +172,7 @@ protected:
 
 	int m_VirtualMode;
 	bool m_JoystickModifier;
-	simdata::Ref<const EventMapping> m_Map;
+	Ref<const EventMapping> m_Map;
 
 	InputInterface *m_Object;
 
@@ -187,6 +189,7 @@ protected:
 	bool m_MousePreDrag;
 };
 
+CSP_NAMESPACE_END
 
 #endif // __CSPSIM_HID_H__
 

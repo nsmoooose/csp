@@ -46,7 +46,7 @@ class GhostHorizon;
 
 class F16HUD: public System {
 public:
-	SIMDATA_DECLARE_OBJECT(F16HUD)
+	CSP_DECLARE_OBJECT(F16HUD)
 
 	F16HUD();
 	virtual ~F16HUD();

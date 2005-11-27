@@ -34,10 +34,10 @@
 #include <csp/csplib/util/Ref.h>
 
 
-SIMDATA_XML_BEGIN(Theater)
-	SIMDATA_DEF("feature_group_list", m_FeatureGroupList, true)
-	SIMDATA_DEF("terrain", m_Terrain, true)
-SIMDATA_XML_END
+CSP_XML_BEGIN(Theater)
+	CSP_DEF("feature_group_list", m_FeatureGroupList, true)
+	CSP_DEF("terrain", m_Terrain, true)
+CSP_XML_END
 
 
 

@@ -87,7 +87,7 @@ class AircraftSimpleFCS: public System {
 
 
 public:
-	SIMDATA_DECLARE_OBJECT(AircraftSimpleFCS)
+	CSP_DECLARE_OBJECT(AircraftSimpleFCS)
 
 	AircraftSimpleFCS();
 

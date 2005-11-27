@@ -40,7 +40,7 @@ namespace simnet { class NetworkMessage; }
 class ChannelMirrorSet: public simdata::Object {
 	simdata::Link<ChannelMirror>::vector m_Mirrors;
 public:
-	SIMDATA_DECLARE_OBJECT(ChannelMirrorSet)
+	CSP_DECLARE_OBJECT(ChannelMirrorSet)
 	simdata::Link<ChannelMirror>::vector const &mirrors() const { return m_Mirrors; }
 };
 
@@ -113,7 +113,7 @@ protected:
 	virtual void postCreate();
 
 public:
-	SIMDATA_DECLARE_OBJECT(RemoteController)
+	CSP_DECLARE_OBJECT(RemoteController)
 
 	RemoteController();
 	virtual ~RemoteController();
@@ -152,7 +152,7 @@ protected:
 	virtual void postCreate();
 
 public:
-	SIMDATA_DECLARE_OBJECT(LocalController)
+	CSP_DECLARE_OBJECT(LocalController)
 
 	LocalController();
 	virtual ~LocalController();

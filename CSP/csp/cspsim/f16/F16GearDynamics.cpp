@@ -32,8 +32,8 @@
 #include <csp/csplib/data/ObjectInterface.h>
 
 
-SIMDATA_XML_BEGIN(F16GearDynamics)
-SIMDATA_XML_END
+CSP_XML_BEGIN(F16GearDynamics)
+CSP_XML_END
 
 
 bool F16GearDynamics::allowGearUp() const {

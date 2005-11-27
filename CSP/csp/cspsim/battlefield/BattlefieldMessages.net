@@ -1,0 +1,125 @@
+// -*- cpp -*-
+//
+// Copyright 2004 Mark Rose <mkrose@users.sourceforge.net>
+// Copyright 2004 Combat Simulator Project
+//
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 2 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+
+#header <csp/cspsim/battlefield/BattlefieldMessages.h>
+
+#include <csp/csplib/data/Path.h>
+#include <csp/csplib/net/NetworkMessage.h>
+
+///////////////////////////////////////////////////////////////////
+// TESTING ONLY -- REMOVE ME!
+//
+#include <csp/csplib/data/Vector3.h>
+#include <csp/csplib/data/Quat.h>
+
+// battlefield messages use fixed ids in the range 64-511.
+typedef csp::NetworkMessage NetworkMessage;
+
+// request sent to the index server by a client wishing
+// to join the game.  this is extremely oversimplified
+// for testing purposes.
+
+message JoinRequest : NetworkMessage { @id=64;
+	// any identifier (e.g. callsign)
+	std::string user_name;
+	uint32 internal_ip_addr;
+	uint32 external_ip_addr;
+	uint32 local_time;
+}
+
+// response from the index server to a client indicating if
+// a join request was successful.
+
+message JoinResponse : NetworkMessage { @id=65;
+	bool success;
+	std::string details;
+
+	// initial allocation of unique object ids
+	int32 first_id;
+	int32 id_count;
+}
+
+message PlayerJoin : NetworkMessage { @id=66;
+	std::string user_name;
+	int16 peer_id;
+	int16 port;
+	int32 ip_addr;
+	int32 incoming_bw;
+	int32 outgoing_bw;
+}
+
+message PlayerQuit : NetworkMessage { @id=67;
+	int16 peer_id;
+}
+
+
+// Client-GameServer: register an object owned by the client
+message RegisterUnit : NetworkMessage { @id=68;
+	uint32 unit_id;
+	csp::Path unit_class;
+	uint8 unit_type;
+	uint32 grid_x;
+	uint32 grid_y;
+}
+
+// Client<->GameServer: owned object has moved
+message NotifyUnitMotion : NetworkMessage { @id=69;
+	uint32 unit_id;
+	uint32 grid_x;
+	uint32 grid_y;
+}
+
+// GameServer->Client: send object updates to peer
+message CommandUpdatePeer : NetworkMessage { @id=70;
+	uint32 unit_id;
+	uint16 peer_id;
+	bool stop;
+}
+
+// GameServer->Client: add a new unit, expect peer updates
+message CommandAddUnit : NetworkMessage { @id=71;
+	uint32 unit_id;
+	csp::Path unit_class;
+	uint8 unit_type;
+	uint16 owner_id;
+	uint32 grid_x;
+	uint32 grid_y;
+}
+
+// GameServer-Client: remove a new unit, disregard peer updates
+message CommandRemoveUnit : NetworkMessage { @id=72;
+	uint32 unit_id;
+}
+
+message IdAllocationRequest : NetworkMessage { @id=73;
+}
+
+message IdAllocationResponse : NetworkMessage { @id=74;
+	uint32 first_id;
+	uint32 id_count;
+}
+
+message TestUnitState : NetworkMessage { @id=75;
+	uint32 timestamp;
+	csp::Vector3 position;
+	csp::Vector3 velocity;
+	csp::Quat attitude;
+	bool test_object;
+}

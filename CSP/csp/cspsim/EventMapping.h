@@ -1,17 +1,17 @@
-// Combat Simulator Project - FlightSim Demo
+// Combat Simulator Project
 // Copyright (C) 2002 The Combat Simulator Project
 // http://csp.sourceforge.net
-// 
+//
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
 // as published by the Free Software Foundation; either version 2
 // of the License, or (at your option) any later version.
-// 
+//
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU General Public License
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
@@ -26,27 +26,24 @@
 #ifndef __CSPSIM_EVENTMAPPING_H__
 #define __CSPSIM_EVENTMAPPING_H__
 
+#include <csp/csplib/util/Ref.h>
+#include <csp/csplib/util/HashUtility.h>
+
 #include <SDL/SDL_events.h>
 #include <SDL/SDL_keysym.h>
 #include <SDL/SDL_keyboard.h>
 
-# if defined(_MSC_VER) && (_MSC_VER <= 1200)
-#pragma warning (disable : 4786)
-# endif
-
 #include <string>
 #include <vector>
 
-#include <csp/csplib/util/Ref.h>
-#include <csp/csplib/util/HashUtility.h>
+CSP_NAMESPACE
 
-
-class EventMapping: public simdata::Referenced
+class EventMapping: public Referenced
 {
 public:
 	EventMapping();
 
-	typedef simdata::Ref<EventMapping> Ref;
+	typedef Ref<EventMapping> RefT;
 
 	struct LinearCorrection {
 		int low, high;
@@ -98,10 +95,10 @@ public:
 		mutable int idx;
 	};
 
-	typedef HASH_MAP<int, Script> script_map;
-	typedef HASH_MAP<int, Motion> motion_map;
+	typedef HashMap<int, Script>::Type script_map;
+	typedef HashMap<int, Motion>::Type motion_map;
 	typedef script_map::const_iterator EventScript;
-			
+
 	int getKeyID(int device, SDL_keysym const &key, int state, int mode) const;
 	int getJoystickButtonID(int device, int button, int state, int jmod, int mode) const;
 	int getMouseButtonID(int device, int button, int state, int kmod, int mode) const;
@@ -129,7 +126,7 @@ public:
 	void parseBinding(const char *line);
 	bool load(std::string const &path);
 
-	const std::vector<simdata::hasht> &getBindings() const { return m_Bindings; }
+	const std::vector<hasht> &getBindings() const { return m_Bindings; }
 
 private:
 	script_map m_KeyMap;
@@ -137,11 +134,13 @@ private:
 	script_map m_MouseButtonMap;
 	motion_map m_MouseMotionMap;
 	
-	std::vector<simdata::hasht> m_Bindings;
+	std::vector<hasht> m_Bindings;
 	
 	Axis m_JoystickAxisMap[4][8];
 };
 
+
+CSP_NAMESPACE_END
 
 #endif // __CSPSIM_EVENTMAPPING_H__
 

@@ -1,4 +1,4 @@
-// Combat Simulator Project - FlightSim Demo
+// Combat Simulator Project
 // Copyright (C) 2002 The Combat Simulator Project
 // http://csp.sourceforge.net
 //
@@ -26,10 +26,10 @@
 #pragma warning(disable : 4786)
 # endif
 
-#include "HID.h"
-#include "InputInterface.h"
+//#include <csp/cspsim/Event.h>
+#include <csp/cspsim/HID.h>
+#include <csp/cspsim/InputInterface.h>
 #include <SDL/SDL_events.h>
-//#include "Event.h"
 
 #include <cassert>
 #include <iostream>
@@ -40,10 +40,10 @@
 #include <string>
 
 
+CSP_NAMESPACE
+
 /////////////////////////////////////////////////////////////////////////////
 // class HID
-
-
 
 void HID::translate(SDL_Event &event) {
 	if (event.type == SDL_KEYDOWN || event.type == SDL_KEYUP) {
@@ -101,12 +101,8 @@ bool HID::onEvent(SDL_Event &event) {
 
 
 
-
-
 /////////////////////////////////////////////////////////////////////////////
 // class VirtualHID: public HID
-
-
 
 VirtualHID::VirtualHID(): m_MouseDrag(false), m_MousePreDrag(false) {
 	m_Map = 0;
@@ -117,7 +113,7 @@ VirtualHID::VirtualHID(): m_MouseDrag(false), m_MousePreDrag(false) {
 
 VirtualHID::~VirtualHID() {}
 
-void VirtualHID::setMapping(simdata::Ref<EventMapping const> map) {
+void VirtualHID::setMapping(Ref<EventMapping const> map) {
 	m_Map = map;
 }
 
@@ -269,4 +265,5 @@ void VirtualHID::setScript(EventMapping::Script const *s, int x, int y, bool dra
 	onUpdate(0.0);
 }
 
+CSP_NAMESPACE_END
 

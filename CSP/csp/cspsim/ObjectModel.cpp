@@ -1,4 +1,4 @@
-// Combat Simulator Project - FlightSim Demo
+// Combat Simulator Project
 // Copyright (C) 2002 The Combat Simulator Project
 // http://csp.sourceforge.net
 //
@@ -25,13 +25,13 @@
 #include <vector>
 #include <utility>
 
-#include "ObjectModel.h"
-#include "Animation.h"
-#include "Config.h"
-#include "HUD/HUD.h"
-#include "SceneConstants.h"
-#include "SmokeEffects.h"
-#include "Station.h"
+#include <csp/cspsim/ObjectModel.h>
+#include <csp/cspsim/Animation.h>
+#include <csp/cspsim/Config.h>
+#include <csp/cspsim/HUD/HUD.h>
+#include <csp/cspsim/SceneConstants.h>
+#include <csp/cspsim/SmokeEffects.h>
+#include <csp/cspsim/Station.h>
 
 #include <osgDB/FileUtils>
 #include <osgDB/Registry>
@@ -76,30 +76,30 @@
 
 const simdata::Enumeration ObjectModel::EffectItems("None SpecularHighlights");
 
-SIMDATA_XML_BEGIN(ObjectModel)
-	SIMDATA_DEF("label", m_Label, false)
-	SIMDATA_DEF("model_path", m_ModelPath, true)
-	SIMDATA_DEF("axis_0", m_Axis0, false)
-	SIMDATA_DEF("axis_1", m_Axis1, false)
-	SIMDATA_DEF("view_point", m_ViewPoint, false)
-	SIMDATA_DEF("hud_placement", m_HudPlacement, false)
-	SIMDATA_DEF("hud_width", m_HudWidth, false)
-	SIMDATA_DEF("hud_height", m_HudHeight, false)
-	SIMDATA_DEF("offset", m_Offset, false)
-	SIMDATA_DEF("scale", m_Scale, false)
-	SIMDATA_DEF("smooth", m_Smooth, false)
-	SIMDATA_DEF("filter", m_Filter, false)
-	SIMDATA_DEF("filter_value", m_FilterValue, false)
-	SIMDATA_DEF("effect", m_Effect, false)
-	SIMDATA_DEF("contacts", m_Contacts, false)
-	SIMDATA_DEF("debug_points", m_DebugPoints, false)
-	SIMDATA_DEF("elevation_correction", m_ElevationCorrection, false)
-	SIMDATA_DEF("polygon_offset", m_PolygonOffset, false)
-	SIMDATA_DEF("cull_face", m_CullFace, false)
-	SIMDATA_DEF("lighting", m_Lighting, false)
-	SIMDATA_DEF("animations", m_Animations, false)
-	SIMDATA_DEF("stations", m_Stations, false)
-SIMDATA_XML_END
+CSP_XML_BEGIN(ObjectModel)
+	CSP_DEF("label", m_Label, false)
+	CSP_DEF("model_path", m_ModelPath, true)
+	CSP_DEF("axis_0", m_Axis0, false)
+	CSP_DEF("axis_1", m_Axis1, false)
+	CSP_DEF("view_point", m_ViewPoint, false)
+	CSP_DEF("hud_placement", m_HudPlacement, false)
+	CSP_DEF("hud_width", m_HudWidth, false)
+	CSP_DEF("hud_height", m_HudHeight, false)
+	CSP_DEF("offset", m_Offset, false)
+	CSP_DEF("scale", m_Scale, false)
+	CSP_DEF("smooth", m_Smooth, false)
+	CSP_DEF("filter", m_Filter, false)
+	CSP_DEF("filter_value", m_FilterValue, false)
+	CSP_DEF("effect", m_Effect, false)
+	CSP_DEF("contacts", m_Contacts, false)
+	CSP_DEF("debug_points", m_DebugPoints, false)
+	CSP_DEF("elevation_correction", m_ElevationCorrection, false)
+	CSP_DEF("polygon_offset", m_PolygonOffset, false)
+	CSP_DEF("cull_face", m_CullFace, false)
+	CSP_DEF("lighting", m_Lighting, false)
+	CSP_DEF("animations", m_Animations, false)
+	CSP_DEF("stations", m_Stations, false)
+CSP_XML_END
 
 
 /**

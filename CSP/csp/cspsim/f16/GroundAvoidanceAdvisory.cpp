@@ -34,8 +34,8 @@
 #include <csp/csplib/data/ObjectInterface.h>
 
 
-SIMDATA_XML_BEGIN(GroundAvoidanceAdvisory)
-SIMDATA_XML_END
+CSP_XML_BEGIN(GroundAvoidanceAdvisory)
+CSP_XML_END
 
 
 GroundAvoidanceAdvisory::GroundAvoidanceAdvisory():

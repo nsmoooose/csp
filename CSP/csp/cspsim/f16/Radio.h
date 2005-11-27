@@ -33,7 +33,7 @@
 
 class F16Radio: public System {
 public:
-	SIMDATA_DECLARE_OBJECT(F16Radio)
+	CSP_DECLARE_OBJECT(F16Radio)
 
 	static simdata::Enumeration STATUS;
 	static simdata::Enumeration MODE;

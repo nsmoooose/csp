@@ -22,12 +22,12 @@
  *
  **/
 
-
 #ifndef __CSPSIM_THEATER_FEATURE_H__
 #define __CSPSIM_THEATER_FEATURE_H__
 
-
 #include <csp/csplib/util/Ref.h>
+
+CSP_NAMESPACE
 
 class FeatureObjectModel;
 
@@ -47,11 +47,12 @@ class Feature {
 protected:
 	char m_Damage;
 	char m_Value;
-	simdata::Ref<FeatureObjectModel const> m_Model;
+	Ref<FeatureObjectModel const> m_Model;
 public:
 	Feature(FeatureObjectModel const *model, char value_ = 0);
 };
 
+CSP_NAMESPACE_END
 
 #endif // __CSPSIM_THEATER_FEATURE_H__
 

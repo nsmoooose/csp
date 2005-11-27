@@ -49,16 +49,17 @@
 */
 
 
-#include "FlightModel.h"
+#include <csp/cspsim/FlightModel.h>
 #include <csp/csplib/data/ObjectInterface.h>
 
+CSP_NAMESPACE
 
-SIMDATA_XML_BEGIN(FlightModel)
-	SIMDATA_DEF("wing_span", m_WingSpan, true)
-	SIMDATA_DEF("wing_chord", m_WingChord, true)
-	SIMDATA_DEF("wing_area", m_WingArea, true)
-	SIMDATA_DEF("ground_effect_offset", m_GroundEffectOffset, false)
-SIMDATA_XML_END
+CSP_XML_BEGIN(FlightModel)
+	CSP_DEF("wing_span", m_WingSpan, true)
+	CSP_DEF("wing_chord", m_WingChord, true)
+	CSP_DEF("wing_area", m_WingArea, true)
+	CSP_DEF("ground_effect_offset", m_GroundEffectOffset, false)
+CSP_XML_END
 
 
 FlightModel::FlightModel():
@@ -100,4 +101,6 @@ double FlightModel::groundEffect(double height) {
 	}
 	return 1.0;
 }
+
+CSP_NAMESPACE_END
 

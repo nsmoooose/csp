@@ -39,7 +39,7 @@ class F16System: public System {
 	static const simdata::Enumeration MasterModes;
 
 public:
-	SIMDATA_DECLARE_OBJECT(F16System)
+	CSP_DECLARE_OBJECT(F16System)
 
 	DECLARE_INPUT_INTERFACE(F16System, System)
 		BIND_ACTION("CATI", setCatI);

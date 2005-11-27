@@ -1,4 +1,4 @@
-// Combat Simulator Project - FlightSim Demo
+// Combat Simulator Project
 // Copyright (C) 2002 The Combat Simulator Project
 // http://csp.sourceforge.net
 //
@@ -148,7 +148,6 @@ private:
 
 	BaseScreen *m_LogoScreen;
 	GameScreen *m_GameScreen;
-	BaseScreen *m_MainMenuScreen;
 
 	int m_ScreenWidth;
 	int m_ScreenHeight;

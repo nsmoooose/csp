@@ -29,8 +29,8 @@
 #include <csp/csplib/data/ObjectInterface.h>
 
 
-SIMDATA_XML_BEGIN(AircraftInputSystem)
-SIMDATA_XML_END
+CSP_XML_BEGIN(AircraftInputSystem)
+CSP_XML_END
 
 DEFINE_INPUT_INTERFACE(AircraftInputSystem)
 

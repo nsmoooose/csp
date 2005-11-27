@@ -22,15 +22,17 @@
  *
  **/
 
-#include <Stores/Projectile.h>
-#include <Stores/Stores.h>
+#include <csp/cspsim/stores/Projectile.h>
+#include <csp/cspsim/stores/Stores.h>
 #include <csp/csplib/data/ObjectInterface.h>
 #include <SimCore/Util/StringTools.h>
 
-SIMDATA_XML_BEGIN(Projectile)
-SIMDATA_XML_END
+CSP_NAMESPACE
 
-void Projectile::prepareRelease(simdata::Ref<DynamicObject> const &/*parent*/, simdata::Ref<Store> const &store) {
+CSP_XML_BEGIN(Projectile)
+CSP_XML_END
+
+void Projectile::prepareRelease(Ref<DynamicObject> const &/*parent*/, Ref<Store> const &store) {
 	assert(store.valid() && !m_Store);
 	m_Store = store;
 	setReferenceMass(store->mass());
@@ -60,3 +62,6 @@ void Projectile::createSceneModel() {
 		m_SceneModel->setLabel(label);
 	}
 }
+
+CSP_NAMESPACE_END
+

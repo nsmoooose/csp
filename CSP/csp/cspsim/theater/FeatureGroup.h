@@ -22,13 +22,13 @@
  *
  **/
 
-
 #ifndef __CSPSIM_THEATER_FEATUREGROUP_H__
 #define __CSPSIM_THEATER_FEATUREGROUP_H__
 
+#include <csp/cspsim/theater/Feature.h>
+#include <csp/cspsim/theater/FeatureModel.h>
 
-#include "Feature.h"
-#include "FeatureModel.h"
+#include <csp/cspsim/battlefield/SimObject.h>
 
 #include <csp/csplib/data/GeoPos.h>
 #include <csp/csplib/data/Link.h>
@@ -40,9 +40,9 @@
 #include <osg/Vec3>
 #include <osg/ref_ptr>
 
-#include <SimCore/Battlefield/SimObject.h>
-
 #include <vector>
+
+CSP_NAMESPACE
 
 class FeatureSceneGroup;
 class TerrainObject;
@@ -64,8 +64,8 @@ class Projection;
  */
 class FeatureGroup: public SimObject {
 protected:
-	simdata::Link<FeatureModel> m_Model;
-	simdata::LLA m_Position;
+	Link<FeatureModel> m_Model;
+	LLA m_Position;
 	float m_Orientation;
 	float m_X, m_Y;
 
@@ -74,14 +74,14 @@ protected:
 
 public:
 
-	typedef simdata::Ref<FeatureGroup> Ref;
+	typedef Ref<FeatureGroup> Ref;
 
-	SIMDATA_DECLARE_OBJECT(FeatureGroup)
+	CSP_DECLARE_OBJECT(FeatureGroup)
 
 	/**
 	 * Return the absolute position of this FeatureGroup in the Theater.
 	 */
-	virtual simdata::Vector3 getGlobalPosition() const;
+	virtual Vector3 getGlobalPosition() const;
 
 	/**
 	 * Return the scene graph for this FeatureGroup.  The scene graph, if
@@ -111,7 +111,7 @@ public:
 	 * FeatureGroup.  Elevation corrections are computed for each individual
 	 * feature using the supplied terrain model.
 	 */
-	virtual FeatureSceneGroup* makeSceneGroup(simdata::Vector3 const &origin, TerrainObject *terrain);
+	virtual FeatureSceneGroup* makeSceneGroup(Vector3 const &origin, TerrainObject *terrain);
 
 	/**
 	 * Aggregate the FeatureGroup.
@@ -132,7 +132,7 @@ public:
 	virtual void project(Projection const &);
 };
 
-
+CSP_NAMESPACE_END
 
 #endif // __CSPSIM_THEATER_FEATUREGROUP_H__
 

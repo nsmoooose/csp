@@ -23,12 +23,13 @@
  **/
 
 
-#ifndef __INPUTEVENTCHANNEL_H__
-#define __INPUTEVENTCHANNEL_H__
+#ifndef __CSPSIM_INPUTEVENTCHANNEL_H__
+#define __CSPSIM_INPUTEVENTCHANNEL_H__
 
-#include <Bus.h>
-#include <InputInterface.h>
+#include <csp/cspsim/Bus.h>
+#include <csp/cspsim/InputInterface.h>
 
+CSP_NAMESPACE
 
 /** A specialized channel for accessing input events from the system bus.
  *  Provides a general signal mechanism similar to a push data channel, but
@@ -52,8 +53,8 @@
  */
 class InputEventChannel: public ChannelBase, public sigc::trackable {
 public:
-	typedef simdata::Ref<InputEventChannel> Ref;
-	typedef simdata::Ref<const InputEventChannel> CRef;
+	typedef Ref<InputEventChannel> RefT;
+	typedef Ref<const InputEventChannel> CRefT;
 
 	/** Construct a new InputEventChannel bound to a specific input event.  The
 	 *  channel name must be the same as the event name.  The input interface
@@ -102,6 +103,7 @@ private:
 	mutable sigc::signal<void> m_Signal;
 };
 
+CSP_NAMESPACE_END
 
-#endif // __INPUTEVENTCHANNEL_H__
+#endif // __CSPSIM_INPUTEVENTCHANNEL_H__
 

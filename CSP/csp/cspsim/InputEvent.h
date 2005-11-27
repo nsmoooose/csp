@@ -1,17 +1,17 @@
-// Combat Simulator Project - CSPSim
+// Combat Simulator Project
 // Copyright (C) 2004 The Combat Simulator Project
 // http://csp.sourceforge.net
-// 
+//
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
 // as published by the Free Software Foundation; either version 2
 // of the License, or (at your option) any later version.
-// 
+//
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU General Public License
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
@@ -20,22 +20,25 @@
 /**
  * @file InputEvent.h
  *
- * 
  */
 
-#ifndef __INPUTEVENT_H__
-#define __INPUTEVENT_H__
+#ifndef __CSPSIM_INPUTEVENT_H__
+#define __CSPSIM_INPUTEVENT_H__
+
+#include <csp/csplib/util/Namespace.h>
+#include <csp/csplib/data/Date.h>
+
+#include <SDL/SDL_events.h>
 
 #include <fstream>
 #include <memory>
 
-#include <SDL/SDL_events.h>
+CSP_NAMESPACE
 
-#include <csp/csplib/data/Date.h>
 
 class Handle {
 protected:
-	simdata::SimTime m_EventTime;
+	SimTime m_EventTime;
 	static const float m_Sampling;
 public:
 	Handle():
@@ -45,10 +48,12 @@ public:
 	virtual ~Handle();
 };
 
+
 class Play: public Handle {
 public:
 	virtual bool operator()(SDL_Event& event);
 };
+
 
 class Save: public Handle {
 	std::ofstream m_of;
@@ -58,6 +63,7 @@ public:
 	virtual bool operator()(SDL_Event& event);
 };
 
+
 class Replay: public Handle {
 	std::ifstream m_if;
 public:
@@ -65,6 +71,7 @@ public:
 	~Replay();
 	virtual bool operator()(SDL_Event& event);
 };
+
 
 class InputEvent {
 	enum Mode {PLAY,REPLAY,RECORD};
@@ -76,5 +83,7 @@ public:
 	}
 };
 
-#endif
+CSP_NAMESPACE_END
+
+#endif // __CSPSIM_INPUTEVENT_H__
 

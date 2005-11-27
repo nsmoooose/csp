@@ -1,4 +1,4 @@
-// Combat Simulator Project - CSPSim
+// Combat Simulator Project
 // Copyright (C) 2004 The Combat Simulator Project
 // http://csp.sourceforge.net
 //

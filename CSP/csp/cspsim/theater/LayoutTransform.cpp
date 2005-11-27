@@ -23,10 +23,10 @@
  **/
 
 
-#include "Theater/LayoutTransform.h"
-
+#include <csp/cspsim/theater/LayoutTransform.h>
 #include <csp/csplib/util/osg.h>
 
+CSP_NAMESPACE
 
 LayoutTransform::LayoutTransform() {
 	m_X = 0.0;
@@ -55,13 +55,13 @@ osg::Vec3 LayoutTransform::operator()() const {
 	return operator()(osg::Vec3(0.0, 0.0, 0.0));
 }
 
-osg::Vec3 LayoutTransform::operator()(simdata::Vector3 const &offset) const {
-	return operator()(simdata::toOSG(offset));
+osg::Vec3 LayoutTransform::operator()(Vector3 const &offset) const {
+	return operator()(toOSG(offset));
 }
 
 osg::Vec3 LayoutTransform::operator()(osg::Vec3 const &offset) const {
 	return osg::Vec3(m_X + offset.x() * c - offset.y() * s, m_Y + offset.x() * s + offset.y() * c, 0.0);
 }
 
-
+CSP_NAMESPACE_END
 

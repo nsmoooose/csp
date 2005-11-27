@@ -1,4 +1,4 @@
-// Combat Simulator Project - FlightSim Demo
+// Combat Simulator Project
 // Copyright (C) 2002 The Combat Simulator Project
 // http://csp.sourceforge.net
 //
@@ -60,14 +60,16 @@
  *
  */
 
-# if defined(_MSC_VER) && (_MSC_VER <= 1300)
-#include <cassert>
-# endif
 
-#include "SmokeEffects.h"
-#include "CSPSim.h"
-#include "VirtualScene.h"
-#include "Atmosphere.h"
+#include <csp/cspsim/SmokeEffects.h>
+
+// TODO can't smoke effects be implemented without touching all these singletons?
+#include <csp/cspsim/CSPSim.h>
+#include <csp/cspsim/VirtualScene.h>
+#include <csp/cspsim/Atmosphere.h>
+
+#include <csp/csplib/util/Random.h>
+#include <csp/csplib/util/osg.h>
 
 #include <osg/Geode>
 #include <osg/Group>
@@ -82,22 +84,21 @@
 #include <osgParticle/RadialShooter>
 #include <osgParticle/Operator>
 
-#include <csp/csplib/util/Random.h>
-#include <csp/csplib/util/osg.h>
-
+#include <cassert>
 #include <cstdio>
 #include <algorithm>
 
+CSP_NAMESPACE
 
 namespace fx {
 
 
 class WindEmitter: public osgParticle::Emitter {
 	Atmosphere const *m_Atmosphere;
-	simdata::Vector3 m_VertexA;
-	simdata::Vector3 m_VertexB;
-	simdata::Vector3 m_WindA;
-	simdata::Vector3 m_WindB;
+	Vector3 m_VertexA;
+	Vector3 m_VertexB;
+	Vector3 m_WindA;
+	Vector3 m_WindB;
 	float m_Count;
 	float m_Density;
 	int m_Min, m_Max;
@@ -108,7 +109,7 @@ public:
 		m_Max = 100;
 		m_Density = 1.0;
 	}
-	void setSource(simdata::Vector3 const &x) {
+	void setSource(Vector3 const &x) {
 		m_VertexB = m_VertexA;
 		m_VertexA = x;
 		m_WindB = m_WindA;
@@ -122,8 +123,8 @@ public:
 		m_Max = max;
 	}
 	void emit(double dt) {
-		simdata::Vector3 wind, d_wind;
-		simdata::Vector3 place, d_place;
+		Vector3 wind, d_wind;
+		Vector3 place, d_place;
 		float distance = (m_VertexB - m_VertexA).length();
 		int count = int(distance * m_Density);
 		if (count > m_Max) count = m_Max;
@@ -136,8 +137,8 @@ public:
 		for (int i = 0; i < count; ++i) {
 			osgParticle::Particle *P = getParticleSystem()->createParticle(getUseDefaultTemplate()? 0: &getParticleTemplate());
 			if (P) {
-				P->setPosition(simdata::toOSG(place));
-				P->setVelocity(simdata::toOSG(wind) + push.get_random());
+				P->setPosition(toOSG(place));
+				P->setVelocity(toOSG(wind) + push.get_random());
 				place += d_place;
 				wind += d_wind;
 				if (getReferenceFrame() == RELATIVE_RF) {
@@ -151,23 +152,23 @@ public:
 
 class WindShooter: public osgParticle::RadialShooter {
 	Atmosphere const *m_Atmosphere;
-	simdata::Vector3 m_Wind;
-	simdata::Vector3 m_LastWind;
+	Vector3 m_Wind;
+	Vector3 m_LastWind;
 	osgParticle::rangev3 m_WindRange;
 public:
 	WindShooter() {
 		m_Atmosphere = CSPSim::theSim->getAtmosphere();
 	}
 
-	void updateWind(simdata::Vector3 const &position) {
+	void updateWind(Vector3 const &position) {
 		if (m_Atmosphere) {
 			m_LastWind = m_Wind;
 			m_Wind = m_Atmosphere->getWind(position);
-			m_WindRange.set(simdata::toOSG(m_LastWind), simdata::toOSG(m_Wind));
+			m_WindRange.set(toOSG(m_LastWind), toOSG(m_Wind));
 		}
 	}
 
-	simdata::Vector3 const &getWind() { return m_Wind; }
+	Vector3 const &getWind() { return m_Wind; }
 
 	// XXX this is a bit slow (6 random generations per frame),
 	// and still results in visible stepping of the smoke trail
@@ -222,7 +223,7 @@ void SmokeThinner::operate(osgParticle::Particle *p, double /*dt*/)
 	float radius = p->getRadius();
 	// check if we've already operated on this particle
 	if (radius > 1000.0) {
-		float x = simdata::g_Random.unit();
+		float x = g_Random.unit();
 		float old_lifetime = p->getLifeTime();
 		// this needs to be made into a member variable, set by
 		// a constructor argument
@@ -416,7 +417,7 @@ osgParticle::Emitter* SmokeTrail::getEmitter() {
 	return emitter;
 }
 
-void SmokeTrail::setOffset(simdata::Vector3 const &offset) {
+void SmokeTrail::setOffset(Vector3 const &offset) {
 	m_Offset = offset;
 }
 
@@ -447,8 +448,8 @@ osgParticle::Placer* SmokeTrail::getPlacer() {
 	return m_Placer.get();
 }
 
-void SmokeTrail::update(double dt, simdata::Vector3 const &position, simdata::Quat const &attitude) {
-	simdata::Vector3 place = position + attitude.rotate(m_Offset);
+void SmokeTrail::update(double dt, Vector3 const &position, Quat const &attitude) {
+	Vector3 place = position + attitude.rotate(m_Offset);
 	m_Placer->setVertexA(toOSG(place));
 	m_Placer->setVertexB(toOSG(m_LastPlace+m_LastWind*dt));
 	m_Shooter->updateWind(place);
@@ -457,10 +458,10 @@ void SmokeTrail::update(double dt, simdata::Vector3 const &position, simdata::Qu
 }
 */
 
-void SmokeTrail::update(double /*dt*/, simdata::Vector3 const &position, simdata::Quat const &attitude) {
+void SmokeTrail::update(double /*dt*/, Vector3 const &position, Quat const &attitude) {
 	WindEmitter *emitter = dynamic_cast<WindEmitter*>(m_Emitter.get());
 	if (emitter) {
-		simdata::Vector3 place = position + attitude.rotate(m_Offset);
+		Vector3 place = position + attitude.rotate(m_Offset);
 		emitter->setSource(place);
 	}
 }
@@ -503,12 +504,14 @@ void SmokeTrailSystem::setEnabled(bool on) {
 		(*iter)->setEnabled(on);
 }
 
-void SmokeTrailSystem::update(double dt, simdata::Vector3 const &position, simdata::Quat const &attitude) {
+void SmokeTrailSystem::update(double dt, Vector3 const &position, Quat const &attitude) {
 	TrailList::iterator iter = m_Trails.begin();
 	TrailList::const_iterator iEnd = m_Trails.end();
 	for (; iter != iEnd; ++iter)
 		(*iter)->update(dt, position, attitude);
 }
 
-} // fx
+} // namespace fx
+
+CSP_NAMESPACE_END
 

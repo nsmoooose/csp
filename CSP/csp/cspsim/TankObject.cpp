@@ -1,4 +1,4 @@
-// Combat Simulator Project - FlightSim Demo
+// Combat Simulator Project
 // Copyright (C) 2002 The Combat Simulator Project
 // http://csp.sourceforge.net
 //
@@ -33,12 +33,12 @@
 
 using namespace std;
 
-SIMDATA_XML_BEGIN(TankObject)
-	SIMDATA_DEF("forward_speed", forward_speed, false)
-	SIMDATA_DEF_BIT("test0", bits, 1, false)
-	SIMDATA_DEF_BIT("test1", bits, 2, false)
-	SIMDATA_DEF_BIT("test2", bits, 4, false)
-SIMDATA_XML_END
+CSP_XML_BEGIN(TankObject)
+	CSP_DEF("forward_speed", forward_speed, false)
+	CSP_DEF_BIT("test0", bits, 1, false)
+	CSP_DEF_BIT("test1", bits, 2, false)
+	CSP_DEF_BIT("test2", bits, 4, false)
+CSP_XML_END
 
 
 TankObject::TankObject(): DynamicObject(TYPE_MUD_UNIT)

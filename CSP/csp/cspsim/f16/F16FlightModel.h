@@ -41,7 +41,7 @@
  */
 class F16FlightModel: public FlightModel {
 public:
-	SIMDATA_DECLARE_OBJECT(F16FlightModel)
+	CSP_DECLARE_OBJECT(F16FlightModel)
 
 	F16FlightModel();
 	virtual void calculateForceAndMoment(simdata::Vector3 &force, simdata::Vector3 &moment);

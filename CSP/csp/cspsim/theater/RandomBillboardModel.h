@@ -26,12 +26,12 @@
 #ifndef __CSPSIM_THEATER_RANDOMBILLBOARDMODEL_H__
 #define __CSPSIM_THEATER_RANDOMBILLBOARDMODEL_H__
 
-
-#include "Theater/FeatureGroupModel.h"
-
+#include <csp/cspsim/theater/FeatureGroupModel.h>
 #include <csp/csplib/data/Link.h>
 
 #include <vector>
+
+CSP_NAMESPACE
 
 class FeatureQuad;
 class FeatureSceneGroup;
@@ -46,15 +46,15 @@ class IsoContour;
  * in random locations within a given area.
  */
 class RandomBillboardModel: public FeatureGroupModel {
-	simdata::Link<FeatureQuad>::vector m_Models;
+	Link<FeatureQuad>::vector m_Models;
 	std::vector<float> m_Density;
 	float m_MinimumSpacing;
 	int m_Seed;
-	std::vector<std::vector<simdata::Vector3> > m_Offsets;
-	simdata::Link<IsoContour> m_IsoContour;
+	std::vector<std::vector<Vector3> > m_Offsets;
+	Link<IsoContour> m_IsoContour;
 	
 public:
-	SIMDATA_DECLARE_STATIC_OBJECT(RandomBillboardModel)
+	CSP_DECLARE_STATIC_OBJECT(RandomBillboardModel)
 
 	/**
 	 * Return the total number of features below this group.
@@ -82,6 +82,7 @@ public:
 
 };
 
+CSP_NAMESPACE_END
 
 #endif // __CSPSIM_THEATER_RANDOMBILLBOARDMODEL_H__
 

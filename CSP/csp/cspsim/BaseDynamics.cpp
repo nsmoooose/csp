@@ -27,7 +27,6 @@
 
 CSP_NAMESPACE
 
-
 BaseDynamics::BaseDynamics():
 	m_Force(Vector3::ZERO),
 	m_Moment(Vector3::ZERO)
@@ -37,13 +36,11 @@ BaseDynamics::BaseDynamics():
 BaseDynamics::~BaseDynamics() {
 }
 
-
 void BaseDynamics::bindKinematics(Vector3 const &position_local,
                                   Vector3 const &velocity_body,
                                   Vector3 const &angular_velocity_body,
                                   Quat const &attitude,
-                                  Vector3 const &center_of_mass_offset_local)
-{
+                                  Vector3 const &center_of_mass_offset_local) {
 	m_PositionLocal = &position_local;
 	m_VelocityBody = &velocity_body;
 	m_AngularVelocityBody = &angular_velocity_body;
@@ -51,17 +48,13 @@ void BaseDynamics::bindKinematics(Vector3 const &position_local,
 	m_CenterOfMassOffsetLocal = &center_of_mass_offset_local;
 }
 
-
-void BaseDynamics::initializeSimulationStep(double /*dt*/)
-{
+void BaseDynamics::initializeSimulationStep(double /*dt*/) {
 }
 
-void BaseDynamics::postSimulationStep(double /*dt*/)
-{
+void BaseDynamics::postSimulationStep(double /*dt*/) {
 }
 
-void BaseDynamics::preSimulationStep(double /*dt*/)
-{
+void BaseDynamics::preSimulationStep(double /*dt*/) {
 }
 
 

@@ -28,18 +28,19 @@
 #include <csp/csplib/data/LUT.h>
 #include <csp/csplib/data/Object.h>
 
+CSP_NAMESPACE
 
 /** Static thrust data for an aircraft engine.  Data is stored in three tables:
  *  idle, military, and afterburner thrust.  Each table is a function of altitude
  *  and mach number.  Actual thrust is computed by interpolating between these
  *  tables as a function of engine rpm.
  */
-class ThrustData: public simdata::Object {
-	simdata::Table2 m_IdleThrust, m_MilitaryThrust, m_AfterburnerThrust;
+class ThrustData: public Object {
+	Table2 m_IdleThrust, m_MilitaryThrust, m_AfterburnerThrust;
 	bool m_HasAfterburner;
 
 public:
-	SIMDATA_DECLARE_STATIC_OBJECT(ThrustData)
+	CSP_DECLARE_STATIC_OBJECT(ThrustData)
 
 	double getMil(double altitude, double mach) const;
 	double getIdle(double altitude, double mach) const;
@@ -53,6 +54,7 @@ protected:
 	virtual void postCreate();
 };
 
+CSP_NAMESPACE_END
 
 #endif // __CSPSIM_THRUSTDATA_H__
 

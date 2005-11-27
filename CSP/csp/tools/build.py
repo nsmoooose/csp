@@ -669,7 +669,7 @@ def AddNet(env):
 	cxx_file.add_emitter('.net', EmitNet)
 	cxx_file.add_action('.net', '$TRC')
 	# TODO move trc to #/tools/trc/...
-	trc = env.File('#/../SimData/Tools/TaggedRecordCompiler/trc.py')
+	trc = env.File('#/tools/trc/trc.py')
 	env['TRC'] = '%s --source=${TARGETS[0]} --header=${TARGETS[1]} $SOURCES' % trc
 
 

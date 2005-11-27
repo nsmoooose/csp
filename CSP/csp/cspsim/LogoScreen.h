@@ -26,7 +26,7 @@
 #define __CSPSIM_LOGOSCREEN_H__
 
 
-#include "BaseScreen.h"
+#include <csp/cspsim/BaseScreen.h>
 
 #include <osg/ref_ptr>
 //#include <osgProducer/Viewer>
@@ -35,13 +35,14 @@ namespace osg { class Texture2D; }
 namespace osgUtil { class SceneView; }
 
 
+CSP_NAMESPACE
 
 //struct SDL_Surface;
 
-/**
- * class LogoScreen
+/** A screen for displaying a series of static images.
  *
- * @author unknown
+ *  TODO This class is currently specialized to display a fixed set of images
+ *  during startup, but should be generalized.
  */
 class LogoScreen : public BaseScreen { //, public osgProducer::Viewer, public virtual OpenThreads::Thread {
 public:
@@ -58,13 +59,14 @@ public:
 	void stop();
 
 private:
-	osg::ref_ptr<osgUtil::SceneView> m_LogoView; 
+	osg::ref_ptr<osgUtil::SceneView> m_LogoView;
 	osg::ref_ptr<osg::Texture2D> m_Texture;
 	//osgProducer::Viewer m_Viewer;
 	//SDL_Surface * m_image;
 	int m_width, m_height;
 };
 
+CSP_NAMESPACE_END
 
 #endif // __CSPSIM_LOGOSCREEN_H__
 

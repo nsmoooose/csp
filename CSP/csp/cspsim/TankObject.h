@@ -1,4 +1,4 @@
-// Combat Simulator Project - FlightSim Demo
+// Combat Simulator Project
 // Copyright (C) 2002 The Combat Simulator Project
 // http://csp.sourceforge.net
 //
@@ -46,7 +46,7 @@
 class TankObject : public DynamicObject
 {
 public:
-	SIMDATA_DECLARE_OBJECT(TankObject)
+	CSP_DECLARE_OBJECT(TankObject)
 
 	TankObject();
 	virtual ~TankObject();

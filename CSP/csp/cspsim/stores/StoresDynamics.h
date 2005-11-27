@@ -26,10 +26,10 @@
 #ifndef __CSPSIM_STORESDYNAMICS_H__
 #define __CSPSIM_STORESDYNAMICS_H__
 
-
 #include <csp/csplib/data/Vector3.h>
 #include <csp/csplib/data/Matrix3.h>
 
+CSP_NAMESPACE
 
 /** Dynamical properties model for stores carried by a vehicle.
  *
@@ -55,9 +55,9 @@ public:
 	void reset() {
 		mass = 0.0;
 		drag = 0.0;
-		center_of_mass = simdata::Vector3::ZERO;
-		center_of_drag = simdata::Vector3::ZERO;
-		inertia = simdata::Matrix3::IDENTITY;
+		center_of_mass = Vector3::ZERO;
+		center_of_drag = Vector3::ZERO;
+		inertia = Matrix3::IDENTITY;
 		valid = true;
 	}
 
@@ -74,7 +74,7 @@ public:
 	 *  unit mass in body coordinates (must take the orientation of the store into account),
 	 *  neglecting inertia due to the offset of the store relative to the aircraft origin.
 	 */
-	void addMassAndInertia(double mass_, simdata::Matrix3 const &unit_inertia, simdata::Vector3 const &position) {
+	void addMassAndInertia(double mass_, Matrix3 const &unit_inertia, Vector3 const &position) {
 		valid = false;
 		mass += mass_;
 		center_of_mass += mass_ * position;
@@ -84,7 +84,7 @@ public:
 	/** Add drag properties for a single source.  The position is the center of mass position
 	 *  of the store in body coordintates.
 	 */
-	void addDrag(double coefficient, simdata::Vector3 const &position) {
+	void addDrag(double coefficient, Vector3 const &position) {
 		valid = false;
 		drag += coefficient;
 		center_of_drag += coefficient * position;
@@ -99,15 +99,15 @@ public:
 
 	/** Compute the drag force and moment from all stores.
 	 */
-	void computeDragForceAndMoment(double qbar, double Cd, double alpha, simdata::Vector3 &force, simdata::Vector3 &moment) const {
+	void computeDragForceAndMoment(double qbar, double Cd, double alpha, Vector3 &force, Vector3 &moment) const {
 		assert(valid);
-		force = (qbar * drag * Cd) * simdata::Vector3(0.0, -cos(alpha), sin(alpha));
+		force = (qbar * drag * Cd) * Vector3(0.0, -cos(alpha), sin(alpha));
 		moment = center_of_drag ^ force;
 	}
 
 	/** Compute m_ij = o_i * o_j - o^2
 	 */
-	static simdata::Matrix3 makeInertiaOffset(simdata::Vector3 const &offset) {
+	static Matrix3 makeInertiaOffset(Vector3 const &offset) {
 		double d = offset.length2();
 		double xx = offset.x() * offset.x();
 		double xy = offset.x() * offset.y();
@@ -115,24 +115,25 @@ public:
 		double yy = offset.y() * offset.y();
 		double yz = offset.y() * offset.z();
 		double zz = offset.z() * offset.z();
-		return simdata::Matrix3(xx - d, xy, xz, xy, yy - d, yz, xz, yz, zz - d);
+		return Matrix3(xx - d, xy, xz, xy, yy - d, yz, xz, yz, zz - d);
 	}
 
 	double getMass() const { return mass; }
 	double getDrag() const { return drag; }
-	simdata::Vector3 const &getCenterOfMass() const { assert(valid); return center_of_mass; }
-	simdata::Vector3 const &getCenterOfDrag() const { assert(valid); return center_of_drag; }
-	simdata::Matrix3 const &getInertia() const { return inertia; }
+	Vector3 const &getCenterOfMass() const { assert(valid); return center_of_mass; }
+	Vector3 const &getCenterOfDrag() const { assert(valid); return center_of_drag; }
+	Matrix3 const &getInertia() const { return inertia; }
 
 private:
 	double mass;
 	double drag;
-	simdata::Vector3 center_of_mass;
-	simdata::Matrix3 inertia;
-	simdata::Vector3 center_of_drag;
+	Vector3 center_of_mass;
+	Matrix3 inertia;
+	Vector3 center_of_drag;
 	bool valid;
 };
 
+CSP_NAMESPACE_END
 
 #endif // __CSPSIM_STORESDYNAMICS_H__
 

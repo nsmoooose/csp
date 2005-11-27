@@ -33,17 +33,17 @@
 #include <map>
 #include <set>
 
-SIMDATA_XML_BEGIN(ChannelMirrorSet)
-	SIMDATA_DEF("mirrors", m_Mirrors, true)
-SIMDATA_XML_END
+CSP_XML_BEGIN(ChannelMirrorSet)
+	CSP_DEF("mirrors", m_Mirrors, true)
+CSP_XML_END
 
-SIMDATA_XML_BEGIN(RemoteController)
-	SIMDATA_DEF("channel_mirror_set", m_ChannelMirrorSet, false)
-SIMDATA_XML_END
+CSP_XML_BEGIN(RemoteController)
+	CSP_DEF("channel_mirror_set", m_ChannelMirrorSet, false)
+CSP_XML_END
 
-SIMDATA_XML_BEGIN(LocalController)
-	SIMDATA_DEF("channel_mirror_set", m_ChannelMirrorSet, false)
-SIMDATA_XML_END
+CSP_XML_BEGIN(LocalController)
+	CSP_DEF("channel_mirror_set", m_ChannelMirrorSet, false)
+CSP_XML_END
 
 
 RemoteController::RemoteController(): m_UpdateDelay(0) {

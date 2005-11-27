@@ -21,6 +21,7 @@ Import('env build')
 MODULES = [
 	'data',
 	'net',
+	'spatial',
 	'thread',
 	'util',
 ]
@@ -39,5 +40,6 @@ libcsplib = env.SharedLibrary('csplib', OBJECTS + INTERFACES, SHLIBPREFIX='_')
 
 csplib_tests = env.SharedLibrary('csplib_tests', TESTS)
 
-Alias(['all', 'csplib', 'test'], [libcsplib, csplib_tests])
+Alias(['all', 'test'], [libcsplib, csplib_tests])
+Alias(['csplib'], [libcsplib])
 

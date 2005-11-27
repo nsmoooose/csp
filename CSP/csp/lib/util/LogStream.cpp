@@ -27,7 +27,6 @@
 #include <csp/lib/util/FileUtility.h>
 #include <csp/lib/util/Trace.h>
 #include <csp/lib/thread/Thread.h>
-//#include <csp/lib/thread/ThreadUtil.h>
 
 #include <iostream>
 #include <iomanip>
@@ -45,7 +44,7 @@ CSP_NAMESPACE
 // destruction.
 namespace {
 	typedef std::map<std::string, LogStream *> LogStreamRegistry;
-	LogStreamRegistry NamedLogStreamRegistry;
+	LogStreamRegistry *NamedLogStreamRegistry = 0;
 }
 
 
@@ -130,10 +129,11 @@ void LogStream::LogEntry::die() {
 }
 
 LogStream *LogStream::getOrCreateNamedLog(const std::string &name) {
-	LogStreamRegistry::iterator iter = NamedLogStreamRegistry.find(name);
-	if (iter == NamedLogStreamRegistry.end()) {
+	if (!NamedLogStreamRegistry) NamedLogStreamRegistry = new LogStreamRegistry;
+	LogStreamRegistry::iterator iter = NamedLogStreamRegistry->find(name);
+	if (iter == NamedLogStreamRegistry->end()) {
 		LogStream *logstream = new LogStream(std::cerr);
-		NamedLogStreamRegistry[name] = logstream;
+		NamedLogStreamRegistry->insert(std::make_pair(name, logstream));
 		return logstream;
 	}
 	return iter->second;

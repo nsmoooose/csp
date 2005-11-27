@@ -198,7 +198,6 @@ private:
 	int m_octaves;
 	int m_offset;
 	int m_interpolation;
-	
 };
 
 

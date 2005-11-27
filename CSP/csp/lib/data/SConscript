@@ -39,7 +39,7 @@ SOURCES = [
 ]
 
 TESTS = [
-	'test_Object.cpp',
+	'test/test_Object.cpp',
 ]
 
 OBJECTS = build.Apply(env.SharedObject, SOURCES + TESTS)

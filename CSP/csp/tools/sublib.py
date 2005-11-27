@@ -30,8 +30,8 @@ import popen2
 import re
 import time
 
-from CSP.base import app
-from CSP.base import domtree
+from csp.base import app
+from csp.base import domtree
 
 class File:
   ADD = 'ADD'

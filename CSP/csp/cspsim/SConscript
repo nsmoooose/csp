@@ -1,0 +1,144 @@
+# -*- python -*-
+#
+# Copyright 2004 Mark Rose <mkrose@users.sourceforge.net>
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+Import('env build')
+
+SOURCES = [
+#	'AircraftObject.cpp',
+#	'AircraftPhysicsModel.cpp',
+#	'Animation.cpp',
+#	'AnimationSequence.cpp',
+	'Atmosphere.cpp',
+	'BaseDynamics.cpp',
+#	'BaseScreen.cpp',
+	'Channels.cpp',
+#	'ChunkLodTerrain.cpp',
+#	'CockpitInterface.cpp',
+#	'Collision.cpp',
+	'Colorspace.cpp',
+#	'Config.cpp',
+#	'Console.cpp',
+#	'ConsoleCommands.cpp',
+#	'Controller.cpp',
+#	'CSPSim.cpp',
+#	'DemeterTerrain.cpp',
+#	'DoubleChannelMirror.cpp',
+#	'DynamicObject.cpp',
+	'DynamicalSystem.cpp',
+#	'Engine.cpp',
+#	'EventMapIndex.cpp',
+#	'EventMapping.cpp',
+#	'Exception.cpp',
+#	'FlightControlSystem.cpp',
+#	'FlightDynamics.cpp',
+#	'FlightModel.cpp',
+#	'FuelManagementSystem.cpp',
+#	'GameScreen.cpp',
+#	'GearAnimation.cpp',
+#	'glDiagnostics.cpp',
+#	'HID.cpp',
+#	'InputEvent.cpp',
+	'InputInterface.cpp',
+#	'LandingGear.cpp',
+#	'LogoScreen.cpp',
+#	'MenuScreen.cpp',
+	'NumericalMethod.cpp',
+#	'ObjectModel.cpp',
+	'PhysicsModel.cpp',
+#	'Projection.cpp',
+#	'ScreenInfo.cpp',
+#	'ScreenInfoManager.cpp',
+#	'SimpleSceneManager.cpp',
+#	'Sky.cpp',
+#	'SmokeEffects.cpp',
+#	'StabilityFlightModel.cpp',
+#	'Station.cpp',
+##	'System.cpp',
+##	'SystemsModel.cpp',
+#	'TankObject.cpp',
+#	'TerrainObject.cpp',
+#	'Theater.cpp',
+#	'ThrustData.cpp',
+#	'VirtualScene.cpp',
+
+#	'f16/AlphaNumericDisplay.cpp',
+#	'f16/GroundAvoidanceAdvisory.cpp',
+#	'f16/UpFrontControls.cpp',
+#	'f16/DataEntryPage.cpp',
+#	'f16/PageCNI.cpp',
+#	'f16/PageLIST.cpp',
+#	'f16/FLCS.cpp',
+#	'f16/F16Channels.cpp',
+#	'f16/F16Engine.cpp',
+#	'f16/F16FlightModel.cpp',
+#	'f16/F16GearDynamics.cpp',
+#	'f16/F16HUD.cpp',
+#	'f16/F16INS.cpp',
+#	'f16/F16System.cpp',
+#	'f16/FuelSystem.cpp',
+#	'f16/PanelHUD.cpp',
+#	'f16/Radio.cpp',
+#	'f16/NavigationSystem.cpp',
+
+#	'hud/HUD.cpp',
+#	'hud/Tape.cpp',
+#	'hud/Text.cpp',
+#	'hud/PitchLadder.cpp',
+
+#	'stores/DragProfile.cpp',
+#	'stores/Projectile.cpp',
+#	'stores/Stores.cpp',
+#	'stores/StoresDatabase.cpp',
+#	'stores/StoresDefinition.cpp',
+#	'stores/StoresManagementSystem.cpp',
+
+#	'systems/AircraftFlightSensors.cpp',
+#	'systems/AircraftInputSystem.cpp',
+#	'systems/AircraftSimpleFCS.cpp',
+
+#	'theater/CustomLayoutModel.cpp',
+#	'theater/ElevationCorrection.cpp',
+#	'theater/Feature.cpp',
+#	'theater/FeatureGroup.cpp',
+#	'theater/FeatureGroupList.cpp',
+#	'theater/FeatureLayout.cpp',
+#	'theater/FeatureObjectModel.cpp',
+#	'theater/FeatureQuad.cpp',
+#	'theater/FeatureSceneModel.cpp',
+#	'theater/IsoContour.cpp',
+#	'theater/LayoutTransform.cpp',
+#	'theater/Objective.cpp',
+#	'theater/RandomBillboardModel.cpp',
+#	'theater/RandomForestModel.cpp',
+
+#	'views/CameraAgent.cpp',
+#	'views/CameraKinematics.cpp',
+#	'views/ExternalViews.cpp',
+#	'views/InternalView.cpp',
+#	'views/View.cpp',
+# --------------------------------------
+#	'ObjectUpdate.net',
+]
+
+
+#ccspsim_wrap, ccspsim_module = env.Swig('ccspsim.i')
+INTERFACES = [] #env.SwigWrapper(ccspsim_wrap)]
+
+ccspsim = env.SharedLibrary('ccspsim', INTERFACES + SOURCES, SHLIBPREFIX='_')
+Alias(['all', 'cspsim'], [ccspsim])
+

@@ -30,8 +30,8 @@ Usage: %(prog)s [options] command [args...]
 Run "%(prog)s help <command>" for help on a specific command.
 """
 
-from CSP.base import app
-from CSP.tools import subcmd
+from csp.base import app
+from csp.tools import subcmd
 
 def main(args):
   if len(args) < 1:

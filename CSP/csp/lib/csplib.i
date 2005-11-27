@@ -23,7 +23,7 @@
 #include <csp/lib/data/DataManager.h>
 #include <csp/lib/data/InterfaceRegistry.h>
 #include <csp/lib/data/Types.h>
-///#include <csp/lib/data/Version.h>
+#include <csp/lib/util/Version.h>
 #include <csp/lib/util/HashUtility.h>
 #include <csp/lib/util/Exception.h>
 
@@ -50,28 +50,27 @@ PyObject *cspPyException;
 
 %include "csp/lib/util/Export.h"
 %include "csp/lib/util/Namespace.h"
-%include "csp/lib/util/Log.i"
+%include "csp/lib/util/swig/Log.i"
 %include "csp/lib/util/Uniform.h"
-///%include "csp/lib/util/Version.h"
+%include "csp/lib/util/Version.h"
 
 // not currently used (will be directors).
-%feature("polymorphic") CSP(InterfaceProxy);
-%feature("polymorphic") CSP(Object);
+//%feature("polymorphic") CSP(InterfaceProxy);
+//%feature("polymorphic") CSP(Object);
+//%feature("polymorphic:except") {
+//    if ($error != NULL) {
+//        printf("got a python exception\n");
+//        throw CSP(PythonException)();
+//    }
+//}
 
-%feature("polymorphic:except") {
-    if ($error != NULL) {
-        printf("got a python exception\n");
-        throw CSP(PythonException)();
-    }
-}
-
-%include "csp/lib/util/Testing.i"
-%include "csp/lib/util/Exception.i"
-%include "csp/lib/util/HashUtility.i"
-///%include "csp/lib/util/Conversions.i"
-%include "csp/lib/util/Random.i"
-///%include "csp/lib/util/Noise.i"
-%include "csp/lib/data/Types.i"
+%include "csp/lib/util/swig/Testing.i"
+%include "csp/lib/util/swig/Exception.i"
+%include "csp/lib/util/swig/HashUtility.i"
+%include "csp/lib/util/swig/Conversions.i"
+%include "csp/lib/util/swig/Random.i"
+%include "csp/lib/util/swig/Noise.i"
+%include "csp/lib/data/swig/Types.i"
 
 %import "csp/lib/swig/vector.i"
 new_vector(double, double);
@@ -111,9 +110,9 @@ PyObject *csp_swig_exception(CSP(ExceptionBase) &e) {
 	}
 }
 
-%include "csp/lib/data/DataArchive.i"
-%include "csp/lib/data/DataManager.i"
-%include "csp/lib/data/InterfaceRegistry.i"
+%include "csp/lib/data/swig/DataArchive.i"
+%include "csp/lib/data/swig/DataManager.i"
+%include "csp/lib/data/swig/InterfaceRegistry.i"
 %exception;
 
 class swig_string_bug_workaround {

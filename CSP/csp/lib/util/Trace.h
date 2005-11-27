@@ -31,6 +31,7 @@
 
 #include <csp/lib/util/Export.h>
 #include <csp/lib/util/Namespace.h>
+#include <csp/lib/util/Properties.h>
 #include <iosfwd>
 
 
@@ -76,7 +77,7 @@ inline std::ostream &operator<<(std::ostream &os, StackTrace const &trace) {
 }
 
 
-CSP_EXPORT class AutoTrace {
+CSP_EXPORT class AutoTrace: public NonConstructable {
 public:
 	// install sigv and abort handlers.
 	static CSP_EXPORT bool install();

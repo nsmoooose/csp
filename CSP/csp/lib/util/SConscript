@@ -36,8 +36,8 @@ SOURCES = [
 ]
 
 TESTS = [
-	'test_FileUtility.cpp',
-	'test_Ref.cpp',
+	'test/test_FileUtility.cpp',
+	'test/test_Ref.cpp',
 ]
 
 config = env.Program('csplib_config', ['Config.cpp'])

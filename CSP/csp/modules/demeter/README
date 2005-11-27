@@ -1,0 +1,27 @@
+Demeter-CSP
+
+Adapted from the Demeter Terrain Visualization Library by Clay Fowler
+Copyright (C) 2002 Clay Fowler
+http://www.terrainengine.com
+
+Modifications to Demeter for use in CSP by Scott Flicker and Mark Rose.
+Copyright (C) 2002 The Combat Simulator Project (CSP)
+http://csp.sf.net/forum
+
+As distributed with CSP, this version of Demeter is released under the terms of
+the GNU General Public License.  See http://www.gnu.org/copyleft/gpl.html for
+details.
+
+
+Dependencies
+---------------------------------------------------------------------------------
+Demeter-CSP depends on the Simple DirectMedia Layer (SDL) version >= 1.2.5.
+SDL can be obtained from http://www.libsdl.org/
+
+
+Compiling Demeter-CSP:
+---------------------------------------------------------------------------------
+Demeter-CSP is part of the complete CSP build.  Refer to the README instructions
+in the top-level CSP directory for more information.
+
+

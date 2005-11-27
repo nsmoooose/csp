@@ -188,7 +188,7 @@ public:
 	 *
 	 *  @param s the new seed.
 	 */
-	void setSeed(unsigned long int s);
+	void setSeed(unsigned long s);
 
 	/** Save the current state of the generator.
 	 *
@@ -277,19 +277,15 @@ public:
  */
 class CSP_EXPORT Taus2 {
 	// state
-	unsigned long int _s1, _s2, _s3;
+	unsigned long _s1, _s2, _s3;
 
-	static const unsigned long int MASK = 0xffffffffUL;
+	static const unsigned long MASK = 0xffffffffUL;
 
-	inline static unsigned long int LCG(unsigned long int n) {
+	inline static unsigned long LCG(unsigned long n) {
 		return ((69069 * n) & 0xffffffffUL);
 	}
 
-	inline static unsigned long int TAUSWORTHE(unsigned long int s,
-			                           unsigned long int a,
-						   unsigned long int b,
-						   unsigned long int c,
-						   unsigned long int d) {
+	inline static unsigned long TAUSWORTHE(unsigned long s, unsigned long a, unsigned long b, unsigned long c, unsigned long d) {
 		return (((s &c) <<d) &MASK) ^ ((((s <<a) &MASK)^s) >>b);
 	}
 
@@ -306,7 +302,7 @@ public:
 	/** Structure for saving and restoring the internal state of the generator.
 	 */
 	struct State {
-		unsigned long int _s1, _s2, _s3;
+		unsigned long _s1, _s2, _s3;
 	};
 
 	/** Get the name of this generator.
@@ -351,7 +347,7 @@ public:
 	 *
 	 *  @param s the new seed.
 	 */
-	void setSeed(unsigned long int s);
+	void setSeed(unsigned long s);
 
 	/** Save the current state of the generator.
 	 *
@@ -390,7 +386,7 @@ protected:
 class CSP_EXPORT RandomInterface {
 public:
 	typedef Ref<RandomStateWrapper> State;
-	typedef unsigned long int SeedType;
+	typedef unsigned long SeedType;
 
 	virtual ~RandomInterface();
 
@@ -607,7 +603,7 @@ public:
 	 *
 	 *  @param seed the new seed.
 	 */
-	inline void setSeed(unsigned long int seed) { _gen.setSeed(seed); _odd = true; }
+	inline void setSeed(unsigned long seed) { _gen.setSeed(seed); _odd = true; }
 
 	/** Save the current state of the distribution.
 	 *

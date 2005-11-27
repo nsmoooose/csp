@@ -29,6 +29,8 @@ import re
 import shutil
 import pickle
 import glob
+import time
+import atexit
 
 from distutils import sysconfig
 
@@ -415,6 +417,7 @@ def CheckPkgConfig(context, lib, version=None, lib_name=None):
 		env.ParseConfig('pkg-config --cflags --libs %s' % lib)
 	else:
 		context.Result("no")
+	return ok
 
 
 def _checking(context, target, min_version=None):
@@ -441,7 +444,7 @@ def CheckCommandVersion(context, lib, command, min_version=None, lib_name=None):
 
 
 def CustomConfigure(env):
-	conf = env.Configure()
+	conf = env.Configure(log_file="#/.config.log")
 	conf.AddTests({'CheckSwig': CheckSwig})
 	conf.AddTests({'CheckLibVersion': CheckLibVersion})
 	conf.AddTests({'CheckOSGVersion': CheckOSGVersion})
@@ -496,11 +499,7 @@ def SetDistributed(env):
 
 
 def UpdateEnvironment(env, config=None):
-	if config:
-		if ('config' in SConscript.CommandLineTargets) or ReadConfig(env):
-			if not env.GetOption('clean'):
-				config(env)
-				WriteConfig(env)
+	SetConfig(env, config)
 	def nop(target, source, env): pass
 	env.Append(BUILDERS = {'config': Builder(action=Action(nop, ''))})
 
@@ -510,7 +509,7 @@ def SetDefaultMessage(env, message):
 	env.Default('default')
 
 
-def GlobalSetup(env, distributed=1, short_messages=None, default_message=None, with_swig=1):
+def GlobalSetup(env, distributed=1, short_messages=None, default_message=None, config=None, with_swig=1, timer=1):
 	try:
 		options = SCons.Script.Main.options
 		ssoptions = SCons.Script.Main.ssoptions
@@ -532,6 +531,13 @@ def GlobalSetup(env, distributed=1, short_messages=None, default_message=None, w
 	AddPhonyTarget(env, 'config')
 	SConsEnvironment.SetConfig = SetConfig
 	SConsEnvironment.Documentation = MakeDocumentation
+	if config:
+		env.SetConfig(config)
+	if timer:
+		start_time = time.time()
+		def showtime(start_time=start_time):
+			print 'build time: %d sec' % (time.time() - start_time)
+		atexit.register(showtime)
 
 
 class GlobalSettings:

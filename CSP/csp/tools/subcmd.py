@@ -30,8 +30,8 @@ import zipfile
 import StringIO
 import time
 
-from CSP.base import app
-from CSP.tools import sublib
+from csp.base import app
+from csp.tools import sublib
 
 
 def sendmail(sender, recipients, subject, body, attachments=None):

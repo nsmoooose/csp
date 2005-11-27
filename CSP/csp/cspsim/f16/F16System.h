@@ -30,7 +30,7 @@
 #include <Steerpoint.h>
 #include <F16/NavigationSystem.h>
 
-#include <csp/lib/data/Enum.h>
+#include <csp/csplib/data/Enum.h>
 #include <vector>
 
 class TimedSequence;

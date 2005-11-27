@@ -25,9 +25,9 @@
 #ifndef __CONTROL_NODE_H__
 #define __CONTROL_NODE_H__
 
-#include <csp/lib/data/Key.h>
-#include <csp/lib/util/Math.h>
-#include <csp/lib/data/Object.h>
+#include <csp/csplib/data/Key.h>
+#include <csp/csplib/util/Math.h>
+#include <csp/csplib/data/Object.h>
 #include <map>
 
 class Bus;

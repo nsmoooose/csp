@@ -32,7 +32,7 @@
 #include "Projection.h"
 
 #include <SimCore/Util/Log.h>
-#include <csp/lib/data/ObjectInterface.h>
+#include <csp/csplib/data/ObjectInterface.h>
 
 #include <osg/Vec3>
 #include <osg/Quat>

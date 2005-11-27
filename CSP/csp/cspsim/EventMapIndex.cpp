@@ -32,8 +32,8 @@
 //#include <osgDB/FileUtils>
 //#include <osgDB/FileNameUtils>
 
-#include <csp/lib/util/Log.h>
-#include <csp/lib/util/FileUtility.h>
+#include <csp/csplib/util/Log.h>
+#include <csp/csplib/util/FileUtility.h>
 
 #include <cassert>
 

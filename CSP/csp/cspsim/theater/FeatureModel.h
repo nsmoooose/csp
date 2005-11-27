@@ -29,8 +29,8 @@
 
 class Feature;
 
-#include <csp/lib/data/Path.h>
-#include <csp/lib/data/Object.h>
+#include <csp/csplib/data/Path.h>
+#include <csp/csplib/data/Object.h>
 
 class LayoutTransform;
 class ElevationCorrection;

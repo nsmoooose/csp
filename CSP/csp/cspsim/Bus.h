@@ -52,10 +52,10 @@
  *   add warning/debug logging
  */
 
-#include <csp/lib/util/Log.h>
-#include <csp/lib/util/StringTools.h>
-#include <csp/lib/util/Callback.h>
-#include <csp/lib/util/Ref.h>
+#include <csp/csplib/util/Log.h>
+#include <csp/csplib/util/StringTools.h>
+#include <csp/csplib/util/Callback.h>
+#include <csp/csplib/util/Ref.h>
 
 #include <sigc++/sigc++.h>
 #include <map>

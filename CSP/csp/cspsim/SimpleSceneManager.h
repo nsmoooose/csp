@@ -26,7 +26,7 @@
 #define __CSPSIM_SIMPLESCENEMANAGER_H__
 
 
-#include <csp/lib/battlefield/SceneManager.h>
+#include <csp/csplib/battlefield/SceneManager.h>
 
 class VirtualScene;
 class FeatureGroup;

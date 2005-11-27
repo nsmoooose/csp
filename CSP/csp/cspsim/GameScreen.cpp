@@ -35,7 +35,7 @@
 #include <osgText/Text>
 #include <Producer/Camera>
 
-#include <csp/lib/util/FileUtility.h>
+#include <csp/csplib/util/FileUtility.h>
 
 #include "ConsoleCommands.h"
 #include "CSPSim.h"
@@ -49,8 +49,8 @@
 #include "Views/CameraCommand.h"
 #include "VirtualScene.h"
 
-#include <csp/lib/battlefield/LocalBattlefield.h>
-#include <csp/lib/util/Log.h>
+#include <csp/csplib/battlefield/LocalBattlefield.h>
+#include <csp/csplib/util/Log.h>
 
 /*
  * TODO

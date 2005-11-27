@@ -27,7 +27,7 @@
 #define __CSPSIM_THEATER_FEATURE_H__
 
 
-#include <csp/lib/util/Ref.h>
+#include <csp/csplib/util/Ref.h>
 
 class FeatureObjectModel;
 

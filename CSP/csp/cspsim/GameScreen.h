@@ -26,9 +26,9 @@
 #define __CSPSIM_GAMESCREEN_H__
 
 #include <osg/ref_ptr>
-#include <csp/lib/util/Ref.h>
-#include <csp/lib/util/ScopedPointer.h>
-#include <csp/lib/util/Callback.h>
+#include <csp/csplib/util/Ref.h>
+#include <csp/csplib/util/ScopedPointer.h>
+#include <csp/csplib/util/Callback.h>
 #include "BaseScreen.h"
 
 class PyConsole;

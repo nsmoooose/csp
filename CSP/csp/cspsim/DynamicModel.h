@@ -27,7 +27,7 @@
 #define __CSPSIM_DYNAMICMODEL_H__
 
 #include <sigc++/signal.h>
-#include <csp/lib/util/Ref.h>
+#include <csp/csplib/util/Ref.h>
 #include <ObjectModel.h>  // TODO forward declare scenemodel and move signalCreateSceneModel to a cpp file
 
 

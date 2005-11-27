@@ -25,7 +25,7 @@
 #ifndef __MAPEVENT_H__
 #define __MAPEVENT_H__
 
-#include <csp/lib/util/Namespace.h>
+#include <csp/csplib/util/Namespace.h>
 
 #include <string>
 

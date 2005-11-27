@@ -30,7 +30,7 @@
 #include "Config.h"
 #include "EventMapping.h"
 
-#include <csp/lib/util/HashUtility.h>
+#include <csp/csplib/util/HashUtility.h>
 
 
 class EventMapIndex: public simdata::Referenced

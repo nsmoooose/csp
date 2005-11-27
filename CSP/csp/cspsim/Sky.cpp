@@ -33,13 +33,13 @@
 
 #include <cmath>
 
-#include <csp/lib/util/StringTools.h>
-#include <csp/lib/data/Date.h>
-#include <csp/lib/data/Path.h>
-#include <csp/lib/data/Object.h>
-#include <csp/lib/data/ObjectInterface.h>
-#include <csp/lib/data/DataManager.h>
-#include <csp/lib/util/Math.h>
+#include <csp/csplib/util/StringTools.h>
+#include <csp/csplib/data/Date.h>
+#include <csp/csplib/data/Path.h>
+#include <csp/csplib/data/Object.h>
+#include <csp/csplib/data/ObjectInterface.h>
+#include <csp/csplib/data/DataManager.h>
+#include <csp/csplib/util/Math.h>
 
 #include <osg/BlendFunc>
 #include <osg/Depth>

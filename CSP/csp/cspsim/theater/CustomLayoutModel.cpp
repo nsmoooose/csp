@@ -26,7 +26,7 @@
 #include "Theater/CustomLayoutModel.h"
 #include "Theater/FeatureLayout.h"
 
-#include <csp/lib/data/ObjectInterface.h>
+#include <csp/csplib/data/ObjectInterface.h>
 
 #include <vector>
 

@@ -26,9 +26,9 @@
 #include <KineticsChannels.h>
 #include <ObjectModel.h>
 #include <ObjectUpdate.h>
-#include <csp/lib/battlefield/BattlefieldMessages.h>
-#include <csp/lib/util/TimeStamp.h>
-#include <csp/lib/data/ObjectInterface.h>
+#include <csp/csplib/battlefield/BattlefieldMessages.h>
+#include <csp/csplib/util/TimeStamp.h>
+#include <csp/csplib/data/ObjectInterface.h>
 
 #include <map>
 #include <set>

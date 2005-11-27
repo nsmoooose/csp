@@ -36,12 +36,12 @@
 #include <HUD/PitchLadder.h>
 #include <KineticsChannels.h>
 #include <LandingGearChannels.h>
-#include <csp/lib/util/Conversions.h>
-#include <csp/lib/util/Math.h>
-#include <csp/lib/data/ObjectInterface.h>
-#include <csp/lib/util/osg.h>
-#include <csp/lib/util/Timing.h>
-#include <csp/lib/data/Vector3.h>
+#include <csp/csplib/util/Conversions.h>
+#include <csp/csplib/util/Math.h>
+#include <csp/csplib/data/ObjectInterface.h>
+#include <csp/csplib/util/osg.h>
+#include <csp/csplib/util/Timing.h>
+#include <csp/csplib/data/Vector3.h>
 
 
 // TODO

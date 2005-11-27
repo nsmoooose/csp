@@ -34,10 +34,10 @@
 #include <SimCore/Battlefield/LocalBattlefield.h>
 #include <DynamicModel.h>
 #include <DynamicObject.h>
-#include <csp/lib/data/DataArchive.h>
-#include <csp/lib/data/DataManager.h>
-#include <csp/lib/data/ObjectInterface.h>
-#include <csp/lib/util/Timing.h>
+#include <csp/csplib/data/DataArchive.h>
+#include <csp/csplib/data/DataManager.h>
+#include <csp/csplib/data/ObjectInterface.h>
+#include <csp/csplib/util/Timing.h>
 #include <sigc++/functors/mem_fun.h>
 #include <osg/Group>
 #include <cassert>

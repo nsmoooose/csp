@@ -31,9 +31,9 @@
 #include <Demeter/DemeterDrawable.h>
 #include <Demeter/TerrainTextureFactory.h>
 
-#include <csp/lib/util/Log.h>
-#include <csp/lib/util/FileUtility.h>
-#include <csp/lib/data/ObjectInterface.h>
+#include <csp/csplib/util/Log.h>
+#include <csp/csplib/util/FileUtility.h>
+#include <csp/csplib/data/ObjectInterface.h>
 
 #include <osg/Geode>
 #include <osg/StateSet>

@@ -25,10 +25,10 @@
 #ifndef __CSPSIM_ATMOSPHERE_H__
 #define __CSPSIM_ATMOSPHERE_H__
 
-#include <csp/lib/data/Date.h>
-#include <csp/lib/data/Object.h>
-#include <csp/lib/data/LUT.h>
-#include <csp/lib/data/Vector3.h>
+#include <csp/csplib/data/Date.h>
+#include <csp/csplib/data/Object.h>
+#include <csp/csplib/data/LUT.h>
+#include <csp/csplib/data/Vector3.h>
 
 #include <vector>
 

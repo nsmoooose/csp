@@ -26,9 +26,9 @@
 #define __CSPSIM_DEMETERTERRAIN_H__
 
 
-#include <csp/lib/data/Object.h>
-#include <csp/lib/data/GeoPos.h>
-#include <csp/lib/data/Vector3.h>
+#include <csp/csplib/data/Object.h>
+#include <csp/csplib/data/GeoPos.h>
+#include <csp/csplib/data/Vector3.h>
 
 #include "TerrainObject.h"
 

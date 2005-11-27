@@ -35,8 +35,8 @@
 #include <osg/StateSet>
 #include <osgText/Text>
 
-#include <csp/lib/util/Conversions.h>
-#include <csp/lib/util/Timing.h>
+#include <csp/csplib/util/Conversions.h>
+#include <csp/csplib/util/Timing.h>
 
 using std::max;
 using std::min;

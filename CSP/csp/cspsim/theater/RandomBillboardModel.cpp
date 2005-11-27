@@ -32,8 +32,8 @@
 #include <osg/Geometry>
 #include <osgUtil/Optimizer>
 
-#include <csp/lib/data/ObjectInterface.h>
-#include <csp/lib/util/Random.h>
+#include <csp/csplib/data/ObjectInterface.h>
+#include <csp/csplib/util/Random.h>
 
 #include <SimCore/Util/Log.h>
 

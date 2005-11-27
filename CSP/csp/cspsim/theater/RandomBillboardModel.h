@@ -29,7 +29,7 @@
 
 #include "Theater/FeatureGroupModel.h"
 
-#include <csp/lib/data/Link.h>
+#include <csp/csplib/data/Link.h>
 
 #include <vector>
 

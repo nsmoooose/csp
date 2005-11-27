@@ -28,10 +28,10 @@
 #include "Theater/FeatureGroupList.h"
 #include "TerrainObject.h"
 
-#include <csp/lib/util/Log.h>
-#include <csp/lib/data/ObjectInterface.h>
-#include <csp/lib/data/Path.h>
-#include <csp/lib/util/Ref.h>
+#include <csp/csplib/util/Log.h>
+#include <csp/csplib/data/ObjectInterface.h>
+#include <csp/csplib/data/Path.h>
+#include <csp/csplib/util/Ref.h>
 
 
 SIMDATA_XML_BEGIN(Theater)

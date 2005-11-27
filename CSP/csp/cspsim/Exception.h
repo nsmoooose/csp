@@ -25,7 +25,7 @@
 #ifndef __CSP_EXCEPTION_H__
 #define __CSP_EXCEPTION_H__
 
-#include <csp/lib/util/Exception.h>
+#include <csp/csplib/util/Exception.h>
 
 class DemeterException;
 

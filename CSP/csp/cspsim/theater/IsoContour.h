@@ -26,8 +26,8 @@
 #define __CSPSIM_THEATER_ISOCONTOUR_H__
 
 
-#include <csp/lib/data/Vector3.h>
-#include <csp/lib/data/Object.h>
+#include <csp/csplib/data/Vector3.h>
+#include <csp/csplib/data/Object.h>
 #include <SimCore/Util/Log.h>
 
 

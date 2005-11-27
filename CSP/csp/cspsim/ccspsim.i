@@ -18,11 +18,11 @@
 
 %module ccspsim
 %{
-#include <csp/lib/util/HashUtility.h>
-#include <csp/lib/util/Exception.h>
-#include <csp/lib/data/Types.h>
-#include <csp/lib/data/DataArchive.h>
-#include <csp/lib/data/InterfaceRegistry.h>
+#include <csp/csplib/util/HashUtility.h>
+#include <csp/csplib/util/Exception.h>
+#include <csp/csplib/data/Types.h>
+#include <csp/csplib/data/DataArchive.h>
+#include <csp/csplib/data/InterfaceRegistry.h>
 #include <csp/cspsim/CSPSim.h>
 #include <csp/cspsim/ObjectModel.h>
 #include <csp/cspsim/Animation.h>

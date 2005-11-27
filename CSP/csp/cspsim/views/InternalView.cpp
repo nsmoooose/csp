@@ -36,7 +36,7 @@
 
 #include <SimCore/Battlefield/LocalBattlefield.h>
 #include <SimData/Noise.h>
-#include <csp/lib/data/Quat.h>
+#include <csp/csplib/data/Quat.h>
 
 
 InternalView::InternalView(size_t vm):

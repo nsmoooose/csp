@@ -54,14 +54,14 @@
 #include <osg/MatrixTransform>
 #include <osg/PositionAttitudeTransform>
 
-#include <csp/lib/util/Log.h>
-#include <csp/lib/util/FileUtility.h>
-#include <csp/lib/util/HashUtility.h>
-#include <csp/lib/data/Key.h>
-#include <csp/lib/data/ObjectInterface.h>
-#include <csp/lib/util/osg.h>
-#include <csp/lib/util/Timing.h>
-#include <csp/lib/data/Quat.h>
+#include <csp/csplib/util/Log.h>
+#include <csp/csplib/util/FileUtility.h>
+#include <csp/csplib/util/HashUtility.h>
+#include <csp/csplib/data/Key.h>
+#include <csp/csplib/data/ObjectInterface.h>
+#include <csp/csplib/util/osg.h>
+#include <csp/csplib/util/Timing.h>
+#include <csp/csplib/data/Quat.h>
 
 /*
 	TODO

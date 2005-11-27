@@ -31,8 +31,8 @@
 #include <FuelManagementSystem.h>
 #include <Stores/StoresManagementSystem.h>
 
-#include <csp/lib/data/Enum.h>
-#include <csp/lib/util/Conversions.h>
+#include <csp/csplib/data/Enum.h>
+#include <csp/csplib/util/Conversions.h>
 
 
 namespace f16 {

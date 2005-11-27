@@ -29,7 +29,7 @@
 #include "NumericalMethod.h"
 #include "Profile.h"
 
-#include <csp/lib/data/ObjectInterface.h>
+#include <csp/csplib/data/ObjectInterface.h>
 
 #include <algorithm>
 

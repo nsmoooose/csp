@@ -33,7 +33,7 @@ namespace osgText {
 #include <osg/Geode>
 #include <osg/Switch>
 
-#include <csp/lib/util/Ref.h>
+#include <csp/csplib/util/Ref.h>
 
 class DynamicObject;
 

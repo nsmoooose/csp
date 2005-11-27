@@ -38,12 +38,12 @@
 #include <SystemsModel.h>
 #include <TerrainObject.h>
 
-//#include <csp/lib/battlefield/LocalBattlefield.h>
-#include <csp/lib/util/Log.h>
-#include <csp/lib/data/DataManager.h>
-#include <csp/lib/data/ObjectInterface.h>
-#include <csp/lib/util/osg.h>
-#include <csp/lib/data/Quat.h>
+//#include <csp/csplib/battlefield/LocalBattlefield.h>
+#include <csp/csplib/util/Log.h>
+#include <csp/csplib/data/DataManager.h>
+#include <csp/csplib/data/ObjectInterface.h>
+#include <csp/csplib/util/osg.h>
+#include <csp/csplib/data/Quat.h>
 
 #include <osg/Group>
 

@@ -43,8 +43,8 @@
 #include <KineticsChannels.h>
 #include <LandingGearChannels.h>
 
-#include <csp/lib/util/Math.h>
-#include <csp/lib/data/ObjectInterface.h>
+#include <csp/csplib/util/Math.h>
+#include <csp/csplib/data/ObjectInterface.h>
 
 #include <cstdio>
 #include <iostream>

@@ -26,7 +26,7 @@
 
 #include "Exception.h"
 #include <Demeter/DemeterException.h>
-#include <csp/lib/util/Log.h>
+#include <csp/csplib/util/Log.h>
 
 namespace csp {
 

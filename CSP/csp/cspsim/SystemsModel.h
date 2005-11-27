@@ -31,7 +31,7 @@
 #include <csp/cspsim/PhysicsModel.h>
 #include <csp/cspsim/Controller.h>
 
-#include <csp/lib/util/Namespace.h>
+#include <csp/csplib/util/Namespace.h>
 
 
 CSP_NAMESPACE

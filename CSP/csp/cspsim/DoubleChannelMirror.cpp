@@ -24,8 +24,8 @@
 
 #include <ChannelMirror.h>
 #include <Bus.h>
-#include <csp/lib/util/Math.h>
-#include <csp/lib/data/ObjectInterface.h>
+#include <csp/csplib/util/Math.h>
+#include <csp/csplib/data/ObjectInterface.h>
 
 
 class DoubleChannelSlave: public ChannelSlave {

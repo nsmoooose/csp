@@ -23,9 +23,9 @@
 #include <csp/cspsim/Projection.h>
 #include <csp/cspsim/Shell.h>
 #include <csp/cspsim/DynamicObject.h>
-#include <csp/lib/battlefield/LocalBattlefield.h>
-#include <csp/lib/data/DataManager.h>
-#include <csp/lib/data/Math.h>
+#include <csp/csplib/battlefield/LocalBattlefield.h>
+#include <csp/csplib/data/DataManager.h>
+#include <csp/csplib/data/Math.h>
 
 void _createVehicleHelper(CSPSim *self, const char *path, simdata::Vector3 position,
                           simdata::Vector3 velocity, simdata::Vector3 attitude) {

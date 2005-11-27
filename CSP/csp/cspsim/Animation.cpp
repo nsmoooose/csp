@@ -33,13 +33,13 @@
 #include <osg/Switch>
 #include <osg/Version>
 
-#include <csp/lib/util/Log.h>
-#include <csp/lib/data/Enum.h>
-#include <csp/lib/util/Math.h>
-#include <csp/lib/util/osg.h>
-#include <csp/lib/data/LUT.h>
-#include <csp/lib/data/Vector3.h>
-#include <csp/lib/data/ObjectInterface.h>
+#include <csp/csplib/util/Log.h>
+#include <csp/csplib/data/Enum.h>
+#include <csp/csplib/util/Math.h>
+#include <csp/csplib/util/osg.h>
+#include <csp/csplib/data/LUT.h>
+#include <csp/csplib/data/Vector3.h>
+#include <csp/csplib/data/ObjectInterface.h>
 
 #ifndef OSG_VERSION_MAJOR
 #define OSG_OLD_CONTROL_POINT_INTERFACE

@@ -28,13 +28,13 @@
 
 #include <csp/cspsim/Bus.h>
 
-#include <csp/lib/data/Enum.h>
-#include <csp/lib/data/Link.h>
-#include <csp/lib/data/Object.h>
-#include <csp/lib/data/Vector3.h>
+#include <csp/csplib/data/Enum.h>
+#include <csp/csplib/data/Link.h>
+#include <csp/csplib/data/Object.h>
+#include <csp/csplib/data/Vector3.h>
 
-#include <csp/lib/util/Export.h>
-#include <csp/lib/util/Namespace.h>
+#include <csp/csplib/util/Export.h>
+#include <csp/csplib/util/Namespace.h>
 
 #include <osg/ref_ptr>
 #include <vector>

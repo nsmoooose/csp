@@ -27,8 +27,8 @@
 #define __CSPSIM_STORESDYNAMICS_H__
 
 
-#include <csp/lib/data/Vector3.h>
-#include <csp/lib/data/Matrix3.h>
+#include <csp/csplib/data/Vector3.h>
+#include <csp/csplib/data/Matrix3.h>
 
 
 /** Dynamical properties model for stores carried by a vehicle.

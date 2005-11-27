@@ -32,8 +32,8 @@
 #include <Atmosphere.h>
 #include <CSPSim.h>
 
-#include <csp/lib/util/Conversions.h>
-#include <csp/lib/data/ObjectInterface.h>
+#include <csp/csplib/util/Conversions.h>
+#include <csp/csplib/data/ObjectInterface.h>
 
 
 SIMDATA_XML_BEGIN(AircraftFlightSensors)

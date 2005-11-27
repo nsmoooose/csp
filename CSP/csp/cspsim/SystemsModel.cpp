@@ -29,7 +29,7 @@
 #include <csp/cspsim/DataRecorder.h>
 #include <csp/cspsim/stores/StoresManagementSystem.h>
 
-#include <csp/lib/data/ObjectInterface.h>
+#include <csp/csplib/data/ObjectInterface.h>
 
 
 CSP_NAMESPACE

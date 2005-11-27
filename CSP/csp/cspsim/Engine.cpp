@@ -26,10 +26,10 @@
 #include "FlightDynamicsChannels.h"
 #include "ThrustData.h"
 
-#include <csp/lib/util/Conversions.h>
-#include <csp/lib/util/Math.h>
-#include <csp/lib/data/Quat.h>
-#include <csp/lib/data/ObjectInterface.h>
+#include <csp/csplib/util/Conversions.h>
+#include <csp/csplib/util/Math.h>
+#include <csp/csplib/data/Quat.h>
+#include <csp/csplib/data/ObjectInterface.h>
 
 #include <iomanip>
 #include <sstream>

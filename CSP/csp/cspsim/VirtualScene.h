@@ -26,9 +26,9 @@
 #define __CSPSIM_VIRTUALBATTLEFIELDSCENE_H__
 
 
-#include <csp/lib/data/Path.h>
-#include <csp/lib/data/Vector3.h>
-#include <csp/lib/util/Ref.h>
+#include <csp/csplib/data/Path.h>
+#include <csp/csplib/data/Vector3.h>
+#include <csp/csplib/util/Ref.h>
 
 #include <osg/ref_ptr>
 #include <osg/Vec4>

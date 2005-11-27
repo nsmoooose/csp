@@ -26,9 +26,9 @@
 #ifndef __CSPSIM_STORESDATABASE_H__
 #define __CSPSIM_STORESDATABASE_H__
 
-#include <csp/lib/util/Ref.h>
-#include <csp/lib/data/Key.h>
-#include <csp/lib/data/Path.h>
+#include <csp/csplib/util/Ref.h>
+#include <csp/csplib/data/Key.h>
+#include <csp/csplib/data/Path.h>
 #include <SimData/Singleton.h>
 
 #include <map>

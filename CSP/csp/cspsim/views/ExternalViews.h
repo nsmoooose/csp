@@ -25,7 +25,7 @@
 #ifndef __CSPSIM_EXTERNAL_VIEWS_H__
 #define __CSPSIM_EXTERNAL_VIEWS_H__
 
-#include <csp/lib/data/Vector3.h>
+#include <csp/csplib/data/Vector3.h>
 #include "Views/View.h"
 
 

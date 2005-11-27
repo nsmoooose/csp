@@ -28,11 +28,11 @@
 #ifndef __CSPSIM_PROJECTION_H__
 #define __CSPSIM_PROJECTION_H__
 
-#include <csp/lib/data/Vector3.h>
-#include <csp/lib/util/Math.h>
-#include <csp/lib/data/GeoPos.h>
-#include <csp/lib/data/LUT.h>
-#include <csp/lib/util/Ref.h>
+#include <csp/csplib/data/Vector3.h>
+#include <csp/csplib/util/Math.h>
+#include <csp/csplib/data/GeoPos.h>
+#include <csp/csplib/data/LUT.h>
+#include <csp/csplib/util/Ref.h>
 
 #include <cstdio>
 #include <iostream>

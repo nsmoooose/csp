@@ -39,7 +39,7 @@
 #include <osgDB/ReadFile>
 #include <osgUtil/SceneView>
 
-#include <csp/lib/util/FileUtility.h>
+#include <csp/csplib/util/FileUtility.h>
 
 #include "Config.h"
 #include "Exception.h"

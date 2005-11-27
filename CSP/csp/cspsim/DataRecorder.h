@@ -28,8 +28,8 @@
 
 #include <csp/cspsim/Bus.h>
 
-#include <csp/lib/util/Referenced.h>
-#include <csp/lib/data/Vector3.h>
+#include <csp/csplib/util/Referenced.h>
+#include <csp/csplib/data/Vector3.h>
 
 #include <cstdio>
 

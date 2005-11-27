@@ -27,7 +27,7 @@
 #define __CSPSIM_F16_GROUND_AVOIDANCE_ADVISORY_H__
 
 #include <System.h>
-#include <csp/lib/data/Vector3.h>
+#include <csp/csplib/data/Vector3.h>
 
 
 /** Implements the F-16 Ground Avoidance Advisory Function (GAAF).

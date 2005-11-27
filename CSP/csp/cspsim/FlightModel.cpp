@@ -50,7 +50,7 @@
 
 
 #include "FlightModel.h"
-#include <csp/lib/data/ObjectInterface.h>
+#include <csp/csplib/data/ObjectInterface.h>
 
 
 SIMDATA_XML_BEGIN(FlightModel)

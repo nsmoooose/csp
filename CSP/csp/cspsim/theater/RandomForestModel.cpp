@@ -30,8 +30,8 @@
 #include "Theater/ElevationCorrection.h"
 #include "Theater/IsoContour.h"
 
-#include <csp/lib/data/ObjectInterface.h>
-#include <csp/lib/util/Random.h>
+#include <csp/csplib/data/ObjectInterface.h>
+#include <csp/csplib/util/Random.h>
 
 #include <osg/Geometry>
 #include <osg/Drawable>

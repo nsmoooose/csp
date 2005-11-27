@@ -24,14 +24,14 @@
 
 
 #include "DispatchCenter.h"
-#include <csp/lib/util/Log.h>
+#include <csp/csplib/util/Log.h>
 #include "Animation.h"
 #include "Config.h"
 #include "ObjectModel.h"
-#include <csp/lib/net/Networking.h>
-#include <csp/lib/net/NetworkMessage.h>
+#include <csp/csplib/net/Networking.h>
+#include <csp/csplib/net/NetworkMessage.h>
 
-#include <csp/lib/util/Dispatch.h>
+#include <csp/csplib/util/Dispatch.h>
 #include <SimData/TaggedRecordRegistry.h>
 
 DispatchCenter::DispatchCenter() {

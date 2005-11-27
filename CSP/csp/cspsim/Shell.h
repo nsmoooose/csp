@@ -28,7 +28,7 @@
 #define __CSPSIM_SHELL_H__
 
 #include <Python.h>
-#include <csp/lib/util/Ref.h>
+#include <csp/csplib/util/Ref.h>
 
 class PyShell: public simdata::Referenced {
 public:

@@ -24,7 +24,7 @@
 
 #include <Stores/Projectile.h>
 #include <Stores/Stores.h>
-#include <csp/lib/data/ObjectInterface.h>
+#include <csp/csplib/data/ObjectInterface.h>
 #include <SimCore/Util/StringTools.h>
 
 SIMDATA_XML_BEGIN(Projectile)

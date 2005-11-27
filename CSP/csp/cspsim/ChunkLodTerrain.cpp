@@ -26,10 +26,10 @@
 #include "ChunkLodTerrain.h"
 #include "Config.h"
 
-#include <csp/lib/util/Log.h>
-#include <csp/lib/util/FileUtility.h>
-#include <csp/lib/data/ObjectInterface.h>
-#include <csp/lib/util/osg.h>
+#include <csp/csplib/util/Log.h>
+#include <csp/csplib/util/FileUtility.h>
+#include <csp/csplib/data/ObjectInterface.h>
+#include <csp/csplib/util/osg.h>
 
 #include <osg/Geode>
 #include <osg/Matrix>

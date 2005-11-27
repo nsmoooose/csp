@@ -26,7 +26,7 @@
 #include "Theater/FeatureGroupList.h"
 #include "Projection.h"
 
-#include <csp/lib/data/ObjectInterface.h>
+#include <csp/csplib/data/ObjectInterface.h>
 
 
 SIMDATA_XML_BEGIN(FeatureGroupList)

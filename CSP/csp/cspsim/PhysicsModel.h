@@ -26,12 +26,12 @@
 #ifndef __CSPSIM_PHYSICSMODEL_H__
 #define __CSPSIM_PHYSICSMODEL_H__
 
-#include <csp/lib/util/Namespace.h>
-#include <csp/lib/util/Ref.h>
+#include <csp/csplib/util/Namespace.h>
+#include <csp/csplib/util/Ref.h>
 
-#include <csp/lib/data/Matrix3.h>
-#include <csp/lib/data/Vector3.h>
-#include <csp/lib/data/Quat.h>
+#include <csp/csplib/data/Matrix3.h>
+#include <csp/csplib/data/Vector3.h>
+#include <csp/csplib/data/Quat.h>
 
 #include <csp/cspsim/System.h>
 #include <csp/cspsim/DynamicalSystem.h>

@@ -22,8 +22,8 @@
  *
  **/
 
-#include <csp/lib/util/Namespace.h>
-#include <csp/lib/util/Log.h>
+#include <csp/csplib/util/Namespace.h>
+#include <csp/csplib/util/Log.h>
 #include <csp/cspsim/NumericalMethod.h>
 #include <csp/cspsim/VectorField.h>
 #include <cmath>

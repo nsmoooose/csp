@@ -28,7 +28,7 @@
 #define NOT_USE_VALARRAY
 #endif
 
-#include <csp/lib/util/Namespace.h>
+#include <csp/csplib/util/Namespace.h>
 
 #include <cmath>
 #include <functional>

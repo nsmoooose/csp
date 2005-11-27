@@ -28,10 +28,10 @@
 
 #include <System.h>
 #include <SystemsModel.h>
-#include <csp/lib/data/Key.h>
-#include <csp/lib/data/Object.h>
-#include <csp/lib/data/ObjectInterface.h>
-#include <csp/lib/data/Real.h>
+#include <csp/csplib/data/Key.h>
+#include <csp/csplib/data/Object.h>
+#include <csp/csplib/data/ObjectInterface.h>
+#include <csp/csplib/data/Real.h>
 
 
 class FuelTank;

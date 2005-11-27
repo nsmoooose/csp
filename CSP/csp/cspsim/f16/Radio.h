@@ -27,7 +27,7 @@
 #define __CSPSIM_F16_RADIO_H__
 
 #include <System.h>
-#include <csp/lib/data/Enum.h>
+#include <csp/csplib/data/Enum.h>
 #include <vector>
 
 

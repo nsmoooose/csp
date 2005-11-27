@@ -31,8 +31,8 @@
 #include <osgParticle/ParticleSystemUpdater>
 #include <osgParticle/Operator>
 
-#include <csp/lib/data/Quat.h>
-#include <csp/lib/data/Vector3.h>
+#include <csp/csplib/data/Quat.h>
+#include <csp/csplib/data/Vector3.h>
 
 #include <vector>
 #include <string>

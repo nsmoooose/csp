@@ -26,8 +26,8 @@
 #define __CSPSIM_ANIMATION_SEQUENCE_H__
 
 #include "Bus.h"
-#include <csp/lib/util/Math.h>
-#include <csp/lib/data/Object.h>
+#include <csp/csplib/util/Math.h>
+#include <csp/csplib/data/Object.h>
 #include <string>
 
 

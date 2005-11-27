@@ -39,8 +39,8 @@
 
 #include <csp/cspsim/MapEvent.h>
 
-#include <csp/lib/util/Namespace.h>
-#include <csp/lib/util/HashUtility.h>
+#include <csp/csplib/util/Namespace.h>
+#include <csp/csplib/util/HashUtility.h>
 
 #include <sigc++/sigc++.h>
 #include <SDL/SDL_events.h>

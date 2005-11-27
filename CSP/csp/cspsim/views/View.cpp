@@ -36,7 +36,7 @@
 #include "VirtualScene.h"
 
 #include <SimCore/Battlefield/LocalBattlefield.h>
-#include <csp/lib/data/Quat.h>
+#include <csp/csplib/data/Quat.h>
 
 #include <cmath>
 #include <queue>

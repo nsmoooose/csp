@@ -7,15 +7,15 @@
 #include <FlightDynamicsChannels.h>
 #include <KineticsChannels.h>
 #include <LandingGearChannels.h>
-#include <csp/lib/util/Conversions.h>
-#include <csp/lib/data/LUT.h>
-#include <csp/lib/util/Math.h>
-#include <csp/lib/data/ObjectInterface.h>
-#include <csp/lib/data/Vector3.h>
+#include <csp/csplib/util/Conversions.h>
+#include <csp/csplib/data/LUT.h>
+#include <csp/csplib/util/Math.h>
+#include <csp/csplib/data/ObjectInterface.h>
+#include <csp/csplib/data/Vector3.h>
 
 #include "F16Channels.h"
 
-#include <csp/lib/data/ObjectInterface.h>
+#include <csp/csplib/data/ObjectInterface.h>
 
 
 class LeadingEdgeFlapControl: public ControlNode {

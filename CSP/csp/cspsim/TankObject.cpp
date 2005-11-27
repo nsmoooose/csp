@@ -27,8 +27,8 @@
 #include "ObjectModel.h"
 #include "SystemsModel.h"
 
-#include <csp/lib/util/Log.h>
-#include <csp/lib/data/ObjectInterface.h>
+#include <csp/csplib/util/Log.h>
+#include <csp/csplib/data/ObjectInterface.h>
 
 
 using namespace std;

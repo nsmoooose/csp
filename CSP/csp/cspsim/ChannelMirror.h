@@ -51,7 +51,7 @@
 #ifndef __CHANNEL_MIRROR_H__
 #define __CHANNEL_MIRROR_H__
 
-#include <csp/lib/data/Object.h>
+#include <csp/csplib/data/Object.h>
 #include <string>
 
 class Bus;

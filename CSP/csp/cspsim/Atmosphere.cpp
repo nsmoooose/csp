@@ -23,8 +23,8 @@
  **/
 
 #include <csp/cspsim/Atmosphere.h>
-#include <csp/lib/util/Noise.h>
-#include <csp/lib/util/Random.h>
+#include <csp/csplib/util/Noise.h>
+#include <csp/csplib/util/Random.h>
 
 
 // temporary, for testing.

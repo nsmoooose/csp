@@ -30,7 +30,7 @@
 #include <osg/Geometry>
 #include <osg/Billboard>
 #include <osg/Matrix>
-#include <csp/lib/data/Date.h>
+#include <csp/csplib/data/Date.h>
 #include "Colorspace.h"
 
 class StarSystem;

@@ -26,11 +26,11 @@
 #include <Animation.h>
 #include <KineticsChannels.h>
 #include <ObjectModel.h>
-#include <csp/lib/util/Log.h>
+#include <csp/csplib/util/Log.h>
 
-#include <csp/lib/data/ObjectInterface.h>
-#include <csp/lib/data/Quat.h>
-#include <csp/lib/util/Ref.h>
+#include <csp/csplib/data/ObjectInterface.h>
+#include <csp/csplib/data/Quat.h>
+#include <csp/csplib/util/Ref.h>
 
 using bus::Kinetics;
 

@@ -25,8 +25,8 @@
 #ifndef __CSPSIM_THRUSTDATA_H__
 #define __CSPSIM_THRUSTDATA_H__
 
-#include <csp/lib/data/LUT.h>
-#include <csp/lib/data/Object.h>
+#include <csp/csplib/data/LUT.h>
+#include <csp/csplib/data/Object.h>
 
 
 /** Static thrust data for an aircraft engine.  Data is stored in three tables:

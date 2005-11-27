@@ -29,8 +29,8 @@
 #include <csp/cspsim/Bus.h>
 #include <csp/cspsim/SystemsModel.h>
 
-#include <csp/lib/util/Log.h>
-#include <csp/lib/data/ObjectInterface.h>
+#include <csp/csplib/util/Log.h>
+#include <csp/csplib/data/ObjectInterface.h>
 
 
 CSP_NAMESPACE

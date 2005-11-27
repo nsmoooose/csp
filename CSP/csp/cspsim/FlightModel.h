@@ -27,10 +27,10 @@
 #define __CSPSIM_FLIGHTMODEL_H__
 
 
-#include <csp/lib/data/LUT.h>
-#include <csp/lib/util/Math.h>
-#include <csp/lib/data/Object.h>
-#include <csp/lib/data/Vector3.h>
+#include <csp/csplib/data/LUT.h>
+#include <csp/csplib/util/Math.h>
+#include <csp/csplib/data/Object.h>
+#include <csp/csplib/data/Vector3.h>
 
 
 /**

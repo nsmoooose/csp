@@ -35,8 +35,8 @@
 #ifndef __CSPSIM_PROFILE_H__
 #define __CSPSIM_PROFILE_H__
 
-#include <csp/lib/util/Log.h>
-#include <csp/lib/data/Date.h>
+#include <csp/csplib/util/Log.h>
+#include <csp/csplib/data/Date.h>
 
 #define PROF0(id) \
 	static int id##_c = 0; \

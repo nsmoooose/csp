@@ -28,11 +28,11 @@
 #include <FlightDynamicsChannels.h>
 #include <KineticsChannels.h>
 
-#include <csp/lib/util/Log.h>
-#include <csp/lib/util/Math.h>
-#include <csp/lib/data/ObjectInterface.h>
-#include <csp/lib/data/Quat.h>
-#include <csp/lib/util/Conversions.h>
+#include <csp/csplib/util/Log.h>
+#include <csp/csplib/util/Math.h>
+#include <csp/csplib/data/ObjectInterface.h>
+#include <csp/csplib/data/Quat.h>
+#include <csp/csplib/util/Conversions.h>
 
 #include <sstream> // for getInfo
 #include <iomanip> // for getInfo

@@ -82,8 +82,8 @@
 #include <osgParticle/RadialShooter>
 #include <osgParticle/Operator>
 
-#include <csp/lib/util/Random.h>
-#include <csp/lib/util/osg.h>
+#include <csp/csplib/util/Random.h>
+#include <csp/csplib/util/osg.h>
 
 #include <cstdio>
 #include <algorithm>

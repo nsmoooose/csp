@@ -28,9 +28,9 @@
 #include <TerrainObject.h>
 #include <Projection.h>
 
-#include <csp/lib/data/Date.h>
-#include <csp/lib/util/Math.h>
-#include <csp/lib/util/Conversions.h>
+#include <csp/csplib/data/Date.h>
+#include <csp/csplib/util/Math.h>
+#include <csp/csplib/util/Conversions.h>
 
 
 NavigationSystem::NavigationSystem() {

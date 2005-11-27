@@ -29,7 +29,7 @@
 #include <algorithm>
 #include <cmath>
 
-#include <csp/lib/util/Math.h>
+#include <csp/csplib/util/Math.h>
 
 #include <SimCore/Util/Log.h>
 

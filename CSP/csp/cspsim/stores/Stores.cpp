@@ -26,8 +26,8 @@
 #include <CSPSim.h>
 #include <DynamicObject.h>
 #include <Stores/Stores.h>
-#include <csp/lib/data/ObjectInterface.h>
-#include <csp/lib/data/DataManager.h>
+#include <csp/csplib/data/ObjectInterface.h>
+#include <csp/csplib/data/DataManager.h>
 
 
 SIMDATA_XML_BEGIN(HardpointData)

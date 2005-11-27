@@ -37,9 +37,9 @@ namespace osg {
 	class Geometry;
 }
 
-#include <csp/lib/data/Link.h>
-#include <csp/lib/util/Ref.h>
-#include <csp/lib/data/Vector3.h>
+#include <csp/csplib/data/Link.h>
+#include <csp/csplib/util/Ref.h>
+#include <csp/csplib/data/Vector3.h>
 
 #include <vector>
 

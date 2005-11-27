@@ -30,7 +30,7 @@
 #ifndef __CSPSIM_COLORSPACE_H__
 #define __CSPSIM_COLORSPACE_H__
 
-#include <csp/lib/util/Namespace.h>
+#include <csp/csplib/util/Namespace.h>
 #include <ostream>
 
 CSP_NAMESPACE

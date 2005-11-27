@@ -30,10 +30,10 @@
 #include "Stores/StoresDynamics.h"
 #include "TerrainObject.h"
 
-#include <csp/lib/battlefield/SimObject.h>
-#include <csp/lib/data/Link.h>
-#include <csp/lib/data/Matrix3.h>
-#include <csp/lib/data/Quat.h>
+#include <csp/csplib/battlefield/SimObject.h>
+#include <csp/csplib/data/Link.h>
+#include <csp/csplib/data/Matrix3.h>
+#include <csp/csplib/data/Quat.h>
 
 
 class DataRecorder;

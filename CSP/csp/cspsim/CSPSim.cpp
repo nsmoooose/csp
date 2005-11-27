@@ -55,21 +55,21 @@
 #include "Theater.h"
 #include "VirtualScene.h"
 
-#include <csp/lib/battlefield/LocalBattlefield.h>
-#include <csp/lib/battlefield/SimObject.h>
+#include <csp/csplib/battlefield/LocalBattlefield.h>
+#include <csp/csplib/battlefield/SimObject.h>
 
-#include <csp/lib/data/GeoPos.h>
-#include <csp/lib/data/DataArchive.h>
-#include <csp/lib/data/DataManager.h>
-#include <csp/lib/data/Types.h>
+#include <csp/csplib/data/GeoPos.h>
+#include <csp/csplib/data/DataArchive.h>
+#include <csp/csplib/data/DataManager.h>
+#include <csp/csplib/data/Types.h>
 
-#include <csp/lib/util/Exception.h>
-#include <csp/lib/util/FileUtility.h>
-#include <csp/lib/util/Log.h>
-#include <csp/lib/util/Timing.h>
-#include <csp/lib/util/Trace.h>
+#include <csp/csplib/util/Exception.h>
+#include <csp/csplib/util/FileUtility.h>
+#include <csp/csplib/util/Log.h>
+#include <csp/csplib/util/Timing.h>
+#include <csp/csplib/util/Trace.h>
 
-#include <csp/lib/net/ClientServer.h>
+#include <csp/csplib/net/ClientServer.h>
 
 #include <GL/gl.h>   // Header File For The OpenGL32 Library
 #include <GL/glu.h>  // Header File For The GLu32 Library

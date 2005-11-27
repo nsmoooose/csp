@@ -33,14 +33,14 @@
 #include <Stores/StoresDynamics.h>
 
 #include <SimData/InterfaceRegistry.h>
-#include <csp/lib/data/Key.h>
-#include <csp/lib/data/Matrix3.h>
-#include <csp/lib/data/Object.h>
-#include <csp/lib/util/osg.h>
-#include <csp/lib/data/Path.h>
-#include <csp/lib/data/Quat.h>
-#include <csp/lib/data/Real.h>
-#include <csp/lib/data/Vector3.h>
+#include <csp/csplib/data/Key.h>
+#include <csp/csplib/data/Matrix3.h>
+#include <csp/csplib/data/Object.h>
+#include <csp/csplib/util/osg.h>
+#include <csp/csplib/data/Path.h>
+#include <csp/csplib/data/Quat.h>
+#include <csp/csplib/data/Real.h>
+#include <csp/csplib/data/Vector3.h>
 
 #include <osg/PositionAttitudeTransform>
 

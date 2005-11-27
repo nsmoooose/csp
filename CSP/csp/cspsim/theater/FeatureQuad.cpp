@@ -26,8 +26,8 @@
 #include "Theater/FeatureQuad.h"
 #include "Config.h"
 
-#include <csp/lib/util/FileUtility.h>
-#include <csp/lib/data/ObjectInterface.h>
+#include <csp/csplib/util/FileUtility.h>
+#include <csp/csplib/data/ObjectInterface.h>
 
 #include <osg/Geometry>
 #include <osg/Texture2D>

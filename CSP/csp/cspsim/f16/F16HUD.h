@@ -32,8 +32,8 @@
 #include <Filters.h>
 #include <HUD/HUD.h>
 #include <System.h>
-#include <csp/lib/data/Quat.h>
-#include <csp/lib/data/Vector3.h>
+#include <csp/csplib/data/Quat.h>
+#include <csp/csplib/data/Vector3.h>
 
 
 class HUDFont;

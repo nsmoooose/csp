@@ -27,7 +27,7 @@
 #define __CSPSIM_DAMAGEMODIFIER_H__
 
 
-#include <csp/lib/data/Object.h>
+#include <csp/csplib/data/Object.h>
 
 
 /**

@@ -29,7 +29,7 @@
 #include "Theater/FeatureGroup.h"
 #include "ObjectModel.h"
 
-#include <csp/lib/data/Vector3.h>
+#include <csp/csplib/data/Vector3.h>
 
 
 // random optimization note.  iterating through all elements of a map is

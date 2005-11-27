@@ -33,8 +33,8 @@
 #include <System.h>
 #include <DataRecorder.h>
 
-#include <csp/lib/data/LUT.h>
-#include <csp/lib/data/ObjectInterface.h>
+#include <csp/csplib/data/LUT.h>
+#include <csp/csplib/data/ObjectInterface.h>
 
 #include <cstdlib>
 #include <vector>

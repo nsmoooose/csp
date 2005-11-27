@@ -33,9 +33,9 @@
 #define __CSPSIM_THEATER_H__
 
 
-#include <csp/lib/util/Ref.h>
-#include <csp/lib/data/Path.h>
-#include <csp/lib/data/Object.h>
+#include <csp/csplib/util/Ref.h>
+#include <csp/csplib/data/Path.h>
+#include <csp/csplib/data/Object.h>
 
 
 class TerrainObject;

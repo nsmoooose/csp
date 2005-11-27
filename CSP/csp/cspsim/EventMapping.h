@@ -37,8 +37,8 @@
 #include <string>
 #include <vector>
 
-#include <csp/lib/util/Ref.h>
-#include <csp/lib/util/HashUtility.h>
+#include <csp/csplib/util/Ref.h>
+#include <csp/csplib/util/HashUtility.h>
 
 
 class EventMapping: public simdata::Referenced

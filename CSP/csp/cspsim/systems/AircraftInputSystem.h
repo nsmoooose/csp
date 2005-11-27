@@ -26,7 +26,7 @@
 #ifndef __CSPSIM_AIRCRAFTINPUTSYSTEM_H__
 #define __CSPSIM_AIRCRAFTINPUTSYSTEM_H__
 
-#include <csp/lib/util/Math.h>
+#include <csp/csplib/util/Math.h>
 
 #include "System.h"
 

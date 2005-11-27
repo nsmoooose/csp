@@ -31,7 +31,7 @@
 
 #include <SDL/SDL_events.h>
 
-#include <csp/lib/data/Date.h>
+#include <csp/csplib/data/Date.h>
 
 class Handle {
 protected:

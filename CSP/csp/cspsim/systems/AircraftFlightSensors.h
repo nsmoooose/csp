@@ -27,7 +27,7 @@
 #define __CSPSIM_AIRCRAFTFLIGHTSENSORS_H__
 
 #include <System.h>
-#include <csp/lib/data/Vector3.h>
+#include <csp/csplib/data/Vector3.h>
 
 class AircraftFlightSensors: public System {
 public:

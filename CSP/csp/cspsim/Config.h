@@ -27,7 +27,7 @@
 
 
 #include <string>
-#include <csp/lib/util/SimpleConfig.h>
+#include <csp/csplib/util/SimpleConfig.h>
 
 /**
  * Global configuration file

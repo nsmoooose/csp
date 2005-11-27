@@ -30,11 +30,11 @@
 #include <Bus.h>
 #include <F16/NavigationSystem.h>
 #include <SimCore/Util/StringTools.h>
-#include <csp/lib/util/Conversions.h>
-#include <csp/lib/data/Enum.h>
-#include <csp/lib/util/Math.h>
-#include <csp/lib/util/Ref.h>
-#include <csp/lib/data/Vector3.h>
+#include <csp/csplib/util/Conversions.h>
+#include <csp/csplib/data/Enum.h>
+#include <csp/csplib/util/Math.h>
+#include <csp/csplib/util/Ref.h>
+#include <csp/csplib/data/Vector3.h>
 #include <cmath>
 
 #if !defined(__GNUC__) && !defined(snprintf)

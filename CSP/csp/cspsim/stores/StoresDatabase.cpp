@@ -25,7 +25,7 @@
 
 #include <Stores/StoresDatabase.h>
 #include <Stores/Stores.h>
-#include <csp/lib/data/DataManager.h>
+#include <csp/csplib/data/DataManager.h>
 
 /*  currently we search for all stores at runtime, but it might be better
     to list stores explicitly.  alternatively, we could cache the store

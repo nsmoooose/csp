@@ -26,7 +26,7 @@
 #ifndef __CSPSIM_DYNAMICALSYSTEM_H__
 #define __CSPSIM_DYNAMICALSYSTEM_H__
 
-#include <csp/lib/util/Namespace.h>
+#include <csp/csplib/util/Namespace.h>
 #include <csp/cspsim/VectorField.h>
 
 #include <vector>

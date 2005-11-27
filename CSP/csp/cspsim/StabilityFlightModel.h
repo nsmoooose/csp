@@ -28,7 +28,7 @@
 
 
 #include <FlightModel.h>
-#include <csp/lib/data/LUT.h>
+#include <csp/csplib/data/LUT.h>
 
 /**
  * StabilityFlightModel implements an  aircraft flight model based on stability

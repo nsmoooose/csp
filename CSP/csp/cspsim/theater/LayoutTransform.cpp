@@ -25,7 +25,7 @@
 
 #include "Theater/LayoutTransform.h"
 
-#include <csp/lib/util/osg.h>
+#include <csp/csplib/util/osg.h>
 
 
 LayoutTransform::LayoutTransform() {

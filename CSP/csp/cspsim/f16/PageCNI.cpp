@@ -26,8 +26,8 @@
 #include "PageCNI.h"
 #include <ConditionsChannels.h>
 #include <CSPSim.h>
-#include <csp/lib/util/Conversions.h>
-#include <csp/lib/util/Math.h>
+#include <csp/csplib/util/Conversions.h>
+#include <csp/csplib/util/Math.h>
 #include <iostream>
 
 // TODO replace m_RadioStatusLabel and radioStatusLabel with a widget class that

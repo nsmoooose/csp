@@ -47,7 +47,7 @@
 #include <SDL/SDL_keysym.h>
 #include <SDL/SDL_keyboard.h>
 
-#include <csp/lib/util/Ref.h>
+#include <csp/csplib/util/Ref.h>
 
 #include <string>
 #include <vector>

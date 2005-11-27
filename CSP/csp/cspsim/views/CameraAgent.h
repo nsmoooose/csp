@@ -27,8 +27,8 @@
 
 #include <map>
 
-#include <csp/lib/util/Ref.h>
-#include <csp/lib/data/Vector3.h>
+#include <csp/csplib/util/Ref.h>
+#include <csp/csplib/data/Vector3.h>
 
 #include "Views/CameraKinematics.h"
 #include "Views/View.h"

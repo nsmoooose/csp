@@ -32,8 +32,8 @@
 #endif
 #include <GL/gl.h>
 
-#include <csp/lib/util/Log.h>
-#include <csp/lib/util/Verify.h>
+#include <csp/csplib/util/Log.h>
+#include <csp/csplib/util/Verify.h>
 
 
 namespace {

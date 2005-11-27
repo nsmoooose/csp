@@ -28,8 +28,8 @@
 
 #include <Bus.h>
 #include <InputInterface.h>
-#include <csp/lib/util/Ref.h>
-#include <csp/lib/data/Enum.h>
+#include <csp/csplib/util/Ref.h>
+#include <csp/csplib/data/Enum.h>
 #include <sigc++/sigc++.h>
 #include <string>
 

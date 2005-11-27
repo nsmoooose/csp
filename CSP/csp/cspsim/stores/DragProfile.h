@@ -27,8 +27,8 @@
 #define __CSPSIM_DRAGPROFILE_H__
 
 
-#include <csp/lib/data/LUT.h>
-#include <csp/lib/data/Object.h>
+#include <csp/csplib/data/LUT.h>
+#include <csp/csplib/data/Object.h>
 
 
 /** Aerodynamic drag profile for a vehicle store or projectile.  Currently individual

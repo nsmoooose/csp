@@ -29,9 +29,9 @@
 
 #include <osg/LineSegment>
 
-#include <csp/lib/util/Log.h>
-#include <csp/lib/data/ObjectInterface.h>
-#include <csp/lib/util/osg.h>
+#include <csp/csplib/util/Log.h>
+#include <csp/csplib/data/ObjectInterface.h>
+#include <csp/csplib/util/osg.h>
 
 
 SIMDATA_XML_BEGIN(TerrainObject)

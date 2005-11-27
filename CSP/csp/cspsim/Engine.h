@@ -25,9 +25,9 @@
 #ifndef __CSPSIM_ENGINE_H__
 #define __CSPSIM_ENGINE_H__
 
-#include <csp/lib/data/LUT.h>
-#include <csp/lib/data/Object.h>
-#include <csp/lib/data/Vector3.h>
+#include <csp/csplib/data/LUT.h>
+#include <csp/csplib/data/Object.h>
+#include <csp/csplib/data/Vector3.h>
 
 #include <BaseDynamics.h>
 

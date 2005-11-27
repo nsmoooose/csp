@@ -47,9 +47,9 @@
 #ifndef __CSPSIM_H__
 #define __CSPSIM_H__
 
-#include <csp/lib/util/Ref.h>
-#include <csp/lib/util/ScopedPointer.h>
-#include <csp/lib/data/Date.h>
+#include <csp/csplib/util/Ref.h>
+#include <csp/csplib/util/ScopedPointer.h>
+#include <csp/csplib/data/Date.h>
 
 #include <osg/ref_ptr>
 

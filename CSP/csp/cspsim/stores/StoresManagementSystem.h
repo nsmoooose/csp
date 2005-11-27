@@ -27,7 +27,7 @@
 #define __CSPSIM_STORESMANAGEMENTSYSTEM_H__
 
 #include <System.h>
-#include <csp/lib/data/Link.h>
+#include <csp/csplib/data/Link.h>
 #include <sigc++/trackable.h>
 #include <set>
 #include <vector>

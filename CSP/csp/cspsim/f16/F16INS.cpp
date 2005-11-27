@@ -27,9 +27,9 @@
 #include <KineticsChannels.h>
 #include <F16/F16Channels.h>
 
-#include <csp/lib/data/ObjectInterface.h>
-#include <csp/lib/data/Quat.h>
-#include <csp/lib/data/Vector3.h>
+#include <csp/csplib/data/ObjectInterface.h>
+#include <csp/csplib/data/Quat.h>
+#include <csp/csplib/data/Vector3.h>
 
 
 class F16INS: public System {

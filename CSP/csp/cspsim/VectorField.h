@@ -25,7 +25,7 @@
 #ifndef __CSPSIM_VECTORFIELD_H__
 #define __CSPSIM_VECTORFIELD_H__
 
-#include <csp/lib/util/Namespace.h>
+#include <csp/csplib/util/Namespace.h>
 #include <csp/cspsim/Vector.h>
 
 CSP_NAMESPACE

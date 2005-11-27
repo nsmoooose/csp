@@ -27,7 +27,7 @@
 
 #include <osg/Projection>
 
-#include <csp/lib/util/Ref.h>
+#include <csp/csplib/util/Ref.h>
 
 #include <SDL/SDL_keyboard.h>
 

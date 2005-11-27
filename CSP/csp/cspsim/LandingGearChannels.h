@@ -26,7 +26,7 @@
 #ifndef __CSPSIM_LANDINGGEAR_CHANNELS_H__
 #define __CSPSIM_LANDINGGEAR_CHANNELS_H__
 
-#include <csp/lib/util/Namespace.h>
+#include <csp/csplib/util/Namespace.h>
 #include <string>
 
 CSP_NAMESPACE

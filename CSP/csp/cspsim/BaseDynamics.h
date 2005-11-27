@@ -24,8 +24,8 @@
 #ifndef __CSPSIM_BASEDYNAMICS_H__
 #define __CSPSIM_BASEDYNAMICS_H__
 
-#include <csp/lib/util/Namespace.h>
-#include <csp/lib/data/Vector3.h>
+#include <csp/csplib/util/Namespace.h>
+#include <csp/csplib/data/Vector3.h>
 
 #include <csp/cspsim/System.h>
 

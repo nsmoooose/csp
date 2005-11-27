@@ -22,7 +22,7 @@
  *
  **/
 
-#include <csp/lib/util/Math.h>
+#include <csp/csplib/util/Math.h>
 
 #include "Views/CameraKinematics.h"
 #include "Views/CameraCommand.h"

@@ -26,7 +26,7 @@
 #include <Stores/StoresDefinition.h>
 #include <Stores/Stores.h>
 
-#include <csp/lib/data/ObjectInterface.h>
+#include <csp/csplib/data/ObjectInterface.h>
 
 SIMDATA_XML_BEGIN(StoresDefinition)
 	SIMDATA_DEF("hardpoints", m_Hardpoints, true)

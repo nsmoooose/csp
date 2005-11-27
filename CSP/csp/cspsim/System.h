@@ -83,12 +83,12 @@
 #include <csp/cspsim/Bus.h>  // could be forward declared, but most Bus users will need it in the header anyway.
 #include <csp/cspsim/InputInterface.h>
 
-#include <csp/lib/util/Namespace.h>
-#include <csp/lib/util/Composite.h>
-#include <csp/lib/util/SynchronousUpdate.h>
+#include <csp/csplib/util/Namespace.h>
+#include <csp/csplib/util/Composite.h>
+#include <csp/csplib/util/SynchronousUpdate.h>
 
-#include <csp/lib/data/Object.h>
-#include <csp/lib/data/Link.h>
+#include <csp/csplib/data/Object.h>
+#include <csp/csplib/data/Link.h>
 
 CSP_NAMESPACE
 

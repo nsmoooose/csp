@@ -27,8 +27,8 @@
 #define __CSPSIM_F16_PAGE_CNI_H__
 
 #include "DataEntryPage.h"
-#include <csp/lib/data/Enum.h>
-#include <csp/lib/data/Vector3.h>
+#include <csp/csplib/data/Enum.h>
+#include <csp/csplib/data/Vector3.h>
 
 class PageCNI: public DataEntryForm {
 public:

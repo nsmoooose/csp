@@ -30,12 +30,12 @@
 #include "Feature.h"
 #include "FeatureModel.h"
 
-#include <csp/lib/data/GeoPos.h>
-#include <csp/lib/data/Link.h>
-#include <csp/lib/data/Object.h>
-#include <csp/lib/data/Path.h>
-#include <csp/lib/util/Ref.h>
-#include <csp/lib/data/Vector3.h>
+#include <csp/csplib/data/GeoPos.h>
+#include <csp/csplib/data/Link.h>
+#include <csp/csplib/data/Object.h>
+#include <csp/csplib/data/Path.h>
+#include <csp/csplib/util/Ref.h>
+#include <csp/csplib/data/Vector3.h>
 
 #include <osg/Vec3>
 #include <osg/ref_ptr>

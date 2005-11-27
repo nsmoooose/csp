@@ -27,8 +27,8 @@
 #include <ControlSurfacesChannels.h>
 #include <Systems/AircraftSimpleFCS.h>
 
-#include <csp/lib/util/Math.h>
-#include <csp/lib/data/ObjectInterface.h>
+#include <csp/csplib/util/Math.h>
+#include <csp/csplib/data/ObjectInterface.h>
 
 #include <sstream>
 #include <iomanip>

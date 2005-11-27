@@ -27,8 +27,8 @@
 #define __CSPSIM_THEATER_FEATUREGROUPLIST_H__
 
 
-#include <csp/lib/data/Path.h>
-#include <csp/lib/data/Object.h>
+#include <csp/csplib/data/Path.h>
+#include <csp/csplib/data/Object.h>
 
 #include "Theater/FeatureGroup.h"
 

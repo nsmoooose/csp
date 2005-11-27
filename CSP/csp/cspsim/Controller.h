@@ -29,10 +29,10 @@
 #include <ChannelMirror.h>
 #include <System.h>
 
-#include <csp/lib/data/Vector3.h>
-#include <csp/lib/data/Quat.h>
-#include <csp/lib/data/Date.h>
-#include <csp/lib/util/TimeStamp.h>
+#include <csp/csplib/data/Vector3.h>
+#include <csp/csplib/data/Quat.h>
+#include <csp/csplib/data/Date.h>
+#include <csp/csplib/util/TimeStamp.h>
 
 namespace simnet { class NetworkMessage; }
 

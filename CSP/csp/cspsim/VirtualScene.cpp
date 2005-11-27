@@ -36,11 +36,11 @@
 #include "Theater/FeatureGroup.h"
 #include "Theater/FeatureSceneGroup.h"
 
-#include <csp/lib/util/Log.h>
-#include <csp/lib/data/Types.h>
-#include <csp/lib/util/Math.h>
-#include <csp/lib/util/FileUtility.h>
-#include <csp/lib/util/osg.h>
+#include <csp/csplib/util/Log.h>
+#include <csp/csplib/data/Types.h>
+#include <csp/csplib/util/Math.h>
+#include <csp/csplib/util/FileUtility.h>
+#include <csp/csplib/util/osg.h>
 
 #include <osg/AlphaFunc>
 #include <osg/BlendColor>

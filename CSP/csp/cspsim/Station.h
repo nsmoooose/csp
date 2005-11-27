@@ -25,8 +25,8 @@
 #ifndef __CSPSIM_STATION_H__
 #define __CSPSIM_STATION_H__
 
-#include <csp/lib/data/Link.h>
-#include <csp/lib/data/Object.h>
+#include <csp/csplib/data/Link.h>
+#include <csp/csplib/data/Object.h>
 
 class Bus;
 class SceneModel;

@@ -23,7 +23,7 @@
  **/
 
 #include <csp/cspsim/DynamicalSystem.h>
-#include <csp/cspsim/NumericalMethod.h>
+#include <csp/csplib/numeric/NumericalMethod.h>
 
 CSP_NAMESPACE
 

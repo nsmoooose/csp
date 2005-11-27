@@ -31,7 +31,7 @@
 #include <string>
 #include <vector>
 
-#include <csp/cspsim/Vector.h>
+#include <csp/csplib/numeric/Vector.h>
 
 #define USE_VALARRAY_ARITHMETIC
 

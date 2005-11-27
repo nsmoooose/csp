@@ -24,8 +24,8 @@
 
 #include <csp/csplib/util/Namespace.h>
 #include <csp/csplib/util/Log.h>
-#include <csp/cspsim/NumericalMethod.h>
-#include <csp/cspsim/VectorField.h>
+#include <csp/csplib/numeric/NumericalMethod.h>
+#include <csp/csplib/numeric/VectorField.h>
 #include <cmath>
 
 CSP_NAMESPACE

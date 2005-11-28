@@ -26,20 +26,21 @@
 #ifndef __CSPSIM_AIRCRAFTSIMPLEFCS_H__
 #define __CSPSIM_AIRCRAFTSIMPLEFCS_H__
 
+#include <csp/cspsim/System.h>
+
 #include <algorithm>
 #include <cmath>
 
+#include <csp/csplib/util/Log.h>
 #include <csp/csplib/util/Math.h>
 
-#include <SimCore/Util/Log.h>
-
-#include <System.h>
+CSP_NAMESPACE
 
 class AircraftSimpleFCS: public System {
 
 	class Deflection {
-		DataChannel<double>::CRef b_Input;
-		DataChannel<double>::Ref b_Output;
+		DataChannel<double>::CRefT b_Input;
+		DataChannel<double>::RefT b_Output;
 		double m_Rate;
 		double m_Limit0, m_Limit1, m_Limit;
 	public:
@@ -58,7 +59,7 @@ class AircraftSimpleFCS: public System {
 		void bindInput(Bus *bus, std::string const &name) {
 			b_Input = bus->getChannel(name, false);
 			if (!b_Input) {
-				CSP_LOG(INPUT, WARNING, "AicraftSimpleFCS: input channel '" << name << "' unavailable."); 
+				CSPLOG(WARNING, INPUT) << "AicraftSimpleFCS: input channel '" << name << "' unavailable."; 
 			}
 		}
 		void registerOutput(Bus *bus, std::string const &name) {
@@ -118,6 +119,7 @@ private:
 	double m_MinG;
 };
 
+CSP_NAMESPACE_END
 
 #endif // __CSPSIM_AICRAFTSIMPLEFCS_H__
 

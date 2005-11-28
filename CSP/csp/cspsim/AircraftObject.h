@@ -26,9 +26,10 @@
 #ifndef __CSPSIM_AIRCRAFTOBJECT_H__
 #define __CSPSIM_AIRCRAFTOBJECT_H__
 
-#include "DynamicObject.h"
-#include "HID.h"
+#include <csp/cspsim/DynamicObject.h>
+#include <csp/cspsim/HID.h>
 
+CSP_NAMESPACE
 
 class TimedSequence;
 
@@ -79,11 +80,12 @@ protected:
 	virtual void convertXML();
 
 	// dynamic properties
-	DataChannel<double>::Ref b_Roll;
-	DataChannel<double>::Ref b_Pitch;
-	DataChannel<double>::Ref b_Heading;
+	DataChannel<double>::RefT b_Roll;
+	DataChannel<double>::RefT b_Pitch;
+	DataChannel<double>::RefT b_Heading;
 };
 
+CSP_NAMESPACE_END
 
 #endif // __CSPSIM_AIRCRAFTOBJECT_H__
 

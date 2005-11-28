@@ -22,10 +22,12 @@
  *
  **/
 
-#ifndef __CAMERACOMMAND_H__
-#define __CAMERACOMMAND_H__
+#ifndef __CSPSIM_VIEWS_CAMERACOMMAND_H__
+#define __CSPSIM_VIEWS_CAMERACOMMAND_H__
 
-#include "Views/CameraKinematics.h"
+#include <csp/cspsim/views/CameraKinematics.h>
+
+CSP_NAMESPACE
 
 class CameraCommand {
 public:
@@ -167,5 +169,8 @@ struct CameraCommands {
 	LookLeftCommand LookLeft;
 };
 
-#endif //__CAMERACOMMAND_H__
+
+CSP_NAMESPACE_END
+
+#endif // __CSPSIM_VIEWS_CAMERACOMMAND_H__
 

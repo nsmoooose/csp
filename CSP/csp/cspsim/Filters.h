@@ -28,7 +28,7 @@
 #ifndef __CSPSIM_FILTERS_H__
 #define __CSPSIM_FILTERS_H__
 
-#include <csp/lib/util/Namespace.h>
+#include <csp/csplib/util/Namespace.h>
 
 CSP_NAMESPACE
 

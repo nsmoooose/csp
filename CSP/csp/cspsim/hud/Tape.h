@@ -23,12 +23,13 @@
  **/
 
 
-#ifndef __CSPSIM_HUDTAPE_H__
-#define __CSPSIM_HUDTAPE_H__
+#ifndef __CSPSIM_HUD_TAPE_H__
+#define __CSPSIM_HUD_TAPE_H__
 
-#include "HUD.h"
-#include "Text.h"
+#include <csp/cspsim/hud/HUD.h>
+#include <csp/cspsim/hud/Text.h>
 
+CSP_NAMESPACE
 
 // TODO
 // add major ticks
@@ -189,6 +190,7 @@ private:
 	std::vector<osg::ref_ptr<HUD::LabelElement> > m_Labels;
 };
 
+CSP_NAMESPACE_END
 
-#endif // __CSPSIM_HUDTAPE_H__
+#endif // __CSPSIM_HUD_TAPE_H__
 

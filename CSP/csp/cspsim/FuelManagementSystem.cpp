@@ -22,10 +22,11 @@
  *
  **/
 
-#include <FuelManagementSystem.h>
-#include <Stores/Stores.h>
-#include <Stores/StoresManagementSystem.h>
+#include <csp/cspsim/FuelManagementSystem.h>
+#include <csp/cspsim/stores/Stores.h>
+#include <csp/cspsim/stores/StoresManagementSystem.h>
 
+CSP_NAMESPACE
 
 CSP_XML_BEGIN(FuelNode)
 	CSP_DEF("key", m_Key, true)
@@ -71,7 +72,7 @@ void FuelTankNode::bindStores(StoresManagementSystem* sms) {
 	m_Tank = 0;
 	StoreIndex hp = sms->getHardpointByName(m_TankId);
 	if (hp.valid()) {
-		std::vector<Store::Ref> stores;
+		std::vector<Ref<Store> > stores;
 		sms->getAllStores(hp, stores);
 		for (unsigned i = 0; i < stores.size(); ++i) {
 			m_Tank = !stores[i] ? 0 : stores[i]->asFuelTank();
@@ -79,14 +80,14 @@ void FuelTankNode::bindStores(StoresManagementSystem* sms) {
 		}
 	}
 	if (add && m_Tank.valid()) {
-		CSP_LOG(OBJECT, INFO, "adding fuel to " << m_TankId);
+		CSPLOG(INFO, OBJECT) << "adding fuel to " << m_TankId;
 		m_Tank->setQuantity(m_Tank->capacity());  // TODO SMS should handle this!
 		sms->setDirtyDynamics();
 	}
 	if (m_Tank.valid()) {
-		CSP_LOG(OBJECT, INFO, "FuelTankNode::bindStores: tank " << m_TankId << " found");
+		CSPLOG(INFO, OBJECT) << "FuelTankNode::bindStores: tank " << m_TankId << " found";
 	} else {
-		CSP_LOG(OBJECT, INFO, "FuelTankNode::bindStores: tank " << m_TankId << " not found");
+		CSPLOG(INFO, OBJECT) << "FuelTankNode::bindStores: tank " << m_TankId << " not found";
 	}
 }
 
@@ -137,7 +138,7 @@ void FuelManagementSystem::postCreate() {
 }
 
 void FuelManagementSystem::registerChannels(Bus *bus) {
-	bus->registerLocalDataChannel<FuelManagementSystem::Ref>(Channel, this);
+	bus->registerLocalDataChannel<Ref<FuelManagementSystem> >(Channel, this);
 }
 
 void FuelManagementSystem::importChannels(Bus *) {
@@ -150,7 +151,7 @@ void FuelManagementSystem::importChannels(Bus *) {
 
 void FuelManagementSystem::initialize() {
 	for (unsigned i = 0; i < m_FuelNodes.size(); ++i) {
-		simdata::Key key = m_FuelNodes[i]->key();
+		Key key = m_FuelNodes[i]->key();
 		assert(m_NodeMap.find(key) == m_NodeMap.end());
 		m_NodeMap[key] = m_FuelNodes[i].get();
 	}
@@ -167,3 +168,6 @@ void FuelManagementSystem::rebind() {
 		}
 	}
 }
+
+CSP_NAMESPACE_END
+

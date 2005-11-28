@@ -23,7 +23,8 @@
  **/
 
 
-#include <HUD/Tape.h>
+#include <csp/cspsim/hud/Tape.h>
+
 #include <osg/Geode>
 #include <osg/Geometry>
 #include <osgText/Text>
@@ -31,6 +32,7 @@
 #include <cassert>
 #include <cmath>
 
+CSP_NAMESPACE
 
 HUDTape::HUDTape(Orientation orientation, int tick_count, float tick_spacing, float tick_width, float offset_x, float offset_y):
 	m_Orientation(orientation),
@@ -312,4 +314,6 @@ void HUDTape::show(bool visible) {
 	}
 	m_Hidden = !visible;
 }
+
+CSP_NAMESPACE_END
 

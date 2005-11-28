@@ -26,28 +26,30 @@
 #ifndef __CONTROLLER_H__
 #define __CONTROLLER_H__
 
-#include <ChannelMirror.h>
-#include <System.h>
+#include <csp/cspsim/ChannelMirror.h>
+#include <csp/cspsim/System.h>
 
 #include <csp/csplib/data/Vector3.h>
 #include <csp/csplib/data/Quat.h>
 #include <csp/csplib/data/Date.h>
 #include <csp/csplib/util/TimeStamp.h>
 
-namespace simnet { class NetworkMessage; }
+CSP_NAMESPACE
+
+class NetworkMessage;
 
 
-class ChannelMirrorSet: public simdata::Object {
-	simdata::Link<ChannelMirror>::vector m_Mirrors;
+class ChannelMirrorSet: public Object {
+	Link<ChannelMirror>::vector m_Mirrors;
 public:
 	CSP_DECLARE_OBJECT(ChannelMirrorSet)
-	simdata::Link<ChannelMirror>::vector const &mirrors() const { return m_Mirrors; }
+	Link<ChannelMirror>::vector const &mirrors() const { return m_Mirrors; }
 };
 
 
-class RemoteAnimationUpdate: public simdata::Referenced {
-	DataChannel<double>::CRef m_Channel;
-	simdata::uint8 m_LastValue;
+class RemoteAnimationUpdate: public Referenced {
+	DataChannel<double>::CRefT m_Channel;
+	uint8 m_LastValue;
 	int m_LevelOfDetail;
 	double m_Limit0;
 	double m_Limit1;
@@ -55,21 +57,20 @@ class RemoteAnimationUpdate: public simdata::Referenced {
 	bool m_Increasing;
 
 public:
-	typedef simdata::Ref<RemoteAnimationUpdate> Ref;
 	RemoteAnimationUpdate(): m_LastValue(0), m_LevelOfDetail(100), m_Limit0(-1.0), m_Limit1(1.0), m_Scale(255.0/2.0), m_Increasing(true) { }
-	void bind(DataChannel<double>::CRef const &channel) { m_Channel = channel; }
+	void bind(DataChannel<double>::CRefT const &channel) { m_Channel = channel; }
 	bool update(int lod);
 	void setLevelOfDetail(unsigned lod) { m_LevelOfDetail = lod; }
 	void setLimits(double lo, double hi) { m_Limit0 = lo; m_Limit1 = hi; m_Scale = 255.0 / (m_Limit1 - m_Limit0); }
 	void expandLimits(double lo, double hi) { setLimits(std::min(lo, m_Limit0), std::max(hi, m_Limit1)); }
 	inline int lod() const { return m_LevelOfDetail; }
-	inline simdata::uint8 value() const { return m_LastValue; }
-	inline static double convert(simdata::uint8 value);
+	inline uint8 value() const { return m_LastValue; }
+	inline static double convert(uint8 value);
 };
 
 
-class LocalAnimationUpdate: public simdata::Referenced {
-	DataChannel<double>::Ref m_Channel;
+class LocalAnimationUpdate: public Referenced {
+	DataChannel<double>::RefT m_Channel;
 	double m_Target;
 	double m_Limit0;
 	double m_Limit1;
@@ -77,14 +78,13 @@ class LocalAnimationUpdate: public simdata::Referenced {
 	double m_RateLimit;
 
 public:
-	typedef simdata::Ref<LocalAnimationUpdate> Ref;
 	LocalAnimationUpdate(): m_Target(0), m_Limit0(-1.0), m_Limit1(1.0), m_Scale(2.0/255.0), m_RateLimit(1.0) { }
 	void setLimits(double lo, double hi) { m_Limit0 = lo; m_Limit1 = hi; m_Scale = (hi - lo) / 255.0; }
 	void setRateLimit(double limit) { m_RateLimit = limit; }
 	void lowerRateLimit(double limit) { m_RateLimit = std::min(limit, m_RateLimit); }
 	void expandLimits(double lo, double hi) { setLimits(std::min(lo, m_Limit0), std::max(hi, m_Limit1)); }
-	void bind(DataChannel<double>::Ref const &channel) { m_Channel = channel; }
-	void setTarget(simdata::uint8 value);
+	void bind(DataChannel<double>::RefT const &channel) { m_Channel = channel; }
+	void setTarget(uint8 value);
 	void update(double dt);
 };
 
@@ -92,24 +92,24 @@ public:
 /** Interface for controlling remote copies of an object.
  */
 class RemoteController: public System {
-	typedef std::vector< simdata::Ref<ChannelMaster> > ChannelMasters;
+	typedef std::vector< Ref<ChannelMaster> > ChannelMasters;
 
 	ChannelMasters m_ChannelMasters;
-	simdata::Link<ChannelMirrorSet> m_ChannelMirrorSet;
+	Link<ChannelMirrorSet> m_ChannelMirrorSet;
 
-	DataChannel<simdata::Vector3>::CRef b_Position;
-	DataChannel<simdata::Vector3>::CRef b_Velocity;
-	DataChannel<simdata::Vector3>::CRef b_AngularVelocity;
-	DataChannel<simdata::Vector3>::CRef b_AngularVelocityBody;
-	DataChannel<simdata::Vector3>::CRef b_AccelerationBody;
-	DataChannel<simdata::Quat>::CRef b_Attitude;
+	DataChannel<Vector3>::CRefT b_Position;
+	DataChannel<Vector3>::CRefT b_Velocity;
+	DataChannel<Vector3>::CRefT b_AngularVelocity;
+	DataChannel<Vector3>::CRefT b_AngularVelocityBody;
+	DataChannel<Vector3>::CRefT b_AccelerationBody;
+	DataChannel<Quat>::CRefT b_Attitude;
 	int m_UpdateDelay;
 
 protected:
-	inline simdata::Vector3 const &position() const { return b_Position->value(); }
-	inline simdata::Vector3 const &velocity() const { return b_Velocity->value(); }
-	inline simdata::Vector3 const &angularVelocity() const { return b_AngularVelocity->value(); }
-	inline simdata::Quat const &attitude() const { return b_Attitude->value(); }
+	inline Vector3 const &position() const { return b_Position->value(); }
+	inline Vector3 const &velocity() const { return b_Velocity->value(); }
+	inline Vector3 const &angularVelocity() const { return b_AngularVelocity->value(); }
+	inline Quat const &attitude() const { return b_Attitude->value(); }
 	virtual void postCreate();
 
 public:
@@ -120,7 +120,7 @@ public:
 
 	virtual void registerChannels(Bus*);
 	virtual void importChannels(Bus *);
-	virtual simdata::Ref<simnet::NetworkMessage> getUpdate(simcore::TimeStamp current_timestamp, simdata::SimTime interval, int detail);
+	virtual Ref<NetworkMessage> getUpdate(TimeStamp current_timestamp, SimTime interval, int detail);
 };
 
 
@@ -128,27 +128,27 @@ public:
  *  a remote controller.
  */
 class LocalController: public System {
-	simdata::Link<ChannelMirrorSet> m_ChannelMirrorSet;
+	Link<ChannelMirrorSet> m_ChannelMirrorSet;
 
-	typedef std::vector< simdata::Ref<ChannelSlave> > ChannelSlaves;
+	typedef std::vector< Ref<ChannelSlave> > ChannelSlaves;
 	ChannelSlaves m_ChannelSlaves;
 
 	// dynamic properties
-	DataChannel<simdata::Vector3>::Ref b_Position;
-	DataChannel<simdata::Vector3>::Ref b_Velocity;
-	DataChannel<simdata::Vector3>::Ref b_AngularVelocity;
-	DataChannel<simdata::Quat>::Ref b_Attitude;
-	simdata::Vector3 m_TargetVelocity;
-	simdata::Quat m_TargetAttitude;
-	simdata::Vector3 m_TargetPosition;
-	simdata::Vector3 m_Correction;
-	simcore::TimeStamp m_LastStamp;
+	DataChannel<Vector3>::RefT b_Position;
+	DataChannel<Vector3>::RefT b_Velocity;
+	DataChannel<Vector3>::RefT b_AngularVelocity;
+	DataChannel<Quat>::RefT b_Attitude;
+	Vector3 m_TargetVelocity;
+	Quat m_TargetAttitude;
+	Vector3 m_TargetPosition;
+	Vector3 m_Correction;
+	TimeStamp m_LastStamp;
 
 protected:
-	void setTargetPosition(simdata::Vector3 const &position);
-	void setTargetVelocity(simdata::Vector3 const &velocity);
-	void setTargetAttitude(simdata::Quat const &attitude);
-	bool sequentialUpdate(simcore::TimeStamp stamp, simcore::TimeStamp now, simdata::SimTime &dt);
+	void setTargetPosition(Vector3 const &position);
+	void setTargetVelocity(Vector3 const &velocity);
+	void setTargetAttitude(Quat const &attitude);
+	bool sequentialUpdate(TimeStamp stamp, TimeStamp now, SimTime &dt);
 	virtual void postCreate();
 
 public:
@@ -159,10 +159,11 @@ public:
 
 	virtual void registerChannels(Bus*);
 	virtual void importChannels(Bus *);
-	virtual void onUpdate(simdata::Ref<simnet::NetworkMessage> const &msg, simcore::TimeStamp now);
+	virtual void onUpdate(Ref<NetworkMessage> const &msg, TimeStamp now);
 	double onUpdate(double dt);
 };
 
+CSP_NAMESPACE_END
 
 #endif // __CONTROLLER_H__
 

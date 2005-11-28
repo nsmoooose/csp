@@ -28,6 +28,8 @@
 #include <csp/csplib/data/Link.h>
 #include <csp/csplib/data/Object.h>
 
+CSP_NAMESPACE
+
 class Bus;
 class SceneModel;
 class ObjectModel;
@@ -41,9 +43,9 @@ class SceneModelChild;
  *  viewing model that controls view (e.g. by simulating eye, head, and torso
  *  movements) from that position in the vehicle.
  */
-class Station: public simdata::Object {
-	//simdata::Link<ViewModel> m_ViewModel;  // TODO
-	simdata::Link<ObjectModel> m_DetailModel;
+class Station: public Object {
+	//Link<ViewModel> m_ViewModel;  // TODO
+	Link<ObjectModel> m_DetailModel;
 	std::string m_Name;
 	std::vector<std::string> m_MaskNames;
 	mutable unsigned m_Mask;
@@ -81,6 +83,7 @@ public:
 	SceneModelChild *createDetailModel() const;
 };
 
+CSP_NAMESPACE_END
 
 #endif // __CSPSIM_STATION_H__
 

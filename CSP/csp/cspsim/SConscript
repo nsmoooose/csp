@@ -18,9 +18,30 @@
 
 Import('env build')
 
+def PackageConfig(env):
+	print ':: csp.cspsim config'
+	conf = build.CustomConfigure(env)
+	valid = 1
+	valid = conf.CheckLib('SDL_image', 'IMG_Load') and valid
+	valid = conf.CheckOSGVersion('osg', '0.9.6') and valid
+	valid = conf.CheckOSGVersion('osgUtil', '0.9.6') and valid
+	valid = conf.CheckOSGVersion('osgText', '0.9.6') and valid
+	valid = conf.CheckOSGVersion('osgParticle', '0.9.6') and valid
+	valid = conf.CheckLib('osgFX') and valid  # doesn't have a GetVersion function
+	valid = conf.CheckCommandVersion('sdl', 'sdl-config --version', '1.2.5') and valid
+	if not valid:
+		print 'Missing dependencies; see http://csp.sf.net/wiki/Current_build_dependencies for more information.'
+		Exit(1)
+	env = conf.Finish()
+	env.ParseConfig('sdl-config --cflags --libs')
+
+env = env.Copy()
+env.SetConfig(PackageConfig)
+
+
 SOURCES = [
-#	'AircraftObject.cpp',
-#	'AircraftPhysicsModel.cpp',
+	'AircraftObject.cpp',
+	'AircraftPhysicsModel.cpp',
 	'Animation.cpp',
 	'AnimationSequence.cpp',
 	'Atmosphere.cpp',
@@ -29,51 +50,49 @@ SOURCES = [
 	'Channels.cpp',
 #	'ChunkLodTerrain.cpp',
 	'CockpitInterface.cpp',
-#	'Collision.cpp',
+	'Collision.cpp',
 	'Colorspace.cpp',
 	'Config.cpp',
-#	'Console.cpp',
-#	'ConsoleCommands.cpp',
-#	'Controller.cpp',
-#	'CSPSim.cpp',
-#	'DemeterTerrain.cpp',
+	'Controller.cpp',
+	'CSPSim.cpp',
+	'DemeterTerrain.cpp',
 	'DoubleChannelMirror.cpp',
-#	'DynamicObject.cpp',
+	'DynamicObject.cpp',
 	'DynamicalSystem.cpp',
 	'Engine.cpp',
 	'EventMapIndex.cpp',
 	'EventMapping.cpp',
 	'Exception.cpp',
 	'FlightControlSystem.cpp',
-#	'FlightDynamics.cpp',
+	'FlightDynamics.cpp',
 	'FlightModel.cpp',
-#	'FuelManagementSystem.cpp',
-#	'GameScreen.cpp',
-#	'GearAnimation.cpp',
-#	'glDiagnostics.cpp',
+	'FuelManagementSystem.cpp',
+	'GameScreen.cpp',
+	'GearAnimation.cpp',
+	'glDiagnostics.cpp',
 	'HID.cpp',
-##	'InputEvent.cpp',
+	'InputEvent.cpp',
 	'InputInterface.cpp',
-#	'LandingGear.cpp',
+	'LandingGear.cpp',
 	'LogoScreen.cpp',
-#	'MenuScreen.cpp',
-#	'ObjectModel.cpp',
+	'ObjectModel.cpp',
+	'ObjectUpdate.net',
 	'PhysicsModel.cpp',
 	'Projection.cpp',
-#	'ScreenInfo.cpp',
-#	'ScreenInfoManager.cpp',
-#	'SimpleSceneManager.cpp',
-#	'Sky.cpp',
-##	'SmokeEffects.cpp',
+	'ScreenInfo.cpp',
+	'ScreenInfoManager.cpp',
+	'SimpleSceneManager.cpp',
+	'Sky.cpp',
+	'SmokeEffects.cpp',
 	'StabilityFlightModel.cpp',
-#	'Station.cpp',
-##	'System.cpp',
-##	'SystemsModel.cpp',
-#	'TankObject.cpp',
+	'Station.cpp',
+	'System.cpp',
+	'SystemsModel.cpp',
+	'TankObject.cpp',
 	'TerrainObject.cpp',
-#	'Theater.cpp',
+	'Theater.cpp',
 	'ThrustData.cpp',
-#	'VirtualScene.cpp',
+	'VirtualScene.cpp',
 
 	'battlefield/Battlefield.cpp',
 	'battlefield/BattlefieldMessages.net',
@@ -100,29 +119,29 @@ SOURCES = [
 #	'f16/Radio.cpp',
 #	'f16/NavigationSystem.cpp',
 
-#	'hud/HUD.cpp',
-#	'hud/Tape.cpp',
-#	'hud/Text.cpp',
-#	'hud/PitchLadder.cpp',
+	'hud/HUD.cpp',
+	'hud/Tape.cpp',
+	'hud/Text.cpp',
+	'hud/PitchLadder.cpp',
 
 	'stores/DragProfile.cpp',
-##	'stores/Projectile.cpp',
-##	'stores/Stores.cpp',
+	'stores/Projectile.cpp',
+	'stores/Stores.cpp',
 	'stores/StoresDatabase.cpp',
-##	'stores/StoresDefinition.cpp',
-##	'stores/StoresManagementSystem.cpp',
+	'stores/StoresDefinition.cpp',
+	'stores/StoresManagementSystem.cpp',
 
-#	'systems/AircraftFlightSensors.cpp',
-#	'systems/AircraftInputSystem.cpp',
-#	'systems/AircraftSimpleFCS.cpp',
+	'systems/AircraftFlightSensors.cpp',
+	'systems/AircraftInputSystem.cpp',
+	'systems/AircraftSimpleFCS.cpp',
 
 	'theater/CustomLayoutModel.cpp',
 	'theater/ElevationCorrection.cpp',
-##	'theater/Feature.cpp',
-##	'theater/FeatureGroup.cpp',
+	'theater/Feature.cpp',
+	'theater/FeatureGroup.cpp',
 	'theater/FeatureGroupList.cpp',
 	'theater/FeatureLayout.cpp',
-##	'theater/FeatureObjectModel.cpp',
+	'theater/FeatureObjectModel.cpp',
 	'theater/FeatureQuad.cpp',
 	'theater/FeatureSceneModel.cpp',
 	'theater/IsoContour.cpp',
@@ -131,19 +150,17 @@ SOURCES = [
 	'theater/RandomBillboardModel.cpp',
 	'theater/RandomForestModel.cpp',
 
-#	'views/CameraAgent.cpp',
-#	'views/CameraKinematics.cpp',
-#	'views/ExternalViews.cpp',
-#	'views/InternalView.cpp',
-#	'views/View.cpp',
-# --------------------------------------
-#	'ObjectUpdate.net',
+	'views/CameraAgent.cpp',
+	'views/CameraKinematics.cpp',
+	'views/ExternalViews.cpp',
+	'views/InternalView.cpp',
+	'views/View.cpp',
 ]
 
 
-#ccspsim_wrap, ccspsim_module = env.Swig('ccspsim.i')
-INTERFACES = [] #env.SwigWrapper(ccspsim_wrap)]
+cspsim_wrap, cspsim_module = env.Swig('cspsim.i')
+INTERFACES = [env.SwigWrapper(cspsim_wrap)]
 
-ccspsim = env.SharedLibrary('ccspsim', INTERFACES + SOURCES, SHLIBPREFIX='_')
-Alias(['all', 'cspsim'], [ccspsim])
+cspsim = env.SharedLibrary('cspsim', INTERFACES + SOURCES, SHLIBPREFIX='_')
+Alias(['all', 'cspsim'], [cspsim])
 

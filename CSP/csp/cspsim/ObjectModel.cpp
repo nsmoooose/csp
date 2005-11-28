@@ -28,10 +28,20 @@
 #include <csp/cspsim/ObjectModel.h>
 #include <csp/cspsim/Animation.h>
 #include <csp/cspsim/Config.h>
-#include <csp/cspsim/HUD/HUD.h>
 #include <csp/cspsim/SceneConstants.h>
 #include <csp/cspsim/SmokeEffects.h>
 #include <csp/cspsim/Station.h>
+#include <csp/cspsim/hud/HUD.h>
+
+#include <csp/csplib/util/FileUtility.h>
+#include <csp/csplib/util/HashUtility.h>
+#include <csp/csplib/util/Log.h>
+#include <csp/csplib/util/osg.h>
+#include <csp/csplib/util/Timing.h>
+#include <csp/csplib/data/Enum.h>
+#include <csp/csplib/data/Key.h>
+#include <csp/csplib/data/ObjectInterface.h>
+#include <csp/csplib/data/Quat.h>
 
 #include <osgDB/FileUtils>
 #include <osgDB/Registry>
@@ -54,15 +64,6 @@
 #include <osg/MatrixTransform>
 #include <osg/PositionAttitudeTransform>
 
-#include <csp/csplib/util/Log.h>
-#include <csp/csplib/util/FileUtility.h>
-#include <csp/csplib/util/HashUtility.h>
-#include <csp/csplib/data/Key.h>
-#include <csp/csplib/data/ObjectInterface.h>
-#include <csp/csplib/util/osg.h>
-#include <csp/csplib/util/Timing.h>
-#include <csp/csplib/data/Quat.h>
-
 /*
 	TODO
 
@@ -73,8 +74,9 @@
 
  */
 
+CSP_NAMESPACE
 
-const simdata::Enumeration ObjectModel::EffectItems("None SpecularHighlights");
+const Enumeration ObjectModel::EffectItems("None SpecularHighlights");
 
 CSP_XML_BEGIN(ObjectModel)
 	CSP_DEF("label", m_Label, false)
@@ -110,8 +112,8 @@ CSP_XML_END
  * callback.
  */
 class AnimationBinding: public osg::Referenced {
-	simdata::Ref<Animation const> m_Animation;
-	simdata::Ref<Animation const> m_NestedAnimation;
+	Ref<Animation const> m_Animation;
+	Ref<Animation const> m_NestedAnimation;
 public:
 	AnimationBinding(Animation const* animation): m_Animation(animation) {}
 	AnimationCallback *bind(osg::Node *node) const {
@@ -142,10 +144,10 @@ public:
 	void operator()(osg::ref_ptr<AnimationCallback> &cb) {
 		if (cb.valid()) {
 			if (!cb->bindChannels(m_Bus)) {
-				CSP_LOG(OBJECT, WARNING, "AnimationBinder: failed to bind animation in " << m_Label);
+				CSPLOG(WARNING, OBJECT) << "AnimationBinder: failed to bind animation in " << m_Label;
 			}
 		} else {
-			CSP_LOG(OBJECT, WARNING, "AnimationBinder: AnimationCallback not valid in " << m_Label << "; skipping");
+			CSPLOG(WARNING, OBJECT) << "AnimationBinder: AnimationCallback not valid in " << m_Label << "; skipping";
 		}
 	}
 };
@@ -158,19 +160,19 @@ public:
  */
 class ModelProcessor: public osg::NodeVisitor {
 	osg::ref_ptr<osg::Node> m_Root;
-	typedef std::multimap<simdata::Key, simdata::Link<Animation> > AnimationsMap;
+	typedef std::multimap<Key, Link<Animation> > AnimationsMap;
 	AnimationsMap m_AnimationsMap;
 	std::map<std::string, unsigned> m_InteriorMap;
 
-	void fillMap(simdata::Link<Animation>::vector const *animations) {
-		simdata::Link<Animation>::vector::const_iterator i = animations->begin();
-		simdata::Link<Animation>::vector::const_iterator i_end = animations->end();
+	void fillMap(Link<Animation>::vector const *animations) {
+		Link<Animation>::vector::const_iterator i = animations->begin();
+		Link<Animation>::vector::const_iterator i_end = animations->end();
 		for (; i != i_end; ++i) {
-			m_AnimationsMap.insert(std::make_pair(simdata::Key((*i)->getNodeLabel()),*i));
+			m_AnimationsMap.insert(std::make_pair(Key((*i)->getNodeLabel()),*i));
 		}
 	}
 
-	AnimationBinding* installAnimation(osg::Node& node, const simdata::Ref<Animation>& anim) const {
+	AnimationBinding* installAnimation(osg::Node& node, const Ref<Animation>& anim) const {
 		// Flag node as dynamic to enable the callback.
 		node.setDataVariance(osg::Object::DYNAMIC);
 		AnimationBinding* animation_binding = new AnimationBinding(anim.get());
@@ -188,11 +190,11 @@ class ModelProcessor: public osg::NodeVisitor {
 		}
 	}
 
-	struct KeyToCompare: std::unary_function<simdata::Key,bool> {
-		const simdata::Key m_KeyToCompare;
+	struct KeyToCompare: std::unary_function<Key,bool> {
+		const Key m_KeyToCompare;
 	public:
-		KeyToCompare(const simdata::Key& key): m_KeyToCompare(key) {}
-		bool operator()(const std::pair<simdata::Key,simdata::Link<Animation> >& e) const {
+		KeyToCompare(const Key& key): m_KeyToCompare(key) {}
+		bool operator()(const std::pair<Key,Link<Animation> >& e) const {
 			return m_KeyToCompare == e.first;
 		}
 	};
@@ -201,7 +203,7 @@ public:
 
 	ModelProcessor(): NodeVisitor(TRAVERSE_ALL_CHILDREN) { }
 
-	void setAnimations(simdata::Link<Animation>::vector const *animations) {
+	void setAnimations(Link<Animation>::vector const *animations) {
 		fillMap(animations);
 	}
 
@@ -222,7 +224,7 @@ public:
 			breakNameInComponents(name, animation_name, node_name);
 
 			// Find the first animation binding, if any, based on the node_name.
-			const simdata::Key node_id = node_name;
+			const Key node_id = node_name;
 			AnimationsMap::iterator i = m_AnimationsMap.find(node_id);
 			AnimationsMap::const_iterator i_end = m_AnimationsMap.end();
 
@@ -238,7 +240,7 @@ public:
 			bool found_second_animation = false;
 			if (!animation_name.empty()) {
 				// animation_name is set; check for an explicit binding.
-				const simdata::Key animation_id = animation_name;
+				const Key animation_id = animation_name;
 				i = m_AnimationsMap.find(animation_id);
 				if (i != i_end) {
 					if (!found_first_animation) {
@@ -256,26 +258,26 @@ public:
 				}
 			}
 			if (found_first_animation) {
-				CSP_LOG(OBJECT, DEBUG, "Found primary animation for " << name);
+				CSPLOG(DEBUG, OBJECT) << "Found primary animation for " << name;
 			}
 			if (found_second_animation) {
 				// Install as a nested callback.
-				CSP_LOG(OBJECT, DEBUG, "Found secondary animation for " << name);
+				CSPLOG(DEBUG, OBJECT) << "Found secondary animation for " << name;
 				if (animation_binding) animation_binding->setNestedAnimation(i->second.get());
 			}
 			if (!found_first_animation && !found_second_animation) {
-				CSP_LOG(OBJECT, WARNING, "Found no animations for node " << name);
+				CSPLOG(WARNING, OBJECT) << "Found no animations for node " << name;
 			}
 		} else if (label.substr(0, 8) == "__PITS__") {
-			CSP_LOG(OBJECT, INFO, "Found __PITS__, " << node.getNumChildren() << " children");
+			CSPLOG(INFO, OBJECT) << "Found __PITS__, " << node.getNumChildren() << " children";
 			assert(m_InteriorMap.empty());
 			for (unsigned i = 0; i < node.getNumChildren(); ++i) {
 				std::string pitname = node.getChild(i)->getName();
 				if (m_InteriorMap.find(pitname) == m_InteriorMap.end()) {
-					CSP_LOG(OBJECT, INFO, "Found pit " << pitname);
+					CSPLOG(INFO, OBJECT) << "Found pit " << pitname;
 					m_InteriorMap[pitname] = i;
 				} else {
-					CSP_LOG(OBJECT, ERROR, "Duplicate interior label " << pitname);
+					CSPLOG(ERROR, OBJECT) << "Duplicate interior label " << pitname;
 				}
 			}
 		}
@@ -333,13 +335,13 @@ public:
 
 std::string g_ModelPath = "";
 
-ObjectModel::ObjectModel(): simdata::Object() {
+ObjectModel::ObjectModel(): Object() {
 	m_Label = "OBJECT";
-	m_Axis0 = simdata::Vector3::XAXIS;
-	m_Axis1 = simdata::Vector3::ZAXIS;
-	m_Offset = simdata::Vector3::ZERO;
-	m_ViewPoint = simdata::Vector3::ZERO;
-	m_HudPlacement = simdata::Vector3::ZERO;
+	m_Axis0 = Vector3::XAXIS;
+	m_Axis1 = Vector3::ZAXIS;
+	m_Offset = Vector3::ZERO;
+	m_ViewPoint = Vector3::ZERO;
+	m_HudPlacement = Vector3::ZERO;
 	m_HudWidth = 0.1;
 	m_HudHeight = 0.1;
 	m_Scale = 1.0;
@@ -361,7 +363,7 @@ void ObjectModel::postCreate() {
 	loadModel();
 }
 
-osg::Geometry *makeDiamond(simdata::Vector3 const &pos, float s, osg::Vec4 const &color) {
+osg::Geometry *makeDiamond(Vector3 const &pos, float s, osg::Vec4 const &color) {
 	float vv[][3] = {
 		{ 0.0, 0.0,   s },
 		{   s, 0.0, 0.0 },
@@ -422,7 +424,7 @@ void ObjectModel::generateStationMasks(std::map<std::string, unsigned> const &in
 			if (iter != interior_map.end()) {
 				mask |= (1 << iter->second);
 			} else {
-				CSP_LOG(OBJECT, WARNING, "Pit " << names[j] << " not found while processing station " << m_Stations[i]->getName());
+				CSPLOG(WARNING, OBJECT) << "Pit " << names[j] << " not found while processing station " << m_Stations[i]->getName();
 			}
 		}
 		assert(m_Stations[i]->getMask() == 0U);
@@ -431,19 +433,19 @@ void ObjectModel::generateStationMasks(std::map<std::string, unsigned> const &in
 }
 
 void ObjectModel::loadModel() {
-	simdata::Timer timer;
-	const std::string source = m_ModelPath.getSource();
+	Timer timer;
+	const std::string source = ospath::denormalize(m_ModelPath);
 
-	CSP_LOG(OBJECT, INFO, "ObjectModel::loadModel: " << source);
+	CSPLOG(INFO, OBJECT) << "ObjectModel::loadModel: " << source;
 
 	timer.start();
 	osg::Node *pNode = osgDB::readNodeFile(source);
 	timer.stop();
 
 	if (pNode) {
-		CSP_LOG(OBJECT, INFO, "ObjectModel::loadModel: readNodeFile(" << source << ") succeeded in " << (timer.elapsed() * 1e3) << " ms");
+		CSPLOG(INFO, OBJECT) << "ObjectModel::loadModel: readNodeFile(" << source << ") succeeded in " << (timer.elapsed() * 1e3) << " ms";
 	} else {
-		CSP_LOG(OBJECT, ERROR, "ObjectModel::loadModel: readNodeFile(" << source << ") failed.");
+		CSPLOG(ERROR, OBJECT) << "ObjectModel::loadModel: readNodeFile(" << source << ") failed.";
 	}
 
 	assert(pNode);
@@ -487,8 +489,8 @@ void ObjectModel::loadModel() {
 		m_Model->accept(tfv);
 	}
 
-	CSP_LOG(OBJECT, INFO, "Animations available: " << m_Animations.size());
-	CSP_LOG(OBJECT, INFO, "Processing model");
+	CSPLOG(INFO, OBJECT) << "Animations available: " << m_Animations.size();
+	CSPLOG(INFO, OBJECT) << "Processing model";
 	timer.start();
 
 	// add animation hooks to user data field of animation
@@ -501,21 +503,21 @@ void ObjectModel::loadModel() {
 	}
 
 	timer.stop();
-	CSP_LOG(OBJECT, INFO, "Processing model finished in " << (timer.elapsed() * 1e+6) << " us");
+	CSPLOG(INFO, OBJECT) << "Processing model finished in " << (timer.elapsed() * 1e+6) << " us";
 
 	// normalize and orthogonalize the model axes.
 	assert(m_Axis0.length() > 0.0);
 	m_Axis0.normalize();
-	m_Axis1 = m_Axis1 - m_Axis0 * simdata::dot(m_Axis0, m_Axis1);
+	m_Axis1 = m_Axis1 - m_Axis0 * dot(m_Axis0, m_Axis1);
 	assert(m_Axis1.length() > 0.0);
 	m_Axis1.normalize();
 
 	// insert an adjustment matrix at the head of the model only if necessary.
-	if (m_Axis0 != simdata::Vector3::XAXIS || m_Axis1 != simdata::Vector3::YAXIS || m_Scale != 1.0 || m_Offset != simdata::Vector3::ZERO) {
-		CSP_LOG(OBJECT, WARNING, "Adding model adjustment matrix");
+	if (m_Axis0 != Vector3::XAXIS || m_Axis1 != Vector3::YAXIS || m_Scale != 1.0 || m_Offset != Vector3::ZERO) {
+		CSPLOG(WARNING, OBJECT) << "Adding model adjustment matrix";
 		// find third axis and make the transform matrix
-		simdata::Vector3 axis2 = m_Axis0 ^ m_Axis1;
-		simdata::Matrix3 o(m_Axis0.x(), m_Axis0.y(), m_Axis0.z(),
+		Vector3 axis2 = m_Axis0 ^ m_Axis1;
+		Matrix3 o(m_Axis0.x(), m_Axis0.y(), m_Axis0.z(),
 		                   m_Axis1.x(), m_Axis1.y(), m_Axis1.z(),
 		                   axis2.x(), axis2.y(), axis2.z());
 		o = o.getInverse() * m_Scale;
@@ -536,7 +538,7 @@ void ObjectModel::loadModel() {
 		adjust->setMatrix(model_orientation);
 		adjust->addChild(m_Model.get());
 		m_Model = adjust;
-		simdata::Matrix3 sd_adjust = simdata::fromOSG(model_orientation); //.getInverse();
+		Matrix3 sd_adjust = fromOSG(model_orientation); //.getInverse();
 		for (unsigned i = 0; i < m_Contacts.size(); i++) {
 			m_Contacts[i] = sd_adjust * m_Contacts[i]  + m_Offset;
 		}
@@ -562,7 +564,7 @@ void ObjectModel::loadModel() {
 	m_DebugMarkers->getOrCreateStateSet()->setAttributeAndModes(new osg::CullFace, osg::StateAttribute::ON);
 
 	// create visible markers for each contact and debug point
-	CSP_LOG(OBJECT, DEBUG, "Adding debug markers");
+	CSPLOG(DEBUG, OBJECT) << "Adding debug markers";
 	addDebugMarkers();
 
 	/*
@@ -571,12 +573,12 @@ void ObjectModel::loadModel() {
 	
 	osg::ref_ptr<osg::State> state = new osg::State;
 
-	CSP_LOG(OBJECT, DEBUG, "Compiling display lists");
+	CSPLOG(DEBUG, OBJECT) << "Compiling display lists";
 	osgUtil::GLObjectsVisitor ov;
 	ov.setState(state.get());
 	ov.setNodeMaskOverride(0xffffffff);
 	m_Model->accept(ov);
-	CSP_LOG(OBJECT, DEBUG, "Compiling display lists for debug markers");
+	CSPLOG(DEBUG, OBJECT) << "Compiling display lists for debug markers";
 	m_DebugMarkers->accept(ov);
 	*/
 
@@ -592,12 +594,12 @@ void ObjectModel::loadModel() {
 	//    it never occurs when running csp in debug mode from the ide.
 	// 5) I'm unable to trace it :)
 
-	//CSP_LOG(OBJECT, DEBUG, "LoadModel: Optimizer run");
+	//CSPLOG(DEBUG, OBJECT) << "LoadModel: Optimizer run";
 	//osgUtil::Optimizer opt;
 	//opt.optimize(m_Model.get());
-	//CSP_LOG(OBJECT, DEBUG, "LoadModel: Optimizer done");
+	//CSPLOG(DEBUG, OBJECT) << "LoadModel: Optimizer done";
 
-	CSP_LOG(OBJECT, DEBUG, "Done loading model " << source);
+	CSPLOG(DEBUG, OBJECT) << "Done loading model " << source;
 
 }
 
@@ -635,6 +637,10 @@ bool ObjectModel::getDebugMarkersVisible() const {
 
 osg::ref_ptr<osg::Node> ObjectModel::getModel() {
 	return m_Model.get();
+}
+
+std::string ObjectModel::getModelPath() const {
+	return ospath::denormalize(m_ModelPath);
 }
 
 osg::ref_ptr<osg::Node> ObjectModel::getDebugMarkers() {
@@ -680,24 +686,24 @@ public:
 				} else if (node->asTransform()) {
 					new_node = static_cast<osg::Node*>(node->clone(*this));
 				} else {
-					CSP_LOG(OBJECT, ERROR, "Unknown node type for animation binding");
+					CSPLOG(ERROR, OBJECT) << "Unknown node type for animation binding";
 				}
 				assert(new_node);
 				if (!bind_node) bind_node = new_node;
 				AnimationCallback *cb = binding->bind(bind_node);
 				if (cb) {
 					m_AnimationCallbacks.push_back(cb);
-					CSP_LOG(OBJECT, INFO, "ADDED CALLBACK (" << m_AnimationCallbacks.size() << ") ON " << node->getName().substr(6));
+					CSPLOG(INFO, OBJECT) << "ADDED CALLBACK (" << m_AnimationCallbacks.size() << ") ON " << node->getName().substr(6);
 				} else {
-					CSP_LOG(OBJECT, WARNING, "Failed to add animation callback to " << node->getName().substr(6));
+					CSPLOG(WARNING, OBJECT) << "Failed to add animation callback to " << node->getName().substr(6);
 				}
 				if (binding->hasNestedAnimation()) {
 					AnimationCallback *cb = binding->bindNested(new_node);
 					if (cb) {
 						m_AnimationCallbacks.push_back(cb);
-						CSP_LOG(OBJECT, INFO, "ADDED NESTED CALLBACK (" << m_AnimationCallbacks.size() << ") ON " << node->getName().substr(6));
+						CSPLOG(INFO, OBJECT) << "ADDED NESTED CALLBACK (" << m_AnimationCallbacks.size() << ") ON " << node->getName().substr(6);
 					} else {
-						CSP_LOG(OBJECT, WARNING, "Failed to add nested animation callback to " << node->getName().substr(6));
+						CSPLOG(WARNING, OBJECT) << "Failed to add nested animation callback to " << node->getName().substr(6);
 					}
 				}
 				return new_node;
@@ -705,7 +711,7 @@ public:
 		}
 		if (node->asGroup()) {
 			if (node->getName() == "__PITS__") {
-				CSP_LOG(OBJECT, INFO, "Copying __PITS__ node");
+				CSPLOG(INFO, OBJECT) << "Copying __PITS__ node";
 				assert(!m_PitSwitch.valid());
 				// clone the __PITS__ node as a switch and save a reference.
 				osg::Switch *select_node = 0;
@@ -759,10 +765,10 @@ private:
 };
 
 
-SceneModel::SceneModel(simdata::Ref<ObjectModel> const & model) {
+SceneModel::SceneModel(Ref<ObjectModel> const & model) {
 	m_Model = model;
 	assert(m_Model.valid());
-	CSP_LOG(APP, INFO, "create SceneModel for " << m_Model->getModelPath());
+	CSPLOG(INFO, APP) << "create SceneModel for " << m_Model->getModelPath();
 
 	// get the prototype model scene graph
 	osg::Node *model_node = m_Model->getModel().get();
@@ -771,15 +777,15 @@ SceneModel::SceneModel(simdata::Ref<ObjectModel> const & model) {
 	// create a working copy
 	ModelCopy model_copy;
 
-	simdata::Timer timer;
+	Timer timer;
 	timer.start();
 	m_ModelCopy = model_copy(model_node);
 	m_PitSwitch = model_copy.getPitSwitch();
 	timer.stop();
 
-	CSP_LOG(APP, INFO, "Copied model, animation count = " << model_copy.getAnimationCallbacks().size());
+	CSPLOG(INFO, APP) << "Copied model, animation count = " << model_copy.getAnimationCallbacks().size();
 	if (timer.elapsed() > 0.01) {
-		CSP_LOG(APP, WARNING, "Model copy took " << (timer.elapsed() * 1e+3) << " ms");
+		CSPLOG(WARNING, APP) << "Model copy took " << (timer.elapsed() * 1e+3) << " ms";
 	}
 
 	m_AnimationCallbacks.resize(model_copy.getAnimationCallbacks().size());
@@ -826,14 +832,14 @@ SceneModel::~SceneModel() {
 }
 
 void SceneModel::setPitMask(unsigned mask) {
-	CSP_LOG(OBJECT, INFO, "Setting pit mask to " <<mask);
+	CSPLOG(INFO, OBJECT) << "Setting pit mask to " <<mask;
 	if (m_PitSwitch.valid()) {
 		const unsigned n = m_PitSwitch->getNumChildren();
 		for (unsigned i = 0; i < n; ++i) {
 			m_PitSwitch->setValue(i, (mask & (1 << i)) == 0);
 		}
 	} else {
-		CSP_LOG(OBJECT, WARNING, "Setting pit mask but model has no pit switch");
+		CSPLOG(WARNING, OBJECT) << "Setting pit mask but model has no pit switch";
 	}
 }
 
@@ -841,11 +847,11 @@ void SceneModel::setLabel(std::string const &label) {
 	m_Label->setText(label);
 }
 
-void SceneModel::updateSmoke(double dt, simdata::Vector3 const &global_position, simdata::Quat const &attitude) {
+void SceneModel::updateSmoke(double dt, Vector3 const &global_position, Quat const &attitude) {
 	m_SmokeTrails->update(dt, global_position, attitude);
 }
 
-void SceneModel::setSmokeEmitterLocation(std::vector<simdata::Vector3> const &sel) {
+void SceneModel::setSmokeEmitterLocation(std::vector<Vector3> const &sel) {
 	m_SmokeEmitterLocation = sel;
 }
 
@@ -854,8 +860,8 @@ bool SceneModel::addSmoke() {
 		return true;
 	else {
 		if (!m_SmokeEmitterLocation.empty()) {
-			std::vector<simdata::Vector3>::const_iterator iEnd = m_SmokeEmitterLocation.end();
-			for (std::vector<simdata::Vector3>::iterator i = m_SmokeEmitterLocation.begin(); i != iEnd; ++i) {
+			std::vector<Vector3>::const_iterator iEnd = m_SmokeEmitterLocation.end();
+			for (std::vector<Vector3>::iterator i = m_SmokeEmitterLocation.begin(); i != iEnd; ++i) {
 				fx::SmokeTrail *trail = new fx::SmokeTrail();
 				trail->setEnabled(false);
 				trail->setTexture("Smoke/white-smoke-hilite.rgb");
@@ -900,10 +906,10 @@ void SceneModel::disableSmoke() {
 }
 
 void SceneModel::enableSmoke() {
-	CSP_LOG(OBJECT, DEBUG, "SceneModel::enableSmoke()...");
+	CSPLOG(DEBUG, OBJECT) << "SceneModel::enableSmoke()...";
 	if (!m_Smoke) {
 		if (!addSmoke()) return;
-		CSP_LOG(OBJECT, DEBUG, "SceneModel::enableSmoke()");
+		CSPLOG(DEBUG, OBJECT) << "SceneModel::enableSmoke()";
 		m_SmokeTrails->setEnabled(true);
 		m_Smoke = true;
 	}
@@ -915,13 +921,13 @@ void SceneModel::bindAnimationChannels(Bus* bus) {
 }
 
 void SceneModel::bindHud(HUD *hud) {
-	CSP_LOG(OBJECT, DEBUG, "adding HUD to model");
+	CSPLOG(DEBUG, OBJECT) << "adding HUD to model";
 	assert(hud);
 	m_HudModel = hud->hud();
-	m_HudModel->setPosition(simdata::toOSG(m_Model->getHudPlacement()));
+	m_HudModel->setPosition(toOSG(m_Model->getHudPlacement()));
 	m_CenterOfMassOffset->addChild(m_HudModel.get());
-	hud->setOrigin(simdata::toOSG(m_Model->getHudPlacement()));
-	hud->setViewPoint(simdata::toOSG(m_Model->getViewPoint()));
+	hud->setOrigin(toOSG(m_Model->getHudPlacement()));
+	hud->setViewPoint(toOSG(m_Model->getViewPoint()));
 	hud->setDimensions(m_Model->getHudWidth(), m_Model->getHudHeight());
 }
 
@@ -936,10 +942,10 @@ void SceneModel::onViewMode(bool internal) {
 	}
 }
 
-void SceneModel::setPositionAttitude(simdata::Vector3 const &position, simdata::Quat const &attitude, simdata::Vector3 const &cm_offset) {
-	m_Transform->setAttitude(simdata::toOSG(attitude));
-	m_Transform->setPosition(simdata::toOSG(position));
-	m_CenterOfMassOffset->setPosition(simdata::toOSG(-cm_offset));
+void SceneModel::setPositionAttitude(Vector3 const &position, Quat const &attitude, Vector3 const &cm_offset) {
+	m_Transform->setAttitude(toOSG(attitude));
+	m_Transform->setPosition(toOSG(position));
+	m_CenterOfMassOffset->setPosition(toOSG(-cm_offset));
 }
 
 osg::Group* SceneModel::getRoot() {
@@ -954,7 +960,7 @@ osg::Group *SceneModel::getDynamicGroup() {
 	return m_DynamicGroup.get();
 }
 
-void SceneModel::addChild(simdata::Ref<SceneModelChild> const &child) {
+void SceneModel::addChild(Ref<SceneModelChild> const &child) {
 	assert(child->getRoot());
 	if (!m_Children) {
 		m_Children = new osg::Group;
@@ -963,7 +969,7 @@ void SceneModel::addChild(simdata::Ref<SceneModelChild> const &child) {
 	m_Children->addChild(child->getRoot());
 }
 
-void SceneModel::removeChild(simdata::Ref<SceneModelChild> const &child) {
+void SceneModel::removeChild(Ref<SceneModelChild> const &child) {
 	assert(child->getRoot());
 	if (m_Children.valid()) {
 		m_Children->removeChild(child->getRoot());
@@ -981,15 +987,15 @@ void SceneModel::removeAllChildren() {
 
 SceneModelChild::~SceneModelChild() {}
 
-SceneModelChild::SceneModelChild(simdata::Ref<ObjectModel> const &model) {
+SceneModelChild::SceneModelChild(Ref<ObjectModel> const &model) {
 	m_Model = model;
 	assert(m_Model.valid());
-	CSP_LOG(APP, INFO, "Create SceneModelChild for " << m_Model->getModelPath());
+	CSPLOG(INFO, APP) << "Create SceneModelChild for " << m_Model->getModelPath();
 
 	// create a working copy of the prototype model
 	ModelCopy model_copy;
 	m_ModelCopy = model_copy(m_Model->getModel().get());
-	CSP_LOG(APP, INFO, "Copied model, animation count = " << model_copy.getAnimationCallbacks().size());
+	CSPLOG(INFO, APP) << "Copied model, animation count = " << model_copy.getAnimationCallbacks().size();
 
 	// store all the animation update callbacks
 	m_AnimationCallbacks.resize(model_copy.getAnimationCallbacks().size());
@@ -1004,4 +1010,6 @@ void SceneModelChild::bindAnimationChannels(Bus* bus) {
 	AnimationBinder binder(bus, m_Model->getModelPath());
 	std::for_each(m_AnimationCallbacks.begin(), m_AnimationCallbacks.end(), binder);
 }
+
+CSP_NAMESPACE_END
 

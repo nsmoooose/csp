@@ -25,29 +25,27 @@
 
 // TODO(OS) add more documentation and split into multiple headers/sources.
 
-#ifndef __CSPSIM_STORES_H__
-#define __CSPSIM_STORES_H__
+#ifndef __CSPSIM_STORES_STORES_H__
+#define __CSPSIM_STORES_STORES_H__
 
 
 #include <csp/cspsim/stores/StoresDynamics.h>
 
-//#include <csp/csplib/data/InterfaceRegistry.h>
 #include <csp/csplib/data/Key.h>
 #include <csp/csplib/data/Link.h>
 #include <csp/csplib/data/Matrix3.h>
 #include <csp/csplib/data/Object.h>
-#include <csp/csplib/util/osg.h>
 #include <csp/csplib/data/Path.h>
 #include <csp/csplib/data/Quat.h>
 #include <csp/csplib/data/Real.h>
 #include <csp/csplib/data/Vector3.h>
+#include <csp/csplib/util/osg.h>
 
 #include <osg/PositionAttitudeTransform>
 
 #include <algorithm>
 #include <set>
 #include <vector>
-#include <iostream>
 
 CSP_NAMESPACE
 
@@ -457,7 +455,6 @@ public:
 	Quat const &attitude() const { return m_Attitude; }
 
 	void applyGeometry(Vector3 &offset, Quat &attitude) const {
-		std::cout << "@^ " << attitude << " " << m_Attitude << "\n";
 		offset = offset + attitude.rotate(m_Offset);
 		attitude = attitude * m_Attitude;
 	}
@@ -854,7 +851,6 @@ public:
 		StoreIndex hpindex = StoreIndex::Hardpoint(m_Index);
 		offset = m_Data->offset();
 		attitude = m_Data->attitude();
-		std::cout << "@@ " << attitude << "\n";
 		if (idx == hpindex) {
 			store = m_Store;
 			m_Store = 0;
@@ -904,5 +900,5 @@ private:
 
 CSP_NAMESPACE_END
 
-#endif // __CSPSIM_STORES_H__
+#endif // __CSPSIM_STORES_STORES_H__
 

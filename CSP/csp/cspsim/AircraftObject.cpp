@@ -22,27 +22,24 @@
  *
  **/
 
-#include <csp/csplib/util/Math.h>
-
-#include "AircraftObject.h"
-#include "AnimationSequence.h"
-#include "DataRecorder.h"
-#include "KineticsChannels.h"
-#include "Collision.h"
-#include "Engine.h"
-#include "FlightModel.h"
-#include "ObjectModel.h"
-#include "SystemsModel.h"
+#include <csp/cspsim/AircraftObject.h>
+#include <csp/cspsim/AnimationSequence.h>
+#include <csp/cspsim/DataRecorder.h>
+#include <csp/cspsim/KineticsChannels.h>
+#include <csp/cspsim/Collision.h>
+#include <csp/cspsim/Engine.h>
+#include <csp/cspsim/FlightModel.h>
+#include <csp/cspsim/ObjectModel.h>
+#include <csp/cspsim/SystemsModel.h>
 
 #include <csp/csplib/util/Log.h>
+#include <csp/csplib/util/Math.h>
 #include <csp/csplib/data/ObjectInterface.h>
 
 #include <sstream>
 #include <iomanip>
 
-using simdata::toRadians;
-using simdata::toDegrees;
-
+CSP_NAMESPACE
 
 CSP_XML_BEGIN(AircraftObject)
 CSP_XML_END
@@ -51,16 +48,15 @@ DEFINE_INPUT_INTERFACE(AircraftObject)
 
 
 AircraftObject::AircraftObject(): DynamicObject(TYPE_AIR_UNIT) {
-	CSP_LOG(OBJECT, DEBUG, "AircraftObject::AircraftObject() ...");
+	CSPLOG(DEBUG, OBJECT) << "AircraftObject::AircraftObject() ...";
 	m_ObjectName = "AIRCRAFT";
 
 	b_Heading = DataChannel<double>::newLocal(bus::Kinetics::Heading, 0.0);
 	b_Roll = DataChannel<double>::newLocal(bus::Kinetics::Roll, 0.0);
 	b_Pitch = DataChannel<double>::newLocal(bus::Kinetics::Pitch, 0.0);
 
-	CSP_LOG(OBJECT, DEBUG, "... AircraftObject::AircraftObject()");
+	CSPLOG(DEBUG, OBJECT) << "... AircraftObject::AircraftObject()";
 }
-
 
 AircraftObject::~AircraftObject() {
 }
@@ -71,7 +67,6 @@ void AircraftObject::convertXML() {
 void AircraftObject::postCreate() {
 	DynamicObject::postCreate();
 }
-
 
 void AircraftObject::registerChannels(Bus* bus) {
 	DynamicObject::registerChannels(bus);
@@ -96,19 +91,17 @@ double AircraftObject::onUpdate(double dt) {
 	return DynamicObject::onUpdate(dt);
 }
 
-
 void AircraftObject::onRender() {
 	DynamicObject::onRender();
 	if (m_SceneModel.valid()) {
 		// XXX TEMPORARY HACK
 		if (getSystemsModel().valid()) {
-			simdata::Ref<EngineDynamics> ed = getSystemsModel()->getSystem("EngineDynamics",false);
+			Ref<EngineDynamics> ed = getSystemsModel()->getSystem("EngineDynamics",false);
 			if (ed.valid())
 				m_SceneModel->setSmokeEmitterLocation(ed->getSmokeEmitterLocation());
 		}
 	}
 }
-
 
 void AircraftObject::SmokeOn() {
 	enableSmoke();
@@ -130,27 +123,25 @@ void AircraftObject::MarkersToggle() {
 	m_Model->showDebugMarkers(!m_Model->getDebugMarkersVisible());
 }
 
-void AircraftObject::setAttitude(double pitch, double roll, double heading)
-{
+void AircraftObject::setAttitude(double pitch, double roll, double heading) {
 	b_Pitch->value() = pitch;
 	b_Roll->value() = roll;
 	b_Heading->value() = heading;
 	
-	simdata::Quat attitude;
+	Quat attitude;
 	// use standard Euler convension (X axis is roll, Y is pitch, Z is yaw).
 	attitude.makeRotate(roll, pitch, heading);
 	// convert to CSP coordinate system (X axis is pitch, Y axis is roll, -Z is yaw)
-	simdata::Quat modified(attitude.y(), attitude.x(), -attitude.z(), attitude.w());
+	Quat modified(attitude.y(), attitude.x(), -attitude.z(), attitude.w());
 	DynamicObject::setAttitude(modified);
 }
 
-void AircraftObject::postUpdate(double dt)
-{
+void AircraftObject::postUpdate(double dt) {
 	DynamicObject::postUpdate(dt);
 
 	// convert from CSP frame to standard Euler (X is roll, Y is pitch, Z is yaw)
-	simdata::Quat modified = b_Attitude->value();
-	modified = simdata::Quat(modified.y(), modified.x(), -modified.z(), modified.w());
+	Quat modified = b_Attitude->value();
+	modified = Quat(modified.y(), modified.x(), -modified.z(), modified.w());
 	modified.getEulerAngles(b_Roll->value(), b_Pitch->value(), b_Heading->value());
 }
 
@@ -166,8 +157,7 @@ void AircraftObject::getInfo(std::vector<std::string> &info) const {
 	line.setf(std::ios::fixed);
 	line << "Heading: " << std::setw(3) << std::setfill('0') << heading << std::setfill(' ');
 	line.setf(std::ios::fixed | std::ios::showpos);
-	line << ", Pitch: " << std::setw(4) << pitch
-	     << ", Roll: " << std::setw(4) << roll;
+	line << ", Pitch: " << std::setw(4) << pitch << ", Roll: " << std::setw(4) << roll;
 	info.push_back(line.str());
 }
 
@@ -178,4 +168,6 @@ void AircraftObject::setDataRecorder(DataRecorder *recorder) {
 	recorder->addSource(b_Roll);
 	recorder->addSource(b_Heading);
 }
+
+CSP_NAMESPACE_END
 

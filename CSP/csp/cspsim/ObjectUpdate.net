@@ -1,0 +1,29 @@
+#header <csp/cspsim/ObjectUpdate.h>
+
+#include <csp/csplib/net/NetworkMessage.h>
+#include <csp/csplib/data/Vector3.h>
+#include <csp/csplib/data/Quat.h>
+#include <csp/csplib/util/MessageTypes.h>
+
+// simplified/inefficient object update message for testing only.
+//
+// eventually we will want to make some fields required, use
+// single-precision where possible, and add (optional) common
+// state fields.
+//
+// the static id assignment is only for convenience; eventually
+// ids will be assigned during theater generation.
+
+type csp::GlobalPosition;
+type csp::Vector3f;
+type csp::Vector4f;
+
+message ObjectUpdate : csp::NetworkMessage { @id=1025;
+
+	REQUIRED int32 timestamp;
+	REQUIRED csp::GlobalPosition position;
+	REQUIRED csp::Vector3f velocity;
+	csp::Vector4f attitude;
+	uint8[] animation_flags;
+	uint8[] animation_values;
+}

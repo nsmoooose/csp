@@ -56,10 +56,13 @@
 struct SDL_Surface;
 typedef struct _SDL_Joystick SDL_Joystick;
 
-class Atmosphere;
 //--namespace Producer { class RenderSurface; }
-namespace simdata { class DataManager; }
-namespace simnet { class Client; }
+
+CSP_NAMESPACE
+
+class Atmosphere;
+class DataManager;
+class Client;
 class InputEvent;
 class PyShell;
 class DynamicObject;
@@ -71,19 +74,14 @@ class VirtualHID;
 class BaseScreen;
 class GameScreen;
 class EventMapIndex;
-class PyConsole;
-
 
 void fillerup(void *unused, unsigned char *stream, int len);
 
-/**
- * class CSPSim - The primary simulation engine for CSP.
- *
- * @author Wolverine
- * @author Mark Rose <mrose@stm.lbl.gov>
+/** The primary simulation engine for CSP.  Also acts as a singleton to provide
+ *  direct access to shared simulation state.  Do not abuse this access point;
+ *  minimizing dependence on the CSPSim instance is a Good Thing.
  */
-class CSPSim
-{
+class CSPSim {
 public:
 	static CSPSim *theSim;
 
@@ -97,35 +95,27 @@ public:
 	void changeScreen(BaseScreen * newScreen);
 	SDL_Surface * getSDLScreen() {return m_SDLScreen;};
 
-	simdata::SimDate & getCurrentTime() { return m_CurrentTime; }
-	simdata::SimTime const & getFrameRate() const{ return m_FrameRate; }
-	simdata::SimTime const & getElapsedTime() const { return m_ElapsedTime; }
+	SimDate & getCurrentTime() { return m_CurrentTime; }
+	SimTime const & getFrameRate() const{ return m_FrameRate; }
+	SimTime const & getElapsedTime() const { return m_ElapsedTime; }
 	
-	void setActiveObject(simdata::Ref<DynamicObject> object);
-	simdata::Ref<DynamicObject> getActiveObject() const;
+	void setActiveObject(Ref<DynamicObject> object);
+	Ref<DynamicObject> getActiveObject() const;
 	LocalBattlefield * getBattlefield();
 	LocalBattlefield const * getBattlefield() const;
 	TerrainObject * getTerrain();
 	TerrainObject const * getTerrain() const;
 	VirtualScene * getScene();
 	VirtualScene const * getScene() const;
-	simdata::Ref<Theater> getTheater() const;
-	simdata::Ref<EventMapIndex> getInterfaceMaps() const;
-
-/*WNET
-	NetworkMessenger * getNetworkMessenger();
-*/
+	Ref<Theater> getTheater() const;
+	Ref<EventMapIndex> getInterfaceMaps() const;
 
 	void togglePause();
-	void runConsole(PyConsole *console);
-	void endConsole();
 	bool isPaused() { return m_Paused; }
 
-	simdata::DataManager & getDataManager() { return *m_DataManager; }
+	DataManager & getDataManager() { return *m_DataManager; }
 
 	Atmosphere const * getAtmosphere() const { return m_Atmosphere.get(); }
-
-	simdata::Ref<PyShell> getShell() const;
 
 
 protected:
@@ -139,7 +129,6 @@ protected:
 
 
 private:
-
 	SDL_Surface *m_SDLScreen;
 	SDL_Joystick* m_SDLJoystick;
 
@@ -154,50 +143,48 @@ private:
 
 	bool m_Paused;
 	bool m_Finished;
-	bool m_ConsoleOpen;
 	bool m_Clean;
 
 	/**
 	 * The current simulation time/date
 	 */
-	simdata::SimDate m_CurrentTime;
-	simdata::SimTime m_FrameTime;
-	simdata::SimTime m_FrameRate;
-	simdata::SimTime m_AverageFrameTime;
-	simdata::SimTime m_ElapsedTime;
-	simdata::SimTime m_TimeLag;
+	SimDate m_CurrentTime;
+	SimTime m_FrameTime;
+	SimTime m_FrameRate;
+	SimTime m_AverageFrameTime;
+	SimTime m_ElapsedTime;
+	SimTime m_TimeLag;
 
-	void initTime(simdata::SimDate const &);
+	void initTime(SimDate const &);
 	void updateTime();
 
 	/**
 	 * The current input device interface
 	 */
-	simdata::Ref<VirtualHID> m_Interface;
-	simdata::Ref<EventMapIndex> m_InterfaceMaps;
-	simdata::Ref<DynamicObject> m_ActiveObject;
+	Ref<VirtualHID> m_Interface;
+	Ref<EventMapIndex> m_InterfaceMaps;
+	Ref<DynamicObject> m_ActiveObject;
 
 	/**
 	 * The virtual battlefield
 	 */
-	simdata::Ref<LocalBattlefield> m_Battlefield;
-	simdata::Ref<VirtualScene> m_Scene;
-	simdata::Ref<simnet::Client> m_NetworkClient;
+	Ref<LocalBattlefield> m_Battlefield;
+	Ref<VirtualScene> m_Scene;
+	Ref<Client> m_NetworkClient;
 
 	// TODO the terrain will eventually be encapsulated in a Theater class
-	simdata::Ref<Theater> m_Theater;
-	simdata::Ref<TerrainObject> m_Terrain;
-	simdata::Ref<simdata::DataManager> m_DataManager;
-	simdata::ScopedPointer<Atmosphere> m_Atmosphere;
+	Ref<Theater> m_Theater;
+	Ref<TerrainObject> m_Terrain;
+	Ref<DataManager> m_DataManager;
+	ScopedPointer<Atmosphere> m_Atmosphere;
 
-	//PyObject* m_Console;
-	//osg::ref_ptr<PyConsole> m_Console;
-	simdata::Ref<PyShell> m_Shell;
-	
 	//--osg::ref_ptr<Producer::RenderSurface> m_RenderSurface;
 
-	simdata::ScopedPointer<InputEvent> m_InputEvent;
+	ScopedPointer<InputEvent> m_InputEvent;
 };
+
+
+CSP_NAMESPACE_END
 
 #endif // __CSPSIM_H__
 

@@ -25,22 +25,25 @@
 #ifndef __CSPSIM_SCREENINFOMANAGER_H__
 #define __CSPSIM_SCREENINFOMANAGER_H__
 
+#include <csp/cspsim/ScreenInfo.h>
+
 #include <osg/Projection>
 
-#include "ScreenInfo.h"
+CSP_NAMESPACE
 
-class ScreenInfoManager: public osg::Projection
-{
+class ScreenInfoManager: public osg::Projection {
 public:
-	ScreenInfoManager(int ScreenWidth, int ScreenHeight);
+	ScreenInfoManager(int screen_width, int screen_height);
 	virtual ~ScreenInfoManager(){}
-	void setStatus(std::string const & name, bool bvisible);
-	bool getStatus(std::string const & name);
-	void changeObjectStats(int ScreenWidth, int ScreenHeight,simdata::Ref<DynamicObject> const& activeObject);
+	void setStatus(std::string const &name, bool visible);
+	bool getStatus(std::string const &name);
+	void changeObjectStats(int screen_width, int screen_height, Ref<DynamicObject> const& active_object);
 	void addMessage(std::string const &line);
 private:
 	osg::MatrixTransform* m_modelview_abs;
-	ScreenInfo* getScreenInfo(std::string const & name);
+	ScreenInfo* getScreenInfo(std::string const &name);
 };
+
+CSP_NAMESPACE_END
 
 #endif // __CSPSIM_SCREENINFOMANAGER_H__

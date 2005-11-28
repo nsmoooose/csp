@@ -22,16 +22,18 @@
  *
  **/
 
-#include <Controller.h>
-#include <KineticsChannels.h>
-#include <ObjectModel.h>
-#include <ObjectUpdate.h>
-#include <csp/csplib/battlefield/BattlefieldMessages.h>
+#include <csp/cspsim/Controller.h>
+#include <csp/cspsim/KineticsChannels.h>
+#include <csp/cspsim/ObjectModel.h>
+#include <csp/cspsim/ObjectUpdate.h>
+#include <csp/cspsim/battlefield/BattlefieldMessages.h>
 #include <csp/csplib/util/TimeStamp.h>
 #include <csp/csplib/data/ObjectInterface.h>
 
 #include <map>
 #include <set>
+
+CSP_NAMESPACE
 
 CSP_XML_BEGIN(ChannelMirrorSet)
 	CSP_DEF("mirrors", m_Mirrors, true)
@@ -69,8 +71,8 @@ void RemoteController::importChannels(Bus *bus) {
 void RemoteController::postCreate() {
 	System::postCreate();
 	if (m_ChannelMirrorSet.valid()) {
-		simdata::Link<ChannelMirror>::vector const &mirrors = m_ChannelMirrorSet->mirrors();
-		simdata::Link<ChannelMirror>::vector::const_iterator iter = mirrors.begin();
+		Link<ChannelMirror>::vector const &mirrors = m_ChannelMirrorSet->mirrors();
+		Link<ChannelMirror>::vector::const_iterator iter = mirrors.begin();
 		m_ChannelMasters.reserve(mirrors.size());
 		for (; iter != mirrors.end(); ++iter) {
 			ChannelMaster *master = (*iter)->createMaster();
@@ -84,13 +86,10 @@ bool RemoteAnimationUpdate::update(int lod) {
 	if (m_Channel.valid() && lod >= m_LevelOfDetail) {
 		double test = (m_Channel->value() - m_Limit0) * m_Scale;
 		if (test < -5.0 || test > 260) {
-			static int XXX = 0;
-			if ((++XXX % 1000) == 1) {
-				std::cout << m_Channel->getName() << " " << m_Channel->value() << " " << m_Limit0 << " " << m_Scale << "\n";
-			}
+			//static int XXX = 0; if ((++XXX % 1000) == 1) std::cout << m_Channel->getName() << " " << m_Channel->value() << " " << m_Limit0 << " " << m_Scale << "\n";
 		}
-		double value = simdata::clampTo((m_Channel->value() - m_Limit0) * m_Scale, 0.0, 255.0);
-		simdata::uint8 x = static_cast<simdata::uint8>(value);
+		double value = clampTo((m_Channel->value() - m_Limit0) * m_Scale, 0.0, 255.0);
+		uint8 x = static_cast<uint8>(value);
 		if (x != m_LastValue) {
 			// one unit of hysteresis to prevent jittering of the remote animation
 			if ((x > m_LastValue) && (m_Increasing || (x > m_LastValue + 1))) {
@@ -107,7 +106,7 @@ bool RemoteAnimationUpdate::update(int lod) {
 	return false;
 }
 
-void LocalAnimationUpdate::setTarget(simdata::uint8 value) {
+void LocalAnimationUpdate::setTarget(uint8 value) {
 	m_Target = m_Limit0 + (static_cast<double>(value) * m_Scale);
 }
 
@@ -121,14 +120,14 @@ void LocalAnimationUpdate::update(double dt) {
 }
 
 
-simdata::Ref<simnet::NetworkMessage> RemoteController::getUpdate(simcore::TimeStamp current_timestamp, simdata::SimTime interval, int detail) {
+Ref<NetworkMessage> RemoteController::getUpdate(TimeStamp current_timestamp, SimTime interval, int detail) {
 	// TODO (in subclass) compare interval to current_timestamp - last_timestamp to decide if
 	// we need to generate a new message.  better, need to find a simple way to cache the
 	// encoded packet data if no update is needed!
 	// ^^^^^
 	// Note that this is currently done, at least to some extent.   LocalBattlefield caches
 	// messages by detail level, and messages sent to multiple targets are serialized only
-	// once per frame (by caching in simnet::MessageQueue).  In the current scheme, message
+	// once per frame (by caching in MessageQueue).  In the current scheme, message
 	// contents must *not* depend on interval (which is always zero now), since the same
 	// message may be sent to peers at different update intervals.
 	//
@@ -166,20 +165,20 @@ simdata::Ref<simnet::NetworkMessage> RemoteController::getUpdate(simcore::TimeSt
 #ifdef CSP_ERROR_THROTTLING
 	double acceleration_error = b_AccelerationBody->value().length2();
 	double rotation_error = b_AngularVelocity->value().length2();
-	double error = simdata::clampTo(sqrt(acceleration_error + 350 * rotation_error) * (1 << detail) * 0.001, 0.2, 1.0);
+	double error = clampTo(sqrt(acceleration_error + 350 * rotation_error) * (1 << detail) * 0.001, 0.2, 1.0);
 	int skip_count = static_cast<int>(1.0 / error + 0.5);
 #else
 	int skip_count = 1;
 #endif
 
 	//if (m_UpdateDelay % 20 == 0) {
-	//	CSP_LOG(APP, ERROR, "skip: " << acceleration_error << " " << rotation_error << " " << skip_count);
+	//	CSPLOG(ERROR, APP) << "skip: " << acceleration_error << " " << rotation_error << " " << skip_count;
 	//}
 
-	ObjectUpdate::Ref update = new ObjectUpdate();
+	Ref<ObjectUpdate> update = new ObjectUpdate();
 
-	std::vector<simdata::uint8> &flags = update->set_animation_flags();
-	std::vector<simdata::uint8> &values = update->set_animation_values();
+	std::vector<uint8> &flags = update->set_animation_flags();
+	std::vector<uint8> &values = update->set_animation_values();
 	bool has_animation_updates = false;
 	for (unsigned i = 0; i < m_ChannelMasters.size(); ++i) {
 		if (m_ChannelMasters[i]->send(detail, values, force)) {
@@ -201,23 +200,23 @@ simdata::Ref<simnet::NetworkMessage> RemoteController::getUpdate(simcore::TimeSt
 		update->clear_animation_values();
 	}
 	update->set_timestamp(current_timestamp);
-	update->set_position(simcore::GlobalPosition(position()));
-	update->set_velocity(simcore::Vector3f(velocity()));
+	update->set_position(GlobalPosition(position()));
+	update->set_velocity(Vector3f(velocity()));
 	if (detail > 1) {
-		update->set_attitude(simcore::Vector4f(attitude()));
+		update->set_attitude(Vector4f(attitude()));
 	}
 	return update;
 }
 
-void LocalController::setTargetPosition(simdata::Vector3 const &position) {
+void LocalController::setTargetPosition(Vector3 const &position) {
 	m_TargetPosition = position;
 	m_Correction = m_TargetPosition - b_Position->value();
 }
 
-void LocalController::setTargetVelocity(simdata::Vector3 const &velocity) {
+void LocalController::setTargetVelocity(Vector3 const &velocity) {
 	m_TargetVelocity = velocity;
 }
-void LocalController::setTargetAttitude(simdata::Quat const &attitude) {
+void LocalController::setTargetAttitude(Quat const &attitude) {
 	m_TargetAttitude = attitude;
 }
 
@@ -230,8 +229,8 @@ LocalController::~LocalController() {
 void LocalController::postCreate() {
 	System::postCreate();
 	if (m_ChannelMirrorSet.valid()) {
-		simdata::Link<ChannelMirror>::vector const &mirrors = m_ChannelMirrorSet->mirrors();
-		simdata::Link<ChannelMirror>::vector::const_iterator iter = mirrors.begin();
+		Link<ChannelMirror>::vector const &mirrors = m_ChannelMirrorSet->mirrors();
+		Link<ChannelMirror>::vector::const_iterator iter = mirrors.begin();
 		m_ChannelSlaves.reserve(mirrors.size());
 		for (; iter != mirrors.end(); ++iter) {
 			ChannelSlave *slave = (*iter)->createSlave();
@@ -242,7 +241,7 @@ void LocalController::postCreate() {
 }
 
 void LocalController::registerChannels(Bus *bus) {
-	CSP_LOG(APP, INFO, "LocalController::registerChannels");
+	CSPLOG(INFO, APP) << "LocalController::registerChannels";
 	for (ChannelSlaves::iterator iter = m_ChannelSlaves.begin(); iter != m_ChannelSlaves.end(); ++iter) (*iter)->bind(bus);
 }
 
@@ -254,32 +253,31 @@ void LocalController::importChannels(Bus *bus) {
 	b_Attitude = bus->getSharedChannel(bus::Kinetics::Attitude, true, true);
 }
 
-bool LocalController::sequentialUpdate(simcore::TimeStamp stamp, simcore::TimeStamp now, simdata::SimTime &dt) {
+bool LocalController::sequentialUpdate(TimeStamp stamp, TimeStamp now, SimTime &dt) {
 #if 0
 	static double hack_offset = 0.0;
 
 	//-----------------
-	std::cerr << "update " << stamp << " " << m_LastStamp << " i=" << simcore::timeStampDelta(stamp, m_LastStamp) << " o=" << simcore::timeStampDelta(now, stamp) << " h=" << hack_offset << "\n";
+	std::cerr << "update " << stamp << " " << m_LastStamp << " i=" << timeStampDelta(stamp, m_LastStamp) << " o=" << timeStampDelta(now, stamp) << " h=" << hack_offset << "\n";
 	//-----------------
 #endif
 
 	if (m_LastStamp != 0) {
-		simdata::SimTime sequence = simcore::timeStampDelta(stamp, m_LastStamp);
+		SimTime sequence = timeStampDelta(stamp, m_LastStamp);
 		if (sequence <= 0) {
-			static int XXX = 0; if (++XXX % 10 == 0) std::cout << "dropped 10 stale updates (" << stamp << ", " << m_LastStamp << ")\n";
+			//static int XXX = 0; if (++XXX % 10 == 0) std::cout << "dropped 10 stale updates (" << stamp << ", " << m_LastStamp << ")\n";
 			return false;
 		}
 	}
 
-	dt = simcore::timeStampDelta(now, stamp);
+	dt = timeStampDelta(now, stamp);
 
 	if (std::abs(dt) > 0.200) {
-		static int XXX = 0;
-		if (++XXX % 5 == 0) std::cout << "WARNING: large update skew (" << (dt * 1e+3) << " ms)\n";
+		//static int XXX = 0; if (++XXX % 5 == 0) std::cout << "WARNING: large update skew (" << (dt * 1e+3) << " ms)\n";
 	}
 
 #if 0
-	dt = simcore::timeStampDelta(now, stamp) + hack_offset;
+	dt = timeStampDelta(now, stamp) + hack_offset;
 	// if dt < -200 ms the clocks are badly skewed.  may need a recovery mode
 	// note that we need to allow negative time differences, since "now"
 	// corresponds to the start of this message processing cycle rather than
@@ -308,26 +306,26 @@ bool LocalController::sequentialUpdate(simcore::TimeStamp stamp, simcore::TimeSt
 	return true;
 }
 
-void LocalController::onUpdate(simdata::Ref<simnet::NetworkMessage> const &msg, simcore::TimeStamp now) {
-	CSP_LOG(OBJECT, INFO, "received state: " << *msg);
-	ObjectUpdate::Ref update = simnet::NetworkMessage::FastCast<ObjectUpdate>(msg);
+void LocalController::onUpdate(Ref<NetworkMessage> const &msg, TimeStamp now) {
+	CSPLOG(INFO, OBJECT) << "received state: " << *msg;
+	Ref<ObjectUpdate> update = NetworkMessage::FastCast<ObjectUpdate>(msg);
 	if (!update) return;
-	simdata::SimTime dt;
+	SimTime dt;
 	if (sequentialUpdate(update->timestamp(), now, dt)) {
-		CSP_LOG(OBJECT, INFO, "updating kinetics");
-		setTargetVelocity(update->velocity().Vector3());
+		CSPLOG(INFO, OBJECT) << "updating kinetics";
+		setTargetVelocity(update->velocity().asVector3());
 		if (update->has_attitude()) {
-			setTargetAttitude(update->attitude().Quat());
+			setTargetAttitude(update->attitude().asQuat());
 		}
-		setTargetPosition(update->position().Vector3() + m_TargetVelocity * dt);
+		setTargetPosition(update->position().asVector3() + m_TargetVelocity * dt);
 
 		if (update->has_animation_flags()) {
-			std::vector<simdata::uint8> const &flags = update->animation_flags();
-			std::vector<simdata::uint8> const &values = update->animation_values();
+			std::vector<uint8> const &flags = update->animation_flags();
+			std::vector<uint8> const &values = update->animation_values();
 			const unsigned n = std::min(flags.size() * 8, m_ChannelSlaves.size());
 			unsigned idx = 0;
 			for (unsigned i = 0; i < n; ++i) {
-				const simdata::uint8 flag = flags[i>>3];
+				const uint8 flag = flags[i>>3];
 				if ((flag & (1<<(i&7))) != 0) {
 					m_ChannelSlaves[i]->receive(values, idx);
 				}
@@ -335,24 +333,24 @@ void LocalController::onUpdate(simdata::Ref<simnet::NetworkMessage> const &msg, 
 			assert(idx == values.size());
 		}
 	} else {
-		CSP_LOG(OBJECT, INFO, "non sequential update: msg=" << update->timestamp() << " local=" << now);
+		CSPLOG(INFO, OBJECT) << "non sequential update: msg=" << update->timestamp() << " local=" << now;
 	}
 }
 
 double LocalController::onUpdate(double dt) {
-	CSP_LOG(OBJECT, INFO, "local controller update");
+	CSPLOG(INFO, OBJECT) << "local controller update";
 	b_Position->value() = b_Position->value() + b_Velocity->value() * dt;
 	{
 		double dx = m_Correction.length() - 50.0;
 		double f = dt * 1.0;
 		if (dx > 0.0) f += dx * dx * 0.0001;
 		if (f > 1.0) f = 1.0;
-		simdata::Vector3 partial_correction = f * m_Correction;
+		Vector3 partial_correction = f * m_Correction;
 		b_Position->value() += partial_correction;
 		m_Correction -= partial_correction;
 	}
 	{
-		simdata::Vector3 dv = m_TargetVelocity - b_Velocity->value();
+		Vector3 dv = m_TargetVelocity - b_Velocity->value();
 		double dx = dv.length() - 10;
 		double f = dt * 10.0;
 		if (dx > 0.0) f += dx * dx * 0.01;
@@ -373,4 +371,5 @@ double LocalController::onUpdate(double dt) {
 	return 0.0;
 }
 
+CSP_NAMESPACE_END
 

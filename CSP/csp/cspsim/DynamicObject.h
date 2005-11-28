@@ -25,16 +25,23 @@
 #ifndef __CSPSIM_DYNAMICOBJECT_H__
 #define __CSPSIM_DYNAMICOBJECT_H__
 
-#include "Bus.h"
-#include "InputInterface.h"
-#include "Stores/StoresDynamics.h"
-#include "TerrainObject.h"
+#include <csp/cspsim/Bus.h>
+#include <csp/cspsim/InputInterface.h>
+#include <csp/cspsim/TerrainObject.h>
+#include <csp/cspsim/stores/StoresDynamics.h>
+#include <csp/cspsim/battlefield/SimObject.h>
 
-#include <csp/csplib/battlefield/SimObject.h>
 #include <csp/csplib/data/Link.h>
 #include <csp/csplib/data/Matrix3.h>
 #include <csp/csplib/data/Quat.h>
 
+namespace osgParticle {
+	class Geode;
+	class ModularEmitter;
+	class ParticleSystemUpdater;
+}
+
+CSP_NAMESPACE
 
 class DataRecorder;
 class DynamicModel;
@@ -42,20 +49,13 @@ class HUD;
 class LocalController;
 class ObjectModel;
 class PhysicsModel;
+class Quat;
 class RemoteController;
 class SceneModel;
 class SceneModelChild;
 class Station;
 class StoresManagementSystem;
 class SystemsModel;
-
-namespace simdata { class Quat; }
-
-namespace osgParticle {
-	class Geode;
-	class ModularEmitter;
-	class ParticleSystemUpdater;
-}
 
 
 /**
@@ -66,10 +66,10 @@ class DynamicObject: public SimObject, public InputInterface
 {
 	struct SystemsModelStore {
 		ObjectId id;
-		simdata::Ref<SystemsModel> model;
+		Ref<SystemsModel> model;
 		SystemsModelStore();
 		~SystemsModelStore();
-		SystemsModelStore(ObjectId id_, simdata::Ref<SystemsModel> model_);
+		SystemsModelStore(ObjectId id_, Ref<SystemsModel> model_);
 	};
 
 	static std::list<SystemsModelStore> SystemsModelCache;
@@ -84,9 +84,9 @@ private:
 	virtual void onRemote();
 
 	void cacheSystemsModel();
-	simdata::Ref<SystemsModel> getCachedSystemsModel();
+	Ref<SystemsModel> getCachedSystemsModel();
 	void selectVehicleCore();
-	void setVehicleCore(simdata::Ref<SystemsModel>);
+	void setVehicleCore(Ref<SystemsModel>);
 
 
 protected:
@@ -104,9 +104,9 @@ public:
 	virtual ~DynamicObject();
 
 	// model and scene related functions
-	simdata::Ref<SceneModel> getSceneModel();
-	simdata::Ref<ObjectModel> getModel() const;
-	simdata::Ref<SystemsModel> getSystemsModel() const;
+	Ref<SceneModel> getSceneModel();
+	Ref<ObjectModel> getModel() const;
+	Ref<SystemsModel> getSystemsModel() const;
 	virtual void createSceneModel();
 	virtual void destroySceneModel();
 	osg::Node* getOrCreateModelNode();
@@ -114,28 +114,28 @@ public:
 
 	virtual void getInfo(std::vector<std::string> &info) const;
 
-	void setVelocity(simdata::Vector3 const & velocity);
+	void setVelocity(Vector3 const & velocity);
 	void setVelocity(double Vx, double Vy, double Vz);
-	void setAngularVelocity(simdata::Vector3 const & angular_velocity);
-	simdata::Vector3 const & getAngularVelocity() const { return b_AngularVelocity->value(); }
-	simdata::Vector3 const & getAccelerationBody() const { return b_AccelerationBody->value(); }
-	simdata::Vector3 const & getVelocity() const { return b_LinearVelocity->value(); }
+	void setAngularVelocity(Vector3 const & angular_velocity);
+	Vector3 const & getAngularVelocity() const { return b_AngularVelocity->value(); }
+	Vector3 const & getAccelerationBody() const { return b_AccelerationBody->value(); }
+	Vector3 const & getVelocity() const { return b_LinearVelocity->value(); }
 	double getSpeed() const { return b_LinearVelocity->value().length(); }
 	virtual double getAltitude() const { return (b_ModelPosition->value().z() - b_GroundZ->value()); }
 
 	// Get the current offset from the model origin to the center of mass (body origin).
-	simdata::Vector3 const & getCenterOfMassOffset() const { return b_CenterOfMassOffset->value(); }
+	Vector3 const & getCenterOfMassOffset() const { return b_CenterOfMassOffset->value(); }
 
 	// Get the nominal offset from the model origin to the center of mass (body origin).  This
 	// is the nominal value for the base configuration of the vehicle.  The actual center of
 	// mass offset may vary with conditions (e.g., fuel and loadout).  See getCenterOfMassOffset().
-	simdata::Vector3 const & getReferenceCenterOfMassOffset() const { return m_ReferenceCenterOfMassOffset; }
+	Vector3 const & getReferenceCenterOfMassOffset() const { return m_ReferenceCenterOfMassOffset; }
 
-	virtual simdata::Vector3 getNominalViewPointBody() const;
-	virtual void setViewPointBody(simdata::Vector3 const &point);
+	virtual Vector3 getNominalViewPointBody() const;
+	virtual void setViewPointBody(Vector3 const &point);
 
-	virtual void onAggregate() { CSP_LOG(APP, INFO, "aggregate @ " << *this); }
-	virtual void onDeaggregate() { CSP_LOG(APP, INFO, "deaggregate @ " << *this); }
+	virtual void onAggregate() { CSPLOG(INFO, APP) << "aggregate @ " << *this; }
+	virtual void onDeaggregate() { CSPLOG(INFO, APP) << "deaggregate @ " << *this; }
 
 	bool isNearGround();
 
@@ -144,17 +144,17 @@ public:
 	void setObjectName(const std::string name) { m_ObjectName = name; }
 	std::string getObjectName() const { return m_ObjectName; }
 
-	simdata::Vector3 getDirection() const;
-	simdata::Vector3 getUpDirection() const;
-	simdata::Quat const & getAttitude() const { return b_Attitude->value(); }
-	void setAttitude(simdata::Quat const & attitude);
+	Vector3 getDirection() const;
+	Vector3 getUpDirection() const;
+	Quat const & getAttitude() const { return b_Attitude->value(); }
+	void setAttitude(Quat const & attitude);
 
-	virtual simdata::Vector3 getCenterOfMassPosition() const { return b_Position->value(); }
-	virtual simdata::Vector3 getGlobalPosition() const { return b_ModelPosition->value(); }
-	virtual void setGlobalPosition(simdata::Vector3 const & position);
+	virtual Vector3 getCenterOfMassPosition() const { return b_Position->value(); }
+	virtual Vector3 getGlobalPosition() const { return b_ModelPosition->value(); }
+	virtual void setGlobalPosition(Vector3 const & position);
 	virtual void setGlobalPosition(double x, double y, double z);
 
-	virtual void updateScene(simdata::Vector3 const &origin);
+	virtual void updateScene(Vector3 const &origin);
 	
 	bool isSmoke();
 	void disableSmoke();
@@ -166,8 +166,8 @@ public:
 	// Allow the reference mass and inertia to be overridden.  This is used by StoresManagementSystem when
 	// creating a objects for detached stores (for example, a half empty fuel tank).
 	void setReferenceMass(double mass);
-	void setReferenceInertia(simdata::Matrix3 const &inertia);
-	void setReferenceCgOffset(simdata::Vector3 const &offset);
+	void setReferenceInertia(Matrix3 const &inertia);
+	void setReferenceCgOffset(Vector3 const &offset);
 
 	void toggleMarkers();
 
@@ -184,8 +184,8 @@ protected:
 	virtual void bindChannels(Bus* bus);
 	virtual void bindAnimations(Bus* bus);
 
-	virtual simdata::Ref<simnet::NetworkMessage> getState(simcore::TimeStamp current_timestamp, simdata::SimTime interval, int detail) const;
-	virtual void setState(simdata::Ref<simnet::NetworkMessage> const &msg, simcore::TimeStamp now);
+	virtual Ref<NetworkMessage> getState(TimeStamp current_timestamp, SimTime interval, int detail) const;
+	virtual void setState(Ref<NetworkMessage> const &msg, TimeStamp now);
 
 	TerrainObject::IntersectionHint m_GroundHint;
 
@@ -194,36 +194,36 @@ protected:
 	// dynamic properties
 
 	// previous cm position in global coordinates
-	simdata::Vector3 m_PrevPosition;
+	Vector3 m_PrevPosition;
 
-	DataChannel<simdata::Vector3>::Ref b_ModelPosition;
-	DataChannel<simdata::Vector3>::Ref b_Position;  // cm position
-	DataChannel<double>::Ref b_Mass;
-	DataChannel<double>::Ref b_GroundZ;
-	DataChannel<simdata::Vector3>::Ref b_GroundN;
-	DataChannel<bool>::Ref b_NearGround;
-	DataChannel<simdata::Matrix3>::Ref b_Inertia;
-	DataChannel<simdata::Matrix3>::Ref b_InertiaInv;
-	DataChannel<simdata::Vector3>::Ref b_AngularVelocity;
-	DataChannel<simdata::Vector3>::Ref b_AngularVelocityBody;
-	DataChannel<simdata::Vector3>::Ref b_LinearVelocity;
-	DataChannel<simdata::Vector3>::Ref b_AccelerationBody;
-	DataChannel<simdata::Vector3>::Ref b_CenterOfMassOffset;
-	DataChannel<StoresDynamics>::Ref b_StoresDynamics;
-	DataChannel<simdata::Quat>::Ref b_Attitude;
-	DataChannel<DynamicModel*>::Ref b_DynamicModel;
-	DataChannel<HUD*>::CRef b_Hud;
+	DataChannel<Vector3>::RefT b_ModelPosition;
+	DataChannel<Vector3>::RefT b_Position;  // cm position
+	DataChannel<double>::RefT b_Mass;
+	DataChannel<double>::RefT b_GroundZ;
+	DataChannel<Vector3>::RefT b_GroundN;
+	DataChannel<bool>::RefT b_NearGround;
+	DataChannel<Matrix3>::RefT b_Inertia;
+	DataChannel<Matrix3>::RefT b_InertiaInv;
+	DataChannel<Vector3>::RefT b_AngularVelocity;
+	DataChannel<Vector3>::RefT b_AngularVelocityBody;
+	DataChannel<Vector3>::RefT b_LinearVelocity;
+	DataChannel<Vector3>::RefT b_AccelerationBody;
+	DataChannel<Vector3>::RefT b_CenterOfMassOffset;
+	DataChannel<StoresDynamics>::RefT b_StoresDynamics;
+	DataChannel<Quat>::RefT b_Attitude;
+	DataChannel<DynamicModel*>::RefT b_DynamicModel;
+	DataChannel<HUD*>::CRefT b_Hud;
 
 	std::string m_ObjectName;
 
-	simdata::Link<ObjectModel> m_Model;
-	simdata::Ref<DynamicModel> m_DynamicModel;
-	simdata::Ref<SceneModel> m_SceneModel;
-	simdata::Ref<SceneModelChild> m_StationSceneModel;
-	simdata::Ref<SystemsModel> m_SystemsModel;
-	simdata::Ref<PhysicsModel> m_PhysicsModel;
-	simdata::Ref<LocalController> m_LocalController;
-	simdata::Ref<RemoteController> m_RemoteController;
+	Link<ObjectModel> m_Model;
+	Ref<DynamicModel> m_DynamicModel;
+	Ref<SceneModel> m_SceneModel;
+	Ref<SceneModelChild> m_StationSceneModel;
+	Ref<SystemsModel> m_SystemsModel;
+	Ref<PhysicsModel> m_PhysicsModel;
+	Ref<LocalController> m_LocalController;
+	Ref<RemoteController> m_RemoteController;
 
 	void createStationSceneModel();
 	void activateStation(int index);
@@ -239,13 +239,14 @@ protected:
 
 private:
 	double m_ReferenceMass;
-	simdata::Vector3 m_ReferenceCenterOfMassOffset;
-	simdata::Matrix3 m_ReferenceInertia;
-	simdata::Path m_HumanModel;
-	simdata::Path m_AgentModel;
-	simdata::Path m_RemoteModel;
+	Vector3 m_ReferenceCenterOfMassOffset;
+	Matrix3 m_ReferenceInertia;
+	Path m_HumanModel;
+	Path m_AgentModel;
+	Path m_RemoteModel;
 };
 
+CSP_NAMESPACE_END
 
 #endif // __CSPSIM_DYNAMICOBJECT_H__
 

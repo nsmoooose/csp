@@ -25,12 +25,11 @@
 #ifndef __CSPSIM_DEMETERTERRAIN_H__
 #define __CSPSIM_DEMETERTERRAIN_H__
 
+#include <csp/cspsim/TerrainObject.h>
 
 #include <csp/csplib/data/Object.h>
 #include <csp/csplib/data/GeoPos.h>
 #include <csp/csplib/data/Vector3.h>
-
-#include "TerrainObject.h"
 
 #include <string>
 
@@ -41,16 +40,18 @@ namespace Demeter {
 }
 
 #include <osg/ref_ptr>
-#include <osg/Node>
 
+namespace osg { class Node; }
+
+
+CSP_NAMESPACE
 
 /**
  * class DemeterTerrain
  *
  */
 
-class DemeterTerrain: public TerrainObject
-{
+class DemeterTerrain: public TerrainObject {
 public:
 	CSP_DECLARE_OBJECT(DemeterTerrain)
 
@@ -62,8 +63,8 @@ public:
 	bool isActive();
 
 	virtual void testLineOfSight(Intersection &, IntersectionHint &);
-	virtual float getGroundElevation(double x, double y, simdata::Vector3 &normal, IntersectionHint &);
-	virtual float getGroundElevation(double x, double y, IntersectionHint &);
+	virtual float getGroundElevation(double x, double y, Vector3 &normal, IntersectionHint &) const;
+	virtual float getGroundElevation(double x, double y, IntersectionHint &) const;
 
 	void setCameraPosition(double, double, double);
 
@@ -75,13 +76,12 @@ public:
 	int getLatticeWidth() const { return m_LatticeWidth; }
 	int getLatticeHeight() const { return m_LatticeHeight; }
 
-	simdata::Vector3 getOrigin(simdata::Vector3 const &) const;
+	Vector3 getOrigin(Vector3 const &) const;
 	virtual void endDraw();
 
 	virtual void setScreenSizeHint(int width, int height);
 
 protected:
-
 	bool m_DynamicTextures;
 	bool m_TextureCompression;
 	bool m_PreloadTextures;
@@ -99,14 +99,12 @@ protected:
 	std::string m_LatticeTexExt;
 	int m_LatticeWidth;
 	int m_LatticeHeight;
-	simdata::Vector3 m_Offset;
+	Vector3 m_Offset;
 	float m_CellWidth, m_CellHeight;
 	int m_ScreenWidth;
 	int m_ScreenHeight;
 
-
 protected:
-
 	virtual void postCreate();
 
 	int createTerrainLattice();
@@ -132,6 +130,7 @@ protected:
 	Demeter::TerrainTextureFactory * m_TerrainTextureFactory;
 };
 
+CSP_NAMESPACE_END
 
 #endif // __CSPSIM_DEMETERTERRAIN_H__
 

@@ -23,9 +23,10 @@
  **/
 
 
-#include <HUD/PitchLadder.h>
+#include <csp/cspsim/hud/PitchLadder.h>
 #include <cmath>
 
+CSP_NAMESPACE
 
 PitchLadder::PitchLadder(): m_Dirty(false), m_Hidden(false), m_LastPitchAngle(100.0f) { }
 
@@ -77,3 +78,6 @@ void PitchLadder::show(bool visible) {
 		}
 	}
 }
+
+CSP_NAMESPACE_END
+

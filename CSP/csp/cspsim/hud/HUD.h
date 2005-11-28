@@ -23,10 +23,10 @@
  **/
 
 
-#ifndef __CSPSIM_HUD_H__
-#define __CSPSIM_HUD_H__
+#ifndef __CSPSIM_HUD_HUD_H__
+#define __CSPSIM_HUD_HUD_H__
 
-
+#include <csp/csplib/util/Namespace.h>
 #include <osg/PositionAttitudeTransform>
 #include <osgText/Text>
 
@@ -39,6 +39,7 @@ namespace osg { class Geode; }
 namespace osg { class Geometry; }
 namespace osg { class Material; }
 
+CSP_NAMESPACE
 
 /** A container class representing a Heads Up Display.  The display is composed
  *  of one or more Elements.  The HUD defines a fixed frame to contain elements
@@ -368,5 +369,6 @@ public:
 	osgText::Text *text() { return m_Text; }
 };
 
+CSP_NAMESPACE_END
 
-#endif // __CSPSIM_HUD_H__
+#endif // __CSPSIM_HUD_HUD_H__

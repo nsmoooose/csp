@@ -29,9 +29,8 @@
 #include <csp/cspsim/stores/StoresDatabase.h>
 #include <csp/cspsim/stores/StoresDefinition.h>
 #include <csp/cspsim/stores/StoresDynamics.h>
-#include <csp/cspsim/CSPSim.h>  // XXX
-#include <csp/cspsim/SystemsModel.h>  // XXX
 #include <csp/cspsim/battlefield/LocalBattlefield.h>
+#include <csp/cspsim/CSPSim.h>  // XXX
 #include <csp/cspsim/DynamicModel.h>
 #include <csp/cspsim/DynamicObject.h>
 
@@ -54,8 +53,7 @@ CSP_XML_END
 StoresManagementSystem::StoresManagementSystem(): m_DirtyDynamics(true) { }
 StoresManagementSystem::~StoresManagementSystem() { }
 
-
-void StoresManagementSystem::registerChannels(Bus*) {}
+void StoresManagementSystem::registerChannels(Bus*) { }
 
 void StoresManagementSystem::importChannels(Bus* bus) {
 	DataChannel<DynamicModel*>::CRefT channel = bus->getChannel("DynamicModel");
@@ -118,12 +116,12 @@ bool StoresManagementSystem::mountStore(StoreIndex const &index, Store *store) {
 	Hardpoint *hp = m_Hardpoints.at(index.hardpoint()).get();
 	assert(hp);
 	if (!hp->data()->isCompatible(store->key())) {
-		CSP_LOG(OBJECT, INFO, "store " << store->name() << " incompatible with hardpoint " << hp->name());
+		CSPLOG(INFO, OBJECT) << "store " << store->name() << " incompatible with hardpoint " << hp->name();
 		return false;
 	}
 	Store *parent = hp->getStore(index.parent());
 	if (!parent || !parent->asRack()) {
-		CSP_LOG(OBJECT, INFO, "cannot mount store " << store->name() << "; mount point not found on hardpoint " << hp->name());
+		CSPLOG(INFO, OBJECT) << "cannot mount store " << store->name() << "; mount point not found on hardpoint " << hp->name();
 		return false;
 	}
 	return parent->asRack()->setChild(index, store);
@@ -148,7 +146,7 @@ void StoresManagementSystem::releaseMarkedStores(DynamicObject *parent) {
 	bool released = false;
 	for (std::set<StoreIndex>::const_iterator iter = m_MarkedForRelease.begin(); iter != m_MarkedForRelease.end(); ++iter) {
 		StoreIndex const &index = *iter;
-		CSP_LOG(OBJECT, INFO, "Removing store @ " << index);
+		CSPLOG(INFO, OBJECT) << "Removing store @ " << index;
 
 		Hardpoint *hp = m_Hardpoints.at(index.hardpoint()).get();
 		assert(hp);
@@ -166,7 +164,7 @@ void StoresManagementSystem::releaseMarkedStores(DynamicObject *parent) {
 		assert(store.valid());
 		released = true;
 
-		CSP_LOG(OBJECT, INFO, "Creating dynamic object for released store");
+		CSPLOG(INFO, OBJECT) << "Creating dynamic object for released store";
 
 		// open questions / problems:
 		//  - for racks, need to include child models and dynamics
@@ -207,18 +205,18 @@ bool StoresManagementSystem::DEPRECATED_releaseStore(StoreIndex const &index) {
 	Store::Ref store;
 	Vector3 position;
 	Quat attitude;
-	CSP_LOG(OBJECT, INFO, "Removing store @ " << index);
+	CSPLOG(INFO, OBJECT) << "Removing store @ " << index;
 	if (!hp->removeStore(index, store, position, attitude)) return false;
 	assert(store.valid());
 
-	CSP_LOG(OBJECT, INFO, "Removing store from vehicle scene graph");
+	CSPLOG(INFO, OBJECT) << "Removing store from vehicle scene graph";
 	osg::Group *group = store->getParentGroup();
 	if (group) {
 		assert(group->getNumParents() == 1);
 		group->getParent(0)->asGroup()->removeChild(group);
 	}
 
-	CSP_LOG(OBJECT, INFO, "Creating dynamic object for released store");
+	CSPLOG(INFO, OBJECT) << "Creating dynamic object for released store";
 	// TODO constructing and return a wrapper object
 	// open questions / problems:
 	//  - for racks, need to include child models and dynamics
@@ -230,7 +228,7 @@ bool StoresManagementSystem::DEPRECATED_releaseStore(StoreIndex const &index) {
 	if (object.valid()) {
 		object->setGlobalPosition(position);
 		object->setAttitude(attitude);
-		CSP_LOG(OBJECT, INFO, "Created dynamic object, queueing for parent.");
+		CSPLOG(INFO, OBJECT) << "Created dynamic object, queueing for parent.";
 		m_ReleasedObjects.push_back(object);
 	}
 

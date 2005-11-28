@@ -23,35 +23,34 @@
  **/
 
 
-#include "Views/ExternalViews.h"
-#include "Views/CameraAgent.h"
-#include "Views/CameraKinematics.h"
+#include <csp/cspsim/views/ExternalViews.h>
+#include <csp/cspsim/views/CameraAgent.h>
+#include <csp/cspsim/views/CameraKinematics.h>
 
-#include "CSPSim.h"
-#include "DynamicObject.h"
+#include <csp/cspsim/CSPSim.h>
+#include <csp/cspsim/DynamicObject.h>
 // FIXME: why ObjetModel class definition is needed here (vc++ error)
-#include "ObjectModel.h"
+#include <csp/cspsim/ObjectModel.h>
 
-#include <SimData/Noise.h>
+#include <csp/csplib/util/Noise.h>
 
 #include <cmath>
 
+CSP_NAMESPACE
 
 void ExternalViewBody::activate() {
 	View::activate();
-	//m_CameraKinematics->resetDistance();
 }
 
-void ExternalViewBody::updateView(simdata::Vector3& ep, simdata::Vector3& lp, simdata::Vector3& up, double /*dt*/) {
+void ExternalViewBody::updateView(Vector3& ep, Vector3& lp, Vector3& up, double /*dt*/) {
 	updateBody(ep, lp, up);
 }
 
 void ExternalViewWorld::activate() {
 	View::activate();
-	//m_CameraKinematics->resetDistance();
 }
 
-void ExternalViewWorld::updateView(simdata::Vector3& ep, simdata::Vector3& lp, simdata::Vector3& up, double /*dt*/) {
+void ExternalViewWorld::updateView(Vector3& ep, Vector3& lp, Vector3& up, double /*dt*/) {
 	/*  Very simplistic camera jitter (disabled).  Ideally should take wind speed/direction
 	 *  and turbulence into account.
 	static std::vector<float> turbulenceX;
@@ -59,7 +58,7 @@ void ExternalViewWorld::updateView(simdata::Vector3& ep, simdata::Vector3& lp, s
 	static std::vector<float> turbulenceZ;
 	static int i = 0, j = 512;
 	if (turbulenceX.empty()) {
-		simdata::Perlin1D noise(0.8, 8, simdata::Perlin1D::LINEAR);
+		Perlin1D noise(0.8, 8, Perlin1D::LINEAR);
 		turbulenceX = noise.generate(1024, true, 4.0, 2.0);
 		turbulenceY = noise.generate(1024, true, 4.0, 2.0);
 		turbulenceZ = noise.generate(1024, true, 4.0, 1.0);
@@ -70,23 +69,23 @@ void ExternalViewWorld::updateView(simdata::Vector3& ep, simdata::Vector3& lp, s
 	*/
 	updateWorld(ep, lp, up);
 	/*
-	ep += simdata::Vector3(turbulenceX[i], turbulenceY[i], turbulenceZ[i]) * 0.03;
-	lp += simdata::Vector3(turbulenceX[j], turbulenceY[j], turbulenceZ[j]) * 0.015 * m_CameraKinematics->getDistance() ;
+	ep += Vector3(turbulenceX[i], turbulenceY[i], turbulenceZ[i]) * 0.03;
+	lp += Vector3(turbulenceX[j], turbulenceY[j], turbulenceZ[j]) * 0.015 * m_CameraKinematics->getDistance() ;
 	*/
 }
 
 void FixedFlybyView::newFixedCamPos(SimObject* target) {
 	if (m_Initialized) return;
 	m_Initialized = true;
-	simdata::Vector3 object_pos = target->getGlobalPosition();
+	Vector3 object_pos = target->getGlobalPosition();
 	DynamicObject* dynamic = dynamic_cast<DynamicObject*>(target);
 	if (dynamic) {
-		simdata::Vector3 up = dynamic->getUpDirection();
-		simdata::Vector3 object_dir = dynamic->getDirection();
+		Vector3 up = dynamic->getUpDirection();
+		Vector3 object_dir = dynamic->getDirection();
 		//double speed_level = dynamic->getSpeed()/50.0;
 		m_FixedCameraPosition =  object_pos - 20.0 * object_dir;
 	} else {
-		m_FixedCameraPosition = object_pos + 100.0 * simdata::Vector3::ZAXIS + 100.0 * simdata::Vector3::XAXIS;
+		m_FixedCameraPosition = object_pos + 100.0 * Vector3::ZAXIS + 100.0 * Vector3::XAXIS;
 	}
 }
 
@@ -96,15 +95,15 @@ void FixedFlybyView::activate() {
 }
 
 void FlybyView::newFixedCamPos(SimObject* target) {
-	simdata::Vector3 object_pos = target->getGlobalPosition();
+	Vector3 object_pos = target->getGlobalPosition();
 	DynamicObject* dynamic = dynamic_cast<DynamicObject*>(target);
 	if (dynamic) {
-		simdata::Vector3 up = dynamic->getUpDirection();
-		simdata::Vector3 object_dir = dynamic->getDirection();
+		Vector3 up = dynamic->getUpDirection();
+		Vector3 object_dir = dynamic->getDirection();
 		//double speed_level = dynamic->getSpeed()/50.0;
 		m_FixedCameraPosition =  object_pos + 900.0* object_dir + ( 12.0 - (rand() % 5) ) * (object_dir^up) + ( 6.0 + (rand () % 3) ) * up;
 	} else {
-		m_FixedCameraPosition = object_pos + 100.0 * simdata::Vector3::ZAXIS + 100.0 * simdata::Vector3::XAXIS;
+		m_FixedCameraPosition = object_pos + 100.0 * Vector3::ZAXIS + 100.0 * Vector3::XAXIS;
 	}
 }
 
@@ -114,16 +113,16 @@ void FlybyView::activate() {
 }
 
 
-void FlybyView::updateView(simdata::Vector3& ep, simdata::Vector3& lp, simdata::Vector3& up, double /*dt*/) {
+void FlybyView::updateView(Vector3& ep, Vector3& lp, Vector3& up, double /*dt*/) {
 	lp = m_ActiveObject->getGlobalPosition();
 	ep = m_FixedCameraPosition;
 	if ((lp - ep).length() > 1000.0) {
 		newFixedCamPos(m_ActiveObject.get());
 	}
-	up = simdata::Vector3::ZAXIS;
+	up = Vector3::ZAXIS;
 }
 
-void FlybyView::recalculate(simdata::Vector3& ep, simdata::Vector3& /*lp*/, simdata::Vector3& /*up*/, double /*dt*/) {
+void FlybyView::recalculate(Vector3& ep, Vector3& /*lp*/, Vector3& /*up*/, double /*dt*/) {
 	TerrainObject* terrain = CSPSim::theSim->getTerrain();
 	if (terrain) {
 		const double SAFETY = 2.0f;
@@ -137,12 +136,13 @@ void FlybyView::recalculate(simdata::Vector3& ep, simdata::Vector3& /*lp*/, simd
 void SatelliteView::activate() {
 	View::activate();
 	m_CameraKinematics->setTheta(0.0);
-	m_CameraKinematics->setPhi(simdata::PI_2);
+	m_CameraKinematics->setPhi(PI_2);
 	m_CameraKinematics->setDistance(500.0);
 }
 
-void SatelliteView::updateView(simdata::Vector3& ep, simdata::Vector3& lp, simdata::Vector3& up, double /*dt*/) {
+void SatelliteView::updateView(Vector3& ep, Vector3& lp, Vector3& up, double /*dt*/) {
 	updateWorld(ep, lp, up);
 }
 
+CSP_NAMESPACE_END
 

@@ -22,19 +22,20 @@
  *
  **/
 
-#include <sstream>
-#include <iomanip>
-
-#include <Systems/AircraftFlightSensors.h>
-#include <ConditionsChannels.h>
-#include <FlightDynamicsChannels.h>
-#include <KineticsChannels.h>
-#include <Atmosphere.h>
-#include <CSPSim.h>
+#include <csp/cspsim/systems/AircraftFlightSensors.h>
+#include <csp/cspsim/ConditionsChannels.h>
+#include <csp/cspsim/FlightDynamicsChannels.h>
+#include <csp/cspsim/KineticsChannels.h>
+#include <csp/cspsim/Atmosphere.h>
+#include <csp/cspsim/CSPSim.h>
 
 #include <csp/csplib/util/Conversions.h>
 #include <csp/csplib/data/ObjectInterface.h>
 
+#include <sstream>
+#include <iomanip>
+
+CSP_NAMESPACE
 
 CSP_XML_BEGIN(AircraftFlightSensors)
 CSP_XML_END
@@ -43,14 +44,14 @@ CSP_XML_END
 AircraftFlightSensors::AircraftFlightSensors(): m_Distance(0) { }
 
 double AircraftFlightSensors::onUpdate(double dt) {
-	simdata::Vector3 pos = b_Position->value();
+	Vector3 pos = b_Position->value();
 	double speed = b_Velocity->value().length();
 	Atmosphere const *atmosphere = CSPSim::theSim->getAtmosphere();
 	if (atmosphere) {
 		b_Density->value() = atmosphere->getDensity(pos.z());
 		b_Temperature->value() = atmosphere->getTemperature(pos.z());
 		b_Pressure->value() = atmosphere->getPressure(pos.z());
-		simdata::Vector3 wind = atmosphere->getWind(pos);
+		Vector3 wind = atmosphere->getWind(pos);
 		wind += atmosphere->getTurbulence(pos, m_Distance);
 		b_WindVelocity->value() = wind;
 		double mach = atmosphere->getMach(speed, pos.z());
@@ -59,7 +60,7 @@ double AircraftFlightSensors::onUpdate(double dt) {
 		m_Distance += (wind - b_Velocity->value()).length() * dt;
 	} else {
 		b_Density->value() = 1.25; // nominal sea-level air density
-		b_WindVelocity->value() = simdata::Vector3::ZERO;
+		b_WindVelocity->value() = Vector3::ZERO;
 	}
 	b_VerticalVelocity->value() = b_Velocity->value().z();
 	b_PressureAltitude->value() = pos.z(); // FIXME roll in atmospheric pressure variations
@@ -74,7 +75,7 @@ void AircraftFlightSensors::importChannels(Bus *bus) {
 
 void AircraftFlightSensors::registerChannels(Bus *bus) {
 	assert(bus!=0);
-	b_WindVelocity = bus->registerLocalDataChannel<simdata::Vector3>(bus::Conditions::WindVelocity, simdata::Vector3::ZERO);
+	b_WindVelocity = bus->registerLocalDataChannel<Vector3>(bus::Conditions::WindVelocity, Vector3::ZERO);
 	b_Pressure = bus->registerLocalDataChannel<double>(bus::Conditions::Pressure, 100000.0);
 	b_Density = bus->registerLocalDataChannel<double>(bus::Conditions::Density, 1.25);
 	b_Temperature = bus->registerLocalDataChannel<double>(bus::Conditions::Temperature, 300);
@@ -91,7 +92,9 @@ void AircraftFlightSensors::getInfo(InfoList &info) const {
 	line << "P: " << std::setw(3) << b_Pressure->value()
 	     << ", T: " << std::setw(3) <<  b_Temperature->value()
 	     << ", Mach: " << std::setw(5) << std::setprecision(2) <<  b_Mach->value()
-	     << ", CAS: " << std::setw(3) << std::setprecision(0) <<  simdata::convert::mps_kts(b_CAS->value()) << " kts";
+	     << ", CAS: " << std::setw(3) << std::setprecision(0) <<  convert::mps_kts(b_CAS->value()) << " kts";
 	info.push_back(line.str());
 }
+
+CSP_NAMESPACE_END
 

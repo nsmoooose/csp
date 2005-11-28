@@ -26,9 +26,9 @@
 #ifndef __CSPSIM_HUD_PITCHLADDER_H__
 #define __CSPSIM_HUD_PITCHLADDER_H__
 
+#include <csp/cspsim/hud/HUD.h>
 
-#include "HUD.h"
-
+CSP_NAMESPACE
 
 /** A general purpose HUD pitch-ladder manager.  This class updates the pitch
  *  bar positions and orientations and culls pitch bars that are outside the
@@ -81,6 +81,7 @@ private:
 	float m_LastPitchAngle;
 };
 
+CSP_NAMESPACE_END
 
 #endif // __CSPSIM_HUD_PITCHLADDER_H__
 

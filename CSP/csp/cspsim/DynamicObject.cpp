@@ -22,23 +22,21 @@
  *
  **/
 
+#include <csp/cspsim/DynamicObject.h>
+#include <csp/cspsim/Animation.h>
+#include <csp/cspsim/DynamicModel.h>
+#include <csp/cspsim/Controller.h>
+#include <csp/cspsim/CSPSim.h>
+#include <csp/cspsim/DataRecorder.h>
+#include <csp/cspsim/KineticsChannels.h>
+#include <csp/cspsim/ObjectModel.h>
+#include <csp/cspsim/PhysicsModel.h>
+#include <csp/cspsim/Station.h>
+#include <csp/cspsim/SystemsModel.h>
+#include <csp/cspsim/TerrainObject.h>
+#include <csp/cspsim/hud/HUD.h>
+#include <csp/cspsim/stores/StoresManagementSystem.h>
 
-#include <DynamicObject.h>
-#include <Animation.h>
-#include <DynamicModel.h>
-#include <Controller.h>
-#include <CSPSim.h>
-#include <DataRecorder.h>
-#include <HUD/HUD.h>
-#include <KineticsChannels.h>
-#include <ObjectModel.h>
-#include <PhysicsModel.h>
-#include <Station.h>
-#include <Stores/StoresManagementSystem.h>
-#include <SystemsModel.h>
-#include <TerrainObject.h>
-
-//#include <csp/csplib/battlefield/LocalBattlefield.h>
 #include <csp/csplib/util/Log.h>
 #include <csp/csplib/data/DataManager.h>
 #include <csp/csplib/data/ObjectInterface.h>
@@ -47,6 +45,7 @@
 
 #include <osg/Group>
 
+CSP_NAMESPACE
 
 CSP_XML_BEGIN(DynamicObject)
 	CSP_DEF("model", m_Model, false)
@@ -66,20 +65,20 @@ using bus::Kinetics;
 DynamicObject::DynamicObject(TypeId type): SimObject(type) {
 	assert(!isStatic());
 
-	b_ModelPosition = DataChannel<simdata::Vector3>::newLocal(Kinetics::ModelPosition, simdata::Vector3::ZERO);
-	b_Position = DataChannel<simdata::Vector3>::newLocal(Kinetics::Position, simdata::Vector3::ZERO);
+	b_ModelPosition = DataChannel<Vector3>::newLocal(Kinetics::ModelPosition, Vector3::ZERO);
+	b_Position = DataChannel<Vector3>::newLocal(Kinetics::Position, Vector3::ZERO);
 	b_Mass = DataChannel<double>::newLocal(Kinetics::Mass, 1.0);
 	b_GroundZ = DataChannel<double>::newLocal(Kinetics::GroundZ, 0.0);
-	b_GroundN = DataChannel<simdata::Vector3>::newLocal(Kinetics::GroundN, simdata::Vector3::ZAXIS);
+	b_GroundN = DataChannel<Vector3>::newLocal(Kinetics::GroundN, Vector3::ZAXIS);
 	b_NearGround = DataChannel<bool>::newLocal(Kinetics::NearGround, false);
-	b_Inertia = DataChannel<simdata::Matrix3>::newLocal(Kinetics::Inertia, simdata::Matrix3::IDENTITY);
-	b_InertiaInv = DataChannel<simdata::Matrix3>::newLocal(Kinetics::InertiaInverse, simdata::Matrix3::IDENTITY);
-	b_AngularVelocity = DataChannel<simdata::Vector3>::newLocal(Kinetics::AngularVelocity, simdata::Vector3::ZERO);
-	b_AngularVelocityBody = DataChannel<simdata::Vector3>::newLocal(Kinetics::AngularVelocityBody, simdata::Vector3::ZERO);
-	b_LinearVelocity = DataChannel<simdata::Vector3>::newLocal(Kinetics::Velocity, simdata::Vector3::ZERO);
-	b_AccelerationBody = DataChannel<simdata::Vector3>::newLocal(Kinetics::AccelerationBody, simdata::Vector3::ZERO);
-	b_Attitude = DataChannel<simdata::Quat>::newLocal(Kinetics::Attitude, simdata::Quat::IDENTITY);
-	b_CenterOfMassOffset = DataChannel<simdata::Vector3>::newLocal(Kinetics::CenterOfMassOffset, simdata::Vector3::ZERO);
+	b_Inertia = DataChannel<Matrix3>::newLocal(Kinetics::Inertia, Matrix3::IDENTITY);
+	b_InertiaInv = DataChannel<Matrix3>::newLocal(Kinetics::InertiaInverse, Matrix3::IDENTITY);
+	b_AngularVelocity = DataChannel<Vector3>::newLocal(Kinetics::AngularVelocity, Vector3::ZERO);
+	b_AngularVelocityBody = DataChannel<Vector3>::newLocal(Kinetics::AngularVelocityBody, Vector3::ZERO);
+	b_LinearVelocity = DataChannel<Vector3>::newLocal(Kinetics::Velocity, Vector3::ZERO);
+	b_AccelerationBody = DataChannel<Vector3>::newLocal(Kinetics::AccelerationBody, Vector3::ZERO);
+	b_Attitude = DataChannel<Quat>::newLocal(Kinetics::Attitude, Quat::IDENTITY);
+	b_CenterOfMassOffset = DataChannel<Vector3>::newLocal(Kinetics::CenterOfMassOffset, Vector3::ZERO);
 	b_StoresDynamics = DataChannel<StoresDynamics>::newLocal(Kinetics::StoresDynamics, StoresDynamics());
 
 	m_DynamicModel = new DynamicModel;
@@ -87,11 +86,11 @@ DynamicObject::DynamicObject(TypeId type): SimObject(type) {
 
 	m_GroundHint = 0;
 	m_ReferenceMass = 1.0;
-	m_ReferenceInertia = simdata::Matrix3::IDENTITY;
-	m_ReferenceCenterOfMassOffset = simdata::Vector3::ZERO;
+	m_ReferenceInertia = Matrix3::IDENTITY;
+	m_ReferenceCenterOfMassOffset = Vector3::ZERO;
 
-	setGlobalPosition(simdata::Vector3::ZERO);
-	m_PrevPosition = simdata::Vector3::ZERO;
+	setGlobalPosition(Vector3::ZERO);
+	m_PrevPosition = Vector3::ZERO;
 
 	m_ActiveStation = -1;
 	m_PreviousStation = 0;
@@ -116,13 +115,13 @@ void DynamicObject::setReferenceMass(double mass) {
 	b_Mass->value() = m_ReferenceMass;
 }
 
-void DynamicObject::setReferenceInertia(simdata::Matrix3 const &inertia) {
+void DynamicObject::setReferenceInertia(Matrix3 const &inertia) {
 	m_ReferenceInertia = inertia;
 	b_Inertia->value() = m_ReferenceInertia;
 	b_InertiaInv->value() = m_ReferenceInertia.getInverse();
 }
 
-void DynamicObject::setReferenceCgOffset(simdata::Vector3 const &offset) {
+void DynamicObject::setReferenceCgOffset(Vector3 const &offset) {
 	m_ReferenceCenterOfMassOffset = offset;
 	b_CenterOfMassOffset->value() = m_ReferenceCenterOfMassOffset;
 }
@@ -152,24 +151,24 @@ osg::Node* DynamicObject::getModelNode() {
 	return m_SceneModel->getRoot();
 }
 
-void DynamicObject::setGlobalPosition(simdata::Vector3 const & position) {
+void DynamicObject::setGlobalPosition(Vector3 const & position) {
 	b_ModelPosition->value() = position;
 	b_Position->value() = position + b_Attitude->value().rotate(b_CenterOfMassOffset->value());
 }
 
 void DynamicObject::setGlobalPosition(double x, double y, double z) {
-	setGlobalPosition(simdata::Vector3(x, y, z));
+	setGlobalPosition(Vector3(x, y, z));
 }
 
-void DynamicObject::setVelocity(simdata::Vector3 const &velocity) {
+void DynamicObject::setVelocity(Vector3 const &velocity) {
 	b_LinearVelocity->value() = velocity;
 }
 
 void DynamicObject::setVelocity(double Vx, double Vy, double Vz) {
-	setVelocity(simdata::Vector3(Vx, Vy, Vz));
+	setVelocity(Vector3(Vx, Vy, Vz));
 }
 
-void DynamicObject::setAngularVelocity(simdata::Vector3 const & angular_velocity) {
+void DynamicObject::setAngularVelocity(Vector3 const & angular_velocity) {
 	b_AngularVelocity->value() = angular_velocity;
 }
 
@@ -180,19 +179,19 @@ void DynamicObject::registerUpdate(UpdateMaster *master) {
 	}
 }
 
-simdata::Ref<simnet::NetworkMessage> DynamicObject::getState(simcore::TimeStamp current_time, simdata::SimTime interval, int detail) const {
-	CSP_LOG(OBJECT, INFO, "get object state");
+Ref<NetworkMessage> DynamicObject::getState(TimeStamp current_time, SimTime interval, int detail) const {
+	CSPLOG(INFO, OBJECT) << "get object state";
 	if (m_RemoteController.valid()) {
-		CSP_LOG(OBJECT, INFO, "get object state from remote controller");
+		CSPLOG(INFO, OBJECT) << "get object state from remote controller";
 		return m_RemoteController->getUpdate(current_time, interval, detail);
 	}
 	return 0;
 }
 
-void DynamicObject::setState(simdata::Ref<simnet::NetworkMessage> const &msg, simcore::TimeStamp now) {
-	CSP_LOG(OBJECT, INFO, "set object state");
+void DynamicObject::setState(Ref<NetworkMessage> const &msg, TimeStamp now) {
+	CSPLOG(INFO, OBJECT) << "set object state";
 	if (m_LocalController.valid()) {
-		CSP_LOG(OBJECT, INFO, "set object state (local controller)");
+		CSPLOG(INFO, OBJECT) << "set object state (local controller)";
 		m_LocalController->onUpdate(msg, now);
 	}
 }
@@ -249,6 +248,7 @@ void DynamicObject::updateDynamics(StoresManagementSystem *sms) {
 	b_Inertia->value() = m_ReferenceInertia + dynamics.getInertia();
 	b_InertiaInv->value() = b_Inertia->value().getInverse();
 	b_CenterOfMassOffset->value() = (m_ReferenceCenterOfMassOffset * m_ReferenceMass + dynamics.getCenterOfMass() * dynamics.getMass()) / b_Mass->value();
+	/*
 	std::cout <<
 		"updateDynamics: \n"
 		"  mass_ref=" << m_ReferenceMass << ", mass_sms=" << dynamics.getMass() << "\n"
@@ -258,6 +258,7 @@ void DynamicObject::updateDynamics(StoresManagementSystem *sms) {
 		"  drag pos=" << dynamics.getCenterOfDrag() << "\n"
 		"  I_ref   =\n" << m_ReferenceInertia << "\n"
 		"  I_sms   =\n" << dynamics.getInertia() << "\n";
+	*/
 	sms->clearDirtyDynamics();
 }
 
@@ -275,7 +276,7 @@ void DynamicObject::doPhysics(double dt) {
 
 // update variables that depend on position
 void DynamicObject::postUpdate(double dt) {
-	const simdata::Vector3 model_position = b_Position->value() - b_Attitude->value().rotate(b_CenterOfMassOffset->value());
+	const Vector3 model_position = b_Position->value() - b_Attitude->value().rotate(b_CenterOfMassOffset->value());
 	b_ModelPosition->value() = model_position;
 	if (m_SceneModel.valid() && isSmoke()) {
 		m_SceneModel->updateSmoke(dt, b_ModelPosition->value(), b_Attitude->value());
@@ -294,26 +295,26 @@ void DynamicObject::postUpdate(double dt) {
 	b_NearGround->value() = (height < m_Model->getBoundingSphereRadius());
 }
 
-simdata::Vector3 DynamicObject::getDirection() const {
-	return b_Attitude->value().rotate(simdata::Vector3::YAXIS);
+Vector3 DynamicObject::getDirection() const {
+	return b_Attitude->value().rotate(Vector3::YAXIS);
 }
 
-simdata::Vector3 DynamicObject::getUpDirection() const {
-	return b_Attitude->value().rotate(simdata::Vector3::ZAXIS);
+Vector3 DynamicObject::getUpDirection() const {
+	return b_Attitude->value().rotate(Vector3::ZAXIS);
 }
 
-void DynamicObject::setAttitude(simdata::Quat const &attitude) {
+void DynamicObject::setAttitude(Quat const &attitude) {
 	b_Attitude->value() = attitude;
 	b_Position->value() = b_ModelPosition->value() + attitude.rotate(b_CenterOfMassOffset->value());
 }
 
-simdata::Vector3 DynamicObject::getNominalViewPointBody() const {
+Vector3 DynamicObject::getNominalViewPointBody() const {
 	return m_Model->getViewPoint();
 }
 
-void DynamicObject::setViewPointBody(simdata::Vector3 const &point) {
+void DynamicObject::setViewPointBody(Vector3 const &point) {
 	if (m_SceneModel.valid() && b_Hud.valid()) {
-		b_Hud->value()->setViewPoint(simdata::toOSG(point));
+		b_Hud->value()->setViewPoint(toOSG(point));
 	}
 }
 
@@ -375,9 +376,9 @@ void DynamicObject::cacheSystemsModel() {
 	SystemsModelCache.push_back(SystemsModelStore(id(), m_SystemsModel));
 }
 
-SystemsModel::Ref DynamicObject::getCachedSystemsModel() {
+Ref<SystemsModel> DynamicObject::getCachedSystemsModel() {
 	std::list<SystemsModelStore>::iterator iter;
-	simdata::Ref<SystemsModel> model;
+	Ref<SystemsModel> model;
 	for (iter = SystemsModelCache.begin(); iter != SystemsModelCache.end(); ++iter) {
 		if (iter->id == id()) {
 			model = iter->model;
@@ -406,7 +407,7 @@ void DynamicObject::registerChannels(Bus* bus) {
 	bus->registerChannel(b_NearGround.get());
 	bus->registerChannel(b_DynamicModel.get());
 	bus->registerChannel(b_StoresDynamics.get());
-	bus->registerLocalDataChannel< simdata::Ref<ObjectModel> >("Internal.ObjectModel", m_Model);
+	bus->registerLocalDataChannel< Ref<ObjectModel> >("Internal.ObjectModel", m_Model);
 }
 
 Bus* DynamicObject::getBus() {
@@ -434,7 +435,7 @@ void DynamicObject::activateStation(int index) {
 			m_ActiveStation = index;
 		} else {
 			m_ActiveStation = -1;
-			CSP_LOG(OBJECT, ERROR, "Selecting invalid station " << index);
+			CSPLOG(ERROR, OBJECT) << "Selecting invalid station " << index;
 		}
 		if (m_SceneModel.valid() && activeStation()) {
 			createStationSceneModel();
@@ -472,7 +473,7 @@ void DynamicObject::bindChannels(Bus* bus) {
 		b_Hud = bus->getChannel("HUD", false);
 		bindAnimations(bus);
 	} else {
-		CSP_LOG(OBJECT, DEBUG, "DynamicObject::bindChannels() - bus is invalid");
+		CSPLOG(DEBUG, OBJECT) << "DynamicObject::bindChannels() - bus is invalid";
 	}
 }
 
@@ -480,31 +481,31 @@ void DynamicObject::bindChannels(Bus* bus) {
 // the scene model and register DynamicModel event handlers).  moveover we need to transfer
 // state, such as the loadout.  ideally the loadout scene group can be shared.
 void DynamicObject::selectVehicleCore() {
-	simdata::Path path;
-	simdata::Ref<SystemsModel> systems;
+	Path path;
+	Ref<SystemsModel> systems;
 	if (isLocal()) {
 		if (isHuman()) {
 			systems = getCachedSystemsModel();
 			path = m_HumanModel;
-			CSP_LOG(OBJECT, INFO, "selecting local human systems model for " << *this);
+			CSPLOG(INFO, OBJECT) << "selecting local human systems model for " << *this;
 			activateStation(m_PreviousStation);
 		} else {
 			path = m_AgentModel;
-			CSP_LOG(OBJECT, INFO, "selecting local agent systems model for " << *this);
+			CSPLOG(INFO, OBJECT) << "selecting local agent systems model for " << *this;
 			deactivateStation();
 		}
 	} else {
 		path = m_RemoteModel;
-		CSP_LOG(OBJECT, INFO, "selecting remote systems model for " << *this);
+		CSPLOG(INFO, OBJECT) << "selecting remote systems model for " << *this;
 		deactivateStation();
 	}
 	if (!systems && !path.isNone()) {
 		CSPSim *sim = CSPSim::theSim;
 		if (sim) {
-			simdata::DataManager &manager = sim->getDataManager();
+			DataManager &manager = sim->getDataManager();
 			systems = manager.getObject(path);
 			if (systems.valid()) {
-				CSP_LOG(OBJECT, INFO, "registering channels and binding systems for " << *this << " " << this);
+				CSPLOG(INFO, OBJECT) << "registering channels and binding systems for " << *this << " " << this;
 				registerChannels(systems->getBus().get());
 				systems->bindSystems();
 			}
@@ -513,7 +514,7 @@ void DynamicObject::selectVehicleCore() {
 	setVehicleCore(systems);
 }
 
-void DynamicObject::setVehicleCore(SystemsModel::Ref systems) {
+void DynamicObject::setVehicleCore(Ref<SystemsModel> systems) {
 	if (systems.valid()) {
 		systems->init(m_SystemsModel);
 		m_PhysicsModel = systems->getPhysicsModel();
@@ -550,36 +551,37 @@ void DynamicObject::getInfo(std::vector<std::string> &info) const {
 	}
 }
 
-void DynamicObject::updateScene(simdata::Vector3 const &origin) {
+void DynamicObject::updateScene(Vector3 const &origin) {
 	if (m_SceneModel.valid()) {
 		m_SceneModel->setPositionAttitude(b_Position->value() - origin, b_Attitude->value(), b_CenterOfMassOffset->value());
 		onRender();
 	}
 }
 
-simdata::Ref<SceneModel> DynamicObject::getSceneModel() {
+Ref<SceneModel> DynamicObject::getSceneModel() {
 	return m_SceneModel;
 }
 
-simdata::Ref<ObjectModel> DynamicObject::getModel() const {
+Ref<ObjectModel> DynamicObject::getModel() const {
 	return m_Model;
 }
 
-simdata::Ref<SystemsModel> DynamicObject::getSystemsModel() const {
+Ref<SystemsModel> DynamicObject::getSystemsModel() const {
 	return m_SystemsModel;
 }
 
 DynamicObject::SystemsModelStore::SystemsModelStore(): id(0) {
 }
 
-DynamicObject::SystemsModelStore::SystemsModelStore(ObjectId id_, simdata::Ref<SystemsModel> model_): id(id_), model(model_) {
+DynamicObject::SystemsModelStore::SystemsModelStore(ObjectId id_, Ref<SystemsModel> model_): id(id_), model(model_) {
 }
 
 DynamicObject::SystemsModelStore::~SystemsModelStore() {
 }
 
 void DynamicObject::toggleMarkers() {
-	std::cout << "MARKERS +++++++++++++++++\n";
 	m_Model->showDebugMarkers(!m_Model->getDebugMarkersVisible());
 }
+
+CSP_NAMESPACE_END
 

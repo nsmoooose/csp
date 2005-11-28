@@ -22,14 +22,12 @@
  *
  **/
 
-#include "Sky.h"
-#include "CSPSim.h"
-#include "Config.h"
-#include "Colorspace.h"
-#include "Exception.h"
-#include "Profile.h"
-
-#include <cmath>
+#include <csp/cspsim/Sky.h>
+#include <csp/cspsim/CSPSim.h>
+#include <csp/cspsim/Config.h>
+#include <csp/cspsim/Colorspace.h>
+#include <csp/cspsim/Exception.h>
+#include <csp/cspsim/Profile.h>
 
 #include <csp/csplib/util/StringTools.h>
 #include <csp/csplib/data/Date.h>
@@ -56,13 +54,15 @@
 #include <osg/MatrixTransform>
 #include <osg/Version>
 
+#include <cmath>
+
 #ifndef OSG_VERSION_MAJOR
 #  define OSG_OLD_COMPUTE_BOUND
 #endif
 
 using namespace osg;
-using simdata::toRadians;
-using simdata::toDegrees;
+
+CSP_NAMESPACE
 
 const float TURBIDITY = 3.0f;
 
@@ -102,7 +102,7 @@ const float TURBIDITY = 3.0f;
  */
 
 
-class StarCatalog: public simdata::Object {
+class StarCatalog: public Object {
 
 public:
 	struct Star {
@@ -112,10 +112,10 @@ public:
 		float r;
 		float g;
 		float b;
-		void serialize(simdata::Writer &writer) const {
+		void serialize(Writer &writer) const {
 			writer << Ra << De << I << r << g << b;
 		}
-		void serialize(simdata::Reader &reader) {
+		void serialize(Reader &reader) {
 			reader >> Ra >> De >> I >> r >> g >> b;
 		}
 		bool parse(StringTokenizer &t) {
@@ -138,7 +138,7 @@ public:
 
 	CSP_DECLARE_STATIC_OBJECT(StarCatalog)
 
-	void serialize(simdata::Writer &writer) const {
+	void serialize(Writer &writer) const {
 		Object::serialize(writer);
 		writer << static_cast<int>(_stars.size());
 		std::vector<Star>::const_iterator i;
@@ -147,7 +147,7 @@ public:
 		}
 	}
 
-	void serialize(simdata::Reader &reader) {
+	void serialize(Reader &reader) {
 		Object::serialize(reader);
 		int n;
 		reader >> n;
@@ -188,7 +188,7 @@ public:
 
 	StarSystem(): osg::Drawable() {
 		rx = rz = 0.0;
-		simdata::DataManager &manager = CSPSim::theSim->getDataManager();	
+		DataManager &manager = CSPSim::theSim->getDataManager();	
 		_catalog = manager.getObject("sim:environment.stars");
 		assert(_catalog.valid());
 		int n = _catalog->_stars.size();
@@ -295,7 +295,7 @@ public:
 private:
 	ref_ptr<Vec3Array> _positionList;
 	ref_ptr<Vec4Array> _colorList;
-	simdata::Ref<StarCatalog> _catalog;
+	Ref<StarCatalog> _catalog;
 	double rx, rz;
 	double alpha;
 };
@@ -309,7 +309,7 @@ const double AstronomicalBody::_earth_radius = 6370000.0;
 const double AstronomicalBody::_earth_tilt = toRadians(23.4397);
 const double AstronomicalBody::_cos_earth_tilt = cos(_earth_tilt);
 const double AstronomicalBody::_sin_earth_tilt = sin(_earth_tilt);
-const double AstronomicalBody::_epoch = simdata::SimDate(2000,1,1,0,0,0).getJulianDate();
+const double AstronomicalBody::_epoch = SimDate(2000,1,1,0,0,0).getJulianDate();
 
 AstronomicalBody::AstronomicalBody() {
 	_alpha = _beta = _delta = _lambda = _pi = 1.0;
@@ -517,7 +517,7 @@ bool AstroBillboard::computeMatrix(Matrix& modelview, const Vec3& eye_local, con
 	Vec3 to_eye(eye_local-pos_local);
 	Vec3 to_eye_projection = to_eye^_axis;
 	if (to_eye_projection.normalize() > 0.0) {
-		float rotation_angle = simdata::PI+acos(to_eye_projection*_onormal);
+		float rotation_angle = PI+acos(to_eye_projection*_onormal);
 		Vec3 pivot = _onormal^to_eye_projection;
 		matrix.makeRotate(rotation_angle, pivot);
 	}
@@ -715,16 +715,16 @@ void Moon::_updateIllumination(Sun const &sun) {
 	m_Phase = (sun.getLambda() - getLambda());
 	float sun_angle = getBeta() * 0.38/159.6; // (distance ratio moon:sun)
 	float a0 = 0.5 * m_Phase;
-	float a1 = 0.5 * (simdata::PI - m_Phase);
+	float a1 = 0.5 * (PI - m_Phase);
 	float f0 = fabs(tan(0.5*a0));
 	float f1 = fabs(tan(0.5*a1));
 	m_EarthShine = 0.19 * 0.5;
 	if (f0 > 0.0) {
-		m_EarthShine *= 1.0 - sin(a0)*tan(a0)*log(1.0/f0);
+		m_EarthShine *= 1.0 - sin(a0) * tan(a0) * ::log(1.0/f0);
 	}
 	m_SunShine = 1905.0;
 	if (f1 > 0.0) {
-		m_SunShine *= 1.0 - sin(a1)*tan(a1)*log(1.0/f1);
+		m_SunShine *= 1.0 - sin(a1) * tan(a1)* ::log(1.0/f1);
 	}
 	float rd = _radius / _distance;
 	m_MoonShine = 0.67 * 0.072 * rd * rd * (m_EarthShine + m_SunShine);
@@ -743,8 +743,8 @@ void Moon::_updateIllumination(Sun const &sun) {
  */
 void Moon::_maskPhase(float phi, float beta) {
 	{
-		int n = (int) (phi / (2.0*simdata::PI));
-		phi -= n * 2.0 * simdata::PI;
+		int n = (int) (phi / (2.0*PI));
+		phi -= n * 2.0 * PI;
 		//cout << "MOON PHASE = " << phi << endl;
 	}
 	osg::Image *phased = new osg::Image(*(m_Image.get()), CopyOp::DEEP_COPY_IMAGES);
@@ -902,7 +902,7 @@ Color SkyShader::getZenith(float T, float theta_s) {
 	float yb = -0.04214 * s3 + 0.08970 * s2 - 0.04153 * s + 0.00516;
 	float yc =  0.15346 * s3 - 0.26756 * s2 + 0.06670 * s + 0.26688;
 	float yz = ya * t2 + yb * t + yc;
-	float chi = (0.4444444 - T * 0.008333333) * (simdata::PI - 2.0*s);
+	float chi = (0.4444444 - T * 0.008333333) * (PI - 2.0*s);
 	float Yz = (4.0453 * T - 4.9710) * tan(chi) - 0.2155 * T + 2.4192;
 	// Yz is in units of kcd/m^2
 
@@ -924,19 +924,19 @@ void SkyShader::setTurbidity(float T) {
 
 void SkyShader::setSunElevation(float h) {
 	m_AzimuthCorrection = 0.0;
-	if (h < -simdata::PI) {
-		h += 2.0 * simdata::PI * int((simdata::PI - h) / (2.0 * simdata::PI));
+	if (h < -PI) {
+		h += 2.0 * PI * int((PI - h) / (2.0 * PI));
 	} else
-	if (h > simdata::PI) {
-		h -= 2.0 * simdata::PI * int((simdata::PI + h) / (2.0 * simdata::PI));
+	if (h > PI) {
+		h -= 2.0 * PI * int((PI + h) / (2.0 * PI));
 	}
-	if (h > 0.5 *simdata::PI) {
-		h = simdata::PI - h;
-		m_AzimuthCorrection = simdata::PI;
+	if (h > 0.5 *PI) {
+		h = PI - h;
+		m_AzimuthCorrection = PI;
 	} else
-	if (h < -0.5*simdata::PI) {
-		h = -simdata::PI - h;
-		m_AzimuthCorrection =  -simdata::PI;
+	if (h < -0.5*PI) {
+		h = -PI - h;
+		m_AzimuthCorrection =  -PI;
 	}
 	m_SunElevation = h;
 	m_Dirty = true;
@@ -945,7 +945,7 @@ void SkyShader::setSunElevation(float h) {
 void SkyShader::_computeBase() {
 	m_Dirty = false;
 
-	m_SunTheta = 0.5*simdata::PI - m_SunElevation;
+	m_SunTheta = 0.5*PI - m_SunElevation;
 	m_SunVector[0] = 0.0;
 	m_SunVector[1] = sin(m_SunTheta);
 	m_SunVector[2] = cos(m_SunTheta);
@@ -970,8 +970,8 @@ void SkyShader::_computeBase() {
 
 #ifdef CUSTOM
 	// only rescale down to the horizon, bad things happen if we go further
-	if (m_SunTheta >= 0.5*simdata::PI) {
-		m_MaxY = Perez(0.5*simdata::PI, 0.0, 0.5*simdata::PI, m_Zenith.getC(), m_Coefficients.Y);
+	if (m_SunTheta >= 0.5*PI) {
+		m_MaxY = Perez(0.5*PI, 0.0, 0.5*PI, m_Zenith.getC(), m_Coefficients.Y);
 	} else {
 		m_MaxY = Perez(m_SunTheta, 0.0, m_SunTheta, m_Zenith.getC(), m_Coefficients.Y);
 	}
@@ -982,14 +982,14 @@ void SkyShader::_computeBase() {
 	// as the sun nears the horizon.  Large values of SHARPNESS localize
 	// the drop at the horizon.  NightBase is scaling with the sun 90
 	// degrees below the horizon.
-	m_F =(atan(m_SunElevation*m_SunsetSharpness)/simdata::PI+0.5)*(1.0-m_NightBase) + m_NightBase;
+	m_F =(atan(m_SunElevation*m_SunsetSharpness)/PI+0.5)*(1.0-m_NightBase) + m_NightBase;
 #endif
 
 }
 
 Color SkyShader::SkyColor(float elevation, float azimuth, float dark, float &intensity) {
 	if (m_Dirty) _computeBase();
-	float theta = 0.5*simdata::PI - elevation;
+	float theta = 0.5*PI - elevation;
 	float A = azimuth + m_AzimuthCorrection;
 	float v[3] = {sin(A)*sin(theta), cos(A)*sin(theta), cos(theta)};
 	float dot = v[0]*m_SunVector[0]+v[1]*m_SunVector[1]+v[2]*m_SunVector[2];
@@ -1105,7 +1105,7 @@ public:
 
 	void updateHorizon(float altitude, float clip) {
 		float a = 0.0;
-		float da = 2.0 * simdata::PI / m_Segments;
+		float da = 2.0 * PI / m_Segments;
 		// XXX
 		float radius = std::min(950000.0f, std::max(1.5f*clip, sqrtf(2.0 * 6370000.0 * altitude)));
 		//float radius = std::min(99500.0f, std::max(1.5f*clip, sqrtf(2.0f * 6370000.0f * altitude)));
@@ -1145,8 +1145,7 @@ Sky::~Sky() {
 	delete[] m_lev;
 }
 
-void Sky::_init()
-{
+void Sky::_init() {
 	initColor();
 	_initLights();
 	m_lev = new float[90];
@@ -1381,7 +1380,7 @@ void Sky::_updateStars() {
 #ifndef TEXDOME
 void Sky::_updateShading(double sun_h, double sun_A) {
 	Vec4Array& colors = *(dynamic_cast<Vec4Array*>(m_SkyDome->getColorArray()));
-	double da = 2.0 * simdata::PI / (m_nseg);
+	double da = 2.0 * PI / (m_nseg);
 	double min_a = 0.5*da;
 	double jitter = 0.0;
 	int i, j, ci = 0;
@@ -1391,7 +1390,7 @@ void Sky::_updateShading(double sun_h, double sun_A) {
 	for (i = 0; i < m_nlev; ++i) {
 		double elev = toRadians(m_lev[i]);
 		if (elev < 0.0) elev = 0.0; // sub horizon colors aren't correct
-		double azimuth = -sun_A - 0.5 * simdata::PI;
+		double azimuth = -sun_A - 0.5 * PI;
 		bool at_vertex = fabs(elev - sun_h) < min_a; // this is only a rough measure
 		for (j = 0; j < m_nseg; ++j) {
 			float intensity;
@@ -1432,7 +1431,7 @@ void Sky::_updateShading(double /*sun_h*/, double sun_A) {
 	int n_average = 0;
 
 	float dark = m_Moon.getApparentBrightness();
-	simdata::SimTime t = simdata::SimDate::getSystemTime();
+	SimTime t = SimDate::getSystemTime();
 
 	{ // update skydome texture
 		unsigned char *shade = m_SkyDomeTextureImage->data();
@@ -1442,7 +1441,7 @@ void Sky::_updateShading(double /*sun_h*/, double sun_A) {
 			double y = (j-32) / 30.0;
 			for (i = 0; i < 32; ++i) {
 				double x = i / 30.0;
-				double elevation = (1.0 - sqrt(x*x+y*y)) * 0.5 * simdata::PI;
+				double elevation = (1.0 - sqrt(x*x+y*y)) * 0.5 * PI;
 				if (elevation >= -0.15) {
 					if (elevation < 0.0) elevation = 0.0;
 					double azimuth = atan2(x, y);
@@ -1463,8 +1462,8 @@ void Sky::_updateShading(double /*sun_h*/, double sun_A) {
 	
 	{ // separate evaluation for horizon colors
 		int n = m_HorizonColors->size();
-		double da = 2.0 * simdata::PI / n;
-		double azimuth = -sun_A - 0.5 * simdata::PI;
+		double da = 2.0 * PI / n;
+		double azimuth = -sun_A - 0.5 * PI;
 		for (i = 0; i < n; ++i) {
 			float intensity;
 			Color c = m_SkyShader.SkyColor(0.0, azimuth, dark, intensity);
@@ -1476,12 +1475,12 @@ void Sky::_updateShading(double /*sun_h*/, double sun_A) {
 	
 	{ // update texture coordinates
 		int ci = 0;
-		double da = 2.0 * simdata::PI / (m_nseg);
+		double da = 2.0 * PI / (m_nseg);
 		for (i = 0; i < m_nlev; ++i) {
 			double elev = toRadians(m_lev[i]);
 			if (elev < 0.0) elev = 0.0; // sub horizon colors aren't correct
-			double azimuth = -sun_A - 0.5 * simdata::PI;
-			float factor = (1.0 - 2.0 * elev / simdata::PI) * 30.0 / 32.0;
+			double azimuth = -sun_A - 0.5 * PI;
+			float factor = (1.0 - 2.0 * elev / PI) * 30.0 / 32.0;
 			for (j = 0; j < m_nseg; ++j) {
 				float x = 0.5 * (1.0 + sin(azimuth) * factor) + 0.5 / 64.0;
 				float y = 0.5 * (1.0 + cos(azimuth) * factor) + 0.5 / 64.0;
@@ -1494,8 +1493,8 @@ void Sky::_updateShading(double /*sun_h*/, double sun_A) {
 	}
 	
 
-	simdata::SimTime u = simdata::SimDate::getSystemTime();
-	CSP_LOG(APP, DEBUG, "Sky update time: " << ((u-t)*1000.0) << " ms");
+	SimTime u = SimDate::getSystemTime();
+	CSPLOG(DEBUG, APP) << "Sky update time: " << ((u-t)*1000.0) << " ms";
 
 	m_Horizon->updateHorizonColors(*m_HorizonColors);
 	if (n_average != 0)
@@ -1518,8 +1517,8 @@ void Sky::spinTheWorld(bool noreset) {
 	}
 }
 
-void Sky::update(double lat, double lon, simdata::SimDate const &t) {
-	m_LMST = t.getMST(lon) + m_SpinTheWorld * 2.0 * simdata::PI;
+void Sky::update(double lat, double lon, SimDate const &t) {
+	m_LMST = t.getMST(lon) + m_SpinTheWorld * 2.0 * PI;
 	m_JD = t.getJulianDate() + m_SpinTheWorld;
 	m_Latitude = lat;
 	_updateSun();
@@ -1565,9 +1564,10 @@ osg::Vec4 Sky::getHorizonColor(float angle) {
 }
 
 
-void Sky::updateHorizon(Vec4 const &fog_color, float altitude, float clip)
-{
+void Sky::updateHorizon(Vec4 const &fog_color, float altitude, float clip) {
 	m_Horizon->updateFogColor(fog_color);
 	m_Horizon->updateHorizon(altitude, clip);
 }
+
+CSP_NAMESPACE_END
 

@@ -25,40 +25,39 @@
 #ifndef __COLLISION_H__
 #define __COLLISION_H__
 
+#include <csp/cspsim/BaseDynamics.h>
+
 #include <csp/csplib/data/Matrix3.h>
 #include <csp/csplib/util/Ref.h>
 #include <csp/csplib/data/Vector3.h>
 
-#include "BaseDynamics.h"
 
-
+CSP_NAMESPACE
 
 /**
  * Dynamics class for vehicle-ground collisions.
  *
- * Models collisions of vehicle "contact" points with the
- * ground.  These contact points are specified in the
- * vehicle ObjectModel and should be placed at the external
- * points of the model (e.g. wingtips, tail tip, nose, etc).
- * Collisions are treated as a damped harmonic oscillators,
- * with additional sliding friction.  Hard impacts induce
- * rapid energy loss, and should be coupled with vehicle
- * damage modeling.
+ * Models collisions of vehicle "contact" points with the ground.  These
+ * contact points are specified in the vehicle ObjectModel and should be placed
+ * at the external points of the model (e.g. wingtips, tail tip, nose, etc).
+ * Collisions are treated as a damped harmonic oscillators, with additional
+ * sliding friction.  Hard impacts induce rapid energy loss, and should be
+ * coupled with vehicle damage modeling.
  */
 class GroundCollisionDynamics: public BaseDynamics {
-	std::vector<simdata::Vector3> m_Forces;
-	std::vector<simdata::Vector3> m_Extension;
-	std::vector<simdata::Vector3> m_Contacts;
+	std::vector<Vector3> m_Forces;
+	std::vector<Vector3> m_Extension;
+	std::vector<Vector3> m_Contacts;
 	double m_Mass;
 	double m_ContactSpring;
 	double m_SpringConstant, m_Friction, m_ImpactDamping;
 	double const m_ImpactSpeedTolerance;
 	bool m_NeedsImpulse, m_HasContact;
 
-	DataChannel<double>::CRef b_Mass;
-	DataChannel<simdata::Vector3>::CRef b_GroundN;
-	DataChannel<double>::CRef b_GroundZ;
-	DataChannel<bool>::CRef b_NearGround;
+	DataChannel<double>::CRefT b_Mass;
+	DataChannel<Vector3>::CRefT b_GroundN;
+	DataChannel<double>::CRefT b_GroundZ;
+	DataChannel<bool>::CRefT b_NearGround;
 
 protected:
 	virtual void importChannels(Bus *bus);
@@ -74,7 +73,7 @@ public:
 	 *       used only to limit extremely violent collisions.
 	 * @contacts the vehicle contact points
 	 */
-	GroundCollisionDynamics(); //double mass, std::vector<simdata::Vector3> const &contacts);
+	GroundCollisionDynamics(); //double mass, std::vector<Vector3> const &contacts);
 
 	/**
 	 * Set the dynamic properties of the ground.
@@ -102,6 +101,8 @@ public:
 	 */
 	bool hasContact() const { return m_HasContact; }
 };
+
+CSP_NAMESPACE_END
 
 #endif // __COLLISION_H__
 

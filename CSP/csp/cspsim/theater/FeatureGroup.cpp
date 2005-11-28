@@ -57,11 +57,11 @@ FeatureSceneGroup* FeatureGroup::getSceneGroup() {
 }
 
 void FeatureGroup::onEnterScene() {
-	CSP_LOG(APP, DEBUG, "FeatureGroup @ " << getGlobalPosition() << ": adding " << m_Model->getFeatureCount() << " feature(s) to the scene");
+	CSPLOG(DEBUG, APP) << "FeatureGroup @ " << getGlobalPosition() << ": adding " << m_Model->getFeatureCount() << " feature(s) to the scene";
 }
 
 void FeatureGroup::onLeaveScene() {
-	CSP_LOG(APP, DEBUG, "FeatureGroup @ " << getGlobalPosition() << ": removing " << m_Model->getFeatureCount() << " feature(s) from the scene");
+	CSPLOG(DEBUG, APP) << "FeatureGroup @ " << getGlobalPosition() << ": removing " << m_Model->getFeatureCount() << " feature(s) from the scene";
 	// our scene graph is no longer needed
 	m_SceneGroup = NULL;
 }

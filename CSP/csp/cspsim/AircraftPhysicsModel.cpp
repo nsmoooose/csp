@@ -21,17 +21,19 @@
  *
  **/
 
-#include "AircraftPhysicsModel.h"
-#include "Atmosphere.h"
-#include "BaseDynamics.h"
-#include "Collision.h"
-#include "CSPSim.h"
-#include "NumericalMethod.h"
-#include "Profile.h"
+#include <csp/cspsim/AircraftPhysicsModel.h>
+#include <csp/cspsim/Atmosphere.h>
+#include <csp/cspsim/BaseDynamics.h>
+#include <csp/cspsim/Collision.h>
+#include <csp/cspsim/CSPSim.h>
+#include <csp/cspsim/Profile.h>
+#include <csp/csplib/numeric/NumericalMethod.h>
 
 #include <csp/csplib/data/ObjectInterface.h>
 
 #include <algorithm>
+
+CSP_NAMESPACE
 
 using Vector::Vectord;
 
@@ -56,7 +58,7 @@ Vectord const &AircraftPhysicsModel::f(double x, Vectord &y) {
 	m_PositionLocal = b_Position->value() + bodyToLocal(m_PositionBody);
 	y[9] = m_Attitude.w(); y[10] = m_Attitude.x(); y[11] = m_Attitude.y(); y[12] = m_Attitude.z();
 
-	m_ForcesBody = m_MomentsBody = simdata::Vector3::ZERO;
+	m_ForcesBody = m_MomentsBody = Vector3::ZERO;
 	m_WeightBody = localToBody(m_WeightLocal);
 
 /* XXX
@@ -69,17 +71,17 @@ Vectord const &AircraftPhysicsModel::f(double x, Vectord &y) {
 	}
 */
 
-	std::vector< simdata::Ref<BaseDynamics> >::iterator bd = m_Dynamics.begin();
-	std::vector< simdata::Ref<BaseDynamics> >::const_iterator bdEnd = m_Dynamics.end();
+	std::vector< Ref<BaseDynamics> >::iterator bd = m_Dynamics.begin();
+	std::vector< Ref<BaseDynamics> >::const_iterator bdEnd = m_Dynamics.end();
 	for (; bd != bdEnd; ++bd) {
 		(*bd)->computeForceAndMoment(x);
-		simdata::Vector3 force = (*bd)->getForce();
-		simdata::Vector3 moment = (*bd)->getMoment();
+		Vector3 force = (*bd)->getForce();
+		Vector3 moment = (*bd)->getMoment();
 		if (force.valid() && moment.valid()) {
 			m_ForcesBody += force;
 			m_MomentsBody += moment;
 		} else {
-			CSP_LOG(OBJECT, ERROR, "AircraftPhysicsModel: overflow in dynamics class '" << (*bd)->getClassName() << "'");
+			CSPLOG(ERROR, OBJECT) << "AircraftPhysicsModel: overflow in dynamics class '" << (*bd)->getClassName() << "'";
 			std::cout << "AircraftPhysicsModel: overflow in dynamics class '" << (*bd)->getClassName() << "'\n";
 			std::cout << "(f,m) = (" << force << ", " << moment <<")\n";
 		}
@@ -97,7 +99,7 @@ Vectord const &AircraftPhysicsModel::f(double x, Vectord &y) {
 	                     (m_MomentsBody - (m_AngularVelocityBody^(b_Inertia->value() * m_AngularVelocityBody)));
 	
 	// quaternion derivative and w in body coordinates: q' = 0.5 * q * w
-	simdata::Quat qprim = 0.5 * m_Attitude * m_AngularVelocityBody;
+	Quat qprim = 0.5 * m_Attitude * m_AngularVelocityBody;
 	
 	// p' = v
 	m_dy[0] = y[3]; m_dy[1] = y[4]; m_dy[2] = y[5];
@@ -134,7 +136,7 @@ void AircraftPhysicsModel::doSimStep(double dt) {
 	assert(b_AngularVelocityBody.valid());
 	assert(b_Attitude.valid());
 	assert(b_AccelerationBody.valid());
-	m_WeightLocal = - b_Mass->value() * gravity * simdata::Vector3::ZAXIS;
+	m_WeightLocal = - b_Mass->value() * gravity * Vector3::ZAXIS;
 	m_PositionLocal = b_Position->value();
 	m_VelocityLocal = b_Velocity->value();
 	m_AngularVelocityLocal = b_AngularVelocity->value();
@@ -149,7 +151,7 @@ void AircraftPhysicsModel::doSimStep(double dt) {
 		
 		m_AngularVelocityBody = localToBody(m_AngularVelocityLocal);
 
-		Vectord y0 = bodyToY(simdata::Vector3::ZERO,m_VelocityBody,m_AngularVelocityBody,m_Attitude);
+		Vectord y0 = bodyToY(Vector3::ZERO,m_VelocityBody,m_AngularVelocityBody,m_Attitude);
 
 		std::for_each(m_Dynamics.begin(),m_Dynamics.end(),PreSimulationStep(dtlocal));
 
@@ -203,4 +205,6 @@ void AircraftPhysicsModel::doSimStep(double dt) {
 	// the pilot's frame of reference.
 	b_AccelerationBody->value() = m_ForcesBody / b_Mass->value();
 }
+
+CSP_NAMESPACE_END
 

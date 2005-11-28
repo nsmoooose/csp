@@ -23,7 +23,10 @@
  **/
 
 
-#include "glDiagnostics.h"
+#include <csp/cspsim/glDiagnostics.h>
+
+#include <csp/csplib/util/Log.h>
+#include <csp/csplib/util/Verify.h>
 
 #include <sstream>
 
@@ -32,9 +35,7 @@
 #endif
 #include <GL/gl.h>
 
-#include <csp/csplib/util/Log.h>
-#include <csp/csplib/util/Verify.h>
-
+CSP_NAMESPACE
 
 namespace {
 	enum {
@@ -384,7 +385,7 @@ void GlStateSnapshot::logDiff(std::string const &label, GlStateSnapshot const *o
 
 
 void GlStateSnapshot::_logDiff(std::string const &label, GlStateSnapshot const &other) {
-	SIMDATA_VERIFY_EQ(m_StateLog.size(), other.m_StateLog.size());
+	CSP_VERIFY_EQ(m_StateLog.size(), other.m_StateLog.size());
 	bool first = true;
 	for (unsigned i = 0; i < m_StateLog.size(); ++i) {
 		if (m_StateLog[i] != other.m_StateLog[i]) {
@@ -399,7 +400,7 @@ void GlStateSnapshot::_logDiff(std::string const &label, GlStateSnapshot const &
 }
 
 bool GlStateSnapshot::_hasChanged(GlStateSnapshot const &other) {
-	SIMDATA_VERIFY_EQ(m_StateLog.size(), other.m_StateLog.size());
+	CSP_VERIFY_EQ(m_StateLog.size(), other.m_StateLog.size());
 	for (unsigned i = 0; i < m_StateLog.size(); ++i) {
 		if (m_StateLog[i] != other.m_StateLog[i]) return true;
 	}
@@ -414,3 +415,6 @@ bool GlStateSnapshot::hasChanged(GlStateSnapshot const *other) {
 		return _hasChanged(*other);
 	}
 }
+
+CSP_NAMESPACE_END
+

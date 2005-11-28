@@ -298,6 +298,7 @@ protected:
 		_unbind();
 		_reference = dynamic_cast<CLASS*>(ptr);
 		if (_reference == 0 && ptr != 0 && throw_on_fail) {
+			// TODO log both types to aid debugging!
 			_log_reference_conversion_error();
 			throw ConversionError();
 		}

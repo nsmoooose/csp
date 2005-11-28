@@ -26,7 +26,7 @@
 #ifndef __CSPSIM_LANDINGGEAR_H__
 #define __CSPSIM_LANDINGGEAR_H__
 
-#include <vector>
+#include <csp/cspsim/BaseDynamics.h>
 
 #include <csp/csplib/data/Link.h>
 #include <csp/csplib/util/Math.h>
@@ -35,7 +35,9 @@
 #include <csp/csplib/data/Real.h>
 #include <csp/csplib/data/Vector3.h>
 
-#include "BaseDynamics.h"
+#include <vector>
+
+CSP_NAMESPACE
 
 class GearAnimation;
 
@@ -48,7 +50,7 @@ class GearAnimation;
  *  See also GearDynamics, which contains one or more LandingGear
  *  instances and which drives the simulation of each gear.
  */
-class LandingGear: public simdata::Object {
+class LandingGear: public Object {
 public:
 	CSP_DECLARE_OBJECT(LandingGear)
 
@@ -81,7 +83,7 @@ public:
 
 	// Get the position of the wheel in world coordinates at the first touch
 	// down since resetTouchdown was last called.
-	simdata::Vector3 const &getTouchdownPoint() const { return m_TouchdownPoint; }
+	Vector3 const &getTouchdownPoint() const { return m_TouchdownPoint; }
 
 	// Reset the touchdown trigger, which will record the position of the wheel at the
 	// next instant that WOW is true.
@@ -91,14 +93,14 @@ public:
 	double getDamage() const { return m_Damage; }
 
 	// Get the position of the wheel in model coordinates.
-	simdata::Vector3 const &getPosition() const { return m_Position; }
+	Vector3 const &getPosition() const { return m_Position; }
 
 	// Get the position of the wheel when completely unweighted in model coordinates.
-	simdata::Vector3 const &getMaxPosition() const { return m_MaxPosition; }
+	Vector3 const &getMaxPosition() const { return m_MaxPosition; }
 
 	// Get the displacement of the wheel (absorber compression) relative to
 	// the fully unweighted position.
-	simdata::Vector3 getDisplacement() const { return getPosition() - getMaxPosition(); }
+	Vector3 getDisplacement() const { return getPosition() - getMaxPosition(); }
 
 	// Extend the gear and trigger the gear extension animation.
 	void extend();
@@ -124,11 +126,11 @@ public:
 
 	// Run additional updates and cleanup after dynamics calculation.
 	// Note that origin is the model origin in local coordinates (*not* the cm origin).
-	virtual void postSimulationStep(double dt, simdata::Vector3 const &origin, simdata::Vector3 const &vBody, simdata::Quat const &q, double const height, simdata::Vector3 const &normalGroundBody);
+	virtual void postSimulationStep(double dt, Vector3 const &origin, Vector3 const &vBody, Quat const &q, double const height, Vector3 const &normalGroundBody);
 
 	// Compute the total force in body coordinates from this landing gear.
 	// Note that origin is the model origin in local coordinates (*not* the cm origin).
-	simdata::Vector3 simulateSubStep(simdata::Vector3 const &origin, simdata::Vector3 const &vBody, simdata::Quat const &q, double height, simdata::Vector3 const &normalGroundBody);
+	Vector3 simulateSubStep(Vector3 const &origin, Vector3 const &vBody, Quat const &q, double height, Vector3 const &normalGroundBody);
 
 	// Drive the animation channels.  This method should be called frequently (at
 	// least several times per second if not every frame) regardless of gear state.
@@ -153,29 +155,29 @@ public:
 
 protected:
 	void resetForces();
-	void updateWOW(simdata::Vector3 const &origin, simdata::Quat const &q);
+	void updateWOW(Vector3 const &origin, Quat const &q);
 	void updateBraking(double dt);
 	void updateBrakeTemperature(double dt, double dissipation, double airspeed);
 	void updateWheel(double dt,
-	                 simdata::Vector3 const &origin,
-	                 simdata::Vector3 const &vBody,
-	                 simdata::Quat const &q,
-	                 simdata::Vector3 const &normalGroundBody,
+	                 Vector3 const &origin,
+	                 Vector3 const &vBody,
+	                 Quat const &q,
+	                 Vector3 const &normalGroundBody,
 	                 bool updateContact);
 	void updateSuspension(const double dt,
-	                      simdata::Vector3 const &origin,
-	                      simdata::Vector3 const &vBody,
-	                      simdata::Quat const &q,
+	                      Vector3 const &origin,
+	                      Vector3 const &vBody,
+	                      Quat const &q,
 	                      double const height,
-	                      simdata::Vector3 const &normalGroundBody);
+	                      Vector3 const &normalGroundBody);
 	void updateTireRotation(double dt);
 	void updateSteeringAngle(double dt);
 
 
 protected:
-	simdata::Vector3 m_MaxPosition;
-	simdata::Vector3 m_Motion;
-	simdata::Real m_DamageLimit;
+	Vector3 m_MaxPosition;
+	Vector3 m_Motion;
+	Real m_DamageLimit;
 
 	bool m_Chained;
 
@@ -190,7 +192,7 @@ protected:
 	double m_BrakeFriction;
 	double m_BrakeSlip;
 	double m_BrakeTemperature;
-	simdata::Real m_RollingFriction;
+	Real m_RollingFriction;
 
 	double m_TireK;
 	double m_TireBeta;
@@ -200,22 +202,22 @@ protected:
 	double m_TireRotationRate;
 	double m_TireRotation;
 	double m_TireRadius;
-	simdata::Vector3 m_TireContactPoint;
+	Vector3 m_TireContactPoint;
 
 	double m_SteeringAngle;
 	double m_SteeringLimit;
 	double m_TargetSteerAngle;
-	simdata::Quat m_SteerTransform;
+	Quat m_SteerTransform;
 
 	// Export sensor data
-	DataChannel<bool>::Ref b_FullyExtended;
-	DataChannel<bool>::Ref b_FullyRetracted;
-	DataChannel<bool>::Ref b_WOW;
-	DataChannel<bool>::Ref b_AntilockBrakingActive;
+	DataChannel<bool>::RefT b_FullyExtended;
+	DataChannel<bool>::RefT b_FullyRetracted;
+	DataChannel<bool>::RefT b_WOW;
+	DataChannel<bool>::RefT b_AntilockBrakingActive;
 
 	// Import controls
-	DataChannel<double>::CRef b_BrakeCommand;
-	DataChannel<double>::CRef b_SteeringCommand;
+	DataChannel<double>::CRefT b_BrakeCommand;
+	DataChannel<double>::CRefT b_SteeringCommand;
 
 	bool m_Initialize;
 	bool m_Extend;
@@ -226,15 +228,15 @@ protected:
 
 	double m_DragFactor;
 
-	simdata::Vector3 m_Position;
-	simdata::Vector3 m_NormalForce;
-	simdata::Vector3 m_TangentForce;
+	Vector3 m_Position;
+	Vector3 m_NormalForce;
+	Vector3 m_TangentForce;
 
 	bool m_Touchdown;
-	simdata::Vector3 m_TouchdownPoint;
+	Vector3 m_TouchdownPoint;
 	std::string m_Name;
 
-	simdata::Link<GearAnimation> m_GearAnimation;
+	Link<GearAnimation> m_GearAnimation;
 };
 
 
@@ -243,7 +245,7 @@ protected:
  *  for input events related to the landing gear.
  */
 class GearDynamics: public BaseDynamics {
-	typedef simdata::Link<LandingGear>::vector GearSet;
+	typedef Link<LandingGear>::vector GearSet;
 
 public:
 	CSP_DECLARE_OBJECT(GearDynamics)
@@ -282,20 +284,20 @@ public:
 protected:
 	GearSet m_Gear;
 
-	DataChannel<bool>::Ref b_GearExtendSelected;  // tracks intent, not actual state.
-	DataChannel<bool>::Ref b_FullyRetracted;
-	DataChannel<bool>::Ref b_FullyExtended;
-	DataChannel<bool>::Ref b_WOW;
-	DataChannel<bool>::CRef b_NearGround;
-	DataChannel<double>::CRef b_Density;
-	DataChannel<double>::CRef b_GroundZ;
-	DataChannel<simdata::Vector3>::CRef b_GroundN;
-	DataChannel<simdata::Vector3>::CRef b_WindVelocity;
-	DataChannel<simdata::Vector3>::CRef b_CenterOfMassOffset;
+	DataChannel<bool>::RefT b_GearExtendSelected;  // tracks intent, not actual state.
+	DataChannel<bool>::RefT b_FullyRetracted;
+	DataChannel<bool>::RefT b_FullyExtended;
+	DataChannel<bool>::RefT b_WOW;
+	DataChannel<bool>::CRefT b_NearGround;
+	DataChannel<double>::CRefT b_Density;
+	DataChannel<double>::CRefT b_GroundZ;
+	DataChannel<Vector3>::CRefT b_GroundN;
+	DataChannel<Vector3>::CRefT b_WindVelocity;
+	DataChannel<Vector3>::CRefT b_CenterOfMassOffset;
 
-	simdata::Vector3 m_CenterOfMassOffsetLocal;
-	simdata::Vector3 m_GroundNormalBody;
-	simdata::Vector3 m_WindVelocityBody;
+	Vector3 m_CenterOfMassOffsetLocal;
+	Vector3 m_GroundNormalBody;
+	Vector3 m_WindVelocityBody;
 	double m_Height;
 
 	virtual double onUpdate(double dt);
@@ -304,6 +306,8 @@ private:
 	void doComplexPhysics(double x);
 	void doSimplePhysics(double x);
 };
+
+CSP_NAMESPACE_END
 
 #endif // __CSPSIM_LANDINGGEAR_H__
 

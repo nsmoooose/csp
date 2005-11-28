@@ -26,6 +26,8 @@
 #ifndef __CSPSIM_SCREENINFO_H__
 #define __CSPSIM_SCREENINFO_H__
 
+#include <csp/csplib/util/Ref.h>
+
 namespace osgText {
 	class Text;
 }
@@ -33,83 +35,70 @@ namespace osgText {
 #include <osg/Geode>
 #include <osg/Switch>
 
-#include <csp/csplib/util/Ref.h>
+CSP_NAMESPACE
 
 class DynamicObject;
 
-class ScreenInfo: public osg::Switch
-//class ScreenInfo: public osg::Geode
-{
+class ScreenInfo: public osg::Switch {
 protected:
 	std::string m_TTFPath;
 	int m_FontSize;
 	float m_CharacterSize;
 	osg::ref_ptr<osg::Geode> m_InfoGeode;
 	osg::ref_ptr<osgText::Text> m_Text;
-	osgText::Text *makeText(float pos_x, float pos_y,std::string const &string_text = "");
-	virtual ~ScreenInfo() {}
+	osgText::Text *makeText(float pos_x, float pos_y, std::string const &string_text = "");
 public:
 	ScreenInfo(float pos_x, float pos_y, std::string const &name, std::string const &text = "");
-	virtual void update(){}
-	void setStatus(bool const visible) {if (visible) setAllChildrenOn(); else setAllChildrenOff();}
-	bool getStatus() const {return getValue(0);}
+	virtual void update() { }
+	void setStatus(bool const visible) { if (visible) setAllChildrenOn(); else setAllChildrenOff(); }
+	bool getStatus() const { return getValue(0); }
 };
 
 
-class Framerate: public ScreenInfo
-{
+class Framerate: public ScreenInfo {
 	float m_MinFps, m_MaxFps, m_Cumul;
 	osgText::Text* m_Date;
-protected:
-	~Framerate(){}
 public:
-	Framerate(int posx,int posy);
+	Framerate(int posx, int posy);
 	virtual void update();
 };
 
 
-class GeneralStats: public ScreenInfo
-{
+class GeneralStats: public ScreenInfo {
 	osgText::Text* m_Altitude;
 	osgText::Text* m_GlobalPosition;
 	osgText::Text* m_Velocity;
-protected:
-	~GeneralStats(){}
 public:
-	GeneralStats(int posx,int posy);
+	GeneralStats(int posx, int posy);
 	virtual void update();
 };
 
 
-class ObjectStats: public ScreenInfo
-{
+class ObjectStats: public ScreenInfo {
 	// input device informations
 	std::vector<osg::ref_ptr<osgText::Text> > m_ObjectStats;
 	int m_PosX;
 	int m_PosY;
 	int m_Skip;
-protected:
-	~ObjectStats(){}
 public:
-	ObjectStats(int posx,int posy, simdata::Ref<DynamicObject> const& activeObject);
+	ObjectStats(int posx, int posy, Ref<DynamicObject> const& activeObject);
 	virtual void update();
 };
 
 
-class MessageList: public ScreenInfo
-{
+class MessageList: public ScreenInfo {
 	std::vector<osg::ref_ptr<osgText::Text> > m_Messages;
 	int m_Lines;
 	float m_Delay;
 	float m_Alpha;
 	double m_LastUpdate;
-protected:
-	~MessageList(){}
 public:
 	MessageList(int posx, int posy, int lines, float delay);
 	void addLine(std::string const &line);
 	virtual void update();
 };
+
+CSP_NAMESPACE_END
 
 #endif  // __SCREENINFO_H__
 

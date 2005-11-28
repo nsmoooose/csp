@@ -22,15 +22,15 @@
  *
  **/
 
-
-#include "SimpleSceneManager.h"
-#include "VirtualScene.h"
-#include "DynamicObject.h"
-#include "Theater/FeatureGroup.h"
-#include "ObjectModel.h"
+#include <csp/cspsim/SimpleSceneManager.h>
+#include <csp/cspsim/DynamicObject.h>
+#include <csp/cspsim/ObjectModel.h>
+#include <csp/cspsim/VirtualScene.h>
+#include <csp/cspsim/theater/FeatureGroup.h>
 
 #include <csp/csplib/data/Vector3.h>
 
+CSP_NAMESPACE
 
 // random optimization note.  iterating through all elements of a map is
 // about 10 times slower than using a vector, when compiled with g++ -O2.
@@ -42,34 +42,34 @@
 // for 1000 elements).
 
 
-void SimpleSceneManager::scheduleHideFeature(simdata::Ref<FeatureGroup> feature) {
+void SimpleSceneManager::scheduleHideFeature(Ref<FeatureGroup> feature) {
 	m_Scene->removeFeature(feature);
 	// TODO feature->discardSceneGroup() ??
 }
 
-void SimpleSceneManager::scheduleShowFeature(simdata::Ref<FeatureGroup> feature) {
-	CSP_LOG(SCENE, DEBUG, "scheduling show feature " << *feature);
+void SimpleSceneManager::scheduleShowFeature(Ref<FeatureGroup> feature) {
+	CSPLOG(DEBUG, SCENE) << "scheduling show feature " << *feature;
 	FeatureSceneGroup *scene_group = feature->getSceneGroup();
 	if (scene_group == 0) {
-		simdata::Vector3 origin = m_Scene->getFeatureOrigin(feature);
+		Vector3 origin = m_Scene->getFeatureOrigin(feature);
 		TerrainObject *terrain = m_Scene->getTerrain().get();
-		CSP_LOG(SCENE, DEBUG, "constructing feature scene group @ " << origin);
+		CSPLOG(DEBUG, SCENE) << "constructing feature scene group @ " << origin;
 		scene_group = feature->makeSceneGroup(origin, terrain);
 	}
-	CSP_LOG(SCENE, DEBUG, "adding feature to scene");
+	CSPLOG(DEBUG, SCENE) << "adding feature to scene";
 	m_Scene->addFeature(feature);
 }
 
-void SimpleSceneManager::scheduleHideDynamic(simdata::Ref<DynamicObject> dynamic) {
+void SimpleSceneManager::scheduleHideDynamic(Ref<DynamicObject> dynamic) {
 	m_Scene->removeObject(dynamic);
 }
 
-void SimpleSceneManager::scheduleShowDynamic(simdata::Ref<DynamicObject> dynamic) {
+void SimpleSceneManager::scheduleShowDynamic(Ref<DynamicObject> dynamic) {
 	m_Scene->addObject(dynamic);
 }
 
 void SimpleSceneManager::scheduleVisibilityChange(ObjectRef const& object, bool hide) {
-	CSP_LOG(SCENE, DEBUG, "setting visibility for " << *object << " to " << !hide);
+	CSPLOG(DEBUG, SCENE) << "setting visibility for " << *object << " to " << !hide;
 	if (hide) {
 		assert(object->isVisible());
 		if (!object->isVisible()) return;
@@ -83,7 +83,7 @@ void SimpleSceneManager::scheduleVisibilityChange(ObjectRef const& object, bool 
 	if (object->isStatic()) {
 		// static objects will be FeatureGroup subclasses, so do a
 		// static cast rather than using Ref's dynamic_cast.
-		simdata::Ref<FeatureGroup> feature = static_cast<FeatureGroup*>(object.get());
+		Ref<FeatureGroup> feature = static_cast<FeatureGroup*>(object.get());
 		if (hide) {
 			scheduleHideFeature(feature);
 		} else {
@@ -92,7 +92,7 @@ void SimpleSceneManager::scheduleVisibilityChange(ObjectRef const& object, bool 
 	} else {
 		// non-static objects will be DynamicObject subclasses, so do a
 		// static cast rather than using Ref's dynamic_cast.
-		simdata::Ref<DynamicObject> dynamic = static_cast<DynamicObject*>(object.get());
+		Ref<DynamicObject> dynamic = static_cast<DynamicObject*>(object.get());
 		if (hide) {
 			scheduleHideDynamic(dynamic);
 		} else {
@@ -101,8 +101,7 @@ void SimpleSceneManager::scheduleVisibilityChange(ObjectRef const& object, bool 
 	}
 }
 
-
-SimpleSceneManager::SimpleSceneManager(simdata::Ref<VirtualScene> scene, double visibility_range):
+SimpleSceneManager::SimpleSceneManager(Ref<VirtualScene> scene, double visibility_range):
 	SceneManager(visibility_range),
 	m_Scene(scene)
 {
@@ -120,8 +119,9 @@ void SimpleSceneManager::scheduleShow(ObjectRef const& object) {
 	scheduleVisibilityChange(object, false /* hide */);
 }
 
-void SimpleSceneManager::setCamera(simdata::Vector3 const &eye_point, simdata::Vector3 const &look_pos, simdata::Vector3 const &up_vec) {
+void SimpleSceneManager::setCamera(Vector3 const &eye_point, Vector3 const &look_pos, Vector3 const &up_vec) {
 	m_Scene->_setLookAt(eye_point, look_pos, up_vec);
 }
 
+CSP_NAMESPACE_END
 

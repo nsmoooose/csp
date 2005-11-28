@@ -192,8 +192,7 @@ public:
 // VortexExpander
 
 
-void VortexExpander::operate(osgParticle::Particle *p, double /*dt*/)
-{
+void VortexExpander::operate(osgParticle::Particle *p, double /*dt*/) {
 	static int x = 0;
 	if (p && isEnabled()) {
 		float age = p->getAge();
@@ -218,8 +217,7 @@ void VortexExpander::operate(osgParticle::Particle *p, double /*dt*/)
 // SmokeThinner
 
 
-void SmokeThinner::operate(osgParticle::Particle *p, double /*dt*/)
-{
+void SmokeThinner::operate(osgParticle::Particle *p, double /*dt*/) {
 	float radius = p->getRadius();
 	// check if we've already operated on this particle
 	if (radius > 1000.0) {

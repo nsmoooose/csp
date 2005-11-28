@@ -16,22 +16,26 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
-%module ccspsim
+%module cspsim
+
 %{
-#include <csp/csplib/util/HashUtility.h>
 #include <csp/csplib/util/Exception.h>
+#include <csp/csplib/util/HashUtility.h>
 #include <csp/csplib/data/Types.h>
 #include <csp/csplib/data/DataArchive.h>
 #include <csp/csplib/data/InterfaceRegistry.h>
-#include <csp/cspsim/CSPSim.h>
-#include <csp/cspsim/ObjectModel.h>
-#include <csp/cspsim/Animation.h>
+//#include <csp/cspsim/CSPSim.h>
+//#include <csp/cspsim/ObjectModel.h>
+//#include <csp/cspsim/Animation.h>
 %}
 
 %include exception.i
 %include std_string.i
 %include std_vector.i
 
-%include <csp/cspsim/VirtualScene.i>
-%include <csp/cspsim/CSPSim.i>
-%include <csp/cspsim/Config.i>
+/*
+%include <csp/cspsim/swig/VirtualScene.i>
+%include <csp/cspsim/swig/CSPSim.i>
+%include <csp/cspsim/swig/Config.i>
+%include <csp/cspsim/swig/Log.i>
+*/

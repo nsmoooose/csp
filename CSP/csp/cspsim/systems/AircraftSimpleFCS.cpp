@@ -23,9 +23,9 @@
  **/
 
 
-#include <ControlInputsChannels.h>
-#include <ControlSurfacesChannels.h>
-#include <Systems/AircraftSimpleFCS.h>
+#include <csp/cspsim/systems/AircraftSimpleFCS.h>
+#include <csp/cspsim/ControlInputsChannels.h>
+#include <csp/cspsim/ControlSurfacesChannels.h>
 
 #include <csp/csplib/util/Math.h>
 #include <csp/csplib/data/ObjectInterface.h>
@@ -33,9 +33,7 @@
 #include <sstream>
 #include <iomanip>
 
-using simdata::toRadians;
-using simdata::toDegrees;
-
+CSP_NAMESPACE
 
 CSP_XML_BEGIN(AircraftSimpleFCS)
 	CSP_DEF("elevator_limit0", m_ElevatorLimit0, false)
@@ -53,8 +51,7 @@ CSP_XML_BEGIN(AircraftSimpleFCS)
 CSP_XML_END
 
 
-AircraftSimpleFCS::AircraftSimpleFCS()
-{
+AircraftSimpleFCS::AircraftSimpleFCS() {
 	m_ElevatorLimit1 = 0.3;
 	m_ElevatorLimit0 = -m_ElevatorLimit1;
 	m_ElevatorRate = 0.5;
@@ -124,4 +121,5 @@ void AircraftSimpleFCS::getInfo(InfoList &info) const {
 	info.push_back(line.str());
 }
 
+CSP_NAMESPACE_END
 

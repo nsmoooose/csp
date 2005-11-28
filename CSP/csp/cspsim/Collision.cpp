@@ -20,20 +20,22 @@
  * @file Collision.cpp
  *
  **/
-#include <algorithm>
 
-#include <Collision.h>
-#include <Animation.h>
-#include <KineticsChannels.h>
-#include <ObjectModel.h>
+#include <csp/cspsim/Collision.h>
+#include <csp/cspsim/Animation.h>
+#include <csp/cspsim/KineticsChannels.h>
+#include <csp/cspsim/ObjectModel.h>
+
 #include <csp/csplib/util/Log.h>
-
+#include <csp/csplib/util/Ref.h>
 #include <csp/csplib/data/ObjectInterface.h>
 #include <csp/csplib/data/Quat.h>
-#include <csp/csplib/util/Ref.h>
+
+#include <algorithm>
+
+CSP_NAMESPACE
 
 using bus::Kinetics;
-
 
 CSP_XML_BEGIN(GroundCollisionDynamics)
 CSP_XML_END
@@ -69,7 +71,7 @@ void GroundCollisionDynamics::importChannels(Bus *bus) {
 	b_GroundN = bus->getChannel(Kinetics::GroundN);
 	b_GroundZ = bus->getChannel(Kinetics::GroundZ);
 	b_NearGround = bus->getChannel(Kinetics::NearGround);
-	DataChannel<simdata::Ref<ObjectModel> >::CRef model = bus->getChannel("Internal.ObjectModel");
+	DataChannel<Ref<ObjectModel> >::CRefT model = bus->getChannel("Internal.ObjectModel");
 	m_Contacts = model->value()->getContacts();
 	m_Forces.resize(m_Contacts.size());
 	m_Extension.resize(m_Contacts.size());
@@ -79,29 +81,29 @@ void GroundCollisionDynamics::importChannels(Bus *bus) {
 void GroundCollisionDynamics::computeForceAndMoment(double) {
 	m_HasContact = false;
 	m_NeedsImpulse = false;
-	m_Force = simdata::Vector3::ZERO;
-	m_Moment = simdata::Vector3::ZERO;
+	m_Force = Vector3::ZERO;
+	m_Moment = Vector3::ZERO;
 
 	if (!b_NearGround->value()) return;
 
-	const simdata::Vector3 model_position = getModelPositionLocal();
+	const Vector3 model_position = getModelPositionLocal();
 	const double height = model_position.z() - b_GroundZ->value();
-	simdata::Quat const &q = *m_Attitude;
-	simdata::Vector3 const &velocityBody = *m_VelocityBody;
-	simdata::Vector3 const &angularVelocityBody = *m_AngularVelocityBody;
-	simdata::Vector3 const &normalGroundLocal = b_GroundN->value();
-	simdata::Vector3 normalGroundBody = q.invrotate(normalGroundLocal);
-	simdata::Vector3 origin(0.0, 0.0, height);
+	Quat const &q = *m_Attitude;
+	Vector3 const &velocityBody = *m_VelocityBody;
+	Vector3 const &angularVelocityBody = *m_AngularVelocityBody;
+	Vector3 const &normalGroundLocal = b_GroundN->value();
+	Vector3 normalGroundBody = q.invrotate(normalGroundLocal);
+	Vector3 origin(0.0, 0.0, height);
 
 	for (size_t i = 0; i < m_Contacts.size(); ++i) {
-		simdata::Vector3 forceBody = simdata::Vector3::ZERO;
-		simdata::Vector3 const &contactBody = m_Contacts[i];
-		simdata::Vector3 contactLocal = q.rotate(contactBody) + origin;
-		double depth = -simdata::dot(contactLocal, normalGroundLocal);
+		Vector3 forceBody = Vector3::ZERO;
+		Vector3 const &contactBody = m_Contacts[i];
+		Vector3 contactLocal = q.rotate(contactBody) + origin;
+		double depth = -dot(contactLocal, normalGroundLocal);
 		if (depth >= 0.0) { // contact
 			m_HasContact = true;
-			simdata::Vector3 contactVelocityBody = velocityBody + (angularVelocityBody^contactBody);
-			double impactSpeed = -simdata::dot(contactVelocityBody, normalGroundBody);
+			Vector3 contactVelocityBody = velocityBody + (angularVelocityBody^contactBody);
+			double impactSpeed = -dot(contactVelocityBody, normalGroundBody);
 			if (impactSpeed > m_ImpactSpeedTolerance) { // hard impact (not used)
 			}
 			// normal spring force plus damping
@@ -110,7 +112,7 @@ void GroundCollisionDynamics::computeForceAndMoment(double) {
 			normalForce = std::max(normalForce, 0.0);
 			forceBody += normalForce * normalGroundBody;
 			// sliding frictional force
-			simdata::Vector3 slidingVelocityBody = contactVelocityBody + impactSpeed * normalGroundBody;
+			Vector3 slidingVelocityBody = contactVelocityBody + impactSpeed * normalGroundBody;
 			double slidingSpeed = slidingVelocityBody.length();
 			if (slidingSpeed > 0.0) {
 				// in principle we should have both sliding and static friction coefficients,
@@ -121,7 +123,7 @@ void GroundCollisionDynamics::computeForceAndMoment(double) {
 				// monotonic time.
 				/*
 				m_Extension[i] += slidingVelocityBody * dt;
-				simdata::Vector3 slidingFriction = -m_Extension[i] * m_ContactSpring;
+				Vector3 slidingFriction = -m_Extension[i] * m_ContactSpring;
 				double frictionScale = slidingFriction.length() / frictionLimit;
 				if (frictionScale > 1.0) {  // free sliding
 					m_Extension[i] /= frictionScale;
@@ -134,13 +136,13 @@ void GroundCollisionDynamics::computeForceAndMoment(double) {
 				// instead just use sliding friction, and attenuate it to zero at low velocity
 				// this generally results in a perpetual slide at low speed.
 				double friction = frictionLimit / (slidingSpeed + 0.1);
-				simdata::Vector3 slidingFriction = -friction * slidingVelocityBody;
+				Vector3 slidingFriction = -friction * slidingVelocityBody;
 				forceBody += slidingFriction;
 			}
 			m_Force += forceBody;
 		} else {
 			// release sliding spring tension
-			m_Extension[i] = simdata::Vector3::ZERO;
+			m_Extension[i] = Vector3::ZERO;
 		}
 		m_Forces[i] = forceBody;
 	}
@@ -155,7 +157,7 @@ void GroundCollisionDynamics::computeForceAndMoment(double) {
 			m_NeedsImpulse = true;
 		}
 		// compute normalized forces and moments
-		m_Force = simdata::Vector3::ZERO;
+		m_Force = Vector3::ZERO;
 		for (size_t i = 0; i < m_Contacts.size(); ++i) {
 			m_Force += m_Forces[i] * scale;
 			m_Moment += m_Contacts[i] ^ m_Forces[i] * scale;
@@ -163,4 +165,5 @@ void GroundCollisionDynamics::computeForceAndMoment(double) {
 	}
 }
 
+CSP_NAMESPACE_END
 

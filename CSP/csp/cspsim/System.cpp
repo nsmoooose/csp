@@ -50,7 +50,7 @@ void System::setModel(SystemsModel *model) {
 	assert(m_Model == 0);
 	assert(model != 0);
 	m_Model = model;
-	Bus::Ref bus = model->getBus();
+	Ref<Bus> bus = model->getBus();
 	registerChannels(bus.get());
 }
 
@@ -60,10 +60,10 @@ void System::postCreate() {
 	// have been instantiated in the m_Subsystems vector, so now we add them
 	// as child nodes and clear m_Subsystems to eliminate the extra set
 	// of references.
-	CSP_LOG(OBJECT, DEBUG, "System::postCreate() " << getClassName() << ", adding " << m_Subsystems.size() << " subsystems.");
+	CSPLOG(DEBUG, OBJECT) << "System::postCreate() " << getClassName() << ", adding " << m_Subsystems.size() << " subsystems.";
 	Link<System>::vector::iterator iter = m_Subsystems.begin();
 	for (; iter != m_Subsystems.end(); ++iter) {
-		CSP_LOG(OBJECT, DEBUG, "System::addChild() " << (*iter)->getClassName());
+		CSPLOG(DEBUG, OBJECT) << "System::addChild() " << (*iter)->getClassName();
 		addChild(iter->get());
 	}
 	m_Subsystems.clear();
@@ -71,7 +71,7 @@ void System::postCreate() {
 
 bool System::addChild(SystemNode *node) {
 	if (!SystemNode::addChild(node)) {
-		CSP_LOG(OBJECT, ERROR, "SystemNode::addChild() failed.");
+		CSPLOG(ERROR, OBJECT) << "SystemNode::addChild() failed.";
 		return false;
 	}
 	return true;

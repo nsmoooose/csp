@@ -116,10 +116,8 @@ Ref<DynamicObject> StoreData::createObject() const {
 }
 
 osg::Node *StoreData::makeModel() const {
-	std::cout << "storedata::makemodel\n";
 	// FIXME should/can ObjectModel provide const access to the base model?
 	ObjectModel *model = const_cast<ObjectModel*>(m_Model.get());
-	std::cout << "model=" << model << "\n";
 	return !model ? 0 : model->getModel().get();
 }
 

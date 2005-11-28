@@ -24,15 +24,19 @@
  **/
 
 
-#ifndef __CSPSIM_HUDTEXT_H__
-#define __CSPSIM_HUDTEXT_H__
+#ifndef __CSPSIM_HUD_TEXT_H__
+#define __CSPSIM_HUD_TEXT_H__
 
-#include <string>
+#include <csp/csplib/util/Namespace.h>
+
 #include <osg/ref_ptr>
 #include <osg/Referenced>
 
+#include <string>
+
 namespace osgText { class Text; }
 
+CSP_NAMESPACE
 
 /** An abstract base class for a font/style that can be applied to
  *  an osgText::Text element.
@@ -67,6 +71,7 @@ public:
 	virtual void format(char *buffer, int len, float value);
 };
 
+CSP_NAMESPACE_END
 
-#endif // __CSPSIM_HUDTEXT_H__
+#endif // __CSPSIM_HUD_TEXT_H__
 

@@ -26,32 +26,32 @@
 #ifndef __CSPSIM_FUELMANAGEMENTSYSTEM_H__
 #define __CSPSIM_FUELMANAGEMENTSYSTEM_H__
 
-#include <System.h>
-#include <SystemsModel.h>
+#include <csp/cspsim/System.h>
+#include <csp/cspsim/SystemsModel.h>
 #include <csp/csplib/data/Key.h>
 #include <csp/csplib/data/Object.h>
 #include <csp/csplib/data/ObjectInterface.h>
 #include <csp/csplib/data/Real.h>
 
+CSP_NAMESPACE
 
 class FuelTank;
 class FuelManagementSystem;
 class StoresManagementSystem;
 
 
-class FuelNode: public simdata::Object {
+class FuelNode: public Object {
 friend class FuelManagementSystem;
 
 public:
-	typedef simdata::Ref<FuelNode> Ref;
-	typedef std::map<simdata::Key, FuelNode*> NodeMap;
+	typedef std::map<Key, FuelNode*> NodeMap;
 
 public:
 	CSP_DECLARE_ABSTRACT_OBJECT(FuelNode)
 
 	FuelNode(): m_Blocked(false) { }
 
-	simdata::Key const &key() const { return m_Key; }
+	Key const &key() const { return m_Key; }
 
 	virtual void addFuel(double /*amount*/) { }
 
@@ -91,8 +91,8 @@ private:
 	virtual void redistribute(double /*dt*/) { }
 	virtual void updatePressure(double /*dt*/, bool /*pressurize*/) { }
 
-	simdata::Key m_Key;
-	std::vector<simdata::Key> m_ChildKeys;
+	Key m_Key;
+	std::vector<Key> m_ChildKeys;
 	bool m_Blocked;
 };
 
@@ -124,7 +124,7 @@ protected:
 		if (m_Tank.valid()) {
 			double delta = pressurize ? std::min(0.2, 1.0 - m_Pressure) : std::max(-0.2, -m_Pressure);
 			double rate = pressurize ? m_PressurizationRate : m_DepressurizationRate;
-			m_Pressure = simdata::clampTo(m_Pressure + delta * rate * dt, 0.0, 1.0);
+			m_Pressure = clampTo(m_Pressure + delta * rate * dt, 0.0, 1.0);
 		} else {
 			m_Pressure = 0.0;
 		}
@@ -149,7 +149,7 @@ protected:
 		if (!m_Tank) return 0.0;
 		double limit = m_InflowRate * dt;
 		if (m_NeedsPressure) {
-			limit *= simdata::clampTo(1.0 - m_Pressure, 0.0, 1.0);
+			limit *= clampTo(1.0 - m_Pressure, 0.0, 1.0);
 		}
 		return std::min(limit, space());
 	}
@@ -158,7 +158,7 @@ protected:
 		if (!m_Tank || blocked()) return 0.0;
 		double limit = m_OutflowRate * dt;
 		if (m_NeedsPressure) {
-			limit *= simdata::clampTo(m_Pressure, 0.0, 1.0);
+			limit *= clampTo(m_Pressure, 0.0, 1.0);
 		}
 		return std::min(limit, quantity());
 	}
@@ -167,13 +167,13 @@ private:
 	virtual void bindStores(StoresManagementSystem* sms);
 
 	std::string m_TankId;
-	simdata::Ref<FuelTank> m_Tank;
+	Ref<FuelTank> m_Tank;
 	double m_Pressure;
 	bool m_NeedsPressure;
-	simdata::Real m_PressurizationRate;
-	simdata::Real m_DepressurizationRate;
-	simdata::Real m_InflowRate;
-	simdata::Real m_OutflowRate;
+	Real m_PressurizationRate;
+	Real m_DepressurizationRate;
+	Real m_InflowRate;
+	Real m_OutflowRate;
 };
 
 
@@ -189,9 +189,8 @@ public:
 	CSP_DECLARE_ABSTRACT_OBJECT(FuelManagementSystem)
 
 	static const char *Channel;
-	typedef simdata::Ref<FuelManagementSystem> Ref;
 
-	FuelNode* getNode(simdata::Key const &key) {
+	FuelNode* getNode(Key const &key) {
 		FuelNode::NodeMap::const_iterator iter = m_NodeMap.find(key);
 		return (iter == m_NodeMap.end()) ? 0 : iter->second;
 	}
@@ -211,10 +210,11 @@ private:
 	void initialize();
 	void rebind();
 
-	simdata::Link<FuelNode>::vector m_FuelNodes;
+	Link<FuelNode>::vector m_FuelNodes;
 	FuelNode::NodeMap m_NodeMap;
 };
 
+CSP_NAMESPACE_END
 
 #endif // __CSPSIM_FUELMANAGEMENTSYSTEM_H__
 

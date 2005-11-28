@@ -22,55 +22,58 @@
  *
  **/
 
-#ifndef __CAMERAAGENT_H__
-#define __CAMERAAGENT_H__
-
-#include <map>
+#ifndef __CSPSIM_VIEWS_CAMERAAGENT_H__
+#define __CSPSIM_VIEWS_CAMERAAGENT_H__
 
 #include <csp/csplib/util/Ref.h>
 #include <csp/csplib/data/Vector3.h>
 
-#include "Views/CameraKinematics.h"
-#include "Views/View.h"
+#include <map>
+
+CSP_NAMESPACE
 
 class CameraCommand;
 class DynamicObject;
+class TerrainObject;
+class View;
+class ViewFactory;
 
+/** Primary interface for view and camera manipulation.
+ */
 class CameraAgent {
-	typedef size_t ViewMode;
-	typedef std::map<ViewMode, View::Ref> ViewList;
-	simdata::Vector3 m_EyePoint, m_LookPoint, m_UpVector;
-	View::Ref m_ActiveView;
-	ViewMode m_ViewMode;
-	ViewList m_ViewList;
-	simdata::Ref<DynamicObject> m_ActiveObject;
-
-	void validate(double dt);
-	void notifyCameraKinematicsToViews();
-
-	template <class T> class Accept {
-		T m_t;
-	public:
-		Accept(const T t): m_t(t) {}
-		void operator()(std::pair<const size_t, CameraKinematics*>& vm) const {
-			vm.second->accept(m_t);
-		}
-	};
 public:
+	typedef size_t ViewMode;
 	CameraAgent(const ViewFactory& vf, ViewMode default_view = 0);
 	~CameraAgent();
 	void attach(ViewMode mode, View* vm);
 	void setViewMode(ViewMode vm);
 	void setCameraCommand(CameraCommand* cc);
-	void setObject(const simdata::Ref<DynamicObject> object);
+	void setObject(const Ref<DynamicObject> object);
 	void select();
 	void reselect();
 	void deselect();
-	void updateCamera(double dt);
-	const simdata::Vector3& getEyePoint() const { return m_EyePoint; }
-	const simdata::Vector3& getLookPoint() const { return m_LookPoint; }
-	const simdata::Vector3& getUpVector() const { return m_UpVector; }
+	void updateCamera(double dt, const TerrainObject *terrain);
+	void setCameraParameters(double view_angle, double near_plane, double aspect);
+	const Vector3& getEyePoint() const { return m_EyePoint; }
+	const Vector3& getLookPoint() const { return m_LookPoint; }
+	const Vector3& getUpVector() const { return m_UpVector; }
+
+private:
+	typedef std::map<ViewMode, Ref<View> > ViewList;
+	Vector3 m_EyePoint, m_LookPoint, m_UpVector;
+	ViewMode m_ViewMode;
+	ViewList m_ViewList;
+	double m_ViewAngle;
+	double m_Aspect;
+	double m_NearPlane;
+	Ref<View> m_ActiveView;
+	Ref<DynamicObject> m_ActiveObject;
+
+	void validate(double dt, const TerrainObject *terrain);
+	void notifyCameraKinematicsToViews();
 };
+
+CSP_NAMESPACE_END
 
 #endif //__CAMERAAGENT_H__
 

@@ -28,21 +28,19 @@
  **/
 
 
-
 #ifndef __CSPSIM_THEATER_H__
 #define __CSPSIM_THEATER_H__
 
+#include <csp/cspsim/theater/FeatureGroupList.h>
 
 #include <csp/csplib/util/Ref.h>
 #include <csp/csplib/data/Path.h>
 #include <csp/csplib/data/Object.h>
 
-
 class TerrainObject;
 class FeatureGroup;
 
-#include "Theater/FeatureGroupList.h"
-
+CSP_NAMESPACE
 
 /**
  * class Theater
@@ -50,10 +48,10 @@ class FeatureGroup;
  * A Theater represents an area of military operations.  It consists of static
  * data representing the terrain, natural features, and man-made structures.
  */
-class Theater: public simdata::Object
+class Theater: public Object
 {
-	simdata::Link<FeatureGroupList> m_FeatureGroupList;
-	simdata::Link<TerrainObject> m_Terrain;
+	Link<FeatureGroupList> m_FeatureGroupList;
+	Link<TerrainObject> m_Terrain;
 public:
 
 	CSP_DECLARE_OBJECT(Theater)
@@ -62,7 +60,7 @@ public:
 	 * Return a list of all FeatureGroups in the theater.  Currently only
 	 * Objectives are returned.
 	 */
-	simdata::Ref<FeatureGroup>::list getAllFeatureGroups();
+	Ref<FeatureGroup>::list getAllFeatureGroups();
 
 	Theater();
 
@@ -71,12 +69,13 @@ public:
 	/**
 	 * Get the TerrainObject used by the theater.
 	 */
-	simdata::Ref<TerrainObject> getTerrain();
+	Ref<TerrainObject> getTerrain();
 
 	virtual void postCreate();
 
 };
 
+CSP_NAMESPACE_END
 
 #endif // __CSPSIM_THEATER_H__
 

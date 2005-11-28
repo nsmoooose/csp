@@ -23,16 +23,17 @@
  **/
 
 
-#include "Theater.h"
-#include "Theater/FeatureGroup.h"
-#include "Theater/FeatureGroupList.h"
-#include "TerrainObject.h"
+#include <csp/cspsim/Theater.h>
+#include <csp/cspsim/theater/FeatureGroup.h>
+#include <csp/cspsim/theater/FeatureGroupList.h>
+#include <csp/cspsim/TerrainObject.h>
 
 #include <csp/csplib/util/Log.h>
 #include <csp/csplib/data/ObjectInterface.h>
 #include <csp/csplib/data/Path.h>
 #include <csp/csplib/util/Ref.h>
 
+CSP_NAMESPACE
 
 CSP_XML_BEGIN(Theater)
 	CSP_DEF("feature_group_list", m_FeatureGroupList, true)
@@ -40,12 +41,11 @@ CSP_XML_BEGIN(Theater)
 CSP_XML_END
 
 
-
-simdata::Ref<FeatureGroup>::list Theater::getAllFeatureGroups() {
-	simdata::Link<FeatureGroup>::vector const &groups = m_FeatureGroupList->getFeatureGroups();
-	simdata::Ref<FeatureGroup>::list result;
+Ref<FeatureGroup>::list Theater::getAllFeatureGroups() {
+	Link<FeatureGroup>::vector const &groups = m_FeatureGroupList->getFeatureGroups();
+	Ref<FeatureGroup>::list result;
 	// translate from Link<> list to Ref<> list.  XXX should be a simdata function?
-	simdata::Link<FeatureGroup>::vector::const_iterator i = groups.begin();
+	Link<FeatureGroup>::vector::const_iterator i = groups.begin();
 	for (; i != groups.end(); i++) {
 		result.push_back(*i);
 	}
@@ -59,12 +59,14 @@ Theater::~Theater() {
 }
 
 void Theater::postCreate() {
-	CSP_LOG(TERRAIN, INFO, "Projecting feature groups.");
+	CSPLOG(INFO, TERRAIN) << "Projecting feature groups.";
 	m_FeatureGroupList->projectFeatureGroups(*(m_Terrain->getProjection()));
-	CSP_LOG(TERRAIN, INFO, "Projecting feature groups done.");
+	CSPLOG(INFO, TERRAIN) << "Projecting feature groups done.";
 }
 
-simdata::Ref<TerrainObject> Theater::getTerrain() {
+Ref<TerrainObject> Theater::getTerrain() {
 	return m_Terrain;
 }
+
+CSP_NAMESPACE_END
 

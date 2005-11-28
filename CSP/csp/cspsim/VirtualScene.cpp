@@ -22,19 +22,19 @@
  *
  **/
 
-#include "VirtualScene.h"
-#include "Animation.h"
-#include "Config.h"
-#include "CSPSim.h"
-#include "DynamicObject.h"
-#include "glDiagnostics.h"
-#include "ObjectModel.h"
-#include "Projection.h"
-#include "Sky.h"
-#include "SceneConstants.h"
-#include "TerrainObject.h"
-#include "Theater/FeatureGroup.h"
-#include "Theater/FeatureSceneGroup.h"
+#include <csp/cspsim/VirtualScene.h>
+#include <csp/cspsim/Animation.h>
+#include <csp/cspsim/Config.h>
+#include <csp/cspsim/CSPSim.h>
+#include <csp/cspsim/DynamicObject.h>
+#include <csp/cspsim/glDiagnostics.h>
+#include <csp/cspsim/ObjectModel.h>
+#include <csp/cspsim/Projection.h>
+#include <csp/cspsim/Sky.h>
+#include <csp/cspsim/SceneConstants.h>
+#include <csp/cspsim/TerrainObject.h>
+#include <csp/cspsim/theater/FeatureGroup.h>
+#include <csp/cspsim/theater/FeatureSceneGroup.h>
 
 #include <csp/csplib/util/Log.h>
 #include <csp/csplib/data/Types.h>
@@ -72,8 +72,8 @@
 #include "shadow.h"
 #endif
 
-using simdata::Ref;
 
+CSP_NAMESPACE
 
 ///////////////////////////////////////////////////////////////////////
 // testing
@@ -138,12 +138,12 @@ unsigned int ContextIDFactory::getOrCreateContextID(osgUtil::SceneView *scene_vi
 }
 
 class FeatureTile: public osg::PositionAttitudeTransform {
-	simdata::Vector3 m_GlobalPosition;
+	Vector3 m_GlobalPosition;
 	/* experiment
 	osg::ref_ptr<osg::BlendColor> m_BlendColor;
 	*/
 public:
-	FeatureTile(simdata::Vector3 const &origin): m_GlobalPosition(origin) {
+	FeatureTile(Vector3 const &origin): m_GlobalPosition(origin) {
 		/* experiment
 		m_BlendColor = new osg::BlendColor;
 		getOrCreateStateSet()->setAttributeAndModes(new osg::BlendFunc(GL_ONE_MINUS_CONSTANT_ALPHA, GL_CONSTANT_ALPHA), osg::StateAttribute::ON|osg::StateAttribute::OVERRIDE);
@@ -151,8 +151,8 @@ public:
 		*/
 	}
 	typedef osg::ref_ptr<FeatureTile> Ref;
-	inline void updateOrigin(simdata::Vector3 const &origin) {
-		simdata::Vector3 offset = m_GlobalPosition - origin;
+	inline void updateOrigin(Vector3 const &origin) {
+		Vector3 offset = m_GlobalPosition - origin;
 		setPosition(osg::Vec3(offset.x(), offset.y(), offset.z()));
 		/** experiment with feature fading.  fading full tiles is efficient but too coarse.  might work for
 		 *  smaller tiles (say 10x10km) but that adds overhead.  could drop into tiles that are in the fade
@@ -165,7 +165,7 @@ public:
 	}
 };
 
-void VirtualScene::_updateOrigin(simdata::Vector3 const &origin) {
+void VirtualScene::_updateOrigin(Vector3 const &origin) {
 	m_Origin = origin;
 	FeatureTileMap::iterator titer = m_FeatureTiles.begin();
 	for (; titer != m_FeatureTiles.end(); ++titer) {
@@ -177,13 +177,13 @@ void VirtualScene::_updateOrigin(simdata::Vector3 const &origin) {
 	}
 }
 
-simdata::Vector3 VirtualScene::getFeatureOrigin(simdata::Ref<FeatureGroup> const &feature) const {
+Vector3 VirtualScene::getFeatureOrigin(Ref<FeatureGroup> const &feature) const {
 	double x = floor(feature->getGlobalPosition().x() * m_FeatureTileScale) * m_FeatureTileSize;
 	double y = floor(feature->getGlobalPosition().y() * m_FeatureTileScale) * m_FeatureTileSize;
-	return simdata::Vector3(x, y, 0.0);
+	return Vector3(x, y, 0.0);
 }
 
-int VirtualScene::_getFeatureTileIndex(simdata::Ref<FeatureGroup> feature) const {
+int VirtualScene::_getFeatureTileIndex(Ref<FeatureGroup> feature) const {
 	int x = static_cast<int>(feature->getGlobalPosition().x() * m_FeatureTileScale);
 	int y = static_cast<int>(feature->getGlobalPosition().y() * m_FeatureTileScale);
 	// the multiplier below is somewhat arbitrary (needs to be big enough to
@@ -195,20 +195,20 @@ int VirtualScene::_getFeatureTileIndex(simdata::Ref<FeatureGroup> feature) const
  *  The feature's scene group must be constructed *before* calling
  *  this method.
  */
-void VirtualScene::addFeature(simdata::Ref<FeatureGroup> feature) {
+void VirtualScene::addFeature(Ref<FeatureGroup> feature) {
 	int index = _getFeatureTileIndex(feature);
 	FeatureTileMap::iterator iter = m_FeatureTiles.find(index);
 	FeatureTileRef tile;
 	if (iter == m_FeatureTiles.end()) {
-		simdata::Vector3 origin = getFeatureOrigin(feature);
+		Vector3 origin = getFeatureOrigin(feature);
 		tile = new FeatureTile(origin);
 		m_FeatureTiles[index] = tile;
 		m_FeatureGroup->addChild(tile.get());
-		CSP_LOG(SCENE, DEBUG, "adding new feature cell, index = " << index);
+		CSPLOG(DEBUG, SCENE) << "adding new feature cell, index = " << index;
 	} else {
 		tile = iter->second;
 	}
-	CSP_LOG(SCENE, DEBUG, "adding feature " << *feature << " to scene");
+	CSPLOG(DEBUG, SCENE) << "adding feature " << *feature << " to scene";
 	FeatureSceneGroup *scene_group = feature->getSceneGroup();
 	assert(scene_group != 0);
 	if (scene_group == 0) return;
@@ -219,7 +219,7 @@ void VirtualScene::addFeature(simdata::Ref<FeatureGroup> feature) {
 
 /**
 */
-void VirtualScene::removeFeature(simdata::Ref<FeatureGroup> feature) {
+void VirtualScene::removeFeature(Ref<FeatureGroup> feature) {
 	int index = _getFeatureTileIndex(feature);
 	FeatureTileMap::iterator iter = m_FeatureTiles.find(index);
 	assert(iter != m_FeatureTiles.end());
@@ -230,11 +230,11 @@ void VirtualScene::removeFeature(simdata::Ref<FeatureGroup> feature) {
 	FeatureTile* tile = iter->second.get();
 	tile->removeChild(scene_group);
 	feature->leaveScene();
-	CSP_LOG(SCENE, DEBUG, "removing feature " << *feature << " from scene");
+	CSPLOG(DEBUG, SCENE) << "removing feature " << *feature << " from scene";
 	if (tile->getNumChildren() == 0) {
 		m_FeatureGroup->removeChild(tile);
 		m_FeatureTiles.erase(iter);
-		CSP_LOG(SCENE, DEBUG, "removing empty feature cell, index = " << index);
+		CSPLOG(DEBUG, SCENE) << "removing empty feature cell, index = " << index;
 	}
 	// TODO feature->discardSceneGroup() ??
 }
@@ -349,7 +349,7 @@ void VirtualScene::createInfoView() {
 }
 
 void VirtualScene::buildScene() {
-	CSP_LOG(APP, INFO, "VirtualScene::buildScene() ");
+	CSPLOG(INFO, APP) << "VirtualScene::buildScene() ";
 
 	/////////////////////////////////////
 	//(Un)comment to (enable) disable debug info from osg
@@ -494,7 +494,7 @@ void VirtualScene::drawInfoView() {
 }
 
 int VirtualScene::drawScene() {
-	CSP_LOG(APP, DEBUG, "VirtualScene::drawScene()...");
+	CSPLOG(DEBUG, APP) << "VirtualScene::drawScene()...";
 	drawVeryFarView();
 	drawFarView();
 	drawNearView();
@@ -515,7 +515,7 @@ void VirtualScene::onUpdate(float dt) {
 		}
 		if (m_SpinTheWorld) m_Sky->spinTheWorld();
 		if (m_Terrain.valid()) {
-			simdata::LLA m = m_Terrain->getProjection()->convert(m_Origin);
+			LLA m = m_Terrain->getProjection()->convert(m_Origin);
 			m_Sky->update(m.latitude(), m.longitude(), CSPSim::theSim->getCurrentTime());
 		} else {
 			m_Sky->update(0.0, 0.0, CSPSim::theSim->getCurrentTime());
@@ -527,58 +527,58 @@ void VirtualScene::onUpdate(float dt) {
 		t += dt;
 	}
 
-	CSP_LOG(APP, DEBUG, "VirtualScene::onUpdate - entering" );
+	CSPLOG(DEBUG, APP) << "VirtualScene::onUpdate - entering" ;
 
 	m_FrameStamp->setReferenceTime(m_FrameStamp->getReferenceTime() + dt);
 	m_FrameStamp->setFrameNumber(m_FrameStamp->getFrameNumber() + 1);
 
-	CSP_LOG(APP, DEBUG, "VirtualScene::onUpdate - leaving" );
+	CSPLOG(DEBUG, APP) << "VirtualScene::onUpdate - leaving" ;
 }
 
 
 void VirtualScene::setCameraNode(osg::Node *) {
 }
 
-void VirtualScene::_setLookAt(const simdata::Vector3& eyePos, const simdata::Vector3& lookPos, const simdata::Vector3& upVec) {
-	CSP_LOG(APP, DEBUG, "VirtualScene::setLookAt - eye: " << eyePos << ", look: " << lookPos << ", up: " << upVec);
+void VirtualScene::_setLookAt(const Vector3& eyePos, const Vector3& lookPos, const Vector3& upVec) {
+	CSPLOG(DEBUG, APP) << "VirtualScene::setLookAt - eye: " << eyePos << ", look: " << lookPos << ", up: " << upVec;
 
 	assert(m_FarView.valid());
 	_updateOrigin(eyePos);
 	osg::Vec3 _up (upVec.x(), upVec.y(), upVec.z() );
 
-	m_VeryFarView->setViewMatrixAsLookAt(osg::Vec3(0.0, 0.0, 0.0), simdata::toOSG(lookPos - eyePos), _up);
-	m_FarView->setViewMatrixAsLookAt(osg::Vec3(0.0, 0.0, 0.0), simdata::toOSG(lookPos - eyePos), _up);
-	m_NearView->setViewMatrixAsLookAt(osg::Vec3(0.0, 0.0, 0.0), simdata::toOSG(lookPos - eyePos), _up);
+	m_VeryFarView->setViewMatrixAsLookAt(osg::Vec3(0.0, 0.0, 0.0), toOSG(lookPos - eyePos), _up);
+	m_FarView->setViewMatrixAsLookAt(osg::Vec3(0.0, 0.0, 0.0), toOSG(lookPos - eyePos), _up);
+	m_NearView->setViewMatrixAsLookAt(osg::Vec3(0.0, 0.0, 0.0), toOSG(lookPos - eyePos), _up);
 
-	m_GlobalFrame->setPosition(simdata::toOSG(-eyePos));
+	m_GlobalFrame->setPosition(toOSG(-eyePos));
 
 	_updateFog(lookPos, eyePos);
 
 	if (m_Terrain.valid()) {
 		m_Terrain->setCameraPosition(eyePos.x(), eyePos.y(), eyePos.z());
-		simdata::Vector3 tpos = m_Terrain->getOrigin(eyePos) - eyePos;
-		m_TerrainGroup->setPosition(simdata::toOSG(tpos));
+		Vector3 tpos = m_Terrain->getOrigin(eyePos) - eyePos;
+		m_TerrainGroup->setPosition(toOSG(tpos));
 	}
 }
 
 // TODO externalize a couple fixed parameters
-void VirtualScene::_updateFog(simdata::Vector3 const &lookPos, simdata::Vector3 const &eyePos) {
+void VirtualScene::_updateFog(Vector3 const &lookPos, Vector3 const &eyePos) {
 	if (!m_FogEnabled) return;
 	//AdjustCM(m_Sky->getSkyIntensity());
 	intensity_test = m_Sky->getSkyIntensity();
 	osg::Light *sun = m_Sky->getSunLight();
 	osg::Vec3 sdir_ = sun->getDirection();
-	simdata::Vector3 sdir(sdir_.x(), sdir_.y(), sdir_.z());
-	simdata::Vector3 dir = lookPos - eyePos;
+	Vector3 sdir(sdir_.x(), sdir_.y(), sdir_.z());
+	Vector3 dir = lookPos - eyePos;
 	dir.normalize();
 	sdir.normalize();
 	float sunz = (1.0 - sdir.z());
 	if (sunz > 1.0) sunz = 2.0 - sunz;
 	float clearSky = 0.0; //std::max(0.0, 0.5 * eyePos.z() - 2500.0);
-	double a = simdata::dot(dir, sdir) * sunz;
+	double a = dot(dir, sdir) * sunz;
 	osg::StateSet *pStateSet = m_FogGroup->getStateSet();
 	osg::Fog * pFogAttr = (osg::Fog*)pStateSet->getAttribute(osg::StateAttribute::FOG);
-	float angle = simdata::toDegrees(atan2(dir.y(), dir.x()));
+	float angle = toDegrees(atan2(dir.y(), dir.x()));
 	// 0.8 brings some relief to distant mountain profiles at the clip plane, but
 	// is not an ideal solution (better to push out the clip plane)
 	//osg::Vec4 color = m_Sky->getHorizonColor(angle) * 0.8;
@@ -591,17 +591,17 @@ void VirtualScene::_updateFog(simdata::Vector3 const &lookPos, simdata::Vector3 
 	m_Sky->updateHorizon(m_FogColor, eyePos.z(), m_ViewDistance);
 }
 
-void VirtualScene::getLookAt(simdata::Vector3 & eyePos, simdata::Vector3 & lookPos, simdata::Vector3 & upVec) const {
+void VirtualScene::getLookAt(Vector3 & eyePos, Vector3 & lookPos, Vector3 & upVec) const {
 	assert(m_FarView.valid());
 	osg::Vec3 _eye;
 	osg::Vec3 _center;
 	osg::Vec3 _up;
 	const_cast<osgUtil::SceneView*>(m_FarView.get())->getViewMatrixAsLookAt(_eye, _center, _up);
-	eyePos = simdata::Vector3(_eye.x(), _eye.y(), _eye.z());
-	lookPos = simdata::Vector3(_center.x(), _center.y(), _center.z());
-	upVec = simdata::Vector3(_up.x(), _up.y(), _up.z());
+	eyePos = Vector3(_eye.x(), _eye.y(), _eye.z());
+	lookPos = Vector3(_center.x(), _center.y(), _center.z());
+	upVec = Vector3(_up.x(), _up.y(), _up.z());
 
-	CSP_LOG(APP, DEBUG, "VirtualScene::getLookAt - eye: " << eyePos << ", look: " << lookPos << ", up: " << upVec);
+	CSPLOG(DEBUG, APP) << "VirtualScene::getLookAt - eye: " << eyePos << ", look: " << lookPos << ", up: " << upVec;
 }
 
 
@@ -631,7 +631,7 @@ void VirtualScene::removeParticleEmitter(osg::Node *emitter) {
 	m_ParticleEmitterGroup->removeChild(emitter);
 }
 
-void VirtualScene::addObject(simdata::Ref<DynamicObject> object) {
+void VirtualScene::addObject(Ref<DynamicObject> object) {
 	assert(object.valid());
 	assert(!object->isInScene());
 	osg::Node *node = object->getOrCreateModelNode();
@@ -640,26 +640,26 @@ void VirtualScene::addObject(simdata::Ref<DynamicObject> object) {
 	if (object->isNearField()) {
 		bool ok = m_NearObjectGroup->addChild(node);
 		assert(ok);
-		CSP_LOG(SCENE, INFO, "adding object to near field " << *object);
+		CSPLOG(INFO, SCENE) << "adding object to near field " << *object;
 	} else {
 		bool ok = m_FreeObjectGroup->addChild(node);
 		assert(ok);
-		CSP_LOG(SCENE, INFO, "adding object to far field " << *object);
+		CSPLOG(INFO, SCENE) << "adding object to far field " << *object;
 	}
 	m_DynamicObjects.push_back(object);
 }
 
-void VirtualScene::removeObject(simdata::Ref<DynamicObject> object) {
+void VirtualScene::removeObject(Ref<DynamicObject> object) {
 	assert(object.valid());
 	assert(object->isInScene());
 	osg::Node *node = object->getOrCreateModelNode();
 	assert(node != 0);
 	if (object->isNearField()) {
 		m_NearObjectGroup->removeChild(node);
-		CSP_LOG(SCENE, INFO, "removing object from near field " << *object);
+		CSPLOG(INFO, SCENE) << "removing object from near field " << *object;
 	} else {
 		m_FreeObjectGroup->removeChild(node);
-		CSP_LOG(SCENE, INFO, "removing object from far field " << *object);
+		CSPLOG(INFO, SCENE) << "removing object from far field " << *object;
 	}
 	object->leaveScene();
 	// not very efficient, but object removal is rare compared to
@@ -673,24 +673,21 @@ void VirtualScene::removeObject(simdata::Ref<DynamicObject> object) {
 	}
 }
 
-void VirtualScene::setNearObject(simdata::Ref<DynamicObject> object, bool isNear) {
+void VirtualScene::setNearObject(Ref<DynamicObject> object, bool isNear) {
 	assert(object.valid());
 	if (object->isNearField() == isNear) return;
 	object->setNearFlag(isNear);
-	CSP_LOG(SCENE, INFO, "setting near flag for " << *object << " to " << isNear);
+	CSPLOG(INFO, SCENE) << "setting near flag for " << *object << " to " << isNear;
 	if (object->isInScene()) {
 		osg::Node *node = object->getOrCreateModelNode();
 		if (isNear) {
 			m_FreeObjectGroup->removeChild(node);
 			m_NearObjectGroup->addChild(node);
-			CSP_LOG(SCENE, INFO, "moving object from far to near field " << *object);
+			CSPLOG(INFO, SCENE) << "moving object from far to near field " << *object;
 		} else {
-			bool ok;
-			ok = m_NearObjectGroup->removeChild(node);
-			assert(ok);
-			ok = m_FreeObjectGroup->addChild(node);
-			assert(ok);
-			CSP_LOG(SCENE, INFO, "moving object from near to far field " << *object);
+			CSP_VERIFY(m_NearObjectGroup->removeChild(node));
+			CSP_VERIFY(m_FreeObjectGroup->addChild(node));
+			CSPLOG(INFO, SCENE) << "moving object from near to far field " << *object;
 		}
 	}
 }
@@ -794,7 +791,7 @@ int VirtualScene::getTerrainPolygonsRendered() {
 	}
 }
 
-void VirtualScene::setTerrain(simdata::Ref<TerrainObject> terrain) {
+void VirtualScene::setTerrain(Ref<TerrainObject> terrain) {
 	if (!terrain) {
 		if (m_TerrainNode.valid()) {
 			m_TerrainGroup->removeChild(m_TerrainNode.get());
@@ -809,15 +806,14 @@ void VirtualScene::setTerrain(simdata::Ref<TerrainObject> terrain) {
 		if (m_TerrainNode.valid()) {
 			m_TerrainGroup->addChild(m_TerrainNode.get());
 #ifdef SHADOW
-	osg::Vec4 ambientLightColor(0.9f, 0.1f, 0.1f, 1.0f);
-	int texture_unit = 3;
-	osg::NodeCallback* cb = createCullCallback(m_FreeObjectGroup.get(), osg::Vec3(6000.0, 1500.0, 30000), ambientLightColor, texture_unit);
-	m_TerrainGroup->setCullCallback(cb);
-	m_TerrainGroup->setCullingActive(true);
-	m_FogGroup->setCullingActive(true);
-	m_FarGroup->setCullingActive(true);
+			osg::Vec4 ambientLightColor(0.9f, 0.1f, 0.1f, 1.0f);
+			int texture_unit = 3;
+			osg::NodeCallback* cb = createCullCallback(m_FreeObjectGroup.get(), osg::Vec3(6000.0, 1500.0, 30000), ambientLightColor, texture_unit);
+			m_TerrainGroup->setCullCallback(cb);
+			m_TerrainGroup->setCullingActive(true);
+			m_FogGroup->setCullingActive(true);
+			m_FarGroup->setCullingActive(true);
 #endif
-
 		}
 	}
 }
@@ -861,4 +857,6 @@ bool VirtualScene::pick(int x, int y) {
 	}
 	return false;
 }
+
+CSP_NAMESPACE_END
 

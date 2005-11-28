@@ -31,17 +31,17 @@
  *  Generic damage modelling, gear collapse,  etc.
  *  wheel inertia
  *    - move spindown to common method
- *    - base spindown on friction coefficient (simdata::Real)
+ *    - base spindown on friction coefficient (Real)
  *    - real wheel inertia?
  *
  */
 
-#include <LandingGear.h>
-#include <ConditionsChannels.h>
-#include <ControlInputsChannels.h>
-#include <GearAnimation.h>
-#include <KineticsChannels.h>
-#include <LandingGearChannels.h>
+#include <csp/cspsim/LandingGear.h>
+#include <csp/cspsim/ConditionsChannels.h>
+#include <csp/cspsim/ControlInputsChannels.h>
+#include <csp/cspsim/GearAnimation.h>
+#include <csp/cspsim/KineticsChannels.h>
+#include <csp/cspsim/LandingGearChannels.h>
 
 #include <csp/csplib/util/Math.h>
 #include <csp/csplib/data/ObjectInterface.h>
@@ -53,10 +53,7 @@
 #include <sstream>
 #include <stdexcept>
 
-using simdata::toRadians;
-using simdata::dot;
-using simdata::Vector3;
-
+CSP_NAMESPACE
 
 CSP_XML_BEGIN(LandingGear)
 	CSP_DEF("gear_name", m_Name, true)
@@ -117,7 +114,7 @@ LandingGear::LandingGear() {
 	m_TangentForce = Vector3::ZERO;
 	m_TouchdownPoint = Vector3::ZERO;
 	m_TireContactPoint = Vector3::ZERO;
-	m_SteerTransform = simdata::Quat::IDENTITY;
+	m_SteerTransform = Quat::IDENTITY;
 	m_Skidding = false;
 	m_SkidFlag = false;
 	m_Touchdown = false;
@@ -142,7 +139,7 @@ void LandingGear::postCreate() {
 
 Vector3 LandingGear::simulateSubStep(Vector3 const &origin,
                                      Vector3 const &vBody,
-                                     simdata::Quat const &q,
+                                     Quat const &q,
                                      double height,
                                      Vector3 const &normalGroundBody)
 {
@@ -203,7 +200,7 @@ void LandingGear::updateBraking(double dt) {
 	// nauseum if the wheel continues to skid.
 	if (b_BrakeCommand.valid()) {
 		double f = std::min(dt * 10.0, 1.0);  // ad-hoc time constant
-		double brake_command = simdata::clampTo(b_BrakeCommand->value(), 0.0, 1.0);
+		double brake_command = clampTo(b_BrakeCommand->value(), 0.0, 1.0);
 		m_Brake = m_Brake * (1.0 - f) + brake_command * f;
 	}
 }
@@ -211,7 +208,7 @@ void LandingGear::updateBraking(double dt) {
 /**
  * Update Weight-On-Wheels flag and record touchdown point
  */
-void LandingGear::updateWOW(Vector3 const &origin, simdata::Quat const &q) {
+void LandingGear::updateWOW(Vector3 const &origin, Quat const &q) {
 	if (m_Compression > 0.02) {
 		// first contact?
 		if (!b_WOW->value()) {
@@ -262,13 +259,13 @@ void LandingGear::updateTireRotation(double dt) {
 void LandingGear::updateSuspension(const double dt,
                                    Vector3 const &/*origin*/,
                                    Vector3 const &vBody,
-                                   simdata::Quat const &/*q*/,
+                                   Quat const &/*q*/,
                                    double const height,
                                    Vector3 const &normalGroundBody)
 {
 	double compression = 0.0;
 	double motionNormal = dot(m_Motion, normalGroundBody);
-	simdata::Vector3 max_position = getMaxPosition();
+	Vector3 max_position = getMaxPosition();
 	if (motionNormal > 0.0) {
 		compression = - (dot(max_position, normalGroundBody) + height) / motionNormal;
 	}
@@ -290,7 +287,7 @@ void LandingGear::updateSuspension(const double dt,
 		double vCompression = - dot(vBody, normalGroundBody) * motionNormal;
 		// restrict compression speed to reasonable limits (faster than this means
 		// the gear will probably break in a moment anyway)
-		vCompression = simdata::clampTo(vCompression, -10.0, 10.0);
+		vCompression = clampTo(vCompression, -10.0, 10.0);
 
 		const double old_compression = m_Compression;
 
@@ -301,7 +298,7 @@ void LandingGear::updateSuspension(const double dt,
 			// too quickly (prevents launching the aircraft up when the gear gets
 			// overcompressed --- although eventually the gear should just break
 			// in this case).
-			double extra = simdata::clampTo(20.0 * (vCompression + 0.5), 0.0, 10.0);
+			double extra = clampTo(20.0 * (vCompression + 0.5), 0.0, 10.0);
 			compression += (compression - m_Compression) * extra;
 			// TODO: break the gear if overcompression is too high (should
 			// actually be keyed by normalForce below).
@@ -333,7 +330,7 @@ void LandingGear::resetForces() {
 
 void LandingGear::updateSteeringAngle(double /*dt*/) {
 	if (m_SteeringLimit > 0 && b_SteeringCommand.valid()) {
-		double setting = simdata::clampTo(b_SteeringCommand->value(), -1.0, 1.0);
+		double setting = clampTo(b_SteeringCommand->value(), -1.0, 1.0);
 		m_SteeringAngle = setting * m_SteeringLimit;
 		m_SteerTransform.makeRotate(toRadians(m_SteeringAngle), Vector3::ZAXIS);
 	}
@@ -342,7 +339,7 @@ void LandingGear::updateSteeringAngle(double /*dt*/) {
 void LandingGear::postSimulationStep(double dt,
                                      Vector3 const &origin,
                                      Vector3 const &vBody,
-                                     simdata::Quat const &q,
+                                     Quat const &q,
                                      double const height,
                                      Vector3 const &normalGroundBody) {
 	if (b_FullyRetracted->value()) return;
@@ -374,7 +371,7 @@ void LandingGear::updateAnimation(double dt) {
 	if (m_GearAnimation.valid()) {
 		m_GearAnimation->update(dt);
 		m_GearAnimation->setCompression(m_Compression / m_CompressionLimit);
-		m_GearAnimation->setTireRotation(fmod(m_TireRotation, 2.0*simdata::PI) - simdata::PI);
+		m_GearAnimation->setTireRotation(fmod(m_TireRotation, 2.0*PI) - PI);
 		if (m_SteeringLimit > 0.0) {
 			m_GearAnimation->setSteeringAngle(toRadians(m_SteeringAngle));
 		}
@@ -415,7 +412,7 @@ void LandingGear::updateBrakeTemperature(double dt, double dissipation, double a
 void LandingGear::updateWheel(double dt,
                               Vector3 const &origin,
                               Vector3 const &vBody,
-                              simdata::Quat const &q,
+                              Quat const &q,
                               Vector3 const &normalGroundBody,
                               bool updateContact)
 {
@@ -607,7 +604,7 @@ void LandingGear::updateWheel(double dt,
 }
 
 void LandingGear::registerChannels(Bus* bus) {
-	CSP_LOG(OBJECT, INFO, "Registering " << getName() << " channels");
+	CSPLOG(INFO, OBJECT) << "Registering " << getName() << " channels";
 	b_WOW = bus->registerLocalDataChannel<bool>(bus::LandingGear::selectWOW(getName()), false);
 	b_FullyRetracted = bus->registerLocalDataChannel<bool>(bus::LandingGear::selectFullyRetracted(getName()), false);
 	b_FullyExtended = bus->registerLocalDataChannel<bool>(bus::LandingGear::selectFullyExtended(getName()), false);
@@ -617,7 +614,7 @@ void LandingGear::registerChannels(Bus* bus) {
 		m_GearAnimation->setCompressionMotion(m_Motion, m_CompressionLimit);
 		m_GearAnimation->registerChannels(bus);
 	} else {
-		CSP_LOG(OBJECT, DEBUG, "GearAnimation for " << getName() << " not valid");
+		CSPLOG(DEBUG, OBJECT) << "GearAnimation for " << getName() << " not valid";
 	}
 }
 
@@ -639,7 +636,7 @@ void GearDynamics::doComplexPhysics(double) {
 	Vector3 dynamic_pressure = 0.5 * (b_Density->value()) * airflow_body * airspeed;
 	b_FullyRetracted->value() = true;
 	const size_t n = m_Gear.size();
-	const simdata::Vector3 model_origin_local = getModelPositionLocal();
+	const Vector3 model_origin_local = getModelPositionLocal();
 	for (size_t i = 0; i < n; ++i) {
 		LandingGear &gear = *(m_Gear[i]);
 		if (gear.isFullyRetracted()) continue;
@@ -710,7 +707,7 @@ void GearDynamics::preSimulationStep(double dt) {
 
 	m_WindVelocityBody = m_Attitude->invrotate(b_WindVelocity->value());
 	m_GroundNormalBody = m_Attitude->invrotate(b_GroundN->value());
-	const simdata::Vector3 model_origin_local = getModelPositionLocal();
+	const Vector3 model_origin_local = getModelPositionLocal();
 	m_Height = model_origin_local.z() - b_GroundZ->value();
 	size_t n =  m_Gear.size();
 	for (size_t i = 0; i < n; ++i) {
@@ -729,7 +726,7 @@ void GearDynamics::postSimulationStep(double dt) {
 		}
 		return;
 	}
-	const simdata::Vector3 model_origin_local = getModelPositionLocal();
+	const Vector3 model_origin_local = getModelPositionLocal();
 	m_Height = model_origin_local.z() - b_GroundZ->value();
 	for (size_t i = 0; i < n; ++i) {
 		Vector3 R = m_Gear[i]->getPosition() - b_CenterOfMassOffset->value();  // body (cm) coordinates
@@ -758,7 +755,7 @@ void GearDynamics::getInfo(InfoList &info) const {
 	std::stringstream line;
 	line.setf(std::ios::fixed | std::ios::showpos);
 	line.precision(0);
-	simdata::Ref<LandingGear> main = m_Gear[1];
+	Ref<LandingGear> main = m_Gear[1];
 	line << "Gear: ";
 	line << (b_FullyRetracted->value() ? "UP" : (b_FullyExtended->value() ? "DOWN" : "TRANS"));
 	line << " T_brakes " << std::setw(3) << main->getBrakeTemperature() << "K";
@@ -792,4 +789,6 @@ void GearDynamics::GearToggle() {
 		GearDown();
 	}
 }
+
+CSP_NAMESPACE_END
 

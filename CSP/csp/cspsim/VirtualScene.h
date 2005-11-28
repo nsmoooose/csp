@@ -25,6 +25,7 @@
 #ifndef __CSPSIM_VIRTUALBATTLEFIELDSCENE_H__
 #define __CSPSIM_VIRTUALBATTLEFIELDSCENE_H__
 
+#include <csp/cspsim/TerrainObject.h>
 
 #include <csp/csplib/data/Path.h>
 #include <csp/csplib/data/Vector3.h>
@@ -49,7 +50,7 @@ namespace osgUtil {
 }
 
 
-#include "TerrainObject.h"
+CSP_NAMESPACE
 
 class Sky;
 class FalseHorizon;
@@ -61,7 +62,7 @@ class DynamicObject;
 * The purpose of this simple class is to provide a new opengl context id
 * to each sceneview. sceneview's context ids are tracked.
 */
-class ContextIDFactory: public simdata::Referenced {
+class ContextIDFactory: public Referenced {
 	unsigned int m_NextContextID;
 	typedef std::map<const osgUtil::SceneView *, unsigned int> ContextIDSet;
 	ContextIDSet m_ContextIDSet;
@@ -84,7 +85,7 @@ public:
  * A class that manages the 3D scene.  Currently created by CSPSim and used as a
  * singleton.  See CSPSim::getScene().
  */
-class VirtualScene: public simdata::Referenced
+class VirtualScene: public Referenced
 {
 public:
 	VirtualScene(int width, int height);
@@ -103,20 +104,20 @@ public:
 	void removeParticleEmitter(osg::Node *emitter);
 	void addParticleSystem(osg::Node *system, osg::Node *program);
 	void removeParticleSystem(osg::Node *system, osg::Node *program);
-	void addObject(simdata::Ref<DynamicObject> object);
-	void removeObject(simdata::Ref<DynamicObject> object);
-	void setNearObject(simdata::Ref<DynamicObject> object, bool isNear);
+	void addObject(Ref<DynamicObject> object);
+	void removeObject(Ref<DynamicObject> object);
+	void setNearObject(Ref<DynamicObject> object, bool isNear);
 
-	void removeFeature(simdata::Ref<FeatureGroup> feature);
-	void addFeature(simdata::Ref<FeatureGroup> feature);
+	void removeFeature(Ref<FeatureGroup> feature);
+	void addFeature(Ref<FeatureGroup> feature);
 
 	/** Called by the SceneManager to update the view point.
 	 *  Do not call this method directly; instead use Battlefield->setCamera()
 	 *  to update the view point.
 	 */
-	void _setLookAt(const simdata::Vector3& eyePos,const simdata::Vector3& lookPos,const simdata::Vector3& upVec);
+	void _setLookAt(const Vector3& eyePos,const Vector3& lookPos,const Vector3& upVec);
 
-	void getLookAt(simdata::Vector3 & eyePos, simdata::Vector3 & lookPos, simdata::Vector3 & upVec) const;
+	void getLookAt(Vector3 & eyePos, Vector3 & lookPos, Vector3 & upVec) const;
 
 	void setWireframeMode(bool flag);
 	bool getWireframeMode() const { return m_Wireframe; }
@@ -127,11 +128,11 @@ public:
 	float getViewDistance() const { return m_ViewDistance; }
 	void setViewDistance(float value);
 
-	simdata::Vector3 const &getOrigin() const { return m_Origin; }
-	simdata::Vector3 getFeatureOrigin(simdata::Ref<FeatureGroup> const &feature) const;
+	Vector3 const &getOrigin() const { return m_Origin; }
+	Vector3 getFeatureOrigin(Ref<FeatureGroup> const &feature) const;
 
-	void setTerrain(simdata::Ref<TerrainObject>);
-	inline simdata::Ref<TerrainObject> getTerrain() const { return m_Terrain; }
+	void setTerrain(Ref<TerrainObject>);
+	inline Ref<TerrainObject> getTerrain() const { return m_Terrain; }
 	int getTerrainPolygonsRendered();
 
 	void setCameraNode(osg::Node *);
@@ -163,12 +164,12 @@ private:
 	typedef std::map<int, FeatureTileRef> FeatureTileMap;
 	FeatureTileMap m_FeatureTiles;
 
-	typedef simdata::Ref<DynamicObject> DynamicObjectRef;
+	typedef Ref<DynamicObject> DynamicObjectRef;
 	typedef std::vector<DynamicObjectRef> DynamicObjectList;
 	DynamicObjectList m_DynamicObjects;
 
-	int _getFeatureTileIndex(simdata::Ref<FeatureGroup> feature) const;
-	void _updateOrigin(simdata::Vector3 const &origin);
+	int _getFeatureTileIndex(Ref<FeatureGroup> feature) const;
+	void _updateOrigin(Vector3 const &origin);
 
 	osgUtil::SceneView *makeSceneView();
 
@@ -187,9 +188,9 @@ private:
 
 protected:
 
-	void _updateFog(simdata::Vector3 const &lookPos, simdata::Vector3 const &eyePos);
+	void _updateFog(Vector3 const &lookPos, Vector3 const &eyePos);
 
-	simdata::Ref<TerrainObject> m_Terrain;
+	Ref<TerrainObject> m_Terrain;
 
 	osg::ref_ptr<osgUtil::SceneView> m_InfoView;
 	osg::ref_ptr<osgUtil::SceneView> m_NearView;
@@ -201,7 +202,7 @@ protected:
 	osg::ref_ptr<osg::DisplaySettings> m_DisplaySettings;
 
 	osg::ref_ptr<osg::FrameStamp> m_FrameStamp;
-	simdata::Ref<ContextIDFactory> m_ContextIDFactory;
+	Ref<ContextIDFactory> m_ContextIDFactory;
 
 	float m_ViewDistance;
 	float m_ViewAngle;
@@ -226,9 +227,9 @@ protected:
 
 	unsigned m_NodeMask;
 
-	simdata::Vector3 m_Origin;
-	simdata::Vector3 m_SkyPoint;
-	simdata::Vector3 m_TerrainOrigin;
+	Vector3 m_Origin;
+	Vector3 m_SkyPoint;
+	Vector3 m_TerrainOrigin;
 
 	osg::ref_ptr<Sky> m_Sky;
 	osg::ref_ptr<osg::Group> m_SkyLights;
@@ -251,6 +252,8 @@ protected:
 	osg::ref_ptr<osg::PositionAttitudeTransform> m_FeatureGroup;
 	osg::ref_ptr<osg::PositionAttitudeTransform> m_TerrainGroup;
 };
+
+CSP_NAMESPACE_END
 
 #endif // __CSPSIM_VIRTUALBATTLEFIELDSCENE_H__
 

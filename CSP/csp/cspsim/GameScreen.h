@@ -25,13 +25,18 @@
 #ifndef __CSPSIM_GAMESCREEN_H__
 #define __CSPSIM_GAMESCREEN_H__
 
-#include <osg/ref_ptr>
+#include <csp/cspsim/BaseScreen.h>
 #include <csp/csplib/util/Ref.h>
 #include <csp/csplib/util/ScopedPointer.h>
 #include <csp/csplib/util/Callback.h>
-#include "BaseScreen.h"
 
-class PyConsole;
+#include <osg/ref_ptr>
+
+namespace osg { class Group; }
+namespace osgUtil { class SceneView; }
+
+CSP_NAMESPACE
+
 class DynamicObject;
 class MouseCommand;
 class ScreenInfoManager;
@@ -40,16 +45,8 @@ class CameraAgent;
 class CameraCommand;
 struct CameraCommands;
 
-namespace osg { class Group; }
-namespace osgUtil { class SceneView; }
 
-/**
- * class GameScreen - Describe me!
- *
- * @author unknown
- */
-class GameScreen : public BaseScreen
-{
+class GameScreen : public BaseScreen {
 public:
 	GameScreen();
 	virtual ~GameScreen();
@@ -60,7 +57,7 @@ public:
 	virtual void onRender();
 	virtual void onUpdate(double dt);
 
-	virtual void setActiveObject(simdata::Ref<DynamicObject> const &);
+	virtual void setActiveObject(Ref<DynamicObject> const &);
 
 	DECLARE_INPUT_INTERFACE(GameScreen, BaseScreen)
 		BIND_ACTION("QUIT", on_Quit);
@@ -68,7 +65,6 @@ public:
 		BIND_ACTION("TOGGLE_RECORDER", on_ToggleRecorder);
 		BIND_ACTION("TOGGLE_WIREFRAME", on_ToggleWireframe);
 		BIND_ACTION("STATS", on_Stats);
-		BIND_ACTION("CONSOLE", on_Console);
 		BIND_ACTION("CHANGE_VEHICLE", on_ChangeVehicle);
 		BIND_ACTION("CAMERA_VIEW_0", on_View0);
 		BIND_ACTION("CAMERA_VIEW_1", on_View1);
@@ -121,7 +117,6 @@ public:
 	void on_ToggleRecorder();
 	void on_ToggleWireframe();
 	void on_Stats();
-	void on_Console();
 	void on_ChangeVehicle();
 	void on_LookForward();
 	void on_LookBackward();
@@ -174,23 +169,24 @@ private:
 
 	// text information
 	osg::ref_ptr<ScreenInfoManager> m_ScreenInfoManager;
-	osg::ref_ptr<PyConsole> m_Console;
 
-	simdata::Ref<DynamicObject> m_ActiveObject;
+	Ref<DynamicObject> m_ActiveObject;
 
 	// data recorder
-	simdata::Ref<DataRecorder> m_DataRecorder;
+	Ref<DataRecorder> m_DataRecorder;
 	void setRecorder(bool on);
 
 	// camera management by a command
-	simdata::ScopedPointer<CameraAgent> m_CameraAgent;
-	simdata::ScopedPointer<CameraCommands> m_CameraCommands;
+	ScopedPointer<CameraAgent> m_CameraAgent;
+	ScopedPointer<CameraCommands> m_CameraCommands;
 
 	void onPlayerJoin(int, const std::string&);
 	void onPlayerQuit(int, const std::string&);
-	simcore::callback<void, int, const std::string&> m_OnPlayerJoin;
-	simcore::callback<void, int, const std::string&> m_OnPlayerQuit;
+	callback<void, int, const std::string&> m_OnPlayerJoin;
+	callback<void, int, const std::string&> m_OnPlayerQuit;
 };
+
+CSP_NAMESPACE_END
 
 #endif // __CSPSIM_GAMESCREEN_H__
 

@@ -24,14 +24,10 @@
 
 #include <csp/csplib/util/Math.h>
 
-#include "Views/CameraKinematics.h"
-#include "Views/CameraCommand.h"
+#include <csp/cspsim/views/CameraKinematics.h>
+#include <csp/cspsim/views/CameraCommand.h>
 
-#include "CSPSim.h"
-#include "DynamicObject.h"
-#include "ObjectModel.h"
-#include "VirtualScene.h"
-
+CSP_NAMESPACE
 
 void CameraKinematics::scale(double dt) {
 	double scale_factor = 1.0 + m_ZoomRate * dt;
@@ -39,14 +35,14 @@ void CameraKinematics::scale(double dt) {
 		(m_DistanceToObject < m_AbsoluteMaximumDistance && scale_factor > 1.0) ) {
 		m_DistanceToObject *= scale_factor;
 	}
-	m_DistanceToObject = simdata::clampTo<double>(m_DistanceToObject, m_MinimumDistance, m_AbsoluteMaximumDistance);
+	m_DistanceToObject = clampTo<double>(m_DistanceToObject, m_MinimumDistance, m_AbsoluteMaximumDistance);
 }
 
 void CameraKinematics::update(double dt) {
 	if (m_PanRateTheta != 0.0 || m_PanRatePhi != 0.0) {
 		m_Accel = std::min(3.0, m_Accel + 1.0 * dt);
 	}
-	m_FOVScale = std::min(CSPSim::theSim->getScene()->getViewAngle() / 40.0, 1.0);
+	m_FOVScale = std::min(m_ViewAngle / 40.0, 1.0);
 	rotateTheta(dt);
 	rotatePhi(dt);
 	scale(dt);
@@ -64,11 +60,17 @@ double CameraKinematics::smooth(double value, double min_value, double max_value
 }
 
 CameraKinematics::CameraKinematics():
-// XXX: serialize these parameters
-	m_BaseRate(simdata::toRadians(30.0)),
+// XXX: serialize the constant parameters
+	m_BaseRate(toRadians(30.0)),
 	m_DisplacementCoefficient(0.001),
 	m_MinimumDistanceOffset(10.0),
 	m_AbsoluteMaximumDistance(80000.0),
+	m_MinimumDistance(10.0),
+	m_DistanceToObject(20.0),
+	m_ObjectSize(10.0),
+	m_ViewAngle(60.0),
+	m_NearPlane(0.0),
+	m_Aspect(1.0),
 	m_FOVScale(1.0),
 	m_Accel(1.0),
 	m_ExternalPan(false) {
@@ -76,16 +78,28 @@ CameraKinematics::CameraKinematics():
 }
 void CameraKinematics::clampPhi(double min_phi, double max_phi, bool smooth_on) {
 	if (smooth_on && m_PanRatePhi != 0.0) {
-		m_PanRatePhi = simdata::sign(m_PanRatePhi) * smooth(m_Phi, min_phi, max_phi) * m_BaseRate;
+		m_PanRatePhi = sign(m_PanRatePhi) * smooth(m_Phi, min_phi, max_phi) * m_BaseRate;
 	}
-	m_Phi = simdata::clampTo<double>(m_Phi, min_phi, max_phi);
+	m_Phi = clampTo<double>(m_Phi, min_phi, max_phi);
 }
 
 void CameraKinematics::clampTheta(double min_theta, double max_theta, bool smooth_on) {
 	if (smooth_on && m_PanRateTheta != 0.0) {
-		m_PanRateTheta = simdata::sign(m_PanRateTheta)*smooth(m_Theta, min_theta, max_theta)*m_BaseRate;
+		m_PanRateTheta = sign(m_PanRateTheta)*smooth(m_Theta, min_theta, max_theta)*m_BaseRate;
 	}
-	m_Theta = simdata::clampTo<double>(m_Theta, min_theta, max_theta);
+	m_Theta = clampTo<double>(m_Theta, min_theta, max_theta);
+}
+
+void CameraKinematics::setObjectSize(double size) {
+	m_ObjectSize = size;
+	m_MinimumDistance = m_NearPlane + m_ObjectSize + 1.0;
+}
+
+void CameraKinematics::setCameraParameters(double view_angle, double near_plane, double aspect) {
+	m_ViewAngle = view_angle;
+	m_NearPlane = near_plane;;
+	m_Aspect = aspect;
+	m_MinimumDistance = m_NearPlane + m_ObjectSize + 1.0;
 }
 
 void CameraKinematics::reset() {
@@ -95,16 +109,6 @@ void CameraKinematics::reset() {
 	m_PanRateTheta = 0.0;
 	m_ZoomRate = 0.0;
 	m_Accel = 1.0;
-	resetDistance();
-}
-
-void CameraKinematics::resetDistance() {
-	const simdata::Ref<DynamicObject> active_object = CSPSim::theSim->getActiveObject();
-	if (active_object.valid()) {
-		m_MinimumDistance = 1.0 + active_object->getModel()->getBoundingSphereRadius() + CSPSim::theSim->getScene()->getNearPlane();
-	} else {
-		m_MinimumDistance = m_MinimumDistanceOffset;
-	}
 	m_DistanceToObject = m_MinimumDistance + m_MinimumDistanceOffset;
 }
 
@@ -172,4 +176,6 @@ void CameraKinematics::displacement(int /*x*/, int /*y*/, int dx, int dy) {
 void CameraKinematics::accept(CameraCommand* cc) {
 	if (cc) cc->execute(this);
 }
+
+CSP_NAMESPACE_END
 

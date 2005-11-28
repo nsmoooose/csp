@@ -25,7 +25,9 @@
 #ifndef __CSPSIM_AIRCRAFTPHYSICSMODEL_H__
 #define __CSPSIM_AIRCRAFTPHYSICSMODEL_H__
 
-#include "PhysicsModel.h"
+#include <csp/cspsim/PhysicsModel.h>
+
+CSP_NAMESPACE
 
 class AircraftPhysicsModel: public PhysicsModel {
 	bool m_NeedsImpulse;
@@ -37,6 +39,8 @@ public:
 	Vector::Vectord const& f(double t, Vector::Vectord& y);
 };
 
-#endif //__AIRCRAFTPHYSICSMODEL_H__
+CSP_NAMESPACE_END
+
+#endif // __CSPSIM_AIRCRAFTPHYSICSMODEL_H__
 
 

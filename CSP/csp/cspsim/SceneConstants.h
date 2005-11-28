@@ -25,6 +25,9 @@
 #ifndef __CSPSIM_SCENE_CONSTANTS_H__
 #define __CSPSIM_SCENE_CONSTANTS_H__
 
+#include <csp/csplib/util/Namespace.h>
+
+CSP_NAMESPACE
 
 class SceneMasks {
 public:
@@ -36,6 +39,7 @@ public:
 	} NodeMask;
 };
 
+CSP_NAMESPACE_END
 
 #endif // __CSPSIM_SCENE_CONSTANTS_H__
 

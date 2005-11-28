@@ -22,11 +22,22 @@
  *
  **/
 
+#include <csp/cspsim/GameScreen.h>
+#include <csp/cspsim/CSPSim.h>
+#include <csp/cspsim/DataRecorder.h>
+#include <csp/cspsim/DynamicObject.h>
+#include <csp/cspsim/EventMapIndex.h>
+#include <csp/cspsim/glDiagnostics.h>
+#include <csp/cspsim/ObjectModel.h>
+#include <csp/cspsim/ScreenInfoManager.h>
+#include <csp/cspsim/VirtualScene.h>
+#include <csp/cspsim/battlefield/LocalBattlefield.h>
+#include <csp/cspsim/views/CameraAgent.h>
+#include <csp/cspsim/views/CameraCommand.h>
+#include <csp/cspsim/views/View.h>
 
-#include "GameScreen.h"
-
-#include <ctime>
-#include <iomanip>
+#include <csp/csplib/util/FileUtility.h>
+#include <csp/csplib/util/Log.h>
 
 #include <osg/Image>
 #include <osgDB/WriteFile>
@@ -35,22 +46,10 @@
 #include <osgText/Text>
 #include <Producer/Camera>
 
-#include <csp/csplib/util/FileUtility.h>
+#include <ctime>
+#include <iomanip>
 
-#include "ConsoleCommands.h"
-#include "CSPSim.h"
-#include "DataRecorder.h"
-#include "DynamicObject.h"
-#include "EventMapIndex.h"
-#include "glDiagnostics.h"
-#include "ObjectModel.h"
-#include "ScreenInfoManager.h"
-#include "Views/CameraAgent.h"
-#include "Views/CameraCommand.h"
-#include "VirtualScene.h"
-
-#include <csp/csplib/battlefield/LocalBattlefield.h>
-#include <csp/csplib/util/Log.h>
+CSP_NAMESPACE
 
 /*
  * TODO
@@ -76,16 +75,16 @@ void GameScreen::initInterface()
 	assert(!m_Interface);
 	m_Interface = new VirtualHID(); //GameScreenInterface();
 	m_Interface->bindObject(this);
-	simdata::Ref<EventMapIndex> maps = CSPSim::theSim->getInterfaceMaps();
+	Ref<EventMapIndex> maps = CSPSim::theSim->getInterfaceMaps();
 	if (maps.valid()) {
-		EventMapping::Ref map = maps->getMap("__gamescreen__");
+		Ref<EventMapping> map = maps->getMap("__gamescreen__");
 		if (map != NULL) {
 			m_Interface->setMapping(map);
 		} else {
-			CSP_LOG( APP , ERROR, "HID interface map '__gamescreen__' not found.");
+			CSPLOG(ERROR, APP) << "HID interface map '__gamescreen__' not found.";
 		}
 	} else {
-		CSP_LOG( APP , ERROR, "No HID interface maps defined, '__gamescreen__' not found.");
+		CSPLOG(ERROR, APP) << "No HID interface maps defined, '__gamescreen__' not found.";
 	}
 }
 
@@ -134,7 +133,7 @@ public:
 			image->readPixels(x,y,width,height,GL_RGB,GL_UNSIGNED_BYTE);
 
 			// save the file in the form CSPmmddyy-hhmmss.ext
-			osgDB::writeImageFile(*image, simdata::ospath::join(m_Directory, m_Filename + getDate() + m_Ext));
+			osgDB::writeImageFile(*image, ospath::join(m_Directory, m_Filename + getDate() + m_Ext));
 			m_SnapImageOnNextFrame = false;
 		}
     }
@@ -172,17 +171,11 @@ void GameScreen::onInit() {
 	m_ScreenInfoManager->setStatus("PAUSE", CSPSim::theSim->isPaused());
 	m_ScreenInfoManager->setStatus("RECORD", false);
 
-	/*
-	m_Console = new PyConsole(ScreenWidth, ScreenHeight);
-	m_Console->setName("PyConsole");
-	*/
-
 	osg::Group *info = CSPSim::theSim->getScene()->getInfoGroup();
 	info->removeChild(0, info->getNumChildren());
 	info->addChild(m_ScreenInfoManager.get());
-	//info->addChild(m_Console.get());
 
-	simdata::Ref<DynamicObject> ao = CSPSim::theSim->getActiveObject();
+	Ref<DynamicObject> ao = CSPSim::theSim->getActiveObject();
 	if (ao.valid()) {
 		setActiveObject(ao);
 	}
@@ -206,7 +199,7 @@ void GameScreen::onPlayerQuit(int, const std::string& name) {
 void GameScreen::onExit() {
 }
 
-void GameScreen::setActiveObject(simdata::Ref<DynamicObject> const &object) {
+void GameScreen::setActiveObject(Ref<DynamicObject> const &object) {
 	VirtualScene *scene = CSPSim::theSim->getScene();
 	if (m_ActiveObject.valid() && m_ActiveObject != object) {
 		if (scene && m_ActiveObject->isNearField()) {
@@ -336,16 +329,10 @@ void GameScreen::on_Stats() {
 	m_ScreenInfoManager->setStatus("OBJECT STATS", !m_ScreenInfoManager->getStatus("OBJECT STATS"));
 }
 
-void GameScreen::on_Console()
-{
-	CSPSim::theSim->runConsole(m_Console.get());
-}
-
-void GameScreen::on_ChangeVehicle()
-{
+void GameScreen::on_ChangeVehicle() {
 	LocalBattlefield *battlefield = CSPSim::theSim->getBattlefield();
 	if (battlefield) {
-		simdata::Ref<DynamicObject> object;
+		Ref<DynamicObject> object;
 		object = battlefield->getNextUnit(m_ActiveObject, 1, 1, 0);
 		if (object.valid()) CSPSim::theSim->setActiveObject(object);
 	}
@@ -431,8 +418,7 @@ void GameScreen::on_ViewZoomStepOut() {
 	m_CameraAgent->setCameraCommand(&m_CameraCommands->ZoomStepOut);
 }
 
-void GameScreen::on_ViewFovStepDec()
-{
+void GameScreen::on_ViewFovStepDec() {
 	VirtualScene *scene = CSPSim::theSim->getScene();
 	if (scene) {
 		float fov = scene->getViewAngle() * 0.8;
@@ -442,8 +428,7 @@ void GameScreen::on_ViewFovStepDec()
 	}
 }
 
-void GameScreen::on_ViewFovStepInc()
-{
+void GameScreen::on_ViewFovStepInc() {
 	VirtualScene *scene = CSPSim::theSim->getScene();
 	if (scene) {
 		float fov = scene->getViewAngle() * 1.20;
@@ -453,8 +438,7 @@ void GameScreen::on_ViewFovStepInc()
 	}
 }
 
-void GameScreen::on_SpinTheWorld()
-{
+void GameScreen::on_SpinTheWorld() {
 	VirtualScene *scene = CSPSim::theSim->getScene();
 	if (scene) {
 		scene->spinTheWorld(true);
@@ -503,11 +487,17 @@ void GameScreen::on_MouseView(MapEvent::MotionEvent const &event) {
 }
 
 void GameScreen::setCamera(double dt) {
-	m_CameraAgent->updateCamera(dt);
-
+	VirtualScene* scene = CSPSim::theSim->getScene();
+	if (scene) {
+		TerrainObject const *terrain = scene->getTerrain().get();
+		m_CameraAgent->setCameraParameters(scene->getViewAngle(), scene->getNearPlane(), scene->getAspect());
+		m_CameraAgent->updateCamera(dt, terrain);
+	}
 	LocalBattlefield* battlefield = CSPSim::theSim->getBattlefield();
 	if (battlefield) {
 		battlefield->setCamera(m_CameraAgent->getEyePoint(), m_CameraAgent->getLookPoint(), m_CameraAgent->getUpVector());
 	}
 }
+
+CSP_NAMESPACE_END
 

@@ -79,7 +79,7 @@ public:
 		return *this;
 	}
 
-	inline Vector3 Vector3() const {
+	inline Vector3 asVector3() const {
 		return Vector3(x + (static_cast<int>(x0)-128) * 32000.0, y + (static_cast<int>(y0)-128) * 32000.0, z);
 	}
 
@@ -94,7 +94,7 @@ inline Writer & operator << (Writer &w, GlobalPosition const &p) {
 }
 
 inline std::ostream & operator << (std::ostream &o, GlobalPosition const &p) {
-	return o << p.Vector3();
+	return o << p.asVector3();
 }
 
 
@@ -126,7 +126,7 @@ public:
 		return *this;
 	}
 
-	inline Vector3 Vector3() const {
+	inline Vector3 asVector3() const {
 		return Vector3(x, y, 0.0);
 	}
 
@@ -141,7 +141,7 @@ inline Writer & operator << (Writer &w, Vector2f const &p) {
 }
 
 inline std::ostream & operator << (std::ostream &o, Vector2f const &p) {
-	return o << p.Vector3();
+	return o << p.asVector3();
 }
 
 
@@ -172,7 +172,7 @@ public:
 		return *this;
 	}
 
-	inline Vector3 Vector3() const {
+	inline Vector3 asVector3() const {
 		return Vector3(x, y, z);
 	}
 
@@ -187,7 +187,7 @@ inline Writer & operator << (Writer &w, Vector3f const &p) {
 }
 
 inline std::ostream & operator << (std::ostream &o, Vector3f const &p) {
-	return o << p.Vector3();
+	return o << p.asVector3();
 }
 
 
@@ -221,7 +221,7 @@ public:
 		return *this;
 	}
 
-	inline Quat Quat() const {
+	inline Quat asQuat() const {
 		return Quat(x, y, z, w);
 	}
 
@@ -236,7 +236,7 @@ inline Writer & operator << (Writer &w, Vector4f const &p) {
 }
 
 inline std::ostream & operator << (std::ostream &o, Vector4f const &p) {
-	return o << p.Quat();
+	return o << p.asQuat();
 }
 
 CSP_NAMESPACE_END

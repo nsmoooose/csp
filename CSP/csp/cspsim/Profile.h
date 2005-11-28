@@ -40,18 +40,17 @@
 
 #define PROF0(id) \
 	static int id##_c = 0; \
-	static simdata::SimTime id##_t = 0.0; \
-	simdata::SimTime id##_t0; \
-	id##_t0 = simdata::SimDate::getSystemTime();
+	static CSP(SimTime) id##_t = 0.0; \
+	CSP(SimTime) id##_t0; \
+	id##_t0 = CSP(SimDate)::getSystemTime();
 
 #define PROF1(id, n) \
-	id##_t += simdata::SimDate::getSystemTime() - id##_t0; \
+	id##_t += CSP(SimDate)::getSystemTime() - id##_t0; \
 	if (++id##_c >= n) { \
-		CSP_LOG(PROFILE, DEBUG, "PROF " << #id << ": " << (1000.0*id##_t/id##_c) << " ms"); \
+		CSPLOG(DEBUG, TIMING) << "PROF " << #id << ": " << (1000.0*id##_t/id##_c) << " ms"; \
 		id##_t = 0; \
 		id##_c = 0; \
 	}
-
 
 #endif // __CSPSIM_PROFILE_H__
 

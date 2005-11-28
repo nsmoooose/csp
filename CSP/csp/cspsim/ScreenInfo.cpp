@@ -22,28 +22,27 @@
  *
  **/
 
-#include "ScreenInfo.h"
-#include "CSPSim.h"
-#include "DynamicObject.h"
-#include "ObjectModel.h"
-#include "VirtualScene.h"
+#include <csp/cspsim/ScreenInfo.h>
+#include <csp/cspsim/CSPSim.h>
+#include <csp/cspsim/DynamicObject.h>
+#include <csp/cspsim/ObjectModel.h>
+#include <csp/cspsim/VirtualScene.h>
 
-#include <iomanip>
-#include <sstream>
+#include <csp/csplib/util/Conversions.h>
+#include <csp/csplib/util/Timing.h>
 
 #include <osg/Texture2D>
 #include <osg/StateSet>
 #include <osgText/Text>
 
-#include <csp/csplib/util/Conversions.h>
-#include <csp/csplib/util/Timing.h>
+#include <iomanip>
+#include <sstream>
 
-using std::max;
-using std::min;
-using std::setprecision;
 using std::setw;
 using std::fixed;
 using std::setfill;
+
+CSP_NAMESPACE
 
 /*
   NOTE: as of OSG 0.9.4, updating text is a costly operation since
@@ -119,8 +118,8 @@ void Framerate::update() {
 		m_MaxFps = 10.0f;
 	}
 	
-	m_MinFps = min(m_MinFps,fps);
-	m_MaxFps = max(m_MaxFps,fps);
+	m_MinFps = std::min(m_MinFps,fps);
+	m_MaxFps = std::max(m_MaxFps,fps);
 	m_Cumul += fps;
 
 	std::stringstream line;
@@ -133,7 +132,7 @@ void Framerate::update() {
 	m_Text->setText(line.str());
 
 	line.str("");
-	simdata::SimDate artificial_time = CSPSim::theSim->getCurrentTime();
+	SimDate artificial_time = CSPSim::theSim->getCurrentTime();
 	artificial_time.addTime(CSPSim::theSim->getScene()->getSpin());
 	line << artificial_time.asString();
 	m_Date->setText(line.str());
@@ -164,22 +163,22 @@ void GeneralStats::update() {
 	osstr << "Terrain Polygons: " << setw(7) << CSPSim::theSim->getScene()->getTerrainPolygonsRendered();
 	m_Text->setText(osstr.str());
 
-	simdata::Ref<DynamicObject const> const activeObject = CSPSim::theSim->getActiveObject();
+	Ref<DynamicObject const> const activeObject = CSPSim::theSim->getActiveObject();
 	if (activeObject.valid()) {
-		simdata::Vector3 pos = activeObject->getGlobalPosition();
+		Vector3 pos = activeObject->getGlobalPosition();
 		double altitude = activeObject->getAltitude();
 		osstr.str("");
-		osstr << "Altitude (agl): " << setprecision(precision) << fixed << setw(8) << simdata::convert::m_ft(altitude) << " fts";
+		osstr << "Altitude (agl): " << std::setprecision(precision) << fixed << setw(8) << convert::m_ft(altitude) << " fts";
 		m_Altitude->setText(osstr.str());
 
 		osstr.str("");
-		osstr << "Global position: [" << setprecision(2) << fixed << std::showpos << setfill(' ')
+		osstr << "Global position: [" << std::setprecision(2) << fixed << std::showpos << setfill(' ')
 		      << setw(11) << pos.x() << setw(11) << pos.y() << setw(11) << pos.z() << "]";
 		m_GlobalPosition->setText(osstr.str());
 
-		simdata::Vector3 vel = activeObject->getVelocity();
+		Vector3 vel = activeObject->getVelocity();
 		osstr.str("");
-		osstr << "Velocity: [" << setprecision(2) << setfill(' ') << fixed
+		osstr << "Velocity: [" << std::setprecision(2) << setfill(' ') << fixed
 		      << setw(8) << vel.x() << setw(8) << vel.y() << setw(8) << vel.z()
 		      << "] magnitude: " << std::noshowpos << vel.length();
 		m_Velocity->setText(osstr.str());
@@ -187,7 +186,7 @@ void GeneralStats::update() {
 }
 
 
-ObjectStats::ObjectStats(int posx,int posy, simdata::Ref<DynamicObject> const& /*activeObject*/)
+ObjectStats::ObjectStats(int posx,int posy, Ref<DynamicObject> const& /*activeObject*/)
 	: ScreenInfo(posx,posy,"OBJECT STATS"), m_PosX(posx), m_PosY(posy)
 {
 	m_Skip = static_cast<int>(m_CharacterSize);
@@ -200,7 +199,7 @@ ObjectStats::ObjectStats(int posx,int posy, simdata::Ref<DynamicObject> const& /
 }
 
 void ObjectStats::update() {
-	simdata::Ref<DynamicObject> activeObject = CSPSim::theSim->getActiveObject();
+	Ref<DynamicObject> activeObject = CSPSim::theSim->getActiveObject();
 	if (activeObject.valid()) {
 		std::vector<std::string> stringStats;
 		activeObject->getInfo(stringStats);
@@ -243,7 +242,7 @@ MessageList::MessageList(int posx, int posy, int lines, float delay)
 }
 
 void MessageList::addLine(std::string const &line) {
-	m_LastUpdate = simdata::get_realtime();
+	m_LastUpdate = get_realtime();
 	for (int i = m_Lines-1; i > 0; --i) {
 		m_Messages[i]->setText(m_Messages[i-1]->getText());
 	}
@@ -253,7 +252,7 @@ void MessageList::addLine(std::string const &line) {
 }
 
 void MessageList::update() {
-	double now = simdata::get_realtime();
+	double now = get_realtime();
 	float dt = static_cast<float>(now - m_LastUpdate);
 	float old_alpha = m_Alpha;
 	if (dt > m_Delay) {
@@ -270,3 +269,5 @@ void MessageList::update() {
 		}
 	}
 }
+
+CSP_NAMESPACE_END

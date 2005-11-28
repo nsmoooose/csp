@@ -25,8 +25,9 @@
 #ifndef __CSPSIM_SIMPLESCENEMANAGER_H__
 #define __CSPSIM_SIMPLESCENEMANAGER_H__
 
+#include <csp/cspsim/battlefield/SceneManager.h>
 
-#include <csp/csplib/battlefield/SceneManager.h>
+CSP_NAMESPACE
 
 class VirtualScene;
 class FeatureGroup;
@@ -38,13 +39,13 @@ class DynamicObject;
 class SimpleSceneManager: public SceneManager
 {
 private:
-	simdata::Ref<VirtualScene> m_Scene;
+	Ref<VirtualScene> m_Scene;
 
 	// (internal) specialized hide/show methods
-	void scheduleHideFeature(simdata::Ref<FeatureGroup> feature);
-	void scheduleShowFeature(simdata::Ref<FeatureGroup> feature);
-	void scheduleHideDynamic(simdata::Ref<DynamicObject> dynamic);
-	void scheduleShowDynamic(simdata::Ref<DynamicObject> dynamic);
+	void scheduleHideFeature(Ref<FeatureGroup> feature);
+	void scheduleShowFeature(Ref<FeatureGroup> feature);
+	void scheduleHideDynamic(Ref<DynamicObject> dynamic);
+	void scheduleShowDynamic(Ref<DynamicObject> dynamic);
 
 	// main (internal) entry point for showing or hiding an object.
 	void scheduleVisibilityChange(ObjectRef const& object, bool hide);
@@ -56,16 +57,17 @@ public:
 	 *  @param scene The VirtualScene class that serves as an interface to the scene graph.
 	 *  @param visilibity_range The range, in meters, around the camera in which objects are visible.
 	 */
-	SimpleSceneManager(simdata::Ref<VirtualScene> scene, double visibility_range);
+	SimpleSceneManager(Ref<VirtualScene> scene, double visibility_range);
 
 	virtual ~SimpleSceneManager();
 
 	virtual void scheduleHide(ObjectRef const& object);
 	virtual void scheduleShow(ObjectRef const& object);
-	virtual void setCamera(simdata::Vector3 const &eye_point, simdata::Vector3 const &look_pos, simdata::Vector3 const &up_vec);
+	virtual void setCamera(Vector3 const &eye_point, Vector3 const &look_pos, Vector3 const &up_vec);
 
 };
 
+CSP_NAMESPACE_END
 
 #endif // __CSPSIM_SIMPLESCENEMANAGER_H__
 

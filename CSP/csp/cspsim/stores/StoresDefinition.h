@@ -26,8 +26,6 @@
 #ifndef __CSPSIM_STORESDEFINITION_H__
 #define __CSPSIM_STORESDEFINITION_H__
 
-
-//#include <csp/csplib/data/InterfaceRegistry.h>
 #include <csp/csplib/data/Object.h>
 #include <csp/csplib/data/Link.h>
 

@@ -26,9 +26,9 @@
 #ifndef __CSPSIM_THEATER_FEATUREOBJECTMODEL_H__
 #define __CSPSIM_THEATER_FEATUREOBJECTMODEL_H__
 
+#include <csp/cspsim/theater/Feature.h>
 #include <csp/cspsim/theater/FeatureModel.h>
 #include <csp/cspsim/DamageModifier.h>
-#include <csp/cspsim/Feature.h>
 #include <csp/cspsim/ObjectModel.h>
 
 #include <vector>

@@ -29,13 +29,13 @@
 #include <csp/csplib/util/Namespace.h>
 #include <csp/cspsim/BaseDynamics.h>
 #include <csp/cspsim/Filters.h>
+#include <csp/cspsim/stores/StoresDynamics.h>
 
 CSP_NAMESPACE
 
 class DragProfile;
 class FlightModel;
 class ThrustData;
-class StoresDynamics;
 
 
 /**
@@ -62,7 +62,6 @@ public:
 	double getAirspeed() const { return m_Airspeed; }
 
 protected:
-
 	Link<FlightModel> m_FlightModel;
 	Link<DragProfile> m_DragProfile;
 
@@ -74,27 +73,27 @@ protected:
 	void addExternalDrag();
 
 	// control surfaces
-	DataChannel<double>::CRef b_Aileron;
-	DataChannel<double>::CRef b_Elevator;
-	DataChannel<double>::CRef b_Rudder;
-	DataChannel<double>::CRef b_Airbrake;
-	DataChannel<double>::CRef b_LeadingEdgeFlap;
-	DataChannel<double>::CRef b_TrailingEdgeFlap;
-	DataChannel<double>::CRef b_Density;
-	DataChannel<double>::CRef b_GroundZ;
-	DataChannel<double>::CRef b_Mach;
-	DataChannel<Vector3>::CRef b_AccelerationBody;
-	DataChannel<Vector3>::CRef b_WindVelocity;
-	DataChannel<Vector3>::CRef b_CenterOfMassOffset;
-	DataChannel<StoresDynamics>::CRef b_StoresDynamics;
+	DataChannel<double>::CRefT b_Aileron;
+	DataChannel<double>::CRefT b_Elevator;
+	DataChannel<double>::CRefT b_Rudder;
+	DataChannel<double>::CRefT b_Airbrake;
+	DataChannel<double>::CRefT b_LeadingEdgeFlap;
+	DataChannel<double>::CRefT b_TrailingEdgeFlap;
+	DataChannel<double>::CRefT b_Density;
+	DataChannel<double>::CRefT b_GroundZ;
+	DataChannel<double>::CRefT b_Mach;
+	DataChannel<Vector3>::CRefT b_AccelerationBody;
+	DataChannel<Vector3>::CRefT b_WindVelocity;
+	DataChannel<Vector3>::CRefT b_CenterOfMassOffset;
+	DataChannel<StoresDynamics>::CRefT b_StoresDynamics;
 
 	// export channels
-	DataChannel<double>::Ref b_Alpha;    // current angle of attack
-	DataChannel<double>::Ref b_Beta;     // side slip angle
-	DataChannel<double>::Ref b_Airspeed;
-	DataChannel<double>::Ref b_QBar;     // dynamic pressure
-	DataChannel<double>::Ref b_G;  // normal acceleration in G (includes gravity and rotation)
-	DataChannel<double>::Ref b_LateralG; // lateral acceleration in G (includes gravity and rotation)
+	DataChannel<double>::RefT b_Alpha;    // current angle of attack
+	DataChannel<double>::RefT b_Beta;     // side slip angle
+	DataChannel<double>::RefT b_Airspeed;
+	DataChannel<double>::RefT b_QBar;     // dynamic pressure
+	DataChannel<double>::RefT b_G;  // normal acceleration in G (includes gravity and rotation)
+	DataChannel<double>::RefT b_LateralG; // lateral acceleration in G (includes gravity and rotation)
 
 	double m_Beta;
 	double m_Alpha;

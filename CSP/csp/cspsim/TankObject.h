@@ -25,45 +25,38 @@
 #ifndef __CSPSIM_TANKOBJECT_H__
 #define __CSPSIM_TANKOBJECT_H__
 
-#include "DynamicObject.h"
+#include <csp/cspsim/DynamicObject.h>
 
-#include <cstdio>
-#include <iostream>
+CSP_NAMESPACE
 
-// movement states for the tank object
-// 0 - stopped
-// 1 - forward
-// 2 - backward
-// 3 - turning right
-// 4 - turning left
-
-
-/**
- * class TankObject
- *
- * @author unknown
+/** Outline of a tank object class -- not functional.
  */
-class TankObject : public DynamicObject
-{
+class TankObject : public DynamicObject {
 public:
 	CSP_DECLARE_OBJECT(TankObject)
 
 	TankObject();
 	virtual ~TankObject();
-	virtual void getStats(std::vector<std::string> &/*stats*/) const {}
+	virtual void getStats(std::vector<std::string> &/*stats*/) const { }
 
 	double getMaxViewingRange() { return max_viewing_range; }
 	double getMaxViewingAngle() { return max_viewing_angle; }
 	double getMaxFiringRange() { return max_firing_range; }
 
+	// movement states for the tank object
+	// 0 - stopped
+	// 1 - forward
+	// 2 - backward
+	// 3 - turning right
+	// 4 - turning left
 	void setMovementState(unsigned int state) { movement_state = state; }
-	virtual void onRender();
 
+	virtual void onRender();
 
 protected:
 	virtual double onUpdate(double);
-	virtual void registerChannels(Bus * bus);
-	virtual void bindChannels(Bus * bus);
+	virtual void registerChannels(Bus *bus);
+	virtual void bindChannels(Bus *bus);
 
 	double gun_angle;
 
@@ -75,14 +68,13 @@ protected:
 	double backward_speed;
 	double turn_speed;
 
-	unsigned int movement_state;
-
+	unsigned movement_state;
 	char bits;
 
-	DataChannel<double>::Ref b_Heading;
+	DataChannel<double>::RefT b_Heading;
 };
 
-
+CSP_NAMESPACE_END
 
 #endif // __CSPSIM_TANKOBJECT_H__
 

@@ -22,16 +22,17 @@
  *
  **/
 
-#ifndef __CSPSIM_INTERNALVIEW_H__
-#define __CSPSIM_INTERNALVIEW_H__
+#ifndef __CSPSIM_VIEWS_INTERNALVIEW_H__
+#define __CSPSIM_VIEWS_INTERNALVIEW_H__
 
-#include <map>
-
+#include <csp/cspsim/views/View.h>
 #include <csp/csplib/data/Quat.h>
 #include <csp/csplib/util/Ref.h>
 #include <csp/csplib/data/Vector3.h>
-#include "View.h"
 
+#include <map>
+
+CSP_NAMESPACE
 
 /** An internal view that supports padlocking.
  */
@@ -45,10 +46,10 @@ public:
 
 protected:
 	using View::Contact;
-	virtual void updateView(simdata::Vector3& ep, simdata::Vector3& lp, simdata::Vector3& up, double dt);
+	virtual void updateView(Vector3& ep, Vector3& lp, Vector3& up, double dt);
 
 private:
-	simdata::Ref<DynamicObject> m_Padlock;
+	Ref<DynamicObject> m_Padlock;
 
 	bool m_Padlocked;
 	void setPadlocked();
@@ -69,20 +70,21 @@ private:
 	const double m_NeckTurnLimit;
 	const double m_NeckTiltLimit;
 	const double m_TorsoTurnLimit;
-	const simdata::Vector3 m_NeckPivotOffset;
-	simdata::Vector3 m_NeckBobbing;
-	simdata::Vector3 m_Up;
-	simdata::Vector3 m_Dir;
-	simdata::Vector3 m_DirLocal;
-	simdata::Vector3 m_PadlockPosition;
-	simdata::Vector3 m_PadlockVelocity;
+	const Vector3 m_NeckPivotOffset;
+	Vector3 m_NeckBobbing;
+	Vector3 m_Up;
+	Vector3 m_Dir;
+	Vector3 m_DirLocal;
+	Vector3 m_PadlockPosition;
+	Vector3 m_PadlockVelocity;
 	double m_PadlockLossTime;
 
 	struct SortById;
-	void moveViewpoint(simdata::Vector3& ep, simdata::Vector3& lp, simdata::Vector3& up, double dt);
+	void moveViewpoint(Vector3& ep, Vector3& lp, Vector3& up, double dt);
 	bool inVisualRange(Contact contact) const;
 };
 
+CSP_NAMESPACE_END
 
-#endif // __CSPSIM_INTERNALVIEW_H__
+#endif // __CSPSIM_VIEWS_INTERNALVIEW_H__
 

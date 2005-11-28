@@ -75,6 +75,7 @@ enum {
 	cLogCategory_BATTLEFIELD  = 0x00400000,
 	cLogCategory_OBJECT       = 0x00800000,
 	cLogCategory_APP          = 0x01000000,
+	cLogCategory_VIEW         = 0x02000000,
 
 	// groups
 	cLogCategory_NONE         = 0x00000000,

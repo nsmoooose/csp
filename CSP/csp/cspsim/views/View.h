@@ -22,12 +22,14 @@
  *
  **/
 
-#ifndef __CSPSIM_VIEW_H__
-#define __CSPSIM_VIEW_H__
+#ifndef __CSPSIM_VIEWS_VIEW_H__
+#define __CSPSIM_VIEWS_VIEW_H__
 
 #include <csp/csplib/util/Ref.h>
 #include <csp/csplib/util/ScopedPointer.h>
 #include <csp/csplib/data/Vector3.h>
+
+CSP_NAMESPACE
 
 class CameraAgent;
 class CameraKinematics;
@@ -36,31 +38,29 @@ class SimObject;
 
 
 /** Base class for different viewing modes. */
-class View: public simdata::Referenced {
+class View: public Referenced {
 private:
 	const bool m_Internal;
 	const size_t m_ViewMode;
 
 protected:
-	simdata::Ref<CameraKinematics> m_CameraKinematics;
-	simdata::Ref<DynamicObject> m_ActiveObject;
-	void updateBody(simdata::Vector3& ep, simdata::Vector3& lp, simdata::Vector3& up);
-	void updateWorld(simdata::Vector3& ep, simdata::Vector3& lp, simdata::Vector3& up);
-	virtual void updateView(simdata::Vector3& ep, simdata::Vector3& lp, simdata::Vector3& up, double dt)=0;
+	Ref<CameraKinematics> m_CameraKinematics;
+	Ref<DynamicObject> m_ActiveObject;
+	void updateBody(Vector3& ep, Vector3& lp, Vector3& up);
+	void updateWorld(Vector3& ep, Vector3& lp, Vector3& up);
+	virtual void updateView(Vector3& ep, Vector3& lp, Vector3& up, double dt)=0;
 
-	typedef simdata::Ref<SimObject> Contact;
-	void findContacts(simdata::Vector3 const &dir, double cutoff_angle, std::vector<Contact> &result) const;
+	typedef Ref<SimObject> Contact;
+	void findContacts(Vector3 const &dir, double cutoff_angle, std::vector<Contact> &result) const;
 
 public:
-	typedef simdata::Ref<View> Ref;
-
 	View(size_t vm, bool internal);
 	virtual void activate();
 	virtual void reactivate() { activate(); }
-	void update(simdata::Vector3& ep, simdata::Vector3& lp, simdata::Vector3& up, double dt);
-	void setActiveObject(const simdata::Ref<DynamicObject> object);
+	void update(Vector3& ep, Vector3& lp, Vector3& up, double dt);
+	void setActiveObject(const Ref<DynamicObject> object);
 
-	virtual void recalculate(simdata::Vector3& ep, simdata::Vector3& lp, simdata::Vector3& up, double dt) {
+	virtual void recalculate(Vector3& ep, Vector3& lp, Vector3& up, double dt) {
 		update(ep, lp, up, dt);
 	}
 
@@ -74,6 +74,7 @@ public:
 	virtual ~View();
 
 	inline bool isInternal() const { return m_Internal; }
+	void setCameraParameters(double view_angle, double near_plane, double aspect);
 };
 
 
@@ -90,5 +91,7 @@ public:
 	void attachAllView(CameraAgent* ca) const;
 };
 
-#endif //__VIEW_H__
+CSP_NAMESPACE_END
+
+#endif // __CSPSIM_VIEWS_VIEW_H__
 

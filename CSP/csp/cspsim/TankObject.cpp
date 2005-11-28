@@ -22,16 +22,15 @@
  *
  **/
 
-#include "KineticsChannels.h"
-#include "TankObject.h"
-#include "ObjectModel.h"
-#include "SystemsModel.h"
+#include <csp/cspsim/TankObject.h>
+#include <csp/cspsim/KineticsChannels.h>
+#include <csp/cspsim/ObjectModel.h>
+#include <csp/cspsim/SystemsModel.h>
 
 #include <csp/csplib/util/Log.h>
 #include <csp/csplib/data/ObjectInterface.h>
 
-
-using namespace std;
+CSP_NAMESPACE
 
 CSP_XML_BEGIN(TankObject)
 	CSP_DEF("forward_speed", forward_speed, false)
@@ -41,9 +40,8 @@ CSP_XML_BEGIN(TankObject)
 CSP_XML_END
 
 
-TankObject::TankObject(): DynamicObject(TYPE_MUD_UNIT)
-{
-	CSP_LOG(OBJECT, DEBUG, "TankObject::TankObject() ...");
+TankObject::TankObject(): DynamicObject(TYPE_MUD_UNIT) {
+	CSPLOG(DEBUG, OBJECT) << "TankObject::TankObject() ...";
 	b_Heading = DataChannel<double>::newLocal(bus::Kinetics::Heading, 0.0);
 
 //	m_ObjectType = TANK_OBJECT_TYPE;
@@ -60,12 +58,11 @@ TankObject::TankObject(): DynamicObject(TYPE_MUD_UNIT)
 	bits = 0;
 }
 
-TankObject::~TankObject()
-{
-
+TankObject::~TankObject() {
 }
+
 void TankObject::registerChannels(Bus * bus) {
-	CSP_LOG(OBJECT, DEBUG, "TankObject::registerChannels() ...");
+	CSPLOG(DEBUG, OBJECT) << "TankObject::registerChannels() ...";
 
 	DynamicObject::registerChannels(bus);
 //	if (bus->valid()) {
@@ -74,17 +71,17 @@ void TankObject::registerChannels(Bus * bus) {
 }
 
 void TankObject::bindChannels(Bus*) {
-	CSP_LOG(OBJECT, DEBUG, "TankObject::bindChannels() ...");
+	CSPLOG(DEBUG, OBJECT) << "TankObject::bindChannels() ...";
 //	DynamicObject::bindChannels(bus);
 }
 
-double TankObject::onUpdate(double dt)
-{
+double TankObject::onUpdate(double dt) {
 	return DynamicObject::onUpdate(dt);
 }
-
 
 void TankObject::onRender() {
 	DynamicObject::onRender();
 }
+
+CSP_NAMESPACE_END
 

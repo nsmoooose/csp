@@ -23,11 +23,13 @@
  **/
 
 
-#ifndef __CSPSIM_AIRCRAFTFLIGHTSENSORS_H__
-#define __CSPSIM_AIRCRAFTFLIGHTSENSORS_H__
+#ifndef __CSPSIM_SYSTEMS_AIRCRAFTFLIGHTSENSORS_H__
+#define __CSPSIM_SYSTEMS_AIRCRAFTFLIGHTSENSORS_H__
 
-#include <System.h>
+#include <csp/cspsim/System.h>
 #include <csp/csplib/data/Vector3.h>
+
+CSP_NAMESPACE
 
 class AircraftFlightSensors: public System {
 public:
@@ -41,19 +43,22 @@ protected:
 	virtual void registerChannels(Bus *bus);
 	virtual void getInfo(InfoList &info) const;
 
-	DataChannel<simdata::Vector3>::CRef b_Position;
-	DataChannel<simdata::Vector3>::CRef b_Velocity;
-	DataChannel<simdata::Vector3>::Ref b_WindVelocity;
-	DataChannel<double>::Ref b_Temperature;
-	DataChannel<double>::Ref b_Pressure;
-	DataChannel<double>::Ref b_Density;
-	DataChannel<double>::Ref b_Mach;
-	DataChannel<double>::Ref b_CAS;
-	DataChannel<double>::Ref b_PressureAltitude;
-	DataChannel<double>::Ref b_VerticalVelocity;
+	DataChannel<Vector3>::CRefT b_Position;
+	DataChannel<Vector3>::CRefT b_Velocity;
+	DataChannel<Vector3>::RefT b_WindVelocity;
+	DataChannel<double>::RefT b_Temperature;
+	DataChannel<double>::RefT b_Pressure;
+	DataChannel<double>::RefT b_Density;
+	DataChannel<double>::RefT b_Mach;
+	DataChannel<double>::RefT b_CAS;
+	DataChannel<double>::RefT b_PressureAltitude;
+	DataChannel<double>::RefT b_VerticalVelocity;
 
 private:
 	double m_Distance;
 };
 
-#endif // __CSPSIM_AIRCRAFTFLIGHTSENSORS_H__
+CSP_NAMESPACE_END
+
+#endif // __CSPSIM_SYSTEMS_AIRCRAFTFLIGHTSENSORS_H__
+

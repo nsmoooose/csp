@@ -23,7 +23,7 @@
  **/
 
 
-#include <HUD/HUD.h>
+#include <csp/cspsim/hud/HUD.h>
 
 #include <osg/ClipNode>
 #include <osg/Geode>
@@ -36,6 +36,7 @@
 
 #include <cassert>
 
+CSP_NAMESPACE
 
 HUD::HUD(): m_ViewPoint(0, -1, 0) {
 	osg::PositionAttitudeTransform* placement = new osg::PositionAttitudeTransform();
@@ -279,4 +280,6 @@ void HUD::updateView() {
 HUD::LabelElement::LabelElement(): m_Text(new osgText::Text) {
 	geode()->addDrawable(m_Text);
 }
+
+CSP_NAMESPACE_END
 

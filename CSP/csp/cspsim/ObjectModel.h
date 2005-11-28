@@ -25,7 +25,6 @@
 #ifndef __CSPSIM_OBJECTMODEL_H__
 #define __CSPSIM_OBJECTMODEL_H__
 
-
 #include <csp/cspsim/Bus.h>
 
 #include <csp/csplib/data/Enum.h>
@@ -39,17 +38,6 @@
 #include <osg/ref_ptr>
 #include <vector>
 
-
-CSP_NAMESPACE
-
-class Animation;
-class AnimationCallback;
-class AnimationChannel;
-class Bus;
-class HUD;
-class Station;
-class Quat;
-
 namespace osg {
 	class Node;
 	class Group;
@@ -61,6 +49,16 @@ namespace osg {
 namespace osgText {
 	class Text;
 }
+
+CSP_NAMESPACE
+
+class Animation;
+class AnimationCallback;
+class AnimationChannel;
+class Bus;
+class HUD;
+class Station;
+class Quat;
 
 namespace fx {
 	class SmokeTrailSystem;
@@ -76,7 +74,7 @@ namespace fx {
  * TODO: add LOD support here.
  *
  */
-class CSPSIM_EXPORT ObjectModel: public Object {
+class CSP_EXPORT ObjectModel: public Object {
 	static const Enumeration EffectItems;
 
 private:
@@ -95,7 +93,7 @@ public:
 
 	osg::ref_ptr<osg::Node> getModel();
 	osg::ref_ptr<osg::Node> getDebugMarkers();
-	std::string getModelPath() const { return m_ModelPath.getSource(); }
+	std::string getModelPath() const;
 
 	const Vector3 &getAxis0() const { return m_Axis0; }
 	const Vector3 &getAxis1() const { return m_Axis1; }

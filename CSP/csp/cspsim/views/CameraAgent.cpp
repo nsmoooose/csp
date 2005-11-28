@@ -22,62 +22,59 @@
  *
  **/
 
+#include <csp/cspsim/views/CameraAgent.h>
+#include <csp/cspsim/views/CameraCommand.h>
+#include <csp/cspsim/views/CameraKinematics.h>
+#include <csp/cspsim/views/View.h>
+#include <csp/cspsim/DynamicObject.h>
 #include <csp/csplib/util/Math.h>
 
-#include "Views/CameraAgent.h"
-#include "Views/CameraCommand.h"
-
-#include "CSPSim.h"
-#include "DynamicObject.h"
-#include "ObjectModel.h"
-#include "VirtualScene.h"
-
+CSP_NAMESPACE
 
 CameraAgent::CameraAgent(const ViewFactory& vf, ViewMode default_view):
-	m_EyePoint(simdata::Vector3::ZERO), 
-	m_LookPoint(simdata::Vector3::XAXIS),
-	m_UpVector(simdata::Vector3::ZAXIS),
-	m_ViewMode(10000) {
+	m_EyePoint(Vector3::ZERO),
+	m_LookPoint(Vector3::XAXIS),
+	m_UpVector(Vector3::ZAXIS),
+	m_ViewMode(10000),
+	m_ViewAngle(60.0),
+	m_Aspect(1.0),
+	m_NearPlane(0.0) {
 	vf.attachAllView(this);
 	setViewMode(default_view);
 }
 
-void CameraAgent::attach(ViewMode mode, View* view){
+void CameraAgent::attach(ViewMode mode, View* view) {
 	assert(view);
 	m_ViewList[mode] = view;
 }
 
 CameraAgent::~CameraAgent() { }
 
-void CameraAgent::validate(double dt) {
-	if (!m_ActiveView) return;
-	VirtualScene* scene = CSPSim::theSim->getScene();
-	const simdata::Ref<TerrainObject> terrain = scene->getTerrain();
+void CameraAgent::validate(double dt, const TerrainObject *terrain) {
+	if (!m_ActiveView || !terrain) return;
 	TerrainObject::IntersectionHint camera_hint = 0;
 	double const SAFETY = 3.0;
 	double h = SAFETY + terrain->getGroundElevation(m_EyePoint.x(), m_EyePoint.y(), camera_hint);
 	// if the eyepoint is near the ground, check more carefully that the terrain isn't
 	// clipped by the near-clipping plane.
 	if (m_EyePoint.z() < h) {
-		double alpha_2 = simdata::toRadians(0.5*scene->getViewAngle());
-		double near_dist = scene->getNearPlane();
-		double aspect = scene->getAspect();
-		simdata::Vector3 eye_look = m_LookPoint - m_EyePoint;
-		simdata::Vector3 eye_look_unit = eye_look.normalized();
-		simdata::Vector3 up_vec_unit = m_UpVector.normalized();
+		double alpha_2 = toRadians(0.5 * m_ViewAngle);
+		Vector3 eye_look = m_LookPoint - m_EyePoint;
+		Vector3 eye_look_unit = eye_look.normalized();
+		Vector3 up_vec_unit = m_UpVector.normalized();
 
 		double tan_alpha_2 = tan(alpha_2);
-		simdata::Vector3 right_unit = eye_look_unit^up_vec_unit;
-		simdata::Vector3 min_edge;
+		Vector3 right_unit = eye_look_unit^up_vec_unit;
+		Vector3 min_edge;
 		double min_elev = 1.0;
 		// iterate over the corners of the rectangle defined by the intersection
 		// of the near clipping plane and the view frustum; find the lowest
 		// corner.
 		for (double i = -1.0; i <= 1.0; i += 2.0)
 			for (double j = -1.0;j <= 1.0; j += 2.0) {
-				simdata::Vector3 edge_vector = near_dist * (eye_look_unit
-					+ tan_alpha_2 * ( i * up_vec_unit + j * aspect * right_unit));
-				simdata::Vector3 edge = m_EyePoint + edge_vector;
+				Vector3 edge_vector = m_NearPlane * (eye_look_unit
+					+ tan_alpha_2 * ( i * up_vec_unit + j * m_Aspect * right_unit));
+				Vector3 edge = m_EyePoint + edge_vector;
 				double edge_elev = edge.z()-terrain->getGroundElevation(edge.x(), edge.y(), camera_hint);
 				if (min_elev > edge_elev) {
 					min_elev = edge_elev;
@@ -88,7 +85,7 @@ void CameraAgent::validate(double dt) {
 		// clipped (revealing the void underneath); rotate the view up to prevent
 		// this from happening.
 		if (min_elev < 0.1) {
-			simdata::Vector3 rotvec = m_LookPoint - min_edge;
+			Vector3 rotvec = m_LookPoint - min_edge;
 			// project back onto the plane defined by L-E and Up
 			rotvec -= dot(rotvec, right_unit) * right_unit;
 			double R = rotvec.normalize();
@@ -98,12 +95,12 @@ void CameraAgent::validate(double dt) {
 			double phi = asin(-rotvec.z());
 			// angle to rotate the view in order to bring the lowest clip point up to
 			// the terrain height (+10cm).
-			double alpha = std::max(0.0, acos(rotvec.z() - dh/R) - simdata::PI_2 - phi);
+			double alpha = std::max(0.0, acos(rotvec.z() - dh/R) - PI_2 - phi);
 			if (alpha > 0.0) {
 				CameraKinematics *kinematics = m_ActiveView->kinematics();
 				phi = kinematics->getPhi();
 				// first bring phi into the range -pi..pi
-				if (dot(rotvec ^ simdata::Vector3::ZAXIS, right_unit) > 0) {
+				if (dot(rotvec ^ Vector3::ZAXIS, right_unit) > 0) {
 					kinematics->setPhi(phi + alpha);
 				} else {
 					kinematics->setPhi(phi - alpha);
@@ -117,7 +114,7 @@ void CameraAgent::validate(double dt) {
 
 void CameraAgent::setViewMode(ViewMode vm) {
 	if (vm == m_ViewMode) {
-		CSP_LOG(APP, INFO, "reactivate view");
+		CSPLOG(INFO, APP) << "reactivate view";
 		assert(m_ActiveView.valid());
 		m_ActiveView->reactivate();
 	} else {
@@ -127,6 +124,7 @@ void CameraAgent::setViewMode(ViewMode vm) {
 			m_ViewMode = vm;
 			m_ActiveView = iter->second;
 			m_ActiveView->setActiveObject(m_ActiveObject);
+			m_ActiveView->setCameraParameters(m_ViewAngle, m_NearPlane, m_Aspect);
 			m_ActiveView->activate();
 		}
 	}
@@ -150,18 +148,32 @@ void CameraAgent::setCameraCommand(CameraCommand *cc) {
 	}
 }
 
-void CameraAgent::updateCamera(double dt) {
+void CameraAgent::updateCamera(double dt, const TerrainObject *terrain) {
+	if (m_NearPlane == 0) {
+		CSPLOG(FATAL, VIEW) << "CameraAgent near plane not set; call setCameraParameters first!";
+	}
 	if (m_ActiveView.valid()) {
 		m_ActiveView->update(m_EyePoint, m_LookPoint, m_UpVector, dt);
 		if (!m_ActiveView->isInternal()) {
-			validate(dt);
+			validate(dt, terrain);
 		}
 		m_ActiveView->cull();
 	}
 }
 
-void CameraAgent::setObject(simdata::Ref<DynamicObject> object) {
+void CameraAgent::setCameraParameters(double view_angle, double near_plane, double aspect) {
+	m_ViewAngle = view_angle;
+	m_NearPlane = near_plane;
+	m_Aspect = aspect;
+	if (m_ActiveView.valid()) {
+		m_ActiveView->setCameraParameters(view_angle, near_plane, aspect);
+	}
+}
+
+void CameraAgent::setObject(Ref<DynamicObject> object) {
 	m_ActiveObject = object;
 	if (m_ActiveView.valid()) m_ActiveView->setActiveObject(object);
 }
+
+CSP_NAMESPACE_END
 

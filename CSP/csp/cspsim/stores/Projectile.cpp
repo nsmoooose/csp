@@ -24,8 +24,9 @@
 
 #include <csp/cspsim/stores/Projectile.h>
 #include <csp/cspsim/stores/Stores.h>
+#include <csp/cspsim/ObjectModel.h>
 #include <csp/csplib/data/ObjectInterface.h>
-#include <SimCore/Util/StringTools.h>
+#include <csp/csplib/util/StringTools.h>
 
 CSP_NAMESPACE
 

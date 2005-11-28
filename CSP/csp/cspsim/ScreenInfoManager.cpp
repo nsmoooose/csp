@@ -22,48 +22,47 @@
  *
  **/
 
-#include "ScreenInfoManager.h"
+#include <csp/cspsim/ScreenInfoManager.h>
 
 #include <osg/Depth>
 #include <osg/MatrixTransform>
 #include <osgText/Text>
 
+CSP_NAMESPACE
 
-void set2dScene(osg::Group *rootNode, int ScreenWidth, int ScreenHeight)
-{
+void set2dScene(osg::Group *root_node, int screen_width, int screen_height) {
 	const unsigned short offsetpos = 11;
-	osg::ref_ptr<Framerate> framerate = new Framerate(offsetpos,ScreenHeight - offsetpos);
-	osg::ref_ptr<ScreenInfo> pause = new ScreenInfo(ScreenWidth-5*offsetpos,ScreenHeight-offsetpos,"PAUSE", "PAUSE");
-	osg::ref_ptr<ScreenInfo> record = new ScreenInfo(ScreenWidth-15*offsetpos,ScreenHeight-offsetpos,"RECORD", "RECORD");
-	osg::ref_ptr<GeneralStats> generalStats = new GeneralStats(offsetpos, ScreenHeight / 3);
-	osg::ref_ptr<MessageList> messageBox = new MessageList(offsetpos, ScreenHeight / 2, 4, 4.0);
+	osg::ref_ptr<Framerate> framerate = new Framerate(offsetpos, screen_height - offsetpos);
+	osg::ref_ptr<ScreenInfo> pause = new ScreenInfo(screen_width-5*offsetpos, screen_height-offsetpos, "PAUSE", "PAUSE");
+	osg::ref_ptr<ScreenInfo> record = new ScreenInfo(screen_width-15*offsetpos, screen_height-offsetpos, "RECORD", "RECORD");
+	osg::ref_ptr<GeneralStats> generalStats = new GeneralStats(offsetpos, screen_height / 3);
+	osg::ref_ptr<MessageList> messageBox = new MessageList(offsetpos, screen_height / 2, 4, 4.0);
 
-	rootNode->addChild(framerate.get());
-	rootNode->addChild(pause.get());
-	rootNode->addChild(record.get());
-	rootNode->addChild(generalStats.get());
-	rootNode->addChild(messageBox.get());
+	root_node->addChild(framerate.get());
+	root_node->addChild(pause.get());
+	root_node->addChild(record.get());
+	root_node->addChild(generalStats.get());
+	root_node->addChild(messageBox.get());
 
-	osg::StateSet *rootState = rootNode->getOrCreateStateSet();
-	rootState->setMode(GL_LIGHTING,osg::StateAttribute::OFF);
-	rootState->setMode(GL_DEPTH_TEST,osg::StateAttribute::OFF);
+	osg::StateSet *rootState = root_node->getOrCreateStateSet();
+	rootState->setMode(GL_LIGHTING, osg::StateAttribute::OFF);
+	rootState->setMode(GL_DEPTH_TEST, osg::StateAttribute::OFF);
 }
 
-ScreenInfoManager::ScreenInfoManager(int ScreenWidth, int ScreenHeight)
-{
-	setMatrix(osg::Matrix::ortho2D(0,ScreenWidth,0,ScreenHeight));
+ScreenInfoManager::ScreenInfoManager(int screen_width, int screen_height) {
+	setMatrix(osg::Matrix::ortho2D(0, screen_width, 0, screen_height));
 
 	m_modelview_abs = new osg::MatrixTransform;
 	m_modelview_abs->setReferenceFrame(osg::Transform::ABSOLUTE_RF);
 	m_modelview_abs->setMatrix(osg::Matrix::identity());
 
-	set2dScene(m_modelview_abs,ScreenWidth,ScreenHeight);
+	set2dScene(m_modelview_abs, screen_width, screen_height);
 
 	addChild(m_modelview_abs);
 	setCullingActive(true);
 }
 
-void ScreenInfoManager::changeObjectStats(int /*ScreenWidth*/, int ScreenHeight,simdata::Ref<DynamicObject> const& vehicle)
+void ScreenInfoManager::changeObjectStats(int /*screen_width*/, int screen_height, Ref<DynamicObject> const& vehicle)
 {
 	bool visible = getScreenInfo("GENERAL STATS")->getStatus();
 	ScreenInfo* os = getScreenInfo("OBJECT STATS");
@@ -71,7 +70,7 @@ void ScreenInfoManager::changeObjectStats(int /*ScreenWidth*/, int ScreenHeight,
 		visible = os->getStatus();
 		m_modelview_abs->removeChild(os);
 	}
-	osg::ref_ptr<ObjectStats> objectStats = new ObjectStats(12, 2 * ScreenHeight / 3,vehicle);
+	osg::ref_ptr<ObjectStats> objectStats = new ObjectStats(12, 2 * screen_height / 3, vehicle);
 	objectStats->setStatus(visible);
 	m_modelview_abs->addChild(objectStats.get());
 }
@@ -108,21 +107,18 @@ public:
 	}
 };
 
-ScreenInfo* ScreenInfoManager::getScreenInfo(std::string const& name)
-{
+ScreenInfo* ScreenInfoManager::getScreenInfo(std::string const& name) {
 	FindNamedNodeVisitor nv(name);
 	m_modelview_abs->accept(nv);
 	return dynamic_cast<ScreenInfo*>(nv.foundNode());
 }
 
-void ScreenInfoManager::setStatus(std::string const& name, bool visible)
-{
+void ScreenInfoManager::setStatus(std::string const& name, bool visible) {
 	ScreenInfo* sci = getScreenInfo(name);
 	if (sci) sci->setStatus(visible);
 }
 
-bool ScreenInfoManager::getStatus(std::string const& name)
-{
+bool ScreenInfoManager::getStatus(std::string const& name) {
 	ScreenInfo *sci = getScreenInfo(name);
 	if (sci) {
 		return sci->getStatus();
@@ -131,10 +127,12 @@ bool ScreenInfoManager::getStatus(std::string const& name)
 	}
 }
 
-void ScreenInfoManager::addMessage(std::string const &line)
-{
+void ScreenInfoManager::addMessage(std::string const &line) {
 	MessageList *mbox = dynamic_cast<MessageList*>(getScreenInfo("MESSAGE BOX"));
 	if (mbox) {
 		mbox->addLine(line);
 	}
 }
+
+CSP_NAMESPACE_END
+

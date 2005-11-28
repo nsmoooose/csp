@@ -26,19 +26,20 @@
 #ifndef __CSPSIM_GEAR_ANIMATION_H__
 #define __CSPSIM_GEAR_ANIMATION_H__
 
+#include <csp/cspsim/Bus.h>
+#include <csp/cspsim/AnimationSequence.h>
 
-#include "Bus.h"
-#include "AnimationSequence.h"
 #include <csp/csplib/data/Link.h>
-#include <csp/csplib/util/Math.h>
 #include <csp/csplib/data/Object.h>
 #include <csp/csplib/data/Vector3.h>
+#include <csp/csplib/util/Math.h>
 
+CSP_NAMESPACE
 
 /** Base class for driving landing gear animations.  Controls retract/extend
  *  motion, shock absorber compression, tire rotation, and steering.
  */
-class GearAnimation: public simdata::Object {
+class GearAnimation: public Object {
 public:
 	virtual void setGearName(const std::string &name) { m_GearName = name; m_Prefix = "LandingGear." + name; }
 	std::string const &getGearName() const { return m_GearName; }
@@ -67,12 +68,12 @@ public:
 	// Called by LandingGear to allow subclasses to import channels.
 	virtual void bindChannels(Bus*) { }
 
-	virtual void setCompressionMotion(simdata::Vector3 const &axis, double limit) {
+	virtual void setCompressionMotion(Vector3 const &axis, double limit) {
 		m_CompressionAxis = axis.normalized();
 		m_CompressionScale = limit;
 	}
 
-	simdata::Vector3 const &getCompressionAxis() const { return m_CompressionAxis; }
+	Vector3 const &getCompressionAxis() const { return m_CompressionAxis; }
 	double getCompressionScale() const { return m_CompressionScale; }
 
 	virtual double getExtension() const = 0;
@@ -88,7 +89,7 @@ protected:
 private:
 	std::string m_GearName;
 	std::string m_Prefix;
-	simdata::Vector3 m_CompressionAxis;
+	Vector3 m_CompressionAxis;
 	double m_CompressionScale;
 };
 
@@ -132,10 +133,10 @@ public:
 	virtual void registerChannels(Bus* bus);
 
 private:
-	simdata::Link<TimedSequence> m_RetractSequence;
-	simdata::Link<DrivenSequence> m_CompressionSequence;
-	DataChannel<double>::Ref b_TireRotation;
-	DataChannel<double>::Ref b_SteeringAngle;
+	Link<TimedSequence> m_RetractSequence;
+	Link<DrivenSequence> m_CompressionSequence;
+	DataChannel<double>::RefT b_TireRotation;
+	DataChannel<double>::RefT b_SteeringAngle;
 };
 
 
@@ -154,9 +155,9 @@ class M2kGearAnimation: public GearSequenceAnimation {
 	float m_Absorber02Length, m_Absorber03Length, m_Offset;
 
 	// Channels to be exposed to drive animations.
-	DataChannel<double>::Ref b_Absorber02Angle;
-	DataChannel<double>::Ref b_Absorber03Angle;
-	DataChannel<double>::Ref b_Compression;
+	DataChannel<double>::RefT b_Absorber02Angle;
+	DataChannel<double>::RefT b_Absorber03Angle;
+	DataChannel<double>::RefT b_Compression;
 
 public:
 	CSP_DECLARE_OBJECT(M2kGearAnimation)
@@ -169,6 +170,7 @@ public:
 	virtual void registerChannels(Bus* bus);
 };
 
+CSP_NAMESPACE_END
 
 #endif // __CSPSIM_GEAR_ANIMATION_H__
 

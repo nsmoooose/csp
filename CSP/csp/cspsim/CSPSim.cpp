@@ -23,7 +23,6 @@
  */
 
 
-
 #ifdef _DEBUG
 #undef _DEBUG
 #include <Python.h>
@@ -32,30 +31,28 @@
 #include <Python.h>
 #endif
 
-#include "CSPSim.h"
+#include <csp/cspsim/CSPSim.h>
+#include <csp/cspsim/AnimationSequence.h>
+#include <csp/cspsim/Atmosphere.h>
+#include <csp/cspsim/Config.h>
+#include <csp/cspsim/DynamicObject.h>
+#include <csp/cspsim/EventMapIndex.h>
+#include <csp/cspsim/Exception.h>
+#include <csp/cspsim/GameScreen.h>
+#include <csp/cspsim/HID.h>
+#include <csp/cspsim/InputEvent.h>
+#include <csp/cspsim/LogoScreen.h>
+#include <csp/cspsim/ObjectModel.h>
+#include <csp/cspsim/Profile.h>
+#include <csp/cspsim/SimpleSceneManager.h>
+#include <csp/cspsim/TerrainObject.h>
+#include <csp/cspsim/Theater.h>
+#include <csp/cspsim/VirtualScene.h>
 
-#include "AnimationSequence.h"
-#include "Atmosphere.h"
-#include "Config.h"
-//#include "ConsoleCommands.h"
-#include "DynamicObject.h"
-#include "EventMapIndex.h"
-#include "Exception.h"
-#include "GameScreen.h"
-#include "HID.h"
-#include "InputEvent.h"
-#include "LogoScreen.h"
-#include "ObjectModel.h"
-#include "Profile.h"
-#include "Shell.h"
-#include "SimpleSceneManager.h"
-#include "Stores/StoresDatabase.h"
-#include "TerrainObject.h"
-#include "Theater.h"
-#include "VirtualScene.h"
+#include <csp/cspsim/battlefield/LocalBattlefield.h>
+#include <csp/cspsim/battlefield/SimObject.h>
 
-#include <csp/csplib/battlefield/LocalBattlefield.h>
-#include <csp/csplib/battlefield/SimObject.h>
+#include <csp/cspsim/stores/StoresDatabase.h>
 
 #include <csp/csplib/data/GeoPos.h>
 #include <csp/csplib/data/DataArchive.h>
@@ -70,6 +67,8 @@
 
 #include <csp/csplib/net/ClientServer.h>
 
+#include <csp/modules/demeter/DemeterException.h>
+
 #include <GL/gl.h>   // Header File For The OpenGL32 Library
 #include <GL/glu.h>  // Header File For The GLu32 Library
 
@@ -82,13 +81,12 @@
 #include <SDL/SDL_joystick.h>
 
 
-#include <Demeter/DemeterException.h>
 
-
+/*
 ////////////////////////////////////////////////
 // FIXME
 
-#include "AircraftObject.h"
+//#include "AircraftObject.h"
 
 //
 ////////////////////////////////////////////////
@@ -101,7 +99,10 @@
 #ifndef TRUE
 #define TRUE 1
 #endif
+*/
 
+
+CSP_NAMESPACE
 
 // For network testing on a single box it's convenient to disable rendering on
 // one of the sims.  Using a global here just because we're lazy.
@@ -128,7 +129,7 @@ SDLWave  m_audioWave;
 CSPSim *CSPSim::theSim = 0;
 
 CSPSim::CSPSim():
-	m_DataManager(new simdata::DataManager),
+	m_DataManager(new DataManager),
 	m_Atmosphere(new Atmosphere),
 	//--m_RenderSurface(new Producer::RenderSurface),
 	m_InputEvent(new InputEvent)
@@ -138,10 +139,10 @@ CSPSim::CSPSim():
 	}
 
 	int level = g_Config.getInt("Debug", "LoggingLevel", 0, true);
-	csplog().setCategories(CSP_ALL);
-	csplog().setPriority(level);
+	log().setCategories(cLogCategory_ALL);
+	log().setPriority(level);
 	std::string logfile = g_Config.getString("Debug", "LogFile", "CSPSim.log", true);
-	csplog().logToFile(logfile);
+	log().logToFile(logfile);
 
 	g_DisableRender = g_Config.getBool("Debug", "DisableRender", false, false);
 
@@ -151,9 +152,6 @@ CSPSim::CSPSim():
 
 	m_Paused = true;
 	m_Finished = false;
-	m_ConsoleOpen = false;
-
-	//m_Console = NULL;
 
 	m_CurrentScreen = NULL;
 	m_PrevScreen = NULL;
@@ -163,8 +161,6 @@ CSPSim::CSPSim():
 	m_FrameTime = 0.05;
 	m_FrameRate = 20.0;
 	m_ElapsedTime = 0.0;
-
-	m_Shell = new PyShell();
 }
 
 
@@ -175,15 +171,15 @@ CSPSim::~CSPSim() {
 	}
 }
 
-void CSPSim::setActiveObject(simdata::Ref<DynamicObject> object) {
+void CSPSim::setActiveObject(Ref<DynamicObject> object) {
 
 	/*
-	CSP_LOG(APP, INFO, "CSPSim::setActiveObject - objectID: " << object->getObjectID()
+	CSPLOG(INFO, APP) << "CSPSim::setActiveObject - objectID: " << object->getObjectID(;
 	                   << ", ObjectType: " << object->getObjectType()
 	                   << ", Position: " << object->getGlobalPosition());
 	*/
 
-	CSP_LOG(APP, INFO, "CSPSim::setActiveObject()");
+	CSPLOG(INFO, APP) << "CSPSim::setActiveObject()";
 
 	if (object == m_ActiveObject) return;
 	if (m_ActiveObject.valid()) {
@@ -203,20 +199,16 @@ void CSPSim::setActiveObject(simdata::Ref<DynamicObject> object) {
 		// term solution for vehicle allocation.  It's also a bit tricky since the
 		// aggregation bubbles are determined by human-controlled vehicles.
 		// XXX XXX m_Battlefield->setHuman(m_ActiveObject->id(), true);
-		simdata::hasht classhash = m_ActiveObject->getPath();
-		CSP_LOG(APP, INFO, "getting map for " << classhash.str());
-		simdata::Ref<EventMapping> map = m_InterfaceMaps->getMap(classhash);
-		CSP_LOG(APP, INFO, "selecting map @ " << map.get());
+		hasht classhash = m_ActiveObject->getPath();
+		CSPLOG(INFO, APP) << "getting map for " << classhash.str();
+		Ref<EventMapping> map = m_InterfaceMaps->getMap(classhash);
+		CSPLOG(INFO, APP) << "selecting map @ " << map.get();
 		m_Interface->setMapping(map);
 	}
 	m_Interface->bindObject(m_ActiveObject.get());
 }
 
-simdata::Ref<PyShell> CSPSim::getShell() const {
-	return m_Shell;
-}
-
-simdata::Ref<DynamicObject> CSPSim::getActiveObject() const {
+Ref<DynamicObject> CSPSim::getActiveObject() const {
 	return m_ActiveObject;
 }
 
@@ -245,7 +237,7 @@ void CSPSim::togglePause() {
 void CSPSim::init() {
 	try {
 		CSPLOG(INFO, APP) << "Installing stack trace handler...";
-		simdata::AutoTrace::install();
+		AutoTrace::install();
 
 		CSPLOG(INFO, APP) << "Starting CSPSim...";
 		osg::setNotifyLevel(osg::WARN);
@@ -255,22 +247,22 @@ void CSPSim::init() {
 		std::string model_path = getDataPath("ModelPath");
 		std::string font_path = getDataPath("FontPath");
 		std::string search_path;
-		simdata::ospath::addpath(search_path, image_path);
-		simdata::ospath::addpath(search_path, model_path);
-		simdata::ospath::addpath(search_path, font_path);
+		ospath::addpath(search_path, image_path);
+		ospath::addpath(search_path, model_path);
+		ospath::addpath(search_path, font_path);
 		ObjectModel::setDataFilePathList(search_path);
 
 		// open the primary data archive
 		std::string cache_path = getCachePath();
-		std::string archive_file = simdata::ospath::join(cache_path, "sim.dar");
+		std::string archive_file = ospath::join(cache_path, "sim.dar");
 		try {
-			simdata::DataArchive *sim = new simdata::DataArchive(archive_file.c_str(), 1);
+			DataArchive *sim = new DataArchive(archive_file.c_str(), 1);
 			assert(sim);
 			m_DataManager->addArchive(sim);
 		}
-		catch (simdata::Exception &e) {
-			CSP_LOG(APP, ERROR, "Error opening data archive " << archive_file);
-			CSP_LOG(APP, ERROR, e.getType() << ": " << e.getMessage());
+		catch (Exception &e) {
+			CSPLOG(ERROR, APP) << "Error opening data archive " << archive_file;
+			CSPLOG(ERROR, APP) << e.getType() << ": " << e.getMessage();
 			throw e;
 			//::exit(0);
 		}
@@ -299,7 +291,7 @@ void CSPSim::init() {
 
 		m_Clean = false;
 
-		CSP_LOG(APP, DEBUG, "INIT:: interface maps");
+		CSPLOG(DEBUG, APP) << "INIT:: interface maps";
 
 		// load all interface maps and create a virtual hid for the active object
 		m_InterfaceMaps = new EventMapIndex();
@@ -310,7 +302,7 @@ void CSPSim::init() {
 		logoScreen.onRender();
 		SDL_GL_SwapBuffers();
 
-		CSP_LOG(APP, DEBUG, "INIT:: theater");
+		CSPLOG(DEBUG, APP) << "INIT:: theater";
 
 		std::string theater = g_Config.getPath("Testing", "Theater", "sim:theater.balkan", false);
 		m_Theater = m_DataManager->getObject(theater.c_str());
@@ -334,7 +326,7 @@ void CSPSim::init() {
 		logoScreen.onRender();
 		SDL_GL_SwapBuffers();
 
-		CSP_LOG(APP, DEBUG, "INIT:: scene");
+		CSPLOG(DEBUG, APP) << "INIT:: scene";
 
 		m_Scene = new VirtualScene(m_ScreenWidth, m_ScreenHeight);
 		m_Scene->buildScene();
@@ -344,13 +336,13 @@ void CSPSim::init() {
 		logoScreen.onRender();
 		SDL_GL_SwapBuffers();
 
-		CSP_LOG(APP, DEBUG, "INIT:: battlefield");
+		CSPLOG(DEBUG, APP) << "INIT:: battlefield";
 
 		logoScreen.onUpdate(0.0);
 		logoScreen.onRender();
 		SDL_GL_SwapBuffers();
 
-		CSP_LOG(APP, DEBUG, "INIT:: scene configuration");
+		CSPLOG(DEBUG, APP) << "INIT:: scene configuration";
 
 		// get view parameters from configuration file.  ultimately there should
 		// be an in-game ui for this and probably a separate config file.
@@ -381,32 +373,32 @@ void CSPSim::init() {
 		if (g_Config.getBool("Networking", "UseNetworking", false, true)) {
 			CSPLOG(DEBUG, APP) << "Initializing network layer";
 			std::string netlogfile = g_Config.getString("Debug", "NetLogFile", "SimNet.log", true);
-			simnet::netlog().logToFile(netlogfile);
-			simnet::netlog().setPriority(simdata::LOG_INFO);
-			std::string default_ip = simnet::NetworkNode().getIpString();
+			netlog().logToFile(netlogfile);
+			netlog().setPriority(cLogPriority_INFO);
+			std::string default_ip = NetworkNode().getIpString();
 			std::string local_address = g_Config.getString("Networking", "LocalIp", default_ip, true);
 			int local_port = g_Config.getInt("Networking", "LocalPort", 3161, true);
-			simnet::NetworkNode local_node(local_address, local_port);
+			NetworkNode local_node(local_address, local_port);
 			CSPLOG(INFO, NETWORK) << "Initializing network interface " << local_address << ":" << local_port;
 
 			int incoming_bw = g_Config.getInt("Networking", "IncomingBandwidth", 36000, true);
 			int outgoing_bw = g_Config.getInt("Networking", "OutgoingBandwidth", 36000, true);
-			m_NetworkClient = new simnet::Client(local_node, incoming_bw, outgoing_bw);
+			m_NetworkClient = new Client(local_node, incoming_bw, outgoing_bw);
 
 			std::string server_address = g_Config.getString("Networking", "ServerIp", default_ip, true);
 			int server_port = g_Config.getInt("Networking", "ServerPort", 3160, true);
-			CSP_LOG(NETWORK, INFO, "Connecting to server: " << server_address << ":" << server_port);
-			simnet::NetworkNode server_node(server_address, server_port);
+			CSPLOG(INFO, NETWORK) << "Connecting to server: " << server_address << ":" << server_port;
+			NetworkNode server_node(server_address, server_port);
 			if (!m_NetworkClient->connectToServer(server_node, 5.0 /*seconds*/)) {
 				std::cerr << "Unable to connecting to server, running in local mode\n";
-				CSP_LOG(NETWORK, ERROR, "Unable to connecting to server, running in local mode");
+				CSPLOG(ERROR, NETWORK) << "Unable to connecting to server, running in local mode";
 				m_NetworkClient = 0;
 			} else {
 				std::string name = g_Config.getString("Networking", "UserName", "anonymous", true);
-				CSP_LOG(NETWORK, INFO, "Connecting to server battlefield as " << name);
+				CSPLOG(INFO, NETWORK) << "Connecting to server battlefield as " << name;
 				m_Battlefield->setNetworkClient(m_NetworkClient);
 				m_Battlefield->connectToServer(name);
-				simdata::Timer timer;
+				Timer timer;
 				timer.start();
 				while (timer.elapsed() < 5.0 && !m_Battlefield->isConnectionActive()) {
 					m_NetworkClient->processAndWait(0.01, 0.01, 0.1);
@@ -416,7 +408,7 @@ void CSPSim::init() {
 					m_Battlefield->setNetworkClient(0);
 				}
 			}
-			simnet::netlog().setPriority(simdata::LOG_INFO);
+			netlog().setPriority(cLogPriority_INFO);
 		}
 
 		logoScreen.onUpdate(0.0);
@@ -437,14 +429,11 @@ void CSPSim::init() {
 		changeScreen(m_GameScreen);
 		
 	}
-	catch(csp::Exception & pEx) {
-		csp::FatalException(pEx, "initialization");
+	catch (Exception &e) {
+		FatalException(e, "initialization");
 	}
-	catch(DemeterException & pEx) {
-		csp::DemeterFatalException(pEx, "initialization");
-	}
-	catch(simdata::Exception & pEx) {
-		csp::SimDataFatalException(pEx, "initialization");
+	catch (DemeterException &e) {
+		DemeterFatalException(e, "initialization");
 	}
 	/*
 	catch (...) {
@@ -456,7 +445,7 @@ void CSPSim::init() {
 
 
 void CSPSim::cleanup() {
-	CSP_LOG(APP, INFO, "CSPSim  cleanup...");
+	CSPLOG(INFO, APP) << "CSPSim  cleanup...";
 
 	assert(m_Battlefield.valid());
 	assert(m_Scene.valid());
@@ -475,25 +464,19 @@ void CSPSim::cleanup() {
 		SDL_JoystickClose(m_SDLJoystick);
 		m_SDLJoystick = NULL;
 	}
-	/*
-	if (m_Console) {
-		Py_DECREF(m_Console);
-		m_Console = NULL;
-	}
-	*/
 	SDL_Quit();
 	m_Clean = true;
 }
 
 
 void CSPSim::quit() {
-	CSP_LOG(APP, DEBUG, "CSPSim::quit...");
+	CSPLOG(DEBUG, APP) << "CSPSim::quit...";
 	m_Finished = true;
 }
 
 
 void CSPSim::changeScreen(BaseScreen * newScreen) {
-	CSP_LOG(APP, DEBUG, "CSPSim::changeScreen ...");
+	CSPLOG(DEBUG, APP) << "CSPSim::changeScreen ...";
 	m_PrevScreen = m_CurrentScreen;
 	m_CurrentScreen = newScreen;
 }
@@ -504,12 +487,12 @@ void CSPSim::run() {
 	float low_priority = 0.0;
 	int idx = 0;
 
-	CSP_LOG(APP, DEBUG, "CSPSim::run...");
+	CSPLOG(DEBUG, APP) << "CSPSim::run...";
 
 	//m_bShowStats = true;
 
 	std::string date_string = g_Config.getString("Testing", "Date", "2000-01-01 00:00:00.0", true);
-	simdata::SimDate date;
+	SimDate date;
 	try {
 		date.parseXML(date_string.c_str());
 	}
@@ -530,13 +513,13 @@ void CSPSim::run() {
 	m_Atmosphere->setDate(date);
 	m_Atmosphere->reset();
 
-	simdata::Timer time_object_update;
-	simdata::Timer time_render;
+	Timer time_object_update;
+	Timer time_render;
 	bool lopri = false;
 
 	try {
 		while (!m_Finished) {
-			CSP_LOG(APP, DEBUG, "CSPSim::run... Starting loop iteration");
+			CSPLOG(DEBUG, APP) << "CSPSim::run... Starting loop iteration";
 
 			if (m_NetworkClient.valid()) {
 				m_NetworkClient->processIncoming(0.01);
@@ -569,12 +552,12 @@ void CSPSim::run() {
 
 			// Update Objects if sim is not frozen
 			PROF0(_objects);
-			if (!m_Paused && !m_ConsoleOpen) {
-				//CSP_LOG(APP, ERROR, "update objects");
+			if (!m_Paused) {
+				//CSPLOG(ERROR, APP) << "update objects";
 				time_object_update.start();
 				updateObjects(dt);
 				time_object_update.stop();
-				//CSP_LOG(APP, ERROR, "update objects done");
+				//CSPLOG(ERROR, APP) << "update objects done";
 			}
 			PROF1(_objects, 60);
 			
@@ -614,28 +597,24 @@ void CSPSim::run() {
 		}
 		//m_Battlefield->dumpObjectHistory();
 	}
-	catch(DemeterException * pEx) {
-		std::string msg = pEx->GetErrorMessage();
-		CSP_LOG(APP, ERROR, "Caught Demeter Exception: " << msg );
+	catch (DemeterException *e) {
+		std::string msg = e->GetErrorMessage();
+		CSPLOG(ERROR, APP) << "Caught Demeter exception: " << msg ;
 		cleanup();
 		::exit(1);
 	}
-	catch(simdata::Exception & pEx) {
-		csp::SimDataFatalException(pEx, "mainloop");
+	catch (Exception &e) {
+		FatalException(e, "mainloop");
 	}
-	catch(csp::Exception & pEx) {
-		csp::FatalException(pEx, "initialization");
-	}
-	catch(...) {
-		CSP_LOG(APP, ERROR, "MAIN: Unexpected exception, GLErrorNUM: " << glGetError());
+	catch (...) {
+		CSPLOG(ERROR, APP) << "MAIN: Unexpected exception, GLErrorNUM: " << glGetError();
 		cleanup();
 		::exit(1);
 	}
-
 }
 
 
-void CSPSim::initTime(simdata::SimDate const &date) {
+void CSPSim::initTime(SimDate const &date) {
 	m_CurrentTime = date;
 	m_CurrentTime.update();
 	m_ElapsedTime = 0.0;
@@ -674,9 +653,9 @@ void CSPSim::updateTime() {
 }
 
 void CSPSim::doInput(double dt) {
-	CSP_LOG(APP, DEBUG, "CSPSim::doInput()...");
+	CSPLOG(DEBUG, APP) << "CSPSim::doInput()...";
 
-	simdata::Ref<VirtualHID> screen_interface = m_CurrentScreen->getInterface();
+	Ref<VirtualHID> screen_interface = m_CurrentScreen->getInterface();
 
 	SDL_Event event;
 	short doPoll = 10;
@@ -688,23 +667,13 @@ void CSPSim::doInput(double dt) {
 			m_Finished = true;
 			return;
 		}
-		if (m_ConsoleOpen && event.type == SDL_KEYDOWN) {
-			if (event.key.keysym.sym == SDLK_ESCAPE) {
-				endConsole();
-				handled = true;
-			} else {
-				/*
-				handled = m_Console->onKey(event.key.keysym);
-				*/
-			}
-		}
 		if (!handled && m_CurrentScreen) {
 			if (screen_interface.valid()) {
 				handled = screen_interface->onEvent(event);
 			}
 		}
 		if (!handled && m_Interface.valid()) {
-			CSP_LOG(APP, DEBUG, "CSPSim::doInput()-Calling m_Interface->onEvent()");
+			CSPLOG(DEBUG, APP) << "CSPSim::doInput()-Calling m_Interface->onEvent()";
 			handled = m_Interface->onEvent(event);
 		}
 	}
@@ -722,7 +691,7 @@ void CSPSim::doInput(double dt) {
  * Update all objects, calling physics and AI routines.
  */
 void CSPSim::updateObjects(double dt) {
-	CSP_LOG(APP, DEBUG, "CSPSim::updateObjects...");
+	CSPLOG(DEBUG, APP) << "CSPSim::updateObjects...";
 
 	if (m_Battlefield.valid()) {
 		m_Battlefield->update(dt);
@@ -734,7 +703,7 @@ void CSPSim::updateObjects(double dt) {
 
 
 int CSPSim::initSDL() {
-	CSP_LOG(APP, DEBUG, "Initializing SDL...");
+	CSPLOG(DEBUG, APP) << "Initializing SDL...";
 
 	int height = g_Config.getInt("Screen", "Height", 768, true);
 	int width = g_Config.getInt("Screen", "Width", 1024, true);
@@ -745,14 +714,14 @@ int CSPSim::initSDL() {
 
 	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK | SDL_INIT_AUDIO /*  | SDL_INIT_NOPARACHUTE */ ) != 0) {
 		std::cerr << "Unable to initialize SDL: " << SDL_GetError() << "\n";
-		CSP_LOG(APP, ERROR, "ERROR! Unable to initialize SDL: " << SDL_GetError());
+		CSPLOG(ERROR, APP) << "ERROR! Unable to initialize SDL: " << SDL_GetError();
 		return 1;
 	}
 
 	const SDL_VideoInfo *info = SDL_GetVideoInfo();
 	int bpp = info->vfmt->BitsPerPixel;
 
-	CSP_LOG(APP, ERROR, "Initializing video at " << bpp << " BitsPerPixel.");
+	CSPLOG(ERROR, APP) << "Initializing video at " << bpp << " BitsPerPixel.";
 
 	Uint32 flags = SDL_OPENGL | SDL_HWSURFACE | SDL_DOUBLEBUF;
 
@@ -766,31 +735,31 @@ int CSPSim::initSDL() {
 
 	if (m_SDLScreen == NULL) {
 		std::cerr << "Unable to set video mode: " << SDL_GetError() << "\n";
-		CSP_LOG(APP, ERROR, "ERROR! Unable to initialize SDL: " << SDL_GetError());
+		CSPLOG(ERROR, APP) << "ERROR! Unable to initialize SDL: " << SDL_GetError();
 		return 1;
 	}
 
 	SDL_JoystickEventState(SDL_ENABLE);
 	m_SDLJoystick = SDL_JoystickOpen(0);
 	if (m_SDLJoystick == NULL) {
-		CSP_LOG(APP, ERROR, "Failed to open joystick");
-		CSP_LOG(APP, ERROR, SDL_GetError());
+		CSPLOG(ERROR, APP) << "Failed to open joystick";
+		CSPLOG(ERROR, APP) << SDL_GetError();
 	}
 
 	SDL_EnableUNICODE(1);
 
 	// some simple sdl sound testing
 	std::string sound_path = getDataPath("SoundPath");
-	std::string test_sound = simdata::ospath::join(sound_path, "avionturbine5.wav");
+	std::string test_sound = ospath::join(sound_path, "avionturbine5.wav");
 	if (SDL_LoadWAV(test_sound.c_str(), &m_audioWave.spec, &m_audioWave.sound,
 	                &m_audioWave.soundlen) == NULL) {
-		CSP_LOG(APP, WARNING,  "Couldn't load '" << test_sound << "': " << SDL_GetError());
+		CSPLOG(WARNING, APP) <<  "Couldn't load '" << test_sound << "': " << SDL_GetError();
 	} else {
 		m_audioWave.spec.callback = fillerup;
 
 		/* Initialize fillerup() variables */
 		if (SDL_OpenAudio(&m_audioWave.spec, NULL) < 0)  {
-			CSP_LOG(APP, ERROR, "Couldn't open audio: " << SDL_GetError());
+			CSPLOG(ERROR, APP) << "Couldn't open audio: " << SDL_GetError();
 			SDL_FreeWAV(m_audioWave.sound);
 		}
 	}
@@ -825,28 +794,7 @@ void fillerup(void * /*unused*/, Uint8 *stream, int len) {
 	m_audioWave.soundpos += len;
 }
 
-
-void CSPSim::runConsole(PyConsole * /*console*/) {
-	// XXX the console code needs a major rewrite since upgrading to osg 0.9.4
-	/*
-	m_Console = console;
-	if (m_Console.valid()) {
-		m_ConsoleOpen = true;
-		m_Console->bind(m_Shell);
-		m_Console->enable();
-	}
-	*/
-}
-
-void CSPSim::endConsole() {
-	/*
-	m_ConsoleOpen = false;
-	m_Console->disable();
-	m_Console = NULL;
-	*/
-}
-
-simdata::Ref<Theater> CSPSim::getTheater() const {
+Ref<Theater> CSPSim::getTheater() const {
 	return m_Theater;
 }
 
@@ -858,7 +806,9 @@ TerrainObject const * CSPSim::getTerrain() const {
 	return m_Terrain.get();
 }
 
-simdata::Ref<EventMapIndex> CSPSim::getInterfaceMaps() const {
+Ref<EventMapIndex> CSPSim::getInterfaceMaps() const {
 	return m_InterfaceMaps;
 }
+
+CSP_NAMESPACE_END
 

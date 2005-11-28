@@ -25,15 +25,16 @@
 #ifndef __CSPSIM_EXTERNAL_VIEWS_H__
 #define __CSPSIM_EXTERNAL_VIEWS_H__
 
+#include <csp/cspsim/views/View.h>
 #include <csp/csplib/data/Vector3.h>
-#include "Views/View.h"
 
+CSP_NAMESPACE
 
 class ExternalViewBody: public View {
 public:
 	ExternalViewBody(size_t vm): View(vm, false) { }
 	virtual void activate();
-	virtual void updateView(simdata::Vector3& ep, simdata::Vector3& lp, simdata::Vector3& up, double dt);
+	virtual void updateView(Vector3& ep, Vector3& lp, Vector3& up, double dt);
 	virtual ~ExternalViewBody() { }
 };
 
@@ -42,20 +43,20 @@ class ExternalViewWorld: public View {
 public:
 	ExternalViewWorld(size_t vm): View(vm, false) { }
 	virtual void activate();
-	virtual void updateView(simdata::Vector3& ep, simdata::Vector3& lp, simdata::Vector3& up, double dt);
+	virtual void updateView(Vector3& ep, Vector3& lp, Vector3& up, double dt);
 	virtual ~ExternalViewWorld() { }
 };
 
 
 class FlybyView: public View {
 protected:
-	simdata::Vector3 m_FixedCameraPosition;
+	Vector3 m_FixedCameraPosition;
 	virtual void newFixedCamPos(SimObject* target);
 public:
 	FlybyView(size_t vm): View(vm, false) { }
 	virtual void activate();
-	virtual void updateView(simdata::Vector3& ep, simdata::Vector3& lp, simdata::Vector3& up, double dt);
-	virtual void recalculate(simdata::Vector3& ep, simdata::Vector3& lp, simdata::Vector3& up, double dt);
+	virtual void updateView(Vector3& ep, Vector3& lp, Vector3& up, double dt);
+	virtual void recalculate(Vector3& ep, Vector3& lp, Vector3& up, double dt);
 	virtual ~FlybyView() { }
 };
 
@@ -74,10 +75,11 @@ class SatelliteView: public View {
 public:
 	SatelliteView(size_t vm): View(vm, false) { }
 	virtual void activate();
-	virtual void updateView(simdata::Vector3& ep, simdata::Vector3& lp, simdata::Vector3& up, double dt);
+	virtual void updateView(Vector3& ep, Vector3& lp, Vector3& up, double dt);
 	virtual ~SatelliteView() { }
 };
 
+CSP_NAMESPACE_END
 
 #endif // __CSPSIM_EXTERNAL_VIEWS_H__
 

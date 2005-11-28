@@ -23,11 +23,12 @@
  **/
 
 
-#include "Systems/AircraftInputSystem.h"
-#include "ControlInputsChannels.h"
+#include <csp/cspsim/systems/AircraftInputSystem.h>
+#include <csp/cspsim/ControlInputsChannels.h>
 
 #include <csp/csplib/data/ObjectInterface.h>
 
+CSP_NAMESPACE
 
 CSP_XML_BEGIN(AircraftInputSystem)
 CSP_XML_END
@@ -207,4 +208,5 @@ void AircraftInputSystem::IncAirbrake() {
 	m_AirbrakeInput.setValue(v);
 }
 
+CSP_NAMESPACE_END
 

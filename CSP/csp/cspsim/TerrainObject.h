@@ -109,8 +109,8 @@ public:
 	virtual void setScreenSizeHint(int, int) {}
 	virtual void setCameraPosition(double, double, double) = 0;
 	virtual void testLineOfSight(Intersection &, IntersectionHint &) = 0;
-	virtual float getGroundElevation(double x, double y, Vector3 &normal, IntersectionHint &) = 0;
-	virtual float getGroundElevation(double x, double y, IntersectionHint &) = 0;
+	virtual float getGroundElevation(double x, double y, Vector3 &normal, IntersectionHint &) const = 0;
+	virtual float getGroundElevation(double x, double y, IntersectionHint &) const = 0;
 
 	virtual int getTerrainPolygonsRendered() const = 0;
 	virtual osg::Node *getNode() = 0;

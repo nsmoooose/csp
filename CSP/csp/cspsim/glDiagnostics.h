@@ -25,6 +25,7 @@
 #ifndef __CSPSIM_GLDIAGNOSTICS_H__
 #define __CSPSIM_GLDIAGNOSTICS_H__
 
+#include <csp/csplib/util/Namespace.h>
 
 #include <vector>
 #include <string>
@@ -33,6 +34,7 @@
 #define GL_ALL_CLIENT_ATTRIB_BITS 0xFFFFFFFF
 #endif
 
+CSP_NAMESPACE
 
 /** Tool for capturing (most of) the current glState, and logging
  *  state differences.
@@ -77,5 +79,6 @@ public:
 	bool hasChanged(GlStateSnapshot const *other=0);
 };
 
+CSP_NAMESPACE_END
 
 #endif // __CSPSIM_GLDIAGNOSTICS_H__

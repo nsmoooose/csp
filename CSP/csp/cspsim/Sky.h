@@ -25,21 +25,24 @@
 #ifndef __CSPSIM_SKY_H__
 #define __CSPSIM_SKY_H__
 
+#include <csp/cspsim/Colorspace.h>
+#include <csp/csplib/data/Date.h>
+
 #include <osg/Group>
 #include <osg/Light>
 #include <osg/Geometry>
 #include <osg/Billboard>
 #include <osg/Matrix>
-#include <csp/csplib/data/Date.h>
-#include "Colorspace.h"
-
-class StarSystem;
-class FalseHorizon;
 
 namespace osg {
 	class Texture2D;
 	class ColorMatrix;
 }
+
+CSP_NAMESPACE
+
+class StarSystem;
+class FalseHorizon;
 
 class SkyShader {
 protected:
@@ -246,7 +249,7 @@ class Sky: public osg::Group {
 public:
 	Sky();
 	virtual ~Sky();
-	void update(double lat, double lon, simdata::SimDate const &);
+	void update(double lat, double lon, SimDate const &);
 	osg::Light* getSunLight();
 	osg::Light* getMoonLight();
 	osg::Vec4 getHorizonColor(float angle);
@@ -287,6 +290,8 @@ protected:
 	double m_Latitude;
 	double m_SpinTheWorld;
 };
+
+CSP_NAMESPACE_END
 
 #endif // __CSPSIM_SKY_H__
 

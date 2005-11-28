@@ -33,7 +33,7 @@ CSP_NAMESPACE
 void TaggedRecordRegistry::registerFactory(TaggedRecordFactoryBase *factory) {
 	assert(factory != 0);
 	assert(!hasFactory(factory->getName()));
-	CSPLOG(INFO, ALL) << "Registering TaggedRecordFactory<" << factory->getName() << "> [" << factory->getId() << "]";
+	CSPLOG(DEBUG, ALL) << "Registering TaggedRecordFactory<" << factory->getName() << "> [" << factory->getId() << "]";
 	TaggedRecord::Id id = factory->getId();
 	HashT key(static_cast<uint32>(id), static_cast<uint32>(id>>32));
 	_map[factory->getName()] = factory;

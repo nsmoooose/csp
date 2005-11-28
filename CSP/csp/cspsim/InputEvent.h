@@ -41,9 +41,7 @@ protected:
 	SimTime m_EventTime;
 	static const float m_Sampling;
 public:
-	Handle():
-	  m_EventTime(0.0f) {
-	 }
+	Handle(): m_EventTime(0.0f) { }
 	virtual bool operator()(SDL_Event& event) = 0;
 	virtual ~Handle();
 };

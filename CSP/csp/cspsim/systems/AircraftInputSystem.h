@@ -23,13 +23,14 @@
  **/
 
 
-#ifndef __CSPSIM_AIRCRAFTINPUTSYSTEM_H__
-#define __CSPSIM_AIRCRAFTINPUTSYSTEM_H__
+#ifndef __CSPSIM_SYSTEMS_AIRCRAFTINPUTSYSTEM_H__
+#define __CSPSIM_SYSTEMS_AIRCRAFTINPUTSYSTEM_H__
+
+#include <csp/cspsim/System.h>
 
 #include <csp/csplib/util/Math.h>
 
-#include "System.h"
-
+CSP_NAMESPACE
 
 class AircraftInputSystem: public System {
 
@@ -40,7 +41,7 @@ class AircraftInputSystem: public System {
 		double m_Increment;
 		double m_Minimum;
 		double m_Maximum;
-		DataChannel<double>::Ref m_Channel;
+		DataChannel<double>::RefT m_Channel;
 	public:
 		CombinedInput(double rate=0.4, double decay=0.9, double minimum=-1.0, double maximum=1.0): 
 			m_Rate(rate),
@@ -67,7 +68,7 @@ class AircraftInputSystem: public System {
 					}
 				}
 			}
-			m_Channel->value() = simdata::clampTo(v, m_Minimum, m_Maximum);
+			m_Channel->value() = clampTo(v, m_Minimum, m_Maximum);
 		}
 		double getValue() const {
 			return m_Channel->value();
@@ -176,9 +177,9 @@ private:
 	CombinedInput m_AirbrakeInput;
 
 	bool m_WheelBrakes;
-
 };
 
+CSP_NAMESPACE_END
 
-#endif // __CSPSIM_AICRAFTINPUTSYSTEM_H__
+#endif // __CSPSIM_SYSTEMS_AIRCRAFTINPUTSYSTEM_H__
 

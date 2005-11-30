@@ -23,26 +23,27 @@
  **/
 
 
-#include "DataEntryPage.h"
+#include <csp/cspsim/f16/DataEntryPage.h>
 
+CSP_NAMESPACE
 
 DataEntryForm::DataEntryForm(): m_EntryIndex(0), m_CycleIndex(0) { }
 
-void DataEntryForm::addCycle(DataCycle::Ref cycle) {
+void DataEntryForm::addCycle(DataCycle::RefT cycle) {
 	assert(cycle.valid());
 	cycle->setVisible(m_Cycles.empty());
 	m_Cycles.push_back(cycle);
 	m_Widgets.push_back(cycle);
 }
 
-void DataEntryForm::addEntry(DataEntry::Ref entry) {
+void DataEntryForm::addEntry(DataEntry::RefT entry) {
 	assert(entry.valid());
 	entry->setActive(m_Entries.empty());
 	m_Entries.push_back(entry);
 	m_Widgets.push_back(entry);
 }
 
-void DataEntryForm::addWidget(DataWidget::Ref widget) {
+void DataEntryForm::addWidget(DataWidget::RefT widget) {
 	assert(widget.valid());
 	m_Widgets.push_back(widget);
 }
@@ -161,5 +162,8 @@ std::string DataEntryGroup::ICP_DEC() { return m_ActivePage.valid() ? m_ActivePa
 double DataEntryGroup::update() { return 1; }
 void DataEntryGroup::importChannels(Bus*) { }
 void DataEntryGroup::reset() { m_ActivePage = 0; }
-void DataEntryGroup::setActivePage(DataEntryPage::Ref page) { m_ActivePage = page; }
+void DataEntryGroup::setActivePage(DataEntryPage::RefT page) { m_ActivePage = page; }
 std::string DataEntryGroup::onNumber(int) { return ""; }
+
+CSP_NAMESPACE_END
+

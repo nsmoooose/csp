@@ -37,6 +37,8 @@ def PackageConfig(env):
 
 env = env.Copy()
 env.SetConfig(PackageConfig)
+env.Append(LIBPATH=['#/modules/demeter/.bin', '#/modules/chunklod/.bin'])
+env.Append(LIBS=['demeter', 'chunklod'])
 
 
 SOURCES = [
@@ -48,7 +50,7 @@ SOURCES = [
 	'BaseDynamics.cpp',
 	'BaseScreen.cpp',
 	'Channels.cpp',
-#	'ChunkLodTerrain.cpp',
+	'ChunkLodTerrain.cpp',
 	'CockpitInterface.cpp',
 	'Collision.cpp',
 	'Colorspace.cpp',
@@ -100,24 +102,24 @@ SOURCES = [
 	'battlefield/SceneManager.cpp',
 	'battlefield/SimObject.cpp',
 
-#	'f16/AlphaNumericDisplay.cpp',
-#	'f16/GroundAvoidanceAdvisory.cpp',
-#	'f16/UpFrontControls.cpp',
-#	'f16/DataEntryPage.cpp',
-#	'f16/PageCNI.cpp',
-#	'f16/PageLIST.cpp',
-#	'f16/FLCS.cpp',
-#	'f16/F16Channels.cpp',
-#	'f16/F16Engine.cpp',
-#	'f16/F16FlightModel.cpp',
-#	'f16/F16GearDynamics.cpp',
-#	'f16/F16HUD.cpp',
-#	'f16/F16INS.cpp',
-#	'f16/F16System.cpp',
-#	'f16/FuelSystem.cpp',
-#	'f16/PanelHUD.cpp',
-#	'f16/Radio.cpp',
-#	'f16/NavigationSystem.cpp',
+	'f16/AlphaNumericDisplay.cpp',
+	'f16/GroundAvoidanceAdvisory.cpp',
+	'f16/UpFrontControls.cpp',
+	'f16/DataEntryPage.cpp',
+	'f16/PageCNI.cpp',
+	'f16/PageLIST.cpp',
+	'f16/FLCS.cpp',
+	'f16/F16Channels.cpp',
+	'f16/F16Engine.cpp',
+	'f16/F16FlightModel.cpp',
+	'f16/F16GearDynamics.cpp',
+	'f16/F16HUD.cpp',
+	'f16/F16INS.cpp',
+	'f16/F16System.cpp',
+	'f16/FuelSystem.cpp',
+	'f16/PanelHUD.cpp',
+	'f16/Radio.cpp',
+	'f16/NavigationSystem.cpp',
 
 	'hud/HUD.cpp',
 	'hud/Tape.cpp',

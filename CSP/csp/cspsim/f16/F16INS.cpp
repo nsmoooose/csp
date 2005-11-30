@@ -23,14 +23,15 @@
  **/
 
 
-#include <System.h>
-#include <KineticsChannels.h>
-#include <F16/F16Channels.h>
+#include <csp/cspsim/System.h>
+#include <csp/cspsim/KineticsChannels.h>
+#include <csp/cspsim/f16/F16Channels.h>
 
 #include <csp/csplib/data/ObjectInterface.h>
 #include <csp/csplib/data/Quat.h>
 #include <csp/csplib/data/Vector3.h>
 
+CSP_NAMESPACE
 
 class F16INS: public System {
 public:
@@ -40,7 +41,7 @@ public:
 	virtual ~F16INS() { }
 
 	virtual void registerChannels(Bus* bus) {
-		b_INSAttitude = bus->registerLocalDataChannel<simdata::Quat>(bus::F16::INSAttitude, simdata::Quat());
+		b_INSAttitude = bus->registerLocalDataChannel<Quat>(bus::F16::INSAttitude, Quat());
 	}
 
 	virtual void importChannels(Bus* bus) {
@@ -53,8 +54,8 @@ protected:
 	virtual double onUpdate(double dt) {
 		double f = dt / (dt + m_ResponseTime);
 		double g = 1.0 - f;
-		simdata::Quat &a0 = b_INSAttitude->value();
-		simdata::Quat const &a1 = b_Attitude->value();
+		Quat &a0 = b_INSAttitude->value();
+		Quat const &a1 = b_Attitude->value();
 		a0.w() = a0.w() * g + a1.w() * f;
 		a0.x() = a0.x() * g + a1.x() * f;
 		a0.y() = a0.y() * g + a1.y() * f;
@@ -62,10 +63,10 @@ protected:
 		return 0.0;
 	}
 
-	DataChannel<simdata::Quat>::Ref b_INSAttitude;
-	DataChannel<simdata::Quat>::CRef b_Attitude;
-	DataChannel<simdata::Vector3>::CRef b_Position;
-	DataChannel<simdata::Vector3>::CRef b_Velocity;
+	DataChannel<Quat>::RefT b_INSAttitude;
+	DataChannel<Quat>::CRefT b_Attitude;
+	DataChannel<Vector3>::CRefT b_Position;
+	DataChannel<Vector3>::CRefT b_Velocity;
 
 	double m_ResponseTime;
 };
@@ -74,4 +75,6 @@ protected:
 CSP_XML_BEGIN(F16INS)
 	CSP_DEF("ins_attitude_response_time", m_ResponseTime, false)
 CSP_XML_END
+
+CSP_NAMESPACE_END
 

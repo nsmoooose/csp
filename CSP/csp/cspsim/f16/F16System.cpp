@@ -22,25 +22,25 @@
  *
  **/
 
-#include "F16System.h"
-#include "F16Channels.h"
-#include <AnimationSequence.h>
-#include <CSPSim.h>
-#include <FlightDynamicsChannels.h>
-#include <NavigationChannels.h>
-#include <LandingGearChannels.h>
+#include <csp/cspsim/f16/F16System.h>
+#include <csp/cspsim/f16/F16Channels.h>
+#include <csp/cspsim/AnimationSequence.h>
+#include <csp/cspsim/CSPSim.h>
+#include <csp/cspsim/FlightDynamicsChannels.h>
+#include <csp/cspsim/LandingGearChannels.h>
+#include <csp/cspsim/NavigationChannels.h>
+#include <csp/cspsim/SystemsModel.h>
 
-// for testing stores release (connected to refueling door event for now!)
-#include <Stores/StoresManagementSystem.h>
-#include <Stores/Stores.h>
-
-#include <SystemsModel.h>
+// for testing stores release
+#include <csp/cspsim/stores/StoresManagementSystem.h>
+#include <csp/cspsim/stores/Stores.h>
 
 #include <csp/csplib/util/Conversions.h>
 #include <csp/csplib/data/Date.h>
 #include <csp/csplib/util/Math.h>
 #include <csp/csplib/data/ObjectInterface.h>
 
+CSP_NAMESPACE
 
 CSP_XML_BEGIN(F16System)
 	CSP_DEF("fuel_door_sequence", m_FuelDoorSequence, false)
@@ -49,7 +49,7 @@ CSP_XML_END
 
 DEFINE_INPUT_INTERFACE(F16System)
 
-const simdata::Enumeration F16System::MasterModes("NAV AA AG");
+const Enumeration F16System::MasterModes("NAV AA AG");
 
 
 F16System::F16System(): m_CatIII(false) {
@@ -64,8 +64,8 @@ void F16System::registerChannels(Bus* bus) {
 	b_ManualPitchOverrideActive = bus->registerSharedDataChannel<bool>(bus::F16::ManualPitchOverrideActive, false);
 	b_StandbyGains = bus->registerLocalDataChannel<bool>(bus::F16::StandbyGains, false);
 	b_TakeoffLandingGains = bus->registerLocalDataChannel<bool>(bus::F16::TakeoffLandingGains, false);
-	b_NavigationSystem = bus->registerSharedDataChannel<NavigationSystem::Ref>("Navigation", new NavigationSystem);
-	b_MasterMode = bus->registerLocalPushChannel<simdata::EnumLink>("MasterMode", MasterMode("NAV"));
+	b_NavigationSystem = bus->registerSharedDataChannel<Ref<NavigationSystem> >("Navigation", new NavigationSystem);
+	b_MasterMode = bus->registerLocalPushChannel<EnumLink>("MasterMode", MasterMode("NAV"));
 	bus->registerSharedDataChannel<double>("F16.CaraAlow", 0.0);
 	bus->registerSharedDataChannel<double>("F16.MslFloor", 0.0);
 	bus->registerSharedDataChannel<double>("F16.TfAdv", 0.0);
@@ -126,12 +126,12 @@ void F16System::setCatIII() {
 }
 
 void F16System::nextSteerpoint() {
-	CSP_LOG(APP, DEBUG, "next steerpoint event");
+	CSPLOG(DEBUG, APP) << "next steerpoint event";
 	if (b_NavigationSystem.valid()) b_NavigationSystem->value()->nextSteerpoint();
 }
 
 void F16System::prevSteerpoint() {
-	CSP_LOG(APP, DEBUG, "prev steerpoint event");
+	CSPLOG(DEBUG, APP) << "prev steerpoint event";
 	if (b_NavigationSystem.valid()) b_NavigationSystem->value()->prevSteerpoint();
 }
 
@@ -189,4 +189,6 @@ void F16System::engageMPO() {
 void F16System::disengageMPO() {
 	b_ManualPitchOverride->value() = false;
 }
+
+CSP_NAMESPACE_END
 

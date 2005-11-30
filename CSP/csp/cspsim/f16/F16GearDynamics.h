@@ -26,9 +26,10 @@
 #ifndef __CSPSIM_F16_GEARDYNAMICS_H__
 #define __CSPSIM_F16_GEARDYNAMICS_H__
 
-#include <LandingGear.h>
-#include <SimCore/Util/Callback.h>
+#include <csp/cspsim/LandingGear.h>
+#include <csp/csplib/util/Callback.h>
 
+CSP_NAMESPACE
 
 class F16GearDynamics: public GearDynamics {
 public:
@@ -47,17 +48,18 @@ public:
 	virtual void postCreate();
 
 protected:
-	DataChannel<bool>::Ref b_WheelSpin;
-	DataChannel<bool>::Ref b_GearHandleUp;
-	simdata::Ref<LandingGear> m_NoseLandingGear;
-	simdata::Ref<LandingGear> m_LeftMainLandingGear;
-	simdata::Ref<LandingGear> m_RightMainLandingGear;
+	DataChannel<bool>::RefT b_WheelSpin;
+	DataChannel<bool>::RefT b_GearHandleUp;
+	Ref<LandingGear> m_NoseLandingGear;
+	Ref<LandingGear> m_LeftMainLandingGear;
+	Ref<LandingGear> m_RightMainLandingGear;
 
 private:
 	bool gearHandleRequestHandler(bool const &);
-	simcore::callback<bool, bool const &> m_GearHandleRequest;
+	callback<bool, bool const &> m_GearHandleRequest;
 };
 
+CSP_NAMESPACE_END
 
 #endif // __CSPSIM_F16_GEARDYNAMICS_H__
 

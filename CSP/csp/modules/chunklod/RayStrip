@@ -1,0 +1,134 @@
+/*
+ * RayStrip
+ *
+ * Copyright 2003 Mark Rose <mkrose@users.sourceforge.net>
+ *
+ * The osgChunkLod library is open source and may be redistributed and/or modified
+ * under the terms of the OpenSceneGraph Public License (OSGPL) version 0.0 or 
+ * (at your option) any later version.  The full license is in LICENSE file
+ * included with this distribution, and on the openscenegraph.org website.
+ * 
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the 
+ * OpenSceneGraph Public License for more details.
+ *
+ */
+
+#ifndef _OSGRAYSTRIP_H_
+#define _OSGRAYSTRIP_H_
+
+
+#include <csp/modules/chunklod/Export>
+
+#include <vector>
+
+#include <osg/Vec3>
+#include <osg/LineSegment>
+
+#include <cassert>
+#include <cmath>
+
+
+// TODO
+//   both of these functions should be methods of class ChunkLod
+
+namespace osgChunkLod {
+
+	struct ChunkLodVertex;
+	class ChunkLodElevationTest;
+
+	/**
+	 * Compute an intersection between a line segment and a triangle
+	 * strip.
+	 *
+	 * Searches through the triangles in the strip, looking for 
+	 * intersections.  Each vertex is scaled, morphed, and offset prior 
+	 * to testing.  The search starts at a specified index, which would 
+	 * typically be the index of the triangle hit in the last test.  For 
+	 * exhaustive searches, the entire strip is tested and the nearest 
+	 * collision returned.  
+	 *
+	 * Performance:
+	 *   This routine tests about 4000 triangles per ms on an 800 mHz 
+	 *   machine.
+	 *
+	 * @param segment the line segment to test
+	 * @param vertices a list of unmorphed vertices of the tristrip
+	 * @param indices the tristrip vertex indices
+	 * @param n_indices the number of indices
+	 * @param morph the chunk's morph parameter
+	 * @param offset the chunk's origin in the coordinate system of
+	 *               the line segment
+	 * @param scale the horizontal and vertical scale factor for the
+	 *              vertices
+	 * @param index the triangle index to begin testing.  returns the
+	 *              index of the triangle that the ray intersected, if
+	 *              any.
+	 * @param normal returns the normal vector of the triangle the ray
+	 *               intersected, if any.
+	 * @param exhaustive if true the entire tristrip will be tested for
+	 *                   the nearest intersection.  if false, the test
+	 *                   will stop after the first successful 
+	 *                   intersection.
+	 * @param t the normalized distance to the point of intersection,
+	 *          where 0 is the start of the line segment, and 1 is the
+	 *          end of the line segment.
+	 * @param u edge coordinate of the intersection point within the
+	 *          triangle that is hit.
+	 * @param v edge coordinate of the intersection point within the
+	 *          triangle that is hit.
+	 */
+	extern OSGCHUNKLOD_EXPORT bool intersectRayStrip(
+	                       osg::LineSegment const *segment, 
+                               ChunkLodVertex const *vertices,
+			       unsigned short const *indices,
+			       int n_indices,
+			       float morph,
+			       osg::Vec3 const &offset,
+			       osg::Vec3 const &scale,
+                               int &index, 
+			       osg::Vec3 &normal,
+			       bool exhaustive,
+			       float &t, 
+			       float &u, 
+			       float &v);
+
+
+	/**
+	 * Compute an intersection between a vertical ray and a triangle 
+	 * strip.
+	 *
+	 * Searches through the triangles in the strip, looking for 
+	 * intersections.  The geometry of the strip and vertical ray allows 
+	 * a couple of important optimizations relative to 
+	 * intersectRayStrip(), providing roughly an order of magnitude speed 
+	 * improvement for typical tests.
+	 *
+	 * Performance:
+	 *   This routine tests about 40000 triangles per ms on an 800 mHz 
+	 *   machine.
+	 *
+	 * @param test test parameters and results
+	 * @param vertices a list of unmorphed vertices of the tristrip
+	 * @param indices the tristrip vertex indices
+	 * @param n_indices the number of indices
+	 * @param morph the chunk's morph parameter
+	 * @param offset the chunk's origin in the coordinate system of
+	 *               the line segment
+	 * @param scale the horizontal and vertical scale factor for the
+	 *              vertices
+	 */
+	extern OSGCHUNKLOD_EXPORT bool intersectVerticalStrip(
+	                                   ChunkLodElevationTest &test,
+					   ChunkLodVertex const *vertices,
+					   unsigned short const *indices,
+					   int n_indices,
+					   float morph,
+					   osg::Vec3 const &offset,
+					   osg::Vec3 const &scale);
+
+}
+
+#endif
+

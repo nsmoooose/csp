@@ -721,7 +721,7 @@ int CSPSim::initSDL() {
 	const SDL_VideoInfo *info = SDL_GetVideoInfo();
 	int bpp = info->vfmt->BitsPerPixel;
 
-	CSPLOG(ERROR, APP) << "Initializing video at " << bpp << " BitsPerPixel.";
+	CSPLOG(INFO, APP) << "Initializing video at " << bpp << " bits per pixel.";
 
 	Uint32 flags = SDL_OPENGL | SDL_HWSURFACE | SDL_DOUBLEBUF;
 

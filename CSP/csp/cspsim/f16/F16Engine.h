@@ -26,10 +26,12 @@
 #ifndef __CSPSIM_F16_F16ENGINE_H__
 #define __CSPSIM_F16_F16ENGINE_H__
 
-#include <Engine.h>
-#include <csp/csplib/data/Real.h>
-#include <FuelManagementSystem.h>  // FIXME only need FuelManagementInterface
+#include <csp/cspsim/Engine.h>
+#include <csp/cspsim/FuelManagementSystem.h>  // FIXME only need FuelManagementInterface
 
+#include <csp/csplib/data/Real.h>
+
+CSP_NAMESPACE
 
 class F16Engine: public Engine {
 public:
@@ -70,11 +72,11 @@ private:
 
 	// state variables
 	double m_Drive;
-	DataChannel<double>::Ref b_RPM;   // TODO export
+	DataChannel<double>::RefT b_RPM;   // TODO export
 	double m_StartRPM;
 	double m_CoreTemperature;
 	double m_ExhaustTemperature;   // TODO export
-	DataChannel<double>::Ref b_FanTurbineInletTemperature;   // TODO export
+	DataChannel<double>::RefT b_FanTurbineInletTemperature;   // TODO export
 	double m_CoreTemperatureTarget;
 	double m_ExhaustTemperatureTarget;
 	double m_FanTurbineInletTemperatureTarget;
@@ -87,56 +89,57 @@ private:
 	double m_ThrustSpecificFuelConsumption;
 	double m_FuelConsumption;   // TODO export
 	double m_HotStartTemperature;
-	DataChannel<double>::Ref b_Nozzle;   // TODO export
+	DataChannel<double>::RefT b_Nozzle;   // TODO export
 	double m_FuelPressure;
 	double m_StartElapsedTime;
 	double m_HangTime;
 	double m_Blend;
 	bool m_NormalStart;
 
-	DataChannel<FuelManagementSystem::Ref>::CRef b_FuelManagementSystem;
-	DataChannel<double>::Ref b_FuelFlow;
+	DataChannel< Ref<FuelManagementSystem> >::CRefT b_FuelManagementSystem;
+	DataChannel<double>::RefT b_FuelFlow;
 
 	// TODO add Link<jfs>
 
 	void regen();
-	simdata::Real m_WindSpin;
-	simdata::Real m_DragRate;
-	simdata::Real m_FanTurbineInletHeatRate;
-	simdata::Real m_FanTurbineInletCoolRate;
-	simdata::Real m_FanTurbineInletTemperatureBase;
-	simdata::Real m_FanTurbineInletTemperatureScale;
-	simdata::Real m_CoreFanTurbineInletTemperatureRatio;
-	simdata::Real m_CoreHeatRate;
-	simdata::Real m_CoreCoolRate;
-	simdata::Real m_ExhaustHeatRate;
-	simdata::Real m_ExhaustCoolRate;
-	simdata::Real m_Friction;
-	simdata::Real m_SpinDownTau;
-	simdata::Real m_SpoolRate;
-	simdata::Real m_AbnormalStartChance;
-	simdata::Real m_HotDelta;
-	simdata::Real m_Overheat;
-	simdata::Real m_IdleRPM;
-	simdata::Real m_AfterburnerRPM;
-	simdata::Real m_AfterburnerDelay;
-	simdata::Real m_AfterburnerMinRPM;
-	simdata::Real m_AfterburnerCutoffRPM;
-	simdata::Real m_IdleFuelConsumption;
-	simdata::Real m_MinFTITIgnition;
-	simdata::Real m_NozzleIdleFactor;
-	simdata::Real m_NozzleBase;
-	simdata::Real m_JFSOffRPM;
-	simdata::Real m_StartDrive;
-	simdata::Real m_DriveSpeed;
-	simdata::Real m_NormalHangTime;
-	simdata::Real m_AbnormalHangTime;
-	simdata::Real m_HotStartBranch;
-	simdata::Real m_JFSDriveFactor;
-	simdata::Real m_FuelPressurizationRate;
-	simdata::Real m_FuelDepressurizationRate;
+	Real m_WindSpin;
+	Real m_DragRate;
+	Real m_FanTurbineInletHeatRate;
+	Real m_FanTurbineInletCoolRate;
+	Real m_FanTurbineInletTemperatureBase;
+	Real m_FanTurbineInletTemperatureScale;
+	Real m_CoreFanTurbineInletTemperatureRatio;
+	Real m_CoreHeatRate;
+	Real m_CoreCoolRate;
+	Real m_ExhaustHeatRate;
+	Real m_ExhaustCoolRate;
+	Real m_Friction;
+	Real m_SpinDownTau;
+	Real m_SpoolRate;
+	Real m_AbnormalStartChance;
+	Real m_HotDelta;
+	Real m_Overheat;
+	Real m_IdleRPM;
+	Real m_AfterburnerRPM;
+	Real m_AfterburnerDelay;
+	Real m_AfterburnerMinRPM;
+	Real m_AfterburnerCutoffRPM;
+	Real m_IdleFuelConsumption;
+	Real m_MinFTITIgnition;
+	Real m_NozzleIdleFactor;
+	Real m_NozzleBase;
+	Real m_JFSOffRPM;
+	Real m_StartDrive;
+	Real m_DriveSpeed;
+	Real m_NormalHangTime;
+	Real m_AbnormalHangTime;
+	Real m_HotStartBranch;
+	Real m_JFSDriveFactor;
+	Real m_FuelPressurizationRate;
+	Real m_FuelDepressurizationRate;
 };
 
+CSP_NAMESPACE_END
 
 #endif // __CSPSIM_F16_F16ENGINE_H__
 

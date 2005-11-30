@@ -23,8 +23,9 @@
  **/
 
 
-#include "PageLIST.h"
+#include <csp/cspsim/f16/PageLIST.h>
 
+CSP_NAMESPACE
 
 const char *const PageLIST::LIST[] = {"DEST", "BINGO", "VIP", "INTG", "NAV", "MAN", "INS", "DLNK", "", "MODE", "VRP", "MISC"};
 const char *const PageLIST::MISC[] = {"CORR", "MAGV", "OFP", "", "INSM", "LASR", "GPS", "", "DRNG", "BULL", "", ""};
@@ -41,4 +42,6 @@ void PageLIST::render(AlphaNumericDisplay& ded) {
 	ded.write(12, 0, m_Misc ? "MISC" : "LIST");
 	ded.write(21, 0, "%2d", m_Steerpoint->get());
 }
+
+CSP_NAMESPACE_END
 

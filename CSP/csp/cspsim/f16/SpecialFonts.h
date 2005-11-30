@@ -28,8 +28,10 @@
  *
  **/
 
-#ifndef __SPECIAL_FONTS__
-#define __SPECIAL_FONTS__
+#ifndef __CSPSIM_F16_SPECIAL_FONTS__
+#define __CSPSIM_F16_SPECIAL_FONTS__
+
+#include <csp/csplib/util/Namespace.h>
 
 #include <osg/Version>
 #include <osgText/Font>
@@ -40,6 +42,8 @@
 #ifndef OSG_VERSION_MAJOR
 #define OSG_OLD_FONT_INTERFACE
 #endif
+
+CSP_NAMESPACE
 
 /** A specialized font for rendering normal and reverse video text.  Character
  *  codes 128-255 are reverse video representations of the glyphs for glyphs
@@ -234,6 +238,8 @@ public:
 		return 0;
 	}
 };
+
+CSP_NAMESPACE_END
 
 #endif // __SPECIAL_FONTS__
 

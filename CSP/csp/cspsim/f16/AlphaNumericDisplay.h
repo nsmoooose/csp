@@ -26,19 +26,21 @@
 #ifndef __CSPSIM_F16_ALPHA_NUMERIC_DISPLAY_H__
 #define __CSPSIM_F16_ALPHA_NUMERIC_DISPLAY_H__
 
+#include <csp/csplib/util/Ref.h>
 #include <cstdio>
 #include <string>
 #include <vector>
-#include <csp/csplib/util/Ref.h>
 
 #if !defined(__GNUC__) && !defined(snprintf)
 #define snprintf _snprintf
 #endif
 
-class AlphaNumericDisplay: public simdata::Referenced {
+CSP_NAMESPACE
+
+class AlphaNumericDisplay: public Referenced {
 public:
+	typedef Ref<AlphaNumericDisplay> RefT;
 	typedef enum { NORMAL, INVERSE } Video;
-	typedef simdata::Ref<AlphaNumericDisplay> Ref;
 	AlphaNumericDisplay(unsigned width, unsigned height);
 	~AlphaNumericDisplay();
 	template <typename T>
@@ -71,6 +73,7 @@ private:
 	bool *m_DirtyLines;
 };
 
+CSP_NAMESPACE_END
 
 #endif // __CSPSIM_F16_ALPHA_NUMERIC_DISPLAY_H__
 

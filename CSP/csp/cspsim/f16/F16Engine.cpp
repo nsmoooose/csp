@@ -23,9 +23,11 @@
  **/
 
 
-#include <F16/F16Engine.h>
+#include <csp/cspsim/f16/F16Engine.h>
+#include <csp/cspsim/FuelManagementSystem.h>
 #include <csp/csplib/data/ObjectInterface.h>
-#include <FuelManagementSystem.h>
+
+CSP_NAMESPACE
 
 CSP_XML_BEGIN(F16Engine)
 	CSP_DEF("wind_spin", m_WindSpin, false)
@@ -259,10 +261,10 @@ void F16Engine::updateTemperatureTargets() {
 
 // TODO fix simdata random interface to provide obvious functions like this!
 double gauss(double mean, double sigma) {
-	return static_cast<double>(simdata::rd::BoxMueller(simdata::g_Random, mean, sigma));
+	return static_cast<double>(rd::BoxMueller(g_Random, mean, sigma));
 }
 double randomUnit() {
-	return static_cast<double>(simdata::g_Random.unit());
+	return static_cast<double>(g_Random.unit());
 }
 
 void F16Engine::updateOff(double dt) {
@@ -359,13 +361,13 @@ void F16Engine::updateRunning(double dt) {
 	double r = 0.0;
 	if (p1 < 0.5) {
 		if (p3 < 0.5) {
-			r = (p1 - p3) * simdata::clampTo(2.0 - (p1-p3)*4.0, 0.1, 1.0);
+			r = (p1 - p3) * clampTo(2.0 - (p1-p3)*4.0, 0.1, 1.0);
 		} else {
 			r = 5.0 * (0.4 - p3);
 		}
 	} else {
 		if (p3 < 0.5) {
-			r = (0.6 - p3) * simdata::clampTo(2.0 - (0.6-p3)*4.0, 0.1, 1.0);
+			r = (0.6 - p3) * clampTo(2.0 - (0.6-p3)*4.0, 0.1, 1.0);
 		} else {
 			r = 5.0 * (p1 - p3);
 		}
@@ -435,11 +437,11 @@ void F16Engine::updateNozzle(double) {
 	} else if (rpm <= 1.0) {
 		double power = (rpm - m_IdleRPM) / (1.0 - m_IdleRPM);
 		m_Blend = 1.0 + power;
-		nozzle_factor = m_NozzleIdleFactor * simdata::clampTo(1.0 - power, 0.0, 1.0);
+		nozzle_factor = m_NozzleIdleFactor * clampTo(1.0 - power, 0.0, 1.0);
 	} else {
 		double power = 1.0 + (rpm - 1.0) / (m_AfterburnerRPM - 1.0);
 		m_Blend = 1.0 + power;
-		nozzle_factor = simdata::clampTo(power - 1.0, 0.0, 1.0);
+		nozzle_factor = clampTo(power - 1.0, 0.0, 1.0);
 	}
 	b_Nozzle->value() = m_NozzleBase + (1.0 - m_NozzleBase) * nozzle_factor;
 }
@@ -460,3 +462,6 @@ bool F16Engine::isFuelDepressurized() {
 double F16Engine::getAltitudeFactor() {
 	return getDensity() * 0.78125;  // approx 1.0 at sea level
 }
+
+CSP_NAMESPACE_END
+

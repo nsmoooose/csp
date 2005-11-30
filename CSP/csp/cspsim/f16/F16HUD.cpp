@@ -22,40 +22,43 @@
  *
  **/
 
-
-#include <F16/F16HUD.h>
-#include <F16/F16Channels.h>
-#include <F16/SpecialFonts.h>
-#include <Atmosphere.h>
-#include <ConditionsChannels.h>
-#include <CSPSim.h>
-#include <FlightDynamicsChannels.h>
-#include <HUD/HUD.h>
-#include <HUD/Tape.h>
-#include <HUD/Text.h>
-#include <HUD/PitchLadder.h>
-#include <KineticsChannels.h>
-#include <LandingGearChannels.h>
-#include <csp/csplib/util/Conversions.h>
-#include <csp/csplib/util/Math.h>
-#include <csp/csplib/data/ObjectInterface.h>
-#include <csp/csplib/util/osg.h>
-#include <csp/csplib/util/Timing.h>
-#include <csp/csplib/data/Vector3.h>
-
-
 // TODO
 // true airspeed and ground speed
 // ils symbology
 // 10,000 other things!
 // more efficient calculations, push channel callbacks
 
+#include <csp/cspsim/f16/F16HUD.h>
+#include <csp/cspsim/f16/F16Channels.h>
+#include <csp/cspsim/f16/SpecialFonts.h>
+
+#include <csp/cspsim/hud/HUD.h>
+#include <csp/cspsim/hud/Tape.h>
+#include <csp/cspsim/hud/Text.h>
+#include <csp/cspsim/hud/PitchLadder.h>
+
+#include <csp/cspsim/Atmosphere.h>
+#include <csp/cspsim/ConditionsChannels.h>
+#include <csp/cspsim/CSPSim.h>
+#include <csp/cspsim/FlightDynamicsChannels.h>
+#include <csp/cspsim/KineticsChannels.h>
+#include <csp/cspsim/LandingGearChannels.h>
+
+#include <csp/csplib/util/Conversions.h>
+#include <csp/csplib/util/Math.h>
+#include <csp/csplib/util/osg.h>
+#include <csp/csplib/util/Timing.h>
+#include <csp/csplib/data/ObjectInterface.h>
+#include <csp/csplib/data/Vector3.h>
+
+CSP_NAMESPACE
+
 CSP_XML_BEGIN(F16HUD)
 	CSP_DEF("color", m_Color, false)
 CSP_XML_END
 
 namespace {
-static const simdata::Vector3 DefaultHUDColor(0.45, 0.94, 0.68);
+static const Vector3 DefaultHUDColor(0.45, 0.94, 0.68);
 }
 
 
@@ -194,7 +197,7 @@ public:
 		bar.addToGeode(geode());
 	}
 	static double getCenterAngle() {
-		return simdata::toRadians(13.0);
+		return toRadians(13.0);
 	}
 };
 
@@ -299,7 +302,7 @@ public:
 	void update(double anticipation, osg::Vec3 const &fpm) {
 		if (anticipation > 0.0) {
 			show(true);
-			double angle = std::max(0.0, 1.0 - anticipation) * simdata::toRadians(3.0);
+			double angle = std::max(0.0, 1.0 - anticipation) * toRadians(3.0);
 			setDirection(fpm * osg::Matrixf::rotate(-angle, osg::Vec3(1.0, 0.0, 0.0)));
 		} else {
 			show(false);
@@ -325,8 +328,8 @@ public:
 		addSymbol(horizon);
 		m_CenterDir = m_Center;
 		m_CenterDir.normalize();
-		m_R = atan(simdata::toRadians(offset_degrees));
-		m_Threshold = tan(simdata::toRadians(offset_degrees + buffer_degrees));
+		m_R = atan(toRadians(offset_degrees));
+		m_Threshold = tan(toRadians(offset_degrees + buffer_degrees));
 	}
 
 	void update(osg::Vec3 horizon_body, osg::Vec3 horizon_right_body, double dt) {
@@ -348,7 +351,7 @@ public:
 				// Align with the horizon (same formula that the pitch ladder uses).
 				float angle = -atan2(horizon_right_body.z(), horizon_right_body.x());
 				// Alignment isn't enought; need to know if the horizon is above or below the hud.
-				if (dot_hb * (m_CenterDir * (horizon_body ^ horizon_right_body)) < 0) angle += simdata::PI;
+				if (dot_hb * (m_CenterDir * (horizon_body ^ horizon_right_body)) < 0) angle += PI;
 				setOrientation(angle);
 				setDirection(m_Center + osg::Vec3(m_R * sin(angle), 0.0f, m_R * cos(angle)));
 			}
@@ -359,13 +362,13 @@ public:
 
 
 class DEDReadout: public HUD::MoveableElement {
-	simdata::Ref<const AlphaNumericDisplay> m_Display;
+	Ref<const AlphaNumericDisplay> m_Display;
 	osgText::Text** m_Lines;
 public:
-	DEDReadout(simdata::Ref<const AlphaNumericDisplay> display, osg::ref_ptr<HUDFont> font): m_Display(display) {
+	DEDReadout(Ref<const AlphaNumericDisplay> display, osg::ref_ptr<HUDFont> font): m_Display(display) {
 		assert(font.valid());
 		unsigned lines = m_Display->height();
-		CSP_LOG(APP, DEBUG, "DEDReadout: " << lines << " lines");
+		CSPLOG(DEBUG, APP) << "DEDReadout: " << lines << " lines";
 		m_Lines = new osgText::Text*[lines];
 		for (unsigned i = 0; i < lines; ++i) {
 			m_Lines[i] = addText();
@@ -442,28 +445,28 @@ void F16HUD::importChannels(Bus* bus) {
 }
 
 double F16HUD::onUpdate(double dt) {
-	//simdata::Timer timer;
+	//Timer timer;
 	//timer.start();
-	simdata::Quat const &attitude = b_Attitude->value();
-	simdata::Vector3 velocity = b_Velocity->value();
+	Quat const &attitude = b_Attitude->value();
+	Vector3 velocity = b_Velocity->value();
 
 	// if velocity is too small, the hud symbols that are cued by V will jitter wildly.
 	// we fix V at the forward horizon in that case.  this appears to be what the real
 	// jet does.  we only do this on the ground; otherwise useful information would be
 	// lost in a severe stall.
 	if (velocity.length2() < 2500.0 && b_LeftMainLandingGearWOW->value()) {
-		velocity = attitude.rotate(simdata::Vector3::YAXIS);  // forward vector in world coordinates
+		velocity = attitude.rotate(Vector3::YAXIS);  // forward vector in world coordinates
 		velocity.z() = 0.0;
 	}
 
-	double speed = simdata::convert::mps_kts(getSpeed());
+	double speed = convert::mps_kts(getSpeed());
 
 	bool gear_down = !b_GearHandleUp->value();
 	bool ILS_mode = false;
 
-	simdata::Vector3 horizon = velocity; horizon.z() = 0.0;
-	simdata::Vector3 horizon_right(horizon.y(), -horizon.x(), horizon.z()); // 90 deg rotation around z
-	osg::Vec3 velocity_body = simdata::toOSG(attitude.invrotate(velocity));
+	Vector3 horizon = velocity; horizon.z() = 0.0;
+	Vector3 horizon_right(horizon.y(), -horizon.x(), horizon.z()); // 90 deg rotation around z
+	osg::Vec3 velocity_body = toOSG(attitude.invrotate(velocity));
 	osg::Vec3 velocity_right_body(-velocity_body.z(), 0.0, velocity_body.x());
 	m_FlightPathMarker->show(m_ShowFPM);
 	m_FlightPathMarker->setDirection(velocity_body);
@@ -483,15 +486,15 @@ double F16HUD::onUpdate(double dt) {
 		m_BankAngleIndicator->setOrientation(-b_Roll->value());
 	}
 
-	osg::Vec3 horizon_body = simdata::toOSG(attitude.invrotate(horizon));
-	osg::Vec3 horizon_right_body = simdata::toOSG(attitude.invrotate(horizon_right));
+	osg::Vec3 horizon_body = toOSG(attitude.invrotate(horizon));
+	osg::Vec3 horizon_right_body = toOSG(attitude.invrotate(horizon_right));
 
 	m_PitchLadder->show(m_ShowAttitude || gear_down);
 	m_PitchLadder->update(horizon_body, horizon_right_body, b_Pitch->value());
 
 	m_GhostHorizon->update(horizon_body, horizon_right_body, dt);
 
-	const float aoa_degrees = simdata::toDegrees(b_Alpha->value());
+	const float aoa_degrees = toDegrees(b_Alpha->value());
 	if (aoa_degrees >= 15.0) {
 		b_AOAIndexer->value() = "HIGH";
 	} else if (aoa_degrees <= 11.0) {
@@ -508,7 +511,7 @@ double F16HUD::onUpdate(double dt) {
 			// FIXME getCenterAngle should be an instance method, and m_LandingAngleOfAttackRange should
 			// be of type LandingAngleOfAttackRange.
 			double da = b_Alpha->value() - LandingAngleOfAttackRange::getCenterAngle();
-			da = simdata::clampTo(da, simdata::toRadians(-9.0), simdata::toRadians(9.0));
+			da = clampTo(da, toRadians(-9.0), toRadians(9.0));
 			m_AlphaFilter.update(da, dt);
 		}
 		const float landing_aoa_angle = static_cast<float>(m_AlphaFilter.value());
@@ -528,7 +531,7 @@ double F16HUD::onUpdate(double dt) {
 	m_AirspeedTape->update(speed >= 50.0 ? speed : 0.0);
 
 	double altitude = b_Position->value().z();
-	double altitude_agl_ft = simdata::convert::m_ft(altitude - b_GroundZ->value());
+	double altitude_agl_ft = convert::m_ft(altitude - b_GroundZ->value());
 	bool baro_alt = b_AltitudeSwitch.valid() && b_AltitudeSwitch->value() == "BARO";
 	if ((altitude_agl_ft <= 1500) && !baro_alt) {
 		double alow_ft = b_CaraAlow.valid() ? b_CaraAlow->value() : 0.0;
@@ -539,20 +542,20 @@ double F16HUD::onUpdate(double dt) {
 	} else {
 		m_RadarAltitudeScale->show(false);
 		m_AltitudeTape->show(m_ShowScales);
-		m_AltitudeTape->update(simdata::convert::m_ft(altitude));
+		m_AltitudeTape->update(convert::m_ft(altitude));
 		m_AltitudeBox->show(true);
 	}
 
 	m_HeadingTape->show(m_ShowScales);
-	m_HeadingTape->update(simdata::toDegrees(b_Heading->value()));
+	m_HeadingTape->update(toDegrees(b_Heading->value()));
 
-	Steerpoint::Ref active_steerpoint = b_NavigationSystem.valid() ? b_NavigationSystem->value()->activeSteerpoint() : 0;
+	Ref<Steerpoint> active_steerpoint = b_NavigationSystem.valid() ? b_NavigationSystem->value()->activeSteerpoint() : 0;
 	if (active_steerpoint.valid()) {
-		simdata::Vector3 steerpoint = active_steerpoint->position();
-		simdata::Vector3 steerpoint_offset = steerpoint - b_Position->value();
+		Vector3 steerpoint = active_steerpoint->position();
+		Vector3 steerpoint_offset = steerpoint - b_Position->value();
 		float steering_angle = atan2(steerpoint_offset.x(), steerpoint_offset.y());
 
-		osg::Vec3 steerpoint_offset_body = simdata::toOSG(attitude.invrotate(steerpoint_offset));
+		osg::Vec3 steerpoint_offset_body = toOSG(attitude.invrotate(steerpoint_offset));
 		m_Steerpoint->setDirection(steerpoint_offset_body);
 		m_Steerpoint->setOrientation(-b_Roll->value());
 		m_Steerpoint->show(steerpoint_offset_body.y() > 0);
@@ -565,14 +568,14 @@ double F16HUD::onUpdate(double dt) {
 			tadpole_angle += 2.0 * osg::PI;
 		}
 		float constrained_tadpole_angle = osg::clampTo(tadpole_angle, -osg::inDegrees(2.5f), osg::inDegrees(2.5f));
-		osg::Vec3 up_body = simdata::toOSG(attitude.invrotate(simdata::Vector3::ZAXIS));
+		osg::Vec3 up_body = toOSG(attitude.invrotate(Vector3::ZAXIS));
 		osg::Vec3 tadpole_cue = velocity_body * osg::Matrix::rotate(-constrained_tadpole_angle, up_body);
 		m_Tadpole->setDirection(tadpole_cue);
 		m_Tadpole->setOrientation(tadpole_angle);
 		m_Tadpole->show(tadpole_cue.y() > 0);
 
 		m_AltitudeTape->enableCaret(true);
-		m_AltitudeTape->setCaret(simdata::convert::m_ft(steerpoint.z()));
+		m_AltitudeTape->setCaret(convert::m_ft(steerpoint.z()));
 
 		double distance = steerpoint_offset.length();
 		// TODO move these calculations to a navigation system; update sp cas less often but low pass
@@ -628,7 +631,7 @@ double F16HUD::onUpdate(double dt) {
 		updateSwitches();
 	}
 	//double debug_dt = timer.stop();
-	//CSP_LOG(APP, DEBUG, "HUD UPDATE took " << static_cast<int>(1e+6*debug_dt) << " microseconds");
+	//CSPLOG(DEBUG, APP) << "HUD UPDATE took " << static_cast<int>(1e+6*debug_dt) << " microseconds";
 	return 0.0;
 }
 
@@ -709,25 +712,25 @@ void F16HUD::updateReadouts() {
 		m_MaxG = dG;
 		m_MaxGForce->print("%3.1f", dG * 0.1);
 	}
-	const int heading = static_cast<int>(simdata::toDegrees(b_Heading->value()) + 0.5);
+	const int heading = static_cast<int>(toDegrees(b_Heading->value()) + 0.5);
 	if (heading != m_Heading) {
 		m_Heading = heading;
 		m_HeadingText->print("%03d", (heading < 0) ? (heading + 360) : heading);
 	}
-	const int speed = static_cast<int>(simdata::convert::mps_kts(getSpeed()) + 0.5);
+	const int speed = static_cast<int>(convert::mps_kts(getSpeed()) + 0.5);
 	m_AirspeedText->print("%4d", speed < 50 ? 0 : speed);
 
 	bool radar_alt = b_AltitudeSwitch.valid() && b_AltitudeSwitch->value() == "RADAR";
 	double altitude_value = b_Position->value().z();
 	if (radar_alt) altitude_value -= b_GroundZ->value();
-	const int altitude = static_cast<int>(simdata::convert::m_ft(altitude_value) + 0.5);
+	const int altitude = static_cast<int>(convert::m_ft(altitude_value) + 0.5);
 	const int clicks = altitude / 1000;
 	if (altitude >= 1000) {
 		m_AltitudeText->print("%2d\037%03d", clicks, altitude - clicks * 1000);
 	} else {
 		m_AltitudeText->print("%6d", altitude);
 	}
-	const int radar_altitude = 10 * static_cast<int>(0.1 * simdata::convert::m_ft(b_Position->value().z() - b_GroundZ->value()) + 0.5);
+	const int radar_altitude = 10 * static_cast<int>(0.1 * convert::m_ft(b_Position->value().z() - b_GroundZ->value()) + 0.5);
 	const int radar_clicks = radar_altitude / 1000;
 	if (radar_altitude >= 1000) {
 		m_RadarAltimeter->print("R %2d\037%03d", radar_clicks, radar_altitude - radar_clicks * 1000);
@@ -745,19 +748,19 @@ void F16HUD::updateReadouts() {
 	}
 
 	// TODO use projection to compute geodesic distances and headings
-	Steerpoint::Ref active_steerpoint = b_NavigationSystem.valid() ? b_NavigationSystem->value()->activeSteerpoint() : 0;
+	Ref<Steerpoint> active_steerpoint = b_NavigationSystem.valid() ? b_NavigationSystem->value()->activeSteerpoint() : 0;
 	if (active_steerpoint.valid()) {
-		simdata::Vector3 steerpoint = active_steerpoint->position();
-		simdata::Vector3 steerpoint_offset = steerpoint - b_Position->value();
+		Vector3 steerpoint = active_steerpoint->position();
+		Vector3 steerpoint_offset = steerpoint - b_Position->value();
 		const double slant_range = steerpoint_offset.length();
-		const int dslant_range = static_cast<int>(simdata::convert::m_nm(slant_range) * 10.0 + 0.5);
+		const int dslant_range = static_cast<int>(convert::m_nm(slant_range) * 10.0 + 0.5);
 		steerpoint_offset.z() = 0.0;
 		const double steerpoint_range = steerpoint_offset.length();
-		simdata::Vector3 ground_velocity = b_Velocity->value();
+		Vector3 ground_velocity = b_Velocity->value();
 		ground_velocity.z() = 0.0;
 		const double ground_speed = ground_velocity.length();
 		const int dsteerpoint_time = static_cast<int>(steerpoint_range / ground_speed + 0.5);
-		const int dsteerpoint_distance = static_cast<int>(simdata::convert::m_nm(steerpoint_offset.length()) + 0.5);
+		const int dsteerpoint_distance = static_cast<int>(convert::m_nm(steerpoint_offset.length()) + 0.5);
 		if (dslant_range != m_LastSlantRange) {
 			m_LastSlantRange = dslant_range;
 			m_SlantRange->print("B%05.1f", dslant_range * 0.1);
@@ -772,7 +775,7 @@ void F16HUD::updateReadouts() {
 			m_SteerpointDistance->print("%03d>%02d", dsteerpoint_distance, active_steerpoint->index());
 		}
 	} else {
-		CSP_LOG(APP, DEBUG, "no active steerpoint");
+		CSPLOG(DEBUG, APP) << "no active steerpoint";
 	}
 
 	m_AirspeedUnits->setText(m_VelocityLabel);
@@ -856,7 +859,7 @@ void F16HUD::addRollTape() {
 	float y0 = -0.067;
 	float r0 = 0.02;
 	for (int i=-4; i <= 4; ++i) {
-		float angle = i * simdata::toRadians(10.0);
+		float angle = i * toRadians(10.0);
 		float r1 = r0 - 0.0015;
 		if ((i == 4) || (i == -4)) {
 			angle *= 4.5/4.0;
@@ -1101,4 +1104,6 @@ double F16HUD::getSpeed() const {
 	}
 	return b_Velocity->value().length();  // GND
 }
+
+CSP_NAMESPACE_END
 

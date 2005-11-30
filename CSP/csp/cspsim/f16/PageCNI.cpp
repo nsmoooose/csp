@@ -23,12 +23,11 @@
  **/
 
 
-#include "PageCNI.h"
-#include <ConditionsChannels.h>
-#include <CSPSim.h>
+#include <csp/cspsim/f16/PageCNI.h>
+#include <csp/cspsim/ConditionsChannels.h>
+#include <csp/cspsim/CSPSim.h>
 #include <csp/csplib/util/Conversions.h>
 #include <csp/csplib/util/Math.h>
-#include <iostream>
 
 // TODO replace m_RadioStatusLabel and radioStatusLabel with a widget class that
 // maps enumlink to string and can be defined in xml.  then the page can be made
@@ -57,6 +56,8 @@
 // coded.
 
 
+CSP_NAMESPACE
+
 PageCNI::PageCNI() {
 	m_Steerpoint = new SimpleCycle(1, 1, 99, true);
 	m_UHFPreset = new SimpleCycle(1, 1, 20, true);
@@ -77,7 +78,7 @@ void PageCNI::render(AlphaNumericDisplay &ded) {
 	ded.write(6, 2, "10");
 	ded.write(15, 0, "STPT");
 	ded.write(21, 0, "%2d", m_Steerpoint->get());
-	simdata::SimDate now = CSPSim::theSim->getCurrentTime();
+	SimDate now = CSPSim::theSim->getCurrentTime();
 	std::string label = now.formatString("%H:%M:%S");
 	if (label[0] == '0') label[0] = ' ';
 	ded.write(17, 2, label);
@@ -88,7 +89,7 @@ void PageCNI::render(AlphaNumericDisplay &ded) {
 }
 
 double PageCNI::update() {
-	simdata::SimDate now = CSPSim::theSim->getCurrentTime();
+	SimDate now = CSPSim::theSim->getCurrentTime();
 	double time = now.getTime();
 	return 1.0 - (time - static_cast<int>(time));
 }
@@ -121,3 +122,6 @@ std::string PageCNI::onNumber(int x) {
 	};
 	return "";
 }
+
+CSP_NAMESPACE_END
+

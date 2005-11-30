@@ -25,22 +25,6 @@
 
 %include "csp/csplib/util/Namespace.h"
 
-#ifndef VFLOAT
-#define VFLOAT
-namespace std {
-	%template(vector_t) vector<float>;
-}
-#endif
-
-/* // already defined by List.i
-#ifndef VINT
-#define VINT
-namespace std {
-	%template(vector_i) vector<int>;
-}
-#endif
-*/
-
 %typemap(in) std::vector<std::vector<float> > const & (std::vector<std::vector<float> > temp) {
 	if (PyTuple_Check($input) || PyList_Check($input)) {
 		unsigned int size = (PyTuple_Check($input) ?  PyTuple_Size($input) : PyList_Size($input));

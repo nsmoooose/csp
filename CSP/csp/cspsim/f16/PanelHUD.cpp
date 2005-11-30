@@ -23,10 +23,10 @@
  **/
 
 
-#include <F16/PanelHUD.h>
-
+#include <csp/cspsim/f16/PanelHUD.h>
 #include <csp/csplib/data/ObjectInterface.h>
 
+CSP_NAMESPACE
 
 CSP_XML_BEGIN(PanelHUD)
 CSP_XML_END
@@ -37,11 +37,11 @@ PanelHUD::PanelHUD() { }
 PanelHUD::~PanelHUD() { }
 
 void PanelHUD::registerChannels(Bus* bus) {
-	b_DataSwitch = bus->registerSharedDataChannel<simdata::EnumLink>("HUD.DataSwitch", simdata::Enum<DataSwitchSettings>("DATA"));
-	b_FlightPathMarkerSwitch = bus->registerSharedDataChannel<simdata::EnumLink>("HUD.FlightPathMarkerSwitch", simdata::Enum<FlightPathMarkerSettings>("ATT/FPM"));
-	b_ScalesSwitch = bus->registerSharedDataChannel<simdata::EnumLink>("HUD.ScalesSwitch", simdata::Enum<ScalesSwitchSettings>("VAH"));
-	b_VelocitySwitch = bus->registerSharedDataChannel<simdata::EnumLink>("HUD.VelocitySwitch", simdata::Enum<VelocitySwitchSettings>("CAS"));
-	b_AltitudeSwitch = bus->registerSharedDataChannel<simdata::EnumLink>("HUD.AltitudeSwitch", simdata::Enum<AltitudeSwitchSettings>("BARO"));
+	b_DataSwitch = bus->registerSharedDataChannel<EnumLink>("HUD.DataSwitch", Enum<DataSwitchSettings>("DATA"));
+	b_FlightPathMarkerSwitch = bus->registerSharedDataChannel<EnumLink>("HUD.FlightPathMarkerSwitch", Enum<FlightPathMarkerSettings>("ATT/FPM"));
+	b_ScalesSwitch = bus->registerSharedDataChannel<EnumLink>("HUD.ScalesSwitch", Enum<ScalesSwitchSettings>("VAH"));
+	b_VelocitySwitch = bus->registerSharedDataChannel<EnumLink>("HUD.VelocitySwitch", Enum<VelocitySwitchSettings>("CAS"));
+	b_AltitudeSwitch = bus->registerSharedDataChannel<EnumLink>("HUD.AltitudeSwitch", Enum<AltitudeSwitchSettings>("BARO"));
 }
 
 void PanelHUD::importChannels(Bus*) {
@@ -67,9 +67,11 @@ void PanelHUD::onCycleAltitudeSwitch() {
 	b_AltitudeSwitch->value().cycle();
 }
 
-const simdata::Enumeration PanelHUD::DataSwitchSettings("OFF DATA");
-const simdata::Enumeration PanelHUD::FlightPathMarkerSettings("OFF FPM ATT/FPM");
-const simdata::Enumeration PanelHUD::ScalesSwitchSettings("OFF VAH VV/VAH");
-const simdata::Enumeration PanelHUD::VelocitySwitchSettings("GND TAS CAS");
-const simdata::Enumeration PanelHUD::AltitudeSwitchSettings("AUTO BARO RADAR");
+const Enumeration PanelHUD::DataSwitchSettings("OFF DATA");
+const Enumeration PanelHUD::FlightPathMarkerSettings("OFF FPM ATT/FPM");
+const Enumeration PanelHUD::ScalesSwitchSettings("OFF VAH VV/VAH");
+const Enumeration PanelHUD::VelocitySwitchSettings("GND TAS CAS");
+const Enumeration PanelHUD::AltitudeSwitchSettings("AUTO BARO RADAR");
+
+CSP_NAMESPACE_END
 

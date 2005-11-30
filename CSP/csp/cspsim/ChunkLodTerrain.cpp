@@ -22,9 +22,8 @@
  *
  **/
 
-
-#include "ChunkLodTerrain.h"
-#include "Config.h"
+#include <csp/cspsim/ChunkLodTerrain.h>
+#include <csp/cspsim/Config.h>
 
 #include <csp/csplib/util/Log.h>
 #include <csp/csplib/util/FileUtility.h>
@@ -35,9 +34,10 @@
 #include <osg/Matrix>
 #include <osg/MatrixTransform>
 
-#include <osgChunkLod/ChunkLodDrawable>
-#include <osgChunkLod/TextureQuadTree>
+#include <csp/modules/chunklod/ChunkLodDrawable>
+#include <csp/modules/chunklod/TextureQuadTree>
 
+CSP_NAMESPACE
 
 /**
  * TODO
@@ -62,18 +62,13 @@ CSP_XML_END
 
 /**
  */
-ChunkLodTerrain::ChunkLodTerrain()
-{
+ChunkLodTerrain::ChunkLodTerrain() {
 	m_Terrain = NULL;
 	m_Drawable = NULL;
 
 	m_UseLoaderThread = true;
-	
-	m_ChunkFile.setSource("");
-	m_TextureFile.setSource("");
-	m_ElevationFile.setSource("");
 	m_ElevationScale = 1.0;
-	
+
 	m_Active = false;
 	m_Loaded = false;
 
@@ -97,8 +92,7 @@ ChunkLodTerrain::ChunkLodTerrain()
 	m_ScreenHeight = 1024;
 }
 
-ChunkLodTerrain::~ChunkLodTerrain()
-{
+ChunkLodTerrain::~ChunkLodTerrain() {
 	unload();
 	if (m_ElevationTest) {
 		delete m_ElevationTest;
@@ -139,11 +133,10 @@ void ChunkLodTerrain::setScreenSizeHint(int width, int height) {
 void ChunkLodTerrain::load() {
 	if (m_Loaded) return;
 	std::string terrain_path = getDataPath("TerrainPath");
-	std::string chu_file = simdata::ospath::join(terrain_path, m_ChunkFile.getSource());
-	std::string tqt_file = simdata::ospath::join(terrain_path, m_TextureFile.getSource());
+	std::string chu_file = ospath::join(terrain_path, ospath::denormalize(m_ChunkFile));
+	std::string tqt_file = ospath::join(terrain_path, ospath::denormalize(m_TextureFile));
 	m_Texture = new osgChunkLod::TextureQuadTree(tqt_file.c_str());
-	int scale = int(m_ElevationScale);  	// XXX this isn't used by ChunkLodTree currently, and probably
-						// shouldn't be an int
+	int scale = static_cast<int>(m_ElevationScale);  // XXX this isn't used by ChunkLodTree currently, and probably shouldn't be an int
 	m_Terrain = new osgChunkLod::ChunkLodTree(chu_file.c_str(), m_Texture, m_ElevationMap.get(), scale);
 	m_Terrain->loaderUseThread(m_UseLoaderThread);
 	m_Terrain->setQuality(m_BaseScreenError, m_BaseTexelSize);
@@ -160,13 +153,12 @@ void ChunkLodTerrain::load() {
 	m_Node->setMatrix(m_CoordinateTransform);
 	m_Loaded = true;
 }
-	
+
 
 /**
  * Activate the terrain engine.
  */
-void ChunkLodTerrain::activate()
-{
+void ChunkLodTerrain::activate() {
 	if (!m_Active) {
 		m_Active = true;
 		load();
@@ -176,8 +168,7 @@ void ChunkLodTerrain::activate()
 /**
  * Deactivate the terrain engine.
  */
-void ChunkLodTerrain::deactivate()
-{
+void ChunkLodTerrain::deactivate() {
 	if (m_Active) {
 		m_Active = false;
 	}
@@ -193,17 +184,17 @@ void ChunkLodTerrain::testLineOfSight(Intersection &test, IntersectionHint &hint
 	if (!m_Terrain) return;
 	osgChunkLod::ChunkLodIntersect cl_test;
 	cl_test.setIndex(hint);
-	osg::Vec3 start = simdata::toOSG(test.getStart() - m_Origin);
-	osg::Vec3 end = simdata::toOSG(test.getEnd() - m_Origin);
+	osg::Vec3 start = toOSG(test.getStart() - m_Origin);
+	osg::Vec3 end = toOSG(test.getEnd() - m_Origin);
 	cl_test.setLineSegment(new osg::LineSegment(start, end));
 	m_Terrain->intersect(cl_test);
 	if (cl_test.getHit()) {
-		test.setHit(cl_test.getRatio(), simdata::fromOSG(cl_test.getNormal()));
+		test.setHit(cl_test.getRatio(), fromOSG(cl_test.getNormal()));
 		hint = cl_test.getIndex();
 	}
 }
 
-float ChunkLodTerrain::getGroundElevation(double x, double y, IntersectionHint &hint) {
+float ChunkLodTerrain::getGroundElevation(double x, double y, IntersectionHint &hint) const {
 	if (!m_Terrain) return 0.0;
 	m_ElevationTest->setIndex(hint);
 	/*
@@ -220,8 +211,8 @@ float ChunkLodTerrain::getGroundElevation(double x, double y, IntersectionHint &
 	return 0.0;
 }
 
-float ChunkLodTerrain::getGroundElevation(double x, double y, simdata::Vector3 &normal, IntersectionHint &hint) {
-	normal = simdata::Vector3::ZAXIS;
+float ChunkLodTerrain::getGroundElevation(double x, double y, Vector3 &normal, IntersectionHint &hint) const {
+	normal = Vector3::ZAXIS;
 	if (!m_Terrain) {
 		return 0.0;
 	}
@@ -232,9 +223,9 @@ float ChunkLodTerrain::getGroundElevation(double x, double y, simdata::Vector3 &
 	m_Terrain->intersect(*m_ElevationTest);
 	*/
 	m_ElevationTest->setPosition(x - m_Origin.x(), -(y - m_Origin.y()));
-	//simdata::SimTime t1 = simdata::SimDate::getSystemTime();
+	//SimTime t1 = SimDate::getSystemTime();
 	m_Terrain->findElevation(*m_ElevationTest);
-	//simdata::SimTime t2 = simdata::SimDate::getSystemTime();
+	//SimTime t2 = SimDate::getSystemTime();
 	if (m_ElevationTest->getHit()) {
 		osg::Vec3 norm = m_ElevationTest->getNormal();
 		normal.set(norm.x(), -norm.z(), norm.y());
@@ -248,7 +239,7 @@ float ChunkLodTerrain::getGroundElevation(double x, double y, simdata::Vector3 &
 		*/
 
 		/*
-		static simdata::SimTime t = 0;
+		static SimTime t = 0;
 		t += t2 - t1;
 		static int XXX = 0; XXX++;
 		if (XXX % 30 == 0) {
@@ -264,24 +255,22 @@ float ChunkLodTerrain::getGroundElevation(double x, double y, simdata::Vector3 &
 }
 
 
-void ChunkLodTerrain::setCameraPosition(double x, double y, double z)
-{
+void ChunkLodTerrain::setCameraPosition(double x, double y, double z) {
 	if (m_Terrain != 0) {
-		CSP_LOG(TERRAIN, DEBUG, "Terrain camera @ " << (simdata::Vector3(x,y,z)));
+		CSPLOG(DEBUG, TERRAIN) << "Terrain camera @ " << (Vector3(x,y,z));
 		// osgChunkLod terrain is in the x-z plane
 		m_Terrain->setCameraPosition(x, y);
 		m_Terrain->getLocalOrigin(x, y, z);
 		// translate coordinates
 		m_Origin.set(x, -z, y);
-		CSP_LOG(TERRAIN, DEBUG, "Terrain origin @ " << (simdata::Vector3(x,y,z)));
+		CSPLOG(DEBUG, TERRAIN) << "Terrain origin @ " << (Vector3(x,y,z));
 	} else {
-		m_Origin = simdata::Vector3::ZERO;
+		m_Origin = Vector3::ZERO;
 	}
 }
 
 
-int ChunkLodTerrain::getTerrainPolygonsRendered() const
-{
+int ChunkLodTerrain::getTerrainPolygonsRendered() const {
 	if (m_Drawable.valid()) {
 		return m_Drawable->getTrianglesRendered();
 	}
@@ -289,7 +278,7 @@ int ChunkLodTerrain::getTerrainPolygonsRendered() const
 }
 
 
-simdata::Vector3 ChunkLodTerrain::getOrigin(simdata::Vector3 const &) const {
+Vector3 ChunkLodTerrain::getOrigin(Vector3 const &) const {
 	return m_Origin;
 }
 
@@ -300,4 +289,6 @@ void ChunkLodTerrain::postCreate() {
 osg::Node *ChunkLodTerrain::getNode() {
 	return m_Node.get();
 }
+
+CSP_NAMESPACE_END
 

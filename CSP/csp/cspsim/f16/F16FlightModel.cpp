@@ -27,15 +27,12 @@
    difference for the yaw axis!
 */
 
-#include "F16/F16FlightModel.h"
+#include <csp/cspsim/f16/F16FlightModel.h>
 
 #include <csp/csplib/util/Math.h>
 #include <csp/csplib/data/ObjectInterface.h>
 
-
-using simdata::toDegrees;
-using simdata::toRadians;
-
+CSP_NAMESPACE
 
 CSP_XML_BEGIN(F16FlightModel)
 	CSP_DEF("cd_m_a", m_CD_m_a, true)
@@ -178,7 +175,7 @@ double F16FlightModel::calculateYawMoment() const {
 	// convenience, the fm data was taken from the "non-linear f-16 simulation using simulink
 	// and matlab" package in predigitized form.  This data should be identical to the nasa data,
 	// but in practice there are small variations.
-	cn_dr *= simdata::clampTo((simdata::toDegrees(m_Alpha) - 40) * 0.8, 1.0, 20.0);
+	cn_dr *= clampTo((toDegrees(m_Alpha) - 40) * 0.8, 1.0, 20.0);
 	cn_dr = -fabs(cn_dr);
 
 	// note that these offsets are in internal body coordinates, not fm coordinates.
@@ -197,14 +194,14 @@ double F16FlightModel::calculateYawMoment() const {
 	return -moment * m_qBarS * m_WingSpan;
 }
 
-void F16FlightModel::calculateForceAndMoment(simdata::Vector3 &force, simdata::Vector3 &moment) {
-	m_ScaleLEF = 1.0 - m_LeadingEdgeFlap * simdata::toRadians(1.0/25.0);
+void F16FlightModel::calculateForceAndMoment(Vector3 &force, Vector3 &moment) {
+	m_ScaleLEF = 1.0 - m_LeadingEdgeFlap * toRadians(1.0/25.0);
 
-	simdata::Vector3 drag_direction(sin(m_Beta), -cos(m_Beta)*cos(m_Alpha), cos(m_Beta)*sin(m_Alpha));
-	simdata::Vector3 lift_direction = (drag_direction ^ simdata::Vector3::ZAXIS) ^ drag_direction;
+	Vector3 drag_direction(sin(m_Beta), -cos(m_Beta)*cos(m_Alpha), cos(m_Beta)*sin(m_Alpha));
+	Vector3 lift_direction = (drag_direction ^ Vector3::ZAXIS) ^ drag_direction;
 
 	// rotate from nasa to internal coordinate system
-	simdata::Vector3 force_c(calculateForceCoefficientY(), calculateForceCoefficientX(), -calculateForceCoefficientZ());
+	Vector3 force_c(calculateForceCoefficientY(), calculateForceCoefficientX(), -calculateForceCoefficientZ());
 
 	// scale nasa low-speed drag by hffm drag normalized to 1.0 at low speed.
 	double CD = force_c * drag_direction;
@@ -234,4 +231,6 @@ void F16FlightModel::calculateForceAndMoment(simdata::Vector3 &force, simdata::V
 	force = force_c * m_qBarS;
 	moment.set(calculatePitchMoment(), calculateRollMoment(), calculateYawMoment());
 }
+
+CSP_NAMESPACE_END
 

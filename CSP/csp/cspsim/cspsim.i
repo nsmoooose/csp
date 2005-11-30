@@ -24,18 +24,15 @@
 #include <csp/csplib/data/Types.h>
 #include <csp/csplib/data/DataArchive.h>
 #include <csp/csplib/data/InterfaceRegistry.h>
-//#include <csp/cspsim/CSPSim.h>
-//#include <csp/cspsim/ObjectModel.h>
-//#include <csp/cspsim/Animation.h>
+#include <csp/cspsim/CSPSim.h>
+#include <csp/cspsim/ObjectModel.h>
+#include <csp/cspsim/Animation.h>
 %}
 
 %include exception.i
 %include std_string.i
 %include std_vector.i
 
-/*
+%include <csp/cspsim/swig/Config.i>
 %include <csp/cspsim/swig/VirtualScene.i>
 %include <csp/cspsim/swig/CSPSim.i>
-%include <csp/cspsim/swig/Config.i>
-%include <csp/cspsim/swig/Log.i>
-*/

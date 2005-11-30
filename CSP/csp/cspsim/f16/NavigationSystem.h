@@ -26,35 +26,37 @@
 #ifndef __CSPSIM_NAVIGATION_SYSTEM_H__
 #define __CSPSIM_NAVIGATION_SYSTEM_H__
 
-#include <Projection.h>
-#include <System.h>
-#include <Steerpoint.h>
+#include <csp/cspsim/Projection.h>
+#include <csp/cspsim/System.h>
+#include <csp/cspsim/Steerpoint.h>
 
 #include <vector>
 
+CSP_NAMESPACE
 
-class NavigationSystem: public simdata::Referenced {
+class NavigationSystem: public Referenced {
 public:
-	typedef simdata::Ref<NavigationSystem> Ref;
+	typedef Ref<NavigationSystem> RefT;
 
 	NavigationSystem();
 
-	virtual simdata::LLA fromWorld(simdata::Vector3 const &);
-	virtual simdata::Vector3 toWorld(simdata::LLA const &);
+	virtual LLA fromWorld(Vector3 const &);
+	virtual Vector3 toWorld(LLA const &);
 
 	virtual void nextSteerpoint();
 	virtual void prevSteerpoint();
 
-	virtual Steerpoint::Ref activeSteerpoint();
+	virtual Steerpoint::RefT activeSteerpoint();
 	virtual void setActiveSteerpoint(unsigned index);
 
 protected:
 	void addTestSteerpoints();
 	int m_SteerpointIndex;
-	std::vector<Steerpoint::Ref> m_Steerpoints;
-	simdata::Ref<const Projection> m_Projection;
+	std::vector<Steerpoint::RefT> m_Steerpoints;
+	Ref<const Projection> m_Projection;
 };
 
+CSP_NAMESPACE_END
 
 #endif // __CSPSIM_NAVIGATION_SYSTEM_H__
 

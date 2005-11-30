@@ -22,17 +22,15 @@
  *
  **/
 
-#ifndef __CHUNKLODTERRAIN_H__
-#define __CHUNKLODTERRAIN_H__
+#ifndef __CSPSIM_CHUNKLODTERRAIN_H__
+#define __CSPSIM_CHUNKLODTERRAIN_H__
 
+#include <csp/cspsim/TerrainObject.h>
 
 #include <csp/csplib/data/Object.h>
 #include <csp/csplib/data/Vector3.h>
 
-#include "TerrainObject.h"
-
 #include <osg/Matrix>
-
 
 namespace osgChunkLod {
 	class ChunkLodTree;
@@ -49,6 +47,7 @@ namespace osg {
 }
 
 
+CSP_NAMESPACE
 
 /**
  * class ChunkLodTerrain
@@ -69,8 +68,8 @@ public:
 	bool isActive();
 
 	virtual void testLineOfSight(Intersection &, IntersectionHint &);
-	virtual float getGroundElevation(double x, double y, simdata::Vector3 &normal, IntersectionHint &);
-	virtual float getGroundElevation(double x, double y, IntersectionHint &);
+	virtual float getGroundElevation(double x, double y, Vector3 &normal, IntersectionHint &) const;
+	virtual float getGroundElevation(double x, double y, IntersectionHint &) const;
 
 	void setCameraPosition(double, double, double);
 	virtual void setScreenSizeHint(int width, int height);
@@ -81,7 +80,7 @@ public:
 	float getLatticeWidth() const { return m_LatticeWidth; }
 	float getLatticeHeight() const { return m_LatticeHeight; }
 
-	simdata::Vector3 getOrigin(simdata::Vector3 const &) const;
+	Vector3 getOrigin(Vector3 const &) const;
 
 protected:
 	
@@ -94,7 +93,7 @@ protected:
 	std::string m_ElevationFile;
 	float m_LatticeWidth;
 	float m_LatticeHeight;
-	simdata::Vector3 m_Origin;
+	Vector3 m_Origin;
 	int m_ScreenWidth;
 	int m_ScreenHeight;
 
@@ -122,6 +121,7 @@ protected:
 	bool m_Loaded;
 };
 
+CSP_NAMESPACE_END
 
 #endif // __CHUNKLODTERRAIN_H__
 

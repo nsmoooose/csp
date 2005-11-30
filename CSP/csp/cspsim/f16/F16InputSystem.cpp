@@ -23,11 +23,12 @@
  **/
 
 
-#include "F16InputSystem.h"
+#include <csp/cspsim/f16/F16InputSystem.h>
 
+CSP_NAMESPACE
 
-SIMDATA_REGISTER_INTERFACE(F16InputSystem)
-
+CSP_XML_BEGIN(F16InputSystem)
+CSP_XML_END
 
 void AircraftInputSystem::setAirbrake(double x) {
 	m_AirbrakeInput.setValue(x);
@@ -51,4 +52,5 @@ void AircraftInputSystem::IncAirbrake() {
 	m_AirbrakeInput.setValue(v);
 }
 
+CSP_NAMESPACE_END
 

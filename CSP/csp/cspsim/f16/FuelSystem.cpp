@@ -27,13 +27,14 @@
 // air source
 // indicator animations
 
-#include <CockpitInterface.h>
-#include <FuelManagementSystem.h>
-#include <Stores/StoresManagementSystem.h>
+#include <csp/cspsim/CockpitInterface.h>
+#include <csp/cspsim/FuelManagementSystem.h>
+#include <csp/cspsim/stores/StoresManagementSystem.h>
 
 #include <csp/csplib/data/Enum.h>
 #include <csp/csplib/util/Conversions.h>
 
+CSP_NAMESPACE
 
 namespace f16 {
 
@@ -75,10 +76,10 @@ public:
 	}
 
 	virtual double onUpdate(double dt) {
-		static const simdata::EnumLink norm(EXT_FUEL_TRANS, "NORM");
-		static const simdata::EnumLink air_refuel_open(AIR_REFUEL, "OPEN");
-		static const simdata::EnumLink air_source_norm(AIR_SOURCE, "NORM");
-		static const simdata::EnumLink air_source_dump(AIR_SOURCE, "DUMP");
+		static const EnumLink norm(EXT_FUEL_TRANS, "NORM");
+		static const EnumLink air_refuel_open(AIR_REFUEL, "OPEN");
+		static const EnumLink air_source_norm(AIR_SOURCE, "NORM");
+		static const EnumLink air_source_dump(AIR_SOURCE, "DUMP");
 
 		if ((b_ExtFuelTransSwitch->state() == norm) && (m_CenterExternal->quantity() > 0.1)) {
 			m_CenterExternal->unblock();
@@ -109,19 +110,15 @@ public:
 	}
 
 	virtual double drawFuel(double dt, double amount) {
-		static const simdata::EnumLink master(MASTER_FUEL, "MASTER");
-		static const simdata::EnumLink norm(ENGINE_FEED, "NORM");
+		static const EnumLink master(MASTER_FUEL, "MASTER");
+		static const EnumLink norm(ENGINE_FEED, "NORM");
 
 		double quantity = 0.0;
 		const double aft_fuel = m_AftReservoir->quantity() + m_AftFuselage->quantity();
 		const double fwd_fuel = m_FwdReservoir->quantity() + m_FwdFuselage->quantity();
 		const double fwd_heavy = fwd_fuel - aft_fuel;
 
-		static double XXX = 0.0;  XXX += dt;
-		if (XXX > 5) {
-			XXX = 0;
-			std::cout << "*** " << b_EngineFeedSwitch->state().getToken() << "; fwd heavy: " << fwd_heavy << " " << m_AFFTActive << "\n";
-		}
+		//static double XXX = 0.0;  XXX += dt; if (XXX > 5) { XXX = 0; std::cout << "*** " << b_EngineFeedSwitch->state().getToken() << "; fwd heavy: " << fwd_heavy << " " << m_AFFTActive << "\n"; }
 
 		if (b_MasterFuelSwitch->state() == master) {
 			switch (b_EngineFeedSwitch->state().getValue()) {
@@ -179,7 +176,7 @@ public:
 
 		// ensure that the totalizer output updates continuously.
 		if (b_FuelQtySelSwitch->state().getValue() != 0 /*TEST*/ && !m_TestMode) {
-			b_Totalizer->value() -= simdata::convert::kg_lb(quantity * m_NominalFuelDensity);
+			b_Totalizer->value() -= convert::kg_lb(quantity * m_NominalFuelDensity);
 		}
 
 		return quantity;
@@ -207,15 +204,15 @@ protected:
 
 	virtual void postCreate() {
 		FuelManagementSystem::postCreate();
-		m_FwdReservoir = getNode(simdata::Key("FwdReservoir")); assert(m_FwdReservoir);
-		m_AftReservoir = getNode(simdata::Key("AftReservoir")); assert(m_AftReservoir);
-		m_FwdFuselage = getNode(simdata::Key("FwdFuselage")); assert(m_FwdFuselage);
-		m_AftFuselage = getNode(simdata::Key("AftFuselage")); assert(m_AftFuselage);
-		m_LeftWing = getNode(simdata::Key("LeftWing")); assert(m_LeftWing);
-		m_RightWing = getNode(simdata::Key("RightWing")); assert(m_RightWing);
-		m_LeftExternal = getNode(simdata::Key("LeftExternal")); assert(m_LeftExternal);
-		m_RightExternal = getNode(simdata::Key("RightExternal")); assert(m_RightExternal);
-		m_CenterExternal = getNode(simdata::Key("CenterExternal")); assert(m_CenterExternal);
+		m_FwdReservoir = getNode(Key("FwdReservoir")); assert(m_FwdReservoir);
+		m_AftReservoir = getNode(Key("AftReservoir")); assert(m_AftReservoir);
+		m_FwdFuselage = getNode(Key("FwdFuselage")); assert(m_FwdFuselage);
+		m_AftFuselage = getNode(Key("AftFuselage")); assert(m_AftFuselage);
+		m_LeftWing = getNode(Key("LeftWing")); assert(m_LeftWing);
+		m_RightWing = getNode(Key("RightWing")); assert(m_RightWing);
+		m_LeftExternal = getNode(Key("LeftExternal")); assert(m_LeftExternal);
+		m_RightExternal = getNode(Key("RightExternal")); assert(m_RightExternal);
+		m_CenterExternal = getNode(Key("CenterExternal")); assert(m_CenterExternal);
 	}
 
 private:
@@ -237,8 +234,8 @@ private:
 
 		switch (b_FuelQtySelSwitch->state().getValue()) {
 			case 0: // test
-				totalizer = simdata::convert::lb_kg(6000.0) / m_NominalFuelDensity;
-				al = fr = simdata::convert::lb_kg(2000.0) / m_NominalFuelDensity;
+				totalizer = convert::lb_kg(6000.0) / m_NominalFuelDensity;
+				al = fr = convert::lb_kg(2000.0) / m_NominalFuelDensity;
 				fwd_warning_light = aft_warning_light = true;
 				m_TestMode = true;
 				break;
@@ -272,9 +269,9 @@ private:
 		// TODO make these targets and low pass filter the channel values (need a
 		// higher update rate, with an internal timer for slower fuel management
 		// updates).
-		b_Totalizer->value() = simdata::convert::kg_lb(totalizer * m_NominalFuelDensity);
-		b_AftLeftPointer->value() = simdata::convert::kg_lb(al * m_NominalFuelDensity);
-		b_FwdRightPointer->value() = simdata::convert::kg_lb(fr * m_NominalFuelDensity);
+		b_Totalizer->value() = convert::kg_lb(totalizer * m_NominalFuelDensity);
+		b_AftLeftPointer->value() = convert::kg_lb(al * m_NominalFuelDensity);
+		b_FwdRightPointer->value() = convert::kg_lb(fr * m_NominalFuelDensity);
 	}
 
 	bool m_Pressurize;
@@ -301,28 +298,28 @@ private:
 	FuelNode *m_RightExternal;
 	FuelNode *m_CenterExternal;
 
-	static const simdata::Enumeration MASTER_FUEL;
-	static const simdata::Enumeration TANK_INERTING;
-	static const simdata::Enumeration ENGINE_FEED;
-	static const simdata::Enumeration FUEL_QTY_SEL;
-	static const simdata::Enumeration EXT_FUEL_TRANS;
-	static const simdata::Enumeration AIR_REFUEL;
-	static const simdata::Enumeration AIR_SOURCE;
+	static const Enumeration MASTER_FUEL;
+	static const Enumeration TANK_INERTING;
+	static const Enumeration ENGINE_FEED;
+	static const Enumeration FUEL_QTY_SEL;
+	static const Enumeration EXT_FUEL_TRANS;
+	static const Enumeration AIR_REFUEL;
+	static const Enumeration AIR_SOURCE;
 
-	CockpitSwitch::Ref b_MasterFuelSwitch;
-	CockpitSwitch::Ref b_TankInertingSwitch;
-	CockpitSwitch::Ref b_EngineFeedSwitch;
-	CockpitSwitch::Ref b_FuelQtySelSwitch;
-	CockpitSwitch::Ref b_ExtFuelTransSwitch;
-	CockpitSwitch::Ref b_AirRefuelSwitch;
-	CockpitSwitch::Ref b_AirSourceSwitch;
+	CockpitSwitch::RefT b_MasterFuelSwitch;
+	CockpitSwitch::RefT b_TankInertingSwitch;
+	CockpitSwitch::RefT b_EngineFeedSwitch;
+	CockpitSwitch::RefT b_FuelQtySelSwitch;
+	CockpitSwitch::RefT b_ExtFuelTransSwitch;
+	CockpitSwitch::RefT b_AirRefuelSwitch;
+	CockpitSwitch::RefT b_AirSourceSwitch;
 	CockpitInterface m_CockpitInterface;
 
-	DataChannel<double>::Ref b_Totalizer;
-	DataChannel<double>::Ref b_AftLeftPointer;
-	DataChannel<double>::Ref b_FwdRightPointer;
-	DataChannel<bool>::Ref b_FwdFuelLowLight;
-	DataChannel<bool>::Ref b_AftFuelLowLight;
+	DataChannel<double>::RefT b_Totalizer;
+	DataChannel<double>::RefT b_AftLeftPointer;
+	DataChannel<double>::RefT b_FwdRightPointer;
+	DataChannel<bool>::RefT b_FwdFuelLowLight;
+	DataChannel<bool>::RefT b_AftFuelLowLight;
 
 };
 
@@ -331,13 +328,16 @@ CSP_XML_BEGIN(f16::FuelSystem)
 	CSP_DEF("fwd_fuel_low_level", m_FwdFuelLowLevel, false)
 CSP_XML_END
 
-const simdata::Enumeration FuelSystem::MASTER_FUEL("OFF MASTER");
-const simdata::Enumeration FuelSystem::TANK_INERTING("OFF INERTING");
-const simdata::Enumeration FuelSystem::ENGINE_FEED("OFF NORM AFT FWD");
-const simdata::Enumeration FuelSystem::FUEL_QTY_SEL("TEST NORM RSVR INT_WING EXT_WING EXT_CTR");
-const simdata::Enumeration FuelSystem::EXT_FUEL_TRANS("NORM WING_FIRST");
-const simdata::Enumeration FuelSystem::AIR_REFUEL("CLOSE OPEN");
-const simdata::Enumeration FuelSystem::AIR_SOURCE("OFF NORM DUMP RAM");
+const Enumeration FuelSystem::MASTER_FUEL("OFF MASTER");
+const Enumeration FuelSystem::TANK_INERTING("OFF INERTING");
+const Enumeration FuelSystem::ENGINE_FEED("OFF NORM AFT FWD");
+const Enumeration FuelSystem::FUEL_QTY_SEL("TEST NORM RSVR INT_WING EXT_WING EXT_CTR");
+const Enumeration FuelSystem::EXT_FUEL_TRANS("NORM WING_FIRST");
+const Enumeration FuelSystem::AIR_REFUEL("CLOSE OPEN");
+const Enumeration FuelSystem::AIR_SOURCE("OFF NORM DUMP RAM");
 const double FuelSystem::m_NominalFuelDensity = 0.8; // kg/l
 
 } // namespace f16
+
+CSP_NAMESPACE_END
+

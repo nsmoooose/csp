@@ -25,6 +25,7 @@
 #ifndef __CSPSIM_CONFIG_H__
 #define __CSPSIM_CONFIG_H__
 
+#include <csp/csplib/util/Namespace.h>
 #include <csp/csplib/util/SimpleConfig.h>
 #include <string>
 

@@ -26,18 +26,21 @@
 #ifndef __CSPSIM_F16_DATA_ENTRY_PAGE_H__
 #define __CSPSIM_F16_DATA_ENTRY_PAGE_H__
 
-#include "DataEntry.h"
+#include <csp/cspsim/f16/DataEntry.h>
+#include <csp/csplib/util/Callback.h>
 #include <csp/csplib/util/Ref.h>
-#include <SimCore/Util/Callback.h>
+
 #include <vector>
+
+CSP_NAMESPACE
 
 class AlphaNumericDisplay;
 class Bus;
 
 
-class DataEntryPage: public simdata::Referenced {
+class DataEntryPage: public Referenced {
 public:
-	typedef simdata::Ref<DataEntryPage> Ref;
+	typedef Ref<DataEntryPage> RefT;
 	virtual ~DataEntryPage() { }
 
 	virtual std::string ICP_0()=0;
@@ -71,7 +74,7 @@ protected:
 
 class DataEntryForm: public DataEntryPage {
 public:
-	typedef simdata::Ref<DataEntryForm> Ref;
+	typedef Ref<DataEntryForm> RefT;
 
 	DataEntryForm();
 
@@ -107,14 +110,14 @@ protected:
 	virtual void nextEntry();
 	virtual void prevEntry();
 
-	virtual void addCycle(DataCycle::Ref);
-	virtual void addEntry(DataEntry::Ref);
-	virtual void addWidget(DataWidget::Ref);
+	virtual void addCycle(DataCycle::RefT);
+	virtual void addEntry(DataEntry::RefT);
+	virtual void addWidget(DataWidget::RefT);
 
 private:
-	std::vector<DataWidget::Ref> m_Widgets;
-	std::vector<DataEntry::Ref> m_Entries;
-	std::vector<DataCycle::Ref> m_Cycles;
+	std::vector<DataWidget::RefT> m_Widgets;
+	std::vector<DataEntry::RefT> m_Entries;
+	std::vector<DataCycle::RefT> m_Cycles;
 	int m_EntryIndex;
 	int m_CycleIndex;
 };
@@ -122,7 +125,7 @@ private:
 
 class DataEntryGroup: public DataEntryPage {
 public:
-	typedef simdata::Ref<DataEntryGroup> Ref;
+	typedef Ref<DataEntryGroup> RefT;
 
 	DataEntryGroup();
 
@@ -150,13 +153,14 @@ public:
 	virtual void reset();
 
 protected:
-	virtual void setActivePage(DataEntryPage::Ref page);
+	virtual void setActivePage(DataEntryPage::RefT page);
 	virtual std::string onNumber(int n);
 
 private:
-	DataEntryPage::Ref m_ActivePage;
+	DataEntryPage::RefT m_ActivePage;
 };
 
+CSP_NAMESPACE_END
 
 #endif // __CSPSIM_F16_DATA_ENTRY_PAGE_H__
 

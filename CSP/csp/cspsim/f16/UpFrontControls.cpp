@@ -23,15 +23,16 @@
  **/
 
 
-#include "UpFrontControls.h"
-#include "InputEventChannel.h"
-#include "PageALOW.h"
-#include "PageCNI.h"
-#include "PageLIST.h"
-#include "PageSTPT.h"
+#include <csp/cspsim/f16/UpFrontControls.h>
+#include <csp/cspsim/f16/PageALOW.h>
+#include <csp/cspsim/f16/PageCNI.h>
+#include <csp/cspsim/f16/PageLIST.h>
+#include <csp/cspsim/f16/PageSTPT.h>
+#include <csp/cspsim/InputEventChannel.h>
 
 #include <csp/csplib/data/ObjectInterface.h>
 
+CSP_NAMESPACE
 
 CSP_XML_BEGIN(UpFrontControls)
 CSP_XML_END
@@ -53,7 +54,7 @@ UpFrontControls::~UpFrontControls() { }
 	bus->registerChannel(new InputEventChannel(#CONTROL, this, &UpFrontControls::CONTROL));
 
 void UpFrontControls::registerChannels(Bus *bus) {
-	m_Display = bus->registerLocalDataChannel<AlphaNumericDisplay::Ref>("DED", new AlphaNumericDisplay(26, 5));
+	m_Display = bus->registerLocalDataChannel<AlphaNumericDisplay::RefT>("DED", new AlphaNumericDisplay(26, 5));
 	UFC_REGISTER(ICP_0);
 	UFC_REGISTER(ICP_1);
 	UFC_REGISTER(ICP_2);
@@ -152,7 +153,7 @@ double UpFrontControls::onUpdate(double dt) {
 	return 0.0;
 }
 
-DataEntryPage::Ref UpFrontControls::getActivePage() {
+DataEntryPage::RefT UpFrontControls::getActivePage() {
 	assert(m_ActivePage.valid());
 	if (!m_Override) return m_ActivePage;
 	return m_Override;
@@ -191,7 +192,7 @@ void UpFrontControls::override(std::string const &page) {
 void UpFrontControls::updateActivePage() {
 	m_ElapsedTime = 0;
 	m_UpdateTime = 1.0;
-	DataEntryPage::Ref page = getActivePage();
+	DataEntryPage::RefT page = getActivePage();
 	if (page.valid()) {
 		m_UpdateTime = page->update();
 		// TODO display needs to keep a double buffer to allow
@@ -203,3 +204,6 @@ void UpFrontControls::updateActivePage() {
 		}
 	}
 }
+
+CSP_NAMESPACE_END
+

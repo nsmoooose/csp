@@ -20,37 +20,39 @@
 /**
  * @file Radio.h
  *
- **/
+ */
 
 
 #ifndef __CSPSIM_F16_RADIO_H__
 #define __CSPSIM_F16_RADIO_H__
 
-#include <System.h>
+#include <csp/cspsim/System.h>
 #include <csp/csplib/data/Enum.h>
+
 #include <vector>
 
+CSP_NAMESPACE
 
 class F16Radio: public System {
 public:
 	CSP_DECLARE_OBJECT(F16Radio)
 
-	static simdata::Enumeration STATUS;
-	static simdata::Enumeration MODE;
-	static simdata::Enumeration BAND;
-	static simdata::Enumeration POWER;
+	static Enumeration STATUS;
+	static Enumeration MODE;
+	static Enumeration BAND;
+	static Enumeration POWER;
 
-	typedef simdata::Enum<STATUS> Status;
-	typedef simdata::Enum<MODE> Mode;
-	typedef simdata::Enum<BAND> Band;
-	typedef simdata::Enum<POWER> Power;
+	typedef Enum<STATUS> Status;
+	typedef Enum<MODE> Mode;
+	typedef Enum<BAND> Band;
+	typedef Enum<POWER> Power;
 
 	virtual void importChannels(Bus*) {
 	}
 
 	virtual void registerChannels(Bus* bus) {
-		bus->registerSharedDataChannel<simdata::EnumLink>("Radio.UHF.Status", Status("GUARD"));
-		bus->registerSharedDataChannel<simdata::EnumLink>("Radio.VHF.Status", Status("BACKUP"));
+		bus->registerSharedDataChannel<EnumLink>("Radio.UHF.Status", Status("GUARD"));
+		bus->registerSharedDataChannel<EnumLink>("Radio.VHF.Status", Status("BACKUP"));
 	}
 
 	F16Radio();
@@ -66,6 +68,8 @@ protected:
 	std::vector<int> m_UHFPresets;
 	std::vector<int> m_VHFPresets;
 };
+
+CSP_NAMESPACE_END
 
 #endif // __CSPSIM_F16_RADIO_H__
 

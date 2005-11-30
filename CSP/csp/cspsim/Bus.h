@@ -21,23 +21,22 @@
  * @file Bus.h
  * @brief Classes for sharing data between vehicle subsystems.
  *
- * The bus and data channel infrastructure provides a higly flexible way
- * of interfacing disparate vehicle subsystems.  Rather than relying on
- * base class interfaces and virtual dispatch to connect subsystems, the
- * bus architecture provides dynamic data channels that are constructed
- * when the systems are first connected.  Individual systems export named
- * channels, which provide strongly-typed access to internal data.  These
- * channels are registered with a bus, which acts as a broker between the
- * subsystems in a vehicle.  To retrieve external data, systems request
- * specific channels by name from the bus.  Once a channel is retrieved,
- * the channel instance can be used to efficiently retrieve data from the
- * system providing the channel.  The two subsystems need no specific
- * knowledge of each other, just an agreed set of channel names and types.
- * Since the binding is dynamic (at runtime), systems can provide fallback
- * behavior in the event that a particular channel is unavailable.
- * Channels provide both passive data transfer, as well as push-style
- * data updates and active (multi-parameter) callbacks via the sigc++
- * library.
+ * The bus and data channel infrastructure provides a higly flexible way of
+ * interfacing disparate vehicle subsystems.  Rather than relying on base class
+ * interfaces and virtual dispatch to connect subsystems, the bus architecture
+ * provides dynamic data channels that are constructed when the systems are
+ * first connected.  Individual systems export named channels, which provide
+ * strongly-typed access to internal data.  These channels are registered with
+ * a bus, which acts as a broker between the subsystems in a vehicle.  To
+ * retrieve external data, systems request specific channels by name from the
+ * bus.  Once a channel is retrieved, the channel instance can be used to
+ * efficiently retrieve data from the system providing the channel.  The two
+ * subsystems need no specific knowledge of each other, just an agreed set of
+ * channel names and types.  Since the binding is dynamic (at runtime), systems
+ * can provide fallback behavior in the event that a particular channel is
+ * unavailable.  Channels provide both passive data transfer, as well as
+ * push-style data updates and active (multi-parameter) callbacks via the
+ * sigc++ library.
  *
  **/
 
@@ -66,15 +65,13 @@ class Bus;
 
 /** Base class for channels on a bus.
  *
- *  Channels are reference counted objects that are stored in a bus
- *  and can be shared by components with access to the bus. Each
- *  component can provide channels to the bus and access channels
- *  provided by other components. Since the channels are identified
- *  by strings, this provides a very flexible way to share
- *  interfaces. Although the initial retrieval and connection of a
- *  channel involves some over- head, references to channels can be
- *  stored locally to provide low-overhead data and method sharing
- *  between components.
+ *  Channels are reference counted objects that are stored in a bus and can be
+ *  shared by components with access to the bus. Each component can provide
+ *  channels to the bus and access channels provided by other components. Since
+ *  the channels are identified by strings, this provides a very flexible way
+ *  to share interfaces. Although the initial retrieval and connection of a
+ *  channel involves some over- head, references to channels can be stored
+ *  locally to provide low-overhead data and method sharing between components.
  */
 class ChannelBase: public Referenced {
 friend class Bus;
@@ -173,12 +170,11 @@ protected:
 
 /** A channel for calling methods of a remote object.
  *
- *  Method channels to allow components on a bus to call methods of
- *  other components (and retrieve the results). This is somewhat
- *  similar to "pull" data channels, except that the called method
- *  can take arguments. The calling mechanism is based on libsigc++
- *  signals (see the libsigc++ documentation for details on using
- *  signals).
+ *  Method channels to allow components on a bus to call methods of other
+ *  components (and retrieve the results). This is somewhat similar to "pull"
+ *  data channels, except that the called method can take arguments. The
+ *  calling mechanism is based on libsigc++ signals (see the libsigc++
+ *  documentation for details on using signals).
  */
 template <class SIGNAL>
 class MethodChannel: public ChannelBase {
@@ -200,22 +196,20 @@ public:
 
 /** Base class for data channels on a bus.
  *
- *  This class provides basic data channel functionality without
- *  specializing to a particular data type.  Data channels are
- *  reference counted objects.  The references are stored both in
- *  the bus (which provides name-based channel lookups) and in
- *  individual systems as member variable references.  The data
- *  channel may therefore persist even if the system originally
+ *  This class provides basic data channel functionality without specializing
+ *  to a particular data type.  Data channels are reference counted objects.
+ *  The references are stored both in the bus (which provides name-based
+ *  channel lookups) and in individual systems as member variable references.
+ *  The data channel may therefore persist even if the system originally
  *  defining the channel is destroyed.
  *
- *  Data channels support either push and pull based value updates,
- *  and must be specialized when the first signal handler is
- *  connected.  For push channels, any change to the channel value
- *  will send a signal to all callbacks connected to the channel.
- *  For pull channels, any attempt to read a channel value will
- *  first send a signal to a callback that can update the value.
- *  In this case only one callback may be connected to the channel,
- *  usually by the system that creates the channel.
+ *  Data channels support either push and pull based value updates, and must be
+ *  specialized when the first signal handler is connected.  For push channels,
+ *  any change to the channel value will send a signal to all callbacks
+ *  connected to the channel.  For pull channels, any attempt to read a channel
+ *  value will first send a signal to a callback that can update the value.  In
+ *  this case only one callback may be connected to the channel, usually by the
+ *  system that creates the channel.
  */
 class DataChannelBase: public ChannelBase {
 private:
@@ -255,14 +249,12 @@ protected:
 		}
 	}
 
-	/** Test if the channel has had at least one signal handler
-	 *  connected.
+	/** Test if the channel has had at least one signal handler connected.
 	 *
-	 *  Note that handlers are not tracked beyond their initial
-	 *  connection to the channel, so it is possible for this
-	 *  method to return true even if no handlers are currently
-	 *  connected.  This flag is used as an internal optimization
-	 *  for channels that have never been connected to a signal
+	 *  Note that handlers are not tracked beyond their initial connection to
+	 *  the channel, so it is possible for this method to return true even if
+	 *  no handlers are currently connected.  This flag is used as an internal
+	 *  optimization for channels that have never been connected to a signal
 	 *  handler.
 	 */
 	bool hasHandler() const { return isMask(MASK_HANDLER); }
@@ -285,11 +277,10 @@ public:
 
 	/** Mark this channel as dirty.
 	 *
-	 *  Used by pull channels to inform users of the channel that the
-	 *  current data value is stale.  Calls to pull() when the channel
-	 *  is dirty will result in a signal being sent to the channel
-	 *  provider, which should update the value and clear the dirty flag
-	 *  by calling setClean().
+	 *  Used by pull channels to inform users of the channel that the current
+	 *  data value is stale.  Calls to pull() when the channel is dirty will
+	 *  result in a signal being sent to the channel provider, which should
+	 *  update the value and clear the dirty flag by calling setClean().
 	 */
 	void setDirty() { setMask(MASK_DIRTY); }
 
@@ -317,8 +308,8 @@ public:
 	/** Connect a signal handler to this channel.
 	 *
 	 *  If push is true, this method may be called any number of times to
-	 *  connect multiple handlers.  If push is false, only one callback can
-	 *  be connected (additional calls to connect() will raise an assertion).
+	 *  connect multiple handlers.  If push is false, only one callback can be
+	 *  connected (additional calls to connect() will raise an assertion).
 	 *
 	 *  @param object The instance providing the handler.
 	 *  @param callback The class method used to handle the signal.
@@ -345,11 +336,10 @@ public:
 
 /** Channel for passing data between systems over a Bus.
  *
- *  Channels are type-specialized objects which store a data
- *  value and can be shared (by reference) by multiple systems
- *  connected to a data bus.  In addition to the push/pull
- *  signaling functionality provided by the ChannelBase base
- *  class, this subclass defines accessor methods for the
+ *  Channels are type-specialized objects which store a data value and can be
+ *  shared (by reference) by multiple systems connected to a data bus.  In
+ *  addition to the push/pull signaling functionality provided by the
+ *  ChannelBase base class, this subclass defines accessor methods for the
  *  underlying data value.
  */
 template <typename T>
@@ -482,13 +472,12 @@ public:
 
 /** A data bus class for passing data between multiple Systems.
  *
- *  Bus instances are essentially just collections of data channels,
- *  providing some convenience methods for accessing channels and
- *  connecting systems.  Systems connected by a Bus can exchange
- *  information synchonously or asynchronously using an efficient
- *  string-based interface.  No detailed (compile-time) knowledge
- *  of the system class interfaces is required, which allows for a
- *  much more flexible design of system class hierarchies.
+ *  Bus instances are essentially just collections of data channels, providing
+ *  some convenience methods for accessing channels and connecting systems.
+ *  Systems connected by a Bus can exchange information synchonously or
+ *  asynchronously using an efficient string-based interface.  No detailed
+ *  (compile-time) knowledge of the system class interfaces is required, which
+ *  allows for a much more flexible design of system class hierarchies.
  */
 class Bus: public Referenced {
 
@@ -524,10 +513,10 @@ public:
 		
 	/** Register a new channel.
 	 *
-	 *  This method is typically called from a system's registerChannels
-	 *  method to register all data channels that the system provides
-	 *  via this bus.  The return value can be used to store a local
-	 *  reference to the new channel.
+	 *  This method is typically called from a system's registerChannels method
+	 *  to register all data channels that the system provides via this bus.
+	 *  The return value can be used to store a local reference to the new
+	 *  channel.
 	 *
 	 *  @param channel The channel to register.
 	 *  @param groups A space-separated list of group names.  The channel

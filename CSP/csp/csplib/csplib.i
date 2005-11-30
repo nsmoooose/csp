@@ -48,6 +48,16 @@ PyObject *cspPyException;
 %include "std_vector.i"
 %include "exception.i"
 
+// vector templates
+%import "csp/csplib/swig/vector.i"
+new_vector(double, double);
+new_vector(float, float);
+new_vector(int, int);
+new_vector(string, std::string);
+new_vector(Real, CSP(Real));
+new_vector(Path, CSP(Path));
+new_vector(Key, CSP(Key));
+
 %include "csp/csplib/util/Export.h"
 %include "csp/csplib/util/Namespace.h"
 %include "csp/csplib/util/swig/Log.i"
@@ -71,15 +81,6 @@ PyObject *cspPyException;
 %include "csp/csplib/util/swig/Random.i"
 %include "csp/csplib/util/swig/Noise.i"
 %include "csp/csplib/data/swig/Types.i"
-
-%import "csp/csplib/swig/vector.i"
-new_vector(double, double);
-new_vector(string, std::string);
-new_vector(int, int);
-new_vector(Real, CSP(Real));
-new_vector(Path, CSP(Path));
-new_vector(Key, CSP(Key));
-
 
 %{
 PyObject *csp_swig_exception(CSP(ExceptionBase) &e) {

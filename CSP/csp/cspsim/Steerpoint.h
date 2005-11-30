@@ -25,18 +25,20 @@
 #ifndef __CSPSIM_STEERPOINT_H__
 #define __CSPSIM_STEERPOINT_H__
 
+#include <csp/cspsim/Projection.h>
+
 #include <csp/csplib/util/Ref.h>
 #include <csp/csplib/data/Date.h>
 #include <csp/csplib/data/Vector3.h>
 #include <csp/csplib/data/GeoPos.h>
-#include <Projection.h>
 
+CSP_NAMESPACE
 
 /** Base class for representing steerpoints / waypoints.  It is intended to contain both
  *  standard steerpoint data (e.g. position) and AI cues (e.g. formation, action).  Very
  *  specialized behavior should go in subclasses.
  */
-class Steerpoint: public simdata::Referenced {
+class Steerpoint: public Referenced {
 public:
 	struct OffsetPoint {
 		OffsetPoint(): enabled(false), range(0.0), bearing(0.0), elevation(0.0) { }
@@ -47,26 +49,26 @@ public:
 		float elevation;
 	};
 
-	typedef simdata::Ref<Steerpoint> Ref;
+	typedef Ref<Steerpoint> RefT;
 
-	Steerpoint(Projection::CRef projection, int index, std::string const &label, simdata::Vector3 const &position):
+	Steerpoint(Projection::CRefT projection, int index, std::string const &label, Vector3 const &position):
 		m_Projection(projection), m_Index(index), m_Label(label), m_Position(position) { assert(projection.valid()); updateLLA(); }
 
-	Steerpoint(Projection::CRef projection, int index, std::string const &label, simdata::LLA const &lla):
+	Steerpoint(Projection::CRefT projection, int index, std::string const &label, LLA const &lla):
 		m_Projection(projection), m_Index(index), m_Label(label), m_LLA(lla) { assert(projection.valid()); updatePosition(); }
 
 	virtual ~Steerpoint() { }
 
 	virtual int index() const { return m_Index; }
-	virtual simdata::DateZulu const &time() const { return m_Time; }
-	virtual simdata::Vector3 const &position() const { return m_Position; }
-	virtual simdata::LLA const &lla() const { return m_LLA; }
+	virtual DateZulu const &time() const { return m_Time; }
+	virtual Vector3 const &position() const { return m_Position; }
+	virtual LLA const &lla() const { return m_LLA; }
 	virtual float altitude() const { return static_cast<float>(m_LLA.altitude()); }
 
 	virtual void setAltitude(float altitude) { m_LLA.set(m_LLA.latitude(), m_LLA.longitude(), altitude); updatePosition(); }
-	virtual void setPosition(simdata::Vector3 const &position) { m_Position = position; updateLLA(); }
-	virtual void setPosition(simdata::LLA const &position) { m_LLA = position; updatePosition(); }
-	virtual void setTime(simdata::DateZulu const &time) { m_Time = time; }
+	virtual void setPosition(Vector3 const &position) { m_Position = position; updateLLA(); }
+	virtual void setPosition(LLA const &position) { m_LLA = position; updatePosition(); }
+	virtual void setTime(DateZulu const &time) { m_Time = time; }
 
 	virtual void setOffsetAimpoint0(OffsetPoint const &point) { m_OffsetAimpoint0 = point; }
 	virtual void setOffsetAimpoint1(OffsetPoint const &point) { m_OffsetAimpoint1 = point; }
@@ -79,17 +81,19 @@ private:
 
 	// TODO AI/mission planning cues: formation, action
 
-	Projection::CRef m_Projection;
+	Ref<const Projection> m_Projection;
 	int m_Index;
 	std::string m_Label;
-	simdata::DateZulu m_Time;
-	simdata::Vector3 m_Position;
-	simdata::LLA m_LLA;
+	DateZulu m_Time;
+	Vector3 m_Position;
+	LLA m_LLA;
 
 	OffsetPoint m_OffsetAimpoint0;
 	OffsetPoint m_OffsetAimpoint1;
 	OffsetPoint m_VisualInitialPoint;
 	OffsetPoint m_VisualReferencePoint;
 };
+
+CSP_NAMESPACE_END
 
 #endif // __CSPSIM_STEERPOINT_H__

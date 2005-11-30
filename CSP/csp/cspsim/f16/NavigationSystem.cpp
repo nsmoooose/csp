@@ -22,16 +22,17 @@
  *
  **/
 
-#include "NavigationSystem.h"
-#include <CSPSim.h>
-#include <Theater.h>
-#include <TerrainObject.h>
-#include <Projection.h>
+#include <csp/cspsim/f16/NavigationSystem.h>
+#include <csp/cspsim/CSPSim.h>
+#include <csp/cspsim/Theater.h>
+#include <csp/cspsim/TerrainObject.h>
+#include <csp/cspsim/Projection.h>
 
 #include <csp/csplib/data/Date.h>
 #include <csp/csplib/util/Math.h>
 #include <csp/csplib/util/Conversions.h>
 
+CSP_NAMESPACE
 
 NavigationSystem::NavigationSystem() {
 	m_Projection = CSPSim::theSim->getTheater()->getTerrain()->getProjection();
@@ -40,23 +41,23 @@ NavigationSystem::NavigationSystem() {
 }
 
 void NavigationSystem::addTestSteerpoints() {
-	CSP_LOG(APP, DEBUG, "add test steerpoints");
+	CSPLOG(DEBUG, APP) << "add test steerpoints";
 	m_Steerpoints.clear();
 	Steerpoint *steerpoint;
-	simdata::DateZulu sptime = CSPSim::theSim->getCurrentTime();
-	steerpoint = new Steerpoint(m_Projection, 1, "takeoff", simdata::Vector3(-29495.0, -10830, 85.5));
+	DateZulu sptime = CSPSim::theSim->getCurrentTime();
+	steerpoint = new Steerpoint(m_Projection, 1, "takeoff", Vector3(-29495.0, -10830, 85.5));
 	sptime.addTime(60.0);
 	steerpoint->setTime(sptime);
 	m_Steerpoints.push_back(steerpoint);
-	steerpoint = new Steerpoint(m_Projection, 2, "climb", simdata::Vector3(-29495.0, -25000, 1000.0));
+	steerpoint = new Steerpoint(m_Projection, 2, "climb", Vector3(-29495.0, -25000, 1000.0));
 	sptime.addTime(120.0);
 	steerpoint->setTime(sptime);
 	m_Steerpoints.push_back(steerpoint);
-	steerpoint = new Steerpoint(m_Projection, 3, "cruise", simdata::Vector3(30495.0, -35000, 6000.0));
+	steerpoint = new Steerpoint(m_Projection, 3, "cruise", Vector3(30495.0, -35000, 6000.0));
 	sptime.addTime(200.0);
 	steerpoint->setTime(sptime);
 	m_Steerpoints.push_back(steerpoint);
-	steerpoint = new Steerpoint(m_Projection, 4, "simulated attack", simdata::Vector3(-29495.0, -10830, 85.5));
+	steerpoint = new Steerpoint(m_Projection, 4, "simulated attack", Vector3(-29495.0, -10830, 85.5));
 	sptime.addTime(240.0);
 	steerpoint->setTime(sptime);
 	steerpoint->setOffsetAimpoint0(Steerpoint::OffsetPoint(1000.0, 290.0, 90.0));
@@ -70,14 +71,14 @@ void NavigationSystem::addTestSteerpoints() {
 }
 
 void NavigationSystem::nextSteerpoint() {
-	CSP_LOG(APP, DEBUG, "next steerpoint " << m_SteerpointIndex << " " << m_Steerpoints.size());
+	CSPLOG(DEBUG, APP) << "next steerpoint " << m_SteerpointIndex << " " << m_Steerpoints.size();
 	if (!m_Steerpoints.empty()) {
 		m_SteerpointIndex = (m_SteerpointIndex + 1) % m_Steerpoints.size();
 	}
 }
 
 void NavigationSystem::prevSteerpoint() {
-	CSP_LOG(APP, DEBUG, "prev steerpoint " << m_SteerpointIndex << " " << m_Steerpoints.size());
+	CSPLOG(DEBUG, APP) << "prev steerpoint " << m_SteerpointIndex << " " << m_Steerpoints.size();
 	if (!m_Steerpoints.empty()) {
 		m_SteerpointIndex = (m_SteerpointIndex + m_Steerpoints.size() - 1) % m_Steerpoints.size();
 	}
@@ -89,14 +90,17 @@ void NavigationSystem::setActiveSteerpoint(unsigned index) {
 	}
 }
 
-Steerpoint::Ref NavigationSystem::activeSteerpoint() {
+Steerpoint::RefT NavigationSystem::activeSteerpoint() {
 	return m_Steerpoints.empty() ? 0 : m_Steerpoints[m_SteerpointIndex];
 }
 
-simdata::LLA NavigationSystem::fromWorld(simdata::Vector3 const &position) {
+LLA NavigationSystem::fromWorld(Vector3 const &position) {
 	return m_Projection->convert(position);
 }
 
-simdata::Vector3 NavigationSystem::toWorld(simdata::LLA const &position) {
+Vector3 NavigationSystem::toWorld(LLA const &position) {
 	return m_Projection->convert(position);
 }
+
+CSP_NAMESPACE_END
+

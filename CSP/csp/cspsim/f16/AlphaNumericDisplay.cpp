@@ -23,10 +23,11 @@
  **/
 
 
-#include "AlphaNumericDisplay.h"
+#include <csp/cspsim/f16/AlphaNumericDisplay.h>
 #include <cassert>
 #include <iostream>
 
+CSP_NAMESPACE
 
 AlphaNumericDisplay::AlphaNumericDisplay(unsigned width, unsigned height): m_Width(width), m_Height(height), m_Dirty(false) {
 	m_Width = width;
@@ -105,3 +106,6 @@ const char* AlphaNumericDisplay::getLine(unsigned i) const {
 	assert(i < m_Height);
 	return m_Lines[i];
 }
+
+CSP_NAMESPACE_END
+

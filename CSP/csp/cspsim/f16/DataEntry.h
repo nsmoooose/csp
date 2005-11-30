@@ -26,29 +26,33 @@
 #ifndef __CSPSIM_F16_DATA_ENTRY_H__
 #define __CSPSIM_F16_DATA_ENTRY_H__
 
-#include "AlphaNumericDisplay.h"
-#include <Bus.h>
-#include <F16/NavigationSystem.h>
-#include <SimCore/Util/StringTools.h>
+#include <csp/cspsim/f16/AlphaNumericDisplay.h>
+#include <csp/cspsim/f16/NavigationSystem.h>
+#include <csp/cspsim/Bus.h>
+
+#include <csp/csplib/util/StringTools.h>
 #include <csp/csplib/util/Conversions.h>
-#include <csp/csplib/data/Enum.h>
 #include <csp/csplib/util/Math.h>
 #include <csp/csplib/util/Ref.h>
+#include <csp/csplib/data/Enum.h>
 #include <csp/csplib/data/Vector3.h>
+
 #include <cmath>
 
 #if !defined(__GNUC__) && !defined(snprintf)
 #define snprintf _snprintf
 #endif
 
+CSP_NAMESPACE
+
 //////
 // todo
 //  - move callbacks/accessors to another header and document them
 //  - change datachannel interface to allow uniform access to push, pull, and method channels.
 
-class CycleCallback: public simdata::Referenced {
+class CycleCallback: public Referenced {
 public:
-	typedef simdata::Ref<CycleCallback> Ref;
+	typedef Ref<CycleCallback> RefT;
 	virtual void increment()=0;
 	virtual void decrement()=0;
 	virtual int get() const=0;
@@ -57,7 +61,7 @@ public:
 
 class SimpleCycle: public CycleCallback {
 public:
-	typedef simdata::Ref<SimpleCycle> Ref;
+	typedef Ref<SimpleCycle> RefT;
 	SimpleCycle(int initial, int min_, int max_, bool wrap): m_Value(initial), m_Min(min_), m_Max(max_), m_Wrap(wrap) {
 		assert(initial >= min_ && initial <= max_);
 	}
@@ -74,7 +78,7 @@ private:
 
 
 template <typename T>
-class Accessor: public simdata::Referenced {
+class Accessor: public Referenced {
 public:
 	virtual bool readonly() const=0;
 	virtual void set(T const &)=0;
@@ -86,7 +90,7 @@ template <typename T>
 class ChannelAccessor: public Accessor<T> {
 public:
 	ChannelAccessor(std::string const &channel): m_ChannelName(channel) { }
-	ChannelAccessor(typename DataChannel<T>::Ref channel): m_Channel(channel) { }
+	ChannelAccessor(typename DataChannel<T>::RefT channel): m_Channel(channel) { }
 	virtual bool readonly() const { return false; }
 	virtual void set(T const &x) { if (m_Channel.valid()) m_Channel->value() = x; }
 	virtual T get() const { return !m_Channel ? T() : m_Channel->value(); }
@@ -96,14 +100,14 @@ public:
 		}
 	}
 private:
-	typename DataChannel<T>::Ref m_Channel;
+	typename DataChannel<T>::RefT m_Channel;
 	std::string m_ChannelName;
 };
 
 template <typename T>
 class ChannelReadOnlyAccessor: public Accessor<T> {
 public:
-	ChannelReadOnlyAccessor(typename DataChannel<T>::CRef channel): m_Channel(channel) { }
+	ChannelReadOnlyAccessor(typename DataChannel<T>::CRefT channel): m_Channel(channel) { }
 	virtual bool readonly() const { return true; }
 	virtual void set(T const &) { assert(0); }
 	virtual T get() const { return !m_Channel ? T() : m_Channel->value(); }
@@ -113,7 +117,7 @@ public:
 		}
 	}
 private:
-	typename DataChannel<T>::CRef m_Channel;
+	typename DataChannel<T>::CRefT m_Channel;
 	std::string m_ChannelName;
 };
 
@@ -182,7 +186,7 @@ private:
 // access to the bus.
 //
 // of course there are downsides to this last approach as well.  first, adapters
-// must be simdata::Objects, which may make them harder to use programatically.
+// must be Objects, which may make them harder to use programatically.
 // i'm not sure if this is a real limitation though, for example one can provide
 // a non-default constructor for supplying the paramaters that would otherwise
 // come from xml.  also, what could in principle be very lightweight adapter
@@ -203,8 +207,8 @@ public:
 		b_Navigation = bus->getSharedChannel(m_Channel, false);
 	}
 private:
-	Steerpoint::Ref activeSteerpoint() const { return b_Navigation.valid() ? b_Navigation->value()->activeSteerpoint() : 0; }
-	DataChannel<NavigationSystem::Ref>::Ref b_Navigation;
+	Ref<Steerpoint> activeSteerpoint() const { return b_Navigation.valid() ? b_Navigation->value()->activeSteerpoint() : 0; }
+	DataChannel<NavigationSystem::RefT>::RefT b_Navigation;
 	std::string m_Channel;
 };
 
@@ -222,12 +226,12 @@ public:
 		return activeSteerpoint().valid() ? activeSteerpoint()->index() : 1;
 	}
 	virtual void importChannels(Bus *bus) {
-		DataChannel<NavigationSystem::Ref>::Ref nav = bus->getSharedChannel(m_Channel, false);
+		DataChannel<NavigationSystem::RefT>::RefT nav = bus->getSharedChannel(m_Channel, false);
 		m_Navigation = nav.valid() ? nav->value() : 0;
 	}
 private:
-	Steerpoint::Ref activeSteerpoint() const { return m_Navigation.valid() ? m_Navigation->activeSteerpoint() : 0; }
-	NavigationSystem::Ref m_Navigation;
+	Ref<Steerpoint> activeSteerpoint() const { return m_Navigation.valid() ? m_Navigation->activeSteerpoint() : 0; }
+	Ref<NavigationSystem> m_Navigation;
 	std::string m_Channel;
 };
 
@@ -240,7 +244,7 @@ public:
 	virtual bool readonly() const { return false; }
 	virtual void set(double const &coordinate) {
 		if (activeSteerpoint().valid()) {
-			simdata::LLA lla = activeSteerpoint()->lla();
+			LLA lla = activeSteerpoint()->lla();
 			switch (m_Coordinate) {
 				case LATITUDE: lla.setLatitudeInDegrees(coordinate); break;
 				case LONGITUDE: lla.setLongitudeInDegrees(coordinate); break;
@@ -251,7 +255,7 @@ public:
 	}
 	virtual double get() const {
 		if (activeSteerpoint().valid()) {
-			simdata::LLA lla = activeSteerpoint()->lla();
+			LLA lla = activeSteerpoint()->lla();
 			switch (m_Coordinate) {
 				case LATITUDE: return lla.latitudeInDegrees();
 				case LONGITUDE: return lla.longitudeInDegrees();
@@ -261,12 +265,12 @@ public:
 		return 0.0;
 	}
 	virtual void importChannels(Bus *bus) {
-		DataChannel<NavigationSystem::Ref>::Ref nav = bus->getSharedChannel(m_Channel, false);
+		DataChannel<NavigationSystem::RefT>::RefT nav = bus->getSharedChannel(m_Channel, false);
 		m_Navigation = nav.valid() ? nav->value() : 0;
 	}
 private:
-	Steerpoint::Ref activeSteerpoint() const { return m_Navigation.valid() ? m_Navigation->activeSteerpoint() : 0; }
-	NavigationSystem::Ref m_Navigation;
+	Ref<Steerpoint> activeSteerpoint() const { return m_Navigation.valid() ? m_Navigation->activeSteerpoint() : 0; }
+	Ref<NavigationSystem> m_Navigation;
 	Coordinate m_Coordinate;
 	std::string m_Channel;
 };
@@ -276,9 +280,9 @@ private:
 
 /** A generic widget interface for rendering data on an AlphaNumericDisplay.
  */
-class DataWidget: public simdata::Referenced {
+class DataWidget: public Referenced {
 public:
-	typedef simdata::Ref<DataWidget> Ref;
+	typedef Ref<DataWidget> RefT;
 	DataWidget(unsigned x, unsigned y): m_X(x), m_Y(y), m_Visible(true) { }
 	virtual void render(AlphaNumericDisplay&)=0;
 	virtual void importChannels(Bus*) { }
@@ -300,9 +304,9 @@ private:
  */
 class DataCycle: public DataWidget {
 public:
-	typedef simdata::Ref<CycleCallback> Callback;
+	typedef Ref<CycleCallback> Callback;
 
-	typedef simdata::Ref<DataCycle> Ref;
+	typedef Ref<DataCycle> RefT;
 
 	/** Create a new data cycle.  The up/dn arrow symbol will be placed at the
 	 *  specified x,y coordinates on the display.  The callback handles increment
@@ -341,7 +345,7 @@ private:
  */
 class DataEntry: public DataWidget {
 public:
-	typedef simdata::Ref<DataEntry> Ref;
+	typedef Ref<DataEntry> RefT;
 
 	DataEntry(unsigned x, unsigned y): DataWidget(x, y), m_Active(false) { }
 
@@ -390,8 +394,8 @@ private:
 template <typename T>
 class ScratchPad: public DataEntry {
 public:
-	typedef simdata::Ref<Accessor<T> > Callback;
-	typedef simdata::Ref<ScratchPad> Ref;
+	typedef Ref<Accessor<T> > Callback;
+	typedef Ref<ScratchPad> Ref;
 
 	/** Construct a new scratch pad.  The leading asterisk will be placed at the
 	 *  specified (x,y) coordinates, followed by the value and a trailing asterisk.
@@ -661,7 +665,7 @@ protected:
 	virtual std::string format(double const &value) {
 		char buffer[40];
 		const double clamp = (m_Type == LATITUDE) ? 90.0 : 180.0;
-		const double cvalue = simdata::clampTo(value, -clamp, clamp);
+		const double cvalue = clampTo(value, -clamp, clamp);
 		int degrees = static_cast<int>(cvalue);
 		double minutes = std::abs(cvalue - degrees) * 60.0;
 		snprintf(buffer, sizeof(buffer), "%c%3d\027 %6.3f'", directionSymbol(cvalue), std::abs(degrees), minutes);
@@ -723,7 +727,7 @@ protected:
 
 
 class SpeedDirectionWidget: public DataWidget {
-	DataChannel<simdata::Vector3>::CRef b_Vector;
+	DataChannel<Vector3>::CRefT b_Vector;
 	std::string m_Channel;
 public:
 	SpeedDirectionWidget(unsigned x, unsigned y, std::string const &channel): DataWidget(x, y), m_Channel(channel) {
@@ -735,9 +739,9 @@ public:
 
 	virtual void render(AlphaNumericDisplay& display) {
 		if (visible() && b_Vector.valid()) {
-			simdata::Vector3 const &vector = b_Vector->value();
-			double speed = simdata::convert::mps_kts(vector.length());
-			int direction = static_cast<int>(simdata::toDegrees(atan2(vector.x(), vector.y())));
+			Vector3 const &vector = b_Vector->value();
+			double speed = convert::mps_kts(vector.length());
+			int direction = static_cast<int>(toDegrees(atan2(vector.x(), vector.y())));
 			if (direction < 0) direction += 360;
 			display.write(x(), y(), "%03d\027", direction);
 			display.write(x() + 4, y(), "%3d", static_cast<int>(speed));
@@ -753,7 +757,7 @@ public:
 		parseLabelMap(label_map);
 	}
 
-	std::string getLabel(simdata::EnumLink const &link) {
+	std::string getLabel(EnumLink const &link) {
 		std::string setting = link.getToken();
 		LabelMap::const_iterator iter = m_LabelMap.find(setting);
 		return (iter != m_LabelMap.end()) ? iter->second : "";
@@ -780,7 +784,7 @@ private:
 
 
 class EnumDisplayWidget: public DataWidget {
-	DataChannel<simdata::EnumLink>::CRef b_Setting;
+	DataChannel<EnumLink>::CRefT b_Setting;
 	std::string m_Channel;
 	EnumMap m_EnumMap;
 public:
@@ -796,6 +800,8 @@ public:
 		b_Setting = bus->getChannel(m_Channel, false);
 	}
 };
+
+CSP_NAMESPACE_END
 
 #endif // __CSPSIM_F16_DATA_ENTRY_H__
 

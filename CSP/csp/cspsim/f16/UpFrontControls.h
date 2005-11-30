@@ -26,9 +26,10 @@
 #ifndef __CSPSIM_F16_UP_FRONT_CONTROLS_H__
 #define __CSPSIM_F16_UP_FRONT_CONTROLS_H__
 
-#include <System.h>
-#include "DataEntryPage.h"
+#include <csp/cspsim/f16/DataEntryPage.h>
+#include <csp/cspsim/System.h>
 
+CSP_NAMESPACE
 
 // At the one extreme, each system defines its own DataEntryPage and exports registers
 // it with the UFC.  The UFC simply forwards ICP events on the active page, which holds
@@ -89,30 +90,32 @@ protected:
 	virtual void transition(std::string const &);
 	virtual void override(std::string const &);
 	virtual void updateActivePage();
-	DataEntryPage::Ref getActivePage();
+	DataEntryPage::RefT getActivePage();
 
 	void addPages(Bus *bus);
 
 private:
-	DataEntryPage::Ref m_ActivePage;
-	DataEntryPage::Ref m_Override;
+	DataEntryPage::RefT m_ActivePage;
+	DataEntryPage::RefT m_Override;
 
-	DataEntryPage::Ref m_CNI;
-	DataEntryPage::Ref m_Com1;
-	DataEntryPage::Ref m_Com2;
-	DataEntryPage::Ref m_List;
-	DataEntryPage::Ref m_IFF;
+	DataEntryPage::RefT m_CNI;
+	DataEntryPage::RefT m_Com1;
+	DataEntryPage::RefT m_Com2;
+	DataEntryPage::RefT m_List;
+	DataEntryPage::RefT m_IFF;
 	bool m_AA;
 	bool m_AG;
 	
-	DataChannel<AlphaNumericDisplay::Ref>::Ref m_Display;
+	DataChannel<AlphaNumericDisplay::RefT>::RefT m_Display;
 
-	typedef std::map<std::string, DataEntryPage::Ref> PageMap;
+	typedef std::map<std::string, DataEntryPage::RefT> PageMap;
 	PageMap m_PageMap;
 
 	double m_ElapsedTime;
 	double m_UpdateTime;
 };
+
+CSP_NAMESPACE_END
 
 #endif // __CSPSIM_F16_UP_FRONT_CONTROLS_H__
 

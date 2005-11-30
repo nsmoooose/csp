@@ -23,14 +23,15 @@
  **/
 
 
-#include "F16Channels.h"
-#include "F16GearDynamics.h"
-#include "GearAnimation.h"
+#include <csp/cspsim/f16/F16Channels.h>
+#include <csp/cspsim/f16/F16GearDynamics.h>
+#include <csp/cspsim/GearAnimation.h>
 
 #include <csp/csplib/util/Conversions.h>
 #include <csp/csplib/util/Math.h>
 #include <csp/csplib/data/ObjectInterface.h>
 
+CSP_NAMESPACE
 
 CSP_XML_BEGIN(F16GearDynamics)
 CSP_XML_END
@@ -67,7 +68,7 @@ void F16GearDynamics::importChannels(Bus *bus) {
 
 void F16GearDynamics::preSimulationStep(double dt) {
 	if (isGearExtendSelected()) {
-		b_WheelSpin->value() = m_LeftMainLandingGear->getWheelSpeed() > simdata::convert::kts_mps(60.0);
+		b_WheelSpin->value() = m_LeftMainLandingGear->getWheelSpeed() > convert::kts_mps(60.0);
 	}
 	GearDynamics::preSimulationStep(dt);
 }
@@ -93,3 +94,6 @@ bool F16GearDynamics::gearHandleRequestHandler(bool const &up) {
 }
 
 F16GearDynamics::F16GearDynamics(): m_GearHandleRequest(this, &F16GearDynamics::gearHandleRequestHandler) { }
+
+CSP_NAMESPACE_END
+

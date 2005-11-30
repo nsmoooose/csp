@@ -44,7 +44,7 @@
 #include <osgDB/FileUtils>
 #include <osgUtil/SceneView>
 #include <osgText/Text>
-#include <Producer/Camera>
+//#include <Producer/Camera>
 
 #include <ctime>
 #include <iomanip>
@@ -88,6 +88,7 @@ void GameScreen::initInterface()
 	}
 }
 
+#if 0
 // XXX: Preparing for the jump to OpenProducer ...
 class SnapImageDrawCallback: public Producer::Camera::Callback {
 	std::string m_Filename, m_Ext, m_Directory;
@@ -146,6 +147,7 @@ void GameScreen::on_PrintScreen() {
 	osg::ref_ptr<Producer::Camera> camera = new Producer::Camera;
 	sn(*camera);
 }
+#endif
 
 GameScreen::GameScreen():
 	BaseScreen(),

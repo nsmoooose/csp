@@ -26,15 +26,17 @@
 #ifndef __CSPSIM_F16_F16HUD_H__
 #define __CSPSIM_F16_F16HUD_H__
 
-#include <CockpitInterface.h>
-#include <F16/NavigationSystem.h>
-#include <F16/AlphaNumericDisplay.h>
-#include <Filters.h>
-#include <HUD/HUD.h>
-#include <System.h>
+#include <csp/cspsim/f16/NavigationSystem.h>
+#include <csp/cspsim/f16/AlphaNumericDisplay.h>
+#include <csp/cspsim/hud/HUD.h>
+#include <csp/cspsim/CockpitInterface.h>
+#include <csp/cspsim/Filters.h>
+#include <csp/cspsim/System.h>
+
 #include <csp/csplib/data/Quat.h>
 #include <csp/csplib/data/Vector3.h>
 
+CSP_NAMESPACE
 
 class HUDFont;
 class HUDTape;
@@ -55,35 +57,35 @@ public:
 	virtual void importChannels(Bus*);
 
 protected:
-	DataChannel<double>::CRef b_GearExtension;
-	DataChannel<double>::CRef b_Airspeed;
-	DataChannel<double>::CRef b_Roll;
-	DataChannel<double>::CRef b_Pitch;
-	DataChannel<double>::CRef b_Heading;
-	DataChannel<double>::CRef b_Alpha;
-	DataChannel<double>::CRef b_CAS;
-	DataChannel<double>::CRef b_Mach;
-	DataChannel<double>::CRef b_G;
-	DataChannel<double>::CRef b_GroundZ;
-	DataChannel<double>::CRef b_CaraAlow;
-	DataChannel<bool>::CRef b_LeftMainLandingGearWOW;
-	DataChannel<bool>::CRef b_GearHandleUp;
-	DataChannel<simdata::Quat>::CRef b_Attitude;
-	DataChannel<simdata::Vector3>::CRef b_Position;
-	DataChannel<simdata::Vector3>::CRef b_Velocity;
-	DataChannel<NavigationSystem::Ref>::CRef b_NavigationSystem;
-	DataChannel<AlphaNumericDisplay::Ref>::CRef b_DEDReadout;
-	DataChannel<bool>::CRef b_AltitudeAdvisory;
-	DataChannel<bool>::CRef b_DescentWarningAfterTakeoff;
-	DataChannel<double>::CRef b_PullupAnticipation;
+	DataChannel<double>::CRefT b_GearExtension;
+	DataChannel<double>::CRefT b_Airspeed;
+	DataChannel<double>::CRefT b_Roll;
+	DataChannel<double>::CRefT b_Pitch;
+	DataChannel<double>::CRefT b_Heading;
+	DataChannel<double>::CRefT b_Alpha;
+	DataChannel<double>::CRefT b_CAS;
+	DataChannel<double>::CRefT b_Mach;
+	DataChannel<double>::CRefT b_G;
+	DataChannel<double>::CRefT b_GroundZ;
+	DataChannel<double>::CRefT b_CaraAlow;
+	DataChannel<bool>::CRefT b_LeftMainLandingGearWOW;
+	DataChannel<bool>::CRefT b_GearHandleUp;
+	DataChannel<Quat>::CRefT b_Attitude;
+	DataChannel<Vector3>::CRefT b_Position;
+	DataChannel<Vector3>::CRefT b_Velocity;
+	DataChannel<Ref<NavigationSystem> >::CRefT b_NavigationSystem;
+	DataChannel<Ref<AlphaNumericDisplay> >::CRefT b_DEDReadout;
+	DataChannel<bool>::CRefT b_AltitudeAdvisory;
+	DataChannel<bool>::CRefT b_DescentWarningAfterTakeoff;
+	DataChannel<double>::CRefT b_PullupAnticipation;
 
-	DataChannel<simdata::EnumLink>::CRef b_DataSwitch;
-	DataChannel<simdata::EnumLink>::CRef b_FlightPathMarkerSwitch;
-	DataChannel<simdata::EnumLink>::CRef b_ScalesSwitch;
-	DataChannel<simdata::EnumLink>::CRef b_VelocitySwitch;
-	DataChannel<simdata::EnumLink>::CRef b_AltitudeSwitch;
+	DataChannel<EnumLink>::CRefT b_DataSwitch;
+	DataChannel<EnumLink>::CRefT b_FlightPathMarkerSwitch;
+	DataChannel<EnumLink>::CRefT b_ScalesSwitch;
+	DataChannel<EnumLink>::CRefT b_VelocitySwitch;
+	DataChannel<EnumLink>::CRefT b_AltitudeSwitch;
 	CockpitInterface m_HudPanel;
-	DataChannel<simdata::EnumLink>::Ref b_AOAIndexer;
+	DataChannel<EnumLink>::RefT b_AOAIndexer;
 
 	virtual double onUpdate(double dt);
 	virtual void updateReadouts();
@@ -106,7 +108,7 @@ protected:
 	virtual double getSpeedCaret(double ground_speed) const;
 	virtual double getSpeed() const;
 
-	simdata::Vector3 m_Color;
+	Vector3 m_Color;
 
 	osg::ref_ptr<HUD::DirectionElement> m_Tadpole;
 	osg::ref_ptr<HUD::DirectionElement> m_Steerpoint;
@@ -175,6 +177,7 @@ protected:
 	HUD::SymbolMaker m_CaretSymbol;
 };
 
+CSP_NAMESPACE_END
 
 #endif // __CSPSIM_F16_F16HUD_H__
 

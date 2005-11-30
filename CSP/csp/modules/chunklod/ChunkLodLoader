@@ -1,0 +1,150 @@
+/* -*- Mode: c++; c-basic-offset: 4; tab-width: 4; indent-tabs-mode: nil; -*- */
+
+/*
+ * ChunkLodLoader
+ *
+ * Author(s): Vladimir Vukicevic <vladimir@pobox.com>
+ * 
+ * The code follows closely after Thatcher Ulrich's sample ChunkLOD implementation.
+ * See http://tulrich.com/geekstuff/chunklod.html for more information.
+ * Original algorithm by Thatcher Ulrich, released into the public domain.
+ *
+ * The osgChunkLod library is open source and may be redistributed and/or modified
+ * under the terms of the OpenSceneGraph Public License (OSGPL) version 0.0 or 
+ * (at your option) any later version.  The full license is in LICENSE file
+ * included with this distribution, and on the openscenegraph.org website.
+ * 
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the 
+ * OpenSceneGraph Public License for more details.
+ * 
+ * Modifications by Mark Rose <mkrose@users.sourceforge.net>, May 2003,
+ * see include/osgChunkLod/ChunkLod for details.
+ */
+
+#ifndef _ChunkLodLoader_H_
+#define _ChunkLodLoader_H_
+
+#include <csp/modules/chunklod/Export>
+
+#include <string>
+
+#include <osg/Vec3>
+#include <osg/Image>
+
+#include <csp/modules/chunklod/ChunkLod>
+#include <csp/modules/chunklod/MmapFile>
+#include <csp/modules/chunklod/TextureQuadTree>
+
+#ifdef _WIN32
+# ifndef PTHREADS_ON_WIN32
+#  define USE_WIN32_THREADS
+# else
+#  define USE_PTHREADS
+# endif
+#else
+# define USE_PTHREADS
+#endif
+#if defined(USE_WIN32_THREADS)
+#include <windows.h>
+#elif defined(USE_PTHREADS)
+#include <pthread.h>
+#include <time.h>
+#endif
+
+// XXX XXX XXX XXX
+//#ifdef USE_PTHREADS
+//#undef USE_PTHREADS
+//#endif
+
+namespace osgChunkLod {
+
+#define REQUEST_BUFFER_SIZE		4
+
+    class ChunkLodLoader {
+      public:
+        ChunkLodLoader (ChunkLodTree *tree, MmapFile *chu_file, const TextureQuadTree* tqt);
+        ~ChunkLodLoader ();
+
+        void syncLoader ();
+
+        void requestLoad (ChunkLod *chunk, float urgency);
+        void requestUnload (ChunkLod *chunk);
+
+        void requestLoadTexture (ChunkLod *chunk);
+        void requestUnloadTexture (ChunkLod *chunk);
+
+        void useThread (bool use_thread);
+        bool usingThread () { return _usingThread; }
+
+      private:
+        bool _serviceData();
+        bool _serviceTexture();
+
+#if defined(USE_WIN32_THREADS)
+	typedef int ThreadFuncReturn; 
+#else
+	typedef void* ThreadFuncReturn;
+#endif
+
+        struct pending_load_request {
+            ChunkLod *_chunk;
+            float _priority;
+
+            pending_load_request() : _chunk(NULL), _priority(0.0f) {}
+            pending_load_request(ChunkLod *chunk, float priority)
+                : _chunk (chunk), _priority (priority)
+            {
+            }
+
+            static int compare (const void *r1, const void *r2) {
+                float p1 = ((pending_load_request *) r1)->_priority;
+                float p2 = ((pending_load_request *) r2)->_priority;
+                if (p1 < p2) return -1;
+                if (p1 > p2) return 1;
+                return 0;
+            }
+        };
+
+        struct retire_info {
+            ChunkLod* _chunk;
+            ChunkLodData* _chunk_data;
+        };
+
+        struct retire_texture_info {
+            ChunkLod* _chunk;
+            osg::ref_ptr<osg::Image> _texture_image;
+        };
+
+		bool _usingThread;
+        ChunkLodTree *_tree;
+        MmapFile* _chunkfile;
+        const TextureQuadTree* _tqt;
+
+		std::vector<pending_load_request>	_loadQueue;
+		std::vector<ChunkLod*>				_unloadQueue;
+
+		std::vector<ChunkLod*>			_loadTextureQueue;
+		std::vector<ChunkLod*>			_unloadTextureQueue;
+
+        ChunkLod*						_requestBuffer[REQUEST_BUFFER_SIZE];
+        retire_info						_retireBuffer[REQUEST_BUFFER_SIZE];
+
+        ChunkLod*						_requestTextureBuffer[REQUEST_BUFFER_SIZE];
+        retire_texture_info				_retireTextureBuffer[REQUEST_BUFFER_SIZE];
+        
+        // thread stuff
+        static ThreadFuncReturn _loaderThreadFunc (void *param);
+        bool _stopThread;
+#if defined(USE_WIN32_THREADS)
+		HANDLE _hThread;
+		CRITICAL_SECTION _hCritSection;
+#elif defined(USE_PTHREADS)
+		pthread_t _thread;
+		pthread_mutex_t _mutex;
+#endif
+    };
+}
+
+#endif

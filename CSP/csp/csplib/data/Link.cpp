@@ -64,11 +64,11 @@ LinkCore LinkCore::_serialize(Reader &reader, DataArchive* &data_archive) {
 			ObjectID class_id;
 			reader >> class_id;
 			if (class_id == 0) {
-				CSPLOG(ERROR, ARCHIVE) << "loading Link with no path and no object";
+				CSPLOG(DEBUG, ARCHIVE) << "loading Link with no path and no object";
 			} else {
 				Object *pobj = data_archive->_createObject(class_id);
 				assert(pobj);
-				CSPLOG(ERROR, ARCHIVE) << "loading inline object " << pobj->getClassName();
+				CSPLOG(DEBUG, ARCHIVE) << "loading inline object " << pobj->getClassName();
 				pobj->serialize(reader);
 				// start reference counting before postCreate!
 				LinkCore link(path, pobj);

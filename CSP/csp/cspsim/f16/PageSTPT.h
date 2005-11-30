@@ -26,13 +26,12 @@
 #ifndef __CSPSIM_F16_PAGE_STPT_H__
 #define __CSPSIM_F16_PAGE_STPT_H__
 
-#include "DataEntryPage.h"
+#include <csp/cspsim/f16/DataEntryPage.h>
 #include <csp/csplib/util/Math.h>
-#include <iostream>
 
+CSP_NAMESPACE
 
 class PageSTPT: public DataEntryForm {
-
 public:
 	PageSTPT() {
 		addCycle(new DataCycle(17, 0, new ActiveSteerpointCycle("Navigation")));
@@ -53,9 +52,9 @@ public:
 		ded.write(21, 0, "MAN");
 		ded.write(11, 4, "12:58:34");
 	}
-
 };
 
+CSP_NAMESPACE_END
 
 #endif // __CSPSIM_F16_PAGE_STPT_H__
 

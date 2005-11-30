@@ -26,10 +26,10 @@
 #ifndef __CSPSIM_F16_FLIGHTMODEL_H__
 #define __CSPSIM_F16_FLIGHTMODEL_H__
 
-
-#include <FlightModel.h>
+#include <csp/cspsim/FlightModel.h>
 #include <csp/csplib/data/LUT.h>
 
+CSP_NAMESPACE
 
 /**
  * class F16FlightModel
@@ -44,7 +44,7 @@ public:
 	CSP_DECLARE_OBJECT(F16FlightModel)
 
 	F16FlightModel();
-	virtual void calculateForceAndMoment(simdata::Vector3 &force, simdata::Vector3 &moment);
+	virtual void calculateForceAndMoment(Vector3 &force, Vector3 &moment);
 
 protected:
 
@@ -62,56 +62,56 @@ protected:
 	 */
 
 	// xml interface parameters
-	simdata::Table3 m_CX_de_a_b;
-	simdata::Table2 m_CX_lef_a_b;
-	simdata::Table1 m_CX_q_a;
-	simdata::Table1 m_CX_q_lef_a;
-	simdata::Table1 m_CX_sb_a;
-	simdata::Table1 m_CX_tef_a;
+	Table3 m_CX_de_a_b;
+	Table2 m_CX_lef_a_b;
+	Table1 m_CX_q_a;
+	Table1 m_CX_q_lef_a;
+	Table1 m_CX_sb_a;
+	Table1 m_CX_tef_a;
 
-	simdata::Table3 m_CZ_de_a_b;
-	simdata::Table2 m_CZ_lef_a_b;
-	simdata::Table1 m_CZ_q_a;
-	simdata::Table1 m_CZ_q_lef_a;
-	simdata::Table1 m_CZ_sb_a;
-	simdata::Table1 m_CZ_tef_a;
+	Table3 m_CZ_de_a_b;
+	Table2 m_CZ_lef_a_b;
+	Table1 m_CZ_q_a;
+	Table1 m_CZ_q_lef_a;
+	Table1 m_CZ_sb_a;
+	Table1 m_CZ_tef_a;
 
-	simdata::Table2 m_CD_m_a; // drag scaling at high speed
-	simdata::Table2 m_CL_m_a; // lift scaling at high speed
-	simdata::Table1 m_CL_x_m; // center of lift offset vs mach
+	Table2 m_CD_m_a; // drag scaling at high speed
+	Table2 m_CL_m_a; // lift scaling at high speed
+	Table1 m_CL_x_m; // center of lift offset vs mach
 
-	simdata::Table1 m_CM_q_a;
-	simdata::Table1 m_CM_sb_a;
-	simdata::Table1 m_CM_tef_a;
-	simdata::Table2 m_CM_de_a;
-	simdata::Table1 m_Delta_CM_de;
+	Table1 m_CM_q_a;
+	Table1 m_CM_sb_a;
+	Table1 m_CM_tef_a;
+	Table2 m_CM_de_a;
+	Table1 m_Delta_CM_de;
 
-	simdata::Table2 m_CY_a_b;
-	simdata::Table2 m_CY_lef_a_b;
-	simdata::Table2 m_CY_dr_a_b;
-	simdata::Table2 m_CY_da_a_b;
-	simdata::Table2 m_CY_da_lef_a_b;
-	simdata::Table1 m_CY_m;
-	simdata::Table1 m_CY_p_a;
-	simdata::Table1 m_CY_r_a;
-	simdata::Table1 m_CY_p_lef_a;
-	simdata::Table1 m_CY_r_lef_a;
+	Table2 m_CY_a_b;
+	Table2 m_CY_lef_a_b;
+	Table2 m_CY_dr_a_b;
+	Table2 m_CY_da_a_b;
+	Table2 m_CY_da_lef_a_b;
+	Table1 m_CY_m;
+	Table1 m_CY_p_a;
+	Table1 m_CY_r_a;
+	Table1 m_CY_p_lef_a;
+	Table1 m_CY_r_lef_a;
 
-	simdata::Table3 m_CI_de_a_b;
-	simdata::Table2 m_CI_da_a_b;
-	simdata::Table2 m_CI_dr_a_b;
-	simdata::Table1 m_CI_p_a;
-	simdata::Table1 m_CI_r_a;
+	Table3 m_CI_de_a_b;
+	Table2 m_CI_da_a_b;
+	Table2 m_CI_dr_a_b;
+	Table1 m_CI_p_a;
+	Table1 m_CI_r_a;
 
-	simdata::Table1 m_Cn_p_a;
-	simdata::Table1 m_Cn_p_lef_a;
-	simdata::Table1 m_Cn_r_a;
-	simdata::Table1 m_Cn_r_lef_a;
-	simdata::Table2 m_Cn_da_a_b;
-	simdata::Table2 m_Cn_dr_a_b;
-	simdata::Table3 m_Cn_de_a_b;
-	simdata::Table2 m_Cn_lef_a_b;
-	simdata::Table2 m_Cn_da_lef_a_b;
+	Table1 m_Cn_p_a;
+	Table1 m_Cn_p_lef_a;
+	Table1 m_Cn_r_a;
+	Table1 m_Cn_r_lef_a;
+	Table2 m_Cn_da_a_b;
+	Table2 m_Cn_dr_a_b;
+	Table3 m_Cn_de_a_b;
+	Table2 m_Cn_lef_a_b;
+	Table2 m_Cn_da_lef_a_b;
 
 	// shared intermediate values
 	double m_CX;
@@ -119,6 +119,8 @@ protected:
 	double m_CZ;
 	double m_ScaleLEF;
 };
+
+CSP_NAMESPACE_END
 
 #endif  // __F16_FLIGHTMODEL_H__
 

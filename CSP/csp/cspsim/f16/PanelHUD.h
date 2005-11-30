@@ -26,9 +26,10 @@
 #ifndef __CSPSIM_F16_PANEL_HUD_H__
 #define __CSPSIM_F16_PANEL_HUD_H__
 
-#include <System.h>
+#include <csp/cspsim/System.h>
 #include <csp/csplib/data/Enum.h>
 
+CSP_NAMESPACE
 
 class PanelHUD: public System {
 public:
@@ -56,19 +57,20 @@ public:
 	void onCycleAltitudeSwitch();
 
 protected:
-	DataChannel<simdata::EnumLink>::Ref b_DataSwitch;
-	DataChannel<simdata::EnumLink>::Ref b_FlightPathMarkerSwitch;
-	DataChannel<simdata::EnumLink>::Ref b_ScalesSwitch;
-	DataChannel<simdata::EnumLink>::Ref b_VelocitySwitch;
-	DataChannel<simdata::EnumLink>::Ref b_AltitudeSwitch;
+	DataChannel<EnumLink>::RefT b_DataSwitch;
+	DataChannel<EnumLink>::RefT b_FlightPathMarkerSwitch;
+	DataChannel<EnumLink>::RefT b_ScalesSwitch;
+	DataChannel<EnumLink>::RefT b_VelocitySwitch;
+	DataChannel<EnumLink>::RefT b_AltitudeSwitch;
 
-	static const simdata::Enumeration DataSwitchSettings;
-	static const simdata::Enumeration FlightPathMarkerSettings;
-	static const simdata::Enumeration ScalesSwitchSettings;
-	static const simdata::Enumeration VelocitySwitchSettings;
-	static const simdata::Enumeration AltitudeSwitchSettings;
+	static const Enumeration DataSwitchSettings;
+	static const Enumeration FlightPathMarkerSettings;
+	static const Enumeration ScalesSwitchSettings;
+	static const Enumeration VelocitySwitchSettings;
+	static const Enumeration AltitudeSwitchSettings;
 };
 
+CSP_NAMESPACE_END
 
 #endif // __CSPSIM_F16_PANEL_HUD_H__
 

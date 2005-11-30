@@ -480,6 +480,23 @@ def SetConfig(env, config):
 				WriteConfig(env)
 
 
+def RemoveFlags(env, **kw):
+	"""
+	Remove flags from environment variables.  The specified environment
+	variables must be lists for this function to work.
+	"""
+	for key, val in kw.items():
+		if isinstance(val, str):
+			val = [val]
+		if env.has_key(key):
+			flags = env[key]
+			if isinstance(flags, list):
+				for flag in val:
+					try:
+						flags.remove(flag)
+					except ValueError:
+						pass
+
 
 ############################################################################
 # GLOBAL BUILD SETUP
@@ -531,6 +548,7 @@ def GlobalSetup(env, distributed=1, short_messages=None, default_message=None, c
 	AddPhonyTarget(env, 'config')
 	SConsEnvironment.SetConfig = SetConfig
 	SConsEnvironment.Documentation = MakeDocumentation
+	SConsEnvironment.RemoveFlags = RemoveFlags
 	if config:
 		env.SetConfig(config)
 	if timer:
@@ -658,8 +676,8 @@ def EmitNet(target, source, env):
 	name = os.path.splitext(source.name)[0]
 	dir = source.srcnode().dir
 	target = [
-		dir.File(name + env['CXXFILESUFFIX']),
-		dir.File(name + '.h'),
+		source.target_from_source('', env['CXXFILESUFFIX']),
+		dir.File(name + '.h')
 	]
 	return (target, source)
 
@@ -668,7 +686,6 @@ def AddNet(env):
 	_, cxx_file = SCons.Tool.createCFileBuilders(env)
 	cxx_file.add_emitter('.net', EmitNet)
 	cxx_file.add_action('.net', '$TRC')
-	# TODO move trc to #/tools/trc/...
 	trc = env.File('#/tools/trc/trc.py')
 	env['TRC'] = '%s --source=${TARGETS[0]} --header=${TARGETS[1]} $SOURCES' % trc
 

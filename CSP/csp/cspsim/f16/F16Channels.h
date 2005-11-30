@@ -23,9 +23,12 @@
  **/
 
 
-#ifndef __CSPSIM_F16CHANNELS_H__
-#define __CSPSIM_F16CHANNELS_H__
+#ifndef __CSPSIM_F16_F16CHANNELS_H__
+#define __CSPSIM_F16_F16CHANNELS_H__
 
+#include <csp/csplib/util/Namespace.h>
+
+CSP_NAMESPACE
 
 namespace bus {
 
@@ -43,7 +46,9 @@ struct F16 {
 	static const char *WheelSpin;
 };
 
-}
+} // namespace bus
+
+CSP_NAMESPACE_END
 
 #endif // __CSPSIM_F16CHANNELS_H__
 

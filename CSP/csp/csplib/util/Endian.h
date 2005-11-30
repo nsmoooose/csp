@@ -62,33 +62,33 @@
 
 /* Basic bit swapping functions
  */
-#define CSP_UINT16_SWAP_LE_BE_CONSTANT(val) (static_cast<CSP(uint16)> ( \
-	static_cast<CSP(uint16)> (static_cast<CSP(uint16)> (val) >> 8) | \
-	static_cast<CSP(uint16)> (static_cast<CSP(uint16)> (val) << 8)))
+#define CSP_UINT16_SWAP_LE_BE_CONSTANT(val) (static_cast<CSP(uint16)>( \
+	static_cast<CSP(uint16)>(static_cast<CSP(uint16)>(val) >> 8) | \
+	static_cast<CSP(uint16)>(static_cast<CSP(uint16)>(val) << 8)))
 
-#define CSP_UINT32_SWAP_LE_BE_CONSTANT(val) (static_cast<CSP(uint32)> ( \
-	((static_cast<CSP(uint32)> (val) & static_cast<CSP(uint32)> 0x000000ffU) << 24) | \
-	((static_cast<CSP(uint32)> (val) & static_cast<CSP(uint32)> 0x0000ff00U) <<  8) | \
-	((static_cast<CSP(uint32)> (val) & static_cast<CSP(uint32)> 0x00ff0000U) >>  8) | \
-	((static_cast<CSP(uint32)> (val) & static_cast<CSP(uint32)> 0xff000000U) >> 24)))
+#define CSP_UINT32_SWAP_LE_BE_CONSTANT(val) (static_cast<CSP(uint32)>( \
+	(static_cast<CSP(uint32)>(val) & static_cast<CSP(uint32)>(0x000000ffU) << 24) | \
+	(static_cast<CSP(uint32)>(val) & static_cast<CSP(uint32)>(0x0000ff00U) <<  8) | \
+	(static_cast<CSP(uint32)>(val) & static_cast<CSP(uint32)>(0x00ff0000U) >>  8) | \
+	(static_cast<CSP(uint32)>(val) & static_cast<CSP(uint32)>(0xff000000U) >> 24)))
 
-#define CSP_UINT64_SWAP_LE_BE_CONSTANT(val) (static_cast<CSP(uint64)> ( \
-	((static_cast<CSP(uint64)> (val) & \
-		static_cast<CSP(uint64)> CSP_ULL (0x00000000000000ff)) << 56) | \
-	((static_cast<CSP(uint64)> (val) & \
-		static_cast<CSP(uint64)> CSP_ULL (0x000000000000ff00)) << 40) | \
-	((static_cast<CSP(uint64)> (val) & \
-		static_cast<CSP(uint64)> CSP_ULL (0x0000000000ff0000)) << 24) | \
-	((static_cast<CSP(uint64)> (val) & \
-		static_cast<CSP(uint64)> CSP_ULL (0x00000000ff000000)) <<  8) | \
-	((static_cast<CSP(uint64)> (val) & \
-		static_cast<CSP(uint64)> CSP_ULL (0x000000ff00000000)) >>  8) | \
-	((static_cast<CSP(uint64)> (val) & \
-		static_cast<CSP(uint64)> CSP_ULL (0x0000ff0000000000)) >> 24) | \
-	((static_cast<CSP(uint64)> (val) & \
-		static_cast<CSP(uint64)> CSP_ULL (0x00ff000000000000)) >> 40) | \
-	((static_cast<CSP(uint64)> (val) & \
-		static_cast<CSP(uint64)> CSP_ULL (0xff00000000000000)) >> 56)))
+#define CSP_UINT64_SWAP_LE_BE_CONSTANT(val) (static_cast<CSP(uint64)>( \
+	(static_cast<CSP(uint64)>(val) & \
+		static_cast<CSP(uint64)>(CSP_ULL(0x00000000000000ff)) << 56) | \
+	(static_cast<CSP(uint64)>(val) & \
+		static_cast<CSP(uint64)>(CSP_ULL(0x000000000000ff00)) << 40) | \
+	(static_cast<CSP(uint64)>(val) & \
+		static_cast<CSP(uint64)>(CSP_ULL(0x0000000000ff0000)) << 24) | \
+	(static_cast<CSP(uint64)>(val) & \
+		static_cast<CSP(uint64)>(CSP_ULL(0x00000000ff000000)) <<  8) | \
+	(static_cast<CSP(uint64)>(val) & \
+		static_cast<CSP(uint64)>(CSP_ULL(0x000000ff00000000)) >>  8) | \
+	(static_cast<CSP(uint64)>(val) & \
+		static_cast<CSP(uint64)>(CSP_ULL(0x0000ff0000000000)) >> 24) | \
+	(static_cast<CSP(uint64)>(val) & \
+		static_cast<CSP(uint64)>(CSP_ULL(0x00ff000000000000)) >> 40) | \
+	(static_cast<CSP(uint64)>(val) & \
+		static_cast<CSP(uint64)>(CSP_ULL(0xff00000000000000)) >> 56)))
 
 /* Arch specific stuff for speed
  */

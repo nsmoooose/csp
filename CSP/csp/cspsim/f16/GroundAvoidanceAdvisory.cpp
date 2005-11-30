@@ -22,25 +22,25 @@
  *
  **/
 
+#include <csp/cspsim/f16/GroundAvoidanceAdvisory.h>
+#include <csp/cspsim/f16/F16Channels.h>
+#include <csp/cspsim/ConditionsChannels.h>
+#include <csp/cspsim/KineticsChannels.h>
+#include <csp/cspsim/LandingGearChannels.h>
 
-#include <F16/GroundAvoidanceAdvisory.h>
-#include <F16/F16Channels.h>
-#include <ConditionsChannels.h>
-#include <KineticsChannels.h>
-#include <LandingGearChannels.h>
-#include <SimCore/Util/Log.h>
 #include <csp/csplib/util/Conversions.h>
+#include <csp/csplib/util/Log.h>
 #include <csp/csplib/util/Math.h>
 #include <csp/csplib/data/ObjectInterface.h>
 
+CSP_NAMESPACE
 
 CSP_XML_BEGIN(GroundAvoidanceAdvisory)
 CSP_XML_END
 
-
 GroundAvoidanceAdvisory::GroundAvoidanceAdvisory():
-	m_MinimumDescentRate(simdata::convert::ft_m(960.0)/60.0),
-	m_RollRate(simdata::toRadians(120.0)),
+	m_MinimumDescentRate(convert::ft_m(960.0)/60.0),
+	m_RollRate(toRadians(120.0)),
 	m_InverseG(1.0 / (4.0 * 9.8)),
 	m_DescentWarningState(DISARMED) {
 }
@@ -84,16 +84,16 @@ void GroundAvoidanceAdvisory::updateAltitudeAdvisories(const double descent_velo
 	const double roll_altitude_loss = descent_velocity * std::abs(b_Roll->value()) / m_RollRate;
 	const double recovery_altitude_loss = b_Velocity->value().length2() * (1.0 - cos(b_Pitch->value())) * m_InverseG;
 	const double predicted_altitude_loss = advance_altitude_loss + reaction_altitude_loss + roll_altitude_loss + recovery_altitude_loss;
-	const double cas_factor = simdata::clampTo(375.0 - simdata::convert::mps_kts(b_CAS->value()), 0.0, 50.0);
+	const double cas_factor = clampTo(375.0 - convert::mps_kts(b_CAS->value()), 0.0, 50.0);
 	const double buffer_factor = cas_factor * (0.125 / 50.0);
-	const double buffer_offset = simdata::convert::ft_m(cas_factor * 2.0 + 50.0);
+	const double buffer_offset = convert::ft_m(cas_factor * 2.0 + 50.0);
 	const double buffer = buffer_factor * predicted_altitude_loss + buffer_offset;
-	const double alow = simdata::convert::ft_m(b_CaraAlow->value());
+	const double alow = convert::ft_m(b_CaraAlow->value());
 	const double maximum_loss = b_Position->value().z() - b_GroundZ->value() - buffer - alow;
 	const double advance_alert_loss = std::max(maximum_loss - (predicted_altitude_loss - advance_altitude_loss), 0.0);
 	b_AltitudeAdvisory->value() = maximum_loss < (predicted_altitude_loss - advance_altitude_loss);
 	b_AdvanceAltitudeAdvisory->value() = maximum_loss < predicted_altitude_loss;
-	b_PullupAnticipation->value() = 1.0 - simdata::clampTo(advance_alert_loss / descent_velocity * 0.125, 0.0, 1.000001);
+	b_PullupAnticipation->value() = 1.0 - clampTo(advance_alert_loss / descent_velocity * 0.125, 0.0, 1.000001);
 }
 
 void GroundAvoidanceAdvisory::updateTakeoff(const double dt) {
@@ -105,9 +105,9 @@ void GroundAvoidanceAdvisory::updateTakeoff(const double dt) {
 	} else if (m_DescentWarningState != DISARMED) {
 		m_TakeoffElapsedTime += dt;
 		const double msl_above_runway = b_Position->value().z() - m_RunwayAltitude;
-		if ((m_TakeoffElapsedTime > 180.0) || (msl_above_runway > simdata::convert::ft_m(10000.0))) {
+		if ((m_TakeoffElapsedTime > 180.0) || (msl_above_runway > convert::ft_m(10000.0))) {
 			m_DescentWarningState = DISARMED;
-		} else if (msl_above_runway > simdata::convert::ft_m(300.0)) {
+		} else if (msl_above_runway > convert::ft_m(300.0)) {
 			m_DescentWarningState = ARMED;
 		}
 	}
@@ -133,4 +133,6 @@ void GroundAvoidanceAdvisory::updateDescentWarning(const double descent_velocity
 		}
 	}
 }
+
+CSP_NAMESPACE_END
 

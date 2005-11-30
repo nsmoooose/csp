@@ -26,9 +26,10 @@
 #ifndef __CSPSIM_F16_GROUND_AVOIDANCE_ADVISORY_H__
 #define __CSPSIM_F16_GROUND_AVOIDANCE_ADVISORY_H__
 
-#include <System.h>
+#include <csp/cspsim/System.h>
 #include <csp/csplib/data/Vector3.h>
 
+CSP_NAMESPACE
 
 /** Implements the F-16 Ground Avoidance Advisory Function (GAAF).
  *
@@ -89,24 +90,23 @@ public:
 	virtual double onUpdate(double dt);
 
 private:
-
 	void updateAltitudeAdvisories(const double descent_velocity);
 	void updateTakeoff(const double dt);
 	void updateDescentWarning(const double descent_velocity);
 
-	DataChannel<bool>::Ref b_AltitudeAdvisory;
-	DataChannel<bool>::Ref b_AdvanceAltitudeAdvisory;
-	DataChannel<bool>::Ref b_DescentWarningAfterTakeoff;
-	DataChannel<double>::Ref b_PullupAnticipation;
-	DataChannel<simdata::Vector3>::CRef b_Velocity;
-	DataChannel<simdata::Vector3>::CRef b_Position;
-	DataChannel<double>::CRef b_CAS;
-	DataChannel<double>::CRef b_GroundZ;
-	DataChannel<double>::CRef b_Roll;
-	DataChannel<double>::CRef b_Pitch;
-	DataChannel<bool>::CRef b_GearHandleUp;
-	DataChannel<bool>::CRef b_WOW;
-	DataChannel<double>::CRef b_CaraAlow;
+	DataChannel<bool>::RefT b_AltitudeAdvisory;
+	DataChannel<bool>::RefT b_AdvanceAltitudeAdvisory;
+	DataChannel<bool>::RefT b_DescentWarningAfterTakeoff;
+	DataChannel<double>::RefT b_PullupAnticipation;
+	DataChannel<Vector3>::CRefT b_Velocity;
+	DataChannel<Vector3>::CRefT b_Position;
+	DataChannel<double>::CRefT b_CAS;
+	DataChannel<double>::CRefT b_GroundZ;
+	DataChannel<double>::CRefT b_Roll;
+	DataChannel<double>::CRefT b_Pitch;
+	DataChannel<bool>::CRefT b_GearHandleUp;
+	DataChannel<bool>::CRefT b_WOW;
+	DataChannel<double>::CRefT b_CaraAlow;
 	double m_MinimumDescentRate;
 	double m_RollRate;
 	double m_InverseG;
@@ -115,6 +115,8 @@ private:
 	typedef enum { ENABLED, ARMED, DISARMED } DescentWarningState;
 	DescentWarningState m_DescentWarningState;
 };
+
+CSP_NAMESPACE_END
 
 #endif // __CSPSIM_F16_GROUND_AVOIDANCE_ADVISORY_H__
 

@@ -26,16 +26,16 @@
 #ifndef __CSPSIM_F16_PAGE_LIST_H__
 #define __CSPSIM_F16_PAGE_LIST_H__
 
-#include "DataEntryPage.h"
-#include <iostream>
+#include <csp/cspsim/f16/DataEntryPage.h>
 
+CSP_NAMESPACE
 
 class PageLIST: public DataEntryForm {
 	static const char *const LIST[];
 	static const char *const MISC[];
 	static const int COLS[];
 
-	SimpleCycle::Ref m_Steerpoint;
+	SimpleCycle::RefT m_Steerpoint;
 	bool m_Misc;
 
 public:
@@ -59,6 +59,7 @@ public:
 	}
 };
 
+CSP_NAMESPACE_END
 
 #endif // __CSPSIM_F16_PAGE_LIST_H__
 

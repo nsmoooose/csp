@@ -23,7 +23,9 @@
  **/
 
 
-#include "F16Channels.h"
+#include <csp/cspsim/f16/F16Channels.h>
+
+CSP_NAMESPACE
 
 namespace bus {
 
@@ -40,3 +42,6 @@ const char *F16::StandbyGains = "F16.StandbyGains";
 const char *F16::INSAttitude = "F16.INS.Attitude";
 
 } // namespace bus
+
+CSP_NAMESPACE_END
+

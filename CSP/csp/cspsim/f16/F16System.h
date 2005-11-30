@@ -23,20 +23,23 @@
  **/
 
 
-#ifndef __CSPSIM_F16_SYSTEM_H__
-#define __CSPSIM_F16_SYSTEM_H__
+#ifndef __CSPSIM_F16_F16SYSTEM_H__
+#define __CSPSIM_F16_F16SYSTEM_H__
 
-#include <System.h>
-#include <Steerpoint.h>
-#include <F16/NavigationSystem.h>
+#include <csp/cspsim/f16/NavigationSystem.h>
+#include <csp/cspsim/System.h>
+#include <csp/cspsim/Steerpoint.h>
 
 #include <csp/csplib/data/Enum.h>
+
 #include <vector>
+
+CSP_NAMESPACE
 
 class TimedSequence;
 
 class F16System: public System {
-	static const simdata::Enumeration MasterModes;
+	static const Enumeration MasterModes;
 
 public:
 	CSP_DECLARE_OBJECT(F16System)
@@ -74,34 +77,34 @@ public:
 	virtual void registerChannels(Bus*);
 	virtual void importChannels(Bus*);
 
-	typedef simdata::Enum<MasterModes> MasterMode;
+	typedef Enum<MasterModes> MasterMode;
 
 protected:
 
 	//void addTestSteerpoints();
 
-	DataChannel<simdata::EnumLink>::CRef b_AirRefuelSwitch;
-	DataChannel<bool>::CRef b_GearExtendSelected;
-	DataChannel<bool>::CRef b_GearFullyRetracted;
-	DataChannel<double>::CRef b_Airspeed;
-	DataChannel<double>::CRef b_FuelDoorSequence;
-	DataChannel<bool>::CRef b_NoseLandingGearWOW;
-	DataChannel<bool>::CRef b_LeftMainLandingGearWOW;
-	DataChannel<bool>::CRef b_RightMainLandingGearWOW;
-	DataChannel<bool>::CRef b_WheelSpin;
-	DataChannel<double>::Ref b_TrailingEdgeFlapExtension;
-	DataChannel<double>::Ref b_AirbrakeLimit;
-	DataChannel<bool>::Ref b_AltFlaps;
-	DataChannel<bool>::Ref b_CatIII;
-	DataChannel<bool>::Ref b_ManualPitchOverride;
-	DataChannel<bool>::Ref b_ManualPitchOverrideActive;
-	DataChannel<bool>::Ref b_StandbyGains;
-	DataChannel<bool>::Ref b_TakeoffLandingGains;
-	DataChannel<NavigationSystem::Ref>::Ref b_NavigationSystem;
-	DataChannel<simdata::EnumLink>::Ref b_MasterMode;
+	DataChannel<EnumLink>::CRefT b_AirRefuelSwitch;
+	DataChannel<bool>::CRefT b_GearExtendSelected;
+	DataChannel<bool>::CRefT b_GearFullyRetracted;
+	DataChannel<double>::CRefT b_Airspeed;
+	DataChannel<double>::CRefT b_FuelDoorSequence;
+	DataChannel<bool>::CRefT b_NoseLandingGearWOW;
+	DataChannel<bool>::CRefT b_LeftMainLandingGearWOW;
+	DataChannel<bool>::CRefT b_RightMainLandingGearWOW;
+	DataChannel<bool>::CRefT b_WheelSpin;
+	DataChannel<double>::RefT b_TrailingEdgeFlapExtension;
+	DataChannel<double>::RefT b_AirbrakeLimit;
+	DataChannel<bool>::RefT b_AltFlaps;
+	DataChannel<bool>::RefT b_CatIII;
+	DataChannel<bool>::RefT b_ManualPitchOverride;
+	DataChannel<bool>::RefT b_ManualPitchOverrideActive;
+	DataChannel<bool>::RefT b_StandbyGains;
+	DataChannel<bool>::RefT b_TakeoffLandingGains;
+	DataChannel<Ref<NavigationSystem> >::RefT b_NavigationSystem;
+	DataChannel<EnumLink>::RefT b_MasterMode;
 
-	simdata::Link<TimedSequence> m_FuelDoorSequence;
-	simdata::Link<TimedSequence> m_CanopySequence;
+	Link<TimedSequence> m_FuelDoorSequence;
+	Link<TimedSequence> m_CanopySequence;
 
 	virtual double onUpdate(double dt);
 
@@ -112,7 +115,7 @@ protected:
 	bool m_CatIII;
 
 	//int m_SteerpointIndex;
-	//std::vector<Steerpoint::Ref> m_Steerpoints;
+	//std::vector<Steerpoint::RefT> m_Steerpoints;
 	void onAirRefuelSwitch();
 
 	// for testing only
@@ -123,6 +126,7 @@ protected:
 	void disengageMPO();
 };
 
+CSP_NAMESPACE_END
 
-#endif // __CSPSIM_F16_SYSTEM_H__
+#endif // __CSPSIM_F16_F16SYSTEM_H__
 

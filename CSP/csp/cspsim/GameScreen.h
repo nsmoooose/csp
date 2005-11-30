@@ -100,7 +100,7 @@ public:
 		BIND_ACTION("CAMERA_FOV_STEP_INC", on_ViewFovStepInc);
 		BIND_ACTION("SPIN_THE_WORLD", on_SpinTheWorld);
 		BIND_ACTION("SPIN_THE_WORLD_STOP", on_SpinTheWorldStop);
-		BIND_ACTION("PRINT_SCREEN", on_PrintScreen);
+		//BIND_ACTION("PRINT_SCREEN", on_PrintScreen);
 		BIND_ACTION("RESET_SPIN", on_ResetSpin);
 		BIND_ACTION("LABELS_OFF", on_LabelsOff);
 		BIND_ACTION("LABELS_ON", on_LabelsOn);
@@ -153,7 +153,7 @@ public:
 	void on_SpinTheWorld();
 	void on_SpinTheWorldStop();
 	void on_ResetSpin();
-	void on_PrintScreen();
+	//void on_PrintScreen();
 	void on_LabelsOn();
 	void on_LabelsOff();
 	void on_LabelsToggle();

@@ -26,9 +26,11 @@
 #ifndef __CSPSIM_F16_PAGE_CNI_H__
 #define __CSPSIM_F16_PAGE_CNI_H__
 
-#include "DataEntryPage.h"
+#include <csp/cspsim/f16/DataEntryPage.h>
 #include <csp/csplib/data/Enum.h>
 #include <csp/csplib/data/Vector3.h>
+
+CSP_NAMESPACE
 
 class PageCNI: public DataEntryForm {
 public:
@@ -43,11 +45,12 @@ protected:
 	virtual std::string onNumber(int x);
 
 private:
-	SimpleCycle::Ref m_Steerpoint;
-	SimpleCycle::Ref m_UHFPreset;
-	SimpleCycle::Ref m_VHFPreset;
+	SimpleCycle::RefT m_Steerpoint;
+	SimpleCycle::RefT m_UHFPreset;
+	SimpleCycle::RefT m_VHFPreset;
 };
 
+CSP_NAMESPACE_END
 
 #endif // __CSPSIM_F16_PAGE_CNI_H__
 

@@ -20,6 +20,7 @@ Import('env build')
 
 PACKAGES = [
 	'#/modules/demeter',
+	'#/modules/chunklod',
 ]
 
 build.BuildPackages(env, PACKAGES)

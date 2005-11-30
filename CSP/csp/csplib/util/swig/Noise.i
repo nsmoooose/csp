@@ -21,13 +21,5 @@
 #include "csp/csplib/util/Noise.h"
 %}
 
-// HACK!
-#ifndef VFLOAT
-#define VFLOAT
-namespace std {
-	%template(vector_t) vector<float>;
-}
-#endif
-
 %include "csp/csplib/util/Noise.h"
 

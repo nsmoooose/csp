@@ -521,7 +521,7 @@ public:
 
 AnimationCallback *StateSwitch::newCallback(osg::Node *node) const {
 	assert(node);
-	CSPLOG(INFO, OBJECT) << "Creating StateSwitch callback\n";
+	CSPLOG(INFO, OBJECT) << "Creating StateSwitch callback";
 	AnimationCallback *callback = new Callback(this);
 	callback->bind(*node);
 	return callback;

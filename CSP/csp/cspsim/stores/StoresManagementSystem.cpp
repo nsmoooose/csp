@@ -64,7 +64,6 @@ void StoresManagementSystem::importChannels(Bus* bus) {
 }
 
 void StoresManagementSystem::onCreateSceneModel(osg::Group *group) {
-	std::cout << "onCreateSceneModel\n";
 	assert(group);
 	m_SceneGroup = group;
 	for (unsigned i =  0; i < m_Hardpoints.size(); ++i) {
@@ -430,12 +429,10 @@ void StoresManagementSystem::addTestLoadout() {
 
 void StoresManagementSystem::getDynamics(StoresDynamics &dynamics) {
 	dynamics.reset();
-	std::cout << "DYNAMICS MASS A" << dynamics.getMass() << "\n";
 	for (unsigned i =  0; i < m_Hardpoints.size(); ++i) {
 		assert(m_Hardpoints[i].valid());
 		m_Hardpoints[i]->sumDynamics(dynamics);
 	}
-	std::cout << "DYNAMICS MASS B" << dynamics.getMass() << "\n";
 	dynamics.compute();
 }
 

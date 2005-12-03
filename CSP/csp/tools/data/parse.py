@@ -29,17 +29,15 @@ import xml.sax
 
 # zlib is often misinstalled under windows, so don't require it.
 try:
-	from gzip import GzipFileXX
+	from gzip import GzipFile
 except Exception, e:
 	GzipFile = None
 	GzipError = str(e)
 
-from zipfile import ZipFile
 from traceback import print_exception
+from csp.tools.data.debug import *
 
-from Debug import *
 
-#g_InterfaceRegistry = csplib.g_InterfaceRegistry
 g_InterfaceRegistry = csplib.InterfaceRegistry.getInterfaceRegistry()
 
 
@@ -65,6 +63,7 @@ class CompilerErrorHandler(ErrorHandler):
 		print "File %s%s - %s" % (self._path, place, ", ".join(error.args))
 		sys.exit(1)
 
+
 def path_to_id(prefix, path):
 	if path.endswith('.gz'): path = path[:-3]
 	if path.endswith('.xml'): path = path[:-4]
@@ -77,13 +76,14 @@ def path_to_id(prefix, path):
 			break;
 	return prefix + ":" + '.'.join(parts)
 
+
 def id_to_path(id):
 	parts = id.split(':')
 	if len(parts) == 2:
 		id = parts[1]
 	return apply(os.path.join, id.split('.'))
 
-	
+
 # convert to absolute path id
 def adjust_path(base, id):
 	if ':' in id:
@@ -97,8 +97,9 @@ def adjust_path(base, id):
 		prefix, base = "", base
 	return prefix + ":" + id[1:]
 
+
 class ElementHandler(ContentHandler):
-	
+
 	def __init__(self, id, base, name, attrs):
 		#print id, base, name
 		self._handler = None
@@ -270,14 +271,12 @@ class ListHandler(SimpleHandler):
 
 
 class FloatListHandler(ListHandler):
-
 	def __init__(self, id, base, name, attrs):
 		ListHandler.__init__(self, id, base, name, attrs)
 		self._type = "float"
 
 
 class IntHandler(SimpleHandler):
-
 	def __init__(self, id, base, name, attrs):
 		SimpleHandler.__init__(self, id, base, name, attrs)
 	
@@ -286,9 +285,9 @@ class IntHandler(SimpleHandler):
 			self._element = int(self._c, 16)
 		else:
 			self._element = int(self._c)
-		
-class BoolHandler(SimpleHandler):
 
+
+class BoolHandler(SimpleHandler):
 	def __init__(self, id, base, name, attrs):
 		SimpleHandler.__init__(self, id, base, name, attrs)
 	
@@ -301,116 +300,98 @@ class BoolHandler(SimpleHandler):
 		else:
 			self._element = int(value)
 
-class FloatHandler(SimpleHandler):
 
+class FloatHandler(SimpleHandler):
 	def __init__(self, id, base, name, attrs):
 		SimpleHandler.__init__(self, id, base, name, attrs)
-	
+
 	def end(self):
 		self._element = float(self._c)
 
 
 class RealHandler(SimpleHandler):
-
 	def __init__(self, id, base, name, attrs):
 		SimpleHandler.__init__(self, id, base, name, attrs)
-	
+
 	def end(self):
 		self._element = csplib.Real()
 		self._element.parseXML(self._c.encode('ascii'))
 
-class ECEFHandler(SimpleHandler):
 
+class ECEFHandler(SimpleHandler):
 	def __init__(self, id, base, name, attrs):
 		SimpleHandler.__init__(self, id, base, name, attrs)
-	
+
 	def end(self):
 		self._element = csplib.ECEF()
 		self._element.parseXML(self._c.encode('ascii'))
 
-class LLAHandler(SimpleHandler):
 
+class LLAHandler(SimpleHandler):
 	def __init__(self, id, base, name, attrs):
 		SimpleHandler.__init__(self, id, base, name, attrs)
-	
+
 	def end(self):
 		self._element = csplib.LLA()
 		self._element.parseXML(self._c.encode('ascii'))
 
-class UTMHandler(SimpleHandler):
 
+class UTMHandler(SimpleHandler):
 	def __init__(self, id, base, name, attrs):
 		SimpleHandler.__init__(self, id, base, name, attrs)
-	
+
 	def end(self):
 		self._element = csplib.UTM()
 		self._element.parseXML(self._c.encode('ascii'))
 
-class VectorHandler(SimpleHandler):
 
+class VectorHandler(SimpleHandler):
 	def __init__(self, id, base, name, attrs):
 		SimpleHandler.__init__(self, id, base, name, attrs)
-	
+
 	def end(self):
 		self._element = csplib.Vector3()
 		self._element.parseXML(self._c.encode('ascii'))
 
 
 class MatrixHandler(SimpleHandler):
-
 	def __init__(self, id, base, name, attrs):
 		SimpleHandler.__init__(self, id, base, name, attrs)
-	
+
 	def end(self):
 		self._element = csplib.Matrix3()
 		self._element.parseXML(self._c.encode('ascii'))
 
 class QuatHandler(SimpleHandler):
-
 	def __init__(self, id, base, name, attrs):
 		SimpleHandler.__init__(self, id, base, name, attrs)
-	
+
 	def end(self):
 		self._element = csplib.Quat()
 		self._element.parseXML(self._c.encode('ascii'))
 
-class DateHandler(SimpleHandler):
 
+class DateHandler(SimpleHandler):
 	def __init__(self, id, base, name, attrs):
 		SimpleHandler.__init__(self, id, base, name, attrs)
-	
+
 	def end(self):
 		self._element = csplib.SimDate()
 		self._element.parseXML(self._c.encode('ascii'))
 
 
 class StringHandler(SimpleHandler):
-
 	def __init__(self, id, base, name, attrs):
 		SimpleHandler.__init__(self, id, base, name, attrs)
-	
+
 	def end(self):
 		self._element = self._c.encode('ascii')
-			
-	# only needed for bug fix... remove once swig is patched
-	# swig doesn't apply typemaps to member varibale accessors
-	# correctly so we can't set std::string variable directly.
-	# instead we filter our strings through a special class to
-	# convert them to wrapped c++ std::strings which the set
-	# method that swig generates will accept.  yuck!
+
 	def assign(self, interface, obj, name):
 		interface.set(obj, name, str(self._element))
-# 		return
-# 		try:
-# 			setattr(obj, name, self._element)
-# 		except:
-# 			fix = csplib.swig_string_bug_workaround(str(self._element))
-# 			element = fix.get_as_swig_wrapped_pointer
-# 			setattr(obj, name, element)
 
 
 class EnumHandler(SimpleHandler):
-
 	def __init__(self, id, base, name, attrs):
 		SimpleHandler.__init__(self, id, base, name, attrs)
 
@@ -421,16 +402,8 @@ class EnumHandler(SimpleHandler):
 		value = self._element.encode('ascii')
 		interface.set_enum(object, name, value)
 
-#		# FIXME this will break if the enum attribute doesn't exist in an Object,
-#		# since it will not be linked to an enumeration
-#		ext = self.getObjectAttribute(obj, name, None)
-#		if ext is None:
-#			raise XMLSyntax, "Object enumeration member undefined (no Enumeration class)"
-#		ext.parseXML(self._c.encode('ascii'))
-
 
 class PathHandler(SimpleHandler):
-
 	def __init__(self, id, base, name, attrs):
 		SimpleHandler.__init__(self, id, base, name, attrs)
 
@@ -451,24 +424,12 @@ class PathHandler(SimpleHandler):
 	def assign(self, interface, obj, name):
 		interface.set(obj, name, self.getElement())
 
-# 		ext = self.getObjectAttribute(obj, name, csplib.PathPointer)
-#		#ext = self.getObjectAttribute(obj, name, csplib.PyPathPointer)
-# 		if isinstance(ext, types.StringType):
-# 			msg = "Path member '%s' of %s does not appear to be properly wrapped.\n" % (name, str(obj.__class__))
-# 			msg = msg + \
-# 			      "You may have forgotten to add 'new_pointer(classname)' in the SWIG interface file\n" + \
-# 			      "associated with this class."
-# 			raise str(msg)
-# 		ext.setPath(self._element.encode('ascii'))
-			
-		
 
-
+# DEPRECATED: the External type is no longer supported.
 class ExternalHandler(SimpleHandler):
-
 	def __init__(self, id, base, name, attrs):
 		SimpleHandler.__init__(self, id, base, name, attrs)
-	
+
 	def end(self):
 		if self._attrs.has_key("source"):
 			source = self._attrs["source"]
@@ -481,26 +442,20 @@ class ExternalHandler(SimpleHandler):
 	def assign(self, interface, obj, name):
 		ext = csplib.External()
 		ext.setSource(self._element.encode('ascii'))
-		interface.set(obj, name, ext)	
-# 		ext = self.getObjectAttribute(obj, name, csplib.External())
-# 		ext.setSource(self._element.encode('ascii'))
+		interface.set(obj, name, ext)
 
 
 class KeyHandler(SimpleHandler):
-
 	def __init__(self, id, base, name, attrs):
 		SimpleHandler.__init__(self, id, base, name, attrs)
-	
+
 	def end(self):
 		id = self._c.encode('ascii')
 		self._element = csplib.Key(id)
 
 
-##
 # Generic LUT handler, specialized below for Table1, Table2, and Table3
-#
 class _LUTHandler(SimpleHandler):
-
 	handlers = {
 		"Values"       : FloatListHandler,
 		"Method"       : StringHandler,
@@ -508,7 +463,7 @@ class _LUTHandler(SimpleHandler):
 
 	members = handlers.keys()
 	required_members = ["Values"]
-	
+
 	def __init__(self, dim, id, base, name, attrs):
 		SimpleHandler.__init__(self, id, base, name, attrs)
 		self._method = attrs.get("method", "linear")
@@ -517,7 +472,7 @@ class _LUTHandler(SimpleHandler):
 			self._required_members.append("Breaks%d" % i)
 		self._dim = dim
 		self._keys = {}
-		
+
 	def handleChild(self, name, attrs):
 		if name.startswith("Breaks"):
 			return FloatListHandler
@@ -528,7 +483,7 @@ class _LUTHandler(SimpleHandler):
 			n = int(name[6:])
 			return n >= 0 and n < self._dim
 		return name in _LUTHandler.members
-		
+
 	def endChild(self):
 		child = self._handler.getElement()
 		attrs = self._handler._attrs
@@ -590,7 +545,6 @@ class Table3Handler(_LUTHandler):
 
 
 class FileHandler(ElementHandler):
-
 	def __init__(self, prefix="", path=None, id=None):
 		if path is not None:
 			id = path_to_id(prefix, path)
@@ -599,14 +553,12 @@ class FileHandler(ElementHandler):
 		base = '.'.join(id[:-1])
 		self._name = id[-1]
 		ElementHandler.__init__(self, self._id, base, None, None)
-	
+
 	def validateChild(self, name, attrs):
 		return name in ["Object"]
 
 
-
 class ObjectHandler(ElementHandler):
-
 	def __init__(self, id, base, name=None, attrs=None):
 		ElementHandler.__init__(self, id, base, name, attrs)
 		self._class = attrs.get("class", None)
@@ -677,9 +629,7 @@ class ObjectHandler(ElementHandler):
 		return _handler
 
 
-
 class ObjectXMLArchive:
-
 	MASTER = None
 
 	def __init__(self, prefix, path):

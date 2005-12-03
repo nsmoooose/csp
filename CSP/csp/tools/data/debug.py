@@ -23,7 +23,7 @@ _WarningCount = 0
 
 def DEBUG(level, msg):
 	if level <= _DebugLevel:
-		print "DEBUG:", msg.rstrip()
+		print msg.rstrip()
 
 def WARN(level, msg):
 	global _MaxWarningLevel

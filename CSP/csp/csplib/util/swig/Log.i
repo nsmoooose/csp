@@ -23,7 +23,7 @@
 %}
 
 %include "csp/csplib/util/Namespace.h"
-%import "csp/csplib/util/LogConstants.h"
+%include "csp/csplib/util/LogConstants.h"
 
 CSP_NAMESPACE
 

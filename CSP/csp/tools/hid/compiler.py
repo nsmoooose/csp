@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-# Combat Simulator Project - MAP2HID input script compiler
+# Combat Simulator Project
 # Copyright (C) 2002, 2004 The Combat Simulator Project
 # http://csp.sourceforge.net
 #
@@ -22,14 +22,13 @@
 ## @author Mark Rose <mkrose@users.sourceforge.net>
 
 """
-Combat Simulator Project Input Map Compiler
-
-usage: %(prog)s [flags] infile
+Input interface map compiler.  Reads an input interface map and generates
+compact representation used by the simulation.  See tools/hid/README.map
+for a description of the interface map language.
 """
 
 import sys
 import os.path
-from csp.base import app
 
 
 KMODS = {
@@ -47,10 +46,10 @@ KMODS = {
 }
 
 MULTI_KMODS = {
-	"SHIFT"	 : ("LSHIFT", "RSHIFT"),
-	"CTRL"	 : ("LCTRL", "RCTRL"),
-	"ALT"	 : ("LALT", "RALT"),
-	"META"	 : ("LMETA", "RMETA"),
+	"SHIFT" : ("LSHIFT", "RSHIFT"),
+	"CTRL"  : ("LCTRL", "RCTRL"),
+	"ALT"   : ("LALT", "RALT"),
+	"META"  : ("LMETA", "RMETA"),
 }
 
 
@@ -58,13 +57,15 @@ SDL_PRESSED = 0x01
 
 def SDL_BUTTON(x):
 	if x == 0: return 0
-	if x < 0 or x > 8: 
+	if x < 0 or x > 8:
 		raise Error("invalid mouse button identifier %d (should be 0..7)." % x)
 	return SDL_PRESSED << (x-1)
 
-class Error:
+
+class Error(Exception):
 	def __init__(self, msg):
 		self.msg = msg
+
 
 def convertToInt(s):
 	try:
@@ -74,7 +75,8 @@ def convertToInt(s):
 			return int(s)
 	except:
 		raise Error("expected an integer or hex value, got '%s' instead." % s)
-	
+
+
 def generatePermutations(m):
 	result = []
 	if len(m) > 0:
@@ -87,7 +89,6 @@ def generatePermutations(m):
 
 
 class Action:
-
 	def __init__(self, id, time, stop = 0, loop = -1, mode = -1, jmod = -1):
 		self.id = id
 		self.time = time
@@ -106,7 +107,6 @@ class Action:
 
 
 class Mapping:
-
 	def __init__(self, device, number, mmod, kmod, jmod, type, mode, event_id, script):
 		self.device = device
 		self.number = number
@@ -166,9 +166,7 @@ class Mapping:
 		print "in mode", self.mode
 
 
-
 class VirtualDeviceDefinition:
-
 	def __init__(self, include_path='.'):
 		self.included = {}
 		self.values = {}
@@ -179,8 +177,13 @@ class VirtualDeviceDefinition:
 		self.devices = {}
 		self.filestack = []
 		self.pathstack = []
-		if include_path:
-			self.pathstack = [include_path]
+		self.include_path = []
+		if include_path is not None:
+			if isinstance(include_path, str):
+				include_path = [include_path]
+			self.include_path = list(include_path)
+		#if include_path:
+		#	self.pathstack = [include_path]
 		self.line = 0
 		self.file = ""
 		self.bind = {}
@@ -223,6 +226,16 @@ class VirtualDeviceDefinition:
 				print >>sys.stderr, ">", line
 				sys.exit(1)
 
+	def search(self, fn):
+		if os.path.isabs(fn):
+			return fn, 0
+		local = (os.path.dirname(fn) == '')
+		for path in self.pathstack[-1:] + self.include_path:
+			trial = os.path.join(path, fn)
+			if os.path.exists(trial):
+				return trial, not local
+		raise Error("include file not found")
+
 	def includeCommand(self, args):
 		n = len(args)
 		if n == 1:
@@ -230,12 +243,10 @@ class VirtualDeviceDefinition:
 			if not self.included.has_key(fn):
 				self.included[fn] = 1
 				self.filestack.append((self.file, self.line))
-				basepath = self.pathstack[-1]
-				if not os.path.isabs(fn):
-					fn = os.path.join(basepath, fn)
-				self.pathstack.append(os.path.dirname(fn))
+				fn, relative = self.search(fn)
+				if relative: self.pathstack.append(os.path.dirname(fn))
 				self.read(fn)
-				self.pathstack.pop()
+				if relative: self.pathstack.pop()
 				self.file, self.line = self.filestack.pop()
 		else:
 			raise Error("incorrect number of parameters for 'include' statement.")
@@ -284,7 +295,6 @@ class VirtualDeviceDefinition:
 			self.devices[name] = (type, number, definitions)
 		else:
 			raise Error("incorrect number of parameters for 'device' statement.")
-					
 
 	def defineCommand(self, args):
 		n = len(args)
@@ -294,7 +304,6 @@ class VirtualDeviceDefinition:
 			self.setDefinition(device, name, id)
 		else:
 			raise Error("incorrect number of parameters for 'define' statement.")
-
 
 	def mapCommand(self, args):
 		n = len(args)
@@ -482,9 +491,7 @@ class VirtualDeviceDefinition:
 		return actions
 
 
-
 class VirtualDevice:
-
 	def __init__(self):
 		self.mode = 0
 		self.mapping = {}
@@ -498,37 +505,4 @@ class MapCompiler:
 		v.write(outfile)
 	compile = staticmethod(compile)
 
-
-def main(args):
-	mapfile = None
-
-	if len(args) != 1:
-		app.usage()
-		return 1
-
-	mapfile = args[0]
-
-	outfile = app.options.output_file
-	if outfile == '-':
-		outf = sys.stdout
-	else:
-		try:
-			outf = open(outfile, "wt")
-		except:
-			print "Unable to write to '%s'." % outfile
-			return 1
-
-	try:
-		MapCompiler.compile(mapfile, outf, include_path=app.options.include_path)
-	except Error, e:
-		print e.msg
-		return 1
-
-	return 0
-
-
-if __name__ == '__main__':
-	app.addOption('-I', '--include_path', metavar='PATH', default='.', help='default include path')
-	app.addOption('-o', '--output_file', metavar='FILE', default='-', help='output file (default stdout)')
-	app.start()
 

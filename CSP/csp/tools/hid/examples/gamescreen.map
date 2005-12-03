@@ -1,0 +1,25 @@
+include maps/gamescreen-core.map
+include maps/x36.map
+
+device joystick 0 x36 Saitek_X36
+
+map x36:Pinkie           press        SHIFT
+map x36:SHIFT-Pinkie     release      NOSHIFT
+
+map x36:H2_Left          press        CAMERA_PAN_LEFT
+map x36:H2_Left          release      CAMERA_PAN_LEFT_STOP
+map x36:H2_Right         press        CAMERA_PAN_RIGHT
+map x36:H2_Right         release      CAMERA_PAN_RIGHT_STOP
+map x36:H2_Up            press        CAMERA_PAN_UP
+map x36:H2_Up            release      CAMERA_PAN_UP_STOP
+map x36:H2_Down          press        CAMERA_PAN_DOWN
+map x36:H2_Down          release      CAMERA_PAN_DOWN_STOP
+
+map x36:SHIFT-H2_Left    press        CAMERA_ZOOM_IN
+map x36:SHIFT-H2_Left    release      CAMERA_ZOOM_STOP
+map x36:SHIFT-H2_Right   press        CAMERA_ZOOM_OUT
+map x36:SHIFT-H2_Right   release      CAMERA_ZOOM_STOP
+map x36:SHIFT-H2_Up      press        CAMERA_FOV_STEP_DEC|0.3|/R
+map x36:SHIFT-H2_Up      release      |
+map x36:SHIFT-H2_Down    press        CAMERA_FOV_STEP_INC|0.3|/R
+map x36:SHIFT-H2_Down    release      |

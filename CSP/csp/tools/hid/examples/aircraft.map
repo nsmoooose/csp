@@ -1,0 +1,18 @@
+include maps/aircraft-core.map
+include maps/x36.map
+
+device joystick 0 x36 Saitek_X36
+
+map x36:Stick_X     axis        AILERON
+map x36:Stick_Y     axis        ELEVATOR
+map x36:Rudder      axis        RUDDER
+map x36:Throttle    axis        THROTTLE
+map x36:FireA       press       SMOKE_TOGGLE
+map x36:FireB       press       WHEEL_BRAKE_ON
+map x36:FireB       release     WHEEL_BRAKE_OFF
+
+map key:CTRL-SHIFT-a press CYCLE_HUD_ALTITUDE_SWITCH
+map key:CTRL-SHIFT-d press CYCLE_HUD_DATA_SWITCH
+map key:CTRL-SHIFT-f press CYCLE_HUD_FLIGHT_PATH_MARKER_SWITCH
+map key:CTRL-SHIFT-s press CYCLE_HUD_SCALES_SWITCH
+map key:CTRL-SHIFT-v press CYCLE_HUD_VELOCITY_SWITCH

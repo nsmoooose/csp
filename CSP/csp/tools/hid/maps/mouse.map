@@ -1,0 +1,8 @@
+# mapping for standard three-button wheel mice
+
+define standard_mouse:LEFT         1
+define standard_mouse:MIDDLE       2
+define standard_mouse:RIGHT        3
+define standard_mouse:WHEELUP      4
+define standard_mouse:WHEELDOWN    5
+

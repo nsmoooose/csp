@@ -1,0 +1,43 @@
+include mouse.map
+include keys.map
+include x36.map
+
+device keyboard 0 key US_keyboard
+device joystick 0 x36 Saitek_X36
+device mouse 0 mouse standard_mouse
+
+bind vehicles.aircraft.m2k
+bind vehicles.aircraft.f16
+
+mode NAV
+mode AA
+mode AG
+
+script post_takeoff    1.0|RETRACT_GEAR|1.0|SMOKE_ON
+
+map key:p              press          TOGGLE_PAUSE
+map key:ESCAPE         press          EXIT
+map key:SHIFT-p        press          PAUSE
+map key:SHIFT-p        release        UNPAUSE
+
+map x36:FireB          press    NAV   post_takeoff
+
+map x36:Stick_X        axis           AILERON
+map x36:Stick_Y        axis           ELEVATOR
+map x36:Rudder         axis           RUDDER
+map x36:Throttle       axis           THROTTLE
+
+map mouse:0            move     NAV   PAN_VIEW
+map mouse:LEFT         press    AA|AG LAUNCH
+
+map x36:FireB          press    NAV   action
+map x36:SHIFT-FireB    press    NAV   action
+
+map x36:Pinkie         press          SHIFT
+map x36:SHIFT-Pinkie   press          NOSHIFT
+map x36:Mode1          press          AA
+map x36:Mode2          press          NAV
+map x36:Mode3          press          AG
+
+map x36:SHIFT-FireA    press          BORE|RADAR_ACM60/B*|RADAR_VERT/B|RADAR_SLEW/BR
+

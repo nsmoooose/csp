@@ -1,0 +1,29 @@
+# hid event identifier definitions for the  joystick.
+
+# primary buttons
+
+define WingManExtreme:FireA  1
+define WingManExtreme:FireB  2
+define WingManExtreme:FireC  7
+define WingManExtreme:FireD  4
+
+# additional buttons
+
+define WingManExtreme:Pinkie  6
+define WingManExtreme:Launch  3
+
+# coolie hat
+
+define WingManExtreme:Mouse        5
+define WingManExtreme:Mouse_Up     22
+define WingManExtreme:Mouse_Right  23
+define WingManExtreme:Mouse_Down   24
+define WingManExtreme:Mouse_Left   25
+
+# axes
+
+define WingManExtreme:Stick_X   0
+define WingManExtreme:Stick_Y   1
+define WingManExtreme:Rudder    2
+define WingManExtreme:Throttle  3
+

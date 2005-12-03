@@ -33,6 +33,7 @@ import time
 from csp.base import app
 from csp.base import domtree
 
+
 class File:
   ADD = 'ADD'
   DEL = 'DEL'

@@ -31,7 +31,7 @@ Run "%(prog)s help <command>" for help on a specific command.
 """
 
 from csp.base import app
-from csp.tools import subcmd
+from csp.tools.svn import subcmd
 
 def main(args):
   if len(args) < 1:

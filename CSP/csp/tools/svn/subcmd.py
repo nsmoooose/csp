@@ -31,7 +31,7 @@ import StringIO
 import time
 
 from csp.base import app
-from csp.tools import sublib
+from csp.tools.svn import sublib
 
 
 def sendmail(sender, recipients, subject, body, attachments=None):

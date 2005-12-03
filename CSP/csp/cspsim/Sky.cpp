@@ -305,6 +305,77 @@ private:
 //
 ////////////////////////////////////////////////////////////////////////////////
 
+
+// OSG's billboard implementation is incomplete as of 0.9.3, and does
+// not properly implement axial rotations with an arbitrary 'up' vector.
+// This class provides that functionality.
+class AstroBillboard: public osg::Billboard {
+public:
+	virtual bool computeMatrix(osg::Matrix& modelview, const osg::Vec3& eye_local, const osg::Vec3& pos_local) const;
+	void setAxes(const osg::Vec3& axis, const osg::Vec3 &up, const osg::Vec3 &normal);
+protected:
+	osg::Vec3 _onormal;
+	osg::Matrix _orient;
+};
+
+
+class AstronomicalBody {
+protected:
+	// the earth's tilt varies periodically in time, by about 3 degrees
+	// over a 41,000 year cycle.  but we'll ignore that for now ;-)
+	// that fact here.
+	static const double _earth_tilt;
+	static const double _cos_earth_tilt;
+	static const double _sin_earth_tilt;
+	static const double _earth_radius;
+	static const double _epoch;
+	
+	mutable double _alpha, _delta;
+	double  _beta, _lambda, _pi;
+	double _radius;
+	mutable double _angular_radius, _distance;
+	mutable bool _stale;
+
+public:
+	AstronomicalBody();
+	virtual ~AstronomicalBody() {}
+
+	/**
+	 * Compute atmospheric refraction
+	 *
+	 * Really very minor effect in the grand scheme of things.
+	 */
+	double refract(double h) const;
+
+	void updateEquatorial() const;
+
+	void toObserver(double lat, double lmst, double &h, double &A) const;
+
+	void getEliptic(double &beta, double &lambda) const;
+
+	void getEquatorial(double &delta, double &alpha) const;
+
+	virtual void updatePosition(double julian_date) = 0;
+	
+	double getEpoch() const { return _epoch; }
+	
+	double getRadius() const { return _radius; }
+	double getAngularRadius() const { return _angular_radius; }
+
+	double getLambda() const { return _lambda; }
+	double getBeta() const { return _beta; }
+	double getPi() const { return _pi; }
+
+	osg::Light *getLight() { return m_Light.get(); }
+	void initLight(int n);
+
+protected:
+
+	osg::ref_ptr<osg::Light> m_Light;
+	int m_LightNum;
+};
+
+
 const double AstronomicalBody::_earth_radius = 6370000.0;
 const double AstronomicalBody::_earth_tilt = toRadians(23.4397);
 const double AstronomicalBody::_cos_earth_tilt = cos(_earth_tilt);
@@ -358,6 +429,20 @@ void AstronomicalBody::initLight(int n) {
 	m_Light->setDiffuse(osg::Vec4(0.0f,0.0f,0.0f,1.0f));
 	m_Light->setSpecular(osg::Vec4(0.0f,0.0f,0.0f,1.0f));
 }
+
+
+class Sun: public AstronomicalBody {
+public:
+	Sun();
+	virtual void updatePosition(double);
+	void updateScene(double h, double A, Color const &color, float intensity, float background);
+	void _updateLighting(float x, float y, float z, float h, Color const &color, float intensity, float background);
+	Color const &getColor() const { return m_Color; }
+	float getIntensity() const { return m_Intensity; }
+protected:
+	Color m_Color;
+	float m_Intensity;
+};
 
 
 Sun::Sun(): AstronomicalBody() {
@@ -462,6 +547,38 @@ void Sun::updatePosition(double julian_date) {
 	_stale = true;
 }
 
+
+class Moon: public AstronomicalBody {
+public:
+	Moon();
+	virtual void updatePosition(double);
+	osg::Node* getNode();
+	virtual void updateScene(double lat, double lmst, Sun const &sun, float intensity);
+	float getPhase() { return m_Phase; }
+	void setLight(int n);
+	float getApparentBrightness() { return m_ApparentBrightness; }
+private:
+	void _initImposter();
+	void _maskPhase(float phase, float beta);
+	void _updateShading(float h, float intensity);
+	void _updateIllumination(Sun const &sun);
+	void _updateLighting(double x, double y, double z, double h, float intensity);
+	bool m_DirtyImage;
+	osg::ref_ptr<osg::MatrixTransform> m_Transform;
+	osg::ref_ptr<AstroBillboard> m_Billboard;
+	osg::ref_ptr<osg::Image> m_Image;
+	osg::ref_ptr<osg::Image> m_Phased;
+	osg::ref_ptr<osg::Texture2D> m_Texture;
+	osg::ref_ptr<osg::Geometry> m_Moon;
+	osg::ref_ptr<osg::ColorMatrix> m_CM;
+	double m_Latitude;
+	double m_Phase;
+	float m_MoonShine;
+	float m_EarthShine;
+	float m_SunShine;
+	float m_ApparentBrightness;
+	float m_RenderDistance;
+};
 
 
 void Moon::updatePosition(double julian_date) {
@@ -814,8 +931,91 @@ osg::Node* Moon::getNode() {
 ////////////////////////////////////////////////////////////////////////////////
 
 
-#define CUSTOM
+class SkyShader {
+protected:
 
+	typedef float coeff[5];
+	struct sky_c { coeff x, y, Y; };
+	struct perez { float x, y, Y; };
+
+	// control parameters
+	Color m_FullMoonColor;
+	float m_HaloSharpness;
+	float m_NightBase;
+	float m_SunsetSharpness;
+	float m_OverLuminescence;
+	float m_Turbidity;
+	float m_SunElevation;
+
+	// internal parameters
+	sky_c m_Coefficients;
+	Color m_Zenith;
+	float m_MaxY;
+	float m_F;
+	float m_SunTheta;
+	float m_SunVector[3];
+	float m_AzimuthCorrection;
+	perez m_PerezFactor;
+	bool m_Dirty;
+
+	/**
+	 * Get Skylight Distribution Coefficients (c.f. Preetham et al.) for
+	 * a given atmospheric turbitity.
+	 *
+	 * @param T Turbidity.
+	 */
+	void getSkyCoefficients(float T, sky_c &skylight);
+
+	/**
+	 * Perez Sky Model function.
+	 *
+	 * @param theta An angle (radians).
+	 * @param gamma An angle (radians).
+	 * @param p Skylight coefficients.
+	 */
+	float F(float theta, float gamma, coeff &p);
+
+	/**
+	 * Normalized Perez Sky Model function for use with precomputed sun position.
+	 *
+	 * @param theta View vector declination.
+	 * @param gamma Angle between view vector and sun vector.
+	 * @praam factor Perez precomputed scaling factor for this color component.
+	 * @param z Zenith color component.
+	 * @param p Skylight coefficients.
+	 */
+	float FastPerez(float theta, float gamma, float factor, float z, coeff &p);
+	
+	/**
+	 * Normalized Perez Sky Model function.
+	 *
+	 * @param theta View vector declination.
+	 * @param gamma Angle between view vector and sun vector.
+	 * @praam theta_s Sun vector declination.
+	 * @param z Zenith color component.
+	 * @param p Skylight coefficients.
+	 */
+	float Perez(float theta, float gamma, float theta_s, float z, coeff &p);
+
+	/**
+	 * Get zenith color in CIE xyY colorspace.
+	 *
+	 * @param T Atmospheric turbidity.
+	 * @param theta_s Sun vector declination.
+	 */
+	Color getZenith(float T, float theta_s);
+
+	void _computeBase();
+
+public:
+	SkyShader();
+	void setTurbidity(float T);
+	void setSunElevation(float h);
+	Color SkyColor(float elevation, float azimuth, float dark, float &intensity);
+};
+
+
+#define CUSTOM
 
 #if 0
 // CUSTOMIZATION PARAMETERS
@@ -836,6 +1036,7 @@ osg::Node* Moon::getNode() {
 #define HALO_SHARPNESS 0.5
 // --------------------------------------------------------------------------
 #endif
+
 
 SkyShader::SkyShader() {
 	m_OverLuminescence = 1.2;
@@ -1132,7 +1333,7 @@ private:
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-Sky::Sky(): Group() {
+Sky::Sky(): Group(), m_Sun(new Sun), m_Moon(new Moon), m_SkyShader(new SkyShader) {
 	m_LastMoonFullUpdate = -1e+10;
 	m_Latitude = 0.0;
 	m_LMST = 0.0;
@@ -1313,7 +1514,7 @@ void Sky::_init() {
 	geode->addDrawable(m_SkyDome.get());
 	geode->addDrawable(m_StarDome.get());
 	addChild(geode);
-	addChild(m_Moon.getNode());
+	addChild(m_Moon->getNode());
 	osg::Geode *horizon = new osg::Geode();
 	horizon->addDrawable(m_Horizon.get());
  	// draw horizon after sky, stars, and moon
@@ -1322,19 +1523,21 @@ void Sky::_init() {
 	setName("Sky");
 }
 
-
 void Sky::_initLights() {
-	m_Sun.initLight(0);
-	m_Moon.initLight(1);
+	m_Sun->initLight(0);
+	m_Moon->initLight(1);
 }
 
+float Sky::getSunIntensity() const {
+	return m_Sun->getIntensity();
+}
 
 osg::Light *Sky::getSunLight() {
-	return m_Sun.getLight();
+	return m_Sun->getLight();
 }
 
 osg::Light *Sky::getMoonLight() {
-	return m_Moon.getLight();
+	return m_Moon->getLight();
 }
 
 // TODO
@@ -1346,15 +1549,15 @@ osg::Light *Sky::getMoonLight() {
 
 void Sky::_updateMoon(bool quick) {
 	if (!quick) {
-		m_Moon.updatePosition(m_JD);
+		m_Moon->updatePosition(m_JD);
 	}
-	m_Moon.updateScene(m_Latitude, m_LMST, m_Sun, m_AverageIntensity);
+	m_Moon->updateScene(m_Latitude, m_LMST, *m_Sun, m_AverageIntensity);
 }
 
 void Sky::_updateSun() {
 	double sun_h, sun_A;
-	m_Sun.updatePosition(m_JD);
-	m_Sun.toObserver(m_Latitude, m_LMST, sun_h, sun_A);
+	m_Sun->updatePosition(m_JD);
+	m_Sun->toObserver(m_Latitude, m_LMST, sun_h, sun_A);
 	
 	double light_h = sun_h;
 	// below horizon
@@ -1362,15 +1565,15 @@ void Sky::_updateSun() {
 		light_h = 0.0;
 	}
 
-	m_SkyShader.setSunElevation(sun_h);
+	m_SkyShader->setSunElevation(sun_h);
 	
 	// update the skydome
 	_updateShading(sun_h, sun_A);
 
 	// get the sky shading at the position of the sun
-	m_ZenithColor = m_SkyShader.SkyColor(light_h, 0.0, 0.0, m_ZenithIntensity);
+	m_ZenithColor = m_SkyShader->SkyColor(light_h, 0.0, 0.0, m_ZenithIntensity);
 	
-	m_Sun.updateScene(sun_h, sun_A, m_ZenithColor, m_ZenithIntensity, m_AverageIntensity);
+	m_Sun->updateScene(sun_h, sun_A, m_ZenithColor, m_ZenithIntensity, m_AverageIntensity);
 }
 
 void Sky::_updateStars() {
@@ -1385,7 +1588,7 @@ void Sky::_updateShading(double sun_h, double sun_A) {
 	double jitter = 0.0;
 	int i, j, ci = 0;
 	m_AverageIntensity = 0.0;
-	float dark = m_Moon.getApparentBrightness();
+	float dark = m_Moon->getApparentBrightness();
 	osg::Vec4 horizon_average;
 	for (i = 0; i < m_nlev; ++i) {
 		double elev = toRadians(m_lev[i]);
@@ -1402,7 +1605,7 @@ void Sky::_updateShading(double sun_h, double sun_A) {
 			} else {
 				jitter = 0.0;
 			}
-			Color c = m_SkyShader.SkyColor(elev, azimuth+jitter, dark, intensity);
+			Color c = m_SkyShader->SkyColor(elev, azimuth+jitter, dark, intensity);
 			azimuth += da;
 			colors[ci][0] = c.getA();
 			colors[ci][1] = c.getB();
@@ -1430,7 +1633,7 @@ void Sky::_updateShading(double /*sun_h*/, double sun_A) {
 	m_AverageIntensity = 0.0;
 	int n_average = 0;
 
-	float dark = m_Moon.getApparentBrightness();
+	float dark = m_Moon->getApparentBrightness();
 	SimTime t = SimDate::getSystemTime();
 
 	{ // update skydome texture
@@ -1446,7 +1649,7 @@ void Sky::_updateShading(double /*sun_h*/, double sun_A) {
 					if (elevation < 0.0) elevation = 0.0;
 					double azimuth = atan2(x, y);
 					float intensity = 0.0;
-					Color c = m_SkyShader.SkyColor(elevation, azimuth, dark, intensity);
+					Color c = m_SkyShader->SkyColor(elevation, azimuth, dark, intensity);
 					int i0 = idx + i*3 - 1;
 					int i1 = idx - i*3 - 1;
 					shade[++i0] = shade[++i1] = static_cast<unsigned char>(c.getA() * 255.0);
@@ -1466,7 +1669,7 @@ void Sky::_updateShading(double /*sun_h*/, double sun_A) {
 		double azimuth = -sun_A - 0.5 * PI;
 		for (i = 0; i < n; ++i) {
 			float intensity;
-			Color c = m_SkyShader.SkyColor(0.0, azimuth, dark, intensity);
+			Color c = m_SkyShader->SkyColor(0.0, azimuth, dark, intensity);
 			(*m_HorizonColors)[i] = Vec4(c.getA(), c.getB(), c.getC(), 1.0);
 			azimuth += da;
 		}
@@ -1541,8 +1744,8 @@ void Sky::update(double lat, double lon, SimDate const &t) {
 // sunrise/set for wide fields of view.  2 point interpolation
 // (avg=0) seems to look better than the multipoint averaging
 // implemented below for avg > 0.
-osg::Vec4 Sky::getHorizonColor(float angle) {
-	static int avg = 0;
+osg::Vec4 Sky::getHorizonColor(float angle) const {
+	static const int avg = 0;
 	// skydome wraps around clockwise
 	angle = -angle;
 	if (angle < 360.0) {

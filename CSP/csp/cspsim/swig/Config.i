@@ -22,6 +22,13 @@
 #include <csp/cspsim/Config.h>
 %}
 
+%include "std_string.i"
+
 namespace csp {
 extern bool openConfig(std::string path, bool report_error);
+extern std::string getCachePath();
+extern std::string getConfigPath();
+extern std::string getConfigPath(std::string const &);
+extern std::string getDataPath();
+extern std::string getDataPath(std::string const &);
 }

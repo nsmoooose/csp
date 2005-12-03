@@ -36,7 +36,7 @@ case, the names of the output files are printed to stdout in the format
 import sys
 import os
 
-from CSP.base import app
+from csp.base import app
 
 
 app.addOption('--output1', metavar='PATH', default='', help='output path for original file')

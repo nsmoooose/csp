@@ -125,6 +125,8 @@ def start(disable_interspersed_args=0):
     name = frame.f_globals.get('__name__', '')
     if name == '__main__':
       doc = frame.f_globals.get('__doc__', None)
+      if isinstance(doc, str):
+        if doc.startswith('\n'): doc = doc[1:]  # ignore first newline in triple-quoted strings
       opt.set_usage(doc)
       main = frame.f_globals.get('main', None)
       global options

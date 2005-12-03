@@ -28,10 +28,10 @@ if len(sys.path) == 1 and hasattr(sys, 'CSP_PATH'):
 	sys.path = sys.CSP_PATH
 	del sys.CSP_PATH
 
-dirname = __path__[0]
+dir = os.path.abspath(__path__[0])
 
 # bring compiled modules into the csp package
-__path__.insert(0, os.path.join(dirname, 'cspsim', '.bin'))
+__path__.insert(0, os.path.join(dir, 'cspsim', '.bin'))
 
 def initDynamicLoading():
 	"""Enable lazy loading of shared library modules if available"""

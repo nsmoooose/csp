@@ -27,13 +27,13 @@
 #define __CSPSIM_DYNAMICMODEL_H__
 
 #include <sigc++/signal.h>
-#include <csp/csplib/util/Ref.h>
-#include <csp/cspsim/SceneModel.h>  // TODO move signalCreateSceneModel to a cpp file
-//#include <csp/cspsim/ObjectModel.h>  // TODO forward declare scenemodel and move signalCreateSceneModel to a cpp file
+#include <csp/csplib/util/Referenced.h>
 
 namespace osg { class Group; }
 
 CSP_NAMESPACE
+
+class SceneModel;
 
 /** Interface provided by DynamicObjects to allow System classes to interact
  *  with the scene.
@@ -45,10 +45,7 @@ public:
 	void addCreateSceneModelHandler(sigc::slot<void, osg::Group*> const &slot) const { m_CreateSceneModelSignal.connect(slot); }
 	void addDeleteSceneModelHandler(sigc::slot<void> const &slot) const { m_DeleteSceneModelSignal.connect(slot); }
 
-	void signalCreateSceneModel(SceneModel *model) {
-		assert(model);
-		m_CreateSceneModelSignal.emit(model->getDynamicGroup());
-	}
+	void signalCreateSceneModel(SceneModel *model);
 	void signalDeleteSceneModel() { m_DeleteSceneModelSignal.emit(); }
 	void signalInternalView(bool internal_view) { m_InternalViewSignal.emit(internal_view); }
 

@@ -21,17 +21,12 @@
  * @file ObjectModel.cpp
  *
  **/
-#include <algorithm>
-#include <vector>
-#include <utility>
 
 #include <csp/cspsim/ObjectModel.h>
 #include <csp/cspsim/Animation.h>
+#include <csp/cspsim/Bus.h>
 #include <csp/cspsim/Config.h>
-#include <csp/cspsim/SceneConstants.h>
-#include <csp/cspsim/SmokeEffects.h>
 #include <csp/cspsim/Station.h>
-#include <csp/cspsim/hud/HUD.h>
 
 #include <csp/csplib/util/FileUtility.h>
 #include <csp/csplib/util/HashUtility.h>
@@ -56,23 +51,16 @@
 #include <osg/Texture>
 #include <osg/Geode>
 #include <osg/Depth>
-#include <osgText/Text>
 #include <osg/PolygonOffset>
-#include <osg/Node>
 #include <osg/Switch>
 #include <osg/Group>
 #include <osg/MatrixTransform>
 #include <osg/PositionAttitudeTransform>
 
-/*
-	TODO
+#include <algorithm>
+#include <vector>
+#include <utility>
 
-		o adjust contact markers and view point for model
-		  transform
-
-		o implement ModelProcessor
-
- */
 
 CSP_NAMESPACE
 
@@ -763,253 +751,6 @@ private:
 		return clone;
 	}
 };
-
-
-SceneModel::SceneModel(Ref<ObjectModel> const & model) {
-	m_Model = model;
-	assert(m_Model.valid());
-	CSPLOG(INFO, APP) << "create SceneModel for " << m_Model->getModelPath();
-
-	// get the prototype model scene graph
-	osg::Node *model_node = m_Model->getModel().get();
-	assert(model_node);
-
-	// create a working copy
-	ModelCopy model_copy;
-
-	Timer timer;
-	timer.start();
-	m_ModelCopy = model_copy(model_node);
-	m_PitSwitch = model_copy.getPitSwitch();
-	timer.stop();
-
-	CSPLOG(INFO, APP) << "Copied model, animation count = " << model_copy.getAnimationCallbacks().size();
-	if (timer.elapsed() > 0.01) {
-		CSPLOG(WARNING, APP) << "Model copy took " << (timer.elapsed() * 1e+3) << " ms";
-	}
-
-	m_AnimationCallbacks.resize(model_copy.getAnimationCallbacks().size());
-
-	// store all the animation update callbacks
-	std::copy(model_copy.getAnimationCallbacks().begin(), model_copy.getAnimationCallbacks().end(), m_AnimationCallbacks.begin());
-
-	m_Label = new osgText::Text();
-	m_Label->setFont("hud.ttf");
-	m_Label->setFontResolution(30, 30);
-	m_Label->setColor(osg::Vec4(1.0f, 0.4f, 0.2f, 1.0f));
-	m_Label->setCharacterSize(20.0);
-	m_Label->setPosition(osg::Vec3(0, 0, 0));
-	m_Label->setAxisAlignment(osgText::Text::SCREEN);
-	m_Label->setAlignment(osgText::Text::CENTER_BOTTOM);
-	m_Label->setCharacterSizeMode(osgText::Text::SCREEN_COORDS);
-	m_Label->setText(m_Model->getLabel());
-	osg::Geode *label = new osg::Geode;
-	osg::Depth *depth = new osg::Depth;
-	depth->setFunction(osg::Depth::ALWAYS);
-	depth->setRange(1.0, 1.0);
-	label->getOrCreateStateSet()->setAttributeAndModes(depth, osg::StateAttribute::OFF);
-	label->getOrCreateStateSet()->setMode(GL_LIGHTING, osg::StateAttribute::OFF);
-	label->addDrawable(m_Label.get());
-	label->setNodeMask(SceneMasks::LABELS);
-
-	m_Transform = new osg::PositionAttitudeTransform;
-	m_Transform->setName("position");
-	m_CenterOfMassOffset = new osg::PositionAttitudeTransform;
-	m_CenterOfMassOffset->setName("cm_offset");
-	m_Transform->addChild(m_CenterOfMassOffset.get());
-	m_CenterOfMassOffset->addChild(m_ModelCopy.get());
-	m_CenterOfMassOffset->addChild(m_Model->getDebugMarkers().get());
-	m_CenterOfMassOffset->addChild(label);
-	m_Smoke = false;
-}
-
-SceneModel::~SceneModel() {
-	// FIXME shouldn't we be removing the copy?
-	osg::Node *model_node = m_Model->getModel().get();
-	assert(model_node);
-	// FIXME why?
-	m_CenterOfMassOffset->removeChild(model_node);
-}
-
-void SceneModel::setPitMask(unsigned mask) {
-	CSPLOG(INFO, OBJECT) << "Setting pit mask to " <<mask;
-	if (m_PitSwitch.valid()) {
-		const unsigned n = m_PitSwitch->getNumChildren();
-		for (unsigned i = 0; i < n; ++i) {
-			m_PitSwitch->setValue(i, (mask & (1 << i)) == 0);
-		}
-	} else {
-		CSPLOG(WARNING, OBJECT) << "Setting pit mask but model has no pit switch";
-	}
-}
-
-void SceneModel::setLabel(std::string const &label) {
-	m_Label->setText(label);
-}
-
-void SceneModel::updateSmoke(double dt, Vector3 const &global_position, Quat const &attitude) {
-	m_SmokeTrails->update(dt, global_position, attitude);
-}
-
-void SceneModel::setSmokeEmitterLocation(std::vector<Vector3> const &sel) {
-	m_SmokeEmitterLocation = sel;
-}
-
-bool SceneModel::addSmoke() {
-	if (m_SmokeTrails.valid())
-		return true;
-	else {
-		if (!m_SmokeEmitterLocation.empty()) {
-			std::vector<Vector3>::const_iterator iEnd = m_SmokeEmitterLocation.end();
-			for (std::vector<Vector3>::iterator i = m_SmokeEmitterLocation.begin(); i != iEnd; ++i) {
-				fx::SmokeTrail *trail = new fx::SmokeTrail();
-				trail->setEnabled(false);
-				trail->setTexture("Smoke/white-smoke-hilite.rgb");
-
-				// short blue trail slowly evasing
-				trail->setColorRange(osg::Vec4(0.9, 0.9, 1.0, 0.2), osg::Vec4(0.97, 0.97, 0.99, 0.08));
-				trail->setSizeRange(0.7, 1.5);
-				trail->setLifeTime(0.2);
-
-				// short red trail
-				//trail->setColorRange(osg::Vec4(0.9, 0.1, 0.1, 0.3), osg::Vec4(0.99, 0.97, 0.97, 0.1));
-				//trail->setSizeRange(0.8, 0.6);
-				//trail->setLifeTime(0.1);
-
-				trail->setLight(false);
-				trail->setExpansion(1.0);
-
-				// Author: please, document this SmokeThinner operator.
-				//trail->addOperator(new fx::SmokeThinner);
-
-				trail->setOffset(*i);
-
-				m_SmokeTrails = new fx::SmokeTrailSystem;
-				m_SmokeTrails->addSmokeTrail(trail);
-			}
-			m_Smoke = false;
-			return true;
-		}
-	}
-	return false;
-}
-
-bool SceneModel::isSmoke() {
-	return m_Smoke;
-}
-
-void SceneModel::disableSmoke() {
-	if (m_Smoke) {
-		m_SmokeTrails->setEnabled(false);
-		m_Smoke = false;
-	}
-}
-
-void SceneModel::enableSmoke() {
-	CSPLOG(DEBUG, OBJECT) << "SceneModel::enableSmoke()...";
-	if (!m_Smoke) {
-		if (!addSmoke()) return;
-		CSPLOG(DEBUG, OBJECT) << "SceneModel::enableSmoke()";
-		m_SmokeTrails->setEnabled(true);
-		m_Smoke = true;
-	}
-}
-
-void SceneModel::bindAnimationChannels(Bus* bus) {
-	AnimationBinder binder(bus, m_Model->getModelPath());
-	std::for_each(m_AnimationCallbacks.begin(), m_AnimationCallbacks.end(), binder);
-}
-
-void SceneModel::bindHud(HUD *hud) {
-	CSPLOG(DEBUG, OBJECT) << "adding HUD to model";
-	assert(hud);
-	m_HudModel = hud->hud();
-	m_HudModel->setPosition(toOSG(m_Model->getHudPlacement()));
-	m_CenterOfMassOffset->addChild(m_HudModel.get());
-	hud->setOrigin(toOSG(m_Model->getHudPlacement()));
-	hud->setViewPoint(toOSG(m_Model->getViewPoint()));
-	hud->setDimensions(m_Model->getHudWidth(), m_Model->getHudHeight());
-}
-
-void SceneModel::onViewMode(bool internal) {
-	// show/hide hud (if any) when the view is internal/external
-	if (m_HudModel.valid()) {
-		if (internal) {
-			m_HudModel->setNodeMask(0xff);
-		} else {
-			m_HudModel->setNodeMask(0x0);
-		}
-	}
-}
-
-void SceneModel::setPositionAttitude(Vector3 const &position, Quat const &attitude, Vector3 const &cm_offset) {
-	m_Transform->setAttitude(toOSG(attitude));
-	m_Transform->setPosition(toOSG(position));
-	m_CenterOfMassOffset->setPosition(toOSG(-cm_offset));
-}
-
-osg::Group* SceneModel::getRoot() {
-	return m_Transform.get();
-}
-
-osg::Group *SceneModel::getDynamicGroup() {
-	if (!m_DynamicGroup) {
-		m_DynamicGroup = new osg::Group;
-		m_CenterOfMassOffset->addChild(m_DynamicGroup.get());
-	}
-	return m_DynamicGroup.get();
-}
-
-void SceneModel::addChild(Ref<SceneModelChild> const &child) {
-	assert(child->getRoot());
-	if (!m_Children) {
-		m_Children = new osg::Group;
-		m_CenterOfMassOffset->addChild(m_Children.get());
-	}
-	m_Children->addChild(child->getRoot());
-}
-
-void SceneModel::removeChild(Ref<SceneModelChild> const &child) {
-	assert(child->getRoot());
-	if (m_Children.valid()) {
-		m_Children->removeChild(child->getRoot());
-	}
-}
-
-void SceneModel::removeAllChildren() {
-	if (m_Children.valid()) {
-		m_Children->removeChild(0, m_Children->getNumChildren());
-		m_CenterOfMassOffset->removeChild(m_Children.get());
-		m_Children = 0;
-	}
-}
-
-
-SceneModelChild::~SceneModelChild() {}
-
-SceneModelChild::SceneModelChild(Ref<ObjectModel> const &model) {
-	m_Model = model;
-	assert(m_Model.valid());
-	CSPLOG(INFO, APP) << "Create SceneModelChild for " << m_Model->getModelPath();
-
-	// create a working copy of the prototype model
-	ModelCopy model_copy;
-	m_ModelCopy = model_copy(m_Model->getModel().get());
-	CSPLOG(INFO, APP) << "Copied model, animation count = " << model_copy.getAnimationCallbacks().size();
-
-	// store all the animation update callbacks
-	m_AnimationCallbacks.resize(model_copy.getAnimationCallbacks().size());
-	std::copy(model_copy.getAnimationCallbacks().begin(), model_copy.getAnimationCallbacks().end(), m_AnimationCallbacks.begin());
-}
-
-osg::Node *SceneModelChild::getRoot() {
-	return m_ModelCopy.get();
-}
-
-void SceneModelChild::bindAnimationChannels(Bus* bus) {
-	AnimationBinder binder(bus, m_Model->getModelPath());
-	std::for_each(m_AnimationCallbacks.begin(), m_AnimationCallbacks.end(), binder);
-}
 
 CSP_NAMESPACE_END
 

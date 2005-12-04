@@ -24,7 +24,7 @@
 
 #include <csp/cspsim/stores/Projectile.h>
 #include <csp/cspsim/stores/Stores.h>
-#include <csp/cspsim/ObjectModel.h>
+#include <csp/cspsim/SceneModel.h>
 #include <csp/csplib/data/ObjectInterface.h>
 #include <csp/csplib/util/StringTools.h>
 

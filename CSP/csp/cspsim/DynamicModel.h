@@ -28,7 +28,8 @@
 
 #include <sigc++/signal.h>
 #include <csp/csplib/util/Ref.h>
-#include <csp/cspsim/ObjectModel.h>  // TODO forward declare scenemodel and move signalCreateSceneModel to a cpp file
+#include <csp/cspsim/SceneModel.h>  // TODO move signalCreateSceneModel to a cpp file
+//#include <csp/cspsim/ObjectModel.h>  // TODO forward declare scenemodel and move signalCreateSceneModel to a cpp file
 
 namespace osg { class Group; }
 

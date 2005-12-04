@@ -37,8 +37,8 @@ def PackageConfig(env):
 
 env = env.Copy()
 env.SetConfig(PackageConfig)
-env.Append(LIBPATH=['#/modules/demeter/.bin', '#/modules/chunklod/.bin'])
-env.Append(LIBS=['demeter', 'chunklod'])
+#env.Append(LIBPATH=['#/modules/demeter/.bin', '#/modules/chunklod/.bin'])
+#env.Append(LIBS=['demeter', 'chunklod'])
 
 
 SOURCES = [
@@ -50,14 +50,14 @@ SOURCES = [
 	'BaseDynamics.cpp',
 	'BaseScreen.cpp',
 	'Channels.cpp',
-	'ChunkLodTerrain.cpp',
+#	'ChunkLodTerrain.cpp',
 	'CockpitInterface.cpp',
 	'Collision.cpp',
 	'Colorspace.cpp',
 	'Config.cpp',
 	'Controller.cpp',
 	'CSPSim.cpp',
-	'DemeterTerrain.cpp',
+#	'DemeterTerrain.cpp',
 	'DoubleChannelMirror.cpp',
 	'DynamicObject.cpp',
 	'DynamicalSystem.cpp',
@@ -77,10 +77,12 @@ SOURCES = [
 	'InputInterface.cpp',
 	'LandingGear.cpp',
 	'LogoScreen.cpp',
+	'Module.cpp',
 	'ObjectModel.cpp',
 	'ObjectUpdate.net',
 	'PhysicsModel.cpp',
 	'Projection.cpp',
+	'SceneModel.cpp',
 	'ScreenInfo.cpp',
 	'ScreenInfoManager.cpp',
 	'SimpleSceneManager.cpp',

@@ -29,7 +29,7 @@
 #include <csp/cspsim/theater/Feature.h>
 #include <csp/cspsim/theater/FeatureModel.h>
 #include <csp/cspsim/DamageModifier.h>
-#include <csp/cspsim/ObjectModel.h>
+#include <csp/csplib/data/Link.h>
 
 #include <vector>
 
@@ -38,6 +38,7 @@ CSP_NAMESPACE
 class FeatureSceneGroup;
 class LayoutTransform;
 class ElevationCorrection;
+class ObjectModel;
 
 
 /**
@@ -51,7 +52,7 @@ protected:
 	char m_HitPoints;
 	char m_Value;
 	Link<ObjectModel> m_ObjectModel;
-	
+
 public:
 	CSP_DECLARE_STATIC_OBJECT(FeatureObjectModel)
 
@@ -59,23 +60,19 @@ public:
 
 	virtual ~FeatureObjectModel();
 
-	/**
-	 * Get the damage modifiers for this feature type.
+	/** Get the damage modifiers for this feature type.
 	 */
 	virtual Ref<DamageModifier const> getDamageModifier() const { return Ref<DamageModifier const>(); }
 
-	/**
-	 * Get the damage resitance of this feature type.
+	/** Get the damage resitance of this feature type.
 	 */
 	char getHitPoints() const { return m_HitPoints; }
 
-	/**
-	 * Get the base value for this feature type.
+	/** Get the base value for this feature type.
 	 */
 	char getValue() const { return m_Value; }
 
-	/**
-	 * Add this feature to the scene graph of a FeatureGroup.
+	/** Add this feature to the scene graph of a FeatureGroup.
 	 *
 	 * @param group The root of the FeatureGroup scene graph.
 	 * @param transform The cummulative transform for this model.
@@ -83,8 +80,7 @@ public:
 	 */
 	void addSceneModel(FeatureSceneGroup *group, LayoutTransform const &transform, ElevationCorrection const &correction);
 
-	/**
-	 * Construct a new Feature instance for this feature.
+	/** Construct a new Feature instance for this feature.
 	 */
 	virtual void makeFeatures(std::vector<Feature> &features, int value) const;
 };

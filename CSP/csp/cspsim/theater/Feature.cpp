@@ -24,7 +24,6 @@
 
 #include <csp/cspsim/theater/Feature.h>
 #include <csp/cspsim/theater/FeatureObjectModel.h>
-#include <csp/cspsim/ObjectModel.h>
 
 CSP_NAMESPACE
 

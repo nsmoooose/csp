@@ -25,6 +25,7 @@
 #include <csp/cspsim/Station.h>
 #include <csp/cspsim/Animation.h>
 #include <csp/cspsim/ObjectModel.h>
+#include <csp/cspsim/SceneModel.h>
 
 #include <csp/csplib/data/ObjectInterface.h>
 

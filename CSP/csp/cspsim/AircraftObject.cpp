@@ -30,6 +30,7 @@
 #include <csp/cspsim/Engine.h>
 #include <csp/cspsim/FlightModel.h>
 #include <csp/cspsim/ObjectModel.h>
+#include <csp/cspsim/SceneModel.h>
 #include <csp/cspsim/SystemsModel.h>
 
 #include <csp/csplib/util/Log.h>

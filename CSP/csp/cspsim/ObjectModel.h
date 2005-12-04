@@ -25,8 +25,6 @@
 #ifndef __CSPSIM_OBJECTMODEL_H__
 #define __CSPSIM_OBJECTMODEL_H__
 
-#include <csp/cspsim/Bus.h>
-
 #include <csp/csplib/data/Enum.h>
 #include <csp/csplib/data/Link.h>
 #include <csp/csplib/data/Object.h>
@@ -40,10 +38,8 @@
 
 namespace osg {
 	class Node;
-	class Group;
 	class Switch;
 	class MatrixTransform;
-	class PositionAttitudeTransform;
 }
 
 namespace osgText {
@@ -53,16 +49,8 @@ namespace osgText {
 CSP_NAMESPACE
 
 class Animation;
-class AnimationCallback;
-class AnimationChannel;
 class Bus;
-class HUD;
 class Station;
-class Quat;
-
-namespace fx {
-	class SmokeTrailSystem;
-}
 
 
 /**
@@ -161,79 +149,6 @@ protected:
 	double m_BoundingSphereRadius;
 
 	enum { DEBUG_MARKERS };
-};
-
-
-/** A representation of an ObjectModel that can be added to the scene
- *  as a child of a SceneModel.
- */
-class SceneModelChild: public Referenced {
-	osg::ref_ptr<osg::Node> m_ModelCopy;
-	Ref<ObjectModel> m_Model;
-	std::vector< osg::ref_ptr<AnimationCallback> > m_AnimationCallbacks;
-protected:
-	virtual ~SceneModelChild();
-public:
-	SceneModelChild(Ref<ObjectModel> const &model);
-	void bindAnimationChannels(Bus*);
-	osg::Node *getRoot();
-};
-
-
-/**
- * SceneModel - Represents an object in the scene graph.
- *
- * The base object classes are independent of the scene graph.  SimObject
- * contains a pointer to a SceneModel that can be instantiated to create
- * a visual representation of the object.
- */
-class SceneModel: public Referenced {
-private:
-	osg::ref_ptr<osg::PositionAttitudeTransform> m_Transform;
-	osg::ref_ptr<osg::PositionAttitudeTransform> m_CenterOfMassOffset;
-	osg::ref_ptr<osg::Group> m_DynamicGroup;
-	osg::ref_ptr<osg::Group> m_Children;
-	osg::ref_ptr<osg::Node> m_ModelCopy;
-	osg::ref_ptr<osgText::Text> m_Label;
-	Ref<ObjectModel> m_Model;
-	bool m_Smoke;
-	osg::ref_ptr<fx::SmokeTrailSystem> m_SmokeTrails;
-	std::vector<Vector3> m_SmokeEmitterLocation;
-	std::vector< osg::ref_ptr<AnimationCallback> > m_AnimationCallbacks;
-	osg::ref_ptr<osg::PositionAttitudeTransform> m_HudModel;
-	osg::ref_ptr<osg::Switch> m_PitSwitch;
-
-	osg::Node *getModelCopy() { return m_ModelCopy.get(); }
-
-protected:
-	virtual ~SceneModel();
-
-public:
-	SceneModel(Ref<ObjectModel> const & model);
-
-	Ref<ObjectModel> getModel() { return m_Model; }
-	osg::Group* getRoot();
-	osg::Group* getDynamicGroup();
-
-	void setPositionAttitude(Vector3 const &position, Quat const &attitude, Vector3 const &cm_offset);
-
-	void addChild(Ref<SceneModelChild> const &child);
-	void removeChild(Ref<SceneModelChild> const &child);
-	void removeAllChildren();
-
-	void bindAnimationChannels(Bus*);
-	void bindHud(HUD* hud);
-
-	void setSmokeEmitterLocation(std::vector<Vector3> const &sel);
-	bool addSmoke();
-	bool isSmoke();
-	void disableSmoke();
-	void enableSmoke();
-	virtual void onViewMode(bool internal);
-	void updateSmoke(double dt, Vector3 const & global_position, Quat const &attitude);
-	void setLabel(std::string const &);
-	void setPitMask(unsigned mask);
-	void pick(int x, int y);
 };
 
 CSP_NAMESPACE_END

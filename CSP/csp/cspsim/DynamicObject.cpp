@@ -31,6 +31,7 @@
 #include <csp/cspsim/KineticsChannels.h>
 #include <csp/cspsim/ObjectModel.h>
 #include <csp/cspsim/PhysicsModel.h>
+#include <csp/cspsim/SceneModel.h>
 #include <csp/cspsim/Station.h>
 #include <csp/cspsim/SystemsModel.h>
 #include <csp/cspsim/TerrainObject.h>

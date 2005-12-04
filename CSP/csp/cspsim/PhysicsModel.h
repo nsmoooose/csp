@@ -77,11 +77,11 @@ protected:
 
 	/** Extract kinematic variables from the vector field variable.
 	 */
-	virtual void YToBody(Vector::Vectord const &y);
+	virtual void YToBody(numeric::Vectord const &y);
 
 	/** Assemble the vector field variable from individual kinematic variables.
 	 */
-	virtual Vector::Vectord const &bodyToY(Vector3 const &p, Vector3 const &v, Vector3 const &w, Quat const &q);
+	virtual numeric::Vectord const &bodyToY(Vector3 const &p, Vector3 const &v, Vector3 const &w, Quat const &q);
 
 	/** Convert from local (global) to body coordinates.
 	 */

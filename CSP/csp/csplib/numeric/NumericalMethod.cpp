@@ -30,7 +30,7 @@
 
 CSP_NAMESPACE
 
-using Vector::Vectord;
+namespace numeric {
 
 NumericalMethod::NumericalMethod():
 	m_VectorField(0),
@@ -729,4 +729,5 @@ Vectord const &RKCK_VS_VO::enhancedSolve(Vectord &y0, double t0, double dt) {
 	return vrkfBound(y0, t0, dt, std::min(m_Hestimate,dt), nok, nbad);
 }
 
+} // namespace numeric
 CSP_NAMESPACE_END

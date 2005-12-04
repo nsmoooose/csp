@@ -78,11 +78,8 @@ Vector3 PhysicsModel::bodyToLocal(Vector3 const &vec) {
 	return m_Attitude.rotate(vec);
 }
 
-Vector::Vectord const &PhysicsModel::bodyToY(Vector3 const &p,
-                                Vector3 const &v,
-                                Vector3 const &w,
-                                Quat const &q) {
-	static Vector::Vectord y(13);
+numeric::Vectord const &PhysicsModel::bodyToY(Vector3 const &p, Vector3 const &v, Vector3 const &w, Quat const &q) {
+	static numeric::Vectord y(13);  // caution - not threadsafe!
 	y[0] = p.x(); y[1] = p.y(); y[2] = p.z();
 	y[3] = v.x(); y[4] = v.y(); y[5] = v.z();
 	y[6] = w.x(); y[7] = w.y(); y[8] = w.z();
@@ -90,7 +87,7 @@ Vector::Vectord const &PhysicsModel::bodyToY(Vector3 const &p,
 	return y;
 }
 
-void PhysicsModel::YToBody(Vector::Vectord const &y) {
+void PhysicsModel::YToBody(numeric::Vectord const &y) {
 	m_PositionBody.set(y[0],y[1],y[2]);
 	m_VelocityBody.set(y[3],y[4],y[5]);
 	//m_AngularVelocityBody = m_Damping * Vector3(y[6],y[7],y[8]);

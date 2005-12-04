@@ -35,14 +35,14 @@
 
 CSP_NAMESPACE
 
-using Vector::Vectord;
+using numeric::Vectord;
 
 CSP_XML_BEGIN(AircraftPhysicsModel)
 CSP_XML_END
 
 
 AircraftPhysicsModel::AircraftPhysicsModel(): PhysicsModel(13) {
-	setNumericalMethod(new RKCK_VS_VO(this));
+	setNumericalMethod(new numeric::RKCK_VS_VO(this));
 }
 
 Vectord const &AircraftPhysicsModel::f(double x, Vectord &y) {

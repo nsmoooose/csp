@@ -33,39 +33,40 @@
 
 CSP_NAMESPACE
 
-class NumericalMethod;
+namespace numeric {
+	class NumericalMethod;
+}
 
 
 /**
- * DynamicalSystem is a base class for physics models that can
- * be solved by numerical integration.  The dynamical variables
- * are stored in a vector field, and are integrated by an 
- * associated numerical method (e.g. Runge-Kutta).  The f()
- * function of VectorField provides the driving term, which
- * must be implemented in derived classes.  Implementations of 
- * f() typically involve evaluation of one or more BaseDynamics
- * instances to determine the total force and moment acting on
- * the body at each instant.
+ * DynamicalSystem is a base class for physics models that can be solved by
+ * numerical integration.  The dynamical variables are stored in a vector
+ * field, and are integrated by an associated numerical method (e.g.
+ * Runge-Kutta).  The f() function of VectorField provides the driving term,
+ * which must be implemented in derived classes.  Implementations of f()
+ * typically involve evaluation of one or more BaseDynamics instances to
+ * determine the total force and moment acting on the body at each instant.
  */
-class DynamicalSystem: public VectorField {
-	NumericalMethod *m_NumericalMethod;
+class DynamicalSystem: public numeric::VectorField {
+	numeric::NumericalMethod *m_NumericalMethod;
 public:
 	DynamicalSystem(size_type dimension = 0);
 	virtual ~DynamicalSystem();
+
 	/**
-	 * Set the numerical integration method used to integrate
-	 * the equations of motion.
+	 * Set the numerical integration method used to integrate the equations of
+	 * motion.
 	 */
-	void setNumericalMethod(NumericalMethod *pnumericalMethod);
+	void setNumericalMethod(numeric::NumericalMethod *pnumericalMethod);
 
-	virtual NumericalMethod *const getNumericalMethod() const;
+	virtual numeric::NumericalMethod const *getNumericalMethod() const;
 
 	/**
-	 * Integrate the model over a specified time interval (dt) given
-	 * a set of initial conditions (y0, t0). 
+	 * Integrate the model over a specified time interval (dt) given a set of
+	 * initial conditions (y0, t0).
 	 * @return the value of the ODE flow at (t0,y0,t0+dt).
 	 */
-	Vector::Vectord const &flow(Vector::Vectord &y0, double t0, double dt);
+	numeric::Vectord const &flow(numeric::Vectord &y0, double t0, double dt);
 
 	/**
 	* @return true if the enhanced solver has failed and a quick solver has been called

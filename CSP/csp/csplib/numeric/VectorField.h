@@ -30,6 +30,8 @@
 
 CSP_NAMESPACE
 
+namespace numeric {
+
 class NumericalMethod;
 
 /**
@@ -41,7 +43,7 @@ class VectorField {
 protected:
 	typedef size_t size_type;
 	size_type const m_Dimension;
-	Vector::Vectord m_dy; /// the current value of the vector field at (t,y_1,...,y_d)
+	Vectord m_dy; /// the current value of the vector field at (t,y_1,...,y_d)
 public:
 	/**
 	 * Construct a new vector field of the specified dimension.
@@ -63,16 +65,18 @@ public:
 	/**
 	 * @return the vector field at the specified point.
 	 */
-	virtual Vector::Vectord const &f(double t, Vector::Vectord &y) = 0;
+	virtual Vectord const &f(double t, Vectord &y) = 0;
 
 	/**
 	 * @return the numerical method, if any, used to solve
 	 * y' = f(t,y)
 	 */
-	virtual NumericalMethod *const getNumericalMethod() const {
+	virtual NumericalMethod const *getNumericalMethod() const {
 		return 0;
 	}
 };
+
+} // namespace numeric
 
 CSP_NAMESPACE_END
 

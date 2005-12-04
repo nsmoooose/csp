@@ -37,8 +37,9 @@
 
 CSP_NAMESPACE
 
-class VectorField;
+namespace numeric {
 
+class VectorField;
 
 /**
 * Interesting readings about numerical analysis of ODE can be found in:
@@ -111,23 +112,23 @@ public:
 
 	/**
 	* enhancedSolve may be a sophisticated method (manage a variable step size, variable order, multistep,
-	* be implicit, ...). 
-	* @warning It is called intensively so it may well be a bottleneck. 
+	* be implicit, ...).
+	* @warning It is called intensively so it may well be a bottleneck.
 	* @param y0 initial position at  ...
 	* @param t = t0 (Cauchy conditions)
 	* @param dt delta t
 	* @return the position of the system at t = t0 + dt (returns y0 if failed)
 	*/
-	virtual Vector::Vectord const &enhancedSolve(Vector::Vectord &y0, double t0, double dt) = 0;
+	virtual Vectord const &enhancedSolve(Vectord &y0, double t0, double dt) = 0;
 
 	/**
 	* In case of that enhancedSolve fails, quickSolve acts as a security to waranty an integration. In
-	* general, it should be relatively fast and eventually less accurate but ideally more stable (implicit 
-	* method may be required to assure more stability. It is automatically called by DynamicalSystem::flow 
+	* general, it should be relatively fast and eventually less accurate but ideally more stable (implicit
+	* method may be required to assure more stability. It is automatically called by DynamicalSystem::flow
 	* if needed.
 	* @param see enhancedSolve
 	*/
-	virtual Vector::Vectord const &quickSolve(Vector::Vectord &y0, double t0, double dt) = 0; 
+	virtual Vectord const &quickSolve(Vectord &y0, double t0, double dt) = 0;
 
 	/**
 	 * @return the name of the numerical method.
@@ -148,9 +149,9 @@ public:
 //=================================================================
 
 class RungeKutta: public NumericalMethod {
-	Vector::Vectord const &rk4(Vector::Vectord const &y, Vector::Vectord const &dyx, double x, double h) const;
-	Vector::Vectord const &rkqc(Vector::Vectord &y, Vector::Vectord &dydx, double &x, double htry, double eps, Vector::Vectord const &yscal, double &hdid, double &hnext);
-	Vector::Vectord const &odeint(Vector::Vectord const &ystart, double x1, double x2, double eps, double h1, double hmin, unsigned int &nok, unsigned int &nbad);
+	Vectord const &rk4(Vectord const &y, Vectord const &dyx, double x, double h) const;
+	Vectord const &rkqc(Vectord &y, Vectord &dydx, double &x, double htry, double eps, Vectord const &yscal, double &hdid, double &hnext);
+	Vectord const &odeint(Vectord const &ystart, double x1, double x2, double eps, double h1, double hmin, unsigned int &nok, unsigned int &nbad);
 
 	static double const PGROW ;
 	static double const PSHRNK;
@@ -164,8 +165,8 @@ class RungeKutta: public NumericalMethod {
 	double m_hmin, m_hestimate;
 
 public:
-	Vector::Vectord const &quickSolve(Vector::Vectord &y0, double t0, double dt);
-	Vector::Vectord const &enhancedSolve(Vector::Vectord &y0, double t0, double dt);
+	Vectord const &quickSolve(Vectord &y0, double t0, double dt);
+	Vectord const &enhancedSolve(Vectord &y0, double t0, double dt);
 	RungeKutta(VectorField *vectorField = 0, double epsilon = 1.e-3, double Hmin = 0.0, double Hestimate = 1.e-2):
 		NumericalMethod(vectorField),
 		m_hmin(Hmin),
@@ -179,9 +180,9 @@ public:
 //=================================================================
 
 class RungeKuttaCK: public NumericalMethod {
-	Vector::Vectord const &rkck(Vector::Vectord const &y, Vector::Vectord const &dyx, double x, double h, Vector::Vectord &yerr) const;
-	Vector::Vectord const &rkqs(Vector::Vectord &y, Vector::Vectord &dydx, double &x, double htry, double eps, Vector::Vectord const &yscal, double &hdid, double &hnext);
-	Vector::Vectord const &odeint(Vector::Vectord const &ystart, double x1, double x2, double eps, double h1, double hmin, unsigned int &nok, unsigned int &nbad);
+	Vectord const &rkck(Vectord const &y, Vectord const &dyx, double x, double h, Vectord &yerr) const;
+	Vectord const &rkqs(Vectord &y, Vectord &dydx, double &x, double htry, double eps, Vectord const &yscal, double &hdid, double &hnext);
+	Vectord const &odeint(Vectord const &ystart, double x1, double x2, double eps, double h1, double hmin, unsigned int &nok, unsigned int &nbad);
 
 	static double const PGROW ;
 	static double const PSHRNK;
@@ -194,8 +195,8 @@ class RungeKuttaCK: public NumericalMethod {
 	double m_hmin, m_hestimate;
 
 public:
-	Vector::Vectord const &quickSolve(Vector::Vectord &y0, double t0, double dt);
-	Vector::Vectord const &enhancedSolve(Vector::Vectord &y0, double t0, double dt);
+	Vectord const &quickSolve(Vectord &y0, double t0, double dt);
+	Vectord const &enhancedSolve(Vectord &y0, double t0, double dt);
 	RungeKuttaCK(VectorField *vectorField = 0, double epsilon = 1.e-3, double Hmin = std::numeric_limits<float>::epsilon(), double Hestimate = 1.e-2):
 		NumericalMethod(vectorField),
 		m_hmin(Hmin),
@@ -222,16 +223,16 @@ class RKCK_VS_VO: public NumericalMethod {
 	* @return the error between RK(n+1) and RK(n)
 	* @warning a and h don't design the same as a,h in vrkfBound (they are variable in vrkf)
 	*/
-	double rkck12(double a, double h, Vector::Vectord const &ystart);
-	double rkck23(double a, double h, Vector::Vectord const &ystart);
-	double rkck45(double a, double h, Vector::Vectord const &ystart);
+	double rkck12(double a, double h, Vectord const &ystart);
+	double rkck23(double a, double h, Vectord const &ystart);
+	double rkck45(double a, double h, Vectord const &ystart);
 
 	/**
 	* @return to vrkfBound the solution at a+h
 	* @param hdone is the step size which has been done, in respect to error criteria
 	* @param hnext is a prevision of the step size for next integration in [a,a+h0]
 	*/
-	Vector::Vectord const &vrkf(Vector::Vectord &ystart, double a, double h, double &hdone, double &hnext);
+	Vectord const &vrkf(Vectord &ystart, double a, double h, double &hdone, double &hnext);
 
 	/**
 	* @param ystart
@@ -240,7 +241,7 @@ class RKCK_VS_VO: public NumericalMethod {
 	* @param nok, nbad informs about the robustness of the result; not used yet.
 	* @return the solution at a + h
 	*/
-	Vector::Vectord const &vrkfBound(Vector::Vectord &ystart, double a, double h, double h1, unsigned int &nok, unsigned int &nbad);
+	Vectord const &vrkfBound(Vectord &ystart, double a, double h, double h1, unsigned int &nok, unsigned int &nbad);
 
 	/*
 	* resize vector members
@@ -262,8 +263,8 @@ class RKCK_VS_VO: public NumericalMethod {
 	*/
 	double m_Hmin, m_Hestimate;
 	std::vector<double> m_Twiddle, m_Quit;
-	Vector::Vectord m_k1, m_k2, m_k3, m_k4;
-	Vector::Vectord m_ytemp, m_y2, m_y3, m_y4, m_y5, m_Result;
+	Vectord m_k1, m_k2, m_k3, m_k4;
+	Vectord m_ytemp, m_y2, m_y3, m_y4, m_y5, m_Result;
 public:
 	RKCK_VS_VO(VectorField *vectorField = 0, double epsilon = 1.e-3, double Hmin = std::numeric_limits<float>::epsilon(), double Hestimate = 1.e-2);
 	virtual void setVectorField(VectorField *pvf);
@@ -271,9 +272,11 @@ public:
 	/**
 	* @warning dt must be positive
 	*/
-	virtual Vector::Vectord const &quickSolve(Vector::Vectord &y0, double t0, double dt); 
-	virtual Vector::Vectord const &enhancedSolve(Vector::Vectord &y0, double t0, double dt);
+	virtual Vectord const &quickSolve(Vectord &y0, double t0, double dt); 
+	virtual Vectord const &enhancedSolve(Vectord &y0, double t0, double dt);
 };
+
+} // namespace numeric
 
 CSP_NAMESPACE_END
 

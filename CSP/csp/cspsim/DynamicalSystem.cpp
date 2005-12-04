@@ -27,6 +27,8 @@
 
 CSP_NAMESPACE
 
+using namespace numeric;
+
 DynamicalSystem::DynamicalSystem(size_type dimension):
 	VectorField(dimension),
 	m_NumericalMethod(0) {
@@ -41,11 +43,11 @@ void DynamicalSystem::setNumericalMethod(NumericalMethod *pnumericalMethod) {
 DynamicalSystem::~DynamicalSystem() {
 }
 
-NumericalMethod *const DynamicalSystem::getNumericalMethod() const {
+NumericalMethod const * DynamicalSystem::getNumericalMethod() const {
 	return m_NumericalMethod;
 }
 
-Vector::Vectord const &DynamicalSystem::flow(Vector::Vectord &y0, double t0, double dt){
+Vectord const &DynamicalSystem::flow(Vectord &y0, double t0, double dt){
 	//PROF0(FLOW);
 	return m_NumericalMethod->enhancedSolve(y0, t0, dt);
 	//PROF1(FLOW, 200);

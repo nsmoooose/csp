@@ -21,8 +21,13 @@
  * @file Vector.h
  *
  **/
-#ifndef __CSPSIM_VECTOR_H__
-#define __CSPSIM_VECTOR_H__
+
+/** @namespace numeric
+ *  @brief Numerical integration and related utilities
+ */
+
+#ifndef __CSPSIM_NUMERIC_VECTOR_H__
+#define __CSPSIM_NUMERIC_VECTOR_H__
 
 #if !defined(NOT_USE_VALARRAY) && defined(_MSC_VER) && !defined(_STLP_WIN32)
 #define NOT_USE_VALARRAY
@@ -41,7 +46,7 @@
 
 CSP_NAMESPACE
 
-namespace Vector {
+namespace numeric {
 
 template<typename T,class A> class Expr {
 	A m_Iter;
@@ -223,15 +228,6 @@ public:
 	}
 };
 
-template<typename T> std::ostream &operator<<(std::ostream& lhs, const Vector<T>& rhs) {
-	if (!rhs.empty()) {
-		typename Vector<T>::cvi iBegin = rhs.begin();
-		lhs << "(" << *iBegin;
-		std::for_each(iBegin+1,rhs.end(),PrintElement<T>(lhs));
-		lhs << ") ";
-	}
-	return lhs;
-}
 template<typename T> struct Abs {
 	inline T operator()(T lhs,T rhs) const {
 		return lhs + fabs(rhs);
@@ -255,15 +251,28 @@ template<typename T> inline T norm_2(const Vector<T>& lhs) {
 }
 
 typedef Vector<double> Vectord;
-} // namespace Vector
+
+} // namespace numeric
 
 CSP_NAMESPACE_END
+
+template<typename T> std::ostream &operator<<(std::ostream& lhs, const numeric::Vector<T>& rhs) {
+	if (!rhs.empty()) {
+		typename numeric::Vector<T>::cvi iBegin = rhs.begin();
+		lhs << "(" << *iBegin;
+		std::for_each(iBegin+1,rhs.end(),PrintElement<T>(lhs));
+		lhs << ") ";
+	}
+	return lhs;
+}
 
 #else // NOT_USE_VALARRAY ifdef
 
 #include <valarray>
 
 CSP_NAMESPACE
+
+namespace numeric {
 
 template<typename T> T norm_2(const std::valarray<T>& lhs) {
 	return sqrt((lhs*lhs).sum());
@@ -273,24 +282,23 @@ template<typename T> T norm_1(const std::valarray<T>& lhs) {
 	return abs(lhs).sum();
 }
 
+typedef std::valarray<double> Vectord;
+
+} // namespace numeric
+
+CSP_NAMESPACE_END
+
 template<typename T> std::ostream &operator<<(std::ostream& lhs, const std::valarray<T>& rhs) {
 	size_t n = rhs.size();
 	if (n>0) {
 		lhs << "(" << rhs[0];
-		for(size_t i = 1;i<n;++i)
-			lhs << "," << rhs[i];
+		for(size_t i = 1;i<n;++i) lhs << "," << rhs[i];
 		lhs << ")";
 	}
 	return lhs;
 }
 
-namespace Vector {
-typedef std::valarray<double> Vectord;
-}
-
-CSP_NAMESPACE_END
-
 #endif  // NOT_USE_VALARRAY else
 
-#endif // __CSPSIM_VECTOR_H__
+#endif // __CSPSIM_NUMERIC_VECTOR_H__
 

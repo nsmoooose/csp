@@ -36,7 +36,7 @@ public:
 
 	AircraftPhysicsModel();
 	void doSimStep(double dt);
-	Vector::Vectord const& f(double t, Vector::Vectord& y);
+	numeric::Vectord const& f(double t, numeric::Vectord& y);
 };
 
 CSP_NAMESPACE_END

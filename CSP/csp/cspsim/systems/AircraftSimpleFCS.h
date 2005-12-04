@@ -27,66 +27,14 @@
 #define __CSPSIM_AIRCRAFTSIMPLEFCS_H__
 
 #include <csp/cspsim/System.h>
+#include <csp/csplib/util/ScopedPointer.h>
 
 #include <algorithm>
 #include <cmath>
 
-#include <csp/csplib/util/Log.h>
-#include <csp/csplib/util/Math.h>
-
 CSP_NAMESPACE
 
 class AircraftSimpleFCS: public System {
-
-	class Deflection {
-		DataChannel<double>::CRefT b_Input;
-		DataChannel<double>::RefT b_Output;
-		double m_Rate;
-		double m_Limit0, m_Limit1, m_Limit;
-	public:
-		Deflection(): m_Rate(0.5), m_Limit0(-0.3), m_Limit1(-m_Limit0), m_Limit(m_Limit1) {}
-		virtual ~Deflection() {}
-		void setParameters(double rate, double limit) {
-			limit = std::abs(limit);
-			setParameters(rate,-limit,limit);
-		}
-		void setParameters(double rate, double limit0, double limit1) {
-			m_Rate = rate;
-			m_Limit0 = limit0;
-			m_Limit1 = limit1;
-			m_Limit = std::max(std::abs(m_Limit0),std::abs(m_Limit1));
-		}
-		void bindInput(Bus *bus, std::string const &name) {
-			b_Input = bus->getChannel(name, false);
-			if (!b_Input) {
-				CSPLOG(WARNING, INPUT) << "AicraftSimpleFCS: input channel '" << name << "' unavailable."; 
-			}
-		}
-		void registerOutput(Bus *bus, std::string const &name) {
-			b_Output = bus->registerLocalDataChannel(name, 0.0);
-		}
-		// experiment a poor flatting function
-		virtual double flat(double x) const {
-			double abs_x = std::abs(x);
-			double scale = x*x*(3.0 - 2.0*abs_x);
-			return scale * x;
-		}
-		virtual void update(double dt) {
-			double input = 0.0;
-			double output = b_Output->value();
-			if (b_Input.valid()) input = flat(b_Input->value()) * m_Limit;
-			double smooth = std::min(1.0, 10.0*std::abs(output-input));
-			if (output < input) {
-				output = std::min(output + smooth*m_Rate*dt, m_Limit1);
-			} else {
-				output = std::max(output - smooth*m_Rate*dt, m_Limit0);
-			}
-			b_Output->value() = output;
-		}
-		double getDeflectionAngle() const { return b_Output->value(); }
-	};
-
-
 public:
 	CSP_DECLARE_OBJECT(AircraftSimpleFCS)
 
@@ -102,10 +50,12 @@ protected:
 	virtual void getInfo(InfoList &info) const;
 
 private:
-	Deflection m_Elevator;
-	Deflection m_Aileron;
-	Deflection m_Rudder;
-	Deflection m_Airbrake;
+	class Deflection;
+
+	ScopedPointer<Deflection> m_Elevator;
+	ScopedPointer<Deflection> m_Aileron;
+	ScopedPointer<Deflection> m_Rudder;
+	ScopedPointer<Deflection> m_Airbrake;
 
 	double m_ElevatorLimit0,m_ElevatorLimit1;
 	double m_AileronLimit0, m_AileronLimit1;

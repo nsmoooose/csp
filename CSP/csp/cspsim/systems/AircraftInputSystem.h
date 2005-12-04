@@ -29,67 +29,11 @@
 #include <csp/cspsim/System.h>
 
 #include <csp/csplib/util/Math.h>
+#include <csp/csplib/util/ScopedPointer.h>
 
 CSP_NAMESPACE
 
 class AircraftInputSystem: public System {
-
-	class CombinedInput {
-		double m_Rate;
-		double m_Decay;
-		int m_DecayCount;
-		double m_Increment;
-		double m_Minimum;
-		double m_Maximum;
-		DataChannel<double>::RefT m_Channel;
-	public:
-		CombinedInput(double rate=0.4, double decay=0.9, double minimum=-1.0, double maximum=1.0): 
-			m_Rate(rate),
-			m_Decay(decay),
-			m_DecayCount(0),
-			m_Increment(0.0),
-			m_Minimum(minimum),
-			m_Maximum(maximum)
-		{
-		}
-		void connect(Bus *bus, std::string const &name) {
-			m_Channel = bus->registerLocalDataChannel<double>(name, 0.0);
-		}
-		void update(double dt) {
-			double v = m_Channel->value();
-			v += m_Increment * dt * m_Rate;
-			if (m_DecayCount > 0) {
-				m_DecayCount--;
-				if (m_Increment == 0.0) { 
-					if (m_DecayCount == 0) {
-						v = 0.0;
-					} else {
-						v *= m_Decay;
-					}
-				}
-			}
-			m_Channel->value() = clampTo(v, m_Minimum, m_Maximum);
-		}
-		double getValue() const {
-			return m_Channel->value();
-		}
-		void setValue(double value) {
-			m_Channel->value() = value;
-		}
-		void setIncrement(double increment) {
-			m_Increment = increment;
-		}
-		void stopIncrement() {
-			if (m_Increment > 0.0) m_Increment = 0.0; 
-		}
-		void stopDecrement() {
-			if (m_Increment < 0.0) m_Increment = 0.0; 
-		}
-		void setDecay(int decay_count) {
-			m_DecayCount = decay_count;
-		}
-	};
-
 public:
 	CSP_DECLARE_OBJECT(AircraftInputSystem)
 
@@ -167,14 +111,16 @@ protected:
 	virtual double onUpdate(double dt);
 
 private:
+	class CombinedInput;
+
 	// control inputs bus
-	CombinedInput m_PitchInput;
-	CombinedInput m_RollInput;
-	CombinedInput m_RudderInput;
-	CombinedInput m_LeftBrakeInput;
-	CombinedInput m_RightBrakeInput;
-	CombinedInput m_ThrottleInput;
-	CombinedInput m_AirbrakeInput;
+	ScopedPointer<CombinedInput> m_PitchInput;
+	ScopedPointer<CombinedInput> m_RollInput;
+	ScopedPointer<CombinedInput> m_RudderInput;
+	ScopedPointer<CombinedInput> m_LeftBrakeInput;
+	ScopedPointer<CombinedInput> m_RightBrakeInput;
+	ScopedPointer<CombinedInput> m_ThrottleInput;
+	ScopedPointer<CombinedInput> m_AirbrakeInput;
 
 	bool m_WheelBrakes;
 };

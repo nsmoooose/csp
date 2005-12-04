@@ -40,8 +40,7 @@ class Projectile: public DynamicObject {
 public:
 	CSP_DECLARE_OBJECT(Projectile)
 
-	// TODO SimObject probably needs a specialized type for Projectiles.
-	Projectile(): DynamicObject(TYPE_AIR_UNIT), m_DetachedModel(false) { }
+	Projectile();
 
 	/** Called by StoresManagementSystem when releasing a store from a parent object.
 	 *  The newly created Projectile instance is responsible for loading necessary
@@ -53,6 +52,8 @@ public:
 	virtual void prepareRelease(Ref<DynamicObject> const &parent, Ref<Store> const &store);
 
 protected:
+	virtual ~Projectile();
+
 	virtual void onEnterScene();
 	virtual void createSceneModel();
 

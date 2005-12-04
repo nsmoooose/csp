@@ -33,6 +33,13 @@ CSP_NAMESPACE
 CSP_XML_BEGIN(Projectile)
 CSP_XML_END
 
+// TODO SimObject probably needs a specialized type for Projectiles.
+Projectile::Projectile(): DynamicObject(TYPE_AIR_UNIT), m_DetachedModel(false) {
+}
+
+Projectile::~Projectile() {
+}
+
 void Projectile::prepareRelease(Ref<DynamicObject> const &/*parent*/, Ref<Store> const &store) {
 	assert(store.valid() && !m_Store);
 	m_Store = store;

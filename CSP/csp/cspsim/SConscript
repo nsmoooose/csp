@@ -25,9 +25,11 @@ def PackageConfig(env):
 	valid = conf.CheckLib('SDL_image', 'IMG_Load') and valid
 	valid = conf.CheckOSGVersion('osg', '0.9.6') and valid
 	valid = conf.CheckOSGVersion('osgUtil', '0.9.6') and valid
+	valid = conf.CheckOSGVersion('osgDB', '0.9.6') and valid
 	valid = conf.CheckOSGVersion('osgText', '0.9.6') and valid
 	valid = conf.CheckOSGVersion('osgParticle', '0.9.6') and valid
 	valid = conf.CheckLib('osgFX') and valid  # doesn't have a GetVersion function
+	valid = conf.CheckLib('OpenThreads') and valid  # doesn't have a GetVersion function
 	valid = conf.CheckCommandVersion('sdl', 'sdl-config --version', '1.2.5') and valid
 	if not valid:
 		print 'Missing dependencies; see http://csp.sf.net/wiki/Current_build_dependencies for more information.'

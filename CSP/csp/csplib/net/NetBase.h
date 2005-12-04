@@ -22,6 +22,17 @@
  *
  */
 
+/**
+ * @defgroup net Network communications layer
+ *
+ * csplib provides a facilities for network communications between
+ * distributed components in a simulation, using GNU Common C++ for
+ * low-level network access.  The network layer supports reliable and
+ * unreliable message transport over UDP.  The communications model
+ * combines a client-server interface with peer-to-peer communications
+ * between clients.
+ */
+
 #ifndef __CSPLIB_NET_NETBASE_H__
 #define __CSPLIB_NET_NETBASE_H__
 
@@ -71,6 +82,8 @@ typedef std::pair<uint32, Port> ConnectionPoint;
  *  The latter subclasses PacketHeader, providing the same fields
  *  (at the same offsets) as well as extra fields for implementing
  *  reliable udp.
+ *
+ *  @ingroup net
  */
 #pragma pack(push, 1)
 class PacketHeader {
@@ -156,6 +169,8 @@ public:
  *  priority is 3, id0 will be the confirmation id for this packet.
  *  All other non-zero ids are confirmations of past messages that
  *  have been successfully received from the destination host.
+ *
+ *  @ingroup net
  */
 #pragma pack(push, 1)
 class PacketReceiptHeader: public PacketHeader {

@@ -38,6 +38,8 @@ CSP_NAMESPACE
 
 /** Storage class used by PeerInfo to keep track of reliable packets
  *  until confirmation in received.
+ *
+ *  @ingroup net
  */
 class ReliablePacket: public Referenced {
 	ConfirmationId m_Id;

@@ -56,6 +56,7 @@ class DispatchTarget;
 
 /** DispatchManager passes messages to DispatchTargets, and caches
  *  the most common object/handler pairs for immediate dispatch.
+ *  @ingroup net
  */
 class DispatchManager: public Referenced {
 public:

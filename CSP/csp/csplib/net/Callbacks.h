@@ -38,6 +38,7 @@ CSP_NAMESPACE
 /** Base class for callbacks used by DispatchHandler.  The callbacks take
  *  a single network message as input, as well as a message queue that can
  *  be used for sending responses.
+ *  @ingroup net
  */
 class BaseCallback: public Referenced {
 public:
@@ -46,6 +47,7 @@ public:
 
 
 /** Default callback used by DispatchHandler for unknown message types.
+ *  @ingroup net
  */
 template <class CLASS>
 class DefaultCallback: public BaseCallback {
@@ -65,6 +67,7 @@ public:
  *  The generic message is efficiently downcast to the correct type with
  *  static_cast<> prior to executing the callback, using message ids to
  *  ensure type compatability.
+ *  @ingroup net
  */
 template <class CLASS, class MSG>
 class MessageCallback: public BaseCallback {

@@ -35,6 +35,8 @@ CSP_NAMESPACE
  *  Subclasses must implement handlePacket().  PacketHandlers must be registered
  *  with a NetworkInterface.  All registered handlers are called to handle each
  *  incoming packet.
+ *
+ *  @ingroup net
  */
 class PacketHandler: public Referenced {
 	friend class NetworkInterface;

@@ -35,6 +35,7 @@ CSP_NAMESPACE
  *  for common operations.  std::vector was chosen to speed up handler
  *  calls, since iteration over a vector is significantly faster than
  *  maps and sets.
+ *  @ingroup net
  */
 template <class HANDLER>
 class HandlerSet {

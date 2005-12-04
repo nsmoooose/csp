@@ -47,6 +47,7 @@ CSP_NAMESPACE
 
 
 /** Class representing a remote host address (ip address and receive port)
+ *  @ingroup net
  */
 class NetworkNode
 {

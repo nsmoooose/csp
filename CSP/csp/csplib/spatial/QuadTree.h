@@ -39,6 +39,11 @@
  *
  */
 
+/**
+ * @namespace spatial
+ * @brief Spatial representation and indexing
+ */
+
 #ifndef __CSPLIB_SPATIAL_QUADTREE_H__
 #define __CSPLIB_SPATIAL_QUADTREE_H__
 

@@ -40,6 +40,8 @@ CSP_NAMESPACE
  *
  *  By convention, tag descriptors that subclass NetworkMessage are
  *  stored in files ending with ".net".
+ *
+ *  @ingroup net
  */
 class NetworkMessage: public TaggedRecord {
 	PeerId m_source;

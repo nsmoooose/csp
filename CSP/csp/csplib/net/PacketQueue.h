@@ -56,6 +56,8 @@ CSP_NAMESPACE
  *
  *  More realistically, both the incoming message rate and the
  *  processing rate will vary over time.  TODO more discussion.
+ *
+ *  @ingroup net
  */
 class PacketQueue {
 	CircularBuffer m_Buffer;

@@ -77,11 +77,22 @@ inline std::ostream &operator<<(std::ostream &os, StackTrace const &trace) {
 }
 
 
+/** Static methods for installing signal handlers that log stack traces.
+ */
 CSP_EXPORT class AutoTrace: public NonConstructable {
 public:
-	// install sigv and abort handlers.
+	/** Install segv, abort, and sigterm handlers.
+	 */
 	static CSP_EXPORT bool install();
+
+	/** Set the logstream used by the signal handlers to log stack traces.
+	 */
 	static CSP_EXPORT void setLog(LogStream &log);
+
+	/** Disable the abort signal handler.  There is no way to reenable the
+	 *  handler.  This is intended to be used before intentionally calling
+	 *  abort after all relevant information has already been logged.
+	 */
 	static CSP_EXPORT void inhibitAbortHandler() { _abort = false; }
 
 private:

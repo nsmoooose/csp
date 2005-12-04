@@ -41,6 +41,8 @@ CSP_NAMESPACE
 /** Abstract interface for TaggedRecord factories.
  *
  *  Automatically registers with the TaggedRecordRegistry when instantiated.
+ *
+ *  @ingroup net
  */
 class CSP_EXPORT TaggedRecordFactoryBase {
 public:
@@ -60,7 +62,7 @@ public:
  *  TaggedRecord classes automatically register themselves with the global instance
  *  of this class at startup.
  *
- *  @author Mark Rose <mkrose@users.sf.net>
+ *  @ingroup net
  */
 class CSP_EXPORT TaggedRecordRegistry: public Singleton<TaggedRecordRegistry> {
 
@@ -132,6 +134,7 @@ private:
 
 
 /** Factory template for creating TaggedRecord subclasses.
+ *  @ingroup net
  */
 template <class RECORD>
 class TaggedRecordFactory: public TaggedRecordFactoryBase {

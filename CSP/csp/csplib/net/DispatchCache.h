@@ -41,6 +41,7 @@ CSP_NAMESPACE
  *  particularly useful in cases where ordinary dispatch resolution is slow,
  *  such as dispatch in a deep object hierarchy, without requiring large
  *  lookup maps.  @see DispatchManager for one use case.
+ *  @ingroup net
  */
 class DispatchCache: public Referenced {
 

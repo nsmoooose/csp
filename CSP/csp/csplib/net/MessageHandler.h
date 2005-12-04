@@ -36,6 +36,7 @@ CSP_NAMESPACE
  *
  *  Subclass MessageHandler and add your handler to a PacketDecoder
  *  to process incoming messages.
+ *  @ingroup net
  */
 class MessageHandler: public Referenced {
 public:
@@ -60,6 +61,7 @@ public:
  *  to create new callback handlers.  Note that CallbackHandler is just one of many
  *  MessageHandler specializations.  It is declared in MessageHandler.h purely for
  *  convenience.
+ *  @ingroup net
  */
 template <class CLASS>
 class CallbackHandler: public MessageHandler {

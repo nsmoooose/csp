@@ -70,6 +70,8 @@ class ActivePeerList;
  *  the server, which assigns a unique id to the client and can negotiate peer
  *  to peer contacts as needed.  Note that there can be only one server on a
  *  network (the server id is always one).
+ *
+ *  @ingroup net
  */
 class NetworkInterface: public Referenced {
 	friend class ActivePeerList;

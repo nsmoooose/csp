@@ -59,6 +59,7 @@ CSP_NAMESPACE
  *  }
  *  @endcode
  *
+ *  @ingroup net
  */
 class StopWatch {
 public:

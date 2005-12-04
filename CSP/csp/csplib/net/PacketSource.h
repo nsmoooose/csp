@@ -34,6 +34,8 @@ class NetworkInterface;
 
 /** Abstract interface for classes that generate packets to be sent
  *  over the network.
+ *
+ *  @ingroup net
  */
 class PacketSource: public Referenced {
 	friend class NetworkInterface;

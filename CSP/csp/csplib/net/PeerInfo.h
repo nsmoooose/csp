@@ -48,10 +48,11 @@ CSP_NAMESPACE
 class NetworkInterface;
 
 
-/**
- * PeerInfo encapsulates the state of a remote connection.  It records
- * connection statistics, manages bandwidth and packet throttling,
- * and tracks reliable packet transmission and receipts.
+/** PeerInfo encapsulates the state of a remote connection.  It records
+ *  connection statistics, manages bandwidth and packet throttling,
+ *  and tracks reliable packet transmission and receipts.
+ *
+ *  @ingroup net
  */
 class PeerInfo: public NonCopyable {
 	friend class ActivePeerList;

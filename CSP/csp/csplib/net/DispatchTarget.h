@@ -69,6 +69,7 @@ class DispatchManager;
 /** An interface for objects receiving messages from a DispatchManager.
  *  In each subclass, use a CSPNET_DECLARE_DISPATCH block to bind handler
  *  methods to specific message types.
+ *  @ingroup net
  */
 class DispatchTarget {
 	friend class DispatchManager;

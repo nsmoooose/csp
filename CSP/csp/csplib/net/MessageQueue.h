@@ -34,6 +34,7 @@
 CSP_NAMESPACE
 
 /** A packet source that encodes NetworkMessages to binary packets.
+ *  @ingroup net
  */
 class MessageQueue: public PacketSource {
 

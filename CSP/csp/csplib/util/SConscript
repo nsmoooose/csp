@@ -24,6 +24,7 @@ SOURCES = [
 	'HashUtility.cpp',
 	'LocalUpdate.cpp',
 	'LogStream.cpp',
+	'Modules.cpp',
 	'Noise.cpp',
 	'Random.cpp',
 	'SimpleConfig.cpp',

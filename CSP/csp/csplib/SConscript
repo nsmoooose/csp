@@ -44,3 +44,5 @@ csplib_tests = env.SharedLibrary('csplib_tests', TESTS)
 Alias(['all', 'test'], [libcsplib, csplib_tests])
 Alias(['csplib'], [libcsplib])
 
+env.Documentation('#/csplib/.dox', '#/csplib/csplib.dox', ['#/csplib/*/*.h', '#/csplib/*/*.cpp'])
+

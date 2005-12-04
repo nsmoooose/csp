@@ -45,6 +45,8 @@ CSP_NAMESPACE
 /** Minimal wrapper for GNU CommonC++ UDPReceive.
  *
  *  Exposes several protected methods.
+ *
+ *  @ingroup net
  */
 class DatagramReceiveSocket: public ost::UDPReceive {
 public:
@@ -74,6 +76,8 @@ public:
 /** Minimal wrapper for GNU CommonC++ UDPTransmit.
  *
  *  Exposes several protected methods.
+ *
+ *  @ingroup net
  */
 class DatagramTransmitSocket: public ost::UDPTransmit {
 public:

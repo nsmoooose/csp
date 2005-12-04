@@ -34,6 +34,7 @@
 CSP_NAMESPACE
 
 /** Packet handler for decoding raw packets to NetworkMessage subclasses.
+ *  @ingroup net
  */
 class PacketDecoder: public PacketHandler {
 	RecordCodec m_Codec;

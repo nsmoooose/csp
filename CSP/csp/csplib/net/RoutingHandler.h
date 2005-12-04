@@ -90,6 +90,8 @@ CSP_NAMESPACE
  *  field of NetworkMessage.  If the routing type field is used, it typically
  *  serves as the first stage of message dispatch.  Add a RoutingHandler to
  *  the main PacketDecoder to provide this functionality.
+ *
+ *  @ingroup net
  */
 class RoutingHandler: public MessageHandler {
 	// NetworkMessage::routing_type is 8-bits

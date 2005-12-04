@@ -93,6 +93,7 @@ CSP_NAMESPACE
 
 /** A MessageHandler that dispatches messages to callback handlers
  *  based on message id.
+ *  @ingroup net
  */
 class DispatchHandler: public MessageHandler {
 public:

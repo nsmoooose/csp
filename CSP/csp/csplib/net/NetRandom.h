@@ -39,6 +39,7 @@ CSP_NAMESPACE
 /** LCG pseudorandom number generator  used to drop packets under high load.
  *
  *  Uses the venerable 69069 generator.
+ *  @ingroup net
  */
 class NetRandom {
 	// internal state for lcg

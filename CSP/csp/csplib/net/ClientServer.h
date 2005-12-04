@@ -55,6 +55,7 @@ class PeerInfo;
 
 
 /** Command base class for clients and servers.
+ *  @ingroup net
  */
 class ClientServerBase: public Referenced {
 
@@ -191,6 +192,7 @@ public:
  *  server, and the server may then introduce clients for direct peer-peer
  *  communication.  Servers use a fixed peer id (defined by NetworkInterface::ServerId),
  *  and are responsible for assigning unique ids to all clients.
+ *  @ingroup net
  */
 class Server: public ClientServerBase {
 
@@ -224,6 +226,7 @@ public:
 
 
 /** Convenience class for implementing network clients using SimNet.
+ *  @ingroup net
  */
 class Client: public ClientServerBase {
 	bool m_Connected;

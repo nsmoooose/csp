@@ -62,6 +62,8 @@ class TaggedRecordFactoryBase;
 
 /** Singleton class for decoding network messages to tagged records, and
  *  dispatching these records to object handlers.
+ *
+ *  @ingroup net
  */
 class RecordCodec {
 

@@ -27,6 +27,7 @@
 
 #include <csp/cspsim/TerrainObject.h>
 
+#include <csp/csplib/data/External.h>
 #include <csp/csplib/data/Object.h>
 #include <csp/csplib/data/Vector3.h>
 
@@ -88,9 +89,9 @@ protected:
 	float m_BaseTexelSize;
 	float m_BaseScreenError;
 	float m_ElevationScale;
-	std::string m_ChunkFile;
-	std::string m_TextureFile;
-	std::string m_ElevationFile;
+	External m_ChunkFile;
+	External m_TextureFile;
+	External m_ElevationFile;
 	float m_LatticeWidth;
 	float m_LatticeHeight;
 	Vector3 m_Origin;

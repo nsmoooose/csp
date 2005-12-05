@@ -92,7 +92,7 @@ osg::Geometry *FeatureQuad::makeGeometry() const {
 osg::StateSet* FeatureQuad::makeStateSet() const {
 	osg::Texture2D* tex = new osg::Texture2D;
 	std::string image_path = getDataPath("ImagePath");
-	std::string path = ospath::join(image_path, ospath::denormalize(m_Texture));
+	std::string path = ospath::join(image_path, m_Texture.getSource());
 	osg::Image* image = osgDB::readImageFile(path);
 	tex->setImage(image);
 	osg::StateSet *state = new osg::StateSet;

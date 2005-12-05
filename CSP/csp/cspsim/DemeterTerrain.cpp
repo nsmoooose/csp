@@ -233,17 +233,17 @@ int DemeterTerrain::createTerrain() {
 	updateDemeterSettings();
 	if (!m_TextureFactory) {
 		if (m_DetailTextureFile.empty()) {
-			m_Terrain = new Demeter::Terrain(m_ElevationFile.c_str(), m_TextureFile.c_str(), NULL,
+			m_Terrain = new Demeter::Terrain(m_ElevationFile.getSource().c_str(), m_TextureFile.getSource().c_str(), NULL,
 			m_VertexSpacing, m_VertexHeight, m_MaxTriangles);
 		} else {
-			m_Terrain = new Demeter::Terrain(m_ElevationFile.c_str(), m_TextureFile.c_str(),
-			m_DetailTextureFile.c_str(), m_VertexSpacing, m_VertexHeight, m_MaxTriangles);
+			m_Terrain = new Demeter::Terrain(m_ElevationFile.getSource().c_str(), m_TextureFile.getSource().c_str(),
+			m_DetailTextureFile.getSource().c_str(), m_VertexSpacing, m_VertexHeight, m_MaxTriangles);
 		}
 	} else {
 		if (m_DetailTextureFile.empty()) {
-			m_Terrain = new Demeter::Terrain(m_ElevationFile.c_str(), NULL, NULL, m_VertexSpacing, m_VertexHeight, m_MaxTriangles, false, 0, 0, 4, 4);
+			m_Terrain = new Demeter::Terrain(m_ElevationFile.getSource().c_str(), NULL, NULL, m_VertexSpacing, m_VertexHeight, m_MaxTriangles, false, 0, 0, 4, 4);
 		} else {
-			m_Terrain = new Demeter::Terrain(m_ElevationFile.c_str(), NULL, m_DetailTextureFile.c_str(), m_VertexSpacing, m_VertexHeight, m_MaxTriangles, false, 0, 0, 4, 4);
+			m_Terrain = new Demeter::Terrain(m_ElevationFile.getSource().c_str(), NULL, m_DetailTextureFile.getSource().c_str(), m_VertexSpacing, m_VertexHeight, m_MaxTriangles, false, 0, 0, 4, 4);
 		}
 		// just to catch your attention ;-)  it may be ok to just delete any
 		// pre-existing terraintexturefactory.
@@ -269,7 +269,7 @@ int DemeterTerrain::createTerrainLattice() {
 	//char terrainTextureDetail[256];
 //	Config.GetString(terrainTextureDetail, "TerrainTextureDetail");
 
-//	if (m_DetailTextureFile == "")
+//	if (m_DetailTextureFile.empty())
 //	{
 //		m_TerrainLattice = new Demeter::TerrainLattice(m_LatticeBaseName.c_str(),
 //			m_LatticeElevExt.c_str(), m_LatticeTexExt.c_str(),
@@ -280,14 +280,14 @@ int DemeterTerrain::createTerrainLattice() {
 //	{
 //		m_TerrainLattice = new Demeter::TerrainLattice(m_LatticeBaseName.c_str(),
 //			m_LatticeElevExt.c_str(), m_LatticeTexExt.c_str(),
-//			m_DetailTextureFile.c_str(), m_VertexSpacing, m_VertexHeight, m_MaxTriangles,
+//			m_DetailTextureFile.getSource().c_str(), m_VertexSpacing, m_VertexHeight, m_MaxTriangles,
 //			false, m_LatticeWidth, m_LatticeHeight);
 //
 //	}
 
 	m_TerrainLattice = new Demeter::TerrainLattice(m_LatticeBaseName.c_str(),
 	                                               m_LatticeElevExt.c_str(), /*m_LatticeTexExt.c_str() */ NULL,
-	                                               m_DetailTextureFile.c_str(),
+	                                               m_DetailTextureFile.getSource().c_str(),
 	                                               m_VertexSpacing, m_VertexHeight, m_MaxTriangles,
 	                                               //NULL, m_VertexSpacing, m_VertexHeight, m_MaxTriangles,
 	                                               true, m_LatticeWidth, m_LatticeHeight);
@@ -406,9 +406,6 @@ void DemeterTerrain::updateDemeterSettings() {
 
 void DemeterTerrain::postCreate() {
 	TerrainObject::postCreate();
-	m_DetailTextureFile = ospath::denormalize(m_DetailTextureFile);
-	m_ElevationFile = ospath::denormalize(m_ElevationFile);
-	m_TextureFile = ospath::denormalize(m_TextureFile);
 	CSPLOG(INFO, TERRAIN) << "Terrain Center @ " << getCenter().asString();
 	CSPLOG(INFO, TERRAIN) << "Terrain Size " << getWidth() << " x " << getHeight() << " m";
 	m_Offset.set(getWidth()*0.5, getHeight()*0.5, 0.0);

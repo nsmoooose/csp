@@ -90,6 +90,10 @@ public:
 	 */
 	bool operator!=(std::string const &path) { return !(*this==path); }
 
+	/** Test if the path is not set.
+	 */
+	bool empty() const { return _path.empty(); }
+
 	/** Assign from a path string, converting to the internal farmat.
 	 */
 	void setSource(const char* path);

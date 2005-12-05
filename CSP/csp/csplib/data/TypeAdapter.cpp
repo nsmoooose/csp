@@ -32,7 +32,7 @@ CSP_NAMESPACE
 
 
 const char *TypeAdapter::TypeNames[] = {
-	"NONE", "Integer", "Double", "String", "Object", "ECEF", "EnumLink",
+	"NONE", "Integer", "Double", "String", "Object", "ECEF", "EnumLink", "External",
 	"Key", "LinkBase", "LinkCore", "LLA", "Matrix3", "Path", "Quat", "Real",
 	"SimDate", "Table1", "Table2", "Table3", "UTM", "Vector3"};
 
@@ -84,6 +84,7 @@ void TypeAdapter::setBase<Path>(Path & x, TYPE) const {
 
 BASETYPE_SET(ECEF)
 BASETYPE_SET(EnumLink)
+BASETYPE_SET(External)
 BASETYPE_SET(Key)
 BASETYPE_SET(LinkBase)
 BASETYPE_SET(LLA)

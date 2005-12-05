@@ -66,7 +66,7 @@ class CSP_EXPORT TypeAdapter
 	// in TypeAdapter.cpp!
 	typedef enum {TYPE_NONE, TYPE_INT, TYPE_DOUBLE, TYPE_STRING,
 	              TYPE_Object,  // first BaseType
-	              TYPE_ECEF, TYPE_EnumLink, TYPE_Key, TYPE_LinkBase, TYPE_LinkCore,
+	              TYPE_ECEF, TYPE_EnumLink, TYPE_External, TYPE_Key, TYPE_LinkBase, TYPE_LinkCore,
 	              TYPE_LLA, TYPE_Matrix3, TYPE_Path, TYPE_Quat, TYPE_Real, TYPE_SimDate,
 	              TYPE_Table1, TYPE_Table2, TYPE_Table3, TYPE_UTM, TYPE_Vector3} TYPE;
 	static const char * TypeNames[];
@@ -91,6 +91,7 @@ public:
 
 	BASETYPE_ADAPTER(ECEF);
 	BASETYPE_ADAPTER(EnumLink);
+	BASETYPE_ADAPTER(External);
 	BASETYPE_ADAPTER(Key);
 	BASETYPE_ADAPTER(LinkCore);
 	BASETYPE_ADAPTER(LinkBase);
@@ -160,6 +161,7 @@ public:
 	void set(Table1 & x) const;
 	void set(Table2 & x) const;
 	void set(Table3 & x) const;
+	void set(External & x) const;
 	void set(Key & x) const;
 	void set(Path & x) const;
 

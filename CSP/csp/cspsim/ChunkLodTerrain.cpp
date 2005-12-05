@@ -133,8 +133,8 @@ void ChunkLodTerrain::setScreenSizeHint(int width, int height) {
 void ChunkLodTerrain::load() {
 	if (m_Loaded) return;
 	std::string terrain_path = getDataPath("TerrainPath");
-	std::string chu_file = ospath::join(terrain_path, ospath::denormalize(m_ChunkFile));
-	std::string tqt_file = ospath::join(terrain_path, ospath::denormalize(m_TextureFile));
+	std::string chu_file = ospath::join(terrain_path, m_ChunkFile.getSource());
+	std::string tqt_file = ospath::join(terrain_path, m_TextureFile.getSource());
 	m_Texture = new osgChunkLod::TextureQuadTree(tqt_file.c_str());
 	int scale = static_cast<int>(m_ElevationScale);  // XXX this isn't used by ChunkLodTree currently, and probably shouldn't be an int
 	m_Terrain = new osgChunkLod::ChunkLodTree(chu_file.c_str(), m_Texture, m_ElevationMap.get(), scale);

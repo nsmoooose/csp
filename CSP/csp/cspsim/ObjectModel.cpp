@@ -422,7 +422,7 @@ void ObjectModel::generateStationMasks(std::map<std::string, unsigned> const &in
 
 void ObjectModel::loadModel() {
 	Timer timer;
-	const std::string source = ospath::denormalize(m_ModelPath);
+	const std::string source = m_ModelPath.getSource();
 
 	CSPLOG(INFO, OBJECT) << "ObjectModel::loadModel: " << source;
 
@@ -628,7 +628,7 @@ osg::ref_ptr<osg::Node> ObjectModel::getModel() {
 }
 
 std::string ObjectModel::getModelPath() const {
-	return ospath::denormalize(m_ModelPath);
+	return m_ModelPath.getSource();
 }
 
 osg::ref_ptr<osg::Node> ObjectModel::getDebugMarkers() {

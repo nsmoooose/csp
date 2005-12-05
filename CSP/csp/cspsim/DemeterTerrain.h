@@ -27,8 +27,9 @@
 
 #include <csp/cspsim/TerrainObject.h>
 
-#include <csp/csplib/data/Object.h>
+#include <csp/csplib/data/External.h>
 #include <csp/csplib/data/GeoPos.h>
+#include <csp/csplib/data/Object.h>
 #include <csp/csplib/data/Vector3.h>
 
 #include <string>
@@ -87,9 +88,9 @@ protected:
 	bool m_PreloadTextures;
 	bool m_TextureFactory;
 	int m_MaxTriangles;
-	std::string m_DetailTextureFile;
-	std::string m_TextureFile;
-	std::string m_ElevationFile;
+	External m_DetailTextureFile;
+	External m_TextureFile;
+	External m_ElevationFile;
 	float m_VertexSpacing;
 	float m_VertexHeight;
 	bool m_Lattice;

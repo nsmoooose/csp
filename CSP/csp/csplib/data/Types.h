@@ -26,6 +26,7 @@
 
 #include <csp/csplib/data/Date.h>
 #include <csp/csplib/data/Enum.h>
+#include <csp/csplib/data/External.h>
 #include <csp/csplib/data/GeoPos.h>
 #include <csp/csplib/data/Key.h>
 #include <csp/csplib/data/LUT.h>

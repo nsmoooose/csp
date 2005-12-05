@@ -26,6 +26,7 @@
 #define __CSPSIM_OBJECTMODEL_H__
 
 #include <csp/csplib/data/Enum.h>
+#include <csp/csplib/data/External.h>
 #include <csp/csplib/data/Link.h>
 #include <csp/csplib/data/Object.h>
 #include <csp/csplib/data/Vector3.h>
@@ -116,7 +117,7 @@ public:
 protected:
 
 	std::string m_Label;
-	std::string m_ModelPath;
+	External m_ModelPath;
 	Vector3 m_Axis0, m_Axis1;
 	Vector3 m_Offset;
 	Vector3 m_ViewPoint;

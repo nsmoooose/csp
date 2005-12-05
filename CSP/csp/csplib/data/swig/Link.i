@@ -21,11 +21,11 @@
 #include <csp/csplib/data/Link.h>
 %}
 
-%include "csp/csplib/util/Namespace.h"
+%include <csp/csplib/util/Namespace.h>
 
 %rename(__repr__) CSP(LinkBase)::asString() const;
 %rename(__not__) CSP(LinkBase)::operator!() const;
 
-%include "csp/csplib/data/Link.h"
+%include <csp/csplib/data/Link.h>
 
 

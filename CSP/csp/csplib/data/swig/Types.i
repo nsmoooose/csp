@@ -47,6 +47,7 @@
 %include "csp/csplib/data/swig/Key.i"
 %include "csp/csplib/data/swig/Real.i"
 %include "csp/csplib/data/swig/Enum.i"
+%include "csp/csplib/data/swig/External.i"
 %include "csp/csplib/data/swig/LUT.i"
 %include "csp/csplib/data/swig/Matrix3.i"
 %include "csp/csplib/data/swig/Quat.i"

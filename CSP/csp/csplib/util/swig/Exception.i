@@ -28,4 +28,4 @@
 // break if swig knows about the class.
 %warnfilter(401) Exception;
 
-%include "csp/csplib/util/Exception.h"
+%include <csp/csplib/util/Exception.h>

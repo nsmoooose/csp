@@ -18,7 +18,7 @@
 
 %module Key
 %{
-#include "csp/csplib/data/Key.h"
+#include <csp/csplib/data/Key.h>
 %}
 
 %rename(__repr__) CSP(Key)::asString() const;
@@ -27,4 +27,4 @@
 %rename(__ne__) CSP(Key)::operator!=(CSP(Key) const &) const;
 %rename(__ne__) CSP(Key)::operator!=(std::string const &) const;
 
-%include "csp/csplib/data/Key.h"
+%include <csp/csplib/data/Key.h>

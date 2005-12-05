@@ -18,10 +18,10 @@
 
 %module Archive
 %{
-#include "csp/csplib/data/Archive.h"
+#include <csp/csplib/data/Archive.h>
 %}
 
-%include "csp/csplib/swig/filemap.i"
+%include <csp/csplib/swig/filemap.i>
 
 %ignore CSP(Reader)::operator>>;
 %ignore CSP(Writer)::operator<<;
@@ -31,7 +31,7 @@
 	$2 = PyString_Size($input);
 }
 
-%include "csp/csplib/data/Archive.h"
+%include <csp/csplib/data/Archive.h>
 
 %exception;
 

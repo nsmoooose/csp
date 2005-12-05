@@ -23,6 +23,7 @@ SOURCES = [
 	'DataManager.cpp',
 	'Date.cpp',
 	'Enum.cpp',
+	'External.cpp',
 	'GeoPos.cpp',
 	'InterfaceProxy.cpp',
 	'InterfaceRegistry.cpp',

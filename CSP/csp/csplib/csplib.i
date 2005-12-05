@@ -78,6 +78,7 @@ new_vector(Key, CSP(Key));
 %include "csp/csplib/util/swig/Exception.i"
 %include "csp/csplib/util/swig/HashUtility.i"
 %include "csp/csplib/util/swig/Conversions.i"
+%include "csp/csplib/util/swig/Modules.i"
 %include "csp/csplib/util/swig/Random.i"
 %include "csp/csplib/util/swig/Noise.i"
 %include "csp/csplib/data/swig/Types.i"

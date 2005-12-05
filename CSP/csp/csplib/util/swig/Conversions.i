@@ -21,5 +21,5 @@
 #include <csp/csplib/util/Conversions.h>
 %}
 
-%include "csp/csplib/util/Conversions.h"
+%include <csp/csplib/util/Conversions.h>
 

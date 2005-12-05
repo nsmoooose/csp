@@ -24,8 +24,8 @@
 #include <csp/csplib/util/Namespace.h>
 %}
 
-%import "csp/csplib/swig/vector.i"
-%include "csp/csplib/util/Namespace.h"
+%import <csp/csplib/swig/vector.i>
+%include <csp/csplib/util/Namespace.h>
 
 CSP_NAMESPACE
 
@@ -54,8 +54,8 @@ CSP_NAMESPACE_END
 
 new_vector(pInterfaceProxy, CSP(InterfaceProxy)*)
 
-%include "csp/csplib/data/InterfaceProxy.h"
-%include "csp/csplib/data/InterfaceRegistry.h"
+%include <csp/csplib/data/InterfaceProxy.h>
+%include <csp/csplib/data/InterfaceRegistry.h>
 
 %exception;
 

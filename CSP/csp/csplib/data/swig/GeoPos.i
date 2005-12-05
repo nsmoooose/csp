@@ -35,5 +35,5 @@ CSP_NAMESPACE
 %ignore ECEF::operator=(LLA const&);
 CSP_NAMESPACE_END
 
-%include "csp/csplib/data/GeoPos.h"
+%include <csp/csplib/data/GeoPos.h>
 

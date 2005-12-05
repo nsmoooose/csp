@@ -23,19 +23,19 @@
 %}
 
 
-%import "csp/csplib/util/swig/Exception.i"
+%import <csp/csplib/util/swig/Exception.i>
 
 namespace std {
     %template(vector_hasht) vector<CSP(hasht)>;
 }
 
 
-%import "csp/csplib/data/swig/Object.i"
+%import <csp/csplib/data/swig/Object.i>
 
 %typemap(out) FP {
     $result = PyFile_FromFile($1.f, const_cast<char*>($1.name.c_str()),
                     const_cast<char*>($1.mode.c_str()), 0);
 }
 
-%include "csp/csplib/data/DataArchive.h"
+%include <csp/csplib/data/DataArchive.h>
 

@@ -21,8 +21,8 @@
 #include <csp/csplib/data/Object.h>
 %}
 
-%include "csp/csplib/util/Namespace.h"
-%include "csp/csplib/util/Export.h"
+%include <csp/csplib/util/Namespace.h>
+%include <csp/csplib/util/Export.h>
 
 %feature("polymorphic") CSP(Object);
 
@@ -33,5 +33,5 @@ CSP_NAMESPACE
 	class Referenced {};
 CSP_NAMESPACE_END
 
-%include "csp/csplib/data/Object.h"
+%include <csp/csplib/data/Object.h>
 

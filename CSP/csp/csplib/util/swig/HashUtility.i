@@ -21,7 +21,7 @@
 #include <csp/csplib/util/HashUtility.h>
 %}
 
-#include "csp/csplib/util/Namespace.h"
+#include <csp/csplib/util/Namespace.h>
 
 %rename(hash_string) CSP(newhasht_cstring)(const char*);
 

@@ -23,7 +23,7 @@
 %}
 
 
-%import "csp/csplib/util/swig/Exception.i"
+%import <csp/csplib/util/swig/Exception.i>
 
 %exception CSP(DataManager) {
     try {
@@ -44,9 +44,9 @@
 }
 
 
-%import "csp/csplib/data/swig/Object.i"
-%import "csp/csplib/data/swig/DataArchive.i"
+%import <csp/csplib/data/swig/Object.i>
+%import <csp/csplib/data/swig/DataArchive.i>
 
-%include "csp/csplib/data/DataManager.h"
+%include <csp/csplib/data/DataManager.h>
 
 %exception;

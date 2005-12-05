@@ -22,8 +22,8 @@
 #include <csp/csplib/util/Log.h>
 %}
 
-%include "csp/csplib/util/Namespace.h"
-%include "csp/csplib/util/LogConstants.h"
+%include <csp/csplib/util/Namespace.h>
+%include <csp/csplib/util/LogConstants.h>
 
 CSP_NAMESPACE
 
@@ -57,6 +57,6 @@ public:
 
 CSP_NAMESPACE_END
 
-%include "csp/csplib/util/LogConstants.h"
-%include "csp/csplib/util/Log.h"
+%include <csp/csplib/util/LogConstants.h>
+%include <csp/csplib/util/Log.h>
 

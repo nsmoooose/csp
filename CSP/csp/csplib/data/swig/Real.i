@@ -18,12 +18,12 @@
 
 %module Real
 %{
-#include "csp/csplib/data/Real.h"
+#include <csp/csplib/data/Real.h>
 %}
 
-%include "csp/csplib/util/Namespace.h"
+%include <csp/csplib/util/Namespace.h>
 
 %rename(__repr__) CSP(Real)::asString() const;
 
-%include "csp/csplib/data/Real.h"
+%include <csp/csplib/data/Real.h>
 

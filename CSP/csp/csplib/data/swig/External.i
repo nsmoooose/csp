@@ -16,31 +16,16 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
-%module Date
+%module External
 %{
-#include <csp/csplib/data/Date.h>
+#include <csp/csplib/data/External.h>
 %}
 
+%rename(__repr__) CSP(External)::asString() const;
+%rename(__eq__) CSP(External)::operator==(CSP(External) const &) const;
+%rename(__eq__) CSP(External)::operator==(std::string const &) const;
+%rename(__ne__) CSP(External)::operator!=(CSP(External) const &) const;
+%rename(__ne__) CSP(External)::operator!=(std::string const &) const;
 
-CSP_NAMESPACE
-%rename(__repr__) Date::asString() const;
-%rename(__repr__) Zulu::asString() const;
-%rename(__repr__) DateZulu::asString() const;
-%rename(__repr__) SimDate::asString() const;
-%rename(__cmp__) Date::compare(Date const &) const;
-%rename(__cmp__) SimDate::compare(SimDate const &) const;
-CSP_NAMESPACE_END
-
-%exception {
-	try {
-		$function
-	} catch (CSP(InvalidDate) e) {
-		e.clear();
-		SWIG_exception(SWIG_RuntimeError, e.getError().c_str());
-	}
-}
-
-%include <csp/csplib/data/Date.h>
-
-%exception;
+%include <csp/csplib/data/External.h>
 

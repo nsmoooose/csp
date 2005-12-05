@@ -22,7 +22,7 @@
 #include <csp/csplib/util/Random.h>
 %}
 
-%include "csp/csplib/util/Namespace.h"
+%include <csp/csplib/util/Namespace.h>
 
 CSP_NAMESPACE
 

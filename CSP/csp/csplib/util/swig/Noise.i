@@ -18,8 +18,8 @@
 
 %module Noise
 %{
-#include "csp/csplib/util/Noise.h"
+#include <csp/csplib/util/Noise.h>
 %}
 
-%include "csp/csplib/util/Noise.h"
+%include <csp/csplib/util/Noise.h>
 

@@ -22,9 +22,9 @@
 #include <csp/csplib/data/Matrix3.h>
 %}
 
-%include "csp/csplib/util/Namespace.h"
+%include <csp/csplib/util/Namespace.h>
 
 %rename(__repr__) CSP(Vector3)::asString() const;
 
-%include "csp/csplib/data/Vector3.h"
+%include <csp/csplib/data/Vector3.h>
 

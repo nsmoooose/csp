@@ -77,29 +77,7 @@
 //--#include <Producer/RenderSurface>
 
 #include <SDL/SDL.h>
-#include <SDL/SDL_audio.h>
 #include <SDL/SDL_joystick.h>
-
-
-
-/*
-////////////////////////////////////////////////
-// FIXME
-
-//#include "AircraftObject.h"
-
-//
-////////////////////////////////////////////////
-
-
-#ifndef FALSE
-#define FALSE 0
-#endif
-
-#ifndef TRUE
-#define TRUE 1
-#endif
-*/
 
 
 CSP_NAMESPACE
@@ -108,15 +86,6 @@ CSP_NAMESPACE
 // one of the sims.  Using a global here just because we're lazy.
 bool g_DisableRender = false;
 
-
-struct SDLWave {
-	SDL_AudioSpec spec;
-	Uint8   *sound;			/* Pointer to wave data */
-	Uint32   soundlen;		/* Length of wave data */
-	int      soundpos;		/* Current play position */
-};
-
-SDLWave  m_audioWave;
 
 ///////////////////////////////////////////////////////////////////////
 // CSPSim
@@ -307,6 +276,7 @@ void CSPSim::init() {
 		std::string theater = g_Config.getPath("Testing", "Theater", "sim:theater.balkan", false);
 		m_Theater = m_DataManager->getObject(theater.c_str());
 		assert(m_Theater.valid());
+		//CSP_VERIFY(m_Theater->initialize(*m_DataManager));
 		m_Terrain = m_Theater->getTerrain();
 		assert(m_Terrain.valid());
 		m_Terrain->setScreenSizeHint(m_ScreenWidth, m_ScreenHeight);
@@ -427,7 +397,6 @@ void CSPSim::init() {
 		m_GameScreen->onInit();
 		
 		changeScreen(m_GameScreen);
-		
 	}
 	catch (Exception &e) {
 		FatalException(e, "initialization");
@@ -712,7 +681,7 @@ int CSPSim::initSDL() {
 	m_ScreenHeight = height;
 	m_ScreenWidth = width;
 
-	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK | SDL_INIT_AUDIO /*  | SDL_INIT_NOPARACHUTE */ ) != 0) {
+	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK) != 0) {
 		std::cerr << "Unable to initialize SDL: " << SDL_GetError() << "\n";
 		CSPLOG(ERROR, APP) << "ERROR! Unable to initialize SDL: " << SDL_GetError();
 		return 1;
@@ -730,8 +699,8 @@ int CSPSim::initSDL() {
 	}
 
 	m_SDLScreen = SDL_SetVideoMode(width, height, bpp, flags);
-	SDL_GL_SetAttribute( SDL_GL_DEPTH_SIZE, 32 );
-	SDL_GL_SetAttribute( SDL_GL_DOUBLEBUFFER, 1 );
+	SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 32);
+	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 
 	if (m_SDLScreen == NULL) {
 		std::cerr << "Unable to set video mode: " << SDL_GetError() << "\n";
@@ -748,50 +717,10 @@ int CSPSim::initSDL() {
 
 	SDL_EnableUNICODE(1);
 
-	// some simple sdl sound testing
-	std::string sound_path = getDataPath("SoundPath");
-	std::string test_sound = ospath::join(sound_path, "avionturbine5.wav");
-	if (SDL_LoadWAV(test_sound.c_str(), &m_audioWave.spec, &m_audioWave.sound,
-	                &m_audioWave.soundlen) == NULL) {
-		CSPLOG(WARNING, APP) <<  "Couldn't load '" << test_sound << "': " << SDL_GetError();
-	} else {
-		m_audioWave.spec.callback = fillerup;
-
-		/* Initialize fillerup() variables */
-		if (SDL_OpenAudio(&m_audioWave.spec, NULL) < 0)  {
-			CSPLOG(ERROR, APP) << "Couldn't open audio: " << SDL_GetError();
-			SDL_FreeWAV(m_audioWave.sound);
-		}
-	}
-	bool mute = g_Config.getBool("Testing", "Mute", false, true);
-	SDL_PauseAudio(mute);
-
 	/* Make sure SDL_Quit gets called when the program exits. */
 	atexit(SDL_Quit);
 
 	return 0;
-}
-
-
-void fillerup(void * /*unused*/, Uint8 *stream, int len) {
-	Uint8 *waveptr;
-	int    waveleft;
-
-	/* Set up the pointers */
-	waveptr = m_audioWave.sound + m_audioWave.soundpos;
-	waveleft = m_audioWave.soundlen - m_audioWave.soundpos;
-
-	/* Go! */
-	while ( waveleft <= len ) {
-		SDL_MixAudio(stream, waveptr, waveleft, SDL_MIX_MAXVOLUME);
-		stream += waveleft;
-		len -= waveleft;
-		waveptr = m_audioWave.sound;
-		waveleft = m_audioWave.soundlen;
-		m_audioWave.soundpos = 0;
-	}
-	SDL_MixAudio(stream, waveptr, len, SDL_MIX_MAXVOLUME);
-	m_audioWave.soundpos += len;
 }
 
 Ref<Theater> CSPSim::getTheater() const {

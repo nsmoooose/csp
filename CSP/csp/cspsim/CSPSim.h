@@ -44,6 +44,12 @@
  *
  */
 
+/**
+ * @namespace csp
+ * @brief Primary namespace for all internal code (csplib and cspsim).
+ */
+
+
 #ifndef __CSPSIM_H__
 #define __CSPSIM_H__
 
@@ -61,21 +67,19 @@ typedef struct _SDL_Joystick SDL_Joystick;
 CSP_NAMESPACE
 
 class Atmosphere;
-class DataManager;
+class BaseScreen;
 class Client;
-class InputEvent;
-class PyShell;
+class DataManager;
 class DynamicObject;
+class EventMapIndex;
+class GameScreen;
+class InputEvent;
+class LocalBattlefield;
 class TerrainObject;
 class Theater;
-class LocalBattlefield;
-class VirtualScene;
 class VirtualHID;
-class BaseScreen;
-class GameScreen;
-class EventMapIndex;
+class VirtualScene;
 
-void fillerup(void *unused, unsigned char *stream, int len);
 
 /** The primary simulation engine for CSP.  Also acts as a singleton to provide
  *  direct access to shared simulation state.  Do not abuse this access point;
@@ -117,7 +121,6 @@ public:
 
 	Atmosphere const * getAtmosphere() const { return m_Atmosphere.get(); }
 
-
 protected:
 
 	void initSim();
@@ -127,8 +130,8 @@ protected:
 	void updateObjects(double dt);
 	void doStartupScript();
 
-
 private:
+
 	SDL_Surface *m_SDLScreen;
 	SDL_Joystick* m_SDLJoystick;
 
@@ -145,9 +148,7 @@ private:
 	bool m_Finished;
 	bool m_Clean;
 
-	/**
-	 * The current simulation time/date
-	 */
+	// The current simulation time/date
 	SimDate m_CurrentTime;
 	SimTime m_FrameTime;
 	SimTime m_FrameRate;
@@ -158,16 +159,12 @@ private:
 	void initTime(SimDate const &);
 	void updateTime();
 
-	/**
-	 * The current input device interface
-	 */
+	// The current input device interface
 	Ref<VirtualHID> m_Interface;
 	Ref<EventMapIndex> m_InterfaceMaps;
 	Ref<DynamicObject> m_ActiveObject;
 
-	/**
-	 * The virtual battlefield
-	 */
+	// The virtual battlefield
 	Ref<LocalBattlefield> m_Battlefield;
 	Ref<VirtualScene> m_Scene;
 	Ref<Client> m_NetworkClient;

@@ -22,6 +22,10 @@
  *
  **/
 
+/**
+ * @namespace csp::fx
+ * @brief 3D special effects.
+ */
 
 #ifndef __CSPSIM_SMOKEEFFECTS_H__
 #define __CSPSIM_SMOKEEFFECTS_H__

@@ -22,6 +22,10 @@
  *
  **/
 
+/**
+ * @namespace csp::f16
+ * @brief F16 systems implementation.
+ */
 
 #ifndef __CSPSIM_F16_F16SYSTEM_H__
 #define __CSPSIM_F16_F16SYSTEM_H__

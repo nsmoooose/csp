@@ -171,7 +171,7 @@ protected:
 		inline bool operator==(Object const &o) { return id() == o->id(); }
 		inline bool operator!=(Object const &o) { return id() != o->id(); }
 
-		/** Get the (simdata object) path for this object.  The path uniquely identifies the
+		/** Get the (csplib object) path for this object.  The path uniquely identifies the
 		 *  object type, and can used to construct an instance of the object.
 		 */
 		inline const Path path() const { return m_Path; }

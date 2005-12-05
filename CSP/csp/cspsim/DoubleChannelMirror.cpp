@@ -17,8 +17,9 @@
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 
-/** Channel mirror specializations for double-precision floating point
- *  channels.
+/**
+ * @file DoubleChannelMirror.cpp
+ * @brief Channel mirror specializations for double-precision floating point channels.
  */
 
 

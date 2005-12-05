@@ -172,3 +172,6 @@ INTERFACES = [env.SwigWrapper(cspsim_wrap)]
 cspsim = env.SharedLibrary('cspsim', INTERFACES + SOURCES, SHLIBPREFIX='_')
 Alias(['all', 'cspsim'], [cspsim])
 
+env.Documentation('#/cspsim/.dox', '#/cspsim/cspsim.dox', ['#/cspsim/*.h', '#/cspsim/*.cpp', '#/cspsim/*/*.h', '#/cspsim/*/*.cpp'])
+
+

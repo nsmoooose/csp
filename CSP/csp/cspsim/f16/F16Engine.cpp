@@ -259,7 +259,7 @@ void F16Engine::updateTemperatureTargets() {
 	m_CoreTemperatureTarget = m_FanTurbineInletTemperatureTarget * m_CoreFanTurbineInletTemperatureRatio;
 }
 
-// TODO fix simdata random interface to provide obvious functions like this!
+// TODO fix csplib random interface to provide obvious functions like this!
 double gauss(double mean, double sigma) {
 	return static_cast<double>(rd::BoxMueller(g_Random, mean, sigma));
 }

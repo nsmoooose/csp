@@ -432,9 +432,9 @@ public:
 
 	RackMount(): m_Attitude(Quat::IDENTITY), m_Fixed(false) { }
 
-	// XXX simdata should not zero m_Attitude when the xml tag is not set.
+	// XXX csplib should not zero m_Attitude when the xml tag is not set.
 	// temporary (hacked) fix for testing purposes.  UPDATE: actually,
-	// simdata doesn't zero m_Altitude.  it saved the old default value
+	// csplib doesn't zero m_Altitude.  it saved the old default value
 	// in the .dar file, and doesn't realize that the default has changed.
 	virtual void postCreate() { if (m_Attitude == Quat::ZERO) m_Attitude = Quat::IDENTITY; }
 
@@ -767,7 +767,7 @@ public:
 
 	HardpointData(): m_External(true), m_Attitude(Quat::IDENTITY) { }
 
-	// XXX simdata should not zero m_Attitude when the xml tag is not set.  temporary (hacked) fix for testing purposes.
+	// XXX csplib should not zero m_Attitude when the xml tag is not set.  temporary (hacked) fix for testing purposes.
 	virtual void postCreate() { if (m_Attitude == Quat::ZERO) m_Attitude = Quat::IDENTITY; }
 
 	virtual Hardpoint *createHardpoint(unsigned index) const;

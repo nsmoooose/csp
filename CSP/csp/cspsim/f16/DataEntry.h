@@ -156,7 +156,7 @@ private:
 // links between channels.  for example read(A) returns Alist[B] via a pull callback,
 // such that write(B) will change the output of the next call to read(A).
 //
-// the second drawback concerns data-driven programming.  simdata provides fairly
+// the second drawback concerns data-driven programming.  csplib provides fairly
 // powerful ways to connect objects together at runtime based on external data.
 // for some systems it would be very nice to provide only very basic class types
 // than can then be connected in non-trivial ways via xml.  for example, the f-16
@@ -166,7 +166,7 @@ private:
 // hard codes the widget layout and static text it displays.  this works but requires
 // code changes to modify the layout and add new pages.  an attractive alternative
 // would be to write a single, generic interface page that gets its layout from an
-// xml definition via simdata.  specifying static text this way is easy, but
+// xml definition via csplib.  specifying static text this way is easy, but
 // connecting input widgets to the bus is difficult unless all the channels of
 // interest are primitive types.  for example, an elevation entry widget can take
 // a single channel input of type double (or int), but that requires every system

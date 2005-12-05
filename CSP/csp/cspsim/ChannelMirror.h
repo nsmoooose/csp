@@ -17,7 +17,9 @@
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 
-/** Interfaces for replicating data channels between remote clients.
+/**
+ *  @file CSPSim.cpp
+ *  @brief Interfaces for replicating data channels between remote clients.
  *
  *  Most of the important state of an object is contained its the data channels.
  *  Replicating selected channels from a source object to remote mirrors of

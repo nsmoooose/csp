@@ -40,6 +40,10 @@
  *
  **/
 
+/**
+ * @namespace csp::bus
+ * @brief Namespace used for data channel identifiers.
+ */
 
 #ifndef __CSPSIM_BUS_H__
 #define __CSPSIM_BUS_H__

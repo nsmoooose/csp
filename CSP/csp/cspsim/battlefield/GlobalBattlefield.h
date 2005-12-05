@@ -22,46 +22,47 @@
  *
  **/
 
-#ifndef __SIMCORE_BATTLEFIELD_GLOBALBATTLEFIELD_H__
-#define __SIMCORE_BATTLEFIELD_GLOBALBATTLEFIELD_H__
+#ifndef __CSPSIM_BATTLEFIELD_GLOBALBATTLEFIELD_H__
+#define __CSPSIM_BATTLEFIELD_GLOBALBATTLEFIELD_H__
 
-#include <SimData/Ref.h>
-#include <SimData/ScopedPointer.h>
-#include <SimData/Timing.h>
+#include <csp/cspsim/battlefield/SimObject.h>
+#include <csp/cspsim/battlefield/Battlefield.h>
+#include <csp/cspsim/battlefield/BattlefieldMessages.h>
 
-#include <SimCore/Battlefield/SimObject.h>
-#include <SimCore/Battlefield/Battlefield.h>
-#include <SimCore/Battlefield/BattlefieldMessages.h>
+#include <csp/csplib/net/NetBase.h>
+#include <csp/csplib/net/ClientServer.h>
+#include <csp/csplib/net/PeerInfo.h>
 
-namespace simnet { class Server; }
-
-#include <SimNet/NetBase.h>
-#include <SimNet/ClientServer.h>
-#include <SimNet/PeerInfo.h>
+#include <csp/csplib/util/Ref.h>
+#include <csp/csplib/util/ScopedPointer.h>
+#include <csp/csplib/util/Timing.h>
 
 #include <set>
 
+CSP_NAMESPACE
+
+class Server;
 
 // TODO when a peer is dropped, remove its objects from the battlefield.
 // (eventually they should be reassigned to an agent server.)
 
 
 class UnitContact: public SimObject {
-	simdata::Path m_Path;
+	Path m_Path;
 public:
-	typedef simdata::Ref<UnitContact> Ref;
-	UnitContact(SimObject::TypeId type, simdata::Path const &path, SimObject::ObjectId id): SimObject(type), m_Path(path) {
+	typedef Ref<UnitContact> Ref;
+	UnitContact(SimObject::TypeId type, Path const &path, SimObject::ObjectId id): SimObject(type), m_Path(path) {
 		setId(id);
 		setContact();
 	}
-	virtual simdata::Vector3 getGlobalPosition() const { assert(0); return simdata::Vector3::ZERO; }
-	virtual simdata::Path getObjectPath() const { return m_Path; }
+	virtual Vector3 getGlobalPosition() const { assert(0); return Vector3::ZERO; }
+	virtual Path getObjectPath() const { return m_Path; }
 };
 
 
 struct ClientData {
 	std::string user_name;
-	simnet::PeerId id;
+	PeerId id;
 	std::set<SimObject::ObjectId> units;
 	uint32 internal_ip_addr;
 	uint32 external_ip_addr;
@@ -70,20 +71,20 @@ struct ClientData {
 
 class GlobalBattlefield: public Battlefield {
 	unsigned int m_NextId;
-	typedef simnet::PeerId PeerId;
+	typedef PeerId PeerId;
 	typedef std::map<PeerId, ClientData> ClientDataMap;
 
 	template <class MSG>
 	class ClientResponse {
 		typename MSG::Ref m_Response;
 	public:
-		ClientResponse(simnet::NetworkMessage::Ref const &request): m_Response(new MSG()) {
+		ClientResponse(NetworkMessage::Ref const &request): m_Response(new MSG()) {
 			m_Response->setReplyTo(request);
 			m_Response->setReliable();
 			m_Response->setRoutingType(ROUTE_COMMAND);
 		}
 		inline typename MSG::Ref const &operator->() { return m_Response; }
-		inline void send(simnet::MessageQueue::Ref const &queue) {
+		inline void send(MessageQueue::Ref const &queue) {
 			queue->queueMessage(m_Response);
 		}
 	};
@@ -97,7 +98,7 @@ class GlobalBattlefield: public Battlefield {
 
 	public:
 		ContactWrapper(Unit const &u, PeerId owner): UnitWrapper(u, owner) { }
-		ContactWrapper(ObjectId id, simdata::Path const &path, PeerId owner): UnitWrapper(id, path, owner) { }
+		ContactWrapper(ObjectId id, Path const &path, PeerId owner): UnitWrapper(id, path, owner) { }
 		UnitContact::Ref contact() { return static_cast<UnitContact*>(object().get()); }
 		inline bool isUpdating(int peer) {
 			return m_UpdateCount.find(peer) != m_UpdateCount.end();
@@ -140,11 +141,11 @@ public:
 		Battlefield::update(dt);
 	}
 
-	void setNetworkServer(simdata::Ref<simnet::Server> const &server) {
+	void setNetworkServer(Ref<Server> const &server) {
 		assert(m_NetworkServer.isNull());
 		assert(server.valid());
 		m_NetworkServer = server;
-		simnet::DispatchHandler::Ref dispatch = new simnet::DispatchHandler(server->queue());
+		DispatchHandler::Ref dispatch = new DispatchHandler(server->queue());
 		bindCommandDispatch(dispatch);
 		server->routeToHandler(ROUTE_COMMAND, dispatch);
 	}
@@ -160,7 +161,7 @@ private:
 		ClientDataMap::iterator data = m_ClientData.find(id);
 		if (data != m_ClientData.end()) {
 			std::set<SimObject::ObjectId> const &units = data->second.units;
-			CSP_LOG(BATTLEFIELD, INFO, "Removing client " << id << " with " << units.size() << " units");
+			CSPLOG(INFO, BATTLEFIELD) << "Removing client " << id << " with " << units.size() << " units";
 			std::set<SimObject::ObjectId>::const_iterator uiter = units.begin();
 			std::set<SimObject::ObjectId>::const_iterator uend = units.end();
 			for (; uiter != uend; ++uiter) {
@@ -168,19 +169,19 @@ private:
 			}
 			m_ClientData.erase(data);
 		} else {
-			CSP_LOG(BATTLEFIELD, ERROR, "Removing client " << id << " but client data not found!");
+			CSPLOG(ERROR, BATTLEFIELD) << "Removing client " << id << " but client data not found!";
 		}
 		announceExit(id);
 	}
 
-	void sendClientCommand(simnet::NetworkMessage::Ref const &command, PeerId client_id) {
+	void sendClientCommand(NetworkMessage::Ref const &command, PeerId client_id) {
 		command->setDestination(client_id);
 		command->setRoutingType(ROUTE_COMMAND);
 		command->setReliable();
 		m_NetworkServer->queue()->queueMessage(command, client_id);
 	}
 
-	void bindCommandDispatch(simnet::DispatchHandler::Ref const &dispatch) {
+	void bindCommandDispatch(DispatchHandler::Ref const &dispatch) {
 		dispatch->registerHandler(this, &GlobalBattlefield::onJoinRequest);
 		dispatch->registerHandler(this, &GlobalBattlefield::onIdAllocationRequest);
 		dispatch->registerHandler(this, &GlobalBattlefield::onNotifyUnitMotion);
@@ -192,7 +193,7 @@ private:
 		join->setRoutingType(ROUTE_COMMAND);
 		join->setReliable();
 		ClientData &data = m_ClientData[id];
-		simnet::PeerInfo const *peer_info = m_NetworkServer->getPeer(id);
+		PeerInfo const *peer_info = m_NetworkServer->getPeer(id);
 		join->set_peer_id(id);
 		join->set_user_name(data.user_name);
 		join->set_outgoing_bw(static_cast<int>(peer_info->outgoingBandwidth()));
@@ -241,55 +242,55 @@ private:
 		}
 	}
 
-	void onJoinRequest(simdata::Ref<JoinRequest> const &msg, simdata::Ref<simnet::MessageQueue> const &queue) {
-		CSP_LOG(BATTLEFIELD, INFO, "received join request");
+	void onJoinRequest(Ref<JoinRequest> const &msg, Ref<MessageQueue> const &queue) {
+		CSPLOG(INFO, BATTLEFIELD) << "received join request";
 		ClientResponse<JoinResponse> response(msg);
 		response->set_success(false);
 
 		if (!msg->has_user_name()) {
-			CSP_LOG(BATTLEFIELD, ERROR, "join rejected: no user name");
+			CSPLOG(ERROR, BATTLEFIELD) << "join rejected: no user name";
 			response->set_details("no user name");
 			response.send(queue);
 			return;
 		}
 
 		if (msg->has_local_time()) {
-			int skew = static_cast<int>(static_cast<double>(msg->local_time()) - simdata::getSecondsSinceUnixEpoch());
+			int skew = static_cast<int>(static_cast<double>(msg->local_time()) - getSecondsSinceUnixEpoch());
 			// 10 seconds is somewhat arbitrary, but reasonable
 			if (std::abs(skew) > 10) {
-				CSP_LOG(BATTLEFIELD, ERROR, "join rejected: large clock skew (" << skew << "s)");
+				CSPLOG(ERROR, BATTLEFIELD) << "join rejected: large clock skew (" << skew << "s)";
 				response->set_details("excessive clock skew");
 				response.send(queue);
 				return;
 			}
 		} else {
-			CSP_LOG(BATTLEFIELD, WARNING, "join request missing local time");
+			CSPLOG(WARNING, BATTLEFIELD) << "join request missing local time";
 		}
 
 		PeerId id = msg->getSource();
-		simnet::PeerInfo const *peer_info = m_NetworkServer->getPeer(id);
+		PeerInfo const *peer_info = m_NetworkServer->getPeer(id);
 
 		uint32 inbound_ip_addr = peer_info->getNode().getIp();
 		uint32 internal_ip_addr = msg->has_internal_ip_addr() ? msg->internal_ip_addr() : inbound_ip_addr;
 
-		CSP_LOG(BATTLEFIELD, INFO, "join request from " << peer_info->getNode());
-		CSP_LOG(BATTLEFIELD, INFO, "      internal ip " << simnet::NetworkNode::ipToString(internal_ip_addr));
+		CSPLOG(INFO, BATTLEFIELD) << "join request from " << peer_info->getNode();
+		CSPLOG(INFO, BATTLEFIELD) << "      internal ip " << NetworkNode::ipToString(internal_ip_addr);
 
 		// basic sanity checking on ip addresses
-		if (simnet::NetworkNode::isRoutable(internal_ip_addr) && (internal_ip_addr != inbound_ip_addr)) {
-			CSP_LOG(BATTLEFIELD, ERROR, "join rejected: internal ip routable, but does not match external ip");
+		if (NetworkNode::isRoutable(internal_ip_addr) && (internal_ip_addr != inbound_ip_addr)) {
+			CSPLOG(ERROR, BATTLEFIELD) << "join rejected: internal ip routable, but does not match external ip";
 			response->set_details("internal ip routable, but does not match external ip");
 			response.send(queue);
 			return;
 		}
-		if (!simnet::NetworkNode::isRoutable(inbound_ip_addr) && (internal_ip_addr != inbound_ip_addr)) {
-			CSP_LOG(BATTLEFIELD, ERROR, "join rejected: inbound ip unroutable, but does not match internal ip");
+		if (!NetworkNode::isRoutable(inbound_ip_addr) && (internal_ip_addr != inbound_ip_addr)) {
+			CSPLOG(ERROR, BATTLEFIELD) << "join rejected: inbound ip unroutable, but does not match internal ip";
 			response->set_details("inbound ip is unroutable, but does not match internal ip");
 			response.send(queue);
 			return;
 		}
-		if (simnet::NetworkNode::isRoutable(inbound_ip_addr) && (!m_NetworkServer->getExternalNode().isRoutable())) {
-			CSP_LOG(BATTLEFIELD, ERROR, "join rejected: inbound ip routable, but server is not configured to accept remote connections (no external ip set).");
+		if (NetworkNode::isRoutable(inbound_ip_addr) && (!m_NetworkServer->getExternalNode().isRoutable())) {
+			CSPLOG(ERROR, BATTLEFIELD) << "join rejected: inbound ip routable, but server is not configured to accept remote connections (no external ip set).";
 			response->set_details("server not configured to accept remote connections");
 			response.send(queue);
 			return;
@@ -299,7 +300,7 @@ private:
 		// on the same lan, use the server's "external" ip address.  this simplifies the configuration,
 		// since only the server needs to specify an external ip address; the clients can just bind to
 		// their local interfaces and the server will decide which ip to use when introducing two peers.
-		uint32 external_ip_addr = simnet::NetworkNode::isRoutable(inbound_ip_addr) ? inbound_ip_addr : m_NetworkServer->getExternalNode().getIp();
+		uint32 external_ip_addr = NetworkNode::isRoutable(inbound_ip_addr) ? inbound_ip_addr : m_NetworkServer->getExternalNode().getIp();
 
 		ClientData &data = m_ClientData[id];
 		response->set_success(true);
@@ -318,8 +319,8 @@ private:
 		announceExistingPlayers(id);
 	}
 
-	void onIdAllocationRequest(simdata::Ref<IdAllocationRequest> const &msg, simdata::Ref<simnet::MessageQueue> const &queue) {
-		CSP_LOG(BATTLEFIELD, INFO, "allocating ids");
+	void onIdAllocationRequest(Ref<IdAllocationRequest> const &msg, Ref<MessageQueue> const &queue) {
+		CSPLOG(INFO, BATTLEFIELD) << "allocating ids";
 		ClientResponse<IdAllocationResponse> response(msg);
 		response->set_first_id(m_NextId);
 		response->set_id_count(100);
@@ -327,15 +328,15 @@ private:
 		response.send(queue);
 	}
 
-	void onNotifyUnitMotion(simdata::Ref<NotifyUnitMotion> const &msg, simdata::Ref<simnet::MessageQueue> const &/*queue*/) {
+	void onNotifyUnitMotion(Ref<NotifyUnitMotion> const &msg, Ref<MessageQueue> const &/*queue*/) {
 		UnitWrapper *wrapper = findUnitWrapper(msg->unit_id());
 		if (wrapper) {
-			CSP_LOG(BATTLEFIELD, INFO, "unit moved " << *(wrapper->unit()));
+			CSPLOG(INFO, BATTLEFIELD) << "unit moved " << *(wrapper->unit());
 			GridPoint old_position = wrapper->point();
 			GridPoint new_position(msg->grid_x(), msg->grid_y());
 			updatePosition(wrapper, new_position);
 		} else {
-			CSP_LOG(BATTLEFIELD, ERROR, "unknown unit moved " << msg->unit_id());
+			CSPLOG(ERROR, BATTLEFIELD) << "unknown unit moved " << msg->unit_id();
 		}
 	}
 
@@ -344,19 +345,19 @@ private:
 		recomputeUpdates(wrapper, old_position, new_position);
 	}
 
-	void onRegisterUnit(simdata::Ref<RegisterUnit> const &msg, simdata::Ref<simnet::MessageQueue> const &/*queue*/) {
+	void onRegisterUnit(Ref<RegisterUnit> const &msg, Ref<MessageQueue> const &/*queue*/) {
 		const SimObject::ObjectId unit_id = msg->unit_id();
 		const PeerId owner = msg->getSource();
 		UnitWrapper *wrapper = findUnitWrapper(unit_id);
 		if (wrapper) {
-			CSP_LOG(BATTLEFIELD, ERROR, "request to register existing unit " << unit_id << " for " << owner << " (already owned by " << wrapper->owner() << ")");
+			CSPLOG(ERROR, BATTLEFIELD) << "request to register existing unit " << unit_id << " for " << owner << " (already owned by " << wrapper->owner() << ")";
 			// wrapper != null could be a client side bug or a duplicate message that wasn't filtered.
 			// either is bad enough that we want to fail (in debug mode).
 			assert(0);
 			return;
 		}
-		CSP_LOG(BATTLEFIELD, INFO, "registering unit " << unit_id << " " << msg->unit_class() << " owned by " << owner);
-		simdata::Ref<UnitContact> unit = new UnitContact(static_cast<SimObject::TypeId>(msg->unit_type()), msg->unit_class(), unit_id);
+		CSPLOG(INFO, BATTLEFIELD) << "registering unit " << unit_id << " " << msg->unit_class() << " owned by " << owner;
+		Ref<UnitContact> unit = new UnitContact(static_cast<SimObject::TypeId>(msg->unit_type()), msg->unit_class(), unit_id);
 		wrapper = new ContactWrapper(unit, owner);
 		addUnit(wrapper);
 		GridPoint old_position = wrapper->point();
@@ -398,7 +399,7 @@ private:
 	 *  the Unit.
 	 */
 	void recomputeUpdates(UnitWrapper *wrapper, GridPoint const old_position, GridPoint const new_position) {
-		CSP_LOG(BATTLEFIELD, INFO, "recomputing updates for " << *(wrapper->unit()));
+		CSPLOG(INFO, BATTLEFIELD) << "recomputing updates for " << *(wrapper->unit());
 
 		// find all nearby objects.  the query range will be chosen to be somewhat larger than the most common
 		// radar range (say 60 nm for A-A).
@@ -415,7 +416,7 @@ private:
 			dynamicIndex()->query(region, units);
 		}
 
-		CSP_LOG(BATTLEFIELD, INFO, "found " << units.size() << " nearby units");
+		CSPLOG(INFO, BATTLEFIELD) << "found " << units.size() << " nearby units";
 
 		std::set<int> position_hints;  // set of peers that need hints about A's motion
 		int radius = 40000;  // XXX temporary hack
@@ -426,7 +427,7 @@ private:
 			int other_radius = 40000;  // XXX temporary hack
 			int old_separation = static_cast<int>(sqrt(globalDistance2(other_wrapper->point(), old_position)));
 			int new_separation = static_cast<int>(sqrt(globalDistance2(other_wrapper->point(), new_position)));
-			CSP_LOG(BATTLEFIELD, INFO, "separations (old, new): " << old_separation << ", " << new_separation);
+			CSPLOG(INFO, BATTLEFIELD) << "separations (old, new): " << old_separation << ", " << new_separation;
 
 			// consider updates from other_wrapper to wrapper
 			if (new_separation > radius) {
@@ -463,18 +464,18 @@ private:
 
 	void incrementUpdateCount(UnitWrapper *from, UnitWrapper *to) {
 		ContactWrapper *cfrom = static_cast<ContactWrapper*>(from);
-		CSP_LOG(BATTLEFIELD, DEBUG, "INCREMENT: " << *(from->unit()) << " -> " << *(to->unit()));
+		CSPLOG(DEBUG, BATTLEFIELD) << "INCREMENT: " << *(from->unit()) << " -> " << *(to->unit());
 		if (cfrom->incrementCount(to->owner())) {
 			// if the units are owned by the same client we still reference count
 			// but we don't send an update.  both units will already be present in
 			// the client's local battlefield.
 			if (from->owner() != to->owner()) {
-				CSP_LOG(BATTLEFIELD, INFO, "sending add unit " << from->unit()->id() << " to client " << to->owner());
+				CSPLOG(INFO, BATTLEFIELD) << "sending add unit " << from->unit()->id() << " to client " << to->owner();
 				{  // tell OWNER[to] to expect updates from OWNER[from]
 					CommandAddUnit::Ref msg = new CommandAddUnit();
 					msg->set_unit_id(from->id());
-					msg->set_unit_class(simdata::Path(from->unit()->getObjectPath()));
-					msg->set_unit_type(static_cast<const simdata::uint8>(from->unit()->type()));
+					msg->set_unit_class(Path(from->unit()->getObjectPath()));
+					msg->set_unit_type(static_cast<const uint8>(from->unit()->type()));
 					msg->set_owner_id(from->owner());
 					msg->set_grid_x(from->point().x());
 					msg->set_grid_y(from->point().y());
@@ -492,13 +493,13 @@ private:
 
 	void decrementUpdateCount(UnitWrapper *from, UnitWrapper *to) {
 		ContactWrapper *cfrom = static_cast<ContactWrapper*>(from);
-		CSP_LOG(BATTLEFIELD, DEBUG, "DECREMENT: " << *(from->unit()) << " -> " << *(to->unit()));
+		CSPLOG(DEBUG, BATTLEFIELD) << "DECREMENT: " << *(from->unit()) << " -> " << *(to->unit());
 		if (cfrom->decrementCount(to->owner())) {
 			// if the units are owned by the same client we still reference count
 			// but we don't send an update.  removal and notification of local units
 			// has already been done in the client's battlefield.
 			if (from->owner() != to->owner()) {
-				CSP_LOG(BATTLEFIELD, INFO, "sending remove unit " << from->unit()->id() << " to client " << to->owner());
+				CSPLOG(INFO, BATTLEFIELD) << "sending remove unit " << from->unit()->id() << " to client " << to->owner();
 				{
 					CommandRemoveUnit::Ref msg = new CommandRemoveUnit();
 					msg->set_unit_id(from->id());
@@ -520,12 +521,11 @@ private:
 	}
 
 private:
-	simdata::Ref<simnet::Server> m_NetworkServer;
+	Ref<Server> m_NetworkServer;
 	ClientDataMap m_ClientData;
 };
 
+CSP_NAMESPACE_END
 
-#endif // __SIMCORE_BATTLEFIELD_GLOBALBATTLEFIELD_H__
-
-
+#endif // __CSPSIM_BATTLEFIELD_GLOBALBATTLEFIELD_H__
 

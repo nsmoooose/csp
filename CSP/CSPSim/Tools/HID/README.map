@@ -1,10 +1,8 @@
 Input mapping language description.
 ========================================================================
 
-
-
 1 Primary statements
-	
+
 	include filename
 		Processes commands in the specified file.  Included files
 		may include additional files to arbitrary depth.  The specified
@@ -48,7 +46,7 @@ Input mapping language description.
 		as needed.  Use these definitions when declaring devices, and then
 		use the identifiers, rather than the scan codes, to refer to events.
 
-	map device:event type [modes] action	
+	map device:event type [modes] action
 		Map an input event to an action.  The device here is the label set
 		in one of the prior device statements.  The event is a combination
 		of an event identifier for this device (see 'define' above) and
@@ -63,4 +61,5 @@ Input mapping language description.
 		this input event.  See the 'script' statement below for details.
 
 	script
-		
+		TODO
+

@@ -6,7 +6,7 @@
 
 <Object class="AircraftObject">
 
-	<Path name="model">F16.DJ.model</Path>
+	<Path name="model">f16dj.model</Path>
 
 	<!-- Mass/Inertial properties -->
 	<!-- empty mass = 8273 kg?  f16A from nasa 1979 paper has mass = 9304 kg -->
@@ -22,8 +22,8 @@
 	<!--Vector name="reference_center_of_mass_offset">0.0 -0.1 -0.07</Vector-->
 	<Vector name="reference_center_of_mass_offset">0.0 -0.1 -0.17</Vector>
 
-	<Path name="human_systems">F16.DJ.systems</Path>
-	<Path name="remote_systems">F16.DJ.remote</Path>
-	<Path name="agent_systems">F16.DJ.systems</Path>
+	<Path name="human_systems">f16.systems</Path>
+	<Path name="remote_systems">f16.remote</Path>
+	<Path name="agent_systems">f16.systems</Path>
 
 </Object>

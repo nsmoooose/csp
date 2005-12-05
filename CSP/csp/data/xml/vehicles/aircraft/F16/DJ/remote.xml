@@ -1,0 +1,7 @@
+<?xml version="1.0" standalone="no"?>
+
+<Object class="SystemsModel">
+	<Object class="LocalController" name="local_controller">
+		<Path name="channel_mirror_set">channel_mirrors</Path>
+	</Object>
+</Object>

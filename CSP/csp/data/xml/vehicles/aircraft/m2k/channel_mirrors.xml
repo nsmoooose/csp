@@ -1,0 +1,168 @@
+<?xml version="1.0" standalone="no"?>
+
+<Object class="ChannelMirrorSet">
+
+	<List name="mirrors">
+		<Object class="DoubleChannelMirror">
+			<String name="channel_name">ControlSurfaces.RudderDeflection</String>
+			<Int name="lod">8</Int>
+			<Float name="limit_0">-1.0</Float>
+			<Float name="limit_1">1.0</Float>
+			<Float name="rate_limit">2.0</Float>
+		</Object>
+
+		<Object  class="DoubleChannelMirror">
+			<String name="channel_name">ControlSurfaces.LeftElevronDeflection</String>
+			<Int name="lod">8</Int>
+			<Float name="limit_0">-1.0</Float>
+			<Float name="limit_1">1.0</Float>
+			<Float name="rate_limit">2.0</Float>
+		</Object>
+		<Object class="DoubleChannelMirror">
+			<String name="channel_name">ControlSurfaces.LeftElevronDeflection</String>
+			<Int name="lod">8</Int>
+			<Float name="limit_0">-1.0</Float>
+			<Float name="limit_1">1.0</Float>
+			<Float name="rate_limit">2.0</Float>
+		</Object>
+		<Object  class="DoubleChannelMirror">
+			<String name="channel_name">ControlSurfaces.RightElevronDeflection</String>
+			<Int name="lod">8</Int>
+			<Float name="limit_0">-1.0</Float>
+			<Float name="limit_1">1.0</Float>
+			<Float name="rate_limit">2.0</Float>
+		</Object>
+		<Object class="DoubleChannelMirror">
+			<String name="channel_name">ControlSurfaces.RightElevronDeflection</String>
+			<Int name="lod">8</Int>
+			<Float name="limit_0">-1.0</Float>
+			<Float name="limit_1">1.0</Float>
+			<Float name="rate_limit">2.0</Float>
+		</Object>
+
+		<Object class="DoubleChannelMirror">
+			<String name="channel_name">ControlSurfaces.AirbrakeDeflection</String>
+			<Int name="lod">7</Int>
+			<Float name="limit_0">0.0</Float>
+			<Float name="limit_1">1.0</Float>
+			<Float name="rate_limit">2.0</Float>
+		</Object>
+
+
+		<Object class="DoubleChannelMirror">
+			<String name="channel_name">LandingGear.FrontGear.RetractCompress</String>
+			<Int name="lod">5</Int>
+			<Float name="limit_0">0.0</Float>
+			<Float name="limit_1">4.0</Float>
+			<Float name="rate_limit">8.0</Float>
+		</Object>
+		<Object class="DoubleChannelMirror">
+			<String name="channel_name">LandingGear.RightGear.RetractCompress</String>
+			<Int name="lod">5</Int>
+			<Float name="limit_0">0.0</Float>
+			<Float name="limit_1">4.0</Float>
+			<Float name="rate_limit">8.0</Float>
+		</Object>
+		 <Object class="DoubleChannelMirror">
+			<String name="channel_name">LandingGear.LeftGear.RetractCompress</String>
+			<Int name="lod">5</Int>
+			<Float name="limit_0">0.0</Float>
+			<Float name="limit_1">4.0</Float>
+			<Float name="rate_limit">8.0</Float>
+		</Object>
+
+		<Object class="DoubleChannelMirror">
+			<String name="channel_name">LandingGear.FrontGear.Compression</String>
+			<Int name="lod">8</Int>
+			<Float name="limit_0">-1.0</Float>
+			<Float name="limit_1">1.0</Float>
+			<Float name="rate_limit">8.0</Float>
+		</Object>
+		<Object class="DoubleChannelMirror">
+			<String name="channel_name">LandingGear.FrontGear.TireRotation</String>
+			<Int name="lod">8</Int>
+			<Float name="limit_0">-3.15</Float>
+			<Float name="limit_1">3.15</Float>
+			<Float name="rate_limit">100.0</Float>
+		</Object>
+		<Object class="DoubleChannelMirror">
+			<String name="channel_name">LandingGear.FrontGear.Absorber02</String>
+			<Int name="lod">8</Int>
+			<Float name="limit_0">-1.0</Float>
+			<Float name="limit_1">1.0</Float>
+			<Float name="rate_limit">8.0</Float>
+		</Object>
+		<Object class="DoubleChannelMirror">
+			<String name="channel_name">LandingGear.FrontGear.Absorber03</String>
+			<Int name="lod">8</Int>
+			<Float name="limit_0">-1.0</Float>
+			<Float name="limit_1">1.0</Float>
+			<Float name="rate_limit">8.0</Float>
+		</Object>
+		<Object class="DoubleChannelMirror">
+			<String name="channel_name">LandingGear.FrontGear.SteeringAngle</String>
+			<Int name="lod">8</Int>
+			<Float name="limit_0">-1.0</Float>
+			<Float name="limit_1">1.0</Float>
+			<Float name="rate_limit">2.0</Float>
+		</Object>
+
+		<Object class="DoubleChannelMirror">
+			<String name="channel_name">LandingGear.LeftGear.Compression</String>
+			<Int name="lod">8</Int>
+			<Float name="limit_0">-1.0</Float>
+			<Float name="limit_1">1.0</Float>
+			<Float name="rate_limit">8.0</Float>
+		</Object>
+		<Object class="DoubleChannelMirror">
+			<String name="channel_name">LandingGear.LeftGear.TireRotation</String>
+			<Int name="lod">8</Int>
+			<Float name="limit_0">-3.15</Float>
+			<Float name="limit_1">3.15</Float>
+			<Float name="rate_limit">100.0</Float>
+		</Object>
+		<Object class="DoubleChannelMirror">
+			<String name="channel_name">LandingGear.LeftGear.Absorber02</String>
+			<Int name="lod">8</Int>
+			<Float name="limit_0">-1.0</Float>
+			<Float name="limit_1">1.0</Float>
+			<Float name="rate_limit">8.0</Float>
+		</Object>
+		<Object class="DoubleChannelMirror">
+			<String name="channel_name">LandingGear.LeftGear.Absorber03</String>
+			<Int name="lod">8</Int>
+			<Float name="limit_0">-1.0</Float>
+			<Float name="limit_1">1.0</Float>
+			<Float name="rate_limit">8.0</Float>
+		</Object>
+
+		<Object class="DoubleChannelMirror">
+			<String name="channel_name">LandingGear.RightGear.Compression</String>
+			<Int name="lod">8</Int>
+			<Float name="limit_0">-1.0</Float>
+			<Float name="limit_1">1.0</Float>
+			<Float name="rate_limit">8.0</Float>
+		</Object>
+		<Object class="DoubleChannelMirror">
+			<String name="channel_name">LandingGear.RightGear.TireRotation</String>
+			<Int name="lod">8</Int>
+			<Float name="limit_0">-3.15</Float>
+			<Float name="limit_1">3.15</Float>
+			<Float name="rate_limit">100.0</Float>
+		</Object>
+		 <Object class="DoubleChannelMirror">
+			<String name="channel_name">LandingGear.RightGear.Absorber02</String>
+			<Int name="lod">8</Int>
+			<Float name="limit_0">-1.0</Float>
+			<Float name="limit_1">1.0</Float>
+			<Float name="rate_limit">8.0</Float>
+		</Object>
+		<Object class="DoubleChannelMirror">
+			<String name="channel_name">LandingGear.RightGear.Absorber03</String>
+			<Int name="lod">8</Int>
+			<Float name="limit_0">-1.0</Float>
+			<Float name="limit_1">1.0</Float>
+			<Float name="rate_limit">8.0</Float>
+		</Object>
+	</List>
+</Object>

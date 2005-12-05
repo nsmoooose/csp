@@ -1,0 +1,109 @@
+<?xml version="1.0" standalone="no"?>
+
+<!--
+	F16 landing gear
+-->
+
+<Object class="F16GearDynamics" name="gear_dynamics">
+	<List name="gear_set">
+		<!-- all of these values are complete guesses for testing only! -->
+		<Object class="LandingGear"> <!-- nosewheel -->
+			<String name="gear_name">FrontGear</String>
+			<Vector name="max_position">0.0 3.270 -1.600</Vector>
+			<Vector name="motion">0 -0.358 0.934</Vector>  <!-- about 69 degrees -->
+			<Real name="damage_limit">80000.0:10000.0</Real>
+			<!--
+				 The 3d model has 0.089 m of displacement for a complete compression.
+			-->
+			<Float name="compression_limit">0.0895</Float>
+			<Float name="K">450000.0</Float>
+			<Float name="beta">20000.0</Float>
+
+			<Float name="brake_limit">0.0</Float>
+			<Float name="steering_limit">32.0</Float>
+			
+			<Float name="tire_radius">0.2</Float>
+			<Float name="tire_static_friction">0.8</Float>
+			<Float name="tire_skid_friction">0.6</Float>
+			<Float name="tire_K">1200000.0</Float>
+			<Float name="tire_beta">200000.0</Float>
+			<Real name="rolling_friction">0.02:0.001</Real>
+			<Float name="drag_factor">0.8</Float>
+			<Object class="GearSequenceAnimation" name="gear_animation">
+				<Object class="TimedSequence" name="retract_sequence">
+					<Float name="initial_key">0.0</Float>
+					<Float name="final_key">4.001</Float>
+				</Object>
+				<Object class="DrivenSequence" name="compression_sequence">
+					<Float name="initial_key">4.000</Float>
+					<Float name="final_key">7.999</Float>
+					<Float name="scale">1.0</Float>
+					<Float name="offset">0.0</Float>
+				</Object>
+			</Object>
+		</Object>
+		<Object class="LandingGear"> <!-- left main -->
+			<String name="gear_name">LeftGear</String>
+			<Vector name="max_position">-1.100 -0.740 -1.66</Vector>
+			<Vector name="motion">-0.574 0 0.819</Vector>  <!-- about 44 degrees -->
+			<Real name="damage_limit">80000.0</Real>
+			<!-- 0.191 -->
+			<Float name="compression_limit">0.223</Float>
+			<Float name="K">350000.0</Float>
+			<Float name="beta">190000.0</Float>
+			<Float name="brake_limit">50000.0</Float>
+			<Float name="brake_slip">0.8</Float>
+			<Float name="tire_radius">0.4</Float>
+			<Float name="tire_static_friction">0.8</Float>
+			<Float name="tire_skid_friction">0.6</Float>
+			<Float name="tire_K">1200000.0</Float>
+			<Float name="tire_beta">200000.0</Float>
+			<Real name="rolling_friction">0.02:0.001</Real>
+			<Bool name="abs">true</Bool>
+			<Float name="drag_factor">0.8</Float>
+			<Object class="GearSequenceAnimation" name="gear_animation">
+				<Object class="TimedSequence" name="retract_sequence">
+					<Float name="initial_key">0.0</Float>
+					<Float name="final_key">4.001</Float>
+				</Object>
+				<Object class="DrivenSequence" name="compression_sequence">
+					<Float name="initial_key">4.000</Float>
+					<Float name="final_key">7.999</Float>
+					<Float name="scale">1.0</Float>
+					<Float name="offset">0.0</Float>
+				</Object>
+			</Object>
+		</Object>
+		<Object class="LandingGear"> <!-- right main -->
+			<String name="gear_name">RightGear</String>
+			<Vector name="max_position">1.100 -0.740 -1.660</Vector>
+			<Vector name="motion">0.574 0 0.819</Vector>  <!-- about 44 degrees -->
+			<Real name="damage_limit">80000.0:10000.0</Real>
+			<Float name="compression_limit">0.223</Float>
+			<Float name="K">350000.0</Float>
+			<Float name="beta">190000.0</Float>
+			<Float name="brake_limit">50000.0</Float>
+			<Float name="brake_slip">0.8</Float>
+			<Float name="tire_radius">0.4</Float>
+			<Float name="tire_static_friction">0.8</Float>
+			<Float name="tire_skid_friction">0.6</Float>
+			<Float name="tire_K">1200000.0</Float>
+			<Float name="tire_beta">200000.0</Float>
+			<Real name="rolling_friction">0.02:0.001</Real>
+			<Bool name="abs">true</Bool>
+			<Float name="drag_factor">0.8</Float>
+			<Object class="GearSequenceAnimation" name="gear_animation">
+				<Object class="TimedSequence" name="retract_sequence">
+					<Float name="initial_key">0.0</Float>
+					<Float name="final_key">4.001</Float>
+				</Object>
+				<Object class="DrivenSequence" name="compression_sequence">
+					<Float name="initial_key">4.000</Float>
+					<Float name="final_key">7.999</Float>
+					<Float name="scale">1.0</Float>
+					<Float name="offset">0.0</Float>
+				</Object>
+			</Object>
+		</Object>
+	</List>
+</Object>

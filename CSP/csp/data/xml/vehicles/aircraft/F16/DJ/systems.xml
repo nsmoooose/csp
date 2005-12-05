@@ -1,0 +1,57 @@
+<?xml version="1.0" standalone="no"?>
+
+<Object class="SystemsModel">
+	<List name="subsystems">
+		<Object class="AircraftInputSystem" />
+		<Path class="FlightControlSystem">fcs</Path>
+		<Object class="AircraftFlightSensors" />
+		<Object class="F16System">
+			<Object class="TimedSequence" name="fuel_door_sequence">
+				<Float name="initial_key">0.0</Float>
+				<Float name="final_key">3.0</Float>
+				<String name="sequence_channel">Aircraft.FuelDoorSequence.ReferenceTime</String>
+				<String name="normalized_channel">Aircraft.FuelDoorSequence.NormalizedTime</String>
+			</Object>
+			<Object class="TimedSequence" name="canopy_sequence">
+				<Float name="initial_key">0.0</Float>
+				<Float name="final_key">6.0</Float>
+				<String name="sequence_channel">Aircraft.CanopySequence.ReferenceTime</String>
+			</Object>
+		</Object>
+		<Object class="F16HUD" />
+		<Object class="F16INS">
+			<Float name="ins_attitude_response_time">0.04</Float>
+		</Object>
+		<Object class="UpFrontControls" />
+		<Object class="GroundAvoidanceAdvisory" />
+		<Object class="F16Radio" />
+		<Path class="f16::FuelSystem">fuel</Path>
+	</List>
+
+	<Object class="RemoteController" name="remote_controller">
+		<Path name="channel_mirror_set">channel_mirrors</Path>
+	</Object>
+
+	<Object class="AircraftPhysicsModel" name="physics_model">
+		<List name="subsystems">
+			<Object class="FlightDynamics">
+				<Path name="flight_model">fm</Path>
+				<Path name="store_drag">.objects.stores_drag</Path>
+			</Object>
+			<Object class="EngineDynamics">
+				<List name="engine_set">
+					<Object class="F16Engine">
+						<Path name="thrust_data">thrust</Path>
+						<Vector name="thrust_direction">0.0 1.0 0.0</Vector>
+						<Vector name="engine_offset">0.0 0.0 0.0</Vector>
+						<Vector name="smoke_emitter_location">0.0 -5.5 0.522</Vector>
+					</Object>
+				</List>
+			</Object>
+			<Path class="GearDynamics">gear</Path>
+			<Object class="GroundCollisionDynamics" />
+		</List>
+	</Object>
+
+	<Path name="stores_management_system">sms</Path>
+</Object>

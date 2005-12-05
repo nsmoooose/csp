@@ -1,0 +1,475 @@
+<?xml version="1.0" standalone="no"?>
+<!-- 
+     *** WARNING: THIS IS A GENERATED FILE ***
+     Think twice before editing this file directly!
+     Generated from /b/mrose/projects/csp/CSP.cockpit/CSP/CSPSim/Tools/FlightControlSystem/m2k at Sat Oct 15 10:53:54 2005
+-->
+<Object class="FlightControlSystem">
+	<List name="nodes">
+
+		<!-- Normal acceleration in units of nominal gravitational acceleration at sea level. -->
+		<Object class="InputScalarChannel">
+			<Key name="id">G</Key>
+			<String name="channel">FlightDynamics.G</String>
+		</Object>
+
+		<Object class="OutputChannel">
+			<Key name="id">aileron_deflection</Key>
+			<String name="channel">ControlSurfaces.AileronDeflection</String>
+			<Float name="clamp_hi">0.436332312999</Float>
+			<Float name="clamp_lo">-0.279252680319</Float>
+			<Float name="gain">-0.0174532925199</Float>
+			<Key name="input">da_f</Key>
+			<Float name="rate_limit_dec">-1.3962634016</Float>
+			<Float name="rate_limit_inc">1.3962634016</Float>
+		</Object>
+
+		<Object class="OutputChannel">
+			<Key name="id">airbrake_deflection</Key>
+			<String name="channel">ControlSurfaces.AirbrakeDeflection</String>
+			<Float name="clamp_hi">1.0471975512</Float>
+			<Float name="clamp_lo">0.0</Float>
+			<Float name="gain">0.0174532925199</Float>
+			<Key name="input">dsb</Key>
+			<Float name="rate_limit_dec">-0.349065850399</Float>
+			<Float name="rate_limit_inc">0.349065850399</Float>
+		</Object>
+
+		<!-- Angle of attack in degrees. -->
+		<Object class="InputScalarChannel">
+			<Key name="id">alpha</Key>
+			<String name="channel">FlightDynamics.Alpha</String>
+			<Float name="clamp_hi">0.523598775598</Float>
+			<Float name="clamp_lo">-0.0872664625997</Float>
+		</Object>
+
+		<!-- Lowpass filtered angle of attack. -->
+		<Object class="LagFilter">
+			<Key name="id">alpha_f</Key>
+			<Float name="a">10.0</Float>
+			<Key name="input">alpha</Key>
+		</Object>
+
+		<Object class="OutputChannel">
+			<Key name="id">alpha_f_output</Key>
+			<String name="channel">FCS.FilteredAlpha</String>
+			<Key name="input">alpha_f</Key>
+		</Object>
+
+		<Object class="Adder">
+			<Key name="id">da_f</Key>
+			<Float name="gain_a">-0.5</Float>
+			<Float name="gain_b">0.5</Float>
+			<Key name="input_a">de_left_f</Key>
+			<Key name="input_b">de_right_f</Key>
+		</Object>
+
+		<Object class="Scale">
+			<Key name="id">da_program</Key>
+			<Float name="gain">25.0</Float>
+			<Key name="input">roll_control</Key>
+		</Object>
+
+		<Object class="Adder">
+			<Key name="id">de_f</Key>
+			<Float name="gain_a">0.5</Float>
+			<Float name="gain_b">0.5</Float>
+			<Key name="input_a">de_left_f</Key>
+			<Key name="input_b">de_right_f</Key>
+		</Object>
+
+		<Object class="Adder">
+			<Key name="id">de_left</Key>
+			<Float name="clamp_hi">16</Float>
+			<Float name="clamp_lo">-25</Float>
+			<Float name="gain_a">-1.0</Float>
+			<Float name="gain_b">-1.0</Float>
+			<Key name="input_a">elevator_pitch_deflection_command</Key>
+			<Key name="input_b">da_program</Key>
+		</Object>
+
+		<Object class="LagFilter">
+			<Key name="id">de_left_f</Key>
+			<Float name="a">20.2</Float>
+			<Key name="input">de_left</Key>
+		</Object>
+
+		<Object class="Adder">
+			<Key name="id">de_right</Key>
+			<Float name="clamp_hi">16</Float>
+			<Float name="clamp_lo">-25</Float>
+			<Float name="gain_a">-1.0</Float>
+			<Float name="gain_b">1.0</Float>
+			<Key name="input_a">elevator_pitch_deflection_command</Key>
+			<Key name="input_b">da_program</Key>
+		</Object>
+
+		<Object class="LagFilter">
+			<Key name="id">de_right_f</Key>
+			<Float name="a">20.2</Float>
+			<Key name="input">de_right</Key>
+		</Object>
+
+		<!-- Speed brake deflection angle in degrees. -->
+		<Object class="Lesser">
+			<Key name="id">dsb</Key>
+			<Float name="gain_a">60.0</Float>
+			<Float name="gain_b">60.0</Float>
+			<Key name="input_a">speedbrake_control</Key>
+			<Key name="input_b">one</Key>
+		</Object>
+
+		<Object class="OutputChannel">
+			<Key name="id">elevator_deflection</Key>
+			<String name="channel">ControlSurfaces.ElevatorDeflection</String>
+			<Float name="clamp_hi">0.436332312999</Float>
+			<Float name="clamp_lo">-0.279252680319</Float>
+			<Float name="gain">-0.0174532925199</Float>
+			<Key name="input">de_f</Key>
+			<Float name="rate_limit_dec">-1.0471975512</Float>
+			<Float name="rate_limit_inc">1.0471975512</Float>
+		</Object>
+
+		<Object class="Adder">
+			<Key name="id">elevator_deviation</Key>
+			<Float name="gain_a">-1.0</Float>
+			<Key name="input_a">limited_g_command_f</Key>
+			<Key name="input_b">target_f</Key>
+		</Object>
+
+		<Object class="Integrator">
+			<Key name="id">elevator_deviation_integrator</Key>
+			<Float name="clamp_hi">25.0</Float>
+			<Float name="clamp_lo">-16.0</Float>
+			<Float name="gain">5.0</Float>
+			<Key name="input">reduced_elevator_deviation</Key>
+		</Object>
+
+		<Object class="OutputChannel">
+			<Key name="id">elevator_deviation_integrator_output</Key>
+			<String name="channel">FCS.ElevatorDeviationIntegrator</String>
+			<Key name="input">elevator_deviation_integrator</Key>
+		</Object>
+
+		<Object class="OutputChannel">
+			<Key name="id">elevator_deviation_output</Key>
+			<String name="channel">FCS.ElevatorDeviation</String>
+			<Key name="input">elevator_deviation</Key>
+		</Object>
+
+		<Object class="Adder">
+			<Key name="id">elevator_pitch_deflection_command</Key>
+			<Float name="clamp_hi">25</Float>
+			<Float name="clamp_lo">-16</Float>
+			<Float name="gain_a">8.0</Float>
+			<Key name="input_a">reduced_elevator_deviation</Key>
+			<Key name="input_b">elevator_deviation_integrator</Key>
+		</Object>
+
+		<Object class="OutputChannel">
+			<Key name="id">elevator_pitch_deflection_command_output</Key>
+			<String name="channel">FCS.ElevatorPitchDeflectionCommand</String>
+			<Key name="input">elevator_pitch_deflection_command</Key>
+		</Object>
+
+		<Object class="OutputChannel">
+			<Key name="id">elevron_deflection_left</Key>
+			<String name="channel">ControlSurfaces.LeftElevronDeflection</String>
+			<Float name="clamp_hi">0.436332312999</Float>
+			<Float name="clamp_lo">-0.279252680319</Float>
+			<Float name="gain">-0.0174532925199</Float>
+			<Key name="input">de_left_f</Key>
+			<Float name="rate_limit_dec">-1.3962634016</Float>
+			<Float name="rate_limit_inc">1.3962634016</Float>
+		</Object>
+
+		<Object class="OutputChannel">
+			<Key name="id">elevron_deflection_right</Key>
+			<String name="channel">ControlSurfaces.RightElevronDeflection</String>
+			<Float name="clamp_hi">0.436332312999</Float>
+			<Float name="clamp_lo">-0.279252680319</Float>
+			<Float name="gain">-0.0174532925199</Float>
+			<Key name="input">de_right_f</Key>
+			<Float name="rate_limit_dec">-1.3962634016</Float>
+			<Float name="rate_limit_inc">1.3962634016</Float>
+		</Object>
+
+		<Object class="OutputChannel">
+			<Key name="id">filtered_pitch_rate_output</Key>
+			<String name="channel">FCS.FilteredPitchRate</String>
+			<Key name="input">pitch_rate_f</Key>
+		</Object>
+
+		<!-- NASA-79-tp1538 page 212 (F-16A) -->
+		<Object class="Schedule1">
+			<Key name="id">g_command</Key>
+			<Float name="gain">180.0</Float>
+			<Key name="input">pitch_control</Key>
+			<Table1 name="schedule" method="linear">
+				<Breaks0 spacing="10.0">-180.0 -80.0 -30.0 -10.0 10.0 40.0 180.0</Breaks0>
+				<Values>-4.0 -4.0 -0.8 0.0 0.0 0.5 10.8</Values>
+			</Table1>
+		</Object>
+
+		<Object class="OutputChannel">
+			<Key name="id">g_command_output</Key>
+			<String name="channel">FCS.GCommand</String>
+			<Key name="input">g_command</Key>
+		</Object>
+
+		<!-- G - 1 -->
+		<Object class="Scale">
+			<Key name="id">g_minus_1</Key>
+			<Key name="input">G</Key>
+			<Float name="offset">-1.0</Float>
+		</Object>
+
+		<Object class="OutputChannel">
+			<Key name="id">g_minus_1_output</Key>
+			<String name="channel">FCS.GMinus1</String>
+			<Key name="input">g_minus_1</Key>
+		</Object>
+
+		<Object class="Constant">
+			<Key name="id">g_trim</Key>
+			<Float name="value">0.0</Float>
+		</Object>
+
+		<!-- Lateral acceleration (body X-axis) in si units. -->
+		<Object class="InputVectorXChannel">
+			<Key name="id">lateral_acceleration</Key>
+			<String name="channel">Kinetics.AccelerationBody</String>
+		</Object>
+
+		<Object class="Adder">
+			<Key name="id">left_brake_channel</Key>
+			<Float name="clamp_hi">1.0</Float>
+			<Float name="clamp_lo">0.0</Float>
+			<Float name="gain_b">-1.0</Float>
+			<Key name="input_a">left_brake_input</Key>
+			<Key name="input_b">yaw_control</Key>
+		</Object>
+
+		<Object class="OutputChannel">
+			<Key name="id">left_brake_command</Key>
+			<String name="channel">LandingGear.LeftGear.BrakeCommand</String>
+			<Float name="clamp_hi">1.0</Float>
+			<Float name="clamp_lo">0.0</Float>
+			<Key name="input">left_brake_channel</Key>
+			<Float name="rate_limit_dec">-4.0</Float>
+			<Float name="rate_limit_inc">4.0</Float>
+		</Object>
+
+		<Object class="InputScalarChannel">
+			<Key name="id">left_brake_input</Key>
+			<String name="channel">ControlInputs.LeftBrakeInput</String>
+		</Object>
+
+		<Object class="Adder">
+			<Key name="id">limited_g_command</Key>
+			<Key name="input_a">negative_g_limit</Key>
+			<Key name="input_b">positive_g_limit</Key>
+		</Object>
+
+		<Object class="LagFilter">
+			<Key name="id">limited_g_command_f</Key>
+			<Float name="a">8.3</Float>
+			<Key name="input">limited_g_command</Key>
+		</Object>
+
+		<Object class="OutputChannel">
+			<Key name="id">limited_g_command_f_output</Key>
+			<String name="channel">FCS.FilteredLimitedGCommand</String>
+			<Key name="input">limited_g_command_f</Key>
+		</Object>
+
+		<Object class="Scale">
+			<Key name="id">negative_g_limit</Key>
+			<Float name="clamp_hi">0.0</Float>
+			<Float name="clamp_lo">-3.0</Float>
+			<Key name="input">trimmed_g_command</Key>
+		</Object>
+
+		<Object class="OutputChannel">
+			<Key name="id">negative_g_limit_output</Key>
+			<String name="channel">FCS.NegativeGLimit</String>
+			<Key name="input">negative_g_limit</Key>
+		</Object>
+
+		<Object class="BooleanSwitch">
+			<Key name="id">nose_wheel_steering</Key>
+			<String name="channel">LandingGear.FrontGear.WOW</String>
+			<Key name="input_a">yaw_control</Key>
+			<Key name="input_b">zero</Key>
+		</Object>
+
+		<Object class="Constant">
+			<Key name="id">one</Key>
+			<Float name="value">1.0</Float>
+		</Object>
+
+		<Object class="InputScalarChannel">
+			<Key name="id">pitch_control</Key>
+			<String name="channel">ControlInputs.PitchInput</String>
+		</Object>
+
+		<Object class="OutputChannel">
+			<Key name="id">pitch_control_output</Key>
+			<String name="channel">FCS.PitchControl</String>
+			<Key name="input">pitch_control</Key>
+		</Object>
+
+		<Object class="OutputChannel">
+			<Key name="id">pitch_input</Key>
+			<String name="channel">FCS.dE</String>
+			<Key name="input">de_f</Key>
+		</Object>
+
+		<!-- Pitch rate in radians/sec. -->
+		<Object class="InputVectorXChannel">
+			<Key name="id">pitch_rate</Key>
+			<String name="channel">Kinetics.AngularVelocityBody</String>
+		</Object>
+
+		<Object class="LeadFilter">
+			<Key name="id">pitch_rate_f</Key>
+			<Float name="a">1.0</Float>
+			<Key name="input">pitch_rate</Key>
+		</Object>
+
+		<Object class="Scale">
+			<Key name="id">positive_g_limit</Key>
+			<Float name="clamp_hi">8.0</Float>
+			<Float name="clamp_lo">0.0</Float>
+			<Key name="input">trimmed_g_command</Key>
+		</Object>
+
+		<Object class="OutputChannel">
+			<Key name="id">positive_g_limit_output</Key>
+			<String name="channel">FCS.PositiveGLimit</String>
+			<Key name="input">positive_g_limit</Key>
+		</Object>
+
+		<!-- Dynamic pressure in si units. -->
+		<Object class="InputScalarChannel">
+			<Key name="id">qbar</Key>
+			<String name="channel">FlightDynamics.QBar</String>
+		</Object>
+
+		<Object class="OutputChannel">
+			<Key name="id">qbar_output</Key>
+			<String name="channel">FCS.DynamicPressure</String>
+			<Key name="input">qbar</Key>
+		</Object>
+
+		<Object class="Schedule2">
+			<Key name="id">reduced_elevator_deviation</Key>
+			<Float name="gain_a">1.5</Float>
+			<Float name="gain_b">0.001</Float>
+			<Key name="input_a">elevator_deviation</Key>
+			<Key name="input_b">qbar</Key>
+			<Table1 name="schedule" method="linear">
+				<Breaks0 spacing="4.0">0.0 10.0 44.0 200.0</Breaks0>
+				<Values>1.0 1.0 0.4 0.2</Values>
+			</Table1>
+		</Object>
+
+		<Object class="OutputChannel">
+			<Key name="id">reduced_elevator_deviation_output</Key>
+			<String name="channel">FCS.ReducedElevatorDeviation</String>
+			<Key name="input">reduced_elevator_deviation</Key>
+		</Object>
+
+		<Object class="Adder">
+			<Key name="id">right_brake_channel</Key>
+			<Float name="clamp_hi">1.0</Float>
+			<Float name="clamp_lo">0.0</Float>
+			<Float name="gain_b">1.0</Float>
+			<Key name="input_a">right_brake_input</Key>
+			<Key name="input_b">yaw_control</Key>
+		</Object>
+
+		<Object class="OutputChannel">
+			<Key name="id">right_brake_command</Key>
+			<String name="channel">LandingGear.RightGear.BrakeCommand</String>
+			<Float name="clamp_hi">1.0</Float>
+			<Float name="clamp_lo">0.0</Float>
+			<Key name="input">right_brake_channel</Key>
+			<Float name="rate_limit_dec">-4.0</Float>
+			<Float name="rate_limit_inc">4.0</Float>
+		</Object>
+
+		<Object class="InputScalarChannel">
+			<Key name="id">right_brake_input</Key>
+			<String name="channel">ControlInputs.RightBrakeInput</String>
+		</Object>
+
+		<Object class="InputScalarChannel">
+			<Key name="id">roll_control</Key>
+			<String name="channel">ControlInputs.RollInput</String>
+		</Object>
+
+		<Object class="OutputChannel">
+			<Key name="id">rudder_deflection</Key>
+			<String name="channel">ControlSurfaces.RudderDeflection</String>
+			<Float name="clamp_hi">0.523598775598</Float>
+			<Float name="clamp_lo">-0.523598775598</Float>
+			<Float name="gain">-0.523598775598</Float>
+			<Key name="input">yaw_control</Key>
+			<Float name="rate_limit_dec">-2.09439510239</Float>
+			<Float name="rate_limit_inc">2.09439510239</Float>
+		</Object>
+
+		<Object class="InputScalarChannel">
+			<Key name="id">speedbrake_control</Key>
+			<String name="channel">ControlInputs.AirbrakeInput</String>
+		</Object>
+
+		<Object class="OutputChannel">
+			<Key name="id">steering_command</Key>
+			<String name="channel">LandingGear.FrontGear.SteeringCommand</String>
+			<Float name="clamp_hi">1.0</Float>
+			<Float name="clamp_lo">-1.0</Float>
+			<Key name="input">nose_wheel_steering</Key>
+			<Float name="rate_limit_dec">-4.0</Float>
+			<Float name="rate_limit_inc">4.0</Float>
+		</Object>
+
+		<Object class="Adder">
+			<Key name="id">target</Key>
+			<Float name="gain_b">0.334</Float>
+			<Key name="input_a">g_minus_1</Key>
+			<Key name="input_b">pitch_rate_f</Key>
+		</Object>
+
+		<Object class="LeadLagFilter">
+			<Key name="id">target_f</Key>
+			<Float name="a">4.0</Float>
+			<Float name="b">12.0</Float>
+			<Float name="c">3.0</Float>
+			<Key name="input">target</Key>
+		</Object>
+
+		<Object class="Adder">
+			<Key name="id">trimmed_g_command</Key>
+			<Key name="input_a">g_command</Key>
+			<Key name="input_b">g_trim</Key>
+		</Object>
+
+		<Object class="InputScalarChannel">
+			<Key name="id">yaw_control</Key>
+			<String name="channel">ControlInputs.RudderInput</String>
+		</Object>
+
+		<!-- Yaw rate in radians/sec. -->
+		<Object class="InputVectorZChannel">
+			<Key name="id">yaw_rate</Key>
+			<String name="channel">Kinetics.AngularVelocityBody</String>
+		</Object>
+
+		<Object class="Constant">
+			<Key name="id">zero</Key>
+			<Float name="value">0.0</Float>
+		</Object>
+	</List>
+</Object>

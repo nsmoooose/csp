@@ -1,0 +1,27 @@
+<Object class="ObjectModel">
+	<String name="model_path">stores/f16_wing_fuel_tank.osg</String>
+	<Vector name="axis_0">1 0 0</Vector>
+	<Vector name="axis_1">0 1 0</Vector>
+	<Bool name="smooth">false</Bool>
+	<Enum name="effect">SpecularHighlights</Enum>
+	<List name="contacts">
+		<Vector>0.4 2.00 0.4</Vector>
+		<Vector>0.4 2.00 -0.4</Vector>
+		<Vector>-0.4 2.00 0.4</Vector>
+		<Vector>-0.4 2.00 -0.4</Vector>
+		<Vector>0.4 -2.00 0.4</Vector>
+		<Vector>0.4 -2.00 -0.4</Vector>
+		<Vector>-0.4 -2.00 0.4</Vector>
+		<Vector>-0.4 -2.00 -0.4</Vector>
+	</List>
+	<List name="debug_points">
+		<Vector>0.4 2.00 0.4</Vector>
+		<Vector>0.4 2.00 -0.4</Vector>
+		<Vector>-0.4 2.00 0.4</Vector>
+		<Vector>-0.4 2.00 -0.4</Vector>
+		<Vector>0.4 -2.00 0.4</Vector>
+		<Vector>0.4 -2.00 -0.4</Vector>
+		<Vector>-0.4 -2.00 0.4</Vector>
+		<Vector>-0.4 -2.00 -0.4</Vector>
+	</List>
+</Object>

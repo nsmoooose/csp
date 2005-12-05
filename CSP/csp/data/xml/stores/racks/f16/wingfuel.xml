@@ -1,0 +1,26 @@
+<Object class="RackData">
+	<String name="name">F16 wing fuel tank rack</String>
+	<Float name="mass">20</Float>
+	<Float name="drag_factor">0.05</Float>
+	<Matrix name="unit_inertia">1 0 0 0 0.1 0 0 0 1</Matrix>
+	<Vector name="cg_offset">0 0 0 0 0 0 0 0 -0.03</Vector>
+	<List name="mounts">
+		<Object class="RackMount">
+			<Vector name="offset">0 0.895 -0.503</Vector>
+			<Vector name="eject_velocity">0 0 -3</Vector>
+			<Vector name="eject_angular_velocity">-0.5 0 0</Vector>
+		</Object>
+	</List>
+	<Object class="StoreCompatibilityTable" name="default_compatibility">
+		<List name="stores" type="key">
+			tanks.f16.wing_370gal
+		</List>
+	</Object>
+	<Object name="model" class="ObjectModel">
+		<String name="model_path">stores/f16_wing_fuel_pylon.osg</String>
+		<Vector name="axis_0">1 0 0</Vector>
+		<Vector name="axis_1">0 1 0</Vector>
+		<Bool name="smooth">false</Bool>
+		<Enum name="effect">SpecularHighlights</Enum>
+	</Object>
+</Object>

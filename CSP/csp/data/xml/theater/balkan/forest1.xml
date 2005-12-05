@@ -1,0 +1,19 @@
+<?xml version="1.0" standalone="no"?>
+
+<Object class="RandomBillboardModel">
+    <List name="models">
+        <Object class="FeatureQuad">
+            <String name="texture">Trees/tree2.png</String>
+            <Float name="width">10</Float>
+            <Float name="height">15</Float>
+        </Object>
+    </List>
+    <List name="density">
+        <Float>0.01</Float>
+    </List>
+    <Float name="minimum_spacing">2</Float>
+    <Object class="RectangularCurve" name="isocontour">
+        <Float name="width">20</Float>
+        <Float name="height">10</Float>
+    </Object>
+</Object>

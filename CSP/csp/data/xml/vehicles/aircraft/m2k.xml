@@ -1,0 +1,26 @@
+<?xml version="1.0" standalone="no"?>
+
+<!--
+    Mirage 2000
+-->
+
+<Object class="AircraftObject">
+
+    <Path name="model">m2k.model</Path>
+
+    <!-- Mass/Inertial properties -->
+    <!-- empty mass = 7600 kg -->
+    <Float name="mass">10000.0</Float>
+    <!-- these values come from a FS2k2 add-on -->
+    <Matrix name="inertia">
+    171554.0      0.0       0.0
+         0.0  55427.0    1764.0
+         0.0   1764.0  252326.0
+    </Matrix>
+    <Vector name="reference_center_of_mass_offset">0.0 1.0 0</Vector>
+
+    <Path name="human_systems">m2k.systems</Path>
+    <Path name="remote_systems">m2k.remote</Path>
+    <Path name="agent_systems">m2k.systems</Path>
+
+</Object>

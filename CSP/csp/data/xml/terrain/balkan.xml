@@ -1,0 +1,27 @@
+<?xml version="1.0" standalone="no"?>
+
+<Object class="DemeterTerrain">
+	<String name="name">Balkan Terrain</String>
+	<Int name="version">0</Int>
+	<Int name="use_dynamic_textures">0</Int>
+	<Int name="use_texture_compression">1</Int>
+	<Int name="preload_textures">1</Int>
+	<Int name="use_texture_factory">0</Int>
+	<Int name="max_triangles">60000</Int>
+	<Int name="lattice">1</Int>
+	<Int name="lattice_width">16</Int>
+	<Int name="lattice_height">16</Int>
+	<String name="detail_texture_file">Stone4.bmp</String>
+	<String name="lattice_basename">balkanMap</String>
+	<String name="lattice_elevation_extension">bmp</String>
+	<String name="lattice_texture_extension">bmp</String>
+	<String name="texture_file"></String>
+	<String name="elevation_file"></String>
+	<Float name="vertex_spacing">250</Float>
+	<Float name="vertex_height">0.38</Float>
+	<Float name="detail_threshold">8</Float>
+	<LLA name="center">41.6450 16.0057 0.0</LLA>
+	<Float name="width">1024000</Float>
+	<Float name="height">1024000</Float>
+</Object>
+

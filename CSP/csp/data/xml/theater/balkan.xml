@@ -1,0 +1,21 @@
+<?xml version="1.0" standalone="no"?>
+
+<Object class="Theater">
+	<String name="name">Balkan Theater</String>
+	<String name="description"/>
+	<String name="credits"/>
+	<List name="modules">
+		<!--Object class="Module">
+			<String name="path">modules/demeter/libdemeter.so</String>
+			<String name="name">demeter_csp</String>
+			<String name="brief">Demeter Terrain Engine for CSP</String>
+			<String name="description"/>
+			<String name="copyright"/>
+			<String name="credits"/>
+		</Object-->
+	</List>
+	<Path name="terrain">.terrain.balkan</Path>
+	<Path name="feature_group_list">balkan.objectives</Path>
+</Object>
+
+

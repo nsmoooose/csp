@@ -1,0 +1,7 @@
+<?xml version="1.0" standalone="no"?>
+
+<Object class="FeatureObjectModel">
+	<Path name="model">runway.model</Path>
+	<Int name="hit_points">20</Int>
+</Object>
+

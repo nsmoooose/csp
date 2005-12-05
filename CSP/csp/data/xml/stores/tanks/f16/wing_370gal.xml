@@ -1,0 +1,10 @@
+<Object class="FuelTankData">
+	<String name="name">F16 wing fuel tank (370 gallon)</String>
+	<Float name="capacity">1400</Float>
+	<Float name="mass">206</Float> <!-- from dash-one, p. A1-3 -->
+	<Float name="drag_factor">6.75</Float>
+	<Matrix name="unit_inertia">1.5 0 0 0 0.03 0 0 0 1.5</Matrix>
+	<Vector name="cg_offset">0 0 0 0 0 0 0 0 -0.25</Vector>
+	<Path name="model">wing_370gal.model</Path>
+	<Path name="object">wing_370gal.object</Path>
+</Object>

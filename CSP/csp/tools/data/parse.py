@@ -425,7 +425,6 @@ class PathHandler(SimpleHandler):
 		interface.set(obj, name, self.getElement())
 
 
-# DEPRECATED: the External type is no longer supported.
 class ExternalHandler(SimpleHandler):
 	def __init__(self, id, base, name, attrs):
 		SimpleHandler.__init__(self, id, base, name, attrs)

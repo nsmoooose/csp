@@ -1,7 +1,7 @@
 <?xml version="1.0" standalone="no"?>
 
 <Object class="ObjectModel">
-    <String name="model_path">caissons/caisson11/caisson11.osg</String>
+    <External name="model_path">caissons/caisson11/caisson11.osg</External>
     <Vector name="axis_0">1 0 0</Vector>
     <Vector name="axis_1">0 1.0 0.0</Vector>
     <Vector name="offset">0 0 0</Vector>

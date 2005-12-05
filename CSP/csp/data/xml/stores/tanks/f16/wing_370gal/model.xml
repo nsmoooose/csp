@@ -1,5 +1,5 @@
 <Object class="ObjectModel">
-	<String name="model_path">stores/f16_wing_fuel_tank.osg</String>
+	<External name="model_path">stores/f16_wing_fuel_tank.osg</External>
 	<Vector name="axis_0">1 0 0</Vector>
 	<Vector name="axis_1">0 1 0</Vector>
 	<Bool name="smooth">false</Bool>

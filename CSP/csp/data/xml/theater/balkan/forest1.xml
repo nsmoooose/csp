@@ -3,7 +3,7 @@
 <Object class="RandomBillboardModel">
     <List name="models">
         <Object class="FeatureQuad">
-            <String name="texture">Trees/tree2.png</String>
+            <External name="texture">Trees/tree2.png</External>
             <Float name="width">10</Float>
             <Float name="height">15</Float>
         </Object>

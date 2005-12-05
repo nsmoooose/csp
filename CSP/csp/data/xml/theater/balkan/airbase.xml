@@ -40,115 +40,115 @@
         </Object>
         <!-- Taxi signalisation -->
         <Object class="FeatureLayout">
-            <Path name="model">caisson01</Path>
+            <Path name="model">caissons.caisson01</Path>
             <Float name="x">365</Float>
             <Float name="y">1218</Float>
             <Float name="orientation">3.64</Float>
         </Object>
         <Object class="FeatureLayout">
-            <Path name="model">caisson02</Path>
+            <Path name="model">caissons.caisson02</Path>
             <Float name="x">240</Float>
             <Float name="y">1138</Float>
             <Float name="orientation">2.07</Float>
         </Object>
         <Object class="FeatureLayout">
-            <Path name="model">caisson03</Path>
+            <Path name="model">caissons.caisson03</Path>
             <Float name="x">52</Float>
             <Float name="y">1138</Float>
             <Float name="orientation">2.07</Float>
         </Object>
         <Object class="FeatureLayout">
-            <Path name="model">caisson04</Path>
+            <Path name="model">caissons.caisson04</Path>
             <Float name="x">48</Float>
             <Float name="y">1138</Float>
             <Float name="orientation">-2.07</Float>
         </Object>
         <Object class="FeatureLayout">
-            <Path name="model">caisson05</Path>
+            <Path name="model">caissons.caisson05</Path>
             <Float name="x">30</Float>
             <Float name="y">1068</Float>
             <Float name="orientation">-0.64</Float>
         </Object>
         <Object class="FeatureLayout">
-            <Path name="model">caisson06</Path>
+            <Path name="model">caissons.caisson06</Path>
             <Float name="x">160</Float>
             <Float name="y">1138</Float>
             <Float name="orientation">-2.07</Float>
         </Object>
         <Object class="FeatureLayout">
-            <Path name="model">caisson07</Path>
+            <Path name="model">caissons.caisson07</Path>
             <Float name="x">215</Float>
             <Float name="y">400</Float>
             <Float name="orientation">3.64</Float>
         </Object>
         <Object class="FeatureLayout">
-            <Path name="model">caisson08</Path>
+            <Path name="model">caissons.caisson08</Path>
             <Float name="x">180</Float>
             <Float name="y">400</Float>
             <Float name="orientation">2.64</Float>
         </Object>
         <Object class="FeatureLayout">
-            <Path name="model">caisson09</Path>
+            <Path name="model">caissons.caisson09</Path>
             <Float name="x">52</Float>
             <Float name="y">340</Float>
             <Float name="orientation">2.07</Float>
         </Object>
          <Object class="FeatureLayout">
-            <Path name="model">caisson10</Path>
+            <Path name="model">caissons.caisson10</Path>
             <Float name="x">30</Float>
             <Float name="y">240</Float>
             <Float name="orientation">-0.64</Float>
         </Object>
         <Object class="FeatureLayout">
-            <Path name="model">caisson11</Path>
+            <Path name="model">caissons.caisson11</Path>
             <Float name="x">30</Float>
             <Float name="y">500</Float>
             <Float name="orientation">3.64</Float>
         </Object>
         <Object class="FeatureLayout">
-            <Path name="model">caisson12</Path>
+            <Path name="model">caissons.caisson12</Path>
             <Float name="x">30</Float>
             <Float name="y">-120</Float>
             <Float name="orientation">3.64</Float>
         </Object>
         <Object class="FeatureLayout">
-            <Path name="model">caisson13</Path>
+            <Path name="model">caissons.caisson13</Path>
             <Float name="x">30</Float>
             <Float name="y">-380</Float>
             <Float name="orientation">-0.64</Float>
         </Object>
         <Object class="FeatureLayout">
-            <Path name="model">caisson14</Path>
+            <Path name="model">caissons.caisson14</Path>
             <Float name="x">30</Float>
             <Float name="y">-820</Float>
             <Float name="orientation">3.64</Float>
         </Object>
         <Object class="FeatureLayout">
-            <Path name="model">caisson15</Path>
+            <Path name="model">caissons.caisson15</Path>
             <Float name="x">160</Float>
             <Float name="y">380</Float>
             <Float name="orientation">-1.07</Float>
         </Object>
         <Object class="FeatureLayout">
-            <Path name="model">caisson16</Path>
+            <Path name="model">caissons.caisson16</Path>
             <Float name="x">160</Float>
             <Float name="y">-255</Float>
             <Float name="orientation">-1.07</Float>
         </Object>
         <Object class="FeatureLayout">
-            <Path name="model">caisson17</Path>
+            <Path name="model">caissons.caisson17</Path>
             <Float name="x">180</Float>
             <Float name="y">-204</Float>
             <Float name="orientation">1.57</Float>
         </Object>
         <Object class="FeatureLayout">
-            <Path name="model">caisson17</Path>
+            <Path name="model">caissons.caisson17</Path>
             <Float name="x">180</Float>
             <Float name="y">-398</Float>
             <Float name="orientation">1.57</Float>
         </Object>
         <Object class="FeatureLayout">
-            <Path name="model">caisson17</Path>
+            <Path name="model">caissons.caisson17</Path>
             <Float name="x">180</Float>
             <Float name="y">-553</Float>
             <Float name="orientation">1.57</Float>

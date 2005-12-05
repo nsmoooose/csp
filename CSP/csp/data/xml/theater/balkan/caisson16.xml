@@ -1,6 +1,6 @@
 <?xml version="1.0" standalone="no"?>
 
 <Object class="FeatureObjectModel">
-    <Path name="model">caissons.caisson16.model</Path>
+    <Path name="model">caisson16.model</Path>
     <Int name="hit_points">30</Int>
 </Object>

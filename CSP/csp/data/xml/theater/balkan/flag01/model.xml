@@ -1,7 +1,7 @@
 <?xml version="1.0" standalone="no"?>
 
 <Object class="ObjectModel">
-    <External name="model_path">flag01/flag01.osg</External>
+    <External name="model_path">airbase/flag01/flag01.osg</External>
     <Vector name="axis_0">1 0 0</Vector>
     <Vector name="axis_1">0 1 0</Vector>
     <!--Int name="cull_face">1</Int-->

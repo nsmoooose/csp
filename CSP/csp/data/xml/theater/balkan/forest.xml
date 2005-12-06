@@ -3,17 +3,17 @@
 <Object class="RandomBillboardModel">
     <List name="models">
         <Object class="FeatureQuad">
-            <External name="texture">Trees/tree0.png</External>
+            <External name="texture">trees/tree0.png</External>
             <Float name="width">6</Float>
             <Float name="height">10</Float>
         </Object>
         <Object class="FeatureQuad">
-            <External name="texture">Trees/tree5.png</External>
+            <External name="texture">trees/tree5.png</External>
             <Float name="width">8</Float>
             <Float name="height">12</Float>
         </Object>
         <Object class="FeatureQuad">
-            <External name="texture">Trees/tree6.png</External>
+            <External name="texture">trees/tree6.png</External>
             <Float name="width">10</Float>
             <Float name="height">14</Float>
         </Object>

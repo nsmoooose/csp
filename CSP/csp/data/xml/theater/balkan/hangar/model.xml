@@ -1,7 +1,7 @@
 <?xml version="1.0" standalone="no"?>
 
 <Object class="ObjectModel">
-    <External name="model_path">Hangar/hangar01.3ds</External>
+    <External name="model_path">airbase/hangar01/hangar01.3ds</External>
     <Vector name="axis_0">1 0 0</Vector>
     <Vector name="axis_1">0 1 0</Vector>
     <Int name="cull_face">0</Int>

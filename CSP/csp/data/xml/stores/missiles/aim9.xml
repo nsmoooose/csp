@@ -7,7 +7,7 @@
 	<Matrix name="unit_inertia">0.68 0 0 0 0.01 0 0 0 0.68</Matrix>
 	<Vector name="cg_offset">0 0 0 0 0 0 0 0 -0.065</Vector>
 	<Object name="model" class="ObjectModel">
-		<External name="model_path">stores/aim9.osg</External>
+		<External name="model_path">stores/missiles/aim9/aim9.osg</External>
 		<Vector name="axis_0">1 0 0</Vector>
 		<Vector name="axis_1">0 1 0</Vector>
 		<Bool name="smooth">false</Bool>

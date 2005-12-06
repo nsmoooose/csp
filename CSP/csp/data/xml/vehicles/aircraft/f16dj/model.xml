@@ -2,7 +2,7 @@
 
 <Object class="ObjectModel">
 	<String name="label">F16</String>
-	<External name="model_path">F16/DJ/F16DJ.osg</External>
+	<External name="model_path">aircraft/f16/f16dj.osg</External>
 	<Vector name="axis_0">1 0 0</Vector>
 	<Vector name="axis_1">0 1 0</Vector>
 	<Vector name="view_point">0.0 4.60 1.20</Vector>

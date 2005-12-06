@@ -1,7 +1,7 @@
 <?xml version="1.0" standalone="no"?>
 
 <Object class="ObjectModel">
-    <External name="model_path">Lightpylon1/Lightpylon1.osg</External>
+    <External name="model_path">airbase/lightpylon/lightpylon.osg</External>
     <Vector name="axis_0">1 0 0</Vector>
     <Vector name="axis_1">0 1 0</Vector>
     <Bool name="smooth">true</Bool>

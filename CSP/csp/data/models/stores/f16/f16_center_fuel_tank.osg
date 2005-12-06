@@ -60,7 +60,7 @@ MatrixTransform {
             GL_TEXTURE_2D ON
             Texture2D {
               DataVariance STATIC
-              file "images/t7.tga"
+              file "f16/T7.tga"
               wrap_s CLAMP_TO_EDGE
               wrap_t CLAMP_TO_EDGE
               wrap_r CLAMP_TO_EDGE

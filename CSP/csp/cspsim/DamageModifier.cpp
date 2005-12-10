@@ -22,7 +22,7 @@
  *
  **/
 
-#include <csp/cspsim/theater/DamageModifier.h>
+#include <csp/cspsim/DamageModifier.h>
 #include <csp/csplib/data/ObjectInterface.h>
 
 CSP_NAMESPACE

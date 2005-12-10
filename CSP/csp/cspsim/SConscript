@@ -22,156 +22,302 @@ def PackageConfig(env):
 	print ':: csp.cspsim config'
 	conf = build.CustomConfigure(env)
 	valid = 1
-	valid = conf.CheckLib('SDL_image', 'IMG_Load') and valid
-	valid = conf.CheckOSGVersion('osg', '0.9.6') and valid
-	valid = conf.CheckOSGVersion('osgUtil', '0.9.6') and valid
-	valid = conf.CheckOSGVersion('osgDB', '0.9.6') and valid
-	valid = conf.CheckOSGVersion('osgText', '0.9.6') and valid
-	valid = conf.CheckOSGVersion('osgParticle', '0.9.6') and valid
-	valid = conf.CheckLib('osgFX') and valid  # doesn't have a GetVersion function
-	valid = conf.CheckLib('OpenThreads') and valid  # doesn't have a GetVersion function
+	valid = conf.CheckPkgConfig('openscenegraph', version='0.9.8', lib_name='osg') and valid
+	valid = conf.CheckPkgConfig('openthreads', version='0.9.8', lib_name='openthreads') and valid
+	valid = conf.CheckPkgConfig('producer', version='0.9.8', lib_name='producer') and valid
 	valid = conf.CheckCommandVersion('sdl', 'sdl-config --version', '1.2.5') and valid
+	valid = conf.CheckLib('SDL_image', 'IMG_Load') and valid
 	if not valid:
 		print 'Missing dependencies; see http://csp.sf.net/wiki/Current_build_dependencies for more information.'
 		Exit(1)
 	env = conf.Finish()
 	env.ParseConfig('sdl-config --cflags --libs')
+	#env.ParseConfig('pkg-config --cflags --libs openscenegraph')
+	#env.ParseConfig('pkg-config --cflags --libs openthreads')
+	#env.ParseConfig('pkg-config --cflags --libs producer')
 
 env = env.Copy()
 env.SetConfig(PackageConfig)
-#env.Append(LIBPATH=['#/modules/demeter/.bin', '#/modules/chunklod/.bin'])
-#env.Append(LIBS=['demeter', 'chunklod'])
 
+cspsim_in = build.SourceList(
+	'cspsim.i',
 
-SOURCES = [
 	'AircraftObject.cpp',
+	'AircraftObject.h',
 	'AircraftPhysicsModel.cpp',
+	'AircraftPhysicsModel.h',
 	'Animation.cpp',
+	'Animation.h',
 	'AnimationSequence.cpp',
+	'AnimationSequence.h',
 	'Atmosphere.cpp',
+	'Atmosphere.h',
 	'BaseDynamics.cpp',
+	'BaseDynamics.h',
 	'BaseScreen.cpp',
+	'BaseScreen.h',
+	'Bus.h',
+	'CSPSim.cpp',
+	'CSPSim.h',
+	'ChannelMirror.h',
 	'Channels.cpp',
 #	'ChunkLodTerrain.cpp',
+#	'ChunkLodTerrain.h',
 	'CockpitInterface.cpp',
+	'CockpitInterface.h',
 	'Collision.cpp',
+	'Collision.h',
 	'Colorspace.cpp',
+	'Colorspace.h',
+	'ConditionsChannels.h',
 	'Config.cpp',
+	'Config.h',
+	'ControlInputsChannels.h',
+	'ControlNode.h',
+	'ControlSurfacesChannels.h',
 	'Controller.cpp',
-	'CSPSim.cpp',
+	'Controller.h',
+	'DamageModifier.cpp',
+	'DamageModifier.h',
 	'DataRecorder.cpp',
+	'DataRecorder.h',
 #	'DemeterTerrain.cpp',
+#	'DemeterTerrain.h',
 	'DoubleChannelMirror.cpp',
-	'DynamicalSystem.cpp',
 	'DynamicModel.cpp',
+	'DynamicModel.h',
 	'DynamicObject.cpp',
+	'DynamicObject.h',
+	'DynamicalSystem.cpp',
+	'DynamicalSystem.h',
 	'Engine.cpp',
+	'Engine.h',
 	'EventMapIndex.cpp',
+	'EventMapIndex.h',
 	'EventMapping.cpp',
+	'EventMapping.h',
 	'Exception.cpp',
+	'Exception.h',
+	'Filters.h',
 	'FlightControlSystem.cpp',
 	'FlightDynamics.cpp',
+	'FlightDynamics.h',
+	'FlightDynamicsChannels.h',
 	'FlightModel.cpp',
+	'FlightModel.h',
 	'FuelManagementSystem.cpp',
+	'FuelManagementSystem.h',
 	'GameScreen.cpp',
+	'GameScreen.h',
 	'GearAnimation.cpp',
-	'glDiagnostics.cpp',
+	'GearAnimation.h',
 	'HID.cpp',
+	'HID.h',
 	'InputEvent.cpp',
+	'InputEvent.h',
+	'InputEventChannel.h',
 	'InputInterface.cpp',
+	'InputInterface.h',
+	'KineticsChannels.h',
 	'LandingGear.cpp',
+	'LandingGear.h',
+	'LandingGearChannels.h',
 	'LogoScreen.cpp',
-#	'Module.cpp',
+	'LogoScreen.h',
+	'MapEvent.h',
+	'Module.cpp',
+	'Module.h',
+	'NavigationChannels.h',
 	'ObjectModel.cpp',
+	'ObjectModel.h',
 	'ObjectUpdate.net',
 	'PhysicsModel.cpp',
+	'PhysicsModel.h',
+	'Profile.h',
 	'Projection.cpp',
+	'Projection.h',
+	'SceneConstants.h',
 	'SceneModel.cpp',
+	'SceneModel.h',
 	'ScreenInfo.cpp',
+	'ScreenInfo.h',
 	'ScreenInfoManager.cpp',
+	'ScreenInfoManager.h',
 	'SimpleSceneManager.cpp',
+	'SimpleSceneManager.h',
 	'Sky.cpp',
+	'Sky.h',
 	'SmokeEffects.cpp',
+	'SmokeEffects.h',
 	'StabilityFlightModel.cpp',
+	'StabilityFlightModel.h',
 	'Station.cpp',
+	'Station.h',
+	'Steerpoint.h',
 	'System.cpp',
+	'System.h',
 	'SystemsModel.cpp',
+	'SystemsModel.h',
 	'TankObject.cpp',
+	'TankObject.h',
 	'TerrainObject.cpp',
+	'TerrainObject.h',
 	'Theater.cpp',
+	'Theater.h',
 	'ThrustData.cpp',
+	'ThrustData.h',
 	'VirtualScene.cpp',
+	'VirtualScene.h',
 
 	'battlefield/Battlefield.cpp',
+	'battlefield/Battlefield.h',
 	'battlefield/BattlefieldMessages.net',
+	'battlefield/GlobalBattlefield.h',
 	'battlefield/LocalBattlefield.cpp',
+	'battlefield/LocalBattlefield.h',
 	'battlefield/SceneManager.cpp',
+	'battlefield/SceneManager.h',
 	'battlefield/SimObject.cpp',
+	'battlefield/SimObject.h',
 
 	'f16/AlphaNumericDisplay.cpp',
-	'f16/GroundAvoidanceAdvisory.cpp',
-	'f16/UpFrontControls.cpp',
+	'f16/AlphaNumericDisplay.h',
+	'f16/DataEntry.h',
 	'f16/DataEntryPage.cpp',
-	'f16/PageCNI.cpp',
-	'f16/PageLIST.cpp',
-	'f16/FLCS.cpp',
+	'f16/DataEntryPage.h',
 	'f16/F16Channels.cpp',
+	'f16/F16Channels.h',
 	'f16/F16Engine.cpp',
+	'f16/F16Engine.h',
 	'f16/F16FlightModel.cpp',
+	'f16/F16FlightModel.h',
 	'f16/F16GearDynamics.cpp',
+	'f16/F16GearDynamics.h',
 	'f16/F16HUD.cpp',
+	'f16/F16HUD.h',
 	'f16/F16INS.cpp',
+#	'f16/F16InputSystem.cpp',
+#	'f16/F16InputSystem.h',
 	'f16/F16System.cpp',
+	'f16/F16System.h',
+	'f16/FLCS.cpp',
 	'f16/FuelSystem.cpp',
-	'f16/PanelHUD.cpp',
-	'f16/Radio.cpp',
+	'f16/GroundAvoidanceAdvisory.cpp',
+	'f16/GroundAvoidanceAdvisory.h',
 	'f16/NavigationSystem.cpp',
+	'f16/NavigationSystem.h',
+	'f16/PageALOW.h',
+	'f16/PageCNI.cpp',
+	'f16/PageCNI.h',
+	'f16/PageLIST.cpp',
+	'f16/PageLIST.h',
+	'f16/PageSTPT.h',
+	'f16/PanelHUD.cpp',
+	'f16/PanelHUD.h',
+	'f16/Radio.cpp',
+	'f16/Radio.h',
+	'f16/SpecialFonts.h',
+	'f16/UpFrontControls.cpp',
+	'f16/UpFrontControls.h',
+
+	'glDiagnostics.cpp',
+	'glDiagnostics.h',
 
 	'hud/HUD.cpp',
-	'hud/Tape.cpp',
-	'hud/Text.cpp',
+	'hud/HUD.h',
 	'hud/PitchLadder.cpp',
+	'hud/PitchLadder.h',
+	'hud/Tape.cpp',
+	'hud/Tape.h',
+	'hud/Text.cpp',
+	'hud/Text.h',
 
 	'stores/DragProfile.cpp',
+	'stores/DragProfile.h',
 	'stores/Projectile.cpp',
+	'stores/Projectile.h',
 	'stores/Stores.cpp',
+	'stores/Stores.h',
 	'stores/StoresDatabase.cpp',
+	'stores/StoresDatabase.h',
 	'stores/StoresDefinition.cpp',
+	'stores/StoresDefinition.h',
+	'stores/StoresDynamics.h',
 	'stores/StoresManagementSystem.cpp',
+	'stores/StoresManagementSystem.h',
 
 	'systems/AircraftFlightSensors.cpp',
+	'systems/AircraftFlightSensors.h',
 	'systems/AircraftInputSystem.cpp',
+	'systems/AircraftInputSystem.h',
 	'systems/AircraftSimpleFCS.cpp',
+	'systems/AircraftSimpleFCS.h',
 
 	'theater/CustomLayoutModel.cpp',
+	'theater/CustomLayoutModel.h',
 	'theater/ElevationCorrection.cpp',
+	'theater/ElevationCorrection.h',
 	'theater/Feature.cpp',
+	'theater/Feature.h',
 	'theater/FeatureGroup.cpp',
+	'theater/FeatureGroup.h',
 	'theater/FeatureGroupList.cpp',
+	'theater/FeatureGroupList.h',
+	'theater/FeatureGroupModel.h',
 	'theater/FeatureLayout.cpp',
+	'theater/FeatureLayout.h',
+	'theater/FeatureModel.h',
 	'theater/FeatureObjectModel.cpp',
+	'theater/FeatureObjectModel.h',
 	'theater/FeatureQuad.cpp',
+	'theater/FeatureQuad.h',
+	'theater/FeatureSceneGroup.h',
 	'theater/FeatureSceneModel.cpp',
+	'theater/FeatureSceneModel.h',
 	'theater/IsoContour.cpp',
+	'theater/IsoContour.h',
 	'theater/LayoutTransform.cpp',
+	'theater/LayoutTransform.h',
 	'theater/Objective.cpp',
+	'theater/Objective.h',
 	'theater/RandomBillboardModel.cpp',
+	'theater/RandomBillboardModel.h',
 	'theater/RandomForestModel.cpp',
+	'theater/RandomForestModel.h',
 
 	'views/CameraAgent.cpp',
+	'views/CameraAgent.h',
+	'views/CameraCommand.h',
 	'views/CameraKinematics.cpp',
+	'views/CameraKinematics.h',
 	'views/ExternalViews.cpp',
+	'views/ExternalViews.h',
 	'views/InternalView.cpp',
+	'views/InternalView.h',
 	'views/View.cpp',
-]
+	'views/View.h',
+)
 
 
-cspsim_wrap, cspsim_module = env.Swig('cspsim.i')
-INTERFACES = [env.SwigWrapper(cspsim_wrap)]
-
-cspsim = env.SharedLibrary('cspsim', INTERFACES + SOURCES, SHLIBPREFIX='_')
+cspsim = env.SharedLibrary('cspsim', cspsim_in.objects(env), SHLIBPREFIX='_')
 Alias(['all', 'cspsim'], [cspsim])
 
-env.Documentation('#/cspsim/.dox', '#/cspsim/cspsim.dox', ['#/cspsim/*.h', '#/cspsim/*.cpp', '#/cspsim/*/*.h', '#/cspsim/*/*.cpp'])
+vs = env.VisualStudioProject(cspsim, cspsim_in)
+Alias(['vs'], vs)
+
+env.Documentation('#/cspsim/.dox', 'cspsim.dox', cspsim_in.all)
 
 
+# old style config.  still might be useful since it pulls in fewer libs
+# than pkg-config.
+	#valid = conf.CheckOSGVersion('osg', '0.9.6') and valid
+	#valid = conf.CheckOSGVersion('osgUtil', '0.9.6') and valid
+	#valid = conf.CheckOSGVersion('osgDB', '0.9.6') and valid
+	#valid = conf.CheckOSGVersion('osgText', '0.9.6') and valid
+	#valid = conf.CheckOSGVersion('osgParticle', '0.9.6') and valid
+	#valid = conf.CheckLib('osgFX') and valid  # doesn't have a GetVersion function
+	#valid = conf.CheckLib('OpenThreads') and valid  # doesn't have a GetVersion function
+
+# no longer linking terrain modules directly
+#env.Append(LIBPATH=['#/modules/demeter/.bin', '#/modules/chunklod/.bin'])
+#env.Append(LIBS=['demeter', 'chunklod'])

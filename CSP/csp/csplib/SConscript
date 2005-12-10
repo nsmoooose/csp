@@ -18,31 +18,194 @@
 
 Import('env build')
 
-MODULES = [
-	'data',
-	'net',
-	'numeric',
-	'spatial',
-	'thread',
-	'util',
-]
-
 env = env.Copy()
 
-csplib_wrap, csplib_module = env.Swig('csplib.i')
+# TODO add headers to the list and post filter?  headers will be needed
+# for installation, dox, and vcproj
 
-INTERFACES = [env.SwigWrapper(csplib_wrap)]
-OBJECTS = build.BuildModules(env, MODULES)
+csplib_in = build.SourceList(
+	'csplib.i',
 
-TESTS = [obj for obj in OBJECTS if obj.name.startswith('test_')]
-OBJECTS = [obj for obj in OBJECTS if not obj.name.startswith('test_')]
+	'data/Archive.h',
+	'data/BaseType.h',
+	'data/DataArchive.cpp',
+	'data/DataArchive.h',
+	'data/DataManager.cpp',
+	'data/DataManager.h',
+	'data/Date.cpp',
+	'data/Date.h',
+	'data/Enum.cpp',
+	'data/Enum.h',
+	'data/External.cpp',
+	'data/External.h',
+	'data/GeoPos.cpp',
+	'data/GeoPos.h',
+	'data/InterfaceProxy.cpp',
+	'data/InterfaceProxy.h',
+	'data/InterfaceRegistry.cpp',
+	'data/InterfaceRegistry.h',
+	'data/Key.cpp',
+	'data/Key.h',
+	'data/LUT.cpp',
+	'data/LUT.h',
+	'data/Link.cpp',
+	'data/Link.h',
+	'data/Matrix3.cpp',
+	'data/Matrix3.h',
+	'data/Object.cpp',
+	'data/Object.h',
+	'data/ObjectInterface.h',
+	'data/Path.cpp',
+	'data/Path.h',
+	'data/Quat.cpp',
+	'data/Quat.h',
+	'data/Real.cpp',
+	'data/Real.h',
+	'data/TypeAdapter.cpp',
+	'data/TypeAdapter.h',
+	'data/Types.h',
+	'data/Vector3.cpp',
+	'data/Vector3.h',
 
-libcsplib = env.SharedLibrary('csplib', OBJECTS + INTERFACES, SHLIBPREFIX='_')
+	'net/Callbacks.h',
+	'net/ClientServer.cpp',
+	'net/ClientServer.h',
+	'net/ClientServerMessages.net',
+	'net/DispatchCache.h',
+	'net/DispatchHandler.cpp',
+	'net/DispatchHandler.h',
+	'net/DispatchManager.cpp',
+	'net/DispatchManager.h',
+	'net/DispatchTarget.cpp',
+	'net/DispatchTarget.h',
+	'net/HandlerSet.h',
+	'net/Median.h',
+	'net/MessageHandler.h',
+	'net/MessageQueue.h',
+	'net/NetBase.h',
+	'net/NetLog.h',
+	'net/NetRandom.cpp',
+	'net/NetRandom.h',
+	'net/NetworkInterface.cpp',
+	'net/NetworkInterface.h',
+	'net/NetworkMessage.h',
+	'net/NetworkNode.cpp',
+	'net/NetworkNode.h',
+	'net/PacketDecoder.h',
+	'net/PacketHandler.h',
+	'net/PacketQueue.h',
+	'net/PacketSource.h',
+	'net/PeerInfo.cpp',
+	'net/PeerInfo.h',
+	'net/RecordCodec.cpp',
+	'net/RecordCodec.h',
+	'net/ReliablePacket.h',
+	'net/RoutingHandler.cpp',
+	'net/RoutingHandler.h',
+	'net/Sockets.h',
+	'net/StopWatch.h',
+	'net/TaggedRecord.h',
+	'net/TaggedRecordRegistry.cpp',
+	'net/TaggedRecordRegistry.h',
 
-csplib_tests = env.SharedLibrary('csplib_tests', TESTS)
+	'numeric/NumericalMethod.cpp',
+	'numeric/NumericalMethod.h',
+	'numeric/Vector.h',
+	'numeric/VectorField.h',
 
-Alias(['all', 'test'], [libcsplib, csplib_tests])
-Alias(['csplib'], [libcsplib])
+	'spatial/QuadTree.cpp',
+	'spatial/QuadTree.h',
 
-env.Documentation('#/csplib/.dox', '#/csplib/csplib.dox', ['#/csplib/*/*.h', '#/csplib/*/*.cpp'])
+	'thread/AtomicCounter.h',
+	'thread/Synchronization.h',
+	'thread/Thread.h',
+	'thread/ThreadQueue.h',
+	'thread/ThreadUtil.h',
+
+	'util/Cache.h',
+	'util/Callback.h',
+	'util/CallbackDecl.h',
+	'util/CircularBuffer.h',
+	'util/Composite.h',
+	'util/Config.h',
+	'util/Conversions.h',
+	'util/Dispatch.h',
+	'util/Endian.h',
+	'util/Exception.cpp',
+	'util/Exception.h',
+	'util/Export.h',
+	'util/FileUtility.cpp',
+	'util/FileUtility.h',
+	'util/HashUtility.cpp',
+	'util/HashUtility.h',
+	'util/LocalUpdate.cpp',
+	'util/LocalUpdate.h',
+	'util/Log.h',
+	'util/LogConstants.h',
+	'util/LogStream.cpp',
+	'util/LogStream.h',
+	'util/Math.h',
+	'util/MessageTypes.h',
+	'util/Modules.cpp',
+	'util/Modules.h',
+	'util/Namespace.h',
+	'util/Noise.cpp',
+	'util/Noise.h',
+	'util/Properties.h',
+	'util/Random.cpp',
+	'util/Random.h',
+	'util/Ref.h',
+	'util/Referenced.h',
+	'util/ScopedPointer.h',
+	'util/SimpleConfig.cpp',
+	'util/SimpleConfig.h',
+	'util/Singleton.h',
+	'util/StringTools.cpp',
+	'util/StringTools.h',
+	'util/SynchronousUpdate.cpp',
+	'util/SynchronousUpdate.h',
+	'util/Testing.cpp',
+	'util/Testing.h',
+	'util/TimeStamp.h',
+	'util/Timing.cpp',
+	'util/Timing.h',
+	'util/Trace.cpp',
+	'util/Trace.h',
+	'util/Uniform.h',
+	'util/Verify.h',
+	'util/Version.cpp',
+	'util/Version.h',
+	'util/hash_map.h',
+	'util/osg.h',
+)
+
+csplib_in.addTests(
+	'data/test/test_Object.cpp',
+	'util/test/test_FileUtility.cpp',
+	'util/test/test_Ref.cpp',
+)
+
+config = env.Program('csplib_config', ['util/Config.cpp'])
+config_h = env.Command('#/csplib/util/Config.h', config, '$SOURCES > $TARGET')
+
+csplib = env.SharedLibrary('csplib', csplib_in.objects(env), SHLIBPREFIX='_')
+
+env.Append(RPATH='.')
+csplib_tests = env.SharedLibrary('csplib_tests', csplib_in.tests, SHLIBPREFIX='')
+
+vs = env.VisualStudioProject(csplib, csplib_in)
+
+env.Documentation('#/csplib/.dox', 'csplib.dox', csplib_in.all)
+
+Alias(['all', 'tests'], [csplib, csplib_tests])
+Alias(['csplib'], [csplib])
+Alias(['vs'], vs)
+
+def RunTests(*args, **kw):
+	import csp.tools.runtests
+	csp.tools.runtests.runall()
+
+runtests = env.Command(None, [csplib, csplib_tests], RunTests)
+AlwaysBuild(runtests)
+Alias('runtests', runtests)
 

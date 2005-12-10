@@ -71,7 +71,8 @@ def AddPhonyTarget(env, target, message=''):
 
 
 def CompareVersions(a, b):
-	return (a.find('.') > 0) and (b.find('.') > 0) and cmp(map(int, a.split('.')), map(int, b.split('.')))
+	if (a.find('.') < 0) or (b.find('.') < 0): return -1
+	return cmp(map(int, a.split('.')), map(int, b.split('.')))
 
 
 def IsWindows(env):
@@ -82,6 +83,60 @@ def SimpleCommand(cmd, msg):
 	def s(target, src, env):
 		print msg % {'src':str(src), 'target':str(target[0])}
 	return SCons.Action.CommandAction(cmd, strfunction=s)
+
+def Extension(fn):
+	return os.path.splitext(fn)[1]
+
+
+class SourceList(object):
+	_header_ext = ('.h', '.hh', '.hpp', '.hxx')
+	_source_ext = ('.c', '.cc', '.cpp', '.cxx')
+	_swig_ext = ('.i',)
+	_message_ext = ('.net',)
+	_known_ext = _header_ext + _source_ext + _swig_ext + _message_ext
+
+	def __init__(self, *items):
+		self._items = items
+		self._tests = []
+
+	def addTests(self, *tests):
+		self._tests += tests
+
+	def getAll(self):
+		return self._items
+	def getHeaders(self):
+		return [x for x in self._items if Extension(x) in SourceList._header_ext]
+	def getSources(self):
+		return [x for x in self._items if Extension(x) in SourceList._source_ext]
+	def getMessages(self):
+		return [x for x in self._items if Extension(x) in SourceList._message_ext]
+	def getSwigInterfaces(self):
+		return [x for x in self._items if Extension(x) in SourceList._swig_ext]
+	def getMiscellaneousFiles(self):
+		header_or_source = SourceList._header_ext + SourceList._source_ext
+		return [x for x in self._items if Extension(x) not in header_or_source]
+	def getOtherFiles(self):
+		return [x for x in self._items if Extension(x) not in SourceList._known_ext]
+	def getTests(self):
+		return self._tests
+
+	all = property(getAll)
+	headers = property(getHeaders)
+	sources = property(getSources)
+	messages = property(getMessages)
+	misc = property(getMiscellaneousFiles)
+	swig = property(getSwigInterfaces)
+	other = property(getOtherFiles)
+	tests = property(getTests)
+
+	def objects(self, env):
+		out = []
+		for item in self._items:
+			if item.endswith('.i'):
+				out.append(env.SwigWrapper(item))
+			elif not item.endswith('.h'):
+				out.append(item)
+		return out
 
 
 ############################################################################
@@ -323,6 +378,39 @@ def BuildModules(env, modules, **kw):
 	return result
 
 
+"""
+class Module:
+	def __init__(env, name, sources=[], headers=[], tests=[], messages=[], submodules=[]):
+		self._name = name
+		self._sources = map(env.File, sources)
+		self._headers = map(env.File, headers)
+		self._tests = map(env.File, tests)
+		self._messages = map(env.File, messages)
+		self._modules = modules
+		env['_BUILD_MODULES_'][name] = self
+
+	def __getattr__(self, name):
+		if name.startswith('_'): return self.__dict__[name]
+		if name == 'name': return self._name
+		values = self.__dict__.get('_' + name, [])
+		for module in self._modules:
+			values += getattr(module, name)
+
+
+def BuildModules_(env, modules, **kw):
+	import build
+	env.setdefault('_BUILD_MODULES_', {})
+	result = []
+	for module in modules:
+		kw.setdefault('exports', 'env build')
+		module = env.SConscript('%s/SConscript' % module, **kw)
+		if module:
+			if type(targets) != type([]): targets = [targets]
+			result.extend(targets)
+	result = env.Flatten(result)
+	return result
+"""
+
 
 ############################################################################
 # AUTOCONF HELPEERS
@@ -400,11 +488,11 @@ def CheckOSGVersion(context, lib, min_version):
 	return CheckLibVersion(context, lib, OSG_VERSION_CHECK, min_version)
 
 
-def CheckPkgConfig(context, lib, version=None, lib_name=None):
+def CheckPkgConfig(context, lib, version=None, lib_name=None, command='pkg-config', version_flag='--modversion', config_flags='--cflags --libs'):
 	if lib_name is None: lib_name = lib
 	env = context.env
 	_checking(context, lib, version)
-	output = os.popen('pkg-config --modversion %s' % lib)
+	output = os.popen('%s %s %s' % (command, version_flag, lib))
 	ok = 0
 	if output is not None:
 		lib_version = output.readline().strip()
@@ -412,7 +500,7 @@ def CheckPkgConfig(context, lib, version=None, lib_name=None):
 	if ok:
 		context.Result("yes (%s)" % lib_version)
 		env['%s_VERSION' % lib_name.upper()] = lib_version
-		env.ParseConfig('pkg-config --cflags --libs %s' % lib)
+		env.ParseConfig('%s %s %s' % (command, config_flags, lib))
 	else:
 		context.Result("no")
 	return ok
@@ -448,6 +536,8 @@ def CustomConfigure(env):
 	conf.AddTests({'CheckOSGVersion': CheckOSGVersion})
 	conf.AddTests({'CheckCommandVersion': CheckCommandVersion})
 	conf.AddTests({'CheckPkgConfig': CheckPkgConfig})
+	# override -Q
+	SCons.SConf.SetProgressDisplay(SCons.Util.display)
 	return conf
 
 
@@ -557,9 +647,12 @@ def GlobalSetup(env, distributed=1, short_messages=None, default_message=None, c
 
 
 class GlobalSettings:
-	def __init__(self, config=None):
+	def __init__(self, config=None, help=''):
 		self._platform = sys.platform
 		self._config = config
+		self._default_message = 'No targets specified; try scons -h for help.'
+		self._help = help
+		self._opts = SCons.Options.Options()
 		self._dict = {}
 	def IsWindows(self):
 		return self._platform.startswith('win')
@@ -575,9 +668,8 @@ class GlobalSettings:
 			self._dict[key] = value
 	def env(self):
 		env = SCons.Environment.Environment(**self._dict)
-		GlobalSetup(env)
-		if self._config is not None:
-			env.SetConfig(self._config)
+		GlobalSetup(env, default_message=self._default_message, config=self._config)
+		env.Help(self._help + self._opts.GenerateHelpText(env))
 		return env
 
 
@@ -688,11 +780,28 @@ def AddNet(env):
 	env['TRC'] = '%s --source=${TARGETS[0]} --header=${TARGETS[1]} $SOURCES' % trc
 
 
+def AddVisualStudioProject(env):
+	def VisualStudioProject(env, target, source):
+		if IsWindows(env):
+			if isinstance(target, list): target = target[0]
+			project_base = os.path.splitext(os.path.basename(target.name))[0]
+			if project_base.startswith('_'): project_base = project_base[1:]
+			dbg = env.MSVSProject(target=project_base+'-dbg.vcproj', srcs=source.sources, incs=source.headers, misc=source.misc, buildtarget=target, variant='Debug')
+			rel = env.MSVSProject(target=project_base+'-rel.vcproj', srcs=source.sources, incs=source.headers, misc=source.misc, buildtarget=target, variant='Release')
+			return [dbg, rel]
+		else:
+			return []
+	env.Append(BUILDERS = {'VisualStudioProject': VisualStudioProject})
+
+
 def AddBuilders(env):
+	#env['MSVS_VERSION'] = '7.1'
+	#SCons.Tool.msvs.generate(env)
 	AddDoxygen(env)
 	AddCopyFile(env)
 	AddLinkFile(env)
 	AddNet(env)
+	AddVisualStudioProject(env)
 
 
 def MarkVersionSource(env, target, prefix='Version.'):

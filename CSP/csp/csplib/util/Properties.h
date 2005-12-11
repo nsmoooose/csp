@@ -46,7 +46,7 @@ private:
 
 /** Inheritable property for classes that cannot be (publicly) constructed.
  */
-class NonConstructable: public NonCopyable {
+class CSPLIB_EXPORT NonConstructable: public NonCopyable {
 private:
 	NonConstructable();
 };

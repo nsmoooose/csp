@@ -48,7 +48,7 @@ CSP_NAMESPACE
 
 namespace numeric {
 
-template<typename T,class A> class Expr {
+template<typename T, class A> class Expr {
 	A m_Iter;
 	typedef typename std::vector<T>::size_type size_type;
 	size_type m_Size;
@@ -79,7 +79,7 @@ template<typename T, class A, class B, class Op> class BinExprOp {
 	A m_A;
 	B m_B;
 public:
-	BinExprOp(const A& a,const B& b):
+	BinExprOp(const A& a, const B& b):
 	  m_A(a),
 	  m_B(b) {
 	}
@@ -94,11 +94,11 @@ public:
 };
 
 
-template<typename T,class A, class Op> class UnaExprOp {
+template<typename T, class A, class Op> class UnaExprOp {
 	T m_T;
 	A m_A;
 public:
-	UnaExprOp(const T& t,const A& a):
+	UnaExprOp(const T& t, const A& a):
 	  m_T(t),
 	  m_A(a) {
 	}
@@ -112,7 +112,7 @@ public:
 };
 
 /*
-template<typename T,class A, class Op> class UnaExprOp {
+template<typename T, class A, class Op> class UnaExprOp {
 	A m_A;
 public:
 	UnaExprOp(const A& a):
@@ -142,7 +142,7 @@ template<typename T> struct Vector: public std::vector<T> {
 	}
 	Vector(size_type n):std::vector<T>(n){
 	}
-	Vector(T value,size_type n):std::vector<T>(n,value){
+	Vector(T value, size_type n):std::vector<T>(n, value){
 	}
 	template<class A> Vector(const Expr<T,A>& rhs):std::vector<T>(rhs.size()){
 		*this = rhs;
@@ -153,30 +153,30 @@ template<typename T> struct Vector: public std::vector<T> {
 			*i = *rhs;
 		return *this;
 	}
-	Expr<T,BinExprOp<T,cvi,cvi,std::plus<T> > > operator+(const Vector& rhs) const {
-		typedef BinExprOp<T,cvi,cvi, std::plus<T> > ExprT;
-		return Expr<T,ExprT>(ExprT(begin(),rhs.begin()),size());
+	Expr<T, BinExprOp<T, cvi, cvi, std::plus<T> > > operator+(const Vector& rhs) const {
+		typedef BinExprOp<T, cvi, cvi, std::plus<T> > ExprT;
+		return Expr<T, ExprT>(ExprT(begin(), rhs.begin()), size());
 	}
 		
-	template<class A> Expr<T,BinExprOp<T,cvi,Expr<T,A>,std::plus<T> > > operator+(const Expr<T,A>& rhs) const {
-		typedef BinExprOp<T,cvi,Expr<T,A>,std::plus<T> > ExprT;
-		return Expr<T,ExprT>(ExprT(begin(),rhs.begin()),size());
+	template<class A> Expr<T, BinExprOp<T, cvi, Expr<T,A>, std::plus<T> > > operator+(const Expr<T,A>& rhs) const {
+		typedef BinExprOp<T, cvi, Expr<T,A>, std::plus<T> > ExprT;
+		return Expr<T,ExprT>(ExprT(begin(), rhs.begin()), size());
 	}
 	Vector operator-() const {
-		Vector opp(size()); 
-		std::transform(begin(),end(),opp.begin(),std::negate<T>());
+		Vector opp(size());
+		std::transform(begin(), end(), opp.begin(), std::negate<T>());
 		return opp;
 	}
-	Expr<T,BinExprOp<T,cvi,cvi,std::minus<T> > > operator-(const Vector& rhs) const {
-		typedef BinExprOp<T,cvi,cvi,std::minus<T> > ExprT;
-		return Expr<T,ExprT>(ExprT(begin(),rhs.begin()),size());
+	Expr<T, BinExprOp<T, cvi, cvi, std::minus<T> > > operator-(const Vector& rhs) const {
+		typedef BinExprOp<T, cvi, cvi, std::minus<T> > ExprT;
+		return Expr<T,ExprT>(ExprT(begin(), rhs.begin()), size());
 	}
-	template<class A> Expr<T,BinExprOp<T,cvi,A,std::minus<T> > > operator-(const A& rhs) const {
-		typedef BinExprOp<T,cvi,A,std::minus<T> > ExprT;
-		return Expr<T,ExprT>(ExprT(begin(), rhs.begin()),size());
+	template<class A> Expr<T, BinExprOp<T, cvi, A, std::minus<T> > > operator-(const A& rhs) const {
+		typedef BinExprOp<T, cvi, A, std::minus<T> > ExprT;
+		return Expr<T,ExprT>(ExprT(begin(), rhs.begin()), size());
 	}
 	T operator*(const Vector& rhs) const {
-		return std::inner_product(begin(),end(),rhs.begin(),0.0);
+		return std::inner_product(begin(), end(), rhs.begin(),0.0);
 	}
 };
 
@@ -229,13 +229,13 @@ public:
 };
 
 template<typename T> struct Abs {
-	inline T operator()(T lhs,T rhs) const {
+	inline T operator()(T lhs, T rhs) const {
 		return lhs + fabs(rhs);
 	}
 };
 
 template<typename T> inline T norm_1(const Vector<T>& lhs) {
-	return std::accumulate(lhs.begin(),lhs.end(),0.0,Abs<T>());
+	return std::accumulate(lhs.begin(), lhs.end(), 0.0, Abs<T>());
 }
 
 template<typename T, class A> inline T norm_1(const Expr<T,A>& lhs) {
@@ -260,7 +260,7 @@ template<typename T> std::ostream &operator<<(std::ostream& lhs, const CSP(numer
 	if (!rhs.empty()) {
 		typename CSP(numeric::Vector<T>)::cvi iBegin = rhs.begin();
 		lhs << "(" << *iBegin;
-		std::for_each(iBegin+1,rhs.end(),PrintElement<T>(lhs));
+		std::for_each(iBegin+1, rhs.end(), PrintElement<T>(lhs));
 		lhs << ") ";
 	}
 	return lhs;

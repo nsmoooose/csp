@@ -93,7 +93,7 @@ unsigned int const RungeKutta::MAXSTP = 8;
 double const       RungeKutta::TINY   = std::numeric_limits<float>::epsilon();//1.0e-30;
 
 
-Vectord const &RungeKutta::rk4(Vectord const &y, Vectord const &dydx, double x, double h) const {	
+Vectord const &RungeKutta::rk4(Vectord const &y, Vectord const &dydx, double x, double h) const {
 	static Vectord yout(m_Dimension), yt(m_Dimension);
 
 	double hh = h * 0.5;
@@ -153,16 +153,16 @@ Vectord const &RungeKutta::rkqc(Vectord &y, Vectord &dydx, double &x, double htr
 			double errmax = 0.0;
 			for (i = 0; i < m_Dimension; ++i) {
 				ytemp[i] = y1[i] - ytemp[i];
-				errmax = std::max(errmax,fabs(ytemp[i] / yscal[i]));
+				errmax = std::max(errmax, fabs(ytemp[i] / yscal[i]));
 			}
 			errmax /= eps;
 			if (errmax <= 1.0) {
 				hdid = h;
 				hnext = (errmax > ERRCON ?
-					SAFETY * h * pow(errmax,PGROW) : 4.0 * h);
+					SAFETY * h * pow(errmax, PGROW) : 4.0 * h);
 				loop = false;
 			} else {
-			 h *= SAFETY * pow(errmax,PSHRNK);
+			 h *= SAFETY * pow(errmax, PSHRNK);
 			}
 		}
 	}
@@ -215,7 +215,7 @@ Vectord const &RungeKutta::odeint(Vectord const &ystart, double x1, double x2, d
 
 Vectord const& RungeKutta::quickSolve(Vectord &y0, double t0, double dt) {
 	static Vectord y;
-	y = rk4(y0, m_VectorField->f(t0,y0), t0, dt);
+	y = rk4(y0, m_VectorField->f(t0, y0), t0, dt);
 	return y;
 }
 
@@ -223,7 +223,7 @@ Vectord const& RungeKutta::quickSolve(Vectord &y0, double t0, double dt) {
 
 Vectord const& RungeKutta::enhancedSolve(Vectord &y0, double t0, double dt) {
 	static Vectord result;
-	unsigned int nok,nbad;
+	unsigned int nok, nbad;
 	m_State = State();
 	//PROF0(_2ODEINT);
 	result = odeint(y0, t0, t0+dt, m_Epsilon, m_hestimate, m_hmin, nok, nbad);
@@ -298,30 +298,29 @@ Vectord const &RungeKuttaCK::rkqs(Vectord &y, Vectord &dydx, double &x, double h
 	Vectord ytemp;
 	do {
 		//PROF0(RKCK);
-		ytemp = rkck(y,dydx,x,h,yerr);
+		ytemp = rkck(y, dydx, x, h, yerr);
 		//PROF1(RKCK, 1);
 		errmax = 0.0;
 		for (i = 0; i < m_Dimension; ++i) {
-			errmax = std::max(errmax,fabs(yerr[i]/yscal[i]));
+			errmax = std::max(errmax, fabs(yerr[i]/yscal[i]));
 		}
 		errmax /= eps;
 		if (errmax <= 1.0) {
 			loop = false;
 		} else {
-			 double	htemp =	SAFETY * h * pow(errmax,PSHRNK);
+			 double htemp = SAFETY * h * pow(errmax, PSHRNK);
 			 h = (h>=0.0 ? std::max(htemp,0.1 * h) : std::min(htemp,0.1*h));
-			 xnew =	x + h;
+			 xnew = x + h;
 			 if (x == xnew) {
 				 m_State << "Stepsize underflow in RungeKuttaCK::rkqs\n";
 			 }
 		}
-	}
-	while (	loop );
+	} while (loop);
 	if (!m_State.getFailed()) {
 		if (errmax > ERRCON) {
-			hnext =	SAFETY * h * pow(errmax,PGROW);
+			hnext = SAFETY * h * pow(errmax, PGROW);
 		} else {
-			hnext =	5.0 * h;
+			hnext = 5.0 * h;
 		}
 		x += (hdid = h);
 		for (i = 0; i < m_Dimension; ++i) {
@@ -375,7 +374,7 @@ Vectord const &RungeKuttaCK::odeint(Vectord const &ystart, double x1, double x2,
 
 Vectord const& RungeKuttaCK::quickSolve(Vectord &y0, double t0, double dt) {
 	static Vectord y, yerr(m_Dimension);
-	y = rkck(y0, m_VectorField->f(t0,y0), t0, dt, yerr);
+	y = rkck(y0, m_VectorField->f(t0, y0), t0, dt, yerr);
 	return y;
 }
 
@@ -383,7 +382,7 @@ Vectord const& RungeKuttaCK::quickSolve(Vectord &y0, double t0, double dt) {
 
 Vectord const& RungeKuttaCK::enhancedSolve(Vectord &y0, double t0, double dt) {
 	static Vectord result;
-	unsigned int nok,nbad;
+	unsigned int nok, nbad;
 	m_State = State();
 	result = odeint(y0, t0, t0+dt, m_Epsilon, m_hestimate, m_hmin, nok, nbad);
 	//std::cout << "RungeKuttaCK::enhancedSolve nok = " << nok << "; nbad = " << nbad << "\n" << std::endl;
@@ -392,9 +391,9 @@ Vectord const& RungeKuttaCK::enhancedSolve(Vectord &y0, double t0, double dt) {
 
 //=================================================================
 
-double const		RKCK_VS_VO::SF = 0.9;
-unsigned int const	RKCK_VS_VO::MAXSTEP = 8;
-double const		RKCK_VS_VO::TINY   = std::numeric_limits<float>::epsilon();//1.0e-30;
+double const RKCK_VS_VO::SF = 0.9;
+unsigned int const RKCK_VS_VO::MAXSTEP = 8;
+double const RKCK_VS_VO::TINY = std::numeric_limits<float>::epsilon();//1.0e-30;
 
 RKCK_VS_VO::RKCK_VS_VO(VectorField *vectorField, double epsilon, double Hmin, double Hestimate):
 	NumericalMethod(vectorField),
@@ -510,7 +509,7 @@ double RKCK_VS_VO::rkck23(double a, double h, Vectord const &ystart) {
 	}
 	*/
 	return err2;
-	//return pow(sqrt(err2),third);
+	//return pow(sqrt(err2), third);
 }
 
 double RKCK_VS_VO::rkck45(double a, double h, Vectord const &ystart) {
@@ -585,7 +584,7 @@ Vectord const  &RKCK_VS_VO::vrkf(Vectord &ystart, double a, double h, double &hd
 	bool loop = true;
 	unsigned int nstp = 0;
 
-	m_k1 = m_VectorField->f(a,ystart);
+	m_k1 = m_VectorField->f(a, ystart);
 	do {
 		double err1 = rkck12(a, h, ystart);
 		e[1] = err1 * inv_eps2 + TINY;
@@ -661,7 +660,7 @@ Vectord const  &RKCK_VS_VO::vrkf(Vectord &ystart, double a, double h, double &hd
 				} // end (e4 > 1.0)
 				else { // begin case (e[4] <= 1.0)
 					//std::cout << "Order 5 solution\n";
-					hnext = std::min(5.0,SF/e4) * h;
+					hnext = std::min(5.0, SF/e4) * h;
 					hdid = h;
 					for (size_t i = 1; i< 3;++i) { // begin for i
 						double q = e[i]/e4;
@@ -670,7 +669,7 @@ Vectord const  &RKCK_VS_VO::vrkf(Vectord &ystart, double a, double h, double &hd
 						} else {
 							q = std::max(q, twothird * m_Quit[i]);
 						}
-						m_Quit[i] = std::max(1.0,std::min(10000.0,q));
+						m_Quit[i] = std::max(1.0, std::min(10000.0, q));
 					} // end for i
 					return m_y5;
 				} //end case (e[4] <= 1.0)
@@ -700,7 +699,7 @@ Vectord const &RKCK_VS_VO::vrkfBound(Vectord &ystart, double a, double h, double
 			//m_State << "Step size too small in RKCK_VS_VO::vrkfBound h = " << fabs(hdid) << "\n";
 		} else {
 			x += hdid;
-			h1 = std::max(0.0,std::min(hnext, b - x));
+			h1 = std::max(0.0, std::min(hnext, b - x));
 			if (fabs(h1) < m_Hmin) {
 				return m_Result;
 			}
@@ -714,10 +713,10 @@ Vectord const &RKCK_VS_VO::vrkfBound(Vectord &ystart, double a, double h, double
 
 Vectord const& RKCK_VS_VO::quickSolve(Vectord &y0, double t0, double dt) {
 	//m_State << "RKCK_VS_VO::quickSolve is called.\n";
-	m_k1 = m_VectorField->f(t0,y0);
+	m_k1 = m_VectorField->f(t0, y0);
 	double err = rkck12(t0, dt, y0);
-	err = rkck23(t0,dt,y0);
-	err = rkck45(t0,dt,y0);
+	err = rkck23(t0, dt, y0);
+	err = rkck45(t0, dt, y0);
 	//return m_y2;
 	return m_y5;
 }
@@ -726,7 +725,7 @@ Vectord const &RKCK_VS_VO::enhancedSolve(Vectord &y0, double t0, double dt) {
 	unsigned int nok, nbad;
 	m_State.setFailed(false);
 	//std::cerr << "RungeKuttaCK::enhancedSolve nok = " << nok << "; nbad = " << nbad << "\n" << std::endl;
-	return vrkfBound(y0, t0, dt, std::min(m_Hestimate,dt), nok, nbad);
+	return vrkfBound(y0, t0, dt, std::min(m_Hestimate, dt), nok, nbad);
 }
 
 } // namespace numeric

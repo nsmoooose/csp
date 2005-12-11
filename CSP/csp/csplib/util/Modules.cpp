@@ -25,6 +25,10 @@
 #include <csp/csplib/util/Modules.h>
 #include <csp/csplib/util/Ref.h>
 #include <csp/csplib/util/ScopedPointer.h>
+
+#ifdef WIN32
+#define NOMINMAX
+#endif
 #include <cc++/file.h>
 #include <map>
 

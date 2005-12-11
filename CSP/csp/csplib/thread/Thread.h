@@ -33,6 +33,9 @@
 #include <csp/csplib/thread/AtomicCounter.h>
 #include <csp/csplib/thread/Synchronization.h>
 
+#ifdef WIN32
+#define NOMINMAX
+#endif
 #include <cc++/thread.h>
 
 

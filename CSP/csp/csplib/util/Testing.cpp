@@ -26,6 +26,9 @@
 #include <csp/csplib/util/Testing.h>
 #include <csp/csplib/util/Timing.h>
 
+#ifdef WIN32
+#define NOMINMAX
+#endif
 #include <cc++/file.h>
 #include <vector>
 

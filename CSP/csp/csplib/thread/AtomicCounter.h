@@ -31,6 +31,9 @@
 #include <csp/csplib/util/Namespace.h>
 #include <csp/csplib/util/Properties.h>
 
+#ifdef WIN32
+#define NOMINMAX
+#endif
 #include <cc++/thread.h>
 
 

@@ -25,6 +25,7 @@
 #ifndef __CSPLIB_UTIL_MODULES_H__
 #define __CSPLIB_UTIL_MODULES_H__
 
+#include <csp/csplib/util/Export.h>
 #include <csp/csplib/util/Namespace.h>
 #include <csp/csplib/util/Properties.h>
 #include <string>
@@ -34,7 +35,7 @@ CSP_NAMESPACE
 /** Interface for loading shared libraries at runtime.  Works only on systems
  *  that support dynamic loading.
  */
-class ModuleLoader: public NonConstructable {
+class CSPLIB_EXPORT ModuleLoader: public NonConstructable {
 public:
 
 	/** Load a new module from the specified path.  Returns true on success.

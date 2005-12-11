@@ -27,6 +27,7 @@
 #define __CSPLIB_UTIL_SYNCHRONOUSUPDATE_H__
 
 
+#include <csp/csplib/util/Export.h>
 #include <csp/csplib/util/Namespace.h>
 #include <csp/csplib/util/Ref.h>
 

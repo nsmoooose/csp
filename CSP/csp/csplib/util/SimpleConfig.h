@@ -39,6 +39,7 @@
 #include <iostream>
 #include <fstream>
 
+#include <csp/csplib/util/Export.h>
 #include <csp/csplib/util/HashUtility.h>
 
 CSP_NAMESPACE
@@ -49,7 +50,7 @@ CSP_NAMESPACE
  * The error message will automatically be dumped to stderr when the object
  * is destroyed unless the clear() method is called.
  */
-class Error {
+class CSPLIB_EXPORT Error {
 public:
 	/**
 	 * Set the error message.
@@ -62,9 +63,7 @@ public:
 	 * Maybe a little too fancy, but the clear() is needed so that
 	 * multiple automatic copies yield only a single error message.
 	 */
-	Error(const Error &e): m_msg(e.m_msg),
-	                       m_fullerror(e.m_fullerror),
-			       m_display(e.m_display) { e.clear(); }
+	Error(const Error &e): m_msg(e.m_msg), m_fullerror(e.m_fullerror), m_display(e.m_display) { e.clear(); }
 	
 	/**
 	 * Display the error message on stderr unless clear() has been called.
@@ -99,7 +98,7 @@ protected:
 /**
  * Thrown by SimpleConfig to report errors.
  */
-class ConfigError: public Error {
+class CSPLIB_EXPORT ConfigError: public Error {
 public:
 	/**
 	 * Set the error information.
@@ -143,7 +142,7 @@ class ConfigValue;
  * This will often be created as a global object so that configuration
  * data can be accessed and saved throughout the program.
  */
-class SimpleConfig {
+class CSPLIB_EXPORT SimpleConfig {
 public:
 	
 	/**

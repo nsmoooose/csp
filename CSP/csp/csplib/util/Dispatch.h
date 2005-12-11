@@ -66,7 +66,9 @@
 #define __CSPLIB_UTIL_DISPATCH_H__
 
 
+#include <csp/csplib/util/Export.h>
 #include <csp/csplib/util/Namespace.h>
+// TODO move to net (util/* shouldn't depend on net/*)
 #include <csp/csplib/net/TaggedRecord.h>
 
 CSP_NAMESPACE
@@ -92,7 +94,7 @@ CSP_NAMESPACE
  *  Inherit from this class and use the MESSAGE_DISPATCH macros to
  *  bind handlers to specific message types.
  */
-class MessageDispatcher {
+class CSPLIB_EXPORT MessageDispatcher {
 
 public:
 	virtual bool dispatchMessage(Ref<TaggedRecord> const &record) {

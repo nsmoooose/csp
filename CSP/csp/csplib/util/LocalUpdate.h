@@ -25,6 +25,7 @@
 #ifndef __CSPLIB_UTIL_LOCALUPDATE_H__
 #define __CSPLIB_UTIL_LOCALUPDATE_H__
 
+#include <csp/csplib/util/Export.h>
 #include <csp/csplib/util/Namespace.h>
 #include <vector>
 #include <sigc++/slot.h>
@@ -80,7 +81,7 @@ CSP_NAMESPACE
  *  };
  *  @endcode
  */
-class LocalUpdate {
+class CSPLIB_EXPORT LocalUpdate {
 public:
 	LocalUpdate(): m_Time(0), m_Next(0) { }
 	~LocalUpdate();

@@ -31,6 +31,10 @@
 #include <osgText/Text>
 #include <cstdio>
 
+#if !defined(__GNUC__) && !defined(snprintf)
+#define snprintf _snprintf
+#endif
+
 CSP_NAMESPACE
 
 void StandardFormatter::format(char *buffer, int len, float value) {

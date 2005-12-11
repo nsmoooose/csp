@@ -68,14 +68,14 @@ public:
 	 *  will always return true (unless the count overflows or is otherwise
 	 *  decremented past zero).
 	 */
-	inline bool operator++() { return ++__count; }
+	inline bool operator++() { return (++__count != 0); }
 
 	/** Decrement the counter.
 	 *
 	 *  @returns true if the pre-decremented count is non-zero,
 	 *  regardless of the actual value; false otherwise.
 	 */
-	inline bool operator--() { return --__count; }
+	inline bool operator--() { return (--__count != 0); }
 
 	/** Return the counter value.
 	 */

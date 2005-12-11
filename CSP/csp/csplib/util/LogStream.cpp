@@ -45,6 +45,49 @@ CSP_NAMESPACE
 namespace {
 	typedef std::map<std::string, LogStream *> LogStreamRegistry;
 	LogStreamRegistry *NamedLogStreamRegistry = 0;
+
+	inline void writeDigits(char *&buffer, int value) {
+		*buffer++ = '0' + value / 10;
+		*buffer++ = '0' + value % 10;
+	}
+
+	// Replaced gmtime_r and strftime with logTime, mainly because gmtime_r isn't
+	// available on win32.  This implementation should also be faster.
+	void logTime(const time_t t, char *buffer, bool date, bool time) {
+		if (date) {
+			time_t days = t / 86400;
+
+			// Taken from glib; originally from the Calendar FAQ.  Offset adjusted for
+			// the unix epoch (rather than the Julian Period starting 1 Jan 4713 BC).
+			const uint32 A = days + 2440588 + 32045;
+			const uint32 B = (4 *(A + 36524)) / 146097 - 1;
+			const uint32 C = A - (146097*B) / 4;
+			const uint32 D = (4 * (C + 365)) / 1461 - 1;
+			const uint32 E = C - ((1461 * D) / 4);
+			const uint32 M = (5 * (E - 1) + 2) / 153;
+
+			int year = static_cast<int>(100 * B + D - 4800 + (M/10));
+			int month = static_cast<int>(M + 3 - 12 * (M/10));
+			int day = static_cast<int>(E - (153 * M + 2) / 5);
+
+			writeDigits(buffer, year / 100);
+			writeDigits(buffer, year % 100);
+			writeDigits(buffer, month);
+			writeDigits(buffer, day);
+			if (time) *buffer++ = ' ';
+		}
+		if (time) {
+			time_t secs = t % 86400;
+			int hour = secs / 3600;
+			int min = (secs % 3600) / 60;
+			int sec = secs % 60;
+			writeDigits(buffer, hour);
+			writeDigits(buffer, min);
+			writeDigits(buffer, sec);
+		}
+		*buffer = 0;
+	}
+
 }
 
 
@@ -80,17 +123,8 @@ void LogStream::LogEntry::prefix(const char *filename, int linenum) {
 	}
 	if (flags & (LogStream::cTimestamp|LogStream::cDatestamp)) {
 		const time_t now = time(0);
-		struct tm gmt;
-		gmtime_r(&now, &gmt);
 		char time_stamp[32];
-		switch (flags & (LogStream::cTimestamp|LogStream::cDatestamp)) {
-			case LogStream::cTimestamp:
-				strftime(time_stamp, 32, "%H%M%S", &gmt); break;
-			case LogStream::cDatestamp:
-				strftime(time_stamp, 32, "%Y%m%d", &gmt); break;
-			default:
-				strftime(time_stamp, 32, "%Y%m%d %H%M%S", &gmt);
-		}
+		logTime(now, time_stamp, (flags & LogStream::cTimestamp) != 0, (flags & LogStream::cDatestamp) != 0);
 		m_buffer << time_stamp << ' ';
 	}
 #ifndef CSP_NOTHREADS

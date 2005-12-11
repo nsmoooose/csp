@@ -374,9 +374,9 @@ public:
 	void dump(std::ostream &os) const;
 };
 
-extern std::ostream & operator << (std::ostream &os, QuadTree const &q);
-extern std::ostream & operator << (std::ostream &os, Point const &p);
-extern std::ostream & operator << (std::ostream &os, Region const &r);
+extern CSPLIB_EXPORT std::ostream & operator << (std::ostream &os, QuadTree const &q);
+extern CSPLIB_EXPORT std::ostream & operator << (std::ostream &os, Point const &p);
+extern CSPLIB_EXPORT std::ostream & operator << (std::ostream &os, Region const &r);
 
 
 } // namespace spatial

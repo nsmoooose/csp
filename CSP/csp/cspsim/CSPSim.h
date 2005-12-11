@@ -53,6 +53,7 @@
 #ifndef __CSPSIM_H__
 #define __CSPSIM_H__
 
+#include <csp/cspsim/Export.h>
 #include <csp/csplib/util/Ref.h>
 #include <csp/csplib/util/ScopedPointer.h>
 #include <csp/csplib/data/Date.h>
@@ -85,7 +86,7 @@ class VirtualScene;
  *  direct access to shared simulation state.  Do not abuse this access point;
  *  minimizing dependence on the CSPSim instance is a Good Thing.
  */
-class CSPSim {
+class CSP_EXPORT CSPSim {
 public:
 	static CSPSim *theSim;
 

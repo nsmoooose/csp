@@ -55,7 +55,7 @@ namespace {
 	// available on win32.  This implementation should also be faster.
 	void logTime(const time_t t, char *buffer, bool date, bool time) {
 		if (date) {
-			time_t days = t / 86400;
+			const uint32 days = static_cast<uint32>(t / 86400);
 
 			// Taken from glib; originally from the Calendar FAQ.  Offset adjusted for
 			// the unix epoch (rather than the Julian Period starting 1 Jan 4713 BC).
@@ -77,7 +77,7 @@ namespace {
 			if (time) *buffer++ = ' ';
 		}
 		if (time) {
-			time_t secs = t % 86400;
+			int secs = static_cast<int>(t % 86400);
 			int hour = secs / 3600;
 			int min = (secs % 3600) / 60;
 			int sec = secs % 60;

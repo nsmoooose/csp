@@ -243,14 +243,14 @@ private:
  */
 class CSPLIB_EXPORT TestRegistry: public NonConstructable {
 public:
-	static CSPLIB_EXPORT bool loadTestModule(const char *module);
-	static CSPLIB_EXPORT bool runAll();
-	static CSPLIB_EXPORT bool runOnePath(const char *path);
-	static CSPLIB_EXPORT bool runOneTest(const char *test);
-	static CSPLIB_EXPORT void addTestRunner(TestRunner *runner);
+	static bool loadTestModule(const char *module);
+	static bool runAll();
+	static bool runOnePath(const char *path);
+	static bool runOneTest(const char *test);
+	static void addTestRunner(TestRunner *runner);
 
 private:
-	static CSPLIB_EXPORT bool _runTests(std::vector<TestRunner*> const &tests);
+	static bool _runTests(std::vector<TestRunner*> const &tests);
 	struct TestData;
 	static TestData &data();
 };

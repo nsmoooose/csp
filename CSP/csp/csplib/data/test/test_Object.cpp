@@ -1,7 +1,5 @@
-/* SimData: Data Infrastructure for Simulations
+/* Combat Simulator Project
  * Copyright (C) 2003 Mark Rose <mkrose@users.sf.net>
- *
- * This file is part of SimData.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -152,7 +150,7 @@ CSP_TESTFIXTURE(Object) {
 	CSP_TESTCASE(Serialize) {
 		// FIXME using tmpfile would be much better but DataArchive doesn't accept open
 		// stream descriptors.
-		const std::string tmpfile("/tmp/simdata.tmptest.dar");
+		const std::string tmpfile("/tmp/csplib.tmptest.dar");
 		{
 			TestObject obj1;
 			SubObject2 obj2;

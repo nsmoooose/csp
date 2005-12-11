@@ -100,7 +100,7 @@ private:
 	/** Add an interface to the registry.
 	 *
 	 *  Interfaces are registered automatically by the XML definition macros
-	 *  (@c CSP_XML_BEGIN and @c SIMDATA_XML_END).
+	 *  (@c CSP_XML_BEGIN and @c CSP_XML_END).
 	 */
 	void addInterface(const char *name, hasht id, InterfaceProxy *proxy);
 

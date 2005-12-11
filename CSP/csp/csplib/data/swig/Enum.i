@@ -36,7 +36,7 @@ CSP_NAMESPACE_END
                 CSP(EnumLink)* ptr = new CSP(EnumLink)((($1_type &)$1)[i]);
                 PyTuple_SetItem($result, i,
                                 SWIG_NewPointerObj((void *) ptr,
-                                $descriptor(simdata::EnumLink *), 1));
+                                $descriptor(csp::EnumLink *), 1));
             }
        }"
 
@@ -69,7 +69,7 @@ CSP_NAMESPACE_END
 %include "csp/csplib/data/Enum.h"
 
 
-#define CSP_ENUM_WRAP1(T) 			\
+#define CSP_ENUM_WRAP1(T) \
 %typemap(in) CSP(Enum)<T> * (int __index, std::string __string, CSP(EnumLink) *__enumlink) \
 	"{ \
 		__index = -1; \
@@ -82,7 +82,7 @@ CSP_NAMESPACE_END
 			__string = std::string(PyString_AsString($input)); \
 		} else \
 		if ((SWIG_ConvertPtr($input,(void **) &$1, $1_descriptor, 0 )) == -1) { \
-			if ((SWIG_ConvertPtr($input,(void **) &__enumlink, SWIGTYPE_p_simdata__EnumLink, 0 )) == -1) { \
+			if ((SWIG_ConvertPtr($input,(void **) &__enumlink, SWIGTYPE_p_csp__EnumLink, 0 )) == -1) { \
 				PyErr_SetString(PyExc_TypeError, \"string or enum expected\"); \
 			} \
 		} \
@@ -105,7 +105,7 @@ CSP_NAMESPACE_END
 	 }";
 
 #define CSP_ENUM_WRAP(NAME, T) \
-	%template(NAME) simdata::Enum<T>; \
+	%template(NAME) csp::Enum<T>; \
 	CSP_ENUM_WRAP1(T) \
 	CSP_ENUM_WRAP2(T)
 

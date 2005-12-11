@@ -1,7 +1,5 @@
-/* SimData: Data Infrastructure for Simulations
+/* Combat Simulator Project
  * Copyright (C) 2002 Mark Rose <mkrose@users.sf.net>
- *
- * This file is part of SimData.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -18,11 +16,11 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
-#ifndef __SIMDATA_VECTOR_TEMPLATES__
-#define __SIMDATA_VECTOR_TEMPLATES__
+#ifndef __CSPLIB_VECTOR_TEMPLATES__
+#define __CSPLIB_VECTOR_TEMPLATES__
 
-#define new_vector(a, b)	\
-	%template(simdata_vector_##a) std::vector< b >;
+#define new_vector(a, b) \
+	%template(csplib_vector_##a) std::vector< b >;
 
-#endif // __SIMDATA_VECTOR_TEMPLATES__
+#endif // __CSPLIB_VECTOR_TEMPLATES__
 

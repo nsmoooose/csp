@@ -463,5 +463,5 @@ CSPLIB_EXPORT std::ostream &operator <<(std::ostream &o, Quat const &q);
 
 CSP_NAMESPACE_END
 
-#endif  // __SIMDATA_QUAT_H__
+#endif  // __CSPLIB_DATA_QUAT_H__
 

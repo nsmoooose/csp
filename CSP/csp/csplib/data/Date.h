@@ -692,14 +692,6 @@ public:
 		return j + t;
 	}
 
-	/** Get the (accurate) Mean Sidereal time.
-	 *
-	 *  @deprecated This routine now calls getMST and remains
-	 *              only for backwards compatibility.  It may
-	 *              be removed in a future version of SimData.
-	 */
-	//double getAccurateMST(radian_t longitude=0.0L) const;
-
 	/** Get the Mean Sidereal time.
 	 *
 	 *  @param longitude The local longitude in radians.

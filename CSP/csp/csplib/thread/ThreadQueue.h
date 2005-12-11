@@ -73,7 +73,7 @@ public:
 				m_notFull.unlock();
 				throw Full();
 			}
-			m_notFull.wait();
+			m_notFull.wait(0, true);
 		}
 		pushItem(item);
 		m_notFull.unlock();
@@ -94,7 +94,7 @@ public:
 				m_notEmpty.unlock();
 				return false;
 			}
-			m_notEmpty.wait();
+			m_notEmpty.wait(0, true);
 		}
 		item = popItem();
 		m_notEmpty.unlock();
@@ -112,7 +112,7 @@ public:
 	bool get(TYPE &item, double timeout) {
 		m_notEmpty.lock();
 		while (empty()) {
-			if (!m_notEmpty.wait(timeout)) {
+			if (!m_notEmpty.wait(timeout, true)) {
 				m_notEmpty.unlock();
 				return false;
 			}
@@ -128,8 +128,7 @@ protected:
 	 *
 	 *  @param maxsize the upper limit on the size of the queue; or zero for no limit.
 	 */
-	ThreadSafeQueueBase(int maxsize)
-		: m_mutex(), m_notEmpty(m_mutex), m_notFull(m_mutex), m_maxsize(maxsize) {}
+	ThreadSafeQueueBase(int maxsize): m_maxsize(maxsize) {}
 
 	/** Destructor.
 	 */
@@ -144,9 +143,8 @@ protected:
 	virtual TYPE popItem() = 0;
 
 private:
-	ThreadMutex m_mutex;
-	ThreadCondition m_notEmpty;
-	ThreadCondition m_notFull;
+	Conditional m_notEmpty;
+	Conditional m_notFull;
 	int m_maxsize;
 };
 

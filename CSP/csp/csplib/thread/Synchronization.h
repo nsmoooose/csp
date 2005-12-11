@@ -146,6 +146,13 @@ private:
 };
 
 
+// CC++ does not yet implement Conditional on win32, so it has been disabled
+// here.  For more information on the difficulty of implementing condition
+// variables using win32 threading primitives, see
+//   http://www.cs.wustl.edu/~schmidt/win32-cv-1.html and
+//   http://www.cs.wustl.edu/~schmidt/win32-cv-2.html
+
+#if 0
 /** Thin wrapper for cc++ Conditional.  Condition variables provide a signaling
  * mechanism to synchronize multiple threads.  Each condition variable is
  * associated with a mutex.  A thread first locks the mutex, then waits on the
@@ -207,6 +214,9 @@ public:
 private:
 	ost::Conditional m_cond;
 };
+#else
+class CSP_EXPORT Conditional {};
+#endif
 
 
 /** A thin wrapper around cc++ Event.

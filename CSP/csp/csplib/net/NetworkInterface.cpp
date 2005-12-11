@@ -45,6 +45,14 @@
 #endif
 #include <cc++/network.h>
 #include <cc++/thread.h>
+#ifdef _WIN32
+#	ifdef min
+#		undef min
+#	endif
+#	ifdef max
+#		undef max
+#	endif
+#endif
 
 #include <string.h>
 #include <sys/types.h>

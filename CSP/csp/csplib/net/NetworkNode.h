@@ -39,6 +39,12 @@
 
 #ifdef _WIN32
 #	pragma warning(pop)
+#	ifdef min
+#		undef min
+#	endif
+#	ifdef max
+#		undef max
+#	endif
 #endif
 
 #include <string>

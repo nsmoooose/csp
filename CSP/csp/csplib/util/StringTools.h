@@ -25,6 +25,7 @@
 #ifndef __CSPLIB_UTIL_STRINGTOOLS_H__
 #define __CSPLIB_UTIL_STRINGTOOLS_H__
 
+#include <csp/csplib/util/Export.h>
 #include <csp/csplib/util/Namespace.h>
 #include <string>
 #include <deque>

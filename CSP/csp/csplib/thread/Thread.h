@@ -168,18 +168,18 @@ private:
 	void setDetached() { m_detached = true; }
 
 	/** Join this task's thread by for an internal condition variable that
-	 *  signals on exit.  Used via ThreadBase.
+	 *  signals on exit.  Used via Thread.
 	 *
 	 *  @param timeout the maximum time in seconds to wait for the task to finish.
 	 *  @return true if the task ended, false if the timeout expired.
 	 */
 	bool join(double timeout) {
-		return m_exit.wait(timeout, false);
+		return m_exit.wait(timeout);
 	}
 
 	struct StartAndFinish {
 		StartAndFinish(Task &task): m_task(task) { m_task.m_running = true; }
-		~StartAndFinish() { m_task.m_complete = true; m_task.m_exit.signalAll(); }
+		~StartAndFinish() { m_task.m_complete = true; m_task.m_exit.signal(); }
 		Task &m_task;
 	};
 
@@ -192,7 +192,7 @@ private:
 	bool m_detached;
 	bool m_complete;
 	bool m_abort;
-	Conditional m_exit;
+	Event m_exit;
 };
 
 

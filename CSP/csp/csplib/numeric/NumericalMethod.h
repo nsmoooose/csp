@@ -31,6 +31,7 @@
 #include <string>
 #include <vector>
 
+#include <csp/csplib/util/Export.h>
 #include <csp/csplib/numeric/Vector.h>
 
 #define USE_VALARRAY_ARITHMETIC
@@ -50,7 +51,7 @@ class VectorField;
 /**
  * Abstract base class for numerical solvers of dynamical systems.
  */
-class NumericalMethod {
+class CSPLIB_EXPORT NumericalMethod {
 protected:
 	/**
 	* State of a numerical method
@@ -148,7 +149,7 @@ public:
 
 //=================================================================
 
-class RungeKutta: public NumericalMethod {
+class CSPLIB_EXPORT RungeKutta: public NumericalMethod {
 	Vectord const &rk4(Vectord const &y, Vectord const &dyx, double x, double h) const;
 	Vectord const &rkqc(Vectord &y, Vectord &dydx, double &x, double htry, double eps, Vectord const &yscal, double &hdid, double &hnext);
 	Vectord const &odeint(Vectord const &ystart, double x1, double x2, double eps, double h1, double hmin, unsigned int &nok, unsigned int &nbad);
@@ -179,7 +180,7 @@ public:
 
 //=================================================================
 
-class RungeKuttaCK: public NumericalMethod {
+class CSPLIB_EXPORT RungeKuttaCK: public NumericalMethod {
 	Vectord const &rkck(Vectord const &y, Vectord const &dyx, double x, double h, Vectord &yerr) const;
 	Vectord const &rkqs(Vectord &y, Vectord &dydx, double &x, double htry, double eps, Vectord const &yscal, double &hdid, double &hnext);
 	Vectord const &odeint(Vectord const &ystart, double x1, double x2, double eps, double h1, double hmin, unsigned int &nok, unsigned int &nbad);
@@ -216,7 +217,7 @@ public:
 * problems with rapidly varying right-hand sides, ACM Transactions on Mathematical 
 * Software, Vol. 16, No. 3, Sept 1990, pp. 201-222.
 */
-class RKCK_VS_VO: public NumericalMethod {
+class CSPLIB_EXPORT RKCK_VS_VO: public NumericalMethod {
 	/**
 	* Evaluate the approximated solution at a+h (entire step size)
 	* control is defered to vrkf to adjust step size and order.

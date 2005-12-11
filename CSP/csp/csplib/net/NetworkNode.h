@@ -27,6 +27,7 @@
 
 
 #include <csp/csplib/net/NetBase.h>
+#include <csp/csplib/util/Export.h>
 #include <csp/csplib/util/Uniform.h>
 
 #ifdef _WIN32
@@ -55,8 +56,7 @@ CSP_NAMESPACE
 /** Class representing a remote host address (ip address and receive port)
  *  @ingroup net
  */
-class NetworkNode
-{
+class CSPLIB_EXPORT NetworkNode {
 private:
 	ost::InetHostAddress m_addr;
 	ost::tpport_t m_port;

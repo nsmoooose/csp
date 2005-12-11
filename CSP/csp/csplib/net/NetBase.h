@@ -37,6 +37,7 @@
 #define __CSPLIB_NET_NETBASE_H__
 
 #include <csp/csplib/util/Endian.h>
+#include <csp/csplib/util/Export.h>
 #include <csp/csplib/util/Uniform.h>
 #include <cassert>
 #include <ostream>

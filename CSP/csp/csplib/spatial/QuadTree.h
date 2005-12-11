@@ -47,6 +47,7 @@
 #ifndef __CSPLIB_SPATIAL_QUADTREE_H__
 #define __CSPLIB_SPATIAL_QUADTREE_H__
 
+#include <csp/csplib/util/Export.h>
 #include <csp/csplib/util/Namespace.h>
 #include <csp/csplib/util/Uniform.h>
 
@@ -63,7 +64,7 @@ typedef uint32 Coordinate;
 
 /** A simple 2D point class, using usigned 32-bit integer coordinates.
  */
-class Point {
+class CSPLIB_EXPORT Point {
 	uint32 _x, _y;
 public:
 
@@ -107,7 +108,7 @@ public:
 /** A simple 2D rectangular region class, using unsigned 32-bit integer
  *  coordinates.
  */
-class Region {
+class CSPLIB_EXPORT Region {
 	uint32 _x0, _y0, _x1, _y1;
 public:
 
@@ -224,7 +225,7 @@ public:
  *  be deleted via a subclass pointer, since Child does not define a virtual
  *  destructor.
  */
-class Child {
+class CSPLIB_EXPORT Child {
 	int _id;
 	Point _point;
 public:
@@ -281,7 +282,7 @@ public:
 /** Helper class for passing tree configuration data down to subnodes
  *  when traversing the tree.
  */
-class TreeConstraint {
+class CSPLIB_EXPORT TreeConstraint {
 	const uint32 _max_depth;
 	const uint32 _leaf_limit;
 public:
@@ -315,7 +316,7 @@ class Node;
 
 /** A 2D spatial index over 32-bit integer coordinates.
  */
-class QuadTree {
+class CSPLIB_EXPORT QuadTree {
 	Node *_root;
 	TreeConstraint _constraint;
 

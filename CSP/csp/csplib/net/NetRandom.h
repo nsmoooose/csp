@@ -25,7 +25,7 @@
 #ifndef __CSPLIB_NET_NETRANDOM_H__
 #define __CSPLIB_NET_NETRANDOM_H__
 
-
+#include <csp/csplib/util/Export.h>
 #include <csp/csplib/util/Uniform.h>
 
 CSP_NAMESPACE
@@ -41,7 +41,7 @@ CSP_NAMESPACE
  *  Uses the venerable 69069 generator.
  *  @ingroup net
  */
-class NetRandom {
+class CSPLIB_EXPORT NetRandom {
 	// internal state for lcg
 	static uint32 RandSeed;
 

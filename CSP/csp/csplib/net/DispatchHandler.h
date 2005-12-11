@@ -95,7 +95,7 @@ CSP_NAMESPACE
  *  based on message id.
  *  @ingroup net
  */
-class DispatchHandler: public MessageHandler {
+class CSPLIB_EXPORT DispatchHandler: public MessageHandler {
 public:
 	/** Construct a new DispatchHandler.
 	 *

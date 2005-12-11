@@ -61,7 +61,7 @@ CSP_NAMESPACE
  *
  *  @ingroup net
  */
-class StopWatch {
+class CSPLIB_EXPORT StopWatch {
 public:
 
 	/** Internal timing data.  Declare separate, persistent Data instance for each

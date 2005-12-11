@@ -36,7 +36,7 @@ CSP_NAMESPACE
 /** A packet source that encodes NetworkMessages to binary packets.
  *  @ingroup net
  */
-class MessageQueue: public PacketSource {
+class CSPLIB_EXPORT MessageQueue: public PacketSource {
 
 	/** Thin wrapper for outbound messages, which keeps a separate record of the
 	 *  destination.  This is necessary to allow broadcasting a single message to

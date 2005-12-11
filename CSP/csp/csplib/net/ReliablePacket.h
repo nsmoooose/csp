@@ -41,7 +41,7 @@ CSP_NAMESPACE
  *
  *  @ingroup net
  */
-class ReliablePacket: public Referenced {
+class CSPLIB_EXPORT ReliablePacket: public Referenced {
 	ConfirmationId m_Id;
 	bool m_Confirmed;
 	int m_Attempts;

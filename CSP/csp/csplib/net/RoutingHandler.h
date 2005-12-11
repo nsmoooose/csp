@@ -93,7 +93,7 @@ CSP_NAMESPACE
  *
  *  @ingroup net
  */
-class RoutingHandler: public MessageHandler {
+class CSPLIB_EXPORT RoutingHandler: public MessageHandler {
 	// NetworkMessage::routing_type is 8-bits
 	static const unsigned RoutingTableSize = 256;
 	// Use a simple table for fast lookup.

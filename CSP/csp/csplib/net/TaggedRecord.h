@@ -59,7 +59,7 @@ CSP_NAMESPACE
 /** Simple Writer class for serializing to a memory buffer.
  *  @ingroup net
  */
-class BufferWriter: public Writer {
+class CSPLIB_EXPORT BufferWriter: public Writer {
 	uint8 *_buffer;
 	uint8 *_write;
 	uint8 *_end;
@@ -90,7 +90,7 @@ public:
 /** Simple Reader class for serializing from a memory buffer.
  *  @ingroup net
  */
-class BufferReader: public Reader {
+class CSPLIB_EXPORT BufferReader: public Reader {
 public:
 	BufferReader(): Reader(0, 0) { }
 	BufferReader(uint8 const *buffer, uint32 size): Reader(buffer, size) { }
@@ -100,7 +100,7 @@ public:
 /** Simple Writer class for serializing to a string buffer.
  *  @ingroup net
  */
-class StringWriter: public Writer {
+class CSPLIB_EXPORT StringWriter: public Writer {
 	std::string _buffer;
 protected:
 	virtual void write(void const* data, uint32 bytes) {
@@ -114,7 +114,7 @@ public:
 /** Simple Reader class for serializing from a string buffer.
  *  @ingroup net
  */
-class StringReader: public Reader {
+class CSPLIB_EXPORT StringReader: public Reader {
 public:
 	StringReader(std::string const &buffer):
 		Reader(reinterpret_cast<uint8 const*>(buffer.data()), buffer.size()) { }
@@ -128,7 +128,7 @@ class TagWriter;
 /** Base class for objects supporting tagged serialization of data fields.
  *  @ingroup net
  */
-class TaggedGroup : public Referenced {
+class CSPLIB_EXPORT TaggedGroup : public Referenced {
 public:
 	virtual void dump(DumpWriter &, const char *name=0) const=0;
 	virtual void serialize(TagReader &reader) = 0;
@@ -140,7 +140,7 @@ public:
  *  of nested records.
  *  @ingroup net
  */
-class TagBase {
+class CSPLIB_EXPORT TagBase {
  protected:
 	std::stack<int> _tagstack;
 	enum { TAG_END = 0 };
@@ -153,7 +153,7 @@ class TagBase {
 /** Class for writing tagged records to wire format.
  *  @ingroup net
  */
-class TagWriter: public TagBase {
+class CSPLIB_EXPORT TagWriter: public TagBase {
  public:
 	Writer &writer;
 	explicit TagWriter(Writer &writer_): TagBase(), writer(writer_) { }
@@ -187,7 +187,7 @@ class TagWriter: public TagBase {
 /** Class for reading tagged records from wire format.
  *  @ingroup net
  */
-class TagReader: public TagBase {
+class CSPLIB_EXPORT TagReader: public TagBase {
  public:
 	Reader &reader;
 	explicit TagReader(Reader &reader_): TagBase(), reader(reader_) { }
@@ -225,7 +225,7 @@ class DumpLine;
 /** Helper class for formatting indented text to an output stream.
  *  @ingroup net
  */
-class DumpWriter {
+class CSPLIB_EXPORT DumpWriter {
 	friend class DumpLine;
 	std::string m_indent;
 	mutable std::ostream &m_os;
@@ -243,7 +243,7 @@ public:
 /** Helper class for DumpWriter for formatting a single line of indented text.
  *  @ingroup net
  */
-class DumpLine {
+class CSPLIB_EXPORT DumpLine {
 	mutable DumpWriter &m_writer;
 public:
 	inline std::ostream &os() const { return m_writer.os(); }
@@ -277,7 +277,7 @@ inline std::ostream& operator <<(std::ostream& os, const TaggedGroup &group) {
  *  record definitions with the TaggedRecordCompiler.
  *  @ingroup net
  */
-class TaggedRecord: public TaggedGroup {
+class CSPLIB_EXPORT TaggedRecord: public TaggedGroup {
 public:
 	typedef uint64 Id;
 	virtual Id getId() const=0;

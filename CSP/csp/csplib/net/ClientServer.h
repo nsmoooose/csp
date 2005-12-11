@@ -57,7 +57,7 @@ class PeerInfo;
 /** Command base class for clients and servers.
  *  @ingroup net
  */
-class ClientServerBase: public Referenced {
+class CSPLIB_EXPORT ClientServerBase: public Referenced {
 
 	// client-server message handlers.
 	virtual void onConnectionRequest(Ref<ConnectionRequest> const &, Ref<MessageQueue> const &) {}
@@ -194,7 +194,7 @@ public:
  *  and are responsible for assigning unique ids to all clients.
  *  @ingroup net
  */
-class Server: public ClientServerBase {
+class CSPLIB_EXPORT Server: public ClientServerBase {
 
 	// Callbacks used during the initial client-server connection handshake.
 	virtual void onConnectionRequest(Ref<ConnectionRequest> const &msg, Ref<MessageQueue> const &queue);
@@ -228,7 +228,7 @@ public:
 /** Convenience class for implementing network clients using SimNet.
  *  @ingroup net
  */
-class Client: public ClientServerBase {
+class CSPLIB_EXPORT Client: public ClientServerBase {
 	bool m_Connected;
 
 	// Callback used during the initial client-server connection handshake.

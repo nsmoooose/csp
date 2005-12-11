@@ -38,7 +38,7 @@ CSP_NAMESPACE
  *  to process incoming messages.
  *  @ingroup net
  */
-class MessageHandler: public Referenced {
+class CSPLIB_EXPORT MessageHandler: public Referenced {
 public:
 	/** Called by PacketDecoder to handle an incoming message.
 	 */

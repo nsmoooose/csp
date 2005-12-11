@@ -54,7 +54,7 @@ class NetworkInterface;
  *
  *  @ingroup net
  */
-class PeerInfo: public NonCopyable {
+class CSPLIB_EXPORT PeerInfo: public NonCopyable {
 	friend class ActivePeerList;
 
 	PeerId m_id;
@@ -442,7 +442,7 @@ public:
  * connection updates (bandwidth shaping, reliable message retransmission,
  * and heartbeats).
  */
-class ActivePeerList: public NonCopyable {
+class CSPLIB_EXPORT ActivePeerList: public NonCopyable {
 	double m_ElapsedTime;
 	uint32 m_DesiredRateToSelf;
 	typedef std::vector<PeerInfo *> PeerList;

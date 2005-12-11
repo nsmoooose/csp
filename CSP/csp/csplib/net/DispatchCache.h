@@ -43,7 +43,7 @@ CSP_NAMESPACE
  *  lookup maps.  @see DispatchManager for one use case.
  *  @ingroup net
  */
-class DispatchCache: public Referenced {
+class CSPLIB_EXPORT DispatchCache: public Referenced {
 
 	typedef uint64 CacheKey;
 	typedef MostRecentlyUsedCache<CacheKey, Ref<BaseCallback> > MRUCache;

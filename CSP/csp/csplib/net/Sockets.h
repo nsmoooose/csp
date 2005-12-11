@@ -54,7 +54,7 @@ CSP_NAMESPACE
  *
  *  @ingroup net
  */
-class DatagramReceiveSocket: public ost::UDPReceive {
+class CSPLIB_EXPORT DatagramReceiveSocket: public ost::UDPReceive {
 public:
 	DatagramReceiveSocket(const ost::InetHostAddress &host, ost::tpport_t port):
 	    ost::UDPReceive(host, port) { }
@@ -85,7 +85,7 @@ public:
  *
  *  @ingroup net
  */
-class DatagramTransmitSocket: public ost::UDPTransmit {
+class CSPLIB_EXPORT DatagramTransmitSocket: public ost::UDPTransmit {
 public:
 	DatagramTransmitSocket(): ost::UDPTransmit() { }
 

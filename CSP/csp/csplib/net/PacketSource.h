@@ -37,7 +37,7 @@ class NetworkInterface;
  *
  *  @ingroup net
  */
-class PacketSource: public Referenced {
+class CSPLIB_EXPORT PacketSource: public Referenced {
 	friend class NetworkInterface;
 
 	// TODO(os)

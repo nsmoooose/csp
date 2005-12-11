@@ -73,7 +73,7 @@ class ActivePeerList;
  *
  *  @ingroup net
  */
-class NetworkInterface: public Referenced {
+class CSPLIB_EXPORT NetworkInterface: public Referenced {
 	friend class ActivePeerList;
 
 	// reserved message ids

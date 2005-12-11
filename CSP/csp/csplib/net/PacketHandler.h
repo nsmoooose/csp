@@ -38,7 +38,7 @@ CSP_NAMESPACE
  *
  *  @ingroup net
  */
-class PacketHandler: public Referenced {
+class CSPLIB_EXPORT PacketHandler: public Referenced {
 	friend class NetworkInterface;
 
 	// TODO(os)

@@ -59,7 +59,7 @@ CSP_NAMESPACE
  *
  *  @ingroup net
  */
-class PacketQueue {
+class CSPLIB_EXPORT PacketQueue {
 	CircularBuffer m_Buffer;
 	int m_Depth;
 	double m_DropFraction;

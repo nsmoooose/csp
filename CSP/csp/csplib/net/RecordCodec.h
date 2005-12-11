@@ -65,7 +65,7 @@ class TaggedRecordFactoryBase;
  *
  *  @ingroup net
  */
-class RecordCodec {
+class CSPLIB_EXPORT RecordCodec {
 
 	static const int MAX_MESSAGE_IDS = 65536;
 

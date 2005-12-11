@@ -256,9 +256,9 @@ typedef Vector<double> Vectord;
 
 CSP_NAMESPACE_END
 
-template<typename T> std::ostream &operator<<(std::ostream& lhs, const numeric::Vector<T>& rhs) {
+template<typename T> std::ostream &operator<<(std::ostream& lhs, const CSP(numeric::Vector<T>)& rhs) {
 	if (!rhs.empty()) {
-		typename numeric::Vector<T>::cvi iBegin = rhs.begin();
+		typename CSP(numeric::Vector<T>)::cvi iBegin = rhs.begin();
 		lhs << "(" << *iBegin;
 		std::for_each(iBegin+1,rhs.end(),PrintElement<T>(lhs));
 		lhs << ") ";

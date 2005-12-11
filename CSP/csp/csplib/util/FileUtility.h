@@ -52,7 +52,7 @@ namespace ospath {
 	 *        on the platform under which the documentation was
 	 *        built.
 	 */
-	extern CSP_EXPORT const char DIR_SEPARATOR;
+	extern CSPLIB_EXPORT const char DIR_SEPARATOR;
 
 	/** The local, platform-specific search-path separator.
 	 *
@@ -60,18 +60,18 @@ namespace ospath {
 	 *        on the platform under which the documentation was
 	 *        built.
 	 */
-	extern CSP_EXPORT const char PATH_SEPARATOR;
+	extern CSPLIB_EXPORT const char PATH_SEPARATOR;
 	
 	/** Return the basename of pathname path.
 	 *
 	 *  Example:
 	 *    @li <tt>basename("/usr/local/csp") == "csp"</tt>
 	 */
-	extern CSP_EXPORT std::string basename(const std::string &path);
+	extern CSPLIB_EXPORT std::string basename(const std::string &path);
 	
 	/** Returns true if path is an absolute pathname.
 	 */
-	extern CSP_EXPORT bool isabs(const std::string &path);
+	extern CSPLIB_EXPORT bool isabs(const std::string &path);
 	
 	/** Strips leading drive specifier and root directory marker.
 	 *
@@ -79,25 +79,25 @@ namespace ospath {
 	 *    @li <tt>skiproot("c:\\windows") == "windows"</tt>
 	 *    @li <tt>skiproot("/linux/csp") == "linux/csp"</tt>
 	 */
-	extern CSP_EXPORT std::string skiproot(const std::string &path);
+	extern CSPLIB_EXPORT std::string skiproot(const std::string &path);
 	
 	/** Returns the directory name of pathname path.
 	 *
 	 *  Example:
 	 *    @li <tt>dirname("/usr/local/csp") == "/usr/local"</tt>.
 	 */
-	extern CSP_EXPORT std::string dirname(const std::string &path);
+	extern CSPLIB_EXPORT std::string dirname(const std::string &path);
 	
 	/** Returns the current working directory.
 	 */
-	extern CSP_EXPORT std::string currentdir();
+	extern CSPLIB_EXPORT std::string currentdir();
 	
 	/** Returns the (last) extension of pathname path.
 	 *
 	 *  Example:
 	 *    @li <tt>ext("/usr/local/script.csp") == ".csp"</tt>
 	 */
-	extern CSP_EXPORT std::string ext(const std::string &path);
+	extern CSPLIB_EXPORT std::string ext(const std::string &path);
 	
 	/** Intelligently joins two path components into a pathname.
 	 *
@@ -106,7 +106,7 @@ namespace ospath {
 	 *    @li <tt>join("c:\\windows\\", "system")
 	 *               == "c:\\windows\\system"</tt>
 	 */
-	extern CSP_EXPORT std::string join(const std::string &a, const std::string &b);
+	extern CSPLIB_EXPORT std::string join(const std::string &a, const std::string &b);
 	
 	/** Substitute characters in a string.
 	 *
@@ -117,46 +117,46 @@ namespace ospath {
 	 *  @param search The character to replace.
 	 *  @param replace The replacement character.
 	 */
-	extern CSP_EXPORT std::string stringreplace(const std::string &path, char search, char replace);
+	extern CSPLIB_EXPORT std::string stringreplace(const std::string &path, char search, char replace);
 	
 	/** Convert a native path to a standard format (uses '/' instead of '\')
 	 *
 	 *  @note does <b>not</b> handle drive specifiers under windows.
 	 */
-	extern CSP_EXPORT std::string normalize(const std::string &path);
+	extern CSPLIB_EXPORT std::string normalize(const std::string &path);
 	
 	/** Convert a normalized path to the native format.
 	 */
-	extern CSP_EXPORT std::string denormalize(const std::string &path);
+	extern CSPLIB_EXPORT std::string denormalize(const std::string &path);
 	
 	/** Filter an input path to use the native directory separation character.
 	 */
-	extern CSP_EXPORT std::string filter(const std::string &path);
+	extern CSPLIB_EXPORT std::string filter(const std::string &path);
 
 	/** Add a path to a list of paths using the platform path separator.
 	 */
-	extern CSP_EXPORT std::string const &addpath(std::string &pathlist, const std::string &path);
+	extern CSPLIB_EXPORT std::string const &addpath(std::string &pathlist, const std::string &path);
 	
 	/** Removes the last extension from a filepath.  Returns the extension
 	 *  (excluding the '.'), or an empty string if no extensions were found.
 	 */
- 	extern CSP_EXPORT std::string stripFileExtension(std::string &path);
+ 	extern CSPLIB_EXPORT std::string stripFileExtension(std::string &path);
 
 	/** Get the last extension of a filename (excluding the '.'), or an empty
 	 *  string if no extensions were found.
 	 */
-	extern CSP_EXPORT std::string getFileExtension(const std::string &path);
+	extern CSPLIB_EXPORT std::string getFileExtension(const std::string &path);
 
 	/** Test if a file exists.
 	 */
-	extern CSP_EXPORT bool exists(const std::string &path);
+	extern CSPLIB_EXPORT bool exists(const std::string &path);
 
 	typedef std::vector<std::string> DirectoryContents;
 
 	/** Retrieve a list of entries (files and subdirectories) from the given
 	 *  path (non-recursive).
 	 */
-	extern CSP_EXPORT DirectoryContents getDirectoryContents(std::string const &path);
+	extern CSPLIB_EXPORT DirectoryContents getDirectoryContents(std::string const &path);
 
 } // namespace ospath
 

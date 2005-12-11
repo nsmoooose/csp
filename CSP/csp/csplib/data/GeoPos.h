@@ -35,7 +35,7 @@ CSP_NAMESPACE
 
 /** Reference ellipsoid parameters.
  */
-struct CSP_EXPORT ReferenceEllipsoid {
+struct CSPLIB_EXPORT ReferenceEllipsoid {
 	ReferenceEllipsoid(double semi_major, double semi_minor) {
 		A          = semi_major;
 		B          = semi_minor;
@@ -97,25 +97,25 @@ struct CSP_EXPORT ReferenceEllipsoid {
 namespace GeoRef {
 	/** Airy 1830
 	 */
-	extern CSP_EXPORT const ReferenceEllipsoid Airy1830;
+	extern CSPLIB_EXPORT const ReferenceEllipsoid Airy1830;
 	/** Australian National
 	 */
-	extern CSP_EXPORT const ReferenceEllipsoid AustralianNational;
+	extern CSPLIB_EXPORT const ReferenceEllipsoid AustralianNational;
 	/** World Geodetic System 1984
 	 */
-	extern CSP_EXPORT const ReferenceEllipsoid WGS84;
+	extern CSPLIB_EXPORT const ReferenceEllipsoid WGS84;
 	/** World Geodetic System 1980
 	 */
-	extern CSP_EXPORT const ReferenceEllipsoid GRS80;
+	extern CSPLIB_EXPORT const ReferenceEllipsoid GRS80;
 	/** World Geodetic System 1972
 	 */
-	extern CSP_EXPORT const ReferenceEllipsoid WGS72;
+	extern CSPLIB_EXPORT const ReferenceEllipsoid WGS72;
 	/** Clarke 1866
 	 */
-	extern CSP_EXPORT const ReferenceEllipsoid Clarke1866;
+	extern CSPLIB_EXPORT const ReferenceEllipsoid Clarke1866;
 	/** North American Datum 1927
 	 */
-	extern CSP_EXPORT const ReferenceEllipsoid NAD27;
+	extern CSPLIB_EXPORT const ReferenceEllipsoid NAD27;
 }
 
 
@@ -234,7 +234,7 @@ void ShellDistance(LLA const &p,
  *
  *  @ingroup BaseTypes
  */
-class CSP_EXPORT LLA {
+class CSPLIB_EXPORT LLA {
 	double _lat, _lon, _alt;
 
 public: // BaseType
@@ -358,7 +358,7 @@ public:
  *
  *  @ingroup BaseTypes
  */
-class CSP_EXPORT UTM {
+class CSPLIB_EXPORT UTM {
 	double _E, _N, _alt;
 	char _zone, _designator;
 
@@ -482,7 +482,7 @@ public:
  *
  *  @ingroup BaseTypes
  */
-class CSP_EXPORT ECEF: public Vector3 {
+class CSPLIB_EXPORT ECEF: public Vector3 {
 public: // BaseType (most methods inherited from Vector3)
 
 	/// Type representation.
@@ -516,9 +516,9 @@ public:
 };
 
 
-CSP_EXPORT std::ostream &operator <<(std::ostream &o, LLA const &q);
-CSP_EXPORT std::ostream &operator <<(std::ostream &o, UTM const &q);
-CSP_EXPORT std::ostream &operator <<(std::ostream &o, ECEF const &q);
+CSPLIB_EXPORT std::ostream &operator <<(std::ostream &o, LLA const &q);
+CSPLIB_EXPORT std::ostream &operator <<(std::ostream &o, UTM const &q);
+CSPLIB_EXPORT std::ostream &operator <<(std::ostream &o, ECEF const &q);
 
 CSP_NAMESPACE_END
 

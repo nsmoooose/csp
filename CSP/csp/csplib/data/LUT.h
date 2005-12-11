@@ -230,7 +230,7 @@ public:
  *
  * @author Mark Rose <mkrose@users.sf.net>
  */
-class CSP_EXPORT Interpolation {
+class CSPLIB_EXPORT Interpolation {
 public:
 	typedef enum { LINEAR, SPLINE } Modes;
 
@@ -274,7 +274,7 @@ protected:
  * @author Mark Rose <mkrose@users.sf.net>
  */
 template <typename X>
-class CSP_EXPORT InterpolationType: public Interpolation {
+class CSPLIB_EXPORT InterpolationType: public Interpolation {
 protected:
 	X m_X0, m_X1, m_XS;
 	int m_Limit;
@@ -328,7 +328,7 @@ class Curvature;
  * @ingroup BaseTypes
  */
 template <int N, class X=float>
-class CSP_EXPORT LUT: public InterpolationType<X> {
+class CSPLIB_EXPORT LUT: public InterpolationType<X> {
 
 public: // BaseType
 
@@ -545,7 +545,7 @@ public:
  * @author Mark Rose <mkrose@users.sf.net>
  */
 template <typename X>
-class CSP_EXPORT LUT<1, X>: public InterpolationType<X> {
+class CSPLIB_EXPORT LUT<1, X>: public InterpolationType<X> {
 
 public: // BaseType
 
@@ -698,7 +698,7 @@ public:
 /** Stub to prevent zero-dimensional LUTs
  */
 template <typename X>
-class CSP_EXPORT LUT<0, X>: public Interpolation {
+class CSPLIB_EXPORT LUT<0, X>: public Interpolation {
 	LUT();
 };
 
@@ -732,9 +732,9 @@ typedef LUT<2,float> Table2;
 typedef LUT<3,float> Table3;
 
 
-CSP_EXPORT std::ostream &operator <<(std::ostream &o, Table1 const &t);
-CSP_EXPORT std::ostream &operator <<(std::ostream &o, Table2 const &t);
-CSP_EXPORT std::ostream &operator <<(std::ostream &o, Table3 const &t);
+CSPLIB_EXPORT std::ostream &operator <<(std::ostream &o, Table1 const &t);
+CSPLIB_EXPORT std::ostream &operator <<(std::ostream &o, Table2 const &t);
+CSPLIB_EXPORT std::ostream &operator <<(std::ostream &o, Table3 const &t);
 
 CSP_NAMESPACE_END
 

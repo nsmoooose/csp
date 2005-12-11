@@ -39,7 +39,7 @@ CSP_NAMESPACE
 
 // Log a fatal error and abort the program.  Also declared in Log.h, but
 // redeclared here for convenience.  Defined in LogStream.cpp
-extern void CSP_EXPORT fatal(std::string const &msg);
+extern void CSPLIB_EXPORT fatal(std::string const &msg);
 
 
 /**
@@ -50,20 +50,20 @@ extern void CSP_EXPORT fatal(std::string const &msg);
 
 struct HashT;
 
-extern CSP_EXPORT uint32 newhash4_cstring(std::string const &);
-extern CSP_EXPORT HashT newhasht_cstring(std::string const &);
+extern CSPLIB_EXPORT uint32 newhash4_cstring(std::string const &);
+extern CSPLIB_EXPORT HashT newhasht_cstring(std::string const &);
 
 /** CSP standard 32-bit hash functions.
  */
-extern CSP_EXPORT uint32 hash_uint32(uint32);
-extern CSP_EXPORT uint32 hash_uint32(uint64);
-extern CSP_EXPORT uint32 hash_uint32(std::string const &);
-extern CSP_EXPORT uint32 hash_uint32(const char *buffer, const int len);
+extern CSPLIB_EXPORT uint32 hash_uint32(uint32);
+extern CSPLIB_EXPORT uint32 hash_uint32(uint64);
+extern CSPLIB_EXPORT uint32 hash_uint32(std::string const &);
+extern CSPLIB_EXPORT uint32 hash_uint32(const char *buffer, const int len);
 
 
 /** A 64-bit hash value.
  */
-struct CSP_EXPORT HashT {
+struct CSPLIB_EXPORT HashT {
 	uint32 a, b;
 
 	/** Construct a default hash value (0).

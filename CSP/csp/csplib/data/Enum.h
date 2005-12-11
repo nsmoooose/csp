@@ -117,7 +117,7 @@ CSP_SUBEXCEPTION(EnumTypeError, EnumError)
  * You should never create an instance of this class directly;
  * use Enumeration instead.
  */
-class CSP_EXPORT EnumerationCore: public Referenced {
+class CSPLIB_EXPORT EnumerationCore: public Referenced {
 friend class Enumeration;
 	typedef std::pair<std::string, int> Element;
 	typedef std::vector<Element> Elements;
@@ -243,7 +243,7 @@ friend class Enumeration;
  *     Enumeration Foo::MyEnumeration("apple orange cherry");
  * @endcode
  */
-class CSP_EXPORT Enumeration {
+class CSPLIB_EXPORT Enumeration {
 friend class EnumLink;
 	/// Reference counted smart-pointer to the associated EnumerationCore.
 	Ref<EnumerationCore const> __core;
@@ -431,7 +431,7 @@ public:
  *
  * @ingroup BaseTypes
  */
-class CSP_EXPORT EnumLink
+class CSPLIB_EXPORT EnumLink
 {
 friend class Enumeration;
 	/// the associated enumeration
@@ -722,7 +722,7 @@ inline EnumLink Enumeration::first() const {
 	return makeEnum(0);
 }
 
-CSP_EXPORT std::ostream &operator <<(std::ostream &o, EnumLink &e);
+CSPLIB_EXPORT std::ostream &operator <<(std::ostream &o, EnumLink &e);
 
 CSP_NAMESPACE_END
 

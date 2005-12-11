@@ -60,7 +60,7 @@ CSP_EXCEPTION(TypeMismatch)
  *
  *  @internal
  */
-class CSP_EXPORT TypeAdapter
+class CSPLIB_EXPORT TypeAdapter
 {
 	// WARNING: This list must be kept in sync with the TypeNames definition
 	// in TypeAdapter.cpp!

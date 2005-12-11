@@ -53,7 +53,7 @@ class Quat;
  *
  * @ingroup BaseTypes
  */
-class CSP_EXPORT Matrix3
+class CSPLIB_EXPORT Matrix3
 {
 public: // BaseType
 
@@ -669,7 +669,7 @@ inline Vector3 Matrix3::preMult(const Vector3& v) const {
 	               (_mat[0][2]*v.x() + _mat[1][2]*v.y() + _mat[2][2]*v.z()));
 }
 
-CSP_EXPORT std::ostream &operator <<(std::ostream &o, Matrix3 const &m);
+CSPLIB_EXPORT std::ostream &operator <<(std::ostream &o, Matrix3 const &m);
 
 
 CSP_NAMESPACE_END

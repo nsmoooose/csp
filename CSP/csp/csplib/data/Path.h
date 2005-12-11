@@ -55,7 +55,7 @@ CSP_EXCEPTION(ObjectTypeMismatch)
  * @author Mark Rose <mkrose@users.sf.net>
  * @ingroup BaseTypes
  */
-class CSP_EXPORT Path
+class CSPLIB_EXPORT Path
 {
 protected:
 	ObjectID _path;
@@ -135,7 +135,7 @@ public:
 };
 
 
-CSP_EXPORT std::ostream &operator <<(std::ostream &o, Path const &p);
+CSPLIB_EXPORT std::ostream &operator <<(std::ostream &o, Path const &p);
 
 CSP_NAMESPACE_END
 

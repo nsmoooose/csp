@@ -216,12 +216,12 @@ void fatal(std::string const &msg) {
 }
 
 // not really the right place for this, but convenient.
-void CSP_EXPORT _log_reference_count_error(int count, void *pointer) {
+void CSPLIB_EXPORT _log_reference_count_error(int count, void *pointer) {
 	CSPLOG(FATAL, ALL) << "ReferencedBase(" << pointer << ") deleted with non-zero reference count (" << count << "): memory corruption possible.";
 }
 
 // not really the right place for this, but convenient.
-void CSP_EXPORT _log_reference_conversion_error() {
+void CSPLIB_EXPORT _log_reference_conversion_error() {
 	CSPLOG(ERROR, ALL) << "Ref() assignment: incompatible types (dynamic cast failed).";
 }
 

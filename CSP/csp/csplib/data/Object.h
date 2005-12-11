@@ -62,7 +62,7 @@ class LinkCore;
  *
  *  @ingroup BaseTypes
  */
-class CSP_EXPORT Object: public virtual Referenced {
+class CSPLIB_EXPORT Object: public virtual Referenced {
 	friend class DataArchive;
 	friend class LinkCore;
 
@@ -217,7 +217,7 @@ public:
 };
 
 
-CSP_EXPORT std::ostream &operator <<(std::ostream &o, Object const &obj);
+CSPLIB_EXPORT std::ostream &operator <<(std::ostream &o, Object const &obj);
 
 
 CSP_NAMESPACE_END

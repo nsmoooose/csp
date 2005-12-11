@@ -36,7 +36,7 @@ CSP_NAMESPACE
  *
  *  @ingroup BaseTypes
  */
-class CSP_EXPORT External {
+class CSPLIB_EXPORT External {
 protected:
 	std::string _path;
 	std::string _native_path;
@@ -104,7 +104,7 @@ public:
 };
 
 
-CSP_EXPORT std::ostream &operator <<(std::ostream &o, External const &e);
+CSPLIB_EXPORT std::ostream &operator <<(std::ostream &o, External const &e);
 
 
 CSP_NAMESPACE_END

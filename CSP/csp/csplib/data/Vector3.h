@@ -50,7 +50,7 @@ class Matrix3;
  *
  *  @ingroup BaseTypes
  */
-class CSP_EXPORT Vector3
+class CSPLIB_EXPORT Vector3
 {
 	double _x, _y, _z;
 
@@ -357,7 +357,7 @@ inline const Vector3 cross(const Vector3& a, const Vector3& b) { return a^b; }
 
 inline Vector3 operator * (double lhs, const Vector3 &rhs) { return rhs*lhs; }
 
-CSP_EXPORT std::ostream &operator <<(std::ostream &o, Vector3 const &v);
+CSPLIB_EXPORT std::ostream &operator <<(std::ostream &o, Vector3 const &v);
 
 CSP_NAMESPACE_END
 

@@ -56,7 +56,7 @@ class DataArchive;
  *
  *  @author Mark Rose <mkrose@users.sf.net>
  */
-class CSP_EXPORT LinkCore: public Path {
+class CSPLIB_EXPORT LinkCore: public Path {
 private:
 	Object *_reference;
 

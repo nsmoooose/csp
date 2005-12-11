@@ -50,7 +50,7 @@ CSP_EXCEPTION(SerializeError)
 /** A trivial FILE * wrapper to provide a uniform file interface for both C++
  *  and Python.
  */
-class CSP_EXPORT PackFile {
+class CSPLIB_EXPORT PackFile {
 	FILE *_f;
 	bool _open;
 public:
@@ -89,7 +89,7 @@ public:
 
 /** Base class for serializing standard types and BaseTypes from a data source.
  */
-class CSP_EXPORT Reader {
+class CSPLIB_EXPORT Reader {
 	uint8 const *_buffer;
 	uint8 const *_read;
 	uint8 const *_end;
@@ -314,7 +314,7 @@ inline Reader& operator>>(Reader& reader, std::vector<T> &y) {
  * Abstract base class for serializing standard types and BaseTypes
  * to a data source.
  */
-class CSP_EXPORT Writer {
+class CSPLIB_EXPORT Writer {
 protected:
 	virtual void write(void const* data, uint32 bytes)=0;
 
@@ -467,7 +467,7 @@ inline Writer& operator<<(Writer &writer, std::vector<T> const &x) {
  *
  *  @author Mark Rose <mkrose@users.sourceforge.net>
  */
-class CSP_EXPORT ArchiveWriter: public Writer {
+class CSPLIB_EXPORT ArchiveWriter: public Writer {
 	FILE *_f;
 	int32 _n;
 
@@ -496,7 +496,7 @@ public:
  *
  *  @author Mark Rose <mkrose@users.sourceforge.net>
  */
-class CSP_EXPORT ArchiveReader: public Reader {
+class CSPLIB_EXPORT ArchiveReader: public Reader {
 public:
 	ArchiveReader(const char* data, int32 n, DataArchive* archive=0, bool loadall=true):
 		Reader(reinterpret_cast<const uint8*>(data), n, archive, loadall) { }

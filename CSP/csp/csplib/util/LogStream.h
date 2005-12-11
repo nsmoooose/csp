@@ -51,7 +51,7 @@ CSP_EXCEPTION(FatalException)
 
 /** Class to manage the debug logging stream.
  */
-class CSP_EXPORT LogStream {
+class CSPLIB_EXPORT LogStream {
 public:
 	/// Flags controlling log metadata.
 	enum { cTerse=0, cPriority=1, cDatestamp=2, cTimestamp=4, cLinestamp=8, cFullPath=16, cThread=32, cVerbose=~0 };
@@ -184,7 +184,7 @@ private:
  *  file name and line number to be automatically recorded in the log.
  *  See the various CSPLOG macros for more information.
  */
-class CSP_EXPORT LogStream::LogEntry {
+class CSPLIB_EXPORT LogStream::LogEntry {
 public:
 	/** Create a new log entry in the specified log stream.
 	 *

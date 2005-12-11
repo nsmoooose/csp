@@ -46,7 +46,7 @@ CSP_NAMESPACE
  *
  * @author Mark Rose <mkrose@users.sf.net>
  */
-class CSP_EXPORT Perlin1D {
+class CSPLIB_EXPORT Perlin1D {
 	
 public:
 

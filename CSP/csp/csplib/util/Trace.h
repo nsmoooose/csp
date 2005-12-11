@@ -43,7 +43,7 @@ class LogStream;
 
 /** A class that can acquire, store, and display a stack trace.
  */
-CSP_EXPORT class StackTrace {
+CSPLIB_EXPORT class StackTrace {
 public:
 	StackTrace();
 	~StackTrace();
@@ -79,34 +79,34 @@ inline std::ostream &operator<<(std::ostream &os, StackTrace const &trace) {
 
 /** Static methods for installing signal handlers that log stack traces.
  */
-CSP_EXPORT class AutoTrace: public NonConstructable {
+CSPLIB_EXPORT class AutoTrace: public NonConstructable {
 public:
 	/** Install segv, abort, and sigterm handlers.
 	 */
-	static CSP_EXPORT bool install();
+	static CSPLIB_EXPORT bool install();
 
 	/** Set the logstream used by the signal handlers to log stack traces.
 	 */
-	static CSP_EXPORT void setLog(LogStream &log);
+	static CSPLIB_EXPORT void setLog(LogStream &log);
 
 	/** Disable the abort signal handler.  There is no way to reenable the
 	 *  handler.  This is intended to be used before intentionally calling
 	 *  abort after all relevant information has already been logged.
 	 */
-	static CSP_EXPORT void inhibitAbortHandler() { _abort = false; }
+	static CSPLIB_EXPORT void inhibitAbortHandler() { _abort = false; }
 
 private:
 	// signal handlers.
-	static CSP_EXPORT void __sigterm(int /*sig_n*/);
-	static CSP_EXPORT void __sigsegv(int /*sig_n*/);
-	static CSP_EXPORT void __sigabort(int /*sig_n*/);
+	static CSPLIB_EXPORT void __sigterm(int /*sig_n*/);
+	static CSPLIB_EXPORT void __sigsegv(int /*sig_n*/);
+	static CSPLIB_EXPORT void __sigabort(int /*sig_n*/);
 
-	static CSP_EXPORT LogStream *log();
+	static CSPLIB_EXPORT LogStream *log();
 
-	static CSP_EXPORT StackTrace _trace;
-	static CSP_EXPORT LogStream *_log;
-	static CSP_EXPORT char *_reserve;
-	static CSP_EXPORT bool _abort;
+	static CSPLIB_EXPORT StackTrace _trace;
+	static CSPLIB_EXPORT LogStream *_log;
+	static CSPLIB_EXPORT char *_reserve;
+	static CSPLIB_EXPORT bool _abort;
 };
 
 CSP_NAMESPACE_END

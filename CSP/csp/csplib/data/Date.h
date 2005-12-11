@@ -88,7 +88,7 @@ CSP_EXCEPTION(InvalidDate)
  *        GNU General Public License, as allowed by the GNU
  *        Lesser General Public License.
  */
-class CSP_EXPORT Date {
+class CSPLIB_EXPORT Date {
 public:
 	typedef int32 julian_t;
 	typedef uint8 day_t;
@@ -380,7 +380,7 @@ private:
  *  @author Mark Rose <mkrose@users.sf.net>
  */
 
-class CSP_EXPORT Zulu {
+class CSPLIB_EXPORT Zulu {
 
 public:
 	typedef double time_t;
@@ -560,7 +560,7 @@ private:
  *
  *  @author Mark Rose <mkrose@users.sf.net>
  */
-class CSP_EXPORT DateZulu: public Date, public Zulu {
+class CSPLIB_EXPORT DateZulu: public Date, public Zulu {
 
 
 public:
@@ -725,7 +725,7 @@ typedef DateZulu::time_t SimTime;
  *  @author Mark Rose <mkrose@users.sf.net>
  *  @ingroup BaseTypes
  */
-class CSP_EXPORT SimDate: public DateZulu {
+class CSPLIB_EXPORT SimDate: public DateZulu {
 
 	SimTime reference;
 	SimTime pause_time;
@@ -939,10 +939,10 @@ public:
 };
 
 
-CSP_EXPORT std::ostream &operator <<(std::ostream &o, Date const &d);
-CSP_EXPORT std::ostream &operator <<(std::ostream &o, Zulu const &d);
-CSP_EXPORT std::ostream &operator <<(std::ostream &o, DateZulu const &d);
-CSP_EXPORT std::ostream &operator <<(std::ostream &o, SimDate const &d);
+CSPLIB_EXPORT std::ostream &operator <<(std::ostream &o, Date const &d);
+CSPLIB_EXPORT std::ostream &operator <<(std::ostream &o, Zulu const &d);
+CSPLIB_EXPORT std::ostream &operator <<(std::ostream &o, DateZulu const &d);
+CSPLIB_EXPORT std::ostream &operator <<(std::ostream &o, SimDate const &d);
 
 
 CSP_NAMESPACE_END

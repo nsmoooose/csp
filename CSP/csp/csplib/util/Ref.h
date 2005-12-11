@@ -48,7 +48,7 @@ class LinkCore;
 
 CSP_EXCEPTION(ConversionError)
 
-void CSP_EXPORT _log_reference_conversion_error();
+void CSPLIB_EXPORT _log_reference_conversion_error();
 
 
 /** Reference counting smart-pointer.

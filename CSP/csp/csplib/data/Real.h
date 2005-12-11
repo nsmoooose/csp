@@ -45,7 +45,7 @@ CSP_NAMESPACE
  * @author Mark Rose <mkrose@users.sf.net>
  * @ingroup BaseTypes
  */
-class CSP_EXPORT Real {
+class CSPLIB_EXPORT Real {
 	static random::Taus2 _rng;
 	float _mean, _sigma;
 	float _value;
@@ -171,7 +171,7 @@ public:
 #endif // SWIG
 
 
-CSP_EXPORT std::ostream &operator <<(std::ostream &o, Real const &r);
+CSPLIB_EXPORT std::ostream &operator <<(std::ostream &o, Real const &r);
 
 CSP_NAMESPACE_END
 

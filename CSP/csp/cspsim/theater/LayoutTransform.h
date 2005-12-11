@@ -26,7 +26,7 @@
 #ifndef __CSPSIM_THEATER_LAYOUTTRANSFORM_H__
 #define __CSPSIM_THEATER_LAYOUTTRANSFORM_H__
 
-#include <csp/csplib/util/Export.h>
+#include <csp/cspsim/Export.h>
 #include <csp/csplib/util/Namespace.h>
 #include <osg/Vec3>
 

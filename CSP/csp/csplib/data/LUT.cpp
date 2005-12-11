@@ -733,9 +733,9 @@ std::ostream &operator <<(std::ostream &o, Table2 const &t) { return o << t.asSt
 std::ostream &operator <<(std::ostream &o, Table3 const &t) { return o << t.asString(); }
 
 // Force template instantiation for the three supported types.
-template class CSP_EXPORT LUT<1, float>;
-template class CSP_EXPORT LUT<2, float>;
-template class CSP_EXPORT LUT<3, float>;
+template class CSPLIB_EXPORT LUT<1, float>;
+template class CSPLIB_EXPORT LUT<2, float>;
+template class CSPLIB_EXPORT LUT<3, float>;
 
 
 CSP_NAMESPACE_END

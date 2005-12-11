@@ -25,8 +25,8 @@
 #ifndef __CSPSIM_THEATER_ELEVATIONCORRECTION_H__
 #define __CSPSIM_THEATER_ELEVATIONCORRECTION_H__
 
+#include <csp/cspsim/Export.h>
 #include <csp/cspsim/theater/LayoutTransform.h>
-#include <csp/csplib/util/Export.h>
 #include <osg/Vec3>
 
 CSP_NAMESPACE

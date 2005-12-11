@@ -97,7 +97,7 @@ class TypeAdapter;
  *
  *  @author Mark Rose <mkrose@users.sf.net>
  */
-class CSP_EXPORT InterfaceProxy {
+class CSPLIB_EXPORT InterfaceProxy {
 
 private:
 

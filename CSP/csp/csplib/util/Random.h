@@ -100,7 +100,7 @@ namespace rng { // random number generators
  *
  *  The period of this generator is 2^{19937} - 1.
  */
-class CSP_EXPORT MT19937 {
+class CSPLIB_EXPORT MT19937 {
 	static const int N = 624;	/* Period parameters */
 	static const int M = 397;
 
@@ -275,7 +275,7 @@ public:
  * 2274823218 2529502358 3284895257 3539574397 (s2 < 8).
  *
  */
-class CSP_EXPORT Taus2 {
+class CSPLIB_EXPORT Taus2 {
 	// state
 	unsigned long _s1, _s2, _s3;
 
@@ -383,7 +383,7 @@ protected:
 
 /** Abstract interface for random number generators and random distributions.
  */
-class CSP_EXPORT RandomInterface {
+class CSPLIB_EXPORT RandomInterface {
 public:
 	typedef Ref<RandomStateWrapper> State;
 	typedef unsigned long SeedType;
@@ -410,7 +410,7 @@ public:
 
 /** Abstract interface for random number generators.
  */
-class CSP_EXPORT RandomNumberGeneratorInterface: public RandomInterface {
+class CSPLIB_EXPORT RandomNumberGeneratorInterface: public RandomInterface {
 public:
 	/** Get a random number in the range [0,1).
 	 */
@@ -446,7 +446,7 @@ public:
  *  typically about 20%.
  */
 template <class RNG>
-class CSP_EXPORT RandomNumberGenerator: public RandomNumberGeneratorInterface {
+class CSPLIB_EXPORT RandomNumberGenerator: public RandomNumberGeneratorInterface {
 
 	/** Random number generator state.
 	 */
@@ -551,7 +551,7 @@ namespace rd { // random distributions
 
 /** Gaussian random number distribution.
  */
-class CSP_EXPORT Gauss {
+class CSPLIB_EXPORT Gauss {
 	rng::Taus2 _gen;
 	double _mean, _sigma;
 	double _x;
@@ -623,7 +623,7 @@ public:
 };
 
 
-extern CSP_EXPORT double BoxMueller(RandomNumberGeneratorInterface &_gen, double _mean, double _sigma);
+extern CSPLIB_EXPORT double BoxMueller(RandomNumberGeneratorInterface &_gen, double _mean, double _sigma);
 
 } // namespace rd
 
@@ -635,7 +635,7 @@ extern CSP_EXPORT double BoxMueller(RandomNumberGeneratorInterface &_gen, double
 
 /** Abstract interface for random distributions.
  */
-class CSP_EXPORT RandomDistributionInterface: public RandomInterface {
+class CSPLIB_EXPORT RandomDistributionInterface: public RandomInterface {
 public:
 	/** Sample the distribution.
 	 */
@@ -739,7 +739,7 @@ namespace random { // generators and distributions
  *  thread.  In multithreaded environments, construct local generators, use
  *  a thread-specific generator, or explicitly lock a shared generator.
  */
-extern CSP_EXPORT random::Taus2 g_Random;
+extern CSPLIB_EXPORT random::Taus2 g_Random;
 
 
 CSP_NAMESPACE_END

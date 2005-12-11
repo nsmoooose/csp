@@ -42,7 +42,7 @@ CSP_NAMESPACE
  *  Common C++ atomic counter implementation, which simply restricts the interface
  *  and brings it into the csp namespace.
  */
-class CSP_EXPORT AtomicCounter: public NonCopyable {
+class CSPLIB_EXPORT AtomicCounter: public NonCopyable {
 private:
 	ost::AtomicCounter __count;
 

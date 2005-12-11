@@ -57,7 +57,7 @@ CSP_NAMESPACE
  *
  * @ingroup BaseTypes
  */
-class CSP_EXPORT Quat
+class CSPLIB_EXPORT Quat
 {
 	double _x, _y, _z, _w;
 
@@ -405,7 +405,7 @@ public:
 #ifndef SWIG
 	/** Format to an output stream.
 	 */
-	CSP_EXPORT friend std::ostream& operator << (std::ostream& output, const Quat& q);
+	CSPLIB_EXPORT friend std::ostream& operator << (std::ostream& output, const Quat& q);
 	/** Multiply a Quat by a scalar value on the left.
 	 */
 	friend inline Quat operator * (double lhs, const Quat& rhs) { return rhs*lhs; }
@@ -459,7 +459,7 @@ public:
 
 };
 
-CSP_EXPORT std::ostream &operator <<(std::ostream &o, Quat const &q);
+CSPLIB_EXPORT std::ostream &operator <<(std::ostream &o, Quat const &q);
 
 CSP_NAMESPACE_END
 

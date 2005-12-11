@@ -157,7 +157,7 @@ LogStream& testlog();
 
 /** Base class for all test fixtures.
  */
-class CSP_EXPORT TestFixture: public NonCopyable {
+class CSPLIB_EXPORT TestFixture: public NonCopyable {
 public:
 	virtual ~TestFixture() {}
 	virtual void setup() {}
@@ -171,7 +171,7 @@ public:
  *  CSP_TESTCASE macro to identify the enclosing fixture class.
  */
 template <class tCLASS>
-class CSP_EXPORT TypedTestFixture : public TestFixture {
+class CSPLIB_EXPORT TypedTestFixture : public TestFixture {
 protected:
 	typedef tCLASS TestFixtureClass;
 };
@@ -184,7 +184,7 @@ template <class tFIXTURE> class TestCase;
  *  by the CSP_TESTCASE macro.
  */
 template <class tFIXTURE>
-class CSP_EXPORT TestCase {
+class CSPLIB_EXPORT TestCase {
 	std::string m_name;
 	void (tFIXTURE::*m_test)();
 
@@ -211,7 +211,7 @@ public:
  *  sophisticated reporters (e.g., GUI-based) could be implemented by implementing
  *  this interface if desired.
  */
-class CSP_EXPORT TestReporter: public NonCopyable {
+class CSPLIB_EXPORT TestReporter: public NonCopyable {
 public:
 	virtual ~TestReporter() {}
 	virtual void beginFixture(std::string const &name) = 0;
@@ -223,7 +223,7 @@ public:
 
 /** A helper class for executing test cases within a single test fixture.
  */
-class CSP_EXPORT TestRunner: public NonCopyable {
+class CSPLIB_EXPORT TestRunner: public NonCopyable {
 public:
 	bool runTests(TestReporter &reporter);
 	std::string const &file() const { return m_file; }
@@ -241,16 +241,16 @@ private:
 /** A global (static) registry of test fixtures.  Provides a C++ and Python
  *  interface for running test fixtures.
  */
-class CSP_EXPORT TestRegistry: public NonConstructable {
+class CSPLIB_EXPORT TestRegistry: public NonConstructable {
 public:
-	static CSP_EXPORT bool loadTestModule(const char *module);
-	static CSP_EXPORT bool runAll();
-	static CSP_EXPORT bool runOnePath(const char *path);
-	static CSP_EXPORT bool runOneTest(const char *test);
-	static CSP_EXPORT void addTestRunner(TestRunner *runner);
+	static CSPLIB_EXPORT bool loadTestModule(const char *module);
+	static CSPLIB_EXPORT bool runAll();
+	static CSPLIB_EXPORT bool runOnePath(const char *path);
+	static CSPLIB_EXPORT bool runOneTest(const char *test);
+	static CSPLIB_EXPORT void addTestRunner(TestRunner *runner);
 
 private:
-	static CSP_EXPORT bool _runTests(std::vector<TestRunner*> const &tests);
+	static CSPLIB_EXPORT bool _runTests(std::vector<TestRunner*> const &tests);
 	struct TestData;
 	static TestData &data();
 };
@@ -260,7 +260,7 @@ private:
  *  fixture class.
  */
 template <class tFIXTURE>
-class CSP_EXPORT TypedTestRunner: public TestRunner {
+class CSPLIB_EXPORT TypedTestRunner: public TestRunner {
 	typedef std::map<std::string, TestCase<tFIXTURE> > TestCaseMap;
 	static TestCaseMap *m_testcases;
 public:

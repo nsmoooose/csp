@@ -46,7 +46,7 @@ class InterfaceProxy;
 
 /** Class for managing read access to multiple data archives.
  */
-class CSP_EXPORT DataManager: public Referenced {
+class CSPLIB_EXPORT DataManager: public Referenced {
 	friend class DataArchive;
 
 public:

@@ -55,7 +55,7 @@ inline timeout_t makeMilliTimeout(double timeout) {
  *  causing a deadlock.  The mutex will remain locked until it has been unlocked as
  *  many times as it was locked.
  */
-class CSP_EXPORT Mutex: public NonCopyable {
+class CSPLIB_EXPORT Mutex: public NonCopyable {
 public:
 	/** Create a new mutex.
 	 *
@@ -159,7 +159,7 @@ private:
  * condition variable.  If another thread signals the condition variable, one
  * (or all) of the threads waiting on that variable will be activated.
  */
-class CSP_EXPORT Conditional: public NonCopyable {
+class CSPLIB_EXPORT Conditional: public NonCopyable {
 public:
 
 	/** Construct a condition variable, using an internal mutex.
@@ -215,7 +215,7 @@ private:
 	ost::Conditional m_cond;
 };
 #else
-class CSP_EXPORT Conditional {};
+class CSPLIB_EXPORT Conditional {};
 #endif
 
 

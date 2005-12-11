@@ -35,7 +35,7 @@ CSP_NAMESPACE
 
 /** Inheritable property for classes that cannot be copied.
  */
-class CSP_EXPORT NonCopyable {
+class CSPLIB_EXPORT NonCopyable {
 protected:
 	NonCopyable() { }
 private:

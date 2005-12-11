@@ -38,7 +38,7 @@ class StackTrace;
 
 /** General exception base class with error reporting.
  */
-class CSP_EXPORT ExceptionBase { //: public std::runtime_error {
+class CSPLIB_EXPORT ExceptionBase { //: public std::runtime_error {
 	std::string _msg;
 	std::string _type;
 	mutable bool _dump;
@@ -113,7 +113,7 @@ public:
 #ifndef SWIG
 	/** Dump details of an exception to an output stream
 	 */
-	friend CSP_EXPORT std::ostream& operator<< (std::ostream&, const ExceptionBase&);
+	friend CSPLIB_EXPORT std::ostream& operator<< (std::ostream&, const ExceptionBase&);
 #else
 	%insert(shadow) %{
 		def __str__(self): return self.getError()
@@ -128,7 +128,7 @@ private:
 
 /** Base class for all csp exceptions.
  */
-class CSP_EXPORT Exception: public ExceptionBase {
+class CSPLIB_EXPORT Exception: public ExceptionBase {
 public:
 	Exception(std::string const &type="Exception", std::string const &msg="", bool trace=true):
 		ExceptionBase(type, msg, trace) { }

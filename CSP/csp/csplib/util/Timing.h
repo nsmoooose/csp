@@ -48,14 +48,14 @@ typedef double timing_t;
  *
  *  The offset is platform dependent, so do not use this value for absolute time.
  */
-CSP_EXPORT timing_t get_realtime();
+CSPLIB_EXPORT timing_t get_realtime();
 
 /** Return seconds since the Unix epoch (1970-01-01T00:00:00Z).  The resolution is
  *  system dependenent, varying from a few usec on Linux to about 15 ms on WinXP.
  *  If the system time is accurate (e.g. using NTP), this provides a good but non-
  *  realtime measure of the true time.
  */
-CSP_EXPORT double getSecondsSinceUnixEpoch();
+CSPLIB_EXPORT double getSecondsSinceUnixEpoch();
 
 /** Calibrate the high-performance counter used for high-resolution timing.  The
  *  first call establishes the offset between system time and the CPU counter.
@@ -71,7 +71,7 @@ CSP_EXPORT double getSecondsSinceUnixEpoch();
  *
  *  This function is a noop on Unix.
  */
-CSP_EXPORT void calibrateRealTime();
+CSPLIB_EXPORT void calibrateRealTime();
 
 /** Get the current time, in seconds.  Like getSecondsSinceUnixEpoch, the time
  *  value is relative to the Unix epoch.  Unlike getSecondsSinceUnixEpoch, the
@@ -84,7 +84,7 @@ CSP_EXPORT void calibrateRealTime();
  *  NB: to obtain accurate calibrated times, you should call calibrateRealTime
  *  periodically.
  */
-CSP_EXPORT double getCalibratedRealTime();
+CSPLIB_EXPORT double getCalibratedRealTime();
 
 /** A simple timing class with standard stopwatch functions.  The
  *  timing precision is equivalent to get_realtime().

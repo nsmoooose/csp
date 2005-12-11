@@ -25,13 +25,14 @@
 #ifndef __CSPSIM_OBJECTMODEL_H__
 #define __CSPSIM_OBJECTMODEL_H__
 
+#include <csp/cspsim/Export.h>
+
 #include <csp/csplib/data/Enum.h>
 #include <csp/csplib/data/External.h>
 #include <csp/csplib/data/Link.h>
 #include <csp/csplib/data/Object.h>
 #include <csp/csplib/data/Vector3.h>
 
-#include <csp/csplib/util/Export.h>
 #include <csp/csplib/util/Namespace.h>
 
 #include <osg/ref_ptr>

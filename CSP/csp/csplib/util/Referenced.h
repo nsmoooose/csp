@@ -43,7 +43,7 @@ CSP_NAMESPACE
 
 template <class T> class Ref;
 
-void CSP_EXPORT _log_reference_count_error(int count, void* pointer);
+void CSPLIB_EXPORT _log_reference_count_error(int count, void* pointer);
 
 
 /** Base class for reference counted objects.
@@ -51,7 +51,7 @@ void CSP_EXPORT _log_reference_count_error(int count, void* pointer);
  *  Inspired by OpenSceneGraph's osg::Referenced class.
  */
 template <typename COUNTER>
-class CSP_EXPORT ReferencedBase: public NonCopyable {
+class CSPLIB_EXPORT ReferencedBase: public NonCopyable {
 
 template <class T> friend class Ref;
 friend class LinkCore;

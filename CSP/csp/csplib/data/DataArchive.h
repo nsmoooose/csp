@@ -81,7 +81,7 @@ class InterfaceProxy;
  *
  *  @author Mark Rose <mkrose@users.sf.net>
  */
-class CSP_EXPORT DataArchive {
+class CSPLIB_EXPORT DataArchive {
 
 	friend class LinkCore;
 	friend class DataManager;

@@ -40,7 +40,7 @@ CSP_NAMESPACE
  *
  * @ingroup BaseTypes
  */
-class CSP_EXPORT Key {
+class CSPLIB_EXPORT Key {
 	uint32 _key;
 
 public: // BaseType
@@ -114,7 +114,7 @@ public:
 };
 
 
-CSP_EXPORT std::ostream &operator <<(std::ostream &o, Key const &k);
+CSPLIB_EXPORT std::ostream &operator <<(std::ostream &o, Key const &k);
 
 
 CSP_NAMESPACE_END

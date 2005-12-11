@@ -44,7 +44,7 @@ CSP_NAMESPACE
  *
  *  @ingroup net
  */
-class CSP_EXPORT TaggedRecordFactoryBase {
+class CSPLIB_EXPORT TaggedRecordFactoryBase {
 public:
 	TaggedRecordFactoryBase() { }
 	virtual Ref<TaggedRecord> create() const=0;
@@ -64,7 +64,7 @@ public:
  *
  *  @ingroup net
  */
-class CSP_EXPORT TaggedRecordRegistry: public Singleton<TaggedRecordRegistry> {
+class CSPLIB_EXPORT TaggedRecordRegistry: public Singleton<TaggedRecordRegistry> {
 
 friend class Singleton<TaggedRecordRegistry>;
 

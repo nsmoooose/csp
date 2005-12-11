@@ -43,7 +43,7 @@ class LogStream;
 
 /** A class that can acquire, store, and display a stack trace.
  */
-CSPLIB_EXPORT class StackTrace {
+class CSPLIB_EXPORT StackTrace {
 public:
 	StackTrace();
 	~StackTrace();
@@ -79,7 +79,7 @@ inline std::ostream &operator<<(std::ostream &os, StackTrace const &trace) {
 
 /** Static methods for installing signal handlers that log stack traces.
  */
-CSPLIB_EXPORT class AutoTrace: public NonConstructable {
+class CSPLIB_EXPORT AutoTrace: public NonConstructable {
 public:
 	/** Install segv, abort, and sigterm handlers.
 	 */

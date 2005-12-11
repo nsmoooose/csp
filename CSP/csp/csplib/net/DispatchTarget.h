@@ -71,7 +71,7 @@ class DispatchManager;
  *  methods to specific message types.
  *  @ingroup net
  */
-class DispatchTarget {
+class CSPLIB_EXPORT DispatchTarget {
 	friend class DispatchManager;
 protected:
 	/** This method is called by DispatchManager::dispatch to pass a

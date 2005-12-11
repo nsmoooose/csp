@@ -42,7 +42,7 @@ class UpdateProxy;
 class UpdateMaster;
 
 
-class UpdateTarget {
+class CSPLIB_EXPORT UpdateTarget {
 friend class UpdateProxy;
 private:
 	/// A proxy for connecting to an UpdateMaster.
@@ -96,7 +96,7 @@ public:
 
 
 
-class UpdateProxy: public Referenced {
+class CSPLIB_EXPORT UpdateProxy: public Referenced {
 friend class UpdateMaster;
 friend class UpdateTarget;
 
@@ -191,7 +191,7 @@ private:
  *  often as UpdateMaster::update is called, and this interval will also
  *  determine the granularity of delayed callback intervals.
  */
-class UpdateMaster {
+class CSPLIB_EXPORT UpdateMaster {
 
 	/// Binary predicate for prioritizing delayed update callbacks.
 	struct UpdatePriority: public std::binary_function<UpdateProxy::Ref,UpdateProxy::Ref,bool> {

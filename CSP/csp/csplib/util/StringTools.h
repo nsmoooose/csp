@@ -34,16 +34,16 @@ CSP_NAMESPACE
 
 /** Convert a string to uppercase (in place).
  */
-void ConvertStringToUpper(std::string &str);
+void CSPLIB_EXPORT ConvertStringToUpper(std::string &str);
 
 /** Convert a string to lowercase (in place).
  */
-void ConvertStringToLower(std::string &str);
+void CSPLIB_EXPORT ConvertStringToLower(std::string &str);
 
 
 /** Tokenize a string, placing the tokens into a deque.
  */
-class StringTokenizer: public std::deque<std::string> {
+class CSPLIB_EXPORT StringTokenizer: public std::deque<std::string> {
 public:
 	typedef std::deque<std::string>::iterator iterator;
 	typedef std::deque<std::string>::const_iterator const_iterator;
@@ -51,13 +51,13 @@ public:
 };
 
 /** Remove leading and trailing whitespace, or other characters if specified. */
-std::string TrimString(std::string const &str, std::string const &chars = " \n\r\t");
+std::string CSPLIB_EXPORT TrimString(std::string const &str, std::string const &chars = " \n\r\t");
 
 /** Remove leading whitespace, or other characters if specified. */
-std::string LeftTrimString(std::string const &str, std::string const &chars = " \n\r\t");
+std::string CSPLIB_EXPORT LeftTrimString(std::string const &str, std::string const &chars = " \n\r\t");
 
 /** Remove trailing whitespace, or other characters if specified. */
-std::string RightTrimString(std::string const &str, std::string const &chars = " \n\n\t");
+std::string CSPLIB_EXPORT RightTrimString(std::string const &str, std::string const &chars = " \n\n\t");
 
 
 CSP_NAMESPACE_END

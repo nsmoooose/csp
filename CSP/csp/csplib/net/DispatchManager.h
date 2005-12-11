@@ -58,7 +58,7 @@ class DispatchTarget;
  *  the most common object/handler pairs for immediate dispatch.
  *  @ingroup net
  */
-class DispatchManager: public Referenced {
+class CSPLIB_EXPORT DispatchManager: public Referenced {
 public:
 	/** Construct a new DispatchManager.
 	 *

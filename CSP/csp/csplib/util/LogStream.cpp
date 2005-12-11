@@ -241,7 +241,7 @@ void LogStream::trace(StackTrace const *stacktrace) {
 	unlock();
 }
 
-void fatal(std::string const &msg) {
+void CSPLIB_EXPORT fatal(std::string const &msg) {
 	std::cerr << "CSP fatal error:" << std::endl;
 	std::cerr << msg << std::endl;
 	// use abort() instead of exit() to trigger the SIGABRT handler (if installed)

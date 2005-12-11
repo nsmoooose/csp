@@ -83,30 +83,30 @@ class CSPLIB_EXPORT AutoTrace: public NonConstructable {
 public:
 	/** Install segv, abort, and sigterm handlers.
 	 */
-	static CSPLIB_EXPORT bool install();
+	static bool install();
 
 	/** Set the logstream used by the signal handlers to log stack traces.
 	 */
-	static CSPLIB_EXPORT void setLog(LogStream &log);
+	static void setLog(LogStream &log);
 
 	/** Disable the abort signal handler.  There is no way to reenable the
 	 *  handler.  This is intended to be used before intentionally calling
 	 *  abort after all relevant information has already been logged.
 	 */
-	static CSPLIB_EXPORT void inhibitAbortHandler() { _abort = false; }
+	static void inhibitAbortHandler() { _abort = false; }
 
 private:
 	// signal handlers.
-	static CSPLIB_EXPORT void __sigterm(int /*sig_n*/);
-	static CSPLIB_EXPORT void __sigsegv(int /*sig_n*/);
-	static CSPLIB_EXPORT void __sigabort(int /*sig_n*/);
+	static void __sigterm(int /*sig_n*/);
+	static void __sigsegv(int /*sig_n*/);
+	static void __sigabort(int /*sig_n*/);
 
-	static CSPLIB_EXPORT LogStream *log();
+	static LogStream *log();
 
-	static CSPLIB_EXPORT StackTrace _trace;
-	static CSPLIB_EXPORT LogStream *_log;
-	static CSPLIB_EXPORT char *_reserve;
-	static CSPLIB_EXPORT bool _abort;
+	static StackTrace _trace;
+	static LogStream *_log;
+	static char *_reserve;
+	static bool _abort;
 };
 
 CSP_NAMESPACE_END

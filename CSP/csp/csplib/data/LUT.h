@@ -218,7 +218,8 @@ friend class LUT<N,T>;
 public:
 	/** Specify another coordinate.
 	 */
-	inline WRAP<N,T> &operator[](T x);
+	template <typename Y>
+	inline WRAP<N,T> &operator[](Y y);
 
 	/** Coerce the return value.
 	 */
@@ -515,9 +516,10 @@ public:
 	 *
 	 *  @param x The first coordinate to sample.
 	 */
-	inline WRAP<N,X> operator[](X x) const {
+	template <typename Y>
+	inline WRAP<N,X> operator[](Y y) const {
 		this->checkInterpolated();
-		return WRAP<N,X>(this, x);
+		return WRAP<N,X>(this, static_cast<X>(y));
 	}
 
 	/** Test if the table contains no data.
@@ -707,8 +709,9 @@ class CSPLIB_EXPORT LUT<0, X>: public Interpolation {
  *  the coordinates are set.
  */
 template <int N, typename X>
-inline WRAP<N,X> &WRAP<N,X>::operator[](X x) {
-	m_Vec(x);
+template <typename Y>
+inline WRAP<N,X> &WRAP<N,X>::operator[](Y y) {
+	m_Vec(static_cast<X>(y));
 	if (++m_N == N && m_Bind) {
 		m_Value = m_Bind->getValue(m_Vec);
 	}

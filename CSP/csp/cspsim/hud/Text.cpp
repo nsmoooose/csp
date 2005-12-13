@@ -38,7 +38,7 @@
 CSP_NAMESPACE
 
 void StandardFormatter::format(char *buffer, int len, float value) {
-	std::snprintf(buffer, len, m_Format.c_str(), value);
+	snprintf(buffer, len, m_Format.c_str(), value);
 }
 
 CSP_NAMESPACE_END

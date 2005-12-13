@@ -36,6 +36,7 @@
 #include <osg/LightSource>
 #include <osg/Texture2D>
 #include <osgDB/ReadFile>
+#include <osgDB/Registry>
 #include <osgUtil/SceneView>
 
 #include <ctime>
@@ -61,44 +62,32 @@ class ImageUpdateCallback: public osg::NodeCallback {
 	ImageList::size_type m_CurrPos;
 	double m_PrevTime;
 	void setValue() {
-		m_Texture->setImage(m_ImageList[m_CurrPos].get());
+		if (!m_ImageList.empty()) {
+			m_Texture->setImage(m_ImageList[m_CurrPos].get());
+		}
 	}
 public:
 	ImageUpdateCallback(osg::Texture2D *texture, double delay):
-	m_Texture(texture),
-	m_Delay(delay),
-	m_PrevTime(0.0) {
-		// serialized?
-		typedef std::vector<std::string> StrVec;
-		StrVec file_name;
-		file_name.push_back("Logo/CSPLogo.jpg");
-		file_name.push_back("Logo/moonrise1.jpg");
-		file_name.push_back("Logo/crescent.jpg");
-		file_name.push_back("Logo/sunlight2.jpg");
-		file_name.push_back("Logo/sunset4.jpg");
-		file_name.push_back("Logo/console2.jpg");
-		file_name.push_back("Logo/TLabMultitex.jpg");
-		file_name.push_back("Logo/landing-2.jpg");
-		file_name.push_back("Logo/vista.jpg");
-		file_name.push_back("Logo/ground-fog.jpg");
-		file_name.push_back("Logo/fx2.jpg");
-
+		m_Texture(texture),
+		m_Delay(delay),
+		m_PrevTime(0.0)
+	{
 		std::string image_path = getDataPath("ImagePath");
-		StrVec::const_iterator iEnd = file_name.end();
-		for (StrVec::const_iterator i = file_name.begin();i!=iEnd;++i) {
-			std::string path = ospath::join(image_path, *i);
-			osg::ref_ptr<osg::Image> image = osgDB::readImageFile(path);
-			if (!image.valid()) {
-				std::string err = "Unable to load bitmap " + path;
-				std::cerr << err << std::endl;
-				throw DataError(err);
+		std::string logo_path = ospath::join(image_path, "logo");
+		ospath::DirectoryContents dir = ospath::getDirectoryContents(logo_path);
+		for (unsigned i = 0; i < dir.size(); ++i) {
+			std::string ext = ospath::getFileExtension(dir[i]);
+			std::cout << ext << "\n";
+			if (osgDB::Registry::instance()->getReaderWriterForExtension(ext)) {
+				std::string path = ospath::join("logo", dir[i]);
+				std::cout << path << "\n";
+				osg::ref_ptr<osg::Image> image = osgDB::readImageFile(path);
+				if (image.valid()) m_ImageList.push_back(image);
 			}
-			else
-				m_ImageList.push_back(image);
 		}
-		if (!file_name.empty()) {
+		if (!m_ImageList.empty()) {
 			srand(static_cast<unsigned int>(time(0)));
-			m_CurrPos = rand() % file_name.size();
+			m_CurrPos = rand() % m_ImageList.size();
 			setValue();
 		}
 	}
@@ -109,8 +98,10 @@ public:
 			// record time
 			m_PrevTime = currTime;
 			// advance the current positon, wrap round if required.
-			++m_CurrPos %= m_ImageList.size();
-			setValue();
+			if (!m_ImageList.empty()) {
+				++m_CurrPos %= m_ImageList.size();
+				setValue();
+			}
 			//}
 		}
 	}
@@ -232,95 +223,26 @@ void LogoScreen::onUpdate(double /*dt*/) {
 void LogoScreen::run() {
 	/*static int i = 0;
 	setDone(false);
-    while (!done()) {
+	while (!done()) {
 		//bar.block(2);
-        // wait for all cull and draw threads to complete.
-        sync();
-        // update the scene by traversing it with the the update visitor which will
-        // call all node update callbacks and animations.
+		// wait for all cull and draw threads to complete.
+		sync();
+		// update the scene by traversing it with the the update visitor which will
+		// call all node update callbacks and animations.
 		if (++i == 10) setDone(true);
-        update();
-        // fire off the cull and draw traversals of the scene.
-        frame();
+		update();
+		// fire off the cull and draw traversals of the scene.
+		frame();
 		//bar.block(2);
-    }
-    // wait for all cull and draw threads to complete before exit.
-    sync();*/
+	}
+	// wait for all cull and draw threads to complete before exit.
+	sync();*/
 }
 
 void LogoScreen::stop() {
 	//setDone(true);
 }
 
-
-/*
-#ifdef WIN32
-#include <windows.h>
-#endif
-
-#include <iostream>
-#include <GL/gl.h>			// Header File For The OpenGL32 Library
-#include <GL/glu.h>			// Header File For The GLu32 Library
-
-#include <SDL/SDL.h>
-
-
-LogoScreen::LogoScreen(int width, int height)
-{
-	m_width = width;
-	m_height = height;
-}
-
-LogoScreen::~LogoScreen()
-{
-}
-
-void LogoScreen::onInit()
-{
-	std::string image_path = getDataPath("ImagePath");
-	std::string path = simdata::ospath::join(image_path, "CSPLogo.bmp");
-	m_image = SDL_LoadBMP(path.c_str());
-	if (m_image == NULL) {
-		throw csp::DataError("Unable to load bitmap " + path);
-	}
-}
-
-void LogoScreen::onExit()
-{
-	if (m_image) {
-		SDL_FreeSurface(m_image);
-	}
-}
-
-void LogoScreen::onRender()
-{
-	if (!m_image) return;
-
-	SDL_Rect src, dest;
-
-	src.x = 0;
-	src.y = 0;
-	src.w = m_image->w;
-	src.h = m_image->h;
-
-	dest.x = 0;
-	dest.y = 0;
-	dest.w = m_image->w;
-	dest.h = m_image->h;
-
-	glViewport(0, 0, m_width, m_height);
-	glMatrixMode(GL_PROJECTION);
-	glLoadIdentity();
-	glOrtho(0.0, m_width, 0.0, m_height, -1.0, 1.0);
-
-	// this centers the bitmap in case its a different size then the screen.
-	glRasterPos2i( ((m_width - m_image->w) >> 1),
-		     m_height - ((m_height - m_image->h) >> 1) );
-	glPixelZoom(1.0,-1.0);
-
-	glDrawPixels(m_image->w, m_image->h, GL_RGB, GL_UNSIGNED_BYTE, m_image->pixels);
-}
-*/
 
 CSP_NAMESPACE_END
 

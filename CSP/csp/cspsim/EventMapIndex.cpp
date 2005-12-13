@@ -24,6 +24,7 @@
 
 
 #include <csp/cspsim/EventMapIndex.h>
+#include <csp/cspsim/Config.h>
 
 //#include <osgDB/FileUtils>
 //#include <osgDB/FileNameUtils>

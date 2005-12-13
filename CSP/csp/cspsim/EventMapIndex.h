@@ -27,7 +27,6 @@
 
 
 #include <csp/cspsim/HID.h>
-#include <csp/cspsim/Config.h>
 #include <csp/cspsim/EventMapping.h>
 
 #include <csp/csplib/util/HashUtility.h>

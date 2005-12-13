@@ -154,19 +154,19 @@
             <Float name="orientation">1.57</Float>
         </Object>
         <Object class="FeatureLayout">
-            <Path name="model">Lightpylon1</Path>
+            <Path name="model">lightpylon</Path>
             <Float name="x">405</Float>
             <Float name="y">-190</Float>
             <Float name="orientation">-1.57</Float>
         </Object>
         <Object class="FeatureLayout">
-            <Path name="model">Lightpylon1</Path>
+            <Path name="model">lightpylon</Path>
             <Float name="x">408</Float>
             <Float name="y">-380</Float>
             <Float name="orientation">-1.57</Float>
         </Object>
         <Object class="FeatureLayout">
-            <Path name="model">Lightpylon1</Path>
+            <Path name="model">lightpylon</Path>
             <Float name="x">405</Float>
             <Float name="y">-572</Float>
             <Float name="orientation">-1.57</Float>

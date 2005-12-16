@@ -26,9 +26,9 @@ csp package from the current workspace (if possible).
 """
 
 import os
-import os.path
 import sys
-import string
+
+BOOTSTRAP_VERSION = 2
 
 # save the path
 old_path = sys.path[:]
@@ -79,6 +79,8 @@ except ImportError, e:
 	print
 	print 'Unable to bootstrap a csp module space from the current working directory.'
 	raise
+
+csp.BOOTSTRAP_VERSION = BOOTSTRAP_VERSION
 
 # restore the path
 sys.path = [CSP_PATH] + old_path

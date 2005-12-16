@@ -87,6 +87,8 @@ def SimpleCommand(cmd, msg):
 def Extension(fn):
 	return os.path.splitext(fn)[1]
 
+def GetCurrentScript():
+	return SCons.Script.SConscript.stack[-1].sconscript
 
 class SourceList(object):
 	_header_ext = ('.h', '.hh', '.hpp', '.hxx')
@@ -537,7 +539,8 @@ def CustomConfigure(env):
 	conf.AddTests({'CheckCommandVersion': CheckCommandVersion})
 	conf.AddTests({'CheckPkgConfig': CheckPkgConfig})
 	# override -Q
-	SCons.SConf.SetProgressDisplay(SCons.Util.display)
+	if hasattr(SCons.SConf, 'SetProgressDisplay'):
+		Scons.SConf.SetProgressDisplay(SCons.Util.display)
 	return conf
 
 
@@ -567,6 +570,49 @@ def SetConfig(env, config):
 				config(env)
 				WriteConfig(env)
 
+def _CustomizeForPlatform(env, platform_settings):
+	assert isinstance(platform_settings, PlatformSettings)
+	SetConfig(env, platform_settings.config)
+	platform_settings.customize(env)
+
+def CopyEnvironment(env, vars):
+	for var in vars:
+		if os.environ.has_key(var):
+			env['ENV'][var] = os.environ[var]
+
+def CustomizeForPlatform(env, settings):
+	if hasattr(settings, '__bases__'):
+		settings = settings()
+	script = GetCurrentScript()
+	platform = sys.platform.lower()
+
+	configs = []
+	customizations = []
+	for item in dir(settings):
+		if item.startswith('config_'):
+			configs.append((item[len('config_'):], getattr(settings, item)))
+		elif item.startswith('customize_'):
+			customizations.append((item[len('customize_'):], getattr(settings, item)))
+
+	run_config = getattr(settings, 'config_default', None)
+	run_customization = getattr(settings, 'customize_default', None)
+	if not platform.startswith('win'):
+		if run_config is None:
+			run_config = getattr(settings, 'config_linux', None)
+		if run_customization is None:
+			run_customization = getattr(settings, 'customize_linux', None)
+	for target, method in configs:
+		if platform.startswith(target):
+			run_config = method
+			break
+	for target, method in customizations:
+		if platform.startswith(target):
+			run_customization = method
+			break
+	if run_config is not None:
+		SetConfig(env, run_config)
+	if run_customization is not None:
+		run_customization(env)
 
 def RemoveFlags(env, **kw):
 	"""
@@ -596,7 +642,7 @@ def SetDistributed(env):
 	if not distcc:
 		print 'Concurrent build requested, but distcc not found.'
 		return
-	CXX = '%s %s' % (distcc, CXX)
+	CXX = '$( %s $) %s' % (distcc, CXX)
 	# distcc needs access to configuration in the home directory
 	env['ENV']['HOME'] = os.environ.get('HOME', '')
 	env.Replace(CXX=CXX)
@@ -634,6 +680,8 @@ def GlobalSetup(env, distributed=1, short_messages=None, default_message=None, c
 	if distributed and ssoptions.get('num_jobs') > 1:
 		SetDistributed(env)
 	AddPhonyTarget(env, 'config')
+	SConsEnvironment.CustomizeForPlatform = CustomizeForPlatform
+	SConsEnvironment.CopyEnvironment = CopyEnvironment
 	SConsEnvironment.SetConfig = SetConfig
 	SConsEnvironment.Documentation = MakeDocumentation
 	SConsEnvironment.RemoveFlags = RemoveFlags
@@ -661,6 +709,8 @@ class GlobalSettings:
 	def UnsupportedPlatform(self):
 		print 'Platform "%s" not supported' % self._platform
 		sys.exit(1)
+	def AddOption(self, *arg, **kw):
+		self._opts.Add(*arg, **kw)
 	def __setattr__(self, key, value):
 		if key.startswith('_'):
 			self.__dict__[key] = value
@@ -670,6 +720,7 @@ class GlobalSettings:
 		env = SCons.Environment.Environment(**self._dict)
 		GlobalSetup(env, default_message=self._default_message, config=self._config)
 		env.Help(self._help + self._opts.GenerateHelpText(env))
+		self._opts.Update(env)
 		return env
 
 
@@ -691,11 +742,15 @@ def EmitSwig(target, source, env):
 
 
 def AddSwigBuild(env):
-	env['SWIGCOM'] = '$SWIG $SWIGFLAGS $SWIGINCLUDES -o $TARGET $SOURCE'
-	builder = Builder(action = '$SWIG $SWIGFLAGS $SWIGINCLUDES -o ${TARGETS[0]} $SOURCE', emitter = EmitSwig)
+	env['SWIGCOM'] = '$SWIG $SWIGFLAGS $_SWIGINCFLAGS -o $TARGET $SOURCE'
+	env['SWIGINCPREFIX'] = '-I'
+	env['SWIGINCSUFFIX'] = '$INCSUFFIX'
+	env['SWIGCXXFLAGS'] = '$CXXFLAGS'
+	env['_SWIGINCFLAGS'] = '$( ${_concat(SWIGINCPREFIX, SWIGINCLUDES, SWIGINCSUFFIX, __env__, RDirs)} $)'
+	builder = Builder(action = '$SWIG $SWIGFLAGS $_SWIGINCFLAGS -o ${TARGETS[0]} $SOURCE', emitter = EmitSwig)
 	env.Append(BUILDERS = {'Swig': builder})
 	def wrapper_builder(env, target = None, source = SCons.Builder._null, **kw):
-		kw.setdefault('CXXFLAGS', env.get('SWIGCXXFLAGS', env.get('CXXFLAGS', '')))
+		kw.setdefault('CXXFLAGS', env['SWIGCXXFLAGS'])
 		return env.SharedObject(target, source, **kw)
 	env.Append(BUILDERS = {'SwigWrapper': wrapper_builder })
 
@@ -782,7 +837,7 @@ def AddNet(env):
 
 def AddVisualStudioProject(env):
 	def VisualStudioProject(env, target, source):
-		if IsWindows(env):
+		if IsWindows(env) and hasattr(env, 'MSVSProject'):
 			if isinstance(target, list): target = target[0]
 			project_base = os.path.splitext(os.path.basename(target.name))[0]
 			if project_base.startswith('_'): project_base = project_base[1:]

@@ -165,15 +165,15 @@ namespace osgChunkLod {
 		inline void reset() { _hit = false; }
 		inline float getBBoxTop() const { return _bbox_top; }
 		inline int getChunk() const { return _chunk_label; }
-		inline void getVertices(osg::Vec3 &A, osg::Vec3 &B, osg::Vec3 &C) const {
-			A = _A;
-			B = _B;
-			C = _C;
+		inline void getVertices(osg::Vec3 &a, osg::Vec3 &b, osg::Vec3 &c) const {
+			a = _a;
+			b = _b;
+			c = _c;
 		}
-		inline void getSourceVertices(ChunkLodVertex &A, ChunkLodVertex &B, ChunkLodVertex &C) const {
-			A = _source_A;
-			B = _source_B;
-			C = _source_C;
+		inline void getSourceVertices(ChunkLodVertex &a, ChunkLodVertex &b, ChunkLodVertex &c) const {
+			a = _source_a;
+			b = _source_b;
+			c = _source_c;
 		}
 		inline void getParameters(osg::Vec3 &offset, osg::Vec3 &scale) const {
 			offset = _offset;
@@ -189,23 +189,23 @@ namespace osgChunkLod {
 		inline void _setMaxHeight(float bbox_top) {
 			_bbox_top = bbox_top;
 		}
-		inline void _setVertices(osg::Vec3 const &A,
-		                         osg::Vec3 const &B,
-		                         osg::Vec3 const &C) {
-			_A = A;
-			_B = B;
-			_C = C;
+		inline void _setVertices(osg::Vec3 const &a,
+		                         osg::Vec3 const &b,
+		                         osg::Vec3 const &c) {
+			_a = a;
+			_b = b;
+			_c = c;
 		}
 		inline void _setParameters(osg::Vec3 const &offset, osg::Vec3 const &scale) {
 			_offset = offset;
 			_scale = scale;
 		}
-		inline void _setSourceVertices(ChunkLodVertex const &A,
-		                               ChunkLodVertex const &B,
-		                               ChunkLodVertex const &C) {
-			_source_A = A;
-			_source_B = B;
-			_source_C = C;
+		inline void _setSourceVertices(ChunkLodVertex const &a,
+		                               ChunkLodVertex const &b,
+		                               ChunkLodVertex const &c) {
+			_source_a = a;
+			_source_b = b;
+			_source_c = c;
 		}
 		inline void _setChunk(int label) { _chunk_label = label; }
 
@@ -218,8 +218,8 @@ namespace osgChunkLod {
 		float _bbox_top;
 		osg::Vec3 _offset;
 		osg::Vec3 _scale;
-		osg::Vec3 _A, _B, _C;
-		ChunkLodVertex _source_A, _source_B, _source_C;
+		osg::Vec3 _a, _b, _c;
+		ChunkLodVertex _source_a, _source_b, _source_c;
 	};
 
 

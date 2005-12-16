@@ -52,6 +52,10 @@
 
 CSP_NAMESPACE
 
+// verify may be defined as a macro on macs
+#ifdef verify
+#undef verify
+#endif
 
 #ifdef __GNUC__
 #	define CSP_NORETURN  __attribute__ ((__noreturn__))

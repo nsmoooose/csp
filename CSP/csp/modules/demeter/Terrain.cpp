@@ -35,7 +35,6 @@ Boston, MA  02111-1307, USA.
 #ifdef _WIN32
 #include <io.h>
 #else
-#include <sys/io.h>
 #include <errno.h>
 #endif
 

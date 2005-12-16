@@ -22,10 +22,7 @@
  *
  **/
 
-#ifndef __GNUC__
-#define snprintf _snprintf
-#endif
-
+#include <csp/cspsim/Export.h>
 #include <csp/cspsim/hud/Text.h>
 
 #include <osgText/Text>

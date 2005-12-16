@@ -66,7 +66,7 @@ public:
 	StackTrace const &operator=(StackTrace const &);
 
 private:
-	struct TraceData;
+	class TraceData;
 	TraceData *_data;
 };
 

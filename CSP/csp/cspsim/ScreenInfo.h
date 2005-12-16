@@ -52,25 +52,31 @@ public:
 	virtual void update() { }
 	void setStatus(bool const visible) { if (visible) setAllChildrenOn(); else setAllChildrenOff(); }
 	bool getStatus() const { return getValue(0); }
+protected:
+	virtual ~ScreenInfo();
 };
 
 
 class Framerate: public ScreenInfo {
 	float m_MinFps, m_MaxFps, m_Cumul;
-	osgText::Text* m_Date;
+	osg::ref_ptr<osgText::Text> m_Date;
 public:
 	Framerate(int posx, int posy);
 	virtual void update();
+protected:
+	virtual ~Framerate();
 };
 
 
 class GeneralStats: public ScreenInfo {
-	osgText::Text* m_Altitude;
-	osgText::Text* m_GlobalPosition;
-	osgText::Text* m_Velocity;
+	osg::ref_ptr<osgText::Text> m_Altitude;
+	osg::ref_ptr<osgText::Text> m_GlobalPosition;
+	osg::ref_ptr<osgText::Text> m_Velocity;
 public:
 	GeneralStats(int posx, int posy);
 	virtual void update();
+protected:
+	virtual ~GeneralStats();
 };
 
 
@@ -83,6 +89,8 @@ class ObjectStats: public ScreenInfo {
 public:
 	ObjectStats(int posx, int posy, Ref<DynamicObject> const& activeObject);
 	virtual void update();
+protected:
+	virtual ~ObjectStats();
 };
 
 
@@ -96,6 +104,8 @@ public:
 	MessageList(int posx, int posy, int lines, float delay);
 	void addLine(std::string const &line);
 	virtual void update();
+protected:
+	virtual ~MessageList();
 };
 
 CSP_NAMESPACE_END

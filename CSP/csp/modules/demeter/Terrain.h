@@ -63,8 +63,15 @@ typedef signed int      Sint32;
 #define NOMINMAX
     #include <windows.h>
 #endif
+
+#ifndef __APPLE__
 #include <GL/gl.h>
 #include <GL/glu.h>
+#else  // apple
+#include <OpenGL/gl.h>
+#include <OpenGL/glu.h>
+#endif
+
 #include <stdlib.h>
 #include <math.h>
 #include <stdio.h>

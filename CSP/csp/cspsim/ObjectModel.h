@@ -64,7 +64,7 @@ class Station;
  * TODO: add LOD support here.
  *
  */
-class CSP_EXPORT ObjectModel: public Object {
+class CSPSIM_EXPORT ObjectModel: public Object {
 	static const Enumeration EffectItems;
 
 private:

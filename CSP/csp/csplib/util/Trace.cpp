@@ -50,10 +50,10 @@ bool AutoTrace::_abort = true;
 
 
 // Platform-specific implementation of stack traces.  Each platform and/or
-// compilre must implement the StackTrace::TraceData class, which provides
-// three public methods: acquire and writeToStream.
+// compiler must implement the StackTrace::TraceData class, which provides
+// three public methods: acquire, valid, and writeToStream.
 
-#if defined(__GNUC__) && !defined(__MINGW32__)
+#if defined(__GNUC__) && !defined(__MINGW32__) && !defined(__APPLE__)
 
 // TODO need to add a config test for these headers.
 #include <dlfcn.h>
@@ -115,7 +115,7 @@ private:
 	int _stack_depth;
 };
 
-#else  // non-gcc
+#else  // non-gcc or apple
 
 // Windows version not yet implemented.  Please feel free to add it if
 // you know how.

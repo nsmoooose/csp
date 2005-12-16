@@ -297,9 +297,9 @@ const DataArchive::TableEntry* DataArchive::_lookupPath(ObjectID const &id, std:
 	TableMap::const_iterator i = _table_map.find(id);
 	if (i == _table_map.end()) {
 		std::string msg = path_str;
-		if (msg=="") {
+		if (msg.empty()) {
 			msg = getPathString(id);
-			if (msg == "") {
+			if (msg.empty()) {
 				msg = "human-readable path unavailable";
 			}
 		}

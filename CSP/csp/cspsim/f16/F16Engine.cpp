@@ -293,7 +293,7 @@ void F16Engine::updatePrestart(double dt) {
 		return;
 	}
 	const double rpm = b_RPM->value();
-	const double rpm_factor = powf(rpm, 2.1);
+	const double rpm_factor = pow(rpm, 2.1);
 	const double drive = m_Drive * rpm_factor * getAltitudeFactor();
 	driveEngine(drive, dt);
 	// TODO jfs

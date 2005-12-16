@@ -33,7 +33,12 @@
 #ifdef _MSC_VER
 #include <windows.h>
 #endif
+
+#ifndef __APPLE__
 #include <GL/gl.h>
+#else // apple
+#include <OpenGL/gl.h>
+#endif
 
 CSP_NAMESPACE
 

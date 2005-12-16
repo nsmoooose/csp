@@ -86,7 +86,7 @@ class VirtualScene;
  *  direct access to shared simulation state.  Do not abuse this access point;
  *  minimizing dependence on the CSPSim instance is a Good Thing.
  */
-class CSP_EXPORT CSPSim {
+class CSPSIM_EXPORT CSPSim {
 public:
 	static CSPSim *theSim;
 

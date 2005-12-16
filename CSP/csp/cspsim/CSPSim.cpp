@@ -69,8 +69,13 @@
 
 #include <csp/modules/demeter/DemeterException.h>
 
+#ifndef __APPLE__
 #include <GL/gl.h>   // Header File For The OpenGL32 Library
 #include <GL/glu.h>  // Header File For The GLu32 Library
+#else // apple
+#include <OpenGL/gl.h>   // Header File For The OpenGL32 Library
+#include <OpenGL/glu.h>  // Header File For The GLu32 Library
+#endif
 
 #include <osg/Timer>
 #include <osg/Notify>

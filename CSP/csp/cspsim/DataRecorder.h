@@ -135,7 +135,7 @@ private:
 	bool m_Enabled;
 	float m_ElapsedTime;
 
-	class File;
+	struct File;
 	ScopedPointer<File> m_File;
 
 	enum {TIME=250, PAUSE=251, RESUME=252, END=255};

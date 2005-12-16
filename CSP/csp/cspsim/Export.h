@@ -22,21 +22,21 @@
  * @brief Macros needed to export/import symbols from shared libraries.
  */
 
-#ifndef __CSP_EXPORT_H__
-#define __CSP_EXPORT_H__
+#ifndef __CSPSIM_EXPORT_H__
+#define __CSPSIM_EXPORT_H__
 
 #if defined(_MSC_VER) || defined(__CYGWIN__) || defined(__MINGW32__) || defined( __BCPLUSPLUS__) || defined( __MWERKS__)
 	#  ifdef SWIG
 	#    undef  __declspec
 	#    define __declspec(x)
 	#  endif // SWIG
-	#  ifdef CSP_EXPORTS
-	#    define CSP_EXPORT   __declspec(dllexport)
+	#  ifdef CSPSIM_EXPORTS
+	#    define CSPSIM_EXPORT   __declspec(dllexport)
 	#  else
-	#    define CSP_EXPORT   __declspec(dllimport)
-	#  endif // CSP_EXPORTS
+	#    define CSPSIM_EXPORT   __declspec(dllimport)
+	#  endif // CSPSIM_EXPORTS
 #else
-	#  define CSP_EXPORT
+	#  define CSPSIM_EXPORT
 #endif
 
 # if defined(_MSC_VER) && (_MSC_VER <= 1400)
@@ -48,5 +48,5 @@
 # endif
 
 
-#endif // __CSP_EXPORT_H__
+#endif // __CSPSIM_EXPORT_H__
 

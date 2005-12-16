@@ -85,6 +85,9 @@ ScreenInfo::ScreenInfo(float pos_x, float pos_y, std::string const &name, std::s
 		addChild(m_InfoGeode.get());
 }
 
+ScreenInfo::~ScreenInfo() {
+}
+
 osgText::Text *ScreenInfo::makeText(float pos_x, float pos_y, std::string const &string_text) {
 	osgText::Text *text = new osgText::Text;
 	text->setFont(m_TTFPath);
@@ -102,11 +105,15 @@ Framerate::Framerate(int pos_x, int pos_y):
 	m_MinFps(99.0f),
 	m_MaxFps(10.0f),
 	m_Cumul(0.0f),
-	m_Date(makeText(pos_x, pos_y - 2*m_CharacterSize)) {
-		m_Text->setUseDisplayList(false);
-		m_Date->setUseDisplayList(false);
-		m_InfoGeode->addDrawable(m_Date);
-		setUpdateCallback(new UpdateCallback);
+	m_Date(makeText(pos_x, pos_y - 2*m_CharacterSize))
+{
+	m_Text->setUseDisplayList(false);
+	m_Date->setUseDisplayList(false);
+	m_InfoGeode->addDrawable(m_Date.get());
+	setUpdateCallback(new UpdateCallback);
+}
+
+Framerate::~Framerate() {
 }
 
 void Framerate::update() {
@@ -147,13 +154,16 @@ GeneralStats::GeneralStats(int pos_x,int pos_y):
 
 	m_Text->setUseDisplayList(false);
 	m_Altitude->setUseDisplayList(false);
-	m_InfoGeode->addDrawable(m_Altitude);
+	m_InfoGeode->addDrawable(m_Altitude.get());
 	m_GlobalPosition->setUseDisplayList(false);
-	m_InfoGeode->addDrawable(m_GlobalPosition);
+	m_InfoGeode->addDrawable(m_GlobalPosition.get());
 	m_Velocity->setUseDisplayList(false);
-	m_InfoGeode->addDrawable(m_Velocity);
+	m_InfoGeode->addDrawable(m_Velocity.get());
 
 	setUpdateCallback(new UpdateCallback);
+}
+
+GeneralStats::~GeneralStats() {
 }
 
 void GeneralStats::update() {
@@ -198,6 +208,9 @@ ObjectStats::ObjectStats(int posx,int posy, Ref<DynamicObject> const& /*activeOb
 	}
 }
 
+ObjectStats::~ObjectStats() {
+}
+
 void ObjectStats::update() {
 	Ref<DynamicObject> activeObject = CSPSim::theSim->getActiveObject();
 	if (activeObject.valid()) {
@@ -239,6 +252,9 @@ MessageList::MessageList(int posx, int posy, int lines, float delay)
 	if (!getUpdateCallback()) {
 		setUpdateCallback(new UpdateCallback);
 	}
+}
+
+MessageList::~MessageList() {
 }
 
 void MessageList::addLine(std::string const &line) {

@@ -84,7 +84,8 @@ public:
 
 	/** Partial constructor.  See operator() for details.
 	 */
-	VEC(T d): m_Vp(m_Vec), m_N(1) { m_Vec[0] = d; }
+	template <class Y>
+	VEC(Y d): m_Vp(m_Vec), m_N(1) { m_Vec[0] = static_cast<T>(d); }
 
 	/** Default constructor.  The new VEC must be initialized before use.  See set().
 	 */
@@ -158,7 +159,8 @@ public:
 		if (v.size() != 1) throw InterpolationIndex("VEC::VEC() dimension mismatch");
 		m_Vec = v[0];
 	}
-	VEC(T d): m_Vec(d) {}
+	template <class Y>
+	VEC(Y d): m_Vec(static_cast<T>(d)) {}
 	inline void set(T d) { m_Vec = d; }
 	inline T operator[](int n) const {
 		if (n != 0) {

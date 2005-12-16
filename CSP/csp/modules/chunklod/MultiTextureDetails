@@ -117,7 +117,7 @@ public:
 	virtual void setMode(osg::State &/*state*/, bool /*enabled*/) const {}
 
 protected:
-	int _textureUnitCount;
+	GLint _textureUnitCount;
 	typedef osg::ref_ptr<osg::Texture2D> Texture;
 	std::vector<Texture> _detailTextures;
 	std::vector<float> _detailScale;

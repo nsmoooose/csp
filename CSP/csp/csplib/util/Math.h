@@ -55,29 +55,29 @@ const double PI_4 = 0.78539816339744830962;
 /** return the minimum of two values, equivilant to std::min.
   * std::min not used because of STL implementation under IRIX contains no std::min.*/
 template<typename T>
-inline T absolute(T v) { return v<(T)0?-v:v; }
+inline T absolute(T v) { return (v < static_cast<T>(0)) ? -v : v; }
 
 /** return the minimum of two values, equivilant to std::min.
   * std::min not used because of STL implementation under IRIX contains no std::min.*/
 template<typename T>
-inline T minimum(T lhs,T rhs) { return lhs<rhs?lhs:rhs; }
+inline T minimum(T lhs, T rhs) { return lhs < rhs ? lhs : rhs; }
 
 /** return the maximum of two values, equivilant to std::max.
   * std::max not used because of STL implementation under IRIX contains no std::max.*/
 template<typename T>
-inline T maximum(T lhs,T rhs) { return lhs>rhs?lhs:rhs; }
+inline T maximum(T lhs, T rhs) { return lhs > rhs ? lhs : rhs; }
 
 template<typename T>
-inline T clampTo(T v,T minimum,T maximum) { return v<minimum?minimum:v>maximum?maximum:v; }
+inline T clampTo(T v, T minimum, T maximum) { return (v < minimum) ? minimum : (v > maximum) ? maximum : v; }
 
 template<typename T>
-inline T clampAbove(T v,T minimum) { return v<minimum?minimum:v; }
+inline T clampAbove(T v, T minimum) { return v < minimum ? minimum : v; }
 
 template<typename T>
-inline T clampBelow(T v,T maximum) { return v>maximum?maximum:v; }
+inline T clampBelow(T v, T maximum) { return v > maximum ? maximum : v; }
 
 template<typename T>
-inline T sign(T v) { return v<(T)0?(T)-1:(T)1; }
+inline T sign(T v) { return static_cast<T>((v < static_cast<T>(0)) ? -1 : 1); }
 
 template<typename T>
 inline T square(T v) { return v*v; }
@@ -86,10 +86,10 @@ template<typename T>
 inline T signedSquare(T v) { return v<(T)0?-v*v:v*v; }
 
 template<typename T>
-inline T toRadians(T deg) { return deg * PI / ((T)180); }
+inline T toRadians(T deg) { return static_cast<T>(deg * (PI / 180)); }
 
 template<typename T>
-inline T toDegrees(T rad) { return rad * ((T)180 / PI); }
+inline T toDegrees(T rad) { return static_cast<T>(rad * (180 / PI)); }
 
 template<typename T>
 inline T inDegrees(T angle) { return toRadians(angle); }
@@ -108,10 +108,10 @@ inline void swap(T &a, T &b) { T t = a; a = b; b = t; }
 #endif
 
 #if defined(_WIN32) && !defined(__CYGWIN__) && !defined(__MWERKS__)
-	inline bool isNaN(float v) { return _isnan(v)!=0; }
-	inline bool isNaN(double v) { return _isnan(v)!=0; }
+	inline bool isNaN(float v) { return _isnan(v) != 0; }
+	inline bool isNaN(double v) { return _isnan(v) != 0; }
 #else
-#	if defined(__DARWIN_OSX__) && !defined (DARWIN_OSX_PRE_10_2)
+#	if defined(__APPLE__)
 	inline bool isNaN(float v) { return __isnanf(v); }
 	inline bool isNaN(double v) { return __isnand(v); }
 #	else

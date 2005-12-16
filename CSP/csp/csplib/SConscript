@@ -19,9 +19,8 @@
 Import('env build')
 
 env = env.Copy()
+env.Append(CPPDEFINES=Split('CSPLIB_EXPORTS'))
 
-# TODO add headers to the list and post filter?  headers will be needed
-# for installation, dox, and vcproj
 
 csplib_in = build.SourceList(
 	'csplib.i',
@@ -190,6 +189,7 @@ config_h = env.Command('#/csplib/util/Config.h', config, '$SOURCES > $TARGET')
 
 csplib = env.SharedLibrary('csplib', csplib_in.objects(env), SHLIBPREFIX='_')
 
+# TODO need to link against csplib under windows
 env.Append(RPATH='.')
 csplib_tests = env.SharedLibrary('csplib_tests', csplib_in.tests, SHLIBPREFIX='')
 

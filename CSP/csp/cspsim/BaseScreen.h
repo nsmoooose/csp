@@ -25,6 +25,11 @@
 #ifndef __CSPSIM_BASESCREEN_H__
 #define __CSPSIM_BASESCREEN_H__
 
+// On Mac OS X, force use of Cocoa as the OpenGL backend
+#ifdef __APPLE__
+#define __USE_OSX_CGL_IMPLEMENTATION__
+#endif
+
 #include <csp/cspsim/InputInterface.h>
 #include <csp/cspsim/HID.h>
 #include <csp/csplib/util/Namespace.h>

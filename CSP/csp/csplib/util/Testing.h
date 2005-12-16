@@ -294,9 +294,9 @@ bool TypedTestRunner<tFIXTURE>::_runTests(TestReporter &reporter) {
 			ok = true;
 		} catch (FatalException const &e) {
 			e.clear();  // already logged
-		} catch (PassTest const &e) {
+		} catch (PassTest const &) {
 			ok = true;
-		} catch (FailTest const &e) {
+		} catch (FailTest const &) {
 			ok = false;
 		}
 		fixture.teardown();

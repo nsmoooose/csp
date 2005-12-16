@@ -48,6 +48,8 @@ PyObject *cspPyException;
 %include "std_vector.i"
 %include "exception.i"
 
+%include "csp/csplib/util/Namespace.h"
+
 // vector templates
 %import "csp/csplib/swig/vector.i"
 new_vector(double, double);
@@ -59,7 +61,6 @@ new_vector(Path, CSP(Path));
 new_vector(Key, CSP(Key));
 
 %include "csp/csplib/util/Export.h"
-%include "csp/csplib/util/Namespace.h"
 %include "csp/csplib/util/swig/Log.i"
 %include "csp/csplib/util/Uniform.h"
 %include "csp/csplib/util/Version.h"

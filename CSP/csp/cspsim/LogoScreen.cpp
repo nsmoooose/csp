@@ -77,10 +77,8 @@ public:
 		ospath::DirectoryContents dir = ospath::getDirectoryContents(logo_path);
 		for (unsigned i = 0; i < dir.size(); ++i) {
 			std::string ext = ospath::getFileExtension(dir[i]);
-			std::cout << ext << "\n";
 			if (osgDB::Registry::instance()->getReaderWriterForExtension(ext)) {
 				std::string path = ospath::join("logo", dir[i]);
-				std::cout << path << "\n";
 				osg::ref_ptr<osg::Image> image = osgDB::readImageFile(path);
 				if (image.valid()) m_ImageList.push_back(image);
 			}

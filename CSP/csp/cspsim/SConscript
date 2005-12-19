@@ -319,7 +319,7 @@ build.SharedLibrary(expenv,
 build.SharedLibrary(env,
 	name = 'indexserver',
 	sources = [
-		'IndexServer.i',
+		'indexserver.i',
 		'IndexServer.h',
 		'IndexServer.cpp',
 		'@cspsim/battlefield',

@@ -41,7 +41,7 @@ build.SourceGroup(expenv,
 	deps = ['csplib'])
 
 
-cspsim = build.SourceGroup(expenv,
+build.SourceGroup(expenv,
 	name = 'cspsim',
 	sources = [
 		'cspsim.i',
@@ -129,8 +129,8 @@ cspsim = build.SourceGroup(expenv,
 		'LogoScreen.cpp',
 		'LogoScreen.h',
 		'MapEvent.h',
-		'Module.cpp',
-		'Module.h',
+#		'Module.cpp',
+#		'Module.h',
 		'NavigationChannels.h',
 		'ObjectModel.cpp',
 		'ObjectModel.h',
@@ -303,13 +303,29 @@ cspsim = build.SourceGroup(expenv,
 	deps = ['csplib', 'opengl', 'osg', 'sdl'])
 
 
-build.SharedLibrary(expenv, 'cspsim',
-	sources=[
+build.SharedLibrary(expenv,
+	name = 'cspsim',
+	sources = [
 		'@cspsim',
 		'@cspsim/battlefield',
 		'@cspsim/config',
 	],
-	aliases='all',
-	doxygen='cspsim.dox',
-	SHLIBPREFIX='_')
+	aliases = 'all',
+	doxygen = 'cspsim.dox',
+	softlink = 1,
+	SHLIBPREFIX = '_')
+
+
+build.SharedLibrary(env,
+	name = 'indexserver',
+	sources = [
+		'IndexServer.i',
+		'IndexServer.h',
+		'IndexServer.cpp',
+		'@cspsim/battlefield',
+		'@cspsim/config',
+	],
+	deps = ['csplib'],
+	aliases = 'all',
+	SHLIBPREFIX = '_')
 

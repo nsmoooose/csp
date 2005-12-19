@@ -188,6 +188,7 @@ build.SharedLibrary(
 	sources = ['@csplib'],
 	aliases = 'all',
 	doxygen = 'csplib.dox',
+	softlink = 1,
 	SHLIBPREFIX='_')
 
 

@@ -1226,7 +1226,7 @@ class SourceGroup:
 
 
 class SharedLibrary:
-	def __init__(self, env, name, sources=[], aliases=[], deps=[], always_build=0, doxygen=None, **kw):
+	def __init__(self, env, name, sources=[], aliases=[], deps=[], always_build=0, softlink=0, doxygen=None, **kw):
 		self._env = env.Copy()
 		self._name = name
 		self._sources = [s for s in sources if s.startswith('@')]
@@ -1237,6 +1237,7 @@ class SharedLibrary:
 		self._target = os.path.join(env.Dir('.').path, name)  # a bit ugly
 		self._aliases = aliases
 		self._always_build = always_build
+		self._softlink = softlink
 		self._doxygen = None
 		if doxygen:
 			self._dox = env.Dir('.dox').srcnode()
@@ -1306,5 +1307,6 @@ class SharedLibrary:
 		self._findSources()
 		for group in self._groups:
 			group._addSettings(settings, bdeps)
-		settings.merge(LIBPATH=[os.path.dirname(self._target)], LIBS=[os.path.basename(self._target)])
+		if IsWindows(self._env) or not self._softlink:
+			settings.merge(LIBPATH=[os.path.dirname(self._target)], LIBS=[os.path.basename(self._target)])
 

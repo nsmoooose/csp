@@ -51,7 +51,6 @@ SCons.Warnings.suppressWarningClass(SCons.Warnings.DuplicateEnvironmentWarning)
 PACKAGES = [
 	'csplib',
 	'cspsim',
-	'indexserver',
 	'modules',
 ]
 

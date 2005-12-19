@@ -25,46 +25,48 @@
 #ifndef __CSPSIM_CONFIG_H__
 #define __CSPSIM_CONFIG_H__
 
+#include <csp/cspsim/Export.h>
 #include <csp/csplib/util/Namespace.h>
 #include <csp/csplib/util/SimpleConfig.h>
 #include <string>
 
 CSP_NAMESPACE
 
+// TODO move to CSPSim?
 /**
  * Global configuration file
  */
-extern SimpleConfig g_Config;
+extern CSPSIM_EXPORT SimpleConfig g_Config;
 
 /**
  * Open the global configuration file.
  */
-extern bool openConfig(std::string path, bool report_error); //=true);
+extern CSPSIM_EXPORT bool openConfig(std::string path, bool report_error); //=true);
 
 /**
  * Get the main cache path.
  */
-extern std::string getCachePath();
+extern CSPSIM_EXPORT std::string getCachePath();
 
 /**
  * Get the main configuration path.
  */
-extern std::string getConfigPath();
+extern CSPSIM_EXPORT std::string getConfigPath();
 
 /**
  * Get the specific configuration path.
  */
-extern std::string getConfigPath(std::string const &);
+extern CSPSIM_EXPORT std::string getConfigPath(std::string const &);
 
 /**
  * Get the main data path.
  */
-extern std::string getDataPath();
+extern CSPSIM_EXPORT std::string getDataPath();
 
 /**
  * Get the specific data path.
  */
-extern std::string getDataPath(std::string const &);
+extern CSPSIM_EXPORT std::string getDataPath(std::string const &);
 
 CSP_NAMESPACE_END
 

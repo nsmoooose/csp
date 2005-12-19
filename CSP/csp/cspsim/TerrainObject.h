@@ -29,7 +29,7 @@
 #ifndef __CSPSIM_TERRAINOBJECT_H__
 #define __CSPSIM_TERRAINOBJECT_H__
 
-
+#include <csp/cspsim/Export.h>
 #include <csp/csplib/util/Ref.h>
 #include <csp/csplib/data/Object.h>
 #include <csp/csplib/data/GeoPos.h>
@@ -48,13 +48,9 @@ class Projection;
 
 
 /**
- * class TerrainObject
- *
- * @author unknown
+ * Abstract base class for all terrain modules.
  */
-
-class TerrainObject: public Object
-{
+class CSPSIM_EXPORT TerrainObject: public Object {
 public:
 	CSP_DECLARE_ABSTRACT_OBJECT(TerrainObject)
 

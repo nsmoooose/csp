@@ -27,6 +27,26 @@
 
 #include <csp/csplib/util/Namespace.h>
 
+// the following symbols are used in the logging macros, so
+// previous macro declarations must be deleted.  note that we
+// do *not* redefine these macros, the symbols are ## joined
+// with cLogPriority_ to construct the priority constants below.
+#ifdef DEBUG
+#undef DEBUG
+#endif
+#ifdef INFO
+#undef INFO
+#endif
+#ifdef WARNING
+#undef WARNING
+#endif
+#ifdef ERROR
+#undef ERROR
+#endif
+#ifdef FATAL
+#undef FATAL
+#endif
+
 CSP_NAMESPACE
 
 /** Log message priorities

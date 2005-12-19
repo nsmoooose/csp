@@ -243,7 +243,7 @@ template <class key, class val, class cmp = HashCompare<key> > struct HashMap {
 };
 
 
-extern std::ostream & operator<<(std::ostream &o, const hasht &x);
+extern CSPLIB_EXPORT std::ostream & operator<<(std::ostream &o, const hasht &x);
 
 
 // 32-bit fingerprint functions.

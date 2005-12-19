@@ -49,8 +49,6 @@ class CSPLIB_EXPORT ReliablePacket: public Referenced {
 	std::string m_PacketData;
 
 public:
-	typedef Ref<ReliablePacket> Ref;
-
 	/** Construct an empty instance; use assign to initialize it.
 	 */
 	ReliablePacket(): m_Id(0), m_Confirmed(true), m_Attempts(0), m_NextTime(0.0) { }
@@ -128,8 +126,8 @@ public:
 	/** Functor used to order reliable packets in a priority queue by the
 	 *  scheduled time for the next retry attempt.
 	 */
-	struct Order : public std::binary_function<Ref, Ref, bool> {
-		inline bool operator()(const Ref& __x, const Ref& __y) const {
+	struct Order : public std::binary_function<Ref<ReliablePacket>, Ref<ReliablePacket>, bool> {
+		inline bool operator()(const Ref<ReliablePacket>& __x, const Ref<ReliablePacket>& __y) const {
 			return __x->nextTime() > __y->nextTime();
 		}
 	};

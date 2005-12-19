@@ -50,7 +50,6 @@ class Server;
 class UnitContact: public SimObject {
 	Path m_Path;
 public:
-	typedef Ref<UnitContact> Ref;
 	UnitContact(SimObject::TypeId type, Path const &path, SimObject::ObjectId id): SimObject(type), m_Path(path) {
 		setId(id);
 		setContact();
@@ -71,20 +70,19 @@ struct ClientData {
 
 class GlobalBattlefield: public Battlefield {
 	unsigned int m_NextId;
-	typedef PeerId PeerId;
 	typedef std::map<PeerId, ClientData> ClientDataMap;
 
 	template <class MSG>
 	class ClientResponse {
-		typename MSG::Ref m_Response;
+		Ref<MSG> m_Response;
 	public:
-		ClientResponse(NetworkMessage::Ref const &request): m_Response(new MSG()) {
+		ClientResponse(Ref<NetworkMessage> const &request): m_Response(new MSG()) {
 			m_Response->setReplyTo(request);
 			m_Response->setReliable();
 			m_Response->setRoutingType(ROUTE_COMMAND);
 		}
-		inline typename MSG::Ref const &operator->() { return m_Response; }
-		inline void send(MessageQueue::Ref const &queue) {
+		inline Ref<MSG> const &operator->() { return m_Response; }
+		inline void send(Ref<MessageQueue> const &queue) {
 			queue->queueMessage(m_Response);
 		}
 	};
@@ -99,7 +97,7 @@ class GlobalBattlefield: public Battlefield {
 	public:
 		ContactWrapper(Unit const &u, PeerId owner): UnitWrapper(u, owner) { }
 		ContactWrapper(ObjectId id, Path const &path, PeerId owner): UnitWrapper(id, path, owner) { }
-		UnitContact::Ref contact() { return static_cast<UnitContact*>(object().get()); }
+		Ref<UnitContact> contact() { return static_cast<UnitContact*>(object().get()); }
 		inline bool isUpdating(int peer) {
 			return m_UpdateCount.find(peer) != m_UpdateCount.end();
 		}
@@ -145,7 +143,7 @@ public:
 		assert(m_NetworkServer.isNull());
 		assert(server.valid());
 		m_NetworkServer = server;
-		DispatchHandler::Ref dispatch = new DispatchHandler(server->queue());
+		Ref<DispatchHandler> dispatch = new DispatchHandler(server->queue());
 		bindCommandDispatch(dispatch);
 		server->routeToHandler(ROUTE_COMMAND, dispatch);
 	}
@@ -174,22 +172,22 @@ private:
 		announceExit(id);
 	}
 
-	void sendClientCommand(NetworkMessage::Ref const &command, PeerId client_id) {
+	void sendClientCommand(Ref<NetworkMessage> const &command, PeerId client_id) {
 		command->setDestination(client_id);
 		command->setRoutingType(ROUTE_COMMAND);
 		command->setReliable();
 		m_NetworkServer->queue()->queueMessage(command, client_id);
 	}
 
-	void bindCommandDispatch(DispatchHandler::Ref const &dispatch) {
+	void bindCommandDispatch(Ref<DispatchHandler> const &dispatch) {
 		dispatch->registerHandler(this, &GlobalBattlefield::onJoinRequest);
 		dispatch->registerHandler(this, &GlobalBattlefield::onIdAllocationRequest);
 		dispatch->registerHandler(this, &GlobalBattlefield::onNotifyUnitMotion);
 		dispatch->registerHandler(this, &GlobalBattlefield::onRegisterUnit);
 	}
 
-	PlayerJoin::Ref makeJoin(const PeerId id, bool local) {
-		PlayerJoin::Ref join = new PlayerJoin();
+	Ref<PlayerJoin> makeJoin(const PeerId id, bool local) {
+		Ref<PlayerJoin> join = new PlayerJoin();
 		join->setRoutingType(ROUTE_COMMAND);
 		join->setReliable();
 		ClientData &data = m_ClientData[id];
@@ -205,22 +203,22 @@ private:
 
 	void announceJoin(const PeerId id) {
 		ClientData &new_client_data = m_ClientData[id];
-		PlayerJoin::Ref local_join = makeJoin(id, true);
-		PlayerJoin::Ref remote_join = makeJoin(id, false);
+		Ref<PlayerJoin> local_join = makeJoin(id, true);
+		Ref<PlayerJoin> remote_join = makeJoin(id, false);
 		for (ClientDataMap::const_iterator iter = m_ClientData.begin(); iter != m_ClientData.end(); ++iter) {
 			// don't announce to ourself
 			if (iter->first == id) continue;
 
 			// if the external ips match, these hosts are probably on a LAN and should communicate via their
 			// internal interfaces; otherwise use the external ip.
-			PlayerJoin::Ref join;
+			Ref<PlayerJoin> join;
 			bool local = (iter->second.external_ip_addr == new_client_data.external_ip_addr);
 			m_NetworkServer->queue()->queueMessage(local ? local_join : remote_join, iter->first);
 		}
 	}
 
 	void announceExit(const PeerId id) {
-		PlayerQuit::Ref msg = new PlayerQuit();
+		Ref<PlayerQuit> msg = new PlayerQuit();
 		msg->setRoutingType(ROUTE_COMMAND);
 		msg->set_peer_id(id);
 		for (ClientDataMap::const_iterator iter = m_ClientData.begin(); iter != m_ClientData.end(); ++iter) {
@@ -237,7 +235,7 @@ private:
 			const PeerId id = iter->first;
 			if (id == new_id) continue;
 			bool local = (iter->second.external_ip_addr == new_client_data.external_ip_addr);
-			PlayerJoin::Ref join = makeJoin(id, local);
+			Ref<PlayerJoin> join = makeJoin(id, local);
 			m_NetworkServer->queue()->queueMessage(join, new_id);
 		}
 	}
@@ -472,7 +470,7 @@ private:
 			if (from->owner() != to->owner()) {
 				CSPLOG(INFO, BATTLEFIELD) << "sending add unit " << from->unit()->id() << " to client " << to->owner();
 				{  // tell OWNER[to] to expect updates from OWNER[from]
-					CommandAddUnit::Ref msg = new CommandAddUnit();
+					Ref<CommandAddUnit> msg = new CommandAddUnit();
 					msg->set_unit_id(from->id());
 					msg->set_unit_class(Path(from->unit()->getObjectPath()));
 					msg->set_unit_type(static_cast<const uint8>(from->unit()->type()));
@@ -482,7 +480,7 @@ private:
 					sendClientCommand(msg, to->owner());
 				}
 				{ // tell OWNER[from] to update OWNER[to]
-					CommandUpdatePeer::Ref msg = new CommandUpdatePeer();
+					Ref<CommandUpdatePeer> msg = new CommandUpdatePeer();
 					msg->set_unit_id(from->id());
 					msg->set_peer_id(to->owner());
 					sendClientCommand(msg, from->owner());
@@ -501,12 +499,12 @@ private:
 			if (from->owner() != to->owner()) {
 				CSPLOG(INFO, BATTLEFIELD) << "sending remove unit " << from->unit()->id() << " to client " << to->owner();
 				{
-					CommandRemoveUnit::Ref msg = new CommandRemoveUnit();
+					Ref<CommandRemoveUnit> msg = new CommandRemoveUnit();
 					msg->set_unit_id(from->id());
 					sendClientCommand(msg, to->owner());
 				}
 				{
-					CommandUpdatePeer::Ref msg = new CommandUpdatePeer();
+					Ref<CommandUpdatePeer> msg = new CommandUpdatePeer();
 					msg->set_unit_id(from->id());
 					msg->set_peer_id(to->owner());
 					msg->set_stop(true);

@@ -1,6 +1,6 @@
-# -*- python -*-
+# -*-python-*-
 #
-# Copyright 2004 Mark Rose <mkrose@users.sourceforge.net>
+# Copyright 2004-2005 Mark Rose <mkrose@users.sourceforge.net>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -18,38 +18,27 @@
 
 Import('env build')
 
-def PackageConfig(env):
-	print ':: csp.modules.chunklod config'
-	conf = build.CustomConfigure(env)
-	valid = 1
-	valid = conf.CheckOSGVersion('osg', '0.9.6') and valid
-	# TODO enable/disable osgNV in config.h
-	#valid = conf.CheckOSGVersion('osgNV', '0.5.7') and valid
-	#valid = conf.CheckLib('osgNVCg') and valid
-	#valid = conf.CheckLib('osgNVParse') and valid
-	if not valid:
-		print 'Missing dependencies; see http://csp.sf.net/wiki/Current_build_dependencies for more information.'
-		Exit(1)
-	env = conf.Finish()
-
-
 env = env.Copy()
-env.SetConfig(PackageConfig)
 
-# cspchunklod generates lots of warnings; feel free to clean it up and then
-# remove this line
-env.RemoveFlags(CXXFLAGS=['-pedantic', '-W'])
+# cspchunklod generates lots of warnings; feel free to clean it up and then remove this line
+env.RemoveFlags(CXXFLAGS=Split('-pedantic -W /W3'))
+
+build.SharedLibrary(env,
+	name = 'chunklod',
+	sources = [
+		'ChunkLod.cpp',
+		'ChunkLodDrawable.cpp',
+		'ChunkLodLoader.cpp',
+		'RayStrip.cpp',
+		'TextureQuadTree.cpp',
+		'Version.cpp',
+	],
+	deps = ['cspsim'],
+	alias = 'all')
 
 
-SOURCES = [
-	'ChunkLod.cpp',
-	'ChunkLodDrawable.cpp',
-	'ChunkLodLoader.cpp',
-	'RayStrip.cpp',
-	'TextureQuadTree.cpp',
-	'Version.cpp',
-]
-
-libchunklod = env.SharedLibrary('chunklod', SOURCES)
-Alias(['all', 'chunklod'], [libchunklod])
+# TODO enable/disable osgNV in config.h
+#valid = conf.CheckOSGVersion('osgNV', '0.5.7') and valid
+#valid = conf.CheckLib('osgNVCg') and valid
+#valid = conf.CheckLib('osgNVParse') and valid
 

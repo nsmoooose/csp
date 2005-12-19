@@ -33,7 +33,9 @@ import atexit
 from distutils import sysconfig
 
 import SCons
+import SCons.Defaults
 import SCons.Builder
+import SCons.Util
 from SCons.Builder import Builder
 from SCons.Script import SConscript
 from SCons.Script.SConscript import SConsEnvironment
@@ -43,6 +45,10 @@ from SCons.Node.FS import default_fs
 
 File = default_fs.File
 Dir = default_fs.Dir
+Alias = SCons.Defaults.DefaultEnvironment().Alias
+AlwaysBuild = SCons.Defaults.DefaultEnvironment().AlwaysBuild
+Depends = SCons.Defaults.DefaultEnvironment().Depends
+Flatten = SCons.Util.flatten
 
 SConsVersion = tuple(map(int, SCons.__version__.split('.')))
 
@@ -364,7 +370,7 @@ def BuildPackages(env, packages, **kw):
 		if targets:
 			if type(targets) != type([]): targets = [targets]
 			result.extend(targets)
-	result = env.Flatten(result)
+	result = Flatten(result)
 	return result
 
 def BuildModules(env, modules, **kw):
@@ -376,7 +382,7 @@ def BuildModules(env, modules, **kw):
 		if targets:
 			if type(targets) != type([]): targets = [targets]
 			result.extend(targets)
-	result = env.Flatten(result)
+	result = Flatten(result)
 	return result
 
 
@@ -409,7 +415,7 @@ def BuildModules_(env, modules, **kw):
 		if module:
 			if type(targets) != type([]): targets = [targets]
 			result.extend(targets)
-	result = env.Flatten(result)
+	result = Flatten(result)
 	return result
 """
 
@@ -532,6 +538,7 @@ def CheckCommandVersion(context, lib, command, min_version=None, lib_name=None):
 
 
 def CustomConfigure(env):
+	SCons.Script.SConscript.sconscript_reading = 1
 	conf = env.Configure(log_file="#/.config.log")
 	conf.AddTests({'CheckSwig': CheckSwig})
 	conf.AddTests({'CheckLibVersion': CheckLibVersion})
@@ -690,7 +697,9 @@ def GlobalSetup(env, distributed=1, short_messages=None, default_message=None, c
 	if timer:
 		start_time = time.time()
 		def showtime(start_time=start_time):
-			print 'build time: %d sec' % (time.time() - start_time)
+			elapsed = time.time() - start_time
+			if elapsed > 10:
+				print 'build time: %d sec' % elapsed
 		atexit.register(showtime)
 
 
@@ -867,14 +876,21 @@ def MarkVersionSource(env, target, prefix='Version.'):
 	if version: env.Depends(version, others)
 
 
-def MakeDocumentation(env, target, source, *args):
+def MakeDocumentation(env, target, config, sources):
 	target = Dir(target)
 	html = target.Dir('html')
 	if 'dox' in SConscript.CommandLineTargets:
-		source = File(source)
 		index = html.File('index.html')
-		dox = env.Doxygen(index, source)
-		[env.Depends(dox, Glob(g)) for g in args]
+		dox = env.Doxygen(index, File(config))
+		for item in sources:
+			if isinstance(item, str):
+				if item.startswith('@'):
+					item = BuildRegistry.GetSourceGroup(item)
+					env.Depends(dox, item.all)
+				else:
+					env.Depends(dox, Glob(item))
+			else:
+				print 'implement me'
 		env.Alias('dox', dox)
 	env.Clean(['dox', 'all'], html)
 
@@ -882,4 +898,413 @@ def Apply(builder, sources, **overrides):
 	def builder_wrap(source):
 		return builder(source, **overrides)
 	return map(builder_wrap, sources)
+
+
+# =============================================================================================
+
+class Settings(dict):
+	def merge(self, *args, **kw):
+		settings = kw
+		if args:
+			assert len(args) == 1
+			settings.update(args[0])
+		for key, value in settings.items():
+			base = self.setdefault(key, [])
+			for item in value:
+				if not item in base: base.append(item)
+
+	def apply(self, env):
+		env.AppendUnique(**self)
+
+	def Diff(old_env, new_env):
+		settings = {}
+		for key in ('CCFLAGS', 'CPPPATH', 'CPPFLAGS', 'LIBS', 'LIBPATH', 'LINKFLAGS'):
+			new_values = new_env.get(key, [])
+			old_values = old_env.get(key, [])
+			for old in old_values:
+				if old in new_values: new_values.remove(old)
+			settings[key] = new_values
+		return Settings(settings)
+	Diff = staticmethod(Diff)
+
+
+class _BuildRegistry:
+	def __init__(self):
+		self._targets = {}
+		self._sources = {}
+		self._libraries = {}
+	def AddLibrary(self, name, lib):
+		self._libraries[name] = lib
+	def AddSourceGroup(self, name, group):
+		self._sources['@' + name] = group
+	def AddTarget(self, name, target):
+		self._targets[name] = target
+	def GetLibrary(self, name, req=0):
+		#if not name.startswith('@'):
+		#	raise 'invalid library %s' % name
+		if req and not self._libraries.has_key(name):
+			raise 'unknown library %s' % name
+		return self._libraries.get(name)
+	def GetTarget(self, name, req=0):
+		#if not name.startswith('@'):
+		#	raise 'invalid target %s' % name
+		if req and not self._targets.has_key(name):
+			raise 'unknown target %s' % name
+		return self._targets.get(name)
+	def GetSourceGroup(self, name, req=0):
+		if not name.startswith('@'):
+			raise 'invalid sourcegroup %s' % name
+		if req and not self._sources.has_key(name):
+			raise 'unknown source group %s' % name
+		return self._sources.get(name)
+	def GetDependency(self, name):
+		return self._libraries.get(name) or self._sources.get(name) or self._targets.get(name)
+
+	def Configure(self, env):
+		if ('config' in SConscript.CommandLineTargets) or not self._ReadConfigs(env):
+			if not env.GetOption('clean'):
+				valid = 1
+				conf = CustomConfigure(env.Copy())
+				settings = Settings()
+				for name, lib in self._libraries.items():
+					valid = lib.config(conf, settings) and valid
+				new = conf.Finish()
+				if not valid:
+					print 'Configure failed'
+					sys.exit(1)
+				self._SaveConfigs(env)
+
+	def _ReadConfigs(self, env):
+		config_file = env.GetBuildPath('.config')
+		try:
+			config = open(config_file, 'rt')
+		except IOError:
+			return 0
+		saved = pickle.load(config)
+		if not isinstance(saved, dict): return 0
+		for name in self._libraries.keys():
+			if not saved.has_key(name): return 0
+		for name, settings in saved.items():
+			if not self._libraries.has_key(name): return 0
+			self._libraries[name]._settings = Settings(settings)
+		return 1
+
+	def _SaveConfigs(self, env):
+		config_file = env.GetBuildPath('.config')
+		config = open(config_file, 'wt')
+		out = {}
+		for name, lib in self._libraries.items():
+			out[name] = dict(lib._settings)
+		pickle.dump(out, config)
+
+	def Build(self):
+		for target in self._targets.values():
+			target.build()
+
+BuildRegistry = _BuildRegistry()
+
+
+class ExternalLibrary:
+	def __init__(self, name='', config=[]):
+		assert name
+		self._name = name
+		self._config = config
+		self._settings = Settings()
+		BuildRegistry.AddLibrary(name, self)
+
+	def _save(env, oldenv):
+		settings = {}
+		for key in ('CCFLAGS', 'CPPPATH', 'CPPFLAGS', 'LIBS', 'LIBPATH', 'LINKFLAGS'):
+			new_values = env.get(key, [])
+			old_values = oldenv.get(key, [])
+			for old in old_values:
+				if old in new_values: new_values.remove(old)
+			settings[key] = new_values
+		return settings
+	_save = staticmethod(_save)
+
+	def config(self, conf, global_settings):
+		valid = 1
+		oldenv = conf.env.Copy()
+		settings = Settings()
+		for c in self._config:
+			valid = c.configure(conf) and valid
+		if valid:
+			settings.merge(ExternalLibrary._save(conf.env, oldenv))
+			global_settings.merge(settings)
+			self._settings = settings
+		return valid
+
+	def _addSettings(self, settings, bdeps):
+		settings.merge(self._settings)
+
+class PkgConfig:
+	def __init__(self, package=None, version=None, label=None):
+		assert package
+		if label is None: label = package
+		self._package = package
+		self._version = version
+		self._label = label
+
+	def configure(self, conf):
+		if IsWindows(conf.env): return 1
+		return conf.CheckPkgConfig(self._package, version=self._version, lib_name=self._label)
+
+class CommandConfig:
+	def __init__(self, package=None, version_command=None, flags_command=None, version=None, label=None):
+		self._package = package
+		self._version_command = version_command
+		self._flags_command = flags_command
+		self._version = version
+		self._label = label
+
+	def configure(self, conf):
+		if IsWindows(conf.env): return 1
+		valid = conf.CheckCommandVersion(self._package, self._version_command, self._version, lib_name=self._label)
+		if valid:
+			conf.env.ParseConfig(self._flags_command)
+		return valid
+
+class LibConfig:
+	def __init__(self, lib=None, symbol='', label=None):
+		if label is None: label = lib
+		self._lib = lib
+		self._symbol = symbol
+		self._label = label
+	def configure(self, conf):
+		return conf.CheckLib(self._lib, self._symbol)
+
+class UnixLibConfig(LibConfig):
+	def __init__(self, lib=None, symbol='', label=None):
+		LibConfig.__init__(self, lib, symbol, label)
+	def configure(self, conf):
+		if IsWindows(conf.env): return 1
+		return conf.CheckLib(self._lib, self._symbol)
+
+class WindowsLibConfig(LibConfig):
+	# using atoi as the default test symbol since it always succeeds.
+	# haven't yet figured out how to test real symbols in many libraries,
+	# probably due to complications with declspec.
+	def __init__(self, lib=None, symbol='atoi', label=None):
+		LibConfig.__init__(self, lib, symbol, label)
+	def configure(self, conf):
+		if not IsWindows(conf.env): return 1
+		return conf.CheckLib(self._lib, self._symbol)
+
+
+class DevpackConfig:
+	DEVPACK = None
+	VERSION = None
+
+	def _checkPath(*args):
+		path = os.path.join(*args)
+		if not os.path.exists(path):
+			print 'CSPDEVPACK path (%s) not found.' % path
+			sys.exit(1)
+	_checkPath = staticmethod(_checkPath)
+
+	def SetMinimumVersion(version):
+		DevpackConfig.VERSION = version
+	SetMinimumVersion = staticmethod(SetMinimumVersion)
+
+	def _Find():
+		if DevpackConfig.DEVPACK: return
+		path = os.environ.get('CSPDEVPACK', '')
+		if not path:
+			print 'CSPDEVPACK environment variable not set.'
+			sys.exit(1)
+		try:
+			v = map(int, re.search(r'[0-9.]+$').group().split('.'))
+		except Exception:
+			print 'CSPDEVPACK environment variable (%s) is does not look like a valid devpack path.' % path
+			sys.exit(1)
+		if v < map(int, DevpackConfig.VERSION.split('.')):
+			print 'The installed devpack (%s) is too old; need version %s' % (path, version)
+			sys.exit(1)
+		DevpackConfig._checkPath(path)
+		DevpackConfig._checkPath(path, 'usr', 'bin')
+		DevpackConfig._checkPath(path, 'usr', 'lib')
+		DevpackConfig._checkPath(path, 'usr', 'include')
+		DevpackConfig.DEVPACK = path
+	_Find = staticmethod(_Find)
+
+	def __init__(self, dlls, headers=[]):
+		if isinstance(dlls, str):
+			dlls = [dlls]
+		self._dlls = dlls
+		self._headers = headers
+
+	def configure(self, conf):
+		if IsWindows(conf.env):
+			DevpackConfig._Find()
+			dp = DevpackConfig.DEVPACK
+			for dll in self._dlls:
+				self._checkPath(dp, 'usr', 'bin', dll + '.dll')
+				self._checkPath(dp, 'usr', 'lib', dll + '.lib')
+			for header in self._headers:
+				if isinstance(header, tuple):
+					header = os.path.join(*header)
+				self._checkPath(os.path.join(dp, 'usr', 'include', header))
+			conf.env.AppendUnique(CPPPATH=[os.path.join(dp, 'usr', 'include')])
+			conf.env.AppendUnique(LIBPATH=[os.path.join(dp, 'usr', 'lib')])
+			conf.env.AppendUnique(LIBS=self._dlls)
+		return 1
+
+
+class SourceGroup:
+	def __init__(self, env, name='', sources=[], deps=[], **kw):
+		self._env = env.Copy()
+		self._name = name
+		self._sources = [x for x in env.arg2nodes(sources)]
+		self._deps = deps
+		self._objects = None
+		self._options = kw
+		self._bdeps = []
+		BuildRegistry.AddSourceGroup(name, self)
+
+	def _makeObjects(self):
+		if self._objects is None:
+			settings = Settings()
+			for dep in self._deps:
+				lib = BuildRegistry.GetDependency(dep)
+				if lib:
+					lib._addSettings(settings, self._bdeps)
+				else:
+					print '%s: could not find dependency %s' % (self._name, dep)
+					sys.exit(1)
+			self._settings = settings
+			settings.apply(self._env)
+			self._objects = []
+			for file in self._sources:
+				if isinstance(file, SCons.Node.FS.File):
+					if file.get_suffix() == '.i':
+						self._objects += self._env.SwigWrapper(file, **self._options)
+					elif file.get_suffix() != '.h':
+						self._objects.append(self._env.SharedObject(file, **self._options))
+				else:
+					self._objects.append(file)
+
+	def _addSettings(self, settings, bdeps):
+		self._makeObjects()
+		settings.merge(self._settings)
+		bdeps += self._bdeps
+
+	def add(self, objects, settings, bdeps):
+		self._makeObjects()
+		objects += self._objects
+		self._addSettings(settings, bdeps)
+
+	_header_ext = ('.h', '.hh', '.hpp', '.hxx')
+	_source_ext = ('.c', '.cc', '.cpp', '.cxx')
+	_swig_ext = ('.i',)
+	_message_ext = ('.net',)
+	_known_ext = _header_ext + _source_ext + _swig_ext + _message_ext
+
+	def getAll(self):
+		return [x.srcnode() for x in self._sources]
+	def getHeaders(self):
+		return [x.srcnode() for x in self._sources if x.get_suffix() in SourceGroup._header_ext]
+	def getSources(self):
+		return [x.srcnode() for x in self._sources if x.get_suffix() in SourceGroup._source_ext]
+	def getMessages(self):
+		return [x.srcnode() for x in self._sources if x.get_suffix() in SourceGroup._message_ext]
+	def getSwigInterfaces(self):
+		return [x.srcnode() for x in self._sources if x.get_suffix() in SourceGroup._swig_ext]
+	def getMiscellaneousFiles(self):
+		header_or_source = SourceGroup._header_ext + SourceGroup._source_ext
+		return [x.srcnode() for x in self._sources if x.get_suffix() not in header_or_source]
+	def getOtherFiles(self):
+		return [x.srcnode() for x in self._sources if x.get_suffix() not in SourceGroup._known_ext]
+
+	all = property(getAll)
+	headers = property(getHeaders)
+	sources = property(getSources)
+	messages = property(getMessages)
+	misc = property(getMiscellaneousFiles)
+	swig = property(getSwigInterfaces)
+	other = property(getOtherFiles)
+
+
+class SharedLibrary:
+	def __init__(self, env, name, sources=[], aliases=[], deps=[], always_build=0, doxygen=None, **kw):
+		self._env = env.Copy()
+		self._name = name
+		self._sources = [s for s in sources if s.startswith('@')]
+		pure = [s for s in sources if not s.startswith('@')]
+		if pure or deps:
+			SourceGroup(env, name, sources=pure, deps=deps)
+			self._sources.append('@' + name)
+		self._target = os.path.join(env.Dir('.').path, name)  # a bit ugly
+		self._aliases = aliases
+		self._always_build = always_build
+		self._doxygen = None
+		if doxygen:
+			self._dox = env.Dir('.dox').srcnode()
+			self._doxygen = env.File(doxygen)
+		self._options = kw
+		self._groups = None
+		self._output = None
+		BuildRegistry.AddTarget(name, self)
+
+	def _findSources(self):
+		if self._groups is None:
+			self._groups = []
+			for source in self._sources:
+				group = BuildRegistry.GetSourceGroup(source)
+				if not group:
+					print 'shlib %s: unknown source %s' % (self._name, source)
+					sys.exit(1)
+				self._groups.append(group)
+
+	def build(self):
+		if self._output:
+			return self._output
+		objects = []
+		settings = Settings()
+		self._findSources()
+		bdeps = []
+		for group in self._groups:
+			group.add(objects, settings, bdeps)
+		bdeps = Flatten(bdeps)
+		objects = Flatten(objects)
+		settings.merge(self._options)
+		shlib = self._env.SharedLibrary(self._target, objects, **settings)
+		Alias = SCons.Defaults.DefaultEnvironment().Alias
+		Alias(self._name, shlib)
+		if self._aliases:
+			Alias(self._aliases, shlib)
+		if IsWindows(self._env):
+			self._makeVisualStudioProject(shlib)
+		if self._doxygen:
+			self._env.Documentation(self._dox, self._doxygen, self._sources)
+		if self._always_build:
+			AlwaysBuild(shlib)
+		self._output = shlib
+		if bdeps:
+			Depends(shlib, bdeps)
+		return shlib[0]
+
+	def _makeVisualStudioProject(self, shlib):
+		if not hasattr(self._env, 'MSVSProject'):
+			Alias('vs', [])
+			return
+		target = shlib[0]
+		sources = []
+		headers = []
+		misc = []
+		self._findSources()
+		for group in self._groups:
+			sources += group.sources
+			headers += group.headers
+			misc += group.misc
+		dbg = self._env.MSVSProject(target=self._name+'-dbg.vcproj', srcs=sources, incs=headers, misc=misc, buildtarget=target, variant='Debug')
+		rel = self._env.MSVSProject(target=self._name+'-rel.vcproj', srcs=sources, incs=headers, misc=misc, buildtarget=target, variant='Release')
+		Alias('vs', [dbg, rel])
+
+	def _addSettings(self, settings, bdeps):
+		bdeps.append(self.build())
+		self._findSources()
+		for group in self._groups:
+			group._addSettings(settings, bdeps)
+		settings.merge(LIBPATH=[os.path.dirname(self._target)], LIBS=[os.path.basename(self._target)])
 

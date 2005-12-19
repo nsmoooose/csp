@@ -1,4 +1,4 @@
-# -*- python -*-
+# -*-python-*-
 #
 # Copyright 2004 Mark Rose <mkrose@users.sourceforge.net>
 #
@@ -23,20 +23,23 @@ HELP = """
 COMMON TARGETS:
 
   scons config        check for necessary headers and libraries
+  scons all           build everything
   scons cspsim        build the main flight simulator client
   scons indexserver   build the master server needed for multiplayer
-  scons all           build everything
   scons dox           generate doxygen documentation
-  scons test          run unittests
+  scons runtests      build and run all unittests
+  scons setup         configure the workspace (only needs to be run once)
 """
 
 from tools import build
-import sys
-import os
 
+import logging
+import os
+import sys
 
 build.CheckSConsVersion('0.96.1')
 build.CheckPythonVersion('2.2.2')
+build.DevpackConfig.SetMinimumVersion('0.5')
 
 
 # several global targets (e.g. 'all') are shared between copied subenvironments;
@@ -45,23 +48,10 @@ import SCons.Warnings
 SCons.Warnings.suppressWarningClass(SCons.Warnings.DuplicateEnvironmentWarning)
 
 
-def GlobalConfig(env):
-	print ':: csp config'
-	conf = build.CustomConfigure(env)
-	valid = 1
-	valid = conf.CheckSwig('1.3.20') and valid
-	valid = conf.CheckPkgConfig('libccgnu2', version='1.3.19', lib_name='ccgnu2') and valid
-	valid = conf.CheckPkgConfig('sigc++-2.0', version='2.0.6', lib_name='sigc') and valid
-	valid = conf.CheckPkgConfig('sdl', version='1.2.5', command='sdl-config', version_flag='--version') and valid
-	if not valid:
-		print 'Missing dependencies; see http://csp.sf.net/wiki/Current_build_dependencies for more information.'
-		Exit(1)
-	env = conf.Finish()
-
-
 PACKAGES = [
 	'csplib',
 	'cspsim',
+	'indexserver',
 	'modules',
 ]
 
@@ -71,22 +61,111 @@ INCLUDE = [
 ]
 
 
-if sys.platform.startswith('win'):
-	settings = build.GlobalSettings(help=HELP)
-	# TODO check devpack path and contents
-else:
-	settings = build.GlobalSettings(GlobalConfig, help=HELP)
-	settings.CXX = 'g++'
-	settings.CXXFLAGS = Split('-O2 -g -W -Wall -pedantic -Wno-long-long')
-	settings.SWIGCXXFLAGS = Split('-O2 -g')
-	settings.ARFLAGS = Split('cr')
+build.ExternalLibrary(
+	name = 'opengl',
+	config = [
+		build.WindowsLibConfig('glu32'),
+		build.WindowsLibConfig('opengl32'),
+	])
+
+build.ExternalLibrary(
+	name = 'windows',
+	config = [
+		build.WindowsLibConfig('advapi32'),
+		build.WindowsLibConfig('msvcrt', symbol='_toupper'),
+		build.WindowsLibConfig('ws2_32'),
+	])
+
+build.ExternalLibrary(
+	name = 'gnucc2',
+	config = [
+		build.PkgConfig(package='libccgnu2', version='1.3.19', label='commoncpp'),
+		build.DevpackConfig(dlls='ccgnu2', headers=[('cc++', 'thread.h')]),
+	])
+
+build.ExternalLibrary(
+	name = 'sigc',
+	config = [
+		build.PkgConfig(package='sigc++-2.0', version='2.0.6', label='sigc'),
+		build.DevpackConfig(dlls='sigc-2.0', headers=['sigc++config.h', ('sigc++', 'trackable.h')]),
+	])
+
+build.ExternalLibrary(
+	name = 'osg',
+	config = [
+		build.PkgConfig(package='openscenegraph', version='0.9.8'),
+		build.PkgConfig(package='openthreads', version='0.9.8'),
+		build.PkgConfig(package='producer', version='0.9.8'),
+		build.DevpackConfig(dlls=['osg', 'osgDB', 'osgFX', 'osgGA', 'osgParticle', 'osgProducer', 'osgText', 'osgUtil', 'OpenThreadsWin32'], headers=[('osg', 'Depth'), ('osgText', 'Font')]),
+	])
+
+build.ExternalLibrary(
+	name = 'sdl',
+	config = [
+		build.CommandConfig(package='sdl', version_command='sdl-config --version', flags_command='sdl-config --cflags --libs', version='1.2.5', label='sdl'),
+		build.UnixLibConfig(lib='SDL_image', symbol='IMG_Load', label='sdl image'),
+		build.DevpackConfig(dlls=['SDL', 'SDL_image'], headers=[('SDL', 'SDL_mouse.h'), ('SDL', 'SDL_image.h')]),
+	])
+
+
+def AddSetupTarget(env):
+	def SetupClientWorkspace(force):
+		sys.path.insert(0, '.')
+		import tools.setup
+		del sys.path[0]
+		setup_log = logging.Logger('setup', logging.INFO)
+		setup_log.addHandler(logging.FileHandler('.setup.log', mode='wt'))
+		if tools.setup.SetupClientWorkspace(force, log=setup_log):
+			print 'Setup complete.'
+		else:
+			print 'Setup failed; see .setup.log for details.'
+	sources = Split('#/tools/csp.bootstrap #/tools/setup.py')
+	def SetupProxy(*args, **kw): SetupClientWorkspace(0)
+	def ForceSetupProxy(*args, **kw): SetupClientWorkspace(1)
+	setup = env.Command('setup', sources, SetupProxy)
+	force = env.Command('force_setup', sources, ForceSetupProxy)
+
+
+def AddRunTestsTarget(env):
+	def RunTests(*args, **kw):
+		import csp.tools.runtests
+		csp.tools.runtests.runall()
+	env.Command('runtests', 'tests', RunTests)
+
+
+class PlatformSettings:
+	def customize_win(self, env):
+		env['CXXFLAGS'] = Split('/GR /MT /O2 /EHsc /nologo')
+		env.AppendUnique(CPPDEFINES=Split('WIN32 _USRDLL _DLL NDEBUG'))
+		env.AppendUnique(LINKFLAGS=Split('/INCREMENTAL:NO /RELEASE /nologo'))
+		env.AppendUnique(SHLINKFLAGS=Split('/INCREMENTAL:NO /RELEASE /nologo'))
+		env.CopyEnvironment(Split('PATH INCLUDE LIB')) # FIXME
+
+	def customize_linux(self, env):
+		env['CXXFLAGS'] = Split('-O2 -g -W -Wall -pedantic -Wno-long-long')
+		env['SWIGCXXFLAGS'] = Split('-O2 -g')
+		env['ARFLAGS'] = Split('cr')
+
+	def customize_darwin(self, env):
+		self.customize_linux(env)
+		env['SHLINKFLAGS'] = Split('-Wl -bundle')
+
+
 
 # platform-independent settings
+settings = build.GlobalSettings(help=HELP)
 settings.CXXFILESUFFIX='.cpp'
-settings.SWIGFLAGS = Split('-python -c++')
 settings.CPPPATH = INCLUDE
-settings.SWIGINCLUDES = '$_CPPINCFLAGS'
+settings.SWIGFLAGS = Split('-python -c++')
+settings.SWIGINCLUDES = INCLUDE
 
 env = settings.env()
+env.CustomizeForPlatform(PlatformSettings)
+
 build.BuildPackages(env, PACKAGES)
+build.BuildRegistry.Configure(env)
+build.BuildRegistry.Build()
+
+AddSetupTarget(env)
+AddRunTestsTarget(env)
 

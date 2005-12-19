@@ -117,6 +117,7 @@ public:
 	bool _loadAll() const { return _load_all; }
 	bool isComplete() const { return _read >= _end; }
 
+#ifndef SWIG
 	Reader& operator>>(char &x) {
 		if (_read >= _end) throw DataUnderflow();
 		x = *_read++;
@@ -218,6 +219,7 @@ public:
 		_read += n;
 		return *this;
 	}
+#endif // SWIG
 
 	// old, fixed-width length implementation (DISABLED)
 	// int32 _readLength() { int32 n; operator>>(n); return n; }
@@ -321,6 +323,7 @@ protected:
 public:
 	virtual ~Writer() {}
 
+#ifndef SWIG
 	Writer& operator<<(const char y) {
 		write(&y, sizeof(y));
 		return *this;
@@ -388,6 +391,7 @@ public:
 		write(y.data(), n);
 		return *this;
 	}
+#endif // SWIG
 
 	void writeLength(int32 length) {
 		assert(length >= 0 && length <= 1073741823);

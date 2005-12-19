@@ -157,7 +157,7 @@ LogStream& testlog();
 
 /** Base class for all test fixtures.
  */
-class CSPLIB_EXPORT TestFixture: public NonCopyable {
+class TestFixture: public NonCopyable {
 public:
 	virtual ~TestFixture() {}
 	virtual void setup() {}
@@ -171,7 +171,7 @@ public:
  *  CSP_TESTCASE macro to identify the enclosing fixture class.
  */
 template <class tCLASS>
-class CSPLIB_EXPORT TypedTestFixture : public TestFixture {
+class TypedTestFixture : public TestFixture {
 protected:
 	typedef tCLASS TestFixtureClass;
 };
@@ -184,7 +184,7 @@ template <class tFIXTURE> class TestCase;
  *  by the CSP_TESTCASE macro.
  */
 template <class tFIXTURE>
-class CSPLIB_EXPORT TestCase {
+class TestCase {
 	std::string m_name;
 	void (tFIXTURE::*m_test)();
 
@@ -260,7 +260,7 @@ private:
  *  fixture class.
  */
 template <class tFIXTURE>
-class CSPLIB_EXPORT TypedTestRunner: public TestRunner {
+class TypedTestRunner: public TestRunner {
 	typedef std::map<std::string, TestCase<tFIXTURE> > TestCaseMap;
 	static TestCaseMap *m_testcases;
 public:

@@ -1114,7 +1114,7 @@ class DevpackConfig:
 			print 'CSPDEVPACK environment variable not set.'
 			sys.exit(1)
 		try:
-			v = map(int, re.search(r'[0-9.]+$').group().split('.'))
+			v = map(int, re.search(r'[0-9.]+$', path).group().split('.'))
 		except Exception:
 			print 'CSPDEVPACK environment variable (%s) is does not look like a valid devpack path.' % path
 			sys.exit(1)

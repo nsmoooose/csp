@@ -47,6 +47,9 @@ private:
 
 	Ref<Server> m_NetworkServer;
 	Ref<GlobalBattlefield> m_Battlefield;
+
+	IndexServer(const IndexServer&);
+	IndexServer const &operator=(const IndexServer&);
 };
 
 CSP_NAMESPACE_END

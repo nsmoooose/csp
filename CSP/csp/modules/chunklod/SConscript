@@ -19,6 +19,7 @@
 Import('env build')
 
 env = env.Copy()
+env.AppendUnique(CPPDEFINES=Split('OSGCHUNKLOD_LIBRARY'))
 
 # cspchunklod generates lots of warnings; feel free to clean it up and then remove this line
 env.RemoveFlags(CXXFLAGS=Split('-pedantic -W /W3'))
@@ -33,7 +34,7 @@ build.SharedLibrary(env,
 		'TextureQuadTree.cpp',
 		'Version.cpp',
 	],
-	deps = ['cspsim'],
+	deps = ['cspsim', 'jpeg'],
 	alias = 'all')
 
 

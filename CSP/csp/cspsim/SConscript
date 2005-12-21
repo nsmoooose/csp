@@ -316,7 +316,7 @@ build.SharedLibrary(expenv,
 	SHLIBPREFIX = '_')
 
 
-build.SharedLibrary(env,
+build.SharedLibrary(expenv,
 	name = 'indexserver',
 	sources = [
 		'indexserver.i',

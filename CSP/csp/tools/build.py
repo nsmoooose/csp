@@ -1281,7 +1281,7 @@ class SharedLibrary:
 		if self._always_build:
 			AlwaysBuild(shlib)
 		self._output = shlib
-		if bdeps:
+		if bdeps and not self._env.GetOption('clean'):
 			Depends(shlib, bdeps)
 		return shlib[0]
 

@@ -320,6 +320,24 @@ public:
  *  objects provide only const access to internal data and keep no dynamic state.
  *  The last macro is used for abstract base classes that cannot be instantiated.
  *
+ *  If the object will be subclassed outside of the shared library in which it is
+ *  defined, a @c CSP_EXPORT_OBJECT macro must be included before the
+ *  @c CSP_DECLARE_* macro.  Although this is technically only a requirement on
+ *  Windows, it should always be done to ensure portability.  Typically a
+ *  module will use a macro to select between @c __declspec(dllimport) and
+ *  @c __declspec(dllexport) tags (or no tag on non-windows platforms).
+ *  Assuming this macro is named @c MY_EXPORT, the following ensures that @c Foo
+ *  can be subclassed in other modules:
+ *
+ *  @code
+ *  class MY_EXPORT Foo {
+ *  public:
+ *      CSP_EXPORT_OBJECT(MY_EXPORT)
+ *      CSP_DECLARE_OBJECT(Foo)
+ *      ...
+ *  };
+ *  @endcode
+ *
  *  If any of the @c CSP_DECLARE_ macros is included in an object class, the
  *  object must define an XML interface in the corresponding source file (outside
  *  of the class declaration and not in a header file).  The format of the XML
@@ -441,6 +459,9 @@ inline hasht classhash_helper(std::string const &class_name, const fprint32 sign
 	virtual void _serialize(CSP(Writer) &writer) const; \
 	virtual void _serialize(CSP(Reader) &reader); \
 	static __csp_interface_proxy__M_classname __csp_interface_proxy__M_classname_instance;
+
+#define CSP_EXPORT_OBJECT(_M_export_spec) \
+	class _M_export_spec __csp_interface_proxy__M_classname;
 
 #define CSP_DECLARE_OBJECT(_M_classname) \
 	__CSP_CLASS_DEFINE(_M_classname, false, false)

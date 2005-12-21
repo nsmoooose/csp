@@ -52,6 +52,7 @@ class Projection;
  */
 class CSPSIM_EXPORT TerrainObject: public Object {
 public:
+	CSP_EXPORT_OBJECT(CSPSIM_EXPORT)
 	CSP_DECLARE_ABSTRACT_OBJECT(TerrainObject)
 
 	/* currently the only two terrain engines are demeter and

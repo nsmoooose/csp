@@ -3161,7 +3161,7 @@ TerrainLattice::TerrainLattice(const char* szBaseName,const char* szExtensionEle
 
 TerrainLattice::~TerrainLattice()
 {
-	cout << "~TerrainLattice()\n";
+	//cout << "~TerrainLattice()\n";
 	if (Settings::GetInstance()->IsVerbose())
 	{
 		m_Logfile << "Removing TerrainLattice" << std::endl;

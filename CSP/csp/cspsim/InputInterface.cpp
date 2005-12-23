@@ -45,8 +45,8 @@ InputInterface::~InputInterface() {
 }
 
 bool InputInterface::onMapEvent(MapEvent const &event) {
-	if (m_RuntimeDispatch) {
-		return m_RuntimeDispatch->onMapEvent(event);
+	if (m_RuntimeDispatch && m_RuntimeDispatch->onMapEvent(event)) {
+		return true;
 	}
 	InputInterfaceDispatch *map = _getInputInterfaceDispatch();
 	return map ? map->callHandler(this, event) : false;

@@ -380,6 +380,18 @@ public:
 		push();
 	}
 
+	/** Set the channel value and signal the change to listeners if the value has
+	 *  changed.
+	 *
+	 *  Should only be called for push channels (asserts false otherwise).
+	 */
+	void pushOnChange(const T& value) {
+		if (m_Value != value) {
+			m_Value = value;
+			push();
+		}
+	}
+
 	/** Set a handler for a non-shared data channel that will be called when
 	 *  a holder of a const reference to the channel requests that a new value
 	 *  be set.  The handler can honor this request by setting the channel

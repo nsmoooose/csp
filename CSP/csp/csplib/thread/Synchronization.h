@@ -28,12 +28,12 @@
 
 #include <csp/csplib/util/Namespace.h>
 #include <csp/csplib/util/Properties.h>
-#include <csp/csplib/thread/ThreadUtil.h>
 
 #ifdef WIN32
 #define NOMINMAX
 #endif
 #include <cc++/thread.h>
+#include <algorithm>
 #include <cerrno>
 #include <cmath>
 

@@ -41,15 +41,32 @@ void CSPLIB_EXPORT ConvertStringToUpper(std::string &str);
  */
 void CSPLIB_EXPORT ConvertStringToLower(std::string &str);
 
+/** Tokenize a string, appending the tokens into a container.
+ */
+template <class T_BackInsertionSequence>
+void CSPLIB_EXPORT Tokenize(std::string const &str, T_BackInsertionSequence &output, const char *delimiters = " ,\n") {
+	if (!delimiters) return;
+	std::string::size_type lastPos(str.find_first_not_of(delimiters, 0));
+	std::string::size_type pos(str.find_first_of(delimiters, lastPos));
+	while (std::string::npos != pos || std::string::npos != lastPos) {
+		output.push_back(str.substr(lastPos, pos - lastPos));
+		lastPos = str.find_first_not_of(delimiters, pos);
+		pos = str.find_first_of(delimiters, lastPos);
+	}
+}
 
 /** Tokenize a string, placing the tokens into a deque.
  */
-class CSPLIB_EXPORT StringTokenizer: public std::deque<std::string> {
+class CSPLIB_EXPORT TokenQueue: public std::deque<std::string> {
 public:
 	typedef std::deque<std::string>::iterator iterator;
 	typedef std::deque<std::string>::const_iterator const_iterator;
-	StringTokenizer(const std::string &str, const std::string &delimiters = " ,\n");
+	TokenQueue(const std::string &str, const std::string &delimiters = " ,\n");
 };
+
+/** @DEPRECATED For backwards compatibility only; use TokenQueue instead.
+ */
+typedef TokenQueue StringTokenizer;
 
 /** Remove leading and trailing whitespace, or other characters if specified. */
 std::string CSPLIB_EXPORT TrimString(std::string const &str, std::string const &chars = " \n\r\t");

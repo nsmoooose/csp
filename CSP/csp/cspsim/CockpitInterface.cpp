@@ -24,6 +24,7 @@
 
 
 #include <csp/cspsim/CockpitInterface.h>
+#include <csp/csplib/util/StringTools.h>
 
 CSP_NAMESPACE
 

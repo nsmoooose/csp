@@ -26,6 +26,7 @@
 #include <csp/csplib/util/Log.h>
 #include <csp/csplib/util/FileUtility.h>
 #include <csp/csplib/util/Trace.h>
+#include <csp/csplib/thread/Synchronization.h>
 #include <csp/csplib/thread/Thread.h>
 
 #include <iostream>
@@ -174,6 +175,7 @@ LogStream *LogStream::getOrCreateNamedLog(const std::string &name) {
 }
 
 void LogStream::init() {
+	m_mutex = new Mutex;
 	m_threadsafe = true;
 	m_initial_thread = thread::id();
 }
@@ -184,6 +186,7 @@ LogStream::LogStream():
 		m_categories(~0),
 		m_stream(&std::cerr),
 		m_fstream(0),
+		m_mutex(0),
 		m_throw_on_fatal(false) {
 	init();
 }
@@ -193,12 +196,14 @@ LogStream::LogStream(std::ostream& stream):
 		m_priority(cInfo),
 		m_categories(~0),
 		m_stream(&stream),
-		m_fstream(0) {
+		m_fstream(0),
+		m_mutex(0) {
 	init();
 }
 
 LogStream::~LogStream() {
 	close();
+	delete m_mutex;
 }
 
 void LogStream::setStream(std::ostream &stream) {
@@ -224,6 +229,22 @@ void LogStream::logToFile(std::string const &filename) {
 	target->rdbuf()->pubsetbuf(0, 0);
 	m_fstream = target;
 	m_stream = m_fstream ? m_fstream : &std::cerr;
+}
+
+void LogStream::endl() {
+	if (m_stream) *m_stream << std::endl;
+}
+
+void LogStream::flush() {
+	if (m_stream) m_stream->flush();
+}
+
+void LogStream::lock() {
+	if (m_threadsafe && m_mutex) m_mutex->lock();
+}
+
+void LogStream::unlock() {
+	if (m_threadsafe && m_mutex) m_mutex->unlock();
 }
 
 void LogStream::trace(StackTrace const *stacktrace) {

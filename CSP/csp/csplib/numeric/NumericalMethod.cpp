@@ -32,28 +32,18 @@ CSP_NAMESPACE
 
 namespace numeric {
 
-NumericalMethod::NumericalMethod():
-	m_VectorField(0),
-	m_State(),
-	m_Name("Undefined numerical method!") {
-}
-
-NumericalMethod::NumericalMethod(VectorField *pvf):
-	m_VectorField(pvf),
-	m_State(),
-	m_Name("Undefined numerical method!")
-{
-	if (m_VectorField)
+NumericalMethod::NumericalMethod(std::string const &name, double epsilon, VectorField *pvf): m_Name(name), m_Epsilon(epsilon), m_VectorField(pvf) {
+	if (m_VectorField) {
 		m_Dimension = m_VectorField->getDimension();
-	else {
+	} else {
 		m_Dimension = 2;
 		CSPLOG(ERROR, PHYSICS) << "NumericalMethod: VectorField dimension undefined! (default is 2)";
 	}
 }
 
 void NumericalMethod::setVectorField(VectorField *pvf) {
-		m_VectorField = pvf;
-		m_Dimension = m_VectorField->getDimension();
+	m_VectorField = pvf;
+	m_Dimension = m_VectorField->getDimension();
 }
 
 void NumericalMethod::setPrecision(double precision) {
@@ -62,7 +52,7 @@ void NumericalMethod::setPrecision(double precision) {
 
 NumericalMethod::~NumericalMethod(){
 	if (m_VectorField && (m_VectorField->getNumericalMethod() != this)) {
-		std::cerr << "\nDeleting vector field in ~NumericalMethod(): " << m_Name << std::endl;
+		CSPLOG(DEBUG, NUMERIC) << "Deleting vector field in ~NumericalMethod(): " << m_Name;
 		delete m_VectorField;
 		m_VectorField = 0;
 	}
@@ -72,13 +62,6 @@ std::string const &NumericalMethod::getName() const {
 	return m_Name;
 }
 
-void NumericalMethod::printState() const {
-	m_State.print();
-}
-
-bool NumericalMethod::hasFailed() const {
-	return m_State.getFailed();
-}
 
 //===========================================================================
 
@@ -89,8 +72,8 @@ double const RungeKutta::FCOR   = 0.06666666;         // 1.0/15.0
 double const RungeKutta::SAFETY = 0.9;
 double const RungeKutta::ERRCON = 6.0e-4;
 
-unsigned int const RungeKutta::MAXSTP = 8;
-double const       RungeKutta::TINY   = std::numeric_limits<float>::epsilon();//1.0e-30;
+unsigned const RungeKutta::MAXSTP = 8;
+double const RungeKutta::TINY = std::numeric_limits<float>::epsilon();//1.0e-30;
 
 
 Vectord const &RungeKutta::rk4(Vectord const &y, Vectord const &dydx, double x, double h) const {
@@ -146,7 +129,8 @@ Vectord const &RungeKutta::rkqc(Vectord &y, Vectord &dydx, double &x, double htr
 		y1 = rk4(ytemp, dydx, x, hh);
 		x = xsav + h;
 		if (x == xsav) {
-			m_State << "Step size too small in RungeKutta::rkqc\n";
+			setFailed();
+			CSPLOG(DEBUG, NUMERIC) << "Step size too small in RungeKutta::rkqc";
 			loop = false;
 		} else {
 			ytemp = rk4(ysav, dysav, xsav, h);
@@ -162,13 +146,13 @@ Vectord const &RungeKutta::rkqc(Vectord &y, Vectord &dydx, double &x, double htr
 					SAFETY * h * pow(errmax, PGROW) : 4.0 * h);
 				loop = false;
 			} else {
-			 h *= SAFETY * pow(errmax, PSHRNK);
+				h *= SAFETY * pow(errmax, PSHRNK);
 			}
 		}
 	}
 	while ( loop );
 	//PROF1(RKQC, 100);
-	if (m_State.getFailed()) {
+	if (hasFailed()) {
 		return ysav;
 	} else {
 		for (i = 0; i < m_Dimension; ++i)
@@ -200,15 +184,17 @@ Vectord const &RungeKutta::odeint(Vectord const &ystart, double x1, double x2, d
 			return y;
 		} else {
 			if (fabs(hnext) <= hmin) {
-				m_State << "Step size too small in RungeKutta::odeint\n";
+				setFailed();
+				CSPLOG(DEBUG, NUMERIC) << "Step size too small in RungeKutta::odeint";
 			} else {
 				h = hnext;
 			}
 		}
 	}
-	while ( ++nstp < MAXSTP && !m_State.getFailed());
+	while ( ++nstp < MAXSTP && !hasFailed());
 	if (nstp == MAXSTP) {
-		m_State << "Too many steps in RungeKutta::odeint\n";
+		setFailed();
+		CSPLOG(DEBUG, NUMERIC) << "Too many steps in RungeKutta::odeint";
 	}
 	return ystart;
 }
@@ -224,11 +210,11 @@ Vectord const& RungeKutta::quickSolve(Vectord &y0, double t0, double dt) {
 Vectord const& RungeKutta::enhancedSolve(Vectord &y0, double t0, double dt) {
 	static Vectord result;
 	unsigned int nok, nbad;
-	m_State = State();
+	setFailed(false);
 	//PROF0(_2ODEINT);
 	result = odeint(y0, t0, t0+dt, m_Epsilon, m_hestimate, m_hmin, nok, nbad);
 	//PROF1(_2ODEINT, 100);
-	//m_State << "RungeKutta::enhancedSolve nok =" << nok << "; nbad = " << nbad << "\n" << std::endl;
+	//CSPLOG(DEBUG, NUMERIC) << "RungeKutta::enhancedSolve nok =" << nok << "; nbad = " << nbad;
 	return result;
 }
 
@@ -308,15 +294,16 @@ Vectord const &RungeKuttaCK::rkqs(Vectord &y, Vectord &dydx, double &x, double h
 		if (errmax <= 1.0) {
 			loop = false;
 		} else {
-			 double htemp = SAFETY * h * pow(errmax, PSHRNK);
-			 h = (h>=0.0 ? std::max(htemp,0.1 * h) : std::min(htemp,0.1*h));
-			 xnew = x + h;
-			 if (x == xnew) {
-				 m_State << "Stepsize underflow in RungeKuttaCK::rkqs\n";
-			 }
+			double htemp = SAFETY * h * pow(errmax, PSHRNK);
+			h = (h>=0.0 ? std::max(htemp,0.1 * h) : std::min(htemp,0.1*h));
+			xnew = x + h;
+			if (x == xnew) {
+				setFailed();
+				CSPLOG(DEBUG, NUMERIC) << "Stepsize underflow in RungeKuttaCK::rkqs";
+			}
 		}
 	} while (loop);
-	if (!m_State.getFailed()) {
+	if (!hasFailed()) {
 		if (errmax > ERRCON) {
 			hnext = SAFETY * h * pow(errmax, PGROW);
 		} else {
@@ -358,15 +345,17 @@ Vectord const &RungeKuttaCK::odeint(Vectord const &ystart, double x1, double x2,
 			return y;
 		} else {
 			if (fabs(hnext) <= hmin) {
-				m_State << "Step size too small in RungeKuttaCK::odeint\n";
+				setFailed();
+				CSPLOG(DEBUG, NUMERIC) << "Step size too small in RungeKuttaCK::odeint";
 			} else {
 				h = hnext;
 			}
 		}
-	}
-	while (++nstp < MAXSTP && !m_State.getFailed());
+	} while (++nstp < MAXSTP && !hasFailed());
+
 	if (nstp == MAXSTP) {
-		m_State << "Too many steps in RungeKuttaCK::odeint\n";
+		setFailed();
+		CSPLOG(DEBUG, NUMERIC) << "Too many steps in RungeKuttaCK::odeint";
 	}
 
 	return ystart;
@@ -378,14 +367,12 @@ Vectord const& RungeKuttaCK::quickSolve(Vectord &y0, double t0, double dt) {
 	return y;
 }
 
-
-
 Vectord const& RungeKuttaCK::enhancedSolve(Vectord &y0, double t0, double dt) {
 	static Vectord result;
 	unsigned int nok, nbad;
-	m_State = State();
+	setFailed(false);
 	result = odeint(y0, t0, t0+dt, m_Epsilon, m_hestimate, m_hmin, nok, nbad);
-	//std::cout << "RungeKuttaCK::enhancedSolve nok = " << nok << "; nbad = " << nbad << "\n" << std::endl;
+	//CSPLOG(DEBUG, NUMERIC) << "RungeKuttaCK::enhancedSolve nok = " << nok << "; nbad = " << nbad;
 	return result;
 }
 
@@ -396,14 +383,14 @@ unsigned int const RKCK_VS_VO::MAXSTEP = 8;
 double const RKCK_VS_VO::TINY = std::numeric_limits<float>::epsilon();//1.0e-30;
 
 RKCK_VS_VO::RKCK_VS_VO(VectorField *vectorField, double epsilon, double Hmin, double Hestimate):
-	NumericalMethod(vectorField),
+	NumericalMethod("Runge-Kutta Cash-Karp variable order (extrapolation at 5), variable step size", epsilon, vectorField),
 	m_Hmin(Hmin),
-	m_Hestimate(Hestimate),
-	m_Twiddle(3),
-	m_Quit(3)
+	m_Hestimate(Hestimate)
 {
-	m_Epsilon = epsilon;
-	m_Name = "Runge-Kutta Cash-Karp variable order (extrapolation at 5), variable step size";
+	for (int i = 0; i < 3; ++i) {
+		m_Twiddle[i] = 0.0;
+		m_Quit[i] = 0.0;
+	}
 	resize();
 }
 
@@ -580,7 +567,7 @@ Vectord const  &RKCK_VS_VO::vrkf(Vectord &ystart, double a, double h, double &hd
 	static double const inv_eps3 = 1.0 / pow(m_Epsilon, third);
 	static double const inv_eps5 = 1.0 / pow(m_Epsilon, 0.2);
 
-	std::vector<double> e(3);
+	double e[3];
 	bool loop = true;
 	unsigned int nstp = 0;
 
@@ -659,7 +646,7 @@ Vectord const  &RKCK_VS_VO::vrkf(Vectord &ystart, double a, double h, double &hd
 					} // end (e1 >= 1.0)
 				} // end (e4 > 1.0)
 				else { // begin case (e[4] <= 1.0)
-					//std::cout << "Order 5 solution\n";
+					// Order 5 solution
 					hnext = std::min(5.0, SF/e4) * h;
 					hdid = h;
 					for (size_t i = 1; i< 3;++i) { // begin for i
@@ -677,14 +664,15 @@ Vectord const  &RKCK_VS_VO::vrkf(Vectord &ystart, double a, double h, double &hd
 		} // end (e[1] <= m_Twiddle[1] * m_Quit[1])
 	} // do
 	while (loop && ++nstp < MAXSTEP && fabs(h) > m_Hmin);
-	//if (nstp == MAXSTEP)
-	//	m_State << "Too many steps in RKCK_VS_VO::vrkf: " << MAXSTEP << "\n";
-	m_State.setFailed(true);
+	//if (nstp == MAXSTEP) {
+	//	setFailed();
+	//	CSPLOG(DEBUG, NUMERIC) << "Too many steps in RKCK_VS_VO::vrkf: " << MAXSTEP;
+	//}
+	setFailed(true);
 	return ystart;
 }
 
-Vectord const &RKCK_VS_VO::vrkfBound(Vectord &ystart, double a, double h, double h1,
-                                     unsigned int &/*nok*/, unsigned int &/*nbad*/) {
+Vectord const &RKCK_VS_VO::vrkfBound(Vectord &ystart, double a, double h, double h1, unsigned int &/*nok*/, unsigned int &/*nbad*/) {
 	double b = a + h, x = a, hdid, hnext;
 	// CAUTION: unusual index to match math notation
 	m_Twiddle[1] = 1.5; m_Twiddle[2] = 1.1;
@@ -695,8 +683,8 @@ Vectord const &RKCK_VS_VO::vrkfBound(Vectord &ystart, double a, double h, double
 		hnext = hdid = 0.0;
 		m_Result = vrkf(m_Result,  x, h1, hdid, hnext);
 		if (fabs(hdid) < m_Hmin) {
-			m_State.setFailed(true);
-			//m_State << "Step size too small in RKCK_VS_VO::vrkfBound h = " << fabs(hdid) << "\n";
+			setFailed(true);
+			CSPLOG(DEBUG, NUMERIC) << "Step size too small in RKCK_VS_VO::vrkfBound h = " << fabs(hdid);
 		} else {
 			x += hdid;
 			h1 = std::max(0.0, std::min(hnext, b - x));
@@ -704,27 +692,23 @@ Vectord const &RKCK_VS_VO::vrkfBound(Vectord &ystart, double a, double h, double
 				return m_Result;
 			}
 		}
-	}
-	while (++nstp < MAXSTEP && !m_State.getFailed());
-	m_State.setFailed(true);
-	//m_State << "Too many steps in RKCK_VS_VO::vrkfBound: " << MAXSTEP << "\n";
+	} while (++nstp < MAXSTEP && !hasFailed());
+	setFailed();
+	//CSPLOG(DEBUG, NUMERIC) << "Too many steps in RKCK_VS_VO::vrkfBound: " << MAXSTEP;
 	return ystart;
 }
 
 Vectord const& RKCK_VS_VO::quickSolve(Vectord &y0, double t0, double dt) {
-	//m_State << "RKCK_VS_VO::quickSolve is called.\n";
 	m_k1 = m_VectorField->f(t0, y0);
 	double err = rkck12(t0, dt, y0);
 	err = rkck23(t0, dt, y0);
 	err = rkck45(t0, dt, y0);
-	//return m_y2;
 	return m_y5;
 }
 
 Vectord const &RKCK_VS_VO::enhancedSolve(Vectord &y0, double t0, double dt) {
 	unsigned int nok, nbad;
-	m_State.setFailed(false);
-	//std::cerr << "RungeKuttaCK::enhancedSolve nok = " << nok << "; nbad = " << nbad << "\n" << std::endl;
+	setFailed(false);
 	return vrkfBound(y0, t0, dt, std::min(m_Hestimate, dt), nok, nbad);
 }
 

@@ -25,6 +25,8 @@
 #include <csp/cspsim/Config.h>
 #include <csp/csplib/util/FileUtility.h>
 
+#include <iostream>
+
 CSP_NAMESPACE
 
 /**

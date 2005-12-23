@@ -24,7 +24,9 @@
 
 
 #include <csp/csplib/util/StringTools.h>
+
 #include <ctype.h>
+#include <cassert>
 #include <algorithm>
 
 CSP_NAMESPACE
@@ -37,14 +39,8 @@ void ConvertStringToLower(std::string &str) {
 	std::transform(str.begin(), str.end(), str.begin(), ::tolower);
 }
 
-StringTokenizer::StringTokenizer(const std::string &str, const std::string &delimiters) {
-	std::string::size_type lastPos(str.find_first_not_of(delimiters, 0));
-	std::string::size_type pos(str.find_first_of(delimiters, lastPos));
-	while (std::string::npos != pos || std::string::npos != lastPos) {
-		push_back(str.substr(lastPos, pos - lastPos));
-		lastPos = str.find_first_not_of(delimiters, pos);
-		pos = str.find_first_of(delimiters, lastPos);
-	}
+TokenQueue::TokenQueue(const std::string &str, const std::string &delimiters) {
+	Tokenize(str, *this, delimiters.c_str());
 }
 
 std::string TrimString(std::string const &str, std::string const &chars) {

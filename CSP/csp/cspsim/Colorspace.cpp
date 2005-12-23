@@ -42,7 +42,7 @@ CSP_NAMESPACE
 
 // global whitepoint
 namespace {
-	float PI = 3.14159265358979f;
+	float wpPI = 3.14159265358979f;
 	float Xn, Yn, Zn;
 	float unprime, vnprime, wnprime;
 }
@@ -492,7 +492,7 @@ float T_to_spd(float T, float lambda) {
 	static float nmtom = 1.0E-09f;
 	float expon = h * c / ( nmtom * lambda * k * T );
 	float denom = powf(nmtom,4.0f) * powf(lambda, 5.0f) * (expf(expon) - 1.0f);
-	float power = 8.0f * PI * h * c / denom;
+	float power = 8.0f * wpPI * h * c / denom;
 	return power;
 }
 

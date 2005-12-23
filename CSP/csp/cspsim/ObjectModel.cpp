@@ -32,6 +32,7 @@
 #include <csp/csplib/util/HashUtility.h>
 #include <csp/csplib/util/Log.h>
 #include <csp/csplib/util/osg.h>
+#include <csp/csplib/util/StringTools.h>
 #include <csp/csplib/util/Timing.h>
 #include <csp/csplib/data/Enum.h>
 #include <csp/csplib/data/Key.h>

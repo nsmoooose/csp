@@ -60,6 +60,7 @@ build.SourceGroup(expenv,
 		'BaseDynamics.h',
 		'BaseScreen.cpp',
 		'BaseScreen.h',
+		'Bus.cpp',
 		'Bus.h',
 		'CSPSim.cpp',
 		'CSPSim.h',
@@ -314,7 +315,6 @@ build.SharedLibrary(expenv,
 	doxygen = 'cspsim.dox',
 	softlink = 1,
 	SHLIBPREFIX = '_')
-
 
 build.SharedLibrary(expenv,
 	name = 'indexserver',

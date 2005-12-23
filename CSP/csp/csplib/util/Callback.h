@@ -69,6 +69,7 @@
 #ifndef __CSPLIB_UTIL_CALLBACK_H__
 #define __CSPLIB_UTIL_CALLBACK_H__
 
+#include <csp/csplib/util/Namespace.h>
 #include <sigc++/sigc++.h>
 
 CSP_NAMESPACE

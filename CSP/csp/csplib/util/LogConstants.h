@@ -78,7 +78,8 @@ enum {
 	cLogCategory_AUDIO        = 0x00000080,
 	cLogCategory_OPENGL       = 0x00000100,
 	cLogCategory_INPUT        = 0x00000200,
-	cLogCategory_PHYSICS      = 0x00000400,
+	cLogCategory_NUMERIC      = 0x00000400,
+	cLogCategory_PHYSICS      = 0x00000400,  // same as NUMERIC
 	cLogCategory_TESTING      = 0x00000800,
 
 	// net

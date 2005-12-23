@@ -26,20 +26,20 @@
 #ifndef __CSPLIB_UTIL_LOGSTREAM_H__
 #define __CSPLIB_UTIL_LOGSTREAM_H__
 
-#include <csp/csplib/thread/Synchronization.h>
-#include <csp/csplib/util/Namespace.h>
+#include <csp/csplib/util/Exception.h>
 #include <csp/csplib/util/Export.h>
+#include <csp/csplib/util/Namespace.h>
 #include <csp/csplib/util/Uniform.h>
 
 #include <iosfwd>
 #include <string>
 #include <ostream>
-#include <fstream>
 #include <cassert>
 
 
 CSP_NAMESPACE
 
+class Mutex;
 class StackTrace;
 
 /** Thrown when logging a message at cFatal priority iff the LogStream has been
@@ -97,13 +97,13 @@ public:
 	 */
 	void logToFile(std::string const &filename);
 
-	void endl() { if (m_stream) *m_stream << std::endl; }
-	void flush() { if (m_stream) m_stream->flush(); }
+	void endl();
+	void flush();
 	void trace(StackTrace const *stacktrace=0);
 
 	void setLocking(bool thread_safe=true) { m_threadsafe = thread_safe; }
-	void lock() { if (m_threadsafe) m_mutex.lock(); }
-	void unlock() { if (m_threadsafe) m_mutex.unlock(); }
+	void lock();
+	void unlock();
 
 	uint64 initialThread() const { return m_initial_thread; }
 
@@ -150,7 +150,7 @@ private:
 	std::ostream *m_stream;
 	std::ofstream *m_fstream;
 
-	Mutex m_mutex;
+	Mutex *m_mutex;
 	bool m_threadsafe;
 	uint64 m_initial_thread;
 	bool m_throw_on_fatal;

@@ -27,6 +27,7 @@
 #include <csp/cspsim/Config.h>
 
 #include <stdexcept>
+#include <iostream>
 
 CSP_NAMESPACE
 
@@ -94,7 +95,7 @@ InputEvent::InputEvent() {
 		case RECORD:
 			m_Handle.reset(new Save);
 			break;
-		case REPLAY: 
+		case REPLAY:
 			m_Handle.reset(new Replay);
 			break;
 		}

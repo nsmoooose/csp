@@ -48,7 +48,7 @@ ModuleWrapper::Map *getModuleRegistry() {
 	static ModuleWrapper::Map *registry = 0;
 	if (!registry) registry = new ModuleWrapper::Map;
 	return registry;
-};
+}
 
 // Force singleton construction at startup to avoid synchronization issues.
 struct ModuleRegistryInitializer { ModuleRegistryInitializer() { getModuleRegistry(); } } InitModuleRegistry;

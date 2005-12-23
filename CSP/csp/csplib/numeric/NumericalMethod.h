@@ -25,11 +25,8 @@
 #ifndef __CSPSIM_NUMERICALMETHOD_H__
 #define __CSPSIM_NUMERICALMETHOD_H__
 
-#include <iostream>
 #include <limits>
-#include <sstream>
 #include <string>
-#include <vector>
 
 #include <csp/csplib/util/Export.h>
 #include <csp/csplib/numeric/Vector.h>
@@ -52,56 +49,18 @@ class VectorField;
  * Abstract base class for numerical solvers of dynamical systems.
  */
 class CSPLIB_EXPORT NumericalMethod {
+	bool m_Failed;
+
 protected:
-	/**
-	* State of a numerical method
-	*/
-	class State {
-		std::ostringstream m_Message;
-		bool m_Failed;
-		void reset() {
-			m_Message.clear();
-			m_Message.str("");
-			m_Message << "Success\n";
-		}
-	public:
-		State(): m_Message("Success\n"), m_Failed(false) {
-		}
-		~State(){}
-		State(State const &other): m_Message(other.m_Message.str()), m_Failed(other.m_Failed) { }
-		void setFailed(bool failed) {
-			if (failed) 
-				m_Message.str("Fail\n");
-			else
-				reset();
-			m_Failed = failed;
-		}
-		bool getFailed() const {
-			return m_Failed;
-		}
-		std::ostringstream& operator<<(std::string const &rhs) {
-			m_Message << rhs;
-			m_Failed |= true;
-			return m_Message;
-		}
-		State &operator=(State const &rhs) {
-			m_Message.str(rhs.m_Message.str());
-			m_Failed = rhs.getFailed();
-			return *this;
-		}
-		void print() const {
-			std::cerr << m_Message.str();
-		}
-	};
-	VectorField* m_VectorField;
-	State m_State;
-	size_t m_Dimension;
 	std::string m_Name;
 	double m_Epsilon;
+	VectorField* m_VectorField;
+	size_t m_Dimension;
+
+	void setFailed(bool failed=true) { m_Failed = failed; }
 
 public:
-	NumericalMethod();
-	NumericalMethod(VectorField *pvf);
+	NumericalMethod(std::string const &name, double epsilon, VectorField *pvf=0);
 
 	/**
 	* set the vector field f to solve (y' = f(t,y))
@@ -144,7 +103,7 @@ public:
 	/**
 	* @return true if the enhanced solver has failed.
 	*/
-	bool hasFailed() const;
+	bool hasFailed() const { return m_Failed; }
 };
 
 //=================================================================
@@ -169,13 +128,9 @@ public:
 	Vectord const &quickSolve(Vectord &y0, double t0, double dt);
 	Vectord const &enhancedSolve(Vectord &y0, double t0, double dt);
 	RungeKutta(VectorField *vectorField = 0, double epsilon = 1.e-3, double Hmin = 0.0, double Hestimate = 1.e-2):
-		NumericalMethod(vectorField),
+		NumericalMethod("Runge-Kutta order 4 with variable step size", epsilon, vectorField),
 		m_hmin(Hmin),
-		m_hestimate(Hestimate)
-	{
-		m_Epsilon = epsilon;
-		m_Name = "Runge-Kutta order 4 with variable step size";
-	}
+		m_hestimate(Hestimate) { }
 };
 
 //=================================================================
@@ -199,22 +154,18 @@ public:
 	Vectord const &quickSolve(Vectord &y0, double t0, double dt);
 	Vectord const &enhancedSolve(Vectord &y0, double t0, double dt);
 	RungeKuttaCK(VectorField *vectorField = 0, double epsilon = 1.e-3, double Hmin = std::numeric_limits<float>::epsilon(), double Hestimate = 1.e-2):
-		NumericalMethod(vectorField),
+		NumericalMethod("Runge-Kutta Cash-Karp order 5 variable step size", epsilon, vectorField),
 		m_hmin(Hmin),
-		m_hestimate(Hestimate)
-	{
-		m_Epsilon = epsilon;
-		m_Name = "Runge-Kutta Cash-Karp order 5 variable step size";
-	}
+		m_hestimate(Hestimate) { }
 };
 
 //=================================================================
 
 /**
-* Runge-Kutta Cash-Karp embedded methods 1-5 variable order, variable step size, 
+* Runge-Kutta Cash-Karp embedded methods 1-5 variable order, variable step size,
 * adapted from:
-* J. R. Cash, A. H. Karp, A variable order Runge-Kutta method for initial value 
-* problems with rapidly varying right-hand sides, ACM Transactions on Mathematical 
+* J. R. Cash, A. H. Karp, A variable order Runge-Kutta method for initial value
+* problems with rapidly varying right-hand sides, ACM Transactions on Mathematical
 * Software, Vol. 16, No. 3, Sept 1990, pp. 201-222.
 */
 class CSPLIB_EXPORT RKCK_VS_VO: public NumericalMethod {
@@ -256,14 +207,15 @@ class CSPLIB_EXPORT RKCK_VS_VO: public NumericalMethod {
 	/**
 	* \var
 	* m_Epsilon is the desired precision
-	* m_Hmin is minimum time step size; if internal step size is below this value calculations may go out of float 
+	* m_Hmin is minimum time step size; if internal step size is below this value calculations may go out of float
 	* precision.
 	* m_Hestimate is just an estimation of the step size to start integration (it is automatically
 	* adpated if the precision m_Epsilon is not reached)
 	* These members have default values
 	*/
 	double m_Hmin, m_Hestimate;
-	std::vector<double> m_Twiddle, m_Quit;
+	double m_Twiddle[3];
+	double m_Quit[3];
 	Vectord m_k1, m_k2, m_k3, m_k4;
 	Vectord m_ytemp, m_y2, m_y3, m_y4, m_y5, m_Result;
 public:
@@ -273,7 +225,7 @@ public:
 	/**
 	* @warning dt must be positive
 	*/
-	virtual Vectord const &quickSolve(Vectord &y0, double t0, double dt); 
+	virtual Vectord const &quickSolve(Vectord &y0, double t0, double dt);
 	virtual Vectord const &enhancedSolve(Vectord &y0, double t0, double dt);
 };
 
@@ -282,5 +234,4 @@ public:
 CSP_NAMESPACE_END
 
 #endif // __CSPSIM_NUMERICALMETHOD_H__
-
 

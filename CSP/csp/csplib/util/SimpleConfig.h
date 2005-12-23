@@ -36,8 +36,7 @@
 
 #include <string>
 #include <vector>
-#include <iostream>
-#include <fstream>
+#include <iosfwd>
 
 #include <csp/csplib/util/Export.h>
 #include <csp/csplib/util/HashUtility.h>
@@ -103,8 +102,7 @@ public:
 	/**
 	 * Set the error information.
 	 */
-	ConfigError(const std::string &msg, const std::string &filename,
-	            int line_no, const std::string &line);
+	ConfigError(const std::string &msg, const std::string &filename, int line_no, const std::string &line);
 	
 	/**
 	 * Get the basic error message.

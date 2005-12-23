@@ -32,6 +32,7 @@
 #include <csp/csplib/data/ObjectInterface.h>
 
 #include <algorithm>
+#include <iostream>
 
 CSP_NAMESPACE
 

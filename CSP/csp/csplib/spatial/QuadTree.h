@@ -53,7 +53,7 @@
 
 #include <vector>
 #include <cassert>
-#include <iostream>
+#include <iosfwd>
 
 
 CSP_NAMESPACE

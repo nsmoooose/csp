@@ -24,6 +24,7 @@
 
 
 #include <csp/csplib/spatial/QuadTree.h>
+#include <iostream>
 
 CSP_NAMESPACE
 

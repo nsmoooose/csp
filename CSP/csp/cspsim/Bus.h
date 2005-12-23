@@ -48,20 +48,12 @@
 #ifndef __CSPSIM_BUS_H__
 #define __CSPSIM_BUS_H__
 
-
-/* TODO
- *   move most non-template methods to Bus.cpp, and most template methods
- *   (and Log.h) to BusInline.h.
- *   add warning/debug logging
- */
-
 #include <csp/csplib/util/Log.h>
-#include <csp/csplib/util/StringTools.h>
 #include <csp/csplib/util/Callback.h>
 #include <csp/csplib/util/Ref.h>
 
 #include <sigc++/sigc++.h>
-#include <map>
+#include <map>  // TODO move to .cpp
 
 CSP_NAMESPACE
 
@@ -90,10 +82,10 @@ protected:
 
 	/// Channel state flags.
 	enum {
-	      MASK_ENABLED = 0x00000001,
-	      MASK_BLOCKED = 0x00000002,
-	      MASK_SHARED  = 0x00000004,
-	      DERIVED_MASK = 0xffff0000
+		MASK_ENABLED = 0x00000001,
+		MASK_BLOCKED = 0x00000002,
+		MASK_SHARED  = 0x00000004,
+		DERIVED_MASK = 0xffff0000
 	};
 
 	/** Access mode.
@@ -505,8 +497,14 @@ class Bus: public Referenced {
 
 	/// The status [0, 1] used for damage modelling.
 	float m_Status;
-	
+
 public:
+	/** Construct a new Bus.
+	 *
+	 *  @param name The name of the bus (currently only used for logging).
+	 */
+	Bus(std::string const &name);
+
 	/** Test if a particular data channel is available.
 	 *
 	 *  @param name the name of the channel.
@@ -514,7 +512,7 @@ public:
 	bool hasChannel(std::string const &name) {
 		return getChannel(name, false).valid();
 	}
-		
+
 	/** Register a new channel.
 	 *
 	 *  This method is typically called from a system's registerChannels method
@@ -526,21 +524,7 @@ public:
 	 *  @param groups A space-separated list of group names.  The channel
 	 *    will be associated wich each of these groups (not currently used).
 	 */
-	ChannelBase* registerChannel(ChannelBase *channel, std::string const &groups = "") {
-		assert(channel);
-		std::string name = channel->getName();
-		CSPLOG(DEBUG, OBJECT) << "Bus::registerChannel(" << name << ")";
-		assert(m_Channels.find(name) == m_Channels.end());
-		m_Channels[name] = channel;
-		CSPLOG(DEBUG, OBJECT) << "Bus::registerChannel: groups = " << groups;
-		StringTokenizer grouplist(groups, " ");
-		StringTokenizer::iterator group = grouplist.begin();
-		for (; group != grouplist.end(); ++group) {
-			CSPLOG(DEBUG, OBJECT) << "Bus::registerChannel: groupX = " << *group;
-			m_Groups[*group].push_back(channel);
-		}
-		return channel;
-	}
+	ChannelBase* registerChannel(ChannelBase *channel, std::string const &groups = "");
 
 	/** Some registration helpers for data channels
 	 */
@@ -632,16 +616,7 @@ public:
 	 *           reference if the data channel is not found and required
 	 *           is false.
 	 */
-	ChannelBase::RefT getSharedChannel(std::string const &name, bool required = true, bool override = false) {
-		ChannelMap::iterator iter = m_Channels.find(name);
-		if (iter == m_Channels.end()) {
-			CSPLOG(DEBUG, OBJECT) << "Bus::getSharedChannel(" << name << ") failed.";
-			assert(!required);
-			return 0;
-		}
-		assert(iter->second->isShared() || override);
-		return iter->second;
-	}
+	ChannelBase::RefT getSharedChannel(std::string const &name, bool required = true, bool override = false);
 
 	/** Get a reference to a shared or non-shared data channel.
 	 *
@@ -655,19 +630,7 @@ public:
 	 *                  missing channels will be returned as null
 	 *                  references.
 	 */
-	ChannelBase::CRefT getChannel(std::string const &name, bool required = true) {
-		ChannelMap::iterator iter = m_Channels.find(name);
-		if (iter == m_Channels.end()) {
-			if (required) {
-				CSPLOG(ERROR, OBJECT) << "Bus::getChannel(" << name << ") failed.";
-				assert(0);
-			} else {
-				CSPLOG(DEBUG, OBJECT) << "Bus::getChannel(" << name << ") failed.";
-			}
-			return 0;
-		}
-		return iter->second;
-	}
+	ChannelBase::CRefT getChannel(std::string const &name, bool required = true);
 
 	/** Convenience method to get or create a local data channel.
 	 *
@@ -726,14 +689,7 @@ public:
 	 *
 	 *  @param enabled True to enable the bus, False to disable it.
 	 */
-	void setEnabled(bool enabled) {
-		if (enabled == m_Enabled) return;
-		for (ChannelMap::iterator iter = m_Channels.begin();
-		     iter != m_Channels.end(); ++iter) {
-			iter->second->setEnabled(enabled);
-		}
-		m_Enabled = enabled;
-	}
+	void setEnabled(bool enabled);
 
 	/** Change the bus status value.
 	 *
@@ -748,22 +704,6 @@ public:
 		m_Status = status;
 		// disable or enable a proportionate number of accessors
 	}
-	
-	/** Construct a new Bus.
-	 *
-	 *  The bus is enabled by default.
-	 *
-	 *  @param name The name of the bus (currently only used for logging).
-	 */
-	Bus(std::string const &name):
-		m_Bound(false),
-		m_Enabled(true),
-		m_Name(name),
-		m_Status(1.0)
-	{
-		CSPLOG(DEBUG, OBJECT) << "Bus(" << name << ") created.";
-	}
-
 };
 
 CSP_NAMESPACE_END

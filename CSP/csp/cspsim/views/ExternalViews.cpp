@@ -81,8 +81,7 @@ void FixedFlybyView::newFixedCamPos(SimObject* target) {
 	DynamicObject* dynamic = dynamic_cast<DynamicObject*>(target);
 	if (dynamic) {
 		Vector3 up = dynamic->getUpDirection();
-		Vector3 object_dir = dynamic->getDirection();
-		//double speed_level = dynamic->getSpeed()/50.0;
+		Vector3 object_dir = dynamic->getVelocity().normalized();
 		m_FixedCameraPosition =  object_pos - 20.0 * object_dir;
 	} else {
 		m_FixedCameraPosition = object_pos + 100.0 * Vector3::ZAXIS + 100.0 * Vector3::XAXIS;
@@ -99,8 +98,7 @@ void FlybyView::newFixedCamPos(SimObject* target) {
 	DynamicObject* dynamic = dynamic_cast<DynamicObject*>(target);
 	if (dynamic) {
 		Vector3 up = dynamic->getUpDirection();
-		Vector3 object_dir = dynamic->getDirection();
-		//double speed_level = dynamic->getSpeed()/50.0;
+		Vector3 object_dir = dynamic->getVelocity().normalized();
 		m_FixedCameraPosition =  object_pos + 900.0* object_dir + ( 12.0 - (rand() % 5) ) * (object_dir^up) + ( 6.0 + (rand () % 3) ) * up;
 	} else {
 		m_FixedCameraPosition = object_pos + 100.0 * Vector3::ZAXIS + 100.0 * Vector3::XAXIS;

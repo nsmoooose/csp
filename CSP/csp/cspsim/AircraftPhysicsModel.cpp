@@ -62,16 +62,6 @@ Vectord const &AircraftPhysicsModel::f(double x, Vectord &y) {
 	m_ForcesBody = m_MomentsBody = Vector3::ZERO;
 	m_WeightBody = localToBody(m_WeightLocal);
 
-/* XXX
-	if (m_GroundCollisionDynamics.valid() && (m_NearGround || m_GroundCollisionDynamics->hasContact())) {
-		m_GroundCollisionDynamics->computeForceAndMoment(x);
-		if (m_GroundCollisionDynamics->hasContact()) {
-			m_ForcesBody += m_GroundCollisionDynamics->getForce();
-			m_MomentsBody += m_GroundCollisionDynamics->getMoment();
-		}
-	}
-*/
-
 	std::vector< Ref<BaseDynamics> >::iterator bd = m_Dynamics.begin();
 	std::vector< Ref<BaseDynamics> >::const_iterator bdEnd = m_Dynamics.end();
 	for (; bd != bdEnd; ++bd) {
@@ -89,19 +79,23 @@ Vectord const &AircraftPhysicsModel::f(double x, Vectord &y) {
 		if ((*bd)->needsImpulse()) m_NeedsImpulse = true;
 	}
 
-	// Add weight; null moment
+	// add weight; null moment
 	m_ForcesBody += m_WeightBody;
+
+	// add engine gyroscopic effect
+	// TODO model L_e based on engine rpm (also 216.9 kg-m^2/sec seems much too small!)
+	const double engine_angular_momentum = 216.9;  // nasa-79 value, kg-m^2/sec
+	m_MomentsBody += Vector3(0.0, engine_angular_momentum, 0.0) ^ m_AngularVelocityBody;
 
 	// linear acceleration body: calculate v' = F/m - w^v
 	m_LinearAccelBody = m_ForcesBody / b_Mass->value() - (m_AngularVelocityBody ^ m_VelocityBody);
 
 	// angular acceleration body: calculate Iw' = M - w^Iw
-	m_AngularAccelBody = b_InertiaInverse->value() *
-	                     (m_MomentsBody - (m_AngularVelocityBody^(b_Inertia->value() * m_AngularVelocityBody)));
-	
+	m_AngularAccelBody = b_InertiaInverse->value() * (m_MomentsBody - (m_AngularVelocityBody^(b_Inertia->value() * m_AngularVelocityBody)));
+
 	// quaternion derivative and w in body coordinates: q' = 0.5 * q * w
 	Quat qprim = 0.5 * m_Attitude * m_AngularVelocityBody;
-	
+
 	// p' = v
 	m_dy[0] = y[3]; m_dy[1] = y[4]; m_dy[2] = y[5];
 	// v'
@@ -110,7 +104,7 @@ Vectord const &AircraftPhysicsModel::f(double x, Vectord &y) {
 	m_dy[6] = m_AngularAccelBody.x(); m_dy[7] = m_AngularAccelBody.y(); m_dy[8] = m_AngularAccelBody.z();
 	// q'
 	m_dy[9] = qprim.w(); m_dy[10] = qprim.x(); m_dy[11] = qprim.y(); m_dy[12] = qprim.z();
-	
+
 	return m_dy;
 }
 
@@ -166,14 +160,6 @@ void AircraftPhysicsModel::doSimStep(double dt) {
 		// solution to body data members
 		YToBody(y);
 
-
-/* XXX
-		// correct an eventual underground position
-		if (m_GroundCollisionDynamics.valid() && m_GroundCollisionDynamics->needsImpulse()) {
-			double scale = 1.0 - std::min(1.0, dtlocal * 100.0);
-			m_VelocityBody *= scale;
-		}
-*/
 		if (m_NeedsImpulse) {
 			double scale = 1.0 - std::min(1.0, dtlocal * 100.0);
 			m_VelocityBody *= scale;

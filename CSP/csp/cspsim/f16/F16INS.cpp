@@ -51,15 +51,14 @@ public:
 	}
 
 protected:
+	// TODO implement an INS error model (for background, see NAWCWPNS TM 8128, "Basic
+	// Inertial Navigation," http://www.fas.org/spp/military/program/nav/basicnav.pdf).
 	virtual double onUpdate(double dt) {
-		double f = dt / (dt + m_ResponseTime);
+		double f = 1.0 - m_ResponseTime / (dt + m_ResponseTime);
 		double g = 1.0 - f;
 		Quat &a0 = b_INSAttitude->value();
 		Quat const &a1 = b_Attitude->value();
-		a0.w() = a0.w() * g + a1.w() * f;
-		a0.x() = a0.x() * g + a1.x() * f;
-		a0.y() = a0.y() * g + a1.y() * f;
-		a0.z() = a0.z() * g + a1.z() * f;
+		a0.slerp(f, a0, a1);
 		return 0.0;
 	}
 

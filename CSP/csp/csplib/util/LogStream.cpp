@@ -89,8 +89,54 @@ namespace {
 		*buffer = 0;
 	}
 
-}
+/** A private singleton used as a hook at static destruction to force
+ *  logstreams that will never be deleted to enter autoflush mode.
+ *  This ensures that the log will not be truncated when the program
+ *  terminates.  LogStreams that are allocated on the heap and never
+ *  deleted should be registered with this helper by calling
+ *  setNeverDeleted().
+ */
+class AutoFlushAtExitHelper {
+	// lazy construction to ensure proper initialization during static
+	// construction.
+	static std::vector<LogStream*> *m_streams;
+	static Mutex *m_mutex;
+public:
+	// warning: this is not thread-safe!
+	static void registerStream(LogStream* stream) {
+		if (!m_mutex) m_mutex = new Mutex;
+		if (!m_streams) m_streams = new std::vector<LogStream*>;
+		m_mutex->lock();
+		m_streams->push_back(stream);
+		m_mutex->unlock();
+	}
+	AutoFlushAtExitHelper() {
+		// force initialization in case no streams are registered during
+		// static construction.
+		if (!m_mutex) m_mutex = new Mutex;
+		if (!m_streams) m_streams = new std::vector<LogStream*>;
+	}
+	~AutoFlushAtExitHelper() {
+		for (std::vector<LogStream*>::iterator iter = m_streams->begin(); iter != m_streams->end(); ++iter) {
+			(*iter)->setAlwaysFlush(true);
+			(*iter)->flush();
+		}
+		delete m_streams;
+		delete m_mutex;
+	}
+} AutoFlushAtExit;  // static instance
 
+std::vector<LogStream*> *AutoFlushAtExitHelper::m_streams;
+Mutex *AutoFlushAtExitHelper::m_mutex;
+
+} // namespace
+
+void LogStream::setNeverDeleted() {
+	if (!m_never_deleted) {
+		AutoFlushAtExitHelper::registerStream(this);
+		m_never_deleted = true;
+	}
+}
 
 void LogStream::initFromEnvironment(const char *log_file, const char *log_priority, const char *log_flags) {
 	if (log_file) {
@@ -187,7 +233,9 @@ LogStream::LogStream():
 		m_stream(&std::cerr),
 		m_fstream(0),
 		m_mutex(0),
-		m_throw_on_fatal(false) {
+		m_throw_on_fatal(false),
+		m_autoflush(false),
+		m_never_deleted(false) {
 	init();
 }
 
@@ -197,13 +245,16 @@ LogStream::LogStream(std::ostream& stream):
 		m_categories(~0),
 		m_stream(&stream),
 		m_fstream(0),
-		m_mutex(0) {
+		m_mutex(0),
+		m_autoflush(false),
+		m_never_deleted(false) {
 	init();
 }
 
 LogStream::~LogStream() {
 	close();
 	delete m_mutex;
+	assert(!m_never_deleted);
 }
 
 void LogStream::setStream(std::ostream &stream) {

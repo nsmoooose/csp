@@ -49,6 +49,7 @@ inline LogStream& log() {
 		// it is safe to log messages from static destructors.
 		log_stream = LogStream::getOrCreateNamedLog("CSP");
 		log_stream->initFromEnvironment("CSPLOG_FILE", "CSPLOG_PRIORITY", "CSPLOG_FLAGS");
+		log_stream->setNeverDeleted();
 	}
 	return *log_stream;
 }

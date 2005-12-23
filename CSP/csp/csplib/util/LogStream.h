@@ -115,7 +115,6 @@ public:
 	 */
 	void setThrowOnFatal(bool throw_on_fatal=true) { m_throw_on_fatal = throw_on_fatal; }
 
-
 	/** Test if a given priority and category should be logged.
 	 */
 	inline bool isNoteworthy(int priority, int category=~0) {
@@ -133,12 +132,24 @@ public:
 	 */
 	static LogStream *getOrCreateNamedLog(const std::string &name);
 
-
 	/** Helper class used to write a single entry to the log stream.  The
 	 *  class constructs the log entry as a string internally, then writes
 	 *  it to the LogStream when it goes out of scope.
 	 */
 	class LogEntry;
+
+	/** Call for logstreams that are allocated on the heap and never deleted
+	 *  to ensure that log messages will be properly flushed during static
+	 *  destruction at program exit.
+	 */
+	void setNeverDeleted();
+
+	/** Call to force the log to be flushed after each entry.  Note that
+	 *  constant flushing is very inefficient.  This method is primarily
+	 *  used internally in conjunction with setNeverDeleted.
+	 */
+	void setAlwaysFlush(bool flush) { m_autoflush = flush; }
+	inline bool autoflush() const { return m_autoflush; }
 
 private:
 	void init();
@@ -154,6 +165,9 @@ private:
 	bool m_threadsafe;
 	uint64 m_initial_thread;
 	bool m_throw_on_fatal;
+
+	bool m_autoflush;
+	bool m_never_deleted;
 };
 
 
@@ -221,7 +235,7 @@ public:
 	~LogEntry() {
 		m_stream.lock();
 		m_stream.getStream() << m_buffer.get() << "\n";
-		if (m_priority >= LogStream::cWarning) m_stream.flush();
+		if (m_priority >= LogStream::cWarning || m_stream.autoflush()) m_stream.flush();
 		m_stream.unlock();
 		if (m_priority == LogStream::cFatal) die();
 	}

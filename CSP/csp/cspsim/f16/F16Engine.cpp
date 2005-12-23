@@ -89,6 +89,7 @@ F16Engine::F16Engine():
 	m_StartElapsedTime(0.0),
 	m_HangTime(0.0),
 	m_Blend(0.0),
+	m_Power(0.0),
 	m_NormalStart(true)
 {
 	// TODO set defaults
@@ -201,31 +202,30 @@ void F16Engine::importChannels(Bus* bus) {
 }
 
 void F16Engine::update(double dt) {
-	double fdt = static_cast<double>(dt);
 	// jfs->update(fdt);
-	updateTemperature(fdt);
+	updateTemperature(dt);
 	switch (m_Status) {
 		case STATUS_OFF:
-			updateOff(fdt);
+			updateOff(dt);
 			break;
 		case STATUS_PRESTART:
-			updatePrestart(fdt);
+			updatePrestart(dt);
 			break;
 		case STATUS_RUNNING:
-			updateRunning(fdt);
+			updateRunning(dt);
 			break;
 		case STATUS_STALL:
-			//updateStall(fdt);
+			//updateStall(dt);
 			break;
 		case STATUS_FIRE:
-			//updateFire(fdt);
+			//updateFire(dt);
 			break;
 		case STATUS_FAIL:
-			//updateFail(fdt);
+			//updateFail(dt);
 			break;
 	}
-	updateNozzle(fdt);
-	updateFuel(fdt);
+	updateNozzle(dt);
+	updateFuel(dt);
 	updateThrust();
 }
 
@@ -332,50 +332,39 @@ void F16Engine::updateRunning(double dt) {
 		const double effective_thrust = (thrust - getIdleThrust()) * thrust_scale;
 		updateFuelConsumption(m_IdleFuelConsumption + std::max(0.0, effective_thrust * m_ThrustSpecificFuelConsumption), dt);
 	}
+	spoolEngine(dt);
+	updateTemperatureTargets();
+}
+
+// Engine spooling simulation based on fig. 66 of NASA 1979.
+void F16Engine::spoolEngine(double dt) {
 	const double throttle = getEffectiveThrottle();
-	/*
-	double target = 1.0;
-	if (throttle <= 0.95) {
-		const double f = throttle / 0.95;
-		target = m_IdleRPM * (1.0 - f) + f;
-		if (rpm <= m_AfterburnerCutoffRPM) setAfterburner(false);
-	} else if (!m_AfterburnerFailure) {
-		const double f = (throttle - 0.95) * 20.0;
-		if (m_Afterburner) {
-			target = (1.0 - f) + f * m_AfterburnerRPM;
-		} else {
-			if (rpm >= m_AfterburnerMinRPM) {
-				if (m_AfterburnerTime <= 0.0) m_AfterburnerTime = m_AfterburnerDelay;
-				m_AfterburnerTime -= dt;
-				if (m_AfterburnerTime <= 0.0) setAfterburner(true);
-			}
-		}
-	} else {
-		setAfterburner(false);
-	}
-	updateTemperatureTargets();
-	b_RPM->value() = rpm + (target - rpm) * m_SpoolRate * dt;
-	*/
-	double p1 = throttle * (0.625) + std::max(0.0, (throttle - 0.8) * 1.875);
-	static double p3 = 0.0;  // XXX
+	// Fig. 66(b) commanded power versus throttle position, taking the military
+	// setting at 80 percent rather than roughly 76 percent.
+	double power = throttle * (0.625) + std::max(0.0, (throttle - 0.8) * 1.875);
+	// TODO externalize the rate constants
 	double r = 0.0;
-	if (p1 < 0.5) {
-		if (p3 < 0.5) {
-			r = (p1 - p3) * clampTo(2.0 - (p1-p3)*4.0, 0.1, 1.0);
+	if (power < 0.5) {
+		if (m_Power < 0.5) {
+			r = (power - m_Power) * clampTo(2.0 - (power - m_Power)*4.0, 0.1, 1.0);
 		} else {
-			r = 5.0 * (0.4 - p3);
+			r = 5.0 * (0.4 - m_Power);
 		}
 	} else {
-		if (p3 < 0.5) {
-			r = (0.6 - p3) * clampTo(2.0 - (0.6-p3)*4.0, 0.1, 1.0);
+		if (m_Power < 0.5) {
+			r = (0.6 - m_Power) * clampTo(2.0 - (0.6-m_Power)*4.0, 0.1, 1.0);
 		} else {
-			r = 5.0 * (p1 - p3);
+			r = 5.0 * (power - m_Power);
 		}
 	}
-	p3 += r * dt;
-	setAfterburner(p3 >= 0.5);
-	updateTemperatureTargets();
-	b_RPM->value() = (p3 < 0.5) ? m_IdleRPM * (1.0 - 2*p3) + 2*p3 : (1.0 - p3)*2 + m_AfterburnerRPM * (2*p3 - 1.0);
+	m_Power = clampTo(m_Power + r * dt, 0.0, 1.0);
+	if (m_Power < 0.5) {  // non-AB
+		setAfterburner(false);
+		b_RPM->value() = m_IdleRPM * (1.0 - 2*m_Power) + 2*m_Power;
+	} else { // AB
+		setAfterburner(true);
+		b_RPM->value() = (1.0 - m_Power)*2 + m_AfterburnerRPM * (2*m_Power - 1.0);
+	}
 }
 
 void F16Engine::driveEngine(double drive, double dt) {

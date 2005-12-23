@@ -65,6 +65,7 @@ private:
 	void setAfterburner(bool on);
 	void updateFuel(double dt);
 	void updateNozzle(double dt);
+	void spoolEngine(double dt);
 	double getEffectiveThrottle();
 	bool isFuelPressurized();
 	bool isFuelDepressurized();
@@ -94,12 +95,11 @@ private:
 	double m_StartElapsedTime;
 	double m_HangTime;
 	double m_Blend;
+	double m_Power;
 	bool m_NormalStart;
 
 	DataChannel< Ref<FuelManagementSystem> >::CRefT b_FuelManagementSystem;
 	DataChannel<double>::RefT b_FuelFlow;
-
-	// TODO add Link<jfs>
 
 	void regen();
 	Real m_WindSpin;

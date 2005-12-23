@@ -54,7 +54,7 @@ namespace {
 
 	// Replaced gmtime_r and strftime with logTime, mainly because gmtime_r isn't
 	// available on win32.  This implementation should also be faster.
-	void logTime(const time_t t, char *buffer, bool date, bool time) {
+	void logTime(const time_t t, char *buffer, bool time, bool date) {
 		if (date) {
 			const uint32 days = static_cast<uint32>(t / 86400);
 
@@ -214,6 +214,7 @@ void LogStream::setStream(std::ostream &stream) {
 }
 
 void LogStream::close() {
+	flush();
 	if (m_fstream) {
 		m_fstream->close();
 		delete m_fstream;

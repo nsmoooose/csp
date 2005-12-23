@@ -35,7 +35,7 @@ build.SharedLibrary(env,
 		'Version.cpp',
 	],
 	deps = ['cspsim', 'jpeg'],
-	alias = 'all')
+	aliases = 'all')
 
 
 # TODO enable/disable osgNV in config.h

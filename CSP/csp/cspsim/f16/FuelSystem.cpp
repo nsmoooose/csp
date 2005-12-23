@@ -118,7 +118,7 @@ public:
 		const double fwd_fuel = m_FwdReservoir->quantity() + m_FwdFuselage->quantity();
 		const double fwd_heavy = fwd_fuel - aft_fuel;
 
-		//static double XXX = 0.0;  XXX += dt; if (XXX > 5) { XXX = 0; std::cout << "*** " << b_EngineFeedSwitch->state().getToken() << "; fwd heavy: " << fwd_heavy << " " << m_AFFTActive << "\n"; }
+		//if (m_AFFTActive) { static double XXX = 0.0;  XXX += dt; if (XXX > 5) { XXX = 0; std::cout << "*** " << b_EngineFeedSwitch->state().getToken() << "; fwd heavy: " << fwd_heavy << " " << m_AFFTActive << "\n"; } }
 
 		if (b_MasterFuelSwitch->state() == master) {
 			switch (b_EngineFeedSwitch->state().getValue()) {

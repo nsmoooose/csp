@@ -447,7 +447,7 @@ bool SimpleConfig::hasSection(std::string const &section) const {
 }
 
 
-// This is a rather ugly and slow way to delete a section.  It can leave stay
+// This is a rather ugly and slow way to delete a section.  It can leave stray
 // comments in the middle of sections, but will remove the section entirely,
 // even if it is multiply declared.  This whole function was a bit of an
 // afterthought, since it isn't very likely to be used in the application this

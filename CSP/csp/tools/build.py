@@ -590,7 +590,7 @@ def CopyEnvironment(env, vars):
 def CustomizeForPlatform(env, settings):
 	if hasattr(settings, '__bases__'):
 		settings = settings()
-	script = GetCurrentScript()
+	#script = GetCurrentScript()
 	platform = sys.platform.lower()
 
 	configs = []
@@ -1187,11 +1187,11 @@ class SourceGroup:
 	def _addSettings(self, settings, bdeps):
 		self._makeObjects()
 		settings.merge(self._settings)
-		bdeps += self._bdeps
+		bdeps.extend(self._bdeps)
 
 	def add(self, objects, settings, bdeps):
 		self._makeObjects()
-		objects += self._objects
+		objects.extend(self._objects)
 		self._addSettings(settings, bdeps)
 
 	_header_ext = ('.h', '.hh', '.hpp', '.hxx')

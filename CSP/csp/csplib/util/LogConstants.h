@@ -27,26 +27,6 @@
 
 #include <csp/csplib/util/Namespace.h>
 
-// the following symbols are used in the logging macros, so
-// previous macro declarations must be deleted.  note that we
-// do *not* redefine these macros, the symbols are ## joined
-// with cLogPriority_ to construct the priority constants below.
-#ifdef DEBUG
-#undef DEBUG
-#endif
-#ifdef INFO
-#undef INFO
-#endif
-#ifdef WARNING
-#undef WARNING
-#endif
-#ifdef ERROR
-#undef ERROR
-#endif
-#ifdef FATAL
-#undef FATAL
-#endif
-
 CSP_NAMESPACE
 
 /** Log message priorities
@@ -73,14 +53,13 @@ enum {
 	cLogCategory_REGISTRY     = 0x00000004,
 	cLogCategory_THREAD       = 0x00000008,
 	cLogCategory_TIME         = 0x00000010,
-	cLogCategory_FILE         = 0x00000020,
-	cLogCategory_NETWORK      = 0x00000040,
-	cLogCategory_AUDIO        = 0x00000080,
-	cLogCategory_OPENGL       = 0x00000100,
-	cLogCategory_INPUT        = 0x00000200,
-	cLogCategory_NUMERIC      = 0x00000400,
-	cLogCategory_PHYSICS      = 0x00000400,  // same as NUMERIC
-	cLogCategory_TESTING      = 0x00000800,
+	cLogCategory_NETWORK      = 0x00000020,
+	cLogCategory_AUDIO        = 0x00000040,
+	cLogCategory_OPENGL       = 0x00000080,
+	cLogCategory_INPUT        = 0x00000100,
+	cLogCategory_NUMERIC      = 0x00000200,
+	cLogCategory_PHYSICS      = 0x00000200,  // same as NUMERIC
+	cLogCategory_TESTING      = 0x00000400,
 
 	// net
 	cLogCategory_TIMING       = 0x00001000,

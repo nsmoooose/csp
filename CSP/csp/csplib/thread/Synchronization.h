@@ -29,10 +29,9 @@
 #include <csp/csplib/util/Namespace.h>
 #include <csp/csplib/util/Properties.h>
 
-#ifdef WIN32
-#define NOMINMAX
-#endif
 #include <cc++/thread.h>
+#include <csp/csplib/util/undef.h>
+
 #include <algorithm>
 #include <cerrno>
 #include <cmath>
@@ -268,12 +267,9 @@ public:
 	 */
 	Semaphore(size_t count): m_semaphore(count) { }
 
-	/** Wait for an available resource, or until the specified timeout expires.
-	 *
-	 *  @param timeout The maximum time (in seconds) to wait, or zero for no limit.
-	 *  @return true if a resource is available, false if the timeout expired first.
+	/** Wait for an available resource.
 	 */
-	bool wait(double timeout=0) { return m_semaphore.wait(makeMilliTimeout(timeout)); }
+	void wait() { m_semaphore.wait(); }
 
 	/** Release a resource so that other waiting threads can use it.  Should only
 	 *  be called after wait() has succeeded.

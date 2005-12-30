@@ -28,21 +28,15 @@
 #ifdef _WIN32
 // use this to fix compile problems with mulitple includes of windows and winsock headers.
 #	define _WINSOCKAPI_
-#	define NOMINMAX
 #	pragma warning(push)
 #	pragma warning(disable: 4100)
 #endif
 
 #include <cc++/network.h>
+#include <csp/csplib/util/undef.h>
 
 #ifdef _WIN32
 #	pragma warning(pop)
-#	ifdef min
-#		undef min
-#	endif
-#	ifdef max
-#		undef max
-#	endif
 #endif
 
 CSP_NAMESPACE

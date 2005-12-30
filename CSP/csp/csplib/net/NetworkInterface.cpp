@@ -41,18 +41,11 @@
 #ifdef _WIN32
 // use this to fix compile problems with mulitple includes of windows and winsock headers.
 #define _WINSOCKAPI_
-#define NOMINMAX
 #endif
+
 #include <cc++/network.h>
 #include <cc++/thread.h>
-#ifdef _WIN32
-#	ifdef min
-#		undef min
-#	endif
-#	ifdef max
-#		undef max
-#	endif
-#endif
+#include <csp/csplib/util/undef.h>
 
 #include <string.h>
 #include <sys/types.h>

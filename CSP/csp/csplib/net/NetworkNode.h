@@ -31,21 +31,15 @@
 #include <csp/csplib/util/Uniform.h>
 
 #ifdef _WIN32
-#	define NOMINMAX
 #	pragma warning(push)
 #	pragma warning(disable: 4100 4996)
 #endif
 
 #include <cc++/socket.h>
+#include <csp/csplib/util/undef.h>
 
 #ifdef _WIN32
 #	pragma warning(pop)
-#	ifdef min
-#		undef min
-#	endif
-#	ifdef max
-#		undef max
-#	endif
 #endif
 
 #include <string>

@@ -82,6 +82,15 @@ build.ExternalLibrary(
 	])
 
 build.ExternalLibrary(
+	name = 'sound',
+	config = [
+		build.PkgConfig(package='openalpp', version='0.2'),
+		build.PkgConfig(package='vorbis', version='1.1.0'),
+		build.DevpackConfig(dlls='openalpp', headers=[('openalpp', 'sounddata.h')]),
+		build.DevpackConfig(dlls='vorbis', headers=[('vorbis', 'vorbisfile.h')]),
+	])
+
+build.ExternalLibrary(
 	name = 'gnucc2',
 	config = [
 		build.PkgConfig(package='libccgnu2', version='1.3.19', label='commoncpp'),
@@ -101,6 +110,8 @@ build.ExternalLibrary(
 		build.PkgConfig(package='openscenegraph', version='0.9.8'),
 		build.PkgConfig(package='openthreads', version='0.9.8'),
 		build.PkgConfig(package='producer', version='0.9.8'),
+		build.PkgConfig(package='osgal', version='0.3'),
+		build.DevpackConfig(dlls='osgal', headers=[('osgAL', 'SoundNode')]),
 		build.DevpackConfig(dlls=['osg', 'osgDB', 'osgFX', 'osgGA', 'osgParticle', 'osgProducer', 'osgText', 'osgUtil', 'OpenThreadsWin32'], headers=[('osg', 'Depth'), ('osgText', 'Font')]),
 	])
 
@@ -143,7 +154,7 @@ class PlatformSettings:
 		env['CXXFLAGS'] = Split('/GR /MT /O2 /EHsc /nologo')
 		env.AppendUnique(CPPDEFINES=Split('WIN32 __WIN32__ _USRDLL _DLL NDEBUG'))
 		env.AppendUnique(LINKFLAGS=Split('/INCREMENTAL:NO /RELEASE /nologo'))
-		env.AppendUnique(SHLINKFLAGS=Split('/INCREMENTAL:NO /RELEASE /nologo'))
+		env.AppendUnique(SHLINKFLAGS=Split('/INCREMENTAL:NO /NODEFAULTLIB:LIBCMT /RELEASE /nologo'))
 		env.CopyEnvironment(Split('PATH INCLUDE LIB')) # FIXME
 
 	def customize_linux(self, env):

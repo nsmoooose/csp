@@ -28,6 +28,7 @@
 // for platform-specific fast timing routines
 #ifdef _WIN32
 	#include <Windows.h>
+	#include <csp/csplib/util/undef.h>
 #else
 	#include <sys/time.h>
 	#include <unistd.h>

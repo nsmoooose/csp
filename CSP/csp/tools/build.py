@@ -94,7 +94,11 @@ def Extension(fn):
 	return os.path.splitext(fn)[1]
 
 def GetCurrentScript():
-	return SCons.Script.SConscript.stack[-1].sconscript
+	try:
+		call_stack = SCons.Script.call_stack
+	except AttributeError:
+		call_stack = SCons.Script.SConscript.stack  # pre 0.96.91
+	return call_stack[-1].sconscript
 
 class SourceList(object):
 	_header_ext = ('.h', '.hh', '.hpp', '.hxx')
@@ -777,9 +781,14 @@ def AddSwigDep(env):
 
 SWIG = 'swig'
 
-def AddSwigSupport(env):
+def AddSwigSupport(env, required=1):
 	global SWIG
 	SWIG = SCons.Util.WhereIs('swig')
+	if not SWIG:
+		print 'WARNING: swig not found in path'
+		if required:
+			print >>sys.stderr, 'Cannot continue without swig.'
+			sys.exit(1)
 	env['SWIG'] = SWIG
 	AddSwigDep(env)
 	AddSwigBuild(env)
@@ -1178,7 +1187,8 @@ class SourceGroup:
 			for file in self._sources:
 				if isinstance(file, SCons.Node.FS.File):
 					if file.get_suffix() == '.i':
-						self._objects += self._env.SwigWrapper(file, **self._options)
+						wrapper, module = self._env.Swig(file, **self._options)
+						self._objects += self._env.SwigWrapper(wrapper, **self._options)
 					elif file.get_suffix() != '.h':
 						self._objects.append(self._env.SharedObject(file, **self._options))
 				else:

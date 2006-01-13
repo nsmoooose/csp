@@ -34,6 +34,7 @@
 #include <csp/modules/demeter/Terrain.h>
 #include <csp/modules/demeter/DemeterDrawable.h>
 #include <csp/modules/demeter/TerrainTextureFactory.h>
+#include <csp/csplib/util/undef.h>
 
 #include <osg/Geode>
 #include <osg/StateSet>

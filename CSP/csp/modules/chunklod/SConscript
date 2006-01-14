@@ -24,6 +24,9 @@ env.AppendUnique(CPPDEFINES=Split('OSGCHUNKLOD_LIBRARY'))
 # cspchunklod generates lots of warnings; feel free to clean it up and then remove this line
 env.RemoveFlags(CXXFLAGS=Split('-pedantic -W /W3'))
 
+# to remove conflicts with MSVCRT
+env.AppendUnique(SHLINKFLAGS=Split('/NODEFAULTLIB:LIBC')) 
+
 build.SharedLibrary(env,
 	name = 'chunklod',
 	sources = [
@@ -35,6 +38,7 @@ build.SharedLibrary(env,
 		'Version.cpp',
 	],
 	deps = ['cspsim', 'jpeg'],
+	LIBS=['user32'],
 	aliases = 'all')
 
 

@@ -64,6 +64,7 @@ build.ExternalLibrary(
 	name = 'jpeg',
 	config = [
 		build.WindowsLibConfig('libjpeg'),
+		build.WindowsLibConfig('user32'),
 	])
 
 build.ExternalLibrary(

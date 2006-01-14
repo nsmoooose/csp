@@ -69,7 +69,8 @@ class F16HUDFont: public HUDFont {
 public:
 	F16HUDFont(float height, osg::Vec4 const &color): m_Height(height), m_Color(color), m_Font(NULL) {
 		//m_Font = new ReverseAltFont(osgText::readFontFile("hud.ttf")); // FIXME LEAKS!
-		m_Font = new ScaledAltFont(osgText::readFontFile("hud.ttf"), 1.2); // FIXME LEAKS!
+		//m_Font = new ScaledAltFont(osgText::readFontFile("hud.ttf"), 1.2); // FIXME LEAKS!
+		m_Font = osgText::readFontFile("hud.ttf"); // FIXME LEAKS!
 	}
 	virtual void apply(osgText::Text *text) {
 		text->setFont(m_Font);

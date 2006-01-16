@@ -25,6 +25,7 @@
 #include <csp/cspsim/battlefield/LocalBattlefield.h>
 #include <csp/csplib/data/DataManager.h>
 #include <csp/csplib/util/Math.h>
+#include <iostream>
 
 void _createVehicleHelper(csp::CSPSim *self, const char *path, csp::Vector3 position,
                           csp::Vector3 velocity, csp::Vector3 attitude) {

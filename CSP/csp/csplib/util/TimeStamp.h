@@ -29,6 +29,7 @@
 #include <csp/csplib/util/Namespace.h>
 #include <csp/csplib/util/Uniform.h>
 #include <csp/csplib/data/Date.h>
+#include <cmath>
 
 
 CSP_NAMESPACE

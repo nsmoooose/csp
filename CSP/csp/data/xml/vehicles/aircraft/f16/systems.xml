@@ -17,14 +17,36 @@
 				<Float name="final_key">6.0</Float>
 				<String name="sequence_channel">Aircraft.CanopySequence.ReferenceTime</String>
 			</Object>
+			<Path name="resources">resources</Path>
 		</Object>
-		<Object class="F16HUD" />
 		<Object class="F16INS">
 			<Float name="ins_attitude_response_time">0.04</Float>
 		</Object>
-		<Object class="UpFrontControls" />
-		<Object class="GroundAvoidanceAdvisory" />
+		<Object class="F16HUD" />
+		<Object class="MultiFunctionDisplay">
+			<String name="channel">LeftMFD</String>
+			<String name="event_prefix">LEFT_</String>
+			<String name="default_configuration">*FCR BLANK BLANK</String>
+		</Object>
+		<Object class="MultiFunctionDisplay">
+			<String name="channel">RightMFD</String>
+			<String name="event_prefix">RIGHT_</String>
+			<String name="default_configuration">BLANK BLANK *SMS</String>
+		</Object>
+		<Object class="DataEntryDisplay">
+			<Vector name="color">1.0 0.95 0.5</Vector>
+			<Float name="text_height">0.0038</Float>
+			<Float name="line_spacing">0.0040</Float>
+		</Object>
+		<!--Object class="MultiFunctionDisplay">
+			<String name="channel">LeftMFD</String>
+		</Object-->
 		<Object class="F16Radio" />
+		<Object class="GroundAvoidanceAdvisory" />
+		<Object class="UpFrontControls" />
+		<Object class="VoiceMessageUnit">
+			<Path name="resources">resources</Path>
+		</Object>
 		<Path class="f16::FuelSystem">fuel</Path>
 	</List>
 
@@ -39,6 +61,7 @@
 				<Path name="store_drag">.objects.stores_drag</Path>
 			</Object>
 			<Object class="EngineDynamics">
+				<Path name="resources">resources</Path>
 				<List name="engine_set">
 					<Object class="F16Engine">
 						<Path name="thrust_data">thrust</Path>

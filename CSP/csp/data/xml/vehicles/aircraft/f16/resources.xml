@@ -1,0 +1,26 @@
+<Object class="ResourceBundle">
+	<List name="sounds">
+		<Object class="SoundSample">
+			<String name="name">low_speed_warning_sound</String>
+			<External name="filename">../data/sounds/f16_low_speed_warning_tone.ogg</External>
+			<Bool name="looping">true</Bool>
+		</Object>
+		<Object class="SoundSample">
+			<String name="name">configuration_warning_sound</String>
+			<External name="filename">../data/sounds/f16_configuration_warning_tone.ogg</External>
+			<Bool name="looping">true</Bool>
+		</Object>
+		<Object class="SoundSample">
+			<String name="name">altitude_warning_sample</String>
+			<External name="filename">../data/sounds/f16_betty_altitude.ogg</External>
+		</Object>
+		<Object class="SoundSample">
+			<String name="name">engine</String>
+			<External name="filename">../data/sounds/engine03.ogg</External>
+			<Bool name="looping">true</Bool>
+			<Float name="reference_distance">70.0</Float>
+			<Float name="max_distance">40000.0</Float>
+			<Int name="priority">10</Int>
+		</Object>
+	</List>
+</Object>

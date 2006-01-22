@@ -25,7 +25,8 @@ env.AppendUnique(CPPDEFINES=Split('OSGCHUNKLOD_LIBRARY'))
 env.RemoveFlags(CXXFLAGS=Split('-pedantic -W /W3'))
 
 # to remove conflicts with MSVCRT
-env.AppendUnique(SHLINKFLAGS=Split('/NODEFAULTLIB:LIBC')) 
+if env['PLATFORM'].startswith('win'):
+	env.AppendUnique(SHLINKFLAGS=Split('/NODEFAULTLIB:LIBC'))
 
 build.SharedLibrary(env,
 	name = 'chunklod',

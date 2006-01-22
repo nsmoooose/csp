@@ -286,13 +286,11 @@ void GameScreen::on_View9() {
 void GameScreen::on_View0() {
 }
 
-void GameScreen::on_Quit()
-{
+void GameScreen::on_Quit() {
 	CSPSim::theSim->quit();
 }
 
-void GameScreen::on_Pause()
-{
+void GameScreen::on_Pause() {
 	CSPSim::theSim->togglePause();
 	m_ScreenInfoManager->setStatus("PAUSE", !m_ScreenInfoManager->getStatus("PAUSE"));
 }

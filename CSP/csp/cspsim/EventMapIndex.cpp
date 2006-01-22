@@ -64,11 +64,11 @@ void EventMapIndex::loadAllMaps() {
 	std::string path = getConfigPath("InputMapPath");
 	CSPLOG(INFO, APP) << "Looking for human interface device mappings in '" << path << "'";
 	ospath::DirectoryContents dc = ospath::getDirectoryContents(path);
-	CSPLOG(INFO, APP) << "Found " << dc.size() << " files";
 	for (ospath::DirectoryContents::const_iterator file = dc.begin(); file != dc.end(); ++file) {
 		std::string fn = ospath::join(path, *file);
-		CSPLOG(INFO, APP) << "File: " << *file << ", " << fn << ", " << ospath::getFileExtension(fn);
-		if (ospath::getFileExtension(fn) == "hid") load(fn);
+		if (ospath::getFileExtension(fn) == "hid") {
+			load(fn);
+		}
 	}
 }
 

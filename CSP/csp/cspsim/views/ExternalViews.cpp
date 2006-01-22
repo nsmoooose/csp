@@ -29,8 +29,6 @@
 
 #include <csp/cspsim/CSPSim.h>
 #include <csp/cspsim/DynamicObject.h>
-// FIXME: why ObjetModel class definition is needed here (vc++ error)
-#include <csp/cspsim/ObjectModel.h>
 
 #include <csp/csplib/util/Noise.h>
 

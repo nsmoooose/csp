@@ -18,6 +18,8 @@
          CD values extracted from HFFM, normalized to 1.0 at M=0.  Each column gives the drag profile vs mach at a given aoa.
          These values are then scaled by the NASA low speed drag data to obtain the total drag as a function of airspeed,
          alpha, beta, and elevator deflection.
+
+        TODO renormalize taking LEF scheduling into account.
     -->
     <Table2 name="cd_m_a">
       <Breaks0 spacing="0.05">

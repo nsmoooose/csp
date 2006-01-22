@@ -55,9 +55,9 @@ HUDTape::HUDTape(Orientation orientation, int tick_count, float tick_spacing, fl
 	m_ValueOffset(0.0),
 	m_Hidden(false)
 {
-	m_Ticks = new HUD::MoveableElement;
-	m_ExtraTick = new HUD::MoveableElement;
-	HUD::SymbolMaker ticks;
+	m_Ticks = new display::MoveableElement;
+	m_ExtraTick = new display::MoveableElement;
+	display::SymbolMaker ticks;
 	ticks.beginDrawLines();
 
 	// always an odd count with an extra tick.  the extra tick is visible through
@@ -71,17 +71,17 @@ HUDTape::HUDTape(Orientation orientation, int tick_count, float tick_spacing, fl
 	ticks.endDrawLines();
 	m_Ticks->addSymbol(ticks);
 
-	HUD::SymbolMaker extra_tick;
+	display::SymbolMaker extra_tick;
 	extra_tick.addLine(0.0, (-1 - center_offset) * tick_spacing, tick_width, (-1 - center_offset) * tick_spacing);
 	m_ExtraTick->addSymbol(extra_tick);
 	m_ExtraTick->show(false);
 
 	float tick_direction = (tick_width < 0) ? -1.0 : 1.0;
 
-	m_CaretSymbol = new HUD::MoveableElement;
+	m_CaretSymbol = new display::MoveableElement;
 	m_CaretSymbol->show(false);
 
-	m_CenterLine = new HUD::Element;
+	m_CenterLine = new display::Element;
 	m_CenterLine->show(false);
 
 	if (orientation == HORIZONTAL) {
@@ -98,7 +98,7 @@ void HUDTape::setValueScale(float scale, float offset) {
 	m_ValueOffset = offset;
 }
 
-void HUDTape::addNumericLabels(float increment, float value_offset, float position_offset, int minor_ticks, LabelFormatter *formatter, HUDFont *font) {
+void HUDTape::addNumericLabels(float increment, float value_offset, float position_offset, int minor_ticks, LabelFormatter *formatter, DisplayFont *font) {
 	assert(formatter);
 	assert(font);
 	const int label_count = m_TickCount / (minor_ticks + 1) + 1;
@@ -110,7 +110,7 @@ void HUDTape::addNumericLabels(float increment, float value_offset, float positi
 	m_LabelIncrement = increment;
 	const float center_offset = 0.0; // put label_0 at center
 	for (int i=0; i < label_count; ++i) {
-		HUD::LabelElement *element = new HUD::LabelElement;
+		display::LabelElement *element = new display::LabelElement;
 		osgText::Text *text = element->text();
 		m_Labels.push_back(element);
 		font->apply(text);
@@ -144,7 +144,7 @@ void HUDTape::setLabelWrapping(float offset, float period) {
 	m_WrapPeriod = period;
 }
 
-void HUDTape::setCaretSymbol(HUD::SymbolMaker &symbol) {
+void HUDTape::setCaretSymbol(display::SymbolMaker &symbol) {
 	assert(!m_HasCaret);
 	m_CaretSymbol->addSymbol(symbol);
 	m_HasCaret = true;
@@ -161,7 +161,7 @@ void HUDTape::enableCaret(bool enabled) {
 
 void HUDTape::addCenterLine(float length, float gap) {
 	float sign = m_TickWidth < 0.0 ? -1.0 : 1.0;
-	HUD::SymbolMaker line;
+	display::SymbolMaker line;
 	if (m_Orientation == HORIZONTAL) {
 		line.addLine(m_OffsetX, m_OffsetY + sign * gap, m_OffsetX, m_OffsetY + sign * (gap + length));
 	} else {
@@ -172,7 +172,7 @@ void HUDTape::addCenterLine(float length, float gap) {
 	m_CenterLine->show(true);
 }
 
-void HUDTape::addToHudFrame(HUD::Frame *hud_frame) {
+void HUDTape::addToHudFrame(display::Frame *hud_frame) {
 	hud_frame->addElement(m_Ticks);
 	hud_frame->addElement(m_ExtraTick);
 	for (unsigned i=0; i < m_Labels.size(); ++i) {

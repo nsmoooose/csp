@@ -81,7 +81,7 @@ public:
 	 *  @param formatter A LabelFormatter that converts values into label strings.
 	 *  @param font The font for the labels.
 	 */
-	void addNumericLabels(float increment, float value_offset, float position_offset, int minor_ticks, LabelFormatter *formatter, HUDFont *font);
+	void addNumericLabels(float increment, float value_offset, float position_offset, int minor_ticks, LabelFormatter *formatter, DisplayFont *font);
 
 	/** Show or hide negative labels.  By default negative labels are displayed.
 	 */
@@ -109,7 +109,7 @@ public:
 	 *
 	 *  See setCaret() for setting the caret position.
 	 */
-	void setCaretSymbol(HUD::SymbolMaker &symbol);
+	void setCaretSymbol(display::SymbolMaker &symbol);
 
 	/** Set the caret position.  The value parameter uses the same scale as the
 	 *  update() method.
@@ -130,7 +130,7 @@ public:
 	/** Add the tape symbology to a HUD frame.  This method must be called after all
 	 *  configuration methods (e.g. setCaretSymbol).
 	 */
-	void addToHudFrame(HUD::Frame *hud_frame);
+	void addToHudFrame(display::Frame *hud_frame);
 
 	/** Update the tape scale and readout to the current value.
 	 *  FIXME value is specified in tick increments but should be absolute.
@@ -159,9 +159,9 @@ private:
 	 */
 	void updateLabels(float value, float left_tick, float right_tick);
 
-	osg::ref_ptr<HUD::MoveableElement> m_Ticks;
-	osg::ref_ptr<HUD::MoveableElement> m_ExtraTick;
-	osg::ref_ptr<HUD::Element> m_CenterLine;
+	osg::ref_ptr<display::MoveableElement> m_Ticks;
+	osg::ref_ptr<display::MoveableElement> m_ExtraTick;
+	osg::ref_ptr<display::Element> m_CenterLine;
 
 	Orientation m_Orientation;
 	int m_TickCount;
@@ -185,9 +185,9 @@ private:
 	float m_ValueScale;
 	float m_ValueOffset;
 	bool m_Hidden;
-	osg::ref_ptr<HUD::MoveableElement> m_CaretSymbol;
+	osg::ref_ptr<display::MoveableElement> m_CaretSymbol;
 	osg::ref_ptr<LabelFormatter> m_LabelFormatter;
-	std::vector<osg::ref_ptr<HUD::LabelElement> > m_Labels;
+	std::vector<osg::ref_ptr<display::LabelElement> > m_Labels;
 };
 
 CSP_NAMESPACE_END

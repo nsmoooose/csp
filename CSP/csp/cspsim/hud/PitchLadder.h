@@ -36,7 +36,7 @@ CSP_NAMESPACE
  */
 class PitchLadder: public osg::Referenced {
 public:
-	typedef osg::ref_ptr<HUD::DirectionElement> PitchBar;
+	typedef osg::ref_ptr<display::DirectionElement> PitchBar;
 
 	PitchLadder();
 

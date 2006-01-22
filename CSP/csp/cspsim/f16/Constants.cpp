@@ -1,5 +1,5 @@
 // Combat Simulator Project
-// Copyright (C) 2005 The Combat Simulator Project
+// Copyright (C) 2006 The Combat Simulator Project
 // http://csp.sourceforge.net
 //
 // This program is free software; you can redistribute it and/or
@@ -18,25 +18,32 @@
 
 
 /**
- * @file Text.cpp
+ * @file f16/Constants.cpp
  *
  **/
 
-#include <csp/cspsim/Export.h>
-#include <csp/cspsim/hud/Text.h>
-
-#include <osgText/Text>
-#include <cstdio>
-
-#if !defined(__GNUC__) && !defined(snprintf)
-#define snprintf _snprintf
-#endif
+#include <csp/cspsim/f16/Constants.h>
 
 CSP_NAMESPACE
 
-void StandardFormatter::format(char *buffer, int len, float value) {
-	snprintf(buffer, len, m_Format.c_str(), value);
+namespace f16 {
+
+namespace AirToGround {
+	const Enumeration Submodes("CCIP CCRP DTOS LADD ULOFT MANUAL PRE VIS BORE STRAFE");
+
+	 const Submode CCIP("CCIP");
+	 const Submode CCRP("CCRP");
+	 const Submode DTOS("DTOS");
+	 const Submode LADD("LADD");
+	 const Submode ULOFT("ULOFT");
+	 const Submode MANUAL("MANUAL");
+	 const Submode PRE("PRE");
+	 const Submode VIS("VIS");
+	 const Submode BORE("BORE");
+	 const Submode STRAFE("STRAFE");
 }
+
+} // namespace f16
 
 CSP_NAMESPACE_END
 

@@ -30,6 +30,7 @@
 
 #include <csp/cspsim/f16/F16HUD.h>
 #include <csp/cspsim/f16/F16Channels.h>
+#include <csp/cspsim/f16/Constants.h>
 #include <csp/cspsim/f16/SpecialFonts.h>
 
 #include <csp/cspsim/hud/HUD.h>
@@ -47,9 +48,15 @@
 #include <csp/csplib/util/Conversions.h>
 #include <csp/csplib/util/Math.h>
 #include <csp/csplib/util/osg.h>
+#include <csp/csplib/util/StringTools.h>
 #include <csp/csplib/util/Timing.h>
 #include <csp/csplib/data/ObjectInterface.h>
 #include <csp/csplib/data/Vector3.h>
+
+#include <cstdio>
+#if !defined(__GNUC__) && !defined(snprintf)
+#define snprintf _snprintf
+#endif
 
 CSP_NAMESPACE
 
@@ -57,21 +64,31 @@ CSP_XML_BEGIN(F16HUD)
 	CSP_DEF("color", m_Color, false)
 CSP_XML_END
 
+
+using display::Element;
+using display::MoveableElement;
+using display::DirectionElement;
+using display::FloatingFrame;
+using display::SymbolMaker;
+using display::ElementText;
+
+
 namespace {
 static const Vector3 DefaultHUDColor(0.45, 0.94, 0.68);
 }
 
 
-class F16HUDFont: public HUDFont {
+// TODO generalize and move out of f16/
+class HUDFont: public DisplayFont {
 	float m_Height;
 	osg::Vec4 m_Color;
 	osgText::Font *m_Font;
 public:
-	F16HUDFont(float height, osg::Vec4 const &color): m_Height(height), m_Color(color), m_Font(NULL) {
-		//m_Font = new ReverseAltFont(osgText::readFontFile("hud.ttf")); // FIXME LEAKS!
-		//m_Font = new ScaledAltFont(osgText::readFontFile("hud.ttf"), 1.2); // FIXME LEAKS!
-		m_Font = osgText::readFontFile("hud.ttf"); // FIXME LEAKS!
+	HUDFont(float height, osg::Vec4 const &color): m_Height(height), m_Color(color), m_Font(NULL) {
+		m_Font = ScaledAltFont::load("hud.ttf", 1.2); // FIXME leaks!
 	}
+	virtual double getHeight() const { return m_Height; }
+	virtual osgText::Font const *font() const { return m_Font; }
 	virtual void apply(osgText::Text *text) {
 		text->setFont(m_Font);
 		text->setFontResolution(30, 30);
@@ -93,9 +110,9 @@ class F16AltitudeFormatter: public LabelFormatter {
 };
 
 
-class RadarAltitudeScale: public HUD::Element {
+class RadarAltitudeScale: public Element {
 public:
-	RadarAltitudeScale(double x0, double y0, double wide, double narrow, double spacing, double label_offset, osg::ref_ptr<HUDFont> font):
+	RadarAltitudeScale(double x0, double y0, double wide, double narrow, double spacing, double label_offset, osg::ref_ptr<DisplayFont> font):
 		m_X0(x0),
 		m_Y0(y0),
 		m_Wide(wide),
@@ -105,7 +122,7 @@ public:
 		m_Alow(-1),
 		m_AltitudeAgl(0)
 	{
-		HUD::SymbolMaker scale;
+		SymbolMaker scale;
 		scale.beginDrawLines();
 		for (int i = 0; i <= 24; i++) {
 			if (i != 21 && i != 23) {
@@ -167,8 +184,8 @@ private:
 	double m_LabelOffset;
 	int m_Alow;
 	int m_AltitudeAgl;
-	HUD::SymbolMaker m_Indicator;
-	HUD::SymbolMaker m_AlowCaret;
+	SymbolMaker m_Indicator;
+	SymbolMaker m_AlowCaret;
 };
 
 
@@ -180,15 +197,15 @@ private:
  *  automatically resizes itself if the view point changes to maintain the
  *  correct angular extent.
  */
-class LandingAngleOfAttackRange: public HUD::DirectionElement {
+class LandingAngleOfAttackRange: public DirectionElement {
 public:
 	virtual void updateView(osg::Vec3 const &origin, osg::Vec3 const &view_point) {
-		HUD::DirectionElement::updateView(origin, view_point);
+		DirectionElement::updateView(origin, view_point);
 		float d = (origin - view_point).length();
 		// the dash one says this marker extends from 11 to 15 degrees AoA, but
 		// in a HUD video (post MLU?) it is closer to 2 degrees in extent.
 		float h = 0.5 * d * osg::inDegrees(2.0);
-		HUD::SymbolMaker bar;
+		SymbolMaker bar;
 		bar.beginDrawLines();
 		bar.drawLine(-0.0065, h, -0.005, h);
 		bar.drawLine(-0.0065, h, -0.0065, -h);
@@ -203,10 +220,10 @@ public:
 };
 
 
-class FlightPathMarker: public HUD::DirectionElement {
+class FlightPathMarker: public DirectionElement {
 public:
 	FlightPathMarker() {
-		HUD::SymbolMaker fpm;
+		SymbolMaker fpm;
 		fpm.addCircle(0.0, 0.0, 0.002, 10);
 		fpm.beginDrawLines();
 		fpm.drawLine(0.002, 0.0, 0.006, 0.0);
@@ -218,13 +235,13 @@ public:
 };
 
 
-class BankAngleIndicator: public HUD::DirectionElement {
+class BankAngleIndicator: public DirectionElement {
 public:
 	BankAngleIndicator() {
 		const int ticks = 9;
 		const float angles[ticks] = {-60.0, -30.0, -20.0, -10.0, 0.0, 10.0, 20.0, 30.0, 60.0 };
 		const float length[ticks] = {2.0, 2.0, 1.0, 1.0, 2.0, 1.0, 1.0, 2.0, 2.0 };
-		HUD::SymbolMaker bai;
+		SymbolMaker bai;
 		bai.beginDrawLines();
 		for (int i = 0; i < ticks; i++) {
 			float angle = osg::inDegrees(angles[i]);
@@ -240,10 +257,10 @@ public:
 };
 
 
-class Tadpole: public HUD::DirectionElement {
+class Tadpole: public DirectionElement {
 public:
 	Tadpole() {
-		HUD::SymbolMaker tadpole;
+		SymbolMaker tadpole;
 		tadpole.addCircle(0.0, 0.0, 0.001, 8);
 		tadpole.addLine(0.0, 0.001, 0.0, 0.006);
 		addSymbol(tadpole);
@@ -252,11 +269,11 @@ public:
 };
 
 
-class SteerpointMarker: public HUD::DirectionElement {
+class SteerpointMarker: public DirectionElement {
 public:
 	SteerpointMarker() {
 		const float size = 0.002;
-		HUD::SymbolMaker diamond;
+		SymbolMaker diamond;
 		diamond.beginDrawLines();
 		diamond.moveTo(0.0, size);
 		diamond.lineTo(size, 0.0);
@@ -270,11 +287,11 @@ public:
 };
 
 
-class OffsetAimpointMarker: public HUD::DirectionElement {
+class OffsetAimpointMarker: public DirectionElement {
 public:
 	OffsetAimpointMarker() {
 		const float size = 0.002;
-		HUD::SymbolMaker symbol;
+		SymbolMaker symbol;
 		symbol.beginDrawLines();
 		symbol.moveTo(0.0, size * 1.2);
 		symbol.lineTo(size * 0.5, -size * 0.8);
@@ -287,10 +304,10 @@ public:
 };
 
 
-class PullupAnticipationCue: public HUD::DirectionElement {
+class PullupAnticipationCue: public DirectionElement {
 public:
 	PullupAnticipationCue() {
-		HUD::SymbolMaker symbol;
+		SymbolMaker symbol;
 		symbol.beginDrawLines();
 		symbol.moveTo(-0.0044, 0.0028);
 		symbol.lineTo(-0.0044, 0.0);
@@ -311,8 +328,79 @@ public:
 	}
 };
 
+class ImpactPointCue: public DirectionElement {
+	SymbolMaker m_FallLine;
+	SymbolMaker m_TimedDelayCue;
+public:
+	ImpactPointCue() {
+		SymbolMaker cue;
+		cue.addCircle(0.0, 0.0, 0.002, 10);
+		cue.addCircle(0.0, 0.0, 0.0002, 3);
+		addSymbol(cue);
+		addSymbol(m_FallLine);
+		addSymbol(m_TimedDelayCue);
+	}
+	virtual void update(osg::Vec3 const &fpm, Vector3 const &velocity, Quat const &attitude, double altitude_agl) {
+		static const double g = 9.802;
+		const double vz = velocity.z();
+		Vector3 v_h(velocity.x(), velocity.y(), 0.0);
+		const double t = (vz + sqrt(vz*vz + (2.0*g)*altitude_agl)) / g;
+		Vector3 impact = (v_h * t) - Vector3(0.0, 0.0, altitude_agl);
+		osg::Vec3 impact_body = toOSG(attitude.invrotate(impact));
+		double cos_angle = impact_body.y() / impact_body.length();
+		static const double delay_angle = cos(toRadians(14.0));
+		m_TimedDelayCue.erase();
+		const bool timed_delay_cue = (cos_angle < delay_angle);
+		if (timed_delay_cue) { // show delay cue instead
+			osg::Vec3 pivot = osg::Vec3(0, 1, 0) ^ impact_body;
+			impact_body = osg::Quat(toRadians(14.0), pivot) * osg::Vec3(0, 1, 0);
+		}
+		setDirection(impact_body);
+		osg::Vec3 line = fpm - position();
+		osg::Vec3 line_dir(line);
+		line_dir.normalize();
+		m_FallLine.erase();
+		// MLU manual shows fall line ending on the edge of the fpm circle, but HUD
+		// video shows it at the center.
+		m_FallLine.addLine(line_dir.x() * 0.002, line_dir.z() * 0.002, line.x(), line.z());
+		if (timed_delay_cue) {
+			static const float cue_length = 0.002;
+			osg::Vec3 center = line * 0.5;
+			osg::Vec3 dir(cue_length * line_dir.z(), 0.0, -cue_length * line_dir.x());
+			osg::Vec3 a = center + dir;
+			osg::Vec3 b = center - dir;
+			m_TimedDelayCue.addLine(a.x(), a.z(), b.x(), b.z());
+		}
+	}
+};
 
-class GhostHorizon: public HUD::DirectionElement {
+
+class BombSteeringCue: public osg::Referenced {
+	osg::ref_ptr<DirectionElement> m_AzimuthSteeringLine;
+	osg::ref_ptr<DirectionElement> m_VerticalSteeringCue;
+	osg::ref_ptr<DirectionElement> m_AnticipationCue;
+public:
+	BombSteeringCue() {
+		m_AzimuthSteeringLine = new DirectionElement;
+		SymbolMaker symbol;
+		symbol.addLine(0.0, -0.5, 0.0, 0.5);
+		m_AzimuthSteeringLine->addSymbol(symbol);
+		symbol.reset();
+		symbol.addLine(-0.1, 0.0, 0.1, 0.0);
+		m_VerticalSteeringCue->addSymbol(symbol);
+		symbol.reset();
+		symbol.addLine(-0.002, 0.0, 0.002, 0.0);
+		m_AnticipationCue->addSymbol(symbol);
+	}
+	void addToHUD(HUD *hud) {
+		hud->addFloatingElement(m_AzimuthSteeringLine);
+		hud->addFloatingElement(m_VerticalSteeringCue);
+		hud->addFloatingElement(m_AnticipationCue);
+	}
+};
+
+
+class GhostHorizon: public DirectionElement {
 	osg::Vec3 m_Center;
 	osg::Vec3 m_CenterDir;
 	float m_R;
@@ -320,7 +408,7 @@ class GhostHorizon: public HUD::DirectionElement {
 	double m_Threshold;
 public:
 	GhostHorizon(float center_y, float offset_degrees, float buffer_degrees): m_Center(0.0, 1.0, center_y), m_R(1.0), m_Delay(0.0) {
-		HUD::SymbolMaker horizon;
+		SymbolMaker horizon;
 		horizon.beginDrawLines();
 		for (int i = -5; i < 5; ++i) {
 			horizon.drawLine(i * 0.03 + 0.0075, 0.0, i * 0.03 + 0.0225, 0.0);
@@ -362,11 +450,11 @@ public:
 };
 
 
-class DEDReadout: public HUD::MoveableElement {
+class DEDReadout: public MoveableElement {
 	Ref<const AlphaNumericDisplay> m_Display;
 	osgText::Text** m_Lines;
 public:
-	DEDReadout(Ref<const AlphaNumericDisplay> display, osg::ref_ptr<HUDFont> font): m_Display(display) {
+	DEDReadout(Ref<const AlphaNumericDisplay> display, osg::ref_ptr<DisplayFont> font): m_Display(display) {
 		assert(font.valid());
 		unsigned lines = m_Display->height();
 		CSPLOG(DEBUG, APP) << "DEDReadout: " << lines << " lines";
@@ -390,7 +478,7 @@ public:
 };
 
 
-F16HUD::F16HUD(): m_Color(DefaultHUDColor), m_AlphaFilter(1.0), m_G(-1), m_MaxG(-100), m_Heading(-1), m_Mach(-1), m_ElapsedTime(0.0), m_UpdateTime(0.0) {
+F16HUD::F16HUD(): m_Color(DefaultHUDColor), m_AlphaFilter(1.0), m_G(-1), m_MaxG(-100), m_Heading(-1), m_Mach(-1), m_ElapsedTime(0.0), m_UpdateTime(0.0), m_LastMasterMode(f16::NAV) {
 	m_HudPanel.addElement(new CockpitSwitch("OFF DATA", "HUD.DataSwitch", "HUD_DATASWITCH", "DATA"));
 	m_HudPanel.addElement(new CockpitSwitch("OFF FPM ATT_FPM", "HUD.FlightPathMarkerSwitch", "HUD_FPM_SWITCH", "ATT_FPM"));
 	m_HudPanel.addElement(new CockpitSwitch("OFF VAH VV_VAH", "HUD.ScalesSwitch", "HUD_SCALES_SWITCH", "VAH"));
@@ -436,6 +524,7 @@ void F16HUD::importChannels(Bus* bus) {
 	b_PullupAnticipation = bus->getChannel("F16.GroundAvoidance.PullupAnticipation", false);
 	b_DescentWarningAfterTakeoff = bus->getChannel("F16.GroundAvoidance.DescentWarningAfterTakeoff", false);
 
+	b_MasterMode = bus->getChannel("MasterMode", true);
 	b_DataSwitch = bus->getChannel("HUD.DataSwitch");
 	b_FlightPathMarkerSwitch = bus->getChannel("HUD.FlightPathMarkerSwitch");
 	b_ScalesSwitch = bus->getChannel("HUD.ScalesSwitch");
@@ -449,15 +538,15 @@ double F16HUD::onUpdate(double dt) {
 	//Timer timer;
 	//timer.start();
 	Quat const &attitude = b_Attitude->value();
-	Vector3 velocity = b_Velocity->value();
+	m_CueVelocity = b_Velocity->value();
 
 	// if velocity is too small, the hud symbols that are cued by V will jitter wildly.
 	// we fix V at the forward horizon in that case.  this appears to be what the real
 	// jet does.  we only do this on the ground; otherwise useful information would be
 	// lost in a severe stall.
-	if (velocity.length2() < 2500.0 && b_LeftMainLandingGearWOW->value()) {
-		velocity = attitude.rotate(Vector3::YAXIS);  // forward vector in world coordinates
-		velocity.z() = 0.0;
+	if (m_CueVelocity.length2() < 2500.0 && b_LeftMainLandingGearWOW->value()) {
+		m_CueVelocity = attitude.rotate(Vector3::YAXIS);  // forward vector in world coordinates
+		m_CueVelocity.z() = 0.0;
 	}
 
 	double speed = convert::mps_kts(getSpeed());
@@ -465,9 +554,9 @@ double F16HUD::onUpdate(double dt) {
 	bool gear_down = !b_GearHandleUp->value();
 	bool ILS_mode = false;
 
-	Vector3 horizon = velocity; horizon.z() = 0.0;
+	Vector3 horizon = m_CueVelocity; horizon.z() = 0.0;
 	Vector3 horizon_right(horizon.y(), -horizon.x(), horizon.z()); // 90 deg rotation around z
-	osg::Vec3 velocity_body = toOSG(attitude.invrotate(velocity));
+	osg::Vec3 velocity_body = toOSG(attitude.invrotate(m_CueVelocity));
 	osg::Vec3 velocity_right_body(-velocity_body.z(), 0.0, velocity_body.x());
 	m_FlightPathMarker->show(m_ShowFPM);
 	m_FlightPathMarker->setDirection(velocity_body);
@@ -532,7 +621,8 @@ double F16HUD::onUpdate(double dt) {
 	m_AirspeedTape->update(speed >= 50.0 ? speed : 0.0);
 
 	double altitude = b_Position->value().z();
-	double altitude_agl_ft = convert::m_ft(altitude - b_GroundZ->value());
+	double altitude_agl = altitude - b_GroundZ->value();
+	double altitude_agl_ft = convert::m_ft(altitude_agl);
 	bool baro_alt = b_AltitudeSwitch.valid() && b_AltitudeSwitch->value() == "BARO";
 	if ((altitude_agl_ft <= 1500) && !baro_alt) {
 		double alow_ft = b_CaraAlow.valid() ? b_CaraAlow->value() : 0.0;
@@ -550,6 +640,8 @@ double F16HUD::onUpdate(double dt) {
 	m_HeadingTape->show(m_ShowScales);
 	m_HeadingTape->update(toDegrees(b_Heading->value()));
 
+	updateMasterMode();
+
 	Ref<Steerpoint> active_steerpoint = b_NavigationSystem.valid() ? b_NavigationSystem->value()->activeSteerpoint() : 0;
 	if (active_steerpoint.valid()) {
 		Vector3 steerpoint = active_steerpoint->position();
@@ -561,7 +653,7 @@ double F16HUD::onUpdate(double dt) {
 		m_Steerpoint->setOrientation(-b_Roll->value());
 		m_Steerpoint->show(steerpoint_offset_body.y() > 0);
 
-		float velocity_angle = atan2(velocity.x(), velocity.y());
+		float velocity_angle = atan2(m_CueVelocity.x(), m_CueVelocity.y());
 		float tadpole_angle = steering_angle - velocity_angle;
 		if (tadpole_angle > osg::PI) {
 			tadpole_angle -= 2.0 * osg::PI;
@@ -606,8 +698,7 @@ double F16HUD::onUpdate(double dt) {
 
 	// Flash at 3 Hz when enabled.
 	m_BreakX->show(b_AltitudeAdvisory.valid() && b_AltitudeAdvisory->value() && (static_cast<int>(m_ElapsedTime * 6.0) & 1));
-	// TODO only display in A-G mode
-	if (b_PullupAnticipation.valid()) {
+	if (b_PullupAnticipation.valid() && b_MasterMode->mode() == f16::AG) {
 		m_PullupAnticipationCue->update(b_PullupAnticipation->value(), velocity_body);
 	}
 
@@ -707,19 +798,19 @@ void F16HUD::updateReadouts() {
 	const int dG = static_cast<int>(b_G->value() * 10.0 + 0.5);
 	if (dG != m_G) {
 		m_G = dG;
-		m_GForceMeter->print("%4.1f", dG * 0.1);
+		m_GForceMeter->setText(stringprintf("%4.1f", dG * 0.1));
 	}
 	if (dG > m_MaxG) {
 		m_MaxG = dG;
-		m_MaxGForce->print("%3.1f", dG * 0.1);
+		m_MaxGForce->setText(stringprintf("%3.1f", dG * 0.1));
 	}
 	const int heading = static_cast<int>(toDegrees(b_Heading->value()) + 0.5);
 	if (heading != m_Heading) {
 		m_Heading = heading;
-		m_HeadingText->print("%03d", (heading < 0) ? (heading + 360) : heading);
+		m_HeadingText->setText(stringprintf("%03d", (heading < 0) ? (heading + 360) : heading));
 	}
 	const int speed = static_cast<int>(convert::mps_kts(getSpeed()) + 0.5);
-	m_AirspeedText->print("%4d", speed < 50 ? 0 : speed);
+	m_AirspeedText->setText(stringprintf("%4d", speed < 50 ? 0 : speed));
 
 	bool radar_alt = b_AltitudeSwitch.valid() && b_AltitudeSwitch->value() == "RADAR";
 	double altitude_value = b_Position->value().z();
@@ -727,25 +818,25 @@ void F16HUD::updateReadouts() {
 	const int altitude = static_cast<int>(convert::m_ft(altitude_value) + 0.5);
 	const int clicks = altitude / 1000;
 	if (altitude >= 1000) {
-		m_AltitudeText->print("%2d\037%03d", clicks, altitude - clicks * 1000);
+		m_AltitudeText->setText(stringprintf("%2d\037%03d", clicks, altitude - clicks * 1000));
 	} else {
-		m_AltitudeText->print("%6d", altitude);
+		m_AltitudeText->setText(stringprintf("%6d", altitude));
 	}
 	const int radar_altitude = 10 * static_cast<int>(0.1 * convert::m_ft(b_Position->value().z() - b_GroundZ->value()) + 0.5);
 	const int radar_clicks = radar_altitude / 1000;
 	if (radar_altitude >= 1000) {
-		m_RadarAltimeter->print("R %2d\037%03d", radar_clicks, radar_altitude - radar_clicks * 1000);
+		m_RadarAltimeter->setText(stringprintf("R %2d\037%03d", radar_clicks, radar_altitude - radar_clicks * 1000));
 	} else {
-		m_RadarAltimeter->print("R %6d", radar_altitude);
+		m_RadarAltimeter->setText(stringprintf("R %6d", radar_altitude));
 	}
 	const int dMach = static_cast<int>(b_Mach->value() * 100.0 + 0.5);
 	if (dMach != m_Mach) {
 		m_Mach = dMach;
-		m_MachMeter->print("%4.2f", b_Mach->value());
+		m_MachMeter->setText(stringprintf("%4.2f", b_Mach->value()));
 	}
 
 	if (b_CaraAlow.valid()) {
-		m_Alow->print("AL%5d", static_cast<int>(b_CaraAlow->value() + 0.5));
+		m_Alow->setText(stringprintf("AL%5d", static_cast<int>(b_CaraAlow->value() + 0.5)));
 	}
 
 	// TODO use projection to compute geodesic distances and headings
@@ -764,16 +855,16 @@ void F16HUD::updateReadouts() {
 		const int dsteerpoint_distance = static_cast<int>(convert::m_nm(steerpoint_offset.length()) + 0.5);
 		if (dslant_range != m_LastSlantRange) {
 			m_LastSlantRange = dslant_range;
-			m_SlantRange->print("B%05.1f", dslant_range * 0.1);
+			m_SlantRange->setText(stringprintf("B%05.1f", dslant_range * 0.1));
 		}
 		if (dsteerpoint_time != m_LastSteerpointTime) {
 			m_LastSteerpointTime = dsteerpoint_time;
 			int minutes = std::min(999, dsteerpoint_time / 60);
-			m_SteerpointTime->print("%03d:%02d", minutes, dsteerpoint_time%60);
+			m_SteerpointTime->setText(stringprintf("%03d:%02d", minutes, dsteerpoint_time%60));
 		}
 		if (dsteerpoint_distance != m_LastSteerpointDistance) {
 			m_LastSteerpointDistance = dsteerpoint_distance;
-			m_SteerpointDistance->print("%03d>%02d", dsteerpoint_distance, active_steerpoint->index());
+			m_SteerpointDistance->setText(stringprintf("%03d>%02d", dsteerpoint_distance, active_steerpoint->index()));
 		}
 	} else {
 		CSPLOG(DEBUG, APP) << "no active steerpoint";
@@ -788,13 +879,13 @@ void F16HUD::updateReadouts() {
 
 void F16HUD::buildHUD() {
 	const osg::Vec4 color(m_Color.x(), m_Color.y(), m_Color.z(), 1.0);
-	m_StandardFont = new F16HUDFont(0.003, color);
+	m_StandardFont = new HUDFont(0.003, color);
 	m_CaretSymbol.beginDrawLines();
 	m_CaretSymbol.drawLine(0.001, 0.0, 0.00372,  0.00127);
 	m_CaretSymbol.drawLine(0.001, 0.0, 0.00372, -0.00127);
 	m_CaretSymbol.endDrawLines();
 
-	m_VerticalFrame = new HUD::FloatingFrame;
+	m_VerticalFrame = new FloatingFrame;
 	m_HUD.addFrameElement(m_VerticalFrame);
 	addFlightPathMarker();
 	addGunCross();
@@ -820,6 +911,9 @@ void F16HUD::addExtraSymbols() {
 	m_HUD.addFloatingElement(m_LandingAngleOfAttackRange);
 	m_GhostHorizon = new GhostHorizon(-0.088, 8.0, 2.0);
 	m_HUD.addFloatingElement(m_GhostHorizon);
+	m_ImpactPointCue = new ImpactPointCue;
+	m_HUD.addFloatingElement(m_ImpactPointCue);
+	m_ImpactPointCue->show(false);
 }
 
 void F16HUD::addFlightPathMarker() {
@@ -830,8 +924,8 @@ void F16HUD::addFlightPathMarker() {
 }
 
 void F16HUD::addGunCross() {
-	m_GunCross = new HUD::Element;
-	HUD::SymbolMaker cross;
+	m_GunCross = new Element;
+	SymbolMaker cross;
 	cross.beginDrawLines();
 	cross.drawLine(0.0010, 0.0, 0.0035, 0.0);
 	cross.drawLine(-0.0010, 0.0, -0.0035, 0.0);
@@ -843,8 +937,8 @@ void F16HUD::addGunCross() {
 }
 
 void F16HUD::addBreakX() {
-	m_BreakX = new HUD::Element;
-	HUD::SymbolMaker x;
+	m_BreakX = new Element;
+	SymbolMaker x;
 	x.beginDrawLines();
 	x.drawLine(-0.0175, -0.010, 0.0175, -0.036);
 	x.drawLine(0.0175, -0.010, -0.0175, -0.036);
@@ -854,8 +948,8 @@ void F16HUD::addBreakX() {
 }
 
 void F16HUD::addRollTape() {
-	m_RollTape = new HUD::Element;
-	HUD::SymbolMaker rolltape;
+	m_RollTape = new Element;
+	SymbolMaker rolltape;
 	rolltape.beginDrawLines();
 	float y0 = -0.067;
 	float r0 = 0.02;
@@ -874,8 +968,8 @@ void F16HUD::addRollTape() {
 	m_RollTape->addSymbol(rolltape);
 	m_HUD.addFrameElement(m_RollTape);
 
-	m_RollMarker = new HUD::MoveableElement;
-	HUD::SymbolMaker rollmarker;
+	m_RollMarker = new MoveableElement;
+	SymbolMaker rollmarker;
 	rollmarker.beginDrawLines();
 	rollmarker.drawLine(0.0, - r0, 0.0015, - r0 - 0.0026);
 	rollmarker.drawLine(0.0, - r0, -0.0015, - r0 - 0.0026);
@@ -900,9 +994,9 @@ void F16HUD::addAirspeedTape() {
 	m_AirspeedTape->addToHudFrame(m_VerticalFrame.get());
 
 	const float box_origin = offset_x - 0.0025 - 0.0025;
-	m_AirspeedBox = new HUD::Element;
-	m_AirspeedText = new HUD::ElementText(m_AirspeedBox.get());
-	HUD::SymbolMaker box;
+	m_AirspeedBox = new Element;
+	m_AirspeedText = new ElementText(m_AirspeedBox.get());
+	SymbolMaker box;
 	box.beginDrawLines();
 	box.drawLine(-0.010 + box_origin, -0.0018 + offset_y, -0.010 + box_origin, 0.0018 + offset_y);
 	box.drawLine(-0.010 + box_origin, 0.0018 + offset_y, 0.000 + box_origin, 0.0018 + offset_y);
@@ -932,9 +1026,9 @@ void F16HUD::addAltitudeTape() {
 	m_AltitudeTape->addToHudFrame(m_VerticalFrame.get());
 
 	const float box_origin = offset_x + 0.0025 + 0.0025;
-	m_AltitudeBox = new HUD::Element;
-	m_AltitudeText = new HUD::ElementText(m_AltitudeBox.get());
-	HUD::SymbolMaker box;
+	m_AltitudeBox = new Element;
+	m_AltitudeText = new ElementText(m_AltitudeBox.get());
+	SymbolMaker box;
 	box.beginDrawLines();
 	box.drawLine(0.0135 + box_origin, -0.0018 + offset_y, 0.0135 + box_origin, 0.0018 + offset_y);
 	box.drawLine(0.0135 + box_origin, 0.0018 + offset_y, 0.000 + box_origin, 0.0018 + offset_y);
@@ -953,7 +1047,7 @@ void F16HUD::addAltitudeTape() {
 }
 
 void F16HUD::addHeadingTape() {
-	m_HeadingTapeFrame = new HUD::FloatingFrame;
+	m_HeadingTapeFrame = new FloatingFrame;
 	m_HUD.addFrameElement(m_HeadingTapeFrame);
 	m_HeadingTape = new HUDTape(HUDTape::HORIZONTAL, 5, 0.010, 0.0025, 0.0, -0.06);
 	m_HeadingTape->setValueScale(10.0 /* degrees per tick */, 360.0 /* force the range to be positive */);
@@ -964,9 +1058,9 @@ void F16HUD::addHeadingTape() {
 	m_HeadingTape->setCaretSymbol(m_CaretSymbol);
 	m_HeadingTape->addToHudFrame(m_HeadingTapeFrame.get());
 
-	m_HeadingBox = new HUD::Element;
-	m_HeadingText = new HUD::ElementText(m_HeadingBox.get());
-	HUD::SymbolMaker box;
+	m_HeadingBox = new Element;
+	m_HeadingText = new ElementText(m_HeadingBox.get());
+	SymbolMaker box;
 	box.addRectangle(-0.0035, -0.0630, 0.0035, -0.0670);
 	m_HeadingBox->addSymbol(box);
 	m_HeadingTapeFrame->addElement(m_HeadingBox);
@@ -975,8 +1069,8 @@ void F16HUD::addHeadingTape() {
 	m_HeadingText->setAlignment(osgText::Text::CENTER_CENTER);
 }
 
-void F16HUD::newVerticalText(osg::ref_ptr<HUD::ElementText> &element, float x, float y, HUD::ElementText::AlignmentType alignment) {
-	element = new HUD::ElementText(new HUD::Element);
+void F16HUD::newVerticalText(osg::ref_ptr<ElementText> &element, float x, float y, ElementText::AlignmentType alignment) {
+	element = new ElementText(new Element);
 	m_VerticalFrame->addElement(element->element());
 	m_StandardFont->apply(element);
 	element->setPosition(x, y);
@@ -988,12 +1082,12 @@ void F16HUD::addTextElements() {
 	newVerticalText(m_MasterArm, -0.042, -0.0520);
 	m_MasterArm->setText("SIM");
 	newVerticalText(m_MachMeter, -0.042, -0.0555);
-	newVerticalText(m_MaxGForce, -0.042, -0.0590, HUD::ElementText::RIGHT_BOTTOM);
-	newVerticalText(m_MasterMode, -0.042, -0.0625, HUD::ElementText::RIGHT_BOTTOM);
+	newVerticalText(m_MaxGForce, -0.042, -0.0590, ElementText::RIGHT_BOTTOM);
+	newVerticalText(m_MasterMode, -0.042, -0.0625, ElementText::RIGHT_BOTTOM);
 	m_MasterMode->setText("NAV");
 
 	newVerticalText(m_RadarAltimeter, 0.035, -0.0535);
-	HUD::SymbolMaker box;
+	SymbolMaker box;
 	box.addRectangle(0.038, -0.0505, 0.053, -0.0540);
 	m_RadarAltimeter->element()->addSymbol(box);
 
@@ -1020,8 +1114,8 @@ void F16HUD::addPitchLadder() {
 		float sign = (i < 0) ? -1.0 : 1.0;
 		float slope = (i < 0) ? sin(0.25 * osg::inDegrees(angle)) : 0.0;
 		osgText::Text *label;
-		HUD::DirectionElement *element = new HUD::DirectionElement;
-		HUD::SymbolMaker bar;
+		DirectionElement *element = new DirectionElement;
+		SymbolMaker bar;
 		bar.beginDrawLines();
 		if (i > 0) {  // above the horizon, flat pitch bars
 			bar.drawLine(0.020, -0.002 * sign, 0.020, 0.000);
@@ -1064,8 +1158,8 @@ void F16HUD::addPitchLadder() {
 	}
 
 	{ // -2.5 degree glideslope bar
-		HUD::DirectionElement *element = new HUD::DirectionElement;
-		HUD::SymbolMaker bar;
+		DirectionElement *element = new DirectionElement;
+		SymbolMaker bar;
 		bar.beginDrawLines();
 		bar.drawLine(0.16 * 0.015 + 0.005, 0.0, 0.005, 0.0);
 		bar.drawLine(0.28 * 0.015 + 0.005, 0.0, 0.44 * 0.015 + 0.005, 0.0);
@@ -1104,6 +1198,36 @@ double F16HUD::getSpeed() const {
 		return b_Velocity->value().length();  // XXX
 	}
 	return b_Velocity->value().length();  // GND
+}
+
+void F16HUD::updateMasterMode() {
+	f16::MasterMode mode = b_MasterMode->mode();
+	const bool newmode = (m_LastMasterMode != mode);
+	m_LastMasterMode = mode;
+
+	// initial mastermode hacking
+	// FIXME m_MasterMode should really be the HUD operating mode label, which
+	// is not the same as the master mode.
+	if (mode == f16::AA) {
+		if (newmode) {
+			m_MasterMode->setText("AA");
+			m_ImpactPointCue->show(false);
+		}
+	} else if (mode == f16::AG) {
+		if (newmode) {
+			m_MasterMode->setText("AG");
+			m_ImpactPointCue->show(true);
+		}
+		double altitude = b_Position->value().z();
+		double altitude_agl = altitude - b_GroundZ->value();
+		Quat const &attitude = b_Attitude->value();
+		m_ImpactPointCue->update(m_FlightPathMarker->position(), m_CueVelocity, attitude, altitude_agl);
+	} else {  // nav
+		if (newmode) {
+			m_MasterMode->setText(mode.getToken());
+			m_ImpactPointCue->show(false);
+		}
+	}
 }
 
 CSP_NAMESPACE_END

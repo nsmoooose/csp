@@ -18,9 +18,9 @@
 
 
 /**
- * @file HUDText.h
+ * @file Text.h
  *
- * TODO These classes are not HUD specific and should be moved elsewhere.
+ * TODO Rename DisplayText.h
  **/
 
 
@@ -35,23 +35,28 @@
 #include <string>
 
 namespace osgText { class Text; }
+namespace osgText { class Font; }
 
 CSP_NAMESPACE
 
 /** An abstract base class for a font/style that can be applied to
  *  an osgText::Text element.
  */
-class HUDFont: public osg::Referenced {
+class DisplayFont: public osg::Referenced {
 protected:
-	virtual ~HUDFont() {}
+	virtual ~DisplayFont() {}
 public:
-	typedef osg::ref_ptr<HUDFont> Ref;
+	typedef osg::ref_ptr<DisplayFont> RefT;
+	virtual osgText::Font const *font() const = 0;
+	virtual double getHeight() const = 0;
+	virtual double getWidth() const { return getHeight() * 0.8; }
 	virtual void apply(osgText::Text *text) = 0;
 	template <class C> void apply(osg::ref_ptr<C> &text) {
 		apply(text.get());
 	}
 };
 
+// TODO convert LabelFormatter and subclasses to use std::string + stringprintf.
 
 /** An abstract base class for classes that format floating point values
  *  as text.

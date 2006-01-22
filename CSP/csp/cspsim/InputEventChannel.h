@@ -63,6 +63,7 @@ public:
 	InputEventChannel(std::string const &name, InputInterface *input_interface): ChannelBase(name, ACCESS_SHARED) {
 		input_interface->bindActionEvent(name, sigc::mem_fun(*this, &InputEventChannel::onInputEvent));
 	}
+
 	/** A convenience method to construct an InputEventChannel and bind a callback
 	 *  method in one step.  Useful when the System creating and registering the
 	 *  channel does not need to retain a private reference.  Note that the instance
@@ -72,6 +73,15 @@ public:
 	InputEventChannel(std::string const &name, C* instance, void (C::*method)()): ChannelBase(name, ACCESS_SHARED) {
 		connect(instance, method);
 		instance->bindActionEvent(name, sigc::mem_fun(*this, &InputEventChannel::onInputEvent));
+	}
+
+	/** Another convenience method to construct an InputEventChannel and bind a
+	 *  callback in one step.  Useful when the System creating and registering the
+	 *  channel does not need to retain a private reference.
+	 */
+	InputEventChannel(std::string const &name, InputInterface *input_interface, sigc::slot<void> const &functor): ChannelBase(name, ACCESS_SHARED) {
+		connect(functor);
+		input_interface->bindActionEvent(name, sigc::mem_fun(*this, &InputEventChannel::onInputEvent));
 	}
 
 	/** Connect a new signal handler to the channel.  The handler will be called

@@ -1,5 +1,0 @@
-NB: this code is experimental; use at your own risk!
-
-see test.cpp for a trivial example of how to bootstrap
-NetworkInterface.  much, much documentation still needs
-to be written.

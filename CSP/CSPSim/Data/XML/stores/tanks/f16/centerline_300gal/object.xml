@@ -1,6 +1,0 @@
-<Object class="Projectile">
-	<Path name="model">model</Path>
-	<Float name="mass">1</Float>
-	<Path name="human_systems">.objects.freefall_systems</Path>
-	<Path name="agent_systems">.objects.freefall_systems</Path>
-</Object>

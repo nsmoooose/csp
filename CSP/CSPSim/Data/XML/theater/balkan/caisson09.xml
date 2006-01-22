@@ -1,6 +1,0 @@
-<?xml version="1.0" standalone="no"?>
-
-<Object class="FeatureObjectModel">
-    <Path name="model">caissons.caisson09.model</Path>
-    <Int name="hit_points">30</Int>
-</Object>

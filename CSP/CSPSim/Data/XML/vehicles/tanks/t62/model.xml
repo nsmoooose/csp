@@ -1,9 +1,0 @@
-<?xml version="1.0" standalone="no"?>
-
-<Object class="ObjectModel">
-	<External name="model_path">t62.osg</External>
-	<Vector name="axis_0">1 0 0</Vector>
-	<Vector name="axis_1">0 1 0</Vector>
-	<Float name="scale">0.01</Float>
-</Object>
-

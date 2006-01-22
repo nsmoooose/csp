@@ -37,6 +37,7 @@
 CSP_NAMESPACE
 
 class DataRecorder;
+class SoundModel;
 class StoresManagementSystem;
 
 
@@ -47,58 +48,16 @@ class StoresManagementSystem;
  *  and serves as the external interface of the composite system.
  */
 class SystemsModel: public System {
-
-	Ref<Bus> m_Bus;
-
-	bool m_Bound;
-
-	virtual void setModel(SystemsModel *) {}
-
-	class FindSystemByNameVisitor: public FindVisitor<System,SystemVisitor> {
-		std::string m_Name;
-	public:
-		FindSystemByNameVisitor(std::string const &name):
-			FindVisitor<System,SystemVisitor>(), m_Name(name) {}
-		virtual bool match(System &s) { return s.getName() == m_Name; }
-	};
-
-	class EventVisitor: public SystemVisitor {
-		bool m_handled;
-		MapEvent m_event;
-	public:
-		EventVisitor(MapEvent const &event): m_handled(false), m_event(event) {}
-		bool handled() const { return m_handled; }
-		void apply(System &system) {
-			if (m_handled) return;
-			m_handled = system.onMapEvent(m_event);
-			if (!m_handled) traverse(system);
-		}
-		void apply(SystemsModel &model) { traverse(model); }
-	};
-
-	class InfoVisitor: public SystemVisitor {
-		InfoList &m_info;
-	public:
-		InfoVisitor(InfoList &info): m_info(info) {}
-		void apply(System &system) { system.getInfo(m_info); traverse(system); }
-		void apply(SystemsModel &model) { traverse(model); }
-	};
-
-	// A few subsystems bind tightly to the parent DynamicObject instance, so it
-	// is convenient to declare the separately.  If defined these systems will be
-	// added to the System tree when the SystemsModel is first created, but are
-	// also directly available via accessor methods.
-	Link<PhysicsModel> m_PhysicsModel;
-	Link<LocalController> m_LocalController;
-	Link<RemoteController> m_RemoteController;
-	Link<StoresManagementSystem> m_StoresManagementSystem;
-
-protected:
-	virtual ~SystemsModel() { }
+	class BindRecorderVisitor;
+	class EventVisitor;
+	class FindSystemByNameVisitor;
+	class InfoVisitor;
 
 public:
-
 	CSP_DECLARE_OBJECT(SystemsModel)
+	CSP_VISITABLE(SystemVisitor);
+
+	SystemsModel();
 
 	/** Initialize from an existing model.
 	 *
@@ -111,20 +70,15 @@ public:
 
 	bool canBeAdded() const { return false; }
 
-	/*  why?  remove if not needed.  2005-06-05
-	template<typename T>
-	void publish(std::string const &name, T const &value) {
-		assert(!m_Bound);
-		m_Bus->registerLocalDataChannel(name, value);
-	}
-	*/
-
-	Ref<Bus> getBus() const {
+	Bus* getBus() const {
 		assert(m_Bus.valid());
-		return m_Bus;
+		return m_Bus.get();
 	}
 
-	virtual void postCreate();
+	SoundModel *getSoundModel() const {
+		assert(m_SoundModel.valid());
+		return m_SoundModel.get();
+	}
 
 	Ref<PhysicsModel> getPhysicsModel() const;
 	Ref<LocalController> getLocalController() const;
@@ -135,39 +89,46 @@ public:
 
 	virtual void getInfo(InfoList &info);
 
-	Ref<System> getSystem(std::string const &name, bool required = true) {
-		Ref< FindVisitor<System,SystemVisitor> > visitor;
-		visitor = accept(new FindSystemByNameVisitor(name));
-		Ref<System> found = visitor->getNode();
-		if (!found) {
-			assert(!required);
-			return 0;
-		}
-		return found;
-	}
+	Ref<System> getSystem(std::string const &name, bool required=true);
 
-	void bindSystems() {
-		assert(!m_Bound);
-		accept(new SetModelVisitor(getModel()));
-		Ref<BindVisitor> binder = new BindVisitor(m_Bus.get());
-		accept(binder);
-		m_Bound = true;
-	}
+	void bindSystems();
 
-	SystemsModel(): m_Bound(false) {
-		m_Model = this;
-		m_Bus = new Bus("MODEL_BUS");
-	}
+	virtual bool onMapEvent(MapEvent const &event);
+	virtual void registerChannels(Bus *);
+	virtual void importChannels(Bus *);
 
-	virtual bool onMapEvent(MapEvent const &event) {
-		Ref<EventVisitor> visitor = accept(new EventVisitor(event));
-		return visitor->handled();
-	}
+	void setInternalView(bool internal_view);
+	void attachSceneModel(SceneModel *model);
+	void detachSceneModel(SceneModel *model);
 
-	virtual void registerChannels(Bus *) {}
-	virtual void importChannels(Bus *) {}
+protected:
+	virtual ~SystemsModel();
+	virtual void postCreate();
 
-	CSP_VISITABLE(SystemVisitor);
+private:
+	virtual void setModel(SystemsModel *);
+
+	void importChannelsProxy(System &system);
+	void registerChannelsProxy(System &system);
+
+	// A few subsystems bind tightly to the parent DynamicObject instance, so it
+	// is convenient to declare the separately.  If defined these systems will be
+	// added to the System tree when the SystemsModel is first created, but are
+	// also directly available via accessor methods.
+	Link<PhysicsModel> m_PhysicsModel;
+	Link<LocalController> m_LocalController;
+	Link<RemoteController> m_RemoteController;
+
+	// Other subsystems are owned by the parent object and shared by all systems
+	// models.  The parent object calls setFoo(...) to assign the shared resource,
+	// which other subsystems can access via the corresponding getFoo(...) methods.
+	// TODO move sms to DynamicObject.
+	Link<StoresManagementSystem> m_StoresManagementSystem;
+
+	Ref<SoundModel> m_SoundModel;
+	Ref<Bus> m_Bus;
+
+	bool m_Bound;
 };
 
 

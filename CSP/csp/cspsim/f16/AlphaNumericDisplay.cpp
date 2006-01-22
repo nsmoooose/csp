@@ -29,54 +29,47 @@
 
 CSP_NAMESPACE
 
-AlphaNumericDisplay::AlphaNumericDisplay(unsigned width, unsigned height): m_Width(width), m_Height(height), m_Dirty(false) {
+AlphaNumericDisplay::AlphaNumericDisplay(unsigned width, unsigned height): m_Width(width), m_Height(height), m_DirtyCount(0) {
 	m_Width = width;
 	m_Height = height;
-	m_DirtyLines = new bool[height];
+	m_DirtyLineCount = new int[height];
 	m_Lines = new char*[height];
-	for (unsigned i = 0; i < height; ++i) m_Lines[i] = new char[width + 1];
+	for (unsigned i = 0; i < height; ++i) {
+		m_Lines[i] = new char[width + 1];
+		m_DirtyLineCount[i] = 0;
+	}
 	clear();
 }
 
 AlphaNumericDisplay::~AlphaNumericDisplay() {
 	for (unsigned i = 0; i < m_Height; ++i) delete[] m_Lines[i];
 	delete[] m_Lines;
-	delete[] m_DirtyLines;
-}
-
-void AlphaNumericDisplay::setClean() {
-	m_Dirty = false;
-	for (unsigned i = 0; i < m_Height; ++i) m_DirtyLines[i] = false;
-}
-
-void AlphaNumericDisplay::setClean(unsigned i) {
-	assert(i < m_Height);
-	m_DirtyLines[i] = false;
-	m_Dirty = false;
-	for (unsigned i = 0; i < m_Height && !m_Dirty; ++i) m_Dirty = m_Dirty || m_DirtyLines[i];
+	delete[] m_DirtyLineCount;
 }
 
 void AlphaNumericDisplay::write(unsigned x, unsigned y, const char *text, Video video) {
 	assert(y < m_Height);
 	char *d = m_Lines[y];
 	char shift = static_cast<char>((video == NORMAL) ? 0 : 0x80);
-	bool dirty = m_DirtyLines[y];
+	bool changed = false;
 	for (unsigned i = x; *text && i < m_Width; ++i) {
 		char character = *text++ | shift;
-		dirty = dirty || (d[i] != character);
+		changed = changed || (d[i] != character);
 		d[i] = character;
 	}
-	m_DirtyLines[y] = dirty;
-	m_Dirty = m_Dirty || dirty;
+	if (changed) {
+		m_DirtyLineCount[y]++;
+		m_DirtyCount++;
+	}
 }
 
 void AlphaNumericDisplay::clear() {
 	for (unsigned i = 0; i < m_Height; ++i) {
 		for (unsigned int j = 0; j < m_Width; ++j) m_Lines[i][j] = ' ';
 		m_Lines[i][m_Width] = 0;
-		m_DirtyLines[i] = true;
+		m_DirtyLineCount[i]++;
 	}
-	m_Dirty = true;
+	m_DirtyCount++;
 }
 
 void AlphaNumericDisplay::dump() const {
@@ -97,9 +90,9 @@ void AlphaNumericDisplay::dump(InfoList &info) const {
 	}
 }
 
-bool AlphaNumericDisplay::isDirty(unsigned i) const {
+int AlphaNumericDisplay::getDirtyCount(unsigned i) const {
 	assert(i < m_Height);
-	return m_DirtyLines[i];
+	return m_DirtyLineCount[i];
 }
 
 const char* AlphaNumericDisplay::getLine(unsigned i) const {

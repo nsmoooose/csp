@@ -44,7 +44,6 @@ namespace osgParticle {
 CSP_NAMESPACE
 
 class DataRecorder;
-class DynamicModel;
 class HUD;
 class LocalController;
 class ObjectModel;
@@ -74,7 +73,8 @@ class DynamicObject: public SimObject, public InputInterface
 
 	static std::list<SystemsModelStore> SystemsModelCache;
 
-	enum { MODELCACHESIZE = 5 };
+	enum { MODEL_CACHE_SIZE = 5 };
+	enum { NO_STATION = -1 };
 
 private:
 
@@ -211,13 +211,11 @@ protected:
 	DataChannel<Vector3>::RefT b_CenterOfMassOffset;
 	DataChannel<StoresDynamics>::RefT b_StoresDynamics;
 	DataChannel<Quat>::RefT b_Attitude;
-	DataChannel<DynamicModel*>::RefT b_DynamicModel;
 	DataChannel<HUD*>::CRefT b_Hud;
 
 	std::string m_ObjectName;
 
 	Link<ObjectModel> m_Model;
-	Ref<DynamicModel> m_DynamicModel;
 	Ref<SceneModel> m_SceneModel;
 	Ref<SceneModelChild> m_StationSceneModel;
 	Ref<SystemsModel> m_SystemsModel;
@@ -231,6 +229,7 @@ protected:
 	Station const *activeStation();
 	int m_ActiveStation;
 	int m_PreviousStation;
+	bool m_InternalView;
 
 	virtual void doPhysics(double dt);
 	virtual void doControl(double dt);

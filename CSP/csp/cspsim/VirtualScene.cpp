@@ -30,8 +30,9 @@
 #include <csp/cspsim/glDiagnostics.h>
 #include <csp/cspsim/ObjectModel.h>
 #include <csp/cspsim/Projection.h>
-#include <csp/cspsim/Sky.h>
 #include <csp/cspsim/SceneConstants.h>
+#include <csp/cspsim/Sky.h>
+#include <csp/cspsim/SoundEngine.h>
 #include <csp/cspsim/TerrainObject.h>
 #include <csp/cspsim/theater/FeatureGroup.h>
 #include <csp/cspsim/theater/FeatureSceneGroup.h>
@@ -55,6 +56,7 @@
 #include <osg/PositionAttitudeTransform>
 #include <osg/StateSet>
 #include <osg/TexEnv>
+#include <osgAL/SoundRoot>
 #include <osgUtil/CullVisitor>
 #include <osgUtil/IntersectVisitor>
 #include <osgUtil/Optimizer>
@@ -361,6 +363,13 @@ void VirtualScene::buildScene() {
 	init();
 	createSceneViews();
 
+	m_SoundRoot = new osg::PositionAttitudeTransform;
+	m_SoundRoot->addChild(SoundEngine::getInstance().getSoundRoot());
+
+	// place the sound root in the very far group to ensure that the listener is
+	// traversed before any other sound sources.
+	m_VeryFarGroup->addChild(m_SoundRoot.get());
+
 	m_FreeObjectGroup = new osg::Group;
 	m_FreeObjectGroup->setName("free_object_group");
 
@@ -542,13 +551,19 @@ void VirtualScene::setCameraNode(osg::Node *) {
 void VirtualScene::_setLookAt(const Vector3& eyePos, const Vector3& lookPos, const Vector3& upVec) {
 	CSPLOG(DEBUG, APP) << "VirtualScene::setLookAt - eye: " << eyePos << ", look: " << lookPos << ", up: " << upVec;
 
-	assert(m_FarView.valid());
 	_updateOrigin(eyePos);
-	osg::Vec3 _up (upVec.x(), upVec.y(), upVec.z() );
+	osg::Vec3 _up(upVec.x(), upVec.y(), upVec.z());
 
-	m_VeryFarView->setViewMatrixAsLookAt(osg::Vec3(0.0, 0.0, 0.0), toOSG(lookPos - eyePos), _up);
-	m_FarView->setViewMatrixAsLookAt(osg::Vec3(0.0, 0.0, 0.0), toOSG(lookPos - eyePos), _up);
-	m_NearView->setViewMatrixAsLookAt(osg::Vec3(0.0, 0.0, 0.0), toOSG(lookPos - eyePos), _up);
+	osg::Matrix view_matrix;
+	view_matrix.makeLookAt(osg::Vec3(0.0, 0.0, 0.0), toOSG(lookPos - eyePos), _up);
+
+	m_VeryFarView->setViewMatrix(view_matrix);
+	m_FarView->setViewMatrix(view_matrix);
+	m_NearView->setViewMatrix(view_matrix);
+
+	osg::Quat listener_attitude;
+	listener_attitude.set(view_matrix);
+	m_SoundRoot->setAttitude(listener_attitude);
 
 	m_GlobalFrame->setPosition(toOSG(-eyePos));
 

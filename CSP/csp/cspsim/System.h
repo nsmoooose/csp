@@ -82,6 +82,7 @@
 
 #include <csp/cspsim/Bus.h>  // could be forward declared, but most Bus users will need it in the header anyway.
 #include <csp/cspsim/InputInterface.h>
+#include <csp/cspsim/SoundEffect.h>  // for SoundEffect::Mode
 
 #include <csp/csplib/util/Namespace.h>
 #include <csp/csplib/util/Composite.h>
@@ -94,6 +95,9 @@ CSP_NAMESPACE
 
 
 class DataRecorder;
+class ResourceBundle;
+class SceneModel;
+class SoundSample;
 class System;
 class SystemsModel;
 
@@ -136,111 +140,10 @@ public:
 	/// Strings used for onscreen data display.  See getInfo().
 	typedef std::vector<std::string> InfoList;
 
-private:
-
-	/** External XML variable for specifying and serializing child
-	 *  systems.
-	 *
-	 *  After deserialization, references to theso subsystems are added
-	 *  to the node tree.  See postCreate() for details.
-	 */
-	Link<System>::vector m_Subsystems;
-
-	/** Keep a pointer to the root of the systems tree.  We store a raw
-	 *  pointer rather than a Ref<> in order to prevent cyclic references.
-	 *  All Ref references are from parents to children.
-	 */
-	SystemsModel *m_Model;
-
-	/** Visitor class to inform all subsystems of the root SystemsModel
-	 *  instance.  Each subsystem maintains a reference to the root of
-	 *  the systems tree.
-	 */
-	class SetModelVisitor: public SystemVisitor {
-		SystemsModel *m_Model;
-	public:
-		SetModelVisitor(SystemsModel *model): m_Model(model) {}
-		virtual void apply(System &s) {
-			s.setModel(m_Model);
-			traverse(s);
-		}
-	};
-
-	/** Called by the SetModelVisitor to bind to the root SystemsModel
-	 *  after the full tree has been assembled.
-	 */
-	virtual void setModel(SystemsModel *model);
-
-	/** Called by the UpdateMasterVisitor to bind to an UpdateMaster and
-	 *  receive periodic update callbacks.  You must extend onUpdate() to
-	 *  handle these callbacks.  If not extended, the first update event
-	 *  will automatically disconnect this system from further updates.
-	 */
-	void _registerUpdate(UpdateMaster *master) {
-		UpdateTarget::registerUpdate(master);
-	}
-
-protected:
-
-	/** Register channels for access to internal data by other 
-	 *  systems on the bus.
-	 */
-	virtual void registerChannels(Bus*)=0;
-
-	/** A visitor used to connect systems to existing channels on the bus.
-	 *  Systems export channels to the system bus when first added to the
-	 *  systems model, but do not import channels until after all systems
-	 *  have been added.  This two-phased approach eliminates dependancy
-	 *  on the order in which the systems are added to the model.
-	 */
-	class BindVisitor: public SystemVisitor {
-		Bus* m_Bus;
-	public:
-		BindVisitor(Bus *bus): m_Bus(bus) {}
-		void apply(System &s) {
-			s.importChannels(m_Bus);
-			traverse(s);
-		}
-	};
-
-	/** A visitor to connect systems to the update master that provides
-	 *  periodic update callbacks.  See UpdateMaster for details.
-	 */
-	class UpdateMasterVisitor: public SystemVisitor {
-		UpdateMaster* m_Master;
-	public:
-		UpdateMasterVisitor(UpdateMaster* master): m_Master(master) {}
-		void apply(System &s) {
-			s._registerUpdate(m_Master);
-			traverse(s);
-		}
-	};
-
-	/** Import channels provided by other systems on the bus.
-	 *
-	 *  Call bus->getChannel() and bus->getSharedChannel() to
-	 *  obtain references to data channels available on the
-	 *  bus.  These references should generally be stored as
-	 *  system member variables for later use.
-	 */
-	virtual void importChannels(Bus*)=0;
-
-
-	// XXX use raw pointers here to prevent circular references
-	// that keep the model alive.  the model pointer is only
-	// for internal use by the system instance, which will be
-	// destroyed when the model goes out of scope.
-	SystemsModel* getModel() const { return m_Model; }
-
-	/** Add and register all subsystems.
-	 *
-	 *  Called automatically as part of the SimData deserialization
-	 *  infrastructure.
-	 */
-	virtual void postCreate();
-
-public:
 	CSP_DECLARE_ABSTRACT_OBJECT(System)
+
+	// System nodes accept SystemVisitors
+	CSP_VISITABLE(SystemVisitor);
 
 	System();
 	virtual ~System();
@@ -295,8 +198,141 @@ public:
 	 */
 	virtual void bindRecorder(DataRecorder *) const {}
 
-	// System nodes accept SystemVisitors
-	CSP_VISITABLE(SystemVisitor);
+protected:
+
+	/** Register channels for access to internal data by other 
+	 *  systems on the bus.
+	 */
+	virtual void registerChannels(Bus*)=0;
+
+	/** A visitor to connect systems to the update master that provides
+	 *  periodic update callbacks.  See UpdateMaster for details.
+	 */
+	class UpdateMasterVisitor: public SystemVisitor {
+		UpdateMaster* m_Master;
+	public:
+		UpdateMasterVisitor(UpdateMaster* master): m_Master(master) {}
+		virtual void apply(System &s) {
+			s._registerUpdate(m_Master);
+			traverse(s);
+		}
+	};
+
+	/** Import channels provided by other systems on the bus.
+	 *
+	 *  Call bus->getChannel() and bus->getSharedChannel() to
+	 *  obtain references to data channels available on the
+	 *  bus.  These references should generally be stored as
+	 *  system member variables for later use.
+	 */
+	virtual void importChannels(Bus*)=0;
+
+	/** Event callbacks.  These methods are called by the vehicle object class
+	 *  in response to various events.  These methods are only called for the
+	 *  active system model; inactive models do not receive notification until
+	 *  they are reactivated.  The default implementation does nothing.
+	 */
+	virtual void onInternalView(bool);
+	virtual void onAttachSceneModel(SceneModel*);
+	virtual void onDetachSceneModel(SceneModel*);
+
+	/** Get the resource bundle for this system, or null.
+	 */
+	ResourceBundle *getResourceBundle() { return m_ResourceBundle.get(); }
+
+	/** Retrieve a sound sample from the resource bundle.  Returns null if
+	 *  the sample is not found.
+	 */
+	SoundSample const *getSoundSample(std::string const &name) const;
+
+	/** Convenience method to create a new sound effect from a sound sample
+	 *  in the system resource bundle.  Returns null if the named sample is
+	 *  not found.  Otherwise returns a new object that must be assigned to
+	 *  a Ref pointer to avoid memory leaks.
+	 */
+	SoundEffect *addSoundEffect(std::string const &name, SoundEffect::Mode mode);
+
+	/** Remove a sound effect that was added using addSoundEffect.
+	 */
+	void removeSoundEffect(Ref<SoundEffect> const &sound);
+
+	/** Convenience method to both remove a sound effect and reset the reference
+	 *  to null in one step.
+	 */
+	void removeAndDeleteSoundEffect(Ref<SoundEffect> &sound);
+
+	// XXX use raw pointers here to prevent circular references
+	// that keep the model alive.  the model pointer is only
+	// for internal use by the system instance, which will be
+	// destroyed when the model goes out of scope.
+	SystemsModel* getModel() const { return m_Model; }
+
+	/** Add and register all subsystems.
+	 *
+	 *  Called automatically as part of the SimData deserialization
+	 *  infrastructure.
+	 */
+	virtual void postCreate();
+
+private:
+
+	/** External XML variable for specifying and serializing child
+	 *  systems.
+	 *
+	 *  After deserialization, references to theso subsystems are added
+	 *  to the node tree.  See postCreate() for details.
+	 */
+	Link<System>::vector m_Subsystems;
+
+	/** External XML variable specifying resources, such as sound
+	 *  samples, that this system may use (optional).
+	 */
+	Link<ResourceBundle> m_ResourceBundle;
+
+	/** Keep a pointer to the root of the systems tree.  We store a raw
+	 *  pointer rather than a Ref<> in order to prevent cyclic references.
+	 *  All Ref references are from parents to children.
+	 */
+	SystemsModel *m_Model;
+
+	/** Called by the SetModelVisitor to bind to the root SystemsModel
+	 *  after the full tree has been assembled.
+	 */
+	virtual void setModel(SystemsModel *model);
+
+	/** Called by the UpdateMasterVisitor to bind to an UpdateMaster and
+	 *  receive periodic update callbacks.  You must extend onUpdate() to
+	 *  handle these callbacks.  If not extended, the first update event
+	 *  will automatically disconnect this system from further updates.
+	 */
+	void _registerUpdate(UpdateMaster *master) {
+		UpdateTarget::registerUpdate(master);
+	}
+
+	/** A visitor used to connect systems to existing channels on the bus.
+	 *  Systems export channels to the system bus when first added to the
+	 *  systems model, but do not import channels until after all systems
+	 *  have been added.  This two-phased approach eliminates dependancy
+	 *  on the order in which the systems are added to the model.
+	 */
+	class BindVisitor: public SystemVisitor {
+		Bus* m_Bus;
+	public:
+		BindVisitor(Bus *bus): m_Bus(bus) {}
+		virtual void apply(System &s);
+	};
+
+	/** Visitor class to inform all subsystems of the root SystemsModel
+	 *  instance.  Each subsystem maintains a reference to the root of
+	 *  the systems tree.  Subsystems use this callback to register
+	 *  channels on the bus and perform other initialization.
+	 */
+	class InitVisitor: public SystemVisitor {
+		SystemsModel *m_Model;
+	public:
+		InitVisitor(SystemsModel *model): m_Model(model) {}
+		virtual void apply(System &s);
+	};
 };
 
 

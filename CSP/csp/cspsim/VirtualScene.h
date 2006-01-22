@@ -34,20 +34,16 @@
 #include <osg/ref_ptr>
 #include <osg/Vec4>
 
-namespace osg {
-	class Node;
-	class Group;
-	class Transform;
-	class FrameStamp;
-	class PositionAttitudeTransform;
-	class State;
-	class StateSet;
-	class DisplaySettings;
-}
+namespace osg { class Node; }
+namespace osg { class Group; }
+namespace osg { class Transform; }
+namespace osg { class FrameStamp; }
+namespace osg { class PositionAttitudeTransform; }
+namespace osg { class State; }
+namespace osg { class StateSet; }
+namespace osg { class DisplaySettings; }
 
-namespace osgUtil {
-	class SceneView;
-}
+namespace osgUtil { class SceneView; }
 
 
 CSP_NAMESPACE
@@ -251,6 +247,9 @@ protected:
 	osg::ref_ptr<osg::PositionAttitudeTransform> m_GlobalFrame;
 	osg::ref_ptr<osg::PositionAttitudeTransform> m_FeatureGroup;
 	osg::ref_ptr<osg::PositionAttitudeTransform> m_TerrainGroup;
+
+	// root node for sound effects (the listener)
+	osg::ref_ptr<osg::PositionAttitudeTransform> m_SoundRoot;
 };
 
 CSP_NAMESPACE_END

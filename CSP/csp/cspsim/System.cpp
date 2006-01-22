@@ -27,16 +27,20 @@
 
 #include <csp/cspsim/System.h>
 #include <csp/cspsim/Bus.h>
+#include <csp/cspsim/ResourceBundle.h>
+#include <csp/cspsim/SoundModel.h>
 #include <csp/cspsim/SystemsModel.h>
 
 #include <csp/csplib/util/Log.h>
 #include <csp/csplib/data/ObjectInterface.h>
+#include <csp/csplib/sound/Sample.h>
 
 
 CSP_NAMESPACE
 
 CSP_XML_BEGIN(System)
 	CSP_DEF("subsystems", m_Subsystems, false)
+	CSP_DEF("resources", m_ResourceBundle, false)
 CSP_XML_END
 
 
@@ -77,6 +81,57 @@ bool System::addChild(SystemNode *node) {
 	return true;
 }
 
+void System::onInternalView(bool) { }
+void System::onAttachSceneModel(SceneModel*) { }
+void System::onDetachSceneModel(SceneModel*) { }
+
+SoundSample const *System::getSoundSample(std::string const &name) const {
+	if (!m_ResourceBundle) {
+		CSPLOG(ERROR, OBJECT) << "No resource bundle in system " << getClassName() << " for sound " << name;
+		return 0;
+	}
+	return m_ResourceBundle->getSoundSample(name);
+}
+
+SoundEffect *System::addSoundEffect(std::string const &name, SoundEffect::Mode mode) {
+	assert(m_Model);
+	Ref<const SoundSample> sample(getSoundSample(name));
+	Ref<SoundModel> model = m_Model->getSoundModel();
+	if (!sample || !model) return 0;
+	switch (mode) {
+		case SoundEffect::HEADSET:
+			return SoundEffect::HeadsetSound(sample, model);
+		case SoundEffect::INTERNAL:
+			return SoundEffect::InternalSound(sample, model);
+		case SoundEffect::EXTERNAL:
+			return SoundEffect::ExternalSound(sample, model);
+		default:
+			CSPLOG(ERROR, AUDIO) << "Unknown sound effect mode " << mode;
+	}
+	return 0;
+}
+
+void System::removeSoundEffect(Ref<SoundEffect> const &sound) {
+	Ref<SoundModel> model = m_Model->getSoundModel();
+	if (model.valid()) {
+		model->removeSound(sound);
+	}
+}
+
+void System::removeAndDeleteSoundEffect(Ref<SoundEffect> &sound) {
+	removeSoundEffect(sound);
+	sound = 0;
+}
+
+void System::BindVisitor::apply(System &s) {
+	s.importChannels(m_Bus);
+	traverse(s);
+}
+
+void System::InitVisitor::apply(System &s) {
+	s.setModel(m_Model);
+	traverse(s);
+}
 
 CSP_NAMESPACE_END
 

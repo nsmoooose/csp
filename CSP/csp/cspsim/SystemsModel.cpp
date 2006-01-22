@@ -1,5 +1,5 @@
 // Combat Simulator Project
-// Copyright (C) 2003 The Combat Simulator Project
+// Copyright (C) 2003, 2005 The Combat Simulator Project
 // http://csp.sourceforge.net
 //
 // This program is free software; you can redistribute it and/or
@@ -27,6 +27,7 @@
 
 #include <csp/cspsim/SystemsModel.h>
 #include <csp/cspsim/DataRecorder.h>
+#include <csp/cspsim/SoundModel.h>
 #include <csp/cspsim/stores/StoresManagementSystem.h>
 
 #include <csp/csplib/data/ObjectInterface.h>
@@ -41,8 +42,37 @@ CSP_XML_BEGIN(SystemsModel)
 	CSP_DEF("stores_management_system", m_StoresManagementSystem, false)
 CSP_XML_END
 
+class SystemsModel::FindSystemByNameVisitor: public FindVisitor<System,SystemVisitor> {
+	std::string m_Name;
+public:
+	FindSystemByNameVisitor(std::string const &name):
+		FindVisitor<System,SystemVisitor>(), m_Name(name) {}
+	virtual bool match(System &s) { return s.getName() == m_Name; }
+};
 
-class BindRecorderVisitor: public SystemVisitor {
+class SystemsModel::EventVisitor: public SystemVisitor {
+	bool m_handled;
+	MapEvent m_event;
+public:
+	EventVisitor(MapEvent const &event): m_handled(false), m_event(event) {}
+	bool handled() const { return m_handled; }
+	void apply(System &system) {
+		m_handled = m_handled || system.onMapEvent(m_event);
+		if (!m_handled) traverse(system);
+	}
+	void apply(SystemsModel &model) { traverse(model); }
+};
+
+class SystemsModel::InfoVisitor: public SystemVisitor {
+	InfoList &m_info;
+public:
+	InfoVisitor(InfoList &info): m_info(info) {}
+	void apply(System &system) { system.getInfo(m_info); traverse(system); }
+	void apply(SystemsModel &model) { traverse(model); }
+};
+
+
+class SystemsModel::BindRecorderVisitor: public SystemVisitor {
 	DataRecorder *m_Recorder;
 public:
 	BindRecorderVisitor(DataRecorder *recorder): m_Recorder(recorder) {}
@@ -52,6 +82,23 @@ public:
 	}
 	void apply(SystemsModel &model) { traverse(model); }
 };
+
+void SystemsModel::importChannelsProxy(System &system) {
+	system.importChannels(getBus());
+}
+
+void SystemsModel::registerChannelsProxy(System &system) {
+	system.registerChannels(getBus());
+}
+
+SystemsModel::SystemsModel(): m_Bound(false) {
+	m_Model = this;
+	m_Bus = new Bus("MODEL_BUS");
+	m_SoundModel = new SoundModel;
+}
+
+SystemsModel::~SystemsModel() {
+}
 
 void SystemsModel::setDataRecorder(DataRecorder *recorder) {
 	if (!recorder) return;
@@ -102,6 +149,70 @@ void SystemsModel::getInfo(InfoList &info) {
 void SystemsModel::init(Ref<SystemsModel>) {
 }
 
+bool SystemsModel::onMapEvent(MapEvent const &event) {
+	Ref<EventVisitor> visitor = accept(new EventVisitor(event));
+	return visitor->handled();
+}
+
+void SystemsModel::registerChannels(Bus *) {
+}
+
+void SystemsModel::importChannels(Bus *) {
+}
+
+void SystemsModel::setModel(SystemsModel *) {
+}
+
+Ref<System> SystemsModel::getSystem(std::string const &name, bool required) {
+	Ref< FindVisitor<System,SystemVisitor> > visitor;
+	visitor = accept(new FindSystemByNameVisitor(name));
+	Ref<System> found = visitor->getNode();
+	if (!found) {
+		assert(!required);
+		return 0;
+	}
+	return found;
+}
+
+void SystemsModel::bindSystems() {
+	assert(!m_Bound);
+	accept(new InitVisitor(getModel()));
+	Ref<BindVisitor> binder = new BindVisitor(getBus());
+	accept(binder);
+	m_Bound = true;
+}
+
+// Visitor for triggering internal event callbacks.  These callbacks should
+// not be confused with user event callbacks, which are handled by onMapEvent
+// and EventVisitor.  This visitor works with callbacks that take a signal
+// argument and return null.
+template <typename VALUE>
+class InternalEventVisitor: public SystemVisitor {
+	typedef void (System::*METHOD)(VALUE);
+	METHOD m_Method;
+	VALUE m_Value;
+public:
+	InternalEventVisitor(METHOD method, VALUE value): m_Method(method), m_Value(value) { }
+	void apply(System &system) {
+		(system.*m_Method)(m_Value);
+		traverse(system);
+	}
+};
+
+void SystemsModel::setInternalView(bool internal_view) {
+	accept(new InternalEventVisitor<bool>(&System::onInternalView, internal_view));
+	m_SoundModel->setInternalView(internal_view);
+}
+
+void SystemsModel::attachSceneModel(SceneModel* model) {
+	m_SoundModel->bind(model);
+	accept(new InternalEventVisitor<SceneModel*>(&System::onAttachSceneModel, model));
+}
+
+void SystemsModel::detachSceneModel(SceneModel* model) {
+	accept(new InternalEventVisitor<SceneModel*>(&System::onDetachSceneModel, model));
+	m_SoundModel->unbind(model);
+}
 
 CSP_NAMESPACE_END
 

@@ -108,6 +108,15 @@ protected:
 	virtual double getBlend() const;
 	// An arbitary scale factor for the blended thrust.
 	virtual double getThrustScale() const;
+
+	/** Add engine sounds to the specified sound model.  The bundle argument, if not
+	 *  null, can be used to retrieve shared sound sources defined in the parent
+	 *  object (typically EngineDynamics).
+	 */
+	virtual void bindSounds(SoundModel *model, ResourceBundle *bundle=0);
+
+	// A single external sound for now.
+	Ref<SoundEffect> m_EngineSound;
 };
 
 

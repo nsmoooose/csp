@@ -27,6 +27,7 @@
 #define __CSPSIM_F16_UP_FRONT_CONTROLS_H__
 
 #include <csp/cspsim/f16/DataEntryPage.h>
+#include <csp/cspsim/f16/MasterModes.h>
 #include <csp/cspsim/System.h>
 
 CSP_NAMESPACE
@@ -107,6 +108,7 @@ private:
 	bool m_AG;
 	
 	DataChannel<AlphaNumericDisplay::RefT>::RefT m_Display;
+	f16::MasterModeSelection::RefT b_MasterMode;
 
 	typedef std::map<std::string, DataEntryPage::RefT> PageMap;
 	PageMap m_PageMap;

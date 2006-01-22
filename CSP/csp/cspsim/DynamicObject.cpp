@@ -24,7 +24,6 @@
 
 #include <csp/cspsim/DynamicObject.h>
 #include <csp/cspsim/Animation.h>
-#include <csp/cspsim/DynamicModel.h>
 #include <csp/cspsim/Controller.h>
 #include <csp/cspsim/CSPSim.h>
 #include <csp/cspsim/DataRecorder.h>
@@ -82,9 +81,7 @@ DynamicObject::DynamicObject(TypeId type): SimObject(type) {
 	b_CenterOfMassOffset = DataChannel<Vector3>::newLocal(Kinetics::CenterOfMassOffset, Vector3::ZERO);
 	b_StoresDynamics = DataChannel<StoresDynamics>::newLocal(Kinetics::StoresDynamics, StoresDynamics());
 
-	m_DynamicModel = new DynamicModel;
-	b_DynamicModel = DataChannel<DynamicModel*>::newLocal("DynamicModel", m_DynamicModel.get());
-
+	m_InternalView = false;
 	m_GroundHint = 0;
 	m_ReferenceMass = 1.0;
 	m_ReferenceInertia = Matrix3::IDENTITY;
@@ -93,15 +90,15 @@ DynamicObject::DynamicObject(TypeId type): SimObject(type) {
 	setGlobalPosition(Vector3::ZERO);
 	m_PrevPosition = Vector3::ZERO;
 
-	m_ActiveStation = -1;
+	m_ActiveStation = NO_STATION;
 	m_PreviousStation = 0;
 
 	// XXX XXX hack for now.  these values should probably be externalized in the xml interface.
 	setAggregationBubbles(60000, 40000);
-
 }
 
 DynamicObject::~DynamicObject() {
+	destroySceneModel();
 }
 
 void DynamicObject::postCreate() {
@@ -133,13 +130,20 @@ void DynamicObject::createSceneModel() {
 		assert(m_SceneModel.valid());
 		if (activeStation()) createStationSceneModel();
 		if (getBus()) bindAnimations(getBus());
-		if (m_DynamicModel.valid()) m_DynamicModel->signalCreateSceneModel(m_SceneModel.get());
+		if (m_SystemsModel.valid()) {
+			m_SystemsModel->attachSceneModel(m_SceneModel.get());
+			m_SystemsModel->setInternalView(m_InternalView);
+		}
 	}
 }
 
 void DynamicObject::destroySceneModel() {
-	if (m_DynamicModel.valid()) m_DynamicModel->signalDeleteSceneModel();
-	m_SceneModel = NULL;
+	if (m_SystemsModel.valid()) {
+		m_SystemsModel->detachSceneModel(m_SceneModel.get());
+	}
+	if (m_SceneModel.valid()) {
+		m_SceneModel = 0;
+	}
 }
 
 osg::Node* DynamicObject::getOrCreateModelNode() {
@@ -249,17 +253,6 @@ void DynamicObject::updateDynamics(StoresManagementSystem *sms) {
 	b_Inertia->value() = m_ReferenceInertia + dynamics.getInertia();
 	b_InertiaInv->value() = b_Inertia->value().getInverse();
 	b_CenterOfMassOffset->value() = (m_ReferenceCenterOfMassOffset * m_ReferenceMass + dynamics.getCenterOfMass() * dynamics.getMass()) / b_Mass->value();
-	/*
-	std::cout <<
-		"updateDynamics: \n"
-		"  mass_ref=" << m_ReferenceMass << ", mass_sms=" << dynamics.getMass() << "\n"
-		"  cmas_ref=" << m_ReferenceCenterOfMassOffset << ", cmas_sms=" << dynamics.getCenterOfMass() << "\n"
-		"  cmas_ofs=" << b_CenterOfMassOffset->value() << "\n"
-		"  drag coe=" << dynamics.getDrag() << "\n"
-		"  drag pos=" << dynamics.getCenterOfDrag() << "\n"
-		"  I_ref   =\n" << m_ReferenceInertia << "\n"
-		"  I_sms   =\n" << dynamics.getInertia() << "\n";
-	*/
 	sms->clearDirtyDynamics();
 }
 
@@ -293,7 +286,7 @@ void DynamicObject::postUpdate(double dt) {
 		m_GroundHint
 	);
 	double height = (model_position.z() - b_GroundZ->value()) * b_GroundN->value().z();
-	b_NearGround->value() = (height < m_Model->getBoundingSphereRadius());
+	b_NearGround->value() = (height < std::max(10.0, m_Model->getBoundingSphereRadius()));
 }
 
 Vector3 DynamicObject::getDirection() const {
@@ -336,17 +329,19 @@ void DynamicObject::enableSmoke() {
 }
 
 void DynamicObject::internalView(bool internal) {
-	if (!m_SceneModel.valid()) return;
-	m_SceneModel->onViewMode(internal);
-	// the following is mostly for testing; we may want to keep the detailed pit
-	// in the external view as well.  Calling [de]activateStation() also works;
-	// it is less efficient but doesn't create a notible delay.
-	if (m_StationSceneModel.valid()) {
-		m_SceneModel->setPitMask(internal ? activeStation()->getMask() : 0);
-		m_StationSceneModel->getRoot()->setNodeMask(internal ? ~0 : 0);
+	m_InternalView = internal;
+	if (m_SceneModel.valid()) {
+		m_SceneModel->onViewMode(internal);
+		// the following is mostly for testing; we may want to keep the detailed pit
+		// in the external view as well.  Calling [de]activateStation() also works;
+		// it is less efficient but doesn't create a noticible delay.
+		if (m_StationSceneModel.valid()) {
+			m_SceneModel->setStation(internal ? m_ActiveStation : NO_STATION);
+			m_StationSceneModel->getRoot()->setNodeMask(internal ? ~0 : 0);
+		}
+		// notify interested subsystems that the view has changed.
+		if (m_SystemsModel.valid()) m_SystemsModel->setInternalView(internal);
 	}
-	// notify interested subsystems that the view has changed.
-	if (m_DynamicModel.valid()) m_DynamicModel->signalInternalView(internal);
 }
 
 void DynamicObject::setDataRecorder(DataRecorder *recorder) {
@@ -371,7 +366,7 @@ void DynamicObject::cacheSystemsModel() {
 			break;
 		}
 	}
-	if (SystemsModelCache.size() >= MODELCACHESIZE) {
+	if (SystemsModelCache.size() >= MODEL_CACHE_SIZE) {
 		SystemsModelCache.pop_front();
 	}
 	SystemsModelCache.push_back(SystemsModelStore(id(), m_SystemsModel));
@@ -406,36 +401,37 @@ void DynamicObject::registerChannels(Bus* bus) {
 	bus->registerChannel(b_GroundN.get());
 	bus->registerChannel(b_GroundZ.get());
 	bus->registerChannel(b_NearGround.get());
-	bus->registerChannel(b_DynamicModel.get());
 	bus->registerChannel(b_StoresDynamics.get());
 	bus->registerLocalDataChannel< Ref<ObjectModel> >("Internal.ObjectModel", m_Model);
 }
 
 Bus* DynamicObject::getBus() {
-	return (m_SystemsModel.valid() ? m_SystemsModel->getBus().get(): 0);
+	return (m_SystemsModel.valid() ? m_SystemsModel->getBus() : 0);
 }
 
 void DynamicObject::createStationSceneModel() {
-	assert(activeStation() && m_SceneModel.valid() && !m_StationSceneModel);
+	assert(activeStation() && !m_StationSceneModel);
+	assert(m_SceneModel.valid());
 	m_StationSceneModel = activeStation()->createDetailModel();
 	if (m_StationSceneModel.valid()) {
 		m_SceneModel->addChild(m_StationSceneModel);
-		m_SceneModel->setPitMask(activeStation()->getMask());
+		m_SceneModel->setStation(m_ActiveStation);
 	}
 }
 
 void DynamicObject::activateStation(int index) {
+	CSPLOG(INFO, OBJECT) << "Object " << *this << " selecting station " << index;
 	if (m_ActiveStation != index) {
 		if (m_SceneModel.valid() && m_StationSceneModel.valid()) {
 			m_StationSceneModel->bindAnimationChannels(0);
 			m_SceneModel->removeChild(m_StationSceneModel);
-			m_SceneModel->setPitMask(0);
+			m_SceneModel->setStation(NO_STATION);
 			m_StationSceneModel = 0;
 		}
 		if (index < static_cast<int>(m_Model->numStations())) {
 			m_ActiveStation = index;
 		} else {
-			m_ActiveStation = -1;
+			m_ActiveStation = NO_STATION;
 			CSPLOG(ERROR, OBJECT) << "Selecting invalid station " << index;
 		}
 		if (m_SceneModel.valid() && activeStation()) {
@@ -448,7 +444,7 @@ void DynamicObject::activateStation(int index) {
 void DynamicObject::deactivateStation() {
 	if (m_ActiveStation >= 0) {
 		m_PreviousStation = m_ActiveStation;
-		activateStation(-1);
+		activateStation(NO_STATION);
 	}
 }
 
@@ -478,9 +474,6 @@ void DynamicObject::bindChannels(Bus* bus) {
 	}
 }
 
-// TODO need to notify new systems model of current state (e.g. allow it to connect to
-// the scene model and register DynamicModel event handlers).  moveover we need to transfer
-// state, such as the loadout.  ideally the loadout scene group can be shared.
 void DynamicObject::selectVehicleCore() {
 	Path path;
 	Ref<SystemsModel> systems;
@@ -507,7 +500,7 @@ void DynamicObject::selectVehicleCore() {
 			systems = manager.getObject(path);
 			if (systems.valid()) {
 				CSPLOG(INFO, OBJECT) << "registering channels and binding systems for " << *this << " " << this;
-				registerChannels(systems->getBus().get());
+				registerChannels(systems->getBus());
 				systems->bindSystems();
 			}
 		}
@@ -528,11 +521,14 @@ void DynamicObject::setVehicleCore(Ref<SystemsModel> systems) {
 	}
 	if (m_SystemsModel.valid()) {
 		m_SystemsModel->registerUpdate(0);
+		m_SystemsModel->detachSceneModel(m_SceneModel.get());
 	}
 	m_SystemsModel = systems;
 	if (m_SystemsModel.valid()) {
 		bindChannels(getBus());
 		m_SystemsModel->copyRegistration(this);
+		m_SystemsModel->attachSceneModel(m_SceneModel.get());
+		m_SystemsModel->setInternalView(m_InternalView);
 	}
 }
 

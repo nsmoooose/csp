@@ -51,10 +51,8 @@ public:
 	}
 	void write(unsigned x, unsigned y, const char *text, Video mode=NORMAL);
 	void write(unsigned x, unsigned y, std::string const &text, Video mode=NORMAL) { write(x, y, text.c_str(), mode); }
-	void setClean();
-	void setClean(unsigned i);
-	bool isDirty() const { return m_Dirty; }
-	bool isDirty(unsigned i) const;
+	int getDirtyCount() const { return m_DirtyCount; }
+	int getDirtyCount(unsigned i) const;
 	void clear();
 	void dump() const;
 
@@ -69,8 +67,8 @@ private:
 	unsigned m_Width;
 	unsigned m_Height;
 	char **m_Lines;
-	bool m_Dirty;
-	bool *m_DirtyLines;
+	int m_DirtyCount;
+	int *m_DirtyLineCount;
 };
 
 CSP_NAMESPACE_END

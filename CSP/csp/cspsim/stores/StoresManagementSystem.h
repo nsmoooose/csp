@@ -38,6 +38,7 @@ namespace osg { class Group; }
 CSP_NAMESPACE
 
 class Hardpoint;
+class SceneModel;
 class StoresDefinition;
 class StoresDynamics;
 class DynamicObject;
@@ -87,8 +88,8 @@ protected:
 	virtual void registerChannels(Bus*);
 	virtual void importChannels(Bus* bus);
 
-	void onCreateSceneModel(osg::Group *group);
-	void onDeleteSceneModel();
+	void onAttachSceneModel(SceneModel *model);
+	void onDetachSceneModel(SceneModel *model);
 
 	void signalConfiguration() { m_ConfigurationSignal.emit(); }
 

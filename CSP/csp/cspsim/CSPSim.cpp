@@ -45,6 +45,7 @@
 #include <csp/cspsim/ObjectModel.h>
 #include <csp/cspsim/Profile.h>
 #include <csp/cspsim/SimpleSceneManager.h>
+#include <csp/cspsim/SoundEngine.h>
 #include <csp/cspsim/TerrainObject.h>
 #include <csp/cspsim/Theater.h>
 #include <csp/cspsim/VirtualScene.h>
@@ -58,14 +59,13 @@
 #include <csp/csplib/data/DataArchive.h>
 #include <csp/csplib/data/DataManager.h>
 #include <csp/csplib/data/Types.h>
-
+#include <csp/csplib/net/ClientServer.h>
+#include <csp/csplib/sound/Loader.h>
 #include <csp/csplib/util/Exception.h>
 #include <csp/csplib/util/FileUtility.h>
 #include <csp/csplib/util/Log.h>
 #include <csp/csplib/util/Timing.h>
 #include <csp/csplib/util/Trace.h>
-
-#include <csp/csplib/net/ClientServer.h>
 
 #include <csp/modules/demeter/DemeterException.h>
 
@@ -79,6 +79,7 @@
 
 #include <osg/Timer>
 #include <osg/Notify>
+#include <osgAL/SoundManager>
 //--#include <Producer/RenderSurface>
 
 #include <SDL/SDL.h>
@@ -91,9 +92,6 @@ CSP_NAMESPACE
 // one of the sims.  Using a global here just because we're lazy.
 bool g_DisableRender = false;
 
-
-///////////////////////////////////////////////////////////////////////
-// CSPSim
 
 
 /**
@@ -120,7 +118,7 @@ CSPSim::CSPSim():
 
 	g_DisableRender = g_Config.getBool("Debug", "DisableRender", false, false);
 
-	CSPLOG(INFO, APP) << "Constructing CSPSim Object...";
+	CSPLOG(DEBUG, APP) << "Constructing CSPSim object";
 
 	m_Clean = true;
 
@@ -146,14 +144,11 @@ CSPSim::~CSPSim() {
 }
 
 void CSPSim::setActiveObject(Ref<DynamicObject> object) {
-
-	/*
-	CSPLOG(INFO, APP) << "CSPSim::setActiveObject - objectID: " << object->getObjectID(;
-	                   << ", ObjectType: " << object->getObjectType()
-	                   << ", Position: " << object->getGlobalPosition());
-	*/
-
-	CSPLOG(INFO, APP) << "CSPSim::setActiveObject()";
+	if (object.valid()) {
+		CSPLOG(INFO, APP) << "Setting active object to " << *object;
+	} else {
+		CSPLOG(INFO, APP) << "Deselecting active object";
+	}
 
 	if (object == m_ActiveObject) return;
 	if (m_ActiveObject.valid()) {
@@ -174,9 +169,9 @@ void CSPSim::setActiveObject(Ref<DynamicObject> object) {
 		// aggregation bubbles are determined by human-controlled vehicles.
 		// XXX XXX m_Battlefield->setHuman(m_ActiveObject->id(), true);
 		hasht classhash = m_ActiveObject->getPath();
-		CSPLOG(INFO, APP) << "getting map for " << classhash.str();
+		CSPLOG(DEBUG, APP) << "Getting input interface map for " << classhash.str();
 		Ref<EventMapping> map = m_InterfaceMaps->getMap(classhash);
-		CSPLOG(INFO, APP) << "selecting map @ " << map.get();
+		CSPLOG(INFO, APP) << "Selecting map @ " << map.get();
 		m_Interface->setMapping(map);
 	}
 	m_Interface->bindObject(m_ActiveObject.get());
@@ -210,10 +205,10 @@ void CSPSim::togglePause() {
 
 void CSPSim::init() {
 	try {
-		CSPLOG(INFO, APP) << "Installing stack trace handler...";
+		CSPLOG(INFO, APP) << "Installing stack trace handler";
 		AutoTrace::install();
 
-		CSPLOG(INFO, APP) << "Starting CSPSim...";
+		CSPLOG(INFO, APP) << "Beginning initialization";
 		osg::setNotifyLevel(osg::WARN);
 
 		// setup osg search path for external data files
@@ -241,9 +236,8 @@ void CSPSim::init() {
 			//::exit(0);
 		}
 
-		// initialize SDL
 		if (initSDL()) {
-			::exit(1);
+			::exit(1);  // error already logged
 		}
 
 		//--m_RenderSurface->setWindowRectangle(-1, -1, m_ScreenWidth, m_ScreenHeight);
@@ -265,9 +259,8 @@ void CSPSim::init() {
 
 		m_Clean = false;
 
-		CSPLOG(DEBUG, APP) << "INIT:: interface maps";
-
 		// load all interface maps and create a virtual hid for the active object
+		CSPLOG(DEBUG, APP) << "Initializing input event maps";
 		m_InterfaceMaps = new EventMapIndex();
 		m_InterfaceMaps->loadAllMaps();
 		m_Interface = new VirtualHID();
@@ -276,8 +269,8 @@ void CSPSim::init() {
 		logoScreen.onRender();
 		SDL_GL_SwapBuffers();
 
-		CSPLOG(DEBUG, APP) << "INIT:: theater";
 
+		CSPLOG(DEBUG, APP) << "Initializing theater";
 		std::string theater = g_Config.getPath("Testing", "Theater", "sim:theater.balkan", false);
 		m_Theater = m_DataManager->getObject(theater.c_str());
 		assert(m_Theater.valid());
@@ -301,8 +294,12 @@ void CSPSim::init() {
 		logoScreen.onRender();
 		SDL_GL_SwapBuffers();
 
-		CSPLOG(DEBUG, APP) << "INIT:: scene";
+		CSPLOG(DEBUG, APP) << "Initializing sound system";
+		SoundEngine::getInstance().initialize();
+		SoundEngine::getInstance().mute();
+		SoundFileLoader::init();
 
+		CSPLOG(DEBUG, APP) << "Initializing scene graph";
 		m_Scene = new VirtualScene(m_ScreenWidth, m_ScreenHeight);
 		m_Scene->buildScene();
 		m_Scene->setTerrain(m_Terrain);
@@ -310,14 +307,6 @@ void CSPSim::init() {
 		logoScreen.onUpdate(0.0);
 		logoScreen.onRender();
 		SDL_GL_SwapBuffers();
-
-		CSPLOG(DEBUG, APP) << "INIT:: battlefield";
-
-		logoScreen.onUpdate(0.0);
-		logoScreen.onRender();
-		SDL_GL_SwapBuffers();
-
-		CSPLOG(DEBUG, APP) << "INIT:: scene configuration";
 
 		// get view parameters from configuration file.  ultimately there should
 		// be an in-game ui for this and probably a separate config file.
@@ -343,6 +332,10 @@ void CSPSim::init() {
 				m_Battlefield->addStatic(*iter);
 			}
 		}
+
+		logoScreen.onUpdate(0.0);
+		logoScreen.onRender();
+		SDL_GL_SwapBuffers();
 
 		// create the networking layer
 		if (g_Config.getBool("Networking", "UseNetworking", false, true)) {
@@ -400,7 +393,7 @@ void CSPSim::init() {
 		// create and initialize screens
 		m_GameScreen = new GameScreen;
 		m_GameScreen->onInit();
-		
+
 		changeScreen(m_GameScreen);
 	}
 	catch (Exception &e) {
@@ -419,7 +412,7 @@ void CSPSim::init() {
 
 
 void CSPSim::cleanup() {
-	CSPLOG(INFO, APP) << "CSPSim  cleanup...";
+	CSPLOG(INFO, APP) << "Cleaning up resources";
 
 	assert(m_Battlefield.valid());
 	assert(m_Scene.valid());
@@ -438,19 +431,26 @@ void CSPSim::cleanup() {
 		SDL_JoystickClose(m_SDLJoystick);
 		m_SDLJoystick = NULL;
 	}
+
+	// release cached objects.  this must be done before the sound engine is shut
+	// down to prevent errors when deleting cached sound samples.
+	m_DataManager = 0;
+
+	SoundEngine::getInstance().shutdown();
 	SDL_Quit();
 	m_Clean = true;
 }
 
 
 void CSPSim::quit() {
-	CSPLOG(DEBUG, APP) << "CSPSim::quit...";
+	CSPLOG(INFO, APP) << "Quit requested";
 	m_Finished = true;
+	SoundEngine::getInstance().mute();
 }
 
 
 void CSPSim::changeScreen(BaseScreen * newScreen) {
-	CSPLOG(DEBUG, APP) << "CSPSim::changeScreen ...";
+	CSPLOG(DEBUG, APP) << "Changing screen";
 	m_PrevScreen = m_CurrentScreen;
 	m_CurrentScreen = newScreen;
 }
@@ -461,9 +461,7 @@ void CSPSim::run() {
 	float low_priority = 0.0;
 	int idx = 0;
 
-	CSPLOG(DEBUG, APP) << "CSPSim::run...";
-
-	//m_bShowStats = true;
+	CSPLOG(DEBUG, APP) << "Initializing simulation time";
 
 	std::string date_string = g_Config.getString("Testing", "Date", "2000-01-01 00:00:00.0", true);
 	SimDate date;
@@ -491,9 +489,12 @@ void CSPSim::run() {
 	Timer time_render;
 	bool lopri = false;
 
+	SoundEngine::getInstance().unmute();
+
+	CSPLOG(INFO, APP) << "Entering main simulation loop";
 	try {
 		while (!m_Finished) {
-			CSPLOG(DEBUG, APP) << "CSPSim::run... Starting loop iteration";
+			CSPLOG(DEBUG, APP) << "Starting simulation loop iteration";
 
 			if (m_NetworkClient.valid()) {
 				m_NetworkClient->processIncoming(0.01);
@@ -573,7 +574,7 @@ void CSPSim::run() {
 	}
 	catch (DemeterException *e) {
 		std::string msg = e->GetErrorMessage();
-		CSPLOG(ERROR, APP) << "Caught Demeter exception: " << msg ;
+		CSPLOG(ERROR, APP) << "Caught demeter exception: " << msg ;
 		cleanup();
 		::exit(1);
 	}
@@ -581,7 +582,8 @@ void CSPSim::run() {
 		FatalException(e, "mainloop");
 	}
 	catch (...) {
-		CSPLOG(ERROR, APP) << "MAIN: Unexpected exception, GLErrorNUM: " << glGetError();
+		CSPLOG(ERROR, APP) << "Caught unexpected (and unknown) exception";
+		CSPLOG(ERROR, APP) << "glError is " << glGetError();
 		cleanup();
 		::exit(1);
 	}
@@ -627,7 +629,7 @@ void CSPSim::updateTime() {
 }
 
 void CSPSim::doInput(double dt) {
-	CSPLOG(DEBUG, APP) << "CSPSim::doInput()...";
+	CSPLOG(DEBUG, APP) << "Checking for input events";
 
 	Ref<VirtualHID> screen_interface = m_CurrentScreen->getInterface();
 
@@ -647,7 +649,7 @@ void CSPSim::doInput(double dt) {
 			}
 		}
 		if (!handled && m_Interface.valid()) {
-			CSPLOG(DEBUG, APP) << "CSPSim::doInput()-Calling m_Interface->onEvent()";
+			CSPLOG(DEBUG, APP) << "Passing event to the active object";
 			handled = m_Interface->onEvent(event);
 		}
 	}
@@ -665,7 +667,7 @@ void CSPSim::doInput(double dt) {
  * Update all objects, calling physics and AI routines.
  */
 void CSPSim::updateObjects(double dt) {
-	CSPLOG(DEBUG, APP) << "CSPSim::updateObjects...";
+	CSPLOG(DEBUG, APP) << "Updating all objects";
 
 	if (m_Battlefield.valid()) {
 		m_Battlefield->update(dt);
@@ -677,7 +679,7 @@ void CSPSim::updateObjects(double dt) {
 
 
 int CSPSim::initSDL() {
-	CSPLOG(DEBUG, APP) << "Initializing SDL...";
+	CSPLOG(DEBUG, APP) << "Initializing SDL";
 
 	int height = g_Config.getInt("Screen", "Height", 768, true);
 	int width = g_Config.getInt("Screen", "Width", 1024, true);
@@ -687,8 +689,8 @@ int CSPSim::initSDL() {
 	m_ScreenWidth = width;
 
 	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK) != 0) {
-		std::cerr << "Unable to initialize SDL: " << SDL_GetError() << "\n";
-		CSPLOG(ERROR, APP) << "ERROR! Unable to initialize SDL: " << SDL_GetError();
+		std::cerr << "Unable to initialize SDL (" << SDL_GetError() << ")\n";
+		CSPLOG(ERROR, APP) << "Unable to initialize SDL (" << SDL_GetError() << ")";
 		return 1;
 	}
 
@@ -708,21 +710,20 @@ int CSPSim::initSDL() {
 	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 
 	if (m_SDLScreen == NULL) {
-		std::cerr << "Unable to set video mode: " << SDL_GetError() << "\n";
-		CSPLOG(ERROR, APP) << "ERROR! Unable to initialize SDL: " << SDL_GetError();
+		std::cerr << "Unable to set video mode (" << SDL_GetError() << ")\n";
+		CSPLOG(ERROR, APP) << "Unable to set video mode (" << SDL_GetError() << ")";
 		return 1;
 	}
 
 	SDL_JoystickEventState(SDL_ENABLE);
 	m_SDLJoystick = SDL_JoystickOpen(0);
 	if (m_SDLJoystick == NULL) {
-		CSPLOG(ERROR, APP) << "Failed to open joystick";
-		CSPLOG(ERROR, APP) << SDL_GetError();
+		CSPLOG(ERROR, APP) << "Failed to open joystick (" <<  SDL_GetError() << ")";
 	}
 
 	SDL_EnableUNICODE(1);
 
-	/* Make sure SDL_Quit gets called when the program exits. */
+	// make sure SDL_Quit gets called when the program exits.
 	atexit(SDL_Quit);
 
 	return 0;

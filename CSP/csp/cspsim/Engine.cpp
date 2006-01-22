@@ -24,12 +24,19 @@
 #include <csp/cspsim/Engine.h>
 #include <csp/cspsim/ConditionsChannels.h>
 #include <csp/cspsim/FlightDynamicsChannels.h>
+#include <csp/cspsim/ResourceBundle.h>
+#include <csp/cspsim/SoundModel.h>
+#include <csp/cspsim/SystemsModel.h>
 #include <csp/cspsim/ThrustData.h>
 
 #include <csp/csplib/util/Conversions.h>
 #include <csp/csplib/util/Math.h>
+#include <csp/csplib/util/osg.h>
+#include <csp/csplib/sound/Sample.h>
 #include <csp/csplib/data/Quat.h>
 #include <csp/csplib/data/ObjectInterface.h>
+
+#include <osgAL/SoundState>
 
 #include <iomanip>
 #include <sstream>
@@ -74,6 +81,25 @@ void Engine::setThrustDirection(Vector3 const& thrustDirection) {
 
 Vector3 const &Engine::getSmokeEmitterLocation() const {
 	return m_SmokeEmitterLocation;
+}
+
+void Engine::bindSounds(SoundModel* model, ResourceBundle* bundle) {
+	assert(model);
+	CSPLOG(INFO, AUDIO) << "Engine::bindSounds";
+	if (bundle) {
+		CSPLOG(INFO, AUDIO) << "Engine::bindSounds have bundle";
+		Ref<const SoundSample> sample(bundle->getSoundSample("engine"));
+		m_EngineSound = SoundEffect::ExternalSound(sample, model);
+		if (m_EngineSound.valid()) {
+			CSPLOG(INFO, AUDIO) << "Engine::bindSounds have sound";
+			m_EngineSound->state()->setPosition(toOSG(m_EngineOffset));
+			m_EngineSound->state()->setDirection(toOSG(m_ThrustDirection));
+			CSPLOG(INFO, AUDIO) << "engine sound position " << m_EngineOffset;
+			CSPLOG(INFO, AUDIO) << "engine sound direction " << m_ThrustDirection;
+			m_EngineSound->state()->apply();
+			m_EngineSound->play();  // TODO rpm dependence
+		}
+	}
 }
 
 void Engine::updateThrust() {
@@ -130,8 +156,12 @@ double Engine::flatten(double x) const {
 
 
 void EngineDynamics::registerChannels(Bus *bus) {
+	SoundModel *sound_model = getModel()->getSoundModel();
 	for (unsigned i = 0; i < m_Engine.size(); ++i) {
 		m_Engine[i]->registerChannels(bus);
+		if (sound_model) {
+			m_Engine[i]->bindSounds(sound_model, getResourceBundle());
+		}
 	}
 }
 

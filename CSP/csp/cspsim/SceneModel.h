@@ -34,16 +34,11 @@
 #include <osg/ref_ptr>
 #include <vector>
 
-namespace osg {
-	class Node;
-	class Group;
-	class Switch;
-	class PositionAttitudeTransform;
-}
-
-namespace osgText {
-	class Text;
-}
+namespace osg { class Node; }
+namespace osg { class Group; }
+namespace osg { class Switch; }
+namespace osg { class PositionAttitudeTransform; }
+namespace osgText { class Text; }
 
 CSP_NAMESPACE
 
@@ -53,9 +48,7 @@ class HUD;
 class ObjectModel;
 class Quat;
 
-namespace fx {
-	class SmokeTrailSystem;
-}
+namespace fx { class SmokeTrailSystem; }
 
 
 /** A representation of an ObjectModel that can be added to the scene
@@ -96,6 +89,7 @@ private:
 	std::vector< osg::ref_ptr<AnimationCallback> > m_AnimationCallbacks;
 	osg::ref_ptr<osg::PositionAttitudeTransform> m_HudModel;
 	osg::ref_ptr<osg::Switch> m_PitSwitch;
+	int m_Station;
 
 	osg::Node *getModelCopy() { return m_ModelCopy.get(); }
 
@@ -115,6 +109,10 @@ public:
 	void removeChild(Ref<SceneModelChild> const &child);
 	void removeAllChildren();
 
+	/** Connect the scene model animations to the bus.  Channels on the bus
+	 *  are used to drive the animations.  This method can be called with
+	 *  a NULL pointer to unbind the animations.
+	 */
 	void bindAnimationChannels(Bus*);
 	void bindHud(HUD* hud);
 
@@ -123,10 +121,11 @@ public:
 	bool isSmoke();
 	void disableSmoke();
 	void enableSmoke();
-	virtual void onViewMode(bool internal);
 	void updateSmoke(double dt, Vector3 const & global_position, Quat const &attitude);
+
+	virtual void onViewMode(bool internal);
 	void setLabel(std::string const &);
-	void setPitMask(unsigned mask);
+	void setStation(int index);
 	void pick(int x, int y);
 };
 

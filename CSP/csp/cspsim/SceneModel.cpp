@@ -26,6 +26,7 @@
 #include <csp/cspsim/Animation.h>
 #include <csp/cspsim/SceneConstants.h>
 #include <csp/cspsim/SmokeEffects.h>
+#include <csp/cspsim/Station.h>
 #include <csp/cspsim/hud/HUD.h>
 
 //#include <csp/csplib/util/HashUtility.h>
@@ -239,7 +240,7 @@ SceneModel::SceneModel(Ref<ObjectModel> const & model) {
 	std::copy(model_copy.getAnimationCallbacks().begin(), model_copy.getAnimationCallbacks().end(), m_AnimationCallbacks.begin());
 
 	m_Label = new osgText::Text();
-	m_Label->setFont("hud.ttf");
+	m_Label->setFont("screeninfo.ttf");
 	m_Label->setFontResolution(30, 30);
 	m_Label->setColor(osg::Vec4(1.0f, 0.4f, 0.2f, 1.0f));
 	m_Label->setCharacterSize(20.0);
@@ -265,6 +266,7 @@ SceneModel::SceneModel(Ref<ObjectModel> const & model) {
 	m_CenterOfMassOffset->addChild(m_ModelCopy.get());
 	m_CenterOfMassOffset->addChild(m_Model->getDebugMarkers().get());
 	m_CenterOfMassOffset->addChild(label);
+	m_Station = -1;
 	m_Smoke = false;
 }
 
@@ -276,15 +278,14 @@ SceneModel::~SceneModel() {
 	m_CenterOfMassOffset->removeChild(model_node);
 }
 
-void SceneModel::setPitMask(unsigned mask) {
-	CSPLOG(INFO, OBJECT) << "Setting pit mask to " <<mask;
-	if (m_PitSwitch.valid()) {
+void SceneModel::setStation(int index) {
+	if (m_Station != index && m_PitSwitch.valid()) {
+		m_Station = index;
+		const unsigned mask = (index >= 0) ? m_Model->station(index)->getMask() : 0;
 		const unsigned n = m_PitSwitch->getNumChildren();
 		for (unsigned i = 0; i < n; ++i) {
 			m_PitSwitch->setValue(i, (mask & (1 << i)) == 0);
 		}
-	} else {
-		CSPLOG(WARNING, OBJECT) << "Setting pit mask but model has no pit switch";
 	}
 }
 

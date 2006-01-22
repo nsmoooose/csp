@@ -22,6 +22,24 @@
  *
  **/
 
+// TODO ========================================================================
+// The current interaction between sms and the object scene model is probably
+// flawed.  The sms stores all state internally, and adds scene elements to
+// the shared scene model only when first initialized.  similarly, it only
+// removes scene elements when the model goes out of view.  there is no code
+// to dynamically add loadout after initialization, hand off loadout from one
+// systems model to another, or transfer state over the network.
+//
+// One possible solution is to define a loadout serialization language that
+// would allow state to be transfered over the network and between systems
+// models.  The latter needs to be done without removing and reattaching
+// scene elements.
+//
+// Elevating the SMS to the DynamicObject class would solve many of these
+// problems.  If each SystemsModel was given a pointer to the SMS the rest
+// of the code would work as is.  By defining a serialization protocol for
+// the SMS the state can easily be transfered over the wire.
+
 
 #include <csp/cspsim/stores/StoresManagementSystem.h>
 #include <csp/cspsim/stores/Projectile.h>
@@ -31,8 +49,8 @@
 #include <csp/cspsim/stores/StoresDynamics.h>
 #include <csp/cspsim/battlefield/LocalBattlefield.h>
 #include <csp/cspsim/CSPSim.h>  // XXX
-#include <csp/cspsim/DynamicModel.h>
 #include <csp/cspsim/DynamicObject.h>
+#include <csp/cspsim/SceneModel.h>
 
 #include <csp/csplib/data/DataArchive.h>
 #include <csp/csplib/data/DataManager.h>
@@ -54,25 +72,19 @@ StoresManagementSystem::StoresManagementSystem(): m_DirtyDynamics(true) { }
 StoresManagementSystem::~StoresManagementSystem() { }
 
 void StoresManagementSystem::registerChannels(Bus*) { }
+void StoresManagementSystem::importChannels(Bus*) { }
 
-void StoresManagementSystem::importChannels(Bus* bus) {
-	DataChannel<DynamicModel*>::CRefT channel = bus->getChannel("DynamicModel");
-	if (channel.valid() && channel->value()) {
-		channel->value()->addCreateSceneModelHandler(sigc::mem_fun(this, &StoresManagementSystem::onCreateSceneModel));
-		channel->value()->addDeleteSceneModelHandler(sigc::mem_fun(this, &StoresManagementSystem::onDeleteSceneModel));
+void StoresManagementSystem::onAttachSceneModel(SceneModel* model) {
+	if (model) {
+		m_SceneGroup = model->getDynamicGroup();
+		for (unsigned i =  0; i < m_Hardpoints.size(); ++i) {
+			assert(m_Hardpoints[i].valid());
+			m_Hardpoints[i]->addModel(m_SceneGroup.get());
+		}
 	}
 }
 
-void StoresManagementSystem::onCreateSceneModel(osg::Group *group) {
-	assert(group);
-	m_SceneGroup = group;
-	for (unsigned i =  0; i < m_Hardpoints.size(); ++i) {
-		assert(m_Hardpoints[i].valid());
-		m_Hardpoints[i]->addModel(group);
-	}
-}
-
-void StoresManagementSystem::onDeleteSceneModel() {
+void StoresManagementSystem::onDetachSceneModel(SceneModel*) {
 	m_SceneGroup = 0;
 }
 

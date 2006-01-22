@@ -24,6 +24,7 @@
 
 
 #include <csp/cspsim/f16/UpFrontControls.h>
+#include <csp/cspsim/f16/Constants.h>
 #include <csp/cspsim/f16/PageALOW.h>
 #include <csp/cspsim/f16/PageCNI.h>
 #include <csp/cspsim/f16/PageLIST.h>
@@ -31,6 +32,7 @@
 #include <csp/cspsim/InputEventChannel.h>
 
 #include <csp/csplib/data/ObjectInterface.h>
+#include <csp/csplib/data/Enum.h>
 
 CSP_NAMESPACE
 
@@ -85,6 +87,7 @@ void UpFrontControls::registerChannels(Bus *bus) {
 
 
 void UpFrontControls::importChannels(Bus* bus) {
+	b_MasterMode = bus->getSharedChannel("MasterMode", true);
 	for (PageMap::iterator i = m_PageMap.begin(); i != m_PageMap.end(); ++i) {
 		i->second->importChannels(bus);
 	}
@@ -132,14 +135,14 @@ void UpFrontControls::ICP_IFF() {
 }
 
 void UpFrontControls::ICP_AA() {
-	//b_MasterMode->push(m_AA ? "NAV" : "AA");
+	b_MasterMode->setBaseMode(m_AA ? f16::NAV : f16::AA);
 	m_AA = !m_AA;
 	m_AG = false;
 	updateActivePage();
 }
 
 void UpFrontControls::ICP_AG() {
-	//b_MasterMode->push(m_AG ? "NAV" : "AG");
+	b_MasterMode->setBaseMode(m_AG ? f16::NAV : f16::AG);
 	m_AG = !m_AG;
 	m_AA = false;
 	updateActivePage();
@@ -162,8 +165,8 @@ DataEntryPage::RefT UpFrontControls::getActivePage() {
 void UpFrontControls::addPages(Bus*) {
 }
 
-void UpFrontControls::getInfo(InfoList &info) const {
-	m_Display->value()->dump(info);
+void UpFrontControls::getInfo(InfoList&) const {
+	//m_Display->value()->dump(info);
 }
 
 void UpFrontControls::transition(std::string const &page) {
@@ -199,9 +202,6 @@ void UpFrontControls::updateActivePage() {
 		// dirty checks.
 		m_Display->value()->clear();
 		page->render(*(m_Display->value()));  // XXX fixme
-		if (m_Display->value()->isDirty()) {
-			//m_Display->value().dump();
-		}
 	}
 }
 

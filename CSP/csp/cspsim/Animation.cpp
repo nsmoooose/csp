@@ -24,6 +24,7 @@
 
 
 #include <csp/cspsim/Animation.h>
+#include <csp/cspsim/hud/Display.h>
 #include <csp/cspsim/InputEventChannel.h>
 
 #include <csp/csplib/util/Log.h>
@@ -1390,7 +1391,16 @@ public:
 	inline const std::vector<std::string> &getEventChannelNames() const { return m_EventChannelNames; }
 	inline double getCycleTime() const { return m_CycleTime; }
 
-	AnimatedMomentarySwitch(): m_CycleTime(0.1) { }
+	AnimatedMomentarySwitch(): m_CycleTime(0.3) { }
+
+protected:
+	virtual void postCreate() {
+		Animation::postCreate();
+		if (m_EventChannelNames.empty()) {
+			CSPLOG(WARNING, OBJECT) << "No channel name specified, using node label " << getNodeLabel();
+			m_EventChannelNames.push_back(getNodeLabel());
+		}
+	}
 
 private:
 	std::vector<std::string> m_EventChannelNames;
@@ -1398,7 +1408,7 @@ private:
 };
 
 CSP_XML_BEGIN(AnimatedMomentarySwitch)
-	CSP_DEF("event_channel_names", m_EventChannelNames, true)
+	CSP_DEF("event_channel_names", m_EventChannelNames, false)
 	CSP_DEF("cycle_time", m_CycleTime, false)
 CSP_XML_END
 
@@ -1430,13 +1440,16 @@ class AnimatedMomentarySwitch::Callback: public AnimationCallback, public sigc::
 
 protected:
 	void updateAnimation(osg::Node *node) {
-		osg::AnimationPath::ControlPoint cp;
-		cp.interpolate(m_Cycle, m_DefaultPoint, m_ControlPoints[m_Index]);
-		AnimationPathCallbackVisitor apcv(cp, m_AnimationPathCallback->getPivotPoint(), m_AnimationPathCallback->getUseInverseMatrix());
-		node->accept(apcv);
+		if (m_AnimationPathCallback.valid()) {
+			osg::AnimationPath::ControlPoint cp;
+			cp.interpolate(m_Cycle, m_DefaultPoint, m_ControlPoints[m_Index]);
+			AnimationPathCallbackVisitor apcv(cp, m_AnimationPathCallback->getPivotPoint(), m_AnimationPathCallback->getUseInverseMatrix());
+			node->accept(apcv);
+		}
 	}
 
 	void onEvent(unsigned index) {
+		if (!m_AnimationPathCallback) return;
 		assert(index < m_ControlPoints.size());
 		if (m_Pause) {
 			m_Pause = false;
@@ -1486,8 +1499,7 @@ public:
 		m_Pause(false)  // force initial reset
 	{
 		assert(animation);
-		assert(path);
-		initControlPoints();
+		if (path) initControlPoints();
 	}
 
 	virtual bool bindChannels(Bus *bus) {
@@ -1515,12 +1527,81 @@ AnimationCallback *AnimatedMomentarySwitch::newCallback(osg::Node *node) const {
 	osg::AnimationPathCallback *oapc = dynamic_cast<osg::AnimationPathCallback*>(node->getUpdateCallback());
 	if (!oapc) {
 		CSPLOG(WARNING, OBJECT) << "AnimatedMomentarySwitch node has no animation path (" << node->getName() << ")";
-		return 0;
 	}
 	AnimationCallback *callback = new Callback(this, oapc);
 	callback->bind(*node);
 	return callback;
 }
+
+
+/**
+ */
+class DisplayScreen: public Animation {
+public:
+	CSP_DECLARE_OBJECT(DisplayScreen)
+
+	DisplayScreen() { }
+
+	virtual AnimationCallback *newCallback(osg::Node *node) const;
+
+	inline const std::string &getChannelName() const { return m_ChannelName; }
+	inline const Vector3 &offset() const { return m_Offset; }
+	//inline const Vector3 &getBottomLeft() const { return m_BottomLeft; }
+	//inline const Vector3 &getTopRight() const { return m_TopRight; }
+
+protected:
+	class Callback;
+
+	std::string m_ChannelName;
+	Vector3 m_Offset;
+	//Vector3 m_BottomLeft;
+	//Vector3 m_TopRight;
+};
+
+class DisplayScreen::Callback: public AnimationCallback {
+	Ref<const DisplayScreen> m_Animation;
+	osg::ref_ptr<osg::PositionAttitudeTransform> m_Adjustment;
+
+public:
+	Callback(DisplayScreen const *display_screen, osg::Node *node): m_Animation(display_screen) {
+		assert(display_screen && node);
+		osg::Group *group = node->asGroup();
+		if (group) {
+			m_Adjustment = new osg::PositionAttitudeTransform;
+			m_Adjustment->setPosition(toOSG(display_screen->offset()));
+			group->addChild(m_Adjustment.get());
+		} else {
+			CSPLOG(ERROR, OBJECT) << "Display screen " << display_screen->getChannelName() << " bound to non-group node";
+		}
+	}
+	virtual void operator()(osg::Node* node, osg::NodeVisitor* nv) { traverse(node, nv); }
+	virtual bool bindChannels(Bus *bus) {
+		if (!m_Adjustment) return false;
+		m_Adjustment->removeChild(0, 1);
+		if (bus) {
+			DataChannel<Display>::RefT channel = bus->getSharedChannel(m_Animation->getChannelName(), false);
+			if (channel.valid()) {
+				m_Adjustment->addChild(channel->value().model());
+			}
+		};
+		return true;
+	}
+};
+
+AnimationCallback *DisplayScreen::newCallback(osg::Node *node) const {
+	assert(node);
+	AnimationCallback *callback = new Callback(this, node);
+	callback->bind(*node);
+	return callback;
+}
+
+CSP_XML_BEGIN(DisplayScreen)
+	CSP_DEF("channel_name", m_ChannelName, true)
+	CSP_DEF("offset", m_Offset, false)
+	//CSP_DEF("bottom_left", m_BottomLeft, false)
+	//CSP_DEF("top_right", m_TopRight, false)
+CSP_XML_END
+
 
 CSP_NAMESPACE_END
 

@@ -15,6 +15,81 @@
 		<Vector>0.0 4.45 1.19</Vector>
 	</List>
 	<List name="animations">
+		<Object class="DisplayScreen">
+			<String name="model_id">LeftMFD</String>
+			<String name="channel_name">LeftMFD</String>
+			<Vector name="offset">0 -0.01 0</Vector>
+		</Object>
+		<Object class="DisplayScreen">
+			<String name="model_id">RightMFD</String>
+			<String name="channel_name">RightMFD</String>
+			<Vector name="offset">0 -0.01 0</Vector>
+		</Object>
+		<Object class="AnimatedMomentarySwitch">
+			<String name="model_id">LEFT_OSB_00</String>
+		</Object>
+		<Object class="AnimatedMomentarySwitch">
+			<String name="model_id">LEFT_OSB_01</String>
+		</Object>
+		<Object class="AnimatedMomentarySwitch">
+			<String name="model_id">LEFT_OSB_02</String>
+		</Object>
+		<Object class="AnimatedMomentarySwitch">
+			<String name="model_id">LEFT_OSB_03</String>
+		</Object>
+		<Object class="AnimatedMomentarySwitch">
+			<String name="model_id">LEFT_OSB_04</String>
+		</Object>
+		<Object class="AnimatedMomentarySwitch">
+			<String name="model_id">LEFT_OSB_05</String>
+		</Object>
+		<Object class="AnimatedMomentarySwitch">
+			<String name="model_id">LEFT_OSB_06</String>
+		</Object>
+		<Object class="AnimatedMomentarySwitch">
+			<String name="model_id">LEFT_OSB_07</String>
+		</Object>
+		<Object class="AnimatedMomentarySwitch">
+			<String name="model_id">LEFT_OSB_08</String>
+		</Object>
+		<Object class="AnimatedMomentarySwitch">
+			<String name="model_id">LEFT_OSB_09</String>
+		</Object>
+		<Object class="AnimatedMomentarySwitch">
+			<String name="model_id">LEFT_OSB_10</String>
+		</Object>
+		<Object class="AnimatedMomentarySwitch">
+			<String name="model_id">LEFT_OSB_11</String>
+		</Object>
+		<Object class="AnimatedMomentarySwitch">
+			<String name="model_id">LEFT_OSB_12</String>
+		</Object>
+		<Object class="AnimatedMomentarySwitch">
+			<String name="model_id">LEFT_OSB_13</String>
+		</Object>
+		<Object class="AnimatedMomentarySwitch">
+			<String name="model_id">LEFT_OSB_14</String>
+		</Object>
+		<Object class="AnimatedMomentarySwitch">
+			<String name="model_id">LEFT_OSB_15</String>
+		</Object>
+		<Object class="AnimatedMomentarySwitch">
+			<String name="model_id">LEFT_OSB_16</String>
+		</Object>
+		<Object class="AnimatedMomentarySwitch">
+			<String name="model_id">LEFT_OSB_17</String>
+		</Object>
+		<Object class="AnimatedMomentarySwitch">
+			<String name="model_id">LEFT_OSB_18</String>
+		</Object>
+		<Object class="AnimatedMomentarySwitch">
+			<String name="model_id">LEFT_OSB_19</String>
+		</Object>
+		<Object class="DisplayScreen">
+			<String name="model_id">DED</String>
+			<String name="channel_name">DataEntryDisplay</String>
+			<Vector name="offset">-0.032 -0.023 0.009</Vector>
+		</Object>
 		<Object class="AnimatedMomentarySwitch">
 			<String name="model_id">ICP.DataControlSwitch</String>
 			<List name="event_channel_names">
@@ -113,6 +188,20 @@
 			<String name="model_id">ICP LIST</String>
 			<List name="event_channel_names">
 				<String>ICP_LIST</String>
+			</List>
+			<Float name="cycle_time">0.3</Float>
+		</Object>
+		<Object class="AnimatedMomentarySwitch">
+			<String name="model_id">ICP AA</String>
+			<List name="event_channel_names">
+				<String>ICP_AA</String>
+			</List>
+			<Float name="cycle_time">0.3</Float>
+		</Object>
+		<Object class="AnimatedMomentarySwitch">
+			<String name="model_id">ICP AG</String>
+			<List name="event_channel_names">
+				<String>ICP_AG</String>
 			</List>
 			<Float name="cycle_time">0.3</Float>
 		</Object>

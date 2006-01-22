@@ -46,9 +46,9 @@ GroundAvoidanceAdvisory::GroundAvoidanceAdvisory():
 }
 
 void GroundAvoidanceAdvisory::registerChannels(Bus* bus) {
-	b_AltitudeAdvisory = bus->registerLocalDataChannel<bool>("F16.GroundAvoidance.AltitudeAdvisory", false);
+	b_AltitudeAdvisory = bus->registerLocalPushChannel<bool>("F16.GroundAvoidance.AltitudeAdvisory", false);
 	b_AdvanceAltitudeAdvisory = bus->registerLocalDataChannel<bool>("F16.GroundAvoidance.AdvanceAdvisory", false);
-	b_DescentWarningAfterTakeoff = bus->registerLocalDataChannel<bool>("F16.GroundAvoidance.DescentWarningAfterTakeoff", false);
+	b_DescentWarningAfterTakeoff = bus->registerLocalPushChannel<bool>("F16.GroundAvoidance.DescentWarningAfterTakeoff", false);
 	b_PullupAnticipation = bus->registerLocalDataChannel<double>("F16.GroundAvoidance.PullupAnticipation", 0.0);
 }
 
@@ -66,16 +66,28 @@ void GroundAvoidanceAdvisory::importChannels(Bus* bus) {
 
 double GroundAvoidanceAdvisory::onUpdate(double dt) {
 	updateTakeoff(dt);
-	b_AltitudeAdvisory->value() = false;
-	b_AdvanceAltitudeAdvisory->value() = false;
-	b_PullupAnticipation->value() = 0.0;
-	if (!b_GearHandleUp->value()) return 0.5;
+	if (!b_GearHandleUp->value()) {
+		reset();
+		return 0.5;
+	}
 	const double descent_velocity = -b_Velocity->value().z();
 	updateDescentWarning(descent_velocity);
-	if (descent_velocity < m_MinimumDescentRate * 0.5) return 0.5;
-	if (descent_velocity < m_MinimumDescentRate) return 0.2;
+	if (descent_velocity < m_MinimumDescentRate * 0.5) {
+		reset();
+		return 0.5;
+	}
+	if (descent_velocity < m_MinimumDescentRate) {
+		reset();
+		return 0.2;
+	}
 	updateAltitudeAdvisories(descent_velocity);
 	return (b_PullupAnticipation->value() > 0.0) ? 0.0 : 0.2;
+}
+
+void GroundAvoidanceAdvisory::reset() {
+	b_AltitudeAdvisory->pushOnChange(false);
+	b_AdvanceAltitudeAdvisory->value() = false;
+	b_PullupAnticipation->value() = 0.0;
 }
 
 void GroundAvoidanceAdvisory::updateAltitudeAdvisories(const double descent_velocity) {
@@ -91,7 +103,7 @@ void GroundAvoidanceAdvisory::updateAltitudeAdvisories(const double descent_velo
 	const double alow = convert::ft_m(b_CaraAlow->value());
 	const double maximum_loss = b_Position->value().z() - b_GroundZ->value() - buffer - alow;
 	const double advance_alert_loss = std::max(maximum_loss - (predicted_altitude_loss - advance_altitude_loss), 0.0);
-	b_AltitudeAdvisory->value() = maximum_loss < (predicted_altitude_loss - advance_altitude_loss);
+	b_AltitudeAdvisory->pushOnChange(maximum_loss < (predicted_altitude_loss - advance_altitude_loss));
 	b_AdvanceAltitudeAdvisory->value() = maximum_loss < predicted_altitude_loss;
 	b_PullupAnticipation->value() = 1.0 - clampTo(advance_alert_loss / descent_velocity * 0.125, 0.0, 1.000001);
 }
@@ -101,7 +113,7 @@ void GroundAvoidanceAdvisory::updateTakeoff(const double dt) {
 		m_RunwayAltitude = b_Position->value().z();
 		m_TakeoffElapsedTime = 0.0;
 		m_DescentWarningState = ENABLED;
-		b_DescentWarningAfterTakeoff->value() = false;
+		b_DescentWarningAfterTakeoff->pushOnChange(false);
 	} else if (m_DescentWarningState != DISARMED) {
 		m_TakeoffElapsedTime += dt;
 		const double msl_above_runway = b_Position->value().z() - m_RunwayAltitude;
@@ -119,16 +131,16 @@ void GroundAvoidanceAdvisory::updateDescentWarning(const double descent_velocity
 		const double msl_above_runway = b_Position->value().z() - m_RunwayAltitude;
 		const double impact_time = msl_above_runway / descent_velocity;
 		if (impact_time < 30.0) {
-			b_DescentWarningAfterTakeoff->value() = true;
+			b_DescentWarningAfterTakeoff->pushOnChange(true);
 		} else if (impact_time > 35.0) {  // hysteresis (may not be corrrect)
 			if (b_DescentWarningAfterTakeoff->value()) {
-				b_DescentWarningAfterTakeoff->value() = false;
+				b_DescentWarningAfterTakeoff->pushOnChange(false);
 				m_DescentWarningState = DISARMED;
 			}
 		}
 	} else {
 		if (b_DescentWarningAfterTakeoff->value()) {
-			b_DescentWarningAfterTakeoff->value() = false;
+			b_DescentWarningAfterTakeoff->pushOnChange(false);
 			m_DescentWarningState = DISARMED;
 		}
 	}

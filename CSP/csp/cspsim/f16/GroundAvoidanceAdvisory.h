@@ -93,6 +93,7 @@ private:
 	void updateAltitudeAdvisories(const double descent_velocity);
 	void updateTakeoff(const double dt);
 	void updateDescentWarning(const double descent_velocity);
+	void reset();
 
 	DataChannel<bool>::RefT b_AltitudeAdvisory;
 	DataChannel<bool>::RefT b_AdvanceAltitudeAdvisory;

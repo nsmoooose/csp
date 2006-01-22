@@ -112,6 +112,10 @@ build.SourceGroup(expenv, 'csplib',
 		'numeric/Vector.h',
 		'numeric/VectorField.h',
 
+		'sound/Loader.cpp',
+		'sound/OggLoader.cpp',
+		'sound/Sample.cpp',
+
 		'spatial/QuadTree.cpp',
 		'spatial/QuadTree.h',
 
@@ -177,7 +181,7 @@ build.SourceGroup(expenv, 'csplib',
 		'util/hash_map.h',
 		'util/osg.h',
 	],
-	deps = ['gnucc2', 'sigc', 'windows'])
+	deps = ['gnucc2', 'sigc', 'windows', 'sound'])
 
 config = env.Program('csplib_config', ['util/Config.cpp'])
 config_h = env.Command('#/csplib/util/Config.h', config, '$SOURCES > $TARGET')

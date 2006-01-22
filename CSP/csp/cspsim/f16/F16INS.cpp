@@ -55,7 +55,6 @@ protected:
 	// Inertial Navigation," http://www.fas.org/spp/military/program/nav/basicnav.pdf).
 	virtual double onUpdate(double dt) {
 		double f = 1.0 - m_ResponseTime / (dt + m_ResponseTime);
-		double g = 1.0 - f;
 		Quat &a0 = b_INSAttitude->value();
 		Quat const &a1 = b_Attitude->value();
 		a0.slerp(f, a0, a1);

@@ -30,6 +30,7 @@
 #ifndef __CSPSIM_F16_F16SYSTEM_H__
 #define __CSPSIM_F16_F16SYSTEM_H__
 
+#include <csp/cspsim/f16/Constants.h>
 #include <csp/cspsim/f16/NavigationSystem.h>
 #include <csp/cspsim/System.h>
 #include <csp/cspsim/Steerpoint.h>
@@ -40,11 +41,12 @@
 
 CSP_NAMESPACE
 
+class FuelManagementSystem;
+class JetFuelStarter;
 class TimedSequence;
 
-class F16System: public System {
-	static const Enumeration MasterModes;
 
+class F16System: public System {
 public:
 	CSP_DECLARE_OBJECT(F16System)
 
@@ -78,39 +80,57 @@ public:
 	virtual void nextSteerpoint();
 	virtual void prevSteerpoint();
 
+	virtual void getInfo(InfoList &info) const;
+
+protected:
 	virtual void registerChannels(Bus*);
 	virtual void importChannels(Bus*);
 
-	typedef Enum<MasterModes> MasterMode;
-
-protected:
-
-	//void addTestSteerpoints();
-
 	DataChannel<EnumLink>::CRefT b_AirRefuelSwitch;
+
 	DataChannel<bool>::CRefT b_GearExtendSelected;
+	DataChannel<bool>::CRefT b_GearFullyExtended;
 	DataChannel<bool>::CRefT b_GearFullyRetracted;
+	DataChannel<bool>::CRefT b_GearHandleUp;
+
+	DataChannel<Vector3>::CRefT b_Position;
+	DataChannel<Vector3>::CRefT b_Velocity;
+
+	DataChannel<double>::CRefT b_Alpha;
+	DataChannel<double>::CRefT b_Pitch;
 	DataChannel<double>::CRefT b_Airspeed;
+	DataChannel<double>::CRefT b_PressureAltitude;
+	DataChannel<double>::CRefT b_EngineRpm;
+
 	DataChannel<double>::CRefT b_FuelDoorSequence;
 	DataChannel<bool>::CRefT b_NoseLandingGearWOW;
 	DataChannel<bool>::CRefT b_LeftMainLandingGearWOW;
 	DataChannel<bool>::CRefT b_RightMainLandingGearWOW;
 	DataChannel<bool>::CRefT b_WheelSpin;
+
 	DataChannel<double>::RefT b_TrailingEdgeFlapExtension;
 	DataChannel<double>::RefT b_AirbrakeLimit;
+
 	DataChannel<bool>::RefT b_AltFlaps;
 	DataChannel<bool>::RefT b_CatIII;
 	DataChannel<bool>::RefT b_ManualPitchOverride;
 	DataChannel<bool>::RefT b_ManualPitchOverrideActive;
+
 	DataChannel<bool>::RefT b_StandbyGains;
 	DataChannel<bool>::RefT b_TakeoffLandingGains;
+
+	DataChannel<Ref<FuelManagementSystem> >::CRefT b_FuelManagementSystem;
 	DataChannel<Ref<NavigationSystem> >::RefT b_NavigationSystem;
-	DataChannel<EnumLink>::RefT b_MasterMode;
+	f16::MasterModeSelection::RefT b_MasterMode;
 
 	Link<TimedSequence> m_FuelDoorSequence;
 	Link<TimedSequence> m_CanopySequence;
 
+	Ref<SoundEffect> m_LowSpeedWarning;
+	Ref<SoundEffect> m_ConfigurationWarning;
+
 	virtual double onUpdate(double dt);
+	void updateWarnings(double dt);
 
 	// TODO should use push channels so we don't have to track state separately!
 	// right now we poll state variables in the update handler to check if anything

@@ -31,6 +31,8 @@
 #include <map>
 #include <cassert>
 
+#include <csp/csplib/util/undef.h>
+
 CSP_NAMESPACE
 
 namespace {

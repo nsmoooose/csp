@@ -30,6 +30,7 @@
 #include <openalpp/sample.h>
 #include <vorbis/vorbisfile.h>
 
+#include <csp/csplib/util/undef.h>
 
 CSP_NAMESPACE
 

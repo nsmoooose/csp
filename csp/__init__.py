@@ -19,14 +19,6 @@
 
 import sys
 import os
-import os.path
-
-# ugly kludge to allow us to import dl.  the bootstrap loader removes the
-# original contents of sys.path, and stashes the full path in sys.CSP_PATH.
-# if it has been set we restore the path here and clear the sys attribute.
-if len(sys.path) == 1 and hasattr(sys, 'CSP_PATH'):
-	sys.path = sys.CSP_PATH
-	del sys.CSP_PATH
 
 dir = os.path.abspath(__path__[0])
 

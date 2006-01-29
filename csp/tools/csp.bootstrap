@@ -28,60 +28,44 @@ csp package from the current workspace (if possible).
 import os
 import sys
 
-BOOTSTRAP_VERSION = 2
+BOOTSTRAP_VERSION = 3
 
-# save the path
-old_path = sys.path[:]
+# prevent recursive imports if the real csp module isn't found.
+if not sys.modules.get('csp_bootstrap'):
 
-# remove this module from sys.modules
-self = sys.modules['csp']
-del sys.modules['csp']
+	# rename this module to 'csp_bootstrap' in sys.modules, making room for the real csp module.
+	self = sys.modules['csp']
+	del sys.modules['csp']
+	sys.modules['csp_bootstrap'] = self
 
-# note that we use os.sep and normal string splitting/joining instead
-# of os.path.split/join since the latter behaves a bit strangely under
-# windows.  for example, os.path.split('c:\\csp') gives ['c:\\csp']
-# rather than ['c:', 'csp'].  actually, neither one is ideal ;-)
+	# note that we use os.sep and normal string splitting/joining instead
+	# of os.path.split/join since the latter behaves a bit strangely under
+	# windows.  for example, os.path.split('c:\\csp') gives ['c:\\csp']
+	# rather than ['c:', 'csp'].  actually, neither one is ideal ;-)
 
-# look for the root of the current workspace (first 'csp' directory
-# above cwd).
-cwd = os.getcwd()
-parts = cwd.split(os.sep)
-if not 'csp' in parts:
-	print
-	print 'Error: trying to import csp from outside of a workspace.'
-	print 'Current working directory is %s' % cwd
-	sys.exit(1)
-while parts[-1].lower() != 'csp':
-	parts = parts[:-1]
+	# look for the root of the current workspace (first 'csp' directory
+	# above cwd).
+	cwd = os.getcwd()
+	parts = cwd.split(os.sep)
+	if not 'csp' in parts:
+		raise ImportError, 'Trying to import csp from outside of a workspace (current working directory is "%s")' % cwd
+	while parts[-1].lower() != 'csp':
+		parts = parts[:-1]
 
-CSP_PATH = os.sep.join(parts[:-1])
-ROOT = os.sep.join([CSP_PATH, 'csp'])
+	CSP_PATH = os.sep.join(parts[:-1])
+	ROOT = os.sep.join([CSP_PATH, 'csp'])
 
-if not os.path.exists(os.sep.join([ROOT, '.svn'])):
-	print
-	print 'Warning: %s does not contain .svn and may not be a valid CSP workspace.' % ROOT
+	if not os.path.exists(os.sep.join([ROOT, '.svn'])):
+		print 'Warning: %s does not contain .svn.' % ROOT
 
-# load the real csp package.  we strip away the original sys.path to
-# prevent this module from being loaded recursively on failure.  the
-# only problem is that the real csp package __init__ needs to the
-# full path to import dl.  the expedient (but ugly, ugly) workaround
-# is to cache the full path in sys.CSP_PATH, which the csp module
-# uses to restore the full path (after which it deletes sys.CSP_PATH).
-sys.path = [CSP_PATH]
-sys.CSP_PATH = [CSP_PATH] + old_path
+	if not os.path.exists(os.sep.join([ROOT, '__init__.py'])):
+		print 'Warning: %s does not contain __init__.py' % ROOT
 
-try:
+	sys.path.insert(0, CSP_PATH)
+
 	import csp
-except ImportError, e:
-	# cleanup, notify, and pass the error along.
-	del sys.CSP_PATH
-	sys.path = old_path
-	print
-	print 'Unable to bootstrap a csp module space from the current working directory.'
-	raise
+	if hasattr(csp, 'BOOTSTRAP_VERSION'):
+		raise ImportError, 'Unable to bootstrap a csp module space from the current working directory.'
 
-csp.BOOTSTRAP_VERSION = BOOTSTRAP_VERSION
-
-# restore the path
-sys.path = [CSP_PATH] + old_path
+	csp.BOOTSTRAP_VERSION = BOOTSTRAP_VERSION
 

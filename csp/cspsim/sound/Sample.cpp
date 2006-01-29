@@ -31,6 +31,7 @@
 
 #include <osgAL/SoundState>
 #include <openalpp/sample.h>
+#include <csp/csplib/util/undef.h>
 
 
 CSP_NAMESPACE

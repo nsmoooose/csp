@@ -33,6 +33,7 @@
 #include <osg/MatrixTransform>
 #include <osgAL/SoundNode>
 #include <osgAL/SoundState>
+#include <csp/csplib/util/undef.h>
 
 #include <cassert>
 

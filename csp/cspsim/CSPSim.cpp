@@ -85,6 +85,7 @@
 #include <SDL/SDL.h>
 #include <SDL/SDL_joystick.h>
 
+#include <csp/csplib/util/undef.h>
 
 CSP_NAMESPACE
 

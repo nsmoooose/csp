@@ -103,6 +103,7 @@ public:
 	std::string const &getLabel() const { return m_Label; }
 
 	bool getElevationCorrection() const { return m_ElevationCorrection; }
+	bool isFlat() const { return m_PolygonOffset != 0.0; }
 
 	void showDebugMarkers(bool on);
 	bool getDebugMarkersVisible() const;

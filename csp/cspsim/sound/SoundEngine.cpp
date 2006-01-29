@@ -23,7 +23,7 @@
  **/
 
 
-#include <csp/cspsim/SoundEngine.h>
+#include <csp/cspsim/sound/SoundEngine.h>
 
 #include <osgAL/SoundManager>
 #include <osgAL/SoundRoot>

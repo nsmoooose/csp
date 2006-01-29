@@ -32,7 +32,7 @@
 #include <csp/cspsim/Projection.h>
 #include <csp/cspsim/SceneConstants.h>
 #include <csp/cspsim/Sky.h>
-#include <csp/cspsim/SoundEngine.h>
+#include <csp/cspsim/sound/SoundEngine.h>
 #include <csp/cspsim/TerrainObject.h>
 #include <csp/cspsim/theater/FeatureGroup.h>
 #include <csp/cspsim/theater/FeatureSceneGroup.h>

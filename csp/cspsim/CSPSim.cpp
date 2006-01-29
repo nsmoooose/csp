@@ -45,7 +45,8 @@
 #include <csp/cspsim/ObjectModel.h>
 #include <csp/cspsim/Profile.h>
 #include <csp/cspsim/SimpleSceneManager.h>
-#include <csp/cspsim/SoundEngine.h>
+#include <csp/cspsim/sound/Loader.h>
+#include <csp/cspsim/sound/SoundEngine.h>
 #include <csp/cspsim/TerrainObject.h>
 #include <csp/cspsim/Theater.h>
 #include <csp/cspsim/VirtualScene.h>
@@ -60,7 +61,6 @@
 #include <csp/csplib/data/DataManager.h>
 #include <csp/csplib/data/Types.h>
 #include <csp/csplib/net/ClientServer.h>
-#include <csp/csplib/sound/Loader.h>
 #include <csp/csplib/util/Exception.h>
 #include <csp/csplib/util/FileUtility.h>
 #include <csp/csplib/util/Log.h>

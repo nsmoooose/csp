@@ -18,13 +18,13 @@
 
 
 /**
- * @file csplib/sound/Sample.cpp
+ * @file cspsim/sound/Sample.cpp
  * @brief Object class for sound samples and related utilities.
  **/
 
 
-#include <csp/csplib/sound/Sample.h>
-#include <csp/csplib/sound/Loader.h>
+#include <csp/cspsim/sound/Sample.h>
+#include <csp/cspsim/sound/Loader.h>
 #include <csp/csplib/data/ObjectInterface.h>
 #include <csp/csplib/util/FileUtility.h>
 #include <csp/csplib/util/osg.h>

@@ -18,13 +18,13 @@
 
 
 /**
- * @file csplib/sound/Sample.h
+ * @file cspsim/sound/Sample.h
  * @brief Object class for sound samples and related utilities.
  **/
 
 
-#ifndef __CSPLIB_SOUND_SAMPLE_H__
-#define __CSPLIB_SOUND_SAMPLE_H__
+#ifndef __CSPSIM_SOUND_SAMPLE_H__
+#define __CSPSIM_SOUND_SAMPLE_H__
 
 #include <csp/csplib/data/External.h>
 #include <csp/csplib/data/Object.h>

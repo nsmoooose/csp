@@ -18,14 +18,15 @@
 
 
 /**
- * @file csplib/sound/Loader.h
+ * @file cspsim/sound/Loader.h
  * @brief Base class and registry for loading sound samples.
  **/
 
 
-#ifndef __CSPLIB_SOUND_LOADER_H__
-#define __CSPLIB_SOUND_LOADER_H__
+#ifndef __CSPSIM_SOUND_LOADER_H__
+#define __CSPSIM_SOUND_LOADER_H__
 
+#include <csp/cspsim/Export.h>
 #include <csp/csplib/util/Namespace.h>
 #include <csp/csplib/util/Export.h>
 #include <string>
@@ -36,14 +37,14 @@ namespace openalpp { class Sample; }
 CSP_NAMESPACE
 
 
-void CSPLIB_EXPORT __registerOgg();
+void CSPSIM_EXPORT __registerOgg();
 
 /** A base class for loading sound samples.  Subclasses should implement
  *  _load to load samples in various formats, and call registerExtension
  *  from their constructor.  Create a single static instance of each
  *  loader subclass.
  */
-class CSPLIB_EXPORT SoundFileLoader {
+class CSPSIM_EXPORT SoundFileLoader {
 public:
 	/** Initialize the sound loader.  Must be called before loading samples.
 	 */

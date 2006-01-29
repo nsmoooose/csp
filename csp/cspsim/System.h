@@ -82,7 +82,7 @@
 
 #include <csp/cspsim/Bus.h>  // could be forward declared, but most Bus users will need it in the header anyway.
 #include <csp/cspsim/InputInterface.h>
-#include <csp/cspsim/SoundEffect.h>  // for SoundEffect::Mode
+#include <csp/cspsim/sound/SoundEffect.h>  // for SoundEffect::Mode
 
 #include <csp/csplib/util/Namespace.h>
 #include <csp/csplib/util/Composite.h>

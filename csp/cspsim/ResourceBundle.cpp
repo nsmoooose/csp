@@ -24,8 +24,8 @@
  **/
 
 #include <csp/cspsim/ResourceBundle.h>
+#include <csp/cspsim/sound/Sample.h>
 #include <csp/csplib/data/ObjectInterface.h>
-#include <csp/csplib/sound/Sample.h>
 
 CSP_NAMESPACE
 

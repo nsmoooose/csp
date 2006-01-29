@@ -28,12 +28,12 @@
 #include <csp/cspsim/System.h>
 #include <csp/cspsim/Bus.h>
 #include <csp/cspsim/ResourceBundle.h>
-#include <csp/cspsim/SoundModel.h>
+#include <csp/cspsim/sound/Sample.h>
+#include <csp/cspsim/sound/SoundModel.h>
 #include <csp/cspsim/SystemsModel.h>
 
 #include <csp/csplib/util/Log.h>
 #include <csp/csplib/data/ObjectInterface.h>
-#include <csp/csplib/sound/Sample.h>
 
 
 CSP_NAMESPACE

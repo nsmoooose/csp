@@ -18,20 +18,19 @@
 
 
 /**
- * @file csplib/sound/Loader.cpp
+ * @file cspsim/sound/Loader.cpp
  * @brief Base class and registry for loading sound samples.
  **/
 
-#include <csp/csplib/sound/Loader.h>
+#include <csp/cspsim/sound/Loader.h>
 #include <csp/csplib/util/Log.h>
 #include <csp/csplib/util/FileUtility.h>
 
 #include <openalpp/sample.h>
 
+#include <csp/csplib/util/undef.h>
 #include <map>
 #include <cassert>
-
-#include <csp/csplib/util/undef.h>
 
 CSP_NAMESPACE
 

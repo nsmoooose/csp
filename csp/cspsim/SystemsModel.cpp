@@ -27,7 +27,7 @@
 
 #include <csp/cspsim/SystemsModel.h>
 #include <csp/cspsim/DataRecorder.h>
-#include <csp/cspsim/SoundModel.h>
+#include <csp/cspsim/sound/SoundModel.h>
 #include <csp/cspsim/stores/StoresManagementSystem.h>
 
 #include <csp/csplib/data/ObjectInterface.h>

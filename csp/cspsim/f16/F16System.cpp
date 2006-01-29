@@ -31,7 +31,7 @@
 #include <csp/cspsim/KineticsChannels.h>
 #include <csp/cspsim/LandingGearChannels.h>
 #include <csp/cspsim/NavigationChannels.h>
-#include <csp/cspsim/SoundEffect.h>
+#include <csp/cspsim/sound/SoundEffect.h>
 #include <csp/cspsim/SystemsModel.h>
 
 // for testing stores release

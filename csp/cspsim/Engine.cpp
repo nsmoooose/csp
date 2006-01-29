@@ -25,14 +25,14 @@
 #include <csp/cspsim/ConditionsChannels.h>
 #include <csp/cspsim/FlightDynamicsChannels.h>
 #include <csp/cspsim/ResourceBundle.h>
-#include <csp/cspsim/SoundModel.h>
+#include <csp/cspsim/sound/Sample.h>
+#include <csp/cspsim/sound/SoundModel.h>
 #include <csp/cspsim/SystemsModel.h>
 #include <csp/cspsim/ThrustData.h>
 
 #include <csp/csplib/util/Conversions.h>
 #include <csp/csplib/util/Math.h>
 #include <csp/csplib/util/osg.h>
-#include <csp/csplib/sound/Sample.h>
 #include <csp/csplib/data/Quat.h>
 #include <csp/csplib/data/ObjectInterface.h>
 

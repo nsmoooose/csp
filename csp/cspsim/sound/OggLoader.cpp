@@ -18,12 +18,12 @@
 
 
 /**
- * @file csplib/sound/OggLoader.cpp
+ * @file cspsim/sound/OggLoader.cpp
  * @brief Loads OggVorbis sound files (.ogg).
  **/
 
 
-#include <csp/csplib/sound/Loader.h>
+#include <csp/cspsim/sound/Loader.h>
 #include <csp/csplib/util/Log.h>
 #include <csp/csplib/util/Uniform.h>
 

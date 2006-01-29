@@ -23,9 +23,9 @@
  **/
 
 
-#include <csp/cspsim/SoundEffect.h>
-#include <csp/cspsim/SoundModel.h>
-#include <csp/csplib/sound/Sample.h>
+#include <csp/cspsim/sound/SoundEffect.h>
+#include <csp/cspsim/sound/SoundModel.h>
+#include <csp/cspsim/sound/Sample.h>
 #include <csp/csplib/util/Log.h>
 
 #include <osgAL/SoundState>

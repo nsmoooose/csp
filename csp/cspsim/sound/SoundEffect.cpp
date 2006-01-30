@@ -29,6 +29,7 @@
 #include <csp/csplib/util/Log.h>
 
 #include <osgAL/SoundState>
+#include <csp/csplib/util/undef.h>
 
 #include <cassert>
 

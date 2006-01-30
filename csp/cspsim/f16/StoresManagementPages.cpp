@@ -622,7 +622,7 @@ protected:
 			if (index == 1) {
 				if (!m_Current.empty()) {
 					double value = std::min(entry.high, std::max<unsigned>(entry.low, atoi(m_Current.c_str())));
-					entry.value = value / pow(10.0, entry.decimal);
+					entry.value = value / pow(10.0, (double)entry.decimal);
 					m_Current = "";
 					formatOutput(m_Index);
 				}

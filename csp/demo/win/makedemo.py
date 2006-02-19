@@ -21,23 +21,30 @@ licensing terms.  Finally, create a zip archive of the entire demo directory
 named %(DEMO)s.zip.
 """
 
-import CSP
-import CSP.SimData
-import CSP.CSPSim
+# redirect csp log output if not otherwise specified.
+os.environ.setdefault('CSPLOG_FILE', 'makedemo.log')
 
-BASE = os.path.dirname(CSP.__file__)
-CSPSIM_DATA = os.path.join(BASE, 'CSPSim', 'Data')
-CSPSIM_BIN = os.path.join(BASE, 'CSPSim', 'Bin')
-CSPSIM_BIN_SOURCE = os.path.join(BASE, 'CSPSim', '.bin', 'Source')
-SIMDATA = os.path.join(BASE, 'SimData')
+import csp
+import csp.csplib
+import csp.cspsim
 
-sys.path.append(CSPSIM_BIN)
+BASE = os.path.dirname(csp.__file__)
+DATA = os.path.join(BASE, 'data')
+BIN = os.path.join(BASE, 'bin')
+
+# not sure which if any of these and the AddPackagePath statements below are
+# needed for the new directory structure.  some experimentation will probably
+# be necessary.
+
+#CSPLIB = os.path.join(BASE, 'csplib')
+#CSPSIM_BIN = os.path.join(BASE, 'cspsim', '.bin')
+#sys.path.append(CSPSIM_BIN)
 
 try:
 	import modulefinder
-	modulefinder.AddPackagePath('CSP.CSPSim', CSPSIM_BIN)
-	modulefinder.AddPackagePath('CSP.CSPSim', CSPSIM_BIN_SOURCE)
-	modulefinder.AddPackagePath('CSP', SIMDATA)
+	#modulefinder.AddPackagePath('csp.cspsim', BIN)
+	#modulefinder.AddPackagePath('csp.cspsim', CSPSIM_BIN)
+	#modulefinder.AddPackagePath('csp', CSPLIB)
 except ImportError:
 	print 'WARNING: unable to import modulefinder'
 
@@ -76,8 +83,8 @@ def copy_tree(src, dst, symlinks=0, exclude=None):
 
 
 def make_demo(version):
-	TEMPLATE = 'CSPSim-Demo'
-	DEMO = 'CSPSim-Demo-%s' % version
+	TEMPLATE = 'template'
+	DEMO = 'cspsim-demo-%s' % version
 
 	if not os.path.exists(TEMPLATE):
 		error('%s not found!' % TEMPLATE)
@@ -88,25 +95,25 @@ def make_demo(version):
 	print 'Copying data from %s to %s' % (TEMPLATE, DEMO)
 	copy_tree(TEMPLATE, DEMO, exclude=r'^\.svn$')
 
-	DIST_DIR = os.path.join(DEMO, 'Bin')
+	DIST_DIR = os.path.join(DEMO, 'bin')
 	print 'Running py2exe to create %s' % DIST_DIR
 
 	opts = {
 		'py2exe': {
-			'excludes': ['SimData', 'dl'],
+			'excludes': ['dl'],
 			'dist_dir': DIST_DIR
 		}
 	}
 
-	TARGET = os.path.join(CSPSIM_BIN, 'CSPSim.py')
-	CONFIG = os.path.join(CSPSIM_DATA, 'CSPSim.ini')
+	TARGET = os.path.join(BIN, 'sim.py')
+	CONFIG = os.path.join(BIN, 'sim.ini')
 
 	setup(options=opts, console=[TARGET], data_files=[CONFIG])
 
-	DATA_TARGET = os.path.join(DEMO, 'Data')
+	DATA_TARGET = os.path.join(DEMO, 'data')
 	if not os.path.exists(DATA_TARGET):
-		print 'Copying data from %s to %s' % (CSPSIM_DATA, DATA_TARGET)
-		copy_tree(CSPSIM_DATA, DATA_TARGET, exclude=r'^\.svn$')
+		print 'Copying data from %s to %s' % (DATA, DATA_TARGET)
+		copy_tree(DATA, DATA_TARGET, exclude=r'^\.svn$')
 
 	print 'Writing README header'
 	README = os.path.join(DEMO, 'README')

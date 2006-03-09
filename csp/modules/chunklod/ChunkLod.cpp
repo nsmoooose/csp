@@ -51,6 +51,10 @@ int s_child_count = 0;
 #include <osg/GLExtensions>
 #include <osg/Version>
 
+#include <osg/Program>
+#include <osg/Shader>
+#include <osg/Uniform>
+
 #include <csp/modules/chunklod/ChunkLod>
 #include <csp/modules/chunklod/ChunkLodLoader>
 #include <csp/modules/chunklod/MmapFile>
@@ -58,6 +62,7 @@ int s_child_count = 0;
 #include <csp/modules/chunklod/RayStrip>
 
 
+/*
 #ifdef USE_CG
 #include <osgNV/VectorParameterValue>
 #include <osgNVCg/Parameter>
@@ -67,6 +72,7 @@ int s_child_count = 0;
 #ifdef USE_NV
 #include <osgNV/StateMatrixParameterValue>
 #endif
+*/
 
 // OSG_VERSION_MAJOR first defined in OSG 0.9.9
 #ifdef OSG_VERSION_MAJOR
@@ -96,10 +102,10 @@ int s_child_count = 0;
 namespace osgChunkLod {
 
 
-ChunkLodTree::ChunkLodTree (const char *chunksrc,
-                            const TextureQuadTree* texture_quadtree,
-                            const osg::Image* heightmap_image,
-                            const int height_scale)
+ChunkLodTree::ChunkLodTree(const char *chunksrc,
+                           const TextureQuadTree* texture_quadtree,
+                           const osg::Image* heightmap_image,
+                           const int height_scale)
 {
 	_latticeWidth = 1000.0;
 	_latticeHeight = 1000.0;
@@ -111,32 +117,32 @@ ChunkLodTree::ChunkLodTree (const char *chunksrc,
 	_offset_z = 0.0;
 	_boundIndex = 0;
 
-	chu_file = new MmapFile (chunksrc);
+	chu_file = new MmapFile(chunksrc);
 
 	textureQuadtree = texture_quadtree;
 	_heightimage = heightmap_image;
 	_heightscale = height_scale;
 
 	// verify that the given file is a valid CHU file
-	unsigned int tag = chu_file->readUI32 ();
+	unsigned int tag = chu_file->readUI32();
 	if (tag != (('C') | ('H' << 8) | ('U' << 16))) {
 		throw "not a valid .chu file";
 	}
 
-	unsigned int format_version = chu_file->readUI16 ();
+	unsigned int format_version = chu_file->readUI16();
 	if (format_version != 9 && format_version != 10) {
 		throw "wrong format version .chu file";
 	}
 
-	treeDepth = chu_file->readUI16 ();
-	errorLODmax = chu_file->readFloat ();
-	verticalScale = chu_file->readFloat ();
-	baseChunkDimension = chu_file->readFloat ();
-	chunkCount = chu_file->readUI32 ();
+	treeDepth = chu_file->readUI16();
+	errorLODmax = chu_file->readFloat();
+	verticalScale = chu_file->readFloat();
+	baseChunkDimension = chu_file->readFloat();
+	chunkCount = chu_file->readUI32();
 
 	chunkTable = new ChunkLod *[chunkCount];
 	allocated += chunkCount * sizeof(ChunkLod*);
-	memset (chunkTable, 0, sizeof (chunkTable[0]) * chunkCount);
+	memset(chunkTable, 0, sizeof(chunkTable[0]) * chunkCount);
 
 	chunksAllocated = 0;
 	chunks = new ChunkLod[chunkCount];
@@ -148,23 +154,23 @@ ChunkLodTree::ChunkLodTree (const char *chunksrc,
 	_maxPixelError = 10.0;
 	_updateParameters();
 
-	printf ("errorLODmax: %f verticalScale: %f baseDim: %f chunkCount: %d\n", errorLODmax, verticalScale, baseChunkDimension, chunkCount);
+	printf("errorLODmax: %f verticalScale: %f baseDim: %f chunkCount: %d\n", errorLODmax, verticalScale, baseChunkDimension, chunkCount);
 
 	unsigned long maxvertices = 0;
 
 	chunksAllocated++;
 	chunks[0].lod = 0;
 	chunks[0].parent = 0;
-	chunks[0].read (chu_file, treeDepth - 1, this, maxvertices, format_version);
-	chunks[0].lookupNeighbors (this);
+	chunks[0].read(chu_file, treeDepth - 1, this, maxvertices, format_version);
+	chunks[0].lookupNeighbors(this);
 
-	printf ("Max Vertices: %ld\n", maxvertices);
+	printf("Max Vertices: %ld\n", maxvertices);
 	maxvertices = maxvertices | 0xf; // pad to 8.
 	vertexBuffer = new float [maxvertices * 4];	// allocate a vertex buffer
 	allocated += sizeof(float)*maxvertices*4;
 	vertexBufferSize = maxvertices * 4;
 
-	loader = new ChunkLodLoader (this, chu_file, textureQuadtree);
+	loader = new ChunkLodLoader(this, chu_file, textureQuadtree);
 
 #ifdef USE_CG
 	_cgContext = new osgNVCg::Context;
@@ -175,8 +181,8 @@ ChunkLodTree::ChunkLodTree (const char *chunksrc,
 		_canUseVertexProgram = true;
 		_useVertexProgram = true;
 
-		_cgProgram = new osgNVCg::Program (_cgContext,osgNVCg::Program::ARBVP1);
-		_cgProgram->setFileName ("ChunkVertexMorph.cg");
+		_cgProgram = new osgNVCg::Program(_cgContext,osgNVCg::Program::ARBVP1);
+		_cgProgram->setFileName("ChunkVertexMorph.cg");
 
 		// set up some base stuffs
 		_cgScaleValParam = _cgProgram->addVectorParameter("scaleVal");
@@ -217,17 +223,53 @@ ChunkLodTree::ChunkLodTree (const char *chunksrc,
 	_useVertexProgram = false;
 #endif
 #endif
+
+	std::cout << "loading vertex program\n";
+	osg::ref_ptr<osg::Shader> shader = new osg::Shader(osg::Shader::VERTEX);
+	if (shader->loadShaderSourceFromFile("clod.vertex")) {
+		_canUseVertexProgram = true;
+		_useVertexProgram = true;
+		_vertexProgram = new osg::Program;
+		_vertexProgram->addShader(shader.get());
+		_vertexScale = new osg::Uniform("vertex_scale", osg::Vec3(0.0, 0.0, 0.0));
+		_vertexOffset = new osg::Uniform("vertex_offset", osg::Vec3(0.0, 0.0, 0.0));
+		std::cout << "loaded vertex program\n";
+		osg::ref_ptr<osg::Shader> fragment_shader = new osg::Shader(osg::Shader::FRAGMENT);
+		if (fragment_shader->loadShaderSourceFromFile("clod.fragment")) {
+			_vertexProgram->addShader(fragment_shader.get());
+			_tex0 = new osg::Uniform("tex0", 0);
+		}
+	}
 }
 
-void ChunkLodTree::apply(osg::StateSet *ss) {
+void ChunkLodTree::setScaleAndOffset(const osg::Vec3 &scale, const osg::Vec3 &offset) {
+	if (_useVertexProgram) {
+		_vertexScale->set(scale);
+		_vertexOffset->set(offset);
+		// todo: this should be done automatically when the tree is split into separate
+		// drawables.  as a single drawable we need to drive the internal state changes
+		// manually.
+		osg::Program::PerContextProgram *pcp = _vertexProgram->getPCP(0);
+		assert(pcp);
+		pcp->apply(*_vertexScale);
+		pcp->apply(*_vertexOffset);
+	}
+}
+
+void ChunkLodTree::apply(osg::StateSet* ss) {
 #ifdef USE_NV
 	assert(_vp.valid());
 	ss->setAttributeAndModes(_vp.get());
 #endif
+	if (_useVertexProgram) {
+		ss->setAttributeAndModes(_vertexProgram.get());
+		ss->addUniform(_vertexScale.get());
+		ss->addUniform(_vertexOffset.get());
+		ss->addUniform(_tex0.get());
+	}
 }
 
-ChunkLodTree::~ChunkLodTree ()
-{
+ChunkLodTree::~ChunkLodTree() {
 	allocated -= chunkCount * sizeof(ChunkLod*);
 	allocated -= sizeof(float)*vertexBufferSize;
 	allocated -= chunkCount * sizeof(ChunkLod);
@@ -241,15 +283,11 @@ ChunkLodTree::~ChunkLodTree ()
 	delete chu_file;
 }
 
-void
-ChunkLodTree::loaderUseThread (bool use)
-{
-	 loader->useThread (use);
+void ChunkLodTree::loaderUseThread(bool use) {
+	 loader->useThread(use);
 }
 
-void
-ChunkLodTree::useVertexProgram (bool use)
-{
+void ChunkLodTree::useVertexProgram(bool /*use*/) {
 #if defined(USE_CG) || defined(USE_NV)
 	if (_canUseVertexProgram) {
 		_useVertexProgram = true;
@@ -257,11 +295,9 @@ ChunkLodTree::useVertexProgram (bool use)
 #endif
 }
 
-void
-ChunkLodTree::update (const osg::Vec3& viewpoint, osg::State& s)
-{
+void ChunkLodTree::update(const osg::Vec3& viewpoint, osg::State& s) {
 	if (chunks[0].data == NULL) {
-		loader->requestLoad (&chunks[0], 1.0f);
+		loader->requestLoad(&chunks[0], 1.0f);
 	}
 
 	sChunksInUse = 0;
@@ -280,11 +316,11 @@ ChunkLodTree::update (const osg::Vec3& viewpoint, osg::State& s)
 	if (chunks[0].split) {
 		chunks[0].clear();
 	}
-	chunks[0].update (this, viewpoint);
+	chunks[0].update(this, viewpoint);
 	if (textureQuadtree) {
-		chunks[0].updateTexture (this, viewpoint);
+		chunks[0].updateTexture(this, viewpoint);
 	}
-	chunks[0].cull (*this, s);
+	chunks[0].cull(*this, s);
 
 #ifdef DUMP_STATS
 	if (last_texture_count != s_texture_count) 
@@ -296,9 +332,7 @@ ChunkLodTree::update (const osg::Vec3& viewpoint, osg::State& s)
 	loader->syncLoader();
 }
 
-int
-ChunkLodTree::render (osg::State& s, MultiTextureDetails &details)
-{
+int ChunkLodTree::render(osg::State& s, MultiTextureDetails &details) {
 	int triangle_count = 0;
 #ifdef DUMP_STATS
 	int last_textures_bound = s_textures_bound;
@@ -307,20 +341,20 @@ ChunkLodTree::render (osg::State& s, MultiTextureDetails &details)
 
 	if (_useVertexProgram) {
 #ifdef USE_CG
-		cgGLEnableProfile (cgGetProgramProfile (_cgProgram->getHandle(s)));
+		cgGLEnableProfile(cgGetProgramProfile(_cgProgram->getHandle(s)));
 #endif
 	}
 
 	if (chunks[0].data == NULL) {
 		// no data in root node; should happen only briefly until it's loaded
 	} else {
-		triangle_count += chunks[0].render (*this, s, details, textureQuadtree == NULL ? true : false);
+		triangle_count += chunks[0].render(*this, s, details, textureQuadtree == NULL ? true : false);
 	}
 
 
 	if (_useVertexProgram) {
 #ifdef USE_CG
-		cgGLDisableProfile (cgGetProgramProfile (_cgProgram->getHandle(s)));
+		cgGLDisableProfile(cgGetProgramProfile(_cgProgram->getHandle(s)));
 #endif
 	}
 
@@ -332,18 +366,14 @@ ChunkLodTree::render (osg::State& s, MultiTextureDetails &details)
 	return triangle_count;
 }
 
-void
-ChunkLodTree::setQuality (float max_pixel_error,
-                          float max_texel_size)
-{
+void ChunkLodTree::setQuality(float max_pixel_error, float max_texel_size) {
 	_maxPixelError = max_pixel_error;
 	_maxTexelSize = max_texel_size;
 	_updateParameters();
 }
 
-void
-ChunkLodTree::_updateParameters() {
-	const float tan_half_FOV = tanf (0.5f * _fov);
+void ChunkLodTree::_updateParameters() {
+	const float tan_half_FOV = tanf(0.5f * _fov);
 	const float K = _screenWidth / tan_half_FOV;
 
 	distanceLODmax = (errorLODmax / _maxPixelError) * K;
@@ -357,18 +387,13 @@ ChunkLodTree::_updateParameters() {
 }
 
 
-void
-ChunkLodTree::setCameraParameters ( int screen_width_pixels,
-                                    float horizontal_FOV_degrees)
-{
+void ChunkLodTree::setCameraParameters(int screen_width_pixels, float horizontal_FOV_degrees) {
 	_screenWidth = screen_width_pixels;
 	_fov = horizontal_FOV_degrees * float(M_PI) / 180.0f;
 	_updateParameters();
 }
 
-void
-ChunkLodTree::setCameraPosition(double x, double z)
-{
+void ChunkLodTree::setCameraPosition(double x, double z) {
 	int ix = static_cast<int>(x / _latticeWidth + 0.5);
 	int iz = static_cast<int>(z / _latticeHeight + 0.5);
 	if (ix != _lattice_x || iz != _lattice_z) {
@@ -383,9 +408,7 @@ ChunkLodTree::setCameraPosition(double x, double z)
 	}
 }
 
-void 
-ChunkLodTree::getLocalOrigin(double &x, double &y, double &z) const 
-{
+void ChunkLodTree::getLocalOrigin(double &x, double &y, double &z) const {
 	// include the offset that brings the origin to the center
 	// of the terrain
 	x = _origin_x - _offset_x;
@@ -393,9 +416,7 @@ ChunkLodTree::getLocalOrigin(double &x, double &y, double &z) const
 	z = _origin_z - _offset_z;
 }
 
-void 
-ChunkLodTree::_getInternalOrigin(double &x, double &y, double &z) const 
-{
+void ChunkLodTree::_getInternalOrigin(double &x, double &y, double &z) const {
 	// omit the offset that brings the origin to the center
 	// of the terrain
 	x = _origin_x;
@@ -403,32 +424,27 @@ ChunkLodTree::_getInternalOrigin(double &x, double &y, double &z) const
 	z = _origin_z;
 }
 
-void 
-ChunkLodTree::_setInternalOffset(double x, double y, double z)  
-{
+void ChunkLodTree::_setInternalOffset(double x, double /*y*/, double z) {
 	//std::cout << "INTERNAL OFFSET: " << x << ", " << z << "\n";
 	_offset_x = x;
 	_offset_z = z;
 	_origin_x = _lattice_x * _latticeWidth + _offset_x;
-        _origin_z = _lattice_z * _latticeHeight + _offset_z;
+   _origin_z = _lattice_z * _latticeHeight + _offset_z;
 }
 
-void 
-ChunkLodTree::setLatticeDimensions(double width, double height) {
+void ChunkLodTree::setLatticeDimensions(double width, double height) {
 	_latticeWidth = width;
 	_latticeHeight = height;
 	// XXX update?
 }
 
-bool 
-ChunkLodTree::intersect(ChunkLodIntersect &test) const {
+bool ChunkLodTree::intersect(ChunkLodIntersect &test) const {
 	test.reset();
 	chunks[0].intersect(test, verticalScale);
 	return test.getHit();
 }
 
-bool 
-ChunkLodTree::findElevation(ChunkLodElevationTest &test) const {
+bool ChunkLodTree::findElevation(ChunkLodElevationTest &test) const {
 	test.reset();
 	chunks[0].findElevation(test, verticalScale);
 	return test.getHit();
@@ -439,59 +455,43 @@ ChunkLodTree::findElevation(ChunkLodElevationTest &test) const {
 // ChunkLodElevationTest instance.  here we discard all knowledge about 
 // which triangle was last intersected, so each call requires an 
 // exhaustive search of the triangle strip.
-float
-ChunkLodTree::simpleHeightAt (const float x, const float z) const
-{
+float ChunkLodTree::simpleHeightAt(const float x, const float z) const {
 	ChunkLodElevationTest test;
 	test.setPosition(x, z);
 	findElevation(test);
 	return test.getElevation();
 }
 
-void
-ChunkLodTree::getBoundingBox (osg::Vec3* box_center, osg::Vec3* box_extent) const
-{
-	chunks[0].computeBoundingBox (box_center, box_extent);
+void ChunkLodTree::getBoundingBox(osg::Vec3* box_center, osg::Vec3* box_extent) const {
+	chunks[0].computeBoundingBox(box_center, box_extent);
 }
 
-unsigned short
-ChunkLodTree::_computeLod (const osg::Vec3& center,
-                           const osg::Vec3& extent,
-                           const osg::Vec3& viewpoint) const
-{
+unsigned short ChunkLodTree::_computeLod(const osg::Vec3& center, const osg::Vec3& extent, const osg::Vec3& viewpoint) const {
 	osg::Vec3 disp = viewpoint - center;
-	disp[0] = fmax (0.0f, fabsf (disp[0]) - extent[0]);
-	disp[1] = fmax (0.0f, fabsf (disp[1]) - extent[1]);
-	disp[2] = fmax (0.0f, fabsf (disp[2]) - extent[2]);
+	disp[0] = fmax(0.0f, fabsf(disp[0]) - extent[0]);
+	disp[1] = fmax(0.0f, fabsf(disp[1]) - extent[1]);
+	disp[2] = fmax(0.0f, fabsf(disp[2]) - extent[2]);
 
 	float d = disp.length();
-	return iclamp (((treeDepth << 8) - 1) - int (log2f (fmax (1, d / distanceLODmax)) * 256), 0, 0x0FFFF);
+	return iclamp(((treeDepth << 8) - 1) - int(log2f(fmax(1, d / distanceLODmax)) * 256), 0, 0x0FFFF);
 }
 
-int
-ChunkLodTree::_computeTextureLod (const osg::Vec3& center,
-                                     const osg::Vec3& extent,
-                                     const osg::Vec3& viewpoint) const
-{
+int ChunkLodTree::_computeTextureLod(const osg::Vec3& center, const osg::Vec3& extent, const osg::Vec3& viewpoint) const {
 	osg::Vec3 disp = viewpoint - center;
-	disp[0] = fmax (0.0f, fabsf (disp[0]) - extent[0]);
-	disp[1] = fmax (0.0f, fabsf (disp[1]) - extent[1]);
-	disp[2] = fmax (0.0f, fabsf (disp[2]) - extent[2]);
+	disp[0] = fmax(0.0f, fabsf(disp[0]) - extent[0]);
+	disp[1] = fmax(0.0f, fabsf(disp[1]) - extent[1]);
+	disp[2] = fmax(0.0f, fabsf(disp[2]) - extent[2]);
 
 	float d = disp.length();
-	return (treeDepth - 1 - int (log2f (fmax (1, d / textureDistanceLODmax))));
+	return (treeDepth - 1 - int(log2f(fmax(1, d / textureDistanceLODmax))));
 }
 
-void 
-ChunkLodTree::_addChunk(int label, ChunkLod *chunklod) 
-{
-	assert (chunkTable[label] == 0);
+void ChunkLodTree::_addChunk(int label, ChunkLod *chunklod) {
+	assert(chunkTable[label] == 0);
 	chunkTable[label] = chunklod;
 }
 
-ChunkLod* 
-ChunkLodTree::_newChunk() 
-{
+ChunkLod* ChunkLodTree::_newChunk() {
 	return &(chunks[chunksAllocated++]);
 }
 
@@ -499,15 +499,17 @@ ChunkLodTree::_newChunk()
 ////// ChunkLod methods
 //////////////////////////////////
 
-static void
-countChunkStats (ChunkLod* c)
-{
-	return;
+static void countChunkStats(ChunkLod*) {
 }
 
-void
-ChunkLod::clear ()
-{
+ChunkLod::~ChunkLod() {
+	if (data) {
+		delete data;
+	}
+	releaseTexture();
+}
+
+void ChunkLod::clear() {
 	// performance stuff
 	// ChunkLodTree::sChunksInUse++;
 	// ChunkLodTree::sChunksWithData++;
@@ -532,24 +534,22 @@ ChunkLod::clear ()
 	}
 }
 
-void
-ChunkLod::update (ChunkLodTree* tree, const osg::Vec3& viewpoint)
-{
-	unsigned short desired_lod = tree->_computeLod (lores_center, lores_extent, viewpoint);
+void ChunkLod::update(ChunkLodTree* tree, const osg::Vec3& viewpoint) {
+	unsigned short desired_lod = tree->_computeLod(lores_center, lores_extent, viewpoint);
 
-	if (hasChildren () && desired_lod > (lod | 0xFF) && canSplit (tree)) {
+	if (hasChildren() && desired_lod > (lod | 0xFF) && canSplit(tree)) {
 		// the LOD level is higher than what we can do; we need to split
-		doSplit (tree, viewpoint);
+		doSplit(tree, viewpoint);
 
 		for (int i = 0; i < 4; i++) {
-			children[i]->update (tree, viewpoint);
+			children[i]->update(tree, viewpoint);
 		}
 	} else {
 		// this chunk can satisfy the LOD requirements
 		if ((lod & 0xFF00) == 0) {
 			// root chunk, check if we have a valid morph value
-			lod = iclamp (desired_lod, lod & 0xFF00, lod | 0x0FF);
-			assert ((lod >> 8) == level);
+			lod = iclamp(desired_lod, lod & 0xFF00, lod | 0x0FF);
+			assert((lod >> 8) == level);
 		}
 
 		// get ready to preload our children,
@@ -562,20 +562,18 @@ ChunkLod::update (ChunkLodTree* tree, const osg::Vec3& viewpoint)
 
 			if (priority < 0.5f) {
 				for (int i = 0; i < 4; i++) {
-					children[i]->requestUnloadSubtree (tree);
+					children[i]->requestUnloadSubtree(tree);
 				}
 			} else {
 				for (int i = 0; i < 4; i++) {
-					children[i]->warmUpData (tree, priority);
+					children[i]->warmUpData(tree, priority);
 				}
 			}
 		}
 	}
 }
 
-void
-ChunkLod::updateTexture (ChunkLodTree* tree, const osg::Vec3& viewpoint)
-{
+void ChunkLod::updateTexture(ChunkLodTree* tree, const osg::Vec3& viewpoint) {
 	if (tree->getTextureQuadtree() == NULL) return;
 
 	if (level >= tree->getTextureQuadtree()->depth()) {
@@ -585,27 +583,27 @@ ChunkLod::updateTexture (ChunkLodTree* tree, const osg::Vec3& viewpoint)
 		return;
 	}
 
-	int desiredTexLevel = tree->_computeTextureLod (lores_center, lores_extent, viewpoint);
+	int desiredTexLevel = tree->_computeTextureLod(lores_center, lores_extent, viewpoint);
 
 	if (texture.valid()) {
-		assert (parent == NULL || parent->texture.valid());
+		assert(parent == NULL || parent->texture.valid());
 
 		// decide if we should release our texture
 		if (data == NULL || desiredTexLevel < level) {
 			// release this texture and any of our descendants'
 			// textures.
-			requestUnloadTextures (tree);
+			requestUnloadTextures(tree);
 		} else {
 			if (hasChildren()) {
 				for (int i = 0; i < 4; i++) {
-					children[i]->updateTexture (tree, viewpoint);
+					children[i]->updateTexture(tree, viewpoint);
 				}
 			}
 		}
 	} else {
 		// decide if we should load our texture
 		if (desiredTexLevel >= level && data) {
-			tree->getLoader()->requestLoadTexture (this);
+			tree->getLoader()->requestLoadTexture(this);
 		} else {
 			// nothing to do
 			// could ensure that our children don't have textures loaded for debugging
@@ -613,32 +611,28 @@ ChunkLod::updateTexture (ChunkLodTree* tree, const osg::Vec3& viewpoint)
 	}
 }
 
-void
-ChunkLod::doSplit (ChunkLodTree* tree, const osg::Vec3& viewpoint)
-{
+void ChunkLod::doSplit(ChunkLodTree* tree, const osg::Vec3& viewpoint) {
 	if (split == false) {
-		assert (this->canSplit (tree));
-		assert (hasResidentData());
+		assert(this->canSplit(tree));
+		assert(hasResidentData());
 
 		split = true;
 
-		if (hasChildren ()) {
+		if (hasChildren()) {
 			for (int i = 0; i < 4; i++) {
 				ChunkLod* c = children[i];
-				short desired_lod = tree->_computeLod (lores_center, lores_extent, viewpoint);
-				c->lod = iclamp (desired_lod, c->lod & 0xFF00, c->lod | 0x0FF);
+				short desired_lod = tree->_computeLod(lores_center, lores_extent, viewpoint);
+				c->lod = iclamp(desired_lod, c->lod & 0xFF00, c->lod | 0x0FF);
 			}
 		}
 
 		for (ChunkLod* p = parent; p && p->split == false; p = p->parent) {
-			p->doSplit (tree, viewpoint);
+			p->doSplit(tree, viewpoint);
 		}
 	}
 }
 
-bool
-ChunkLod::canSplit (ChunkLodTree* tree)
-{
+bool ChunkLod::canSplit(ChunkLodTree* tree) {
 	if (split) {
 		return true;
 	}
@@ -654,7 +648,7 @@ ChunkLod::canSplit (ChunkLodTree* tree)
 	for (int i = 0; i < 4; i++) {
 		ChunkLod* c = children[i];
 		if (c->hasResidentData() == false) {
-			tree->getLoader()->requestLoad (c, 1.0f);
+			tree->getLoader()->requestLoad(c, 1.0f);
 			can_split = false;
 		}
 	}
@@ -673,14 +667,11 @@ ChunkLod::canSplit (ChunkLodTree* tree)
 		// TODO -- pull this outside of here
 		const int MAXIMUM_ALLOWED_NEIGHBOR_DIFFERENCE = 2;
 
-		for (int count = 0;
-		     n && count < MAXIMUM_ALLOWED_NEIGHBOR_DIFFERENCE;
-		     count++)
-		{
+		for (int count = 0; n && count < MAXIMUM_ALLOWED_NEIGHBOR_DIFFERENCE; count++) {
 			n = n->parent;
 		}
 
-		if (n && n->canSplit (tree) == false) {
+		if (n && n->canSplit(tree) == false) {
 			can_split = false;
 		}
 	}
@@ -688,19 +679,15 @@ ChunkLod::canSplit (ChunkLodTree* tree)
 	return can_split;
 }
 
-void
-ChunkLod::unloadData()
-{
+void ChunkLod::unloadData() {
 	delete data;
 	data = NULL;
 }
 
-void
-ChunkLod::warmUpData (ChunkLodTree* tree, float priority)
-{
+void ChunkLod::warmUpData(ChunkLodTree* tree, float priority) {
 	// request that our data be loaded, and unload our children's data
 	if (data == NULL) {
-		tree->getLoader()->requestLoad (this, priority);
+		tree->getLoader()->requestLoad(this, priority);
 	} 
 
 	// if our priority is fairly high, only unload our grandchildren
@@ -708,7 +695,7 @@ ChunkLod::warmUpData (ChunkLodTree* tree, float priority)
 	if (hasChildren()) {
 		if (priority < 0.5f) {
 			for (int i = 0; i < 4; i++) {
-				children[i]->requestUnloadSubtree (tree);
+				children[i]->requestUnloadSubtree(tree);
 			}
 		} else {
 			// TODO -- we could call c->warmUpData here with a low priority and get (almost)
@@ -717,7 +704,7 @@ ChunkLod::warmUpData (ChunkLodTree* tree, float priority)
 				ChunkLod* c = children[i];
 				if (c->hasChildren()) {
 					for (int j = 0; j < 4; j++) {
-						c->children[j]->requestUnloadSubtree (tree);
+						c->children[j]->requestUnloadSubtree(tree);
 					}
 				}
 			}
@@ -725,34 +712,29 @@ ChunkLod::warmUpData (ChunkLodTree* tree, float priority)
 	}
 }
 
-void
-ChunkLod::requestUnloadSubtree (ChunkLodTree* tree)
-{
+void ChunkLod::requestUnloadSubtree(ChunkLodTree* tree) {
 	if (data) {
-		if (hasChildren ()) {
+		if (hasChildren()) {
 			for (int i = 0; i < 4; i++) {
-				children[i]->requestUnloadSubtree (tree);
+				children[i]->requestUnloadSubtree(tree);
 			}
 		}
-		tree->getLoader()->requestUnload (this);
+		tree->getLoader()->requestUnload(this);
 	}
 }
 
-void
-ChunkLod::requestUnloadTextures (ChunkLodTree* tree)
-{
+void ChunkLod::requestUnloadTextures(ChunkLodTree* tree) {
 	if (texture.valid()) {
 		if (hasChildren ()) {
 			for (int i = 0; i < 4; i++) {
-				children[i]->requestUnloadTextures (tree);
+				children[i]->requestUnloadTextures(tree);
 			}
 		}
-		tree->getLoader()->requestUnloadTexture (this);
+		tree->getLoader()->requestUnloadTexture(this);
 	}
 }
 
-void
-draw_box(osg::Vec3 const &min, osg::Vec3 const &max) {
+void draw_box(osg::Vec3 const &min, osg::Vec3 const &max) {
 	glBegin(GL_LINES);
 	glVertex3f(min.x(), min.y(), min.z());
 	glVertex3f(min.x(), max.y(), min.z());
@@ -781,17 +763,14 @@ draw_box(osg::Vec3 const &min, osg::Vec3 const &max) {
 	glEnd();
 }
 
-void
-ChunkLod::cull (const ChunkLodTree& c,
-                   osg::State& s)
-{
+void ChunkLod::cull(const ChunkLodTree& c, osg::State& s) {
 	osg::BoundingBox bbox(lores_center - lores_extent, lores_center + lores_extent);
 
-	if (s.getViewFrustum().contains (bbox)) {
+	if (s.getViewFrustum().contains(bbox)) {
 		culled = false;
 		if (split) {
 			for (int i = 0; i < 4; i++) {
-				children[i]->cull (c, s);
+				children[i]->cull(c, s);
 			}
 		}
 	} else {
@@ -799,12 +778,7 @@ ChunkLod::cull (const ChunkLodTree& c,
 	}
 }
 
-int
-ChunkLod::render (const ChunkLodTree& c,
-                  osg::State& s,
-		  MultiTextureDetails &details,
-                  bool texture_bound)
-{
+int ChunkLod::render(ChunkLodTree& c, osg::State& s, MultiTextureDetails &details, bool texture_bound) {
 	if (culled) {
 		return 0;
 	}
@@ -821,7 +795,7 @@ ChunkLod::render (const ChunkLodTree& c,
 			    !children[3]->texture.valid())
 			{
 				//std::cout << "+BIND\n";
-				bindTexture (s, details); 
+				bindTexture(s, details); 
 				//std::cout << "-BIND\n";
 				texture_bound = true;
 			}
@@ -830,10 +804,10 @@ ChunkLod::render (const ChunkLodTree& c,
 
 	if (split) {
 		for (int i = 0; i < 4; i++) {
-			triangle_count += children[i]->render (c, s, details, texture_bound);
+			triangle_count += children[i]->render(c, s, details, texture_bound);
 		}
 	} else {
-		triangle_count += data->render (c, *this, s, details, lores_center, lores_extent);
+		triangle_count += data->render(c, *this, s, details, lores_center, lores_extent);
 // XXX XXX 
 //   		Removed temporarily, as this is currently incompatible with
 //   		the vertex program that does geomorphing.
@@ -860,9 +834,7 @@ float test_tex_cz;
 
 // set up and bind the texture so it stretches over the entire
 // X-Z extent of the bounding box
-void
-ChunkLod::bindTexture (osg::State& s, MultiTextureDetails &details)
-{
+void ChunkLod::bindTexture(osg::State& s, MultiTextureDetails &details) {
 	s_textures_bound++;
 
 	float xsz = lores_extent[0] * 2.0 * (513.0f / 512.0f);
@@ -885,58 +857,52 @@ ChunkLod::bindTexture (osg::State& s, MultiTextureDetails &details)
 
 
 	// standard texturing
-	s.applyTextureAttribute (0, texture.get()); 
-	s.applyTextureMode (0, GL_TEXTURE_2D, true); 
+	s.applyTextureAttribute(0, texture.get()); 
+	s.applyTextureMode(0, GL_TEXTURE_2D, true); 
 
 	float p[4] = { 0, 0, 0, 0 };
 
 	p[0] = 1.0f / xsz;
 	p[3] = -x0 / xsz;
-	glTexGeni (GL_S, GL_TEXTURE_GEN_MODE, GL_OBJECT_LINEAR);
-	glTexGenfv (GL_S, GL_OBJECT_PLANE, p);
+	glTexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_OBJECT_LINEAR);
+	glTexGenfv(GL_S, GL_OBJECT_PLANE, p);
 	
 	p[0] = 0;
 	p[2] = 1.0f / zsz;
 	p[3] = -z0 / zsz;
-	glTexGeni (GL_T, GL_TEXTURE_GEN_MODE, GL_OBJECT_LINEAR);
-	glTexGenfv (GL_T, GL_OBJECT_PLANE, p);
+	glTexGeni(GL_T, GL_TEXTURE_GEN_MODE, GL_OBJECT_LINEAR);
+	glTexGenfv(GL_T, GL_OBJECT_PLANE, p);
 }
 
-void
-ChunkLod::read (MmapFile* in, 
-                int recursion_count, 
-                ChunkLodTree* tree, 
-                unsigned long& max_vertices, 
-                int format_version)
-{
+void ChunkLod::read(MmapFile* in, int recursion_count, ChunkLodTree* tree, unsigned long& max_vertices, int format_version) {
 	split = false;
 	data = NULL;
 
 	//	int pos = in->tell();
-	label = in->readSI32 ();
+	label = in->readSI32();
 
 	if (label >= tree->getChunkCount() || label < 0) {
-		assert (0);
+		assert(0);
 		// oops
 	}
 
 	tree->_addChunk(label, this);
 
 	for (int i = 0; i < 4; i++) {
-		neighbor[i].label = in->readSI32 ();
+		neighbor[i].label = in->readSI32();
 	}
 
-	level = in->readUI8 ();
-	x = in->readUI16 ();
-	z = in->readUI16 ();
-	miny = in->readSI16 ();
-	maxy = in->readSI16 ();
+	level = in->readUI8();
+	x = in->readUI16();
+	z = in->readUI16();
+	miny = in->readSI16();
+	maxy = in->readSI16();
 
 	unsigned long verts = 0;
 	if (format_version >= 10) {
-		verts = in->readUI16 ();
+		verts = in->readUI16();
 	}
-	dataFilePosition = in->readUI32 ();
+	dataFilePosition = in->readUI32();
 
 	if (format_version < 10) {
 		// this causes a pretty annoying slowdown at 
@@ -948,9 +914,9 @@ ChunkLod::read (MmapFile* in,
 		// jump to the dataFilePosition to read the number of 
 		// vertices for this chunk
 		unsigned long cur = in->tell();
-		in->seek (dataFilePosition);
-		verts = in->readUI16 ();
-		in->seek (cur);
+		in->seek(dataFilePosition);
+		verts = in->readUI16();
+		in->seek(cur);
 	}
 
 	if (verts > max_vertices) {
@@ -958,11 +924,11 @@ ChunkLod::read (MmapFile* in,
 	}
 
 	// get center and extent
-	_internalComputeBoundingBox (*tree);
+	_internalComputeBoundingBox(*tree);
 	if (level == 0) {
 		// first time through.  center the top level chunk
 		tree->_setInternalOffset(center_x, 0.0, center_z);
-		_internalComputeBoundingBox (*tree);
+		_internalComputeBoundingBox(*tree);
 	}
 
 	// recurse to children
@@ -983,12 +949,10 @@ ChunkLod::read (MmapFile* in,
 
 }
 
-void
-ChunkLod::lookupNeighbors (ChunkLodTree* tree)
-{
+void ChunkLod::lookupNeighbors(ChunkLodTree* tree) {
 	for (int i = 0; i < 4; i++) {
 		if (neighbor[i].label < -1 || neighbor[i].label >= tree->getChunkCount()) {
-			assert (0);
+			assert(0);
 			neighbor[i].label = -1;
 		}
 
@@ -1001,14 +965,12 @@ ChunkLod::lookupNeighbors (ChunkLodTree* tree)
 
 	if (hasChildren()) {
 		for (int i = 0; i < 4; i++) {
-			children[i]->lookupNeighbors (tree);
+			children[i]->lookupNeighbors(tree);
 		}
 	}
 }
 
-void
-ChunkLod::_internalComputeBoundingBox (const ChunkLodTree& tree)
-{
+void ChunkLod::_internalComputeBoundingBox(const ChunkLodTree& tree) {
 	float level_factor = (1 << (tree.getDepth() - 1 - level));
 
 	double origin_x;
@@ -1035,8 +997,7 @@ ChunkLod::_internalComputeBoundingBox (const ChunkLodTree& tree)
 }
 
 
-void 
-ChunkLod::updateOrigin(ChunkLodTree const & tree) {
+void ChunkLod::updateOrigin(ChunkLodTree const & tree) {
 	_internalComputeBoundingBox(tree);
 	if (hasChildren()) {
 		for (int i = 0; i < 4; i++) {
@@ -1045,14 +1006,11 @@ ChunkLod::updateOrigin(ChunkLodTree const & tree) {
 	}
 }
 
-osg::BoundingBox
-ChunkLod::getBoundingBox() const {
+osg::BoundingBox ChunkLod::getBoundingBox() const {
 	return osg::BoundingBox(lores_center - lores_extent, lores_center + lores_extent);
 }
 
-void 
-ChunkLod::intersect (ChunkLodIntersect &test, float vscale) const
-{
+void ChunkLod::intersect(ChunkLodIntersect &test, float vscale) const {
 	osg::BoundingBox bb = getBoundingBox();
 	//std::cout << lores_center << " - " << lores_extent << std::endl;
 	osg::LineSegment const *segment = test.getLineSegment();
@@ -1107,9 +1065,7 @@ ChunkLod::intersect (ChunkLodIntersect &test, float vscale) const
 	//}
 }
 	
-void 
-ChunkLod::findElevation (ChunkLodElevationTest &test, float vscale) const
-{
+void ChunkLod::findElevation(ChunkLodElevationTest &test, float vscale) const {
 	osg::BoundingBox bb = getBoundingBox();
 	if (test.cull(bb)) return;
 	if (hasChildren() && split) {
@@ -1147,19 +1103,12 @@ ChunkLod::findElevation (ChunkLodElevationTest &test, float vscale) const
 ///// ChunkLodData methods
 ////////////////////////
 
-int
-ChunkLodData::render (const ChunkLodTree& c,
-                      const ChunkLod& chunk,
-                      osg::State& s,
-		      MultiTextureDetails &details,
-                      const osg::Vec3& box_center,
-                      const osg::Vec3& box_extent)
-{
+int ChunkLodData::render(ChunkLodTree& c, const ChunkLod& chunk, osg::State& s, MultiTextureDetails &/*details*/, const osg::Vec3& box_center, const osg::Vec3& box_extent) {
 	int triangle_count = 0;
 	float *buffer = c.getVertexBuffer();
 	unsigned long buffer_size = c.getVertexBufferSize();
 
-	assert (((unsigned long) (3*vertexInfo.vertexCount)) <= buffer_size);
+	assert(((unsigned long) (3*vertexInfo.vertexCount)) <= buffer_size);
 
 	float f = (chunk.lod & 0x0FF) / 255.0f;
 
@@ -1184,14 +1133,19 @@ ChunkLodData::render (const ChunkLodTree& c,
 			v++;
 		}
 		// then do the drawing using the vertex and index buffers
-		glColor3f (1.0f, 1.0f, 1.0f);
-		s.setVertexPointer (3, GL_FLOAT, 0, buffer);
-	        glDrawElements (GL_TRIANGLE_STRIP, vertexInfo.indexCount, GL_UNSIGNED_SHORT, vertexInfo.indices);
+		glColor3f(1.0f, 1.0f, 1.0f);
+		s.setVertexPointer(3, GL_FLOAT, 0, buffer);
+		glDrawElements(GL_TRIANGLE_STRIP, vertexInfo.indexCount, GL_UNSIGNED_SHORT, vertexInfo.indices);
 	} else {
+		if (c.useVertexProgram()) {
+			c.setScaleAndOffset(osg::Vec3(sx, c.getVerticalScale(), sz), osg::Vec3(offsetx, one_minus_f, offsetz));
+			s.setVertexPointer(4, GL_FLOAT, 0, vertexInfo.floatVertices);
+			glDrawElements(GL_TRIANGLE_STRIP, vertexInfo.indexCount, GL_UNSIGNED_SHORT, vertexInfo.indices);
+		}
 #ifdef USE_CG
-		c.getCgScaleValueParameter()->set (sx, c.getVerticalScale(), sz);
-		c.getCgOffsetValueParameter()->set (offsetx, 1.0f - f, offsetz);
-		s.applyAttribute (c.getCgProgram());
+		c.getCgScaleValueParameter()->set(sx, c.getVerticalScale(), sz);
+		c.getCgOffsetValueParameter()->set(offsetx, 1.0f - f, offsetz);
+		s.applyAttribute(c.getCgProgram());
 #else
 #ifdef USE_NV
 		c._vp_scale->set(sx, c.getVerticalScale(), sz);
@@ -1225,7 +1179,6 @@ ChunkLodData::render (const ChunkLodTree& c,
 		s.haveAppliedAttribute(dummy.get());
 		bool applied = s.applyAttribute(c._vp.get());
 		if (!applied) return 0;
-		
 #endif
 #endif
 
@@ -1233,11 +1186,11 @@ ChunkLodData::render (const ChunkLodTree& c,
 		// If we're using a vertex program, we might be using a server-side vertex object
 		if (vertexInfo._vertexArray != 0) {
 			// yep, we have a vertex object
-			const ChunkLodTree::Extensions* ext = ChunkLodTree::getExtensions (0, true);
+			const ChunkLodTree::Extensions* ext = ChunkLodTree::getExtensions(0, true);
 			::exit(0);
-			ext->glArrayObjectATI (GL_VERTEX_ARRAY, 4, GL_FLOAT, 0, vertexInfo._vertexArray, 0);
-			glEnableClientState (GL_VERTEX_ARRAY);
-			glDrawArrays (GL_TRIANGLE_STRIP, 0, vertexInfo.indexCount);
+			ext->glArrayObjectATI(GL_VERTEX_ARRAY, 4, GL_FLOAT, 0, vertexInfo._vertexArray, 0);
+			glEnableClientState(GL_VERTEX_ARRAY);
+			glDrawArrays(GL_TRIANGLE_STRIP, 0, vertexInfo.indexCount);
 		} else {
 			// nope, no vertex array; fill up the buffer with non-morphed values and copy.
 			// this ought to be a memcpy()
@@ -1259,8 +1212,8 @@ ChunkLodData::render (const ChunkLodTree& c,
 
 			s.setVertexPointer (4, GL_FLOAT, 0, buffer);
 */
-			s.setVertexPointer (4, GL_FLOAT, 0, vertexInfo.floatVertices);
-			glDrawElements (GL_TRIANGLE_STRIP, vertexInfo.indexCount, GL_UNSIGNED_SHORT, vertexInfo.indices);
+			s.setVertexPointer(4, GL_FLOAT, 0, vertexInfo.floatVertices);
+			glDrawElements(GL_TRIANGLE_STRIP, vertexInfo.indexCount, GL_UNSIGNED_SHORT, vertexInfo.indices);
 		}
 
 		//s.dirtyAllAttributes ();		// needed to make sure we can apply the same context again (To update params)
@@ -1272,13 +1225,11 @@ ChunkLodData::render (const ChunkLodTree& c,
     return triangle_count;
 }
 
-ChunkLodData::ChunkLodData (MmapFile* mf)
-{
-	vertexInfo.read (mf);
+ChunkLodData::ChunkLodData(MmapFile* mf) {
+	vertexInfo.read(mf);
 }
 
-ChunkLodVertexInfo::~ChunkLodVertexInfo ()
-{
+ChunkLodVertexInfo::~ChunkLodVertexInfo() {
 	if (vertices) {
 		allocated -= vertexCount * sizeof(ChunkLodVertex);
 		delete [] vertices;
@@ -1297,11 +1248,13 @@ ChunkLodVertexInfo::~ChunkLodVertexInfo ()
 #ifdef DUMP_ALLOC
     	std::cerr << "FREEING " << allocated << "\n";
 #endif
+#ifdef USE_VAR
 	if (_vertexArray) {
-		const ChunkLodTree::Extensions* ext = ChunkLodTree::getExtensions (0, true);
-		ext->glFreeObjectBufferATI (_vertexArray);
+		const ChunkLodTree::Extensions* ext = ChunkLodTree::getExtensions(0, true);
+		ext->glFreeObjectBufferATI(_vertexArray);
 		_vertexArray = 0;
 	}
+#endif // USE_VAR
 }
 
 /*
@@ -1309,9 +1262,7 @@ ChunkLodVertexInfo::~ChunkLodVertexInfo ()
  * as such, it should be free of OpenGL calls
  */
 
-void
-ChunkLodVertexInfo::read (MmapFile* mf)
-{
+void ChunkLodVertexInfo::read(MmapFile* mf) {
 	vertexCount = mf->readUI16();
 	vertices = new ChunkLodVertex[vertexCount];
 	for (int i = 0; i < vertexCount; i++) {
@@ -1350,12 +1301,10 @@ ChunkLodVertexInfo::read (MmapFile* mf)
 /*
  * convert the data in this chunk to an object array
   */
-void
-ChunkLodVertexInfo::convertToObjectArray ()
-{
+void ChunkLodVertexInfo::convertToObjectArray() {
 	// Explode the vertices into a server-side vertex buffer
-	const ChunkLodTree::Extensions* ext = ChunkLodTree::getExtensions (0, true);
-	if (!ext->isVertexArrayObjectSupported ()) {
+	const ChunkLodTree::Extensions* ext = ChunkLodTree::getExtensions(0, true);
+	if (!ext->isVertexArrayObjectSupported()) {
 		return;		// no vertex array buffer support, return
 	}
 
@@ -1366,7 +1315,9 @@ ChunkLodVertexInfo::convertToObjectArray ()
 		fbuf[i*4 + 2] = vertices[indices[i]].v[2];
 		fbuf[i*4 + 3] = vertices[indices[i]].y_delta;
 	}
-	_vertexArray = ext->glNewObjectBufferATI (sizeof(float) * indexCount * 4, fbuf, GL_STATIC_ATI);
+#ifdef USE_VAR
+	_vertexArray = ext->glNewObjectBufferATI(sizeof(float) * indexCount * 4, fbuf, GL_STATIC_ATI);
+#endif // USE_VAR
 	delete [] fbuf;
 	delete [] indices;
 	delete [] vertices;
@@ -1381,45 +1332,34 @@ ChunkLodVertexInfo::convertToObjectArray ()
 typedef osg::buffered_value< osg::ref_ptr<ChunkLodTree::Extensions> > BufferedExtensions;
 static BufferedExtensions s_extensions;
 
-const ChunkLodTree::Extensions*
-ChunkLodTree::getExtensions (unsigned int contextID, bool createIfNotInitialized)
-{
+const ChunkLodTree::Extensions* ChunkLodTree::getExtensions(unsigned int contextID, bool createIfNotInitialized) {
 	if (!s_extensions[contextID] && createIfNotInitialized) s_extensions[contextID] = new Extensions(contextID);
 	return s_extensions[contextID].get();
 }
 
-void
-ChunkLodTree::setExtensions (unsigned int contextID, ChunkLodTree::Extensions* extensions)
-{
+void ChunkLodTree::setExtensions(unsigned int contextID, ChunkLodTree::Extensions* extensions) {
 	s_extensions[contextID] = extensions;
 }
 
-ChunkLodTree::Extensions::Extensions (unsigned int contextID)
-{
+ChunkLodTree::Extensions::Extensions(unsigned int contextID) {
 	setupGLExtensions(contextID);
 }
 
-ChunkLodTree::Extensions::Extensions (const ChunkLodTree::Extensions& rhs) :
+ChunkLodTree::Extensions::Extensions(const ChunkLodTree::Extensions& rhs) :
 	osg::Referenced(),
-	_vertexArrayObjectSupported (rhs._vertexArrayObjectSupported),
-	_glNewObjectBufferATI (rhs._glNewObjectBufferATI),
-	_glUpdateObjectBufferATI (rhs._glUpdateObjectBufferATI),
-	_glFreeObjectBufferATI (rhs._glFreeObjectBufferATI),
-	_glArrayObjectATI (rhs._glArrayObjectATI),
-	_glVariantObjectArrayATI (rhs._glVariantObjectArrayATI)
+	_vertexArrayObjectSupported(rhs._vertexArrayObjectSupported),
+	_glNewObjectBufferATI(rhs._glNewObjectBufferATI),
+	_glUpdateObjectBufferATI(rhs._glUpdateObjectBufferATI),
+	_glFreeObjectBufferATI(rhs._glFreeObjectBufferATI),
+	_glArrayObjectATI(rhs._glArrayObjectATI),
+	_glVariantObjectArrayATI(rhs._glVariantObjectArrayATI)
 {
 }
 
-void
-ChunkLodTree::Extensions::lowestCommonDenominator (const ChunkLodTree::Extensions& rhs)
-{
-	// blah
-	return;
+void ChunkLodTree::Extensions::lowestCommonDenominator(const ChunkLodTree::Extensions&) {
 }
 
-void
-ChunkLodTree::Extensions::setupGLExtensions (unsigned int contextID)
-{
+void ChunkLodTree::Extensions::setupGLExtensions(unsigned int contextID) {
 #ifdef OSG_GL_EXTENSION_REQUIRES_CONTEXT
 #	define IS_GL_EXTENSION_SUPPORTED(f)  osg::isGLExtensionSupported(contextID, f)
 #else
@@ -1431,30 +1371,27 @@ ChunkLodTree::Extensions::setupGLExtensions (unsigned int contextID)
 	std::cout << "NV VAR2 = " <<  IS_GL_EXTENSION_SUPPORTED("GL_NV_vertex_array_range2") << "\n";;
 #undef IS_GL_EXTENSION_SUPPORTED
 
-#define GET_FUNC(f)  _##f = osg::getGLExtensionFuncPtr (#f)
-	GET_FUNC (glNewObjectBufferATI);
-	GET_FUNC (glUpdateObjectBufferATI);
-	GET_FUNC (glFreeObjectBufferATI);
-	GET_FUNC (glArrayObjectATI);
-	GET_FUNC (glVariantObjectArrayATI);
+#define GET_FUNC(f)  _##f = osg::getGLExtensionFuncPtr(#f)
+	GET_FUNC(glNewObjectBufferATI);
+	GET_FUNC(glUpdateObjectBufferATI);
+	GET_FUNC(glFreeObjectBufferATI);
+	GET_FUNC(glArrayObjectATI);
+	GET_FUNC(glVariantObjectArrayATI);
 #undef GET_FUNC
 }
 
-GLuint
-ChunkLodTree::Extensions::glNewObjectBufferATI (GLsizei size, const void *pointer, GLenum usage) const
-{
+#ifdef USE_VAR
+GLuint ChunkLodTree::Extensions::glNewObjectBufferATI(GLsizei size, const void *pointer, GLenum usage) const {
 	if (_glNewObjectBufferATI) {
-		typedef GLuint (APIENTRY * glNewObjectBufferATIPtr) (GLsizei size, const void *pointer, GLenum usage);
-		return ((glNewObjectBufferATIPtr) _glNewObjectBufferATI) (size, pointer, usage);
+		typedef GLuint(APIENTRY * glNewObjectBufferATIPtr) (GLsizei size, const void *pointer, GLenum usage);
+		return (reinterpret_cast<glNewObjectBufferATIPtr>(_glNewObjectBufferATI)) (size, pointer, usage);
 	} else {
 		osg::notify(osg::WARN) << "Error: glNewObjectBufferATI is not supported by OpenGL" << std::endl;
 	}
 	return 0;
 }
 
-void
-ChunkLodTree::Extensions::glUpdateObjectBufferATI (GLuint buffer, GLuint offset, GLsizei size, const void *pointer, GLenum preserve) const
-{
+void ChunkLodTree::Extensions::glUpdateObjectBufferATI(GLuint buffer, GLuint offset, GLsizei size, const void *pointer, GLenum preserve) const {
 	if (_glUpdateObjectBufferATI) {
 		typedef void (APIENTRY * glUpdateObjectBufferATIPtr) (GLuint buffer, GLuint offset, GLsizei size, const void *pointer, GLenum preserve);
 		((glUpdateObjectBufferATIPtr) _glUpdateObjectBufferATI) (buffer, offset, size, pointer, preserve);
@@ -1463,9 +1400,7 @@ ChunkLodTree::Extensions::glUpdateObjectBufferATI (GLuint buffer, GLuint offset,
 	}
 }
 
-void
-ChunkLodTree::Extensions::glFreeObjectBufferATI (GLuint buffer) const
-{
+void ChunkLodTree::Extensions::glFreeObjectBufferATI(GLuint buffer) const {
 	if (_glFreeObjectBufferATI) {
 		typedef void (APIENTRY * glFreeObjectBufferATIPtr) (GLuint buffer);
 		((glFreeObjectBufferATIPtr) _glFreeObjectBufferATI) (buffer);
@@ -1474,9 +1409,7 @@ ChunkLodTree::Extensions::glFreeObjectBufferATI (GLuint buffer) const
 	}
 }
 
-void
-ChunkLodTree::Extensions::glArrayObjectATI (GLenum array, GLint size, GLenum type, GLsizei stride, GLuint buffer, GLuint offset) const
-{
+void ChunkLodTree::Extensions::glArrayObjectATI (GLenum array, GLint size, GLenum type, GLsizei stride, GLuint buffer, GLuint offset) const {
 	if (_glArrayObjectATI) {
 		typedef void (APIENTRY * glArrayObjectATIPtr) (GLenum array, GLint size, GLenum type, GLsizei stride, GLuint buffer, GLuint offset);
 		((glArrayObjectATIPtr) _glArrayObjectATI) (array, size, type, stride, buffer, offset);
@@ -1485,9 +1418,7 @@ ChunkLodTree::Extensions::glArrayObjectATI (GLenum array, GLint size, GLenum typ
 	}
 }
 
-void
-ChunkLodTree::Extensions::glVariantObjectArrayATI (GLuint id, GLenum type, GLsizei stride, GLuint buffer, GLuint offset) const
-{
+void ChunkLodTree::Extensions::glVariantObjectArrayATI(GLuint id, GLenum type, GLsizei stride, GLuint buffer, GLuint offset) const {
 	if (_glVariantObjectArrayATI) {
 		typedef void (APIENTRY * glVariantObjectArrayATIPtr) (GLuint id, GLenum type, GLsizei stride, GLuint buffer, GLuint offset);
 		((glVariantObjectArrayATIPtr) _glVariantObjectArrayATI) (id, type, stride, buffer, offset);
@@ -1495,5 +1426,6 @@ ChunkLodTree::Extensions::glVariantObjectArrayATI (GLuint id, GLenum type, GLsiz
 		osg::notify(osg::WARN) << "Error: glVariantObjectArrayATI is not supported by OpenGL" << std::endl;
 	}
 }
+#endif  // USE_VAR
 
 } // namespace osgChunkLod {

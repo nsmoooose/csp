@@ -2,17 +2,17 @@
  * RayStrip.cpp
  *
  * Copyright 2003 Mark Rose <mkrose@users.sourceforge.net>
- * 
+ *
  * The osgChunkLod library is open source and may be redistributed and/or modified
- * under the terms of the OpenSceneGraph Public License (OSGPL) version 0.0 or 
+ * under the terms of the OpenSceneGraph Public License (OSGPL) version 0.0 or
  * (at your option) any later version.  The full license is in LICENSE file
  * included with this distribution, and on the openscenegraph.org website.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * OpenSceneGraph Public License for more details.
- * 
+ *
  * Modifications by Mark Rose <mkrose@users.sourceforge.net>, May 2003,
  * see include/osgChunkLod/ChunkLod for details.
  *
@@ -30,19 +30,20 @@ inline osg::Vec3 toVec3(Vertex const &v, osg::Vec3 const &offset, osg::Vec3 cons
 	return osg::Vec3(scale.x() * v.v[0], scale.y() * (v.v[1] + morph * v.y_delta), scale.z() * v.v[2]) + offset;
 }
 
-bool intersectRayStrip(osg::LineSegment const *segment, 
-                              Vertex const *vertices,
-			      unsigned short const *indices,
-			      int n_indices,
-			      float morph,
-			      osg::Vec3 const &offset,
-			      osg::Vec3 const &scale,
-                              int &index, 
-			      osg::Vec3 &normal,
-			      bool exhaustive,
-			      float &t, 
-			      float &u, 
-			      float &v) {
+bool intersectRayStrip(
+		osg::LineSegment const *segment,
+		Vertex const *vertices,
+		unsigned short const *indices,
+		int n_indices,
+		float morph,
+		osg::Vec3 const &offset,
+		osg::Vec3 const &scale,
+		int &index,
+		osg::Vec3 &normal,
+		bool exhaustive,
+		float &t,
+		float &u,
+		float &v) {
 	if (n_indices < 3 || vertices == 0 || indices == 0 || !segment) {
 		assert(0);
 		return false;
@@ -78,7 +79,7 @@ bool intersectRayStrip(osg::LineSegment const *segment,
 			B = toVec3(vertices[indices[i++]], offset, scale, morph);
 			C = toVec3(vertices[indices[i++]], offset, scale, morph);
 			edge1 = C - B;
-		} 
+		}
 		B = C;
 		C = toVec3(vertices[indices[i++]], offset, scale, morph);
 		if (i == start) break;
@@ -104,7 +105,7 @@ bool intersectRayStrip(osg::LineSegment const *segment,
 			//if (index < 0) index += n_indices;
 			normal = edge1 ^ edge2;
 			normal.normalize();
-			//std::cout << "HIT @ " << index << " of " << n_indices << "\n"; 
+			//std::cout << "HIT @ " << index << " of " << n_indices << "\n";
 			//std::cout << origin << " " << dir << "\n";
 			hit = true;
 		}
@@ -123,14 +124,14 @@ inline int getZ(Vertex const *vertices, unsigned short const *indices, int index
 	return int((vertices + indices[index])->v[2]) << 1;
 }
 
-bool intersectVerticalStrip(ChunkLodElevationTest &test,
-                                   Vertex const *vertices,
-			           unsigned short const *indices,
-			           int n_indices,
-			           float morph,
-			           osg::Vec3 const &offset,
-			           osg::Vec3 const &scale)
-{
+bool intersectVerticalStrip(
+		ChunkLodElevationTest &test,
+		Vertex const *vertices,
+		unsigned short const *indices,
+		int n_indices,
+		float morph,
+		osg::Vec3 const &offset,
+		osg::Vec3 const &scale) {
 	osg::Vec3 pos = test.getPoint();
 	int index = test.getIndex();
 	if (n_indices < 3 || vertices == 0 || indices == 0) {
@@ -148,7 +149,7 @@ bool intersectVerticalStrip(ChunkLodElevationTest &test,
 	// comp is our vertex test accumulator.  each of the three lower bits
 	// represents a coordinate comparison with one of the vertices of a
 	// triangle.  values of 0 and 7 mean all vertices are to the left or
-	// to the right of the test point (no hit).  values of 1-6 indicate 
+	// to the right of the test point (no hit).  values of 1-6 indicate
 	// enclosure in one axis.  repeating the test for the other axis is
 	// necessary to detect an intersection.
 	register int comp = 0;
@@ -158,7 +159,7 @@ bool intersectVerticalStrip(ChunkLodElevationTest &test,
 	int remaining=n_indices;
 	while (--remaining >= 0) {
 		// tight loop, find triangles that straddle x
-		comp = (comp >> 1) | (getX(vertices, indices, i++) > x_pos ? 4 : 0); 
+		comp = (comp >> 1) | (getX(vertices, indices, i++) > x_pos ? 4 : 0);
 		if (comp != 0 && comp != 7) {
 			// x test succeded, now check z
 			int z_comp = getZ(vertices, indices, i-3) > z_pos ? 1 : 0;
@@ -202,7 +203,7 @@ bool intersectVerticalStrip(ChunkLodElevationTest &test,
 						test._setHit(height, index, normal);
 						test._setVertices(A, B, C);
 						test._setParameters(offset, scale);
-						test._setSourceVertices(vertices[indices[i-1]], 
+						test._setSourceVertices(vertices[indices[i-1]],
 						                        vertices[indices[i-2]],
 						                        vertices[indices[i-3]]);
 						return true;
@@ -215,8 +216,8 @@ bool intersectVerticalStrip(ChunkLodElevationTest &test,
 			if (start <= 2) {
 				return false;
 			}
-			comp = (comp >> 1) | (getX(vertices, indices, 0) > x_pos ? 4 : 0); 
-			comp = (comp >> 1) | (getX(vertices, indices, 1) > x_pos ? 4 : 0); 
+			comp = (comp >> 1) | (getX(vertices, indices, 0) > x_pos ? 4 : 0);
+			comp = (comp >> 1) | (getX(vertices, indices, 1) > x_pos ? 4 : 0);
 			i = 2;
 		}
 	}

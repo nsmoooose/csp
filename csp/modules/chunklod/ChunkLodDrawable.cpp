@@ -31,13 +31,13 @@
 #include <osg/StateSet>
 #include <cstdio>
 
-#include "RegisterCombinerDetails.cpp"
+//#include "RegisterCombinerDetails.cpp"
 
 namespace osgChunkLod {
 
-ChunkLodDrawable::ChunkLodDrawable ()
+ChunkLodDrawable::ChunkLodDrawable()
 {
-	setSupportsDisplayList (false);
+	setSupportsDisplayList(false);
 	_tree = NULL;
 	osg::Timer t;
 	_last_tick = t.tick();
@@ -64,55 +64,39 @@ ChunkLodDrawable::ChunkLodDrawable ()
 	// TODO delete _details in dtor
 }
 
-ChunkLodDrawable::ChunkLodDrawable (const ChunkLodDrawable& t, const osg::CopyOp &copyop)
-{
+ChunkLodDrawable::ChunkLodDrawable(const ChunkLodDrawable& t, const osg::CopyOp &copyop): osg::Drawable(t, copyop) {
 	_tree = t._tree;
 }
 
-ChunkLodDrawable::~ChunkLodDrawable ()
-{
+ChunkLodDrawable::~ChunkLodDrawable() {
 }
 
-ChunkLodDrawable&
-ChunkLodDrawable::operator = (const ChunkLodDrawable& t)
-{
+ChunkLodDrawable& ChunkLodDrawable::operator=(const ChunkLodDrawable& t) {
 	_tree = t._tree;
 	return (*this);
 }
 
-osg::Object*
-ChunkLodDrawable::cloneType() const
-{
+osg::Object* ChunkLodDrawable::cloneType() const {
 	return new ChunkLodDrawable();
 }
 
-osg::Object*
-ChunkLodDrawable::clone(const osg::CopyOp& copyop) const
-{
-	return new ChunkLodDrawable (*this, copyop);
+osg::Object* ChunkLodDrawable::clone(const osg::CopyOp& copyop) const {
+	return new ChunkLodDrawable(*this, copyop);
 }
 
-bool
-ChunkLodDrawable::isSameKindAs (const osg::Object* obj) const
-{
+bool ChunkLodDrawable::isSameKindAs(const osg::Object* obj) const {
 	return dynamic_cast<const ChunkLodDrawable*>(obj) != NULL;
 }
 
-const char*
-ChunkLodDrawable::className() const
-{
+const char* ChunkLodDrawable::className() const {
 	return "ChunkLodDrawable";
 }
 
-const char *
-ChunkLodDrawable::libraryName() const
-{
+const char* ChunkLodDrawable::libraryName() const {
 	return "osgChunkLod";
 }
 
-void
-ChunkLodDrawable::setChunkLodTree (ChunkLodTree* tree)
-{
+void ChunkLodDrawable::setChunkLodTree(ChunkLodTree* tree) {
 	_tree = tree;
 	if (tree != NULL) {
 		osg::StateSet *ss = getOrCreateStateSet();
@@ -120,9 +104,7 @@ ChunkLodDrawable::setChunkLodTree (ChunkLodTree* tree)
 	}
 }
 
-void
-ChunkLodDrawable::drawImplementation (osg::State& state) const
-{
+void ChunkLodDrawable::drawImplementation(osg::State& state) const {
 	static int frame = 0;
 
 	_triangles_rendered = 0;
@@ -147,7 +129,7 @@ ChunkLodDrawable::drawImplementation (osg::State& state) const
 		osg::Timer t;
 		osg::Timer_t update_t = t.tick();
 
-		tree->update (viewpoint, state);
+		tree->update(viewpoint, state);
 		//osg::Timer_t render_t = t.tick();
 		_triangles_rendered = tree->render(state, *_details);
 		_triangle_count += _triangles_rendered;
@@ -161,7 +143,7 @@ ChunkLodDrawable::drawImplementation (osg::State& state) const
 		}
 
 		// stats
-		float d = t.delta_s (_last_tick, t.tick());
+		float d = t.delta_s(_last_tick, t.tick());
 		if (d > 1.0f) {
 			//std::cout << "update tree for view from " << viewpoint << "\n";
 			//std::cout << _triangles_rendered << " triangles rendered\n";
@@ -173,7 +155,7 @@ ChunkLodDrawable::drawImplementation (osg::State& state) const
 
 		_details->disable(state);
 
-		state.disableAllVertexArrays ();
+		state.disableAllVertexArrays();
 		state.dirtyTexCoordPointersAboveAndIncluding(0);
 		state.setActiveTextureUnit(0);
 
@@ -181,24 +163,6 @@ ChunkLodDrawable::drawImplementation (osg::State& state) const
 	}
 }
 
-#ifdef OSG_OLD_COMPUTE_BOUND
-bool
-ChunkLodDrawable::computeBound() const
-{
-	if (_tree == NULL) {
-		_bbox.init();
-		return false;
-	}
-
-	osg::Vec3 center, extent;
-	ChunkLodTree *t = const_cast<ChunkLodTree*>(_tree);
-	t->getBoundingBox(&center, &extent);
-	_bbox._min = center - extent;
-	_bbox._max = center + extent;
-
-	return true;
-}
-#else
 osg::BoundingBox ChunkLodDrawable::computeBound() const {
 	osg::BoundingBox bbox;
 	if (_tree != NULL) {
@@ -210,7 +174,6 @@ osg::BoundingBox ChunkLodDrawable::computeBound() const {
 	}
 	return bbox;
 }
-#endif
 
 }
 

@@ -1,20 +1,20 @@
-/* -*- Mode: c++; c-basic-offset: 4; tab-width: 4; indent-tabs-mode: nil; -*- */
+// -*- c++ -*-
 
 /*
  * MmapFile
  *
  * Author(s): Vladimir Vukicevic <vladimir@pobox.com>
- * 
+ *
  * The osgChunkLod library is open source and may be redistributed and/or modified
- * under the terms of the OpenSceneGraph Public License (OSGPL) version 0.0 or 
+ * under the terms of the OpenSceneGraph Public License (OSGPL) version 0.0 or
  * (at your option) any later version.  The full license is in LICENSE file
  * included with this distribution, and on the openscenegraph.org website.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * OpenSceneGraph Public License for more details.
- * 
+ *
  */
 
 /*
@@ -40,95 +40,105 @@
 
 namespace osgChunkLod {
 
-	class MmapFile {
-	public:
-		MmapFile (const char *filename) {
-			struct stat st;
-			if (stat (filename, &st) < 0)
-				throw "unable to stat file";
-
-			_fileSize = st.st_size;
-#ifdef _WIN32
-			_hFile = CreateFile (filename, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_FLAG_RANDOM_ACCESS, NULL);
-			if (_hFile == NULL)
-				throw "CreateFile failed";
-			_hFileMapping = CreateFileMapping (_hFile, NULL, PAGE_READONLY, 0, 0, NULL);
-			if (_hFileMapping == NULL)
-				throw "CreateFileMapping failed";
-			_mapbase = MapViewOfFile (_hFileMapping, FILE_MAP_READ, 0, 0, _fileSize);
-			if (_mapbase == NULL)
-				throw "MapViewOfFile failed";
-#else
-			_fd = open (filename, O_RDONLY);
-			if (_fd <= 0)
-				throw "unable to open file";
-			_mapbase = mmap (NULL, _fileSize, PROT_READ, MAP_SHARED, _fd, 0);
-			if (_mapbase == NULL)
-				throw "unable to mmap file";
-#endif
-			_curptr = (unsigned char *) _mapbase;
-			_curindex = 0;
+class MmapFile {
+public:
+	MmapFile(const char *filename) {
+		struct stat st;
+		if (stat(filename, &st) < 0) {
+			throw "unable to stat file";
 		}
 
-		~MmapFile () {
+		_fileSize = st.st_size;
 #ifdef _WIN32
-			UnmapViewOfFile (_mapbase);
-			CloseHandle (_hFileMapping);
-			CloseHandle (_hFile);
-#else
-			munmap (_mapbase, _fileSize);
-			close (_fd);
-#endif
-			_mapbase = NULL;
-			_curptr = NULL;
+		_hFile = CreateFile(filename, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_FLAG_RANDOM_ACCESS, NULL);
+		if (_hFile == NULL) {
+			throw "CreateFile failed";
 		}
+		_hFileMapping = CreateFileMapping(_hFile, NULL, PAGE_READONLY, 0, 0, NULL);
+		if (_hFileMapping == NULL) {
+			throw "CreateFileMapping failed";
+		}
+		_mapbase = MapViewOfFile(_hFileMapping, FILE_MAP_READ, 0, 0, _fileSize);
+		if (_mapbase == NULL) {
+			throw "MapViewOfFile failed";
+		}
+#else
+		_fd = open(filename, O_RDONLY);
+		if (_fd <= 0) {
+			throw "unable to open file";
+		}
+		_mapbase = mmap(NULL, _fileSize, PROT_READ, MAP_SHARED, _fd, 0);
+		if (_mapbase == NULL) {
+			throw "unable to mmap file";
+		}
+#endif
+		_curptr = (unsigned char *) _mapbase;
+		_curindex = 0;
+	}
+
+	~MmapFile() {
+#ifdef _WIN32
+		UnmapViewOfFile(_mapbase);
+		CloseHandle(_hFileMapping);
+		CloseHandle(_hFile);
+#else
+		munmap(_mapbase, _fileSize);
+		close(_fd);
+#endif
+		_mapbase = NULL;
+		_curptr = NULL;
+	}
 
 #define READFUNC(name, type) \
-		type read##name () { \
-			type out = * (type *) _curptr; \
-			_curptr += sizeof (type); \
-			_curindex += sizeof (type); \
-			return out; \
-		}
-
-		READFUNC(UI8, unsigned char);
-		READFUNC(UI16, unsigned short);
-		READFUNC(UI32, unsigned int);
-		READFUNC(SI8, char);
-		READFUNC(SI16, short);
-		READFUNC(SI32, int);
-		READFUNC(Float, float);
+	type read##name() { \
+		type out = * (type *) _curptr; \
+		_curptr += sizeof(type); \
+		_curindex += sizeof(type); \
+		return out; \
+	}
+	READFUNC(UI8, unsigned char);
+	READFUNC(UI16, unsigned short);
+	READFUNC(UI32, unsigned int);
+	READFUNC(SI8, char);
+	READFUNC(SI16, short);
+	READFUNC(SI32, int);
+	READFUNC(Float, float);
 #undef READFUNC
 
-		void seek(unsigned long pos) {
-			if (pos > _fileSize)
-				throw "bad pos";
-			_curptr = ((unsigned char *) _mapbase) + pos;
-			_curindex = pos;
+	void seek(unsigned long pos) {
+		if (pos > _fileSize) {
+			throw "bad pos";
 		}
+		_curptr = ((unsigned char *) _mapbase) + pos;
+		_curindex = pos;
+	}
 
-		unsigned long tell() {
-			return _curindex;
-		}
+	unsigned long tell() {
+		return _curindex;
+	}
 
-		void *mapbase() {
-			return _mapbase;
-		}
+	void *mapbase() {
+		return _mapbase;
+	}
 
-		unsigned long mapsize() {
-			return _fileSize;
-		}
-	private:
-		void *_mapbase;
-		unsigned char *_curptr;
-		unsigned long _fileSize;
-		unsigned long _curindex;
+	unsigned long mapsize() {
+		return _fileSize;
+	}
+
+private:
+	void *_mapbase;
+	unsigned char *_curptr;
+	unsigned long _fileSize;
+	unsigned long _curindex;
 #ifdef _WIN32
-		HANDLE _hFile, _hFileMapping;
+	HANDLE _hFile, _hFileMapping;
 #else
-		int _fd;
+	int _fd;
 #endif
-	};
-}
+};
 
-#endif
+}  // namespace osgChunkLod
+
+
+#endif  // _MMAPFILE_H_
+

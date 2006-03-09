@@ -1,10 +1,10 @@
-/* -*- Mode: c++; c-basic-offset: 4; tab-width: 4; indent-tabs-mode: nil; -*- */
+// -*- c++ -*-
 
 /*
  * TextureQuadTree
  *
  * Author(s): Vladimir Vukicevic <vladimir@pobox.com>
- * 
+ *
  * The code follows closely after Thatcher Ulrich's sample ChunkLOD implementation.
  * See http://tulrich.com/geekstuff/chunklod.html for more information.
  * Original algorithm by Thatcher Ulrich, released into the public domain.
@@ -18,7 +18,7 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the 
  * OpenSceneGraph Public License for more details.
- * 
+ *
  */
 
 
@@ -27,35 +27,47 @@
 
 #include <csp/modules/chunklod/Export>
 
-#include <vector>
-#include <string>
-
 #include <osg/Image>
 #include <csp/modules/chunklod/MmapFile>
+
+#include <vector>
+#include <string>
+#include <cassert>
+
 
 namespace osgChunkLod {
 
 class OSGCHUNKLOD_EXPORT TextureQuadTree {
-  public:
-	TextureQuadTree (const char* filename);
-    ~TextureQuadTree ();
+public:
+	TextureQuadTree(const char* filename);
+	~TextureQuadTree();
 
-    bool valid() const { return _source != NULL; }
-    int depth() const { return _depth; }
-    int tileSize() const { return _tileSize; }
+	bool valid() const { return _source != NULL; }
+	int depth() const { return _depth; }
+	int tileSize() const { return _tileSize; }
 
-    osg::Image* loadImage (int level, int col, int row) const;
+	osg::Image* loadImage(int level, int col, int row) const;
 
-    static int nodeCount (int depth);
-    static int nodeIndex (int level, int col, int row);
+	// the number of nodes in a fully populated quadtree of the given depth
+	static int nodeCount(int depth) {
+		return 0x55555555 & ((1 << depth * 2) - 1);
+	}
 
-  private:
-    std::vector<unsigned int> _toc;
-    int _depth;
-    int _tileSize;
-    MmapFile* _source;
+	// return a node index given the level and position of a node
+	static int nodeIndex(int level, int col, int row) {
+		assert(col >= 0 && col < (1 << level));
+		assert(row >= 0 && row < (1 << level));
+		return nodeCount(level) + (row << level) + col;
+	}
+
+private:
+	std::vector<unsigned int> _toc;
+	int _depth;
+	int _tileSize;
+	MmapFile* _source;
 };
 
-}
+}  // namespace osgChunkLod
 
-#endif
+#endif // _TEXTUREQUADTREE_H_
+

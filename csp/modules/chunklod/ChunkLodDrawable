@@ -1,20 +1,20 @@
-/* -*- Mode: c++; c-basic-offset: 4; tab-width: 4; indent-tabs-mode: nil; -*- */
+// -*- c++ -*-
 
 /*
  * ChunkLodDrawable
  *
  * Author(s): Vladimir Vukicevic <vladimir@pobox.com>
- * 
+ *
  * The osgChunkLod library is open source and may be redistributed and/or modified
- * under the terms of the OpenSceneGraph Public License (OSGPL) version 0.0 or 
+ * under the terms of the OpenSceneGraph Public License (OSGPL) version 0.0 or
  * (at your option) any later version.  The full license is in LICENSE file
  * included with this distribution, and on the openscenegraph.org website.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * OpenSceneGraph Public License for more details.
- * 
+ *
  * Modifications by Mark Rose <mkrose@users.sourceforge.net>, May 2003,
  * see include/osgChunkLod/ChunkLod for details.
  */
@@ -29,58 +29,49 @@
 #include <csp/modules/chunklod/Export>
 #include <csp/modules/chunklod/ChunkLod>
 
-// OSG_VERSION_MAJOR first defined in OSG 0.9.9
-#ifndef OSG_VERSION_MAJOR
-// The interface to Drawable::computeBound changed in 0.9.9.
-#  define OSG_OLD_COMPUTE_BOUND
-#endif
+namespace osgChunkLod {
 
-namespace osgChunkLod
-{
+class MultiTextureDetails;
 
-    class MultiTextureDetails;
+class OSGCHUNKLOD_EXPORT ChunkLodDrawable : public osg::Drawable {
+public:
+	ChunkLodDrawable ();
+	ChunkLodDrawable (const ChunkLodDrawable &, const osg::CopyOp &copyop = osg::CopyOp::SHALLOW_COPY);
 
-    class OSGCHUNKLOD_EXPORT ChunkLodDrawable : public osg::Drawable
-    {
-      public:
-        ChunkLodDrawable ();
-        ChunkLodDrawable (const ChunkLodDrawable &, const osg::CopyOp &copyop = osg::CopyOp::SHALLOW_COPY);
+	virtual ~ChunkLodDrawable ();
 
-        virtual ~ChunkLodDrawable ();
+	// osg utility funcs
+	ChunkLodDrawable& operator = (const ChunkLodDrawable&);
 
-        // osg utility funcs
-        ChunkLodDrawable& operator = (const ChunkLodDrawable&);
+	virtual osg::Object* cloneType() const;
+	virtual osg::Object* clone(const osg::CopyOp& copyop) const;
+	virtual bool isSameKindAs (const osg::Object* obj) const;
 
-        virtual osg::Object* cloneType() const;
-        virtual osg::Object* clone(const osg::CopyOp& copyop) const;
-        virtual bool isSameKindAs (const osg::Object* obj) const;
-
-        virtual const char* className() const;
-        virtual const char* libraryName() const;
+	virtual const char* className() const;
+	virtual const char* libraryName() const;
 
 	inline int getTrianglesRendered() const { return _triangles_rendered; }
 	inline int getTrianglesPerSecond() const { return _triangles_per_second; }
 
-        // meat code
-        void setChunkLodTree (ChunkLodTree *tree);
-        ChunkLodTree* getChunkLodTree () { return _tree; }
-        const ChunkLodTree* getChunkLodTree () const { return _tree; }
-        virtual void drawImplementation (osg::State &) const;
+	// meat code
+	void setChunkLodTree(ChunkLodTree *tree);
+	ChunkLodTree* getChunkLodTree() { return _tree; }
+	const ChunkLodTree* getChunkLodTree() const { return _tree; }
+	virtual void drawImplementation(osg::State &) const;
 
-      protected:
-#ifdef OSG_OLD_COMPUTE_BOUND
-        virtual bool computeBound() const;
-#else
-        virtual osg::BoundingBox computeBound() const;
-#endif
-        ChunkLodTree* _tree;
+protected:
+	virtual osg::BoundingBox computeBound() const;
+
+	ChunkLodTree* _tree;
 	mutable osg::Timer_t _last_tick;
 	mutable int _triangles_rendered;
 	mutable int _triangles_per_second;
 	mutable int _triangle_count;
 	mutable int _lastBoundIndex;
 	MultiTextureDetails *_details;
-    };
-}
+};
 
-#endif
+}  // namespace osgChunkLod
+
+#endif  // _OSG_CHUNKLODDRAWABLE__
+

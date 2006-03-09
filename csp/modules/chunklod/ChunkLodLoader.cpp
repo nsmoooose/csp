@@ -1,24 +1,24 @@
-/* -*- Mode: c++; c-basic-offset: 4; tab-width: 4; indent-tabs-mode: nil; -*- */
+// -*- c++ -*-
 
 /*
  * ChunkLodLoader.cpp
  *
  * Author(s): Vladimir Vukicevic <vladimir@pobox.com>
- * 
+ *
  * The code follows closely after Thatcher Ulrich's sample ChunkLOD implementation.
  * See http://tulrich.com/geekstuff/chunklod.html for more information.
  * Original algorithm by Thatcher Ulrich, released into the public domain.
  *
  * The osgChunkLod library is open source and may be redistributed and/or modified
- * under the terms of the OpenSceneGraph Public License (OSGPL) version 0.0 or 
+ * under the terms of the OpenSceneGraph Public License (OSGPL) version 0.0 or
  * (at your option) any later version.  The full license is in LICENSE file
  * included with this distribution, and on the openscenegraph.org website.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * OpenSceneGraph Public License for more details.
- * 
+ *
  * Modifications by Mark Rose <mkrose@users.sourceforge.net>, May 2003,
  * see include/osgChunkLod/ChunkLod for details.
  *
@@ -31,17 +31,13 @@
 
 namespace osgChunkLod {
 
-ChunkLodLoader::ChunkLodLoader (ChunkLodTree* tree,
-                                MmapFile* chu_file,
-                                const TextureQuadTree* tqt)
-{
+ChunkLodLoader::ChunkLodLoader(ChunkLodTree* tree, MmapFile* chu_file, const TextureQuadTree* tqt) {
 	_tree = tree;
 	_chunkfile = chu_file;
 	_tqt = tqt;
 	_usingThread = false;
 
-	for (int i = 0; i < REQUEST_BUFFER_SIZE; i++)
-	{
+	for (int i = 0; i < REQUEST_BUFFER_SIZE; i++) {
 		_requestBuffer[i] = NULL;
 		_retireBuffer[i]._chunk = NULL;
 		_requestTextureBuffer[i] = NULL;
@@ -49,42 +45,39 @@ ChunkLodLoader::ChunkLodLoader (ChunkLodTree* tree,
 	}
 
 #ifdef USE_WIN32_THREADS
-	InitializeCriticalSection (&_hCritSection);
+	InitializeCriticalSection(&_hCritSection);
 #elif defined(USE_PTHREADS)
 	pthread_mutex_init(&_mutex, NULL);
 #endif
 }
 
-ChunkLodLoader::~ChunkLodLoader ()
-{
-	useThread (false);
+ChunkLodLoader::~ChunkLodLoader() {
+	useThread(false);
 #if defined(USE_WIN32_THREADS)
-	DeleteCriticalSection (&_hCritSection);
+	DeleteCriticalSection(&_hCritSection);
 #elif defined(USE_PTHREADS)
 	pthread_mutex_destroy(&_mutex);
 #endif
 }
 
-void
-ChunkLodLoader::useThread (bool use_thread)
-{
+void ChunkLodLoader::useThread(bool use_thread) {
 	if (_usingThread == use_thread) {
 		// nothing to do, we're already doing what's asked
-		return; 
+		return;
 	}
 
 #if defined(USE_WIN32_THREADS)
 	if (_usingThread) {
 		// we're currently using a thread, and we've been asked to stop
 		_stopThread = TRUE;
-		WaitForSingleObject (_hThread, INFINITE);
-		CloseHandle (_hThread);
+		WaitForSingleObject(_hThread, INFINITE);
+		CloseHandle(_hThread);
 		_usingThread = FALSE;
 	} else {
 		// we're not using a thread, and we've been asked to start using one
 		_usingThread = TRUE;
 		_stopThread = FALSE;
-		_hThread = CreateThread (NULL, 0, (LPTHREAD_START_ROUTINE) _loaderThreadFunc, this, 0, NULL);
+		_hThread = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE) _loaderThreadFunc, this, 0, NULL);
 		if (_hThread == NULL) {
 			// thread creation failed; we'll continue using no thread
 			_usingThread = FALSE;
@@ -124,14 +117,12 @@ ChunkLodLoader::useThread (bool use_thread)
 #endif
 }
 
-void
-ChunkLodLoader::syncLoader ()
-{
+void ChunkLodLoader::syncLoader() {
 	if (_usingThread) {
 #if defined(USE_WIN32_THREADS)
-		EnterCriticalSection (&_hCritSection);
+		EnterCriticalSection(&_hCritSection);
 #elif defined(USE_PTHREADS)
-		pthread_mutex_lock (&_mutex);
+		pthread_mutex_lock(&_mutex);
 #endif
 	}
 
@@ -148,9 +139,9 @@ ChunkLodLoader::syncLoader ()
 	for (unsigned int i = 0; i < _unloadTextureQueue.size(); i++) {
 		ChunkLod* c = _unloadTextureQueue[i];
 		if (c->parent != NULL) {
-			assert (c->parent->texture.valid());
-			assert (c->hasChildren() == false
-				|| (!c->children[0]->texture.valid() &&
+			assert(c->parent->texture.valid());
+			assert(c->hasChildren() == false || (
+				!c->children[0]->texture.valid() &&
 				!c->children[1]->texture.valid() &&
 				!c->children[2]->texture.valid() &&
 				!c->children[3]->texture.valid()));
@@ -168,7 +159,7 @@ ChunkLodLoader::syncLoader ()
 			} else {
 				// ATI
 				if (_tree->useVertexProgram()) {
-					r._chunk_data->vertexInfo.convertToObjectArray ();
+					r._chunk_data->vertexInfo.convertToObjectArray();
 				}
 				r._chunk->data = r._chunk_data;
 			}
@@ -185,9 +176,9 @@ ChunkLodLoader::syncLoader ()
 				r._texture_image = NULL;
 			} else {
 				// make a texture for this chunk
-				osg::Texture2D *texture = new osg::Texture2D ();
-				texture->setImage (r._texture_image.get());
-				texture->setUseHardwareMipMapGeneration (true);
+				osg::Texture2D *texture = new osg::Texture2D();
+				texture->setImage(r._texture_image.get());
+				texture->setUseHardwareMipMapGeneration(true);
 				r._chunk->texture = texture;
 			}
 		}
@@ -204,7 +195,7 @@ ChunkLodLoader::syncLoader ()
 	int qsize = _loadQueue.size();
 	if (qsize > 0) {
 		int req_count = 0;
-		qsort (&_loadQueue[0], qsize, sizeof (_loadQueue[0]), pending_load_request::compare);
+		qsort(&_loadQueue[0], qsize, sizeof(_loadQueue[0]), pending_load_request::compare);
 		for (int i = 0; i < qsize; i++) {
 			ChunkLod* c = _loadQueue[qsize - 1 - i]._chunk;
 			if (c->data == NULL && (c->parent == NULL || c->parent->data != NULL)) {
@@ -233,12 +224,12 @@ ChunkLodLoader::syncLoader ()
 				}
 			}
 		}
-		_loadTextureQueue.resize (0);
+		_loadTextureQueue.resize(0);
 	}
 
 	if (_usingThread) {
 #if defined(USE_WIN32_THREADS)
-		LeaveCriticalSection (&_hCritSection);
+		LeaveCriticalSection(&_hCritSection);
 #elif defined(USE_PTHREADS)
 		pthread_mutex_unlock(&_mutex);
 #endif
@@ -258,52 +249,44 @@ ChunkLodLoader::syncLoader ()
 	}
 }
 
-void
-ChunkLodLoader::requestLoad (ChunkLod* chunk, float urgency)
-{
+void ChunkLodLoader::requestLoad(ChunkLod* chunk, float urgency) {
 //	printf ("requestLoad: chunk: 0x%08x (level %d %d,%d) urgency: %f\n",
 //		chunk, chunk->level, chunk->x, chunk->z, urgency);
 	if (chunk->parent == NULL || chunk->parent->data != NULL) {
-		_loadQueue.push_back (pending_load_request (chunk, urgency));
+		_loadQueue.push_back(pending_load_request(chunk, urgency));
 	}
 }
 
-void
-ChunkLodLoader::requestUnload (ChunkLod* chunk)
-{
+void ChunkLodLoader::requestUnload(ChunkLod* chunk) {
 //	printf ("requestUnload: chunk: 0x%08x (level %d %d,%d)\n",
 //		chunk, chunk->level, chunk->x, chunk->z);
-	_unloadQueue.push_back (chunk);
+	_unloadQueue.push_back(chunk);
 }
 
 void
-ChunkLodLoader::requestLoadTexture (ChunkLod* chunk)
+ChunkLodLoader::requestLoadTexture(ChunkLod* chunk)
 {
 	if (chunk->parent == NULL || chunk->parent->texture.valid()) {
-		_loadTextureQueue.push_back (chunk);
+		_loadTextureQueue.push_back(chunk);
 	}
 }
 
 
-void
-ChunkLodLoader::requestUnloadTexture (ChunkLod* chunk)
-{
-	_unloadTextureQueue.push_back (chunk); 
+void ChunkLodLoader::requestUnloadTexture(ChunkLod* chunk) {
+	_unloadTextureQueue.push_back(chunk);
 }
 
 
 //
 // service data request
-bool
-ChunkLodLoader::_serviceData ()
-{
+bool ChunkLodLoader::_serviceData() {
 	volatile ChunkLod* chunk_to_load = NULL;
 
 	if (_usingThread) {
 #if defined(USE_WIN32_THREADS)
-		EnterCriticalSection (&_hCritSection);
+		EnterCriticalSection(&_hCritSection);
 #elif defined(USE_PTHREADS)
-		pthread_mutex_lock (&_mutex);
+		pthread_mutex_lock(&_mutex);
 #endif
 	}
 
@@ -331,9 +314,9 @@ ChunkLodLoader::_serviceData ()
 
 	if (_usingThread) {
 #if defined(USE_WIN32_THREADS)
-		LeaveCriticalSection (&_hCritSection);
+		LeaveCriticalSection(&_hCritSection);
 #elif defined(USE_PTHREADS)
-		pthread_mutex_unlock (&_mutex);
+		pthread_mutex_unlock(&_mutex);
 #endif
 	}
 
@@ -343,14 +326,14 @@ ChunkLodLoader::_serviceData ()
 	}
 
 	ChunkLodData* loaded_data = NULL;
-	_chunkfile->seek (chunk_to_load->dataFilePosition);
-	loaded_data = new ChunkLodData (_chunkfile);
+	_chunkfile->seek(chunk_to_load->dataFilePosition);
+	loaded_data = new ChunkLodData(_chunkfile);
 
 	if (_usingThread) {
 #if defined(USE_WIN32_THREADS)
-		EnterCriticalSection (&_hCritSection);
+		EnterCriticalSection(&_hCritSection);
 #elif defined(USE_PTHREADS)
-		pthread_mutex_lock (&_mutex);
+		pthread_mutex_lock(&_mutex);
 #endif
 	}
 
@@ -364,18 +347,16 @@ ChunkLodLoader::_serviceData ()
 
 	if (_usingThread) {
 #if defined(USE_WIN32_THREADS)
-		LeaveCriticalSection (&_hCritSection);
+		LeaveCriticalSection(&_hCritSection);
 #elif defined(USE_PTHREADS)
-		pthread_mutex_unlock (&_mutex);
+		pthread_mutex_unlock(&_mutex);
 #endif
 	}
 
 	return true;
 }
 
-bool
-ChunkLodLoader::_serviceTexture ()
-{
+bool ChunkLodLoader::_serviceTexture() {
 	if (!_tqt) {
 		// no textures, nothing to do
 		return false;
@@ -385,9 +366,9 @@ ChunkLodLoader::_serviceTexture ()
 
 	if (_usingThread) {
 #if defined(USE_WIN32_THREADS)
-		EnterCriticalSection (&_hCritSection);
+		EnterCriticalSection(&_hCritSection);
 #elif defined(USE_PTHREADS)
-		pthread_mutex_lock (&_mutex);
+		pthread_mutex_lock(&_mutex);
 #endif
 	}
 
@@ -414,9 +395,9 @@ ChunkLodLoader::_serviceTexture ()
 
 	if (_usingThread) {
 #if defined(USE_WIN32_THREADS)
-		LeaveCriticalSection (&_hCritSection);
+		LeaveCriticalSection(&_hCritSection);
 #elif defined(USE_PTHREADS)
-		pthread_mutex_unlock (&_mutex);
+		pthread_mutex_unlock(&_mutex);
 #endif
 	}
 
@@ -426,13 +407,13 @@ ChunkLodLoader::_serviceTexture ()
 	}
 
 	osg::Image* texImage;
-	texImage = _tqt->loadImage (chunk_to_load->level, chunk_to_load->x, chunk_to_load->z);
+	texImage = _tqt->loadImage(chunk_to_load->level, chunk_to_load->x, chunk_to_load->z);
 
 	if (_usingThread) {
 #if defined(USE_WIN32_THREADS)
-		EnterCriticalSection (&_hCritSection);
+		EnterCriticalSection(&_hCritSection);
 #elif defined(USE_PTHREADS)
-		pthread_mutex_lock (&_mutex);
+		pthread_mutex_lock(&_mutex);
 #endif
 	}
 
@@ -446,12 +427,12 @@ ChunkLodLoader::_serviceTexture ()
 
 	if (_usingThread) {
 #if defined(USE_WIN32_THREADS)
-		LeaveCriticalSection (&_hCritSection);
+		LeaveCriticalSection(&_hCritSection);
 #elif defined(USE_PTHREADS)
-		pthread_mutex_unlock (&_mutex);
+		pthread_mutex_unlock(&_mutex);
 #endif
 	}
-    
+   
 	return true;
 }
 
@@ -459,20 +440,18 @@ ChunkLodLoader::_serviceTexture ()
 // thread function
 //
 
-ChunkLodLoader::ThreadFuncReturn
-ChunkLodLoader::_loaderThreadFunc (void *param)
-{
+ChunkLodLoader::ThreadFuncReturn ChunkLodLoader::_loaderThreadFunc(void *param) {
 	ChunkLodLoader *loader = (ChunkLodLoader *) param;
 	while (!loader->_stopThread) {
 		//std::cout << "IN LOADER THREAD\n";
 		bool loaded = false;
-		loaded = loaded || loader->_serviceData ();
-		loaded = loaded || loader->_serviceTexture ();
+		loaded = loaded || loader->_serviceData();
+		loaded = loaded || loader->_serviceTexture();
 
 		if (!loaded) {
 			// sleep for a bit; this coild be done using a semaphore when data arrives
 #if defined(USE_WIN32_THREADS)
-			Sleep (10);
+			Sleep(10);
 #elif defined(USE_PTHREADS)
 			struct timespec tspec;
 			tspec.tv_sec = 0;
@@ -484,5 +463,5 @@ ChunkLodLoader::_loaderThreadFunc (void *param)
 	return 0;
 }
 
-} // namespace osgChunkLod 
+} // namespace osgChunkLod
 

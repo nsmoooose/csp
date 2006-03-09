@@ -22,7 +22,7 @@ env = env.Copy()
 env.AppendUnique(CPPDEFINES=Split('OSGCHUNKLOD_LIBRARY'))
 
 # cspchunklod generates lots of warnings; feel free to clean it up and then remove this line
-env.RemoveFlags(CXXFLAGS=Split('-pedantic -W /W3'))
+#env.RemoveFlags(CXXFLAGS=Split('-pedantic -W /W3'))
 
 # to remove conflicts with MSVCRT
 if env['PLATFORM'].startswith('win'):
@@ -39,11 +39,6 @@ build.SharedLibrary(env,
 		'Version.cpp',
 	],
 	deps = ['cspsim', 'jpeg'],
-	aliases = 'all')
+	aliases = ['all', 'clod'])
 
-
-# TODO enable/disable osgNV in config.h
-#valid = conf.CheckOSGVersion('osgNV', '0.5.7') and valid
-#valid = conf.CheckLib('osgNVCg') and valid
-#valid = conf.CheckLib('osgNVParse') and valid
 

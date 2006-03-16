@@ -292,7 +292,7 @@ void VirtualScene::createSceneViews() {
 	createInfoView();
 }
 
-osgUtil::SceneView *VirtualScene::makeSceneView() {
+osgUtil::SceneView *VirtualScene::makeSceneView(unsigned mask) {
 	osgUtil::SceneView *sv = new osgUtil::SceneView(m_DisplaySettings.get());
 	sv->setDefaults(osgUtil::SceneView::COMPILE_GLOBJECTS_AT_INIT);
 	sv->setViewport(0, 0, m_ScreenWidth, m_ScreenHeight);
@@ -307,21 +307,21 @@ osgUtil::SceneView *VirtualScene::makeSceneView() {
 	sv->getCullVisitor()->setImpostorsActive(true);
 	sv->getCullVisitor()->setComputeNearFarMode(osgUtil::CullVisitor::COMPUTE_NEAR_FAR_USING_BOUNDING_VOLUMES);
 	sv->getCullVisitor()->setCullingMode(osgUtil::CullVisitor::ENABLE_ALL_CULLING);
-	sv->setCullMask(SceneMasks::CULL_ONLY | SceneMasks::NORMAL);
+	sv->setCullMask(SceneMasks::CULL_ONLY | SceneMasks::NORMAL | mask);
 	// default update settings
-	sv->getUpdateVisitor()->setTraversalMask(SceneMasks::UPDATE_ONLY | SceneMasks::NORMAL);
+	sv->getUpdateVisitor()->setTraversalMask(SceneMasks::UPDATE_ONLY | SceneMasks::NORMAL | mask);
 	return sv;
 }
 
 void VirtualScene::createVeryFarView() {
-	m_VeryFarView = makeSceneView();
+	m_VeryFarView = makeSceneView(SceneMasks::FAR);
 	m_VeryFarGroup = new osg::Group;
 	m_VeryFarGroup->setName("very_far_group");
 	m_VeryFarView->setSceneData(m_VeryFarGroup.get());
 }
 
 void VirtualScene::createFarView() {
-	m_FarView = makeSceneView();
+	m_FarView = makeSceneView(SceneMasks::FAR);
 	// clear the depth buffer (but not the color buffer)
 	m_FarView->getRenderStage()->setClearMask(GL_DEPTH_BUFFER_BIT);
 	m_FarGroup = new osg::Group;
@@ -330,7 +330,7 @@ void VirtualScene::createFarView() {
 }
 
 void VirtualScene::createNearView() {
-	m_NearView = makeSceneView();
+	m_NearView = makeSceneView(SceneMasks::NEAR);
 	// clear the depth buffer (but not the color buffer)
 	m_NearView->getRenderStage()->setClearMask(GL_DEPTH_BUFFER_BIT);
 	m_NearView->getCullVisitor()->setImpostorsActive(false);
@@ -340,7 +340,7 @@ void VirtualScene::createNearView() {
 }
 
 void VirtualScene::createInfoView() {
-	m_InfoView = makeSceneView();
+	m_InfoView = makeSceneView(0);
 
 	// clear the depth buffer (but not the color buffer)
 	m_InfoView->getRenderStage()->setClearMask(GL_DEPTH_BUFFER_BIT);

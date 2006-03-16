@@ -29,13 +29,34 @@
 
 CSP_NAMESPACE
 
+/** NodeVisitor traversal mask bits that are set when rendering the scene.
+ *
+ *  UPDATE_ONLY - set during the update traversal.
+ *  CULL_ONLY - set during the cull traversal.
+ *  LABELS - set only if labels are turned on.
+ *  NEAR - set for traversals of the near scene graph.
+ *  FAR - set for traversals of all far scene graphs.
+ *
+ *  For example, the NEAR mask bit is used to enable rendering of canopy
+ *  reflections in internal views by setting the node mask of a canopy model
+ *  with a cockpit reflection texture map to NEAR.  That node is culled in
+ *  external views, and a second canopy model with node mask FAR and an
+ *  environmental reflection texture map is rendered instead.
+ *
+ *  Note that the OSG enables a node if there is any overlap between the node
+ *  mask and the traversal mask.  So for example, there is no way to set a node
+ *  mask such that a node is only enabled for update traversals (UPDATE_ONLY)
+ *  that occur in the near scene graph (NEAR).
+ */
 class SceneMasks {
 public:
 	typedef enum {
 		UPDATE_ONLY = 0x0001,
 		CULL_ONLY = 0x0002,
 		NORMAL = 0x0003,
-		LABELS = 0x0100
+		LABELS = 0x0100,
+		NEAR = 0x200,
+		FAR = 0x400
 	} NodeMask;
 };
 

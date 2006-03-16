@@ -167,7 +167,7 @@ private:
 	int _getFeatureTileIndex(Ref<FeatureGroup> feature) const;
 	void _updateOrigin(Vector3 const &origin);
 
-	osgUtil::SceneView *makeSceneView();
+	osgUtil::SceneView *makeSceneView(unsigned mask);
 
 	void init();
 	void createSceneViews();

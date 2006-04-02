@@ -82,6 +82,11 @@ public:
 		}
 	}
 
+	// GCC 3.4 and up require a copy constructor for const references to temporaries,
+	// even if the constructor is optimized away.  This optimization should occur in
+	// all cases, so this ctor simply aborts if called.
+	VEC(VEC const &other);
+
 	/** Partial constructor.  See operator() for details.
 	 */
 	template <class Y>
@@ -448,6 +453,8 @@ private:
 public:
 	/** An integer array type for dimensioning the table */
 	typedef VEC<N, int> Dim;
+	/** An integer array type for dimensioning a child table */
+	typedef VEC<N-1, int> ChildDim;
 	/** A floating point array for specifying table coordinates */
 	typedef VEC<N, X> Vec;
 	/** An array of breakpoint sets for specifying the input data coordinates */
@@ -507,7 +514,6 @@ public:
 	inline X getValue(std::vector<X> const &x) const {
 		return getValue(Vec(x));
 	}
-
 
 	/** Lookup the value at a given point in the table.
 	 *

@@ -22,11 +22,27 @@
  */
 
 #include <csp/csplib/data/LUT.h>
+#include <csp/csplib/util/Log.h>
 
 #include <sstream>
 
 
 CSP_NAMESPACE
+
+
+// GCC 3.4 and up require a copy constructor for const references to temporaries,
+// even if the constructor is optimized away.  In fact we want this ctor to always
+// be optimized away since the copying the vector elements is expensive.  Worse,
+// the correct implementation of the copy constructor isn't obvious because of the
+// way m_Vp is shared.  So we punt and log a fatal error if this ctor is called.
+template <int N, typename T>
+VEC<N,T>::VEC(VEC const &other): m_Vp(other.m_Vp), m_N(other.m_N) {
+	CSPLOG(FATAL, NUMERIC) << "VEC copy constructor called\n";
+	// best effort implementation, not correct in all cases:
+	//if (other.m_Vp == other.m_Vec) {
+	//	for (int i = 0; i < m_N; ++i) m_Vec[i] = other.m_Vec[i];
+	//}
+}
 
 
 /**

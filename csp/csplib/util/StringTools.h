@@ -85,7 +85,7 @@ std::string CSPLIB_EXPORT RightTrimString(std::string const &str, std::string co
 class CSPLIB_EXPORT FormatArg {
 public:
 	class stringbuf;
-	class formatspec;
+	struct formatspec;
 
 	FormatArg(int x): x_type(TYPE_INT) { x_val.i = x; }
 	FormatArg(unsigned x): x_type(TYPE_UINT) { x_val.ui = x; }

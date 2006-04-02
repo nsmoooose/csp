@@ -356,6 +356,9 @@ void OptionSelectButton::setMode(Mode mode) {
 }
 
 
+TextPlacement::~TextPlacement() {
+}
+
 BasePage::BasePage(DisplayLayout *layout): m_Layout(layout), m_Group(new osg::Group) {
 	CSP_VERIFY(layout);
 }

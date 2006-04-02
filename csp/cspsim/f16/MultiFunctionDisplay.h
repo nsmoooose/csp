@@ -103,6 +103,7 @@ private:
 class TextPlacement {
 public:
 	virtual void get(DisplayLayout *layout, double &x, double &y, osgText::Text::AlignmentType &alignment) const = 0;
+	virtual ~TextPlacement();
 };
 
 class PlaceOSB: public TextPlacement {

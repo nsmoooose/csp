@@ -24,6 +24,7 @@ Boston, MA  02111-1307, USA.
 
 
 #include <osg/Drawable>
+#include <osg/Geode>
 #include <osg/Version>
 
 // OSG_VERSION_MAJOR was first defined in 0.9.9.

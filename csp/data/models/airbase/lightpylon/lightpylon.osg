@@ -9,7 +9,7 @@ MatrixTransform {
     rendering_hint DEFAULT_BIN
     renderBinMode INHERIT
     GL_LIGHTING ON
-    GL_LIGHT0 ON
+    GL_LIGHT2 ON
   }
   referenceFrame RELATIVE
   Matrix {
@@ -15465,12 +15465,12 @@ MatrixTransform {
         DataVariance STATIC
         rendering_hint DEFAULT_BIN
         renderBinMode INHERIT
-        GL_LIGHT0 ON
+        GL_LIGHT2 ON
       }
       referenceFrame RELATIVE
       Light {
         DataVariance STATIC
-        light_num 0
+        light_num 2
         ambient 0.05 0.05 0.05 1
         diffuse 4.90196 4.92157 4.33333 1
         specular 4.90196 4.92157 4.33333 1

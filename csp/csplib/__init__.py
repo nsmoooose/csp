@@ -24,8 +24,21 @@ import types
 bin = os.path.join(os.path.dirname(__file__), '.bin')
 sys.path.insert(0, bin)
 
-import csplib as _csplib
+try:
+	import csplib as _csplib
+except ImportError, e:
+	sys.stderr.write(str(e))
+	sys.stderr.write(
+"""
+Unable to import csplib.py from csp/csplib/.bin.  This file and
+and others needed by cspsim are generatedd during the build.
+Check that all targets have been built successfully.  See the
+README file for build instructions.
+""")
+	sys.exit(1)
+
 from csplib import *
+sys.path = sys.path[1:]
 
 version = _csplib.getVersion()
 

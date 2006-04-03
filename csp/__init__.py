@@ -16,20 +16,31 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
-
 import sys
 import os
 
 dir = os.path.abspath(__path__[0])
 
-# bring compiled modules into the csp package
-__path__.insert(0, os.path.join(dir, 'cspsim', '.bin'))
-
-def initDynamicLoading():
-	"""Enable lazy loading of shared library modules if available"""
+def _configureModules():
 	if os.name == 'posix':
-		import dl
-		sys.setdlopenflags(dl.RTLD_GLOBAL|dl.RTLD_LAZY)
+		try:
+			import dl
+			# enable lazy loading of shared library modules if available.
+			sys.setdlopenflags(dl.RTLD_GLOBAL|dl.RTLD_LAZY)
+		except ImportError:
+			sys.stderr.write('import dl failed; lazy module loading not enabled.\n')
+	else:
+		# if CSPDEVPACK is defined in the environment, add the devpack bin
+		# directory to the execution path.  this ensures that devpack libraries
+		# will be found before other (potentially incompatible) versions of the
+		# same libraries.  note that windows is currently the only system with
+		# a devpack.
+		devpack = os.environ.get('CSPDEVPACK')
+		if devpack:
+			bin = os.path.join(devpack, 'usr', 'bin')
+			path = [bin]
+			if 'PATH' in os.environ:
+				path.append(os.environ.get('PATH'))
+			os.environ['PATH'] = os.pathsep.join(path)
 
-initDynamicLoading()
-
+_configureModules()

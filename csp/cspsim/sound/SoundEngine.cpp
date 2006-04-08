@@ -24,6 +24,7 @@
 
 
 #include <csp/cspsim/sound/SoundEngine.h>
+#include <csp/csplib/util/Log.h>
 
 #include <osgAL/SoundManager>
 #include <osgAL/SoundRoot>
@@ -36,7 +37,10 @@ CSP_NAMESPACE
 
 SoundEngine &SoundEngine::getInstance() {
 	static SoundEngine *engine = 0;
-	if (!engine) engine = new SoundEngine;
+	if (!engine) {
+		CSPLOG(DEBUG, APP) << "Creating SoundEngine";
+		engine = new SoundEngine;
+	}
 	return *engine;
 }
 
@@ -52,13 +56,18 @@ osgAL::SoundManager *SoundEngine::getManager() {
 }
 
 void SoundEngine::initialize() {
+	CSPLOG(DEBUG, APP) << "SoundEngine::initialize";
 	osgAL::SoundManager *manager = getManager();
+	CSPLOG(DEBUG, APP) << "SoundEngine::initialize manager = " << manager;
 	assert(manager);
 	manager->init(32);
+	CSPLOG(DEBUG, APP) << "SoundEngine::initialize manager init";
+	CSPLOG(DEBUG, APP) << "SoundEngine::initialize env = " << manager->getEnvironment();
 	manager->getEnvironment()->setDistanceModel(openalpp::InverseDistanceClamped);
 	manager->getEnvironment()->setDopplerFactor(0.3);  // full doppler produces artifacts
 	manager->setMaxVelocity(200);
 	//manager->setClampVelocity(true);  (not available in 20041121-3 debian package)
+	CSPLOG(DEBUG, APP) << "SoundEngine::initialize done";
 }
 
 void SoundEngine::shutdown() {

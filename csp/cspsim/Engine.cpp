@@ -86,21 +86,22 @@ Vector3 const &Engine::getSmokeEmitterLocation() const {
 
 void Engine::bindSounds(SoundModel* model, ResourceBundle* bundle) {
 	assert(model);
-	CSPLOG(INFO, AUDIO) << "Engine::bindSounds";
+	CSPLOG(DEBUG, AUDIO) << "Engine::bindSounds";
 	if (bundle) {
-		CSPLOG(INFO, AUDIO) << "Engine::bindSounds have bundle";
+		CSPLOG(DEBUG, AUDIO) << "Engine::bindSounds have bundle";
 		Ref<const SoundSample> sample(bundle->getSoundSample("engine"));
 		m_EngineSound = SoundEffect::ExternalSound(sample, model);
 		if (m_EngineSound.valid()) {
-			CSPLOG(INFO, AUDIO) << "Engine::bindSounds have sound";
+			CSPLOG(DEBUG, AUDIO) << "Engine::bindSounds have sound";
 			m_EngineSound->state()->setPosition(toOSG(m_EngineOffset));
 			m_EngineSound->state()->setDirection(toOSG(m_ThrustDirection));
-			CSPLOG(INFO, AUDIO) << "engine sound position " << m_EngineOffset;
-			CSPLOG(INFO, AUDIO) << "engine sound direction " << m_ThrustDirection;
+			CSPLOG(DEBUG, AUDIO) << "engine sound position " << m_EngineOffset;
+			CSPLOG(DEBUG, AUDIO) << "engine sound direction " << m_ThrustDirection;
 			m_EngineSound->state()->apply();
 			m_EngineSound->play();  // TODO rpm dependence
 		}
 	}
+	CSPLOG(DEBUG, AUDIO) << "Engine::bindSounds exit";
 }
 
 void Engine::updateThrust() {

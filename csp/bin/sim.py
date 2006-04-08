@@ -58,6 +58,24 @@ def relativePath(a, b=None):
 	return os.path.join(*(['..'] * (len(a) - i) + list(b[i:])))
 
 
+def configureEnvironment():
+	os.environ.setdefault('CSPLOG_FILE', 'sim.log')
+	os.environ.setdefault('CSPLOG_PRIORITY', '2')
+
+	# for Windows, ensure that the devpack bin path is searched ahead of
+	# any other directories in PATH.
+	CSPDEVPACK=os.environ.get('CSPDEVPACK')
+	if CSPDEVPACK:
+		PATH = os.environ.get('PATH', '')
+		CSPDEVPACK_BIN = os.path.join(CSPDEVPACK, 'bin')
+		if not PATH.startswith(CSPDEVPACK_BIN):
+			print 'WARNING: placing %s at start of PATH' % CSPDEVPACK_BIN
+			os.environ['PATH'] = os.pathsep.join([CSPDEVPACK_BIN, PATH])
+	elif sys.platform.startswith('win'):
+		print 'WARNING: CSPDEVPACK environment variable not set; required libraries'
+		print 'may not be found.'
+
+
 def checkModuleSpace():
 	"""
 	Check that the bootstrap module works correctly and that the top-level csp
@@ -74,7 +92,6 @@ def checkModuleSpace():
 	csp = _csp
 	# check if we are running as a py2exe executable
 	IS_FROZEN = hasattr(csp, '__loader__')
-
 
 
 def checkData():
@@ -331,8 +348,7 @@ def main(args):
 
 
 if __name__ == '__main__':
-	os.environ.setdefault('CSPLOG_FILE', 'sim.log')
-	os.environ.setdefault('CSPLOG_PRIORITY', '2')
+	configureEnvironment()
 	checkModuleSpace()
 	checkData()
 	importModules()

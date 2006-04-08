@@ -1042,6 +1042,7 @@ class ExternalLibrary:
 			settings.merge(ExternalLibrary._save(conf.env, oldenv))
 			global_settings.merge(settings)
 			self._settings = settings
+		conf.env = oldenv
 		return valid
 
 	def _addSettings(self, settings, bdeps):
@@ -1137,10 +1138,13 @@ class DevpackConfig:
 		DevpackConfig.DEVPACK = path
 	_Find = staticmethod(_Find)
 
-	def __init__(self, dlls, headers=[]):
+	def __init__(self, dlls=[], libs=[], headers=[]):
 		if isinstance(dlls, str):
 			dlls = [dlls]
+		if isinstance(libs, str):
+			libs = [libs]
 		self._dlls = dlls
+		self._libs = libs
 		self._headers = headers
 
 	def configure(self, conf):
@@ -1150,13 +1154,15 @@ class DevpackConfig:
 			for dll in self._dlls:
 				self._checkPath(dp, 'usr', 'bin', dll + '.dll')
 				self._checkPath(dp, 'usr', 'lib', dll + '.lib')
+			for lib in self._libs:
+				self._checkPath(dp, 'usr', 'lib', lib + '.lib')
 			for header in self._headers:
 				if isinstance(header, tuple):
 					header = os.path.join(*header)
 				self._checkPath(os.path.join(dp, 'usr', 'include', header))
 			conf.env.AppendUnique(CPPPATH=[os.path.join(dp, 'usr', 'include')])
 			conf.env.AppendUnique(LIBPATH=[os.path.join(dp, 'usr', 'lib')])
-			conf.env.AppendUnique(LIBS=self._dlls)
+			conf.env.AppendUnique(LIBS=self._dlls + self._libs)
 		return 1
 
 

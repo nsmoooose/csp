@@ -63,7 +63,7 @@ INCLUDE = [
 build.ExternalLibrary(
 	name = 'jpeg',
 	config = [
-		build.WindowsLibConfig('libjpeg'),
+		build.DevpackConfig(libs='libjpeg'),
 		build.WindowsLibConfig('user32'),
 	])
 
@@ -88,7 +88,8 @@ build.ExternalLibrary(
 		build.PkgConfig(package='openalpp', version='0.2'),
 		build.PkgConfig(package='vorbis', version='1.1.0'),
 		build.DevpackConfig(dlls='openalpp', headers=[('openalpp', 'sounddata.h')]),
-		build.DevpackConfig(dlls='vorbis', headers=[('vorbis', 'vorbisfile.h')]),
+		build.DevpackConfig(dlls=['libvorbis', 'libvorbisfile'], headers=[('vorbis', 'vorbisfile.h')]),
+		build.DevpackConfig(dlls='libogg', headers=[('ogg', 'ogg.h')]),
 	])
 
 build.ExternalLibrary(
@@ -156,6 +157,9 @@ class PlatformSettings:
 		env.AppendUnique(CPPDEFINES=Split('WIN32 __WIN32__ _USRDLL _DLL NDEBUG'))
 		env.AppendUnique(LINKFLAGS=Split('/INCREMENTAL:NO /RELEASE /nologo'))
 		env.AppendUnique(SHLINKFLAGS=Split('/INCREMENTAL:NO /NODEFAULTLIB:LIBCMT /RELEASE /nologo'))
+		# FIXME why is LIBPATH being overwritten?  quick hack for now is to add the path to linkflags.
+		env.AppendUnique(LIBPATH=[build.PYTHON_LIBRARY])
+		env.AppendUnique(LINKFLAGS=['/LIBPATH:%s' % build.PYTHON_LIBRARY])
 		env.CopyEnvironment(Split('PATH INCLUDE LIB')) # FIXME
 
 	def customize_linux(self, env):

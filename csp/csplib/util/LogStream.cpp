@@ -39,6 +39,26 @@
 
 CSP_NAMESPACE
 
+
+CSPLIB_EXPORT LogStream& internal_log() {
+	static LogStream *log_stream = 0;
+	// this method of access is safe (no race condition), since the first log
+	// messages are generated during static initialization.
+	if (log_stream == 0) {
+		bool is_new = false;
+		// default to stderr, which may be overridden by the environment
+		// settings.  note that this LogStream instance is never freed, so
+		// it is safe to log messages from static destructors.
+		log_stream = LogStream::getOrCreateNamedLog("CSP", &is_new);
+		if (is_new) {
+			log_stream->initFromEnvironment("CSPLOG_FILE", "CSPLOG_PRIORITY", "CSPLOG_FLAGS");
+			log_stream->setNeverDeleted();
+		}
+	}
+	return *log_stream;
+}
+
+
 // A trivial registry for LogStreams.  Note that the registry does not take ownership of
 // the pointers it contains, the log streams will persist unless explicitly deleted.  Be
 // careful when deleting log streams, since logs may be written even during static
@@ -131,6 +151,7 @@ Mutex *AutoFlushAtExitHelper::m_mutex;
 
 } // namespace
 
+
 void LogStream::setNeverDeleted() {
 	if (!m_never_deleted) {
 		AutoFlushAtExitHelper::registerStream(this);
@@ -209,10 +230,12 @@ void LogStream::LogEntry::die() {
 	::abort();
 }
 
-LogStream *LogStream::getOrCreateNamedLog(const std::string &name) {
+LogStream *LogStream::getOrCreateNamedLog(const std::string &name, bool *created) {
+	if (created) *created = false;
 	if (!NamedLogStreamRegistry) NamedLogStreamRegistry = new LogStreamRegistry;
 	LogStreamRegistry::iterator iter = NamedLogStreamRegistry->find(name);
 	if (iter == NamedLogStreamRegistry->end()) {
+		if (created) *created = true;
 		LogStream *logstream = new LogStream(std::cerr);
 		NamedLogStreamRegistry->insert(std::make_pair(name, logstream));
 		return logstream;
@@ -267,6 +290,7 @@ void LogStream::setStream(std::ostream &stream) {
 void LogStream::close() {
 	flush();
 	if (m_fstream) {
+		std::cout << "Closing logfile" << std::endl;
 		m_fstream->close();
 		delete m_fstream;
 		m_fstream = 0;
@@ -278,9 +302,15 @@ void LogStream::logToFile(std::string const &filename) {
 	std::ofstream *target = new std::ofstream(filename.c_str());
 	if (!target) CSPLOG(ERROR, ALL) << "Unable to open log stream to file " << filename;
 	close();
-	target->rdbuf()->pubsetbuf(0, 0);
+	if (target) {
+		target->rdbuf()->pubsetbuf(0, 0);
+		m_stream = target;
+		m_filename = filename;
+	} else {
+		m_stream = &std::cerr;
+		m_filename = "";
+	}
 	m_fstream = target;
-	m_stream = m_fstream ? m_fstream : &std::cerr;
 }
 
 void LogStream::endl() {

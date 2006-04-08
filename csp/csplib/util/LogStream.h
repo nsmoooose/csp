@@ -127,10 +127,12 @@ public:
 	 *  components.
 	 *
 	 *  @param name a unique identifier for the log stream.
+     *  @param created an optional flag set to true if the named log did not
+     *    exist before this call.
 	 *  @return the existing logstream associated with the identifier, or a
 	 *    new logstream.
 	 */
-	static LogStream *getOrCreateNamedLog(const std::string &name);
+	static LogStream *getOrCreateNamedLog(const std::string &name, bool *created=NULL);
 
 	/** Helper class used to write a single entry to the log stream.  The
 	 *  class constructs the log entry as a string internally, then writes
@@ -151,6 +153,11 @@ public:
 	void setAlwaysFlush(bool flush) { m_autoflush = flush; }
 	inline bool autoflush() const { return m_autoflush; }
 
+	/** Returns the log filename set by logToFile, or an empty string if
+     *  no filename has been assigned.
+     */
+	std::string const &filename() const { return m_filename; }
+
 private:
 	void init();
 	void close();
@@ -168,6 +175,8 @@ private:
 
 	bool m_autoflush;
 	bool m_never_deleted;
+
+	std::string m_filename;
 };
 
 

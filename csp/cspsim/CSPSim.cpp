@@ -114,8 +114,6 @@ CSPSim::CSPSim():
 	int level = g_Config.getInt("Debug", "LoggingLevel", 0, true);
 	log().setCategories(cLogCategory_ALL);
 	log().setPriority(level);
-	std::string logfile = g_Config.getString("Debug", "LogFile", "CSPSim.log", true);
-	log().logToFile(logfile);
 
 	g_DisableRender = g_Config.getBool("Debug", "DisableRender", false, false);
 
@@ -297,7 +295,9 @@ void CSPSim::init() {
 
 		CSPLOG(DEBUG, APP) << "Initializing sound system";
 		SoundEngine::getInstance().initialize();
+		CSPLOG(DEBUG, APP) << "Muting sound";
 		SoundEngine::getInstance().mute();
+		CSPLOG(DEBUG, APP) << "Initializing sound file loader";
 		SoundFileLoader::init();
 
 		CSPLOG(DEBUG, APP) << "Initializing scene graph";
@@ -341,9 +341,6 @@ void CSPSim::init() {
 		// create the networking layer
 		if (g_Config.getBool("Networking", "UseNetworking", false, true)) {
 			CSPLOG(DEBUG, APP) << "Initializing network layer";
-			std::string netlogfile = g_Config.getString("Debug", "NetLogFile", "SimNet.log", true);
-			netlog().logToFile(netlogfile);
-			netlog().setPriority(cLogPriority_INFO);
 			std::string default_ip = NetworkNode().getIpString();
 			std::string local_address = g_Config.getString("Networking", "LocalIp", default_ip, true);
 			int local_port = g_Config.getInt("Networking", "LocalPort", 3161, true);
@@ -377,7 +374,6 @@ void CSPSim::init() {
 					m_Battlefield->setNetworkClient(0);
 				}
 			}
-			netlog().setPriority(cLogPriority_INFO);
 		}
 
 		logoScreen.onUpdate(0.0);
@@ -490,6 +486,7 @@ void CSPSim::run() {
 	Timer time_render;
 	bool lopri = false;
 
+	CSPLOG(DEBUG, APP) << "Unmuting sound";
 	SoundEngine::getInstance().unmute();
 
 	CSPLOG(INFO, APP) << "Entering main simulation loop";

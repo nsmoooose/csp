@@ -34,26 +34,22 @@
 
 CSP_NAMESPACE
 
+// Internal accessor for the main csp LogStream.  Use log() instead, which
+// is more efficient, or better yet the CSPLOG macros.
+extern CSPLIB_EXPORT LogStream &internal_log();
+
 /**
  * Accessor for the main csp LogStream instance.  Under most circumstances
  * the CSPLOG macro should be used instead of this function.
  * @return csp LogStream
  */
-inline LogStream& log() {
-	static LogStream *log_stream = 0;
-	// this method of access is safe (no race condition), since the first log
-	// messages are generated during static initialization.
-	if (log_stream == 0) {
-		// default to stderr, which may be overridden by the environment
-		// settings.  note that this LogStream instance is never freed, so
-		// it is safe to log messages from static destructors.
-		log_stream = LogStream::getOrCreateNamedLog("CSP");
-		log_stream->initFromEnvironment("CSPLOG_FILE", "CSPLOG_PRIORITY", "CSPLOG_FLAGS");
-		log_stream->setNeverDeleted();
+inline LogStream &log() {
+	static LogStream *log = 0;
+	if (log == 0) {
+		log = &(internal_log());
 	}
-	return *log_stream;
+	return *log;
 }
-
 
 #define CSPLOG_PRIORITY(P) CSP(cLogPriority_##P)
 #define CSPLOG_CATEGORY(C) CSP(cLogCategory_##C)

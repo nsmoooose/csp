@@ -32,6 +32,7 @@
 #include <csp/csplib/net/ClientServer.h>
 #include <csp/csplib/net/DispatchHandler.h>
 #include <csp/csplib/util/Callback.h>
+#include <csp/csplib/util/Log.h>
 #include <csp/csplib/util/SynchronousUpdate.h>
 #include <csp/csplib/util/Timing.h>
 #include <csp/csplib/util/Verify.h>
@@ -378,7 +379,7 @@ void LocalBattlefield::bindCommandDispatch(Ref<DispatchHandler> const &dispatch)
 }
 
 void LocalBattlefield::onPlayerQuit(Ref<PlayerQuit> const &msg, Ref<MessageQueue> const &) {
-	SIMNET_LOG(INFO, MESSAGE) << *msg;
+	CSPLOG(INFO, MESSAGE) << *msg;
 	const PeerId id = msg->peer_id();
 	PlayerInfoMap::iterator iter = m_PlayerInfoMap.find(id);
 	if (iter != m_PlayerInfoMap.end()) {
@@ -406,7 +407,7 @@ void LocalBattlefield::registerPlayerQuitCallback(callback<void, int, const std:
 }
 
 void LocalBattlefield::onPlayerJoin(Ref<PlayerJoin> const &msg, Ref<MessageQueue> const &) {
-	SIMNET_LOG(INFO, MESSAGE) << *msg;
+	CSPLOG(INFO, MESSAGE) << *msg;
 	const PeerId id = msg->peer_id();
 	if (!m_NetworkClient->getPeer(id)) {
 		const NetworkNode remote_node(msg->ip_addr(), msg->port());
@@ -420,7 +421,7 @@ void LocalBattlefield::onPlayerJoin(Ref<PlayerJoin> const &msg, Ref<MessageQueue
 }
 
 void LocalBattlefield::onCommandUpdatePeer(Ref<CommandUpdatePeer> const &msg, Ref<MessageQueue> const &) {
-	SIMNET_LOG(INFO, MESSAGE) << *msg;
+	CSPLOG(INFO, MESSAGE) << *msg;
 	LocalUnitWrapper *wrapper = findLocalUnitWrapper(msg->unit_id());
 	if (wrapper) {
 		assert(wrapper->unit().valid() && wrapper->unit()->isLocal());
@@ -439,7 +440,7 @@ void LocalBattlefield::onCommandUpdatePeer(Ref<CommandUpdatePeer> const &msg, Re
 }
 
 void LocalBattlefield::onCommandAddUnit(Ref<CommandAddUnit> const &msg, Ref<MessageQueue> const &) {
-	SIMNET_LOG(INFO, MESSAGE) << *msg;
+	CSPLOG(INFO, MESSAGE) << *msg;
 	LocalUnitWrapper *wrapper = findLocalUnitWrapper(msg->unit_id());
 	if (wrapper) {
 		// already added.  for testing, double check that the message is consistent (FIXME)
@@ -453,7 +454,7 @@ void LocalBattlefield::onCommandAddUnit(Ref<CommandAddUnit> const &msg, Ref<Mess
 }
 
 void LocalBattlefield::onCommandRemoveUnit(Ref<CommandRemoveUnit> const &msg, Ref<MessageQueue> const &) {
-	SIMNET_LOG(INFO, MESSAGE) << *msg;
+	CSPLOG(INFO, MESSAGE) << *msg;
 	removeUnit(msg->unit_id());
 }
 
@@ -463,7 +464,7 @@ void LocalBattlefield::sendServerCommand(Ref<NetworkMessage> const &msg) {
 }
 
 void LocalBattlefield::onJoinResponse(Ref<JoinResponse> const &msg, Ref<MessageQueue> const &) {
-	SIMNET_LOG(INFO, MESSAGE) << *msg;
+	CSPLOG(INFO, MESSAGE) << *msg;
 	if (m_ConnectionState != CONNECTION_JOIN) {
 		CSPLOG(ERROR, BATTLEFIELD) << "received unrequested join response";
 		return;
@@ -483,7 +484,7 @@ void LocalBattlefield::onJoinResponse(Ref<JoinResponse> const &msg, Ref<MessageQ
 }
 
 void LocalBattlefield::onIdAllocationResponse(Ref<IdAllocationResponse> const &msg, Ref<MessageQueue> const &) {
-	SIMNET_LOG(INFO, MESSAGE) << *msg;
+	CSPLOG(INFO, MESSAGE) << *msg;
 	if (static_cast<ObjectId>(msg->first_id()) == m_LocalIdPool->reserve) return;  // duplicate
 	assert(m_LocalIdPool->reserve_limit == 0);
 	m_LocalIdPool->reserve = msg->first_id();

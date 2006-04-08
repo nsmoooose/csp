@@ -6,6 +6,11 @@ import shutil
 import os.path
 import re
 import time
+from glob import glob
+
+def error(msg):
+	print >>sys.stderr, msg
+	sys.exit(1)
 
 USAGE = """\
 CSPSim demo generation script.
@@ -24,38 +29,51 @@ named %(DEMO)s.zip.
 # redirect csp log output if not otherwise specified.
 os.environ.setdefault('CSPLOG_FILE', 'makedemo.log')
 
-import csp
-import csp.csplib
-import csp.cspsim
+# ensure that the devpack binaries are found first in case the
+# PATH is not set properly.
+CSPDEVPACK = os.environ.get('CSPDEVPACK')
+if CSPDEVPACK:
+	CSPDEVPACK_BIN = os.path.join(CSPDEVPACK, 'bin')
+	PATH = os.environ.get('PATH', '')
+	if PATH.split(os.pathsep)[0] != CSPDEVPACK_BIN:
+		print >>sys.stderr, 'WARNING: placing %s at start of PATH' % CSPDEVPACK_BIN
+		os.environ['PATH'] = '%s;%s' % (CSPDEVPACK, os.environ.get('PATH', ''))
+
+try:
+	import csp
+	import csp.csplib
+	import csp.cspsim
+except ImportError, e:
+	error('ERROR: unable to import csp packages. %s\nHave you built everything?' % e)
 
 BASE = os.path.dirname(csp.__file__)
 DATA = os.path.join(BASE, 'data')
 BIN = os.path.join(BASE, 'bin')
 
-# not sure which if any of these and the AddPackagePath statements below are
-# needed for the new directory structure.  some experimentation will probably
-# be necessary.
-
-#CSPLIB = os.path.join(BASE, 'csplib')
-#CSPSIM_BIN = os.path.join(BASE, 'cspsim', '.bin')
-#sys.path.append(CSPSIM_BIN)
+CSPSIM_BIN = os.path.join(BASE, 'cspsim', '.bin')
+CSPLIB_BIN = os.path.join(BASE, 'csplib', '.bin')
 
 try:
 	import modulefinder
-	#modulefinder.AddPackagePath('csp.cspsim', BIN)
-	#modulefinder.AddPackagePath('csp.cspsim', CSPSIM_BIN)
-	#modulefinder.AddPackagePath('csp', CSPLIB)
-except ImportError:
-	print 'WARNING: unable to import modulefinder'
+except ImportError, e:
+	error('ERROR: unable to import modulefinder %s' % e)
 
+# modulefinder needs a bit of help to deal with the .bin __path__
+# redirections in csp.csplib and csp.cspsim.
+modulefinder.AddPackagePath('csp.cspsim', CSPSIM_BIN)
+modulefinder.AddPackagePath('csp.csplib', CSPLIB_BIN)
+
+# in addition to the package paths, sys.path needs to be tweaked
+# so that modulefinder can import the swig extensions in .bin.
+sys.path.append(CSPLIB_BIN)
+sys.path.append(CSPSIM_BIN)
 
 from distutils.core import setup
-import py2exe
 
-
-def error(msg):
-	print >>sys.stderr, msg
-	sys.exit(1)
+try:
+	import py2exe
+except ImportError, e:
+	error('ERROR: unable to import py2exe. %s\nIs it installed?' % e)
 
 
 def copy_tree(src, dst, symlinks=0, exclude=None):
@@ -82,6 +100,7 @@ def copy_tree(src, dst, symlinks=0, exclude=None):
 		raise Error, errors
 
 
+# TODO force msvcrt80.dll and msvcrp80.dll to be included?
 def make_demo(version):
 	TEMPLATE = 'template'
 	DEMO = 'cspsim-demo-%s' % version
@@ -92,16 +111,24 @@ def make_demo(version):
 	if os.path.exists(DEMO):
 		error('%s already exists!  Aborting.' % DEMO)
 
+	CSPDEVPACK = os.environ.get('CSPDEVPACK')
+	if CSPDEVPACK is None:
+		error('CSPDEVPACK environment variable is not set')
+	DP_BIN = os.path.join(CSPDEVPACK, 'bin')
+
 	print 'Copying data from %s to %s' % (TEMPLATE, DEMO)
 	copy_tree(TEMPLATE, DEMO, exclude=r'^\.svn$')
 
 	DIST_DIR = os.path.join(DEMO, 'bin')
 	print 'Running py2exe to create %s' % DIST_DIR
 
+	TEST_OBJECTS = os.path.join(BIN, 'test_objects.py')
+
 	opts = {
 		'py2exe': {
 			'excludes': ['dl'],
-			'dist_dir': DIST_DIR
+			'dist_dir': DIST_DIR,
+			'packages': ['encodings'],
 		}
 	}
 
@@ -109,6 +136,17 @@ def make_demo(version):
 	CONFIG = os.path.join(BIN, 'sim.ini')
 
 	setup(options=opts, console=[TARGET], data_files=[CONFIG])
+
+	# not all dependencies can be found by py2exe, so ensure that all
+	# dlls in the devpack are copied.  same for csp modules.
+	DEVPACK_DLLS = glob(os.path.join(DP_BIN, '*.dll'))
+	print os.path.join(BASE, 'modules', '*', '.bin', '*.dll')
+	MODULES = glob(os.path.join(BASE, 'modules', '*', '.bin', '*.dll'))
+	for src in MODULES + DEVPACK_DLLS:
+		dest = os.path.join(DIST_DIR, os.path.basename(src))
+		if not os.path.exists(dest) or os.path.getmtime(dest) < os.path.getmtime(src):
+			print 'Copying', src
+			shutil.copy2(src, DIST_DIR)
 
 	DATA_TARGET = os.path.join(DEMO, 'data')
 	if not os.path.exists(DATA_TARGET):

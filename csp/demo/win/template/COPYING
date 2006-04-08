@@ -6,13 +6,13 @@ in the associated directories.  Please report any errors or ommisions
 on the forums at http://csp.sf.net/forum.
 
 CSPSim
-Copyright 2002-2005 The Combat Simulator Project
+Copyright 2002-2006 The Combat Simulator Project
 Licensed under the terms of the GNU General Public License version 2 or
 later.
 http://csp.sf.net/forum
 
-SimData
-Copyright 2002-2005 Mark Rose <mkrose@users.sf.net>
+CSPLib (formerly SimData)
+Copyright 2002-2006 Mark Rose <mkrose@users.sf.net>
 Licensed under the terms of the GNU General Public License version 2 or
 later.
 http://csp.sf.net/forum
@@ -68,10 +68,17 @@ later.
 http://www.gnu.org/software/commoncpp/
 
 LibSigC++
-Copyright 2002, The libsigc++ Development Team
+Copyright 2002, the libsigc++ Development Team
 Licensed under the terms of the GNU Library General Public License version
 2 or later.
 http://libsigc.sourceforge.net/
+
+FreeType
+Copyright 2001, 2002, 2003, 2004, 2006, David Turner, Robert Wilhelm, and 
+Werner Lemberg.
+Licensed under the terms of the GNU General Public License version 2 or
+later.
+http://savannah.nongnu.org/projects/freetype
 
 zlib
 Copyright 1995-1998 Jean-loup Gailly and Mark Adler
@@ -87,4 +94,32 @@ libpng
 Copyright 1998-2004 Glenn Randers-Pehrson
 See LICENSES/libpng for the license.
 http://libpng.sourceforge.net/
+
+libogg
+Copyright 2002 Xiph.Org Foundation
+See LICENSES/xiph
+http://www.xiph.org/
+
+libvorbis
+Copyright 2002-2004 Xiph.Org Foundation
+See LICENSES/xiph
+http://www.xiph.org/
+
+openal
+Copyright 1999-2000 various authors (see LICENSES/openal)
+Licensed under the terms of the GNU Library General Public License version
+2 or later.
+http://www.openal.org
+
+openal++
+Copyright 2002 VRlab, Umeå University
+Licensed under the terms of the GNU Library General Public License version
+2.1 or later.
+http://alpp.sourceforge.net
+
+osgAL
+Copyright 2004 VRlab, Umeå University
+Licensed under the terms of the GNU Library General Public License version
+2.1 or later.
+http://www.vrlab.umu.se/research/osgAL/
 

@@ -1132,9 +1132,9 @@ class DevpackConfig:
 			print 'The installed devpack (%s) is too old; need version %s' % (path, version)
 			sys.exit(1)
 		DevpackConfig._checkPath(path)
-		DevpackConfig._checkPath(path, 'usr', 'bin')
-		DevpackConfig._checkPath(path, 'usr', 'lib')
-		DevpackConfig._checkPath(path, 'usr', 'include')
+		DevpackConfig._checkPath(path, 'bin')
+		DevpackConfig._checkPath(path, 'lib')
+		DevpackConfig._checkPath(path, 'include')
 		DevpackConfig.DEVPACK = path
 	_Find = staticmethod(_Find)
 
@@ -1152,16 +1152,16 @@ class DevpackConfig:
 			DevpackConfig._Find()
 			dp = DevpackConfig.DEVPACK
 			for dll in self._dlls:
-				self._checkPath(dp, 'usr', 'bin', dll + '.dll')
-				self._checkPath(dp, 'usr', 'lib', dll + '.lib')
+				self._checkPath(dp, 'bin', dll + '.dll')
+				self._checkPath(dp, 'lib', dll + '.lib')
 			for lib in self._libs:
-				self._checkPath(dp, 'usr', 'lib', lib + '.lib')
+				self._checkPath(dp, 'lib', lib + '.lib')
 			for header in self._headers:
 				if isinstance(header, tuple):
 					header = os.path.join(*header)
-				self._checkPath(os.path.join(dp, 'usr', 'include', header))
-			conf.env.AppendUnique(CPPPATH=[os.path.join(dp, 'usr', 'include')])
-			conf.env.AppendUnique(LIBPATH=[os.path.join(dp, 'usr', 'lib')])
+				self._checkPath(os.path.join(dp, 'include', header))
+			conf.env.AppendUnique(CPPPATH=[os.path.join(dp, 'include')])
+			conf.env.AppendUnique(LIBPATH=[os.path.join(dp, 'lib')])
 			conf.env.AppendUnique(LIBS=self._dlls + self._libs)
 		return 1
 

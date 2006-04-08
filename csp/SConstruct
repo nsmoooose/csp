@@ -39,7 +39,7 @@ import sys
 
 build.CheckSConsVersion('0.96.1')
 build.CheckPythonVersion('2.2.2')
-build.DevpackConfig.SetMinimumVersion('0.5')
+build.DevpackConfig.SetMinimumVersion('0.6')
 
 
 # several global targets (e.g. 'all') are shared between copied subenvironments;

@@ -28,6 +28,9 @@ import sys
 import os
 import os.path
 
+# this flag will be set to 1 after checkModuleSpace is called if
+# running as a py2exe executable.
+IS_FROZEN = 0
 
 def error(message, die=0):
 	sys.stderr.write(message + '\n')
@@ -67,22 +70,39 @@ def checkModuleSpace():
 		     'setup.py successfully to initialize the workspace.')
 
 	global csp
+	global IS_FROZEN
 	csp = _csp
+	# check if we are running as a py2exe executable
+	IS_FROZEN = hasattr(csp, '__loader__')
+
+
+
+def checkData():
+	"""Spot check some of the data to detect common problems."""
+	DATA = os.path.join('..', 'data')
+	checks = (
+		('xml', 'theater', 'balkan.xml'),
+		('terrain', 'balkanMapElev.11-9.bmp'),
+		('images', 'moon.png'),
+		('models', 'aircraft', 'm2k', 'm2k.osg'),
+	)
+	for path in checks:
+		path = os.path.join(DATA, *list(path))
+		if not os.path.exists(path):
+			fail('Unable to find required data file: %s' % path)
 
 
 def importModules():
 	"""Import csplib and cspsim modules, checking for errors."""
 	try:
-		import csp.csplib as _csplib
+		import csp.csplib
 	except ImportError, e:
 		reportImportError(e, 'csp.csplib')
-	csp.csplib = _csplib
 
 	try:
-		import csp.cspsim as _cspsim
+		import csp.cspsim
 	except ImportError, e:
 		reportImportError(e, 'csp.cspsim')
-	csp.cspsim = _cspsim
 
 
 def reportImportError(exception, module):
@@ -165,6 +185,7 @@ def createTestObjects(sim, file):
 		if file.endswith('.py'): file = file[:-3]
 		try:
 			mod = __import__(file, {}, {}, [])
+			#import csp.test_objects as mod
 		except ImportError:
 			fail('Unable to import test objects file "%s"' % file)
 		try:
@@ -179,18 +200,18 @@ def loadExtensionModules():
 	by the sim as part of the theater initialization, but this feature is not yet fully
 	implemented.  For now we load demeter and chunklod by hand at startup.
 	"""
-	if os.name == 'posix':
-		modules = [
-			'../modules/chunklod/.bin/libchunklod.so',
-			'../modules/demeter/.bin/libdemeter.so',
-		]
-	else:
-		modules = [
-			r'..\modules\chunklod\.bin\chunklod.dll',
-			r'..\modules\demeter\.bin\demeter.dll',
-		]
+	modules = ('chunklod', 'demeter')
+	extension = {
+		'posix' : '.so',
+		'nt' : '.dll',
+	}.get(os.name, '')
 	for module in modules:
-		if not csp.csplib.ModuleLoader.load(module):
+		module_path = os.path.join('..', 'modules', module, '.bin', module) + extension
+		# for windows demos, the modules are instead placed in the current directory.
+		# TODO move them to ../modules/*.dll?
+		if not os.path.exists(module_path):
+			module_path = os.path.join(module) + extension
+		if not csp.csplib.ModuleLoader.load(module_path):
 			fail('Unable to load required extension module "%s"' % module)
 
 
@@ -313,6 +334,7 @@ if __name__ == '__main__':
 	os.environ.setdefault('CSPLOG_FILE', 'sim.log')
 	os.environ.setdefault('CSPLOG_PRIORITY', '2')
 	checkModuleSpace()
+	checkData()
 	importModules()
 
 	import csp.base.app

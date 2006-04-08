@@ -32,7 +32,6 @@
 #include <csp/csplib/net/PacketSource.h>
 #include <csp/csplib/net/PeerInfo.h>
 #include <csp/csplib/net/StopWatch.h>
-#include <csp/csplib/net/NetLog.h>
 
 #include <csp/csplib/net/TaggedRecordRegistry.h>
 #include <csp/csplib/util/Timing.h>
@@ -123,7 +122,7 @@ void NetworkInterface::sendPackets(double timeout) {
 
 	bool first = true;
 
-	SIMNET_LOG(DEBUG, TIMING) << "TRANSMIT " << (timeout * 1000.0) << " ms available to send packets";
+	CSPLOG(DEBUG, TIMING) << "TRANSMIT " << (timeout * 1000.0) << " ms available to send packets";
 
 	StopWatch watch(timeout, swd);
 	watch.start();
@@ -156,7 +155,7 @@ void NetworkInterface::sendPackets(double timeout) {
 			// check that this peer id was previously active (not a very stringent test).
 			//assert(peer->getLastDeactivationTime() > 0);
 			if (peer->getLastDeactivationTime() <= 0) {
-				SIMNET_LOG(WARNING, PACKET) << "sending to inacive peer " << header->destination() << " and last deactivation time <= 0 " << (!peer ? "null" : "nonnull");
+				CSPLOG(WARNING, PACKET) << "sending to inacive peer " << header->destination() << " and last deactivation time <= 0 " << (!peer ? "null" : "nonnull");
 			}
 			queue->releaseReadBuffer();
 			continue;
@@ -192,7 +191,7 @@ void NetworkInterface::sendPackets(double timeout) {
 		}
 
 		if (header->reliable()) {
-			SIMNET_LOG(DEBUG, PACKET) << "send reliable header to " << peer->getId() << ", size=" << size;
+			CSPLOG(DEBUG, PACKET) << "send reliable header to " << peer->getId() << ", size=" << size;
 		}
 		int len = socket->transmit((char*)ptr, size);
 		queue->releaseReadBuffer();
@@ -200,7 +199,7 @@ void NetworkInterface::sendPackets(double timeout) {
 		peer->tallySentPacket(size);
 
 		if (len != int(size)) {
-			SIMNET_LOG(INFO, PACKET) << "Send underflow! (" << len << " of " << size << " bytes sent)";
+			CSPLOG(INFO, PACKET) << "Send underflow! (" << len << " of " << size << " bytes sent)";
 			// TODO tally errors and eventually disconnect.
 		}
 
@@ -209,7 +208,7 @@ void NetworkInterface::sendPackets(double timeout) {
 		if (watch.checkExpired()) break;
 	}
 
-	SIMNET_LOG(DEBUG, TIMING) << "TRANSMIT COMPLETE " << (watch.elapsed() * 1000.0) << " ms used";
+	CSPLOG(DEBUG, TIMING) << "TRANSMIT COMPLETE " << (watch.elapsed() * 1000.0) << " ms used";
 
 	// drop a fraction of the packets we were unable to send
 	for (int idx = 0; idx < 4; ++idx) {
@@ -283,7 +282,7 @@ void NetworkInterface::processOutgoing(double timeout) {
 	// TODO divide timeout between packet_source and tx based
 	// on queue lengths.  for now just split evenly
 
-	SIMNET_LOG(DEBUG, TIMING) << "outgoing loop start (" << m_PacketSource->size() << " packets to send)";
+	CSPLOG(DEBUG, TIMING) << "outgoing loop start (" << m_PacketSource->size() << " packets to send)";
 	int DEBUG_exitcode = 0;
 	double DEBUG_dt[20000];
 	int DEBUG_idx = 0;
@@ -326,7 +325,7 @@ void NetworkInterface::processOutgoing(double timeout) {
 
 		const bool reliable = (queue_idx == 3);
 		if (reliable || peer->hasPendingConfirmations()) {
-			SIMNET_LOG(DEBUG, PACKET) << "send reliable header to " << destination;
+			CSPLOG(DEBUG, PACKET) << "send reliable header to " << destination;
 			header->setReliable(true);
 			header_size = ReceiptHeaderSize;
 			receipt = reinterpret_cast<PacketReceiptHeader*>(ptr);
@@ -362,17 +361,17 @@ void NetworkInterface::processOutgoing(double timeout) {
 	// next flush the tx queue to the outgoing sockets
 	sendPackets(timeout);
 
-	SIMNET_LOG(DEBUG, TIMING) << "outgoing loop end: " << (DEBUG_elapsed * 1000.0) << " ms to queue packets";
+	CSPLOG(DEBUG, TIMING) << "outgoing loop end: " << (DEBUG_elapsed * 1000.0) << " ms to queue packets";
 	if (DEBUG_exitcode == 1) {
-		SIMNET_LOG(DEBUG, TIMING) << "  exit state: queue buffer full";
+		CSPLOG(DEBUG, TIMING) << "  exit state: queue buffer full";
 	} else
 	if (DEBUG_exitcode == 2) {
-		SIMNET_LOG(DEBUG, TIMING) << "  exit state: send time expired";
+		CSPLOG(DEBUG, TIMING) << "  exit state: send time expired";
 	} else {
-		SIMNET_LOG(DEBUG, TIMING) << "  exit state: no more packets";
+		CSPLOG(DEBUG, TIMING) << "  exit state: no more packets";
 	}
 	for (int i=0; i < DEBUG_idx; ++i) {
-		SIMNET_LOG(DEBUG, TIMING) << "send packet @ " << (DEBUG_dt[i]*1000.0) << " ms";
+		CSPLOG(DEBUG, TIMING) << "send packet @ " << (DEBUG_dt[i]*1000.0) << " ms";
 	}
 
 }
@@ -400,7 +399,7 @@ int NetworkInterface::receivePackets(double timeout) {
 	PacketQueue *queue;
 	header = reinterpret_cast<PacketReceiptHeader*>(buffer);
 
-	SIMNET_LOG(DEBUG, TIMING) << "receive packets; " << (timeout * 1000.0) << " ms available";
+	CSPLOG(DEBUG, TIMING) << "receive packets; " << (timeout * 1000.0) << " ms available";
 	int DEBUG_exitcode = 0;
 	int DEBUG_count = 0;
 
@@ -427,7 +426,7 @@ int NetworkInterface::receivePackets(double timeout) {
 		}
 
 		if (header->destination() != m_LocalId) {
-			SIMNET_LOG(WARNING, PACKET) << "received bad packet (wrong destination): " << *header;
+			CSPLOG(WARNING, PACKET) << "received bad packet (wrong destination): " << *header;
 			m_BadPackets++;
 			continue;
 		}
@@ -449,7 +448,7 @@ int NetworkInterface::receivePackets(double timeout) {
 
 		if (source > 0 && source < PeerIndexSize) peer = &(m_PeerIndex[source]);
 		if (!peer || !peer->isActive()) {
-			SIMNET_LOG(WARNING, PACKET) << "received packet from unknown source: " << *header;
+			CSPLOG(WARNING, PACKET) << "received packet from unknown source: " << *header;
 			m_BadPackets++;
 			continue;
 		}
@@ -461,7 +460,7 @@ int NetworkInterface::receivePackets(double timeout) {
 		int header_size = HeaderSize;
 		if (header->reliable()) {
 			header_size = ReceiptHeaderSize;
-			SIMNET_LOG(DEBUG, PACKET) << "received a reliable header " << *header;
+			CSPLOG(DEBUG, PACKET) << "received a reliable header " << *header;
 			if (packet_length >= ReceiptHeaderSize) {
 				// if this packet is priority 3, it requires confirmation (id stored in id0);
 				// there may also be confirmation receipts in the remaining id slots.  we
@@ -510,19 +509,19 @@ int NetworkInterface::receivePackets(double timeout) {
 					peer->updateTiming(latency, last_ping_latency);
 				}
 			} else {
-				SIMNET_LOG(ERROR, PEER) << "Ping packet does not contain timing payload";
+				CSPLOG(ERROR, PEER) << "Ping packet does not contain timing payload";
 			}
 			// pings are handled internally without being seen by the upstream handlers.
 			continue;
 		}
 
 		int queue_idx = header->priority();
-		SIMNET_LOG(INFO, PACKET) << "receiving packet in queue " << queue_idx;
+		CSPLOG(INFO, PACKET) << "receiving packet in queue " << queue_idx;
 		queue = m_RxQueues[queue_idx];
 
 		ptr = queue->getWriteBuffer(packet_length);
 		if (ptr) {
-			SIMNET_LOG(INFO, PACKET) << "copying packet data (" << packet_length << " bytes) " << *header;
+			CSPLOG(INFO, PACKET) << "copying packet data (" << packet_length << " bytes) " << *header;
 			memcpy((void*)ptr, (const void*)buffer, packet_length);
 			// rewrite the source field, in case we have assigned a new one.
 			reinterpret_cast<PacketHeader*>(ptr)->setSource(source);
@@ -532,7 +531,7 @@ int NetworkInterface::receivePackets(double timeout) {
 			received_packets++;
 
 			queue->commitWriteBuffer(packet_length);
-			SIMNET_LOG(INFO, PACKET) << "committed packet data (" << packet_length << " bytes)";
+			CSPLOG(INFO, PACKET) << "committed packet data (" << packet_length << " bytes)";
 
 		} else {
 			// this is a bad state; we have no room left to receive the incoming packet.
@@ -551,12 +550,12 @@ int NetworkInterface::receivePackets(double timeout) {
 
 	double DEBUG_elapsed = watch.elapsed();
 	DEBUG_recvtime = DEBUG_elapsed;
-	SIMNET_LOG(DEBUG, TIMING) << "receive loop end: " << (DEBUG_elapsed * 1000.0) << " ms to queue " << DEBUG_count << " packets";
-	SIMNET_LOG(DEBUG, TIMING) << "receive stats: " << m_BadPackets << " bad, " << m_DroppedPackets << " dropped, " << m_DuplicatePackets << " dups, " << m_ReceivedPackets << " ok)";
+	CSPLOG(DEBUG, TIMING) << "receive loop end: " << (DEBUG_elapsed * 1000.0) << " ms to queue " << DEBUG_count << " packets";
+	CSPLOG(DEBUG, TIMING) << "receive stats: " << m_BadPackets << " bad, " << m_DroppedPackets << " dropped, " << m_DuplicatePackets << " dups, " << m_ReceivedPackets << " ok)";
 	if (DEBUG_exitcode == 1) {
-		SIMNET_LOG(DEBUG, TIMING) << "  exit state: recv time expired";
+		CSPLOG(DEBUG, TIMING) << "  exit state: recv time expired";
 	} else {
-		SIMNET_LOG(DEBUG, TIMING) << "  exit state: no more packets";
+		CSPLOG(DEBUG, TIMING) << "  exit state: no more packets";
 	}
 
 	return received_packets;
@@ -582,7 +581,7 @@ int NetworkInterface::receivePackets(double timeout) {
 void NetworkInterface::processIncoming(double timeout) {
 	static StopWatch::Data swd(0.000001f);
 
-	SIMNET_LOG(DEBUG, TIMING) << "processing incoming packets";
+	CSPLOG(DEBUG, TIMING) << "processing incoming packets";
 
 	double start_time = get_realtime();
 
@@ -614,7 +613,7 @@ void NetworkInterface::processIncoming(double timeout) {
 	receive_dt = DEBUG_recvtime;  // XXX XXX remove me when debug logging is removed from receivePackets
 	timeout -= receive_dt;
 
-	SIMNET_LOG(DEBUG, TIMING) << "handling packets; " << (timeout * 1000.0) << " ms available";
+	CSPLOG(DEBUG, TIMING) << "handling packets; " << (timeout * 1000.0) << " ms available";
 
 	StopWatch watch(timeout, swd);
 	watch.start();
@@ -647,14 +646,14 @@ void NetworkInterface::processIncoming(double timeout) {
 		--count;
 
 		// XXX remove me!
-		SIMNET_LOG(INFO, PACKET) << "reading packet from receive queue";
+		CSPLOG(INFO, PACKET) << "reading packet from receive queue";
 		uint8 *ptr = queue->getReadBuffer(size);
 		PacketHeader *header = reinterpret_cast<PacketHeader*>(ptr);
 		uint32 header_size = (header->reliable() ? ReceiptHeaderSize : HeaderSize);
 		uint8 *payload = ptr + header_size;
 		uint32 payload_length = size - header_size;
 		// XXX remove me!
-		SIMNET_LOG(INFO, PACKET) << "found payload " << payload_length << " bytes, " << *header;
+		CSPLOG(INFO, PACKET) << "found payload " << payload_length << " bytes, " << *header;
 
 		// pass the packet to all handlers
 		PacketHandlerCallback callback(header, payload, payload_length);
@@ -670,11 +669,11 @@ void NetworkInterface::processIncoming(double timeout) {
 	}
 
 	double DEBUG_elapsed = watch.elapsed();
-	SIMNET_LOG(DEBUG, TIMING) << "handling loop end: " << (DEBUG_elapsed * 1000.0) << " ms to handle packets";
+	CSPLOG(DEBUG, TIMING) << "handling loop end: " << (DEBUG_elapsed * 1000.0) << " ms to handle packets";
 	if (DEBUG_exitcode == 1) {
-		SIMNET_LOG(DEBUG, TIMING) << "  exit state: send time expired";
+		CSPLOG(DEBUG, TIMING) << "  exit state: send time expired";
 	} else {
-		SIMNET_LOG(DEBUG, TIMING) << "  exit state: no more packets";
+		CSPLOG(DEBUG, TIMING) << "  exit state: no more packets";
 	}
 
 	double now = get_realtime();
@@ -761,7 +760,7 @@ void NetworkInterface::initialize(NetworkNode const &local_node, bool isServer, 
 
 
 void NetworkInterface::addPeer(PeerId id, NetworkNode const &remote_node, bool provisional, double incoming, double outgoing) {
-	SIMNET_LOG(INFO, PEER) << "add peer " << id;
+	CSPLOG(INFO, PEER) << "add peer " << id;
 	PeerInfo *peer = getPeer(id);
 	assert(peer && !peer->isActive());
 	peer->setNode(remote_node, incoming, outgoing);
@@ -775,7 +774,7 @@ void NetworkInterface::addPeer(PeerId id, NetworkNode const &remote_node, double
 }
 
 void NetworkInterface::removePeer(PeerId id) {
-	SIMNET_LOG(INFO, PEER) << "remove peer " << id;
+	CSPLOG(INFO, PEER) << "remove peer " << id;
 	PeerInfo *peer = getPeer(id);
 	assert(peer && peer->isActive());
 	notifyPeerDisconnect(id);
@@ -813,10 +812,10 @@ PeerInfo const *NetworkInterface::getPeer(PeerId id) const {
 }
 
 void NetworkInterface::establishConnection(PeerId id, double incoming, double outgoing) {
-	SIMNET_LOG(INFO, PEER) << "connection established with peer " << id;
+	CSPLOG(INFO, PEER) << "connection established with peer " << id;
 	PeerInfo *peer = getPeer(id);
 	if (peer && peer->isActive() && peer->isProvisional()) {
-		SIMNET_LOG(INFO, PEER) << "setting peer bandwidth " << incoming << ", " << outgoing;
+		CSPLOG(INFO, PEER) << "setting peer bandwidth " << incoming << ", " << outgoing;
 		peer->updateBandwidth(incoming, outgoing);
 		peer->setProvisional(false);
 	}
@@ -852,7 +851,7 @@ PeerId NetworkInterface::getSourceId(ConnectionPoint const &point) {
 	IpPeerMap::iterator iter = m_IpPeerMap.find(point);
 	// if the ip is unknown ip, allocate a new peer id
 	if (iter == m_IpPeerMap.end()) {
-		SIMNET_LOG(INFO, HANDSHAKE) << "initial connection from " << NetworkNode::ipToString(point.first) << ":" << point.second;
+		CSPLOG(INFO, HANDSHAKE) << "initial connection from " << NetworkNode::ipToString(point.first) << ":" << point.second;
 		// a connection must be disconnected for 60 seconds before the id can be reused.
 		double cutoff = get_realtime() - 60;
 		// use LastAssignedPeerId to rotate through assignments, rather than always
@@ -862,7 +861,7 @@ PeerId NetworkInterface::getSourceId(ConnectionPoint const &point) {
 			if (id == PeerIndexSize) id = 2;
 			if (!m_PeerIndex[id].isActive()) {
 				if (m_PeerIndex[id].getLastDeactivationTime() < cutoff) {
-					SIMNET_LOG(INFO, HANDSHAKE) << "assigned provisional id " << id;
+					CSPLOG(INFO, HANDSHAKE) << "assigned provisional id " << id;
 					// TODO add a callback mechanism for validating ips?
 					NetworkNode node(point);
 					// restrict to a low initial bandwidth; will be reconfigured once the
@@ -874,7 +873,7 @@ PeerId NetworkInterface::getSourceId(ConnectionPoint const &point) {
 			}
 			if (id == m_LastAssignedPeerId) break;
 		}
-		SIMNET_LOG(WARNING, HANDSHAKE) << "all peer ids in use; rejecting connection";
+		CSPLOG(WARNING, HANDSHAKE) << "all peer ids in use; rejecting connection";
 		return 0;
 	}
 	return iter->second;

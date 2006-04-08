@@ -38,7 +38,6 @@
 #include <csp/csplib/net/MessageHandler.h>
 #include <csp/csplib/net/MessageQueue.h>
 #include <csp/csplib/net/NetworkInterface.h>
-#include <csp/csplib/net/NetLog.h>
 #include <csp/csplib/net/NetworkMessage.h>
 #include <csp/csplib/net/NetworkNode.h>
 #include <csp/csplib/net/PacketDecoder.h>

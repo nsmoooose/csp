@@ -36,6 +36,7 @@
 #include <csp/csplib/net/RoutingHandler.h>
 #include <csp/csplib/net/DispatchHandler.h>
 
+#include <csp/csplib/util/Log.h>
 #include <csp/csplib/util/Ref.h>
 #include <csp/csplib/util/Timing.h>
 
@@ -114,11 +115,11 @@ Server::Server(NetworkNode const &bind, int inbound_bw, int outbound_bw):
 }
 
 void Server::onConnectionRequest(Ref<ConnectionRequest> const &msg, Ref<MessageQueue> const &queue) {
-	SIMNET_LOG(INFO, HANDSHAKE) << "connection request " << *msg;
+	CSPLOG(INFO, HANDSHAKE) << "connection request " << *msg;
 	const PeerId client_id = msg->getSource();
 	ConnectionData &connection_data = m_PendingConnections[client_id];
 	if (msg->incoming_bw() < 1000 || msg->outgoing_bw() < 1000) {
-		SIMNET_LOG(ERROR, HANDSHAKE) << "client reports very low bandwidth " << *msg;
+		CSPLOG(ERROR, HANDSHAKE) << "client reports very low bandwidth " << *msg;
 	}
 	connection_data.incoming_bw = msg->incoming_bw();
 	connection_data.outgoing_bw = msg->outgoing_bw();
@@ -132,20 +133,20 @@ void Server::onConnectionRequest(Ref<ConnectionRequest> const &msg, Ref<MessageQ
 }
 
 void Server::onAcknowledge(Ref<Acknowledge> const &msg, Ref<MessageQueue> const &/*queue*/) {
-	SIMNET_LOG(DEBUG, HANDSHAKE) << "received acknowledgement " << *msg;
+	CSPLOG(DEBUG, HANDSHAKE) << "received acknowledgement " << *msg;
 	PendingConnectionMap::iterator iter = m_PendingConnections.find(msg->getSource());
 	if (iter == m_PendingConnections.end()) {
-		SIMNET_LOG(WARNING, HANDSHAKE) << "received unsolicited connection acknowledgement from client id " << msg->getSource();
+		CSPLOG(WARNING, HANDSHAKE) << "received unsolicited connection acknowledgement from client id " << msg->getSource();
 		return;
 	}
-	SIMNET_LOG(INFO, HANDSHAKE) << "adding client " << msg->getSource()
+	CSPLOG(INFO, HANDSHAKE) << "adding client " << msg->getSource()
 		<< " (bw " << (iter->second.incoming_bw) << "/" << (iter->second.outgoing_bw) << ")";
 	m_NetworkInterface->establishConnection(msg->getSource(), iter->second.incoming_bw, iter->second.outgoing_bw);
 	m_PendingConnections.erase(iter);
 }
 
 void Server::onDisconnect(Ref<Disconnect> const &msg, Ref<MessageQueue> const &/*queue*/) {
-	SIMNET_LOG(DEBUG, HANDSHAKE) << "received disconnect notice " << *msg;
+	CSPLOG(DEBUG, HANDSHAKE) << "received disconnect notice " << *msg;
 	m_NetworkInterface->disconnectPeer(msg->getSource());
 }
 
@@ -189,19 +190,19 @@ bool Client::connectToServer(NetworkNode const &server, double timeout) {
 }
 
 void Client::onConnectionResponse(Ref<ConnectionResponse> const &msg, Ref<MessageQueue> const &queue) {
-	SIMNET_LOG(DEBUG, HANDSHAKE) << "received connection response " << *msg;
+	CSPLOG(DEBUG, HANDSHAKE) << "received connection response " << *msg;
 	if (m_Connected) return;
 	if (!msg->has_success() || !msg->success() || !msg->has_client_id()) {
 		if (msg->has_response()) {
-			SIMNET_LOG(ERROR, HANDSHAKE) << "connection failed: " << msg->response();
+			CSPLOG(ERROR, HANDSHAKE) << "connection failed: " << msg->response();
 		} else {
-			SIMNET_LOG(ERROR, HANDSHAKE) << "connection failed: " << *msg;
+			CSPLOG(ERROR, HANDSHAKE) << "connection failed: " << *msg;
 		}
 		// TODO set m_Connected to indicate failure
 		return;
 	}
 	if (msg->client_id() < 2) {
-		SIMNET_LOG(ERROR, HANDSHAKE) << "connection failed: bad id assignment from server";
+		CSPLOG(ERROR, HANDSHAKE) << "connection failed: bad id assignment from server";
 		// TODO set m_Connected to indicate failure
 		return;
 	}

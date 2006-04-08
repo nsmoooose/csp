@@ -25,7 +25,6 @@
 
 #include <csp/csplib/net/RoutingHandler.h>
 #include <csp/csplib/net/MessageHandler.h>
-#include <csp/csplib/net/NetLog.h>
 #include <csp/csplib/util/Verify.h>
 
 

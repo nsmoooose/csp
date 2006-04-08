@@ -31,7 +31,6 @@
 #include <csp/csplib/net/NetworkNode.h>
 #include <csp/csplib/net/ReliablePacket.h>
 #include <csp/csplib/net/Sockets.h>
-#include <csp/csplib/net/NetLog.h>
 #include <csp/csplib/net/Median.h>
 
 #include <csp/csplib/util/Properties.h>
@@ -315,7 +314,7 @@ public:
 	 *  peer receives the confirmation id, reliable transmission of the packet is complete.
 	 */
 	inline void pushConfirmation(ConfirmationId id) {
-		SIMNET_LOG(DEBUG, PEER) << "Peer requests confirmation of id " << id;
+		CSPLOG(DEBUG, PEER) << "Peer requests confirmation of id " << id;
 		m_confirmation_queue.push_back(id);
 	}
 
@@ -335,7 +334,7 @@ public:
 			iter->second->confirm();
 			m_reliable_packet_map.erase(iter);
 		} else {
-			SIMNET_LOG(WARNING, PEER) << "Received confirmation that we did not request " << id;
+			CSPLOG(WARNING, PEER) << "Received confirmation that we did not request " << id;
 		}
 	}
 

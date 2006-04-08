@@ -27,7 +27,6 @@
 
 #include <csp/csplib/net/PacketSource.h>
 #include <csp/csplib/net/NetworkMessage.h>
-#include <csp/csplib/net/NetLog.h>
 #include <csp/csplib/net/TaggedRecordRegistry.h>
 #include <deque>
 
@@ -81,7 +80,7 @@ public:
 		if (msg->getCustomId() > 0) {
 			m_Queue.push_back(MessageWrapper(msg));
 		} else {
-			SIMNET_LOG(ERROR, PACKET) << "attempt to send message id=0";
+			CSPLOG(ERROR, PACKET) << "attempt to send message id=0";
 		}
 	}
 
@@ -92,7 +91,7 @@ public:
 		if (msg->getCustomId() > 0) {
 			m_Queue.push_back(MessageWrapper(msg, destination));
 		} else {
-			SIMNET_LOG(ERROR, PACKET) << "attempt to send message id=0";
+			CSPLOG(ERROR, PACKET) << "attempt to send message id=0";
 		}
 	}
 
@@ -112,7 +111,7 @@ public:
 		Ref<NetworkMessage> message = m_Queue.front().message;
 		PeerId destination = m_Queue.front().destination;
 		m_Queue.pop_front();
-		SIMNET_LOG(DEBUG, MESSAGE) << "SENDING MESSAGE " << message->getCustomId() << " " << message->getName();
+		CSPLOG(DEBUG, MESSAGE) << "SENDING MESSAGE " << message->getCustomId() << " " << message->getName();
 		header->setDestination(destination);
 		header->setMessageId(static_cast<uint16>(message->getCustomId()));
 		header->setRouting(message->getRoutingType(), message->getRoutingData());
@@ -123,9 +122,9 @@ public:
 			if (m_PayloadCacheLength <= payload_length) {
 				memcpy(payload, m_PayloadCache, m_PayloadCacheLength);
 				payload_length = m_PayloadCacheLength;
-				SIMNET_LOG(DEBUG, MESSAGE) << "SENDING CACHED PAYLOAD, length = " << payload_length;
+				CSPLOG(DEBUG, MESSAGE) << "SENDING CACHED PAYLOAD, length = " << payload_length;
 			} else {
-				SIMNET_LOG(WARNING, MESSAGE) << "buffer overflow sending " << message->getName();
+				CSPLOG(WARNING, MESSAGE) << "buffer overflow sending " << message->getName();
 			}
 		} else {
 			// serialize directly into the target buffer
@@ -171,7 +170,7 @@ public:
 	virtual void skipPacket() {
 		if (m_Queue.size() > 0) {
 			Ref<NetworkMessage> message = m_Queue.front().message;
-			SIMNET_LOG(INFO, PACKET) << "dropping outbound packet " << *message;
+			CSPLOG(INFO, PACKET) << "dropping outbound packet " << *message;
 			m_Queue.pop_front();
 			// if we had a cached payload for the message that was skipped, and the
 			// next message is different we need to invalidate the cache.

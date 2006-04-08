@@ -26,7 +26,6 @@
 #define __CSPLIB_NET_RELIABLEPACKET_H__
 
 #include <csp/csplib/net/NetBase.h>
-#include <csp/csplib/net/NetLog.h>
 #include <csp/csplib/util/Ref.h>
 #include <csp/csplib/util/Timing.h>
 
@@ -56,7 +55,7 @@ public:
 	/** Destructor (releases packet buffer).
 	 */
 	virtual ~ReliablePacket() {
-		SIMNET_LOG(DEBUG, PACKET) << "reliable packet " << m_Id << ": destroyed";
+		CSPLOG(DEBUG, PACKET) << "reliable packet " << m_Id << ": destroyed";
 	}
 
 	/** Iniitalize this instance.
@@ -69,7 +68,7 @@ public:
 	 *  @param packet_size the full packet size in bytes (header + payload).
 	 */
 	void assign(ConfirmationId id, PacketReceiptHeader* receipt, uint32 packet_size) {
-		SIMNET_LOG(DEBUG, PACKET) << "creating reliable packet " << id;
+		CSPLOG(DEBUG, PACKET) << "creating reliable packet " << id;
 		m_Id = id;
 		m_Confirmed = false;
 		m_Attempts = 0;
@@ -86,7 +85,7 @@ public:
 	void updateAttempt(double now) {
 		double delay = std::min(8.0, ++m_Attempts * 1.0);
 		m_NextTime = now + delay;
-		SIMNET_LOG(DEBUG, PACKET) << "reliable packet " << m_Id << " retry #" << m_Attempts << "; next retry in " << delay << " s";
+		CSPLOG(DEBUG, PACKET) << "reliable packet " << m_Id << " retry #" << m_Attempts << "; next retry in " << delay << " s";
 	}
 
 	/** Copy the stored packet data (header + payload) to a buffer.
@@ -119,7 +118,7 @@ public:
 	/** Mark this packet as confirmed.
 	 */
 	inline void confirm() {
-		SIMNET_LOG(DEBUG, PACKET) << "reliable packet " << m_Id << " confirmed";
+		CSPLOG(DEBUG, PACKET) << "reliable packet " << m_Id << " confirmed";
 		m_Confirmed = true;
 	}
 

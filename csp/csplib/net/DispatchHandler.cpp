@@ -24,7 +24,6 @@
 
 
 #include <csp/csplib/net/DispatchHandler.h>
-#include <csp/csplib/net/NetLog.h>
 
 CSP_NAMESPACE
 
@@ -36,9 +35,9 @@ DispatchHandler::~DispatchHandler() {
 }
 
 void DispatchHandler::handleMessage(Ref<NetworkMessage> const &msg) {
-	SIMNET_LOG(INFO, MESSAGE) << "handling message of type " << msg->getName();
+	CSPLOG(INFO, MESSAGE) << "handling message of type " << msg->getName();
 	if (!dispatch(msg) && m_DefaultHandler.valid()) {
-		SIMNET_LOG(INFO, MESSAGE) << "unknown message type, calling default handler";
+		CSPLOG(INFO, MESSAGE) << "unknown message type, calling default handler";
 		m_DefaultHandler->call(msg, m_Queue);
 	}
 }
@@ -51,7 +50,7 @@ bool DispatchHandler::dispatch(Ref<NetworkMessage> const &msg) const {
 }
 
 void DispatchHandler::_registerHandler(std::string const &name, const MessageId id, Ref<BaseCallback> const &handler) {
-	SIMNET_LOG(INFO, MESSAGE) << "registering handler for " << name;
+	CSPLOG(INFO, MESSAGE) << "registering handler for " << name;
 	assert(!getCallback(id));
 	m_DispatchMap[id] = handler;
 }

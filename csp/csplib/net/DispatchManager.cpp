@@ -25,7 +25,6 @@
 
 #include <csp/csplib/net/DispatchManager.h>
 #include <csp/csplib/net/DispatchTarget.h>
-#include <csp/csplib/net/NetLog.h>
 
 
 CSP_NAMESPACE
@@ -39,12 +38,12 @@ DispatchManager::DispatchManager(Ref<MessageQueue> queue, unsigned cache_size)
 bool DispatchManager::dispatch(DispatchTarget *target, Ref<NetworkMessage> const &msg) {
 	Ref<BaseCallback> callback;
 	if (m_Cache->findHandler(msg, callback)) {
-		SIMNET_LOG(DEBUG, MESSAGE) << "Found handler in cache";
+		CSPLOG(DEBUG, MESSAGE) << "Found handler in cache";
 		if (!callback) return false;
 		callback->call(msg, m_Queue);
 		return true;
 	} else {
-		SIMNET_LOG(DEBUG, MESSAGE) << "Did not find handler in cache";
+		CSPLOG(DEBUG, MESSAGE) << "Did not find handler in cache";
 		m_Message = msg;
 		bool result = target->dispatch(this);
 		if (!result) {

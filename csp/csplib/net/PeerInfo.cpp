@@ -22,7 +22,6 @@
  */
 
 #include <csp/csplib/net/PeerInfo.h>
-#include <csp/csplib/net/NetLog.h>
 #include <csp/csplib/net/NetworkInterface.h>
 #include <csp/csplib/util/Timing.h>
 #include <csp/csplib/util/Verify.h>
@@ -223,7 +222,7 @@ void PeerInfo::registerConfirmation(PacketReceiptHeader *receipt, const uint32 p
 	// around and hit an old id.  if so, just log an error and move on.
 	if (m_reliable_packet_map.find(id) != m_reliable_packet_map.end()) {
 		m_reliable_packet_map[id]->confirm();
-		SIMNET_LOG(WARNING, PEER) << "reassigning to active confirmation id";
+		CSPLOG(WARNING, PEER) << "reassigning to active confirmation id";
 	}
 
 	// save the packet data in case we need to resend it
@@ -251,23 +250,23 @@ void PeerInfo::setReceipt(PacketReceiptHeader *receipt, bool reliable, uint32 pa
 		assert(hasPendingConfirmations());
 		receipt->setId0(m_confirmation_queue.front());
 		m_confirmation_queue.pop_front();
-		SIMNET_LOG(DEBUG, PACKET) << "sending receipt " << receipt->id0();
+		CSPLOG(DEBUG, PACKET) << "sending receipt " << receipt->id0();
 	}
 
 	if (!hasPendingConfirmations()) return;
 	receipt->setId1(m_confirmation_queue.front());
 	m_confirmation_queue.pop_front();
-	SIMNET_LOG(DEBUG, PACKET) << "sending receipt " << receipt->id1();
+	CSPLOG(DEBUG, PACKET) << "sending receipt " << receipt->id1();
 
 	if (!hasPendingConfirmations()) return;
 	receipt->setId2(m_confirmation_queue.front());
 	m_confirmation_queue.pop_front();
-	SIMNET_LOG(DEBUG, PACKET) << "sending receipt " << receipt->id2();
+	CSPLOG(DEBUG, PACKET) << "sending receipt " << receipt->id2();
 
 	if (!hasPendingConfirmations()) return;
 	receipt->setId3(m_confirmation_queue.front());
 	m_confirmation_queue.pop_front();
-	SIMNET_LOG(DEBUG, PACKET) << "sending receipt " << receipt->id3();
+	CSPLOG(DEBUG, PACKET) << "sending receipt " << receipt->id3();
 }
 
 bool PeerInfo::isDuplicate(const ConfirmationId id) {
@@ -351,11 +350,11 @@ void ActivePeerList::update(double dt, NetworkInterface *ni) {
 		}
 		bool remove = false;
 		if (peer->getDeadTime() > 30.0) {
-			SIMNET_LOG(WARNING, PEER) << "dead time expired for peer " << peer->getId() << " (" << peer->getDeadTime() << " s)";
+			CSPLOG(WARNING, PEER) << "dead time expired for peer " << peer->getId() << " (" << peer->getDeadTime() << " s)";
 			if (ni->handleDeadPeer(peer)) remove = true;
 		}
 		if (peer->isProvisionalExpired()) {
-			SIMNET_LOG(WARNING, PEER) << "provisional time expired for peer " << peer->getId();
+			CSPLOG(WARNING, PEER) << "provisional time expired for peer " << peer->getId();
 			remove = true;
 		}
 		if (remove) remove_peers.push_back(peer);

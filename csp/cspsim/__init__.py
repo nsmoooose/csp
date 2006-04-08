@@ -4,8 +4,11 @@
 import os
 import sys
 
+# this path hack allows the cspsim extension module to be loaded
+# transparently from the .bin directory.  extending rather than
+# replacing __path__ is necessary for py2exe imports to work.
 bin = os.path.join(os.path.dirname(__file__), '.bin')
-sys.path.insert(0, bin)
+__path__.append(bin)
 
 try:
 	from cspsim import *
@@ -14,11 +17,9 @@ except ImportError, e:
 	sys.stderr.write(
 """
 Unable to import cspsim.py from csp/cspsim/.bin.  This file and
-and others needed by cspsim are generatedd during the build.
+and others needed by cspsim are generated during the build.
 Check that all targets have been built successfully.  See the
 README file for build instructions.
 """)
 	sys.exit(1)
-
-sys.path = sys.path[1:]
 

@@ -44,3 +44,4 @@ def _configureModules():
 			os.environ['PATH'] = os.pathsep.join(path)
 
 _configureModules()
+

@@ -15,14 +15,16 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
-
 import exceptions
 import os.path
 import sys
 import types
 
+# this path hack allows the csplib extension module to be loaded
+# transparently from the .bin directory.  extending rather than
+# replacing __path__ is necessary for py2exe imports to work.
 bin = os.path.join(os.path.dirname(__file__), '.bin')
-sys.path.insert(0, bin)
+__path__.append(bin)
 
 try:
 	import csplib as _csplib
@@ -31,14 +33,13 @@ except ImportError, e:
 	sys.stderr.write(
 """
 Unable to import csplib.py from csp/csplib/.bin.  This file and
-and others needed by cspsim are generatedd during the build.
+and others needed by cspsim are generated during the build.
 Check that all targets have been built successfully.  See the
 README file for build instructions.
 """)
 	sys.exit(1)
 
 from csplib import *
-sys.path = sys.path[1:]
 
 version = _csplib.getVersion()
 

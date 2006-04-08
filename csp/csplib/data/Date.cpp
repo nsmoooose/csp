@@ -298,6 +298,7 @@ void DateZulu::convert(struct tm *tm, bool local) const {
 	tm->tm_mday = getDay();
 	tm->tm_mon  = getMonth() - 1; /* 0-11 goes in tm */
 	tm->tm_year = getYear() - 1900; /* X/Open says tm_year can be negative */
+	tm->tm_year = std::max(0, tm->tm_year); /* but msvcrt's strftime can't handle negative years! */
 
 	weekday_t day = getWeekday();
 	if (day == 7) day = 0; /* struct tm wants days since Sunday, so Sunday is 0 */

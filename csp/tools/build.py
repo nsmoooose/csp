@@ -1291,6 +1291,7 @@ class SharedLibrary:
 		if self._aliases:
 			Alias(self._aliases, shlib)
 		if IsWindows(self._env):
+			self.__bindManifest(shlib)
 			self._makeVisualStudioProject(shlib)
 		if self._doxygen:
 			self._env.Documentation(self._dox, self._doxygen, self._sources)
@@ -1300,6 +1301,19 @@ class SharedLibrary:
 		if bdeps and not self._env.GetOption('clean'):
 			Depends(shlib, bdeps)
 		return shlib[0]
+
+	MT_BIN = 0
+	def _bindManifest(self, shlib):
+		if SharedLibrary.MT_BIN == 0:
+			SharedLibrary.MT_BIN = SCons.Util.WhereIs('mt')
+			if not SharedLibrary.MT_BIN:
+				print 'WARNING: could not find mt.exe, will not bind manifests'
+		if SharedLibrary.MT_BIN:
+			dll = shlib[0]
+			assert dll.get_suffix() == '.dll'
+			CMD = '"%s" /nologo /manifest ${TARGET}.manifest /outputresource:${TARGET};#2' % SharedLibrary.MT_BIN
+			MSG = 'Binding manifest to %s' % dll.name
+			self._env.AddPostAction(dll, SimpleCommand(CMD, MSG))
 
 	def _makeVisualStudioProject(self, shlib):
 		if not hasattr(self._env, 'MSVSProject'):

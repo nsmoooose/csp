@@ -78,7 +78,7 @@ build.ExternalLibrary(
 	name = 'windows',
 	config = [
 		build.WindowsLibConfig('advapi32'),
-		build.WindowsLibConfig('msvcrt', symbol='_toupper'),
+		#build.WindowsLibConfig('msvcrt', symbol='_toupper'),
 		build.WindowsLibConfig('ws2_32'),
 	])
 

@@ -1,0 +1,125 @@
+The package contains the main CSPSim application and several supporting
+libraries.  The following summarizes the copyright and licensing terms
+of the various components, with links to the associated websites where
+the source code can be obtained.  Licenses for data files can be found
+in the associated directories.  Please report any errors or ommisions
+on the forums at http://csp.sf.net/forum.
+
+CSPSim
+Copyright 2002-2006 The Combat Simulator Project
+Licensed under the terms of the GNU General Public License version 2 or
+later.
+http://csp.sf.net/forum
+
+CSPLib (formerly SimData)
+Copyright 2002-2006 Mark Rose <mkrose@users.sf.net>
+Licensed under the terms of the GNU General Public License version 2 or
+later.
+http://csp.sf.net/forum
+
+SDL
+Copyright 1997-2002  Sam Lantinga
+Licensed under the terms of the GNU Library General Public License version
+2 or later.
+http://www.libsdl.org/
+
+SDL_image
+Copyright 1997-2001  Sam Lantinga
+Licensed under the terms of the GNU Library General Public License version
+2 or later.
+http://www.libsdl.org/projects/SDL_image/
+
+OpenThreads
+OpenThread library, Copyright 2002-2003 The Open Thread Group
+Licensed under the terms of the GNU Library General Public License version
+2.1 or later.
+http://openthreads.sourceforge.net/
+
+Producer
+Copyright 2002 Don Burns
+Licensed under the terms of the GNU Library General Public License.
+http://www.andesengineering.com/Producer/
+
+OpenSceneGraph
+Copyright 1998-2005 Robert Osfield
+Licensed under the terms of the OpenSceneGraph Public License (OSGPL) version
+0.0 or later.
+http://www.openscenegraph.org/
+
+Demeter
+Licensed under the terms of the GNU Library General Public License version
+2 or later.
+Copyright 2002 Clay Fowler
+http://sourceforge.net/projects/demeter/
+
+Python (executable and various core modules)
+Copyright 2001, 2002, 2003 Python Software Foundation.
+Copyright 2000 BeOpen.com.
+Copyright 1995-2001 Corporation for National Research Initiatives.
+Copyright 1991-1995 Stichting Mathematisch Centrum.
+Each copyright holder provides a different license, all of which are certified
+Open Source and GNU GPL-compatible; see LICENSES/python.
+http://python.org/
+
+GNU Common C++
+Copyright 1999-2003 Open Source Telecom Corporation.
+Licensed under the terms of the GNU General Public License version 2 or
+later.
+http://www.gnu.org/software/commoncpp/
+
+LibSigC++
+Copyright 2002, the libsigc++ Development Team
+Licensed under the terms of the GNU Library General Public License version
+2 or later.
+http://libsigc.sourceforge.net/
+
+FreeType
+Copyright 2001, 2002, 2003, 2004, 2006, David Turner, Robert Wilhelm, and 
+Werner Lemberg.
+Licensed under the terms of the GNU General Public License version 2 or
+later.
+http://savannah.nongnu.org/projects/freetype
+
+zlib
+Copyright 1995-1998 Jean-loup Gailly and Mark Adler
+See LICENSES/zlib
+http://www.gzip.org/zlib/
+
+libjpeg
+Copyright 1991-1998, Thomas G. Lane
+See LICENSES/libjpeg for the license.
+http://www.ijg.org/
+
+libpng
+Copyright 1998-2004 Glenn Randers-Pehrson
+See LICENSES/libpng for the license.
+http://libpng.sourceforge.net/
+
+libogg
+Copyright 2002 Xiph.Org Foundation
+See LICENSES/xiph
+http://www.xiph.org/
+
+libvorbis
+Copyright 2002-2004 Xiph.Org Foundation
+See LICENSES/xiph
+http://www.xiph.org/
+
+openal
+Copyright 1999-2000 various authors (see LICENSES/openal)
+Licensed under the terms of the GNU Library General Public License version
+2 or later.
+http://www.openal.org
+
+openal++
+Copyright 2002 VRlab, Umeå University
+Licensed under the terms of the GNU Library General Public License version
+2.1 or later.
+http://alpp.sourceforge.net
+
+osgAL
+Copyright 2004 VRlab, Umeå University
+Licensed under the terms of the GNU Library General Public License version
+2.1 or later.
+http://www.vrlab.umu.se/research/osgAL/
+

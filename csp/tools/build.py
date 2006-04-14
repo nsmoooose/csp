@@ -1291,7 +1291,7 @@ class SharedLibrary:
 		if self._aliases:
 			Alias(self._aliases, shlib)
 		if IsWindows(self._env):
-			self.__bindManifest(shlib)
+			self._bindManifest(shlib)
 			self._makeVisualStudioProject(shlib)
 		if self._doxygen:
 			self._env.Documentation(self._dox, self._doxygen, self._sources)

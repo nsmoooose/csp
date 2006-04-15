@@ -17,7 +17,7 @@
   !define WriteEnvStr_RegKey 'HKCU "Environment"'
 
   Name "CSP Devpack ${VERSION}"
-  OutFile "cspdevpack-${VERSION}.exe"
+  OutFile "cspdevpack-${VERSION}-installer.exe"
 
   InstallDir "$PROGRAMFILES\cspdevpack-${VERSION}"
   InstallDirRegKey HKCU "Software\cspdevpack-${VERSION}" ""
@@ -36,11 +36,11 @@
 
   !insertmacro MUI_LANGUAGE "English"
 
-  VIProductVersion "0.6.0.1"
+  VIProductVersion "${VERSION}.0.0"
   VIAddVersionKey /LANG=${LANG_ENGLISH} "ProductName" "Combat Simulator Project Devpack"
   VIAddVersionKey /LANG=${LANG_ENGLISH} "Comments" "Visit http://csp.sf.net/wiki/Devpack for more information."
   VIAddVersionKey /LANG=${LANG_ENGLISH} "FileDescription" "CSP Devpack Installer"
-  VIAddVersionKey /LANG=${LANG_ENGLISH} "FileVersion" "0.6"
+  VIAddVersionKey /LANG=${LANG_ENGLISH} "FileVersion" "${VERSION}"
 
 
 Section "Devpack" SecDevpack

@@ -154,7 +154,7 @@ def AddRunTestsTarget(env):
 class PlatformSettings:
 	def customize_win(self, env):
 		env['CXXFLAGS'] = Split('/GR /MD /O2 /EHsc /nologo')
-		env.AppendUnique(CPPDEFINES=Split('WIN32 __WIN32__ _USRDLL _DLL NDEBUG'))
+		env.AppendUnique(CPPDEFINES=Split('WIN32 __WIN32__ _USRDLL _DLL NDEBUG _CRT_SECURE_NO_DEPRECATE'))
 		env.AppendUnique(LINKFLAGS=Split('/INCREMENTAL:NO /RELEASE /nologo'))
 		env.AppendUnique(SHLINKFLAGS=Split('/INCREMENTAL:NO /RELEASE /nologo'))
 		# FIXME why is LIBPATH being overwritten?  quick hack for now is to add the path to linkflags.

@@ -22,9 +22,10 @@ Combat Simulator Project - Interface Map Compiler
 Converts interface definitions (.map) to a condensed format used by
 the simulation (.hid).
 
-Usage: %(prog)s [options] [infile|-] [outfile|-]
+Usage: %(prog)s [options] infile [outfile|-]
 """
 
+import os
 import sys
 
 from csp.base import app
@@ -36,6 +37,14 @@ def main(args):
 		app.usage()
 		return 1
 
+	include_path = app.options.include_path
+
+	# for convenience, add the default include path if the program appears
+	# to have been run from the tools directory.
+	program_path = os.path.dirname(app.programPath())
+	if program_path.lower().endswith('tools'):
+		include_path.append(os.path.join(program_path, 'hid'))
+
 	outfile = sys.stdout
 	if len(args) == 2 and args[1] != '-':
 		outfile = args[1]
@@ -43,10 +52,11 @@ def main(args):
 	if args:
 		infile = args[0]
 	else:
-		infile = '-'
+		app.usage()
+		return 1
 
 	try:
-		compiler.MapCompiler.compile(infile, outfile, include_path=app.options.include_path)
+		compiler.MapCompiler.compile(infile, outfile, include_path=include_path)
 	except compiler.Error, e:
 		print str(e)
 		return 1

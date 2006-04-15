@@ -1,0 +1,37 @@
+Import('devpack')
+
+env = devpack.makeEnvironment(
+	CXXFLAGS=['/DOPENALPP_EXPORTS'],
+	CPPPATH=['include'])
+
+SOURCES = [
+	'src/audiobase.cpp',
+	'src/audioconvert.cpp',
+	'src/audioenvironment.cpp',
+	'src/deviceupdater.cpp',
+	'src/error.cpp',
+	'src/filestream.cpp',
+	'src/filestreamupdater.cpp',
+	'src/groupsource.cpp',
+	'src/listener.cpp',
+	'src/openalpp.cpp',
+	'src/referenced.cpp',
+	'src/sample.cpp',
+	'src/sounddata.cpp',
+	'src/source.cpp',
+	'src/sourcebase.cpp',
+	'src/stream.cpp',
+	'src/streamupdater.cpp',
+]
+
+DEPENDS = [
+	devpack.ogg,
+	devpack.vorbis,
+	devpack.vorbisfile,
+	devpack.OpenThreads,
+	devpack.OpenAL,
+	devpack.alut,
+]
+
+env.dll('openalpp.dll', SOURCES, alias=['sound'], depends=DEPENDS)
+

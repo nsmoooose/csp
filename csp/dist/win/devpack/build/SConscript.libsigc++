@@ -1,0 +1,20 @@
+Import('devpack')
+
+env = devpack.makeEnvironment(
+	CXXFLAGS=['/DSIGC_BUILD', '/D_WINDLL', '/D_MSC_VER', '/D_CONSOLE'],
+	CPPPATH=['.', 'MSVC_Net2003'])
+
+SOURCES = [
+	"MSVC_Net2003/blank.cpp",
+	"sigc++/connection.cc",
+	"sigc++/adaptors/lambda/lambda.cc",
+	"sigc++/signal.cc",
+	"sigc++/signal_base.cc",
+	"sigc++/functors/slot.cc",
+	"sigc++/functors/slot_base.cc",
+	"sigc++/trackable.cc",
+#	env.RES("MSVC_Net2003/sigc-2.0.rc"),
+]
+
+env.dll('sigc-2.0.dll', SOURCES, alias=['sigc'])
+

@@ -1,0 +1,58 @@
+Import('devpack')
+
+env = devpack.makeEnvironment()
+
+env['CPPFLAGS'] = Split('-DCRTAPI1=_cdecl -DCRTAPI2=_cdecl -D_X86_=1 -DWIN32 -D_WIN32 -D_WINNT -D_WIN32_WINNT=0x0500 -D_WIN32_IE=0x0500 -DWINVER=0x0500 -DNDEBUG -D_MT -D_CRT_SECURE_NO_DEPRECATE')
+env['CCFLAGS'] = Split('-nologo -GS -W3 -Zi -Od -MT')
+
+
+SOURCES = [
+	'jcapimin.c',
+	'jcapistd.c',
+	'jccoefct.c',
+	'jccolor.c',
+	'jcdctmgr.c',
+	'jchuff.c',
+	'jcinit.c',
+	'jcmainct.c',
+	'jcmarker.c',
+	'jcmaster.c',
+	'jcomapi.c',
+	'jcparam.c',
+	'jcphuff.c',
+	'jcprepct.c',
+	'jcsample.c',
+	'jctrans.c',
+	'jdapimin.c',
+	'jdapistd.c',
+	'jdatadst.c',
+	'jdatasrc.c',
+	'jdcoefct.c',
+	'jdcolor.c',
+	'jddctmgr.c',
+	'jdhuff.c',
+	'jdinput.c',
+	'jdmainct.c',
+	'jdmarker.c',
+	'jdmaster.c',
+	'jdmerge.c',
+	'jdphuff.c',
+	'jdpostct.c',
+	'jdsample.c',
+	'jdtrans.c',
+	'jerror.c',
+	'jfdctflt.c',
+	'jfdctfst.c',
+	'jfdctint.c',
+	'jidctflt.c',
+	'jidctfst.c',
+	'jidctint.c',
+	'jidctred.c',
+	'jquant1.c',
+	'jquant2.c',
+	'jutils.c',
+	'jmemmgr.c',
+	'jmemnobs.c',
+]
+
+env.lib('libjpeg.lib', SOURCES, alias=['jpeg'])

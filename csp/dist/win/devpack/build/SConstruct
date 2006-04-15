@@ -1,0 +1,26 @@
+# scons build scripts for third-party libraries in the csp windows devpack.
+# these scripts are customized for the library versions listed below.  to use,
+# copy the SConscript.* files to SConscript in the corresponding directory and
+# run 'scons all' from the top-level directory.  note that some manual
+# adjustments must be made to the sdl directory to place all headers under
+# SDL-1.2.9/custom/SDL/.  also, the openal 1.1 sdk must be installed; see
+# devpack.py for the expected path.
+
+import devpack
+Export('devpack')
+
+SConscript(dirs='libogg-1.1.3')
+SConscript(dirs='libvorbis-1.1.2')
+SConscript(dirs='openalpp')  # cvs 050303
+SConscript(dirs='OSG_OP_OT-1.0/OpenThreads')
+SConscript(dirs='OSG_OP_OT-1.0/Producer')
+SConscript(dirs='OSG_OP_OT-1.0/OpenSceneGraph')
+SConscript(dirs='libsigc++-2.0.16')
+SConscript(dirs='libpng-1.2.8-config')
+SConscript(dirs='zlib-1.2.3')
+SConscript(dirs='commoncpp2-1.3.22')
+SConscript(dirs='libjpeg/jpeg-6b')
+SConscript(dirs='SDL-1.2.9')
+SConscript(dirs='SDL_image-1.2.4')
+SConscript(dirs='freetype-2.1.9')
+SConscript(dirs='osgAL')  # v040-050527

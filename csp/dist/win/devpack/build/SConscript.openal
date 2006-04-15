@@ -1,0 +1,17 @@
+Import('devpack')
+
+env = devpack.makeEnvironment(
+	CPPFLAGS=['/DOSGAL_LIBRARY', '/DUSECOLOSSEUM3D'],
+	CPPPATH=['include'])
+
+SOURCES = [
+	'src/osgAL/OccludeCallback.cpp',
+	'src/osgAL/SoundManager.cpp',
+	'src/osgAL/SoundNode.cpp',
+	'src/osgAL/SoundRoot.cpp',
+	'src/osgAL/SoundState.cpp',
+	'src/osgAL/Version.cpp',
+]
+
+env.dll('osgAL.dll', SOURCES, alias=['sound'], depends=[devpack.osg, devpack.osgDB, devpack.osgUtil, devpack.openalpp, devpack.OpenThreads, devpack.OpenAL])
+

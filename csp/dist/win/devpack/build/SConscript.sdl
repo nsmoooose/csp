@@ -1,0 +1,74 @@
+Import('devpack')
+
+env = devpack.makeEnvironment(
+	CPPFLAGS=['/DENABLE_WINDIB', '/DHAVE_OPENGL', '/D_WIN32_WINNT=0x0400'],
+	CPPPATH=['.', 'src', 'src/audio', 'src/video', 'src/video/wincommon', 'src/video/windx5', 'src/events', 'src/joystick', 'src/cdrom', 'src/thread', 'src/thread/win32', 'src/timer', 'include', 'include/SDL'],
+	LIBS=['winmm.lib', 'user32.lib', 'gdi32.lib', 'advapi32.lib', 'comctl32.lib'])
+	#LIBS=['winmm.lib', 'user32.lib', 'gdi32.lib', 'advapi32.lib', 'comctl32.lib', 'dsound.lib', 'dinput.lib', 'ddraw.lib'])
+
+SOURCES = [
+	"src/SDL.c",
+	"src/SDL_error.c",
+	"src/SDL_fatal.c",
+	"src/audio/SDL_audio.c",
+	"src/audio/SDL_audiocvt.c",
+	"src/audio/SDL_audiomem.c",
+	"src/audio/SDL_mixer.c",
+	"src/audio/SDL_wave.c",
+	"src/audio/windib/SDL_dibaudio.c",
+	"src/cdrom/SDL_cdrom.c",
+	"src/cdrom/Win32/SDL_syscdrom.c",
+	"src/cpuinfo/SDL_cpuinfo.c",
+	"src/endian/SDL_endian.c",
+	"src/events/SDL_active.c",
+	"src/events/SDL_events.c",
+	"src/events/SDL_expose.c",
+	"src/events/SDL_keyboard.c",
+	"src/events/SDL_mouse.c",
+	"src/events/SDL_quit.c",
+	"src/events/SDL_resize.c",
+	"src/file/SDL_rwops.c",
+	"src/joystick/SDL_joystick.c",
+	"src/joystick/win32/SDL_mmjoystick.c",
+	"src/thread/SDL_thread.c",
+	"src/thread/Win32/SDL_systhread.c",
+	"src/thread/generic/SDL_syscond.c",
+	"src/thread/win32/SDL_sysmutex.c",
+	"src/thread/win32/SDL_syssem.c",
+	"src/timer/SDL_timer.c",
+	"src/timer/win32/SDL_systimer.c",
+	"src/video/SDL_RLEaccel.c",
+	"src/video/SDL_blit.c",
+	"src/video/SDL_blit_0.c",
+	"src/video/SDL_blit_1.c",
+	"src/video/SDL_blit_A.c",
+	"src/video/SDL_blit_N.c",
+	"src/video/SDL_bmp.c",
+	"src/video/SDL_cursor.c",
+	"src/video/SDL_gamma.c",
+	"src/video/SDL_pixels.c",
+	"src/video/SDL_stretch.c",
+	"src/video/SDL_surface.c",
+	"src/video/SDL_video.c",
+	"src/video/SDL_yuv.c",
+	"src/video/SDL_yuv_sw.c",
+	"src/video/Windib/SDL_dibevents.c",
+	"src/video/Windib/SDL_dibvideo.c",
+	"src/video/wincommon/SDL_sysevents.c",
+	"src/video/wincommon/SDL_sysmouse.c",
+	"src/video/wincommon/SDL_syswm.c",
+	"src/video/wincommon/SDL_wingl.c",
+	#"src/audio/windx5/SDL_dx5audio.c",
+	#"src/video/Windx5/SDL_dx5events.c",
+	#"src/video/Windx5/SDL_dx5video.c",
+	#"src/video/windx5/SDL_dx5yuv.c",
+	#env.RES("VisualC/SDL/Version.rc"),
+]
+
+env.dll('SDL.dll', SOURCES, alias=['sdl'])
+env.lib('SDLmain.lib', ["src/main/win32/SDL_win32_main.c"], alias=['sdl'])
+
+envtest = env.Copy()
+#envtest['CPPFLAGS'] = Split('/D_MBCS /DWIN32 /D_WINDOWS /DNDEBUG /DHAVE_OPENGL')
+#envtest['LIBS'] = Split('SDL.lib kernel32.lib')
+envtest.exe('testwin.exe', ['test/testwin.c'], alias=['sdltest'], LIBPATH=['.'], LIBS=['SDL.lib', 'SDLmain.lib'], LINKFLAGS=['/SUBSYSTEM:CONSOLE'])

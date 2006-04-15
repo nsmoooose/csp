@@ -1,0 +1,43 @@
+Import('devpack')
+
+env = devpack.makeEnvironment(
+	CCFLAGS=['/DLIBVORBIS_EXPORTS'],
+	CPPPATH=['include'])
+
+SOURCES = [
+	'lib/analysis.c',
+	'lib/bitrate.c',
+	'lib/block.c',
+	'lib/codebook.c',
+	'lib/envelope.c',
+	'lib/floor0.c',
+	'lib/floor1.c',
+	'lib/info.c',
+	'lib/lookup.c',
+	'lib/lpc.c',
+	'lib/lsp.c',
+	'lib/mapping0.c',
+	'lib/mdct.c',
+	'lib/psy.c',
+	'lib/registry.c',
+	'lib/res0.c',
+	'lib/sharedbook.c',
+	'lib/smallft.c',
+	'lib/synthesis.c',
+	'win32/vorbis.def',
+	'lib/vorbisenc.c',
+	'lib/window.c',
+]
+
+FILE = [
+	'lib/vorbisfile.c',
+	'win32/vorbisfile.def',
+]
+
+env.dll('libvorbis.dll', SOURCES, alias=['sound'], depends=[devpack.ogg])
+
+env = env.Copy()
+env.AppendUnique(CCFLAGS=['/DLIBVORBISFILE_EXPORTS'])
+
+env.dll('libvorbisfile.dll', FILE, alias=['sound'], depends=[devpack.ogg, devpack.vorbis])
+

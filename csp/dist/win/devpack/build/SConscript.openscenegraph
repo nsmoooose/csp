@@ -1,0 +1,485 @@
+Import('devpack')
+
+env = devpack.makeEnvironment(
+	CPPPATH=['include', 'src'],
+	LIBPATH=['.'],
+	LIBS=['opengl32.lib', 'glu32.lib', 'gdi32.lib', 'user32.lib'])
+
+
+def make(lib, sources, LIBS=[]):
+	e = env.Copy()
+	e.AppendUnique(CPPFLAGS=['/D%s_LIBRARY' % lib.upper()])
+	e.AppendUnique(LIBS=LIBS)
+	e.dll(lib + '.dll', sources, alias=['osg'], depends=[devpack.OpenThreads, devpack.Producer])
+
+make('osg', [
+	'src/osg/AlphaFunc.cpp',
+	'src/osg/AnimationPath.cpp',
+	'src/osg/ApplicationUsage.cpp',
+	'src/osg/ArgumentParser.cpp',
+	'src/osg/Array.cpp',
+	'src/osg/AutoTransform.cpp',
+	'src/osg/Billboard.cpp',
+	'src/osg/BlendColor.cpp',
+	'src/osg/BlendEquation.cpp',
+	'src/osg/BlendFunc.cpp',
+	'src/osg/BoundingBox.cpp',
+	'src/osg/BoundingSphere.cpp',
+	'src/osg/BufferObject.cpp',
+	'src/osg/CameraNode.cpp',
+	'src/osg/CameraView.cpp',
+	'src/osg/ClearNode.cpp',
+	'src/osg/ClipNode.cpp',
+	'src/osg/ClipPlane.cpp',
+	'src/osg/ClusterCullingCallback.cpp',
+	'src/osg/CollectOccludersVisitor.cpp',
+	'src/osg/ColorMask.cpp',
+	'src/osg/ColorMatrix.cpp',
+	'src/osg/ConvexPlanarOccluder.cpp',
+	'src/osg/ConvexPlanarPolygon.cpp',
+	'src/osg/CoordinateSystemNode.cpp',
+	'src/osg/CopyOp.cpp',
+	'src/osg/CullFace.cpp',
+	'src/osg/CullSettings.cpp',
+	'src/osg/CullStack.cpp',
+	'src/osg/CullingSet.cpp',
+	'src/osg/Depth.cpp',
+	'src/osg/DisplaySettings.cpp',
+	'src/osg/DrawPixels.cpp',
+	'src/osg/Drawable.cpp',
+	'src/osg/Fog.cpp',
+	'src/osg/FragmentProgram.cpp',
+	'src/osg/FrameBufferObject.cpp',
+	'src/osg/FrameStamp.cpp',
+	'src/osg/FrontFace.cpp',
+	'src/osg/GLExtensions.cpp',
+	'src/osg/Geode.cpp',
+	'src/osg/Geometry.cpp',
+	'src/osg/GraphicsContext.cpp',
+	'src/osg/GraphicsThread.cpp',
+	'src/osg/Group.cpp',
+	'src/osg/Image.cpp',
+	'src/osg/ImageStream.cpp',
+	'src/osg/LOD.cpp',
+	'src/osg/Light.cpp',
+	'src/osg/LightModel.cpp',
+	'src/osg/LightSource.cpp',
+	'src/osg/LineSegment.cpp',
+	'src/osg/LineStipple.cpp',
+	'src/osg/LineWidth.cpp',
+	'src/osg/LogicOp.cpp',
+	'src/osg/Material.cpp',
+	'src/osg/MatrixTransform.cpp',
+	'src/osg/Matrixd.cpp',
+	'src/osg/Matrixf.cpp',
+	'src/osg/Multisample.cpp',
+	'src/osg/Node.cpp',
+	'src/osg/NodeCallback.cpp',
+	'src/osg/NodeTrackerCallback.cpp',
+	'src/osg/NodeVisitor.cpp',
+	'src/osg/Notify.cpp',
+	'src/osg/Object.cpp',
+	'src/osg/OccluderNode.cpp',
+	'src/osg/PagedLOD.cpp',
+	'src/osg/Point.cpp',
+	'src/osg/PointSprite.cpp',
+	'src/osg/PolygonMode.cpp',
+	'src/osg/PolygonOffset.cpp',
+	'src/osg/PolygonStipple.cpp',
+	'src/osg/PositionAttitudeTransform.cpp',
+	'src/osg/PrimitiveSet.cpp',
+	'src/osg/Program.cpp',
+	'src/osg/Projection.cpp',
+	'src/osg/ProxyNode.cpp',
+	'src/osg/Quat.cpp',
+	'src/osg/Referenced.cpp',
+	'src/osg/Scissor.cpp',
+	'src/osg/Sequence.cpp',
+	'src/osg/ShadeModel.cpp',
+	'src/osg/Shader.cpp',
+	'src/osg/ShadowVolumeOccluder.cpp',
+	'src/osg/Shape.cpp',
+	'src/osg/ShapeDrawable.cpp',
+	'src/osg/State.cpp',
+	'src/osg/StateAttribute.cpp',
+	'src/osg/StateSet.cpp',
+	'src/osg/Stencil.cpp',
+	'src/osg/Switch.cpp',
+	'src/osg/TexEnv.cpp',
+	'src/osg/TexEnvCombine.cpp',
+	'src/osg/TexEnvFilter.cpp',
+	'src/osg/TexGen.cpp',
+	'src/osg/TexGenNode.cpp',
+	'src/osg/TexMat.cpp',
+	'src/osg/Texture.cpp',
+	'src/osg/Texture1D.cpp',
+	'src/osg/Texture2D.cpp',
+	'src/osg/Texture3D.cpp',
+	'src/osg/TextureCubeMap.cpp',
+	'src/osg/TextureRectangle.cpp',
+	'src/osg/Timer.cpp',
+	'src/osg/Transform.cpp',
+	'src/osg/Uniform.cpp',
+	'src/osg/UnitTestFramework.cpp',
+	'src/osg/Vec3.cpp',
+	'src/osg/Version.cpp',
+	'src/osg/VertexProgram.cpp',
+	'src/osg/Viewport.cpp',
+	'src/osg/dxtctool.cpp',
+])
+
+make('osgUtil', [
+	'src/osgUtil/CubeMapGenerator.cpp',
+	'src/osgUtil/CullVisitor.cpp',
+	'src/osgUtil/DelaunayTriangulator.cpp',
+	'src/osgUtil/DisplayRequirementsVisitor.cpp',
+	'src/osgUtil/GLObjectsVisitor.cpp',
+	'src/osgUtil/HalfWayMapGenerator.cpp',
+	'src/osgUtil/HighlightMapGenerator.cpp',
+	'src/osgUtil/IntersectVisitor.cpp',
+	'src/osgUtil/Optimizer.cpp',
+	'src/osgUtil/PositionalStateContainer.cpp',
+	'src/osgUtil/RenderBin.cpp',
+	'src/osgUtil/RenderLeaf.cpp',
+	'src/osgUtil/RenderStage.cpp',
+	'src/osgUtil/SceneView.cpp',
+	'src/osgUtil/Simplifier.cpp',
+	'src/osgUtil/SmoothingVisitor.cpp',
+	'src/osgUtil/StateGraph.cpp',
+	'src/osgUtil/TangentSpaceGenerator.cpp',
+	'src/osgUtil/Tesselator.cpp',
+	'src/osgUtil/TransformAttributeFunctor.cpp',
+	'src/osgUtil/TransformCallback.cpp',
+	'src/osgUtil/TriStripVisitor.cpp',
+	'src/osgUtil/TriStrip_tri_stripper.cpp',
+	'src/osgUtil/UpdateVisitor.cpp',
+	'src/osgUtil/Version.cpp',
+],
+LIBS=['osg.lib'])
+
+make('osgGA', [
+	'src/osgGA/AnimationPathManipulator.cpp',
+	'src/osgGA/DriveManipulator.cpp',
+	'src/osgGA/EventVisitor.cpp',
+	'src/osgGA/FlightManipulator.cpp',
+	'src/osgGA/GUIEventAdapter.cpp',
+	'src/osgGA/GUIEventHandler.cpp',
+	'src/osgGA/GUIEventHandlerVisitor.cpp',
+	'src/osgGA/KeySwitchMatrixManipulator.cpp',
+	'src/osgGA/MatrixManipulator.cpp',
+	'src/osgGA/NodeTrackerManipulator.cpp',
+	'src/osgGA/SetSceneViewVisitor.cpp',
+	'src/osgGA/StateSetManipulator.cpp',
+	'src/osgGA/TerrainManipulator.cpp',
+	'src/osgGA/TrackballManipulator.cpp',
+	'src/osgGA/UFOManipulator.cpp',
+	'src/osgGA/Version.cpp',
+],
+LIBS=['osg.lib', 'osgUtil.lib'])
+
+make('osgDB', [
+	'src/osgDB/Archive.cpp',
+	'src/osgDB/DatabasePager.cpp',
+	'src/osgDB/DotOsgWrapper.cpp',
+	'src/osgDB/DynamicLibrary.cpp',
+	'src/osgDB/Field.cpp',
+	'src/osgDB/FieldReader.cpp',
+	'src/osgDB/FieldReaderIterator.cpp',
+	'src/osgDB/FileNameUtils.cpp',
+	'src/osgDB/FileUtils.cpp',
+	'src/osgDB/ImageOptions.cpp',
+	'src/osgDB/Input.cpp',
+	'src/osgDB/Output.cpp',
+	'src/osgDB/ReadFile.cpp',
+	'src/osgDB/ReaderWriter.cpp',
+	'src/osgDB/ReentrantMutex.cpp',
+	'src/osgDB/Registry.cpp',
+	'src/osgDB/SharedStateManager.cpp',
+	'src/osgDB/Version.cpp',
+	'src/osgDB/WriteFile.cpp',
+],
+LIBS=['osg.lib', 'osgUtil.lib'])
+
+make('osgProducer', [
+	'src/osgProducer/EventAdapter.cpp',
+	'src/osgProducer/GraphicsContextImplementation.cpp',
+	'src/osgProducer/KeyboardMouseCallback.cpp',
+	'src/osgProducer/OsgCameraGroup.cpp',
+	'src/osgProducer/OsgSceneHandler.cpp',
+	'src/osgProducer/Version.cpp',
+	'src/osgProducer/Viewer.cpp',
+	'src/osgProducer/ViewerEventHandler.cpp',
+],
+LIBS=['osg.lib', 'osgDB.lib', 'osgGA.lib', 'osgText.lib', 'osgUtil.lib'])
+
+make('osgFX', [
+	'src/osgFX/AnisotropicLighting.cpp',
+	'src/osgFX/BumpMapping.cpp',
+	'src/osgFX/Cartoon.cpp',
+	'src/osgFX/Effect.cpp',
+	'src/osgFX/MultiTextureControl.cpp',
+	'src/osgFX/Registry.cpp',
+	'src/osgFX/Scribe.cpp',
+	'src/osgFX/SpecularHighlights.cpp',
+	'src/osgFX/Technique.cpp',
+	'src/osgFX/Validator.cpp',
+],
+LIBS=['osg.lib', 'osgDB.lib', 'osgUtil.lib'])
+
+make('osgParticle', [
+	'src/osgParticle/ConnectedParticleSystem.cpp',
+	'src/osgParticle/Emitter.cpp',
+	'src/osgParticle/ExplosionDebrisEffect.cpp',
+	'src/osgParticle/ExplosionEffect.cpp',
+	'src/osgParticle/FireEffect.cpp',
+	'src/osgParticle/FluidFrictionOperator.cpp',
+	'src/osgParticle/FluidProgram.cpp',
+	'src/osgParticle/ModularEmitter.cpp',
+	'src/osgParticle/ModularProgram.cpp',
+	'src/osgParticle/MultiSegmentPlacer.cpp',
+	'src/osgParticle/Particle.cpp',
+	'src/osgParticle/ParticleEffect.cpp',
+	'src/osgParticle/ParticleProcessor.cpp',
+	'src/osgParticle/ParticleSystem.cpp',
+	'src/osgParticle/ParticleSystemUpdater.cpp',
+	'src/osgParticle/Program.cpp',
+	'src/osgParticle/SmokeEffect.cpp',
+	'src/osgParticle/SmokeTrailEffect.cpp',
+	'src/osgParticle/Version.cpp',
+],
+LIBS=['osg.lib', 'osgDB.lib'])
+
+make('osgSim', [
+	'src/osgSim/BlinkSequence.cpp',
+	'src/osgSim/ColorRange.cpp',
+	'src/osgSim/DOFTransform.cpp',
+	'src/osgSim/Impostor.cpp',
+	'src/osgSim/ImpostorSprite.cpp',
+	'src/osgSim/InsertImpostorsVisitor.cpp',
+	'src/osgSim/LightPoint.cpp',
+	'src/osgSim/LightPointDrawable.cpp',
+	'src/osgSim/LightPointNode.cpp',
+	'src/osgSim/MultiSwitch.cpp',
+	'src/osgSim/OverlayNode.cpp',
+	'src/osgSim/ScalarBar.cpp',
+	'src/osgSim/ScalarsToColors.cpp',
+	'src/osgSim/Sector.cpp',
+	'src/osgSim/SphereSegment.cpp',
+	'src/osgSim/Version.cpp',
+	'src/osgSim/VisibilityGroup.cpp',
+],
+LIBS=['osg.lib', 'osgText.lib', 'osgUtil.lib'])
+
+make('osgText', [
+	'src/osgText/DefaultFont.cpp',
+	'src/osgText/Font.cpp',
+	'src/osgText/String.cpp',
+	'src/osgText/Text.cpp',
+	'src/osgText/Version.cpp',
+],
+LIBS=['osg', 'osgDB'])
+
+"""
+make('osgTerrain', [
+	'src/osgTerrain/DataSet.cpp',
+	'src/osgTerrain/HeightFieldNode.cpp',
+	'src/osgTerrain/HeightFieldRenderer.cpp',
+	'src/osgTerrain/Version.cpp',
+],
+LIBS=['osg'])
+"""
+
+"""
+make('osgIntrospection', [
+	'src/osgIntrospection/ConstructorInfo.cpp',
+	'src/osgIntrospection/CustomAttributeProvider.cpp',
+	'src/osgIntrospection/DefaultReflectors.cpp',
+	'src/osgIntrospection/MethodInfo.cpp',
+	'src/osgIntrospection/PropertyInfo.cpp',
+	'src/osgIntrospection/Reflection.cpp',
+	'src/osgIntrospection/Type.cpp',
+	'src/osgIntrospection/Utility.cpp',
+	'src/osgIntrospection/Value.cpp',
+])
+"""
+
+"""
+make('osgWrappers', [
+])
+"""
+
+
+envapp = env.Copy()
+envapp.AppendUnique(LIBS=['osg.lib', 'osgGA.lib', 'osgDB.lib', 'osgUtil.lib', 'osgProducer.lib'])
+
+def Program(exe, sources, **kw):
+	envapp.exe(exe, sources, alias=['programs'], depends=[devpack.OpenThreads, devpack.Producer], **kw)
+
+Program('osgviewer.exe', ['applications/osgviewer/osgviewer.cpp'])
+Program('osgversion.exe', ['applications/osgversion/osgversion.cpp'])
+Program('osgconv.exe', ['applications/osgconv/osgconv.cpp', 'applications/osgconv/OrientationConverter.cpp'])
+
+
+plugin_env = env.Copy(
+	LIBS=[
+		"advapi32.lib",
+		"comdlg32.lib",
+		"gdi32.lib",
+		"glu32.lib",
+		"kernel32.lib",
+		"ole32.lib",
+		"oleaut32.lib",
+		"opengl32.lib",
+		"osg.lib",
+		"osgDB.lib",
+		"osgFX.lib",
+		"osgParticle.lib",
+		"osgSim.lib",
+		"osgText.lib",
+		"osgUtil.lib",
+		"shell32.lib",
+		"user32.lib",
+		"uuid.lib",
+		"winspool.lib"])
+
+def Plugin(dll, sources, deps=[], **kw):
+	deps = [devpack.OpenThreads] + deps
+	env = plugin_env
+	if kw:
+		env = plugin_env.Copy()
+		env.AppendUnique(**kw)
+	env.dll('osgdb_' + dll, sources, alias=['plugins'], depends=deps)
+
+
+# VisualStudio/osgPlugins/3dc
+Plugin("3dc.dll", ["src/osgPlugins/3dc/ReaderWriter3DC.cpp"])
+
+# VisualStudio/osgPlugins/ac3d
+Plugin("ac.dll", ["src/osgPlugins/ac3d/ac3d.cpp","src/osgPlugins/ac3d/Exception.cpp","src/osgPlugins/ac3d/Geode.cpp"])
+
+# VisualStudio/osgPlugins/bmp
+Plugin("bmp.dll", ["src/osgPlugins/bmp/ReaderWriterBMP.cpp"])
+
+# VisualStudio/osgPlugins/dds
+Plugin("dds.dll", ["src/osgPlugins/dds/ReaderWriterDDS.cpp"])
+
+# VisualStudio/osgPlugins/directx
+Plugin("directx.dll", ["src/osgPlugins/directx/directx.cpp","src/osgPlugins/directx/ReaderWriterDirectX.cpp"])
+
+# VisualStudio/osgPlugins/dw
+Plugin("dw.dll", ["src/osgPlugins/dw/ReaderWriterDW.cpp"])
+
+# VisualStudio/osgPlugins/dxf
+Plugin("dxf.dll", ["src/osgPlugins/dxf/aci.cpp","src/osgPlugins/dxf/dxfBlock.cpp","src/osgPlugins/dxf/dxfEntity.cpp","src/osgPlugins/dxf/dxfFile.cpp","src/osgPlugins/dxf/dxfReader.cpp","src/osgPlugins/dxf/dxfSection.cpp","src/osgPlugins/dxf/dxfTable.cpp","src/osgPlugins/dxf/ReaderWriterDXF.cpp","src/osgPlugins/dxf/scene.cpp"])
+
+# VisualStudio/osgPlugins/flt
+Plugin("flt.dll", ["src/osgPlugins/flt/BoundingVolumeRecords.cpp","src/osgPlugins/flt/BSPRecord.cpp","src/osgPlugins/flt/ColorPaletteRecord.cpp","src/osgPlugins/flt/CommentRecord.cpp","src/osgPlugins/flt/ControlRecord.cpp","src/osgPlugins/flt/DofRecord.cpp","src/osgPlugins/flt/ExtensionRecord.cpp","src/osgPlugins/flt/ExternalRecord.cpp","src/osgPlugins/flt/FaceRecord.cpp","src/osgPlugins/flt/FindExternalModelVisitor.cpp","src/osgPlugins/flt/flt.cpp","src/osgPlugins/flt/flt2osg.cpp","src/osgPlugins/flt/FltFile.cpp","src/osgPlugins/flt/GeoSetBuilder.cpp","src/osgPlugins/flt/GroupRecord.cpp","src/osgPlugins/flt/HeaderRecord.cpp","src/osgPlugins/flt/Input.cpp","src/osgPlugins/flt/InstanceRecords.cpp","src/osgPlugins/flt/LightPointPaletteRecords.cpp","src/osgPlugins/flt/LightPointRecord.cpp","src/osgPlugins/flt/LightPointSystemRecord.cpp","src/osgPlugins/flt/LightSourcePaletteRecord.cpp","src/osgPlugins/flt/LightSourceRecord.cpp","src/osgPlugins/flt/LocalVertexPoolRecord.cpp","src/osgPlugins/flt/LodRecord.cpp","src/osgPlugins/flt/LongIDRecord.cpp","src/osgPlugins/flt/MaterialPaletteRecord.cpp","src/osgPlugins/flt/MeshPrimitiveRecord.cpp","src/osgPlugins/flt/MeshRecord.cpp","src/osgPlugins/flt/MultiTextureRecord.cpp","src/osgPlugins/flt/ObjectRecord.cpp","src/osgPlugins/flt/OldMaterialPaletteRecord.cpp","src/osgPlugins/flt/OldVertexRecords.cpp","src/osgPlugins/flt/Pool.cpp","src/osgPlugins/flt/ReaderWriterATTR.cpp","src/osgPlugins/flt/ReaderWriterFLT.cpp","src/osgPlugins/flt/Record.cpp","src/osgPlugins/flt/RecordVisitor.cpp","src/osgPlugins/flt/Registry.cpp","src/osgPlugins/flt/RoadRecords.cpp","src/osgPlugins/flt/SwitchRecord.cpp","src/osgPlugins/flt/TextureMappingPaletteRecord.cpp","src/osgPlugins/flt/TexturePaletteRecord.cpp","src/osgPlugins/flt/TransformationRecords.cpp","src/osgPlugins/flt/UnknownRecord.cpp","src/osgPlugins/flt/UVListRecord.cpp","src/osgPlugins/flt/VertexPoolRecords.cpp"])
+
+# VisualStudio/osgPlugins/freetype
+Plugin("freetype.dll", ["src/osgPlugins/freetype/FreeTypeFont.cpp","src/osgPlugins/freetype/FreeTypeLibrary.cpp","src/osgPlugins/freetype/ReaderWriterFreeType.cpp"], deps=[devpack.freetype])
+
+# VisualStudio/osgPlugins/gdal
+#Plugin("gdal.dll", ["src/osgPlugins/gdal/ReaderWriterGDAL.cpp"])
+
+# VisualStudio/osgPlugins/geo
+#Plugin("geo.dll", ["src/osgPlugins/geo/ClipRegion.cpp","src/osgPlugins/geo/geoActions.cpp","src/osgPlugins/geo/ReaderWriterGEO.cpp"])
+
+# VisualStudio/osgPlugins/gif
+#Plugin("gif.dll", ["src/osgPlugins/gif/ReaderWriterGIF.cpp"])
+
+# VisualStudio/osgPlugins/hdr
+Plugin("hdr.dll", ["src/osgPlugins/hdr/hdrloader.cpp","src/osgPlugins/hdr/ReaderWriterHDR.cpp"])
+
+# VisualStudio/osgPlugins/ive
+Plugin("ive.dll", ["src/osgPlugins/ive/AlphaFunc.cpp","src/osgPlugins/ive/AnimationPath.cpp","src/osgPlugins/ive/AnimationPathCallback.cpp","src/osgPlugins/ive/AzimElevationSector.cpp","src/osgPlugins/ive/AzimSector.cpp","src/osgPlugins/ive/Billboard.cpp","src/osgPlugins/ive/BlendFunc.cpp","src/osgPlugins/ive/BlinkSequence.cpp","src/osgPlugins/ive/CameraNode.cpp","src/osgPlugins/ive/CameraView.cpp","src/osgPlugins/ive/ClipPlane.cpp","src/osgPlugins/ive/ClipNode.cpp","src/osgPlugins/ive/ClusterCullingCallback.cpp","src/osgPlugins/ive/ConeSector.cpp","src/osgPlugins/ive/ConvexPlanarOccluder.cpp","src/osgPlugins/ive/ConvexPlanarPolygon.cpp","src/osgPlugins/ive/CoordinateSystemNode.cpp","src/osgPlugins/ive/CullFace.cpp","src/osgPlugins/ive/DataInputStream.cpp","src/osgPlugins/ive/DataOutputStream.cpp","src/osgPlugins/ive/DirectionalSector.cpp","src/osgPlugins/ive/DOFTransform.cpp","src/osgPlugins/ive/Drawable.cpp","src/osgPlugins/ive/DrawArrayLengths.cpp","src/osgPlugins/ive/DrawArrays.cpp","src/osgPlugins/ive/DrawElementsUByte.cpp","src/osgPlugins/ive/DrawElementsUInt.cpp","src/osgPlugins/ive/DrawElementsUShort.cpp","src/osgPlugins/ive/ElevationSector.cpp","src/osgPlugins/ive/EllipsoidModel.cpp","src/osgPlugins/ive/Exception.cpp","src/osgPlugins/ive/FragmentProgram.cpp","src/osgPlugins/ive/FrontFace.cpp","src/osgPlugins/ive/Geode.cpp","src/osgPlugins/ive/Geometry.cpp","src/osgPlugins/ive/Group.cpp","src/osgPlugins/ive/Image.cpp","src/osgPlugins/ive/Impostor.cpp","src/osgPlugins/ive/Light.cpp","src/osgPlugins/ive/LightModel.cpp","src/osgPlugins/ive/LightPoint.cpp","src/osgPlugins/ive/LightPointNode.cpp","src/osgPlugins/ive/LightSource.cpp","src/osgPlugins/ive/LineWidth.cpp","src/osgPlugins/ive/LOD.cpp","src/osgPlugins/ive/Material.cpp","src/osgPlugins/ive/MatrixTransform.cpp","src/osgPlugins/ive/MultiSwitch.cpp","src/osgPlugins/ive/MultiTextureControl.cpp","src/osgPlugins/ive/Node.cpp","src/osgPlugins/ive/Object.cpp","src/osgPlugins/ive/OccluderNode.cpp","src/osgPlugins/ive/PagedLOD.cpp","src/osgPlugins/ive/Point.cpp","src/osgPlugins/ive/PolygonMode.cpp","src/osgPlugins/ive/PolygonOffset.cpp","src/osgPlugins/ive/PositionAttitudeTransform.cpp","src/osgPlugins/ive/PrimitiveSet.cpp","src/osgPlugins/ive/ProxyNode.cpp","src/osgPlugins/ive/ReaderWriterIVE.cpp","src/osgPlugins/ive/Scissor.cpp","src/osgPlugins/ive/Sequence.cpp","src/osgPlugins/ive/ShadeModel.cpp","src/osgPlugins/ive/Shape.cpp","src/osgPlugins/ive/ShapeDrawable.cpp","src/osgPlugins/ive/StateSet.cpp","src/osgPlugins/ive/Switch.cpp","src/osgPlugins/ive/TexEnv.cpp","src/osgPlugins/ive/TexEnvCombine.cpp","src/osgPlugins/ive/TexGen.cpp","src/osgPlugins/ive/TexGenNode.cpp","src/osgPlugins/ive/TexMat.cpp","src/osgPlugins/ive/Text.cpp","src/osgPlugins/ive/Program.cpp","src/osgPlugins/ive/Shader.cpp","src/osgPlugins/ive/Uniform.cpp","src/osgPlugins/ive/Texture.cpp","src/osgPlugins/ive/Texture1D.cpp","src/osgPlugins/ive/Texture2D.cpp","src/osgPlugins/ive/Texture3D.cpp","src/osgPlugins/ive/TextureCubeMap.cpp","src/osgPlugins/ive/Transform.cpp","src/osgPlugins/ive/VertexProgram.cpp","src/osgPlugins/ive/Viewport.cpp","src/osgPlugins/ive/VisibilityGroup.cpp"])
+
+# VisualStudio/osgPlugins/jp2
+#Plugin("jp2.dll", ["src/osgPlugins/jp2/ReaderWriterJP2.cpp"])
+
+# VisualStudio/osgPlugins/jpeg
+Plugin("jpeg.dll", ["src/osgPlugins/jpeg/ReaderWriterJPEG.cpp"], deps=[devpack.jpeg])
+
+# VisualStudio/osgPlugins/lib3ds
+Plugin("3ds.dll", ["src/osgPlugins/Lib3ds/atmosphere.cpp","src/osgPlugins/Lib3ds/background.cpp","src/osgPlugins/Lib3ds/Camera.cpp","src/osgPlugins/Lib3ds/Chunk.cpp","src/osgPlugins/Lib3ds/Ease.cpp","src/osgPlugins/Lib3ds/File.cpp","src/osgPlugins/Lib3ds/Lib3ds_float.cpp","src/osgPlugins/Lib3ds/Light.cpp","src/osgPlugins/Lib3ds/Material.cpp","src/osgPlugins/Lib3ds/Matrix.cpp","src/osgPlugins/Lib3ds/Mesh.cpp","src/osgPlugins/Lib3ds/Node.cpp","src/osgPlugins/Lib3ds/Quat.cpp","src/osgPlugins/Lib3ds/ReaderWriter3DS.cpp","src/osgPlugins/Lib3ds/readwrite.cpp","src/osgPlugins/Lib3ds/Shadow.cpp","src/osgPlugins/Lib3ds/Tcb.cpp","src/osgPlugins/Lib3ds/Tracks.cpp","src/osgPlugins/Lib3ds/Vector.cpp","src/osgPlugins/Lib3ds/Viewport.cpp"])
+
+# VisualStudio/osgPlugins/logo
+Plugin("logo.dll", ["src/osgPlugins/logo/ReaderWriterLOGO.cpp"])
+
+# VisualStudio/osgPlugins/lwo
+Plugin("lwo.dll", ["src/osgPlugins/lwo/Block.cpp","src/osgPlugins/lwo/Clip.cpp","src/osgPlugins/lwo/Converter.cpp","src/osgPlugins/lwo/Object.cpp","src/osgPlugins/lwo/old_lw.cpp","src/osgPlugins/lwo/old_Lwo2.cpp","src/osgPlugins/lwo/old_Lwo2Layer.cpp","src/osgPlugins/lwo/Polygon.cpp","src/osgPlugins/lwo/ReaderWriterLWO.cpp","src/osgPlugins/lwo/Surface.cpp","src/osgPlugins/lwo/Tessellator.cpp","src/osgPlugins/lwo/Unit.cpp","src/osgPlugins/lwo/VertexMap.cpp"])
+
+# VisualStudio/osgPlugins/lws
+Plugin("lws.dll", ["src/osgPlugins/lws/ReaderWriterLWS.cpp","src/osgPlugins/lws/SceneLoader.cpp"])
+
+# VisualStudio/osgPlugins/md2
+Plugin("md2.dll", ["src/osgPlugins/md2/ReaderWriterMD2.cpp"])
+
+# VisualStudio/osgPlugins/net
+Plugin("net.dll", ["src/osgPlugins/net/ReaderWriterNET.cpp","src/osgPlugins/net/sockinet.cpp","src/osgPlugins/net/sockstream.cpp"], LINKFLAGS=['ws2_32.lib'])
+
+# VisualStudio/osgPlugins/obj
+Plugin("obj.dll", ["src/osgPlugins/obj/obj.cpp","src/osgPlugins/obj/ReaderWriterOBJ.cpp"])
+
+# VisualStudio/osgPlugins/osg
+Plugin("osg.dll", ["src/osgPlugins/osg/AlphaFunc.cpp","src/osgPlugins/osg/AnimationPath.cpp","src/osgPlugins/osg/AutoTransform.cpp","src/osgPlugins/osg/Billboard.cpp","src/osgPlugins/osg/BlendFunc.cpp","src/osgPlugins/osg/CameraNode.cpp","src/osgPlugins/osg/CameraView.cpp","src/osgPlugins/osg/ClearNode.cpp","src/osgPlugins/osg/ClipNode.cpp","src/osgPlugins/osg/ClipPlane.cpp","src/osgPlugins/osg/ColorMask.cpp","src/osgPlugins/osg/ColorMatrix.cpp","src/osgPlugins/osg/ConvexPlanarOccluder.cpp","src/osgPlugins/osg/CoordinateSystemNode.cpp","src/osgPlugins/osg/CullFace.cpp","src/osgPlugins/osg/Depth.cpp","src/osgPlugins/osg/Drawable.cpp","src/osgPlugins/osg/EllipsoidModel.cpp","src/osgPlugins/osg/Fog.cpp","src/osgPlugins/osg/FragmentProgram.cpp","src/osgPlugins/osg/FrontFace.cpp","src/osgPlugins/osg/Geode.cpp","src/osgPlugins/osg/Geometry.cpp","src/osgPlugins/osg/Group.cpp","src/osgPlugins/osg/Image.cpp","src/osgPlugins/osg/Light.cpp","src/osgPlugins/osg/LightModel.cpp","src/osgPlugins/osg/LightSource.cpp","src/osgPlugins/osg/LineStipple.cpp","src/osgPlugins/osg/LineWidth.cpp","src/osgPlugins/osg/LOD.cpp","src/osgPlugins/osg/Material.cpp","src/osgPlugins/osg/Matrix.cpp","src/osgPlugins/osg/MatrixTransform.cpp","src/osgPlugins/osg/Node.cpp","src/osgPlugins/osg/NodeCallback.cpp","src/osgPlugins/osg/Object.cpp","src/osgPlugins/osg/OccluderNode.cpp","src/osgPlugins/osg/PagedLOD.cpp","src/osgPlugins/osg/Point.cpp","src/osgPlugins/osg/PointSprite.cpp","src/osgPlugins/osg/PolygonMode.cpp","src/osgPlugins/osg/PolygonOffset.cpp","src/osgPlugins/osg/PositionAttitudeTransform.cpp","src/osgPlugins/osg/Program.cpp","src/osgPlugins/osg/Projection.cpp","src/osgPlugins/osg/ProxyNode.cpp","src/osgPlugins/osg/ReaderWriterOSG.cpp","src/osgPlugins/osg/Scissor.cpp","src/osgPlugins/osg/Sequence.cpp","src/osgPlugins/osg/ShadeModel.cpp","src/osgPlugins/osg/Shader.cpp","src/osgPlugins/osg/Shape.cpp","src/osgPlugins/osg/ShapeDrawable.cpp","src/osgPlugins/osg/StateSet.cpp","src/osgPlugins/osg/Stencil.cpp","src/osgPlugins/osg/Switch.cpp","src/osgPlugins/osg/TessellationHints.cpp","src/osgPlugins/osg/TexEnv.cpp","src/osgPlugins/osg/TexEnvCombine.cpp","src/osgPlugins/osg/TexEnvFilter.cpp","src/osgPlugins/osg/TexGen.cpp","src/osgPlugins/osg/TexGenNode.cpp","src/osgPlugins/osg/TexMat.cpp","src/osgPlugins/osg/Texture.cpp","src/osgPlugins/osg/Texture1D.cpp","src/osgPlugins/osg/Texture2D.cpp","src/osgPlugins/osg/Texture3D.cpp","src/osgPlugins/osg/TextureCubeMap.cpp","src/osgPlugins/osg/TextureRectangle.cpp","src/osgPlugins/osg/Transform.cpp","src/osgPlugins/osg/Uniform.cpp","src/osgPlugins/osg/VertexProgram.cpp","src/osgPlugins/osg/Viewport.cpp"])
+
+# VisualStudio/osgPlugins/osgFX
+Plugin("osgFX.dll", ["src/osgPlugins/osgFX/IO_AnisotropicLighting.cpp","src/osgPlugins/osgFX/IO_BumpMapping.cpp","src/osgPlugins/osgFX/IO_Cartoon.cpp","src/osgPlugins/osgFX/IO_Effect.cpp","src/osgPlugins/osgFX/IO_MultiTextureControl.cpp","src/osgPlugins/osgFX/IO_Scribe.cpp","src/osgPlugins/osgFX/IO_SpecularHighlights.cpp"])
+
+# VisualStudio/osgPlugins/osgParticle
+Plugin("osgParticle.dll", ["src/osgPlugins/osgParticle/IO_AccelOperator.cpp","src/osgPlugins/osgParticle/IO_AngularAccelOperator.cpp","src/osgPlugins/osgParticle/IO_CenteredPlacer.cpp","src/osgPlugins/osgParticle/IO_ConnectedParticleSystem.cpp","src/osgPlugins/osgParticle/IO_Emitter.cpp","src/osgPlugins/osgParticle/IO_FluidFrictionOperator.cpp","src/osgPlugins/osgParticle/IO_ForceOperator.cpp","src/osgPlugins/osgParticle/IO_LinearInterpolator.cpp","src/osgPlugins/osgParticle/IO_ModularEmitter.cpp","src/osgPlugins/osgParticle/IO_ModularProgram.cpp","src/osgPlugins/osgParticle/IO_MultiSegmentPlacer.cpp","src/osgPlugins/osgParticle/IO_Particle.cpp","src/osgPlugins/osgParticle/IO_ParticleEffect.cpp","src/osgPlugins/osgParticle/IO_ExplosionEffect.cpp","src/osgPlugins/osgParticle/IO_ExplosionDebrisEffect.cpp","src/osgPlugins/osgParticle/IO_SmokeEffect.cpp","src/osgPlugins/osgParticle/IO_SmokeTrailEffect.cpp","src/osgPlugins/osgParticle/IO_FireEffect.cpp","src/osgPlugins/osgParticle/IO_ParticleProcessor.cpp","src/osgPlugins/osgParticle/IO_ParticleSystem.cpp","src/osgPlugins/osgParticle/IO_ParticleSystemUpdater.cpp","src/osgPlugins/osgParticle/IO_PointPlacer.cpp","src/osgPlugins/osgParticle/IO_Program.cpp","src/osgPlugins/osgParticle/IO_RadialShooter.cpp","src/osgPlugins/osgParticle/IO_RandomRateCounter.cpp","src/osgPlugins/osgParticle/IO_SectorPlacer.cpp","src/osgPlugins/osgParticle/IO_SegmentPlacer.cpp","src/osgPlugins/osgParticle/IO_VariableRateCounter.cpp"])
+
+# VisualStudio/osgPlugins/osgSim
+Plugin("osgSim.dll", ["src/osgPlugins/osgSim/IO_BlinkSequence.cpp","src/osgPlugins/osgSim/IO_DOFTransform.cpp","src/osgPlugins/osgSim/IO_Impostor.cpp","src/osgPlugins/osgSim/IO_LightPoint.cpp","src/osgPlugins/osgSim/IO_LightPointNode.cpp","src/osgPlugins/osgSim/IO_MultiSwitch.cpp","src/osgPlugins/osgSim/IO_Sector.cpp","src/osgPlugins/osgSim/IO_VisibilityGroup.cpp"])
+
+# VisualStudio/osgPlugins/osgText
+Plugin("osgText.dll", ["src/osgPlugins/osgText/IO_Text.cpp"])
+
+# VisualStudio/osgPlugins/osga
+Plugin("osga.dll", ["src/osgPlugins/osga/OSGA_Archive.cpp","src/osgPlugins/osga/ReaderWriterOSGA.cpp"])
+
+# VisualStudio/osgPlugins/osgtgz
+Plugin("osgtgz.dll", ["src/osgPlugins/osgtgz/ReaderWriterOSGTGZ.cpp"])
+
+# VisualStudio/osgPlugins/pfb
+#Plugin("pfb.dll", ["src/osgPlugins/pfb/ConvertFromPerformer.cpp","src/osgPlugins/pfb/ReaderWriterPFB.cpp","src/osgPlugins/pfb/stat.c"])
+
+# VisualStudio/osgPlugins/pic
+Plugin("pic.dll", ["src/osgPlugins/pic/ReaderWriterPIC.cpp"])
+
+# VisualStudio/osgPlugins/png
+Plugin("png.dll", ["src/osgPlugins/png/ReaderWriterPNG.cpp"], deps=[devpack.png, devpack.zlib])
+
+# VisualStudio/osgPlugins/pnm
+Plugin("pnm.dll", ["src/osgPlugins/pnm/ReaderWriterPNM.cpp"])
+
+# VisualStudio/osgPlugins/rgb
+Plugin("rgb.dll", ["src/osgPlugins/rgb/ReaderWriterRGB.cpp"])
+
+# VisualStudio/osgPlugins/rot
+Plugin("rot.dll", ["src/osgPlugins/rot/ReaderWriterROT.cpp"])
+
+# VisualStudio/osgPlugins/scale
+Plugin("scale.dll", ["src/osgPlugins/scale/ReaderWriterSCALE.cpp"])
+
+# VisualStudio/osgPlugins/stl
+Plugin("stl.dll", ["src/osgPlugins/stl/ReaderWriterSTL.cpp"])
+
+# VisualStudio/osgPlugins/tga
+Plugin("tga.dll", ["src/osgPlugins/tga/ReaderWriterTGA.cpp"])
+
+# VisualStudio/osgPlugins/tgz
+Plugin("tgz.dll", ["src/osgPlugins/tgz/ReaderWriterTGZ.cpp"])
+
+# VisualStudio/osgPlugins/tiff
+#Plugin("tiff.dll", ["src/osgPlugins/tiff/ReaderWriterTIFF.cpp"])
+
+# VisualStudio/osgPlugins/trans
+Plugin("trans.dll", ["src/osgPlugins/trans/ReaderWriterTRANS.cpp"])
+
+# VisualStudio/osgPlugins/txp
+Plugin("txp.dll", ["src/osgPlugins/txp/ReaderWriterTXP.cpp","src/osgPlugins/txp/TileMapper.cpp","src/osgPlugins/txp/trpage_basic.cpp","src/osgPlugins/txp/trpage_compat.cpp","src/osgPlugins/txp/trpage_geom.cpp","src/osgPlugins/txp/trpage_header.cpp","src/osgPlugins/txp/trpage_label.cpp","src/osgPlugins/txp/trpage_light.cpp","src/osgPlugins/txp/trpage_main.cpp","src/osgPlugins/txp/trpage_managers.cpp","src/osgPlugins/txp/trpage_material.cpp","src/osgPlugins/txp/trpage_model.cpp","src/osgPlugins/txp/trpage_nodes.cpp","src/osgPlugins/txp/trpage_parse.cpp","src/osgPlugins/txp/trpage_pparse.cpp","src/osgPlugins/txp/trpage_print.cpp","src/osgPlugins/txp/trpage_range.cpp","src/osgPlugins/txp/trpage_rarchive.cpp","src/osgPlugins/txp/trpage_readbuf.cpp","src/osgPlugins/txp/trpage_scene.cpp","src/osgPlugins/txp/trpage_swap.cpp","src/osgPlugins/txp/trpage_tile.cpp","src/osgPlugins/txp/trpage_warchive.cpp","src/osgPlugins/txp/trpage_writebuf.cpp","src/osgPlugins/txp/TXPArchive.cpp","src/osgPlugins/txp/TXPIO.cpp","src/osgPlugins/txp/TXPNode.cpp","src/osgPlugins/txp/TXPPagedLOD.cpp","src/osgPlugins/txp/TXPPageManager.cpp","src/osgPlugins/txp/TXPParser.cpp","src/osgPlugins/txp/TXPSeamLOD.cpp"], CPPPATH=['src/osgPlugins/txp'])
+
+# VisualStudio/osgPlugins/zip
+Plugin("zip.dll", ["src/osgPlugins/zip/ReaderWriterZIP.cpp"], deps=[devpack.zlib])
+

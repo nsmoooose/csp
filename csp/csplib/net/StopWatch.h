@@ -25,6 +25,7 @@
 #ifndef __CSPLIB_NET_STOPWATCH_H__
 #define __CSPLIB_NET_STOPWATCH_H__
 
+#include <csp/csplib/util/Properties.h>
 #include <csp/csplib/util/Timing.h>
 
 CSP_NAMESPACE
@@ -60,7 +61,7 @@ CSP_NAMESPACE
  *
  *  @ingroup net
  */
-class CSPLIB_EXPORT StopWatch {
+class CSPLIB_EXPORT StopWatch: NonCopyable {
 public:
 
 	/** Internal timing data.  Declare separate, persistent Data instance for each

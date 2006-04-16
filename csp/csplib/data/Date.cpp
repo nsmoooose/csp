@@ -318,15 +318,15 @@ std::string DateZulu::formatString(const char *format, bool local) const {
 	return buffer;
 }
 
-#define SEC2RAD 7.272205216643039903848712e-5L
-#define EPOCH   2451545.0e+0L
-#define DAYSEC  86400.0e+0L
-#define CENDAY  36525.0e+0L
-#define PI      3.141592653e+0L
-#define COEFF0  24110.54841e+0L
-#define COEFF1  8640184.812866e+0L
-#define COEFF2  0.093104e+0L
-#define COEFF3  -6.2e-6L
+#define SEC2RAD 7.272205216643039903848712e-5
+#define EPOCH   2451545.0e+0
+#define DAYSEC  86400.0e+0
+#define CENDAY  36525.0e+0
+#define PI      3.141592653e+0
+#define COEFF0  24110.54841e+0
+#define COEFF1  8640184.812866e+0
+#define COEFF2  0.093104e+0
+#define COEFF3  -6.2e-6
 
 /* DEPRECATED
 double DateZulu::getAccurateMST(radian_t longitude) const {

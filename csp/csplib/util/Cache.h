@@ -57,8 +57,8 @@
 #include <cassert>
 #include <list>
 
-#include <csp/csplib/util/Namespace.h>
 #include <csp/csplib/util/HashUtility.h>
+#include <csp/csplib/util/Properties.h>
 
 
 CSP_NAMESPACE
@@ -71,7 +71,7 @@ CSP_NAMESPACE
  *  items in the collection.
  */
 template <typename KEY, typename TYPE, typename HASH_COMPARE = HashCompare<KEY> >
-class MostRecentlyUsedCache {
+class MostRecentlyUsedCache: NonCopyable {
 	typedef TYPE DataType;
 	typedef KEY CacheKey;
 	typedef std::list<CacheKey> MostRecentlyUsedList;

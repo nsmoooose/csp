@@ -283,9 +283,9 @@ bool FormatArg::formatFloat(stringbuf &out, formatspec const &spec, double value
 	char *fill = fmt;
 	*fill++ = '%';
 	*fill++ = '.';
-	if (precision > 100) *fill++ = '0' + (precision / 100) % 10;
-	if (precision > 10) *fill++ = '0' + (precision / 10) % 10;
-	*fill++ = '0' + (precision % 10);
+	if (precision > 100) *fill++ = '0' + static_cast<char>((precision / 100) % 10);
+	if (precision > 10) *fill++ = '0' + static_cast<char>((precision / 10) % 10);
+	*fill++ = '0' + static_cast<char>(precision % 10);
 	*fill++ = style;
 	*fill = 0;
 	// 128 bytes should be more than enough since we are doing alignment by hand.

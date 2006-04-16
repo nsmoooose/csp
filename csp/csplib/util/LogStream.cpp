@@ -68,8 +68,8 @@ namespace {
 	LogStreamRegistry *NamedLogStreamRegistry = 0;
 
 	inline void writeDigits(char *&buffer, int value) {
-		*buffer++ = '0' + value / 10;
-		*buffer++ = '0' + value % 10;
+		*buffer++ = '0' + static_cast<char>(value / 10);
+		*buffer++ = '0' + static_cast<char>(value % 10);
 	}
 
 	// Replaced gmtime_r and strftime with logTime, mainly because gmtime_r isn't

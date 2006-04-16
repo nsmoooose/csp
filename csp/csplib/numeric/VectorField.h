@@ -26,7 +26,7 @@
 #define __CSPSIM_VECTORFIELD_H__
 
 #include <csp/csplib/util/Export.h>
-#include <csp/csplib/util/Namespace.h>
+#include <csp/csplib/util/Properties.h>
 #include <csp/csplib/numeric/Vector.h>
 
 CSP_NAMESPACE
@@ -40,7 +40,7 @@ class NumericalMethod;
  * field describing the kinetic parameters of a dynamical
  * system.
  */
-class CSPLIB_EXPORT VectorField {
+class CSPLIB_EXPORT VectorField: NonCopyable {
 protected:
 	typedef size_t size_type;
 	size_type const m_Dimension;

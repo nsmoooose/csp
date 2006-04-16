@@ -245,7 +245,7 @@ Vectord const & RungeKuttaCK::rkck(Vectord const &y, Vectord const &dydx, double
 	static Vectord ytemp(m_Dimension);
 
 	unsigned short i = 0;
-	register short int const dim = m_Dimension;
+	register short int const dim = static_cast<short int>(m_Dimension);
 	for (; i < dim; ++i) {
 		ytemp[i] = y[i] + b21 * h * dydx[i];
 	}

@@ -283,8 +283,9 @@ public:
  *  when traversing the tree.
  */
 class CSPLIB_EXPORT TreeConstraint {
-	const uint32 _max_depth;
-	const uint32 _leaf_limit;
+	uint32 _max_depth;
+	uint32 _leaf_limit;
+
 public:
 
 	/** Construct a new TreeConstraint.

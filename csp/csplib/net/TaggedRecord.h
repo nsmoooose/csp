@@ -42,8 +42,9 @@
 #define __CSPLIB_NET_TAGGED_RECORD_H__
 
 #include <csp/csplib/data/Archive.h>
-#include <csp/csplib/util/Ref.h>
 #include <csp/csplib/util/Namespace.h>
+#include <csp/csplib/util/Properties.h>
+#include <csp/csplib/util/Ref.h>
 
 #include <string>
 #include <stack>
@@ -140,7 +141,7 @@ public:
  *  of nested records.
  *  @ingroup net
  */
-class CSPLIB_EXPORT TagBase {
+class CSPLIB_EXPORT TagBase: NonCopyable {
  protected:
 	std::stack<int> _tagstack;
 	enum { TAG_END = 0 };

@@ -39,6 +39,7 @@ build.SharedLibrary(env,
 		'Version.cpp',
 	],
 	deps = ['cspsim', 'jpeg'],
-	aliases = ['all', 'clod'])
+	aliases = ['all', 'clod'],
+	SHLIBPREFIX='')
 
 

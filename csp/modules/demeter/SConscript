@@ -30,6 +30,7 @@ build.SharedLibrary(env,
 		'TerrainTextureFactory.cpp',
 	],
 	deps = ['cspsim'],
-	aliases = 'all')
+	aliases = 'all',
+	SHLIBPREFIX='')
 
 

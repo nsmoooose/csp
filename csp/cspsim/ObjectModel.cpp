@@ -70,6 +70,7 @@ const Enumeration ObjectModel::EffectItems("None SpecularHighlights");
 CSP_XML_BEGIN(ObjectModel)
 	CSP_DEF("label", m_Label, false)
 	CSP_DEF("model_path", m_ModelPath, true)
+	CSP_DEF("ground_shadowpath", m_GroundShadowPath, false)
 	CSP_DEF("axis_0", m_Axis0, false)
 	CSP_DEF("axis_1", m_Axis1, false)
 	CSP_DEF("view_point", m_ViewPoint, false)
@@ -444,15 +445,14 @@ void ObjectModel::loadModel() {
 
 	if (m_PolygonOffset != 0.0) {
 		osg::StateSet *ss = m_Model->getOrCreateStateSet();
-		osg::PolygonOffset *po = new osg::PolygonOffset;
-		po->setFactor(-5);
-		po->setUnits(m_PolygonOffset);
-		ss->setAttributeAndModes(po, osg::StateAttribute::ON);
 		// polygon offset is used for co-planar overlays, like the runway.  there should
 		// be no need to write to the depth buffer since it will already be set by the
-		// base layer and setting a nearer value (due to polygon offset) can mask 3d objects
-		// on top of this object when the distance to the camera is large.
+		// base layer (the terrain is drawn in bin -3) and setting a nearer value (due to
+		// polygon offset) can mask 3d objects on top of this object when the distance to
+		// the camera is large.
+		ss->setAttributeAndModes(new osg::PolygonOffset(-5, m_PolygonOffset), osg::StateAttribute::ON);
 		ss->setAttributeAndModes(new osg::Depth(osg::Depth::LEQUAL, 0.0, 1.0, false), osg::StateAttribute::ON);
+		ss->setRenderBinDetails(-2, "RenderBin");
 	}
 
 	if (!m_Lighting) {
@@ -588,6 +588,22 @@ void ObjectModel::loadModel() {
 	//opt.optimize(m_Model.get());
 	//CSPLOG(DEBUG, OBJECT) << "LoadModel: Optimizer done";
 
+	if (!m_GroundShadowPath.asString().empty()) {
+		CSPLOG(DEBUG, OBJECT) << "Loading ground shadow " << m_GroundShadowPath.asString();
+		m_GroundShadow = osgDB::readNodeFile(m_GroundShadowPath.asString());
+		if (m_GroundShadow.valid()) {
+			// ground shadows are drawn after the terrain and flat objects, but before
+			// normal objects.  they do not modify the depth buffer, and are offset away
+			// from the ground to prevent z fighting.
+			osg::StateSet *ss = m_GroundShadow->getOrCreateStateSet();
+			ss->setRenderBinDetails(-1, "RenderBin");
+			ss->setAttributeAndModes(new osg::Depth(osg::Depth::LEQUAL, 0.0, 1.0, false), osg::StateAttribute::ON);
+			ss->setAttributeAndModes(new osg::PolygonOffset(-5, -10), osg::StateAttribute::ON);
+		} else {
+			CSPLOG(WARNING, OBJECT) << "Failed to load ground shadow " << m_GroundShadowPath.asString();
+		}
+	}
+
 	CSPLOG(DEBUG, OBJECT) << "Done loading model " << source;
 
 }
@@ -630,6 +646,10 @@ osg::ref_ptr<osg::Node> ObjectModel::getModel() {
 
 std::string ObjectModel::getModelPath() const {
 	return m_ModelPath.getSource();
+}
+
+osg::ref_ptr<osg::Node> ObjectModel::getGroundShadow() {
+	return m_GroundShadow.get();
 }
 
 osg::ref_ptr<osg::Node> ObjectModel::getDebugMarkers() {

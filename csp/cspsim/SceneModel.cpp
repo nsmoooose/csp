@@ -35,12 +35,12 @@
 #include <csp/csplib/util/Timing.h>
 #include <csp/csplib/data/Quat.h>
 
-#include <osg/Geode>
 #include <osg/Depth>
-#include <osgText/Text>
-#include <osg/Switch>
+#include <osg/Geode>
 #include <osg/Group>
 #include <osg/PositionAttitudeTransform>
+#include <osg/Switch>
+#include <osgText/Text>
 
 #include <algorithm>
 #include <vector>
@@ -258,16 +258,26 @@ SceneModel::SceneModel(Ref<ObjectModel> const & model) {
 	label->addDrawable(m_Label.get());
 	label->setNodeMask(SceneMasks::LABELS);
 
-	m_Transform = new osg::PositionAttitudeTransform;
-	m_Transform->setName("position");
+	m_PositionTransform = new osg::PositionAttitudeTransform;
+	m_AttitudeTransform = new osg::PositionAttitudeTransform;
+	m_PositionTransform->setName("position");
+	m_AttitudeTransform->setName("attitude");
 	m_CenterOfMassOffset = new osg::PositionAttitudeTransform;
 	m_CenterOfMassOffset->setName("cm_offset");
-	m_Transform->addChild(m_CenterOfMassOffset.get());
+	m_PositionTransform->addChild(m_AttitudeTransform.get());
+	m_AttitudeTransform->addChild(m_CenterOfMassOffset.get());
 	m_CenterOfMassOffset->addChild(m_ModelCopy.get());
 	m_CenterOfMassOffset->addChild(m_Model->getDebugMarkers().get());
 	m_CenterOfMassOffset->addChild(label);
 	m_Station = -1;
 	m_Smoke = false;
+
+	osg::ref_ptr<osg::Node> ground_shadow = m_Model->getGroundShadow();
+	if (ground_shadow.valid()) {
+		m_GroundShadow = new osg::PositionAttitudeTransform;
+		m_GroundShadow->addChild(ground_shadow.get());
+		m_PositionTransform->addChild(m_GroundShadow.get());
+	}
 }
 
 SceneModel::~SceneModel() {
@@ -389,13 +399,13 @@ void SceneModel::onViewMode(bool internal) {
 }
 
 void SceneModel::setPositionAttitude(Vector3 const &position, Quat const &attitude, Vector3 const &cm_offset) {
-	m_Transform->setAttitude(toOSG(attitude));
-	m_Transform->setPosition(toOSG(position));
+	m_AttitudeTransform->setAttitude(toOSG(attitude));
+	m_PositionTransform->setPosition(toOSG(position));
 	m_CenterOfMassOffset->setPosition(toOSG(-cm_offset));
 }
 
 osg::Group* SceneModel::getRoot() {
-	return m_Transform.get();
+	return m_PositionTransform.get();
 }
 
 Ref<ObjectModel> SceneModel::getModel() {
@@ -408,6 +418,28 @@ osg::Group *SceneModel::getDynamicGroup() {
 		m_CenterOfMassOffset->addChild(m_DynamicGroup.get());
 	}
 	return m_DynamicGroup.get();
+}
+
+void SceneModel::updateGroundShadow(Vector3 const &height, Vector3 const &ground_normal) {
+	if (m_GroundShadow.valid()) {
+		if (height.z() < 1000.0) {
+			// assume ground_normal is normalized!
+			double s = sqrt(0.5 + 0.5 * ground_normal.z());
+			osg::Quat ground_attitude(-ground_normal.y() / (2.0 * s), ground_normal.x() / (2.0 * s), 0.0, s);
+			const osg::Quat &attitude = m_AttitudeTransform->getAttitude();
+			double x = attitude.x();
+			double y = attitude.y();
+			double z = attitude.z();
+			double w = attitude.w();
+			double heading = atan2(y*y+w*w-x*x-z*z, 2.0*(x*y - w*z)) - PI_2;
+			m_GroundShadow->setAttitude(osg::Quat(heading, osg::Vec3(0.0, 0.0, 1.0)) * ground_attitude);
+			m_GroundShadow->setPosition(toOSG(-height));
+			m_GroundShadow->setNodeMask(~0);
+		} else {
+			// hide shadow at high altitude and skip updates.
+			m_GroundShadow->setNodeMask(0);
+		}
+	}
 }
 
 void SceneModel::addChild(Ref<SceneModelChild> const &child) {

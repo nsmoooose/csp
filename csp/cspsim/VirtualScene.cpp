@@ -396,6 +396,10 @@ void VirtualScene::buildScene() {
 
 	m_TerrainGroup = new osg::PositionAttitudeTransform;
 	m_TerrainGroup->setName("terrain_group");
+	// the terrain is placed in bin -3 to ensure that it is drawn first.
+	// (bin -2 is used for planar objects and bin -1 is used for planar
+	// shadows; see ObjectModel and SceneModel for details.)
+	m_TerrainGroup->getOrCreateStateSet()->setRenderBinDetails(-3, "RenderBin");
 
 	m_FogGroup = new osg::Group;
 	m_FogGroup->setName("fog_group");

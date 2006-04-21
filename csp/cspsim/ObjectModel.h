@@ -67,12 +67,6 @@ class Station;
 class CSPSIM_EXPORT ObjectModel: public Object {
 	static const Enumeration EffectItems;
 
-private:
-
-	osg::ref_ptr<osg::MatrixTransform> m_Transform;
-	osg::ref_ptr<osg::Node> m_Model;
-	osg::ref_ptr<osg::Switch> m_DebugMarkers;
-	osg::ref_ptr<osg::Switch> m_ContactMarkers;
 public:
 	typedef std::vector<Vector3> PointList;
 
@@ -83,6 +77,7 @@ public:
 
 	osg::ref_ptr<osg::Node> getModel();
 	osg::ref_ptr<osg::Node> getDebugMarkers();
+	osg::ref_ptr<osg::Node> getGroundShadow();
 	std::string getModelPath() const;
 
 	const Vector3 &getAxis0() const { return m_Axis0; }
@@ -120,6 +115,7 @@ protected:
 
 	std::string m_Label;
 	External m_ModelPath;
+	External m_GroundShadowPath;
 	Vector3 m_Axis0, m_Axis1;
 	Vector3 m_Offset;
 	Vector3 m_ViewPoint;
@@ -152,6 +148,14 @@ protected:
 	double m_BoundingSphereRadius;
 
 	enum { DEBUG_MARKERS };
+
+private:
+
+	osg::ref_ptr<osg::MatrixTransform> m_Transform;
+	osg::ref_ptr<osg::Node> m_Model;
+	osg::ref_ptr<osg::Node> m_GroundShadow;
+	osg::ref_ptr<osg::Switch> m_DebugMarkers;
+	osg::ref_ptr<osg::Switch> m_ContactMarkers;
 };
 
 CSP_NAMESPACE_END

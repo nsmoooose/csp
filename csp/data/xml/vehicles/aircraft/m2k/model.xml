@@ -3,10 +3,11 @@
 <Object class="ObjectModel">
 	<String name="label">M2K</String>
 	<External name="model_path">aircraft/m2k/m2k.osg</External>
+	<External name="ground_shadowpath">aircraft/m2k/m2k-shadow.osg</External>
 	<Vector name="axis_0">1 0 0</Vector>
 	<Vector name="axis_1">0 1 0</Vector>
 	<Vector name="view_point">0.0 4.3 1.12</Vector>
-	<Bool   name="smooth">false</Bool>
+	<Bool name="smooth">false</Bool>
 	<Enum name="effect">SpecularHighlights</Enum>
 	<List name="contacts">
 		<Vector>0.0 8.291 0.021</Vector>
@@ -40,28 +41,28 @@
 			<String name="channel_name">ControlSurfaces.LeftElevronDeflection</String>
 			<String name="model_id">Aircraft.LeftOuterAileron</String>
 			<Int name="lod_limit">8</Int>
-			<Vector name="axis">-1 0 0</Vector>
+			<Vector name="axis">1 0 0</Vector>
 			<Float name="gain">57.2956</Float>
 		</Object>
 		<Object class="DrivenRotation">
 			<String name="channel_name">ControlSurfaces.LeftElevronDeflection</String>
 			<String name="model_id">Aircraft.LeftAileron</String>
 			<Int name="lod_limit">8</Int>
-			<Vector name="axis">-1 0 0</Vector>
+			<Vector name="axis">1 0 0</Vector>
 			<Float name="gain">57.2956</Float>
 		</Object>
 		<Object  class="DrivenRotation">
 			<String name="channel_name">ControlSurfaces.RightElevronDeflection</String>
 			<String name="model_id">Aircraft.RightOuterAileron</String>
 			<Int name="lod_limit">8</Int>
-			<Vector name="axis">-1 0 0</Vector>
+			<Vector name="axis">1 0 0</Vector>
 			<Float name="gain">57.2956</Float>
 		</Object>
 		<Object class="DrivenRotation">
 			<String name="channel_name">ControlSurfaces.RightElevronDeflection</String>
 			<String name="model_id">Aircraft.RightAileron</String>
 			<Int name="lod_limit">8</Int>
-			<Vector name="axis">-1 0 0</Vector>
+			<Vector name="axis">1 0 0</Vector>
 			<Float name="gain">57.2956</Float>
 		</Object>
 

@@ -76,8 +76,10 @@ public:
  */
 class SceneModel: public Referenced {
 private:
-	osg::ref_ptr<osg::PositionAttitudeTransform> m_Transform;
+	osg::ref_ptr<osg::PositionAttitudeTransform> m_PositionTransform;
+	osg::ref_ptr<osg::PositionAttitudeTransform> m_AttitudeTransform;
 	osg::ref_ptr<osg::PositionAttitudeTransform> m_CenterOfMassOffset;
+	osg::ref_ptr<osg::PositionAttitudeTransform> m_GroundShadow;
 	osg::ref_ptr<osg::Group> m_DynamicGroup;
 	osg::ref_ptr<osg::Group> m_Children;
 	osg::ref_ptr<osg::Node> m_ModelCopy;
@@ -102,6 +104,9 @@ public:
 	Ref<ObjectModel> getModel();
 	osg::Group* getRoot();
 	osg::Group* getDynamicGroup();
+
+	bool hasGroundShadow() const { return m_GroundShadow.valid(); }
+	void updateGroundShadow(Vector3 const &height, Vector3 const &ground_normal);
 
 	void setPositionAttitude(Vector3 const &position, Quat const &attitude, Vector3 const &cm_offset);
 

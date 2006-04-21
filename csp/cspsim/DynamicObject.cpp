@@ -270,7 +270,8 @@ void DynamicObject::doPhysics(double dt) {
 
 // update variables that depend on position
 void DynamicObject::postUpdate(double dt) {
-	const Vector3 model_position = b_Position->value() - b_Attitude->value().rotate(b_CenterOfMassOffset->value());
+	const Vector3 center_of_mass_offset_world = b_Attitude->value().rotate(b_CenterOfMassOffset->value());
+	const Vector3 model_position = b_Position->value() - center_of_mass_offset_world;
 	b_ModelPosition->value() = model_position;
 	if (m_SceneModel.valid() && isSmoke()) {
 		m_SceneModel->updateSmoke(dt, b_ModelPosition->value(), b_Attitude->value());
@@ -285,8 +286,11 @@ void DynamicObject::postUpdate(double dt) {
 		b_GroundN->value(),
 		m_GroundHint
 	);
-	double height = (model_position.z() - b_GroundZ->value()) * b_GroundN->value().z();
-	b_NearGround->value() = (height < std::max(10.0, m_Model->getBoundingSphereRadius()));
+	double height = model_position.z() - b_GroundZ->value();
+	b_NearGround->value() = (height * b_GroundN->value().z() < std::max(10.0, m_Model->getBoundingSphereRadius()));
+	if (m_SceneModel.valid() && m_SceneModel->hasGroundShadow()) {
+		m_SceneModel->updateGroundShadow(Vector3(0.0, 0.0, height) + center_of_mass_offset_world, b_GroundN->value());
+	}
 }
 
 Vector3 DynamicObject::getDirection() const {

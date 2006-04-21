@@ -185,7 +185,10 @@ def TargetMessage(phrase, suffix=''):
 	def printer(target, source, env, phrase=phrase, suffix=suffix):
 		if type(target) == type([]):
 			target = map(str, target)
-			if len(target) == 1: target = target[0]
+			if len(target) == 1:
+				target = target[0]
+			else:
+				target = ', '.join(target)
 		print '- %s %s%s' % (phrase, target, suffix)
 	return printer
 
@@ -1312,7 +1315,7 @@ class SharedLibrary:
 			dll = shlib[0]
 			assert dll.get_suffix() == '.dll'
 			CMD = '"%s" /nologo /manifest ${TARGET}.manifest /outputresource:${TARGET};#2' % SharedLibrary.MT_BIN
-			MSG = 'Binding manifest to %s' % dll.name
+			MSG = '- Binding manifest to %s' % dll.name
 			self._env.AddPostAction(dll, SimpleCommand(CMD, MSG))
 
 	def _makeVisualStudioProject(self, shlib):

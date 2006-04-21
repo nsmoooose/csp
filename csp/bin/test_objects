@@ -1,3 +1,5 @@
+# -*- python -*-
+
 # Combat Simulator Project
 # Copyright (C) 2002 The Combat Simulator Project
 # http://csp.sourceforge.net
@@ -16,57 +18,38 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
-from csp import csplib
 
-##
 # Create some test vehicles and other objects. The first vehicle created
-# will be the initial active object.
-#
-# The create() method checks the terrain name (set in XML) and dispatches
-# the appropriate object creation routine. This is a temporary hack until
-# the theater code is developed to the point that objects are generated
+# will be the initial active object.  This is a temporary hack until the
+# theater code is developed to the point that objects are generated
 # automatically via a campaign engine.
 
-def create(app):
-	terrain = app.getTerrainName()
-	if terrain == "Balkan Terrain":
-		createBalkan(app)
-	elif terrain == "NCA Terrain":
-		createNCA(app)
+# shorthand
 
-def createBalkan(app):
-	v = csplib.Vector3
-	m = csplib.LLA()
-	vehicle = app.createVehicle
-	vehicle("sim:vehicles.aircraft.f16dj", v(-29495, -10530, 87.8), v(0, 0, 0), v(0.0, 0.0, 180.0))
-	vehicle("sim:vehicles.aircraft.m2k", v(-29510, -10530, 87.8), v(0, 0, 0), v(0.0, 0.0, 180.0))
-	#vehicle("sim:vehicles.aircraft.m2k", v(-29413, -10980, 98.75), v(0, 100.0, 0), v(5.0, 0.0, 180.0))
-	#vehicle("sim:vehicles.aircraft.m2k", v(-29413, -10980, 108.75), v(0, 100.0, 0), v(5.0, 0.0, 180.0))
-	#vehicle("sim:vehicles.aircraft.m2k", v(-29413, -10980, 118.75), v(0, 100.0, 0), v(5.0, 0.0, 180.0))
-	#vehicle("sim:vehicles.aircraft.m2k", v(-29413, -10980, 118.75), v(0, 100.0, 0), v(5.0, 0.0, 180.0))
-	#vehicle("sim:vehicles.aircraft.m2k", v(-29413, -10980, 1000), v(0, 100.0, 0), v(5.0, 0.0, 0.0))
+vec = csp.csplib.Vector3
+vehicle = sim.createVehicle
 
-def createNCA(app):
-	v = csplib.Vector3
-	m = csplib.LLA()
-	vehicle = app.createVehicle
-	vehicle("sim:vehicles.aircraft.m2k", v(0, 0, 1200.0), v(0, 100.0, 0), v(5.0, 0.0, 0.0))
-	vehicle("sim:vehicles.aircraft.f16dj", v(10, 10, 1000.2), v(0, 100.0, 0), v(2.0, 2.0, 140.0))
+m2k = "sim:vehicles.aircraft.m2k"
+f16dj = "sim:vehicles.aircraft.f16dj"
 
 
+def createBalkan():
+	vehicle(f16dj, vec(-29495, -10530, 87.8), vec(0, 0, 0), vec(0.0, 0.0, 180.0))
+	vehicle(m2k, vec(-29510, -10530, 87.8), vec(0, 0, 0), vec(0.0, 0.0, 180.0))
 
-#	vehicle("sim:vehicles.aircraft.m2k", v(483010, 499010, 190.2), v(0, 100.0, 0), v(2.0, 2.0, 140.0))
-#	vehicle("sim:vehicles.aircraft.m2k", v(483025, 499015, 190.2), v(0, 100.0, 0), v(5.0, 0.0, 240.0))
-#	vehicle("sim:vehicles.aircraft.m2k", v(483040, 499020, 190.2), v(0, 100.0, 0), v(8.0, 1.0, 240.0))
-#	vehicle("sim:vehicles.aircraft.m2k", v(483055, 499025, 190.2), v(0, 100.0, 0), v(12.0, 3.0, 240.0))
+def createNCA():
+	vehicle(m2k, vec(0, 0, 1200.0), vec(0, 100.0, 0), vec(5.0, 0.0, 0.0))
+	vehicle(f16dj, vec(10, 10, 1000.2), vec(0, 100.0, 0), vec(2.0, 2.0, 140.0))
 
-#	m.setDegrees(37.5, -121.0, 600)
-#	vehicle("sim:vehicles.aircraft.m2k", m, v(0, 100.0, 0), v(2.0, 2.0, 2.0))
+def unknown():
+	print "Unrecognized terrain name: %s" % sim.getTerrainName()
 
-#	m.setDegrees(37.6, -121.41, 2090)
-#	vehicle("sim:vehicles.aircraft.m2k", m, v(0, 100.0, 0), v(2.0, 2.0, 140.0))
-#	m.setDegrees(40.6, 14.42, 2090)
-#	vehicle("sim:vehicles.aircraft.m2k", m, v(0, 100.0, 0), v(2.0, 2.0, 140.0))
-#	m.setDegrees(42.6, 14.43, 2090)
-#	vehicle("sim:vehicles.aircraft.m2k", m, v(0, 100.0, 0), v(2.0, 2.0, 140.0))
-# 
+
+dispatch = {
+	"Balkan Terrain": createBalkan,
+	"NCA Terrain": createNCA,
+}
+
+create = dispatch.get(sim.getTerrainName(), unknown)
+create()
+

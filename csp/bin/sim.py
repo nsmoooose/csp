@@ -198,15 +198,10 @@ def createTestObjects(sim, file):
 	Run the specified script to add test objects to the simulation.  At least one
 	vehicle must be added.
 	"""
-	if file:
-		if file.endswith('.py'): file = file[:-3]
+	if file and os.path.exists(file):
 		try:
-			mod = __import__(file, {}, {}, [])
-			#import csp.test_objects as mod
-		except ImportError:
-			fail('Unable to import test objects file "%s"' % file)
-		try:
-			mod.create(sim)
+			env = {'csp': csp, 'sim': sim}
+			execfile(file, env)
 		except Exception, e:
 			fail('Error executing objects script "%s":\n  %s' % (file, e))
 
@@ -362,6 +357,6 @@ if __name__ == '__main__':
 	csp.base.app.addOption('--logcat', metavar='CATLIST', default=None, help='set log category filter (e.g., "object,physics")')
 	csp.base.app.addOption('--pause', action='store_true', default=False, help='pause on startup for attaching a debugger')
 	csp.base.app.addOption('--dumpdata', action='store_true', default=False, help='dump the contents of the data archive')
-	csp.base.app.addOption('--objects', metavar='PATH', default='test_objects.py', help='python script to place test objects')
+	csp.base.app.addOption('--objects', metavar='PATH', default='test_objects', help='python script to place test objects')
 	csp.base.app.start()
 

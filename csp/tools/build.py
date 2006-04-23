@@ -782,17 +782,13 @@ def AddSwigDep(env):
 	env.Append(SCANNERS = scanner)
 
 
-SWIG = 'swig'
-
 def AddSwigSupport(env, required=1):
-	global SWIG
 	SWIG = SCons.Util.WhereIs('swig')
 	if not SWIG:
 		print 'WARNING: swig not found in path'
 		if required:
 			print >>sys.stderr, 'Cannot continue without swig.'
 			sys.exit(1)
-	env['SWIG'] = SWIG
 	AddSwigDep(env)
 	AddSwigBuild(env)
 

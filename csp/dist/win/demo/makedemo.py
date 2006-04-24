@@ -37,7 +37,7 @@ if CSPDEVPACK:
 	PATH = os.environ.get('PATH', '')
 	if PATH.split(os.pathsep)[0] != CSPDEVPACK_BIN:
 		print >>sys.stderr, 'WARNING: placing %s at start of PATH' % CSPDEVPACK_BIN
-		os.environ['PATH'] = '%s;%s' % (CSPDEVPACK, os.environ.get('PATH', ''))
+		os.environ['PATH'] = '%s;%s' % (CSPDEVPACK_BIN, os.environ.get('PATH', ''))
 
 try:
 	import csp
@@ -103,7 +103,7 @@ def copy_tree(src, dst, symlinks=0, exclude=None):
 # TODO force msvcrt80.dll and msvcrp80.dll to be included?
 def make_demo(version):
 	TEMPLATE = 'template'
-	DEMO = 'cspsim-demo-%s' % version
+	DEMO = 'csp-demo-%s' % version
 
 	if not os.path.exists(TEMPLATE):
 		error('%s not found!' % TEMPLATE)
@@ -122,20 +122,24 @@ def make_demo(version):
 	DIST_DIR = os.path.join(DEMO, 'bin')
 	print 'Running py2exe to create %s' % DIST_DIR
 
-	TEST_OBJECTS = os.path.join(BIN, 'test_objects.py')
+	TARGET = os.path.join(BIN, 'sim.py')
+	CONFIG = os.path.join(BIN, 'sim.ini')
+	TEST_OBJECTS = os.path.join(BIN, 'test_objects')
 
 	opts = {
 		'py2exe': {
 			'excludes': ['dl'],
 			'dist_dir': DIST_DIR,
 			'packages': ['encodings'],
+			'dll_excludes': ['msvcp80.dll', 'msvcr80.dll'],
 		}
 	}
+	windows = {
+		'script': TARGET,
+		'icon_resources':[(1, 'logo.ico')]
+	}
 
-	TARGET = os.path.join(BIN, 'sim.py')
-	CONFIG = os.path.join(BIN, 'sim.ini')
-
-	setup(options=opts, console=[TARGET], data_files=[CONFIG])
+	setup(options=opts, windows=[windows], console=[TARGET], data_files=[CONFIG, TEST_OBJECTS])
 
 	# not all dependencies can be found by py2exe, so ensure that all
 	# dlls in the devpack are copied.  same for csp modules.

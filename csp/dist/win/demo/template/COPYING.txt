@@ -129,6 +129,12 @@ Copyright 2004 VRlab, Umeå University
 Licensed under the terms of the GNU Library General Public License version 2.1 or later.
 http://www.vrlab.umu.se/research/osgAL/
 
+PLY (Python Lex-Yacc)
+Version 1.5  (June 1, 2004)
+Copyright (C) 2001-2004 David M. Beazley
+Licensed under the terms of the GNU Library General Public License version 2.1 or later.
+http://www.dabeaz.com/ply/ply.html
+
 
 Microsoft Visual C++ Runtime Libraries
 --------------------------------------

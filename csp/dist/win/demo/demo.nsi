@@ -23,10 +23,22 @@
   !define MUI_HEADERIMAGE_BITMAP "logo.bmp"
   !define MUI_ABORTWARNING
 
-  !insertmacro MUI_PAGE_LICENSE "csp-demo-${VERSION}\COPYING"
+  !define MUI_FINISHPAGE_RUN
+  !define MUI_FINISHPAGE_RUN_TEXT "Run demo"
+  !define MUI_FINISHPAGE_RUN_FUNCTION LaunchLink
+  !define MUI_FINISHPAGE_RUN_NOTCHECKED
+  !define MUI_FINISHPAGE_SHOWREADME "$INSTDIR\README.txt"
+  !define MUI_FINISHPAGE_SHOWREADME_TEXT "View release notes"
+  !define MUI_FINISHPAGE_SHOWREADME_NOTCHECKED
+  !define MUI_FINISHPAGE_LINK "Online release notes and support"
+  !define MUI_FINISHPAGE_LINK_LOCATION "http://csp.sf.net/wiki/Windows_Demo_0.6"
+  !define MUI_FINISHPAGE_NOREBOOTSUPPORT
+
+  !insertmacro MUI_PAGE_LICENSE "csp-demo-${VERSION}\COPYING.txt"
   !insertmacro MUI_PAGE_DIRECTORY
   !insertmacro MUI_PAGE_STARTMENU Application $STARTMENU_FOLDER
   !insertmacro MUI_PAGE_INSTFILES
+  !insertmacro MUI_PAGE_FINISH
 
   !insertmacro MUI_UNPAGE_CONFIRM
   !insertmacro MUI_UNPAGE_INSTFILES
@@ -38,7 +50,6 @@
   VIAddVersionKey /LANG=${LANG_ENGLISH} "Comments" "Visit http://csp.sf.net/wiki/Demo for more information."
   VIAddVersionKey /LANG=${LANG_ENGLISH} "FileDescription" "CSP Demo Installer"
   VIAddVersionKey /LANG=${LANG_ENGLISH} "FileVersion" "${VERSION}"
-
 
 Section "Demo" SecDemo
 
@@ -55,6 +66,7 @@ Section "Demo" SecDemo
   !insertmacro MUI_STARTMENU_WRITE_BEGIN Application
     CreateDirectory "$SMPROGRAMS\$STARTMENU_FOLDER"
     CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Uninstall.lnk" "$INSTDIR\Uninstall.exe"
+    CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\readme.lnk" "$INSTDIR\README.txt"
     SetOutPath "$INSTDIR\bin"
     CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\sim.lnk" "$INSTDIR\bin\sim.exe" "" "" "" "" "" "Run demo"
     CreateShortCut "$INSTDIR\sim.lnk" "$INSTDIR\bin\sim.exe" "" "" "" "" "" "Run demo"
@@ -70,6 +82,7 @@ Section "Uninstall"
   !insertmacro MUI_STARTMENU_GETFOLDER Application $MUI_TEMP
   Delete "$SMPROGRAMS\$MUI_TEMP\Uninstall.lnk"
   Delete "$SMPROGRAMS\$MUI_TEMP\sim.lnk"
+  Delete "$SMPROGRAMS\$MUI_TEMP\readme.lnk"
   StrCpy $MUI_TEMP "$SMPROGRAMS\$MUI_TEMP"
   startMenuDeleteLoop:
     ClearErrors
@@ -82,3 +95,8 @@ Section "Uninstall"
   DeleteRegKey /ifempty HKCU "Software\csp-demo-${VERSION}"
 
 SectionEnd
+
+Function LaunchLink
+  ExecShell "" "$INSTDIR\sim.lnk"
+FunctionEnd
+

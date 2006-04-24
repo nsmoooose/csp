@@ -1,0 +1,34 @@
+How to build and release a new demo.  Please update these instructions as
+needed.
+
+* Decide on the demo version number (x.y)
+* Copy trunk/csp to branches/csp-demo-x.y/csp at the desired revision number.
+* Check out branches/csp-demo-x.y/csp.
+* Build all targets (scons all)
+* Run 'python makedemo.py x.y'
+* Generate the hid files and copy them to csp-demo-x.y/data/input.
+  - Verify that joystick axis 2 is mapped to the throttle.
+* Copy terrain files to csp-demo-x.y/data/terrain from an existing
+  demo package.  At present these are the standard balkan terrain
+  tiles from 4-4 to 10-10.  All other tiles have been set to zero
+  elevation to save space.  Note also that tile 7-7 (where the
+  airbase is located) has been modified slightly from the version
+  available in the balkan terrain release on SourceForge.
+* Submit to the branch any changes that are specific to this release.
+* All other changes should be made in a separate client workspace
+  checked out from trunk/csp and merged into the release branch as
+  needed.
+* Run 'makensis /DVERSION=x.y demo.nsi'
+* Test the demo installer locally, correcting any problems and
+  repeating earlier steps as needed.
+* From the directory containing the top-level csp directory, run:
+    find csp | grep -v /\\. | grep -v csp/data/ | grep -v csp/dist | \
+         grep -v \\.log | grep -v \\.pyc | xargs tar --no-recursion \
+         -vcjf csp-demo-x.y-src.tbz'
+    tar -vcjf csp-demo-x.y-data.tbz csp/data
+* Distribute the demo installer to other developers for testing.
+* Add a wiki page Windows_Demo_x.y, copying and updating content from
+  the previous version as needed.
+* When all developers have signed off on the new demo, post the installer,
+  source, and data packages to SourceForge.
+* Post an announcement on the forums.

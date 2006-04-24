@@ -331,6 +331,14 @@ void LandingGear::resetForces() {
 void LandingGear::updateSteeringAngle(double /*dt*/) {
 	if (m_SteeringLimit > 0 && b_SteeringCommand.valid()) {
 		double setting = clampTo(b_SteeringCommand->value(), -1.0, 1.0);
+
+		// add a deadzone and more gentle response for small commands.
+		setting = setting * std::max(setting * setting - 0.01, 0.0);
+
+		// ad-hoc velocity limiter
+		double v = m_TireRotationRate * m_TireRadius;
+		setting *= clampTo(1.1 - 0.1 * v, 0.1, 1.0);
+
 		m_SteeringAngle = setting * m_SteeringLimit;
 		m_SteerTransform.makeRotate(toRadians(m_SteeringAngle), Vector3::ZAXIS);
 	}

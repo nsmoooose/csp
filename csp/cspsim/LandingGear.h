@@ -300,7 +300,11 @@ protected:
 	Vector3 m_WindVelocityBody;
 	double m_Height;
 
+	// Sounds
+	Ref<SoundEffect> m_TouchdownSound;
+
 	virtual double onUpdate(double dt);
+	void bindSounds(SoundModel *model, ResourceBundle *bundle=0);
 
 private:
 	void doComplexPhysics(double x);

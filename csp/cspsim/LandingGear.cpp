@@ -42,9 +42,17 @@
 #include <csp/cspsim/GearAnimation.h>
 #include <csp/cspsim/KineticsChannels.h>
 #include <csp/cspsim/LandingGearChannels.h>
+#include <csp/cspsim/SystemsModel.h>
+#include <csp/cspsim/ResourceBundle.h>
+#include <csp/cspsim/sound/Sample.h>
+#include <csp/cspsim/sound/SoundModel.h>
 
 #include <csp/csplib/util/Math.h>
 #include <csp/csplib/data/ObjectInterface.h>
+#include <csp/csplib/util/osg.h>
+
+#include <osgAL/SoundState>
+#include <csp/csplib/util/undef.h>
 
 #include <cstdio>
 #include <iostream>
@@ -636,6 +644,27 @@ void LandingGear::bindChannels(Bus* bus) {
 
 DEFINE_INPUT_INTERFACE(GearDynamics)
 
+void GearDynamics::bindSounds(SoundModel *model, ResourceBundle *bundle) {
+	assert(model);
+	CSPLOG(DEBUG, AUDIO) << "GearDynamics::bindSounds";
+	if (bundle) {
+		CSPLOG(DEBUG, AUDIO) << "GearDynamics::bindSounds have bundle";
+		Ref<const SoundSample> sample(bundle->getSoundSample("wheel_touchdown"));
+		m_TouchdownSound = SoundEffect::ExternalSound(sample, model);
+		if (m_TouchdownSound.valid()) {
+			CSPLOG(DEBUG, AUDIO) << "GearDynamics::bindSounds have sound";
+			m_TouchdownSound->state()->setPosition(toOSG(m_Gear[0]->getPosition()));
+			m_TouchdownSound->state()->setDirection(toOSG(m_Gear[0]->getPosition()));
+			CSPLOG(DEBUG, AUDIO) << "gear touchdown sound position " << m_Gear[0]->getPosition();
+			CSPLOG(DEBUG, AUDIO) << "gear touchdown sound direction " << m_Gear[0]->getPosition();
+			m_TouchdownSound->state()->apply();
+			//m_TouchdownSound->play();
+		}
+	}
+	CSPLOG(DEBUG, AUDIO) << "GearDynamics::bindSounds exit";
+}
+
+
 void GearDynamics::doComplexPhysics(double) {
 	if (b_FullyRetracted->value() && !isGearExtendSelected()) return;
 	m_Force = m_Moment = Vector3::ZERO;
@@ -671,12 +700,16 @@ GearDynamics::GearDynamics(): m_Height(0.0) {
 
 void GearDynamics::registerChannels(Bus *bus) {
 	assert(bus!=0);
+	SoundModel *sound_model = getModel()->getSoundModel();
 	b_WOW = bus->registerLocalDataChannel<bool>(bus::LandingGear::WOW, false);
 	b_FullyRetracted = bus->registerLocalDataChannel<bool>(bus::LandingGear::FullyRetracted, false);
 	b_FullyExtended = bus->registerLocalDataChannel<bool>(bus::LandingGear::FullyExtended, true);
 	b_GearExtendSelected = bus->registerLocalDataChannel<bool>(bus::LandingGear::GearExtendSelected, true);
 	for (unsigned i = 0; i < m_Gear.size(); ++i) {
 		m_Gear[i]->registerChannels(bus);
+	}
+	if (sound_model) {
+		bindSounds(sound_model, getResourceBundle());
 	}
 }
 
@@ -742,6 +775,8 @@ void GearDynamics::postSimulationStep(double dt) {
 		m_Gear[i]->postSimulationStep(dt, model_origin_local, vBody, *m_Attitude, m_Height, m_GroundNormalBody);
 		// generic WOW signal (any gear in contact with the ground triggers it)
 		if (m_Gear[i]->getWOW()) b_WOW->value() = true;
+		if (m_Gear[i]->getTouchdown())
+			if(m_TouchdownSound.valid()) m_TouchdownSound->play();
 	}
 }
 

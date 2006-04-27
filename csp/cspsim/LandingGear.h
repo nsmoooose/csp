@@ -81,6 +81,16 @@ public:
 	// Returns true if WOW has been true since the last call to resetTouchdown.
 	bool getTouchdown() const { return m_Touchdown; }
 
+	// If getTouchdown() is true, returns a flag that indicates if the wheel
+	// skidded on touchdown.  Skidding is assumed to happen if the wheel speed
+	// is significantly different from the ground speed, or if the vertical
+	// velocity at touchdown was high.
+	bool getTouchdownSkid() const { return m_TouchdownSkid; }
+
+	// If getTouchdown() is true, returns the vertical velocity at touchdown
+	// in m/s.
+	double getTouchdownVerticalVelocity() const { return m_TouchdownVerticalVelocity; }
+
 	// Get the position of the wheel in world coordinates at the first touch
 	// down since resetTouchdown was last called.
 	Vector3 const &getTouchdownPoint() const { return m_TouchdownPoint; }
@@ -155,7 +165,7 @@ public:
 
 protected:
 	void resetForces();
-	void updateWOW(Vector3 const &origin, Quat const &q);
+	void updateWOW(Vector3 const &origin, Quat const &q, Vector3 const &vBody, Vector3 const &normalGroundBody);
 	void updateBraking(double dt);
 	void updateBrakeTemperature(double dt, double dissipation, double airspeed);
 	void updateWheel(double dt,
@@ -233,6 +243,8 @@ protected:
 	Vector3 m_TangentForce;
 
 	bool m_Touchdown;
+	bool m_TouchdownSkid;
+	double m_TouchdownVerticalVelocity;
 	Vector3 m_TouchdownPoint;
 	std::string m_Name;
 

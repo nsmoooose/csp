@@ -216,12 +216,15 @@ void LandingGear::updateBraking(double dt) {
 /**
  * Update Weight-On-Wheels flag and record touchdown point
  */
-void LandingGear::updateWOW(Vector3 const &origin, Quat const &q) {
+void LandingGear::updateWOW(Vector3 const &origin, Quat const &q, Vector3 const &vBody, Vector3 const &normalGroundBody) {
 	if (m_Compression > 0.02) {
 		// first contact?
-		if (!b_WOW->value()) {
+		if (!b_WOW->value() && !m_Touchdown) {
 			// yes, flag the touchdown
 			m_Touchdown = true;
+			m_TouchdownVerticalVelocity = std::max(0.0, -dot(vBody, normalGroundBody));
+			Vector3 vGroundBody = vBody - m_TouchdownVerticalVelocity * normalGroundBody;
+			m_TouchdownSkid = fabs(vGroundBody.length() - getWheelSpeed()) > 10.0 * (1.0 - m_TouchdownVerticalVelocity);
 			m_TouchdownPoint = origin + q.rotate(m_Position);
 			b_WOW->value() = true;
 		}
@@ -363,7 +366,7 @@ void LandingGear::postSimulationStep(double dt,
 	// update order matters
 	updateBraking(dt);
 	updateSuspension(dt, origin, vBody, q, height, normalGroundBody);
-	updateWOW(origin, q);
+	updateWOW(origin, q, vBody, normalGroundBody);
 	updateWheel(dt, origin, vBody, q, normalGroundBody, true);
 	updateTireRotation(dt);
 	updateSteeringAngle(dt);
@@ -775,8 +778,12 @@ void GearDynamics::postSimulationStep(double dt) {
 		m_Gear[i]->postSimulationStep(dt, model_origin_local, vBody, *m_Attitude, m_Height, m_GroundNormalBody);
 		// generic WOW signal (any gear in contact with the ground triggers it)
 		if (m_Gear[i]->getWOW()) b_WOW->value() = true;
-		if (m_Gear[i]->getTouchdown())
-			if(m_TouchdownSound.valid()) m_TouchdownSound->play();
+		if (m_Gear[i]->getTouchdown()) {
+			if (m_Gear[i]->getTouchdownSkid()) {
+				if (m_TouchdownSound.valid()) m_TouchdownSound->play();
+			}
+			m_Gear[i]->resetTouchdown();
+		}
 	}
 }
 

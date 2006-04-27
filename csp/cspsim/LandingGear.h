@@ -163,6 +163,11 @@ public:
 	// Returns the gear extension from 0.0 when fully retracted to 1.0 when fully extended.
 	double getExtension() const;
 
+	void bindSounds(SoundModel *model, ResourceBundle *bundle=0);
+
+	// Sounds
+	Ref<SoundEffect> m_TouchdownSound;
+
 protected:
 	void resetForces();
 	void updateWOW(Vector3 const &origin, Quat const &q, Vector3 const &vBody, Vector3 const &normalGroundBody);
@@ -182,7 +187,6 @@ protected:
 	                      Vector3 const &normalGroundBody);
 	void updateTireRotation(double dt);
 	void updateSteeringAngle(double dt);
-
 
 protected:
 	Vector3 m_MaxPosition;
@@ -312,11 +316,7 @@ protected:
 	Vector3 m_WindVelocityBody;
 	double m_Height;
 
-	// Sounds
-	Ref<SoundEffect> m_TouchdownSound;
-
 	virtual double onUpdate(double dt);
-	void bindSounds(SoundModel *model, ResourceBundle *bundle=0);
 
 private:
 	void doComplexPhysics(double x);

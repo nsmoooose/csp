@@ -645,9 +645,7 @@ void LandingGear::bindChannels(Bus* bus) {
 	b_SteeringCommand = bus->getChannel(bus::LandingGear::selectSteeringCommand(getName()), false);
 }
 
-DEFINE_INPUT_INTERFACE(GearDynamics)
-
-void GearDynamics::bindSounds(SoundModel *model, ResourceBundle *bundle) {
+void LandingGear::bindSounds(SoundModel *model, ResourceBundle *bundle) {
 	assert(model);
 	CSPLOG(DEBUG, AUDIO) << "GearDynamics::bindSounds";
 	if (bundle) {
@@ -656,17 +654,17 @@ void GearDynamics::bindSounds(SoundModel *model, ResourceBundle *bundle) {
 		m_TouchdownSound = SoundEffect::ExternalSound(sample, model);
 		if (m_TouchdownSound.valid()) {
 			CSPLOG(DEBUG, AUDIO) << "GearDynamics::bindSounds have sound";
-			m_TouchdownSound->state()->setPosition(toOSG(m_Gear[0]->getPosition()));
-			m_TouchdownSound->state()->setDirection(toOSG(m_Gear[0]->getPosition()));
-			CSPLOG(DEBUG, AUDIO) << "gear touchdown sound position " << m_Gear[0]->getPosition();
-			CSPLOG(DEBUG, AUDIO) << "gear touchdown sound direction " << m_Gear[0]->getPosition();
+			m_TouchdownSound->state()->setPosition(toOSG(getPosition()));
+			m_TouchdownSound->state()->setDirection(toOSG(getPosition()));
+			CSPLOG(DEBUG, AUDIO) << "gear touchdown sound position " << getPosition();
+			CSPLOG(DEBUG, AUDIO) << "gear touchdown sound direction " << getPosition();
 			m_TouchdownSound->state()->apply();
-			//m_TouchdownSound->play();
 		}
 	}
 	CSPLOG(DEBUG, AUDIO) << "GearDynamics::bindSounds exit";
 }
 
+DEFINE_INPUT_INTERFACE(GearDynamics)
 
 void GearDynamics::doComplexPhysics(double) {
 	if (b_FullyRetracted->value() && !isGearExtendSelected()) return;
@@ -710,9 +708,9 @@ void GearDynamics::registerChannels(Bus *bus) {
 	b_GearExtendSelected = bus->registerLocalDataChannel<bool>(bus::LandingGear::GearExtendSelected, true);
 	for (unsigned i = 0; i < m_Gear.size(); ++i) {
 		m_Gear[i]->registerChannels(bus);
-	}
-	if (sound_model) {
-		bindSounds(sound_model, getResourceBundle());
+		if (sound_model) {
+			m_Gear[i]->bindSounds(sound_model, getResourceBundle());
+		}
 	}
 }
 
@@ -780,7 +778,7 @@ void GearDynamics::postSimulationStep(double dt) {
 		if (m_Gear[i]->getWOW()) b_WOW->value() = true;
 		if (m_Gear[i]->getTouchdown()) {
 			if (m_Gear[i]->getTouchdownSkid()) {
-				if (m_TouchdownSound.valid()) m_TouchdownSound->play();
+				if (m_Gear[i]->m_TouchdownSound.valid()) m_Gear[i]->m_TouchdownSound->play();
 			}
 			m_Gear[i]->resetTouchdown();
 		}

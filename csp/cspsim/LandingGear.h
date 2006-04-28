@@ -163,10 +163,10 @@ public:
 	// Returns the gear extension from 0.0 when fully retracted to 1.0 when fully extended.
 	double getExtension() const;
 
+	// bind a SoundModel and a ResourceBundle to the gear
 	void bindSounds(SoundModel *model, ResourceBundle *bundle=0);
 
-	// Sounds
-	Ref<SoundEffect> m_TouchdownSound;
+	Ref<SoundEffect> getTouchdownSound() const { return m_TouchdownSound; }
 
 protected:
 	void resetForces();
@@ -187,6 +187,7 @@ protected:
 	                      Vector3 const &normalGroundBody);
 	void updateTireRotation(double dt);
 	void updateSteeringAngle(double dt);
+
 
 protected:
 	Vector3 m_MaxPosition;
@@ -253,6 +254,9 @@ protected:
 	std::string m_Name;
 
 	Link<GearAnimation> m_GearAnimation;
+
+	// Sounds
+	Ref<SoundEffect> m_TouchdownSound;
 };
 
 

@@ -778,7 +778,7 @@ void GearDynamics::postSimulationStep(double dt) {
 		if (m_Gear[i]->getWOW()) b_WOW->value() = true;
 		if (m_Gear[i]->getTouchdown()) {
 			if (m_Gear[i]->getTouchdownSkid()) {
-				if (m_Gear[i]->m_TouchdownSound.valid()) m_Gear[i]->m_TouchdownSound->play();
+				if (m_Gear[i]->getTouchdownSound().valid()) m_Gear[i]->getTouchdownSound()->play();
 			}
 			m_Gear[i]->resetTouchdown();
 		}

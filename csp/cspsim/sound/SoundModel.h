@@ -88,9 +88,7 @@ private:
 		Mode mode;
 	};
 
-	// TODO we may need to add an optional name argument to add*Sound so that the same effect/state can be added
-	// more than once (e.g. left engine and right engine).
-	typedef std::map<std::string, SoundData> SoundIndex;
+	typedef std::map<osgAL::SoundState*, SoundData> SoundIndex;
 	SoundIndex m_SoundIndex;
 
 	osg::ref_ptr<osg::Group> m_SoundGroup;

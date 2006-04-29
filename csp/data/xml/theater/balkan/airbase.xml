@@ -172,6 +172,18 @@
             <Float name="orientation">-1.57</Float>
         </Object>
         <Object class="FeatureLayout">
+            <Path name="model">O2_unit</Path>
+            <Float name="x">355</Float>
+            <Float name="y">-245</Float>
+            <Float name="orientation">2.57</Float>
+        </Object>
+        <Object class="FeatureLayout">
+            <Path name="model">bombs_trailer</Path>
+            <Float name="x">400</Float>
+            <Float name="y">-250</Float>
+            <Float name="orientation">0</Float>
+        </Object>
+        <Object class="FeatureLayout">
             <Path name="model">hangar</Path>
             <Float name="x">231</Float>
             <Float name="y">1253</Float>
@@ -194,6 +206,12 @@
             <Float name="x">208</Float>
             <Float name="y">1510</Float>
             <Float name="orientation">-1.6</Float>
+        </Object>
+        <Object class="FeatureLayout">
+            <Path name="model">hangar</Path>
+            <Float name="x">258</Float>
+            <Float name="y">1585</Float>
+            <Float name="orientation">-2.9</Float>
         </Object>
         <Object class="FeatureLayout">
             <Path name="model">forest</Path>

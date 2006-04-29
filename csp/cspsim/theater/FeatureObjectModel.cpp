@@ -52,6 +52,9 @@ void FeatureObjectModel::addSceneModel(FeatureSceneGroup *group, LayoutTransform
 		model = new FeatureSceneModel(transform);
 	}
 	model->addChild(m_ObjectModel->getModel().get());
+	if (m_ObjectModel->getGroundShadow().valid()) {
+		model->addChild(m_ObjectModel->getGroundShadow().get());
+	}
 	group->addChild(model);
 }
 

@@ -9,6 +9,279 @@
             <Float name="orientation">0.0</Float>
         </Object>
         <Object class="FeatureLayout">
+            <Path name="model">Taxi_Light_Blue</Path>
+            <Float name="x">26.5</Float>
+            <Float name="y">1111</Float>
+            <Float name="orientation">0.0</Float>
+        </Object>
+<!-- Taxi Lights - Taxi F right side  -->        
+        <Object class="FeatureLayout">
+            <Path name="model">Taxi_Light_Blue</Path>
+            <Float name="x">28.5</Float>
+            <Float name="y">1120</Float>
+            <Float name="orientation">0.0</Float>
+        </Object>
+        <Object class="FeatureLayout">
+            <Path name="model">Taxi_Light_Blue</Path>
+            <Float name="x">31.5</Float>
+            <Float name="y">1130</Float>
+            <Float name="orientation">0.0</Float>
+        </Object>
+        <Object class="FeatureLayout">
+            <Path name="model">Taxi_Light_Blue</Path>
+            <Float name="x">37.6</Float>
+            <Float name="y">1140</Float>
+            <Float name="orientation">0.0</Float>
+        </Object>
+        <Object class="FeatureLayout">
+            <Path name="model">Taxi_Light_Blue</Path>
+            <Float name="x">46</Float>
+            <Float name="y">1144.5</Float>
+            <Float name="orientation">0.0</Float>
+        </Object>
+        <Object class="FeatureLayout">
+            <Path name="model">Taxi_Light_Blue</Path>
+            <Float name="x">56</Float>
+            <Float name="y">1144.5</Float>
+            <Float name="orientation">0.0</Float>
+        </Object>
+        <Object class="FeatureLayout">
+            <Path name="model">Taxi_Light_Blue</Path>
+            <Float name="x">66</Float>
+            <Float name="y">1144.5</Float>
+            <Float name="orientation">0.0</Float>
+        </Object>
+        <Object class="FeatureLayout">
+            <Path name="model">Taxi_Light_Blue</Path>
+            <Float name="x">76</Float>
+            <Float name="y">1144.5</Float>
+            <Float name="orientation">0.0</Float>
+        </Object>
+        <Object class="FeatureLayout">
+            <Path name="model">Taxi_Light_Blue</Path>
+            <Float name="x">86</Float>
+            <Float name="y">1144.5</Float>
+            <Float name="orientation">0.0</Float>
+        </Object>
+        <Object class="FeatureLayout">
+            <Path name="model">Taxi_Light_Blue</Path>
+            <Float name="x">96</Float>
+            <Float name="y">1144.5</Float>
+            <Float name="orientation">0.0</Float>
+        </Object>
+        <Object class="FeatureLayout">
+            <Path name="model">Taxi_Light_Blue</Path>
+            <Float name="x">106</Float>
+            <Float name="y">1144.5</Float>
+            <Float name="orientation">0.0</Float>
+        </Object>
+        <Object class="FeatureLayout">
+            <Path name="model">Taxi_Light_Blue</Path>
+            <Float name="x">116</Float>
+            <Float name="y">1144.5</Float>
+            <Float name="orientation">0.0</Float>
+        </Object>
+        <Object class="FeatureLayout">
+            <Path name="model">Taxi_Light_Blue</Path>
+            <Float name="x">126</Float>
+            <Float name="y">1144.5</Float>
+            <Float name="orientation">0.0</Float>
+        </Object>
+        <Object class="FeatureLayout">
+            <Path name="model">Taxi_Light_Blue</Path>
+            <Float name="x">136</Float>
+            <Float name="y">1144.5</Float>
+            <Float name="orientation">0.0</Float>
+        </Object>
+        <Object class="FeatureLayout">
+            <Path name="model">Taxi_Light_Blue</Path>
+            <Float name="x">146</Float>
+            <Float name="y">1144.5</Float>
+            <Float name="orientation">0.0</Float>
+        </Object>
+        <Object class="FeatureLayout">
+            <Path name="model">Taxi_Light_Blue</Path>
+            <Float name="x">156</Float>
+            <Float name="y">1144.5</Float>
+            <Float name="orientation">0.0</Float>
+        </Object>
+        <Object class="FeatureLayout">
+            <Path name="model">Taxi_Light_Blue</Path>
+            <Float name="x">166</Float>
+            <Float name="y">1144.5</Float>
+            <Float name="orientation">0.0</Float>
+        </Object>
+        <Object class="FeatureLayout">
+            <Path name="model">Taxi_Light_Blue</Path>
+            <Float name="x">176</Float>
+            <Float name="y">1144</Float>
+            <Float name="orientation">0.0</Float>
+        </Object>
+        <Object class="FeatureLayout">
+            <Path name="model">Taxi_Light_Blue</Path>
+            <Float name="x">182</Float>
+            <Float name="y">1139.2</Float>
+            <Float name="orientation">0.0</Float>
+        </Object>
+        <Object class="FeatureLayout">
+            <Path name="model">Taxi_Light_Blue</Path>
+            <Float name="x">210.8</Float>
+            <Float name="y">1138.5</Float>
+            <Float name="orientation">0.0</Float>
+        </Object>
+        <Object class="FeatureLayout">
+            <Path name="model">Taxi_Light_Blue</Path>
+            <Float name="x">217</Float>
+            <Float name="y">1143.3</Float>
+            <Float name="orientation">0.0</Float>
+        </Object>
+        <Object class="FeatureLayout">
+            <Path name="model">Taxi_Light_Blue</Path>
+            <Float name="x">226</Float>
+            <Float name="y">1144.5</Float>
+            <Float name="orientation">0.0</Float>
+        </Object>
+        <Object class="FeatureLayout">
+            <Path name="model">Taxi_Light_Blue</Path>
+            <Float name="x">236</Float>
+            <Float name="y">1144.5</Float>
+            <Float name="orientation">0.0</Float>
+        </Object>
+<!-- Taxi Lights - Taxi F left side  -->
+        <Object class="FeatureLayout">
+            <Path name="model">Taxi_Light_Blue</Path>
+            <Float name="x">26.5</Float>
+            <Float name="y">1168</Float>
+            <Float name="orientation">0.0</Float>
+        </Object>
+        <Object class="FeatureLayout">
+            <Path name="model">Taxi_Light_Blue</Path>
+            <Float name="x">36</Float>
+            <Float name="y">1168</Float>
+            <Float name="orientation">0.0</Float>
+        </Object>
+        <Object class="FeatureLayout">
+            <Path name="model">Taxi_Light_Blue</Path>
+            <Float name="x">46</Float>
+            <Float name="y">1168</Float>
+            <Float name="orientation">0.0</Float>
+        </Object>
+        <Object class="FeatureLayout">
+            <Path name="model">Taxi_Light_Blue</Path>
+            <Float name="x">56</Float>
+            <Float name="y">1168</Float>
+            <Float name="orientation">0.0</Float>
+        </Object>
+        <Object class="FeatureLayout">
+            <Path name="model">Taxi_Light_Blue</Path>
+            <Float name="x">66</Float>
+            <Float name="y">1168</Float>
+            <Float name="orientation">0.0</Float>
+        </Object>
+        <Object class="FeatureLayout">
+            <Path name="model">Taxi_Light_Blue</Path>
+            <Float name="x">76</Float>
+            <Float name="y">1168</Float>
+            <Float name="orientation">0.0</Float>
+        </Object>
+        <Object class="FeatureLayout">
+            <Path name="model">Taxi_Light_Blue</Path>
+            <Float name="x">86</Float>
+            <Float name="y">1168</Float>
+            <Float name="orientation">0.0</Float>
+        </Object>
+        <Object class="FeatureLayout">
+            <Path name="model">Taxi_Light_Blue</Path>
+            <Float name="x">96</Float>
+            <Float name="y">1168</Float>
+            <Float name="orientation">0.0</Float>
+        </Object>
+        <Object class="FeatureLayout">
+            <Path name="model">Taxi_Light_Blue</Path>
+            <Float name="x">106</Float>
+            <Float name="y">1168</Float>
+            <Float name="orientation">0.0</Float>
+        </Object>
+        <Object class="FeatureLayout">
+            <Path name="model">Taxi_Light_Blue</Path>
+            <Float name="x">116</Float>
+            <Float name="y">1168</Float>
+            <Float name="orientation">0.0</Float>
+        </Object>
+        <Object class="FeatureLayout">
+            <Path name="model">Taxi_Light_Blue</Path>
+            <Float name="x">126</Float>
+            <Float name="y">1168</Float>
+            <Float name="orientation">0.0</Float>
+        </Object>
+        <Object class="FeatureLayout">
+            <Path name="model">Taxi_Light_Blue</Path>
+            <Float name="x">136</Float>
+            <Float name="y">1168</Float>
+            <Float name="orientation">0.0</Float>
+        </Object>
+        <Object class="FeatureLayout">
+            <Path name="model">Taxi_Light_Blue</Path>
+            <Float name="x">146</Float>
+            <Float name="y">1168</Float>
+            <Float name="orientation">0.0</Float>
+        </Object>
+        <Object class="FeatureLayout">
+            <Path name="model">Taxi_Light_Blue</Path>
+            <Float name="x">156</Float>
+            <Float name="y">1168</Float>
+            <Float name="orientation">0.0</Float>
+        </Object>
+        <Object class="FeatureLayout">
+            <Path name="model">Taxi_Light_Blue</Path>
+            <Float name="x">166</Float>
+            <Float name="y">1168</Float>
+            <Float name="orientation">0.0</Float>
+        </Object>
+        <Object class="FeatureLayout">
+            <Path name="model">Taxi_Light_Blue</Path>
+            <Float name="x">176</Float>
+            <Float name="y">1168</Float>
+            <Float name="orientation">0.0</Float>
+        </Object>
+        <Object class="FeatureLayout">
+            <Path name="model">Taxi_Light_Blue</Path>
+            <Float name="x">186</Float>
+            <Float name="y">1168</Float>
+            <Float name="orientation">0.0</Float>
+        </Object>
+        <Object class="FeatureLayout">
+            <Path name="model">Taxi_Light_Blue</Path>
+            <Float name="x">196</Float>
+            <Float name="y">1168</Float>
+            <Float name="orientation">0.0</Float>
+        </Object>
+        <Object class="FeatureLayout">
+            <Path name="model">Taxi_Light_Blue</Path>
+            <Float name="x">206</Float>
+            <Float name="y">1168</Float>
+            <Float name="orientation">0.0</Float>
+        </Object>
+        <Object class="FeatureLayout">
+            <Path name="model">Taxi_Light_Blue</Path>
+            <Float name="x">216</Float>
+            <Float name="y">1168</Float>
+            <Float name="orientation">0.0</Float>
+        </Object>
+        <Object class="FeatureLayout">
+            <Path name="model">Taxi_Light_Blue</Path>
+            <Float name="x">226</Float>
+            <Float name="y">1168</Float>
+            <Float name="orientation">0.0</Float>
+        </Object>
+        <Object class="FeatureLayout">
+            <Path name="model">Taxi_Light_Blue</Path>
+            <Float name="x">236</Float>
+            <Float name="y">1168</Float>
+            <Float name="orientation">0.0</Float>
+        </Object>
+<!-- Control Tower  -->
+        <Object class="FeatureLayout">
             <Path name="model">tower1</Path>
             <Float name="x">393</Float>
             <Float name="y">-30</Float>

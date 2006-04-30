@@ -21,23 +21,27 @@
 #include "Loader.h"
 #include "Handle.h"
 
-#include <SimData/Object.h>
-#include <Theater/FeatureModel.h>
-#include <Theater/FeatureSceneGroup.h>
-#include <Theater/ElevationCorrection.h>
-#include <Theater/LayoutTransform.h>
-#include <Animation.h>
-#include <ObjectModel.h>
+#include <csp/csplib/data/Object.h>
+#include <csp/cspsim/theater/FeatureModel.h>
+#include <csp/cspsim/theater/FeatureSceneGroup.h>
+#include <csp/cspsim/theater/ElevationCorrection.h>
+#include <csp/cspsim/theater/LayoutTransform.h>
+#include <csp/cspsim/Animation.h>
+#include <csp/cspsim/ObjectModel.h>
 
 #include <osgDB/ReadFile>
 #include <osgDB/WriteFile>
 
 #include <iostream>
 
+using csp::FeatureModel;
+using csp::FeatureSceneGroup;
+using csp::LayoutTransform;
+using csp::ElevationCorrection;
 
-osg::ref_ptr<osg::Node> getFeatureModel(simdata::Object *object) {
-	simdata::Ref<simdata::Object> objref(object);
-	simdata::Ref<FeatureModel> model(objref);
+osg::ref_ptr<osg::Node> getFeatureModel(csp::Object *object) {
+	csp::Ref<csp::Object> objref(object);
+	csp::Ref<FeatureModel> model(objref);
 	assert(model.valid());
 	osg::ref_ptr<FeatureSceneGroup> group = new FeatureSceneGroup;
 	LayoutTransform transform;
@@ -48,14 +52,14 @@ osg::ref_ptr<osg::Node> getFeatureModel(simdata::Object *object) {
 	return group.get();
 }
 
-osg::ref_ptr<osg::Node> getObjectModel(simdata::Object *object) {
-	simdata::Ref<simdata::Object> objref(object);
-	simdata::Ref<ObjectModel> model(objref);
+osg::ref_ptr<osg::Node> getObjectModel(csp::Object *object) {
+	csp::Ref<csp::Object> objref(object);
+	csp::Ref<csp::ObjectModel> model(objref);
 	assert(model.valid());
 	return model->getModel();
 }
 
 void setPathList(std::string const &pathlist) {
-	ObjectModel::setDataFilePathList(pathlist);
+	csp::ObjectModel::setDataFilePathList(pathlist);
 }
 

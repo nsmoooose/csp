@@ -718,6 +718,7 @@ class GlobalSettings:
 		self._help = help
 		self._opts = SCons.Options.Options()
 		self._dict = {}
+		self._platform_settings = None
 	def IsWindows(self):
 		return self._platform.startswith('win')
 	def IsLinux(self):
@@ -725,6 +726,8 @@ class GlobalSettings:
 	def UnsupportedPlatform(self):
 		print 'Platform "%s" not supported' % self._platform
 		sys.exit(1)
+	def AddPlatformSettings(self, platform_settings):
+		self._platform_settings = platform_settings
 	def AddOption(self, *arg, **kw):
 		self._opts.Add(*arg, **kw)
 	def __setattr__(self, key, value):
@@ -737,6 +740,8 @@ class GlobalSettings:
 		GlobalSetup(env, default_message=self._default_message, config=self._config)
 		env.Help(self._help + self._opts.GenerateHelpText(env))
 		self._opts.Update(env)
+		if self._platform_settings:
+			env.CustomizeForPlatform(self._platform_settings)
 		return env
 
 

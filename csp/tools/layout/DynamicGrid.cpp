@@ -28,6 +28,7 @@
 #include <osg/PositionAttitudeTransform>
 #include <osg/PrimitiveSet>
 
+#include <cmath>
 #include <cassert>
 
 

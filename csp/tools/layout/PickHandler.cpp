@@ -56,12 +56,13 @@ LayoutNode *PickHandler::walkPath(osg::NodePath const &node_path, LayoutNodePath
 	return 0;
 }
 
-bool PickHandler::pick(const osgGA::GUIEventAdapter& ea, int mode)
-{
+bool PickHandler::pick(const osgGA::GUIEventAdapter& ea, int mode) {
 	osgUtil::IntersectVisitor::HitList hlist;
+	/*
 	if (mode == SELECT_ONE) {
 		_view->graph()->deselectAll();
 	}
+	*/
 	if (_viewer->computeIntersections(ea.getX(), ea.getY(), hlist)) {
 		osgUtil::IntersectVisitor::HitList::iterator hitr;
 		for (hitr=hlist.begin(); hitr!=hlist.end(); ++hitr) {
@@ -74,6 +75,10 @@ bool PickHandler::pick(const osgGA::GUIEventAdapter& ea, int mode)
 					std::cout << "PICK: HIT FEATURE\n";
 					if (mode == SELECT_REMOVE) {
 						_view->graph()->deselect(node);
+					} else if (mode == SELECT_ONE) {
+						if (node->isSelected()) continue;
+						_view->graph()->deselectAll();
+						_view->graph()->select(node);
 					} else {
 						_view->graph()->select(node);
 					}
@@ -85,8 +90,7 @@ bool PickHandler::pick(const osgGA::GUIEventAdapter& ea, int mode)
 	return false;
 }
 
-bool PickHandler::handle(const osgGA::GUIEventAdapter& ea,osgGA::GUIActionAdapter&)
-{
+bool PickHandler::handle(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter&) {
 	if (!_enabled) return false;
 	int mod = ea.getModKeyMask();
 	int key = ea.getKey();
@@ -133,3 +137,4 @@ bool PickHandler::handle(const osgGA::GUIEventAdapter& ea,osgGA::GUIActionAdapte
 void PickHandler::enable(bool enable) {
 	_enabled = enable;
 }
+

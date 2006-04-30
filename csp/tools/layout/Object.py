@@ -15,7 +15,7 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 """
-A subset of the SimData XML parsing functionality.  Converts a domtree
+A subset of the csplib XML parsing functionality.  Converts a domtree
 representation of an Object XML hierarchy into a real Object instance.
 Only works for objects that do not contain Link tags.
 """
@@ -23,12 +23,12 @@ Only works for objects that do not contain Link tags.
 # TODO implement other tags (e.g. Table, Enum, Key, etc.).
 
 
-import CSP.SimData as SimData
-import CSP.CSPSim.cCSP
+from csp import csplib
+from csp import cspsim
 import domtree
 import sys
 
-InterfaceRegistry = SimData.InterfaceRegistry.getInterfaceRegistry()
+InterfaceRegistry = csplib.InterfaceRegistry.getInterfaceRegistry()
 
 class Tag_Object:
 	def __init__(self, node, parent=None):
@@ -36,7 +36,7 @@ class Tag_Object:
 		assert(node.name == 'Object')
 		self._name = node.attr('name')
 		self._klass = str(node.attr('class'))
-		assert(InterfaceRegistry.hasInterface(self._klass))
+		assert(InterfaceRegistry.hasInterface(self._klass)), self._klass
 		self._interface = InterfaceRegistry.getInterface(self._klass)
 		self._object = self._interface.createObject()
 		assert(self._object is not None)
@@ -79,20 +79,20 @@ class Tag_Bool:
 class Tag_Vector:
 	def __init__(self, node, parent):
 		name = node.attr('name')
-		vec = SimData.Vector3(*map(float, node.text.split()))
+		vec = csplib.Vector3(*map(float, node.text.split()))
 		parent.set(name, vec)
 
 class Tag_Path:
 	def __init__(self, node, parent):
 		name = node.attr('name')
-		path = SimData.LinkBase()
+		path = csplib.LinkBase()
 		path.setPath(node.text.encode('ascii'))
 		parent.set(name, path)
 
 class Tag_External:
 	def __init__(self, node, parent):
 		name = node.attr('name')
-		external = SimData.External()
+		external = csplib.External()
 		external.setSource(node.text.encode('ascii'))
 		parent.set(name, external)
 
@@ -117,10 +117,10 @@ def MakeObject(node, postCreate=1):
 	return object
 
 if __name__ == '__main__':
-	#tree = domtree.ParseFile('../../Data/XML/theater/balkan/forest.xml')
-	tree = domtree.ParseFile('../../Data/XML/theater/balkan/tower1/model.xml')
+	#tree = domtree.ParseFile('../../data/xml/theater/balkan/forest.xml')
+	tree = domtree.ParseFile('../../data/xml/theater/balkan/tower1/model.xml')
 	o = MakeObject(tree.children[0])
 	o._postCreate()
-	# the constructed object behaves like a SimData::Object pointer.  to do
+	# the constructed object behaves like a csplib::Object pointer.  to do
 	# anything useful with it, we need to pass it to C++ code that understands
 	# the real class type, or swig the appropriate class.

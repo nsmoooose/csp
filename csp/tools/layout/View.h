@@ -26,17 +26,18 @@
 
 #include <osg/Group>
 #include <osg/PositionAttitudeTransform>
-#include <string>
-#include <vector>
 #include <osg/Vec3>
 #include <OpenThreads/Mutex>
-#include <SimData/Object.h>
+
+#include <string>
+#include <vector>
 
 namespace osgProducer { class Viewer; }
 class FeatureGraph;
 class ViewManipulator;
 class PickHandler;
 class DynamicGrid;
+class RegionSelect;
 
 
 // TODO factor generic code from view and graph callbacks into a separate header.
@@ -186,6 +187,9 @@ public:
 		return m_Mutex.unlock();
 	}
 
+	void updateRegionSelection(float x0, float y0, float x1, float y1);
+	void finishRegionSelection(bool cancel);
+
 private:
 	void setViewAxis(osg::Vec3 const &axis, osg::Vec3 const &up);
 	void prepareScene();
@@ -199,6 +203,7 @@ private:
 	ViewManipulator *m_Manipulator;
 	PickHandler *m_Picker;
 	osg::ref_ptr<DynamicGrid> m_DynamicGrid;
+	osg::ref_ptr<RegionSelect> m_RegionSelect;
 
 	float m_MouseX;
 	float m_MouseY;

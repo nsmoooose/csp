@@ -15,10 +15,10 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 """
-This module provides optional access to the simdata::Object classes
-registered by CSPSim.  To load successfully, CSPSim must have been
-built in the current workspace.  If the CSPSim module (cCSP) cannot
-be loaded, none of the functions defined in this module will be
+This module provides optional access to the csp::Object classes
+registered by cspsim.  To load successfully, cspsim must have been
+built in the current workspace.  If the cspsim module cannot be
+loaded, none of the functions defined in this module will be
 available.
 """
 
@@ -33,15 +33,14 @@ import os.path
 # be a fatal error).
 ok = 1
 
-# Redirect SimData logging to a file if it isn't already.
-os.environ.setdefault('SIMDATA_LOGFILE', 'SimData.log')
+# Redirect csp module logging to a file if it isn't already.
+os.environ.setdefault('CSPLOG_FILE', 'layout.log')
 
-# Try to import SimData and CSPSim.  On failure this module is disabled.
+# Try to import csplib and cspsim.  On failure this module is disabled.
 try:
 	print 'Attempting to import CSP modules'
-	import CSP.SimData
-	import CSP.CSPSim.cCSP
-	import CSP.CSPSim.CSPSim
+	import csp.csplib
+	import csp.cspsim
 except ImportError, e:
 	print 'Error importing CSP modules', e
 	ok = 0
@@ -50,28 +49,33 @@ if ok:
 	import cLoader
 	import Object
 
-	CSP.CSPSim.cCSP.csplog().setLogCategory(CSP.CSPSim.cCSP.CSP_ALL)
-	CSP.CSPSim.cCSP.csplog().setLogPriority(CSP.SimData.LOG_ALERT)
+	#csp.csplib.log().setCategories(csp.csplib.cLogCategory_ALL)
+	#csp.csplib.log().setPriority(csp.csplib.cLogPriority_ERROR)
 
 	# Load the CSP interface registry.
-	reg = CSP.SimData.InterfaceRegistry.getInterfaceRegistry()
+	reg = csp.csplib.InterfaceRegistry.getInterfaceRegistry()
 	interface_names = reg.getInterfaceNames()
 	print 'CSP interface registry loaded (%d object classes)' % len(interface_names)
 
 	# FIXME Setup the data load path for ObjectModel.  This should really be read
 	# from the CSPSim.ini file.
-	ini = CSP.CSPSim.CSPSim.findConfig()
+	'''
+	ini = csp.cspsim.findConfig()
 	print 'Loading CSPSim.ini from %s' % ini
 	from ConfigParser import ConfigParser
 	config_parser = ConfigParser()
 	config_parser.readfp(open(ini))
 	data_path = config_parser.get('Paths', 'DataPath')
 	if not os.path.isabs(data_path):
+		#data_path = os.path.join(os.path.dirname(CSP.CSPSim.CSPSim.__file__), data_path)
 		data_path = os.path.join(os.path.dirname(CSP.CSPSim.CSPSim.__file__), data_path)
 	pathlist = os.pathsep.join([os.path.abspath(os.path.join(data_path, subdir)) for subdir in ('Images', 'Models', 'Fonts')])
 	print pathlist
+	'''
 
-	#pathlist = '../../Data/Images:../../Data/Models:../../Data/Fonts'
+	datapath = os.path.join(csp.dir, 'data')
+	datadirs = ('images', 'models', 'fonts', 'sounds')
+	pathlist = os.pathsep.join([os.path.join(datapath, subdir) for subdir in datadirs])
 	cLoader.setPathList(pathlist)
 
 	# Create an OSG subgraph for the specified FeatureModel domtree node.

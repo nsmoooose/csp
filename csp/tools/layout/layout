@@ -27,7 +27,8 @@ import os.path
 import cLayout
 import UI
 
-from CSP.base import app
+import csp
+from csp.base import app
 
 def run(view, ui):
 	view.run()
@@ -48,13 +49,13 @@ def main(args):
 	view.quit()
 
 # find the root of the CSP workspace
-base = os.path.dirname(os.path.dirname(app.__file__))
+base = csp.dir  #os.path.dirname(os.path.dirname(app.__file__))
 # default Data directory for CSPSim in the current workspace
-data = os.path.join(base, 'CSPSim', 'Data')
+data = os.path.join(base, 'data')
 # default XML data path
-xml_path = os.path.join(data, 'XML')
+xml_path = os.path.join(data, 'xml')
 # default 3D model path
-model_path = os.path.join(data, 'Models')
+model_path = os.path.join(data, 'models')
 
 app.addOption('--xml', default=xml_path, type='string', help='path to theater data')
 app.addOption('--model', default=model_path, type='string', help='path to 3d models')

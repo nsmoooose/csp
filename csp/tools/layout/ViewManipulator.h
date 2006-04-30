@@ -27,11 +27,13 @@
 #include "View.h"
 #include "Undo.h"
 
+#include <osg/io_utils>
 #include <osg/MatrixTransform>
 #include <osgGA/TrackballManipulator>
 #include <osgGA/GUIEventHandler>
 #include <osgGA/GUIActionAdapter>
 
+#include <cmath>
 
 /** Helper class for tracking changes to a layout node during manipulation.
  *  Stores the original matrix transform to allow the change to be cancelled.
@@ -262,6 +264,7 @@ class ViewManipulator : public osgGA::TrackballManipulator {
 							_distance = 200.0;
 						}
 						return true;
+
 					case osgGA::GUIEventAdapter::KEY_Home:
 						if (!_action) {
 							flushMouseEventStack();
@@ -297,6 +300,10 @@ class ViewManipulator : public osgGA::TrackballManipulator {
 							}
 							return true;
 						}
+						break;
+
+					case 'b':
+						//_box_select = true;
 						break;
 
 					case 'g':

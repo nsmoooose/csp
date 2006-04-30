@@ -19,66 +19,68 @@
 print 'COMBAT SIMULATOR PROJECT - CSP Theater Layout Tool'
 
 import sys
-from CSP.tools import build
+from csp.tools import build
 
 build.CheckSConsVersion('0.9.6')
 build.CheckPythonVersion('2.2.0')
+build.DevpackConfig.SetMinimumVersion('0.6')
 
-def Configure(env):
-	conf = build.CustomConfigure(env)
-	conf.CheckSwig('1.3.20')
-	conf.CheckOSGVersion('osg', '0.9.6')
-	conf.CheckOSGVersion('osgDB', '0.9.6')
-	conf.CheckOSGVersion('osgProducer', '0.9.6')
-	conf.CheckOSGVersion('osgUtil', '0.9.6')
+build.ExternalLibrary(
+	name = 'osg',
+	config = [
+		build.PkgConfig(package='openscenegraph', version='1.0.0'),
+		build.PkgConfig(package='openthreads', version='1.0.0'),
+		build.PkgConfig(package='producer', version='1.0.0'),
+		build.DevpackConfig(dlls=['osg', 'osgDB', 'osgFX', 'osgGA', 'osgParticle', 'osgProducer', 'osgText', 'osgUtil', 'OpenThreadsWin32'], headers=[('osg', 'Depth'), ('osgText', 'Font')]),
+	])
 
+class PlatformSettings:
+	def customize_linux(self, env):
+		env['CXXFLAGS'] = '-g -Wall -O2'
+		env['SWIGCXXFLAGS'] = '-O2 -g'
 
-settings = build.GlobalSettings(Configure)
-
-# global settings
+settings = build.GlobalSettings()
 settings.SWIGFLAGS = '-python -c++'
 settings.CXXFILESUFFIX = '.cpp'
-settings.CPPPATH = ['.', build.PYTHON_INCLUDE, '#/../../../SimData/Include', '#/../../Include']
-
-# platform settings
-if settings.IsLinux():
-	settings.CXXFLAGS = '-g -Wall -O2'
-	settings.SWIGCXXFLAGS = '-O2 -g'
-else:
-	settings.UnsupportedPlatform()
-
-# create the environment
+settings.CPPPATH = ['.', '#/../../..', build.PYTHON_INCLUDE]
+settings.AddPlatformSettings(PlatformSettings)
 env = settings.env()
 
+build.SourceGroup(env,
+	name = 'layout',
+	sources = [
+		'cLayout.i',
+		'DynamicGrid.cpp',
+		'FeatureGraph.cpp',
+		'LayoutNodes.cpp',
+		'PickHandler.cpp',
+		'RegionSelect.cpp',
+		'View.cpp',
+		'ViewEventHandler.cpp',
+	],
+	deps = ['osg'])
 
-layout_sources = """
-	DynamicGrid.cpp
-	FeatureGraph.cpp
-	LayoutNodes.cpp
-	PickHandler.cpp
-	View.cpp
-	ViewEventHandler.cpp
-	""".split()
+build.SourceGroup(env,
+	name = 'loader',
+	sources = [
+		'cLoader.i',
+		'Handle.cpp',
+		'Loader.cpp',
+	],
+	deps = ['osg'])
 
-# layout module
-cLayout_wrap, cLayout_module = env.Swig('cLayout.i')
-layout_sources.append(env.SwigWrapper(cLayout_wrap))
+build.SharedLibrary(env,
+	name = 'cLayout',
+	sources = ['@layout'],
+	aliases = 'all',
+	SHLIBPREFIX = '_')
 
-# layout shared library
-cLayout = env.SharedLibrary("#/_cLayout", layout_sources, SHLIBPREFIX = '')
-Default(cLayout)
+build.SharedLibrary(env,
+	name = 'cLoader',
+	sources = ['@loader'],
+	aliases = 'all',
+	SHLIBPREFIX = '_')
 
-
-loader_sources = """
-	Loader.cpp
-	Handle.cpp
-	""".split()
-
-# loader module
-cLoader_wrap, cLoader_module = env.Swig('cLoader.i')
-loader_sources.append(env.SwigWrapper(cLoader_wrap))
-
-# loader shared library
-cLoader = env.SharedLibrary("#/_cLoader", loader_sources, SHLIBPREFIX = '')
-Default(cLoader)
+build.BuildRegistry.Configure(env)
+build.BuildRegistry.Build()
 

@@ -26,13 +26,13 @@
 #include <string>
 
 namespace osg { class Node; }
-namespace simdata { class Object; }
+namespace csp { class Object; }
 
 // Retrieve the scene graph for an ObjectModel
-osg::ref_ptr<osg::Node> getObjectModel(simdata::Object *object);
+osg::ref_ptr<osg::Node> getObjectModel(csp::Object *object);
 
 // Retrieve the scene graph for an FeatureModel
-osg::ref_ptr<osg::Node> getFeatureModel(simdata::Object *object);
+osg::ref_ptr<osg::Node> getFeatureModel(csp::Object *object);
 
 // Set the pathlist (':' separated) for loading images, models, and fonts
 // when creating ObjectModels.

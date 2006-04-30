@@ -21,6 +21,7 @@
 
 #include "View.h"
 #include "DynamicGrid.h"
+#include "RegionSelect.h"
 #include "FeatureGraph.h"
 #include "PickHandler.h"
 #include "ViewEventHandler.h"
@@ -366,6 +367,8 @@ void View::prepareScene() {
 	makeLights(group);
 	makeGround(group);
 	m_DynamicGrid = new DynamicGrid();
+	m_RegionSelect = new RegionSelect();
+	group->addChild(m_RegionSelect.get());
 	group->addChild(m_DynamicGrid.get());
 	group->addChild(m_FeatureGraph->getScene().get());
 	m_Viewer->setSceneData(group);
@@ -410,6 +413,7 @@ void View::makeGround(osg::Group *group) {
 	ground_m->setSpecular(osg::Material::FRONT_AND_BACK, osg::Vec4(0.0,0.0,0.0,1.0));
 	ground_g->getOrCreateStateSet()->setAttributeAndModes(ground_m, osg::StateAttribute::ON);
 	ground_g->getOrCreateStateSet()->setAttributeAndModes(new osg::PolygonOffset(1.0, 1.0), osg::StateAttribute::ON);
+	ground_g->getOrCreateStateSet()->setRenderBinDetails(-3, "RenderBin");
 	group->addChild(ground_g);
 }
 
@@ -429,3 +433,11 @@ float View::getGridScale() const {
 	return m_DynamicGrid->getGridScale();
 }
 
+void View::updateRegionSelection(float x0, float y0, float x1, float y1) {
+	m_RegionSelect->show();
+	m_RegionSelect->update(x0, y0, x1, y1);
+}
+
+void View::finishRegionSelection(bool /*cancel*/) {
+	m_RegionSelect->hide();
+}

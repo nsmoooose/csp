@@ -34,7 +34,7 @@ def roundTo(x, dx):
 
 class DataPath:
 	"""
-	A class for managing file and xml paths in a SimData xml hierarchy.  The
+	A class for managing file and xml paths in the csp xml data hierarchy.  The
 	hierarchy has a root path, and the file path is any file ending with a
 	'.xml' extension under that root.  An xml path (or "data path" for lack
 	of a better term) is a special notation for referring to such files in
@@ -130,28 +130,47 @@ class DataPath:
 
 
 class NodeMap:
+	"""
+	NodeMap stores a map from C++ LayoutNode instances to Python Node instances.
+	The former are wrappers around OSG subgraphs that support placement and
+	rotation.  The latter represent primitive and non-primitive elements in the
+	XML tree.  NodeMaps are constructed when a Node hierarchy is first realized
+	(i.e. its LayoutNode dual is constructed), and are used to find Nodes
+	corresponding to elements in the scene.
+	"""
+
 	def __init__(self, graph):
+		"""
+		Construct a new NodeMap for a node hierarchy.  The graph argument is
+		a Node instance at the root of the hierarchy.
+		"""
 		self._map = {}
 		self._group_map = {}
 		self._group_cache = {}
-		self._root = None
+		self._root = None  # LayoutNode at the root of the graph
 		self._path = []
 		self._graph = graph
 
-	def add(self, node, feature_node):
-		# feature_node will be None for unsupported nodes; these are omitted from the map
-		if feature_node is not None:
+	def add(self, node, layout_node):
+		"""
+		Add a Node to LayoutNode association.  The first LayoutNode added to the
+		map will be treated as the root of the graph.
+		"""
+		# layout_node will be None for unsupported nodes; these are omitted from the map
+		if layout_node is not None:
 			# store this ptr as string; LayoutNodes are owned by the C++ code so it
 			# isn't safe to hold a real pointer.
-			self._map[feature_node.asNode().this] = node
+			key = str(layout_node.asNode().this)
+			self._map[key] = node
 			if self._root is None:
-				self._root = feature_node
+				self._root = layout_node
 
 	def addGroup(self, group, feature_node):
 		if feature_node is not None:
 			# store this ptr as string; LayoutNodes are owned by the C++ code so it
 			# isn't safe to hold a real pointer.
-			self._group_map[feature_node.asNode().this] = group
+			key = str(feature_node.asNode().this)
+			self._group_map[key] = group
 	
 	def cacheGroup(self, xmlpath, group):
 		self._group_cache[xmlpath] = group
@@ -169,12 +188,12 @@ class NodeMap:
 
 	def get(self, ptr):
 		if not isinstance(ptr, str):
-			ptr = ptr.asNode().this
+			ptr = str(ptr.asNode().this)
 		return self._map.get(ptr)
 
 	def getGroup(self, ptr):
 		if not isinstance(ptr, str):
-			ptr = ptr.asNode().this
+			ptr = str(ptr.asNode().this)
 		return self._group_map.get(ptr)
 
 	def graph(self):
@@ -206,6 +225,26 @@ class NodeMap:
 
 
 class Node:
+	"""
+	Node represents an abstract element in the XML DOM tree.  Node subclasses
+	can represent primitive elements, such as integer values (<Int> tags), or
+	complex elements such as Object classes (<Object> tags).
+
+	Nodes form a tree that mirrors the DOM structure.  Nodes record which
+	source file they originate from to allow saving modifications back to the
+	original xml file.  Node instances provide accessors for their contents and
+	track modifications through a dirty flag.  To support "undo" functionality,
+	nodes can be marked as deleted without removing them from the tree.
+
+	A Node tree can be "realized" to create a parallel tree of LayoutNode
+	instances (C++) that wrap the objects described by the xml structure.
+	During realization, a NodeMap is constructed to associate LayoutNodes with
+	the corresponding Node instances.  In turn, LayoutNodes are typically
+	realized to generate scene graph nodes.  These nodes are linked back to the
+	LayoutNodes via the "user data" field in osg::Object, allowing
+	bi-directional traversal between Nodes and osg::Objects.
+	"""
+
 	Classes = {}
 
 	def __init__(self, node, parent, path):
@@ -699,7 +738,7 @@ class FeatureObjectModel(Node):
 			else:
 				# load the model, correcting only the offset and orientation
 				path = str(object_model.model_path)
-				path = os.path.join('../../Data/Models', path)  # XXX path hack
+				path = os.path.join('../../data/models', path)  # XXX path hack
 				offset = object_model.offset
 				axis_0 = object_model.axis_0
 				axis_1 = object_model.axis_1

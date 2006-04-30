@@ -227,6 +227,10 @@ void LandingGear::updateWOW(Vector3 const &origin, Quat const &q, Vector3 const 
 			m_TouchdownSkid = fabs(vGroundBody.length() - getWheelSpeed()) > 10.0 * (1.0 - m_TouchdownVerticalVelocity);
 			m_TouchdownPoint = origin + q.rotate(m_Position);
 			b_WOW->value() = true;
+			// play touchdown sound
+			if (m_TouchdownSkid) {
+				if (getTouchdownSound().valid()) getTouchdownSound()->play();
+			}
 		}
 	} else {
 		b_WOW->value() = false;
@@ -776,12 +780,12 @@ void GearDynamics::postSimulationStep(double dt) {
 		m_Gear[i]->postSimulationStep(dt, model_origin_local, vBody, *m_Attitude, m_Height, m_GroundNormalBody);
 		// generic WOW signal (any gear in contact with the ground triggers it)
 		if (m_Gear[i]->getWOW()) b_WOW->value() = true;
-		if (m_Gear[i]->getTouchdown()) {
-			if (m_Gear[i]->getTouchdownSkid()) {
-				if (m_Gear[i]->getTouchdownSound().valid()) m_Gear[i]->getTouchdownSound()->play();
-			}
-			m_Gear[i]->resetTouchdown();
-		}
+		//if (m_Gear[i]->getTouchdown()) {
+		//	if (m_Gear[i]->getTouchdownSkid()) {
+		//		if (m_Gear[i]->getTouchdownSound().valid()) m_Gear[i]->getTouchdownSound()->play();
+		//	}
+		//	m_Gear[i]->resetTouchdown();
+		//}
 	}
 }
 

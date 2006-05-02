@@ -33,6 +33,7 @@
  *    - move spindown to common method
  *    - base spindown on friction coefficient (Real)
  *    - real wheel inertia?
+ *	Touchdown check via push channel
  *
  */
 
@@ -780,12 +781,10 @@ void GearDynamics::postSimulationStep(double dt) {
 		m_Gear[i]->postSimulationStep(dt, model_origin_local, vBody, *m_Attitude, m_Height, m_GroundNormalBody);
 		// generic WOW signal (any gear in contact with the ground triggers it)
 		if (m_Gear[i]->getWOW()) b_WOW->value() = true;
-		//if (m_Gear[i]->getTouchdown()) {
-		//	if (m_Gear[i]->getTouchdownSkid()) {
-		//		if (m_Gear[i]->getTouchdownSound().valid()) m_Gear[i]->getTouchdownSound()->play();
-		//	}
-		//	m_Gear[i]->resetTouchdown();
-		//}
+		// TODO: The touchdown flag should be implemented as a push channel
+		if (m_Gear[i]->getTouchdown()) {
+			m_Gear[i]->resetTouchdown();
+		}
 	}
 }
 

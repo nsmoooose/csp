@@ -95,6 +95,9 @@ public:
 	virtual double getThrust() const { return m_LastThrust; };
 	virtual Vector3 getThrustVector() const { return m_LastThrust * m_ThrustDirection; }
 
+	Ref<SoundEffect> getEngineSound() const { return m_EngineSound; }
+	Ref<SoundEffect> getAfterburnerSound () const { return m_AfterburnerSound; }
+
 	Vector3 const &getSmokeEmitterLocation() const;
 
 	virtual void update(double) { updateThrust(); }
@@ -115,8 +118,9 @@ protected:
 	 */
 	virtual void bindSounds(SoundModel *model, ResourceBundle *bundle=0);
 
-	// A single external sound for now.
+	// Engine sounds
 	Ref<SoundEffect> m_EngineSound;
+	Ref<SoundEffect> m_AfterburnerSound;
 };
 
 

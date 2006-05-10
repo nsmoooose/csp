@@ -88,17 +88,30 @@ void Engine::bindSounds(SoundModel* model, ResourceBundle* bundle) {
 	assert(model);
 	CSPLOG(DEBUG, AUDIO) << "Engine::bindSounds";
 	if (bundle) {
+		// set main engine sound
 		CSPLOG(DEBUG, AUDIO) << "Engine::bindSounds have bundle";
-		Ref<const SoundSample> sample(bundle->getSoundSample("engine"));
-		m_EngineSound = SoundEffect::ExternalSound(sample, model);
+		Ref<const SoundSample> engine_sample(bundle->getSoundSample("engine"));
+		m_EngineSound = SoundEffect::ExternalSound(engine_sample, model);
 		if (m_EngineSound.valid()) {
-			CSPLOG(DEBUG, AUDIO) << "Engine::bindSounds have sound";
+			CSPLOG(DEBUG, AUDIO) << "Engine::bindSounds engine sound available";
 			m_EngineSound->state()->setPosition(toOSG(m_EngineOffset));
 			m_EngineSound->state()->setDirection(toOSG(m_ThrustDirection));
 			CSPLOG(DEBUG, AUDIO) << "engine sound position " << m_EngineOffset;
 			CSPLOG(DEBUG, AUDIO) << "engine sound direction " << m_ThrustDirection;
 			m_EngineSound->state()->apply();
-			m_EngineSound->play();  // TODO rpm dependence
+			m_EngineSound->play();	// ToDo: check if engine's really running
+		}
+
+		// set afterburner sound
+		Ref<const SoundSample> afterburner_sample(bundle->getSoundSample("afterburner"));
+		m_AfterburnerSound = SoundEffect::ExternalSound(afterburner_sample, model);
+		if (m_AfterburnerSound.valid()) {
+			CSPLOG(DEBUG, AUDIO) << "Engine::bindSounds afterburner sound available";
+			m_AfterburnerSound->state()->setPosition(toOSG(m_EngineOffset));
+			m_AfterburnerSound->state()->setDirection(toOSG(m_ThrustDirection));
+			CSPLOG(DEBUG, AUDIO) << "afterburner sound position " << m_EngineOffset;
+			CSPLOG(DEBUG, AUDIO) << "afterburner sound direction " << m_ThrustDirection;
+			m_AfterburnerSound->state()->apply();
 		}
 	}
 	CSPLOG(DEBUG, AUDIO) << "Engine::bindSounds exit";
@@ -196,6 +209,8 @@ std::vector<Vector3> EngineDynamics::getSmokeEmitterLocation() const {
 void EngineDynamics::preSimulationStep(double dt) {
 	BaseDynamics::preSimulationStep(dt);
 	m_Force = m_Moment = Vector3::ZERO;
+	float fPitch, fBlend;
+	bool isPlaying;
 	if (!m_Engine.empty()) {
 		const double alpha = b_Alpha->value();
 		const double altitude = m_PositionLocal->z();
@@ -212,6 +227,32 @@ void EngineDynamics::preSimulationStep(double dt) {
 			Vector3 force = (*i)->getThrustVector();
 			m_Force += force;
 			m_Moment += (*i)->m_EngineOffset ^ force;
+			fBlend = (*i)->getBlend();
+			fPitch = fBlend;
+			// Using fBlend as a modulator for pitch and gain is a simple ad-hoc
+			// solution, but yields to nice results. fPitch must be clamped to 1.999,
+			// because OpenAL crashes when using a value >= 2.0
+			if((*i)->m_EngineSound.valid()) {
+				if (fBlend >= 2.0) {
+					fPitch = 1.999;
+				}
+				(*i)->m_EngineSound->state()->setPitch(fPitch);
+				(*i)->m_EngineSound->state()->setGain(fBlend);
+				(*i)->m_EngineSound->state()->apply();
+			}
+
+			// the afterburner sound is played when fBlend is between 2 and 3
+			// ToDo: check whether this is the right parameter to determine if burner is running
+			if((*i)->m_AfterburnerSound.valid()) {
+				(*i)->m_AfterburnerSound->state()->setGain(fBlend);
+				isPlaying = (*i)->m_AfterburnerSound->state()->getPlay();
+				if (fBlend > 2.0 && !isPlaying) {
+					(*i)->m_AfterburnerSound->play();
+				}
+				if (fBlend <= 2.0 && isPlaying) {
+					(*i)->m_AfterburnerSound->play(false);
+				}
+			}
 		}
 	}
 }

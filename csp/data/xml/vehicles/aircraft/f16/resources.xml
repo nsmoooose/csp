@@ -23,6 +23,14 @@
 			<Int name="priority">10</Int>
 		</Object>
 		<Object class="SoundSample">
+			<String name="name">afterburner</String>
+			<External name="filename">../data/sounds/afterburner.ogg</External>
+			<Bool name="looping">true</Bool>
+			<Float name="reference_distance">70.0</Float>
+			<Float name="max_distance">50000.0</Float>
+			<Int name="priority">10</Int>
+		</Object>
+		<Object class="SoundSample">
 			<String name="name">wheel_touchdown</String>
 			<External name="filename">../data/sounds/f16_touchdown.ogg</External>
 			<Bool name="looping">false</Bool>

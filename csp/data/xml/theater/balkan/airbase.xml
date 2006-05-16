@@ -283,35 +283,18 @@
 <!-- Control Tower  -->
         <Object class="FeatureLayout">
             <Path name="model">tower1</Path>
-            <Float name="x">393</Float>
-            <Float name="y">-30</Float>
+            <Float name="x">272</Float>
+            <Float name="y">-57</Float>
             <Float name="orientation">1.57</Float>
         </Object>
+<!-- Bigs Hangars -->
         <Object class="FeatureLayout">
             <Path name="model">hangar2</Path>
             <Float name="x">421</Float>
             <Float name="y">-252</Float>
             <Float name="orientation">-1.57</Float>
         </Object>
-        <Object class="FeatureLayout">
-            <Path name="model">flag01</Path>
-            <Float name="x">340</Float>
-            <Float name="y">1400</Float>
-            <Float name="orientation">1.57</Float>
-        </Object>
-        <Object class="FeatureLayout">
-            <Path name="model">bureau01</Path>
-            <Float name="x">340</Float>
-            <Float name="y">1420</Float>
-            <Float name="orientation">1.57</Float>
-        </Object>
-        <Object class="FeatureLayout">
-            <Path name="model">bureau01</Path>
-            <Float name="x">340</Float>
-            <Float name="y">1380</Float>
-            <Float name="orientation">1.57</Float>
-        </Object>
-        <!-- Taxi signalisation -->
+<!-- Taxi signalisation -->
         <Object class="FeatureLayout">
             <Path name="model">caissons.caisson01</Path>
             <Float name="x">365</Float>
@@ -426,6 +409,7 @@
             <Float name="y">-553</Float>
             <Float name="orientation">1.57</Float>
         </Object>
+<!-- Lights Pylons -->
         <Object class="FeatureLayout">
             <Path name="model">lightpylon</Path>
             <Float name="x">405</Float>
@@ -444,71 +428,57 @@
             <Float name="y">-572</Float>
             <Float name="orientation">-1.57</Float>
         </Object>
+<!-- O2 Unit -->
         <Object class="FeatureLayout">
             <Path name="model">O2_unit</Path>
             <Float name="x">355</Float>
             <Float name="y">-245</Float>
             <Float name="orientation">2.57</Float>
         </Object>
+<!-- Bombs Trailer -->
         <Object class="FeatureLayout">
             <Path name="model">bombs_trailer</Path>
             <Float name="x">400</Float>
             <Float name="y">-250</Float>
             <Float name="orientation">0</Float>
         </Object>
+<!-- Hangars -->
         <Object class="FeatureLayout">
             <Path name="model">hangar</Path>
-            <Float name="x">231</Float>
-            <Float name="y">1253</Float>
-            <Float name="orientation">-0.75</Float>
-        </Object>
-        <Object class="FeatureLayout">
-            <Path name="model">hangar</Path>
-            <Float name="x">208</Float>
-            <Float name="y">1326</Float>
-            <Float name="orientation">-0.20</Float>
+            <Float name="x">394</Float>
+            <Float name="y">1346</Float>
+            <Float name="orientation">-1.60</Float>
         </Object>
         <Object class="FeatureLayout">
             <Path name="model">hangar</Path>
-            <Float name="x">192</Float>
-            <Float name="y">1433</Float>
-            <Float name="orientation">-2.10</Float>
-        </Object>
-        <Object class="FeatureLayout">
-            <Path name="model">hangar</Path>
-            <Float name="x">208</Float>
-            <Float name="y">1510</Float>
-            <Float name="orientation">-1.6</Float>
-        </Object>
-        <Object class="FeatureLayout">
-            <Path name="model">hangar</Path>
-            <Float name="x">258</Float>
-            <Float name="y">1585</Float>
-            <Float name="orientation">-2.9</Float>
-        </Object>
-        <Object class="FeatureLayout">
-            <Path name="model">forest</Path>
-            <Float name="x">220</Float>
-            <Float name="y">1283</Float>
-            <Float name="orientation">0</Float>
-        </Object>
-        <Object class="FeatureLayout">
-            <Path name="model">forest</Path>
-            <Float name="x">225</Float>
-            <Float name="y">1377</Float>
-            <Float name="orientation">0</Float>
-        </Object>
-        <Object class="FeatureLayout">
-            <Path name="model">forest</Path>
-            <Float name="x">200</Float>
-            <Float name="y">1482</Float>
-            <Float name="orientation">0</Float>
-        </Object>
-        <Object class="FeatureLayout">
-            <Path name="model">forest1</Path>
             <Float name="x">357</Float>
-            <Float name="y">1430</Float>
-            <Float name="orientation">0</Float>
+            <Float name="y">1410</Float>
+            <Float name="orientation">-2.80</Float>
+        </Object>
+        <Object class="FeatureLayout">
+            <Path name="model">hangar</Path>
+            <Float name="x">346</Float>
+            <Float name="y">1506</Float>
+            <Float name="orientation">-2.20</Float>
+        </Object>
+        <Object class="FeatureLayout">
+            <Path name="model">hangar</Path>
+            <Float name="x">341</Float>
+            <Float name="y">1564</Float>
+            <Float name="orientation">-1.53</Float>
+        </Object>
+        <Object class="FeatureLayout">
+            <Path name="model">hangar</Path>
+            <Float name="x">332</Float>
+            <Float name="y">1620</Float>
+            <Float name="orientation">-0.30</Float>
+        </Object>
+<!-- Trees -->
+        <Object class="FeatureLayout">
+            <Path name="model">forest</Path>
+            <Float name="x">343</Float>
+            <Float name="y">1427</Float>
+            <Float name="orientation">-0.50</Float>
         </Object>
     </List>
 </Object>

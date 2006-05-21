@@ -68,7 +68,7 @@ public:
 
 	/** Get the FeatureGraph.
 	 */
-	FeatureGraph* graph() { return m_FeatureGraph; }
+	FeatureGraph* graph() { assert(m_FeatureGraph); return m_FeatureGraph; }
 
 	/** Set the view to look along the X-axis.  The sign of the viewing direction
 	 *  projection onto the X-axis is not changed.
@@ -200,8 +200,8 @@ private:
 
 	osgProducer::Viewer *m_Viewer;
 	FeatureGraph *m_FeatureGraph;
-	ViewManipulator *m_Manipulator;
-	PickHandler *m_Picker;
+	osg::ref_ptr<ViewManipulator> m_Manipulator;
+	osg::ref_ptr<PickHandler> m_Picker;
 	osg::ref_ptr<DynamicGrid> m_DynamicGrid;
 	osg::ref_ptr<RegionSelect> m_RegionSelect;
 

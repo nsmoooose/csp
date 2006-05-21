@@ -96,7 +96,7 @@ int View::init(int argc, char **argv) {
 	// set up the viewer and add our event handlers
 	m_Viewer->setUpViewer(osgProducer::Viewer::HEAD_LIGHT_SOURCE);
 	m_Viewer->getEventHandlerList().push_back(new ViewEventHandler(this, m_Viewer));
-	m_Viewer->addCameraManipulator(m_Manipulator);
+	m_Viewer->addCameraManipulator(m_Manipulator.get());
 
 	// get details on keyboard and mouse bindings used by the viewer.
 	m_Viewer->getUsage(*arguments.getApplicationUsage());
@@ -118,7 +118,7 @@ int View::init(int argc, char **argv) {
 
 	// add the handler for doing the picking
 	m_Picker = new PickHandler(this);
-	m_Viewer->getEventHandlerList().push_front(m_Picker);
+	m_Viewer->getEventHandlerList().push_front(m_Picker.get());
 
 	// add lights, ground, grid, etc. to the scene.
 	prepareScene();
@@ -145,10 +145,15 @@ int View::init(int argc, char **argv) {
 }
 
 View::~View() {
-	if (m_Viewer) delete m_Viewer;
-	if (m_Manipulator) delete m_Manipulator;
-	if (m_Picker) delete m_Picker;
-	if (m_FeatureGraph) delete m_FeatureGraph;
+	if (m_Manipulator.valid()) m_Manipulator->disconnect();
+	if (m_FeatureGraph) {
+		delete m_FeatureGraph;
+		m_FeatureGraph = NULL;
+	}
+	if (m_Viewer) {
+		delete m_Viewer;
+		m_Viewer = NULL;
+	}
 }
 
 void View::run() {
@@ -184,7 +189,7 @@ void View::run() {
 	// and by not deleting the viewer we get a clean exit.
 	//
 	//delete m_Viewer;
-	m_Viewer = 0;
+	//m_Viewer = 0;
 }
 
 void View::quit() {

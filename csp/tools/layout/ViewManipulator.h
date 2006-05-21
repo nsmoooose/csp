@@ -154,7 +154,14 @@ class ViewManipulator : public osgGA::TrackballManipulator {
 	}
 
 	~ViewManipulator() {
-		_view->graph()->removeCallback(_graph_event_adapter_id);
+		disconnect();
+	}
+
+	void disconnect() {
+		if (_view) {
+			_view->graph()->removeCallback(_graph_event_adapter_id);
+			_view = NULL;
+		}
 	}
 
 	virtual const char * className() const { return "ViewManipulator"; }
@@ -164,13 +171,13 @@ class ViewManipulator : public osgGA::TrackballManipulator {
 	void setMoveMode() {
 		if (_action) cancelAction();
 		_mode = MOVE;
-		_view->signalEditMode();
+		if (_view) _view->signalEditMode();
 	}
 
 	void setRotateMode() {
 		if (_action) cancelAction();
 		_mode = ROTATE;
-		_view->signalEditMode();
+		if (_view) _view->signalEditMode();
 	}
 
 	/** Get the current view point.
@@ -257,7 +264,7 @@ class ViewManipulator : public osgGA::TrackballManipulator {
 					case 'z':
 						if (ea.getModKeyMask() & osgGA::GUIEventAdapter::MODKEY_CTRL) {
 							// ctrl-z is undo last command
-							_view->graph()->undo();
+							if (_view) _view->graph()->undo();
 						} else {
 							// 'z' move the camera to 200 m directly over the view point.
 							_rotation = osg::Quat();
@@ -314,7 +321,7 @@ class ViewManipulator : public osgGA::TrackballManipulator {
 					case 'r':
 						if (ea.getModKeyMask() & osgGA::GUIEventAdapter::MODKEY_CTRL) {
 							// ctrl-r is redo last undone command
-							_view->graph()->redo();
+							if (_view) _view->graph()->redo();
 						} else {
 							// 'r' switches to "rotate mode" (layout node rotation)
 							setRotateMode();
@@ -331,11 +338,11 @@ class ViewManipulator : public osgGA::TrackballManipulator {
 						// while shift-tab activates the parent of the current active group.
 						if (!_action && _active_group) {
 							if (ea.getModKeyMask() & osgGA::GUIEventAdapter::MODKEY_SHIFT) {
-								_view->graph()->activateParent();
+								if (_view) _view->graph()->activateParent();
 							} else {
 								LayoutNode *node = _active_group->getOnlySelectedChild();
 								if (node && node->isGroup()) {
-									_view->graph()->activateChild(node->asGroup());
+									if (_view) _view->graph()->activateChild(node->asGroup());
 								}
 							}
 						}
@@ -344,7 +351,7 @@ class ViewManipulator : public osgGA::TrackballManipulator {
 					case osgGA::GUIEventAdapter::KEY_End:
 						// make the top feature group the active group.
 						if (!_action && _active_group) {
-							_view->graph()->activateRoot();
+							if (_view) _view->graph()->activateRoot();
 						}
 						break;
 
@@ -363,7 +370,7 @@ protected:
 	/** Move the camera in response to mouse input.
 	 */
 	virtual bool manipulateViews() {
-		_view->updatePosition(0, 0, 0, 0, 0, 0, 0);
+		if (_view) _view->updatePosition(0, 0, 0, 0, 0, 0, 0);
 
 		// return if less then two events have been added.
 		if (_ga_t0.get()==NULL || _ga_t1.get()==NULL) return false;
@@ -429,7 +436,7 @@ protected:
 		if (!_action_trigger) {
 			float pixel_x;
 			float pixel_y;
-			_view->computePixelCoords(_ga_t0->getXnormalized(), _ga_t0->getYnormalized(), pixel_x, pixel_y);
+			if (_view) _view->computePixelCoords(_ga_t0->getXnormalized(), _ga_t0->getYnormalized(), pixel_x, pixel_y);
 			pixel_x -= _action_start_pixel_x;
 			pixel_y -= _action_start_pixel_y;
 			const float min_motion = 5.0f;  // pixels
@@ -457,7 +464,7 @@ protected:
 				}
 			}
 			if (grid) {
-				float scale = _view->getGridScale();
+				float scale = (_view ? _view->getGridScale() : 1.0f);
 				if (precision) scale *= 0.1;
 				motion.x() = floor(motion.x()/scale + 0.5) * scale;
 				motion.y() = floor(motion.y()/scale + 0.5) * scale;
@@ -472,7 +479,7 @@ protected:
 				iter->moveBy(motion.x(), motion.y());
 			}
 
-			_view->updatePosition(0, 0, 0, 0, motion.x(), motion.y(), 0);
+			if (_view) _view->updatePosition(0, 0, 0, 0, motion.x(), motion.y(), 0);
 		} else if (_mode == ROTATE) {
 			float scale = 2.0f;
 			if (precision) scale *= 0.2;
@@ -493,7 +500,7 @@ protected:
 			for (ManipulatedNode::List::iterator iter = _targets.begin(); iter != _targets.end(); ++iter) {
 				iter->rotateBy(angle);
 			}
-			_view->updatePosition(0, 0, 0, 0, 0, 0, angle);
+			if (_view) _view->updatePosition(0, 0, 0, 0, 0, 0, angle);
 		}
 
 		_action_constrain = constrain;
@@ -503,8 +510,8 @@ protected:
 	/** Pass the current mouse coordinates to the view.
 	 */
 	void updateCoordinates(const osgGA::GUIEventAdapter& ea) {
-		_view->updateMouseCoordinates(ea.getXnormalized(), ea.getYnormalized());
-		_view->updatePosition(ea.getXnormalized(), ea.getYnormalized(), 0, 0, 0, 0, 0);
+		if (_view) _view->updateMouseCoordinates(ea.getXnormalized(), ea.getYnormalized());
+		if (_view) _view->updatePosition(ea.getXnormalized(), ea.getYnormalized(), 0, 0, 0, 0, 0);
 	}
 
 	/** Start to manipulate the selected layout nodes.  Each call to beginAction() must
@@ -517,7 +524,7 @@ protected:
 
 		_action_start_x_normalized = _ga_t0->getXnormalized();
 		_action_start_y_normalized = _ga_t0->getYnormalized();
-		_view->computePixelCoords(_ga_t0->getXnormalized(), _ga_t0->getYnormalized(), _action_start_pixel_x, _action_start_pixel_y);
+		if (_view) _view->computePixelCoords(_ga_t0->getXnormalized(), _ga_t0->getYnormalized(), _action_start_pixel_x, _action_start_pixel_y);
 		_action_trigger = false;
 		_action_constrain = false;
 		_action_angle = 0.0;
@@ -554,7 +561,7 @@ protected:
 		if (_action_trigger) {
 			std::string label = (_mode == MOVE ? "move node" : "rotate node");
 			if (_targets.size() > 1) label += 's';
-			_view->graph()->runCommand(new ManipulateCommand(_targets, label));
+			if (_view) _view->graph()->runCommand(new ManipulateCommand(_targets, label));
 		}
 		_targets.clear();
 		_action = false;
@@ -563,7 +570,7 @@ protected:
 	/** Delete all layout nodes in the current selection.
 	 */
 	void deleteSelectedNodes() {
-		_view->deleteSelectedNodes();
+		if (_view) _view->deleteSelectedNodes();
 	}
 
 	View *_view;

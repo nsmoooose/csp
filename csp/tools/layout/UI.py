@@ -356,6 +356,10 @@ class MainWindow(wxFrame):
 		self._status_bar = self.CreateStatusBar(2)
 		self._status_bar.SetStatusWidths([-1, 130])
 		self._status_bar.SetStatusText('', 0)
+		self._graph_event_callback = None
+		self._graph_event_callback_id = None
+		self._view_event_callback = None
+		self._view_event_callback_id = None
 
 		# TODO update the statusbar via graph/view callbacks, not a timer
 		self._status_timer = wxPyTimer(self.UpdateStatusBar)
@@ -376,6 +380,12 @@ class MainWindow(wxFrame):
 		self.UpdateTree()
 		self.UpdateTools()
 		self.setFilename(None)
+
+	def __del__(self):
+		if self._graph_event_callback_id is not None:
+			self._view.graph().removeCallback(self._graph_event_callback_id)
+		if self._view_event_callback_id is not None:
+			self._view.removeCallback(self._view_event_callback_id)
 
 	def UpdateStatusBar(self, *args):
 		state = ''
@@ -408,7 +418,7 @@ class MainWindow(wxFrame):
 	def SetGraphCallback(self):
 		self._graph_event_callback = GraphCallback(self)
 		self._graph_event_callback.thisown = 0
-		self._view.graph().addCallback(self._graph_event_callback)
+		self._graph_event_callback_id = self._view.graph().addCallback(self._graph_event_callback)
 		GraphCallback.SelectEvent.BIND(self, self.onSelect)
 		GraphCallback.DeselectEvent.BIND(self, self.onDeselect)
 		GraphCallback.SelectionClearEvent.BIND(self, self.onSelectionClear)
@@ -418,7 +428,7 @@ class MainWindow(wxFrame):
 	def SetViewCallback(self):
 		self._view_event_callback = ViewCallback(self)
 		self._view_event_callback.thisown = 0
-		self._view.addCallback(self._view_event_callback)
+		self._view_event_callback_id = self._view.addCallback(self._view_event_callback)
 		ViewCallback.MoveModeEvent.BIND(self, self.onMoveMode)
 		ViewCallback.RotateModeEvent.BIND(self, self.onRotateMode)
 		ViewCallback.UpdatePositionEvent.BIND(self, self.onUpdatePosition)
@@ -437,7 +447,7 @@ class MainWindow(wxFrame):
 			child = self._tree.GetPyData(id)
 			if child is not None:
 				child = child.asNode()
-				print 'FindChildNode:', child.this, node.this
+				#print 'FindChildNode: %s, %s' % (child.this, node.this)
 				if child.this == node.this: return id
 			id = self._tree.GetNextSibling(id)
 		return None

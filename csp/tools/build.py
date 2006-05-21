@@ -1289,7 +1289,8 @@ class SharedLibrary:
 		bdeps = Flatten(bdeps)
 		objects = Flatten(objects)
 		settings.merge(self._options)
-		shlib = self._env.SharedLibrary(self._target, objects, **settings)
+		settings.apply(self._env);
+		shlib = self._env.SharedLibrary(self._target, objects)
 		Alias = SCons.Defaults.DefaultEnvironment().Alias
 		Alias(self._name, shlib)
 		if self._aliases:

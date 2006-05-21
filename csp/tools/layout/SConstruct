@@ -31,23 +31,40 @@ build.ExternalLibrary(
 		build.PkgConfig(package='openscenegraph', version='1.0.0'),
 		build.PkgConfig(package='openthreads', version='1.0.0'),
 		build.PkgConfig(package='producer', version='1.0.0'),
-		build.DevpackConfig(dlls=['osg', 'osgDB', 'osgFX', 'osgGA', 'osgParticle', 'osgProducer', 'osgText', 'osgUtil', 'OpenThreadsWin32'], headers=[('osg', 'Depth'), ('osgText', 'Font')]),
+		build.DevpackConfig(dlls=['osg', 'osgDB', 'osgFX', 'osgGA', 'osgParticle', 'osgProducer', 'osgText', 'osgUtil', 'OpenThreadsWin32', 'Producer'], headers=[('osg', 'Depth'), ('osgText', 'Font')]),
 	])
 
 class PlatformSettings:
 	def customize_linux(self, env):
 		env['CXXFLAGS'] = '-g -Wall -O2'
 		env['SWIGCXXFLAGS'] = '-O2 -g'
+	def customize_win(self, env):
+		env.CopyEnvironment(Split('PATH INCLUDE LIB'))
+		env['CXXFLAGS'] = Split('/GR /MD /O2 /EHsc /W3 /Zi /nologo')
+		env.AppendUnique(CPPDEFINES=Split('WIN32 __WIN32__ _USRDLL _DLL NDEBUG _CRT_SECURE_NO_DEPRECATE'))
+		env.AppendUnique(LINKFLAGS=Split('/INCREMENTAL:NO /RELEASE /nologo'))
+		env.AppendUnique(SHLINKFLAGS=Split('/INCREMENTAL:NO /RELEASE /nologo'))
+		env.AppendUnique(LIBPATH=[build.PYTHON_LIBRARY])
+		# currently there isn't a clean way to depend on the csplib/cspsim libs since they are
+		# under a separate SConstruct file.  probably should merge this SConstruct into the
+		# global one, but for now we just specify the libs by hand.
+		env.AppendUnique(LIBPATH=['#/../../cspsim/.bin', '#/../../csplib/.bin'])
+		env.AppendUnique(SHLINKFLAGS=[Split('%s %s' % ('cspsim.lib', 'csplib.lib'))])
+
+
+INCLUDES = ['#', '#/../../..', build.PYTHON_INCLUDE]
 
 settings = build.GlobalSettings()
 settings.SWIGFLAGS = '-python -c++'
 settings.CXXFILESUFFIX = '.cpp'
-settings.CPPPATH = ['.', '#/../../..', build.PYTHON_INCLUDE]
+settings.CPPPATH = INCLUDES
+settings.SWIGINCLUDES = INCLUDES
 settings.AddPlatformSettings(PlatformSettings)
 env = settings.env()
 
-build.SourceGroup(env,
-	name = 'layout',
+
+build.SharedLibrary(env,
+	name = 'cLayout',
 	sources = [
 		'cLayout.i',
 		'DynamicGrid.cpp',
@@ -58,26 +75,18 @@ build.SourceGroup(env,
 		'View.cpp',
 		'ViewEventHandler.cpp',
 	],
-	deps = ['osg'])
-
-build.SourceGroup(env,
-	name = 'loader',
-	sources = [
-		'cLoader.i',
-		'Handle.cpp',
-		'Loader.cpp',
-	],
-	deps = ['osg'])
-
-build.SharedLibrary(env,
-	name = 'cLayout',
-	sources = ['@layout'],
+	deps = ['osg'],
 	aliases = 'all',
 	SHLIBPREFIX = '_')
 
 build.SharedLibrary(env,
 	name = 'cLoader',
-	sources = ['@loader'],
+	sources = [
+		'cLoader.i',
+		'Handle.cpp',
+		'Loader.cpp',
+	],
+	deps = ['osg'],
 	aliases = 'all',
 	SHLIBPREFIX = '_')
 

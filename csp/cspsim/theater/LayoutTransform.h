@@ -26,6 +26,7 @@
 #ifndef __CSPSIM_THEATER_LAYOUTTRANSFORM_H__
 #define __CSPSIM_THEATER_LAYOUTTRANSFORM_H__
 
+#include <csp/cspsim/Export.h>
 #include <csp/csplib/util/Namespace.h>
 #include <osg/Vec3>
 
@@ -38,7 +39,7 @@ class Vector3;
  *
  * A helper class for accumulationg and applying 2D displacements and rotations.
  */
-class LayoutTransform {
+class CSPSIM_EXPORT LayoutTransform {
 	float m_X, m_Y, m_Angle;
 	float c, s;
 public:

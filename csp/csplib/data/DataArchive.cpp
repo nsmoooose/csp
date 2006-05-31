@@ -340,7 +340,7 @@ const LinkBase DataArchive::getObject(const Path& path, std::string const &path_
 		if (_manager == 0) throw;
 		return _manager->getObject(path, path_str, this);
 	}
-	CSPLOG(DEBUG, ARCHIVE) << "getObject using interface registry @ 0x" << std::hex << int(&(InterfaceRegistry::getInterfaceRegistry()));
+	CSPLOG(DEBUG, ARCHIVE) << "getObject using interface registry @ " << (&(InterfaceRegistry::getInterfaceRegistry()));
 	InterfaceProxy *proxy = InterfaceRegistry::getInterfaceRegistry().getInterface(t->classhash);
 	std::string from = path_str;
 	if (from == "") from = getPathString(path.getPath());

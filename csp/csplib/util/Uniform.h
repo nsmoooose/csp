@@ -28,6 +28,8 @@
 #include <csp/csplib/util/Config.h>
 #include <csp/csplib/util/Namespace.h>
 
+#include <cstring>  // for memcpy
+
 CSP_NAMESPACE
 
 
@@ -89,6 +91,25 @@ typedef unsigned long long uint64;
 # define CSP_PACKED
 # define CSP_UNUSED
 #endif
+
+/* Borrow a minimal version of Boost's STATIC_ASSERT mechanism.
+ */
+template <bool> struct static_assert_failure;
+template <> struct static_assert_failure<true> {};
+template <int> struct static_assert_test {};
+#define CSP_STATIC_ASSERT(expr) \
+	typedef static_assert_test<sizeof(static_assert_failure<(bool)(expr)>)> static_assertion_##__LINE__
+
+/* Portable cast operator for type-punning.  Optimizes extremely well
+ * under gcc; haven't checked msvc assembly though.
+ */
+template <typename T1, typename T2>
+inline T1 alias_cast(T2 src) {
+	CSP_STATIC_ASSERT(sizeof(T1) == sizeof(T2));
+	T1 dst;
+	std::memcpy(&dst, &src, sizeof(dst));
+	return dst;
+}
 
 //@}
 

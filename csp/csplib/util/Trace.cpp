@@ -91,9 +91,9 @@ public:
 		for (int i = _skip; i < _stack_depth; ++i) {
 			Dl_info info;
 			if (dladdr(_trace[i], &info) != 0) {
-				const int addr = reinterpret_cast<int>(_trace[i]);
-				const int sofs = addr - reinterpret_cast<int>(info.dli_saddr);
-				const int bofs = addr - reinterpret_cast<int>(info.dli_fbase);
+				const uintptr_t addr = alias_cast<uintptr_t>(_trace[i]);
+				const uintptr_t sofs = addr - alias_cast<uintptr_t>(info.dli_saddr);
+				const uintptr_t bofs = addr - alias_cast<uintptr_t>(info.dli_fbase);
 				if (!info.dli_fname) info.dli_fname = "??";
 				if (!info.dli_sname) info.dli_sname = "";
 				os << std::hex

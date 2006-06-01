@@ -223,7 +223,7 @@ void DisplayText::setInvert(bool invert) {
 void DisplayText::setText(std::string const &text, bool invert) {
 	TokenQueue tokens(text, "\n");
 	m_Lines.reserve(tokens.size());
-	unsigned widest = 0;
+	size_t widest = 0;
 	for (unsigned i = 0; i < tokens.size(); ++i) {
 		widest = std::max(tokens[i].size(), widest);
 		display::ElementText *text = (i < m_Lines.size()) ? m_Lines[i].get() : 0;

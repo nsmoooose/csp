@@ -254,11 +254,8 @@ bool FormatArg::formatInt(stringbuf &out, formatspec const &spec, int base, bool
 			return formatIntegerType<int64>(out, spec, x_val.ui64, false, base, lower);
 		}
 		case TYPE_PTR: {
-			if (sizeof(void*) == sizeof(unsigned)) {
-				return formatIntegerType<unsigned>(out, spec, reinterpret_cast<unsigned>(x_val.p), false, base, lower);
-			} else {
-				return formatIntegerType<uint64>(out, spec, reinterpret_cast<uint64>(x_val.p), false, base, lower);
-			}
+			uintptr_t val = alias_cast<uintptr_t>(x_val.p);
+			return formatIntegerType<uintptr_t>(out, spec, val, false, base, lower);
 		}
 		default:
 			return false;

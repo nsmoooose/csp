@@ -141,7 +141,7 @@ LinkCore LinkCore::_internal_load(DataArchive* archive, ObjectID path) {
 	*/
 	assert(_ppb.valid());
 	Object *obj = _ppb._reference;
-	CSPLOG(DEBUG, ARCHIVE) << "loaded " << obj->getClassName() << " @ 0x" << std::hex << reinterpret_cast<int>(obj);
+	CSPLOG(DEBUG, ARCHIVE) << "loaded " << obj->getClassName() << " @ " << obj;
 	return _ppb;
 }
 

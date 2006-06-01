@@ -23,12 +23,19 @@ dir = os.path.abspath(__path__[0])
 
 def _configureModules():
 	if os.name == 'posix':
+		# 0x101 is fairly standard, but try to load the correct values from
+		# the dl module if available.
+		GLOBAL_AND_LAZY = 0x101
 		try:
 			import dl
-			# enable lazy loading of shared library modules if available.
-			sys.setdlopenflags(dl.RTLD_GLOBAL|dl.RTLD_LAZY)
+			GLOBAL_AND_LAZY = dl.RTLD_GLOBAL|dl.RTLD_LAZY
 		except ImportError:
-			sys.stderr.write('import dl failed; lazy module loading not enabled.\n')
+			sys.stderr.write('warning: import dl failed; assuming standard dl flags\n')
+		try:
+			# enable lazy loading of shared library modules if available.
+			sys.setdlopenflags(GLOBAL_AND_LAZY)
+		except:
+			sys.stderr.write('warning: setdlopenflags failed; lazy module loading not enabled.\n')
 	else:
 		# if CSPDEVPACK is defined in the environment, add the devpack bin
 		# directory to the execution path.  this ensures that devpack libraries

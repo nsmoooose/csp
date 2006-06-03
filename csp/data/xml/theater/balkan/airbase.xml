@@ -431,8 +431,8 @@
 <!-- O2 Unit -->
         <Object class="FeatureLayout">
             <Path name="model">O2_unit</Path>
-            <Float name="x">355</Float>
-            <Float name="y">-245</Float>
+            <Float name="x">360</Float>
+            <Float name="y">-240</Float>
             <Float name="orientation">2.57</Float>
         </Object>
 <!-- Bombs Trailer -->
@@ -490,6 +490,13 @@
             <Path name="model">forest2</Path>
             <Float name="x">313</Float>
             <Float name="y">-50</Float>
+            <Float name="orientation">-0.50</Float>
+        </Object>
+<!-- Aircraft Tractor -->
+        <Object class="FeatureLayout">
+            <Path name="model">aircraft_tractor01</Path>
+            <Float name="x">400</Float>
+            <Float name="y">-240</Float>
             <Float name="orientation">-0.50</Float>
         </Object>
     </List>

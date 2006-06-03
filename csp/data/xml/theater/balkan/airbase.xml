@@ -480,5 +480,17 @@
             <Float name="y">1427</Float>
             <Float name="orientation">-0.50</Float>
         </Object>
+        <Object class="FeatureLayout">
+            <Path name="model">forest1</Path>
+            <Float name="x">323</Float>
+            <Float name="y">-50</Float>
+            <Float name="orientation">-0.50</Float>
+        </Object>
+        <Object class="FeatureLayout">
+            <Path name="model">forest2</Path>
+            <Float name="x">313</Float>
+            <Float name="y">-50</Float>
+            <Float name="orientation">-0.50</Float>
+        </Object>
     </List>
 </Object>

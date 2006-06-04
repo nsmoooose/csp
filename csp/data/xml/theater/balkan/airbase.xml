@@ -473,6 +473,72 @@
             <Float name="y">1620</Float>
             <Float name="orientation">-0.30</Float>
         </Object>
+        <Object class="FeatureLayout">
+            <Path name="model">hangar</Path>
+            <Float name="x">359.23</Float>
+            <Float name="y">1692.27</Float>
+            <Float name="orientation">-0.982</Float>
+        </Object>
+	<Object class="FeatureLayout">
+            <Path name="model">hangar</Path>
+            <Float name="x">438.37</Float>
+            <Float name="y">1727.04</Float>
+            <Float name="orientation">-2.227</Float>
+	</Object>
+	<Object class="FeatureLayout">
+            <Path name="model">hangar</Path>
+            <Float name="x">511.32</Float>
+            <Float name="y">1771.08</Float>
+            <Float name="orientation">2.799</Float>
+	</Object>
+	<Object class="FeatureLayout">
+            <Path name="model">	hangar</Path>
+            <Float name="x">495.68</Float>
+            <Float name="y">1328.66</Float>
+            <Float name="orientation">-1.006</Float>
+	</Object>
+	<Object class="FeatureLayout">
+            <Path name="model">	hangar</Path>
+            <Float name="x">476.41</Float>
+            <Float name="y">1439.04</Float>
+            <Float name="orientation">2.335</Float>
+	</Object>
+	<Object class="FeatureLayout">
+            <Path name="model">hangar</Path>
+            <Float name="x">560.65</Float>
+            <Float name="y">1708.52</Float>
+            <Float name="orientation">1.876</Float>
+	</Object>
+	<Object class="FeatureLayout">
+            <Path name="model">hangar</Path>
+            <Float name="x">623.06</Float>
+            <Float name="y">1653.65</Float>
+            <Float name="orientation">1.462</Float>
+	</Object>
+	<Object class="FeatureLayout">
+            <Path name="model">hangar</Path>
+            <Float name="x">621.25</Float>
+            <Float name="y">1587.46</Float>
+            <Float name="orientation">1.974</Float>
+	</Object>
+	<Object class="FeatureLayout">
+            <Path name="model">hangar</Path>
+            <Float name="x">607.21</Float>
+            <Float name="y">1509.64</Float>
+            <Float name="orientation">1.234</Float>
+	</Object>
+	<Object class="FeatureLayout">
+            <Path name="model">hangar</Path>
+            <Float name="x">602.39</Float>
+            <Float name="y">1455.85</Float>
+            <Float name="orientation">2.243</Float>
+	</Object>
+	<Object class="FeatureLayout">
+            <Path name="model">hangar</Path>
+            <Float name="x">577.31</Float>
+            <Float name="y">1377.06</Float>
+            <Float name="orientation">1.324</Float>
+	</Object>
 <!-- Trees -->
         <Object class="FeatureLayout">
             <Path name="model">forest</Path>
@@ -499,11 +565,19 @@
             <Float name="y">-240</Float>
             <Float name="orientation">-0.50</Float>
         </Object>
+<!-- House -->
         <Object class="FeatureLayout">
             <Path name="model">house01</Path>
             <Float name="x">297.25</Float>
             <Float name="y">76.8</Float>
             <Float name="orientation">1.57</Float>
         </Object>
+<!-- Tanker Truck -->
+        <Object class="FeatureLayout">
+            <Path name="model">Hemtt_tanker01</Path>
+            <Float name="x">374.34</Float>
+            <Float name="y">-242.77</Float>
+	    <Float name="orientation">1.064</Float>
+	</Object>
     </List>
 </Object>

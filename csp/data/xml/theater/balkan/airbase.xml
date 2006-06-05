@@ -539,6 +539,19 @@
             <Float name="y">1377.06</Float>
             <Float name="orientation">1.324</Float>
 	</Object>
+<!-- Hangar3 -->
+	<Object class="FeatureLayout">
+            <Path name="model">hangar3</Path>
+            <Float name="x">405.9</Float>
+            <Float name="y">337.4</Float>
+            <Float name="orientation">1.57</Float>
+	</Object>
+	<Object class="FeatureLayout">
+            <Path name="model">hangar3</Path>
+            <Float name="x">405.9</Float>
+            <Float name="y">257.75</Float>
+            <Float name="orientation">1.57</Float>
+	</Object>
 <!-- Trees -->
         <Object class="FeatureLayout">
             <Path name="model">forest</Path>

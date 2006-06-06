@@ -15,7 +15,7 @@
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, US
 
 
-#include "LayoutNodes.h"
+#include <csp/tools/layout/LayoutNodes.h>
 #include <iostream>
 
 #include <osg/Switch>
@@ -37,14 +37,14 @@ osg::Matrix LayoutNode::getPathTransform(LayoutNodePath const *path) {
 	return matrix;
 }
 
-void LayoutNodeVisitor::apply(LayoutNode *node) {}
+void LayoutNodeVisitor::apply(LayoutNode *) {}
 
 void LayoutNodeVisitor::apply(LayoutModel *node) {
-	apply(static_cast<LayoutNode*>(node)); 
+	apply(static_cast<LayoutNode*>(node));
 }
 
-void LayoutNodeVisitor::apply(LayoutGroup *node) { 
-	apply(static_cast<LayoutNode*>(node)); 
+void LayoutNodeVisitor::apply(LayoutGroup *node) {
+	apply(static_cast<LayoutNode*>(node));
 }
 
 void LayoutNodeVisitor::push(LayoutNode *node) {

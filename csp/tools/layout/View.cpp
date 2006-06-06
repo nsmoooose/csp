@@ -19,13 +19,15 @@
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, US
 
 
-#include "View.h"
-#include "DynamicGrid.h"
-#include "RegionSelect.h"
-#include "FeatureGraph.h"
-#include "PickHandler.h"
-#include "ViewEventHandler.h"
-#include "ViewManipulator.h"
+#include <csp/tools/layout/View.h>
+#include <csp/tools/layout/DynamicGrid.h>
+#include <csp/tools/layout/RegionSelect.h>
+#include <csp/tools/layout/FeatureGraph.h>
+#include <csp/tools/layout/PickHandler.h>
+#include <csp/tools/layout/ViewEventHandler.h>
+#include <csp/tools/layout/ViewManipulator.h>
+
+#include <csp/csplib/util/Trace.h>
 
 #ifdef _POSIX_C_SOURCE
 #undef _POSIX_C_SOURCE
@@ -74,6 +76,7 @@
 View::View(): m_Viewer(0), m_FeatureGraph(0), m_Manipulator(0) {
 	// TODO move elsewhere in startup logic
 	OpenThreads::Thread::Init();
+	csp::AutoTrace::install();
 }
 
 int View::init(int argc, char **argv) {
@@ -212,7 +215,7 @@ void View::setCamera(float x0, float y0, float z0, float x1, float y1, float z1)
 	m_Viewer->setViewByMatrix(view_matrix);
 }
 
-void View::setViewAxis(osg::Vec3 const &axis, osg::Vec3 const &up) {
+void View::setViewAxis(osg::Vec3 const &axis, osg::Vec3 const &/*up*/) {
 	osg::Vec3 eye = getCameraPosition();
 	osg::Vec3 target = getCameraTarget();
 	float d = getCameraDistance();
@@ -356,7 +359,7 @@ void View::updatePosition(float norm_x, float norm_y, float position_x, float po
 	float x, y;
 	screenToSurface(norm_x, norm_y, x, y);
 	for (ViewCallbackList::iterator iter = m_ViewCallbacks.begin(); iter != m_ViewCallbacks.end(); ++iter) {
-		(*iter)->onUpdatePosition(x, y, position_x, position_x, dx, dy, angle);
+		(*iter)->onUpdatePosition(x, y, position_x, position_y, dx, dy, angle);
 	}
 }
 

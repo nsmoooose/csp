@@ -43,7 +43,7 @@ class PickHandler : public osgGA::GUIEventHandler {
 	enum {
 		SELECT_ONE,
 		SELECT_EXTEND,
-		SELECT_REMOVE,
+		SELECT_REMOVE
 	};
 
 public:

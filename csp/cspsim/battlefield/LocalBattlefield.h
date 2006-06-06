@@ -45,7 +45,7 @@ class Path;
 class SceneManager;
 class UpdateMaster;
 
-class LocalBattlefield: public Battlefield {
+class CSPSIM_EXPORT LocalBattlefield: public Battlefield {
 public:
 
 	LocalBattlefield(Ref<DataManager> const &data_manager);

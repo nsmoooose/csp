@@ -24,6 +24,7 @@
 #ifndef __CSPLIB_UTIL_VERSION_H__
 #define __CSPLIB_UTIL_VERSION_H__
 
+#include <csp/csplib/util/Export.h>
 #include <csp/csplib/util/Namespace.h>
 
 #define CSPLIB_API_VERSION 4
@@ -35,12 +36,12 @@ CSP_NAMESPACE
  * releases, this string will include the build date.  No fixed format for the
  * version string has been set yet.
  */
-const char *getVersion();
+CSPLIB_EXPORT const char *getVersion();
 
 /**
  * Returns a string containing the date and time at which csplib was built.
  */
-const char *buildDate();
+CSPLIB_EXPORT const char *buildDate();
 
 CSP_NAMESPACE_END
 

@@ -237,8 +237,7 @@ public:
 		v.apply(this);
 		v.pop();
 	}
-	virtual void traverse(LayoutNodeVisitor &v) {
-	}
+	virtual void traverse(LayoutNodeVisitor &) { }
 	virtual bool isGroup() const { return false; }
 	virtual LayoutGroup *asGroup() { assert(0); return 0; }
 	virtual void setModel(osg::ref_ptr<osg::Node> node) {
@@ -277,7 +276,7 @@ public:
 		rebind();
 	}
 
-	LayoutGroup(LayoutGroup const &clone): _active(false) {
+	LayoutGroup(LayoutGroup const &clone): LayoutNode(clone), _active(false) {
 		_graph = clone._graph;
 		_data = clone._data;
 		_child_group = clone._child_group;

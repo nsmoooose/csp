@@ -20,8 +20,8 @@ import os.path
 import domtree
 import xml.dom.minidom
 import tempfile
-import cLayout
-import ObjectInterface
+from csp.tools.layout import cLayout
+from csp.tools.layout import ObjectInterface
 
 
 class RecursionError(Exception):

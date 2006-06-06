@@ -130,7 +130,7 @@ class ECEF;
  *  @param _ref the reference ellipsoid (the default is WGS-84)
  *  @return the coordinates in LLA
  */
-LLA ECEFtoLLA(ECEF const &ecef, ReferenceEllipsoid const &_ref = GeoRef::WGS84);
+LLA CSPLIB_EXPORT ECEFtoLLA(ECEF const &ecef, ReferenceEllipsoid const &_ref = GeoRef::WGS84);
 
 /** Convert from Earth centered, Earth fixed (ECEF) coondinates
  *  to Universal Transverse Mercator (UTM) coordinates.
@@ -139,7 +139,7 @@ LLA ECEFtoLLA(ECEF const &ecef, ReferenceEllipsoid const &_ref = GeoRef::WGS84);
  *  @param _ref the reference ellipsoid (the default is WGS-84)
  *  @return the coordinates in UTM
  */
-UTM ECEFtoUTM(ECEF const &ecef, ReferenceEllipsoid const &_ref = GeoRef::WGS84);
+UTM CSPLIB_EXPORT ECEFtoUTM(ECEF const &ecef, ReferenceEllipsoid const &_ref = GeoRef::WGS84);
 
 /** Convert from latitude, longitude, and altitude (LLA) to
  *  Earth centered, Earth fixed (ECEF) coondinates.
@@ -148,7 +148,7 @@ UTM ECEFtoUTM(ECEF const &ecef, ReferenceEllipsoid const &_ref = GeoRef::WGS84);
  *  @param _ref the reference ellipsoid (the default is WGS-84)
  *  @return the coordinates in ECEF
  */
-ECEF LLAtoECEF(LLA const &lla, ReferenceEllipsoid const &_ref = GeoRef::WGS84);
+ECEF CSPLIB_EXPORT LLAtoECEF(LLA const &lla, ReferenceEllipsoid const &_ref = GeoRef::WGS84);
 
 /** Convert from Universal Transverse Mercator (UTM) coordinates to
  *  Earth centered, Earth fixed (ECEF) coondinates.
@@ -157,7 +157,7 @@ ECEF LLAtoECEF(LLA const &lla, ReferenceEllipsoid const &_ref = GeoRef::WGS84);
  *  @param _ref the reference ellipsoid (the default is WGS-84)
  *  @return the coordinates in ECEF
  */
-ECEF UTMtoECEF(UTM const &utm, ReferenceEllipsoid const &_ref = GeoRef::WGS84);
+ECEF CSPLIB_EXPORT UTMtoECEF(UTM const &utm, ReferenceEllipsoid const &_ref = GeoRef::WGS84);
 
 /** Convert from Universal Transverse Mercator (UTM) coordinates to
  *  latitude, longitude, and altitude (LLA).
@@ -166,7 +166,7 @@ ECEF UTMtoECEF(UTM const &utm, ReferenceEllipsoid const &_ref = GeoRef::WGS84);
  *  @param _ref the reference ellipsoid (the default is WGS-84)
  *  @return the coordinates in LLA
  */
-LLA UTMtoLLA(UTM const &utm, ReferenceEllipsoid const &_ref = GeoRef::WGS84);
+LLA CSPLIB_EXPORT UTMtoLLA(UTM const &utm, ReferenceEllipsoid const &_ref = GeoRef::WGS84);
 
 /** Convert from latitude, longitude, and altitude (LLA) to Universal
  *  Transverse Mercator (UTM) coordinates.
@@ -176,7 +176,7 @@ LLA UTMtoLLA(UTM const &utm, ReferenceEllipsoid const &_ref = GeoRef::WGS84);
  *  @param _zone for a specific zone, independent of longitude
  *  @return the coordinates in UTM
  */
-UTM LLAtoUTM(LLA const &lla, ReferenceEllipsoid const &_ref = GeoRef::WGS84, char _zone=-1);
+UTM CSPLIB_EXPORT LLAtoUTM(LLA const &lla, ReferenceEllipsoid const &_ref = GeoRef::WGS84, char _zone=-1);
 
 /** Get the distance between two points along the surface of the
  *  reference ellipsoid.
@@ -190,11 +190,7 @@ UTM LLAtoUTM(LLA const &lla, ReferenceEllipsoid const &_ref = GeoRef::WGS84, cha
  *  @param bearing Output: the bearing to the specified point (in radians relative to true north)
  *  @param _ref the reference ellipsoid (the default is WGS-84)
  */
-void SurfaceDistance(LLA const &p,
-                     LLA const &q,
-                     double &distance,
-                     double &bearing,
-                     ReferenceEllipsoid const &_ref = GeoRef::WGS84);
+void CSPLIB_EXPORT SurfaceDistance(LLA const &p, LLA const &q, double &distance, double &bearing, ReferenceEllipsoid const &_ref = GeoRef::WGS84);
 
 
 /** Get the distance between two points along the surface of the
@@ -210,11 +206,7 @@ void SurfaceDistance(LLA const &p,
  *  @param bearing Output: the bearing to the specified point (in radians relative to true north)
  *  @param _ref the reference ellipsoid (the default is WGS-84)
  */
-void ShellDistance(LLA const &p,
-                   LLA const &q,
-                   double &distance,
-                   double &bearing,
-                   ReferenceEllipsoid const &_ref = GeoRef::WGS84);
+void CSPLIB_EXPORT ShellDistance(LLA const &p, LLA const &q, double &distance, double &bearing, ReferenceEllipsoid const &_ref = GeoRef::WGS84);
 
 
 /** Latitude, longitude, and altitude coordinates.

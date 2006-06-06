@@ -61,7 +61,7 @@ class SystemsModel;
  * class DynamicObject - Base class for all mobile objects in the simulation.
  *
  */
-class DynamicObject: public SimObject, public InputInterface
+class CSPSIM_EXPORT DynamicObject: public SimObject, public InputInterface
 {
 	struct SystemsModelStore {
 		ObjectId id;

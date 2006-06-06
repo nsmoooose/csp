@@ -47,9 +47,7 @@ class InterfaceProxy;
  *  class at startup.  Interfaces can be accessed by name to provide dynamic object
  *  creation and variable assignment.  See @ref InterfaceDetails for details.
  */
-class CSPLIB_EXPORT InterfaceRegistry: public Singleton<InterfaceRegistry> {
-
-friend class Singleton<InterfaceRegistry>;
+class CSPLIB_EXPORT InterfaceRegistry {
 friend class InterfaceProxy;
 
 public:
@@ -89,9 +87,7 @@ public:
 	
 	/** Get the interface registry singleton.
 	 */
-	static InterfaceRegistry &getInterfaceRegistry() {
-		return getInstance();
-	}
+	static InterfaceRegistry &getInterfaceRegistry();
 
 private:
 

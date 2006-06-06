@@ -52,6 +52,7 @@ PACKAGES = [
 	'csplib',
 	'cspsim',
 	'modules',
+	'tools/layout',
 ]
 
 INCLUDE = [
@@ -114,7 +115,7 @@ build.ExternalLibrary(
 		build.PkgConfig(package='producer', version='0.9.8'),
 		build.PkgConfig(package='osgal', version='0.3'),
 		build.DevpackConfig(dlls='osgal', headers=[('osgAL', 'SoundNode')]),
-		build.DevpackConfig(dlls=['osg', 'osgDB', 'osgFX', 'osgGA', 'osgParticle', 'osgProducer', 'osgText', 'osgUtil', 'OpenThreadsWin32'], headers=[('osg', 'Depth'), ('osgText', 'Font')]),
+		build.DevpackConfig(dlls=['osg', 'osgDB', 'osgFX', 'osgGA', 'osgParticle', 'osgProducer', 'osgText', 'osgUtil', 'OpenThreadsWin32', 'Producer'], headers=[('osg', 'Depth'), ('osgText', 'Font')]),
 	])
 
 build.ExternalLibrary(

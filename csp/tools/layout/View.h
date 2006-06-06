@@ -22,7 +22,7 @@
 #ifndef __CSP_LAYOUT_VIEW_H__
 #define __CSP_LAYOUT_VIEW_H__
 
-#include "LayoutNodes.h"
+#include <csp/tools/layout/LayoutNodes.h>
 
 #include <osg/Group>
 #include <osg/PositionAttitudeTransform>
@@ -48,7 +48,7 @@ public:
 	virtual ~ViewCallback() {}
 	virtual void onRotateMode() {}
 	virtual void onMoveMode() {}
-	virtual void onUpdatePosition(float mouse_x, float mouse_y, float pos_x, float pos_y, float dx, float dy, float angle) {}
+	virtual void onUpdatePosition(float /*mouse_x*/, float /*mouse_y*/, float /*pos_x*/, float /*pos_y*/, float /*dx*/, float /*dy*/, float /*angle*/) {}
 	virtual void onKey(std::string const &) {}
 };
 

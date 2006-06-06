@@ -16,10 +16,10 @@
 
 %module(directors="1") cLayout
 %{
-#include "View.h"
-#include "LayoutNodes.h"
-#include "FeatureGraph.h"
-#include "InsertDeleteCommand.h"
+#include <csp/tools/layout/View.h>
+#include <csp/tools/layout/LayoutNodes.h>
+#include <csp/tools/layout/FeatureGraph.h>
+#include <csp/tools/layout/InsertDeleteCommand.h>
 %}
 
 %include "typemaps.i"
@@ -89,9 +89,9 @@ protected:
 // GraphCallback  in Python.
 %warnfilter(515);
 
-%include "LayoutNodes.h"
-%include "FeatureGraph.h"
-%include "Undo.h"
-%include "InsertDeleteCommand.h"
-%include "View.h"
+%include "csp/tools/layout/LayoutNodes.h"
+%include "csp/tools/layout/FeatureGraph.h"
+%include "csp/tools/layout/Undo.h"
+%include "csp/tools/layout/InsertDeleteCommand.h"
+%include "csp/tools/layout/View.h"
 

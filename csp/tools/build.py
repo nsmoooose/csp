@@ -393,39 +393,6 @@ def BuildModules(env, modules, **kw):
 	return result
 
 
-"""
-class Module:
-	def __init__(env, name, sources=[], headers=[], tests=[], messages=[], submodules=[]):
-		self._name = name
-		self._sources = map(env.File, sources)
-		self._headers = map(env.File, headers)
-		self._tests = map(env.File, tests)
-		self._messages = map(env.File, messages)
-		self._modules = modules
-		env['_BUILD_MODULES_'][name] = self
-
-	def __getattr__(self, name):
-		if name.startswith('_'): return self.__dict__[name]
-		if name == 'name': return self._name
-		values = self.__dict__.get('_' + name, [])
-		for module in self._modules:
-			values += getattr(module, name)
-
-
-def BuildModules_(env, modules, **kw):
-	import build
-	env.setdefault('_BUILD_MODULES_', {})
-	result = []
-	for module in modules:
-		kw.setdefault('exports', 'env build')
-		module = env.SConscript('%s/SConscript' % module, **kw)
-		if module:
-			if type(targets) != type([]): targets = [targets]
-			result.extend(targets)
-	result = Flatten(result)
-	return result
-"""
-
 
 ############################################################################
 # AUTOCONF HELPEERS
@@ -923,11 +890,20 @@ class Settings(dict):
 			settings.update(args[0])
 		for key, value in settings.items():
 			base = self.setdefault(key, [])
-			for item in value:
-				if not item in base: base.append(item)
+			if isinstance(value, list):
+				for item in value:
+					if not item in base: base.append(item)
+			else:
+				self[key] = value
 
 	def apply(self, env):
-		env.AppendUnique(**self)
+		for key, value in self.iteritems():
+			if isinstance(value, list):
+				env.AppendUnique(**{key: value})
+			elif isinstance(value, tuple):
+				env[key] = list(value)
+			else:
+				env[key] = value
 
 	def Diff(old_env, new_env):
 		settings = {}
@@ -1244,8 +1220,14 @@ class SourceGroup:
 	swig = property(getSwigInterfaces)
 	other = property(getOtherFiles)
 
+def TargetToString(x):
+	if isinstance(x, list):
+		return map(TargetToString, x)
+	if isinstance(x, SCons.Node.FS.File):
+		return 'FILE:%s' % x.abspath
+	return str(x)
 
-class SharedLibrary:
+class Target:
 	def __init__(self, env, name, sources=[], aliases=[], deps=[], always_build=0, softlink=0, doxygen=None, **kw):
 		self._env = env.Copy()
 		self._name = name
@@ -1267,16 +1249,6 @@ class SharedLibrary:
 		self._output = None
 		BuildRegistry.AddTarget(name, self)
 
-	def _findSources(self):
-		if self._groups is None:
-			self._groups = []
-			for source in self._sources:
-				group = BuildRegistry.GetSourceGroup(source)
-				if not group:
-					print 'shlib %s: unknown source %s' % (self._name, source)
-					sys.exit(1)
-				self._groups.append(group)
-
 	def build(self):
 		if self._output:
 			return self._output
@@ -1290,22 +1262,96 @@ class SharedLibrary:
 		objects = Flatten(objects)
 		settings.merge(self._options)
 		settings.apply(self._env);
-		shlib = self._env.SharedLibrary(self._target, objects)
+		target = self._apply(objects)
+
 		Alias = SCons.Defaults.DefaultEnvironment().Alias
-		Alias(self._name, shlib)
+		Alias(self._name, target)
 		if self._aliases:
-			Alias(self._aliases, shlib)
-		if IsWindows(self._env):
-			self._bindManifest(shlib)
-			self._makeVisualStudioProject(shlib)
+			Alias(self._aliases, target)
 		if self._doxygen:
 			self._env.Documentation(self._dox, self._doxygen, self._sources)
 		if self._always_build:
-			AlwaysBuild(shlib)
-		self._output = shlib
+			AlwaysBuild(target)
+		self._output = target
 		if bdeps and not self._env.GetOption('clean'):
-			Depends(shlib, bdeps)
-		return shlib[0]
+			#print 'depends', TargetToString(target), TargetToString(bdeps)
+			Depends(target, bdeps)
+		return target #[0]
+
+	def _findSources(self):
+		if self._groups is None:
+			self._groups = []
+			for source in self._sources:
+				group = BuildRegistry.GetSourceGroup(source)
+				if not group:
+					print '%s: unknown source %s' % (self._name, source)
+					sys.exit(1)
+				self._groups.append(group)
+
+	def _addSettings(self, settings, bdeps):
+		bdeps.append(self.build())
+		self._findSources()
+		for group in self._groups:
+			group._addSettings(settings, bdeps)
+
+	def _apply(self):
+		pass
+
+
+class Program(Target):
+	def _apply(self, objects):
+		#print 'Program(%s, %s)' % (str(self._target), [o.abspath for o in objects])
+		program = self._env.Program(self._target, objects)
+		return program
+
+
+class Generate(Target):
+	def __init__(self, env, command, targets, sources=[], **kw):
+		name = '__' + '_'.join(targets)
+		Target.__init__(self, env, name, sources, **kw)
+		self._target = targets
+		self._command = command
+
+	def _apply(self, objects):
+		command = self._command
+		while 1:
+			match = re.search(r'{(.*?)}', command)
+			if match is None: break
+			var = match.group(1)
+			target = BuildRegistry.GetTarget(var).build()[0]
+			objects = target
+			command = command[:match.start(0)] + target.abspath + command[match.end(0):]
+		#print 'Command(%s, %s, %s)' % (self._target, TargetToString(objects), command)
+		self._env.Command(self._target, objects, command)
+		return self._target
+
+
+class SharedLibrary(Target):
+
+	def _apply(self, objects):
+		xrpath = self._env.get('XRPATH', [])
+		if xrpath:
+			rpath = []
+			target_path = os.path.abspath(os.path.dirname(self._target)).split(os.sep)
+			#print target_path
+			for path in xrpath:
+				#print ':', path
+				path = path.split(os.sep)
+				for idx, dir in enumerate(target_path):
+					if path[0] == dir:
+						path = path[1:]
+					else:
+						path = ['..'] * (len(target_path) - idx) + path
+						break
+				rpath.append(os.path.join(r'\$\ORIGIN', *path))
+				#print rpath
+			self._env.AppendUnique(RPATH=rpath)
+			#print rpath
+		shlib = self._env.SharedLibrary(self._target, objects)
+		if IsWindows(self._env):
+			self._bindManifest(shlib)
+			self._makeVisualStudioProject(shlib)
+		return shlib
 
 	MT_BIN = 0
 	def _bindManifest(self, shlib):
@@ -1338,10 +1384,10 @@ class SharedLibrary:
 		Alias('vs', [dbg, rel])
 
 	def _addSettings(self, settings, bdeps):
-		bdeps.append(self.build())
-		self._findSources()
-		for group in self._groups:
-			group._addSettings(settings, bdeps)
+		Target._addSettings(self, settings, bdeps)
 		if IsWindows(self._env) or not self._softlink:
 			settings.merge(LIBPATH=[os.path.dirname(self._target)], LIBS=[os.path.basename(self._target)])
+		else:
+			target_dir = os.path.dirname(self._target)
+			settings.merge(XRPATH=[os.path.abspath(target_dir)], LIBPATH=[target_dir], LIBS=[os.path.basename(self._target)])
 

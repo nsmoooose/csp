@@ -434,7 +434,7 @@ public:
 			if (i >= 10 && i <= 14) continue;
 			if (!cLabels[i][0]) continue;
 			bool active = (cLabels[i] == di->getSelectedFormat()->id());
-			osb(i)->setText(cLabels[i], active ? OptionSelectButton::INVERSE : OptionSelectButton::NORMAL);
+			osb(i)->setText(cLabels[i], active);
 		}
 	}
 };
@@ -471,7 +471,7 @@ public:
 			if (i >= 10 && i <= 14) continue;
 			if (!cLabels[i][0]) continue;
 			bool active = (cLabels[i] == di->getSelectedFormat()->id()) || (i == 4);
-			osb(i)->setText(cLabels[i], active ? OptionSelectButton::INVERSE : OptionSelectButton::NORMAL);
+			osb(i)->setText(cLabels[i], active);
 		}
 	}
 };
@@ -811,7 +811,7 @@ double MultiFunctionDisplay::onUpdate(double dt) {
 		for (unsigned idx = 0; idx < 3; ++idx) {
 			bool is_active = (selected == idx);
 			DisplayFormat *format = m_State->getFormat(idx);
-			osb(13 - idx)->setText(format->label(), is_active ? OptionSelectButton::INVERSE : OptionSelectButton::NORMAL);
+			osb(13 - idx)->setText(format->label(), is_active);
 		}
 		m_State->clearDirty();
 	}

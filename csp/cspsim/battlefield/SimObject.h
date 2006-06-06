@@ -25,6 +25,8 @@
 #ifndef __CSPSIM_BATTLEFIELD_SIMOBJECT_H__
 #define __CSPSIM_BATTLEFIELD_SIMOBJECT_H__
 
+#include <csp/cspsim/Export.h>
+
 #include <csp/csplib/util/Log.h>
 #include <csp/csplib/util/SynchronousUpdate.h>
 #include <csp/csplib/util/TimeStamp.h>

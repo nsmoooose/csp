@@ -11,7 +11,7 @@ bin = os.path.join(os.path.dirname(__file__), '.bin')
 __path__.append(bin)
 
 try:
-	from cspsim import *
+	from cspsim_module import *
 except ImportError, e:
 	sys.stderr.write(str(e))
 	sys.stderr.write(

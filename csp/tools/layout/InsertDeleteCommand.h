@@ -21,8 +21,8 @@
 #ifndef __CSP_LAYOUT_INSERTDELETECOMMAND_H__
 #define __CSP_LAYOUT_INSERTDELETECOMMAND_H__
 
-#include "LayoutNodes.h"
-#include "Undo.h"
+#include <csp/tools/layout/LayoutNodes.h>
+#include <csp/tools/layout/Undo.h>
 
 #include <string>
 #include <cassert>

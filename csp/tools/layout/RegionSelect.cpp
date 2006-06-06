@@ -16,7 +16,7 @@
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, US
 
 
-#include "RegionSelect.h"
+#include <csp/tools/layout/RegionSelect.h>
 
 #include <osg/Geode>
 #include <osg/Geometry>

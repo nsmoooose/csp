@@ -37,6 +37,7 @@
 #ifndef __INPUTINTERFACE_H__
 #define __INPUTINTERFACE_H__
 
+#include <csp/cspsim/Export.h>
 #include <csp/cspsim/MapEvent.h>
 
 #include <csp/csplib/util/Namespace.h>
@@ -180,7 +181,7 @@ public:
  *  dispatcher uses arbitrary sigc callbacks, so the handlers do not have to be
  *  InputInterface subclass methods.
  */
-class RuntimeDispatch {
+class CSPSIM_EXPORT RuntimeDispatch {
 public:
 	bool onMapEvent(MapEvent const &);
 	void bindClick(std::string const &id, ClickEventSlot const &callback);
@@ -204,7 +205,7 @@ private:
  *  by all instances of an InputInterface subclass.  InputInterface instances
  *  may also have dynamic dispatch maps if needed.
  */
-class InputInterfaceDispatch {
+class CSPSIM_EXPORT InputInterfaceDispatch {
 private:
 	typedef HashMap<const char*, EventAdapter*>::Type EventHandlerMap;
 
@@ -318,7 +319,7 @@ public:
  *  For more information on processing raw input events and passing them to
  *  InputInterface subclasses, see VirtualHID in HID.h.
  */
-class InputInterface {
+class CSPSIM_EXPORT InputInterface {
 public:
 	InputInterface();
 	virtual ~InputInterface();

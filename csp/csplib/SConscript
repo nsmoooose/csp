@@ -23,8 +23,6 @@ expenv.Append(CPPDEFINES=Split('CSPLIB_EXPORTS'))
 
 build.SourceGroup(expenv, 'csplib',
 	sources = [
-		'csplib.i',
-
 		'data/Archive.h',
 		'data/BaseType.h',
 		'data/DataArchive.cpp',
@@ -179,18 +177,29 @@ build.SourceGroup(expenv, 'csplib',
 	],
 	deps = ['gnucc2', 'sigc', 'windows'])
 
-config = env.Program('csplib_config', ['util/Config.cpp'])
-config_h = env.Command('#/csplib/util/Config.h', config, '$SOURCES > $TARGET')
+build.Program(env,
+	name = 'csplib_config',
+	sources = ['util/Config.cpp'])
+
+build.Generate(env,
+	command = '{csplib_config} > $TARGET',
+	targets = ['#/csplib/util/Config.h'])
 
 build.SharedLibrary(
 	expenv,
 	name = 'csplib',
 	sources = ['@csplib'],
-	aliases = 'all',
+	aliases = ['all', 'csplib'],
 	doxygen = 'csplib.dox',
-	softlink = 1,
-	SHLIBPREFIX='_')
+	softlink = 1)
 
+build.SharedLibrary(
+	env,
+	name = 'csplib_module',
+	sources = ['csplib.i'],
+	deps = ['csplib'],
+	aliases = ['all', 'csplib'],
+	SHLIBPREFIX='_')
 
 build.SharedLibrary(env,
 	name = 'csplib_tests',

@@ -18,32 +18,16 @@
 
 
 /**
- * @file FeatureGroupModel.h
+ * @file FeatureGroupModel.cpp
  *
  **/
 
-
-#ifndef __CSPSIM_THEATER_FEATUREGROUPMODEL_H__
-#define __CSPSIM_THEATER_FEATUREGROUPMODEL_H__
-
-#include <csp/cspsim/theater/FeatureModel.h>
+#include <csp/cspsim/theater/FeatureGroupModel.h>
 
 CSP_NAMESPACE
 
-/**
- * class FeatureGroupModel (STATIC, ABSTRACT)
- *
- * A static collection of multiple FeatureModels that form part of
- * a FeatureGroup.
- */
-class FeatureGroupModel: public FeatureModel {
-public:
-	FeatureGroupModel();
-	virtual ~FeatureGroupModel();
-};
+FeatureGroupModel::FeatureGroupModel() {}
+FeatureGroupModel::~FeatureGroupModel() {}
 
 CSP_NAMESPACE_END
-
-#endif // __CSPSIM_THEATER_FEATUREGROUPMODEL_H__
-
 

@@ -81,7 +81,7 @@ public:
  * A class that manages the 3D scene.  Currently created by CSPSim and used as a
  * singleton.  See CSPSim::getScene().
  */
-class VirtualScene: public Referenced
+class CSPSIM_EXPORT VirtualScene: public Referenced
 {
 public:
 	VirtualScene(int width, int height);

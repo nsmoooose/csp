@@ -16,9 +16,9 @@
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, US
 
 
-#include "View.h"
-#include "FeatureGraph.h"
-#include "ViewEventHandler.h"
+#include <csp/tools/layout/View.h>
+#include <csp/tools/layout/FeatureGraph.h>
+#include <csp/tools/layout/ViewEventHandler.h>
 #include <osgDB/WriteFile>
 
 

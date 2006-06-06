@@ -224,7 +224,7 @@ private:
 	template <typename T> void setBase(T&, TYPE) const;
 };
 
-std::ostream &operator <<(std::ostream &o, TypeAdapter const &t);
+CSPLIB_EXPORT std::ostream &operator <<(std::ostream &o, TypeAdapter const &t);
 
 
 CSP_NAMESPACE_END

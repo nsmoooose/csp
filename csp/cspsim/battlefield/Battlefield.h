@@ -55,7 +55,7 @@ class Vector3;
  *  the game.  It maintains spatial indices to keep track of object locations.
  *  See LocalBattlefield and GlobalBattlefield.
  */
-class Battlefield: public Referenced {
+class CSPSIM_EXPORT Battlefield: public Referenced {
 public:
 
 	// we currently refer to all objects (DynamicObjects and FeatureGroups)

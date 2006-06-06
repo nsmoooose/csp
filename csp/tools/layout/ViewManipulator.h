@@ -21,11 +21,11 @@
 #ifndef __CSP_LAYOUT_VIEW_MANIPULATOR_H__
 #define __CSP_LAYOUT_VIEW_MANIPULATOR_H__
 
-#include "LayoutNodes.h"
-#include "FeatureGraph.h"
-#include "InsertDeleteCommand.h"
-#include "View.h"
-#include "Undo.h"
+#include <csp/tools/layout/LayoutNodes.h>
+#include <csp/tools/layout/FeatureGraph.h>
+#include <csp/tools/layout/InsertDeleteCommand.h>
+#include <csp/tools/layout/View.h>
+#include <csp/tools/layout/Undo.h>
 
 #include <osg/io_utils>
 #include <osg/MatrixTransform>
@@ -145,7 +145,7 @@ class ViewManipulator : public osgGA::TrackballManipulator {
 	 */
 	enum Mode {
 		MOVE = 1,
-		ROTATE = 2,
+		ROTATE = 2
 	};
 
 	ViewManipulator(View *view): _view(view), _active_group(0), _mode(MOVE), _action(false), _graph_event_adapter_id(0) {
@@ -200,7 +200,7 @@ class ViewManipulator : public osgGA::TrackballManipulator {
 
 	/** Handle mouse and keyboard events.
 	 */
-	virtual bool handle(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& us) {
+	virtual bool handle(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter&) {
 		int key = ea.getKey();
 		switch (ea.getEventType()) {
 

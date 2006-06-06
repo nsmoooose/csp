@@ -24,11 +24,11 @@ import sys
 import thread
 import os.path
 
-import cLayout
-import UI
-
 import csp
+from csp import csplib
 from csp.base import app
+from csp.tools.layout import cLayout
+from csp.tools.layout import UI
 
 def run(view, ui):
 	view.run()

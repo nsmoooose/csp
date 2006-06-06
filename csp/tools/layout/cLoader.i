@@ -16,12 +16,12 @@
 
 %module cLoader
 %{
-#include "Loader.h"
+#include <csp/tools/layout/Loader.h>
 #include <osg/Node>
 %}
 
 %include "typemaps.i"
 %include "std_string.i"
 
-%include "Loader.h"
+%include "csp/tools/layout/Loader.h"
 

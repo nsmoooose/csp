@@ -34,13 +34,17 @@
 
 CSP_NAMESPACE
 
+InterfaceRegistry &InterfaceRegistry::getInterfaceRegistry() {
+	static InterfaceRegistry registry;
+	return registry;
+}
 
 InterfaceRegistry::InterfaceRegistry() {
-	CSPLOG(DEBUG, REGISTRY) << "Initializing interface registry.";
+	CSPLOG(INFO, REGISTRY) << "Initializing interface registry.";
 }
 
 InterfaceRegistry::~InterfaceRegistry() {
-	CSPLOG(DEBUG, REGISTRY) << "Destroying the interface registry.";
+	CSPLOG(INFO, REGISTRY) << "Destroying the interface registry.";
 }
 
 InterfaceProxy *InterfaceRegistry::getInterface(const char *name) {

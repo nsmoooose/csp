@@ -36,7 +36,7 @@ namespace f16 {
 class StoresInventory;
 class InventoryDisplay;
 class NestedPage;
-class BombProfile;
+struct BombProfile;
 
 class StoresManagementPage: public DisplayFormat {
 public:

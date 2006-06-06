@@ -27,7 +27,7 @@ bin = os.path.join(os.path.dirname(__file__), '.bin')
 __path__.append(bin)
 
 try:
-	import csplib as _csplib
+	import csplib_module as _csplib
 except ImportError, e:
 	sys.stderr.write(str(e))
 	sys.stderr.write(
@@ -39,7 +39,7 @@ README file for build instructions.
 """)
 	sys.exit(1)
 
-from csplib import *
+from csplib_module import *
 
 version = _csplib.getVersion()
 
@@ -47,7 +47,7 @@ version = _csplib.getVersion()
 g_InterfaceRegistry = _csplib.InterfaceRegistry.getInterfaceRegistry()
 
 # Bring wrapped exception type into scope and give it some sugar.
-libexc = _csplib._csplib.libexc
+libexc = _csplib._csplib_module.libexc
 def __libexc_clear(self): self.args[0].clear()
 def __libexc_type(self): return self.args[0].getType()
 def __libexc_message(self): return self.args[0].getMessage()

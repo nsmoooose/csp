@@ -16,8 +16,8 @@
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, US
 
 from wxPython.wx import *
-from Config import Config
-import cLayout
+from csp.tools.layout import cLayout
+from csp.tools.layout.Config import Config
 import os.path
 import ids
 import DataTree

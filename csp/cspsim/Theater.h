@@ -48,7 +48,7 @@ CSP_NAMESPACE
  * A Theater represents an area of military operations.  It consists of static
  * data representing the terrain, natural features, and man-made structures.
  */
-class Theater: public Object
+class CSPSIM_EXPORT Theater: public Object
 {
 	Link<FeatureGroupList> m_FeatureGroupList;
 	Link<TerrainObject> m_Terrain;

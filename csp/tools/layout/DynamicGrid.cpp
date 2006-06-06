@@ -16,7 +16,7 @@
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, US
 
 
-#include "DynamicGrid.h"
+#include <csp/tools/layout/DynamicGrid.h>
 
 #include <osg/Material>
 #include <osg/BlendFunc>

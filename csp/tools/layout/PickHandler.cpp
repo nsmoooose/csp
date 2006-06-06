@@ -18,10 +18,10 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, US
 
-#include "PickHandler.h"
-#include "LayoutNodes.h"
-#include "FeatureGraph.h"
-#include "View.h"
+#include <csp/tools/layout/PickHandler.h>
+#include <csp/tools/layout/LayoutNodes.h>
+#include <csp/tools/layout/FeatureGraph.h>
+#include <csp/tools/layout/View.h>
 
 #include <osg/BlendFunc>
 #include <osg/Depth>

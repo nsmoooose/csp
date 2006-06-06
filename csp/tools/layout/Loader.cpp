@@ -18,10 +18,11 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, US
 
-#include "Loader.h"
-#include "Handle.h"
+#include <csp/tools/layout/Loader.h>
+#include <csp/tools/layout/Handle.h>
 
 #include <csp/csplib/data/Object.h>
+#include <csp/csplib/util/Log.h>
 #include <csp/cspsim/theater/FeatureModel.h>
 #include <csp/cspsim/theater/FeatureSceneGroup.h>
 #include <csp/cspsim/theater/ElevationCorrection.h>
@@ -41,7 +42,7 @@ using csp::ElevationCorrection;
 
 osg::ref_ptr<osg::Node> getFeatureModel(csp::Object *object) {
 	csp::Ref<csp::Object> objref(object);
-	csp::Ref<FeatureModel> model(objref);
+	csp::Ref<csp::FeatureModel> model(objref);
 	assert(model.valid());
 	osg::ref_ptr<FeatureSceneGroup> group = new FeatureSceneGroup;
 	LayoutTransform transform;

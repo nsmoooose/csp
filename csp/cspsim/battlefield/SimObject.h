@@ -45,7 +45,7 @@ CSP_NAMESPACE
  * class SimObject - Base class for all objects in the simulation.
  *
  */
-class SimObject: public Object, public UpdateTarget, public DispatchTarget
+class CSPSIM_EXPORT SimObject: public Object, public UpdateTarget, public DispatchTarget
 {
 	friend class Battlefield;
 	friend class GlobalBattlefield;

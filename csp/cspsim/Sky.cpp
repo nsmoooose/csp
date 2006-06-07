@@ -435,6 +435,7 @@ class Sun: public AstronomicalBody {
 public:
 	Sun();
 	virtual void updatePosition(double);
+	osg::Node* getNode();
 	void updateScene(double h, double A, Color const &color, float intensity, float background);
 	void _updateLighting(float x, float y, float z, float h, Color const &color, float intensity, float background);
 	Color const &getColor() const { return m_Color; }
@@ -442,11 +443,91 @@ public:
 protected:
 	Color m_Color;
 	float m_Intensity;
+private:
+	osg::ref_ptr<osg::MatrixTransform> m_Transform;
+	osg::ref_ptr<AstroBillboard> m_Billboard;
+	osg::ref_ptr<osg::Image> m_Image;
+	osg::ref_ptr<osg::Image> m_Phased;
+	osg::ref_ptr<osg::Texture2D> m_Texture;
+	osg::ref_ptr<osg::Geometry> m_Sun;
+	osg::ref_ptr<osg::ColorMatrix> m_CM;
+	float m_RenderDistance;
 };
 
 
 Sun::Sun(): AstronomicalBody() {
 	_radius = 695508000.0;
+
+	m_RenderDistance = 990000.0;
+	float x, y;
+	x = y = 1.0;
+	m_Image = osgDB::readImageFile("SunYello.png");
+	if (!m_Image.valid()) throw csp::DataError("unable to open \"moon.png\"");
+
+	// set up the texture.
+	m_Texture = new osg::Texture2D;
+	m_Texture->setImage(m_Image.get());
+
+	// set up the drawstate.
+	osg::StateSet* dstate = new osg::StateSet;
+	dstate->setMode(GL_CULL_FACE,osg::StateAttribute::OFF);
+	dstate->setMode(GL_LIGHTING,osg::StateAttribute::OFF);
+	dstate->setTextureAttributeAndModes(0, m_Texture.get(),osg::StateAttribute::ON);
+	dstate->setMode(GL_CLIP_PLANE0, osg::StateAttribute::OFF);
+	dstate->setMode(GL_CLIP_PLANE1, osg::StateAttribute::OFF);
+	dstate->setMode(GL_CLIP_PLANE2, osg::StateAttribute::OFF);
+	dstate->setMode(GL_CLIP_PLANE3, osg::StateAttribute::OFF);
+	dstate->setMode(GL_CLIP_PLANE4, osg::StateAttribute::OFF);
+	dstate->setMode(GL_CLIP_PLANE5, osg::StateAttribute::OFF);
+	dstate->setMode(GL_DEPTH_TEST, osg::StateAttribute::OFF);
+	osg::BlendFunc *bf = new osg::BlendFunc;
+	bf->setFunction(osg::BlendFunc::SRC_ALPHA, osg::BlendFunc::ONE_MINUS_SRC_ALPHA);
+	dstate->setAttributeAndModes(bf, osg::StateAttribute::ON);
+	osg::Depth *depth = new osg::Depth;
+	depth->setFunction(osg::Depth::ALWAYS);
+	depth->setRange(1.0, 1.0);
+	dstate->setAttributeAndModes(depth, osg::StateAttribute::OFF);
+
+	// set up the geoset.
+	Geometry* geom = new Geometry;
+	geom->setStateSet(dstate);
+
+	Vec3Array* coords = new Vec3Array(4);
+	(*coords)[0].set(-x,0.0f,y);
+	(*coords)[1].set(-x,0.0f,-y);
+	(*coords)[2].set(x,0.0f,-y);
+	(*coords)[3].set(x,0.0f,y);
+	geom->setVertexArray(coords);
+
+	Vec2Array* tcoords = new Vec2Array(4);
+	(*tcoords)[0].set(0.0f,1.0f);
+	(*tcoords)[1].set(0.0f,0.0f);
+	(*tcoords)[2].set(1.0f,0.0f);
+	(*tcoords)[3].set(1.0f,1.0f);
+	geom->setTexCoordArray(0,tcoords);
+
+	osg::Vec4Array* colours = new osg::Vec4Array(1);
+	(*colours)[0].set(1.0f,1.0f,1.0,1.0f);
+	geom->setColorArray(colours);
+	geom->setColorBinding(Geometry::BIND_OVERALL);
+
+	geom->addPrimitiveSet(new DrawArrays(PrimitiveSet::QUADS,0,4));
+
+	m_Sun = geom;
+
+	//dstate->setMode(GL_FOG, osg::StateAttribute::OFF);
+	//dstate->setRenderBinDetails(-2,"RenderBin");
+	m_Transform = new osg::MatrixTransform;
+
+	m_Billboard = new AstroBillboard;
+	m_Billboard->setCullingActive(false);
+	m_Billboard->setStateSet(dstate);
+	m_Billboard->addDrawable(m_Sun.get());
+	m_Billboard->setAxes(osg::Vec3(0.0,1.0,0.0), osg::Vec3(0.0,0.0,1.0), osg::Vec3(0.0,1.0,0.0));
+	m_Transform->addChild(m_Billboard.get());
+	m_Transform->setStateSet(dstate);
+	m_Transform->setCullingActive(false);
+	//	moon->setStateSet(dstate);
 }
 
 void Sun::updateScene(double h, double A, Color const &color, float intensity, float background) {
@@ -547,7 +628,9 @@ void Sun::updatePosition(double julian_date) {
 	_stale = true;
 }
 
-
+osg::Node* Sun::getNode() {
+	return m_Transform.get();
+}
 class Moon: public AstronomicalBody {
 public:
 	Moon();

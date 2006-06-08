@@ -1,0 +1,187 @@
+MatrixTransform {
+  DataVariance STATIC
+  name "Scene Root"
+  nodeMask 0xff
+  cullingActive TRUE
+  StateSet {
+    UniqueID StateSet_0
+    DataVariance STATIC
+    rendering_hint DEFAULT_BIN
+    renderBinMode INHERIT
+    GL_LIGHTING ON
+  }
+  referenceFrame RELATIVE
+  Matrix {
+    1 0 0 0
+    0 1 0 0
+    0 0 1 0
+    0 0 0 1
+  }
+  num_children 1
+  MatrixTransform {
+    DataVariance STATIC
+    name "Box06"
+    nodeMask 0xff
+    cullingActive TRUE
+    referenceFrame RELATIVE
+    Matrix {
+      -7.66058e-008 -0.470203 -2.10197e-008 0
+      -2.05532e-008 -2.10197e-008 0.470203 0
+      -0.470203 7.66058e-008 -2.05532e-008 0
+      17.5261 1.58507 3.75979 1
+    }
+    num_children 1
+    Geode {
+      UniqueID Geode_1
+      DataVariance STATIC
+      nodeMask 0xff
+      cullingActive TRUE
+      num_drawables 1
+      Geometry {
+        DataVariance DYNAMIC
+        StateSet {
+          UniqueID StateSet_2
+          DataVariance STATIC
+          rendering_hint DEFAULT_BIN
+          renderBinMode INHERIT
+          GL_CULL_FACE ON
+          GL_LIGHTING ON
+          0xba1 ON
+          Material {
+            DataVariance STATIC
+            ColorMode OFF
+            ambientColor 0.588 0.588 0.588 1
+            diffuseColor 1 1 1 1
+            specularColor 0 0 0 1
+            emissionColor 0 0 0 1
+            shininess 0
+          }
+          textureUnit 0 {
+            GL_TEXTURE_2D ON
+            Texture2D {
+              DataVariance STATIC
+              file "images\barracks.jpg"
+              wrap_s CLAMP_TO_EDGE
+              wrap_t CLAMP_TO_EDGE
+              wrap_r CLAMP_TO_EDGE
+              min_filter LINEAR_MIPMAP_LINEAR
+              mag_filter LINEAR
+              maxAnisotropy 1
+              borderColor 0 0 0 0
+              borderWidth 0
+              useHardwareMipMapGeneration TRUE
+              unRefImageDataAfterApply FALSE
+              internalFormatMode USE_IMAGE_DATA_FORMAT
+            }
+          }
+        }
+        useDisplayList TRUE
+        useVertexBufferObjects FALSE
+        PrimitiveSets 1
+        {
+          DrawArrays TRIANGLES 0 30
+        }
+        VertexArray Vec3Array 30
+        {
+          -6.54643 -8.07393 0
+          -6.54643 8.07393 0
+          12.8515 8.07393 -1.10454e-006
+          12.8515 8.07393 -1.10454e-006
+          12.8515 -8.07393 -3.98696e-007
+          -6.54643 -8.07393 0
+          -6.54643 -8.07393 74.6404
+          12.8515 -8.07393 74.6404
+          12.8515 8.07393 74.6404
+          12.8515 8.07393 74.6404
+          -6.54643 8.07393 74.6404
+          -6.54643 -8.07393 74.6404
+          12.8515 -8.07393 -3.98696e-007
+          12.8515 8.07393 -1.10454e-006
+          12.8515 8.07393 74.6404
+          12.8515 8.07393 74.6404
+          12.8515 -8.07393 74.6404
+          12.8515 -8.07393 -3.98696e-007
+          12.8515 8.07393 -1.10454e-006
+          -6.54643 8.07393 0
+          -6.54643 8.07393 74.6404
+          -6.54643 8.07393 74.6404
+          12.8515 8.07393 74.6404
+          12.8515 8.07393 -1.10454e-006
+          -6.54643 8.07393 0
+          -6.54643 -8.07393 0
+          -6.54643 -8.07393 74.6404
+          -6.54643 -8.07393 74.6404
+          -6.54643 8.07393 74.6404
+          -6.54643 8.07393 0
+        }
+        NormalBinding PER_VERTEX
+        NormalArray Vec3Array 30
+        {
+          -4.08596e-008 -1.93184e-008 -1
+          -5.69413e-008 0 -1
+          -3.66353e-008 -2.4393e-008 -1
+          -3.66353e-008 -2.4393e-008 -1
+          -2.05536e-008 -4.37114e-008 -1
+          -4.08596e-008 -1.93184e-008 -1
+          0 -4.72471e-007 1
+          0 -4.72471e-007 1
+          0 -4.72471e-007 1
+          0 -4.72471e-007 1
+          0 -4.72471e-007 1
+          0 -4.72471e-007 1
+          1 1.00818e-015 -3.83307e-008
+          1 -1.67549e-015 -3.83307e-008
+          1 1.54265e-014 -3.83307e-008
+          1 1.54265e-014 -3.83307e-008
+          1 1.81102e-014 -3.83307e-008
+          1 1.00818e-015 -3.83307e-008
+          -6.09771e-016 1 -1.27769e-008
+          -7.27534e-016 1 -1.27769e-008
+          -1.17764e-016 1 -1.27769e-008
+          -1.17764e-016 1 -1.27769e-008
+          0 1 -1.27769e-008
+          -6.09771e-016 1 -1.27769e-008
+          -1 -2.45641e-015 3.83307e-008
+          -1 0 3.83307e-008
+          -1 -1.56537e-014 3.83307e-008
+          -1 -1.56537e-014 3.83307e-008
+          -1 -1.81102e-014 3.83307e-008
+          -1 -2.45641e-015 3.83307e-008
+        }
+        TexCoordArray 0 Vec2Array 30
+        {
+          0.265006 0.284988
+          0.265006 0.496092
+          0.0114148 0.496092
+          0.0114148 0.496092
+          0.0114148 0.284988
+          0.265006 0.284988
+          0.265006 0.283674
+          0.0114148 0.283674
+          0.0114148 0.494777
+          0.0114148 0.494777
+          0.265006 0.494777
+          0.265006 0.283674
+          0.0146209 0.506903
+          0.0146209 0.718918
+          0.994621 0.718918
+          0.994621 0.718918
+          0.994621 0.506903
+          0.0146209 0.506903
+          0.0137316 0.988374
+          0.0137316 0.733687
+          0.993732 0.733687
+          0.993732 0.733687
+          0.993732 0.988374
+          0.0137316 0.988374
+          0.0125633 0.721858
+          0.0125633 0.509843
+          0.992563 0.509843
+          0.992563 0.509843
+          0.992563 0.721858
+          0.0125633 0.721858
+        }
+      }
+    }
+  }
+}

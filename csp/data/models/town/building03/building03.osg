@@ -1,0 +1,200 @@
+MatrixTransform {
+  DataVariance STATIC
+  name "Scene Root"
+  nodeMask 0xff
+  cullingActive TRUE
+  StateSet {
+    UniqueID StateSet_0
+    DataVariance STATIC
+    rendering_hint DEFAULT_BIN
+    renderBinMode INHERIT
+    GL_LIGHTING ON
+  }
+  referenceFrame RELATIVE
+  Matrix {
+    1 0 0 0
+    0 1 0 0
+    0 0 1 0
+    0 0 0 1
+  }
+  num_children 1
+  MatrixTransform {
+    DataVariance STATIC
+    name "Box01"
+    nodeMask 0xff
+    cullingActive TRUE
+    referenceFrame RELATIVE
+    Matrix {
+      16.0491 0 0 0
+      0 16.0491 0 0
+      0 0 16.0491 0
+      -0.0477073 0.0506291 36.1636 1
+    }
+    num_children 1
+    MatrixTransform {
+      DataVariance STATIC
+      nodeMask 0xff
+      cullingActive TRUE
+      referenceFrame RELATIVE
+      Matrix {
+        1 0 0 0
+        0 1 0 0
+        0 0 1 0
+        7.86495e-011 -2.13851e-011 -2.25484 1
+      }
+      num_children 1
+      Geode {
+        UniqueID Geode_1
+        DataVariance STATIC
+        nodeMask 0xff
+        cullingActive TRUE
+        num_drawables 1
+        Geometry {
+          DataVariance DYNAMIC
+          StateSet {
+            UniqueID StateSet_2
+            DataVariance STATIC
+            rendering_hint DEFAULT_BIN
+            renderBinMode INHERIT
+            GL_CULL_FACE ON
+            GL_LIGHTING ON
+            0xba1 ON
+            Material {
+              DataVariance STATIC
+              ColorMode OFF
+              ambientColor 0.0392157 0 0.87451 1
+              diffuseColor 1 1 1 1
+              specularColor 0 0 0 1
+              emissionColor 0 0 0 1
+              shininess 0
+            }
+            textureUnit 0 {
+              GL_TEXTURE_2D ON
+              Texture2D {
+                DataVariance STATIC
+                file "images\building03.jpg"
+                wrap_s CLAMP_TO_EDGE
+                wrap_t CLAMP_TO_EDGE
+                wrap_r CLAMP_TO_EDGE
+                min_filter LINEAR_MIPMAP_LINEAR
+                mag_filter LINEAR
+                maxAnisotropy 1
+                borderColor 0 0 0 0
+                borderWidth 0
+                useHardwareMipMapGeneration TRUE
+                unRefImageDataAfterApply FALSE
+                internalFormatMode USE_IMAGE_DATA_FORMAT
+              }
+            }
+          }
+          useDisplayList TRUE
+          useVertexBufferObjects FALSE
+          PrimitiveSets 1
+          {
+            DrawArrays TRIANGLES 0 30
+          }
+          VertexArray Vec3Array 30
+          {
+            -0.953971 -0.80943 4.50968
+            0.953971 -0.80943 4.50968
+            0.953971 0.80943 4.50968
+            0.953971 0.80943 4.50968
+            -0.953971 0.80943 4.50968
+            -0.953971 -0.80943 4.50968
+            -0.953971 -0.80943 0
+            0.953971 -0.80943 0
+            0.953971 -0.80943 4.50968
+            0.953971 -0.80943 4.50968
+            -0.953971 -0.80943 4.50968
+            -0.953971 -0.80943 0
+            0.953971 -0.80943 0
+            0.953971 0.80943 0
+            0.953971 0.80943 4.50968
+            0.953971 0.80943 4.50968
+            0.953971 -0.80943 4.50968
+            0.953971 -0.80943 0
+            0.953971 0.80943 0
+            -0.953971 0.80943 0
+            -0.953971 0.80943 4.50968
+            -0.953971 0.80943 4.50968
+            0.953971 0.80943 4.50968
+            0.953971 0.80943 0
+            -0.953971 0.80943 0
+            -0.953971 -0.80943 0
+            -0.953971 -0.80943 4.50968
+            -0.953971 -0.80943 4.50968
+            -0.953971 0.80943 4.50968
+            -0.953971 0.80943 0
+          }
+          NormalBinding PER_VERTEX
+          NormalArray Vec3Array 30
+          {
+            0 0 1
+            0 0 1
+            0 0 1
+            0 0 1
+            0 0 1
+            0 0 1
+            0 -1 0
+            0 -1 0
+            0 -1 0
+            0 -1 0
+            0 -1 0
+            0 -1 0
+            1 0 0
+            1 0 0
+            1 0 0
+            1 0 0
+            1 0 0
+            1 0 0
+            0 1 0
+            0 1 0
+            0 1 0
+            0 1 0
+            0 1 0
+            0 1 0
+            -1 0 0
+            -1 0 0
+            -1 0 0
+            -1 0 0
+            -1 0 0
+            -1 0 0
+          }
+          TexCoordArray 0 Vec2Array 30
+          {
+            0.986853 0.979769
+            0.745979 0.979769
+            0.745979 0.775391
+            0.745979 0.775391
+            0.986853 0.775391
+            0.986853 0.979769
+            0.359506 0.112053
+            0.729022 0.112053
+            0.729022 0.985453
+            0.729022 0.985453
+            0.359506 0.985453
+            0.359506 0.112053
+            0.0152897 0.112053
+            0.328818 0.112053
+            0.328818 0.985453
+            0.328818 0.985453
+            0.0152898 0.985453
+            0.0152897 0.112053
+            0.357875 0.112053
+            0.727391 0.112053
+            0.727391 0.985453
+            0.727391 0.985453
+            0.357875 0.985453
+            0.357875 0.112053
+            0.014394 0.112053
+            0.327922 0.112053
+            0.327922 0.985453
+            0.327922 0.985453
+            0.0143941 0.985453
+            0.014394 0.112053
+          }
+        }
+      }
+    }
+  }
+}

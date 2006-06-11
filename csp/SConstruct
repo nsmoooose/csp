@@ -52,6 +52,7 @@ PACKAGES = [
 	'csplib',
 	'cspsim',
 	'modules',
+	'tools/canopy',
 	'tools/layout',
 ]
 

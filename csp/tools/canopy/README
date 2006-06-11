@@ -1,0 +1,158 @@
+How to generate canopy reflections
+==================================
+
+To begin, create or extract the 3d geometry of the canopy glass.  Ideally
+this model should have a higher polygon count than the final model used
+in the simulation so that the reflection is smooth.  For example, 2000
+quads produces nice results for the f16-dj front canopy.
+
+The canopy geometry should be aligned such that +X is right, +Y is
+forward, +Z is up.  The absolute position of the canopy used in the
+reflection calculation is not important, but the relative position of
+the pilot's view point is.  The simplest approach is to position the
+canopy exactly as it is in the final model, and use the pilot's
+view point offset defined in the model xml file.
+
+Assume the canopy glass model is canopy.osg, stored in the current
+directory (csp/tools/canopy).
+
+Build the canopy reflection tools:
+$ scons -u canopy
+
+Generate the reflection map:
+$ .bin/map_reflection --width 512 --height 1024 \
+    --viewpoint 0.0,4.6,1.2 --angle 10 canopy.osg > canopy.dat
+
+The options to map_reflection can be adjusted as needed.  Here the
+output texture map will be 512 x 1024 pixels.  This is probably
+sufficient, although generating a larger map and scaling it down
+(or using it directly) may give better results.  Note that the
+width is half the height.  By default only the left half of the
+canopy reflection is generated, so reducing the width gives a
+more even texel size.  The generated textures are intended to
+be used with "mirror" repeat mode to produce a symmetric
+reflection in X.  At some point it would be nice to add an option
+to generate the full (asymmetric) reflection map.
+
+The viewpoint argument specifies the x,y,z coordinates of the
+pilot's view point in model coordinates.  Angle controls the
+cylindrical projection used for the texture map.  Small angles
+give good detail near the center of the canopy at the expense
+of the edges, and vice versa.  Angles between 10 and 30 degrees
+give good results.  The output is written to stdout, which is
+redirected to canopy.dat and serves as the input to the next
+step.
+
+Generate the reflection texture:
+$ .bin/render_reflection --input canopy.dat --output canopy.jpg \
+    cockpit.osg
+
+This program takes the reflection map generated in the previous
+step and uses it to render the cockpit model from the appropriate
+angle for each texel in the reflection map texture.  The output
+texture is canopy.osg.  The cockpit model is specified on the
+command line and should contain any surface that could appear
+in the canopy reflection --- the cockpit, the pilot, parts of
+the aircraft.  Multiple models can be specified on the command
+line if necessary.
+
+Open canopy.jpg in an editor and verify that the mapping looks
+reasonable.  Adjust the brightness and contrast as needed. Add an
+alpha channel and map black to alpha such that darker pixels
+receive lower the alpha values.  Save the image as canopy.png,
+since jpeg does not support transparency.
+
+Lastly, we need to generate texture coordinates for the canopy
+and set up the texture state.  Rerun map_reflection using the
+canopy glass model that will appear in the simulation, with
+one extra argument (--tc):
+
+$ .bin/map_reflection --width 512 --height 1024 \
+    --viewpoint 0.0,4.6,1.2 --angle 10 --tc canopy-tc.osg \
+	canopy.osg > /dev/null
+
+Note that if the model used in the original map_reflection run
+is the same one used in the simulation (as opposed to a higher
+resolution version) you can just add the --tc flag at that time.
+
+This reads canopy.osg and writes it back to canopy-tc.osg with
+the correct texture coordinates.  Edit canopy-tc.osg by hand
+to add a state set that binds the reflection texture and test
+the result in osgviewer.  Here is an example state set definition:
+
+StateSet {
+  DataVariance STATIC
+  rendering_hint TRANSPARENT_BIN
+  renderBinMode USE
+  binNumber 0
+  binName RenderBin
+  GL_BLEND ON
+  GL_CULL_FACE OVERRIDE|ON
+  GL_LIGHTING ON
+  CullFace {
+    mode FRONT
+  }
+  Material {
+    DataVariance STATIC
+    ColorMode OFF
+    ambientColor 1 1 1 0.4
+    diffuseColor 1 1 1 0.4
+    specularColor 0.00900901 0.00900901 0.00900901 0.4
+    emissionColor 0 0 0 0.4
+    shininess 35.84
+  }
+  BlendFunc {
+    DataVariance STATIC
+    source SRC_ALPHA
+    destination ONE_MINUS_SRC_ALPHA
+  }
+  textureUnit 0 {
+    GL_TEXTURE_2D ON
+    Texture2D {
+      DataVariance STATIC
+      file "canopy.png"
+      wrap_s MIRROR
+      wrap_t CLAMP_TO_EDGE
+      wrap_r CLAMP_TO_EDGE
+      min_filter LINEAR_MIPMAP_LINEAR
+      mag_filter LINEAR
+      maxAnisotropy 1
+      borderColor 0 0 0 0
+      borderWidth 0
+      useHardwareMipMapGeneration TRUE
+      unRefImageDataAfterApply FALSE
+      internalFormatMode USE_IMAGE_DATA_FORMAT
+    }
+    TexEnvCombine {
+      DataVariance STATIC
+      combine_RGB INTERPOLATE
+      combine_Alpha MODULATE
+      source0_RGB TEXTURE
+      source1_RGB PREVIOUS
+      source2_RGB CONSTANT
+      source0_Alpha TEXTURE
+      source1_Alpha PREVIOUS
+      source2_Alpha CONSTANT
+      operand0_RGB SRC_COLOR
+      operand1_RGB SRC_COLOR
+      operand2_RGB SRC_COLOR
+      operand0_Alpha SRC_ALPHA
+      operand1_Alpha SRC_ALPHA
+      operand2_Alpha SRC_ALPHA
+      scale_RGB 1
+      scale_Alpha 1
+      constantColor 0.4 0.4 0.4 1.0
+    }
+  }
+}
+
+Open canopy-tc.osg in osgviewer and verify the results.  If everything looks good,
+similar hand editing is generally required to merge the changes to the canopy
+geode into the full model used in the simulation.
+
+
+---------------------
+TODOS:
+- add asymmetric reflection option to map_reflection
+- optionally generate default stateset in --tc output.
+

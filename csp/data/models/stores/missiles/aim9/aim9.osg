@@ -42,10 +42,8 @@ MatrixTransform {
         StateSet {
           UniqueID StateSet_2
           DataVariance STATIC
-          rendering_hint TRANSPARENT_BIN
-          renderBinMode USE
-          binNumber 10
-          binName DepthSortedBin
+          rendering_hint DEFAULT_BIN
+          renderBinMode INHERIT
           GL_CULL_FACE ON
           GL_LIGHTING ON
           0xba1 ON

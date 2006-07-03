@@ -34,7 +34,11 @@ def _configureModules():
 		]
 		devpack = os.environ.get('CSPDEVPACK')
 		if devpack:
-			path.append(os.path.join(devpack, 'usr', 'bin'))
+			bin = os.path.join(devpack, 'bin')
+			if not os.path.exists(bin):
+				# (usr/bin is deprecated)
+				bin = os.path.join(devpack, 'usr', 'bin')
+			path.append(bin)
 		if 'PATH' in os.environ:
 			path.append(os.environ.get('PATH'))
 		os.environ['PATH'] = os.pathsep.join(path)

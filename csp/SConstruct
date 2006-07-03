@@ -16,36 +16,14 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-
 print 'COMBAT SIMULATOR PROJECT - Build System'
 
-HELP = """
-COMMON TARGETS:
-
-  scons config        check for necessary headers and libraries
-  scons all           build everything
-  scons cspsim        build the main flight simulator client
-  scons indexserver   build the master server needed for multiplayer
-  scons dox           generate doxygen documentation
-  scons runtests      build and run all unittests
-  scons setup         configure the workspace (only needs to be run once)
-"""
 
 from tools import build
-
-import logging
-import os
-import sys
 
 build.CheckSConsVersion('0.96.1')
 build.CheckPythonVersion('2.2.2')
 build.DevpackConfig.SetMinimumVersion('0.6')
-
-
-# several global targets (e.g. 'all') are shared between copied subenvironments;
-# this is ok and the warning is annoying
-import SCons.Warnings
-SCons.Warnings.suppressWarningClass(SCons.Warnings.DuplicateEnvironmentWarning)
 
 
 PACKAGES = [
@@ -55,12 +33,6 @@ PACKAGES = [
 	'tools/canopy',
 	'tools/layout',
 ]
-
-INCLUDE = [
-	'#/..',
-	build.PYTHON_INCLUDE,
-]
-
 
 build.ExternalLibrary(
 	name = 'jpeg',
@@ -80,7 +52,6 @@ build.ExternalLibrary(
 	name = 'windows',
 	config = [
 		build.WindowsLibConfig('advapi32'),
-		#build.WindowsLibConfig('msvcrt', symbol='_toupper'),
 		build.WindowsLibConfig('ws2_32'),
 	])
 
@@ -128,65 +99,48 @@ build.ExternalLibrary(
 	])
 
 
-def AddSetupTarget(env):
-	def SetupClientWorkspace(force):
-		sys.path.insert(0, '.')
-		import tools.setup
-		del sys.path[0]
-		setup_log = logging.Logger('setup', logging.INFO)
-		setup_log.addHandler(logging.FileHandler('.setup.log', mode='wt'))
-		if tools.setup.SetupClientWorkspace(force, log=setup_log):
-			print 'Setup complete.'
-		else:
-			print 'Setup failed; see .setup.log for details.'
-	sources = Split('#/tools/csp.bootstrap #/tools/setup.py')
-	def SetupProxy(*args, **kw): SetupClientWorkspace(0)
-	def ForceSetupProxy(*args, **kw): SetupClientWorkspace(1)
-	setup = env.Command('setup', sources, SetupProxy)
-	force = env.Command('force_setup', sources, ForceSetupProxy)
+class Environment(build.Environment):
+	"""
+	COMMON TARGETS:
 
+	  scons config        check for necessary headers and libraries
+	  scons all           build everything
+	  scons cspsim        build the main flight simulator client
+	  scons indexserver   build the master server needed for multiplayer
+	  scons dox           generate doxygen documentation
+	  scons runtests      build and run all unittests
+	  scons setup         configure the workspace (only needs to be run once)
+	"""
 
-def AddRunTestsTarget(env):
-	def RunTests(*args, **kw):
-		import csp.tools.runtests
-		csp.tools.runtests.runall()
-	env.Command('runtests', 'tests', RunTests)
+	INCLUDE = ['#/..', build.GetPythonInclude()]
 
+	def customize_all(self, env):
+		env.Replace(CXXFILESUFFIX='.cpp')
+		env.Replace(CPPPATH=self.INCLUDE)
+		env.Replace(SWIGFLAGS=Split('-python -c++'))
+		env.Replace(SWIGINCLUDES=self.INCLUDE)
 
-class PlatformSettings:
 	def customize_win(self, env):
-		env['CXXFLAGS'] = Split('/GR /MD /O2 /EHsc /W3 /nologo')
+		env.Replace(CXXFLAGS=Split('/GR /MD /O2 /EHsc /W3 /nologo'))
 		env.AppendUnique(CPPDEFINES=Split('WIN32 __WIN32__ _USRDLL _DLL NDEBUG _CRT_SECURE_NO_DEPRECATE'))
 		env.AppendUnique(LINKFLAGS=Split('/INCREMENTAL:NO /RELEASE /nologo'))
 		env.AppendUnique(SHLINKFLAGS=Split('/INCREMENTAL:NO /RELEASE /nologo'))
-		env.AppendUnique(LIBPATH=[build.PYTHON_LIBRARY])
+		env.AppendUnique(LIBPATH=[build.GetPythonLibrary()])
 		env.CopyEnvironment(Split('PATH INCLUDE LIB'))
 
 	def customize_linux(self, env):
-		env['CXXFLAGS'] = Split('-O2 -g -W -Wall -pedantic -Wno-long-long')
-		env['SWIGCXXFLAGS'] = Split('-O2 -g')
-		env['ARFLAGS'] = Split('cr')
+		env.Replace(CXXFLAGS=Split('-O2 -g -W -Wall -pedantic -Wno-long-long'))
+		env.Replace(SWIGCXXFLAGS=Split('-O2 -g'))
+		env.Replace(ARFLAGS=Split('cr'))
 
 	def customize_darwin(self, env):
+		print 'WARNING: Darwin is not yet a fully supported platform.'
 		self.customize_linux(env)
-		env['SHLINKFLAGS'] = Split('-Wl -bundle')
+		env.Replace(SHLINKFLAGS=Split('-Wl -bundle'))
 
 
+env = Environment.Initialize()
 
-# platform-independent settings
-settings = build.GlobalSettings(help=HELP)
-settings.CXXFILESUFFIX='.cpp'
-settings.CPPPATH = INCLUDE
-settings.SWIGFLAGS = Split('-python -c++')
-settings.SWIGINCLUDES = INCLUDE
-
-env = settings.env()
-env.CustomizeForPlatform(PlatformSettings)
-
-build.BuildPackages(env, PACKAGES)
-build.BuildRegistry.Configure(env)
-build.BuildRegistry.Build()
-
-AddSetupTarget(env)
-AddRunTestsTarget(env)
+env.ReadPackages(PACKAGES)
+env.FinalizePackages()
 

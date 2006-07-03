@@ -17,8 +17,10 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 Import('env build')
+
 expenv = env.Copy()
 expenv.AppendUnique(CPPDEFINES=Split('CSPSIM_EXPORTS'))
+
 
 build.SourceGroup(expenv,
 	name = 'cspsim/battlefield',
@@ -336,6 +338,7 @@ build.SharedLibrary(expenv,
 	doxygen = 'cspsim.dox',
 	softlink = 1)
 
+
 build.SharedLibrary(env,
 	name = 'cspsim_module',
 	sources = ['cspsim.i'],
@@ -343,6 +346,7 @@ build.SharedLibrary(env,
 	aliases = ['all', 'cspsim'],
 	doxygen = 'cspsim.dox',
 	SHLIBPREFIX = '_')
+
 
 build.SharedLibrary(expenv,
 	name = 'indexserver',

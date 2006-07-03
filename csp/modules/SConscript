@@ -23,5 +23,5 @@ PACKAGES = [
 	'#/modules/chunklod',
 ]
 
-build.BuildPackages(env, PACKAGES)
+env.ReadPackages(PACKAGES)
 

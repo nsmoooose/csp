@@ -21,7 +21,9 @@ Import('env build')
 expenv = env.Copy()
 expenv.Append(CPPDEFINES=Split('CSPLIB_EXPORTS'))
 
-build.SourceGroup(expenv, 'csplib',
+
+build.SourceGroup(expenv,
+	name = 'csplib',
 	sources = [
 		'data/Archive.h',
 		'data/BaseType.h',
@@ -80,7 +82,6 @@ build.SourceGroup(expenv, 'csplib',
 		'net/MessageHandler.h',
 		'net/MessageQueue.h',
 		'net/NetBase.h',
-		'net/NetLog.h',
 		'net/NetRandom.cpp',
 		'net/NetRandom.h',
 		'net/NetworkInterface.cpp',
@@ -177,29 +178,32 @@ build.SourceGroup(expenv, 'csplib',
 	],
 	deps = ['gnucc2', 'sigc', 'windows'])
 
+
 build.Program(env,
 	name = 'csplib_config',
 	sources = ['util/Config.cpp'])
+
 
 build.Generate(env,
 	command = '{csplib_config} > $TARGET',
 	targets = ['#/csplib/util/Config.h'])
 
-build.SharedLibrary(
-	expenv,
+
+build.SharedLibrary(expenv,
 	name = 'csplib',
 	sources = ['@csplib'],
 	aliases = ['all', 'csplib'],
 	doxygen = 'csplib.dox',
 	softlink = 1)
 
-build.SharedLibrary(
-	env,
+
+build.SharedLibrary(env,
 	name = 'csplib_module',
 	sources = ['csplib.i'],
 	deps = ['csplib'],
 	aliases = ['all', 'csplib'],
 	SHLIBPREFIX='_')
+
 
 build.SharedLibrary(env,
 	name = 'csplib_tests',

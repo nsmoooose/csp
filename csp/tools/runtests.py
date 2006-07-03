@@ -38,12 +38,15 @@ except ImportError:
 
 
 def LoadOneModule(path):
-	# todo pass in modules from scons -- this code is not very portable (e.g., .sl on hpux)
+	# this code is not very portable (e.g., .sl on hpux); prefer 'scons runtests'
 	if sys.platform.startswith('win'):
+		pre = ''
 		ext = '.dll'
 	else:
+		pre = 'lib'
 		ext = '.so'
-	path = os.path.join(csp.dir, path + ext)
+	lib = pre + os.path.basename(path) + ext
+	path = os.path.join(csp.dir, os.path.dirname(path), lib)
 	if not csp.csplib.TestRegistry.loadTestModule(path):
 		print 'Unable to load test module "%s".  Check that it has been built.' % path
 		sys.exit(0)

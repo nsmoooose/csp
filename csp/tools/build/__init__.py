@@ -60,12 +60,21 @@ Caveats:
     SConstruct and SConscript to learn the interface by example.
 """
 
+import os
 import sys
 
 if __name__ == '__main__':
 	print 'This module provides support for the SCons build system; it is not'
 	print 'intended to be run as a standalone program.'
 	sys.exit(1)
+
+# csp bootstrap module may not be installed yet, so manually adjust the module
+# search path if necessary.
+try:
+	import csp
+except ImportError:
+	csp_parent = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', '..'))
+	sys.path.insert(0, csp_parent)
 
 from csp.tools.build.setup import Environment
 

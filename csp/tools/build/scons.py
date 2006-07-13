@@ -27,6 +27,7 @@ import SCons.Script
 import SCons.Warnings
 SCons.Warnings.suppressWarningClass(SCons.Warnings.DuplicateEnvironmentWarning)
 
+FS = SCons.Node.FS.default_fs
 File = SCons.Node.FS.default_fs.File
 Dir = SCons.Node.FS.default_fs.Dir
 Alias = SCons.Defaults.DefaultEnvironment().Alias
@@ -52,7 +53,7 @@ def SetReading():
 def DisableQuiet():
 	# override -Q
 	if hasattr(SCons.SConf, 'SetProgressDisplay'):
-		Scons.SConf.SetProgressDisplay(SCons.Util.display)
+		SCons.SConf.SetProgressDisplay(SCons.Util.display)
 
 
 def GetOptions():

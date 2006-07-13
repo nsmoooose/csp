@@ -173,6 +173,12 @@ def ReadConfig(env):
 		config = open(config_file, 'rt')
 	except IOError:
 		return None
+	# hack to rerun the config if the SConstruct file is modified; this can
+	# probably be done more cleanly using regular scons dependencies.  also
+	# shouldn't hardcode the name 'SConstruct' here.
+	t0 = scons.FS.getmtime(scons.File('#/SConstruct').abspath)
+	t1 = scons.FS.getmtime(scons.File('#/.config').abspath)
+	if t0 > t1: return None
 	return pickle.load(config)
 
 

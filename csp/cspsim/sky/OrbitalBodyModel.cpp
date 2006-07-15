@@ -19,7 +19,7 @@
 #include <csp/cspsim/sky/OrbitalBodyModel.h>
 #include <csp/cspsim/sky/OrbitalBody.h>
 #include <csp/cspsim/sky/OrbitalBodyImposter.h>
-#include <csp/cspsim/sky/SkyObserver.h>
+//#include <csp/cspsim/sky/SkyObserver.h>
 #include <csp/cspsim/sky/Common.h>
 #include <csp/csplib/util/osg.h>
 #include <csp/csplib/util/Timing.h>

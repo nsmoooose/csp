@@ -19,7 +19,7 @@
 #ifndef __CSP_CSPSIM_SKY_SKYSHADER_H__
 #define __CSP_CSPSIM_SKY_SKYSHADER_H__
 
-#include <csp/cspsim/Colorspace.h>
+#include <csp/cspsim/sky/Colorspace.h>
 
 CSP_NAMESPACE
 
@@ -56,13 +56,10 @@ public:
 	 *
 	 * @param elevation the elevation above the horizon in radians.
 	 * @param azimuth the azimuthal angle relative to the sun in radians.
-	 * @param dark experimental parameter used to adjust the sky color at
-	 *   night.  Intended to range from 0.0 for a new moon to 1.0 for a full
-	 *   moon.
 	 * @param intensity returns the unnormalized cie colorspace luminance (Y).
 	 * @return the RGB color at the specified point.
 	 */
-	Color SkyColor(float elevation, float azimuth, float dark, float &intensity);
+	Color SkyColor(float elevation, float azimuth, float &intensity);
 
 protected:
 
@@ -71,7 +68,6 @@ protected:
 	struct perez { float x, y, Y; };
 
 	// control parameters
-	Color m_FullMoonColor;
 	float m_HaloSharpness;
 	float m_NightBase;
 	float m_SunsetSharpness;
@@ -92,6 +88,10 @@ protected:
 	perez m_PerezFactor;
 	bool m_Dirty;
 
+	// extensions
+	float m_DarkAdjustment;
+	Color m_DarkSkyColor;
+
 	/**
 	 * Get Skylight Distribution Coefficients (c.f. Preetham et al.) for
 	 * a given atmospheric turbitity.
@@ -108,6 +108,10 @@ protected:
 	 * @param p Skylight coefficients.
 	 */
 	float F(float theta, float gamma, coeff &p);
+
+	// Testing minor optimization over calling FastPerez; probably not
+	// worth it.
+	float FasterF(float cos_theta, float gamma, float cos_gamma, coeff &p);
 
 	/**
 	 * Normalized Perez Sky Model function for use with precomputed sun position.

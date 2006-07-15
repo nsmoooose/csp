@@ -21,8 +21,9 @@
 
 #include <csp/csplib/util/Ref.h>
 
-#include <osg/Vec3>
 #include <osg/ref_ptr>
+#include <osg/Referenced>
+#include <osg/Vec3>
 
 #include <vector>
 
@@ -31,6 +32,7 @@ namespace osg { class Group; }
 namespace osg { class Light; }
 namespace osg { class LightSource; }
 namespace osg { class MatrixTransform; }
+namespace osg { class StateSet; }
 
 CSP_NAMESPACE
 
@@ -61,10 +63,10 @@ class StarDome;
  *  is fairly expensive, so each update is spread out over many subsequent
  *  frames.
  */
-class SkyObserver {
+class Sky: public osg::Referenced {
 public:
-	SkyObserver(double radius=1.0);
-	~SkyObserver();
+	Sky(double radius=1.0);
+	~Sky();
 
 	/** Set the position of the observer.
 	 *
@@ -108,8 +110,9 @@ public:
 
 	void addSunlight(int lightnum);
 	void addMoonlight(int lightnum);
-	osg::Light *getSunlight();
-	osg::Light *getMoonlight();
+	osg::LightSource *getSunlight();
+	osg::LightSource *getMoonlight();
+	void addGlobalLights(osg::Group *group, osg::StateSet *ss);
 
 private:
 	/** Adjust the light representing the moon.  The light intensity is a
@@ -127,6 +130,7 @@ private:
 	osg::ref_ptr<osg::MatrixTransform> m_Transform;
 	osg::ref_ptr<osg::Group> m_Group;
 	osg::ref_ptr<osg::Group> m_ImposterGroup;
+	osg::ref_ptr<osg::LightSource> m_Sunlight;
 	osg::ref_ptr<osg::LightSource> m_Moonlight;
 	osg::ref_ptr<StarDome> m_StarDome;
 

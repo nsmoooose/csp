@@ -27,6 +27,7 @@ namespace osg { class Geometry; }
 namespace osg { class Image; }
 namespace osg { class Light; }
 namespace osg { class MatrixTransform; }
+namespace osg { class Texture1D; }
 
 CSP_NAMESPACE
 
@@ -98,6 +99,15 @@ public:
 	 */
 	void updateShading(bool force=false);
 
+	/** Get a texture representing the sky color at the horizon.
+	 */
+	osg::Texture1D *getHorizonTexture() { return m_HorizonTexture.get(); }
+
+	/** Get the sky color at the horizon.  The argument is the azimuth angle
+	 *  in radians, in local coordinates (+X = east, +Y = north).
+	 */
+	osg::Vec4 getHorizonColor(double angle) const;
+
 private:
 	~SkyDome();
 
@@ -105,9 +115,14 @@ private:
 	 */
 	void buildDome();
 
-	/** Update the sun light, if initialized.  Called by updateShading.
+	/** Update the sun light, if initialized.  Called by setSunPosition.
 	 */
-	void updateLighting();
+	void updateLighting(double azimuth, double elevation);
+
+	/** Update the horizon color texture, which can be used to shade the
+	 *  fog.  Called by updateShading.
+	 */
+	void updateHorizon();
 
 	osg::ref_ptr<osg::Geometry> m_Dome;
 	osg::ref_ptr<osg::Image> m_Image;
@@ -138,6 +153,13 @@ private:
 	double m_AverageIntensity;
 	double m_AverageIntensitySum;
 	double m_AverageIntensityCount;
+
+	// track horizon colors separately for fog shading
+	osg::ref_ptr<osg::Vec4Array> m_HorizonColors;
+	osg::ref_ptr<osg::Image> m_HorizonImage;
+	osg::ref_ptr<osg::Texture1D> m_HorizonTexture;
+	std::vector<unsigned> m_HorizonIndex;
+	unsigned m_HorizonSlice;
 };
 
 CSP_NAMESPACE_END

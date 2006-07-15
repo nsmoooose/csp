@@ -17,11 +17,11 @@
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include <csp/cspsim/sky/SkyObserver.h>
+#include <csp/cspsim/sky/Common.h>
 #include <csp/cspsim/sky/OrbitalBodyModel.h>
 #include <csp/cspsim/sky/SkyDome.h>
 #include <csp/cspsim/sky/SolarSystem.h>
 #include <csp/cspsim/sky/StarDome.h>
-#include <csp/cspsim/sky/Common.h>
 #include <csp/csplib/util/osg.h>
 
 #include <osg/Geode>
@@ -33,12 +33,12 @@
 
 CSP_NAMESPACE
 
-SkyObserver::SkyObserver(double radius):
+Sky::Sky(double radius):
 		m_Radius(radius),
 		m_Latitude(0.0),
 		m_Longitude(0.0),
 		m_LastFullUpdate(0.0),
-		m_LastMoonIntensity(0) {
+		m_LastMoonIntensity(-1) {
 	m_Transform = new osg::MatrixTransform;
 	m_Group = new osg::Group;
 	m_ImposterGroup = new osg::Group;
@@ -53,39 +53,36 @@ SkyObserver::SkyObserver(double radius):
 	m_Group->addChild(m_Transform.get());
 }
 
-SkyObserver::~SkyObserver() {
+Sky::~Sky() {
 }
 
-void SkyObserver::setPosition(double latitude, double longitude) {
+void Sky::setPosition(double latitude, double longitude) {
 	m_Latitude = latitude;
 	m_Longitude = longitude;
 }
 
-void SkyObserver::addModel(OrbitalBodyModel *model) {
+void Sky::addModel(OrbitalBodyModel *model) {
 	assert(model);
 	m_ImposterGroup->addChild(model->node());
 	model->setSkyDomeRadius(m_Radius);
 	m_Models.push_back(model);
 	if (model->body() == m_SolarSystem->moon()) {
 		m_Moon = model;
-		if (m_Moonlight.valid()) {
-			m_Moon->bindLightSource(m_Moonlight.get());
-		}
 	}
 }
 
-osg::Group *SkyObserver::group() {
+osg::Group *Sky::group() {
 	return m_Group.get();
 }
 
-void SkyObserver::getSunPositionAndSkyMagnitude(double time, double &elevation, double &azimuth, double &magnitude) const {
+void Sky::getSunPositionAndSkyMagnitude(double time, double &elevation, double &azimuth, double &magnitude) const {
 	Vector3 earth = m_SolarSystem->earth()->getHeliocentricPosition(time);
 	Vector3 earth_equatorial = OrbitalBodyModel::toEquatorial(earth);
 	osg::Vec3 sun = equatorialToLocal(toOSG(-earth_equatorial));
 	sun.normalize();
 	elevation = asin(sun.z());
 	azimuth = atan2(sun.y(), sun.x());
-	std::cout << "sun = " << toDegrees(elevation) << "\n";
+	//std::cout << "sun = " << toDegrees(elevation) << "\n";
 
 	// ad-hoc sky light model.  the response is fairly flat above 30 degrees, at around -4.
 	// at sunset, the magnitude is around -1, dropping to +2 at -8 degrees (twilight).
@@ -98,11 +95,11 @@ void SkyObserver::getSunPositionAndSkyMagnitude(double time, double &elevation, 
 	magnitude = 1.0 / sin(std::max((elevation + toRadians(22.0)), 0.14) * 0.5) - 6.0;
 }
 
-void SkyObserver::update(double time) {
+void Sky::update(double time) {
 	double angle = -PI_2 - MeanSiderealTime(time, m_Longitude);
 	m_Transform->setMatrix(osg::Matrixd::rotate(angle, 0, 0, 1) * osg::Matrixd::rotate(m_Latitude - PI_2, 1, 0, 0));
-	if (m_SkyDome.valid()) m_SkyDome->updateShading();
-	if (time - m_LastFullUpdate > (10.0 / 86400.0) || m_LastFullUpdate == 0) {
+	const bool first_update = (m_LastFullUpdate == 0.0);
+	if (time - m_LastFullUpdate > (10.0 / 86400.0) || first_update) {
 		m_LastFullUpdate = time;
 		m_SolarSystem->update(time);
 
@@ -118,38 +115,44 @@ void SkyObserver::update(double time) {
 		if (m_StarDome.valid()) m_StarDome->updateLighting(magnitude);
 		updateMoonlight(magnitude);
 	}
+	// force the sky shading to run to completion on the first update so that
+	// the sky is colored correctly when the simulation starts.  afterward,
+	// shading updates computed over multiple frames.
+	const bool force_update = first_update;
+	if (m_SkyDome.valid()) m_SkyDome->updateShading(force_update);
 }
 
-osg::Vec3 SkyObserver::equatorialToLocal(osg::Vec3 const &vec) const {
+osg::Vec3 Sky::equatorialToLocal(osg::Vec3 const &vec) const {
 	return m_Transform->getMatrix().preMult(vec);
 }
 
-void SkyObserver::addSunlight(int num) {
+void Sky::addSunlight(int num) {
 	m_SkyDome->initSunlight(num);
+	m_Sunlight = new osg::LightSource;
+	m_Sunlight->setLight(m_SkyDome->getSunlight());
 }
 
-osg::Light *SkyObserver::getSunlight() {
-	return m_SkyDome->getSunlight();
+osg::LightSource *Sky::getSunlight() {
+	return m_Sunlight.get();
 }
 
-void SkyObserver::addMoonlight(int num) {
+void Sky::addMoonlight(int num) {
 	assert(!m_Moonlight);
 	if (!m_Moonlight) {
 		m_Moonlight = new osg::LightSource;
 		m_Moonlight->getLight()->setLightNum(num);
 		m_Moonlight->getLight()->setAmbient(osg::Vec4(0.0, 0.0, 0.0, 1.0));
-		if (m_Moon.valid()) {
-			m_Moon->bindLightSource(m_Moonlight.get());
-		}
 	}
 }
 
-osg::Light *SkyObserver::getMoonlight() {
-	return m_Moonlight.valid() ? m_Moonlight->getLight() : 0;
+osg::LightSource *Sky::getMoonlight() {
+	return m_Moonlight.get();
 }
 
-void SkyObserver::updateMoonlight(double sky_magnitude) {
+
+void Sky::updateMoonlight(double sky_magnitude) {
 	if (m_Moonlight.valid() && m_Moon.valid()) {
+		double azimuth = m_Moon->getAzimuth();
 		double elevation = m_Moon->getElevation();
 		double omega = m_Moon->getPhaseAngle();
 		double sin_omega_2 = sin(0.5 * omega);
@@ -171,14 +174,31 @@ void SkyObserver::updateMoonlight(double sky_magnitude) {
 	
 		static const double peakIntensity = 128.0;  // ad-hoc
 		int intensity = static_cast<int>(peakIntensity * lommel_seeler * attenuation);
+		std::cout << "moon intensity: " << intensity << ", ls: " << lommel_seeler << ", atten: " << attenuation << "\n";
 		if (intensity != m_LastMoonIntensity) {
 			m_LastMoonIntensity = intensity;
 			std::cout << "moon: " << attenuation << " " << lommel_seeler << "\n";
 			static const osg::Vec3 color(0.92, 0.98, 1.0);
-			m_Moonlight->getLight()->setAmbient(osg::Vec4(color * 0.01, 1.0));
+			m_Moonlight->getLight()->setAmbient(osg::Vec4(color * 0.00, 1.0));
 			m_Moonlight->getLight()->setDiffuse(osg::Vec4(color * intensity / 255.0, 1.0));
 			m_Moonlight->getLight()->setSpecular(osg::Vec4(color * intensity / 255.0, 1.0));
 		}
+
+		// it would be somewhat simpler to bind the moon lightsource to the moon model
+		// using OrbitalBodyModel::bindLightSource, but this is inconvenient when the
+		// scene is split into multiple views (e.g., CSP uses a very far view for the
+		// sky, and far and near views for other scene elements).  instead, the light
+		// position and direction is updated directly here so that the lightsource can
+		// be placed at the top of the scene graph for each of the views.
+		//
+		// note that the sunlight is updated in a similar way by SkyDome; perhaps this
+		// should be moved to Sky as well.
+		const double cos_elevation = cos(elevation);
+		const double sin_elevation = sin(elevation);
+		osg::Vec3 dir(cos_elevation * cos(azimuth), cos_elevation * sin(azimuth), sin_elevation);
+		m_Moonlight->getLight()->setPosition(osg::Vec4(dir, 0.0));
+		m_Moonlight->getLight()->setDirection(-dir);
+		std::cout << "moon position, direction: " << dir.x() << " " << dir.y() << " " << dir.z() << "\n";
 	}
 }
 

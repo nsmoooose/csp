@@ -27,6 +27,7 @@
 #include <osg/Light>
 #include <osg/MatrixTransform>
 #include <osg/TexEnv>
+#include <osg/Texture1D>
 #include <osg/Texture2D>
 
 #include <iostream>  // debugging only
@@ -60,6 +61,8 @@ void SkyDome::setSunPosition(double azimuth, double elevation) {
 	m_NextSunAzimuth = azimuth;
 	m_NextSunElevation = elevation;
 
+	updateLighting(azimuth, elevation);
+
 	if (!m_UpdateInProgress && (m_NextSunElevation != m_SunAzimuth || m_NextSunElevation != m_SunElevation)) {
 		m_SunAzimuth = azimuth;
 		m_SunElevation = elevation;
@@ -85,7 +88,6 @@ void SkyDome::updateShading(bool force) {
 	// changed as a result of calling setSunPosition).
 	if (!m_UpdateInProgress && !force) return;
 
-	float dark = 0.9f; //0.9f;
 	unsigned char *shade = m_Image->data();
 
 	// Normally update one texture row per call, but if force is true generate
@@ -101,7 +103,7 @@ void SkyDome::updateShading(bool force) {
 				if (elevation < 0.0) elevation = 0.0;
 				double azimuth = atan2(x, y);
 				float intensity = 0.0f;
-				Color c = m_SkyShader->SkyColor(elevation, azimuth, dark, intensity);
+				Color c = m_SkyShader->SkyColor(elevation, azimuth, intensity);
 				unsigned i0 = idx + i*3 - 1;
 				unsigned i1 = idx - i*3 - 1;
 				shade[++i0] = shade[++i1] = static_cast<unsigned char>(c.getA() * 255.0);
@@ -126,7 +128,7 @@ void SkyDome::updateShading(bool force) {
 		if (m_DomeNode.valid()) {
 			m_DomeNode->setMatrix(osg::Matrix::rotate(m_SunAzimuth - PI_2, 0, 0, 1));
 		}
-		updateLighting();
+		updateHorizon();
 
 		// update the average skydome intensity.
 		m_AverageIntensity = m_AverageIntensitySum / m_AverageIntensityCount;
@@ -150,7 +152,10 @@ void SkyDome::buildDome() {
 	m_Elevations.push_back(toRadians(-10.0));
 	m_Elevations.push_back(toRadians(-10.0));
 	m_Elevations.push_back(toRadians(-5.0));
-	m_Elevations.push_back(toRadians(0.0));
+	{
+		m_HorizonSlice = m_Elevations.size();
+		m_Elevations.push_back(toRadians(0.0));
+	}
 	m_Elevations.push_back(toRadians(1.0));
 	for (float elev = 5.0f; elev <= 90.0; elev += 5.0) m_Elevations.push_back(toRadians(elev));
 
@@ -236,70 +241,94 @@ void SkyDome::buildDome() {
 	geode->addDrawable(m_Dome.get());
 	m_DomeNode = new osg::MatrixTransform;
 	m_DomeNode->addChild(geode);
+
+	m_HorizonColors = new osg::Vec4Array(TEXSIZE/2);
+	m_HorizonImage = new osg::Image;
+	m_HorizonImage->allocateImage(m_HorizonColors->size(), 1, 1, GL_RGB, GL_UNSIGNED_BYTE);
+	m_HorizonTexture = new osg::Texture1D;
+	m_HorizonTexture->setImage(m_HorizonImage.get());
+	m_HorizonTexture->setWrap(osg::Texture::WRAP_S, osg::Texture::CLAMP_TO_EDGE);
 }
 
-void SkyDome::updateLighting() {
+void SkyDome::updateHorizon() {
+	unsigned n = m_HorizonColors->size();
+	unsigned char *shade = m_HorizonImage->data();
+	double azimuth = 0.0;
+	double da = PI / n;
+	unsigned index = 0;
+	for (unsigned i = 0 ; i < n; ++i) {
+		float intensity;
+		Color c = m_SkyShader->SkyColor(0.0, azimuth, intensity);
+		(*m_HorizonColors)[i] = osg::Vec4(c.getA(), c.getB(), c.getC(), 1.0);
+		shade[index++] = static_cast<unsigned char>(c.getA() * 255.0);
+		shade[index++] = static_cast<unsigned char>(c.getB() * 255.0);
+		shade[index++] = static_cast<unsigned char>(c.getC() * 255.0);
+		azimuth += da;
+	}
+	m_HorizonImage->dirty();  // force reload
+}
+
+void SkyDome::updateLighting(double azimuth, double elevation) {
 	if (!m_Sunlight) return;
 
 	double specular_scale = 1.0;
 	double diffuse_scale = 1.0;
+	double ambient_scale = 0.3;
 	double ambient = m_AverageIntensity;
-	double elevation = std::max(0.0, m_SunElevation);
+	double clamped_elevation = std::max(0.0, elevation);
 	float intensity = 0.0f;
 
 	if (ambient > 0.1) ambient = 0.1;
 	ambient = 0.0; // XXX
 
-	Color color = m_SkyShader->SkyColor(elevation, 0.0, 0.0, intensity);
-	double x = cos(elevation) * cos(m_SunAzimuth);
-	double y = cos(elevation) * sin(m_SunAzimuth);
-	double z = sin(elevation);
+	Color color = m_SkyShader->SkyColor(clamped_elevation, 0.0, intensity);
+	double x = cos(clamped_elevation) * cos(azimuth);
+	double y = cos(clamped_elevation) * sin(azimuth);
+	double z = sin(clamped_elevation);
 
-#if 0
 	// the sky shading at the sun's position is too blue when the sun
 	// is high to use as the light color.  instead we use the approximate
-	// chromaticity taken from Preetham.  near sunset/rise, this function
-	// decays too rapidly to account for secondary scattering from
-	// the atmosphere that becomes important as the direct sunlight weakens.
-	// so, as an approximation we blend the sunlight color and intensity
-	// smoothly into the sky color at the sun's position as it nears the
-	// horizon.  this misses the sharp drop in direct light as the sun
-	// sets, but captures the nice glow from the horizon that persists for
-	// a short time after sunset/before sunrise.  The discontinuity in
-	// direct light at sunrise/set is approximated by diffuse_scale and
-	// specular_scale below.
-	if (z > 0.0) {
-		// approximate atmospheric path length (1.0 at sunset)
-		double atmospheric_distance = 0.03 / (z + 0.03);
-		// very approximate fit to figure 7 in Preetham
-		double ciex = 0.3233 + 0.08 * atmospheric_distance;
-		double ciey = 0.556 + 2.3*(ciex-0.33) - 2.0*ciex*ciex;
-		// completely ad-hoc
-		double cieY = 1.0 - 0.4 * atmospheric_distance * atmospheric_distance;
-		double weight = z * 2.0;
-		if (weight > 1.0) weight = 1.0;
-		color.blend(Color(ciex, ciey, cieY, Color::CIExyY, false).toRGB(true), weight);
-		intensity = (1.0 - weight) * intensity + weight * cieY;
-	}
-#endif
+	// chromaticity taken from Preetham.  this function probably isn't
+	// ideal before sunrise and after sunset, where secondary scattering
+	// dominates the diffuse lighting component.  for an interesting
+	// discussion of daylight color perception, see
+	//   http://www.soluxtli.com/edu13.htm
+
+	// approximate atmospheric path length (relative to 1.0 at sunset)
+	double atmospheric_distance = 0.03 / (z + 0.03);
+
+	// very approximate fit to figure 7 in Preetham, with y shifted down
+	// slightly at large x to make the light more orange at low elevation.
+	// A straight fit to Preetham is closer to
+	//      ciey =  0.556 + 2.3*(ciex-0.33) - 2.0*ciex*ciex;
+	double ciex = 0.3233 + 0.08 * atmospheric_distance;
+	double ciey = 0.598 + 2.3*(ciex-0.33) - 2.4*ciex*ciex;
+
+	// intensity is completely ad-hoc; pupil dilation and the eye's
+	// nonlinear light response make a linear mapping of light intensity
+	// to screen intensity look unnatural.
+	double cieY = 1.0 - 0.4 * atmospheric_distance * atmospheric_distance;
+
+	double weight = z * 2.0;
+	if (weight > 1.0) weight = 1.0;
+
+	color = Color(ciex, ciey, cieY, Color::CIExyY, false).toRGB(true);
 
 	// ad-hoc additional darkening once the sun has set... the gl light
 	// representing the sun should not be as bright as the horizion.
-	double scale = std::min(1.0, intensity * intensity * 25.0);
+	double scale = 1.0;
 	double light_r = color.getA() * scale;
 	double light_g = color.getB() * scale;
 	double light_b = color.getC() * scale;
 
-	// below horizon?
-	if (z < 0.0) {
-		// 0.5 cuts light level in half exactly at sunset
-		// (give or take the sun's diameter)
-		diffuse_scale = 0.5;
-		// fade out specular faster as sun drops below the horizon
-		specular_scale = std::max(0.0, 0.5 + 9.0*z);
-		// get the "sun shine" from the horizion, not below.
-		z = 0.0;
-	}
+	double sunset = std::min(1.0, toDegrees(elevation) + 0.5);
+	// fade out ambient from sunset to 60 minutes after sunset.  absolute
+	// ambient light is undoubtedly dropping before sunset, but making the
+	// drop symmetric around sunset causes the scene to appear too dark
+	// shortly after sunset, perhaps due to dark adaptation.
+	ambient_scale = 0.3 * std::max(0.0, std::min((10.0 + toDegrees(elevation)) / 20.0 + 0.5, 1.0));
+	diffuse_scale = std::max(ambient_scale, sunset);
+	specular_scale = std::max(0.0, sunset);
 
 	// sunlight direction (if using spot)
 	m_Sunlight->setDirection(osg::Vec3(-x, -y, -z));
@@ -308,10 +337,22 @@ void SkyDome::updateLighting() {
 	m_Sunlight->setPosition(osg::Vec4(x, y, z, 0.0f));
 
 	// set the various light components
-	m_Sunlight->setAmbient(osg::Vec4(0.3f * light_r + ambient, 0.3f * light_g + ambient, 0.3f * light_b + ambient, 1.0f));
+	m_Sunlight->setAmbient(osg::Vec4(ambient_scale, ambient_scale, ambient_scale, 1.0f));
 	m_Sunlight->setDiffuse(osg::Vec4(diffuse_scale*light_r, diffuse_scale*light_g, diffuse_scale*light_b, 1.0f));
 	m_Sunlight->setSpecular(osg::Vec4(specular_scale*light_r, specular_scale*light_g, specular_scale*light_b, 1.0f));
-	std::cout << "sunlight " << light_r << " " << light_g << " " << light_b << " " << intensity << "\n";
+	std::cout << "sunlight " << toDegrees(elevation) << " " << light_r << " " << light_g << " " << light_b << " " << ambient_scale << "\n";
+}
+
+osg::Vec4 SkyDome::getHorizonColor(double angle) const {
+	const int n = static_cast<int>(m_HorizonColors->size());
+	float dx = (angle - m_SunAzimuth) * n / PI;
+	int index_0 = static_cast<int>(floor(dx));
+	dx -= index_0;
+	index_0 = index_0 % (2*n - 1);
+	if (index_0 < 0) index_0 = -index_0;
+	if (index_0 >= n) index_0 = 2*n - 1 - index_0;
+	int index_1 = (index_0 == (n-1)) ? (n-2) : index_0 + 1;
+	return (*m_HorizonColors)[index_0] * (1.0 - dx) + (*m_HorizonColors)[index_1] * dx;
 }
 
 CSP_NAMESPACE_END

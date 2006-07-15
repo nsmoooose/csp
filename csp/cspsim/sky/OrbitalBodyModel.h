@@ -27,12 +27,12 @@ CSP_NAMESPACE
 
 class OrbitalBody;
 class OrbitalBodyImposter;
-class SkyObserver;
+class Sky;
 
 
 /** Class to position an imposter of an orbital body in the local
- *  coordinates of a SkyObserver.  Motion due to rotation of the
- *  observer is handled externally using a common transform for
+ *  coordinates of an observer on the Earth.  Motion due to rotation
+ *  of the observer is handled externally using a common transform for
  *  all models.
  */
 class OrbitalBodyModel: public Referenced {

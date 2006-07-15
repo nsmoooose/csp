@@ -38,7 +38,7 @@ class MagnitudeFunction;
  *  interval, which is typically 2 or more hours.
  *
  *  @see OrbitalBodyModel
- *  @see SkyObserver
+ *  @see Sky
  */
 class OrbitalBody: public Referenced {
 public:

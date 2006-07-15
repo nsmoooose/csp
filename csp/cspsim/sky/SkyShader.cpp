@@ -5,7 +5,6 @@
 
 CSP_NAMESPACE
 
-#define CUSTOM_NIGHT
 #define CUSTOM_EYE
 #define CUSTOM_F
 //#define CUSTOM_Y
@@ -40,10 +39,11 @@ SkyShader::SkyShader() {
 	m_SunsetSharpness = 50.0;
 	m_SunsetElevation = -5.0 * (PI/180.0);  // half-intensity elevation
 	m_NightBase = 0.01;
-	//m_FullMoonColor = Color(0.008, 0.035, 0.140, Color::RGB);
-	//m_FullMoonColor = Color(0.008, 0.086, 0.183, Color::RGB);
-	//m_FullMoonColor = Color(0.008, 0.016, 0.183, Color::RGB);
-	m_FullMoonColor = Color(0.004, 0.008, 0.0915, Color::RGB);
+	//m_DarkSkyColor = Color(0.008, 0.035, 0.140, Color::RGB);
+	//m_DarkSkyColor = Color(0.008, 0.086, 0.183, Color::RGB);
+	m_DarkSkyColor = Color(0.008, 0.016, 0.183, Color::RGB);
+	//m_DarkSkyColor = Color(0.004, 0.008, 0.0915, Color::RGB);
+	m_DarkAdjustment = 0.0;
 	setTurbidity(TURBIDITY);
 	setSunElevation(0.0);
 }
@@ -65,6 +65,14 @@ void SkyShader::getSkyCoefficients(float T, sky_c &skylight) {
 	skylight.Y[3] =  0.12064 * T - 2.57705;
 	skylight.Y[4] = -0.06696 * T + 0.37027;
 }
+
+float SkyShader::FasterF(float cos_theta, float gamma, float cos_gamma, coeff &p) {
+#ifdef CUSTOM_F
+	cos_theta = fabs(cos_theta) + 0.09;
+#endif
+	return (1.0 + p[0]*exp(p[1]/cos_theta))*(1.0+p[2]*exp(p[3]*gamma)+p[4]*cos_gamma*cos_gamma);
+}
+
 
 float SkyShader::F(float theta, float gamma, coeff &p) {
 	float cos_g = cos(gamma);
@@ -142,6 +150,7 @@ void SkyShader::setSunElevation(float h) {
 		m_AzimuthCorrection =  -PI;
 	}
 	m_SunElevation = h;
+	m_DarkAdjustment = clampTo(6.0 * (m_SunElevation - toRadians(-25.0)), 0.0, 1.0);
 	m_Dirty = true;
 }
 
@@ -221,7 +230,7 @@ void _xyY_to_XYZ(float x, float y, float Y_, float &X, float &Y, float &Z) {
 }
 
 
-Color SkyShader::SkyColor(float elevation, float azimuth, float dark, float &intensity) {
+Color SkyShader::SkyColor(float elevation, float azimuth, float &intensity) {
 	if (m_Dirty) _computeBase();
 	float theta = 0.5f*PI - elevation;
 	float A = azimuth + m_AzimuthCorrection;
@@ -231,9 +240,18 @@ Color SkyShader::SkyColor(float elevation, float azimuth, float dark, float &int
 	if (dot < -1.0f) dot = -1.0f; else
 	if (dot >  1.0f) dot =  1.0f;
 	float gamma = acos(dot);
+
+#ifdef SLOW_PEREZ
 	float ciex = FastPerez(theta, gamma, m_PerezFactor.x, m_Zenith.getA(), m_Coefficients.x);
 	float ciey = FastPerez(theta, gamma, m_PerezFactor.y, m_Zenith.getB(), m_Coefficients.y);
 	float cieY = FastPerez(theta, gamma, m_PerezFactor.Y, m_Zenith.getC(), m_Coefficients.Y);
+#else
+	float cos_theta = cos(std::min(theta, 1.5708f));
+	float ciex = m_PerezFactor.x * m_Zenith.getA() * FasterF(cos_theta, gamma, dot, m_Coefficients.x);
+	float ciey = m_PerezFactor.y * m_Zenith.getB() * FasterF(cos_theta, gamma, dot, m_Coefficients.y);
+	float cieY = m_PerezFactor.Y * m_Zenith.getC() * FasterF(cos_theta, gamma, dot, m_Coefficients.Y);
+#endif
+
 	//std::cout << ":: " << theta << " " << gamma << " " << m_PerezFactor.Y << " " << m_Coefficients.Y << " " << m_Zenith.getC() << " " << cieY << "\n";
 
 #ifdef CUSTOM_Y
@@ -265,12 +283,8 @@ Color SkyShader::SkyColor(float elevation, float azimuth, float dark, float &int
 	float X_, Y_, Z_, r_, g_, b_;
 	_xyY_to_XYZ(ciex, ciey, 1.0, X_, Y_, Z_);
 	_XYZ_to_RGB709(X_, Y_, Z_, r_, g_, b_);
-	//float h_, s_, v_;
-	//RGB_to_HSV(r_, g_, b_, h_, s_, v_);
-	//v_ = std::min(2.0f, cieY);
-	//HSV_to_RGB(h_, s_, v_, r_, g_, b_);
 
-	double f = std::min(1.0f, cieY) / getY709(r_, g_, b_); //std::max(r_, std::max(g_, b_));
+	double f = std::min(1.0f, cieY) / getY709(r_, g_, b_);
 	r_ = std::min(1.0, std::max(0.0, f * r_));
 	g_ = std::min(1.0, std::max(0.0, f * g_));
 	b_ = std::min(1.0, std::max(0.0, f * b_));
@@ -279,14 +293,10 @@ Color SkyShader::SkyColor(float elevation, float azimuth, float dark, float &int
 
 	intensity = cieY;
 
-	//Color xyY(ciex, ciey, cieY, Color::CIExyY, false);
-	//cout << xyY << endl;
-	//Color rgb = xyY.toRGB();
-	////cout << rgb << endl;
-#ifdef CUSTOM_NIGHT
-	rgb.composite(m_FullMoonColor, 1.0f, dark);
-	rgb.check();
-#endif // CUSTOM
+	if (m_DarkAdjustment > 0.0) {
+		rgb.composite(m_DarkSkyColor, 1.0f, m_DarkAdjustment);
+		rgb.check();
+	}
 	return rgb;
 }
 

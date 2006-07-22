@@ -36,8 +36,9 @@
 #include <csp/csplib/util/Exception.h>
 #include <csp/csplib/util/Namespace.h>
 
-#include <string>
+#include <cassert>
 #include <iosfwd>
+#include <string>
 
 CSP_NAMESPACE
 

@@ -27,7 +27,7 @@ namespace osg { class Geometry; }
 namespace osg { class Image; }
 namespace osg { class Light; }
 namespace osg { class MatrixTransform; }
-namespace osg { class Texture1D; }
+namespace osg { class Texture2D; }
 
 CSP_NAMESPACE
 
@@ -50,7 +50,8 @@ class SkyDome: public Referenced {
 	// which updates are spread.  Assuming 50 fps a 256 pixel texture
 	// requires about 5 seconds to update, which is fast enough to provide
 	// smooth shading transitions at sunrise/sunset.
-	enum { TEXSIZE = 256 };
+	//enum { TEXSIZE = 256 };
+	enum { TEXSIZE = 512 };
 
 public:
 	SkyDome(double radius=1.0);
@@ -101,7 +102,7 @@ public:
 
 	/** Get a texture representing the sky color at the horizon.
 	 */
-	osg::Texture1D *getHorizonTexture() { return m_HorizonTexture.get(); }
+	osg::Texture2D *getHorizonTexture() { return m_HorizonTexture.get(); }
 
 	/** Get the sky color at the horizon.  The argument is the azimuth angle
 	 *  in radians, in local coordinates (+X = east, +Y = north).
@@ -157,7 +158,7 @@ private:
 	// track horizon colors separately for fog shading
 	osg::ref_ptr<osg::Vec4Array> m_HorizonColors;
 	osg::ref_ptr<osg::Image> m_HorizonImage;
-	osg::ref_ptr<osg::Texture1D> m_HorizonTexture;
+	osg::ref_ptr<osg::Texture2D> m_HorizonTexture;
 	std::vector<unsigned> m_HorizonIndex;
 	unsigned m_HorizonSlice;
 };

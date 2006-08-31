@@ -174,10 +174,10 @@ void Sky::updateMoonlight(double sky_magnitude) {
 	
 		static const double peakIntensity = 128.0;  // ad-hoc
 		int intensity = static_cast<int>(peakIntensity * lommel_seeler * attenuation);
-		std::cout << "moon intensity: " << intensity << ", ls: " << lommel_seeler << ", atten: " << attenuation << "\n";
+		//std::cout << "moon intensity: " << intensity << ", ls: " << lommel_seeler << ", atten: " << attenuation << "\n";
 		if (intensity != m_LastMoonIntensity) {
 			m_LastMoonIntensity = intensity;
-			std::cout << "moon: " << attenuation << " " << lommel_seeler << "\n";
+			//std::cout << "moon: " << attenuation << " " << lommel_seeler << "\n";
 			static const osg::Vec3 color(0.92, 0.98, 1.0);
 			m_Moonlight->getLight()->setAmbient(osg::Vec4(color * 0.00, 1.0));
 			m_Moonlight->getLight()->setDiffuse(osg::Vec4(color * intensity / 255.0, 1.0));
@@ -198,7 +198,7 @@ void Sky::updateMoonlight(double sky_magnitude) {
 		osg::Vec3 dir(cos_elevation * cos(azimuth), cos_elevation * sin(azimuth), sin_elevation);
 		m_Moonlight->getLight()->setPosition(osg::Vec4(dir, 0.0));
 		m_Moonlight->getLight()->setDirection(-dir);
-		std::cout << "moon position, direction: " << dir.x() << " " << dir.y() << " " << dir.z() << "\n";
+		//std::cout << "moon position, direction: " << dir.x() << " " << dir.y() << " " << dir.z() << "\n";
 	}
 }
 

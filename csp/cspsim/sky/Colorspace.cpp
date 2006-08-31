@@ -104,7 +104,7 @@ static float whitepoint_xyz[][3] = {
  *
  * (text excerpt from Poynton's Color FAQ, Copyright Charles Poynton 1997)
  */
-static void setWhite(float x, float y, float /*z*/) {
+void setWhite(float x, float y, float /*z*/) {
 	float X, Y, Z;
 	xyY_to_XYZ(x, y, 1.0, X, Y, Z);
 	XYZ_check(X, Y, Z);
@@ -124,7 +124,7 @@ static void setWhite(float x, float y, float /*z*/) {
  *
  * (text excerpt from Poynton's Color FAQ, Copyright Charles Poynton 1997)
  */
-static void setWhiteD65() {
+void setWhiteD65() {
 	float* xyz = whitepoint_xyz[CIE_D65];
 	setWhite(xyz[0], xyz[1], xyz[2]);
 }
@@ -135,7 +135,7 @@ static void setWhiteD65() {
 static float cubert(float x) {
 	if (x > 0.0) return powf(x, (1.0f/3.0f));
 	if (x == 0.0) return 0.0;
-	return -powf(fabsf(x), (1.0f/3.0f));
+	return -powf(-x, (1.0f/3.0f));
 }
 
 /**

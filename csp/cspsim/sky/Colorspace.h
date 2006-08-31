@@ -38,6 +38,8 @@ CSP_NAMESPACE
 /*
  * Colorspace conversions and corrections.
  */
+void setWhite(float x, float y, float z);
+void setWhiteD65();
 void RGB_check(float &R, float &G, float &B);
 void CMY_check(float &C, float &M, float &Y);
 void CMY_to_RGB(float C, float M, float Y, float &R, float &G, float &B);

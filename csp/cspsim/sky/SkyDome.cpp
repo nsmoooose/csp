@@ -106,6 +106,14 @@ void SkyDome::updateShading(bool force) {
 				Color c = m_SkyShader->SkyColor(elevation, azimuth, intensity);
 				unsigned i0 = idx + i*3 - 1;
 				unsigned i1 = idx - i*3 - 1;
+				// TODO azimuth does not match up perfectly in the simulation; seems to be off
+				// by half a degree or so at 180 degrees azimuth.  need to double check the
+				// coordinate calculations here relative to the texture coordinates assigned
+				// in the dome creation.
+				// to debug horizon (fog) and sky texture alignment, uncomment the next two
+				// lines and comment the following to.  same in updateHorizon.
+				//shade[++i0] = shade[++i1] = static_cast<unsigned char>(255 * (int(toDegrees(azimuth)) % 2)); // XXX
+				//shade[++i0] = shade[++i1] = static_cast<unsigned char>(toDegrees(azimuth));
 				shade[++i0] = shade[++i1] = static_cast<unsigned char>(c.getA() * 255.0);
 				shade[++i0] = shade[++i1] = static_cast<unsigned char>(c.getB() * 255.0);
 				shade[++i0] = shade[++i1] = static_cast<unsigned char>(c.getC() * 255.0);
@@ -157,6 +165,8 @@ void SkyDome::buildDome() {
 		m_Elevations.push_back(toRadians(0.0));
 	}
 	m_Elevations.push_back(toRadians(1.0));
+	m_Elevations.push_back(toRadians(2.0));
+	m_Elevations.push_back(toRadians(3.0));
 	for (float elev = 5.0f; elev <= 90.0; elev += 5.0) m_Elevations.push_back(toRadians(elev));
 
 	m_Slices = m_Elevations.size();
@@ -242,10 +252,11 @@ void SkyDome::buildDome() {
 	m_DomeNode = new osg::MatrixTransform;
 	m_DomeNode->addChild(geode);
 
-	m_HorizonColors = new osg::Vec4Array(TEXSIZE/2);
+	// use approximately the same sampling as the rim of the texture dome (TEXSIZE * PI)
+	m_HorizonColors = new osg::Vec4Array(TEXSIZE*4);
 	m_HorizonImage = new osg::Image;
-	m_HorizonImage->allocateImage(m_HorizonColors->size(), 1, 1, GL_RGB, GL_UNSIGNED_BYTE);
-	m_HorizonTexture = new osg::Texture1D;
+	m_HorizonImage->allocateImage(m_HorizonColors->size(), 4, 1, GL_RGB, GL_UNSIGNED_BYTE);
+	m_HorizonTexture = new osg::Texture2D;
 	m_HorizonTexture->setImage(m_HorizonImage.get());
 	m_HorizonTexture->setWrap(osg::Texture::WRAP_S, osg::Texture::CLAMP_TO_EDGE);
 }
@@ -253,17 +264,23 @@ void SkyDome::buildDome() {
 void SkyDome::updateHorizon() {
 	unsigned n = m_HorizonColors->size();
 	unsigned char *shade = m_HorizonImage->data();
-	double azimuth = 0.0;
-	double da = PI / n;
+	double da = PI / (n - 1);
 	unsigned index = 0;
-	for (unsigned i = 0 ; i < n; ++i) {
-		float intensity;
-		Color c = m_SkyShader->SkyColor(0.0, azimuth, intensity);
-		(*m_HorizonColors)[i] = osg::Vec4(c.getA(), c.getB(), c.getC(), 1.0);
-		shade[index++] = static_cast<unsigned char>(c.getA() * 255.0);
-		shade[index++] = static_cast<unsigned char>(c.getB() * 255.0);
-		shade[index++] = static_cast<unsigned char>(c.getC() * 255.0);
-		azimuth += da;
+	for (unsigned j = 0; j < 4; ++j) {
+		double azimuth = 0.0;
+		for (unsigned i = 0 ; i < n; ++i) {
+			float intensity;
+			Color c = m_SkyShader->SkyColor(j * toRadians(1.0), azimuth, intensity);
+			if (j == 0) (*m_HorizonColors)[i] = osg::Vec4(c.getA(), c.getB(), c.getC(), 1.0);
+			// to debug horizon (fog) and sky texture alignment, uncomment the next two
+			// lines and comment the following to.  same in updateShading.
+			//shade[index++] = static_cast<unsigned char>(255 * (int(toDegrees(azimuth)) % 2)); // XXX
+			//shade[index++] = static_cast<unsigned char>(toDegrees(azimuth));
+			shade[index++] = static_cast<unsigned char>(c.getA() * 255.0);
+			shade[index++] = static_cast<unsigned char>(c.getB() * 255.0);
+			shade[index++] = static_cast<unsigned char>(c.getC() * 255.0);
+			azimuth += da;
+		}
 	}
 	m_HorizonImage->dirty();  // force reload
 }
@@ -340,7 +357,7 @@ void SkyDome::updateLighting(double azimuth, double elevation) {
 	m_Sunlight->setAmbient(osg::Vec4(ambient_scale, ambient_scale, ambient_scale, 1.0f));
 	m_Sunlight->setDiffuse(osg::Vec4(diffuse_scale*light_r, diffuse_scale*light_g, diffuse_scale*light_b, 1.0f));
 	m_Sunlight->setSpecular(osg::Vec4(specular_scale*light_r, specular_scale*light_g, specular_scale*light_b, 1.0f));
-	std::cout << "sunlight " << toDegrees(elevation) << " " << light_r << " " << light_g << " " << light_b << " " << ambient_scale << "\n";
+	//std::cout << "sunlight " << toDegrees(elevation) << " " << light_r << " " << light_g << " " << light_b << " " << ambient_scale << "\n";
 }
 
 osg::Vec4 SkyDome::getHorizonColor(double angle) const {

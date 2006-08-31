@@ -57,7 +57,7 @@ OrbitalBodyModel::OrbitalBodyModel(OrbitalBodyImposter *imposter, double minimum
 }
 
 OrbitalBodyModel::~OrbitalBodyModel() {
-	std::cout << "~OrbitalBodyModel() " << m_Body->label() << "\n";
+	//std::cout << "~OrbitalBodyModel() " << m_Body->label() << "\n";
 }
 
 void OrbitalBodyModel::updateVisibility(double magnitude, double sky_magnitude) {
@@ -75,7 +75,7 @@ void OrbitalBodyModel::updateVisibility(double magnitude, double sky_magnitude) 
 		double atten = (10.0 / 255.0) * pow(10.0, sky_magnitude - magnitude_attenuation);
 		double shine = pow(10.0, -magnitude);
 		double flare_shine = std::min(shine * 0.001, 0.001);
-		std::cout << "mag=" << magnitude << " sky=" << sky_magnitude << " atten=" << atten << " alpha=" << (atten*shine) << "\n";
+		//std::cout << "mag=" << magnitude << " sky=" << sky_magnitude << " atten=" << atten << " alpha=" << (atten*shine) << "\n";
 
 		double r = 1.0;
 		double g = exp(-0.005 * optical_mass);  // ~0.83 min
@@ -178,7 +178,7 @@ void OrbitalBodyModel::update(double time, double sky_magnitude, osg::Matrix con
 
 	m_LastTime = time;
 	t0 = get_realtime() - t0;
-	std::cout << m_Body->label() << " model update took " << int(t0 * 1000000.0) << " us\n";
+	//std::cout << m_Body->label() << " model update took " << int(t0 * 1000000.0) << " us\n";
 
 }
 
@@ -204,7 +204,7 @@ void OrbitalBodyModel::setVisualAccuracy(double angle) {
 	double period1 = 365.25;
 	double reduced_period = 1.0 / ((1.0 / period0) + (1.0 / period1));
 	m_MinimumInterval = m_Accuracy * reduced_period / 360.0;
-	std::cout << angle << " " << m_MinimumInterval << " " << period0 << " *** \n";
+	//std::cout << angle << " " << m_MinimumInterval << " " << period0 << " *** \n";
 }
 
 void OrbitalBodyModel::bindLightSource(osg::LightSource *light_source) {

@@ -1,0 +1,50 @@
+// -*-c-*-
+// Combat Simulator Project
+// Copyright (C) 2006 The Combat Simulator Project
+// http://csp.sourceforge.net
+//
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public License
+// as published by the Free Software Foundation; either version 2
+// of the License, or (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+
+varying vec3 normal;
+varying vec3 halfvector;
+
+uniform float fade;
+uniform vec4 fog;
+
+void main() {
+	const vec3 N = normalize(normal);
+	const vec3 HV = normalize(halfvector);
+	const float NdotL0 = max(dot(N, normalize(vec3(gl_LightSource[0].position))), 0.0);
+	const float NdotL1 = max(dot(N, normalize(vec3(gl_LightSource[1].position))), 0.0);
+	const float NdotHV = max(dot(N, HV), 0.0);
+
+	const vec4 ambient = gl_FrontMaterial.ambient * gl_LightSource[0].ambient;
+	const vec4 diffuse0 = gl_FrontMaterial.diffuse * gl_LightSource[0].diffuse;
+	const vec4 diffuse1 = gl_FrontMaterial.diffuse * gl_LightSource[1].diffuse;
+	const vec4 specular = gl_FrontMaterial.specular * gl_LightSource[0].specular;
+	const vec4 emission = gl_FrontMaterial.emission;
+
+	vec4 mesh_color = (ambient + diffuse0 * NdotL0 + diffuse1 * NdotL1 + emission);
+	// pow(x, 0.0) is buggy on nvidia, so add a small offset.
+	const float shininess = gl_FrontMaterial.shininess + 0.1;
+	mesh_color.rgb += 8.0 * specular.rgb * pow(NdotHV, shininess);
+	mesh_color.a = gl_FrontMaterial.diffuse.a;
+
+	mesh_color.rgb = mix(mesh_color.rgb, fog.rgb, fog.a);
+	gl_FragColor = vec4(mesh_color.rgb, mesh_color.a * (1.0 - fade));
+}
+
+
+

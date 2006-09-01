@@ -1,0 +1,45 @@
+// -*-c-*-
+// Combat Simulator Project
+// Copyright (C) 2006 The Combat Simulator Project
+// http://csp.sourceforge.net
+//
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public License
+// as published by the Free Software Foundation; either version 2
+// of the License, or (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+//
+// CSP demeter-terrain fragment shader.
+
+varying vec3 normal;
+
+uniform sampler2D tex0;
+uniform sampler2D tex1;
+uniform sampler2D tex2;
+
+void main() {
+	vec3 N = normalize(normal);
+	vec3 L0 = normalize(vec3(gl_LightSource[0].position));  // sun
+	vec3 L1 = normalize(vec3(gl_LightSource[1].position));  // moon
+
+	vec4 tc0 = texture2D(tex0, gl_TexCoord[0].st);  // terrain texture
+	vec4 tc1 = texture2D(tex1, gl_TexCoord[1].st);  // detail texture
+	vec4 tc2 = texture2D(tex2, gl_TexCoord[2].st);   // horizon texture
+
+	const float diffuse0 = max(dot(N, L0), 0.0) * gl_LightSource[0].diffuse;
+	const float diffuse1 = max(dot(N, L1), 0.0) * gl_LightSource[1].diffuse;
+	vec4 light = gl_LightSource[0].ambient + diffuse0 + diffuse1;
+
+	const vec4 fog_color = tc2;
+	const vec4 mesh_color = tc0 * tc1 * light;
+
+	gl_FragColor = vec4(mix(mesh_color.rgb, fog_color.rgb, gl_FogFragCoord), 1.0);
+}

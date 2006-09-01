@@ -1,0 +1,36 @@
+// -*-c-*-
+// Combat Simulator Project
+// Copyright (C) 2006 The Combat Simulator Project
+// http://csp.sourceforge.net
+//
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public License
+// as published by the Free Software Foundation; either version 2
+// of the License, or (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+
+varying vec3 normal;
+varying vec3 halfvector;
+
+void main() {
+	normal = normalize(gl_NormalMatrix * gl_Normal);
+	halfvector = normalize(gl_LightSource[0].halfVector.xyz);
+
+	// gl_sphere_map texgen
+	const vec4 vertex = normalize(gl_ModelViewMatrix * gl_Vertex);
+	const vec4 f = reflect(vertex, vec4(normal, 0.0));
+	const float m = 2.0 * sqrt(dot(f, f) + 2.0 * f.z + 1.0);
+	gl_TexCoord[0].st = f.xy / m + 0.5;
+
+	gl_Position = ftransform();
+}
+
+

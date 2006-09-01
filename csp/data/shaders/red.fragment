@@ -1,0 +1,31 @@
+// -*-c-*-
+// Combat Simulator Project
+// Copyright (C) 2006 The Combat Simulator Project
+// http://csp.sourceforge.net
+//
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public License
+// as published by the Free Software Foundation; either version 2
+// of the License, or (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+
+varying vec3 normal;
+
+void main() {
+	const vec3 N = normalize(normal);
+	const float NdotL0 = max(dot(N, normalize(vec3(gl_LightSource[0].position))), 0.0);
+
+	const vec4 ambient = vec4(1.0, 0.0, 0.0, 0.0) * gl_LightSource[0].ambient;
+	const vec4 diffuse = vec4(1.0, 0.0, 0.0, 1.0) * gl_LightSource[0].diffuse;
+	const vec4 emission = vec4(0.2, 0.0, 0.0, 0.0);
+
+	gl_FragColor = (ambient + diffuse * NdotL0 + emission);
+}

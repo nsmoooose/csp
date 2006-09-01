@@ -1,0 +1,57 @@
+// -*-c-*-
+// Combat Simulator Project
+// Copyright (C) 2006 The Combat Simulator Project
+// http://csp.sourceforge.net
+//
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public License
+// as published by the Free Software Foundation; either version 2
+// of the License, or (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+
+varying vec3 normal;
+varying vec3 halfvector;
+
+uniform sampler2D tex0;  // cockpit reflection map
+
+void main() {
+	// the canopy geometry is outward facing; but the internal reflection
+	// map should only be visible from the inside.
+	if (gl_FrontFacing) discard;
+
+	// the texture and texture coordinates for the reflection map are
+	// generated using an program in tools/canopy
+	vec4 tc0 = texture2D(tex0, gl_TexCoord[0].st);
+
+	// approximate lighting of the cockpit.  doesn't take display
+	// glow into account at night; might be possible to add this
+	// using a color channel in the reflection map or a separate
+	// "glow" reflection map that would be active at all light
+	// levels.
+	float light = gl_LightSource[0].ambient.r + gl_LightSource[0].diffuse.r;
+	
+	// can't get blendfunc (src_alpha, one) to work correctly with
+	// the glsl shader (see FX:canopy in f16dj.osg).  instead the
+	// reflection map color channels have to be set to 1, 1, 1 to
+	// approximate an additive blend function (otherwise the
+	// reflection darkens the background at low light levels).
+	vec4 color = vec4(tc0.rgb, tc0.a * light * gl_FrontMaterial.ambient.a);
+
+	// todo consider adding a specular term, or posibly a scratch
+	// bump map like lomac.
+	//color.rgb += 8.0 * specular.rgb * pow(NdotHV, gl_FrontMaterial.shininess);
+	//color.a = tc0.a * gl_FrontMaterial.diffuse.a;
+
+	gl_FragColor = color;
+}
+
+
+

@@ -1,0 +1,85 @@
+// -*-c-*-
+// Combat Simulator Project
+// Copyright (C) 2006 The Combat Simulator Project
+// http://csp.sourceforge.net
+//
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public License
+// as published by the Free Software Foundation; either version 2
+// of the License, or (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+//
+// CSP demeter-terrain vertex shader.
+// Almost all of the work here is done to setup per-pixel fog in the fragment
+// shader.
+
+varying vec3 normal;
+
+// for convenience, hard code the fog parameters for now.  they should be
+// converted to uniforms and set by the application eventually.
+//
+//   fog_attenuation : fog decay length at sea level, in meters
+//   fog_depth : fog decay length with altitude, in meters
+//
+const float fog_attenuation = 10000.0;
+const float fog_depth = 2000.0;
+
+void main() {
+	// fog calculation
+	//
+	//   fog density f(z) decays with altitude as exp(- k * z)
+	//   fog coord is the integral from the eye to the vertex of f(z)*dl.
+	//   fog color is the sky color at the horizon in the direction of the vertex
+	//
+	// computing these values in the vertex shader can produce some visible artifacts
+	// for large quads near the camera, but is much less expensive than running in
+	// the fragment shader.
+
+	const vec4 eye_space_vertex = gl_ModelViewMatrix * gl_Vertex;
+	const vec4 eye_space_origin = gl_ModelViewMatrix[3];
+	const vec4 eye_space_z = gl_ModelViewMatrix[2];
+
+	const float eye_altitude = -dot(eye_space_origin, eye_space_z);
+	const float vertex_altitude = eye_altitude + dot(eye_space_vertex, eye_space_z);
+	const float delta_z = eye_altitude - vertex_altitude;
+	const float i0 = exp(-eye_altitude / fog_depth);
+	const float i1 = exp(-vertex_altitude / fog_depth);
+	float path_length = length(eye_space_vertex.xyz);
+	const float fog_tcoord_t = -19.1 * delta_z / path_length;
+
+	if (abs(delta_z) < 10.0) {
+		// limiting case where the viewer and the vertex are at about the same altitude,
+		// which avoids division by zero in the general formula.
+		path_length *= (i0 + i1) * 0.5;
+	} else {
+		// general case where the viewer and the vertex are different altitudes.
+		path_length *= max(fog_depth * (i1 - i0) / delta_z, 0.0);
+	}
+	gl_FogFragCoord = clamp(1.0 - exp(- path_length / fog_attenuation), 0.0, 1.0);
+
+	// compute the normalized angle between the vertex and the sun in the x-y plane.  this
+	// serves as the texture coordinate for the fog color lookup performed in the fragment
+	// shader.
+	const vec3 sun_dir = normalize(vec3(gl_LightSource[0].position));
+	const vec3 eye_dir = normalize(eye_space_vertex.xyz);
+    const vec2 eye_dir_xy = normalize((gl_ModelViewMatrixInverse * vec4(eye_dir, 0.0)).xy);
+    const vec2 sun_dir_xy = normalize((gl_ModelViewMatrixInverse * vec4(sun_dir, 0.0)).xy);
+	const float fog_tcoord_s = acos(dot(eye_dir_xy, sun_dir_xy)) / 3.1416;
+
+	// demeter uses two texture units for the terrain and detail textures, respectively.
+	// the third texture unit is the horizon color (0 = sun direction, 1 = opposite sun).
+	gl_TexCoord[0] = gl_MultiTexCoord0;
+	gl_TexCoord[1] = gl_MultiTexCoord1;
+	gl_TexCoord[2] = vec4(fog_tcoord_s, fog_tcoord_t, 0.0, 0.0);
+
+	normal = normalize(gl_NormalMatrix * gl_Normal);
+	gl_Position = ftransform();
+}

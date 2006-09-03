@@ -17,7 +17,67 @@ MatrixTransform {
     0 0 1 0
     0 0 0 1
   }
-  num_children 47
+  num_children 48
+  MatrixTransform {
+    StateSet {
+      Program {}
+    }
+    UpdateCallbacks {
+      AnimationPathCallback {
+        AnimationPath {
+          ControlPoints {
+            0 0 0 0 0 0 0 1 1 1 1
+            8 0 0 0 0 0 1 0 1 1 1
+            16 0 0 0 0 0 0 -1 1 1 1
+          }
+        }
+      }
+    }
+    Matrix {
+      1 0 0 0
+      0 1 0 0
+      0 0 1 0
+      0 0 0 1
+    }
+    osgSim::LightPointNode {
+      maxPixelSize 5
+      minPixelSize 2
+      maxDistance2 200000000
+      lightPoint {
+        isOn TRUE
+        position 0.0 0.0 30.0
+        color 1 1 1 1
+        radius 4.0
+        osgSim::AzimElevationSector {
+          azimuthRange 2.64 2.84 0.2
+          elevationRange -0.7 0.7 0.2
+        }
+        blendingMode BLENDED
+      }
+      lightPoint {
+        isOn TRUE
+        position 0.0 0.0 30.0
+        color 1 1 1 1
+        radius 4.0
+        osgSim::AzimElevationSector {
+          azimuthRange 3.44 3.64 0.2
+          elevationRange -0.7 0.7 0.2
+        }
+        blendingMode BLENDED
+      }
+      lightPoint {
+        isOn TRUE
+        position 0.0 0.0 30.0
+        color 0.4 1 0.5 1
+        radius 4.0
+        osgSim::AzimElevationSector {
+          azimuthRange -0.15 0.15 0.6
+          elevationRange -0.7 0.7 0.2
+        }
+        blendingMode BLENDED
+      }
+    }
+  }
   MatrixTransform {
     DataVariance STATIC
     name "Boîte01"

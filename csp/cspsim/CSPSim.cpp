@@ -432,8 +432,12 @@ void CSPSim::cleanup() {
 	// release cached objects.  this must be done before the sound engine is shut
 	// down to prevent errors when deleting cached sound samples.
 	m_DataManager = 0;
-
+	
+	// note: shutdown hangs under some conditions when using openal 0.0.7 (due to
+	// a race condition in _alLockMixerPause when calling alcMakeContextCurrent(NULL)).
+	// if you experience problems here, try upgrading openal.
 	SoundEngine::getInstance().shutdown();
+
 	SDL_Quit();
 	m_Clean = true;
 }
@@ -607,9 +611,9 @@ void CSPSim::updateTime() {
 	m_ElapsedTime += m_FrameTime;
 	m_FrameTime += m_TimeLag;
 	assert(m_FrameTime > 0.0);
-	if (m_FrameTime > 0.2) {
-		m_TimeLag = m_FrameTime - 0.2;
-		m_FrameTime = 0.2;
+	if (m_FrameTime > 0.1) {
+		m_TimeLag = m_FrameTime - 0.1;
+		m_FrameTime = 0.1;
 	} else {
 		m_TimeLag = 0.0;
 	}

@@ -9,6 +9,10 @@ MatrixTransform {
     rendering_hint DEFAULT_BIN
     renderBinMode INHERIT
     GL_LIGHTING ON
+    GL_CULL_FACE ON
+    CullFace {
+      mode BACK
+    }
   }
   referenceFrame RELATIVE
   Matrix {
@@ -44,7 +48,7 @@ MatrixTransform {
           DataVariance STATIC
           rendering_hint DEFAULT_BIN
           renderBinMode INHERIT
-          GL_CULL_FACE OVERRIDE|OFF
+          GL_CULL_FACE OVERRIDE|ON
           GL_LIGHTING ON
           0xba1 ON
           Material {
@@ -1197,7 +1201,7 @@ MatrixTransform {
           DataVariance STATIC
           rendering_hint DEFAULT_BIN
           renderBinMode INHERIT
-          GL_CULL_FACE OVERRIDE|OFF
+          GL_CULL_FACE PROTECTED|OFF
           GL_LIGHTING ON
           0xba1 ON
           Material {
@@ -1656,8 +1660,9 @@ MatrixTransform {
           DataVariance STATIC
           rendering_hint DEFAULT_BIN
           renderBinMode INHERIT
-          GL_CULL_FACE OVERRIDE|OFF
+          GL_CULL_FACE PROTECTED|OFF
           GL_LIGHTING ON
+          GL_BLEND ON
           0xba1 ON
           Material {
             DataVariance STATIC

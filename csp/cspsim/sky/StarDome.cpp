@@ -40,6 +40,7 @@ struct StarDome::Star {
 	float px, py, pz;  // position
 };
 
+
 class StarDome::BrightStar {
 public:
 	BrightStar(osg::Texture2D *texture, osg::Vec3 const &position, double angle, double magnitude) {
@@ -52,14 +53,25 @@ public:
 	void update(double sky_alpha_scaling) {
 		// TODO the apparent brightness on the monitor is different for the single-pixel
 		// alpha scale and the flare alpha scale --- these should be normalized to produce
-		// a more linear apparent brightness.  also, should the flare size be independent
-		// of the field of view?  currently the flare is not visible at wide fields of
-		// view, but making it larger might not look natural at higher magnification.
+		// a more linear apparent brightness.
 		double alpha = clampTo(sky_alpha_scaling * m_Attenuation, 0.0, 1.0);
 		if (fabs(alpha - m_LastAlpha) < (2.0 / 255.0)) return;
 		osg::Vec4Array *colors = dynamic_cast<osg::Vec4Array*>(m_Imposter->getColorArray());
 		assert(colors);
 		(*colors)[0] = osg::Vec4(1, 1, 1, alpha);
+		m_Imposter->dirtyDisplayList();
+	}
+
+	void updateViewAngle(double angle) {
+		osg::Vec2Array *tcoords = dynamic_cast<osg::Vec2Array*>(m_Imposter->getTexCoordArray(0));
+		assert(tcoords);
+		double view_scaling = std::max(0.5, 40.0 / angle);
+		float a = 0.5f + static_cast<float>(view_scaling);
+		float b = 1.0f - a;
+		(*tcoords)[0].set(b, a);
+		(*tcoords)[1].set(b, b);
+		(*tcoords)[2].set(a, b);
+		(*tcoords)[3].set(a, a);
 		m_Imposter->dirtyDisplayList();
 	}
 
@@ -131,7 +143,10 @@ StarDome::StarDome(double radius): m_Radius(radius) {
 	double flare_angular_size = 0.0;
 	if (image.valid()) {
 		bright_texture = new osg::Texture2D(image.get());
-		flare_angular_size = toRadians(image->s() / 64.0);
+		bright_texture->setWrap(osg::Texture::WRAP_S, osg::Texture::CLAMP_TO_BORDER);
+		bright_texture->setWrap(osg::Texture::WRAP_T, osg::Texture::CLAMP_TO_BORDER);
+		bright_texture->setBorderColor(osg::Vec4(0.0, 0.0, 0.0, 0.0));
+		flare_angular_size = 1.2 * toRadians(image->s() / 64.0);
 	} else {
 		CSPLOG(ERROR, SCENE) << "Unable to load " << StarFlareImage;
 	}
@@ -180,6 +195,12 @@ osg::BoundingBox StarDome::computeBound() const {
 	bbox._min = osg::Vec3(-m_Radius, -m_Radius, -m_Radius);
 	bbox._max = osg::Vec3(m_Radius, m_Radius, m_Radius);
 	return bbox;
+}
+
+void StarDome::setViewAngle(double angle) {
+	for (unsigned i = 0; i < m_BrightStars->size(); ++i) {
+		(*m_BrightStars)[i].updateViewAngle(angle);
+	}
 }
 
 void StarDome::updateLighting(double sky_magnitude) {

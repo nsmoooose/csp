@@ -21654,11 +21654,7 @@ MatrixTransform {
         num_drawables 1
         Geometry {
           DataVariance DYNAMIC
-          StateSet {
-            DataVariance STATIC
-            rendering_hint DEFAULT_BIN
-            renderBinMode INHERIT
-          }
+          Use StateSet_37
           useDisplayList TRUE
           useVertexBufferObjects FALSE
           PrimitiveSets 1
@@ -24691,9 +24687,19 @@ MatrixTransform {
       Geometry {
         DataVariance DYNAMIC
         StateSet {
+          UniqueID StateSet_gray
           DataVariance STATIC
           rendering_hint DEFAULT_BIN
           renderBinMode INHERIT
+          Material {
+            DataVariance STATIC
+            ColorMode OFF
+            ambientColor 0.33 0.33 0.33 1
+            diffuseColor 0.33 0.33 0.33 1
+            specularColor 0 0 0 1
+            emissionColor 0 0 0 1
+            shininess 0
+          }
         }
         useDisplayList TRUE
         useVertexBufferObjects FALSE
@@ -28409,11 +28415,7 @@ MatrixTransform {
         num_drawables 1
         Geometry {
           DataVariance DYNAMIC
-          StateSet {
-            DataVariance STATIC
-            rendering_hint DEFAULT_BIN
-            renderBinMode INHERIT
-          }
+          Use StateSet_37
           useDisplayList TRUE
           useVertexBufferObjects FALSE
           PrimitiveSets 1
@@ -37360,11 +37362,7 @@ MatrixTransform {
         num_drawables 1
         Geometry {
           DataVariance DYNAMIC
-          StateSet {
-            DataVariance STATIC
-            rendering_hint DEFAULT_BIN
-            renderBinMode INHERIT
-          }
+          Use StateSet_37
           useDisplayList TRUE
           useVertexBufferObjects FALSE
           PrimitiveSets 1
@@ -45320,11 +45318,7 @@ MatrixTransform {
       num_drawables 1
       Geometry {
         DataVariance DYNAMIC
-        StateSet {
-          DataVariance STATIC
-          rendering_hint DEFAULT_BIN
-          renderBinMode INHERIT
-        }
+        Use StateSet_gray
         useDisplayList TRUE
         useVertexBufferObjects FALSE
         PrimitiveSets 1
@@ -56910,11 +56904,7 @@ MatrixTransform {
       num_drawables 1
       Geometry {
         DataVariance DYNAMIC
-        StateSet {
-          DataVariance STATIC
-          rendering_hint DEFAULT_BIN
-          renderBinMode INHERIT
-        }
+        Use StateSet_gray
         useDisplayList TRUE
         useVertexBufferObjects FALSE
         PrimitiveSets 1

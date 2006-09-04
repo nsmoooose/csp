@@ -25,6 +25,7 @@
 
 #include <csp/cspsim/theater/FeatureQuad.h>
 #include <csp/cspsim/Config.h>
+#include <csp/cspsim/Shader.h>
 
 #include <csp/csplib/util/FileUtility.h>
 #include <csp/csplib/data/ObjectInterface.h>
@@ -99,26 +100,21 @@ osg::StateSet* FeatureQuad::makeStateSet() const {
 	state->setTextureAttributeAndModes(0, tex, osg::StateAttribute::ON);
 	state->setTextureAttribute(0, new osg::TexEnv);
 	state->setAttributeAndModes(new osg::BlendFunc, osg::StateAttribute::ON);
-	osg::AlphaFunc* alphaFunc = new osg::AlphaFunc;
-	alphaFunc->setFunction(osg::AlphaFunc::GEQUAL,0.5f);
-	state->setAttributeAndModes(alphaFunc, osg::StateAttribute::ON);
 	if (m_Lighting) {
 		state->setMode(GL_LIGHTING, osg::StateAttribute::ON);
 	} else {
 		state->setMode(GL_LIGHTING, osg::StateAttribute::OFF);
 	}
-	//osg::Material *material = new osg::Material;
-	//material->setAmbient(osg::Material::FRONT_AND_BACK, osg::Vec4(1.0,1.0,1.0,1.0));
-	//material->setDiffuse(osg::Material::FRONT_AND_BACK, osg::Vec4(1.0,1.0,1.0,1.0));
-	//state->setAttributeAndModes(material, osg::StateAttribute::ON);
+	osg::Material *material = new osg::Material;
+	material->setAmbient(osg::Material::FRONT_AND_BACK, osg::Vec4(1.0,1.0,1.0,1.0));
+	material->setDiffuse(osg::Material::FRONT_AND_BACK, osg::Vec4(1.0,1.0,1.0,1.0));
+	state->setAttributeAndModes(material, osg::StateAttribute::ON);
 	state->setRenderingHint(osg::StateSet::TRANSPARENT_BIN);
-	//osg::CullFace *cull = new osg::CullFace;
-	//cull->setMode(osg::CullFace::FRONT);
-	//state->setAttributeAndModes(cull, osg::StateAttribute::OFF|osg::StateAttribute::PROTECTED|osg::StateAttribute::OVERRIDE);
+	Shader::instance()->applyShader("object", state);
 	return state;
 }
 
-FeatureQuad::FeatureQuad() { 
+FeatureQuad::FeatureQuad() {
 	m_OffsetX = 0.0;
 	m_OffsetY = 0.5;
 	m_Geometry = NULL;

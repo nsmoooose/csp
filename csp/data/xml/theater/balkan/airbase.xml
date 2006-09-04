@@ -1,5 +1,4 @@
-<?xml version="1.0" standalone="no"?>
-
+<?xml version="1.0" ?>
 <Object class="CustomLayoutModel">
     <List name="layout">
         <Object class="FeatureLayout">
@@ -8,13 +7,20 @@
             <Float name="y">0</Float>
             <Float name="orientation">0.0</Float>
         </Object>
+<!-- VASI -->
+        <Object class="FeatureLayout">
+            <Path name="model">vasi</Path>
+            <Float name="x">38.0</Float>
+            <Float name="y">966.0</Float>
+            <Float name="orientation">3.1416</Float>
+        </Object>
+<!-- Taxi Lights - Taxi F right side  -->        
         <Object class="FeatureLayout">
             <Path name="model">Taxi_Light_Blue</Path>
             <Float name="x">26.5</Float>
             <Float name="y">1111</Float>
             <Float name="orientation">0.0</Float>
         </Object>
-<!-- Taxi Lights - Taxi F right side  -->        
         <Object class="FeatureLayout">
             <Path name="model">Taxi_Light_Blue</Path>
             <Float name="x">28.5</Float>
@@ -594,3 +600,4 @@
 	</Object>
     </List>
 </Object>
+

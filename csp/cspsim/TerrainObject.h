@@ -116,6 +116,7 @@ public:
 	inline float getWidth() const { return m_Width; }
 	inline float getHeight() const { return m_Height; }
 	inline std::string const &getName() const { return m_Name; }
+	inline std::string const &getShader() const { return m_Shader; }
 	inline int getVersion() const { return m_Version; }
 	const Projection* getProjection() const { return m_Map.get(); }
 	virtual Vector3 getOrigin(Vector3 const &) const = 0;
@@ -127,6 +128,7 @@ protected:
 	float m_Width, m_Height;
 	Ref<Projection> m_Map;
 	std::string m_Name;
+	std::string m_Shader;
 	int m_Version;
 
 	virtual void postCreate();

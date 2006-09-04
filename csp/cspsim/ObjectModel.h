@@ -142,6 +142,7 @@ protected:
 
 	virtual void postCreate();
 	virtual void loadModel();
+	void processModel();
 	void addDebugMarkers();
 	void generateStationMasks(std::map<std::string, unsigned> const &interior_map) const;
 

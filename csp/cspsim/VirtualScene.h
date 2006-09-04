@@ -48,11 +48,11 @@ namespace osgUtil { class SceneView; }
 
 CSP_NAMESPACE
 
-class Sky;
-class FalseHorizon;
+class DynamicObject;
 class FeatureTile;
 class FeatureGroup;
-class DynamicObject;
+class Sky;
+
 
 /**
 * The purpose of this simple class is to provide a new opengl context id
@@ -164,6 +164,11 @@ private:
 	typedef std::vector<DynamicObjectRef> DynamicObjectList;
 	DynamicObjectList m_DynamicObjects;
 
+	class DynamicObjectCallback;
+	class FeatureGroupCallback;
+	class SceneState;
+	Ref<SceneState> m_SceneState;
+
 	int _getFeatureTileIndex(Ref<FeatureGroup> feature) const;
 	void _updateOrigin(Vector3 const &origin);
 
@@ -183,7 +188,6 @@ private:
 	void drawInfoView();
 
 protected:
-
 	void _updateFog(Vector3 const &lookPos, Vector3 const &eyePos);
 
 	Ref<TerrainObject> m_Terrain;

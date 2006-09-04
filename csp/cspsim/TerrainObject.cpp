@@ -41,6 +41,7 @@ CSP_XML_BEGIN(TerrainObject)
 	CSP_DEF("center", m_Center, true)
 	CSP_DEF("width", m_Width, true)
 	CSP_DEF("height", m_Height, true)
+	CSP_DEF("shader", m_Shader, false)
 CSP_XML_END
 
 

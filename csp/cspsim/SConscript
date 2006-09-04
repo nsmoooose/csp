@@ -19,7 +19,7 @@
 Import('env build')
 
 expenv = env.Copy()
-expenv.AppendUnique(CPPDEFINES=Split('CSPSIM_EXPORTS'))
+expenv.AppendUnique(CPPDEFINES=Split('CSPSIM_EXPORTS __CSPSIM_EXE__'))
 
 
 build.SourceGroup(expenv,
@@ -33,7 +33,6 @@ build.SourceGroup(expenv,
 	],
 	deps = ['csplib'])
 
-
 build.SourceGroup(expenv,
 	name = 'cspsim/config',
 	sources = [
@@ -42,6 +41,34 @@ build.SourceGroup(expenv,
 	],
 	deps = ['csplib'])
 
+build.SourceGroup(expenv,
+	name = 'cspsim/sky',
+	sources = [
+		'sky/Colorspace.cpp',
+		'sky/Colorspace.h',
+		'sky/Magnitude.cpp',
+		'sky/Magnitude.h',
+		'sky/OrbitalBody.cpp',
+		'sky/OrbitalBody.h',
+		'sky/OrbitalBodyImposter.cpp',
+		'sky/OrbitalBodyImposter.h',
+		'sky/OrbitalBodyModel.cpp',
+		'sky/OrbitalBodyModel.h',
+		'sky/PhaseShader.cpp',
+		'sky/PhaseShader.h',
+		'sky/SkyDome.cpp',
+		'sky/SkyDome.h',
+		'sky/SkyObserver.cpp',
+		'sky/SkyObserver.h',
+		'sky/SkyShader.cpp',
+		'sky/SkyShader.h',
+		'sky/SolarSystem.cpp',
+		'sky/SolarSystem.h',
+		'sky/StarDome.cpp',
+		'sky/StarDome.h',
+		'sky/Stars.h',
+	],
+	deps = ['csplib', 'osg'])
 
 build.SourceGroup(expenv,
 	name = 'cspsim',
@@ -72,8 +99,6 @@ build.SourceGroup(expenv,
 		'CockpitInterface.h',
 		'Collision.cpp',
 		'Collision.h',
-		'Colorspace.cpp',
-		'Colorspace.h',
 		'ConditionsChannels.h',
 		'ControlInputsChannels.h',
 		'ControlNode.h',
@@ -146,14 +171,17 @@ build.SourceGroup(expenv,
 		'ScreenInfo.h',
 		'ScreenInfoManager.cpp',
 		'ScreenInfoManager.h',
+		'Shader.cpp',
+		'Shader.h',
 		'SimpleSceneManager.cpp',
 		'SimpleSceneManager.h',
-		'Sky.cpp',
-		'Sky.h',
+		#'Sky.cpp',
+		#'Sky.h',
 		'SmokeEffects.cpp',
 		'SmokeEffects.h',
 		'StabilityFlightModel.cpp',
 		'StabilityFlightModel.h',
+		'StateStack.h',
 		'Station.cpp',
 		'Station.h',
 		'Steerpoint.h',
@@ -333,6 +361,7 @@ build.SharedLibrary(expenv,
 		'@cspsim',
 		'@cspsim/battlefield',
 		'@cspsim/config',
+		'@cspsim/sky',
 	],
 	aliases = ['all', 'cspsim'],
 	doxygen = 'cspsim.dox',
@@ -361,3 +390,11 @@ build.SharedLibrary(expenv,
 	aliases = 'all',
 	SHLIBPREFIX = '_')
 
+build.Program(env,
+	name = 'skydemo',
+	sources = [
+		'@cspsim/sky',
+		'sky/Test.cpp',
+	],
+	deps = ['csplib', 'osg'],
+	aliases = 'skydemo')

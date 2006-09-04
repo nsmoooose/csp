@@ -26,6 +26,7 @@
 #include <csp/cspsim/Animation.h>
 #include <csp/cspsim/Bus.h>
 #include <csp/cspsim/Config.h>
+#include <csp/cspsim/Shader.h>
 #include <csp/cspsim/Station.h>
 
 #include <csp/csplib/util/FileUtility.h>
@@ -388,23 +389,6 @@ osg::Geometry *makeDiamond(Vector3 const &pos, float s, osg::Vec4 const &color) 
 	return geom;
 }
 
-//#include <osgFX/BumpMapping>
-osg::Node* addSpecularHighlights(osg::Node* model_node) {
-	// add an osgFX effect
-	osgFX::SpecularHighlights *effect = new osgFX::SpecularHighlights;	
-	effect->setName("specular_highlights");
-	effect->setTextureUnit(1);
-	effect->addChild(model_node);
-
-	/*osgFX::BumpMapping* effect = new osgFX::BumpMapping;
-	effect->setUpDemo();
-	effect->setNormalMapTextureUnit(2);
-	effect->addChild(model_node);
-	effect->prepareChildren();*/
-	
-	return effect;
-}
-
 void ObjectModel::generateStationMasks(std::map<std::string, unsigned> const &interior_map) const {
 	for (unsigned i = 0; i < m_Stations.size(); ++i) {
 		unsigned mask = 0;
@@ -429,18 +413,16 @@ void ObjectModel::loadModel() {
 	CSPLOG(INFO, OBJECT) << "ObjectModel::loadModel: " << source;
 
 	timer.start();
-	osg::Node *pNode = osgDB::readNodeFile(source);
+	osg::Node *node = osgDB::readNodeFile(source);
 	timer.stop();
 
-	if (pNode) {
-		CSPLOG(INFO, OBJECT) << "ObjectModel::loadModel: readNodeFile(" << source << ") succeeded in " << (timer.elapsed() * 1e3) << " ms";
+	if (node) {
+		CSPLOG(INFO, OBJECT) << "Loaded model '" << source << "' in " << (timer.elapsed() * 1e3) << " ms";
 	} else {
-		CSPLOG(ERROR, OBJECT) << "ObjectModel::loadModel: readNodeFile(" << source << ") failed.";
+		CSPLOG(FATAL, OBJECT) << "Failed to load model '" << source << "'";
 	}
 
-	assert(pNode);
-
-	m_Model = pNode;
+	m_Model = node;
 	m_Model->setName(source);
 
 	if (m_PolygonOffset != 0.0) {
@@ -457,7 +439,7 @@ void ObjectModel::loadModel() {
 
 	if (!m_Lighting) {
 		osg::StateSet *ss = m_Model->getOrCreateStateSet();
-		ss->setMode(GL_LIGHTING,osg::StateAttribute::OFF);
+		ss->setMode(GL_LIGHTING, osg::StateAttribute::OFF);
 	}
 
 	if (m_CullFace != 0) {
@@ -468,31 +450,8 @@ void ObjectModel::loadModel() {
 		ss->setAttributeAndModes(cf, osg::StateAttribute::ON);
 	}
 
-	if (m_Smooth) {
-		osgUtil::SmoothingVisitor sv;
-		m_Model->accept(sv);
-	}
-
-	if (m_Filter) {
-		TrilinearFilterVisitor tfv(m_FilterValue);
-		m_Model->accept(tfv);
-	}
-
-	CSPLOG(INFO, OBJECT) << "Animations available: " << m_Animations.size();
-	CSPLOG(INFO, OBJECT) << "Processing model";
-	timer.start();
-
-	// add animation hooks to user data field of animation
-	// transform nodes
-	{
-		ModelProcessor processor;
-		processor.setAnimations(&m_Animations);
-		m_Model->accept(processor);
-		generateStationMasks(processor.getInteriorMap());
-	}
-
-	timer.stop();
-	CSPLOG(INFO, OBJECT) << "Processing model finished in " << (timer.elapsed() * 1e+6) << " us";
+	// apply various operations to the model scene graph.
+	processModel();
 
 	// normalize and orthogonalize the model axes.
 	assert(m_Axis0.length() > 0.0);
@@ -522,29 +481,37 @@ void ObjectModel::loadModel() {
 			adjust->getOrCreateStateSet()->setMode(GL_NORMALIZE, osg::StateAttribute::ON);
 		}
 		adjust->setName("xmladjustment");
-		//adjust->setDataVariance(osg::Object::STATIC);
 		adjust->setDataVariance(osg::Object::DYNAMIC);
 		adjust->setMatrix(model_orientation);
 		adjust->addChild(m_Model.get());
 		m_Model = adjust;
-		Matrix3 sd_adjust = fromOSG(model_orientation); //.getInverse();
+		Matrix3 sd_adjust = fromOSG(model_orientation);
 		for (unsigned i = 0; i < m_Contacts.size(); i++) {
 			m_Contacts[i] = sd_adjust * m_Contacts[i]  + m_Offset;
 		}
 		for (unsigned i = 0; i < m_DebugPoints.size(); i++) {
 			m_DebugPoints[i] = sd_adjust * m_DebugPoints[i]  + m_Offset;
 		}
-		m_ViewPoint = sd_adjust * m_ViewPoint  + m_Offset;
-		m_HudPlacement = sd_adjust * m_HudPlacement  + m_Offset;
+		m_ViewPoint = sd_adjust * m_ViewPoint + m_Offset;
+		m_HudPlacement = sd_adjust * m_HudPlacement + m_Offset;
 	}
 
 	osg::BoundingSphere s = m_Model->getBound();
 	m_BoundingSphereRadius = s.radius();
 
-	// add an osgFX::effect
-	if (m_Effect == "SpecularHighlights") {
-		m_Model = addSpecularHighlights(m_Model.get());
-	};
+	// Set the default shader to visibly mark nodes that don't have a
+	// shader specified.
+	Shader::instance()->applyShader("red", m_Model->getOrCreateStateSet());
+#if 0
+	// set the default shader
+	if (m_Effect == "None" || m_Effect == "SpecularHighlights") {
+		// XXX temporary transition to new effect names.  "object" should be the default
+		// shader; not sure if any others will be needed.
+		Shader::instance()->applyShader("object", m_Model->getOrCreateStateSet());
+	} else {
+		Shader::instance()->applyShader(m_Effect, m_Model->getOrCreateStateSet());
+	}
+#endif
 
 	m_DebugMarkers = new osg::Switch;
 	m_DebugMarkers->setName("debug");
@@ -606,6 +573,51 @@ void ObjectModel::loadModel() {
 
 	CSPLOG(DEBUG, OBJECT) << "Done loading model " << source;
 
+}
+
+void ObjectModel::processModel() {
+	CSPLOG(INFO, OBJECT) << "Processing model";
+
+	static const double us = 1e+6;  // report microseconds
+	double smooth_time = 0.0;
+	double filter_time = 0.0;
+	double animation_time = 0.0;
+	double shader_time = 0.0;
+
+	Timer timer;
+	timer.start();
+
+	// if requested, apply a smoothing visitor to the model.
+	if (m_Smooth) {
+		osgUtil::SmoothingVisitor sv;
+		m_Model->accept(sv);
+		smooth_time = timer.incremental() * us;
+	}
+
+	// if requested, apply a trilinear filter to all model textures.
+	if (m_Filter) {
+		TrilinearFilterVisitor tfv(m_FilterValue);
+		m_Model->accept(tfv);
+		filter_time = timer.incremental() * us;
+	}
+
+	// add animation hooks to user data field of animation transform nodes.
+	ModelProcessor processor;
+	processor.setAnimations(&m_Animations);
+	m_Model->accept(processor);
+	generateStationMasks(processor.getInteriorMap());
+	animation_time = timer.incremental() * us;
+
+	// add vertex and fragment shaders to statesets named "FX:{shader}"
+	Shader::Visitor sv;
+	m_Model->accept(sv);
+	shader_time = timer.incremental() * us;
+
+	CSPLOG(INFO, OBJECT) << "Processing model finished ("
+		"smooth " << smooth_time << " us, "
+		"filter " << filter_time << " us, "
+		"rigging " << animation_time << " us, "
+		"shader " << shader_time << " us)";
 }
 
 void ObjectModel::addDebugMarkers() {

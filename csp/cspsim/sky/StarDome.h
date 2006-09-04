@@ -58,6 +58,10 @@ public:
 	// since small lighting updates are ignored.
 	void updateLighting(double sky_magnitude);
 
+	// Adjust the star flare size to account for the view angle (in degrees).
+	// The size of star flares is roughly independent of view angle.
+	void setViewAngle(double angle);
+
 private:
 	// Copy star parameters to a Star instance.  The source fields are
 	// x, y, z, red, green, blue, apparent magnitude.  The position vector

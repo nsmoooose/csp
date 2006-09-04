@@ -28,6 +28,7 @@
 #include <osg/ClipNode>
 #include <osg/Depth>
 #include <osg/Group>
+#include <osg/Program>
 
 CSP_NAMESPACE
 
@@ -40,8 +41,15 @@ Display::Display() {
 	m_Root = new osg::ClipNode;
 
 	osg::StateSet *stateset = m_Root->getOrCreateStateSet();
-	stateset->setMode(GL_LIGHTING, osg::StateAttribute::OFF);
+
+	// disable any default shaders that have been set on the parent object.
+	// most shaders rely on material properties, which are not used by the
+	// display, and the fixed-function pipeline is adequate for this purpose.
+	// of course, specialized dislay shaders could be added if desired.
+	stateset->setAttributeAndModes(new osg::Program, osg::StateAttribute::OFF|osg::StateAttribute::PROTECTED);
 	stateset->setAttributeAndModes(new osg::Depth(osg::Depth::LEQUAL, 0.0, 1.0, false), osg::StateAttribute::ON);
+	stateset->setMode(GL_LIGHTING, osg::StateAttribute::OFF);
+
 	// TODO line width should vary with fov
 	//stateset->setAttributeAndModes(new osg::LineWidth(1.5), osg::StateAttribute::ON);
 }

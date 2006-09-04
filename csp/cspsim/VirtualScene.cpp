@@ -22,6 +22,10 @@
  *
  **/
 
+// TODO rename SkyObserver to Sky
+// implement horizon colors
+// move orbital body creation and image loading to skyobserver
+
 #include <csp/cspsim/VirtualScene.h>
 #include <csp/cspsim/Animation.h>
 #include <csp/cspsim/Config.h>
@@ -31,7 +35,16 @@
 #include <csp/cspsim/ObjectModel.h>
 #include <csp/cspsim/Projection.h>
 #include <csp/cspsim/SceneConstants.h>
-#include <csp/cspsim/Sky.h>
+#include <csp/cspsim/Shader.h>
+
+#include <csp/cspsim/sky/SkyObserver.h>
+#include <csp/cspsim/sky/SkyDome.h>
+#include <csp/cspsim/sky/StarDome.h>
+#include <csp/cspsim/sky/SolarSystem.h>
+#include <csp/cspsim/sky/OrbitalBodyModel.h>
+#include <csp/cspsim/sky/OrbitalBodyImposter.h>
+#include <osgDB/ReadFile> // TODO move orbital body creation and image loading to skyobserver
+
 #include <csp/cspsim/sound/SoundEngine.h>
 #include <csp/cspsim/TerrainObject.h>
 #include <csp/cspsim/theater/FeatureGroup.h>
@@ -48,6 +61,7 @@
 #include <osg/BlendFunc>
 #include <osg/ColorMatrix>
 #include <osg/Fog>
+#include <osg/LightModel>
 #include <osg/LightSource>
 #include <osg/Material>
 #include <osg/Node>
@@ -56,6 +70,8 @@
 #include <osg/PositionAttitudeTransform>
 #include <osg/StateSet>
 #include <osg/TexEnv>
+#include <osg/Texture2D>
+#include <osg/Uniform>
 #include <osgAL/SoundRoot>
 #include <osgUtil/CullVisitor>
 #include <osgUtil/IntersectVisitor>
@@ -80,8 +96,6 @@ CSP_NAMESPACE
 ///////////////////////////////////////////////////////////////////////
 // testing
 ///////////////////////////////////////////////////////////////////////
-
-float intensity_test = 0.0;
 
 void setNVG(osg::ColorMatrix* cm) {
 	assert(cm);
@@ -167,8 +181,135 @@ public:
 	}
 };
 
+
+class VirtualScene::SceneState: public Referenced {
+public:
+	void setOrigin(Vector3 const &origin) {
+		m_Origin = origin;
+	}
+	void bindSky(Sky *sky) {
+		m_Sky = sky;
+	}
+	Vector3 getOrigin() const { return m_Origin; }
+	osg::Vec4 getFogColor(Vector3 const &dir) {
+		if (!m_Sky) return osg::Vec4(1.0, 1.0, 1.0, 0.0);
+		const float angle = atan2(dir.y(), dir.x());
+		return m_Sky->getSkyDome()->getHorizonColor(angle);
+	}
+private:
+	Vector3 m_Origin;
+	osg::ref_ptr<Sky> m_Sky;
+};
+
+
+class VirtualScene::DynamicObjectCallback: public osg::NodeCallback {
+public:
+	DynamicObjectCallback(DynamicObject *object, SceneState *state):
+			m_Object(object),
+			m_State(state) {
+		assert(object);
+		assert(state);
+	}
+	virtual void operator()(osg::Node* node, osg::NodeVisitor* nv) {
+		if (nv && nv->getVisitorType() == osg::NodeVisitor::UPDATE_VISITOR) {
+			m_Object->updateScene(m_State->getOrigin());  // position relative to camera
+		}
+		traverse(node, nv);
+	}
+private:
+	DynamicObject *m_Object;
+	SceneState *m_State;
+};
+
+
+class VirtualScene::FeatureGroupCallback: public osg::NodeCallback {
+public:
+	//FeatureGroupCallback(FeatureGroup *object, SceneState *state):
+	FeatureGroupCallback(SimObject *object, SceneState *state):
+			m_Bound(false),
+			m_Object(object),
+			m_State(state),
+			m_Fade(new osg::Uniform(osg::Uniform::FLOAT, "fade")),
+			m_Fog(new osg::Uniform(osg::Uniform::FLOAT_VEC4, "fog")),
+			m_Alpha(-1) {
+		assert(object);
+		assert(state);
+		/*
+		osg::Node *node = object->getSceneGroup();
+		osg::StateSet *ss = node->getOrCreateStateSet();
+		m_Center = object->getGlobalPosition();
+		m_Center.z() = node->getBound().center().z();
+		ss->addUniform(m_Fade.get());
+		ss->addUniform(m_Fog.get());
+		ss->setAttributeAndModes(new osg::BlendFunc, osg::StateAttribute::ON|osg::StateAttribute::OVERRIDE);
+		*/
+	}
+
+	virtual void operator()(osg::Node* node, osg::NodeVisitor* nv) {
+		if (nv && nv->getVisitorType() == osg::NodeVisitor::CULL_VISITOR) {
+			if (!m_Bound) {
+				osg::StateSet *ss = node->getOrCreateStateSet();
+				m_Center = m_Object->getGlobalPosition();
+				m_Center.z() = node->getBound().center().z();
+				ss->addUniform(m_Fade.get());
+				ss->addUniform(m_Fog.get());
+				ss->setAttributeAndModes(new osg::BlendFunc, osg::StateAttribute::ON|osg::StateAttribute::OVERRIDE);
+			}
+			if (!m_Object->isStatic()) {
+				m_Center = m_Object->getGlobalPosition();
+			}
+			updateFade();
+			updateFog();
+		}
+		traverse(node, nv);
+	}
+
+private:
+
+	void updateFade() {
+		const double distance = (m_Object->getGlobalPosition() - m_State->getOrigin()).length();
+		float fade = clampTo(static_cast<float>(distance - 10000.0) / 10000.0f, 0.0f, 1.0f);
+		const int alpha = static_cast<int>(fade * 100);
+		if (alpha != m_Alpha) {
+			m_Alpha = alpha;
+			m_Fade->set(fade);
+		}
+	}
+
+	void updateFog() {
+		const double fog_depth = 2000.0;
+		const double fog_attenuation = 10000.0;
+		const double eye_z = m_State->getOrigin().z();
+		const double i0 = exp(-eye_z / fog_depth);
+		const double i1 = exp(-m_Center.z() / fog_depth);
+		const double dz = eye_z - m_Center.z();
+		const Vector3 direction = m_Center - m_State->getOrigin();
+		double distance = direction.length();
+		if (fabs(dz) < 10.0) {
+			distance *= (i0 + i1) * 0.5;
+		} else {
+			distance *= std::max(fog_depth * (i1 - i0) / dz, 0.0);
+		}
+		const double fog_intensity = clampTo(1.0 - exp(-distance / fog_attenuation), 0.0, 1.0);
+		osg::Vec4 fog = m_State->getFogColor(direction);
+		fog.w() = fog_intensity;
+		m_Fog->set(fog);
+	}
+
+	//FeatureGroup *m_Object;
+	bool m_Bound;
+	SimObject *m_Object;
+	SceneState *m_State;
+	osg::ref_ptr<osg::Uniform> m_Fade;
+	osg::ref_ptr<osg::Uniform> m_Fog;
+	Vector3 m_Center;
+	int m_Alpha;
+};
+
+
 void VirtualScene::_updateOrigin(Vector3 const &origin) {
 	m_Origin = origin;
+	m_SceneState->setOrigin(origin);
 	FeatureTileMap::iterator titer = m_FeatureTiles.begin();
 	for (; titer != m_FeatureTiles.end(); ++titer) {
 		titer->second->updateOrigin(origin);
@@ -217,6 +358,7 @@ void VirtualScene::addFeature(Ref<FeatureGroup> feature) {
 
 	feature->enterScene();
 	tile->addChild(scene_group);
+	scene_group->setCullCallback(new FeatureGroupCallback(feature.get(), m_SceneState.get()));
 }
 
 /**
@@ -243,6 +385,7 @@ void VirtualScene::removeFeature(Ref<FeatureGroup> feature) {
 
 
 VirtualScene::VirtualScene(int width, int height):
+	m_SceneState(new SceneState),
 	m_ViewDistance(30000.0),
 	m_ViewAngle(60.0),
 	m_NearPlane(2.0),
@@ -255,7 +398,7 @@ VirtualScene::VirtualScene(int width, int height):
 	m_ScreenWidth(width),
 	m_ScreenHeight(height),
 	m_NodeMask(0) {
-}
+	}
 
 VirtualScene::~VirtualScene() { }
 
@@ -270,13 +413,24 @@ void VirtualScene::init() {
 	// configure the default state for all scene graphs in the various scene views.
 	m_GlobalStateSet = new osg::StateSet();
 	m_GlobalStateSet->setGlobalDefaults();
+
 	// custom default settings
 	m_GlobalStateSet->setMode(GL_DEPTH_TEST, osg::StateAttribute::ON);
 	m_GlobalStateSet->setMode(GL_LIGHTING, osg::StateAttribute::ON);
+
+	// add default uniforms for shaders
+	Shader::instance()->addDefaultUniforms(m_GlobalStateSet.get());
+
+	// create a light model to eliminate the default ambient light.
+	osg::LightModel *light_model = new osg::LightModel();
+	light_model->setAmbientIntensity(osg::Vec4(0.0, 0.0, 0.0, 1.0));
+	m_GlobalStateSet->setAttributeAndModes(light_model, osg::StateAttribute::ON);
+
 	// set up an alphafunc by default to speed up blending operations.
 	osg::AlphaFunc* alphafunc = new osg::AlphaFunc;
 	alphafunc->setFunction(osg::AlphaFunc::GREATER, 0.0f);
 	m_GlobalStateSet->setAttributeAndModes(alphafunc, osg::StateAttribute::ON);
+
 	// set up an texture environment by default to speed up blending operations.
 	osg::TexEnv* texenv = new osg::TexEnv;
 	texenv->setMode(osg::TexEnv::MODULATE);
@@ -390,7 +544,7 @@ void VirtualScene::buildScene() {
 	// blanking is only needed for wireframe mode.
 	background->setRequiresClear(true);
 	background->setClearColor(osg::Vec4(0.6, 0.3, 0.4, 1.0));
-	background->addChild(m_Sky.get());
+	background->addChild(m_Sky->group());
 
 	m_VeryFarGroup->addChild(background);
 
@@ -400,6 +554,7 @@ void VirtualScene::buildScene() {
 	// (bin -2 is used for planar objects and bin -1 is used for planar
 	// shadows; see ObjectModel and SceneModel for details.)
 	m_TerrainGroup->getOrCreateStateSet()->setRenderBinDetails(-3, "RenderBin");
+	m_TerrainGroup->getOrCreateStateSet()->setTextureAttributeAndModes(2, m_Sky->getSkyDome()->getHorizonTexture(), osg::StateAttribute::ON);
 
 	m_FogGroup = new osg::Group;
 	m_FogGroup->setName("fog_group");
@@ -448,27 +603,26 @@ void VirtualScene::buildSky() {
 	osg::StateSet* globalStateSet = m_FarView->getGlobalStateSet();
 	assert(globalStateSet);
 
-	// build the skydome, stars, and moon
-	m_Sky = new Sky;
+	m_Sky = new Sky(1e+6);
+	m_SceneState->bindSky(m_Sky.get());
 
-	// sunlight
-	osg::Light *sun_light = m_Sky->getSunLight();
-	osg::LightSource *sun_light_source = new osg::LightSource;
-	sun_light_source->setLight(sun_light);
-	sun_light_source->setLocalStateSetModes(osg::StateAttribute::ON);
-	sun_light_source->setStateSetModes(*globalStateSet, osg::StateAttribute::ON);
+	Ref<SolarSystem> ss = m_Sky->getSolarSystem();
+	OrbitalBodyImposter *moon_imposter = new OrbitalBodyImposter(osgDB::readImageFile("moon.png"), 1.0);
+	OrbitalBodyModel *moon = new OrbitalBodyModel(moon_imposter, 0.0, ss->moon(), ss->earth(), 0.01);
+	m_Sky->addModel(moon);
 
-	// moonlight
-	osg::Light *moon_light = m_Sky->getMoonLight();
-	osg::LightSource *moon_light_source = new osg::LightSource;
-	moon_light_source->setLight(moon_light);
-	moon_light_source->setLocalStateSetModes(osg::StateAttribute::ON);
-	moon_light_source->setStateSetModes(*globalStateSet, osg::StateAttribute::ON);
+	m_Sky->addSunlight(0);
+	m_Sky->addMoonlight(1);
 
-	// light group under EyeTransform for celestial bodies (sun, moon, etc)
 	m_SkyLights = new osg::Group;
-	m_SkyLights->addChild(sun_light_source);
-	m_SkyLights->addChild(moon_light_source);
+
+	osg::LightSource *sunlight = m_Sky->getSunlight();
+	sunlight->setStateSetModes(*globalStateSet, osg::StateAttribute::ON);
+	m_SkyLights->addChild(sunlight);
+
+	osg::LightSource *moonlight = m_Sky->getMoonlight();
+	moonlight->setStateSetModes(*globalStateSet, osg::StateAttribute::ON);
+	m_SkyLights->addChild(moonlight);
 }
 
 void VirtualScene::drawVeryFarView() {
@@ -517,28 +671,32 @@ int VirtualScene::drawScene() {
 }
 
 void VirtualScene::onUpdate(float dt) {
-	static float t = 0.0;
-
-	if (m_SpinTheWorld || m_ResetTheWorld || (int(t) % 10) == 0 ||
-			(m_SkyPoint - m_Origin).length2() > 25.0e+6) {
-		m_SkyPoint = m_Origin;
-		if (m_ResetTheWorld) {
-			m_Sky->spinTheWorld(false);
-			m_ResetTheWorld = false;
-		}
-		if (m_SpinTheWorld) m_Sky->spinTheWorld();
-		if (m_Terrain.valid()) {
-			LLA m = m_Terrain->getProjection()->convert(m_Origin);
-			m_Sky->update(m.latitude(), m.longitude(), CSPSim::theSim->getCurrentTime());
-		} else {
-			m_Sky->update(0.0, 0.0, CSPSim::theSim->getCurrentTime());
-		}
-		// greenwich, england (for testing)
-		//m_Sky->update(0.8985, 0.0, CSPSim::theSim->getCurrentTime());
-		t = 1.0;
-	} else {
-		t += dt;
+	// TODO remove static
+	static float t = 1.0; t += dt;
+	if (m_Terrain.valid() || t >= 1.0) {
+		LLA m = m_Terrain->getProjection()->convert(m_Origin);
+		m_Sky->setPosition(m.latitude(), m.longitude());
+		t = 0.0;
 	}
+
+	// TODO remove static
+	static const double day0 = SimDate(2000, 1, 1, 0, 0, 0).getJulianDate();
+	double day = CSPSim::theSim->getCurrentTime().getJulianDate() - day0;
+	static double spin = 0.0;
+	if (m_SpinTheWorld) spin += dt / 300.0;
+	if (m_ResetTheWorld) {
+		spin = 0.0;
+		m_ResetTheWorld = false;
+	}
+
+	// TODO remove static
+	static float view_angle = 0.0;
+	if (view_angle != getViewAngle()) {
+		view_angle = getViewAngle();
+		m_Sky->getStarDome()->setViewAngle(view_angle);
+	}
+
+	m_Sky->update(day + spin);
 
 	CSPLOG(DEBUG, APP) << "VirtualScene::onUpdate - entering" ;
 
@@ -580,12 +738,11 @@ void VirtualScene::_setLookAt(const Vector3& eyePos, const Vector3& lookPos, con
 	}
 }
 
+
 // TODO externalize a couple fixed parameters
 void VirtualScene::_updateFog(Vector3 const &lookPos, Vector3 const &eyePos) {
 	if (!m_FogEnabled) return;
-	//AdjustCM(m_Sky->getSkyIntensity());
-	intensity_test = m_Sky->getSkyIntensity();
-	osg::Light *sun = m_Sky->getSunLight();
+	osg::Light *sun = m_Sky->getSunlight()->getLight();
 	osg::Vec3 sdir_ = sun->getDirection();
 	Vector3 sdir(sdir_.x(), sdir_.y(), sdir_.z());
 	Vector3 dir = lookPos - eyePos;
@@ -597,17 +754,19 @@ void VirtualScene::_updateFog(Vector3 const &lookPos, Vector3 const &eyePos) {
 	double a = dot(dir, sdir) * sunz;
 	osg::StateSet *pStateSet = m_FogGroup->getStateSet();
 	osg::Fog * pFogAttr = (osg::Fog*)pStateSet->getAttribute(osg::StateAttribute::FOG);
-	float angle = toDegrees(atan2(dir.y(), dir.x()));
 	// 0.8 brings some relief to distant mountain profiles at the clip plane, but
 	// is not an ideal solution (better to push out the clip plane)
+	//XXX--float angle = toDegrees(atan2(dir.y(), dir.x()));
 	//osg::Vec4 color = m_Sky->getHorizonColor(angle) * 0.8;
-	m_FogColor = m_Sky->getHorizonColor(angle);
+	//XXX--m_FogColor = m_Sky->getHorizonColor(angle);
+	float angle = atan2(dir.y(), dir.x());
+	m_FogColor = m_Sky->getSkyDome()->getHorizonColor(angle);
 	pFogAttr->setColor(m_FogColor);
 	pFogAttr->setStart(m_FogStart * (1.0 + a) + clearSky);
 	pFogAttr->setEnd(m_FogEnd);
 	pStateSet->setAttributeAndModes(pFogAttr, osg::StateAttribute::ON);
 	m_FogGroup->setStateSet(pStateSet);
-	m_Sky->updateHorizon(m_FogColor, eyePos.z(), m_ViewDistance);
+	//XXX--m_Sky->updateHorizon(m_FogColor, eyePos.z(), m_ViewDistance);
 }
 
 void VirtualScene::getLookAt(Vector3 & eyePos, Vector3 & lookPos, Vector3 & upVec) const {
@@ -655,6 +814,16 @@ void VirtualScene::addObject(Ref<DynamicObject> object) {
 	assert(!object->isInScene());
 	osg::Node *node = object->getOrCreateModelNode();
 	assert(node != 0);
+	// simpler to just call the update directly in _updateOrigin  (remove this)
+#if 0
+	// FIXME breaks if the node already has a different update callback!
+	if (!node->getUpdateCallback()) {
+		node->setUpdateCallback(new ObjectUpdateCallback(object.get(), m_SceneState.get()));
+	}
+#endif
+
+	node->setCullCallback(new FeatureGroupCallback(object.get(), m_SceneState.get()));
+
 	object->enterScene();
 	if (object->isNearField()) {
 		bool ok = m_NearObjectGroup->addChild(node);
@@ -797,7 +966,7 @@ void VirtualScene::resetSpin() {
  * does not directly effect normal "simtime".
  */
 double VirtualScene::getSpin() {
-	return m_Sky->getSpin();
+	return 0.0;  //XXX--m_Sky->getSpin();
 }
 
 void VirtualScene::drawPlayerInterface() { }
@@ -824,6 +993,9 @@ void VirtualScene::setTerrain(Ref<TerrainObject> terrain) {
 		m_TerrainNode = m_Terrain->getNode();
 		if (m_TerrainNode.valid()) {
 			m_TerrainGroup->addChild(m_TerrainNode.get());
+			if (!terrain->getShader().empty()) {
+				Shader::instance()->applyShader(terrain->getShader(), m_TerrainNode->getOrCreateStateSet());
+			}
 #ifdef SHADOW
 			osg::Vec4 ambientLightColor(0.9f, 0.1f, 0.1f, 1.0f);
 			int texture_unit = 3;

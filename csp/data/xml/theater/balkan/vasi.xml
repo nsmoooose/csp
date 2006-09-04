@@ -1,0 +1,22 @@
+<?xml version="1.0" standalone="no"?>
+
+<Object class="CustomLayoutModel">
+    <List name="layout">
+        <Object class="FeatureLayout">
+            <Object class="FeatureObjectModel" name="model">
+                <Path name="model">vasi.vasi-lo</Path>
+            </Object>
+            <Float name="x">0</Float>
+            <Float name="y">0</Float>
+            <Float name="orientation">0.0</Float>
+        </Object>
+        <Object class="FeatureLayout">
+            <Object class="FeatureObjectModel" name="model">
+                <Path name="model">vasi.vasi-hi</Path>
+            </Object>
+            <Float name="x">0</Float>
+            <Float name="y">236</Float>
+            <Float name="orientation">0.0</Float>
+        </Object>
+    </List>
+</Object>

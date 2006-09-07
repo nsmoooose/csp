@@ -258,7 +258,8 @@ void SkyDome::buildDome() {
 	m_HorizonImage->allocateImage(m_HorizonColors->size(), 4, 1, GL_RGB, GL_UNSIGNED_BYTE);
 	m_HorizonTexture = new osg::Texture2D;
 	m_HorizonTexture->setImage(m_HorizonImage.get());
-	m_HorizonTexture->setWrap(osg::Texture::WRAP_S, osg::Texture::CLAMP_TO_EDGE);
+	m_HorizonTexture->setWrap(osg::Texture::WRAP_S, osg::Texture::MIRROR);
+	m_HorizonTexture->setWrap(osg::Texture::WRAP_T, osg::Texture::CLAMP_TO_EDGE);
 }
 
 void SkyDome::updateHorizon() {

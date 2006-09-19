@@ -30,6 +30,7 @@
 #include <osg/StateAttribute>
 #include <osg/StateSet>
 
+#include <cassert>
 #include <map>
 #include <vector>
 

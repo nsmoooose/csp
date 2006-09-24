@@ -77,6 +77,7 @@ private:
 	Vector3 m_DirLocal;
 	Vector3 m_PadlockPosition;
 	Vector3 m_PadlockVelocity;
+	Vector3 m_ViewpointBody;
 	double m_PadlockLossTime;
 
 	struct SortById;

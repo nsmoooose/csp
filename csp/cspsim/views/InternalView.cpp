@@ -197,6 +197,7 @@ void InternalView::moveViewpoint(Vector3 &ep, Vector3 &lp, Vector3 &up, double d
 	Quat attitude = m_ActiveObject->getAttitude();
 
 	if (m_Padlock.valid() && m_Padlocked) {
+		ep = m_ViewpointBody + m_ActiveObject->getGlobalPosition();
 		m_PadlockPosition = m_Padlock->getGlobalPosition();
 		m_PadlockVelocity = m_Padlock->getVelocity();
 		m_PadlockLossTime = 0.0;
@@ -328,7 +329,8 @@ void InternalView::moveViewpoint(Vector3 &ep, Vector3 &lp, Vector3 &up, double d
 	m_NeckBobbing = (1.0 - bob_f) * m_NeckBobbing + bob_f * bobbing;
 	ep = m_ActiveObject->getNominalViewPointBody() + (lean_offset + eyes + m_NeckPivotOffset) + m_NeckBobbing;
 	m_ActiveObject->setViewPointBody(ep);
-	ep = attitude.rotate(ep) + m_ActiveObject->getGlobalPosition();
+	m_ViewpointBody = attitude.rotate(ep);
+	ep = m_ViewpointBody + m_ActiveObject->getGlobalPosition();
 	lp = ep + m_DirLocal * 100.0;
 
 	double up_f = std::min(1.0, 8.0 * dt);

@@ -333,7 +333,9 @@ void GameScreen::on_ChangeVehicle() {
 	LocalBattlefield *battlefield = CSPSim::theSim->getBattlefield();
 	if (battlefield) {
 		Ref<DynamicObject> object;
-		object = battlefield->getNextUnit(m_ActiveObject, 1, 1, 0);
+		// for now, allow ai-controlled vehicles to be selected as the
+		// active object to help diagose the ai logic.
+		object = battlefield->getNextUnit(m_ActiveObject, -1, 1, 0);
 		if (object.valid()) CSPSim::theSim->setActiveObject(object);
 	}
 }

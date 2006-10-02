@@ -99,6 +99,7 @@ namespace bus {
 	const char *LandingGear::FullyExtended = "LandingGear.FullyExtended";
 	const char *LandingGear::FullyRetracted = "LandingGear.FullyRetracted";
 	const char *LandingGear::GearExtendSelected = "LandingGear.GearExtendSelected";
+	const char *LandingGear::GearCommand = "LandingGear.GearCommand";
 	std::string LandingGear::selectWOW(std::string const &gearname) { return "LandingGear." + gearname + ".WOW"; }
 	std::string LandingGear::selectFullyExtended(std::string const &gearname) { return "LandingGear." + gearname + ".FullyExtended"; }
 	std::string LandingGear::selectFullyRetracted(std::string const &gearname) { return "LandingGear." + gearname + ".FullyRetracted"; }

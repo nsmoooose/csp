@@ -38,6 +38,7 @@ struct LandingGear {
 	static const char *FullyExtended;
 	static const char *FullyRetracted;
 	static const char *GearExtendSelected;
+	static const char *GearCommand;
 	static std::string selectWOW(std::string const &gearname);
 	static std::string selectFullyExtended(std::string const &gearname);
 	static std::string selectFullyRetracted(std::string const &gearname);

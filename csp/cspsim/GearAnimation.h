@@ -81,7 +81,7 @@ public:
 	virtual bool isFullyRetracted() const = 0;
 	virtual void extend() = 0;
 	virtual void retract() = 0;
-	virtual void forceExtend() = 0;
+	virtual void force(bool extend) = 0;
 
 protected:
 	virtual std::string const &prefix() const { return m_Prefix; }
@@ -127,7 +127,7 @@ public:
 	virtual bool isFullyRetracted() const { return !m_RetractSequence ? false : m_RetractSequence->atStart(); }
 	virtual void extend() { if (m_RetractSequence.valid()) m_RetractSequence->playForward(); }
 	virtual void retract() { if (m_RetractSequence.valid()) m_RetractSequence->playBackward(); }
-	virtual void forceExtend();
+	virtual void force(bool extend);
 
 	// Called by LandingGear to allow subclasses to register output channels for driving animations.
 	virtual void registerChannels(Bus* bus);

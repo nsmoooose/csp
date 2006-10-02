@@ -47,8 +47,14 @@ void GearSequenceAnimation::setGearName(std::string const &name) {
 	if (m_CompressionSequence.valid()) m_CompressionSequence->setSequenceChannel(control_channel);
 }
 
-void GearSequenceAnimation::forceExtend() {
-	if (m_RetractSequence.valid()) m_RetractSequence->jumpToEnd();
+void GearSequenceAnimation::force(bool extend) {
+	if (m_RetractSequence.valid()) {
+		if (extend) {
+			m_RetractSequence->jumpToEnd();
+		} else {
+			m_RetractSequence->jumpToStart();
+		}
+	}
 	if (m_CompressionSequence.valid()) m_CompressionSequence->enable();
 }
 

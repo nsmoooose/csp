@@ -103,7 +103,7 @@ LandingGear::LandingGear() {
 	m_TireK = 200000.0;
 	m_TireBeta = 500.0;
 	m_Damage = 0.0;
-	m_Extend = true;
+	m_Extend = false;
 	m_Compression = 0.0;
 	m_CompressionLimit = 0.0;
 	m_Touchdown = false;
@@ -406,7 +406,9 @@ void LandingGear::updateAnimation(double dt) {
 		}
 		if (m_Initialize) {
 			m_Initialize = false;
-			m_GearAnimation->forceExtend();
+			m_GearAnimation->force(m_Extend);
+			b_FullyExtended->value() = m_Extend;
+			b_FullyRetracted->value() = !m_Extend;
 		}
 	}
 }
@@ -711,6 +713,8 @@ void GearDynamics::registerChannels(Bus *bus) {
 	b_FullyRetracted = bus->registerLocalDataChannel<bool>(bus::LandingGear::FullyRetracted, false);
 	b_FullyExtended = bus->registerLocalDataChannel<bool>(bus::LandingGear::FullyExtended, true);
 	b_GearExtendSelected = bus->registerLocalDataChannel<bool>(bus::LandingGear::GearExtendSelected, true);
+	b_GearCommand = bus->registerSharedPushChannel<bool>(bus::LandingGear::GearCommand, true);
+	b_GearCommand->connect(this, &GearDynamics::onGearCommand);
 	for (unsigned i = 0; i < m_Gear.size(); ++i) {
 		m_Gear[i]->registerChannels(bus);
 		if (sound_model) {
@@ -835,6 +839,14 @@ void GearDynamics::GearDown() {
 
 void GearDynamics::GearToggle() {
 	if (isGearExtendSelected()) {
+		GearUp();
+	} else {
+		GearDown();
+	}
+}
+
+void GearDynamics::onGearCommand() {
+	if (b_GearCommand->value()) {
 		GearUp();
 	} else {
 		GearDown();

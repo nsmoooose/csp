@@ -304,6 +304,7 @@ public:
 protected:
 	GearSet m_Gear;
 
+	DataChannel<bool>::RefT b_GearCommand;
 	DataChannel<bool>::RefT b_GearExtendSelected;  // tracks intent, not actual state.
 	DataChannel<bool>::RefT b_FullyRetracted;
 	DataChannel<bool>::RefT b_FullyExtended;
@@ -325,6 +326,7 @@ protected:
 private:
 	void doComplexPhysics(double x);
 	void doSimplePhysics(double x);
+	void onGearCommand();
 };
 
 CSP_NAMESPACE_END

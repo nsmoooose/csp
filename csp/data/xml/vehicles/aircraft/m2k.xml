@@ -21,6 +21,6 @@
 
     <Path name="human_systems">m2k.systems</Path>
     <Path name="remote_systems">m2k.remote</Path>
-    <Path name="agent_systems">m2k.systems</Path>
+    <Path name="agent_systems">m2k.agent</Path>
 
 </Object>

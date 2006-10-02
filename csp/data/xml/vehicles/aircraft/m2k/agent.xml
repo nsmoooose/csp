@@ -1,0 +1,29 @@
+<?xml version="1.0" standalone="no"?>
+
+<Object class="SystemsModel">
+	<List name="subsystems">
+		<Object class="AircraftAgent" />
+		<Object class="AircraftFlightSensors" />
+		<Path class="FlightControlSystem">fcs</Path>
+	</List>
+
+	<Object class="AircraftPhysicsModel" name="physics_model">
+		<List name="subsystems">
+			<Object class="FlightDynamics">
+				<Path name="flight_model">fm</Path>
+			</Object>
+			<Object class="EngineDynamics">
+				<List name="engine_set">
+					<Object class="Engine">
+						<Path name="thrust_data">thrust</Path>
+						<Vector name="thrust_direction">0.0 1.0 0.0</Vector>
+						<Vector name="engine_offset">0.0 0.0 0.0</Vector>
+						<Vector name="smoke_emitter_location">0.0 -5.5 0.522</Vector>
+					</Object>
+				</List>
+			</Object>
+			<Path class="GearDynamics">gear</Path>
+			<Object class="GroundCollisionDynamics" />
+		</List>
+	</Object>
+</Object>

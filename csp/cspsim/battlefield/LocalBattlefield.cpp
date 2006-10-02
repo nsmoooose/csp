@@ -569,7 +569,14 @@ void LocalBattlefield::__test__addLocalHumanUnit(Unit const &unit) {
 	assignNewId(unit);
 	LocalUnitWrapper *wrapper = new LocalUnitWrapper(unit, 0);
 	addUnit(wrapper);
-	setHumanUnit(wrapper, true);
+
+	// XXX hack to force the first object to be player controlled.
+	// all other objects default to agent controlled.
+	static bool first = true;
+	if (first) {
+		first = false;
+		setHumanUnit(wrapper, true);
+	}
 
 	unit->registerUpdate(m_UnitUpdateMaster.get());
 	if (isConnectionActive()) {

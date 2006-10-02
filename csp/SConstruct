@@ -37,6 +37,7 @@ PACKAGES = [
 build.ExternalLibrary(
 	name = 'jpeg',
 	config = [
+		build.UnixLibConfig(lib='libjpeg', symbol='jpeg_resync_to_restart'),
 		build.DevpackConfig(libs='libjpeg'),
 		build.WindowsLibConfig('user32'),
 	])

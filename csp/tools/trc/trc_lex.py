@@ -30,10 +30,10 @@ symbols = (
 	'COMMA',
 	'SHARP',
 	'QUAL',
-	'QUOTE',
+#	'QUOTE',
 	'EQ',
-	'LANGLE',
-	'RANGLE',
+#	'LANGLE',
+#	'RANGLE',
 	'LBRACE',
 	'RBRACE',
 	'LBRACKET',
@@ -74,7 +74,7 @@ type_categories = {
 
 # literals
 literals = (
-	'ID', 'FCONST', 'SCONST', 'ICONST', 'CCONST',
+	'ID', 'FCONST', 'SCONST', 'ICONST', #'CCONST',
 )
 
 # include paths ("a.h", <a.h>)
@@ -119,7 +119,7 @@ t_FILEPATH_Q = r'\"[a-zA-Z\.\\/0-9_-]+\"'
 t_FILEPATH_A = r'\<[a-zA-Z\.\\/0-9_-]+\>'
 
 # Character constant 'c' or L'c'
-t_CCONST = r'(L)?\'([^\\\n]|(\\.))*?\''
+#t_CCONST = r'(L)?\'([^\\\n]|(\\.))*?\''
 
 # Comments (// style only)
 def t_comment(t):

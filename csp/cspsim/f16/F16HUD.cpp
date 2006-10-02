@@ -562,7 +562,7 @@ double F16HUD::onUpdate(double dt) {
 	m_FlightPathMarker->setDirection(velocity_body);
 
 	const bool show_roll = !m_ShowData && !m_ShowVerticalVelocity;
-	m_DEDReadout->show(m_ShowData);
+	if (m_DEDReadout.valid()) m_DEDReadout->show(m_ShowData);
 	m_RollMarker->show(show_roll);
 	m_RollTape->show(show_roll);
 	m_BankAngleIndicator->show(m_ShowVerticalVelocity && !m_FlightPathMarker->isHidden());
@@ -872,7 +872,7 @@ void F16HUD::updateReadouts() {
 
 	m_AirspeedUnits->setText(m_VelocityLabel);
 
-	if (!m_DEDReadout->isHidden()) {
+	if (m_DEDReadout.valid() && !m_DEDReadout->isHidden()) {
 		m_DEDReadout->update();
 	}
 }
@@ -1100,9 +1100,13 @@ void F16HUD::addTextElements() {
 }
 
 void F16HUD::addDEDReadout() {
-	m_DEDReadout = new DEDReadout(b_DEDReadout->value(), m_StandardFont);
-	m_DEDReadout->setPosition(-0.030, -0.0760);
-	m_HUD.addFrameElement(m_DEDReadout);
+	if (b_DEDReadout.valid()) {
+		m_DEDReadout = new DEDReadout(b_DEDReadout->value(), m_StandardFont);
+		m_DEDReadout->setPosition(-0.030, -0.0760);
+		m_HUD.addFrameElement(m_DEDReadout);
+	} else {
+		CSPLOG(ERROR, APP) << "DED channel not found";
+	}
 }
 
 void F16HUD::addPitchLadder() {

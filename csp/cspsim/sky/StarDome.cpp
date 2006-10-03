@@ -259,7 +259,7 @@ void StarDome::initStar(Star &star, const float source[7]) {
 
 	// prescale magnitudes to save work when updating point colors.  note that
 	// magnitude is used to control the alpha value when rendering the star.
-	star.ca = pow(10.0, - source[3]);
+	star.ca = pow(10.0f, - source[3]);
 }
 
 osg::Geode *StarDome::makeGeode() {

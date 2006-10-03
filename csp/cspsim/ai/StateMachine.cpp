@@ -20,6 +20,7 @@
 #include <csp/cspsim/ai/StateMachine.h>
 #include <csp/csplib/util/Signal.h>
 
+#include <cassert>
 #include <map>
 
 namespace {

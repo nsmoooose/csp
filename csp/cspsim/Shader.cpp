@@ -187,7 +187,7 @@ public:
 private:
 	void setCulling(osg::StateSet *ss) {
 		osg::StateSet::RefAttributePair const *attr = ss->getAttributePair(osg::StateAttribute::CULLFACE);
-		osg::CullFace *cullface = attr ? static_cast<const osg::CullFace*>(attr->first.get()) : 0;
+		const osg::CullFace *cullface = attr ? static_cast<const osg::CullFace*>(attr->first.get()) : 0;
 		if (cullface) {
 			bool on = ((attr->second & osg::StateAttribute::ON) != 0) && (cullface->getMode() == osg::CullFace::BACK);
 			ss->addUniform(Shader::instance()->cullface(on), attr->second);

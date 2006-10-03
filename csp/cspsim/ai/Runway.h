@@ -28,7 +28,8 @@
 
 CSP_NAMESPACE
 
-struct Runway: public Referenced {
+class Runway: public Referenced {
+public:
 	Runway(): valid(false) {}
 	void init() {
 		direction.normalize();

@@ -27,74 +27,82 @@
 CSP_NAMESPACE
 
 template <class ret>
-struct signal<ret, sigc::nil, sigc::nil, sigc::nil, sigc::nil, sigc::nil, sigc::nil, sigc::nil>: public sigc::signal<ret> { };
+class signal<ret, sigc::nil, sigc::nil, sigc::nil, sigc::nil, sigc::nil, sigc::nil, sigc::nil>: public sigc::signal<ret> { };
 
 template <class ret, class arg1>
-struct signal<ret, arg1, sigc::nil, sigc::nil, sigc::nil, sigc::nil, sigc::nil, sigc::nil>: public sigc::signal<ret, arg1> { };
+class signal<ret, arg1, sigc::nil, sigc::nil, sigc::nil, sigc::nil, sigc::nil, sigc::nil>: public sigc::signal<ret, arg1> { };
 
 template <class ret, class arg1, class arg2>
-struct signal<ret, arg1, arg2, sigc::nil, sigc::nil, sigc::nil, sigc::nil, sigc::nil>: public sigc::signal<ret, arg1, arg2> { };
+class signal<ret, arg1, arg2, sigc::nil, sigc::nil, sigc::nil, sigc::nil, sigc::nil>: public sigc::signal<ret, arg1, arg2> { };
 
 template <class ret, class arg1, class arg2, class arg3>
-struct signal<ret, arg1, arg2, arg3, sigc::nil, sigc::nil, sigc::nil, sigc::nil>: public sigc::signal<ret, arg1, arg2, arg3> { };
+class signal<ret, arg1, arg2, arg3, sigc::nil, sigc::nil, sigc::nil, sigc::nil>: public sigc::signal<ret, arg1, arg2, arg3> { };
 
 template <class ret, class arg1, class arg2, class arg3, class arg4>
-struct signal<ret, arg1, arg2, arg3, arg4, sigc::nil, sigc::nil, sigc::nil>: public sigc::signal<ret, arg1, arg2, arg3, arg4> { };
+class signal<ret, arg1, arg2, arg3, arg4, sigc::nil, sigc::nil, sigc::nil>: public sigc::signal<ret, arg1, arg2, arg3, arg4> { };
 
 template <class ret, class arg1, class arg2, class arg3, class arg4, class arg5>
-struct signal<ret, arg1, arg2, arg3, arg4, arg5, sigc::nil, sigc::nil>: public sigc::signal<ret, arg1, arg2, arg3, arg4, arg5> { };
+class signal<ret, arg1, arg2, arg3, arg4, arg5, sigc::nil, sigc::nil>: public sigc::signal<ret, arg1, arg2, arg3, arg4, arg5> { };
 
 template <class ret, class arg1, class arg2, class arg3, class arg4, class arg5, class arg6>
-struct signal<ret, arg1, arg2, arg3, arg4, arg5, arg6, sigc::nil>: public sigc::signal<ret, arg1, arg2, arg3, arg4, arg5, arg6> { };
+class signal<ret, arg1, arg2, arg3, arg4, arg5, arg6, sigc::nil>: public sigc::signal<ret, arg1, arg2, arg3, arg4, arg5, arg6> { };
 
 template <class ret, class arg1, class arg2, class arg3, class arg4, class arg5, class arg6, class arg7>
-struct signal: public sigc::signal<ret, arg1, arg2, arg3, arg4, arg5, arg6, arg7> { };
+class signal: public sigc::signal<ret, arg1, arg2, arg3, arg4, arg5, arg6, arg7> { };
 
 
 template <class ret, class arg1, class arg2, class arg3, class arg4, class arg5, class arg6, class arg7>
-struct slot: public sigc::slot<ret, arg1, arg2, arg3, arg4, arg5, arg6, arg7> {
+class slot: public sigc::slot<ret, arg1, arg2, arg3, arg4, arg5, arg6, arg7> {
+public:
 	slot() {}
 	template <class functor> slot(const functor &f): sigc::slot<ret, arg1, arg2, arg3, arg4, arg5, arg6, arg7>(f) {}
 };
 
 template <class ret, class arg1, class arg2, class arg3, class arg4, class arg5, class arg6>
-struct slot<ret, arg1, arg2, arg3, arg4, arg5, arg6, sigc::nil>: public sigc::slot<ret, arg1, arg2, arg3, arg4, arg5, arg6> {
+class slot<ret, arg1, arg2, arg3, arg4, arg5, arg6, sigc::nil>: public sigc::slot<ret, arg1, arg2, arg3, arg4, arg5, arg6> {
+public:
 	slot() {}
 	template <class functor> slot(const functor &f): sigc::slot<ret, arg1, arg2, arg3, arg4, arg5, arg6>(f) {}
 };
 
 template <class ret, class arg1, class arg2, class arg3, class arg4, class arg5>
-struct slot<ret, arg1, arg2, arg3, arg4, arg5, sigc::nil, sigc::nil>: public sigc::slot<ret, arg1, arg2, arg3, arg4, arg5> {
+class slot<ret, arg1, arg2, arg3, arg4, arg5, sigc::nil, sigc::nil>: public sigc::slot<ret, arg1, arg2, arg3, arg4, arg5> {
+public:
 	slot() {}
 	template <class functor> slot(const functor &f): sigc::slot<ret, arg1, arg2, arg3, arg4, arg5>(f) {}
 };
 
 template <class ret, class arg1, class arg2, class arg3, class arg4>
-struct slot<ret, arg1, arg2, arg3, arg4, sigc::nil, sigc::nil, sigc::nil>: public sigc::slot<ret, arg1, arg2, arg3, arg4> {
+class slot<ret, arg1, arg2, arg3, arg4, sigc::nil, sigc::nil, sigc::nil>: public sigc::slot<ret, arg1, arg2, arg3, arg4> {
+public:
 	slot() {}
 	template <class functor> slot(const functor &f): sigc::slot<ret, arg1, arg2, arg3, arg4>(f) {}
 };
 
 template <class ret, class arg1, class arg2, class arg3>
-struct slot<ret, arg1, arg2, arg3, sigc::nil, sigc::nil, sigc::nil, sigc::nil>: public sigc::slot<ret, arg1, arg2, arg3> {
+class slot<ret, arg1, arg2, arg3, sigc::nil, sigc::nil, sigc::nil, sigc::nil>: public sigc::slot<ret, arg1, arg2, arg3> {
+public:
 	slot() {}
 	template <class functor> slot(const functor &f): sigc::slot<ret, arg1, arg2, arg3>(f) {}
 };
 
 template <class ret, class arg1, class arg2>
-struct slot<ret, arg1, arg2, sigc::nil, sigc::nil, sigc::nil, sigc::nil, sigc::nil>: public sigc::slot<ret, arg1, arg2> {
+class slot<ret, arg1, arg2, sigc::nil, sigc::nil, sigc::nil, sigc::nil, sigc::nil>: public sigc::slot<ret, arg1, arg2> {
+public:
 	slot() {}
 	template <class functor> slot(const functor &f): sigc::slot<ret, arg1, arg2>(f) {}
 };
 
 template <class ret, class arg1>
-struct slot<ret, arg1, sigc::nil, sigc::nil, sigc::nil, sigc::nil, sigc::nil, sigc::nil>: public sigc::slot<ret, arg1> {
+class slot<ret, arg1, sigc::nil, sigc::nil, sigc::nil, sigc::nil, sigc::nil, sigc::nil>: public sigc::slot<ret, arg1> {
+public:
 	slot() {}
 	template <class functor> slot(const functor &f): sigc::slot<ret, arg1>(f) {}
 };
 
 template <class ret>
-struct slot<ret, sigc::nil, sigc::nil, sigc::nil, sigc::nil, sigc::nil, sigc::nil, sigc::nil>: public sigc::slot<ret> {
+class slot<ret, sigc::nil, sigc::nil, sigc::nil, sigc::nil, sigc::nil, sigc::nil, sigc::nil>: public sigc::slot<ret> {
+public:
 	slot() {}
 	template <class functor> slot(const functor &f): sigc::slot<ret>(f) {}
 };

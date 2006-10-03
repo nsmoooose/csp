@@ -30,6 +30,7 @@
 #include <osg/Geometry>
 #include <osg/LineStipple>
 #include <osg/LineWidth>
+#include <osg/Version>
 
 #include <cassert>
 
@@ -181,7 +182,11 @@ osg::Node *Element::node() {
 }
 
 void Element::clear() {
+#if OSG_VERSION_MAJOR == 1 && OSG_VERSION_MINOR > 0
+	geode()->removeDrawables(0, geode()->getNumDrawables());
+#else
 	geode()->removeDrawable(0, geode()->getNumDrawables());
+#endif
 }
 
 void Element::setLineWidth(double width) {

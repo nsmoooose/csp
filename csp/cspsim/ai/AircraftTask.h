@@ -29,8 +29,8 @@ class Runway;
 
 class AircraftTask: public Task {
 public:
-	void bind(AircraftControl *ai);
-	void setRunway(Runway const *runway);
+	virtual void bind(AircraftControl *ai);
+	virtual void setRunway(Runway const *runway);
 protected:
 	AircraftTask(const char *name);
 	virtual ~AircraftTask();
@@ -38,7 +38,7 @@ protected:
 	AircraftControl *ai() { return m_AircraftControl.get(); }
 	Runway const *runway() { return m_Runway.get(); }
 
-	bool checkDive();
+	virtual bool checkDive();
 	virtual void init();
 
 private:

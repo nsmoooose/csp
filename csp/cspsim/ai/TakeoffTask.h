@@ -27,7 +27,7 @@ CSP_NAMESPACE
 class TakeoffTask: public AircraftTask {
 public:
 	TakeoffTask();
-	void setRunway(Runway const *runway);
+	virtual void setRunway(Runway const *runway);
 
 private:
 	enum {

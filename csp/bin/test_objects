@@ -34,8 +34,8 @@ f16dj = "sim:vehicles.aircraft.f16dj"
 
 
 def createBalkan():
-	vehicle(f16dj, vec(-29495, -10530, 87.8), vec(0, 0, 0), vec(0.0, 0.0, 180.0))
-	vehicle(f16dj, vec(-29510, -10530, 87.8), vec(0, 0, 0), vec(0.0, 0.0, 180.0))
+	vehicle(f16dj, vec(-29495, -10530, 91.1), vec(0, 0, 0), vec(0.0, 0.0, 180.0)) 
+	vehicle(f16dj, vec(-29510, -10530, 91.1), vec(0, 0, 0), vec(0.0, 0.0, 180.0)) 
 
 def createNCA():
 	vehicle(m2k, vec(0, 0, 1200.0), vec(0, 100.0, 0), vec(5.0, 0.0, 0.0))

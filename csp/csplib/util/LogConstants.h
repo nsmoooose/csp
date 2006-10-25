@@ -80,7 +80,7 @@ enum {
 
 	// groups
 	cLogCategory_NONE         = 0x00000000,
-	cLogCategory_ALL          = 0xffffffff
+	cLogCategory_ALL          = 0x7fffffff
 };
 
 CSP_NAMESPACE_END

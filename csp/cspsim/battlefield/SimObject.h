@@ -78,11 +78,11 @@ private:
 	std::vector<ObjectId> m_ContactList;
 	uint32 m_ContactSignature;
 
-	inline void setFlags(int flag, bool on) {
+	inline void setFlags(unsigned flag, bool on) {
 		if (on) m_Flags |= flag; else m_Flags &= ~flag;
 	}
 
-	inline int getFlags(int flags) const {
+	inline int getFlags(unsigned flags) const {
 		return m_Flags & flags;
 	}
 

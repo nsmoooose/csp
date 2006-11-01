@@ -34,6 +34,13 @@
 
 CSP_NAMESPACE
 
+// Local log macro
+
+#define LOG(P) CSPLOG(P, AUDIO)
+
+#define ERR LOG(ERROR)
+#define DEB LOG(DEBUG)
+#define INF LOG(INFO) 
 
 SoundEngine &SoundEngine::getInstance() {
 	static SoundEngine *engine = 0;
@@ -55,19 +62,35 @@ osgAL::SoundManager *SoundEngine::getManager() {
 	return osgAL::SoundManager::instance();
 }
 
-void SoundEngine::initialize() {
-	CSPLOG(DEBUG, APP) << "SoundEngine::initialize";
-	osgAL::SoundManager *manager = getManager();
-	CSPLOG(DEBUG, APP) << "SoundEngine::initialize manager = " << manager;
-	assert(manager);
-	manager->init(32);
-	CSPLOG(DEBUG, APP) << "SoundEngine::initialize manager init";
-	CSPLOG(DEBUG, APP) << "SoundEngine::initialize env = " << manager->getEnvironment();
-	manager->getEnvironment()->setDistanceModel(openalpp::InverseDistanceClamped);
-	manager->getEnvironment()->setDopplerFactor(0.3);  // full doppler produces artifacts
-	manager->setMaxVelocity(200);
-	//manager->setClampVelocity(true);  (not available in 20041121-3 debian package)
-	CSPLOG(DEBUG, APP) << "SoundEngine::initialize done";
+
+void SoundEngine::initialize ()
+{
+	DEB << "Initializing the sound engine";
+	try {
+		assert (getManager ());
+		osgAL::SoundManager& manager = *getManager ();
+
+		DEB << "Initializing osgAL::SoundManager";
+		manager.init (32); // num_soundsources
+		assert (manager.initialized ());
+
+		DEB << "Setting sound environment parameters";
+		assert (manager.getEnvironment ());
+		openalpp::AudioEnvironment& env = *manager.getEnvironment ();
+		env.setDistanceModel (openalpp::InverseDistanceClamped);
+		env.setDopplerFactor (0.3); // full doppler produces artifacts
+		manager.setMaxVelocity (200);
+		manager.setClampVelocity (true);
+	}
+	catch (const std::exception& x) {
+		ERR << "Sound engine initialization failed (" << x.what() << ")";
+		throw; // Don't know how to continue without sound.
+	}
+	catch (...) {
+		ERR << "Sound engine initialization failed (unknown exception)";
+		throw; // Don't know how to continue without sound.
+	}
+	INF << "Sound engine initialization succeeded";
 }
 
 void SoundEngine::shutdown() {

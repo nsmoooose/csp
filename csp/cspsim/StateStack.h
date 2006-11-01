@@ -34,6 +34,10 @@
 #include <map>
 #include <vector>
 
+#ifdef _WIN32
+#include <assert.h>
+#endif
+
 CSP_NAMESPACE
 
 // This class duplicates some of the code in osg::State to track cumulative

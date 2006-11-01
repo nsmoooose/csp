@@ -35,6 +35,8 @@
 #include <csp/cspsim/views/CameraAgent.h>
 #include <csp/cspsim/views/CameraCommand.h>
 #include <csp/cspsim/views/View.h>
+#include <csp/cspsim/wf/WindowManager.h>
+#include <csp/cspsim/windows/QuitResume.h>
 
 #include <csp/csplib/util/FileUtility.h>
 #include <csp/csplib/util/Log.h>
@@ -287,7 +289,11 @@ void GameScreen::on_View0() {
 }
 
 void GameScreen::on_Quit() {
-	CSPSim::theSim->quit();
+	wf::WindowManager* manager = CSPSim::theSim->getScene()->getWindowManager();
+	if(!manager->windowIsOpen<windows::QuitResume>()) {
+		Ref<wf::Window> quitResumeWindow = new windows::QuitResume;
+		manager->show(quitResumeWindow.get());
+	}
 }
 
 void GameScreen::on_Pause() {

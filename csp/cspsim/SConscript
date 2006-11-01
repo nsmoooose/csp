@@ -371,6 +371,21 @@ build.SourceGroup(expenv,
 		'views/InternalView.h',
 		'views/View.cpp',
 		'views/View.h',
+		
+		'wf/Button.cpp',
+		'wf/Button.h',
+		'wf/Control.cpp',
+		'wf/Control.h',
+		'wf/Window.cpp',
+		'wf/Window.h',
+		'wf/WindowManager.cpp',
+		'wf/WindowManager.h',
+
+		'wf/themes/Default.cpp',
+		'wf/themes/Default.h',
+
+		'windows/QuitResume.cpp',
+		'windows/QuitResume.h',
 	],
 	deps = ['csplib', 'opengl', 'osg', 'sdl', 'sound'])
 

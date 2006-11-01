@@ -50,6 +50,8 @@
 #include <csp/cspsim/theater/FeatureGroup.h>
 #include <csp/cspsim/theater/FeatureSceneGroup.h>
 
+#include <csp/cspsim/wf/WindowManager.h>
+
 #include <csp/csplib/util/Log.h>
 #include <csp/csplib/data/Types.h>
 #include <csp/csplib/util/Math.h>
@@ -444,6 +446,7 @@ void VirtualScene::createSceneViews() {
 	createFarView();
 	createNearView();
 	createInfoView();
+	createWindowView();
 }
 
 osgUtil::SceneView *VirtualScene::makeSceneView(unsigned mask) {
@@ -502,6 +505,22 @@ void VirtualScene::createInfoView() {
 	m_InfoGroup = new osg::Group;
 	m_InfoGroup->setName("info_group");
 	m_InfoView->setSceneData(m_InfoGroup.get());
+}
+
+wf::WindowManager* VirtualScene::getWindowManager() {
+	return m_WindowManager.get();
+}
+
+void VirtualScene::createWindowView() {
+	m_WindowView = makeSceneView(0);
+	m_WindowView->getRenderStage()->setClearMask(GL_DEPTH_BUFFER_BIT);
+	
+	// eye, center, up
+	osg::Matrix view_matrix;
+	view_matrix.makeLookAt(osg::Vec3(0, -200, 0.0), osg::Vec3(0.0, 0.0, 0.0), osg::Vec3(0, 0, 1));
+	m_WindowView->setViewMatrix(view_matrix);
+	
+	m_WindowManager = new wf::WindowManager(m_WindowView.get());	
 }
 
 void VirtualScene::buildScene() {
@@ -660,12 +679,19 @@ void VirtualScene::drawInfoView() {
 	m_InfoView->draw();
 }
 
+void VirtualScene::drawWindowView() {
+	m_WindowView->update();
+	m_WindowView->cull();
+	m_WindowView->draw();
+}
+
 int VirtualScene::drawScene() {
 	CSPLOG(DEBUG, APP) << "VirtualScene::drawScene()...";
 	drawVeryFarView();
 	drawFarView();
 	drawNearView();
 	drawInfoView();
+	drawWindowView();
 	if (m_Terrain.valid()) m_Terrain->endDraw();
 	return 1;
 }
@@ -1019,6 +1045,9 @@ bool VirtualScene::getLabels() const {
 }
 
 bool VirtualScene::pick(int x, int y) {
+	if(m_WindowManager->pick(x, y))
+		return true;
+
 	if (m_NearObjectGroup->getNumChildren() > 0) {
 		assert(m_NearObjectGroup->getNumChildren() == 1);
 		osg::Vec3 var_near;

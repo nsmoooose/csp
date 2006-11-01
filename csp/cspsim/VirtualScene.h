@@ -53,6 +53,9 @@ class FeatureTile;
 class FeatureGroup;
 class Sky;
 
+namespace wf {
+	class WindowManager;
+}
 
 /**
 * The purpose of this simple class is to provide a new opengl context id
@@ -150,6 +153,8 @@ public:
 
 	bool pick(int x, int y);
 
+	wf::WindowManager* getWindowManager();
+
 	void drawPlayerInterface();
 
 	osg::Group *getInfoGroup();
@@ -181,11 +186,13 @@ private:
 	void createFarView();
 	void createNearView();
 	void createInfoView();
+	void createWindowView();
 
 	void drawVeryFarView();
 	void drawFarView();
 	void drawNearView();
 	void drawInfoView();
+	void drawWindowView();
 
 protected:
 	void _updateFog(Vector3 const &lookPos, Vector3 const &eyePos);
@@ -196,6 +203,7 @@ protected:
 	osg::ref_ptr<osgUtil::SceneView> m_NearView;
 	osg::ref_ptr<osgUtil::SceneView> m_FarView;
 	osg::ref_ptr<osgUtil::SceneView> m_VeryFarView;
+	osg::ref_ptr<osgUtil::SceneView> m_WindowView;
 
 	osg::ref_ptr<osg::State> m_GlobalState;
 	osg::ref_ptr<osg::StateSet> m_GlobalStateSet;
@@ -203,6 +211,8 @@ protected:
 
 	osg::ref_ptr<osg::FrameStamp> m_FrameStamp;
 	Ref<ContextIDFactory> m_ContextIDFactory;
+	
+	Ref<wf::WindowManager> m_WindowManager;
 
 	float m_ViewDistance;
 	float m_ViewAngle;

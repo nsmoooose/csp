@@ -65,8 +65,9 @@ public:
 		}
 		return false;
 	}
-	
-	virtual const Theme& getTheme() const;
+
+	//! Returns the default theme of this window manager.
+	virtual Theme* getTheme() const;
 	
 private:
 	Ref<Theme> m_Theme;

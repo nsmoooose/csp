@@ -18,12 +18,12 @@
 
 
 /**
- * @file ITheme.h
+ * @file Theme.h
  *
  **/
 
-#ifndef __CSPSIM_WF_ITHEME_H__
-#define __CSPSIM_WF_ITHEME_H__
+#ifndef __CSPSIM_WF_THEME_H__
+#define __CSPSIM_WF_THEME_H__
 
 #include <csp/csplib/util/Referenced.h>
 
@@ -35,6 +35,7 @@ namespace osg {
 	class Group;
 	class Geode;
 	class Geometry;
+	class Switch;
 }
 
 CSP_NAMESPACE
@@ -44,17 +45,29 @@ namespace wf {
 struct Point;
 struct Size;
 class Button;
+class Label;
+class Tab;
+class TabPage;
 class Window;
 
 class Theme : public Referenced {
 public:
-	virtual osg::Group* buildWindow(const Window& window) const =0;
-	virtual osg::Group* buildButton(const Button& button) const =0;
+	virtual osg::Group* buildButton(const Button* button) const =0;
+	virtual osg::Group* buildLabel(const Label* label) const =0;
+	virtual osg::Group* buildTab(const Tab* tab) const =0;
+	virtual osg::Switch* buildTabButton(const Tab* tab, const TabPage* page, int index) const =0;
+	virtual osg::Group* buildTabPage(const TabPage* page) const =0;
+	virtual osg::Group* buildWindow(const Window* window) const =0;
 
 	virtual float getBorderWidth() const =0;
 	virtual float getCaptionHeight() const =0;
 	virtual std::string getCaptionFont() const =0;
 
+	virtual Size getWindowClientAreaSize(const Window* window) const =0;
+	virtual Point getWindowClientAreaLocation(const Window* window) const =0;
+
+	virtual Size getTabPageClientAreaSize(const Tab* tab) const =0;
+	virtual Point getTabPageClientAreaLocation(const Tab* tab) const =0;
 
 	/*
 	
@@ -69,4 +82,4 @@ public:
 
 CSP_NAMESPACE_END
 
-#endif // __CSPSIM_WF_ITHEME_H__
+#endif // __CSPSIM_WF_THEME_H__

@@ -25,7 +25,7 @@
 #ifndef __CSPSIM_WF_WINDOW_H__
 #define __CSPSIM_WF_WINDOW_H__
 
-#include <csp/cspsim/wf/Control.h>
+#include <csp/cspsim/wf/SingleControlContainer.h>
 #include <csp/csplib/util/Ref.h>
 
 namespace osg {
@@ -39,27 +39,25 @@ namespace wf {
 
 class WindowManager;
 
-class Window : public Control {
+class Window : public SingleControlContainer {
 public:
-	Window();
+	Window(Theme* theme);
 	virtual ~Window();
+
+	virtual void setWindowManager(WindowManager* manager);
+	virtual WindowManager* getWindowManager();
 	
 	virtual const std::string &getCaption() const;
 	virtual void setCaption(const std::string &caption);
-
-	virtual const osg::Vec4 &getBackgroundColor() const;
-	virtual void setBackgroundColor(const osg::Vec4 &bgcolor);
 	
-	virtual void buildGeometry(WindowManager* manager);
+	virtual void buildGeometry();
+	virtual void layoutChildControls();
 	
 	virtual void close();
 
 private:
 	WindowManager* m_WindowManager;
 
-	std::string m_Text;
-
-	osg::Vec4 m_BackgroundColor;
 	std::string m_Caption;
 };
 

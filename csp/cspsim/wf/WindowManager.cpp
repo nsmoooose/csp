@@ -81,15 +81,31 @@ bool WindowManager::pick(int x, int y) {
 }
 
 void WindowManager::show(Window* window) {
-	window->buildGeometry(this);
+	// We must initialize the window and all it's child controls. 
+	// We must assign the window to this instance of the window manager.
+	// It makes it possible for windows to open new or close existing
+	// windows.
+	window->setWindowManager(this);
+	
+	// Build the actual geometry of all controls that is going to be
+	// displayed.
+	window->buildGeometry();
+	
+	// Add the window into the tree of nodes in osg. This will make
+	// the window visible for the user in the next render.
 	m_Group->addChild(window->getNode());
+	
+	// Also store a reference to the window.
 	m_Windows.push_back(window);
 }
 
 void WindowManager::close(Window* window) {
+	// Lets remove the node that represents the window. This will
+	// remove the window on the next rendering.
 	osg::Group* windowGroup = window->getNode();
 	m_Group->removeChild(windowGroup);
 	
+	// We must also remove our reference to the Window object.
 	WindowVector::iterator iteratedWindow = m_Windows.begin();
 	for(;iteratedWindow != m_Windows.end();++iteratedWindow) {
 		if(iteratedWindow->get() == window) {
@@ -97,10 +113,14 @@ void WindowManager::close(Window* window) {
 			return;
 		}
 	}
+	
+	// Detach the window from the window manager by assigning
+	// a NULL window manager.
+	window->setWindowManager(NULL);
 }
 
-const Theme& WindowManager::getTheme() const {
-	return (*m_Theme.get());
+Theme* WindowManager::getTheme() const {
+	return m_Theme.get();
 }
 
 } // namespace wf

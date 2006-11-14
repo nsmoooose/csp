@@ -23,6 +23,7 @@
  **/
 
 #include <csp/cspsim/wf/Control.h>
+#include <csp/cspsim/wf/Theme.h>
 #include <csp/csplib/util/Ref.h>
 
 #include <osg/BlendFunc>
@@ -32,8 +33,8 @@ CSP_NAMESPACE
 
 namespace wf {
 
-Control::Control() :
-	m_ZPos(0.0), m_Parent(0), m_TransformGroup(new osg::MatrixTransform)
+Control::Control(Theme* theme) :
+	m_Theme(theme), m_ZPos(0.0), m_Parent(0), m_TransformGroup(new osg::MatrixTransform)
 {
     osg::StateSet *stateSet = m_TransformGroup->getOrCreateStateSet();
     stateSet->setRenderBinDetails(100, "RenderBin");
@@ -47,34 +48,26 @@ Control::Control() :
 Control::~Control() {
 }
 
-void Control::buildGeometry(WindowManager* manager) {
-	ControlVector::iterator control = m_Controls.begin();
-	for(;control != m_Controls.end();++control) {
-		(*control)->buildGeometry(manager);
-	}
-
-	Control::ControlVector childControls = getControls();
-	Control::ControlVector::iterator childControl = childControls.begin();
-	for(;childControl != childControls.end();++childControl) {
-		m_TransformGroup->addChild((*childControl)->getNode());
-	}	
+void Control::buildGeometry() {
 }
 
-Control::ControlVector Control::getControls() {
-	// We return a copy of the vector to prevent the caller from 
-	// modifying the original vector. The caller shall be able to 
-	// use any method on the returned controls so we cannot use a
-	// const method...
-	return m_Controls;
+Theme* Control::getTheme() {
+	return m_Theme.get();
 }
 
 Control* Control::getParent() {
 	return m_Parent;
 }
 
-void Control::addControl(Control* control) {
-	m_Controls.push_back(control);
-	control->m_Parent = this;
+void Control::setParent(Control* parent) {
+	m_Parent = parent;
+}
+
+WindowManager* Control::getWindowManager() {
+	if(m_Parent == NULL)
+		return NULL;
+		
+	return m_Parent->getWindowManager();
 }
 
 osg::Group* Control::getNode() {

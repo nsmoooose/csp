@@ -26,7 +26,7 @@
 #define __CSPSIM_WF_BUTTON_H__
 
 #include <csp/csplib/util/Signal.h>
-#include <csp/cspsim/wf/Control.h>
+#include <csp/cspsim/wf/SingleControlContainer.h>
 
 CSP_NAMESPACE
 
@@ -37,27 +37,31 @@ namespace wf {
  *  A button is a widget that can be pressed by the user with the mouse.
  *  
  */
-class Button : public Control {
+class Button : public SingleControlContainer {
 public:
-	Button();
+	Button(Theme* theme);
+	Button(Theme* theme, const std::string text);
 	virtual ~Button();
 
-	virtual void buildGeometry(WindowManager* manager);
+	virtual void buildGeometry();
 	
-	virtual const std::string& getText() const;
+	virtual const std::string getText() const;
 	virtual void setText(const std::string& text);
+	
+	virtual Control* getControl();
+	virtual void setControl(Control* control);
 	
 	virtual void addButtonClickedHandler(const sigc::slot<void> &handler);
 	
 private:
 
 protected:
-	std::string m_Text;
-	
 	typedef sigc::signal<void> ButtonClickedSignal;	
 	ButtonClickedSignal m_ButtonClicked;
 
 	class ButtonClickedCallback;
+	
+	Ref<Control> m_ChildControl;
 };
 
 } // namespace wf

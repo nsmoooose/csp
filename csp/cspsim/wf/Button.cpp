@@ -24,6 +24,7 @@
 
 #include <csp/cspsim/Animation.h>
 #include <csp/cspsim/wf/Button.h>
+#include <csp/cspsim/wf/Label.h>
 #include <csp/cspsim/wf/Theme.h>
 #include <csp/cspsim/wf/WindowManager.h>
 
@@ -47,29 +48,61 @@ private:
 	ButtonClickedSignal& m_ButtonClicked;
 };
 
-Button::Button() {
+Button::Button(Theme* theme) : SingleControlContainer(theme), m_ChildControl(new Label(theme)) {
+	Label* label = (Label*)m_ChildControl.get();
+	label->setAlignment(osgText::Text::CENTER_CENTER);
+}
+
+Button::Button(Theme* theme, const std::string text) : SingleControlContainer(theme), m_ChildControl(new Label(theme, text)) {
+	Label* label = (Label*)m_ChildControl.get();
+	label->setAlignment(osgText::Text::CENTER_CENTER);
 }
 
 Button::~Button() {
 }
 
-void Button::buildGeometry(WindowManager* manager) {
+void Button::buildGeometry() {
 	// Make sure that all our child controls onInit() is called.
-	Control::buildGeometry(manager);
+	SingleControlContainer::buildGeometry();
 	
 	// Build our own button control and add it to the group.
-	osg::ref_ptr<osg::Group> button = manager->getTheme().buildButton(*this);
+	osg::ref_ptr<osg::Group> button = getTheme()->buildButton(this);
 	osg::ref_ptr<ButtonClickedCallback> callback = new ButtonClickedCallback(m_ButtonClicked, this);
 	button->setUpdateCallback(callback.get());
 	getNode()->addChild(button.get());	
+	
+	if(m_ChildControl.valid()) {
+		m_ChildControl->buildGeometry();
+		
+		osg::ref_ptr<ButtonClickedCallback> callback = new ButtonClickedCallback(m_ButtonClicked, this);
+		
+		osg::ref_ptr<osg::Group> childControl = m_ChildControl->getNode();	
+		childControl->setUpdateCallback(callback.get());
+		getNode()->addChild(childControl.get());			
+	}
 }
 
-const std::string& Button::getText() const {
-	return m_Text;
+const std::string Button::getText() const {
+	Label* label = dynamic_cast<Label*>(m_ChildControl.get());
+	if(label != NULL) {
+		return label->getText();
+	}
+	return std::string("");
 }
 
 void Button::setText(const std::string& text) {
-	m_Text = text;
+	Label* label = dynamic_cast<Label*>(m_ChildControl.get());
+	if(label != NULL) {
+		label->setText(text);
+	}
+}
+
+Control* Button::getControl() {
+	return m_ChildControl.get();
+}
+
+void Button::setControl(Control* control) {
+	m_ChildControl = control;
 }
 
 void Button::addButtonClickedHandler(const sigc::slot<void> &handler) {

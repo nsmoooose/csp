@@ -32,9 +32,9 @@ CSP_NAMESPACE
 
 namespace wf {
 
-Window::Window() : 
+Window::Window(Theme* theme) : 
+	SingleControlContainer(theme),
 	m_WindowManager(NULL),
-	m_BackgroundColor(1.0, 1.0, 1.0, 1.0), 
 	m_Caption("Caption") {
 }
 
@@ -49,21 +49,27 @@ void Window::setCaption(const std::string &caption) {
 	m_Caption = caption; 
 }
 
-const osg::Vec4 &Window::getBackgroundColor() const { 
-	return m_BackgroundColor; 
+void Window::buildGeometry() {
+	SingleControlContainer::buildGeometry();
+
+	getNode()->addChild(getTheme()->buildWindow(this));
 }
 
-void Window::setBackgroundColor(const osg::Vec4 &backgroundColor) { 
-	m_BackgroundColor = backgroundColor; 
+WindowManager* Window::getWindowManager() {
+	return m_WindowManager;
 }
 
-void Window::buildGeometry(WindowManager* manager) {
-	Control::buildGeometry(manager);
-
+void Window::setWindowManager(WindowManager* manager) {
 	m_WindowManager = manager;
-	
-	const Theme& theme = manager->getTheme();
-	getNode()->addChild(theme.buildWindow(*this));
+}
+
+void Window::layoutChildControls() {
+	Control* childControl = getControl();
+	if(childControl != NULL) {
+		Theme* theme = getTheme();
+		childControl->setSize(theme->getWindowClientAreaSize(this));
+		childControl->setLocation(theme->getWindowClientAreaLocation(this));
+	}
 }
 
 void Window::close() {

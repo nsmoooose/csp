@@ -25,6 +25,7 @@
 #ifndef __CSPSIM_WF_CONTROL_H__
 #define __CSPSIM_WF_CONTROL_H__
 
+#include <csp/csplib/util/Ref.h>
 #include <csp/csplib/util/Referenced.h>
 #include <csp/csplib/data/Vector3.h>
 #include <csp/cspsim/wf/Point.h>
@@ -43,7 +44,11 @@ CSP_NAMESPACE
 
 namespace wf {
 
+class Control;
+class Theme;
 class WindowManager;
+
+typedef std::vector<Ref<Control> > ControlVector;
 
 struct Rect {
 	float x0, y0, x1, y1;
@@ -61,15 +66,18 @@ struct Rect {
  */
 class Control : public Referenced {
 public:
-	typedef std::vector<Ref<Control> > ControlVector;
-	
-	Control();
+	Control(Theme* theme);
 	virtual ~Control();
 	
+	virtual Control* getParent();
+	virtual void setParent(Control* parent);
+	virtual Theme* getTheme();
+	virtual WindowManager* getWindowManager();
+
 	/** Function that generates all geometry that is used to display the widget.
 	 * 	buildGeometry is called just before the window is displayed. 
 	 */
-	virtual void buildGeometry(WindowManager* manager);
+	virtual void buildGeometry();
 	
 	/** Returns the node that represents this control. */
 	virtual osg::Group* getNode();
@@ -83,21 +91,16 @@ public:
 	virtual const Size& getSize() const;
 	virtual void setSize(const Size& size);
 	
-	virtual Control* getParent();
-	
-	virtual ControlVector getControls();
-	virtual void addControl(Control* control);
-
 protected:
 
 private:
+	const Ref<Theme> m_Theme;
+
 	osg::ref_ptr<osg::MatrixTransform> m_TransformGroup;
 
 	float m_ZPos;
 	Point m_Point;
 	Size m_Size;
-	
-	ControlVector m_Controls;
 	
 	Control* m_Parent;
 };

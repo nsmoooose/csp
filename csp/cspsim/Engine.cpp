@@ -237,14 +237,14 @@ void EngineDynamics::preSimulationStep(double dt) {
 					fPitch = 1.999;
 				}
 				(*i)->m_EngineSound->state()->setPitch(fPitch);
-				(*i)->m_EngineSound->state()->setGain(fBlend);
-				(*i)->m_EngineSound->state()->apply();
+				(*i)->m_EngineSound->state()->setGain(fBlend / 3);
+//				(*i)->m_EngineSound->state()->apply();
 			}
 
 			// the afterburner sound is played when fBlend is between 2 and 3
 			// ToDo: check whether this is the right parameter to determine if burner is running
 			if((*i)->m_AfterburnerSound.valid()) {
-				(*i)->m_AfterburnerSound->state()->setGain(fBlend);
+				(*i)->m_AfterburnerSound->state()->setGain(fBlend / 3);
 				isPlaying = (*i)->m_AfterburnerSound->state()->getPlay();
 				if (fBlend > 2.0 && !isPlaying) {
 					(*i)->m_AfterburnerSound->play();

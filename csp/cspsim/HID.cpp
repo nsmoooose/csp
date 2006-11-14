@@ -108,6 +108,7 @@ VirtualHID::VirtualHID(): m_MouseDrag(false), m_MousePreDrag(false) {
 	m_Map = 0;
 	m_VirtualMode = 0;
 	m_JoystickModifier = 0;
+	m_Object = 0;
 	m_ActiveScript = 0;
 }
 

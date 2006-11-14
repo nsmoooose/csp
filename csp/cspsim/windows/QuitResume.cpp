@@ -24,6 +24,9 @@
 
 #include <csp/cspsim/CSPSim.h>
 #include <csp/cspsim/wf/Button.h>
+#include <csp/cspsim/wf/TableControlContainer.h>
+#include <csp/cspsim/wf/WindowManager.h>
+#include <csp/cspsim/windows/Options.h>
 #include <csp/cspsim/windows/QuitResume.h>
 #include <csp/csplib/data/ObjectInterface.h>
 
@@ -33,29 +36,25 @@ CSP_NAMESPACE
 
 namespace windows {
 
-QuitResume::QuitResume() {
-	// Completely white and opaque background.
-	setBackgroundColor(osg::Vec4(0.1f, 0.3f, 0.15f, 0.75f));
-	setSize(wf::Size(80.0, 30.0));
+QuitResume::QuitResume(wf::Theme* theme) : wf::Window(theme) {
+	setSize(wf::Size(100.0, 25.0));
 	setZPos(0.0);
 	setCaption("Combat Simulator Project");
 	
-	Ref<wf::Button> quitButton = new wf::Button;
-	quitButton->setLocation(wf::Point(-17.5, -2.0f));
-	quitButton->setSize(wf::Size(25, 10));
-	quitButton->setZPos(getZPos() - 0.1f);
-	quitButton->setText("Quit");
-	addControl(quitButton.get());
-
-	Ref<wf::Button> resumeButton = new wf::Button;
-	resumeButton->setLocation(wf::Point(17.5, -2.0f));
-	resumeButton->setSize(wf::Size(25, 10));
-	resumeButton->setZPos(getZPos() - 0.1f);
-	resumeButton->setText("Resume");
-	addControl(resumeButton.get());
+	Ref<wf::TableControlContainer> table = new wf::TableControlContainer(getTheme(), 3, 1);
+	setControl(table.get());
 	
-	quitButton->addButtonClickedHandler(sigc::mem_fun(*this, &QuitResume::onQuit));
+	Ref<wf::Button> resumeButton = new wf::Button(getTheme(), "Resume");
 	resumeButton->addButtonClickedHandler(sigc::mem_fun(*this, &QuitResume::onResume));
+	table->setControl(0, 0, resumeButton.get());
+
+	Ref<wf::Button> optionsButton = new wf::Button(getTheme(), "Options");
+	optionsButton->addButtonClickedHandler(sigc::mem_fun(*this, &QuitResume::onOptions));
+	table->setControl(1, 0, optionsButton.get());
+
+	Ref<wf::Button> quitButton = new wf::Button(getTheme(), "Quit");
+	quitButton->addButtonClickedHandler(sigc::mem_fun(*this, &QuitResume::onQuit));
+	table->setControl(2, 0, quitButton.get());
 }
 
 void QuitResume::onResume() {
@@ -64,6 +63,18 @@ void QuitResume::onResume() {
 
 void QuitResume::onQuit() {
 	CSPSim::theSim->quit();
+}
+
+void QuitResume::onOptions() {
+	wf::WindowManager* manager = getWindowManager();
+	if(manager != NULL) {
+		if(!manager->windowIsOpen<Options>()) {
+			Ref<Window> options = new Options(getTheme());
+			manager->show(options.get());
+		}
+	}
+	
+	close();
 }
 
 QuitResume::~QuitResume() {

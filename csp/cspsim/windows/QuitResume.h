@@ -33,12 +33,13 @@ namespace windows {
 
 class QuitResume : public wf::Window {
 public:
-	QuitResume();
+	QuitResume(wf::Theme* theme);
 	virtual ~QuitResume();
 	
 private:
 	void onResume();
 	void onQuit();
+	void onOptions();
 };
 
 } // namespace windows

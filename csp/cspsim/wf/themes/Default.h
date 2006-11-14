@@ -41,23 +41,84 @@ public:
 	virtual osg::Geometry* Default::BuildRectangle(
 		float x1, float y1, float x2, float y2, float z,
 		const osg::Vec4& c1, const osg::Vec4& c2, const osg::Vec4& c3, const osg::Vec4& c4) const;
-//	virtual osg::Geometry* BuildRectangle(const Point& topLeft, const Point& bottomRight, float zPos, const osg::Vec4& color, bool shadow) const;
 	
 	virtual float getBorderWidth() const;
 	virtual float getCaptionHeight() const;
 	virtual std::string Default::getCaptionFont() const;
 
-	virtual osg::Group* buildWindow(const Window& window) const;
-	virtual osg::Group* buildButton(const Button& button) const;
+	virtual osg::Group* buildLabel(const Label* label) const;
+	virtual osg::Group* buildButton(const Button* button) const;
+	virtual osg::Group* buildTab(const Tab* tab) const;
+	virtual osg::Switch* buildTabButton(const Tab* tab, const TabPage* page, int index) const;
+	virtual osg::Group* buildTabPage(const TabPage* page) const;
+	virtual osg::Group* buildWindow(const Window* window) const;
+	
+	virtual Size getWindowClientAreaSize(const Window* window) const;
+	virtual Point getWindowClientAreaLocation(const Window* window) const;
+	
+	virtual Size getTabPageClientAreaSize(const Tab* tab) const;
+	virtual Point getTabPageClientAreaLocation(const Tab* tab) const;
 	
 private:
-	virtual osg::Geometry* buildRightShadow(float x1, float y1, float x2, float y2, float z, const osg::Vec4& color, float shadowSpace, float shadowSize) const;
-	virtual osg::Geometry* buildBottomShadow(float x1, float y1, float x2, float y2, float z, const osg::Vec4& color, float shadowSpace, float shadowSize) const;
 
-    virtual float getShadowSpace() const;
-    virtual float getShadowSize() const;
+	struct ThemeColors {
+		ThemeColors() :
+			buttonBackgroundColor1(0.745f, 0.835f, 0.635f, 1.0f),
+			buttonBackgroundColor2(0.0f, 0.0f, 0.0f, 0.0f),
+			buttonBorderColor1(0.0f, 0.0f, 0.0f, 1.0f),
+			buttonBorderColor2(0.0f, 0.0f, 0.0f, 0.5f),
+			buttonBorderWidth(0.4f),
 
+			labelTextColor(0.0f, 0.0f, 0.0f, 1.0f),
+			
+			windowBackgroundColor(0.349f, 0.576f, 0.298f, 0.8f),
+			windowCaptionTextColor(1.0f, 1.0f, 1.0f, 1.0f),
+			windowCaptionBackgroundColor1(0.5f, 0.0f, 0.0f, 1.0f), 
+			windowCaptionBackgroundColor2(0.1f, 0.0f, 0.0f, 0.4f),
+			windowCaptionBorderColor1(0.0f, 0.0f, 0.0f, 1.0f),
+			windowCaptionBorderColor2(0.0f, 0.0f, 0.0f, 0.0f),
+			windowBorderColor1(0.0f, 0.0f, 0.0f, 1.0f),
+			windowBorderColor2(0.0f, 0.0f, 0.0f, 0.0f),
+			windowCaptionHeight(7.0f),
+			
+			tabPageBackgroundColor1(0.745f, 0.835f, 0.635f, 1.0f),
+			tabPageBackgroundColor2(0.745f, 0.835f, 0.635f, 0.0f),
+			tabBorderColor1(0.0f, 0.0f, 0.0f, 1.0f),
+			tabBorderColor2(0.0f, 0.0f, 0.0f, 0.5f),
+			tabBorderWidth(0.4f),
+			tabButtonHeight(7.0f),
+			tabButtonBackgroundColorCurrent(0.745f, 0.835f, 0.635f, 1.0f),
+			tabButtonBackgroundColorNotCurrent(0.645f, 0.735f, 0.535f, 1.0f)
+		{}
+	
+		osg::Vec4 buttonBackgroundColor1, buttonBackgroundColor2;
+		osg::Vec4 buttonBorderColor1, buttonBorderColor2;
+		osg::Vec4 buttonDisabledBorderColor;
+		osg::Vec4 buttonDisabledTextColor;
+		double buttonBorderWidth;
 
+		osg::Vec4 labelTextColor;
+		
+		osg::Vec4 windowBackgroundColor;
+		osg::Vec4 windowCaptionTextColor;
+		osg::Vec4 windowCaptionBackgroundColor1, windowCaptionBackgroundColor2;
+		osg::Vec4 windowCaptionBorderColor1, windowCaptionBorderColor2;
+		osg::Vec4 windowBorderColor1, windowBorderColor2;
+		double windowCaptionHeight;
+		
+		osg::Vec4 tabPageBackgroundColor1, tabPageBackgroundColor2;
+		osg::Vec4 tabBorderColor1, tabBorderColor2;
+		double tabBorderWidth;
+		double tabButtonHeight;
+		osg::Vec4 tabButtonBackgroundColorCurrent;
+		osg::Vec4 tabButtonBackgroundColorNotCurrent;
+		
+	} m_Colors;
+
+	virtual osg::Geometry* Default::BuildRectangle(
+		float x1, float y1, float x2, float y2, float z, float lineWidth,
+		const osg::Vec4& outerColor, const osg::Vec4& innerColor, 
+		bool left=true, bool top=true, bool right=true, bool bottom=true) const;
 
 protected:
 	std::string m_Text;

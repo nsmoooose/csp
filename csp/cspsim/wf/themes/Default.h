@@ -38,13 +38,13 @@ public:
 	Default();
 	virtual ~Default();
 
-	virtual osg::Geometry* Default::BuildRectangle(
+	virtual osg::Geometry* BuildRectangle(
 		float x1, float y1, float x2, float y2, float z,
 		const osg::Vec4& c1, const osg::Vec4& c2, const osg::Vec4& c3, const osg::Vec4& c4) const;
 	
 	virtual float getBorderWidth() const;
 	virtual float getCaptionHeight() const;
-	virtual std::string Default::getCaptionFont() const;
+	virtual std::string getCaptionFont() const;
 
 	virtual osg::Group* buildLabel(const Label* label) const;
 	virtual osg::Group* buildButton(const Button* button) const;
@@ -73,7 +73,7 @@ private:
 			
 			windowBackgroundColor(0.349f, 0.576f, 0.298f, 0.8f),
 			windowCaptionTextColor(1.0f, 1.0f, 1.0f, 1.0f),
-			windowCaptionBackgroundColor1(0.5f, 0.0f, 0.0f, 1.0f), 
+			windowCaptionBackgroundColor1(0.5f, 0.0f, 0.0f, 1.0f),
 			windowCaptionBackgroundColor2(0.1f, 0.0f, 0.0f, 0.4f),
 			windowCaptionBorderColor1(0.0f, 0.0f, 0.0f, 1.0f),
 			windowCaptionBorderColor2(0.0f, 0.0f, 0.0f, 0.0f),
@@ -115,9 +115,9 @@ private:
 		
 	} m_Colors;
 
-	virtual osg::Geometry* Default::BuildRectangle(
+	virtual osg::Geometry* BuildRectangle(
 		float x1, float y1, float x2, float y2, float z, float lineWidth,
-		const osg::Vec4& outerColor, const osg::Vec4& innerColor, 
+		const osg::Vec4& outerColor, const osg::Vec4& innerColor,
 		bool left=true, bool top=true, bool right=true, bool bottom=true) const;
 
 protected:

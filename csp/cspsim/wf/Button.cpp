@@ -44,8 +44,8 @@ public:
 	}
 	
 private:
-	Button* m_Button;
 	ButtonClickedSignal& m_ButtonClicked;
+	Button* m_Button;
 };
 
 Button::Button(Theme* theme) : SingleControlContainer(theme), m_ChildControl(new Label(theme)) {

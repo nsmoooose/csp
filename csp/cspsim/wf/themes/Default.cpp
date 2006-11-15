@@ -270,7 +270,7 @@ osg::Switch* Default::buildTabButton(const Tab* tab, const TabPage* page, int in
 	return group.release();
 }
 
-osg::Group* Default::buildTabPage(const TabPage* page) const {
+osg::Group* Default::buildTabPage(const TabPage* /*page*/) const {
 	return NULL;
 }
 
@@ -428,11 +428,11 @@ Size Default::getWindowClientAreaSize(const Window* window) const {
 	return Size(windowSize.m_W - getBorderWidth(), windowSize.m_H - getBorderWidth() - getCaptionHeight());
 }
 
-Point Default::getWindowClientAreaLocation(const Window* window) const {
+Point Default::getWindowClientAreaLocation(const Window* /*window*/) const {
 	return Point(0, 0 - (getCaptionHeight() / 2));
 }
 
-Size Default::getTabPageClientAreaSize(const Tab* tab) const {
+Size Default::getTabPageClientAreaSize(const Tab* /*tab*/) const {
 	Size tabSize = tab->getSize();
 	return Size(tabSize.m_W, tabSize.m_H - m_Colors.tabButtonHeight);
 }

@@ -75,7 +75,7 @@ public:
 		const Button& button	// The button to generate geometry for.
 		)=0;
 	*/
-	virtual ~Theme()=0{};	
+	virtual ~Theme() {}
 };
 
 } // namespace wf

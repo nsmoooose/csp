@@ -432,12 +432,12 @@ Point Default::getWindowClientAreaLocation(const Window* /*window*/) const {
 	return Point(0, 0 - (getCaptionHeight() / 2));
 }
 
-Size Default::getTabPageClientAreaSize(const Tab* /*tab*/) const {
+Size Default::getTabPageClientAreaSize(const Tab* tab) const {
 	Size tabSize = tab->getSize();
 	return Size(tabSize.m_W, tabSize.m_H - m_Colors.tabButtonHeight);
 }
 
-Point Default::getTabPageClientAreaLocation(const Tab* tab) const {
+Point Default::getTabPageClientAreaLocation(const Tab* /*tab*/) const {
 	return Point(0.0f, 0.0f - (m_Colors.tabButtonHeight / 2));
 }
 

@@ -177,6 +177,9 @@ build.SourceGroup(expenv,
 		'util/Version.h',
 		'util/hash_map.h',
 		'util/osg.h',
+
+		'xml/XmlParser.cpp',
+		'xml/XmlParser.h',
 	],
 	deps = ['gnucc2', 'sigc', 'windows'])
 

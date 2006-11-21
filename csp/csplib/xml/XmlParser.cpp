@@ -378,15 +378,7 @@ XMLNode XMLNode::openFileHelper(CSP_XMLCSTR filename, CSP_XMLCSTR tag)
 			,filename,XMLNode::getError(pResults.error),pResults.nLine,pResults.nColumn,s1,s2,s3);
 
 		// display message
-#ifdef WIN32
-#ifndef _XMLPARSER_NO_MESSAGEBOX_
-		MessageBoxA(NULL,message,"XML Parsing error",MB_OK|MB_ICONERROR|MB_TOPMOST);
-#else
 		printf("%s",message);
-#endif
-#else
-		printf("%s",message);
-#endif
 		exit(255);
 	}
 	return xnode;

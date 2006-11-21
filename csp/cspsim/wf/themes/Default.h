@@ -47,6 +47,8 @@ public:
 	virtual std::string getCaptionFont() const;
 
 	virtual osg::Group* buildLabel(const Label* label) const;
+	virtual osg::Group* buildListBox(const ListBox* listBox) const;
+	virtual osg::Switch* buildListBoxItem(const ListBoxItem* listBoxItem) const;
 	virtual osg::Group* buildButton(const Button* button) const;
 	virtual osg::Group* buildTab(const Tab* tab) const;
 	virtual osg::Switch* buildTabButton(const Tab* tab, const TabPage* page, int index) const;
@@ -88,7 +90,11 @@ private:
 			tabBorderWidth(0.4f),
 			tabButtonHeight(7.0f),
 			tabButtonBackgroundColorCurrent(0.745f, 0.835f, 0.635f, 1.0f),
-			tabButtonBackgroundColorNotCurrent(0.645f, 0.735f, 0.535f, 1.0f)
+			tabButtonBackgroundColorNotCurrent(0.645f, 0.735f, 0.535f, 1.0f),
+			
+			selectedItemColor(0.984f, 0.984f, 0.984f, 0.486f),
+			notSelectedItemColor1(0.349f, 0.576f, 0.298f, 0.4f),
+			notSelectedItemColor2(0.349f, 0.576f, 0.298f, 0.4f)
 		{}
 	
 		osg::Vec4 buttonBackgroundColor1, buttonBackgroundColor2;
@@ -113,6 +119,9 @@ private:
 		osg::Vec4 tabButtonBackgroundColorCurrent;
 		osg::Vec4 tabButtonBackgroundColorNotCurrent;
 		
+		osg::Vec4 selectedItemColor;
+		osg::Vec4 notSelectedItemColor1;
+		osg::Vec4 notSelectedItemColor2;
 	} m_Colors;
 
 	virtual osg::Geometry* BuildRectangle(

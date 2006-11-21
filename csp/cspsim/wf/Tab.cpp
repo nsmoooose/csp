@@ -69,7 +69,7 @@ void Tab::buildGeometry() {
 		// Create a button for the page and add it to our control tree.
 		osg::ref_ptr<osg::Switch> button = getTheme()->buildTabButton(this, page->first.get(), index);
 		osg::ref_ptr<TabClickedCallback> callback = new TabClickedCallback(this, page->first.get());
-		button->setUpdateCallback(callback.get());
+		button->getChild(1)->setUpdateCallback(callback.get());
 		page->second = button;
 
 		// Well we add the page content to the button. This will make the page visible when the button

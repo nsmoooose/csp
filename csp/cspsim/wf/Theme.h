@@ -46,6 +46,8 @@ struct Point;
 struct Size;
 class Button;
 class Label;
+class ListBox;
+class ListBoxItem;
 class Tab;
 class TabPage;
 class Window;
@@ -58,6 +60,8 @@ public:
 	virtual osg::Switch* buildTabButton(const Tab* tab, const TabPage* page, int index) const =0;
 	virtual osg::Group* buildTabPage(const TabPage* page) const =0;
 	virtual osg::Group* buildWindow(const Window* window) const =0;
+	virtual osg::Group* buildListBox(const ListBox* listBox) const =0;
+	virtual osg::Switch* buildListBoxItem(const ListBoxItem* listBoxItem) const =0;
 
 	virtual float getBorderWidth() const =0;
 	virtual float getCaptionHeight() const =0;

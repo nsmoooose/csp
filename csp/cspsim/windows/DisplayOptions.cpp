@@ -23,6 +23,7 @@
  **/
 
 #include <csp/cspsim/wf/Label.h>
+#include <csp/cspsim/wf/ListBox.h>
 #include <csp/cspsim/wf/TableControlContainer.h>
 #include <csp/cspsim/windows/DisplayOptions.h>
 
@@ -35,25 +36,26 @@ namespace windows {
 DisplayOptions::DisplayOptions(wf::Theme* theme) : wf::TabPage(theme) {
 	setText("Display");
 	
-	Ref<wf::TableControlContainer> table = new wf::TableControlContainer(theme, 2, 5);
+	Ref<wf::TableControlContainer> table = new wf::TableControlContainer(theme, 2, 2);
 	table->getColumns()[0].setWidth(0.3f);
 	table->getColumns()[1].setWidth(0.7f);
+	table->getRows()[0].setHeight(0.8f);
+	table->getRows()[1].setHeight(0.2f);
 	
-	table->setControl(0, 0, new wf::Label(theme, "Resolution:"));
-	table->setControl(1, 0, new wf::Label(theme, "TODO: 1024x768"));
+	Ref<wf::Label> resolutionLabel = new wf::Label(theme, "Resolution:");
+	table->setControl(0, 0, resolutionLabel.get());
 	
-	table->setControl(0, 1, new wf::Label(theme, "Terrain:"));
-	table->setControl(1, 1, new wf::Label(theme, "TODO: Low"));
+	Ref<wf::ListBox> listbox = new wf::ListBox(theme);
+	listbox->setZPos(-0.5f);
+	listbox->addItem(new wf::ListBoxItem(theme, "640x480"));
+	listbox->addItem(new wf::ListBoxItem(theme, "800x600"));
+	listbox->addItem(new wf::ListBoxItem(theme, "1024x768"));
+	listbox->addItem(new wf::ListBoxItem(theme, "1280x1024"));
+	table->setControl(1, 0, listbox.get());
 	
-	table->setControl(0, 2, new wf::Label(theme, "Texture:"));
-	table->setControl(1, 2, new wf::Label(theme, "TODO: Very high"));
-	
-	table->setControl(0, 3, new wf::Label(theme, "Effects:"));
-	table->setControl(1, 3, new wf::Label(theme, "TODO: Ultra realistic"));
-
-	table->setControl(0, 4, new wf::Label(theme, "Shadows:"));
-	table->setControl(1, 4, new wf::Label(theme, "TODO: Dark"));
-	
+	table->setControl(0, 1, new wf::Label(theme, "Fullscreen:"));
+	table->setControl(1, 1, new wf::Label(theme, "TODO: Checkbox"));
+		
 	setControl(table.get());
 }
 

@@ -24,6 +24,8 @@
 
 #include <csp/cspsim/wf/Button.h>
 #include <csp/cspsim/wf/Label.h>
+#include <csp/cspsim/wf/ListBox.h>
+#include <csp/cspsim/wf/ListBoxItem.h>
 #include <csp/cspsim/wf/Point.h>
 #include <csp/cspsim/wf/Size.h>
 #include <csp/cspsim/wf/Tab.h>
@@ -419,6 +421,67 @@ osg::Group* Default::buildLabel(const Label* label) const {
 
     osg::ref_ptr<osg::BlendFunc> blendFunction = new osg::BlendFunc;
     stateSet->setAttributeAndModes(blendFunction.get());
+
+	return group.release();
+}
+
+osg::Group* Default::buildListBox(const ListBox* listBox) const {
+	osg::ref_ptr<osg::Geode> geode = new osg::Geode;
+
+	// Fetch all necesarry data that we need.
+	const Size& size = listBox->getSize();
+
+	float x1 = 0 - (size.m_W/2);
+	float y1 = size.m_H / 2;
+	float x2 = (size.m_W / 2);
+	float y2 = 0 - (size.m_H/2);
+
+	// Add a border to the button.
+	geode->addDrawable(BuildRectangle(x1, y1, x2, y2, -0.2, m_Colors.buttonBorderWidth,
+		m_Colors.buttonBorderColor1, m_Colors.buttonBorderColor2));
+
+	osg::ref_ptr<osg::Group> group = new osg::Group;
+	group->addChild(geode.get());
+
+    osg::StateSet *stateSet = group->getOrCreateStateSet();
+    stateSet->setRenderBinDetails(100, "RenderBin");
+    stateSet->setMode(GL_LIGHTING, osg::StateAttribute::OFF);
+    stateSet->setMode(GL_DEPTH_TEST, osg::StateAttribute::ON);
+
+	return group.release();
+}
+
+osg::Switch* Default::buildListBoxItem(const ListBoxItem* listBoxItem) const {
+	const Size& size = listBoxItem->getSize();
+	float x1 = 0 - (size.m_W/2);
+	float y1 = size.m_H / 2;
+	float x2 = (size.m_W / 2);
+	float y2 = 0 - (size.m_H/2);
+
+	osg::ref_ptr<osg::Geode> itemGeode = new osg::Geode;
+	osg::ref_ptr<osg::Geometry> geometry = BuildRectangle(x1, y1, x2, y2, -0.1f,
+		m_Colors.notSelectedItemColor1, m_Colors.notSelectedItemColor2, 
+		m_Colors.notSelectedItemColor2, m_Colors.notSelectedItemColor1);
+	itemGeode->addDrawable(geometry.get());
+	
+	// This geode represents the geometry that is displayed when the item is selected.
+	osg::ref_ptr<osg::Geode> selectedGeode = new osg::Geode;
+	{
+		// Draw the background of the button.
+		osg::ref_ptr<osg::Geometry> geometry = BuildRectangle(x1, y1, x2, y2, -0.2f,
+			m_Colors.selectedItemColor, m_Colors.selectedItemColor, 
+			m_Colors.selectedItemColor, m_Colors.selectedItemColor);
+		selectedGeode->addDrawable(geometry.get());
+	}
+
+	osg::ref_ptr<osg::Switch> group = new osg::Switch;
+	group->addChild(itemGeode.get(), true);
+	group->addChild(selectedGeode.get(), false);
+
+    osg::StateSet *stateSet = group->getOrCreateStateSet();
+    stateSet->setRenderBinDetails(100, "RenderBin");
+    stateSet->setMode(GL_LIGHTING, osg::StateAttribute::OFF);
+    stateSet->setMode(GL_DEPTH_TEST, osg::StateAttribute::ON);
 
 	return group.release();
 }

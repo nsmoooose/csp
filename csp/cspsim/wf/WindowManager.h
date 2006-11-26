@@ -65,6 +65,10 @@ public:
 		}
 		return false;
 	}
+	
+	bool isAnyWindowOpen() {
+		return m_Windows.size() > 0;
+	}
 
 	//! Returns the default theme of this window manager.
 	virtual Theme* getTheme() const;

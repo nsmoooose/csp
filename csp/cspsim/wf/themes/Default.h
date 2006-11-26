@@ -31,6 +31,7 @@
 CSP_NAMESPACE
 
 namespace wf {
+
 namespace themes {
 
 class Default : public Theme {
@@ -38,17 +39,14 @@ public:
 	Default();
 	virtual ~Default();
 
-	virtual osg::Geometry* BuildRectangle(
-		float x1, float y1, float x2, float y2, float z,
-		const osg::Vec4& c1, const osg::Vec4& c2, const osg::Vec4& c3, const osg::Vec4& c4) const;
-	
 	virtual float getBorderWidth() const;
 	virtual float getCaptionHeight() const;
 	virtual std::string getCaptionFont() const;
 
+	virtual osg::Group* buildCheckBox(const CheckBox* checkBox) const;
 	virtual osg::Group* buildLabel(const Label* label) const;
 	virtual osg::Group* buildListBox(const ListBox* listBox) const;
-	virtual osg::Switch* buildListBoxItem(const ListBoxItem* listBoxItem) const;
+	virtual osg::Switch* buildListBoxItem(const ListBox* listBox, const ListBoxItem* listBoxItem) const;
 	virtual osg::Group* buildButton(const Button* button) const;
 	virtual osg::Group* buildTab(const Tab* tab) const;
 	virtual osg::Switch* buildTabButton(const Tab* tab, const TabPage* page, int index) const;
@@ -94,7 +92,9 @@ private:
 			
 			selectedItemColor(0.984f, 0.984f, 0.984f, 0.486f),
 			notSelectedItemColor1(0.349f, 0.576f, 0.298f, 0.4f),
-			notSelectedItemColor2(0.349f, 0.576f, 0.298f, 0.4f)
+			notSelectedItemColor2(0.349f, 0.576f, 0.298f, 0.4f),
+			
+			checkBoxHeight(7.0f)
 		{}
 	
 		osg::Vec4 buttonBackgroundColor1, buttonBackgroundColor2;
@@ -122,12 +122,24 @@ private:
 		osg::Vec4 selectedItemColor;
 		osg::Vec4 notSelectedItemColor1;
 		osg::Vec4 notSelectedItemColor2;
+		
+		double checkBoxHeight;
 	} m_Colors;
 
-	virtual osg::Geometry* BuildRectangle(
+	virtual osg::Geometry* buildRectangle(
+		float x1, float y1, float x2, float y2, float z,
+		const osg::Vec4& c1, const osg::Vec4& c2, const osg::Vec4& c3, const osg::Vec4& c4) const;
+
+	virtual osg::Geometry* buildRectangle(
 		float x1, float y1, float x2, float y2, float z, float lineWidth,
 		const osg::Vec4& outerColor, const osg::Vec4& innerColor,
 		bool left=true, bool top=true, bool right=true, bool bottom=true) const;
+
+	virtual osg::Geode* buildStar() const;
+		
+	virtual osg::Geometry* buildTriangle(
+		const Point& p1, const Point& p2, const Point& p3, float z,
+		const osg::Vec4& c1, const osg::Vec4& c2, const osg::Vec4& c3) const;
 
 protected:
 	std::string m_Text;

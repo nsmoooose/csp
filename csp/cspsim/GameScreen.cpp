@@ -290,7 +290,7 @@ void GameScreen::on_View0() {
 
 void GameScreen::on_Quit() {
 	wf::WindowManager* manager = CSPSim::theSim->getScene()->getWindowManager();
-	if(!manager->windowIsOpen<windows::QuitResume>()) {
+	if(!manager->isAnyWindowOpen()) {
 		Ref<wf::Window> quitResumeWindow = new windows::QuitResume(manager->getTheme());
 		manager->show(quitResumeWindow.get());
 	}

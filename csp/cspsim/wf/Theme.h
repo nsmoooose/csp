@@ -45,6 +45,7 @@ namespace wf {
 struct Point;
 struct Size;
 class Button;
+class CheckBox;
 class Label;
 class ListBox;
 class ListBoxItem;
@@ -55,13 +56,14 @@ class Window;
 class Theme : public Referenced {
 public:
 	virtual osg::Group* buildButton(const Button* button) const =0;
+	virtual osg::Group* buildCheckBox(const CheckBox* checkBox) const =0;
 	virtual osg::Group* buildLabel(const Label* label) const =0;
 	virtual osg::Group* buildTab(const Tab* tab) const =0;
 	virtual osg::Switch* buildTabButton(const Tab* tab, const TabPage* page, int index) const =0;
 	virtual osg::Group* buildTabPage(const TabPage* page) const =0;
 	virtual osg::Group* buildWindow(const Window* window) const =0;
 	virtual osg::Group* buildListBox(const ListBox* listBox) const =0;
-	virtual osg::Switch* buildListBoxItem(const ListBoxItem* listBoxItem) const =0;
+	virtual osg::Switch* buildListBoxItem(const ListBox* listBox, const ListBoxItem* listBoxItem) const =0;
 
 	virtual float getBorderWidth() const =0;
 	virtual float getCaptionHeight() const =0;

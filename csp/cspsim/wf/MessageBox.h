@@ -18,53 +18,41 @@
 
 
 /**
- * @file Window.h
+ * @file MessageBox.h
  *
  **/
 
-#ifndef __CSPSIM_WF_WINDOW_H__
-#define __CSPSIM_WF_WINDOW_H__
+#ifndef __CSPSIM_WF_MESSAGEBOX_H__
+#define __CSPSIM_WF_MESSAGEBOX_H__
 
-#include <csp/cspsim/wf/SingleControlContainer.h>
-#include <csp/csplib/util/Ref.h>
-
-namespace osg {
-	class Group;
-	class Geometry;
-}
+#include <csp/cspsim/wf/Window.h>
 
 CSP_NAMESPACE
 
 namespace wf {
 
-class WindowManager;
+class Label;
 
-class Window : public SingleControlContainer {
+class MessageBox : public Window {
 public:
-	Window(Theme* theme);
-	Window(Theme* theme, std::string caption);
-	virtual ~Window();
+	MessageBox(Theme* theme, std::string caption, std::string message);
+	virtual ~MessageBox();
 
-	virtual void setWindowManager(WindowManager* manager);
-	virtual WindowManager* getWindowManager();
-	
-	virtual const std::string &getCaption() const;
-	virtual void setCaption(const std::string &caption);
-	
 	virtual void buildGeometry();
-	virtual void layoutChildControls();
 	
-	virtual void close();
-
+	virtual std::string getMessage() const;
+	virtual void setMessage(std::string message);
+	
+	static Ref<MessageBox> Show(Theme* theme, std::string caption, std::string message);
+	
 private:
-	WindowManager* m_WindowManager;
-
-	std::string m_Caption;
+	Ref<Label> m_Label;	
+	virtual void onOk();
 };
 
 } // namespace wf
 
 CSP_NAMESPACE_END
 
-#endif // __CSPSIM_WF_WINDOW_H__
+#endif // __CSPSIM_WF_MESSAGEBOX_H__
 

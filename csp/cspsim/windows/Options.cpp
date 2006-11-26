@@ -23,8 +23,10 @@
  **/
 
 #include <csp/cspsim/wf/Button.h>
+#include <csp/cspsim/wf/MessageBox.h>
 #include <csp/cspsim/wf/Tab.h>
 #include <csp/cspsim/wf/TableControlContainer.h>
+#include <csp/cspsim/wf/WindowManager.h>
 #include <csp/cspsim/windows/DisplayOptions.h>
 #include <csp/cspsim/windows/Options.h>
 #include <csp/cspsim/windows/SoundOptions.h>
@@ -69,6 +71,14 @@ Options::Options(wf::Theme* theme) : wf::Window(theme) {
 }
 
 void Options::onOK() {
+	m_DisplayOptionsPage->applyConfiguration();
+	
+	// Display a message box that states that you will need to restart the 
+	// simulator.
+	Ref<wf::MessageBox> messageBox = wf::MessageBox::Show(getTheme(), "Information", 
+		"Changes will not take effect\nuntil you restart the simulator!");
+	getWindowManager()->show(messageBox.get());
+
 	close();
 }
 

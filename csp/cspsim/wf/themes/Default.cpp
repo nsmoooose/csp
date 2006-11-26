@@ -23,6 +23,7 @@
  **/
 
 #include <csp/cspsim/wf/Button.h>
+#include <csp/cspsim/wf/CheckBox.h>
 #include <csp/cspsim/wf/Label.h>
 #include <csp/cspsim/wf/ListBox.h>
 #include <csp/cspsim/wf/ListBoxItem.h>
@@ -37,6 +38,7 @@
 #include <osg/Depth>
 #include <osg/Geode>
 #include <osg/Geometry>
+#include <osg/MatrixTransform>
 #include <osg/Switch>
 #include <osgText/Text>
 
@@ -51,7 +53,7 @@ Default::Default() {
 Default::~Default() {
 }
 
-osg::Geometry* Default::BuildRectangle(
+osg::Geometry* Default::buildRectangle(
 	float x1, float y1, float x2, float y2, float z,
 	const osg::Vec4& c1, const osg::Vec4& c2, const osg::Vec4& c3, const osg::Vec4& c4) const {
 	osg::ref_ptr<osg::Geometry> geom = new osg::Geometry;
@@ -81,7 +83,7 @@ osg::Geometry* Default::BuildRectangle(
 	return geom.release();
 }
 
-osg::Geometry* Default::BuildRectangle(
+osg::Geometry* Default::buildRectangle(
 	float x1, float y1, float x2, float y2, float z, float lineWidth,
 	const osg::Vec4& outerColor, const osg::Vec4& innerColor,
 	bool left, bool top, bool right, bool bottom) const {
@@ -158,6 +160,112 @@ osg::Geometry* Default::BuildRectangle(
 	return geom.release();
 }
 
+osg::Geode* Default::buildStar() const {
+	osg::ref_ptr<osg::Geode> geode = new osg::Geode;
+	
+//	osg::Vec4 color1 = osg::Vec4(0.5f, 0.0f, 0.0f, 0.0f);
+//	osg::Vec4 color2 = osg::Vec4(0.5f, 0.0f, 0.0f, 1.0f);
+	osg::Vec4 color1 = osg::Vec4(0.0f, 0.0f, 0.0f, 0.0f);
+	osg::Vec4 color2 = osg::Vec4(0.0f, 0.0f, 0.0f, 1.0f);
+	
+	const double halfHeight = m_Colors.checkBoxHeight / 2;
+	const double thirdHeight = halfHeight / 3;
+
+	// Top arrow. Left triangle.
+	geode->addDrawable(
+		buildTriangle(
+			Point(0.0f, halfHeight), // Top
+			Point(0.0f - thirdHeight, thirdHeight), // Left 
+			Point(0.0f, 0.0f), // bottom
+			-0.2f, color1, color1, color2));
+
+	// Left arrow. Top triangle.
+	geode->addDrawable(
+		buildTriangle(
+			Point(0.0f, 0.0f), // Right
+			Point(0.0f - halfHeight, 0.0f), // Left 
+			Point(0.0f - thirdHeight, thirdHeight), // top
+			-0.2f, color2, color1, color1));
+
+	// Left arrow. Bottom triangle.
+	geode->addDrawable(
+		buildTriangle(
+			Point(0.0f, 0.0f), // Right
+			Point(0.0f - halfHeight, 0.0f), // Left 
+			Point(0.0f - thirdHeight, 0.0f - thirdHeight), // bottom
+			-0.2f, color2, color1, color1));
+
+	// Bottom arrow. Left triangle.
+	geode->addDrawable(
+		buildTriangle(
+			Point(0.0f, 0.0f), // Right
+			Point(0.0f, 0.0f - halfHeight), // Left 
+			Point(0.0f - thirdHeight, 0.0f - thirdHeight), // bottom
+			-0.2f, color2, color1, color1));
+
+	// Bottom arrow. Right triangle.
+	geode->addDrawable(
+		buildTriangle(
+			Point(0.0f, 0.0f), // Right
+			Point(0.0f, 0.0f - halfHeight), // Left 
+			Point(thirdHeight, 0.0f - thirdHeight), // bottom
+			-0.2f, color2, color1, color1));
+
+	// Right arrow. Bottom triangle.
+	geode->addDrawable(
+		buildTriangle(
+			Point(0.0f, 0.0f), // Right
+			Point(halfHeight, 0.0f), // Left 
+			Point(thirdHeight, 0.0f - thirdHeight), // bottom
+			-0.2f, color2, color1, color1));
+
+	// Right arrow. Top triangle.
+	geode->addDrawable(
+		buildTriangle(
+			Point(0.0f, 0.0f), // Right
+			Point(halfHeight, 0.0f), // Left 
+			Point(thirdHeight, thirdHeight), // top
+			-0.2f, color2, color1, color1));
+
+	// Top arrow. Right triangle.
+	geode->addDrawable(
+		buildTriangle(
+			Point(0.0f, 0.0f), // Right
+			Point(0.0f, halfHeight), // Left 
+			Point(thirdHeight, thirdHeight), // bottom
+			-0.2f, color2, color1, color1));
+	return geode.release();
+}
+
+osg::Geometry* Default::buildTriangle(
+	const Point& p1, const Point& p2, const Point& p3, float z,
+	const osg::Vec4& c1, const osg::Vec4& c2, const osg::Vec4& c3) const {
+
+	osg::ref_ptr<osg::Geometry> geom = new osg::Geometry;
+
+	osg::ref_ptr<osg::Vec3Array> vertices = new osg::Vec3Array;
+	osg::ref_ptr<osg::Vec4Array> colors = new osg::Vec4Array;
+
+	vertices->push_back(osg::Vec3(p1.m_X, z, p1.m_Y));
+	vertices->push_back(osg::Vec3(p2.m_X, z, p2.m_Y));
+	vertices->push_back(osg::Vec3(p3.m_X, z, p3.m_Y));
+	colors->push_back(c1);
+	colors->push_back(c2);
+	colors->push_back(c3);
+
+	geom->setVertexArray(vertices.get());
+	geom->setColorArray(colors.get());
+    geom->setColorBinding(osg::Geometry::BIND_PER_VERTEX);
+	geom->addPrimitiveSet(new osg::DrawArrays(GL_TRIANGLES, 0, 3));
+
+	// setup state
+	osg::StateSet* stateset = geom->getOrCreateStateSet();
+	stateset->setMode(GL_LIGHTING, osg::StateAttribute::OFF);
+	geom->setStateSet(stateset);
+
+	return geom.release();
+}
+
 osg::Group* Default::buildTab(const Tab* tab) const {
 	osg::ref_ptr<osg::Group> group = new osg::Group;
 
@@ -169,7 +277,7 @@ osg::Group* Default::buildTab(const Tab* tab) const {
 	float x2 = (size.m_W / 2);
 	float y2 = 0 - size.m_H / 2;
 	{
-		osg::ref_ptr<osg::Geometry> geometry = BuildRectangle(
+		osg::ref_ptr<osg::Geometry> geometry = buildRectangle(
 			x1, y1, x2, y2, -0.1f,
 			m_Colors.tabPageBackgroundColor1, m_Colors.tabPageBackgroundColor2, 
 			m_Colors.tabPageBackgroundColor2, m_Colors.tabPageBackgroundColor1);
@@ -177,7 +285,7 @@ osg::Group* Default::buildTab(const Tab* tab) const {
 	}
 
 	// Add a border to the button.
-	geode->addDrawable(BuildRectangle(x1, y1, x2, y2, -0.2, m_Colors.tabBorderWidth,
+	geode->addDrawable(buildRectangle(x1, y1, x2, y2, -0.2, m_Colors.tabBorderWidth,
 		m_Colors.tabBorderColor1, m_Colors.tabBorderColor2,
 		true, false, true, true));
 
@@ -202,7 +310,7 @@ osg::Switch* Default::buildTabButton(const Tab* tab, const TabPage* page, int in
 		float y2 = y1 - m_Colors.tabButtonHeight;
 		
 		{
-			osg::ref_ptr<osg::Geometry> geometry = BuildRectangle(
+			osg::ref_ptr<osg::Geometry> geometry = buildRectangle(
 				x1, y1, x2, y2, -0.1f,
 				m_Colors.tabButtonBackgroundColorCurrent, m_Colors.tabButtonBackgroundColorCurrent, 
 				m_Colors.tabButtonBackgroundColorCurrent, m_Colors.tabButtonBackgroundColorCurrent);
@@ -210,7 +318,7 @@ osg::Switch* Default::buildTabButton(const Tab* tab, const TabPage* page, int in
 		}
 	
 		// Add a border to the button.
-		geodeCurrentPage->addDrawable(BuildRectangle(x1, y1, x2, y2, -0.2, m_Colors.tabBorderWidth,
+		geodeCurrentPage->addDrawable(buildRectangle(x1, y1, x2, y2, -0.2, m_Colors.tabBorderWidth,
 			m_Colors.tabBorderColor1, m_Colors.tabBorderColor2,
 			true, true, true, false));
 			
@@ -239,7 +347,7 @@ osg::Switch* Default::buildTabButton(const Tab* tab, const TabPage* page, int in
 		float y2 = y1 - (m_Colors.tabButtonHeight - 1);
 		
 		{
-			osg::ref_ptr<osg::Geometry> geometry = BuildRectangle(
+			osg::ref_ptr<osg::Geometry> geometry = buildRectangle(
 				x1, y1, x2, y2, -0.1f,
 				m_Colors.tabButtonBackgroundColorNotCurrent, m_Colors.tabButtonBackgroundColorNotCurrent, 
 				m_Colors.tabButtonBackgroundColorNotCurrent, m_Colors.tabButtonBackgroundColorNotCurrent);
@@ -247,7 +355,7 @@ osg::Switch* Default::buildTabButton(const Tab* tab, const TabPage* page, int in
 		}
 	
 		// Add a border to the button.
-		geodeNotCurrentPage->addDrawable(BuildRectangle(x1, y1, x2, y2, -0.2, m_Colors.tabBorderWidth,
+		geodeNotCurrentPage->addDrawable(buildRectangle(x1, y1, x2, y2, -0.2, m_Colors.tabBorderWidth,
 			m_Colors.tabBorderColor1, m_Colors.tabBorderColor2,
 			true, true, true, true));
 			
@@ -291,14 +399,14 @@ osg::Group* Default::buildWindow(const Window* window) const {
 	float y2 = 0 - size.m_H / 2;
 	{
 		const osg::Vec4 windowBgColor = m_Colors.windowBackgroundColor;
-		osg::ref_ptr<osg::Geometry> geometry = BuildRectangle(
+		osg::ref_ptr<osg::Geometry> geometry = buildRectangle(
 			x1, y1, x2, y2, 0.0f,
 			windowBgColor, windowBgColor, windowBgColor, windowBgColor);
 		geode->addDrawable(geometry.get());
 	}
 
 	// Create a shaded border round the client area of the window.
-	geode->addDrawable(BuildRectangle(x1, y1, x2, y2, -0.1, borderWidth,
+	geode->addDrawable(buildRectangle(x1, y1, x2, y2, -0.1, borderWidth,
 		m_Colors.windowBorderColor1, m_Colors.windowBorderColor2));
 
 	// Background of the window name
@@ -307,13 +415,13 @@ osg::Group* Default::buildWindow(const Window* window) const {
 	float caption_x2 = (size.m_W / 2) + 3;
 	float caption_y2 = caption_y1 - captionHeight;
 	{
-		osg::ref_ptr<osg::Geometry> geometry = BuildRectangle(caption_x1, caption_y1, caption_x2, caption_y2, -0.1f,
+		osg::ref_ptr<osg::Geometry> geometry = buildRectangle(caption_x1, caption_y1, caption_x2, caption_y2, -0.1f,
 			m_Colors.windowCaptionBackgroundColor2, m_Colors.windowCaptionBackgroundColor2, 
 			m_Colors.windowCaptionBackgroundColor1, m_Colors.windowCaptionBackgroundColor1);
 		geode->addDrawable(geometry.get());
 		
 		// Draw a border around the caption.
-		geode->addDrawable(BuildRectangle(caption_x1, caption_y1, caption_x2, caption_y2, -0.2, borderWidth,
+		geode->addDrawable(buildRectangle(caption_x1, caption_y1, caption_x2, caption_y2, -0.2, borderWidth,
 			m_Colors.windowCaptionBorderColor1, m_Colors.windowCaptionBorderColor2));
 	}
 
@@ -357,13 +465,13 @@ osg::Group* Default::buildButton(const Button* button) const {
 	float y2 = 0 - size.m_H/2;
 
 	// Draw the background of the button.
-	osg::ref_ptr<osg::Geometry> geometry = BuildRectangle(x1, y1, x2, y2, -0.1f,
+	osg::ref_ptr<osg::Geometry> geometry = buildRectangle(x1, y1, x2, y2, -0.1f,
 		m_Colors.buttonBackgroundColor1, m_Colors.buttonBackgroundColor2, 
 		m_Colors.buttonBackgroundColor2, m_Colors.buttonBackgroundColor1);
 	geode->addDrawable(geometry.get());
 
 	// Add a border to the button.
-	geode->addDrawable(BuildRectangle(x1, y1, x2, y2, -0.2, m_Colors.buttonBorderWidth,
+	geode->addDrawable(buildRectangle(x1, y1, x2, y2, -0.2, m_Colors.buttonBorderWidth,
 		m_Colors.buttonBorderColor1, m_Colors.buttonBorderColor2));
 
 	osg::ref_ptr<osg::Group> group = new osg::Group;
@@ -377,6 +485,54 @@ osg::Group* Default::buildButton(const Button* button) const {
     osg::ref_ptr<osg::BlendFunc> blendFunction = new osg::BlendFunc;
     stateSet->setAttributeAndModes(blendFunction.get());
 
+	return group.release();
+}
+
+osg::Group* Default::buildCheckBox(const CheckBox* checkBox) const {
+	const Size& size = checkBox->getSize();
+	
+	osg::ref_ptr<osg::Geode> geode = new osg::Geode;
+
+	float x1 = 0 - (size.m_W / 2);
+	float y1 = m_Colors.checkBoxHeight / 2;
+	float x2 = x1 + m_Colors.checkBoxHeight;
+	float y2 = 0 - (m_Colors.checkBoxHeight / 2);
+
+	// Draw a border around the checkbox.
+	geode->addDrawable(buildRectangle(x1, y1, x2, y2, -0.3, m_Colors.buttonBorderWidth,
+		m_Colors.buttonBorderColor1, m_Colors.buttonBorderColor2));	
+	geode->addDrawable(buildRectangle(x1, y1, x2, y2, -0.2f,
+		m_Colors.notSelectedItemColor1, m_Colors.notSelectedItemColor2, 
+		m_Colors.notSelectedItemColor2, m_Colors.notSelectedItemColor1));
+
+	osg::ref_ptr<osgText::Text> button_text = new osgText::Text;
+	button_text->setText(checkBox->getText());
+	button_text->setColor(m_Colors.labelTextColor);
+	button_text->setAlignment(osgText::Text::LEFT_CENTER);
+	button_text->setFont("screeninfo.ttf");
+	button_text->setCharacterSize(5);
+	button_text->setFontResolution(30, 30);
+	button_text->setAxisAlignment(osgText::Text::SCREEN);
+	button_text->setPosition(osg::Vec3(x2 + 1.0f, -0.2f, 0));
+	geode->addDrawable(button_text.get());
+
+	osg::ref_ptr<osg::Group> group = new osg::Group;
+	group->addChild(geode.get());
+
+    osg::StateSet *stateSet = group->getOrCreateStateSet();
+    stateSet->setRenderBinDetails(100, "RenderBin");
+    stateSet->setMode(GL_LIGHTING, osg::StateAttribute::OFF);
+    stateSet->setMode(GL_DEPTH_TEST, osg::StateAttribute::ON);
+
+    osg::ref_ptr<osg::BlendFunc> blendFunction = new osg::BlendFunc;
+    stateSet->setAttributeAndModes(blendFunction.get());
+
+	if(checkBox->getChecked()) {
+		osg::ref_ptr<osg::MatrixTransform> transform = new osg::MatrixTransform;
+		transform->setMatrix(osg::Matrix::translate(x1 + (m_Colors.checkBoxHeight / 2.0f), -0.2f, 0));
+		transform->addChild(buildStar());
+		group->addChild(transform.get());
+	}
 	return group.release();
 }
 
@@ -437,7 +593,7 @@ osg::Group* Default::buildListBox(const ListBox* listBox) const {
 	float y2 = 0 - (size.m_H/2);
 
 	// Add a border to the button.
-	geode->addDrawable(BuildRectangle(x1, y1, x2, y2, -0.2, m_Colors.buttonBorderWidth,
+	geode->addDrawable(buildRectangle(x1, y1, x2, y2, -0.2, m_Colors.buttonBorderWidth,
 		m_Colors.buttonBorderColor1, m_Colors.buttonBorderColor2));
 
 	osg::ref_ptr<osg::Group> group = new osg::Group;
@@ -451,7 +607,7 @@ osg::Group* Default::buildListBox(const ListBox* listBox) const {
 	return group.release();
 }
 
-osg::Switch* Default::buildListBoxItem(const ListBoxItem* listBoxItem) const {
+osg::Switch* Default::buildListBoxItem(const ListBox* listBox, const ListBoxItem* listBoxItem) const {
 	const Size& size = listBoxItem->getSize();
 	float x1 = 0 - (size.m_W/2);
 	float y1 = size.m_H / 2;
@@ -459,7 +615,7 @@ osg::Switch* Default::buildListBoxItem(const ListBoxItem* listBoxItem) const {
 	float y2 = 0 - (size.m_H/2);
 
 	osg::ref_ptr<osg::Geode> itemGeode = new osg::Geode;
-	osg::ref_ptr<osg::Geometry> geometry = BuildRectangle(x1, y1, x2, y2, -0.1f,
+	osg::ref_ptr<osg::Geometry> geometry = buildRectangle(x1, y1, x2, y2, -0.1f,
 		m_Colors.notSelectedItemColor1, m_Colors.notSelectedItemColor2, 
 		m_Colors.notSelectedItemColor2, m_Colors.notSelectedItemColor1);
 	itemGeode->addDrawable(geometry.get());
@@ -468,7 +624,7 @@ osg::Switch* Default::buildListBoxItem(const ListBoxItem* listBoxItem) const {
 	osg::ref_ptr<osg::Geode> selectedGeode = new osg::Geode;
 	{
 		// Draw the background of the button.
-		osg::ref_ptr<osg::Geometry> geometry = BuildRectangle(x1, y1, x2, y2, -0.2f,
+		osg::ref_ptr<osg::Geometry> geometry = buildRectangle(x1, y1, x2, y2, -0.2f,
 			m_Colors.selectedItemColor, m_Colors.selectedItemColor, 
 			m_Colors.selectedItemColor, m_Colors.selectedItemColor);
 		selectedGeode->addDrawable(geometry.get());
@@ -476,7 +632,7 @@ osg::Switch* Default::buildListBoxItem(const ListBoxItem* listBoxItem) const {
 
 	osg::ref_ptr<osg::Switch> group = new osg::Switch;
 	group->addChild(itemGeode.get(), true);
-	group->addChild(selectedGeode.get(), false);
+	group->addChild(selectedGeode.get(), listBox->getSelectedItem() == listBoxItem);
 
     osg::StateSet *stateSet = group->getOrCreateStateSet();
     stateSet->setRenderBinDetails(100, "RenderBin");

@@ -38,6 +38,12 @@ Window::Window(Theme* theme) :
 	m_Caption("Caption") {
 }
 
+Window::Window(Theme* theme, std::string caption) : 
+	SingleControlContainer(theme),
+	m_WindowManager(NULL),
+	m_Caption(caption) {
+}
+
 Window::~Window() {
 }
 

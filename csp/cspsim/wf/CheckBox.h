@@ -18,53 +18,52 @@
 
 
 /**
- * @file Window.h
+ * @file CheckBox.h
  *
  **/
 
-#ifndef __CSPSIM_WF_WINDOW_H__
-#define __CSPSIM_WF_WINDOW_H__
+#ifndef __CSPSIM_WF_CHECKBOX_H__
+#define __CSPSIM_WF_CHECKBOX_H__
 
-#include <csp/cspsim/wf/SingleControlContainer.h>
-#include <csp/csplib/util/Ref.h>
-
-namespace osg {
-	class Group;
-	class Geometry;
-}
+#include <csp/csplib/util/Signal.h>
+#include <csp/cspsim/wf/Control.h>
 
 CSP_NAMESPACE
 
 namespace wf {
 
-class WindowManager;
+class Label;
 
-class Window : public SingleControlContainer {
+/** A class that represents a button.
+ *
+ *  A button is a widget that can be pressed by the user with the mouse.
+ *  
+ */
+class CheckBox : public Control {
 public:
-	Window(Theme* theme);
-	Window(Theme* theme, std::string caption);
-	virtual ~Window();
+	CheckBox(Theme* theme);
+	CheckBox(Theme* theme, const std::string text);
+	virtual ~CheckBox();
 
-	virtual void setWindowManager(WindowManager* manager);
-	virtual WindowManager* getWindowManager();
-	
-	virtual const std::string &getCaption() const;
-	virtual void setCaption(const std::string &caption);
-	
 	virtual void buildGeometry();
-	virtual void layoutChildControls();
 	
-	virtual void close();
-
+	virtual const std::string getText() const;
+	virtual void setText(const std::string& text);
+	
+	virtual bool getChecked() const;
+	virtual void setChecked(bool checked);
+		
 private:
-	WindowManager* m_WindowManager;
 
-	std::string m_Caption;
+protected:
+	bool m_Checked;
+	std::string m_Text;
+
+	class CheckBoxClickedCallback;	
 };
 
 } // namespace wf
 
 CSP_NAMESPACE_END
 
-#endif // __CSPSIM_WF_WINDOW_H__
-
+#endif // __CSPSIM_WF_CHECKBOX_H__

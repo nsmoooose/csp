@@ -49,6 +49,7 @@ Control::~Control() {
 }
 
 void Control::buildGeometry() {
+	m_TransformGroup->removeChild(0, m_TransformGroup->getNumChildren());
 }
 
 Theme* Control::getTheme() {

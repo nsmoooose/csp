@@ -29,14 +29,23 @@
 
 CSP_NAMESPACE
 
+namespace wf {
+	class CheckBox;
+	class ListBox;
+}
+
 namespace windows {
 
 class DisplayOptions : public wf::TabPage {
 public:
 	DisplayOptions(wf::Theme* theme);
 	virtual ~DisplayOptions();
+
+	void applyConfiguration();
 	
 private:
+	Ref<wf::ListBox> m_Listbox;
+	Ref<wf::CheckBox> m_FullScreen;
 };
 
 } // namespace windows

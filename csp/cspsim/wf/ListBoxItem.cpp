@@ -54,19 +54,12 @@ void ListBoxItem::buildGeometry() {
 	// Make sure that all our child controls onInit() is called.
 	SingleControlContainer::buildGeometry();
 	
-	osg::ref_ptr<osg::Switch> item = getTheme()->buildListBoxItem(this);
+	osg::ref_ptr<osg::Switch> item = getTheme()->buildListBoxItem((ListBox*)getParent(), this);
 	getNode()->addChild(item.get());
 	
 	if(m_ChildControl.valid()) {
 		m_ChildControl->buildGeometry();
 		getNode()->addChild(m_ChildControl->getNode());
-		/*
-		osg::ref_ptr<osg::Group> childControl = m_ChildControl->getNode();	
-		osg::Group* itemGroup = dynamic_cast<osg::Group*>(item->getChild(0));
-		if(itemGroup != NULL) {
-			itemGroup->addChild(childControl.get());
-		}
-		*/
 	}
 }
 

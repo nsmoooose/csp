@@ -53,6 +53,7 @@
 #ifndef __CSPSIM_H__
 #define __CSPSIM_H__
 
+#include <csp/cspsim/Config.h>
 #include <csp/cspsim/Export.h>
 #include <csp/csplib/util/Ref.h>
 #include <csp/csplib/util/ScopedPointer.h>
@@ -142,8 +143,7 @@ private:
 	BaseScreen *m_LogoScreen;
 	GameScreen *m_GameScreen;
 
-	int m_ScreenWidth;
-	int m_ScreenHeight;
+	ScreenSettings screenSettings;
 
 	bool m_Paused;
 	bool m_Finished;

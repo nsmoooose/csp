@@ -78,5 +78,19 @@ std::string getDataPath(std::string const &pathname) {
 	return path;
 }
 
+ScreenSettings getScreenSettings() {
+	ScreenSettings settings;
+	settings.width = g_Config.getInt("Screen", "Width", 1024, true);
+	settings.height = g_Config.getInt("Screen", "Height", 768, true);
+	settings.fullScreen = g_Config.getInt("Screen", "FullScreen", 0, true);
+	return settings;
+}
+
+void setScreenSettings(const ScreenSettings& screenSettings) {
+	g_Config.setInt("Screen", "Width", screenSettings.width);
+	g_Config.setInt("Screen", "Height", screenSettings.height);
+	g_Config.setInt("Screen", "FullScreen", screenSettings.fullScreen);
+}
+
 CSP_NAMESPACE_END
 

@@ -67,14 +67,6 @@ void ListBox::buildGeometry() {
 
 		osg::ref_ptr<ListBoxItemClickedCallback> callback = new ListBoxItemClickedCallback(this, item->get());
 		(*item)->getNode()->setUpdateCallback(callback.get());
-
-		/*
-		osg::Switch* itemSwitch = dynamic_cast<osg::Switch*>((*item)->getNode()->getChild(0));
-		if(itemSwitch != NULL) {
-			osg::ref_ptr<ListBoxItemClickedCallback> callback = new ListBoxItemClickedCallback(this, item->get());
-			itemSwitch->setUpdateCallback(callback.get());
-		}
-		*/
 	}
 }
 
@@ -101,34 +93,20 @@ void ListBox::layoutChildControls() {
 
 void ListBox::addItem(ListBoxItem* item) {
 	m_Items.push_back(item);
+	item->setParent(this);
 }
 
 ListBoxItem* ListBox::getSelectedItem() {
-	ListBoxItemVector::iterator item = m_Items.begin();
-	for(int index=0;item != m_Items.end();++item, ++index) {
-		osg::Switch* itemSwitch = dynamic_cast<osg::Switch*>((*item)->getNode()->getChild(0));
-		if(itemSwitch != NULL) {
-			if(itemSwitch->getValue(1)) {
-				return item->get();
-			}
-		}
-	}
-	return NULL;
+	return m_SelectedItem.get();
+}
+
+ListBoxItem* ListBox::getSelectedItem() const {
+	return m_SelectedItem.get();
 }
 
 void ListBox::setSelectedItem(ListBoxItem* newItem) {
-	ListBoxItemVector::iterator item = m_Items.begin();
-	for(int index=0;item != m_Items.end();++item, ++index) {
-		osg::Switch* itemSwitch = dynamic_cast<osg::Switch*>((*item)->getNode()->getChild(0));
-		if(itemSwitch != NULL) {
-			if(newItem == item->get()) {
-				itemSwitch->setValue(1, true);
-			}
-			else {
-				itemSwitch->setValue(1, false);
-			}
-		}
-	}
+	m_SelectedItem = newItem;
+	buildGeometry();
 }
 
 } // namespace wf

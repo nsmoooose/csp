@@ -245,7 +245,7 @@ void CSPSim::init() {
 		//--m_RenderSurface->realize();
 		SDL_WM_SetCaption("CSPSim", "");
 
-		LogoScreen logoScreen(m_ScreenWidth, m_ScreenHeight);
+		LogoScreen logoScreen(screenSettings.width, screenSettings.height);
 		logoScreen.onInit();
 
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -276,7 +276,7 @@ void CSPSim::init() {
 		//CSP_VERIFY(m_Theater->initialize(*m_DataManager));
 		m_Terrain = m_Theater->getTerrain();
 		assert(m_Terrain.valid());
-		m_Terrain->setScreenSizeHint(m_ScreenWidth, m_ScreenHeight);
+		m_Terrain->setScreenSizeHint(screenSettings.width, screenSettings.height);
 		m_Terrain->activate();
 
 		// configure the atmosphere for the theater location
@@ -301,7 +301,7 @@ void CSPSim::init() {
 		SoundFileLoader::init();
 
 		CSPLOG(DEBUG, APP) << "Initializing scene graph";
-		m_Scene = new VirtualScene(m_ScreenWidth, m_ScreenHeight);
+		m_Scene = new VirtualScene(screenSettings.width, screenSettings.height);
 		m_Scene->buildScene();
 		m_Scene->setTerrain(m_Terrain);
 
@@ -683,12 +683,8 @@ void CSPSim::updateObjects(double dt) {
 int CSPSim::initSDL() {
 	CSPLOG(DEBUG, APP) << "Initializing SDL";
 
-	int height = g_Config.getInt("Screen", "Height", 768, true);
-	int width = g_Config.getInt("Screen", "Width", 1024, true);
-	int fullscreen = g_Config.getInt("Screen", "FullScreen", 0, true);
-
-	m_ScreenHeight = height;
-	m_ScreenWidth = width;
+	// Get settings from configuration file.
+	screenSettings = getScreenSettings();
 
 	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK) != 0) {
 		std::cerr << "Unable to initialize SDL (" << SDL_GetError() << ")\n";
@@ -703,11 +699,11 @@ int CSPSim::initSDL() {
 
 	Uint32 flags = SDL_OPENGL | SDL_HWSURFACE | SDL_DOUBLEBUF;
 
-	if (fullscreen) {
+	if (screenSettings.fullScreen) {
 		flags |= SDL_FULLSCREEN;
 	}
 
-	m_SDLScreen = SDL_SetVideoMode(width, height, bpp, flags);
+	m_SDLScreen = SDL_SetVideoMode(screenSettings.width, screenSettings.height, bpp, flags);
 	SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 32);
 	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 

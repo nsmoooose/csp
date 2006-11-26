@@ -68,6 +68,19 @@ extern CSPSIM_EXPORT std::string getDataPath();
  */
 extern CSPSIM_EXPORT std::string getDataPath(std::string const &);
 
+struct ScreenSettings {
+	ScreenSettings() : width(1024), height(768), fullScreen(false) {}
+	int width;
+	int height;
+	bool fullScreen;
+};
+
+/**
+ * Get screen size and fullscreen
+ */
+extern CSPSIM_EXPORT ScreenSettings getScreenSettings();
+extern CSPSIM_EXPORT void setScreenSettings(const ScreenSettings&);
+
 CSP_NAMESPACE_END
 
 #endif // __CSPSIM_CONFIG_H__

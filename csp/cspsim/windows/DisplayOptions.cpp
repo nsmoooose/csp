@@ -22,20 +22,49 @@
  *
  **/
 
+#include <csp/cspsim/Config.h>
+#include <csp/cspsim/wf/CheckBox.h>
 #include <csp/cspsim/wf/Label.h>
 #include <csp/cspsim/wf/ListBox.h>
 #include <csp/cspsim/wf/TableControlContainer.h>
 #include <csp/cspsim/windows/DisplayOptions.h>
 
+#include <sstream>
 #include <osg/Vec4>
 
 CSP_NAMESPACE
 
+/*
+	TODO:
+		* It would be nice if we could change display settings without restarting
+		  of the simulation.
+		* Enumerate supported screen resolution from your graphics card.
+*/
+
 namespace windows {
+
+struct ScreenResolution {
+	ScreenResolution(int w, int h) : width(w), height(h) {}
+	int width;
+	int height;
+};
+
+typedef std::vector<ScreenResolution> ScreenResolutionVector;
+
+ScreenResolutionVector getScreenResolutions() {
+	ScreenResolutionVector resolutions;
+	
+	resolutions.push_back(ScreenResolution(640, 480));
+	resolutions.push_back(ScreenResolution(800, 600));
+	resolutions.push_back(ScreenResolution(1024, 768));
+	resolutions.push_back(ScreenResolution(1280, 1024));
+	return resolutions;
+}
 
 DisplayOptions::DisplayOptions(wf::Theme* theme) : wf::TabPage(theme) {
 	setText("Display");
 	
+	// We use a table control for all our child controls.
 	Ref<wf::TableControlContainer> table = new wf::TableControlContainer(theme, 2, 2);
 	table->getColumns()[0].setWidth(0.3f);
 	table->getColumns()[1].setWidth(0.7f);
@@ -45,21 +74,62 @@ DisplayOptions::DisplayOptions(wf::Theme* theme) : wf::TabPage(theme) {
 	Ref<wf::Label> resolutionLabel = new wf::Label(theme, "Resolution:");
 	table->setControl(0, 0, resolutionLabel.get());
 	
-	Ref<wf::ListBox> listbox = new wf::ListBox(theme);
-	listbox->setZPos(-0.5f);
-	listbox->addItem(new wf::ListBoxItem(theme, "640x480"));
-	listbox->addItem(new wf::ListBoxItem(theme, "800x600"));
-	listbox->addItem(new wf::ListBoxItem(theme, "1024x768"));
-	listbox->addItem(new wf::ListBoxItem(theme, "1280x1024"));
-	table->setControl(1, 0, listbox.get());
+	ScreenSettings screenSettings = getScreenSettings();
 	
-	table->setControl(0, 1, new wf::Label(theme, "Fullscreen:"));
-	table->setControl(1, 1, new wf::Label(theme, "TODO: Checkbox"));
-		
+	m_Listbox = new wf::ListBox(theme);
+	m_Listbox->setZPos(-0.5f);
+	
+	// Get all supported resolutions for your graphic card and add them to the 
+	// list box.
+	ScreenResolutionVector resolutions = getScreenResolutions();
+	ScreenResolutionVector::const_iterator resolution = resolutions.begin();
+	for(;resolution != resolutions.end();++resolution) {
+		// Format a string to be displayed in the list box. It will have the 
+		// following format: 800x600
+		std::stringstream itemText;
+		itemText << resolution->width << 'x' << resolution->height;
+		Ref<wf::ListBoxItem> item = new wf::ListBoxItem(theme, itemText.str());
+		m_Listbox->addItem(item.get());
+
+		// Test to see if the current setting is the same. If true then we make
+		// this item the default.
+		if(resolution->width == screenSettings.width && resolution->height == screenSettings.height) {
+			m_Listbox->setSelectedItem(item.get());
+		}
+	}
+	table->setControl(1, 0, m_Listbox.get());
+
+	// Add the checkbox that will set the fullscreen settings.
+	m_FullScreen = new wf::CheckBox(theme, "Fullscreen");
+	m_FullScreen->setChecked(screenSettings.fullScreen);
+	table->setControl(1, 1, m_FullScreen.get());
+	
+	// Set the table control as the single control in this page.
 	setControl(table.get());
 }
 
 DisplayOptions::~DisplayOptions() {
+}
+
+void DisplayOptions::applyConfiguration() {
+	// Perhaps not the most elegant solution. But it works...
+	// We take the string that is in the listbox and splits it where the 'x' is.
+	Ref<wf::ListBoxItem> selectedItem = m_Listbox->getSelectedItem();
+	if(selectedItem.valid()) {
+		std::string selectedText = selectedItem->getText();
+		std::string::size_type position = selectedText.find('x');
+		if(position != std::string::npos) {
+			// Read current settings.
+			ScreenSettings screenSettings = getScreenSettings();
+
+			screenSettings.width = atoi(selectedText.substr(0, position).c_str());
+			screenSettings.height = atoi(selectedText.substr(position+1).c_str());
+			screenSettings.fullScreen = m_FullScreen->getChecked();
+			
+			// Store the new settings.
+			setScreenSettings(screenSettings);
+		}
+	}
 }
 
 } // namespace windows

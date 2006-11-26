@@ -47,6 +47,7 @@ public:
 	
 	virtual void addItem(ListBoxItem* item);
 	
+	virtual ListBoxItem* getSelectedItem() const;
 	virtual ListBoxItem* getSelectedItem();
 	virtual void setSelectedItem(ListBoxItem* item);
 	
@@ -55,6 +56,7 @@ private:
 protected:
 	typedef std::vector<Ref<ListBoxItem> > ListBoxItemVector;
 	ListBoxItemVector m_Items;
+	Ref<ListBoxItem> m_SelectedItem;
 
 	class ListBoxItemClickedCallback;
 };

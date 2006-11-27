@@ -1,0 +1,192 @@
+MatrixTransform {
+  DataVariance STATIC
+  name "Scene Root"
+  nodeMask 0xff
+  cullingActive TRUE
+  StateSet {
+    UniqueID StateSet_0
+    DataVariance STATIC
+    rendering_hint DEFAULT_BIN
+    renderBinMode INHERIT
+    GL_LIGHTING ON
+  }
+  referenceFrame RELATIVE
+  Matrix {
+    1 0 0 0
+    0 1 0 0
+    0 0 1 0
+    0 0 0 1
+  }
+  num_children 1
+  MatrixTransform {
+    DataVariance STATIC
+    name "Line01"
+    nodeMask 0xff
+    cullingActive TRUE
+    referenceFrame RELATIVE
+    Matrix {
+      1 0 0 0
+      0 1 0 0
+      0 0 1 0
+      -0.026773 0.062584 0 1
+    }
+    num_children 1
+    Geode {
+      UniqueID Geode_1
+      DataVariance STATIC
+      nodeMask 0xff
+      cullingActive TRUE
+      num_drawables 1
+      Geometry {
+        DataVariance DYNAMIC
+        StateSet {
+          UniqueID StateSet_2
+          DataVariance STATIC
+          rendering_hint TRANSPARENT_BIN
+          renderBinMode USE
+          binNumber 10
+          binName DepthSortedBin
+          GL_CULL_FACE ON
+          GL_LIGHTING ON
+          0xba1 ON
+          GL_BLEND ON
+          Material {
+            DataVariance STATIC
+            ColorMode OFF
+            ambientColor 0 0 0 0.6
+            diffuseColor 0 0 0 0.6
+            specularColor 0 0 0 1
+            emissionColor 0 0 0 0.6
+            shininess 0
+          }
+          BlendFunc {
+            DataVariance STATIC
+            source SRC_ALPHA
+            destination ONE_MINUS_SRC_ALPHA
+          }
+        }
+        useDisplayList TRUE
+        useVertexBufferObjects FALSE
+        PrimitiveSets 1
+        {
+          DrawArrays TRIANGLES 0 54
+        }
+        VertexArray Vec3Array 54
+        {
+          -0.398377 -0.624136 0
+          -0.362591 -0.687125 0
+          -0.331027 -0.597387 0
+          -0.331027 -0.597387 0
+          -0.205449 -0.0624136 0
+          -0.398377 -0.624136 0
+          0.262315 -0.0570638 0
+          0.45173 0.510121 0
+          0.420133 0.571643 0
+          0.420133 0.571643 0
+          0.398734 0.523383 0
+          0.262315 -0.0570638 0
+          0.417066 -0.688568 0
+          0.452231 -0.629486 0
+          0.262315 -0.0570638 0
+          0.262315 -0.0570638 0
+          0.382685 -0.597867 0
+          0.417066 -0.688568 0
+          -0.342205 0.523383 0
+          -0.401052 0.507333 0
+          -0.205449 -0.0624136 0
+          -0.342205 0.523383 0
+          -0.205449 -0.0624136 0
+          0.262315 -0.0570638 0
+          0.398734 0.523383 0
+          -0.342205 0.523383 0
+          0.262315 -0.0570638 0
+          -0.342205 0.523383 0
+          -0.363604 0.571643 0
+          -0.401052 0.507333 0
+          -0.310259 -0.55459 0
+          -0.210118 -0.249655 0
+          -0.205449 -0.0624136 0
+          -0.310259 -0.55459 0
+          -0.205449 -0.0624136 0
+          -0.331027 -0.597387 0
+          -0.310259 -0.55459 0
+          -0.331027 -0.597387 0
+          0.382685 -0.597867 0
+          0.366788 -0.55459 0
+          -0.310259 -0.55459 0
+          0.382685 -0.597867 0
+          0.366788 -0.55459 0
+          0.382685 -0.597867 0
+          0.262315 -0.0570638 0
+          0.266647 -0.249655 0
+          0.366788 -0.55459 0
+          0.262315 -0.0570638 0
+          0.266647 -0.249655 0
+          0.262315 -0.0570638 0
+          -0.205449 -0.0624136 0
+          0.266647 -0.249655 0
+          -0.205449 -0.0624136 0
+          -0.210118 -0.249655 0
+        }
+        NormalBinding PER_VERTEX
+        NormalArray Vec3Array 54
+        {
+          0 0 1
+          0 0 1
+          0 0 1
+          0 0 1
+          0 0 1
+          0 0 1
+          0 0 1
+          0 0 1
+          0 0 1
+          0 0 1
+          0 0 1
+          0 0 1
+          0 0 1
+          0 0 1
+          0 0 1
+          0 0 1
+          0 0 1
+          0 0 1
+          0 0 1
+          0 0 1
+          0 0 1
+          0 0 1
+          0 0 1
+          0 0 1
+          0 0 1
+          0 0 1
+          0 0 1
+          0 0 1
+          0 0 1
+          0 0 1
+          0 0 1
+          0 0 1
+          0 0 1
+          0 0 1
+          0 0 1
+          0 0 1
+          0 0 1
+          0 0 1
+          0 0 1
+          0 0 1
+          0 0 1
+          0 0 1
+          0 0 1
+          0 0 1
+          0 0 1
+          0 0 1
+          0 0 1
+          0 0 1
+          0 0 1
+          0 0 1
+          0 0 1
+          0 0 1
+          0 0 1
+          0 0 1
+        }
+      }
+    }
+  }
+}

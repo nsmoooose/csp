@@ -1,0 +1,10 @@
+<?xml version="1.0" standalone="no"?>
+
+<Object class="ObjectModel">
+    <External name="model_path">airbase/ladder01/ladder01.osg</External>
+    <External name="ground_shadowpath">airbase/ladder01/ladder01_shadow.osg</External>
+    <Vector name="axis_0">1 0 0</Vector>
+    <Vector name="axis_1">0 1 0</Vector>
+    <Bool name="smooth">false</Bool>
+    <Bool name="filter">true</Bool>
+</Object>

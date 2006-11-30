@@ -1,0 +1,109 @@
+MatrixTransform {
+  DataVariance STATIC
+  name "Scene Root"
+  nodeMask 0xff
+  cullingActive TRUE
+  StateSet {
+    UniqueID StateSet_0
+    DataVariance STATIC
+    rendering_hint DEFAULT_BIN
+    renderBinMode INHERIT
+    GL_LIGHTING ON
+  }
+  referenceFrame RELATIVE
+  Matrix {
+    1 0 0 0
+    0 1 0 0
+    0 0 1 0
+    0 0 0 1
+  }
+  num_children 1
+  MatrixTransform {
+    DataVariance STATIC
+    name "Plane01"
+    nodeMask 0xff
+    cullingActive TRUE
+    referenceFrame RELATIVE
+    Matrix {
+      1 0 0 0
+      0 1 0 0
+      0 0 1 0
+      0.0255988 0.0132121 0 1
+    }
+    num_children 1
+    MatrixTransform {
+      DataVariance STATIC
+      nodeMask 0xff
+      cullingActive TRUE
+      referenceFrame RELATIVE
+      Matrix {
+        1 0 0 0
+        0 1 0 0
+        0 0 1 0
+        0 0.094142 0 1
+      }
+      num_children 1
+      Geode {
+        UniqueID Geode_1
+        DataVariance STATIC
+        nodeMask 0xff
+        cullingActive TRUE
+        num_drawables 1
+        Geometry {
+          DataVariance DYNAMIC
+          StateSet {
+            UniqueID StateSet_2
+            DataVariance STATIC
+            rendering_hint TRANSPARENT_BIN
+            renderBinMode USE
+            binNumber 10
+            binName DepthSortedBin
+            GL_CULL_FACE OVERRIDE|OFF
+            GL_LIGHTING ON
+            0xba1 ON
+            GL_BLEND ON
+            Material {
+              DataVariance STATIC
+              ColorMode OFF
+              ambientColor 0 0 0 0.6
+              diffuseColor 0 0 0 0.6
+              specularColor 0 0 0 1
+              emissionColor 0 0 0 0.6
+              shininess 0
+            }
+            BlendFunc {
+              DataVariance STATIC
+              source SRC_ALPHA
+              destination ONE_MINUS_SRC_ALPHA
+            }
+          }
+          useDisplayList TRUE
+          useVertexBufferObjects FALSE
+          PrimitiveSets 1
+          {
+            DrawArrays TRIANGLES 0 6
+          }
+          VertexArray Vec3Array 6
+          {
+            -0.952308 2.10448 0
+            -0.952308 -2.10448 0
+            0.952308 2.10448 0
+            0.952308 -2.10448 0
+            0.952308 2.10448 0
+            -0.952308 -2.10448 0
+          }
+          NormalBinding PER_VERTEX
+          NormalArray Vec3Array 6
+          {
+            0 0 1
+            0 0 1
+            0 0 1
+            0 0 1
+            0 0 1
+            0 0 1
+          }
+        }
+      }
+    }
+  }
+}

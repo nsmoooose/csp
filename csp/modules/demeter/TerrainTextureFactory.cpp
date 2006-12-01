@@ -150,12 +150,12 @@ TerrainTextureFactory::TerrainTextureFactory()
 
 TerrainTextureFactory::~TerrainTextureFactory()
 {
-	delete m_BaseTextures[0];
-	delete m_BaseTextures[1];
-	delete m_BaseTextures[2];
-	delete m_BaseTextures[3];
-	delete m_BaseTextures[4];
-	delete m_BaseTextures[5];
+	delete[] m_BaseTextures[0];
+	delete[] m_BaseTextures[1];
+	delete[] m_BaseTextures[2];
+	delete[] m_BaseTextures[3];
+	delete[] m_BaseTextures[4];
+	delete[] m_BaseTextures[5];
 }
 
 void TerrainTextureFactory::SetTerrain(Terrain * pTerrain)

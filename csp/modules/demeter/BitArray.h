@@ -36,7 +36,7 @@ public:
    virtual ~BitArray()
    {
       if (mLength > 1)
-         delete mpStore;
+         delete[] mpStore;
    }
 
    //
@@ -50,7 +50,7 @@ public:
       if (this != &that)
       {
          if (mLength > 1)
-            delete mpStore;
+            delete[] mpStore;
 
          Init(that.mNumBits);
          

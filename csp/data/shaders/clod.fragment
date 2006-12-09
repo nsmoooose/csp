@@ -1,0 +1,20 @@
+// clod fragment shader
+//
+// Copyright 2003-2006 Mark Rose <mkrose@users.sf.net>
+//
+
+uniform sampler2D tex0;
+varying vec4 normal;
+varying vec4 light;
+varying vec4 eye;
+
+const vec4 fog_color = vec4(0.2, 0.2, 0.4, 1.0);
+
+void main() {
+	const vec4 color = texture2D(tex0, gl_TexCoord[0].st);
+	vec3 r = reflect(normalize(light.xyz), normalize(normal.xyz));
+	float spot = dot(r, normalize(eye.xyz));
+	spot = pow(spot, 20.0);
+	float specular = spot * color.b / dot(color, color);
+	gl_FragColor = mix(color + vec4(1.0, 1.0, 1.0, 1.0) * clamp(specular, 0.0, 1.0), fog_color, gl_FogFragCoord);
+}

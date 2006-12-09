@@ -1,0 +1,34 @@
+// clod vertex morpher
+// 
+// Copyright 2003-2006 Mark Rose <mkrose@users.sf.net>
+//
+//
+
+uniform vec3 vertex_scale;
+uniform vec3 vertex_offset;
+
+varying vec4 normal;
+varying vec4 light;
+varying vec4 eye;
+
+void main() {
+	vec4 morph = vec4(0.0, 0.0, 0.0, 1.0);
+	morph.xz = vertex_offset.xz + gl_Vertex.xz * vertex_scale.xz;
+	vec4 vxy_eye = gl_ModelViewMatrix * morph;
+	vec4 range = length(vxy_eye);
+	morph.y = (gl_Vertex.y + gl_Vertex.w * vertex_offset.y) * vertex_scale.y - range * range / 12740000.0;
+	gl_Position = gl_ModelViewProjectionMatrix * morph;
+
+	vec4 t0 = vec4(0.0, 0.0, 1.0, 1.0);
+	t0.s = dot(morph, gl_ObjectPlaneS[0]);
+	t0.t = dot(morph, gl_ObjectPlaneT[0]);
+	gl_TexCoord[0] = gl_TextureMatrix[0] * t0;
+
+	normal = gl_ModelViewMatrix * vec4(0.0, 1.0, 0.0, 0.0);
+	eye = gl_ModelViewMatrix * morph;
+	light = -gl_LightSource[0].position;
+
+	gl_FrontColor = vec4(1.0, 1.0, 1.0, 1.0);
+	gl_FogFragCoord = 1.0 - exp(-length(eye) * 0.000002);
+}
+

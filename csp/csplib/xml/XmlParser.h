@@ -49,6 +49,7 @@
 #ifndef __CSPLIB_XML_XMLPARSER_H__
 #define __CSPLIB_XML_XMLPARSER_H__
 
+#include <csp/csplib/util/Export.h>
 #include <csp/csplib/util/Namespace.h>
 #include <cstdlib>
 
@@ -156,7 +157,7 @@ extern ALLXMLClearTag XMLClearTags[];
 
 struct XMLNodeContents;
 
-typedef struct XMLNode
+typedef struct CSPLIB_EXPORT XMLNode
 {
 private:
 
@@ -207,6 +208,9 @@ public:
 	// return next child node with specific name
 	//     (return an empty node if failing)
 	XMLNode getChildNode(CSP_XMLCSTR name, int *i=NULL);
+
+	// A method for very basic xpath queries.
+	XMLNode XMLNode::selectSingleNode(CSP_XMLCSTR xpath);
 
 	XMLNode getChildNodeWithAttribute(CSP_XMLCSTR tagName,               // return child node with specific name/attribute
 	                                  CSP_XMLCSTR attributeName,         //     (return an empty node if failing)

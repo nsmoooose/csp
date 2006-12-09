@@ -102,6 +102,7 @@
 #include <cstdio>
 #include <cstring>
 #include <memory.h>
+#include <string>
 
 CSP_NAMESPACE
 
@@ -2234,6 +2235,32 @@ XMLNode XMLNode::getChildNode(CSP_XMLCSTR name, int j)
 	int i=0;
 	while (j-->0) getChildNode(name,&i);
 	return getChildNode(name,&i);
+}
+
+XMLNode XMLNode::selectSingleNode(CSP_XMLCSTR xpath) {
+	std::string path = xpath;
+
+	XMLNode currentNode = *this;
+	std::string::size_type pos = 0;
+	while(true)
+	{
+		std::string::size_type nextpos = path.find('/', pos);
+		std::string nodeName = path.substr(pos, nextpos == std::string::npos ? std::string::npos : nextpos - pos);
+		XMLNode childNode = currentNode.getChildNode(nodeName.c_str());
+		
+		// Test to see if this was the last one.
+		if(nextpos == std::string::npos) {
+			return childNode;
+		}
+		// If we didn't find a child node then we return an empty one.
+		if(childNode.isEmpty()) {
+			return childNode;
+		}
+
+		// Iterate into the next node...
+		pos = nextpos+1;
+		currentNode = childNode;
+	}
 }
 
 XMLNode XMLNode::getChildNodeWithAttribute(CSP_XMLCSTR name,CSP_XMLCSTR attributeName,CSP_XMLCSTR attributeValue, int *k)

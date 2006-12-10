@@ -1,0 +1,40 @@
+<?xml version="1.0"?>
+<WindowDocument xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation='../../window_document.xsd'>
+  <Window SizeWidth="140" SizeHeight="120" Caption="Options" >
+    <Control>
+      <TableControlContainer>
+        <ColumnDefinitions>
+          <Column Width="1"/>
+        </ColumnDefinitions>
+        <RowDefinitions>
+          <Row Height="0.85"/>
+          <Row Height="0.15"/>
+        </RowDefinitions>
+        <Table>
+          <Row>
+            <Cell>
+              <Tab>
+                <Pages>
+                  <!-- A page that describes all display settings. Screen resolution and fullscreen. -->
+                  <Page Text="Display">
+                    <Control>
+                      <!-- Todo, Fill up with the listbox with resolutions and checkbox for fullscreen. -->
+                    </Control>
+                  </Page>
+
+                  <!-- A page that describes sound options like volume. -->
+                  <Page Text="Sound" />
+                </Pages>
+              </Tab>
+            </Cell>
+          </Row>
+          <Row>
+            <Cell>
+              <!-- Todo, Fill up with cancel and ok button. -->
+            </Cell>
+          </Row>
+        </Table>
+      </TableControlContainer>
+    </Control>
+  </Window>
+</WindowDocument>

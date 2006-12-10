@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<WindowDocument xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation='../../window_document.xsd'>
+  <Includes>
+    <StringTableInclude>quit_resume.xml</StringTableInclude>
+  </Includes>
+  <Window SizeWidth="100" SizeHeight="25" Caption="Combat Simulator Project" >
+    <Control>
+      <TableControlContainer>
+        <ColumnDefinitions>
+          <Column Width="0.33"/>
+          <Column Width="0.33"/>
+          <Column Width="0.33"/>
+        </ColumnDefinitions>
+        <RowDefinitions>
+          <Row Height="1"/>
+        </RowDefinitions>
+        <Table>
+          <Row>
+            <Cell>
+              <Button Id="resume" Text="Resume" />
+            </Cell>
+            <Cell>
+              <Button Id="quit" Text="Quit" />
+            </Cell>
+            <Cell>
+              <Button Id="options" Text="Options" />
+            </Cell>
+          </Row>
+        </Table>
+      </TableControlContainer>
+    </Control>
+  </Window>
+</WindowDocument>

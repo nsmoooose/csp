@@ -1,0 +1,211 @@
+<?xml version="1.0"?>
+<!-- 
+This schema is describing all properties of all widgets. It is easy to 
+validate xml for our windows with this schema. All complexType:s found
+in this document has the same inheritence as the cpp-classes.
+ -->
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <xsd:element name="WindowDocument" type="CspWindowFrameworkDocument_t" />
+
+  <xsd:complexType name="CspWindowFrameworkDocument_t">
+    <xsd:sequence>
+      <xsd:element name="Includes" type="Includes_t" minOccurs="0"/>
+      <xsd:element name="Window" type="Window_t" />
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="Includes_t">
+    <xsd:choice maxOccurs="unbounded">
+      <xsd:element name="StringTableInclude" type="xsd:string" maxOccurs="unbounded"/>
+    </xsd:choice>
+  </xsd:complexType>
+
+  <xsd:complexType name="Button_t">
+    <xsd:complexContent>
+      <xsd:extension base="SingleControlContainer_t">
+        <xsd:attribute name="Text" type="xsd:string" />
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+
+  <xsd:complexType name="CheckBox_t">
+    <xsd:complexContent>
+      <xsd:extension base="Control_t">
+        <xsd:attribute name="Text" type="xsd:string" />
+        <xsd:attribute name="Checked" type="xsd:boolean" />
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+
+  <!-- This is the base class of all controls. These settings is optional on all controls. -->
+  <xsd:complexType name="Control_t">
+    <xsd:attribute name="Id" type="xsd:string" use="optional" />
+    <xsd:attribute name="SizeWidth" type="xsd:double" use="optional" />
+    <xsd:attribute name="SizeHeight" type="xsd:double" use="optional" />
+    <xsd:attribute name="LocationX" type="xsd:double" use="optional" />
+    <xsd:attribute name="LocationY" type="xsd:double" use="optional" />
+    <xsd:attribute name="LocationZ" type="xsd:double" use="optional" />
+  </xsd:complexType>
+
+  <xsd:complexType name="Container_t">
+    <xsd:complexContent>
+      <xsd:extension base="Control_t">
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+
+  <xsd:complexType name="ListBox_t">
+    <xsd:complexContent>
+      <xsd:extension base="Container_t">
+        <xsd:sequence>
+          <xsd:element name="Items" type="ListBoxItems_t" />
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+
+  <xsd:complexType name="ListBoxItems_t">
+    <xsd:sequence>
+      <xsd:element name="Item" type="ListBoxItem_t" maxOccurs="unbounded" />
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="ListBoxItem_t">
+    <xsd:complexContent>
+      <xsd:extension base="SingleControlContainer_t">
+        <xsd:attribute name="Text" type="xsd:string" />
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+
+  <xsd:group name="SingleControl_t">
+    <xsd:choice>
+      <xsd:element name="Button" type="Button_t" />
+      <xsd:element name="CheckBox" type="CheckBox_t" />
+      <xsd:element name="ListBox" type="ListBox_t" />
+      <xsd:element name="MultiControlContainer" type="MultiControlContainer_t" />
+      <xsd:element name="Tab" type="Tab_t" />
+      <xsd:element name="TableControlContainer" type="TableControlContainer_t" />
+    </xsd:choice>
+  </xsd:group>
+
+  <xsd:complexType name="SingleControlContainer_t">
+    <xsd:complexContent>
+      <xsd:extension base="Container_t">
+        <xsd:sequence>
+          <xsd:element name="Control" minOccurs="0">
+            <xsd:complexType>
+              <xsd:group ref="SingleControl_t" minOccurs="0" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+
+  <!-- This class represents a control that can contain several child controls. -->
+  <xsd:complexType name="MultiControlContainer_t">
+    <xsd:complexContent>
+      <xsd:extension base="Container_t">
+        <xsd:sequence>
+          <xsd:element name="Controls" type="MultiControlCollection_t" />
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+
+  <!-- This class represents a collection with several controls. -->
+  <xsd:complexType name="MultiControlCollection_t">
+    <xsd:choice minOccurs="0" maxOccurs="unbounded">
+      <xsd:element name="Button" type="Button_t" />
+      <xsd:element name="Multicontrolcontainer" type="MultiControlContainer_t" />
+    </xsd:choice>
+  </xsd:complexType>
+
+  <xsd:complexType name="Tab_t">
+    <xsd:complexContent>
+      <xsd:extension base="Container_t">
+        <xsd:sequence>
+          <xsd:element name="Pages" type="TabPages_t" />
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+
+  <xsd:complexType name="TabPages_t">
+    <xsd:sequence>
+      <xsd:element name="Page" type="TabPage_t" maxOccurs="unbounded" />
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="TabPage_t">
+    <xsd:sequence>
+      <xsd:element name="Control" minOccurs="0">
+        <xsd:complexType>
+          <xsd:group ref="SingleControl_t" minOccurs="0" />
+        </xsd:complexType>
+      </xsd:element>
+    </xsd:sequence>
+    <xsd:attribute name="Text" type="xsd:string" />
+  </xsd:complexType>
+
+  <xsd:complexType name="TableControlContainer_t">
+    <xsd:complexContent>
+      <xsd:extension base="Container_t">
+        <xsd:sequence>
+          <xsd:element name="ColumnDefinitions">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="Column" type="TableControlContainerColumn_t" minOccurs="1" maxOccurs="unbounded" />
+              </xsd:sequence>
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="RowDefinitions">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="Row" type="TableControlContainerRow_t" minOccurs="0" maxOccurs="unbounded" />
+              </xsd:sequence>
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="Table">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="Row" minOccurs="1" maxOccurs="unbounded">
+                  <xsd:complexType>
+                    <xsd:sequence>
+                      <xsd:element name="Cell" minOccurs="0" maxOccurs="unbounded">
+                        <xsd:complexType>
+                          <xsd:group ref="SingleControl_t" minOccurs="0"/>
+                        </xsd:complexType>
+                      </xsd:element>
+                    </xsd:sequence>
+                  </xsd:complexType>
+                </xsd:element>
+              </xsd:sequence>
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:sequence>
+        <xsd:attribute name="CellPaddingLeft" type="xsd:double" use="optional" />
+        <xsd:attribute name="CellPaddingTop" type="xsd:double" use="optional" />
+        <xsd:attribute name="CellPaddingRight" type="xsd:double" use="optional" />
+        <xsd:attribute name="CellPaddingBottom" type="xsd:double" use="optional" />
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+
+  <xsd:complexType name="TableControlContainerColumn_t">
+    <xsd:attribute name="Width" type="xsd:double" />
+  </xsd:complexType>
+
+  <xsd:complexType name="TableControlContainerRow_t">
+    <xsd:attribute name="Height" type="xsd:double" />
+  </xsd:complexType>
+
+  <xsd:complexType name="Window_t">
+    <xsd:complexContent>
+      <xsd:extension base="SingleControlContainer_t">
+        <xsd:attribute name="Caption" type="xsd:string" />
+      </xsd:extension>
+    </xsd:complexContent>    
+  </xsd:complexType>
+</xsd:schema>

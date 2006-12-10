@@ -43,6 +43,7 @@ public:
 	Button(Theme* theme, const std::string text);
 	virtual ~Button();
 
+	virtual void onLoad();
 	virtual void buildGeometry();
 	
 	virtual const std::string getText() const;
@@ -62,6 +63,7 @@ protected:
 	class ButtonClickedCallback;
 	
 	Ref<Control> m_ChildControl;
+	std::string m_text;
 };
 
 } // namespace wf
@@ -69,4 +71,5 @@ protected:
 CSP_NAMESPACE_END
 
 #endif // __CSPSIM_WF_BUTTON_H__
+
 

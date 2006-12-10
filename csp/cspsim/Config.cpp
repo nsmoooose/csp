@@ -82,7 +82,7 @@ ScreenSettings getScreenSettings() {
 	ScreenSettings settings;
 	settings.width = g_Config.getInt("Screen", "Width", 1024, true);
 	settings.height = g_Config.getInt("Screen", "Height", 768, true);
-	settings.fullScreen = g_Config.getInt("Screen", "FullScreen", 0, true);
+	settings.fullScreen = g_Config.getInt("Screen", "FullScreen", 0, true) == 1 ? true : false;
 	return settings;
 }
 
@@ -92,5 +92,10 @@ void setScreenSettings(const ScreenSettings& screenSettings) {
 	g_Config.setInt("Screen", "FullScreen", screenSettings.fullScreen);
 }
 
+extern CSPSIM_EXPORT std::string getUIPath() {
+	return g_Config.getPath("Paths", "UIPath", ".", true);
+}
+
 CSP_NAMESPACE_END
+
 

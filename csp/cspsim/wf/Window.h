@@ -25,8 +25,8 @@
 #ifndef __CSPSIM_WF_WINDOW_H__
 #define __CSPSIM_WF_WINDOW_H__
 
-#include <csp/cspsim/wf/SingleControlContainer.h>
 #include <csp/csplib/util/Ref.h>
+#include <csp/cspsim/wf/SingleControlContainer.h>
 
 namespace osg {
 	class Group;
@@ -37,13 +37,20 @@ CSP_NAMESPACE
 
 namespace wf {
 
+class Window;
 class WindowManager;
+
+typedef std::vector<Ref<Window> > WindowVector;
 
 class Window : public SingleControlContainer {
 public:
+	friend WindowManager;
+	
 	Window(Theme* theme);
 	Window(Theme* theme, std::string caption);
 	virtual ~Window();
+
+	virtual void onInit();
 
 	virtual void setWindowManager(WindowManager* manager);
 	virtual WindowManager* getWindowManager();
@@ -56,10 +63,16 @@ public:
 	
 	virtual void close();
 
+	template<class Archive>
+	void serialize(Archive & ar)	{
+		SingleControlContainer::serialize(ar);
+		ar & make_nvp("@Caption", m_Caption);
+	}
+
 private:
 	WindowManager* m_WindowManager;
 
-	std::string m_Caption;
+	std::string m_Caption;	
 };
 
 } // namespace wf
@@ -67,4 +80,5 @@ private:
 CSP_NAMESPACE_END
 
 #endif // __CSPSIM_WF_WINDOW_H__
+
 

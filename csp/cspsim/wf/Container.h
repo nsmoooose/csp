@@ -38,9 +38,17 @@ public:
 	
 	virtual void layoutChildControls() = 0;
 	
+	virtual ControlVector getChildControls() = 0;
+	
+	template<class T>
+	T* getById(const std::string& id) {
+		return dynamic_cast<T*>(internalGetById(id));
+	}
+	
 protected:
 
 private:
+	virtual Control* internalGetById(const std::string& id);
 };
 
 } // namespace wf
@@ -48,4 +56,5 @@ private:
 CSP_NAMESPACE_END
 
 #endif // __CSPSIM_WF_CONTAINER_H__
+
 

@@ -23,6 +23,7 @@
  **/
 
 #include <csp/cspsim/Animation.h>
+#include <csp/cspsim/wf/Serialization.h>
 #include <csp/cspsim/wf/WindowManager.h>
 #include <csp/cspsim/wf/themes/Default.h>
 
@@ -34,16 +35,14 @@ CSP_NAMESPACE
 
 namespace wf {
 
-WindowManager::WindowManager(osgUtil::SceneView* view) : m_View(view) {
-	m_Group = new osg::Group;
+WindowManager::WindowManager(osgUtil::SceneView* view, Theme* theme, Serialization* serializer) 
+	: m_View(view), m_Theme(theme), m_Serializer(serializer), m_Group(new osg::Group) {
 	m_View->setSceneData(m_Group.get());
 
     osg::StateSet *stateSet = m_Group->getOrCreateStateSet();
     stateSet->setRenderBinDetails(100, "RenderBin");
     stateSet->setMode(GL_LIGHTING, osg::StateAttribute::ON);
-    stateSet->setMode(GL_DEPTH_TEST, osg::StateAttribute::ON);
-    
-    m_Theme = new themes::Default;
+    stateSet->setMode(GL_DEPTH_TEST, osg::StateAttribute::ON);    
 }
 
 WindowManager::~WindowManager() {
@@ -80,6 +79,10 @@ bool WindowManager::pick(int x, int y) {
 	return false;
 }
 
+Serialization* WindowManager::getSerializer() const {
+	return m_Serializer.get();
+}
+
 void WindowManager::show(Window* window) {
 	// We must initialize the window and all it's child controls. 
 	// We must assign the window to this instance of the window manager.
@@ -87,6 +90,11 @@ void WindowManager::show(Window* window) {
 	// windows.
 	window->setWindowManager(this);
 	
+	window->onInit();
+	
+	// Fire the on load event.
+	window->onLoad();
+
 	// Build the actual geometry of all controls that is going to be
 	// displayed.
 	window->buildGeometry();
@@ -96,7 +104,7 @@ void WindowManager::show(Window* window) {
 	m_Group->addChild(window->getNode());
 	
 	// Also store a reference to the window.
-	m_Windows.push_back(window);
+	m_Windows.push_back(window);	
 }
 
 void WindowManager::close(Window* window) {

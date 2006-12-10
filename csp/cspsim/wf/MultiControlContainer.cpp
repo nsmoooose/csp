@@ -35,6 +35,10 @@ MultiControlContainer::MultiControlContainer(Theme* theme) : Container(theme) {
 MultiControlContainer::~MultiControlContainer() {
 }
 
+ControlVector MultiControlContainer::getChildControls() {
+	return m_Controls;
+}
+
 void MultiControlContainer::buildGeometry() {
 	Control::buildGeometry();
 

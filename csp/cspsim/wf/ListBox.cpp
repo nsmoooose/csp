@@ -53,6 +53,15 @@ ListBox::ListBox(Theme* theme) : Container(theme) {
 ListBox::~ListBox() {
 }
 
+ControlVector ListBox::getChildControls() {
+	ControlVector childControls;
+	ListBoxItemVector::iterator item = m_Items.begin();
+	for(;item != m_Items.end();++item) {
+		childControls.push_back(*item);
+	}
+	return childControls;
+}
+
 void ListBox::buildGeometry() {
 	// Make sure that all our child controls onInit() is called.
 	Container::buildGeometry();	

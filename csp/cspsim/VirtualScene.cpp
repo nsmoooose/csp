@@ -50,6 +50,8 @@
 #include <csp/cspsim/theater/FeatureGroup.h>
 #include <csp/cspsim/theater/FeatureSceneGroup.h>
 
+#include <csp/cspsim/wf/Serialization.h>
+#include <csp/cspsim/wf/themes/Default.h>
 #include <csp/cspsim/wf/WindowManager.h>
 
 #include <csp/csplib/util/Log.h>
@@ -520,7 +522,7 @@ void VirtualScene::createWindowView() {
 	view_matrix.makeLookAt(osg::Vec3(0, -200, 0.0), osg::Vec3(0.0, 0.0, 0.0), osg::Vec3(0, 0, 1));
 	m_WindowView->setViewMatrix(view_matrix);
 	
-	m_WindowManager = new wf::WindowManager(m_WindowView.get());	
+	m_WindowManager = new wf::WindowManager(m_WindowView.get(), new wf::themes::Default, new wf::Serialization(getUIPath()));	
 }
 
 void VirtualScene::buildScene() {
@@ -1079,4 +1081,5 @@ bool VirtualScene::pick(int x, int y) {
 }
 
 CSP_NAMESPACE_END
+
 

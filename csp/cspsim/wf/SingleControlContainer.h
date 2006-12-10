@@ -46,6 +46,8 @@ public:
 	SingleControlContainer(Theme* theme);
 	virtual ~SingleControlContainer();
 
+	virtual ControlVector getChildControls();
+
 	virtual void buildGeometry();
 	
 	virtual void setControl(Control* childControl);
@@ -53,6 +55,12 @@ public:
 
 	//! Resizes the child control to fit the entire surface of this control.
 	virtual void layoutChildControls();
+
+	template<class Archive>
+	void serialize(Archive & ar)	{
+		Container::serialize(ar);
+		ar & make_nvp("Control", m_Control);
+	}	
 	
 protected:
 
@@ -65,4 +73,5 @@ private:
 CSP_NAMESPACE_END
 
 #endif // __CSPSIM_WF_SINGLECONTROLCONTAINER_H__
+
 

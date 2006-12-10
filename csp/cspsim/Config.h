@@ -81,7 +81,10 @@ struct ScreenSettings {
 extern CSPSIM_EXPORT ScreenSettings getScreenSettings();
 extern CSPSIM_EXPORT void setScreenSettings(const ScreenSettings&);
 
+extern CSPSIM_EXPORT std::string getUIPath();
+
 CSP_NAMESPACE_END
 
 #endif // __CSPSIM_CONFIG_H__
+
 

@@ -27,8 +27,10 @@
 
 #include <csp/csplib/util/Ref.h>
 #include <csp/csplib/util/Referenced.h>
+#include <csp/csplib/util/Signal.h>
 #include <csp/csplib/data/Vector3.h>
 #include <csp/cspsim/wf/Point.h>
+#include <csp/cspsim/wf/Serialization.h>
 
 #include <osg/ref_ptr>
 #include <osg/Vec4>
@@ -66,8 +68,16 @@ struct Rect {
  */
 class Control : public Referenced {
 public:
+	typedef sigc::signal<void> loadSignal;	
+	loadSignal load;
+
 	Control(Theme* theme);
 	virtual ~Control();
+
+	virtual void onLoad();
+
+	virtual const std::string& getId() const;
+	virtual void setId(const std::string& id);
 	
 	virtual Control* getParent();
 	virtual void setParent(Control* parent);
@@ -91,10 +101,21 @@ public:
 	virtual const Size& getSize() const;
 	virtual void setSize(const Size& size);
 	
+	template<class Archive>
+	void serialize(Archive & ar)	{
+		ar & make_nvp("@Id", m_Id);
+		ar & make_nvp("@LocationX", m_Point.m_X);
+		ar & make_nvp("@LocationY", m_Point.m_Y);
+		ar & make_nvp("@LocationZ", m_ZPos);
+		ar & make_nvp("@SizeWidth", m_Size.m_W);
+		ar & make_nvp("@SizeHeight", m_Size.m_H);
+	}	
+	
 protected:
 
 private:
 	const Ref<Theme> m_Theme;
+	std::string m_Id;
 
 	osg::ref_ptr<osg::MatrixTransform> m_TransformGroup;
 
@@ -110,4 +131,5 @@ private:
 CSP_NAMESPACE_END
 
 #endif // __CSPSIM_WF_CONTROL_H__
+
 

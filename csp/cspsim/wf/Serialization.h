@@ -18,61 +18,43 @@
 
 
 /**
- * @file Tab.h
+ * @file Serialization.h
  *
  **/
 
-#ifndef __CSPSIM_WF_TAB_H__
-#define __CSPSIM_WF_TAB_H__
+#ifndef __CSPSIM_WF_SERIALIZATION_H__
+#define __CSPSIM_WF_SERIALIZATION_H__
 
-#include <csp/cspsim/wf/Container.h>
-
-namespace osg {
-	class Switch;
-}
+#include <csp/csplib/util/Referenced.h>
 
 CSP_NAMESPACE
 
 namespace wf {
 
-class TabPage;
+class Window;
 
-/** A class that represents a tab control.
- *
- *  This class contains a vector with one or more tab pages.
- *  
+/** Is responsible for parsing xml-content into control objects.
  */
-class Tab : public Container {
+class Serialization : public Referenced {
 public:
-	Tab(Theme* theme);
-	virtual ~Tab();
-
-	virtual ControlVector getChildControls();
-
-	virtual void buildGeometry();
-	virtual void layoutChildControls();
+	Serialization(const std::string& userInterfaceDirectory);
+	virtual ~Serialization();
 	
-	virtual void addPage(TabPage* page);
+	virtual void load(Window* window, const std::string& theme, const std::string& file);
 	
-	virtual TabPage* getCurrentPage() const;
-	virtual TabPage* getCurrentPage();
-	virtual void setCurrentPage(TabPage* page);
+protected:
 
 private:
-	typedef std::pair<Ref<TabPage>, osg::ref_ptr<osg::Switch> > PageAndSwitch;
-	typedef std::vector<PageAndSwitch> TabPageVector;
-	TabPageVector m_Pages;
-	
-	TabPage* m_CurrentPage;
-
-protected:
-	class TabClickedCallback;
+	std::string m_UserInterfaceDirectory;
 };
+
+template<class T>
+std::pair<std::string, T*> make_nvp(const std::string& name, T& value) {
+	return std::pair<std::string, T*>(name, (T*)&value);
+}
 
 } // namespace wf
 
 CSP_NAMESPACE_END
 
-#endif // __CSPSIM_WF_TAB_H__
-
-
+#endif // __CSPSIM_WF_SERIALIZATION_H__

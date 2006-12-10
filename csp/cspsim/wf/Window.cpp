@@ -47,6 +47,9 @@ Window::Window(Theme* theme, std::string caption) :
 Window::~Window() {
 }
 
+void Window::onInit() {
+}
+
 const std::string &Window::getCaption() const { 
 	return m_Caption; 
 }

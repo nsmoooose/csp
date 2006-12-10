@@ -47,6 +47,11 @@ public:
 	TableControlContainerSizeType getSizeType() const { return m_SizeType; }
 	void setSizeType(TableControlContainerSizeType sizeType) { m_SizeType = sizeType; }
 
+	template<class Archive>
+	void serialize(Archive & ar) {
+		ar & make_nvp("@Width", m_Width);
+	}	
+
 private:
 	TableControlContainerSizeType m_SizeType;
 	double m_Width;
@@ -61,6 +66,11 @@ public:
 	
 	TableControlContainerSizeType getSizeType() const { return m_SizeType; }
 	void setSizeType(TableControlContainerSizeType sizeType) { m_SizeType = sizeType; }
+
+	template<class Archive>
+	void serialize(Archive & ar) {
+		ar & make_nvp("@Height", m_Height);
+	}	
 	
 private:
 	TableControlContainerSizeType m_SizeType;
@@ -74,10 +84,13 @@ class TableControlContainer : public Container {
 public:
 	typedef std::vector<TableControlContainerColumn> ColumnVector;
 	typedef std::vector<TableControlContainerRow> RowVector;
+	typedef std::vector<ControlVector> XYVector;
 
 	TableControlContainer(Theme* theme);
 	TableControlContainer(Theme* theme, unsigned int columns, unsigned int rows);
 	virtual ~TableControlContainer();
+
+	virtual ControlVector getChildControls();
 
 	virtual void buildGeometry();
 	
@@ -98,6 +111,18 @@ public:
 	
 	virtual Padding& getCellPadding();
 	virtual void setCellPadding(Padding& padding);
+
+	template<class Archive>
+	void serialize(Archive & ar) {
+		Container::serialize(ar);
+		ar & make_nvp("ColumnDefinitions", m_Columns);
+		ar & make_nvp("RowDefinitions", m_Rows);
+		ar & make_nvp("Table", m_Controls);
+		ar & make_nvp("@CellPaddingLeft", m_CellPadding.left);
+		ar & make_nvp("@CellPaddingTop", m_CellPadding.top);
+		ar & make_nvp("@CellPaddingRight", m_CellPadding.right);
+		ar & make_nvp("@CellPaddingBottom", m_CellPadding.bottom);
+	}	
 	
 protected:
 
@@ -105,9 +130,6 @@ private:
 	ColumnVector m_Columns;
 	RowVector m_Rows;
 	
-	typedef std::vector<Ref<Control> > ControlVector;
-	typedef std::vector<ControlVector> XYVector;
-
 	Padding m_CellPadding;
 	XYVector m_Controls;
 	

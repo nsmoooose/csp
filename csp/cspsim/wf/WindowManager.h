@@ -45,11 +45,12 @@ CSP_NAMESPACE
 
 namespace wf {
 
+class Serialization;
 class Theme;
 
 class WindowManager : public Referenced {
 public:
-	WindowManager(osgUtil::SceneView* view);
+	WindowManager(osgUtil::SceneView* view, Theme* theme, Serialization* serializer);
 	virtual ~WindowManager();
 
 	virtual bool pick(int x, int y);
@@ -73,14 +74,15 @@ public:
 	//! Returns the default theme of this window manager.
 	virtual Theme* getTheme() const;
 	
+	virtual Serialization* getSerializer() const;
+	
 private:
-	Ref<Theme> m_Theme;
-
-	typedef std::vector<Ref<Window> > WindowVector;
-	WindowVector m_Windows;
-
 	osg::ref_ptr<osgUtil::SceneView> m_View;
+	Ref<Theme> m_Theme;
+	Ref<Serialization> m_Serializer;
 	osg::ref_ptr<osg::Group> m_Group;
+
+	WindowVector m_Windows;
 };
 
 } // namespace wf

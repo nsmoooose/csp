@@ -42,6 +42,8 @@ public:
 	ListBox(Theme* theme);
 	virtual ~ListBox();
 
+	virtual ControlVector getChildControls();
+
 	virtual void buildGeometry();
 	virtual void layoutChildControls();
 	

@@ -54,6 +54,15 @@ Tab::Tab(Theme* theme) : Container(theme), m_CurrentPage(NULL) {
 Tab::~Tab() {
 }
 
+ControlVector Tab::getChildControls() {
+	ControlVector childControls;
+	TabPageVector::iterator tabPage = m_Pages.begin();
+	for(;tabPage != m_Pages.end();++tabPage) {
+		childControls.push_back(tabPage->first);
+	}
+	return childControls;
+}
+
 void Tab::buildGeometry() {
 	// Make sure that all our child controls onInit() is called.
 	Container::buildGeometry();	

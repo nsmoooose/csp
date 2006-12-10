@@ -53,7 +53,8 @@ Button::Button(Theme* theme) : SingleControlContainer(theme), m_ChildControl(new
 	label->setAlignment(osgText::Text::CENTER_CENTER);
 }
 
-Button::Button(Theme* theme, const std::string text) : SingleControlContainer(theme), m_ChildControl(new Label(theme, text)) {
+Button::Button(Theme* theme, const std::string text) 
+	: SingleControlContainer(theme), m_ChildControl(new Label(theme, text)), m_text(text) {
 	Label* label = (Label*)m_ChildControl.get();
 	label->setAlignment(osgText::Text::CENTER_CENTER);
 }
@@ -61,10 +62,15 @@ Button::Button(Theme* theme, const std::string text) : SingleControlContainer(th
 Button::~Button() {
 }
 
+void Button::onLoad() {
+	setText(m_text);
+	SingleControlContainer::onLoad();
+}
+
 void Button::buildGeometry() {
 	// Make sure that all our child controls onInit() is called.
 	SingleControlContainer::buildGeometry();
-	
+
 	// Build our own button control and add it to the group.
 	osg::ref_ptr<osg::Group> button = getTheme()->buildButton(this);
 	osg::ref_ptr<ButtonClickedCallback> callback = new ButtonClickedCallback(m_ButtonClicked, this);
@@ -83,14 +89,11 @@ void Button::buildGeometry() {
 }
 
 const std::string Button::getText() const {
-	Label* label = dynamic_cast<Label*>(m_ChildControl.get());
-	if(label != NULL) {
-		return label->getText();
-	}
-	return std::string("");
+	return m_text;
 }
 
 void Button::setText(const std::string& text) {
+	m_text = text;
 	Label* label = dynamic_cast<Label*>(m_ChildControl.get());
 	if(label != NULL) {
 		label->setText(text);

@@ -45,6 +45,8 @@ public:
 	MultiControlContainer(Theme* theme);
 	virtual ~MultiControlContainer();
 	
+	virtual ControlVector getChildControls();
+
 	virtual void buildGeometry();
 
 	//! Does nothing in this implementation.
@@ -58,6 +60,12 @@ public:
 	
 	//! Removes the specified control from the container.
 	virtual void removeControl(Control* control);
+
+	template<class Archive>
+	void serialize(Archive & ar) {
+		Container::serialize(ar);
+		ar & make_nvp("Controls", m_Controls);
+	}	
 		
 protected:
 

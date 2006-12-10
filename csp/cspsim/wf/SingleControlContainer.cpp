@@ -35,6 +35,12 @@ SingleControlContainer::SingleControlContainer(Theme* theme) : Container(theme) 
 SingleControlContainer::~SingleControlContainer() {
 }
 
+ControlVector SingleControlContainer::getChildControls() {
+	ControlVector controls;
+	controls.push_back(m_Control);
+	return controls;
+}
+
 void SingleControlContainer::buildGeometry() {
 	Control::buildGeometry();
 	if(m_Control.valid()) {

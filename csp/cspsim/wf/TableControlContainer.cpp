@@ -53,6 +53,22 @@ TableControlContainer::TableControlContainer(Theme* theme, unsigned int columns,
 TableControlContainer::~TableControlContainer() {
 }
 
+ControlVector TableControlContainer::getChildControls() {
+	ControlVector childControls;
+	ColumnVector::size_type columnCount = m_Columns.size();
+	RowVector::size_type rowCount = m_Rows.size();
+	for(ColumnVector::size_type x=0;x<columnCount;++x) {
+		for(ColumnVector::size_type y=0;y<rowCount;++y) {
+			Ref<Control> control = m_Controls[x][y];
+			if(!control.valid())
+				continue;
+			
+			childControls.push_back(control);
+		}
+	}
+	return childControls;
+}
+
 void TableControlContainer::buildGeometry() {
 	// Place all our child controls in right positions.
 	layoutChildControls();

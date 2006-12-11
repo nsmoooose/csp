@@ -1,7 +1,7 @@
 <?xml version="1.0" standalone="no"?>
 
 <Object class="ObjectModel">
-    <External name="model_path">town/house04/house04.osg</External>
+    <External name="model_path">city/house04/house04.osg</External>
     <Vector name="axis_0">1 0 0</Vector>
     <Vector name="axis_1">0 1 0</Vector>
     <Bool name="smooth">false</Bool>

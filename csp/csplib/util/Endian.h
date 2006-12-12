@@ -276,5 +276,39 @@
 #define CSP_HTONS(val) (CSP_UINT16_TO_BE (val))
 
 
+CSP_NAMESPACE
+
+/** Template wrappers for endian macros.
+ */
+template<typename T> struct endian { };
+template<> struct endian<uint8> {
+	inline static uint8 to_le(uint8 x) { return x; }
+	inline static uint8 from_le(uint8 x) { return x; }
+};
+template<> struct endian<int8> {
+	inline static int8 to_le(int8 x) { return x; }
+	inline static int8 from_le(int8 x) { return x; }
+};
+template<> struct endian<char> {
+	inline static char to_le(char x) { return x; }
+	inline static char from_le(char x) { return x; }
+};
+#define CSP_ENDIAN_TEMPLATE(TYPE, CAPTYPE) \
+	template<> struct endian<TYPE> { \
+		inline static TYPE to_le(TYPE x) { return CSP_##CAPTYPE##_TO_LE(x); } \
+		inline static TYPE from_le(TYPE x) { return CSP_##CAPTYPE##_FROM_LE(x); } \
+	};
+CSP_ENDIAN_TEMPLATE(int16, INT16)
+CSP_ENDIAN_TEMPLATE(int32, INT32)
+CSP_ENDIAN_TEMPLATE(int64, INT64)
+CSP_ENDIAN_TEMPLATE(uint16, UINT16)
+CSP_ENDIAN_TEMPLATE(uint32, UINT32)
+CSP_ENDIAN_TEMPLATE(uint64, UINT64)
+CSP_ENDIAN_TEMPLATE(float, UINT32)
+CSP_ENDIAN_TEMPLATE(double, UINT64)
+#undef CSP_ENDIAN_TEMPLATE
+
+CSP_NAMESPACE_END
+
 #endif  // __CSPLIB_UTIL_ENDIAN_H__
 

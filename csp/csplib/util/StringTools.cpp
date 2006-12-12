@@ -29,6 +29,7 @@
 #include <cassert>
 #include <cstdio>
 #include <ctype.h>
+#include <limits>
 
 #if !defined(__GNUC__) && !defined(snprintf)
 #define snprintf _snprintf

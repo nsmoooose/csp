@@ -230,6 +230,14 @@ void LogStream::LogEntry::die() {
 	::abort();
 }
 
+LogStream::LogEntry::~LogEntry() {
+	m_stream.lock();
+	m_stream.getStream() << m_buffer.get() << "\n";
+	if (m_priority >= LogStream::cWarning || m_stream.autoflush()) m_stream.flush();
+	m_stream.unlock();
+	if (m_priority == LogStream::cFatal) die();
+}
+
 LogStream *LogStream::getOrCreateNamedLog(const std::string &name, bool *created) {
 	if (created) *created = false;
 	if (!NamedLogStreamRegistry) NamedLogStreamRegistry = new LogStreamRegistry;

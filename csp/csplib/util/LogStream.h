@@ -241,13 +241,7 @@ public:
 	 *  write operation if running in a multithreaded environment.  If the priority
 	 *  is cFatal, records a stack trace and aborts the program.
 	 */
-	~LogEntry() {
-		m_stream.lock();
-		m_stream.getStream() << m_buffer.get() << "\n";
-		if (m_priority >= LogStream::cWarning || m_stream.autoflush()) m_stream.flush();
-		m_stream.unlock();
-		if (m_priority == LogStream::cFatal) die();
-	}
+	~LogEntry();
 
 	/** Stream operator for recording messages in the log entry.
 	 */
@@ -263,10 +257,6 @@ public:
 		return *this;
 	}
 
-private:
-	void prefix(const char *file, int linenum);
-	void die();
-
 	/** A fixed size string stream used to buffer the log entry text internally
 	 *  before writing the completed string to the log stream.
 	 */
@@ -277,6 +267,10 @@ private:
 	private:
 		FixedStringBuffer<512> m_buffer;
 	};
+
+private:
+	void prefix(const char *file, int linenum);
+	void die();
 
 	LogStream &m_stream;
 	int m_priority;

@@ -65,6 +65,94 @@ std::string RightTrimString(std::string const &str, std::string const &chars) {
 	return end == std::string::npos ? "" : str.substr(0, end + 1);
 }
 
+/** Parse an integer value from a c-string.  Returns the value as an unsigned
+ *  64-bit integer.  The sign is returned separately.  Accepts numerical values
+ *  in standard C octal, decimal, and hex notation.  Returns true if the input
+ *  is a valid numeric string.
+ *
+ *  This is essentially scanf("%{hh,h,,ll}i") with support for unsigned types
+ *  and better portability.
+ */
+bool _parseInt(const char *str, uint64 &value, int &sign) {
+	value = 0;
+	sign = 1;
+	int base = 10;
+	str = skipWhitespace(str);
+	char c = *str++;
+	if (!c) return false;
+	if (c == '-') {
+		sign = -1;
+		c = *str++;
+	} else if (c == '+') {
+		c = *str++;
+	}
+	if (c == '0') {
+		c = *str++;
+		if (!c) return true;
+		if (c == 'x' || c == 'X') {
+			base = 16;
+			c = *str++;
+		} else base = 8;
+	}
+	if (!c) return false;
+	while (c) {
+		int v;
+		if (c < '0') break;
+		if (base == 10) {
+			if (c > '9') return false;
+			v = c - '0';
+		} else if (base == 16) {
+			c = c | 32;
+			if (c <= '9') {
+				v = c - '0';
+			} else if (c >= 'a' && c <= 'f') {
+				v = c - 'a' + 10;
+			} else return false;
+		} else {  // base == 8
+			if (c > '7') return false;
+			v = c - '0';
+		}
+		uint64 next = value * base + v;
+		if (next < value) return false;
+		value = next;
+		c = *str++;
+	}
+	if (c != 0) c = *skipWhitespace(str);
+	return c == 0;
+}
+
+/* A helper template for various parseInt specializations.  Parses an integer
+ * value of the template type from a c-string, returning true if it is a valid
+ * numeric string and is within the limits of the integral type.  The limit
+ * argument should be the largest positive value of the type.
+ */
+template <typename T>
+bool _parseInt(const char *s, T &x) {
+	const bool is_signed = std::numeric_limits<T>::is_signed;
+	const uint64 limit = static_cast<uint64>(std::numeric_limits<T>::max());
+	uint64 value;
+	int sign;
+	if (!_parseInt(s, value, sign)) return false;
+	if (sign < 0 && !is_signed) return false;
+	if (value <= limit) {
+		x = static_cast<T>(value) * static_cast<T>(sign);
+		return true;
+	} else if (sign < 0 && value == limit + 1) {
+		x = -static_cast<T>(limit) - 1;
+		return true;
+	}
+	return false;
+}
+
+bool parseInt(const char *s, int64 &x) { return _parseInt(s, x); }
+bool parseInt(const char *s, uint64 &x) { return _parseInt(s, x); }
+bool parseInt(const char *s, int32 &x) { return _parseInt(s, x); }
+bool parseInt(const char *s, uint32 &x) { return _parseInt(s, x); }
+bool parseInt(const char *s, int16 &x) { return _parseInt(s, x); }
+bool parseInt(const char *s, uint16 &x) { return _parseInt(s, x); }
+bool parseInt(const char *s, int8 &x) { return _parseInt(s, x); }
+bool parseInt(const char *s, uint8 &x) { return _parseInt(s, x); }
+
 // Helper class for stringprintf and friends.  Provides a fast, append-only string
 // buffer that uses the stack for small string.
 class FormatArg::stringbuf {
@@ -219,6 +307,7 @@ bool formatIntegerType(FormatArg::stringbuf &out, FormatArg::formatspec const &s
 		while (scale > 0) {
 			int digit = static_cast<int>(value / scale);
 			value -= digit * scale;
+			assert(digit >= 0 && digit < base);
 			out.append(set[digit]);
 			scale /= base;
 		}
@@ -251,7 +340,7 @@ bool FormatArg::formatInt(stringbuf &out, formatspec const &spec, int base, bool
 			}
 		}
 		case TYPE_UINT64: {
-			return formatIntegerType<int64>(out, spec, x_val.ui64, false, base, lower);
+			return formatIntegerType<uint64>(out, spec, x_val.ui64, false, base, lower);
 		}
 		case TYPE_PTR: {
 			uintptr_t val = alias_cast<uintptr_t>(x_val.p);
@@ -377,16 +466,14 @@ std::string stringprintf(const char *fmt, FormatArg const &a0, FormatArg const &
 			if (x > fmt) out.append(fmt, x - fmt);
 			if (*++x == '%') {
 				out.append('%');
-				fmt = ++x;
+				fmt = x + 1;
 			} else {
 				FormatArg::formatspec spec;
-				if (parseFormat(x, spec)) {
-					fmt = x;
-					if (spec.width == -1) {
-						if (++index > maxarg || !arg[index] || !arg[index]->getWidth(spec)) break;
-					}
-					if (++index > maxarg || !arg[index] || !arg[index]->format(spec, out)) break;
+				if (!parseFormat(x, spec)) return out.str();
+				if (spec.width == -1) {
+					if (++index > maxarg || !arg[index] || !arg[index]->getWidth(spec)) return out.str();
 				}
+				if (++index > maxarg || !arg[index] || !arg[index]->format(spec, out)) return out.str();
 				fmt = x--;
 			}
 		}

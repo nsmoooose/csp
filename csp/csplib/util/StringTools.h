@@ -78,6 +78,26 @@ std::string CSPLIB_EXPORT LeftTrimString(std::string const &str, std::string con
 /** Remove trailing whitespace, or other characters if specified. */
 std::string CSPLIB_EXPORT RightTrimString(std::string const &str, std::string const &chars = " \n\n\t");
 
+/** Find the first non-whitespace character in a c-string. */
+inline const char *skipWhitespace(const char *str) {
+	for (char c = *str; c == ' ' || c == '\t' || c == '\n' || c == '\r'; c = *(++str));
+	return str;
+}
+
+/** Parse an integer value from a c-string.  Accepts numerical values in
+ *  standard C octal, decimal, and hex notation.  Returns true if the input
+ *  is a valid numeric string and can be represented by the specified type.
+ *  Leading and trailing whitespace is ignored.  Trailing non-numeric data,
+ *  even after whitespace, is not allowed.
+ */
+bool CSPLIB_EXPORT parseInt(const char *s, int64 &x);
+bool CSPLIB_EXPORT parseInt(const char *s, uint64 &x);
+bool CSPLIB_EXPORT parseInt(const char *s, int32 &x);
+bool CSPLIB_EXPORT parseInt(const char *s, uint32 &x);
+bool CSPLIB_EXPORT parseInt(const char *s, int16 &x);
+bool CSPLIB_EXPORT parseInt(const char *s, uint16 &x);
+bool CSPLIB_EXPORT parseInt(const char *s, int8 &x);
+bool CSPLIB_EXPORT parseInt(const char *s, uint8 &x);
 
 /** A wrapper for basic types used implicitly by stringprintf.  You should
  *  not need to use this class directly.

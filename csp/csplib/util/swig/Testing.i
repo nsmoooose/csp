@@ -25,6 +25,8 @@
 
 CSP_NAMESPACE
 
+namespace test {
+
 class TestRegistry {
 	TestRegistry();
 public:
@@ -33,6 +35,8 @@ public:
 	static bool runOneTest(const char *test);
 	static bool runOnePath(const char *path);
 };
+
+}
 
 CSP_NAMESPACE_END
 

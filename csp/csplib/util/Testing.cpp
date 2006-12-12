@@ -23,6 +23,7 @@
 
 #include <csp/csplib/util/FileUtility.h>
 #include <csp/csplib/util/Log.h>
+#include <csp/csplib/util/StringTools.h>
 #include <csp/csplib/util/Testing.h>
 #include <csp/csplib/util/Timing.h>
 
@@ -32,16 +33,24 @@
 
 CSP_NAMESPACE
 
+namespace test {
+
+bool TestCase::_testcase_failed = false;
+std::vector<std::string> TestCase::_testcase_messages;
+
 class StandardReporter : public TestReporter {
 public:
 	StandardReporter(): m_successes(0), m_failures(0) {}
 
+	virtual Log *getFixtureLog() { return &m_fixture_log; }
+
 	virtual void beginFixture(std::string const &name) {
 		CSPLOG(INFO, TESTING) << "Starting test fixture " << name;
-		std::cout << "TESTING " << name << "\n";
+		std::cout << "\nTESTING " << name << "\n";
 		m_fixture_name = name;
 		m_last_successes = 0;
 		m_last_failures = 0;
+		m_fixture_log.clear();
 	}
 
 	virtual void beginTestCase(std::string const &name) {
@@ -55,21 +64,41 @@ public:
 		const int time_ms = static_cast<int>(m_test_timer.elapsed() * 1000.0);
 		CSPLOG(INFO, TESTING) << "Finished test " << getTestName() << ": " << (success ? "PASS" : "FAIL") << " [" << time_ms << " ms]";
 		if (success) {
-			std::cout << " - PASS: " << m_test_name << "\n";
+			std::cout << "        - " << m_test_name << "\n";
 			m_successes++;
 			m_last_successes++;
 		} else {
-			std::cout << " - FAIL: " << m_test_name << "\n";
+			std::cout << " *FAIL* - " << m_test_name << "\n";
 			m_failures++;
 			m_last_failures++;
 		}
 	}
 
+	virtual void end() {
+		if (m_failures) {
+			std::cout << "\nFAILED TESTCASES [" << m_failures << " of " << (m_successes + m_failures) << "]\n";
+			for (int i = 0; i < m_log.size(); ++i) {
+				const Log::TestCaseEntry *entry = m_log(i);
+				if (!entry->success) {
+					std::cout << "  - " << entry->fixture_name << "." << entry->testcase_name << "\n";
+					for (unsigned j = 0; j < entry->log.size(); ++j) {
+						std::cout << "     " << entry->log[j] << "\n";
+					}
+				}
+			}
+		} else {
+			std::cout << "\nPASSED\n";
+		}
+	}
+
 	virtual void endFixture() {
+		/*
 		if (m_last_failures) {
 			CSPLOG(INFO, TESTING) << "Test fixture " << m_fixture_name << " had " << m_last_failures << " failures";
-			std::cout << "** FAILURES: " << m_last_failures << " of " << (m_last_failures + m_last_successes) << " tests\n";
+			std::cout << "\nFAILED TESTCASES [" << m_last_failures << " of " << (m_last_failures + m_last_successes) << "]\n";
 		}
+		*/
+		m_log.add(m_fixture_log);
 	}
 
 protected:
@@ -85,6 +114,8 @@ private:
 	int m_failures;
 	int m_last_failures;
 	int m_last_successes;
+    Log m_fixture_log;
+	Log m_log;
 };
 
 
@@ -114,10 +145,12 @@ bool TestRegistry::_runTests(std::vector<TestRunner*> const &tests) {
 	log().setThrowOnFatal(true);
 	StandardReporter reporter;
 	bool success = true;
+	reporter.begin();
 	for (std::vector<TestRunner*>::const_iterator iter = tests.begin(); iter != tests.end(); ++iter) {
 		TestRunner* runner = *iter;
 		success = runner->runTests(reporter) && success;
 	}
+	reporter.end();
 	log().setThrowOnFatal(old_throw_on_fatal);
 	return success;
 }
@@ -175,18 +208,57 @@ bool TestRunner::runTests(TestReporter &reporter) {
 	return success;
 }
 
-/*
-LogStream& testlog() {
-	static LogStream *log_stream = 0;
-	if (log_stream == 0) {
-		log_stream = LogStream::getOrCreateNamedLog("TESTLOG");
-		log_stream->setPriority(LogStream::cInfo);
-		log_stream->setFlags(LogStream::cDatestamp|LogStream::cTimestamp);
-		log_stream->initFromEnvironment("CSP_TESTLOG_FILE", "CSP_TESTLOG_PRIORITY", "CSP_TESTLOG_FLAGS");
+// Test execution must be done inside Testing.cpp, rather than the header,
+// so that FatalException is caught within the csplib library.  The VERIFY
+// macros generate the exception via LogStream.cpp, and catching within the
+// same library ensures that RTTI matching works properly.
+bool TestRunner::_runTest(Test const &test, TestReporter::Log *log) {
+	bool ok = false;
+	std::string fatal_error;
+	try {
+		ok = test.run();
+	} catch (FatalException const &e) {
+		TestCase::AddMessage(e.getError());
+		e.clear();  // already logged
+	} catch (PassTest const &) {
+		ok = true;
+	} catch (FailTest const &) {
+		ok = false;
 	}
-	return *log_stream;
+	if (log) log->add(name(), test.name(), ok);
+	return ok;
 }
-*/
+
+
+TestLogEntry::~TestLogEntry() {
+	LogStream::LogEntry(CSPLOG_, CSPLOG_PRIORITY(ERROR), _filename, _linenum) << _buffer.get();
+	TestCase::AddMessage(stringprintf("%s:%d %s", _filename, _linenum, _buffer.get()));
+	switch (_mode) {
+		case PASS: throw PassTest();
+		case FAIL: throw FailTest();
+		case SOFTFAIL: TestCase::Fail();
+		default: break;
+	}
+}
+
+void TestReporter::Log::add(std::string const &fixture_name, std::string const &testcase_name, bool success) {
+	TestCaseEntry::RefT entry = new TestCaseEntry;
+	_log.push_back(entry);
+	entry->fixture_name = fixture_name;
+	entry->testcase_name = testcase_name;
+	entry->success = success;
+	TestCase::GetMessages(entry->log);
+}
+
+void TestReporter::Log::add(TestReporter::Log const &other) {
+	_log.insert(_log.end(), other._log.begin(), other._log.end());
+}
+
+void TestReporter::Log::clear() {
+	_log.clear();
+}
+
+} // namespace test
 
 CSP_NAMESPACE_END
 

@@ -215,7 +215,8 @@ build.SharedLibrary(env,
 	sources = [
 		'data/test/test_Object.cpp',
 		'util/test/test_FileUtility.cpp',
-		'util/test/test_Ref.cpp'
+		'util/test/test_Ref.cpp',
+		'util/test/test_Testing.cpp'
 	],
 	deps = ['csplib'],
 	aliases = 'tests')

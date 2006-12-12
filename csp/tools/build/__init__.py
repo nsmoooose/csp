@@ -82,7 +82,7 @@ from csp.tools.build.rules import \
 	SourceGroup, Program, Generate, SharedLibrary, Command
 
 from csp.tools.build.autoconf import \
-	CheckSConsVersion, CheckPythonVersion, GetPythonInclude, GetPythonLibrary
+	CheckSConsVersion, CheckPythonVersion, GetPythonInclude, GetPythonLibrary, GetGCCVersion
 
 from csp.tools.build.libconf import \
 	ExternalLibrary, PkgConfig, CommandConfig, UnixLibConfig, WindowsLibConfig, DevpackConfig

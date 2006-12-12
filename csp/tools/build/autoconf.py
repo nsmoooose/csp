@@ -49,6 +49,12 @@ def CheckPythonVersion(minimum):
 		       'version %s or newer.' % (version, minimum))
 		sys.exit(1)
 
+def GetGCCVersion():
+	version = os.popen('gcc -dumpversion').read().strip()
+	try:
+		return map(int, version.split('.'))
+	except:
+		return None
 
 def CheckSwig(context, min_version, not_versions=[]):
 	ok = 0

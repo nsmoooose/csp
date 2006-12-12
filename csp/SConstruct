@@ -136,9 +136,12 @@ class Environment(build.Environment):
 		env.CopyEnvironment(Split('PATH INCLUDE LIB'))
 
 	def customize_linux(self, env):
+		gcc = build.GetGCCVersion()
 		env.Replace(CXXFLAGS=Split('-O2 -g -W -Wall -pedantic -Wno-long-long'))
 		env.Replace(SWIGCXXFLAGS=Split('-O2 -g'))
 		env.Replace(ARFLAGS=Split('cr'))
+		if gcc and gcc[0] >= 4:
+			env.AppendUnique(CXXFLAGS=Split('-fvisibility=hidden'))
 
 	def customize_darwin(self, env):
 		print 'WARNING: Darwin is not yet a fully supported platform.'

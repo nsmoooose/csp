@@ -26,17 +26,21 @@
 #define __CSPLIB_UTIL_EXPORT_H__
 
 #if defined(_MSC_VER) || defined(__CYGWIN__) || defined(__MINGW32__) || defined( __BCPLUSPLUS__) || defined( __MWERKS__)
-	#  ifdef SWIG
-	#    undef  __declspec
-	#    define __declspec(x)
-	#  endif // SWIG
-	#  ifdef CSPLIB_EXPORTS
-	#    define CSPLIB_EXPORT   __declspec(dllexport)
-	#  else
-	#    define CSPLIB_EXPORT   __declspec(dllimport)
-	#  endif // CSPLIB_EXPORTS
+#  ifdef SWIG
+#    undef  __declspec
+#    define __declspec(x)
+#  endif // SWIG
+#  ifdef CSPLIB_EXPORTS
+#    define CSPLIB_EXPORT   __declspec(dllexport)
+#  else
+#    define CSPLIB_EXPORT   __declspec(dllimport)
+#  endif // CSPLIB_EXPORTS
 #else
-	#  define CSPLIB_EXPORT
+#  if defined(__GNUC__) &&  __GNUC__ >= 4
+#    define CSPLIB_EXPORT __attribute__ ((visibility("default")))
+#  else
+#    define CSPLIB_EXPORT
+#  endif
 #endif
 
 # if defined(_MSC_VER) && (_MSC_VER <= 1400)

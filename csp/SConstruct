@@ -140,7 +140,7 @@ class Environment(build.Environment):
 		env.Replace(CXXFLAGS=Split('-O2 -g -W -Wall -pedantic -Wno-long-long'))
 		env.Replace(SWIGCXXFLAGS=Split('-O2 -g'))
 		env.Replace(ARFLAGS=Split('cr'))
-		if gcc and gcc[0] >= 4:
+		if gcc and gcc[0] >= (4, 2, 0):
 			env.AppendUnique(CXXFLAGS=Split('-fvisibility=hidden'))
 
 	def customize_darwin(self, env):

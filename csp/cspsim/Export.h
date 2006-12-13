@@ -26,17 +26,21 @@
 #define __CSPSIM_EXPORT_H__
 
 #if defined(_MSC_VER) || defined(__CYGWIN__) || defined(__MINGW32__) || defined( __BCPLUSPLUS__) || defined( __MWERKS__)
-	#  ifdef SWIG
-	#    undef  __declspec
-	#    define __declspec(x)
-	#  endif // SWIG
-	#  ifdef CSPSIM_EXPORTS
-	#    define CSPSIM_EXPORT   __declspec(dllexport)
-	#  else
-	#    define CSPSIM_EXPORT   __declspec(dllimport)
-	#  endif // CSPSIM_EXPORTS
+#  ifdef SWIG
+#    undef  __declspec
+#    define __declspec(x)
+#  endif // SWIG
+#  ifdef CSPSIM_EXPORTS
+#    define CSPSIM_EXPORT   __declspec(dllexport)
+#  else
+#    define CSPSIM_EXPORT   __declspec(dllimport)
+#  endif // CSPSIM_EXPORTS
 #else
-	#  define CSPSIM_EXPORT
+#  if defined(__GNUC__) &&  __GNUC__ == 4 && __GNUC_MINOR__ >= 2
+#    define CSPSIM_EXPORT __attribute__ ((visibility("default")))
+#  else
+#    define CSPSIM_EXPORT
+#  endif
 #endif
 
 # if defined(_MSC_VER) && (_MSC_VER <= 1400)

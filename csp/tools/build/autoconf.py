@@ -52,7 +52,7 @@ def CheckPythonVersion(minimum):
 def GetGCCVersion():
 	version = os.popen('gcc -dumpversion').read().strip()
 	try:
-		return map(int, version.split('.'))
+		return tuple(map(int, version.split('.')))
 	except:
 		return None
 

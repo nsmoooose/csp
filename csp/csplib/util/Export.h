@@ -36,7 +36,7 @@
 #    define CSPLIB_EXPORT   __declspec(dllimport)
 #  endif // CSPLIB_EXPORTS
 #else
-#  if defined(__GNUC__) &&  __GNUC__ >= 4
+#  if defined(__GNUC__) &&  __GNUC__ == 4 && __GNUC_MINOR__ >= 2
 #    define CSPLIB_EXPORT __attribute__ ((visibility("default")))
 #  else
 #    define CSPLIB_EXPORT

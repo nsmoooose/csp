@@ -24,6 +24,7 @@
 
 #include <csp/cspsim/CSPSim.h>
 #include <csp/cspsim/wf/Button.h>
+#include <csp/cspsim/wf/Serialization.h>
 #include <csp/cspsim/wf/TableControlContainer.h>
 #include <csp/cspsim/wf/WindowManager.h>
 #include <csp/cspsim/windows/Options.h>
@@ -37,35 +38,31 @@ CSP_NAMESPACE
 namespace windows {
 
 QuitResume::QuitResume(wf::Theme* theme) : wf::Window(theme) {
-	setSize(wf::Size(100.0, 25.0));
-	setZPos(0.0);
-	setCaption("Combat Simulator Project");
-	
-	Ref<wf::TableControlContainer> table = new wf::TableControlContainer(getTheme(), 3, 1);
-	setControl(table.get());
-	
-	Ref<wf::Button> resumeButton = new wf::Button(getTheme(), "Resume");
-	resumeButton->addButtonClickedHandler(sigc::mem_fun(*this, &QuitResume::onResume));
-	table->setControl(0, 0, resumeButton.get());
+	Ref<wf::Serialization> serializer = new wf::Serialization(getUIPath());
+	serializer->load(this, "default", "quit_resume.xml");
 
-	Ref<wf::Button> optionsButton = new wf::Button(getTheme(), "Options");
-	optionsButton->addButtonClickedHandler(sigc::mem_fun(*this, &QuitResume::onOptions));
-	table->setControl(1, 0, optionsButton.get());
+	Ref<wf::Button> resumeButton = getById<wf::Button>("resume");
+	if(resumeButton.valid())
+		resumeButton->addButtonClickedHandler(sigc::mem_fun(*this, &QuitResume::resume_Click));
 
-	Ref<wf::Button> quitButton = new wf::Button(getTheme(), "Quit");
-	quitButton->addButtonClickedHandler(sigc::mem_fun(*this, &QuitResume::onQuit));
-	table->setControl(2, 0, quitButton.get());
+	Ref<wf::Button> optionsButton = getById<wf::Button>("options");
+	if(optionsButton.valid())
+		optionsButton->addButtonClickedHandler(sigc::mem_fun(*this, &QuitResume::options_Click));
+
+	Ref<wf::Button> quitButton = getById<wf::Button>("quit");
+	if(quitButton.valid())
+		quitButton->addButtonClickedHandler(sigc::mem_fun(*this, &QuitResume::quit_Click));	
 }
 
-void QuitResume::onResume() {
+void QuitResume::resume_Click() {
 	close();
 }
 
-void QuitResume::onQuit() {
+void QuitResume::quit_Click() {
 	CSPSim::theSim->quit();
 }
 
-void QuitResume::onOptions() {
+void QuitResume::options_Click() {
 	wf::WindowManager* manager = getWindowManager();
 	if(manager != NULL) {
 		if(!manager->windowIsOpen<Options>()) {

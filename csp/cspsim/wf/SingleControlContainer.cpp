@@ -44,7 +44,6 @@ ControlVector SingleControlContainer::getChildControls() {
 void SingleControlContainer::buildGeometry() {
 	Control::buildGeometry();
 	if(m_Control.valid()) {
-		layoutChildControls();
 		m_Control->buildGeometry();
 		getNode()->addChild(m_Control->getNode());
 	}
@@ -61,6 +60,10 @@ Control* SingleControlContainer::getControl() {
 void SingleControlContainer::layoutChildControls() {
 	if(m_Control.valid()) {
 		m_Control->setSize(getSize());
+		Container* container = dynamic_cast<Container*>(m_Control.get());
+		if(container != NULL) {
+			container->layoutChildControls();
+		}
 	}
 }
 

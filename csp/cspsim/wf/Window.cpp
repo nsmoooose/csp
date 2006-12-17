@@ -47,9 +47,6 @@ Window::Window(Theme* theme, std::string caption) :
 Window::~Window() {
 }
 
-void Window::onInit() {
-}
-
 const std::string &Window::getCaption() const { 
 	return m_Caption; 
 }
@@ -78,6 +75,10 @@ void Window::layoutChildControls() {
 		Theme* theme = getTheme();
 		childControl->setSize(theme->getWindowClientAreaSize(this));
 		childControl->setLocation(theme->getWindowClientAreaLocation(this));
+		Container* container = dynamic_cast<Container*>(childControl);
+		if(container != NULL) {
+			container->layoutChildControls();
+		}
 	}
 }
 

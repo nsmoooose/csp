@@ -37,7 +37,6 @@ public:
 	virtual ~Container();
 	
 	virtual void layoutChildControls() = 0;
-	
 	virtual ControlVector getChildControls() = 0;
 	
 	template<class T>

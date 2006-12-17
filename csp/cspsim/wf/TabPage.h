@@ -46,11 +46,18 @@ public:
 	virtual const std::string getText() const;
 	virtual void setText(const std::string& text);
 	
+	template<class Archive>
+	void serialize(Archive & ar) {
+		SingleControlContainer::serialize(ar);
+		ar & make_nvp("@Text", m_Text);
+	}	
 private:
 
 protected:
 	std::string m_Text;
 };
+
+typedef std::vector<Ref<TabPage> > TabPageVector;
 
 } // namespace wf
 

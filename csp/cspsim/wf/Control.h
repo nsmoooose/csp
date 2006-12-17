@@ -68,13 +68,8 @@ struct Rect {
  */
 class Control : public Referenced {
 public:
-	typedef sigc::signal<void> loadSignal;	
-	loadSignal load;
-
 	Control(Theme* theme);
 	virtual ~Control();
-
-	virtual void onLoad();
 
 	virtual const std::string& getId() const;
 	virtual void setId(const std::string& id);
@@ -102,7 +97,7 @@ public:
 	virtual void setSize(const Size& size);
 	
 	template<class Archive>
-	void serialize(Archive & ar)	{
+	void serialize(Archive & ar) {
 		ar & make_nvp("@Id", m_Id);
 		ar & make_nvp("@LocationX", m_Point.m_X);
 		ar & make_nvp("@LocationY", m_Point.m_Y);

@@ -50,8 +50,6 @@ public:
 	Window(Theme* theme, std::string caption);
 	virtual ~Window();
 
-	virtual void onInit();
-
 	virtual void setWindowManager(WindowManager* manager);
 	virtual WindowManager* getWindowManager();
 	

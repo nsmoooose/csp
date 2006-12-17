@@ -52,6 +52,12 @@ public:
 	virtual osgText::Text::AlignmentType getAlignment() const;
 	virtual void setAlignment(osgText::Text::AlignmentType align);
 	
+	template<class Archive>
+	void serialize(Archive & ar) {
+		Control::serialize(ar);
+		ar & make_nvp("@Text", m_Text);
+	}
+	
 private:
 
 protected:

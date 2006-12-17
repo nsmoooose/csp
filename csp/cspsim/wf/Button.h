@@ -43,16 +43,18 @@ public:
 	Button(Theme* theme, const std::string text);
 	virtual ~Button();
 
-	virtual void onLoad();
 	virtual void buildGeometry();
 	
 	virtual const std::string getText() const;
 	virtual void setText(const std::string& text);
 	
-	virtual Control* getControl();
-	virtual void setControl(Control* control);
-	
 	virtual void addButtonClickedHandler(const sigc::slot<void> &handler);
+
+	template<class Archive>
+	void serialize(Archive & ar)	{
+		SingleControlContainer::serialize(ar);
+		ar & make_nvp("@Text", m_text);
+	}
 	
 private:
 
@@ -62,7 +64,6 @@ protected:
 
 	class ButtonClickedCallback;
 	
-	Ref<Control> m_ChildControl;
 	std::string m_text;
 };
 

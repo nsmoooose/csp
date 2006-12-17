@@ -58,13 +58,12 @@ ControlVector Tab::getChildControls() {
 	ControlVector childControls;
 	TabPageVector::iterator tabPage = m_Pages.begin();
 	for(;tabPage != m_Pages.end();++tabPage) {
-		childControls.push_back(tabPage->first);
+		childControls.push_back((*tabPage));
 	}
 	return childControls;
 }
 
 void Tab::buildGeometry() {
-	// Make sure that all our child controls onInit() is called.
 	Container::buildGeometry();	
 	
 	// Get the geometry fot the tab control. This is only the default background of a page.
@@ -72,19 +71,16 @@ void Tab::buildGeometry() {
 	
 	TabPageVector::iterator page = m_Pages.begin();
 	int index = 0;
-	for(;page != m_Pages.end();++page,++index) {
-		// Not that setCurrentPage() method is dependent on the order of function calls here.
-		
+	for(;page != m_Pages.end();++page,++index) {	
 		// Create a button for the page and add it to our control tree.
-		osg::ref_ptr<osg::Switch> button = getTheme()->buildTabButton(this, page->first.get(), index);
-		osg::ref_ptr<TabClickedCallback> callback = new TabClickedCallback(this, page->first.get());
+		osg::ref_ptr<osg::Switch> button = getTheme()->buildTabButton(this, page->get(), index);
+		osg::ref_ptr<TabClickedCallback> callback = new TabClickedCallback(this, page->get());
 		button->getChild(1)->setUpdateCallback(callback.get());
-		page->second = button;
 
 		// Well we add the page content to the button. This will make the page visible when the button
 		// is visible. 
-		page->first->buildGeometry();
-		button->addChild(page->first->getNode(), (getCurrentPage() == page->first.get() ? true : false));
+		(*page)->buildGeometry();
+		button->addChild((*page)->getNode(), (getCurrentPage() == page->get() ? true : false));
 		
 		// Add button and page to this tab control.
 		getNode()->addChild(button.get());
@@ -94,8 +90,9 @@ void Tab::buildGeometry() {
 void Tab::layoutChildControls() {
 	TabPageVector::iterator page = m_Pages.begin();
 	for(;page != m_Pages.end();++page) {
-		page->first->setSize(getTheme()->getTabPageClientAreaSize(this));
-		page->first->setLocation(getTheme()->getTabPageClientAreaLocation(this));
+		(*page)->setSize(getTheme()->getTabPageClientAreaSize(this));
+		(*page)->setLocation(getTheme()->getTabPageClientAreaLocation(this));
+		(*page)->layoutChildControls();
 	}
 }
 
@@ -104,7 +101,7 @@ void Tab::addPage(TabPage* page) {
 	if(m_Pages.size() == 0) {
 		m_CurrentPage = page;
 	}
-	m_Pages.push_back(PageAndSwitch(page, NULL));
+	m_Pages.push_back(page);
 }
 
 TabPage* Tab::getCurrentPage() const {
@@ -117,21 +114,7 @@ TabPage* Tab::getCurrentPage() {
 
 void Tab::setCurrentPage(TabPage* page) {
 	m_CurrentPage = page;
-	
-	// Index 0 == Current page button.
-	// Index 1 == Not current page button.
-	// Index 2 == Page content.
-
-	TabPageVector::iterator iteratedPage = m_Pages.begin();
-	for(;iteratedPage != m_Pages.end();++iteratedPage) {
-		if(iteratedPage->first.get() == page) {
-			iteratedPage->second->setSingleChildOn(0);
-			iteratedPage->second->setValue(2, true);
-		}
-		else {
-			iteratedPage->second->setSingleChildOn(1);
-		}
-	}
+	buildGeometry();
 }
 
 } // namespace wf

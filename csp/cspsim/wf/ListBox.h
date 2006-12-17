@@ -53,10 +53,15 @@ public:
 	virtual ListBoxItem* getSelectedItem();
 	virtual void setSelectedItem(ListBoxItem* item);
 	
+	template<class Archive>
+	void serialize(Archive & ar) {
+		Container::serialize(ar);
+		ar & make_nvp("Items", m_Items);
+	}	
+
 private:
 
 protected:
-	typedef std::vector<Ref<ListBoxItem> > ListBoxItemVector;
 	ListBoxItemVector m_Items;
 	Ref<ListBoxItem> m_SelectedItem;
 

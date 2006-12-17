@@ -48,15 +48,6 @@ Control::Control(Theme* theme) :
 Control::~Control() {
 }
 
-void Control::onLoad() {
-	// The control has been loaded. Lets reflect our properties with
-	// our osg object.
-	m_TransformGroup->setMatrix(osg::Matrix::translate(m_Point.m_X, m_ZPos, m_Point.m_Y));
-	
-	// Fire event handlers if any.
-	load();
-}
-
 const std::string& Control::getId() const {
 	return m_Id;
 }
@@ -67,6 +58,10 @@ void Control::setId(const std::string& id) {
 
 void Control::buildGeometry() {
 	m_TransformGroup->removeChild(0, m_TransformGroup->getNumChildren());
+	
+	// The control has been loaded. Lets reflect our properties with
+	// our osg object.
+	m_TransformGroup->setMatrix(osg::Matrix::translate(m_Point.m_X, m_ZPos, m_Point.m_Y));	
 }
 
 Theme* Control::getTheme() {

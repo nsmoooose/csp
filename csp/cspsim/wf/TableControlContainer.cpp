@@ -70,22 +70,14 @@ ControlVector TableControlContainer::getChildControls() {
 }
 
 void TableControlContainer::buildGeometry() {
-	// Place all our child controls in right positions.
-	layoutChildControls();
+	Container::buildGeometry();
 	
 	osg::Group* group = getNode();
-	ColumnVector::size_type columnCount = m_Columns.size();
-	RowVector::size_type rowCount = m_Rows.size();
-
-	for(ColumnVector::size_type x=0;x<columnCount;++x) {
-		for(ColumnVector::size_type y=0;y<rowCount;++y) {
-			Ref<Control> control = m_Controls[x][y];
-			if(!control.valid())
-				continue;
-			
-			control->buildGeometry();
-			group->addChild(control->getNode());
-		}
+	ControlVector childControls = getChildControls();
+	ControlVector::iterator childControl = childControls.begin();
+	for(;childControl != childControls.end();++childControl) {
+		(*childControl)->buildGeometry();
+		group->addChild((*childControl)->getNode());
 	}
 }
 

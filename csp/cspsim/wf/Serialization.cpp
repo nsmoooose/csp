@@ -41,11 +41,14 @@ CSP_NAMESPACE
 
 namespace wf {
 
+void ToValue(Theme* theme, XMLNode& node, const std::string& src, bool* dst);
 void ToValue(Theme* theme, XMLNode& node, const std::string& src, float* dst);
 void ToValue(Theme* theme, XMLNode& node, const std::string& src, double* dst);
 void ToValue(Theme* theme, XMLNode& node, const std::string& src, std::string* dst);
 void ToValue(Theme* theme, XMLNode& node, const std::string& src, Ref<wf::Control>* dst);
 void ToValue(Theme* theme, XMLNode& node, const std::string& src, ControlVector* dst);
+void ToValue(Theme* theme, XMLNode& node, const std::string& src, ListBoxItemVector* dst);
+void ToValue(Theme* theme, XMLNode& node, const std::string& src, TabPageVector* dst);
 void ToValue(Theme* theme, XMLNode& node, const std::string& src, TableControlContainer::ColumnVector* dst);
 void ToValue(Theme* theme, XMLNode& node, const std::string& src, TableControlContainer::RowVector* dst);
 void ToValue(Theme* theme, XMLNode& node, const std::string& src, TableControlContainer::XYVector* dst);
@@ -131,9 +134,6 @@ public:
 	template<class T>
 	void loadControl(Theme* theme, T* control, XMLNode& node) {
 		load(theme, control, node);
-
-		// Lets call the onLoad to trigger the load event.
-		control->onLoad();
 	}
 	
 	void loadDocument(Window* window, XMLNode& document) {
@@ -167,10 +167,6 @@ void Serialization::load(Window* window, const std::string& theme, const std::st
 	// Parse the content of the document by using our internal archive class.
 	ReadingArchive archive;
 	archive.loadDocument(window, document);
-	
-	// All widgets loaded for the window. Lets rebuild geometry to 
-	// reflect the loaded changes.
-	window->buildGeometry();
 }
 
 Ref<Control> createControl(Theme* theme, XMLNode& node) {
@@ -221,6 +217,15 @@ Ref<Control> createControl(Theme* theme, XMLNode& node) {
 	}	
 }
 
+void ToValue(Theme* theme, XMLNode& node, const std::string& src, bool* dst) {
+	if(src == "1" || src == "true") {
+		*dst = true;
+	} 
+	else {
+		*dst = false;
+	}
+}
+
 void ToValue(Theme* theme, XMLNode& node, const std::string& src, float* dst) {
 	*dst = (float)atof(src.c_str());
 }
@@ -242,6 +247,28 @@ void ToValue(Theme* theme, XMLNode& node, const std::string& src, Ref<wf::Contro
 }
 
 void ToValue(Theme* theme, XMLNode& node, const std::string& src, ControlVector* dst) {
+	int childNodeCount = node.nChildNode();
+	for(int index = 0;index < childNodeCount;++index) {
+		XMLNode childNode = node.getChildNode(index);
+		Ref<Control> control = createControl(theme, childNode);
+		if(control.valid()) {
+			dst->push_back(control);
+		}
+	}
+}
+
+void ToValue(Theme* theme, XMLNode& node, const std::string& src, ListBoxItemVector* dst) {
+	int childNodeCount = node.nChildNode();
+	for(int index = 0;index < childNodeCount;++index) {
+		XMLNode childNode = node.getChildNode(index);
+		Ref<Control> control = createControl(theme, childNode);
+		if(control.valid()) {
+			dst->push_back(control);
+		}
+	}
+}
+
+void ToValue(Theme* theme, XMLNode& node, const std::string& src, TabPageVector* dst) {
 	int childNodeCount = node.nChildNode();
 	for(int index = 0;index < childNodeCount;++index) {
 		XMLNode childNode = node.getChildNode(index);

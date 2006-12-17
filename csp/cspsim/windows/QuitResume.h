@@ -37,9 +37,9 @@ public:
 	virtual ~QuitResume();
 	
 private:
-	void onResume();
-	void onQuit();
-	void onOptions();
+	void resume_Click();
+	void quit_Click();
+	void options_Click();
 };
 
 } // namespace windows

@@ -53,6 +53,7 @@ const std::string& Label::getText() const {
 
 void Label::setText(const std::string& text) {
 	m_Text = text;
+	buildGeometry();
 }
 
 osgText::Text::AlignmentType Label::getAlignment() const {

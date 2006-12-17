@@ -52,6 +52,13 @@ public:
 	
 	virtual bool getChecked() const;
 	virtual void setChecked(bool checked);
+
+	template<class Archive>
+	void serialize(Archive & ar) {
+		Control::serialize(ar);
+		ar & make_nvp("@Checked", m_Checked);
+		ar & make_nvp("@Text", m_Text);
+	}	
 		
 private:
 

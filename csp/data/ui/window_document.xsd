@@ -54,6 +54,14 @@ in this document has the same inheritence as the cpp-classes.
     </xsd:complexContent>
   </xsd:complexType>
 
+  <xsd:complexType name="Label_t">
+    <xsd:complexContent>
+      <xsd:extension base="Control_t">
+        <xsd:attribute name="Text" type="xsd:string" />
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  
   <xsd:complexType name="ListBox_t">
     <xsd:complexContent>
       <xsd:extension base="Container_t">
@@ -82,6 +90,7 @@ in this document has the same inheritence as the cpp-classes.
     <xsd:choice>
       <xsd:element name="Button" type="Button_t" />
       <xsd:element name="CheckBox" type="CheckBox_t" />
+      <xsd:element name="Label" type="Label_t" />
       <xsd:element name="ListBox" type="ListBox_t" />
       <xsd:element name="MultiControlContainer" type="MultiControlContainer_t" />
       <xsd:element name="Tab" type="Tab_t" />
@@ -139,14 +148,11 @@ in this document has the same inheritence as the cpp-classes.
   </xsd:complexType>
 
   <xsd:complexType name="TabPage_t">
-    <xsd:sequence>
-      <xsd:element name="Control" minOccurs="0">
-        <xsd:complexType>
-          <xsd:group ref="SingleControl_t" minOccurs="0" />
-        </xsd:complexType>
-      </xsd:element>
-    </xsd:sequence>
-    <xsd:attribute name="Text" type="xsd:string" />
+    <xsd:complexContent>
+      <xsd:extension base="SingleControlContainer_t">
+        <xsd:attribute name="Text" type="xsd:string" />
+      </xsd:extension>
+    </xsd:complexContent>
   </xsd:complexType>
 
   <xsd:complexType name="TableControlContainer_t">

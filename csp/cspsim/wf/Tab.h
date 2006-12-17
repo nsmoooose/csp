@@ -26,16 +26,11 @@
 #define __CSPSIM_WF_TAB_H__
 
 #include <csp/cspsim/wf/Container.h>
-
-namespace osg {
-	class Switch;
-}
+#include <csp/cspsim/wf/TabPage.h>
 
 CSP_NAMESPACE
 
 namespace wf {
-
-class TabPage;
 
 /** A class that represents a tab control.
  *
@@ -58,9 +53,13 @@ public:
 	virtual TabPage* getCurrentPage();
 	virtual void setCurrentPage(TabPage* page);
 
+	template<class Archive>
+	void serialize(Archive & ar) {
+		Container::serialize(ar);
+		ar & make_nvp("Pages", m_Pages);
+	}	
+
 private:
-	typedef std::pair<Ref<TabPage>, osg::ref_ptr<osg::Switch> > PageAndSwitch;
-	typedef std::vector<PageAndSwitch> TabPageVector;
 	TabPageVector m_Pages;
 	
 	TabPage* m_CurrentPage;

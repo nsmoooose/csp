@@ -90,10 +90,8 @@ void WindowManager::show(Window* window) {
 	// windows.
 	window->setWindowManager(this);
 	
-	window->onInit();
-	
-	// Fire the on load event.
-	window->onLoad();
+	// Force this container to align all child controls.
+	window->layoutChildControls();
 
 	// Build the actual geometry of all controls that is going to be
 	// displayed.

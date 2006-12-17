@@ -20,10 +20,10 @@
               <Button Id="resume" Text="Resume" />
             </Cell>
             <Cell>
-              <Button Id="quit" Text="Quit" />
+              <Button Id="options" Text="Options" />
             </Cell>
             <Cell>
-              <Button Id="options" Text="Options" />
+              <Button Id="quit" Text="Quit" />
             </Cell>
           </Row>
         </Table>

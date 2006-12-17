@@ -46,15 +46,20 @@ public:
 	
 	virtual const std::string getText() const;
 	virtual void setText(const std::string& text);
-	
-	virtual Control* getControl();
-	virtual void setControl(Control* control);
-	
+		
+	template<class Archive>
+	void serialize(Archive & ar) {
+		Container::serialize(ar);
+		ar & make_nvp("@Text", m_Text);
+	}	
+
 private:
 
 protected:
-	Ref<Control> m_ChildControl;
+	std::string m_Text;
 };
+
+typedef std::vector<Ref<ListBoxItem> > ListBoxItemVector;
 
 } // namespace wf
 

@@ -33,17 +33,19 @@ CSP_NAMESPACE
 
 namespace wf {
 
-ListBoxItem::ListBoxItem(Theme* theme) : SingleControlContainer(theme), m_ChildControl(new Label(theme)) {
-	Label* label = (Label*)m_ChildControl.get();
+ListBoxItem::ListBoxItem(Theme* theme) : SingleControlContainer(theme) {
+	Ref<Label> label = new Label(theme);
 	label->setAlignment(osgText::Text::CENTER_CENTER);
 	label->setZPos(-0.1f);
+	setControl(label.get());
 	setSize(Size(30.0f, 7.0f));
 }
 
-ListBoxItem::ListBoxItem(Theme* theme, const std::string text) : SingleControlContainer(theme), m_ChildControl(new Label(theme, text)) {
-	Label* label = (Label*)m_ChildControl.get();
+ListBoxItem::ListBoxItem(Theme* theme, const std::string text) : SingleControlContainer(theme), m_Text(text) {
+	Ref<Label> label = new Label(theme, text);
 	label->setAlignment(osgText::Text::CENTER_CENTER);
 	label->setZPos(-0.1f);
+	setControl(label.get());
 	setSize(Size(30.0f, 7.0f));
 }
 
@@ -51,39 +53,25 @@ ListBoxItem::~ListBoxItem() {
 }
 
 void ListBoxItem::buildGeometry() {
+	Label* label = dynamic_cast<Label*>(getControl());
+	if(label != NULL) {
+		label->setText(m_Text);
+	}
+
 	// Make sure that all our child controls onInit() is called.
 	SingleControlContainer::buildGeometry();
 	
 	osg::ref_ptr<osg::Switch> item = getTheme()->buildListBoxItem((ListBox*)getParent(), this);
-	getNode()->addChild(item.get());
-	
-	if(m_ChildControl.valid()) {
-		m_ChildControl->buildGeometry();
-		getNode()->addChild(m_ChildControl->getNode());
-	}
+	getNode()->addChild(item.get());	
 }
 
 const std::string ListBoxItem::getText() const {
-	Label* label = dynamic_cast<Label*>(m_ChildControl.get());
-	if(label != NULL) {
-		return label->getText();
-	}
-	return std::string("");
+	return m_Text;
 }
 
 void ListBoxItem::setText(const std::string& text) {
-	Label* label = dynamic_cast<Label*>(m_ChildControl.get());
-	if(label != NULL) {
-		label->setText(text);
-	}
-}
-
-Control* ListBoxItem::getControl() {
-	return m_ChildControl.get();
-}
-
-void ListBoxItem::setControl(Control* control) {
-	m_ChildControl = control;
+	m_Text = text;
+	buildGeometry();
 }
 
 } // namespace wf

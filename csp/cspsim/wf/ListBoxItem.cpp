@@ -53,6 +53,11 @@ ListBoxItem::~ListBoxItem() {
 }
 
 void ListBoxItem::buildGeometry() {
+	// Without a parent we cannot build geometry.
+	if(getParent() == NULL) {
+		return;
+	}
+
 	Label* label = dynamic_cast<Label*>(getControl());
 	if(label != NULL) {
 		label->setText(m_Text);

@@ -408,14 +408,10 @@ build.SourceGroup(expenv,
 		'wf/themes/Default.cpp',
 		'wf/themes/Default.h',
 
-		'windows/DisplayOptions.cpp',
-		'windows/DisplayOptions.h',
 		'windows/QuitResume.cpp',
 		'windows/QuitResume.h',
 		'windows/Options.cpp',
 		'windows/Options.h',
-		'windows/SoundOptions.cpp',
-		'windows/SoundOptions.h',
 	],
 	deps = ['csplib', 'opengl', 'osg', 'sdl', 'sound'])
 

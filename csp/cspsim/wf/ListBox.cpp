@@ -105,6 +105,10 @@ void ListBox::addItem(ListBoxItem* item) {
 	item->setParent(this);
 }
 
+ListBoxItemVector ListBox::getItems() {
+	return m_Items;
+}
+
 ListBoxItem* ListBox::getSelectedItem() {
 	return m_SelectedItem.get();
 }

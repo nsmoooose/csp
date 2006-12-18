@@ -141,6 +141,21 @@ public:
 	
 		XMLNode node = document.selectSingleNode("WindowDocument/Window");
 		loadControl(window->getTheme(), window, node);
+
+		// Fix all parent references that is missing due to serialization.
+		setParent(window);
+	}
+
+	void setParent(Container* parent) {
+		ControlVector childControls = parent->getChildControls();
+		ControlVector::iterator childControl = childControls.begin();
+		for(;childControl != childControls.end(); ++childControl) {
+			(*childControl)->setParent(parent);
+			Container* childContainer = dynamic_cast<Container*>(childControl->get());
+			if(childContainer != NULL) {
+				setParent(childContainer);
+			}
+		}
 	}
 
 private:
@@ -182,6 +197,11 @@ Ref<Control> createControl(Theme* theme, XMLNode& node) {
 		archive.loadControl(theme, control.get(), node);
 		return control;
 	}
+	else if(name == "Item") {
+		Ref<ListBoxItem> control = new ListBoxItem(theme);
+		archive.loadControl(theme, control.get(), node);
+		return control;
+	}
 	else if(name == "Label") {
 		Ref<Label> control = new Label(theme);
 		archive.loadControl(theme, control.get(), node);
@@ -204,6 +224,11 @@ Ref<Control> createControl(Theme* theme, XMLNode& node) {
 	}
 	else if(name == "Tab") {
 		Ref<Tab> control = new Tab(theme);
+		archive.loadControl(theme, control.get(), node);
+		return control;
+	}
+	else if(name == "Page") {
+		Ref<TabPage> control = new TabPage(theme);
 		archive.loadControl(theme, control.get(), node);
 		return control;
 	}

@@ -66,6 +66,12 @@ ControlVector Tab::getChildControls() {
 void Tab::buildGeometry() {
 	Container::buildGeometry();	
 	
+	// This fix must be here bequase of serialization. We must always have an
+	// active page.
+	if(m_CurrentPage == NULL && m_Pages.size() > 0) {
+		m_CurrentPage = m_Pages.begin()->get();
+	}
+	
 	// Get the geometry fot the tab control. This is only the default background of a page.
 	getNode()->addChild(getTheme()->buildTab(this));
 	

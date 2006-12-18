@@ -48,6 +48,7 @@ public:
 	virtual void layoutChildControls();
 	
 	virtual void addItem(ListBoxItem* item);
+	virtual ListBoxItemVector getItems();
 	
 	virtual ListBoxItem* getSelectedItem() const;
 	virtual ListBoxItem* getSelectedItem();

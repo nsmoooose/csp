@@ -31,20 +31,14 @@ CSP_NAMESPACE
 
 namespace windows {
 
-class DisplayOptions;
-class SoundOptions;
-
 class Options : public wf::Window {
 public:
 	Options(wf::Theme* theme);
 	virtual ~Options();
 	
 private:
-	void onOK();
-	void onCancel();
-	
-	Ref<DisplayOptions> m_DisplayOptionsPage;
-	Ref<SoundOptions> m_SoundOptionsPage;
+	void ok_Click();
+	void cancel_Click();	
 };
 
 } // namespace windows

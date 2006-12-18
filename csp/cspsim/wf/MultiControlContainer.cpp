@@ -56,7 +56,16 @@ void MultiControlContainer::buildGeometry() {
 }
 
 void MultiControlContainer::layoutChildControls() {
-	// Do nothing. All child controls is manually positioned in code.
+	ControlVector::iterator control = m_Controls.begin();
+	for(;control != m_Controls.end();++control) {
+	
+		// If the child control is a container then we 
+		// need to forward this call to its children.
+		Container* childContainer = dynamic_cast<Container*>(control->get());
+		if(childContainer != NULL) {
+			childContainer->layoutChildControls();
+		}
+	}	
 }
 
 ControlVector MultiControlContainer::getControls() {

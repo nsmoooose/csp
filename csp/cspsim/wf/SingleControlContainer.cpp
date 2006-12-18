@@ -37,7 +37,9 @@ SingleControlContainer::~SingleControlContainer() {
 
 ControlVector SingleControlContainer::getChildControls() {
 	ControlVector controls;
-	controls.push_back(m_Control);
+	if(m_Control.valid()) {
+		controls.push_back(m_Control);
+	}
 	return controls;
 }
 

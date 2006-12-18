@@ -126,8 +126,7 @@ in this document has the same inheritence as the cpp-classes.
   <!-- This class represents a collection with several controls. -->
   <xsd:complexType name="MultiControlCollection_t">
     <xsd:choice minOccurs="0" maxOccurs="unbounded">
-      <xsd:element name="Button" type="Button_t" />
-      <xsd:element name="Multicontrolcontainer" type="MultiControlContainer_t" />
+      <xsd:group ref="SingleControl_t" minOccurs="0" />
     </xsd:choice>
   </xsd:complexType>
 

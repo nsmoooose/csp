@@ -39,8 +39,8 @@ namespace wf {
  */
 class Button : public SingleControlContainer {
 public:
-	Button(Theme* theme);
-	Button(Theme* theme, const std::string text);
+	Button();
+	Button(const std::string text);
 	virtual ~Button();
 
 	virtual void buildGeometry();

@@ -86,8 +86,8 @@ public:
 	typedef std::vector<TableControlContainerRow> RowVector;
 	typedef std::vector<ControlVector> XYVector;
 
-	TableControlContainer(Theme* theme);
-	TableControlContainer(Theme* theme, unsigned int columns, unsigned int rows);
+	TableControlContainer();
+	TableControlContainer(unsigned int columns, unsigned int rows);
 	virtual ~TableControlContainer();
 
 	virtual ControlVector getChildControls();

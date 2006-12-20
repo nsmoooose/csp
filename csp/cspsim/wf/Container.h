@@ -33,7 +33,7 @@ namespace wf {
 
 class Container : public Control {
 public:
-	Container(Theme* theme);
+	Container();
 	virtual ~Container();
 	
 	virtual void layoutChildControls() = 0;

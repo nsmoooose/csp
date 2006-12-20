@@ -39,7 +39,7 @@ namespace wf {
  */
 class ListBox : public Container {
 public:
-	ListBox(Theme* theme);
+	ListBox();
 	virtual ~ListBox();
 
 	virtual ControlVector getChildControls();

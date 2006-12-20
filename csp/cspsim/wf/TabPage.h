@@ -38,7 +38,7 @@ namespace wf {
  */
 class TabPage : public SingleControlContainer {
 public:
-	TabPage(Theme* theme);
+	TabPage();
 	virtual ~TabPage();
 
 	virtual void buildGeometry();

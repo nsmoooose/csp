@@ -29,7 +29,7 @@ CSP_NAMESPACE
 
 namespace wf {
 
-MultiControlContainer::MultiControlContainer(Theme* theme) : Container(theme) {
+MultiControlContainer::MultiControlContainer() {
 }
 
 MultiControlContainer::~MultiControlContainer() {

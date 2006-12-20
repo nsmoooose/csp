@@ -18,26 +18,44 @@
 
 
 /**
- * @file Default.h
+ * @file ControlGeometryBuilder.h
  *
  **/
 
-#ifndef __CSPSIM_WF_THEMES_DEFAULT_H__
-#define __CSPSIM_WF_THEMES_DEFAULT_H__
+#ifndef __CSPSIM_WF_CONTROLGEOMETRYBUILDER_H__
+#define __CSPSIM_WF_CONTROLGEOMETRYBUILDER_H__
 
-#include <csp/csplib/util/Referenced.h>
-#include <csp/cspsim/wf/Theme.h>
+#include <osg/ref_ptr>
+#include <osg/Vec4>
+#include <vector>
+#include <csp/csplib/util/Namespace.h>
+
+namespace osg {
+	class Group;
+	class Geode;
+	class Geometry;
+	class Switch;
+}
 
 CSP_NAMESPACE
 
 namespace wf {
 
-namespace themes {
+struct Point;
+struct Size;
+class Button;
+class CheckBox;
+class Label;
+class ListBox;
+class ListBoxItem;
+class Tab;
+class TabPage;
+class Window;
 
-class Default : public Theme {
+class ControlGeometryBuilder {
 public:
-	Default();
-	virtual ~Default();
+	ControlGeometryBuilder();
+	virtual ~ControlGeometryBuilder();
 
 	virtual float getBorderWidth() const;
 	virtual float getCaptionHeight() const;
@@ -145,10 +163,9 @@ protected:
 	std::string m_Text;
 };
 
-} // namespace themes
 } // namespace wf
 
 CSP_NAMESPACE_END
 
-#endif // __CSPSIM_WF_THEMES_DEFAULT_H__
+#endif // __CSPSIM_WF_CONTROLGEOMETRYBUILDER_H__
 

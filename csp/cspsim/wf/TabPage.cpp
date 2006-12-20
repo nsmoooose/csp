@@ -22,15 +22,15 @@
  *
  **/
 
+#include <csp/cspsim/wf/ControlGeometryBuilder.h>
 #include <csp/cspsim/wf/TabPage.h>
-#include <csp/cspsim/wf/Theme.h>
 #include <osg/Group>
 
 CSP_NAMESPACE
 
 namespace wf {
 
-TabPage::TabPage(Theme* theme) : SingleControlContainer(theme) {
+TabPage::TabPage() {
 }
 
 TabPage::~TabPage() {

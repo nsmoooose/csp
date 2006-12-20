@@ -23,7 +23,7 @@
  **/
 
 #include <csp/cspsim/wf/Control.h>
-#include <csp/cspsim/wf/Theme.h>
+#include <csp/cspsim/wf/ControlGeometryBuilder.h>
 #include <csp/csplib/util/Ref.h>
 
 #include <osg/BlendFunc>
@@ -33,8 +33,8 @@ CSP_NAMESPACE
 
 namespace wf {
 
-Control::Control(Theme* theme) :
-	m_Theme(theme), m_ZPos(0.0), m_Parent(0), m_TransformGroup(new osg::MatrixTransform)
+Control::Control() :
+	m_ZPos(0.0), m_Parent(0), m_TransformGroup(new osg::MatrixTransform)
 {
     osg::StateSet *stateSet = m_TransformGroup->getOrCreateStateSet();
     stateSet->setRenderBinDetails(100, "RenderBin");
@@ -62,10 +62,6 @@ void Control::buildGeometry() {
 	// The control has been loaded. Lets reflect our properties with
 	// our osg object.
 	m_TransformGroup->setMatrix(osg::Matrix::translate(m_Point.m_X, m_ZPos, m_Point.m_Y));	
-}
-
-Theme* Control::getTheme() {
-	return m_Theme.get();
 }
 
 Control* Control::getParent() {

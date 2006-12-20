@@ -25,7 +25,6 @@
 #include <csp/cspsim/Animation.h>
 #include <csp/cspsim/wf/Serialization.h>
 #include <csp/cspsim/wf/WindowManager.h>
-#include <csp/cspsim/wf/themes/Default.h>
 
 #include <osg/Group>
 #include <osgUtil/SceneView>
@@ -35,8 +34,8 @@ CSP_NAMESPACE
 
 namespace wf {
 
-WindowManager::WindowManager(osgUtil::SceneView* view, Theme* theme, Serialization* serializer) 
-	: m_View(view), m_Theme(theme), m_Serializer(serializer), m_Group(new osg::Group) {
+WindowManager::WindowManager(osgUtil::SceneView* view, Serialization* serializer) 
+	: m_View(view), m_Serializer(serializer), m_Group(new osg::Group) {
 	m_View->setSceneData(m_Group.get());
 
     osg::StateSet *stateSet = m_Group->getOrCreateStateSet();
@@ -123,10 +122,6 @@ void WindowManager::close(Window* window) {
 	// Detach the window from the window manager by assigning
 	// a NULL window manager.
 	window->setWindowManager(NULL);
-}
-
-Theme* WindowManager::getTheme() const {
-	return m_Theme.get();
 }
 
 } // namespace wf

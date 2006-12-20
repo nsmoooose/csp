@@ -23,8 +23,8 @@
  **/
 
 #include <csp/cspsim/Animation.h>
+#include <csp/cspsim/wf/ControlGeometryBuilder.h>
 #include <csp/cspsim/wf/ListBox.h>
-#include <csp/cspsim/wf/Theme.h>
 #include <csp/cspsim/wf/WindowManager.h>
 
 #include <osg/Switch>
@@ -47,7 +47,7 @@ private:
 	ListBoxItem* m_Item;
 };
 
-ListBox::ListBox(Theme* theme) : Container(theme) {
+ListBox::ListBox() {
 }
 
 ListBox::~ListBox() {
@@ -67,7 +67,8 @@ void ListBox::buildGeometry() {
 	Container::buildGeometry();	
 	
 	// Build the geometry for the current control.
-	getNode()->addChild(getTheme()->buildListBox(this));
+	ControlGeometryBuilder geometryBuilder;
+	getNode()->addChild(geometryBuilder.buildListBox(this));
 	
 	ListBoxItemVector::iterator item = m_Items.begin();
 	for(;item != m_Items.end();++item) {

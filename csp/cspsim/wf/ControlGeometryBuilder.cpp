@@ -18,12 +18,13 @@
 
 
 /**
- * @file Default.cpp
+ * @file ControlGeometryBuilder.cpp
  *
  **/
 
 #include <csp/cspsim/wf/Button.h>
 #include <csp/cspsim/wf/CheckBox.h>
+#include <csp/cspsim/wf/ControlGeometryBuilder.h>
 #include <csp/cspsim/wf/Label.h>
 #include <csp/cspsim/wf/ListBox.h>
 #include <csp/cspsim/wf/ListBoxItem.h>
@@ -32,7 +33,6 @@
 #include <csp/cspsim/wf/Tab.h>
 #include <csp/cspsim/wf/TabPage.h>
 #include <csp/cspsim/wf/Window.h>
-#include <csp/cspsim/wf/themes/Default.h>
 
 #include <osg/BlendFunc>
 #include <osg/Depth>
@@ -45,15 +45,14 @@
 CSP_NAMESPACE
 
 namespace wf {
-namespace themes {
 
-Default::Default() {
+ControlGeometryBuilder::ControlGeometryBuilder() {
 }
 
-Default::~Default() {
+ControlGeometryBuilder::~ControlGeometryBuilder() {
 }
 
-osg::Geometry* Default::buildRectangle(
+osg::Geometry* ControlGeometryBuilder::buildRectangle(
 	float x1, float y1, float x2, float y2, float z,
 	const osg::Vec4& c1, const osg::Vec4& c2, const osg::Vec4& c3, const osg::Vec4& c4) const {
 	osg::ref_ptr<osg::Geometry> geom = new osg::Geometry;
@@ -83,7 +82,7 @@ osg::Geometry* Default::buildRectangle(
 	return geom.release();
 }
 
-osg::Geometry* Default::buildRectangle(
+osg::Geometry* ControlGeometryBuilder::buildRectangle(
 	float x1, float y1, float x2, float y2, float z, float lineWidth,
 	const osg::Vec4& outerColor, const osg::Vec4& innerColor,
 	bool left, bool top, bool right, bool bottom) const {
@@ -160,7 +159,7 @@ osg::Geometry* Default::buildRectangle(
 	return geom.release();
 }
 
-osg::Geode* Default::buildStar() const {
+osg::Geode* ControlGeometryBuilder::buildStar() const {
 	osg::ref_ptr<osg::Geode> geode = new osg::Geode;
 	
 //	osg::Vec4 color1 = osg::Vec4(0.5f, 0.0f, 0.0f, 0.0f);
@@ -237,7 +236,7 @@ osg::Geode* Default::buildStar() const {
 	return geode.release();
 }
 
-osg::Geometry* Default::buildTriangle(
+osg::Geometry* ControlGeometryBuilder::buildTriangle(
 	const Point& p1, const Point& p2, const Point& p3, float z,
 	const osg::Vec4& c1, const osg::Vec4& c2, const osg::Vec4& c3) const {
 
@@ -266,7 +265,7 @@ osg::Geometry* Default::buildTriangle(
 	return geom.release();
 }
 
-osg::Group* Default::buildTab(const Tab* tab) const {
+osg::Group* ControlGeometryBuilder::buildTab(const Tab* tab) const {
 	osg::ref_ptr<osg::Group> group = new osg::Group;
 
 	// Build up the background of the entire tab.
@@ -294,7 +293,7 @@ osg::Group* Default::buildTab(const Tab* tab) const {
 	return group.release();
 }
 
-osg::Switch* Default::buildTabButton(const Tab* tab, const TabPage* page, int index) const {
+osg::Switch* ControlGeometryBuilder::buildTabButton(const Tab* tab, const TabPage* page, int index) const {
 	osg::ref_ptr<osg::Switch> group = new osg::Switch;
 
 	// Test to see if this button should be visible or not.
@@ -380,11 +379,11 @@ osg::Switch* Default::buildTabButton(const Tab* tab, const TabPage* page, int in
 	return group.release();
 }
 
-osg::Group* Default::buildTabPage(const TabPage* /*page*/) const {
+osg::Group* ControlGeometryBuilder::buildTabPage(const TabPage* /*page*/) const {
 	return NULL;
 }
 
-osg::Group* Default::buildWindow(const Window* window) const {
+osg::Group* ControlGeometryBuilder::buildWindow(const Window* window) const {
 	osg::ref_ptr<osg::Geode> geode = new osg::Geode;
 
 	// Fetch all necesarry data that we need.
@@ -453,7 +452,7 @@ osg::Group* Default::buildWindow(const Window* window) const {
 	return group.release();
 }
 
-osg::Group* Default::buildButton(const Button* button) const {
+osg::Group* ControlGeometryBuilder::buildButton(const Button* button) const {
 	osg::ref_ptr<osg::Geode> geode = new osg::Geode;
 
 	// Fetch all necesarry data that we need.
@@ -488,7 +487,7 @@ osg::Group* Default::buildButton(const Button* button) const {
 	return group.release();
 }
 
-osg::Group* Default::buildCheckBox(const CheckBox* checkBox) const {
+osg::Group* ControlGeometryBuilder::buildCheckBox(const CheckBox* checkBox) const {
 	const Size& size = checkBox->getSize();
 	
 	osg::ref_ptr<osg::Geode> geode = new osg::Geode;
@@ -536,7 +535,7 @@ osg::Group* Default::buildCheckBox(const CheckBox* checkBox) const {
 	return group.release();
 }
 
-osg::Group* Default::buildLabel(const Label* label) const {
+osg::Group* ControlGeometryBuilder::buildLabel(const Label* label) const {
 	osg::ref_ptr<osg::Geode> geode = new osg::Geode;
 
     osg::ref_ptr<osgText::Text> button_text = new osgText::Text;
@@ -581,7 +580,7 @@ osg::Group* Default::buildLabel(const Label* label) const {
 	return group.release();
 }
 
-osg::Group* Default::buildListBox(const ListBox* listBox) const {
+osg::Group* ControlGeometryBuilder::buildListBox(const ListBox* listBox) const {
 	osg::ref_ptr<osg::Geode> geode = new osg::Geode;
 
 	// Fetch all necesarry data that we need.
@@ -607,7 +606,7 @@ osg::Group* Default::buildListBox(const ListBox* listBox) const {
 	return group.release();
 }
 
-osg::Switch* Default::buildListBoxItem(const ListBox* listBox, const ListBoxItem* listBoxItem) const {
+osg::Switch* ControlGeometryBuilder::buildListBoxItem(const ListBox* listBox, const ListBoxItem* listBoxItem) const {
 	const Size& size = listBoxItem->getSize();
 	float x1 = 0 - (size.m_W/2);
 	float y1 = size.m_H / 2;
@@ -642,37 +641,36 @@ osg::Switch* Default::buildListBoxItem(const ListBox* listBox, const ListBoxItem
 	return group.release();
 }
 
-Size Default::getWindowClientAreaSize(const Window* window) const {
+Size ControlGeometryBuilder::getWindowClientAreaSize(const Window* window) const {
 	Size windowSize = window->getSize();
 	return Size(windowSize.m_W - getBorderWidth(), windowSize.m_H - getBorderWidth() - getCaptionHeight());
 }
 
-Point Default::getWindowClientAreaLocation(const Window* /*window*/) const {
+Point ControlGeometryBuilder::getWindowClientAreaLocation(const Window* /*window*/) const {
 	return Point(0, 0 - (getCaptionHeight() / 2));
 }
 
-Size Default::getTabPageClientAreaSize(const Tab* tab) const {
+Size ControlGeometryBuilder::getTabPageClientAreaSize(const Tab* tab) const {
 	Size tabSize = tab->getSize();
 	return Size(tabSize.m_W, tabSize.m_H - m_Colors.tabButtonHeight);
 }
 
-Point Default::getTabPageClientAreaLocation(const Tab* /*tab*/) const {
+Point ControlGeometryBuilder::getTabPageClientAreaLocation(const Tab* /*tab*/) const {
 	return Point(0.0f, 0.0f - (m_Colors.tabButtonHeight / 2));
 }
 
-float Default::getBorderWidth() const {
+float ControlGeometryBuilder::getBorderWidth() const {
 	return 1.0f;
 }
 
-float Default::getCaptionHeight() const {
+float ControlGeometryBuilder::getCaptionHeight() const {
 	return 7.0f;
 }
 
-std::string Default::getCaptionFont() const {
+std::string ControlGeometryBuilder::getCaptionFont() const {
 	return "screeninfo.ttf";
 }
 
-} // namespace themes
 } // namespace wf
 
 CSP_NAMESPACE_END

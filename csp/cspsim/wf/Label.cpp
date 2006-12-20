@@ -22,18 +22,18 @@
  *
  **/
 
+#include <csp/cspsim/wf/ControlGeometryBuilder.h>
 #include <csp/cspsim/wf/Label.h>
-#include <csp/cspsim/wf/Theme.h>
 #include <osg/Group>
 
 CSP_NAMESPACE
 
 namespace wf {
 
-Label::Label(Theme* theme) : Control(theme), m_Alignment(osgText::Text::LEFT_CENTER) {
+Label::Label() : m_Alignment(osgText::Text::LEFT_CENTER) {
 }
 
-Label::Label(Theme* theme, const std::string text) : Control(theme), m_Text(text), m_Alignment(osgText::Text::LEFT_CENTER) {
+Label::Label(const std::string text) : m_Text(text), m_Alignment(osgText::Text::LEFT_CENTER) {
 }
 
 Label::~Label() {
@@ -43,7 +43,8 @@ void Label::buildGeometry() {
 	// Make sure that all our child controls onInit() is called.
 	Control::buildGeometry();	
 	
-	osg::ref_ptr<osg::Group> label = getTheme()->buildLabel(this);
+	ControlGeometryBuilder geometryBuilder;
+	osg::ref_ptr<osg::Group> label = geometryBuilder.buildLabel(this);
 	getNode()->addChild(label.get());
 }
 

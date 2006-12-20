@@ -39,7 +39,7 @@ namespace wf {
  */
 class Tab : public Container {
 public:
-	Tab(Theme* theme);
+	Tab();
 	virtual ~Tab();
 
 	virtual ControlVector getChildControls();

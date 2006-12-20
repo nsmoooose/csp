@@ -33,7 +33,7 @@ namespace windows {
 
 class Options : public wf::Window {
 public:
-	Options(wf::Theme* theme);
+	Options();
 	virtual ~Options();
 	
 private:

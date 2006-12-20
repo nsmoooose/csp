@@ -29,7 +29,7 @@ CSP_NAMESPACE
 
 namespace wf {
 
-SingleControlContainer::SingleControlContainer(Theme* theme) : Container(theme) {
+SingleControlContainer::SingleControlContainer() {
 }
 
 SingleControlContainer::~SingleControlContainer() {

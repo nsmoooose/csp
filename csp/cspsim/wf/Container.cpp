@@ -28,7 +28,7 @@ CSP_NAMESPACE
 
 namespace wf {
 
-Container::Container(Theme* theme) : Control(theme) {
+Container::Container() {
 }
 
 Container::~Container() {

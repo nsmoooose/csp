@@ -40,8 +40,8 @@ namespace wf {
  */
 class Label : public Control {
 public:
-	Label(Theme* theme);
-	Label(Theme* theme, const std::string text);
+	Label();
+	Label(const std::string text);
 	virtual ~Label();
 
 	virtual void buildGeometry();

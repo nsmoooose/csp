@@ -22,9 +22,9 @@
  *
  **/
 
+#include <csp/cspsim/wf/ControlGeometryBuilder.h>
 #include <csp/cspsim/wf/Label.h>
 #include <csp/cspsim/wf/ListBoxItem.h>
-#include <csp/cspsim/wf/Theme.h>
 #include <csp/cspsim/wf/WindowManager.h>
 
 #include <osg/Switch>
@@ -33,16 +33,16 @@ CSP_NAMESPACE
 
 namespace wf {
 
-ListBoxItem::ListBoxItem(Theme* theme) : SingleControlContainer(theme) {
-	Ref<Label> label = new Label(theme);
+ListBoxItem::ListBoxItem() {
+	Ref<Label> label = new Label();
 	label->setAlignment(osgText::Text::CENTER_CENTER);
 	label->setZPos(-0.1f);
 	setControl(label.get());
 	setSize(Size(30.0f, 7.0f));
 }
 
-ListBoxItem::ListBoxItem(Theme* theme, const std::string text) : SingleControlContainer(theme), m_Text(text) {
-	Ref<Label> label = new Label(theme, text);
+ListBoxItem::ListBoxItem(const std::string text) : m_Text(text) {
+	Ref<Label> label = new Label(text);
 	label->setAlignment(osgText::Text::CENTER_CENTER);
 	label->setZPos(-0.1f);
 	setControl(label.get());
@@ -66,7 +66,8 @@ void ListBoxItem::buildGeometry() {
 	// Make sure that all our child controls onInit() is called.
 	SingleControlContainer::buildGeometry();
 	
-	osg::ref_ptr<osg::Switch> item = getTheme()->buildListBoxItem((ListBox*)getParent(), this);
+	ControlGeometryBuilder geometryBuilder;
+	osg::ref_ptr<osg::Switch> item = geometryBuilder.buildListBoxItem((ListBox*)getParent(), this);
 	getNode()->addChild(item.get());	
 }
 

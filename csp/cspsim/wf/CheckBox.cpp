@@ -24,8 +24,8 @@
 
 #include <csp/cspsim/Animation.h>
 #include <csp/cspsim/wf/CheckBox.h>
+#include <csp/cspsim/wf/ControlGeometryBuilder.h>
 #include <csp/cspsim/wf/Label.h>
-#include <csp/cspsim/wf/Theme.h>
 #include <csp/cspsim/wf/WindowManager.h>
 
 #include <osg/Group>
@@ -47,10 +47,10 @@ private:
 	CheckBox* m_CheckBox;
 };
 
-CheckBox::CheckBox(Theme* theme) : Control(theme), m_Checked(false) {
+CheckBox::CheckBox() : m_Checked(false) {
 }
 
-CheckBox::CheckBox(Theme* theme, const std::string text) : Control(theme), m_Text(text), m_Checked(false) {
+CheckBox::CheckBox(const std::string text) : m_Text(text), m_Checked(false) {
 }
 
 CheckBox::~CheckBox() {
@@ -61,7 +61,8 @@ void CheckBox::buildGeometry() {
 	Control::buildGeometry();
 	
 	// Build our own button control and add it to the group.
-	osg::ref_ptr<osg::Group> checkBox = getTheme()->buildCheckBox(this);
+	ControlGeometryBuilder geometryBuilder;
+	osg::ref_ptr<osg::Group> checkBox = geometryBuilder.buildCheckBox(this);
 	osg::ref_ptr<CheckBoxClickedCallback> callback = new CheckBoxClickedCallback(this);
 	checkBox->setUpdateCallback(callback.get());
 	getNode()->addChild(checkBox.get());		

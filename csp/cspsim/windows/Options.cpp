@@ -35,7 +35,7 @@ CSP_NAMESPACE
 
 namespace windows {
 
-Options::Options(wf::Theme* theme) : wf::Window(theme) {
+Options::Options() {
 	Ref<wf::Serialization> serializer = new wf::Serialization(getUIPath());
 	serializer->load(this, "default", "options.xml");
 	
@@ -111,7 +111,7 @@ void Options::ok_Click() {
 	
 	// Display a message box that states that you will need to restart the 
 	// simulator.
-	Ref<wf::MessageBox> messageBox = wf::MessageBox::Show(getTheme(), "Information", 
+	Ref<wf::MessageBox> messageBox = wf::MessageBox::Show("Information", 
 		"Changes will not take effect\nuntil you restart the simulator!");
 	getWindowManager()->show(messageBox.get());
 

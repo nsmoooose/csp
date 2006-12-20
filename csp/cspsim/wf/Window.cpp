@@ -22,7 +22,7 @@
  *
  **/
 
-#include <csp/cspsim/wf/Theme.h>
+#include <csp/cspsim/wf/ControlGeometryBuilder.h>
 #include <csp/cspsim/wf/Window.h>
 #include <csp/cspsim/wf/WindowManager.h>
 
@@ -32,14 +32,12 @@ CSP_NAMESPACE
 
 namespace wf {
 
-Window::Window(Theme* theme) : 
-	SingleControlContainer(theme),
+Window::Window() : 
 	m_WindowManager(NULL),
 	m_Caption("Caption") {
 }
 
-Window::Window(Theme* theme, std::string caption) : 
-	SingleControlContainer(theme),
+Window::Window(std::string caption) : 
 	m_WindowManager(NULL),
 	m_Caption(caption) {
 }
@@ -58,7 +56,8 @@ void Window::setCaption(const std::string &caption) {
 void Window::buildGeometry() {
 	SingleControlContainer::buildGeometry();
 
-	getNode()->addChild(getTheme()->buildWindow(this));
+	ControlGeometryBuilder geometryBuilder;
+	getNode()->addChild(geometryBuilder.buildWindow(this));
 }
 
 WindowManager* Window::getWindowManager() {
@@ -72,9 +71,9 @@ void Window::setWindowManager(WindowManager* manager) {
 void Window::layoutChildControls() {
 	Control* childControl = getControl();
 	if(childControl != NULL) {
-		Theme* theme = getTheme();
-		childControl->setSize(theme->getWindowClientAreaSize(this));
-		childControl->setLocation(theme->getWindowClientAreaLocation(this));
+		ControlGeometryBuilder geometryBuilder;
+		childControl->setSize(geometryBuilder.getWindowClientAreaSize(this));
+		childControl->setLocation(geometryBuilder.getWindowClientAreaLocation(this));
 		Container* container = dynamic_cast<Container*>(childControl);
 		if(container != NULL) {
 			container->layoutChildControls();

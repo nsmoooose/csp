@@ -34,24 +34,23 @@
 #include <csp/cspsim/wf/Serialization.h>
 #include <csp/cspsim/wf/Tab.h>
 #include <csp/cspsim/wf/TableControlContainer.h>
-#include <csp/cspsim/wf/Theme.h>
 #include <csp/cspsim/wf/Window.h>
 
 CSP_NAMESPACE
 
 namespace wf {
 
-void ToValue(Theme* theme, XMLNode& node, const std::string& src, bool* dst);
-void ToValue(Theme* theme, XMLNode& node, const std::string& src, float* dst);
-void ToValue(Theme* theme, XMLNode& node, const std::string& src, double* dst);
-void ToValue(Theme* theme, XMLNode& node, const std::string& src, std::string* dst);
-void ToValue(Theme* theme, XMLNode& node, const std::string& src, Ref<wf::Control>* dst);
-void ToValue(Theme* theme, XMLNode& node, const std::string& src, ControlVector* dst);
-void ToValue(Theme* theme, XMLNode& node, const std::string& src, ListBoxItemVector* dst);
-void ToValue(Theme* theme, XMLNode& node, const std::string& src, TabPageVector* dst);
-void ToValue(Theme* theme, XMLNode& node, const std::string& src, TableControlContainer::ColumnVector* dst);
-void ToValue(Theme* theme, XMLNode& node, const std::string& src, TableControlContainer::RowVector* dst);
-void ToValue(Theme* theme, XMLNode& node, const std::string& src, TableControlContainer::XYVector* dst);
+void ToValue(XMLNode& node, const std::string& src, bool* dst);
+void ToValue(XMLNode& node, const std::string& src, float* dst);
+void ToValue(XMLNode& node, const std::string& src, double* dst);
+void ToValue(XMLNode& node, const std::string& src, std::string* dst);
+void ToValue(XMLNode& node, const std::string& src, Ref<wf::Control>* dst);
+void ToValue(XMLNode& node, const std::string& src, ControlVector* dst);
+void ToValue(XMLNode& node, const std::string& src, ListBoxItemVector* dst);
+void ToValue(XMLNode& node, const std::string& src, TabPageVector* dst);
+void ToValue(XMLNode& node, const std::string& src, TableControlContainer::ColumnVector* dst);
+void ToValue(XMLNode& node, const std::string& src, TableControlContainer::RowVector* dst);
+void ToValue(XMLNode& node, const std::string& src, TableControlContainer::XYVector* dst);
 
 /** This class is an interface for all xml string conversion to
  * the internal data representation in our objects.
@@ -61,7 +60,7 @@ public:
 	/** This method must be implemented in order to make a data 
 	 * conversion to the internal type of an object. 
 	 */
-	virtual void Convert(Theme* theme, XMLNode& node, const std::string& value)=0;
+	virtual void Convert(XMLNode& node, const std::string& value)=0;
 };
 
 /** A template based class that implements the converter interface.
@@ -77,9 +76,9 @@ public:
 	 */
 	TypedStringConverter(T* pointer) : m_Pointer(pointer) {}
 	
-	virtual void Convert(Theme* theme, XMLNode& node, const std::string& value) {
+	virtual void Convert(XMLNode& node, const std::string& value) {
 		// Call a method to convert the string. 
-		ToValue(theme, node, value, m_Pointer);
+		ToValue(node, value, m_Pointer);
 	}
 	
 private:
@@ -99,7 +98,7 @@ public:
 	}
 	
 	template<class T>
-	void load(Theme* theme, T* object, XMLNode& node) {
+	void load(T* object, XMLNode& node) {
 		object->serialize(*this);
 	
 		// First we iterate all nodes and converts values into the objects
@@ -114,7 +113,7 @@ public:
 				if(childNode.nText() > 0) {
 					text = childNode.getText();
 				}
-				converter->second->Convert(theme, childNode, text);
+				converter->second->Convert(childNode, text);
 			}						
 		}
 		// Then we take all attributes and converts them into the objects
@@ -126,21 +125,21 @@ public:
 			NodeConverterMap::iterator converter = m_NodeConverter.find(name);
 			if(converter != m_NodeConverter.end()) {
 				std::string text = node.getAttributeValue(index);
-				converter->second->Convert(theme, node, text);
+				converter->second->Convert(node, text);
 			}						
 		}
 	}
 
 	template<class T>
-	void loadControl(Theme* theme, T* control, XMLNode& node) {
-		load(theme, control, node);
+	void loadControl(T* control, XMLNode& node) {
+		load(control, node);
 	}
 	
 	void loadDocument(Window* window, XMLNode& document) {
 		// Process resource includes...
 	
 		XMLNode node = document.selectSingleNode("WindowDocument/Window");
-		loadControl(window->getTheme(), window, node);
+		loadControl(window, node);
 
 		// Fix all parent references that is missing due to serialization.
 		setParent(window);
@@ -184,57 +183,57 @@ void Serialization::load(Window* window, const std::string& theme, const std::st
 	archive.loadDocument(window, document);
 }
 
-Ref<Control> createControl(Theme* theme, XMLNode& node) {
+Ref<Control> createControl(XMLNode& node) {
 	ReadingArchive archive;
 	std::string name = node.getName();
 	if(name == "Button") {
-		Ref<Button> control = new Button(theme);
-		archive.loadControl(theme, control.get(), node);
+		Ref<Button> control = new Button();
+		archive.loadControl(control.get(), node);
 		return control;
 	}
 	else if(name == "CheckBox") {
-		Ref<CheckBox> control = new CheckBox(theme);
-		archive.loadControl(theme, control.get(), node);
+		Ref<CheckBox> control = new CheckBox();
+		archive.loadControl(control.get(), node);
 		return control;
 	}
 	else if(name == "Item") {
-		Ref<ListBoxItem> control = new ListBoxItem(theme);
-		archive.loadControl(theme, control.get(), node);
+		Ref<ListBoxItem> control = new ListBoxItem();
+		archive.loadControl(control.get(), node);
 		return control;
 	}
 	else if(name == "Label") {
-		Ref<Label> control = new Label(theme);
-		archive.loadControl(theme, control.get(), node);
+		Ref<Label> control = new Label();
+		archive.loadControl(control.get(), node);
 		return control;
 	}
 	else if(name == "ListBox") {
-		Ref<ListBox> control = new ListBox(theme);
-		archive.loadControl(theme, control.get(), node);
+		Ref<ListBox> control = new ListBox();
+		archive.loadControl(control.get(), node);
 		return control;
 	}
 	else if(name == "MultiControlContainer") {
-		Ref<MultiControlContainer> control = new MultiControlContainer(theme);
-		archive.loadControl(theme, control.get(), node);
+		Ref<MultiControlContainer> control = new MultiControlContainer();
+		archive.loadControl(control.get(), node);
 		return control;
 	}
 	else if(name == "SingleControlContainer") {
-		Ref<SingleControlContainer> control = new SingleControlContainer(theme);
-		archive.loadControl(theme, control.get(), node);
+		Ref<SingleControlContainer> control = new SingleControlContainer();
+		archive.loadControl(control.get(), node);
 		return control;
 	}
 	else if(name == "Tab") {
-		Ref<Tab> control = new Tab(theme);
-		archive.loadControl(theme, control.get(), node);
+		Ref<Tab> control = new Tab();
+		archive.loadControl(control.get(), node);
 		return control;
 	}
 	else if(name == "Page") {
-		Ref<TabPage> control = new TabPage(theme);
-		archive.loadControl(theme, control.get(), node);
+		Ref<TabPage> control = new TabPage();
+		archive.loadControl(control.get(), node);
 		return control;
 	}
 	else if(name == "TableControlContainer") {
-		Ref<TableControlContainer> control = new TableControlContainer(theme);
-		archive.loadControl(theme, control.get(), node);
+		Ref<TableControlContainer> control = new TableControlContainer();
+		archive.loadControl(control.get(), node);
 		return control;
 	}
 	else {
@@ -242,7 +241,7 @@ Ref<Control> createControl(Theme* theme, XMLNode& node) {
 	}	
 }
 
-void ToValue(Theme* theme, XMLNode& node, const std::string& src, bool* dst) {
+void ToValue(XMLNode& node, const std::string& src, bool* dst) {
 	if(src == "1" || src == "true") {
 		*dst = true;
 	} 
@@ -251,60 +250,60 @@ void ToValue(Theme* theme, XMLNode& node, const std::string& src, bool* dst) {
 	}
 }
 
-void ToValue(Theme* theme, XMLNode& node, const std::string& src, float* dst) {
+void ToValue(XMLNode& node, const std::string& src, float* dst) {
 	*dst = (float)atof(src.c_str());
 }
 
-void ToValue(Theme* theme, XMLNode& node, const std::string& src, double* dst) {
+void ToValue(XMLNode& node, const std::string& src, double* dst) {
 	*dst = atof(src.c_str());
 }
 
-void ToValue(Theme* theme, XMLNode& node, const std::string& src, std::string* dst) {
+void ToValue(XMLNode& node, const std::string& src, std::string* dst) {
 	*dst = src;
 }
 
-void ToValue(Theme* theme, XMLNode& node, const std::string& src, Ref<wf::Control>* dst) {
+void ToValue(XMLNode& node, const std::string& src, Ref<wf::Control>* dst) {
 	int childNodeCount = node.nChildNode();
 	if(childNodeCount > 0) {
 		XMLNode childNode = node.getChildNode(0);
-		*dst = createControl(theme, childNode);
+		*dst = createControl(childNode);
 	}
 }
 
-void ToValue(Theme* theme, XMLNode& node, const std::string& src, ControlVector* dst) {
+void ToValue(XMLNode& node, const std::string& src, ControlVector* dst) {
 	int childNodeCount = node.nChildNode();
 	for(int index = 0;index < childNodeCount;++index) {
 		XMLNode childNode = node.getChildNode(index);
-		Ref<Control> control = createControl(theme, childNode);
+		Ref<Control> control = createControl(childNode);
 		if(control.valid()) {
 			dst->push_back(control);
 		}
 	}
 }
 
-void ToValue(Theme* theme, XMLNode& node, const std::string& src, ListBoxItemVector* dst) {
+void ToValue(XMLNode& node, const std::string& src, ListBoxItemVector* dst) {
 	int childNodeCount = node.nChildNode();
 	for(int index = 0;index < childNodeCount;++index) {
 		XMLNode childNode = node.getChildNode(index);
-		Ref<Control> control = createControl(theme, childNode);
+		Ref<Control> control = createControl(childNode);
 		if(control.valid()) {
 			dst->push_back(control);
 		}
 	}
 }
 
-void ToValue(Theme* theme, XMLNode& node, const std::string& src, TabPageVector* dst) {
+void ToValue(XMLNode& node, const std::string& src, TabPageVector* dst) {
 	int childNodeCount = node.nChildNode();
 	for(int index = 0;index < childNodeCount;++index) {
 		XMLNode childNode = node.getChildNode(index);
-		Ref<Control> control = createControl(theme, childNode);
+		Ref<Control> control = createControl(childNode);
 		if(control.valid()) {
 			dst->push_back(control);
 		}
 	}
 }
 
-void ToValue(Theme* theme, XMLNode& node, const std::string& src, TableControlContainer::ColumnVector* dst) {
+void ToValue(XMLNode& node, const std::string& src, TableControlContainer::ColumnVector* dst) {
 	int childNodeCount = node.nChildNode();
 	for(int index = 0;index < childNodeCount;++index) {
 		XMLNode childNode = node.getChildNode(index);
@@ -312,12 +311,12 @@ void ToValue(Theme* theme, XMLNode& node, const std::string& src, TableControlCo
 		TableControlContainerColumn column;
 
 		ReadingArchive archive;
-		archive.load(theme, &column, childNode);
+		archive.load(&column, childNode);
 		dst->push_back(column);
 	}
 }
 
-void ToValue(Theme* theme, XMLNode& node, const std::string& src, TableControlContainer::RowVector* dst) {
+void ToValue(XMLNode& node, const std::string& src, TableControlContainer::RowVector* dst) {
 	int childNodeCount = node.nChildNode();
 	for(int index = 0;index < childNodeCount;++index) {
 		XMLNode childNode = node.getChildNode(index);
@@ -325,12 +324,12 @@ void ToValue(Theme* theme, XMLNode& node, const std::string& src, TableControlCo
 		TableControlContainerRow row;
 
 		ReadingArchive archive;
-		archive.load(theme, &row, childNode);
+		archive.load(&row, childNode);
 		dst->push_back(row);
 	}
 }
 
-void ToValue(Theme* theme, XMLNode& node, const std::string& src, TableControlContainer::XYVector* dst) {
+void ToValue(XMLNode& node, const std::string& src, TableControlContainer::XYVector* dst) {
 	bool resizeVector = true;
 
 	// Iterate all rows that is found.
@@ -355,7 +354,7 @@ void ToValue(Theme* theme, XMLNode& node, const std::string& src, TableControlCo
 			XMLNode cellNode = rowNode.getChildNode(cellIndex);
 			if(cellNode.nChildNode() > 0) {
 				XMLNode controlNode = cellNode.getChildNode(0);
-				Ref<Control> cellControl = createControl(theme, controlNode);
+				Ref<Control> cellControl = createControl(controlNode);
 				
 				(*dst)[cellIndex][rowIndex] = cellControl;
 			}

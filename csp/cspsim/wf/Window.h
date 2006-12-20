@@ -46,8 +46,8 @@ class Window : public SingleControlContainer {
 public:
 	friend WindowManager;
 	
-	Window(Theme* theme);
-	Window(Theme* theme, std::string caption);
+	Window();
+	Window(std::string caption);
 	virtual ~Window();
 
 	virtual void setWindowManager(WindowManager* manager);

@@ -41,8 +41,8 @@ class Label;
  */
 class CheckBox : public Control {
 public:
-	CheckBox(Theme* theme);
-	CheckBox(Theme* theme, const std::string text);
+	CheckBox();
+	CheckBox(const std::string text);
 	virtual ~CheckBox();
 
 	virtual void buildGeometry();

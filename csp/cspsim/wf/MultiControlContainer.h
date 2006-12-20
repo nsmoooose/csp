@@ -42,7 +42,7 @@ namespace wf {
  */
 class MultiControlContainer : public Container {
 public:
-	MultiControlContainer(Theme* theme);
+	MultiControlContainer();
 	virtual ~MultiControlContainer();
 	
 	virtual ControlVector getChildControls();

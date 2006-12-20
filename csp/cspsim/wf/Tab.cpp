@@ -23,9 +23,9 @@
  **/
 
 #include <csp/cspsim/Animation.h>
+#include <csp/cspsim/wf/ControlGeometryBuilder.h>
 #include <csp/cspsim/wf/Tab.h>
 #include <csp/cspsim/wf/TabPage.h>
-#include <csp/cspsim/wf/Theme.h>
 #include <osg/Switch>
 
 CSP_NAMESPACE
@@ -48,7 +48,7 @@ private:
 	TabPage* m_Page;
 };
 
-Tab::Tab(Theme* theme) : Container(theme), m_CurrentPage(NULL) {
+Tab::Tab() : m_CurrentPage(NULL) {
 }
 
 Tab::~Tab() {
@@ -73,13 +73,14 @@ void Tab::buildGeometry() {
 	}
 	
 	// Get the geometry fot the tab control. This is only the default background of a page.
-	getNode()->addChild(getTheme()->buildTab(this));
+	ControlGeometryBuilder geometryBuilder;
+	getNode()->addChild(geometryBuilder.buildTab(this));
 	
 	TabPageVector::iterator page = m_Pages.begin();
 	int index = 0;
 	for(;page != m_Pages.end();++page,++index) {	
 		// Create a button for the page and add it to our control tree.
-		osg::ref_ptr<osg::Switch> button = getTheme()->buildTabButton(this, page->get(), index);
+		osg::ref_ptr<osg::Switch> button = geometryBuilder.buildTabButton(this, page->get(), index);
 		osg::ref_ptr<TabClickedCallback> callback = new TabClickedCallback(this, page->get());
 		button->getChild(1)->setUpdateCallback(callback.get());
 
@@ -96,8 +97,9 @@ void Tab::buildGeometry() {
 void Tab::layoutChildControls() {
 	TabPageVector::iterator page = m_Pages.begin();
 	for(;page != m_Pages.end();++page) {
-		(*page)->setSize(getTheme()->getTabPageClientAreaSize(this));
-		(*page)->setLocation(getTheme()->getTabPageClientAreaLocation(this));
+		ControlGeometryBuilder geometryBuilder;
+		(*page)->setSize(geometryBuilder.getTabPageClientAreaSize(this));
+		(*page)->setLocation(geometryBuilder.getTabPageClientAreaLocation(this));
 		(*page)->layoutChildControls();
 	}
 }

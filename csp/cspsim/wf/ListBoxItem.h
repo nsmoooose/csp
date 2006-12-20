@@ -38,8 +38,8 @@ namespace wf {
  */
 class ListBoxItem : public SingleControlContainer {
 public:
-	ListBoxItem(Theme* theme);
-	ListBoxItem(Theme* theme, const std::string text);
+	ListBoxItem();
+	ListBoxItem(const std::string text);
 	virtual ~ListBoxItem();
 
 	virtual void buildGeometry();

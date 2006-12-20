@@ -33,7 +33,7 @@ namespace windows {
 
 class QuitResume : public wf::Window {
 public:
-	QuitResume(wf::Theme* theme);
+	QuitResume();
 	virtual ~QuitResume();
 	
 private:

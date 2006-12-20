@@ -23,10 +23,10 @@
  **/
 
 #include <csp/cspsim/wf/Button.h>
+#include <csp/cspsim/wf/ControlGeometryBuilder.h>
 #include <csp/cspsim/wf/Label.h>
 #include <csp/cspsim/wf/MessageBox.h>
 #include <csp/cspsim/wf/MultiControlContainer.h>
-#include <csp/cspsim/wf/Theme.h>
 
 #include <osg/Group>
 
@@ -41,13 +41,13 @@ namespace wf {
 	* Bitmap with an icon according to warning / information / error etc.
  */
 
-MessageBox::MessageBox(Theme* theme, std::string caption, std::string message) : Window(theme, caption), m_Label(new Label(theme, message)) {
+MessageBox::MessageBox(std::string caption, std::string message) : Window(caption), m_Label(new Label(message)) {
 	setSize(Size(140.0f, 45.0f));
 	
-	Ref<MultiControlContainer> container = new MultiControlContainer(theme);
+	Ref<MultiControlContainer> container = new MultiControlContainer();
 	setControl(container.get());
 	
-	Ref<Button> button = new Button(theme, "OK");
+	Ref<Button> button = new Button("OK");
 	button->setSize(Size(20.0f, 10.0f));
 	button->setLocation(Point(0.0f, -10.0f));
 	button->addButtonClickedHandler(sigc::mem_fun(*this, &MessageBox::onOk));
@@ -78,8 +78,8 @@ void MessageBox::onOk() {
 	close();
 }
 
-Ref<MessageBox> MessageBox::Show(Theme* theme, std::string caption, std::string message) {
-	Ref<MessageBox> messageBox = new MessageBox(theme, caption, message);
+Ref<MessageBox> MessageBox::Show(std::string caption, std::string message) {
+	Ref<MessageBox> messageBox = new MessageBox(caption, message);
 	return messageBox;
 }
 

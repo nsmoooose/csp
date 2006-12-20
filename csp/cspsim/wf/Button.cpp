@@ -24,8 +24,8 @@
 
 #include <csp/cspsim/Animation.h>
 #include <csp/cspsim/wf/Button.h>
+#include <csp/cspsim/wf/ControlGeometryBuilder.h>
 #include <csp/cspsim/wf/Label.h>
-#include <csp/cspsim/wf/Theme.h>
 #include <csp/cspsim/wf/WindowManager.h>
 
 #include <osg/Group>
@@ -48,16 +48,16 @@ private:
 	Button* m_Button;
 };
 
-Button::Button(Theme* theme) : SingleControlContainer(theme) {
-	Ref<Label> label = new Label(theme);
+Button::Button() : SingleControlContainer() {
+	Ref<Label> label = new Label();
 	label->setAlignment(osgText::Text::CENTER_CENTER);
 	setControl(label.get());
 }
 
-Button::Button(Theme* theme, const std::string text) 
-	: SingleControlContainer(theme), m_text(text) {
+Button::Button(const std::string text) 
+	: SingleControlContainer(), m_text(text) {
 
-	Ref<Label> label = new Label(theme);
+	Ref<Label> label = new Label();
 	label->setAlignment(osgText::Text::CENTER_CENTER);
 	setControl(label.get());
 }
@@ -76,7 +76,8 @@ void Button::buildGeometry() {
 	SingleControlContainer::buildGeometry();
 
 	// Build our own button control and add it to the group.
-	osg::ref_ptr<osg::Group> button = getTheme()->buildButton(this);
+	ControlGeometryBuilder geometryBuilder;
+	osg::ref_ptr<osg::Group> button = geometryBuilder.buildButton(this);
 	osg::ref_ptr<ButtonClickedCallback> callback = new ButtonClickedCallback(m_ButtonClicked, this);
 	if(button->getUpdateCallback() == NULL) {
 		button->setUpdateCallback(callback.get());

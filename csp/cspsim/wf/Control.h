@@ -47,7 +47,6 @@ CSP_NAMESPACE
 namespace wf {
 
 class Control;
-class Theme;
 class WindowManager;
 
 typedef std::vector<Ref<Control> > ControlVector;
@@ -68,7 +67,7 @@ struct Rect {
  */
 class Control : public Referenced {
 public:
-	Control(Theme* theme);
+	Control();
 	virtual ~Control();
 
 	virtual const std::string& getId() const;
@@ -76,7 +75,6 @@ public:
 	
 	virtual Control* getParent();
 	virtual void setParent(Control* parent);
-	virtual Theme* getTheme();
 	virtual WindowManager* getWindowManager();
 
 	/** Function that generates all geometry that is used to display the widget.
@@ -109,7 +107,6 @@ public:
 protected:
 
 private:
-	const Ref<Theme> m_Theme;
 	std::string m_Id;
 
 	osg::ref_ptr<osg::MatrixTransform> m_TransformGroup;

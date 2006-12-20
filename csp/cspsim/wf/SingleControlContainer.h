@@ -43,7 +43,7 @@ namespace wf {
  */
 class SingleControlContainer : public Container {
 public:
-	SingleControlContainer(Theme* theme);
+	SingleControlContainer();
 	virtual ~SingleControlContainer();
 
 	virtual ControlVector getChildControls();

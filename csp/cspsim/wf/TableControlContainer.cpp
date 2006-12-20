@@ -29,11 +29,11 @@ CSP_NAMESPACE
 
 namespace wf {
 
-TableControlContainer::TableControlContainer(Theme* theme) : Container(theme) {
+TableControlContainer::TableControlContainer() {
 	m_CellPadding.setAll(2.0f);
 }
 
-TableControlContainer::TableControlContainer(Theme* theme, unsigned int columns, unsigned int rows) : Container(theme) {
+TableControlContainer::TableControlContainer(unsigned int columns, unsigned int rows) {
 	setColumnCount(columns);
 	setRowCount(rows);
 

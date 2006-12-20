@@ -35,7 +35,7 @@ class Label;
 
 class MessageBox : public Window {
 public:
-	MessageBox(Theme* theme, std::string caption, std::string message);
+	MessageBox(std::string caption, std::string message);
 	virtual ~MessageBox();
 
 	virtual void buildGeometry();
@@ -43,7 +43,7 @@ public:
 	virtual std::string getMessage() const;
 	virtual void setMessage(std::string message);
 	
-	static Ref<MessageBox> Show(Theme* theme, std::string caption, std::string message);
+	static Ref<MessageBox> Show(std::string caption, std::string message);
 	
 private:
 	Ref<Label> m_Label;	

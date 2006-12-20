@@ -37,7 +37,7 @@ CSP_NAMESPACE
 
 namespace windows {
 
-QuitResume::QuitResume(wf::Theme* theme) : wf::Window(theme) {
+QuitResume::QuitResume() {
 	Ref<wf::Serialization> serializer = new wf::Serialization(getUIPath());
 	serializer->load(this, "default", "quit_resume.xml");
 
@@ -66,7 +66,7 @@ void QuitResume::options_Click() {
 	wf::WindowManager* manager = getWindowManager();
 	if(manager != NULL) {
 		if(!manager->windowIsOpen<Options>()) {
-			Ref<Window> options = new Options(getTheme());
+			Ref<Window> options = new Options();
 			manager->show(options.get());
 		}
 	}

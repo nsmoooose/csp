@@ -354,7 +354,8 @@ void ToValue(Theme* theme, XMLNode& node, const std::string& src, TableControlCo
 		for(int cellIndex=0;cellIndex < cellNodeCount;++cellIndex) {
 			XMLNode cellNode = rowNode.getChildNode(cellIndex);
 			if(cellNode.nChildNode() > 0) {
-				Ref<Control> cellControl = createControl(theme, cellNode.getChildNode(0));
+				XMLNode controlNode = cellNode.getChildNode(0);
+				Ref<Control> cellControl = createControl(theme, controlNode);
 				
 				(*dst)[cellIndex][rowIndex] = cellControl;
 			}

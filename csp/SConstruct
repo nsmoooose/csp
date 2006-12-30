@@ -116,7 +116,6 @@ class Environment(build.Environment):
 	  scons indexserver   build the master server needed for multiplayer
 	  scons dox           generate doxygen documentation
 	  scons runtests      build and run all unittests
-	  scons setup         configure the workspace (only needs to be run once)
 	"""
 
 	INCLUDE = ['#/..', build.GetPythonInclude()]

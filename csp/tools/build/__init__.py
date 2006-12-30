@@ -68,13 +68,12 @@ if __name__ == '__main__':
 	print 'intended to be run as a standalone program.'
 	sys.exit(1)
 
-# csp bootstrap module may not be installed yet, so manually adjust the module
-# search path if necessary.
+# Before doing any real work, check that the csp bootstrap module is installed.
 try:
 	import csp
 except ImportError:
-	csp_parent = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', '..'))
-	sys.path.insert(0, csp_parent)
+	print 'The CSP build environment has not been initialized.  Please'
+	print 'run "python tools/setup.py" as root or admin.'
 
 from csp.tools.build.setup import Environment
 

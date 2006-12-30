@@ -18,22 +18,28 @@
 
 
 """
-Installs a stub module csp.py into the Python site-packages directory,
-allowing csp and its submodules to be imported from the current client
-workspace without modifying the default Python module path.
+Prepares the development workspace for building and running CSP
+and related tools.  In particular, this script installs a stub
+module named csp.py into the Python site-packages directory,
+allowing csp and its submodules to be imported from the current
+client workspace without modifying the default Python module path.
 
-Also prepares the build environment for the current platform.  (Not
-fully implemented yet.)
+This script should be run once as root or admin for each CSP
+subversion client."""
 
-This module is used by the scons build environment.  See the top-level
-README for details.
-"""
+# This module is used by the scons build environment.  See the top-level
+# README for details.  Note that using scons to install the bootstrap
+# module is deprecated, and support for 'scons setup' will be removed.
+# This is because running scons as root causes a number of scons
+# metadata files to be owned by root, which breaks the build when
+# later running scons as a normal user.
 
 import sys
 import os
 import os.path
 import commands
 import logging
+import optparse
 from distutils import sysconfig
 from distutils import file_util
 from distutils import util
@@ -115,3 +121,29 @@ def SetupClientWorkspace(force=0, log=None):
 	installer = BootstrapInstaller(log)
 	return installer.install(force)
 
+
+if __name__ == '__main__':
+	USAGE = '%s [options]\n%s' % (sys.argv[0], __doc__)
+
+	# parse commandline options
+	opt = optparse.OptionParser(usage=USAGE)
+	opt.add_option('-f', '--force', action='store_true', default=False, help='overwrite existing csp module')
+	opt.add_option('--logfile', type='string', default='', help='log messages to this file (instead of stdout)')
+	options, args = opt.parse_args()
+
+	# initialize logging
+	formatter = logging.Formatter('%(levelname)s : %(message)s')
+	setup_log = logging.Logger('setup', logging.INFO)
+	logstream = sys.stdout
+	if options.logfile:
+		logstream = open(options.logfile, 'wt')
+	loghandler = logging.StreamHandler(logstream)
+	loghandler.setFormatter(formatter)
+	setup_log.addHandler(loghandler)
+
+	# setup the client workspace
+	if SetupClientWorkspace(options.force, log=setup_log):
+		print 'Setup complete.'
+	else:
+		print 'Setup failed.'
+		sys.exit(1)

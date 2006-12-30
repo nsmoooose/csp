@@ -241,15 +241,19 @@ def MakeDocumentation(env, target, config, sources):
 
 
 def SetupClientWorkspace(force):
-	sys.path.insert(0, scons.Dir('#').abspath)
-	import tools.setup
-	del sys.path[0]
-	setup_log = logging.Logger('setup', logging.INFO)
-	setup_log.addHandler(logging.FileHandler('.setup.log', mode='wt'))
-	if tools.setup.SetupClientWorkspace(force, log=setup_log):
-		print 'Setup complete.'
-	else:
-		print 'Setup failed; see .setup.log for details.'
+	print '"scons setup" is no longer supported, since running scons'
+	print 'as root causes permissions problems for metadata files'
+	print 'created by scons.  Run "python tools/setup.py" as root'
+    print 'or admin instead.'
+	#sys.path.insert(0, scons.Dir('#').abspath)
+	#import tools.setup
+	#del sys.path[0]
+	#setup_log = logging.Logger('setup', logging.INFO)
+	#setup_log.addHandler(logging.FileHandler('.setup.log', mode='wt'))
+	#if tools.setup.SetupClientWorkspace(force, log=setup_log):
+	#	print 'Setup complete.'
+	#else:
+	#	print 'Setup failed; see .setup.log for details.'
 
 
 def AddSetupTargets(env):

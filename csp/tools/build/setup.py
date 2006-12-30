@@ -244,7 +244,7 @@ def SetupClientWorkspace(force):
 	print '"scons setup" is no longer supported, since running scons'
 	print 'as root causes permissions problems for metadata files'
 	print 'created by scons.  Run "python tools/setup.py" as root'
-    print 'or admin instead.'
+	print 'or admin instead.'
 	#sys.path.insert(0, scons.Dir('#').abspath)
 	#import tools.setup
 	#del sys.path[0]

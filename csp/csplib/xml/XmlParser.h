@@ -210,7 +210,7 @@ public:
 	XMLNode getChildNode(CSP_XMLCSTR name, int *i=NULL);
 
 	// A method for very basic xpath queries.
-	XMLNode XMLNode::selectSingleNode(CSP_XMLCSTR xpath);
+	XMLNode selectSingleNode(CSP_XMLCSTR xpath);
 
 	XMLNode getChildNodeWithAttribute(CSP_XMLCSTR tagName,               // return child node with specific name/attribute
 	                                  CSP_XMLCSTR attributeName,         //     (return an empty node if failing)

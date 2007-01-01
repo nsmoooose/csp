@@ -21,6 +21,7 @@
 #define __CSPLIB_UTIL_BOOLEAN_H__
 
 #include <csp/csplib/util/Namespace.h>
+#include <csp/csplib/util/Uniform.h>
 
 CSP_NAMESPACE
 
@@ -31,7 +32,7 @@ CSP_NAMESPACE
  */
 class tribool {
 	typedef enum { UNSET=0, FALSE=1, TRUE=2 } State;
-	State _state;
+	uint8 _state;
 	tribool(State state): _state(state) {}
 
 public:

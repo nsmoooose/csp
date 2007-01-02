@@ -29,6 +29,7 @@ from csp.tools.build import shortlog
 from csp.tools.build import registry
 from csp.tools.build import scons
 from csp.tools.build import util
+from csp.tools.build import vcproj
 
 import atexit
 import logging
@@ -85,6 +86,7 @@ class Environment:
 			CustomizeForPlatform(env, settings)
 
 		AddSetupTargets(env)
+		AddVCProjectTarget(env)
 		return env
 	Initialize = classmethod(Initialize)
 
@@ -255,11 +257,14 @@ def SetupClientWorkspace(force):
 	#else:
 	#	print 'Setup failed; see .setup.log for details.'
 
-
 def AddSetupTargets(env):
 	def SetupProxy(*args, **kw): SetupClientWorkspace(0)
 	def ForceSetupProxy(*args, **kw): SetupClientWorkspace(1)
 	sources = ['#/tools/csp.bootstrap', '#/tools/setup.py']
 	env.Command('setup', sources, SetupProxy)
 	env.Command('force_setup', sources, ForceSetupProxy)
+
+def AddVCProjectTarget(env):
+	def generate(*args, **kw): vcproj.Generate()
+	env.Command('vcproj', [], generate)
 

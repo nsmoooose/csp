@@ -293,6 +293,7 @@ void GameScreen::on_Quit() {
 	if(!manager->isAnyWindowOpen()) {
 		Ref<wf::Window> quitResumeWindow = new windows::QuitResume();
 		manager->show(quitResumeWindow.get());
+		quitResumeWindow->centerWindow();
 	}
 }
 

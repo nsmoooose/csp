@@ -45,6 +45,8 @@ public:
 	CheckBox(const std::string text);
 	virtual ~CheckBox();
 
+	virtual std::string getName() const;
+
 	virtual void buildGeometry();
 	
 	virtual const std::string getText() const;

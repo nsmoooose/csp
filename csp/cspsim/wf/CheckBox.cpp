@@ -56,6 +56,10 @@ CheckBox::CheckBox(const std::string text) : m_Text(text), m_Checked(false) {
 CheckBox::~CheckBox() {
 }
 
+std::string CheckBox::getName() const {
+	return "CheckBox";
+}
+
 void CheckBox::buildGeometry() {
 	// Make sure that all our child controls onInit() is called.
 	Control::buildGeometry();

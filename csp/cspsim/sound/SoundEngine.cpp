@@ -52,7 +52,7 @@ SoundEngine &SoundEngine::getInstance() {
 }
 
 
-SoundEngine::SoundEngine() {
+SoundEngine::SoundEngine() : m_SoundEnabled(true) {
 }
 
 SoundEngine::~SoundEngine() {
@@ -84,35 +84,52 @@ void SoundEngine::initialize ()
 	}
 	catch (const std::exception& x) {
 		ERR << "Sound engine initialization failed (" << x.what() << ")";
-		throw; // Don't know how to continue without sound.
+		m_SoundEnabled = false;
+		//throw; // Don't know how to continue without sound.
 	}
 	catch (...) {
 		ERR << "Sound engine initialization failed (unknown exception)";
-		throw; // Don't know how to continue without sound.
+		m_SoundEnabled = false;
+		//throw; // Don't know how to continue without sound.
 	}
 	INF << "Sound engine initialization succeeded";
 }
 
 void SoundEngine::shutdown() {
-	getManager()->shutdown();
+	if(m_SoundEnabled) {
+		getManager()->shutdown();
+	}
 }
 
 osgAL::SoundRoot *SoundEngine::getSoundRoot() {
-	if (!m_SoundRoot) createSoundRoot();
-	return m_SoundRoot.get();
+	if(m_SoundEnabled) {
+		if (!m_SoundRoot) createSoundRoot();
+		return m_SoundRoot.get();
+	}
+	return NULL;
+}
+
+bool SoundEngine::getSoundEnabled() {
+	return m_SoundEnabled;
 }
 
 void SoundEngine::createSoundRoot() {
-	assert(!m_SoundRoot);
-	m_SoundRoot = new osgAL::SoundRoot();
+	if(m_SoundEnabled) {
+		assert(!m_SoundRoot);
+		m_SoundRoot = new osgAL::SoundRoot();
+	}
 }
 
 void SoundEngine::mute() {
-	getManager()->getEnvironment()->setGain(0.0);
+	if(m_SoundEnabled) {
+		getManager()->getEnvironment()->setGain(0.0);
+	}
 }
 
 void SoundEngine::unmute() {
-	getManager()->getEnvironment()->setGain(1.0);
+	if(m_SoundEnabled) {
+		getManager()->getEnvironment()->setGain(1.0);
+	}
 }
 
 CSP_NAMESPACE_END

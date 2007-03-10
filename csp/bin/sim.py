@@ -333,7 +333,14 @@ def main(args):
 
 	try:
 		sim.init()
-		createTestObjects(sim, options.objects)
+		if options.loadsimulation:
+			sim.displayLogoScreen()
+			sim.loadSimulation()
+			createTestObjects(sim, options.objects)
+		else:
+			sim.displayLogoScreen()
+			sim.displayMenuScreen()
+			
 		sim.run()
 	finally:
 		sim.cleanup()
@@ -358,5 +365,6 @@ if __name__ == '__main__':
 	csp.base.app.addOption('--pause', action='store_true', default=False, help='pause on startup for attaching a debugger')
 	csp.base.app.addOption('--dumpdata', action='store_true', default=False, help='dump the contents of the data archive')
 	csp.base.app.addOption('--objects', metavar='PATH', default='test_objects', help='python script to place test objects')
+	csp.base.app.addOption('--loadsimulation', action='store_true', default=False, help='starts the simulation with test objects')
 	csp.base.app.start()
 

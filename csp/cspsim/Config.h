@@ -83,6 +83,12 @@ extern CSPSIM_EXPORT void setScreenSettings(const ScreenSettings&);
 
 extern CSPSIM_EXPORT std::string getUIPath();
 
+extern CSPSIM_EXPORT std::string getUILanguage();
+extern CSPSIM_EXPORT void setUILanguage(const std::string& language);
+	
+extern CSPSIM_EXPORT std::string getUITheme();
+extern CSPSIM_EXPORT void setUITheme(const std::string& themeName);
+
 CSP_NAMESPACE_END
 
 #endif // __CSPSIM_CONFIG_H__

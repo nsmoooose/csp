@@ -33,24 +33,14 @@ CSP_NAMESPACE
 namespace wf {
 
 Window::Window() : 
-	m_WindowManager(NULL),
-	m_Caption("Caption") {
-}
-
-Window::Window(std::string caption) : 
-	m_WindowManager(NULL),
-	m_Caption(caption) {
+	m_WindowManager(NULL) {
 }
 
 Window::~Window() {
 }
 
-const std::string &Window::getCaption() const { 
-	return m_Caption; 
-}
-
-void Window::setCaption(const std::string &caption) { 
-	m_Caption = caption; 
+std::string Window::getName() const {
+	return "Window";
 }
 
 void Window::buildGeometry() {
@@ -72,8 +62,9 @@ void Window::layoutChildControls() {
 	Control* childControl = getControl();
 	if(childControl != NULL) {
 		ControlGeometryBuilder geometryBuilder;
-		childControl->setSize(geometryBuilder.getWindowClientAreaSize(this));
-		childControl->setLocation(geometryBuilder.getWindowClientAreaLocation(this));
+		Rect clientRect = getClientRect();
+		childControl->setSize(Size(clientRect.width(), clientRect.height()));
+		childControl->setLocation(Point(clientRect.x0, clientRect.y0));
 		Container* container = dynamic_cast<Container*>(childControl);
 		if(container != NULL) {
 			container->layoutChildControls();
@@ -85,6 +76,75 @@ void Window::close() {
 	if(m_WindowManager != NULL) {
 		m_WindowManager->close(this);
 	}
+}
+
+Window* Window::getWindow(Control* control) {
+	// We call the const version of this method.
+	return const_cast<Window*>(getWindow(static_cast<const Control*>(control)));
+}
+
+const Window* Window::getWindow(const Control* control) {
+	if(control == NULL) {
+		return NULL;
+	}
+	const Window* window = dynamic_cast<const Window*>(control);
+	if(window != NULL) {
+		return window;
+	}	
+	return getWindow(control->getParent());
+}
+
+void Window::setTheme(const std::string& theme) {
+	m_Theme = theme;
+}
+
+std::string Window::getTheme() const {
+	return m_Theme;
+}
+
+optional<Style> Window::getNamedStyle(const std::string& name) const {
+	optional<Style> style;
+	// Assign the style to the optional if it exists in the map.
+	NamedStyleMap::const_iterator styleIterator = m_Styles.find(name);
+	if(styleIterator != m_Styles.end()) {
+		style.assign(styleIterator->second);
+	}
+	return style;
+}
+
+void Window::addNamedStyle(const std::string& name, const Style& style) {
+	m_Styles[name] = style;
+}
+
+void Window::centerWindow() {
+	if(m_WindowManager == NULL) {
+		return;
+	}
+	
+	Size screenSize = m_WindowManager->getScreenSize();
+	Size windowSize = getSize();
+		
+	Point windowLocation = 
+		Point(screenSize.m_W / 2 - windowSize.m_W / 2, 
+		screenSize.m_H / 2 - windowSize.m_H / 2);
+		
+	setLocation(windowLocation);
+
+	layoutChildControls();
+	buildGeometry();
+}
+
+void Window::maximizeWindow() {
+	if(m_WindowManager == NULL) {
+		return;
+	}
+
+	Size screenSize = m_WindowManager->getScreenSize();
+	setSize(screenSize);
+	setLocation(Point(0, 0));
+
+	layoutChildControls();
+	buildGeometry();
 }
 
 } // namespace wf

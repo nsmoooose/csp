@@ -42,21 +42,27 @@ public:
 	ListBoxItem(const std::string text);
 	virtual ~ListBoxItem();
 
+	virtual std::string getName() const;
+
 	virtual void buildGeometry();
 	
 	virtual const std::string getText() const;
 	virtual void setText(const std::string& text);
 		
+	virtual const Style& getSelectedStyle() const;
+		
 	template<class Archive>
 	void serialize(Archive & ar) {
 		Container::serialize(ar);
 		ar & make_nvp("@Text", m_Text);
+		ar & make_nvp("SelectedStyle", m_SelectedStyle);
 	}	
 
 private:
 
 protected:
 	std::string m_Text;
+	Style m_SelectedStyle;
 };
 
 typedef std::vector<Ref<ListBoxItem> > ListBoxItemVector;

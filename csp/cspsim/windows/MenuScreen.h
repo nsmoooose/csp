@@ -1,5 +1,5 @@
 // Combat Simulator Project
-// Copyright (C) 2002 The Combat Simulator Project
+// Copyright (C) 2002-2005 The Combat Simulator Project
 // http://csp.sourceforge.net
 //
 // This program is free software; you can redistribute it and/or
@@ -18,41 +18,49 @@
 
 
 /**
- * @file MessageBox.h
+ * @file MenuScreen.h
  *
  **/
 
-#ifndef __CSPSIM_WF_MESSAGEBOX_H__
-#define __CSPSIM_WF_MESSAGEBOX_H__
+#ifndef __CSPSIM_WINDOWS_MENUSCREEN_H__
+#define __CSPSIM_WINDOWS_MENUSCREEN_H__
 
-#include <csp/cspsim/wf/Window.h>
+#include <csp/cspsim/BaseScreen.h>
+#include <csp/cspsim/wf/WindowManager.h>
 
 CSP_NAMESPACE
 
 namespace wf {
+	class WindowManager;
+}
 
-class Label;
+namespace windows {
 
-class MessageBox : public Window {
+class MenuScreen : public BaseScreen { 
 public:
-	MessageBox(std::string caption, std::string message);
-	virtual ~MessageBox();
+	MenuScreen();
+	virtual ~MenuScreen();
+ 
+	virtual void onInit();
+	virtual void onExit();
 
-	virtual void buildGeometry();
+	virtual void onRender();
+	virtual void onUpdate(double dt);
 	
-	virtual std::string getMessage() const;
-	virtual void setMessage(std::string message);
-	
-	static Ref<MessageBox> Show(std::string caption, std::string message);
-	
+	virtual void displayDesktopAndMainMenu();
+
+	DECLARE_INPUT_INTERFACE(MenuScreen, BaseScreen)
+		BIND_CLICK("LEFT_CLICK", on_LeftClick);
+	END_INPUT_INTERFACE  // protected:
+
+	void on_LeftClick(MapEvent::ClickEvent const &event);
+
 private:
-	Ref<Label> m_Label;	
-	virtual void onOk();
+	Ref<wf::WindowManager> m_WindowManager;
 };
 
-} // namespace wf
+}
 
 CSP_NAMESPACE_END
 
-#endif // __CSPSIM_WF_MESSAGEBOX_H__
-
+#endif // __CSPSIM_WINDOWS_MENUSCREEN_H__

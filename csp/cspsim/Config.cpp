@@ -96,6 +96,22 @@ extern CSPSIM_EXPORT std::string getUIPath() {
 	return g_Config.getPath("Paths", "UIPath", ".", true);
 }
 
+extern CSPSIM_EXPORT std::string getUILanguage() {
+	return g_Config.getPath("UI", "Language", "english", true);
+}
+
+extern CSPSIM_EXPORT void setUILanguage(const std::string& language) {
+	g_Config.setPath("UI", "Language", language);
+}
+
+extern CSPSIM_EXPORT std::string getUITheme() {
+	return g_Config.getPath("UI", "ThemeName", "default", true);
+}
+
+extern CSPSIM_EXPORT void setUITheme(const std::string& themeName) {
+	g_Config.setPath("UI", "ThemeName", themeName);
+}
+
 CSP_NAMESPACE_END
 
 

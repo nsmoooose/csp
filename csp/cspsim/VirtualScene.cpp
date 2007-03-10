@@ -515,13 +515,17 @@ wf::WindowManager* VirtualScene::getWindowManager() {
 void VirtualScene::createWindowView() {
 	m_WindowView = makeSceneView(0);
 	m_WindowView->getRenderStage()->setClearMask(GL_DEPTH_BUFFER_BIT);
+
+	const int screenWidth = CSPSim::theSim->getSDLScreen()->w;
+	const int screenHeight = CSPSim::theSim->getSDLScreen()->h;
+	m_WindowView->setProjectionMatrixAsOrtho(0, screenWidth, screenHeight, 0, -1000, 1000);
 	
 	// eye, center, up
 	osg::Matrix view_matrix;
-	view_matrix.makeLookAt(osg::Vec3(0, -200, 0.0), osg::Vec3(0.0, 0.0, 0.0), osg::Vec3(0, 0, 1));
+	view_matrix.makeLookAt(osg::Vec3(0, 0, 100.0), osg::Vec3(0.0, 0.0, 0.0), osg::Vec3(0, 1, 0));
 	m_WindowView->setViewMatrix(view_matrix);
 	
-	m_WindowManager = new wf::WindowManager(m_WindowView.get(), new wf::Serialization(getUIPath()));	
+	m_WindowManager = new wf::WindowManager(m_WindowView.get());	
 }
 
 void VirtualScene::buildScene() {
@@ -537,12 +541,14 @@ void VirtualScene::buildScene() {
 	init();
 	createSceneViews();
 
-	m_SoundRoot = new osg::PositionAttitudeTransform;
-	m_SoundRoot->addChild(SoundEngine::getInstance().getSoundRoot());
+	if(SoundEngine::getInstance().getSoundEnabled()) {
+		m_SoundRoot = new osg::PositionAttitudeTransform;
+		m_SoundRoot->addChild(SoundEngine::getInstance().getSoundRoot());
 
-	// place the sound root in the very far group to ensure that the listener is
-	// traversed before any other sound sources.
-	m_VeryFarGroup->addChild(m_SoundRoot.get());
+		// place the sound root in the very far group to ensure that the listener is
+		// traversed before any other sound sources.
+		m_VeryFarGroup->addChild(m_SoundRoot.get());
+	}
 
 	m_FreeObjectGroup = new osg::Group;
 	m_FreeObjectGroup->setName("free_object_group");

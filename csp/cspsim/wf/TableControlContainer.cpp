@@ -69,6 +69,10 @@ ControlVector TableControlContainer::getChildControls() {
 	return childControls;
 }
 
+std::string TableControlContainer::getName() const {
+	return "TableControlContainer";
+}
+
 void TableControlContainer::buildGeometry() {
 	Container::buildGeometry();
 	
@@ -87,25 +91,22 @@ void TableControlContainer::layoutChildControls() {
 	
 	Size tableSize = getSize();
 	
-	Point point(0 - (tableSize.m_W/2), tableSize.m_H/2);
+	Point point(0, 0);
 	for(ColumnVector::size_type x=0;x<columnCount;++x) {
 		const TableControlContainerColumn& column = m_Columns[x];
 		
-		point.m_X += (tableSize.m_W * column.getWidth()) / 2.0f;
-		point.m_Y = tableSize.m_H / 2.0f;
+		point.m_Y = 0;
 		for(ColumnVector::size_type y=0;y<rowCount;++y) {
 			const TableControlContainerRow& row = m_Rows[y];
 					
-			point.m_Y -= (tableSize.m_H * row.getHeight()) / 2.0f;
-
 			Ref<Control> control = m_Controls[x][y];
 			if(control.valid()) {		
-				// TODO
-				// We need to implement absolut positioning!
 				double width = tableSize.m_W * column.getWidth() - m_CellPadding.left - m_CellPadding.right;
 				double height = tableSize.m_H * row.getHeight() - m_CellPadding.top - m_CellPadding.bottom;
 				control->setSize(Size(width, height));
-				control->setLocation(point);
+
+				Point childControlLocation(point.m_X + m_CellPadding.left, point.m_Y + m_CellPadding.top);
+				control->setLocation(childControlLocation);
 				
 				Container* controlContainer = dynamic_cast<Container*>(control.get());
 				if(controlContainer != NULL) {
@@ -113,9 +114,9 @@ void TableControlContainer::layoutChildControls() {
 				}
 			}
 			
-			point.m_Y -= (tableSize.m_H * row.getHeight()) / 2.0f;
+			point.m_Y += (tableSize.m_H * row.getHeight());
 		}
-		point.m_X += (tableSize.m_W * column.getWidth()) / 2.0f;
+		point.m_X += (tableSize.m_W * column.getWidth());
 	}
 }
 

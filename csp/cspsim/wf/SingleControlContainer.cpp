@@ -43,6 +43,10 @@ ControlVector SingleControlContainer::getChildControls() {
 	return controls;
 }
 
+std::string SingleControlContainer::getName() const {
+	return "SingleControlContainer";
+}
+
 void SingleControlContainer::buildGeometry() {
 	Control::buildGeometry();
 	if(m_Control.valid()) {
@@ -53,6 +57,7 @@ void SingleControlContainer::buildGeometry() {
 
 void SingleControlContainer::setControl(Control* childControl) {
 	m_Control = childControl;
+	childControl->setParent(this);
 }
 
 Control* SingleControlContainer::getControl() {

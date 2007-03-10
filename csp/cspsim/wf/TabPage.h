@@ -41,6 +41,7 @@ public:
 	TabPage();
 	virtual ~TabPage();
 
+	virtual std::string getName() const;
 	virtual void buildGeometry();
 	
 	virtual const std::string getText() const;

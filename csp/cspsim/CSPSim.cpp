@@ -56,6 +56,8 @@
 
 #include <csp/cspsim/stores/StoresDatabase.h>
 
+#include <csp/cspsim/windows/MenuScreen.h>
+
 #include <csp/csplib/data/GeoPos.h>
 #include <csp/csplib/data/DataArchive.h>
 #include <csp/csplib/data/DataManager.h>
@@ -124,11 +126,6 @@ CSPSim::CSPSim():
 	m_Paused = true;
 	m_Finished = false;
 
-	m_CurrentScreen = NULL;
-	m_PrevScreen = NULL;
-
-	m_GameScreen = NULL;
-
 	m_FrameTime = 0.05;
 	m_FrameRate = 20.0;
 	m_ElapsedTime = 0.0;
@@ -158,8 +155,11 @@ void CSPSim::setActiveObject(Ref<DynamicObject> object) {
 		// XXX XXX m_Battlefield->setHuman(m_ActiveObject->id(), false);
 	}
 	m_ActiveObject = object;
-	if (m_GameScreen) {
-		m_GameScreen->setActiveObject(m_ActiveObject);
+	if (m_CurrentScreen.valid()) {
+		GameScreen* gameScreen = dynamic_cast<GameScreen*>(m_CurrentScreen.get());
+		if(gameScreen != NULL) {
+			gameScreen->setActiveObject(m_ActiveObject);
+		}
 	}
 	if (m_ActiveObject.valid()) {
 		// The new battlefield code no longer supports this interface.  It could be
@@ -245,16 +245,11 @@ void CSPSim::init() {
 		//--m_RenderSurface->realize();
 		SDL_WM_SetCaption("CSPSim", "");
 
-		LogoScreen logoScreen(screenSettings.width, screenSettings.height);
-		logoScreen.onInit();
-
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		// should run in its own thread
-		logoScreen.onRender();
 		SDL_GL_SwapBuffers();
 		//--m_RenderSurface->swapBuffers();
-		logoScreen.run();
 
 		m_Clean = false;
 
@@ -264,33 +259,6 @@ void CSPSim::init() {
 		m_InterfaceMaps->loadAllMaps();
 		m_Interface = new VirtualHID();
 
-		logoScreen.onUpdate(0.0);
-		logoScreen.onRender();
-		SDL_GL_SwapBuffers();
-
-
-		CSPLOG(DEBUG, APP) << "Initializing theater";
-		std::string theater = g_Config.getPath("Testing", "Theater", "sim:theater.balkan", false);
-		m_Theater = m_DataManager->getObject(theater.c_str());
-		assert(m_Theater.valid());
-		//CSP_VERIFY(m_Theater->initialize(*m_DataManager));
-		m_Terrain = m_Theater->getTerrain();
-		assert(m_Terrain.valid());
-		m_Terrain->setScreenSizeHint(screenSettings.width, screenSettings.height);
-		m_Terrain->activate();
-
-		// configure the atmosphere for the theater location
-		// this affects mean temperatures, and should not need
-		// to be updated for motion within a given theater.
-		double lat = m_Terrain->getCenter().latitude();
-		double lon = m_Terrain->getCenter().longitude();
-		m_Atmosphere->setPosition(lat, lon);
-		
-		// TODO may need a reset method when we swap theaters
-		StoresDatabase::getInstance().load(*m_DataManager, "sim:stores");
-
-		logoScreen.onUpdate(0.0);
-		logoScreen.onRender();
 		SDL_GL_SwapBuffers();
 
 		CSPLOG(DEBUG, APP) << "Initializing sound system";
@@ -299,99 +267,6 @@ void CSPSim::init() {
 		SoundEngine::getInstance().mute();
 		CSPLOG(DEBUG, APP) << "Initializing sound file loader";
 		SoundFileLoader::init();
-
-		CSPLOG(DEBUG, APP) << "Initializing scene graph";
-		m_Scene = new VirtualScene(screenSettings.width, screenSettings.height);
-		m_Scene->buildScene();
-		m_Scene->setTerrain(m_Terrain);
-
-		logoScreen.onUpdate(0.0);
-		logoScreen.onRender();
-		SDL_GL_SwapBuffers();
-
-		// get view parameters from configuration file.  ultimately there should
-		// be an in-game ui for this and probably a separate config file.
-		bool wireframe = g_Config.getBool("View", "Wireframe", false, true);
-		m_Scene->setWireframeMode(wireframe);
-		int view_distance = g_Config.getInt("View", "ViewDistance", 35000, true);
-		m_Scene->setViewDistance(view_distance);
-		bool fog = g_Config.getBool("View", "Fog", true, true);
-		m_Scene->setFogMode(fog);
-		int fog_start = g_Config.getInt("View", "FogStart", 20000, true);
-		m_Scene->setFogStart(fog_start);
-		int fog_end = g_Config.getInt("View", "FogEnd", 35000, true);
-		m_Scene->setFogEnd(fog_end);
-
-		CSPLOG(DEBUG, APP) << "Initializing battlefield";
-		int visual_radius = g_Config.getInt("Testing", "VisualRadius",  40000, true);
-		m_Battlefield = new LocalBattlefield(m_DataManager);
-		m_Battlefield->setSceneManager(new SimpleSceneManager(m_Scene, visual_radius));
-		if (m_Theater.valid()) {
-			FeatureGroup::Ref::list groups = m_Theater->getAllFeatureGroups();
-			CSPLOG(DEBUG, BATTLEFIELD) << "Adding " << groups.size() << " features to the battlefield";
-			for (FeatureGroup::Ref::list::iterator iter = groups.begin(); iter != groups.end(); ++iter) {
-				m_Battlefield->addStatic(*iter);
-			}
-		}
-
-		logoScreen.onUpdate(0.0);
-		logoScreen.onRender();
-		SDL_GL_SwapBuffers();
-
-		// create the networking layer
-		if (g_Config.getBool("Networking", "UseNetworking", false, true)) {
-			CSPLOG(DEBUG, APP) << "Initializing network layer";
-			std::string default_ip = NetworkNode().getIpString();
-			std::string local_address = g_Config.getString("Networking", "LocalIp", default_ip, true);
-			int local_port = g_Config.getInt("Networking", "LocalPort", 3161, true);
-			NetworkNode local_node(local_address, local_port);
-			CSPLOG(INFO, NETWORK) << "Initializing network interface " << local_address << ":" << local_port;
-
-			int incoming_bw = g_Config.getInt("Networking", "IncomingBandwidth", 36000, true);
-			int outgoing_bw = g_Config.getInt("Networking", "OutgoingBandwidth", 36000, true);
-			m_NetworkClient = new Client(local_node, incoming_bw, outgoing_bw);
-
-			std::string server_address = g_Config.getString("Networking", "ServerIp", default_ip, true);
-			int server_port = g_Config.getInt("Networking", "ServerPort", 3160, true);
-			CSPLOG(INFO, NETWORK) << "Connecting to server: " << server_address << ":" << server_port;
-			NetworkNode server_node(server_address, server_port);
-			if (!m_NetworkClient->connectToServer(server_node, 5.0 /*seconds*/)) {
-				std::cerr << "Unable to connecting to server, running in local mode\n";
-				CSPLOG(ERROR, NETWORK) << "Unable to connecting to server, running in local mode";
-				m_NetworkClient = 0;
-			} else {
-				std::string name = g_Config.getString("Networking", "UserName", "anonymous", true);
-				CSPLOG(INFO, NETWORK) << "Connecting to server battlefield as " << name;
-				m_Battlefield->setNetworkClient(m_NetworkClient);
-				m_Battlefield->connectToServer(name);
-				Timer timer;
-				timer.start();
-				while (timer.elapsed() < 5.0 && !m_Battlefield->isConnectionActive()) {
-					m_NetworkClient->processAndWait(0.01, 0.01, 0.1);
-				}
-				if (!m_Battlefield->isConnectionActive()) {
-					// connection failed, go back to local mode
-					m_Battlefield->setNetworkClient(0);
-				}
-			}
-		}
-
-		logoScreen.onUpdate(0.0);
-		logoScreen.onRender();
-		SDL_GL_SwapBuffers();
-
-		CSPLOG(DEBUG, APP) << "Initializing gamescreen";
-
-		// Following variables should be set before calling GameScreen.init()
-		// because they are used in GameScreen initialization process
-
-		m_Paused = false;  // enable/disable pause at startup
-
-		// create and initialize screens
-		m_GameScreen = new GameScreen;
-		m_GameScreen->onInit();
-
-		changeScreen(m_GameScreen);
 	}
 	catch (Exception &e) {
 		FatalException(e, "initialization");
@@ -404,22 +279,19 @@ void CSPSim::init() {
 		csp::OtherFatalException("initialization");
 	}
 	*/
-
 }
-
 
 void CSPSim::cleanup() {
 	CSPLOG(INFO, APP) << "Cleaning up resources";
 
 	assert(m_Battlefield.valid());
 	assert(m_Scene.valid());
-	assert(m_Terrain.valid());
-	assert(m_GameScreen);
 	setActiveObject(NULL);
-	delete m_GameScreen;
-	m_GameScreen = NULL;
+	m_CurrentScreen = NULL;
 	m_InterfaceMaps = NULL;
-	m_Terrain->deactivate();
+	if(m_Terrain.valid()) {
+		m_Terrain->deactivate();
+	}
 	m_Battlefield = NULL;
 	m_Terrain = NULL;
 	m_Theater = NULL;
@@ -442,26 +314,27 @@ void CSPSim::cleanup() {
 	m_Clean = true;
 }
 
-
 void CSPSim::quit() {
 	CSPLOG(INFO, APP) << "Quit requested";
 	m_Finished = true;
 	SoundEngine::getInstance().mute();
 }
 
-
 void CSPSim::changeScreen(BaseScreen * newScreen) {
 	CSPLOG(DEBUG, APP) << "Changing screen";
-	m_PrevScreen = m_CurrentScreen;
 	m_CurrentScreen = newScreen;
 }
 
+BaseScreen* CSPSim::getCurrentScreen() {
+	return m_CurrentScreen.get();
+}
 
-// Main Game loop
-void CSPSim::run() {
-	float low_priority = 0.0;
-	int idx = 0;
-
+void CSPSim::loadSimulation() {
+	if(m_CurrentScreen.valid()) {
+		m_CurrentScreen->onRender();
+		SDL_GL_SwapBuffers();
+	}
+	
 	CSPLOG(DEBUG, APP) << "Initializing simulation time";
 
 	std::string date_string = g_Config.getString("Testing", "Date", "2000-01-01 00:00:00.0", true);
@@ -476,7 +349,7 @@ void CSPSim::run() {
 
 	// XXX the first call of these routines typically takes a few seconds.
 	// calling them here avoids a time jump at the start of the simloop.
-	if (m_CurrentScreen) {
+	if (m_CurrentScreen.valid()) {
 		m_CurrentScreen->onUpdate(0.01);
 		m_CurrentScreen->onRender();
 	}
@@ -486,17 +359,175 @@ void CSPSim::run() {
 	m_Atmosphere->setDate(date);
 	m_Atmosphere->reset();
 
-	Timer time_object_update;
-	Timer time_render;
-	bool lopri = false;
+	CSPLOG(DEBUG, APP) << "Initializing theater";
+	std::string theater = g_Config.getPath("Testing", "Theater", "sim:theater.balkan", false);
+	m_Theater = m_DataManager->getObject(theater.c_str());
+	assert(m_Theater.valid());
+	//CSP_VERIFY(m_Theater->initialize(*m_DataManager));
+	m_Terrain = m_Theater->getTerrain();
+	assert(m_Terrain.valid());
+	m_Terrain->setScreenSizeHint(screenSettings.width, screenSettings.height);
+	m_Terrain->activate();
+
+	// configure the atmosphere for the theater location
+	// this affects mean temperatures, and should not need
+	// to be updated for motion within a given theater.
+	double lat = m_Terrain->getCenter().latitude();
+	double lon = m_Terrain->getCenter().longitude();
+	m_Atmosphere->setPosition(lat, lon);
+	
+	// TODO may need a reset method when we swap theaters
+	StoresDatabase::getInstance().load(*m_DataManager, "sim:stores");
+
+	if(m_CurrentScreen.valid()) {
+		m_CurrentScreen->onUpdate(0.0);
+		m_CurrentScreen->onRender();
+	}
+	SDL_GL_SwapBuffers();
+
+	CSPLOG(DEBUG, APP) << "Initializing scene graph";
+	m_Scene = new VirtualScene(screenSettings.width, screenSettings.height);
+	m_Scene->buildScene();
+	m_Scene->setTerrain(m_Terrain);
+
+	if(m_CurrentScreen.valid()) {
+		m_CurrentScreen->onUpdate(0.0);
+		m_CurrentScreen->onRender();
+	}
+	SDL_GL_SwapBuffers();
+
+	// get view parameters from configuration file.  ultimately there should
+	// be an in-game ui for this and probably a separate config file.
+	bool wireframe = g_Config.getBool("View", "Wireframe", false, true);
+	m_Scene->setWireframeMode(wireframe);
+	int view_distance = g_Config.getInt("View", "ViewDistance", 35000, true);
+	m_Scene->setViewDistance(view_distance);
+	bool fog = g_Config.getBool("View", "Fog", true, true);
+	m_Scene->setFogMode(fog);
+	int fog_start = g_Config.getInt("View", "FogStart", 20000, true);
+	m_Scene->setFogStart(fog_start);
+	int fog_end = g_Config.getInt("View", "FogEnd", 35000, true);
+	m_Scene->setFogEnd(fog_end);
+
+	CSPLOG(DEBUG, APP) << "Initializing battlefield";
+	int visual_radius = g_Config.getInt("Testing", "VisualRadius",  40000, true);
+	m_Battlefield = new LocalBattlefield(m_DataManager);
+	m_Battlefield->setSceneManager(new SimpleSceneManager(m_Scene, visual_radius));
+	if (m_Theater.valid()) {
+		FeatureGroup::Ref::list groups = m_Theater->getAllFeatureGroups();
+		CSPLOG(DEBUG, BATTLEFIELD) << "Adding " << groups.size() << " features to the battlefield";
+		for (FeatureGroup::Ref::list::iterator iter = groups.begin(); iter != groups.end(); ++iter) {
+			m_Battlefield->addStatic(*iter);
+		}
+	}
+
+	if(m_CurrentScreen.valid()) {
+		m_CurrentScreen->onUpdate(0.0);
+		m_CurrentScreen->onRender();
+	}
+	SDL_GL_SwapBuffers();
+
+	// create the networking layer
+	if (g_Config.getBool("Networking", "UseNetworking", false, true)) {
+		CSPLOG(DEBUG, APP) << "Initializing network layer";
+		std::string default_ip = NetworkNode().getIpString();
+		std::string local_address = g_Config.getString("Networking", "LocalIp", default_ip, true);
+		int local_port = g_Config.getInt("Networking", "LocalPort", 3161, true);
+		NetworkNode local_node(local_address, local_port);
+		CSPLOG(INFO, NETWORK) << "Initializing network interface " << local_address << ":" << local_port;
+
+		int incoming_bw = g_Config.getInt("Networking", "IncomingBandwidth", 36000, true);
+		int outgoing_bw = g_Config.getInt("Networking", "OutgoingBandwidth", 36000, true);
+		m_NetworkClient = new Client(local_node, incoming_bw, outgoing_bw);
+
+		std::string server_address = g_Config.getString("Networking", "ServerIp", default_ip, true);
+		int server_port = g_Config.getInt("Networking", "ServerPort", 3160, true);
+		CSPLOG(INFO, NETWORK) << "Connecting to server: " << server_address << ":" << server_port;
+		NetworkNode server_node(server_address, server_port);
+		if (!m_NetworkClient->connectToServer(server_node, 5.0 /*seconds*/)) {
+			std::cerr << "Unable to connecting to server, running in local mode\n";
+			CSPLOG(ERROR, NETWORK) << "Unable to connecting to server, running in local mode";
+			m_NetworkClient = 0;
+		} else {
+			std::string name = g_Config.getString("Networking", "UserName", "anonymous", true);
+			CSPLOG(INFO, NETWORK) << "Connecting to server battlefield as " << name;
+			m_Battlefield->setNetworkClient(m_NetworkClient);
+			m_Battlefield->connectToServer(name);
+			Timer timer;
+			timer.start();
+			while (timer.elapsed() < 5.0 && !m_Battlefield->isConnectionActive()) {
+				m_NetworkClient->processAndWait(0.01, 0.01, 0.1);
+			}
+			if (!m_Battlefield->isConnectionActive()) {
+				// connection failed, go back to local mode
+				m_Battlefield->setNetworkClient(0);
+			}
+		}
+	}
+
+	if(m_CurrentScreen.valid()) {
+		m_CurrentScreen->onUpdate(0.0);
+		m_CurrentScreen->onRender();
+	}
+	SDL_GL_SwapBuffers();
 
 	CSPLOG(DEBUG, APP) << "Unmuting sound";
 	SoundEngine::getInstance().unmute();
+
+	CSPLOG(DEBUG, APP) << "Initializing gamescreen";
+
+	// Following variables should be set before calling GameScreen.init()
+	// because they are used in GameScreen initialization process
+
+	m_Paused = false;  // enable/disable pause at startup
+
+	// create and initialize screens
+	Ref<GameScreen> gameScreen = new GameScreen;
+	gameScreen->onInit();
+
+	changeScreen(gameScreen.get());
+}
+
+void CSPSim::unloadSimulation() {
+}
+
+void CSPSim::displayLogoScreen() {
+	Ref<LogoScreen> logoScreen = new LogoScreen(screenSettings.width, screenSettings.height);
+	logoScreen->onInit();
+	
+	logoScreen->onRender();
+	logoScreen->onUpdate(0.0);
+	SDL_GL_SwapBuffers();
+
+	changeScreen(logoScreen.get());
+}
+
+void CSPSim::displayMenuScreen() {
+	Ref<windows::MenuScreen> menuScreen = new windows::MenuScreen();
+	menuScreen->onInit();
+	
+	changeScreen(menuScreen.get());
+}
+
+// Main Game loop
+void CSPSim::run() {
+	bool lopri = false;
+	float low_priority = 0.0;
+	int idx = 0;
+	Timer time_object_update;
+	Timer time_render;
 
 	CSPLOG(INFO, APP) << "Entering main simulation loop";
 	try {
 		while (!m_Finished) {
 			CSPLOG(DEBUG, APP) << "Starting simulation loop iteration";
+			
+			// The current screen may change during the execution of the 
+			// main game loop. We must ensure that the current screen is
+			// not lost during processing of input (mouse, keyboard) or
+			// onUpdate. We store a local reference to the current screen to
+			// use...
+			Ref<BaseScreen> currentScreen = m_CurrentScreen;
 
 			if (m_NetworkClient.valid()) {
 				m_NetworkClient->processIncoming(0.01);
@@ -509,7 +540,7 @@ void CSPSim::run() {
 
 			// Do Input loop
 			PROF0(_input);
-			doInput(dt);
+			doInput(dt, currentScreen.get());
 			PROF1(_input, 60);
 
 			// Miscellaneous Updates
@@ -539,7 +570,7 @@ void CSPSim::run() {
 			PROF1(_objects, 60);
 			
 			// Display (render) current Screen
-			if (m_CurrentScreen) {
+			if (m_CurrentScreen.valid()) {
 				PROF0(_screen_update);
 				m_CurrentScreen->onUpdate(dt);
 				PROF1(_screen_update, 60);
@@ -630,10 +661,10 @@ void CSPSim::updateTime() {
 	}
 }
 
-void CSPSim::doInput(double dt) {
+void CSPSim::doInput(double dt, BaseScreen* currentScreen) {
 	CSPLOG(DEBUG, APP) << "Checking for input events";
 
-	Ref<VirtualHID> screen_interface = m_CurrentScreen->getInterface();
+	Ref<VirtualHID> screen_interface = currentScreen->getInterface();
 
 	SDL_Event event;
 	short doPoll = 10;
@@ -645,7 +676,7 @@ void CSPSim::doInput(double dt) {
 			m_Finished = true;
 			return;
 		}
-		if (!handled && m_CurrentScreen) {
+		if (!handled && currentScreen != NULL) {
 			if (screen_interface.valid()) {
 				handled = screen_interface->onEvent(event);
 			}

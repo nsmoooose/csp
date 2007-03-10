@@ -25,6 +25,7 @@
 #ifndef __CSPSIM_WF_WINDOW_H__
 #define __CSPSIM_WF_WINDOW_H__
 
+#include <map>
 #include <csp/csplib/util/Ref.h>
 #include <csp/cspsim/wf/SingleControlContainer.h>
 
@@ -41,36 +42,48 @@ class Window;
 class WindowManager;
 
 typedef std::vector<Ref<Window> > WindowVector;
+typedef std::map<std::string, Style> NamedStyleMap;
 
 class Window : public SingleControlContainer {
 public:
 	friend WindowManager;
 	
 	Window();
-	Window(std::string caption);
 	virtual ~Window();
+
+	virtual std::string getName() const;
 
 	virtual void setWindowManager(WindowManager* manager);
 	virtual WindowManager* getWindowManager();
-	
-	virtual const std::string &getCaption() const;
-	virtual void setCaption(const std::string &caption);
 	
 	virtual void buildGeometry();
 	virtual void layoutChildControls();
 	
 	virtual void close();
+	
+	virtual void centerWindow();
+	virtual void maximizeWindow();
+	
+	virtual optional<Style> getNamedStyle(const std::string& name) const;
+	virtual void addNamedStyle(const std::string& name, const Style& style);
 
+	static Window* getWindow(Control* control);
+	static const Window* getWindow(const Control* control);
+
+	virtual void setTheme(const std::string& theme);
+	virtual std::string getTheme() const;
+	
 	template<class Archive>
 	void serialize(Archive & ar)	{
 		SingleControlContainer::serialize(ar);
-		ar & make_nvp("@Caption", m_Caption);
+		ar & make_nvp("Styles", m_Styles);
 	}
-
+	
 private:
 	WindowManager* m_WindowManager;
+	std::string m_Theme;
 
-	std::string m_Caption;	
+	NamedStyleMap m_Styles;
 };
 
 } // namespace wf

@@ -55,6 +55,10 @@ public:
 	CSPSim();
 	virtual ~CSPSim();
 	virtual void init();
+	virtual void loadSimulation();
+	virtual void unloadSimulation();
+	virtual void displayLogoScreen();
+	virtual void displayMenuScreen();
 	virtual void run();
 	virtual void quit();
 	virtual void cleanup();

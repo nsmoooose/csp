@@ -23,25 +23,78 @@
  **/
 
 #include <csp/cspsim/Animation.h>
+#include <csp/cspsim/CSPSim.h>
+#include <csp/cspsim/SceneConstants.h>
 #include <csp/cspsim/wf/Serialization.h>
 #include <csp/cspsim/wf/WindowManager.h>
 
+#include <osg/BlendFunc>
 #include <osg/Group>
 #include <osgUtil/SceneView>
 #include <osgUtil/IntersectVisitor>
+
+#include <SDL/SDL.h>
 
 CSP_NAMESPACE
 
 namespace wf {
 
-WindowManager::WindowManager(osgUtil::SceneView* view, Serialization* serializer) 
-	: m_View(view), m_Serializer(serializer), m_Group(new osg::Group) {
+WindowManager::WindowManager(osgUtil::SceneView* view) 
+	: m_View(view), m_Group(new osg::Group) {
 	m_View->setSceneData(m_Group.get());
 
     osg::StateSet *stateSet = m_Group->getOrCreateStateSet();
     stateSet->setRenderBinDetails(100, "RenderBin");
     stateSet->setMode(GL_LIGHTING, osg::StateAttribute::ON);
     stateSet->setMode(GL_DEPTH_TEST, osg::StateAttribute::ON);    
+
+    osg::ref_ptr<osg::BlendFunc> blendFunction = new osg::BlendFunc;
+    stateSet->setAttributeAndModes(blendFunction.get());
+}
+
+WindowManager::WindowManager() : m_Group(new osg::Group) {
+	const int screenWidth = CSPSim::theSim->getSDLScreen()->w;
+	const int screenHeight = CSPSim::theSim->getSDLScreen()->h;
+
+	osgUtil::SceneView *sv = new osgUtil::SceneView();
+	sv->setDefaults(osgUtil::SceneView::COMPILE_GLOBJECTS_AT_INIT);
+	sv->setViewport(0, 0, screenWidth, screenHeight);
+	
+	// left, right, bottom, top, zNear, zFar
+	//sv->setProjectionMatrixAsOrtho(-screenWidth/2, screenWidth/2, screenHeight/2, -screenHeight/2, -1000, 1000);
+	sv->setProjectionMatrixAsOrtho(0, screenWidth, screenHeight, 0, -1000, 1000);
+	sv->setComputeNearFarMode(osgUtil::CullVisitor::DO_NOT_COMPUTE_NEAR_FAR);
+	// override default HEADLIGHT mode, we provide our own lights.
+	sv->setLightingMode(osgUtil::SceneView::NO_SCENEVIEW_LIGHT);
+	// all scene views share a common gl context
+	//sv->setState(m_GlobalState.get());
+	//sv->setGlobalStateSet(m_GlobalStateSet.get());
+	//sv->setFrameStamp(m_FrameStamp.get());
+	// default cull settings
+	sv->getCullVisitor()->setImpostorsActive(true);
+	sv->getCullVisitor()->setComputeNearFarMode(osgUtil::CullVisitor::COMPUTE_NEAR_FAR_USING_BOUNDING_VOLUMES);
+	sv->getCullVisitor()->setCullingMode(osgUtil::CullVisitor::ENABLE_ALL_CULLING);
+	sv->setCullMask(SceneMasks::CULL_ONLY | SceneMasks::NORMAL);
+	// default update settings
+	sv->getUpdateVisitor()->setTraversalMask(SceneMasks::UPDATE_ONLY | SceneMasks::NORMAL);
+	sv->getRenderStage()->setClearMask(GL_DEPTH_BUFFER_BIT);    	
+	
+	m_View = sv;
+	
+	// eye, center, up
+	osg::Matrix view_matrix;
+	view_matrix.makeLookAt(osg::Vec3(0, 0, 100.0), osg::Vec3(0.0, 0.0, 0.0), osg::Vec3(0, 1, 0));
+	m_View->setViewMatrix(view_matrix);
+	
+	m_View->setSceneData(m_Group.get());
+
+    osg::StateSet *stateSet = m_Group->getOrCreateStateSet();
+    stateSet->setRenderBinDetails(100, "RenderBin");
+    stateSet->setMode(GL_LIGHTING, osg::StateAttribute::ON);
+    stateSet->setMode(GL_DEPTH_TEST, osg::StateAttribute::ON);    
+
+    osg::ref_ptr<osg::BlendFunc> blendFunction = new osg::BlendFunc;
+    stateSet->setAttributeAndModes(blendFunction.get());
 }
 
 WindowManager::~WindowManager() {
@@ -76,10 +129,6 @@ bool WindowManager::pick(int x, int y) {
 		}
 	}
 	return false;
-}
-
-Serialization* WindowManager::getSerializer() const {
-	return m_Serializer.get();
 }
 
 void WindowManager::show(Window* window) {
@@ -122,6 +171,19 @@ void WindowManager::close(Window* window) {
 	// Detach the window from the window manager by assigning
 	// a NULL window manager.
 	window->setWindowManager(NULL);
+}
+
+Size WindowManager::getScreenSize() const {
+	return Size(CSPSim::theSim->getSDLScreen()->w, CSPSim::theSim->getSDLScreen()->h);
+}
+
+void WindowManager::onUpdate(float dt) {
+}
+
+void WindowManager::onRender() {
+	m_View->update();
+	m_View->cull();
+	m_View->draw();
 }
 
 } // namespace wf

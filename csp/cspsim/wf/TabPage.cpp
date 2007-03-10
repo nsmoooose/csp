@@ -36,6 +36,10 @@ TabPage::TabPage() {
 TabPage::~TabPage() {
 }
 
+std::string TabPage::getName() const {
+	return "TabPage";
+}
+
 void TabPage::buildGeometry() {
 	// Make sure that all our child controls onInit() is called.
 	SingleControlContainer::buildGeometry();	

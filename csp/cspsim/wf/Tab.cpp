@@ -63,6 +63,10 @@ ControlVector Tab::getChildControls() {
 	return childControls;
 }
 
+std::string Tab::getName() const {
+	return "Tab";
+}
+
 void Tab::buildGeometry() {
 	Container::buildGeometry();	
 	
@@ -79,18 +83,12 @@ void Tab::buildGeometry() {
 	TabPageVector::iterator page = m_Pages.begin();
 	int index = 0;
 	for(;page != m_Pages.end();++page,++index) {	
-		// Create a button for the page and add it to our control tree.
-		osg::ref_ptr<osg::Switch> button = geometryBuilder.buildTabButton(this, page->get(), index);
-		osg::ref_ptr<TabClickedCallback> callback = new TabClickedCallback(this, page->get());
-		button->getChild(1)->setUpdateCallback(callback.get());
-
 		// Well we add the page content to the button. This will make the page visible when the button
 		// is visible. 
 		(*page)->buildGeometry();
-		button->addChild((*page)->getNode(), (getCurrentPage() == page->get() ? true : false));
 		
 		// Add button and page to this tab control.
-		getNode()->addChild(button.get());
+//		getNode()->addChild(button.get());
 	}
 }
 
@@ -98,9 +96,11 @@ void Tab::layoutChildControls() {
 	TabPageVector::iterator page = m_Pages.begin();
 	for(;page != m_Pages.end();++page) {
 		ControlGeometryBuilder geometryBuilder;
+		/*
 		(*page)->setSize(geometryBuilder.getTabPageClientAreaSize(this));
 		(*page)->setLocation(geometryBuilder.getTabPageClientAreaLocation(this));
 		(*page)->layoutChildControls();
+		*/
 	}
 }
 

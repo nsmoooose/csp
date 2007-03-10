@@ -39,6 +39,10 @@ Label::Label(const std::string text) : m_Text(text), m_Alignment(osgText::Text::
 Label::~Label() {
 }
 
+std::string Label::getName() const {
+	return "Label";
+}
+
 void Label::buildGeometry() {
 	// Make sure that all our child controls onInit() is called.
 	Control::buildGeometry();	

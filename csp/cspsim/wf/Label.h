@@ -44,6 +44,8 @@ public:
 	Label(const std::string text);
 	virtual ~Label();
 
+	virtual std::string getName() const;
+
 	virtual void buildGeometry();
 	
 	virtual const std::string& getText() const;

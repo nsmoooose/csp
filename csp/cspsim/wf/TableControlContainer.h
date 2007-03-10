@@ -92,6 +92,8 @@ public:
 
 	virtual ControlVector getChildControls();
 
+	virtual std::string getName() const;
+
 	virtual void buildGeometry();
 	
 	//! Resizes the child control to fit the entire surface of this control.

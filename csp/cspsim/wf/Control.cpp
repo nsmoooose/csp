@@ -24,6 +24,7 @@
 
 #include <csp/cspsim/wf/Control.h>
 #include <csp/cspsim/wf/ControlGeometryBuilder.h>
+#include <csp/cspsim/wf/Window.h>
 #include <csp/csplib/util/Ref.h>
 
 #include <osg/BlendFunc>
@@ -34,7 +35,7 @@ CSP_NAMESPACE
 namespace wf {
 
 Control::Control() :
-	m_ZPos(0.0), m_Parent(0), m_TransformGroup(new osg::MatrixTransform)
+	m_ZPos(1.0), m_Parent(0), m_TransformGroup(new osg::MatrixTransform)
 {
     osg::StateSet *stateSet = m_TransformGroup->getOrCreateStateSet();
     stateSet->setRenderBinDetails(100, "RenderBin");
@@ -56,19 +57,24 @@ void Control::setId(const std::string& id) {
 	m_Id = id;
 }
 
-void Control::buildGeometry() {
-	m_TransformGroup->removeChild(0, m_TransformGroup->getNumChildren());
-	
-	// The control has been loaded. Lets reflect our properties with
-	// our osg object.
-	m_TransformGroup->setMatrix(osg::Matrix::translate(m_Point.m_X, m_ZPos, m_Point.m_Y));	
+std::string Control::getName() const {
+	return "Control";
 }
 
-Control* Control::getParent() {
+void Control::buildGeometry() {
+	m_TransformGroup->removeChild(0, m_TransformGroup->getNumChildren());
+	updateMatrix();	
+}
+
+Container* Control::getParent() {
 	return m_Parent;
 }
 
-void Control::setParent(Control* parent) {
+const Container* Control::getParent() const {
+	return m_Parent;
+}
+
+void Control::setParent(Container* parent) {
 	m_Parent = parent;
 }
 
@@ -77,6 +83,14 @@ WindowManager* Control::getWindowManager() {
 		return NULL;
 		
 	return m_Parent->getWindowManager();
+}
+
+optional<std::string> Control::getCssClass() const {
+	return m_CssClass;
+}
+
+void Control::setCssClass(const optional<std::string>& cssClass) {
+	m_CssClass = cssClass;
 }
 
 osg::Group* Control::getNode() {
@@ -89,7 +103,7 @@ float Control::getZPos() const {
 
 void Control::setZPos(float zPos) {
 	m_ZPos = zPos;
-	m_TransformGroup->setMatrix(osg::Matrix::translate(m_Point.m_X, m_ZPos, m_Point.m_Y));
+	updateMatrix();
 }
 
 const Point& Control::getLocation() const {
@@ -98,7 +112,7 @@ const Point& Control::getLocation() const {
 
 void Control::setLocation(const Point& point) {
 	m_Point = point;
-	m_TransformGroup->setMatrix(osg::Matrix::translate(m_Point.m_X, m_ZPos, m_Point.m_Y));
+	updateMatrix();
 }
 
 const Size& Control::getSize() const {
@@ -107,6 +121,27 @@ const Size& Control::getSize() const {
 
 void Control::setSize(const Size& size) {
 	m_Size = size;
+	updateMatrix();
+}
+
+const Style& Control::getStyle() const { 
+	return m_Style; 
+}
+
+Style& Control::getStyle() { 
+	return m_Style; 
+}
+
+void Control::updateMatrix() {
+	double parentX = 0, parentY = 0;
+	if(m_Parent != NULL) {
+		parentX = m_Parent->m_Size.m_W / 2;
+		parentY = m_Parent->m_Size.m_H / 2;
+	}
+	
+	// The control has been loaded. Lets reflect our properties with
+	// our osg object.
+	m_TransformGroup->setMatrix(osg::Matrix::translate(m_Point.m_X - parentX + (m_Size.m_W / 2), m_Point.m_Y - parentY + (m_Size.m_H / 2), m_ZPos));	
 }
 
 } // namespace wf

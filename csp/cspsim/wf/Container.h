@@ -39,6 +39,8 @@ public:
 	virtual void layoutChildControls() = 0;
 	virtual ControlVector getChildControls() = 0;
 	
+	virtual Rect getClientRect() const;
+	
 	template<class T>
 	T* getById(const std::string& id) {
 		return dynamic_cast<T*>(internalGetById(id));

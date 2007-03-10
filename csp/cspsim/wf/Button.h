@@ -43,6 +43,8 @@ public:
 	Button(const std::string text);
 	virtual ~Button();
 
+	virtual std::string getName() const;
+
 	virtual void buildGeometry();
 	
 	virtual const std::string getText() const;

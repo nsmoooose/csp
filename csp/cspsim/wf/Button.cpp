@@ -65,6 +65,10 @@ Button::Button(const std::string text)
 Button::~Button() {
 }
 
+std::string Button::getName() const {
+	return "Button";
+}
+
 void Button::buildGeometry() {
 	// If we have a label as a child control then we set the default text on it.
 	Label* label = dynamic_cast<Label*>(getControl());
@@ -78,16 +82,20 @@ void Button::buildGeometry() {
 	// Build our own button control and add it to the group.
 	ControlGeometryBuilder geometryBuilder;
 	osg::ref_ptr<osg::Group> button = geometryBuilder.buildButton(this);
-	osg::ref_ptr<ButtonClickedCallback> callback = new ButtonClickedCallback(m_ButtonClicked, this);
-	if(button->getUpdateCallback() == NULL) {
-		button->setUpdateCallback(callback.get());
-	}
-	getNode()->addChild(button.get());		
-	
-	// Bind the update callback to the child control also.
-	Control* childControl = getControl();
-	if(childControl != NULL) {	
-		childControl->getNode()->setUpdateCallback(callback.get());
+	// When the button is invisible there will not be any geometry created.
+	// If this happens we cannot connect a callback on click either.
+	if(button.valid()) {
+		osg::ref_ptr<ButtonClickedCallback> callback = new ButtonClickedCallback(m_ButtonClicked, this);
+		if(button->getUpdateCallback() == NULL) {
+			button->setUpdateCallback(callback.get());
+		}
+		getNode()->addChild(button.get());		
+		
+		// Bind the update callback to the child control also.
+		Control* childControl = getControl();
+		if(childControl != NULL) {	
+			childControl->getNode()->setUpdateCallback(callback.get());
+		}
 	}
 }
 

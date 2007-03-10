@@ -23,6 +23,8 @@
  **/
 
 #include <map>
+#include <sstream>
+#include <iomanip>
 #include <csp/csplib/util/FileUtility.h>
 #include <csp/csplib/util/Ref.h>
 #include <csp/csplib/xml/XmlParser.h>
@@ -40,6 +42,7 @@ CSP_NAMESPACE
 
 namespace wf {
 
+void ToValue(XMLNode& node, const std::string& src, osg::Vec4* dst);
 void ToValue(XMLNode& node, const std::string& src, bool* dst);
 void ToValue(XMLNode& node, const std::string& src, float* dst);
 void ToValue(XMLNode& node, const std::string& src, double* dst);
@@ -47,10 +50,13 @@ void ToValue(XMLNode& node, const std::string& src, std::string* dst);
 void ToValue(XMLNode& node, const std::string& src, Ref<wf::Control>* dst);
 void ToValue(XMLNode& node, const std::string& src, ControlVector* dst);
 void ToValue(XMLNode& node, const std::string& src, ListBoxItemVector* dst);
+void ToValue(XMLNode& node, const std::string& src, Style* dst);
+void ToValue(XMLNode& node, const std::string& src, NamedStyleMap* dst);
 void ToValue(XMLNode& node, const std::string& src, TabPageVector* dst);
 void ToValue(XMLNode& node, const std::string& src, TableControlContainer::ColumnVector* dst);
 void ToValue(XMLNode& node, const std::string& src, TableControlContainer::RowVector* dst);
 void ToValue(XMLNode& node, const std::string& src, TableControlContainer::XYVector* dst);
+template<class T> void ToValue(XMLNode& node, const std::string& src, optional<T>* dst);
 
 /** This class is an interface for all xml string conversion to
  * the internal data representation in our objects.
@@ -136,10 +142,8 @@ public:
 	}
 	
 	void loadDocument(Window* window, XMLNode& document) {
-		// Process resource includes...
-	
-		XMLNode node = document.selectSingleNode("WindowDocument/Window");
-		loadControl(window, node);
+		XMLNode windowNode = document.selectSingleNode("WindowDocument/Window");
+		loadControl(window, windowNode);
 
 		// Fix all parent references that is missing due to serialization.
 		setParent(window);
@@ -170,10 +174,19 @@ Serialization::~Serialization() {
 }
 
 void Serialization::load(Window* window, const std::string& theme, const std::string& file) {
+	// Remember the name of the theme for the lifetime of the window.
+	window->setTheme(theme);	
+
 	// Build the path to the actual document we wish to load.
 	std::string themesPath = ospath::join(m_UserInterfaceDirectory, "themes");
 	std::string themePath = ospath::join(themesPath, theme);
 	std::string filePath = ospath::join(themePath, file);
+
+	// Test to see if the file exists.
+	if(!ospath::exists(filePath)) {
+		CSPLOG(ERROR, APP) << "UI Window document not found.";		
+		return;
+	}
 	
 	// Load the document.
 	XMLNode document = XMLNode::parseFile(filePath.c_str());
@@ -181,6 +194,35 @@ void Serialization::load(Window* window, const std::string& theme, const std::st
 	// Parse the content of the document by using our internal archive class.
 	ReadingArchive archive;
 	archive.loadDocument(window, document);
+	
+	// Process resource includes...
+	XMLNode includesNode = document.selectSingleNode("WindowDocument/Includes");
+	if(!includesNode.isEmpty()) {
+		int nodeCount = includesNode.nChildNode();
+		for(int index = 0;index < nodeCount;++index) {
+			XMLNode includeNode = includesNode.getChildNode(index);
+			if(includeNode.nText() == 0) {
+				continue;
+			}
+
+			std::string includeFile = includeNode.getText(0);
+			std::string includeFilePath = ospath::join(themePath, includeFile);
+			if(!ospath::exists(includeFilePath)) {
+				CSPLOG(ERROR, APP) << "UI Include document not found.";		
+				continue;
+			}
+			
+			XMLNode includeDocument = XMLNode::parseFile(includeFilePath.c_str());
+			XMLNode namedStylesNode = includeDocument.selectSingleNode("StyleDocument/NamedStyles");
+			NamedStyleMap styles;
+			ToValue(namedStylesNode, "", &styles);
+			
+			NamedStyleMap::iterator style = styles.begin();
+			for(;style != styles.end();++style) {
+				window->addNamedStyle(style->first, style->second);
+			}
+		}
+	}
 }
 
 Ref<Control> createControl(XMLNode& node) {
@@ -241,6 +283,25 @@ Ref<Control> createControl(XMLNode& node) {
 	}	
 }
 
+void ToValue(XMLNode& node, const std::string& src, osg::Vec4* dst) {
+	std::istringstream data(src);
+	
+	unsigned int rgba = 0;
+	data >> std::hex >> rgba;
+
+	unsigned char alpha = rgba & 0xff;
+	unsigned char blue = (rgba >> 8) & 0xff;
+	unsigned char green = (rgba >> 16) & 0xff;
+	unsigned char red = (rgba >> 24) & 0xff;
+
+	double step = 1.0f / 255;
+	
+	dst->_v[0] = red * step;
+	dst->_v[1] = green * step;
+	dst->_v[2] = blue * step;
+	dst->_v[3] = alpha * step;	
+}
+
 void ToValue(XMLNode& node, const std::string& src, bool* dst) {
 	if(src == "1" || src == "true") {
 		*dst = true;
@@ -288,6 +349,25 @@ void ToValue(XMLNode& node, const std::string& src, ListBoxItemVector* dst) {
 		Ref<Control> control = createControl(childNode);
 		if(control.valid()) {
 			dst->push_back(control);
+		}
+	}
+}
+
+void ToValue(XMLNode& node, const std::string& src, Style* dst) {
+	ReadingArchive archive;
+	archive.load(dst, node);
+}
+
+void ToValue(XMLNode& node, const std::string& src, NamedStyleMap* dst) {
+	int childNodeCount = node.nChildNode();
+	for(int index = 0;index < childNodeCount;++index) {
+		XMLNode childNode = node.getChildNode(index);
+		Style style;
+		ToValue(childNode, "", &style);
+
+		CSP_XMLCSTR name = childNode.getAttribute("Name");
+		if(name != NULL) {
+			(*dst)[name] = style;
 		}
 	}
 }
@@ -360,6 +440,14 @@ void ToValue(XMLNode& node, const std::string& src, TableControlContainer::XYVec
 			}
 		}
 	}
+}
+
+template<class T>
+void ToValue(XMLNode& node, const std::string& src, optional<T>* dst) {
+	// Make sure that there is constructed an object.
+	dst->assign(T());
+	// Convert the optional datatype to the destination object.
+	ToValue(node, src, dst->get_ptr());	
 }
 
 } // namespace wf

@@ -39,6 +39,10 @@ ControlVector MultiControlContainer::getChildControls() {
 	return m_Controls;
 }
 
+std::string MultiControlContainer::getName() const {
+	return "MultiControlContainer";
+}
+
 void MultiControlContainer::buildGeometry() {
 	Control::buildGeometry();
 

@@ -44,6 +44,7 @@ public:
 	void shutdown();
 	osgAL::SoundManager *getManager();
 	osgAL::SoundRoot *getSoundRoot();
+	bool getSoundEnabled();
 	void mute();
 	void unmute();
 
@@ -52,6 +53,7 @@ private:
 	virtual ~SoundEngine();
 	void createSoundRoot();
 	osg::ref_ptr<osgAL::SoundRoot> m_SoundRoot;
+	bool m_SoundEnabled;
 };
 
 CSP_NAMESPACE_END

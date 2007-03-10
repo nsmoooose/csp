@@ -49,12 +49,18 @@ class Serialization;
 
 class WindowManager : public Referenced {
 public:
-	WindowManager(osgUtil::SceneView* view, Serialization* serializer);
+	WindowManager(osgUtil::SceneView* view);
+	WindowManager();
 	virtual ~WindowManager();
 
 	virtual bool pick(int x, int y);
 	virtual void show(Window* window);
 	virtual void close(Window* window);
+	
+	virtual Size getScreenSize() const;
+	
+	virtual void onUpdate(float dt);
+	virtual void onRender();
 	
 	template <class Type> 
 	bool windowIsOpen() const {
@@ -66,15 +72,31 @@ public:
 		return false;
 	}
 	
+	template <class Type>
+	Ref<Type> getWindowByType() {
+		WindowVector::const_iterator window = m_Windows.begin();
+		for(;window != m_Windows.end();++window) {
+			Type* type = dynamic_cast<Type*>(window->get());
+			if(type != NULL) return *window;
+		}
+		return Ref<Type>();
+	}
+	
+	template <class Type>
+	void closeByType() {
+		Ref<Type> window = getWindowByType<Type>();
+		while(window.valid()) {
+			close(window.get());
+			window = getWindowByType<Type>();
+		}
+	}
+	
 	bool isAnyWindowOpen() {
 		return m_Windows.size() > 0;
 	}
-
-	virtual Serialization* getSerializer() const;
-	
+		
 private:
 	osg::ref_ptr<osgUtil::SceneView> m_View;
-	Ref<Serialization> m_Serializer;
 	osg::ref_ptr<osg::Group> m_Group;
 
 	WindowVector m_Windows;

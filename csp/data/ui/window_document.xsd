@@ -5,9 +5,63 @@ validate xml for our windows with this schema. All complexType:s found
 in this document has the same inheritence as the cpp-classes.
  -->
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <xsd:element name="WindowDocument" type="CspWindowFrameworkDocument_t" />
+  <xsd:element name="WindowDocument" type="WindowDocument_t" />
+  <xsd:element name="StyleDocument" type="StyleDocument_t" />
 
-  <xsd:complexType name="CspWindowFrameworkDocument_t">
+  <xsd:complexType name="StyleDocument_t">
+    <xsd:sequence>
+      <xsd:element name="NamedStyles">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="Style" type="NamedStyle_t" minOccurs="0" maxOccurs="unbounded" />
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="Style_t">
+    <xsd:sequence>
+      <xsd:element name="FontFamily" type="xsd:string" minOccurs="0" />
+      <xsd:element name="FontSize" type="xsd:double" minOccurs="0" />
+      <xsd:element name="Color" type="xsd:string" minOccurs="0" />
+      
+      <xsd:element name="BackgroundColor" type="xsd:string" minOccurs="0" />
+      <xsd:element name="BackgroundColorTopLeft" type="xsd:string" minOccurs="0" />
+      <xsd:element name="BackgroundColorTopRight" type="xsd:string" minOccurs="0" />
+      <xsd:element name="BackgroundColorBottomLeft" type="xsd:string" minOccurs="0" />
+      <xsd:element name="BackgroundColorBottomRight" type="xsd:string" minOccurs="0" />
+
+      <xsd:element name="BackgroundImage" type="xsd:string" minOccurs="0" />
+
+      <xsd:element name="BorderWidth" type="xsd:double" minOccurs="0" />
+      <xsd:element name="BorderTopWidth" type="xsd:double" minOccurs="0" />
+      <xsd:element name="BorderBottomWidth" type="xsd:double" minOccurs="0" />
+      <xsd:element name="BorderLeftWidth" type="xsd:double" minOccurs="0" />
+      <xsd:element name="BorderRightWidth" type="xsd:double" minOccurs="0" />
+
+      <xsd:element name="BorderColor" type="xsd:string" minOccurs="0" />
+      <xsd:element name="BorderTopColor" type="xsd:string" minOccurs="0" />
+      <xsd:element name="BorderBottomColor" type="xsd:string" minOccurs="0" />
+      <xsd:element name="BorderLeftColor" type="xsd:string" minOccurs="0" />
+      <xsd:element name="BorderRightColor" type="xsd:string" minOccurs="0" />
+
+      <xsd:element name="Visible" type="xsd:boolean" minOccurs="0" />
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="NamedStyle_t">
+    <xsd:complexContent>
+      <xsd:extension base="Style_t">
+        <xsd:attribute name="Name" type="xsd:string" use="required" />
+      </xsd:extension>
+    </xsd:complexContent>
+    
+  </xsd:complexType>
+
+  <!-- This is the start of the descritions of all elements that can be
+  used within a window document. -->
+  <xsd:complexType name="WindowDocument_t">
     <xsd:sequence>
       <xsd:element name="Includes" type="Includes_t" minOccurs="0"/>
       <xsd:element name="Window" type="Window_t" />
@@ -17,6 +71,7 @@ in this document has the same inheritence as the cpp-classes.
   <xsd:complexType name="Includes_t">
     <xsd:choice maxOccurs="unbounded">
       <xsd:element name="StringTableInclude" type="xsd:string" maxOccurs="unbounded"/>
+      <xsd:element name="StyleInclude" type="xsd:string" maxOccurs="unbounded"/>
     </xsd:choice>
   </xsd:complexType>
 
@@ -39,7 +94,11 @@ in this document has the same inheritence as the cpp-classes.
 
   <!-- This is the base class of all controls. These settings is optional on all controls. -->
   <xsd:complexType name="Control_t">
+    <xsd:sequence>
+      <xsd:element name="Style" type="Style_t" minOccurs="0" />
+    </xsd:sequence>
     <xsd:attribute name="Id" type="xsd:string" use="optional" />
+    <xsd:attribute name="CssClass" type="xsd:string" use="optional" />
     <xsd:attribute name="SizeWidth" type="xsd:double" use="optional" />
     <xsd:attribute name="SizeHeight" type="xsd:double" use="optional" />
     <xsd:attribute name="LocationX" type="xsd:double" use="optional" />
@@ -66,7 +125,7 @@ in this document has the same inheritence as the cpp-classes.
     <xsd:complexContent>
       <xsd:extension base="Container_t">
         <xsd:sequence>
-          <xsd:element name="Items" type="ListBoxItems_t" />
+          <xsd:element name="Items" type="ListBoxItems_t" minOccurs="0" />
         </xsd:sequence>
       </xsd:extension>
     </xsd:complexContent>
@@ -74,13 +133,16 @@ in this document has the same inheritence as the cpp-classes.
 
   <xsd:complexType name="ListBoxItems_t">
     <xsd:sequence>
-      <xsd:element name="Item" type="ListBoxItem_t" maxOccurs="unbounded" />
+      <xsd:element name="Item" type="ListBoxItem_t" minOccurs="0" maxOccurs="unbounded" />
     </xsd:sequence>
   </xsd:complexType>
 
   <xsd:complexType name="ListBoxItem_t">
     <xsd:complexContent>
       <xsd:extension base="SingleControlContainer_t">
+        <xsd:sequence>
+          <xsd:element name="SelectedStyle" type="Style_t" minOccurs="0" />
+        </xsd:sequence>
         <xsd:attribute name="Text" type="xsd:string" />
       </xsd:extension>
     </xsd:complexContent>
@@ -209,7 +271,15 @@ in this document has the same inheritence as the cpp-classes.
   <xsd:complexType name="Window_t">
     <xsd:complexContent>
       <xsd:extension base="SingleControlContainer_t">
-        <xsd:attribute name="Caption" type="xsd:string" />
+        <xsd:sequence>
+          <xsd:element name="Styles" minOccurs="0">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="Style" type="NamedStyle_t" minOccurs="0" maxOccurs="unbounded" />
+              </xsd:sequence>
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:sequence>
       </xsd:extension>
     </xsd:complexContent>    
   </xsd:complexType>

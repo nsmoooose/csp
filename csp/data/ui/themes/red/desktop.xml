@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<WindowDocument xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation='../../window_document.xsd'>
+  <Includes>
+    <!-- This include will set the default behaviour on all controls. -->
+    <StyleInclude>styles.xml</StyleInclude>
+  </Includes>
+  <Window LocationZ="-10" CssClass="desktop">
+    <Control>
+      <MultiControlContainer>
+        <Controls>
+          <Label Text="Combat Simulator Project" LocationX="30" LocationY="35">
+            <Style>
+              <FontSize>40</FontSize>
+              <Color>000000ff</Color>
+            </Style>
+          </Label>
+          <Label CssClass="stripe" LocationX="0" LocationY="60" SizeHeight="10" SizeWidth="640" />
+        </Controls>
+      </MultiControlContainer>
+    </Control>
+  </Window>
+</WindowDocument>

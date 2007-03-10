@@ -31,6 +31,7 @@
 #include <csp/csplib/data/Vector3.h>
 #include <csp/cspsim/wf/Point.h>
 #include <csp/cspsim/wf/Serialization.h>
+#include <csp/cspsim/wf/Style.h>
 
 #include <osg/ref_ptr>
 #include <osg/Vec4>
@@ -46,6 +47,7 @@ CSP_NAMESPACE
 
 namespace wf {
 
+class Container;
 class Control;
 class WindowManager;
 
@@ -56,7 +58,7 @@ struct Rect {
 	Rect() {}
 	Rect(float x0_, float y0_, float x1_, float y1_): x0(x0_), y0(y0_), x1(x1_), y1(y1_) {}
 	inline float width() const { return x1 - x0; }
-	inline float height() const { return y0 - y1; }
+	inline float height() const { return y1 - y0; }
 };
 
 /** The base class for all controls that exists.
@@ -72,10 +74,16 @@ public:
 
 	virtual const std::string& getId() const;
 	virtual void setId(const std::string& id);
+		
+	virtual std::string getName() const;
 	
-	virtual Control* getParent();
-	virtual void setParent(Control* parent);
+	virtual Container* getParent();
+	virtual const Container* getParent() const;
+	virtual void setParent(Container* parent);
 	virtual WindowManager* getWindowManager();
+	
+	virtual optional<std::string> getCssClass() const;
+	virtual void setCssClass(const optional<std::string>& cssClass);
 
 	/** Function that generates all geometry that is used to display the widget.
 	 * 	buildGeometry is called just before the window is displayed. 
@@ -94,14 +102,19 @@ public:
 	virtual const Size& getSize() const;
 	virtual void setSize(const Size& size);
 	
+	virtual const Style& getStyle() const;
+	virtual Style& getStyle();
+	
 	template<class Archive>
 	void serialize(Archive & ar) {
 		ar & make_nvp("@Id", m_Id);
+		ar & make_nvp("@CssClass", m_CssClass);
 		ar & make_nvp("@LocationX", m_Point.m_X);
 		ar & make_nvp("@LocationY", m_Point.m_Y);
 		ar & make_nvp("@LocationZ", m_ZPos);
 		ar & make_nvp("@SizeWidth", m_Size.m_W);
 		ar & make_nvp("@SizeHeight", m_Size.m_H);
+		ar & make_nvp("Style", m_Style);
 	}	
 	
 protected:
@@ -110,12 +123,17 @@ private:
 	std::string m_Id;
 
 	osg::ref_ptr<osg::MatrixTransform> m_TransformGroup;
+	optional<std::string> m_CssClass;
 
 	float m_ZPos;
 	Point m_Point;
 	Size m_Size;
 	
-	Control* m_Parent;
+	Container* m_Parent;
+	Style m_Style;
+	bool m_Visible;
+	
+	void updateMatrix();
 };
 
 } // namespace wf

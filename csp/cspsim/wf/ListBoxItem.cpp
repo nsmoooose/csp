@@ -52,6 +52,10 @@ ListBoxItem::ListBoxItem(const std::string text) : m_Text(text) {
 ListBoxItem::~ListBoxItem() {
 }
 
+std::string ListBoxItem::getName() const {
+	return "ListBoxItem";
+}
+
 void ListBoxItem::buildGeometry() {
 	// Without a parent we cannot build geometry.
 	if(getParent() == NULL) {
@@ -67,7 +71,7 @@ void ListBoxItem::buildGeometry() {
 	SingleControlContainer::buildGeometry();
 	
 	ControlGeometryBuilder geometryBuilder;
-	osg::ref_ptr<osg::Switch> item = geometryBuilder.buildListBoxItem((ListBox*)getParent(), this);
+	osg::ref_ptr<osg::Group> item = geometryBuilder.buildListBoxItem((ListBox*)getParent(), this);
 	getNode()->addChild(item.get());	
 }
 
@@ -78,6 +82,10 @@ const std::string ListBoxItem::getText() const {
 void ListBoxItem::setText(const std::string& text) {
 	m_Text = text;
 	buildGeometry();
+}
+
+const Style& ListBoxItem::getSelectedStyle() const {
+	return m_SelectedStyle;
 }
 
 } // namespace wf

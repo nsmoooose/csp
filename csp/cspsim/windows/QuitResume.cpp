@@ -39,7 +39,7 @@ namespace windows {
 
 QuitResume::QuitResume() {
 	Ref<wf::Serialization> serializer = new wf::Serialization(getUIPath());
-	serializer->load(this, "default", "quit_resume.xml");
+	serializer->load(this, getUITheme(), "quit_resume.xml");
 
 	Ref<wf::Button> resumeButton = getById<wf::Button>("resume");
 	if(resumeButton.valid())
@@ -68,6 +68,7 @@ void QuitResume::options_Click() {
 		if(!manager->windowIsOpen<Options>()) {
 			Ref<Window> options = new Options();
 			manager->show(options.get());
+			options->centerWindow();
 		}
 	}
 	

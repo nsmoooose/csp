@@ -23,6 +23,7 @@
  **/
 
 #include <csp/cspsim/wf/Container.h>
+#include <csp/cspsim/wf/StyleBuilder.h>
 
 CSP_NAMESPACE
 
@@ -62,6 +63,39 @@ Control* Container::internalGetById(const std::string& id) {
 	}
 	// No control is found. 
 	return NULL;
+}
+
+Rect Container::getClientRect() const {
+	Style style = StyleBuilder::buildStyle(this);
+		
+	Rect clientArea;
+	clientArea.x0 = style.borderWidth ? *style.borderWidth : 0;
+	if(style.borderLeftWidth) {
+		clientArea.x0 = *style.borderLeftWidth;
+	}
+	
+	clientArea.y0 = style.borderWidth ? *style.borderWidth : 0;
+	if(style.borderTopWidth) {
+		clientArea.y0 = *style.borderTopWidth;
+	}
+	
+	clientArea.x1 = getSize().m_W;
+	if(style.borderWidth && !style.borderRightWidth) {
+		clientArea.x1 -= *style.borderWidth;
+	}
+	if(style.borderRightWidth) {
+		clientArea.x1 -= *style.borderRightWidth;
+	}
+	
+	clientArea.y1 = getSize().m_H;
+	if(style.borderWidth && !style.borderBottomWidth) {
+		clientArea.y1 -= *style.borderWidth;
+	}
+	if(style.borderBottomWidth) {
+		clientArea.y1 -= *style.borderBottomWidth;
+	}
+	
+	return clientArea;	
 }
 
 } // namespace wf

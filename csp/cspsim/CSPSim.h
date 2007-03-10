@@ -94,11 +94,18 @@ public:
 	CSPSim();
 	virtual ~CSPSim();
 	virtual void init();
+	// Initializes all objects needed to run the simulator.	
+	virtual void loadSimulation();
+	// Unloads all objects used during a simulation.
+	virtual void unloadSimulation();
+	virtual void displayLogoScreen();
+	virtual void displayMenuScreen();
 	virtual void run();
 	virtual void quit();
 	virtual void cleanup();
 
 	void changeScreen(BaseScreen * newScreen);
+	BaseScreen* getCurrentScreen();
 	SDL_Surface * getSDLScreen() {return m_SDLScreen;};
 
 	SimDate & getCurrentTime() { return m_CurrentTime; }
@@ -128,20 +135,16 @@ protected:
 	void initSim();
 	int initSDL();
 
-	void doInput(double dt);
+	void doInput(double dt, BaseScreen* currentScreen);
 	void updateObjects(double dt);
 	void doStartupScript();
 
 private:
-
+	
 	SDL_Surface *m_SDLScreen;
 	SDL_Joystick* m_SDLJoystick;
 
-	BaseScreen *m_CurrentScreen;
-	BaseScreen *m_PrevScreen;
-
-	BaseScreen *m_LogoScreen;
-	GameScreen *m_GameScreen;
+	Ref<BaseScreen> m_CurrentScreen;
 
 	ScreenSettings screenSettings;
 

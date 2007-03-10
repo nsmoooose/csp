@@ -48,6 +48,8 @@ public:
 
 	virtual ControlVector getChildControls();
 
+	virtual std::string getName() const;
+
 	virtual void buildGeometry();
 	
 	virtual void setControl(Control* childControl);

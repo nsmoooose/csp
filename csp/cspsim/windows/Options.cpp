@@ -23,12 +23,15 @@
  **/
 
 #include <sstream>
+#include <csp/csplib/util/FileUtility.h>
 #include <csp/cspsim/Config.h>
+#include <csp/cspsim/CSPSim.h>
 #include <csp/cspsim/wf/Button.h>
 #include <csp/cspsim/wf/CheckBox.h>
 #include <csp/cspsim/wf/ListBox.h>
-#include <csp/cspsim/wf/MessageBox.h>
 #include <csp/cspsim/wf/WindowManager.h>
+#include <csp/cspsim/windows/MenuScreen.h>
+#include <csp/cspsim/windows/MessageBox.h>
 #include <csp/cspsim/windows/Options.h>
 
 CSP_NAMESPACE
@@ -37,7 +40,7 @@ namespace windows {
 
 Options::Options() {
 	Ref<wf::Serialization> serializer = new wf::Serialization(getUIPath());
-	serializer->load(this, "default", "options.xml");
+	serializer->load(this, getUITheme(), "options.xml");
 	
 	Ref<wf::Button> okButton = getById<wf::Button>("ok");
 	if(okButton.valid()) {
@@ -72,10 +75,73 @@ Options::Options() {
 		}
 	}
 
+	// Find the theme list box control.
+	Ref<wf::ListBox> themeListBox = getById<wf::ListBox>("theme");
+	if(themeListBox.valid()) {
+		// First we start by enumerating all the themes available to the
+		// user.
+		std::string currentTheme = getUITheme();
+		
+		// Build the path to the themes directory and get all the content in that 
+		// directory.
+		std::string themesPath = ospath::join(getUIPath(), "themes");
+		ospath::DirectoryContents directoryContents = ospath::getDirectoryContents(themesPath);
+		
+		// Foreach subdirectory we add an item to the listbox with the 
+		// name of the theme.
+		ospath::DirectoryContents::const_iterator directoryEntry = directoryContents.begin();
+		for(;directoryEntry != directoryContents.end();++directoryEntry) {
+			// Uggly hack to skip files with a files and the
+			// . and .. directories.
+			if(directoryEntry->find(".") != std::string::npos) {
+				continue;
+			}
+			
+			Ref<wf::ListBoxItem> item = new wf::ListBoxItem(*directoryEntry);
+			themeListBox->addItem(item.get());
+			// TODO: Remove this row when we can set height through css.	
+			item->setSize(wf::Size(0, 30));
+			
+			// If the theme is the same as the current we select it in the
+			// list box.
+			if(currentTheme == *directoryEntry) {
+				themeListBox->setSelectedItem(item.get());
+			}
+		}
+	}
+
 	// Check / uncheck the checkbox with the current value.
 	Ref<wf::CheckBox> fullScreen = getById<wf::CheckBox>("fullscreen");
 	if(fullScreen.valid()) {
 		fullScreen->setChecked(screenSettings.fullScreen);
+	}
+	
+	// Handle different language settings.	
+	Ref<wf::ListBox> languageListBox = getById<wf::ListBox>("language");
+	if(languageListBox.valid()) {
+		std::string currentLanguage = getUILanguage();
+		
+		std::string localizationPath = ospath::join(getUIPath(), "localization");
+		ospath::DirectoryContents directoryContents = ospath::getDirectoryContents(localizationPath);
+		
+		ospath::DirectoryContents::const_iterator directoryEntry = directoryContents.begin();
+		for(;directoryEntry != directoryContents.end();++directoryEntry) {
+			if(directoryEntry->find(".") != std::string::npos) {
+				continue;
+			}
+			
+			Ref<wf::ListBoxItem> item = new wf::ListBoxItem(*directoryEntry);
+			languageListBox->addItem(item.get());
+			
+			// TODO: Remove this row when we can set height through css.	
+			item->setSize(wf::Size(0, 30));
+			
+			// If the language is the same as the current we select it in the
+			// list box.
+			if(currentLanguage == *directoryEntry) {
+				languageListBox->setSelectedItem(item.get());
+			}
+		}
 	}
 }
 
@@ -109,14 +175,46 @@ void Options::ok_Click() {
 	// Store the new settings.
 	setScreenSettings(screenSettings);
 	
+	// Store the current language of the application.
+	Ref<wf::ListBox> language = getById<wf::ListBox>("language");
+	if(language.valid()) {
+		Ref<wf::ListBoxItem> selectedItem = language->getSelectedItem();
+		if(selectedItem.valid()) {
+			std::string selectedText = selectedItem->getText();
+			setUILanguage(selectedText);
+		}
+	}
+	
+	// Store the new theme if it has changed.
+	Ref<wf::ListBox> themeListBox = getById<wf::ListBox>("theme");
+	if(themeListBox.valid()) {
+		Ref<wf::ListBoxItem> selectedItem = themeListBox->getSelectedItem();
+		if(selectedItem.valid()) {
+			setUITheme(selectedItem->getText());
+		}
+	}
+	
+	wf::WindowManager* windowManager = getWindowManager();
+
+	// Well we need to close all windows to make the theme change
+	// to be in effect.
+	MenuScreen* menuScreen = dynamic_cast<MenuScreen*>(CSPSim::theSim->getCurrentScreen());
+	if(menuScreen != NULL) {
+		menuScreen->displayDesktopAndMainMenu();
+	}
+	
 	// Display a message box that states that you will need to restart the 
 	// simulator.
-	Ref<wf::MessageBox> messageBox = wf::MessageBox::Show("Information", 
+	Ref<MessageBox> messageBox = MessageBox::Show("Information", 
 		"Changes will not take effect\nuntil you restart the simulator!");
-	getWindowManager()->show(messageBox.get());
+	windowManager->show(messageBox.get());
+	messageBox->centerWindow();
 
-	// Closes this window.
-	close();
+	// We only need to close this window if it hasn't been already.
+	if(menuScreen == NULL) {
+		// Closes this window.
+		close();
+	}
 }
 
 void Options::cancel_Click() {

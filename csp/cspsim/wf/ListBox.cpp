@@ -62,6 +62,10 @@ ControlVector ListBox::getChildControls() {
 	return childControls;
 }
 
+std::string ListBox::getName() const {
+	return "ListBox";
+}
+
 void ListBox::buildGeometry() {
 	// Make sure that all our child controls onInit() is called.
 	Container::buildGeometry();	
@@ -82,22 +86,24 @@ void ListBox::buildGeometry() {
 
 void ListBox::layoutChildControls() {
 	Size listBoxSize = getSize();
+	Rect clientRect = getClientRect();
 
-	double yPosition = listBoxSize.m_H / 2.0f;
+	double yPosition =  clientRect.y0;
 
 	ListBoxItemVector::iterator item = m_Items.begin();
 	for(int index=0;item != m_Items.end();++item, ++index) {
 		// Set the width of the list box item.	
 		Size size = (*item)->getSize();
-		size.m_W = listBoxSize.m_W;
+		size.m_W = clientRect.width();
 		(*item)->setSize(size);
-		(*item)->setZPos(-0.2f);
+		(*item)->setZPos(2.0f);
 		(*item)->layoutChildControls();
 
 		// Set the location of the listbox item.
-		yPosition -= (size.m_H / 2.0f);
-		(*item)->setLocation(Point(0.0f, yPosition));
-		yPosition -= (size.m_H / 2.0f);
+		(*item)->setLocation(Point(clientRect.x0, yPosition));
+
+		// Prepare the position for the next listbox item.
+		yPosition += (size.m_H);
 	}
 }
 

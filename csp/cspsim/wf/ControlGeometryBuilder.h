@@ -87,9 +87,6 @@ private:
 	virtual osg::Geometry* buildTriangle(
 		const Point& p1, const Point& p2, const Point& p3, float z,
 		const osg::Vec4& c1, const osg::Vec4& c2, const osg::Vec4& c3) const;
-
-protected:
-	std::string m_Text;
 };
 
 } // namespace wf

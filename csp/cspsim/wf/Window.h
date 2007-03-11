@@ -46,8 +46,6 @@ typedef std::map<std::string, Style> NamedStyleMap;
 
 class Window : public SingleControlContainer {
 public:
-	friend WindowManager;
-	
 	Window();
 	virtual ~Window();
 

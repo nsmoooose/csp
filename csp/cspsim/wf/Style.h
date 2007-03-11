@@ -29,6 +29,7 @@
 #include <string>
 
 #include <csp/csplib/util/Optional.h>
+#include <csp/cspsim/wf/Serialization.h>
 
 CSP_NAMESPACE
 

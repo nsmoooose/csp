@@ -158,7 +158,7 @@ def make_demo(version):
 		copy_tree(DATA, DATA_TARGET, exclude=r'^\.svn$')
 
 	print 'Writing README header'
-	README = os.path.join(DEMO, 'README')
+	README = os.path.join(DEMO, 'README.txt')
 	readme = open(README).read()
 	open(README, 'wt').write(readme % {'VERSION': version, 'DATE': time.strftime('%Y-%m-%d')})
 

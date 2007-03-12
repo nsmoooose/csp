@@ -25,7 +25,7 @@
 #include <csp/csplib/data/DataManager.h>
 #include <csp/cspsim/CSPSim.h>
 #include <csp/cspsim/DynamicObject.h>
-#include <csp/cspsim/battlefield/LocalBattleField.h>
+#include <csp/cspsim/battlefield/LocalBattlefield.h>
 #include <csp/cspsim/wf/Button.h>
 #include <csp/cspsim/wf/Serialization.h>
 #include <csp/cspsim/wf/WindowManager.h>

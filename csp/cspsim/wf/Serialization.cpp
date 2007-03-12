@@ -283,7 +283,7 @@ Ref<Control> createControl(XMLNode& node) {
 	}	
 }
 
-void ToValue(XMLNode& node, const std::string& src, osg::Vec4* dst) {
+void ToValue(XMLNode& /* node */, const std::string& src, osg::Vec4* dst) {
 	std::istringstream data(src);
 	
 	unsigned int rgba = 0;
@@ -302,7 +302,7 @@ void ToValue(XMLNode& node, const std::string& src, osg::Vec4* dst) {
 	dst->_v[3] = alpha * step;	
 }
 
-void ToValue(XMLNode& node, const std::string& src, bool* dst) {
+void ToValue(XMLNode& /* node */, const std::string& src, bool* dst) {
 	if(src == "1" || src == "true") {
 		*dst = true;
 	} 
@@ -311,19 +311,19 @@ void ToValue(XMLNode& node, const std::string& src, bool* dst) {
 	}
 }
 
-void ToValue(XMLNode& node, const std::string& src, float* dst) {
+void ToValue(XMLNode& /* node */, const std::string& src, float* dst) {
 	*dst = (float)atof(src.c_str());
 }
 
-void ToValue(XMLNode& node, const std::string& src, double* dst) {
+void ToValue(XMLNode& /* node */, const std::string& src, double* dst) {
 	*dst = atof(src.c_str());
 }
 
-void ToValue(XMLNode& node, const std::string& src, std::string* dst) {
+void ToValue(XMLNode& /* node */, const std::string& src, std::string* dst) {
 	*dst = src;
 }
 
-void ToValue(XMLNode& node, const std::string& src, Ref<wf::Control>* dst) {
+void ToValue(XMLNode& node, const std::string& /* src */, Ref<wf::Control>* dst) {
 	int childNodeCount = node.nChildNode();
 	if(childNodeCount > 0) {
 		XMLNode childNode = node.getChildNode(0);
@@ -331,7 +331,7 @@ void ToValue(XMLNode& node, const std::string& src, Ref<wf::Control>* dst) {
 	}
 }
 
-void ToValue(XMLNode& node, const std::string& src, ControlVector* dst) {
+void ToValue(XMLNode& node, const std::string& /* src */, ControlVector* dst) {
 	int childNodeCount = node.nChildNode();
 	for(int index = 0;index < childNodeCount;++index) {
 		XMLNode childNode = node.getChildNode(index);
@@ -342,7 +342,7 @@ void ToValue(XMLNode& node, const std::string& src, ControlVector* dst) {
 	}
 }
 
-void ToValue(XMLNode& node, const std::string& src, ListBoxItemVector* dst) {
+void ToValue(XMLNode& node, const std::string& /* src */, ListBoxItemVector* dst) {
 	int childNodeCount = node.nChildNode();
 	for(int index = 0;index < childNodeCount;++index) {
 		XMLNode childNode = node.getChildNode(index);
@@ -353,12 +353,12 @@ void ToValue(XMLNode& node, const std::string& src, ListBoxItemVector* dst) {
 	}
 }
 
-void ToValue(XMLNode& node, const std::string& src, Style* dst) {
+void ToValue(XMLNode& node, const std::string& /* src */, Style* dst) {
 	ReadingArchive archive;
 	archive.load(dst, node);
 }
 
-void ToValue(XMLNode& node, const std::string& src, NamedStyleMap* dst) {
+void ToValue(XMLNode& node, const std::string& /* src */, NamedStyleMap* dst) {
 	int childNodeCount = node.nChildNode();
 	for(int index = 0;index < childNodeCount;++index) {
 		XMLNode childNode = node.getChildNode(index);
@@ -372,7 +372,7 @@ void ToValue(XMLNode& node, const std::string& src, NamedStyleMap* dst) {
 	}
 }
 
-void ToValue(XMLNode& node, const std::string& src, TabPageVector* dst) {
+void ToValue(XMLNode& node, const std::string& /* src */, TabPageVector* dst) {
 	int childNodeCount = node.nChildNode();
 	for(int index = 0;index < childNodeCount;++index) {
 		XMLNode childNode = node.getChildNode(index);
@@ -383,7 +383,7 @@ void ToValue(XMLNode& node, const std::string& src, TabPageVector* dst) {
 	}
 }
 
-void ToValue(XMLNode& node, const std::string& src, TableControlContainer::ColumnVector* dst) {
+void ToValue(XMLNode& node, const std::string& /* src */, TableControlContainer::ColumnVector* dst) {
 	int childNodeCount = node.nChildNode();
 	for(int index = 0;index < childNodeCount;++index) {
 		XMLNode childNode = node.getChildNode(index);
@@ -396,7 +396,7 @@ void ToValue(XMLNode& node, const std::string& src, TableControlContainer::Colum
 	}
 }
 
-void ToValue(XMLNode& node, const std::string& src, TableControlContainer::RowVector* dst) {
+void ToValue(XMLNode& node, const std::string& /* src */, TableControlContainer::RowVector* dst) {
 	int childNodeCount = node.nChildNode();
 	for(int index = 0;index < childNodeCount;++index) {
 		XMLNode childNode = node.getChildNode(index);
@@ -409,7 +409,7 @@ void ToValue(XMLNode& node, const std::string& src, TableControlContainer::RowVe
 	}
 }
 
-void ToValue(XMLNode& node, const std::string& src, TableControlContainer::XYVector* dst) {
+void ToValue(XMLNode& node, const std::string& /* src */, TableControlContainer::XYVector* dst) {
 	bool resizeVector = true;
 
 	// Iterate all rows that is found.

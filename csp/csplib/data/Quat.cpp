@@ -168,7 +168,7 @@ void Quat::makeRotate(double roll, double pitch, double yaw) {
 	double ch2 = cos(0.5*yaw);
 	_x = sh0 * ch1 * ch2 - ch0 * sh1 * sh2;
 	_y = ch0 * sh1 * ch2 + sh0 * ch1 * sh2;
-	_z = ch0 * ch1 * sh2 - sh0 * sh1 * sh2;
+	_z = ch0 * ch1 * sh2 - sh0 * sh1 * ch2;
 	_w = ch0 * ch1 * ch2 + sh0 * sh1 * sh2;
 }
 

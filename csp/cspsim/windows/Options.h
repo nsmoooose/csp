@@ -37,8 +37,8 @@ public:
 	virtual ~Options();
 	
 private:
-	void ok_Click();
-	void cancel_Click();	
+	void ok_Click(wf::ClickEventArgs& event);
+	void cancel_Click(wf::ClickEventArgs& event);	
 };
 
 } // namespace windows

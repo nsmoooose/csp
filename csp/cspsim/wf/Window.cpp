@@ -62,7 +62,7 @@ void Window::layoutChildControls() {
 	Control* childControl = getControl();
 	if(childControl != NULL) {
 		ControlGeometryBuilder geometryBuilder;
-		Rect clientRect = getClientRect();
+		Rectangle clientRect = getClientRect();
 		childControl->setSize(Size(clientRect.width(), clientRect.height()));
 		childControl->setLocation(Point(clientRect.x0, clientRect.y0));
 		Container* container = dynamic_cast<Container*>(childControl);
@@ -125,8 +125,8 @@ void Window::centerWindow() {
 	Size windowSize = getSize();
 		
 	Point windowLocation = 
-		Point(screenSize.m_W / 2 - windowSize.m_W / 2, 
-		screenSize.m_H / 2 - windowSize.m_H / 2);
+		Point(screenSize.width / 2 - windowSize.width / 2, 
+		screenSize.height / 2 - windowSize.height / 2);
 		
 	setLocation(windowLocation);
 

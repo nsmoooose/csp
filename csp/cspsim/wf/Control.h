@@ -25,11 +25,15 @@
 #ifndef __CSPSIM_WF_CONTROL_H__
 #define __CSPSIM_WF_CONTROL_H__
 
+#include <set>
+
 #include <csp/csplib/util/Ref.h>
 #include <csp/csplib/util/Referenced.h>
 #include <csp/csplib/util/Signal.h>
+#include <csp/csplib/util/WeakRef.h>
+#include <csp/csplib/util/WeakReferenced.h>
 #include <csp/csplib/data/Vector3.h>
-#include <csp/cspsim/wf/Point.h>
+#include <csp/cspsim/wf/Rectangle.h>
 #include <csp/cspsim/wf/Serialization.h>
 #include <csp/cspsim/wf/Style.h>
 
@@ -53,13 +57,22 @@ class WindowManager;
 
 typedef std::vector<Ref<Control> > ControlVector;
 
-struct Rect {
-	float x0, y0, x1, y1;
-	Rect() {}
-	Rect(float x0_, float y0_, float x1_, float y1_): x0(x0_), y0(y0_), x1(x1_), y1(y1_) {}
-	inline float width() const { return x1 - x0; }
-	inline float height() const { return y1 - y0; }
+struct EventArgs {
+	EventArgs() : handled(false) {}
+	bool handled;
 };
+
+struct ClickEventArgs : EventArgs {
+	ClickEventArgs(int X, int Y) : x(X), y(Y) {}
+	int x, y;
+};
+
+struct HoverEventArgs : EventArgs {
+	int x, y;
+};
+
+typedef sigc::signal<void, ClickEventArgs&> ClickSignal;	
+typedef sigc::signal<void, HoverEventArgs&> HoverSignal;	
 
 /** The base class for all controls that exists.
  *
@@ -67,7 +80,7 @@ struct Rect {
  *  window framework.
  *
  */
-class Control : public Referenced {
+class Control : public Referenced, public WeakReferenced {
 public:
 	Control();
 	virtual ~Control();
@@ -105,15 +118,28 @@ public:
 	virtual const Style& getStyle() const;
 	virtual Style& getStyle();
 	
+	virtual void addState(const std::string& state);
+	virtual void removeState(const std::string& state);
+	virtual std::string getState() const;
+
+	/** The following members is signals that any class
+	 * can listen to. */
+	ClickSignal Click;
+	HoverSignal Hover;
+	
+	// Fires the click signal.
+	virtual void onClick(ClickEventArgs& event);
+	virtual void onHover(HoverEventArgs& event);
+
 	template<class Archive>
 	void serialize(Archive & ar) {
 		ar & make_nvp("@Id", m_Id);
 		ar & make_nvp("@CssClass", m_CssClass);
-		ar & make_nvp("@LocationX", m_Point.m_X);
-		ar & make_nvp("@LocationY", m_Point.m_Y);
+		ar & make_nvp("@LocationX", m_Point.x);
+		ar & make_nvp("@LocationY", m_Point.y);
 		ar & make_nvp("@LocationZ", m_ZPos);
-		ar & make_nvp("@SizeWidth", m_Size.m_W);
-		ar & make_nvp("@SizeHeight", m_Size.m_H);
+		ar & make_nvp("@SizeWidth", m_Size.width);
+		ar & make_nvp("@SizeHeight", m_Size.height);
 		ar & make_nvp("Style", m_Style);
 	}	
 	
@@ -121,6 +147,9 @@ protected:
 
 private:
 	std::string m_Id;
+	
+	typedef std::set<std::string> StateSet;
+	StateSet m_States; 
 
 	osg::ref_ptr<osg::MatrixTransform> m_TransformGroup;
 	optional<std::string> m_CssClass;
@@ -129,7 +158,7 @@ private:
 	Point m_Point;
 	Size m_Size;
 	
-	Container* m_Parent;
+	WeakRef<Container> m_Parent;
 	Style m_Style;
 	bool m_Visible;
 	

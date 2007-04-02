@@ -62,49 +62,6 @@ void buildInheritedValue(Style& styleToBuild, T& propertyToBuild, const Control*
 }
 
 template<class T>
-void buildStyleForSingleProperty(Style& styleToBuild, T& propertyToBuild, const Control* control) {
-	if(propertyToBuild) {
-		// There was already a value on the style. This will override all
-		// other styles.
-		return;
-	}
-	
-	const Container* parent = control->getParent();
-	if(parent != NULL) {
-		buildInheritedValue(styleToBuild, propertyToBuild, parent);
-	}
-
-	// Retreive the window control. It is mandatory for the
-	// rest of the method call to be completed.
-	const Window* window = Window::getWindow(control);
-	if(window == NULL) {
-		return;
-	}
-
-	// Lets fetch value from class with the same name as the 
-	// control class. All labels can share same values with
-	// the "Label" style name. This style is more specific 
-	// than the inherited one. This style will override
-	// inherited values.
-	const std::string className = control->getName();
-	optional<Style> cssStyle = window->getNamedStyle(className);
-	if(cssStyle) {
-		buildStyleFromCssClass(styleToBuild, propertyToBuild, *cssStyle);
-	}
-
-	// Lets fetch value from a specified class if it exists.
-	// This is the most specific style. This style will override
-	// both inherited style and control specific style.
-	const optional<std::string> cssClassName = control->getCssClass();
-	if(cssClassName) {
-		optional<Style> cssStyle = window->getNamedStyle(*cssClassName);
-		if(cssStyle) {
-			buildStyleFromCssClass(styleToBuild, propertyToBuild, *cssStyle);
-		}
-	}
-}
-
-template<class T>
 void buildStyleForSinglePropertyWithState(Style& styleToBuild, T& propertyToBuild, 
 	const Control* control, const std::string& stateName) {
 	if(propertyToBuild) {
@@ -128,7 +85,10 @@ void buildStyleForSinglePropertyWithState(Style& styleToBuild, T& propertyToBuil
 	// the "Label" style name. This style is more specific 
 	// than the inherited one. This style will override
 	// inherited values.
-	const std::string className = control->getName() + ":" + stateName;
+	std::string className = control->getName();
+	if(stateName.size() != 0) {
+	  	className += std::string(":") + stateName;
+	}
 	optional<Style> cssStyle = window->getNamedStyle(className);
 	if(cssStyle) {
 		buildStyleFromCssClass(styleToBuild, propertyToBuild, *cssStyle);
@@ -137,8 +97,11 @@ void buildStyleForSinglePropertyWithState(Style& styleToBuild, T& propertyToBuil
 	// Lets fetch value from a specified class if it exists.
 	// This is the most specific style. This style will override
 	// both inherited style and control specific style.
-	const optional<std::string> cssClassName = control->getCssClass() + ":" + stateName;
+	optional<std::string> cssClassName = control->getCssClass();
 	if(cssClassName) {
+		if(stateName.size() != 0) {
+			*cssClassName += std::string(":") + stateName;
+		}
 		optional<Style> cssStyle = window->getNamedStyle(*cssClassName);
 		if(cssStyle) {
 			buildStyleFromCssClass(styleToBuild, propertyToBuild, *cssStyle);
@@ -150,33 +113,16 @@ Style StyleBuilder::buildStyle(const Control* control) {
 	// This method will imitate CSS to some extent. Well the
 	// most important things is here anyway...
 	
-	// First we try to get any value set directly on the control or any of the 
-	// parents.
+	// First we try to get any value set directly on the control.
 	Style style = control->getStyle();
-	buildStyleForSingleProperty(style, style.fontFamily, control);
-	buildStyleForSingleProperty(style, style.fontSize, control);
-	buildStyleForSingleProperty(style, style.color, control);
-	buildStyleForSingleProperty(style, style.backgroundColor, control);
-	buildStyleForSingleProperty(style, style.backgroundColorTopLeft, control);
-	buildStyleForSingleProperty(style, style.backgroundColorTopRight, control);
-	buildStyleForSingleProperty(style, style.backgroundColorBottomLeft, control);
-	buildStyleForSingleProperty(style, style.backgroundColorBottomRight, control);
-
-	buildStyleForSingleProperty(style, style.backgroundImage, control);
-
-	buildStyleForSingleProperty(style, style.borderWidth, control);
-	buildStyleForSingleProperty(style, style.borderTopWidth, control);
-	buildStyleForSingleProperty(style, style.borderBottomWidth, control);
-	buildStyleForSingleProperty(style, style.borderLeftWidth, control);
-	buildStyleForSingleProperty(style, style.borderRightWidth, control);
 	
-	buildStyleForSingleProperty(style, style.borderColor, control);
-	buildStyleForSingleProperty(style, style.borderTopColor, control);
-	buildStyleForSingleProperty(style, style.borderBottomColor, control);
-	buildStyleForSingleProperty(style, style.borderLeftColor, control);
-	buildStyleForSingleProperty(style, style.borderRightColor, control);
-
-	buildStyleForSingleProperty(style, style.visible, control);
+	// Well we don't have any special kind of state at this point.
+	// So lets call the build style method with an empty state.
+	// This method call will build the current controls style
+	// according to set values on the control, inherited values and CssClasses. 
+	buildStyle(style, control, control->getState());
+	
+	// Return the style to the caller.
 	return style;
 }
 

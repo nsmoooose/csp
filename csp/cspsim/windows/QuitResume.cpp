@@ -43,26 +43,29 @@ QuitResume::QuitResume() {
 
 	Ref<wf::Button> resumeButton = getById<wf::Button>("resume");
 	if(resumeButton.valid())
-		resumeButton->addButtonClickedHandler(sigc::mem_fun(*this, &QuitResume::resume_Click));
+		resumeButton->Click.connect(sigc::mem_fun(*this, &QuitResume::resume_Click));
 
 	Ref<wf::Button> optionsButton = getById<wf::Button>("options");
 	if(optionsButton.valid())
-		optionsButton->addButtonClickedHandler(sigc::mem_fun(*this, &QuitResume::options_Click));
+		optionsButton->Click.connect(sigc::mem_fun(*this, &QuitResume::options_Click));
 
 	Ref<wf::Button> quitButton = getById<wf::Button>("quit");
 	if(quitButton.valid())
-		quitButton->addButtonClickedHandler(sigc::mem_fun(*this, &QuitResume::quit_Click));	
+		quitButton->Click.connect(sigc::mem_fun(*this, &QuitResume::quit_Click));	
 }
 
-void QuitResume::resume_Click() {
+void QuitResume::resume_Click(wf::ClickEventArgs& event) {
+	event.handled = true;
 	close();
 }
 
-void QuitResume::quit_Click() {
+void QuitResume::quit_Click(wf::ClickEventArgs& event) {
+	event.handled = true;
 	CSPSim::theSim->quit();
 }
 
-void QuitResume::options_Click() {
+void QuitResume::options_Click(wf::ClickEventArgs& event) {
+	event.handled = true;
 	wf::WindowManager* manager = getWindowManager();
 	if(manager != NULL) {
 		if(!manager->windowIsOpen<Options>()) {

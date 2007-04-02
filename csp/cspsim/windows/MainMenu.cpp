@@ -42,15 +42,15 @@ MainMenu::MainMenu() {
 
 	Ref<wf::Button> instantActionButton = getById<wf::Button>("instantAction");
 	if(instantActionButton.valid())
-		instantActionButton->addButtonClickedHandler(sigc::mem_fun(*this, &MainMenu::instantAction_Click));
+		instantActionButton->Click.connect(sigc::mem_fun(*this, &MainMenu::instantAction_Click));
 
 	Ref<wf::Button> optionsButton = getById<wf::Button>("options");
 	if(optionsButton.valid())
-		optionsButton->addButtonClickedHandler(sigc::mem_fun(*this, &MainMenu::options_Click));
+		optionsButton->Click.connect(sigc::mem_fun(*this, &MainMenu::options_Click));
 
 	Ref<wf::Button> quitButton = getById<wf::Button>("quit");
 	if(quitButton.valid())
-		quitButton->addButtonClickedHandler(sigc::mem_fun(*this, &MainMenu::quit_Click));	
+		quitButton->Click.connect(sigc::mem_fun(*this, &MainMenu::quit_Click));	
 }
 
 void createVehicleHelper(CSPSim *self, const char *path, Vector3 position,
@@ -71,7 +71,9 @@ void createVehicleHelper(CSPSim *self, const char *path, Vector3 position,
 }
 
 
-void MainMenu::instantAction_Click() {
+void MainMenu::instantAction_Click(wf::ClickEventArgs& event) {
+	event.handled = true;
+
 	CSPSim::theSim->displayLogoScreen();
 	CSPSim::theSim->loadSimulation();
 
@@ -79,11 +81,13 @@ void MainMenu::instantAction_Click() {
 	createVehicleHelper(CSPSim::theSim, "sim:vehicles.aircraft.f16dj", Vector3(-29510, -10530, 91.1), Vector3(0, 0, 0), Vector3(0.0, 0.0, 180.0));
 }
 
-void MainMenu::quit_Click() {
+void MainMenu::quit_Click(wf::ClickEventArgs& event) {
+	event.handled = true;
+
 	CSPSim::theSim->quit();
 }
 
-void MainMenu::options_Click() {
+void MainMenu::options_Click(wf::ClickEventArgs& event) {
 	wf::WindowManager* manager = getWindowManager();
 	if(manager != NULL) {
 		if(!manager->windowIsOpen<Options>()) {

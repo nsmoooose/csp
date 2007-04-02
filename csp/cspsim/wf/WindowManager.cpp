@@ -25,6 +25,7 @@
 #include <csp/cspsim/Animation.h>
 #include <csp/cspsim/CSPSim.h>
 #include <csp/cspsim/SceneConstants.h>
+#include <csp/cspsim/wf/ControlCallback.h>
 #include <csp/cspsim/wf/Serialization.h>
 #include <csp/cspsim/wf/WindowManager.h>
 
@@ -100,7 +101,57 @@ WindowManager::WindowManager() : m_Group(new osg::Group) {
 WindowManager::~WindowManager() {
 }
 
-bool WindowManager::pick(int x, int y) {
+bool WindowManager::onClick(int x, int y) {
+	ClickEventArgs event(x, y);
+	Control* control = getControlAtPosition(x, y);
+	if(control != NULL) {
+		control->onClick(event);
+	}
+	return event.handled;
+}
+
+bool WindowManager::onMouseMove(int x, int y, int dx, int dy) {
+	return false;
+#if 0
+	// Save the new mouse position.
+	m_MousePosition = Point(x, y);
+	
+	Control* newHoverControl = getControlAtPosition(x, y);
+	
+	// If there is no control on the current mouse position and there
+	// was a hover control before. Then we need to rebuild the geometry
+	// for that control to reflect style changes.
+	if(newHoverControl == NULL && m_HoverControl.valid()) {
+		m_HoverControl->removeState("hover");		
+		m_HoverControl->buildGeometry();
+		m_HoverControl = NULL;
+	}
+	// If the last hover control is null and we have a new one then build
+	// geometry for the new hover control.
+	else if(newHoverControl != NULL && !m_HoverControl.valid()) {
+		m_HoverControl = newHoverControl;
+		m_HoverControl->addState("hover");
+		m_HoverControl->buildGeometry();
+	}
+	else if(newHoverControl != NULL && m_HoverControl != newHoverControl) {
+		Ref<Control> oldHover = m_HoverControl;
+		m_HoverControl = newHoverControl;
+		
+		oldHover->buildGeometry();
+		m_HoverControl->buildGeometry();
+		
+		oldHover->removeState("hover");
+		m_HoverControl->addState("hover");
+	}
+	return false;
+#endif
+}
+
+Point WindowManager::getMousePosition() const {
+	return m_MousePosition;
+}
+
+Control* WindowManager::getControlAtPosition(int x, int y) {
 	if (m_Group->getNumChildren() > 0) {
 		assert(m_Group->getNumChildren() == 1);
 		osg::Vec3 var_near;
@@ -115,20 +166,22 @@ bool WindowManager::pick(int x, int y) {
 			if (!hits.empty()) {
 				osg::NodePath const &nearest = hits[0]._nodePath;
 				// TODO should we iterate in reverse?
-				for (osg::NodePath::const_iterator iter = nearest.begin(); iter != nearest.end(); ++iter) {
+				for (osg::NodePath::const_reverse_iterator iter = nearest.rbegin(); iter != nearest.rend(); ++iter) {
 					osg::Node *node = *iter;
 					osg::NodeCallback *callback = node->getUpdateCallback();
 					if (callback) {
-						AnimationCallback *anim = dynamic_cast<AnimationCallback*>(callback);
+						ControlCallback *controlCallback = dynamic_cast<ControlCallback*>(callback);
 						// TODO set flags for click type, possibly add position if we can determine a useful
 						// coordinate system.
-						if (anim && anim->pick(0)) return true;
+						if (controlCallback) {
+							return controlCallback->getControl();
+						}
 					}
 				}
 			}
 		}
 	}
-	return false;
+	return NULL;
 }
 
 void WindowManager::show(Window* window) {

@@ -53,7 +53,9 @@ public:
 	WindowManager();
 	virtual ~WindowManager();
 
-	virtual bool pick(int x, int y);
+	virtual bool onClick(int x, int y);
+	virtual bool onMouseMove(int x, int y, int dx, int dy);
+	
 	virtual void show(Window* window);
 	virtual void close(Window* window);
 	
@@ -61,6 +63,9 @@ public:
 	
 	virtual void onUpdate(float dt);
 	virtual void onRender();
+	
+	virtual Point getMousePosition() const;
+	virtual Control* getControlAtPosition(int x, int y);
 	
 	template <class Type> 
 	bool windowIsOpen() const {
@@ -100,6 +105,10 @@ private:
 	osg::ref_ptr<osg::Group> m_Group;
 
 	WindowVector m_Windows;
+	
+	// This is the control that the mouse is currently hovering above.
+	Ref<Control> m_HoverControl;
+	Point m_MousePosition;
 };
 
 } // namespace wf

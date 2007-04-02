@@ -49,11 +49,8 @@ public:
 	
 	virtual void displayDesktopAndMainMenu();
 
-	DECLARE_INPUT_INTERFACE(MenuScreen, BaseScreen)
-		BIND_CLICK("LEFT_CLICK", on_LeftClick);
-	END_INPUT_INTERFACE  // protected:
-
-	void on_LeftClick(MapEvent::ClickEvent const &event);
+	virtual bool onMouseMove(SDL_MouseMotionEvent const &);
+	virtual bool onMouseButton(SDL_MouseButtonEvent const &);
 
 private:
 	Ref<wf::WindowManager> m_WindowManager;

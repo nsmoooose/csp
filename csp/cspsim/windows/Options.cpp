@@ -44,12 +44,12 @@ Options::Options() {
 	
 	Ref<wf::Button> okButton = getById<wf::Button>("ok");
 	if(okButton.valid()) {
-		okButton->addButtonClickedHandler(sigc::mem_fun(*this, &Options::ok_Click));
+		okButton->Click.connect(sigc::mem_fun(*this, &Options::ok_Click));
 	}
 
 	Ref<wf::Button> cancelButton = getById<wf::Button>("cancel");
 	if(cancelButton.valid()) {
-		cancelButton->addButtonClickedHandler(sigc::mem_fun(*this, &Options::cancel_Click));
+		cancelButton->Click.connect(sigc::mem_fun(*this, &Options::cancel_Click));
 	}
 
 	// Get the current screen settings.
@@ -145,7 +145,9 @@ Options::Options() {
 	}
 }
 
-void Options::ok_Click() {
+void Options::ok_Click(wf::ClickEventArgs& event) {
+	event.handled = true;
+	
 	// Read current display settings.
 	ScreenSettings screenSettings = getScreenSettings();
 	
@@ -217,7 +219,8 @@ void Options::ok_Click() {
 	}
 }
 
-void Options::cancel_Click() {
+void Options::cancel_Click(wf::ClickEventArgs& event) {
+	event.handled = true;
 	close();
 }
 

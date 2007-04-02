@@ -32,12 +32,12 @@ CSP_NAMESPACE
 namespace wf {
 
 struct Point {
-	Point() : m_X(0.0), m_Y(0.0) {}
-	Point(double x, double y) : m_X(x), m_Y(y) {}
-	Point(const Point& point, const Size& size) : m_X(point.m_X + size.m_W), m_Y(point.m_Y - size.m_H) {}
+	Point() : x(0.0), y(0.0) {}
+	Point(double _x, double _y) : x(_x), y(_y) {}
+	Point(const Point& point, const Size& size) : x(point.x + size.width), y(point.y - size.height) {}
 	virtual ~Point() {}
 
-	double m_X, m_Y;
+	double x, y;
 };
 
 } // namespace wf

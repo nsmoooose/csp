@@ -23,6 +23,7 @@
  **/
 
 #include <csp/cspsim/wf/Control.h>
+#include <csp/cspsim/wf/ControlCallback.h>
 #include <csp/cspsim/wf/ControlGeometryBuilder.h>
 #include <csp/cspsim/wf/Window.h>
 #include <csp/csplib/util/Ref.h>
@@ -35,7 +36,7 @@ CSP_NAMESPACE
 namespace wf {
 
 Control::Control() :
-	m_ZPos(1.0), m_Parent(0), m_TransformGroup(new osg::MatrixTransform)
+	m_ZPos(1.0), m_TransformGroup(new osg::MatrixTransform)
 {
     osg::StateSet *stateSet = m_TransformGroup->getOrCreateStateSet();
     stateSet->setRenderBinDetails(100, "RenderBin");
@@ -44,6 +45,12 @@ Control::Control() :
 
     osg::ref_ptr<osg::BlendFunc> blendFunction = new osg::BlendFunc;
     stateSet->setAttributeAndModes(blendFunction.get());
+    
+    // Attach a control callback to the control. This makes it possible 
+	// for the window manager to find out what control exists on a specific
+	// coordinate.
+    osg::ref_ptr<ControlCallback> callback = new ControlCallback(this);
+	m_TransformGroup->setUpdateCallback(callback.get());
 }
 
 Control::~Control() {
@@ -67,11 +74,11 @@ void Control::buildGeometry() {
 }
 
 Container* Control::getParent() {
-	return m_Parent;
+	return m_Parent.get();
 }
 
 const Container* Control::getParent() const {
-	return m_Parent;
+	return m_Parent.get();
 }
 
 void Control::setParent(Container* parent) {
@@ -79,7 +86,7 @@ void Control::setParent(Container* parent) {
 }
 
 WindowManager* Control::getWindowManager() {
-	if(m_Parent == NULL)
+	if(!m_Parent.valid())
 		return NULL;
 		
 	return m_Parent->getWindowManager();
@@ -132,16 +139,53 @@ Style& Control::getStyle() {
 	return m_Style; 
 }
 
+void Control::addState(const std::string& state) {
+	m_States.insert(state);
+}
+
+void Control::removeState(const std::string& state) {
+	m_States.erase(state);
+}
+
+std::string Control::getState() const {
+	StateSet::const_iterator state = m_States.begin();
+	std::string statesToReturn;
+	for(;state != m_States.end();++state) {
+		statesToReturn += ":" + *state;
+	}
+	return statesToReturn;
+}
+
 void Control::updateMatrix() {
 	double parentX = 0, parentY = 0;
-	if(m_Parent != NULL) {
-		parentX = m_Parent->m_Size.m_W / 2;
-		parentY = m_Parent->m_Size.m_H / 2;
+	if(m_Parent.valid()) {
+		parentX = m_Parent->m_Size.width / 2;
+		parentY = m_Parent->m_Size.height / 2;
 	}
 	
 	// The control has been loaded. Lets reflect our properties with
 	// our osg object.
-	m_TransformGroup->setMatrix(osg::Matrix::translate(m_Point.m_X - parentX + (m_Size.m_W / 2), m_Point.m_Y - parentY + (m_Size.m_H / 2), m_ZPos));	
+	m_TransformGroup->setMatrix(osg::Matrix::translate(m_Point.x - parentX + (m_Size.width / 2), m_Point.y - parentY + (m_Size.height / 2), m_ZPos));	
+}
+
+void Control::onClick(ClickEventArgs& event) {
+	Click(event);
+	if(event.handled == false) {
+		Control* parent = getParent();
+		if(parent != NULL) {
+			parent->onClick(event);
+		}
+	}
+}
+
+void Control::onHover(HoverEventArgs& event) {
+	Hover(event);
+	if(event.handled == false) {
+		Control* parent = getParent();
+		if(parent != NULL) {
+			parent->onHover(event);
+		}
+	}
 }
 
 } // namespace wf

@@ -25,7 +25,6 @@
 #ifndef __CSPSIM_WF_BUTTON_H__
 #define __CSPSIM_WF_BUTTON_H__
 
-#include <csp/csplib/util/Signal.h>
 #include <csp/cspsim/wf/SingleControlContainer.h>
 
 CSP_NAMESPACE
@@ -50,8 +49,6 @@ public:
 	virtual const std::string getText() const;
 	virtual void setText(const std::string& text);
 	
-	virtual void addButtonClickedHandler(const sigc::slot<void> &handler);
-
 	template<class Archive>
 	void serialize(Archive & ar)	{
 		SingleControlContainer::serialize(ar);
@@ -60,12 +57,6 @@ public:
 	
 private:
 
-protected:
-	typedef sigc::signal<void> ButtonClickedSignal;	
-	ButtonClickedSignal m_ButtonClicked;
-
-	class ButtonClickedCallback;
-	
 	std::string m_text;
 };
 

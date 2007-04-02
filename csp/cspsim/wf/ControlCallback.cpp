@@ -18,44 +18,23 @@
 
 
 /**
- * @file Container.h
+ * @file ControlCallback.cpp
  *
  **/
 
-#ifndef __CSPSIM_WF_CONTAINER_H__
-#define __CSPSIM_WF_CONTAINER_H__
-
-#include <csp/cspsim/wf/Control.h>
+#include <csp/cspsim/wf/ControlCallback.h>
 
 CSP_NAMESPACE
 
 namespace wf {
+	
+ControlCallback::ControlCallback(Control* control) : m_Control(control) {
+}
 
-class Container : public Control {
-public:
-	Container();
-	virtual ~Container();
-	
-	virtual void layoutChildControls() = 0;
-	virtual ControlVector getChildControls() = 0;
-	
-	virtual Rectangle getClientRect() const;
-	
-	template<class T>
-	T* getById(const std::string& id) {
-		return dynamic_cast<T*>(internalGetById(id));
-	}
-	
-protected:
-
-private:
-	virtual Control* internalGetById(const std::string& id);
-};
+Control* ControlCallback::getControl() {
+	return m_Control;
+}
 
 } // namespace wf
 
 CSP_NAMESPACE_END
-
-#endif // __CSPSIM_WF_CONTAINER_H__
-
-

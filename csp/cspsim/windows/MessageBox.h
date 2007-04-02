@@ -41,7 +41,7 @@ public:
 	static Ref<MessageBox> Show(std::string caption, std::string message);
 	
 private:
-	virtual void ok_Click();
+	virtual void ok_Click(wf::ClickEventArgs& event);
 };
 
 } // namespace windows

@@ -95,17 +95,17 @@ void TableControlContainer::layoutChildControls() {
 	for(ColumnVector::size_type x=0;x<columnCount;++x) {
 		const TableControlContainerColumn& column = m_Columns[x];
 		
-		point.m_Y = 0;
+		point.y = 0;
 		for(ColumnVector::size_type y=0;y<rowCount;++y) {
 			const TableControlContainerRow& row = m_Rows[y];
 					
 			Ref<Control> control = m_Controls[x][y];
 			if(control.valid()) {		
-				double width = tableSize.m_W * column.getWidth() - m_CellPadding.left - m_CellPadding.right;
-				double height = tableSize.m_H * row.getHeight() - m_CellPadding.top - m_CellPadding.bottom;
+				double width = tableSize.width * column.getWidth() - m_CellPadding.left - m_CellPadding.right;
+				double height = tableSize.height * row.getHeight() - m_CellPadding.top - m_CellPadding.bottom;
 				control->setSize(Size(width, height));
 
-				Point childControlLocation(point.m_X + m_CellPadding.left, point.m_Y + m_CellPadding.top);
+				Point childControlLocation(point.x + m_CellPadding.left, point.y + m_CellPadding.top);
 				control->setLocation(childControlLocation);
 				
 				Container* controlContainer = dynamic_cast<Container*>(control.get());
@@ -114,9 +114,9 @@ void TableControlContainer::layoutChildControls() {
 				}
 			}
 			
-			point.m_Y += (tableSize.m_H * row.getHeight());
+			point.y += (tableSize.height * row.getHeight());
 		}
-		point.m_X += (tableSize.m_W * column.getWidth());
+		point.x += (tableSize.width * column.getWidth());
 	}
 }
 

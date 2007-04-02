@@ -34,20 +34,6 @@ CSP_NAMESPACE
 
 namespace wf {
 
-class Button::ButtonClickedCallback : public AnimationCallback {
-public:
-	ButtonClickedCallback(ButtonClickedSignal& signal, Button* button) : m_ButtonClicked(signal), m_Button(button) {}
-	virtual ~ButtonClickedCallback() {}
-	virtual bool pick(int /*flags*/) {
-		m_ButtonClicked();
-		return true;
-	}
-	
-private:
-	ButtonClickedSignal& m_ButtonClicked;
-	Button* m_Button;
-};
-
 Button::Button() : SingleControlContainer() {
 	Ref<Label> label = new Label();
 	label->setAlignment(osgText::Text::CENTER_CENTER);
@@ -82,20 +68,10 @@ void Button::buildGeometry() {
 	// Build our own button control and add it to the group.
 	ControlGeometryBuilder geometryBuilder;
 	osg::ref_ptr<osg::Group> button = geometryBuilder.buildButton(this);
+
 	// When the button is invisible there will not be any geometry created.
-	// If this happens we cannot connect a callback on click either.
 	if(button.valid()) {
-		osg::ref_ptr<ButtonClickedCallback> callback = new ButtonClickedCallback(m_ButtonClicked, this);
-		if(button->getUpdateCallback() == NULL) {
-			button->setUpdateCallback(callback.get());
-		}
 		getNode()->addChild(button.get());		
-		
-		// Bind the update callback to the child control also.
-		Control* childControl = getControl();
-		if(childControl != NULL) {	
-			childControl->getNode()->setUpdateCallback(callback.get());
-		}
 	}
 }
 
@@ -106,10 +82,6 @@ const std::string Button::getText() const {
 void Button::setText(const std::string& text) {
 	m_text = text;
 	buildGeometry();
-}
-
-void Button::addButtonClickedHandler(const sigc::slot<void> &handler) {
-	m_ButtonClicked.connect(handler);
 }
 
 } // namespace wf

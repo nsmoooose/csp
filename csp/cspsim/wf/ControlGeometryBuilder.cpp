@@ -179,10 +179,10 @@ void ControlGeometryBuilder::buildControl(osg::Geode* geode, float& z, const Sty
 	
 	const Size& size = control->getSize();
 
-	float x1 = 0 - (size.m_W/2);
-	float y1 = 0 - size.m_H/2;
-	float x2 = (size.m_W/2);
-	float y2 = size.m_H/2;
+	float x1 = 0 - (size.width/2);
+	float y1 = 0 - size.height/2;
+	float x2 = (size.width/2);
+	float y2 = size.height/2;
 	
 	// Draw background color of the control.
 	osg::ref_ptr<osg::Geometry> backgroundGeometry;
@@ -386,9 +386,9 @@ osg::Geometry* ControlGeometryBuilder::buildTriangle(
 	osg::ref_ptr<osg::Vec3Array> vertices = new osg::Vec3Array;
 	osg::ref_ptr<osg::Vec4Array> colors = new osg::Vec4Array;
 
-	vertices->push_back(osg::Vec3(p1.m_X, p1.m_Y, z));
-	vertices->push_back(osg::Vec3(p2.m_X, p2.m_Y, z));
-	vertices->push_back(osg::Vec3(p3.m_X, p3.m_Y, z));
+	vertices->push_back(osg::Vec3(p1.x, p1.y, z));
+	vertices->push_back(osg::Vec3(p2.x, p2.y, z));
+	vertices->push_back(osg::Vec3(p3.x, p3.y, z));
 	colors->push_back(c1);
 	colors->push_back(c2);
 	colors->push_back(c3);
@@ -492,10 +492,10 @@ osg::Group* ControlGeometryBuilder::buildButton(const Button* button) const {
 	// Fetch all necesarry data that we need.
 	const Size& size = button->getSize();
 
-	float x1 = 0 - (size.m_W/2);
-	float y1 = size.m_H/2;
-	float x2 = (size.m_W/2);
-	float y2 = 0 - size.m_H/2;
+	float x1 = 0 - (size.width/2);
+	float y1 = size.height/2;
+	float x2 = (size.width/2);
+	float y2 = 0 - size.height/2;
 
 	// Add a border to the button.
 	getNextLayer(z);
@@ -524,10 +524,10 @@ osg::Group* ControlGeometryBuilder::buildCheckBox(const CheckBox* checkBox) cons
 
 	const Size& size = checkBox->getSize();
 	
-	float x1 = 0 - (size.m_W/2);
-	float y1 = 0 - size.m_H/2;
-	float x2 = (size.m_W/2);
-	float y2 = size.m_H/2;
+	float x1 = 0 - (size.width/2);
+	float y1 = 0 - size.height/2;
+	float x2 = (size.width/2);
+	float y2 = size.height/2;
 
 	osg::ref_ptr<osg::Geode> geode = new osg::Geode;
 	float z = 0;
@@ -538,12 +538,12 @@ osg::Group* ControlGeometryBuilder::buildCheckBox(const CheckBox* checkBox) cons
 	// must have been set. We draw the border with this color.
 	if(style.color) {
 		getNextLayer(z);
-		geode->addDrawable(buildRectangle(x1, y1, x1 + size.m_H, y1 + size.m_H, z, 2.0f, *style.color, *style.color, true, true, true, true));	
+		geode->addDrawable(buildRectangle(x1, y1, x1 + size.height, y1 + size.height, z, 2.0f, *style.color, *style.color, true, true, true, true));	
 		
 		// Draw an invisible object that can pick up mouse clicks.
 		getNextLayer(z);
 		osg::Vec4 invisibleColor(0.0f, 0.0f, 0.0f, 0.0f);
-		geode->addDrawable(buildRectangle(x1, y1, x1 + size.m_H, y1 + size.m_H, z, invisibleColor, invisibleColor, invisibleColor, invisibleColor));	
+		geode->addDrawable(buildRectangle(x1, y1, x1 + size.height, y1 + size.height, z, invisibleColor, invisibleColor, invisibleColor, invisibleColor));	
 	}
 
 	// Draw the text of the checkbox if all needed styles exists.
@@ -558,7 +558,7 @@ osg::Group* ControlGeometryBuilder::buildCheckBox(const CheckBox* checkBox) cons
 		button_text->setFontResolution(30, 30);
 		button_text->setAxisAlignment(osgText::Text::XY_PLANE);
 		button_text->setRotation(osg::Quat(PI/2, 0, 0, 0));
-		button_text->setPosition(osg::Vec3(x1 + size.m_H + 5, 0, z));
+		button_text->setPosition(osg::Vec3(x1 + size.height + 5, 0, z));
 		geode->addDrawable(button_text.get());
 	}
 
@@ -576,10 +576,10 @@ osg::Group* ControlGeometryBuilder::buildCheckBox(const CheckBox* checkBox) cons
 	if(checkBox->getChecked() && style.color) {
 		getNextLayer(z);
 		osg::ref_ptr<osg::MatrixTransform> transform = new osg::MatrixTransform;
-		transform->setMatrix(osg::Matrix::translate(x1 + (size.m_H / 2.0f), -0.2f, 0));
+		transform->setMatrix(osg::Matrix::translate(x1 + (size.height / 2.0f), -0.2f, 0));
 		osg::Vec4 color2 = *style.color;
 		color2._v[3] = 0.0f;
-		transform->addChild(buildStar(size.m_H, z, color2, *style.color));
+		transform->addChild(buildStar(size.height, z, color2, *style.color));
 		group->addChild(transform.get());
 	}
 	return group.release();
@@ -613,7 +613,7 @@ osg::Group* ControlGeometryBuilder::buildLabel(const Label* label) const {
 		switch(label->getAlignment()) {
 			case osgText::Text::LEFT_TOP:
 			case osgText::Text::LEFT_CENTER:
-				button_text->setPosition(osg::Vec3(0 - (label->getSize().m_W / 2), 0, z));
+				button_text->setPosition(osg::Vec3(0 - (label->getSize().width / 2), 0, z));
 				break;
 			case osgText::Text::LEFT_BOTTOM:
 			case osgText::Text::CENTER_TOP:
@@ -661,10 +661,10 @@ osg::Group* ControlGeometryBuilder::buildListBox(const ListBox* listBox) const {
 	// Fetch all necesarry data that we need.
 	const Size& size = listBox->getSize();
 
-	float x1 = 0 - (size.m_W/2);
-	float y1 = size.m_H / 2;
-	float x2 = (size.m_W / 2);
-	float y2 = 0 - (size.m_H/2);
+	float x1 = 0 - (size.width/2);
+	float y1 = size.height / 2;
+	float x2 = (size.width / 2);
+	float y2 = 0 - (size.height/2);
 
 	osg::ref_ptr<osg::Group> group = new osg::Group;
 	group->addChild(geode.get());

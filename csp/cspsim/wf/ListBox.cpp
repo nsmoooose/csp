@@ -33,20 +33,6 @@ CSP_NAMESPACE
 
 namespace wf {
 
-class ListBox::ListBoxItemClickedCallback : public AnimationCallback {
-public:
-	ListBoxItemClickedCallback(ListBox* listBox, ListBoxItem* item) : m_ListBox(listBox), m_Item(item) {}
-	virtual ~ListBoxItemClickedCallback() {}
-	virtual bool pick(int /*flags*/) {
-		m_ListBox->setSelectedItem(m_Item);
-		return true;
-	}
-	
-private:
-	ListBox* m_ListBox;
-	ListBoxItem* m_Item;
-};
-
 ListBox::ListBox() {
 }
 
@@ -78,15 +64,12 @@ void ListBox::buildGeometry() {
 	for(;item != m_Items.end();++item) {
 		(*item)->buildGeometry();
 		getNode()->addChild((*item)->getNode());
-
-		osg::ref_ptr<ListBoxItemClickedCallback> callback = new ListBoxItemClickedCallback(this, item->get());
-		(*item)->getNode()->setUpdateCallback(callback.get());
 	}
 }
 
 void ListBox::layoutChildControls() {
 	Size listBoxSize = getSize();
-	Rect clientRect = getClientRect();
+	Rectangle clientRect = getClientRect();
 
 	double yPosition =  clientRect.y0;
 
@@ -94,7 +77,7 @@ void ListBox::layoutChildControls() {
 	for(int index=0;item != m_Items.end();++item, ++index) {
 		// Set the width of the list box item.	
 		Size size = (*item)->getSize();
-		size.m_W = clientRect.width();
+		size.width = clientRect.width();
 		(*item)->setSize(size);
 		(*item)->setZPos(2.0f);
 		(*item)->layoutChildControls();
@@ -103,7 +86,7 @@ void ListBox::layoutChildControls() {
 		(*item)->setLocation(Point(clientRect.x0, yPosition));
 
 		// Prepare the position for the next listbox item.
-		yPosition += (size.m_H);
+		yPosition += (size.height);
 	}
 }
 

@@ -37,9 +37,9 @@ public:
 	virtual ~QuitResume();
 	
 private:
-	void resume_Click();
-	void quit_Click();
-	void options_Click();
+	void resume_Click(wf::ClickEventArgs& event);
+	void quit_Click(wf::ClickEventArgs& event);
+	void options_Click(wf::ClickEventArgs& event);
 };
 
 } // namespace windows

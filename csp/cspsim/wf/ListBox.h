@@ -67,8 +67,6 @@ private:
 protected:
 	ListBoxItemVector m_Items;
 	Ref<ListBoxItem> m_SelectedItem;
-
-	class ListBoxItemClickedCallback;
 };
 
 } // namespace wf

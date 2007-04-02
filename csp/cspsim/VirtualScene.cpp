@@ -1052,7 +1052,7 @@ bool VirtualScene::getLabels() const {
 }
 
 bool VirtualScene::pick(int x, int y) {
-	if(m_WindowManager->pick(x, y))
+	if(m_WindowManager->onClick(x, y))
 		return true;
 
 	if (m_NearObjectGroup->getNumChildren() > 0) {

@@ -50,6 +50,8 @@ public:
 	virtual void setText(const std::string& text);
 		
 	virtual const Style& getSelectedStyle() const;
+
+	virtual void onClick(ClickEventArgs& event);
 		
 	template<class Archive>
 	void serialize(Archive & ar) {

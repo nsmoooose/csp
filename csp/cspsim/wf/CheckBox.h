@@ -54,6 +54,8 @@ public:
 	
 	virtual bool getChecked() const;
 	virtual void setChecked(bool checked);
+	
+	virtual void onClick(ClickEventArgs& event);
 
 	template<class Archive>
 	void serialize(Archive & ar) {
@@ -67,8 +69,6 @@ private:
 protected:
 	bool m_Checked;
 	std::string m_Text;
-
-	class CheckBoxClickedCallback;	
 };
 
 } // namespace wf

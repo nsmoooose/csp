@@ -39,7 +39,7 @@ MessageBox::MessageBox(std::string caption, std::string message) {
 	
 	Ref<wf::Button> okButton = getById<wf::Button>("ok");
 	if(okButton.valid()) {
-		okButton->addButtonClickedHandler(sigc::mem_fun(*this, &MessageBox::ok_Click));
+		okButton->Click.connect(sigc::mem_fun(*this, &MessageBox::ok_Click));
 	}
 	
 	Ref<wf::Label> captionLabel = getById<wf::Label>("caption");
@@ -51,13 +51,14 @@ MessageBox::MessageBox(std::string caption, std::string message) {
 	if(messageLabel.valid()) {
 		messageLabel->setText(message);
 	}
-	
 }
 
 MessageBox::~MessageBox() {
 }
 
-void MessageBox::ok_Click() {
+void MessageBox::ok_Click(wf::ClickEventArgs& event) {
+	event.handled = true;
+	
 	close();
 }
 

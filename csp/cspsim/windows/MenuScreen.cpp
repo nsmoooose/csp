@@ -32,8 +32,6 @@ CSP_NAMESPACE
 
 namespace windows {
 
-DEFINE_INPUT_INTERFACE(MenuScreen)
-
 MenuScreen::MenuScreen() {
 }
 
@@ -49,17 +47,6 @@ void MenuScreen::onInit() {
 	// We need some kindo of keyboard binding for this screen.
 	m_Interface = new VirtualHID();
 	m_Interface->bindObject(this);
-	Ref<EventMapIndex> maps = CSPSim::theSim->getInterfaceMaps();
-	if (maps.valid()) {
-		Ref<EventMapping> map = maps->getMap("__gamescreen__");
-		if (map != NULL) {
-			m_Interface->setMapping(map);
-		} else {
-			CSPLOG(ERROR, APP) << "HID interface map '__gamescreen__' not found.";
-		}
-	} else {
-		CSPLOG(ERROR, APP) << "No HID interface maps defined, '__gamescreen__' not found.";
-	}
 }
 
 void MenuScreen::onExit() {
@@ -73,8 +60,15 @@ void MenuScreen::onUpdate(double dt) {
 	m_WindowManager->onUpdate(dt);
 }
 
-void MenuScreen::on_LeftClick(MapEvent::ClickEvent const &event) {
-	m_WindowManager->pick(event.x, event.y);
+bool MenuScreen::onMouseMove(SDL_MouseMotionEvent const &event) {
+	return m_WindowManager->onMouseMove(event.x, event.y, event.xrel, event.yrel);
+}
+
+bool MenuScreen::onMouseButton(SDL_MouseButtonEvent const &event) {
+	if(event.state == SDL_RELEASED) {
+		return m_WindowManager->onClick(event.x, event.y);
+	}
+	return false;
 }
 
 void MenuScreen::displayDesktopAndMainMenu() {

@@ -32,11 +32,11 @@ CSP_NAMESPACE
 namespace wf {
 
 struct Size {
-	Size() : m_W(0.0), m_H(0.0) {}
-	Size(double w, double h) : m_W(w), m_H(h) {}
+	Size() : width(0.0), height(0.0) {}
+	Size(double w, double h) : width(w), height(h) {}
 	virtual ~Size() {}
 
-	double m_W, m_H;
+	double width, height;
 };
 
 } // namespace wf

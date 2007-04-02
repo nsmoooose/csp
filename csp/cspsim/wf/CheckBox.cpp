@@ -34,19 +34,6 @@ CSP_NAMESPACE
 
 namespace wf {
 
-class CheckBox::CheckBoxClickedCallback : public AnimationCallback {
-public:
-	CheckBoxClickedCallback(CheckBox* checkBox) : m_CheckBox(checkBox) {}
-	virtual ~CheckBoxClickedCallback() {}
-	virtual bool pick(int /*flags*/) {
-		m_CheckBox->setChecked(!m_CheckBox->getChecked());
-		return true;
-	}
-	
-private:
-	CheckBox* m_CheckBox;
-};
-
 CheckBox::CheckBox() : m_Checked(false) {
 }
 
@@ -67,8 +54,6 @@ void CheckBox::buildGeometry() {
 	// Build our own button control and add it to the group.
 	ControlGeometryBuilder geometryBuilder;
 	osg::ref_ptr<osg::Group> checkBox = geometryBuilder.buildCheckBox(this);
-	osg::ref_ptr<CheckBoxClickedCallback> callback = new CheckBoxClickedCallback(this);
-	checkBox->setUpdateCallback(callback.get());
 	getNode()->addChild(checkBox.get());		
 }
 
@@ -88,6 +73,15 @@ bool CheckBox::getChecked() const {
 void CheckBox::setChecked(bool checked) {
 	m_Checked = checked;
 	buildGeometry();
+}
+
+void CheckBox::onClick(ClickEventArgs& event) {
+	// Modify the geometry according to the click event.
+	setChecked(!getChecked());
+	
+	// Set the event to handled to prevent it to bubble up to the parent control.
+	event.handled = true;
+	Control::onClick(event);
 }
 
 } // namespace wf

@@ -18,44 +18,31 @@
 
 
 /**
- * @file Container.h
+ * @file Rectangle.h
  *
  **/
+#ifndef __CSPSIM_WF_RECTANGLE_H__
+#define __CSPSIM_WF_RECTANGLE_H__
 
-#ifndef __CSPSIM_WF_CONTAINER_H__
-#define __CSPSIM_WF_CONTAINER_H__
-
-#include <csp/cspsim/wf/Control.h>
+#include <csp/cspsim/wf/Point.h>
 
 CSP_NAMESPACE
 
 namespace wf {
 
-class Container : public Control {
-public:
-	Container();
-	virtual ~Container();
-	
-	virtual void layoutChildControls() = 0;
-	virtual ControlVector getChildControls() = 0;
-	
-	virtual Rectangle getClientRect() const;
-	
-	template<class T>
-	T* getById(const std::string& id) {
-		return dynamic_cast<T*>(internalGetById(id));
+struct Rectangle {
+	float x0, y0, x1, y1;
+	Rectangle() {}
+	Rectangle(float x0_, float y0_, float x1_, float y1_): x0(x0_), y0(y0_), x1(x1_), y1(y1_) {}
+	inline float width() const { return x1 - x0; }
+	inline float height() const { return y1 - y0; }
+	inline bool pointInRectangle(Point& p) {
+		return p.x >= x0 && p.x <= x1 && p.y >= y0 && p.y <= y1;
 	}
-	
-protected:
-
-private:
-	virtual Control* internalGetById(const std::string& id);
 };
 
 } // namespace wf
 
 CSP_NAMESPACE_END
 
-#endif // __CSPSIM_WF_CONTAINER_H__
-
-
+#endif // __CSPSIM_WF_RECTANGLE_H__

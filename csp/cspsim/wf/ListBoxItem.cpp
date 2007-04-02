@@ -24,6 +24,7 @@
 
 #include <csp/cspsim/wf/ControlGeometryBuilder.h>
 #include <csp/cspsim/wf/Label.h>
+#include <csp/cspsim/wf/ListBox.h>
 #include <csp/cspsim/wf/ListBoxItem.h>
 #include <csp/cspsim/wf/WindowManager.h>
 
@@ -86,6 +87,18 @@ void ListBoxItem::setText(const std::string& text) {
 
 const Style& ListBoxItem::getSelectedStyle() const {
 	return m_SelectedStyle;
+}
+
+void ListBoxItem::onClick(ClickEventArgs& event) {
+	ListBox* parent = dynamic_cast<ListBox*>(getParent());
+	if(parent != NULL) {
+		parent->setSelectedItem(this);
+	}
+	
+	// Set that the event has been handled to prevent it to
+	// bubble up to the parent control.
+	event.handled = true;
+	SingleControlContainer::onClick(event);
 }
 
 } // namespace wf

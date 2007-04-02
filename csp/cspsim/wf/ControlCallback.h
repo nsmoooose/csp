@@ -1,5 +1,5 @@
 // Combat Simulator Project
-// Copyright (C) 2002 The Combat Simulator Project
+// Copyright (C) 2002-2005 The Combat Simulator Project
 // http://csp.sourceforge.net
 //
 // This program is free software; you can redistribute it and/or
@@ -18,44 +18,34 @@
 
 
 /**
- * @file Container.h
+ * @file ControlCallback.h
  *
  **/
 
-#ifndef __CSPSIM_WF_CONTAINER_H__
-#define __CSPSIM_WF_CONTAINER_H__
+#ifndef __CSPSIM_WF_CONTROLCALLBACK_H__
+#define __CSPSIM_WF_CONTROLCALLBACK_H__
 
-#include <csp/cspsim/wf/Control.h>
+#include <osg/NodeCallback>
+#include <csp/csplib/util/Ref.h>
 
 CSP_NAMESPACE
 
 namespace wf {
+	
+class Control;
 
-class Container : public Control {
+class ControlCallback: public osg::NodeCallback {
 public:
-	Container();
-	virtual ~Container();
+	ControlCallback(Control* control);
 	
-	virtual void layoutChildControls() = 0;
-	virtual ControlVector getChildControls() = 0;
-	
-	virtual Rectangle getClientRect() const;
-	
-	template<class T>
-	T* getById(const std::string& id) {
-		return dynamic_cast<T*>(internalGetById(id));
-	}
-	
-protected:
+	Control* getControl();
 
 private:
-	virtual Control* internalGetById(const std::string& id);
+	Control* m_Control;
 };
 
-} // namespace wf
+}
 
 CSP_NAMESPACE_END
 
-#endif // __CSPSIM_WF_CONTAINER_H__
-
-
+#endif // __CSPSIM_WF_CONTROLCALLBACK_H__

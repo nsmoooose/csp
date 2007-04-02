@@ -65,10 +65,10 @@ Control* Container::internalGetById(const std::string& id) {
 	return NULL;
 }
 
-Rect Container::getClientRect() const {
+Rectangle Container::getClientRect() const {
 	Style style = StyleBuilder::buildStyle(this);
 		
-	Rect clientArea;
+	Rectangle clientArea;
 	clientArea.x0 = style.borderWidth ? *style.borderWidth : 0;
 	if(style.borderLeftWidth) {
 		clientArea.x0 = *style.borderLeftWidth;
@@ -79,7 +79,7 @@ Rect Container::getClientRect() const {
 		clientArea.y0 = *style.borderTopWidth;
 	}
 	
-	clientArea.x1 = getSize().m_W;
+	clientArea.x1 = getSize().width;
 	if(style.borderWidth && !style.borderRightWidth) {
 		clientArea.x1 -= *style.borderWidth;
 	}
@@ -87,7 +87,7 @@ Rect Container::getClientRect() const {
 		clientArea.x1 -= *style.borderRightWidth;
 	}
 	
-	clientArea.y1 = getSize().m_H;
+	clientArea.y1 = getSize().height;
 	if(style.borderWidth && !style.borderBottomWidth) {
 		clientArea.y1 -= *style.borderWidth;
 	}

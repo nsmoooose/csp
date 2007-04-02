@@ -37,9 +37,9 @@ public:
 	virtual ~MainMenu();
 
 private:
-	void instantAction_Click();
-	void quit_Click();
-	void options_Click();
+	void instantAction_Click(wf::ClickEventArgs& event);
+	void quit_Click(wf::ClickEventArgs& event);
+	void options_Click(wf::ClickEventArgs& event);
 };
 
 } // namespace windows

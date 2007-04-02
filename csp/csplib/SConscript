@@ -175,6 +175,8 @@ build.SourceGroup(expenv,
 		'util/Verify.h',
 		'util/Version.cpp',
 		'util/Version.h',
+		'util/WeakReferenced.cpp',
+		'util/WeakReferenced.h',
 		'util/hash_map.h',
 		'util/osg.h',
 

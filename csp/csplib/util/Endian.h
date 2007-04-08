@@ -295,8 +295,8 @@ template<> struct endian<char> {
 };
 #define CSP_ENDIAN_TEMPLATE(TYPE, CAPTYPE) \
 	template<> struct endian<TYPE> { \
-		inline static TYPE to_le(TYPE x) { return CSP_##CAPTYPE##_TO_LE(x); } \
-		inline static TYPE from_le(TYPE x) { return CSP_##CAPTYPE##_FROM_LE(x); } \
+		inline static TYPE to_le(TYPE x) { return static_cast<TYPE>(CSP_##CAPTYPE##_TO_LE(x)); } \
+		inline static TYPE from_le(TYPE x) { return static_cast<TYPE>(CSP_##CAPTYPE##_FROM_LE(x)); } \
 	};
 CSP_ENDIAN_TEMPLATE(int16, INT16)
 CSP_ENDIAN_TEMPLATE(int32, INT32)

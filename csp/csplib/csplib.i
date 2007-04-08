@@ -43,6 +43,14 @@ PyObject *cspPyException;
 	if (cspPyException) PyDict_SetItemString(d, "libexc", cspPyException);
 %}
 
+/* For now, suppress warning 124:
+ *   Specifying the language name in %typemap is >deprecated - use
+ *   #ifdef SWIG<LANG> instead.
+ * We'll do this after a few minor version releases of swig (or when
+ * support for languages in typmap is removed.
+ */
+#pragma SWIG nowarn=124
+
 // standard includes
 %include "std_string.i"
 %include "std_vector.i"

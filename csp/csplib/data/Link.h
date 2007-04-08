@@ -96,11 +96,13 @@ protected:
 	 *
 	 * This method is used by subclasses to assign after checking type compatibility.
 	 */
+#ifndef SWIG
 	LinkCore& operator=(const LinkCore& r) {
 		Path::operator=(r);
 		_reassign(r._reference);
 		return *this;
 	}
+#endif
 
 public:
 

@@ -219,7 +219,8 @@ class Generate(Target):
 			target = registry.BuildRegistry.GetTarget(var).build()[0]
 			objects = target
 			command = command[:match.start(0)] + target.abspath + command[match.end(0):]
-		self._env.Command(self._target, objects, SCons.Action.Action(command, '$GENERATECOMSTR'))
+		#print 'Command(%s, %s, %s)' % (self._target, scons.TargetToString(objects), command)
+		self._env.Command(self._target, objects, command)
 		return self._target
 
 

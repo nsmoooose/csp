@@ -49,7 +49,6 @@ def CheckPythonVersion(minimum):
 		       'version %s or newer.' % (version, minimum))
 		sys.exit(1)
 
-
 def GetGCCVersion():
 	version = os.popen('gcc -dumpversion').read().strip()
 	try:
@@ -57,10 +56,9 @@ def GetGCCVersion():
 	except:
 		return None
 
-
 def CheckSwig(context, min_version, not_versions=[]):
 	ok = 0
-	_checking(context, 'swig', reset_cached=1)
+	_checking(context, 'swig')
 	swig_in, swig_out, swig_err = os.popen3('%s -version' % context.env.get('SWIG', 'swig'), 't')
 	if swig_err is not None:
 		output = swig_err.readlines() + swig_out.readlines()
@@ -114,32 +112,10 @@ def CheckOSGVersion(context, lib, min_version):
 	return CheckLibVersion(context, lib, OSG_VERSION_CHECK, min_version)
 
 
-# Lazy check that pkg-config is installed.
-HAS_PKG_CONFIG = None
-def _CheckPkgConfigWorks(context):
-	global HAS_PKG_CONFIG
-	if HAS_PKG_CONFIG is None:
-		_checking(context, 'pkg-config', reset_cached=1)
-		_, output, error = os.popen3('pkg-config --version')
-		version = output.read().strip()
-		error = error.read().strip()
-		if not error and re.match(r'\d', version) is not None:
-			HAS_PKG_CONFIG = 1
-			context.Result("yes (%s)" % version)
-		else:
-			HAS_PKG_CONFIG = 0
-			context.Result("no")
-			context.Log(error)
-	return HAS_PKG_CONFIG
-
-
 def CheckPkgConfig(context, lib, version=None, lib_name=None, command='pkg-config', version_flag='--modversion', config_flags='--cflags --libs'):
-	has_pkg_config = _CheckPkgConfigWorks(context)
 	if lib_name is None: lib_name = lib
-	_checking(context, lib, version, reset_cached=1)
-	if not has_pkg_config:
-		context.Result("unknown (need pkg-config)")
-		return 0
+	env = context.env
+	_checking(context, lib, version)
 	output = os.popen('%s %s %s' % (command, version_flag, lib))
 	ok = 0
 	if output is not None:
@@ -147,39 +123,34 @@ def CheckPkgConfig(context, lib, version=None, lib_name=None, command='pkg-confi
 		ok = (version is None) or (util.CompareVersions(lib_version, version) >= 0)
 	if ok:
 		context.Result("yes (%s)" % lib_version)
-		context.env['%s_VERSION' % lib_name.upper()] = lib_version
-		context.env.ParseConfig('%s %s %s' % (command, config_flags, lib))
+		env['%s_VERSION' % lib_name.upper()] = lib_version
+		env.ParseConfig('%s %s %s' % (command, config_flags, lib))
 	else:
 		context.Result("no")
 	return ok
 
 
+def _checking(context, target, min_version=None):
+	if min_version is None:
+		context.Message('Checking for %s... ' % (target))
+	else:
+		context.Message('Checking for %s (>= %s)... ' % (target, min_version))
+
+
 def CheckCommandVersion(context, lib, command, min_version=None, lib_name=None):
 	if lib_name is None: lib_name = lib
-	_checking(context, lib, min_version, reset_cached=1)
-	_, output, error = os.popen3(command)
-	version = output.read().strip()
-	error = error.read().strip()
-	ok = not error and (util.CompareVersions(version, min_version) >= 0)
+	_checking(context, lib, min_version)
+	output = os.popen(command)
+	ok = output is not None
+	if ok:
+		version = output.readline().strip()
+		ok = (util.CompareVersions(version, min_version) >= 0)
 	if ok:
 		context.Result("yes (%s)" % version)
 		context.env['%s_VERSION' % lib_name.upper()] = version
 	else:
 		context.Result("no")
-		centext.Log(error)
 	return ok
-
-
-def _checking(context, target, min_version=None, reset_cached=0):
-	if min_version is None:
-		context.Message('Checking for %s... ' % (target))
-	else:
-		context.Message('Checking for %s (>= %s)... ' % (target, min_version))
-	if reset_cached:
-		# hack into scons internals to prevent the "(cached)" message from
-		# displaying when the subsequent check doesn't use the SConf
-		# infrastructure (e.g., a straight popen test).
-		context.sconf.cached = 0
 
 
 def CustomConfigure(env):

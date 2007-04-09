@@ -24,7 +24,6 @@ if __name__ == '__main__':
 
 
 from csp.tools.build import scons
-from csp.tools.build import buildlog
 
 import os
 import re
@@ -62,13 +61,12 @@ def EmitSwig(target, source, env):
 
 
 def AddSwigBuild(env):
-	env['SWIGCOM'] = '$SWIG $SWIGFLAGS $_SWIGINCFLAGS -o ${TARGETS[0]} $SOURCE'
+	env['SWIGCOM'] = '$SWIG $SWIGFLAGS $_SWIGINCFLAGS -o $TARGET $SOURCE'
 	env['SWIGINCPREFIX'] = '-I'
 	env['SWIGINCSUFFIX'] = '$INCSUFFIX'
 	env['SWIGCXXFLAGS'] = '$CXXFLAGS'
 	env['_SWIGINCFLAGS'] = '$( ${_concat(SWIGINCPREFIX, SWIGINCLUDES, SWIGINCSUFFIX, __env__, RDirs)} $)'
-	SwigAction = SCons.Action.Action('$SWIGCOM', '$SWIGCOMSTR')
-	builder = SCons.Builder.Builder(action = SwigAction, emitter = EmitSwig)
+	builder = SCons.Builder.Builder(action = '$SWIG $SWIGFLAGS $_SWIGINCFLAGS -o ${TARGETS[0]} $SOURCE', emitter = EmitSwig)
 	env.Append(BUILDERS = {'Swig': builder})
 	def wrapper_builder(env, target = None, source = SCons.Builder._null, **kw):
 		kw.setdefault('CXXFLAGS', env['SWIGCXXFLAGS'])
@@ -99,31 +97,38 @@ def AddSwigSupport(env, required=1):
 
 
 def AddDoxygen(env):
-	env['DOXYGEN'] = 'doxygen'
-	env['DOXYGENCOM'] = 'cd $SOURCE.dir && $DOXYGEN $SOURCES.file 1>.dox.log 2>.dox.err'
-	env.Append(BUILDERS = {'Doxygen': SCons.Builder.Builder(action=SCons.Action.Action('$DOXYGENCOM', '$DOXYGENCOMSTR'))})
+	def report(target, source, env):
+		source = str(source[0])
+		return 'doxygen %s' % source
+	action = 'cd $SOURCE.dir && doxygen $SOURCES.file 1>.dox.log 2>.dox.err'
+	env.Append(BUILDERS = {'Doxygen': SCons.Builder.Builder(action=SCons.Action.Action(action, report))})
 
 
 def AddCopyFile(env):
 	def copy(target, source, env):
-		source, target = source[0].abspath, target[0].abspath
-		buildlog.Log('shutil.copy("%s", "%s")' % (source, target))
-		shutil.copy(source, target)
-	CopyFile = SCons.Builder.Builder(action=SCons.Action.Action(copy, '$COPYFILECOMSTR'))
+		shutil.copy(str(source[0]), str(target[0]))
+	def report(target, source, env):
+		source = str(source[0])
+		target = str(target[0])
+		return 'copying %s -> %s' % (source, target)
+	CopyFile = SCons.Builder.Builder(action=SCons.Action.Action(copy, strfunction=report))
 	env.Append(BUILDERS = {'CopyFile': CopyFile})
 
 
 def AddLinkFile(env):
-	def symlink(target, source, env):
-		source, target = source[0].abspath, target[0].abspath
+	def copy(target, source, env):
+		source = str(source[0])
+		target = str(target[0])
 		if os.name=='posix':
-			buildlog.Log('os.link("%s", "%s")' % (source, target))
 			os.link(source, target)
 		else:
-			buildlog.Log('shutil.copy("%s", "%s")' % (source, target))
 			shutil.copy(source, target)
-	LinkFile = SCons.Builder.Builder(action=SCons.Action.Action(symlink, '$SYMLINKCOMSTR'))
-	env.Append(BUILDERS = {'LinkFile': LinkFile})
+	def report(target, source, env):
+		source = str(source[0])
+		target = str(target[0])
+		return 'linking %s -> %s' % (source, target)
+	CopyFile = SCons.Builder.Builder(action=SCons.Action.Action(copy, report))
+	env.Append(BUILDERS = {'LinkFile': CopyFile})
 
 
 def EmitNet(target, source, env):
@@ -141,7 +146,7 @@ def EmitNet(target, source, env):
 def AddNet(env):
 	_, cxx_file = SCons.Tool.createCFileBuilders(env)
 	cxx_file.add_emitter('.net', EmitNet)
-	cxx_file.add_action('.net', SCons.Action.Action('$TRC', '$TRCCOMSTR'))
+	cxx_file.add_action('.net', '$TRC')
 	trc = env.File('#/tools/trc/trc.py')
 	env['TRC'] = '%s --source=${TARGETS[0]} --header=${TARGETS[1]} $SOURCES' % trc
 

@@ -61,8 +61,6 @@ libexc.trace = __libexc_trace
 libexc.has_trace = __libexc_has_trace
 libexc.details = __libexc_details
 
-hash_string = _csplib.newhasht_cstring
-
 ## Specialized Link class for Python.  This class behaves like
 ## Object, but automatically combines C++ and Python reference
 ## counting to handle object lifetime in a sane way.  Both C++

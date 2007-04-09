@@ -25,7 +25,7 @@ if __name__ == '__main__':
 
 from csp.tools.build import autoconf
 from csp.tools.build import builders
-from csp.tools.build import shortlog
+from csp.tools.build import buildlog
 from csp.tools.build import registry
 from csp.tools.build import scons
 from csp.tools.build import util
@@ -201,8 +201,9 @@ def GlobalSetup(env, distributed=1, short_messages=None, default_message=None, c
 	if short_messages is None:
 		short_messages = options.no_progress
 	builders.AddBuilders(env)
+	buildlog.InitializeLogging(env)
 	if short_messages:
-		shortlog.SetShortMessages(env)
+		buildlog.SetShortMessages(env)
 	if distributed and ssoptions.get('num_jobs') > 1:
 		scons.SetDistributed(env)
 	util.AddPhonyTarget(env, 'config')

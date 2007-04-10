@@ -34,15 +34,26 @@ _BUILDLOG = None
 _SPAWN = None
 
 
+class _Tee:
+	"""Generalized "T" for writing to multiple file objects."""
+	def __init__(self, *out):
+		self._out = out
+	def write(self, data):
+		for out in self._out:
+			out.write(data)
+
+
 def _MakeLogHook(pspawn, log):
 	"""
 	Return a spawn function suitable for env['SPAWN'].   The function logs the
 	command string and then calls pspawn to execute the command, which writes
 	stdout and stderr to the log.
 	"""
+	stdout = _Tee(log, sys.stdout)
+	stderr = _Tee(log, sys.stderr)
 	def _spawn_wrapper(sh, escape, cmd, cargs, env):
 		Log(' '.join(cargs))
-		pspawn(sh, escape, cmd, cargs, env, log, log)
+		return pspawn(sh, escape, cmd, cargs, env, stdout, stderr)
 	return _spawn_wrapper
 
 

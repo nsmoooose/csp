@@ -95,8 +95,6 @@ build.ExternalLibrary(
 	name = 'sdl',
 	config = [
 		build.CommandConfig(package='sdl', version_command='sdl-config --version', flags_command='sdl-config --cflags --libs', version='1.2.5', label='sdl'),
-		build.UnixLibConfig(lib='SDL_image', symbol='IMG_Load', label='sdl image'),
-		build.DevpackConfig(dlls=['SDL', 'SDL_image'], headers=[('SDL', 'SDL_mouse.h'), ('SDL', 'SDL_image.h')]),
 	])
 
 build.ExternalLibrary(

@@ -41,8 +41,6 @@ Boston, MA  02111-1307, USA.
 #include <fcntl.h>
 #include <sys/stat.h>
 
-#include <SDL/SDL_image.h>
-
 #ifndef _WIN32
  #define GL_GLEXT_PROTOTYPES
  #include <SDL/SDL_opengl.h>
@@ -52,6 +50,10 @@ Boston, MA  02111-1307, USA.
  #define _close(a) close((a))
  #define _read(a,b,c) read((a),(b),(c))
 #endif
+
+#include <osg/Image>
+#include <osgDB/ReadFile>
+#include <osgDB/Registry>
 
 //#ifdef DEMETER_MEMORYMANAGER
 //#include "mmgr.h"
@@ -2509,65 +2511,62 @@ int RayBoxIntersect(const Ray *ray,const Box *box,Vector *point,float *distance)
 }
 #endif
 
-void LoadImage(const char* szShortFilename,int& width,int &height,Uint8** ppBuffer,bool bAlpha)
+void LoadImage(const char* szShortFilename, int& width, int &height, Uint8** ppBuffer, bool bAlpha)
 {
-	SDL_Init(SDL_INIT_VIDEO);
+	width = 0;
+	height = 0;
+	*ppBuffer = NULL;
+
 	char szFullFilename[MAX_FILENAME_LENGTH];
-	if (strstr(szShortFilename,"\\") || strstr(szShortFilename,"/"))
-		sprintf(szFullFilename,szShortFilename);
+	if (strstr(szShortFilename, "\\") || strstr(szShortFilename, "/"))
+		sprintf(szFullFilename, szShortFilename);
 	else
-		Settings::GetInstance()->PrependMediaPath(szShortFilename,szFullFilename);
+		Settings::GetInstance()->PrependMediaPath(szShortFilename, szFullFilename);
 
 	m_Logfile  << "TERRAIN: Loading texture " << szFullFilename << endl;
-	SDL_Surface* pImage = IMG_Load(szFullFilename);
-	if (pImage != NULL)
-	{
-		width = pImage->w;
-		height = pImage->h;
-		Uint8* pBufferTemp;
-		if (bAlpha)
-			pBufferTemp = new Uint8[width * height * 4];
-		else
-			pBufferTemp = new Uint8[width * height * 3];
-		int i,j;
-		Uint8* pImagePixels = (Uint8*)pImage->pixels;
-		for (i = 0,j = 0; i < pImage->h * pImage->pitch; i += pImage->pitch)
-		{
-			Uint8* pImageRow = pImagePixels + i;
-			for (Uint8* pImagePixel = pImageRow; pImagePixel < pImageRow + pImage->w * pImage->format->BytesPerPixel; pImagePixel += pImage->format->BytesPerPixel)
-			{
-				Uint8 red,green,blue,alpha;
-				// Read the pixel into a 32-bit dword for use by SDL_GetRGBA
-				Uint8 pPixel[4];
-				for (int i = 0; i < pImage->format->BytesPerPixel; i++)
-					pPixel[i] = pImagePixel[i];
-				Uint32* pCurrentPixel = (Uint32*)pPixel;
-				SDL_GetRGBA(*pCurrentPixel,pImage->format,&red,&green,&blue,&alpha);
-				if(SDL_BYTEORDER == SDL_BIG_ENDIAN)
-				{
-					Uint8* p = (Uint8*)pCurrentPixel;
-					Uint32 currentPixelConverted = p[0] << 16 | p[1] << 8 | p[2];
-					SDL_GetRGBA(currentPixelConverted, pImage->format, &red, &green, &blue, &alpha);
-				}
-				
-				pBufferTemp[j++] = red;
-				pBufferTemp[j++] = green;
-				pBufferTemp[j++] = blue;
-				if (bAlpha)
-				{
-					pBufferTemp[j++] = alpha;
-				}
-			}
+	osg::ref_ptr<osg::Image> image = osgDB::readImageFile(szFullFilename);
+
+	if (!image.valid()) {
+		m_Logfile << "TERRAIN: Error reading image" << endl;
+		return;
+	}
+
+	// Only accept RGB/RGBA for simplicity.  This is sufficient for the current terrain and
+	// texture data used in CSP.
+	const GLenum pixel_format = image->getPixelFormat();
+	if (pixel_format != GL_RGB && pixel_format != GL_RGBA) {
+		m_Logfile << "TERRAIN: Can't handle pixel format " << image->getPixelFormat() << endl;
+		return;
+	}
+
+	if (image->getDataType() != GL_UNSIGNED_BYTE) {
+		m_Logfile << "TERRAIN: Can't handle data type " << image->getDataType() << endl;
+		return;
+	}
+
+	width = image->s();
+	height = image->t();
+	Uint8* image_data = (Uint8*)image->data();
+	Uint8* pBufferTemp = new Uint8[width * height * (bAlpha ? 4 : 3)];
+
+	const int row_size = image->getRowSizeInBytes();
+	const int bits_per_pixel = image->getPixelSizeInBits();
+
+	assert(bits_per_pixel == 24 || bits_per_pixel == 32);
+	const int bytes_per_pixel = image->getPixelSizeInBits() / 8;
+	
+	for (int i = (height - 1) * row_size, j = 0; i >= 0; i -= row_size) {
+		Uint8* row = image_data + i;
+		Uint8* end = row + row_size;
+		for (Uint8* pixel = row; pixel < end; pixel += bytes_per_pixel) {
+			pBufferTemp[j++] = pixel[0];
+			pBufferTemp[j++] = pixel[1];
+			pBufferTemp[j++] = pixel[2];
+			if (bAlpha) pBufferTemp[j++] = pixel[3];
 		}
-		*ppBuffer = pBufferTemp;
-		SDL_FreeSurface(pImage);
 	}
-	else
-	{
-		width = 0;
-		height = 0;
-		*ppBuffer = NULL;
-	}
+
+	*ppBuffer = pBufferTemp;
 }
 
 

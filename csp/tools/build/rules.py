@@ -259,6 +259,9 @@ class SharedLibrary(Target):
 			sources += group.sources
 			headers += group.headers
 			misc += group.misc
+		sources = map(str, sources)
+		headers = map(str, headers)
+		misc = map(str, misc)
 		dbg = self._env.MSVSProject(target=self._name+'-dbg.vcproj', srcs=sources, incs=headers, misc=misc, buildtarget=target, variant='Debug')
 		rel = self._env.MSVSProject(target=self._name+'-rel.vcproj', srcs=sources, incs=headers, misc=misc, buildtarget=target, variant='Release')
 		scons.Alias('vs', [dbg, rel])

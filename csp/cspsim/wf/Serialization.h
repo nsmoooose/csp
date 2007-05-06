@@ -25,22 +25,26 @@
 #ifndef __CSPSIM_WF_SERIALIZATION_H__
 #define __CSPSIM_WF_SERIALIZATION_H__
 
+#include <csp/cspsim/Export.h>
 #include <csp/csplib/util/Referenced.h>
 
 CSP_NAMESPACE
 
 namespace wf {
 
+class StringResourceManager;
 class Window;
 
 /** Is responsible for parsing xml-content into control objects.
  */
-class Serialization : public Referenced {
+class CSPSIM_EXPORT Serialization : public Referenced {
 public:
+	Serialization();
 	Serialization(const std::string& userInterfaceDirectory);
 	virtual ~Serialization();
 	
 	virtual void load(Window* window, const std::string& theme, const std::string& file);
+	virtual void load(StringResourceManager* resourceManager, const std::string& filePath);
 	
 protected:
 

@@ -25,6 +25,7 @@
 #include <csp/cspsim/wf/Control.h>
 #include <csp/cspsim/wf/ControlCallback.h>
 #include <csp/cspsim/wf/ControlGeometryBuilder.h>
+#include <csp/cspsim/wf/SignalData.h>
 #include <csp/cspsim/wf/Window.h>
 #include <csp/csplib/util/Ref.h>
 
@@ -36,7 +37,7 @@ CSP_NAMESPACE
 namespace wf {
 
 Control::Control() :
-	m_ZPos(1.0), m_TransformGroup(new osg::MatrixTransform)
+	m_ZPos(1.0), m_TransformGroup(new osg::MatrixTransform), m_ClickSignal(new Signal)
 {
     osg::StateSet *stateSet = m_TransformGroup->getOrCreateStateSet();
     stateSet->setRenderBinDetails(100, "RenderBin");
@@ -56,7 +57,14 @@ Control::Control() :
 Control::~Control() {
 }
 
-const std::string& Control::getId() const {
+void Control::dispose() {
+	if(m_ClickSignal.valid()) {
+		m_ClickSignal->dispose();
+		m_ClickSignal = NULL;
+	}
+}
+
+std::string Control::getId() const {
 	return m_Id;
 }
 
@@ -168,6 +176,10 @@ void Control::updateMatrix() {
 	m_TransformGroup->setMatrix(osg::Matrix::translate(m_Point.x - parentX + (m_Size.width / 2), m_Point.y - parentY + (m_Size.height / 2), m_ZPos));	
 }
 
+Signal* Control::getClickSignal() {
+	return m_ClickSignal.get();
+}
+
 void Control::onClick(ClickEventArgs& event) {
 	Click(event);
 	if(event.handled == false) {
@@ -176,6 +188,9 @@ void Control::onClick(ClickEventArgs& event) {
 			parent->onClick(event);
 		}
 	}
+	
+	Ref<SignalData> data = new SignalData();
+	m_ClickSignal->emit(data.get());
 }
 
 void Control::onHover(HoverEventArgs& event) {

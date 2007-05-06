@@ -31,10 +31,10 @@ CSP_NAMESPACE
 
 namespace wf {
 	
-WindowResourceLocator::WindowResourceLocator(const Window* window) : m_Window(window) {
+ImageResourceLocator::ImageResourceLocator(const Window* window) : m_Window(window) {
 }
 
-bool WindowResourceLocator::locateResource(std::string& file) const {
+bool ImageResourceLocator::locateResource(std::string& file) const {
 	// Build up the path to the file in order to be able to read it.
 	std::string themesPath = ospath::join(getUIPath(), "themes");
 	std::string themePath = ospath::join(themesPath, m_Window->getTheme());
@@ -50,6 +50,36 @@ bool WindowResourceLocator::locateResource(std::string& file) const {
 		// directory. It may exist there.
 		std::string dataPath = getDataPath();
 		filePath = ospath::join(dataPath, file);
+		if(ospath::exists(filePath.c_str())) {
+			file = filePath;
+			return true;
+		}
+	}
+	
+	// Didn't find any file that is matching the resource asked for.
+	return false;
+}
+
+StringResourceLocator::StringResourceLocator(const Window* window) : m_Window(window) {
+}
+
+bool StringResourceLocator::locateResource(std::string& file) const {
+	// Build up the path to the file in order to be able to read it.
+	std::string themesPath = ospath::join(getUIPath(), "themes");
+	std::string themePath = ospath::join(themesPath, m_Window->getTheme());
+	std::string filePath = ospath::join(themePath, file);
+	
+	// Test to see if the file exists at all?
+	if(ospath::exists(filePath.c_str())) {
+		file = filePath;
+		return true;
+	}
+	else {
+		// As a secondary solution we look for the file in the specialized 
+		// language directory.
+		std::string localizationPath = ospath::join(getUIPath(), "localization");
+		std::string languagePath = ospath::join(localizationPath, getUILanguage());
+		std::string filePath = ospath::join(languagePath, file);
 		if(ospath::exists(filePath.c_str())) {
 			file = filePath;
 			return true;

@@ -18,32 +18,25 @@
 
 
 /**
- * @file QuitResume.h
+ * @file Slot.cpp
  *
  **/
 
-#ifndef __CSPSIM_WINDOWS_QUITRESUME_H__
-#define __CSPSIM_WINDOWS_QUITRESUME_H__
-
-#include <csp/cspsim/wf/Window.h>
+#include <csp/cspsim/wf/Slot.h>
 
 CSP_NAMESPACE
 
-namespace windows {
+namespace wf {
 
-class QuitResume : public wf::Window {
-public:
-	QuitResume();
-	virtual ~QuitResume();
-	
-private:
-	void resume_Click(wf::ClickEventArgs& event);
-	void quit_Click(wf::ClickEventArgs& event);
-	void options_Click(wf::ClickEventArgs& event);
-};
+Slot::Slot() {
+}
 
-} // namespace windows
+Slot::~Slot() {
+}
+
+void Slot::notify(SignalData* event) {
+}
+
+} // namespace wf
 
 CSP_NAMESPACE_END
-
-#endif // __CSPSIM_WINDOWS_QUITRESUME_H__

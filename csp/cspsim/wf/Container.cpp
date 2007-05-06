@@ -35,7 +35,7 @@ Container::Container() {
 Container::~Container() {
 }
 
-Control* Container::internalGetById(const std::string& id) {
+Control* Container::getById(const std::string& id) {
 	// Enumerate all child controls to see if we can find the control.
 	ControlVector childControls = getChildControls();
 	ControlVector::iterator control = childControls.begin();
@@ -53,7 +53,7 @@ Control* Container::internalGetById(const std::string& id) {
 		if(childContainer != NULL) {
 			// Yes. The child control is a container. Check if the control is found
 			// there.
-			Control* childControl = childContainer->internalGetById(id);
+			Control* childControl = childContainer->getById(id);
 			if(childControl != NULL) {
 				// Yes the child control is found. Lets return it to the 
 				// caller.

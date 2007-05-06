@@ -48,6 +48,8 @@ void _createVehicleHelper(csp::CSPSim *self, const char *path, csp::Vector3 posi
 
 namespace csp {
 
+// %newobject CSPSim::getConfiguration();
+
 class CSPSim {
 public:
 	static csp::CSPSim *theSim;
@@ -64,6 +66,13 @@ public:
 	virtual void cleanup();
 
 	void changeScreen(csp::BaseScreen * newScreen);
+	csp::BaseScreen* getCurrentScreen();
+	
+	virtual config::Configuration* getConfiguration();
+	virtual void setConfiguration(config::Configuration* config); 
+	virtual wf::Signal* getConfigurationChangedSignal();
+
+
 	SDL_Surface * getSDLScreen();
 	csp::SimDate & getCurrentTime();
 	csp::SimTime const & getFrameRate() const;

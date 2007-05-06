@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<StringTableDocument xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation='../../window_document.xsd'>
+	<Strings>
+		<String key="cancel">Cancel</String>
+		<String key="full_screen_mode">Fullscreen</String>
+		<String key="instant_action">Instant action</String>
+		<String key="main_menu">Main menu</String>
+		<String key="ok">OK</String>
+		<String key="options">Options</String>
+		<String key="quit">Quit</String>
+		<String key="resume">Resume</String>
+		<String key="restart_required">Restart is required for changes to take effect.</String>
+		<String key="screen_resolution">Resolution</String>
+		<String key="ui_theme">Theme</String>
+		<String key="ui_language">Language</String>
+	</Strings>
+</StringTableDocument>

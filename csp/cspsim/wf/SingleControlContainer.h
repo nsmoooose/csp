@@ -41,7 +41,7 @@ namespace wf {
  *  method is called the child control will be resized to fit the
  *  entire surface.
  */
-class SingleControlContainer : public Container {
+class CSPSIM_EXPORT SingleControlContainer : public Container {
 public:
 	SingleControlContainer();
 	virtual ~SingleControlContainer();

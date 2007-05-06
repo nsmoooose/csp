@@ -7,6 +7,27 @@ in this document has the same inheritence as the cpp-classes.
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <xsd:element name="WindowDocument" type="WindowDocument_t" />
   <xsd:element name="StyleDocument" type="StyleDocument_t" />
+  <xsd:element name="StringTableDocument" type="StringTableDocument_t" />
+
+  <xsd:complexType name="StringTableDocument_t">
+  	<xsd:sequence>
+  		<xsd:element name="Strings" minOccurs="0"> 
+  			<xsd:complexType>
+  				<xsd:sequence>
+  					<xsd:element name="String" type="StringKey_t" maxOccurs="unbounded" />
+  				</xsd:sequence>
+  			</xsd:complexType>
+  		</xsd:element>
+  	</xsd:sequence>
+  </xsd:complexType>
+  
+  <xsd:complexType name="StringKey_t">
+  	<xsd:complexContent>
+  		<xsd:extension base="xsd:string">
+  			<xsd:attribute name="key" type="xsd:string "/>
+  		</xsd:extension>
+  	</xsd:complexContent>
+  </xsd:complexType>
 
   <xsd:complexType name="StyleDocument_t">
     <xsd:sequence>
@@ -56,7 +77,6 @@ in this document has the same inheritence as the cpp-classes.
         <xsd:attribute name="Name" type="xsd:string" use="required" />
       </xsd:extension>
     </xsd:complexContent>
-    
   </xsd:complexType>
 
   <!-- This is the start of the descritions of all elements that can be

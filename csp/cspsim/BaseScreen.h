@@ -40,7 +40,7 @@ CSP_NAMESPACE
  *  within the game / sim should subclass this class.  The active screen receives
  *  input events and renders the view via the onRender callback.
  */
-class BaseScreen: public InputInterface, public Referenced
+class CSPSIM_EXPORT BaseScreen: public InputInterface, public Referenced
 {
 public:
 	BaseScreen();

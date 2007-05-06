@@ -37,7 +37,7 @@ namespace wf {
  *  A button is a widget that can be pressed by the user with the mouse.
  *  
  */
-class ListBox : public Container {
+class CSPSIM_EXPORT ListBox : public Container {
 public:
 	ListBox();
 	virtual ~ListBox();
@@ -55,7 +55,10 @@ public:
 	virtual ListBoxItem* getSelectedItem() const;
 	virtual ListBoxItem* getSelectedItem();
 	virtual void setSelectedItem(ListBoxItem* item);
+	virtual bool setSelectedItemByText(const std::string& text);
 	
+	virtual Signal* getSelectedItemChangedSignal();
+
 	template<class Archive>
 	void serialize(Archive & ar) {
 		Container::serialize(ar);
@@ -67,6 +70,7 @@ private:
 protected:
 	ListBoxItemVector m_Items;
 	Ref<ListBoxItem> m_SelectedItem;
+	Ref<Signal> m_SelectedItemChanged;
 };
 
 } // namespace wf

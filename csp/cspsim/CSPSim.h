@@ -54,10 +54,12 @@
 #define __CSPSIM_H__
 
 #include <csp/cspsim/Config.h>
+#include <csp/cspsim/config/Configuration.h>
 #include <csp/cspsim/Export.h>
 #include <csp/csplib/util/Ref.h>
 #include <csp/csplib/util/ScopedPointer.h>
 #include <csp/csplib/data/Date.h>
+#include <csp/cspsim/wf/Signal.h>
 
 #include <osg/ref_ptr>
 
@@ -82,7 +84,6 @@ class Theater;
 class VirtualHID;
 class VirtualScene;
 
-
 /** The primary simulation engine for CSP.  Also acts as a singleton to provide
  *  direct access to shared simulation state.  Do not abuse this access point;
  *  minimizing dependence on the CSPSim instance is a Good Thing.
@@ -103,6 +104,10 @@ public:
 	virtual void run();
 	virtual void quit();
 	virtual void cleanup();
+
+	virtual wf::Signal* getConfigurationChangedSignal();
+	virtual config::Configuration* getConfiguration();
+	virtual void setConfiguration(config::Configuration* config); 
 
 	void changeScreen(BaseScreen * newScreen);
 	BaseScreen* getCurrentScreen();
@@ -129,7 +134,7 @@ public:
 	DataManager & getDataManager() { return *m_DataManager; }
 
 	Atmosphere const * getAtmosphere() const { return m_Atmosphere.get(); }
-
+	
 protected:
 
 	void initSim();
@@ -140,11 +145,13 @@ protected:
 	void doStartupScript();
 
 private:
+	Ref<wf::Signal> m_ConfigurationChanged;
 	
 	SDL_Surface *m_SDLScreen;
 	SDL_Joystick* m_SDLJoystick;
 
 	Ref<BaseScreen> m_CurrentScreen;
+	Ref<config::Configuration> m_Configuration;
 
 	ScreenSettings screenSettings;
 

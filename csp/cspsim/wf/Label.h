@@ -38,7 +38,7 @@ namespace wf {
  *  A button is a widget that can be pressed by the user with the mouse.
  *  
  */
-class Label : public Control {
+class CSPSIM_EXPORT Label : public Control {
 public:
 	Label();
 	Label(const std::string text);

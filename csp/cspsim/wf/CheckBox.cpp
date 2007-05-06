@@ -26,6 +26,7 @@
 #include <csp/cspsim/wf/CheckBox.h>
 #include <csp/cspsim/wf/ControlGeometryBuilder.h>
 #include <csp/cspsim/wf/Label.h>
+#include <csp/cspsim/wf/SignalData.h>
 #include <csp/cspsim/wf/WindowManager.h>
 
 #include <osg/Group>
@@ -34,10 +35,10 @@ CSP_NAMESPACE
 
 namespace wf {
 
-CheckBox::CheckBox() : m_Checked(false) {
+CheckBox::CheckBox() : m_Checked(false), m_CheckedChanged(new Signal) {
 }
 
-CheckBox::CheckBox(const std::string text) : m_Text(text), m_Checked(false) {
+CheckBox::CheckBox(const std::string text) : m_Text(text), m_Checked(false), m_CheckedChanged(new Signal) {
 }
 
 CheckBox::~CheckBox() {
@@ -73,6 +74,13 @@ bool CheckBox::getChecked() const {
 void CheckBox::setChecked(bool checked) {
 	m_Checked = checked;
 	buildGeometry();
+	
+	Ref<SignalData> data = new SignalData;
+	m_CheckedChanged->emit(data.get());
+}
+
+Signal* CheckBox::getCheckedChangedSignal() {
+	return m_CheckedChanged.get();
 }
 
 void CheckBox::onClick(ClickEventArgs& event) {

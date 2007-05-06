@@ -39,7 +39,7 @@ class Label;
  *  A button is a widget that can be pressed by the user with the mouse.
  *  
  */
-class CheckBox : public Control {
+class CSPSIM_EXPORT CheckBox : public Control {
 public:
 	CheckBox();
 	CheckBox(const std::string text);
@@ -55,6 +55,7 @@ public:
 	virtual bool getChecked() const;
 	virtual void setChecked(bool checked);
 	
+	virtual Signal* getCheckedChangedSignal();
 	virtual void onClick(ClickEventArgs& event);
 
 	template<class Archive>
@@ -69,6 +70,8 @@ private:
 protected:
 	bool m_Checked;
 	std::string m_Text;
+	
+	Ref<Signal> m_CheckedChanged;
 };
 
 } // namespace wf

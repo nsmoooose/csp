@@ -26,6 +26,7 @@
 #define __CSPSIM_GAMESCREEN_H__
 
 #include <csp/cspsim/BaseScreen.h>
+#include <csp/cspsim/wf/InputInterfaceManager.h>
 #include <csp/csplib/util/Ref.h>
 #include <csp/csplib/util/ScopedPointer.h>
 #include <csp/csplib/util/Callback.h>
@@ -45,6 +46,9 @@ class CameraAgent;
 class CameraCommand;
 struct CameraCommands;
 
+namespace wf {
+	class WindowManager;
+}
 
 class GameScreen : public BaseScreen {
 public:
@@ -57,10 +61,12 @@ public:
 	virtual void onRender();
 	virtual void onUpdate(double dt);
 
+	virtual wf::WindowManager* getWindowManager();
+	virtual wf::InputInterfaceManager* getInputInterfaceManager();
+
 	virtual void setActiveObject(Ref<DynamicObject> const &);
 
 	DECLARE_INPUT_INTERFACE(GameScreen, BaseScreen)
-		BIND_ACTION("QUIT", on_Quit);
 		BIND_ACTION("PAUSE", on_Pause);
 		BIND_ACTION("TOGGLE_RECORDER", on_ToggleRecorder);
 		BIND_ACTION("TOGGLE_WIREFRAME", on_ToggleWireframe);
@@ -112,7 +118,6 @@ public:
 public:
 
 	// input event handlers
-	void on_Quit();
 	void on_Pause();
 	void on_ToggleRecorder();
 	void on_ToggleWireframe();
@@ -184,6 +189,9 @@ private:
 	void onPlayerQuit(int, const std::string&);
 	callback<void, int, const std::string&> m_OnPlayerJoin;
 	callback<void, int, const std::string&> m_OnPlayerQuit;
+	
+	// Handles signals to be emitted to the python gui code. For example player QUIT action.
+	Ref<wf::InputInterfaceManager> m_InputInterfaceManager;
 };
 
 CSP_NAMESPACE_END

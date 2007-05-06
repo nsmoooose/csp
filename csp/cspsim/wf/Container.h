@@ -31,7 +31,7 @@ CSP_NAMESPACE
 
 namespace wf {
 
-class Container : public Control {
+class CSPSIM_EXPORT Container : public Control {
 public:
 	Container();
 	virtual ~Container();
@@ -41,15 +41,15 @@ public:
 	
 	virtual Rectangle getClientRect() const;
 	
+	virtual Control* getById(const std::string& id);
 	template<class T>
 	T* getById(const std::string& id) {
-		return dynamic_cast<T*>(internalGetById(id));
+		return dynamic_cast<T*>(getById(id));
 	}
 	
 protected:
 
 private:
-	virtual Control* internalGetById(const std::string& id);
 };
 
 } // namespace wf

@@ -37,7 +37,7 @@ namespace wf {
  *  This class contains a vector with one or more tab pages.
  *  
  */
-class Tab : public Container {
+class CSPSIM_EXPORT Tab : public Container {
 public:
 	Tab();
 	virtual ~Tab();

@@ -56,6 +56,16 @@ class CSPLIB_EXPORT ReferencedBase: public NonCopyable {
 template <class T> friend class Ref;
 friend class LinkCore;
 
+public:
+
+	inline void _incref() const {
+		++__count;
+	}
+	inline void _decref() const {
+		CSP_VERIFY(__count > 0);
+		if (!--__count) delete this;
+	}
+
 protected:
 	ReferencedBase(): __count(0) {
 	}
@@ -67,14 +77,6 @@ protected:
 	inline int _count() const { return static_cast<int>(__count); }
 
 private:
-
-	inline void _incref() const {
-		++__count;
-	}
-	inline void _decref() const {
-		CSP_VERIFY(__count > 0);
-		if (!--__count) delete this;
-	}
 	mutable COUNTER __count;
 };
 

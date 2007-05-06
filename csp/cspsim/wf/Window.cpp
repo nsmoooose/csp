@@ -32,8 +32,7 @@ CSP_NAMESPACE
 
 namespace wf {
 
-Window::Window() : 
-	m_WindowManager(NULL) {
+Window::Window() : m_StringResources(new StringResourceManager) {
 }
 
 Window::~Window() {
@@ -51,7 +50,7 @@ void Window::buildGeometry() {
 }
 
 WindowManager* Window::getWindowManager() {
-	return m_WindowManager;
+	return m_WindowManager.get();
 }
 
 void Window::setWindowManager(WindowManager* manager) {
@@ -73,7 +72,7 @@ void Window::layoutChildControls() {
 }
 
 void Window::close() {
-	if(m_WindowManager != NULL) {
+	if(m_WindowManager.valid()) {
 		m_WindowManager->close(this);
 	}
 }
@@ -102,6 +101,14 @@ std::string Window::getTheme() const {
 	return m_Theme;
 }
 
+StringResourceManager* Window::getStringResourceManager() {
+	return m_StringResources.get();
+}
+
+const StringResourceManager* Window::getStringResourceManager() const {
+	return m_StringResources.get();	
+}
+
 optional<Style> Window::getNamedStyle(const std::string& name) const {
 	optional<Style> style;
 	// Assign the style to the optional if it exists in the map.
@@ -117,7 +124,7 @@ void Window::addNamedStyle(const std::string& name, const Style& style) {
 }
 
 void Window::centerWindow() {
-	if(m_WindowManager == NULL) {
+	if(!m_WindowManager.valid()) {
 		return;
 	}
 	
@@ -135,7 +142,7 @@ void Window::centerWindow() {
 }
 
 void Window::maximizeWindow() {
-	if(m_WindowManager == NULL) {
+	if(!m_WindowManager.valid()) {
 		return;
 	}
 

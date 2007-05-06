@@ -28,12 +28,15 @@
 #include <csp/csplib/util/FileUtility.h>
 #include <csp/csplib/util/Ref.h>
 #include <csp/csplib/xml/XmlParser.h>
+#include <csp/cspsim/Config.h>
 #include <csp/cspsim/wf/Button.h>
 #include <csp/cspsim/wf/CheckBox.h>
 #include <csp/cspsim/wf/Label.h>
 #include <csp/cspsim/wf/ListBox.h>
 #include <csp/cspsim/wf/MultiControlContainer.h>
+#include <csp/cspsim/wf/ResourceLocator.h>
 #include <csp/cspsim/wf/Serialization.h>
+#include <csp/cspsim/wf/StringResourceManager.h>
 #include <csp/cspsim/wf/Tab.h>
 #include <csp/cspsim/wf/TableControlContainer.h>
 #include <csp/cspsim/wf/Window.h>
@@ -56,6 +59,7 @@ void ToValue(XMLNode& node, const std::string& src, TabPageVector* dst);
 void ToValue(XMLNode& node, const std::string& src, TableControlContainer::ColumnVector* dst);
 void ToValue(XMLNode& node, const std::string& src, TableControlContainer::RowVector* dst);
 void ToValue(XMLNode& node, const std::string& src, TableControlContainer::XYVector* dst);
+void ToValue(XMLNode& node, const std::string& src, StringMap* dst);
 template<class T> void ToValue(XMLNode& node, const std::string& src, optional<T>* dst);
 
 /** This class is an interface for all xml string conversion to
@@ -149,6 +153,11 @@ public:
 		setParent(window);
 	}
 
+	void loadDocument(StringResourceManager* resourceManager, XMLNode& document) {
+		XMLNode stringsNode = document.selectSingleNode("StringTableDocument");
+		load(resourceManager, stringsNode);
+	}
+
 	void setParent(Container* parent) {
 		ControlVector childControls = parent->getChildControls();
 		ControlVector::iterator childControl = childControls.begin();
@@ -165,6 +174,10 @@ private:
 	typedef std::map<std::string, Ref<StringConverter> > NodeConverterMap;
 	NodeConverterMap m_NodeConverter;
 };
+
+Serialization::Serialization() {
+	m_UserInterfaceDirectory = getUIPath();
+}
 
 Serialization::Serialization(const std::string& userInterfaceDirectory) :
 	m_UserInterfaceDirectory(userInterfaceDirectory) {
@@ -206,23 +219,51 @@ void Serialization::load(Window* window, const std::string& theme, const std::st
 			}
 
 			std::string includeFile = includeNode.getText(0);
-			std::string includeFilePath = ospath::join(themePath, includeFile);
-			if(!ospath::exists(includeFilePath)) {
-				CSPLOG(ERROR, APP) << "UI Include document not found.";		
-				continue;
+					
+			std::string includeNodeName = includeNode.getName();
+			if(includeNodeName == "StringTableInclude") {
+				Ref<StringResourceManager> loadedResources = new StringResourceManager;
+				Ref<ResourceLocator> resourceLocator = new StringResourceLocator(window);
+				if(resourceLocator->locateResource(includeFile)) {
+					// Load the resources from the file and merge it to the existing
+					// resources in this window manager.
+					load(loadedResources.get(), includeFile);
+					window->getStringResourceManager()->merge(loadedResources.get());
+				} 
 			}
-			
-			XMLNode includeDocument = XMLNode::parseFile(includeFilePath.c_str());
-			XMLNode namedStylesNode = includeDocument.selectSingleNode("StyleDocument/NamedStyles");
-			NamedStyleMap styles;
-			ToValue(namedStylesNode, "", &styles);
-			
-			NamedStyleMap::iterator style = styles.begin();
-			for(;style != styles.end();++style) {
-				window->addNamedStyle(style->first, style->second);
+			else if(includeNodeName == "StyleInclude") {
+				std::string includeFilePath = ospath::join(themePath, includeFile);
+				if(!ospath::exists(includeFilePath)) {
+					CSPLOG(ERROR, APP) << "UI Include document not found.";		
+					continue;
+				}
+				XMLNode includeDocument = XMLNode::parseFile(includeFilePath.c_str());
+				XMLNode namedStylesNode = includeDocument.selectSingleNode("StyleDocument/NamedStyles");
+				NamedStyleMap styles;
+				ToValue(namedStylesNode, "", &styles);
+				
+				NamedStyleMap::iterator style = styles.begin();
+				for(;style != styles.end();++style) {
+					window->addNamedStyle(style->first, style->second);
+				}
 			}
 		}
 	}
+}
+
+void Serialization::load(StringResourceManager* resourceManager, const std::string& filePath) {
+	// Test to see if the file exists.
+	if(!ospath::exists(filePath)) {
+		CSPLOG(ERROR, APP) << "UI string table document not found.";		
+		return;
+	}
+
+	// Load the document.
+	XMLNode document = XMLNode::parseFile(filePath.c_str());
+
+	// Parse the content of the document by using our internal archive class.
+	ReadingArchive archive;
+	archive.loadDocument(resourceManager, document);
 }
 
 Ref<Control> createControl(XMLNode& node) {
@@ -448,6 +489,18 @@ void ToValue(XMLNode& node, const std::string& src, optional<T>* dst) {
 	dst->assign(T());
 	// Convert the optional datatype to the destination object.
 	ToValue(node, src, dst->get_ptr());	
+}
+
+void ToValue(XMLNode& node, const std::string& src, StringMap* dst) {
+	StringMap& stringTable = *dst;
+	int childNodeCount = node.nChildNode();
+	for(int index = 0;index < childNodeCount;++index) {
+		XMLNode childNode = node.getChildNode(index);
+		CSP_XMLCSTR key = childNode.getAttribute("key");
+		if(childNode.nText() > 0) {
+			stringTable[key] = childNode.getText();
+		}
+	}
 }
 
 } // namespace wf

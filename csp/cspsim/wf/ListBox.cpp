@@ -25,6 +25,7 @@
 #include <csp/cspsim/Animation.h>
 #include <csp/cspsim/wf/ControlGeometryBuilder.h>
 #include <csp/cspsim/wf/ListBox.h>
+#include <csp/cspsim/wf/SignalData.h>
 #include <csp/cspsim/wf/WindowManager.h>
 
 #include <osg/Switch>
@@ -33,7 +34,7 @@ CSP_NAMESPACE
 
 namespace wf {
 
-ListBox::ListBox() {
+ListBox::ListBox() : m_SelectedItemChanged(new Signal) {
 }
 
 ListBox::~ListBox() {
@@ -109,7 +110,27 @@ ListBoxItem* ListBox::getSelectedItem() const {
 
 void ListBox::setSelectedItem(ListBoxItem* newItem) {
 	m_SelectedItem = newItem;
+	
+	// Fire event to any listeners.
+	Ref<SignalData> data = new SignalData();
+	m_SelectedItemChanged->emit(data.get());
+	 
 	buildGeometry();
+}
+
+bool ListBox::setSelectedItemByText(const std::string& text) {
+	ListBoxItemVector::iterator item = m_Items.begin();
+	for(;item != m_Items.end();++item) {
+		if(text == (*item)->getText()) {
+			setSelectedItem(item->get());
+			return true;
+		}
+	}
+	return false;
+}
+
+Signal* ListBox::getSelectedItemChangedSignal() {
+	return m_SelectedItemChanged.get();
 }
 
 } // namespace wf

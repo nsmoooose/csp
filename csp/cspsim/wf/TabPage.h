@@ -36,7 +36,7 @@ namespace wf {
  *  A button is a widget that can be pressed by the user with the mouse.
  *  
  */
-class TabPage : public SingleControlContainer {
+class CSPSIM_EXPORT TabPage : public SingleControlContainer {
 public:
 	TabPage();
 	virtual ~TabPage();

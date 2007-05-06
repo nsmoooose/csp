@@ -27,6 +27,7 @@
 
 #include <csp/csplib/util/Ref.h>
 #include <csp/csplib/util/Referenced.h>
+#include <csp/csplib/util/WeakReferenced.h>
 #include <csp/cspsim/wf/Window.h>
 
 #include <osg/ref_ptr>
@@ -47,7 +48,7 @@ namespace wf {
 
 class Serialization;
 
-class WindowManager : public Referenced {
+class CSPSIM_EXPORT WindowManager : public Referenced, public WeakReferenced {
 public:
 	WindowManager(osgUtil::SceneView* view);
 	WindowManager();
@@ -58,6 +59,7 @@ public:
 	
 	virtual void show(Window* window);
 	virtual void close(Window* window);
+	virtual void closeAll();
 	
 	virtual Size getScreenSize() const;
 	

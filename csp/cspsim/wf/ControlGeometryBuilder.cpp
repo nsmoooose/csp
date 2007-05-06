@@ -231,7 +231,7 @@ void ControlGeometryBuilder::buildControl(osg::Geode* geode, float& z, const Sty
 			// Try to locate the resource using a resource locator class.
 			// The resource can be located in the theme directory or in
 			// the datapath.		
-			Ref<WindowResourceLocator> resourceLocator = new WindowResourceLocator(window);
+			Ref<ResourceLocator> resourceLocator = new ImageResourceLocator(window);
 			std::string filePath = *style.backgroundImage;
 			if(resourceLocator->locateResource(filePath)) {
 				image = osgDB::readImageFile(filePath);
@@ -548,9 +548,17 @@ osg::Group* ControlGeometryBuilder::buildCheckBox(const CheckBox* checkBox) cons
 
 	// Draw the text of the checkbox if all needed styles exists.
 	if(style.fontSize && style.fontFamily && style.color) {
+		std::string checkBoxText = checkBox->getText();
+		std::string parsedText = checkBoxText;
+		Ref<const Window> window = Window::getWindow(checkBox);
+		if(window.valid()) {
+			Ref<const StringResourceManager> stringResources = window->getStringResourceManager();
+			parsedText = stringResources->parseAndReplace(checkBoxText);
+		}
+
 		getNextLayer(z);
 		osg::ref_ptr<osgText::Text> button_text = new osgText::Text;
-		button_text->setText(checkBox->getText());
+		button_text->setText(parsedText);
 		button_text->setColor(*style.color);
 		button_text->setAlignment(osgText::Text::LEFT_CENTER);
 		button_text->setFont(style.fontFamily->c_str());
@@ -597,12 +605,20 @@ osg::Group* ControlGeometryBuilder::buildLabel(const Label* label) const {
 	float z = 0;
 
 	buildControl(geode.get(), z, style, label);
-	
+		
 	// Check for mandatory elements of font information.
 	if(style.fontSize && style.fontFamily && style.color) {
+		std::string labelText = label->getText();
+		std::string parsedText = labelText;
+		Ref<const Window> window = Window::getWindow(label);
+		if(window.valid()) {
+			Ref<const StringResourceManager> stringResources = window->getStringResourceManager();
+			parsedText = stringResources->parseAndReplace(labelText);
+		}
+	
 		getNextLayer(z);
 	    osg::ref_ptr<osgText::Text> button_text = new osgText::Text;
-	    button_text->setText(label->getText());
+	    button_text->setText(parsedText);
 	    button_text->setColor(*style.color);
 	    button_text->setAlignment(label->getAlignment());
 	    button_text->setFont(style.fontFamily->c_str());

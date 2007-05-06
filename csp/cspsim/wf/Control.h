@@ -35,6 +35,7 @@
 #include <csp/csplib/data/Vector3.h>
 #include <csp/cspsim/wf/Rectangle.h>
 #include <csp/cspsim/wf/Serialization.h>
+#include <csp/cspsim/wf/Signal.h>
 #include <csp/cspsim/wf/Style.h>
 
 #include <osg/ref_ptr>
@@ -80,12 +81,14 @@ typedef sigc::signal<void, HoverEventArgs&> HoverSignal;
  *  window framework.
  *
  */
-class Control : public Referenced, public WeakReferenced {
+class CSPSIM_EXPORT Control : public Referenced, public WeakReferenced {
 public:
 	Control();
 	virtual ~Control();
+	
+	virtual void dispose();
 
-	virtual const std::string& getId() const;
+	virtual std::string getId() const;
 	virtual void setId(const std::string& id);
 		
 	virtual std::string getName() const;
@@ -124,6 +127,7 @@ public:
 
 	/** The following members is signals that any class
 	 * can listen to. */
+	virtual Signal* getClickSignal();
 	ClickSignal Click;
 	HoverSignal Hover;
 	
@@ -161,6 +165,8 @@ private:
 	WeakRef<Container> m_Parent;
 	Style m_Style;
 	bool m_Visible;
+	
+	Ref<Signal> m_ClickSignal;
 	
 	void updateMatrix();
 };

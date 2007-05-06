@@ -16,7 +16,7 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
-%module cspsim_module
+%module(directors="1") cspsim_module
 
 %{
 #include <csp/csplib/util/Exception.h>
@@ -33,6 +33,19 @@
 %include std_string.i
 %include std_vector.i
 
+namespace csp {
+
+%feature("ref")   Referenced "$this->_incref();"
+%feature("unref") Referenced "$this->_decref();"
+
+%ignore Referenced;
+class Referenced {
+};
+
+}
+
 %include <csp/cspsim/swig/Config.i>
 %include <csp/cspsim/swig/VirtualScene.i>
+%include <csp/cspsim/swig/wf.i>
+%include <csp/cspsim/swig/Screens.i>
 %include <csp/cspsim/swig/CSPSim.i>

@@ -1,5 +1,5 @@
 // Combat Simulator Project
-// Copyright (C) 2002-2005 The Combat Simulator Project
+// Copyright (C) 2002 The Combat Simulator Project
 // http://csp.sourceforge.net
 //
 // This program is free software; you can redistribute it and/or
@@ -18,46 +18,45 @@
 
 
 /**
- * @file MenuScreen.h
+ * @file Signal.cpp
  *
  **/
 
-#ifndef __CSPSIM_WINDOWS_MENUSCREEN_H__
-#define __CSPSIM_WINDOWS_MENUSCREEN_H__
-
-#include <csp/cspsim/BaseScreen.h>
-#include <csp/cspsim/wf/WindowManager.h>
+#include <csp/cspsim/wf/Signal.h>
 
 CSP_NAMESPACE
 
 namespace wf {
-	class WindowManager;
+
+Signal::Signal() {
 }
 
-namespace windows {
-
-class MenuScreen : public BaseScreen { 
-public:
-	MenuScreen();
-	virtual ~MenuScreen();
- 
-	virtual void onInit();
-	virtual void onExit();
-
-	virtual void onRender();
-	virtual void onUpdate(double dt);
-	
-	virtual void displayDesktopAndMainMenu();
-
-	virtual bool onMouseMove(SDL_MouseMotionEvent const &);
-	virtual bool onMouseButton(SDL_MouseButtonEvent const &);
-
-private:
-	Ref<wf::WindowManager> m_WindowManager;
-};
-
+Signal::~Signal() {
 }
+
+void Signal::connect(Slot* slot) {
+	m_InvocationList.push_back(slot);
+}
+
+void Signal::disconnect(Slot* slot) {
+	for(int index=m_InvocationList.size()-1;index >= 0;--index) {
+		if(m_InvocationList.at(index).get() == slot) {
+			m_InvocationList.erase(m_InvocationList.begin()+index);
+		}
+	}
+}
+
+void Signal::emit(SignalData* data) {
+	SlotVector::iterator slot = m_InvocationList.begin();
+	for(;slot != m_InvocationList.end();++slot) {
+		(*slot)->notify(data);
+	}
+}
+
+void Signal::dispose() {
+	m_InvocationList.clear();
+}
+
+} // namespace wf
 
 CSP_NAMESPACE_END
-
-#endif // __CSPSIM_WINDOWS_MENUSCREEN_H__

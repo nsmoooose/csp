@@ -27,7 +27,9 @@
 
 #include <map>
 #include <csp/csplib/util/Ref.h>
+#include <csp/csplib/util/WeakRef.h>
 #include <csp/cspsim/wf/SingleControlContainer.h>
+#include <csp/cspsim/wf/StringResourceManager.h>
 
 namespace osg {
 	class Group;
@@ -44,7 +46,7 @@ class WindowManager;
 typedef std::vector<Ref<Window> > WindowVector;
 typedef std::map<std::string, Style> NamedStyleMap;
 
-class Window : public SingleControlContainer {
+class CSPSIM_EXPORT Window : public SingleControlContainer {
 public:
 	Window();
 	virtual ~Window();
@@ -71,6 +73,9 @@ public:
 	virtual void setTheme(const std::string& theme);
 	virtual std::string getTheme() const;
 	
+	virtual StringResourceManager* getStringResourceManager();
+	virtual const StringResourceManager* getStringResourceManager() const;
+	
 	template<class Archive>
 	void serialize(Archive & ar)	{
 		SingleControlContainer::serialize(ar);
@@ -78,8 +83,9 @@ public:
 	}
 	
 private:
-	WindowManager* m_WindowManager;
+	WeakRef<WindowManager> m_WindowManager;
 	std::string m_Theme;
+	Ref<StringResourceManager> m_StringResources;
 
 	NamedStyleMap m_Styles;
 };

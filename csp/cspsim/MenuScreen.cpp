@@ -24,13 +24,10 @@
 
 #include <csp/cspsim/CSPSim.h>
 #include <csp/cspsim/EventMapIndex.h>
+#include <csp/cspsim/MenuScreen.h>
 #include <csp/cspsim/wf/WindowManager.h>
-#include <csp/cspsim/windows/MenuScreen.h>
-#include <csp/cspsim/windows/MainMenu.h>
 
 CSP_NAMESPACE
-
-namespace windows {
 
 MenuScreen::MenuScreen() {
 }
@@ -40,9 +37,7 @@ MenuScreen::~MenuScreen() {
 
 void MenuScreen::onInit() {
 	m_WindowManager = new wf::WindowManager;
-	
-	// Display the desktop window and the main menu.
-	displayDesktopAndMainMenu();
+	m_Serializer = new wf::Serialization(getUIPath());
 
 	// We need some kindo of keyboard binding for this screen.
 	m_Interface = new VirtualHID();
@@ -71,24 +66,12 @@ bool MenuScreen::onMouseButton(SDL_MouseButtonEvent const &event) {
 	return false;
 }
 
-void MenuScreen::displayDesktopAndMainMenu() {
-	m_WindowManager->closeByType<wf::Window>();
-
-	// Serializer to be used for reading xml definitions of windows and controls.
-	Ref<wf::Serialization> serializer = new wf::Serialization(getUIPath());
-
-	// This is the desktop window that is used a background window
-	// for all dialogs that is displayed.
-	Ref<wf::Window> desktopWindow = new wf::Window;
-	serializer->load(desktopWindow.get(), getUITheme(), "desktop.xml");
-	m_WindowManager->show(desktopWindow.get());
-	desktopWindow->maximizeWindow();
-	
-	// Display the main menu.
-	Ref<MainMenu> mainMenu = new MainMenu;
-	m_WindowManager->show(mainMenu.get());
+wf::WindowManager* MenuScreen::getWindowManager() {
+	return m_WindowManager.get();
 }
 
+wf::Serialization* MenuScreen::getSerializer() {
+	return m_Serializer.get();
 }
 
 CSP_NAMESPACE_END

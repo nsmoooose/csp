@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<StringTableDocument xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation='../../window_document.xsd'>
+	<Strings>
+		<String key="cancel">Avbryt</String>
+		<String key="full_screen_mode">Helskarm</String>
+		<String key="instant_action">Action</String>
+		<String key="main_menu">Huvudmeny</String>
+		<String key="ok">OK</String>
+		<String key="options">Installningar</String>
+		<String key="quit">Avsluta</String>
+		<String key="restart_required">Omstart kravs for att andring skall galla.</String>
+		<String key="resume">Aterga</String>
+		<String key="screen_resolution">Upplosning</String>
+		<String key="ui_theme">Tema</String>
+		<String key="ui_language">Sprak</String>
+	</Strings>
+</StringTableDocument>

@@ -37,7 +37,7 @@ enum TableControlContainerSizeType {
 	Absolute
 };
 
-class TableControlContainerColumn {
+class CSPSIM_EXPORT TableControlContainerColumn {
 public:
 	TableControlContainerColumn() : m_SizeType(Percent), m_Width(0.0f) {}
 
@@ -57,7 +57,7 @@ private:
 	double m_Width;
 };
 
-class TableControlContainerRow {
+class CSPSIM_EXPORT TableControlContainerRow {
 public:
 	TableControlContainerRow() : m_SizeType(Percent), m_Height(0.0f) {}
 	
@@ -80,7 +80,7 @@ private:
 /** 
  *
  */
-class TableControlContainer : public Container {
+class CSPSIM_EXPORT TableControlContainer : public Container {
 public:
 	typedef std::vector<TableControlContainerColumn> ColumnVector;
 	typedef std::vector<TableControlContainerRow> RowVector;

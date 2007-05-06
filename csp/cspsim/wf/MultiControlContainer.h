@@ -40,7 +40,7 @@ namespace wf {
  *  The purpose is to have a control that handles several child 
  *  controls and have absolute control over positioning.
  */
-class MultiControlContainer : public Container {
+class CSPSIM_EXPORT MultiControlContainer : public Container {
 public:
 	MultiControlContainer();
 	virtual ~MultiControlContainer();

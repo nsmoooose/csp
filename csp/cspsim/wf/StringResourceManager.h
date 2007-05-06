@@ -18,31 +18,47 @@
 
 
 /**
- * @file Options.h
+ * @file StringResourceManager.h
  *
  **/
 
-#ifndef __CSPSIM_WINDOWS_OPTIONS_H__
-#define __CSPSIM_WINDOWS_OPTIONS_H__
+#ifndef __CSPSIM_WF_STRINGRESOURCEMANAGER_H__
+#define __CSPSIM_WF_STRINGRESOURCEMANAGER_H__
 
-#include <csp/cspsim/wf/Window.h>
+#include <map>
+#include <csp/csplib/util/Referenced.h>
+#include <csp/cspsim/Export.h>
 
 CSP_NAMESPACE
 
-namespace windows {
+namespace wf {
 
-class Options : public wf::Window {
+class ResourceLocator;
+
+typedef std::map<std::string, std::string> StringMap;
+
+class CSPSIM_EXPORT StringResourceManager : public Referenced {
 public:
-	Options();
-	virtual ~Options();
+	StringResourceManager();
+	virtual ~StringResourceManager();
+	
+	virtual std::string getString(const std::string& key) const;
+	virtual void merge(StringResourceManager* stringsToMerge);
+
+	virtual std::string parseAndReplace(const std::string& original) const;
+
+	template<class Archive>
+	void serialize(Archive & ar)	{
+		ar & make_nvp("Strings", m_Values);
+	}
 	
 private:
-	void ok_Click(wf::ClickEventArgs& event);
-	void cancel_Click(wf::ClickEventArgs& event);	
+	StringMap m_Values;
 };
 
-} // namespace windows
+} // namespace wf
 
 CSP_NAMESPACE_END
 
-#endif // __CSPSIM_WINDOWS_OPTIONS_H__
+#endif // __CSPSIM_WF_STRINGRESOURCEMANAGER_H__
+

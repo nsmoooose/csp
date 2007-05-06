@@ -339,9 +339,9 @@ def main(args):
 			createTestObjects(sim, options.objects)
 		else:
 			sim.displayLogoScreen()
-			sim.displayMenuScreen()
-			
-		sim.run()
+			from csp.data.ui.startup import UserInterfaceStartup
+			userInterface = UserInterfaceStartup(sim)
+			userInterface.run();
 	finally:
 		sim.cleanup()
 

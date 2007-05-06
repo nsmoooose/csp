@@ -207,6 +207,8 @@ void WindowManager::show(Window* window) {
 }
 
 void WindowManager::close(Window* window) {
+	Ref<Window> myWindow = window;
+	
 	// Lets remove the node that represents the window. This will
 	// remove the window on the next rendering.
 	osg::Group* windowGroup = window->getNode();
@@ -217,14 +219,20 @@ void WindowManager::close(Window* window) {
 	for(;iteratedWindow != m_Windows.end();++iteratedWindow) {
 		if(iteratedWindow->get() == window) {
 			m_Windows.erase(iteratedWindow);
-			return;
+			break;
 		}
 	}
 	
 	// Detach the window from the window manager by assigning
 	// a NULL window manager.
-	window->setWindowManager(NULL);
+	myWindow->setWindowManager(NULL);
+	myWindow->dispose();
 }
+
+void WindowManager::closeAll() {
+	closeByType<Window>();
+}
+
 
 Size WindowManager::getScreenSize() const {
 	return Size(CSPSim::theSim->getSDLScreen()->w, CSPSim::theSim->getSDLScreen()->h);

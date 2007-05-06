@@ -36,7 +36,7 @@ namespace wf {
  *  A button is a widget that can be pressed by the user with the mouse.
  *  
  */
-class ListBoxItem : public SingleControlContainer {
+class CSPSIM_EXPORT ListBoxItem : public SingleControlContainer {
 public:
 	ListBoxItem();
 	ListBoxItem(const std::string text);

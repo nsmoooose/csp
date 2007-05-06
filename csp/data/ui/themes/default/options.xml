@@ -3,33 +3,29 @@
   <Includes>
     <!-- This include will set the default behaviour on all controls. -->
     <StyleInclude>styles.xml</StyleInclude>
+    <StringTableInclude>global.xml</StringTableInclude>
   </Includes>
-  <Window CssClass="window_default" SizeWidth="449" SizeHeight="420" LocationZ="30" >
+  <Window CssClass="window_default" SizeWidth="580" SizeHeight="420" LocationZ="30" >
     <Control>
       <MultiControlContainer>
         <Controls>
-          <Label LocationX="10" LocationY="2" SizeWidth="438" SizeHeight="30" Text="Display settings" />
-          <Label CssClass="stripe" LocationX="0" LocationY="30" SizeWidth="438" SizeHeight="10" />
+          <Label LocationX="10" LocationY="2" SizeWidth="569" SizeHeight="30" Text="${options}" />
+          <Label CssClass="stripe" LocationX="0" LocationY="30" SizeWidth="569" SizeHeight="10" />
 
-          <Label Text="Resolution:" LocationX="25" LocationY="55" SizeHeight="25" />
-          <ListBox Id="resolution" LocationX="145" LocationY="55" SizeWidth="250" SizeHeight="140">
-            <Items>
-              <Item Text="640x480" SizeHeight="30" />
-              <Item Text="800x600" SizeHeight="30" />
-              <Item Text="1024x768" SizeHeight="30" />
-              <Item Text="1280x1024" SizeHeight="30" />
-              <Item Text="1920x1200" SizeHeight="30" />
-            </Items>
-          </ListBox>
+          <Label Text="${screen_resolution}:" LocationX="10" LocationY="55" SizeHeight="25" />
+          <ListBox Id="resolution" LocationX="20" LocationY="83" SizeWidth="145" SizeHeight="230" />
 
-          <CheckBox Id="fullscreen" LocationX="25" LocationY="195" SizeWidth="150" SizeHeight="30" Text="Fullscreen" />
+          <CheckBox Id="fullscreen" LocationX="10" LocationY="330" SizeWidth="150" SizeHeight="30" Text="${full_screen_mode}" />
 
-          <Label LocationX="25" LocationY="230" SizeWidth="438" SizeHeight="25" Text="Theme:" />
-          <ListBox Id="theme" LocationX="145" LocationY="230" SizeWidth="250" SizeHeight="140" />
+          <Label LocationX="175" LocationY="55" SizeWidth="438" SizeHeight="25" Text="${ui_theme}:" />
+          <ListBox Id="theme" LocationX="185" LocationY="83" SizeWidth="170" SizeHeight="230" />
+
+          <Label LocationX="370" LocationY="55" SizeWidth="438" SizeHeight="25" Text="${ui_language}:" />
+          <ListBox Id="language" LocationX="380" LocationY="83" SizeWidth="165" SizeHeight="230" />
 
           <!-- Buttons for ok and cancel actions. -->
-          <Button Id="ok" Text="OK" LocationX="180" LocationY="375" SizeWidth="120" SizeHeight="35" />
-          <Button Id="cancel" Text="Cancel" LocationX="310" LocationY="375" SizeWidth="120" SizeHeight="35" />
+          <Button Id="ok" Text="${ok}" LocationX="310" LocationY="375" SizeWidth="120" SizeHeight="35" />
+          <Button Id="cancel" Text="${cancel}" LocationX="440" LocationY="375" SizeWidth="120" SizeHeight="35" />
         </Controls>
       </MultiControlContainer>
     </Control>

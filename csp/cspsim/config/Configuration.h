@@ -1,5 +1,5 @@
 // Combat Simulator Project
-// Copyright (C) 2002 The Combat Simulator Project
+// Copyright (C) 2005 The Combat Simulator Project
 // http://csp.sourceforge.net
 //
 // This program is free software; you can redistribute it and/or
@@ -18,35 +18,42 @@
 
 
 /**
- * @file MessageBox.h
+ * @file Configuration.h
  *
  **/
 
-#ifndef __CSPSIM_WINDOWS_MESSAGEBOX_H__
-#define __CSPSIM_WINDOWS_MESSAGEBOX_H__
 
-#include <csp/cspsim/wf/Window.h>
+#ifndef __CONFIG_CONFIGURATION_H__
+#define __CONFIG_CONFIGURATION_H__
+
+#include <csp/csplib/util/Ref.h>
+#include <csp/cspsim/Export.h>
 
 CSP_NAMESPACE
 
-namespace windows {
+namespace config {
+	
+class Display;
+class UserInterface;
 
-class Label;
-
-class MessageBox : public wf::Window {
+class CSPSIM_EXPORT Configuration: public Referenced {
 public:
-	MessageBox(std::string caption, std::string message);
-	virtual ~MessageBox();
-
-	static Ref<MessageBox> Show(std::string caption, std::string message);
+	Configuration(Display* display, UserInterface* userInterface);
+	virtual ~Configuration();
+	
+	virtual Display* getDisplay();
+	virtual UserInterface* getUserInterface();
+	
+	virtual Configuration* clone();
 	
 private:
-	virtual void ok_Click(wf::ClickEventArgs& event);
+	Ref<Display> m_Display;
+	Ref<UserInterface> m_UserInterface;
 };
 
-} // namespace windows
+}
 
 CSP_NAMESPACE_END
 
-#endif // __CSPSIM_WINDOWS_MESSAGEBOX_H__
+#endif // __CONFIG_CONFIGURATION_H__
 

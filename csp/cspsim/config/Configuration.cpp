@@ -1,5 +1,5 @@
 // Combat Simulator Project
-// Copyright (C) 2002 The Combat Simulator Project
+// Copyright (C) 2005 The Combat Simulator Project
 // http://csp.sourceforge.net
 //
 // This program is free software; you can redistribute it and/or
@@ -18,32 +18,36 @@
 
 
 /**
- * @file MainMenu.h
+ * @file Configuration.cpp
  *
  **/
 
-#ifndef __CSPSIM_WINDOWS_MAINMENU_H__
-#define __CSPSIM_WINDOWS_MAINMENU_H__
 
-#include <csp/cspsim/wf/Window.h>
+#include <csp/cspsim/Config.h>
+#include <csp/cspsim/config/Configuration.h>
+#include <csp/cspsim/config/Display.h>
+#include <csp/cspsim/config/UserInterface.h>
 
 CSP_NAMESPACE
+namespace config {
 
-namespace windows {
+Configuration::Configuration(Display* display, UserInterface* userInterface) : m_Display(display), m_UserInterface(userInterface) {
+}
 
-class MainMenu : public wf::Window {
-public:
-	MainMenu();
-	virtual ~MainMenu();
+Configuration::~Configuration() {
+}
 
-private:
-	void instantAction_Click(wf::ClickEventArgs& event);
-	void quit_Click(wf::ClickEventArgs& event);
-	void options_Click(wf::ClickEventArgs& event);
-};
+Configuration* Configuration::clone() {
+	return new Configuration(m_Display->clone(), m_UserInterface->clone());
+}
 
-} // namespace windows
+Display* Configuration::getDisplay() {
+	return m_Display.get();
+}
 
+UserInterface* Configuration::getUserInterface() {
+	return m_UserInterface.get();
+}
+
+}
 CSP_NAMESPACE_END
-
-#endif // __CSPSIM_WINDOWS_MAINMENU_H__

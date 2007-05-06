@@ -12,14 +12,7 @@
           <Label CssClass="stripe" LocationX="0" LocationY="30" SizeWidth="438" SizeHeight="10" />
 
           <Label Text="Resolution:" LocationX="25" LocationY="55" SizeHeight="25" />
-          <ListBox Id="resolution" LocationX="145" LocationY="55" SizeWidth="250" SizeHeight="140">
-            <Items>
-              <Item Text="640x480" SizeHeight="30" />
-              <Item Text="800x600" SizeHeight="30" />
-              <Item Text="1024x768" SizeHeight="30" />
-              <Item Text="1280x1024" SizeHeight="30" />
-            </Items>
-          </ListBox>
+          <ListBox Id="resolution" LocationX="145" LocationY="55" SizeWidth="250" SizeHeight="140" />
 
           <CheckBox Id="fullscreen" LocationX="25" LocationY="195" SizeWidth="150" SizeHeight="30" Text="Fullscreen" />
 

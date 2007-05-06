@@ -3,15 +3,16 @@
   <Includes>
     <!-- This include will set the default behaviour on all controls. -->
     <StyleInclude>styles.xml</StyleInclude>
+    <StringTableInclude>global.xml</StringTableInclude>
   </Includes>
-  <Window CssClass="window_default" SizeWidth="309" SizeHeight="88" >
+  <Window CssClass="window_default" SizeWidth="439" SizeHeight="88" >
     <Control>
       <MultiControlContainer>
         <Controls>
-          <Label LocationX="10" LocationY="2" SizeWidth="298" SizeHeight="30" Text="Combat Simulator Project" />
-          <Label CssClass="stripe" LocationX="0" LocationY="30" SizeWidth="298" SizeHeight="10" />
+          <Label LocationX="10" LocationY="2" SizeWidth="328" SizeHeight="30" Text="Combat Simulator Project" />
+          <Label CssClass="stripe" LocationX="0" LocationY="30" SizeWidth="428" SizeHeight="10" />
 
-          <TableControlContainer LocationX="5" LocationY="45" SizeWidth="288" SizeHeight="35" CellPaddingTop="0" CellPaddingBottom="0" >
+          <TableControlContainer LocationX="5" LocationY="45" SizeWidth="418" SizeHeight="35" CellPaddingTop="0" CellPaddingBottom="0" >
             <ColumnDefinitions>
               <Column Width="0.33"/>
               <Column Width="0.33"/>
@@ -23,13 +24,13 @@
             <Table>
               <Row>
                 <Cell>
-                  <Button Id="resume" Text="Resume" />
+                  <Button Id="resume" Text="${resume}" />
                 </Cell>
                 <Cell>
-                  <Button Id="options" Text="Options" />
+                  <Button Id="options" Text="${options}" />
                 </Cell>
                 <Cell>
-                  <Button Id="quit" Text="Quit" />
+                  <Button Id="quit" Text="${quit}" />
                 </Cell>
               </Row>
             </Table>

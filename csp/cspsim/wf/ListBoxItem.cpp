@@ -39,7 +39,7 @@ ListBoxItem::ListBoxItem() {
 	label->setAlignment(osgText::Text::CENTER_CENTER);
 	label->setZPos(-0.1f);
 	setControl(label.get());
-	setSize(Size(30.0f, 7.0f));
+	setSize(Size(30.0f, 30.0f));
 }
 
 ListBoxItem::ListBoxItem(const std::string text) : m_Text(text) {
@@ -47,7 +47,7 @@ ListBoxItem::ListBoxItem(const std::string text) : m_Text(text) {
 	label->setAlignment(osgText::Text::CENTER_CENTER);
 	label->setZPos(-0.1f);
 	setControl(label.get());
-	setSize(Size(30.0f, 7.0f));
+	setSize(Size(30.0f, 30.0f));
 }
 
 ListBoxItem::~ListBoxItem() {

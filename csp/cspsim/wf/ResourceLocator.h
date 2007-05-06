@@ -40,14 +40,24 @@ public:
 	virtual bool locateResource(std::string& file) const = 0;
 };
 
-class WindowResourceLocator : public ResourceLocator {
+class ImageResourceLocator : public ResourceLocator {
 public:
-	WindowResourceLocator(const Window* window);
+	ImageResourceLocator(const Window* window);
 	
 	virtual bool locateResource(std::string& file) const;
 	
 private:
 	Ref<const Window> m_Window;	
+};
+
+class StringResourceLocator : public ResourceLocator {
+public:
+	StringResourceLocator(const Window* window);
+	
+	virtual bool locateResource(std::string& file) const;
+	
+private:
+	Ref<const Window> m_Window;		
 };
 
 } // namespace wf

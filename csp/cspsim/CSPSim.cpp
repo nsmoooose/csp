@@ -34,6 +34,9 @@
 #include <csp/cspsim/CSPSim.h>
 #include <csp/cspsim/AnimationSequence.h>
 #include <csp/cspsim/Atmosphere.h>
+#include <csp/cspsim/config/Configuration.h>
+#include <csp/cspsim/config/Display.h>
+#include <csp/cspsim/config/UserInterface.h>
 #include <csp/cspsim/Config.h>
 #include <csp/cspsim/DynamicObject.h>
 #include <csp/cspsim/EventMapIndex.h>
@@ -42,6 +45,7 @@
 #include <csp/cspsim/HID.h>
 #include <csp/cspsim/InputEvent.h>
 #include <csp/cspsim/LogoScreen.h>
+#include <csp/cspsim/MenuScreen.h>
 #include <csp/cspsim/ObjectModel.h>
 #include <csp/cspsim/Profile.h>
 #include <csp/cspsim/SimpleSceneManager.h>
@@ -56,7 +60,7 @@
 
 #include <csp/cspsim/stores/StoresDatabase.h>
 
-#include <csp/cspsim/windows/MenuScreen.h>
+#include <csp/cspsim/wf/SignalData.h>
 
 #include <csp/csplib/data/GeoPos.h>
 #include <csp/csplib/data/DataArchive.h>
@@ -104,6 +108,7 @@ bool g_DisableRender = false;
 CSPSim *CSPSim::theSim = 0;
 
 CSPSim::CSPSim():
+	m_ConfigurationChanged(new wf::Signal),
 	m_DataManager(new DataManager),
 	m_Atmosphere(new Atmosphere),
 	//--m_RenderSurface(new Producer::RenderSurface),
@@ -137,6 +142,49 @@ CSPSim::~CSPSim() {
 	if (theSim == this) {
 		theSim = 0;
 	}
+}
+
+config::Configuration* CSPSim::getConfiguration() {
+	if(!m_Configuration.valid()) {
+		const ScreenSettings screenSettings = getScreenSettings();
+		Ref<config::Display> display = new config::Display(screenSettings.width, screenSettings.height, screenSettings.fullScreen);
+		Ref<config::UserInterface> userInterface = new config::UserInterface(getUILanguage(), getUITheme());
+		m_Configuration = new config::Configuration(display.get(), userInterface.get());
+	}
+	return m_Configuration.get();
+}
+
+void CSPSim::setConfiguration(config::Configuration* config) {
+	
+	// TODO Check if the new configuration can be set correctly. Things to check:
+	// * Can the new screen resolution be set according my graphics driver?
+	
+	// Apply the configuration. First we start with assigning the configuration object.
+	m_Configuration = config;
+
+	// Set all display settings.
+	Ref<config::Display> display = config->getDisplay();
+	ScreenSettings screenSettings = getScreenSettings();
+	screenSettings.width = display->getWidth();
+	screenSettings.height = display->getHeight();
+	screenSettings.fullScreen = display->getFullscreen();
+	setScreenSettings(screenSettings);
+
+	// Set all UI settings.
+	Ref<config::UserInterface> userInterface = config->getUserInterface();
+	setUITheme(userInterface->getTheme());
+	setUILanguage(userInterface->getLanguage());
+		
+	// Save the new configuration to persistent storage. 
+	// Configuration changes is stored on successfull quit of the application.
+	
+	// Trigger the configuration changed signal to inform any listener about the change.
+	Ref<wf::SignalData> data = new wf::SignalData;
+	m_ConfigurationChanged->emit(data.get());
+} 
+
+wf::Signal* CSPSim::getConfigurationChangedSignal() {
+	return m_ConfigurationChanged.get();
 }
 
 void CSPSim::setActiveObject(Ref<DynamicObject> object) {
@@ -503,7 +551,7 @@ void CSPSim::displayLogoScreen() {
 }
 
 void CSPSim::displayMenuScreen() {
-	Ref<windows::MenuScreen> menuScreen = new windows::MenuScreen();
+	Ref<MenuScreen> menuScreen = new MenuScreen();
 	menuScreen->onInit();
 	
 	changeScreen(menuScreen.get());

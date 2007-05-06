@@ -36,7 +36,6 @@
 #include <csp/cspsim/views/CameraCommand.h>
 #include <csp/cspsim/views/View.h>
 #include <csp/cspsim/wf/WindowManager.h>
-#include <csp/cspsim/windows/QuitResume.h>
 
 #include <csp/csplib/util/FileUtility.h>
 #include <csp/csplib/util/Log.h>
@@ -240,6 +239,19 @@ void GameScreen::onUpdate(double dt) {
 	}
 }
 
+wf::WindowManager* GameScreen::getWindowManager() {
+	return CSPSim::theSim->getScene()->getWindowManager();
+}
+
+wf::InputInterfaceManager* GameScreen::getInputInterfaceManager() {
+	if(m_InputInterfaceManager.valid()) {
+		return m_InputInterfaceManager.get();
+	}
+	
+	m_InputInterfaceManager = new wf::InputInterfaceManager(this);
+	return m_InputInterfaceManager.get(); 
+}
+
 void GameScreen::on_View1() {
 	m_ViewMode = 1;
 	m_CameraAgent->setViewMode(m_ViewMode);
@@ -286,15 +298,6 @@ void GameScreen::on_View9() {
 }
 
 void GameScreen::on_View0() {
-}
-
-void GameScreen::on_Quit() {
-	wf::WindowManager* manager = CSPSim::theSim->getScene()->getWindowManager();
-	if(!manager->isAnyWindowOpen()) {
-		Ref<wf::Window> quitResumeWindow = new windows::QuitResume();
-		manager->show(quitResumeWindow.get());
-		quitResumeWindow->centerWindow();
-	}
 }
 
 void GameScreen::on_Pause() {

@@ -155,7 +155,7 @@ def make_demo(version):
 	DATA_TARGET = os.path.join(DEMO, 'data')
 	if not os.path.exists(DATA_TARGET):
 		print 'Copying data from %s to %s' % (DATA, DATA_TARGET)
-		copy_tree(DATA, DATA_TARGET, exclude=r'^\.svn$')
+		copy_tree(DATA, DATA_TARGET, exclude=r'^\.svn$|\.py$|\.pyc$')
 
 	print 'Writing README header'
 	README = os.path.join(DEMO, 'README.txt')

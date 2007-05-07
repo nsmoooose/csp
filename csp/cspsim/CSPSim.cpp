@@ -332,8 +332,6 @@ void CSPSim::init() {
 void CSPSim::cleanup() {
 	CSPLOG(INFO, APP) << "Cleaning up resources";
 
-	assert(m_Battlefield.valid());
-	assert(m_Scene.valid());
 	setActiveObject(NULL);
 	m_CurrentScreen = NULL;
 	m_InterfaceMaps = NULL;
@@ -655,7 +653,7 @@ void CSPSim::run() {
 	}
 	catch (DemeterException *e) {
 		std::string msg = e->GetErrorMessage();
-		CSPLOG(ERROR, APP) << "Caught demeter exception: " << msg ;
+		CSPLOG(ERROR, APP) << "Caught demeter exception: " << msg;
 		cleanup();
 		::exit(1);
 	}

@@ -37,20 +37,20 @@ CSP_NAMESPACE
 namespace wf {
 
 Control::Control() :
-	m_ZPos(1.0), m_TransformGroup(new osg::MatrixTransform), m_ClickSignal(new Signal)
+	m_TransformGroup(new osg::MatrixTransform), m_ZPos(1.0), m_ClickSignal(new Signal)
 {
-    osg::StateSet *stateSet = m_TransformGroup->getOrCreateStateSet();
-    stateSet->setRenderBinDetails(100, "RenderBin");
-    stateSet->setMode(GL_LIGHTING, osg::StateAttribute::OFF);
-    stateSet->setMode(GL_DEPTH_TEST, osg::StateAttribute::ON);
+	osg::StateSet *stateSet = m_TransformGroup->getOrCreateStateSet();
+	stateSet->setRenderBinDetails(100, "RenderBin");
+	stateSet->setMode(GL_LIGHTING, osg::StateAttribute::OFF);
+	stateSet->setMode(GL_DEPTH_TEST, osg::StateAttribute::ON);
 
-    osg::ref_ptr<osg::BlendFunc> blendFunction = new osg::BlendFunc;
-    stateSet->setAttributeAndModes(blendFunction.get());
-    
-    // Attach a control callback to the control. This makes it possible 
+	osg::ref_ptr<osg::BlendFunc> blendFunction = new osg::BlendFunc;
+	stateSet->setAttributeAndModes(blendFunction.get());
+
+	// Attach a control callback to the control. This makes it possible
 	// for the window manager to find out what control exists on a specific
 	// coordinate.
-    osg::ref_ptr<ControlCallback> callback = new ControlCallback(this);
+	osg::ref_ptr<ControlCallback> callback = new ControlCallback(this);
 	m_TransformGroup->setUpdateCallback(callback.get());
 }
 
@@ -78,7 +78,7 @@ std::string Control::getName() const {
 
 void Control::buildGeometry() {
 	m_TransformGroup->removeChild(0, m_TransformGroup->getNumChildren());
-	updateMatrix();	
+	updateMatrix();
 }
 
 Container* Control::getParent() {
@@ -96,7 +96,7 @@ void Control::setParent(Container* parent) {
 WindowManager* Control::getWindowManager() {
 	if(!m_Parent.valid())
 		return NULL;
-		
+
 	return m_Parent->getWindowManager();
 }
 
@@ -139,12 +139,12 @@ void Control::setSize(const Size& size) {
 	updateMatrix();
 }
 
-const Style& Control::getStyle() const { 
-	return m_Style; 
+const Style& Control::getStyle() const {
+	return m_Style;
 }
 
-Style& Control::getStyle() { 
-	return m_Style; 
+Style& Control::getStyle() {
+	return m_Style;
 }
 
 void Control::addState(const std::string& state) {
@@ -170,10 +170,10 @@ void Control::updateMatrix() {
 		parentX = m_Parent->m_Size.width / 2;
 		parentY = m_Parent->m_Size.height / 2;
 	}
-	
+
 	// The control has been loaded. Lets reflect our properties with
 	// our osg object.
-	m_TransformGroup->setMatrix(osg::Matrix::translate(m_Point.x - parentX + (m_Size.width / 2), m_Point.y - parentY + (m_Size.height / 2), m_ZPos));	
+	m_TransformGroup->setMatrix(osg::Matrix::translate(m_Point.x - parentX + (m_Size.width / 2), m_Point.y - parentY + (m_Size.height / 2), m_ZPos));
 }
 
 Signal* Control::getClickSignal() {
@@ -188,7 +188,7 @@ void Control::onClick(ClickEventArgs& event) {
 			parent->onClick(event);
 		}
 	}
-	
+
 	Ref<SignalData> data = new SignalData();
 	m_ClickSignal->emit(data.get());
 }

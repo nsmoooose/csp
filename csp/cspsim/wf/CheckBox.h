@@ -37,7 +37,7 @@ class Label;
 /** A class that represents a button.
  *
  *  A button is a widget that can be pressed by the user with the mouse.
- *  
+ *
  */
 class CSPSIM_EXPORT CheckBox : public Control {
 public:
@@ -48,13 +48,13 @@ public:
 	virtual std::string getName() const;
 
 	virtual void buildGeometry();
-	
+
 	virtual const std::string getText() const;
 	virtual void setText(const std::string& text);
-	
+
 	virtual bool getChecked() const;
 	virtual void setChecked(bool checked);
-	
+
 	virtual Signal* getCheckedChangedSignal();
 	virtual void onClick(ClickEventArgs& event);
 
@@ -63,14 +63,14 @@ public:
 		Control::serialize(ar);
 		ar & make_nvp("@Checked", m_Checked);
 		ar & make_nvp("@Text", m_Text);
-	}	
-		
+	}
+
 private:
 
 protected:
 	bool m_Checked;
 	std::string m_Text;
-	
+
 	Ref<Signal> m_CheckedChanged;
 };
 

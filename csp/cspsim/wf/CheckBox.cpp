@@ -38,7 +38,7 @@ namespace wf {
 CheckBox::CheckBox() : m_Checked(false), m_CheckedChanged(new Signal) {
 }
 
-CheckBox::CheckBox(const std::string text) : m_Text(text), m_Checked(false), m_CheckedChanged(new Signal) {
+CheckBox::CheckBox(const std::string text) : m_Checked(false), m_Text(text), m_CheckedChanged(new Signal) {
 }
 
 CheckBox::~CheckBox() {
@@ -51,11 +51,11 @@ std::string CheckBox::getName() const {
 void CheckBox::buildGeometry() {
 	// Make sure that all our child controls onInit() is called.
 	Control::buildGeometry();
-	
+
 	// Build our own button control and add it to the group.
 	ControlGeometryBuilder geometryBuilder;
 	osg::ref_ptr<osg::Group> checkBox = geometryBuilder.buildCheckBox(this);
-	getNode()->addChild(checkBox.get());		
+	getNode()->addChild(checkBox.get());
 }
 
 const std::string CheckBox::getText() const {
@@ -74,7 +74,7 @@ bool CheckBox::getChecked() const {
 void CheckBox::setChecked(bool checked) {
 	m_Checked = checked;
 	buildGeometry();
-	
+
 	Ref<SignalData> data = new SignalData;
 	m_CheckedChanged->emit(data.get());
 }
@@ -86,7 +86,7 @@ Signal* CheckBox::getCheckedChangedSignal() {
 void CheckBox::onClick(ClickEventArgs& event) {
 	// Modify the geometry according to the click event.
 	setChecked(!getChecked());
-	
+
 	// Set the event to handled to prevent it to bubble up to the parent control.
 	event.handled = true;
 	Control::onClick(event);

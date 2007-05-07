@@ -34,7 +34,7 @@ Slot::Slot() {
 Slot::~Slot() {
 }
 
-void Slot::notify(SignalData* event) {
+void Slot::notify(SignalData* /*event*/) {
 }
 
 } // namespace wf

@@ -28,6 +28,7 @@
 #include <map>
 #include <csp/csplib/util/Referenced.h>
 #include <csp/cspsim/Export.h>
+#include <csp/cspsim/wf/Serialization.h>
 
 CSP_NAMESPACE
 
@@ -41,7 +42,7 @@ class CSPSIM_EXPORT StringResourceManager : public Referenced {
 public:
 	StringResourceManager();
 	virtual ~StringResourceManager();
-	
+
 	virtual std::string getString(const std::string& key) const;
 	virtual void merge(StringResourceManager* stringsToMerge);
 
@@ -51,7 +52,7 @@ public:
 	void serialize(Archive & ar)	{
 		ar & make_nvp("Strings", m_Values);
 	}
-	
+
 private:
 	StringMap m_Values;
 };

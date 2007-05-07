@@ -67,8 +67,8 @@ template<class T> void ToValue(XMLNode& node, const std::string& src, optional<T
  */
 class StringConverter : public Referenced {
 public:
-	/** This method must be implemented in order to make a data 
-	 * conversion to the internal type of an object. 
+	/** This method must be implemented in order to make a data
+	 * conversion to the internal type of an object.
 	 */
 	virtual void Convert(XMLNode& node, const std::string& value)=0;
 };
@@ -85,12 +85,12 @@ public:
 	 * pointer.
 	 */
 	TypedStringConverter(T* pointer) : m_Pointer(pointer) {}
-	
+
 	virtual void Convert(XMLNode& node, const std::string& value) {
-		// Call a method to convert the string. 
+		// Call a method to convert the string.
 		ToValue(node, value, m_Pointer);
 	}
-	
+
 private:
 	T* m_Pointer;
 };
@@ -103,14 +103,14 @@ class ReadingArchive {
 public:
 	template<class T>
 	ReadingArchive* operator &(std::pair<std::string, T*> nvp) {
-		m_NodeConverter[nvp.first] = new TypedStringConverter<T>(nvp.second);	
+		m_NodeConverter[nvp.first] = new TypedStringConverter<T>(nvp.second);
 		return this;
 	}
-	
+
 	template<class T>
 	void load(T* object, XMLNode& node) {
 		object->serialize(*this);
-	
+
 		// First we iterate all nodes and converts values into the objects
 		// data representation.
 		int children = node.nChildNode();
@@ -124,7 +124,7 @@ public:
 					text = childNode.getText();
 				}
 				converter->second->Convert(childNode, text);
-			}						
+			}
 		}
 		// Then we take all attributes and converts them into the objects
 		// data representation.
@@ -136,7 +136,7 @@ public:
 			if(converter != m_NodeConverter.end()) {
 				std::string text = node.getAttributeValue(index);
 				converter->second->Convert(node, text);
-			}						
+			}
 		}
 	}
 
@@ -144,7 +144,7 @@ public:
 	void loadControl(T* control, XMLNode& node) {
 		load(control, node);
 	}
-	
+
 	void loadDocument(Window* window, XMLNode& document) {
 		XMLNode windowNode = document.selectSingleNode("WindowDocument/Window");
 		loadControl(window, windowNode);
@@ -188,7 +188,7 @@ Serialization::~Serialization() {
 
 void Serialization::load(Window* window, const std::string& theme, const std::string& file) {
 	// Remember the name of the theme for the lifetime of the window.
-	window->setTheme(theme);	
+	window->setTheme(theme);
 
 	// Build the path to the actual document we wish to load.
 	std::string themesPath = ospath::join(m_UserInterfaceDirectory, "themes");
@@ -197,17 +197,17 @@ void Serialization::load(Window* window, const std::string& theme, const std::st
 
 	// Test to see if the file exists.
 	if(!ospath::exists(filePath)) {
-		CSPLOG(ERROR, APP) << "UI Window document not found.";		
+		CSPLOG(ERROR, APP) << "UI Window document not found.";
 		return;
 	}
-	
+
 	// Load the document.
 	XMLNode document = XMLNode::parseFile(filePath.c_str());
 
 	// Parse the content of the document by using our internal archive class.
 	ReadingArchive archive;
 	archive.loadDocument(window, document);
-	
+
 	// Process resource includes...
 	XMLNode includesNode = document.selectSingleNode("WindowDocument/Includes");
 	if(!includesNode.isEmpty()) {
@@ -219,7 +219,7 @@ void Serialization::load(Window* window, const std::string& theme, const std::st
 			}
 
 			std::string includeFile = includeNode.getText(0);
-					
+
 			std::string includeNodeName = includeNode.getName();
 			if(includeNodeName == "StringTableInclude") {
 				Ref<StringResourceManager> loadedResources = new StringResourceManager;
@@ -229,19 +229,19 @@ void Serialization::load(Window* window, const std::string& theme, const std::st
 					// resources in this window manager.
 					load(loadedResources.get(), includeFile);
 					window->getStringResourceManager()->merge(loadedResources.get());
-				} 
+				}
 			}
 			else if(includeNodeName == "StyleInclude") {
 				std::string includeFilePath = ospath::join(themePath, includeFile);
 				if(!ospath::exists(includeFilePath)) {
-					CSPLOG(ERROR, APP) << "UI Include document not found.";		
+					CSPLOG(ERROR, APP) << "UI Include document not found.";
 					continue;
 				}
 				XMLNode includeDocument = XMLNode::parseFile(includeFilePath.c_str());
 				XMLNode namedStylesNode = includeDocument.selectSingleNode("StyleDocument/NamedStyles");
 				NamedStyleMap styles;
 				ToValue(namedStylesNode, "", &styles);
-				
+
 				NamedStyleMap::iterator style = styles.begin();
 				for(;style != styles.end();++style) {
 					window->addNamedStyle(style->first, style->second);
@@ -254,7 +254,7 @@ void Serialization::load(Window* window, const std::string& theme, const std::st
 void Serialization::load(StringResourceManager* resourceManager, const std::string& filePath) {
 	// Test to see if the file exists.
 	if(!ospath::exists(filePath)) {
-		CSPLOG(ERROR, APP) << "UI string table document not found.";		
+		CSPLOG(ERROR, APP) << "UI string table document not found.";
 		return;
 	}
 
@@ -321,12 +321,12 @@ Ref<Control> createControl(XMLNode& node) {
 	}
 	else {
 		return NULL;
-	}	
+	}
 }
 
 void ToValue(XMLNode& /* node */, const std::string& src, osg::Vec4* dst) {
 	std::istringstream data(src);
-	
+
 	unsigned int rgba = 0;
 	data >> std::hex >> rgba;
 
@@ -336,17 +336,17 @@ void ToValue(XMLNode& /* node */, const std::string& src, osg::Vec4* dst) {
 	unsigned char red = (rgba >> 24) & 0xff;
 
 	double step = 1.0f / 255;
-	
+
 	dst->_v[0] = red * step;
 	dst->_v[1] = green * step;
 	dst->_v[2] = blue * step;
-	dst->_v[3] = alpha * step;	
+	dst->_v[3] = alpha * step;
 }
 
 void ToValue(XMLNode& /* node */, const std::string& src, bool* dst) {
 	if(src == "1" || src == "true") {
 		*dst = true;
-	} 
+	}
 	else {
 		*dst = false;
 	}
@@ -457,10 +457,10 @@ void ToValue(XMLNode& node, const std::string& /* src */, TableControlContainer:
 	int rowNodeCount = node.nChildNode();
 	for(int rowIndex = 0;rowIndex < rowNodeCount;++rowIndex) {
 		XMLNode rowNode = node.getChildNode(rowIndex);
-		
+
 		// Iterate all cells found for each row.
 		int cellNodeCount = rowNode.nChildNode();
-		
+
 		// We need to resize the vector in order to manage insertion
 		// in the vector.
 		if(resizeVector) {
@@ -470,13 +470,13 @@ void ToValue(XMLNode& node, const std::string& /* src */, TableControlContainer:
 			}
 			resizeVector = false;
 		}
-		
+
 		for(int cellIndex=0;cellIndex < cellNodeCount;++cellIndex) {
 			XMLNode cellNode = rowNode.getChildNode(cellIndex);
 			if(cellNode.nChildNode() > 0) {
 				XMLNode controlNode = cellNode.getChildNode(0);
 				Ref<Control> cellControl = createControl(controlNode);
-				
+
 				(*dst)[cellIndex][rowIndex] = cellControl;
 			}
 		}
@@ -488,10 +488,10 @@ void ToValue(XMLNode& node, const std::string& src, optional<T>* dst) {
 	// Make sure that there is constructed an object.
 	dst->assign(T());
 	// Convert the optional datatype to the destination object.
-	ToValue(node, src, dst->get_ptr());	
+	ToValue(node, src, dst->get_ptr());
 }
 
-void ToValue(XMLNode& node, const std::string& src, StringMap* dst) {
+void ToValue(XMLNode& node, const std::string& /*src*/, StringMap* dst) {
 	StringMap& stringTable = *dst;
 	int childNodeCount = node.nChildNode();
 	for(int index = 0;index < childNodeCount;++index) {

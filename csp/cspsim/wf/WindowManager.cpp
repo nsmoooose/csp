@@ -155,9 +155,6 @@ Point WindowManager::getMousePosition() const {
 
 Control* WindowManager::getControlAtPosition(int x, int y) {
 	if (m_Group->getNumChildren() > 0) {
-		// TODO(henrik0: why this assert?  it fails when pressing the instant
-		// action and options buttons on the main menu.
-		//assert(m_Group->getNumChildren() == 1);
 		osg::Vec3 var_near;
 		osg::Vec3 var_far;
 		const int height = m_View->getViewport()->height();

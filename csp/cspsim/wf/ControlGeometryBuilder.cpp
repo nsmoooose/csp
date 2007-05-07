@@ -492,14 +492,6 @@ osg::Group* ControlGeometryBuilder::buildButton(const Button* button) const {
 	// Fetch all necesarry data that we need.
 	const Size& size = button->getSize();
 
-	// TODO(henrik): needed?
-#if 0
-	float x1 = 0 - (size.width/2);
-	float y1 = size.height/2;
-	float x2 = (size.width/2);
-	float y2 = 0 - size.height/2;
-#endif
-
 	// Add a border to the button.
 	getNextLayer(z);
 
@@ -529,11 +521,6 @@ osg::Group* ControlGeometryBuilder::buildCheckBox(const CheckBox* checkBox) cons
 
 	float x1 = 0 - (size.width/2);
 	float y1 = 0 - size.height/2;
-	// TODO(henrik): needed?
-#if 0
-	float x2 = (size.width/2);
-	float y2 = size.height/2;
-#endif
 
 	osg::ref_ptr<osg::Geode> geode = new osg::Geode;
 	float z = 0;
@@ -682,14 +669,6 @@ osg::Group* ControlGeometryBuilder::buildListBox(const ListBox* listBox) const {
 
 	// Fetch all necesarry data that we need.
 	const Size& size = listBox->getSize();
-
-	// TODO(henrik): needed?
-#if 0
-	float x1 = 0 - (size.width/2);
-	float y1 = size.height / 2;
-	float x2 = (size.width / 2);
-	float y2 = 0 - (size.height/2);
-#endif
 
 	osg::ref_ptr<osg::Group> group = new osg::Group;
 	group->addChild(geode.get());

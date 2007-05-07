@@ -26,6 +26,9 @@
 %}
 
 %include "std_string.i"
+%include "std_vector.i"
+%template(cspsim_vector_string) std::vector<std::string>;
+
 
 namespace csp {
 namespace config {

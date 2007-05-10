@@ -12,8 +12,9 @@
           <Label LocationX="10" LocationY="2" SizeWidth="169" SizeHeight="30" Text="${main_menu}" />
           <Label CssClass="stripe" LocationX="0" LocationY="30" SizeWidth="169" SizeHeight="10" />
           <Button Id="instantAction" Text="${instant_action}" LocationX="10" LocationY="50" SizeWidth="150" SizeHeight="35" />
-          <Button Id="options" Text="${options}" LocationX="10" LocationY="95" SizeWidth="150" SizeHeight="35" />
-          <Button Id="quit" Text="${quit}" LocationX="10" LocationY="140" SizeWidth="150" SizeHeight="35" />
+          <Button Id="multiplayer" Enabled="false" Text="${multiplayer}" LocationX="10" LocationY="95" SizeWidth="150" SizeHeight="35" />
+          <Button Id="options" Text="${options}" LocationX="10" LocationY="140" SizeWidth="150" SizeHeight="35" />
+          <Button Id="quit" Text="${quit}" LocationX="10" LocationY="185" SizeWidth="150" SizeHeight="35" />
           <Label LocationX="10" LocationY="340" Text="version 0.6">
             <Style>
               <FontSize>12</FontSize>

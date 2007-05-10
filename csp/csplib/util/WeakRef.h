@@ -71,6 +71,10 @@ public:
 		return get();
 	}
 	
+	const T* operator->() const {
+		return get();
+	}
+
 	T* get() {
 		if(valid()) {
 			return reference;

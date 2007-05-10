@@ -87,7 +87,7 @@ void buildStyleForSinglePropertyWithState(Style& styleToBuild, T& propertyToBuil
 	// inherited values.
 	std::string className = control->getName();
 	if(stateName.size() != 0) {
-	  	className += std::string(":") + stateName;
+	  	className += stateName;
 	}
 	optional<Style> cssStyle = window->getNamedStyle(className);
 	if(cssStyle) {
@@ -100,7 +100,7 @@ void buildStyleForSinglePropertyWithState(Style& styleToBuild, T& propertyToBuil
 	optional<std::string> cssClassName = control->getCssClass();
 	if(cssClassName) {
 		if(stateName.size() != 0) {
-			*cssClassName += std::string(":") + stateName;
+			*cssClassName += stateName;
 		}
 		optional<Style> cssStyle = window->getNamedStyle(*cssClassName);
 		if(cssStyle) {
@@ -116,8 +116,7 @@ Style StyleBuilder::buildStyle(const Control* control) {
 	// First we try to get any value set directly on the control.
 	Style style = control->getStyle();
 	
-	// Well we don't have any special kind of state at this point.
-	// So lets call the build style method with an empty state.
+	// So lets call the build style method with all state found on the control.
 	// This method call will build the current controls style
 	// according to set values on the control, inherited values and CssClasses. 
 	buildStyle(style, control, control->getState());

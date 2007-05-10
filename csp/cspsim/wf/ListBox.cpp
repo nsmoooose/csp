@@ -109,7 +109,22 @@ ListBoxItem* ListBox::getSelectedItem() const {
 }
 
 void ListBox::setSelectedItem(ListBoxItem* newItem) {
+	// Do nothing if we select the same object again.
+	if(m_SelectedItem.get() == newItem) {
+		return;
+	}
+	
+	// Remove the old selected state from the item.
+	if(m_SelectedItem.valid()) {
+		m_SelectedItem->removeState("selected");
+	}
+	
 	m_SelectedItem = newItem;
+	
+	// Add the selected state to the new listbox item.
+	if(m_SelectedItem.valid()) {
+		m_SelectedItem->addState("selected");
+	}
 	
 	// Fire event to any listeners.
 	Ref<SignalData> data = new SignalData();

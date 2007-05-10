@@ -120,6 +120,9 @@ public:
 
 	virtual const Style& getStyle() const;
 	virtual Style& getStyle();
+	
+	virtual bool getEnabled() const;
+	virtual void setEnabled(bool enabled);
 
 	virtual void addState(const std::string& state);
 	virtual void removeState(const std::string& state);
@@ -138,6 +141,7 @@ public:
 	template<class Archive>
 	void serialize(Archive & ar) {
 		ar & make_nvp("@Id", m_Id);
+		ar & make_nvp("@Enabled", m_Enabled);
 		ar & make_nvp("@CssClass", m_CssClass);
 		ar & make_nvp("@LocationX", m_Point.x);
 		ar & make_nvp("@LocationY", m_Point.y);
@@ -151,6 +155,7 @@ protected:
 
 private:
 	std::string m_Id;
+	bool m_Enabled;
 
 	typedef std::set<std::string> StateSet;
 	StateSet m_States;

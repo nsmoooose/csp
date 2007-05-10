@@ -683,10 +683,6 @@ osg::Group* ControlGeometryBuilder::buildListBox(const ListBox* listBox) const {
 
 osg::Group* ControlGeometryBuilder::buildListBoxItem(const ListBox* listBox, const ListBoxItem* listBoxItem) const {
 	Style style = StyleBuilder::buildStyle(listBoxItem);
-	if(listBox->getSelectedItem() == listBoxItem) {
-		style = listBoxItem->getSelectedStyle();
-		StyleBuilder::buildStyle(style, listBoxItem, "selected");
-	}
 
 	// Test if the control is visible or not.
 	if(style.visible && *style.visible == false) {

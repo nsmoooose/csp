@@ -8,6 +8,12 @@
       <BorderColor>000000ff</BorderColor>
     </Style>
 
+    <Style Name="Button:disabled">
+      <BackgroundColor>aaaaaaaa</BackgroundColor>
+      <BorderWidth>1</BorderWidth>
+      <BorderColor>00000044</BorderColor>
+    </Style>
+
     <Style Name="CheckBox">
       <FontFamily>prima_sans_bt.ttf</FontFamily>
       <FontSize>20</FontSize>
@@ -20,6 +26,13 @@
       <FontFamily>prima_sans_bt.ttf</FontFamily>
       <FontSize>20</FontSize>
       <Color>000000ff</Color>
+      <BackgroundColor>00000000</BackgroundColor>
+    </Style>
+
+    <Style Name="Label:disabled">
+      <FontFamily>prima_sans_bt.ttf</FontFamily>
+      <FontSize>20</FontSize>
+      <Color>333333ff</Color>
       <BackgroundColor>00000000</BackgroundColor>
     </Style>
 

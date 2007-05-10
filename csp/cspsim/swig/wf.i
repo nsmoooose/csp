@@ -152,6 +152,9 @@ public:
 	virtual std::string getId();
 	virtual void setId(const std::string& id);
 		
+	virtual bool getEnabled() const;
+	virtual void setEnabled(bool enabled);
+
 	virtual std::string getName();
 
 	virtual Container* getParent();

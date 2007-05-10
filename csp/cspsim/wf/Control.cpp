@@ -37,7 +37,7 @@ CSP_NAMESPACE
 namespace wf {
 
 Control::Control() :
-	m_TransformGroup(new osg::MatrixTransform), m_ZPos(1.0), m_ClickSignal(new Signal)
+	m_Enabled(true), m_TransformGroup(new osg::MatrixTransform), m_ZPos(1.0), m_ClickSignal(new Signal)
 {
 	osg::StateSet *stateSet = m_TransformGroup->getOrCreateStateSet();
 	stateSet->setRenderBinDetails(100, "RenderBin");
@@ -147,6 +147,30 @@ Style& Control::getStyle() {
 	return m_Style;
 }
 
+bool Control::getEnabled() const {
+	// If this control is disabled then just return disabled.
+	if(!m_Enabled) {
+		return false;
+	}
+	
+	// This control seems to be enabled. But this settings is inherited
+	// from the parent control. So if we have a valid parent control
+	// lets return the parents enabled property.
+	if(m_Parent.valid()) {
+		return m_Parent->getEnabled();
+	}
+	
+	// No parent. Just return the value we got.
+	return m_Enabled;
+}
+
+void Control::setEnabled(bool enabled) {
+	if(m_Enabled == enabled) {
+		return;
+	}
+	m_Enabled = enabled;
+}
+
 void Control::addState(const std::string& state) {
 	m_States.insert(state);
 }
@@ -156,9 +180,16 @@ void Control::removeState(const std::string& state) {
 }
 
 std::string Control::getState() const {
-	StateSet::const_iterator state = m_States.begin();
+	// Make a local copy of the state. We wish to add all
+	// state that is inherited from the parent control. 
+	StateSet copy = m_States;
+	if(!getEnabled()) {
+		copy.insert("disabled");
+	}
+	
+	StateSet::const_iterator state = copy.begin();
 	std::string statesToReturn;
-	for(;state != m_States.end();++state) {
+	for(;state != copy.end();++state) {
 		statesToReturn += ":" + *state;
 	}
 	return statesToReturn;
@@ -181,6 +212,12 @@ Signal* Control::getClickSignal() {
 }
 
 void Control::onClick(ClickEventArgs& event) {
+	// Only fire the click event if this control is enabled.
+	if(!m_Enabled) {
+		// Not enabled. Lets return.
+		return;
+	}
+	
 	Click(event);
 	if(event.handled == false) {
 		Control* parent = getParent();

@@ -118,6 +118,7 @@ in this document has the same inheritence as the cpp-classes.
       <xsd:element name="Style" type="Style_t" minOccurs="0" />
     </xsd:sequence>
     <xsd:attribute name="Id" type="xsd:string" use="optional" />
+    <xsd:attribute name="Enabled" type="xsd:boolean" use="optional" />
     <xsd:attribute name="CssClass" type="xsd:string" use="optional" />
     <xsd:attribute name="SizeWidth" type="xsd:double" use="optional" />
     <xsd:attribute name="SizeHeight" type="xsd:double" use="optional" />

@@ -67,11 +67,15 @@ class UserInterfaceStartup:
 
         # We only change all settings when we are in the menu screen mode.
         # When the simulation is running the class name is GameScreen instead.
-        if self.cspsim.getCurrentScreen().__class__.__name__ == 'MenuScreen':
+
+        # Issue a find on the clss name. We cannot use exact match since swig can generate different
+        # names depending on version.
+        if self.cspsim.getCurrentScreen().__class__.__name__.find('MenuScreen') != -1:
+            print('Reloading all windows...')
             self.windowManager.closeAll()
             self.displayDesktop()
             self.displayMainMenu()
-        elif self.cspsim.getCurrentScreen().__class__.__name__ == 'GameScreen':
+        elif self.cspsim.getCurrentScreen().__class__.__name__.find('GameScreen') != -1:
             from csp.data.ui.messagebox import MessageBox
             messageBox = MessageBox(self.cspsim, self.configuration.getUserInterface().getTheme())
             messageBox.setMessage('${restart_required}')

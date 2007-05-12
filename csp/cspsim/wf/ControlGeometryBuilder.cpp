@@ -31,6 +31,7 @@
 #include <csp/cspsim/wf/Label.h>
 #include <csp/cspsim/wf/ListBox.h>
 #include <csp/cspsim/wf/ListBoxItem.h>
+#include <csp/cspsim/wf/Model.h>
 #include <csp/cspsim/wf/Point.h>
 #include <csp/cspsim/wf/ResourceLocator.h>
 #include <csp/cspsim/wf/Size.h>
@@ -690,6 +691,50 @@ osg::Group* ControlGeometryBuilder::buildListBoxItem(const ListBox* /*listBox*/,
 
 	osg::ref_ptr<osg::Group> group = new osg::Group;
 	group->addChild(geode.get());
+
+    osg::StateSet *stateSet = group->getOrCreateStateSet();
+    stateSet->setRenderBinDetails(100, "RenderBin");
+    stateSet->setMode(GL_LIGHTING, osg::StateAttribute::OFF);
+    stateSet->setMode(GL_DEPTH_TEST, osg::StateAttribute::ON);
+
+	return group.release();
+}
+
+osg::Group* ControlGeometryBuilder::buildModel(const Model* model) const {
+	Style style = StyleBuilder::buildStyle(model);
+
+	// Test if the control is visible or not.
+	if (style.visible && *style.visible == false) {
+		return NULL;
+	}
+
+	osg::ref_ptr<osg::Geode> geode = new osg::Geode;
+	float z = 0;
+
+	buildControl(geode.get(), z, style, model);
+	
+	osg::ref_ptr<osg::Group> group = new osg::Group;
+	group->addChild(geode.get());
+
+	// Load the model from the file system and add
+	// it to the control if it was found.
+	Ref<ResourceLocator> resourceLocator = new ModelResourceLocator(Window::getWindow(model));
+	std::string modelPath = model->getModelFilePath();
+	if (resourceLocator->locateResource(modelPath)) {
+		osg::ref_ptr<osg::Node> loadedModel = osgDB::readNodeFile(modelPath);
+		if (loadedModel.valid()) {
+			double scale = model->getScale();
+			if(scale == 1.0) {
+				group->addChild(loadedModel.get());
+			}
+			else {
+				osg::ref_ptr<osg::MatrixTransform> transformGroup = new osg::MatrixTransform;
+				transformGroup->setMatrix(osg::Matrix::scale(osg::Vec3(scale, scale, scale)));
+				transformGroup->addChild(loadedModel.get());
+				group->addChild(transformGroup.get());
+			}
+		}
+	}
 
     osg::StateSet *stateSet = group->getOrCreateStateSet();
     stateSet->setRenderBinDetails(100, "RenderBin");

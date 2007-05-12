@@ -22,11 +22,11 @@ in this document has the same inheritence as the cpp-classes.
   </xsd:complexType>
   
   <xsd:complexType name="StringKey_t">
-  	<xsd:complexContent>
-  		<xsd:extension base="xsd:string">
-  			<xsd:attribute name="key" type="xsd:string "/>
-  		</xsd:extension>
-  	</xsd:complexContent>
+	<xsd:simpleContent>
+		<xsd:extension base="xsd:string">
+			<xsd:attribute name="key" type="xsd:string"/>
+		</xsd:extension>
+	</xsd:simpleContent>	
   </xsd:complexType>
 
   <xsd:complexType name="StyleDocument_t">
@@ -169,12 +169,22 @@ in this document has the same inheritence as the cpp-classes.
     </xsd:complexContent>
   </xsd:complexType>
 
+  <xsd:complexType name="Model_t">
+    <xsd:complexContent>
+      <xsd:extension base="Control_t">
+        <xsd:attribute name="ModelFilePath" use="required" type="xsd:string" />
+        <xsd:attribute name="Scale" type="xsd:double" />
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+
   <xsd:group name="SingleControl_t">
     <xsd:choice>
       <xsd:element name="Button" type="Button_t" />
       <xsd:element name="CheckBox" type="CheckBox_t" />
       <xsd:element name="Label" type="Label_t" />
       <xsd:element name="ListBox" type="ListBox_t" />
+      <xsd:element name="Model" type="Model_t" />
       <xsd:element name="MultiControlContainer" type="MultiControlContainer_t" />
       <xsd:element name="Tab" type="Tab_t" />
       <xsd:element name="TableControlContainer" type="TableControlContainer_t" />

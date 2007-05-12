@@ -90,6 +90,35 @@ bool StringResourceLocator::locateResource(std::string& file) const {
 	return false;
 }
 
+ModelResourceLocator::ModelResourceLocator(const Window* window) : m_Window(window) {
+}
+
+bool ModelResourceLocator::locateResource(std::string& file) const {
+	// Build up the path to the file in order to be able to read it.
+	std::string themesPath = ospath::join(getUIPath(), "themes");
+	std::string themePath = ospath::join(themesPath, m_Window->getTheme());
+	std::string filePath = ospath::join(themePath, file);
+	
+	// Test to see if the file exists at all?
+	if(ospath::exists(filePath.c_str())) {
+		file = filePath;
+		return true;
+	}
+	else {
+		// As a secondary solution we look for the file in the data
+		// directory. It may exist there.
+		std::string dataPath = getDataPath();
+		filePath = ospath::join(dataPath, file);
+		if(ospath::exists(filePath.c_str())) {
+			file = filePath;
+			return true;
+		}
+	}
+	
+	// Didn't find any file that is matching the resource asked for.
+	return false;
+}
+
 } // namespace wf
 
 CSP_NAMESPACE_END

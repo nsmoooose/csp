@@ -33,6 +33,7 @@
 #include <csp/cspsim/wf/CheckBox.h>
 #include <csp/cspsim/wf/Label.h>
 #include <csp/cspsim/wf/ListBox.h>
+#include <csp/cspsim/wf/Model.h>
 #include <csp/cspsim/wf/MultiControlContainer.h>
 #include <csp/cspsim/wf/ResourceLocator.h>
 #include <csp/cspsim/wf/Serialization.h>
@@ -291,6 +292,11 @@ Ref<Control> createControl(XMLNode& node) {
 	}
 	else if(name == "ListBox") {
 		Ref<ListBox> control = new ListBox();
+		archive.loadControl(control.get(), node);
+		return control;
+	}
+	else if(name == "Model") {
+		Ref<Model> control = new Model();
 		archive.loadControl(control.get(), node);
 		return control;
 	}

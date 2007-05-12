@@ -35,11 +35,17 @@ namespace wf {
 	
 class Window;
 
+// Base class for all classes that is responsible for finding resources
+// in the filesystem. A resource can be placed in different places in the
+// data directory.
 class ResourceLocator : public Referenced {
 public:
 	virtual bool locateResource(std::string& file) const = 0;
 };
 
+// Class that is looking for images in the theme directory of the current 
+// window (data/ui/themes/[current theme]/[filepath]). It is also looking for the 
+// image in the data/[filepath] directory.
 class ImageResourceLocator : public ResourceLocator {
 public:
 	ImageResourceLocator(const Window* window);
@@ -50,9 +56,25 @@ private:
 	Ref<const Window> m_Window;	
 };
 
+// Class that is looking for string table files in the theme directory of the
+// current window (data/ui/themes/[current theme]/[filepath]). It is also looking
+// for the file in the data/ui/localization/[current language]/[filepath].
 class StringResourceLocator : public ResourceLocator {
 public:
 	StringResourceLocator(const Window* window);
+	
+	virtual bool locateResource(std::string& file) const;
+	
+private:
+	Ref<const Window> m_Window;		
+};
+
+// Class that is looking for 3d models in the theme directory of the current 
+// window (data/ui/themes/[current theme]/[filepath]). It is also looking for the 
+// model in the data/[filepath] directory.
+class ModelResourceLocator : public ResourceLocator {
+public:
+	ModelResourceLocator(const Window* window);
 	
 	virtual bool locateResource(std::string& file) const;
 	

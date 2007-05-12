@@ -50,6 +50,7 @@ class Control;
 class Label;
 class ListBox;
 class ListBoxItem;
+class Model;
 class Tab;
 class TabPage;
 class Window;
@@ -65,6 +66,7 @@ public:
 	virtual osg::Group* buildListBox(const ListBox* listBox) const;
 	virtual osg::Group* buildListBoxItem(const ListBox* listBox, const ListBoxItem* listBoxItem) const;
 	virtual osg::Group* buildButton(const Button* button) const;
+	virtual osg::Group* buildModel(const Model* model) const;
 	virtual osg::Group* buildTab(const Tab* tab) const;
 	virtual osg::Group* buildTabButton(const Tab* tab, const TabPage* page) const;
 	virtual osg::Group* buildTabPage(const TabPage* page) const;

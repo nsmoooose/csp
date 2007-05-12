@@ -106,7 +106,7 @@ osg::Geometry* ControlGeometryBuilder::buildRectangle(
 	int verticeCount = 0;
 
 	// Left rectangle
-	if(left) {
+	if (left) {
 		vertices->push_back(osg::Vec3(x1 + lineWidth, y1 + (top ? lineWidth : 0.0f), z));//top right
 		vertices->push_back(osg::Vec3(x1 + lineWidth, y2 - (bottom ? lineWidth : 0.0f), z));//bottom right
 		vertices->push_back(osg::Vec3(x1, y2, z));//bottom left
@@ -119,7 +119,7 @@ osg::Geometry* ControlGeometryBuilder::buildRectangle(
 	}
 
 	// Top rectangle
-	if(top) {
+	if (top) {
 		vertices->push_back(osg::Vec3(x2, y1, z));//top right
 		vertices->push_back(osg::Vec3(x2 - (right ? lineWidth : 0.0f), y1 + lineWidth, z));//bottom right
 		vertices->push_back(osg::Vec3(x1 + (left ? lineWidth : 0.0f), y1 + lineWidth, z));//bottom left
@@ -132,7 +132,7 @@ osg::Geometry* ControlGeometryBuilder::buildRectangle(
 	}
 
 	// Right rectangle
-	if(right) {
+	if (right) {
 		vertices->push_back(osg::Vec3(x2, y1, z));//top right
 		vertices->push_back(osg::Vec3(x2, y2, z));//bottom right
 		vertices->push_back(osg::Vec3(x2 - lineWidth, y2 - (bottom ? lineWidth : 0.0f), z));//bottom left
@@ -145,7 +145,7 @@ osg::Geometry* ControlGeometryBuilder::buildRectangle(
 	}
 
 	// Bottom rectangle
-	if(bottom) {
+	if (bottom) {
 		vertices->push_back(osg::Vec3(x2 - (right ? lineWidth : 0.0f), y2 - lineWidth, z));//top right
 		vertices->push_back(osg::Vec3(x2, y2, z));//bottom right
 		vertices->push_back(osg::Vec3(x1, y2, z));//bottom left
@@ -173,7 +173,7 @@ osg::Geometry* ControlGeometryBuilder::buildRectangle(
 
 void ControlGeometryBuilder::buildControl(osg::Geode* geode, float& z, const Style& style, const Control* control) const {
 	// If the control isn't visible then we dont create any geometry at all.
-	if(style.visible && *style.visible == false) {
+	if (style.visible && *style.visible == false) {
 		return;
 	}
 
@@ -186,7 +186,7 @@ void ControlGeometryBuilder::buildControl(osg::Geode* geode, float& z, const Sty
 
 	// Draw background color of the control.
 	osg::ref_ptr<osg::Geometry> backgroundGeometry;
-	if(style.backgroundColor) {
+	if (style.backgroundColor) {
 		getNextLayer(z);
 		// Draw the background of the control.
 		// First priority is to use backgroundColorXxxYyyy if a value exists. Otherwise we use
@@ -202,11 +202,11 @@ void ControlGeometryBuilder::buildControl(osg::Geode* geode, float& z, const Sty
 
 	// Test to see if we should have a background image to this control. In that case we
 	// must load a texture and set it on background geometry.
-	if(style.backgroundImage) {
+	if (style.backgroundImage) {
 		// If we have a background color set then we already have a background
 		// geometry to use. In any other case we must add a rectangle that we use for
 		// the texture we are going to load.
-		if(!backgroundGeometry.valid()) {
+		if (!backgroundGeometry.valid()) {
 			getNextLayer(z);
 			backgroundGeometry = buildRectangle(x1, y1, x2, y2, z,
 				osg::Vec4(1.0f, 0.0f, 0.0f, 1.0f), 	osg::Vec4(1.0f, 0.0f, 0.0f, 1.0f),
@@ -217,7 +217,7 @@ void ControlGeometryBuilder::buildControl(osg::Geode* geode, float& z, const Sty
 		// The control needs to be attached to a window in order to load
 		// textures. All textures belongs to the current theme.
 		const Window* window = Window::getWindow(control);
-		if(window != NULL) {
+		if (window != NULL) {
 			// Add texture coordinates to our geometry.
 			osg::ref_ptr<osg::Vec2Array> textureCoordinates = new osg::Vec2Array(4);
 			textureCoordinates->at(3).set(0.0f, 1.0f);
@@ -233,13 +233,13 @@ void ControlGeometryBuilder::buildControl(osg::Geode* geode, float& z, const Sty
 			// the datapath.
 			Ref<ResourceLocator> resourceLocator = new ImageResourceLocator(window);
 			std::string filePath = *style.backgroundImage;
-			if(resourceLocator->locateResource(filePath)) {
+			if (resourceLocator->locateResource(filePath)) {
 				image = osgDB::readImageFile(filePath);
 			}
 
 			// If we succeeded with loading of the texture then we
 			// set it so it is displayed.
-			if(image.valid()) {
+			if (image.valid()) {
 				// Create a texture and assign the image to it.
 				osg::ref_ptr<osg::Texture2D> texture = new osg::Texture2D;
 				texture->setImage(image.get());
@@ -256,7 +256,7 @@ void ControlGeometryBuilder::buildControl(osg::Geode* geode, float& z, const Sty
 	getNextLayer(z);
 
 	// Draw top border.
-	if((style.borderWidth || style.borderTopWidth) && (style.borderColor || style.borderTopColor)) {
+	if ((style.borderWidth || style.borderTopWidth) && (style.borderColor || style.borderTopColor)) {
 		float borderWidth = style.borderTopWidth ? *style.borderTopWidth : *style.borderWidth;
 		osg::Vec4 borderColor = style.borderTopColor ? *style.borderTopColor : *style.borderColor;
 
@@ -268,7 +268,7 @@ void ControlGeometryBuilder::buildControl(osg::Geode* geode, float& z, const Sty
 	}
 
 	// Draw bottom border.
-	if((style.borderWidth || style.borderBottomWidth) && (style.borderColor || style.borderBottomColor)) {
+	if ((style.borderWidth || style.borderBottomWidth) && (style.borderColor || style.borderBottomColor)) {
 		float borderWidth = style.borderBottomWidth ? *style.borderBottomWidth : *style.borderWidth;
 		osg::Vec4 borderColor = style.borderBottomColor ? *style.borderBottomColor : *style.borderColor;
 
@@ -280,7 +280,7 @@ void ControlGeometryBuilder::buildControl(osg::Geode* geode, float& z, const Sty
 	}
 
 	// Draw left border.
-	if((style.borderWidth || style.borderLeftWidth) && (style.borderColor || style.borderLeftColor)) {
+	if ((style.borderWidth || style.borderLeftWidth) && (style.borderColor || style.borderLeftColor)) {
 		float borderWidth = style.borderLeftWidth ? *style.borderLeftWidth : *style.borderWidth;
 		osg::Vec4 borderColor = style.borderLeftColor ? *style.borderLeftColor : *style.borderColor;
 
@@ -292,7 +292,7 @@ void ControlGeometryBuilder::buildControl(osg::Geode* geode, float& z, const Sty
 	}
 
 	// Draw right border.
-	if((style.borderWidth || style.borderRightWidth) && (style.borderColor || style.borderRightColor)) {
+	if ((style.borderWidth || style.borderRightWidth) && (style.borderColor || style.borderRightColor)) {
 		float borderWidth = style.borderRightWidth ? *style.borderRightWidth : *style.borderWidth;
 		osg::Vec4 borderColor = style.borderRightColor ? *style.borderRightColor : *style.borderColor;
 
@@ -480,7 +480,7 @@ osg::Group* ControlGeometryBuilder::buildButton(const Button* button) const {
 	Style style = StyleBuilder::buildStyle(button);
 
 	// Test if the control is visible or not.
-	if(style.visible && *style.visible == false) {
+	if (style.visible && *style.visible == false) {
 		return NULL;
 	}
 
@@ -488,9 +488,6 @@ osg::Group* ControlGeometryBuilder::buildButton(const Button* button) const {
 	float z = 0;
 
 	buildControl(geode.get(), z, style, button);
-
-	// Fetch all necesarry data that we need.
-	const Size& size = button->getSize();
 
 	// Add a border to the button.
 	getNextLayer(z);
@@ -513,7 +510,7 @@ osg::Group* ControlGeometryBuilder::buildCheckBox(const CheckBox* checkBox) cons
 	Style style = StyleBuilder::buildStyle(checkBox);
 
 	// Test if the control is visible or not.
-	if(style.visible && *style.visible == false) {
+	if (style.visible && *style.visible == false) {
 		return NULL;
 	}
 
@@ -529,7 +526,7 @@ osg::Group* ControlGeometryBuilder::buildCheckBox(const CheckBox* checkBox) cons
 
 	// Draw a border around the checkbox. In order to do this the color style
 	// must have been set. We draw the border with this color.
-	if(style.color) {
+	if (style.color) {
 		getNextLayer(z);
 		geode->addDrawable(buildRectangle(x1, y1, x1 + size.height, y1 + size.height, z, 2.0f, *style.color, *style.color, true, true, true, true));
 
@@ -540,11 +537,11 @@ osg::Group* ControlGeometryBuilder::buildCheckBox(const CheckBox* checkBox) cons
 	}
 
 	// Draw the text of the checkbox if all needed styles exists.
-	if(style.fontSize && style.fontFamily && style.color) {
+	if (style.fontSize && style.fontFamily && style.color) {
 		std::string checkBoxText = checkBox->getText();
 		std::string parsedText = checkBoxText;
 		Ref<const Window> window = Window::getWindow(checkBox);
-		if(window.valid()) {
+		if (window.valid()) {
 			Ref<const StringResourceManager> stringResources = window->getStringResourceManager();
 			parsedText = stringResources->parseAndReplace(checkBoxText);
 		}
@@ -574,7 +571,7 @@ osg::Group* ControlGeometryBuilder::buildCheckBox(const CheckBox* checkBox) cons
     osg::ref_ptr<osg::BlendFunc> blendFunction = new osg::BlendFunc;
     stateSet->setAttributeAndModes(blendFunction.get());
 
-	if(checkBox->getChecked() && style.color) {
+	if (checkBox->getChecked() && style.color) {
 		getNextLayer(z);
 		osg::ref_ptr<osg::MatrixTransform> transform = new osg::MatrixTransform;
 		transform->setMatrix(osg::Matrix::translate(x1 + (size.height / 2.0f), -0.2f, 0));
@@ -590,7 +587,7 @@ osg::Group* ControlGeometryBuilder::buildLabel(const Label* label) const {
 	Style style = StyleBuilder::buildStyle(label);
 
 	// Test if the control is visible or not.
-	if(style.visible && *style.visible == false) {
+	if (style.visible && *style.visible == false) {
 		return NULL;
 	}
 
@@ -600,11 +597,11 @@ osg::Group* ControlGeometryBuilder::buildLabel(const Label* label) const {
 	buildControl(geode.get(), z, style, label);
 
 	// Check for mandatory elements of font information.
-	if(style.fontSize && style.fontFamily && style.color) {
+	if (style.fontSize && style.fontFamily && style.color) {
 		std::string labelText = label->getText();
 		std::string parsedText = labelText;
 		Ref<const Window> window = Window::getWindow(label);
-		if(window.valid()) {
+		if (window.valid()) {
 			Ref<const StringResourceManager> stringResources = window->getStringResourceManager();
 			parsedText = stringResources->parseAndReplace(labelText);
 		}
@@ -658,7 +655,7 @@ osg::Group* ControlGeometryBuilder::buildListBox(const ListBox* listBox) const {
 	Style style = StyleBuilder::buildStyle(listBox);
 
 	// Test if the control is visible or not.
-	if(style.visible && *style.visible == false) {
+	if (style.visible && *style.visible == false) {
 		return NULL;
 	}
 
@@ -666,9 +663,6 @@ osg::Group* ControlGeometryBuilder::buildListBox(const ListBox* listBox) const {
 	float z = 0;
 
 	buildControl(geode.get(), z, style, listBox);
-
-	// Fetch all necesarry data that we need.
-	const Size& size = listBox->getSize();
 
 	osg::ref_ptr<osg::Group> group = new osg::Group;
 	group->addChild(geode.get());
@@ -681,11 +675,11 @@ osg::Group* ControlGeometryBuilder::buildListBox(const ListBox* listBox) const {
 	return group.release();
 }
 
-osg::Group* ControlGeometryBuilder::buildListBoxItem(const ListBox* listBox, const ListBoxItem* listBoxItem) const {
+osg::Group* ControlGeometryBuilder::buildListBoxItem(const ListBox* /*listBox*/, const ListBoxItem* listBoxItem) const {
 	Style style = StyleBuilder::buildStyle(listBoxItem);
 
 	// Test if the control is visible or not.
-	if(style.visible && *style.visible == false) {
+	if (style.visible && *style.visible == false) {
 		return NULL;
 	}
 

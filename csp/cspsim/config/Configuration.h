@@ -23,8 +23,8 @@
  **/
 
 
-#ifndef __CONFIG_CONFIGURATION_H__
-#define __CONFIG_CONFIGURATION_H__
+#ifndef __CSPSIM_CONFIG_CONFIGURATION_H__
+#define __CSPSIM_CONFIG_CONFIGURATION_H__
 
 #include <csp/csplib/util/Ref.h>
 #include <csp/cspsim/Export.h>
@@ -32,7 +32,7 @@
 CSP_NAMESPACE
 
 namespace config {
-	
+
 class Display;
 class UserInterface;
 
@@ -40,12 +40,12 @@ class CSPSIM_EXPORT Configuration: public Referenced {
 public:
 	Configuration(Display* display, UserInterface* userInterface);
 	virtual ~Configuration();
-	
+
 	virtual Display* getDisplay();
 	virtual UserInterface* getUserInterface();
-	
+
 	virtual Configuration* clone();
-	
+
 private:
 	Ref<Display> m_Display;
 	Ref<UserInterface> m_UserInterface;
@@ -55,5 +55,5 @@ private:
 
 CSP_NAMESPACE_END
 
-#endif // __CONFIG_CONFIGURATION_H__
+#endif // __CSPSIM_CONFIG_CONFIGURATION_H__
 

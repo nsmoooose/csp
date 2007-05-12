@@ -23,8 +23,8 @@
  **/
 
 
-#ifndef __CONFIG_USERINTERFACE_H__
-#define __CONFIG_USERINTERFACE_H__
+#ifndef __CSPSIM_CONFIG_USERINTERFACE_H__
+#define __CSPSIM_CONFIG_USERINTERFACE_H__
 
 #include <string>
 #include <vector>
@@ -35,24 +35,24 @@ CSP_NAMESPACE
 
 namespace config {
 
-typedef std::vector<std::string> StringVector;	
+typedef std::vector<std::string> StringVector;
 
 class CSPSIM_EXPORT UserInterface: public Referenced {
 public:
 	UserInterface(const std::string& language, const std::string& theme);
 	virtual ~UserInterface();
-	
+
 	virtual std::string getLanguage();
 	virtual void setLanguage(const std::string& language);
-	
+
 	virtual std::string getTheme();
 	virtual void setTheme(const std::string& themeName);
-	
+
 	virtual UserInterface* clone();
-	
+
 	virtual StringVector enumerateThemes();
 	virtual StringVector enumerateLanguages();
-	
+
 private:
 	std::string m_Language;
 	std::string m_Theme;
@@ -62,5 +62,5 @@ private:
 
 CSP_NAMESPACE_END
 
-#endif // __CONFIG_USERINTERFACE_H__
+#endif // __CSPSIM_CONFIG_USERINTERFACE_H__
 

@@ -49,5 +49,5 @@ UserInterface* Configuration::getUserInterface() {
 	return m_UserInterface.get();
 }
 
-}
+}  // namespace config
 CSP_NAMESPACE_END

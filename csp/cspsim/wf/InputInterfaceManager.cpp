@@ -30,47 +30,58 @@ CSP_NAMESPACE
 
 namespace wf {
 
-InputInterfaceManager::InputInterfaceManager(InputInterface* inputInterface) : 
+
+// An adapter class for binding a wf::Signal to an InputInterface action.
+// This signal is owned by the adapter class, and fires whenever the action
+// is triggered by an external event.
+class InputInterfaceManager::ActionToSignalSlot : public Referenced {
+public:
+	ActionToSignalSlot(const std::string& id, InputInterface* inputInterface) {
+		m_Signal = new Signal;
+		inputInterface->bindActionEvent(id, sigc::mem_fun(*this, &InputInterfaceManager::ActionToSignalSlot::notify));
+	}
+
+	Signal* getSignal() { return m_Signal.get(); }
+
+private:
+	void notify() {
+		Ref<SignalData> data = new SignalData;
+		m_Signal->emit(data.get());
+	}
+
+	Ref<Signal> m_Signal;
+};
+
+
+InputInterfaceManager::InputInterfaceManager(InputInterface* inputInterface) :
+	m_ActionSignals(new ActionSignalMap),
 	m_InputInterface(inputInterface) {
 }
 
 InputInterfaceManager::~InputInterfaceManager() {
+	delete m_ActionSignals;
 }
 
 Signal* InputInterfaceManager::getActionSignal(const std::string& id) {
-	ActionSignalMap::iterator signal = m_ActionSignals.find(id);
-	if(signal != m_ActionSignals.end()) {
+	ActionSignalMap::iterator signal = m_ActionSignals->find(id);
+	if (signal != m_ActionSignals->end()) {
 		return signal->second->getSignal();
 	}
-	
+
 	return NULL;
 }
 
 Signal* InputInterfaceManager::registerActionSignal(const std::string& id) {
 	// If there already is a action signal we return it.
 	Signal* signal = getActionSignal(id);
-	if(signal != NULL) {
+	if (signal != NULL) {
 		return signal;
 	}
-	
+
 	// Otherwise we must insert a new one into our action map.
 	Ref<ActionToSignalSlot> actionToSignalSlot = new ActionToSignalSlot(id, m_InputInterface);
-	m_ActionSignals[id] = actionToSignalSlot;
+	(*m_ActionSignals)[id] = actionToSignalSlot;
 	return actionToSignalSlot->getSignal();
-}
-
-InputInterfaceManager::ActionToSignalSlot::ActionToSignalSlot(const std::string& id, InputInterface* inputInterface) {
-	m_Signal = new Signal;
-	inputInterface->bindActionEvent(id, sigc::mem_fun(*this, &InputInterfaceManager::ActionToSignalSlot::notify));
-}
-
-Signal* InputInterfaceManager::ActionToSignalSlot::getSignal() {
-	return m_Signal.get();
-}
-
-void InputInterfaceManager::ActionToSignalSlot::notify() {
-	Ref<SignalData> data = new SignalData;
-	m_Signal->emit(data.get());
 }
 
 } // namespace wf

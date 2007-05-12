@@ -40,29 +40,31 @@ namespace wf {
 class Signal;
 class Slot;
 
+/// An adapter class for binding InputInterface action events to window
+/// framework signals.
 class CSPSIM_EXPORT InputInterfaceManager: public Referenced {
 public:
-	InputInterfaceManager(InputInterface* inputInterface);
+	/// The input interface to which to bind signals.  The input interface
+	/// instance must outlive the InputInterfaceManager.
+	explicit InputInterfaceManager(InputInterface* inputInterface);
 	virtual ~InputInterfaceManager();
-	
-	virtual Signal* getActionSignal(const std::string& id);
-	virtual Signal* registerActionSignal(const std::string& id);
-	
-private:
-	class ActionToSignalSlot : public Referenced {
-	public:	
-		ActionToSignalSlot(const std::string& id, InputInterface* inputInterface);
-		Signal* getSignal();
-		
-	private:
-		Ref<Signal> m_Signal;
-		void notify();
-	};
 
-	InputInterface* m_InputInterface;
-	
+	/// Get the signal associated with the specified action id, or NULL if no
+	/// signal has been registered via registerActionSignal.
+	virtual Signal* getActionSignal(const std::string& id);
+
+	/// Get or create a signal associated with the specified action id.  The
+	/// signal will fire whenever the action event occurs.  The signal instance
+	/// lifetime is the same as the InputInterfaceManager instance that created
+	/// it.
+	virtual Signal* registerActionSignal(const std::string& id);
+
+private:
+	class ActionToSignalSlot;
 	typedef std::map<std::string, Ref<ActionToSignalSlot> > ActionSignalMap;
-	ActionSignalMap m_ActionSignals;
+
+	ActionSignalMap* m_ActionSignals;
+	InputInterface* m_InputInterface;  // not owned
 };
 
 } // namespace wf

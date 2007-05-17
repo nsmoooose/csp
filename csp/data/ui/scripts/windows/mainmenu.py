@@ -23,7 +23,9 @@ Combat Simulator Project : Main menu script
 """
 
 import csp.cspsim
-from csp.data.ui.utils import SlotManager
+from csp.data.ui.scripts.gamescreenmanager import GameScreenManager
+from csp.data.ui.scripts.utils import SlotManager
+from csp.data.ui.scripts.windows.options import Options
 
 class MainMenu(csp.cspsim.Window, SlotManager):
     def __init__(self, cspsim, themeName):
@@ -59,14 +61,11 @@ class MainMenu(csp.cspsim.Window, SlotManager):
         self.cspsim.createVehicle(f16dj, vec(-29495, -10530, 91.1), vec(0, 0, 0), vec(0.0, 0.0, 180.0)) 
         self.cspsim.createVehicle(f16dj, vec(-29510, -10530, 91.1), vec(0, 0, 0), vec(0.0, 0.0, 180.0)) 
         
-        from csp.data.ui.gamescreenmanager import GameScreenManager
         gameScreenManager = GameScreenManager(self.cspsim, self.getTheme())
                         
     def options_Click(self):
-        from csp.data.ui.options import Options
         options = Options(self.cspsim, self.getTheme())
         self.getWindowManager().show(options)
-        options.centerWindow()
         
     def quit_Click(self):
         self.cspsim.quit()

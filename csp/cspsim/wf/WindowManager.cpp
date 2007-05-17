@@ -27,6 +27,7 @@
 #include <csp/cspsim/SceneConstants.h>
 #include <csp/cspsim/wf/ControlCallback.h>
 #include <csp/cspsim/wf/Serialization.h>
+#include <csp/cspsim/wf/StyleBuilder.h>
 #include <csp/cspsim/wf/WindowManager.h>
 
 #include <osg/BlendFunc>
@@ -194,6 +195,38 @@ void WindowManager::show(Window* window) {
 
 	// Force this container to align all child controls.
 	window->layoutChildControls();
+	
+	// We do wish to handle alignment when the window is displayed for 
+	// the first time.
+	Point windowLocation = window->getLocation();
+	const Size windowSize = window->getSize();
+	const int screenWidth = CSPSim::theSim->getSDLScreen()->w;
+	const int screenHeight = CSPSim::theSim->getSDLScreen()->h;
+	
+	Style windowStyle = StyleBuilder::buildStyle(window);
+	if(windowStyle.horizontalAlign) {	
+		if(*windowStyle.horizontalAlign == "left") {
+			windowLocation.x = 0;
+		}
+		else if(*windowStyle.horizontalAlign == "center") {
+			windowLocation.x = (screenWidth / 2) - (windowSize.width / 2);					
+		}
+		else if(*windowStyle.horizontalAlign == "right") {		
+			windowLocation.x = screenWidth - windowSize.width;
+		}
+	} 
+	if(windowStyle.verticalAlign) {
+		if(*windowStyle.verticalAlign == "top") {
+			windowLocation.y = 0;
+		}
+		else if(*windowStyle.verticalAlign == "middle") {		
+			windowLocation.y = (screenHeight / 2) - (windowSize.height / 2);
+		}
+		else if(*windowStyle.verticalAlign == "bottom") {		
+			windowLocation.y = screenHeight - windowSize.height;
+		}
+	}
+	window->setLocation(windowLocation);
 
 	// Build the actual geometry of all controls that is going to be
 	// displayed.

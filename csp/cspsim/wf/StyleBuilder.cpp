@@ -149,6 +149,9 @@ void StyleBuilder::buildStyle(Style& style, const Control* control, const std::s
 	buildStyleForSinglePropertyWithState(style, style.borderLeftColor, control, stateName);
 	buildStyleForSinglePropertyWithState(style, style.borderRightColor, control, stateName);
 
+	buildStyleForSinglePropertyWithState(style, style.verticalAlign, control, stateName);
+	buildStyleForSinglePropertyWithState(style, style.horizontalAlign, control, stateName);
+
 	buildStyleForSinglePropertyWithState(style, style.visible, control, stateName);
 }
 

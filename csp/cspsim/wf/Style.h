@@ -60,6 +60,9 @@ struct Style {
 	optional<osg::Vec4> borderLeftColor;
 	optional<osg::Vec4> borderRightColor;
 	
+	optional<std::string> horizontalAlign;
+	optional<std::string> verticalAlign;
+	
 	optional<bool> visible;
 	
 	template<class Archive>
@@ -86,6 +89,9 @@ struct Style {
 		ar & make_nvp("BorderBottomColor", borderBottomColor);
 		ar & make_nvp("BorderLeftColor", borderLeftColor);
 		ar & make_nvp("BorderRightColor", borderRightColor);
+
+		ar & make_nvp("HorizontalAlign", horizontalAlign);
+		ar & make_nvp("VerticalAlign", verticalAlign);
 
 		ar & make_nvp("Visible", visible);
 	}		

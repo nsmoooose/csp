@@ -339,7 +339,7 @@ def main(args):
 			createTestObjects(sim, options.objects)
 		else:
 			sim.displayLogoScreen()
-			from csp.data.ui.startup import UserInterfaceStartup
+			from csp.data.ui.scripts.startup import UserInterfaceStartup
 			userInterface = UserInterfaceStartup(sim)
 			userInterface.run();
 	finally:

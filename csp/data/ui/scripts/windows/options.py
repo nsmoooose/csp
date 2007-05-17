@@ -23,8 +23,9 @@ Combat Simulator Project : Options menu script
 """
 
 import csp.cspsim
-from csp.data.ui.utils import SlotManager
-from csp.data.ui.utils import ListBoxManager
+from csp.data.ui.scripts.utils import SlotManager
+from csp.data.ui.scripts.utils import ListBoxManager
+from csp.data.ui.scripts.windows.messagebox import MessageBox
 
 class Options(csp.cspsim.Window, SlotManager):
     def __init__(self, cspsim, themeName):
@@ -93,7 +94,6 @@ class Options(csp.cspsim.Window, SlotManager):
         self.configuration.getDisplay().setWidth(width)
         self.configuration.getDisplay().setHeight(height)
         
-        from csp.data.ui.messagebox import MessageBox
         messageBox = MessageBox(self.cspsim, self.getTheme())
         messageBox.show(self, '${restart_required}')
         

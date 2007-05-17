@@ -6,6 +6,10 @@
     <StringTableInclude>global.xml</StringTableInclude>
   </Includes>
   <Window CssClass="window_default" SizeWidth="180" SizeHeight="350" LocationX="10" LocationY="80" LocationZ="1" >
+	<Style>
+		<VerticalAlign>none</VerticalAlign>
+		<HorizontalAlign>none</HorizontalAlign>
+	</Style>
     <Control>
       <MultiControlContainer>
         <Controls>

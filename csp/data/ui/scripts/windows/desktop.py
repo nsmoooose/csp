@@ -19,23 +19,35 @@
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 """
-Combat Simulator Project : GameScreen script that handles UI when a simulation is running.
+Combat Simulator Project : Main menu script
 """
 
 import csp.cspsim
-from csp.data.ui.utils import SlotManager
+from csp.data.ui.scripts.utils import SlotManager
+from csp.data.ui.scripts.windows.options import Options
 
-class GameScreenManager(SlotManager):
+class Desktop(csp.cspsim.Window, SlotManager):
     def __init__(self, cspsim, themeName):
+        csp.cspsim.Window.__init__(self)
         SlotManager.__init__(self)
-
+       
         self.cspsim = cspsim
-        self.themeName = themeName
-               
-        self.connectToInputInterfaceAction(self.cspsim, 'QUIT', self.on_Quit)
-                                
-    def on_Quit(self):
-        from csp.data.ui.quitresume import QuitResume
-        quitResume = QuitResume(self.cspsim, self.themeName)
-        self.cspsim.getCurrentScreen().getWindowManager().show(quitResume)
-        quitResume.centerWindow()
+       
+        serializer = csp.cspsim.Serialization()
+        serializer.load(self, themeName, 'desktop.xml')
+
+        optionsButton = self.getById('options')
+        if optionsButton != None:
+            self.connectToClickSignal(optionsButton, self.options_Click)
+
+        quitButton = self.getById('quit')
+        if quitButton != None:
+            self.connectToClickSignal(quitButton, self.quit_Click)
+
+    def options_Click(self):
+        options = Options(self.cspsim, self.getTheme())
+        self.getWindowManager().show(options)
+        
+    def quit_Click(self):
+        self.cspsim.quit()
+        

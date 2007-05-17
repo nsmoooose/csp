@@ -87,6 +87,8 @@
 
     <Style Name="window_default">
       <BorderLeftWidth>10</BorderLeftWidth>
+      <VerticalAlign>middle</VerticalAlign>
+      <HorizontalAlign>center</HorizontalAlign>
     </Style>
 
   </NamedStyles>

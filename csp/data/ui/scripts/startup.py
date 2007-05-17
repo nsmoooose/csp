@@ -24,6 +24,13 @@ Combat Simulator Project : User interface startup script
 Usage: To be called from sim.py
 """
 
+import csp.csplib
+import csp.cspsim
+from csp.data.ui.scripts.utils import SlotProxy
+from csp.data.ui.scripts.windows.desktop import Desktop
+from csp.data.ui.scripts.windows.mainmenu import MainMenu
+from csp.data.ui.scripts.windows.messagebox import MessageBox
+
 class UserInterfaceStartup:
     def __init__(self, cspsim):
         self.cspsim = cspsim
@@ -31,23 +38,17 @@ class UserInterfaceStartup:
         
     def displayDesktop(self):
         # Displays the background of the desktop. 
-        import csp.csplib
-        import csp.cspsim
-        self.desktopWindow = csp.cspsim.Window()
-        serializer = csp.cspsim.Serialization()
-        serializer.load(self.desktopWindow, self.configuration.getUserInterface().getTheme(), 'desktop.xml')
+        self.desktopWindow = Desktop(self.cspsim, self.configuration.getUserInterface().getTheme())
         self.windowManager.show(self.desktopWindow)
         self.desktopWindow.maximizeWindow()
         
     def displayMainMenu(self):
         # Displays the main menu that lets the user interact with the game.
-        from csp.data.ui.mainmenu import MainMenu
         self.mainMenuWindow = MainMenu(self.cspsim, self.configuration.getUserInterface().getTheme())
         self.windowManager.show(self.mainMenuWindow)
         
     def run(self):
         # We want to connect to the configuration changed event.
-        from csp.data.ui.utils import SlotProxy
         self.configurationChangedSlot = SlotProxy(self.configuration_Changed)
         self.cspsim.getConfigurationChangedSignal().connect(self.configurationChangedSlot)
         
@@ -76,8 +77,6 @@ class UserInterfaceStartup:
             self.displayDesktop()
             self.displayMainMenu()
         elif self.cspsim.getCurrentScreen().__class__.__name__.find('GameScreen') != -1:
-            from csp.data.ui.messagebox import MessageBox
             messageBox = MessageBox(self.cspsim, self.configuration.getUserInterface().getTheme())
             messageBox.setMessage('${restart_required}')
             self.cspsim.getCurrentScreen().getWindowManager().show(messageBox)
-            messageBox.centerWindow()

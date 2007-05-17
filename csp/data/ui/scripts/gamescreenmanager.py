@@ -19,37 +19,22 @@
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 """
-Combat Simulator Project : Message box script
+Combat Simulator Project : GameScreen script that handles UI when a simulation is running.
 """
 
 import csp.cspsim
-from csp.data.ui.utils import SlotManager
+from csp.data.ui.scripts.utils import SlotManager
+from csp.data.ui.scripts.windows.quitresume import QuitResume
 
-class MessageBox(csp.cspsim.Window, SlotManager):
+class GameScreenManager(SlotManager):
     def __init__(self, cspsim, themeName):
-        csp.cspsim.Window.__init__(self)
         SlotManager.__init__(self)
 
         self.cspsim = cspsim
-
-        # Load the user interface for this window.
-        serializer = csp.cspsim.Serialization()
-        serializer.load(self, themeName, 'messagebox.xml')
-                
-        # Listen to the click signal for the ok button.
-        okButton = self.getById('ok')
-        if okButton != None:
-            self.connectToClickSignal(okButton, self.ok_Click)
-        
-    def ok_Click(self):
-        self.close()
-        
-    def setMessage(self, message):
-        messageLabel = self.getById('message')
-        if messageLabel != None:
-            messageLabel.setText(message)
-            
-    def show(self, parentWindow, message):
-        self.setMessage(message)
-        parentWindow.getWindowManager().show(self)
-        self.centerWindow()
+        self.themeName = themeName
+               
+        self.connectToInputInterfaceAction(self.cspsim, 'QUIT', self.on_Quit)
+                                
+    def on_Quit(self):
+        quitResume = QuitResume(self.cspsim, self.themeName)
+        self.cspsim.getCurrentScreen().getWindowManager().show(quitResume)

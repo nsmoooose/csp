@@ -19,13 +19,13 @@
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 """
-Combat Simulator Project : Quit and resume window script
+Combat Simulator Project : Message box script
 """
 
 import csp.cspsim
-from csp.data.ui.utils import SlotManager
+from csp.data.ui.scripts.utils import SlotManager
 
-class QuitResume(csp.cspsim.Window, SlotManager):
+class MessageBox(csp.cspsim.Window, SlotManager):
     def __init__(self, cspsim, themeName):
         csp.cspsim.Window.__init__(self)
         SlotManager.__init__(self)
@@ -34,33 +34,21 @@ class QuitResume(csp.cspsim.Window, SlotManager):
 
         # Load the user interface for this window.
         serializer = csp.cspsim.Serialization()
-        serializer.load(self, themeName, 'quit_resume.xml')
-
-        resumeButton = self.getById('resume')
-        if resumeButton != None:
-            self.connectToClickSignal(resumeButton, self.resume_Click)
-
-        optionsButton = self.getById('options')
-        if optionsButton != None:
-            self.connectToClickSignal(optionsButton, self.options_Click)
+        serializer.load(self, themeName, 'messagebox.xml')
+                
+        # Listen to the click signal for the ok button.
+        okButton = self.getById('ok')
+        if okButton != None:
+            self.connectToClickSignal(okButton, self.ok_Click)
         
-        quitButton = self.getById('quit')
-        if quitButton != None:
-            self.connectToClickSignal(quitButton, self.quit_Click)
-        
-    def resume_Click(self):
-        self.close()
-
-    def options_Click(self):
-        # Display the options window
-        from csp.data.ui.options import Options
-        options = Options(self.cspsim, self.getTheme())
-        self.getWindowManager().show(options)
-        options.centerWindow()
-
-        # Close myself...
+    def ok_Click(self):
         self.close()
         
-    def quit_Click(self):
-        self.cspsim.quit()
-        
+    def setMessage(self, message):
+        messageLabel = self.getById('message')
+        if messageLabel != None:
+            messageLabel.setText(message)
+            
+    def show(self, parentWindow, message):
+        self.setMessage(message)
+        parentWindow.getWindowManager().show(self)

@@ -154,16 +154,16 @@ osgText::Font::Glyph* ReverseAltFont::getGlyph(unsigned int charcode) {
 			Glyph *reference = getGlyph('0');
 			Glyph *normal = getGlyph(charcode % 128);
 			Glyph *reverse = new osgText::Font::Glyph;
-			unsigned int reference_width = reference->s();
-			unsigned int reference_height = reference->t();
-			unsigned int source_width = normal->s();
-			unsigned int source_height = normal->t();
+			int reference_width = reference->s();
+			int reference_height = reference->t();
+			int source_width = normal->s();
+			int source_height = normal->t();
 
 			// the new glyph should fit the full character cell.  we expand the horizontal dimensions slightly
 			// to compensate for texture blending at the edges of the glyph that might otherwise cause a gap
 			// between adjacent reverse video characters.
-			unsigned int cell_height = static_cast<unsigned int>(reference->getVerticalAdvance() + 0.5);
-			unsigned int cell_width = static_cast<unsigned int>(reference->getHorizontalAdvance() + 0.5) + 2 * getGlyphImageMargin();
+			int cell_height = static_cast<int>(reference->getVerticalAdvance() + 0.5);
+			int cell_width = static_cast<int>(reference->getHorizontalAdvance() + 0.5) + 2 * getGlyphImageMargin();
 
 			// sanity checking
 			cell_width = std::max(cell_width, source_width);
@@ -194,8 +194,8 @@ osgText::Font::Glyph* ReverseAltFont::getGlyph(unsigned int charcode) {
 			unsigned int offset_left = static_cast<unsigned int>(std::max(0.0f, (cell_width - reference_width) / 2 - glyph_offset.x()));
 			unsigned char const *source = image;
 			unsigned char *copy = data + offset_top * cell_width + offset_left;
-			for (unsigned int j = 0; j < source_height; j++) {
-				for (unsigned int i = 0; i < source_width; i++) {
+			for (int j = 0; j < source_height; j++) {
+				for (int i = 0; i < source_width; i++) {
 					*copy++ = *source++ ^ 0xff;
 				}
 				copy += cell_width - source_width;

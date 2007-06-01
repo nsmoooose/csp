@@ -399,8 +399,7 @@ VirtualScene::VirtualScene(int width, int height):
 	m_FeatureTileSize(40000.0), // 40 km
 	m_FeatureTileScale(1.0 / m_FeatureTileSize),
 	m_ScreenWidth(width),
-	m_ScreenHeight(height),
-	m_NodeMask(0) {
+	m_ScreenHeight(height) {
 	}
 
 VirtualScene::~VirtualScene() { }
@@ -1043,12 +1042,13 @@ void VirtualScene::setTerrain(Ref<TerrainObject> terrain) {
 }
 
 void VirtualScene::setLabels(bool show) {
-	m_NodeMask = (m_NodeMask & ~SceneMasks::LABELS) | (show ? SceneMasks::LABELS : 0);
-	m_FarView->setCullMask(SceneMasks::CULL_ONLY | SceneMasks::NORMAL | m_NodeMask);
+	unsigned int currentMask = m_FarView->getCullMask();
+	unsigned int newMask = (currentMask & ~SceneMasks::LABELS) | (show ? SceneMasks::LABELS : 0);
+	m_FarView->setCullMask(newMask);
 }
 
 bool VirtualScene::getLabels() const {
-	return (m_NodeMask & SceneMasks::LABELS) != 0;
+	return (m_FarView->getCullMask() & SceneMasks::LABELS) != 0;
 }
 
 bool VirtualScene::pick(int x, int y) {

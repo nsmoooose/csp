@@ -235,8 +235,6 @@ protected:
 	const int m_ScreenWidth;
 	const int m_ScreenHeight;
 
-	unsigned m_NodeMask;
-
 	Vector3 m_Origin;
 	Vector3 m_SkyPoint;
 	Vector3 m_TerrainOrigin;

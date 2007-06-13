@@ -93,6 +93,15 @@ void buildStyleForSinglePropertyWithState(Style& styleToBuild, T& propertyToBuil
 	if(cssStyle) {
 		buildStyleFromCssClass(styleToBuild, propertyToBuild, *cssStyle);
 	}
+	else {
+		// No named style including the state was found. Lets try without the 
+		// state also...
+		className = control->getName();
+		cssStyle = window->getNamedStyle(className);
+		if(cssStyle) {
+			buildStyleFromCssClass(styleToBuild, propertyToBuild, *cssStyle);
+		}
+	}
 
 	// Lets fetch value from a specified class if it exists.
 	// This is the most specific style. This style will override
@@ -105,6 +114,16 @@ void buildStyleForSinglePropertyWithState(Style& styleToBuild, T& propertyToBuil
 		optional<Style> cssStyle = window->getNamedStyle(*cssClassName);
 		if(cssStyle) {
 			buildStyleFromCssClass(styleToBuild, propertyToBuild, *cssStyle);
+		}
+		else
+		{
+			// No named style with cssclass and state was found. Lets only use
+			// the cssclass without the state....
+			cssClassName = control->getCssClass();
+			cssStyle = window->getNamedStyle(*cssClassName);
+			if(cssStyle) {
+				buildStyleFromCssClass(styleToBuild, propertyToBuild, *cssStyle);
+			}
 		}
 	}
 }

@@ -67,6 +67,4 @@ class ListBoxManager:
         for text in texts:
             listBoxItem = csp.cspsim.ListBoxItem(text)
             listbox.addItem(listBoxItem)
-            
-#    def selectListBoxItem(self, listbox, text):
         

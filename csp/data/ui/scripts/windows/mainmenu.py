@@ -28,7 +28,7 @@ from csp.data.ui.scripts.utils import SlotManager
 from csp.data.ui.scripts.windows.options import Options
 
 class MainMenu(csp.cspsim.Window, SlotManager):
-    def __init__(self, cspsim, themeName):
+    def __init__(self, cspsim):
         csp.cspsim.Window.__init__(self)
         SlotManager.__init__(self)
 
@@ -36,7 +36,7 @@ class MainMenu(csp.cspsim.Window, SlotManager):
         
         configuration = cspsim.getConfiguration()
         serializer = csp.cspsim.Serialization()
-        serializer.load(self, themeName, 'main_menu.xml')
+        serializer.load(self, 'main_menu.xml')
         
         instantActionButton = self.getById('instantAction')
         if instantActionButton != None:
@@ -61,10 +61,10 @@ class MainMenu(csp.cspsim.Window, SlotManager):
         self.cspsim.createVehicle(f16dj, vec(-29495, -10530, 91.1), vec(0, 0, 0), vec(0.0, 0.0, 180.0)) 
         self.cspsim.createVehicle(f16dj, vec(-29510, -10530, 91.1), vec(0, 0, 0), vec(0.0, 0.0, 180.0)) 
         
-        gameScreenManager = GameScreenManager(self.cspsim, self.getTheme())
+        gameScreenManager = GameScreenManager(self.cspsim)
                         
     def options_Click(self):
-        options = Options(self.cspsim, self.getTheme())
+        options = Options(self.cspsim)
         self.getWindowManager().show(options)
         
     def quit_Click(self):

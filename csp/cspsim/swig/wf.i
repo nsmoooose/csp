@@ -267,7 +267,7 @@ class Serialization : public Referenced {
 public:
 	Serialization();
 	Serialization(std::string&);
-	virtual void load(Window* window, const std::string& theme, const std::string& file);
+	virtual void load(Window* window, const std::string& file);
 };
 
 class WindowManager : public Referenced {

@@ -19,7 +19,7 @@
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 """
-Combat Simulator Project : Main menu script
+Combat Simulator Project : Desktop script
 """
 
 import csp.cspsim
@@ -27,27 +27,9 @@ from csp.data.ui.scripts.utils import SlotManager
 from csp.data.ui.scripts.windows.options import Options
 
 class Desktop(csp.cspsim.Window, SlotManager):
-    def __init__(self, cspsim, themeName):
+    def __init__(self):
         csp.cspsim.Window.__init__(self)
         SlotManager.__init__(self)
        
-        self.cspsim = cspsim
-       
         serializer = csp.cspsim.Serialization()
-        serializer.load(self, themeName, 'desktop.xml')
-
-        optionsButton = self.getById('options')
-        if optionsButton != None:
-            self.connectToClickSignal(optionsButton, self.options_Click)
-
-        quitButton = self.getById('quit')
-        if quitButton != None:
-            self.connectToClickSignal(quitButton, self.quit_Click)
-
-    def options_Click(self):
-        options = Options(self.cspsim, self.getTheme())
-        self.getWindowManager().show(options)
-        
-    def quit_Click(self):
-        self.cspsim.quit()
-        
+        serializer.load(self, 'desktop.xml')

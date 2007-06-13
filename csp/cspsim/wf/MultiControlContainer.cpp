@@ -62,7 +62,6 @@ void MultiControlContainer::buildGeometry() {
 void MultiControlContainer::layoutChildControls() {
 	ControlVector::iterator control = m_Controls.begin();
 	for(;control != m_Controls.end();++control) {
-	
 		// If the child control is a container then we 
 		// need to forward this call to its children.
 		Container* childContainer = dynamic_cast<Container*>(control->get());

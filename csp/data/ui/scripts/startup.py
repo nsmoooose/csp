@@ -30,6 +30,7 @@ from csp.data.ui.scripts.utils import SlotProxy
 from csp.data.ui.scripts.windows.desktop import Desktop
 from csp.data.ui.scripts.windows.mainmenu import MainMenu
 from csp.data.ui.scripts.windows.messagebox import MessageBox
+from csp.data.ui.scripts.windows.topmenu import TopMenu
 
 class UserInterfaceStartup:
     def __init__(self, cspsim):
@@ -38,13 +39,18 @@ class UserInterfaceStartup:
         
     def displayDesktop(self):
         # Displays the background of the desktop. 
-        self.desktopWindow = Desktop(self.cspsim, self.configuration.getUserInterface().getTheme())
+        self.desktopWindow = Desktop()
         self.windowManager.show(self.desktopWindow)
         self.desktopWindow.maximizeWindow()
         
+    def displayTopMenu(self):
+        # Displays the top menu with the most important buttons. 
+        self.topMenu = TopMenu(self.cspsim)
+        self.windowManager.show(self.topMenu)
+
     def displayMainMenu(self):
         # Displays the main menu that lets the user interact with the game.
-        self.mainMenuWindow = MainMenu(self.cspsim, self.configuration.getUserInterface().getTheme())
+        self.mainMenuWindow = MainMenu(self.cspsim)
         self.windowManager.show(self.mainMenuWindow)
         
     def run(self):
@@ -60,6 +66,7 @@ class UserInterfaceStartup:
 
         # Display the desktop and the main menu.
         self.displayDesktop()
+        self.displayTopMenu()
         self.displayMainMenu()
         self.cspsim.run()
 
@@ -75,8 +82,9 @@ class UserInterfaceStartup:
             print('Reloading all windows...')
             self.windowManager.closeAll()
             self.displayDesktop()
+            self.displayTopMenu()
             self.displayMainMenu()
         elif self.cspsim.getCurrentScreen().__class__.__name__.find('GameScreen') != -1:
-            messageBox = MessageBox(self.cspsim, self.configuration.getUserInterface().getTheme())
+            messageBox = MessageBox(self.cspsim)
             messageBox.setMessage('${restart_required}')
             self.cspsim.getCurrentScreen().getWindowManager().show(messageBox)

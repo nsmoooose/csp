@@ -27,14 +27,13 @@ from csp.data.ui.scripts.utils import SlotManager
 from csp.data.ui.scripts.windows.quitresume import QuitResume
 
 class GameScreenManager(SlotManager):
-    def __init__(self, cspsim, themeName):
+    def __init__(self, cspsim):
         SlotManager.__init__(self)
 
         self.cspsim = cspsim
-        self.themeName = themeName
                
         self.connectToInputInterfaceAction(self.cspsim, 'QUIT', self.on_Quit)
                                 
     def on_Quit(self):
-        quitResume = QuitResume(self.cspsim, self.themeName)
+        quitResume = QuitResume(self.cspsim)
         self.cspsim.getCurrentScreen().getWindowManager().show(quitResume)

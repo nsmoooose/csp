@@ -4,5 +4,20 @@
     <!-- This include will set the default behaviour on all controls. -->
     <StyleInclude>styles.xml</StyleInclude>
   </Includes>
-  <Window LocationZ="-10" CssClass="desktop" />
+  <Window LocationZ="-10" CssClass="desktop">
+  	<Control>
+  		<MultiControlContainer>
+  			<Controls>
+		  		<Label SizeWidth="550" SizeHeight="550">
+		  			<Style>
+		  				<BackgroundColor>ffffffff</BackgroundColor>
+						<BackgroundImage>images/csplogo_large.png</BackgroundImage>
+						<VerticalAlign>middle</VerticalAlign>
+						<HorizontalAlign>center</HorizontalAlign>
+		  			</Style>
+		  		</Label>
+  			</Controls>
+  		</MultiControlContainer>
+  	</Control>
+  </Window>
 </WindowDocument>

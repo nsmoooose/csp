@@ -159,6 +159,9 @@ in this document has the same inheritence as the cpp-classes.
   <xsd:complexType name="Label_t">
     <xsd:complexContent>
       <xsd:extension base="Control_t">
+      	<xsd:sequence>
+      		<xsd:element name="Text" type="xsd:string" minOccurs="0" />
+      	</xsd:sequence>
         <xsd:attribute name="Text" type="xsd:string" />
       </xsd:extension>
     </xsd:complexContent>

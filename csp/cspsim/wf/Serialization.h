@@ -25,6 +25,7 @@
 #ifndef __CSPSIM_WF_SERIALIZATION_H__
 #define __CSPSIM_WF_SERIALIZATION_H__
 
+#include <set>
 #include <csp/cspsim/Export.h>
 #include <csp/csplib/util/Referenced.h>
 
@@ -43,11 +44,12 @@ public:
 	Serialization(const std::string& userInterfaceDirectory);
 	virtual ~Serialization();
 	
-	virtual void load(Window* window, const std::string& theme, const std::string& file);
-	virtual void load(StringResourceManager* resourceManager, const std::string& filePath);
+	// Loads a specific resource file containing ui controls. The file parameter should contain 
+	// the full path to the file excluding Xxx/data/ui. Example: help/index.xml.
+	virtual void load(Window* window, const std::string& file);
 	
-protected:
-
+	virtual void load(StringResourceManager* resourceManager, const std::string& filePath);
+	 
 private:
 	std::string m_UserInterfaceDirectory;
 };

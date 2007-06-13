@@ -94,6 +94,46 @@ struct Style {
 		ar & make_nvp("VerticalAlign", verticalAlign);
 
 		ar & make_nvp("Visible", visible);
+	}
+	
+	bool operator==(const Style& style) const {
+		return equals(style);
+	}
+	
+	bool operator!=(const Style& style) const {
+		return !equals(style);
+	}
+	
+	bool equals(const Style& style) const {
+		return
+			fontFamily.equals(style.fontFamily) &&
+			fontSize.equals(style.fontSize) &&
+			color.equals(style.color) &&
+				
+			backgroundColor.equals(style.backgroundColor) &&
+			backgroundColorTopLeft.equals(style.backgroundColorTopLeft) &&
+			backgroundColorTopRight.equals(style.backgroundColorTopRight) &&
+			backgroundColorBottomLeft.equals(style.backgroundColorBottomLeft) &&
+			backgroundColorBottomRight.equals(style.backgroundColorBottomRight) &&
+			
+			backgroundImage.equals(style.backgroundImage) &&
+				
+			borderWidth.equals(style.borderWidth) &&
+			borderTopWidth.equals(style.borderTopWidth) &&
+			borderBottomWidth.equals(style.borderBottomWidth) &&
+			borderLeftWidth.equals(style.borderLeftWidth) &&
+			borderRightWidth.equals(style.borderRightWidth) &&
+		
+			borderColor.equals(style.borderColor) &&
+			borderTopColor.equals(style.borderTopColor) &&
+			borderBottomColor.equals(style.borderBottomColor) &&
+			borderLeftColor.equals(style.borderLeftColor) &&
+			borderRightColor.equals(style.borderRightColor) &&
+			
+			horizontalAlign.equals(style.horizontalAlign) &&
+			verticalAlign.equals(style.verticalAlign) &&
+			
+			visible.equals(style.visible);
 	}		
 };
 

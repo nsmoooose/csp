@@ -35,17 +35,10 @@ CSP_NAMESPACE
 namespace wf {
 
 Button::Button() : SingleControlContainer() {
-	Ref<Label> label = new Label();
-	label->setAlignment(osgText::Text::CENTER_CENTER);
-	setControl(label.get());
 }
 
 Button::Button(const std::string text) 
 	: SingleControlContainer(), m_text(text) {
-
-	Ref<Label> label = new Label();
-	label->setAlignment(osgText::Text::CENTER_CENTER);
-	setControl(label.get());
 }
 
 Button::~Button() {
@@ -56,13 +49,6 @@ std::string Button::getName() const {
 }
 
 void Button::buildGeometry() {
-	// If we have a label as a child control then we set the default text on it.
-	Label* label = dynamic_cast<Label*>(getControl());
-	if(label != NULL) {
-		label->setText(m_text);
-	}
-
-	// Make sure that all our child controls onInit() is called.
 	SingleControlContainer::buildGeometry();
 
 	// Build our own button control and add it to the group.

@@ -187,23 +187,16 @@ Serialization::Serialization(const std::string& userInterfaceDirectory) :
 Serialization::~Serialization() {
 }
 
-void Serialization::load(Window* window, const std::string& theme, const std::string& file) {
-	// Remember the name of the theme for the lifetime of the window.
-	window->setTheme(theme);
-
-	// Build the path to the actual document we wish to load.
-	std::string themesPath = ospath::join(m_UserInterfaceDirectory, "themes");
-	std::string themePath = ospath::join(themesPath, theme);
-	std::string filePath = ospath::join(themePath, file);
-
-	// Test to see if the file exists.
-	if(!ospath::exists(filePath)) {
+void Serialization::load(Window* window, const std::string& file) {
+	std::string absoluteFilePath = file;
+	Ref<ResourceLocator> resourceLocator = createDefaultResourceLocator();
+	if(!resourceLocator->locateResource(absoluteFilePath)) {
 		CSPLOG(ERROR, APP) << "UI Window document not found.";
 		return;
 	}
 
 	// Load the document.
-	XMLNode document = XMLNode::parseFile(filePath.c_str());
+	XMLNode document = XMLNode::parseFile(absoluteFilePath.c_str());
 
 	// Parse the content of the document by using our internal archive class.
 	ReadingArchive archive;
@@ -224,7 +217,6 @@ void Serialization::load(Window* window, const std::string& theme, const std::st
 			std::string includeNodeName = includeNode.getName();
 			if(includeNodeName == "StringTableInclude") {
 				Ref<StringResourceManager> loadedResources = new StringResourceManager;
-				Ref<ResourceLocator> resourceLocator = new StringResourceLocator(window);
 				if(resourceLocator->locateResource(includeFile)) {
 					// Load the resources from the file and merge it to the existing
 					// resources in this window manager.
@@ -233,19 +225,16 @@ void Serialization::load(Window* window, const std::string& theme, const std::st
 				}
 			}
 			else if(includeNodeName == "StyleInclude") {
-				std::string includeFilePath = ospath::join(themePath, includeFile);
-				if(!ospath::exists(includeFilePath)) {
-					CSPLOG(ERROR, APP) << "UI Include document not found.";
-					continue;
-				}
-				XMLNode includeDocument = XMLNode::parseFile(includeFilePath.c_str());
-				XMLNode namedStylesNode = includeDocument.selectSingleNode("StyleDocument/NamedStyles");
-				NamedStyleMap styles;
-				ToValue(namedStylesNode, "", &styles);
-
-				NamedStyleMap::iterator style = styles.begin();
-				for(;style != styles.end();++style) {
-					window->addNamedStyle(style->first, style->second);
+				if(resourceLocator->locateResource(includeFile)) {
+					XMLNode includeDocument = XMLNode::parseFile(includeFile.c_str());
+					XMLNode namedStylesNode = includeDocument.selectSingleNode("StyleDocument/NamedStyles");
+					NamedStyleMap styles;
+					ToValue(namedStylesNode, "", &styles);
+	
+					NamedStyleMap::iterator style = styles.begin();
+					for(;style != styles.end();++style) {
+						window->addNamedStyle(style->first, style->second);
+					}
 				}
 			}
 		}

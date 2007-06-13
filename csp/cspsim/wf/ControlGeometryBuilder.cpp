@@ -63,6 +63,17 @@ void ControlGeometryBuilder::getNextLayer(float& z) const {
 	z += 0.1f;
 }
 
+osgText::Text* ControlGeometryBuilder::buildText(const std::string& text, const std::string& fontFamily, float fontSize, osg::Vec4& color) const {
+    osg::ref_ptr<osgText::Text> textNode = new osgText::Text;
+    textNode->setText(text);
+    textNode->setColor(color);
+    textNode->setFont(fontFamily.c_str());
+    textNode->setCharacterSize(fontSize);
+	textNode->setAxisAlignment(osgText::Text::XY_PLANE);
+	textNode->setRotation(osg::Quat(PI/2, 0, 0, 0));
+	return textNode.release();
+}
+
 osg::Geometry* ControlGeometryBuilder::buildRectangle(
 	float x1, float y1, float x2, float y2, float z,
 	const osg::Vec4& c1, const osg::Vec4& c2, const osg::Vec4& c3, const osg::Vec4& c4) const {
@@ -232,7 +243,7 @@ void ControlGeometryBuilder::buildControl(osg::Geode* geode, float& z, const Sty
 			// Try to locate the resource using a resource locator class.
 			// The resource can be located in the theme directory or in
 			// the datapath.
-			Ref<ResourceLocator> resourceLocator = new ImageResourceLocator(window);
+			Ref<ResourceLocator> resourceLocator = createDefaultResourceLocator();
 			std::string filePath = *style.backgroundImage;
 			if (resourceLocator->locateResource(filePath)) {
 				image = osgDB::readImageFile(filePath);
@@ -488,10 +499,21 @@ osg::Group* ControlGeometryBuilder::buildButton(const Button* button) const {
 	osg::ref_ptr<osg::Geode> geode = new osg::Geode;
 	float z = 0;
 
+	// Add all default control behaviours like borders, background color, image etc.
 	buildControl(geode.get(), z, style, button);
 
-	// Add a border to the button.
-	getNextLayer(z);
+	Ref<const Window> window = Window::getWindow(button);
+	if(style.fontFamily && style.fontSize && style.color && window.valid()) {
+		getNextLayer(z);
+		
+		Ref<const StringResourceManager> stringResources = window->getStringResourceManager();
+		std::string parsedText = stringResources->parseAndReplace(button->getText());
+		
+		osg::ref_ptr<osgText::Text> textNode = buildText(parsedText, *style.fontFamily, *style.fontSize, *style.color);
+		textNode->setAlignment(osgText::Text::CENTER_CENTER);
+		textNode->setPosition(osg::Vec3(0, 0, z));
+		geode->addDrawable(textNode.get());
+	}
 
 	osg::ref_ptr<osg::Group> group = new osg::Group;
 	group->addChild(geode.get());
@@ -608,15 +630,10 @@ osg::Group* ControlGeometryBuilder::buildLabel(const Label* label) const {
 		}
 
 		getNextLayer(z);
-	    osg::ref_ptr<osgText::Text> button_text = new osgText::Text;
-	    button_text->setText(parsedText);
-	    button_text->setColor(*style.color);
+		
+	    osg::ref_ptr<osgText::Text> button_text = buildText(parsedText, *style.fontFamily, *style.fontSize, *style.color);
+	    button_text->setMaximumWidth(label->getSize().width);
 	    button_text->setAlignment(label->getAlignment());
-	    button_text->setFont(style.fontFamily->c_str());
-	    button_text->setCharacterSize(*style.fontSize);
-	    //button_text->setFontResolution(30, 30);
-		button_text->setAxisAlignment(osgText::Text::XY_PLANE);
-		button_text->setRotation(osg::Quat(PI/2, 0, 0, 0));
 		switch(label->getAlignment()) {
 			case osgText::Text::LEFT_TOP:
 			case osgText::Text::LEFT_CENTER:
@@ -718,7 +735,7 @@ osg::Group* ControlGeometryBuilder::buildModel(const Model* model) const {
 
 	// Load the model from the file system and add
 	// it to the control if it was found.
-	Ref<ResourceLocator> resourceLocator = new ModelResourceLocator(Window::getWindow(model));
+	Ref<ResourceLocator> resourceLocator = createDefaultResourceLocator();
 	std::string modelPath = model->getModelFilePath();
 	if (resourceLocator->locateResource(modelPath)) {
 		osg::ref_ptr<osg::Node> loadedModel = osgDB::readNodeFile(modelPath);

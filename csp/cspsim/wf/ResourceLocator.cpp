@@ -30,94 +30,55 @@
 CSP_NAMESPACE
 
 namespace wf {
-	
-ImageResourceLocator::ImageResourceLocator(const Window* window) : m_Window(window) {
-}
 
-bool ImageResourceLocator::locateResource(std::string& file) const {
-	// Build up the path to the file in order to be able to read it.
-	std::string themesPath = ospath::join(getUIPath(), "themes");
-	std::string themePath = ospath::join(themesPath, m_Window->getTheme());
-	std::string filePath = ospath::join(themePath, file);
+ResourceLocator::ResourceLocator(const StringVector& includeFolders) : m_IncludeFolders(includeFolders) {
+}
 	
-	// Test to see if the file exists at all?
-	if(ospath::exists(filePath.c_str())) {
-		file = filePath;
-		return true;
-	}
-	else {
-		// As a secondary solution we look for the file in the image data
-		// directory. It may exist there.
-		std::string dataPath = getDataPath();
-		filePath = ospath::join(dataPath, file);
-		if(ospath::exists(filePath.c_str())) {
-			file = filePath;
+bool ResourceLocator::locateResource(std::string& file) const {
+	StringVector includeFolders = m_IncludeFolders;
+	includeFolders.insert(includeFolders.begin(), ospath::dirname(file));
+	
+	StringVector::const_iterator folderIterator = includeFolders.begin();
+	for(;folderIterator != includeFolders.end();++folderIterator) {
+		std::string tempFilePath = ospath::join(*folderIterator, file);
+		if(ospath::exists(tempFilePath)) {
+			file = tempFilePath;
 			return true;
 		}
 	}
-	
-	// Didn't find any file that is matching the resource asked for.
 	return false;
 }
-
-StringResourceLocator::StringResourceLocator(const Window* window) : m_Window(window) {
+	
+const StringVector& ResourceLocator::getIncludeFolders() const {
+	return m_IncludeFolders;
 }
 
-bool StringResourceLocator::locateResource(std::string& file) const {
-	// Build up the path to the file in order to be able to read it.
+void ResourceLocator::setIncludeFolders(const StringVector& includeFolders) {
+	m_IncludeFolders = includeFolders;
+}
+	
+ResourceLocator* createDefaultResourceLocator() {
+	StringVector includeFolders;
+	
+	// Add the current theme folder.
 	std::string themesPath = ospath::join(getUIPath(), "themes");
-	std::string themePath = ospath::join(themesPath, m_Window->getTheme());
-	std::string filePath = ospath::join(themePath, file);
+	std::string themePath = ospath::join(themesPath, getUITheme());
+	includeFolders.push_back(themePath);
 	
-	// Test to see if the file exists at all?
-	if(ospath::exists(filePath.c_str())) {
-		file = filePath;
-		return true;
-	}
-	else {
-		// As a secondary solution we look for the file in the specialized 
-		// language directory.
-		std::string localizationPath = ospath::join(getUIPath(), "localization");
-		std::string languagePath = ospath::join(localizationPath, getUILanguage());
-		std::string filePath = ospath::join(languagePath, file);
-		if(ospath::exists(filePath.c_str())) {
-			file = filePath;
-			return true;
-		}
-	}
+	// Add the current language folder
+	std::string localizationPath = ospath::join(getUIPath(), "localization");
+	std::string languagePath = ospath::join(localizationPath, getUILanguage());
+	includeFolders.push_back(languagePath);
 	
-	// Didn't find any file that is matching the resource asked for.
-	return false;
+	// Add the data directory
+	includeFolders.push_back(getDataPath());
+
+	// Add the ui directory below the data directory.	
+	includeFolders.push_back(getUIPath());
+
+	return new ResourceLocator(includeFolders);
 }
 
-ModelResourceLocator::ModelResourceLocator(const Window* window) : m_Window(window) {
-}
-
-bool ModelResourceLocator::locateResource(std::string& file) const {
-	// Build up the path to the file in order to be able to read it.
-	std::string themesPath = ospath::join(getUIPath(), "themes");
-	std::string themePath = ospath::join(themesPath, m_Window->getTheme());
-	std::string filePath = ospath::join(themePath, file);
-	
-	// Test to see if the file exists at all?
-	if(ospath::exists(filePath.c_str())) {
-		file = filePath;
-		return true;
-	}
-	else {
-		// As a secondary solution we look for the file in the data
-		// directory. It may exist there.
-		std::string dataPath = getDataPath();
-		filePath = ospath::join(dataPath, file);
-		if(ospath::exists(filePath.c_str())) {
-			file = filePath;
-			return true;
-		}
-	}
-	
-	// Didn't find any file that is matching the resource asked for.
-	return false;
-}
 
 } // namespace wf
 

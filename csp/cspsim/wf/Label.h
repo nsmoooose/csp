@@ -58,6 +58,7 @@ public:
 	void serialize(Archive & ar) {
 		Control::serialize(ar);
 		ar & make_nvp("@Text", m_Text);
+		ar & make_nvp("Text", m_Text);
 	}
 	
 private:

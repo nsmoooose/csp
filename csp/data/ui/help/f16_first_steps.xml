@@ -1,0 +1,44 @@
+<?xml version="1.0"?>
+<WindowDocument xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation='../window_document.xsd'>
+  <Includes>
+    <!-- This include will set the default behaviour on all controls. -->
+    <StyleInclude>styles.xml</StyleInclude>
+    <StringTableInclude>global.xml</StringTableInclude>
+  </Includes>
+  <Window LocationZ="10" CssClass="help" SizeWidth="900" SizeHeight="650">
+ 	<Control>
+ 		<MultiControlContainer>
+ 			<Controls>
+ 				<Button Id="close" CssClass="close_button" SizeHeight="32" SizeWidth="32" />
+		        <Label LocationX="10" LocationY="2" SizeWidth="569" SizeHeight="30" Text="${help}" />
+		        <Label CssClass="stripe" LocationX="0" LocationY="35" SizeWidth="889" SizeHeight="10" />
+				<ListBox Id="topics" LocationX="10" LocationY="55" SizeWidth="150" SizeHeight="585" />
+				<Label LocationX="170" LocationY="55" SizeWidth="709" SizeHeight="40" Text="F16 First steps">
+					<Style>
+						<FontSize>30</FontSize>
+					</Style>
+				</Label>
+				<Label LocationX="170" LocationY="55" SizeWidth="709" SizeHeight="585">
+					<Text>
+If you don't have a joystick/throttle, you can use the keyboard to fly the plane. To takeoff in the default aircraft (F-16), increase the throttle to full afterburner, accelerate down the runway, and pitch the nose up at about 150 kts. Here are a few hints that may help:
+
+The throttle setting is displayed in the white text overlay on the left side of the screen, along with lots of other diagnostic data. You can also look at the fuel flow indicator at the front right side of the cockpit, just below the display with orange/yellow text (DED). If the value is above 30000 or so you should have plenty of thrust for takeoff. If you are using the keyboard, you'll need to hold the 'increase throttle' key (=) for a few seconds. On German keyboards it is the '+' key. 
+
+The airspeed is visible on the left side of the HUD, and also in the white text overlay (near the bottom left of the screen). 
+
+To see the HUD more clearly, zoom the view by holding the left shift key at rotating the mouse wheel. Note that this may not be possible on laptops without external mice. 
+ 
+If you are using the keyboard, you need to hold the down arrow to pitch the nose up to about 10 degrees when you pass 150 kts. You want the "+" sign in the top center of the HUD to align with the 10 degree pitch bar (horizontal line with "10" on either side). Release and press the down arrow as needed to maintain about 10 degrees pitch until you climb away from the runway. 
+ 
+Press 'g' to raise your landing gear once you are up in the air. 
+
+Landing is a bit more difficult, and landing gracefully without a joystick/throttle combination is particularly challenging. I'd recommend searching on the web for landing tutorials for Falcon4. The same instructions work well in CSP.
+
+Good luck!
+ 					</Text>
+				</Label>
+ 			</Controls>
+ 		</MultiControlContainer>
+  	</Control>
+  </Window>
+</WindowDocument>

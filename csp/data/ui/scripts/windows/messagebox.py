@@ -26,7 +26,7 @@ import csp.cspsim
 from csp.data.ui.scripts.utils import SlotManager
 
 class MessageBox(csp.cspsim.Window, SlotManager):
-    def __init__(self, cspsim, themeName):
+    def __init__(self, cspsim):
         csp.cspsim.Window.__init__(self)
         SlotManager.__init__(self)
 
@@ -34,7 +34,7 @@ class MessageBox(csp.cspsim.Window, SlotManager):
 
         # Load the user interface for this window.
         serializer = csp.cspsim.Serialization()
-        serializer.load(self, themeName, 'messagebox.xml')
+        serializer.load(self, 'messagebox.xml')
                 
         # Listen to the click signal for the ok button.
         okButton = self.getById('ok')

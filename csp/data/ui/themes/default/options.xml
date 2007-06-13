@@ -9,8 +9,9 @@
     <Control>
       <MultiControlContainer>
         <Controls>
+          <Button Id="close" CssClass="close_button" SizeHeight="32" SizeWidth="32"/>
           <Label LocationX="10" LocationY="2" SizeWidth="569" SizeHeight="30" Text="${options}" />
-          <Label CssClass="stripe" LocationX="0" LocationY="30" SizeWidth="569" SizeHeight="10" />
+          <Label CssClass="stripe" LocationX="0" LocationY="35" SizeWidth="569" SizeHeight="10" />
 
           <Label Text="${screen_resolution}:" LocationX="10" LocationY="55" SizeHeight="25" />
           <ListBox Id="resolution" LocationX="20" LocationY="83" SizeWidth="145" SizeHeight="230" />
@@ -24,8 +25,8 @@
           <ListBox Id="language" LocationX="380" LocationY="83" SizeWidth="165" SizeHeight="230" />
 
           <!-- Buttons for ok and cancel actions. -->
-          <Button Id="ok" Text="${ok}" LocationX="310" LocationY="375" SizeWidth="120" SizeHeight="35" />
-          <Button Id="cancel" Text="${cancel}" LocationX="440" LocationY="375" SizeWidth="120" SizeHeight="35" />
+          <Button Id="ok" Text="${ok}" LocationX="310" LocationY="370" SizeWidth="120" SizeHeight="40" />
+          <Button Id="cancel" Text="${cancel}" LocationX="440" LocationY="370" SizeWidth="120" SizeHeight="40" />
         </Controls>
       </MultiControlContainer>
     </Control>

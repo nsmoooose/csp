@@ -2,7 +2,15 @@
 <StringTableDocument xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation='../../window_document.xsd'>
 	<Strings>
 		<String key="cancel">Cancel</String>
+		<String key="credits">Credits</String>
 		<String key="full_screen_mode">Fullscreen</String>
+		<String key="help">Help</String>
+		<String key="help_mouse">Mouse</String>
+		<String key="help_keyboard_view">View controls</String>
+		<String key="help_welcome">Welcome</String>
+		<String key="help_joystick">Joystick</String>
+		<String key="help_f16_first_steps">F16 first steps</String>
+		<String key="help_keyboard_aircraft">Aircraft controls</String>
 		<String key="instant_action">Instant action</String>
 		<String key="main_menu">Main menu</String>
 		<String key="multiplayer">Multiplayer</String>
@@ -11,7 +19,9 @@
 		<String key="quit">Quit</String>
 		<String key="resume">Resume</String>
 		<String key="restart_required">Restart is required for changes to take effect.</String>
+		<String key="singleplayer">Single player</String>
 		<String key="screen_resolution">Resolution</String>
+		<String key="tutorials">Tutorials</String>
 		<String key="ui_theme">Theme</String>
 		<String key="ui_language">Language</String>
 	</Strings>

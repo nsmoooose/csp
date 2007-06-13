@@ -2,7 +2,15 @@
 <StringTableDocument xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation='../../window_document.xsd'>
 	<Strings>
 		<String key="cancel">Avbryt</String>
+		<String key="credits">Berom</String>
 		<String key="full_screen_mode">Helskarm</String>
+		<String key="help">Hjalp</String>
+		<String key="help_mouse">Mus</String>
+		<String key="help_keyboard_view">Vyer</String>
+		<String key="help_welcome">Valkommen</String>
+		<String key="help_joystick">Joystick</String>
+		<String key="help_f16_first_steps">F16 Start</String>
+		<String key="help_keyboard_aircraft">Flygplans kontroller</String>
 		<String key="instant_action">Action</String>
 		<String key="main_menu">Huvudmeny</String>
 		<String key="multiplayer">Natverk</String>
@@ -12,6 +20,8 @@
 		<String key="restart_required">Omstart kravs for att andring skall galla.</String>
 		<String key="resume">Aterga</String>
 		<String key="screen_resolution">Upplosning</String>
+		<String key="singleplayer">1 spelare</String>
+		<String key="tutorials">Handledning</String>
 		<String key="ui_theme">Tema</String>
 		<String key="ui_language">Sprak</String>
 	</Strings>

@@ -32,6 +32,7 @@
 
 #include <osg/BlendFunc>
 #include <osg/Group>
+#include <osg/MatrixTransform>
 #include <osgUtil/SceneView>
 #include <osgUtil/IntersectVisitor>
 
@@ -43,6 +44,18 @@ namespace wf {
 
 WindowManager::WindowManager(osgUtil::SceneView* view)
 	: m_View(view), m_Group(new osg::Group) {
+
+	Size screenSize;
+	float screenScale;
+	calculateScreenSizeAndScale(screenSize, screenScale);
+	if(screenScale != 1.0) {
+		osg::ref_ptr<osg::MatrixTransform> scaledGroup = new osg::MatrixTransform;
+		osg::Matrix scale;
+		scale.makeScale(osg::Vec3(screenScale, screenScale, screenScale));
+		scaledGroup->setMatrix(scale);
+		m_Group = scaledGroup.get();
+	}
+
 	m_View->setSceneData(m_Group.get());
 
     osg::StateSet *stateSet = m_Group->getOrCreateStateSet();
@@ -57,6 +70,17 @@ WindowManager::WindowManager(osgUtil::SceneView* view)
 WindowManager::WindowManager() : m_Group(new osg::Group) {
 	const int screenWidth = CSPSim::theSim->getSDLScreen()->w;
 	const int screenHeight = CSPSim::theSim->getSDLScreen()->h;
+	
+	Size screenSize;
+	float screenScale;
+	calculateScreenSizeAndScale(screenSize, screenScale);
+	if(screenScale != 1.0) {
+		osg::ref_ptr<osg::MatrixTransform> scaledGroup = new osg::MatrixTransform;
+		osg::Matrix scale;
+		scale.makeScale(osg::Vec3(screenScale, screenScale, screenScale));
+		scaledGroup->setMatrix(scale);
+		m_Group = scaledGroup.get();
+	}
 
 	osgUtil::SceneView *sv = new osgUtil::SceneView();
 	sv->setDefaults(osgUtil::SceneView::COMPILE_GLOBJECTS_AT_INIT);
@@ -111,44 +135,44 @@ bool WindowManager::onClick(int x, int y) {
 	return event.handled;
 }
 
-bool WindowManager::onMouseMove(int, int, int, int) {
-	return false;
-}
-#if 0
 bool WindowManager::onMouseMove(int x, int y, int dx, int dy) {
 	// Save the new mouse position.
 	m_MousePosition = Point(x, y);
 
 	Control* newHoverControl = getControlAtPosition(x, y);
-
-	// If there is no control on the current mouse position and there
-	// was a hover control before. Then we need to rebuild the geometry
-	// for that control to reflect style changes.
-	if(newHoverControl == NULL && m_HoverControl.valid()) {
-		m_HoverControl->removeState("hover");
-		m_HoverControl->buildGeometry();
-		m_HoverControl = NULL;
+	if(newHoverControl != m_HoverControl.get()) {
+		removeStateAndRebuildGeometry("hover", m_HoverControl.get());
+		addStateAndRebuildGeometry("hover", newHoverControl);
 	}
-	// If the last hover control is null and we have a new one then build
-	// geometry for the new hover control.
-	else if(newHoverControl != NULL && !m_HoverControl.valid()) {
-		m_HoverControl = newHoverControl;
-		m_HoverControl->addState("hover");
-		m_HoverControl->buildGeometry();
-	}
-	else if(newHoverControl != NULL && m_HoverControl != newHoverControl) {
-		Ref<Control> oldHover = m_HoverControl;
-		m_HoverControl = newHoverControl;
-
-		oldHover->buildGeometry();
-		m_HoverControl->buildGeometry();
-
-		oldHover->removeState("hover");
-		m_HoverControl->addState("hover");
-	}
+	m_HoverControl = newHoverControl;
 	return false;
 }
-#endif
+
+void WindowManager::removeStateAndRebuildGeometry(const std::string& state, Control* control) {
+	if(control == NULL) {
+		return;
+	}
+	
+	Style currentStyle = StyleBuilder::buildStyle(control);
+	control->removeState(state);
+	Style newStyle = StyleBuilder::buildStyle(control);
+	if(currentStyle != newStyle) {
+		control->buildGeometry();
+	}
+}
+
+void WindowManager::addStateAndRebuildGeometry(const std::string& state, Control* control) {
+	if(control == NULL) {
+		return;
+	}
+	
+	Style currentStyle = StyleBuilder::buildStyle(control);
+	control->addState(state);
+	Style newStyle = StyleBuilder::buildStyle(control);
+	if(currentStyle != newStyle) {
+		control->buildGeometry();
+	}
+}
 
 Point WindowManager::getMousePosition() const {
 	return m_MousePosition;
@@ -200,8 +224,7 @@ void WindowManager::show(Window* window) {
 	// the first time.
 	Point windowLocation = window->getLocation();
 	const Size windowSize = window->getSize();
-	const int screenWidth = CSPSim::theSim->getSDLScreen()->w;
-	const int screenHeight = CSPSim::theSim->getSDLScreen()->h;
+	Size screenSize = getScreenSize();
 	
 	Style windowStyle = StyleBuilder::buildStyle(window);
 	if(windowStyle.horizontalAlign) {	
@@ -209,10 +232,10 @@ void WindowManager::show(Window* window) {
 			windowLocation.x = 0;
 		}
 		else if(*windowStyle.horizontalAlign == "center") {
-			windowLocation.x = (screenWidth / 2) - (windowSize.width / 2);					
+			windowLocation.x = (screenSize.width / 2) - (windowSize.width / 2);					
 		}
 		else if(*windowStyle.horizontalAlign == "right") {		
-			windowLocation.x = screenWidth - windowSize.width;
+			windowLocation.x = screenSize.width - windowSize.width;
 		}
 	} 
 	if(windowStyle.verticalAlign) {
@@ -220,10 +243,10 @@ void WindowManager::show(Window* window) {
 			windowLocation.y = 0;
 		}
 		else if(*windowStyle.verticalAlign == "middle") {		
-			windowLocation.y = (screenHeight / 2) - (windowSize.height / 2);
+			windowLocation.y = (screenSize.height / 2) - (windowSize.height / 2);
 		}
 		else if(*windowStyle.verticalAlign == "bottom") {		
-			windowLocation.y = screenHeight - windowSize.height;
+			windowLocation.y = screenSize.height - windowSize.height;
 		}
 	}
 	window->setLocation(windowLocation);
@@ -269,7 +292,38 @@ void WindowManager::closeAll() {
 
 
 Size WindowManager::getScreenSize() const {
-	return Size(CSPSim::theSim->getSDLScreen()->w, CSPSim::theSim->getSDLScreen()->h);
+	Size size;
+	float scale;
+	calculateScreenSizeAndScale(size, scale);
+	return size;
+}
+
+void WindowManager::calculateScreenSizeAndScale(Size& size, float& scale) const {
+	Size screenSize(CSPSim::theSim->getSDLScreen()->w, CSPSim::theSim->getSDLScreen()->h);
+	
+	if(screenSize.width >= 1024 && screenSize.height >= 768) {
+		size = screenSize;
+		scale = 1.0;
+		return;
+	}
+	
+	// Well the user has a low screen resolution. We do wish to scale down
+	// all user interface elements into smaler controls. We current don't have
+	// support for rescaling of controls. So lets fake a higher screen
+	// resolution and calculate a scale transformation.
+	size = screenSize;
+	double minimumRatio = 1024.0 / 768.0;
+	double aspectRatio = screenSize.width / screenSize.height;
+	if(aspectRatio > minimumRatio) {
+		size.width *= (768.0 / screenSize.height);
+		size.height *= (768.0 / screenSize.height);
+		scale = screenSize.height / 768.0; 
+	}
+	else {
+		size.width *= (1024.0 / screenSize.width);
+		size.height *= (1024.0 / screenSize.width);
+		scale = screenSize.width / 1024.0; 
+	}
 }
 
 void WindowManager::onUpdate(float /*dt*/) {

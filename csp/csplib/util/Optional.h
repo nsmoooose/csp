@@ -75,7 +75,7 @@ public:
 		return *this;
 	}
 	
-	operator bool() const { return this->get_ptr() != 0; }
+	operator bool() const { return hasValue(); }
 	
 	T* operator->() { return get_ptr(); }
 	const T* operator->() const { return get_ptr(); }
@@ -83,7 +83,27 @@ public:
 	const T& operator*() const { return *m_object; }
 	T& operator*() { return *m_object; }
 	
-	bool operator!() const { return (this->get_ptr() == 0); }
+	bool operator!() const { return !hasValue(); }
+	
+	bool operator==(const optional<T>& opt) const {
+		return equals(opt);
+	}
+	
+	bool operator!=(const optional<T>& opt) const {
+		return !equals(opt);
+	}
+
+	bool hasValue() const {	return this->get_ptr() != 0; }
+	
+	bool equals(const optional<T>& opt) const {
+		if(hasValue() && opt.hasValue()) {
+			return *m_object == *opt.m_object;
+		}
+		else if(hasValue() == opt.hasValue()) {
+			return true;
+		}
+		return false;
+	}
 	
 private:
 	T* m_object;

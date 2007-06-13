@@ -1,0 +1,64 @@
+<?xml version="1.0"?>
+<WindowDocument xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation='../window_document.xsd'>
+  <Includes>
+    <!-- This include will set the default behaviour on all controls. -->
+    <StyleInclude>styles.xml</StyleInclude>
+    <StringTableInclude>global.xml</StringTableInclude>
+  </Includes>
+  <Window LocationZ="10" CssClass="help" SizeWidth="900" SizeHeight="650">
+ 	<Control>
+ 		<MultiControlContainer>
+ 			<Controls>
+ 				<Button Id="close" CssClass="close_button" SizeHeight="32" SizeWidth="32" />
+		        <Label LocationX="10" LocationY="2" SizeWidth="569" SizeHeight="30" Text="${help}" />
+		        <Label CssClass="stripe" LocationX="0" LocationY="35" SizeWidth="889" SizeHeight="10" />
+				<ListBox Id="topics" LocationX="10" LocationY="55" SizeWidth="150" SizeHeight="585" />
+				<Label LocationX="170" LocationY="55" SizeWidth="709" SizeHeight="40" Text="Joystick">
+					<Style>
+						<FontSize>30</FontSize>
+					</Style>
+				</Label>
+				<TableControlContainer LocationX="170" LocationY="55" SizeWidth="709" SizeHeight="585">
+					<ColumnDefinitions>
+						<Column Width="0.20"/>
+						<Column Width="0.25"/>
+						<Column Width="0.20"/>
+						<Column Width="0.35"/>
+					</ColumnDefinitions>
+					<RowDefinitions>
+						<Row Height="1.0"/>
+					</RowDefinitions>
+					<Table>
+						<Row>
+							<Cell>
+								<Label>
+									<Text>
+AXIS0
+AXIS1
+AXIS2
+AXIS3
+									</Text>
+								</Label>
+							</Cell>
+							<Cell>
+								<Label>
+									<Text>
+Aileron
+Elevator
+Throttle
+Rudder
+									</Text>
+								</Label>
+							</Cell>
+							<Cell>
+							</Cell>
+							<Cell>
+							</Cell>
+						</Row>
+					</Table>
+				</TableControlContainer>
+ 			</Controls>
+ 		</MultiControlContainer>
+  	</Control>
+  </Window>
+</WindowDocument>

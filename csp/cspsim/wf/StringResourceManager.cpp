@@ -22,6 +22,7 @@
  *
  **/
 
+#include <algorithm>
 #include <csp/cspsim/wf/StringResourceManager.h>
 
 CSP_NAMESPACE
@@ -66,6 +67,13 @@ std::string StringResourceManager::parseAndReplace(const std::string& original) 
 		
 		pos = copy.find("${");
 	}
+
+	pos = copy.find("\r");
+	while(pos != std::string::npos) {
+		copy.replace(pos, 1, "");
+		pos = copy.find("\r");
+	}
+
 	return copy;
 }
 

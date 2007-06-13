@@ -1,0 +1,40 @@
+<?xml version="1.0"?>
+<WindowDocument xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation='../../window_document.xsd'>
+  <Includes>
+    <!-- This include will set the default behaviour on all controls. -->
+    <StyleInclude>styles.xml</StyleInclude>
+    <StringTableInclude>global.xml</StringTableInclude>
+  </Includes>
+  <Window CssClass="topmenu" LocationZ="-9" SizeWidth="276" SizeHeight="84">
+	<Style>
+		<VerticalAlign>top</VerticalAlign>
+		<HorizontalAlign>right</HorizontalAlign>
+	</Style>
+  	<Control>
+  		<MultiControlContainer>
+  			<Controls>
+	          <Button Id="help" LocationX="10" LocationY="10" SizeWidth="64" SizeHeight="64" >
+	          	<Style>
+	          		<BackgroundImage>images/help_button.png</BackgroundImage>
+	          	</Style>
+	          </Button>
+	          <Button Id="library" LocationX="74" LocationY="10" SizeWidth="64" SizeHeight="64" Enabled="false" >
+	          	<Style>
+	          		<BackgroundImage>images/library_button.png</BackgroundImage>
+	          	</Style>
+	          </Button>
+	          <Button Id="options" LocationX="138" LocationY="10" SizeWidth="64" SizeHeight="64" >
+	          	<Style>
+	          		<BackgroundImage>images/settings_button.png</BackgroundImage>
+	          	</Style>
+	          </Button>
+	          <Button Id="quit" LocationX="202" LocationY="10" SizeWidth="64" SizeHeight="64" >
+	          	<Style>
+	          		<BackgroundImage>images/quit_button.png</BackgroundImage>
+	          	</Style>
+	          </Button>
+  			</Controls>
+  		</MultiControlContainer>
+  	</Control>
+  </Window>
+</WindowDocument>

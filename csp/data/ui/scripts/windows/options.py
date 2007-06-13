@@ -28,7 +28,7 @@ from csp.data.ui.scripts.utils import ListBoxManager
 from csp.data.ui.scripts.windows.messagebox import MessageBox
 
 class Options(csp.cspsim.Window, SlotManager):
-    def __init__(self, cspsim, themeName):
+    def __init__(self, cspsim):
         csp.cspsim.Window.__init__(self)
         SlotManager.__init__(self)
 
@@ -36,7 +36,7 @@ class Options(csp.cspsim.Window, SlotManager):
 
         # Load the user interface for this window.
         serializer = csp.cspsim.Serialization()
-        serializer.load(self, themeName, 'options.xml')
+        serializer.load(self, 'options.xml')
         
         # Make a copy of the current configuration. This copy
         # is used while we have the window open.
@@ -51,6 +51,10 @@ class Options(csp.cspsim.Window, SlotManager):
         cancelButton = self.getById('cancel')
         if cancelButton != None:
             self.connectToClickSignal(cancelButton, self.cancel_Click)
+            
+        closeButton = self.getById('close')
+        if closeButton != None:
+            self.connectToClickSignal(closeButton, self.cancel_Click)
 
         # Class with usefull functions to handle listboxes.
         listBoxManager = ListBoxManager()
@@ -94,7 +98,7 @@ class Options(csp.cspsim.Window, SlotManager):
         self.configuration.getDisplay().setWidth(width)
         self.configuration.getDisplay().setHeight(height)
         
-        messageBox = MessageBox(self.cspsim, self.getTheme())
+        messageBox = MessageBox(self.cspsim)
         messageBox.show(self, '${restart_required}')
         
         

@@ -1,0 +1,140 @@
+<?xml version="1.0"?>
+<WindowDocument xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation='../window_document.xsd'>
+  <Includes>
+    <!-- This include will set the default behaviour on all controls. -->
+    <StyleInclude>styles.xml</StyleInclude>
+    <StringTableInclude>global.xml</StringTableInclude>
+  </Includes>
+  <Window LocationZ="10" CssClass="help" SizeWidth="900" SizeHeight="650">
+ 	<Control>
+ 		<MultiControlContainer>
+ 			<Controls>
+ 				<Button Id="close" CssClass="close_button" SizeHeight="32" SizeWidth="32" />
+		        <Label LocationX="10" LocationY="2" SizeWidth="569" SizeHeight="30" Text="${help}" />
+		        <Label CssClass="stripe" LocationX="0" LocationY="35" SizeWidth="889" SizeHeight="10" />
+				<ListBox Id="topics" LocationX="10" LocationY="55" SizeWidth="150" SizeHeight="585" />
+				<Label LocationX="170" LocationY="55" SizeWidth="709" SizeHeight="40" Text="View controls">
+					<Style>
+						<FontSize>30</FontSize>
+					</Style>
+				</Label>
+				<TableControlContainer LocationX="170" LocationY="55" SizeWidth="709" SizeHeight="585">
+					<ColumnDefinitions>
+						<Column Width="0.15"/>
+						<Column Width="0.30"/>
+						<Column Width="0.20"/>
+						<Column Width="0.35"/>
+					</ColumnDefinitions>
+					<RowDefinitions>
+						<Row Height="1.0"/>
+					</RowDefinitions>
+					<Table>
+						<Row>
+							<Cell>
+								<Label>
+									<Text>
+1
+2
+3
+4
+5
+6
+7
+8
+9
+
+CTRL-KP4
+CTRL-KP6
+CTRL-KP8
+CTRL-KP2
+
+ESCAPE
+p
+r
+ALT-w
+F12
+HOME
+SPACE
+									</Text>
+								</Label>
+							</Cell>
+							<Cell>
+								<Label>
+									<Text>
+Camera (internal)
+Camera (external body)
+Camera (external world)
+Camera (fixed flyby)
+Camera (fixed flyby)
+Camera (none)
+Camera (satellite)
+Camera (flyby)
+Camera (flyby)
+
+Pan camera left
+Pan camera right
+Pan camera up
+Pan camera down
+
+Quit
+Pause
+Toggle recorder
+Toggle wireframe
+Statistics
+Console
+Change vehicle
+									</Text>
+								</Label>
+							</Cell>
+							<Cell>
+								<Label>
+									<Text>
+KP_PLUS
+KP_MINUS
+SHIFT-KP_PLUS
+SHIFT-KP_MINUS
+
+F1
+F2
+o
+l
+
+CTRL-UP
+CTRL-RIGHT
+CTRL-LEFT
+CTRL-DOWN
+SHIFT-UP
+SHIFT-DOWN
+									</Text>
+								</Label>
+							</Cell>
+							<Cell>
+								<Label>
+									<Text>
+Zoom camera in
+Zoom camera out
+Dec fov on camera
+Inc fov on camera
+
+Toggle spin the world
+RESET_SPIN
+Print screen
+Toggle labels
+
+Camera forw. (break padlock)
+Camera right (break padlock)
+Camera left (break padlock)
+Camera back. (break padlock)
+Camera forward
+Camera select (padlock)									
+									</Text>
+								</Label>
+							</Cell>
+						</Row>
+					</Table>
+				</TableControlContainer>
+ 			</Controls>
+ 		</MultiControlContainer>
+  	</Control>
+  </Window>
+</WindowDocument>

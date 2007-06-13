@@ -27,7 +27,7 @@ from csp.data.ui.scripts.utils import SlotManager
 from csp.data.ui.scripts.windows.options import Options
 
 class QuitResume(csp.cspsim.Window, SlotManager):
-    def __init__(self, cspsim, themeName):
+    def __init__(self, cspsim):
         csp.cspsim.Window.__init__(self)
         SlotManager.__init__(self)
 
@@ -35,7 +35,7 @@ class QuitResume(csp.cspsim.Window, SlotManager):
 
         # Load the user interface for this window.
         serializer = csp.cspsim.Serialization()
-        serializer.load(self, themeName, 'quit_resume.xml')
+        serializer.load(self, 'quit_resume.xml')
 
         resumeButton = self.getById('resume')
         if resumeButton != None:
@@ -54,7 +54,7 @@ class QuitResume(csp.cspsim.Window, SlotManager):
 
     def options_Click(self):
         # Display the options window
-        options = Options(self.cspsim, self.getTheme())
+        options = Options(self.cspsim)
         self.getWindowManager().show(options)
 
         # Close myself...

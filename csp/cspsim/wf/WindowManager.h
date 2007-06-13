@@ -111,6 +111,11 @@ private:
 	// This is the control that the mouse is currently hovering above.
 	Ref<Control> m_HoverControl;
 	Point m_MousePosition;
+	
+	void removeStateAndRebuildGeometry(const std::string& state, Control* control);
+	void addStateAndRebuildGeometry(const std::string& state, Control* control);
+	
+	void calculateScreenSizeAndScale(Size& size, float& scale) const;
 };
 
 } // namespace wf

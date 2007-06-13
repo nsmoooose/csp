@@ -1,0 +1,45 @@
+<?xml version="1.0"?>
+<WindowDocument xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation='../window_document.xsd'>
+  <Includes>
+    <!-- This include will set the default behaviour on all controls. -->
+    <StyleInclude>styles.xml</StyleInclude>
+  </Includes>
+  <Window LocationZ="10" CssClass="help" SizeWidth="600" SizeHeight="400">
+ 	<Control>
+ 		<TableControlContainer>
+ 			<ColumnDefinitions>
+ 				<Column Width="0.25" />
+ 				<Column Width="0.75" />
+ 			</ColumnDefinitions>
+ 			<RowDefinitions>
+ 				<Row Height="1.0" />
+ 			</RowDefinitions>
+ 			<Table>
+ 				<Row>
+ 					<Cell>
+ 						<ListBox>
+ 							<Items>
+ 								<Item Text="Index" />
+ 								<Item Text="Keyboard" />
+ 								<Item Text="Takeoff" />
+ 								<Item Text="Flight" />
+ 								<Item Text="Landing" />
+
+<!--
+	 							<Item Text="AIM-120 AMRAAM" />
+ 								<Item Text="FIM-92 Stinger" />
+ 								<Item Text="M1097 Avenger" />
+ 								<Item Text="MIM-104 Patriot" />
+ --> 								
+ 							</Items>
+ 						</ListBox>
+ 					</Cell>
+ 					<Cell>
+ 						<Label Text="jklafjd" />
+ 					</Cell>
+ 				</Row>
+ 			</Table>
+ 		</TableControlContainer>
+  	</Control>
+  </Window>
+</WindowDocument>

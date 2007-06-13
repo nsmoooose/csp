@@ -26,6 +26,7 @@
 #include <csp/cspsim/wf/ControlCallback.h>
 #include <csp/cspsim/wf/ControlGeometryBuilder.h>
 #include <csp/cspsim/wf/SignalData.h>
+#include <csp/cspsim/wf/StyleBuilder.h>
 #include <csp/cspsim/wf/Window.h>
 #include <csp/csplib/util/Ref.h>
 
@@ -77,6 +78,44 @@ std::string Control::getName() const {
 }
 
 void Control::buildGeometry() {
+	if(m_Parent.valid()) {
+		// Handle alignment of the control in the parents container.
+		// Some containers will resize child controls. These containers
+		// will alignment don't work.
+		
+		Point controlLocation = getLocation();
+		const Size controlSize = getSize();
+		const int parentWidth = m_Parent->getClientRect().width();
+		const int parentHeight = m_Parent->getClientRect().height();
+		 
+		Style controlStyle = StyleBuilder::buildStyle(this);
+		if(controlStyle.horizontalAlign) {	
+			if(*controlStyle.horizontalAlign == "left") {
+				controlLocation.x = 0;
+			}
+			else if(*controlStyle.horizontalAlign == "center") {
+				controlLocation.x = (parentWidth / 2) - (controlSize.width / 2);					
+			}
+			else if(*controlStyle.horizontalAlign == "right") {		
+				controlLocation.x = parentWidth - controlSize.width;
+			}
+		} 
+		if(controlStyle.verticalAlign) {
+			if(*controlStyle.verticalAlign == "top") {
+				controlLocation.y = 0;
+			}
+			else if(*controlStyle.verticalAlign == "middle") {		
+				controlLocation.y = (parentHeight / 2) - (controlSize.height / 2);
+			}
+			else if(*controlStyle.verticalAlign == "bottom") {		
+				controlLocation.y = parentHeight - controlSize.height;
+			}
+		}
+		setLocation(controlLocation);
+	}
+	
+	
+	
 	m_TransformGroup->removeChild(0, m_TransformGroup->getNumChildren());
 	updateMatrix();
 }

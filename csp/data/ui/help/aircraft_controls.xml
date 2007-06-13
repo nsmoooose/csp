@@ -1,0 +1,184 @@
+<?xml version="1.0"?>
+<WindowDocument xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation='../window_document.xsd'>
+  <Includes>
+    <!-- This include will set the default behaviour on all controls. -->
+    <StyleInclude>styles.xml</StyleInclude>
+    <StringTableInclude>global.xml</StringTableInclude>
+  </Includes>
+  <Window LocationZ="10" CssClass="help" SizeWidth="900" SizeHeight="650">
+ 	<Control>
+ 		<MultiControlContainer>
+ 			<Controls>
+ 				<Button Id="close" CssClass="close_button" SizeHeight="32" SizeWidth="32" />
+		        <Label LocationX="10" LocationY="2" SizeWidth="569" SizeHeight="30" Text="${help}" />
+		        <Label CssClass="stripe" LocationX="0" LocationY="35" SizeWidth="889" SizeHeight="10" />
+				<ListBox Id="topics" LocationX="10" LocationY="55" SizeWidth="150" SizeHeight="585" />
+				<Label LocationX="170" LocationY="55" SizeWidth="709" SizeHeight="40" Text="Aircraft controls">
+					<Style>
+						<FontSize>30</FontSize>
+					</Style>
+				</Label>
+				<TableControlContainer LocationX="170" LocationY="55" SizeWidth="709" SizeHeight="585">
+					<ColumnDefinitions>
+						<Column Width="0.20"/>
+						<Column Width="0.25"/>
+						<Column Width="0.20"/>
+						<Column Width="0.35"/>
+					</ColumnDefinitions>
+					<RowDefinitions>
+						<Row Height="1.0"/>
+					</RowDefinitions>
+					<Table>
+						<Row>
+							<Cell>
+								<Label>
+									<Text>
+UP/DOWN
+LEFT/RIGHT
+COMMA/PERIOD
+MINUS/EQUALS
+f
+s
+w
+m
+g
+b
+SHIFT-b
+CTRL-b
+SHIFT-x
+SHIFT-z
+CTRL-r
+SHIFT-c
+KP0
+KP1
+KP2
+KP3
+KP4
+KP5
+KP6
+KP7
+KP8
+KP9
+SHIFT-m
+									</Text>
+								</Label>
+							</Cell>
+							<Cell>
+								<Label>
+									<Text>
+ELEVATOR
+AILERON
+RUDDER
+THROTTLE
+FLAPS_TOGGLE
+SMOKE_TOGGLE
+WHEEL_BRAKE
+MARKS_TOGGLE
+GEAR_TOGGLE
+AIRBRAKE_TOGGLE
+INC_AIRBRAKE
+DEC_AIRBRAKE
+NEXT_STEERPOINT
+PREV_STEERPOINT
+AIR_REFUEL_TOGGLE
+CANOPY_TOGGLE
+ICP_0
+ICP_1
+ICP_2
+ICP_3
+ICP_4
+ICP_5
+ICP_6
+ICP_7
+ICP_8
+ICP_9
+MPO (hold to enable)
+									</Text>
+								</Label>
+							</Cell>
+							<Cell>
+								<Label>
+									<Text>
+SHIFT-KP_MINUS
+SHIFT-KP_PLUS
+KP_ENTER
+KP_MULTIPLY
+SHIFT-KP2
+SHIFT-KP8
+SHIFT-KP6
+SHIFT-KP4
+SHIFT-1
+SHIFT-2
+SHIFT-3
+SHIFT-4
+SHIFT-5
+SHIFT-6
+d
+SHIFT-d
+CTRL-d
+h
+ALT-h
+SHIFT-h
+CTRL-h
+SHIFT-CTRL-h
+CTRL-SHIFT-a
+CTRL-SHIFT-d
+CTRL-SHIFT-f
+CTRL-SHIFT-s
+CTRL-SHIFT-v
+SHIFT-CTRL-m
+SHIFT-CTRL-e
+SHIFT-CTRL-o
+CTRL-e
+SHIFT-q
+CTRL-q
+									</Text>
+								</Label>
+							</Cell>
+							<Cell>
+								<Label>
+									<Text>
+ICP_DEC
+ICP_INC
+ICP_ENTR
+ICP_RCL
+ICP_DN
+ICP_UP
+ICP_SEQ
+ICP_RTN
+ICP_COM1
+ICP_COM2
+ICP_IFF
+ICP_LIST
+ICP_AA
+ICP_AG
+HUD_DATASWITCH_TOGGLE
+HUD_DATASWITCH_OFF
+HUD_DATASWITCH_DATA
+HUD_FPM_SWITCH_CYCLE_NEXT
+HUD_FPM_SWITCH_CYCLE_PREV
+HUD_FPM_SWITCH_OFF
+HUD_FPM_SWITCH_FPM
+HUD_FPM_SWITCH_ATT_FPM
+Cycle HUD altitude switch
+Cycle HUD data switch
+Cycle HUD flight path marker
+Cycle HUD scales switch
+Cycle HUD velocity switch
+Master fuel toggle
+FUEL_QTY_SEL_CYCLE_NEXT
+EXT_FUEL_TRANS_TOGGLE
+ENGINE_FEED_CYCLE_NEXT
+Eject right wing tank
+Eject center and left wing tank
+									</Text>
+								</Label>
+							</Cell>
+						</Row>
+					</Table>
+				</TableControlContainer>
+ 			</Controls>
+ 		</MultiControlContainer>
+  	</Control>
+  </Window>
+</WindowDocument>

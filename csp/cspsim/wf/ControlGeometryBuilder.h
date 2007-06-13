@@ -37,6 +37,10 @@ namespace osg {
 	class Switch;
 }
 
+namespace osgText {
+	class Text;
+}
+
 CSP_NAMESPACE
 
 namespace wf {
@@ -83,6 +87,8 @@ private:
 		float x1, float y1, float x2, float y2, float z, float lineWidth,
 		const osg::Vec4& outerColor, const osg::Vec4& innerColor,
 		bool left=true, bool top=true, bool right=true, bool bottom=true) const;
+		
+	virtual osgText::Text* buildText(const std::string& text, const std::string& fontFamily, float fontSize, osg::Vec4& color) const;
 
 	virtual osg::Geode* buildStar(float heightAndWidth, float z, osg::Vec4& color1, osg::Vec4& color2) const;
 		

@@ -82,21 +82,21 @@ void Control::buildGeometry() {
 		// Handle alignment of the control in the parents container.
 		// Some containers will resize child controls. These containers
 		// will alignment don't work.
-		
+
 		Point controlLocation = getLocation();
 		const Size controlSize = getSize();
-		const int parentWidth = m_Parent->getClientRect().width();
-		const int parentHeight = m_Parent->getClientRect().height();
+		const int parentWidth = static_cast<int>(m_Parent->getClientRect().width());
+		const int parentHeight = static_cast<int>(m_Parent->getClientRect().height());
 		 
 		Style controlStyle = StyleBuilder::buildStyle(this);
-		if(controlStyle.horizontalAlign) {	
+		if(controlStyle.horizontalAlign) {
 			if(*controlStyle.horizontalAlign == "left") {
 				controlLocation.x = 0;
 			}
 			else if(*controlStyle.horizontalAlign == "center") {
-				controlLocation.x = (parentWidth / 2) - (controlSize.width / 2);					
+				controlLocation.x = (parentWidth / 2) - (controlSize.width / 2);
 			}
-			else if(*controlStyle.horizontalAlign == "right") {		
+			else if(*controlStyle.horizontalAlign == "right") {
 				controlLocation.x = parentWidth - controlSize.width;
 			}
 		} 
@@ -104,18 +104,18 @@ void Control::buildGeometry() {
 			if(*controlStyle.verticalAlign == "top") {
 				controlLocation.y = 0;
 			}
-			else if(*controlStyle.verticalAlign == "middle") {		
+			else if(*controlStyle.verticalAlign == "middle") {
 				controlLocation.y = (parentHeight / 2) - (controlSize.height / 2);
 			}
-			else if(*controlStyle.verticalAlign == "bottom") {		
+			else if(*controlStyle.verticalAlign == "bottom") {
 				controlLocation.y = parentHeight - controlSize.height;
 			}
 		}
 		setLocation(controlLocation);
 	}
-	
-	
-	
+
+
+
 	m_TransformGroup->removeChild(0, m_TransformGroup->getNumChildren());
 	updateMatrix();
 }
@@ -191,14 +191,14 @@ bool Control::getEnabled() const {
 	if(!m_Enabled) {
 		return false;
 	}
-	
+
 	// This control seems to be enabled. But this settings is inherited
 	// from the parent control. So if we have a valid parent control
 	// lets return the parents enabled property.
 	if(m_Parent.valid()) {
 		return m_Parent->getEnabled();
 	}
-	
+
 	// No parent. Just return the value we got.
 	return m_Enabled;
 }
@@ -225,7 +225,7 @@ std::string Control::getState() const {
 	if(!getEnabled()) {
 		copy.insert("disabled");
 	}
-	
+
 	StateSet::const_iterator state = copy.begin();
 	std::string statesToReturn;
 	for(;state != copy.end();++state) {
@@ -256,7 +256,7 @@ void Control::onClick(ClickEventArgs& event) {
 		// Not enabled. Lets return.
 		return;
 	}
-	
+
 	Click(event);
 	if(event.handled == false) {
 		Control* parent = getParent();

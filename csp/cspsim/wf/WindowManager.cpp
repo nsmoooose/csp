@@ -70,7 +70,7 @@ WindowManager::WindowManager(osgUtil::SceneView* view)
 WindowManager::WindowManager() : m_Group(new osg::Group) {
 	const int screenWidth = CSPSim::theSim->getSDLScreen()->w;
 	const int screenHeight = CSPSim::theSim->getSDLScreen()->h;
-	
+
 	Size screenSize;
 	float screenScale;
 	calculateScreenSizeAndScale(screenSize, screenScale);
@@ -135,7 +135,7 @@ bool WindowManager::onClick(int x, int y) {
 	return event.handled;
 }
 
-bool WindowManager::onMouseMove(int x, int y, int dx, int dy) {
+bool WindowManager::onMouseMove(int x, int y, int /*dx*/, int /*dy*/) {
 	// Save the new mouse position.
 	m_MousePosition = Point(x, y);
 
@@ -152,7 +152,7 @@ void WindowManager::removeStateAndRebuildGeometry(const std::string& state, Cont
 	if(control == NULL) {
 		return;
 	}
-	
+
 	Style currentStyle = StyleBuilder::buildStyle(control);
 	control->removeState(state);
 	Style newStyle = StyleBuilder::buildStyle(control);
@@ -165,7 +165,7 @@ void WindowManager::addStateAndRebuildGeometry(const std::string& state, Control
 	if(control == NULL) {
 		return;
 	}
-	
+
 	Style currentStyle = StyleBuilder::buildStyle(control);
 	control->addState(state);
 	Style newStyle = StyleBuilder::buildStyle(control);
@@ -219,33 +219,33 @@ void WindowManager::show(Window* window) {
 
 	// Force this container to align all child controls.
 	window->layoutChildControls();
-	
-	// We do wish to handle alignment when the window is displayed for 
+
+	// We do wish to handle alignment when the window is displayed for
 	// the first time.
 	Point windowLocation = window->getLocation();
 	const Size windowSize = window->getSize();
 	Size screenSize = getScreenSize();
-	
+
 	Style windowStyle = StyleBuilder::buildStyle(window);
-	if(windowStyle.horizontalAlign) {	
+	if(windowStyle.horizontalAlign) {
 		if(*windowStyle.horizontalAlign == "left") {
 			windowLocation.x = 0;
 		}
 		else if(*windowStyle.horizontalAlign == "center") {
-			windowLocation.x = (screenSize.width / 2) - (windowSize.width / 2);					
+			windowLocation.x = (screenSize.width / 2) - (windowSize.width / 2);
 		}
-		else if(*windowStyle.horizontalAlign == "right") {		
+		else if(*windowStyle.horizontalAlign == "right") {
 			windowLocation.x = screenSize.width - windowSize.width;
 		}
-	} 
+	}
 	if(windowStyle.verticalAlign) {
 		if(*windowStyle.verticalAlign == "top") {
 			windowLocation.y = 0;
 		}
-		else if(*windowStyle.verticalAlign == "middle") {		
+		else if(*windowStyle.verticalAlign == "middle") {
 			windowLocation.y = (screenSize.height / 2) - (windowSize.height / 2);
 		}
-		else if(*windowStyle.verticalAlign == "bottom") {		
+		else if(*windowStyle.verticalAlign == "bottom") {
 			windowLocation.y = screenSize.height - windowSize.height;
 		}
 	}
@@ -300,13 +300,13 @@ Size WindowManager::getScreenSize() const {
 
 void WindowManager::calculateScreenSizeAndScale(Size& size, float& scale) const {
 	Size screenSize(CSPSim::theSim->getSDLScreen()->w, CSPSim::theSim->getSDLScreen()->h);
-	
+
 	if(screenSize.width >= 1024 && screenSize.height >= 768) {
 		size = screenSize;
 		scale = 1.0;
 		return;
 	}
-	
+
 	// Well the user has a low screen resolution. We do wish to scale down
 	// all user interface elements into smaler controls. We current don't have
 	// support for rescaling of controls. So lets fake a higher screen
@@ -317,12 +317,12 @@ void WindowManager::calculateScreenSizeAndScale(Size& size, float& scale) const 
 	if(aspectRatio > minimumRatio) {
 		size.width *= (768.0 / screenSize.height);
 		size.height *= (768.0 / screenSize.height);
-		scale = screenSize.height / 768.0; 
+		scale = screenSize.height / 768.0;
 	}
 	else {
 		size.width *= (1024.0 / screenSize.width);
 		size.height *= (1024.0 / screenSize.width);
-		scale = screenSize.width / 1024.0; 
+		scale = screenSize.width / 1024.0;
 	}
 }
 

@@ -1,5 +1,5 @@
 // Combat Simulator Project
-// Copyright (C) 2002 The Combat Simulator Project
+// Copyright (C) 2007 The Combat Simulator Project
 // http://csp.sourceforge.net
 //
 // This program is free software; you can redistribute it and/or

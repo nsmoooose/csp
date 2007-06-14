@@ -114,13 +114,13 @@ WindowManager::WindowManager() : m_Group(new osg::Group) {
 
 	m_View->setSceneData(m_Group.get());
 
-    osg::StateSet *stateSet = m_Group->getOrCreateStateSet();
-    stateSet->setRenderBinDetails(100, "RenderBin");
-    stateSet->setMode(GL_LIGHTING, osg::StateAttribute::ON);
-    stateSet->setMode(GL_DEPTH_TEST, osg::StateAttribute::ON);
+	osg::StateSet *stateSet = m_Group->getOrCreateStateSet();
+	stateSet->setRenderBinDetails(100, "RenderBin");
+	stateSet->setMode(GL_LIGHTING, osg::StateAttribute::ON);
+	stateSet->setMode(GL_DEPTH_TEST, osg::StateAttribute::ON);
 
-    osg::ref_ptr<osg::BlendFunc> blendFunction = new osg::BlendFunc;
-    stateSet->setAttributeAndModes(blendFunction.get());
+	osg::ref_ptr<osg::BlendFunc> blendFunction = new osg::BlendFunc;
+	stateSet->setAttributeAndModes(blendFunction.get());
 }
 
 WindowManager::~WindowManager() {

@@ -33,13 +33,11 @@ CSP_NAMESPACE
 void set2dScene(osg::Group *root_node, int screen_width, int screen_height) {
 	const unsigned short offsetpos = 11;
 	osg::ref_ptr<Framerate> framerate = new Framerate(offsetpos, screen_height - offsetpos);
-	osg::ref_ptr<ScreenInfo> pause = new ScreenInfo(screen_width-5*offsetpos, screen_height-offsetpos, "PAUSE", "PAUSE");
 	osg::ref_ptr<ScreenInfo> record = new ScreenInfo(screen_width-15*offsetpos, screen_height-offsetpos, "RECORD", "RECORD");
 	osg::ref_ptr<GeneralStats> generalStats = new GeneralStats(offsetpos, screen_height / 3);
 	osg::ref_ptr<MessageList> messageBox = new MessageList(offsetpos, screen_height / 2, 4, 4.0);
 
 	root_node->addChild(framerate.get());
-	root_node->addChild(pause.get());
 	root_node->addChild(record.get());
 	root_node->addChild(generalStats.get());
 	root_node->addChild(messageBox.get());

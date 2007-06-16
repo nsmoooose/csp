@@ -3,6 +3,7 @@
 	<Strings>
 		<String key="cancel">Cancel</String>
 		<String key="credits">Credits</String>
+		<String key="csp">Combat Simulator Project</String>	
 		<String key="full_screen_mode">Fullscreen</String>
 		<String key="help">Help</String>
 		<String key="help_mouse">Mouse</String>
@@ -16,6 +17,7 @@
 		<String key="multiplayer">Multiplayer</String>
 		<String key="ok">OK</String>
 		<String key="options">Options</String>
+		<String key="pause">Pause</String>
 		<String key="quit">Quit</String>
 		<String key="resume">Resume</String>
 		<String key="restart_required">Restart is required for changes to take effect.</String>

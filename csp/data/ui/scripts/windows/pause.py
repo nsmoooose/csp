@@ -19,35 +19,28 @@
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 """
-Combat Simulator Project : GameScreen script that handles UI when a simulation is running.
+Combat Simulator Project : Pause window script
 """
 
 import csp.cspsim
 from csp.data.ui.scripts.utils import SlotManager
-from csp.data.ui.scripts.windows.quitresume import QuitResume
-from csp.data.ui.scripts.windows.pause import Pause
 
-
-class GameScreenManager(SlotManager):
+class Pause(csp.cspsim.Window, SlotManager):
     def __init__(self, cspsim):
+        csp.cspsim.Window.__init__(self)
         SlotManager.__init__(self)
 
         self.cspsim = cspsim
-               
-        self.connectToInputInterfaceAction(self.cspsim, 'QUIT', self.on_Quit)
-        self.connectToInputInterfaceAction(self.cspsim, 'PAUSE', self.on_Pause)
-                                
-    def on_Quit(self):
-        quitResume = QuitResume(self.cspsim)
-        self.cspsim.getCurrentScreen().getWindowManager().show(quitResume)
+        self.cspsim.togglePause()
 
-    def on_Pause(self):
-        if self.cspsim.isPaused():
-            self.cspsim.togglePause()
-            pauseWindow = self.cspsim.getCurrentScreen().getWindowManager().getById('pauseWindow')
-            if pauseWindow != None:
-                pauseWindow.close()
-        else:
-            pause = Pause(self.cspsim)
-            self.cspsim.getCurrentScreen().getWindowManager().show(pause)
-        
+        # Load the user interface for this window.
+        serializer = csp.cspsim.Serialization()
+        serializer.load(self, 'pause.xml')
+
+        resumeButton = self.getById('resume')
+        if resumeButton != None:
+            self.connectToClickSignal(resumeButton, self.resume_Click)
+
+    def resume_Click(self):
+        self.cspsim.togglePause()
+        self.close()

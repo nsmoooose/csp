@@ -290,8 +290,11 @@ public:
 	virtual void load(Window* window, const std::string& file);
 };
 
+%newobject WindowManager::getById();
+
 class WindowManager : public Referenced {
 public:
+	virtual Window* getById(const std::string& id);
 	virtual void show(Window* window);
 	virtual void close(Window* window);	
 	virtual void closeAll();

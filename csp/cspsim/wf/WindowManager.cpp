@@ -210,6 +210,16 @@ Control* WindowManager::getControlAtPosition(int x, int y) {
 	return NULL;
 }
 
+Window* WindowManager::getById(const std::string& id) {
+	WindowVector::iterator window = m_Windows.begin();
+	for(;window != m_Windows.end();++window) {
+		if((*window)->getId() == id) {
+			return window->get();
+		}
+	}
+	return NULL;
+}
+
 void WindowManager::show(Window* window) {
 	// We must initialize the window and all it's child controls.
 	// We must assign the window to this instance of the window manager.

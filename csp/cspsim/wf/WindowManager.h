@@ -63,6 +63,8 @@ public:
 	
 	virtual Size getScreenSize() const;
 	
+	virtual Window* getById(const std::string& id);
+
 	virtual void onUpdate(float dt);
 	virtual void onRender();
 	

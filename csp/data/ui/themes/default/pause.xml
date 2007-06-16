@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<WindowDocument xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation='../../window_document.xsd'>
+  <Includes>
+    <!-- This include will set the default behaviour on all controls. -->
+    <StyleInclude>styles.xml</StyleInclude>
+    <StringTableInclude>global.xml</StringTableInclude>
+  </Includes>
+  <Window CssClass="window_default" SizeWidth="439" SizeHeight="120" Id="pauseWindow">
+    <Control>
+      <MultiControlContainer>
+        <Controls>
+          <Label LocationX="10" LocationY="2" SizeWidth="328" SizeHeight="30" Text="${csp} - ${pause}" />
+          <Label CssClass="stripe" LocationX="0" LocationY="30" SizeWidth="428" SizeHeight="10" />
+          <Image LocationX="10" LocationY="50" SizeWidth="64" SizeHeight="64">
+          	<Style>
+          		<BackgroundColor>ffffffff</BackgroundColor>
+          		<BackgroundImage>images/pause.png</BackgroundImage>
+          	</Style>
+          </Image>
+		  <Button LocationY="60" SizeWidth="150" SizeHeight="40" Id="resume" Text="${resume}" >
+		  	<Style>
+		  		<HorizontalAlign>center</HorizontalAlign>
+		  	</Style>
+		  </Button>
+        </Controls>
+      </MultiControlContainer>
+    </Control>
+  </Window>
+</WindowDocument>

@@ -171,7 +171,6 @@ void GameScreen::onInit() {
 
 	m_ScreenInfoManager = new ScreenInfoManager(ScreenWidth, ScreenHeight);
 	m_ScreenInfoManager->setName("ScreenInfoManager");
-	m_ScreenInfoManager->setStatus("PAUSE", CSPSim::theSim->isPaused());
 	m_ScreenInfoManager->setStatus("RECORD", false);
 
 	osg::Group *info = CSPSim::theSim->getScene()->getInfoGroup();
@@ -298,11 +297,6 @@ void GameScreen::on_View9() {
 }
 
 void GameScreen::on_View0() {
-}
-
-void GameScreen::on_Pause() {
-	CSPSim::theSim->togglePause();
-	m_ScreenInfoManager->setStatus("PAUSE", !m_ScreenInfoManager->getStatus("PAUSE"));
 }
 
 void GameScreen::setRecorder(bool on) {

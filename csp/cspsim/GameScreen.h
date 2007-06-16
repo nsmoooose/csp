@@ -67,7 +67,6 @@ public:
 	virtual void setActiveObject(Ref<DynamicObject> const &);
 
 	DECLARE_INPUT_INTERFACE(GameScreen, BaseScreen)
-		BIND_ACTION("PAUSE", on_Pause);
 		BIND_ACTION("TOGGLE_RECORDER", on_ToggleRecorder);
 		BIND_ACTION("TOGGLE_WIREFRAME", on_ToggleWireframe);
 		BIND_ACTION("STATS", on_Stats);
@@ -118,7 +117,6 @@ public:
 public:
 
 	// input event handlers
-	void on_Pause();
 	void on_ToggleRecorder();
 	void on_ToggleWireframe();
 	void on_Stats();

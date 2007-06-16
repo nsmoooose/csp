@@ -3,6 +3,7 @@
 	<Strings>
 		<String key="cancel">Avbryt</String>
 		<String key="credits">Berom</String>
+		<String key="csp">Combat Simulator Project</String>
 		<String key="full_screen_mode">Helskarm</String>
 		<String key="help">Hjalp</String>
 		<String key="help_mouse">Mus</String>
@@ -16,6 +17,7 @@
 		<String key="multiplayer">Natverk</String>
 		<String key="ok">OK</String>
 		<String key="options">Installningar</String>
+		<String key="pause">Paus</String>
 		<String key="quit">Avsluta</String>
 		<String key="restart_required">Omstart kravs for att andring skall galla.</String>
 		<String key="resume">Aterga</String>

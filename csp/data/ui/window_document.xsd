@@ -167,6 +167,14 @@ in this document has the same inheritence as the cpp-classes.
     </xsd:complexContent>
   </xsd:complexType>
   
+  <xsd:complexType name="Image_t">
+    <xsd:complexContent>
+      <xsd:extension base="Control_t">
+        <xsd:attribute name="Text" type="xsd:string" />
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+
   <xsd:complexType name="ListBox_t">
     <xsd:complexContent>
       <xsd:extension base="Container_t">
@@ -208,6 +216,7 @@ in this document has the same inheritence as the cpp-classes.
       <xsd:element name="Button" type="Button_t" />
       <xsd:element name="CheckBox" type="CheckBox_t" />
       <xsd:element name="Label" type="Label_t" />
+      <xsd:element name="Image" type="Image_t" />
       <xsd:element name="ListBox" type="ListBox_t" />
       <xsd:element name="Model" type="Model_t" />
       <xsd:element name="MultiControlContainer" type="MultiControlContainer_t" />

@@ -28,6 +28,7 @@
 #include <csp/cspsim/wf/Button.h>
 #include <csp/cspsim/wf/CheckBox.h>
 #include <csp/cspsim/wf/ControlGeometryBuilder.h>
+#include <csp/cspsim/wf/Image.h>
 #include <csp/cspsim/wf/Label.h>
 #include <csp/cspsim/wf/ListBox.h>
 #include <csp/cspsim/wf/ListBoxItem.h>
@@ -654,6 +655,33 @@ osg::Group* ControlGeometryBuilder::buildLabel(const Label* label) const {
 		}
 	    geode->addDrawable(button_text.get());
 	}
+
+	osg::ref_ptr<osg::Group> group = new osg::Group;
+	group->addChild(geode.get());
+
+    osg::StateSet *stateSet = group->getOrCreateStateSet();
+    stateSet->setRenderBinDetails(100, "RenderBin");
+    stateSet->setMode(GL_LIGHTING, osg::StateAttribute::OFF);
+    stateSet->setMode(GL_DEPTH_TEST, osg::StateAttribute::ON);
+
+    osg::ref_ptr<osg::BlendFunc> blendFunction = new osg::BlendFunc;
+    stateSet->setAttributeAndModes(blendFunction.get());
+
+	return group.release();
+}
+
+osg::Group* ControlGeometryBuilder::buildImage(const Image* image) const {
+	Style style = StyleBuilder::buildStyle(image);
+
+	// Test if the control is visible or not.
+	if (style.visible && *style.visible == false) {
+		return NULL;
+	}
+
+	osg::ref_ptr<osg::Geode> geode = new osg::Geode;
+	float z = 0;
+
+	buildControl(geode.get(), z, style, image);
 
 	osg::ref_ptr<osg::Group> group = new osg::Group;
 	group->addChild(geode.get());

@@ -31,6 +31,7 @@
 #include <csp/cspsim/Config.h>
 #include <csp/cspsim/wf/Button.h>
 #include <csp/cspsim/wf/CheckBox.h>
+#include <csp/cspsim/wf/Image.h>
 #include <csp/cspsim/wf/Label.h>
 #include <csp/cspsim/wf/ListBox.h>
 #include <csp/cspsim/wf/Model.h>
@@ -271,6 +272,11 @@ Ref<Control> createControl(XMLNode& node) {
 	}
 	else if(name == "Item") {
 		Ref<ListBoxItem> control = new ListBoxItem();
+		archive.loadControl(control.get(), node);
+		return control;
+	}
+	else if(name == "Image") {
+		Ref<Image> control = new Image();
 		archive.loadControl(control.get(), node);
 		return control;
 	}

@@ -51,6 +51,7 @@ struct Style;
 class Button;
 class CheckBox;
 class Control;
+class Image;
 class Label;
 class ListBox;
 class ListBoxItem;
@@ -67,6 +68,7 @@ public:
 	virtual void buildControl(osg::Geode* geode, float& z, const Style& style, const Control* control) const;
 	virtual osg::Group* buildCheckBox(const CheckBox* checkBox) const;
 	virtual osg::Group* buildLabel(const Label* label) const;
+	virtual osg::Group* buildImage(const Image* image) const;
 	virtual osg::Group* buildListBox(const ListBox* listBox) const;
 	virtual osg::Group* buildListBoxItem(const ListBox* listBox, const ListBoxItem* listBoxItem) const;
 	virtual osg::Group* buildButton(const Button* button) const;

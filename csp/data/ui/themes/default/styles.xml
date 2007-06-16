@@ -54,6 +54,11 @@
 			<BorderWidth>0</BorderWidth>
 			<BorderColor>000000ff</BorderColor>
 		</Style>
+		
+		<Style Name="Image">
+			<Color>000000ff</Color>
+			<BackgroundColor>00000000</BackgroundColor>
+		</Style>
 
 		<Style Name="Label">
 			<FontFamily>prima_sans_bt.ttf</FontFamily>

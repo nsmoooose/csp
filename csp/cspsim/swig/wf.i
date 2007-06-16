@@ -22,6 +22,7 @@
 #include <csp/cspsim/wf/Label.h>
 #include <csp/cspsim/wf/ListBox.h>
 #include <csp/cspsim/wf/ListBoxItem.h>
+#include <csp/cspsim/wf/Model.h>
 #include <csp/cspsim/wf/Serialization.h>
 #include <csp/cspsim/wf/Signal.h>
 #include <csp/cspsim/wf/SignalData.h>
@@ -47,6 +48,7 @@ class Container;
 class Control;
 class Label;
 class ListBoxItem;
+class Model;
 class Signal;
 class SignalData;
 class Slot;
@@ -112,6 +114,13 @@ public:
 	     if (e) {
 	        *ptr = (void *) e;
 	        return SWIGTYPE_p_csp__wf__Window;
+	     }
+	 }
+     {
+	     csp::wf::Model *e = dynamic_cast<csp::wf::Model *>(*nptr);
+	     if (e) {
+	        *ptr = (void *) e;
+	        return SWIGTYPE_p_csp__wf__Model;
 	     }
 	 }
      csp::wf::Control* f = dynamic_cast<csp::wf::Control*>(*nptr);
@@ -228,6 +237,17 @@ public:
 	virtual bool setSelectedItemByText(const std::string& text);
 
 	virtual Signal* getSelectedItemChangedSignal();
+};
+
+// ***************** MODEL *****************************
+
+class Model : public Control {
+public:
+	virtual std::string getModelFilePath() const;
+	virtual void setModelFilePath(std::string& filePath);
+
+	virtual double getScale() const;
+	virtual void setScale(double scale);
 };
 
 // ***************** SINGLECONTROLCONTAINER *****************************

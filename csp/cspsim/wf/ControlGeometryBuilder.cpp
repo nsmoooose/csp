@@ -66,7 +66,7 @@ void ControlGeometryBuilder::getNextLayer(float& z) const {
 
 osgText::Text* ControlGeometryBuilder::buildText(const std::string& text, const std::string& fontFamily, float fontSize, osg::Vec4& color) const {
     osg::ref_ptr<osgText::Text> textNode = new osgText::Text;
-    textNode->setText(text);
+    textNode->setText(text, osgText::String::ENCODING_UTF8);
     textNode->setColor(color);
     textNode->setFont(fontFamily.c_str());
     textNode->setCharacterSize(fontSize);
@@ -572,7 +572,7 @@ osg::Group* ControlGeometryBuilder::buildCheckBox(const CheckBox* checkBox) cons
 
 		getNextLayer(z);
 		osg::ref_ptr<osgText::Text> button_text = new osgText::Text;
-		button_text->setText(parsedText);
+		button_text->setText(parsedText, osgText::String::ENCODING_UTF8);
 		button_text->setColor(*style.color);
 		button_text->setAlignment(osgText::Text::LEFT_CENTER);
 		button_text->setFont(style.fontFamily->c_str());

@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<StringTableDocument xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation='../../window_document.xsd'>
+	<Strings>
+		<String key="cancel">Abbrechen</String>
+		<String key="credits">Credits</String>
+		<String key="csp">Combat Simulator Project</String>	
+		<String key="full_screen_mode">Vollbildmodus</String>
+		<String key="help">Hilfe</String>
+		<String key="help_mouse">Maus</String>
+		<String key="help_keyboard_view">Sichten</String>
+		<String key="help_welcome">Willkommen</String>
+		<String key="help_joystick">Joystick</String>
+		<String key="help_f16_first_steps">F-16 Erste Schritte</String>
+		<String key="help_keyboard_aircraft">Flugzeugsteuerung</String>
+		<String key="instant_action">Sofort starten!</String>
+		<String key="main_menu">Hauptmen</String>
+		<String key="multiplayer">Mehrspieler</String>
+		<String key="ok">OK</String>
+		<String key="options">Optionen</String>
+		<String key="pause">Pause</String>
+		<String key="quit">Beenden</String>
+		<String key="resume">Fortsetzen</String>
+		<String key="restart_required">Neustart erforderlich</String>
+		<String key="singleplayer">Einzelspieler</String>
+		<String key="screen_resolution">Auflösung</String>
+		<String key="tutorials">Tutorials</String>
+		<String key="ui_theme">Theme</String>
+		<String key="ui_language">Sprache</String>
+	</Strings>
+</StringTableDocument>

@@ -166,7 +166,7 @@ def CheckCommandVersion(context, lib, command, min_version=None, lib_name=None):
 		context.env['%s_VERSION' % lib_name.upper()] = version
 	else:
 		context.Result("no")
-		centext.Log(error)
+		context.Log(error)
 	return ok
 
 

@@ -24,9 +24,9 @@ Combat Simulator Project : GameScreen script that handles UI when a simulation i
 
 import csp.cspsim
 from csp.data.ui.scripts.utils import SlotManager
-from csp.data.ui.scripts.windows.quitresume import QuitResume
 from csp.data.ui.scripts.windows.pause import Pause
-
+from csp.data.ui.scripts.windows.quitresume import QuitResume
+from csp.data.ui.scripts.windows.topmenu import TopMenu
 
 class GameScreenManager(SlotManager):
     def __init__(self, cspsim):
@@ -38,16 +38,25 @@ class GameScreenManager(SlotManager):
         self.connectToInputInterfaceAction(self.cspsim, 'PAUSE', self.on_Pause)
                                 
     def on_Quit(self):
-        quitResume = QuitResume(self.cspsim)
-        self.cspsim.getCurrentScreen().getWindowManager().show(quitResume)
+        topMenu = self.cspsim.getCurrentScreen().getWindowManager().getById('topMenuWindow')
+        resumeWindow = self.cspsim.getCurrentScreen().getWindowManager().getById('resumeWindow')
+        if topMenu != None:
+            self.cspsim.getCurrentScreen().getWindowManager().closeAll()
+            if self.cspsim.isPaused():
+                self.cspsim.togglePause()
+        else:
+            self.cspsim.getCurrentScreen().getWindowManager().closeAll()
+            topMenu = TopMenu(self.cspsim)
+            quitResume = QuitResume(self.cspsim)
+            self.cspsim.getCurrentScreen().getWindowManager().show(quitResume)
+            self.cspsim.getCurrentScreen().getWindowManager().show(topMenu)
 
     def on_Pause(self):
         if self.cspsim.isPaused():
             self.cspsim.togglePause()
-            pauseWindow = self.cspsim.getCurrentScreen().getWindowManager().getById('pauseWindow')
-            if pauseWindow != None:
-                pauseWindow.close()
+            self.cspsim.getCurrentScreen().getWindowManager().closeAll()
         else:
+            self.cspsim.getCurrentScreen().getWindowManager().closeAll()
             pause = Pause(self.cspsim)
             self.cspsim.getCurrentScreen().getWindowManager().show(pause)
         

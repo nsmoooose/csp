@@ -5,36 +5,15 @@
     <StyleInclude>styles.xml</StyleInclude>
     <StringTableInclude>global.xml</StringTableInclude>
   </Includes>
-  <Window CssClass="window_default" SizeWidth="439" SizeHeight="88" >
+  <Window CssClass="window_default" SizeWidth="439" SizeHeight="120" Id="resumeWindow">
     <Control>
       <MultiControlContainer>
         <Controls>
           <Label LocationX="10" LocationY="2" SizeWidth="328" SizeHeight="30" Text="Combat Simulator Project" />
           <Label CssClass="stripe" LocationX="0" LocationY="30" SizeWidth="428" SizeHeight="10" />
 
-          <TableControlContainer LocationX="5" LocationY="45" SizeWidth="418" SizeHeight="35" CellPaddingTop="0" CellPaddingBottom="0" >
-            <ColumnDefinitions>
-              <Column Width="0.33"/>
-              <Column Width="0.33"/>
-              <Column Width="0.33"/>
-            </ColumnDefinitions>
-            <RowDefinitions>
-              <Row Height="1"/>
-            </RowDefinitions>
-            <Table>
-              <Row>
-                <Cell>
-                  <Button Id="resume" Text="${resume}" />
-                </Cell>
-                <Cell>
-                  <Button Id="options" Text="${options}" />
-                </Cell>
-                <Cell>
-                  <Button Id="quit" Text="${quit}" />
-                </Cell>
-              </Row>
-            </Table>
-          </TableControlContainer>
+		  <Button LocationX="47" LocationY="60" SizeWidth="150" SizeHeight="40" Id="resume" Text="${resume}" />
+		  <Button LocationX="229" LocationY="60" SizeWidth="150" SizeHeight="40" Id="end_simulation" Text="${main_menu}" Enabled="false" />
         </Controls>
       </MultiControlContainer>
     </Control>

@@ -40,26 +40,22 @@ class QuitResume(csp.cspsim.Window, SlotManager):
         resumeButton = self.getById('resume')
         if resumeButton != None:
             self.connectToClickSignal(resumeButton, self.resume_Click)
-
-        optionsButton = self.getById('options')
-        if optionsButton != None:
-            self.connectToClickSignal(optionsButton, self.options_Click)
-        
-        quitButton = self.getById('quit')
-        if quitButton != None:
-            self.connectToClickSignal(quitButton, self.quit_Click)
+       
+        endSimButton = self.getById('end_simulation')
+        if endSimButton != None:
+            self.connectToClickSignal(endSimButton, self.end_simulation_Click)
+            
+        if self.cspsim.isPaused() == False:
+            self.cspsim.togglePause()
         
     def resume_Click(self):
+        if self.cspsim.isPaused():
+            self.cspsim.togglePause()
+        topMenu = self.getWindowManager().getById('topMenuWindow')
+        if topMenu != None:
+            topMenu.close()
         self.close()
-
-    def options_Click(self):
-        # Display the options window
-        options = Options(self.cspsim)
-        self.getWindowManager().show(options)
-
-        # Close myself...
-        self.close()
-        
-    def quit_Click(self):
-        self.cspsim.quit()
-        
+       
+    def end_simulation_Click(self):
+        # self.cspsim.displayMenuScreen()
+        print 'End requested'

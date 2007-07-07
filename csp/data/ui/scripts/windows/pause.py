@@ -42,5 +42,6 @@ class Pause(csp.cspsim.Window, SlotManager):
             self.connectToClickSignal(resumeButton, self.resume_Click)
 
     def resume_Click(self):
-        self.cspsim.togglePause()
+        if self.cspsim.isPaused():
+            self.cspsim.togglePause()
         self.close()

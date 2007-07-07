@@ -5,7 +5,7 @@
     <StyleInclude>styles.xml</StyleInclude>
     <StringTableInclude>global.xml</StringTableInclude>
   </Includes>
-  <Window CssClass="topmenu" LocationZ="-9" SizeWidth="276" SizeHeight="84">
+  <Window CssClass="topmenu" LocationZ="-9" SizeWidth="276" SizeHeight="84" Id="topMenuWindow">
 	<Style>
 		<VerticalAlign>top</VerticalAlign>
 		<HorizontalAlign>right</HorizontalAlign>

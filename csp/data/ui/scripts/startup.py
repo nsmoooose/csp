@@ -68,7 +68,6 @@ class UserInterfaceStartup:
         self.displayDesktop()
         self.displayTopMenu()
         self.displayMainMenu()
-        self.cspsim.run()
 
     def configuration_Changed(self):
         self.configuration = self.cspsim.getConfiguration()

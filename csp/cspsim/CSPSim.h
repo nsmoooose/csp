@@ -99,12 +99,13 @@ public:
 	virtual void loadSimulation();
 	// Unloads all objects used during a simulation.
 	virtual void unloadSimulation();
+	virtual void unloadSimulationNow();
 	virtual void displayLogoScreen();
 	virtual void displayMenuScreen();
 	virtual void run();
 	virtual void quit();
 	virtual void cleanup();
-
+	
 	virtual wf::Signal* getConfigurationChangedSignal();
 	virtual config::Configuration* getConfiguration();
 	virtual void setConfiguration(config::Configuration* config); 
@@ -158,6 +159,7 @@ private:
 	bool m_Paused;
 	bool m_Finished;
 	bool m_Clean;
+	bool m_UnloadSimulationRequested;
 
 	// The current simulation time/date
 	SimDate m_CurrentTime;

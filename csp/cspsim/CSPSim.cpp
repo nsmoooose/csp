@@ -127,7 +127,7 @@ CSPSim::CSPSim():
 	CSPLOG(DEBUG, APP) << "Constructing CSPSim object";
 
 	m_Clean = true;
-
+	m_UnloadSimulationRequested = false;
 	m_Paused = true;
 	m_Finished = false;
 
@@ -535,6 +535,24 @@ void CSPSim::loadSimulation() {
 }
 
 void CSPSim::unloadSimulation() {
+	m_UnloadSimulationRequested = true;
+}
+
+void CSPSim::unloadSimulationNow() {
+	m_ActiveObject = NULL;
+	
+	// The virtual battlefield
+	m_Battlefield = NULL;
+	m_Scene = NULL;
+	m_NetworkClient = NULL;
+
+	// TODO the terrain will eventually be encapsulated in a Theater class
+	m_Theater = NULL;
+
+	if(m_Terrain.valid()) {
+		m_Terrain->deactivate();
+		m_Terrain = NULL;
+	}
 }
 
 void CSPSim::displayLogoScreen() {
@@ -647,6 +665,14 @@ void CSPSim::run() {
 
 			if (time_render.elapsed() + time_object_update.elapsed() > 0.05) {
 				//std::cout << "long frame: update=" << time_object_update.elapsed() << " render=" << time_render.elapsed() << " lo=" << lopri << "\n";
+			}
+			
+			// Check if someone has requested that the simulation should be
+			// unloaded. This usually means that the user wants to go back to
+			// the main menu.
+			if(m_UnloadSimulationRequested) {
+				unloadSimulationNow();
+				m_UnloadSimulationRequested = false;
 			}
 		}
 		//m_Battlefield->dumpObjectHistory();

@@ -13,7 +13,7 @@
           <Label CssClass="stripe" LocationX="0" LocationY="30" SizeWidth="428" SizeHeight="10" />
 
 		  <Button LocationX="47" LocationY="60" SizeWidth="150" SizeHeight="40" Id="resume" Text="${resume}" />
-		  <Button LocationX="229" LocationY="60" SizeWidth="150" SizeHeight="40" Id="end_simulation" Text="${main_menu}" Enabled="false" />
+		  <Button LocationX="229" LocationY="60" SizeWidth="150" SizeHeight="40" Id="end_simulation" Text="${main_menu}" />
         </Controls>
       </MultiControlContainer>
     </Control>

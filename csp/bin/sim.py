@@ -342,6 +342,7 @@ def main(args):
 			from csp.data.ui.scripts.startup import UserInterfaceStartup
 			userInterface = UserInterfaceStartup(sim)
 			userInterface.run();
+			sim.run()
 	finally:
 		sim.cleanup()
 

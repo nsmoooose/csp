@@ -109,7 +109,6 @@ CSPSim *CSPSim::theSim = 0;
 
 CSPSim::CSPSim():
 	m_ConfigurationChanged(new wf::Signal),
-	m_DataManager(new DataManager),
 	m_Atmosphere(new Atmosphere),
 	//--m_RenderSurface(new Producer::RenderSurface),
 	m_InputEvent(new InputEvent)
@@ -268,21 +267,6 @@ void CSPSim::init() {
 		ospath::addpath(search_path, font_path);
 		ObjectModel::setDataFilePathList(search_path);
 
-		// open the primary data archive
-		std::string cache_path = getCachePath();
-		std::string archive_file = ospath::join(cache_path, "sim.dar");
-		try {
-			DataArchive *sim = new DataArchive(archive_file.c_str(), 1);
-			assert(sim);
-			m_DataManager->addArchive(sim);
-		}
-		catch (Exception &e) {
-			CSPLOG(ERROR, APP) << "Error opening data archive " << archive_file;
-			CSPLOG(ERROR, APP) << e.getType() << ": " << e.getMessage();
-			throw e;
-			//::exit(0);
-		}
-
 		if (initSDL()) {
 			::exit(1);  // error already logged
 		}
@@ -347,6 +331,8 @@ void CSPSim::cleanup() {
 		m_SDLJoystick = NULL;
 	}
 
+	StoresDatabase::getInstance().reset();
+
 	// release cached objects.  this must be done before the sound engine is shut
 	// down to prevent errors when deleting cached sound samples.
 	m_DataManager = 0;
@@ -376,6 +362,24 @@ BaseScreen* CSPSim::getCurrentScreen() {
 }
 
 void CSPSim::loadSimulation() {
+	
+	m_DataManager = new DataManager();
+
+	// open the primary data archive
+	std::string cache_path = getCachePath();
+	std::string archive_file = ospath::join(cache_path, "sim.dar");
+	try {
+		DataArchive *sim = new DataArchive(archive_file.c_str(), 1);
+		assert(sim);
+		m_DataManager->addArchive(sim);
+	}
+	catch (Exception &e) {
+		CSPLOG(ERROR, APP) << "Error opening data archive " << archive_file;
+		CSPLOG(ERROR, APP) << e.getType() << ": " << e.getMessage();
+		throw e;
+		//::exit(0);
+	}
+	
 	if(m_CurrentScreen.valid()) {
 		m_CurrentScreen->onRender();
 		SDL_GL_SwapBuffers();
@@ -422,7 +426,6 @@ void CSPSim::loadSimulation() {
 	double lon = m_Terrain->getCenter().longitude();
 	m_Atmosphere->setPosition(lat, lon);
 	
-	// TODO may need a reset method when we swap theaters
 	StoresDatabase::getInstance().load(*m_DataManager, "sim:stores");
 
 	if(m_CurrentScreen.valid()) {
@@ -539,20 +542,21 @@ void CSPSim::unloadSimulation() {
 }
 
 void CSPSim::unloadSimulationNow() {
+	// TODO Do we need to unload in a specific order?
 	m_ActiveObject = NULL;
-	
-	// The virtual battlefield
 	m_Battlefield = NULL;
 	m_Scene = NULL;
 	m_NetworkClient = NULL;
-
-	// TODO the terrain will eventually be encapsulated in a Theater class
 	m_Theater = NULL;
+
+	StoresDatabase::getInstance().reset();
 
 	if(m_Terrain.valid()) {
 		m_Terrain->deactivate();
 		m_Terrain = NULL;
 	}
+	
+	m_DataManager = NULL;
 }
 
 void CSPSim::displayLogoScreen() {

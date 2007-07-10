@@ -62,6 +62,10 @@ public:
 	 *  objects under the path indicated by the root parameter will be indexed.
 	 */
 	void load(DataManager &data_manager, std::string const &root);
+	
+	/** Unloads all objects in this singleton. Used when we swap theatre.
+	 */
+	void reset();
 
 	/** Convenience method to get a store by id string, equivalent to getStore(Key(id)).
 	 */

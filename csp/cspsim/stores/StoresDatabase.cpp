@@ -62,6 +62,12 @@ void StoresDatabase::load(DataManager &data_manager, std::string const &root) {
 	_load(data_manager, ObjectID(root), root);
 }
 
+void StoresDatabase::reset() {
+	m_StoresByKey.clear();
+	m_ParentMatrix.clear();
+	m_ChildMatrix.clear();
+}
+
 Ref<Store> StoresDatabase::getStore(std::string const &id) {
 	return getStore(Key(id));
 }

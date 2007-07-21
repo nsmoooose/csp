@@ -793,10 +793,12 @@ void VirtualScene::_updateFog(Vector3 const &lookPos, Vector3 const &eyePos) {
 	//XXX--m_FogColor = m_Sky->getHorizonColor(angle);
 	float angle = atan2(dir.y(), dir.x());
 	m_FogColor = m_Sky->getSkyDome()->getHorizonColor(angle);
-	pFogAttr->setColor(m_FogColor);
-	pFogAttr->setStart(m_FogStart * (1.0 + a) + clearSky);
-	pFogAttr->setEnd(m_FogEnd);
-	pStateSet->setAttributeAndModes(pFogAttr, osg::StateAttribute::ON);
+	if (pFogAttr != NULL) {  // TODO why is pFogAttr NULL at startup?
+		pFogAttr->setColor(m_FogColor);
+		pFogAttr->setStart(m_FogStart * (1.0 + a) + clearSky);
+		pFogAttr->setEnd(m_FogEnd);
+		pStateSet->setAttributeAndModes(pFogAttr, osg::StateAttribute::ON);
+	}
 	m_FogGroup->setStateSet(pStateSet);
 	//XXX--m_Sky->updateHorizon(m_FogColor, eyePos.z(), m_ViewDistance);
 }

@@ -101,9 +101,7 @@ public:
 	 *  Specifiy the four real-valued components.
 	 */
 	inline Quat(double x_, double y_, double z_, double w_):
-		_x(x_), _y(y_), _z(z_), _w(w_)
-	{
-	}
+		_x(x_), _y(y_), _z(z_), _w(w_) { }
 
 	/** Construct a new quaternion representing a rotation.
 	 *
@@ -128,9 +126,8 @@ public:
 	 *  @param axis3 the third rotation axis.
 	 */
 	inline Quat(double angle1, const Vector3& axis1,
-		    double angle2, const Vector3& axis2,
-		    double angle3, const Vector3& axis3)
-	{
+	            double angle2, const Vector3& axis2,
+	            double angle3, const Vector3& axis3) {
 		makeRotate(angle1, axis1, angle2, axis2, angle3, axis3);
 	}
 
@@ -155,21 +152,19 @@ public:
 			case 1: return _y;
 			case 2: return _z;
 			case 3: return _w;
-			default:
-				throw ""; // FIXME
+			default: abort();
 		}
 	}
 
 	/** Get a component value by index (0,1,2,3 = x,y,z,w)
 	 */
-	inline double  operator [] (int i) const {
+	inline double operator [] (int i) const {
 		switch (i) {
 			case 0: return _x;
 			case 1: return _y;
 			case 2: return _z;
 			case 3: return _w;
-			default:
-				throw ""; // FIXME
+			default: abort();
 		}
 	}
 
@@ -202,14 +197,11 @@ public:
 		return !(*this == rhs);
 	}
 
-	/** Test if the quaternion is zero.
-	 *
-	 *  Zero rotations can generally be ignored in computations.
+	/** Shorthand to test if the quaternion is the identity element.
 	 */
-	bool zeroRotation() const {
+	bool isIdentity() const {
 		return _x==0.0 && _y==0.0 && _z==0.0 && _w==1.0;
 	}
-
 
 	/// Multiply by scalar
 	inline const Quat operator * (double rhs) const {
@@ -218,7 +210,7 @@ public:
 
 	/// Unary multiply by scalar
 	inline Quat& operator *= (double rhs) {
-		_x *= rhs; _y *= rhs; _z *= rhs; _w *= rhs;	
+		_x *= rhs; _y *= rhs; _z *= rhs; _w *= rhs;
 		return *this;
 	}
 
@@ -239,12 +231,12 @@ public:
 		_z = z_;
 		_y = y_;
 		_x = x_;
-		return *this;	
+		return *this;
 	}
 
 	/// Divide by scalar
 	inline const Quat operator / (double rhs) const {
-		return *this * (1.0/rhs);
+		return *this * (1.0 / rhs);
 	}
 
 	/// Unary divide by scalar
@@ -309,8 +301,20 @@ public:
 		return Quat(-_x, -_y, -_z, _w);
 	}
 
+	/// Normalize to length 1 (unless zero)
+	inline void normalize() {
+		const double len2 = length2();
+		if (len2 > 0.0) *this /= sqrt(len2);
+	}
+
+	/// Get normalized quat (or zero)
+	inline Quat normalized() {
+		const double len2 = length2();
+		return (len2 > 0.0) ? Quat(*this / sqrt(len2)) : *this;
+	}
+
 	/// Multiplicative inverse method: q^(-1) = q^*/(q.q^*)
-	inline const Quat inverse () const {
+	inline const Quat inverse() const {
 		return conj() / length2();
 	}
 
@@ -348,6 +352,8 @@ public:
 	void makeRotate(const Vector3& vec1, const Vector3& vec2);
 
 	/** Set this Quat to represent a rotation defined by Euler angles.
+	 *  This system of Euler angles uses a right-handerd coordinate
+	 *  system, with rotations applied in the order (Z, Y, X).
 	 *
 	 *  @param roll The x-axis rotation angle (right-handed) in radians.
 	 *  @param pitch The y-axis rotation angle (right-handed) in radians.
@@ -355,6 +361,10 @@ public:
 	 */
 	void makeRotate(double roll, double pitch, double yaw);
 
+	/** Get the Euler angles corresponding to the rotation defined by
+	 *  this Quat.  This method is the inverse of makeRotate(double,
+	 *  double, double).  The Quat does not need to be normalized.
+	 */
 	void getEulerAngles(double &roll, double &pitch, double &yaw) const;
 
 	/** Return the angle and vector components represented by the quaternion.
@@ -365,10 +375,16 @@ public:
 	 */
 	void getRotate(double& angle, Vector3& vec) const;
 
-	/** Spherical Linear Interpolation.
+	/** Spherical linear interpolation.
 	 *  As t goes from 0 to 1, the Quat object goes from "from" to "to".
 	 */
 	void slerp(double t, const Quat& from, const Quat& to);
+
+	/** Normalized linear interpolation.
+	 *  As t goes from 0 to 1, the quat goes from "from" to "to".  At each
+	 *  point, the resulting quat is normalized.
+	 */
+	void nlerp(double t, const Quat& from, const Quat& to);
 
 	/** Set quaternion to be equivalent to specified matrix.
 	 */
@@ -406,9 +422,11 @@ public:
 	/** Format to an output stream.
 	 */
 	CSPLIB_EXPORT friend std::ostream& operator << (std::ostream& output, const Quat& q);
+
 	/** Multiply a Quat by a scalar value on the left.
 	 */
 	friend inline Quat operator * (double lhs, const Quat& rhs) { return rhs*lhs; }
+
 	/** Multiply a Quat by a vector on the right.
 	 */
 	friend inline Quat operator *(Quat const& lhs, Vector3 const& rhs) {

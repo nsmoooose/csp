@@ -82,7 +82,7 @@ void Quat::parseXML(const char* cdata) {
 
 std::string Quat::asString() const {
 	std::ostringstream os("[");
-	os << _x << " " << _y << " " << _z << " " << _w << "]";
+	os << "[" << _x << " " << _y << " " << _z << " " << _w << "]";
 	return os.str();
 }
 
@@ -177,11 +177,12 @@ void Quat::getEulerAngles(double &roll, double &pitch, double &yaw) const {
 	double y2 = _y*_y;
 	double z2 = _z*_z;
 	double w2 = _w*_w;
-	double sin_theta = 2.0 * (_w*_y - _x*_z);
+	double l2 = x2 + y2 + z2 + w2;
+	double sin_theta = 2.0 * (_w*_y - _x*_z) / (l2 > 0 ? l2 : 1.0);
 	if (fabs(sin_theta) > 0.99999) {
 		roll = 0.0;
 		pitch = asin(sin_theta);
-		yaw = atan2(2.0*(_w*_z - _x*_y), w2-x2+y2-z2);
+		yaw = atan2(2.0*(_w*_z + _x*_y), w2+x2-y2-z2);
 	} else {
 		roll = atan2(2.0*(_y*_z + _w*_x), w2-x2-y2+z2);
 		pitch = asin(sin_theta);
@@ -200,7 +201,7 @@ void Quat::getRotate(double& angle, Vector3& vec) const {
 void Quat::getRotate(double& angle, double& x_, double& y_, double& z_) const {
 	double sinhalfangle = sqrt(_x*_x + _y*_y + _z*_z);
 	angle = 2 * atan2(sinhalfangle, _w);
-	if(sinhalfangle) {
+	if (sinhalfangle != 0) {
 		x_ = _x / sinhalfangle;
 		y_ = _y / sinhalfangle;
 		z_ = _z / sinhalfangle;
@@ -248,7 +249,7 @@ void Quat::slerp(double t, const Quat& from, const Quat& to) {
 		quatTo.set(-to._x, -to._y, -to._z, -to._w);
 	}
 
-	if((1.0 - cosomega) > epsilon) {
+	if ((1.0 - cosomega) > epsilon) {
 		double omega = acos(cosomega);  // 0 <= omega <= Pi (see man acos)
 		double invsinomega = 1.0/sin(omega);  // this sinomega should always be +ve so
 		scale_from = sin((1.0-t)*omega)*invsinomega;
@@ -266,7 +267,10 @@ void Quat::slerp(double t, const Quat& from, const Quat& to) {
 	_w = from._w * scale_from + quatTo._w * scale_to;
 }
 
-
+void Quat::nlerp(double t, const Quat& from, const Quat& to) {
+	*this = ((1 - t) * from + t * to);
+	normalize();
+}
 
 void Quat::set(const Matrix3& m) {
 	// Source: Gamasutra, Rotating Objects Using Quaternions

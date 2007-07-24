@@ -177,6 +177,9 @@ public:
 	}
 
 	/// Compute the cross product with another vector.
+	/// CAUTION: operator^ has low precedence, so cross products
+	/// should always be enclosed in parentheses.  Consider using
+	/// the cross() function instead.
 	inline const Vector3 operator ^ (const Vector3& rhs) const {
 		return Vector3(_y*rhs._z-_z*rhs._y, _z*rhs._x-_x*rhs._z, _x*rhs._y-_y*rhs._x);
 	}

@@ -52,6 +52,9 @@ const double PI   = 3.14159265358979323846;
 const double PI_2 = 1.57079632679489661923;
 const double PI_4 = 0.78539816339744830962;
 
+template <typename T> struct ToFloat { typedef double Type; };
+template <> struct ToFloat<float> { typedef float Type; };
+
 /** return the minimum of two values, equivilant to std::min.
   * std::min not used because of STL implementation under IRIX contains no std::min.*/
 template<typename T>
@@ -83,19 +86,19 @@ template<typename T>
 inline T square(T v) { return v*v; }
 
 template<typename T>
-inline T signedSquare(T v) { return v<(T)0?-v*v:v*v; }
+inline T signedSquare(T v) { return (v < static_cast<T>(0)) ? -v*v : v*v; }
 
 template<typename T>
-inline T toRadians(T deg) { return static_cast<T>(deg * (PI / 180)); }
+inline typename ToFloat<T>::Type toRadians(T deg) { return static_cast<typename ToFloat<T>::Type>(deg * (PI / 180)); }
 
 template<typename T>
-inline T toDegrees(T rad) { return static_cast<T>(rad * (180 / PI)); }
+inline typename ToFloat<T>::Type toDegrees(T rad) { return static_cast<typename ToFloat<T>::Type>(rad * (180 / PI)); }
 
 template<typename T>
-inline T inDegrees(T angle) { return toRadians(angle); }
+inline typename ToFloat<T>::Type inDegrees(T angle) { return toRadians(angle); }
 
 template<typename T>
-inline T inRadians(T angle) { return angle; }
+inline typename ToFloat<T>::Type inRadians(T angle) { return static_cast<typename ToFloat<T>::Type>(angle); }
 
 template<typename T>
 inline void swap(T &a, T &b) { T t = a; a = b; b = t; }

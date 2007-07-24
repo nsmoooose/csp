@@ -78,7 +78,7 @@ except ImportError:
 from csp.tools.build.setup import Environment
 
 from csp.tools.build.rules import \
-	SourceGroup, Program, Generate, SharedLibrary, Command
+	SourceGroup, Program, Generate, SharedLibrary, Command, Test
 
 from csp.tools.build.autoconf import \
 	CheckSConsVersion, CheckPythonVersion, GetPythonInclude, GetPythonLibrary, GetGCCVersion

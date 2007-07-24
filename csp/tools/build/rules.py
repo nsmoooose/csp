@@ -102,7 +102,7 @@ class SourceGroup:
 
 
 class Target:
-	def __init__(self, env, name, sources=[], aliases=[], deps=[], always_build=0, softlink=0, doxygen=None, **kw):
+	def __init__(self, env, name, sources=[], aliases=[], deps=[], always_build=0, softlink=0, doxygen=None, is_test=0, **kw):
 		self._env = env.Copy()
 		self._name = name
 		self._sources = [s for s in sources if s.startswith('@')]
@@ -110,10 +110,15 @@ class Target:
 		if pure or deps:
 			SourceGroup(env, name, sources=pure, deps=deps)
 			self._sources.append('@' + name)
+		self._path = env.Dir('.').srcnode().path
 		self._target = os.path.join(env.Dir('.').path, name)  # a bit ugly
-		if isinstance(aliases, str): aliases = [aliases]
+		if isinstance(aliases, str):
+			aliases = [aliases]
+		else:
+			aliases = aliases[:]
+		if is_test: aliases.append('tests')
 		self._aliases = aliases
-		self._is_test = 'tests' in aliases
+		self._is_test = is_test or ('tests' in aliases)  # the latter is for backward compatibility
 		self._always_build = always_build
 		self._softlink = softlink
 		self._doxygen = None
@@ -273,6 +278,12 @@ class SharedLibrary(Target):
 		else:
 			target_dir = os.path.dirname(self._target)
 			settings.merge(XRPATH=[os.path.abspath(target_dir)], LIBPATH=[target_dir], LIBS=[os.path.basename(self._target)])
+
+
+class Test(SharedLibrary):
+	def __init__(self, env, **kw):
+		kw['is_test'] = 1
+		SharedLibrary.__init__(self, env, **kw)
 
 
 class Command(Target):

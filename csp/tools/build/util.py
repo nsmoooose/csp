@@ -59,6 +59,11 @@ def SimpleCommand(cmd, msg):
 	return CommandAction(cmd, strfunction=s)
 
 
+def SilentAction(callback):
+	def noprint(*args, **kw): pass
+	return Action(callback, noprint)
+
+
 def Extension(fn):
 	return os.path.splitext(fn)[1]
 

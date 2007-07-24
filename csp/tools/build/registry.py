@@ -28,6 +28,7 @@ class _BuildRegistry:
 		self._sources = {}
 		self._libraries = {}
 		self._tests = []
+		self._dir_tests = {}
 
 	def AddLibrary(self, name, lib):
 		self._libraries[name] = lib
@@ -92,17 +93,29 @@ class _BuildRegistry:
 			config[name] = dict(lib._settings)
 		autoconf.SaveConfig(env, config)
 
-	def _RunTests(self):
-		if not self._tests: return
+	def _SetupTests(self):
 		os.environ.setdefault('CSPLOG_FILE', os.path.join(scons.File('#/.testlog').abspath))
 		try:
 			import csp.csplib
 		except ImportError:
 			print 'ERROR: unnable to import csp.csplib'
 			return
-		for test in self._tests:
-			csp.csplib.TestRegistry.loadTestModule(test[0].abspath)
-		csp.csplib.TestRegistry.runAll()
+		return csp.csplib.TestRegistry
+
+	def _RunTests(self, *args, **kw):
+		tests = kw['source']
+		if not tests: return
+		tester = self._SetupTests()
+		for test in tests:
+			tester.loadTestModule(test.abspath)
+		tester.runAll()
+
+	def _RunOneTest(self, *args, **kw):
+		tester = self._SetupTests()
+		modules = kw['source']
+		for module in modules:
+			tester.loadTestModule(module.abspath)
+		tester.runAll()
 
 	def Build(self, env):
 		self.Configure(env)
@@ -110,9 +123,20 @@ class _BuildRegistry:
 			object = target.build()
 			if target.isTest():
 				self._tests.append(object)
-		def runtests(*args, **kw):
-			self._RunTests()
-		env.Command('runtests', 'tests', runtests)
+				if target._path not in self._dir_tests:
+					self._dir_tests[target._path] = []
+				self._dir_tests[target._path].append(object)
+				run_alias = os.path.join(target._path, target._name) + '.run'
+				env.Command(run_alias, object, util.SilentAction(self._RunOneTest))
+		env.Command('runtests', self._tests, util.SilentAction(self._RunTests))
+		for path, targets in self._dir_tests.items():
+			env.Command(path + '.runtests', targets, util.SilentAction(self._RunTests))
+		# sample aliases for running tests:
+		#	$ scons runtests
+		#	$ scons cspsim.runtests
+		#	$ scons csplib.runtests
+		#	$ scons cspsim/test_PhysicsModel.run
+		# 	$ scons csplib/data/test_Object.run
 
 BuildRegistry = _BuildRegistry()
 

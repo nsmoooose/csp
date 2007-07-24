@@ -186,9 +186,9 @@ struct less_equal { bool operator()(A const &a, B const &b) const { return a <= 
 template <typename A, typename B>
 struct not_equal_to { bool operator()(A const &a, B const &b) const { return !equal_to<A,B>()(a, b); } };
 template <typename A, typename B>
-struct greater_than { bool operator()(A const &a, B const &b) const { return !less_equal<A,B>(a, b); } };
+struct greater_than { bool operator()(A const &a, B const &b) const { return !less_equal<A,B>()(a, b); } };
 template <typename A, typename B>
-struct greater_equal { bool operator()(A const &a, B const &b) const { return !less_than<A,B>(a, b); } };
+struct greater_equal { bool operator()(A const &a, B const &b) const { return !less_than<A,B>()(a, b); } };
 template <typename A >
 struct float_equal { bool operator()(A const &a, A const &b) const { return float_eq(a, b); } };
 template <typename A>
@@ -266,12 +266,14 @@ private:
 
 #define CSP_TEST__(A, B, OP, MODE) \
 	if (CSP(test::TestResult) result = CSP(test::TestResult)(A, B, OP, #A, #B)); \
-    else CSP(test::TestLogEntry)(__FILE__, __LINE__, CSP(test::TestLogEntry)::MODE) << result.msg();
+    else CSP(test::TestLogEntry)(__FILE__, __LINE__, CSP(test::TestLogEntry)::MODE) << result.msg() << " "
 
 #define CSP_TEST_U__(A, MODE) \
 	if (A); else CSP(test::TestLogEntry)(__FILE__, __LINE__, CSP(test::TestLogEntry)::MODE) << "TEST FAILED (" #A ") "
 
 #define CSP_ENSURE(A) CSP_TEST_U__(A, FAIL)
+#define CSP_ENSURE_TRUE(A) CSP_TEST_U__(A, FAIL)
+#define CSP_ENSURE_FALSE(A) CSP_TEST_U__(!(A), FAIL)
 #define CSP_ENSURE_EQ(A, B)  CSP_TEST__(A, B, CSP(test::EqualTo()), FAIL)
 #define CSP_ENSURE_NE(A, B)  CSP_TEST__(A, B, CSP(test::NotEqualTo()), FAIL)
 #define CSP_ENSURE_LT(A, B)  CSP_TEST__(A, B, CSP(test::LessThan()), FAIL)
@@ -290,6 +292,8 @@ private:
 #define CSP_ENSURE_DGE(A, B)  CSP_TEST__(A, B, CSP(test::DoubleGreaterEqual()), FAIL)
 
 #define CSP_EXPECT(A) CSP_TEST_U__(A, SOFTFAIL)
+#define CSP_EXPECT_TRUE(A) CSP_TEST_U__(A, SOFTFAIL)
+#define CSP_EXPECT_FALSE(A) CSP_TEST_U__(!(A), SOFTFAIL)
 #define CSP_EXPECT_EQ(A, B)  CSP_TEST__(A, B, CSP(test::EqualTo()), SOFTFAIL)
 #define CSP_EXPECT_NE(A, B)  CSP_TEST__(A, B, CSP(test::NotEqualTo()), SOFTFAIL)
 #define CSP_EXPECT_LT(A, B)  CSP_TEST__(A, B, CSP(test::LessThan()), SOFTFAIL)

@@ -145,6 +145,11 @@ double Matrix3::determinant() const {
 
 
 bool Matrix3::invert(const Matrix3& m, double tolerance) {
+	if (&m == this) {
+		Matrix3 copy(m);
+		return invert(copy);
+	}
+
 	_mat[0][0] = DET2(m._mat,1,1,2,2);
 	_mat[0][1] = DET2(m._mat,0,2,2,1);
 	_mat[0][2] = DET2(m._mat,0,1,1,2);

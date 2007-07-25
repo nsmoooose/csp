@@ -150,6 +150,11 @@ build.SourceGroup(expenv,
 		'util/Noise.cpp',
 		'util/Noise.h',
 		'util/Properties.h',
+		# disabled for now to avoid having to link libpython for executables
+		# that use csplib.  these should probably be moved to csplib_module,
+		# since that necessarily uses python.
+		#'util/PyCasts.cpp',
+		#'util/PyCasts.h',
 		'util/Random.cpp',
 		'util/Random.h',
 		'util/Ref.h',
@@ -212,16 +217,36 @@ build.SharedLibrary(env,
 	SHLIBPREFIX='_')
 
 
-build.SharedLibrary(env,
-	name = 'csplib_tests',
+build.Test(env,
+	name = 'test_data',
 	sources = [
 		'data/test/test_Object.cpp',
+		'data/test/test_Quat.cpp',
+		'data/test/test_Vector3.cpp',
+	],
+	deps = ['csplib'])
+
+build.Test(env,
+	name = 'test_util',
+	sources = [
 		'util/test/test_Boolean.cpp',
 		'util/test/test_FileUtility.cpp',
+		#'util/test/test_PyCasts.cpp',
 		'util/test/test_Ref.cpp',
 		'util/test/test_StringTools.cpp',
 		'util/test/test_Testing.cpp'
 	],
-	deps = ['csplib'],
-	aliases = 'tests')
+	deps = ['csplib'])
 
+build.Test(env,
+	name = 'test_numeric',
+	sources = [
+		'numeric/test/test_Vector.cpp',
+		'numeric/test/test_NumericalMethod.cpp',
+	],
+	deps = ['csplib'])
+
+build.Program(env,
+	name = 'numeric_timing',
+	sources = ['numeric/test/NumericalMethodTiming.cpp'],
+	deps = ['csplib'])

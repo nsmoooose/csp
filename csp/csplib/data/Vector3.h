@@ -96,20 +96,20 @@ public:
 
 #ifndef SWIG
 	/// Copy operator.
-	inline const Vector3& operator = (const Vector3& v) {
+	const Vector3& operator = (const Vector3& v) {
 		_x=v._x; _y=v._y; _z=v._z;
 		return *this;
 	}
 #endif // SWIG
 
 	/// Test for equality with another vectors.
-	inline bool operator == (const Vector3& v) const { return _x==v._x && _y==v._y && _z==v._z; }
+	bool operator == (const Vector3& v) const { return _x==v._x && _y==v._y && _z==v._z; }
 
 	/// Test for inequality with another vectors.
-	inline bool operator != (const Vector3& v) const { return _x!=v._x || _y!=v._y || _z!=v._z; }
+	bool operator != (const Vector3& v) const { return _x!=v._x || _y!=v._y || _z!=v._z; }
 
 	/// Set the vector components.
-	inline void set(double x_, double y_, double z_) { _x=x_; _y=y_; _z=z_; }
+	void set(double x_, double y_, double z_) { _x=x_; _y=y_; _z=z_; }
 
 #ifndef SWIG
 	/** Get a reference to vector component by numeric index.
@@ -119,13 +119,12 @@ public:
 	 *
 	 *  @return A reference to the specified component.
 	 */
-	inline double& operator [] (int i) {
+	double& operator [] (int i) {
 		switch (i) {
 			case 0: return _x;
 			case 1: return _y;
 			case 2: return _z;
-			default:
-				throw ""; // FIXME
+			default: abort();
 		}
 	}
 
@@ -136,13 +135,12 @@ public:
 	 *
 	 *  @return The value of the specified component.
 	 */
-	inline double operator [] (int i) const {
+	double operator [] (int i) const {
 		switch (i) {
 			case 0: return _x;
 			case 1: return _y;
 			case 2: return _z;
-			default:
-				throw ""; // FIXME
+			default: abort();
 		}
 	}
 #endif // SWIG
@@ -150,75 +148,75 @@ public:
 
 #ifndef SWIG
 	/// Get a reference to the x-component.
-	inline double& x() { return _x; }
+	double& x() { return _x; }
 	/// Get a reference to the y-component.
-	inline double& y() { return _y; }
+	double& y() { return _y; }
 	/// Get a reference to the z-component.
-	inline double& z() { return _z; }
+	double& z() { return _z; }
 #endif // SWIG
 
 	/// Get the value of the x-component.
-	inline double x() const { return _x; }
+	double x() const { return _x; }
 	/// Get the value of the y-component.
-	inline double y() const { return _y; }
+	double y() const { return _y; }
 	/// Get the value of the z-component.
-	inline double z() const { return _z; }
+	double z() const { return _z; }
 
 	/// Test if all components are valid floating point values.
-	inline bool valid() const { return !isNaN(); }
+	bool valid() const { return !isNaN(); }
 	
 	/// Test if any components are NaN (not-a-number).
-	inline bool isNaN() const { return csp::isNaN(_x) || csp::isNaN(_y) || csp::isNaN(_z); }
-	inline bool isZero() const { return *this == ZERO; }
+	bool isNaN() const { return csp::isNaN(_x) || csp::isNaN(_y) || csp::isNaN(_z); }
+	bool isZero() const { return *this == ZERO; }
 
 	/// Compute the dot product with another vector.
-	inline double operator * (const Vector3& rhs) const {
-		return _x*rhs._x+_y*rhs._y+_z*rhs._z;
+	double operator * (const Vector3& rhs) const {
+		return _x * rhs._x + _y * rhs._y + _z * rhs._z;
 	}
 
 	/// Compute the cross product with another vector.
 	/// CAUTION: operator^ has low precedence, so cross products
 	/// should always be enclosed in parentheses.  Consider using
 	/// the cross() function instead.
-	inline const Vector3 operator ^ (const Vector3& rhs) const {
-		return Vector3(_y*rhs._z-_z*rhs._y, _z*rhs._x-_x*rhs._z, _x*rhs._y-_y*rhs._x);
+	const Vector3 operator ^ (const Vector3& rhs) const {
+		return Vector3(_y * rhs._z - _z * rhs._y, _z * rhs._x - _x * rhs._z, _x * rhs._y - _y*rhs._x);
 	}
 
 	/// Multiply by a scalar.
-	inline const Vector3 operator * (double rhs) const {
-		return Vector3(_x*rhs, _y*rhs, _z*rhs);
+	const Vector3 operator * (double rhs) const {
+		return Vector3(_x * rhs, _y * rhs, _z * rhs);
 	}
 
 #ifndef SWIG
 	/// Unary multiply by a scalar.
-	inline Vector3& operator *= (double rhs) {
-		_x*=rhs;
-		_y*=rhs;
-		_z*=rhs;
+	Vector3& operator *= (double rhs) {
+		_x *= rhs;
+		_y *= rhs;
+		_z *= rhs;
 		return *this;
 	}
 #endif // SWIG
 
 	/// Divide by a scalar.
-	inline const Vector3 operator / (double rhs) const {
-		return (*this)*(1.0/rhs);
+	const Vector3 operator / (double rhs) const {
+		return (*this) * (1.0 / rhs);
 	}
 
 #ifndef SWIG
 	/// Unary divide by a scalar.
-	inline Vector3& operator /= (double rhs) {
-		return *this *= (1.0/rhs);
+	Vector3& operator /= (double rhs) {
+		return *this *= (1.0 / rhs);
 	}
 #endif // SWIG
 
 	/// Binary vector addition.
-	inline const Vector3 operator + (const Vector3& rhs) const {
-		return Vector3(_x+rhs._x, _y+rhs._y, _z+rhs._z);
+	const Vector3 operator + (const Vector3& rhs) const {
+		return Vector3(_x + rhs._x, _y + rhs._y, _z + rhs._z);
 	}
 
 #ifndef SWIG
 	/// Unary vector addition.
-	inline Vector3& operator += (const Vector3& rhs) {
+	Vector3& operator += (const Vector3& rhs) {
 		_x += rhs._x;
 		_y += rhs._y;
 		_z += rhs._z;
@@ -227,32 +225,32 @@ public:
 #endif // SWIG
 
 	/// Binary vector subtraction.
-	inline const Vector3 operator - (const Vector3& rhs) const {
-		return Vector3(_x-rhs._x, _y-rhs._y, _z-rhs._z);
+	const Vector3 operator - (const Vector3& rhs) const {
+		return Vector3(_x - rhs._x, _y - rhs._y, _z - rhs._z);
 	}
 
 #ifndef SWIG
 	/// Unary vector subtraction.
-	inline Vector3& operator -= (const Vector3& rhs) {
-		_x-=rhs._x;
-		_y-=rhs._y;
-		_z-=rhs._z;
+	Vector3& operator -= (const Vector3& rhs) {
+		_x -= rhs._x;
+		_y -= rhs._y;
+		_z -= rhs._z;
 		return *this;
 	}
 #endif // SWIG
 
 	/// Negation operator; returns the negative of the vector.
-	inline const Vector3 operator - () const {
+	const Vector3 operator - () const {
 		return Vector3(-_x, -_y, -_z);
 	}
 
 	/// Get the length of the vector = sqrt(v*v)
-	inline double length() const {
-		return ::sqrt( _x*_x + _y*_y + _z*_z );
+	double length() const {
+		return ::sqrt(_x*_x + _y*_y + _z*_z);
 	}
 
 	/// Get the length squared of the vector = v*v
-	inline double length2() const {
+	double length2() const {
 		return _x*_x + _y*_y + _z*_z;
 	}
 
@@ -260,23 +258,16 @@ public:
 	 *
 	 *  @returns The original length of the vector.
 	 */
-	inline double normalize() {
+	double normalize() {
 		double norm = length();
-		if (norm > 0.0) {
-			_x /= norm;
-			_y /= norm;
-			_z /= norm;
-		}
+		if (norm > 0.0) *this /= norm;
 		return norm;
 	}
 
 	/// Get a unit vector in the direction of this vector.
-	inline const Vector3 normalized() const {
+	const Vector3 normalized() const {
 		double norm = length();
-		if (norm > 0.0) {
-			return (*this / norm);
-		}
-		return *this;
+		return (norm > 0.0) ? (*this / norm) : *this;
 	}
 
 	/// Compute the star matrix of this vector.
@@ -287,7 +278,7 @@ public:
 	 *  The components of @c min and @c max are updated to
 	 *  contain the corresponding components of this vector.
 	 */
-	inline void bound(Vector3& min, Vector3& max) {
+	void bound(Vector3& min, Vector3& max) const {
 		if (_x < min._x) min._x = _x;
 		if (_y < min._y) min._y = _y;
 		if (_z < min._z) min._z = _z;
@@ -295,7 +286,7 @@ public:
 		if (_y > max._y) max._y = _y;
 		if (_z > max._z) max._z = _z;
 	}
-		
+
 #ifndef SWIG
 	/// Compute the dot product of two vectors.
 	friend double dot(const Vector3& a, const Vector3& b); // inline
@@ -323,7 +314,7 @@ public:
 			_y = v[1];
 			_z = v[2];
 		} else {
-			// FIXME (throw)
+			abort();
 		}
 	}
 

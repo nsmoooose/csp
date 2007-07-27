@@ -505,5 +505,10 @@ void GameScreen::setCamera(double dt) {
 	}
 }
 
+bool GameScreen::onMouseMove(SDL_MouseMotionEvent const &event) {
+	// Let the window manager process the input interface events.
+	return getWindowManager()->onMouseMove(event.x, event.y, event.xrel, event.yrel);
+}
+
 CSP_NAMESPACE_END
 

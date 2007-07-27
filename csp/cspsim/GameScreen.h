@@ -190,6 +190,10 @@ private:
 	
 	// Handles signals to be emitted to the python gui code. For example player QUIT action.
 	Ref<wf::InputInterfaceManager> m_InputInterfaceManager;
+
+	// Receives mouse move events from the input interface and sends 
+	// them on to the window framework for processing.  
+	bool onMouseMove(SDL_MouseMotionEvent const &event);
 };
 
 CSP_NAMESPACE_END

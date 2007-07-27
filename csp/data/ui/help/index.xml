@@ -18,7 +18,7 @@
 						<FontSize>30</FontSize>
 					</Style>
 				</Label>
-				<Label LocationX="170" LocationY="55" SizeWidth="709" SizeHeight="585">
+				<Label LocationX="170" LocationY="95" SizeWidth="709" SizeHeight="545">
 					<Text>
 About CSP
 The Combat Simulator Project (CSP) is a community united by the common interest in combat simulator development. We are developing standards, technologies, code libraries, tools and artwork that can be used to build a wide variety of real-time combat simulators. Our ultimate goal is to create free, cross-platform, multiplayer simulations of large scale combat scenarios.

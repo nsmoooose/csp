@@ -41,7 +41,6 @@
 #include <csp/cspsim/wf/TabPage.h>
 #include <csp/cspsim/wf/Window.h>
 
-#include <osg/BlendFunc>
 #include <osg/Depth>
 #include <osg/Geode>
 #include <osg/Geometry>
@@ -96,12 +95,6 @@ osg::Geometry* ControlGeometryBuilder::buildRectangle(
 	geom->setColorArray(colors.get());
     geom->setColorBinding(osg::Geometry::BIND_PER_VERTEX);
 	geom->addPrimitiveSet(new osg::DrawArrays(GL_QUADS, 0, 4));
-
-	// setup state
-	osg::StateSet* stateset = geom->getOrCreateStateSet();
-	stateset->setMode(GL_LIGHTING, osg::StateAttribute::OFF);
-    stateset->setMode(GL_DEPTH_TEST, osg::StateAttribute::ON);
-	geom->setStateSet(stateset);
 
 	return geom.release();
 }
@@ -174,12 +167,6 @@ osg::Geometry* ControlGeometryBuilder::buildRectangle(
 	geom->setColorArray(colors.get());
     geom->setColorBinding(osg::Geometry::BIND_PER_VERTEX);
 	geom->addPrimitiveSet(new osg::DrawArrays(GL_QUADS, 0, verticeCount));
-
-	// setup state
-	osg::StateSet* stateset = geom->getOrCreateStateSet();
-	stateset->setMode(GL_LIGHTING, osg::StateAttribute::OFF);
-    stateset->setMode(GL_DEPTH_TEST, osg::StateAttribute::ON);
-	geom->setStateSet(stateset);
 
 	return geom.release();
 }
@@ -259,7 +246,6 @@ void ControlGeometryBuilder::buildControl(osg::Geode* geode, float& z, const Sty
 
 				osg::ref_ptr<osg::StateSet> stateset = backgroundGeometry->getOrCreateStateSet();
 				stateset->setTextureAttributeAndModes(0, texture.get(), osg::StateAttribute::ON);
-				stateset->setMode(GL_LIGHTING, osg::StateAttribute::OFF);
 				backgroundGeometry->setStateSet(stateset.get());
 			}
 		}
@@ -411,12 +397,6 @@ osg::Geometry* ControlGeometryBuilder::buildTriangle(
     geom->setColorBinding(osg::Geometry::BIND_PER_VERTEX);
 	geom->addPrimitiveSet(new osg::DrawArrays(GL_TRIANGLES, 0, 3));
 
-	// setup state
-	osg::StateSet* stateset = geom->getOrCreateStateSet();
-	stateset->setMode(GL_LIGHTING, osg::StateAttribute::OFF);
-    stateset->setMode(GL_DEPTH_TEST, osg::StateAttribute::ON);
-	geom->setStateSet(stateset);
-
 	return geom.release();
 }
 
@@ -477,14 +457,6 @@ osg::Group* ControlGeometryBuilder::buildWindow(const Window* window) const {
 	osg::ref_ptr<osg::Group> group = new osg::Group;
 	group->addChild(geode.get());
 
-    osg::StateSet *stateSet = group->getOrCreateStateSet();
-    stateSet->setRenderBinDetails(100, "RenderBin");
-    stateSet->setMode(GL_LIGHTING, osg::StateAttribute::OFF);
-    stateSet->setMode(GL_DEPTH_TEST, osg::StateAttribute::ON);
-
-    osg::ref_ptr<osg::BlendFunc> blendFunction = new osg::BlendFunc;
-    stateSet->setAttributeAndModes(blendFunction.get());
-
 	return group.release();
 }
 
@@ -518,14 +490,6 @@ osg::Group* ControlGeometryBuilder::buildButton(const Button* button) const {
 
 	osg::ref_ptr<osg::Group> group = new osg::Group;
 	group->addChild(geode.get());
-
-    osg::StateSet *stateSet = group->getOrCreateStateSet();
-    stateSet->setRenderBinDetails(100, "RenderBin");
-    stateSet->setMode(GL_LIGHTING, osg::StateAttribute::OFF);
-    stateSet->setMode(GL_DEPTH_TEST, osg::StateAttribute::ON);
-
-    osg::ref_ptr<osg::BlendFunc> blendFunction = new osg::BlendFunc;
-    stateSet->setAttributeAndModes(blendFunction.get());
 
 	return group.release();
 }
@@ -586,14 +550,6 @@ osg::Group* ControlGeometryBuilder::buildCheckBox(const CheckBox* checkBox) cons
 
 	osg::ref_ptr<osg::Group> group = new osg::Group;
 	group->addChild(geode.get());
-
-    osg::StateSet *stateSet = group->getOrCreateStateSet();
-    stateSet->setRenderBinDetails(100, "RenderBin");
-    stateSet->setMode(GL_LIGHTING, osg::StateAttribute::OFF);
-    stateSet->setMode(GL_DEPTH_TEST, osg::StateAttribute::ON);
-
-    osg::ref_ptr<osg::BlendFunc> blendFunction = new osg::BlendFunc;
-    stateSet->setAttributeAndModes(blendFunction.get());
 
 	if (checkBox->getChecked() && style.color) {
 		getNextLayer(z);
@@ -659,14 +615,6 @@ osg::Group* ControlGeometryBuilder::buildLabel(const Label* label) const {
 	osg::ref_ptr<osg::Group> group = new osg::Group;
 	group->addChild(geode.get());
 
-    osg::StateSet *stateSet = group->getOrCreateStateSet();
-    stateSet->setRenderBinDetails(100, "RenderBin");
-    stateSet->setMode(GL_LIGHTING, osg::StateAttribute::OFF);
-    stateSet->setMode(GL_DEPTH_TEST, osg::StateAttribute::ON);
-
-    osg::ref_ptr<osg::BlendFunc> blendFunction = new osg::BlendFunc;
-    stateSet->setAttributeAndModes(blendFunction.get());
-
 	return group.release();
 }
 
@@ -685,14 +633,6 @@ osg::Group* ControlGeometryBuilder::buildImage(const Image* image) const {
 
 	osg::ref_ptr<osg::Group> group = new osg::Group;
 	group->addChild(geode.get());
-
-    osg::StateSet *stateSet = group->getOrCreateStateSet();
-    stateSet->setRenderBinDetails(100, "RenderBin");
-    stateSet->setMode(GL_LIGHTING, osg::StateAttribute::OFF);
-    stateSet->setMode(GL_DEPTH_TEST, osg::StateAttribute::ON);
-
-    osg::ref_ptr<osg::BlendFunc> blendFunction = new osg::BlendFunc;
-    stateSet->setAttributeAndModes(blendFunction.get());
 
 	return group.release();
 }
@@ -713,11 +653,6 @@ osg::Group* ControlGeometryBuilder::buildListBox(const ListBox* listBox) const {
 	osg::ref_ptr<osg::Group> group = new osg::Group;
 	group->addChild(geode.get());
 
-    osg::StateSet *stateSet = group->getOrCreateStateSet();
-    stateSet->setRenderBinDetails(100, "RenderBin");
-    stateSet->setMode(GL_LIGHTING, osg::StateAttribute::OFF);
-    stateSet->setMode(GL_DEPTH_TEST, osg::StateAttribute::ON);
-
 	return group.release();
 }
 
@@ -736,11 +671,6 @@ osg::Group* ControlGeometryBuilder::buildListBoxItem(const ListBox* /*listBox*/,
 
 	osg::ref_ptr<osg::Group> group = new osg::Group;
 	group->addChild(geode.get());
-
-    osg::StateSet *stateSet = group->getOrCreateStateSet();
-    stateSet->setRenderBinDetails(100, "RenderBin");
-    stateSet->setMode(GL_LIGHTING, osg::StateAttribute::OFF);
-    stateSet->setMode(GL_DEPTH_TEST, osg::StateAttribute::ON);
 
 	return group.release();
 }
@@ -780,11 +710,6 @@ osg::Group* ControlGeometryBuilder::buildModel(const Model* model) const {
 			}
 		}
 	}
-
-    osg::StateSet *stateSet = group->getOrCreateStateSet();
-    stateSet->setRenderBinDetails(100, "RenderBin");
-    stateSet->setMode(GL_LIGHTING, osg::StateAttribute::OFF);
-    stateSet->setMode(GL_DEPTH_TEST, osg::StateAttribute::ON);
 
 	return group.release();
 }

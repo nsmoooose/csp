@@ -18,7 +18,7 @@
 						<FontSize>30</FontSize>
 					</Style>
 				</Label>
-				<TableControlContainer LocationX="170" LocationY="55" SizeWidth="709" SizeHeight="585">
+				<TableControlContainer LocationX="170" LocationY="95" SizeWidth="709" SizeHeight="545">
 					<ColumnDefinitions>
 						<Column Width="0.20"/>
 						<Column Width="0.25"/>

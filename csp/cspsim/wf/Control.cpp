@@ -40,14 +40,6 @@ namespace wf {
 Control::Control() :
 	m_Enabled(true), m_TransformGroup(new osg::MatrixTransform), m_ZPos(1.0), m_ClickSignal(new Signal)
 {
-	osg::StateSet *stateSet = m_TransformGroup->getOrCreateStateSet();
-	stateSet->setRenderBinDetails(100, "RenderBin");
-	stateSet->setMode(GL_LIGHTING, osg::StateAttribute::OFF);
-	stateSet->setMode(GL_DEPTH_TEST, osg::StateAttribute::ON);
-
-	osg::ref_ptr<osg::BlendFunc> blendFunction = new osg::BlendFunc;
-	stateSet->setAttributeAndModes(blendFunction.get());
-
 	// Attach a control callback to the control. This makes it possible
 	// for the window manager to find out what control exists on a specific
 	// coordinate.
